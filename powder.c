@@ -806,6 +806,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 		{parts[i].temp += parts[i].temp* 0.2f;}		
 		else
 		{parts[i].temp = MAX_TEMP;}
+	return 0;
 	}
 	if((r&0xFF)==PT_BHOL){
 		parts[i].type=PT_NONE;
