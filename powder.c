@@ -1973,9 +1973,9 @@ void update_particles_i(pixel *vid, int start, int inc){
 							   (pmap[y+ny][x+nx]&0xFF)!=0xFF) 
 							   {
 							r = pmap[y+ny][x+nx];
-								   if(parts[r>>8].temp+ (parts[r>>8].temp*0.5f)<=MAX_TEMP)
-								   {parts[r>>8].temp += parts[r>>8].temp*0.5f;}
-								   else {parts[r>>8].temp = 3500;}
+								   if(parts[r>>8].temp+ (parts[r>>8].temp*0.2f)<=MAX_TEMP)
+								   {parts[r>>8].temp += parts[r>>8].temp*0.2f;}
+								   else {parts[r>>8].temp = MAX_TEMP;}
 						}
 			}
 
@@ -1992,11 +1992,11 @@ void update_particles_i(pixel *vid, int start, int inc){
 							
 								 r = pmap[y+ny][x+nx];
 								   if(parts[r>>8].temp > 1)
-								   {parts[r>>8].temp -= parts[r>>8].temp*0.5f;}
+								   {parts[r>>8].temp -= parts[r>>8].temp*0.2f;}
 								   else {if (parts[r>>8].temp>0) 
 										 {parts[r>>8].temp = -1;}
-										 else{if(parts[r>>8].temp+ (parts[r>>8].temp*0.5f)>=MIN_TEMP)
-											 {parts[r>>8].temp += parts[r>>8].temp*0.5f;}
+										 else{if(parts[r>>8].temp+ (parts[r>>8].temp*0.2f)>=MIN_TEMP)
+											 {parts[r>>8].temp += parts[r>>8].temp*0.2f;}
 										      else{parts[r>>8].temp = MIN_TEMP;}
 									   }							   
 								   
