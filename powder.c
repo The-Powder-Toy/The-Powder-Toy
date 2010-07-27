@@ -26,9 +26,6 @@
 #include <SDL.h>
 #include <bzlib.h>
 #include <time.h>
-#ifdef OCL
-#include <CL/opencl.h>
-#endif
 //#include <pthread.h>
 #ifdef MT
 #include <pthread.h>
@@ -64,7 +61,7 @@
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
-unsigned char ZFACTOR = 256/ZSIZE_D;//ZFACTOR_D;
+unsigned char ZFACTOR = 256/ZSIZE_D;
 unsigned char ZSIZE = ZSIZE_D;
 
 #define CELL    4
@@ -115,6 +112,7 @@ char *it_msg =
 "\brThe Powder Toy\n"
 "\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
 "\n"
+"\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
 "\bgTo choose a material, hover over once of the icons on the right, it will show a selection of elements in that group.\n"
 "\bgPick your material from the menu using mouse left/right buttons.\n"
 "Draw freeform lines by dragging your mouse left/right button across the drawing area.\n"
@@ -137,11 +135,7 @@ char *it_msg =
 "\n"
 "\bgSpecial thanks to Brian Ledbetter for maintaining ports & server development in the past."
 "\nand CW for hosting the original server.\n"
-#ifdef WIN32
-"\nThanks to Akuryo for Windows icons.\n"
-#endif
-"\n"
-"\bgTo use online features such as saving, you need to register at: http://powder.hardwired.org.uk/Register.html"
+"\bgTo use online features such as saving, you need to register at: \brhttp://powder.hardwired.org.uk/Register.html"
 ;
 
 typedef struct {
@@ -1118,7 +1112,7 @@ int nearest_part(int ci, int t){
 	int cy = (int)parts[ci].y;
 	for(i=0; i<NPART; i++){
 		if(parts[i].type==t&&!parts[i].life&&i!=ci){
-			ndistance = sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
+			ndistance = abs((cx-parts[i].x)+(cy-parts[i].y));// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
 			if(ndistance<distance){
 				distance = ndistance;
 				id = i;
@@ -3728,6 +3722,12 @@ void stamp_gen_thumb(int i)
 	
     free(data);
 }
+
+int clipboard_ready = 0;
+ 		
+void *clipboard_data = 0;
+ 		
+int clipboard_length = 0;
 
 void stamp_save(int x, int y, int w, int h)
 {
@@ -7554,7 +7554,7 @@ char *download_ui(pixel *vid_buf, char *uri, int *len)
     ulen |= ((unsigned char)tmp[6])<<16;
     ulen |= ((unsigned char)tmp[7])<<24;
 	
-    res = malloc(ulen);
+    res = (char *)malloc(ulen);
     if(!res){
 		printf("No res!\n");
 		goto corrupt;
@@ -7576,6 +7576,21 @@ corrupt:
     free(tmp);
     return NULL;
 }
+void clear_area(int area_x, int area_y, int area_w, int area_h){
+ 		
+ int cx = 0;
+ int cy = 0;
+ for(cy=0; cy<area_h; cy++){
+ for(cx=0; cx<area_w; cx++){
+ bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
+ 		
+  delete_part(cx+area_x, cy+area_y);
+ 	 }
+ 		
+ }
+ 		
+}
+ 		
 
 int main(int argc, char *argv[])
 {
@@ -7605,7 +7620,7 @@ int main(int argc, char *argv[])
     int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
     void *load_data=NULL;
     pixel *load_img=NULL;//, *fbi_img=NULL;
-    int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0;
+    int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
 	
 #ifdef MT
 	numCores = core_count();
@@ -7853,7 +7868,29 @@ int main(int argc, char *argv[])
 			sys_pause = !sys_pause;
 		if(sdl_key=='p')
 			dump_frame(vid_buf, XRES, YRES, XRES);
-		if(sdl_key=='c') {
+		if(sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))){
+ 		
+      if(clipboard_ready==1){
+		  load_data = malloc(clipboard_length);
+ 	      memcpy(load_data, clipboard_data, clipboard_length);
+ 	      load_size = clipboard_length;
+ 				if(load_data) {
+ 				load_img = prerender_save(load_data, load_size, &load_w, &load_h);
+ 					if(load_img)
+ 					load_mode = 1;
+ 					else
+ 					free(load_data);
+ 	    }
+ 	   }
+ 	}
+ 	if(sdl_key=='x'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))){
+ 	   save_mode = 1;
+ 	   copy_mode = 2;
+	}
+ 	if(sdl_key=='c'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))){
+ 	     save_mode = 1;
+ 	     copy_mode = 1;
+ 	} else if(sdl_key=='c') {
 #ifdef HEAT_ENABLE
 			set_cmode((cmode+1) % 6);
 #else
@@ -8090,8 +8127,21 @@ int main(int argc, char *argv[])
 			if(save_w<1) save_w = 1;
 			if(save_h<1) save_h = 1;
 			if(!b) {
-				stamp_save(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
-				save_mode = 0;
+		if(copy_mode==1){
+ 	      clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+ 	      clipboard_ready = 1;
+ 	      save_mode = 0;
+ 	      copy_mode = 0;
+ 	 } else if(copy_mode==2){
+ 	          clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+ 	          clipboard_ready = 1;
+ 	          save_mode = 0;
+ 	          copy_mode = 0;
+ 	          clear_area(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+ 	        } else {
+ 	        stamp_save(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+ 	        save_mode = 0;
+ }
 			}
 		} else if(sdl_zoom_trig && zoom_en<2) {
 			x /= sdl_scale;
