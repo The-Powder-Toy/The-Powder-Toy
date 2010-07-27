@@ -23,9 +23,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <bzlib.h>
 #include <time.h>
+#ifdef OCL
+#include <CL/opencl.h>
+#endif
 //#include <pthread.h>
 #ifdef MT
 #include <pthread.h>
@@ -61,7 +64,7 @@
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
-unsigned char ZFACTOR = 256/ZSIZE_D;
+unsigned char ZFACTOR = 256/ZSIZE_D;//ZFACTOR_D;
 unsigned char ZSIZE = ZSIZE_D;
 
 #define CELL    4
@@ -112,7 +115,6 @@ char *it_msg =
 "\brThe Powder Toy\n"
 "\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
 "\n"
-"\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
 "\bgTo choose a material, hover over once of the icons on the right, it will show a selection of elements in that group.\n"
 "\bgPick your material from the menu using mouse left/right buttons.\n"
 "Draw freeform lines by dragging your mouse left/right button across the drawing area.\n"
@@ -135,7 +137,11 @@ char *it_msg =
 "\n"
 "\bgSpecial thanks to Brian Ledbetter for maintaining ports & server development in the past."
 "\nand CW for hosting the original server.\n"
-"\bgTo use online features such as saving, you need to register at: \brhttp://powder.hardwired.org.uk/Register.html"
+#ifdef WIN32
+"\nThanks to Akuryo for Windows icons.\n"
+#endif
+"\n"
+"\bgTo use online features such as saving, you need to register at: http://powder.hardwired.org.uk/Register.html"
 ;
 
 typedef struct {
@@ -557,7 +563,8 @@ struct menu_section msections[] = {
 #define PT_PLSM 49
 #define PT_ETRD 50
 #define PT_NICE 51
-#define PT_NUM  52
+#define PT_NBLE 52
+#define PT_NUM  53
 
 #define R_TEMP 22
 #define MAX_TEMP 3500
@@ -616,6 +623,8 @@ const struct part_type ptypes[] = {
 	{"PLSM",	PIXPACK(0xBB99FF),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.30f,	0.001f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_GAS,			3500.0f,		115,	"Plasma, extremely hot."},
 	{"ETRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)"},
 	{"NICE",	PIXPACK(0xC0E0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0005f* CFDS,	0,	0,		0,	0,	20,	1,	SC_OTHER,		-250.0f,		46,		"Nitrogen Ice."},
+    {"NBLE",	PIXPACK(0xEB4917),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+2.0f,	106,	"Noble Gas. Diffuses. Conductive. Ionizes into plasma when intruduced to electricity"},
+	
 };
 
 #ifdef HEAT_ENABLE
@@ -677,69 +686,71 @@ const struct part_state pstates[] = {
 	/* PLSM */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* ETRD */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* NICE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LNTG, -209.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-};
+	/* NBLE */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+	};
 #endif
 static const unsigned char can_move[PT_NUM][PT_NUM] = {
 	/*   A B */
 	/* A 0 1 | B ligher than A */
 	/* B 1 0 | A heavier than B */
 	 
-	/*          N D W O F M L G N C G P D I W S S W N P P A V W C D S S D B B P U W M P N L F B W R L H S G C B T P E N */
-	/*          o u a i i e a u i l a l f c i p n o e l l c o t n s a l m m r h r a W S S N o H H b R S a l s G h l t i */
-	/*          n s t l r t v n t n s e r e r r o o u u n i i r c t l t n t m o a x a c c 2 a o o d b C n a c l d s r c */
-	/*          e t r l e l a p r e s x m i e k w d t t t d d v t w t w d l t t n   x n n   m l l m d N d s n a r m d e */
-	/* NONE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* DUST */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* WATR */ {0,0,0,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* OILL */ {0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* FIRE */ {0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0},
-	/* METL */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
-	/* LAVA */ {0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* GUNP */ {0,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* NITR */ {0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* CLNE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* GASS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* PLEX */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* DFRM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* ICEI */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* WIRE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* SPRK */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* SNOW */ {0,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* WOOD */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* NEUT */ {0,1,1,1,1,0,0,1,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,1,0,1,1,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* PLUT */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
-	/* PLNT */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* ACID */ {0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* VOID */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* WTRV */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* CNCT */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* DSTW */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* SALT */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* SLTW */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* DMND */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* BMTL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* BRMT */ {0,1,1,1,1,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
-	/* PHOT */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* URAN */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
-	/* WAX	*/ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* MWAX */ {0,1,0,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* PSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* NSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* LNTG */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* FOAM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* BHOL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* WHOL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* RBDM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* LRBD */ {0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* HSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* SAND */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
-	/* GLAS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* CSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* BGLA */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
-	/* THDR */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* PLSM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* ETRD */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* NICE */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/*          N D W O F M L G N C G P D I W S S W N P P A V W C D S S D B B P U W M P N L F B W R L H S G C B T P E N H */
+	/*          o u a i i e a u i l a l f c i p n o e l l c o t n s a l m m r h r a W S S N o H H b R S a l s G h l t i T */
+	/*          n s t l r t v n t n s e r e r r o o u u n i i r c t l t n t m o a x a c c 2 a o o d b C n a c l d s r c P */
+	/*          e t r l e l a p r e s x m i e k w d t t t d d v t w t w d l t t n   x n n   m l l m d N d s n a r m d e T */
+	/* NONE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* DUST */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* WATR */ {0,0,0,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* OILL */ {0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* FIRE */ {0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0},
+	/* METL */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+	/* LAVA */ {0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* GUNP */ {0,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* NITR */ {0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* CLNE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* GASS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* PLEX */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* DFRM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* ICEI */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* WIRE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* SPRK */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* SNOW */ {0,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* WOOD */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* NEUT */ {0,1,1,1,1,0,0,1,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,1,0,1,1,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
+	/* PLUT */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+	/* PLNT */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* ACID */ {0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* VOID */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* WTRV */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* CNCT */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* DSTW */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* SALT */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* SLTW */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* DMND */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* BMTL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* BRMT */ {0,1,1,1,1,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+	/* PHOT */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* URAN */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+	/* WAX	*/ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* MWAX */ {0,1,0,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* PSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* NSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* LNTG */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* FOAM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* BHOL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* WHOL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* RBDM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* LRBD */ {0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* HSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* SAND */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+	/* GLAS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* CSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* BGLA */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+	/* THDR */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* PLSM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* ETRD */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* NICE */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* NBLE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 };
 
 #define FLAG_STAGNANT	1
@@ -912,7 +923,8 @@ int create_part(int p, int x, int y, int t)
 		   (pmap[y][x]&0xFF)!=PT_RBDM &&
 		   (pmap[y][x]&0xFF)!=PT_LRBD &&
 		   (pmap[y][x]&0xFF)!=PT_ETRD &&
-		   (pmap[y][x]&0xFF)!=PT_BRMT)
+		   (pmap[y][x]&0xFF)!=PT_BRMT &&
+		   (pmap[y][x]&0xFF)!=PT_NBLE)
 			return -1;
 		parts[pmap[y][x]>>8].type = PT_SPRK;
 		parts[pmap[y][x]>>8].life = 4;
@@ -955,7 +967,9 @@ int create_part(int p, int x, int y, int t)
 		parts[i].life = rand()%150+50;
     if(t==PT_LAVA)
 		parts[i].life = rand()%120+240;
-    if(t==PT_NEUT) {
+    if(t==PT_NBLE)
+		parts[i].life = 0;
+	if(t==PT_NEUT) {
 		float r = (rand()%128+128)/127.0f;
 		float a = (rand()%360)*3.14159f/180.0f;
 		parts[i].life = rand()%480+480;
@@ -1104,7 +1118,7 @@ int nearest_part(int ci, int t){
 	int cy = (int)parts[ci].y;
 	for(i=0; i<NPART; i++){
 		if(parts[i].type==t&&!parts[i].life&&i!=ci){
-			ndistance = abs((cx-parts[i].x)+(cy-parts[i].y));// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
+			ndistance = sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
 			if(ndistance<distance){
 				distance = ndistance;
 				id = i;
@@ -1133,9 +1147,9 @@ void update_particles_i(pixel *vid, int start, int inc){
 			if(sys_pause)
 				goto justdraw;
 		
-			if(parts[i].life&&t!=PT_ACID&&t!=PT_WOOD) {
+			if(parts[i].life&&t!=PT_ACID&&t!=PT_WOOD&&t!=PT_NBLE) {
 				parts[i].life--;
-				if(parts[i].life<=0 && t!=PT_WIRE && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_HSCN && t!=PT_CSCN && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD) {
+				if(parts[i].life<=0 && t!=PT_WIRE && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_HSCN && t!=PT_CSCN && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD && t!=PT_NBLE) {
 					kill_part(i);
 					continue;
 				}
@@ -1182,7 +1196,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 			vy[y/CELL][x/CELL] *= ptypes[t].airloss;
 			vx[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vx;
 			vy[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vy;
-			if(t==PT_GASS) {
+			if(t==PT_GASS||t==PT_NBLE) {
 				if(pv[y/CELL][x/CELL]<3.5f)
 					pv[y/CELL][x/CELL] += ptypes[t].hotair*(3.5f-pv[y/CELL][x/CELL]);
 				if(y+CELL<YRES && pv[y/CELL+1][x/CELL]<3.5f)
@@ -1409,7 +1423,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 			}
 			#endif
 			
-			if(t==PT_WATR || t==PT_ETRD || t==PT_SLTW || t==PT_WIRE || t==PT_RBDM || t==PT_LRBD || t==PT_BRMT || t==PT_PSCN || t==PT_NSCN || t==PT_HSCN || t==PT_CSCN || t==PT_BMTL || t==PT_SPRK) {
+			if(t==PT_WATR || t==PT_ETRD || t==PT_SLTW || t==PT_WIRE || t==PT_RBDM || t==PT_LRBD || t==PT_BRMT || t==PT_PSCN || t==PT_NSCN || t==PT_HSCN || t==PT_CSCN || t==PT_BMTL || t==PT_SPRK || t==PT_NBLE) {
 				nx = x % CELL;
 				if(nx == 0)
 					nx = x/CELL - 1;
@@ -1425,7 +1439,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 				else
 					ny = y/CELL;
 				if(nx>=0 && ny>=0 && nx<XRES/CELL && ny<YRES/CELL) {
-					if(t==PT_WATR || t==PT_ETRD || t==PT_SLTW || t==PT_WIRE || t==PT_RBDM || t==PT_LRBD || t==PT_NSCN || t==PT_HSCN || t==PT_CSCN || t==PT_PSCN || t==PT_BRMT || t==PT_BMTL) {
+					if(t==PT_WATR || t==PT_ETRD || t==PT_SLTW || t==PT_WIRE || t==PT_RBDM || t==PT_LRBD || t==PT_NSCN || t==PT_HSCN || t==PT_CSCN || t==PT_PSCN || t==PT_BRMT || t==PT_BMTL|| t==PT_NBLE) {
 						if(emap[ny][nx]==12 && !parts[i].life) {
 							parts[i].type = PT_SPRK;
 							parts[i].life = 4;
@@ -1477,7 +1491,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 							r = pmap[y+ny][x+nx];
 							if((r>>8)>=NPART || !r)
 								continue;
-							if(((r&0xFF)==PT_WIRE || (r&0xFF)==PT_ETRD || (r&0xFF)==PT_PSCN || (r&0xFF)==PT_NSCN || (r&0xFF)==PT_HSCN || (r&0xFF)==PT_CSCN || (r&0xFF)==PT_BMTL || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD || (r&0xFF)==PT_BRMT) && parts[r>>8].ctype!=PT_SPRK ){
+							if(((r&0xFF)==PT_WIRE || (r&0xFF)== PT_ETRD || (r&0xFF)==PT_PSCN || (r&0xFF)==PT_NSCN || (r&0xFF)==PT_HSCN || (r&0xFF)==PT_CSCN || (r&0xFF)==PT_BMTL || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD || (r&0xFF)==PT_BRMT|| (r&0xFF)==PT_NBLE) && parts[r>>8].ctype!=PT_SPRK ){
 								t = parts[i].type = PT_NONE;
 								parts[r>>8].ctype = parts[r>>8].type;
 								parts[r>>8].type = PT_SPRK;
@@ -1878,7 +1892,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 							}
 #endif
 							//Bitches now know about my semi-conductor :(
-							if(t==PT_SPRK && (rt==PT_WIRE||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN) && parts[r>>8].life==0 &&
+							if(t==PT_SPRK && (rt==PT_WIRE||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE) && parts[r>>8].life==0 &&
 							   (parts[i].life<3 || ((r>>8)<i && parts[i].life<4)) && abs(nx)+abs(ny)<4) {
 								if(!(rt==PT_PSCN&&parts[i].ctype==PT_NSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp>=100.0f)&&parts[i].ctype==PT_HSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp<=100.0f)&&parts[i].ctype==PT_CSCN)){
 									parts[r>>8].type = PT_SPRK;
@@ -1928,7 +1942,18 @@ void update_particles_i(pixel *vid, int start, int inc){
 									parts[r>>8].ctype = rt;
 								}
 							}
-						}
+							if(t==PT_SPRK&&parts[i].ctype==PT_NBLE)
+							{
+							parts[i].temp = 3500;
+							}
+							if(t==PT_SPRK&&parts[i].ctype==PT_NBLE&&parts[i].life<=1)
+							{
+							parts[i].life = rand()%150+50;
+							parts[i].type = PT_PLSM;
+							parts[i].temp = 3500;
+							pv[y/CELL][x/CELL] += 1;
+							}
+}
 			killed:
 				if(parts[i].type == PT_NONE)
 					continue;
@@ -3703,10 +3728,6 @@ void stamp_gen_thumb(int i)
 	
     free(data);
 }
-
-int clipboard_ready = 0;
-void *clipboard_data = 0;
-int clipboard_length = 0;
 
 void stamp_save(int x, int y, int w, int h)
 {
@@ -7533,7 +7554,7 @@ char *download_ui(pixel *vid_buf, char *uri, int *len)
     ulen |= ((unsigned char)tmp[6])<<16;
     ulen |= ((unsigned char)tmp[7])<<24;
 	
-    res = (char *)malloc(ulen);
+    res = malloc(ulen);
     if(!res){
 		printf("No res!\n");
 		goto corrupt;
@@ -7554,17 +7575,6 @@ corrupt:
     error_ui(vid_buf, 0, "Downloaded update is corrupted");
     free(tmp);
     return NULL;
-}
-
-void clear_area(int area_x, int area_y, int area_w, int area_h){
-	int cx = 0;
-	int cy = 0;
-	for(cy=0; cy<area_h; cy++){
-		for(cx=0; cx<area_w; cx++){
-			bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
-			delete_part(cx+area_x, cy+area_y);
-		}
-	}
 }
 
 int main(int argc, char *argv[])
@@ -7595,7 +7605,7 @@ int main(int argc, char *argv[])
     int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
     void *load_data=NULL;
     pixel *load_img=NULL;//, *fbi_img=NULL;
-    int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
+    int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0;
 	
 #ifdef MT
 	numCores = core_count();
@@ -7843,28 +7853,7 @@ int main(int argc, char *argv[])
 			sys_pause = !sys_pause;
 		if(sdl_key=='p')
 			dump_frame(vid_buf, XRES, YRES, XRES);
-		if(sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))){
-			if(clipboard_ready==1){
-				load_data = malloc(clipboard_length);
-				memcpy(load_data, clipboard_data, clipboard_length);
-				load_size = clipboard_length;
-				if(load_data) {
-					load_img = prerender_save(load_data, load_size, &load_w, &load_h);
-					if(load_img)
-						load_mode = 1;
-					else
-						free(load_data);
-				}
-			}
-		}
-		if(sdl_key=='x'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))){
-			save_mode = 1;
-			copy_mode = 2;
-		}
-		if(sdl_key=='c'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))){
-			save_mode = 1;
-			copy_mode = 1;
-		} else if(sdl_key=='c') {
+		if(sdl_key=='c') {
 #ifdef HEAT_ENABLE
 			set_cmode((cmode+1) % 6);
 #else
@@ -8089,12 +8078,10 @@ int main(int argc, char *argv[])
 			if(save_y >= YRES/CELL) save_y = YRES/CELL-1;
 			save_w = 1;
 			save_h = 1;
-			if(b==1){
+			if(b==1)
 				save_mode = 2;
-			} else if(b==4){
+			else if(b==4)
 				save_mode = 0;
-				copy_mode = 0;
-			}
 		} else if(save_mode==2) {
 			save_w = (mx/sdl_scale+CELL/2)/CELL - save_x;
 			save_h = (my/sdl_scale+CELL/2)/CELL - save_y;
@@ -8103,21 +8090,8 @@ int main(int argc, char *argv[])
 			if(save_w<1) save_w = 1;
 			if(save_h<1) save_h = 1;
 			if(!b) {
-				if(copy_mode==1){
-				    clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
-					clipboard_ready = 1;
-					save_mode = 0;
-					copy_mode = 0;
-				} else if(copy_mode==2){
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
-					clipboard_ready = 1;
-					save_mode = 0;
-					copy_mode = 0;
-					clear_area(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
-				} else {
-					stamp_save(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
-					save_mode = 0;
-				}
+				stamp_save(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+				save_mode = 0;
 			}
 		} else if(sdl_zoom_trig && zoom_en<2) {
 			x /= sdl_scale;
