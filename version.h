@@ -21,11 +21,11 @@
 #define VERSION_H
 
 #define SAVE_VERSION 38
-#define MINOR_VERSION 0
-#define IDENT_VERSION "S" //Change this if you're not Simon! It should be a single letter.
+#define MINOR_VERSION 1
+#define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 
 #define MENUV3
-//#define BETA
+#define BETA
 #define HEAT_ENABLE
 
 #endif
