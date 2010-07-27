@@ -1182,7 +1182,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 			vy[y/CELL][x/CELL] *= ptypes[t].airloss;
 			vx[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vx;
 			vy[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vy;
-			if(t==PT_GASS) {
+			if(t==PT_GASS||t==PT_NEON) {
 				if(pv[y/CELL][x/CELL]<3.5f)
 					pv[y/CELL][x/CELL] += ptypes[t].hotair*(3.5f-pv[y/CELL][x/CELL]);
 				if(y+CELL<YRES && pv[y/CELL+1][x/CELL]<3.5f)
