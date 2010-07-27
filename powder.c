@@ -1491,7 +1491,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 							r = pmap[y+ny][x+nx];
 							if((r>>8)>=NPART || !r)
 								continue;
-							if(((r&0xFF)==PT_WIRE || (r&0xFF)==PT_ETRD || (r&0xFF)==PT_PSCN || (r&0xFF)==PT_NSCN || (r&0xFF)==PT_HSCN || (r&0xFF)==PT_CSCN || (r&0xFF)==PT_BMTL || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD || (r&0xFF)==PT_BRMT) && parts[r>>8].ctype!=PT_SPRK ){
+							if(((r&0xFF)==PT_WIRE || (r&0xFF)== PT_ETRD || (r&0xFF)==PT_PSCN || (r&0xFF)==PT_NSCN || (r&0xFF)==PT_HSCN || (r&0xFF)==PT_CSCN || (r&0xFF)==PT_BMTL || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD || (r&0xFF)==PT_BRMT|| (r&0xFF)==PT_NEON) && parts[r>>8].ctype!=PT_SPRK ){
 								t = parts[i].type = PT_NONE;
 								parts[r>>8].ctype = parts[r>>8].type;
 								parts[r>>8].type = PT_SPRK;
@@ -1942,11 +1942,16 @@ void update_particles_i(pixel *vid, int start, int inc){
 									parts[r>>8].ctype = rt;
 								}
 							}
+							if(t==PT_SPRK&&parts[i].ctype==PT_NEON)
+							{
+							parts[i].temp = 3500;
+							}
 							if(t==PT_SPRK&&parts[i].ctype==PT_NEON&&parts[i].life<=1)
 							{
 							parts[i].life = rand()%150+50;
 							parts[i].type = PT_PLSM;
 							parts[i].temp = 3500;
+							pv[y/CELL][x/CELL] += 1;
 							}
 }
 			killed:
