@@ -617,7 +617,7 @@ const struct part_type ptypes[] = {
 	{"PLSM",	PIXPACK(0xBB99FF),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.30f,	0.001f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_GAS,			3500.0f,		115,	"Plasma, extremely hot."},
 	{"ETRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)"},
 	{"NICE",	PIXPACK(0xC0E0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0005f* CFDS,	0,	0,		0,	0,	20,	1,	SC_OTHER,		-250.0f,		46,		"Nitrogen Ice."},
-	{"CHLR",	PIXPACK(0xC2E76A),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,	0,	0,	0,	1,	SC_GAS,			R_TEMP+2.0f,	34,		"Chlorine. Gas. Turns into the acid on contact with water."},
+	{"CHLR",	PIXPACK(0xC2E76A),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,	0,	0,	0,	1,	SC_GAS,			R_TEMP+2.0f,	202,		"Chlorine. Gas. Turns into the acid on contact with water."},
 };
 
 #ifdef HEAT_ENABLE
@@ -679,7 +679,7 @@ const struct part_state pstates[] = {
 	/* PLSM */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* ETRD */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* NICE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LNTG, -209.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-	/* CHLR */ {ST_GAS,	PT_NONE, 0.0f,		PT_ACID, -34.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+	/* CHLR */ {ST_GAS,	PT_NONE, 0.0f,		PT_NONE, 0.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
 };
 #endif
 static const unsigned char can_move[PT_NUM][PT_NUM] = {
