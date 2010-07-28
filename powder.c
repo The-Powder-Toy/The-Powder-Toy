@@ -617,7 +617,7 @@ const struct part_type ptypes[] = {
 	{"PLSM",	PIXPACK(0xBB99FF),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.30f,	0.001f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_GAS,			3500.0f,		115,	"Plasma, extremely hot."},
 	{"ETRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)"},
 	{"NICE",	PIXPACK(0xC0E0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0005f* CFDS,	0,	0,		0,	0,	20,	1,	SC_OTHER,		-250.0f,		46,		"Nitrogen Ice."},
-	{"CHLR",	PIXPACK(0xCCFF00),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,	0,	0,	0,	1,	SC_GAS,			R_TEMP+2.0f,	34,		"Chlorine. Gas. Turns into the acid on contact with water."},
+	{"CHLR",	PIXPACK(0xC2E76A),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,	0,	0,	0,	1,	SC_GAS,			R_TEMP+2.0f,	34,		"Chlorine. Gas. Turns into the acid on contact with water."},
 };
 
 #ifdef HEAT_ENABLE
@@ -1961,11 +1961,13 @@ void update_particles_i(pixel *vid, int start, int inc){
 						if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
 					       	{
 							r = pmap[y+ny][x+nx];
-							if(((r&0xFF)==PT_WATR||(r&0xFF)==PT_DSTW) && parts[pmap[y][x]>>8].type==PT_CHLR)
+							if(((r&0xFF)==PT_WATR||(r&0xFF)==PT_DSTW||(r&0xFF)==PT_WTRV||(r&0xFF)==PT_SLTW) && parts[pmap[y][x]>>8].type==PT_CHLR)
 							{
 								parts[r>>8].type = PT_ACID;
 								parts[r>>8].life = 75;
 								delete_part(x,y);
+								if ((r&0xFF)==PT_SLTW)
+									create_part(-1,x,y,PT_SALT);
 							}
 						}
 
@@ -8086,8 +8088,7 @@ int main(int argc, char *argv[])
 			zoom_en = 0;
 		
 		if(sdl_key==Z_keysym && zoom_en==2)
-			zoom_en = 1;
-		
+			zoom_en = 1;              
 		if(load_mode) {
 			load_x = CELL*((mx/sdl_scale-load_w/2+CELL/2)/CELL);
 			load_y = CELL*((my/sdl_scale-load_h/2+CELL/2)/CELL);
