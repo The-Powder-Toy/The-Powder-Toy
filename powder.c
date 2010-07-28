@@ -1944,6 +1944,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 							{
 							parts[i].life = rand()%150+50;
 							parts[i].type = PT_PLSM;
+							parts[i].ctype = PT_NBLE;
 							parts[i].temp = 3500;
 							pv[y/CELL][x/CELL] += 1;
 							}
@@ -1965,6 +1966,11 @@ void update_particles_i(pixel *vid, int start, int inc){
 								parts[i].ctype = pmap[y+ny][x+nx]&0xFF;
 				} else
 					create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+			}
+			if(t==PT_PLSM&&parts[i].ctype == PT_NBLE&&parts[i].life <=1)
+			{
+			parts[i].type = PT_NBLE;
+			parts[i].life = 0;
 			}
 			
 			nx = (int)(parts[i].x+0.5f);
