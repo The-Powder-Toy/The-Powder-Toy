@@ -558,7 +558,8 @@ struct menu_section msections[] = {
 #define PT_ETRD 50
 #define PT_NICE 51
 #define PT_NBLE 52
-#define PT_NUM  53
+#define PT_BTRY 53
+#define PT_NUM  54
 
 #define R_TEMP 22
 #define MAX_TEMP 3500
@@ -618,6 +619,7 @@ const struct part_type ptypes[] = {
 	{"ETRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)"},
 	{"NICE",	PIXPACK(0xC0E0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0005f* CFDS,	0,	0,		0,	0,	20,	1,	SC_OTHER,		-250.0f,		46,		"Nitrogen Ice."},
 	{"NBLE",	PIXPACK(0xEB4917),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+2.0f,	106,	"Noble Gas. Diffuses. Conductive. Ionizes into plasma when intruduced to electricity"},
+	{"BTRY",	PIXPACK(0x858505),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Battery, Generates Electricity."},
 	
 };
 
@@ -681,6 +683,7 @@ const struct part_state pstates[] = {
 	/* ETRD */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* NICE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LNTG, -209.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* NBLE */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+	/* BTRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	
 };
 #endif
@@ -1445,7 +1448,6 @@ void update_particles_i(pixel *vid, int start, int inc){
 						set_emap(nx, ny);
 				}
 			}
-			
 			nx = x/CELL;
 			ny = y/CELL;
 			if(bmap[ny][nx]==6 && emap[ny][nx]<8)
@@ -1972,6 +1974,20 @@ void update_particles_i(pixel *vid, int start, int inc){
 			{
 			parts[i].type = PT_NBLE;
 			parts[i].life = 0;
+			}
+			if(t==PT_BTRY)
+			{
+			for(nx=-2; nx<3; nx++){
+						for(ny=-2; ny<3; ny++){
+														rt = pmap[y+ny][x+nx]&0xFF;
+							if(rt && rt!=PT_SPRK && rt!=PT_BTRY&&abs(ny)+abs(nx)<4){
+								
+								create_part(-1,nx+x,ny+y,PT_SPRK);
+							}
+						}
+							
+						
+			}
 			}
 			nx = (int)(parts[i].x+0.5f);
 			ny = (int)(parts[i].y+0.5f);
