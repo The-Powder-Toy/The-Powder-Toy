@@ -1950,8 +1950,11 @@ void update_particles_i(pixel *vid, int start, int inc){
 							parts[i].ctype = PT_NBLE;
 							parts[i].temp = 3500;
 							pv[y/CELL][x/CELL] += 1;
-							}						
+							}
+							
 }
+
+
 			killed:
 				if(parts[i].type == PT_NONE)
 					continue;
@@ -1970,6 +1973,20 @@ void update_particles_i(pixel *vid, int start, int inc){
 				} else
 					create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
 			}
+			if(t==PT_NBLE){
+								for(nx=-2;nx<3;nx++){
+									for(ny=-2;ny<3;ny++){
+										r = pmap[y+ny][x+nx];
+										rt= (r&0xFF);
+										if(rt == PT_SPRK&& abs(nx)+abs(ny) < 4)
+										{
+										parts[i].type = PT_SPRK;
+										parts[i].life = 4;
+										parts[i].ctype = PT_NBLE;					
+									}
+									}
+								}
+							}
 			if(t==PT_PLSM&&parts[i].ctype == PT_NBLE&&parts[i].life <=1)
 			{
 			parts[i].type = PT_NBLE;
@@ -1979,8 +1996,9 @@ void update_particles_i(pixel *vid, int start, int inc){
 			{
 			for(nx=-2; nx<3; nx++){
 						for(ny=-2; ny<3; ny++){
-														rt = pmap[y+ny][x+nx]&0xFF;
-							if(rt && rt!=PT_SPRK && rt!=PT_BTRY&&abs(ny)+abs(nx)<4){
+								r = pmap[y+ny][x+nx];						
+							rt = pmap[y+ny][x+nx]&0xFF;
+							if(rt && rt!=PT_SPRK && rt!=PT_BTRY&&abs(ny)+abs(nx)<4&& parts[r>>8].life == 0){
 								
 								create_part(-1,nx+x,ny+y,PT_SPRK);
 							}
