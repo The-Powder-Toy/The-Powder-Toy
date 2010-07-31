@@ -1802,7 +1802,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 							if((r>>8)>=NPART || !r)
 								continue;
 							rt = parts[r>>8].type;
-							if((rt==PT_WIRE||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE)&&parts[r>>8].life==0) {
+							if((rt==PT_WIRE||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE)&&parts[r>>8].life==0 && abs(nx)+abs(ny) < 4) {
 								parts[r>>8].life = 4;
 								parts[r>>8].ctype = rt;
 								parts[r>>8].type = PT_SPRK;
