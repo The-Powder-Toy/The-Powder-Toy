@@ -561,7 +561,7 @@ struct menu_section msections[] = {
 #define PT_NBLE 52
 #define PT_BTRY 53
 #define PT_LCRY 54
-#define PT_SWCH 55
+#define PT_INSL 55
 #define PT_NUM  56
 
 #define R_TEMP 22
@@ -624,7 +624,7 @@ const struct part_type ptypes[] = {
 	{"NBLE",	PIXPACK(0xEB4917),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+2.0f,	106,	"Noble Gas. Diffuses. Conductive. Ionizes into plasma when intruduced to electricity"},
 	{"BTRY",	PIXPACK(0x858505),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Generates Electricity."},
 	{"LCRY",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)"},
-	{"SWCH",	PIXPACK(0x224D19),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Conducts electricity when switched (PSCN turns on, NSCN turns off)"},
+	{"INSL",	PIXPACK(0x1E2336),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Conducts electricity when switched (PSCN turns on, NSCN turns off)"},
 	
 };
 
@@ -690,7 +690,7 @@ const struct part_state pstates[] = {
 	/* NBLE */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* BTRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_PLSM, 2000.0f},
 	/* LCRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_BGLA, 1000.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-	/* SWCH */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_PLSM, 2000.0f},
+	/* INSL */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	
 };
 #endif
@@ -758,7 +758,7 @@ static const unsigned char can_move[PT_NUM][PT_NUM] = {
 	/* NBLE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	/* BTRY */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	/* LCRY */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* SWCH */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* INSL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 };
 
 #define FLAG_STAGNANT	1
@@ -1137,7 +1137,7 @@ int nearest_part(int ci, int t){
 }
 void create_line(int x1, int y1, int x2, int y2, int r, int c);
 void update_particles_i(pixel *vid, int start, int inc){
-    int i, j, x, y, t, nx, ny, r, a, cr,cg,cb, s, rt, fe, nt, lpv, nearp;
+    int i, j, x, y, t, nx, ny, r, a, cr,cg,cb, s, rt, fe, nt, lpv, nearp, pavg;
     float mv, dx, dy, ix, iy, lx, ly;
 #ifdef HEAT_ENABLE
 	float pt = R_TEMP;
@@ -1158,7 +1158,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 			if(parts[i].life&&t!=PT_ACID&&t!=PT_WOOD&&t!=PT_NBLE) {
 				if(!(parts[i].life==10&&parts[i].type==PT_LCRY))
 					parts[i].life--;
-				if(parts[i].life<=0 && t!=PT_WIRE && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_HSCN && t!=PT_CSCN && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD&&t!=PT_LCRY&&t!=PT_SWCH) {
+				if(parts[i].life<=0 && t!=PT_WIRE && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_HSCN && t!=PT_CSCN && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD&&t!=PT_LCRY) {
 					kill_part(i);
 					continue;
 				}
@@ -1815,31 +1815,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 							}
 						}
 			}
-			else if (t==PT_SWCH){
-				for(nx=-2; nx<3; nx++)
-					for(ny=-2; ny<3; ny++)
-						if(x+nx>=0 && y+ny>0 &&
-						   x+nx<XRES && y+ny<YRES && (nx || ny)) 
-						{
-							r = pmap[y+ny][x+nx];
-							if((r>>8)>=NPART || !r)
-								continue;
-							
-							rt = parts[r>>8].type;
-							
-								if(parts[i].tmp == 1)
-									blendpixel(vid, x,y,59,222,27,255);
-							if(rt == PT_SPRK && abs(nx)+abs(ny)<4 && parts[r>>8].ctype == PT_PSCN)
-								parts[i].tmp = 1;
-							if(rt == PT_SPRK && abs(nx)+abs(ny)<4 && parts[r>>8].ctype == PT_NSCN)
-								parts[i].tmp = 0;
-							if(rt == PT_SPRK && abs(nx)+abs(ny)<4 && parts[r>>8].ctype == PT_WIRE && parts[i].tmp == 1 && parts[i].life == 0){
-								parts[i].ctype = parts[i].type;
-							    parts[i].life = 4;
-								parts[i].type = PT_SPRK;
-							}
-						}					
-					}
+			
 				
 			
 			if(t==PT_FIRE || t==PT_PLSM || t==PT_LAVA || t==PT_SPRK || fe || (t==PT_PHOT&&(1>rand()%10))) {
@@ -1959,9 +1935,10 @@ void update_particles_i(pixel *vid, int start, int inc){
 								}
 							}
 #endif
+							pavg = parts[pmap[(int)((parts[i].y + parts[r>>8].y)/2)][(int)((parts[i].x + parts[r>>8].x)/2)]>>8].type;
 							if(t==PT_SPRK && (rt==PT_WIRE||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE) && parts[r>>8].life==0 &&
 							   (parts[i].life<3 || ((r>>8)<i && parts[i].life<4)) && abs(nx)+abs(ny)<4) {
-								if(!(rt==PT_PSCN&&parts[i].ctype==PT_NSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp>=100.0f)&&parts[i].ctype==PT_HSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp<=100.0f)&&parts[i].ctype==PT_CSCN)&&!((rt==PT_PSCN||rt==PT_NSCN) && parts[i].ctype == PT_SWCH)){
+								if(!(rt==PT_PSCN&&parts[i].ctype==PT_NSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp>=100.0f)&&parts[i].ctype==PT_HSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp<=100.0f)&&parts[i].ctype==PT_CSCN)&&!(pavg == PT_INSL)){
 									
 									parts[r>>8].type = PT_SPRK;
 									parts[r>>8].life = 4;
@@ -1974,7 +1951,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 							}
 							if(t==PT_SPRK && rt==PT_HSCN && parts[r>>8].life==0 &&
 							   (parts[i].life<3 || ((r>>8)<i && parts[i].life<4)) && abs(nx)+abs(ny)<4) {
-								if(parts[i].ctype==PT_NSCN||parts[i].ctype==PT_HSCN||(parts[i].ctype==PT_PSCN&&parts[r>>8].temp>100.0f)){
+								if((parts[i].ctype==PT_NSCN||parts[i].ctype==PT_HSCN||(parts[i].ctype==PT_PSCN&&parts[r>>8].temp>100.0f))&&!(pavg == PT_INSL)){
 									parts[r>>8].type = PT_SPRK;
 									parts[r>>8].life = 4;
 									parts[r>>8].ctype = rt;
@@ -1982,7 +1959,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 							}
 							if(t==PT_SPRK && rt==PT_CSCN && parts[r>>8].life==0 &&
 							   (parts[i].life<3 || ((r>>8)<i && parts[i].life<4)) && abs(nx)+abs(ny)<4) {
-								if(parts[i].ctype==PT_NSCN||parts[i].ctype==PT_CSCN||(parts[i].ctype==PT_PSCN&&parts[r>>8].temp<100.0f)){
+								if((parts[i].ctype==PT_NSCN||parts[i].ctype==PT_CSCN||(parts[i].ctype==PT_PSCN&&parts[r>>8].temp<100.0f))&&!(pavg == PT_INSL)){
 									parts[r>>8].type = PT_SPRK;
 									parts[r>>8].life = 4;
 									parts[r>>8].ctype = rt;
@@ -2295,15 +2272,6 @@ void update_particles_i(pixel *vid, int start, int inc){
 					blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
 					blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
 				}
-			}else if(t==PT_SWCH&&parts[i].tmp == 1) {
-				if(cmode == 3||cmode==4) {
-					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(59, 222, 27);
-					} else {
-					cr = 59;
-					cg = 222;
-					cb = 27;
-					blendpixel(vid, nx, ny, cr, cg, cb, 192);
-					}
 			}
 			
 			else if(t==PT_PLSM) {
