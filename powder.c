@@ -624,7 +624,7 @@ const struct part_type ptypes[] = {
 	{"NBLE",	PIXPACK(0xEB4917),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+2.0f,	106,	"Noble Gas. Diffuses. Conductive. Ionizes into plasma when intruduced to electricity"},
 	{"BTRY",	PIXPACK(0x858505),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Generates Electricity."},
 	{"LCRY",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)"},
-	{"INSL",	PIXPACK(0x1E2336),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Conducts electricity when switched (PSCN turns on, NSCN turns off)"},
+	{"INSL",	PIXPACK(0x1E2336),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Blocks electricity"},
 	
 };
 
