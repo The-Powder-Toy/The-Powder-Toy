@@ -804,7 +804,7 @@ int try_move(int i, int x, int y, int nx, int ny)
     if(r && (r>>8)<NPART)
 		r = (r&~0xFF) | parts[r>>8].type;
 	
-	if(parts[i].type==PT_PHOT&&((r&0xFF)==PT_GLAS||(r&0xFF)==PT_PHOT||(r&0xFF)==PT_CLNE)){
+	if(parts[i].type==PT_PHOT&&((r&0xFF)==PT_GLAS||(r&0xFF)==PT_PHOT||(r&0xFF)==PT_CLNE||((r&0xFF)==PT_LCRY&&parts[r>>8].life == 0))){
 		return 1;
 	}
 	
