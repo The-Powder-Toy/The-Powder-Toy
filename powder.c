@@ -1943,9 +1943,9 @@ void update_particles_i(pixel *vid, int start, int inc){
 							
 			
 							pavg = parts[pmap[(int)((parts[i].y + parts[r>>8].y)/2)][(int)((parts[i].x + parts[r>>8].x)/2)]>>8].type;
-							if(t==PT_SPRK && (rt==PT_WIRE||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE||rt==PT_SWCH) && parts[r>>8].life==0 &&
+							if(t==PT_SPRK && (rt==PT_WIRE||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE) && parts[r>>8].life==0 &&
 							   (parts[i].life<3 || ((r>>8)<i && parts[i].life<4)) && abs(nx)+abs(ny)<4) {
-								if(!(rt==PT_PSCN&&parts[i].ctype==PT_NSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp>=100.0f)&&parts[i].ctype==PT_HSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp<=100.0f)&&parts[i].ctype==PT_CSCN)&&!(pavg == PT_INSL)&& !((parts[i].ctype==PT_PSCN||parts[i].ctype== PT_NSCN) && rt== PT_SWCH) &&!(rt== PT_SWCH&& parts[r>>8].life == 0) && !(parts[i].ctype==PT_SWCH &&(rt == PT_PSCN||rt == PT_NSCN)) ){
+								if(!(rt==PT_PSCN&&parts[i].ctype==PT_NSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp>=100.0f)&&parts[i].ctype==PT_HSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp<=100.0f)&&parts[i].ctype==PT_CSCN)&&!(pavg == PT_INSL)&&!(parts[i].ctype==PT_SWCH&&(rt==PT_PSCN||rt==PT_NSCN))){
 									
 									parts[r>>8].type = PT_SPRK;
 									parts[r>>8].life = 4;
