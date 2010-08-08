@@ -3316,20 +3316,20 @@ int sdl_poll(void)
 				//1 8 2
 				if(event.key.keysym.sym == SDLK_RIGHT)
 				{
-					player[0] = 2;  //Go right command
+					player[0] = (int)(player[0])|0x02;  //Go right command
 				}
 				if(event.key.keysym.sym == SDLK_LEFT)
 				{
-					player[0] = 1;  //Go left command
+					player[0] = (int)(player[0])|0x01;  //Go left command
 				}
 				if(event.key.keysym.sym == SDLK_DOWN && ((int)(player[0])&0x08)!=0x08)
 				{
-					player[0] += 8;  //Go left command
+					player[0] = (int)(player[0])|0x08;  //Go left command
 				}
 
 				if(event.key.keysym.sym == SDLK_UP && ((int)(player[0])&0x04)!=0x04)
 				{
-					player[0] += 4;  //Jump command
+					player[0] = (int)(player[0])|0x04;  //Jump command
 				}
 				break;
 
