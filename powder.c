@@ -624,7 +624,7 @@ const struct part_type ptypes[] = {
 	{"NBLE",	PIXPACK(0xEB4917),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+2.0f,	106,	"Noble Gas. Diffuses. Conductive. Ionizes into plasma when intruduced to electricity"},
 	{"BTRY",	PIXPACK(0x858505),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Generates Electricity."},
 	{"LCRY",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)"},
-	{"STKM",	PIXPACK(0X000000),	0.5f,	0.00f * CFDS,	0.0f,	1.0f,	0.0f,	-0.7f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,			R_TEMP+36.6f,	0,	"Stickman. Don't kill him!"},
+	{"STKM",	PIXPACK(0X000000),	0.5f,	0.00f * CFDS,	0.0f,	1.0f,	0.0f,	-0.7f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,			R_TEMP+14.6f,	0,	"Stickman. Don't kill him!"},
 };
 
 #ifdef HEAT_ENABLE
@@ -1026,14 +1026,15 @@ int create_part(int p, int x, int y, int t)
 #ifdef HEAT_ENABLE
 		    parts[i].temp = ptypes[t].heat;
 #endif
+		    player[2] = PT_WATR;
 		    player[3] = x-1;  //Setting legs positions
 		    player[4] = y+6;
 		    player[5] = x-1;
 		    player[6] = y+6;
 
-		    player[7] = x-2;
+		    player[7] = x-3;
 		    player[8] = y+12;
-		    player[9] = x-2;
+		    player[9] = x-3;
 		    player[10] = y+12;
 
 		    player[11] = x+1;
@@ -1041,9 +1042,9 @@ int create_part(int p, int x, int y, int t)
 		    player[13] = x+1;
 		    player[14] = y+6;
 
-		    player[15] = x+2;
+		    player[15] = x+3;
 		    player[16] = y+12;
-		    player[17] = x+2;
+		    player[17] = x+3;
 		    player[18] = y+12;
 
 		    isplayer = 1;
@@ -2133,7 +2134,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 				player[16] = pp;
 
 				//Go left
-				if (player[0] == 1 || player[0] == 5)
+				if (((int)(player[0])&0x01) == 0x01)
 				{
 					if (pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID)
 					{
@@ -2162,7 +2163,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 				}
 				
 				//Go right
-				if (player[0] == 2 || player[0] == 6)
+				if (((int)(player[0])&0x02) == 0x02)
 				{
 					if (pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID)
 					{
@@ -2191,10 +2192,33 @@ void update_particles_i(pixel *vid, int start, int inc){
 					}
 				}
 
-				//Jump
-				if (player[0] == 3 || player[0] == 5 || player[0] == 6 || player[0] == 8)
+				//Head position
+				nx = (int)parts[i].x + 3*((((int)player[1])&0x02) == 0x02) - 3*((((int)player[1])&0x01) == 0x01); 
+				ny = (int)parts[i].y - 3*(player[1] == 0);  
+
+				if(pmap[ny-2][nx] && (pmap[ny-2][nx]&0xFF)!=0xFF && pstates[pmap[ny-2][nx]&0xFF].state == ST_SOLID)
+						player[2] = parts[pmap[ny-2][nx]&0xFF].type;  //Current element
+
+				//Spawn
+				if(((int)(player[0])&0x08) == 0x08)
 				{
-					if ( (pmap[(int)(player[8]-1)][(int)(player[7])]))
+					ny -= 2*(rand()%2)+1;
+					if(pstates[pmap[ny][nx]&0xFF].state == ST_SOLID)
+					{
+						create_part(-1, nx, ny, PT_SPRK);
+					}
+					else
+					{					
+						create_part(-1, nx, ny, player[2]);
+						parts[pmap[ny][nx]>>8].vx = parts[pmap[ny][nx]>>8].vx + 5*((((int)player[1])&0x02) == 0x02) 
+							- 5*(((int)(player[1])&0x01) == 0x01);
+					}
+				}
+
+				//Jump
+				if (((int)(player[0])&0x04) == 0x04)
+				{
+					if (pmap[(int)(player[8]-1)][(int)(player[7])] || pmap[(int)(player[16]-1)][(int)(player[15])])
 					{
 						parts[i].vy = -7; player[8] -= 3; player[16] -= 3;
 					}	
@@ -3288,8 +3312,8 @@ int sdl_poll(void)
 				if( event.key.keysym.sym == SDLK_MINUS || event.key.keysym.sym == SDLK_LEFTBRACKET){
 					sdl_wheel--;
 				}
-				//  3
-				//1 4 2
+				//  4
+				//1 8 2
 				if(event.key.keysym.sym == SDLK_RIGHT)
 				{
 					player[0] = 2;  //Go right command
@@ -3298,7 +3322,12 @@ int sdl_poll(void)
 				{
 					player[0] = 1;  //Go left command
 				}
-				if(event.key.keysym.sym == SDLK_UP && player[0]<=4)
+				if(event.key.keysym.sym == SDLK_DOWN && ((int)(player[0])&0x08)!=0x08)
+				{
+					player[0] += 8;  //Go left command
+				}
+
+				if(event.key.keysym.sym == SDLK_UP && ((int)(player[0])&0x04)!=0x04)
 				{
 					player[0] += 4;  //Jump command
 				}
@@ -3309,17 +3338,18 @@ int sdl_poll(void)
 					sdl_caps = 0;
 				if(event.key.keysym.sym == Z_keysym)
 					sdl_zoom_trig = 0;
-				if(event.key.keysym.sym == SDLK_RIGHT)
+				if(event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_LEFT)
 				{
+					player[1] = player[0];  //Saving last movement
 					player[0] = 0;  //Stop command
-				}
-				if(event.key.keysym.sym == SDLK_LEFT)
-				{
-					player[0] = 0;
 				}
 				if(event.key.keysym.sym == SDLK_UP)
 				{
 					player[0] -= 4;
+				}
+				if(event.key.keysym.sym == SDLK_DOWN)
+				{
+					player[0] -= 8;
 				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
