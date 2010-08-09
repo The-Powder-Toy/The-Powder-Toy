@@ -4,7 +4,7 @@
  * Copyright (c) 2008 - 2010 Stanislaw Skowronek.
  * Copyright (c) 2010 Simon Robertshaw
  * Copyright (c) 2010 Skresanov Savely
- * Copyright (c) 2010 Bryan Who?
+ * Copyright (c) 2010 Bryan Hoyle
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,7 +127,7 @@ char *it_msg =
 "\bgCopyright (c) 2008-10 Stanislaw K Skowronek (\brhttp://powder.unaligned.org\bg, \bbirc.unaligned.org #wtf\bg)\n"
 "\bgCopyright (c) 2010 Simon Robertshaw (\brhttp://powdertoy.co.uk\bg, \bbirc.freenode.net #powder\bg)\n"
 "\bgCopyright (c) 2010 Skresanov Savely (Stickman)\n"
-"\bgCopyright (c) 2010 Bryan Who? (New elements)\n"
+"\bgCopyright (c) 2010 Bryan Hoyle (New elements)\n"
 "\n"
 "\bgSpecial thanks to Brian Ledbetter for maintaining ports.\n"
 "\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html"
