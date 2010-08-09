@@ -1026,7 +1026,7 @@ int create_part(int p, int x, int y, int t)
 #ifdef HEAT_ENABLE
 		    parts[i].temp = ptypes[t].heat;
 #endif
-		    player[2] = PT_WATR;
+		    player[2] = PT_DUST;
 		    player[3] = x-1;  //Setting legs positions
 		    player[4] = y+6;
 		    player[5] = x-1;
@@ -1114,7 +1114,7 @@ void draw_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, 
 	e = (dy<<2)-dx; 
 	for (i=0; i<=dx; i++)
 	{
-		blendpixel(vid, x, y, r, g, b, a);
+		vid[x+y*a] =PIXRGB(r, g, b);
 		if (e>=0)
 		{
 			if (check==1)
@@ -2192,12 +2192,24 @@ void update_particles_i(pixel *vid, int start, int inc){
 					}
 				}
 
+				//Searching for particles near head
+				//r = 10;
+				for(nx = -2; nx<= 2; nx++)
+					for(ny = 0; ny>=-2; ny--)
+					{
+						if(pmap[ny+y][nx+x] && (pmap[ny+y][nx+x]&0xFF)!=0xFF 
+								&& pstates[pmap[ny+y][nx+x]&0xFF].state != ST_SOLID 
+								//&& (abs(nx-x)+abs(ny-y))<r   //Need fix
+								&& (pmap[ny+y][nx+x]&0xFF)!=PT_STKM)
+						{
+							player[2] = pmap[ny+y][nx+x]&0xFF;  //Current element
+							//r = abs(nx-x)+abs(ny-y);  //Distance
+						}
+					}
+				
 				//Head position
-				nx = (int)parts[i].x + 3*((((int)player[1])&0x02) == 0x02) - 3*((((int)player[1])&0x01) == 0x01); 
-				ny = (int)parts[i].y - 3*(player[1] == 0);  
-
-				if(pmap[ny-2][nx] && (pmap[ny-2][nx]&0xFF)!=0xFF && pstates[pmap[ny-2][nx]&0xFF].state == ST_SOLID)
-						player[2] = parts[pmap[ny-2][nx]&0xFF].type;  //Current element
+				nx = x + 3*((((int)player[1])&0x02) == 0x02) - 3*((((int)player[1])&0x01) == 0x01); 
+				ny = y - 3*(player[1] == 0);  
 
 				//Spawn
 				if(((int)(player[0])&0x08) == 0x08)
@@ -2250,7 +2262,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					//For left leg
 					if (r)
 					{
-						if(pstates[r&0xFF].state == ST_LIQUID)  //Liquid checks
+						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)  //Liquid checks
 						{	
 							if(parts[i].y<(player[8]-10))
 								parts[i].vy = 1;
@@ -2283,7 +2295,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					//For right leg
 					if (r)
 					{
-						if(pstates[r&0xFF].state == ST_LIQUID)
+						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)
 						{	
 							if(parts[i].y<(player[16]-10))
 								parts[i].vy = 1;
@@ -2493,15 +2505,16 @@ void update_particles_i(pixel *vid, int start, int inc){
 			{
 				for(r=-2; r<=1; r++)  //Here I use r variable not as I should, but I think you will excuse me :-p
 				{
-					blendpixel(vid, nx+r, ny-2, 255, 224, 174, 254);
-					blendpixel(vid, nx+r+1, ny+2, 255, 224, 174, 254);
-					blendpixel(vid, nx-2, ny+r+1, 255, 224, 174, 254);
-					blendpixel(vid, nx+2, ny+r, 255, 224, 174, 254);
+					s = XRES+BARSIZE;
+					vid[(ny-2)*s+nx+r] = ptypes[(int)player[2]].pcolors;
+					vid[(ny+2)*s+nx+r+1] = ptypes[(int)player[2]].pcolors;
+					vid[(ny+r+1)*s+nx-2] = ptypes[(int)player[2]].pcolors;
+					vid[(ny+r)*s+nx+2] = ptypes[(int)player[2]].pcolors;
 				}
-				draw_line(vid , nx, ny+3, player[3], player[4], 256, 256, 256, 254);
-				draw_line(vid , player[3], player[4], player[7], player[8], 256, 256, 256, 254);
-				draw_line(vid , nx, ny+3, player[11], player[12], 256, 256, 256, 254);
-				draw_line(vid , player[11], player[12], player[15], player[16], 256, 256, 256, 254);
+				draw_line(vid , nx, ny+3, player[3], player[4], 255, 255, 255, s);
+				draw_line(vid , player[3], player[4], player[7], player[8], 255, 255, 255, s);
+				draw_line(vid , nx, ny+3, player[11], player[12], 255, 255, 255, s);
+				draw_line(vid , player[11], player[12], player[15], player[16], 255, 255, 255, s);
 
 				isplayer = 1;  //It's a secret. Tssss...
 			}
@@ -3341,15 +3354,15 @@ int sdl_poll(void)
 				if(event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_LEFT)
 				{
 					player[1] = player[0];  //Saving last movement
-					player[0] = 0;  //Stop command
+					player[0] = (int)(player[0])&12;  //Stop command
 				}
 				if(event.key.keysym.sym == SDLK_UP)
 				{
-					player[0] -= 4;
+					player[0] = (int)(player[0])&11;
 				}
 				if(event.key.keysym.sym == SDLK_DOWN)
 				{
-					player[0] -= 8;
+					player[0] = (int)(player[0])&7;
 				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
@@ -3775,7 +3788,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 			j=d[p++];
 			if(j >= PT_NUM)
 				goto corrupt;
-			if(j) {
+			if(j && !(isplayer == 1 && j==PT_STKM)) {
 				if(pmap[y][x]) {
 					k = pmap[y][x]>>8;
 					parts[k].type = j;
@@ -3803,6 +3816,31 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 			if(i < NPART) {
 				parts[i].vx = (d[p++]-127.0f)/16.0f;
 				parts[i].vy = (d[p++]-127.0f)/16.0f;
+				if(parts[i].type == PT_STKM)
+				{
+					player[2] = PT_DUST;
+
+					player[3] = parts[i].x-1;  //Setting legs positions
+					player[4] = parts[i].y+6;
+					player[5] = parts[i].x-1;
+					player[6] = parts[i].y+6;
+
+					player[7] = parts[i].x-3;
+					player[8] = parts[i].y+12;
+					player[9] = parts[i].x-3;
+					player[10] = parts[i].y+12;
+
+					player[11] = parts[i].x+1;
+					player[12] = parts[i].y+6;
+					player[13] = parts[i].x+1;
+					player[14] = parts[i].y+6;
+
+					player[15] = parts[i].x+3;
+					player[16] = parts[i].y+12;
+					player[17] = parts[i].x+3;
+					player[18] = parts[i].y+12;
+
+				}
 			} else
 				p += 2;
 		}
@@ -4000,7 +4038,25 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
 				goto corrupt;
 			j=d[p++];
 			if(j<PT_NUM && j>0)
-				fb[y*w+x] = ptypes[j].pcolors;
+			{
+				if(j==PT_STKM)  //Stickman should be drawed another way
+				{
+					//Stickman drawing
+					for(k=-2; k<=1; k++)  					
+					{
+						fb[(y-2)*w+x+k] = PIXRGB(255, 224, 178);
+						fb[(y+2)*w+x+k+1] = PIXRGB(255, 224, 178);
+						fb[(y+k+1)*w+x-2] = PIXRGB(255, 224, 178);
+						fb[(y+k)*w+x+2] = PIXRGB(255, 224, 178);
+					}
+					draw_line(fb , x, y+3, x-1, y+6, 255, 255, 255, w);
+					draw_line(fb , x-1, y+6, x-3, y+12, 255, 255, 255, w);
+					draw_line(fb , x, y+3, x+1, y+6, 255, 255, 255, w);
+					draw_line(fb , x+1, y+6, x+3, y+12, 255, 255, 255, w);
+				}
+				else
+					fb[y*w+x] = ptypes[j].pcolors;
+			}
 		}
 	
     free(d);
