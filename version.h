@@ -20,7 +20,7 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define SAVE_VERSION 39
+#define SAVE_VERSION 40
 #define MINOR_VERSION 0
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 
