@@ -604,7 +604,7 @@ const struct part_type ptypes[] = {
 	{"LRBD",	PIXPACK(0xAAAAAA),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000001f* CFDS,2,	1000,	1,	0,	2,	1,	SC_EXPLOSIVE,	R_TEMP+45.0f,	170,	"Liquid Rubidium."},
 	{"NTCT",	PIXPACK(0x505040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Semi-conductor. Only conducts electricity when hot (More than 100C)"},
 	{"SAND",	PIXPACK(0xFFD090),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	SC_POWDERS,		R_TEMP+0.0f,	150,	"Sand, Heavy particles. Meltable."},
-	{"GLAS",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_SOLIDS,		R_TEMP+0.0f,	150,	"Solid. Meltable. Shatters under pressure"},
+	{"GLAS",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_SOLIDS,		R_TEMP+0.0f,	150,	"Solid. Meltable. Shatters under pressure"},
 	{"PTCT",	PIXPACK(0x405050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Semi-conductor. Only conducts electricity when cold (Less than 120C)"},
 	{"BGLA",	PIXPACK(0x606060),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	2,	1,	SC_POWDERS,		R_TEMP+0.0f,	150,	"Broken Glass, Heavy particles. Meltable. Bagels."},
 	{"THDR",	PIXPACK(0xFFFFA0),	0.0f,	0.00f * CFDS,	1.0f,	0.30f,	-0.99f,	0.6f,	0.62f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_ELEC,		3500.0f,		251,	"Lightning! Very hot, inflicts damage upon most materials, transfers current to metals."},
@@ -1347,7 +1347,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					}
 					if(pt>=pstates[t].btemp&&pstates[t].burn) {
 						t = parts[i].type = pstates[t].burn;
-						if(t==PT_FIRE)
+						if(t==PT_FIRE||t==PT_PLSM)
 							parts[i].life = rand()%50+120;
 					}
 					else if((pt<=pstates[t].stemp||(t==PT_LAVA&&(pt<=pstates[parts[i].ctype].ltemp)))&&pstates[t].solid){
