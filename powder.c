@@ -1225,7 +1225,7 @@ int nearest_part(int ci, int t){
 }
 void create_line(int x1, int y1, int x2, int y2, int r, int c);
 void update_particles_i(pixel *vid, int start, int inc){
-    int i, j, x, y, t, nx, ny, r, a, cr,cg,cb, s, rt, fe, nt, lpv, nearp;
+    int i, j, x, y, t, nx, ny, r, a, cr,cg,cb, s, rt, fe, nt, lpv, nearp, pavg;
     float mv, dx, dy, ix, iy, lx, ly, d, pp;
 #ifdef HEAT_ENABLE
 	float pt = R_TEMP;
@@ -2375,8 +2375,6 @@ void update_particles_i(pixel *vid, int start, int inc){
 				continue;
 			}
 			if(cmode!=CM_HEAT){
-<<<<<<< HEAD
-				
 #endif
 			if(t==PT_STKM)  //Just draw head here
 			{
@@ -2396,8 +2394,6 @@ void update_particles_i(pixel *vid, int start, int inc){
 				isplayer = 1;  //It's a secret. Tssss...
 			}
 
-=======
->>>>>>> upstream/master
 			if(t==PT_ACID) {
 				if(parts[i].life>255) parts[i].life = 255; 
 				if(parts[i].life<47) parts[i].life = 48; 
