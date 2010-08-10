@@ -1242,8 +1242,8 @@ void update_particles_i(pixel *vid, int start, int inc){
 			if(sys_pause)
 				goto justdraw;
 		
-			if(parts[i].life && t!=PT_ACID && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH) {
-				if(!(parts[i].life==10&&parts[i].type==PT_LCRY)&&t!=PT_STKM)
+			if(parts[i].life && t!=PT_ACID && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM) {
+				if(!(parts[i].life==10&&parts[i].type==PT_LCRY))
 					parts[i].life--;
 				if(parts[i].life<=0 && t!=PT_WIRE && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_HSCN && t!=PT_CSCN && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD&&t!=PT_LCRY) {
 					kill_part(i);
@@ -1951,8 +1951,18 @@ void update_particles_i(pixel *vid, int start, int inc){
 					parts[i].temp += 1;
 				
 				//Death
-				if(parts[i].life<=1)
-				{parts[i].vy -= 1; parts[i].vx = 0; parts[i].life -= 0.1;}
+				if(parts[i].life<=0)
+				{
+					for(r=-2; r<=1; r++)  
+					{
+						create_part(-1, x+r, y-2, player[2]);
+						create_part(-1, x+r+1, y+2, player[2]);
+						create_part(-1, x-2, y+r+1, player[2]);
+						create_part(-1, x+2, y+r, player[2]);
+					}
+					kill_part(i);
+					goto killed;
+				}
 
 				//Verlet integration
 				pp = 2*player[3]-player[5];
@@ -2055,6 +2065,14 @@ void update_particles_i(pixel *vid, int start, int inc){
 							player[2] = pmap[ny+y][nx+x]&0xFF;  //Current element
 							//r = abs(nx-x)+abs(ny-y);  //Distance
 						}
+						if((pmap[ny+y][nx+x]&0xFF) == PT_PLNT && parts[i].life<100)
+						{
+							if(parts[i].life<=95)
+								parts[i].life += 5;
+							else
+								parts[i].life = 100;
+							kill_part(pmap[ny+y][nx+x]>>8);
+						}
 					}
 				
 				//Head position
@@ -2080,9 +2098,9 @@ void update_particles_i(pixel *vid, int start, int inc){
 				//Jump
 				if (((int)(player[0])&0x04) == 0x04)
 				{
-					if (pmap[(int)(player[8]-1)][(int)(player[7])] || pmap[(int)(player[16]-1)][(int)(player[15])])
+					if (pmap[(int)(player[8]-0.5)][(int)(player[7])] || pmap[(int)(player[16]-0.5)][(int)(player[15])])
 					{
-						parts[i].vy = -7; player[8] -= 3; player[16] -= 3;
+						parts[i].vy = -5; player[8] -= 4; player[16] -= 4;
 					}	
 
 				}
@@ -2107,7 +2125,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 				//Collision checks
 				for(ny = 0; ny<=2+(int)parts[i].vy; ny++)
 				{
-					r = pmap[(int)(player[8]-ny)][(int)(player[7])];  //This is to make coding more pleasant :-)
+					r = pmap[(int)(player[8]-ny)][(int)(player[7]+0.5)];  //This is to make coding more pleasant :-)
 
 					//For left leg
 					if (r)
@@ -2127,20 +2145,9 @@ void update_particles_i(pixel *vid, int start, int inc){
 							parts[i].vy -= 0.5*parts[i].vy;
 						}
 						player[9] = player[7];
-						
-						if(parts[r&0xFF].temp>=50 && (r&0xFF)!=0xFF)  //If hot
-						{
-							parts[i].life -= 5;
-							player[8] -= 1;
-						}	
-						
-						if(parts[r&0xFF].type==PT_SPRK && (r&0xFF)!=0xFF)  //If on charge
-						{
-							parts[i].life -= (int)(rand()/1000)+38;
-						}	
 					}
 
-					r = pmap[(int)(player[16]-ny)][(int)(player[15])];
+					r = pmap[(int)(player[16]-ny)][(int)(player[15]+0.5)];
 
 					//For right leg
 					if (r)
@@ -2160,18 +2167,6 @@ void update_particles_i(pixel *vid, int start, int inc){
 							parts[i].vy -= 0.5*parts[i].vy;
 						}
 						player[17] = player[15];	
-
-						if(parts[r&0xFF].temp>=50 && (r&0xFF)!=0xFF)  //If hot
-						{
-							parts[i].life -= 5;
-							player[16] -= 1;
-						}
-						
-						if(parts[r&0xFF].type==PT_SPRK && (r&0xFF)!=0xFF)  //If on charge
-						{
-							parts[i].life -= (int)(rand()/1000)+38;
-						}	
-
 					}
 
 					//If it falls too fast
@@ -2195,8 +2190,39 @@ void update_particles_i(pixel *vid, int start, int inc){
 					player[3] += 0.2;
 					player[11] -= 0.2;
 				}
+				
+				//If legs touch something
+				r = pmap[(int)(player[8]+1.5)][(int)(player[7]+0.5)];
+				if((r&0xFF)==PT_SPRK && (r&0xFF)!=0xFF)  //If on charge
+				{
+					parts[i].life -= (int)(rand()/1000)+38;
+				}	
+				
+				if ((r&0xFF)!=0xFF)  //If hot
+				{
+					if(parts[r>>8].temp>=50)
+					{
+						parts[i].life -= 5;
+						player[16] -= 1;
+					}
+				}
+				
+				r = pmap[(int)(player[16]+1.5)][(int)(player[15]+0.5)];
+				if((r&0xFF)==PT_SPRK && (r&0xFF)!=0xFF)  //If on charge
+				{
+					parts[i].life -= (int)(rand()/1000)+38;
+				}	
+				
+				if((r&0xFF)!=0xFF)  //If hot
+				{
+					if(parts[r>>8].temp>=50)
+					{
+						parts[i].life -= 5;
+						player[8] -= 1;
+					}
+				}	
 
-					isplayer = 1;
+				isplayer = 1;
 			}
 
 			if(t==PT_CLNE) {
