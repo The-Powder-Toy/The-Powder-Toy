@@ -1203,7 +1203,7 @@ void set_emap(int x, int y)
 }
 int parts_avg(int ci, int ni){
 	int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
-	return parts[(pmr>>8>=PT_NUM)?PT_NONE:pmr>>8].type;
+	return parts[(pmr>>8>=NPART)?PT_NONE:pmr>>8].type;
 }
 int nearest_part(int ci, int t){
 	int distance = sqrt(pow(XRES, 2)+pow(YRES, 2));
