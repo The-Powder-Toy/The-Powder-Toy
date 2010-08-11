@@ -615,7 +615,7 @@ const struct part_type ptypes[] = {
 	{"NBLE",	PIXPACK(0xEB4917),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+2.0f,	106,	"Noble Gas. Diffuses. Conductive. Ionizes into plasma when intruduced to electricity"},
 	{"BTRY",	PIXPACK(0x858505),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Generates Electricity."},
 	{"LCRY",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)"},
-	{"STKM",	PIXPACK(0X000000),	0.5f,	0.00f * CFDS,	0.0f,	1.0f,	0.0f,	-0.7f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,			R_TEMP+14.6f,	0,	"Stickman. Don't kill him!"},
+	{"STKM",	PIXPACK(0X000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	-0.7f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,			R_TEMP+14.6f,	0,	"Stickman. Don't kill him!"},
 	{"SWCH",	PIXPACK(0x103B11),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f  * CFDS, 0,  0,		0,  0,  1,  1,  SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Only conducts when switched on. (PSCN switches on, NSCN switches off)"},
 	{"SMKE",	PIXPACK(0x222222),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	0,	SC_GAS,			R_TEMP+400.0f,	88,		"Smoke"},
 };
@@ -1951,7 +1951,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					parts[i].temp += 1;
 				
 				//Death
-				if(parts[i].life<=0)
+				if(parts[i].life<=0 || pv[y/CELL][x/CELL]>=4.5f)  //If his HP is less that 0 or there is very big wind...
 				{
 					for(r=-2; r<=1; r++)  
 					{
@@ -1960,7 +1960,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 						create_part(-1, x-2, y+r+1, player[2]);
 						create_part(-1, x+2, y+r, player[2]);
 					}
-					kill_part(i);
+					kill_part(i);  //Kill him
 					goto killed;
 				}
 
@@ -2054,7 +2054,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 
 				//Searching for particles near head
 				//r = 10;
-				for(nx = -2; nx<= 2; nx++)
+				for(nx = -2; nx <= 2; nx++)
 					for(ny = 0; ny>=-2; ny--)
 					{
 						if(pmap[ny+y][nx+x] && (pmap[ny+y][nx+x]&0xFF)!=0xFF 
@@ -2065,12 +2065,17 @@ void update_particles_i(pixel *vid, int start, int inc){
 							player[2] = pmap[ny+y][nx+x]&0xFF;  //Current element
 							//r = abs(nx-x)+abs(ny-y);  //Distance
 						}
-						if((pmap[ny+y][nx+x]&0xFF) == PT_PLNT && parts[i].life<100)
+						if((pmap[ny+y][nx+x]&0xFF) == PT_PLNT && parts[i].life<100)  //Plant gives him 5 HP
 						{
 							if(parts[i].life<=95)
 								parts[i].life += 5;
 							else
 								parts[i].life = 100;
+							kill_part(pmap[ny+y][nx+x]>>8);
+						}
+						if((pmap[ny+y][nx+x]&0xFF) == PT_NEUT)
+						{
+							parts[i].life -= (102-parts[i].life)/2;
 							kill_part(pmap[ny+y][nx+x]>>8);
 						}
 					}
@@ -2100,7 +2105,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 				{
 					if (pmap[(int)(player[8]-0.5)][(int)(player[7])] || pmap[(int)(player[16]-0.5)][(int)(player[15])])
 					{
-						parts[i].vy = -5; player[8] -= 4; player[16] -= 4;
+						parts[i].vy = -5; player[10] += 1; player[18] += 1;
 					}	
 
 				}
@@ -2121,14 +2126,24 @@ void update_particles_i(pixel *vid, int start, int inc){
 				d = 36/(pow((player[11]-parts[i].x), 2) + pow((player[12]-parts[i].y), 2)+36) - 0.5;
 				parts[i].vx -= (player[11]-parts[i].x)*d; parts[i].vy -= (player[12]-parts[i].y)*d;
 				player[11] += (player[11]-parts[i].x)*d; player[12] += (player[12]-parts[i].y)*d;
-				
+
+				//Side collisions checking
+				for(nx = -3; nx <= 3; nx++)
+				{
+					if(pmap[(int)(player[16]-2)][(int)(player[15]+nx)])
+						player[15] -= nx;
+
+					if(pmap[(int)(player[8]-2)][(int)(player[7]+nx)])
+						player[7] -= nx;
+				}
+
 				//Collision checks
 				for(ny = 0; ny<=2+(int)parts[i].vy; ny++)
 				{
 					r = pmap[(int)(player[8]-ny)][(int)(player[7]+0.5)];  //This is to make coding more pleasant :-)
 
 					//For left leg
-					if (r)
+					if (r && (r&0xFF)!=PT_STKM)
 					{
 						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)  //Liquid checks
 						{	
@@ -2150,7 +2165,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					r = pmap[(int)(player[16]-ny)][(int)(player[15]+0.5)];
 
 					//For right leg
-					if (r)
+					if (r && (r&0xFF)!=PT_STKM)
 					{
 						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)
 						{	
@@ -2172,7 +2187,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					//If it falls too fast
 					if (parts[i].vy>=30)
 					{
-						parts[i].y -= 10+r;
+						parts[i].y -= 10+ny;
 						parts[i].vy = -10;
 					}
 
@@ -2207,6 +2222,12 @@ void update_particles_i(pixel *vid, int start, int inc){
 					}
 				}
 				
+				if ((r&0xFF)==PT_ACID)  //If on acid
+					parts[i].life -= 5;
+				
+				if ((r&0xFF)==PT_PLUT)  //If on plut
+					parts[i].life -= 1;
+
 				r = pmap[(int)(player[16]+1.5)][(int)(player[15]+0.5)];
 				if((r&0xFF)==PT_SPRK && (r&0xFF)!=0xFF)  //If on charge
 				{
@@ -2221,6 +2242,12 @@ void update_particles_i(pixel *vid, int start, int inc){
 						player[8] -= 1;
 					}
 				}	
+				
+				if ((r&0xFF)==PT_ACID)  //If on acid
+					parts[i].life -= 5;
+				
+				if ((r&0xFF)==PT_PLUT)  //If on plut
+					parts[i].life -= 1;
 
 				isplayer = 1;
 			}
