@@ -2151,7 +2151,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					r = pmap[(int)(player[8]-ny)][(int)(player[7]+0.5)];  //This is to make coding more pleasant :-)
 
 					//For left leg
-					if (r && (r>>8)<NPART && (r&0xFF)!=PT_STKM)
+					if (r && (r&0xFF)!=PT_STKM)
 					{
 						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)  //Liquid checks
 						{	
@@ -2173,7 +2173,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					r = pmap[(int)(player[16]-ny)][(int)(player[15]+0.5)];
 
 					//For right leg
-					if (r && (r>>8)<NPART && (r&0xFF)!=PT_STKM)
+					if (r && (r&0xFF)!=PT_STKM)
 					{
 						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)
 						{	
