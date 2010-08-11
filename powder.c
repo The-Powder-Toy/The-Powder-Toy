@@ -2060,6 +2060,8 @@ void update_particles_i(pixel *vid, int start, int inc){
 				for(nx = -2; nx <= 2; nx++)
 					for(ny = 0; ny>=-2; ny--)
 					{
+						if(!pmap[ny+y][nx+x] || (pmap[ny+y][nx+x]>>8)>=NPART)
+							continue;
 						if(pmap[ny+y][nx+x] && (pmap[ny+y][nx+x]&0xFF)!=0xFF 
 								&& pstates[pmap[ny+y][nx+x]&0xFF].state != ST_SOLID 
 								//&& (abs(nx-x)+abs(ny-y))<r   //Need fix
@@ -2091,7 +2093,10 @@ void update_particles_i(pixel *vid, int start, int inc){
 				if(((int)(player[0])&0x08) == 0x08)
 				{
 					ny -= 2*(rand()%2)+1;
-					if(pstates[pmap[ny][nx]&0xFF].state == ST_SOLID)
+					r = pmap[ny][nx];
+					if(r && (r>>8)<NPART)
+						r = 0;
+					if(pstates[r&0xFF].state == ST_SOLID)
 					{
 						create_part(-1, nx, ny, PT_SPRK);
 					}
@@ -2146,7 +2151,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					r = pmap[(int)(player[8]-ny)][(int)(player[7]+0.5)];  //This is to make coding more pleasant :-)
 
 					//For left leg
-					if (r && (r&0xFF)!=PT_STKM)
+					if (r && (r>>8)<NPART && (r&0xFF)!=PT_STKM)
 					{
 						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)  //Liquid checks
 						{	
@@ -2168,7 +2173,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					r = pmap[(int)(player[16]-ny)][(int)(player[15]+0.5)];
 
 					//For right leg
-					if (r && (r&0xFF)!=PT_STKM)
+					if (r && (r>>8)<NPART && (r&0xFF)!=PT_STKM)
 					{
 						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)
 						{	
@@ -2211,12 +2216,12 @@ void update_particles_i(pixel *vid, int start, int inc){
 				
 				//If legs touch something
 				r = pmap[(int)(player[8]+1.5)][(int)(player[7]+0.5)];
-				if((r&0xFF)==PT_SPRK && (r&0xFF)!=0xFF)  //If on charge
+				if((r&0xFF)==PT_SPRK && r && (r>>8)<NPART)  //If on charge
 				{
 					parts[i].life -= (int)(rand()/1000)+38;
 				}	
 				
-				if ((r&0xFF)!=0xFF)  //If hot
+				if (r && (r>>8)<NPART)  //If hot
 				{
 					if(parts[r>>8].temp>=50)
 					{
@@ -2232,12 +2237,12 @@ void update_particles_i(pixel *vid, int start, int inc){
 					parts[i].life -= 1;
 
 				r = pmap[(int)(player[16]+1.5)][(int)(player[15]+0.5)];
-				if((r&0xFF)==PT_SPRK && (r&0xFF)!=0xFF)  //If on charge
+				if((r&0xFF)==PT_SPRK && r && (r>>8)<NPART)  //If on charge
 				{
 					parts[i].life -= (int)(rand()/1000)+38;
 				}	
 				
-				if((r&0xFF)!=0xFF)  //If hot
+				if(r && (r>>8)<NPART)  //If hot
 				{
 					if(parts[r>>8].temp>=50)
 					{
@@ -2262,7 +2267,8 @@ void update_particles_i(pixel *vid, int start, int inc){
 							if(x+nx>=0 && y+ny>0 &&
 							   x+nx<XRES && y+ny<YRES &&
 							   pmap[y+ny][x+nx] &&
-							   (pmap[y+ny][x+nx]&0xFF)!=PT_CLNE && pmap[y+ny][x+nx]!=PT_STKM &&
+							   (pmap[y+ny][x+nx]&0xFF)!=PT_CLNE &&
+							   (pmap[y+ny][x+nx]&0xFF)!=PT_STKM &&
 							   (pmap[y+ny][x+nx]&0xFF)!=0xFF)
 								parts[i].ctype = pmap[y+ny][x+nx]&0xFF;
 				} else
