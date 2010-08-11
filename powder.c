@@ -550,9 +550,10 @@ struct menu_section msections[] = {
 #define PT_NBLE 52
 #define PT_BTRY 53
 #define PT_LCRY 54
-#define PT_SWCH 55
-#define PT_SMKE 56
-#define PT_NUM  57
+#define PT_STKM 55
+#define PT_SWCH 56
+#define PT_SMKE 57
+#define PT_NUM  58
 
 #define R_TEMP 22
 #define MAX_TEMP 3500
@@ -614,6 +615,7 @@ const struct part_type ptypes[] = {
 	{"NBLE",	PIXPACK(0xEB4917),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+2.0f,	106,	"Noble Gas. Diffuses. Conductive. Ionizes into plasma when intruduced to electricity"},
 	{"BTRY",	PIXPACK(0x858505),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Generates Electricity."},
 	{"LCRY",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)"},
+	{"STKM",	PIXPACK(0X000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	-0.7f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,			R_TEMP+14.6f,	0,	"Stickman. Don't kill him!"},
 	{"SWCH",	PIXPACK(0x103B11),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f  * CFDS, 0,  0,		0,  0,  1,  1,  SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Only conducts when switched on. (PSCN switches on, NSCN switches off)"},
 	{"SMKE",	PIXPACK(0x222222),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	0,	SC_GAS,			R_TEMP+400.0f,	88,		"Smoke"},
 };
@@ -679,6 +681,7 @@ const struct part_state pstates[] = {
 	/* NBLE */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* BTRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_PLSM, 2000.0f},
 	/* LCRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_BGLA, 1000.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+	/* STKM */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* SWCH */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* SMKE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 };
@@ -687,66 +690,67 @@ static const unsigned char can_move[PT_NUM][PT_NUM] = {
 	/* A 0 1 | B ligher than A */
 	/* B 1 0 | A heavier than B */
 	 
-	/*          N D W O F M L G N C G P D I W S S W N P P A V W C D S S D B B P U W M P N L F B W R L H S G C B T P E N N B L */
-	/*          o u a i i e a u i l a l f c i p n o e l l c o t n s a l m m r h r a W S S N o H H b R S a l s G h l t i B t C */
-	/*          n s t l r t v n t n s e r e r r o o u u n i i r c t l t n t m o a x a c c 2 a o o d b C n a c l d s r c L r r */
-	/*          e t r l e l a p r e s x m i e k w d t t t d d v t w t w d l t t n   x n n   m l l m d N d s n a r m d e E y y */
-	/* NONE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* DUST */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* WATR */ {0,0,0,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* OILL */ {0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* FIRE */ {0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0},
-	/* METL */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* LAVA */ {0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* GUNP */ {0,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* NITR */ {0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* CLNE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* GASS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* PLEX */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* DFRM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* ICEI */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* WIRE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* SPRK */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* SNOW */ {0,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* WOOD */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* NEUT */ {0,1,1,1,1,0,0,1,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,1,0,1,1,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1},
-	/* PLUT */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* PLNT */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* ACID */ {0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* VOID */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* WTRV */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* CNCT */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* DSTW */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* SALT */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* SLTW */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* DMND */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* BMTL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* BRMT */ {0,1,1,1,1,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* PHOT */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* URAN */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* WAX	*/ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* MWAX */ {0,1,0,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* PSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* NSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* LNTG */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* FOAM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* BHOL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* WHOL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* RBDM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* LRBD */ {0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* HSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* SAND */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* GLAS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* CSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* BGLA */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* THDR */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* PLSM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* ETRD */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* NICE */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	/* NBLE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* BTRY */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* LCRY */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* SWCH */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/*          N D W O F M L G N C G P D I W S S W N P P A V W C D S S D B B P U W M P N L F B W R L H S G C B T P E N N B L S S S*/
+	/*          o u a i i e a u i l a l f c i p n o e l l c o t n s a l m m r h r a W S S N o H H b R S a l s G h l t i B t C T W M*/
+	/*          n s t l r t v n t n s e r e r r o o u u n i i r c t l t n t m o a x a c c 2 a o o d b C n a c l d s r c L r r K C K*/
+	/*          e t r l e l a p r e s x m i e k w d t t t d d v t w t w d l t t n   x n n   m l l m d N d s n a r m d e E y y M H E*/
+	/* NONE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* DUST */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1},
+	/* WATR */ {0,0,0,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	/* OILL */ {0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* FIRE */ {0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0},
+	/* METL */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},
+	/* LAVA */ {0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1},
+	/* GUNP */ {0,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},
+	/* NITR */ {0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* CLNE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* GASS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* PLEX */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* DFRM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* ICEI */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	/* WIRE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* SPRK */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* SNOW */ {0,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},
+	/* WOOD */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* NEUT */ {0,1,1,1,1,0,0,1,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,1,0,1,1,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1},
+	/* PLUT */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},
+	/* PLNT */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* ACID */ {0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* VOID */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* WTRV */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* CNCT */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1},
+	/* DSTW */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	/* SALT */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1},
+	/* SLTW */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1},
+	/* DMND */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	/* BMTL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* BRMT */ {0,1,1,1,1,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1},
+	/* PHOT */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* URAN */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},
+	/* WAX	*/ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* MWAX */ {0,1,0,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	/* PSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* NSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* LNTG */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	/* FOAM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* BHOL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* WHOL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* RBDM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* LRBD */ {0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1},
+	/* HSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* SAND */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},
+	/* GLAS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* CSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* BGLA */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},
+	/* THDR */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* PLSM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* ETRD */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* NICE */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	/* NBLE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* BTRY */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* LCRY */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* STKM */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	/* SWCH */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	/* SMKE */ {0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0},
 };
 
@@ -759,6 +763,8 @@ typedef struct {
     int flags;
 } particle;
 particle *parts;
+float player[20]; //[0] is a command cell, [3]-[18] are legs positions, [19] is index
+int isplayer = 0;  //It shows is player spawned or not
 
 void menu_count(void){
 	int i=0;
@@ -801,6 +807,11 @@ int try_move(int i, int x, int y, int nx, int ny)
 			parts[r>>8].temp = restrict_flt(parts[r>>8].temp+parts[i].temp/2, MIN_TEMP, MAX_TEMP);//3.0f;
 		}
 		return 0;
+	}
+
+	if(parts[i].type==PT_STKM)  //Stick man's head shouldn't collide
+	{
+		return 1;
 	}
 	
 	if(bmap[ny/CELL][nx/CELL]==12 && !emap[y/CELL][x/CELL]){
@@ -934,14 +945,19 @@ int create_part(int p, int x, int y, int t)
     } else
 		i = p;
 	
-    parts[i].x = (float)x;
-    parts[i].y = (float)y;
-    parts[i].type = t;
-    parts[i].vx = 0;
-    parts[i].vy = 0;
-    parts[i].life = 0;
-    parts[i].ctype = 0;
-	parts[i].temp = ptypes[t].heat;
+    if(t!=PT_STKM)
+    {
+	    parts[i].x = (float)x;
+	    parts[i].y = (float)y;
+	    parts[i].type = t;
+	    parts[i].vx = 0;
+	    parts[i].vy = 0;
+	    parts[i].life = 0;
+	    parts[i].ctype = 0;
+#ifdef HEAT_ENABLE
+	    parts[i].temp = ptypes[t].heat;
+#endif
+    }
 	if(t==PT_ACID){
 		parts[i].life = 75;
 	}
@@ -983,7 +999,46 @@ int create_part(int p, int x, int y, int t)
 		//}
     }
 	
-    pmap[y][x] = t|(i<<8);
+    if(t!=PT_STKM)
+	pmap[y][x] = t|(i<<8);
+    else
+    {
+	    if(isplayer==0)
+	    {
+		    parts[i].x = (float)x;
+		    parts[i].y = (float)y;
+		    parts[i].type = PT_STKM;
+		    parts[i].vx = 0;
+		    parts[i].vy = 0;
+		    parts[i].life = 100;
+		    parts[i].ctype = 0;
+#ifdef HEAT_ENABLE
+		    parts[i].temp = ptypes[t].heat;
+#endif
+		    player[2] = PT_DUST;
+		    player[3] = x-1;  //Setting legs positions
+		    player[4] = y+6;
+		    player[5] = x-1;
+		    player[6] = y+6;
+
+		    player[7] = x-3;
+		    player[8] = y+12;
+		    player[9] = x-3;
+		    player[10] = y+12;
+
+		    player[11] = x+1;
+		    player[12] = y+6;
+		    player[13] = x+1;
+		    player[14] = y+6;
+
+		    player[15] = x+3;
+		    player[16] = y+12;
+		    player[17] = x+3;
+		    player[18] = y+12;
+
+		    isplayer = 1;
+	    }
+    }
 	
     return i;
 }
@@ -1014,6 +1069,55 @@ void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 		b = (a*b + (255-a)*PIXB(t)) >> 8;
     }
     vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
+}
+
+int sign(float i)  //Signum function
+{
+	if (i<0)
+		return -1;
+	if (i>0)
+		return 1;
+	return 0;
+} 
+
+void draw_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, int a)  //Draws a line
+{
+	int dx, dy, i, sx, sy, check, e, x, y;
+
+	dx = abs(x1-x2);
+	dy = abs(y1-y2);
+	sx = sign(x2-x1);
+	sy = sign(y2-y1);
+	x = x1;
+	y = y1;
+	check = 0;
+
+	if (dy>dx)
+	{
+		dx = dx+dy;
+		dy = dx-dy;
+		dx = dx-dy;
+		check = 1;
+	}
+
+	e = (dy<<2)-dx; 
+	for (i=0; i<=dx; i++)
+	{
+		vid[x+y*a] =PIXRGB(r, g, b);
+		if (e>=0)
+		{
+			if (check==1)
+				x = x+sx; 
+			else 
+				y = y+sy;
+			e = e-(dx<<2);
+		}
+		if (check==1)
+			y = y+sy; 
+		else 
+			x = x+sx; 
+		e = e+(dy<<2);
+	}
 }
 
 void addpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
@@ -1099,7 +1203,11 @@ void set_emap(int x, int y)
 }
 int parts_avg(int ci, int ni){
 	int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
-	return parts[(pmr>>8>=NPART)?PT_NONE:pmr>>8].type;
+	if((pmr>>8)<NPART){
+		return parts[pmr>>8].type;
+	} else {
+		return PT_NONE;
+	}
 }
 int nearest_part(int ci, int t){
 	int distance = sqrt(pow(XRES, 2)+pow(YRES, 2));
@@ -1122,7 +1230,7 @@ int nearest_part(int ci, int t){
 void create_line(int x1, int y1, int x2, int y2, int r, int c);
 void update_particles_i(pixel *vid, int start, int inc){
     int i, j, x, y, t, nx, ny, r, a, cr,cg,cb, s, rt, fe, nt, lpv, nearp, pavg;
-    float mv, dx, dy, ix, iy, lx, ly;
+    float mv, dx, dy, ix, iy, lx, ly, d, pp;
 	float pt = R_TEMP;
 	float c_heat = 0.0f;
 	int h_count = 0;
@@ -1137,7 +1245,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 			if(sys_pause)
 				goto justdraw;
 		
-			if(parts[i].life && t!=PT_ACID && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH) {
+			if(parts[i].life && t!=PT_ACID && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM) {
 				if(!(parts[i].life==10&&parts[i].type==PT_LCRY))
 					parts[i].life--;
 				if(parts[i].life<=0 && t!=PT_WIRE && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_HSCN && t!=PT_CSCN && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD&&t!=PT_LCRY) {
@@ -1169,14 +1277,14 @@ void update_particles_i(pixel *vid, int start, int inc){
 			
 			
 			if(x<0 || y<0 || x>=XRES || y>=YRES ||
-			   bmap[y/CELL][x/CELL]==1 ||
+			   ((bmap[y/CELL][x/CELL]==1 ||
 			   bmap[y/CELL][x/CELL]==8 ||
 			   bmap[y/CELL][x/CELL]==9 ||
 			   (bmap[y/CELL][x/CELL]==2) ||
 			   (bmap[y/CELL][x/CELL]==3 && ptypes[t].falldown!=2) ||
 			   (bmap[y/CELL][x/CELL]==10 && ptypes[t].falldown!=1) ||
 			   (bmap[y/CELL][x/CELL]==6 && (t==PT_WIRE || t==PT_SPRK)) ||
-			   (bmap[y/CELL][x/CELL]==7 && !emap[y/CELL][x/CELL])) {
+			   (bmap[y/CELL][x/CELL]==7 && !emap[y/CELL][x/CELL])) && (t!=PT_STKM))) {
 				kill_part(i);
 				continue;
 			}
@@ -1837,6 +1945,316 @@ void update_particles_i(pixel *vid, int start, int inc){
 					continue;
 			}
 			
+			if(t==PT_STKM)
+			{
+				//Tempirature handling
+				if(parts[i].temp<-30)
+					parts[i].life -= 0.2;
+				if((parts[i].temp<36.6f) && (parts[i].temp>=-30))
+					parts[i].temp += 1;
+				
+				//Death
+				if(parts[i].life<=0 || pv[y/CELL][x/CELL]>=4.5f)  //If his HP is less that 0 or there is very big wind...
+				{
+					for(r=-2; r<=1; r++)  
+					{
+						create_part(-1, x+r, y-2, player[2]);
+						create_part(-1, x+r+1, y+2, player[2]);
+						create_part(-1, x-2, y+r+1, player[2]);
+						create_part(-1, x+2, y+r, player[2]);
+					}
+					kill_part(i);  //Kill him
+					goto killed;
+				}
+
+				//Verlet integration
+				pp = 2*player[3]-player[5];
+				player[5] = player[3];
+				player[3] = pp;
+				pp = 2*player[4]-player[6];
+				player[6] = player[4];
+				player[4] = pp;
+				
+				pp = 2*player[7]-player[9];
+				player[9] = player[7];
+				player[7] = pp;
+				pp = 2*player[8]-player[10]+1;
+				player[10] = player[8];
+				player[8] = pp;
+				
+				pp = 2*player[11]-player[13];
+				player[13] = player[11];
+				player[11] = pp;
+				pp = 2*player[12]-player[14];
+				player[14] = player[12];
+				player[12] = pp;
+				
+				pp = 2*player[15]-player[17];
+				player[17] = player[15];
+				player[15] = pp;
+				pp = 2*player[16]-player[18]+1;
+				player[18] = player[16];
+				player[16] = pp;
+
+				//Go left
+				if (((int)(player[0])&0x01) == 0x01)
+				{
+					if (pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID)
+					{
+						if (pmap[(int)(player[8]-1)][(int)(player[7])])
+						{
+							player[9] += 3; player[10] += 2; player[5] += 2;
+						}
+
+						if (pmap[(int)(player[16]-1)][(int)(player[15])])
+						{
+							player[17] += 3; player[18] += 2; player[13] +=2;
+						}
+					}
+					else
+					{
+						if (pmap[(int)(player[8]-1)][(int)(player[7])])  //It should move another way in liquids
+						{
+							player[9] += 1; player[10] += 1; player[5] += 1;
+						}
+
+						if (pmap[(int)(player[16]-1)][(int)(player[15])])
+						{
+							player[17] += 1; player[18] += 1; player[13] +=1;
+						}
+					}
+				}
+				
+				//Go right
+				if (((int)(player[0])&0x02) == 0x02)
+				{
+					if (pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID)
+					{
+						if (pmap[(int)(player[8]-1)][(int)(player[7])])
+						{
+							player[9] -= 3; player[10] += 2; player[5] -= 2;
+						}
+
+						if (pmap[(int)(player[16]-1)][(int)(player[15])])
+						{
+							player[17] -= 3; player[18] += 2; player[13] -= 2;
+						}
+					}
+					else
+					{
+						if (pmap[(int)(player[8]-1)][(int)(player[7])])
+						{
+							player[9] -= 1; player[10] += 1; player[5] -= 1;
+						}
+
+						if (pmap[(int)(player[16]-1)][(int)(player[15])])
+						{
+							player[17] -= 1; player[18] += 1; player[13] -= 1;
+						}
+
+					}
+				}
+
+				//Searching for particles near head
+				//r = 10;
+				for(nx = -2; nx <= 2; nx++)
+					for(ny = 0; ny>=-2; ny--)
+					{
+						if(pmap[ny+y][nx+x] && (pmap[ny+y][nx+x]&0xFF)!=0xFF 
+								&& pstates[pmap[ny+y][nx+x]&0xFF].state != ST_SOLID 
+								//&& (abs(nx-x)+abs(ny-y))<r   //Need fix
+								&& (pmap[ny+y][nx+x]&0xFF)!=PT_STKM)
+						{
+							player[2] = pmap[ny+y][nx+x]&0xFF;  //Current element
+							//r = abs(nx-x)+abs(ny-y);  //Distance
+						}
+						if((pmap[ny+y][nx+x]&0xFF) == PT_PLNT && parts[i].life<100)  //Plant gives him 5 HP
+						{
+							if(parts[i].life<=95)
+								parts[i].life += 5;
+							else
+								parts[i].life = 100;
+							kill_part(pmap[ny+y][nx+x]>>8);
+						}
+						if((pmap[ny+y][nx+x]&0xFF) == PT_NEUT)
+						{
+							parts[i].life -= (102-parts[i].life)/2;
+							kill_part(pmap[ny+y][nx+x]>>8);
+						}
+					}
+				
+				//Head position
+				nx = x + 3*((((int)player[1])&0x02) == 0x02) - 3*((((int)player[1])&0x01) == 0x01); 
+				ny = y - 3*(player[1] == 0);  
+
+				//Spawn
+				if(((int)(player[0])&0x08) == 0x08)
+				{
+					ny -= 2*(rand()%2)+1;
+					if(pstates[pmap[ny][nx]&0xFF].state == ST_SOLID)
+					{
+						create_part(-1, nx, ny, PT_SPRK);
+					}
+					else
+					{					
+						create_part(-1, nx, ny, player[2]);
+						parts[pmap[ny][nx]>>8].vx = parts[pmap[ny][nx]>>8].vx + 5*((((int)player[1])&0x02) == 0x02) 
+							- 5*(((int)(player[1])&0x01) == 0x01);
+					}
+				}
+
+				//Jump
+				if (((int)(player[0])&0x04) == 0x04)
+				{
+					if (pmap[(int)(player[8]-0.5)][(int)(player[7])] || pmap[(int)(player[16]-0.5)][(int)(player[15])])
+					{
+						parts[i].vy = -5; player[10] += 1; player[18] += 1;
+					}	
+
+				}
+				
+				//Simulation of joints
+				d = 25/(pow((player[3]-player[7]), 2) + pow((player[4]-player[8]), 2)+25) - 0.5;  //Fast distance
+				player[7] -= (player[3]-player[7])*d; player[8] -= (player[4]-player[8])*d;
+				player[3] += (player[3]-player[7])*d; player[4] += (player[4]-player[8])*d;
+				
+				d = 25/(pow((player[11]-player[15]), 2) + pow((player[12]-player[16]), 2)+25) - 0.5;
+				player[15] -= (player[11]-player[15])*d; player[16] -= (player[12]-player[16])*d;
+				player[11] += (player[11]-player[15])*d; player[12] += (player[12]-player[16])*d;
+				
+				d = 36/(pow((player[3]-parts[i].x), 2) + pow((player[4]-parts[i].y), 2)+36) - 0.5;
+				parts[i].vx -= (player[3]-parts[i].x)*d; parts[i].vy -= (player[4]-parts[i].y)*d;
+				player[3] += (player[3]-parts[i].x)*d; player[4] += (player[4]-parts[i].y)*d;	
+				
+				d = 36/(pow((player[11]-parts[i].x), 2) + pow((player[12]-parts[i].y), 2)+36) - 0.5;
+				parts[i].vx -= (player[11]-parts[i].x)*d; parts[i].vy -= (player[12]-parts[i].y)*d;
+				player[11] += (player[11]-parts[i].x)*d; player[12] += (player[12]-parts[i].y)*d;
+
+				//Side collisions checking
+				for(nx = -3; nx <= 3; nx++)
+				{
+					if(pmap[(int)(player[16]-2)][(int)(player[15]+nx)])
+						player[15] -= nx;
+
+					if(pmap[(int)(player[8]-2)][(int)(player[7]+nx)])
+						player[7] -= nx;
+				}
+
+				//Collision checks
+				for(ny = 0; ny<=2+(int)parts[i].vy; ny++)
+				{
+					r = pmap[(int)(player[8]-ny)][(int)(player[7]+0.5)];  //This is to make coding more pleasant :-)
+
+					//For left leg
+					if (r && (r&0xFF)!=PT_STKM)
+					{
+						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)  //Liquid checks
+						{	
+							if(parts[i].y<(player[8]-10))
+								parts[i].vy = 1;
+							else
+								parts[i].vy = 0;
+							if(abs(parts[i].vx)>1)
+								parts[i].vx *= 0.5;
+						}
+						else
+						{
+							player[8] -= ny+1;
+							parts[i].vy -= 0.5*parts[i].vy;
+						}
+						player[9] = player[7];
+					}
+
+					r = pmap[(int)(player[16]-ny)][(int)(player[15]+0.5)];
+
+					//For right leg
+					if (r && (r&0xFF)!=PT_STKM)
+					{
+						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)
+						{	
+							if(parts[i].y<(player[16]-10))
+								parts[i].vy = 1;
+							else
+								parts[i].vy = 0;
+							if(abs(parts[i].vx)>1)
+								parts[i].vx *= 0.5;
+						}
+						else
+						{
+							player[16] -= ny+1;
+							parts[i].vy -= 0.5*parts[i].vy;
+						}
+						player[17] = player[15];	
+					}
+
+					//If it falls too fast
+					if (parts[i].vy>=30)
+					{
+						parts[i].y -= 10+ny;
+						parts[i].vy = -10;
+					}
+
+				}
+
+				//Keeping legs distance
+				if (pow((player[7] - player[15]), 2)<16 && pow((player[8]-player[16]), 2)<1)
+				{
+					player[7] += 0.2;
+					player[15] -= 0.2;
+				}
+				
+				if (pow((player[3] - player[11]), 2)<16 && pow((player[4]-player[12]), 2)<1)
+				{
+					player[3] += 0.2;
+					player[11] -= 0.2;
+				}
+				
+				//If legs touch something
+				r = pmap[(int)(player[8]+1.5)][(int)(player[7]+0.5)];
+				if((r&0xFF)==PT_SPRK && (r&0xFF)!=0xFF)  //If on charge
+				{
+					parts[i].life -= (int)(rand()/1000)+38;
+				}	
+				
+				if ((r&0xFF)!=0xFF)  //If hot
+				{
+					if(parts[r>>8].temp>=50)
+					{
+						parts[i].life -= 5;
+						player[16] -= 1;
+					}
+				}
+				
+				if ((r&0xFF)==PT_ACID)  //If on acid
+					parts[i].life -= 5;
+				
+				if ((r&0xFF)==PT_PLUT)  //If on plut
+					parts[i].life -= 1;
+
+				r = pmap[(int)(player[16]+1.5)][(int)(player[15]+0.5)];
+				if((r&0xFF)==PT_SPRK && (r&0xFF)!=0xFF)  //If on charge
+				{
+					parts[i].life -= (int)(rand()/1000)+38;
+				}	
+				
+				if((r&0xFF)!=0xFF)  //If hot
+				{
+					if(parts[r>>8].temp>=50)
+					{
+						parts[i].life -= 5;
+						player[8] -= 1;
+					}
+				}	
+				
+				if ((r&0xFF)==PT_ACID)  //If on acid
+					parts[i].life -= 5;
+				
+				if ((r&0xFF)==PT_PLUT)  //If on plut
+					parts[i].life -= 1;
+
+				isplayer = 1;
+			}
+
 			if(t==PT_CLNE) {
 				if(!parts[i].ctype) {
 					for(nx=-1; nx<2; nx++)
@@ -1844,7 +2262,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 							if(x+nx>=0 && y+ny>0 &&
 							   x+nx<XRES && y+ny<YRES &&
 							   pmap[y+ny][x+nx] &&
-							   (pmap[y+ny][x+nx]&0xFF)!=PT_CLNE &&
+							   (pmap[y+ny][x+nx]&0xFF)!=PT_CLNE && pmap[y+ny][x+nx]!=PT_STKM &&
 							   (pmap[y+ny][x+nx]&0xFF)!=0xFF)
 								parts[i].ctype = pmap[y+ny][x+nx]&0xFF;
 				} else
@@ -2013,6 +2431,24 @@ void update_particles_i(pixel *vid, int start, int inc){
 				continue;
 			}
 			if(cmode!=CM_HEAT){
+			if(t==PT_STKM)  //Just draw head here
+			{
+				for(r=-2; r<=1; r++)  //Here I use r variable not as I should, but I think you will excuse me :-p
+				{
+					s = XRES+BARSIZE;
+					vid[(ny-2)*s+nx+r] = ptypes[(int)player[2]].pcolors;
+					vid[(ny+2)*s+nx+r+1] = ptypes[(int)player[2]].pcolors;
+					vid[(ny+r+1)*s+nx-2] = ptypes[(int)player[2]].pcolors;
+					vid[(ny+r)*s+nx+2] = ptypes[(int)player[2]].pcolors;
+				}
+				draw_line(vid , nx, ny+3, player[3], player[4], 255, 255, 255, s);
+				draw_line(vid , player[3], player[4], player[7], player[8], 255, 255, 255, s);
+				draw_line(vid , nx, ny+3, player[11], player[12], 255, 255, 255, s);
+				draw_line(vid , player[11], player[12], player[15], player[16], 255, 255, 255, s);
+
+				isplayer = 1;  //It's a secret. Tssss...
+			}
+
 			if(t==PT_ACID) {
 				if(parts[i].life>255) parts[i].life = 255; 
 				if(parts[i].life<47) parts[i].life = 48; 
@@ -2296,6 +2732,7 @@ void update_particles(pixel *vid)
 	pthread_t *InterThreads;
 #endif
 	
+    isplayer = 0;  //Needed for player spawning
     memset(pmap, 0, sizeof(pmap));
     r = rand()%2;
     for(j=0; j<NPART; j++) {
@@ -2813,19 +3250,51 @@ int sdl_poll(void)
 					sdl_zoom_trig = 1;
 					Z_keysym = event.key.keysym.sym;
 				}
-				if(event.key.keysym.sym == SDLK_UP || event.key.keysym.sym == SDLK_PLUS || event.key.keysym.sym == SDLK_RIGHTBRACKET){
+				if( event.key.keysym.sym == SDLK_PLUS || event.key.keysym.sym == SDLK_RIGHTBRACKET){
 					sdl_wheel++;
 				}
-				if(event.key.keysym.sym == SDLK_DOWN || event.key.keysym.sym == SDLK_MINUS || event.key.keysym.sym == SDLK_LEFTBRACKET){
+				if( event.key.keysym.sym == SDLK_MINUS || event.key.keysym.sym == SDLK_LEFTBRACKET){
 					sdl_wheel--;
 				}
+				//  4
+				//1 8 2
+				if(event.key.keysym.sym == SDLK_RIGHT)
+				{
+					player[0] = (int)(player[0])|0x02;  //Go right command
+				}
+				if(event.key.keysym.sym == SDLK_LEFT)
+				{
+					player[0] = (int)(player[0])|0x01;  //Go left command
+				}
+				if(event.key.keysym.sym == SDLK_DOWN && ((int)(player[0])&0x08)!=0x08)
+				{
+					player[0] = (int)(player[0])|0x08;  //Go left command
+				}
+
+				if(event.key.keysym.sym == SDLK_UP && ((int)(player[0])&0x04)!=0x04)
+				{
+					player[0] = (int)(player[0])|0x04;  //Jump command
+				}
 				break;
-				
+
 			case SDL_KEYUP:
 				if(event.key.keysym.sym == SDLK_CAPSLOCK)
 					sdl_caps = 0;
 				if(event.key.keysym.sym == Z_keysym)
 					sdl_zoom_trig = 0;
+				if(event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_LEFT)
+				{
+					player[1] = player[0];  //Saving last movement
+					player[0] = (int)(player[0])&12;  //Stop command
+				}
+				if(event.key.keysym.sym == SDLK_UP)
+				{
+					player[0] = (int)(player[0])&11;
+				}
+				if(event.key.keysym.sym == SDLK_DOWN)
+				{
+					player[0] = (int)(player[0])&7;
+				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				if(event.button.button == SDL_BUTTON_WHEELUP)
@@ -3242,7 +3711,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 			j=d[p++];
 			if(j >= PT_NUM)
 				goto corrupt;
-			if(j) {
+			if(j && !(isplayer == 1 && j==PT_STKM)) {
 				if(pmap[y][x]) {
 					k = pmap[y][x]>>8;
 					parts[k].type = j;
@@ -3270,6 +3739,31 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 			if(i < NPART) {
 				parts[i].vx = (d[p++]-127.0f)/16.0f;
 				parts[i].vy = (d[p++]-127.0f)/16.0f;
+				if(parts[i].type == PT_STKM)
+				{
+					player[2] = PT_DUST;
+
+					player[3] = parts[i].x-1;  //Setting legs positions
+					player[4] = parts[i].y+6;
+					player[5] = parts[i].x-1;
+					player[6] = parts[i].y+6;
+
+					player[7] = parts[i].x-3;
+					player[8] = parts[i].y+12;
+					player[9] = parts[i].x-3;
+					player[10] = parts[i].y+12;
+
+					player[11] = parts[i].x+1;
+					player[12] = parts[i].y+6;
+					player[13] = parts[i].x+1;
+					player[14] = parts[i].y+6;
+
+					player[15] = parts[i].x+3;
+					player[16] = parts[i].y+12;
+					player[17] = parts[i].x+3;
+					player[18] = parts[i].y+12;
+
+				}
 			} else
 				p += 2;
 		}
@@ -3463,7 +3957,25 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
 				goto corrupt;
 			j=d[p++];
 			if(j<PT_NUM && j>0)
-				fb[y*w+x] = ptypes[j].pcolors;
+			{
+				if(j==PT_STKM)  //Stickman should be drawed another way
+				{
+					//Stickman drawing
+					for(k=-2; k<=1; k++)  					
+					{
+						fb[(y-2)*w+x+k] = PIXRGB(255, 224, 178);
+						fb[(y+2)*w+x+k+1] = PIXRGB(255, 224, 178);
+						fb[(y+k+1)*w+x-2] = PIXRGB(255, 224, 178);
+						fb[(y+k)*w+x+2] = PIXRGB(255, 224, 178);
+					}
+					draw_line(fb , x, y+3, x-1, y+6, 255, 255, 255, w);
+					draw_line(fb , x-1, y+6, x-3, y+12, 255, 255, 255, w);
+					draw_line(fb , x, y+3, x+1, y+6, 255, 255, 255, w);
+					draw_line(fb , x+1, y+6, x+3, y+12, 255, 255, 255, w);
+				}
+				else
+					fb[y*w+x] = ptypes[j].pcolors;
+			}
 		}
 	
     free(d);
