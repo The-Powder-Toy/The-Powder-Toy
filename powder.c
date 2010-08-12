@@ -1203,7 +1203,11 @@ void set_emap(int x, int y)
 }
 int parts_avg(int ci, int ni){
 	int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
-	return parts[(pmr>>8>=NPART)?PT_NONE:pmr>>8].type;
+	if((pmr>>8)<NPART){
+		return parts[pmr>>8].type;
+	} else {
+		return PT_NONE;
+	}
 }
 int nearest_part(int ci, int t){
 	int distance = sqrt(pow(XRES, 2)+pow(YRES, 2));
@@ -1227,7 +1231,10 @@ void create_line(int x1, int y1, int x2, int y2, int r, int c);
 void update_particles_i(pixel *vid, int start, int inc){
     int i, j, x, y, t, nx, ny, r, a, cr,cg,cb, s, rt, fe, nt, lpv, nearp, pavg;
     float mv, dx, dy, ix, iy, lx, ly, d, pp;
+<<<<<<< HEAD
 #ifdef HEAT_ENABLE
+=======
+>>>>>>> upstream/master
 	float pt = R_TEMP;
 	float c_heat = 0.0f;
 	int h_count = 0;
@@ -2057,6 +2064,11 @@ void update_particles_i(pixel *vid, int start, int inc){
 				for(nx = -2; nx <= 2; nx++)
 					for(ny = 0; ny>=-2; ny--)
 					{
+<<<<<<< HEAD
+=======
+						if(!pmap[ny+y][nx+x] || (pmap[ny+y][nx+x]>>8)>=NPART)
+							continue;
+>>>>>>> upstream/master
 						if(pmap[ny+y][nx+x] && (pmap[ny+y][nx+x]&0xFF)!=0xFF 
 								&& pstates[pmap[ny+y][nx+x]&0xFF].state != ST_SOLID 
 								//&& (abs(nx-x)+abs(ny-y))<r   //Need fix
@@ -2088,7 +2100,14 @@ void update_particles_i(pixel *vid, int start, int inc){
 				if(((int)(player[0])&0x08) == 0x08)
 				{
 					ny -= 2*(rand()%2)+1;
+<<<<<<< HEAD
 					if(pstates[pmap[ny][nx]&0xFF].state == ST_SOLID)
+=======
+					r = pmap[ny][nx];
+					if(r && (r>>8)<NPART)
+						r = 0;
+					if(pstates[r&0xFF].state == ST_SOLID)
+>>>>>>> upstream/master
 					{
 						create_part(-1, nx, ny, PT_SPRK);
 					}
@@ -2208,12 +2227,20 @@ void update_particles_i(pixel *vid, int start, int inc){
 				
 				//If legs touch something
 				r = pmap[(int)(player[8]+1.5)][(int)(player[7]+0.5)];
+<<<<<<< HEAD
 				if((r&0xFF)==PT_SPRK && (r&0xFF)!=0xFF)  //If on charge
+=======
+				if((r&0xFF)==PT_SPRK && r && (r>>8)<NPART)  //If on charge
+>>>>>>> upstream/master
 				{
 					parts[i].life -= (int)(rand()/1000)+38;
 				}	
 				
+<<<<<<< HEAD
 				if ((r&0xFF)!=0xFF)  //If hot
+=======
+				if (r && (r>>8)<NPART)  //If hot
+>>>>>>> upstream/master
 				{
 					if(parts[r>>8].temp>=50)
 					{
@@ -2229,12 +2256,20 @@ void update_particles_i(pixel *vid, int start, int inc){
 					parts[i].life -= 1;
 
 				r = pmap[(int)(player[16]+1.5)][(int)(player[15]+0.5)];
+<<<<<<< HEAD
 				if((r&0xFF)==PT_SPRK && (r&0xFF)!=0xFF)  //If on charge
+=======
+				if((r&0xFF)==PT_SPRK && r && (r>>8)<NPART)  //If on charge
+>>>>>>> upstream/master
 				{
 					parts[i].life -= (int)(rand()/1000)+38;
 				}	
 				
+<<<<<<< HEAD
 				if((r&0xFF)!=0xFF)  //If hot
+=======
+				if(r && (r>>8)<NPART)  //If hot
+>>>>>>> upstream/master
 				{
 					if(parts[r>>8].temp>=50)
 					{
@@ -2259,7 +2294,12 @@ void update_particles_i(pixel *vid, int start, int inc){
 							if(x+nx>=0 && y+ny>0 &&
 							   x+nx<XRES && y+ny<YRES &&
 							   pmap[y+ny][x+nx] &&
+<<<<<<< HEAD
 							   (pmap[y+ny][x+nx]&0xFF)!=PT_CLNE && pmap[y+ny][x+nx]!=PT_STKM &&
+=======
+							   (pmap[y+ny][x+nx]&0xFF)!=PT_CLNE &&
+							   (pmap[y+ny][x+nx]&0xFF)!=PT_STKM &&
+>>>>>>> upstream/master
 							   (pmap[y+ny][x+nx]&0xFF)!=0xFF)
 								parts[i].ctype = pmap[y+ny][x+nx]&0xFF;
 				} else
@@ -2428,7 +2468,10 @@ void update_particles_i(pixel *vid, int start, int inc){
 				continue;
 			}
 			if(cmode!=CM_HEAT){
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> upstream/master
 			if(t==PT_STKM)  //Just draw head here
 			{
 				for(r=-2; r<=1; r++)  //Here I use r variable not as I should, but I think you will excuse me :-p
