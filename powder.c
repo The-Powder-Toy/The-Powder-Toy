@@ -1206,15 +1206,16 @@ void set_emap(int x, int y)
 			}
 }
 int parts_avg(int ci, int ni){
-	if (ni < NPART){
+	
 	int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
 	if((pmr>>8)<NPART){
 		return parts[pmr>>8].type;
 	} else {
 		return PT_NONE;
 	}
-	}
-	}
+}
+	
+	
 int nearest_part(int ci, int t){
 	int distance = sqrt(pow(XRES, 2)+pow(YRES, 2));
 	int ndistance = 0;
@@ -1895,6 +1896,28 @@ void update_particles_i(pixel *vid, int start, int inc){
 									}
 								}
 							}
+							if(rt==PT_SWCH && t==PT_SPRK)
+			{
+				if(parts[r>>8].life<10&&parts[r>>8].life>0){
+							parts[r>>8].life--;
+							}					
+						
+					
+											
+						pavg = parts_avg(r>>8, i);
+						
+							if(parts[i].ctype == PT_PSCN&&pavg != PT_INSL){
+								parts[r>>8].life = 10;}
+							if(parts[i].ctype == PT_NSCN&&pavg != PT_INSL){
+								parts[r>>8].life = 9;}
+							if(!(parts[i].ctype == PT_PSCN||parts[i].ctype == PT_NSCN)&&parts[r>>8].life == 10&&pavg != PT_INSL){
+								parts[r>>8].type = PT_SPRK;
+								parts[r>>8].ctype = PT_SWCH;
+								parts[r>>8].life = 4;
+							}
+						
+					}
+							
 							pavg = parts_avg(i, r>>8);
 							if(t==PT_SWCH&&pavg!= PT_INSL){	
 							if(parts[r>>8].type == PT_SWCH){
@@ -2313,41 +2336,11 @@ void update_particles_i(pixel *vid, int start, int inc){
 			}
 			if (t==PT_FIRE && parts[i].life <=10)
 		{
-			blendpixel(vid,x,y,20,20,20,20);	
-			parts[i].type = PT_SMKE;
+				
+			t=parts[i].type = PT_SMKE;
 				parts[i].life = 0;
 			}
-			if(t==PT_SWCH)
-			{
-				if(parts[i].type == PT_SWCH&&parts[i].life<10&&parts[i].life>0){
-							parts[i].life--;
-							}
-				for(nx=-2; nx<3; nx++){
-					for(ny=-2; ny<3; ny++){
-						r =pmap[y+ny][x+nx];
-						pavg = parts_avg(i, r>>8);
-					if(pmap[y+ny][x+nx]<=NPART){
-						if(parts[r>>8].type == PT_SPRK&&abs(nx)+abs(ny)<4)
-						{
-							if(parts[r>>8].ctype == PT_PSCN&&pavg != PT_INSL)
-								parts[i].life = 10;
-							if(parts[r>>8].ctype == PT_NSCN&&pavg != PT_INSL)
-								parts[i].life = 9;
-							if(!(parts[r>>8].ctype == PT_PSCN||parts[r>>8].ctype == PT_NSCN)&&parts[i].life == 10&&pavg != PT_INSL&&parts[i].life == 10){
-								parts[i].type = PT_SPRK;
-								parts[i].ctype = PT_SWCH;
-								parts[i].life = 4;
-							}	
-						}	
-					}
-							
-
-							
-							
-						
-					}
-				}
-			}
+			
 			
 			nx = (int)(parts[i].x+0.5f);
 			ny = (int)(parts[i].y+0.5f);
