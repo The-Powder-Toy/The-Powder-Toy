@@ -2055,6 +2055,13 @@ void update_particles_i(pixel *vid, int start, int inc){
 					}
 				}
 
+				//Charge detector wall if foot inside
+				if(bmap[(int)(player[8]+0.5)/CELL][(int)(player[7]+0.5)/CELL]==6)
+					set_emap((int)player[7]/CELL, (int)player[8]/CELL);
+				
+				if(bmap[(int)(player[16]+0.5)/CELL][(int)(player[15]+0.5)/CELL]==6)
+					set_emap((int)(player[15]+0.5)/CELL, (int)(player[16]+0.5)/CELL);
+
 				//Searching for particles near head
 				//r = 10;
 				for(nx = -2; nx <= 2; nx++)
