@@ -1823,6 +1823,11 @@ void update_particles_i(pixel *vid, int start, int inc){
 						}
 			}
 			if(t==PT_FIRE || t==PT_PLSM || t==PT_LAVA || t==PT_SPRK || fe || (t==PT_PHOT&&(1>rand()%10)) || t ==PT_SWCH) {
+				if(t==PT_SWCH)
+					if((parts[i].life>0&&parts[i].life<10)|| parts[i].life == 11)
+					{
+						parts[i].life--;
+					}
 				for(nx=-2; nx<3; nx++)
 					for(ny=-2; ny<3; ny++)
 						if(x+nx>=0 && y+ny>0 &&
@@ -1891,8 +1896,6 @@ void update_particles_i(pixel *vid, int start, int inc){
 								}
 							}
 							if(rt==PT_SWCH && t==PT_SPRK){
-								if(parts[r>>8].life<10&&parts[r>>8].life>0)
-									parts[r>>8].life--; 
 								pavg = parts_avg(r>>8, i);
 								if(parts[i].ctype == PT_PSCN&&pavg != PT_INSL)
 									parts[r>>8].life = 10;
@@ -1903,17 +1906,6 @@ void update_particles_i(pixel *vid, int start, int inc){
 									parts[r>>8].ctype = PT_SWCH;
 									parts[r>>8].life = 4;
 								}
-							}
-							pavg = parts_avg(i, r>>8);
-							if(t==PT_SWCH&&pavg!= PT_INSL){	
-							if(parts[r>>8].type == PT_SWCH){
-								if(parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0){
-									parts[i].life = 9;
-								} else if(parts[i].life==0&&parts[r>>8].life==10){
-									parts[i].life = 10;
-								}
-							}
-							
 							}
 							pavg = parts_avg(i, r>>8);
 							if(pavg != PT_INSL){
@@ -1977,7 +1969,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 						if(t==PT_SPRK&&parts[i].ctype==PT_SWCH&&parts[i].life<=1)
 						{
 							parts[i].type = PT_SWCH;
-							parts[i].life = 10;
+							parts[i].life = 11;
 						}
 					}
 							}
