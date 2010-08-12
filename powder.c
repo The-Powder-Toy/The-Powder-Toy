@@ -1895,6 +1895,16 @@ void update_particles_i(pixel *vid, int start, int inc){
 									}
 								}
 							}
+							pavg = parts_avg(i, r>>8);
+							if(t==PT_SWCH&&pavg!= PT_INSL){  
+								if(parts[r>>8].type == PT_SWCH){
+									if(parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0){
+										parts[i].life = 9;
+									} else if(parts[i].life==0&&parts[r>>8].life==10){
+										parts[i].life = 10;
+									}
+								}
+							}          
 							if(rt==PT_SWCH && t==PT_SPRK){
 								pavg = parts_avg(r>>8, i);
 								if(parts[i].ctype == PT_PSCN&&pavg != PT_INSL)
