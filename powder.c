@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2008 - 2010 Stanislaw Skowronek.
  * Copyright (c) 2010 Simon Robertshaw
+ * Copyright (c) 2010 Skresanov Savely
  * Copyright (c) 2010 Bryan Hoyle
  *
  * This program is free software; you can redistribute it and/or modify
