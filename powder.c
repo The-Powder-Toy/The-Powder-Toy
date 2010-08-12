@@ -617,7 +617,7 @@ const struct part_type ptypes[] = {
 	{"LCRY",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)"},
 	{"STKM",	PIXPACK(0X000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	-0.7f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,			R_TEMP+14.6f,	0,	"Stickman. Don't kill him!"},
 	{"SWCH",	PIXPACK(0x103B11),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f  * CFDS, 0,  0,		0,  0,  1,  1,  SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Only conducts when switched on. (PSCN switches on, NSCN switches off)"},
-	{"SMKE",	PIXPACK(0x222222),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	0,	SC_GAS,			R_TEMP+400.0f,	88,		"Smoke"},
+	{"SMKE",	PIXPACK(0x222222),	0.7f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+400.0f,	88,		"Smoke"},
 };
 
 #define ST_NONE 0
@@ -741,7 +741,7 @@ static const unsigned char can_move[PT_NUM][PT_NUM] = {
 	/* SAND */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},
 	/* GLAS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	/* CSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	/* BGLA */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},
+	/* BGLA */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1},
 	/* THDR */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	/* PLSM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	/* ETRD */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -2311,11 +2311,12 @@ void update_particles_i(pixel *vid, int start, int inc){
 				parts[i].type = PT_NBLE;
 				parts[i].life = 0;
 			}
-			//if (t==PT_FIRE && parts[i].life <=1)
-			//{
-			//	parts[i].type = PT_SMKE;
-			//	parts[i].life = 0;
-			//}
+			if (t==PT_FIRE && parts[i].life <=10)
+		{
+			blendpixel(vid,x,y,20,20,20,20);	
+			parts[i].type = PT_SMKE;
+				parts[i].life = 0;
+			}
 			if(t==PT_SWCH)
 			{
 				if(parts[i].type == PT_SWCH&&parts[i].life<10&&parts[i].life>0){
@@ -2569,7 +2570,36 @@ void update_particles_i(pixel *vid, int start, int inc){
 				x = nx;
 				y = ny;
 				blendpixel(vid,x,y,17,217,24,255);
-			} else if(t==PT_THDR) {
+			} 
+			else if(t==PT_SMKE) {
+					if(cmode == 3||cmode==4) {
+					x = nx/CELL;
+					y = ny/CELL;
+					cg = 10;
+					cb = 10;
+					cr = 10;
+					
+					
+					cg += fire_g[y][x]; if(cg > 50) cg = 50; fire_g[y][x] = cg;
+					cb += fire_b[y][x]; if(cb > 50) cb = 50; fire_b[y][x] = cb;
+					cr += fire_r[y][x]; if(cr > 50) cr = 50; fire_r[y][x] = cr;
+					}
+					else{
+				for(x=-3;x<4;x++){
+					for(y=-3;y<4;y++){
+					if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2)){
+					blendpixel(vid,x+nx,y+ny,100,100,100,30);
+					}
+				    if(abs(x)+abs(y) <=3 && abs(x)+abs(y))
+					{
+					blendpixel(vid,x+nx,y+ny,100,100,100,10);
+					}
+					if (abs(x)+abs(y) == 2)
+					blendpixel(vid,x+nx,y+ny,100,100,100,20);
+					}
+					}
+					}
+			}else if(t==PT_THDR) {
 				if(cmode == 3||cmode==4) {
 					vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
 					cg = 16;
@@ -2662,6 +2692,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					cg += fire_g[y][x]; if(cg > 255) cg = 255; fire_g[y][x] = cg;
 					cb += fire_b[y][x]; if(cb > 255) cb = 255; fire_b[y][x] = cb;
 				} else {
+					
 					cr = parts[i].life * 8;
 					cg = parts[i].life * 2;
 					cb = parts[i].life;
@@ -2677,7 +2708,8 @@ void update_particles_i(pixel *vid, int start, int inc){
 					blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
 					blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
 					blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
-				}
+					}
+				
 			} else if(t==PT_LAVA && parts[i].life) {
 				cr = parts[i].life * 2 + 0xE0;
 				cg = parts[i].life * 1 + 0x50;
