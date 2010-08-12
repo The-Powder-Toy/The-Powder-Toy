@@ -2094,16 +2094,14 @@ void update_particles_i(pixel *vid, int start, int inc){
 				{
 					ny -= 2*(rand()%2)+1;
 					r = pmap[ny][nx];
-					if(r && (r>>8)<NPART)
-						r = 0;
-					if(!pmap[ny][nx])
+					if(pstates[r&0xFF].state == ST_SOLID)
 					{
-						if(pstates[r&0xFF].state == ST_SOLID)
+						create_part(-1, nx, ny, PT_SPRK);
+					}
+					else
+					{					
+						if(!r)
 						{
-							create_part(-1, nx, ny, PT_SPRK);
-						}
-						else
-						{					
 							create_part(-1, nx, ny, player[2]);
 							parts[pmap[ny][nx]>>8].vx = parts[pmap[ny][nx]>>8].vx + 5*((((int)player[1])&0x02) == 0x02) 
 								- 5*(((int)(player[1])&0x01) == 0x01);
