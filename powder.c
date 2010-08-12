@@ -759,6 +759,7 @@ typedef struct {
     int type;
     int life, ctype;
     float x, y, vx, vy;
+	float pavg[2];
 	float temp;
     int flags;
 } particle;
@@ -779,7 +780,7 @@ void menu_count(void){
 int pfree;
 
 unsigned pmap[YRES][XRES];
-
+/**pv[y/CELL][x/CELL] = pressure of one pixel**/
 int try_move(int i, int x, int y, int nx, int ny)
 {
     unsigned r;
@@ -944,7 +945,10 @@ int create_part(int p, int x, int y, int t)
 		pfree = parts[i].life;
     } else
 		i = p;
-	
+	if(t==PT_GLAS)
+	{
+	parts[i].pavg[1] = pv[y/CELL][x/CELL];
+	}
     if(t!=PT_STKM)
     {
 	    parts[i].x = (float)x;
@@ -1402,8 +1406,18 @@ void update_particles_i(pixel *vid, int start, int inc){
 			}
 			if(t==PT_BMTL && pv[y/CELL][x/CELL]>2.5f)
 				t = parts[i].type = PT_BRMT;
-			if(t==PT_GLAS && pv[y/CELL][x/CELL]>4.0f)
-				t = parts[i].type = PT_BGLA;
+			
+			
+			if(t==PT_GLAS){
+			parts[i].pavg[0] = parts[i].pavg[1];
+			parts[i].pavg[1] = pv[y/CELL][x/CELL];
+			if(parts[i].pavg[1]- parts[i].pavg[0] > 0.05||parts[i].pavg[1]- parts[i].pavg[0]<-0.05)
+			{
+			parts[i].type = PT_BGLA;
+			}
+			
+			
+			}
 			if(t==PT_ICEI && pv[y/CELL][x/CELL]>0.8f)
 				t = parts[i].type = PT_SNOW;
 			if(t==PT_PLUT && 1>rand()%100 && ((int)(5.0f*pv[y/CELL][x/CELL]))>(rand()%1000)) {
