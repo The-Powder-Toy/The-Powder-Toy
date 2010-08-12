@@ -1,7 +1,7 @@
 SOURCES := powder.c http.c md5.c update.c
 HEADERS := font.h hmap.h http.h md5.h icon.h update.h version.h
 
-CFLAGS := -Wall -std=c99 -D_POSIX_C_SOURCE=200112L -fgnu89-inline
+CFLAGS := -Wall -std=c99 -D_POSIX_C_SOURCE=200112L
 OFLAGS := -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations
 LFLAGS := -lSDL -lm -lbz2 
 LFLAGS_MTW32 := -lpthreadGC2
@@ -10,31 +10,31 @@ MFLAGS_MT := -march=k8 -DX86 -DX86_SSE3 -DMT -msse3
 MFLAGS_SSE3 := -march=k8 -DX86 -DX86_SSE3 -msse3
 MFLAGS_SSE2 := -march=k8 -DX86 -DX86_SSE2
 MFLAGS_SSE := -march=pentium3 -DX86 -DX86_SSE
-
+COMPILER := gcc
 LINUX_TARG := powder-64-sse2 powder-sse powder-sse2
 WIN32_TARG := powder-sse.exe powder-sse2.exe
 
 powder: $(SOURCES) $(HEADERS)
-	gcc -DINTERNAL -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64
+	$(COMPILER) -DINTERNAL -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64
 
 powder-sse3: $(SOURCES) $(HEADERS)
-	gcc -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN32
+	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN32
 	strip $@
 powder-mt: $(SOURCES) $(HEADERS)
-	gcc -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS_MT) $(MFLAGS_MT) $(SOURCES) -DLIN32
+	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS_MT) $(MFLAGS_MT) $(SOURCES) -DLIN32
 	strip $@
 powder-sse2: $(SOURCES) $(HEADERS)
-	gcc -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE2) $(SOURCES) -DLIN32
+	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE2) $(SOURCES) -DLIN32
 	strip $@
 powder-sse: $(SOURCES) $(HEADERS)
-	gcc -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE) $(SOURCES) -DLIN32
+	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE) $(SOURCES) -DLIN32
 	strip $@
 
 powder-64-sse3: $(SOURCES) $(HEADERS)
-	gcc -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64
+	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64
 	strip $@
 powder-64-sse2: $(SOURCES) $(HEADERS)
-	gcc -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE2) $(SOURCES) -DLIN64
+	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE2) $(SOURCES) -DLIN64
 	strip $@
 
 powder-res.o: powder-res.rc powder.ico
@@ -69,7 +69,7 @@ powder-src.tar.bz2: *.c *.h *.rc *.ico Makefile
 
 release: $(LINUX_TARG) $(WIN32_TARG) powder-src.tar.bz2
 	tar cfz powder-linux.tar.gz $(LINUX_TARG)
-	cp /usr/i586-mingw32msvc/bin/SDL.dll .
+	cp /usr/i586-mingw32msvc/bin/SDL.dll ./
 	zip powder-win32.zip $(WIN32_TARG) SDL.dll
 	mkdir -p release
 	mv powder-linux.tar.gz release/
