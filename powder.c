@@ -1202,13 +1202,15 @@ void set_emap(int x, int y)
 			}
 }
 int parts_avg(int ci, int ni){
+	if (ni < NPART){
 	int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
 	if((pmr>>8)<NPART){
 		return parts[pmr>>8].type;
 	} else {
 		return PT_NONE;
 	}
-}
+	}
+	}
 int nearest_part(int ci, int t){
 	int distance = sqrt(pow(XRES, 2)+pow(YRES, 2));
 	int ndistance = 0;
@@ -2309,6 +2311,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					for(ny=-2; ny<3; ny++){
 						r =pmap[y+ny][x+nx];
 						pavg = parts_avg(i, r>>8);
+					if(pmap[y+ny][x+nx]<=NPART){
 						if(parts[r>>8].type == PT_SPRK&&abs(nx)+abs(ny)<4)
 						{
 							if(parts[r>>8].ctype == PT_PSCN&&pavg != PT_INSL)
@@ -2321,7 +2324,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 								parts[i].life = 4;
 							}	
 						}	
-					
+					}
 							
 
 							
