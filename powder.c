@@ -2152,8 +2152,8 @@ void update_particles_i(pixel *vid, int start, int inc){
 						{					
 							create_part(-1, nx, ny, player[2]);
 							r = pmap[ny][nx];
-							if(!((r>>8)>=NPART)||(r>>8)<0)
-							parts[r>>8].vx = parts[r>>8].vx + 5*((((int)player[1])&0x02) == 0x02) - 5*(((int)(player[1])&0x01) == 0x01);
+							if( ((r>>8) < NPART) && (r>>8)>=0 )
+								parts[r>>8].vx = parts[r>>8].vx + 5*((((int)player[1])&0x02) == 0x02) - 5*(((int)(player[1])&0x01) == 0x01);
 						}
 					}
 				}
