@@ -7494,11 +7494,20 @@ int stamp_ui(pixel *vid_buf)
 
 void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 {
-    *w = textwidth(signs[i].text) + 5;
-    *h = 14;
-    *x0 = (signs[i].ju == 2) ? signs[i].x - *w :
-	(signs[i].ju == 1) ? signs[i].x - *w/2 : signs[i].x;
-    *y0 = (signs[i].y > 18) ? signs[i].y - 18 : signs[i].y + 4;
+	//Changing width if sign have special content 
+	if(strcmp(signs[i].text, "{p}")==0)  
+		*w = textwidth("Pressure: -000.00");
+	
+	if(strcmp(signs[i].text, "{t}")==0) 
+		*w = textwidth("Temp: 0000.00");
+
+	//Ususal width
+	if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}"))	
+		*w = textwidth(signs[i].text) + 5;
+	*h = 14;
+	*x0 = (signs[i].ju == 2) ? signs[i].x - *w :
+		(signs[i].ju == 1) ? signs[i].x - *w/2 : signs[i].x;
+	*y0 = (signs[i].y > 18) ? signs[i].y - 18 : signs[i].y + 4;
 }
 
 void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag)
@@ -7518,12 +7527,32 @@ void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag)
 void render_signs(pixel *vid_buf)
 {
     int i, j, x, y, w, h, dx, dy;
+    char buff[30];  //Buffer
     for(i=0; i<MAXSIGNS; i++)
 		if(signs[i].text[0]) {
 			get_sign_pos(i, &x, &y, &w, &h);
 			clearrect(vid_buf, x, y, w, h);
 			drawrect(vid_buf, x, y, w, h, 192, 192, 192, 255);
-			drawtext(vid_buf, x+3, y+3, signs[i].text, 255, 255, 255, 255);
+			
+			//Displaying special information
+			if(strcmp(signs[i].text, "{p}")==0)
+			{
+				sprintf(buff, "Pressure: %3.2f", pv[signs[i].y/CELL][signs[i].x/CELL]);  //...pressure
+				drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+			}
+			
+			if(strcmp(signs[i].text, "{t}")==0)
+			{
+				if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
+					sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp);  //...tempirature
+				else
+					sprintf(buff, "Temp: 0.00");  //...tempirature
+				drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+			}
+
+			//Usual text
+			if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}"))	
+				drawtext(vid_buf, x+3, y+3, signs[i].text, 255, 255, 255, 255);
 			x = signs[i].x;
 			y = signs[i].y;
 			dx = 1 - signs[i].ju;
