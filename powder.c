@@ -2042,7 +2042,8 @@ void update_particles_i(pixel *vid, int start, int inc){
 				//Go left
 				if (((int)(player[0])&0x01) == 0x01)
 				{
-					if (pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID)
+					if (pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID 
+							&& (pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF) != PT_LNTG)
 					{
 						if (pmap[(int)(player[8]-1)][(int)(player[7])])
 						{
@@ -2071,7 +2072,8 @@ void update_particles_i(pixel *vid, int start, int inc){
 				//Go right
 				if (((int)(player[0])&0x02) == 0x02)
 				{
-					if (pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID)
+					if (pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID 
+							&& (pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF) != PT_LNTG)
 					{
 						if (pmap[(int)(player[8]-1)][(int)(player[7])])
 						{
@@ -2111,13 +2113,10 @@ void update_particles_i(pixel *vid, int start, int inc){
 					{
 						if(!pmap[ny+y][nx+x] || (pmap[ny+y][nx+x]>>8)>=NPART)
 							continue;
-						if(pmap[ny+y][nx+x] && (pmap[ny+y][nx+x]&0xFF)!=0xFF 
-								&& pstates[pmap[ny+y][nx+x]&0xFF].state != ST_SOLID 
-								//&& (abs(nx-x)+abs(ny-y))<r   //Need fix
-								&& (pmap[ny+y][nx+x]&0xFF)!=PT_STKM)
+						if((pstates[pmap[ny+y][nx+x]&0xFF].state != ST_SOLID && (pmap[ny+y][nx+x]&0xFF)!=PT_STKM) 
+								|| (pmap[ny+y][nx+x]&0xFF) == PT_LNTG)
 						{
 							player[2] = pmap[ny+y][nx+x]&0xFF;  //Current element
-							//r = abs(nx-x)+abs(ny-y);  //Distance
 						}
 						if((pmap[ny+y][nx+x]&0xFF) == PT_PLNT && parts[i].life<100)  //Plant gives him 5 HP
 						{
@@ -2127,6 +2126,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 								parts[i].life = 100;
 							kill_part(pmap[ny+y][nx+x]>>8);
 						}
+
 						if((pmap[ny+y][nx+x]&0xFF) == PT_NEUT)
 						{
 							parts[i].life -= (102-parts[i].life)/2;
@@ -2203,7 +2203,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					//For left leg
 					if (r && (r&0xFF)!=PT_STKM)
 					{
-						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)  //Liquid checks
+						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS || (r&0xFF)==PT_LNTG)  //Liquid checks
 						{	
 							if(parts[i].y<(player[8]-10))
 								parts[i].vy = 1;
@@ -2225,7 +2225,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 					//For right leg
 					if (r && (r&0xFF)!=PT_STKM)
 					{
-						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS)
+						if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS || (r&0xFF)==PT_LNTG)
 						{	
 							if(parts[i].y<(player[16]-10))
 								parts[i].vy = 1;
@@ -2271,11 +2271,11 @@ void update_particles_i(pixel *vid, int start, int inc){
 					parts[i].life -= (int)(rand()/1000)+38;
 				}	
 				
-				if (r>0 && (r>>8)<NPART)  //If hot
+				if (r>0 && (r>>8)<NPART)  //If hot or cold
 				{
-					if(parts[r>>8].temp>=50)
+					if(parts[r>>8].temp>=50 || parts[r>>8].temp<=-30)
 					{
-						parts[i].life -= 5;
+						parts[i].life -= 2;
 						player[16] -= 1;
 					}
 				}
@@ -2292,11 +2292,11 @@ void update_particles_i(pixel *vid, int start, int inc){
 					parts[i].life -= (int)(rand()/1000)+38;
 				}	
 				
-				if(r>0 && (r>>8)<NPART)  //If hot
+				if(r>0 && (r>>8)<NPART)  //If hot or cold
 				{
-					if(parts[r>>8].temp>=50)
+					if(parts[r>>8].temp>=50 || parts[r>>8].temp<=-30)
 					{
-						parts[i].life -= 5;
+						parts[i].life -= 2;
 						player[8] -= 1;
 					}
 				}	
