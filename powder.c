@@ -2196,9 +2196,9 @@ void update_particles_i(pixel *vid, int start, int inc){
 				}
 
 				//Collision checks
-				for(ny = 0; ny<=2+(int)parts[i].vy; ny++)
+				for(ny = -2-(int)parts[i].vy; ny<=0; ny++)
 				{
-					r = pmap[(int)(player[8]-ny)][(int)(player[7]+0.5)];  //This is to make coding more pleasant :-)
+					r = pmap[(int)(player[8]+ny)][(int)(player[7]+0.5)];  //This is to make coding more pleasant :-)
 
 					//For left leg
 					if (r && (r&0xFF)!=PT_STKM)
@@ -2214,13 +2214,13 @@ void update_particles_i(pixel *vid, int start, int inc){
 						}
 						else
 						{
-							player[8] -= ny+1;
+							player[8] += ny-1;
 							parts[i].vy -= 0.5*parts[i].vy;
 						}
 						player[9] = player[7];
 					}
 
-					r = pmap[(int)(player[16]-ny)][(int)(player[15]+0.5)];
+					r = pmap[(int)(player[16]+ny)][(int)(player[15]+0.5)];
 
 					//For right leg
 					if (r && (r&0xFF)!=PT_STKM)
@@ -2236,7 +2236,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 						}
 						else
 						{
-							player[16] -= ny+1;
+							player[16] += ny-1;
 							parts[i].vy -= 0.5*parts[i].vy;
 						}
 						player[17] = player[15];	
@@ -2265,7 +2265,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 				}
 				
 				//If legs touch something
-				r = pmap[(int)(player[8]+1.5)][(int)(player[7]+0.5)];
+				r = pmap[(int)(player[8]+0.5)][(int)(player[7]+0.5)];
 				if((r&0xFF)==PT_SPRK && r && (r>>8)<NPART)  //If on charge
 				{
 					parts[i].life -= (int)(rand()/1000)+38;
@@ -2286,7 +2286,7 @@ void update_particles_i(pixel *vid, int start, int inc){
 				if ((r&0xFF)==PT_PLUT)  //If on plut
 					parts[i].life -= 1;
 
-				r = pmap[(int)(player[16]+1.5)][(int)(player[15]+0.5)];
+				r = pmap[(int)(player[16]+0.5)][(int)(player[15]+0.5)];
 				if((r&0xFF)==PT_SPRK && r && (r>>8)<NPART)  //If on charge
 				{
 					parts[i].life -= (int)(rand()/1000)+38;
