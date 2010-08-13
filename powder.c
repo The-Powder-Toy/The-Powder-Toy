@@ -597,7 +597,7 @@ const struct part_type ptypes[] = {
 	{"PSCN",	PIXPACK(0x805050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"P-Type Silicon, Will transfer current to any conductor."},
 	{"NSCN",	PIXPACK(0x505080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"N-Type Silicon, Will only transfer current to P-Type Silicon."},
 	{"LN2",		PIXPACK(0x80A0DF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	0,	1,	SC_LIQUID,		-205.0f,		70,		"Liquid Nitrogen. Very cold."},
-	{"INSL",	PIXPACK(0x9EA3B6),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	10,	1,	SC_SPECIAL,		R_TEMP+0.0f,	0,		"Insulator, does not conduct heat or electricity."},
+	{"INSL",	PIXPACK(0x9EA3B6),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	7,		0,	0,	10,	1,	SC_SPECIAL,		R_TEMP+0.0f,	0,		"Insulator, does not conduct heat or electricity."},
 	{"BHOL",	PIXPACK(0x202020),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.01f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,		R_TEMP+70.0f,	255,	"Black hole, sucks in other particles and heats up."},
 	{"WHOL",	PIXPACK(0xEFEFEF),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.010f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,		R_TEMP-16.0f,	255,	"White hole, pushes other particles away."},
 	{"RBDM",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	1,	50,	1,	1,	SC_EXPLOSIVE,	R_TEMP+0.0f,	240,	"Rubidium, explosive, especially on contact with water, low melting point"},
@@ -1822,6 +1822,11 @@ void update_particles_i(pixel *vid, int start, int inc){
 						}
 			}
 			if(t==PT_FIRE || t==PT_PLSM || t==PT_LAVA || t==PT_SPRK || fe || (t==PT_PHOT&&(1>rand()%10)) || t ==PT_SWCH) {
+				if(t==PT_SWCH)
+					if((parts[i].life>0&&parts[i].life<10)|| parts[i].life == 11)
+					{
+						parts[i].life--;
+					}
 				for(nx=-2; nx<3; nx++)
 					for(ny=-2; ny<3; ny++)
 						if(x+nx>=0 && y+ny>0 &&
@@ -1890,8 +1895,6 @@ void update_particles_i(pixel *vid, int start, int inc){
 								}
 							}
 							if(rt==PT_SWCH && t==PT_SPRK){
-								if(parts[r>>8].life<10&&parts[r>>8].life>0)
-									parts[r>>8].life--; 
 								pavg = parts_avg(r>>8, i);
 								if(parts[i].ctype == PT_PSCN&&pavg != PT_INSL)
 									parts[r>>8].life = 10;
@@ -1902,17 +1905,6 @@ void update_particles_i(pixel *vid, int start, int inc){
 									parts[r>>8].ctype = PT_SWCH;
 									parts[r>>8].life = 4;
 								}
-							}
-							pavg = parts_avg(i, r>>8);
-							if(t==PT_SWCH&&pavg!= PT_INSL){	
-							if(parts[r>>8].type == PT_SWCH){
-								if(parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0){
-									parts[i].life = 9;
-								} else if(parts[i].life==0&&parts[r>>8].life==10){
-									parts[i].life = 10;
-								}
-							}
-							
 							}
 							pavg = parts_avg(i, r>>8);
 							if(pavg != PT_INSL){
@@ -2148,7 +2140,9 @@ void update_particles_i(pixel *vid, int start, int inc){
 						else
 						{					
 							create_part(-1, nx, ny, player[2]);
-							parts[pmap[ny][nx]>>8].vx = parts[pmap[ny][nx]>>8].vx + 5*((((int)player[1])&0x02) == 0x02) - 5*(((int)(player[1])&0x01) == 0x01);
+							r = pmap[ny][nx];
+							if( ((r>>8) < NPART) && (r>>8)>=0 )
+								parts[r>>8].vx = parts[r>>8].vx + 5*((((int)player[1])&0x02) == 0x02) - 5*(((int)(player[1])&0x01) == 0x01);
 						}
 					}
 				}
