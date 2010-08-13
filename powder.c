@@ -598,7 +598,7 @@ const struct part_type ptypes[] = {
 	{"PSCN",	PIXPACK(0x805050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"P-Type Silicon, Will transfer current to any conductor."},
 	{"NSCN",	PIXPACK(0x505080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"N-Type Silicon, Will only transfer current to P-Type Silicon."},
 	{"LN2",		PIXPACK(0x80A0DF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	0,	1,	SC_LIQUID,		-205.0f,		70,		"Liquid Nitrogen. Very cold."},
-	{"INSL",	PIXPACK(0x9EA3B6),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	10,	1,	SC_SPECIAL,		R_TEMP+0.0f,	0,		"Insulator, does not conduct heat or electricity."},
+	{"INSL",	PIXPACK(0x9EA3B6),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	7,		0,	0,	10,	1,	SC_SPECIAL,		R_TEMP+0.0f,	0,		"Insulator, does not conduct heat or electricity."},
 	{"BHOL",	PIXPACK(0x202020),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.01f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,		R_TEMP+70.0f,	255,	"Black hole, sucks in other particles and heats up."},
 	{"WHOL",	PIXPACK(0xEFEFEF),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.010f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,		R_TEMP-16.0f,	255,	"White hole, pushes other particles away."},
 	{"RBDM",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	1,	50,	1,	1,	SC_EXPLOSIVE,	R_TEMP+0.0f,	240,	"Rubidium, explosive, especially on contact with water, low melting point"},
@@ -2151,6 +2151,8 @@ void update_particles_i(pixel *vid, int start, int inc){
 						else
 						{					
 							create_part(-1, nx, ny, player[2]);
+							r = pmap[ny][nx];
+							if(!((r>>8)>=NPART)||(r>>8)<0)
 							parts[r>>8].vx = parts[r>>8].vx + 5*((((int)player[1])&0x02) == 0x02) - 5*(((int)(player[1])&0x01) == 0x01);
 						}
 					}
