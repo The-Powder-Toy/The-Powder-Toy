@@ -2107,13 +2107,13 @@ void update_particles_i(pixel *vid, int start, int inc){
 					set_emap((int)(player[15]+0.5)/CELL, (int)(player[16]+0.5)/CELL);
 
 				//Searching for particles near head
-				//r = 10;
 				for(nx = -2; nx <= 2; nx++)
 					for(ny = 0; ny>=-2; ny--)
 					{
 						if(!pmap[ny+y][nx+x] || (pmap[ny+y][nx+x]>>8)>=NPART)
 							continue;
-						if((pstates[pmap[ny+y][nx+x]&0xFF].state != ST_SOLID && (pmap[ny+y][nx+x]&0xFF)!=PT_STKM) 
+						if((pstates[pmap[ny+y][nx+x]&0xFF].state != ST_SOLID && (pmap[ny+y][nx+x]&0xFF)!=PT_STKM 
+									&& (pmap[ny+y][nx+x]&0xFF)!=PT_WHOL && (pmap[ny+y][nx+x]&0xFF)!=PT_BHOL) 
 								|| (pmap[ny+y][nx+x]&0xFF) == PT_LNTG)
 						{
 							player[2] = pmap[ny+y][nx+x]&0xFF;  //Current element
