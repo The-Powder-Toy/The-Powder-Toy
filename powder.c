@@ -617,7 +617,7 @@ const struct part_type ptypes[] = {
 	{"LCRY",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)"},
 	{"STKM",	PIXPACK(0X000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	-0.7f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,			R_TEMP+14.6f,	0,	"Stickman. Don't kill him!"},
 	{"SWCH",	PIXPACK(0x103B11),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f  * CFDS, 0,  0,		0,  0,  1,  1,  SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Only conducts when switched on. (PSCN switches on, NSCN switches off)"},
-	{"SMKE",	PIXPACK(0x222222),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	0,	SC_GAS,			R_TEMP+400.0f,	88,		"Smoke"},
+	{"SMKE",	PIXPACK(0x222222),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+400.0f,	88,		"Smoke"},
 };
 
 #define ST_NONE 0
@@ -2575,7 +2575,29 @@ void update_particles_i(pixel *vid, int start, int inc){
 								blendpixel(vid,x+nx,y+ny,100,100,100,10);
 							if (abs(x)+abs(y) == 2)
 								blendpixel(vid,x+nx,y+ny,100,100,100,20);
-							}
+						}
+					}
+				}
+			} else if(t==PT_WTRV) {
+ 				if(cmode == 3||cmode==4) {
+					x = nx/CELL;
+					y = ny/CELL;
+					cg = PIXG(ptypes[t].pcolors)/3;
+					cb = PIXB(ptypes[t].pcolors)/3;
+					cr = PIXR(ptypes[t].pcolors)/3;
+					cg += fire_g[y][x]; if(cg > PIXG(ptypes[t].pcolors)/2) cg = PIXG(ptypes[t].pcolors)/2; fire_g[y][x] = cg;
+					cb += fire_b[y][x]; if(cb > PIXB(ptypes[t].pcolors)/2) cb = PIXB(ptypes[t].pcolors)/2; fire_b[y][x] = cb;
+					cr += fire_r[y][x]; if(cr > PIXR(ptypes[t].pcolors)/2) cr = PIXR(ptypes[t].pcolors)/2; fire_r[y][x] = cr;
+				} else {
+					for(x=-3;x<4;x++){
+						for(y=-3;y<4;y++){
+							if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
+								blendpixel(vid,x+nx,y+ny, PIXR(ptypes[t].pcolors)/1.6, PIXG(ptypes[t].pcolors)/1.6, PIXB(ptypes[t].pcolors)/1.6, 30);
+							if(abs(x)+abs(y) <=3 && abs(x)+abs(y))
+								blendpixel(vid,x+nx,y+ny, PIXR(ptypes[t].pcolors)/1.6, PIXG(ptypes[t].pcolors)/1.6, PIXB(ptypes[t].pcolors)/1.6, 10);
+							if (abs(x)+abs(y) == 2)
+								blendpixel(vid,x+nx,y+ny, PIXR(ptypes[t].pcolors)/1.6, PIXG(ptypes[t].pcolors)/1.6, PIXB(ptypes[t].pcolors)/1.6, 20);
+						}
 					}
 				}
 			} else if(t==PT_THDR) {
