@@ -395,7 +395,7 @@ struct part_type {
 	float heat;
 	unsigned char hconduct;
     const char *descs;
-	unsigned char props;
+	unsigned char properties;
 };
 
 struct part_state {
