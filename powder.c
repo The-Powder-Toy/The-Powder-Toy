@@ -507,6 +507,8 @@ struct menu_section msections[] =
     {"\xCC", "Special", 0},
 };
 
+#define CM_COUNT 7
+#define CM_FANCY 6
 #define CM_HEAT 5
 #define CM_BLOB 4
 #define CM_FIRE 3
@@ -2883,7 +2885,7 @@ justdraw:
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
-                if(t==PT_MWAX&&cmode == 3)
+                if(t==PT_MWAX&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -2908,16 +2910,20 @@ justdraw:
                     cr = PIXR(ptypes[t].pcolors)/s;
                     cg = PIXG(ptypes[t].pcolors)/s;
                     cb = PIXB(ptypes[t].pcolors)/s;
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-                            if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,cr,cg,cb,40);
-                        }
-                    }
+					if(cmode==6){
+						for(x=-1; x<=1; x++)
+						{
+						    for(y=-1; y<=1; y++)
+						    {
+						        if ((abs(x) == 0) && (abs(y) == 0))
+						            blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
+						        else if (abs(y) != 0 || abs(x) != 0)
+						            blendpixel(vid,x+nx,y+ny,cr,cg,cb,40);
+						    }
+						}
+					} else {
+						blendpixel(vid, x, y, cr, cg, cb, 255);
+					}
 
                     if(cmode==4)
                     {
@@ -2932,7 +2938,7 @@ justdraw:
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
                     }
                 }
-                else if(t==PT_OILL&&cmode == 3)
+                else if(t==PT_OILL&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -2947,7 +2953,7 @@ justdraw:
                 }
                 else if(t==PT_NEUT)
                 {
-                    if(cmode == 3||cmode==4)
+                    if(cmode == 3||cmode==4 || cmode==6)
                     {
                         vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
                         cg = 8;
@@ -2976,7 +2982,7 @@ justdraw:
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
-                } else if(t==PT_PLUT&&cmode == 3)
+                } else if(t==PT_PLUT&&cmode == 6)
                 {
                     int tempx;
                     int tempy;
@@ -2996,7 +3002,7 @@ justdraw:
                             blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
                         }
                     }
-                } else if(t==PT_URAN&&cmode == 3)
+                } else if(t==PT_URAN&&cmode == 6)
                 {
                     int tempx;
                     int tempy;
@@ -3016,7 +3022,7 @@ justdraw:
                             blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
                         }
                     }
-                } else if(t==PT_SLTW&&cmode == 3)
+                } else if(t==PT_SLTW&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3031,7 +3037,7 @@ justdraw:
                 }
                 else if(t==PT_PHOT)
                 {
-                    if(cmode == 3||cmode==4)
+                    if(cmode == 3||cmode==4 || cmode==6)
                     {
                         vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
                         cg = 12;
@@ -3071,7 +3077,7 @@ justdraw:
                     y = ny;
                     blendpixel(vid,x,y,17,217,24,255);
                 }
-                else if(t==PT_LNTG&&cmode == 3)
+                else if(t==PT_LNTG&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3086,7 +3092,7 @@ justdraw:
                 }
                 else if(t==PT_SMKE)
                 {
-                    if(cmode == 3||cmode==4)
+                    if(cmode == 3||cmode==4 || cmode==6)
                     {
                         x = nx/CELL;
                         y = ny/CELL;
@@ -3119,7 +3125,7 @@ justdraw:
                         }
                     }
                 }
-                else if(t==PT_WATR&&cmode == 3)
+                else if(t==PT_WATR&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3132,7 +3138,7 @@ justdraw:
                         }
                     }
 
-                } else if(t==PT_DSTW&&cmode == 3)
+                } else if(t==PT_DSTW&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3145,7 +3151,7 @@ justdraw:
                         }
                     }
                 }
-                else if(t==PT_NITR&&cmode == 3)
+                else if(t==PT_NITR&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3159,7 +3165,7 @@ justdraw:
                     }
 
                 }
-                else if(t==PT_LRBD&&cmode == 3)
+                else if(t==PT_LRBD&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3174,7 +3180,7 @@ justdraw:
 
                 }
 
-                else if(t==PT_NBLE&&cmode == 3)
+                else if(t==PT_NBLE&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3190,7 +3196,7 @@ justdraw:
                     }
 
                 }
-                else if(t==PT_GASS&&cmode == 3)
+                else if(t==PT_GASS&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3208,7 +3214,7 @@ justdraw:
                 }
                 else if(t==PT_WTRV)
                 {
-                    if(cmode == 3||cmode==4)
+                    if(cmode == 3||cmode==4 || cmode==6)
                     {
                         x = nx/CELL;
                         y = ny/CELL;
@@ -3243,7 +3249,7 @@ justdraw:
                 }
                 else if(t==PT_THDR)
                 {
-                    if(cmode == 3||cmode==4)
+                    if(cmode == 3||cmode==4 || cmode==6)
                     {
                         vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
                         cg = 16;
@@ -3279,7 +3285,7 @@ justdraw:
                 }
                 else if(t==PT_LCRY)
                 {
-                    if(cmode == 3||cmode==4)
+                    if(cmode == 3||cmode==4 || cmode==6)
                     {
                         //cr = R/8;
                         //cg = G/8;
@@ -3313,7 +3319,7 @@ justdraw:
                     uint8 R = plasma_data[caddress];
                     uint8 G = plasma_data[caddress+1];
                     uint8 B = plasma_data[caddress+2];
-                    if(cmode == 3||cmode==4)
+                    if(cmode == 3||cmode==4 || cmode==6)
                     {
                         cr = R/8;
                         cg = G/8;
@@ -3348,7 +3354,7 @@ justdraw:
                 }
                 else if(t==PT_FIRE && parts[i].life)
                 {
-                    if(cmode == 3||cmode==4)
+                    if(cmode == 3||cmode==4 || cmode==6)
                     {
                         cr = parts[i].life / 4;
                         cg = parts[i].life / 16;
@@ -3400,7 +3406,7 @@ justdraw:
                     blendpixel(vid, nx-1, ny, cr, cg, cb, 64);
                     blendpixel(vid, nx, ny+1, cr, cg, cb, 64);
                     blendpixel(vid, nx, ny-1, cr, cg, cb, 64);
-                    if(cmode == 3||cmode==4)
+                    if(cmode == 3||cmode==4 || cmode==6)
                     {
                         cr /= 32;
                         cg /= 32;
@@ -3421,7 +3427,7 @@ justdraw:
                 else if(t==PT_LAVA || t==PT_SPRK)
                 {
                     vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
-                    if(cmode == 3 || cmode==4)
+                    if(cmode == 3 || cmode==4 || cmode==6)
                     {
                         if(t == PT_LAVA)
                         {
@@ -5089,7 +5095,7 @@ struct stamp_info
 {
     char name[11];
     pixel *thumb;
-    int thumb_w, thumb_h, delete;
+    int thumb_w, thumb_h, dodelete;
 } stamps[STAMP_MAX];//[STAMP_X*STAMP_Y];
 
 int stamp_count = 0;
@@ -5148,7 +5154,7 @@ void stamp_update(void)
     {
         if(!stamps[i].name[0])
             break;
-        if(stamps[i].delete!=1)
+        if(stamps[i].dodelete!=1)
         {
             fwrite(stamps[i].name, 1, 10, f);
         }
@@ -5323,7 +5329,7 @@ void stamp_init(void)
 
 void del_stamp(int d)
 {
-    stamps[d].delete = 1;
+    stamps[d].dodelete = 1;
     stamp_update();
     stamp_count = 0;
     stamp_init();
@@ -6918,6 +6924,9 @@ void draw_svf_ui(pixel *vid_buf)
     case 5:
         drawtext(vid_buf, XRES-27+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBE", 255, 0, 0, 255);
         drawtext(vid_buf, XRES-27+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBD", 255, 255, 255, 255);
+        break;
+    case 6:
+        drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xC4", 100, 150, 255, 255);
         break;
     }
     drawrect(vid_buf, XRES-32+BARSIZE/*478*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
@@ -9363,7 +9372,7 @@ void load_presets(void)
     sdl_scale = (tmp == 2) ? 2 : 1;
     if(fread(&tmp, 1, 1, f) != 1)
         goto fail;
-    cmode = tmp%6;
+    cmode = tmp%7;
     if(fread(&tmp, 1, 1, f) != 1)
         goto fail;
     svf_admin = tmp;
@@ -9588,6 +9597,13 @@ void set_cmode(int cm)
     else if(cmode==5)
     {
         strcpy(itc_msg, "Heat Display");
+    }
+    else if(cmode==6)
+    {
+        memset(fire_r, 0, sizeof(fire_r));
+        memset(fire_g, 0, sizeof(fire_g));
+        memset(fire_b, 0, sizeof(fire_b));
+        strcpy(itc_msg, "Fancy Display");
     }
     else if(cmode==3)
     {
@@ -9926,7 +9942,7 @@ int main(int argc, char *argv[])
             }
             fire_fc = (fire_fc+1) % 3;
         }
-        if(cmode==3||cmode==4)
+        if(cmode==3||cmode==4||cmode==6)
             render_fire(vid_buf);
 
         render_signs(vid_buf);
@@ -10027,6 +10043,10 @@ int main(int argc, char *argv[])
         {
             set_cmode(5);
         }
+        if(sdl_key=='7')
+        {
+            set_cmode(6);
+        }
         if(sdl_key==SDLK_SPACE)
             sys_pause = !sys_pause;
         if(sdl_key=='h')
@@ -10062,7 +10082,7 @@ int main(int argc, char *argv[])
         }
         else if(sdl_key=='c')
         {
-            set_cmode((cmode+1) % 6);
+            set_cmode((cmode+1) % 7);
             if(it > 50)
                 it = 50;
         }
@@ -10508,9 +10528,9 @@ int main(int argc, char *argv[])
                     if(x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
                     {
                         if(b & SDL_BUTTON_LMASK)
-                            set_cmode((cmode+1) % 6);
+                            set_cmode((cmode+1) % 7);
                         if(b & SDL_BUTTON_RMASK)
-                            set_cmode((cmode+5) % 6);
+                            set_cmode((cmode+6) % 7);
                         save_presets(0);
                     }
                     if(x>=(XRES+BARSIZE-(510-494)) && x<=(XRES+BARSIZE-(510-509)) && !bq)
@@ -10601,7 +10621,6 @@ int main(int argc, char *argv[])
                                 //Something
                             }
                         }
-                        //create_parts(x, y, bs, SPC_AIR);
                         lx = x;
                         ly = y;
                         lb = 0;
@@ -10609,7 +10628,7 @@ int main(int argc, char *argv[])
                     }
                     else
                     {
-                        //Copy state before drawing any particles (for undo)
+                        //Copy state before drawing any particles (for undo)7
                         int cbx, cby, cbi;
 
                         for(cbi=0; cbi<NPART; cbi++)
@@ -10755,8 +10774,6 @@ int main(int argc, char *argv[])
         if(it)
         {
             it--;
-            //if(fbi_img)
-            //draw_image(vid_buf, fbi_img, (XRES-FBI_W)/2, (YRES-FBI_H)/2+25, FBI_W, FBI_H, it>12?64:it*5);
             drawtext(vid_buf, 16, 20, it_msg, 255, 255, 255, it>51?255:it*5);
         }
 
@@ -10777,9 +10794,6 @@ int main(int argc, char *argv[])
 #endif
             drawrect(vid_buf, XRES-19-old_ver_len, YRES-22, old_ver_len+5, 13, 255, 216, 32, 255);
         }
-        /*#ifdef MT
-         pthread_join(pth2,NULL);
-         #endif*/
 
         if(hud_enable)
         {
