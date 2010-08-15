@@ -395,6 +395,7 @@ struct part_type {
 	float heat;
 	unsigned char hconduct;
     const char *descs;
+	unsigned char props;
 };
 
 struct part_state {
@@ -558,6 +559,13 @@ struct menu_section msections[] = {
 #define R_TEMP 22
 #define MAX_TEMP 3500
 #define MIN_TEMP -273
+
+static unsigned char TYPE_PART   = 0b0001 << 4;
+static unsigned char TYPE_LIQUID = 0b0010 << 4;
+static unsigned char TYPE_SOLID  = 0b0100 << 4;
+static unsigned char TYPE_GAS    = 0b1000 << 4;
+static unsigned char PROP_CONDUCTS = 0b0001 >> 4;
+
 const struct part_type ptypes[] = {
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal Burn	Exp	Mel Hrd M	Section			H				Ins(real world, by triclops200) Description
 	{"",		PIXPACK(0x000000),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_SPECIAL,		R_TEMP+0.0f,	251,	"Erases particles."},
@@ -959,9 +967,7 @@ inline int create_part(int p, int x, int y, int t)
 	    parts[i].vy = 0;
 	    parts[i].life = 0;
 	    parts[i].ctype = 0;
-#ifdef HEAT_ENABLE
 	    parts[i].temp = ptypes[t].heat;
-#endif
     }
 	if(t==PT_ACID){
 		parts[i].life = 75;
@@ -1017,9 +1023,7 @@ inline int create_part(int p, int x, int y, int t)
 		    parts[i].vy = 0;
 		    parts[i].life = 100;
 		    parts[i].ctype = 0;
-#ifdef HEAT_ENABLE
 		    parts[i].temp = ptypes[t].heat;
-#endif
 		    player[2] = PT_DUST;
 		    player[3] = x-1;  //Setting legs positions
 		    player[4] = y+6;
