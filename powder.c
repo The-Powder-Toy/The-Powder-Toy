@@ -766,6 +766,7 @@ typedef struct {
 particle *parts;
 float player[20]; //[0] is a command cell, [3]-[18] are legs positions, [19] is index
 int isplayer = 0;  //It shows is player spawned or not
+int mousex, mousey = 0;  //They contain mouse position
 
 void menu_count(void){
 	int i=0;
@@ -2469,27 +2470,25 @@ void update_particles_i(pixel *vid, int start, int inc){
 			if(t==PT_STKM)  //Just draw head here
 			{
 				char buff[10];  //Buffer for HP
-				int mx, my;  //Mouse position
 
-				SDL_GetMouseState(&mx, &my);  //Get mouse state for check
-				if(mx>(nx-3) && mx<(nx+3) && my<(ny+3) && my>(ny-3))
+				if(mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3))  //If mous is in the head
 				{
-					sprintf(buff, "%3d", (int)parts[i].life);
-					drawtext(vid, mx-8-2*(parts[i].life<100)-2*(parts[i].life<10), my-12, buff, 255, 255, 255, 255);
+					sprintf(buff, "%3d", (int)parts[i].life);  //Show HP
+					drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
 				}
 
 				for(r=-2; r<=1; r++)  //Here I use r variable not as I should, but I think you will excuse me :-p
-				{
-					s = XRES+BARSIZE;
-					vid[(ny-2)*s+nx+r] = ptypes[(int)player[2]].pcolors;
-					vid[(ny+2)*s+nx+r+1] = ptypes[(int)player[2]].pcolors;
-					vid[(ny+r+1)*s+nx-2] = ptypes[(int)player[2]].pcolors;
-					vid[(ny+r)*s+nx+2] = ptypes[(int)player[2]].pcolors;
-				}
-				draw_line(vid , nx, ny+3, player[3], player[4], 255, 255, 255, s);
-				draw_line(vid , player[3], player[4], player[7], player[8], 255, 255, 255, s);
-				draw_line(vid , nx, ny+3, player[11], player[12], 255, 255, 255, s);
-				draw_line(vid , player[11], player[12], player[15], player[16], 255, 255, 255, s);
+					{
+						s = XRES+BARSIZE;
+						vid[(ny-2)*s+nx+r] = ptypes[(int)player[2]].pcolors;
+						vid[(ny+2)*s+nx+r+1] = ptypes[(int)player[2]].pcolors;
+						vid[(ny+r+1)*s+nx-2] = ptypes[(int)player[2]].pcolors;
+						vid[(ny+r)*s+nx+2] = ptypes[(int)player[2]].pcolors;
+					}
+					draw_line(vid , nx, ny+3, player[3], player[4], 255, 255, 255, s);
+					draw_line(vid , player[3], player[4], player[7], player[8], 255, 255, 255, s);
+					draw_line(vid , nx, ny+3, player[11], player[12], 255, 255, 255, s);
+					draw_line(vid , player[11], player[12], player[15], player[16], 255, 255, 255, s);
 
 				isplayer = 1;  //It's a secret. Tssss...
 			}
@@ -2767,8 +2766,35 @@ void update_particles_i(pixel *vid, int start, int inc){
 				uint8 R = color_data[caddress];
 				uint8 G = color_data[caddress+1];
 				uint8 B = color_data[caddress+2];
-				vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(R, G, B);
-				//blendpixel(vid, nx+1, ny, R, G, B, 255);
+
+				if(t==PT_STKM)  //Stick man should be visible in heat mode
+				{
+					char buff[10];  //Buffer for HP
+
+					if(mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3))  //If mous is in the head
+					{
+						sprintf(buff, "%3d", (int)parts[i].life);  //Show HP
+						drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
+					}
+
+					for(r=-2; r<=1; r++)
+					{
+						s = XRES+BARSIZE;
+						vid[(ny-2)*s+nx+r] = PIXRGB (R, G, B);
+						vid[(ny+2)*s+nx+r+1] =  PIXRGB (R, G, B);
+						vid[(ny+r+1)*s+nx-2] =  PIXRGB (R, G, B);
+						vid[(ny+r)*s+nx+2] =  PIXRGB (R, G, B);
+					}
+					draw_line(vid , nx, ny+3, player[3], player[4], R, G, B, s);
+					draw_line(vid , player[3], player[4], player[7], player[8], R, G, B, s);
+					draw_line(vid , nx, ny+3, player[11], player[12], R, G, B, s);
+					draw_line(vid , player[11], player[12], player[15], player[16], R, G, B, s);
+				}
+				else
+				{
+					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(R, G, B);
+					//blendpixel(vid, nx+1, ny, R, G, B, 255);
+				}
 			}
 			if(cmode == 4&&t!=PT_FIRE&&t!=PT_PLSM&&t!=PT_NONE&&t!=PT_ACID){
 				uint8 R = PIXR(ptypes[t].pcolors);
@@ -8860,7 +8886,10 @@ int main(int argc, char *argv[])
 		}
 		
 		if(zoom_en!=1 && !load_mode && !save_mode)
+		{
 			render_cursor(vid_buf, mx/sdl_scale, my/sdl_scale, su, bs);
+			mousex = mx/sdl_scale; mousey = my/sdl_scale;
+		}
 		
 		if(zoom_en)
 			render_zoom(vid_buf);
