@@ -2468,6 +2468,16 @@ void update_particles_i(pixel *vid, int start, int inc){
 			if(cmode!=CM_HEAT){
 			if(t==PT_STKM)  //Just draw head here
 			{
+				char buff[10];  //Buffer for HP
+				int mx, my;  //Mouse position
+
+				SDL_GetMouseState(&mx, &my);  //Get mouse state for check
+				if(mx>(nx-3) && mx<(nx+3) && my<(ny+3) && my>(ny-3))
+				{
+					sprintf(buff, "%3d", (int)parts[i].life);
+					drawtext(vid, mx-8-2*(parts[i].life<100)-2*(parts[i].life<10), my-12, buff, 255, 255, 255, 255);
+				}
+
 				for(r=-2; r<=1; r++)  //Here I use r variable not as I should, but I think you will excuse me :-p
 				{
 					s = XRES+BARSIZE;
@@ -3510,7 +3520,7 @@ int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int p
 						g += PIXG(ptypes[t].pcolors);
 						b += PIXB(ptypes[t].pcolors);
 						a ++;
-					}
+						}
 				}
 			if(a) {
 				a = 256/a;
@@ -3518,6 +3528,7 @@ int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int p
 				g = (g*a)>>8;
 				b = (b*a)>>8;
 			}
+				
 			drawpixel(vid_buf, px+sx, py+sy, r, g, b, 255);
 			sx++;
 		}
