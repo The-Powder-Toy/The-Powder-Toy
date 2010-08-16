@@ -5,6 +5,7 @@
  * Copyright (c) 2010 Simon Robertshaw
  * Copyright (c) 2010 Skresanov Savely
  * Copyright (c) 2010 Bryan Hoyle
+ * Copyright (c) 2010 Nathan Cousins
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,6 +114,7 @@ char *it_msg =
     "Shift+drag will create straight lines of particles.\n"
     "Ctrl+drag will result in filled rectangles.\n"
     "Ctrl+Shift+click will flood-fill a closed area.\n"
+	"Ctrl+Z will act as Undo.\n"
     "Middle click or Alt+Click to \"sample\" the particles.\n"
     "\n\boUse 'Z' for a zoom tool. Click to make the drawable zoom window stay around. Use the wheel to change the zoom strength\n"
     "Use 'S' to save parts of the window as 'stamps'.\n"
@@ -128,6 +130,7 @@ char *it_msg =
     "\bgCopyright (c) 2010 Simon Robertshaw (\brhttp://powdertoy.co.uk\bg, \bbirc.freenode.net #powder\bg)\n"
     "\bgCopyright (c) 2010 Skresanov Savely (Stickman)\n"
     "\bgCopyright (c) 2010 Bryan Hoyle (New elements)\n"
+	"\bgCopyright (c) 2010 Nathan Cousins (New elements, small engine mods.)\n"
     "\n"
     "\bgSpecial thanks to Brian Ledbetter for maintaining ports.\n"
     "\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html"
@@ -169,11 +172,20 @@ struct sign
 
 unsigned char bmap[YRES/CELL][XRES/CELL];
 unsigned char emap[YRES/CELL][XRES/CELL];
+
+unsigned char cb_bmap[YRES/CELL][XRES/CELL];
+unsigned char cb_emap[YRES/CELL][XRES/CELL];
+
 unsigned cmode = 3;
 
 float vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
 float vy[YRES/CELL][XRES/CELL], ovy[YRES/CELL][XRES/CELL];
 float pv[YRES/CELL][XRES/CELL], opv[YRES/CELL][XRES/CELL];
+
+float cb_vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
+float cb_vy[YRES/CELL][XRES/CELL], ovy[YRES/CELL][XRES/CELL];
+float cb_pv[YRES/CELL][XRES/CELL], opv[YRES/CELL][XRES/CELL];
+
 float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 #define TSTEPP 0.3f
 #define TSTEPV 0.4f
@@ -340,7 +352,7 @@ void *update_air_th(void *arg)
     return NULL;
 }
 
-inline unsigned clamp_flt(float f, float min, float max)
+unsigned clamp_flt(float f, float min, float max)
 {
     if(f<min)
         return 0;
@@ -349,7 +361,7 @@ inline unsigned clamp_flt(float f, float min, float max)
     return (int)(255.0f*(f-min)/(max-min));
 }
 
-inline float restrict_flt(float f, float min, float max)
+float restrict_flt(float f, float min, float max)
 {
     if(f<min)
         return min;
@@ -797,7 +809,10 @@ typedef struct
     float pavg[2];
     int flags;
 } particle;
+
 particle *parts;
+particle *cb_parts;
+
 float player[20]; //[0] is a command cell, [3]-[18] are legs positions, [19] is index
 int isplayer = 0;  //It shows is player spawned or not
 int mousex, mousey = 0;  //They contain mouse position
@@ -817,6 +832,7 @@ void menu_count(void)
 int pfree;
 
 unsigned pmap[YRES][XRES];
+unsigned cb_pmap[YRES][XRES];
 
 int try_move(int i, int x, int y, int nx, int ny)
 {
@@ -917,7 +933,7 @@ void kill_part(int i)
     pfree = i;
 }
 
-inline int create_part(int p, int x, int y, int t)
+int create_part(int p, int x, int y, int t)
 {
     int i;
 
@@ -1123,7 +1139,7 @@ void delete_part(int x, int y)
     pmap[y][x] = 0;	// just in case
 }
 
-inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 {
     pixel t;
     if(x<0 || y<0 || x>=XRES || y>=YRES)
@@ -1272,7 +1288,7 @@ void set_emap(int x, int y)
                     set_emap(x, y+1);
             }
 }
-inline int parts_avg(int ci, int ni)
+ int parts_avg(int ci, int ni)
 {
     int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
     if((pmr>>8) < NPART && (pmr>>8) >= 0)
@@ -4474,7 +4490,7 @@ void *build_thumb(int *size, int bzip2)
     return d;
 }
 
-inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
+void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int py, int scl)
 {
     unsigned char *d,*c=thumb;
@@ -5434,7 +5450,7 @@ void del_stamp(int d)
 
 #include "font.h"
 
-inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 {
     pixel t;
     if(x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
@@ -5449,7 +5465,7 @@ inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
     vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 }
 
-inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
+int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 {
     int i, j, w, bn = 0, ba = 0;
     char *rp = font_data + font_ptrs[c];
@@ -9875,6 +9891,7 @@ int main(int argc, char *argv[])
 #endif
     menu_count();
     parts = calloc(sizeof(particle), NPART);
+	cb_parts = calloc(sizeof(particle), NPART);
     for(i=0; i<NPART-1; i++)
         parts[i].life = i+1;
     parts[NPART-1].life = -1;
@@ -10156,6 +10173,27 @@ int main(int argc, char *argv[])
             set_cmode((cmode+1) % 6);
             if(it > 50)
                 it = 50;
+        }
+		if(sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
+        {
+			int cbx, cby, cbi;
+
+			for(cbi=0; cbi<NPART; cbi++)
+				parts[cbi] = cb_parts[cbi];
+			
+			for(cby = 0; cby<YRES; cby++)
+				for(cbx = 0; cbx<XRES; cbx++)
+					pmap[cby][cbx] = cb_pmap[cby][cbx];
+
+			for(cby = 0; cby<(YRES/CELL); cby++)
+				for(cbx = 0; cbx<(XRES/CELL); cbx++)
+				{
+					vx[cby][cbx] = cb_vx[cby][cbx];
+					vy[cby][cbx] = cb_vy[cby][cbx];
+					pv[cby][cbx] = cb_pv[cby][cbx];
+					bmap[cby][cbx] = cb_bmap[cby][cbx];
+					emap[cby][cbx] = cb_emap[cby][cbx];
+				}
         }
 #ifdef INTERNAL
         if(sdl_key=='v')
@@ -10679,6 +10717,26 @@ int main(int argc, char *argv[])
                     }
                     else
                     {
+						//Copy state before drawing any particles (for undo)
+						int cbx, cby, cbi;
+
+						for(cbi=0; cbi<NPART; cbi++)
+							cb_parts[cbi] = parts[cbi];
+
+						for(cby = 0; cby<YRES; cby++)
+							for(cbx = 0; cbx<XRES; cbx++)
+								cb_pmap[cby][cbx] = pmap[cby][cbx];
+
+						for(cby = 0; cby<(YRES/CELL); cby++)
+							for(cbx = 0; cbx<(XRES/CELL); cbx++)
+							{
+								cb_vx[cby][cbx] = vx[cby][cbx];
+								cb_vy[cby][cbx] = vy[cby][cbx];
+								cb_pv[cby][cbx] = pv[cby][cbx];
+								cb_bmap[cby][cbx] = bmap[cby][cbx];
+								cb_emap[cby][cbx] = emap[cby][cbx];
+							}
+
                         create_parts(x, y, bs, c);
                         lx = x;
                         ly = y;
