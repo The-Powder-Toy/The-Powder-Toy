@@ -582,11 +582,11 @@ struct menu_section msections[] =
 #define MAX_TEMP 3500
 #define MIN_TEMP -273
 
-static unsigned char TYPE_PART   = 0b0001 << 4;
-static unsigned char TYPE_LIQUID = 0b0010 << 4;
-static unsigned char TYPE_SOLID  = 0b0100 << 4;
-static unsigned char TYPE_GAS    = 0b1000 << 4;
-static unsigned char PROP_CONDUCTS = 0b0001 >> 4;
+static unsigned char TYPE_PART		= 0x01; //1
+static unsigned char TYPE_LIQUID	= 0x02; //2
+static unsigned char TYPE_SOLID		= 0x04; //4
+static unsigned char TYPE_GAS		= 0x08; //8
+static unsigned char PROP_CONDUCTS	= 0x10; //16
 
 const struct part_type ptypes[] =
 {
