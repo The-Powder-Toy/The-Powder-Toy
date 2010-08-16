@@ -114,7 +114,7 @@ char *it_msg =
     "Shift+drag will create straight lines of particles.\n"
     "Ctrl+drag will result in filled rectangles.\n"
     "Ctrl+Shift+click will flood-fill a closed area.\n"
-	"Ctrl+Z will act as Undo.\n"
+    "Ctrl+Z will act as Undo.\n"
     "Middle click or Alt+Click to \"sample\" the particles.\n"
     "\n\boUse 'Z' for a zoom tool. Click to make the drawable zoom window stay around. Use the wheel to change the zoom strength\n"
     "Use 'S' to save parts of the window as 'stamps'.\n"
@@ -130,7 +130,7 @@ char *it_msg =
     "\bgCopyright (c) 2010 Simon Robertshaw (\brhttp://powdertoy.co.uk\bg, \bbirc.freenode.net #powder\bg)\n"
     "\bgCopyright (c) 2010 Skresanov Savely (Stickman)\n"
     "\bgCopyright (c) 2010 Bryan Hoyle (New elements)\n"
-	"\bgCopyright (c) 2010 Nathan Cousins (New elements, small engine mods.)\n"
+    "\bgCopyright (c) 2010 Nathan Cousins (New elements, small engine mods.)\n"
     "\n"
     "\bgSpecial thanks to Brian Ledbetter for maintaining ports.\n"
     "\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html"
@@ -1288,7 +1288,7 @@ void set_emap(int x, int y)
                     set_emap(x, y+1);
             }
 }
- inline int parts_avg(int ci, int ni)
+inline int parts_avg(int ci, int ni)
 {
     int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
     if((pmr>>8) < NPART && (pmr>>8) >= 0)
@@ -2910,40 +2910,40 @@ justdraw:
                     }
                 } else if(t==PT_PLUT)
                 {
-									cr = 0x40;
-									cg = 0x70;
-									cb = 0x20;
-									blendpixel(vid, nx, ny, cr, cg, cb, 192);
-									blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
-									blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
-									blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
-									blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-									for(int tempx = 2; tempx < 10; tempx++) {
-										for(int tempy = 2; tempy < 10; tempy++) {
-											blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
-										}
-									}
+                    cr = 0x40;
+                    cg = 0x70;
+                    cb = 0x20;
+                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+                    blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+                    blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+                    blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+                    for(int tempx = 2; tempx < 10; tempx++) {
+                        for(int tempy = 2; tempy < 10; tempy++) {
+                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+                        }
+                    }
                 } else if(t==PT_URAN)
                 {
-									cr = 0x70;
-									cg = 0x70;
-									cb = 0x20;
-									blendpixel(vid, nx, ny, cr, cg, cb, 192);
-									blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
-									blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
-									blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
-									blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-									for(int tempx = 2; tempx < 10; tempx++) {
-										for(int tempy = 2; tempy < 10; tempy++) {
-											blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
-										}
-									}
+                    cr = 0x70;
+                    cg = 0x70;
+                    cb = 0x20;
+                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+                    blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+                    blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+                    blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+                    for(int tempx = 2; tempx < 10; tempx++) {
+                        for(int tempy = 2; tempy < 10; tempy++) {
+                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+                        }
+                    }
                 } else if(t==PT_SLTW)
                 {
                     for(x=-1; x<=1; x++)
@@ -3232,40 +3232,40 @@ justdraw:
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
                 } else if(t==PT_PLUT) {
-									cr = 0x40;
-									cg = 0x70;
-									cb = 0x20;
-									blendpixel(vid, nx, ny, cr, cg, cb, 192);
-									blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
-									blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
-									blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
-									blendpixel(vid, nx, ny-1, cr, cg, cb, 5);
-									for(int tempx = 2; tempx < 10; tempx++) {
-										for(int tempy = 2; tempy < 10; tempy++) {
-											blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
-										}
-									}
+                    cr = 0x40;
+                    cg = 0x70;
+                    cb = 0x20;
+                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
+                    blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
+                    blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
+                    blendpixel(vid, nx, ny-1, cr, cg, cb, 5);
+                    for(int tempx = 2; tempx < 10; tempx++) {
+                        for(int tempy = 2; tempy < 10; tempy++) {
+                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+                        }
+                    }
                 } else if(t==PT_URAN)
                 {
-									cr = 0x70;
-									cg = 0x70;
-									cb = 0x20;
-									blendpixel(vid, nx, ny, cr, cg, cb, 192);
-									blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
-									blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
-									blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
-									blendpixel(vid, nx, ny-1, cr, cg, cb, 5);
-									for(int tempx = 2; tempx < 10; tempx++) {
-										for(int tempy = 2; tempy < 10; tempy++) {
-											blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
-											blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
-										}
-									}
+                    cr = 0x70;
+                    cg = 0x70;
+                    cb = 0x20;
+                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
+                    blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
+                    blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
+                    blendpixel(vid, nx, ny-1, cr, cg, cb, 5);
+                    for(int tempx = 2; tempx < 10; tempx++) {
+                        for(int tempy = 2; tempy < 10; tempy++) {
+                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+                        }
+                    }
                 } else if(t==PT_PLSM)
                 {
                     float ttemp = parts[i].life;
@@ -9735,7 +9735,7 @@ int main(int argc, char *argv[])
 #endif
     menu_count();
     parts = calloc(sizeof(particle), NPART);
-	cb_parts = calloc(sizeof(particle), NPART);
+    cb_parts = calloc(sizeof(particle), NPART);
     for(i=0; i<NPART-1; i++)
         parts[i].life = i+1;
     parts[NPART-1].life = -1;
@@ -10018,26 +10018,26 @@ int main(int argc, char *argv[])
             if(it > 50)
                 it = 50;
         }
-		if(sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
+        if(sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
         {
-			int cbx, cby, cbi;
+            int cbx, cby, cbi;
 
-			for(cbi=0; cbi<NPART; cbi++)
-				parts[cbi] = cb_parts[cbi];
-			
-			for(cby = 0; cby<YRES; cby++)
-				for(cbx = 0; cbx<XRES; cbx++)
-					pmap[cby][cbx] = cb_pmap[cby][cbx];
+            for(cbi=0; cbi<NPART; cbi++)
+                parts[cbi] = cb_parts[cbi];
 
-			for(cby = 0; cby<(YRES/CELL); cby++)
-				for(cbx = 0; cbx<(XRES/CELL); cbx++)
-				{
-					vx[cby][cbx] = cb_vx[cby][cbx];
-					vy[cby][cbx] = cb_vy[cby][cbx];
-					pv[cby][cbx] = cb_pv[cby][cbx];
-					bmap[cby][cbx] = cb_bmap[cby][cbx];
-					emap[cby][cbx] = cb_emap[cby][cbx];
-				}
+            for(cby = 0; cby<YRES; cby++)
+                for(cbx = 0; cbx<XRES; cbx++)
+                    pmap[cby][cbx] = cb_pmap[cby][cbx];
+
+            for(cby = 0; cby<(YRES/CELL); cby++)
+                for(cbx = 0; cbx<(XRES/CELL); cbx++)
+                {
+                    vx[cby][cbx] = cb_vx[cby][cbx];
+                    vy[cby][cbx] = cb_vy[cby][cbx];
+                    pv[cby][cbx] = cb_pv[cby][cbx];
+                    bmap[cby][cbx] = cb_bmap[cby][cbx];
+                    emap[cby][cbx] = cb_emap[cby][cbx];
+                }
         }
 #ifdef INTERNAL
         if(sdl_key=='v')
@@ -10561,25 +10561,25 @@ int main(int argc, char *argv[])
                     }
                     else
                     {
-						//Copy state before drawing any particles (for undo)
-						int cbx, cby, cbi;
+                        //Copy state before drawing any particles (for undo)
+                        int cbx, cby, cbi;
 
-						for(cbi=0; cbi<NPART; cbi++)
-							cb_parts[cbi] = parts[cbi];
+                        for(cbi=0; cbi<NPART; cbi++)
+                            cb_parts[cbi] = parts[cbi];
 
-						for(cby = 0; cby<YRES; cby++)
-							for(cbx = 0; cbx<XRES; cbx++)
-								cb_pmap[cby][cbx] = pmap[cby][cbx];
+                        for(cby = 0; cby<YRES; cby++)
+                            for(cbx = 0; cbx<XRES; cbx++)
+                                cb_pmap[cby][cbx] = pmap[cby][cbx];
 
-						for(cby = 0; cby<(YRES/CELL); cby++)
-							for(cbx = 0; cbx<(XRES/CELL); cbx++)
-							{
-								cb_vx[cby][cbx] = vx[cby][cbx];
-								cb_vy[cby][cbx] = vy[cby][cbx];
-								cb_pv[cby][cbx] = pv[cby][cbx];
-								cb_bmap[cby][cbx] = bmap[cby][cbx];
-								cb_emap[cby][cbx] = emap[cby][cbx];
-							}
+                        for(cby = 0; cby<(YRES/CELL); cby++)
+                            for(cbx = 0; cbx<(XRES/CELL); cbx++)
+                            {
+                                cb_vx[cby][cbx] = vx[cby][cbx];
+                                cb_vy[cby][cbx] = vy[cby][cbx];
+                                cb_pv[cby][cbx] = pv[cby][cbx];
+                                cb_bmap[cby][cbx] = bmap[cby][cbx];
+                                cb_emap[cby][cbx] = emap[cby][cbx];
+                            }
 
                         create_parts(x, y, bs, c);
                         lx = x;
