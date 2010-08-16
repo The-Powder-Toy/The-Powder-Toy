@@ -3266,7 +3266,6 @@ justdraw:
 											blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
 										}
 									}
->>>>>>> simon/master
                 } else if(t==PT_PLSM)
                 {
                     float ttemp = parts[i].life;
