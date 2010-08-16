@@ -3073,7 +3073,7 @@ justdraw:
                             for(y=-1; y<=1; y++)
                             {
                                 if ((abs(x) == 0) && (abs(y) == 0))
-                                    blendpixel(vid,x+nx,y+ny,224,255,32,200);
+                                    blendpixel(vid,x+nx,y+ny,224,255,32,255);
                                 else if (abs(y) != 0 || abs(x) != 0)
                                     blendpixel(vid,x+nx,y+ny,224,255,32,20);
                             }
