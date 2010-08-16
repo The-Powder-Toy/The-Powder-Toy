@@ -3222,10 +3222,10 @@ justdraw:
                         cg = 0x50+(parts[i].life*10);
                         cb = 0x50+(parts[i].life*10);
                         blendpixel(vid, nx, ny, cr, cg, cb, 192);
-                        blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
-                        blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
-                        blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
-                        blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+                        blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
+                        blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
+                        blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
+                        blendpixel(vid, nx, ny-1, cr, cg, cb, 5);
                         blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
