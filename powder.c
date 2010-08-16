@@ -3023,6 +3023,20 @@ justdraw:
                             }
                         }
                 }
+                else if(t==PT_NBLE)
+                {
+                    for(x=-1; x<=1; x++)
+                        {
+                            for(y=-1; y<=1; y++)
+                            {
+                                if ((abs(x) == 0) && (abs(y) == 0))
+                                    blendpixel(vid,x+nx,y+ny,235,73,23,100);
+                                else if (abs(y) != 0 || abs(x) != 0)
+                                    blendpixel(vid,x+nx,y+ny,235,73,23,20);
+                            }
+                        }
+
+                }
                 else if(t==PT_GASS)
                 {
                     for(x=-1; x<=1; x++)
