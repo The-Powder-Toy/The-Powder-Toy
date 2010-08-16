@@ -2850,6 +2850,22 @@ justdraw:
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
                     }
                 }
+                else if(t==PT_OILL)
+                {
+                    for(x=-2; x<2; x++)
+                        {
+                            for(y=-2; y<2; y++)
+                            {
+                                if (abs(x)+abs(y) <=0 && !(abs(x)==2||abs(y)==2))
+                                    blendpixel(vid,x+nx,y+ny,64,64,16,100);
+                                if(abs(x)+abs(y) <1 && abs(x)+abs(y))
+                                    blendpixel(vid,x+nx,y+ny,64,64,16,95);
+                                if (abs(x)+abs(y) <= 2)
+                                    blendpixel(vid,x+nx,y+ny,64,64,16,90);
+                            }
+                        }
+
+                }
                 else if(t==PT_NEUT)
                 {
                     if(cmode == 3||cmode==4)
