@@ -3231,7 +3231,42 @@ justdraw:
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
-
+                } else if(t==PT_PLUT) {
+									cr = 0x40;
+									cg = 0x70;
+									cb = 0x20;
+									blendpixel(vid, nx, ny, cr, cg, cb, 192);
+									blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+									blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+									blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+									blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+									for(int tempx = 2; tempx < 10; tempx++) {
+										for(int tempy = 2; tempy < 10; tempy++) {
+											blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+											blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+											blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+											blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+										}
+									}
+                } else if(t==PT_URAN)
+                {
+									cr = 0x70;
+									cg = 0x70;
+									cb = 0x20;
+									blendpixel(vid, nx, ny, cr, cg, cb, 192);
+									blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+									blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+									blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+									blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+									for(int tempx = 2; tempx < 10; tempx++) {
+										for(int tempy = 2; tempy < 10; tempy++) {
+											blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+											blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+											blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+											blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+										}
+									}
+>>>>>>> simon/master
                 } else if(t==PT_PLSM)
                 {
                     float ttemp = parts[i].life;
