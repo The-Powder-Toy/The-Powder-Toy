@@ -3180,8 +3180,20 @@ justdraw:
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
-                }
-                else if(t==PT_PLSM)
+                } else if(t==PT_URAN) {
+												cr=0x70;
+												cg=0x70;
+												cb=0x20;
+                        blendpixel(vid, nx, ny, 255, 255, 255, 255);
+                        blendpixel(vid, nx+1, ny, cr+100, cg+100, cb+100, 96);
+                        blendpixel(vid, nx-1, ny, cr+100, cg+100, cb+100, 96);
+                        blendpixel(vid, nx, ny+1, cr+100, cg+100, cb+100, 96);
+                        blendpixel(vid, nx, ny-1, cr+100, cg+100, cb+100, 96);
+                        blendpixel(vid, nx+1, ny-1, cr, cg, cb, 255);
+                        blendpixel(vid, nx-1, ny+1, cr, cg, cb, 255);
+                        blendpixel(vid, nx+1, ny+1, cr, cg, cb, 255);
+                        blendpixel(vid, nx-1, ny-1, cr, cg, cb, 255);
+								} else if(t==PT_PLSM)
                 {
                     float ttemp = parts[i].life;
                     int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
