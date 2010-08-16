@@ -2947,6 +2947,21 @@ justdraw:
                         }
                     }
                 }
+                else if(t==PT_WATR)
+                {
+                    for(x=-3; x<4; x++)
+                        {
+                            for(y=-3; y<4; y++)
+                            {
+                                if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
+                                    blendpixel(vid,x+nx,y+ny,32,48,208,100);
+                                if(abs(x)+abs(y) <=3 && abs(x)+abs(y))
+                                    blendpixel(vid,x+nx,y+ny,32,48,208,50);
+                                if (abs(x)+abs(y) == 2)
+                                    blendpixel(vid,x+nx,y+ny,32,48,208,70);
+                            }
+                        }
+                    }
                 else if(t==PT_WTRV)
                 {
                     if(cmode == 3||cmode==4)
