@@ -43,34 +43,39 @@ static char *exe_name(void)
 {
 #if defined WIN32
     char *name= (char *)malloc(64), max=64, res;
-    while((res = (char)GetModuleFileName(NULL, name, max)) >= max) {
+    while((res = (char)GetModuleFileName(NULL, name, max)) >= max)
+    {
 #elif defined MACOSX
     char *fn=malloc(64),*name=malloc(PATH_MAX), max=64, res;
-    if(_NSGetExecutablePath(fn, &max) != 0) {
-	fn = realloc(fn, max);
-	_NSGetExecutablePath(fn, &max);
+    if(_NSGetExecutablePath(fn, &max) != 0)
+    {
+        fn = realloc(fn, max);
+        _NSGetExecutablePath(fn, &max);
     }
-    if(realpath(fn, name) == NULL) {
-	free(fn);
-	free(name);
-	return NULL;
+    if(realpath(fn, name) == NULL)
+    {
+        free(fn);
+        free(name);
+        return NULL;
     }
     res = 1;
 #else
     char fn[64], *name=malloc(64), max=64, res;
     sprintf(fn, "/proc/self/exe");
     memset(name, 0, max);
-    while((res = readlink(fn, name, max)) >= max-1) {
+    while((res = readlink(fn, name, max)) >= max-1)
+    {
 #endif
 #ifndef MACOSX
-	max *= 2;
-	name = realloc(name, max);
-	memset(name, 0, max);
+        max *= 2;
+        name = realloc(name, max);
+        memset(name, 0, max);
     }
 #endif
-    if(res <= 0) {
-	free(name);
-	return NULL;
+    if(res <= 0)
+    {
+        free(name);
+        return NULL;
     }
     return name;
 }
@@ -85,34 +90,36 @@ int update_start(char *data, int len)
     int res = 1;
 
     if(!self)
-	return 1;
+        return 1;
 
 #ifdef WIN32
     temp = malloc(strlen(self)+12);
     strcpy(temp, self);
     p = temp + strlen(temp) - 4;
     if(_stricmp(p, ".exe"))
-	p += 4;
+        p += 4;
     strcpy(p, "_update.exe");
 
     if(!MoveFile(self, temp))
-	goto fail;
+        goto fail;
 
     f = fopen(self, "wb");
     if(!f)
-	goto fail;
-    if(fwrite(data, 1, len, f) != len) {
-	fclose(f);
-	DeleteFile(self);
-	goto fail;
+        goto fail;
+    if(fwrite(data, 1, len, f) != len)
+    {
+        fclose(f);
+        DeleteFile(self);
+        goto fail;
     }
     fclose(f);
 
-    if((int)ShellExecute(NULL, "open", self, NULL, NULL, SW_SHOWNORMAL) <= 32) {
-	DeleteFile(self);
-	goto fail;
+    if((int)ShellExecute(NULL, "open", self, NULL, NULL, SW_SHOWNORMAL) <= 32)
+    {
+        DeleteFile(self);
+        goto fail;
     }
-    
+
     return 0;
 #else
     temp = malloc(strlen(self)+8);
@@ -121,22 +128,25 @@ int update_start(char *data, int len)
 
     f = fopen(temp, "w");
     if(!f)
-	goto fail;
-    if(fwrite(data, 1, len, f) != len) {
-	fclose(f);
-	unlink(temp);
-	goto fail;
+        goto fail;
+    if(fwrite(data, 1, len, f) != len)
+    {
+        fclose(f);
+        unlink(temp);
+        goto fail;
     }
     fclose(f);
 
-    if(chmod(temp, 0755)) {
-	unlink(temp);
-	goto fail;
+    if(chmod(temp, 0755))
+    {
+        unlink(temp);
+        goto fail;
     }
 
-    if(rename(temp, self)) {
-	unlink(temp);
-	goto fail;
+    if(rename(temp, self))
+    {
+        unlink(temp);
+        goto fail;
     }
 
     execl(self, "powder-update", NULL);
@@ -158,22 +168,25 @@ int update_finish(void)
     strcpy(temp, self);
     p = temp + strlen(temp) - 4;
     if(_stricmp(p, ".exe"))
-	p += 4;
+        p += 4;
     strcpy(p, "_update.exe");
 
-    while(!DeleteFile(temp)) {
-	err = GetLastError();
-	if(err == ERROR_FILE_NOT_FOUND) {
-	    // just as well, then
-	    free(temp);
-	    return 0;
-	}
-	Sleep(500);
-	timeout--;
-	if(timeout <= 0) {
-	    free(temp);
-	    return 1;
-	}
+    while(!DeleteFile(temp))
+    {
+        err = GetLastError();
+        if(err == ERROR_FILE_NOT_FOUND)
+        {
+            // just as well, then
+            free(temp);
+            return 0;
+        }
+        Sleep(500);
+        timeout--;
+        if(timeout <= 0)
+        {
+            free(temp);
+            return 1;
+        }
     }
     free(temp);
 #endif
