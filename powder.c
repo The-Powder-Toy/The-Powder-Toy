@@ -2940,6 +2940,22 @@ justdraw:
                     y = ny;
                     blendpixel(vid,x,y,17,217,24,255);
                 }
+                else if(t==PT_LNTG)
+                {
+                    for(x=-3; x<3; x++)
+                        {
+                            for(y=-3; y<3; y++)
+                            {
+                                if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
+                                    blendpixel(vid,x+nx,y+ny,128,160,223,100);
+                                if(abs(x)+abs(y) <=3 && abs(x)+abs(y))
+                                    blendpixel(vid,x+nx,y+ny,128,160,223,70);
+                                if (abs(x)+abs(y) == 2)
+                                    blendpixel(vid,x+nx,y+ny,128,160,223,90);
+                            }
+                        }
+
+                }
                 else if(t==PT_SMKE)
                 {
                     if(cmode == 3||cmode==4)
