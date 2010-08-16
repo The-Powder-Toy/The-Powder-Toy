@@ -2963,6 +2963,7 @@ justdraw:
                         }
                 }
                 else if(t==PT_DSTW)
+                {    
                     for(x=-3; x<4; x++)
                     {
                         for(y=-3; y<4; y++)
@@ -2975,7 +2976,7 @@ justdraw:
                                     blendpixel(vid,x+nx,y+ny,32,48,208,70);
                             }
                         }
-
+                }
                 else if(t==PT_WTRV)
                 {
                     if(cmode == 3||cmode==4)
