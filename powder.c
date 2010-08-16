@@ -2824,7 +2824,19 @@ justdraw:
                     cr = PIXR(ptypes[t].pcolors)/s;
                     cg = PIXG(ptypes[t].pcolors)/s;
                     cb = PIXB(ptypes[t].pcolors)/s;
-                    blendpixel(vid, nx, ny, cr, cg, cb, 255);
+                    for(x=-2; x<2; x++)
+                        {
+                            for(y=-2; y<2; y++)
+                            {
+                                if (abs(x)+abs(y) <=0 && !(abs(x)==2||abs(y)==2))
+                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
+                                if(abs(x)+abs(y) <1 && abs(x)+abs(y))
+                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,95);
+                                if (abs(x)+abs(y) <= 2)
+                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,90);
+                            }
+                        }
+  
                     if(cmode==4)
                     {
                         blendpixel(vid, nx+1, ny, cr, cg, cb, 223);
@@ -2869,6 +2881,22 @@ justdraw:
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
+                }
+                else if(t==PT_SLTW)
+                {
+                    for(x=-3; x<3; x++)
+                        {
+                            for(y=-3; y<3; y++)
+                            {
+                                if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
+                                    blendpixel(vid,x+nx,y+ny,64,80,240,100);
+                                else if(abs(x)+abs(y) <=3 && abs(x)+abs(y))
+                                    blendpixel(vid,x+nx,y+ny,64,80,240,70);
+                                else if (abs(x)+abs(y) == 2)
+                                    blendpixel(vid,x+nx,y+ny,64,80,240,90);
+                            }
+                        }
+
                 }
                 else if(t==PT_PHOT)
                 {
@@ -2956,9 +2984,9 @@ justdraw:
                                 if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
                                     blendpixel(vid,x+nx,y+ny,32,48,208,100);
                                 if(abs(x)+abs(y) <=3 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,32,48,208,50);
-                                if (abs(x)+abs(y) == 2)
                                     blendpixel(vid,x+nx,y+ny,32,48,208,70);
+                                if (abs(x)+abs(y) == 2)
+                                    blendpixel(vid,x+nx,y+ny,32,48,208,90);
                             }
                         }
                 }
