@@ -3023,6 +3023,35 @@ justdraw:
                             }
                         }
                 }
+                else if(t==PT_NITR)
+                {
+                    for(x=-1; x<=1; x++)
+                        {
+                            for(y=-1; y<=1; y++)
+                            {
+                                if ((abs(x) == 0) && (abs(y) == 0))
+                                    blendpixel(vid,x+nx,y+ny,32,224,16,100);
+                                else if (abs(y) != 0 || abs(x) != 0)
+                                    blendpixel(vid,x+nx,y+ny,32,224,16,50);
+                            }
+                        }
+
+                }
+                else if(t==PT_LRBD)
+                {
+                    for(x=-1; x<=1; x++)
+                        {
+                            for(y=-1; y<=1; y++)
+                            {
+                                if ((abs(x) == 0) && (abs(y) == 0))
+                                    blendpixel(vid,x+nx,y+ny,170,170,170,100);
+                                else if (abs(y) != 0 || abs(x) != 0)
+                                    blendpixel(vid,x+nx,y+ny,170,170,170,50);
+                            }
+                        }
+
+                }
+
                 else if(t==PT_NBLE)
                 {
                     for(x=-1; x<=1; x++)
