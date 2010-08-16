@@ -2824,16 +2824,14 @@ justdraw:
                     cr = PIXR(ptypes[t].pcolors)/s;
                     cg = PIXG(ptypes[t].pcolors)/s;
                     cb = PIXB(ptypes[t].pcolors)/s;
-                    for(x=-2; x<2; x++)
+                    for(x=-1; x<=1; x++)
                         {
-                            for(y=-2; y<2; y++)
+                            for(y=-1; y<=1; y++)
                             {
-                                if (abs(x)+abs(y) <=0 && !(abs(x)==2||abs(y)==2))
+                                if ((abs(x) == 0) && (abs(y) == 0))
                                     blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
-                                if(abs(x)+abs(y) <1 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,95);
-                                if (abs(x)+abs(y) <= 2)
-                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,90);
+                                else if (abs(y) != 0 || abs(x) != 0)
+                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,50);
                             }
                         }
   
@@ -2851,20 +2849,17 @@ justdraw:
                     }
                 }
                 else if(t==PT_OILL)
-                {
-                    for(x=-2; x<2; x++)
+                {   
+                    for(x=-1; x<=1; x++)
                         {
-                            for(y=-2; y<2; y++)
+                            for(y=-1; y<=1; y++)
                             {
-                                if (abs(x)+abs(y) <=0 && !(abs(x)==2||abs(y)==2))
+                                if ((abs(x) == 0) && (abs(y) == 0))
                                     blendpixel(vid,x+nx,y+ny,64,64,16,100);
-                                if(abs(x)+abs(y) <1 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,64,64,16,95);
-                                if (abs(x)+abs(y) <= 2)
-                                    blendpixel(vid,x+nx,y+ny,64,64,16,90);
+                                else if (abs(y) != 0 || abs(x) != 0)
+                                    blendpixel(vid,x+nx,y+ny,64,64,16,50);
                             }
                         }
-
                 }
                 else if(t==PT_NEUT)
                 {
@@ -2900,19 +2895,16 @@ justdraw:
                 }
                 else if(t==PT_SLTW)
                 {
-                    for(x=-2; x<2; x++)
+                    for(x=-1; x<=1; x++)
                         {
-                            for(y=-2; y<2; y++)
+                            for(y=-1; y<=1; y++)
                             {
-                                if (abs(x)+abs(y) <0 && !(abs(x)==2||abs(y)==2))
+                                if ((abs(x) == 0) && (abs(y) == 0))
                                     blendpixel(vid,x+nx,y+ny,64,80,240,100);
-                                else if(abs(x)+abs(y) == 1 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,64,80,240,95);
-                                else if (abs(x)+abs(y) == 2)
-                                    blendpixel(vid,x+nx,y+ny,64,80,240,90);
+                                else if (abs(y) != 0 || abs(x) != 0)
+                                    blendpixel(vid,x+nx,y+ny,64,80,240,50);
                             }
                         }
-
                 }
                 else if(t==PT_PHOT)
                 {
@@ -2958,19 +2950,16 @@ justdraw:
                 }
                 else if(t==PT_LNTG)
                 {
-                    for(x=-2; x<2; x++)
+                    for(x=-1; x<=1; x++)
                         {
-                            for(y=-2; y<2; y++)
+                            for(y=-1; y<=1; y++)
                             {
-                                if(abs(x)+abs(y) <0 && !(abs(x)==2||abs(y)==2))
+                                if ((abs(x) == 0) && (abs(y) == 0))
                                     blendpixel(vid,x+nx,y+ny,128,160,223,100);
-                                else if(abs(x)+abs(y) == 1 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,128,160,223,95);
-                                else if (abs(x)+abs(y) == 2)
-                                    blendpixel(vid,x+nx,y+ny,128,160,223,90);
+                                else if (abs(y) != 0 || abs(x) != 0)
+                                    blendpixel(vid,x+nx,y+ny,128,160,223,50);
                             }
                         }
-
                 }
                 else if(t==PT_SMKE)
                 {
@@ -3009,31 +2998,28 @@ justdraw:
                 }
                 else if(t==PT_WATR)
                 {
-                    for(x=-2; x<2; x++)
+                    for(x=-1; x<=1; x++)
                         {
-                            for(y=-2; y<2; y++)
+                            for(y=-1; y<=1; y++)
                             {
-                                if (abs(x)+abs(y) <0 && !(abs(x)==2||abs(y)==2))
+                                if ((abs(x) == 0) && (abs(y) == 0))
                                     blendpixel(vid,x+nx,y+ny,32,48,208,100);
-                                if(abs(x)+abs(y) == 1 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,32,48,208,95);
-                                if (abs(x)+abs(y) == 2)
-                                    blendpixel(vid,x+nx,y+ny,32,48,208,90);
+                                else if (abs(y) != 0 || abs(x) != 0)
+                                    blendpixel(vid,x+nx,y+ny,32,48,208,50);
                             }
                         }
+
                 }
                 else if(t==PT_DSTW)
-                {    
-                    for(x=-2; x<2; x++)
-                    {
-                        for(y=-2; y<2; y++)
+                {
+                    for(x=-1; x<=1; x++)
+                        {
+                            for(y=-1; y<=1; y++)
                             {
-                                if (abs(x)+abs(y) <0 && !(abs(x)==2||abs(y)==2))
+                                if ((abs(x) == 0) && (abs(y) == 0))
                                     blendpixel(vid,x+nx,y+ny,32,48,208,100);
-                                if(abs(x)+abs(y) == 1 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,32,48,208,95);
-                                if (abs(x)+abs(y) == 2)
-                                    blendpixel(vid,x+nx,y+ny,32,48,208,90);
+                                else if (abs(y) != 0 || abs(x) != 0)
+                                    blendpixel(vid,x+nx,y+ny,32,48,208,50);
                             }
                         }
                 }
