@@ -352,7 +352,7 @@ void *update_air_th(void *arg)
     return NULL;
 }
 
-unsigned clamp_flt(float f, float min, float max)
+inline unsigned clamp_flt(float f, float min, float max)
 {
     if(f<min)
         return 0;
@@ -361,7 +361,7 @@ unsigned clamp_flt(float f, float min, float max)
     return (int)(255.0f*(f-min)/(max-min));
 }
 
-float restrict_flt(float f, float min, float max)
+inline float restrict_flt(float f, float min, float max)
 {
     if(f<min)
         return min;
@@ -933,7 +933,7 @@ void kill_part(int i)
     pfree = i;
 }
 
-int create_part(int p, int x, int y, int t)
+inline int create_part(int p, int x, int y, int t)
 {
     int i;
 
@@ -1139,7 +1139,7 @@ void delete_part(int x, int y)
     pmap[y][x] = 0;	// just in case
 }
 
-void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 {
     pixel t;
     if(x<0 || y<0 || x>=XRES || y>=YRES)
@@ -1288,7 +1288,7 @@ void set_emap(int x, int y)
                     set_emap(x, y+1);
             }
 }
- int parts_avg(int ci, int ni)
+ inline int parts_avg(int ci, int ni)
 {
     int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
     if((pmr>>8) < NPART && (pmr>>8) >= 0)
@@ -5450,7 +5450,7 @@ void del_stamp(int d)
 
 #include "font.h"
 
-void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 {
     pixel t;
     if(x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
@@ -5465,7 +5465,7 @@ void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
     vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 }
 
-int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
+inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 {
     int i, j, w, bn = 0, ba = 0;
     char *rp = font_data + font_ptrs[c];
