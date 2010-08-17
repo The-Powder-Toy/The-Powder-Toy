@@ -5,6 +5,7 @@
  * Copyright (c) 2010 Simon Robertshaw
  * Copyright (c) 2010 Skresanov Savely
  * Copyright (c) 2010 Bryan Hoyle
+ * Copyright (c) 2010 Nathan Cousins
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,6 +114,7 @@ char *it_msg =
     "Shift+drag will create straight lines of particles.\n"
     "Ctrl+drag will result in filled rectangles.\n"
     "Ctrl+Shift+click will flood-fill a closed area.\n"
+    "Ctrl+Z will act as Undo.\n"
     "Middle click or Alt+Click to \"sample\" the particles.\n"
     "\n\boUse 'Z' for a zoom tool. Click to make the drawable zoom window stay around. Use the wheel to change the zoom strength\n"
     "Use 'S' to save parts of the window as 'stamps'.\n"
@@ -128,6 +130,7 @@ char *it_msg =
     "\bgCopyright (c) 2010 Simon Robertshaw (\brhttp://powdertoy.co.uk\bg, \bbirc.freenode.net #powder\bg)\n"
     "\bgCopyright (c) 2010 Skresanov Savely (Stickman)\n"
     "\bgCopyright (c) 2010 Bryan Hoyle (New elements)\n"
+    "\bgCopyright (c) 2010 Nathan Cousins (New elements, small engine mods.)\n"
     "\n"
     "\bgSpecial thanks to Brian Ledbetter for maintaining ports.\n"
     "\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html"
@@ -169,11 +172,20 @@ struct sign
 
 unsigned char bmap[YRES/CELL][XRES/CELL];
 unsigned char emap[YRES/CELL][XRES/CELL];
+
+unsigned char cb_bmap[YRES/CELL][XRES/CELL];
+unsigned char cb_emap[YRES/CELL][XRES/CELL];
+
 unsigned cmode = 3;
 
 float vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
 float vy[YRES/CELL][XRES/CELL], ovy[YRES/CELL][XRES/CELL];
 float pv[YRES/CELL][XRES/CELL], opv[YRES/CELL][XRES/CELL];
+
+float cb_vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
+float cb_vy[YRES/CELL][XRES/CELL], ovy[YRES/CELL][XRES/CELL];
+float cb_pv[YRES/CELL][XRES/CELL], opv[YRES/CELL][XRES/CELL];
+
 float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 #define TSTEPP 0.3f
 #define TSTEPV 0.4f
@@ -797,7 +809,10 @@ typedef struct
     float pavg[2];
     int flags;
 } particle;
+
 particle *parts;
+particle *cb_parts;
+
 float player[20]; //[0] is a command cell, [3]-[18] are legs positions, [19] is index
 int isplayer = 0;  //It shows is player spawned or not
 int mousex, mousey = 0;  //They contain mouse position
@@ -817,6 +832,7 @@ void menu_count(void)
 int pfree;
 
 unsigned pmap[YRES][XRES];
+unsigned cb_pmap[YRES][XRES];
 
 int try_move(int i, int x, int y, int nx, int ny)
 {
@@ -1009,7 +1025,7 @@ inline int create_part(int p, int x, int y, int t)
     {
         parts[i].pavg[1] = pv[y/CELL][x/CELL];
     }
-    if(t!=PT_STKM)
+    else if(t!=PT_STKM)
     {
         parts[i].x = (float)x;
         parts[i].y = (float)y;
@@ -1020,7 +1036,7 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].ctype = 0;
         parts[i].temp = ptypes[t].heat;
     }
-    if(t==PT_ACID)
+    else if(t==PT_ACID)
     {
         parts[i].life = 75;
     }
@@ -1109,7 +1125,7 @@ inline int create_part(int p, int x, int y, int t)
     return i;
 }
 
-void delete_part(int x, int y)
+inline void delete_part(int x, int y)
 {
     unsigned i;
 
@@ -1138,7 +1154,7 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
     vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 }
 
-int sign(float i)  //Signum function
+inline int sign(float i)  //Signum function
 {
     if (i<0)
         return -1;
@@ -1207,11 +1223,11 @@ void addpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 
 int drawtext(pixel *vid, int x, int y, char *s, int r, int g, int b, int a);
 
-int is_wire(int x, int y)
+inline int is_wire(int x, int y)
 {
     return bmap[y][x]==6 || bmap[y][x]==7 || bmap[y][x]==3 || bmap[y][x]==8 || bmap[y][x]==11 || bmap[y][x]==12;
 }
-int is_wire_off(int x, int y)
+inline int is_wire_off(int x, int y)
 {
     return (bmap[y][x]==6 || bmap[y][x]==7 || bmap[y][x]==3 || bmap[y][x]==8 || bmap[y][x]==11 || bmap[y][x]==12) && emap[y][x]<8;
 }
@@ -2829,8 +2845,21 @@ justdraw:
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
+                if(t==PT_MWAX)
+                {
+                    for(x=-1; x<=1; x++)
+                    {
+                        for(y=-1; y<=1; y++)
+                        {
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,224,224,170,255);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,224,224,170,5);
+                        }
+                    }
 
-                if(t==PT_ACID)
+                }
+                else if(t==PT_ACID)
                 {
                     if(parts[i].life>255) parts[i].life = 255;
                     if(parts[i].life<47) parts[i].life = 48;
@@ -2839,19 +2868,17 @@ justdraw:
                     cr = PIXR(ptypes[t].pcolors)/s;
                     cg = PIXG(ptypes[t].pcolors)/s;
                     cb = PIXB(ptypes[t].pcolors)/s;
-                    for(x=-2; x<2; x++)
+                    for(x=-1; x<=1; x++)
+                    {
+                        for(y=-1; y<=1; y++)
                         {
-                            for(y=-2; y<2; y++)
-                            {
-                                if (abs(x)+abs(y) <=0 && !(abs(x)==2||abs(y)==2))
-                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
-                                if(abs(x)+abs(y) <1 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,95);
-                                if (abs(x)+abs(y) <= 2)
-                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,90);
-                            }
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,cr,cg,cb,40);
                         }
-  
+                    }
+
                     if(cmode==4)
                     {
                         blendpixel(vid, nx+1, ny, cr, cg, cb, 223);
@@ -2863,6 +2890,19 @@ justdraw:
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 112);
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 112);
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
+                    }
+                }
+                else if(t==PT_OILL)
+                {
+                    for(x=-1; x<=1; x++)
+                    {
+                        for(y=-1; y<=1; y++)
+                        {
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,64,64,16,100);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,64,64,16,40);
+                        }
                     }
                 }
                 else if(t==PT_NEUT)
@@ -2896,22 +2936,54 @@ justdraw:
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
-                }
-                else if(t==PT_SLTW)
+                } else if(t==PT_PLUT)
                 {
-                    for(x=-2; x<2; x++)
-                        {
-                            for(y=-2; y<2; y++)
-                            {
-                                if (abs(x)+abs(y) <0 && !(abs(x)==2||abs(y)==2))
-                                    blendpixel(vid,x+nx,y+ny,64,80,240,100);
-                                else if(abs(x)+abs(y) == 1 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,64,80,240,95);
-                                else if (abs(x)+abs(y) == 2)
-                                    blendpixel(vid,x+nx,y+ny,64,80,240,90);
-                            }
+                    cr = 0x40;
+                    cg = 0x70;
+                    cb = 0x20;
+                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+                    blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+                    blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+                    blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+                    for(int tempx = 2; tempx < 10; tempx++) {
+                        for(int tempy = 2; tempy < 10; tempy++) {
+                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
                         }
-
+                    }
+                } else if(t==PT_URAN)
+                {
+                    cr = 0x70;
+                    cg = 0x70;
+                    cb = 0x20;
+                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+                    blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+                    blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+                    blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+                    for(int tempx = 2; tempx < 10; tempx++) {
+                        for(int tempy = 2; tempy < 10; tempy++) {
+                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+                        }
+                    }
+                } else if(t==PT_SLTW)
+                {
+                    for(x=-1; x<=1; x++)
+                    {
+                        for(y=-1; y<=1; y++)
+                        {
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,64,80,240,100);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,64,80,240,50);
+                        }
+                    }
                 }
                 else if(t==PT_PHOT)
                 {
@@ -2957,19 +3029,16 @@ justdraw:
                 }
                 else if(t==PT_LNTG)
                 {
-                    for(x=-2; x<2; x++)
+                    for(x=-1; x<=1; x++)
+                    {
+                        for(y=-1; y<=1; y++)
                         {
-                            for(y=-2; y<2; y++)
-                            {
-                                if(abs(x)+abs(y) <0 && !(abs(x)==2||abs(y)==2))
-                                    blendpixel(vid,x+nx,y+ny,128,160,223,100);
-                                else if(abs(x)+abs(y) == 1 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,128,160,223,95);
-                                else if (abs(x)+abs(y) == 2)
-                                    blendpixel(vid,x+nx,y+ny,128,160,223,90);
-                            }
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,128,160,223,100);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,128,160,223,50);
                         }
-
+                    }
                 }
                 else if(t==PT_SMKE)
                 {
@@ -3008,33 +3077,87 @@ justdraw:
                 }
                 else if(t==PT_WATR)
                 {
-                    for(x=-2; x<2; x++)
+                    for(x=-1; x<=1; x++)
+                    {
+                        for(y=-1; y<=1; y++)
                         {
-                            for(y=-2; y<2; y++)
-                            {
-                                if (abs(x)+abs(y) <0 && !(abs(x)==2||abs(y)==2))
-                                    blendpixel(vid,x+nx,y+ny,32,48,208,100);
-                                if(abs(x)+abs(y) == 1 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,32,48,208,95);
-                                if (abs(x)+abs(y) == 2)
-                                    blendpixel(vid,x+nx,y+ny,32,48,208,90);
-                            }
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,32,48,208,100);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,32,48,208,50);
                         }
+                    }
+
                 }
                 else if(t==PT_DSTW)
-                {    
-                    for(x=-2; x<2; x++)
+                {
+                    for(x=-1; x<=1; x++)
                     {
-                        for(y=-2; y<2; y++)
-                            {
-                                if (abs(x)+abs(y) <0 && !(abs(x)==2||abs(y)==2))
-                                    blendpixel(vid,x+nx,y+ny,32,48,208,100);
-                                if(abs(x)+abs(y) == 1 && abs(x)+abs(y))
-                                    blendpixel(vid,x+nx,y+ny,32,48,208,95);
-                                if (abs(x)+abs(y) == 2)
-                                    blendpixel(vid,x+nx,y+ny,32,48,208,90);
-                            }
+                        for(y=-1; y<=1; y++)
+                        {
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,32,48,208,100);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,32,48,208,50);
                         }
+                    }
+                }
+                else if(t==PT_NITR)
+                {
+                    for(x=-1; x<=1; x++)
+                    {
+                        for(y=-1; y<=1; y++)
+                        {
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,32,224,16,100);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,32,224,16,50);
+                        }
+                    }
+
+                }
+                else if(t==PT_LRBD)
+                {
+                    for(x=-1; x<=1; x++)
+                    {
+                        for(y=-1; y<=1; y++)
+                        {
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,170,170,170,100);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,170,170,170,50);
+                        }
+                    }
+
+                }
+
+                else if(t==PT_NBLE)
+                {
+                    for(x=-1; x<=1; x++)
+                    {
+                        for(y=-1; y<=1; y++)
+                        {
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,235,73,23,100);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,235,73,23,20);
+                        }
+                    }
+
+                }
+                else if(t==PT_GASS)
+                {
+                    for(x=-1; x<=1; x++)
+                    {
+                        for(y=-1; y<=1; y++)
+                        {
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,224,255,32,255);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,224,255,32,20);
+                        }
+                    }
+
                 }
                 else if(t==PT_WTRV)
                 {
@@ -3136,8 +3259,42 @@ justdraw:
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
-                }
-                else if(t==PT_PLSM)
+                } else if(t==PT_PLUT) {
+                    cr = 0x40;
+                    cg = 0x70;
+                    cb = 0x20;
+                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
+                    blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
+                    blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
+                    blendpixel(vid, nx, ny-1, cr, cg, cb, 5);
+                    for(int tempx = 2; tempx < 10; tempx++) {
+                        for(int tempy = 2; tempy < 10; tempy++) {
+                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+                        }
+                    }
+                } else if(t==PT_URAN)
+                {
+                    cr = 0x70;
+                    cg = 0x70;
+                    cb = 0x20;
+                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
+                    blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
+                    blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
+                    blendpixel(vid, nx, ny-1, cr, cg, cb, 5);
+                    for(int tempx = 2; tempx < 10; tempx++) {
+                        for(int tempy = 2; tempy < 10; tempy++) {
+                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+                        }
+                    }
+                } else if(t==PT_PLSM)
                 {
                     float ttemp = parts[i].life;
                     int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
@@ -4205,7 +4362,7 @@ void *build_thumb(int *size, int bzip2)
     return d;
 }
 
-inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
+void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int py, int scl)
 {
     unsigned char *d,*c=thumb;
@@ -9606,6 +9763,7 @@ int main(int argc, char *argv[])
 #endif
     menu_count();
     parts = calloc(sizeof(particle), NPART);
+    cb_parts = calloc(sizeof(particle), NPART);
     for(i=0; i<NPART-1; i++)
         parts[i].life = i+1;
     parts[NPART-1].life = -1;
@@ -9887,6 +10045,27 @@ int main(int argc, char *argv[])
             set_cmode((cmode+1) % 6);
             if(it > 50)
                 it = 50;
+        }
+        if(sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
+        {
+            int cbx, cby, cbi;
+
+            for(cbi=0; cbi<NPART; cbi++)
+                parts[cbi] = cb_parts[cbi];
+
+            for(cby = 0; cby<YRES; cby++)
+                for(cbx = 0; cbx<XRES; cbx++)
+                    pmap[cby][cbx] = cb_pmap[cby][cbx];
+
+            for(cby = 0; cby<(YRES/CELL); cby++)
+                for(cbx = 0; cbx<(XRES/CELL); cbx++)
+                {
+                    vx[cby][cbx] = cb_vx[cby][cbx];
+                    vy[cby][cbx] = cb_vy[cby][cbx];
+                    pv[cby][cbx] = cb_pv[cby][cbx];
+                    bmap[cby][cbx] = cb_bmap[cby][cbx];
+                    emap[cby][cbx] = cb_emap[cby][cbx];
+                }
         }
 #ifdef INTERNAL
         if(sdl_key=='v')
@@ -10410,6 +10589,26 @@ int main(int argc, char *argv[])
                     }
                     else
                     {
+                        //Copy state before drawing any particles (for undo)
+                        int cbx, cby, cbi;
+
+                        for(cbi=0; cbi<NPART; cbi++)
+                            cb_parts[cbi] = parts[cbi];
+
+                        for(cby = 0; cby<YRES; cby++)
+                            for(cbx = 0; cbx<XRES; cbx++)
+                                cb_pmap[cby][cbx] = pmap[cby][cbx];
+
+                        for(cby = 0; cby<(YRES/CELL); cby++)
+                            for(cbx = 0; cbx<(XRES/CELL); cbx++)
+                            {
+                                cb_vx[cby][cbx] = vx[cby][cbx];
+                                cb_vy[cby][cbx] = vy[cby][cbx];
+                                cb_pv[cby][cbx] = pv[cby][cbx];
+                                cb_bmap[cby][cbx] = bmap[cby][cbx];
+                                cb_emap[cby][cbx] = emap[cby][cbx];
+                            }
+
                         create_parts(x, y, bs, c);
                         lx = x;
                         ly = y;
