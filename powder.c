@@ -2845,7 +2845,7 @@ justdraw:
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
-                if(t==PT_MWAX)
+                if(t==PT_MWAX&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -2894,7 +2894,7 @@ justdraw:
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
                     }
                 }
-                else if(t==PT_OILL)
+                else if(t==PT_OILL&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -2938,7 +2938,7 @@ justdraw:
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
-                } else if(t==PT_PLUT)
+                } else if(t==PT_PLUT&&cmode == 3)
                 {
                     cr = 0x40;
                     cg = 0x70;
@@ -2956,7 +2956,7 @@ justdraw:
                             blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
                         }
                     }
-                } else if(t==PT_URAN)
+                } else if(t==PT_URAN&&cmode == 3)
                 {
                     cr = 0x70;
                     cg = 0x70;
@@ -2974,7 +2974,7 @@ justdraw:
                             blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
                         }
                     }
-                } else if(t==PT_SLTW)
+                } else if(t==PT_SLTW&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3029,7 +3029,7 @@ justdraw:
                     y = ny;
                     blendpixel(vid,x,y,17,217,24,255);
                 }
-                else if(t==PT_LNTG)
+                else if(t==PT_LNTG&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3077,7 +3077,7 @@ justdraw:
                         }
                     }
                 }
-                else if(t==PT_WATR)
+                else if(t==PT_WATR&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3090,20 +3090,7 @@ justdraw:
                         }
                     }
 
-                } else if(t==PT_MWAX)
-                {
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-													if ((abs(x) == 0) && (abs(y) == 0))
-														blendpixel(vid,x+nx,y+ny,0xE0,0xE0,0xAA,100);
-													else if (abs(y) != 0 || abs(x) != 0)
-														blendpixel(vid,x+nx,y+ny,0xE0,0xE0,0xAA,50);
-                        }
-                    }
-
-                } else if(t==PT_DSTW)
+                } else if(t==PT_DSTW&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3116,7 +3103,7 @@ justdraw:
                         }
                     }
                 }
-                else if(t==PT_NITR)
+                else if(t==PT_NITR&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3130,7 +3117,7 @@ justdraw:
                     }
 
                 }
-                else if(t==PT_LRBD)
+                else if(t==PT_LRBD&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3145,7 +3132,7 @@ justdraw:
 
                 }
 
-                else if(t==PT_NBLE)
+                else if(t==PT_NBLE&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3161,7 +3148,7 @@ justdraw:
                     }
 
                 }
-                else if(t==PT_GASS)
+                else if(t==PT_GASS&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3276,41 +3263,6 @@ justdraw:
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
-                    }
-                } else if(t==PT_PLUT) {
-                    cr = 0x40;
-                    cg = 0x70;
-                    cb = 0x20;
-                    blendpixel(vid, nx, ny, cr, cg, cb, 255);
-                    blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
-                    blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
-                    blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
-                    blendpixel(vid, nx, ny-1, cr, cg, cb, 5);
-                    for(int tempx = 2; tempx < 10; tempx++) {
-                        for(int tempy = 2; tempy < 10; tempy++) {
-                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
-                        }
-                    }
-                } else if(t==PT_URAN)
-                {
-                    cr = 0x70;
-                    cg = 0x70;
-                    cb = 0x20;
-                    blendpixel(vid, nx, ny, cr, cg, cb, 255);
-                    blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
-                    blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
-                    blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
-                    blendpixel(vid, nx, ny-1, cr, cg, cb, 5);
-                    for(int tempx = 2; tempx < 10; tempx++) {
-                        for(int tempy = 2; tempy < 10; tempy++) {
-                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
-                        }
                     }
                 } else if(t==PT_PLSM)
                 {
