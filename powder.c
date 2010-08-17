@@ -2853,8 +2853,10 @@ justdraw:
                         {
                             if ((abs(x) == 0) && (abs(y) == 0))
                                 blendpixel(vid,x+nx,y+ny,224,224,170,255);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,224,224,170,5);
+                            else if (abs(y) != 0 && abs(x) != 0)
+								blendpixel(vid,x+nx,y+ny,224,224,170,20);
+							else
+								blendpixel(vid,x+nx,y+ny,224,224,170,40);
                         }
                     }
 
@@ -3151,8 +3153,10 @@ justdraw:
                         {
                             if ((abs(x) == 0) && (abs(y) == 0))
                                 blendpixel(vid,x+nx,y+ny,235,73,23,100);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,235,73,23,20);
+                            else if (abs(y) != 0 && abs(x) != 0)
+								blendpixel(vid,x+nx,y+ny,235,73,23,30);
+							else
+								blendpixel(vid,x+nx,y+ny,235,73,23,50);
                         }
                     }
 
@@ -3164,9 +3168,11 @@ justdraw:
                         for(y=-1; y<=1; y++)
                         {
                             if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,224,255,32,100);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,224,255,32,20);
+								blendpixel(vid,x+nx,y+ny,255,255,0,180);
+							else if (abs(y) != 0 && abs(x) != 0)
+								blendpixel(vid,x+nx,y+ny,255,255,0,50);
+							else
+								blendpixel(vid,x+nx,y+ny,255,255,0,80);
                         }
                     }
 
@@ -3275,7 +3281,7 @@ justdraw:
                     cr = 0x40;
                     cg = 0x70;
                     cb = 0x20;
-                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    blendpixel(vid, nx, ny, cr, cg, cb, 255);
                     blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
                     blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
                     blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
@@ -3293,7 +3299,7 @@ justdraw:
                     cr = 0x70;
                     cg = 0x70;
                     cb = 0x20;
-                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    blendpixel(vid, nx, ny, cr, cg, cb, 255);
                     blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
                     blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
                     blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
