@@ -1025,7 +1025,7 @@ inline int create_part(int p, int x, int y, int t)
     {
         parts[i].pavg[1] = pv[y/CELL][x/CELL];
     }
-    if(t!=PT_STKM)
+    else if(t!=PT_STKM)
     {
         parts[i].x = (float)x;
         parts[i].y = (float)y;
@@ -1036,7 +1036,7 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].ctype = 0;
         parts[i].temp = ptypes[t].heat;
     }
-    if(t==PT_ACID)
+    else if(t==PT_ACID)
     {
         parts[i].life = 75;
     }
@@ -1125,7 +1125,7 @@ inline int create_part(int p, int x, int y, int t)
     return i;
 }
 
-void delete_part(int x, int y)
+inline void delete_part(int x, int y)
 {
     unsigned i;
 
@@ -1154,7 +1154,7 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
     vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 }
 
-int sign(float i)  //Signum function
+inline int sign(float i)  //Signum function
 {
     if (i<0)
         return -1;
@@ -1223,11 +1223,11 @@ void addpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 
 int drawtext(pixel *vid, int x, int y, char *s, int r, int g, int b, int a);
 
-int is_wire(int x, int y)
+inline int is_wire(int x, int y)
 {
     return bmap[y][x]==6 || bmap[y][x]==7 || bmap[y][x]==3 || bmap[y][x]==8 || bmap[y][x]==11 || bmap[y][x]==12;
 }
-int is_wire_off(int x, int y)
+inline int is_wire_off(int x, int y)
 {
     return (bmap[y][x]==6 || bmap[y][x]==7 || bmap[y][x]==3 || bmap[y][x]==8 || bmap[y][x]==11 || bmap[y][x]==12) && emap[y][x]<8;
 }
@@ -2830,8 +2830,21 @@ justdraw:
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
+                if(t==PT_MWAX)
+                {
+                    for(x=-1; x<=1; x++)
+                    {
+                        for(y=-1; y<=1; y++)
+                        {
+                            if ((abs(x) == 0) && (abs(y) == 0))
+                                blendpixel(vid,x+nx,y+ny,224,224,170,255);
+                            else if (abs(y) != 0 || abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,224,224,170,5);
+                        }
+                    }
 
-                if(t==PT_ACID)
+                }
+                else if(t==PT_ACID)
                 {
                     if(parts[i].life>255) parts[i].life = 255;
                     if(parts[i].life<47) parts[i].life = 48;
