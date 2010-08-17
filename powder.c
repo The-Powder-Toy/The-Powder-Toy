@@ -1052,11 +1052,11 @@ inline int create_part(int p, int x, int y, int t)
     {
         parts[i].life = 75;
     }
-    //Testing
-    /*if(t==PT_WOOD){
+    /*Testing
+    if(t==PT_WOOD){
     	parts[i].life = 150;
-    }*/
-    //End Testing
+    }
+    End Testing*/
     if(t==PT_FIRE)
         parts[i].life = rand()%50+120;
     if(t==PT_PLSM)
