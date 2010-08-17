@@ -1025,7 +1025,7 @@ inline int create_part(int p, int x, int y, int t)
     {
         parts[i].pavg[1] = pv[y/CELL][x/CELL];
     }
-    else if(t!=PT_STKM)
+    if(t!=PT_STKM)
     {
         parts[i].x = (float)x;
         parts[i].y = (float)y;
@@ -1036,7 +1036,7 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].ctype = 0;
         parts[i].temp = ptypes[t].heat;
     }
-    else if(t==PT_ACID)
+    if(t==PT_ACID)
     {
         parts[i].life = 75;
     }
