@@ -352,7 +352,11 @@ void *update_air_th(void *arg)
     return NULL;
 }
 
+#ifdef WIN32
+_inline unsigned clamp_flt(float f, float min, float max)
+#else
 inline unsigned clamp_flt(float f, float min, float max)
+#endif
 {
     if(f<min)
         return 0;
@@ -361,7 +365,11 @@ inline unsigned clamp_flt(float f, float min, float max)
     return (int)(255.0f*(f-min)/(max-min));
 }
 
+#ifdef WIN32
+_inline float restrict_flt(float f, float min, float max)
+#else
 inline float restrict_flt(float f, float min, float max)
+#endif
 {
     if(f<min)
         return min;
@@ -933,7 +941,11 @@ void kill_part(int i)
     pfree = i;
 }
 
+#ifdef WIN32
+_inline int create_part(int p, int x, int y, int t)
+#else
 inline int create_part(int p, int x, int y, int t)
+#endif
 {
     int i;
 
@@ -1125,7 +1137,11 @@ inline int create_part(int p, int x, int y, int t)
     return i;
 }
 
+#ifdef WIN32
+_inline void delete_part(int x, int y)
+#else
 inline void delete_part(int x, int y)
+#endif
 {
     unsigned i;
 
@@ -1139,7 +1155,11 @@ inline void delete_part(int x, int y)
     pmap[y][x] = 0;	// just in case
 }
 
+#ifdef WIN32
+_inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+#else
 inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+#endif
 {
     pixel t;
     if(x<0 || y<0 || x>=XRES || y>=YRES)
@@ -1154,7 +1174,12 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
     vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 }
 
-inline int sign(float i)  //Signum function
+//Signum function
+#ifdef WIN32
+_inline int sign(float i) 
+#else
+inline int sign(float i)
+#endif
 {
     if (i<0)
         return -1;
@@ -1223,11 +1248,20 @@ void addpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 
 int drawtext(pixel *vid, int x, int y, char *s, int r, int g, int b, int a);
 
+#ifdef WIN32
+_inline int is_wire(int x, int y)
+#else
 inline int is_wire(int x, int y)
+#endif
 {
     return bmap[y][x]==6 || bmap[y][x]==7 || bmap[y][x]==3 || bmap[y][x]==8 || bmap[y][x]==11 || bmap[y][x]==12;
 }
+
+#ifdef WIN32
+_inline int is_wire_off(int x, int y)
+#else
 inline int is_wire_off(int x, int y)
+#endif
 {
     return (bmap[y][x]==6 || bmap[y][x]==7 || bmap[y][x]==3 || bmap[y][x]==8 || bmap[y][x]==11 || bmap[y][x]==12) && emap[y][x]<8;
 }
@@ -1288,7 +1322,11 @@ void set_emap(int x, int y)
                     set_emap(x, y+1);
             }
 }
+#ifdef WIN32
+_inline int parts_avg(int ci, int ni)
+#else
 inline int parts_avg(int ci, int ni)
+#endif
 {
     int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
     if((pmr>>8) < NPART && (pmr>>8) >= 0)
@@ -2940,6 +2978,8 @@ justdraw:
                     }
                 } else if(t==PT_PLUT&&cmode == 3)
                 {
+					int tempx;
+					int tempy;
                     cr = 0x40;
                     cg = 0x70;
                     cb = 0x20;
@@ -2948,8 +2988,8 @@ justdraw:
                     blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
                     blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
                     blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-                    for(int tempx = 2; tempx < 10; tempx++) {
-                        for(int tempy = 2; tempy < 10; tempy++) {
+                    for(tempx = 2; tempx < 10; tempx++) {
+                        for(tempy = 2; tempy < 10; tempy++) {
                             blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
                             blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
                             blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
@@ -2958,6 +2998,8 @@ justdraw:
                     }
                 } else if(t==PT_URAN&&cmode == 3)
                 {
+					int tempx;
+					int tempy;
                     cr = 0x70;
                     cg = 0x70;
                     cb = 0x20;
@@ -2966,8 +3008,8 @@ justdraw:
                     blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
                     blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
                     blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-                    for(int tempx = 2; tempx < 10; tempx++) {
-                        for(int tempy = 2; tempy < 10; tempy++) {
+                    for(tempx = 2; tempx < 10; tempx++) {
+                        for(tempy = 2; tempy < 10; tempy++) {
                             blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
                             blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
                             blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
@@ -5292,7 +5334,11 @@ void del_stamp(int d)
 
 #include "font.h"
 
+#ifdef WIN32
+_inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+#else
 inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+#endif
 {
     pixel t;
     if(x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
@@ -5307,7 +5353,11 @@ inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
     vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 }
 
+#ifdef WIN32
+_inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
+#else
 inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
+#endif
 {
     int i, j, w, bn = 0, ba = 0;
     char *rp = font_data + font_ptrs[c];
