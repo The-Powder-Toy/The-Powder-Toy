@@ -2086,7 +2086,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                 for(nx=-2; nx<3; nx++)
                     for(ny=-2; ny<3; ny++)
                         if(x+nx>=0 && y+ny>0 &&
-                                x+nx<XRES && y+ny<YRES && (nx || ny))
+						   x+nx<XRES && y+ny<YRES && (nx || ny))
                         {
                             r = pmap[y+ny][x+nx];
                             if((r>>8)>=NPART || !r)
@@ -2102,14 +2102,38 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 }
                             }
                         }
-            }
-            if(t==PT_FIRE || t==PT_PLSM || t==PT_LAVA || t==PT_SPRK || fe || (t==PT_PHOT&&(1>rand()%10)) || t ==PT_SWCH)
+            }else if(t==PT_SWCH)
             {
-                if(t==PT_SWCH)
-                    if((parts[i].life>0&&parts[i].life<10)|| parts[i].life == 11)
-                    {
-                        parts[i].life--;
-                    }
+                rt = 3 + (int)pv[y/CELL][x/CELL];
+                for(nx=-2; nx<3; nx++)
+                    for(ny=-2; ny<3; ny++)
+                        if(x+nx>=0 && y+ny>0 &&
+						   x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+                            r = pmap[y+ny][x+nx];
+                            if((r>>8)>=NPART || !r)
+                                continue;
+                            rt = parts[r>>8].type;
+							if(parts[r>>8].type == PT_SWCH&&parts_avg(i,r>>8)!=PT_INSL)
+							{
+								if(parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
+								{
+									parts[i].life = 9;
+								}
+								else if(parts[i].life==0&&parts[r>>8].life==10)
+								{
+									parts[i].life = 10;
+								}
+							}
+						}
+            }
+			if(t==PT_SWCH)
+				if((parts[i].life>0&&parts[i].life<10)|| parts[i].life == 11)
+				{
+					parts[i].life--;
+				}
+            if(t==PT_FIRE || t==PT_PLSM || t==PT_LAVA || t==PT_SPRK || fe || (t==PT_PHOT&&(1>rand()%10)))
+            {
                 for(nx=-2; nx<3; nx++)
                     for(ny=-2; ny<3; ny++)
                         if(x+nx>=0 && y+ny>0 &&
@@ -2121,8 +2145,8 @@ void update_particles_i(pixel *vid, int start, int inc)
                             if(bmap[(y+ny)/CELL][(x+nx)/CELL] && bmap[(y+ny)/CELL][(x+nx)/CELL]!=5)
                                 continue;
                             rt = parts[r>>8].type;
-                            if((a || ptypes[rt].explosive) && ((rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL) || t!=PT_SPRK) &&
-                                    (t!=PT_LAVA || parts[i].life>0 || (rt!=PT_METL && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_HSCN && rt!=PT_CSCN && rt!=PT_WIRE && rt!=PT_ETRD && rt!=PT_BMTL && rt!=PT_BRMT)) &&
+                            if((a || ptypes[rt].explosive) && ((rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL && rt!=PT_SWCH) || t!=PT_SPRK) &&
+                                    (t!=PT_LAVA || parts[i].life>0 || (rt!=PT_METL && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_HSCN && rt!=PT_CSCN && rt!=PT_WIRE && rt!=PT_ETRD && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SWCH)) &&
                                     ptypes[rt].flammable && (ptypes[rt].flammable + (int)(pv[(y+ny)/CELL][(x+nx)/CELL]*10.0f))>(rand()%1000))
                             {
                                 parts[r>>8].type = PT_FIRE;
@@ -2191,20 +2215,6 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 }
                             }
                             pavg = parts_avg(i, r>>8);
-                            if(t==PT_SWCH&&pavg!= PT_INSL)
-                            {
-                                if(parts[r>>8].type == PT_SWCH)
-                                {
-                                    if(parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
-                                    {
-                                        parts[i].life = 9;
-                                    }
-                                    else if(parts[i].life==0&&parts[r>>8].life==10)
-                                    {
-                                        parts[i].life = 10;
-                                    }
-                                }
-                            }
                             if(rt==PT_SWCH && t==PT_SPRK)
                             {
                                 pavg = parts_avg(r>>8, i);
