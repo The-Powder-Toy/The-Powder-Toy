@@ -352,7 +352,11 @@ void *update_air_th(void *arg)
     return NULL;
 }
 
+#ifdef WIN32
+_inline unsigned clamp_flt(float f, float min, float max)
+#else
 inline unsigned clamp_flt(float f, float min, float max)
+#endif
 {
     if(f<min)
         return 0;
@@ -361,7 +365,11 @@ inline unsigned clamp_flt(float f, float min, float max)
     return (int)(255.0f*(f-min)/(max-min));
 }
 
+#ifdef WIN32
+_inline float restrict_flt(float f, float min, float max)
+#else
 inline float restrict_flt(float f, float min, float max)
+#endif
 {
     if(f<min)
         return min;
@@ -773,7 +781,7 @@ static const unsigned char can_move[PT_NUM][PT_NUM] =
     /* PHOT */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     /* URAN */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},
     /* WAX	*/ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    /* MWAX */ {0,1,0,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    /* MWAX */ {0,1,0,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
     /* PSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     /* NSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     /* LNTG */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -933,7 +941,11 @@ void kill_part(int i)
     pfree = i;
 }
 
+#ifdef WIN32
+_inline int create_part(int p, int x, int y, int t)
+#else
 inline int create_part(int p, int x, int y, int t)
+#endif
 {
     int i;
 
@@ -1025,7 +1037,7 @@ inline int create_part(int p, int x, int y, int t)
     {
         parts[i].pavg[1] = pv[y/CELL][x/CELL];
     }
-    else if(t!=PT_STKM)
+    if(t!=PT_STKM)
     {
         parts[i].x = (float)x;
         parts[i].y = (float)y;
@@ -1036,15 +1048,15 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].ctype = 0;
         parts[i].temp = ptypes[t].heat;
     }
-    else if(t==PT_ACID)
+    if(t==PT_ACID)
     {
         parts[i].life = 75;
     }
-    //Testing
-    /*if(t==PT_WOOD){
+    /*Testing
+    if(t==PT_WOOD){
     	parts[i].life = 150;
-    }*/
-    //End Testing
+    }
+    End Testing*/
     if(t==PT_FIRE)
         parts[i].life = rand()%50+120;
     if(t==PT_PLSM)
@@ -1125,7 +1137,11 @@ inline int create_part(int p, int x, int y, int t)
     return i;
 }
 
+#ifdef WIN32
+_inline void delete_part(int x, int y)
+#else
 inline void delete_part(int x, int y)
+#endif
 {
     unsigned i;
 
@@ -1139,7 +1155,11 @@ inline void delete_part(int x, int y)
     pmap[y][x] = 0;	// just in case
 }
 
+#ifdef WIN32
+_inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+#else
 inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+#endif
 {
     pixel t;
     if(x<0 || y<0 || x>=XRES || y>=YRES)
@@ -1154,7 +1174,12 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
     vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 }
 
-inline int sign(float i)  //Signum function
+//Signum function
+#ifdef WIN32
+_inline int sign(float i)
+#else
+inline int sign(float i)
+#endif
 {
     if (i<0)
         return -1;
@@ -1223,11 +1248,20 @@ void addpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 
 int drawtext(pixel *vid, int x, int y, char *s, int r, int g, int b, int a);
 
+#ifdef WIN32
+_inline int is_wire(int x, int y)
+#else
 inline int is_wire(int x, int y)
+#endif
 {
     return bmap[y][x]==6 || bmap[y][x]==7 || bmap[y][x]==3 || bmap[y][x]==8 || bmap[y][x]==11 || bmap[y][x]==12;
 }
+
+#ifdef WIN32
+_inline int is_wire_off(int x, int y)
+#else
 inline int is_wire_off(int x, int y)
+#endif
 {
     return (bmap[y][x]==6 || bmap[y][x]==7 || bmap[y][x]==3 || bmap[y][x]==8 || bmap[y][x]==11 || bmap[y][x]==12) && emap[y][x]<8;
 }
@@ -1288,7 +1322,11 @@ void set_emap(int x, int y)
                     set_emap(x, y+1);
             }
 }
+#ifdef WIN32
+_inline int parts_avg(int ci, int ni)
+#else
 inline int parts_avg(int ci, int ni)
+#endif
 {
     int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
     if((pmr>>8) < NPART && (pmr>>8) >= 0)
@@ -2261,7 +2299,7 @@ killed:
                     continue;
             }
 
-            if(t==PT_STKM)
+	    if(t==PT_STKM)
 	    {
 		    //Tempirature handling
 		    if(parts[i].temp<-30)
@@ -2454,8 +2492,8 @@ killed:
 						    }
 						    else
 						    {
-							    parts[r>>8].vy = 0;
-							    parts[r>>8].vx = (((((int)player[1])&0x02) == 0x02) - (((int)(player[1])&0x01) == 0x01))*random;
+							    parts[r>>8].vy = -(player[1] == 0)*random;
+							    parts[r>>8].vx = (player[1]!=0)*(((((int)player[1])&0x02) == 0x02) - (((int)(player[1])&0x01) == 0x01))*random;
 						    }
 					    }
 
@@ -2845,7 +2883,7 @@ justdraw:
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
-                if(t==PT_MWAX)
+                if(t==PT_MWAX&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -2853,8 +2891,10 @@ justdraw:
                         {
                             if ((abs(x) == 0) && (abs(y) == 0))
                                 blendpixel(vid,x+nx,y+ny,224,224,170,255);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,224,224,170,5);
+                            else if (abs(y) != 0 && abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,224,224,170,20);
+                            else
+                                blendpixel(vid,x+nx,y+ny,224,224,170,40);
                         }
                     }
 
@@ -2892,7 +2932,7 @@ justdraw:
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
                     }
                 }
-                else if(t==PT_OILL)
+                else if(t==PT_OILL&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -2936,8 +2976,10 @@ justdraw:
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
-                } else if(t==PT_PLUT)
+                } else if(t==PT_PLUT&&cmode == 3)
                 {
+                    int tempx;
+                    int tempy;
                     cr = 0x40;
                     cg = 0x70;
                     cb = 0x20;
@@ -2946,16 +2988,18 @@ justdraw:
                     blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
                     blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
                     blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-                    for(int tempx = 2; tempx < 10; tempx++) {
-                        for(int tempy = 2; tempy < 10; tempy++) {
+                    for(tempx = 2; tempx < 10; tempx++) {
+                        for(tempy = 2; tempy < 10; tempy++) {
                             blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
                             blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
                             blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
                             blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
                         }
                     }
-                } else if(t==PT_URAN)
+                } else if(t==PT_URAN&&cmode == 3)
                 {
+                    int tempx;
+                    int tempy;
                     cr = 0x70;
                     cg = 0x70;
                     cb = 0x20;
@@ -2964,15 +3008,15 @@ justdraw:
                     blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
                     blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
                     blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-                    for(int tempx = 2; tempx < 10; tempx++) {
-                        for(int tempy = 2; tempy < 10; tempy++) {
+                    for(tempx = 2; tempx < 10; tempx++) {
+                        for(tempy = 2; tempy < 10; tempy++) {
                             blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
                             blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
                             blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
                             blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
                         }
                     }
-                } else if(t==PT_SLTW)
+                } else if(t==PT_SLTW&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3027,7 +3071,7 @@ justdraw:
                     y = ny;
                     blendpixel(vid,x,y,17,217,24,255);
                 }
-                else if(t==PT_LNTG)
+                else if(t==PT_LNTG&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3075,7 +3119,7 @@ justdraw:
                         }
                     }
                 }
-                else if(t==PT_WATR)
+                else if(t==PT_WATR&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3088,8 +3132,7 @@ justdraw:
                         }
                     }
 
-                }
-                else if(t==PT_DSTW)
+                } else if(t==PT_DSTW&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3102,7 +3145,7 @@ justdraw:
                         }
                     }
                 }
-                else if(t==PT_NITR)
+                else if(t==PT_NITR&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3116,7 +3159,7 @@ justdraw:
                     }
 
                 }
-                else if(t==PT_LRBD)
+                else if(t==PT_LRBD&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3131,7 +3174,7 @@ justdraw:
 
                 }
 
-                else if(t==PT_NBLE)
+                else if(t==PT_NBLE&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -3139,22 +3182,26 @@ justdraw:
                         {
                             if ((abs(x) == 0) && (abs(y) == 0))
                                 blendpixel(vid,x+nx,y+ny,235,73,23,100);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,235,73,23,20);
+                            else if (abs(y) != 0 && abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,235,73,23,30);
+                            else
+                                blendpixel(vid,x+nx,y+ny,235,73,23,50);
                         }
                     }
 
                 }
-                else if(t==PT_GASS)
+                else if(t==PT_GASS&&cmode == 3)
                 {
                     for(x=-1; x<=1; x++)
                     {
                         for(y=-1; y<=1; y++)
                         {
                             if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,224,255,32,255);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,224,255,32,20);
+                                blendpixel(vid,x+nx,y+ny,255,255,0,180);
+                            else if (abs(y) != 0 && abs(x) != 0)
+                                blendpixel(vid,x+nx,y+ny,255,255,0,50);
+                            else
+                                blendpixel(vid,x+nx,y+ny,255,255,0,80);
                         }
                     }
 
@@ -3258,41 +3305,6 @@ justdraw:
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
-                    }
-                } else if(t==PT_PLUT) {
-                    cr = 0x40;
-                    cg = 0x70;
-                    cb = 0x20;
-                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
-                    blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
-                    blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
-                    blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
-                    blendpixel(vid, nx, ny-1, cr, cg, cb, 5);
-                    for(int tempx = 2; tempx < 10; tempx++) {
-                        for(int tempy = 2; tempy < 10; tempy++) {
-                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
-                        }
-                    }
-                } else if(t==PT_URAN)
-                {
-                    cr = 0x70;
-                    cg = 0x70;
-                    cb = 0x20;
-                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
-                    blendpixel(vid, nx+1, ny, cr, cg, cb, 5);
-                    blendpixel(vid, nx-1, ny, cr, cg, cb, 5);
-                    blendpixel(vid, nx, ny+1, cr, cg, cb, 5);
-                    blendpixel(vid, nx, ny-1, cr, cg, cb, 5);
-                    for(int tempx = 2; tempx < 10; tempx++) {
-                        for(int tempy = 2; tempy < 10; tempy++) {
-                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
-                        }
                     }
                 } else if(t==PT_PLSM)
                 {
@@ -5322,7 +5334,11 @@ void del_stamp(int d)
 
 #include "font.h"
 
+#ifdef WIN32
+_inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+#else
 inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
+#endif
 {
     pixel t;
     if(x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
@@ -5337,7 +5353,11 @@ inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
     vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 }
 
+#ifdef WIN32
+_inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
+#else
 inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
+#endif
 {
     int i, j, w, bn = 0, ba = 0;
     char *rp = font_data + font_ptrs[c];
