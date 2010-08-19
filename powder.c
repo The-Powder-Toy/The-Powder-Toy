@@ -9645,7 +9645,7 @@ char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
 #else
                 "Unknown"
 #endif
-                "&InstrctionSet="
+                "&InstructionSet="
 #if defined X86_SSE3
                 "SSE3"
 #elif defined X86_SSE2
