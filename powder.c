@@ -2451,7 +2451,8 @@ killed:
 			    {
 				    if(!pmap[ny+y][nx+x] || (pmap[ny+y][nx+x]>>8)>=NPART)
 					    continue;
-				    if((pstates[pmap[ny+y][nx+x]&0xFF].state != ST_SOLID && (pmap[ny+y][nx+x]&0xFF)!=PT_STKM
+				    if(((pstates[pmap[ny+y][nx+x]&0xFF].state != ST_SOLID || ptypes[pmap[ny+y][nx+x]&0xFF].falldown > 0) && 
+							    (pmap[ny+y][nx+x]&0xFF)!=PT_STKM
 							    && (pmap[ny+y][nx+x]&0xFF)!=PT_WHOL && (pmap[ny+y][nx+x]&0xFF)!=PT_BHOL)
 						    || (pmap[ny+y][nx+x]&0xFF) == PT_LNTG)
 				    {
@@ -2563,6 +2564,9 @@ killed:
 		    //Collision checks
 		    for(ny = -2-(int)parts[i].vy; ny<=0; ny++)
 		    {
+			    if ((int)(ny+player[8])>=YRES)
+				    continue;
+
 			    r = pmap[(int)(player[8]+ny)][(int)(player[7]+0.5)];  //This is to make coding more pleasant :-)
 
 			    //For left leg
@@ -2584,6 +2588,9 @@ killed:
 				    }
 				    player[9] = player[7];
 			    }
+
+			    if ((int)(ny+player[16])>=YRES)
+				    continue;
 
 			    r = pmap[(int)(player[16]+ny)][(int)(player[15]+0.5)];
 
