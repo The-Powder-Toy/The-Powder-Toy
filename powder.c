@@ -1111,8 +1111,10 @@ inline int create_part(int p, int x, int y, int t)
             parts[i].life = 100;
             parts[i].ctype = 0;
             parts[i].temp = ptypes[t].heat;
-            player[2] = PT_DUST;
-            player[3] = x-1;  //Setting legs positions
+	    
+
+            
+	    player[3] = x-1;  //Setting legs positions
             player[4] = y+6;
             player[5] = x-1;
             player[6] = y+6;
@@ -10852,7 +10854,13 @@ int main(int argc, char *argv[])
             fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
             drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
         }
-        sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
+	sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
+
+	//Setting an element for the stick man
+	if(ptypes[sr].falldown>0)
+		player[2] = sr;
+	else
+		player[2] = PT_DUST;
     }
 
     http_done();
