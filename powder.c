@@ -1588,7 +1588,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                 t = parts[i].type = PT_PLAS;
             if(t==PT_DESL && pv[y/CELL][x/CELL]<-20.0f)
                 t = parts[i].type = PT_GASS;
-            if(t==PT_DESL && pv[y/CELL][x/CELL]>60.0f)      // Only way I know to make it
+            if(t==PT_DESL && pv[y/CELL][x/CELL]>50.0f)      // Only way I know to make it
                 t = parts[i].type = PT_FIRE;                // combust under pressure.
             if(t==PT_GASS && pv[y/CELL][x/CELL]>20.0f)
                 t = parts[i].type = PT_DESL;
