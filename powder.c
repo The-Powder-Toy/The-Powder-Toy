@@ -672,7 +672,7 @@ const struct part_type ptypes[] =
     {"STKM",	PIXPACK(0X000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	-0.7f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,			R_TEMP+14.6f,	0,	"Stickman. Don't kill him!"},
     {"SWCH",	PIXPACK(0x103B11),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f  * CFDS, 0,  0,		0,  0,  1,  1,  SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Only conducts when switched on. (PSCN switches on, NSCN switches off)"},
     {"SMKE",	PIXPACK(0x222222),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+400.0f,	88,		"Smoke"},
-    {"PLAS",	PIXPACK(0x444444),	0.1f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	12,	1,	SC_SOLIDS,		R_TEMP+0.0f,	75,		"Solid. Deforms under really high pressure."},
+    {"PLAS",	PIXPACK(0x444444),	0.1f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	12,	1,	SC_SOLIDS,		R_TEMP+0.0f,	75,		"Solid. Deforms under really high pressure."},
 };
 
 #define ST_NONE 0
@@ -740,7 +740,7 @@ const struct part_state pstates[] =
     /* STKM */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* SWCH */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* SMKE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* PLAS */ {ST_SOLID,   PT_NONE, 0.0f,      PT_OILL, 250.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f},
+    /* PLAS */ {ST_SOLID,   PT_NONE, 0.0f,      PT_OILL, 250.0f,    PT_NONE, 0.0f,      PT_NONE, 0.0f},
 };
 static const unsigned char can_move[PT_NUM][PT_NUM] =
 {
@@ -1488,13 +1488,10 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
             else
             {
-                if(t==PT_PLAS && !parts[i].life)
+                if(t==PT_PLAS && pv[y/CELL][x/CELL]>25.0f)
                 {
-                 if(pv[y/CELL][x/CELL]>75.0f)
-                 {
                     parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
                     parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL];
-                 }
                 }
                 else
                 {
@@ -1569,14 +1566,10 @@ void update_particles_i(pixel *vid, int start, int inc)
             {
                 if(t==PT_WTRV && pv[y/CELL][x/CELL]>4.0f)
                     t = parts[i].type = PT_DSTW;
-                if(t==PT_GASS && pv[y/CELL][x/CELL]>4.0f)
-                    t = parts[i].type = PT_OILL;
-                if(t==PT_OILL && pv[y/CELL][x/CELL]<-4.0f)
-                    t = parts[i].type = PT_GASS;
-                if(t==PT_OILL && pv[y/CELL][x/CELL]>15.0f)
+                if(t==PT_OILL && pv[y/CELL][x/CELL]>8.0f)
                     t = parts[i].type = PT_PLAS;
             }
-            if(t==PT_OILL && pv[y/CELL][x/CELL]>40.0f)
+            if(t==PT_OILL && pv[y/CELL][x/CELL]>20.0f)
                 t = parts[i].type = PT_PLAS;
             if(t==PT_BMTL && pv[y/CELL][x/CELL]>2.5f)
                 t = parts[i].type = PT_BRMT;
