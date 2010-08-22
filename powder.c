@@ -151,8 +151,8 @@ float mheat = 0.0f;
 int do_open = 0;
 int sys_pause = 0;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by commandline or save.
-
-int amd = 0;
+int death = 1, gravityd = 2, framerender = 0;
+int amd = 1;
 
 unsigned char fire_r[YRES/CELL][XRES/CELL];
 unsigned char fire_g[YRES/CELL][XRES/CELL];
@@ -192,7 +192,7 @@ float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 #define VADV 0.3f
 #define VLOSS 0.999f
 #define PLOSS 0.9999f
-int numCores = 1;
+int numCores = 4;
 float kernel[9];
 void make_kernel(void)
 {
@@ -1380,7 +1380,16 @@ void update_particles_i(pixel *vid, int start, int inc)
             t = parts[i].type;
 
             if(sys_pause)
-                goto justdraw;
+			{
+				if(framerender)
+				{
+					sys_pause = 0;
+				}
+				else
+				{
+					goto justdraw;
+				}
+			}
 
             if(parts[i].life && t!=PT_ACID && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM)
             {
@@ -1485,7 +1494,46 @@ void update_particles_i(pixel *vid, int start, int inc)
             else
             {
                 parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
-                parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
+				if(gravityd == 1)
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
+					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] - ptypes[t].gravity;
+				}
+				if(gravityd == 2)
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
+				}
+				if(gravityd == 3)
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
+					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + ptypes[t].gravity;
+				}
+				if(gravityd == 4)
+				{
+					parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
+				}
+				if(gravityd == 5)
+				{
+					parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL];
+				}
+				if(gravityd == 6)
+				{
+					parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
+				}
+				if(gravityd == 7)
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
+					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] - ptypes[t].gravity;
+				}
+				if(gravityd == 8)
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
+				}
+				if(gravityd == 9)
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
+					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + ptypes[t].gravity;
+				}
             }
 
             if(ptypes[t].diffusion)
@@ -2320,7 +2368,7 @@ killed:
                     parts[i].temp += 1;
 
                 //Death
-                if(parts[i].life<=0 || pv[y/CELL][x/CELL]>=4.5f)  //If his HP is less that 0 or there is very big wind...
+                if(parts[i].life<0 && (death == 1))  //If his HP is less that 0 or there is very big wind...
                 {
                     for(r=-2; r<=1; r++)
                     {
@@ -3526,6 +3574,11 @@ justdraw:
             }
 
         }
+		if(framerender == 1)
+		{
+			sys_pause = 1;
+			framerender= 0;
+		}
 
 }
 
@@ -4279,7 +4332,42 @@ int sdl_poll(void)
             {
                 player[0] = (int)(player[0])|0x08;  //Go left command
             }
-
+			if(event.key.keysym.sym == SDLK_KP1) //gravity direction commands
+			{
+				gravityd = 1;
+			}
+			if(event.key.keysym.sym == SDLK_KP2)
+			{
+				gravityd = 2;
+			}
+			if(event.key.keysym.sym == SDLK_KP3)
+			{
+				gravityd = 3;
+			}
+			if(event.key.keysym.sym == SDLK_KP4)
+			{
+				gravityd = 4;
+			}
+			if(event.key.keysym.sym == SDLK_KP5)
+			{
+				gravityd = 5;
+			}
+			if(event.key.keysym.sym == SDLK_KP6)
+			{
+				gravityd = 6;
+			}
+			if(event.key.keysym.sym == SDLK_KP7)
+			{
+				gravityd = 7;
+			}
+			if(event.key.keysym.sym == SDLK_KP8)
+			{
+				gravityd = 8;
+			}
+			if(event.key.keysym.sym == SDLK_KP9)
+			{
+				gravityd = 9;
+			}
             if(event.key.keysym.sym == SDLK_UP && ((int)(player[0])&0x04)!=0x04)
             {
                 player[0] = (int)(player[0])|0x04;  //Jump command
@@ -9992,6 +10080,14 @@ int main(int argc, char *argv[])
                 break;
             }
         }
+		if(sdl_key=='d')
+		{
+			death = !(death);
+		}
+		if(sdl_key=='f')
+		{
+			framerender = 1;
+		}
         if((sdl_key=='l' || sdl_key=='k') && stamps[0].name[0])
         {
             if(load_mode)
@@ -10139,8 +10235,8 @@ int main(int argc, char *argv[])
             else
             {
                 bs += sdl_wheel;
-                if(bs>16)
-                    bs = 16;
+                if(bs>1224)
+                    bs = 1224;
                 if(bs<0)
                     bs = 0;
                 sdl_wheel = 0;
