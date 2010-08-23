@@ -1531,47 +1531,48 @@ void update_particles_i(pixel *vid, int start, int inc)
 							parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL];
 						} else {
 						parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
-						if(gravityd == 1)
-							{
-								parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
-								parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] - ptypes[t].gravity;
-							}
-						if(gravityd == 2)
-							{
-								parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
-							}
-						if(gravityd == 3)
-							{
-								parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
-								parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + ptypes[t].gravity;
-							}
-						if(gravityd == 4)
-							{
-								parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
-							}
-						if(gravityd == 5)
-							{
-								parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL];
-							}
-						if(gravityd == 6)
-							{
-								parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
-							}
-						if(gravityd == 7)
-							{
-								parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
-								parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] - ptypes[t].gravity;
-							}
-						if(gravityd == 8)
-							{
-								parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
-							}
-						if(gravityd == 9)
-							{
-								parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
-								parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + ptypes[t].gravity;
-							}
-					}
+				if(gravityd == 1) //gravity control stuff
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
+					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] - ptypes[t].gravity;
+				}
+				if(gravityd == 2)
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
+				}
+				if(gravityd == 3)
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
+					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + ptypes[t].gravity;
+				}
+				if(gravityd == 4)
+				{
+					parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
+				}
+				if(gravityd == 5)
+				{
+					parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL];
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL];
+				}
+				if(gravityd == 6)
+				{
+					parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
+				}
+				if(gravityd == 7)
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
+					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] - ptypes[t].gravity;
+				}
+				if(gravityd == 8)
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
+				}
+				if(gravityd == 9)
+				{
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
+					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + ptypes[t].gravity;
+				}
+            }
 
             if(ptypes[t].diffusion)
             {
