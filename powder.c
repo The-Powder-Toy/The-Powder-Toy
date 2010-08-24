@@ -151,7 +151,7 @@ float mheat = 0.0f;
 int do_open = 0;
 int sys_pause = 0;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by commandline or save.
-int death = 1, gravityd = 2, framerender = 0;
+int death = 1, framerender = 0;
 int amd = 1;
 
 unsigned char fire_r[YRES/CELL][XRES/CELL];
@@ -710,7 +710,7 @@ const struct part_state pstates[] =
     /* METL */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1000.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* SPRK */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* SNOW */ {ST_SOLID,	PT_NONE, 0.0f,		PT_WATR, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* WOOD */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_COAL, 300.0f,	PT_FIRE, 600.0f},
+    /* WOOD */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,	PT_FIRE, 600.0f},
     /* NEUT */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* PLUT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* PLNT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 300.0f},
@@ -1411,17 +1411,8 @@ void update_particles_i(pixel *vid, int start, int inc)
             ly = parts[i].y;
             t = parts[i].type;
 
-            if(sys_pause)
-			{
-				if(framerender)
-				{
-					sys_pause = 0;
-				}
-				else
-				{
-					goto justdraw;
-				}
-			}
+            if(sys_pause&&!framerender)
+				goto justdraw;
 
             if(parts[i].life && t!=PT_ACID && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM)
             {
@@ -1525,52 +1516,13 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
             else
             {
-					if(t==PT_PLAS && pv[y/CELL][x/CELL]>25.0f)
-						{
-							parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
-							parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL];
-						} else {
-						parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
-				if(gravityd == 1) //gravity control stuff
+				if(t==PT_PLAS && pv[y/CELL][x/CELL]>25.0f)
 				{
-					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
-					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] - ptypes[t].gravity;
-				}
-				if(gravityd == 2)
-				{
-					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
-				}
-				if(gravityd == 3)
-				{
-					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
-					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + ptypes[t].gravity;
-				}
-				if(gravityd == 4)
-				{
-					parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
-				}
-				if(gravityd == 5)
-				{
-					parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL];
+					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
 					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL];
-				}
-				if(gravityd == 6)
-				{
-					parts[i].vx += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
-				}
-				if(gravityd == 7)
-				{
-					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
-					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] - ptypes[t].gravity;
-				}
-				if(gravityd == 8)
-				{
-					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
-				}
-				if(gravityd == 9)
-				{
-					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] - ptypes[t].gravity;
-					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + ptypes[t].gravity;
+				} else {
+					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
 				}
             }
 
@@ -1640,27 +1592,19 @@ void update_particles_i(pixel *vid, int start, int inc)
             {
                 if(t==PT_WTRV && pv[y/CELL][x/CELL]>4.0f)
                     t = parts[i].type = PT_DSTW;
-                if(t==PT_OILL && pv[y/CELL][x/CELL]>8.0f)
-                    t = parts[i].type = PT_PLAS;
                 if(t==PT_DESL && pv[y/CELL][x/CELL]<-6.0f)
                     t = parts[i].type = PT_GASS;
                 if(t==PT_GASS && pv[y/CELL][x/CELL]>6.0f)
                     t = parts[i].type = PT_DESL;
                 if(t==PT_DESL && pv[y/CELL][x/CELL]>12.0f)
                     t = parts[i].type = PT_FIRE;
-                if(t==PT_WOOD && pv[y/CELL][x/CELL]>6.0f)
-                    t = parts[i].type = PT_COAL;
             }
-            if(t==PT_OILL && pv[y/CELL][x/CELL]>20.0f)
-                t = parts[i].type = PT_PLAS;
             if(t==PT_DESL && pv[y/CELL][x/CELL]<-20.0f)
                 t = parts[i].type = PT_GASS;
             if(t==PT_DESL && pv[y/CELL][x/CELL]>50.0f)      // Only way I know to make it
                 t = parts[i].type = PT_FIRE;                // combust under pressure.
             if(t==PT_GASS && pv[y/CELL][x/CELL]>20.0f)
                 t = parts[i].type = PT_DESL;
-            if(t==PT_WOOD && pv[y/CELL][x/CELL]>30.0f)
-                t = parts[i].type = PT_COAL;
             if(t==PT_BMTL && pv[y/CELL][x/CELL]>2.5f)
                 t = parts[i].type = PT_BRMT;
             //if(t==PT_GLAS && pv[y/CELL][x/CELL]>4.0f)
@@ -3048,7 +2992,7 @@ justdraw:
 						    }
 						}
 					} else {
-						blendpixel(vid, x, y, cr, cg, cb, 255);
+						blendpixel(vid, nx, ny, cr, cg, cb, 255);
 					}
 
                     if(cmode==4)
@@ -3640,15 +3584,11 @@ justdraw:
                 blendpixel(vid, nx+1, ny+1, R, G, B, 112);
                 blendpixel(vid, nx-1, ny+1, R, G, B, 112);
             }
-
         }
-		if(framerender == 1)
-		{
-			sys_pause = 1;
-			framerender= 0;
-		}
-
-				}
+	if(framerender){
+		framerender = 0;
+		sys_pause = 1;
+	}
 }
 
 void drawblob(pixel *vid, int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
@@ -3949,7 +3889,7 @@ void update_particles(pixel *vid)
                         fire_b[y][x] = cb;
                     }
                 }
-                if(emap[y][x] && !sys_pause)
+                if(emap[y][x] && (!sys_pause||framerender))
                     emap[y][x] --;
             }
         }
@@ -4168,7 +4108,7 @@ void update_particles(pixel *vid)
                         fire_b[y][x] = cb;
                     }
                 }
-                if(emap[y][x] && !sys_pause)
+                if(emap[y][x] && (!sys_pause||framerender))
                     emap[y][x] --;
             }
         }
@@ -4401,42 +4341,6 @@ int sdl_poll(void)
             {
                 player[0] = (int)(player[0])|0x08;  //Go left command
             }
-			if(event.key.keysym.sym == SDLK_KP1) //gravity direction commands
-			{
-				gravityd = 1;
-			}
-			if(event.key.keysym.sym == SDLK_KP2)
-			{
-				gravityd = 2;
-			}
-			if(event.key.keysym.sym == SDLK_KP3)
-			{
-				gravityd = 3;
-			}
-			if(event.key.keysym.sym == SDLK_KP4)
-			{
-				gravityd = 4;
-			}
-			if(event.key.keysym.sym == SDLK_KP5)
-			{
-				gravityd = 5;
-			}
-			if(event.key.keysym.sym == SDLK_KP6)
-			{
-				gravityd = 6;
-			}
-			if(event.key.keysym.sym == SDLK_KP7)
-			{
-				gravityd = 7;
-			}
-			if(event.key.keysym.sym == SDLK_KP8)
-			{
-				gravityd = 8;
-			}
-			if(event.key.keysym.sym == SDLK_KP9)
-			{
-				gravityd = 9;
-			}
             if(event.key.keysym.sym == SDLK_UP && ((int)(player[0])&0x04)!=0x04)
             {
                 player[0] = (int)(player[0])|0x04;  //Jump command
@@ -10066,7 +9970,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        if(!sys_pause)
+        if(!sys_pause||framerender)
         {
 #ifdef MT
             if(numCores>2)
