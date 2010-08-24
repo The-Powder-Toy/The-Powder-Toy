@@ -601,7 +601,7 @@ struct menu_section msections[] =
 #define PT_PLAS 58
 #define PT_DESL 59
 #define PT_COAL 60
-#define PT_LOX  61
+#define PT_LO2  61
 #define PT_O2   62
 #define PT_INWR 63
 #define PT_NUM  64
@@ -680,7 +680,7 @@ const struct part_type ptypes[] =
     {"PLAS",	PIXPACK(0x444444),	0.1f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.0f	* CFDS,	0,	0,		0,	1,	12,	1,	SC_SOLIDS,		R_TEMP+0.0f,	75,		"Solid. Deforms under really high pressure."},      
     {"DESL",	PIXPACK(0x440000),	1.0f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.0f,	0.0f	* CFDS,	2,	2,		0.01f,	0,	5,	1,	SC_LIQUID,		R_TEMP+0.0f,	42,		"Liquid. Vaporises under low pressure, explodes under high pressure and temperatures"},
     {"COAL",    PIXPACK(0x222222),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f    * CFDS, 0,  10,     0,  0,  20, 1,  SC_SOLIDS,      R_TEMP+0.0f,    200,    "Solid. Burns slowly."},
-    {"LOX",		PIXPACK(0x80A0EF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	5000,  	0,	0,	0,	1,	SC_LIQUID,		-210.0f,		70,		"Liquid Oxygen. Very cold. Reacts with fire"},    
+    {"LO2",		PIXPACK(0x80A0EF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	5000,  	0,	0,	0,	1,	SC_LIQUID,		-210.0f,		70,		"Liquid Oxygen. Very cold. Reacts with fire"},    
     {"O2",      PIXPACK(0x80A0FF),  2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	5.0f,	0.000f	* CFDS,	0,	1000,  	0,	0,	0,	1,	SC_GAS,         R_TEMP+0.0f,        70,     "Gas. Oxygen helps make things burn."},	    
 	{"INWR",	PIXPACK(0x544141),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Insulated Wire. Doesn't conduct to metal or semiconductors."},
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal Burn	Exp	Mel Hrd M	Section			H				Ins(real world, by triclops200) Description    
@@ -754,8 +754,8 @@ const struct part_state pstates[] =
     /* PLAS */ {ST_SOLID,   PT_NONE, 0.0f,      PT_OILL, 250.0f,    PT_NONE, 0.0f,      PT_NONE, 0.0f},
     /* DESL */ {ST_LIQUID,  PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_FIRE, 62.0f},
     /* COAL */ {ST_SOLID,   PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_FIRE, 600.0f},
-    /* LOX  */ {ST_LIQUID,  PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_O2,   -180.0f,   PT_NONE, 0.0f},
-    /* O2   */ {ST_GAS,     PT_NONE, 0.0f,      PT_LOX,  -190.0f,   PT_NONE, 0.0f,      PT_NONE, 0.0f},
+    /* LO2  */ {ST_LIQUID,  PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_O2,   -180.0f,   PT_NONE, 0.0f},
+    /* O2   */ {ST_GAS,     PT_NONE, 0.0f,      PT_LO2,  -190.0f,   PT_NONE, 0.0f,      PT_NONE, 0.0f},
 	/* INWR */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1414.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
 };
 static const unsigned char can_move[PT_NUM][PT_NUM] =
@@ -829,7 +829,7 @@ static const unsigned char can_move[PT_NUM][PT_NUM] =
 /* PLAS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Plas */
 /* DESL */ {0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Desl */
 /* COAL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Coal */    
-/* LOX  */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0}, /* LOX  */
+/* LO2  */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0}, /* LO2  */
 /* O2   */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0}, /* O2  */
 /* INWR */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* INWR */
 /*          N D W O F M L G N C G P D I W S S W N P P A V W C D S S D B B P U W M P N L I B W R L H S G C B T P E N N B L S S S P D C L O*/
