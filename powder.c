@@ -37,71 +37,16 @@
 #include <unistd.h>
 #endif
 
-
+#include "font.h"
+#include "defines.h"
+#include "powder.h"
+#include "graphics.h"
 #include "version.h"
 #include "http.h"
 #include "md5.h"
 #include "update.h"
 #include "hmap.h"
-
-#define SERVER "powdertoy.co.uk"
-
-#undef PLOSS
-
-#ifdef MENUV3
-#define MENUSIZE 40
-#else
-#define MENUSIZE 20
-#endif
-#define BARSIZE 14
-#define XRES	612
-#define YRES	384
-#define NPART XRES*YRES
-
-#define ZSIZE_D	16
-#define ZFACTOR_D	8
-unsigned char ZFACTOR = 256/ZSIZE_D;
-unsigned char ZSIZE = ZSIZE_D;
-
-#define CELL    4
-#define ISTP    (CELL/2)
-#define CFDS	(4.0f/CELL)
-
-typedef unsigned char uint8;
-
-#ifdef PIX16
-#define PIXELSIZE 2
-typedef unsigned short pixel;
-#define PIXPACK(x) ((((x)>>8)&0xF800)|(((x)>>5)&0x07E0)|(((x)>>3)&0x001F))
-#define PIXRGB(r,g,b) ((((r)<<8)&0xF800)|(((g)<<3)&0x07E0)|(((b)>>3)&0x001F))
-#define PIXR(x) (((x)>>8)&0xF8)
-#define PIXG(x) (((x)>>3)&0xFC)
-#define PIXB(x) (((x)<<3)&0xF8)
-#else
-#define PIXELSIZE 4
-typedef unsigned int pixel;
-#ifdef PIX32BGR
-#define PIXPACK(x) ((((x)>>16)&0x0000FF)|((x)&0x00FF00)|(((x)<<16)&0xFF0000))
-#define PIXRGB(r,g,b) (((b)<<16)|((g)<<8)|((r)))// (((b)<<16)|((g)<<8)|(r))
-#define PIXR(x) ((x)&0xFF)
-#define PIXG(x) (((x)>>8)&0xFF)
-#define PIXB(x) ((x)>>16)
-#else
-#ifdef PIX32BGRA
-#define PIXPACK(x) ((((x)>>8)&0x0000FF00)|(((x)<<8)&0x00FF0000)|(((x)<<24)&0xFF000000))
-#define PIXRGB(r,g,b) (((b)<<24)|((g)<<16)|((r)<<8))
-#define PIXR(x) (((x)>>8)&0xFF)
-#define PIXG(x) (((x)>>16)&0xFF)
-#define PIXB(x) (((x)>>24))
-#else
-#define PIXPACK(x) (x)
-#define PIXRGB(r,g,b) (((r)<<16)|((g)<<8)|(b))
-#define PIXR(x) ((x)>>16)
-#define PIXG(x) (((x)>>8)&0xFF)
-#define PIXB(x) ((x)&0xFF)
-#endif
-#endif
-#endif
+#include "air.h"
 
 char *it_msg =
     "\brThe Powder Toy\n"
@@ -176,22 +121,6 @@ unsigned char emap[YRES/CELL][XRES/CELL];
 unsigned char cb_bmap[YRES/CELL][XRES/CELL];
 unsigned char cb_emap[YRES/CELL][XRES/CELL];
 
-unsigned cmode = 3;
-
-float vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
-float vy[YRES/CELL][XRES/CELL], ovy[YRES/CELL][XRES/CELL];
-float pv[YRES/CELL][XRES/CELL], opv[YRES/CELL][XRES/CELL];
-
-float cb_vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
-float cb_vy[YRES/CELL][XRES/CELL], ovy[YRES/CELL][XRES/CELL];
-float cb_pv[YRES/CELL][XRES/CELL], opv[YRES/CELL][XRES/CELL];
-
-float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
-#define TSTEPP 0.3f
-#define TSTEPV 0.4f
-#define VADV 0.3f
-#define VLOSS 0.999f
-#define PLOSS 0.9999f
 int numCores = 4;
 float kernel[9];
 void make_kernel(void)
@@ -378,485 +307,9 @@ inline float restrict_flt(float f, float min, float max)
     return f;
 }
 
-void draw_air(pixel *vid)
-{
-    int x, y, i, j;
-    pixel c;
-
-    if(cmode == 2)
-        return;
-
-    for(y=0; y<YRES/CELL; y++)
-        for(x=0; x<XRES/CELL; x++)
-        {
-            if(cmode)
-            {
-                if(pv[y][x] > 0.0f)
-                    c  = PIXRGB(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);
-                else
-                    c  = PIXRGB(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));
-            }
-            else
-                c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),
-                            clamp_flt(pv[y][x], 0.0f, 8.0f),
-                            clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));
-            for(j=0; j<CELL; j++)
-                for(i=0; i<CELL; i++)
-                    vid[(x*CELL+i) + (y*CELL+j)*(XRES+BARSIZE)] = c;
-        }
-}
-
 /***********************************************************
  *                   PARTICLE SIMULATOR                    *
  ***********************************************************/
-
-struct part_type
-{
-    const char *name;
-    pixel pcolors;
-    float advection;
-    float airdrag;
-    float airloss;
-    float loss;
-    float collision;
-    float gravity;
-    float diffusion;
-    float hotair;
-    int falldown;
-    int flammable;
-    int explosive;
-    int meltable;
-    int hardness;
-    int menu;
-    int menusection;
-    float heat;
-    unsigned char hconduct;
-    const char *descs;
-    unsigned char properties;
-};
-
-struct part_state
-{
-    char state;
-    int solid;
-    float stemp;
-    int liquid;
-    float ltemp;
-    int gas;
-    float gtemp;
-    int burn;
-    float btemp;
-};
-
-struct menu_section
-{
-    char *icon;
-    const char *name;
-    int itemcount;
-};
-struct menu_wall
-{
-    pixel colour;
-    const char *descs;
-};
-
-const struct menu_wall mwalls[] =
-{
-    {PIXPACK(0xC0C0C0), "Wall. Indestructible. Blocks everything. Conductive."},
-    {PIXPACK(0x808080), "E-Wall. Becomes transparent when electricity is connected."},
-    {PIXPACK(0xFF8080), "Detector. Generates electricity when a particle is inside."},
-    {PIXPACK(0x808080), "Streamline. Set start point of a streamline."},
-    {PIXPACK(0x808080), "Sign. Click on a sign to edit it or anywhere else to place a new one."},
-    {PIXPACK(0x8080FF), "Fan. Accelerates air. Use line tool to set direction and strength."},
-    {PIXPACK(0xC0C0C0), "Wall. Blocks most particles but lets liquids through. Conductive."},
-    {PIXPACK(0x808080), "Wall. Absorbs particles but lets air currents through."},
-    {PIXPACK(0x808080), "Erases walls."},
-    {PIXPACK(0x808080), "Wall. Indestructible. Blocks everything."},
-    {PIXPACK(0x3C3C3C), "Wall. Indestructible. Blocks particles, allows air"},
-    {PIXPACK(0x575757), "Wall. Indestructible. Blocks liquids and gasses, allows solids"},
-    {PIXPACK(0xFFFF22), "Conductor, allows particles, conducts electricity"},
-    {PIXPACK(0x242424), "E-Hole, absorbs particles, release them when powered"},
-    {PIXPACK(0xFFFFFF), "Air, creates airflow and pressure"},
-    {PIXPACK(0xFFBB00), "Heats the targetted element."},
-    {PIXPACK(0x00BBFF), "Cools the targetted element."},
-    {PIXPACK(0x303030), "Vacuum, reduces air pressure."},
-    {PIXPACK(0x579777), "Wall. Indestructible. Blocks liquids and solids, allows gasses"},
-};
-
-#define SC_WALL 0
-#define SC_SPECIAL 8
-#define SC_POWDERS 5
-#define SC_SOLIDS 6
-#define SC_ELEC 1
-#define SC_EXPLOSIVE 2
-#define SC_GAS 3
-#define SC_LIQUID 4
-#define SC_NUCLEAR 7
-#define SC_TOTAL 9
-
-struct menu_section msections[] =
-{
-    {"\xC1", "Walls", 0},
-    {"\xC2", "Electronics", 0},
-    {"\xC3", "Explosives", 0},
-    {"\xC5", "Gasses", 0},
-    {"\xC4", "Liquids", 0},
-    {"\xD0", "Powders", 0},
-    {"\xD1", "Solids", 0},
-    {"\xC6", "Radioactive", 0},
-    {"\xCC", "Special", 0},
-};
-
-#define CM_COUNT 7
-#define CM_FANCY 6
-#define CM_HEAT 5
-#define CM_BLOB 4
-#define CM_FIRE 3
-#define CM_PERS 2
-#define CM_PRESS 1
-#define CM_VEL 0
-
-#define UI_WALLSTART 37
-#define UI_WALLCOUNT 19
-
-#define SPC_AIR 136
-#define SPC_HEAT 137
-#define SPC_COOL 138
-#define SPC_VACUUM 139
-
-#define WL_WALLELEC	22
-#define WL_EWALL	23
-#define WL_DETECT	24
-#define WL_STREAM	25
-#define WL_SIGN	26
-#define WL_FAN	27
-#define WL_ALLOWLIQUID	28
-#define WL_DESTROYALL	29
-#define WL_ERASE	30
-#define WL_WALL	31
-#define WL_ALLOWAIR	32
-#define WL_ALLOWSOLID	33
-#define WL_ALLOWALLELEC	34
-#define WL_EHOLE	35
-#define WL_ALLOWGAS	40
-
-#define PT_NONE	0
-#define PT_DUST	1
-#define PT_WATR	2
-#define PT_OILL 3
-#define PT_FIRE 4
-#define PT_STNE 5
-#define PT_LAVA 6
-#define PT_GUNP	7
-#define PT_NITR	8
-#define PT_CLNE 9
-#define PT_GASS 10
-#define PT_PLEX 11
-#define PT_DFRM 12
-#define PT_ICEI 13
-#define PT_METL 14
-#define PT_SPRK 15
-#define PT_SNOW 16
-#define PT_WOOD 17
-#define PT_NEUT 18
-#define PT_PLUT 19
-#define PT_PLNT 20
-#define PT_ACID 21
-#define PT_VOID 22
-#define PT_WTRV 23
-#define PT_CNCT 24
-#define PT_DSTW 25
-#define PT_SALT 26
-#define PT_SLTW 27
-#define PT_DMND 28
-#define PT_BMTL 29
-#define PT_BRMT 30
-#define PT_PHOT 31
-#define PT_URAN 32
-#define PT_WAX  33
-#define PT_MWAX 34
-#define PT_PSCN 35
-#define PT_NSCN 36
-#define PT_LNTG 37
-#define PT_INSL 38
-#define PT_BHOL 39
-#define PT_WHOL 40
-#define PT_RBDM 41
-#define PT_LRBD 42
-#define PT_NTCT 43
-#define PT_SAND 44
-#define PT_GLAS 45
-#define PT_PTCT 46
-#define PT_BGLA 47
-#define PT_THDR 48
-#define PT_PLSM 49
-#define PT_ETRD 50
-#define PT_NICE 51
-#define PT_NBLE 52
-#define PT_BTRY 53
-#define PT_LCRY 54
-#define PT_STKM 55
-#define PT_SWCH 56
-#define PT_SMKE 57
-#define PT_PLAS 58
-#define PT_DESL 59
-#define PT_COAL 60
-#define PT_LO2  61
-#define PT_O2   62
-#define PT_INWR 63
-#define PT_YEST 64
-#define PT_DYST 65
-#define PT_NUM  66
-
-#define R_TEMP 22
-#define MAX_TEMP 3500
-#define MIN_TEMP -273
-
-static unsigned char TYPE_PART		= 0x01; //1
-static unsigned char TYPE_LIQUID	= 0x02; //2
-static unsigned char TYPE_SOLID		= 0x04; //4
-static unsigned char TYPE_GAS		= 0x08; //8
-static unsigned char PROP_CONDUCTS	= 0x10; //16
-
-const struct part_type ptypes[PT_NUM] =
-{
-    //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal Burn	Exp	Mel Hrd M	Section			H				Ins(real world, by triclops200) Description
-    {"",		PIXPACK(0x000000),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_SPECIAL,		R_TEMP+0.0f,	251,	"Erases particles."},
-    {"DUST",	PIXPACK(0xFFE0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	SC_POWDERS,		R_TEMP+0.0f,	70,		"Very light dust. Flammable."},
-    {"WATR",	PIXPACK(0x2030D0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	SC_LIQUID,		R_TEMP+-2.0f,	29,		"Liquid. Conducts electricity. Freezes. Extinguishes fires."},
-    {"OIL",		PIXPACK(0x404010),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	20,		0,	0,	5,	1,	SC_LIQUID,		R_TEMP+0.0f,	42,		"Liquid. Flammable. Solidifies under pressure"},
-    {"FIRE",	PIXPACK(0xFF1000),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	SC_EXPLOSIVE,	R_TEMP+400.0f,	88,		"Ignites flammable materials. Heats air."},
-    {"STNE",	PIXPACK(0xA0A0A0),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	SC_POWDERS,		R_TEMP+0.0f,	150,	"Heavy particles. Meltable."},
-    {"LAVA",	PIXPACK(0xE05010),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	SC_LIQUID,		R_TEMP+1500.0f,	60,		"Heavy liquid. Ignites flammable materials. Solidifies when cold."},
-    {"GUN",		PIXPACK(0xC0C0D0),	0.7f,	0.02f * CFDS,	0.94f,	0.80f,	-0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	600,	1,	0,	10,	1,	SC_EXPLOSIVE,	R_TEMP+0.0f,	97,		"Light dust. Explosive."},
-    {"NITR",	PIXPACK(0x20E010),	0.5f,	0.02f * CFDS,	0.92f,	0.97f,	0.0f,	0.2f,	0.00f,	0.000f	* CFDS,	2,	1000,	2,	0,	3,	1,	SC_EXPLOSIVE,	R_TEMP+0.0f,	50,		"Liquid. Pressure sensitive explosive."},
-    {"CLNE",	PIXPACK(0xFFD010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_SPECIAL,		R_TEMP+0.0f,	251,	"Solid. Duplicates any particles it touches."},
-    {"GAS",		PIXPACK(0xE0FF20),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	600,	0,	0,	1,	1,	SC_GAS,			R_TEMP+2.0f,	42,		"Gas. Diffuses. Flammable. Liquifies under pressure."},
-    {"C-4",		PIXPACK(0xD080E0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	2,	50,	1,	1,	SC_EXPLOSIVE,	R_TEMP+0.0f,	88,		"Solid. Pressure sensitive explosive."},
-    {"GOO",		PIXPACK(0x804000),	0.1f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	12,	1,	SC_SOLIDS,		R_TEMP+0.0f,	75,		"Solid. Deforms and disappears under pressure."},
-    {"ICE",		PIXPACK(0xA0C0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,		0,	0,	20,	1,	SC_SOLIDS,		R_TEMP+-50.0f,	46,		"Solid. Freezes water. Crushes under pressure. Cools down air."},
-    {"METL",	PIXPACK(0x404060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Conducts electricity. Meltable."},
-    {"SPRK",	PIXPACK(0xFFFF80),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Electricity. Conducted by metal and water."},
-    {"SNOW",	PIXPACK(0xC0E0FF),	0.7f,	0.01f * CFDS,	0.96f,	0.90f,	-0.1f,	0.05f,	0.01f,	-0.00005f* CFDS,1,	0,		0,	0,	20,	1,	SC_POWDERS,		R_TEMP+-30.0f,	46,		"Light particles."},
-    {"WOOD",	PIXPACK(0xC0A040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	15,	1,	SC_SOLIDS,		R_TEMP+0.0f,	164,	"Solid. Flammable. Can be pressurised into COAL"},
-    {"NEUT",	PIXPACK(0x20E0FF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_NUCLEAR,		R_TEMP+4.0f,	60,		"Neutrons. Interact with matter in odd ways."},
-    {"PLUT",	PIXPACK(0x407020),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	SC_NUCLEAR,		R_TEMP+4.0f,	251,	"Heavy particles. Fissile. Generates neutrons under pressure."},
-    {"PLNT",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	10,	1,	SC_SOLIDS,		R_TEMP+0.0f,	65,		"Plant, drinks water and grows."},
-    {"ACID",	PIXPACK(0xed55ff),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	40,		0,	0,	1,	1,	SC_LIQUID,		R_TEMP+0.0f,	34,		"Dissolves almost everything."},
-    {"VOID",	PIXPACK(0x790B0B),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,		R_TEMP+0.0f,	251,	"Hole, will drain away any particles."},
-    {"WTRV",	PIXPACK(0xA0A0FF),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	-0.1f,	0.75f,	0.0003f	* CFDS,	0,	0,		0,	0,	4,	1,	SC_GAS,			R_TEMP+100.0f,	48,		"Steam, heats up air, produced from hot water."},
-    {"CNCT",	PIXPACK(0xC0C0C0),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	25,	1,	SC_POWDERS,		R_TEMP+0.0f,	100,	"Concrete, stronger than stone."},
-    {"DSTW",	PIXPACK(0x1020C0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	SC_LIQUID,		R_TEMP+-2.0f,	23,		"Distilled water, does not conduct electricity."},
-    {"SALT",	PIXPACK(0xFFFFFF),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	SC_POWDERS,		R_TEMP+0.0f,	110,	"Salt, dissolves in water."},
-    {"SLTW",	PIXPACK(0x4050F0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	SC_LIQUID,		R_TEMP+0.0f,	75,		"Saltwater, conducts electricity, difficult to freeze."},
-    {"DMND",	PIXPACK(0xCCFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,		R_TEMP+0.0f,	186,	"Diamond. Indestructable."}, //ief015 - Added diamond. Because concrete blocks are kinda pointless.
-    {"BMTL",	PIXPACK(0x505070),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_SOLIDS,		R_TEMP+0.0f,	251,	"Breakable metal."},
-    {"BRMT",	PIXPACK(0x705060),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	SC_POWDERS,		R_TEMP+0.0f,	211,	"Broken metal."},
-    {"PHOT",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_ELEC,		R_TEMP+900.0f,	251,	"Photons. Travel in straight lines."},
-    {"URAN",	PIXPACK(0x707020),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	SC_NUCLEAR,		R_TEMP+30.0f,	251,	"Heavy particles. Generates heat under pressure."},
-    {"WAX",		PIXPACK(0xF0F0BB),  0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	10,	1,	SC_SOLIDS,		R_TEMP+0.0f,	44,		"Wax. Melts at moderately high temperatures."},
-    {"MWAX",	PIXPACK(0xE0E0AA),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000001f* CFDS,2,	5,		0,	0,	2,	1,	SC_LIQUID,		R_TEMP+28.0f,	44,		"Liquid Wax."},
-    {"PSCN",	PIXPACK(0x805050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"P-Type Silicon, Will transfer current to any conductor."},
-    {"NSCN",	PIXPACK(0x505080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"N-Type Silicon, Will only transfer current to P-Type Silicon."},
-    {"LN2",		PIXPACK(0x80A0DF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	0,	1,	SC_LIQUID,		-205.0f,		70,		"Liquid Nitrogen. Very cold."},
-    {"INSL",	PIXPACK(0x9EA3B6),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	7,		0,	0,	10,	1,	SC_SPECIAL,		R_TEMP+0.0f,	0,		"Insulator, does not conduct heat or electricity."},
-    {"BHOL",	PIXPACK(0x202020),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.01f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,		R_TEMP+70.0f,	255,	"Black hole, sucks in other particles and heats up."},
-    {"WHOL",	PIXPACK(0xEFEFEF),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.010f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,		R_TEMP-16.0f,	255,	"White hole, pushes other particles away."},
-    {"RBDM",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	1,	50,	1,	1,	SC_EXPLOSIVE,	R_TEMP+0.0f,	240,	"Rubidium, explosive, especially on contact with water, low melting point"},
-    {"LRBD",	PIXPACK(0xAAAAAA),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000001f* CFDS,2,	1000,	1,	0,	2,	1,	SC_EXPLOSIVE,	R_TEMP+45.0f,	170,	"Liquid Rubidium."},
-    {"NTCT",	PIXPACK(0x505040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Semi-conductor. Only conducts electricity when hot (More than 100C)"},
-    {"SAND",	PIXPACK(0xFFD090),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	SC_POWDERS,		R_TEMP+0.0f,	150,	"Sand, Heavy particles. Meltable."},
-    {"GLAS",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_SOLIDS,		R_TEMP+0.0f,	150,	"Solid. Meltable. Shatters under pressure"},
-    {"PTCT",	PIXPACK(0x405050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Semi-conductor. Only conducts electricity when cold (Less than 120C)"},
-    {"BGLA",	PIXPACK(0x606060),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	2,	1,	SC_POWDERS,		R_TEMP+0.0f,	150,	"Broken Glass, Heavy particles. Meltable. Bagels."},
-    {"THDR",	PIXPACK(0xFFFFA0),	0.0f,	0.00f * CFDS,	1.0f,	0.30f,	-0.99f,	0.6f,	0.62f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_ELEC,		3500.0f,		251,	"Lightning! Very hot, inflicts damage upon most materials, transfers current to metals."},
-    {"PLSM",	PIXPACK(0xBB99FF),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.30f,	0.001f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_GAS,			3500.0f,		115,	"Plasma, extremely hot."},
-    {"ETRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)"},
-    {"NICE",	PIXPACK(0xC0E0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0005f* CFDS,	0,	0,		0,	0,	20,	1,	SC_SOLIDS,		-250.0f,		46,		"Nitrogen Ice."},
-    {"NBLE",	PIXPACK(0xEB4917),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+2.0f,	106,	"Noble Gas. Diffuses. Conductive. Ionizes into plasma when intruduced to electricity"},
-    {"BTRY",	PIXPACK(0x858505),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Generates Electricity."},
-    {"LCRY",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)"},
-    {"STKM",	PIXPACK(0X000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	-0.7f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	SC_SPECIAL,			R_TEMP+14.6f,	0,	"Stickman. Don't kill him!"},
-    {"SWCH",	PIXPACK(0x103B11),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f  * CFDS, 0,  0,		0,  0,  1,  1,  SC_ELEC,		R_TEMP+0.0f,	251,	"Solid. Only conducts when switched on. (PSCN switches on, NSCN switches off)"},
-    {"SMKE",	PIXPACK(0x222222),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	SC_GAS,			R_TEMP+400.0f,	88,		"Smoke"},
-    {"PLAS",	PIXPACK(0x444444),	0.1f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.0f	* CFDS,	0,	0,		0,	1,	12,	1,	SC_SOLIDS,		R_TEMP+0.0f,	75,		"Solid. Deforms under really high pressure."},      
-    {"DESL",	PIXPACK(0x440000),	1.0f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.0f,	0.0f	* CFDS,	2,	2,		0.01f,	0,	5,	1,	SC_LIQUID,		R_TEMP+0.0f,	42,		"Liquid. Vaporises under low pressure, explodes under high pressure and temperatures"},
-    {"COAL",    PIXPACK(0x222222),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f    * CFDS, 0,  10,     0,  0,  20, 1,  SC_SOLIDS,      R_TEMP+0.0f,    200,    "Solid. Burns slowly."},
-    {"LO2",		PIXPACK(0x80A0EF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	5000,  	0,	0,	0,	1,	SC_LIQUID,		-210.0f,		70,		"Liquid Oxygen. Very cold. Reacts with fire"},    
-    {"O2",      PIXPACK(0x80A0FF),  2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	5.0f,	0.000f	* CFDS,	0,	1000,  	0,	0,	0,	1,	SC_GAS,         R_TEMP+0.0f,        70,     "Gas. Oxygen helps make things burn."},	    
-	{"INWR",	PIXPACK(0x544141),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Insulated Wire. Doesn't conduct to metal or semiconductors."},
-	{"YEST",	PIXPACK(0xEEE0C0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	15,		0,	0,	30,	1,	SC_POWDERS,		R_TEMP+0.0f,	70,		"Yeast, grows when warm (~37C)."},
-	{"DYST",	PIXPACK(0xBBB0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	20,		0,	0,	30,	0,	SC_POWDERS,		R_TEMP+0.0f,	70,		"Deat Yeast."},
-    //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal Burn	Exp	Mel Hrd M	Section			H				Ins(real world, by triclops200) Description    
-};
-
-#define ST_NONE 0
-#define ST_SOLID 1
-#define ST_LIQUID 2
-#define ST_GAS 3
-const struct part_state pstates[PT_NUM] =
-{
-    // Name					Solid	 Frzp		Liquid   Mpnt		Gas	   Bpoint
-    /* NONE */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* DUST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* WATR */ {ST_LIQUID,	PT_ICEI, 0.0f,		PT_NONE, 0.0f,		PT_WTRV, 100.0f,	PT_NONE, 0.0f},
-    /* OIL  */ {ST_LIQUID,	PT_NONE, 0.0f,  	PT_NONE, 0.0f,		PT_NONE, 0.0f,  	PT_NONE, 0.0f},
-    /* FIRE */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_PLSM, 2500.0f},
-    /* STNE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 710.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* LAVA */ {ST_LIQUID,	PT_STNE, 700.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* GUN  */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 400.0f},
-    /* NITR */ {ST_LIQUID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 400.0f},
-    /* CLNE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* GAS  */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,  	PT_NONE, 50.0f,		PT_FIRE, 300.0f},
-    /* C-4  */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 400.0f},
-    /* GOO  */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* ICE  */ {ST_SOLID,	PT_NONE, 0.0f,		PT_WATR, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* METL */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1000.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* SPRK */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* SNOW */ {ST_SOLID,	PT_NONE, 0.0f,		PT_WATR, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* WOOD */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,	PT_FIRE, 600.0f},
-    /* NEUT */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* PLUT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* PLNT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 300.0f},
-    /* ACID */ {ST_LIQUID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* VOID */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* WTRV */ {ST_GAS,		PT_ICEI, 0.0f,		PT_DSTW, 98.0f,		PT_NONE, 100.0f,	PT_NONE, 0.0f},
-    /* CNCT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 850.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* DSTW */ {ST_LIQUID,	PT_ICEI, 0.0f,		PT_NONE, 0.0f,		PT_WTRV, 100.0f,	PT_NONE, 0.0f},
-    /* SALT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 900.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* SLTW */ {ST_LIQUID,	PT_ICEI, -40.0f,	PT_NONE, 0.0f,		PT_WTRV, 110.0f,	PT_NONE, 0.0f},
-    /* DMND */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* BMTL */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1000.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* BRMT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1000.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* PHOT */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* URAN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 2100.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* WAX  */ {ST_SOLID,	PT_NONE, 0.0f,		PT_MWAX, 46.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* MWAX */ {ST_LIQUID,	PT_WAX, 45.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 400.0f},
-    /* PSCN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1414.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* NSCN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1414.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* LNTG */ {ST_SOLID,	PT_NICE, -210.0f,	PT_NONE, 0.0f,		PT_NONE, -195.8f,	PT_NONE, 0.0f},
-    /* FOAM */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* BHOL */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* WHOL */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* RBDM */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LRBD, 39.0f,		PT_NONE, 0.0f,		PT_FIRE, 688.0f},
-    /* LRBD */ {ST_LIQUID,	PT_RBDM, 38.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 688.0f},
-    /* HSCN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1414.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* SAND */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1700.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* GLAS */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1700.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* CSCN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1414.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* BGLA */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1700.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* THDR */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* PLSM */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* ETRD */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* NICE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LNTG, -209.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* NBLE */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* BTRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_PLSM, 2000.0f},
-    /* LCRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_BGLA, 1000.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* STKM */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* SWCH */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* SMKE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* PLAS */ {ST_SOLID,   PT_NONE, 0.0f,      PT_OILL, 250.0f,    PT_NONE, 0.0f,      PT_NONE, 0.0f},
-    /* DESL */ {ST_LIQUID,  PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_FIRE, 62.0f},
-    /* COAL */ {ST_SOLID,   PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_FIRE, 600.0f},
-    /* LO2  */ {ST_LIQUID,  PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_O2,   -180.0f,   PT_NONE, 0.0f},
-    /* O2   */ {ST_GAS,     PT_NONE, 0.0f,      PT_LO2,  -190.0f,   PT_NONE, 0.0f,      PT_NONE, 0.0f},
-	/* INWR */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1414.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-	/* YEST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_DYST, 60.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-	/* YEST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_DUST, 200.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-};
-static const unsigned char can_move[PT_NUM][PT_NUM] =
-{
-    /*   A B */
-    /* A 0 1 | B ligher than A */
-    /* B 1 0 | A heavier than B */
-
-/*          N D W O F S L G N C G P D I M S S W N P P A V W C D S S D B B P U W M P N L I B W R L H S G C B T P E N N B L S S S P D C L O I Y */
-/*          o u a i i t a u i l a l f c e p n o e l l c o t n s a l m m r h r a W S S N N H H b R S a l s G h l t i B t C T W M l e o O 2 N E*/
-/*          n s t l r n v n t n s e r e t r o o u u n i i r c t l t n t m o a x a c c 2 S o o d b C n a c l d s r c L r r K C K a s a X   W S*/
-/*          e t r l e e a p r e s x m i l k w d t t t d d v t w t w d l t t n   x n n   U l l m d N d s n a r m d e E y y M H E s l l     R T*/
-/* NONE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* None */
-/* DUST */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0}, /* Dust */
-/* WATR */ {0,0,0,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0}, /* Watr */
-/* OILL */ {0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Oill */
-/* FIRE */ {0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Fire */
-/* STNE */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1}, /* Stne */
-/* LAVA */ {0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,1,1}, /* Lava */
-/* GUNP */ {0,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0}, /* Gunp */
-/* NITR */ {0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Nitr */
-/* CLNE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Clne */
-/* GASS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Gass */
-/* PLEX */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Plex */
-/* DFRM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Dfrm */
-/* ICEI */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0}, /* Icei */
-/* METL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Metl */
-/* SPRK */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Sprk */
-/* SNOW */ {0,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0}, /* Snow */
-/* WOOD */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Wood */
-/* NEUT */ {0,1,1,1,1,0,0,1,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,1,0,1,1,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1,0,0,1,0,0,0,1,1}, /* Neut */
-/* PLUT */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1}, /* Plut */
-/* PLNT */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Plnt */
-/* ACID */ {0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Acid */
-/* VOID */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Void */
-/* WTRV */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Wtrv */
-/* CNCT */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0}, /* Cnct */
-/* DSTW */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0}, /* Dstw */
-/* SALT */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0}, /* Salt */
-/* SLTW */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0}, /* Sltw */
-/* DMND */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0}, /* Dmnd */
-/* BMTL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Bmlt */
-/* BRMT */ {0,1,1,1,1,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,1,1}, /* Brml */
-/* PHOT */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Phot */
-/* URAN */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1}, /* Uran */
-/* WAX	*/ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Wax  */
-/* MWAX */ {0,1,0,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1}, /* MWax */
-/* PSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Pscn */
-/* NSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Nscn */
-/* LNTG */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0}, /* LN2  */
-/* INSU */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Insu */
-/* BHOL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* BHol */
-/* WHOL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Whol */
-/* RBDM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Rbdm */
-/* LRBD */ {0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,1,1}, /* LRbd */
-/* HSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* HSCN */
-/* SAND */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1}, /* Sand */
-/* GLAS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Glas */
-/* CSCN */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Cscn */
-/* BGLA */ {0,1,1,1,0,0,1,1,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1}, /* BGla */
-/* THDR */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Thdr */
-/* PLSM */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Plsm */
-/* ETRD */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Etrd */
-/* NICE */ {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0}, /* NIce */
-/* NBLE */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Nble */
-/* BTRY */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Btry */ 
-/* LCRY */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* LCry */
-/* STKM */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* StkM */
-/* SWCH */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Swch */
-/* SMKE */ {0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Smke */
-/* PLAS */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Plas */
-/* DESL */ {0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Desl */
-/* COAL */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* Coal */    
-/* LO2  */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0}, /* LO2  */
-/* O2   */ {0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0}, /* O2  */
-/* INWR */ {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, /* INWR */
-/* YEST */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0}, /* YEST */
-/* DYST */ {0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0}, /* DYST */
-/*          N D W O F M L G N C G P D I W S S W N P P A V W C D S S D B B P U W M P N L I B W R L H S G C B T P E N N B L S S S P D C L O I Y*/
-/*          o u a i i e a u i l a l f c i p n o e l l c o t n s a l m m r h r a W S S N n H H b R S a l s G h l t i B t C T W M l e o O 2 N E*/
-/*          n s t l r t v n t n s e r e r r o o u u n i i r c t l t n t m o a x a c c 2 s o o d b C n a c l d s r c L r r K C K a s a X   W S*/
-/*          e t r l e l a p r e s x m i e k w d t t t d d v t w t w d l t t n   x n n   u l l m d N d s n a r m d e E y y M H E s l l     R T*/
-};
-
-#define FLAG_STAGNANT	1
-typedef struct
-{
-    int type;
-    int life, ctype;
-    float x, y, vx, vy;
-    float temp;
-    float pavg[2];
-    int flags;
-} particle;
-
 particle *parts;
 particle *cb_parts;
 
@@ -1197,25 +650,6 @@ inline void delete_part(int x, int y)
     pmap[y][x] = 0;	// just in case
 }
 
-#ifdef WIN32
-_inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
-#else
-inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
-#endif
-{
-    pixel t;
-    if(x<0 || y<0 || x>=XRES || y>=YRES)
-        return;
-    if(a!=255)
-    {
-        t = vid[y*(XRES+BARSIZE)+x];
-        r = (a*r + (255-a)*PIXR(t)) >> 8;
-        g = (a*g + (255-a)*PIXG(t)) >> 8;
-        b = (a*b + (255-a)*PIXB(t)) >> 8;
-    }
-    vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
-}
-
 //Signum function
 #ifdef WIN32
 _inline int sign(float i)
@@ -1228,64 +662,6 @@ inline int sign(float i)
     if (i>0)
         return 1;
     return 0;
-}
-
-void draw_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, int a)  //Draws a line
-{
-    int dx, dy, i, sx, sy, check, e, x, y;
-
-    dx = abs(x1-x2);
-    dy = abs(y1-y2);
-    sx = sign(x2-x1);
-    sy = sign(y2-y1);
-    x = x1;
-    y = y1;
-    check = 0;
-
-    if (dy>dx)
-    {
-        dx = dx+dy;
-        dy = dx-dy;
-        dx = dx-dy;
-        check = 1;
-    }
-
-    e = (dy<<2)-dx;
-    for (i=0; i<=dx; i++)
-    {
-        vid[x+y*a] =PIXRGB(r, g, b);
-        if (e>=0)
-        {
-            if (check==1)
-                x = x+sx;
-            else
-                y = y+sy;
-            e = e-(dx<<2);
-        }
-        if (check==1)
-            y = y+sy;
-        else
-            x = x+sx;
-        e = e+(dy<<2);
-    }
-}
-
-void addpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
-{
-    pixel t;
-    if(x<0 || y<0 || x>=XRES || y>=YRES)
-        return;
-    t = vid[y*(XRES+BARSIZE)+x];
-    r = (a*r + 255*PIXR(t)) >> 8;
-    g = (a*g + 255*PIXG(t)) >> 8;
-    b = (a*b + 255*PIXB(t)) >> 8;
-    if(r>255)
-        r = 255;
-    if(g>255)
-        g = 255;
-    if(b>255)
-        b = 255;
-    vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 }
 
 int drawtext(pixel *vid, int x, int y, char *s, int r, int g, int b, int a);
@@ -3630,19 +3006,6 @@ justdraw:
 	}
 }
 
-void drawblob(pixel *vid, int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
-{
-    blendpixel(vid, x+1, y, cr, cg, cb, 112);
-    blendpixel(vid, x-1, y, cr, cg, cb, 112);
-    blendpixel(vid, x, y+1, cr, cg, cb, 112);
-    blendpixel(vid, x, y-1, cr, cg, cb, 112);
-
-    blendpixel(vid, x+1, y-1, cr, cg, cb, 64);
-    blendpixel(vid, x-1, y-1, cr, cg, cb, 64);
-    blendpixel(vid, x+1, y+1, cr, cg, cb, 64);
-    blendpixel(vid, x-1, y+1, cr, cg, cb, 64);
-}
-
 void update_particles_i_th(void *arg)
 {
     upstruc *newup = (upstruc*)arg;
@@ -4215,8 +3578,6 @@ void update_particles_th(void *arg)
  *                       SDL OUTPUT                        *
  ***********************************************************/
 
-int sdl_scale = 1;
-SDL_Surface *sdl_scrn;
 SDLMod sdl_mod;
 int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
 
@@ -4259,59 +3620,6 @@ void sdl_open(void)
     sdl_seticon();
     SDL_EnableUNICODE(1);
     //SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-}
-
-void sdl_blit_1(int x, int y, int w, int h, pixel *src, int pitch)
-{
-    pixel *dst;
-    int j;
-    if(SDL_MUSTLOCK(sdl_scrn))
-        if(SDL_LockSurface(sdl_scrn)<0)
-            return;
-    dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
-    for(j=0; j<h; j++)
-    {
-        memcpy(dst, src, w*PIXELSIZE);
-        dst+=sdl_scrn->pitch/PIXELSIZE;
-        src+=pitch;
-    }
-    if(SDL_MUSTLOCK(sdl_scrn))
-        SDL_UnlockSurface(sdl_scrn);
-    SDL_UpdateRect(sdl_scrn,0,0,0,0);
-}
-
-void sdl_blit_2(int x, int y, int w, int h, pixel *src, int pitch)
-{
-    pixel *dst;
-    int j;
-    int i,k;
-    if(SDL_MUSTLOCK(sdl_scrn))
-        if(SDL_LockSurface(sdl_scrn)<0)
-            return;
-    dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
-    for(j=0; j<h; j++)
-    {
-        for(k=0; k<sdl_scale; k++)
-        {
-            for(i=0; i<w; i++)
-            {
-                dst[i*2]=src[i];
-                dst[i*2+1]=src[i];
-            }
-            dst+=sdl_scrn->pitch/PIXELSIZE;
-        }
-        src+=pitch;
-    }
-    if(SDL_MUSTLOCK(sdl_scrn))
-        SDL_UnlockSurface(sdl_scrn);
-    SDL_UpdateRect(sdl_scrn,0,0,0,0);
-}
-void sdl_blit(int x, int y, int w, int h, pixel *src, int pitch)
-{
-    if(sdl_scale == 2)
-        sdl_blit_2(x, y, w, h, src, pitch);
-    else
-        sdl_blit_1(x, y, w, h, src, pitch);
 }
 
 int frame_idx=0;
@@ -4490,7 +3798,6 @@ void *build_thumb(int *size, int bzip2)
     return d;
 }
 
-void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int py, int scl)
 {
     unsigned char *d,*c=thumb;
@@ -5201,6 +4508,7 @@ corrupt:
 #define STAMP_X 4
 #define STAMP_Y 4
 #define STAMP_MAX 120
+
 struct stamp_info
 {
     char name[11];
@@ -5270,43 +4578,6 @@ void stamp_update(void)
         }
     }
     fclose(f);
-}
-
-pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
-{
-    int i,j,x,y,w,h,r,g,b,c;
-    pixel p, *q;
-    w = (sw+f-1)/f;
-    h = (sh+f-1)/f;
-    q = malloc(w*h*PIXELSIZE);
-    for(y=0; y<h; y++)
-        for(x=0; x<w; x++)
-        {
-            r = g = b = c = 0;
-            for(j=0; j<f; j++)
-                for(i=0; i<f; i++)
-                    if(x*f+i<sw && y*f+j<sh)
-                    {
-                        p = src[(y*f+j)*sw + (x*f+i)];
-                        if(p)
-                        {
-                            r += PIXR(p);
-                            g += PIXG(p);
-                            b += PIXB(p);
-                            c ++;
-                        }
-                    }
-            if(c>1)
-            {
-                r = (r+c/2)/c;
-                g = (g+c/2)/c;
-                b = (b+c/2)/c;
-            }
-            q[y*w+x] = PIXRGB(r, g, b);
-        }
-    *qw = w;
-    *qh = h;
-    return q;
 }
 
 #define GRID_X 5
@@ -5443,805 +4714,6 @@ void del_stamp(int d)
     stamp_update();
     stamp_count = 0;
     stamp_init();
-}
-/***********************************************************
- *                      FONT DRAWING                       *
- ***********************************************************/
-
-#include "font.h"
-
-#ifdef WIN32
-_inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
-#else
-inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
-#endif
-{
-    pixel t;
-    if(x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
-        return;
-    if(a!=255)
-    {
-        t = vid[y*(XRES+BARSIZE)+x];
-        r = (a*r + (255-a)*PIXR(t)) >> 8;
-        g = (a*g + (255-a)*PIXG(t)) >> 8;
-        b = (a*b + (255-a)*PIXB(t)) >> 8;
-    }
-    vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
-}
-
-#ifdef WIN32
-_inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
-#else
-inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
-#endif
-{
-    int i, j, w, bn = 0, ba = 0;
-    char *rp = font_data + font_ptrs[c];
-    w = *(rp++);
-    for(j=0; j<FONT_H; j++)
-        for(i=0; i<w; i++)
-        {
-            if(!bn)
-            {
-                ba = *(rp++);
-                bn = 8;
-            }
-            drawpixel(vid, x+i, y+j, r, g, b, ((ba&3)*a)/3);
-            ba >>= 2;
-            bn -= 2;
-        }
-    return x + w;
-}
-
-int drawtext(pixel *vid, int x, int y, char *s, int r, int g, int b, int a)
-{
-    int sx = x;
-    for(; *s; s++)
-    {
-        if(*s == '\n')
-        {
-            x = sx;
-            y += FONT_H+2;
-        }
-        else if(*s == '\b')
-        {
-            switch(s[1])
-            {
-            case 'w':
-                r = g = b = 255;
-                break;
-            case 'g':
-                r = g = b = 192;
-                break;
-            case 'o':
-                r = 255;
-                g = 216;
-                b = 32;
-                break;
-            case 'r':
-                r = 255;
-                g = b = 0;
-                break;
-            case 'b':
-                r = g = 0;
-                b = 255;
-                break;
-            }
-            s++;
-        }
-        else
-            x = drawchar(vid, x, y, *(unsigned char *)s, r, g, b, a);
-    }
-    return x;
-}
-
-void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
-{
-    int i;
-    for(i=0; i<=w; i++)
-    {
-        drawpixel(vid, x+i, y, r, g, b, a);
-        drawpixel(vid, x+i, y+h, r, g, b, a);
-    }
-    for(i=1; i<h; i++)
-    {
-        drawpixel(vid, x, y+i, r, g, b, a);
-        drawpixel(vid, x+w, y+i, r, g, b, a);
-    }
-}
-
-void fillrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
-{
-    int i,j;
-    for(j=1; j<h; j++)
-        for(i=1; i<w; i++)
-            drawpixel(vid, x+i, y+j, r, g, b, a);
-}
-
-void clearrect(pixel *vid, int x, int y, int w, int h)
-{
-    int i;
-    for(i=1; i<h; i++)
-        memset(vid+(x+1+(XRES+BARSIZE)*(y+i)), 0, PIXELSIZE*(w-1));
-}
-
-void drawdots(pixel *vid, int x, int y, int h, int r, int g, int b, int a)
-{
-    int i;
-    for(i=0; i<=h; i+=2)
-        drawpixel(vid, x, y+i, r, g, b, a);
-}
-
-int textwidth(char *s)
-{
-    int x = 0;
-    for(; *s; s++)
-        x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
-    return x-1;
-}
-int drawtextmax(pixel *vid, int x, int y, int w, char *s, int r, int g, int b, int a)
-{
-    int i;
-    w += x-5;
-    for(; *s; s++)
-    {
-        if(x+font_data[font_ptrs[(int)(*(unsigned char *)s)]]>=w && x+textwidth(s)>=w+5)
-            break;
-        x = drawchar(vid, x, y, *(unsigned char *)s, r, g, b, a);
-    }
-    if(*s)
-        for(i=0; i<3; i++)
-            x = drawchar(vid, x, y, '.', r, g, b, a);
-    return x;
-}
-
-int textnwidth(char *s, int n)
-{
-    int x = 0;
-    for(; *s; s++)
-    {
-        if(!n)
-            break;
-        x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
-        n--;
-    }
-    return x-1;
-}
-int textwidthx(char *s, int w)
-{
-    int x=0,n=0,cw;
-    for(; *s; s++)
-    {
-        cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
-        if(x+(cw/2) >= w)
-            break;
-        x += cw;
-        n++;
-    }
-    return n;
-}
-
-/***********************************************************
- *                      MAIN PROGRAM                       *
- ***********************************************************/
-
-void draw_tool(pixel *vid_buf, int b, int sl, int sr, unsigned pc, unsigned iswall)
-{
-    int x, y, i, j, c;
-    int bo = b;
-    if(iswall==1)
-    {
-        b = b-100;
-        x = (2+32*((b-22)/1));
-        y = YRES+2+40;
-        switch(b)
-        {
-        case WL_WALLELEC:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    if(!(i%2) && !(j%2))
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                    }
-                    else
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = PIXPACK(0x808080);
-                    }
-                }
-            }
-            break;
-        case 23:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<6+j; i++)
-                {
-                    if(!(i&j&1))
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                    }
-                }
-                for(; i<27; i++)
-                {
-                    if(i&j&1)
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                    }
-                }
-            }
-            break;
-        case 24:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 25:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = i==1||i==26||j==1||j==14 ? PIXPACK(0xA0A0A0) : PIXPACK(0x000000);
-                    drawtext(vid_buf, x+4, y+3, "\x8D", 255, 255, 255, 255);
-                }
-            }
-            for(i=9; i<27; i++)
-            {
-                drawpixel(vid_buf, x+i, y+8+(int)(3.9f*cos(i*0.3f)), 255, 255, 255, 255);
-            }
-            break;
-        case 26:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = i==1||i==26||j==1||j==14 ? PIXPACK(0xA0A0A0) : PIXPACK(0x000000);
-                }
-            }
-            drawtext(vid_buf, x+9, y+3, "\xA1", 32, 64, 128, 255);
-            drawtext(vid_buf, x+9, y+3, "\xA0", 255, 255, 255, 255);
-            break;
-        case 27:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 28:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    if(!(i%2) && !(j%2))
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                    }
-                }
-            }
-            break;
-        case 29:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 30:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<13; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            for(j=1; j<15; j++)
-            {
-                for(i=14; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 32:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 33:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 34:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    if(!(i%2) && !(j%2))
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                    }
-                }
-            }
-            break;
-        case 36:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-            if(c<544)
-            {
-                c = 255;
-            }
-            else
-            {
-                c = 0;
-            }
-            drawtext(vid_buf, x+14-textwidth("AIR")/2, y+4, "AIR", c, c, c, 255);
-            break;
-        case 37:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-            if(c<544)
-            {
-                c = 255;
-            }
-            else
-            {
-                c = 0;
-            }
-            drawtext(vid_buf, x+14-textwidth("HEAT")/2, y+4, "HEAT", c, c, c, 255);
-            break;
-        case 38:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-            if(c<544)
-            {
-                c = 255;
-            }
-            else
-            {
-                c = 0;
-            }
-            drawtext(vid_buf, x+14-textwidth("COOL")/2, y+4, "COOL", c, c, c, 255);
-            break;
-        case 39:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-            if(c<544)
-            {
-                c = 255;
-            }
-            else
-            {
-                c = 0;
-            }
-            drawtext(vid_buf, x+14-textwidth("VAC")/2, y+4, "VAC", c, c, c, 255);
-            break;
-        default:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-        }
-        if(b==30)
-        {
-            for(j=4; j<12; j++)
-            {
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x+j+6)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x+j+7)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x-j+21)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x-j+22)] = PIXPACK(0xFF0000);
-            }
-        }
-    }
-    else
-    {
-        x = 2+32*(b/2);
-        y = YRES+2+20*(b%2);
-        for(j=1; j<15; j++)
-        {
-            for(i=1; i<27; i++)
-            {
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-            }
-        }
-        if(b==0)
-        {
-            for(j=4; j<12; j++)
-            {
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x+j+6)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x+j+7)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x-j+21)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x-j+22)] = PIXPACK(0xFF0000);
-            }
-        }
-        c = PIXB(ptypes[b].pcolors) + 3*PIXG(ptypes[b].pcolors) + 2*PIXR(ptypes[b].pcolors);
-        if(c<544)
-        {
-            c = 255;
-        }
-        else
-        {
-            c = 0;
-        }
-        drawtext(vid_buf, x+14-textwidth((char *)ptypes[b].name)/2, y+4, (char *)ptypes[b].name, c, c, c, 255);
-    }
-    if(bo==sl || bo==sr)
-    {
-        c = 0;
-        if(bo==sl)
-            c |= PIXPACK(0xFF0000);
-        if(bo==sr)
-            c |= PIXPACK(0x0000FF);
-        for(i=0; i<30; i++)
-        {
-            vid_buf[(XRES+BARSIZE)*(y-1)+(x+i-1)] = c;
-            vid_buf[(XRES+BARSIZE)*(y+16)+(x+i-1)] = c;
-        }
-        for(j=0; j<18; j++)
-        {
-            vid_buf[(XRES+BARSIZE)*(y+j-1)+(x-1)] = c;
-            vid_buf[(XRES+BARSIZE)*(y+j-1)+(x+28)] = c;
-        }
-    }
-}
-
-int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
-{
-    int i, j, c;
-    if(b>=121)
-    {
-        b = b-100;
-        //x = (2+32*((b-22)/1));
-        //y = YRES+2+40;
-        switch(b)
-        {
-        case WL_WALLELEC:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    if(!(i%2) && !(j%2))
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                    }
-                    else
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = PIXPACK(0x808080);
-                    }
-                }
-            }
-            break;
-        case 23:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<6+j; i++)
-                {
-                    if(!(i&j&1))
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                    }
-                }
-                for(; i<27; i++)
-                {
-                    if(i&j&1)
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                    }
-                }
-            }
-            break;
-        case 24:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 25:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = i==1||i==26||j==1||j==14 ? PIXPACK(0xA0A0A0) : PIXPACK(0x000000);
-                    drawtext(vid_buf, x+4, y+3, "\x8D", 255, 255, 255, 255);
-                }
-            }
-            for(i=9; i<27; i++)
-            {
-                drawpixel(vid_buf, x+i, y+8+(int)(3.9f*cos(i*0.3f)), 255, 255, 255, 255);
-            }
-            break;
-        case 26:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = i==1||i==26||j==1||j==14 ? PIXPACK(0xA0A0A0) : PIXPACK(0x000000);
-                }
-            }
-            drawtext(vid_buf, x+9, y+3, "\xA1", 32, 64, 128, 255);
-            drawtext(vid_buf, x+9, y+3, "\xA0", 255, 255, 255, 255);
-            break;
-        case 27:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 28:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    if(!(i%2) && !(j%2))
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                    }
-                }
-            }
-            break;
-        case 29:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 30:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<13; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            for(j=1; j<15; j++)
-            {
-                for(i=14; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 32:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 33:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        case 34:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    if(!(i%2) && !(j%2))
-                    {
-                        vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                    }
-                }
-            }
-            break;
-        case 36:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-            if(c<544)
-            {
-                c = 255;
-            }
-            else
-            {
-                c = 0;
-            }
-            drawtext(vid_buf, x+14-textwidth("AIR")/2, y+4, "AIR", c, c, c, 255);
-            break;
-        case 37:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-            if(c<544)
-            {
-                c = 255;
-            }
-            else
-            {
-                c = 0;
-            }
-            drawtext(vid_buf, x+14-textwidth("HEAT")/2, y+4, "HEAT", c, c, c, 255);
-            break;
-        case 38:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-            if(c<544)
-            {
-                c = 255;
-            }
-            else
-            {
-                c = 0;
-            }
-            drawtext(vid_buf, x+14-textwidth("COOL")/2, y+4, "COOL", c, c, c, 255);
-            break;
-        case 39:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-            if(c<544)
-            {
-                c = 255;
-            }
-            else
-            {
-                c = 0;
-            }
-            drawtext(vid_buf, x+14-textwidth("VAC")/2, y+4, "VAC", c, c, c, 255);
-            break;
-        case 40:
-            for(j=1; j<15; j+=2)
-            {
-                for(i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
-        default:
-            for(j=1; j<15; j++)
-            {
-                for(i=1; i<27; i++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-        }
-        if(b==30)
-        {
-            for(j=4; j<12; j++)
-            {
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x+j+6)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x+j+7)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x-j+21)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x-j+22)] = PIXPACK(0xFF0000);
-            }
-        }
-    }
-    else
-    {
-        //x = 2+32*(b/2);
-        //y = YRES+2+20*(b%2);
-        for(j=1; j<15; j++)
-        {
-            for(i=1; i<27; i++)
-            {
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-            }
-        }
-        if(b==0)
-        {
-            for(j=4; j<12; j++)
-            {
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x+j+6)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x+j+7)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x-j+21)] = PIXPACK(0xFF0000);
-                vid_buf[(XRES+BARSIZE)*(y+j)+(x-j+22)] = PIXPACK(0xFF0000);
-            }
-        }
-        c = PIXB(ptypes[b].pcolors) + 3*PIXG(ptypes[b].pcolors) + 2*PIXR(ptypes[b].pcolors);
-        if(c<544)
-        {
-            c = 255;
-        }
-        else
-        {
-            c = 0;
-        }
-        drawtext(vid_buf, x+14-textwidth((char *)ptypes[b].name)/2, y+4, (char *)ptypes[b].name, c, c, c, 255);
-    }
-    return 26;
-}
-
-void draw_menu(pixel *vid_buf, int i, int hover)
-{
-
-    //drawtext(vid_buf, XRES+1, /*(12*i)+2*/((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2), msections[i].icon, 255, 255, 255, 255);
-#ifdef MENUV3
-    drawrect(vid_buf, XRES-2, (i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16), 14, 14, 255, 255, 255, 255);
-    if(hover==i)
-    {
-        fillrect(vid_buf, XRES-2, (i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16), 14, 14, 255, 255, 255, 255);
-        drawtext(vid_buf, XRES+1, (i*16)+YRES+MENUSIZE-14-(SC_TOTAL*16), msections[i].icon, 0, 0, 0, 255);
-    }
-    else
-    {
-        drawtext(vid_buf, XRES+1, (i*16)+YRES+MENUSIZE-14-(SC_TOTAL*16), msections[i].icon, 255, 255, 255, 255);
-    }
-#else
-    drawtext(vid_buf, XRES+1, (i*16)+YRES+MENUSIZE-14-(SC_TOTAL*16), msections[i].icon, 255, 255, 255, 255);
-#endif
 }
 
 void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
@@ -6875,65 +5347,6 @@ int flood_parts(int x, int y, int c, int cm, int bm)
     return 1;
 }
 
-static void xor_pixel(int x, int y, pixel *vid)
-{
-    int c;
-    if(x<0 || y<0 || x>=XRES || y>=YRES)
-        return;
-    c = vid[y*(XRES+BARSIZE)+x];
-    c = PIXB(c) + 3*PIXG(c) + 2*PIXR(c);
-    if(c<512)
-        vid[y*(XRES+BARSIZE)+x] = PIXPACK(0xC0C0C0);
-    else
-        vid[y*(XRES+BARSIZE)+x] = PIXPACK(0x404040);
-}
-
-void xor_line(int x1, int y1, int x2, int y2, pixel *vid)
-{
-    int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
-    float e, de;
-    if(cp)
-    {
-        y = x1;
-        x1 = y1;
-        y1 = y;
-        y = x2;
-        x2 = y2;
-        y2 = y;
-    }
-    if(x1 > x2)
-    {
-        y = x1;
-        x1 = x2;
-        x2 = y;
-        y = y1;
-        y1 = y2;
-        y2 = y;
-    }
-    dx = x2 - x1;
-    dy = abs(y2 - y1);
-    e = 0.0f;
-    if(dx)
-        de = dy/(float)dx;
-    else
-        de = 0.0f;
-    y = y1;
-    sy = (y1<y2) ? 1 : -1;
-    for(x=x1; x<=x2; x++)
-    {
-        if(cp)
-            xor_pixel(y, x, vid);
-        else
-            xor_pixel(x, y, vid);
-        e += de;
-        if(e >= 0.5f)
-        {
-            y += sy;
-            e -= 1.0f;
-        }
-    }
-}
-
 void draw_svf_ui(pixel *vid_buf)
 {
     int c;
@@ -7061,6 +5474,7 @@ typedef struct ui_edit
     char str[256],*def;
     int focus, cursor, hide;
 } ui_edit;
+
 void ui_edit_draw(pixel *vid_buf, ui_edit *ed)
 {
     int cx, i;
@@ -7090,8 +5504,10 @@ void ui_edit_draw(pixel *vid_buf, ui_edit *ed)
             drawpixel(vid_buf, ed->x+cx, ed->y+i, 255, 255, 255, 255);
     }
 }
+
 char *shift_0="`1234567890-=[]\\;',./";
 char *shift_1="~!@#$%^&*()_+{}|:\"<>?";
+
 void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
 {
     char ch, ts[2], echo[256], *str;
@@ -7212,11 +5628,13 @@ void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
         }
     }
 }
+
 typedef struct ui_checkbox
 {
     int x, y;
     int focus, checked;
 } ui_checkbox;
+
 void ui_checkbox_draw(pixel *vid_buf, ui_checkbox *ed)
 {
     int w = 12;
@@ -7233,6 +5651,7 @@ void ui_checkbox_draw(pixel *vid_buf, ui_checkbox *ed)
         drawrect(vid_buf, ed->x, ed->y, w, w, 128, 128, 128, 255);
     }
 }
+
 void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed)
 {
     int w = 12;
@@ -7475,6 +5894,7 @@ struct strlist
     char *str;
     struct strlist *next;
 };
+
 void strlist_add(struct strlist **list, char *str)
 {
     struct strlist *item = malloc(sizeof(struct strlist));
@@ -7482,6 +5902,7 @@ void strlist_add(struct strlist **list, char *str)
     item->next = *list;
     *list = item;
 }
+
 int strlist_find(struct strlist **list, char *str)
 {
     struct strlist *item;
@@ -7490,6 +5911,7 @@ int strlist_find(struct strlist **list, char *str)
             return 1;
     return 0;
 }
+
 void strlist_free(struct strlist **list)
 {
     struct strlist *item;
@@ -7758,6 +6180,7 @@ int save_name_ui(pixel *vid_buf)
 }
 
 void thumb_cache_inval(char *id);
+
 void execute_save(pixel *vid_buf)
 {
     int status;
@@ -8031,6 +6454,7 @@ int execute_vote(pixel *vid_buf, char *id, char *action)
 }
 
 static char hex[] = "0123456789ABCDEF";
+
 void strcaturl(char *dst, char *src)
 {
     char *d;
@@ -9034,21 +7458,6 @@ void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a)
         }
 }
 
-void xor_rect(pixel *vid, int x, int y, int w, int h)
-{
-    int i;
-    for(i=0; i<w; i+=2)
-    {
-        xor_pixel(x+i, y, vid);
-        xor_pixel(x+i, y+h-1, vid);
-    }
-    for(i=2; i<h; i+=2)
-    {
-        xor_pixel(x, y+i, vid);
-        xor_pixel(x+w-1, y+i, vid);
-    }
-}
-
 int stamp_ui(pixel *vid_buf)
 {
     int b=1,bq,mx,my,d=-1,i,j,k,x,gx,gy,y,w,h,r=-1,stamp_page=0,per_page=STAMP_X*STAMP_Y,page_count;
@@ -9203,23 +7612,6 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
     *x0 = (signs[i].ju == 2) ? signs[i].x - *w :
           (signs[i].ju == 1) ? signs[i].x - *w/2 : signs[i].x;
     *y0 = (signs[i].y > 18) ? signs[i].y - 18 : signs[i].y + 4;
-}
-
-void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag)
-{
-    char t[2];
-    t[0] = ch;
-    t[1] = 0;
-    if(flag)
-    {
-        fillrect(vid_buf, x-1, y-1, 17, 17, 255, 255, 255, 255);
-        drawtext(vid_buf, x+3, y+2, t, 0, 0, 0, 255);
-    }
-    else
-    {
-        drawrect(vid_buf, x, y, 15, 15, 255, 255, 255, 255);
-        drawtext(vid_buf, x+3, y+2, t, 255, 255, 255, 255);
-    }
 }
 
 void render_signs(pixel *vid_buf)
