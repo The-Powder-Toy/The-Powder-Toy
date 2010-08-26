@@ -3,7 +3,7 @@
 #include "powder.h"
 #include "graphics.h"
 #include "font.h"
-#include "utils.h"
+#include "misc.h"
 #include <math.h>
 #include <SDL/SDL.h>
 
@@ -716,9 +716,6 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 
 void draw_menu(pixel *vid_buf, int i, int hover)
 {
-
-    //drawtext(vid_buf, XRES+1, /*(12*i)+2*/((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2), msections[i].icon, 255, 255, 255, 255);
-#ifdef MENUV3
     drawrect(vid_buf, XRES-2, (i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16), 14, 14, 255, 255, 255, 255);
     if(hover==i)
     {
@@ -729,9 +726,6 @@ void draw_menu(pixel *vid_buf, int i, int hover)
     {
         drawtext(vid_buf, XRES+1, (i*16)+YRES+MENUSIZE-14-(SC_TOTAL*16), msections[i].icon, 255, 255, 255, 255);
     }
-#else
-    drawtext(vid_buf, XRES+1, (i*16)+YRES+MENUSIZE-14-(SC_TOTAL*16), msections[i].icon, 255, 255, 255, 255);
-#endif
 }
 
 #ifdef WIN32

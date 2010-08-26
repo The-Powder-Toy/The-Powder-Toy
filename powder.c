@@ -37,7 +37,7 @@
 #include <unistd.h>
 #endif
 
-#include "utils.h"
+#include "misc.h"
 #include "font.h"
 #include "defines.h"
 #include "powder.h"
@@ -8619,15 +8619,7 @@ int main(int argc, char *argv[])
         {
             draw_menu(vid_buf, i, active_menu);
         }
-#ifndef MENUV3
-        for(i=0; i<SC_TOTAL; i++)
-        {
-            if(!b&&x>=sdl_scale*(XRES+1) && x<sdl_scale*(XRES+BARSIZE-1) &&y>= sdl_scale*(((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2)-2) && y<sdl_scale*(((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2)+12))
-            {
-                menu_ui(vid_buf, i, &sl, &sr);
-            }
-        }
-#else
+
         for(i=0; i<SC_TOTAL; i++)
         {
             if(!b&&x>=sdl_scale*(XRES-2) && x<sdl_scale*(XRES+BARSIZE-1) &&y>= sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)) && y<sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)+15))
@@ -8636,7 +8628,6 @@ int main(int argc, char *argv[])
             }
         }
         menu_ui_v3(vid_buf, active_menu, &sl, &sr, b, bq, x, y);
-#endif
 
         if(zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy
                 && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)

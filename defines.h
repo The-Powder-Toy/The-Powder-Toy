@@ -5,11 +5,7 @@
 
 #undef PLOSS
 
-#ifdef MENUV3
 #define MENUSIZE 40
-#else
-#define MENUSIZE 20
-#endif
 #define BARSIZE 14
 #define XRES	612
 #define YRES	384

@@ -24,8 +24,4 @@
 #define MINOR_VERSION 3
 #define IDENT_VERSION "S" //Change this if you're not Simon! It should be a single letter.
 
-#define MENUV3
-//#define BETA
-#define HEAT_ENABLE
-
 #endif
