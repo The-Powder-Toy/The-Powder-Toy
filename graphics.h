@@ -1,6 +1,8 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 #include <SDL/SDL.h>
+#include "defines.h"
+#include "hmap.h"
 
 #ifdef PIX16
 #define PIXELSIZE 2
@@ -39,6 +41,10 @@ typedef unsigned int pixel;
 extern unsigned cmode;
 extern SDL_Surface *sdl_scrn;
 extern int sdl_scale;
+
+extern unsigned char fire_r[YRES/CELL][XRES/CELL];
+extern unsigned char fire_g[YRES/CELL][XRES/CELL];
+extern unsigned char fire_b[YRES/CELL][XRES/CELL];
 
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f);
 

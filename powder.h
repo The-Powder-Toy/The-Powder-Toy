@@ -397,4 +397,63 @@ static unsigned char can_move[PT_NUM][PT_NUM] =
 /*          e t r l e l a p r e s x m i e k w d t t t d d v t w t w d l t t n   x n n   u l l m d N d s n a r m d e E y y M H E s l l     R T*/
 };
 
+extern int isplayer;
+extern float player[20];
+
+extern particle *parts;
+extern particle *cb_parts;
+
+extern unsigned char bmap[YRES/CELL][XRES/CELL];
+extern unsigned char emap[YRES/CELL][XRES/CELL];
+
+extern unsigned char cb_bmap[YRES/CELL][XRES/CELL];
+extern unsigned char cb_emap[YRES/CELL][XRES/CELL];
+
+extern int pfree;
+
+extern unsigned pmap[YRES][XRES];
+unsigned cb_pmap[YRES][XRES];
+
+int try_move(int i, int x, int y, int nx, int ny);
+
+void kill_part(int i);
+
+#ifdef WIN32
+extern _inline int create_part(int p, int x, int y, int t);
+#else
+extern inline int create_part(int p, int x, int y, int t);
+#endif
+
+#ifdef WIN32
+extern _inline void delete_part(int x, int y);
+#else
+extern inline void delete_part(int x, int y);
+#endif
+
+#ifdef WIN32
+extern _inline int is_wire(int x, int y);
+#else
+extern inline int is_wire(int x, int y);
+#endif
+
+#ifdef WIN32
+extern _inline int is_wire_off(int x, int y);
+#else
+extern inline int is_wire_off(int x, int y);
+#endif
+
+void set_emap(int x, int y);
+
+#ifdef WIN32
+_inline int parts_avg(int ci, int ni);
+#else
+inline int parts_avg(int ci, int ni);
+#endif
+
+int nearest_part(int ci, int t);
+
+void update_particles_i(pixel *vid, int start, int inc);
+
+void update_particles(pixel *vid);
+
 #endif

@@ -63,4 +63,5 @@ static menu_section msections[] =
     {"\xCC", "Special", 0},
 };
 
+void menu_count(void);
 #endif

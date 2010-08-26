@@ -28,4 +28,12 @@ static unsigned char ZSIZE = ZSIZE_D;
 
 typedef unsigned char uint8;
 
+extern int legacy_enable;
+
+extern int sys_pause;
+extern int framerender;
+
+extern int mousex, mousey;
+extern int death;
+
 #endif
