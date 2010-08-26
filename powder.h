@@ -122,7 +122,7 @@ static unsigned char TYPE_GAS		= 0x08; //8
 static unsigned char PROP_CONDUCTS	= 0x10; //16
 #define FLAG_STAGNANT	1
 
-typedef struct
+struct particle
 {
     int type;
     int life, ctype;
@@ -130,7 +130,8 @@ typedef struct
     float temp;
     float pavg[2];
     int flags;
-} particle;
+};
+typedef struct particle particle;
 
 struct part_type
 {
@@ -156,6 +157,7 @@ struct part_type
     const char *descs;
     unsigned char properties;
 };
+typedef struct part_type part_type;
 
 struct part_state
 {
@@ -169,8 +171,9 @@ struct part_state
     int burn;
     float btemp;
 };
+typedef struct part_state part_state;
 
-const struct part_type ptypes[PT_NUM] =
+static part_type ptypes[PT_NUM] =
 {
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal Burn	Exp	Mel Hrd M	Section			H				Ins(real world, by triclops200) Description
     {"",		PIXPACK(0x000000),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_SPECIAL,		R_TEMP+0.0f,	251,	"Erases particles."},
@@ -242,7 +245,7 @@ const struct part_type ptypes[PT_NUM] =
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal Burn	Exp	Mel Hrd M	Section			H				Ins(real world, by triclops200) Description    
 };
 
-const struct part_state pstates[PT_NUM] =
+static part_state pstates[PT_NUM] =
 {
     // Name					Solid	 Frzp		Liquid   Mpnt		Gas	   Bpoint
     /* NONE */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
@@ -312,7 +315,7 @@ const struct part_state pstates[PT_NUM] =
 	/* YEST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_DYST, 60.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* YEST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_DUST, 200.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 };
-static const unsigned char can_move[PT_NUM][PT_NUM] =
+static unsigned char can_move[PT_NUM][PT_NUM] =
 {
     /*   A B */
     /* A 0 1 | B ligher than A */

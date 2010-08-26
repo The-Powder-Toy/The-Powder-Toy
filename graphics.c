@@ -3,7 +3,13 @@
 #include "powder.h"
 #include "graphics.h"
 #include "font.h"
+#include "utils.h"
+#include <math.h>
 #include <SDL/SDL.h>
+
+unsigned cmode = 3;
+SDL_Surface *sdl_scrn;
+int sdl_scale = 1;
 
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
 {

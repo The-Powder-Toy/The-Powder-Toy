@@ -7,13 +7,16 @@ struct menu_section
     const char *name;
     int itemcount;
 };
+typedef struct menu_section menu_section;
+
 struct menu_wall
 {
     pixel colour;
     const char *descs;
 };
+typedef struct menu_wall menu_wall;
 
-const struct menu_wall mwalls[] =
+static menu_wall mwalls[] =
 {
     {PIXPACK(0xC0C0C0), "Wall. Indestructible. Blocks everything. Conductive."},
     {PIXPACK(0x808080), "E-Wall. Becomes transparent when electricity is connected."},
@@ -47,7 +50,7 @@ const struct menu_wall mwalls[] =
 #define SC_NUCLEAR 7
 #define SC_TOTAL 9
 
-struct menu_section msections[] =
+static menu_section msections[] =
 {
     {"\xC1", "Walls", 0},
     {"\xC2", "Electronics", 0},

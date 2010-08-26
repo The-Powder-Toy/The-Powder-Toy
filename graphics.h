@@ -36,9 +36,9 @@ typedef unsigned int pixel;
 #endif
 #endif
 
-unsigned cmode = 3;
-SDL_Surface *sdl_scrn;
-int sdl_scale = 1;
+extern unsigned cmode;
+extern SDL_Surface *sdl_scrn;
+extern int sdl_scale;
 
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f);
 
