@@ -1192,7 +1192,7 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
                     }
                 }
-                else if(t==PT_OILL&&cmode == 6)
+                else if(t==PT_OIL&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
@@ -1450,7 +1450,7 @@ void draw_parts(pixel *vid)
                     }
 
                 }
-                else if(t==PT_GASS&&cmode == 6)
+                else if(t==PT_GAS&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {

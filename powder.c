@@ -524,7 +524,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             vy[y/CELL][x/CELL] *= ptypes[t].airloss;
             vx[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vx;
             vy[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vy;
-            if(t==PT_GASS||t==PT_NBLE)
+            if(t==PT_GAS||t==PT_NBLE)
             {
                 if(pv[y/CELL][x/CELL]<3.5f)
                     pv[y/CELL][x/CELL] += ptypes[t].hotair*(3.5f-pv[y/CELL][x/CELL]);
@@ -562,7 +562,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             parts[i].vx *= ptypes[t].loss;
             parts[i].vy *= ptypes[t].loss;
 
-            if(t==PT_DFRM && !parts[i].life)
+            if(t==PT_GOO && !parts[i].life)
             {
                 if(pv[y/CELL][x/CELL]>1.0f)
                 {
@@ -650,17 +650,17 @@ void update_particles_i(pixel *vid, int start, int inc)
                 if(t==PT_WTRV && pv[y/CELL][x/CELL]>4.0f)
                     t = parts[i].type = PT_DSTW;
                 if(t==PT_DESL && pv[y/CELL][x/CELL]<-6.0f)
-                    t = parts[i].type = PT_GASS;
-                if(t==PT_GASS && pv[y/CELL][x/CELL]>6.0f)
+                    t = parts[i].type = PT_GAS;
+                if(t==PT_GAS && pv[y/CELL][x/CELL]>6.0f)
                     t = parts[i].type = PT_DESL;
                 if(t==PT_DESL && pv[y/CELL][x/CELL]>12.0f)
                     t = parts[i].type = PT_FIRE;
             }
             if(t==PT_DESL && pv[y/CELL][x/CELL]<-20.0f)
-                t = parts[i].type = PT_GASS;
+                t = parts[i].type = PT_GAS;
             if(t==PT_DESL && pv[y/CELL][x/CELL]>50.0f)      // Only way I know to make it
                 t = parts[i].type = PT_FIRE;                // combust under pressure.
-            if(t==PT_GASS && pv[y/CELL][x/CELL]>20.0f)
+            if(t==PT_GAS && pv[y/CELL][x/CELL]>20.0f)
                 t = parts[i].type = PT_DESL;
             if(t==PT_BMTL && pv[y/CELL][x/CELL]>2.5f)
                 t = parts[i].type = PT_BRMT;
@@ -1146,17 +1146,17 @@ void update_particles_i(pixel *vid, int start, int inc)
                             if((r&0xFF)==PT_WATR && 15>(rand()%100))
                                 parts[r>>8].type = PT_DSTW;
                             if((r&0xFF)==PT_PLEX && 15>(rand()%1000))
-                                parts[r>>8].type = PT_DFRM;
+                                parts[r>>8].type = PT_GOO;
                             if((r&0xFF)==PT_NITR && 15>(rand()%1000))
                                 parts[r>>8].type = PT_DESL;
-                            if((r&0xFF)==PT_OILL && 5>(rand()%1000))
+                            if((r&0xFF)==PT_OIL && 5>(rand()%1000))
                                 parts[r>>8].type = PT_PLAS;
                             if((r&0xFF)==PT_PLNT && 5>(rand()%100))
                                 parts[r>>8].type = PT_WOOD;
                             if((r&0xFF)==PT_PLAS && 5>(rand()%1000))
-                                parts[r>>8].type = PT_OILL;
+                                parts[r>>8].type = PT_OIL;
                             if((r&0xFF)==PT_DESL && 15>(rand()%1000))
-                                parts[r>>8].type = PT_GASS;
+                                parts[r>>8].type = PT_GAS;
                             if((r&0xFF)==PT_COAL && 5>(rand()%100))
                                 parts[r>>8].type = PT_WOOD;
                         }
