@@ -63,5 +63,66 @@ static menu_section msections[] =
     {"\xCC", "Special", 0},
 };
 
+struct ui_edit
+{
+    int x, y, w, nx;
+    char str[256],*def;
+    int focus, cursor, hide;
+};
+typedef struct ui_edit ui_edit;
+
+struct ui_checkbox
+{
+    int x, y;
+    int focus, checked;
+};
+typedef struct ui_checkbox ui_checkbox;
+
+extern SDLMod sdl_mod;
+extern int sdl_key, sdl_wheel, sdl_caps, sdl_ascii, sdl_zoom_trig;
+extern char *shift_0;
+extern char *shift_1;
+extern int svf_login;
+extern int svf_admin;
+extern int svf_mod;
+extern char svf_user[64];
+extern char svf_pass[64];
+
+extern int svf_open;
+extern int svf_own;
+extern int svf_myvote;
+extern int svf_publish;
+extern char svf_id[16];
+extern char svf_name[64];
+extern char svf_tags[256];
+extern void *svf_last;
+extern int svf_lsize;
+
+extern int Z_keysym;
+
 void menu_count(void);
+
+void add_sign_ui(pixel *vid_buf, int mx, int my);
+
+void ui_edit_draw(pixel *vid_buf, ui_edit *ed);
+
+void ui_edit_process(int mx, int my, int mb, ui_edit *ed);
+
+void ui_checkbox_draw(pixel *vid_buf, ui_checkbox *ed);
+
+void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed);
+
+void draw_svf_ui(pixel *vid_buf);
+
+void error_ui(pixel *vid_buf, int err, char *txt);
+
+void info_ui(pixel *vid_buf, char *top, char *txt);
+
+void info_box(pixel *vid_buf, char *msg);
+
+int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn);
+
+void login_ui(pixel *vid_buf);
+
+int sdl_poll(void);
 #endif

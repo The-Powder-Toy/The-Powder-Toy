@@ -976,8 +976,8 @@ void draw_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, 
 
     dx = abs(x1-x2);
     dy = abs(y1-y2);
-    sx = sign(x2-x1);
-    sy = sign(y2-y1);
+    sx = isign(x2-x1);
+    sy = isign(y2-y1);
     x = x1;
     y = y1;
     check = 0;

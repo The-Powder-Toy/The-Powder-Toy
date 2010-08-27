@@ -1,10 +1,12 @@
+#include <stdlib.h>
+#include <string.h>
 #include "misc.h"
 
 //Signum function
 #ifdef WIN32
-_inline int sign(float i)
+_inline int isign(float i)
 #else
-inline int sign(float i)
+inline int isign(float i)
 #endif
 {
     if (i<0)
@@ -38,4 +40,16 @@ inline float restrict_flt(float f, float min, float max)
     if(f>max)
         return max;
     return f;
+}
+
+char *mystrdup(char *s)
+{
+    char *x;
+    if(s)
+    {
+        x = malloc(strlen(s)+1);
+        strcpy(x, s);
+        return x;
+    }
+    return s;
 }

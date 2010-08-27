@@ -11,6 +11,8 @@
 #define YRES	384
 #define NPART XRES*YRES
 
+#define MAXSIGNS 16
+
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
 static unsigned char ZFACTOR = 256/ZSIZE_D;
@@ -35,5 +37,14 @@ extern int framerender;
 
 extern int mousex, mousey;
 extern int death;
+
+struct sign
+{
+    int x,y,ju;
+    char text[256];
+};
+typedef struct sign sign;
+
+extern sign signs[MAXSIGNS];
 
 #endif

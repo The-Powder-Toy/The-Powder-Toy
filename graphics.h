@@ -112,4 +112,6 @@ void xor_line(int x1, int y1, int x2, int y2, pixel *vid);
 
 void xor_rect(pixel *vid, int x, int y, int w, int h);
 
+void draw_parts(pixel *vid);
+
 #endif
