@@ -1,5 +1,6 @@
 #include <math.h>
 #include <SDL/SDL.h>
+#include <bzlib.h>
 #include "defines.h"
 #include "air.h"
 #include "powder.h"
@@ -15,6 +16,9 @@ int sdl_scale = 1;
 unsigned char fire_r[YRES/CELL][XRES/CELL];
 unsigned char fire_g[YRES/CELL][XRES/CELL];
 unsigned char fire_b[YRES/CELL][XRES/CELL];
+
+unsigned int fire_alpha[CELL*3][CELL*3];
+pixel *fire_bg;
 
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
 {
@@ -1770,3 +1774,123 @@ void draw_parts(pixel *vid)
             }
 		}
 }
+
+void render_signs(pixel *vid_buf)
+{
+    int i, j, x, y, w, h, dx, dy;
+    char buff[30];  //Buffer
+    for(i=0; i<MAXSIGNS; i++)
+        if(signs[i].text[0])
+        {
+            get_sign_pos(i, &x, &y, &w, &h);
+            clearrect(vid_buf, x, y, w, h);
+            drawrect(vid_buf, x, y, w, h, 192, 192, 192, 255);
+
+            //Displaying special information
+            if(strcmp(signs[i].text, "{p}")==0)
+            {
+                sprintf(buff, "Pressure: %3.2f", pv[signs[i].y/CELL][signs[i].x/CELL]);  //...pressure
+                drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+            }
+
+            if(strcmp(signs[i].text, "{t}")==0)
+            {
+                if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
+                    sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp);  //...tempirature
+                else
+                    sprintf(buff, "Temp: 0.00");  //...tempirature
+                drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+            }
+
+            //Usual text
+            if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}"))
+                drawtext(vid_buf, x+3, y+3, signs[i].text, 255, 255, 255, 255);
+            x = signs[i].x;
+            y = signs[i].y;
+            dx = 1 - signs[i].ju;
+            dy = (signs[i].y > 18) ? -1 : 1;
+            for(j=0; j<4; j++)
+            {
+                drawpixel(vid_buf, x, y, 192, 192, 192, 255);
+                x+=dx;
+                y+=dy;
+            }
+        }
+}
+
+void render_fire(pixel *dst)
+{
+    int i,j,x,y,r,g,b;
+    for(j=0; j<YRES/CELL; j++)
+        for(i=0; i<XRES/CELL; i++)
+        {
+            r = fire_r[j][i];
+            g = fire_g[j][i];
+            b = fire_b[j][i];
+            if(r || g || b)
+                for(y=-CELL+1; y<2*CELL; y++)
+                    for(x=-CELL+1; x<2*CELL; x++)
+                        addpixel(dst, i*CELL+x, j*CELL+y, r, g, b, fire_alpha[y+CELL][x+CELL]);
+            for(y=-1; y<2; y++)
+                for(x=-1; x<2; x++)
+                    if(i+x>=0 && j+y>=0 && i+x<XRES/CELL && j+y<YRES/CELL && (x || y))
+                    {
+                        r += fire_r[j+y][i+x] / 8;
+                        g += fire_g[j+y][i+x] / 8;
+                        b += fire_b[j+y][i+x] / 8;
+                    }
+            r /= 2;
+            g /= 2;
+            b /= 2;
+            fire_r[j][i] = r>4 ? r-4 : 0;
+            fire_g[j][i] = g>4 ? g-4 : 0;
+            fire_b[j][i] = b>4 ? b-4 : 0;
+        }
+}
+
+void prepare_alpha(void)
+{
+    int x,y,i,j;
+    float temp[CELL*3][CELL*3];
+    memset(temp, 0, sizeof(temp));
+    for(x=0; x<CELL; x++)
+        for(y=0; y<CELL; y++)
+            for(i=-CELL; i<CELL; i++)
+                for(j=-CELL; j<CELL; j++)
+                    temp[y+CELL+j][x+CELL+i] += expf(-0.1f*(i*i+j*j));
+    for(x=0; x<CELL*3; x++)
+        for(y=0; y<CELL*3; y++)
+            fire_alpha[y][x] = (int)(255.0f*temp[y][x]/(CELL*CELL));
+}
+
+pixel *render_packed_rgb(void *image, int width, int height, int cmp_size)
+{
+	unsigned char *tmp;
+	pixel *res;
+	int i;
+
+	tmp = malloc(width*height*3);
+	if(!tmp)
+		return NULL;
+	res = malloc(width*height*PIXELSIZE);
+	if(!res)
+	{
+		free(tmp);
+		return NULL;
+	}
+
+	i = width*height*3;
+	if(BZ2_bzBuffToBuffDecompress((char *)tmp, (unsigned *)&i, (char *)image, cmp_size, 0, 0))
+	{
+		free(res);
+		free(tmp);
+		return NULL;
+	}
+
+	for(i=0; i<width*height; i++)
+		res[i] = PIXRGB(tmp[3*i], tmp[3*i+1], tmp[3*i+2]);
+
+	free(tmp);
+	return res;
+}
+ 

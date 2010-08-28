@@ -456,4 +456,14 @@ void update_particles_i(pixel *vid, int start, int inc);
 
 void update_particles(pixel *vid);
 
+void clear_area(int area_x, int area_y, int area_w, int area_h);
+
+void create_box(int x1, int y1, int x2, int y2, int c);
+
+int flood_parts(int x, int y, int c, int cm, int bm);
+
+int create_parts(int x, int y, int r, int c);
+
+void create_line(int x1, int y1, int x2, int y2, int r, int c);
+
 #endif

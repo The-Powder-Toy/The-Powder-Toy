@@ -6,7 +6,6 @@
 
 #ifdef PIX16
 #define PIXELSIZE 2
-typedef unsigned short pixel;
 #define PIXPACK(x) ((((x)>>8)&0xF800)|(((x)>>5)&0x07E0)|(((x)>>3)&0x001F))
 #define PIXRGB(r,g,b) ((((r)<<8)&0xF800)|(((g)<<3)&0x07E0)|(((b)>>3)&0x001F))
 #define PIXR(x) (((x)>>8)&0xF8)
@@ -14,7 +13,6 @@ typedef unsigned short pixel;
 #define PIXB(x) (((x)<<3)&0xF8)
 #else
 #define PIXELSIZE 4
-typedef unsigned int pixel;
 #ifdef PIX32BGR
 #define PIXPACK(x) ((((x)>>16)&0x0000FF)|((x)&0x00FF00)|(((x)<<16)&0xFF0000))
 #define PIXRGB(r,g,b) (((b)<<16)|((g)<<8)|((r)))// (((b)<<16)|((g)<<8)|(r))
@@ -45,6 +43,9 @@ extern int sdl_scale;
 extern unsigned char fire_r[YRES/CELL][XRES/CELL];
 extern unsigned char fire_g[YRES/CELL][XRES/CELL];
 extern unsigned char fire_b[YRES/CELL][XRES/CELL];
+
+extern unsigned int fire_alpha[CELL*3][CELL*3];
+extern pixel *fire_bg;
 
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f);
 
@@ -113,5 +114,11 @@ void xor_line(int x1, int y1, int x2, int y2, pixel *vid);
 void xor_rect(pixel *vid, int x, int y, int w, int h);
 
 void draw_parts(pixel *vid);
+
+void render_signs(pixel *vid_buf);
+
+void render_fire(pixel *dst);
+
+void prepare_alpha(void);
 
 #endif

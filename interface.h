@@ -102,6 +102,8 @@ extern int Z_keysym;
 
 void menu_count(void);
 
+void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
+
 void add_sign_ui(pixel *vid_buf, int mx, int my);
 
 void ui_edit_draw(pixel *vid_buf, ui_edit *ed);
@@ -124,5 +126,17 @@ int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn);
 
 void login_ui(pixel *vid_buf);
 
+int stamp_ui(pixel *vid_buf);
+
+void tag_list_ui(pixel *vid_buf);
+
+int save_name_ui(pixel *vid_buf);
+
+void menu_ui(pixel *vid_buf, int i, int *sl, int *sr);
+
+void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, int my);
+
 int sdl_poll(void);
+
+void set_cmode(int cm);
 #endif

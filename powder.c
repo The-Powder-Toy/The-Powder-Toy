@@ -2545,3 +2545,300 @@ void update_particles(pixel *vid)
             }
 
 }
+
+void clear_area(int area_x, int area_y, int area_w, int area_h)
+{
+    int cx = 0;
+    int cy = 0;
+    for(cy=0; cy<area_h; cy++)
+    {
+        for(cx=0; cx<area_w; cx++)
+        {
+            bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
+            delete_part(cx+area_x, cy+area_y);
+        }
+    }
+}
+
+void create_box(int x1, int y1, int x2, int y2, int c)
+{
+    int i, j;
+    if(x1>x2)
+    {
+        i = x2;
+        x2 = x1;
+        x1 = i;
+    }
+    if(y1>y2)
+    {
+        j = y2;
+        y2 = y1;
+        y1 = j;
+    }
+    for(j=y1; j<=y2; j++)
+        for(i=x1; i<=x2; i++)
+            create_parts(i, j, 1, c);
+}
+
+int flood_parts(int x, int y, int c, int cm, int bm)
+{
+    int x1, x2, dy = (c<PT_NUM)?1:CELL;
+    int co = c;
+    if(c>=122&&c<=122+UI_WALLCOUNT)
+    {
+        c = c-100;
+    }
+    if(cm==-1)
+    {
+        if(c==0)
+        {
+            cm = pmap[y][x]&0xFF;
+            if(!cm)
+                return 0;
+        }
+        else
+            cm = 0;
+    }
+    if(bm==-1)
+    {
+        if(c==30)
+        {
+            bm = bmap[y/CELL][x/CELL];
+            if(!bm)
+                return 0;
+            if(bm==1)
+                cm = 0xFF;
+        }
+        else
+            bm = 0;
+    }
+
+    if((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm)
+        return 1;
+
+    // go left as far as possible
+    x1 = x2 = x;
+    while(x1>=CELL)
+    {
+        if((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm)
+            break;
+        x1--;
+    }
+    while(x2<XRES-CELL)
+    {
+        if((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm)
+            break;
+        x2++;
+    }
+
+    // fill span
+    for(x=x1; x<=x2; x++)
+        if(!create_parts(x, y, 0, co))
+            return 0;
+
+    // fill children
+    if(y>=CELL+dy)
+        for(x=x1; x<=x2; x++)
+            if((pmap[y-dy][x]&0xFF)==cm && bmap[(y-dy)/CELL][x/CELL]==bm)
+                if(!flood_parts(x, y-dy, co, cm, bm))
+                    return 0;
+    if(y<YRES-CELL-dy)
+        for(x=x1; x<=x2; x++)
+            if((pmap[y+dy][x]&0xFF)==cm && bmap[(y+dy)/CELL][x/CELL]==bm)
+                if(!flood_parts(x, y+dy, co, cm, bm))
+                    return 0;
+    return 1;
+}
+
+int create_parts(int x, int y, int r, int c)
+{
+    int i, j, f = 0, u, v, oy, ox, b = 0, dw = 0; //n;
+
+    if(c == 125)
+    {
+        i = x / CELL;
+        j = y / CELL;
+        for(v=-1; v<2; v++)
+            for(u=-1; u<2; u++)
+                if(i+u>=0 && i+u<XRES/CELL &&
+                        j+v>=0 && j+v<YRES/CELL &&
+                        bmap[j+v][i+u] == 5)
+                    return 1;
+        bmap[j][i] = 5;
+        return 1;
+    }
+    //LOLOLOLOLLOLOLOLO
+    if(c == 127)
+    {
+        b = 4;
+        dw = 1;
+    }
+    if(c == 122)
+    {
+        b = 8;
+        dw = 1;
+    }
+    if(c == 123)
+    {
+        b = 7;
+        dw = 1;
+    }
+    if(c == 124)
+    {
+        b = 6;
+        dw = 1;
+    }
+    if(c == 128)
+    {
+        b = 3;
+        dw = 1;
+    }
+    if(c == 129)
+    {
+        b = 2;
+        dw = 1;
+    }
+    if(c == 130)
+    {
+        b = 0;
+        dw = 1;
+    }
+    if(c == 131)
+    {
+        b = 1;
+        dw = 1;
+    }
+    if(c == 132)
+    {
+        b = 9;
+        dw = 1;
+    }
+    if(c == 133)
+    {
+        b = 10;
+        dw = 1;
+    }
+    if(c == 134)
+    {
+        b = 11;
+        dw = 1;
+    }
+    if(c == 135)
+    {
+        b = 12;
+        dw = 1;
+    }
+    if(c == 140)
+    {
+        b = 13;
+        dw = 1;
+    }
+    if(c == 255)
+    {
+        b = 255;
+        dw = 1;
+    }
+    if(dw==1)
+    {
+        r = r/CELL;
+        x = x/CELL;
+        y = y/CELL;
+        x -= r/2;
+        y -= r/2;
+        for (ox=x; ox<=x+r; ox++)
+        {
+            for (oy=y; oy<=y+r; oy++)
+            {
+                if(ox>=0&&ox<XRES/CELL&&oy>=0&&oy<YRES/CELL)
+                {
+                    i = ox;
+                    j = oy;
+                    if(b==4)
+                    {
+                        fvx[j][i] = 0.0f;
+                        fvy[j][i] = 0.0f;
+                    }
+                    bmap[j][i] = b;
+                }
+            }
+        }
+        return 1;
+    }
+    if(c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM)
+    {
+        for(j=-r; j<=r; j++)
+            for(i=-r; i<=r; i++)
+                if(i*i+j*j<=r*r)
+                    create_part(-1, x+i, y+j, c);
+        return 1;
+    }
+
+    if(c == 0)
+    {
+        for(j=-r; j<=r; j++)
+            for(i=-r; i<=r; i++)
+                if(i*i+j*j<=r*r)
+                    delete_part(x+i, y+j);
+        return 1;
+    }
+
+    for(j=-r; j<=r; j++)
+        for(i=-r; i<=r; i++)
+            if(i*i+j*j<=r*r)
+                if(create_part(-1, x+i, y+j, c)==-1)
+                    f = 1;
+    return !f;
+}
+
+void create_line(int x1, int y1, int x2, int y2, int r, int c)
+{
+    int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
+    float e, de;
+    if(cp)
+    {
+        y = x1;
+        x1 = y1;
+        y1 = y;
+        y = x2;
+        x2 = y2;
+        y2 = y;
+    }
+    if(x1 > x2)
+    {
+        y = x1;
+        x1 = x2;
+        x2 = y;
+        y = y1;
+        y1 = y2;
+        y2 = y;
+    }
+    dx = x2 - x1;
+    dy = abs(y2 - y1);
+    e = 0.0f;
+    if(dx)
+        de = dy/(float)dx;
+    else
+        de = 0.0f;
+    y = y1;
+    sy = (y1<y2) ? 1 : -1;
+    for(x=x1; x<=x2; x++)
+    {
+        if(cp)
+            create_parts(y, x, r, c);
+        else
+            create_parts(x, y, r, c);
+        e += de;
+        if(e >= 0.5f)
+        {
+            y += sy;
+            if(c==135 || c==140 || c==134 || c==133 || c==132 || c==131 || c==129 || c==128 || c==127 || c==125 || c==124 || c==123 || c==122 || !r)
+            {
+                if(cp)
+                    create_parts(y, x, r, c);
+                else
+                    create_parts(x, y, r, c);
+            }
+            e -= 1.0f;
+        }
+    }
+}

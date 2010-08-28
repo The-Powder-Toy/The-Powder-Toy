@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "font.h"
 #include "defines.h"
 #include "powder.h"
 #include "interface.h"
@@ -39,6 +40,24 @@ void menu_count(void)
         msections[ptypes[i].menusection].itemcount+=ptypes[i].menu;
     }
 
+}
+
+void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
+{
+    //Changing width if sign have special content
+    if(strcmp(signs[i].text, "{p}")==0)
+        *w = textwidth("Pressure: -000.00");
+
+    if(strcmp(signs[i].text, "{t}")==0)
+        *w = textwidth("Temp: 0000.00");
+
+    //Ususal width
+    if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}"))
+        *w = textwidth(signs[i].text) + 5;
+    *h = 14;
+    *x0 = (signs[i].ju == 2) ? signs[i].x - *w :
+          (signs[i].ju == 1) ? signs[i].x - *w/2 : signs[i].x;
+    *y0 = (signs[i].y > 18) ? signs[i].y - 18 : signs[i].y + 4;
 }
 
 void add_sign_ui(pixel *vid_buf, int mx, int my)
@@ -767,6 +786,735 @@ fail:
     svf_mod = 0;
 }
 
+int stamp_ui(pixel *vid_buf)
+{
+    int b=1,bq,mx,my,d=-1,i,j,k,x,gx,gy,y,w,h,r=-1,stamp_page=0,per_page=STAMP_X*STAMP_Y,page_count;
+    char page_info[64];
+    page_count = ceil((float)stamp_count/(float)per_page);
+
+    while(!sdl_poll())
+    {
+        b = SDL_GetMouseState(&mx, &my);
+        if(!b)
+            break;
+    }
+
+    while(!sdl_poll())
+    {
+        bq = b;
+        b = SDL_GetMouseState(&mx, &my);
+        mx /= sdl_scale;
+        my /= sdl_scale;
+
+        clearrect(vid_buf, -1, -1, XRES+1, YRES+MENUSIZE+1);
+        k = stamp_page*per_page;//0;
+        r = -1;
+        d = -1;
+        for(j=0; j<GRID_Y; j++)
+            for(i=0; i<GRID_X; i++)
+            {
+                if(stamps[k].name[0] && stamps[k].thumb)
+                {
+                    gx = ((XRES/GRID_X)*i) + (XRES/GRID_X-XRES/GRID_S)/2;
+                    gy = ((((YRES-MENUSIZE+20)+15)/GRID_Y)*j) + ((YRES-MENUSIZE+20)/GRID_Y-(YRES-MENUSIZE+20)/GRID_S+10)/2 + 18;
+                    x = (XRES*i)/GRID_X + XRES/(GRID_X*2);
+                    y = (YRES*j)/GRID_Y + YRES/(GRID_Y*2);
+                    gy -= 20;
+                    w = stamps[k].thumb_w;
+                    h = stamps[k].thumb_h;
+                    x -= w/2;
+                    y -= h/2;
+                    draw_image(vid_buf, stamps[k].thumb, gx+(((XRES/GRID_S)/2)-(w/2)), gy+(((YRES/GRID_S)/2)-(h/2)), w, h, 255);
+                    xor_rect(vid_buf, gx+(((XRES/GRID_S)/2)-(w/2)), gy+(((YRES/GRID_S)/2)-(h/2)), w, h);
+                    if(mx>=gx+XRES/GRID_S-4 && mx<(gx+XRES/GRID_S)+6 && my>=gy-6 && my<gy+4)
+                    {
+                        d = k;
+                        drawrect(vid_buf, gx-2, gy-2, XRES/GRID_S+3, YRES/GRID_S+3, 128, 128, 128, 255);
+                        drawtext(vid_buf, gx+XRES/GRID_S-4, gy-6, "\x86", 255, 48, 32, 255);
+                    }
+                    else
+                    {
+                        if(mx>=gx && mx<gx+(XRES/GRID_S) && my>=gy && my<gy+(YRES/GRID_S))
+                        {
+                            r = k;
+                            drawrect(vid_buf, gx-2, gy-2, XRES/GRID_S+3, YRES/GRID_S+3, 128, 128, 210, 255);
+                        }
+                        else
+                        {
+                            drawrect(vid_buf, gx-2, gy-2, XRES/GRID_S+3, YRES/GRID_S+3, 128, 128, 128, 255);
+                        }
+                        drawtext(vid_buf, gx+XRES/GRID_S-4, gy-6, "\x86", 150, 48, 32, 255);
+                    }
+                    drawtext(vid_buf, gx+XRES/(GRID_S*2)-textwidth(stamps[k].name)/2, gy+YRES/GRID_S+7, stamps[k].name, 192, 192, 192, 255);
+                    drawtext(vid_buf, gx+XRES/GRID_S-4, gy-6, "\x85", 255, 255, 255, 255);
+                }
+                k++;
+            }
+
+        sprintf(page_info, "Page %d of %d", stamp_page+1, page_count);
+
+        drawtext(vid_buf, (XRES/2)-(textwidth(page_info)/2), YRES+MENUSIZE-14, page_info, 255, 255, 255, 255);
+
+        if(stamp_page)
+        {
+            drawtext(vid_buf, 4, YRES+MENUSIZE-14, "\x96", 255, 255, 255, 255);
+            drawrect(vid_buf, 1, YRES+MENUSIZE-18, 16, 16, 255, 255, 255, 255);
+        }
+        if(stamp_page<page_count-1)
+        {
+            drawtext(vid_buf, XRES-15, YRES+MENUSIZE-14, "\x95", 255, 255, 255, 255);
+            drawrect(vid_buf, XRES-18, YRES+MENUSIZE-18, 16, 16, 255, 255, 255, 255);
+        }
+
+        if(b==1&&d!=-1)
+        {
+            if(confirm_ui(vid_buf, "Do you want to delete?", stamps[d].name, "Delete"))
+            {
+                del_stamp(d);
+            }
+        }
+
+        sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+
+        if(b==1&&r!=-1)
+            break;
+        if(b==4&&r!=-1)
+        {
+            r = -1;
+            break;
+        }
+
+        if((b && !bq && mx>=1 && mx<=17 && my>=YRES+MENUSIZE-18 && my<YRES+MENUSIZE-2) || sdl_wheel>0)
+        {
+            if(stamp_page)
+            {
+                stamp_page --;
+            }
+            sdl_wheel = 0;
+        }
+        if((b && !bq && mx>=XRES-18 && mx<=XRES-1 && my>=YRES+MENUSIZE-18 && my<YRES+MENUSIZE-2) || sdl_wheel<0)
+        {
+            if(stamp_page<page_count-1)
+            {
+                stamp_page ++;
+            }
+            sdl_wheel = 0;
+        }
+
+        if(sdl_key==SDLK_RETURN)
+            break;
+        if(sdl_key==SDLK_ESCAPE)
+        {
+            r = -1;
+            break;
+        }
+    }
+
+    while(!sdl_poll())
+    {
+        b = SDL_GetMouseState(&mx, &my);
+        if(!b)
+            break;
+    }
+
+    return r;
+}
+
+void tag_list_ui(pixel *vid_buf)
+{
+    int y,d,x0=(XRES-192)/2,y0=(YRES-256)/2,b=1,bq,mx,my,vp,vn;
+    char *p,*q,s;
+    char *tag=NULL, *op=NULL;
+    ui_edit ed;
+    struct strlist *vote=NULL,*down=NULL;
+
+    ed.x = x0+25;
+    ed.y = y0+221;
+    ed.w = 158;
+    ed.nx = 1;
+    ed.def = "[new tag]";
+    ed.focus = 0;
+    ed.hide = 0;
+    ed.cursor = 0;
+    strcpy(ed.str, "");
+
+    fillrect(vid_buf, -1, -1, XRES, YRES+MENUSIZE, 0, 0, 0, 192);
+    while(!sdl_poll())
+    {
+        bq = b;
+        b = SDL_GetMouseState(&mx, &my);
+        mx /= sdl_scale;
+        my /= sdl_scale;
+
+        op = tag = NULL;
+
+        drawrect(vid_buf, x0, y0, 192, 256, 192, 192, 192, 255);
+        clearrect(vid_buf, x0, y0, 192, 256);
+        drawtext(vid_buf, x0+8, y0+8, "Current tags:", 255, 255, 255, 255);
+        p = svf_tags;
+        s = svf_tags[0] ? ' ' : 0;
+        y = 36 + y0;
+        while(s)
+        {
+            q = strchr(p, ' ');
+            if(!q)
+                q = p+strlen(p);
+            s = *q;
+            *q = 0;
+            if(svf_own || svf_admin || svf_mod)
+            {
+                drawtext(vid_buf, x0+20, y-1, "\x86", 160, 48, 32, 255);
+                drawtext(vid_buf, x0+20, y-1, "\x85", 255, 255, 255, 255);
+                d = 14;
+                if(b && !bq && mx>=x0+18 && mx<x0+32 && my>=y-2 && my<y+12)
+                {
+                    op = "delete";
+                    tag = mystrdup(p);
+                }
+            }
+            else
+                d = 0;
+            vp = strlist_find(&vote, p);
+            vn = strlist_find(&down, p);
+            if((!vp && !vn && !svf_own) || svf_admin || svf_mod)
+            {
+                drawtext(vid_buf, x0+d+20, y-1, "\x88", 32, 144, 32, 255);
+                drawtext(vid_buf, x0+d+20, y-1, "\x87", 255, 255, 255, 255);
+                if(b && !bq && mx>=x0+d+18 && mx<x0+d+32 && my>=y-2 && my<y+12)
+                {
+                    op = "vote";
+                    tag = mystrdup(p);
+                    strlist_add(&vote, p);
+                }
+                drawtext(vid_buf, x0+d+34, y-1, "\x88", 144, 48, 32, 255);
+                drawtext(vid_buf, x0+d+34, y-1, "\xA2", 255, 255, 255, 255);
+                if(b && !bq && mx>=x0+d+32 && mx<x0+d+46 && my>=y-2 && my<y+12)
+                {
+                    op = "down";
+                    tag = mystrdup(p);
+                    strlist_add(&down, p);
+                }
+            }
+            if(vp)
+                drawtext(vid_buf, x0+d+48+textwidth(p), y, " - voted!", 48, 192, 48, 255);
+            if(vn)
+                drawtext(vid_buf, x0+d+48+textwidth(p), y, " - voted.", 192, 64, 32, 255);
+            drawtext(vid_buf, x0+d+48, y, p, 192, 192, 192, 255);
+            *q = s;
+            p = q+1;
+            y += 16;
+        }
+        drawtext(vid_buf, x0+11, y0+219, "\x86", 32, 144, 32, 255);
+        drawtext(vid_buf, x0+11, y0+219, "\x89", 255, 255, 255, 255);
+        drawrect(vid_buf, x0+8, y0+216, 176, 16, 192, 192, 192, 255);
+        ui_edit_draw(vid_buf, &ed);
+        drawtext(vid_buf, x0+5, y0+245, "Close", 255, 255, 255, 255);
+        drawrect(vid_buf, x0, y0+240, 192, 16, 192, 192, 192, 255);
+        sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+
+        ui_edit_process(mx, my, b, &ed);
+
+        if(b && mx>=x0 && mx<=x0+192 && my>=y0+240 && my<y0+256)
+            break;
+
+        if(op)
+        {
+            d = execute_tagop(vid_buf, op, tag);
+            free(tag);
+            op = tag = NULL;
+            if(d)
+                goto finish;
+        }
+
+        if(b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+218 && my<y0+232)
+        {
+            d = execute_tagop(vid_buf, "add", ed.str);
+            strcpy(ed.str, "");
+            ed.cursor = 0;
+            if(d)
+                goto finish;
+        }
+
+        if(sdl_key==SDLK_RETURN)
+        {
+            if(!ed.focus)
+                break;
+            d = execute_tagop(vid_buf, "add", ed.str);
+            strcpy(ed.str, "");
+            ed.cursor = 0;
+            if(d)
+                goto finish;
+        }
+        if(sdl_key==SDLK_ESCAPE)
+        {
+            if(!ed.focus)
+                break;
+            strcpy(ed.str, "");
+            ed.cursor = 0;
+            ed.focus = 0;
+        }
+    }
+    while(!sdl_poll())
+    {
+        b = SDL_GetMouseState(&mx, &my);
+        if(!b)
+            break;
+    }
+    sdl_key = 0;
+
+finish:
+    strlist_free(&vote);
+}
+
+int save_name_ui(pixel *vid_buf)
+{
+    int x0=(XRES-192)/2,y0=(YRES-68-YRES/4)/2,b=1,bq,mx,my,ths,nd=0;
+    void *th;
+    ui_edit ed;
+    ui_checkbox cb;
+
+    th = build_thumb(&ths, 0);
+
+    while(!sdl_poll())
+    {
+        b = SDL_GetMouseState(&mx, &my);
+        if(!b)
+            break;
+    }
+
+    ed.x = x0+25;
+    ed.y = y0+25;
+    ed.w = 158;
+    ed.nx = 1;
+    ed.def = "[simulation name]";
+    ed.focus = 1;
+    ed.hide = 0;
+    ed.cursor = strlen(svf_name);
+    strcpy(ed.str, svf_name);
+
+    cb.x = x0+10;
+    cb.y = y0+53+YRES/4;
+    cb.focus = 0;
+    cb.checked = svf_publish;
+
+    fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+    while(!sdl_poll())
+    {
+        bq = b;
+        b = SDL_GetMouseState(&mx, &my);
+        mx /= sdl_scale;
+        my /= sdl_scale;
+
+        drawrect(vid_buf, x0, y0, 192, 90+YRES/4, 192, 192, 192, 255);
+        clearrect(vid_buf, x0, y0, 192, 90+YRES/4);
+        drawtext(vid_buf, x0+8, y0+8, "New simulation name:", 255, 255, 255, 255);
+        drawtext(vid_buf, x0+10, y0+23, "\x82", 192, 192, 192, 255);
+        drawrect(vid_buf, x0+8, y0+20, 176, 16, 192, 192, 192, 255);
+
+        ui_edit_draw(vid_buf, &ed);
+
+        drawrect(vid_buf, x0+(192-XRES/4)/2-2, y0+42, XRES/4+3, YRES/4+3, 128, 128, 128, 255);
+        render_thumb(th, ths, 0, vid_buf, x0+(192-XRES/4)/2, y0+44, 4);
+
+        ui_checkbox_draw(vid_buf, &cb);
+        drawtext(vid_buf, x0+34, y0+50+YRES/4, "Publish? (Do not publish others'\nworks without permission)", 192, 192, 192, 255);
+
+        drawtext(vid_buf, x0+5, y0+79+YRES/4, "Save simulation", 255, 255, 255, 255);
+        drawrect(vid_buf, x0, y0+74+YRES/4, 192, 16, 192, 192, 192, 255);
+
+        sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+
+        ui_edit_process(mx, my, b, &ed);
+        ui_checkbox_process(mx, my, b, bq, &cb);
+
+        if(b && !bq && ((mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36) ||
+                        (mx>=x0 && mx<x0+192 && my>=y0+74+YRES/4 && my<y0+90+YRES/4)))
+        {
+            free(th);
+            if(!ed.str[0])
+                return 0;
+            nd = strcmp(svf_name, ed.str) || !svf_own;
+            strncpy(svf_name, ed.str, 63);
+            svf_name[63] = 0;
+            if(nd)
+            {
+                strcpy(svf_id, "");
+                strcpy(svf_tags, "");
+            }
+            svf_open = 1;
+            svf_own = 1;
+            svf_publish = cb.checked;
+            return nd+1;
+        }
+
+        if(sdl_key==SDLK_RETURN)
+        {
+            free(th);
+            if(!ed.str[0])
+                return 0;
+            nd = strcmp(svf_name, ed.str) || !svf_own;
+            strncpy(svf_name, ed.str, 63);
+            svf_name[63] = 0;
+            if(nd)
+            {
+                strcpy(svf_id, "");
+                strcpy(svf_tags, "");
+            }
+            svf_open = 1;
+            svf_own = 1;
+            svf_publish = cb.checked;
+            return nd+1;
+        }
+        if(sdl_key==SDLK_ESCAPE)
+        {
+            if(!ed.focus)
+                break;
+            ed.focus = 0;
+        }
+    }
+    free(th);
+    return 0;
+}
+
+void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
+{
+    int b=1,bq,mx,my,h,x,y,n=0,height,width,sy,rows=0;
+    pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+    fillrect(vid_buf, -1, -1, XRES+1, YRES+MENUSIZE, 0, 0, 0, 192);
+    memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+
+    while(!sdl_poll())
+    {
+        b = SDL_GetMouseState(&mx, &my);
+        if(!b)
+            break;
+    }
+    while(!sdl_poll())
+    {
+        bq = b;
+        b = SDL_GetMouseState(&mx, &my);
+        mx /= sdl_scale;
+        my /= sdl_scale;
+        rows = ceil((float)msections[i].itemcount/16.0f);
+        height = (ceil((float)msections[i].itemcount/16.0f)*18);
+        width = restrict_flt(msections[i].itemcount*31, 0, 16*31);
+        //clearrect(vid_buf, -1, -1, XRES+1, YRES+MENUSIZE+1);
+        h = -1;
+        x = XRES-BARSIZE-26;
+        y = (((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2))-(height/2)+(FONT_H/2)+1;
+        sy = y;
+        //clearrect(vid_buf, (XRES-BARSIZE-width)+1, y-4, width+4, height+4+rows);
+        fillrect(vid_buf, (XRES-BARSIZE-width)-7, y-10, width+16, height+16+rows, 0, 0, 0, 100);
+        drawrect(vid_buf, (XRES-BARSIZE-width)-7, y-10, width+16, height+16+rows, 255, 255, 255, 255);
+        fillrect(vid_buf, (XRES-BARSIZE)+11, (((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2))-2, 15, FONT_H+3, 0, 0, 0, 100);
+        drawrect(vid_buf, (XRES-BARSIZE)+10, (((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2))-2, 16, FONT_H+3, 255, 255, 255, 255);
+        drawrect(vid_buf, (XRES-BARSIZE)+9, (((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2))-1, 1, FONT_H+1, 0, 0, 0, 255);
+        if(i==SC_WALL)
+        {
+            for(n = 122; n<122+UI_WALLCOUNT; n++)
+            {
+                if(n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
+                {
+                    if(x-26<=60)
+                    {
+                        x = XRES-BARSIZE-26;
+                        y += 19;
+                    }
+                    x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
+                    if(mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                        h = n;
+                    }
+                    else if(n==*sl)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                    }
+                    else if(n==*sr)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+                    }
+                }
+            }
+        }
+        else if(i==SC_SPECIAL)
+        {
+            for(n = 122; n<122+UI_WALLCOUNT; n++)
+            {
+                if(n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
+                {
+                    if(x-26<=60)
+                    {
+                        x = XRES-BARSIZE-26;
+                        y += 19;
+                    }
+                    x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
+                    if(mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                        h = n;
+                    }
+                    else if(n==*sl)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                    }
+                    else if(n==*sr)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+                    }
+                }
+            }
+            for(n = 0; n<PT_NUM; n++)
+            {
+                if(ptypes[n].menusection==i&&ptypes[n].menu==1)
+                {
+                    if(x-26<=60)
+                    {
+                        x = XRES-BARSIZE-26;
+                        y += 19;
+                    }
+                    x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
+                    if(mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                        h = n;
+                    }
+                    else if(n==*sl)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                    }
+                    else if(n==*sr)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+                    }
+                }
+            }
+        }
+        else
+        {
+            for(n = 0; n<PT_NUM; n++)
+            {
+                if(ptypes[n].menusection==i&&ptypes[n].menu==1)
+                {
+                    if(x-26<=60)
+                    {
+                        x = XRES-BARSIZE-26;
+                        y += 19;
+                    }
+                    x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
+                    if(mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                        h = n;
+                    }
+                    else if(n==*sl)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                    }
+                    else if(n==*sr)
+                    {
+                        drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+                    }
+                }
+            }
+        }
+
+        if(h==-1)
+        {
+            drawtext(vid_buf, XRES-textwidth((char *)msections[i].name)-BARSIZE, sy+height+10, (char *)msections[i].name, 255, 255, 255, 255);
+        }
+        else if(i==SC_WALL||(i==SC_SPECIAL&&h>=122))
+        {
+            drawtext(vid_buf, XRES-textwidth((char *)mwalls[h-122].descs)-BARSIZE, sy+height+10, (char *)mwalls[h-122].descs, 255, 255, 255, 255);
+        }
+        else
+        {
+            drawtext(vid_buf, XRES-textwidth((char *)ptypes[h].descs)-BARSIZE, sy+height+10, (char *)ptypes[h].descs, 255, 255, 255, 255);
+        }
+
+
+        sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+        memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+        if(!(mx>=(XRES-BARSIZE-width)-7 && my>=sy-10 && my<sy+height+9))
+        {
+            break;
+        }
+
+        if(b==1&&h!=-1)
+        {
+            *sl = h;
+            break;
+        }
+        if(b==4&&h!=-1)
+        {
+            *sr = h;
+            break;
+        }
+        //if(b==4&&h!=-1) {
+        //	h = -1;
+        //	break;
+        //}
+
+        if(sdl_key==SDLK_RETURN)
+            break;
+        if(sdl_key==SDLK_ESCAPE)
+            break;
+    }
+
+    while(!sdl_poll())
+    {
+        b = SDL_GetMouseState(&mx, &my);
+        if(!b)
+            break;
+    }
+    //drawtext(vid_buf, XRES+2, (12*i)+2, msections[i].icon, 255, 255, 255, 255);
+}
+
+void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, int my)
+{
+    int h,x,y,n=0,height,width,sy,rows=0;
+    mx /= sdl_scale;
+    my /= sdl_scale;
+    rows = ceil((float)msections[i].itemcount/16.0f);
+    height = (ceil((float)msections[i].itemcount/16.0f)*18);
+    width = restrict_flt(msections[i].itemcount*31, 0, 16*31);
+    h = -1;
+    x = XRES-BARSIZE-26;
+    y = YRES+1;
+    sy = y;
+    if(i==SC_WALL)
+    {
+        for(n = 122; n<122+UI_WALLCOUNT; n++)
+        {
+            if(n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
+            {
+                if(x-26<=20)
+                {
+                    x = XRES-BARSIZE-26;
+                    y += 19;
+                }
+                x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
+                if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                    h = n;
+                }
+                else if(n==*sl)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                }
+                else if(n==*sr)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+                }
+            }
+        }
+    }
+    else if(i==SC_SPECIAL)
+    {
+        for(n = 122; n<122+UI_WALLCOUNT; n++)
+        {
+            if(n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
+            {
+                if(x-26<=20)
+                {
+                    x = XRES-BARSIZE-26;
+                    y += 19;
+                }
+                x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
+                if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                    h = n;
+                }
+                else if(n==*sl)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                }
+                else if(n==*sr)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+                }
+            }
+        }
+        for(n = 0; n<PT_NUM; n++)
+        {
+            if(ptypes[n].menusection==i&&ptypes[n].menu==1)
+            {
+                if(x-26<=20)
+                {
+                    x = XRES-BARSIZE-26;
+                    y += 19;
+                }
+                x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
+                if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                    h = n;
+                }
+                else if(n==*sl)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                }
+                else if(n==*sr)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+                }
+            }
+        }
+    }
+    else
+    {
+        for(n = 0; n<PT_NUM; n++)
+        {
+            if(ptypes[n].menusection==i&&ptypes[n].menu==1)
+            {
+                if(x-26<=20)
+                {
+                    x = XRES-BARSIZE-26;
+                    y += 19;
+                }
+                x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
+                if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                    h = n;
+                }
+                else if(n==*sl)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+                }
+                else if(n==*sr)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+                }
+            }
+        }
+    }
+
+    if(h==-1)
+    {
+        drawtext(vid_buf, XRES-textwidth((char *)msections[i].name)-BARSIZE, sy-10, (char *)msections[i].name, 255, 255, 255, 255);
+    }
+    else if(i==SC_WALL||(i==SC_SPECIAL&&h>=122))
+    {
+        drawtext(vid_buf, XRES-textwidth((char *)mwalls[h-122].descs)-BARSIZE, sy-10, (char *)mwalls[h-122].descs, 255, 255, 255, 255);
+    }
+    else
+    {
+        drawtext(vid_buf, XRES-textwidth((char *)ptypes[h].descs)-BARSIZE, sy-10, (char *)ptypes[h].descs, 255, 255, 255, 255);
+    }
+
+    if(b==1&&h!=-1)
+    {
+        *sl = h;
+    }
+    if(b==4&&h!=-1)
+    {
+        *sr = h;
+    }
+}
+
 int sdl_poll(void)
 {
     SDL_Event event;
@@ -844,4 +1592,44 @@ int sdl_poll(void)
     }
     sdl_mod = SDL_GetModState();
     return 0;
+}
+
+void set_cmode(int cm)
+{
+    cmode = cm;
+    itc = 51;
+    if(cmode==4)
+    {
+        memset(fire_r, 0, sizeof(fire_r));
+        memset(fire_g, 0, sizeof(fire_g));
+        memset(fire_b, 0, sizeof(fire_b));
+        strcpy(itc_msg, "Blob Display");
+    }
+    else if(cmode==5)
+    {
+        strcpy(itc_msg, "Heat Display");
+    }
+    else if(cmode==6)
+    {
+        memset(fire_r, 0, sizeof(fire_r));
+        memset(fire_g, 0, sizeof(fire_g));
+        memset(fire_b, 0, sizeof(fire_b));
+        strcpy(itc_msg, "Fancy Display");
+    }
+    else if(cmode==3)
+    {
+        memset(fire_r, 0, sizeof(fire_r));
+        memset(fire_g, 0, sizeof(fire_g));
+        memset(fire_b, 0, sizeof(fire_b));
+        strcpy(itc_msg, "Fire Display");
+    }
+    else if(cmode==2)
+    {
+        memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+        strcpy(itc_msg, "Persistent Display");
+    }
+    else if(cmode==1)
+        strcpy(itc_msg, "Pressure Display");
+    else
+        strcpy(itc_msg, "Velocity Display");
 }
