@@ -751,6 +751,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                         if(t==PT_LAVA&&parts[i].ctype)
                         {
                             parts[i].life = 0;
+							if(parts[i].ctype==PT_THRM)
+							{
+								parts[i].tmp = 0;
+								parts[i].ctype = PT_BMTL;
+							}
                             t = parts[i].type = parts[i].ctype;
                             parts[i].ctype = PT_NONE;
                         }
@@ -811,6 +816,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                     if(t==PT_LAVA)
                     {
                         parts[i].life = restrict_flt((pt-700)/7, 0.0f, 400.0f);
+						if(parts[i].ctype==PT_THRM&&parts[i].tmp>0)
+						{
+							parts[i].tmp--;
+							parts[i].temp = 3500;
+						}
                     }
                     pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
                 }
@@ -938,7 +948,6 @@ void update_particles_i(pixel *vid, int start, int inc)
                             }
                         }
             }
-            //PLANT
             else if(t==PT_PLNT)
             {
                 for(nx=-2; nx<3; nx++)
@@ -958,6 +967,34 @@ void update_particles_i(pixel *vid, int start, int inc)
                             {
                                 parts[i].life = 4;
                                 t = parts[i].type = PT_FIRE;
+                            }
+                            //if(t==PT_SNOW && (r&0xFF)==PT_WATR && 15>(rand()%1000))
+                            //t = parts[i].type = PT_WATR;
+                        }
+            }
+			else if(t==PT_THRM)
+            {
+                for(nx=-2; nx<3; nx++)
+                    for(ny=-2; ny<3; ny++)
+                        if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+                            r = pmap[y+ny][x+nx];
+                            if((r>>8)>=NPART || !r)
+                                continue;
+                            if(((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM || (r&0xFF)==PT_LAVA))
+                            {
+								if(1>(rand()%500)){
+									t = parts[i].type = PT_LAVA;
+									parts[i].ctype = PT_BMTL;
+									pt = parts[i].temp = 3500.0f;
+									pv[y/CELL][x/CELL] += 50.0f;
+								} else {
+									t = parts[i].type = PT_LAVA;
+									parts[i].life = 400;
+									parts[i].ctype = PT_THRM;
+									pt = parts[i].temp = 3500.0f;
+									parts[i].tmp = 20;
+								}
                             }
                             //if(t==PT_SNOW && (r&0xFF)==PT_WATR && 15>(rand()%1000))
                             //t = parts[i].type = PT_WATR;

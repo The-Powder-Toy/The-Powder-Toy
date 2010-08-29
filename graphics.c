@@ -1112,8 +1112,10 @@ void draw_parts(pixel *vid)
     float mv, dx, dy, ix, iy, lx, ly, d, pp;
     float pt = R_TEMP;
 	for(i = 0; i<NPART; i++){
-		t = parts[i].type;
-		nx = (int)(parts[i].x+0.5f);
+		if(parts[i].type){
+			t = parts[i].type;
+
+			nx = (int)(parts[i].x+0.5f);
             ny = (int)(parts[i].y+0.5f);
 
             if(cmode!=CM_HEAT)
@@ -1773,6 +1775,7 @@ void draw_parts(pixel *vid)
                 blendpixel(vid, nx-1, ny+1, R, G, B, 112);
             }
 		}
+	}
 }
 
 void render_signs(pixel *vid_buf)
