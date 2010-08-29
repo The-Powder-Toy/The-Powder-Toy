@@ -167,4 +167,6 @@ void set_cmode(int cm);
 char *download_ui(pixel *vid_buf, char *uri, int *len);
 
 int search_ui(pixel *vid_buf);
+
 #endif
+
