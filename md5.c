@@ -33,34 +33,37 @@ void md5_update(struct md5_context *ctx, unsigned char const *buf, unsigned len)
     // update bit count
     t = ctx->bits[0];
     if((ctx->bits[0] = (t + ((unsigned)len << 3)) & 0xffffffff) < t)
-	ctx->bits[1]++; // carry
+        ctx->bits[1]++; // carry
     ctx->bits[1] += len >> 29;
 
     t = (t >> 3) & 0x3f;
 
     // use leading data to top up the buffer
 
-    if(t) {
-	unsigned char *p = ctx->in + t;
+    if(t)
+    {
+        unsigned char *p = ctx->in + t;
 
-	t = 64-t;
-	if (len < t) {
-	    memcpy(p, buf, len);
-	    return;
-	}
-	memcpy(p, buf, t);
-	md5_transform(ctx->buf, ctx->in);
-	buf += t;
-	len -= t;
+        t = 64-t;
+        if (len < t)
+        {
+            memcpy(p, buf, len);
+            return;
+        }
+        memcpy(p, buf, t);
+        md5_transform(ctx->buf, ctx->in);
+        buf += t;
+        len -= t;
     }
 
     // following 64-byte chunks
 
-    while(len >= 64) {
-	memcpy(ctx->in, buf, 64);
-	md5_transform(ctx->buf, ctx->in);
-	buf += 64;
-	len -= 64;
+    while(len >= 64)
+    {
+        memcpy(ctx->in, buf, 64);
+        md5_transform(ctx->buf, ctx->in);
+        buf += 64;
+        len -= 64;
     }
 
     // save rest of bytes for later
@@ -84,14 +87,17 @@ void md5_final(unsigned char digest[16], struct md5_context *ctx)
     count = 64 - 1 - count;
 
     // Pad out to 56 mod 64
-    if(count < 8) {
-	// we need to finish a whole block before padding
-	memset(p, 0, count);
-	md5_transform(ctx->buf, ctx->in);
-	memset(ctx->in, 0, 56);
-    } else {
-	// just pad to 56 bytes
-	memset(p, 0, count-8);
+    if(count < 8)
+    {
+        // we need to finish a whole block before padding
+        memset(p, 0, count);
+        md5_transform(ctx->buf, ctx->in);
+        memset(ctx->in, 0, 56);
+    }
+    else
+    {
+        // just pad to 56 bytes
+        memset(p, 0, count-8);
     }
 
     // append length & final transform
@@ -121,7 +127,7 @@ void md5_transform(unsigned buf[4], const unsigned char inraw[64])
     int i;
 
     for (i = 0; i < 16; ++i)
-	in[i] = getu32 (inraw + 4 * i);
+        in[i] = getu32 (inraw + 4 * i);
 
     a = buf[0];
     b = buf[1];
@@ -210,15 +216,16 @@ void md5_ascii(char *result, unsigned char const *buf, unsigned len)
     int i;
 
     if(len==0)
-	len = strlen((char *)buf);
+        len = strlen((char *)buf);
 
     md5_init(&md5);
     md5_update(&md5, buf, len);
     md5_final(hash, &md5);
 
-    for(i=0;i<16;i++) {
-	result[i*2] = hex[(hash[i]>>4)&0xF];
-	result[i*2+1] = hex[hash[i]&0x0F];
+    for(i=0; i<16; i++)
+    {
+        result[i*2] = hex[(hash[i]>>4)&0xF];
+        result[i*2+1] = hex[hash[i]&0x0F];
     }
     result[32] = 0;
 }
