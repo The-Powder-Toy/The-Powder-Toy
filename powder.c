@@ -676,7 +676,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                     parts[i].type = PT_BGLA;
                 }
             }
-			if(t==PT_FIRE && parts[i].temp < 300)
+			if(t==PT_FIRE && parts[i].temp < 212)
 			{
 			parts[i].type = PT_SMKE;
 			parts[i].life = rand()%50+120;
