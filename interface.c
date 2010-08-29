@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include "http.h"
+#include "md5.h"
 #include "font.h"
 #include "defines.h"
 #include "powder.h"
 #include "interface.h"
+#include "misc.h"
 
 SDLMod sdl_mod;
 int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;

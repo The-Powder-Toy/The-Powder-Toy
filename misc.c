@@ -53,3 +53,31 @@ char *mystrdup(char *s)
     }
     return s;
 }
+
+void strlist_add(struct strlist **list, char *str)
+{
+    struct strlist *item = malloc(sizeof(struct strlist));
+    item->str = mystrdup(str);
+    item->next = *list;
+    *list = item;
+}
+
+int strlist_find(struct strlist **list, char *str)
+{
+    struct strlist *item;
+    for(item=*list; item; item=item->next)
+        if(!strcmp(item->str, str))
+            return 1;
+    return 0;
+}
+
+void strlist_free(struct strlist **list)
+{
+    struct strlist *item;
+    while(*list)
+    {
+        item = *list;
+        *list = (*list)->next;
+        free(item);
+    }
+}

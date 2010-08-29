@@ -22,4 +22,16 @@ extern inline float restrict_flt(float f, float min, float max);
 
 char *mystrdup(char *s);
 
+struct strlist
+{
+    char *str;
+    struct strlist *next;
+};
+
+void strlist_add(struct strlist **list, char *str);
+
+int strlist_find(struct strlist **list, char *str);
+
+void strlist_free(struct strlist **list);
+
 #endif

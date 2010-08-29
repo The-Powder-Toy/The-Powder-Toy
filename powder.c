@@ -463,6 +463,7 @@ void update_particles_i(pixel *vid, int start, int inc)
     for(i=start; i<(NPART-starti); i+=inc)
         if(parts[i].type)
         {
+			//printf("parts[%d].type: %d\n", i, parts[i].type);
 
             lx = parts[i].x;
             ly = parts[i].y;
