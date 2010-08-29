@@ -676,6 +676,12 @@ void update_particles_i(pixel *vid, int start, int inc)
                     parts[i].type = PT_BGLA;
                 }
             }
+			if(t==PT_FIRE && parts[i].temp < 300)
+			{
+			parts[i].type = PT_SMKE;
+			parts[i].life = rand()%50+120;
+
+			}
             if(t==PT_ICEI && pv[y/CELL][x/CELL]>0.8f)
                 t = parts[i].type = PT_SNOW;
             if(t==PT_PLUT && 1>rand()%100 && ((int)(5.0f*pv[y/CELL][x/CELL]))>(rand()%1000))
