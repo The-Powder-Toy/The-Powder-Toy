@@ -680,6 +680,13 @@ void update_particles_i(pixel *vid, int start, int inc)
 			{
 			parts[i].type = PT_SMKE;
 			parts[i].life = rand()%50+120;
+			parts[i].ctype = PT_FIRE;
+			}
+			if(t==PT_SMKE && parts[i].ctype == PT_FIRE&&parts[i].temp >212)
+			{
+			parts[i].type = PT_FIRE;
+			parts[i].ctype = PT_NONE;
+			
 
 			}
             if(t==PT_ICEI && pv[y/CELL][x/CELL]>0.8f)
