@@ -42,7 +42,7 @@
 #include <netdb.h>
 #endif
 
-#include "version.h"
+#include "defines.h"
 #include "http.h"
 #include "md5.h"
 

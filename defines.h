@@ -7,9 +7,19 @@
 #define PATH_SEP "/"
 #endif
 
+#define SAVE_VERSION 41
+#define MINOR_VERSION 3
+#define IDENT_VERSION "S" //Change this if you're not Simon! It should be a single letter.
+
 #define SERVER "powdertoy.co.uk"
 
 #undef PLOSS
+
+#define THUMB_CACHE_SIZE 256
+
+#define IMGCONNS 3
+#define TIMEOUT 100
+#define HTTP_TIMEOUT 10
 
 #define MENUSIZE 40
 #define BARSIZE 14
@@ -18,6 +28,7 @@
 #define NPART XRES*YRES
 
 #define MAXSIGNS 16
+#define TAG_MAX 256
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
@@ -80,5 +91,14 @@ extern stamp stamps[STAMP_MAX];
 extern int stamp_count;
 extern int itc;
 extern char itc_msg[64];
+
+extern int do_open;
+extern int sys_pause;
+extern int legacy_enable; //Used to disable new features such as heat, will be set by commandline or save.
+extern int death, framerender;
+
+extern unsigned char last_major, last_minor, update_flag;
+
+extern char http_proxy_string[256];
 
 #endif

@@ -1893,4 +1893,65 @@ pixel *render_packed_rgb(void *image, int width, int height, int cmp_size)
 	free(tmp);
 	return res;
 }
- 
+
+void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a)
+{
+    int i, j, r, g, b;
+    for(j=0; j<h; j++)
+        for(i=0; i<w; i++)
+        {
+            r = PIXR(*img);
+            g = PIXG(*img);
+            b = PIXB(*img);
+            drawpixel(vid, x+i, y+j, r, g, b, a);
+            img++;
+        }
+}
+
+void dim_copy(pixel *dst, pixel *src)
+{
+    int i,r,g,b;
+    for(i=0; i<XRES*YRES; i++)
+    {
+        r = PIXR(src[i]);
+        g = PIXG(src[i]);
+        b = PIXB(src[i]);
+        if(r>0)
+            r--;
+        if(g>0)
+            g--;
+        if(b>0)
+            b--;
+        dst[i] = PIXRGB(r,g,b);
+    }
+}
+
+void render_zoom(pixel *img)
+{
+    int x, y, i, j;
+    pixel pix;
+    drawrect(img, zoom_wx-2, zoom_wy-2, ZSIZE*ZFACTOR+2, ZSIZE*ZFACTOR+2, 192, 192, 192, 255);
+    drawrect(img, zoom_wx-1, zoom_wy-1, ZSIZE*ZFACTOR, ZSIZE*ZFACTOR, 0, 0, 0, 255);
+    clearrect(img, zoom_wx, zoom_wy, ZSIZE*ZFACTOR, ZSIZE*ZFACTOR);
+    for(j=0; j<ZSIZE; j++)
+        for(i=0; i<ZSIZE; i++)
+        {
+            pix = img[(j+zoom_y)*(XRES+BARSIZE)+(i+zoom_x)];
+            for(y=0; y<ZFACTOR-1; y++)
+                for(x=0; x<ZFACTOR-1; x++)
+                    img[(j*ZFACTOR+y+zoom_wy)*(XRES+BARSIZE)+(i*ZFACTOR+x+zoom_wx)] = pix;
+        }
+    if(zoom_en)
+    {
+        for(j=-1; j<=ZSIZE; j++)
+        {
+            xor_pixel(zoom_x+j, zoom_y-1, img);
+            xor_pixel(zoom_x+j, zoom_y+ZSIZE, img);
+        }
+        for(j=0; j<ZSIZE; j++)
+        {
+            xor_pixel(zoom_x-1, zoom_y+j, img);
+            xor_pixel(zoom_x+ZSIZE, zoom_y+j, img);
+        }
+    }
+}

@@ -1,5 +1,7 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
+#include <SDL/SDL.h>
+#include "graphics.h"
 
 struct menu_section
 {
@@ -98,7 +100,29 @@ extern char svf_tags[256];
 extern void *svf_last;
 extern int svf_lsize;
 
+extern char *search_ids[GRID_X*GRID_Y];
+extern int   search_votes[GRID_X*GRID_Y];
+extern int   search_publish[GRID_X*GRID_Y];
+extern int	  search_scoredown[GRID_X*GRID_Y];
+extern int	  search_scoreup[GRID_X*GRID_Y];
+extern char *search_names[GRID_X*GRID_Y];
+extern char *search_owners[GRID_X*GRID_Y];
+extern void *search_thumbs[GRID_X*GRID_Y];
+extern int   search_thsizes[GRID_X*GRID_Y];
+
+extern int search_own;
+extern int search_date;
+extern int search_page;
+extern char search_expr[256];
+
+extern char *tag_names[TAG_MAX];
+extern int tag_votes[TAG_MAX];
+
 extern int Z_keysym;
+
+extern int zoom_en;
+extern int zoom_x, zoom_y;
+extern int zoom_wx, zoom_wy;
 
 void menu_count(void);
 
@@ -139,4 +163,8 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 int sdl_poll(void);
 
 void set_cmode(int cm);
+
+char *download_ui(pixel *vid_buf, char *uri, int *len);
+
+int search_ui(pixel *vid_buf);
 #endif

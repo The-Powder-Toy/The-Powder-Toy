@@ -1,4 +1,4 @@
-SOURCES := powder.c http.c md5.c update.c
+SOURCES := *.c
 HEADERS := font.h hmap.h http.h md5.h icon.h update.h version.h
 
 CFLAGS := -Wall -std=c99 -D_POSIX_C_SOURCE=200112L

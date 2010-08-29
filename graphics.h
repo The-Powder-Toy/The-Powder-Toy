@@ -121,4 +121,10 @@ void render_fire(pixel *dst);
 
 void prepare_alpha(void);
 
+void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a);
+
+void dim_copy(pixel *dst, pixel *src);
+
+void render_zoom(pixel *img);
+
 #endif

@@ -1,5 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
+#include <stdio.h>
+#include <stdlib.h>
 
 //Signum function
 #ifdef WIN32
@@ -33,5 +35,13 @@ void strlist_add(struct strlist **list, char *str);
 int strlist_find(struct strlist **list, char *str);
 
 void strlist_free(struct strlist **list);
+
+void save_presets(int do_update);
+
+void load_presets(void);
+
+void save_string(FILE *f, char *str);
+
+int load_string(FILE *f, char *str, int max);
 
 #endif
