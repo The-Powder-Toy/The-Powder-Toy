@@ -3,6 +3,7 @@
 #include <string.h>
 #include <bzlib.h>
 #include <math.h>
+#include <time.h>
 #include "http.h"
 #include "md5.h"
 #include "font.h"
@@ -56,6 +57,8 @@ int Z_keysym = 'z';
 int zoom_en = 0;
 int zoom_x=(XRES-ZSIZE_D)/2, zoom_y=(YRES-ZSIZE_D)/2;
 int zoom_wx=0, zoom_wy=0;
+unsigned char ZFACTOR = 256/ZSIZE_D;
+unsigned char ZSIZE = ZSIZE_D;
 
 void menu_count(void)
 {
@@ -2427,4 +2430,393 @@ finish:
     strcpy(search_expr, ed.str);
 
     return 0;
+}
+
+int search_results(char *str, int votes)
+{
+    int i,j;
+    char *p,*q,*r,*s,*vu,*vd,*pu;
+
+    for(i=0; i<GRID_X*GRID_Y; i++)
+    {
+        if(search_ids[i])
+        {
+            free(search_ids[i]);
+            search_ids[i] = NULL;
+        }
+        if(search_names[i])
+        {
+            free(search_names[i]);
+            search_names[i] = NULL;
+        }
+        if(search_owners[i])
+        {
+            free(search_owners[i]);
+            search_owners[i] = NULL;
+        }
+        if(search_thumbs[i])
+        {
+            free(search_thumbs[i]);
+            search_thumbs[i] = NULL;
+            search_thsizes[i] = 0;
+        }
+    }
+    for(j=0; j<TAG_MAX; j++)
+        if(tag_names[j])
+        {
+            free(tag_names[j]);
+            tag_names[j] = NULL;
+        }
+
+    if(!str || !*str)
+        return 0;
+
+    i = 0;
+    j = 0;
+    s = NULL;
+    do_open = 0;
+    while(1)
+    {
+        if(!*str)
+            break;
+        p = strchr(str, '\n');
+        if(!p)
+            p = str + strlen(str);
+        else
+            *(p++) = 0;
+        if(!strncmp(str, "OPEN ", 5))
+        {
+            do_open = 1;
+            if(i>=GRID_X*GRID_Y)
+                break;
+            if(votes)
+            {
+                pu = strchr(str+5, ' ');
+                if(!pu)
+                    return i;
+                *(pu++) = 0;
+                s = strchr(pu, ' ');
+                if(!s)
+                    return i;
+                *(s++) = 0;
+                vu = strchr(s, ' ');
+                if(!vu)
+                    return i;
+                *(vu++) = 0;
+                vd = strchr(vu, ' ');
+                if(!vd)
+                    return i;
+                *(vd++) = 0;
+                q = strchr(vd, ' ');
+            }
+            else
+            {
+                pu = strchr(str+5, ' ');
+                if(!pu)
+                    return i;
+                *(pu++) = 0;
+                vu = strchr(pu, ' ');
+                if(!vu)
+                    return i;
+                *(vu++) = 0;
+                vd = strchr(vu, ' ');
+                if(!vd)
+                    return i;
+                *(vd++) = 0;
+                q = strchr(vd, ' ');
+            }
+            if(!q)
+                return i;
+            *(q++) = 0;
+            r = strchr(q, ' ');
+            if(!r)
+                return i;
+            *(r++) = 0;
+            search_ids[i] = mystrdup(str+5);
+
+            search_publish[i] = atoi(pu);
+            search_scoreup[i] = atoi(vu);
+            search_scoredown[i] = atoi(vd);
+
+            search_owners[i] = mystrdup(q);
+            search_names[i] = mystrdup(r);
+
+            if(s)
+                search_votes[i] = atoi(s);
+            thumb_cache_find(str, search_thumbs+i, search_thsizes+i);
+            i++;
+        }
+        else if(!strncmp(str, "TAG ", 4))
+        {
+            if(j >= TAG_MAX)
+            {
+                str = p;
+                continue;
+            }
+            q = strchr(str+4, ' ');
+            if(!q)
+            {
+                str = p;
+                continue;
+            }
+            *(q++) = 0;
+            tag_names[j] = mystrdup(str+4);
+            tag_votes[j] = atoi(q);
+            j++;
+        }
+        else
+        {
+            if(i>=GRID_X*GRID_Y)
+                break;
+            if(votes)
+            {
+                pu = strchr(str, ' ');
+                if(!pu)
+                    return i;
+                *(pu++) = 0;
+                s = strchr(pu, ' ');
+                if(!s)
+                    return i;
+                *(s++) = 0;
+                vu = strchr(s, ' ');
+                if(!vu)
+                    return i;
+                *(vu++) = 0;
+                vd = strchr(vu, ' ');
+                if(!vd)
+                    return i;
+                *(vd++) = 0;
+                q = strchr(vd, ' ');
+            }
+            else
+            {
+                pu = strchr(str, ' ');
+                if(!pu)
+                    return i;
+                *(pu++) = 0;
+                vu = strchr(pu, ' ');
+                if(!vu)
+                    return i;
+                *(vu++) = 0;
+                vd = strchr(vu, ' ');
+                if(!vd)
+                    return i;
+                *(vd++) = 0;
+                q = strchr(vd, ' ');
+            }
+            if(!q)
+                return i;
+            *(q++) = 0;
+            r = strchr(q, ' ');
+            if(!r)
+                return i;
+            *(r++) = 0;
+            search_ids[i] = mystrdup(str);
+
+            search_publish[i] = atoi(pu);
+            search_scoreup[i] = atoi(vu);
+            search_scoredown[i] = atoi(vd);
+
+            search_owners[i] = mystrdup(q);
+            search_names[i] = mystrdup(r);
+
+            if(s)
+                search_votes[i] = atoi(s);
+            thumb_cache_find(str, search_thumbs+i, search_thsizes+i);
+            i++;
+        }
+        str = p;
+    }
+    if(*str)
+        i++;
+    return i;
+}
+
+int execute_tagop(pixel *vid_buf, char *op, char *tag)
+{
+    int status;
+    char *result;
+
+    char *names[] = {"ID", "Tag", NULL};
+    char *parts[2];
+
+    char *uri = malloc(strlen(SERVER)+strlen(op)+36);
+    sprintf(uri, "http://" SERVER "/Tag.api?Op=%s", op);
+
+    parts[0] = svf_id;
+    parts[1] = tag;
+
+    result = http_multipart_post(
+                 uri,
+                 names, parts, NULL,
+                 svf_user, svf_pass,
+                 &status, NULL);
+
+    free(uri);
+
+    if(status!=200)
+    {
+        error_ui(vid_buf, status, http_ret_text(status));
+        if(result)
+            free(result);
+        return 1;
+    }
+    if(result && strncmp(result, "OK", 2))
+    {
+        error_ui(vid_buf, 0, result);
+        free(result);
+        return 1;
+    }
+
+    if(result[2])
+    {
+        strncpy(svf_tags, result+3, 255);
+        svf_id[15] = 0;
+    }
+
+    if(result)
+        free(result);
+
+    return 0;
+}
+
+void execute_save(pixel *vid_buf)
+{
+    int status;
+    char *result;
+
+    char *names[] = {"Name", "Data:save.bin", "Thumb:thumb.bin", "Publish", "ID", NULL};
+    char *parts[5];
+    int plens[5];
+
+    parts[0] = svf_name;
+    plens[0] = strlen(svf_name);
+    parts[1] = build_save(plens+1, 0, 0, XRES, YRES);
+    parts[2] = build_thumb(plens+2, 1);
+    parts[3] = (svf_publish==1)?"Public":"Private";
+    plens[3] = strlen((svf_publish==1)?"Public":"Private");
+
+    if(svf_id[0])
+    {
+        parts[4] = svf_id;
+        plens[4] = strlen(svf_id);
+    }
+    else
+        names[4] = NULL;
+
+    result = http_multipart_post(
+                 "http://" SERVER "/Save.api",
+                 names, parts, plens,
+                 svf_user, svf_pass,
+                 &status, NULL);
+
+    if(svf_last)
+        free(svf_last);
+    svf_last = parts[1];
+    svf_lsize = plens[1];
+
+    free(parts[2]);
+
+    if(status!=200)
+    {
+        error_ui(vid_buf, status, http_ret_text(status));
+        if(result)
+            free(result);
+        return;
+    }
+    if(result && strncmp(result, "OK", 2))
+    {
+        error_ui(vid_buf, 0, result);
+        free(result);
+        return;
+    }
+
+    if(result[2])
+    {
+        strncpy(svf_id, result+3, 15);
+        svf_id[15] = 0;
+    }
+
+    if(!svf_id[0])
+    {
+        error_ui(vid_buf, 0, "No ID supplied by server");
+        free(result);
+        return;
+    }
+
+    thumb_cache_inval(svf_id);
+
+    svf_own = 1;
+    if(result)
+        free(result);
+}
+
+void execute_delete(pixel *vid_buf, char *id)
+{
+    int status;
+    char *result;
+
+    char *names[] = {"ID", NULL};
+    char *parts[1];
+
+    parts[0] = id;
+
+    result = http_multipart_post(
+                 "http://" SERVER "/Delete.api",
+                 names, parts, NULL,
+                 svf_user, svf_pass,
+                 &status, NULL);
+
+    if(status!=200)
+    {
+        error_ui(vid_buf, status, http_ret_text(status));
+        if(result)
+            free(result);
+        return;
+    }
+    if(result && strncmp(result, "OK", 2))
+    {
+        error_ui(vid_buf, 0, result);
+        free(result);
+        return;
+    }
+
+    if(result)
+        free(result);
+}
+
+int execute_vote(pixel *vid_buf, char *id, char *action)
+{
+    int status;
+    char *result;
+
+    char *names[] = {"ID", "Action", NULL};
+    char *parts[2];
+
+    parts[0] = id;
+    parts[1] = action;
+
+    result = http_multipart_post(
+                 "http://" SERVER "/Vote.api",
+                 names, parts, NULL,
+                 svf_user, svf_pass,
+                 &status, NULL);
+
+    if(status!=200)
+    {
+        error_ui(vid_buf, status, http_ret_text(status));
+        if(result)
+            free(result);
+        return 0;
+    }
+    if(result && strncmp(result, "OK", 2))
+    {
+        error_ui(vid_buf, 0, result);
+        free(result);
+        return 0;
+    }
+
+    if(result)
+        free(result);
+    return 1;
 }

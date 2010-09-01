@@ -51,7 +51,7 @@ char *mystrdup(char *s)
     char *x;
     if(s)
     {
-        x = malloc(strlen(s)+1);
+        x = (char*)malloc(strlen(s)+1);
         strcpy(x, s);
         return x;
     }
@@ -193,5 +193,77 @@ int load_string(FILE *f, char *str, int max)
     }
     fread(str, li, 1, f);
     str[li] = 0;
+    return 0;
+}
+
+void strcaturl(char *dst, char *src)
+{
+    char *d;
+    unsigned char *s;
+
+    for(d=dst; *d; d++) ;
+
+    for(s=(unsigned char *)src; *s; s++)
+    {
+        if((*s>='0' && *s<='9') ||
+                (*s>='a' && *s<='z') ||
+                (*s>='A' && *s<='Z'))
+            *(d++) = *s;
+        else
+        {
+            *(d++) = '%';
+            *(d++) = hex[*s>>4];
+            *(d++) = hex[*s&15];
+        }
+    }
+    *d = 0;
+}
+
+void *file_load(char *fn, int *size)
+{
+    FILE *f = fopen(fn, "rb");
+    void *s;
+
+    if(!f)
+        return NULL;
+    fseek(f, 0, SEEK_END);
+    *size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    s = malloc(*size);
+    if(!s)
+    {
+        fclose(f);
+        return NULL;
+    }
+    fread(s, *size, 1, f);
+    fclose(f);
+    return s;
+}
+
+int cpu_check(void)
+{
+#ifdef MACOSX
+    return 0;
+#else
+#ifdef X86
+    unsigned af,bf,cf,df;
+    x86_cpuid(0, af, bf, cf, df);
+    if(bf==0x68747541 && cf==0x444D4163 && df==0x69746E65)
+        amd = 1;
+    x86_cpuid(1, af, bf, cf, df);
+#ifdef X86_SSE
+    if(!(df&(1<<25)))
+        return 1;
+#endif
+#ifdef X86_SSE2
+    if(!(df&(1<<26)))
+        return 1;
+#endif
+#ifdef X86_SSE3
+    if(!(cf&1))
+        return 1;
+#endif
+#endif
+#endif
     return 0;
 }

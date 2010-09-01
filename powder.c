@@ -454,7 +454,7 @@ int nearest_part(int ci, int t)
 
 void update_particles_i(pixel *vid, int start, int inc)
 {
-    int i, j, x, y, t, nx, ny, r, a, cr,cg,cb, s, rt, fe, nt, lpv, nearp, pavg;
+    int i, j, x, y, t, nx, ny, r, a, s, rt, fe, nt, lpv, nearp, pavg;
     float mv, dx, dy, ix, iy, lx, ly, d, pp;
     float pt = R_TEMP;
     float c_heat = 0.0f;
@@ -574,14 +574,8 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
             else
             {
-				if(t==PT_PLAS && pv[y/CELL][x/CELL]>25.0f)
-				{
-					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
-					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL];
-				} else {
-					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
-					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
-				}
+				parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
+				parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
             }
 
             if(ptypes[t].diffusion)
@@ -1170,7 +1164,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 pv[y/CELL][x/CELL] += 10.00f * CFDS; //Used to be 2, some people said nukes weren't powerful enough
                                 fe ++;
                             }
-                            if((r&0xFF)==PT_GUNP && 15>(rand()%1000))
+                            /*if((r&0xFF)==PT_GUNP && 15>(rand()%1000))
                                 parts[r>>8].type = PT_DUST;
                             if((r&0xFF)==PT_DYST && 15>(rand()%1000))
                                 parts[r>>8].type = PT_YEST;
@@ -1187,16 +1181,14 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 parts[r>>8].type = PT_GOO;
                             if((r&0xFF)==PT_NITR && 15>(rand()%1000))
                                 parts[r>>8].type = PT_DESL;
-                            if((r&0xFF)==PT_OIL && 5>(rand()%1000))
-                                parts[r>>8].type = PT_PLAS;
                             if((r&0xFF)==PT_PLNT && 5>(rand()%100))
                                 parts[r>>8].type = PT_WOOD;
-                            if((r&0xFF)==PT_PLAS && 5>(rand()%1000))
-                                parts[r>>8].type = PT_OIL;
                             if((r&0xFF)==PT_DESL && 15>(rand()%1000))
                                 parts[r>>8].type = PT_GAS;
                             if((r&0xFF)==PT_COAL && 5>(rand()%100))
-                                parts[r>>8].type = PT_WOOD;
+                                parts[r>>8].type = PT_WOOD;*/
+							if(parts[r>>8].type>1 && parts[r>>8].type!=PT_NEUT && parts[r>>8].type-1!=PT_NEUT && parts[r>>8].type-1!=PT_STKM && 15>(rand()%1000))
+								parts[r>>8].type--;
                         }
             }
             else if(t==PT_PHOT)

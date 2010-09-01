@@ -1108,8 +1108,8 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 
 void draw_parts(pixel *vid)
 {	
-	int i, j, x, y, t, nx, ny, r, a, cr,cg,cb, s, rt, fe, nt, lpv, nearp, pavg;
-    float mv, dx, dy, ix, iy, lx, ly, d, pp;
+	int i, x, y, t, nx, ny, r, s;
+	int cr, cg, cb;
     float pt = R_TEMP;
 	for(i = 0; i<NPART; i++){
 		if(parts[i].type){
@@ -1574,7 +1574,7 @@ void draw_parts(pixel *vid)
                     }
                 } else if(t==PT_PLSM)
                 {
-                    float ttemp = parts[i].life;
+                    float ttemp = (float)parts[i].life;
                     int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
                     uint8 R = plasma_data[caddress];
                     uint8 G = plasma_data[caddress+1];
@@ -1957,4 +1957,299 @@ void render_zoom(pixel *img)
             xor_pixel(zoom_x+ZSIZE, zoom_y+j, img);
         }
     }
+}
+
+pixel *prerender_save(void *save, int size, int *width, int *height)
+{
+    unsigned char *d,*c=save;
+    int i,j,k,x,y,rx,ry,p=0;
+    int bw,bh,w,h;
+    pixel *fb;
+
+    if(size<16)
+        return NULL;
+    if(c[2]!=0x43 || c[1]!=0x75 || c[0]!=0x66)
+        return NULL;
+    if(c[4]>SAVE_VERSION)
+        return NULL;
+
+    bw = c[6];
+    bh = c[7];
+    w = bw*CELL;
+    h = bh*CELL;
+
+    if(c[5]!=CELL)
+        return NULL;
+
+    i = (unsigned)c[8];
+    i |= ((unsigned)c[9])<<8;
+    i |= ((unsigned)c[10])<<16;
+    i |= ((unsigned)c[11])<<24;
+    d = malloc(i);
+    if(!d)
+        return NULL;
+    fb = calloc(w*h, PIXELSIZE);
+    if(!fb)
+    {
+        free(d);
+        return NULL;
+    }
+
+    if(BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), size-12, 0, 0))
+        goto corrupt;
+    size = i;
+
+    if(size < bw*bh)
+        goto corrupt;
+
+    k = 0;
+    for(y=0; y<bh; y++)
+        for(x=0; x<bw; x++)
+        {
+            rx = x*CELL;
+            ry = y*CELL;
+            switch(d[p])
+            {
+            case 1:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
+            case 2:
+                for(j=0; j<CELL; j+=2)
+                    for(i=(j>>1)&1; i<CELL; i+=2)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
+            case 3:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        if(!(j%2) && !(i%2))
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
+                break;
+            case 4:
+                for(j=0; j<CELL; j+=2)
+                    for(i=(j>>1)&1; i<CELL; i+=2)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
+                k++;
+                break;
+            case 6:
+                for(j=0; j<CELL; j+=2)
+                    for(i=(j>>1)&1; i<CELL; i+=2)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0xFF8080);
+                break;
+            case 7:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        if(!(i&j&1))
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
+            case 8:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        if(!(j%2) && !(i%2))
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
+                        else
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
+            }
+            p++;
+        }
+    p += 2*k;
+    if(p>=size)
+        goto corrupt;
+
+    for(y=0; y<h; y++)
+        for(x=0; x<w; x++)
+        {
+            if(p >= size)
+                goto corrupt;
+            j=d[p++];
+            if(j<PT_NUM && j>0)
+            {
+                if(j==PT_STKM)  //Stickman should be drawed another way
+                {
+                    //Stickman drawing
+                    for(k=-2; k<=1; k++)
+                    {
+                        fb[(y-2)*w+x+k] = PIXRGB(255, 224, 178);
+                        fb[(y+2)*w+x+k+1] = PIXRGB(255, 224, 178);
+                        fb[(y+k+1)*w+x-2] = PIXRGB(255, 224, 178);
+                        fb[(y+k)*w+x+2] = PIXRGB(255, 224, 178);
+                    }
+                    draw_line(fb , x, y+3, x-1, y+6, 255, 255, 255, w);
+                    draw_line(fb , x-1, y+6, x-3, y+12, 255, 255, 255, w);
+                    draw_line(fb , x, y+3, x+1, y+6, 255, 255, 255, w);
+                    draw_line(fb , x+1, y+6, x+3, y+12, 255, 255, 255, w);
+                }
+                else
+                    fb[y*w+x] = ptypes[j].pcolors;
+            }
+        }
+
+    free(d);
+    *width = w;
+    *height = h;
+    return fb;
+
+corrupt:
+    free(d);
+    free(fb);
+    return NULL;
+}
+
+int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int py, int scl)
+{
+    unsigned char *d,*c=thumb;
+    int i,j,x,y,a,t,r,g,b,sx,sy;
+
+    if(bzip2)
+    {
+        if(size<16)
+            return 1;
+        if(c[3]!=0x74 || c[2]!=0x49 || c[1]!=0x68 || c[0]!=0x53)
+            return 1;
+        if(c[4]>PT_NUM)
+            return 2;
+        if(c[5]!=CELL || c[6]!=XRES/CELL || c[7]!=YRES/CELL)
+            return 3;
+        i = XRES*YRES;
+        d = malloc(i);
+        if(!d)
+            return 1;
+
+        if(BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+8), size-8, 0, 0))
+            return 1;
+        size = i;
+    }
+    else
+        d = c;
+
+    if(size < XRES*YRES)
+    {
+        if(bzip2)
+            free(d);
+        return 1;
+    }
+
+    sy = 0;
+    for(y=0; y+scl<=YRES; y+=scl)
+    {
+        sx = 0;
+        for(x=0; x+scl<=XRES; x+=scl)
+        {
+            a = 0;
+            r = g = b = 0;
+            for(j=0; j<scl; j++)
+                for(i=0; i<scl; i++)
+                {
+                    t = d[(y+j)*XRES+(x+i)];
+                    if(t==0xFF)
+                    {
+                        r += 256;
+                        g += 256;
+                        b += 256;
+                        a += 2;
+                    }
+                    else if(t)
+                    {
+                        if(t>=PT_NUM)
+                            goto corrupt;
+                        r += PIXR(ptypes[t].pcolors);
+                        g += PIXG(ptypes[t].pcolors);
+                        b += PIXB(ptypes[t].pcolors);
+                        a ++;
+                    }
+                }
+            if(a)
+            {
+                a = 256/a;
+                r = (r*a)>>8;
+                g = (g*a)>>8;
+                b = (b*a)>>8;
+            }
+
+            drawpixel(vid_buf, px+sx, py+sy, r, g, b, 255);
+            sx++;
+        }
+        sy++;
+    }
+
+    if(bzip2)
+        free(d);
+    return 0;
+
+corrupt:
+    if(bzip2)
+        free(d);
+    return 1;
+}
+
+void render_cursor(pixel *vid, int x, int y, int t, int r)
+{
+    int i,j,c;
+    if(t<PT_NUM||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM)
+    {
+        if(r<=0)
+            xor_pixel(x, y, vid);
+        else
+            for(j=0; j<=r; j++)
+                for(i=0; i<=r; i++)
+                    if(i*i+j*j<=r*r && ((i+1)*(i+1)+j*j>r*r || i*i+(j+1)*(j+1)>r*r))
+                    {
+                        xor_pixel(x+i, y+j, vid);
+                        if(j) xor_pixel(x+i, y-j, vid);
+                        if(i) xor_pixel(x-i, y+j, vid);
+                        if(i&&j) xor_pixel(x-i, y-j, vid);
+                    }
+    }
+    else
+    {
+        int tc;
+        c = (r/CELL) * CELL;
+        x = (x/CELL) * CELL;
+        y = (y/CELL) * CELL;
+
+        tc = !((c%(CELL*2))==0);
+
+        x -= c/2;
+        y -= c/2;
+
+        x += tc*(CELL/2);
+        y += tc*(CELL/2);
+
+        for(i=0; i<CELL+c; i++)
+        {
+            xor_pixel(x+i, y, vid);
+            xor_pixel(x+i, y+CELL+c-1, vid);
+        }
+        for(i=1; i<CELL+c-1; i++)
+        {
+            xor_pixel(x, y+i, vid);
+            xor_pixel(x+CELL+c-1, y+i, vid);
+        }
+    }
+}
+
+void sdl_open(void)
+{
+    if(SDL_Init(SDL_INIT_VIDEO)<0)
+    {
+        fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
+        exit(1);
+    }
+    atexit(SDL_Quit);
+#ifdef PIX16
+    sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,16,SDL_SWSURFACE);
+#else
+    sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_SWSURFACE);
+#endif
+    if(!sdl_scrn)
+    {
+        fprintf(stderr, "Creating window: %s\n", SDL_GetError());
+        exit(1);
+    }
+    SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
+    sdl_seticon();
+    SDL_EnableUNICODE(1);
+    //SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 }

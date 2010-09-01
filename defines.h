@@ -32,8 +32,8 @@
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
-static unsigned char ZFACTOR = 256/ZSIZE_D;
-static unsigned char ZSIZE = ZSIZE_D;
+extern unsigned char ZFACTOR;
+extern unsigned char ZSIZE;
 
 #define CELL    4
 #define ISTP    (CELL/2)
@@ -62,6 +62,8 @@ typedef unsigned int pixel;
 #endif
 
 typedef unsigned char uint8;
+
+extern int amd;
 
 extern int legacy_enable;
 
@@ -101,4 +103,13 @@ extern unsigned char last_major, last_minor, update_flag;
 
 extern char http_proxy_string[256];
 
+//Functions in main.c
+void thumb_cache_inval(char *id);
+void thumb_cache_add(char *id, void *thumb, int size);
+int thumb_cache_find(char *id, void **thumb, int *size);
+void *build_thumb(int *size, int bzip2);
+void *build_save(int *size, int x0, int y0, int w, int h);
+int parse_save(void *save, int size, int replace, int x0, int y0);
+void del_stamp(int d);
+void sdl_seticon(void);
 #endif

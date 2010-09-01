@@ -168,5 +168,15 @@ char *download_ui(pixel *vid_buf, char *uri, int *len);
 
 int search_ui(pixel *vid_buf);
 
+int search_results(char *str, int votes);
+
+int execute_tagop(pixel *vid_buf, char *op, char *tag);
+
+void execute_save(pixel *vid_buf);
+
+void execute_delete(pixel *vid_buf, char *id);
+
+int execute_vote(pixel *vid_buf, char *id, char *action);
+
 #endif
 

@@ -3,6 +3,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef WIN32
+#define x86_cpuid(func,af,bf,cf,df) \
+	do {\
+	__asm mov	eax, func\
+	__asm cpuid\
+	__asm mov	af, eax\
+	__asm mov	bf, ebx\
+	__asm mov	cf, ecx\
+	__asm mov	df, edx\
+	} while(0)
+#else
+#define x86_cpuid(func,af,bf,cf,df) \
+__asm__ __volatile ("cpuid":\
+	"=a" (af), "=b" (bf), "=c" (cf), "=d" (df) : "a" (func));
+#endif
+
+static char hex[] = "0123456789ABCDEF";
 //Signum function
 #ifdef WIN32
 extern _inline int isign(float i);
@@ -43,5 +60,11 @@ void load_presets(void);
 void save_string(FILE *f, char *str);
 
 int load_string(FILE *f, char *str, int max);
+
+void strcaturl(char *dst, char *src);
+
+void *file_load(char *fn, int *size);
+
+int cpu_check(void);
 
 #endif
