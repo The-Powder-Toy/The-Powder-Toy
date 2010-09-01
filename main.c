@@ -1082,6 +1082,9 @@ int main(int argc, char *argv[])
         {
             update_air();
         }
+#ifdef OpenGL
+		ClearScreen();
+#else
         if(cmode==0 || cmode==1)
         {
             draw_air(vid_buf);
@@ -1095,6 +1098,7 @@ int main(int argc, char *argv[])
         {
             memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
         }
+#endif
         update_particles(vid_buf);
 		draw_parts(vid_buf);
 

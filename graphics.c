@@ -1,6 +1,17 @@
 #include <math.h>
 #include <SDL/SDL.h>
 #include <bzlib.h>
+
+#ifdef OpenGL
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
+#endif
+
 #include "defines.h"
 #include "air.h"
 #include "powder.h"
@@ -105,10 +116,14 @@ void sdl_blit_2(int x, int y, int w, int h, pixel *src, int pitch)
 
 void sdl_blit(int x, int y, int w, int h, pixel *src, int pitch)
 {
+#ifdef OpenGL
+	RenderScene();
+#else
     if(sdl_scale == 2)
         sdl_blit_2(x, y, w, h, src, pitch);
     else
         sdl_blit_1(x, y, w, h, src, pitch);
+#endif
 }
 
 void drawblob(pixel *vid, int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
@@ -1112,6 +1127,18 @@ void draw_parts(pixel *vid)
 	int cr, cg, cb;
     float pt = R_TEMP;
 	for(i = 0; i<NPART; i++){
+#ifdef OpenGL
+		if(parts[i].type){
+			//Do nothing
+			t = parts[i].type;
+			nx = (int)(parts[i].x+0.5f);
+            ny = (int)(parts[i].y+0.5f);
+			glBegin (GL_POINTS);
+			glColor3ub (PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors));
+			glVertex2d (nx, ny);
+			glEnd ();
+		}
+#else
 		if(parts[i].type){
 			t = parts[i].type;
 
@@ -1775,7 +1802,12 @@ void draw_parts(pixel *vid)
                 blendpixel(vid, nx-1, ny+1, R, G, B, 112);
             }
 		}
+#endif
 	}
+#ifdef OpenGL
+	glFlush ();
+#endif
+
 }
 
 void render_signs(pixel *vid_buf)
@@ -2238,10 +2270,25 @@ void sdl_open(void)
         exit(1);
     }
     atexit(SDL_Quit);
+#ifdef OpenGL
+	sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_OPENGL);
+	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
+	Enable2D ();
+	 //   glBegin(GL_TRIANGLES);
+     //   glColor3ub (255, 0, 0);
+     //   glVertex2d (0, 0);
+     //   glColor3ub (0, 255, 0);
+     //   glVertex2d (640,0);
+    //    glColor3ub (0, 0, 255);
+    //    glVertex2d (50, 50);
+    //glEnd ();
+    //glFlush ();
+#else
 #ifdef PIX16
     sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,16,SDL_SWSURFACE);
 #else
     sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_SWSURFACE);
+#endif
 #endif
     if(!sdl_scrn)
     {
@@ -2253,3 +2300,29 @@ void sdl_open(void)
     SDL_EnableUNICODE(1);
     //SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 }
+
+#ifdef OpenGL
+void Enable2D ()
+{
+    int ViewPort[4]; //Holds screen info
+
+    glGetIntegerv (GL_VIEWPORT, ViewPort);
+
+    glMatrixMode (GL_PROJECTION);
+    glPushMatrix ();
+    glLoadIdentity ();
+
+    glOrtho (0, ViewPort[2], ViewPort[3], 0, -1, 1);
+    glMatrixMode (GL_MODELVIEW);
+    glPushMatrix ();
+    glLoadIdentity ();
+}
+void RenderScene ()
+{
+    SDL_GL_SwapBuffers ();
+}
+void ClearScreen()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+#endif
