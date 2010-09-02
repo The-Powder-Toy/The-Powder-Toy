@@ -75,7 +75,7 @@ _inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a
 inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
 #endif
 
-int drawtext(pixel *vid, int x, int y, char *s, int r, int g, int b, int a);
+int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a);
 
 void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a);
 

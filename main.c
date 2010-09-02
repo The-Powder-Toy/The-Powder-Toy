@@ -49,7 +49,7 @@
 #include "hmap.h"
 #include "air.h"
 
-char *it_msg =
+static const char *it_msg =
     "\brThe Powder Toy\n"
     "\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
     "\n"
@@ -129,7 +129,7 @@ int core_count()
     return numCPU;
 }
 
-int mousex, mousey = 0;  //They contain mouse position
+int mousex = 0, mousey = 0;  //They contain mouse position
 
 void sdl_seticon(void)
 {
@@ -140,10 +140,12 @@ void sdl_seticon(void)
 #ifdef MACOSX
     //SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon_w32, 32, 32, 32, 128, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
     //SDL_WM_SetIcon(icon, NULL/*app_icon_mask*/);
-#else
+/* Does currently not work #else
     SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon, 16, 16, 32, 128, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-    SDL_WM_SetIcon(icon, NULL/*app_icon_mask*/);
+    SDL_WM_SetIcon(icon, NULLapp_icon_mask)//app_icon mask;
+*/
 #endif
+
 #endif
 }
 
