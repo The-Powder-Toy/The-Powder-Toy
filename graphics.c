@@ -707,6 +707,9 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
     {
         //x = 2+32*(b/2);
         //y = YRES+2+20*(b%2);
+#ifdef OpenGL
+		fillrect(vid_buf, x, y, 28, 16, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+#else
         for(j=1; j<15; j++)
         {
             for(i=1; i<27; i++)
@@ -714,6 +717,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
             }
         }
+#endif
         if(b==0)
         {
             for(j=4; j<12; j++)
@@ -797,6 +801,8 @@ inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 
 int drawtext(pixel *vid, int x, int y, char *s, int r, int g, int b, int a)
 {
+#ifdef OpenGL
+#else
     int sx = x;
     for(; *s; s++)
     {
@@ -834,11 +840,21 @@ int drawtext(pixel *vid, int x, int y, char *s, int r, int g, int b, int a)
         else
             x = drawchar(vid, x, y, *(unsigned char *)s, r, g, b, a);
     }
+#endif
     return x;
 }
 
 void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
 {
+#ifdef OpenGL
+	glBegin(GL_LINE_LOOP);
+	glColor4ub(r, g, b, a);
+	glVertex2i(x, y);
+	glVertex2i(x+w, y);
+	glVertex2i(x+w, y+h);
+	glVertex2i(x, y+h);
+	glEnd();
+#else
     int i;
     for(i=0; i<=w; i++)
     {
@@ -850,14 +866,25 @@ void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a
         drawpixel(vid, x, y+i, r, g, b, a);
         drawpixel(vid, x+w, y+i, r, g, b, a);
     }
+#endif
 }
 
 void fillrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
 {
+#ifdef OpenGL
+	glBegin(GL_QUADS);
+	glColor4ub(r, g, b, a);
+	glVertex2i(x, y);
+	glVertex2i(x+w, y);
+	glVertex2i(x+w, y+h);
+	glVertex2i(x, y+h);
+	glEnd();
+#else
     int i,j;
     for(j=1; j<h; j++)
         for(i=1; i<w; i++)
             drawpixel(vid, x+i, y+j, r, g, b, a);
+#endif
 }
 
 void clearrect(pixel *vid, int x, int y, int w, int h)
