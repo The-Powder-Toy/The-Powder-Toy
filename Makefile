@@ -1,5 +1,5 @@
 SOURCES := *.c
-HEADERS := *.h
+HEADERS := font.h hmap.h http.h md5.h icon.h update.h version.h
 
 CFLAGS := -Wall -std=c99 -D_POSIX_C_SOURCE=200112L
 OFLAGS := -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations
@@ -11,7 +11,7 @@ MFLAGS_SSE3 := -march=k8 -DX86 -DX86_SSE3 -msse3
 MFLAGS_SSE2 := -march=k8 -DX86 -DX86_SSE2 -msse2
 MFLAGS_SSE := -march=pentium3 -DX86 -DX86_SSE
 FLAGS_DBUG := -Wall -std=c99 -D_POSIX_C_SOURCE=200112L -pg -O2 -march=k8 -DX86 -DX86_SSE3 -msse3 -lSDL -lm -lpthread -lbz2
-COMPILER := clang
+COMPILER := gcc
 LINUX_TARG := powder-64-sse2 powder-sse powder-sse2
 WIN32_TARG := powder-sse.exe powder-sse2.exe
 

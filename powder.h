@@ -174,7 +174,7 @@ struct part_state
 };
 typedef struct part_state part_state;
 
-static const part_type ptypes[PT_NUM] =
+static part_type ptypes[PT_NUM] =
 {
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal Burn	Exp	Mel Hrd M	Section			H				Ins(real world, by triclops200) Description
     {"",		PIXPACK(0x000000),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_SPECIAL,		R_TEMP+0.0f,	251,	"Erases particles."},
@@ -246,7 +246,7 @@ static const part_type ptypes[PT_NUM] =
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal Burn	Exp	Mel Hrd M	Section			H				Ins(real world, by triclops200) Description    
 };
 
-static const part_state pstates[PT_NUM] =
+static part_state pstates[PT_NUM] =
 {
     // Name					Solid	 Frzp		Liquid   Mpnt		Gas	   Bpoint
     /* NONE */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
@@ -316,7 +316,7 @@ static const part_state pstates[PT_NUM] =
 	/* DYST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_DUST, 200.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* THRM */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 };
-static const unsigned char can_move[PT_NUM][PT_NUM] =
+static unsigned char can_move[PT_NUM][PT_NUM] =
 {
     /*   A B */
     /* A 0 1 | B ligher than A */
@@ -398,21 +398,21 @@ static const unsigned char can_move[PT_NUM][PT_NUM] =
 /*          e t r l e l a p r e s x m i e k w d t t t d d v t w t w d l t t n   x n n   u l l m d N d s n a r m d e E y y M H E s l l     R T*/
 };
 
-int isplayer;
-float player[20];
+extern int isplayer;
+extern float player[20];
 
-particle *parts;
-particle *cb_parts;
+extern particle *parts;
+extern particle *cb_parts;
 
-unsigned char bmap[YRES/CELL][XRES/CELL];
-unsigned char emap[YRES/CELL][XRES/CELL];
+extern unsigned char bmap[YRES/CELL][XRES/CELL];
+extern unsigned char emap[YRES/CELL][XRES/CELL];
 
-unsigned char cb_bmap[YRES/CELL][XRES/CELL];
-unsigned char cb_emap[YRES/CELL][XRES/CELL];
+extern unsigned char cb_bmap[YRES/CELL][XRES/CELL];
+extern unsigned char cb_emap[YRES/CELL][XRES/CELL];
 
-int pfree;
+extern int pfree;
 
-unsigned pmap[YRES][XRES];
+extern unsigned pmap[YRES][XRES];
 unsigned cb_pmap[YRES][XRES];
 
 int try_move(int i, int x, int y, int nx, int ny);

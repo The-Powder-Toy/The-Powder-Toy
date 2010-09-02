@@ -4,6 +4,22 @@
 #include "air.h"
 #include "misc.h"
 
+int isplayer = 0;
+float player[20]; //[0] is a command cell, [3]-[18] are legs positions, [19] is index
+
+particle *parts;
+particle *cb_parts;
+
+unsigned char bmap[YRES/CELL][XRES/CELL];
+unsigned char emap[YRES/CELL][XRES/CELL];
+
+unsigned char cb_bmap[YRES/CELL][XRES/CELL];
+unsigned char cb_emap[YRES/CELL][XRES/CELL];
+
+int pfree;
+
+unsigned pmap[YRES][XRES];
+unsigned cb_pmap[YRES][XRES];
 
 int try_move(int i, int x, int y, int nx, int ny)
 {

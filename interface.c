@@ -11,7 +11,7 @@
 #include "powder.h"
 #include "interface.h"
 #include "misc.h"
-#include "graphics.h"
+
 SDLMod sdl_mod;
 int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
 
