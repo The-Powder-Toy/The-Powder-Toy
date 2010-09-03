@@ -26,7 +26,9 @@ powder-sse2: $(SOURCES) $(HEADERS)
 powder-sse: $(SOURCES) $(HEADERS)
 	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE) $(SOURCES) -DLIN32
 	strip $@
-
+powder-64-sse3-opengl : $(SOURCES) $(HEADERS)
+	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64 -lGL -lGLU -DOpenGL
+	strip $@
 powder-64-sse3: $(SOURCES) $(HEADERS)
 	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64
 	strip $@
