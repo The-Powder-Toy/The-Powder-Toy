@@ -66,13 +66,13 @@ void draw_menu(pixel *vid_buf, int i, int hover);
 #ifdef WIN32
 _inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 #else
-inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
+extern inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 #endif
 
 #ifdef WIN32
 _inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
 #else
-inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
+extern inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
 #endif
 
 int drawtext(pixel *vid, int x, int y, char *s, int r, int g, int b, int a);
