@@ -966,7 +966,6 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 #endif
 {
 #ifdef OpenGL
-    gl_
 #else
     pixel t;
     if(x<0 || y<0 || x>=XRES || y>=YRES)
