@@ -884,7 +884,7 @@ void fillrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a
     for(j=1; j<h; j++)
         for(i=1; i<w; i++)
             drawpixel(vid, x+i, y+j, r, g, b, a);
-#endif
+#endif // OpenGL
 }
 
 void clearrect(pixel *vid, int x, int y, int w, int h)
@@ -893,12 +893,19 @@ void clearrect(pixel *vid, int x, int y, int w, int h)
     for(i=1; i<h; i++)
         memset(vid+(x+1+(XRES+BARSIZE)*(y+i)), 0, PIXELSIZE*(w-1));
 }
-
 void drawdots(pixel *vid, int x, int y, int h, int r, int g, int b, int a)
 {
+#ifdef OpenGL
+    glBegin(GL_QUADS);
+	glColor4ub(r, g, b, a);
+	for(int i = 0; i <= h; i +=2)
+        glVertex2i(x, y+i);
+	glEnd();
+#else
     int i;
     for(i=0; i<=h; i+=2)
         drawpixel(vid, x, y+i, r, g, b, a);
+#endif //OpenGL
 }
 
 int textwidth(char *s)
@@ -958,6 +965,9 @@ _inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 #endif
 {
+#ifdef OpenGL
+    gl_
+#else
     pixel t;
     if(x<0 || y<0 || x>=XRES || y>=YRES)
         return;
@@ -969,6 +979,7 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
         b = (a*b + (255-a)*PIXB(t)) >> 8;
     }
     vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
+#endif //OpenGL
 }
 
 void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag)
