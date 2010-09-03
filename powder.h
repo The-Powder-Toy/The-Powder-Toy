@@ -114,12 +114,15 @@
 #define ST_SOLID 1
 #define ST_LIQUID 2
 #define ST_GAS 3
-
-static unsigned char TYPE_PART		= 0x01; //1
-static unsigned char TYPE_LIQUID	= 0x02; //2
-static unsigned char TYPE_SOLID		= 0x04; //4
-static unsigned char TYPE_GAS		= 0x08; //8
-static unsigned char PROP_CONDUCTS	= 0x10; //16
+/*
+   We should start to implement these.
+*/
+static const unsigned short TYPE_PART		= 0x01; //1
+static const unsigned short TYPE_LIQUID	= 0x02; //2
+static const unsigned short TYPE_SOLID	= 0x04; //4
+static const unsigned short TYPE_GAS		= 0x08; //8
+static const unsigned short PROP_CONDUCTS	= 0x10; //16
+static const unsigned short PROP_DEADLY   = 0x12; //18 Is deadly for stickman.
 #define FLAG_STAGNANT	1
 
 struct particle
@@ -156,7 +159,7 @@ struct part_type
     float heat;
     unsigned char hconduct;
     const char *descs;
-    unsigned char properties;
+    const unsigned short properties;
 };
 typedef struct part_type part_type;
 
@@ -173,8 +176,8 @@ struct part_state
     float btemp;
 };
 typedef struct part_state part_state;
-
-static part_type ptypes[PT_NUM] =
+//Should probably be const.
+static const part_type ptypes[PT_NUM] =
 {
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal Burn	Exp	Mel Hrd M	Section			H				Ins(real world, by triclops200) Description
     {"",		PIXPACK(0x000000),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	SC_SPECIAL,		R_TEMP+0.0f,	251,	"Erases particles."},

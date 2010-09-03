@@ -50,7 +50,7 @@
 #include "air.h"
 #include "icon.h"
 
-char *it_msg =
+static const char *it_msg =
     "\brThe Powder Toy\n"
     "\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
     "\n"
@@ -90,9 +90,9 @@ typedef struct
 } upstruc;
 
 #ifdef BETA
-char *old_ver_msg_beta = "A new beta is available - click here!";
+static const char *old_ver_msg_beta = "A new beta is available - click here!";
 #endif
-char *old_ver_msg = "A new version is available - click here!";
+static const char *old_ver_msg = "A new version is available - click here!";
 float mheat = 0.0f;
 
 int do_open = 0;
@@ -130,7 +130,7 @@ int core_count()
     return numCPU;
 }
 
-int mousex, mousey = 0;  //They contain mouse position
+int mousex = 0, mousey = 0;  //They contain mouse position
 
 void sdl_seticon(void)
 {
@@ -964,7 +964,7 @@ int main(int argc, char *argv[])
 #ifdef MT
     numCores = core_count();
 #endif
-
+//TODO: Move out version stuff
 #ifdef BETA
     if(is_beta)
     {

@@ -799,7 +799,7 @@ inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
     return x + w;
 }
 
-int drawtext(pixel *vid, int x, int y, char *s, int r, int g, int b, int a)
+int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a)
 {
 #ifdef OpenGL
 #else
