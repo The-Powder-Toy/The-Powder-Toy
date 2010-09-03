@@ -48,6 +48,7 @@
 #include "update.h"
 #include "hmap.h"
 #include "air.h"
+#include "icon.h"
 
 char *it_msg =
     "\brThe Powder Toy\n"
