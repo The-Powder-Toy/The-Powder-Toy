@@ -241,7 +241,7 @@ static const part_type ptypes[PT_NUM] =
     {"DESL",	PIXPACK(0x440000),	1.0f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.0f,	0.0f	* CFDS,	2,	2,		0,	0,	5,	1,	SC_LIQUID,		R_TEMP+0.0f,	42,		"Liquid. Vaporises under low pressure, explodes under high pressure and temperatures"},
     {"COAL",    PIXPACK(0x222222),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f    * CFDS, 0,  10,     0,  0,  20, 1,  SC_SOLIDS,      R_TEMP+0.0f,    200,    "Solid. Burns slowly."},
     {"LO2",		PIXPACK(0x80A0EF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	5000,  	0,	0,	0,	1,	SC_LIQUID,		-210.0f,		70,		"Liquid Oxygen. Very cold. Reacts with fire"},    
-    {"O2",      PIXPACK(0x80A0FF),  2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	5.0f,	0.000f	* CFDS,	0,	1000,  	0,	0,	0,	1,	SC_GAS,         R_TEMP+0.0f,        70,     "Gas. Oxygen helps make things burn."},	    
+    {"O2",      PIXPACK(0x80A0FF),  2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	1000,  	0,	0,	0,	1,	SC_GAS,         R_TEMP+0.0f,        70,     "Gas. Oxygen helps make things burn."},	    
 	{"INWR",	PIXPACK(0x544141),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Insulated Wire. Doesn't conduct to metal or semiconductors."},
 	{"YEST",	PIXPACK(0xEEE0C0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	15,		0,	0,	30,	1,	SC_POWDERS,		R_TEMP+0.0f,	70,		"Yeast, grows when warm (~37C)."},
 	{"DYST",	PIXPACK(0xBBB0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	20,		0,	0,	30,	0,	SC_POWDERS,		R_TEMP+0.0f,	70,		"Deat Yeast."},
