@@ -107,8 +107,8 @@
 #define PT_NUM  66
 
 #define R_TEMP 22
-#define MAX_TEMP 3500
-#define MIN_TEMP -273
+#define MAX_TEMP 9999
+#define MIN_TEMP 0
 
 #define ST_NONE 0
 #define ST_SOLID 1
@@ -241,7 +241,7 @@ static const part_type ptypes[PT_NUM] =
     {"DESL",	PIXPACK(0x440000),	1.0f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.0f,	0.0f	* CFDS,	2,	2,		0,	0,	5,	1,	SC_LIQUID,		R_TEMP+0.0f,	42,		"Liquid. Vaporises under low pressure, explodes under high pressure and temperatures"},
     {"COAL",    PIXPACK(0x222222),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f    * CFDS, 0,  10,     0,  0,  20, 1,  SC_SOLIDS,      R_TEMP+0.0f,    200,    "Solid. Burns slowly."},
     {"LO2",		PIXPACK(0x80A0EF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	5000,  	0,	0,	0,	1,	SC_LIQUID,		-210.0f,		70,		"Liquid Oxygen. Very cold. Reacts with fire"},    
-    {"O2",      PIXPACK(0x80A0FF),  2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	1000,  	0,	0,	0,	1,	SC_GAS,         R_TEMP+0.0f,        70,     "Gas. Oxygen helps make things burn."},	    
+    {"O2",      PIXPACK(0x80A0FF),  2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	1000,  	0,	0,	0,	1,	SC_GAS,         R_TEMP+0.0f,        70,     "Gas. Ignites easily."},	    
 	{"INWR",	PIXPACK(0x544141),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	SC_ELEC,		R_TEMP+0.0f,	251,	"Insulated Wire. Doesn't conduct to metal or semiconductors."},
 	{"YEST",	PIXPACK(0xEEE0C0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	15,		0,	0,	30,	1,	SC_POWDERS,		R_TEMP+0.0f,	70,		"Yeast, grows when warm (~37C)."},
 	{"DYST",	PIXPACK(0xBBB0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	20,		0,	0,	30,	0,	SC_POWDERS,		R_TEMP+0.0f,	70,		"Deat Yeast."},
@@ -287,36 +287,36 @@ static part_state pstates[PT_NUM] =
     /* URAN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 2100.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* WAX  */ {ST_SOLID,	PT_NONE, 0.0f,		PT_MWAX, 46.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* MWAX */ {ST_LIQUID,	PT_WAX, 45.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 400.0f},
-    /* PSCN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1414.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* NSCN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1414.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* LNTG */ {ST_SOLID,	PT_NICE, -210.0f,	PT_NONE, 0.0f,		PT_NONE, -195.8f,	PT_NONE, 0.0f},
+    /* PSCN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1687.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* NSCN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1687.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* LNTG */ {ST_SOLID,	PT_NICE, 75.0f,	    PT_NONE, 0.0f,		PT_NONE, 78.0f,	    PT_NONE, 0.0f},
     /* FOAM */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* BHOL */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* WHOL */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* RBDM */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LRBD, 39.0f,		PT_NONE, 0.0f,		PT_FIRE, 688.0f},
+    /* RBDM */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LRBD, 312.0f,	PT_NONE, 0.0f,		PT_FIRE, 688.0f},
     /* LRBD */ {ST_LIQUID,	PT_RBDM, 38.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 688.0f},
-    /* HSCN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1414.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* SAND */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1700.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* GLAS */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1700.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* HSCN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1687.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* SAND */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1973.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* GLAS */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1973.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* CSCN */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1414.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* BGLA */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1700.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* BGLA */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1973.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* THDR */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* PLSM */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* ETRD */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* NICE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LNTG, -209.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* NICE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LNTG, 77.0f,	    PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* NBLE */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* BTRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_PLSM, 2000.0f},
-    /* LCRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_BGLA, 1000.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* BTRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_PLSM, 2273.0f},
+    /* LCRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_BGLA, 1273.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* STKM */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* SWCH */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* SMKE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* DESL */ {ST_LIQUID,  PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_FIRE, 62.0f},
-    /* COAL */ {ST_SOLID,   PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_FIRE, 600.0f},
-    /* LO2  */ {ST_LIQUID,  PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_O2,   -180.0f,   PT_NONE, 0.0f},
-    /* O2   */ {ST_GAS,     PT_NONE, 0.0f,      PT_LO2,  -190.0f,   PT_NONE, 0.0f,      PT_NONE, 0.0f},
-	/* INWR */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1414.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
-	/* YEST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_DYST, 60.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-	/* DYST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_DUST, 200.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* DESL */ {ST_LIQUID,  PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_FIRE, 335.0f},
+    /* COAL */ {ST_SOLID,   PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_FIRE, 673.0f},
+    /* LO2  */ {ST_LIQUID,  PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_O2,   453.0f,   PT_NONE, 0.0f},
+    /* O2   */ {ST_GAS,     PT_NONE, 0.0f,      PT_LO2,  50.0f,     PT_NONE, 0.0f,      PT_NONE, 0.0f},
+	/* INWR */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1687.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+	/* YEST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_DYST, 273.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+	/* DYST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_DUST, 473.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
 	/* THRM */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 };
 static unsigned char can_move[PT_NUM][PT_NUM] =
