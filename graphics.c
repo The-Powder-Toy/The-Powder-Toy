@@ -896,9 +896,10 @@ void clearrect(pixel *vid, int x, int y, int w, int h)
 void drawdots(pixel *vid, int x, int y, int h, int r, int g, int b, int a)
 {
 #ifdef OpenGL
+	int i;
     glBegin(GL_QUADS);
 	glColor4ub(r, g, b, a);
-	for(int i = 0; i <= h; i +=2)
+	for(i = 0; i <= h; i +=2)
         glVertex2i(x, y+i);
 	glEnd();
 #else
