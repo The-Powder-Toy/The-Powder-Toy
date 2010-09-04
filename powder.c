@@ -1161,7 +1161,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
                                     parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
                                 }
-                                pv[y/CELL][x/CELL] += 10.00f * CFDS; //Used to be 2, some people said nukes weren't powerful enough
+                                pv[y/CELL][x/CELL] += 20.0f * CFDS; //Used to be 2, some people said nukes weren't powerful enough
                                 fe ++;
                             }
                             /*if((r&0xFF)==PT_GUNP && 15>(rand()%1000))
