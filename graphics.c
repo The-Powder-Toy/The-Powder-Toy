@@ -1640,7 +1640,7 @@ void draw_parts(pixel *vid)
                 } else if(t==PT_PLSM)
                 {
                     float ttemp = (float)parts[i].life;
-                    int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+                    int caddress = restrict_flt(restrict_flt(ttemp, 273.0f, 473.0f)*3, 273.0f, (473.0f*3)-3);
                     uint8 R = plasma_data[caddress];
                     uint8 G = plasma_data[caddress+1];
                     uint8 B = plasma_data[caddress+2];
@@ -1785,7 +1785,7 @@ void draw_parts(pixel *vid)
             else
             {
                 float ttemp = parts[i].temp+(-MIN_TEMP);
-                int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/512) ) *3, 0.0f, (512.0f*3)-3);
+                int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, 3773+(-MIN_TEMP)) / ((3773+(-MIN_TEMP))/512) ) *3, 0.0f, (512.0f*3)-3);
                 uint8 R = color_data[caddress];
                 uint8 G = color_data[caddress+1];
                 uint8 B = color_data[caddress+2];
@@ -1871,7 +1871,7 @@ void render_signs(pixel *vid_buf)
                 if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
                     sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp);  //...tempirature
                 else
-                    sprintf(buff, "Temp: 0.00");  //...tempirature
+                    sprintf(buff, "Temp: N/A");  //...tempirature
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
             }
 

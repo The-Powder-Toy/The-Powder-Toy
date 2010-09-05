@@ -1355,9 +1355,9 @@ int main(int argc, char *argv[])
             if(!((cr>>8)>=NPART || !cr))
             {
 #ifdef BETA
-                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp, parts[cr>>8].life);
+                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f K, Life: %d", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp, parts[cr>>8].life);
 #else
-                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp);
+                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f K", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp);
 #endif
             }
             else
