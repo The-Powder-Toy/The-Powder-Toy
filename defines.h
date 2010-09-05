@@ -66,6 +66,8 @@ typedef unsigned char uint8;
 
 extern int amd;
 
+extern int FPSB;
+
 extern int legacy_enable;
 
 extern int sys_pause;

@@ -98,8 +98,9 @@ float mheat = 0.0f;
 int do_open = 0;
 int sys_pause = 0;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by commandline or save.
-int death = 1, framerender = 0;
+int death = 0, framerender = 0;
 int amd = 1;
+int FPSB = 0;
 
 sign signs[MAXSIGNS];
 
@@ -533,7 +534,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                 parts[i].vy = (d[p++]-127.0f)/16.0f;
                 if(parts[i].type == PT_STKM)
                 {
-                    player[2] = PT_DUST;
+                    //player[2] = PT_DUST;
 
                     player[3] = parts[i].x-1;  //Setting legs positions
                     player[4] = parts[i].y+6;
@@ -588,7 +589,11 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                 }
                 if(i <= NPART)
                 {
-                    parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
+					if(ver>=42){
+						parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
+					} else {
+						parts[i-1].temp = ((d[p++]*(((3500.0f)+(-(-273)))/255))+(-273)) + 273.15f;
+					}
                 }
                 else
                 {
@@ -943,7 +948,7 @@ int main(int argc, char *argv[])
     char uitext[48] = "";
     char heattext[64] = "";
     int currentTime = 0;
-    int FPS = 0, FPSB = 0;
+    int FPS = 0;
     int pastFPS = 0;
     int past = 0;
     pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
@@ -1155,9 +1160,10 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-		if(sdl_key=='d')
+		if(sdl_key=='d' && isplayer)
 		{
-			death = !(death);
+			death = 1;
+			//death = !(death);
 		}
 		if(sdl_key=='f')
 		{
@@ -1355,9 +1361,9 @@ int main(int argc, char *argv[])
             if(!((cr>>8)>=NPART || !cr))
             {
 #ifdef BETA
-                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp, parts[cr>>8].life);
+                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 #else
-                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp);
+                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
 #endif
             }
             else
@@ -2009,11 +2015,15 @@ int main(int argc, char *argv[])
         }
 	sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
-	//Setting an element for the stick man
-	if(ptypes[sr].falldown>0)
-		player[2] = sr;
-	else
-		player[2] = PT_DUST;
+		//Setting an element for the stick man
+		if(isplayer==0)
+		{
+			if(ptypes[sr].falldown>0 || sr == PT_NEUT || sr == PT_PHOT)
+				player[2] = sr;
+			else
+				player[2] = PT_DUST;
+		}
+
     }
 
     http_done();

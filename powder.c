@@ -5,7 +5,7 @@
 #include "misc.h"
 
 int isplayer = 0;
-float player[20]; //[0] is a command cell, [3]-[18] are legs positions, [19] is index
+float player[27]; //[0] is a command cell, [3]-[18] are legs positions, [19] is index, [19]-[26] are accelerations
 
 particle *parts;
 particle *cb_parts;
@@ -485,7 +485,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                 {
                     t = parts[i].ctype;
                     if(t!=PT_METL&&t!=PT_BMTL&&t!=PT_BRMT&&t!=PT_LRBD&&t!=PT_RBDM&&t!=PT_BTRY&&t!=PT_NBLE)
-                        parts[i].temp = R_TEMP;
+                        parts[i].temp = R_TEMP + 273.15f;
                     if(!t)
                         t = PT_METL;
                     parts[i].type = t;
@@ -819,11 +819,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                     pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
                 }
             }
-            if(t==PT_PTCT&&parts[i].temp>24.0f)
+            if(t==PT_PTCT&&parts[i].temp>249.0f)
             {
                 pt = parts[i].temp -= 2.5f;
             }
-            if(t==PT_NTCT&&parts[i].temp>24.0f)
+            if(t==PT_NTCT&&parts[i].temp>249.0f)
             {
                 pt = parts[i].temp -= 2.5f;
             }
@@ -938,7 +938,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 continue;
                             if((r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_METL)
                             {
-                                parts[i].temp = 200.0f;
+                                parts[i].temp = 473.0f;
                             }
                         }
             }
@@ -1161,7 +1161,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
                                     parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
                                 }
-                                pv[y/CELL][x/CELL] += 20.0f * CFDS; //Used to be 2, some people said nukes weren't powerful enough
+                                pv[y/CELL][x/CELL] += 10.0f * CFDS; //Used to be 2, some people said nukes weren't powerful enough
                                 fe ++;
                             }
                             /*if((r&0xFF)==PT_GUNP && 15>(rand()%1000))
@@ -1399,19 +1399,19 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 if(t==PT_SPRK && (rt==PT_METL||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE) && parts[r>>8].life==0 &&
                                         (parts[i].life<3 || ((r>>8)<i && parts[i].life<4)) && abs(nx)+abs(ny)<4)
                                 {
-                                    if(!(rt==PT_PSCN&&parts[i].ctype==PT_NSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp>=100.0f)&&parts[i].ctype==PT_NTCT)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp<=100.0f)&&parts[i].ctype==PT_PTCT)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN)&&parts[i].ctype==PT_INWR) && pavg != PT_INSL &&!(parts[i].ctype==PT_SWCH&&(rt==PT_PSCN||rt==PT_NSCN)) )
+                                    if(!(rt==PT_PSCN&&parts[i].ctype==PT_NSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp>=373.0f)&&parts[i].ctype==PT_NTCT)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp<=373.0f)&&parts[i].ctype==PT_PTCT)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN)&&parts[i].ctype==PT_INWR) && pavg != PT_INSL &&!(parts[i].ctype==PT_SWCH&&(rt==PT_PSCN||rt==PT_NSCN)) )
                                     {
                                         parts[r>>8].type = PT_SPRK;
                                         parts[r>>8].life = 4;
                                         parts[r>>8].ctype = rt;
-                                        if(parts[r>>8].temp+10.0f<400.0f&&!legacy_enable&&!(rt==PT_LRBD||rt==PT_RBDM||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR))
+                                        if(parts[r>>8].temp+10.0f<673.0f&&!legacy_enable&&!(rt==PT_LRBD||rt==PT_RBDM||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR))
                                             parts[r>>8].temp = parts[r>>8].temp+10.0f;
                                     }
                                 }
                                 if(t==PT_SPRK && rt==PT_NTCT && parts[r>>8].life==0 &&
                                         (parts[i].life<3 || ((r>>8)<i && parts[i].life<4)) && abs(nx)+abs(ny)<4)
                                 {
-                                    if((parts[i].ctype==PT_NSCN||parts[i].ctype==PT_NTCT||(parts[i].ctype==PT_PSCN&&parts[r>>8].temp>100.0f))&&pavg != PT_INSL)
+                                    if((parts[i].ctype==PT_NSCN||parts[i].ctype==PT_NTCT||(parts[i].ctype==PT_PSCN&&parts[r>>8].temp>373.0f))&&pavg != PT_INSL)
                                     {
                                         parts[r>>8].type = PT_SPRK;
                                         parts[r>>8].life = 4;
@@ -1421,7 +1421,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 if(t==PT_SPRK && rt==PT_PTCT && parts[r>>8].life==0 &&
                                         (parts[i].life<3 || ((r>>8)<i && parts[i].life<4)) && abs(nx)+abs(ny)<4)
                                 {
-                                    if((parts[i].ctype==PT_NSCN||parts[i].ctype==PT_PTCT||(parts[i].ctype==PT_PSCN&&parts[r>>8].temp<100.0f))&&pavg != PT_INSL)
+                                    if((parts[i].ctype==PT_NSCN||parts[i].ctype==PT_PTCT||(parts[i].ctype==PT_PSCN&&parts[r>>8].temp<373.0f))&&pavg != PT_INSL)
                                     {
                                         parts[r>>8].type = PT_SPRK;
                                         parts[r>>8].life = 4;
@@ -1486,15 +1486,17 @@ killed:
             }
             if(t==PT_STKM)
             {
+				float dt = 0.9;///(FPSB*FPSB);  //Delta time in square
                 //Tempirature handling
-                if(parts[i].temp<-30)
-                    parts[i].life -= 0.2;
-                if((parts[i].temp<36.6f) && (parts[i].temp>=-30))
+                if(parts[i].temp<243)
+                    parts[i].life -= 1;
+                if((parts[i].temp<309.6f) && (parts[i].temp>=243))
                     parts[i].temp += 1;
 
                 //Death
-                if(parts[i].life<0 && (death == 1))  //If his HP is less that 0 or there is very big wind...
+                if(parts[i].life<1 || death == 1 || (pv[y/CELL][x/CELL]>=4.5f && player[2] != SPC_AIR) )  //If his HP is less that 0 or there is very big wind...
                 {
+					death = 0;
                     for(r=-2; r<=1; r++)
                     {
                         create_part(-1, x+r, y-2, player[2]);
@@ -1506,111 +1508,137 @@ killed:
                     goto killed;
                 }
 
+				parts[i].vy += -0.7*dt;  //Head up!
+
                 //Verlet integration
-                pp = 2*player[3]-player[5];
+                pp = 2*player[3]-player[5]+player[19]*dt*dt;;
                 player[5] = player[3];
                 player[3] = pp;
-                pp = 2*player[4]-player[6];
+                pp = 2*player[4]-player[6]+player[20]*dt*dt;;
                 player[6] = player[4];
                 player[4] = pp;
 
-                pp = 2*player[7]-player[9];
+                pp = 2*player[7]-player[9]+player[21]*dt*dt;;
                 player[9] = player[7];
                 player[7] = pp;
-                pp = 2*player[8]-player[10]+1;
+                pp = 2*player[8]-player[10]+(player[22]+1)*dt*dt;;
                 player[10] = player[8];
                 player[8] = pp;
 
-                pp = 2*player[11]-player[13];
+                pp = 2*player[11]-player[13]+player[23]*dt*dt;;
                 player[13] = player[11];
                 player[11] = pp;
-                pp = 2*player[12]-player[14];
+                pp = 2*player[12]-player[14]+player[24]*dt*dt;;
                 player[14] = player[12];
                 player[12] = pp;
 
-                pp = 2*player[15]-player[17];
+                pp = 2*player[15]-player[17]+player[25]*dt*dt;;
                 player[17] = player[15];
                 player[15] = pp;
-                pp = 2*player[16]-player[18]+1;
+                pp = 2*player[16]-player[18]+(player[26]+1)*dt*dt;;
                 player[18] = player[16];
                 player[16] = pp;
 
+				//Setting acceleration to 0
+				player[19] = 0;
+				player[20] = 0;
+
+				player[21] = 0;
+				player[22] = 0;
+
+				player[23] = 0;
+				player[24] = 0;
+
+				player[25] = 0;
+				player[26] = 0;
+
                 //Go left
-                if (((int)(player[0])&0x01) == 0x01)
+                if (((int)(player[0])&0x01) == 0x01 && pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_GAS)
                 {
                     if (pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID
                             && (pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF) != PT_LNTG)
                     {
                         if (pmap[(int)(player[8]-1)][(int)(player[7])])
                         {
-                            player[9] += 3;
-                            player[10] += 2;
-                            player[5] += 2;
+							player[21] = -3;
+							player[22] = -2;
+							player[19] = -2;
                         }
 
                         if (pmap[(int)(player[16]-1)][(int)(player[15])])
                         {
-                            player[17] += 3;
-                            player[18] += 2;
-                            player[13] +=2;
+                            player[25] = -3;
+							player[26] = -2;
+							player[23] = -2;
                         }
                     }
                     else
                     {
                         if (pmap[(int)(player[8]-1)][(int)(player[7])])  //It should move another way in liquids
                         {
-                            player[9] += 1;
-                            player[10] += 1;
-                            player[5] += 1;
+							player[21] = -1;
+							player[22] = -1;
+							player[19] = -1;
                         }
 
                         if (pmap[(int)(player[16]-1)][(int)(player[15])])
                         {
-                            player[17] += 1;
-                            player[18] += 1;
-                            player[13] +=1;
+							player[25] = -1;
+							player[26] = -1;
+							player[23] = -1;
                         }
                     }
                 }
 
                 //Go right
-                if (((int)(player[0])&0x02) == 0x02)
+                if (((int)(player[0])&0x02) == 0x02 && pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_GAS)
                 {
                     if (pstates[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID
                             && (pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF) != PT_LNTG)
                     {
                         if (pmap[(int)(player[8]-1)][(int)(player[7])])
                         {
-                            player[9] -= 3;
-                            player[10] += 2;
-                            player[5] -= 2;
+player[21] = 3;
+player[22] = -2;
+player[19] = 2;
                         }
 
                         if (pmap[(int)(player[16]-1)][(int)(player[15])])
                         {
-                            player[17] -= 3;
-                            player[18] += 2;
-                            player[13] -= 2;
+player[25] = 3;
+player[26] = -2;
+player[23] = 2;
                         }
                     }
                     else
                     {
                         if (pmap[(int)(player[8]-1)][(int)(player[7])])
                         {
-                            player[9] -= 1;
-                            player[10] += 1;
-                            player[5] -= 1;
+player[21] = 1;
+player[22] = -1;
+player[19] = 1;
                         }
 
                         if (pmap[(int)(player[16]-1)][(int)(player[15])])
                         {
-                            player[17] -= 1;
-                            player[18] += 1;
-                            player[13] -= 1;
+player[25] = 1;
+player[26] = -1;
+player[23] = 1;
                         }
 
                     }
                 }
+
+				//Jump
+				if (((int)(player[0])&0x04) == 0x04 && (pstates[pmap[(int)(player[8]-0.5)][(int)(player[7])]&0xFF].state != ST_GAS || pstates[pmap[(int)(player[16]-0.5)][(int)(player[15])]&0xFF].state != ST_GAS))	
+				{	
+					if (pmap[(int)(player[8]-0.5)][(int)(player[7])] || pmap[(int)(player[16]-0.5)][(int)(player[15])])
+					{
+						parts[i].vy = -5;
+						player[22] -= 1;
+						player[26] -= 1;
+					}
+				}
 
                 //Charge detector wall if foot inside
                 if(bmap[(int)(player[8]+0.5)/CELL][(int)(player[7]+0.5)/CELL]==6)
@@ -1624,12 +1652,10 @@ killed:
                     {
                         if(!pmap[ny+y][nx+x] || (pmap[ny+y][nx+x]>>8)>=NPART)
                             continue;
-                        if((pstates[pmap[ny+y][nx+x]&0xFF].state != ST_SOLID && (pmap[ny+y][nx+x]&0xFF)!=PT_STKM
-                                && (pmap[ny+y][nx+x]&0xFF)!=PT_WHOL && (pmap[ny+y][nx+x]&0xFF)!=PT_BHOL)
-                                || (pmap[ny+y][nx+x]&0xFF) == PT_LNTG)
-                        {
-                            player[2] = pmap[ny+y][nx+x]&0xFF;  //Current element
-                        }
+                        if(ptypes[pmap[ny+y][nx+x]&0xFF].falldown!=0 || (pmap[ny+y][nx+x]&0xFF) == PT_NEUT || (pmap[ny+y][nx+x]&0xFF) == PT_PHOT)
+						{
+							player[2] = pmap[ny+y][nx+x]&0xFF;  //Current element
+						}
                         if((pmap[ny+y][nx+x]&0xFF) == PT_PLNT && parts[i].life<100)  //Plant gives him 5 HP
                         {
                             if(parts[i].life<=95)
@@ -1644,6 +1670,8 @@ killed:
                             parts[i].life -= (102-parts[i].life)/2;
                             kill_part(pmap[ny+y][nx+x]>>8);
                         }
+						if(bmap[(ny+y)/CELL][(nx+x)/CELL]==4)
+							player[2] = SPC_AIR;
                     }
 
                 //Head position
@@ -1663,9 +1691,13 @@ killed:
                         }
                         else
                         {
-                            create_part(-1, nx, ny, player[2]);
+							if(player[2] == SPC_AIR)
+								create_parts(nx + 3*((((int)player[1])&0x02) == 0x02) - 3*((((int)player[1])&0x01) == 0x01), ny, 4, SPC_AIR);
+							else
+								create_part(-1, nx, ny, player[2]);
+
                             r = pmap[ny][nx];
-                            if( ((r>>8) < NPART) && (r>>8)>=0 && player[2]!=PT_PHOT)
+                            if( ((r>>8) < NPART) && (r>>8)>=0 && player[2] != PT_PHOT && player[2] != SPC_AIR)
                                 parts[r>>8].vx = parts[r>>8].vx + 5*((((int)player[1])&0x02) == 0x02) - 5*(((int)(player[1])&0x01) == 0x01);
                             if(((r>>8) < NPART) && (r>>8)>=0 && player[2] == PT_PHOT)
                             {
@@ -1684,18 +1716,6 @@ killed:
 
                         }
                     }
-                }
-
-                //Jump
-                if (((int)(player[0])&0x04) == 0x04)
-                {
-                    if (pmap[(int)(player[8]-0.5)][(int)(player[7])] || pmap[(int)(player[16]-0.5)][(int)(player[15])])
-                    {
-                        parts[i].vy = -5;
-                        player[10] += 1;
-                        player[18] += 1;
-                    }
-
                 }
 
                 //Simulation of joints
@@ -1726,10 +1746,12 @@ killed:
                 //Side collisions checking
                 for(nx = -3; nx <= 3; nx++)
                 {
-                    if(pmap[(int)(player[16]-2)][(int)(player[15]+nx)])
+                    r = pmap[(int)(player[16]-2)][(int)(player[15]+nx)];
+					if(r && pstates[r&0xFF].state != ST_GAS && pstates[r&0xFF].state != ST_LIQUID)
                         player[15] -= nx;
 
-                    if(pmap[(int)(player[8]-2)][(int)(player[7]+nx)])
+                    r = pmap[(int)(player[8]-2)][(int)(player[7]+nx)];
+					if(r && pstates[r&0xFF].state != ST_GAS && pstates[r&0xFF].state != ST_LIQUID)
                         player[7] -= nx;
                 }
 
@@ -1741,19 +1763,22 @@ killed:
                     //For left leg
                     if (r && (r&0xFF)!=PT_STKM)
                     {
-                        if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS || (r&0xFF)==PT_LNTG)  //Liquid checks
+                        if(pstates[r&0xFF].state == ST_LIQUID || (r&0xFF) == PT_LNTG)  //Liquid checks  //Liquid checks
                         {
                             if(parts[i].y<(player[8]-10))
-                                parts[i].vy = 1;
+                                parts[i].vy = 1*dt;
                             else
                                 parts[i].vy = 0;
                             if(abs(parts[i].vx)>1)
-                                parts[i].vx *= 0.5;
+                                parts[i].vx *= 0.5*dt;
                         }
                         else
                         {
-                            player[8] += ny-1;
-                            parts[i].vy -= 0.5*parts[i].vy;
+							if(pstates[r&0xFF].state != ST_GAS)
+							{
+								player[8] += ny-1;
+								parts[i].vy -= 0.5*parts[i].vy*dt;
+							}
                         }
                         player[9] = player[7];
                     }
@@ -1763,19 +1788,22 @@ killed:
                     //For right leg
                     if (r && (r&0xFF)!=PT_STKM)
                     {
-                        if(pstates[r&0xFF].state == ST_LIQUID || pstates[r&0xFF].state == ST_GAS || (r&0xFF)==PT_LNTG)
+                        if(pstates[r&0xFF].state == ST_LIQUID || (r&0xFF) == PT_LNTG)
                         {
                             if(parts[i].y<(player[16]-10))
-                                parts[i].vy = 1;
+                                parts[i].vy = 1*dt;
                             else
                                 parts[i].vy = 0;
                             if(abs(parts[i].vx)>1)
-                                parts[i].vx *= 0.5;
+                                parts[i].vx *= 0.5*dt;
                         }
                         else
                         {
-                            player[16] += ny-1;
-                            parts[i].vy -= 0.5*parts[i].vy;
+                            if(pstates[r&0xFF].state != ST_GAS)
+							{
+								player[16] += ny-1;
+								parts[i].vy -= 0.5*parts[i].vy*dt;
+							}
                         }
                         player[17] = player[15];
                     }
@@ -1783,8 +1811,8 @@ killed:
                     //If it falls too fast
                     if (parts[i].vy>=30)
                     {
-                        parts[i].y -= 10+ny;
-                        parts[i].vy = -10;
+                        parts[i].y -= (10+ny)*dt;
+                        parts[i].vy = -10*dt;
                     }
 
                 }
@@ -1792,14 +1820,14 @@ killed:
                 //Keeping legs distance
                 if (pow((player[7] - player[15]), 2)<16 && pow((player[8]-player[16]), 2)<1)
                 {
-                    player[7] += 0.2;
-                    player[15] -= 0.2;
+					player[21] -= 0.2;
+					player[25] += 0.2;
                 }
 
                 if (pow((player[3] - player[11]), 2)<16 && pow((player[4]-player[12]), 2)<1)
                 {
-                    player[3] += 0.2;
-                    player[11] -= 0.2;
+                    player[19] -= 0.2;
+					player[23] += 0.2;
                 }
 
                 //If legs touch something
@@ -1811,10 +1839,10 @@ killed:
 
                 if (r>0 && (r>>8)<NPART)  //If hot or cold
                 {
-                    if(parts[r>>8].temp>=50 || parts[r>>8].temp<=-30)
+                    if(parts[r>>8].temp>=323 || parts[r>>8].temp<=243)
                     {
                         parts[i].life -= 2;
-                        player[16] -= 1;
+                        player[26] -= 1;
                     }
                 }
 
@@ -1832,10 +1860,10 @@ killed:
 
                 if(r>0 && (r>>8)<NPART)  //If hot or cold
                 {
-                    if(parts[r>>8].temp>=50 || parts[r>>8].temp<=-30)
+                    if(parts[r>>8].temp>=323 || parts[r>>8].temp<=243)
                     {
                         parts[i].life -= 2;
-                        player[8] -= 1;
+                        player[22] -= 1;
                     }
                 }
 
@@ -1866,7 +1894,7 @@ killed:
             }
             if(t==PT_YEST)
             {
-				if(parts[i].temp>30&&parts[i].temp<44){
+				if(parts[i].temp>303&&parts[i].temp<317){
 					create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_YEST);
 				}
             }
