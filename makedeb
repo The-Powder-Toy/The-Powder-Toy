@@ -1,0 +1,5 @@
+#!/usr/bin/sh
+#This is small script made by savask, to make a deb package. Example: sh makedeb 41.3.0
+make
+mv powder ./deb/usr/share/games/The-Powder-Toy
+dpkg -b deb the-powder-toy_"$1"_"$HOSTTYPE".deb

@@ -1,0 +1,6 @@
+Package: the-powder-toy
+Version: 41.3.0
+Architecture: i386
+Depends: libsdl1.2debian (>=1.2.14), libbz2-1.0 (>=1.0.5)
+Maintainer: Skresanov Savely
+Description: Open sandbox-like game.

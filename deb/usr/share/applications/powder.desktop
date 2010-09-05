@@ -1,0 +1,12 @@
+[Desktop Entry]
+Comment=sandbox game
+Name=The Powder Toy
+Exec=the-powder-toy
+Terminal=false
+Type=Application
+Icon=the-powder-toy
+Categories=Game
+Encoding=UTF-8
+Name[ru_RU]=Песочная игра
+Name[en_EN]=The Powder Toy
+

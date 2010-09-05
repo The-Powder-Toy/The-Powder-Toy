@@ -6,4 +6,3 @@ Focus on scalability
 stability, possibly not use -O3 on linux, inlines where possible.
 performance.
 Multithreading?
-Reduce warnings number to 0.
