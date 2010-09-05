@@ -1187,7 +1187,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 parts[r>>8].type = PT_GAS;
                             if((r&0xFF)==PT_COAL && 5>(rand()%100))
                                 parts[r>>8].type = PT_WOOD;*/
-							if(parts[r>>8].type>1 && parts[r>>8].type!=PT_NEUT && parts[r>>8].type-1!=PT_NEUT && parts[r>>8].type-1!=PT_STKM && 15>(rand()%1000))
+							if(parts[r>>8].type>1 && parts[r>>8].type!=PT_NEUT && parts[r>>8].type-1!=PT_NEUT && parts[r>>8].type-1!=PT_STKM && 
+								(ptypes[parts[r>>8].type-1].menusection==SC_LIQUID||
+								ptypes[parts[r>>8].type-1].menusection==SC_EXPLOSIVE||
+								ptypes[parts[r>>8].type-1].menusection==SC_GAS||
+								ptypes[parts[r>>8].type-1].menusection==SC_POWDERS) && 15>(rand()%1000))
 								parts[r>>8].type--;
                         }
             }
@@ -1903,7 +1907,7 @@ player[23] = 1;
                 parts[i].type = PT_NBLE;
                 parts[i].life = 0;
             }
-            if (t==PT_FIRE && parts[i].life <=1)
+			if (t==PT_FIRE && parts[i].life <=1 && parts[i].temp<673)
             {
                 t = parts[i].type = PT_SMKE;
                 parts[i].life = rand()%20+250;

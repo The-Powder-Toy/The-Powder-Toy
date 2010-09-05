@@ -309,7 +309,7 @@ static part_state pstates[PT_NUM] =
     /* LCRY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_BGLA, 1273.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* STKM */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 620.0f},
     /* SWCH */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* SMKE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 673.0f},
+    /* SMKE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* DESL */ {ST_LIQUID,  PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_FIRE, 335.0f},
     /* COAL */ {ST_SOLID,   PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f},
     /* LO2  */ {ST_LIQUID,  PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_O2,   453.0f,	PT_NONE, 0.0f},
