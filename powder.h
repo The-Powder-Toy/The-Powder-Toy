@@ -109,6 +109,8 @@
 #define R_TEMP 22
 #define MAX_TEMP 9999
 #define MIN_TEMP 0
+#define O_MAX_TEMP 3500
+#define O_MIN_TEMP -273
 
 #define ST_NONE 0
 #define ST_SOLID 1

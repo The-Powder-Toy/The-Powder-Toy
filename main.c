@@ -592,7 +592,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 					if(ver>=42){
 						parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
 					} else {
-						parts[i-1].temp = ((d[p++]*(((3500.0f)+(-(-273)))/255))+(-273)) + 273.15f;
+						parts[i-1].temp = ((d[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273;
 					}
                 }
                 else
@@ -1985,6 +1985,7 @@ int main(int argc, char *argv[])
             {
 #ifdef BETA
                 sprintf(uitext, "Version %d (Beta %d) FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
+				//printf("%s\n", uitext);
 #else
                 sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
 #endif
