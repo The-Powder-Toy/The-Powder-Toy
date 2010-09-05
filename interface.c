@@ -1589,6 +1589,11 @@ int sdl_poll(void)
             {
                 player[0] = (int)(player[0])|0x04;  //Jump command
             }
+	    if(event.key.keysym.sym == 'd' && isplayer)
+            {
+                player[0] = (int)(player[0])|0x10;  //Death "command"
+            }
+
             break;
 
         case SDL_KEYUP:

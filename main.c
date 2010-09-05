@@ -98,7 +98,7 @@ float mheat = 0.0f;
 int do_open = 0;
 int sys_pause = 0;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by commandline or save.
-int death = 0, framerender = 0;
+int framerender = 0;
 int amd = 1;
 int FPSB = 0;
 
@@ -1160,11 +1160,6 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-		if(sdl_key=='d' && isplayer)
-		{
-			death = 1;
-			//death = !(death);
-		}
 		if(sdl_key=='f')
 		{
 			framerender = 1;
