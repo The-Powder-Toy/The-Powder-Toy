@@ -644,21 +644,23 @@ void update_particles_i(pixel *vid, int start, int inc)
             {
                 if(t==PT_WTRV && pv[y/CELL][x/CELL]>4.0f)
                     t = parts[i].type = PT_DSTW;
-                if(t==PT_DESL && pv[y/CELL][x/CELL]<-6.0f)
+                if(t==PT_OIL && pv[y/CELL][x/CELL]<-6.0f)
                     t = parts[i].type = PT_GAS;
                 if(t==PT_GAS && pv[y/CELL][x/CELL]>6.0f)
-                    t = parts[i].type = PT_DESL;
+                    t = parts[i].type = PT_OIL;
                 if(t==PT_DESL && pv[y/CELL][x/CELL]>12.0f)
                     t = parts[i].type = PT_FIRE;
             }
-            if(t==PT_DESL && pv[y/CELL][x/CELL]<-20.0f)
-                t = parts[i].type = PT_GAS;
-            if(t==PT_DESL && pv[y/CELL][x/CELL]>50.0f)      // Only way I know to make it
+            if(t==PT_GAS && pv[y/CELL][x/CELL]<-6.0f)
+                t = parts[i].type = PT_OIL;
+            if(t==PT_DESL && pv[y/CELL][x/CELL]>12.0f)      // Only way I know to make it
                 t = parts[i].type = PT_FIRE;                // combust under pressure.
-            if(t==PT_GAS && pv[y/CELL][x/CELL]>20.0f)
-                t = parts[i].type = PT_DESL;
+            if(t==PT_GAS && pv[y/CELL][x/CELL]>6.0f)
+                t = parts[i].type = PT_OIL;
             if(t==PT_BMTL && pv[y/CELL][x/CELL]>2.5f)
                 t = parts[i].type = PT_BRMT;
+			if(t==PT_BRCK && pv[y/CELL][x/CELL]>2.8f)
+                t = parts[i].type = PT_STNE;
             //if(t==PT_GLAS && pv[y/CELL][x/CELL]>4.0f)
             //	t = parts[i].type = PT_BGLA;
             if(t==PT_GLAS)
@@ -1164,7 +1166,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 pv[y/CELL][x/CELL] += 10.0f * CFDS; //Used to be 2, some people said nukes weren't powerful enough
                                 fe ++;
                             }
-                            /*if((r&0xFF)==PT_GUNP && 15>(rand()%1000))
+                            if((r&0xFF)==PT_GUNP && 15>(rand()%1000))
                                 parts[r>>8].type = PT_DUST;
                             if((r&0xFF)==PT_DYST && 15>(rand()%1000))
                                 parts[r>>8].type = PT_YEST;
@@ -1186,13 +1188,13 @@ void update_particles_i(pixel *vid, int start, int inc)
                             if((r&0xFF)==PT_DESL && 15>(rand()%1000))
                                 parts[r>>8].type = PT_GAS;
                             if((r&0xFF)==PT_COAL && 5>(rand()%100))
-                                parts[r>>8].type = PT_WOOD;*/
-							if(parts[r>>8].type>1 && parts[r>>8].type!=PT_NEUT && parts[r>>8].type-1!=PT_NEUT && parts[r>>8].type-1!=PT_STKM && 
+                                parts[r>>8].type = PT_WOOD;
+							/*if(parts[r>>8].type>1 && parts[r>>8].type!=PT_NEUT && parts[r>>8].type-1!=PT_NEUT && parts[r>>8].type-1!=PT_STKM && 
 								(ptypes[parts[r>>8].type-1].menusection==SC_LIQUID||
 								ptypes[parts[r>>8].type-1].menusection==SC_EXPLOSIVE||
 								ptypes[parts[r>>8].type-1].menusection==SC_GAS||
 								ptypes[parts[r>>8].type-1].menusection==SC_POWDERS) && 15>(rand()%1000))
-								parts[r>>8].type--;
+								parts[r>>8].type--;*/
                         }
             }
             else if(t==PT_PHOT)
