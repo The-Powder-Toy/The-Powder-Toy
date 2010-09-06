@@ -938,7 +938,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             r = pmap[y+ny][x+nx];
                             if((r>>8)>=NPART || !r)
                                 continue;
-                            if((r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_METL)
+                            if((r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_METL && pavg(i, r>>8)!=PT_INSL)
                             {
                                 parts[i].temp = 473.0f;
                             }
