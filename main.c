@@ -589,11 +589,11 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                 }
                 if(i <= NPART)
                 {
-					if(ver>=42){
-						parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
-					} else {
-						parts[i-1].temp = ((d[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273;
-					}
+                    if(ver>=42) {
+                        parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
+                    } else {
+                        parts[i-1].temp = ((d[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273;
+                    }
                 }
                 else
                 {
@@ -1089,7 +1089,7 @@ int main(int argc, char *argv[])
             update_air();
         }
 #ifdef OpenGL
-		ClearScreen();
+        ClearScreen();
 #else
         if(cmode==0 || cmode==1)
         {
@@ -1106,7 +1106,7 @@ int main(int argc, char *argv[])
         }
 #endif
         update_particles(vid_buf);
-		draw_parts(vid_buf);
+        draw_parts(vid_buf);
 
         if(cmode==2)
         {
@@ -1160,15 +1160,15 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-		if(sdl_key=='d' && isplayer)
-		{
-			death = 1;
-			//death = !(death);
-		}
-		if(sdl_key=='f')
-		{
-			framerender = 1;
-		}
+        if(sdl_key=='d' && isplayer)
+        {
+            death = 1;
+            //death = !(death);
+        }
+        if(sdl_key=='f')
+        {
+            framerender = 1;
+        }
         if((sdl_key=='l' || sdl_key=='k') && stamps[0].name[0])
         {
             if(load_mode)
@@ -1985,7 +1985,7 @@ int main(int argc, char *argv[])
             {
 #ifdef BETA
                 sprintf(uitext, "Version %d (Beta %d) FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
-				//printf("%s\n", uitext);
+                //printf("%s\n", uitext);
 #else
                 sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
 #endif
@@ -2014,16 +2014,16 @@ int main(int argc, char *argv[])
             fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
             drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
         }
-	sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
+        sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
-		//Setting an element for the stick man
-		if(isplayer==0)
-		{
-			if(ptypes[sr].falldown>0 || sr == PT_NEUT || sr == PT_PHOT)
-				player[2] = sr;
-			else
-				player[2] = PT_DUST;
-		}
+        //Setting an element for the stick man
+        if(isplayer==0)
+        {
+            if(ptypes[sr].falldown>0 || sr == PT_NEUT || sr == PT_PHOT)
+                player[2] = sr;
+            else
+                player[2] = PT_DUST;
+        }
 
     }
 

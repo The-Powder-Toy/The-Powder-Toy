@@ -117,7 +117,7 @@ void sdl_blit_2(int x, int y, int w, int h, pixel *src, int pitch)
 void sdl_blit(int x, int y, int w, int h, pixel *src, int pitch)
 {
 #ifdef OpenGL
-	RenderScene();
+    RenderScene();
 #else
     if(sdl_scale == 2)
         sdl_blit_2(x, y, w, h, src, pitch);
@@ -708,7 +708,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
         //x = 2+32*(b/2);
         //y = YRES+2+20*(b%2);
 #ifdef OpenGL
-		fillrect(vid_buf, x, y, 28, 16, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+        fillrect(vid_buf, x, y, 28, 16, PIXR(pc), PIXG(pc), PIXB(pc), 255);
 #else
         for(j=1; j<15; j++)
         {
@@ -847,13 +847,13 @@ int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a
 void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
 {
 #ifdef OpenGL
-	glBegin(GL_LINE_LOOP);
-	glColor4ub(r, g, b, a);
-	glVertex2i(x, y);
-	glVertex2i(x+w, y);
-	glVertex2i(x+w, y+h);
-	glVertex2i(x, y+h);
-	glEnd();
+    glBegin(GL_LINE_LOOP);
+    glColor4ub(r, g, b, a);
+    glVertex2i(x, y);
+    glVertex2i(x+w, y);
+    glVertex2i(x+w, y+h);
+    glVertex2i(x, y+h);
+    glEnd();
 #else
     int i;
     for(i=0; i<=w; i++)
@@ -872,13 +872,13 @@ void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a
 void fillrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
 {
 #ifdef OpenGL
-	glBegin(GL_QUADS);
-	glColor4ub(r, g, b, a);
-	glVertex2i(x, y);
-	glVertex2i(x+w, y);
-	glVertex2i(x+w, y+h);
-	glVertex2i(x, y+h);
-	glEnd();
+    glBegin(GL_QUADS);
+    glColor4ub(r, g, b, a);
+    glVertex2i(x, y);
+    glVertex2i(x+w, y);
+    glVertex2i(x+w, y+h);
+    glVertex2i(x, y+h);
+    glEnd();
 #else
     int i,j;
     for(j=1; j<h; j++)
@@ -896,12 +896,12 @@ void clearrect(pixel *vid, int x, int y, int w, int h)
 void drawdots(pixel *vid, int x, int y, int h, int r, int g, int b, int a)
 {
 #ifdef OpenGL
-	int i;
+    int i;
     glBegin(GL_QUADS);
-	glColor4ub(r, g, b, a);
-	for(i = 0; i <= h; i +=2)
+    glColor4ub(r, g, b, a);
+    for(i = 0; i <= h; i +=2)
         glVertex2i(x, y+i);
-	glEnd();
+    glEnd();
 #else
     int i;
     for(i=0; i<=h; i+=2)
@@ -1160,28 +1160,28 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 }
 
 void draw_parts(pixel *vid)
-{	
-	int i, x, y, t, nx, ny, r, s;
-	int cr, cg, cb;
-	float fr, fg, fb;
+{
+    int i, x, y, t, nx, ny, r, s;
+    int cr, cg, cb;
+    float fr, fg, fb;
     float pt = R_TEMP;
-	for(i = 0; i<NPART; i++){
+    for(i = 0; i<NPART; i++) {
 #ifdef OpenGL
-		if(parts[i].type){
-			//Do nothing
-			t = parts[i].type;
-			nx = (int)(parts[i].x+0.5f);
+        if(parts[i].type) {
+            //Do nothing
+            t = parts[i].type;
+            nx = (int)(parts[i].x+0.5f);
             ny = (int)(parts[i].y+0.5f);
-			glBegin (GL_POINTS);
-			glColor3ub (PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors));
-			glVertex2d (nx, ny);
-			glEnd ();
-		}
+            glBegin (GL_POINTS);
+            glColor3ub (PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors));
+            glVertex2d (nx, ny);
+            glEnd ();
+        }
 #else
-		if(parts[i].type){
-			t = parts[i].type;
+        if(parts[i].type) {
+            t = parts[i].type;
 
-			nx = (int)(parts[i].x+0.5f);
+            nx = (int)(parts[i].x+0.5f);
             ny = (int)(parts[i].y+0.5f);
 
             if(cmode!=CM_HEAT)
@@ -1236,20 +1236,20 @@ void draw_parts(pixel *vid)
                     cr = PIXR(ptypes[t].pcolors)/s;
                     cg = PIXG(ptypes[t].pcolors)/s;
                     cb = PIXB(ptypes[t].pcolors)/s;
-					if(cmode==6){
-						for(x=-1; x<=1; x++)
-						{
-						    for(y=-1; y<=1; y++)
-						    {
-						        if ((abs(x) == 0) && (abs(y) == 0))
-						            blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
-						        else if (abs(y) != 0 || abs(x) != 0)
-						            blendpixel(vid,x+nx,y+ny,cr,cg,cb,40);
-						    }
-						}
-					} else {
-						blendpixel(vid, nx, ny, cr, cg, cb, 255);
-					}
+                    if(cmode==6) {
+                        for(x=-1; x<=1; x++)
+                        {
+                            for(y=-1; y<=1; y++)
+                            {
+                                if ((abs(x) == 0) && (abs(y) == 0))
+                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
+                                else if (abs(y) != 0 || abs(x) != 0)
+                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,40);
+                            }
+                        }
+                    } else {
+                        blendpixel(vid, nx, ny, cr, cg, cb, 255);
+                    }
 
                     if(cmode==4)
                     {
@@ -1609,17 +1609,17 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
                 }
-				else if(t==PT_GLOW)
+                else if(t==PT_GLOW)
                 {
-					fg = 0;
-					fb = 0;
-					fr = 0;
-					if(pv[ny/CELL][nx/CELL]>0){
-						fg = 6 * pv[ny/CELL][nx/CELL];
-						fb = 4 * pv[ny/CELL][nx/CELL];
-						fr = 2 * pv[ny/CELL][nx/CELL];
-					}
-					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB((int)restrict_flt(0x44 + fr*8, 0, 255), (int)restrict_flt(0x88 + fg*8, 0, 255), (int)restrict_flt(0x44 + fb*8, 0, 255));
+                    fg = 0;
+                    fb = 0;
+                    fr = 0;
+                    if(pv[ny/CELL][nx/CELL]>0) {
+                        fg = 6 * pv[ny/CELL][nx/CELL];
+                        fb = 4 * pv[ny/CELL][nx/CELL];
+                        fr = 2 * pv[ny/CELL][nx/CELL];
+                    }
+                    vid[ny*(XRES+BARSIZE)+nx] = PIXRGB((int)restrict_flt(0x44 + fr*8, 0, 255), (int)restrict_flt(0x88 + fg*8, 0, 255), (int)restrict_flt(0x44 + fb*8, 0, 255));
                     if(cmode == 3||cmode==4 || cmode==6)
                     {
                         x = nx/CELL;
@@ -1634,37 +1634,37 @@ void draw_parts(pixel *vid)
                         if(fr > 255) fr = 255;
                         fire_r[y][x] = fr;
                     }
-					if(cmode == 4){
-						uint8 R = (int)restrict_flt(0x44 + fr*8, 0, 255);
-						uint8 G = (int)restrict_flt(0x88 + fg*8, 0, 255);
-						uint8 B = (int)restrict_flt(0x44 + fb*8, 0, 255);
- 
-						blendpixel(vid, nx+1, ny, R, G, B, 223);
-						blendpixel(vid, nx-1, ny, R, G, B, 223);
-						blendpixel(vid, nx, ny+1, R, G, B, 223);
-						blendpixel(vid, nx, ny-1, R, G, B, 223);
+                    if(cmode == 4) {
+                        uint8 R = (int)restrict_flt(0x44 + fr*8, 0, 255);
+                        uint8 G = (int)restrict_flt(0x88 + fg*8, 0, 255);
+                        uint8 B = (int)restrict_flt(0x44 + fb*8, 0, 255);
 
-						blendpixel(vid, nx+1, ny-1, R, G, B, 112);
-						blendpixel(vid, nx-1, ny-1, R, G, B, 112);
-						blendpixel(vid, nx+1, ny+1, R, G, B, 112);
-						blendpixel(vid, nx-1, ny+1, R, G, B, 112);
-					}
+                        blendpixel(vid, nx+1, ny, R, G, B, 223);
+                        blendpixel(vid, nx-1, ny, R, G, B, 223);
+                        blendpixel(vid, nx, ny+1, R, G, B, 223);
+                        blendpixel(vid, nx, ny-1, R, G, B, 223);
+
+                        blendpixel(vid, nx+1, ny-1, R, G, B, 112);
+                        blendpixel(vid, nx-1, ny-1, R, G, B, 112);
+                        blendpixel(vid, nx+1, ny+1, R, G, B, 112);
+                        blendpixel(vid, nx-1, ny+1, R, G, B, 112);
+                    }
                 }
                 else if(t==PT_LCRY)
                 {
-					uint8 GR = 0x50+(parts[i].life*10);
-					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(GR, GR, GR);
-					if(cmode == 4){
-						blendpixel(vid, nx+1, ny, GR, GR, GR, 223);
-						blendpixel(vid, nx-1, ny, GR, GR, GR, 223);
-						blendpixel(vid, nx, ny+1, GR, GR, GR, 223);
-						blendpixel(vid, nx, ny-1, GR, GR, GR, 223);
+                    uint8 GR = 0x50+(parts[i].life*10);
+                    vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(GR, GR, GR);
+                    if(cmode == 4) {
+                        blendpixel(vid, nx+1, ny, GR, GR, GR, 223);
+                        blendpixel(vid, nx-1, ny, GR, GR, GR, 223);
+                        blendpixel(vid, nx, ny+1, GR, GR, GR, 223);
+                        blendpixel(vid, nx, ny-1, GR, GR, GR, 223);
 
-						blendpixel(vid, nx+1, ny-1, GR, GR, GR, 112);
-						blendpixel(vid, nx-1, ny-1, GR, GR, GR, 112);
-						blendpixel(vid, nx+1, ny+1, GR, GR, GR, 112);
-						blendpixel(vid, nx-1, ny+1, GR, GR, GR, 112);
-					}
+                        blendpixel(vid, nx+1, ny-1, GR, GR, GR, 112);
+                        blendpixel(vid, nx-1, ny-1, GR, GR, GR, 112);
+                        blendpixel(vid, nx+1, ny+1, GR, GR, GR, 112);
+                        blendpixel(vid, nx-1, ny+1, GR, GR, GR, 112);
+                    }
                 } else if(t==PT_PLSM)
                 {
                     float ttemp = (float)parts[i].life;
@@ -1841,7 +1841,7 @@ void draw_parts(pixel *vid)
                     draw_line(vid , nx, ny+3, player[11], player[12], R, G, B, s);
                     draw_line(vid , player[11], player[12], player[15], player[16], R, G, B, s);
 
-					isplayer = 1;  //It's a secret. Tssss...
+                    isplayer = 1;  //It's a secret. Tssss...
                 }
                 else
                 {
@@ -1869,11 +1869,11 @@ void draw_parts(pixel *vid)
                 blendpixel(vid, nx+1, ny+1, R, G, B, 112);
                 blendpixel(vid, nx-1, ny+1, R, G, B, 112);
             }
-		}
+        }
 #endif
-	}
+    }
 #ifdef OpenGL
-	glFlush ();
+    glFlush ();
 #endif
 
 }
@@ -1968,33 +1968,33 @@ void prepare_alpha(void)
 
 pixel *render_packed_rgb(void *image, int width, int height, int cmp_size)
 {
-	unsigned char *tmp;
-	pixel *res;
-	int i;
+    unsigned char *tmp;
+    pixel *res;
+    int i;
 
-	tmp = malloc(width*height*3);
-	if(!tmp)
-		return NULL;
-	res = malloc(width*height*PIXELSIZE);
-	if(!res)
-	{
-		free(tmp);
-		return NULL;
-	}
+    tmp = malloc(width*height*3);
+    if(!tmp)
+        return NULL;
+    res = malloc(width*height*PIXELSIZE);
+    if(!res)
+    {
+        free(tmp);
+        return NULL;
+    }
 
-	i = width*height*3;
-	if(BZ2_bzBuffToBuffDecompress((char *)tmp, (unsigned *)&i, (char *)image, cmp_size, 0, 0))
-	{
-		free(res);
-		free(tmp);
-		return NULL;
-	}
+    i = width*height*3;
+    if(BZ2_bzBuffToBuffDecompress((char *)tmp, (unsigned *)&i, (char *)image, cmp_size, 0, 0))
+    {
+        free(res);
+        free(tmp);
+        return NULL;
+    }
 
-	for(i=0; i<width*height; i++)
-		res[i] = PIXRGB(tmp[3*i], tmp[3*i+1], tmp[3*i+2]);
+    for(i=0; i<width*height; i++)
+        res[i] = PIXRGB(tmp[3*i], tmp[3*i+1], tmp[3*i+2]);
 
-	free(tmp);
-	return res;
+    free(tmp);
+    return res;
 }
 
 void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a)
@@ -2339,14 +2339,14 @@ void sdl_open(void)
     }
     atexit(SDL_Quit);
 #ifdef OpenGL
-	sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_OPENGL);
-	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
-	Enable2D ();
-	 //   glBegin(GL_TRIANGLES);
-     //   glColor3ub (255, 0, 0);
-     //   glVertex2d (0, 0);
-     //   glColor3ub (0, 255, 0);
-     //   glVertex2d (640,0);
+    sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_OPENGL);
+    SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
+    Enable2D ();
+    //   glBegin(GL_TRIANGLES);
+    //   glColor3ub (255, 0, 0);
+    //   glVertex2d (0, 0);
+    //   glColor3ub (0, 255, 0);
+    //   glVertex2d (640,0);
     //    glColor3ub (0, 0, 255);
     //    glVertex2d (50, 50);
     //glEnd ();
@@ -2385,11 +2385,11 @@ void Enable2D ()
     glPushMatrix ();
     glLoadIdentity ();
 
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST);
-	glHint( GL_POINT_SMOOTH_HINT, GL_NICEST);
+    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glHint( GL_POINT_SMOOTH_HINT, GL_NICEST);
 }
 void RenderScene ()
 {
@@ -2397,6 +2397,6 @@ void RenderScene ()
 }
 void ClearScreen()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 #endif
