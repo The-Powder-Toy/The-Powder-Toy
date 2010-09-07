@@ -1903,7 +1903,64 @@ player[23] = 1;
 				if(parts[i].temp>303&&parts[i].temp<317){
 					create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_YEST);
 				}
-            }
+			}
+			if(t==PT_FWRK)
+			{
+				if(parts[i].temp>400&&10>rand()%10000&&parts[i].life==0&&!pmap[y-1][x])
+				{
+					
+					create_part(-1, x , y-1 , PT_FWRK);
+					r = pmap[y-1][x];
+					parts[r>>8].vy = rand()%5-10;
+					parts[r>>8].vx = rand()%5-rand()%5;
+					parts[r>>8].life=rand()%30+50;
+					parts[i].type=PT_NONE;
+				}
+				if(parts[i].life>1)
+				{
+					if(parts[i].life>5)
+					{
+						parts[i].vy += rand()%3-rand()%5;
+						parts[i].vx += rand()%3-rand()%3;
+					}
+					parts[i].life--;
+				}
+				if(parts[i].life==1||(parts[i].vy>6&&parts[i].life>1))
+				{
+					int q = (rand()%6+1)*200+50;
+					for(nx=-1; nx<2; nx++)
+                    for(ny=-1; ny<2; ny++)
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+							if(5>=rand()%8)
+							{
+								
+								create_part(-1, x+nx, y+ny , PT_DUST);
+								a= pmap[y+ny][x+nx];
+								parts[a>>8].vy = rand()%(ny*16+4)-rand()%9;
+								parts[a>>8].vx = rand()%(nx*16+4)-rand()%9;
+								parts[a>>8].life= q;
+								parts[a>>8].temp= rand()%20+600;
+								parts[i].type=PT_NONE;
+							}
+						}
+					
+				}
+			}
+			if(t==PT_DUST&&!parts[i].life==0)
+			{
+				if(parts[i].life>=0)
+				{
+					parts[i].life--;
+					if(parts[i].life<=50||(parts[i].life>248&&parts[i].life<252)||(parts[i].life>448&&parts[i].life<452)||(parts[i].life>648&&parts[i].life<652)||
+						(parts[i].life>848&&parts[i].life<852)||(parts[i].life>1048&&parts[i].life<1052)||parts[i].life==rand()%50+50||parts[i].life==rand()%50+10||
+						parts[i].life==rand()%50+250||parts[i].life==rand()%50+350||parts[i].life==rand()%50+450||parts[i].life==rand()%50+550||parts[i].life==rand()%50+50||parts[i].life==rand()%50+10||
+						parts[i].life==rand()%50+250||parts[i].life==rand()%50+350||parts[i].life==rand()%50+450||parts[i].life==rand()%50+550)
+						parts[i].type=PT_NONE;
+				}
+				
+			}
             if(t==PT_PLSM&&parts[i].ctype == PT_NBLE&&parts[i].life <=1)
             {
                 parts[i].type = PT_NBLE;
