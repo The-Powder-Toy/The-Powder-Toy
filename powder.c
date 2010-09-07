@@ -456,7 +456,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 {
     int i, j, x, y, t, nx, ny, r, a, s, rt, fe, nt, lpv, nearp, pavg;
     float mv, dx, dy, ix, iy, lx, ly, d, pp;
-    float pt = R_TEMP;
+    float pt = R_TEMP + 273.15f;
     float c_heat = 0.0f;
     int h_count = 0;
     int starti = (start*-1);
@@ -766,7 +766,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             t = parts[i].type = pstates[t].solid;
                         }
                     }
-                    else if((pt>=pstates[t].ltemp&&(pt<=pstates[t].gtemp||!pstates[t].gas)&&pstates[t].state==ST_SOLID&&pstates[t].liquid)||(t==PT_ICEI&&pt>pstates[parts[i].ctype].stemp))
+                    else if((pt>=pstates[t].ltemp&&(pt<=pstates[t].gtemp||!pstates[t].gas)&&pstates[t].state==ST_SOLID&&pstates[t].liquid)||(t==PT_ICEI&&pt<pstates[parts[i].ctype].ltemp))
                     {
                         if(pstates[t].liquid==PT_LAVA)
                         {
@@ -1115,7 +1115,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 continue;
                             if((r&0xFF)!=PT_ACID)
                             {
-                                if ((r&0xFF)==PT_PLEX || (r&0xFF)==PT_NITR || (r&0xFF)==PT_GUNP || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD)
+                                if ((r&0xFF)==PT_C4 || (r&0xFF)==PT_NITR || (r&0xFF)==PT_GUNP || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD)
                                 {
                                     t = parts[i].type = PT_FIRE;
                                     parts[i].life = 4;
@@ -1179,7 +1179,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 
                             if((r&0xFF)==PT_WATR && 15>(rand()%100))
                                 parts[r>>8].type = PT_DSTW;
-                            if((r&0xFF)==PT_PLEX && 15>(rand()%1000))
+                            if((r&0xFF)==PT_C4&& 15>(rand()%1000))
                                 parts[r>>8].type = PT_GOO;
                             if((r&0xFF)==PT_NITR && 15>(rand()%1000))
                                 parts[r>>8].type = PT_DESL;
