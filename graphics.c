@@ -1163,6 +1163,7 @@ void draw_parts(pixel *vid)
 {	
 	int i, x, y, t, nx, ny, r, s;
 	int cr, cg, cb;
+	float fr, fg, fb;
     float pt = R_TEMP;
 	for(i = 0; i<NPART; i++){
 #ifdef OpenGL
@@ -1191,7 +1192,7 @@ void draw_parts(pixel *vid)
 
                     if(mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3))  //If mous is in the head
                     {
-                        sprintf(buff, "%3d", (int)parts[i].life);  //Show HP
+                        sprintf(buff, "%3d", parts[i].life);  //Show HP
                         drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
                     }
 
@@ -1608,39 +1609,66 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
                 }
-                else if(t==PT_LCRY)
+				else if(t==PT_GLOW)
                 {
+					fg = 0;
+					fb = 0;
+					fr = 0;
+					if(pv[ny/CELL][nx/CELL]>0){
+						fg = 6 * pv[ny/CELL][nx/CELL];
+						fb = 4 * pv[ny/CELL][nx/CELL];
+						fr = 2 * pv[ny/CELL][nx/CELL];
+					}
+					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB((int)restrict_flt(0x44 + fr*8, 0, 255), (int)restrict_flt(0x88 + fg*8, 0, 255), (int)restrict_flt(0x44 + fb*8, 0, 255));
                     if(cmode == 3||cmode==4 || cmode==6)
                     {
-                        //cr = R/8;
-                        //cg = G/8;
-                        //cb = B/8;
-                        vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(0x50+(parts[i].life*10), 0x50+(parts[i].life*10), 0x50+(parts[i].life*10));
-                        //x = nx/CELL;
-                        //y = ny/CELL;
-                        //cg += fire_g[y][x]; if(cg > 255) cg = 255; fire_g[y][x] = cg;
-                        //cb += fire_b[y][x]; if(cb > 255) cb = 255; fire_b[y][x] = cb;
-                        //cr += fire_r[y][x]; if(cr > 255) cr = 255; fire_r[y][x] = cr;
+                        x = nx/CELL;
+                        y = ny/CELL;
+                        fg += fire_g[y][x];
+                        if(fg > 255) fg = 255;
+                        fire_g[y][x] = fg;
+                        fb += fire_b[y][x];
+                        if(fb > 255) fb = 255;
+                        fire_b[y][x] = fb;
+                        fr += fire_r[y][x];
+                        if(fr > 255) fr = 255;
+                        fire_r[y][x] = fr;
                     }
-                    else
-                    {
-                        cr = 0x50+(parts[i].life*10);
-                        cg = 0x50+(parts[i].life*10);
-                        cb = 0x50+(parts[i].life*10);
-                        blendpixel(vid, nx, ny, cr, cg, cb, 192);
-                        blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
-                        blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
-                        blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
-                        blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-                        blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
-                        blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
-                        blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
-                        blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
-                    }
+					if(cmode == 4){
+						uint8 R = (int)restrict_flt(0x44 + fr*8, 0, 255);
+						uint8 G = (int)restrict_flt(0x88 + fg*8, 0, 255);
+						uint8 B = (int)restrict_flt(0x44 + fb*8, 0, 255);
+ 
+						blendpixel(vid, nx+1, ny, R, G, B, 223);
+						blendpixel(vid, nx-1, ny, R, G, B, 223);
+						blendpixel(vid, nx, ny+1, R, G, B, 223);
+						blendpixel(vid, nx, ny-1, R, G, B, 223);
+
+						blendpixel(vid, nx+1, ny-1, R, G, B, 112);
+						blendpixel(vid, nx-1, ny-1, R, G, B, 112);
+						blendpixel(vid, nx+1, ny+1, R, G, B, 112);
+						blendpixel(vid, nx-1, ny+1, R, G, B, 112);
+					}
+                }
+                else if(t==PT_LCRY)
+                {
+					uint8 GR = 0x50+(parts[i].life*10);
+					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(GR, GR, GR);
+					if(cmode == 4){
+						blendpixel(vid, nx+1, ny, GR, GR, GR, 223);
+						blendpixel(vid, nx-1, ny, GR, GR, GR, 223);
+						blendpixel(vid, nx, ny+1, GR, GR, GR, 223);
+						blendpixel(vid, nx, ny-1, GR, GR, GR, 223);
+
+						blendpixel(vid, nx+1, ny-1, GR, GR, GR, 112);
+						blendpixel(vid, nx-1, ny-1, GR, GR, GR, 112);
+						blendpixel(vid, nx+1, ny+1, GR, GR, GR, 112);
+						blendpixel(vid, nx-1, ny+1, GR, GR, GR, 112);
+					}
                 } else if(t==PT_PLSM)
                 {
                     float ttemp = (float)parts[i].life;
-                    int caddress = restrict_flt(restrict_flt(ttemp, 273.0f, 473.0f)*3, 273.0f, (473.0f*3)-3);
+                    int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
                     uint8 R = plasma_data[caddress];
                     uint8 G = plasma_data[caddress+1];
                     uint8 B = plasma_data[caddress+2];
@@ -1785,7 +1813,7 @@ void draw_parts(pixel *vid)
             else
             {
                 float ttemp = parts[i].temp+(-MIN_TEMP);
-                int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, 3773+(-MIN_TEMP)) / ((3773+(-MIN_TEMP))/512) ) *3, 0.0f, (512.0f*3)-3);
+                int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/512) ) *3, 0.0f, (512.0f*3)-3);
                 uint8 R = color_data[caddress];
                 uint8 G = color_data[caddress+1];
                 uint8 B = color_data[caddress+2];
@@ -1796,7 +1824,7 @@ void draw_parts(pixel *vid)
 
                     if(mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3))  //If mous is in the head
                     {
-                        sprintf(buff, "%3d", (int)parts[i].life);  //Show HP
+                        sprintf(buff, "%3d", parts[i].life);  //Show HP
                         drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
                     }
 
@@ -1812,6 +1840,8 @@ void draw_parts(pixel *vid)
                     draw_line(vid , player[3], player[4], player[7], player[8], R, G, B, s);
                     draw_line(vid , nx, ny+3, player[11], player[12], R, G, B, s);
                     draw_line(vid , player[11], player[12], player[15], player[16], R, G, B, s);
+
+					isplayer = 1;  //It's a secret. Tssss...
                 }
                 else
                 {
@@ -1819,7 +1849,7 @@ void draw_parts(pixel *vid)
                     //blendpixel(vid, nx+1, ny, R, G, B, 255);
                 }
             }
-            if(cmode == 4&&t!=PT_FIRE&&t!=PT_PLSM&&t!=PT_NONE&&t!=PT_ACID)
+            if(cmode == 4&&t!=PT_FIRE&&t!=PT_PLSM&&t!=PT_NONE&&t!=PT_ACID&&t!=PT_LCRY&&t!=PT_GLOW&&t!=PT_SWCH)
             {
                 uint8 R = PIXR(ptypes[t].pcolors);
                 uint8 G = PIXG(ptypes[t].pcolors);
@@ -1871,7 +1901,7 @@ void render_signs(pixel *vid_buf)
                 if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
                     sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp);  //...tempirature
                 else
-                    sprintf(buff, "Temp: N/A");  //...tempirature
+                    sprintf(buff, "Temp: 0.00");  //...tempirature
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
             }
 
@@ -2354,6 +2384,12 @@ void Enable2D ()
     glMatrixMode (GL_MODELVIEW);
     glPushMatrix ();
     glLoadIdentity ();
+
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glHint( GL_POINT_SMOOTH_HINT, GL_NICEST);
 }
 void RenderScene ()
 {
