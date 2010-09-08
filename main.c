@@ -247,7 +247,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
             d[p++] = bmap[y][x];
     for(y=by0; y<by0+bh; y++)
         for(x=bx0; x<bx0+bw; x++)
-            if(bmap[y][x]==4)
+            if(bmap[y][x]==7)
             {
                 i = (int)(fvx[y][x]*64.0f+127.5f);
                 if(i<0) i=0;
@@ -256,7 +256,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
             }
     for(y=by0; y<by0+bh; y++)
         for(x=bx0; x<bx0+bw; x++)
-            if(bmap[y][x]==4)
+            if(bmap[y][x]==7)
             {
                 i = (int)(fvy[y][x]*64.0f+127.5f);
                 if(i<0) i=0;
@@ -958,7 +958,7 @@ int main(int argc, char *argv[])
 #ifdef INTERNAL
     int vs = 0;
 #endif
-    int x, y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
+    int x, y, b = 0, sl=1, sr=0,su=0,psr=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
     int da = 0, db = 0, it = 2047, mx, my, bs = 2;
     float nfvx, nfvy;
     int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
@@ -1074,7 +1074,7 @@ int main(int argc, char *argv[])
         {
             for(i=1; i<XRES/CELL; i++)
             {
-                if(bmap[j][i]==1 || bmap[j][i]==8 || (bmap[j][i]==7 && !emap[j][i]))
+                if(bmap[j][i]==11 || bmap[j][i]==2 || (bmap[j][i]==3 && !emap[j][i]))
                 {
                     vx[j][i] = 0.0f;
                     vx[j][i-1] = 0.0f;
@@ -1345,7 +1345,7 @@ int main(int argc, char *argv[])
                 active_menu = i;
             }
         }
-        menu_ui_v3(vid_buf, active_menu, &sl, &sr, b, bq, x, y);
+        menu_ui_v3(vid_buf, active_menu, &sl, &sr, &psr, b, bq, x, y);
 
         if(zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy
                 && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
@@ -1730,7 +1730,7 @@ int main(int argc, char *argv[])
                     if(lm == 1)
                     {
                         xor_line(lx, ly, x, y, vid_buf);
-                        if(c==127 && lx>=0 && ly>=0 && lx<XRES && ly<YRES && bmap[ly/CELL][lx/CELL]==4)
+                        if(c==127 && lx>=0 && ly>=0 && lx<XRES && ly<YRES && bmap[ly/CELL][lx/CELL]==7)
                         {
                             nfvx = (x-lx)*0.005f;
                             nfvy = (y-ly)*0.005f;
@@ -1741,7 +1741,7 @@ int main(int argc, char *argv[])
                                     {
                                         fvx[j][i] = nfvx;
                                         fvy[j][i] = nfvy;
-                                        bmap[j][i] = 4;
+                                        bmap[j][i] = 7;
                                     }
                         }
                     }
@@ -1845,7 +1845,7 @@ int main(int argc, char *argv[])
                 su = c;
                 if(lm == 1)
                 {
-                    if(c!=127 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=4)
+                    if(c!=127 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=7)
                         create_line(lx, ly, x, y, bs, c);
                 }
                 else

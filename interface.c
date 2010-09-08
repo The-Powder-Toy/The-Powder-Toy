@@ -1291,7 +1291,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
                     else if(n==*sr)
                     {
                         drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
-                    }
+					}
                 }
             }
             for(n = 0; n<PT_NUM; n++)
@@ -1400,7 +1400,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
     //drawtext(vid_buf, XRES+2, (12*i)+2, msections[i].icon, 255, 255, 255, 255);
 }
 
-void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, int my)
+void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *psr,int b, int bq, int mx, int my)
 {
     int h,x,y,n=0,height,width,sy,rows=0;
     mx /= sdl_scale;
@@ -1437,6 +1437,10 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
                 }
+				else if(n==*psr)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+                }
             }
         }
     }
@@ -1465,6 +1469,10 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
                 }
+				else if(n==*psr)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+                }
             }
         }
         for(n = 0; n<PT_NUM; n++)
@@ -1489,6 +1497,10 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
                 else if(n==*sr)
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+                }
+				else if(n==*psr)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
                 }
             }
         }
@@ -1517,6 +1529,10 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
                 else if(n==*sr)
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+                }
+				else if(n==*psr)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
                 }
             }
         }
@@ -1541,6 +1557,8 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
     }
     if(b==4&&h!=-1)
     {
+		PSR = *sr;
+		*psr = *sr;
         *sr = h;
     }
 }
