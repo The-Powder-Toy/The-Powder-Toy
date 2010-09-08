@@ -1407,18 +1407,7 @@ void draw_parts(pixel *vid)
                 {
                     x = nx;
                     y = ny;
-					if(parts[i].life>=50&&parts[i].life<=250)
-						blendpixel(vid,x,y,255,5,20,255);
-					if(parts[i].life>=251&&parts[i].life<=450)
-						blendpixel(vid,x,y,12,245,2,255);
-					if(parts[i].life>=451&&parts[i].life<=650)
-						blendpixel(vid,x,y,1,5,255,255);
-					if(parts[i].life>=651&&parts[i].life<=850)
-						blendpixel(vid,x,y,0,139,139,255);
-					if(parts[i].life>=851&&parts[i].life<=1050)
-						blendpixel(vid,x,y,238,154,0,255);
-					if(parts[i].life>=1051&&parts[i].life<=1250)
-						blendpixel(vid,x,y,24,154,236,255);
+					blendpixel(vid,x,y,parts[i].tmp,parts[i].ctype,parts[i].flags,255);
                 }
                 else if(t==PT_LNTG&&cmode == 6)
                 {
