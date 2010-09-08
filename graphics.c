@@ -1403,11 +1403,51 @@ void draw_parts(pixel *vid)
                     y = ny;
                     blendpixel(vid,x,y,17,217,24,255);
                 }
+				else if((t==PT_FWRK && parts[i].life >= 1)&&(cmode == 3||cmode==4 || cmode==6))
+                {
+                    x = nx;
+                    y = ny;
+                    vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
+                    cg = 10;
+                    cb = 10;
+                    cr = 10;
+                    x = nx/CELL;
+                    y = ny/CELL;
+                    cg += fire_g[y][x];
+                    if(cg > 255) cg = 255;
+                    fire_g[y][x] = cg;
+                    cb += fire_b[y][x];
+                    if(cb > 255) cb = 255;
+                    fire_b[y][x] = cb;
+                    cr += fire_r[y][x];
+                    if(cr > 255) cr = 255;
+                    fire_r[y][x] = cr;
+                }
+                
 				else if(t==PT_DUST && parts[i].life >= 1)
                 {
                     x = nx;
                     y = ny;
-					blendpixel(vid,x,y,parts[i].tmp,parts[i].ctype,parts[i].flags,255);
+					if(cmode == 3||cmode==4 || cmode==6)
+                    {
+                        vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(parts[i].tmp,parts[i].ctype,parts[i].flags);
+                        cg = parts[i].tmp/5;
+                        cb = parts[i].ctype/5;
+                        cr = parts[i].flags/5;
+                        x = nx/CELL;
+                        y = ny/CELL;
+                        cg += fire_g[y][x];
+                        if(cg > 255) cg = 255;
+                        fire_g[y][x] = cg;
+                        cb += fire_b[y][x];
+                        if(cb > 255) cb = 255;
+                        fire_b[y][x] = cb;
+                        cr += fire_r[y][x];
+                        if(cr > 255) cr = 255;
+                        fire_r[y][x] = cr;
+                    }
+					else
+						blendpixel(vid,x,y,parts[i].tmp,parts[i].ctype,parts[i].flags,255);
                 }
                 else if(t==PT_LNTG&&cmode == 6)
                 {

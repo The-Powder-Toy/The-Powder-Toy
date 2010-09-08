@@ -1911,8 +1911,8 @@ player[23] = 1;
 					
 					create_part(-1, x , y-1 , PT_FWRK);
 					r = pmap[y-1][x];
-					parts[r>>8].vy = rand()%10-25;
-					parts[r>>8].vx = rand()%30-rand()%30;
+					parts[r>>8].vy = rand()%8-22;
+					parts[r>>8].vx = rand()%20-rand()%20;
 					parts[r>>8].life=rand()%30+50;
 					parts[i].type=PT_NONE;
 				}
@@ -1936,13 +1936,16 @@ player[23] = 1;
 							{
 								create_part(-1, x+nx, y+ny , PT_DUST);
 								a= pmap[y+ny][x+nx];
-								parts[a>>8].vy = -(rand()%8+1);
-								parts[a>>8].vx = rand()%8-rand()%8+(parts[i].vx)*2;
-								parts[a>>8].life= rand()%75+175;
-								parts[a>>8].tmp=q;
-								parts[a>>8].flags=w;
-								parts[a>>8].ctype=e;
-								parts[a>>8].temp= rand()%20+600;
+								if(parts[a>>8].type==PT_DUST) 
+								{
+									parts[a>>8].vy = -(rand()%10-1);
+									parts[a>>8].vx = ((rand()%2)*2-1)*rand()%(5+5)+(parts[i].vx)*2 ;
+									parts[a>>8].life= rand()%75+35;
+									parts[a>>8].tmp=q;
+									parts[a>>8].flags=w;
+									parts[a>>8].ctype=e;
+									parts[a>>8].temp= rand()%20+600;
+								}
 							}
 							
 						}
