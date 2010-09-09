@@ -101,6 +101,7 @@ int legacy_enable = 0; //Used to disable new features such as heat, will be set 
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
+int cracker = 1;
 
 sign signs[MAXSIGNS];
 
@@ -465,7 +466,38 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
         for(x=bx0; x<bx0+bw; x++)
         {
             if(d[p])
+			{
                 bmap[y][x] = d[p];
+			if(cracker)
+			{
+			if(bmap[y][x]==1)
+				bmap[y][x]=11;
+			else if(bmap[y][x]==2)
+				bmap[y][x]=9;
+			else if(bmap[y][x]==3)
+				bmap[y][x]=8;
+			else if(bmap[y][x]==4)
+				bmap[y][x]=7;
+			else if(bmap[y][x]==5)
+				bmap[y][x]=5;
+			else if(bmap[y][x]==6)
+				bmap[y][x]=4;
+			else if(bmap[y][x]==7)
+				bmap[y][x]=3;
+			else if(bmap[y][x]==8)
+				bmap[y][x]=2;
+			else if(bmap[y][x]==9)
+				bmap[y][x]=12;
+			else if(bmap[y][x]==10)
+				bmap[y][x]=13;
+			else if(bmap[y][x]==11)
+				bmap[y][x]=14;
+			else if(bmap[y][x]==12)
+				bmap[y][x]=15;
+			else if(bmap[y][x]==13)
+				bmap[y][x]=20;
+			}
+			}
             p++;
         }
     for(y=by0; y<by0+bh; y++)
@@ -665,6 +697,7 @@ corrupt:
         memset(signs, 0, sizeof(signs));
         memset(parts, 0, sizeof(particle)*NPART);
         memset(bmap, 0, sizeof(bmap));
+
     }
     return 1;
 }

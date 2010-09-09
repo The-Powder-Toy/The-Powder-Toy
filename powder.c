@@ -1911,15 +1911,18 @@ player[23] = 1;
 			}
 			if(t==PT_FWRK)
 			{
-				if(parts[i].temp>400&&10>rand()%10000&&parts[i].life==0&&!pmap[y-1][x])
+				if(parts[i].temp>400&&(9+parts[i].temp/40)>rand()%100000&&parts[i].life==0&&!pmap[y-1][x])
 				{
 					
 					create_part(-1, x , y-1 , PT_FWRK);
 					r = pmap[y-1][x];
-					parts[r>>8].vy = rand()%8-22;
-					parts[r>>8].vx = rand()%20-rand()%20;
-					parts[r>>8].life=rand()%30+50;
-					parts[i].type=PT_NONE;
+					if(parts[r>>8].type==PT_FWRK)
+					{
+						parts[r>>8].vy = rand()%8-22;
+						parts[r>>8].vx = rand()%20-rand()%20;
+						parts[r>>8].life=rand()%30+50;
+						parts[i].type=PT_NONE;
+					}
 				}
 				if(parts[i].life>1)
 				{
@@ -1939,6 +1942,8 @@ player[23] = 1;
                         {
 							if(5>=rand()%8)
 							{
+								if(!pmap[y+ny][x+nx])
+								{
 								create_part(-1, x+nx, y+ny , PT_DUST);
 								pv[y/CELL][x/CELL] += 2.00f*CFDS;
 								a= pmap[y+ny][x+nx];
@@ -1951,6 +1956,7 @@ player[23] = 1;
 									parts[a>>8].flags=w;
 									parts[a>>8].ctype=e;
 									parts[a>>8].temp= rand()%20+600;
+								}
 								}
 							}
 							
@@ -2180,7 +2186,7 @@ void update_particles(pixel *vid)
         {
             for(x=0; x<XRES/CELL; x++)
             {
-                if(bmap[y][x]==1)
+                if(bmap[y][x]==11)
                     for(j=0; j<CELL; j++)
                         for(i=0; i<CELL; i++)
                         {
@@ -2189,14 +2195,14 @@ void update_particles(pixel *vid)
                             drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
 
                         }
-                if(bmap[y][x]==2)
+                if(bmap[y][x]==9)
                     for(j=0; j<CELL; j+=2)
                         for(i=(j>>1)&1; i<CELL; i+=2)
                         {
                             vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x808080);
                             drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
                         }
-                if(bmap[y][x]==3)
+                if(bmap[y][x]==8)
                 {
                     for(j=0; j<CELL; j++)
                         for(i=0; i<CELL; i++)
@@ -2226,7 +2232,7 @@ void update_particles(pixel *vid)
                             vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x8080FF);
                             drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0xFF);
                         }
-                if(bmap[y][x]==6)
+                if(bmap[y][x]==7)
                 {
                     for(j=0; j<CELL; j+=2)
                         for(i=(j>>1)&1; i<CELL; i+=2)
@@ -2250,7 +2256,7 @@ void update_particles(pixel *vid)
                         fire_b[y][x] = cb;
                     }
                 }
-                if(bmap[y][x]==7)
+                if(bmap[y][x]==3)
                 {
                     if(emap[y][x])
                     {
@@ -2286,7 +2292,7 @@ void update_particles(pixel *vid)
                                 }
                     }
                 }
-                if(bmap[y][x]==8)
+                if(bmap[y][x]==2)
                 {
                     for(j=0; j<CELL; j++)
                         for(i=0; i<CELL; i++)
@@ -2317,7 +2323,7 @@ void update_particles(pixel *vid)
                         fire_b[y][x] = cb;
                     }
                 }
-                if(bmap[y][x]==11)
+                if(bmap[y][x]==14)
                 {
                     for(j=0; j<CELL; j++)
                         for(i=0; i<CELL; i++)
@@ -2344,7 +2350,7 @@ void update_particles(pixel *vid)
                         fire_b[y][x] = cb;
                     }
                 }
-                if(bmap[y][x]==13)
+                if(bmap[y][x]==20)
                 {
                     for(j=0; j<CELL; j+=2)
                     {
@@ -2355,7 +2361,7 @@ void update_particles(pixel *vid)
                         }
                     }
                 }
-                if(bmap[y][x]==9)
+                if(bmap[y][x]==12)
                 {
                     for(j=0; j<CELL; j+=2)
                     {
@@ -2366,7 +2372,7 @@ void update_particles(pixel *vid)
                         }
                     }
                 }
-                if(bmap[y][x]==10)
+                if(bmap[y][x]==13)
                 {
                     for(j=0; j<CELL; j+=2)
                     {
@@ -2377,7 +2383,7 @@ void update_particles(pixel *vid)
                         }
                     }
                 }
-                if(bmap[y][x]==12)
+                if(bmap[y][x]==15)
                 {
                     if(emap[y][x])
                     {
@@ -2878,21 +2884,18 @@ int create_parts(int x, int y, int r, int c)
 	                {
 					    i = ox;
 				        j = oy;
-			            for(q=122;q<141;q++)
-						{
-							if(bmap[j][i]==q-120)
+						q = bmap[j][i]+120;
 							{
 								if(q==PSR)
-								{
-									bmap[j][i]=0;
-									return 1;
-								}
+							{
+								bmap[j][i]=0;
+								return 1;
 							}
 						}
-						return 1;
 				    }
 			    }
 			}
+			return 1;
 		}
 		else
 		{
@@ -2915,7 +2918,7 @@ int create_parts(int x, int y, int r, int c)
                 {
                     i = ox;
                     j = oy;
-                    if(b==4)
+                    if(b==7)
                     {
                         fvx[j][i] = 0.0f;
                         fvy[j][i] = 0.0f;
