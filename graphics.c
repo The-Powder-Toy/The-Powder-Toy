@@ -2356,6 +2356,12 @@ void Enable2D ()
     glMatrixMode (GL_MODELVIEW);
     glPushMatrix ();
     glLoadIdentity ();
+
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glHint( GL_POINT_SMOOTH_HINT, GL_NICEST);
 }
 void RenderScene ()
 {
