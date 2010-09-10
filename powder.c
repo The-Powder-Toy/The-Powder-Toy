@@ -63,7 +63,7 @@ int try_move(int i, int x, int y, int nx, int ny)
     {
         return 1;
     }
-    if(bmap[ny/CELL][nx/CELL]==13 && ptypes[parts[i].type].falldown!=0 && parts[i].type!=PT_FIRE)
+    if(bmap[ny/CELL][nx/CELL]==13 && ptypes[parts[i].type].falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE)
     {
         return 0;
     }
@@ -514,6 +514,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                       (bmap[y/CELL][x/CELL]==2) ||
                       (bmap[y/CELL][x/CELL]==3 && ptypes[t].falldown!=2) ||
                       (bmap[y/CELL][x/CELL]==10 && ptypes[t].falldown!=1) ||
+					  (bmap[y/CELL][x/CELL]==13 && ptypes[t].falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE) ||
                       (bmap[y/CELL][x/CELL]==6 && (t==PT_METL || t==PT_SPRK)) ||
                       (bmap[y/CELL][x/CELL]==7 && !emap[y/CELL][x/CELL])) && (t!=PT_STKM)))
             {
