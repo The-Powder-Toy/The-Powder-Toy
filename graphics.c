@@ -967,6 +967,14 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 #endif
 {
 #ifdef OpenGL
+    if(x<0 || y<0 || x>=XRES || r>=YRES)
+        return;
+    if(a!=255)
+    {
+        glBegin (GL_QUADS);
+        glColor4ub(r,g,b,a);
+        glVertex2i(x, y);
+    }
 #else
     pixel t;
     if(x<0 || y<0 || x>=XRES || y>=YRES)
