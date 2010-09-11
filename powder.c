@@ -1936,32 +1936,32 @@ player[23] = 1;
 					int w = (rand()%255+1);
 					int e = (rand()%255+1);
 					for(nx=-1; nx<2; nx++)
-                    for(ny=-2; ny<3; ny++)
-                        if(x+nx>=0 && y+ny>0 &&
-                                x+nx<XRES && y+ny<YRES)
-                        {
-							if(5>=rand()%8)
+						for(ny=-2; ny<3; ny++)
+							if(x+nx>=0 && y+ny>0 &&
+								x+nx<XRES && y+ny<YRES)
 							{
-								if(!pmap[y+ny][x+nx])
+								if(5>=rand()%8)
 								{
-								create_part(-1, x+nx, y+ny , PT_DUST);
-								pv[y/CELL][x/CELL] += 2.00f*CFDS;
-								a= pmap[y+ny][x+nx];
-								if(parts[a>>8].type==PT_DUST) 
-								{
-									parts[a>>8].vy = -(rand()%10-1);
-									parts[a>>8].vx = ((rand()%2)*2-1)*rand()%(5+5)+(parts[i].vx)*2 ;
-									parts[a>>8].life= rand()%75+35;
-									parts[a>>8].tmp=q;
-									parts[a>>8].flags=w;
-									parts[a>>8].ctype=e;
-									parts[a>>8].temp= rand()%20+600;
+									if(!pmap[y+ny][x+nx])
+									{
+										create_part(-1, x+nx, y+ny , PT_DUST);
+										pv[y/CELL][x/CELL] += 2.00f*CFDS;
+										a= pmap[y+ny][x+nx];
+										if(parts[a>>8].type==PT_DUST) 
+										{
+											parts[a>>8].vy = -(rand()%10-1);
+											parts[a>>8].vx = ((rand()%2)*2-1)*rand()%(5+5)+(parts[i].vx)*2 ;
+											parts[a>>8].life= rand()%75+35;
+											parts[a>>8].tmp=q;
+											parts[a>>8].flags=w;
+											parts[a>>8].ctype=e;
+											parts[a>>8].temp= rand()%20+600;
+										}
+									}
 								}
-								}
+
 							}
-							
-						}
-					parts[i].type=PT_NONE;
+							parts[i].type=PT_NONE;
 				}
 			}
 			if(t==PT_DUST&&!parts[i].life==0)
@@ -2450,12 +2450,12 @@ void update_particles(pixel *vid)
                     for(j=0; j<CELL; j+=2)
                         for(i=(j>>1)&1; i<CELL; i+=2)
                             vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x808080);
-                if(bmap[y][x]==8)
-                {
-                    for(j=0; j<CELL; j++)
-                        for(i=0; i<CELL; i++)
-                            if(!((y*CELL+j)%2) && !((x*CELL+i)%2))
-                                vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0xC0C0C0);
+				if(bmap[y][x]==8)
+				{
+					for(j=0; j<CELL; j++)
+						for(i=0; i<CELL; i++)
+							if(!((y*CELL+j)%2) && !((x*CELL+i)%2))
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0xC0C0C0);
                     if(emap[y][x])
                     {
                         cr = cg = cb = 16;

@@ -311,10 +311,30 @@ void *build_save(int *size, int x0, int y0, int w, int h)
         i = m[j];
         if(i)
         {
-            unsigned char tttemp = (unsigned char)((parts[i-1].temp+(-MIN_TEMP))/((MAX_TEMP+(-MIN_TEMP))/255));
+			if(cracker)
+			{
+				int z;
+				int temp1 = 0;
+				int temp = parts[i-1].temp;
+				int temp2 = temp;
+				for(z = 15;z>=8;z--)
+				{
+					if(temp>0&&temp>=powf(2,z))
+					{
+						temp1 += powf(2,z-8);
+						temp -= powf(2,z);
+					}
+				}				
+					d[p++] = (char)temp1;
+					d[p++] = (char)temp2;
+			}
+            else
+			{
+				unsigned char tttemp = (unsigned char)((parts[i-1].temp+(-MIN_TEMP))/((MAX_TEMP+(-MIN_TEMP))/255));
+				d[p++] = tttemp;
+			}
             //if(tttemp<0) tttemp=0;
             //if(tttemp>255) tttemp=255;
-            d[p++] = tttemp;
         }
     }
     for(j=0; j<w*h; j++)
@@ -361,6 +381,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
     c[9] = p >> 8;
     c[10] = p >> 16;
     c[11] = p >> 24;
+
 
     i -= 12;
 
@@ -468,7 +489,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
             if(d[p])
 			{
                 bmap[y][x] = d[p];
-			if(cracker)
+			if(!cracker)
 			{
 			if(bmap[y][x]==1)
 				bmap[y][x]=11;
@@ -620,16 +641,33 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                     goto corrupt;
                 }
                 if(i <= NPART)
-                {
-					if(ver>=42){
+				{
+					if(cracker)
+					{
+						int z;
+						int q = 0;
+						int temp1 = d[p++];
+						int temp2 = d[p++];
+						for(z = 7;z>=0;z--)
+						{
+							if(temp1>0&&temp1>=powf(2,z))
+							{
+								q += powf(2,z+8);
+								temp1 -= powf(2,z);
+							}
+						}
+
+						parts[i-1].temp = temp2 + q + 0.15;
+					}
+					else if(ver>=42){
 						parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
 					} else {
-						parts[i-1].temp = ((d[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273;
+						parts[i-1].temp = ((d[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273.15;
 					}
                 }
                 else
                 {
-                    p++;
+                    p += 2;
                 }
             }
             else

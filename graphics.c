@@ -1431,9 +1431,9 @@ void draw_parts(pixel *vid)
 					if(cmode == 3||cmode==4 || cmode==6)
                     {
                         vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(parts[i].tmp,parts[i].ctype,parts[i].flags);
-                        cg = parts[i].tmp/5;
-                        cb = parts[i].ctype/5;
-                        cr = parts[i].flags/5;
+                        cg = parts[i].tmp/4;
+                        cb = parts[i].ctype/4;
+                        cr = parts[i].flags/4;
                         x = nx/CELL;
                         y = ny/CELL;
                         cg += fire_g[y][x];
