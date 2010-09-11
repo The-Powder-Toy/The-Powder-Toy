@@ -35,6 +35,7 @@ void *svf_last = NULL;
 int svf_lsize;
 
 char *search_ids[GRID_X*GRID_Y];
+char *search_dates[GRID_X*GRID_Y];
 int   search_votes[GRID_X*GRID_Y];
 int   search_publish[GRID_X*GRID_Y];
 int	  search_scoredown[GRID_X*GRID_Y];
@@ -1563,11 +1564,11 @@ int sdl_poll(void)
                 sdl_zoom_trig = 1;
                 Z_keysym = event.key.keysym.sym;
             }
-            if( event.key.keysym.sym == SDLK_PLUS || event.key.keysym.sym == SDLK_RIGHTBRACKET)
+            if( event.key.keysym.sym == SDLK_PLUS)
             {
                 sdl_wheel++;
             }
-            if( event.key.keysym.sym == SDLK_MINUS || event.key.keysym.sym == SDLK_LEFTBRACKET)
+            if( event.key.keysym.sym == SDLK_MINUS)
             {
                 sdl_wheel--;
             }
@@ -1788,6 +1789,7 @@ int search_ui(pixel *vid_buf)
     memset(img_id, 0, sizeof(img_id));
 
     memset(search_ids, 0, sizeof(search_ids));
+	memset(search_dates, 0, sizeof(search_dates));
     memset(search_names, 0, sizeof(search_names));
     memset(search_scoreup, 0, sizeof(search_scoreup));
     memset(search_scoredown, 0, sizeof(search_scoredown));
@@ -1962,7 +1964,7 @@ int search_ui(pixel *vid_buf)
                 }
                 else
                     pos = gi+GRID_X*gj;
-                if(!search_ids[pos])
+                if(!search_dates[pos])
                     break;
                 gx = ((XRES/GRID_X)*gi) + (XRES/GRID_X-XRES/GRID_S)/2;
                 gy = ((((YRES-(MENUSIZE-20))+15)/GRID_Y)*gj) + ((YRES-(MENUSIZE-20))/GRID_Y-(YRES-(MENUSIZE-20))/GRID_S+10)/2 + 18;
@@ -2003,6 +2005,9 @@ int search_ui(pixel *vid_buf)
                     }
                 }
 				drawrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2, 6, YRES/GRID_S+3, 128, 128, 128, 255);
+				fillrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2, 6, 1+(YRES/GRID_S+3)/2, 0, 107, 10, 255);
+                fillrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2), 6, 1+(YRES/GRID_S+3)/2, 107, 10, 0, 255);
+
                 if(mp==pos && !st)
                     drawrect(vid_buf, gx-2, gy-2, XRES/GRID_S+3, YRES/GRID_S+3, 160, 160, 192, 255);
                 else
@@ -2061,10 +2066,10 @@ int search_ui(pixel *vid_buf)
                         nyd = search_scoredown[pos]/ry;
                     }
 
-                    fillrect(vid_buf, gx-1+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2)-nyu, 4, nyu, 57, 187, 57, 255);
-                    fillrect(vid_buf, gx-1+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2)+1, 4, nyd, 187, 57, 57, 255);
 
-                    //drawrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2)-nyu, 4, nyu, 0, 107, 10, 255);
+                    fillrect(vid_buf, gx-1+(XRES/GRID_S)+5, gy-1+((YRES/GRID_S+3)/2)-nyu, 4, nyu, 57, 187, 57, 255);
+                    fillrect(vid_buf, gx-1+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2), 4, nyd, 187, 57, 57, 255);
+					                    //drawrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2)-nyu, 4, nyu, 0, 107, 10, 255);
                     //drawrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2)+1, 4, nyd, 107, 10, 0, 255);
                 }
             }
@@ -2157,9 +2162,17 @@ int search_ui(pixel *vid_buf)
             fillrect(vid_buf, 0, 0, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 255);
             info_box(vid_buf, "Loading...");
 
-            uri = malloc(strlen(search_ids[mp])*3+strlen(SERVER)+64);
-            strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
-            strcaturl(uri, search_ids[mp]);
+			if(search_dates[mp]){
+				uri = malloc(strlen(search_ids[mp])*3+strlen(search_dates[mp])*3+strlen(SERVER)+71);
+				strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
+				strcaturl(uri, search_ids[mp]);
+				strcaturl(uri, "&Date=");
+				strcaturl(uri, search_dates[mp]);
+			} else {
+				uri = malloc(strlen(search_ids[mp])*3+strlen(SERVER)+64);
+				strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
+				strcaturl(uri, search_ids[mp]);
+			}
             data = http_simple_get(uri, &status, &dlen);
             free(uri);
 
@@ -2436,7 +2449,7 @@ finish:
 int search_results(char *str, int votes)
 {
     int i,j;
-    char *p,*q,*r,*s,*vu,*vd,*pu;
+    char *p,*q,*r,*s,*vu,*vd,*pu,*sd;
 
     for(i=0; i<GRID_X*GRID_Y; i++)
     {
@@ -2449,6 +2462,11 @@ int search_results(char *str, int votes)
         {
             free(search_names[i]);
             search_names[i] = NULL;
+        }
+        if(search_dates[i])
+        {
+            free(search_dates[i]);
+            search_dates[i] = NULL;
         }
         if(search_owners[i])
         {
@@ -2544,7 +2562,78 @@ int search_results(char *str, int votes)
 
             if(s)
                 search_votes[i] = atoi(s);
-            thumb_cache_find(str, search_thumbs+i, search_thsizes+i);
+            thumb_cache_find(str+5, search_thumbs+i, search_thsizes+i);
+            i++;
+        }
+		else if(!strncmp(str, "HISTORY ", 8))
+        {
+            if(i>=GRID_X*GRID_Y)
+                break;
+            if(votes)
+            {
+                sd = strchr(str+8, ' ');
+				if(!sd)
+                    return i;
+                *(sd++) = 0;
+				pu = strchr(sd, ' ');
+                if(!pu)
+                    return i;
+                *(pu++) = 0;
+                s = strchr(pu, ' ');
+                if(!s)
+                    return i;
+                *(s++) = 0;
+                vu = strchr(s, ' ');
+                if(!vu)
+                    return i;
+                *(vu++) = 0;
+                vd = strchr(vu, ' ');
+                if(!vd)
+                    return i;
+                *(vd++) = 0;
+                q = strchr(vd, ' ');
+            }
+            else
+            {
+                sd = strchr(str+8, ' ');
+				if(!sd)
+                    return i;
+                *(sd++) = 0;
+				pu = strchr(sd, ' ');
+                if(!pu)
+                    return i;
+                *(pu++) = 0;
+                vu = strchr(pu, ' ');
+                if(!vu)
+                    return i;
+                *(vu++) = 0;
+                vd = strchr(vu, ' ');
+                if(!vd)
+                    return i;
+                *(vd++) = 0;
+                q = strchr(vd, ' ');
+            }
+            if(!q)
+                return i;
+            *(q++) = 0;
+            r = strchr(q, ' ');
+            if(!r)
+                return i;
+            *(r++) = 0;
+            search_ids[i] = mystrdup(str+8);
+
+			search_dates[i] = mystrdup(sd);
+
+            search_publish[i] = atoi(pu);
+            search_scoreup[i] = atoi(vu);
+            search_scoredown[i] = atoi(vd);
+
+            search_owners[i] = mystrdup(q);
+            search_names[i] = mystrdup(r);
+
+            if(s)
+                search_votes[i] = atoi(s);
+            thumb_cache_find(str+8, search_thumbs+i, search_thsizes+i);
             i++;
         }
         else if(!strncmp(str, "TAG ", 4))

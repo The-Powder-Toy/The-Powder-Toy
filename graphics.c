@@ -2114,13 +2114,16 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
 {
     unsigned char *d,*c=save;
     int i,j,k,x,y,rx,ry,p=0;
-    int bw,bh,w,h;
+    int bw,bh,w,h,new_format = 0;
     pixel *fb;
 
     if(size<16)
         return NULL;
-    if(c[2]!=0x43 || c[1]!=0x75 || c[0]!=0x66)
+    if(!(c[2]==0x43 && c[1]==0x75 && c[0]==0x66) && !(c[2]==0x76 && c[1]==0x53 && c[0]==0x50))
         return NULL;
+	if(c[2]==0x43 && c[1]==0x75 && c[0]==0x66){
+		new_format = 1;
+	}
     if(c[4]>SAVE_VERSION)
         return NULL;
 

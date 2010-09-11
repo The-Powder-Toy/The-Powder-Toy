@@ -245,6 +245,8 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].life = rand()%120+240;
     if(t==PT_NBLE)
         parts[i].life = 0;
+    if(t==PT_ICEI)
+        parts[i].ctype = PT_WATR;
     if(t==PT_NEUT)
     {
         float r = (rand()%128+128)/127.0f;
@@ -701,6 +703,8 @@ void update_particles_i(pixel *vid, int start, int inc)
                 int ctemp = pv[y/CELL][x/CELL]*2;
                 c_heat = 0.0f;
                 h_count = 0;
+				if(t==PT_ICEI && !parts[i].ctype)
+					parts[i].ctype = PT_WATR;
                 if(ptypes[t].hconduct>(rand()%250))
                 {
                     for(nx=-1; nx<2; nx++)
@@ -822,11 +826,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                     pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
                 }
             }
-            if(t==PT_PTCT&&parts[i].temp>249.0f)
+            if(t==PT_PTCT&&parts[i].temp>295.0f)
             {
                 pt = parts[i].temp -= 2.5f;
             }
-            if(t==PT_NTCT&&parts[i].temp>249.0f)
+            if(t==PT_NTCT&&parts[i].temp>295.0f)
             {
                 pt = parts[i].temp -= 2.5f;
             }
