@@ -67,6 +67,7 @@ typedef unsigned char uint8;
 extern int amd;
 
 unsigned int PSR;
+unsigned int SEC;
 
 extern int FPSB;
 

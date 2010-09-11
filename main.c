@@ -1029,7 +1029,7 @@ int main(int argc, char *argv[])
 #ifdef INTERNAL
     int vs = 0;
 #endif
-    int x, y, b = 0, sl=1, sr=0,su=0,psr=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
+    int x, y, b = 0, sl=1, sr=0,su=0,psr=-1, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
     int da = 0, db = 0, it = 2047, mx, my, bs = 2;
     float nfvx, nfvy;
     int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;

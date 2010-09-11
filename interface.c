@@ -1402,7 +1402,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *psr,int b, int bq, int mx, int my)
 {
-    int h,x,y,n=0,height,width,sy,rows=0;
+    int h,x,y,n=0,height,width,sy,rows=0,sec=-1;
     mx /= sdl_scale;
     my /= sdl_scale;
     rows = ceil((float)msections[i].itemcount/16.0f);
@@ -1537,7 +1537,11 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *psr,int b, int bq,
             }
         }
     }
-
+	if(!bq&&mx>=sdl_scale*(XRES-2) && mx<sdl_scale*(XRES+BARSIZE-1) &&my>= sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)) && my<sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)+15))
+	{
+		if(i>=0&&i<SC_TOTAL)
+			sec = i;
+	}
     if(h==-1)
     {
         drawtext(vid_buf, XRES-textwidth((char *)msections[i].name)-BARSIZE, sy-10, (char *)msections[i].name, 255, 255, 255, 255);
@@ -1557,10 +1561,34 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *psr,int b, int bq,
     }
     if(b==4&&h!=-1)
     {
-		PSR = *sr;
-		*psr = *sr;
+		if(h!=0)
+		{
+			SEC = -1;
+			PSR = *sr;
+			*psr = *sr;
+		}
+		else
+		{
+			if(*psr==-2)
+			{
+				SEC = -1;
+				PSR = *sr;
+				*psr = *sr;
+			}
+			else
+			{
+			PSR = -1;
+			*psr = -2;
+			}
+		}
         *sr = h;
     }
+	else if(b==4&&sec>=0)
+	{
+		SEC = sec;
+		PSR = -1;
+		*psr = -1;
+	}
 }
 
 int sdl_poll(void)
