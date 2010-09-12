@@ -232,7 +232,7 @@ void *build_thumb(int *size, int bzip2)
 
 void *build_save(int *size, int x0, int y0, int w, int h)
 {
-    unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*7+MAXSIGNS*262), *c;
+    unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*8+MAXSIGNS*262), *c;
     int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
     int bx0=x0/CELL, by0=y0/CELL, bw=(w+CELL-1)/CELL, bh=(h+CELL-1)/CELL;
 
@@ -311,30 +311,10 @@ void *build_save(int *size, int x0, int y0, int w, int h)
         i = m[j];
         if(i)
         {
-			if(cracker)
-			{
-				int z;
-				int temp1 = 0;
-				int temp = parts[i-1].temp;
-				int temp2 = temp;
-				for(z = 15;z>=8;z--)
-				{
-					if(temp>0&&temp>=powf(2,z))
-					{
-						temp1 += powf(2,z-8);
-						temp -= powf(2,z);
-					}
-				}				
-					d[p++] = (char)temp1;
-					d[p++] = (char)temp2;
-			}
-            else
-			{
-				unsigned char tttemp = (unsigned char)((parts[i-1].temp+(-MIN_TEMP))/((MAX_TEMP+(-MIN_TEMP))/255));
-				d[p++] = tttemp;
-			}
-            //if(tttemp<0) tttemp=0;
-            //if(tttemp>255) tttemp=255;
+	      //New Temperature saving uses a 16bit unsigned int for temperatures, giving a precision of 1 degree versus 36 for the old format
+	      int tttemp = (int)parts[i-1].temp;
+		  d[p++] = ((tttemp&0xFF00)>>8);
+		  d[p++] = (tttemp&0x00FF);
         }
     }
     for(j=0; j<w*h; j++)
@@ -368,10 +348,12 @@ void *build_save(int *size, int x0, int y0, int w, int h)
         }
 
     i = (p*101+99)/100 + 612;
-    c = malloc(i);
-    c[0] = 0x66;
-    c[1] = 0x75;
-    c[2] = 0x43;
+    c = malloc(i);	
+  //New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures	
+  //This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error	
+    c[0] = 0x50;  //0x66;
+    c[1] = 0x53;  //0x75;
+    c[2] = 0x76;  //0x43;
     c[3] = legacy_enable;
     c[4] = SAVE_VERSION;
     c[5] = CELL;
@@ -402,18 +384,23 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
     unsigned char *d,*c=save;
     int i,j,k,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int)), ver, pty, ty, legacy_beta=0;
     int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
-    int fp[NPART], nf=0;
+    int fp[NPART], nf=0, new_format = 0, ttv = 0;
+  //New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
+  //This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
 
-    if(size<16)
-        return 1;
-    if(c[2]!=0x43 || c[1]!=0x75 || c[0]!=0x66)
-        return 1;
-    if(c[4]>SAVE_VERSION)
-        return 2;
-    ver = c[4];
+	if(size<16)
+		return 1;
+	if(!(c[2]==0x43 && c[1]==0x75 && c[0]==0x66) && !(c[2]==0x76 && c[1]==0x53 && c[0]==0x50))
+		return 1;
+	if(c[2]==0x76 && c[1]==0x53 && c[0]==0x50){
+		new_format = 1;
+	}
+	if(c[4]>SAVE_VERSION)
+		return 2;
+	ver = c[4];
 
-    if(ver<34)
-    {
+	if(ver<34)
+	{
         legacy_enable = 1;
     }
     else
@@ -636,40 +623,34 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
         {
             if(ver>=34&&legacy_beta==0)
             {
-                if(p >= size)
-                {
-                    goto corrupt;
-                }
-                if(i <= NPART)
+				if(p >= size)
 				{
-					if(cracker)
-					{
-						int z;
-						int q = 0;
-						int temp1 = d[p++];
-						int temp2 = d[p++];
-						for(z = 7;z>=0;z--)
-						{
-							if(temp1>0&&temp1>=powf(2,z))
-							{
-								q += powf(2,z+8);
-								temp1 -= powf(2,z);
-							}
-						}
+					goto corrupt;
+				}
+				if(i <= NPART)
+				{
+					if(ver>=42){
+						if(new_format){	
+							ttv = (d[p++])<<8;
+							ttv |= (d[p++]);	
+							parts[i-1].temp = ttv;
+						} else {
 
-						parts[i-1].temp = temp2 + q + 0.15;
+							parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
+						}
 					}
-					else if(ver>=42){
-						parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
-					} else {
+					else {
 						parts[i-1].temp = ((d[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273.15;
 					}
-                }
-                else
-                {
-                    p += 2;
-                }
-            }
+				}
+				else
+				{
+					p ++;
+					if(new_format){
+						p++;
+					}
+				}
+			}
             else
             {
                 parts[i-1].temp = ptypes[parts[i-1].type].heat;
@@ -1301,13 +1282,57 @@ int main(int argc, char *argv[])
         {
             set_cmode(5);
         }
-        if(sdl_key=='7')
-        {
-            set_cmode(6);
-        }
-        if(sdl_key==SDLK_SPACE)
-            sys_pause = !sys_pause;
-        if(sdl_key=='h')
+		if(sdl_key=='7')
+		{
+			set_cmode(6);
+		}
+		if(sdl_key==SDLK_LEFTBRACKET){
+			if(sdl_zoom_trig==1)
+			{
+				ZSIZE -= 1;
+				if(ZSIZE>32)
+					ZSIZE = 32;
+				if(ZSIZE<2)
+					ZSIZE = 2;
+				ZFACTOR = 256/ZSIZE;
+			}
+			else
+			{
+				if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
+					bs -= 1;
+				else
+					bs -= ceil((bs/5)+0.5f);
+				if(bs>1224)
+					bs = 1224;
+				if(bs<0)
+					bs = 0;
+			}
+		}
+		if(sdl_key==SDLK_RIGHTBRACKET){
+			if(sdl_zoom_trig==1)
+			{
+				ZSIZE += 1;
+				if(ZSIZE>32)
+					ZSIZE = 32;
+				if(ZSIZE<2)
+					ZSIZE = 2;
+				ZFACTOR = 256/ZSIZE;
+			}
+			else
+			{
+				if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
+					bs += 1;
+				else
+					bs += ceil((bs/5)+0.5f);
+				if(bs>1224)
+					bs = 1224;
+				if(bs<0)
+					bs = 0;
+			}
+		}
+		if(sdl_key==SDLK_SPACE)
+			sys_pause = !sys_pause;
+		if(sdl_key=='h')
             hud_enable = !hud_enable;
         if(sdl_key=='p')
             dump_frame(vid_buf, XRES, YRES, XRES);

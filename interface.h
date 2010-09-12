@@ -101,6 +101,7 @@ extern void *svf_last;
 extern int svf_lsize;
 
 extern char *search_ids[GRID_X*GRID_Y];
+extern char *search_dates[GRID_X*GRID_Y];
 extern int   search_votes[GRID_X*GRID_Y];
 extern int   search_publish[GRID_X*GRID_Y];
 extern int	  search_scoredown[GRID_X*GRID_Y];

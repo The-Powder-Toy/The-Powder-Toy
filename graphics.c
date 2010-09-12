@@ -971,6 +971,15 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 #endif
 {
 #ifdef OpenGL
+    if(x<0 || y<0 || x>=XRES || r>=YRES)
+        return;
+    if(a!=255)
+    {
+       glBegin (GL_QUADS);
+        glColor4ub(r,g,b,a);
+        glVertex2i(x, y);
+    }
+    vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 #else
     pixel t;
     if(x<0 || y<0 || x>=XRES || y>=YRES)
@@ -1171,6 +1180,48 @@ void draw_parts(pixel *vid)
     float pt = R_TEMP;
 	for(i = 0; i<NPART; i++){
 #ifdef OpenGL
+        if(cmode == 6) //If fire mode
+        {
+
+            if(t==PT_MWAX)
+            {
+                for(x=-1; x<=1; x++)
+                {
+                    for(y=-1; y<=1; y++)
+                    {
+                       if ((abs(x) == 0) && (abs(y) == 0))
+                            blendpixel(vid,x+nx,y+ny,224,224,170,255);
+                        else if (abs(y) != 0 && abs(x) != 0)
+                            blendpixel(vid,x+nx,y+ny,224,224,170,20);
+                        else
+                            blendpixel(vid,x+nx,y+ny,224,224,170,40);
+                   }
+                }
+
+            }
+
+           else if(t==PT_PLUT)
+            {
+                int tempx;
+                int tempy;
+                cr = 0x40;
+                cg = 0x70;
+                cb = 0x20;
+                blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+                blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+                blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+                blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+               for(tempx = 2; tempx < 10; tempx++) {
+                    for(tempy = 2; tempy < 10; tempy++) {
+                        blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+                        blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+                        blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+                        blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+                    }
+                }
+           }
+        }
 		if(parts[i].type){
 			//Do nothing
 			t = parts[i].type;
@@ -2113,16 +2164,18 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
 {
     unsigned char *d,*c=save;
     int i,j,k,x,y,rx,ry,p=0;
-    int bw,bh,w,h;
+    int bw,bh,w,h,new_format = 0;
     pixel *fb;
 
     if(size<16)
         return NULL;
-    if(c[2]!=0x43 || c[1]!=0x75 || c[0]!=0x66)
+    if(!(c[2]==0x43 && c[1]==0x75 && c[0]==0x66) && !(c[2]==0x76 && c[1]==0x53 && c[0]==0x50))
         return NULL;
     if(c[4]>SAVE_VERSION)
         return NULL;
-
+	if(c[2]==0x43 && c[1]==0x75 && c[0]==0x66){	
+    new_format = 1;	
+	}
     bw = c[6];
     bh = c[7];
     w = bw*CELL;
