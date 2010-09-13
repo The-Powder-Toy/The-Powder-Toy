@@ -219,6 +219,20 @@ void strcaturl(char *dst, char *src)
     *d = 0;
 }
 
+void strappend(char *dst, char *src)
+{
+    char *d;
+    unsigned char *s;
+
+    for(d=dst; *d; d++) ;
+
+    for(s=(unsigned char *)src; *s; s++)
+    {
+		*(d++) = *s;
+    }
+    *d = 0;
+}
+
 void *file_load(char *fn, int *size)
 {
     FILE *f = fopen(fn, "rb");
