@@ -340,7 +340,7 @@ inline void delete_part(int x, int y)
 		kill_part(i>>8);
 		pmap[y][x] = 0;	
 	}
-	if(ptypes[parts[i>>8].type].menusection==SEC)
+	else if(ptypes[parts[i>>8].type].menusection==SEC)
 	{
 		kill_part(i>>8);
 		pmap[y][x] = 0;
@@ -1426,6 +1426,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 if(t==PT_SPRK && (rt==PT_METL||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE) && parts[r>>8].life==0 &&
                                         (parts[i].life<3 || ((r>>8)<i && parts[i].life<4)) && abs(nx)+abs(ny)<4)
                                 {
+
                                     if(!(rt==PT_PSCN&&parts[i].ctype==PT_NSCN)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp>=373.0f)&&parts[i].ctype==PT_NTCT)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN&&parts[i].temp<=373.0f)&&parts[i].ctype==PT_PTCT)&&!(rt!=PT_PSCN&&!(rt==PT_NSCN)&&parts[i].ctype==PT_INWR) && pavg != PT_INSL &&!(parts[i].ctype==PT_SWCH&&(rt==PT_PSCN||rt==PT_NSCN)) )
                                     {
                                         parts[r>>8].type = PT_SPRK;
@@ -1433,8 +1434,10 @@ void update_particles_i(pixel *vid, int start, int inc)
                                         parts[r>>8].ctype = rt;
                                         if(parts[r>>8].temp+10.0f<673.0f&&!legacy_enable&&!(rt==PT_LRBD||rt==PT_RBDM||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR))
                                             parts[r>>8].temp = parts[r>>8].temp+10.0f;
+
                                     }
                                 }
+
                                 if(t==PT_SPRK && rt==PT_NTCT && parts[r>>8].life==0 &&
                                         (parts[i].life<3 || ((r>>8)<i && parts[i].life<4)) && abs(nx)+abs(ny)<4)
                                 {
@@ -2966,21 +2969,22 @@ int create_parts(int x, int y, int r, int c)
         }
         return 1;
 	}
+
+	if(c == 0||((sdl_mod & (KMOD_LALT|KMOD_RALT))&&(PSR>0||SEC>0)))
+    {
+        for(j=-r; j<=r; j++)
+            for(i=-r; i<=r; i++)
+                if(i*i+j*j<=r*r)
+                    delete_part(x+i, y+j);
+        return 1;
+    }
+
     if(c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM)
     {
         for(j=-r; j<=r; j++)
             for(i=-r; i<=r; i++)
                 if(i*i+j*j<=r*r)
                     create_part(-1, x+i, y+j, c);
-        return 1;
-    }
-
-    if(c == 0)
-    {
-        for(j=-r; j<=r; j++)
-            for(i=-r; i<=r; i++)
-                if(i*i+j*j<=r*r)
-                    delete_part(x+i, y+j);
         return 1;
     }
 

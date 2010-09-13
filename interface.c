@@ -1425,7 +1425,12 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *psr,int b, int bq,
                     y += 19;
                 }
                 x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
-                if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+				if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT|KMOD_RALT)))
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+					h = n;
+				}
+                else if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
                     h = n;
@@ -1457,7 +1462,12 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *psr,int b, int bq,
                     y += 19;
                 }
                 x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
-                if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+				if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT|KMOD_RALT)))
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+					h = n;
+				}
+                else if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
                     h = n;
@@ -1486,7 +1496,12 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *psr,int b, int bq,
                     y += 19;
                 }
                 x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
-                if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+				if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT|KMOD_RALT)))
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+					h = n;
+				}
+                else if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
                     h = n;
@@ -1518,7 +1533,12 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *psr,int b, int bq,
                     y += 19;
                 }
                 x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
-                if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+				if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT|KMOD_RALT)))
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+					h = n;
+				}
+                else if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
                     h = n;
@@ -1558,38 +1578,39 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *psr,int b, int bq,
 
     if(b==1&&h!=-1)
     {
-        *sl = h;
-    }
-    if(b==4&&h!=-1)
-    {
-		if(h!=0)
+		if(sdl_mod & (KMOD_LALT|KMOD_RALT))
 		{
-			SEC = -1;
-			PSR = *sr;
-			*psr = *sr;
+			PSR=h;
+			*psr=h;
+			SEC=-1;
 		}
 		else
-		{
-			if(*psr==-2)
-			{
-				SEC = -1;
-				PSR = *sr;
-				*psr = *sr;
-			}
-			else
-			{
-			PSR = -1;
-			*psr = -2;
-			}
-		}
-        *sr = h;
+        *sl = h;
     }
-	else if(b==4&&sec>=0)
+	else if((b==1&&sec>0)&&(sdl_mod & (KMOD_LALT|KMOD_RALT)))
 	{
 		SEC = sec;
-		PSR = -1;
-		*psr = -1;
+		PSR=-1;
+		*psr=-1;
 	}
+    if(b==4&&h!=-1)
+    {
+		if(sdl_mod & (KMOD_LALT|KMOD_RALT))
+		{
+			PSR=h;
+			*psr=h;
+			SEC=-1;
+		}
+		else
+        *sr = h;
+    }
+	else if((b==4&&sec>0)&&(sdl_mod & (KMOD_LALT|KMOD_RALT)))
+	{
+		SEC = sec;
+		PSR=-1;
+		*psr=-1;
+	}
+
 }
 
 int sdl_poll(void)
