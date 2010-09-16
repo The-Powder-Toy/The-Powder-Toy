@@ -421,7 +421,7 @@ inline int parts_avg(int ci, int ni)
 #endif
 {
     int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
-    if((pmr>>8) < NPART && (pmr>>8) >= 0)
+    if((pmr>>8) < NPART && (pmr>>8) >= 1)
     {
         return parts[pmr>>8].type;
     }
