@@ -237,6 +237,8 @@ inline int create_part(int p, int x, int y, int t)
     	parts[i].life = 150;
     }
     End Testing*/
+	if(t==PT_COAL)
+        parts[i].life = 110;
     if(t==PT_FIRE)
         parts[i].life = rand()%50+120;
     if(t==PT_PLSM)
@@ -474,7 +476,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             if(sys_pause&&!framerender)
                 return;
 
-            if(parts[i].life && t!=PT_ACID && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM)
+            if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM)
             {
                 if(!(parts[i].life==10&&parts[i].type==PT_LCRY))
                     parts[i].life--;
@@ -656,7 +658,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
             if(t==PT_GAS && pv[y/CELL][x/CELL]<-6.0f)
                 t = parts[i].type = PT_OIL;
-            if(t==PT_DESL && pv[y/CELL][x/CELL]>12.0f)      // Only way I know to make it
+            if(t==PT_DESL && pv[y/CELL][x/CELL]>5.0f)      // Only way I know to make it
                 t = parts[i].type = PT_FIRE;                // combust under pressure.
             if(t==PT_GAS && pv[y/CELL][x/CELL]>6.0f)
                 t = parts[i].type = PT_OIL;
@@ -930,6 +932,34 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 }
                                 if(t==PT_SNOW && ((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && 15>(rand()%1000))
                                     t = parts[i].type = PT_WATR;
+                            }
+                        }
+            }
+            else if(t==PT_COAL)
+            {
+				if(parts[i].life<=0){
+					t = PT_NONE;
+					kill_part(i);
+					create_part(-1, x, y, PT_FIRE);
+					goto killed;
+				} else if(parts[i].life < 100){
+					parts[i].life--;
+					create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_FIRE);
+				}
+
+                for(nx=-2; nx<3; nx++)
+                    for(ny=-2; ny<3; ny++)
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+                            r = pmap[y+ny][x+nx];
+                            if((r>>8)>=NPART || !r)
+                                continue;
+                            if(((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM) && 1>(rand()%500))
+                            {
+								if(parts[i].life>100){
+									parts[i].life = 99;
+								}
                             }
                         }
             }
