@@ -228,7 +228,7 @@ void strappend(char *dst, char *src)
 
     for(s=(unsigned char *)src; *s; s++)
     {
-		*(d++) = *s;
+        *(d++) = *s;
     }
     *d = 0;
 }

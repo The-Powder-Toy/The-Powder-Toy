@@ -237,7 +237,7 @@ inline int create_part(int p, int x, int y, int t)
     	parts[i].life = 150;
     }
     End Testing*/
-	if(t==PT_COAL)
+    if(t==PT_COAL)
         parts[i].life = 110;
     if(t==PT_FIRE)
         parts[i].life = rand()%50+120;
@@ -518,7 +518,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                       (bmap[y/CELL][x/CELL]==2) ||
                       (bmap[y/CELL][x/CELL]==3 && ptypes[t].falldown!=2) ||
                       (bmap[y/CELL][x/CELL]==10 && ptypes[t].falldown!=1) ||
-					  (bmap[y/CELL][x/CELL]==13 && ptypes[t].falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE) ||
+                      (bmap[y/CELL][x/CELL]==13 && ptypes[t].falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE) ||
                       (bmap[y/CELL][x/CELL]==6 && (t==PT_METL || t==PT_SPRK)) ||
                       (bmap[y/CELL][x/CELL]==7 && !emap[y/CELL][x/CELL])) && (t!=PT_STKM)))
             {
@@ -705,8 +705,8 @@ void update_particles_i(pixel *vid, int start, int inc)
                 int ctemp = pv[y/CELL][x/CELL]*2;
                 c_heat = 0.0f;
                 h_count = 0;
-				if(t==PT_ICEI && !parts[i].ctype)
-					parts[i].ctype = PT_WATR;
+                if(t==PT_ICEI && !parts[i].ctype)
+                    parts[i].ctype = PT_WATR;
                 if(ptypes[t].hconduct>(rand()%250))
                 {
                     for(nx=-1; nx<2; nx++)
@@ -937,15 +937,15 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
             else if(t==PT_COAL)
             {
-				if(parts[i].life<=0){
-					t = PT_NONE;
-					kill_part(i);
-					create_part(-1, x, y, PT_FIRE);
-					goto killed;
-				} else if(parts[i].life < 100){
-					parts[i].life--;
-					create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_FIRE);
-				}
+                if(parts[i].life<=0) {
+                    t = PT_NONE;
+                    kill_part(i);
+                    create_part(-1, x, y, PT_FIRE);
+                    goto killed;
+                } else if(parts[i].life < 100) {
+                    parts[i].life--;
+                    create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_FIRE);
+                }
 
                 for(nx=-2; nx<3; nx++)
                     for(ny=-2; ny<3; ny++)
@@ -957,9 +957,9 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 continue;
                             if(((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM) && 1>(rand()%500))
                             {
-								if(parts[i].life>100){
-									parts[i].life = 99;
-								}
+                                if(parts[i].life>100) {
+                                    parts[i].life = 99;
+                                }
                             }
                         }
             }

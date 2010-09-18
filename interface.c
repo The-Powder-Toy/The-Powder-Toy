@@ -1789,7 +1789,7 @@ int search_ui(pixel *vid_buf)
     memset(img_id, 0, sizeof(img_id));
 
     memset(search_ids, 0, sizeof(search_ids));
-	memset(search_dates, 0, sizeof(search_dates));
+    memset(search_dates, 0, sizeof(search_dates));
     memset(search_names, 0, sizeof(search_names));
     memset(search_scoreup, 0, sizeof(search_scoreup));
     memset(search_scoredown, 0, sizeof(search_scoredown));
@@ -2004,8 +2004,8 @@ int search_ui(pixel *vid_buf)
                         dp = pos;
                     }
                 }
-				drawrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2, 6, YRES/GRID_S+3, 128, 128, 128, 255);
-				fillrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2, 6, 1+(YRES/GRID_S+3)/2, 0, 107, 10, 255);
+                drawrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2, 6, YRES/GRID_S+3, 128, 128, 128, 255);
+                fillrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2, 6, 1+(YRES/GRID_S+3)/2, 0, 107, 10, 255);
                 fillrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2), 6, 1+(YRES/GRID_S+3)/2, 107, 10, 0, 255);
 
                 if(mp==pos && !st)
@@ -2069,7 +2069,7 @@ int search_ui(pixel *vid_buf)
 
                     fillrect(vid_buf, gx-1+(XRES/GRID_S)+5, gy-1+((YRES/GRID_S+3)/2)-nyu, 4, nyu, 57, 187, 57, 255);
                     fillrect(vid_buf, gx-1+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2), 4, nyd, 187, 57, 57, 255);
-					                    //drawrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2)-nyu, 4, nyu, 0, 107, 10, 255);
+                    //drawrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2)-nyu, 4, nyu, 0, 107, 10, 255);
                     //drawrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2+((YRES/GRID_S+3)/2)+1, 4, nyd, 107, 10, 0, 255);
                 }
             }
@@ -2162,17 +2162,17 @@ int search_ui(pixel *vid_buf)
             fillrect(vid_buf, 0, 0, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 255);
             info_box(vid_buf, "Loading...");
 
-			if(search_dates[mp]){
-				uri = malloc(strlen(search_ids[mp])*3+strlen(search_dates[mp])*3+strlen(SERVER)+71);
-				strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
-				strcaturl(uri, search_ids[mp]);
-				strappend(uri, "&Date=");
-				strcaturl(uri, search_dates[mp]);
-			} else {
-				uri = malloc(strlen(search_ids[mp])*3+strlen(SERVER)+64);
-				strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
-				strcaturl(uri, search_ids[mp]);
-			}
+            if(search_dates[mp]) {
+                uri = malloc(strlen(search_ids[mp])*3+strlen(search_dates[mp])*3+strlen(SERVER)+71);
+                strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
+                strcaturl(uri, search_ids[mp]);
+                strappend(uri, "&Date=");
+                strcaturl(uri, search_dates[mp]);
+            } else {
+                uri = malloc(strlen(search_ids[mp])*3+strlen(SERVER)+64);
+                strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
+                strcaturl(uri, search_ids[mp]);
+            }
             data = http_simple_get(uri, &status, &dlen);
             free(uri);
 
@@ -2384,22 +2384,22 @@ int search_ui(pixel *vid_buf)
                     thlen = 4;
                 }
                 thumb_cache_add(img_id[i], thumb, thlen);
-                for(pos=0; pos<GRID_X*GRID_Y; pos++){
-					if(search_dates[pos]){
-						char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+1);
-						strcpy(id_d_temp, search_ids[pos]);
-						strappend(id_d_temp, "_");
-						strappend(id_d_temp, search_dates[pos]);
-						//img_id[i] = mystrdup(id_d_temp);
-						if(id_d_temp && !strcmp(id_d_temp, img_id[i])){
-							break;
-						}
-					} else {
-						if(search_ids[pos] && !strcmp(search_ids[pos], img_id[i])){
-							break;
-						}
-					}
-				}
+                for(pos=0; pos<GRID_X*GRID_Y; pos++) {
+                    if(search_dates[pos]) {
+                        char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+1);
+                        strcpy(id_d_temp, search_ids[pos]);
+                        strappend(id_d_temp, "_");
+                        strappend(id_d_temp, search_dates[pos]);
+                        //img_id[i] = mystrdup(id_d_temp);
+                        if(id_d_temp && !strcmp(id_d_temp, img_id[i])) {
+                            break;
+                        }
+                    } else {
+                        if(search_ids[pos] && !strcmp(search_ids[pos], img_id[i])) {
+                            break;
+                        }
+                    }
+                }
                 if(pos<GRID_X*GRID_Y)
                 {
                     search_thumbs[pos] = thumb;
@@ -2424,25 +2424,25 @@ int search_ui(pixel *vid_buf)
                     }
                 if(pos<GRID_X*GRID_Y)
                 {
-					if(search_dates[pos]){
-						char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+1);
-						uri = malloc(strlen(search_ids[pos])*3+strlen(search_dates[pos])*3+strlen(SERVER)+71);
-						strcpy(uri, "http://" SERVER "/Get.api?Op=thumb&ID=");
-						strcaturl(uri, search_ids[pos]);
-						strappend(uri, "&Date=");
-						strcaturl(uri, search_dates[pos]);
-						
-						strcpy(id_d_temp, search_ids[pos]);
-						strappend(id_d_temp, "_");
-						strappend(id_d_temp, search_dates[pos]);
-						img_id[i] = mystrdup(id_d_temp);
-					} else {
-						uri = malloc(strlen(search_ids[pos])*3+strlen(SERVER)+64);
-						strcpy(uri, "http://" SERVER "/Get.api?Op=thumb&ID=");
-						strcaturl(uri, search_ids[pos]);
-						img_id[i] = mystrdup(search_ids[pos]);
-					}
-                    
+                    if(search_dates[pos]) {
+                        char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+1);
+                        uri = malloc(strlen(search_ids[pos])*3+strlen(search_dates[pos])*3+strlen(SERVER)+71);
+                        strcpy(uri, "http://" SERVER "/Get.api?Op=thumb&ID=");
+                        strcaturl(uri, search_ids[pos]);
+                        strappend(uri, "&Date=");
+                        strcaturl(uri, search_dates[pos]);
+
+                        strcpy(id_d_temp, search_ids[pos]);
+                        strappend(id_d_temp, "_");
+                        strappend(id_d_temp, search_dates[pos]);
+                        img_id[i] = mystrdup(id_d_temp);
+                    } else {
+                        uri = malloc(strlen(search_ids[pos])*3+strlen(SERVER)+64);
+                        strcpy(uri, "http://" SERVER "/Get.api?Op=thumb&ID=");
+                        strcaturl(uri, search_ids[pos]);
+                        img_id[i] = mystrdup(search_ids[pos]);
+                    }
+
                     img_http[i] = http_async_req_start(img_http[i], uri, NULL, 0, 1);
                     free(uri);
                 }
@@ -2484,7 +2484,7 @@ int search_results(char *str, int votes)
         if(search_ids[i])
         {
             free(search_ids[i]);
-			search_ids[i] = NULL;
+            search_ids[i] = NULL;
         }
         if(search_names[i])
         {
@@ -2593,17 +2593,17 @@ int search_results(char *str, int votes)
             thumb_cache_find(str+5, search_thumbs+i, search_thsizes+i);
             i++;
         }
-		else if(!strncmp(str, "HISTORY ", 8))
+        else if(!strncmp(str, "HISTORY ", 8))
         {
             if(i>=GRID_X*GRID_Y)
                 break;
             if(votes)
             {
                 sd = strchr(str+8, ' ');
-				if(!sd)
+                if(!sd)
                     return i;
                 *(sd++) = 0;
-				pu = strchr(sd, ' ');
+                pu = strchr(sd, ' ');
                 if(!pu)
                     return i;
                 *(pu++) = 0;
@@ -2624,10 +2624,10 @@ int search_results(char *str, int votes)
             else
             {
                 sd = strchr(str+8, ' ');
-				if(!sd)
+                if(!sd)
                     return i;
                 *(sd++) = 0;
-				pu = strchr(sd, ' ');
+                pu = strchr(sd, ' ');
                 if(!pu)
                     return i;
                 *(pu++) = 0;
@@ -2650,7 +2650,7 @@ int search_results(char *str, int votes)
             *(r++) = 0;
             search_ids[i] = mystrdup(str+8);
 
-			search_dates[i] = mystrdup(sd);
+            search_dates[i] = mystrdup(sd);
 
             search_publish[i] = atoi(pu);
             search_scoreup[i] = atoi(vu);
