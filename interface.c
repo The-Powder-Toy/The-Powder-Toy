@@ -1759,7 +1759,7 @@ corrupt:
 
 int search_ui(pixel *vid_buf)
 {
-    int uih=0,nyu,nyd,b=1,bq,mx=0,my=0,mxq=0,myq=0,mmt=0,gi,gj,gx,gy,pos,i,mp,dp,own,last_own=search_own,page_count=0,last_page=0,last_date=0,j,w,h,st=0,lv;
+    int uih=0,nyu,nyd,b=1,bq,mx=0,my=0,mxq=0,myq=0,mmt=0,gi,gj,gx,gy,pos,i,mp,dp,dap,own,last_own=search_own,page_count=0,last_page=0,last_date=0,j,w,h,st=0,lv;
     int is_p1=0, exp_res=GRID_X*GRID_Y, tp, view_own=0;
     int thumb_drawn[GRID_X*GRID_Y];
     pixel *v_buf = (pixel *)malloc(((YRES+MENUSIZE)*(XRES+BARSIZE))*PIXELSIZE);
@@ -1952,6 +1952,7 @@ int search_ui(pixel *vid_buf)
         }
 
         mp = dp = -1;
+		dap = -1;
         st = 0;
         for(gj=0; gj<GRID_Y; gj++)
             for(gi=0; gi<GRID_X; gi++)
@@ -2003,6 +2004,11 @@ int search_ui(pixel *vid_buf)
                         mp = -1;
                         dp = pos;
                     }
+					if(!search_dates[pos] && mx>=gx-6 && mx<=gx+4 && my>=gy+YRES/GRID_S-4 && my<=gy+YRES/GRID_S+6)
+                    {
+                        mp = -1;
+                        dap = pos;
+                    }
                 }
                 drawrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2, 6, YRES/GRID_S+3, 128, 128, 128, 255);
                 fillrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2, 6, 1+(YRES/GRID_S+3)/2, 0, 107, 10, 255);
@@ -2024,6 +2030,16 @@ int search_ui(pixel *vid_buf)
                 {
                     drawtext(vid_buf, gx-6, gy-6, "\xCD", 255, 255, 255, 255);
                     drawtext(vid_buf, gx-6, gy-6, "\xCE", 212, 151, 81, 255);
+                }
+                if(!search_dates[pos] && own)
+                {
+                    fillrect(vid_buf, gx-5, gy+YRES/GRID_S-3, 7, 8, 255, 255, 255, 255);
+					if(dap == pos){
+						drawtext(vid_buf, gx-6, gy+YRES/GRID_S-4, "\xA6", 200, 100, 80, 255);
+					} else {
+						drawtext(vid_buf, gx-6, gy+YRES/GRID_S-4, "\xA6", 160, 70, 50, 255);
+					}
+                    //drawtext(vid_buf, gx-6, gy-6, "\xCE", 212, 151, 81, 255);
                 }
                 if(view_own || svf_admin || svf_mod)
                 {
@@ -2139,6 +2155,11 @@ int search_ui(pixel *vid_buf)
                     last = NULL;
                 }
             }
+        if(b && !bq && dap!=-1)
+		{
+            sprintf(ed.str, "history:%s", search_ids[dap]);
+            lasttime = TIMEOUT;
+		}
 
         if(b && !bq && tp!=-1)
         {
