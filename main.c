@@ -506,7 +506,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
             j=d[p++];
             if(j >= PT_NUM)
                 goto corrupt;
-            if(j && !(isplayer == 1 && j==PT_STKM))
+            if(j)// && !(isplayer == 1 && j==PT_STKM))
             {
                 if(pmap[y][x])
                 {
@@ -1764,7 +1764,7 @@ int main(int argc, char *argv[])
                         memset(fire_g, 0, sizeof(fire_g));
                         memset(fire_b, 0, sizeof(fire_b));
                     }
-                    if(x>=19 && x<=35 && svf_last && svf_open)
+                    if(x>=19 && x<=35 && svf_last && svf_open && !bq)
                         parse_save(svf_last, svf_lsize, 1, 0, 0);
                     if(x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
                     {
