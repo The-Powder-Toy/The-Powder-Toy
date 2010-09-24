@@ -1301,7 +1301,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 								if((r>>8)>=NPART || !r)
 									continue;
 								rt = parts[r>>8].type;
-								if(rt==PT_FIRE)
+								if(rt==PT_FIRE||rt==PT_PLSM||rt==PT_THDR)
 								{
 									parts[i].tmp = 1;
 									parts[i].life = rand()%50+120;
@@ -1314,9 +1314,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 					} else {
 						float newVel = parts[i].life/50;
 						parts[i].flags = parts[i].flags&0xFFFFFFFE;
-						parts[i].vy = -newVel;
-						ly-=newVel;
-						iy-=newVel;
+						if((pmap[(int)(ly-newVel)][(int)lx]&0xFF)==PT_NONE){
+							parts[i].vy = -newVel;
+							ly-=newVel;
+							iy-=newVel;
+						}
 					}
 				}
 				else if(parts[i].tmp==2){
@@ -1329,10 +1331,13 @@ void update_particles_i(pixel *vid, int start, int inc)
 								r = pmap[y+ny][x+nx];
 								if((r>>8)>=NPART || !r)
 									continue;
-								parts[r>>8].vx = (rand()%3-1)*tmul;
-								parts[r>>8].vy = (rand()%3-1)*tmul;
-								parts[r>>8].tmp = 3;
-								parts[r>>8].life = rand()%100+100;
+								if(parts[r>>8].type==PT_FIRW){
+									parts[r>>8].vx = (rand()%3-1)*tmul;
+									parts[r>>8].vy = (rand()%3-1)*tmul;
+									parts[r>>8].tmp = 3;
+									parts[r>>8].life = rand()%100+100;
+									parts[r>>8].temp = 6000.0f;
+								}
 							}
 						}
 					}
