@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <math.h>
 #include "defines.h"
 #include "powder.h"
@@ -466,6 +467,9 @@ int nearest_part(int ci, int t)
 void update_particles_i(pixel *vid, int start, int inc)
 {
     int i, j, x, y, t, nx, ny, r, a, s, rt, fe, nt, lpv, nearp, pavg;
+		uint16_t tempu1, tempu2;
+		int16_t temps1, temps2;
+		float tempf1, tempf2;
     float mv, dx, dy, ix, iy, lx, ly, d, pp;
     float pt = R_TEMP;
     float c_heat = 0.0f;
