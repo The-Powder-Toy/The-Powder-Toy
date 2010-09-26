@@ -1364,76 +1364,76 @@ void update_particles_i(pixel *vid, int start, int inc)
                             }
                         }
             }
-			else if(t==PT_PCLN)
-			{
-				for(nx=-2; nx<3; nx++)
-					for(ny=-2; ny<3; ny++)
-						if(x+nx>=0 && y+ny>0 &&
-						   x+nx<XRES && y+ny<YRES && (nx || ny))
-						{
-							r = pmap[y+ny][x+nx];
-							if((r>>8)>=NPART || !r)
-								continue;
-							rt = parts[r>>8].type;
-							if(rt==PT_SPRK)
-							{
-								if(parts[r>>8].ctype==PT_PSCN)
-								{
-									parts[i].life = 10;
-								}
-								else if(parts[r>>8].ctype==PT_NSCN)
-								{
-									parts[i].life = 9;
-								}
-							}
-							if(rt==PT_PCLN)
-							{
-								if(parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
-								{
-									parts[i].life = 9;
-								}
-								else if(parts[i].life==0&&parts[r>>8].life==10)
-								{
-									parts[i].life = 10;
-								}
-							}
-						}
-			}
-			else if(t==PT_HSWC)
-			{
-				for(nx=-2; nx<3; nx++)
-					for(ny=-2; ny<3; ny++)
-						if(x+nx>=0 && y+ny>0 &&
-						   x+nx<XRES && y+ny<YRES && (nx || ny))
-						{
-							r = pmap[y+ny][x+nx];
-							if((r>>8)>=NPART || !r)
-								continue;
-							rt = parts[r>>8].type;
-							if(rt==PT_SPRK)
-							{
-								if(parts[r>>8].ctype==PT_PSCN)
-								{
-									parts[i].life = 10;
-								}
-								else if(parts[r>>8].ctype==PT_NSCN)
-								{
-									parts[i].life = 9;
-								}
-							}
-							if(rt==PT_HSWC)
-							{
-								if(parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
-								{
-									parts[i].life = 9;
-								}
-								else if(parts[i].life==0&&parts[r>>8].life==10)
-								{
-									parts[i].life = 10;
-								}
-							}
-						}
-			}
+            else if(t==PT_PCLN)
+            {
+                for(nx=-2; nx<3; nx++)
+                    for(ny=-2; ny<3; ny++)
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+                            r = pmap[y+ny][x+nx];
+                            if((r>>8)>=NPART || !r)
+                                continue;
+                            rt = parts[r>>8].type;
+                            if(rt==PT_SPRK)
+                            {
+                                if(parts[r>>8].ctype==PT_PSCN)
+                                {
+                                    parts[i].life = 10;
+                                }
+                                else if(parts[r>>8].ctype==PT_NSCN)
+                                {
+                                    parts[i].life = 9;
+                                }
+                            }
+                            if(rt==PT_PCLN)
+                            {
+                                if(parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
+                                {
+                                    parts[i].life = 9;
+                                }
+                                else if(parts[i].life==0&&parts[r>>8].life==10)
+                                {
+                                    parts[i].life = 10;
+                                }
+                            }
+                        }
+            }
+            else if(t==PT_HSWC)
+            {
+                for(nx=-2; nx<3; nx++)
+                    for(ny=-2; ny<3; ny++)
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+                            r = pmap[y+ny][x+nx];
+                            if((r>>8)>=NPART || !r)
+                                continue;
+                            rt = parts[r>>8].type;
+                            if(rt==PT_SPRK)
+                            {
+                                if(parts[r>>8].ctype==PT_PSCN)
+                                {
+                                    parts[i].life = 10;
+                                }
+                                else if(parts[r>>8].ctype==PT_NSCN)
+                                {
+                                    parts[i].life = 9;
+                                }
+                            }
+                            if(rt==PT_HSWC)
+                            {
+                                if(parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
+                                {
+                                    parts[i].life = 9;
+                                }
+                                else if(parts[i].life==0&&parts[r>>8].life==10)
+                                {
+                                    parts[i].life = 10;
+                                }
+                            }
+                        }
+            }
             else if(t==PT_AMTR)
             {
                 for(nx=-1; nx<2; nx++)
@@ -2170,25 +2170,25 @@ killed:
                 else
                     create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
             }
-			if(parts[i].type==PT_PCLN)
-			{
-				if(!parts[i].ctype)
-					for(nx=-1; nx<2; nx++)
-						for(ny=-1; ny<2; ny++)
-							if(x+nx>=0 && y+ny>0 &&
-									x+nx<XRES && y+ny<YRES &&
-									pmap[y+ny][x+nx] &&
-									(pmap[y+ny][x+nx]&0xFF)!=PT_CLNE &&
-									(pmap[y+ny][x+nx]&0xFF)!=PT_PCLN &&
-									(pmap[y+ny][x+nx]&0xFF)!=PT_SPRK &&
-									(pmap[y+ny][x+nx]&0xFF)!=PT_NSCN &&
-									(pmap[y+ny][x+nx]&0xFF)!=PT_PSCN &&
-									(pmap[y+ny][x+nx]&0xFF)!=PT_STKM &&
-									(pmap[y+ny][x+nx]&0xFF)!=0xFF)
-								parts[i].ctype = pmap[y+ny][x+nx]&0xFF;
-				if(parts[i].ctype && parts[i].life==10)
-					create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
-			}      
+            if(parts[i].type==PT_PCLN)
+            {
+                if(!parts[i].ctype)
+                    for(nx=-1; nx<2; nx++)
+                        for(ny=-1; ny<2; ny++)
+                            if(x+nx>=0 && y+ny>0 &&
+                                    x+nx<XRES && y+ny<YRES &&
+                                    pmap[y+ny][x+nx] &&
+                                    (pmap[y+ny][x+nx]&0xFF)!=PT_CLNE &&
+                                    (pmap[y+ny][x+nx]&0xFF)!=PT_PCLN &&
+                                    (pmap[y+ny][x+nx]&0xFF)!=PT_SPRK &&
+                                    (pmap[y+ny][x+nx]&0xFF)!=PT_NSCN &&
+                                    (pmap[y+ny][x+nx]&0xFF)!=PT_PSCN &&
+                                    (pmap[y+ny][x+nx]&0xFF)!=PT_STKM &&
+                                    (pmap[y+ny][x+nx]&0xFF)!=0xFF)
+                                parts[i].ctype = pmap[y+ny][x+nx]&0xFF;
+                if(parts[i].ctype && parts[i].life==10)
+                    create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+            }
             if(t==PT_YEST)
             {
                 if(parts[i].temp>303&&parts[i].temp<317) {

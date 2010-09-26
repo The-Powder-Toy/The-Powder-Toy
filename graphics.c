@@ -1710,14 +1710,14 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny, GR, GR, GR, 223);
                         blendpixel(vid, nx, ny+1, GR, GR, GR, 223);
                         blendpixel(vid, nx, ny-1, GR, GR, GR, 223);
-						
+
                         blendpixel(vid, nx+1, ny-1, GR, GR, GR, 112);
                         blendpixel(vid, nx-1, ny-1, GR, GR, GR, 112);
                         blendpixel(vid, nx+1, ny+1, GR, GR, GR, 112);
                         blendpixel(vid, nx-1, ny+1, GR, GR, GR, 112);
                     }
                 }
-				else if(t==PT_PCLN)
+                else if(t==PT_PCLN)
                 {
                     uint8 GR = 0x3B+(parts[i].life*19);
                     vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(GR, GR, 10);
@@ -1726,14 +1726,14 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny, GR, GR, 10, 223);
                         blendpixel(vid, nx, ny+1, GR, GR, 10, 223);
                         blendpixel(vid, nx, ny-1, GR, GR, 10, 223);
-						
+
                         blendpixel(vid, nx+1, ny-1, GR, GR, 10, 112);
                         blendpixel(vid, nx-1, ny-1, GR, GR, 10, 112);
                         blendpixel(vid, nx+1, ny+1, GR, GR, 10, 112);
                         blendpixel(vid, nx-1, ny+1, GR, GR, 10, 112);
                     }
                 }
-				else if(t==PT_HSWC)
+                else if(t==PT_HSWC)
                 {
                     uint8 GR = 0x3B+(parts[i].life*19);
                     vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(GR, 10, 10);
@@ -1742,14 +1742,14 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny, GR, 10, 10, 223);
                         blendpixel(vid, nx, ny+1, GR, 10, 10, 223);
                         blendpixel(vid, nx, ny-1, GR, 10, 10, 223);
-						
+
                         blendpixel(vid, nx+1, ny-1, GR, 10, 10, 112);
                         blendpixel(vid, nx-1, ny-1, GR, 10, 10, 112);
                         blendpixel(vid, nx+1, ny+1, GR, 10, 10, 112);
                         blendpixel(vid, nx-1, ny+1, GR, 10, 10, 112);
                     }
                 }
-				else if(t==PT_PLSM)
+                else if(t==PT_PLSM)
                 {
                     float ttemp = (float)parts[i].life;
                     int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
