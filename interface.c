@@ -1952,7 +1952,7 @@ int search_ui(pixel *vid_buf)
         }
 
         mp = dp = -1;
-		dap = -1;
+        dap = -1;
         st = 0;
         for(gj=0; gj<GRID_Y; gj++)
             for(gi=0; gi<GRID_X; gi++)
@@ -2004,7 +2004,7 @@ int search_ui(pixel *vid_buf)
                         mp = -1;
                         dp = pos;
                     }
-					if(!search_dates[pos] && mx>=gx-6 && mx<=gx+4 && my>=gy+YRES/GRID_S-4 && my<=gy+YRES/GRID_S+6)
+                    if(!search_dates[pos] && mx>=gx-6 && mx<=gx+4 && my>=gy+YRES/GRID_S-4 && my<=gy+YRES/GRID_S+6)
                     {
                         mp = -1;
                         dap = pos;
@@ -2034,11 +2034,11 @@ int search_ui(pixel *vid_buf)
                 if(!search_dates[pos] && own)
                 {
                     fillrect(vid_buf, gx-5, gy+YRES/GRID_S-3, 7, 8, 255, 255, 255, 255);
-					if(dap == pos){
-						drawtext(vid_buf, gx-6, gy+YRES/GRID_S-4, "\xA6", 200, 100, 80, 255);
-					} else {
-						drawtext(vid_buf, gx-6, gy+YRES/GRID_S-4, "\xA6", 160, 70, 50, 255);
-					}
+                    if(dap == pos) {
+                        drawtext(vid_buf, gx-6, gy+YRES/GRID_S-4, "\xA6", 200, 100, 80, 255);
+                    } else {
+                        drawtext(vid_buf, gx-6, gy+YRES/GRID_S-4, "\xA6", 160, 70, 50, 255);
+                    }
                     //drawtext(vid_buf, gx-6, gy-6, "\xCE", 212, 151, 81, 255);
                 }
                 if(view_own || svf_admin || svf_mod)
@@ -2156,10 +2156,10 @@ int search_ui(pixel *vid_buf)
                 }
             }
         if(b && !bq && dap!=-1)
-		{
+        {
             sprintf(ed.str, "history:%s", search_ids[dap]);
             lasttime = TIMEOUT;
-		}
+        }
 
         if(b && !bq && tp!=-1)
         {
