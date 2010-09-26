@@ -239,12 +239,16 @@ _inline int create_part(int p, int x, int y, int t)
 	  parts[i].life = 150;
 	  }
 	  End Testing*/
-    if(t==PT_FUSE)
-		parts[i].life = ((uint32_t)(50 << 24) | (uint32_t)50);
+    if(t==PT_FUSE) {
+		parts[i].life = 50;
+		parts[i].tmp = 50;
+	}
     if(t==PT_FSEP)
 		parts[i].life = 50;
-    if(t==PT_COAL)
-        parts[i].life = ((uint32_t)(110 << 24) | (uint32_t)50);
+    if(t==PT_COAL) {
+        parts[i].life = 110;
+		parts[i].tmp = 50;
+	}
 	if(t==PT_BCOL)
 		parts[i].life = 110;
     if(t==PT_FIRE)
@@ -952,22 +956,20 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
             else if(t==PT_COAL)
             {
-				tempu1 = (uint16_t)(((unsigned int)parts[i].life) >> 24);
-				tempu2 = (uint16_t)(((unsigned int)parts[i].life) & 0x0000FFFF);
-                if(tempu1<=0) {
+                if(parts[i].life<=0) {
                     t = PT_NONE;
                     kill_part(i);
                     create_part(-1, x, y, PT_FIRE);
                     goto killed;
-                } else if(tempu1 < 100) {
-                    tempu1--;
+                } else if(parts[i].life < 100) {
+                    parts[i].life;
                     create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_FIRE);
                 }
-				if((pv[y/CELL][x/CELL] > 4.3f)&&tempu2>40)
-					tempu2=39;
-				else if(tempu2<40&&tempu2>0)
-					tempu2--;
-				else if(tempu2<=0) {
+				if((pv[y/CELL][x/CELL] > 4.3f)&&parts[i].tmp>40)
+					parts[i].tmp=39;
+				else if(parts[i].tmp<40&&parts[i].tmp>0)
+					parts[i].tmp--;
+				else if(parts[i].tmp<=0) {
 					t = PT_NONE;
 					kill_part(i);
 					r = create_part(-1, x, y, PT_BCOL);
@@ -983,12 +985,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 continue;
                             if(((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM) && 1>(rand()%500))
                             {
-                                if(tempu1>100) {
-									tempu1 = 99;
+                                if(parts[i].life>100) {
+									parts[i].life = 99;
                                 }
                             }
                         }
-				parts[i].life = ((uint32_t)(((uint32_t)tempu1 << 24) | (uint32_t)tempu2));
             } else if(t==PT_BCOL)
             {
                 if(parts[i].life<=0) {
@@ -1022,24 +1023,24 @@ void update_particles_i(pixel *vid, int start, int inc)
 				// I do a parts[i].life hack here, the first half bits is for the burn life, the last half bits is for the pressure life
 				tempu1 = (uint16_t)(((uint32_t)parts[i].life) >> 24);
 				tempu2 = (uint16_t)(((uint32_t)parts[i].life) & 0xFFFF);
-				if(tempu1<=0) {
+				if(parts[i].life<=0) {
 					t = PT_NONE;
 					kill_part(i);
 					r = create_part(-1, x, y, PT_PLSM);
 					parts[r].life = 50;
 					goto killed;
-				} else if (tempu1 < 40) {
-					tempu1--;
+				} else if (parts[i].life < 40) {
+					parts[i].life--;
 					if((rand()%100)==0) {
 						r = create_part(-1, (nx=x+rand()%3-1), (ny=y+rand()%3-1), PT_PLSM);
 						parts[r].life = 50;
 					}
 				}
-				if((pv[y/CELL][x/CELL] > 2.7f)&&tempu2>40)
-					tempu2=39;
-				else if(tempu2<40&&tempu2>0)
-					tempu2--;
-				else if(tempu2<=0) {
+				if((pv[y/CELL][x/CELL] > 2.7f)&&parts[i].tmp>40)
+					parts[i].tmp=39;
+				else if(parts[i].tmp<40&&parts[i].tmp>0)
+					parts[i].tmp--;
+				else if(parts[i].tmp<=0) {
 					t = PT_NONE;
 					kill_part(i);
 					r = create_part(-1, x, y, PT_FSEP);
@@ -1055,8 +1056,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 								continue;
 							if((r&0xFF)==PT_SPRK || (parts[i].temp>=(273.15+700.0f)) && 1>(rand()%20))
 							{
-								if(tempu1>40) {
-									tempu1 = 39;
+								if(parts[i].life>40) {
+									parts[i].life = 39;
 								}
 							}
 						}
