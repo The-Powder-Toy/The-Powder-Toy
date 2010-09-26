@@ -238,6 +238,10 @@ inline int create_part(int p, int x, int y, int t)
     	parts[i].life = 150;
     }
     End Testing*/
+    if(t==PT_FUSE)
+         parts[i].life = ((uint32_t)(50 << 24) | (uint32_t)50);
+    if(t==PT_FSEP)
+         parts[i].life = 50;
     if(t==PT_COAL)
         parts[i].life = 110;
     if(t==PT_FIRE)
@@ -479,7 +483,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             if(sys_pause&&!framerender)
                 return;
 
-            if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM)
+            if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM && t!=PT_FUSE && t!=PT_FSEP)
             {
                 if(!(parts[i].life==10&&parts[i].type==PT_LCRY))
                     parts[i].life--;
@@ -968,6 +972,80 @@ void update_particles_i(pixel *vid, int start, int inc)
                             }
                         }
             }
+                        else if(t==PT_FUSE)
+                        {
+                                // I do a parts[i].life hack here, the first half bits is for the burn life, the last half bits is for the pressure life
+                                tempu1 = (uint16_t)(((unsigned int)parts[i].life) >> 24);
+                                tempu2 = (uint16_t)(((unsigned int)parts[i].life) & 0x0000FFFF);
+                                if(tempu1<=0) {
+                                        t = PT_NONE;
+                                        kill_part(i);
+                                        r = create_part(-1, x, y, PT_PLSM);
+                                        parts[r].life = 50;
+                                        goto killed;
+                                } else if (tempu1 < 40) {
+                                        tempu1--;
+																				if((rand()%100)==0) {
+																								r = create_part(-1, (nx=x+rand()%3-1), (ny=y+rand()%3-1), PT_PLSM);
+																								parts[r].life = 50;
+																				}
+                                }
+																if(pv[y/CELL][x/CELL] > 0.8f)
+																				tempu2--;
+																else if(tempu2<=0) {
+																				t = PT_NONE;
+                                        kill_part(i);
+                                        r = create_part(-1, x, y, PT_FSEP);
+                                        goto killed;
+																}
+                                for(nx=-2; nx<3; nx++)
+                                        for(ny=-2; ny<3; ny++)
+                                                if(x+nx>=0 && y+ny>0 &&
+                                                   x+nx<XRES && y+ny<YRES && (nx || ny))
+                                                {
+                                                        r = pmap[y+ny][x+nx];
+                                                        if((r>>8)>=NPART || !r)
+                                                                continue;
+                                                        if((r&0xFF)==PT_SPRK || (parts[i].temp>=(273.15+700.0f)) && 1>(rand()%20))
+                                                        {
+                                                                if(tempu1>40) {
+                                                                        tempu1 = 39;
+                                                                }
+                                                        }
+                                                }
+                                parts[i].life = ((uint32_t)(((uint32_t)tempu1 << 24) | (uint32_t)tempu2));
+                        }
+                        else if(t==PT_FSEP)
+                        {
+                                if(parts[i].life<=0) {
+                                        t = PT_NONE;
+                                        kill_part(i);
+                                        r = create_part(-1, x, y, PT_PLSM);
+																				parts[r].life = 50;
+                                        goto killed;
+                                } else if (parts[i].life < 40) {
+                                        parts[i].life--;
+																				if((rand()%10)==0) {
+																								r = create_part(-1, (nx=x+rand()%3-1), (ny=y+rand()%3-1), PT_PLSM);
+																								parts[r].life = 50;
+																				}
+                                }
+                                for(nx=-2; nx<3; nx++)
+                                        for(ny=-2; ny<3; ny++)
+                                                if(x+nx>=0 && y+ny>0 &&
+                                                   x+nx<XRES && y+ny<YRES && (nx || ny))
+                                                {
+                                                        r = pmap[y+ny][x+nx];
+                                                        if((r>>8)>=NPART || !r)
+                                                                continue;
+                                                        if((r&0xFF)==PT_SPRK || (parts[i].temp>=(273.15+400.0f)) && 1>(rand()%15))
+                                                        {
+                                                                if(parts[i].life>40) {
+                                                                        parts[i].life = 39;
+                                                                }
+                                                        }
+                                                }
+                        }
             else if(t==PT_NTCT||t==PT_PTCT||t==PT_INWR)
             {
                 for(nx=-2; nx<3; nx++)
