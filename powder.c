@@ -1021,9 +1021,6 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
 			else if(t==PT_FUSE)
 			{
-				// I do a parts[i].life hack here, the first half bits is for the burn life, the last half bits is for the pressure life
-				tempu1 = (uint16_t)(((uint32_t)parts[i].life) >> 24);
-				tempu2 = (uint16_t)(((uint32_t)parts[i].life) & 0xFFFF);
 				if(parts[i].life<=0) {
 					t = PT_NONE;
 					kill_part(i);
@@ -1055,14 +1052,13 @@ void update_particles_i(pixel *vid, int start, int inc)
 							r = pmap[y+ny][x+nx];
 							if((r>>8)>=NPART || !r)
 								continue;
-							if((r&0xFF)==PT_SPRK || (parts[i].temp>=(273.15+700.0f)) && 1>(rand()%20))
+							if((r&0xFF)==PT_SPRK || ((parts[i].temp>=(273.15+700.0f)) && 1>(rand()%20)))
 							{
 								if(parts[i].life>40) {
 									parts[i].life = 39;
 								}
 							}
 						}
-				parts[i].life = ((uint32_t)(((uint32_t)tempu1 << 24) | (uint32_t)tempu2));
 			}
 			else if(t==PT_FSEP)
 			{
