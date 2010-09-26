@@ -962,7 +962,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                     create_part(-1, x, y, PT_FIRE);
                     goto killed;
                 } else if(parts[i].life < 100) {
-                    parts[i].life;
+                    parts[i].life--;
                     create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_FIRE);
                 }
 				if((pv[y/CELL][x/CELL] > 4.3f)&&parts[i].tmp>40)
@@ -999,7 +999,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                     create_part(-1, x, y, PT_FIRE);
                     goto killed;
                 } else if(parts[i].life < 100) {
-                    parts[i].life;
+                    parts[i].life--;
                     create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_FIRE);
                 }
 
