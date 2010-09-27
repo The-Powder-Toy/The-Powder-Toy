@@ -4,3 +4,4 @@ powder.def
 powder-debug
 gmon.out
 *.*.orig
+build/
