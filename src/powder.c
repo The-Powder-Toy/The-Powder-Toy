@@ -447,6 +447,7 @@ _inline int parts_avg(int ci, int ni)
     }
 }
 
+
 int nearest_part(int ci, int t)
 {
     int distance = sqrt(pow(XRES, 2)+pow(YRES, 2));
@@ -705,7 +706,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             if(t==PT_SPRK&&parts[i].ctype==PT_ETRD&&parts[i].life==1)
             {
                 nearp = nearest_part(i, PT_ETRD);
-                if(nearp!=-1)
+                if(nearp!=-1&&parts_avg(i, nearp)!=PT_INSL)
                 {
                     create_line((int)parts[i].x, (int)parts[i].y, (int)parts[nearp].x, (int)parts[nearp].y, 0, PT_PLSM);
                     t = parts[i].type = PT_ETRD;
