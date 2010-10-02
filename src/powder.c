@@ -74,10 +74,12 @@ int try_move(int i, int x, int y, int nx, int ny)
 
     e = eval_move(parts[i].type, nx, ny, &r);
     if(!e) {
-        if(!legacy_enable) {
+        if(!legacy_enable && parts[i].type==PT_PHOT) {
             if((r >> 8) < PT_NUM)
-                parts[i].temp = parts[r>>8].temp = restrict_flt(parts[r>>8].temp+parts[i].temp/2, MIN_TEMP, MAX_TEMP);
+                parts[i].temp = parts[r>>8].temp =
+                                    restrict_flt((parts[r>>8].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
         }
+        return 0;
         return 0;
     }
     if(e == 2)
