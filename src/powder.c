@@ -39,10 +39,8 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
     if(pt==PT_PHOT&&((r&0xFF)==PT_GLAS||(r&0xFF)==PT_PHOT||(r&0xFF)==PT_CLNE||((r&0xFF)==PT_LCRY||((r&0xFF)==PT_PCLN&&parts[r>>8].life > 5))))
         return 2;
 
-	if(pt==PT_STKM)  //Stick man's head shouldn't collide
-	{
-		return 2;
-	}
+    if(pt==PT_STKM)  //Stick man's head shouldn't collide
+	return 2;
 
      if(bmap[ny/CELL][nx/CELL]==13 && ptypes[pt].falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
         return 0;
@@ -60,6 +58,8 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
     if (r && ((r&0xFF) >= PT_NUM || !can_move[pt][(r&0xFF)]))
         return 0;
 
+    if(pt == PT_PHOT)
+	return 2;
     return 1;
 }
 int try_move(int i, int x, int y, int nx, int ny)
@@ -68,11 +68,13 @@ int try_move(int i, int x, int y, int nx, int ny)
 
     if(x==nx && y==ny)
 		return 1;
-	    e = eval_move(parts[i].type, nx, ny, &r);
+
+    e = eval_move(parts[i].type, nx, ny, &r);
     if(!e)
 		return 0;
     if(e == 2)
 		return 1;
+
     if(bmap[ny/CELL][nx/CELL]==12 && !emap[y/CELL][x/CELL])
         return 1;
     if((bmap[y/CELL][x/CELL]==12 && !emap[y/CELL][x/CELL]) && (bmap[ny/CELL][nx/CELL]!=12 && !emap[ny/CELL][nx/CELL]))
@@ -116,6 +118,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 #define NORMAL_INTERP  20
 #define NORMAL_FRAC    16
 
+#define REFRACT        0x80000000
+
 static unsigned direction_to_map(float dx, float dy)
 {
     return (dx >= 0) |
@@ -130,6 +134,14 @@ static unsigned direction_to_map(float dx, float dy)
 
 static int is_blocking(int t, int x, int y)
 {
+    if(t & REFRACT) {
+        if(x<0 || y<0 || x>=XRES || y>=YRES)
+	    return 0;
+	if((pmap[y][x] & 0xFF) == PT_GLAS)
+	    return 1;
+	return 0;
+    }
+
     return eval_move(t, x, y, NULL);
 }
 
@@ -435,9 +447,9 @@ _inline int create_part(int p, int x, int y, int t)
         //}/
     }
 
-    if(t!=PT_STKM)
+    if(t!=PT_STKM && t!=PT_PHOT)
         pmap[y][x] = t|(i<<8);
-    else
+    else if(t==PT_STKM)
     {
         if(isplayer==0)
         {
@@ -615,11 +627,12 @@ int nearest_part(int ci, int t)
 
 void update_particles_i(pixel *vid, int start, int inc)
 {
-    int i, j, x, y, t, nx, ny, r, a, s, rt, fe, nt, lpv, nearp, pavg;
+    int i, j, x, y, t, nx, ny, r, a, s, lt, rt, fe, nt, lpv, nearp, pavg;
 	uint16_t tempu1, tempu2;
 	int16_t temps1, temps2;
 	float tempf1, tempf2;
     float mv, dx, dy, ix, iy, lx, ly, d, pp, nrx, nry, dp;
+    float nn, ct1, ct2;
     float pt = R_TEMP;
     float c_heat = 0.0f;
     int h_count = 0;
@@ -2411,6 +2424,42 @@ void update_particles_i(pixel *vid, int start, int inc)
                 continue;
             }
 
+	    if(parts[i].type == PT_PHOT) {
+		rt = pmap[ny][nx] & 0xFF;
+
+		if(rt==PT_CLNE) {
+		    lt = pmap[ny][nx] >> 8;
+		    if(!parts[lt].ctype)
+			parts[lt].ctype = PT_PHOT;
+		}
+
+		lt = pmap[y][x] & 0xFF;
+
+		if((rt==PT_GLAS && lt!=PT_GLAS) || (rt!=PT_GLAS && lt==PT_GLAS)) {
+		    if(!get_normal_interp(REFRACT|parts[i].type, x, y, parts[i].vx, parts[i].vy, &nrx, &nry)) {
+			kill_part(i);
+			continue;
+		    }
+		    nrx = -nrx;
+		    nry = -nry;
+		    if(rt!=PT_GLAS && lt==PT_GLAS)
+			nn = 2.0;
+		    else
+			nn = 0.5;
+		    ct1 = parts[i].vx*nrx + parts[i].vy*nry;
+		    ct2 = 1.0f - (nn*nn)*(1.0f-(ct1*ct1));
+		    if(ct2 < 0.0f) {
+			parts[i].vx -= 2.0f*ct1*nrx;
+			parts[i].vy -= 2.0f*ct1*nry;
+		    } else {
+			ct2 = sqrtf(ct2);
+		        ct2 = ct2 - nn*ct1;
+		        parts[i].vx = nn*parts[i].vx + ct2*nrx;
+		        parts[i].vy = nn*parts[i].vy + ct2*nry;
+		    }
+		}
+	    }
+
             rt = parts[i].flags & FLAG_STAGNANT;
             parts[i].flags &= ~FLAG_STAGNANT;
             if(!try_move(i, x, y, nx, ny))
@@ -2608,7 +2657,7 @@ void update_particles(pixel *vid)
             t = parts[i].type;
             x = (int)(parts[i].x+0.5f);
             y = (int)(parts[i].y+0.5f);
-            if(x>=0 && y>=0 && x<XRES && y<YRES)
+            if(x>=0 && y>=0 && x<XRES && y<YRES && parts[i].type!=PT_PHOT)
                 pmap[y][x] = t|(i<<8);
         }
         else
