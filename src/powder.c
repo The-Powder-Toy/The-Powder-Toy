@@ -35,8 +35,11 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
         r = (r&~0xFF) | parts[r>>8].type;
     if(rr)
         *rr = r;
-
-    if(pt==PT_PHOT&&((r&0xFF)==PT_GLAS||(r&0xFF)==PT_PHOT||(r&0xFF)==PT_CLNE||((r&0xFF)==PT_LCRY||((r&0xFF)==PT_PCLN&&parts[r>>8].life > 5))))
+    if(pt==PT_PHOT&&(
+                (r&0xFF)==PT_GLAS || (r&0xFF)==PT_PHOT ||
+                (r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN ||
+                (r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW ||
+                ((r&0xFF)==PT_LCRY&&parts[r>>8].life > 5)))
         return 2;
 
     if(pt==PT_STKM)  //Stick man's head shouldn't collide
@@ -73,7 +76,7 @@ int try_move(int i, int x, int y, int nx, int ny)
     if(!e) {
         if(!legacy_enable) {
             if((r >> 8) < PT_NUM)
-				 parts[i].temp = parts[r>>8].temp = restrict_flt(parts[r>>8].temp+parts[i].temp/2, MIN_TEMP, MAX_TEMP);
+                parts[i].temp = parts[r>>8].temp = restrict_flt(parts[r>>8].temp+parts[i].temp/2, MIN_TEMP, MAX_TEMP);
         }
         return 0;
     }
