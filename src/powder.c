@@ -22,25 +22,66 @@ int pfree;
 unsigned pmap[YRES][XRES];
 unsigned cb_pmap[YRES][XRES];
 
-int try_move(int i, int x, int y, int nx, int ny)
+static int eval_move(int pt, int nx, int ny, unsigned *rr)
 {
     unsigned r;
 
 
     if(nx<0 || ny<0 || nx>=XRES || ny>=YRES)
         return 0;
-    if(x==nx && y==ny)
-        return 1;
-    r = pmap[ny][nx];
+    
+	r = pmap[ny][nx];
     if(r && (r>>8)<NPART)
         r = (r&~0xFF) | parts[r>>8].type;
+    if(rr)
+	*rr = r;
 
-    if(parts[i].type==PT_PHOT&&((r&0xFF)==PT_GLAS||(r&0xFF)==PT_PHOT||(r&0xFF)==PT_CLNE||(r&0xFF)==PT_PCLN||((r&0xFF)==PT_LCRY&&parts[r>>8].life > 5)))
-    {
+    if(pt==PT_PHOT&&((r&0xFF)==PT_GLAS||(r&0xFF)==PT_PHOT||(r&0xFF)==PT_CLNE||((r&0xFF)==PT_LCRY||((r&0xFF)==PT_PCLN&&parts[r>>8].life > 5))))
+        return 2;
+
+	if(pt==PT_STKM)  //Stick man's head shouldn't collide
+	{
+		return 2;
+	}
+
+     if(bmap[ny/CELL][nx/CELL]==13 && ptypes[pt].falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
+        return 0;
+	if(ptypes[pt].falldown!=2 && bmap[ny/CELL][nx/CELL]==3)
+		return 0;
+    if((pt==PT_NEUT ||pt==PT_PHOT) && bmap[ny/CELL][nx/CELL]==7 && !emap[ny/CELL][nx/CELL])
+        return 0;
+
+    if(bmap[ny/CELL][nx/CELL]==9)
+        return 0;
+
+    if(ptypes[pt].falldown!=1 && bmap[ny/CELL][nx/CELL]==10)
+        return 0;
+
+    if (r && ((r&0xFF) >= PT_NUM || !can_move[pt][(r&0xFF)]))
+        return 0;
+
+    return 1;
+}
+int try_move(int i, int x, int y, int nx, int ny)
+{
+    unsigned r, e;
+
+    if(x==nx && y==ny)
+		return 1;
+	    e = eval_move(parts[i].type, nx, ny, &r);
+    if(!e)
+		return 0;
+    if(e == 2)
+		return 1;
+    if(bmap[ny/CELL][nx/CELL]==12 && !emap[y/CELL][x/CELL])
         return 1;
-    }
+    if((bmap[y/CELL][x/CELL]==12 && !emap[y/CELL][x/CELL]) && (bmap[ny/CELL][nx/CELL]!=12 && !emap[ny/CELL][nx/CELL]))
+        return 0;
 
-    if((r&0xFF)==PT_VOID)
+   if(r && (r>>8)<NPART && ptypes[r&0xFF].falldown!=2 && bmap[y/CELL][x/CELL]==3)
+        return 0;
+
+	if((r&0xFF)==PT_VOID)
     {
         parts[i].type=PT_NONE;
         return 0;
@@ -52,50 +93,15 @@ int try_move(int i, int x, int y, int nx, int ny)
         {
             parts[r>>8].temp = restrict_flt(parts[r>>8].temp+parts[i].temp/2, MIN_TEMP, MAX_TEMP);//3.0f;
         }
-        return 0;
-    }
 
-    if(parts[i].type==PT_STKM)  //Stick man's head shouldn't collide
-    {
-        return 1;
-    }
-
-    if(bmap[ny/CELL][nx/CELL]==12 && !emap[y/CELL][x/CELL])
-    {
-        return 1;
-    }
-    if(bmap[ny/CELL][nx/CELL]==13 && ptypes[parts[i].type].falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE)
-    {
         return 0;
-    }
-    if((bmap[y/CELL][x/CELL]==12 && !emap[y/CELL][x/CELL]) && (bmap[ny/CELL][nx/CELL]!=12 && !emap[ny/CELL][nx/CELL]))
-    {
-        return 0;
-    }
-
-    if(ptypes[parts[i].type].falldown!=2 && bmap[ny/CELL][nx/CELL]==3)
-        return 0;
-    if((parts[i].type==PT_NEUT ||parts[i].type==PT_PHOT) && bmap[ny/CELL][nx/CELL]==7 && !emap[ny/CELL][nx/CELL])
-        return 0;
-    if(r && (r>>8)<NPART && ptypes[r&0xFF].falldown!=2 && bmap[y/CELL][x/CELL]==3)
-        return 0;
-
-    if(bmap[ny/CELL][nx/CELL]==9)
-        return 0;
-
-    if(ptypes[parts[i].type].falldown!=1 && bmap[ny/CELL][nx/CELL]==10)
-        return 0;
-
-    if (r && ((r&0xFF) >= PT_NUM || !can_move[parts[i].type][(r&0xFF)]))
-        return 0;
-
+	}
     if(parts[i].type==PT_CNCT && y<ny && (pmap[y+1][x]&0xFF)==PT_CNCT)
-    {
         return 0;
-    }
 
     pmap[ny][nx] = (i<<8)|parts[i].type;
     pmap[y][x] = r;
+
     if(r && (r>>8)<NPART)
     {
         r >>= 8;
@@ -104,6 +110,142 @@ int try_move(int i, int x, int y, int nx, int ny)
     }
 
     return 1;
+}
+#define SURF_RANGE     10
+#define NORMAL_MIN_EST 3
+#define NORMAL_INTERP  20
+#define NORMAL_FRAC    16
+
+static unsigned direction_to_map(float dx, float dy)
+{
+    return (dx >= 0) |
+           (((dx + dy) >= 0) << 1) |     /*  567  */
+           ((dy >= 0) << 2) |            /*  4+0  */
+           (((dy - dx) >= 0) << 3) |     /*  321  */
+           ((dx <= 0) << 4) |
+           (((dx + dy) <= 0) << 5) |
+           ((dy <= 0) << 6) |
+           (((dy - dx) <= 0) << 7);
+}
+
+static int is_blocking(int t, int x, int y)
+{
+    return eval_move(t, x, y, NULL);
+}
+
+static int is_boundary(int pt, int x, int y)
+{
+    if(!is_blocking(pt,x,y))
+	return 0;
+    if(is_blocking(pt,x,y-1) && is_blocking(pt,x,y+1) && is_blocking(pt,x-1,y) && is_blocking(pt,x+1,y))
+	return 0;
+    return 1;
+}
+
+static int find_next_boundary(int pt, int *x, int *y, int dm, int *em)
+{
+    static int dx[8] = {1,1,0,-1,-1,-1,0,1};
+    static int dy[8] = {0,1,1,1,0,-1,-1,-1};
+    static int de[8] = {0x83,0x07,0x0E,0x1C,0x38,0x70,0xE0,0xC1};
+    int i, ii, i0;
+
+    if(*x <= 0 || *x >= XRES-1 || *y <= 0 || *y >= YRES-1)
+	return 0;
+
+    if(*em != -1) {
+	i0 = *em;
+	dm &= de[i0];
+    } else
+	i0 = 0;
+
+    for(ii=0; ii<8; ii++) {
+	i = (ii + i0) & 7;
+	if((dm & (1 << i)) && is_boundary(pt, *x+dx[i], *y+dy[i])) {
+	    *x += dx[i];
+	    *y += dy[i];
+	    *em = i;
+	    return 1;
+	}
+    }
+
+    return 0;
+}
+
+static int vec_colinear(float nx, float ny, float vx, float vy)
+{
+    float d = 1.0f/hypot(vx, vy);
+    d *= nx*vx + ny*vy;
+    return (d >= 0.99) || (d <= -0.99);
+}
+
+int get_normal(int pt, int x, int y, float dx, float dy, float *nx, float *ny)
+{
+    int ldm, rdm, lm, rm;
+    int lx, ly, lv, rx, ry, rv;
+    int i, j;
+    float r, ex, ey;
+
+    if(!dx && !dy)
+	return 0;
+
+    if(!is_boundary(pt, x, y))
+	return 0;
+
+    ldm = direction_to_map(-dy, dx);
+    rdm = direction_to_map(dy, -dx);
+    lx = rx = x;
+    ly = ry = y;
+    lv = rv = 1;
+    lm = rm = -1;
+
+    j = 0;
+    for(i=0; i<SURF_RANGE; i++) {
+	if(lv)
+	    lv = find_next_boundary(pt, &lx, &ly, ldm, &lm);
+	if(rv)
+	rv = find_next_boundary(pt, &rx, &ry, rdm, &rm);
+	j += lv + rv;
+	if(!lv && !rv)
+	    break;
+    }
+
+    if(j < NORMAL_MIN_EST)
+	return 0;
+
+    if((lx == rx) && (ly == ry))
+	return 0;
+
+    ex = rx - lx;
+    ey = ry - ly;
+    r = 1.0f/hypot(ex, ey);
+    *nx =  ey * r;
+    *ny = -ex * r;
+
+    if(vec_colinear(*ny, -*nx, dx, dy))
+	return 0;
+
+    return 1;
+}
+
+int get_normal_interp(int pt, float x0, float y0, float dx, float dy, float *nx, float *ny)
+{
+    int x, y, i;
+
+    dx /= NORMAL_FRAC;
+    dy /= NORMAL_FRAC;
+
+    for(i=0; i<NORMAL_INTERP; i++) {
+	x = (int)(x0 + 0.5f);
+	y = (int)(y0 + 0.5f);
+	if(is_boundary(pt, x, y))
+	    break;
+	x0 += dx;
+	y0 += dy;
+    }
+    if(i >= NORMAL_INTERP)
+	return 0;
+
+    return get_normal(pt, x, y, dx, dy, nx, ny);
 }
 
 void kill_part(int i)
@@ -477,7 +619,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 	uint16_t tempu1, tempu2;
 	int16_t temps1, temps2;
 	float tempf1, tempf2;
-    float mv, dx, dy, ix, iy, lx, ly, d, pp;
+    float mv, dx, dy, ix, iy, lx, ly, d, pp, nrx, nry, dp;
     float pt = R_TEMP;
     float c_heat = 0.0f;
     int h_count = 0;
@@ -906,7 +1048,8 @@ void update_particles_i(pixel *vid, int start, int inc)
                             r = pmap[y+ny][x+nx];
                             if((r>>8)>=NPART || !r)
                                 continue;
-                            if(((r&0xFF)==PT_METL || (r&0xFF)==PT_ETRD || (r&0xFF)==PT_PSCN || (r&0xFF)==PT_NSCN || (r&0xFF)==PT_NTCT || (r&0xFF)==PT_PTCT || (r&0xFF)==PT_BMTL || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD || (r&0xFF)==PT_BRMT||(r&0xFF)==PT_NBLE) || (r&0xFF)==PT_INWR && parts[r>>8].ctype!=PT_SPRK )
+								if(((r&0xFF)==PT_METL || (r&0xFF)==PT_ETRD || (r&0xFF)==PT_PSCN || (r&0xFF)==PT_NSCN || (r&0xFF)==PT_NTCT || (r&0xFF)==PT_PTCT || (r&0xFF)==PT_BMTL || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD || (r&0xFF)==PT_BRMT||(r&0xFF)==PT_NBLE) || (r&0xFF)==PT_INWR && parts[r>>8].ctype!=PT_SPRK)
+
                             {
                                 t = parts[i].type = PT_NONE;
                                 parts[r>>8].ctype = parts[r>>8].type;
@@ -2381,33 +2524,57 @@ void update_particles_i(pixel *vid, int start, int inc)
                 else
                 {
                     parts[i].flags |= FLAG_STAGNANT;
-                    if(nx>x+ISTP) nx=x+ISTP;
-                    if(nx<x-ISTP) nx=x-ISTP;
-                    if(ny>y+ISTP) ny=y+ISTP;
-                    if(ny<y-ISTP) ny=y-ISTP;
                     if(t==PT_NEUT && 100>(rand()%1000))
                     {
                         kill_part(i);
                         continue;
                     }
-                    else if(try_move(i, x, y, 2*x-nx, ny))
-                    {
-                        parts[i].x = (float)(2*x-nx);
-                        parts[i].y = (float)iy;
-                        parts[i].vx *= ptypes[t].collision;
-                    }
-                    else if(try_move(i, x, y, nx, 2*y-ny))
-                    {
-                        parts[i].x = (float)ix;
-                        parts[i].y = (float)(2*y-ny);
-                        parts[i].vy *= ptypes[t].collision;
-                    }
-                    else
-                    {
-                        parts[i].vx *= ptypes[t].collision;
-                        parts[i].vy *= ptypes[t].collision;
-                    }
-                }
+					else if(t==PT_NEUT || t==PT_PHOT)
+		    {
+			if(get_normal_interp(t, lx, ly, parts[i].vx, parts[i].vy, &nrx, &nry)) {
+			    dp = nrx*parts[i].vx + nry*parts[i].vy;
+			    parts[i].vx -= 2.0f*dp*nrx;
+			    parts[i].vy -= 2.0f*dp*nry;
+			    nx = (int)(parts[i].x + parts[i].vx + 0.5f);
+			    ny = (int)(parts[i].y + parts[i].vy + 0.5f);
+			    if(try_move(i, x, y, nx, ny)) {
+                    	        parts[i].x = (float)nx;
+                    	        parts[i].y = (float)ny;
+			    } else {
+				kill_part(i);
+				continue;
+			    }
+			} else {
+			    kill_part(i);
+			    continue;
+			}
+		    }
+
+		    else
+		    {
+                	if(nx>x+ISTP) nx=x+ISTP;
+            		if(nx<x-ISTP) nx=x-ISTP;
+            		if(ny>y+ISTP) ny=y+ISTP;
+                	if(ny<y-ISTP) ny=y-ISTP;
+                	if(try_move(i, x, y, 2*x-nx, ny))
+                	{
+                    	    parts[i].x = (float)(2*x-nx);
+                    	    parts[i].y = (float)iy;
+                    	    parts[i].vx *= ptypes[t].collision;
+                	}
+                	else if(try_move(i, x, y, nx, 2*y-ny))
+                	{
+                    	    parts[i].x = (float)ix;
+                    	    parts[i].y = (float)(2*y-ny);
+                    	    parts[i].vy *= ptypes[t].collision;
+                	}
+                	else
+                	{
+                    	    parts[i].vx *= ptypes[t].collision;
+                	    parts[i].vy *= ptypes[t].collision;
+                	}
+		    }
+  }
             }
             if(nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
             {

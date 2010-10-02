@@ -1302,7 +1302,7 @@ int main(int argc, char *argv[])
         if(sdl_key=='h')
             hud_enable = !hud_enable;
         if(sdl_key=='p')
-            dump_frame(vid_buf, XRES, YRES, XRES);
+            dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
         if(sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
         {
             if(clipboard_ready==1)
@@ -1361,7 +1361,7 @@ int main(int argc, char *argv[])
         if(sdl_key=='v')
             vs = !vs;
         if(vs)
-            dump_frame(vid_buf, XRES, YRES, XRES);
+            dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
 #endif
 
         if(sdl_wheel)

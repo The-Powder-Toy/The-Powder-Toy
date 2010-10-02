@@ -16,6 +16,7 @@
 #include <air.h>
 #include <powder.h>
 #include <graphics.h>
+#define INCLUDE_FONTDATA
 #include <font.h>
 #include <misc.h>
 
