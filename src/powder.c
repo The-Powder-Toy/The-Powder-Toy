@@ -22,10 +22,37 @@ int pfree;
 unsigned pmap[YRES][XRES];
 unsigned cb_pmap[YRES][XRES];
 
+static int pn_junction_sprk(int x, int y, int pt)
+{
+    unsigned r = pmap[y][x];
+    if((r & 0xFF) != pt)
+	return 0;
+    r >>= 8;
+    if(parts[r].type != pt)
+	return 0;
+
+    parts[r].ctype = pt;
+    parts[r].type = PT_SPRK;
+    parts[r].life = 4;
+    return 1;
+}
+
+static void photoelectric_effect(int nx, int ny)
+{
+    unsigned r = pmap[ny][nx];
+
+    if((r&0xFF) == PT_PSCN) {
+	if((pmap[ny][nx-1] & 0xFF) == PT_NSCN ||
+	   (pmap[ny][nx+1] & 0xFF) == PT_NSCN ||
+	   (pmap[ny-1][nx] & 0xFF) == PT_NSCN ||
+	   (pmap[ny+1][nx] & 0xFF) == PT_NSCN)
+	pn_junction_sprk(nx, ny, PT_PSCN);
+    }
+}
+
 static int eval_move(int pt, int nx, int ny, unsigned *rr)
 {
     unsigned r;
-
 
     if(nx<0 || ny<0 || nx>=XRES || ny>=YRES)
         return 0;
@@ -85,7 +112,9 @@ int try_move(int i, int x, int y, int nx, int ny)
     e = eval_move(parts[i].type, nx, ny, &r);
     if(!e) {
         if(!legacy_enable && parts[i].type==PT_PHOT) {
-            if((r & 0xFF ) < PT_NUM)
+            if((r & 0xFF) == PT_COAL || (r & 0xFF) == PT_BCOL)
+                parts[r>>8].temp = parts[i].temp;
+            if((r & 0xFF) < PT_NUM)
                 parts[i].temp = parts[r>>8].temp =
                                     restrict_flt((parts[r>>8].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
         }
@@ -171,7 +200,7 @@ static int is_blocking(int t, int x, int y)
         return 0;
     }
 
-    return eval_move(t, x, y, NULL);
+    return !eval_move(t, x, y, NULL);
 }
 
 static int is_boundary(int pt, int x, int y)
@@ -275,6 +304,9 @@ int get_normal_interp(int pt, float x0, float y0, float dx, float dy, float *nx,
     }
     if(i >= NORMAL_INTERP)
         return 0;
+
+    if(pt == PT_PHOT)
+	photoelectric_effect(x, y);
 
     return get_normal(pt, x, y, dx, dy, nx, ny);
 }
@@ -2671,7 +2703,10 @@ killed:
 			r = pmap[ny][nx];
 
 			/* this should be replaced with a particle type attribute ("photwl" or something) */
+			if((r & 0xFF) == PT_PSCN) parts[i].ctype  = 0x00000000;
+			if((r & 0xFF) == PT_NSCN) parts[i].ctype  = 0x00000000;
 			if((r & 0xFF) == PT_COAL) parts[i].ctype  = 0x00000000;
+			if((r & 0xFF) == PT_BCOL) parts[i].ctype  = 0x00000000;
 			if((r & 0xFF) == PT_PLEX) parts[i].ctype &= 0x1F00003E;
 			if((r & 0xFF) == PT_NITR) parts[i].ctype &= 0x0007C000;
 			if((r & 0xFF) == PT_NBLE) parts[i].ctype &= 0x3FFF8000;
@@ -2683,11 +2718,6 @@ killed:
 			if((r & 0xFF) == PT_PLNT) parts[i].ctype &= 0x0007C000;
 			if((r & 0xFF) == PT_PLUT) parts[i].ctype &= 0x001FCE00;
 			if((r & 0xFF) == PT_URAN) parts[i].ctype &= 0x003FC000;
-
-			if(!parts[i].ctype) {
-                    	    kill_part(i);
-                    	    continue;
-			}
 
                         if(get_normal_interp(t, lx, ly, parts[i].vx, parts[i].vy, &nrx, &nry)) {
                             dp = nrx*parts[i].vx + nry*parts[i].vy;
@@ -2706,6 +2736,11 @@ killed:
                             kill_part(i);
                             continue;
                         }
+
+			if(!parts[i].ctype) {
+                    	    kill_part(i);
+                    	    continue;
+			}
                     }
 
                     else
