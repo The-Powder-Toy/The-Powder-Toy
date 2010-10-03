@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 #define x86_cpuid(func,af,bf,cf,df) \
 	do {\
 	__asm mov	eax, func\

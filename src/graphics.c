@@ -1417,10 +1417,23 @@ void draw_parts(pixel *vid)
                 {
                     if(cmode == 3||cmode==4 || cmode==6)
                     {
-                        vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
-                        cg = 12;
-                        cb = 12;
-                        cr = 12;
+                        cg = 0;
+                        cb = 0;
+                        cr = 0;
+			for(x=0; x<12; x++) {
+			    cr += (parts[i].ctype >> (x+18)) & 1;
+			    cb += (parts[i].ctype >>  x)     & 1;
+			}
+			for(x=0; x<14; x++)
+			    cg += (parts[i].ctype >> (x+9))  & 1;
+			x = 624/(cr+cg+cb+1);
+			cr *= x;
+			cg *= x;
+			cb *= x;
+                        vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cr>255?255:cr,cg>255?255:cg,cb>255?255:cb);
+			cr >>= 4;
+			cg >>= 4;
+			cb >>= 4;
                         x = nx/CELL;
                         y = ny/CELL;
                         cg += fire_g[y][x];
@@ -1828,9 +1841,9 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
-                } else if(t==PT_FIRW&&parts[i].tmp==3)
+                } else if(t==PT_FIRW&&parts[i].tmp>=3)
                 {
-                    float ttemp = (float)parts[i].life;
+                    float ttemp = (float)parts[i].tmp-4;
                     int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
                     uint8 R = firw_data[caddress];
                     uint8 G = firw_data[caddress+1];
@@ -1870,7 +1883,45 @@ void draw_parts(pixel *vid)
                 }
                 else if(t==PT_FIRE && parts[i].life)
                 {
-                    if(cmode == 3||cmode==4 || cmode==6)
+					float ttemp = (float)parts[i].life;
+					int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+					uint8 R = flm_data[caddress];
+					uint8 G = flm_data[caddress+1];
+					uint8 B = flm_data[caddress+2];
+					if(cmode == 3||cmode==4 || cmode==6)
+					{
+						cr = R/8;
+						cg = G/8;
+						cb = B/8;
+						x = nx/CELL;
+						y = ny/CELL;
+						cg += fire_g[y][x];
+						if(cg > 255) cg = 255;
+						fire_g[y][x] = cg;
+						cb += fire_b[y][x];
+						if(cb > 255) cb = 255;
+						fire_b[y][x] = cb;
+						cr += fire_r[y][x];
+						if(cr > 255) cr = 255;
+						fire_r[y][x] = cr;
+					}
+					else
+					{
+						cr = R;
+						cg = G;
+						cb = B;
+						blendpixel(vid, nx, ny, cr, cg, cb, 192);
+						blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+						blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+						blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+						blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+						blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
+						blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
+						blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
+						blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
+					}
+					// Older Code	
+					/*if(cmode == 3||cmode==4 || cmode==6)
                     {
                         cr = parts[i].life / 4;
                         cg = parts[i].life / 16;
@@ -1907,7 +1958,7 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
-                    }
+                    }*/
                 }
                 else if(t==PT_LAVA && parts[i].life)
                 {
@@ -1976,7 +2027,7 @@ void draw_parts(pixel *vid)
             else
             {
                 float ttemp = parts[i].temp+(-MIN_TEMP);
-                int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/512) ) *3, 0.0f, (512.0f*3)-3);
+                int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
                 uint8 R = color_data[caddress];
                 uint8 G = color_data[caddress+1];
                 uint8 B = color_data[caddress+2];
