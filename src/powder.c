@@ -144,6 +144,11 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 #define REFRACT        0x80000000
 
+/* heavy flint glass, for awesome refraction/dispersion
+   this way you can make roof prisms easily */
+#define GLASS_IOR      1.9
+#define GLASS_DISP     0.07
+
 static unsigned direction_to_map(float dx, float dy)
 {
     return (dx >= 0) |
@@ -207,13 +212,6 @@ static int find_next_boundary(int pt, int *x, int *y, int dm, int *em)
     return 0;
 }
 
-static int vec_colinear(float nx, float ny, float vx, float vy)
-{
-    float d = 1.0f/hypot(vx, vy);
-    d *= nx*vx + ny*vy;
-    return (d >= 0.99) || (d <= -0.99);
-}
-
 int get_normal(int pt, int x, int y, float dx, float dy, float *nx, float *ny)
 {
     int ldm, rdm, lm, rm;
@@ -256,9 +254,6 @@ int get_normal(int pt, int x, int y, float dx, float dy, float *nx, float *ny)
     r = 1.0f/hypot(ex, ey);
     *nx =  ey * r;
     *ny = -ex * r;
-
-    if(vec_colinear(*ny, -*nx, dx, dy))
-        return 0;
 
     return 1;
 }
@@ -505,7 +500,7 @@ inline int create_part(int p, int x, int y, int t)
 static void create_cherenkov_photon(int pp)
 {
     int i, lr, nx, ny;
-    float r;
+    float r, eff_ior;
 
     if(pfree == -1)
         return;
@@ -528,7 +523,7 @@ static void create_cherenkov_photon(int pp)
     parts[i].life = 680;
     parts[i].x = parts[pp].x;
     parts[i].y = parts[pp].y;
-    parts[i].temp = parts[pp].temp;
+    parts[i].temp = parts[pmap[ny][nx] >> 8].temp;
     parts[i].tmp = 0;
 
     if(lr) {
@@ -540,7 +535,7 @@ static void create_cherenkov_photon(int pp)
     }
 
     /* photons have speed of light. no discussion. */
-    r = 1.44f / hypotf(parts[i].vx, parts[i].vy);
+    r = 1.269 / hypotf(parts[i].vx, parts[i].vy);
     parts[i].vx *= r;
     parts[i].vy *= r;
 }
@@ -2528,7 +2523,8 @@ killed:
 			kill_part(i);
 			continue;
 		    }
-		    nn = 2.3f - 0.02f*r;
+		    nn = GLASS_IOR - GLASS_DISP*(r-15)/15.0f;
+		    nn *= nn;
 
                     nrx = -nrx;
                     nry = -nry;
@@ -2539,6 +2535,10 @@ killed:
                     if(ct2 < 0.0f) {
                         parts[i].vx -= 2.0f*ct1*nrx;
                         parts[i].vy -= 2.0f*ct1*nry;
+			parts[i].x = lx;
+			parts[i].y = ly;
+			nx = (int)(lx + 0.5f);
+			ny = (int)(ly + 0.5f);
                     } else {
                         ct2 = sqrtf(ct2);
                         ct2 = ct2 - nn*ct1;
