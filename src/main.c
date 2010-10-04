@@ -270,8 +270,11 @@ void *build_save(int *size, int x0, int y0, int w, int h)
         {
             x = (int)(parts[i].x+0.5f);
             y = (int)(parts[i].y+0.5f);
-            if(x>=x0 && x<x0+w && y>=y0 && y<y0+h)
-                m[(x-x0)+(y-y0)*w] = i+1;
+            if(x>=x0 && x<x0+w && y>=y0 && y<y0+h) {
+                if(!m[(x-x0)+(y-y0)*w] ||
+		   parts[m[(x-x0)+(y-y0)*w]-1].type == PT_PHOT)
+            	    m[(x-x0)+(y-y0)*w] = i+1;
+	    }
         }
     for(j=0; j<w*h; j++)
     {
@@ -512,6 +515,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                 {
                     k = pmap[y][x]>>8;
                     parts[k].type = j;
+		    if(j == PT_PHOT)
+			parts[k].ctype = 0x3fffffff;
                     parts[k].x = (float)x;
                     parts[k].y = (float)y;
                     m[(x-x0)+(y-y0)*w] = k+1;
@@ -519,6 +524,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                 else if(i < nf)
                 {
                     parts[fp[i]].type = j;
+		    if(j == PT_PHOT)
+			parts[fp[i]].ctype = 0x3fffffff;
                     parts[fp[i]].x = (float)x;
                     parts[fp[i]].y = (float)y;
                     m[(x-x0)+(y-y0)*w] = fp[i]+1;
