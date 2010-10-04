@@ -7,8 +7,8 @@
 #define PATH_SEP "/"
 #endif
 
-#define SAVE_VERSION 42
-#define MINOR_VERSION 1
+#define SAVE_VERSION 43
+#define MINOR_VERSION 0
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 #define BETA
 
@@ -65,9 +65,6 @@ typedef unsigned int pixel;
 typedef unsigned char uint8;
 
 extern int amd;
-
-unsigned int PSR;
-unsigned int SEC;
 
 extern int FPSB;
 

@@ -37,7 +37,7 @@
 #include <sys/param.h>
 #endif
 
-#include "update.h"
+#include <update.h>
 
 static char *exe_name(void)
 {

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 #define x86_cpuid(func,af,bf,cf,df) \
 	do {\
 	__asm mov	eax, func\
@@ -62,6 +62,8 @@ void save_string(FILE *f, char *str);
 int load_string(FILE *f, char *str, int max);
 
 void strcaturl(char *dst, char *src);
+
+void strappend(char *dst, char *src);
 
 void *file_load(char *fn, int *size);
 

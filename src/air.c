@@ -1,7 +1,7 @@
 #include <math.h>
-#include "air.h"
-#include "powder.h"
-#include "defines.h"
+#include <air.h>
+#include <powder.h>
+#include <defines.h>
 float kernel[9];
 
 float vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
@@ -54,15 +54,15 @@ void update_air(void)
             vy[y][x] *= VLOSS;
             vx[y][x] += dx*TSTEPV;
             vy[y][x] += dy*TSTEPV;
-            if(bmap[y][x]==11 || bmap[y][x+1]==11 ||
-                    bmap[y][x]==2 || bmap[y][x+1]==2 ||
-                    (bmap[y][x]==3 && !emap[y][x]) ||
-                    (bmap[y][x+1]==3 && !emap[y][x+1]))
+            if(bmap[y][x]==1 || bmap[y][x+1]==1 ||
+                    bmap[y][x]==8 || bmap[y][x+1]==8 ||
+                    (bmap[y][x]==7 && !emap[y][x]) ||
+                    (bmap[y][x+1]==7 && !emap[y][x+1]))
                 vx[y][x] = 0;
-            if(bmap[y][x]==11 || bmap[y+1][x]==11 ||
-                    bmap[y][x]==2 || bmap[y+1][x]==2 ||
-                    (bmap[y][x]==3 && !emap[y][x]) ||
-                    (bmap[y+1][x]==3 && !emap[y+1][x]))
+            if(bmap[y][x]==1 || bmap[y+1][x]==1 ||
+                    bmap[y][x]==8 || bmap[y+1][x]==8 ||
+                    (bmap[y][x]==7 && !emap[y][x]) ||
+                    (bmap[y+1][x]==7 && !emap[y+1][x]))
                 vy[y][x] = 0;
         }
 
@@ -76,9 +76,9 @@ void update_air(void)
                 for(i=-1; i<2; i++)
                     if(y+j>0 && y+j<YRES/CELL-1 &&
                             x+i>0 && x+i<XRES/CELL-1 &&
-                            bmap[y+j][x+i]!=11 &&
-                            bmap[y+j][x+i]!=2 &&
-                            (bmap[y+j][x+i]!=8 || emap[y+j][x+i]))
+                            bmap[y+j][x+i]!=1 &&
+                            bmap[y+j][x+i]!=8 &&
+                            (bmap[y+j][x+i]!=7 || emap[y+j][x+i]))
                     {
                         f = kernel[i+1+(j+1)*3];
                         dx += vx[y+j][x+i]*f;
@@ -118,7 +118,7 @@ void update_air(void)
                 dy += VADV*tx*ty*vy[j+1][i+1];
             }
 
-            if(bmap[y][x] == 7)
+            if(bmap[y][x] == 4)
             {
                 dx += fvx[y][x];
                 dy += fvy[y][x];

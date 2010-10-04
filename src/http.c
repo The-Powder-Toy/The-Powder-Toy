@@ -42,9 +42,9 @@
 #include <netdb.h>
 #endif
 
-#include "defines.h"
-#include "http.h"
-#include "md5.h"
+#include <defines.h>
+#include <http.h>
+#include <md5.h>
 
 #ifdef WIN32
 #define PERROR SOCKET_ERROR

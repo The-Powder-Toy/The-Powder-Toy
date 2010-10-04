@@ -37,18 +37,18 @@
 #include <unistd.h>
 #endif
 
-#include "misc.h"
-#include "font.h"
-#include "defines.h"
-#include "powder.h"
-#include "graphics.h"
-#include "version.h"
-#include "http.h"
-#include "md5.h"
-#include "update.h"
-#include "hmap.h"
-#include "air.h"
-#include "icon.h"
+#include <misc.h>
+#include <font.h>
+#include <defines.h>
+#include <powder.h>
+#include <graphics.h>
+#include <version.h>
+#include <http.h>
+#include <md5.h>
+#include <update.h>
+#include <hmap.h>
+#include <air.h>
+#include <icon.h>
 
 static const char *it_msg =
     "\brThe Powder Toy\n"
@@ -101,7 +101,6 @@ int legacy_enable = 0; //Used to disable new features such as heat, will be set 
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
-int cracker = 1;
 
 sign signs[MAXSIGNS];
 
@@ -248,7 +247,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
             d[p++] = bmap[y][x];
     for(y=by0; y<by0+bh; y++)
         for(x=bx0; x<bx0+bw; x++)
-            if(bmap[y][x]==7)
+            if(bmap[y][x]==4)
             {
                 i = (int)(fvx[y][x]*64.0f+127.5f);
                 if(i<0) i=0;
@@ -257,7 +256,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
             }
     for(y=by0; y<by0+bh; y++)
         for(x=bx0; x<bx0+bw; x++)
-            if(bmap[y][x]==7)
+            if(bmap[y][x]==4)
             {
                 i = (int)(fvy[y][x]*64.0f+127.5f);
                 if(i<0) i=0;
@@ -311,10 +310,10 @@ void *build_save(int *size, int x0, int y0, int w, int h)
         i = m[j];
         if(i)
         {
-	      //New Temperature saving uses a 16bit unsigned int for temperatures, giving a precision of 1 degree versus 36 for the old format
-	      int tttemp = (int)parts[i-1].temp;
-		  d[p++] = ((tttemp&0xFF00)>>8);
-		  d[p++] = (tttemp&0x00FF);
+            //New Temperature saving uses a 16bit unsigned int for temperatures, giving a precision of 1 degree versus 36 for the old format
+            int tttemp = (int)parts[i-1].temp;
+            d[p++] = ((tttemp&0xFF00)>>8);
+            d[p++] = (tttemp&0x00FF);
         }
     }
     for(j=0; j<w*h; j++)
@@ -348,12 +347,14 @@ void *build_save(int *size, int x0, int y0, int w, int h)
         }
 
     i = (p*101+99)/100 + 612;
-    c = malloc(i);	
-  //New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures	
-  //This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error	
-    c[0] = 0x50;  //0x66;
-    c[1] = 0x53;  //0x75;
-    c[2] = 0x76;  //0x43;
+    c = malloc(i);
+
+    //New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
+    //This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
+
+    c[0] = 0x50;	//0x66;
+    c[1] = 0x53;	//0x75;
+    c[2] = 0x76;	//0x43;
     c[3] = legacy_enable;
     c[4] = SAVE_VERSION;
     c[5] = CELL;
@@ -363,7 +364,6 @@ void *build_save(int *size, int x0, int y0, int w, int h)
     c[9] = p >> 8;
     c[10] = p >> 16;
     c[11] = p >> 24;
-
 
     i -= 12;
 
@@ -385,22 +385,23 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
     int i,j,k,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int)), ver, pty, ty, legacy_beta=0;
     int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
     int fp[NPART], nf=0, new_format = 0, ttv = 0;
-  //New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
-  //This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
 
-	if(size<16)
-		return 1;
-	if(!(c[2]==0x43 && c[1]==0x75 && c[0]==0x66) && !(c[2]==0x76 && c[1]==0x53 && c[0]==0x50))
-		return 1;
-	if(c[2]==0x76 && c[1]==0x53 && c[0]==0x50){
-		new_format = 1;
-	}
-	if(c[4]>SAVE_VERSION)
-		return 2;
-	ver = c[4];
+    //New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
+    //This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
 
-	if(ver<34)
-	{
+    if(size<16)
+        return 1;
+    if(!(c[2]==0x43 && c[1]==0x75 && c[0]==0x66) && !(c[2]==0x76 && c[1]==0x53 && c[0]==0x50))
+        return 1;
+    if(c[2]==0x76 && c[1]==0x53 && c[0]==0x50) {
+        new_format = 1;
+    }
+    if(c[4]>SAVE_VERSION)
+        return 2;
+    ver = c[4];
+
+    if(ver<34)
+    {
         legacy_enable = 1;
     }
     else
@@ -474,38 +475,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
         for(x=bx0; x<bx0+bw; x++)
         {
             if(d[p])
-			{
                 bmap[y][x] = d[p];
-			if(!cracker)
-			{
-			if(bmap[y][x]==1)
-				bmap[y][x]=11;
-			else if(bmap[y][x]==2)
-				bmap[y][x]=9;
-			else if(bmap[y][x]==3)
-				bmap[y][x]=8;
-			else if(bmap[y][x]==4)
-				bmap[y][x]=7;
-			else if(bmap[y][x]==5)
-				bmap[y][x]=5;
-			else if(bmap[y][x]==6)
-				bmap[y][x]=4;
-			else if(bmap[y][x]==7)
-				bmap[y][x]=3;
-			else if(bmap[y][x]==8)
-				bmap[y][x]=2;
-			else if(bmap[y][x]==9)
-				bmap[y][x]=12;
-			else if(bmap[y][x]==10)
-				bmap[y][x]=13;
-			else if(bmap[y][x]==11)
-				bmap[y][x]=14;
-			else if(bmap[y][x]==12)
-				bmap[y][x]=15;
-			else if(bmap[y][x]==13)
-				bmap[y][x]=20;
-			}
-			}
             p++;
         }
     for(y=by0; y<by0+bh; y++)
@@ -536,7 +506,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
             j=d[p++];
             if(j >= PT_NUM)
                 goto corrupt;
-            if(j && !(isplayer == 1 && j==PT_STKM))
+            if(j)// && !(isplayer == 1 && j==PT_STKM))
             {
                 if(pmap[y][x])
                 {
@@ -623,34 +593,32 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
         {
             if(ver>=34&&legacy_beta==0)
             {
-				if(p >= size)
-				{
-					goto corrupt;
-				}
-				if(i <= NPART)
-				{
-					if(ver>=42){
-						if(new_format){	
-							ttv = (d[p++])<<8;
-							ttv |= (d[p++]);	
-							parts[i-1].temp = ttv;
-						} else {
-
-							parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
-						}
-					}
-					else {
-						parts[i-1].temp = ((d[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273.15;
-					}
-				}
-				else
-				{
-					p ++;
-					if(new_format){
-						p++;
-					}
-				}
-			}
+                if(p >= size)
+                {
+                    goto corrupt;
+                }
+                if(i <= NPART)
+                {
+                    if(ver>=42) {
+                        if(new_format) {
+                            ttv = (d[p++])<<8;
+                            ttv |= (d[p++]);
+                            parts[i-1].temp = ttv;
+                        } else {
+                            parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
+                        }
+                    } else {
+                        parts[i-1].temp = ((d[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273;
+                    }
+                }
+                else
+                {
+                    p++;
+                    if(new_format) {
+                        p++;
+                    }
+                }
+            }
             else
             {
                 parts[i-1].temp = ptypes[parts[i-1].type].heat;
@@ -716,7 +684,6 @@ corrupt:
         memset(signs, 0, sizeof(signs));
         memset(parts, 0, sizeof(particle)*NPART);
         memset(bmap, 0, sizeof(bmap));
-
     }
     return 1;
 }
@@ -1010,7 +977,7 @@ int main(int argc, char *argv[])
 #ifdef INTERNAL
     int vs = 0;
 #endif
-    int x, y, b = 0, sl=1, sr=0,su=0,psr=-1, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
+    int x, y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
     int da = 0, db = 0, it = 2047, mx, my, bs = 2;
     float nfvx, nfvy;
     int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
@@ -1126,7 +1093,7 @@ int main(int argc, char *argv[])
         {
             for(i=1; i<XRES/CELL; i++)
             {
-                if(bmap[j][i]==11 || bmap[j][i]==2 || (bmap[j][i]==3 && !emap[j][i]))
+                if(bmap[j][i]==1 || bmap[j][i]==8 || (bmap[j][i]==7 && !emap[j][i]))
                 {
                     vx[j][i] = 0.0f;
                     vx[j][i-1] = 0.0f;
@@ -1141,7 +1108,7 @@ int main(int argc, char *argv[])
             update_air();
         }
 #ifdef OpenGL
-		ClearScreen();
+        ClearScreen();
 #else
         if(cmode==0 || cmode==1)
         {
@@ -1158,7 +1125,7 @@ int main(int argc, char *argv[])
         }
 #endif
         update_particles(vid_buf);
-		draw_parts(vid_buf);
+        draw_parts(vid_buf);
 
         if(cmode==2)
         {
@@ -1212,15 +1179,15 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-		if(sdl_key=='d' && isplayer)
-		{
-			death = 1;
-			//death = !(death);
-		}
-		if(sdl_key=='f')
-		{
-			framerender = 1;
-		}
+        if(sdl_key=='d' && isplayer)
+        {
+            death = 1;
+            //death = !(death);
+        }
+        if(sdl_key=='f')
+        {
+            framerender = 1;
+        }
         if((sdl_key=='l' || sdl_key=='k') && stamps[0].name[0])
         {
             if(load_mode)
@@ -1282,60 +1249,60 @@ int main(int argc, char *argv[])
         {
             set_cmode(5);
         }
-		if(sdl_key=='7')
-		{
-			set_cmode(6);
-		}
-		if(sdl_key==SDLK_LEFTBRACKET){
-			if(sdl_zoom_trig==1)
-			{
-				ZSIZE -= 1;
-				if(ZSIZE>32)
-					ZSIZE = 32;
-				if(ZSIZE<2)
-					ZSIZE = 2;
-				ZFACTOR = 256/ZSIZE;
-			}
-			else
-			{
-				if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
-					bs -= 1;
-				else
-					bs -= ceil((bs/5)+0.5f);
-				if(bs>1224)
-					bs = 1224;
-				if(bs<0)
-					bs = 0;
-			}
-		}
-		if(sdl_key==SDLK_RIGHTBRACKET){
-			if(sdl_zoom_trig==1)
-			{
-				ZSIZE += 1;
-				if(ZSIZE>32)
-					ZSIZE = 32;
-				if(ZSIZE<2)
-					ZSIZE = 2;
-				ZFACTOR = 256/ZSIZE;
-			}
-			else
-			{
-				if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
-					bs += 1;
-				else
-					bs += ceil((bs/5)+0.5f);
-				if(bs>1224)
-					bs = 1224;
-				if(bs<0)
-					bs = 0;
-			}
-		}
-		if(sdl_key==SDLK_SPACE)
-			sys_pause = !sys_pause;
-		if(sdl_key=='h')
+        if(sdl_key=='7')
+        {
+            set_cmode(6);
+        }
+        if(sdl_key==SDLK_LEFTBRACKET) {
+            if(sdl_zoom_trig==1)
+            {
+                ZSIZE -= 1;
+                if(ZSIZE>32)
+                    ZSIZE = 32;
+                if(ZSIZE<2)
+                    ZSIZE = 2;
+                ZFACTOR = 256/ZSIZE;
+            }
+            else
+            {
+                if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
+                    bs -= 1;
+                else
+                    bs -= ceil((bs/5)+0.5f);
+                if(bs>1224)
+                    bs = 1224;
+                if(bs<0)
+                    bs = 0;
+            }
+        }
+        if(sdl_key==SDLK_RIGHTBRACKET) {
+            if(sdl_zoom_trig==1)
+            {
+                ZSIZE += 1;
+                if(ZSIZE>32)
+                    ZSIZE = 32;
+                if(ZSIZE<2)
+                    ZSIZE = 2;
+                ZFACTOR = 256/ZSIZE;
+            }
+            else
+            {
+                if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
+                    bs += 1;
+                else
+                    bs += ceil((bs/5)+0.5f);
+                if(bs>1224)
+                    bs = 1224;
+                if(bs<0)
+                    bs = 0;
+            }
+        }
+        if(sdl_key==SDLK_SPACE)
+            sys_pause = !sys_pause;
+        if(sdl_key=='h')
             hud_enable = !hud_enable;
         if(sdl_key=='p')
-            dump_frame(vid_buf, XRES, YRES, XRES);
+            dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
         if(sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
         {
             if(clipboard_ready==1)
@@ -1394,7 +1361,7 @@ int main(int argc, char *argv[])
         if(sdl_key=='v')
             vs = !vs;
         if(vs)
-            dump_frame(vid_buf, XRES, YRES, XRES);
+            dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
 #endif
 
         if(sdl_wheel)
@@ -1441,7 +1408,7 @@ int main(int argc, char *argv[])
                 active_menu = i;
             }
         }
-        menu_ui_v3(vid_buf, active_menu, &sl, &sr, &psr, b, bq, x, y);
+        menu_ui_v3(vid_buf, active_menu, &sl, &sr, b, bq, x, y);
 
         if(zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy
                 && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
@@ -1797,7 +1764,7 @@ int main(int argc, char *argv[])
                         memset(fire_g, 0, sizeof(fire_g));
                         memset(fire_b, 0, sizeof(fire_b));
                     }
-                    if(x>=19 && x<=35 && svf_last && svf_open)
+                    if(x>=19 && x<=35 && svf_last && svf_open && !bq)
                         parse_save(svf_last, svf_lsize, 1, 0, 0);
                     if(x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
                     {
@@ -1826,7 +1793,7 @@ int main(int argc, char *argv[])
                     if(lm == 1)
                     {
                         xor_line(lx, ly, x, y, vid_buf);
-                        if(c==127 && lx>=0 && ly>=0 && lx<XRES && ly<YRES && bmap[ly/CELL][lx/CELL]==7)
+                        if(c==127 && lx>=0 && ly>=0 && lx<XRES && ly<YRES && bmap[ly/CELL][lx/CELL]==4)
                         {
                             nfvx = (x-lx)*0.005f;
                             nfvy = (y-ly)*0.005f;
@@ -1837,7 +1804,7 @@ int main(int argc, char *argv[])
                                     {
                                         fvx[j][i] = nfvx;
                                         fvy[j][i] = nfvy;
-                                        bmap[j][i] = 7;
+                                        bmap[j][i] = 4;
                                     }
                         }
                     }
@@ -1941,7 +1908,7 @@ int main(int argc, char *argv[])
                 su = c;
                 if(lm == 1)
                 {
-                    if(c!=127 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=7)
+                    if(c!=127 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=4)
                         create_line(lx, ly, x, y, bs, c);
                 }
                 else
@@ -2081,7 +2048,7 @@ int main(int argc, char *argv[])
             {
 #ifdef BETA
                 sprintf(uitext, "Version %d (Beta %d) FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
-				//printf("%s\n", uitext);
+                //printf("%s\n", uitext);
 #else
                 sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
 #endif
@@ -2110,16 +2077,16 @@ int main(int argc, char *argv[])
             fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
             drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
         }
-	sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
+        sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
-		//Setting an element for the stick man
-		if(isplayer==0)
-		{
-			if(ptypes[sr].falldown>0 || sr == PT_NEUT || sr == PT_PHOT)
-				player[2] = sr;
-			else
-				player[2] = PT_DUST;
-		}
+        //Setting an element for the stick man
+        if(isplayer==0)
+        {
+            if(ptypes[sr].falldown>0 || sr == PT_NEUT || sr == PT_PHOT)
+                player[2] = sr;
+            else
+                player[2] = PT_DUST;
+        }
 
     }
 
