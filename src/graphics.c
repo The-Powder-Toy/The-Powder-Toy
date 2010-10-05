@@ -1883,7 +1883,7 @@ void draw_parts(pixel *vid)
                 }
                 else if(t==PT_FIRE && parts[i].life)
                 {
-					float ttemp = (float)parts[i].life;
+					float ttemp = (float)((int)(parts[i].life/2));
 					int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
 					uint8 R = flm_data[caddress];
 					uint8 G = flm_data[caddress+1];
@@ -1907,18 +1907,21 @@ void draw_parts(pixel *vid)
 					}
 					else
 					{
-						cr = R;
-						cg = G;
-						cb = B;
-						blendpixel(vid, nx, ny, cr, cg, cb, 192);
-						blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
-						blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
-						blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
-						blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-						blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
-						blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
-						blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
-						blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
+                        cr = parts[i].life * 8;
+                        cg = parts[i].life * 2;
+                        cb = parts[i].life;
+                        if(cr>255) cr = 255;
+                        if(cg>192) cg = 212;
+                        if(cb>128) cb = 192;
+                        blendpixel(vid, nx, ny, cr, cg, cb, 255);
+                        blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+                        blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+                        blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+                        blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+                        blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
+                        blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
+                        blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
+                        blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
 					}
 					// Older Code	
 					/*if(cmode == 3||cmode==4 || cmode==6)
