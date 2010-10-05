@@ -500,9 +500,9 @@ inline int create_part(int p, int x, int y, int t)
     }
     if(t==PT_PHOT)
     {
-	float a = (rand()%8) * 0.78540f;
+		float a = (rand()%8) * 0.78540f;
         parts[i].life = 680;
-	parts[i].ctype = 0x3FFFFFFF;
+		parts[i].ctype = 0x3FFFFFFF;
         parts[i].vx = 3.0f*cosf(a);
         parts[i].vy = 3.0f*sinf(a);
     }
@@ -1968,6 +1968,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 continue;
                             rt = parts[r>>8].type;
                             if((a || ptypes[rt].explosive) && ((rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL && rt!=PT_SWCH) || t!=PT_SPRK) &&
+									!(t==PT_PHOT && rt==PT_INSL) && 
                                     (t!=PT_LAVA || parts[i].life>0 || (rt!=PT_STNE && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_METL && rt!=PT_ETRD && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SWCH && rt!=PT_INWR)) &&
                                     ptypes[rt].flammable && (ptypes[rt].flammable + (int)(pv[(y+ny)/CELL][(x+nx)/CELL]*10.0f))>(rand()%1000))
                             {
@@ -2547,8 +2548,10 @@ killed:
                                     (pmap[y+ny][x+nx]&0xFF)!=0xFF)
                                 parts[i].ctype = pmap[y+ny][x+nx]&0xFF;
                 }
-                else
-                    create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+                else {
+					create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+				}
+
             }
             if(parts[i].type==PT_PCLN)
             {
@@ -2567,7 +2570,18 @@ killed:
                                     (pmap[y+ny][x+nx]&0xFF)!=0xFF)
                                 parts[i].ctype = pmap[y+ny][x+nx]&0xFF;
                 if(parts[i].ctype && parts[i].life==10)
-                    create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+					if(parts[i].ctype==PT_PHOT){
+						for(nx=-1; nx<2; nx++)
+							for(ny=-1; ny<2; ny++){
+								r = create_part(-1, x+nx, y+ny, parts[i].ctype);
+								if(r!=-1){
+									parts[r].vx = nx*3;
+									parts[r].vy = ny*3;
+								}
+							}
+					} else {
+						create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+					}
             }
             if(t==PT_YEST)
             {
