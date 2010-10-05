@@ -1615,7 +1615,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     parts[r>>8].type = PT_FIRE;
                                     parts[r>>8].life = 4;
                                 }
-                                else if(((r&0xFF)!=PT_CLNE && ptypes[parts[r>>8].type].hardness>(rand()%1000))&&parts[i].life>=50)
+                                else if(((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && ptypes[parts[r>>8].type].hardness>(rand()%1000))&&parts[i].life>=50)
                                 {
                                     parts[i].life--;
                                     parts[r>>8].type = PT_NONE;
@@ -2601,7 +2601,7 @@ killed:
             if(parts[i].type == PT_PHOT) {
                 rt = pmap[ny][nx] & 0xFF;
 
-                if(rt==PT_CLNE) {
+                if(rt==PT_CLNE || rt==PT_PCLN) {
                     lt = pmap[ny][nx] >> 8;
                     if(!parts[lt].ctype)
                         parts[lt].ctype = PT_PHOT;
