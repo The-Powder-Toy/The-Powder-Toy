@@ -1352,16 +1352,18 @@ void update_particles_i(pixel *vid, int start, int inc)
             else if(t==PT_FUSE)
             {
                 if(parts[i].life<=0) {
-                    t = PT_NONE;
+                    //t = parts[i].life = PT_NONE;
                     kill_part(i);
                     r = create_part(-1, x, y, PT_PLSM);
-                    parts[r].life = 50;
-                    goto killed;
+					if(r!=-1)
+						parts[r].life = 50;
+                    //goto killed;
                 } else if (parts[i].life < 40) {
                     parts[i].life--;
                     if((rand()%100)==0) {
                         r = create_part(-1, (nx=x+rand()%3-1), (ny=y+rand()%3-1), PT_PLSM);
-                        parts[r].life = 50;
+						if(r!=-1)
+							parts[r].life = 50;
                     }
                 }
                 if((pv[y/CELL][x/CELL] > 2.7f)&&parts[i].tmp>40)
@@ -1369,10 +1371,10 @@ void update_particles_i(pixel *vid, int start, int inc)
                 else if(parts[i].tmp<40&&parts[i].tmp>0)
                     parts[i].tmp--;
                 else if(parts[i].tmp<=0) {
-                    t = PT_NONE;
+                    //t = PT_NONE;
                     kill_part(i);
                     r = create_part(-1, x, y, PT_FSEP);
-                    goto killed;
+                    //goto killed;
                 }
                 for(nx=-2; nx<3; nx++)
                     for(ny=-2; ny<3; ny++)
@@ -1393,16 +1395,18 @@ void update_particles_i(pixel *vid, int start, int inc)
             else if(t==PT_FSEP)
             {
                 if(parts[i].life<=0) {
-                    t = PT_NONE;
+                    //t = PT_NONE;
                     kill_part(i);
                     r = create_part(-1, x, y, PT_PLSM);
-                    parts[r].life = 50;
-                    goto killed;
+					if(r!=-1)
+						parts[r].life = 50;
+                    //goto killed;
                 } else if (parts[i].life < 40) {
                     parts[i].life--;
                     if((rand()%10)==0) {
                         r = create_part(-1, (nx=x+rand()%3-1), (ny=y+rand()%3-1), PT_PLSM);
-                        parts[r].life = 50;
+						if(r!=-1)
+							parts[r].life = 50;
                     }
                 }
                 for(nx=-2; nx<3; nx++)
