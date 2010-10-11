@@ -2329,7 +2329,8 @@ int search_ui(pixel *vid_buf)
             last_date = search_date;
             last_page = search_page;
             active = 1;
-            uri = malloc(strlen(last)*3+80+strlen(SERVER)+strlen(svf_user));
+            // TODO: Create a better fix for this bug
+            uri = malloc(strlen(last)*3+180+strlen(SERVER)+strlen(svf_user)); //Increase "padding" from 80 to 180 to fix the search memory corruption bug
             if(search_own || svf_admin || svf_mod)
                 tmp = "&ShowVotes=true";
             else
