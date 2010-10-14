@@ -93,7 +93,7 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
     if(ptypes[pt].falldown!=1 && bmap[ny/CELL][nx/CELL]==10)
         return 0;
 
-    if (r && ((r&0xFF) >= PT_NUM || !can_move[pt][(r&0xFF)]))
+    if (r && ((r&0xFF) >= PT_NUM || (ptypes[pt].weight > ptypes[pt>>8].weight)))
         return 0;
 
     if(pt == PT_PHOT)
