@@ -196,7 +196,7 @@ typedef struct part_state part_state;
  * 2   = Light || Liquids  0-49
  * 98  = Heavy || Powder  50-99
  * 100 = Solid || 
- * 101 = Special (Photons, Neutrons)
+ * 101 is Neutrons, -1 = Photons
  */
 static const part_type ptypes[PT_NUM] =
 {
@@ -232,7 +232,7 @@ static const part_type ptypes[PT_NUM] =
 	{"DMND",	PIXPACK(0xCCFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,	0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	186,	"Diamond. Indestructable."}, //ief015 - Added diamond. Because concrete blocks are kinda pointless.
 	{"BMTL",	PIXPACK(0x505070),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,	0,	1,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Breakable metal."},
 	{"BRMT",	PIXPACK(0x705060),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,	0,	2,	2,	1,	90,	SC_POWDERS,		R_TEMP+0.0f	+273.15f,	211,	"Broken metal."},
-	{"PHOT",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,	0,	0,	0,	1,	101,	SC_ELEC,		R_TEMP+900.0f	+273.15f,	251,	"Photons. Travel in straight lines."},
+	{"PHOT",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,	0,	0,	0,	1,	-1,	SC_ELEC,		R_TEMP+900.0f	+273.15f,	251,	"Photons. Travel in straight lines."},
 	{"URAN",	PIXPACK(0x707020),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,	0,	0,	0,	1,	90,	SC_NUCLEAR,		R_TEMP+30.0f	+273.15f,	251,	"Heavy particles. Generates heat under pressure."},
 	{"WAX",		PIXPACK(0xF0F0BB),  	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,	0,	0,	10,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	44,	"Wax. Melts at moderately high temperatures."},
 	{"MWAX",	PIXPACK(0xE0E0AA),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000001f* CFDS,2,	5,	0,	0,	2,	1,	25,	SC_LIQUID,		R_TEMP+28.0f	+273.15f,	44,	"Liquid Wax."},
