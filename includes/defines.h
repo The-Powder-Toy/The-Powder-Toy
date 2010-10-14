@@ -23,7 +23,7 @@
 #define HTTP_TIMEOUT 10
 
 #define MENUSIZE 40
-#define BARSIZE 14
+#define BARSIZE 17
 #define XRES	612
 #define YRES	384
 #define NPART XRES*YRES

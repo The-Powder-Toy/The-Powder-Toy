@@ -46,6 +46,7 @@ void *search_thumbs[GRID_X*GRID_Y];
 int   search_thsizes[GRID_X*GRID_Y];
 
 int search_own = 0;
+int search_fav = 0;
 int search_date = 0;
 int search_page = 0;
 char search_expr[256] = "";
@@ -1759,7 +1760,7 @@ corrupt:
 
 int search_ui(pixel *vid_buf)
 {
-    int uih=0,nyu,nyd,b=1,bq,mx=0,my=0,mxq=0,myq=0,mmt=0,gi,gj,gx,gy,pos,i,mp,dp,dap,own,last_own=search_own,page_count=0,last_page=0,last_date=0,j,w,h,st=0,lv;
+    int uih=0,nyu,nyd,b=1,bq,mx=0,my=0,mxq=0,myq=0,mmt=0,gi,gj,gx,gy,pos,i,mp,dp,dap,own,last_own=search_own,last_fav=search_fav,page_count=0,last_page=0,last_date=0,j,w,h,st=0,lv;
     int is_p1=0, exp_res=GRID_X*GRID_Y, tp, view_own=0;
     int thumb_drawn[GRID_X*GRID_Y];
     pixel *v_buf = (pixel *)malloc(((YRES+MENUSIZE)*(XRES+BARSIZE))*PIXELSIZE);
@@ -1851,39 +1852,50 @@ int search_ui(pixel *vid_buf)
         if(!svf_login)
         {
             search_own = 0;
-            drawrect(vid_buf, XRES-64, 8, 56, 16, 96, 96, 96, 255);
-            drawtext(vid_buf, XRES-61, 11, "\x94", 96, 80, 16, 255);
-            drawtext(vid_buf, XRES-61, 11, "\x93", 128, 128, 128, 255);
-            drawtext(vid_buf, XRES-46, 13, "My Own", 128, 128, 128, 255);
+            drawrect(vid_buf, XRES-64+16, 8, 56, 16, 96, 96, 96, 255);
+            drawtext(vid_buf, XRES-61+16, 11, "\x94", 96, 80, 16, 255);
+            drawtext(vid_buf, XRES-61+16, 11, "\x93", 128, 128, 128, 255);
+            drawtext(vid_buf, XRES-46+16, 13, "My Own", 128, 128, 128, 255);
         }
         else if(search_own)
         {
-            fillrect(vid_buf, XRES-65, 7, 58, 18, 255, 255, 255, 255);
-            drawtext(vid_buf, XRES-61, 11, "\x94", 192, 160, 64, 255);
-            drawtext(vid_buf, XRES-61, 11, "\x93", 32, 32, 32, 255);
-            drawtext(vid_buf, XRES-46, 13, "My Own", 0, 0, 0, 255);
+            fillrect(vid_buf, XRES-65+16, 7, 58, 18, 255, 255, 255, 255);
+            drawtext(vid_buf, XRES-61+16, 11, "\x94", 192, 160, 64, 255);
+            drawtext(vid_buf, XRES-61+16, 11, "\x93", 32, 32, 32, 255);
+            drawtext(vid_buf, XRES-46+16, 13, "My Own", 0, 0, 0, 255);
         }
         else
         {
-            drawrect(vid_buf, XRES-64, 8, 56, 16, 192, 192, 192, 255);
-            drawtext(vid_buf, XRES-61, 11, "\x94", 192, 160, 32, 255);
-            drawtext(vid_buf, XRES-61, 11, "\x93", 255, 255, 255, 255);
-            drawtext(vid_buf, XRES-46, 13, "My Own", 255, 255, 255, 255);
+            drawrect(vid_buf, XRES-64+16, 8, 56, 16, 192, 192, 192, 255);
+            drawtext(vid_buf, XRES-61+16, 11, "\x94", 192, 160, 32, 255);
+            drawtext(vid_buf, XRES-61+16, 11, "\x93", 255, 255, 255, 255);
+            drawtext(vid_buf, XRES-46+16, 13, "My Own", 255, 255, 255, 255);
+        }
+		
+		if(search_fav)
+        {
+            fillrect(vid_buf, XRES-134, 7, 18, 18, 255, 255, 255, 255);
+            drawtext(vid_buf, XRES-130, 11, "\xCC", 192, 160, 64, 255);
+        }
+        else
+        {
+            drawrect(vid_buf, XRES-134, 8, 16, 16, 192, 192, 192, 255);
+            drawtext(vid_buf, XRES-130, 11, "\xCC", 192, 160, 32, 255);
         }
 
         if(search_date)
         {
-            fillrect(vid_buf, XRES-130, 7, 62, 18, 255, 255, 255, 255);
-            drawtext(vid_buf, XRES-126, 11, "\xA6", 32, 32, 32, 255);
-            drawtext(vid_buf, XRES-111, 13, "By date", 0, 0, 0, 255);
+            fillrect(vid_buf, XRES-130+16, 7, 62, 18, 255, 255, 255, 255);
+            drawtext(vid_buf, XRES-126+16, 11, "\xA6", 32, 32, 32, 255);
+            drawtext(vid_buf, XRES-111+16, 13, "By date", 0, 0, 0, 255);
         }
         else
         {
-            drawrect(vid_buf, XRES-129, 8, 60, 16, 192, 192, 192, 255);
-            drawtext(vid_buf, XRES-126, 11, "\xA9", 144, 48, 32, 255);
-            drawtext(vid_buf, XRES-126, 11, "\xA8", 32, 144, 32, 255);
-            drawtext(vid_buf, XRES-126, 11, "\xA7", 255, 255, 255, 255);
-            drawtext(vid_buf, XRES-111, 13, "By votes", 255, 255, 255, 255);
+            drawrect(vid_buf, XRES-129+16, 8, 60, 16, 192, 192, 192, 255);
+            drawtext(vid_buf, XRES-126+16, 11, "\xA9", 144, 48, 32, 255);
+            drawtext(vid_buf, XRES-126+16, 11, "\xA8", 32, 144, 32, 255);
+            drawtext(vid_buf, XRES-126+16, 11, "\xA7", 255, 255, 255, 255);
+            drawtext(vid_buf, XRES-111+16, 13, "By votes", 255, 255, 255, 255);
         }
 
         if(search_page)
@@ -2133,14 +2145,19 @@ int search_ui(pixel *vid_buf)
         if(sdl_key==SDLK_ESCAPE)
             goto finish;
 
-        if(b && !bq && mx>=XRES-64 && mx<=XRES-8 && my>=8 && my<=24 && svf_login)
+        if(b && !bq && mx>=XRES-64+16 && mx<=XRES-8+16 && my>=8 && my<=24 && svf_login)
         {
             search_own = !search_own;
             lasttime = TIMEOUT;
         }
-        if(b && !bq && mx>=XRES-129 && mx<=XRES-65 && my>=8 && my<=24)
+        if(b && !bq && mx>=XRES-129+16 && mx<=XRES-65+16 && my>=8 && my<=24)
         {
             search_date = !search_date;
+            lasttime = TIMEOUT;
+        }
+		if(b && !bq && mx>=XRES-134 && mx<=XRES-134+16 && my>=8 && my<=24)
+        {
+            search_fav = !search_fav;
             lasttime = TIMEOUT;
         }
 
@@ -2307,10 +2324,10 @@ int search_ui(pixel *vid_buf)
         {
             search = 1;
         }
-        else if(!active && (strcmp(last, ed.str) || last_own!=search_own || last_date!=search_date || last_page!=search_page))
+        else if(!active && (strcmp(last, ed.str) || last_own!=search_own || last_date!=search_date || last_page!=search_page || last_fav!=search_fav))
         {
             search = 1;
-            if(strcmp(last, ed.str) || last_own!=search_own || last_date!=search_date)
+            if(strcmp(last, ed.str) || last_own!=search_own || last_fav!=search_fav || last_date!=search_date)
             {
                 search_page = 0;
                 page_count = 0;
@@ -2328,9 +2345,10 @@ int search_ui(pixel *vid_buf)
             last_own = search_own;
             last_date = search_date;
             last_page = search_page;
+			last_fav = search_fav;
             active = 1;
             // TODO: Create a better fix for this bug
-            uri = malloc(strlen(last)*3+180+strlen(SERVER)+strlen(svf_user)); //Increase "padding" from 80 to 180 to fix the search memory corruption bug
+            uri = malloc(strlen(last)*3+180+strlen(SERVER)+strlen(svf_user)+20); //Increase "padding" from 80 to 180 to fix the search memory corruption bug
             if(search_own || svf_admin || svf_mod)
                 tmp = "&ShowVotes=true";
             else
@@ -2359,6 +2377,10 @@ int search_ui(pixel *vid_buf)
                 strcaturl(uri, " user:");
                 strcaturl(uri, svf_user);
             }
+			if(search_fav)
+			{
+				strcaturl(uri, " cat:favs");
+			}
             if(search_date)
                 strcaturl(uri, " sort:date");
 

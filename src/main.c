@@ -507,8 +507,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
             if(p >= size)
                 goto corrupt;
             j=d[p++];
-            if(j >= PT_NUM)
-                goto corrupt;
+            if(j >= PT_NUM){
+				//TODO: Possibly some server side translation
+				j = PT_DUST;//goto corrupt;
+			}
             if(j)// && !(isplayer == 1 && j==PT_STKM))
             {
                 if(pmap[y][x])
