@@ -94,7 +94,7 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
         return 0;
 
     if (r && ((r&0xFF) >= PT_NUM ||
-        !(ptypes[pt].weight >= ptypes[(r&0xFF)].weight))
+        (ptypes[pt].weight <= ptypes[(r&0xFF)].weight))
        )
         return 0;
 
