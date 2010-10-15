@@ -112,6 +112,7 @@ extern void *search_thumbs[GRID_X*GRID_Y];
 extern int   search_thsizes[GRID_X*GRID_Y];
 
 extern int search_own;
+extern int search_fav;
 extern int search_date;
 extern int search_page;
 extern char search_expr[256];
