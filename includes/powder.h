@@ -196,7 +196,7 @@ typedef struct part_state part_state;
  * 2   = Light || Liquids  0-49
  * 98  = Heavy || Powder  50-99
  * 100 = Solid || 
- * 101 is Neutrons, -1 = Photons
+ * -1 is Neutrons and Photons
  */
 static const part_type ptypes[PT_NUM] =
 {
@@ -219,7 +219,7 @@ static const part_type ptypes[PT_NUM] =
 	{"SPRK",	PIXPACK(0xFFFF80),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.001f	* CFDS,	0,	0,	0,	0,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Electricity. Conducted by metal and water."},
 	{"SNOW",	PIXPACK(0xC0E0FF),	0.7f,	0.01f * CFDS,	0.96f,	0.90f,	-0.1f,	0.05f,	0.01f,	-0.00005f* CFDS,1,	0,	0,	0,	20,	1,	50,	SC_POWDERS,		R_TEMP-30.0f	+273.15f,	46,	"Light particles."},
 	{"WOOD",	PIXPACK(0xC0A040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,	0,	0,	15,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	164,	"Solid. Flammable. Can be pressurised into COAL"},
-	{"NEUT",	PIXPACK(0x20E0FF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,	0,	0,	0,	1,	101,	SC_NUCLEAR,		R_TEMP+4.0f	+273.15f,	60,	"Neutrons. Interact with matter in odd ways."},
+	{"NEUT",	PIXPACK(0x20E0FF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,	0,	0,	0,	1,	-1,	SC_NUCLEAR,		R_TEMP+4.0f	+273.15f,	60,	"Neutrons. Interact with matter in odd ways."},
 	{"PLUT",	PIXPACK(0x407020),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,	0,	0,	0,	1,	90,	SC_NUCLEAR,		R_TEMP+4.0f	+273.15f,	251,	"Heavy particles. Fissile. Generates neutrons under pressure."},
 	{"PLNT",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,	0,	0,	10,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	65,	"Plant, drinks water and grows."},
 	{"ACID",	PIXPACK(0xED55FF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	40,	0,	0,	1,	1,	10,	SC_LIQUID,		R_TEMP+0.0f	+273.15f,	34,	"Dissolves almost everything."},
