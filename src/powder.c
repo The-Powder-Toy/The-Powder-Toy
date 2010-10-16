@@ -188,17 +188,6 @@ int try_move(int i, int x, int y, int nx, int ny)
 
     return 1;
 }
-#define SURF_RANGE     10
-#define NORMAL_MIN_EST 3
-#define NORMAL_INTERP  20
-#define NORMAL_FRAC    16
-
-#define REFRACT        0x80000000
-
-/* heavy flint glass, for awesome refraction/dispersion
-   this way you can make roof prisms easily */
-#define GLASS_IOR      1.9
-#define GLASS_DISP     0.07
 
 static unsigned direction_to_map(float dx, float dy)
 {

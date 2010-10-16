@@ -62,6 +62,18 @@ typedef unsigned short pixel;
 typedef unsigned int pixel;
 #endif
 
+#define SURF_RANGE     10
+#define NORMAL_MIN_EST 3
+#define NORMAL_INTERP  20
+#define NORMAL_FRAC    16
+
+#define REFRACT        0x80000000
+
+/* heavy flint glass, for awesome refraction/dispersion
+   this way you can make roof prisms easily */
+#define GLASS_IOR      1.9
+#define GLASS_DISP     0.07
+
 typedef unsigned char uint8;
 
 extern int amd;
