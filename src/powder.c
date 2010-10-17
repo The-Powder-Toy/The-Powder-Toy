@@ -793,9 +793,6 @@ int nearest_part(int ci, int t)
 void update_particles_i(pixel *vid, int start, int inc)
 {
     int i, j, x, y, t, nx, ny, r, a, s, lt, rt, fe, nt, lpv, nearp, pavg;
-    uint16_t tempu1, tempu2;
-    int16_t temps1, temps2;
-    float tempf1, tempf2;
     float mv, dx, dy, ix, iy, lx, ly, d, pp, nrx, nry, dp;
     float nn, ct1, ct2;
     float pt = R_TEMP;
@@ -1228,8 +1225,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             r = pmap[y+ny][x+nx];
                             if((r>>8)>=NPART || !r)
                                 continue;
-                            if(((r&0xFF)==PT_METL || (r&0xFF)==PT_IRON || (r&0xFF)==PT_ETRD || (r&0xFF)==PT_PSCN || (r&0xFF)==PT_NSCN || (r&0xFF)==PT_NTCT || (r&0xFF)==PT_PTCT || (r&0xFF)==PT_BMTL || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD || (r&0xFF)==PT_BRMT||(r&0xFF)==PT_NBLE) || (r&0xFF)==PT_INWR && parts[r>>8].ctype!=PT_SPRK)
-
+                            if(((r&0xFF)==PT_METL || (r&0xFF)==PT_IRON || (r&0xFF)==PT_ETRD || (r&0xFF)==PT_PSCN || (r&0xFF)==PT_NSCN || (r&0xFF)==PT_NTCT || (r&0xFF)==PT_PTCT || (r&0xFF)==PT_BMTL || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD || (r&0xFF)==PT_BRMT || (r&0xFF)==PT_NBLE || (r&0xFF)==PT_INWR) && parts[r>>8].ctype!=PT_SPRK)
                             {
                                 t = parts[i].type = PT_NONE;
                                 parts[r>>8].ctype = parts[r>>8].type;
@@ -1472,7 +1468,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             r = pmap[y+ny][x+nx];
                             if((r>>8)>=NPART || !r)
                                 continue;
-                            if((r&0xFF)==PT_SPRK || (parts[i].temp>=(273.15+400.0f)) && 1>(rand()%15))
+                            if(((r&0xFF)==PT_SPRK || (parts[i].temp>=(273.15+400.0f))) && 1>(rand()%15))
                             {
                                 if(parts[i].life>40) {
                                     parts[i].life = 39;
@@ -2628,9 +2624,9 @@ killed:
                                     (pmap[y+ny][x+nx]&0xFF)!=PT_STKM &&
                                     (pmap[y+ny][x+nx]&0xFF)!=0xFF)
                                 parts[i].ctype = pmap[y+ny][x+nx]&0xFF;
-                if(parts[i].ctype && parts[i].life==10)
+                		if(parts[i].ctype && parts[i].life==10){
 					if(parts[i].ctype==PT_PHOT){
-						for(nx=-1; nx<2; nx++)
+						for(nx=-1; nx<2; nx++){
 							for(ny=-1; ny<2; ny++){
 								r = create_part(-1, x+nx, y+ny, parts[i].ctype);
 								if(r!=-1){
@@ -2638,9 +2634,11 @@ killed:
 									parts[r].vy = ny*3;
 								}
 							}
+						}
 					} else {
 						create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
 					}
+				}
             }
             if(t==PT_YEST)
             {
