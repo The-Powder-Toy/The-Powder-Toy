@@ -844,6 +844,62 @@ int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a
 #endif
     return x;
 }
+int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, int b, int a)
+{
+#ifdef OpenGL
+#else
+    int sx = x;
+	int rh = 12;
+	int rw = 0;
+	int cw = x;
+    for(; *s; s++)
+    {
+        if(*s == '\n')
+        {
+            x = sx;
+			rw = 0;
+            y += FONT_H+2;
+        }
+        else if(*s == '\b')
+        {
+            switch(s[1])
+            {
+            case 'w':
+                r = g = b = 255;
+                break;
+            case 'g':
+                r = g = b = 192;
+                break;
+            case 'o':
+                r = 255;
+                g = 216;
+                b = 32;
+                break;
+            case 'r':
+                r = 255;
+                g = b = 0;
+                break;
+            case 'b':
+                r = g = 0;
+                b = 255;
+                break;
+            }
+            s++;
+        }
+        else
+		{
+			if(x-cw>=w){
+				x = sx;
+				rw = 0;
+				y+=FONT_H+2;
+				rh+=FONT_H+2;
+			}
+            x = drawchar(vid, x, y, *(unsigned char *)s, r, g, b, a);
+		}
+    }
+#endif
+    return rh;
+}
 
 void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
 {

@@ -77,6 +77,8 @@ extern inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b,
 
 int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a);
 
+int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, int b, int a);
+
 void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a);
 
 void fillrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a);

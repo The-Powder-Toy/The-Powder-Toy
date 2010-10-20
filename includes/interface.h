@@ -73,6 +73,26 @@ struct ui_edit
 };
 typedef struct ui_edit ui_edit;
 
+struct save_info
+{
+	char *title;
+	char *name;
+	char *author;
+	char *date;
+	char *description;
+	int publish;
+	int voteup;
+	int votedown;
+	int vote;
+	int myvote;
+	int myfav;
+	char *tags;
+	int comment_count;
+	char *comments[6];
+	char *commentauthors[6];
+};
+typedef struct save_info save_info;
+
 struct ui_checkbox
 {
     int x, y;
@@ -170,6 +190,10 @@ char *download_ui(pixel *vid_buf, char *uri, int *len);
 
 int search_ui(pixel *vid_buf);
 
+int open_ui(pixel *vid_buf, char *save_id);
+
+int info_parse(void *info_data, save_info *info);
+
 int search_results(char *str, int votes);
 
 int execute_tagop(pixel *vid_buf, char *op, char *tag);
@@ -177,6 +201,10 @@ int execute_tagop(pixel *vid_buf, char *op, char *tag);
 void execute_save(pixel *vid_buf);
 
 void execute_delete(pixel *vid_buf, char *id);
+
+void execute_report(pixel *vid_buf, char *id);
+
+void execute_fav(pixel *vid_buf, char *id);
 
 int execute_vote(pixel *vid_buf, char *id, char *action);
 
