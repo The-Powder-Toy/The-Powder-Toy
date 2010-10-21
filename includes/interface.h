@@ -75,21 +75,21 @@ typedef struct ui_edit ui_edit;
 
 struct save_info
 {
-	char *title;
-	char *name;
-	char *author;
-	char *date;
-	char *description;
-	int publish;
-	int voteup;
-	int votedown;
-	int vote;
-	int myvote;
-	int myfav;
-	char *tags;
-	int comment_count;
-	char *comments[6];
-	char *commentauthors[6];
+    char *title;
+    char *name;
+    char *author;
+    char *date;
+    char *description;
+    int publish;
+    int voteup;
+    int votedown;
+    int vote;
+    int myvote;
+    int myfav;
+    char *tags;
+    int comment_count;
+    char *comments[6];
+    char *commentauthors[6];
 };
 typedef struct save_info save_info;
 

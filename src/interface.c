@@ -1871,8 +1871,8 @@ int search_ui(pixel *vid_buf)
             drawtext(vid_buf, XRES-61+16, 11, "\x93", 255, 255, 255, 255);
             drawtext(vid_buf, XRES-46+16, 13, "My Own", 255, 255, 255, 255);
         }
-		
-		if(search_fav)
+
+        if(search_fav)
         {
             fillrect(vid_buf, XRES-134, 7, 18, 18, 255, 255, 255, 255);
             drawtext(vid_buf, XRES-130, 11, "\xCC", 192, 160, 64, 255);
@@ -2155,7 +2155,7 @@ int search_ui(pixel *vid_buf)
             search_date = !search_date;
             lasttime = TIMEOUT;
         }
-		if(b && !bq && mx>=XRES-134 && mx<=XRES-134+16 && my>=8 && my<=24)
+        if(b && !bq && mx>=XRES-134 && mx<=XRES-134+16 && my>=8 && my<=24)
         {
             search_fav = !search_fav;
             lasttime = TIMEOUT;
@@ -2197,10 +2197,10 @@ int search_ui(pixel *vid_buf)
 
         if((b && !bq && mp!=-1 && !st && !uih) || do_open==1)
         {
-			if(open_ui(vid_buf, search_ids[mp], search_dates[mp]?search_dates[mp]:NULL)==1){
-				goto finish;
-			}
-			/*
+            if(open_ui(vid_buf, search_ids[mp], search_dates[mp]?search_dates[mp]:NULL)==1) {
+                goto finish;
+            }
+            /*
             fillrect(vid_buf, 0, 0, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 255);
             info_box(vid_buf, "Loading...");
 
@@ -2349,7 +2349,7 @@ int search_ui(pixel *vid_buf)
             last_own = search_own;
             last_date = search_date;
             last_page = search_page;
-			last_fav = search_fav;
+            last_fav = search_fav;
             active = 1;
             // TODO: Create a better fix for this bug
             uri = malloc(strlen(last)*3+180+strlen(SERVER)+strlen(svf_user)+20); //Increase "padding" from 80 to 180 to fix the search memory corruption bug
@@ -2381,10 +2381,10 @@ int search_ui(pixel *vid_buf)
                 strcaturl(uri, " user:");
                 strcaturl(uri, svf_user);
             }
-			if(search_fav)
-			{
-				strcaturl(uri, " cat:favs");
-			}
+            if(search_fav)
+            {
+                strcaturl(uri, " cat:favs");
+            }
             if(search_date)
                 strcaturl(uri, " sort:date");
 
@@ -2524,71 +2524,71 @@ finish:
 
 int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 {
-	int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawnthumb=0,authoritah=0,queue_open=0,data_size=0,retval=0;
-	char *uri, *uri_2;
-	void *data, *info_data;
-	save_info *info = malloc(sizeof(save_info));
-	void *http = NULL, *http_2 = NULL;
+    int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawnthumb=0,authoritah=0,queue_open=0,data_size=0,retval=0;
+    char *uri, *uri_2;
+    void *data, *info_data;
+    save_info *info = malloc(sizeof(save_info));
+    void *http = NULL, *http_2 = NULL;
     int lasttime = TIMEOUT;
-	int status, status_2, info_ready = 0, data_ready = 0;
-	time_t http_last_use = HTTP_TIMEOUT,  http_last_use_2 = HTTP_TIMEOUT;
-	pixel *save_pic;// = malloc((XRES/2)*(YRES/2));
+    int status, status_2, info_ready = 0, data_ready = 0;
+    time_t http_last_use = HTTP_TIMEOUT,  http_last_use_2 = HTTP_TIMEOUT;
+    pixel *save_pic;// = malloc((XRES/2)*(YRES/2));
 
-	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
-	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+    pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+    fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 
-	fillrect(vid_buf, 50, 50, XRES+BARSIZE-100, YRES+MENUSIZE-100, 0, 0, 0, 255);
-	drawrect(vid_buf, 50, 50, XRES+BARSIZE-100, YRES+MENUSIZE-100, 255, 255, 255, 255);
-	drawrect(vid_buf, 50, 50, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 155);
-	drawrect(vid_buf, 50+(XRES/2)+1, 50, XRES+BARSIZE-100-((XRES/2)+1), YRES+MENUSIZE-100, 155, 155, 155, 255);
-	drawtext(vid_buf, 50+(XRES/4)-textwidth("Loading...")/2, 50+(YRES/4), "Loading...", 255, 255, 255, 128);
+    fillrect(vid_buf, 50, 50, XRES+BARSIZE-100, YRES+MENUSIZE-100, 0, 0, 0, 255);
+    drawrect(vid_buf, 50, 50, XRES+BARSIZE-100, YRES+MENUSIZE-100, 255, 255, 255, 255);
+    drawrect(vid_buf, 50, 50, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 155);
+    drawrect(vid_buf, 50+(XRES/2)+1, 50, XRES+BARSIZE-100-((XRES/2)+1), YRES+MENUSIZE-100, 155, 155, 155, 255);
+    drawtext(vid_buf, 50+(XRES/4)-textwidth("Loading...")/2, 50+(YRES/4), "Loading...", 255, 255, 255, 128);
 
     memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
-	
-	while(!sdl_poll())
+
+    while(!sdl_poll())
     {
         b = SDL_GetMouseState(&mx, &my);
         if(!b)
             break;
     }
 
-	//Begin Async loading of data
-	if(save_date) {
-		// We're loading an historical save
-		uri = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
-		strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
-		strcaturl(uri, save_id);
-		strappend(uri, "&Date=");
-		strcaturl(uri, save_date);
+    //Begin Async loading of data
+    if(save_date) {
+        // We're loading an historical save
+        uri = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
+        strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
+        strcaturl(uri, save_id);
+        strappend(uri, "&Date=");
+        strcaturl(uri, save_date);
 
-		uri_2 = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
-		strcpy(uri_2, "http://" SERVER "/Get.api?Op=save&ID=");
-		strcaturl(uri_2, save_id);
-		strappend(uri_2, "&Date=");
-		strcaturl(uri_2, save_date);
-	} else {
-		//We're loading a normal save
+        uri_2 = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
+        strcpy(uri_2, "http://" SERVER "/Get.api?Op=save&ID=");
+        strcaturl(uri_2, save_id);
+        strappend(uri_2, "&Date=");
+        strcaturl(uri_2, save_date);
+    } else {
+        //We're loading a normal save
         uri = malloc(strlen(save_id)*3+strlen(SERVER)+64);
         strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
         strcaturl(uri, save_id);
 
-		uri_2 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
+        uri_2 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
         strcpy(uri_2, "http://" SERVER "/Info.api?ID=");
         strcaturl(uri_2, save_id);
     }
-	http = http_async_req_start(http, uri, NULL, 0, 1);
-	http_2 = http_async_req_start(http_2, uri_2, NULL, 0, 1);
-	if(svf_login)
+    http = http_async_req_start(http, uri, NULL, 0, 1);
+    http_2 = http_async_req_start(http_2, uri_2, NULL, 0, 1);
+    if(svf_login)
     {
-		http_auth_headers(http, svf_user, svf_pass);
-		http_auth_headers(http_2, svf_user, svf_pass);
+        http_auth_headers(http, svf_user, svf_pass);
+        http_auth_headers(http_2, svf_user, svf_pass);
     }
     http_last_use = time(NULL);
-	http_last_use_2 = time(NULL);
+    http_last_use_2 = time(NULL);
     free(uri);
-	free(uri_2);
-	active = 1;
-	active_2 = 1;
+    free(uri_2);
+    active = 1;
+    active_2 = 1;
     while(!sdl_poll())
     {
         bq = b;
@@ -2596,188 +2596,188 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
         mx /= sdl_scale;
         my /= sdl_scale;
 
-		if(active && http_async_req_status(http))
+        if(active && http_async_req_status(http))
         {
-			int imgh, imgw, nimgh, nimgw;
+            int imgh, imgw, nimgh, nimgw;
             http_last_use = time(NULL);
             data = http_async_req_stop(http, &status, &data_size);
             if(status == 200)
             {
-				pixel *full_save = prerender_save(data, data_size, &imgw, &imgh);
-				save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
+                pixel *full_save = prerender_save(data, data_size, &imgw, &imgh);
+                save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
                 data_ready = 1;
-				free(full_save);
+                free(full_save);
             }
-			active = 0;
-			free(http);
-			http = NULL;
+            active = 0;
+            free(http);
+            http = NULL;
         }
-		if(active_2 && http_async_req_status(http_2))
+        if(active_2 && http_async_req_status(http_2))
         {
             http_last_use_2 = time(NULL);
             info_data = http_async_req_stop(http_2, &status_2, NULL);
             if(status_2 == 200)
             {
                 info_ready = info_parse(info_data, info);
-				if(info_ready==-1){
-					error_ui(vid_buf, 0, "Not found");
-					break;
-				}
+                if(info_ready==-1) {
+                    error_ui(vid_buf, 0, "Not found");
+                    break;
+                }
             }
             free(info_data);
             active_2 = 0;
-			free(http_2);
-			http_2 = NULL;
+            free(http_2);
+            http_2 = NULL;
         }
 
-		if(data_ready && !hasdrawnthumb){
-			draw_image(vid_buf, save_pic, 51, 51, thumb_w, thumb_h, 255);
-			hasdrawnthumb = 1;
-			memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
-		}
-		if(info_ready && !hasdrawninfo){
-			//drawtext(vid_buf, 2, 2, info->name, 255, 255, 255, 255);
-			cix = drawtext(vid_buf, 60, (YRES/2)+60, info->name, 255, 255, 255, 255);
-			cix = drawtext(vid_buf, 60, (YRES/2)+72, "Author:", 255, 255, 255, 155);
-			cix = drawtext(vid_buf, cix+4, (YRES/2)+72, info->author, 255, 255, 255, 255);
-			cix = drawtext(vid_buf, cix+4, (YRES/2)+72, "Date:", 255, 255, 255, 155);
-			cix = drawtext(vid_buf, cix+4, (YRES/2)+72, info->date, 255, 255, 255, 255);
-			drawtextwrap(vid_buf, 62, (YRES/2)+86, (XRES/2)-24, info->description, 255, 255, 255, 200);
+        if(data_ready && !hasdrawnthumb) {
+            draw_image(vid_buf, save_pic, 51, 51, thumb_w, thumb_h, 255);
+            hasdrawnthumb = 1;
+            memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+        }
+        if(info_ready && !hasdrawninfo) {
+            //drawtext(vid_buf, 2, 2, info->name, 255, 255, 255, 255);
+            cix = drawtext(vid_buf, 60, (YRES/2)+60, info->name, 255, 255, 255, 255);
+            cix = drawtext(vid_buf, 60, (YRES/2)+72, "Author:", 255, 255, 255, 155);
+            cix = drawtext(vid_buf, cix+4, (YRES/2)+72, info->author, 255, 255, 255, 255);
+            cix = drawtext(vid_buf, cix+4, (YRES/2)+72, "Date:", 255, 255, 255, 155);
+            cix = drawtext(vid_buf, cix+4, (YRES/2)+72, info->date, 255, 255, 255, 255);
+            drawtextwrap(vid_buf, 62, (YRES/2)+86, (XRES/2)-24, info->description, 255, 255, 255, 200);
 
-			ccy = 0;
-			for(cc=0;cc<info->comment_count;cc++){
-				drawtext(vid_buf, 60+(XRES/2)+1, ccy+60, info->commentauthors[cc], 255, 255, 255, 255);
-				ccy += 12;
-				ccy += drawtextwrap(vid_buf, 60+(XRES/2)+1, ccy+60, XRES+BARSIZE-100-((XRES/2)+1)-20, info->comments[cc], 255, 255, 255, 185);
-				ccy += 10;
-				draw_line(vid_buf, 50+(XRES/2)+2, ccy+52, XRES+BARSIZE-50, ccy+52, 100, 100, 100, XRES+BARSIZE);
-			}
-			hasdrawninfo = 1;
-			authoritah = svf_login && (!strcmp(info->author, svf_user) || svf_admin || svf_mod);
-			memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
-		}
+            ccy = 0;
+            for(cc=0; cc<info->comment_count; cc++) {
+                drawtext(vid_buf, 60+(XRES/2)+1, ccy+60, info->commentauthors[cc], 255, 255, 255, 255);
+                ccy += 12;
+                ccy += drawtextwrap(vid_buf, 60+(XRES/2)+1, ccy+60, XRES+BARSIZE-100-((XRES/2)+1)-20, info->comments[cc], 255, 255, 255, 185);
+                ccy += 10;
+                draw_line(vid_buf, 50+(XRES/2)+2, ccy+52, XRES+BARSIZE-50, ccy+52, 100, 100, 100, XRES+BARSIZE);
+            }
+            hasdrawninfo = 1;
+            authoritah = svf_login && (!strcmp(info->author, svf_user) || svf_admin || svf_mod);
+            memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+        }
 
-		if(queue_open){
-			if(info_ready && data_ready){
-				// Do Open!
-				status = parse_save(data, data_size, 1, 0, 0);
-				if(!status){
-					//if(svf_last)
-						//free(svf_last);
-					svf_last = data;
-					svf_lsize = data_size;
-					
-					svf_open = 1;
-					svf_own = svf_login && !strcmp(info->author, svf_user);
-					svf_publish = info->publish && svf_login && !strcmp(info->author, svf_user);
-					
-					strcpy(svf_id, save_id);
-					strcpy(svf_name, info->name);
-					if(info->tags)
-					{
-						strncpy(svf_tags, info->tags, 255);
-					    svf_tags[255] = 0;
-					} else {
-					    svf_tags[0] = 0;
-					}
-					svf_myvote = info->myvote;
-					retval = 1;
-					break;
-				} else {
-					queue_open = 0;
-					
-					svf_open = 0;
-					svf_publish = 0;
-					svf_own = 0;
-					svf_myvote = 0;
-					svf_id[0] = 0;
-					svf_name[0] = 0;
-					svf_tags[0] = 0;
-					if(svf_last)
-						free(svf_last);
-					svf_last = NULL;
-					error_ui(vid_buf, 0, "An Error Occurred");
-				}
-			} else {
-				fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 190);
-				drawtext(vid_buf, XRES+BARSIZE/2, XRES+MENUSIZE, "Loading...", 0, 0, 0, 200);
-			}
-		}
+        if(queue_open) {
+            if(info_ready && data_ready) {
+                // Do Open!
+                status = parse_save(data, data_size, 1, 0, 0);
+                if(!status) {
+                    //if(svf_last)
+                    //free(svf_last);
+                    svf_last = data;
+                    svf_lsize = data_size;
 
-		//Open Button
-		if(sdl_key==SDLK_RETURN){
+                    svf_open = 1;
+                    svf_own = svf_login && !strcmp(info->author, svf_user);
+                    svf_publish = info->publish && svf_login && !strcmp(info->author, svf_user);
+
+                    strcpy(svf_id, save_id);
+                    strcpy(svf_name, info->name);
+                    if(info->tags)
+                    {
+                        strncpy(svf_tags, info->tags, 255);
+                        svf_tags[255] = 0;
+                    } else {
+                        svf_tags[0] = 0;
+                    }
+                    svf_myvote = info->myvote;
+                    retval = 1;
+                    break;
+                } else {
+                    queue_open = 0;
+
+                    svf_open = 0;
+                    svf_publish = 0;
+                    svf_own = 0;
+                    svf_myvote = 0;
+                    svf_id[0] = 0;
+                    svf_name[0] = 0;
+                    svf_tags[0] = 0;
+                    if(svf_last)
+                        free(svf_last);
+                    svf_last = NULL;
+                    error_ui(vid_buf, 0, "An Error Occurred");
+                }
+            } else {
+                fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 190);
+                drawtext(vid_buf, XRES+BARSIZE/2, XRES+MENUSIZE, "Loading...", 0, 0, 0, 200);
+            }
+        }
+
+        //Open Button
+        if(sdl_key==SDLK_RETURN) {
             queue_open = 1;
-		}
-		drawrect(vid_buf, 70, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
-		drawtext(vid_buf, 93, YRES+MENUSIZE-63, "Open", 255, 255, 255, 255);
-		drawtext(vid_buf, 78, YRES+MENUSIZE-64, "\x81", 255, 255, 255, 255);
-		if(mx > 70 && mx < 70+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50){
-			fillrect(vid_buf, 70, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
-			if(b && !bq){
-				queue_open = 1;
-			}
-		}
-		
-		//Fav Button
-		if(svf_login){
-			drawrect(vid_buf, 140, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
-			drawtext(vid_buf, 162, YRES+MENUSIZE-63, "Fav.", 255, 255, 255, 255);
-			drawtext(vid_buf, 147, YRES+MENUSIZE-64, "\xCC", 255, 255, 255, 255);
-			if(mx > 140 && mx < 140+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50){
-				fillrect(vid_buf, 140, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
-				if(b && !bq){
-					//Button Clicked
-				}
-			}
-		}
+        }
+        drawrect(vid_buf, 70, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
+        drawtext(vid_buf, 93, YRES+MENUSIZE-63, "Open", 255, 255, 255, 255);
+        drawtext(vid_buf, 78, YRES+MENUSIZE-64, "\x81", 255, 255, 255, 255);
+        if(mx > 70 && mx < 70+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50) {
+            fillrect(vid_buf, 70, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
+            if(b && !bq) {
+                queue_open = 1;
+            }
+        }
 
-		//Report Button
-		if(svf_login){
-			drawrect(vid_buf, 210, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
-			drawtext(vid_buf, 228, YRES+MENUSIZE-63, "Report", 255, 255, 255, 255);
-			drawtext(vid_buf, 218, YRES+MENUSIZE-63, "!", 255, 255, 255, 255);
-			if(mx > 210 && mx < 210+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50){
-				fillrect(vid_buf, 210, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
-				if(b && !bq){
-					//Button Clicked
-				}
-			}
-		}
-		
-		//Delete Button
-		if(authoritah){
-			drawrect(vid_buf, 280, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
-			drawtext(vid_buf, 298, YRES+MENUSIZE-63, "Delete", 255, 255, 255, 255);
-			drawtext(vid_buf, 286, YRES+MENUSIZE-64, "\xAA", 255, 255, 255, 255);
-			if(mx > 280 && mx < 280+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50){
-				fillrect(vid_buf, 280, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
-				if(b && !bq){
-					//Button Clicked
-				}
-			}
-		}
+        //Fav Button
+        if(svf_login) {
+            drawrect(vid_buf, 140, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
+            drawtext(vid_buf, 162, YRES+MENUSIZE-63, "Fav.", 255, 255, 255, 255);
+            drawtext(vid_buf, 147, YRES+MENUSIZE-64, "\xCC", 255, 255, 255, 255);
+            if(mx > 140 && mx < 140+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50) {
+                fillrect(vid_buf, 140, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
+                if(b && !bq) {
+                    //Button Clicked
+                }
+            }
+        }
+
+        //Report Button
+        if(svf_login) {
+            drawrect(vid_buf, 210, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
+            drawtext(vid_buf, 228, YRES+MENUSIZE-63, "Report", 255, 255, 255, 255);
+            drawtext(vid_buf, 218, YRES+MENUSIZE-63, "!", 255, 255, 255, 255);
+            if(mx > 210 && mx < 210+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50) {
+                fillrect(vid_buf, 210, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
+                if(b && !bq) {
+                    //Button Clicked
+                }
+            }
+        }
+
+        //Delete Button
+        if(authoritah) {
+            drawrect(vid_buf, 280, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
+            drawtext(vid_buf, 298, YRES+MENUSIZE-63, "Delete", 255, 255, 255, 255);
+            drawtext(vid_buf, 286, YRES+MENUSIZE-64, "\xAA", 255, 255, 255, 255);
+            if(mx > 280 && mx < 280+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50) {
+                fillrect(vid_buf, 280, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
+                if(b && !bq) {
+                    //Button Clicked
+                }
+            }
+        }
 
 
-		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+        sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
         memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 
         if(sdl_key==SDLK_ESCAPE)
             break;
 
-		if(lasttime<TIMEOUT)
+        if(lasttime<TIMEOUT)
             lasttime++;
-	}
-	return retval;
+    }
+    return retval;
 }
 
 int info_parse(char *info_data, save_info *info)
 {
-	int i,j;
+    int i,j;
     char *p,*q,*r,*s,*vu,*vd,*pu,*sd;
 
-	memset(info, 0, sizeof(save_info));
+    memset(info, 0, sizeof(save_info));
 
-	if(!info_data || !*info_data)
+    if(!info_data || !*info_data)
         return 0;
 
     i = 0;
@@ -2794,87 +2794,87 @@ int info_parse(char *info_data, save_info *info)
         else
             *(p++) = 0;
 
-		if(!strncmp(info_data, "TITLE ", 6))
+        if(!strncmp(info_data, "TITLE ", 6))
         {
             info->title = mystrdup(info_data+6);
             j++;
         }
-		else if(!strncmp(info_data, "NAME ", 5))
+        else if(!strncmp(info_data, "NAME ", 5))
         {
             info->name = mystrdup(info_data+5);
             j++;
         }
-		else if(!strncmp(info_data, "AUTHOR ", 7))
+        else if(!strncmp(info_data, "AUTHOR ", 7))
         {
             info->author = mystrdup(info_data+7);
             j++;
         }
-		else if(!strncmp(info_data, "DATE ", 5))
+        else if(!strncmp(info_data, "DATE ", 5))
         {
             info->date = mystrdup(info_data+5);
             j++;
         }
-		else if(!strncmp(info_data, "DESCRIPTION ", 12))
+        else if(!strncmp(info_data, "DESCRIPTION ", 12))
         {
             info->description = mystrdup(info_data+12);
             j++;
         }
-		else if(!strncmp(info_data, "VOTEUP ", 7))
+        else if(!strncmp(info_data, "VOTEUP ", 7))
         {
             info->voteup = atoi(info_data+7);
             j++;
         }
-		else if(!strncmp(info_data, "VOTEDOWN ", 9))
+        else if(!strncmp(info_data, "VOTEDOWN ", 9))
         {
             info->votedown = atoi(info_data+9);
             j++;
         }
-		else if(!strncmp(info_data, "VOTE ", 5))
+        else if(!strncmp(info_data, "VOTE ", 5))
         {
             info->vote = atoi(info_data+5);
             j++;
         }
-		else if(!strncmp(info_data, "MYVOTE ", 7))
+        else if(!strncmp(info_data, "MYVOTE ", 7))
         {
             info->myvote = atoi(info_data+7);
             j++;
         }
-		else if(!strncmp(info_data, "MYFAV ", 6))
+        else if(!strncmp(info_data, "MYFAV ", 6))
         {
             info->myfav = atoi(info_data+6);
             j++;
         }
-		else if(!strncmp(info_data, "PUBLISH ", 8))
+        else if(!strncmp(info_data, "PUBLISH ", 8))
         {
-			info->publish = atoi(info_data+8);
+            info->publish = atoi(info_data+8);
             j++;
         }
-		else if(!strncmp(info_data, "TAGS ", 5))
+        else if(!strncmp(info_data, "TAGS ", 5))
         {
             info->tags = mystrdup(info_data+5);
             j++;
         }
-		else if(!strncmp(info_data, "COMMENT ", 8))
+        else if(!strncmp(info_data, "COMMENT ", 8))
         {
-			if(info->comment_count>=6){
-				info_data = p;
-				continue;
-			} else {
-				q = strchr(info_data+8, ' ');
-				*(q++) = 0;
-				info->commentauthors[info->comment_count] = mystrdup(info_data+8);
-				info->comments[info->comment_count] = mystrdup(q);
-				info->comment_count++;
-			}
+            if(info->comment_count>=6) {
+                info_data = p;
+                continue;
+            } else {
+                q = strchr(info_data+8, ' ');
+                *(q++) = 0;
+                info->commentauthors[info->comment_count] = mystrdup(info_data+8);
+                info->comments[info->comment_count] = mystrdup(q);
+                info->comment_count++;
+            }
             j++;
         }
-		info_data = p;
+        info_data = p;
     }
-	if(j>=8){
-		return 1;
-	} else {
-		return -1;
-	}
+    if(j>=8) {
+        return 1;
+    } else {
+        return -1;
+    }
 }
 
 int search_results(char *str, int votes)

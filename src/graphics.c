@@ -849,15 +849,15 @@ int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, i
 #ifdef OpenGL
 #else
     int sx = x;
-	int rh = 12;
-	int rw = 0;
-	int cw = x;
+    int rh = 12;
+    int rw = 0;
+    int cw = x;
     for(; *s; s++)
     {
         if(*s == '\n')
         {
             x = sx;
-			rw = 0;
+            rw = 0;
             y += FONT_H+2;
         }
         else if(*s == '\b')
@@ -887,15 +887,15 @@ int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, i
             s++;
         }
         else
-		{
-			if(x-cw>=w){
-				x = sx;
-				rw = 0;
-				y+=FONT_H+2;
-				rh+=FONT_H+2;
-			}
+        {
+            if(x-cw>=w) {
+                x = sx;
+                rw = 0;
+                y+=FONT_H+2;
+                rh+=FONT_H+2;
+            }
             x = drawchar(vid, x, y, *(unsigned char *)s, r, g, b, a);
-		}
+        }
     }
 #endif
     return rh;
@@ -1476,20 +1476,20 @@ void draw_parts(pixel *vid)
                         cg = 0;
                         cb = 0;
                         cr = 0;
-						for(x=0; x<12; x++) {
-							cr += (parts[i].ctype >> (x+18)) & 1;
-							cb += (parts[i].ctype >>  x)     & 1;
-						}
-						for(x=0; x<14; x++)
-							cg += (parts[i].ctype >> (x+9))  & 1;
-						x = 624/(cr+cg+cb+1);
-						cr *= x;
-						cg *= x;
-						cb *= x;
+                        for(x=0; x<12; x++) {
+                            cr += (parts[i].ctype >> (x+18)) & 1;
+                            cb += (parts[i].ctype >>  x)     & 1;
+                        }
+                        for(x=0; x<14; x++)
+                            cg += (parts[i].ctype >> (x+9))  & 1;
+                        x = 624/(cr+cg+cb+1);
+                        cr *= x;
+                        cg *= x;
+                        cb *= x;
                         vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cr>255?255:cr,cg>255?255:cg,cb>255?255:cb);
-						cr >>= 4;
-						cg >>= 4;
-						cb >>= 4;
+                        cr >>= 4;
+                        cg >>= 4;
+                        cb >>= 4;
                         x = nx/CELL;
                         y = ny/CELL;
                         cg += fire_g[y][x];
@@ -1504,22 +1504,22 @@ void draw_parts(pixel *vid)
                     }
                     else
                     {
-						cg = 0;
-						cb = 0;
-						cr = 0;
-						for(x=0; x<12; x++) {
-							cr += (parts[i].ctype >> (x+18)) & 1;
-							cb += (parts[i].ctype >>  x)     & 1;
-						}
-						for(x=0; x<14; x++)
-							cg += (parts[i].ctype >> (x+9))  & 1;
-						x = 624/(cr+cg+cb+1);
-						cr *= x;
-						cg *= x;
-						cb *= x;
-						cr = cr>255?255:cr;
-						cg = cg>255?255:cg;
-						cb = cb>255?255:cb;
+                        cg = 0;
+                        cb = 0;
+                        cr = 0;
+                        for(x=0; x<12; x++) {
+                            cr += (parts[i].ctype >> (x+18)) & 1;
+                            cb += (parts[i].ctype >>  x)     & 1;
+                        }
+                        for(x=0; x<14; x++)
+                            cg += (parts[i].ctype >> (x+9))  & 1;
+                        x = 624/(cr+cg+cb+1);
+                        cr *= x;
+                        cg *= x;
+                        cb *= x;
+                        cr = cr>255?255:cr;
+                        cg = cg>255?255:cg;
+                        cb = cb>255?255:cb;
                         blendpixel(vid, nx, ny, cr, cg, cb, 192);
                         blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
                         blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
@@ -1952,30 +1952,30 @@ void draw_parts(pixel *vid)
                 }
                 else if(t==PT_FIRE && parts[i].life)
                 {
-					float ttemp = (float)((int)(parts[i].life/2));
-					int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
-					uint8 R = flm_data[caddress];
-					uint8 G = flm_data[caddress+1];
-					uint8 B = flm_data[caddress+2];
-					if(cmode == 3||cmode==4 || cmode==6)
-					{
-						cr = R/8;
-						cg = G/8;
-						cb = B/8;
-						x = nx/CELL;
-						y = ny/CELL;
-						cg += fire_g[y][x];
-						if(cg > 255) cg = 255;
-						fire_g[y][x] = cg;
-						cb += fire_b[y][x];
-						if(cb > 255) cb = 255;
-						fire_b[y][x] = cb;
-						cr += fire_r[y][x];
-						if(cr > 255) cr = 255;
-						fire_r[y][x] = cr;
-					}
-					else
-					{
+                    float ttemp = (float)((int)(parts[i].life/2));
+                    int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+                    uint8 R = flm_data[caddress];
+                    uint8 G = flm_data[caddress+1];
+                    uint8 B = flm_data[caddress+2];
+                    if(cmode == 3||cmode==4 || cmode==6)
+                    {
+                        cr = R/8;
+                        cg = G/8;
+                        cb = B/8;
+                        x = nx/CELL;
+                        y = ny/CELL;
+                        cg += fire_g[y][x];
+                        if(cg > 255) cg = 255;
+                        fire_g[y][x] = cg;
+                        cb += fire_b[y][x];
+                        if(cb > 255) cb = 255;
+                        fire_b[y][x] = cb;
+                        cr += fire_r[y][x];
+                        if(cr > 255) cr = 255;
+                        fire_r[y][x] = cr;
+                    }
+                    else
+                    {
                         cr = parts[i].life * 8;
                         cg = parts[i].life * 2;
                         cb = parts[i].life;
@@ -1991,9 +1991,9 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
-					}
-					// Older Code	
-					/*if(cmode == 3||cmode==4 || cmode==6)
+                    }
+                    // Older Code
+                    /*if(cmode == 3||cmode==4 || cmode==6)
                     {
                         cr = parts[i].life / 4;
                         cg = parts[i].life / 16;
@@ -2137,28 +2137,28 @@ void draw_parts(pixel *vid)
             }
             if(cmode == 4&&t!=PT_FIRE&&t!=PT_PLSM&&t!=PT_HFLM&&t!=PT_NONE&&t!=PT_ACID&&t!=PT_LCRY&&t!=PT_GLOW&&t!=PT_SWCH&&t!=PT_SMKE&&t!=PT_WTRV&&!(t==PT_FIRW&&parts[i].tmp==3))
             {
-				if(t==PT_PHOT){
-					cg = 0;
-					cb = 0;
-					cr = 0;
-					for(x=0; x<12; x++) {
-						cr += (parts[i].ctype >> (x+18)) & 1;
-						cb += (parts[i].ctype >>  x)     & 1;
-					}
-					for(x=0; x<14; x++)
-						cg += (parts[i].ctype >> (x+9))  & 1;
-					x = 624/(cr+cg+cb+1);
-					cr *= x;
-					cg *= x;
-					cb *= x;
-					cr = cr>255?255:cr;
-					cg = cg>255?255:cg;
-					cb = cb>255?255:cb;
-				} else {
-					cr = PIXR(ptypes[t].pcolors);
-					cg = PIXG(ptypes[t].pcolors);
-					cb = PIXB(ptypes[t].pcolors);
-				}
+                if(t==PT_PHOT) {
+                    cg = 0;
+                    cb = 0;
+                    cr = 0;
+                    for(x=0; x<12; x++) {
+                        cr += (parts[i].ctype >> (x+18)) & 1;
+                        cb += (parts[i].ctype >>  x)     & 1;
+                    }
+                    for(x=0; x<14; x++)
+                        cg += (parts[i].ctype >> (x+9))  & 1;
+                    x = 624/(cr+cg+cb+1);
+                    cr *= x;
+                    cg *= x;
+                    cb *= x;
+                    cr = cr>255?255:cr;
+                    cg = cg>255?255:cg;
+                    cb = cb>255?255:cb;
+                } else {
+                    cr = PIXR(ptypes[t].pcolors);
+                    cg = PIXG(ptypes[t].pcolors);
+                    cb = PIXB(ptypes[t].pcolors);
+                }
 
                 //if(vid[(ny-1)*YRES+(nx-1)]!=0){
                 //	blendpixel(vid, nx, ny-1, R, G, B, 46);
