@@ -74,6 +74,62 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
     if(pt==PT_PHOT&&(
                 (r&0xFF)==PT_GLAS || (r&0xFF)==PT_PHOT ||
                 (r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN ||
+                (r&0xFF)==PT_GLOW || (r&0xFF)==PT_WATR || 
+                (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW ||
+                ((r&0xFF)==PT_LCRY&&parts[r>>8].life > 5)))
+        return 2;
+    if(pt==PT_NEUT&&(
+                (r&0xFF)==PT_GLAS || (r&0xFF)==PT_PHOT ||
+                (r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN ||
+                (r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || 
+                (r&0xFF)==PT_SLTW || (r%0xFF)==PT_PLUT))
+                    return 2;
+
+    if(pt==PT_STKM) //Stick man's head shouldn't collide
+        return 2;
+
+    if(bmap[ny/CELL][nx/CELL]==13 && ptypes[pt].falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
+        return 0;
+    if(ptypes[pt].falldown!=2 && bmap[ny/CELL][nx/CELL]==3)
+        return 0;
+    if((pt==PT_NEUT ||pt==PT_PHOT) && bmap[ny/CELL][nx/CELL]==7 && !emap[ny/CELL][nx/CELL])
+        return 0;
+
+    if(bmap[ny/CELL][nx/CELL]==9)
+        return 0;
+
+    if(ptypes[pt].falldown!=1 && bmap[ny/CELL][nx/CELL]==10)
+        return 0;
+
+    if (r && ((r&0xFF) >= PT_NUM || (ptypes[pt].weight <= ptypes[(r&0xFF)].weight)))
+        return 0;
+
+    if(pt == PT_PHOT)
+        return 2;
+    
+    if(pt==PT_NEUT)
+        return 2;
+    return 1;
+}
+/*static int eval_move(int pt, int nx, int ny, unsigned *rr)
+{
+    unsigned r;
+
+    if(nx<0 || ny<0 || nx>=XRES || ny>=YRES)
+        return 0;
+
+    r = pmap[ny][nx];
+    if(r && (r>>8)<NPART)
+        r = (r&~0xFF) | parts[r>>8].type;
+    if(rr)
+        *rr = r;
+
+    if((r&0xFF)==PT_VOID || (r&0xFF)==PT_BHOL)
+        return 1;
+
+    if(pt==PT_PHOT&&(
+                (r&0xFF)==PT_GLAS || (r&0xFF)==PT_PHOT ||
+                (r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN ||
                 (r&0xFF)==PT_GLOW || (r&0xFF)==PT_WATR ||
                 (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW ||
                 ((r&0xFF)==PT_LCRY&&parts[r>>8].life > 5)))
@@ -111,7 +167,7 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
 
     return 1;
 }
-
+*/
 static void create_cherenkov_photon(int pp);
 static void create_gain_photon(int pp);
 
@@ -136,13 +192,13 @@ int try_move(int i, int x, int y, int nx, int ny)
         {
             if((r & 0xFF) == PT_COAL || (r & 0xFF) == PT_BCOL)
                 parts[r>>8].temp = parts[i].temp;
-            
+
             if((r & 0xFF) < PT_NUM)
                 parts[i].temp = parts[r>>8].temp = restrict_flt((parts[r>>8].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
         }
         return 0;
     }
-    
+
     if(e == 2)
     {
         if(parts[i].type == PT_PHOT && (r&0xFF)==PT_GLOW && !parts[r>>8].life)
@@ -151,13 +207,13 @@ int try_move(int i, int x, int y, int nx, int ny)
                 parts[r>>8].life = 120;
                 create_gain_photon(i);
             }
-        
-            if(parts[i].type == PT_NEUT && (r&0xFF)==PT_GLAS) {
+
+        if(parts[i].type == PT_NEUT && (r&0xFF)==PT_GLAS) {
             if(rand() < RAND_MAX/10)
                 create_cherenkov_photon(i);
-            }
-        return 1;
         }
+        return 1;
+    }
 
     if((r&0xFF)==PT_VOID)
     {
