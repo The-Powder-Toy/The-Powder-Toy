@@ -67,9 +67,9 @@ static menu_section msections[] =
 
 struct ui_edit
 {
-    int x, y, w, nx;
+    int x, y, w, nx, h;
     char str[256],*def;
-    int focus, cursor, hide;
+    int focus, cursor, hide, multiline;
 };
 typedef struct ui_edit ui_edit;
 
@@ -207,6 +207,8 @@ void execute_report(pixel *vid_buf, char *id);
 void execute_fav(pixel *vid_buf, char *id);
 
 int execute_vote(pixel *vid_buf, char *id, char *action);
+
+void open_link(char *uri);
 
 #endif
 

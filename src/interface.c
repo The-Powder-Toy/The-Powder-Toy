@@ -1,3 +1,6 @@
+#ifdef MACOSX
+#include <CoreFoundation/CFString.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -208,7 +211,7 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
     strcpy(signs[i].text, ed.str);
     signs[i].ju = ju;
 }
-
+//TODO: Finish text wrapping in text edits
 void ui_edit_draw(pixel *vid_buf, ui_edit *ed)
 {
     int cx, i;
@@ -226,8 +229,13 @@ void ui_edit_draw(pixel *vid_buf, ui_edit *ed)
 
     if(ed->str[0])
     {
-        drawtext(vid_buf, ed->x, ed->y, str, 255, 255, 255, 255);
-        drawtext(vid_buf, ed->x+ed->w-11, ed->y-1, "\xAA", 128, 128, 128, 255);
+		if(ed->multiline){
+			drawtextwrap(vid_buf, ed->x, ed->y, ed->h, str, 255, 255, 255, 255);
+			drawtext(vid_buf, ed->x+ed->w-11, ed->y-1, "\xAA", 128, 128, 128, 255);
+		} else {
+			drawtext(vid_buf, ed->x, ed->y, str, 255, 255, 255, 255);
+			drawtext(vid_buf, ed->x+ed->w-11, ed->y-1, "\xAA", 128, 128, 128, 255);
+		}
     }
     else if(!ed->focus)
         drawtext(vid_buf, ed->x, ed->y, ed->def, 128, 128, 128, 255);
@@ -259,19 +267,35 @@ void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
         else
             str = ed->str;
 
-        if(mx>=ed->x+ed->w-11 && mx<ed->x+ed->w && my>=ed->y-5 && my<ed->y+11)
-        {
-            ed->focus = 1;
-            ed->cursor = 0;
-            ed->str[0] = 0;
-        }
-        else if(mx>=ed->x-ed->nx && mx<ed->x+ed->w && my>=ed->y-5 && my<ed->y+11)
-        {
-            ed->focus = 1;
-            ed->cursor = textwidthx(str, mx-ed->x);
-        }
-        else
-            ed->focus = 0;
+		if(ed->multiline){
+			if(mx>=ed->x+ed->w-11 && mx<ed->x+ed->w && my>=ed->y-5 && my<ed->y+11)
+			{
+				ed->focus = 1;
+				ed->cursor = 0;
+				ed->str[0] = 0;
+			}
+			else if(mx>=ed->x-ed->nx && mx<ed->x+ed->w && my>=ed->y-5 && my<ed->y+ed->h)
+			{
+				ed->focus = 1;
+				ed->cursor = textwidthx(str, mx-ed->x);
+			}
+			else
+				ed->focus = 0;
+		} else {
+			if(mx>=ed->x+ed->w-11 && mx<ed->x+ed->w && my>=ed->y-5 && my<ed->y+11)
+			{
+				ed->focus = 1;
+				ed->cursor = 0;
+				ed->str[0] = 0;
+			}
+			else if(mx>=ed->x-ed->nx && mx<ed->x+ed->w && my>=ed->y-5 && my<ed->y+11)
+			{
+				ed->focus = 1;
+				ed->cursor = textwidthx(str, mx-ed->x);
+			}
+			else
+				ed->focus = 0;
+		}
     }
     if(ed->focus && sdl_key)
     {
@@ -1122,6 +1146,7 @@ int save_name_ui(pixel *vid_buf)
     ed.focus = 1;
     ed.hide = 0;
     ed.cursor = strlen(svf_name);
+	ed.multiline = 0;
     strcpy(ed.str, svf_name);
 
     cb.x = x0+10;
@@ -1818,6 +1843,7 @@ int search_ui(pixel *vid_buf)
     ed.focus = 1;
     ed.hide = 0;
     ed.cursor = strlen(search_expr);
+	ed.multiline = 0;
     strcpy(ed.str, search_expr);
 
     sdl_wheel = 0;
@@ -2524,8 +2550,8 @@ finish:
 
 int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 {
-    int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawnthumb=0,authoritah=0,queue_open=0,data_size=0,retval=0;
-    char *uri, *uri_2;
+    int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawnthumb=0,authoritah=0,myown=0,queue_open=0,data_size=0,retval=0,bc=255,openable=1;
+    char *uri, *uri_2, *o_uri;
     void *data, *info_data;
     save_info *info = malloc(sizeof(save_info));
     void *http = NULL, *http_2 = NULL;
@@ -2533,6 +2559,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
     int status, status_2, info_ready = 0, data_ready = 0;
     time_t http_last_use = HTTP_TIMEOUT,  http_last_use_2 = HTTP_TIMEOUT;
     pixel *save_pic;// = malloc((XRES/2)*(YRES/2));
+	ui_edit ed;
 
     pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
     fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
@@ -2543,6 +2570,18 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
     drawrect(vid_buf, 50+(XRES/2)+1, 50, XRES+BARSIZE-100-((XRES/2)+1), YRES+MENUSIZE-100, 155, 155, 155, 255);
     drawtext(vid_buf, 50+(XRES/4)-textwidth("Loading...")/2, 50+(YRES/4), "Loading...", 255, 255, 255, 128);
 
+	ed.x = 57+(XRES/2)+1;
+	ed.y = YRES+MENUSIZE-118;
+	ed.w = XRES+BARSIZE-114-((XRES/2)+1);
+	ed.h = 48;
+    ed.nx = 1;
+    ed.def = "Add comment";
+    ed.focus = 1;
+    ed.hide = 0;
+	ed.multiline = 1;
+    ed.cursor = 0;
+    strcpy(ed.str, "");
+	
     memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 
     while(!sdl_poll())
@@ -2629,7 +2668,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
             free(http_2);
             http_2 = NULL;
         }
-
+		
         if(data_ready && !hasdrawnthumb) {
             draw_image(vid_buf, save_pic, 51, 51, thumb_w, thumb_h, 255);
             hasdrawnthumb = 1;
@@ -2653,9 +2692,22 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
                 draw_line(vid_buf, 50+(XRES/2)+2, ccy+52, XRES+BARSIZE-50, ccy+52, 100, 100, 100, XRES+BARSIZE);
             }
             hasdrawninfo = 1;
-            authoritah = svf_login && (!strcmp(info->author, svf_user) || svf_admin || svf_mod);
+            myown = svf_login && !strcmp(info->author, svf_user);
+			authoritah = svf_login && (!strcmp(info->author, svf_user) || svf_admin || svf_mod);
             memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
         }
+		if(info_ready && svf_login){
+			
+			fillrect(vid_buf, 50+(XRES/2)+1, YRES+MENUSIZE-125, XRES+BARSIZE-100-((XRES/2)+1), 75, 0, 0, 0, 255);
+			drawrect(vid_buf, 50+(XRES/2)+1, YRES+MENUSIZE-125, XRES+BARSIZE-100-((XRES/2)+1), 75, 200, 200, 200, 255);
+			
+			drawrect(vid_buf, 54+(XRES/2)+1, YRES+MENUSIZE-121, XRES+BARSIZE-108-((XRES/2)+1), 48, 255, 255, 255, 200);
+			
+			ui_edit_draw(vid_buf, &ed);
+			
+			drawrect(vid_buf, XRES+BARSIZE-100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
+			drawtext(vid_buf, XRES+BARSIZE-90, YRES+MENUSIZE-63, "Submit", 255, 255, 255, 255);
+		}
 
         if(queue_open) {
             if(info_ready && data_ready) {
@@ -2705,61 +2757,103 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
         }
 
         //Open Button
-        if(sdl_key==SDLK_RETURN) {
+		bc = openable?255:150;
+        drawrect(vid_buf, 50, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
+        drawtext(vid_buf, 73, YRES+MENUSIZE-63, "Open", 255, 255, 255, bc);
+        drawtext(vid_buf, 58, YRES+MENUSIZE-64, "\x81", 255, 255, 255, bc);
+        //Fav Button
+        bc = svf_login?255:150;
+        drawrect(vid_buf, 100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
+        drawtext(vid_buf, 122, YRES+MENUSIZE-63, "Fav.", 255, 255, 255, bc);
+        drawtext(vid_buf, 107, YRES+MENUSIZE-64, "\xCC", 255, 255, 255, bc);
+        //Report Button
+        bc = (svf_login && info_ready)?255:150;
+        drawrect(vid_buf, 150, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
+        drawtext(vid_buf, 168, YRES+MENUSIZE-63, "Report", 255, 255, 255, bc);
+        drawtext(vid_buf, 158, YRES+MENUSIZE-63, "!", 255, 255, 255, bc);
+        //Delete Button
+		bc = authoritah?255:150;
+		drawrect(vid_buf, 200, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
+		drawtext(vid_buf, 218, YRES+MENUSIZE-63, "Delete", 255, 255, 255, bc);
+		drawtext(vid_buf, 206, YRES+MENUSIZE-64, "\xAA", 255, 255, 255, bc);
+		//Open in browser button
+		bc = 255;
+        drawrect(vid_buf, 250, YRES+MENUSIZE-68, 107, 18, 255, 255, 255, bc);
+        drawtext(vid_buf, 273, YRES+MENUSIZE-63, "Open in Browser", 255, 255, 255, bc);
+        drawtext(vid_buf, 258, YRES+MENUSIZE-64, "\x81", 255, 255, 255, bc);
+		
+		//Open Button
+		if(sdl_key==SDLK_RETURN && openable) {
             queue_open = 1;
         }
-        drawrect(vid_buf, 70, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
-        drawtext(vid_buf, 93, YRES+MENUSIZE-63, "Open", 255, 255, 255, 255);
-        drawtext(vid_buf, 78, YRES+MENUSIZE-64, "\x81", 255, 255, 255, 255);
-        if(mx > 70 && mx < 70+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50) {
-            fillrect(vid_buf, 70, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
+		if(mx > 50 && mx < 50+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && openable) {
+            fillrect(vid_buf, 50, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
             if(b && !bq) {
+				//Button Clicked
                 queue_open = 1;
             }
         }
-
-        //Fav Button
-        if(svf_login) {
-            drawrect(vid_buf, 140, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
-            drawtext(vid_buf, 162, YRES+MENUSIZE-63, "Fav.", 255, 255, 255, 255);
-            drawtext(vid_buf, 147, YRES+MENUSIZE-64, "\xCC", 255, 255, 255, 255);
-            if(mx > 140 && mx < 140+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50) {
-                fillrect(vid_buf, 140, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
-                if(b && !bq) {
-                    //Button Clicked
-                }
+		//Fav Button
+		if(mx > 100 && mx < 100+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && svf_login) {
+            fillrect(vid_buf, 100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
+			if(b && !bq) {
+                //Button Clicked
+				fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+				info_box(vid_buf, "Adding to favourites...");
+				execute_fav(vid_buf, save_id);
+            }
+		}
+		//Report Button
+		if(mx > 150 && mx < 150+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && svf_login && info_ready) {
+            fillrect(vid_buf, 150, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
+			if(b && !bq) {
+                //Button Clicked
+				if(confirm_ui(vid_buf, "Are you sure?", "Are you sure you wish to report this save?", "Report")){
+					fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+					info_box(vid_buf, "Reporting...");
+					execute_report(vid_buf, save_id);
+				}
             }
         }
-
-        //Report Button
-        if(svf_login) {
-            drawrect(vid_buf, 210, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
-            drawtext(vid_buf, 228, YRES+MENUSIZE-63, "Report", 255, 255, 255, 255);
-            drawtext(vid_buf, 218, YRES+MENUSIZE-63, "!", 255, 255, 255, 255);
-            if(mx > 210 && mx < 210+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50) {
-                fillrect(vid_buf, 210, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
-                if(b && !bq) {
-                    //Button Clicked
-                }
+		//Delete Button
+		if(mx > 200 && mx < 200+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && authoritah) {
+			fillrect(vid_buf, 200, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
+			if(b && !bq) {
+				//Button Clicked
+				if(myown || !info->publish){
+					if(confirm_ui(vid_buf, "Are you sure you wish to delete this?", "This you will not be able recover it.", "Delete")){
+						fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+						info_box(vid_buf, "Deleting...");
+						execute_delete(vid_buf, save_id);
+					}	
+				} else if(authoritah){
+					if(confirm_ui(vid_buf, "Are you sure?", "This save will be removed from the search index.", "Remove")){
+						fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+						info_box(vid_buf, "Removing...");
+						execute_delete(vid_buf, save_id);
+					}	
+				}
+			}
+		}
+		//Open in browser button
+		if(mx > 250 && mx < 250+107 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50) {
+            fillrect(vid_buf, 250, YRES+MENUSIZE-68, 107, 18, 255, 255, 255, 40);
+            if(b && !bq) {
+				//Button Clicked
+				//TODO: Open link
+				o_uri = malloc(7+strlen(SERVER)+41+strlen(save_id)*3);
+				strcpy(o_uri, "http://" SERVER "/Browse/View.html?ID=");
+				strcaturl(o_uri, save_id);
+				open_link(o_uri);
+				free(o_uri);
             }
         }
-
-        //Delete Button
-        if(authoritah) {
-            drawrect(vid_buf, 280, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
-            drawtext(vid_buf, 298, YRES+MENUSIZE-63, "Delete", 255, 255, 255, 255);
-            drawtext(vid_buf, 286, YRES+MENUSIZE-64, "\xAA", 255, 255, 255, 255);
-            if(mx > 280 && mx < 280+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50) {
-                fillrect(vid_buf, 280, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
-                if(b && !bq) {
-                    //Button Clicked
-                }
-            }
-        }
-
 
         sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
         memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+		if(info_ready && svf_login){
+			ui_edit_process(mx, my, b, &ed);
+		}
 
         if(sdl_key==SDLK_ESCAPE)
             break;
@@ -3408,4 +3502,17 @@ int execute_vote(pixel *vid_buf, char *id, char *action)
     if(result)
         free(result);
     return 1;
+}
+void open_link(char *uri){
+#ifdef WIN32
+	ShellExecute(0, "OPEN", uri, NULL, NULL, 0)
+#elif MACOSX
+	//LSOpenCFURLRef(CFURLCreateWithString(NULL, CFStringCreateWithCString(NULL, uri, 0) ,NULL), NULL); //TODO: Get this crap working
+#elif LIN32
+	execvp("xdg-open", uri);
+#elif LIN64
+	execvp("xdg-open", uri);
+#else
+	printf("Cannot open browser\n");
+#endif
 }

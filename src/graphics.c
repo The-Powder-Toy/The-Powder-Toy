@@ -1002,6 +1002,19 @@ int textnwidth(char *s, int n)
     }
     return x-1;
 }
+int textnheight(char *s, int n, int w)
+{
+    int x = 0;
+	//TODO: Implement Textnheight for wrapped text
+	for(; *s; s++)
+    {
+        if(!n)
+            break;
+        x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+        n--;
+    }
+    return x-1;
+}
 
 int textwidthx(char *s, int w)
 {
