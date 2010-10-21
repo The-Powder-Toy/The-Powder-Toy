@@ -49,7 +49,12 @@ static void photoelectric_effect(int nx, int ny)
 	pn_junction_sprk(nx, ny, PT_PSCN);
     }
 }
-
+/*
+   RETURN-value explenation
+1 = Swap        
+0 = No move/Bounce
+2 = Both particles occupy the same space.
+ */
 static int eval_move(int pt, int nx, int ny, unsigned *rr)
 {
     unsigned r;
