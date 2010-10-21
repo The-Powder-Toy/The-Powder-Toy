@@ -93,13 +93,18 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
     if(ptypes[pt].falldown!=1 && bmap[ny/CELL][nx/CELL]==10)
         return 0;
 
-    if (r && ((r&0xFF) >= PT_NUM ||
-        (ptypes[pt].weight <= ptypes[(r&0xFF)].weight))
-       )
-        return 0;
-
     if(pt == PT_PHOT)
         return 2;
+	
+	if(pt == PT_NEUT)
+        return 1;
+	if((r&0xFF) == PT_NEUT)
+        return 0;
+	
+	if (r && ((r&0xFF) >= PT_NUM || (ptypes[pt].weight <= ptypes[(r&0xFF)].weight)))
+        return 0;
+	
+	
     return 1;
 }
 
@@ -490,6 +495,10 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].vx = r*cosf(a);
         parts[i].vy = r*sinf(a);
     }
+	if(t==PT_MORT)
+	{
+		parts[i].vx = 2;
+	}
     if(t==PT_PHOT)
     {
 		float a = (rand()%8) * 0.78540f;
@@ -1763,6 +1772,9 @@ void update_particles_i(pixel *vid, int start, int inc)
                             }
                         }
             }
+			else if(t==PT_MORT){
+				create_part(-1, x, y-1, PT_SMKE);
+			}
             else if(t==PT_LCRY)
             {
                 for(nx=-1; nx<2; nx++)

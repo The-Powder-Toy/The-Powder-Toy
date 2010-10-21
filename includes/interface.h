@@ -190,9 +190,9 @@ char *download_ui(pixel *vid_buf, char *uri, int *len);
 
 int search_ui(pixel *vid_buf);
 
-int open_ui(pixel *vid_buf, char *save_id);
+int open_ui(pixel *vid_buf, char *save_id, char *save_date);
 
-int info_parse(void *info_data, save_info *info);
+int info_parse(char *info_data, save_info *info);
 
 int search_results(char *str, int votes);
 
