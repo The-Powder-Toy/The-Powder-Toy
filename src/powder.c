@@ -74,62 +74,6 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
     if(pt==PT_PHOT&&(
                 (r&0xFF)==PT_GLAS || (r&0xFF)==PT_PHOT ||
                 (r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN ||
-                (r&0xFF)==PT_GLOW || (r&0xFF)==PT_WATR || 
-                (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW ||
-                ((r&0xFF)==PT_LCRY&&parts[r>>8].life > 5)))
-        return 2;
-    if(pt==PT_NEUT&&(
-                (r&0xFF)==PT_GLAS || (r&0xFF)==PT_PHOT ||
-                (r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN ||
-                (r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || 
-                (r&0xFF)==PT_SLTW || (r%0xFF)==PT_PLUT))
-                    return 2;
-
-    if(pt==PT_STKM) //Stick man's head shouldn't collide
-        return 2;
-
-    if(bmap[ny/CELL][nx/CELL]==13 && ptypes[pt].falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
-        return 0;
-    if(ptypes[pt].falldown!=2 && bmap[ny/CELL][nx/CELL]==3)
-        return 0;
-    if((pt==PT_NEUT ||pt==PT_PHOT) && bmap[ny/CELL][nx/CELL]==7 && !emap[ny/CELL][nx/CELL])
-        return 0;
-
-    if(bmap[ny/CELL][nx/CELL]==9)
-        return 0;
-
-    if(ptypes[pt].falldown!=1 && bmap[ny/CELL][nx/CELL]==10)
-        return 0;
-
-    if (r && ((r&0xFF) >= PT_NUM || (ptypes[pt].weight <= ptypes[(r&0xFF)].weight)))
-        return 0;
-
-    if(pt == PT_PHOT)
-        return 2;
-    
-    if(pt==PT_NEUT)
-        return 2;
-    return 1;
-}
-/*static int eval_move(int pt, int nx, int ny, unsigned *rr)
-{
-    unsigned r;
-
-    if(nx<0 || ny<0 || nx>=XRES || ny>=YRES)
-        return 0;
-
-    r = pmap[ny][nx];
-    if(r && (r>>8)<NPART)
-        r = (r&~0xFF) | parts[r>>8].type;
-    if(rr)
-        *rr = r;
-
-    if((r&0xFF)==PT_VOID || (r&0xFF)==PT_BHOL)
-        return 1;
-
-    if(pt==PT_PHOT&&(
-                (r&0xFF)==PT_GLAS || (r&0xFF)==PT_PHOT ||
-                (r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN ||
                 (r&0xFF)==PT_GLOW || (r&0xFF)==PT_WATR ||
                 (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW ||
                 ((r&0xFF)==PT_LCRY&&parts[r>>8].life > 5)))
@@ -151,23 +95,23 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
     if(ptypes[pt].falldown!=1 && bmap[ny/CELL][nx/CELL]==10)
         return 0;
 
-    if(pt == PT_PHOT)
-        return 0;
-    if(pt == PT_NEUT)
-        return 1;
-    if(pt == PT_NEUT && (r&0xFF == PT_WATR||r&0xFF == PT_SLTW ||r&0xFF == PT_DSTW))
-        return 2;
-
-    if((r&0xFF) == PT_NEUT)
-        return 0;
-
+	if(ptypes[pt].properties&TYPE_ENERGY && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&TYPE_ENERGY))))
+		return 2;
+	
+	if(pt==PT_NEUT && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE))))
+		return 1;
+	if((r&0xFF)==PT_NEUT && ptypes[pt].properties&PROP_NEUTPENETRATE)
+		return 0;
+	
     if (r && ((r&0xFF) >= PT_NUM || (ptypes[pt].weight <= ptypes[(r&0xFF)].weight)))
         return 0;
 
+	if(pt == PT_PHOT)
+        return 2;
 
     return 1;
 }
-*/
+
 static void create_cherenkov_photon(int pp);
 static void create_gain_photon(int pp);
 
