@@ -3595,7 +3595,6 @@ int create_parts(int x, int y, int r, int c)
         bmap[j][i] = 5;
         return 1;
     }
-    //LOLOLOLOLLOLOLOLO
     if(c == 127)
     {
         b = 4;
