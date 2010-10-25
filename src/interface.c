@@ -230,7 +230,7 @@ void ui_edit_draw(pixel *vid_buf, ui_edit *ed)
     if(ed->str[0])
     {
 		if(ed->multiline){
-			drawtextwrap(vid_buf, ed->x, ed->y, ed->h, str, 255, 255, 255, 255);
+			drawtextwrap(vid_buf, ed->x, ed->y, ed->w-14, str, 255, 255, 255, 255);
 			drawtext(vid_buf, ed->x+ed->w-11, ed->y-1, "\xAA", 128, 128, 128, 255);
 		} else {
 			drawtext(vid_buf, ed->x, ed->y, str, 255, 255, 255, 255);
@@ -360,19 +360,19 @@ void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
                 }
                 ts[0]=ed->hide?0x8D:ch;
                 ts[1]=0;
-                if(textwidth(str)+textwidth(ts) > ed->w-14)
+                if((textwidth(str)+textwidth(ts) > ed->w-14 && !ed->multiline) || (float)(((textwidth(str)+textwidth(ts))/(ed->w-14)*12) > ed->h && ed->multiline))
                     break;
                 memmove(ed->str+ed->cursor+1, ed->str+ed->cursor, l+1-ed->cursor);
                 ed->str[ed->cursor] = ch;
                 ed->cursor++;
             }
 #else
-            if(sdl_ascii>=' ' && sdl_ascii<127)
+            if(sdl_ascii>=' ' && sdl_ascii<127 && l<255)
             {
                 ch = sdl_ascii;
                 ts[0]=ed->hide?0x8D:ch;
                 ts[1]=0;
-                if(textwidth(str)+textwidth(ts) > ed->w-14)
+                if((textwidth(str)+textwidth(ts) > ed->w-14 && !ed->multiline) || (float)(((textwidth(str)+textwidth(ts))/(ed->w-14)*12) > ed->h && ed->multiline))
                     break;
                 memmove(ed->str+ed->cursor+1, ed->str+ed->cursor, l+1-ed->cursor);
                 ed->str[ed->cursor] = ch;
@@ -2601,7 +2601,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
         strcaturl(uri, save_date);
 
         uri_2 = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
-        strcpy(uri_2, "http://" SERVER "/Get.api?Op=save&ID=");
+        strcpy(uri_2, "http://" SERVER "/Info.api?ID=");
         strcaturl(uri_2, save_id);
         strappend(uri_2, "&Date=");
         strcaturl(uri_2, save_date);
@@ -2811,26 +2811,36 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 				if(confirm_ui(vid_buf, "Are you sure?", "Are you sure you wish to report this save?", "Report")){
 					fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 					info_box(vid_buf, "Reporting...");
-					execute_report(vid_buf, save_id);
+					if(execute_report(vid_buf, save_id)){
+						info_ui(vid_buf, "Success", "This save has been reported");
+						retval = 0;
+						break;							
+					}
 				}
             }
         }
 		//Delete Button
-		if(mx > 200 && mx < 200+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && authoritah) {
+		if(mx > 200 && mx < 200+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && (authoritah || myown)) {
 			fillrect(vid_buf, 200, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
 			if(b && !bq) {
 				//Button Clicked
 				if(myown || !info->publish){
-					if(confirm_ui(vid_buf, "Are you sure you wish to delete this?", "This you will not be able recover it.", "Delete")){
+					if(confirm_ui(vid_buf, "Are you sure you wish to delete this?", "You will not be able recover it.", "Delete")){
 						fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 						info_box(vid_buf, "Deleting...");
-						execute_delete(vid_buf, save_id);
+						if(execute_delete(vid_buf, save_id)){
+							retval = 0;
+							break;	
+						}
 					}	
-				} else if(authoritah){
+				} else {
 					if(confirm_ui(vid_buf, "Are you sure?", "This save will be removed from the search index.", "Remove")){
 						fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 						info_box(vid_buf, "Removing...");
-						execute_delete(vid_buf, save_id);
+						if(execute_delete(vid_buf, save_id)){
+							retval = 0;
+							break;							
+						}
 					}	
 				}
 			}
@@ -2848,6 +2858,16 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 				free(o_uri);
             }
         }
+	//Submit Button
+	if(mx > XRES+BARSIZE-100 && mx < XRES+BARSIZE-100+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && svf_login && info_ready) {
+		fillrect(vid_buf, XRES+BARSIZE-100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
+		if(b && !bq) {
+        		//Button Clicked
+			fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+			info_box(vid_buf, "Submitting Comment...");
+			execute_submit(vid_buf, save_id, ed.str);
+        	}
+	}
 
         sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
         memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
@@ -3366,7 +3386,7 @@ void execute_save(pixel *vid_buf)
         free(result);
 }
 
-void execute_delete(pixel *vid_buf, char *id)
+int execute_delete(pixel *vid_buf, char *id)
 {
     int status;
     char *result;
@@ -3378,6 +3398,42 @@ void execute_delete(pixel *vid_buf, char *id)
 
     result = http_multipart_post(
                  "http://" SERVER "/Delete.api",
+                 names, parts, NULL,
+                 svf_user, svf_pass,
+                 &status, NULL);
+
+    if(status!=200)
+    {
+        error_ui(vid_buf, status, http_ret_text(status));
+        if(result)
+            free(result);
+        return 0;
+    }
+    if(result && strncmp(result, "OK", 2))
+    {
+        error_ui(vid_buf, 0, result);
+        free(result);
+        return 0;
+    }
+
+    if(result)
+        free(result);
+	return 1;
+}
+
+void execute_submit(pixel *vid_buf, char *id, char *message)
+{
+    int status;
+    char *result;
+
+    char *names[] = {"ID", "Message", NULL};
+    char *parts[2];
+
+    parts[0] = id;
+    parts[1] = message;
+
+    result = http_multipart_post(
+                 "http://" SERVER "/Comment.api",
                  names, parts, NULL,
                  svf_user, svf_pass,
                  &status, NULL);
@@ -3400,7 +3456,7 @@ void execute_delete(pixel *vid_buf, char *id)
         free(result);
 }
 
-void execute_report(pixel *vid_buf, char *id)
+int execute_report(pixel *vid_buf, char *id)
 {
     int status;
     char *result;
@@ -3421,17 +3477,18 @@ void execute_report(pixel *vid_buf, char *id)
         error_ui(vid_buf, status, http_ret_text(status));
         if(result)
             free(result);
-        return;
+        return 0;
     }
     if(result && strncmp(result, "OK", 2))
     {
         error_ui(vid_buf, 0, result);
         free(result);
-        return;
+        return 0;
     }
 
     if(result)
         free(result);
+	return 1;
 }
 
 void execute_fav(pixel *vid_buf, char *id)

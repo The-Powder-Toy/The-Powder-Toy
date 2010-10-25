@@ -200,9 +200,11 @@ int execute_tagop(pixel *vid_buf, char *op, char *tag);
 
 void execute_save(pixel *vid_buf);
 
-void execute_delete(pixel *vid_buf, char *id);
+int execute_delete(pixel *vid_buf, char *id);
 
-void execute_report(pixel *vid_buf, char *id);
+int execute_report(pixel *vid_buf, char *id);
+
+void execute_submit(pixel *vid_buf, char *id, char *message);
 
 void execute_fav(pixel *vid_buf, char *id);
 
