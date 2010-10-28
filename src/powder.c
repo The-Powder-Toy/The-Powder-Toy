@@ -663,9 +663,13 @@ inline void delete_part(int x, int y)
     i = pmap[y][x];
     if(!i || (i>>8)>=NPART)
         return;
-
-    kill_part(i>>8);
-    pmap[y][x] = 0;	// just in case
+    if((parts[i>>8].type==SLALT)||SLALT==-1||SLALT==0)
+	{
+		kill_part(i>>8);
+		pmap[y][x] = 0;	
+	}
+	else
+	    return;
 }
 
 #ifdef WIN32
@@ -3580,7 +3584,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 
 int create_parts(int x, int y, int r, int c)
 {
-    int i, j, f = 0, u, v, oy, ox, b = 0, dw = 0; //n;
+    int i, j, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0; //n;
 
     if(c == 125)
     {
@@ -3691,6 +3695,14 @@ int create_parts(int x, int y, int r, int c)
         }
         return 1;
     }
+    if(sdl_mod & (KMOD_LALT))
+	{
+        for(j=-r; j<=r; j++)
+            for(i=-r; i<=r; i++)
+                if(i*i+j*j<=r*r)
+                    delete_part(x+i, y+j);
+        return 1;
+	}
     if(c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM)
     {
         for(j=-r; j<=r; j++)
@@ -3702,10 +3714,13 @@ int create_parts(int x, int y, int r, int c)
 
     if(c == 0)
     {
+	stemp = SLALT;
+	SLALT = -1;
         for(j=-r; j<=r; j++)
             for(i=-r; i<=r; i++)
                 if(i*i+j*j<=r*r)
                     delete_part(x+i, y+j);
+	SLALT = stemp;
         return 1;
     }
 

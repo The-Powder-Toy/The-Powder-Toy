@@ -100,6 +100,7 @@ struct ui_checkbox
 };
 typedef struct ui_checkbox ui_checkbox;
 
+int SLALT;
 extern SDLMod sdl_mod;
 extern int sdl_key, sdl_wheel, sdl_caps, sdl_ascii, sdl_zoom_trig;
 extern char *shift_0;
