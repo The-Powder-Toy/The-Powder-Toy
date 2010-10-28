@@ -745,15 +745,15 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 
 void draw_menu(pixel *vid_buf, int i, int hover)
 {
-    drawrect(vid_buf, XRES-2, (i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16), 14, 14, 255, 255, 255, 255);
+    drawrect(vid_buf, (XRES+BARSIZE)-16, (i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16), 14, 14, 255, 255, 255, 255);
     if(hover==i)
     {
-        fillrect(vid_buf, XRES-2, (i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16), 14, 14, 255, 255, 255, 255);
-        drawtext(vid_buf, XRES+1, (i*16)+YRES+MENUSIZE-14-(SC_TOTAL*16), msections[i].icon, 0, 0, 0, 255);
+        fillrect(vid_buf, (XRES+BARSIZE)-16, (i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16), 14, 14, 255, 255, 255, 255);
+        drawtext(vid_buf, (XRES+BARSIZE)-13, (i*16)+YRES+MENUSIZE-14-(SC_TOTAL*16), msections[i].icon, 0, 0, 0, 255);
     }
     else
     {
-        drawtext(vid_buf, XRES+1, (i*16)+YRES+MENUSIZE-14-(SC_TOTAL*16), msections[i].icon, 255, 255, 255, 255);
+        drawtext(vid_buf, (XRES+BARSIZE)-13, (i*16)+YRES+MENUSIZE-14-(SC_TOTAL*16), msections[i].icon, 255, 255, 255, 255);
     }
 }
 
@@ -843,6 +843,62 @@ int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a
     }
 #endif
     return x;
+}
+int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, int b, int a)
+{
+#ifdef OpenGL
+#else
+    int sx = x;
+    int rh = 12;
+    int rw = 0;
+    int cw = x;
+    for(; *s; s++)
+    {
+        if(*s == '\n')
+        {
+            x = sx;
+            rw = 0;
+            y += FONT_H+2;
+        }
+        else if(*s == '\b')
+        {
+            switch(s[1])
+            {
+            case 'w':
+                r = g = b = 255;
+                break;
+            case 'g':
+                r = g = b = 192;
+                break;
+            case 'o':
+                r = 255;
+                g = 216;
+                b = 32;
+                break;
+            case 'r':
+                r = 255;
+                g = b = 0;
+                break;
+            case 'b':
+                r = g = 0;
+                b = 255;
+                break;
+            }
+            s++;
+        }
+        else
+        {
+            if(x-cw>=w) {
+                x = sx;
+                rw = 0;
+                y+=FONT_H+2;
+                rh+=FONT_H+2;
+            }
+            x = drawchar(vid, x, y, *(unsigned char *)s, r, g, b, a);
+        }
+    }
+#endif
+    return rh;
 }
 
 void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
@@ -938,6 +994,19 @@ int textnwidth(char *s, int n)
 {
     int x = 0;
     for(; *s; s++)
+    {
+        if(!n)
+            break;
+        x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+        n--;
+    }
+    return x-1;
+}
+int textnheight(char *s, int n, int w)
+{
+    int x = 0;
+	//TODO: Implement Textnheight for wrapped text
+	for(; *s; s++)
     {
         if(!n)
             break;
@@ -1420,20 +1489,20 @@ void draw_parts(pixel *vid)
                         cg = 0;
                         cb = 0;
                         cr = 0;
-			for(x=0; x<12; x++) {
-			    cr += (parts[i].ctype >> (x+18)) & 1;
-			    cb += (parts[i].ctype >>  x)     & 1;
-			}
-			for(x=0; x<14; x++)
-			    cg += (parts[i].ctype >> (x+9))  & 1;
-			x = 624/(cr+cg+cb+1);
-			cr *= x;
-			cg *= x;
-			cb *= x;
+                        for(x=0; x<12; x++) {
+                            cr += (parts[i].ctype >> (x+18)) & 1;
+                            cb += (parts[i].ctype >>  x)     & 1;
+                        }
+                        for(x=0; x<14; x++)
+                            cg += (parts[i].ctype >> (x+9))  & 1;
+                        x = 624/(cr+cg+cb+1);
+                        cr *= x;
+                        cg *= x;
+                        cb *= x;
                         vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cr>255?255:cr,cg>255?255:cg,cb>255?255:cb);
-			cr >>= 4;
-			cg >>= 4;
-			cb >>= 4;
+                        cr >>= 4;
+                        cg >>= 4;
+                        cb >>= 4;
                         x = nx/CELL;
                         y = ny/CELL;
                         cg += fire_g[y][x];
@@ -1448,9 +1517,22 @@ void draw_parts(pixel *vid)
                     }
                     else
                     {
-                        cr = 0xFF;
-                        cg = 0xFF;
-                        cb = 0xFF;
+                        cg = 0;
+                        cb = 0;
+                        cr = 0;
+                        for(x=0; x<12; x++) {
+                            cr += (parts[i].ctype >> (x+18)) & 1;
+                            cb += (parts[i].ctype >>  x)     & 1;
+                        }
+                        for(x=0; x<14; x++)
+                            cg += (parts[i].ctype >> (x+9))  & 1;
+                        x = 624/(cr+cg+cb+1);
+                        cr *= x;
+                        cg *= x;
+                        cb *= x;
+                        cr = cr>255?255:cr;
+                        cg = cg>255?255:cg;
+                        cb = cb>255?255:cb;
                         blendpixel(vid, nx, ny, cr, cg, cb, 192);
                         blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
                         blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
@@ -1883,45 +1965,48 @@ void draw_parts(pixel *vid)
                 }
                 else if(t==PT_FIRE && parts[i].life)
                 {
-					float ttemp = (float)parts[i].life;
-					int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
-					uint8 R = flm_data[caddress];
-					uint8 G = flm_data[caddress+1];
-					uint8 B = flm_data[caddress+2];
-					if(cmode == 3||cmode==4 || cmode==6)
-					{
-						cr = R/8;
-						cg = G/8;
-						cb = B/8;
-						x = nx/CELL;
-						y = ny/CELL;
-						cg += fire_g[y][x];
-						if(cg > 255) cg = 255;
-						fire_g[y][x] = cg;
-						cb += fire_b[y][x];
-						if(cb > 255) cb = 255;
-						fire_b[y][x] = cb;
-						cr += fire_r[y][x];
-						if(cr > 255) cr = 255;
-						fire_r[y][x] = cr;
-					}
-					else
-					{
-						cr = R;
-						cg = G;
-						cb = B;
-						blendpixel(vid, nx, ny, cr, cg, cb, 192);
-						blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
-						blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
-						blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
-						blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-						blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
-						blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
-						blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
-						blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
-					}
-					// Older Code	
-					/*if(cmode == 3||cmode==4 || cmode==6)
+                    float ttemp = (float)((int)(parts[i].life/2));
+                    int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+                    uint8 R = flm_data[caddress];
+                    uint8 G = flm_data[caddress+1];
+                    uint8 B = flm_data[caddress+2];
+                    if(cmode == 3||cmode==4 || cmode==6)
+                    {
+                        cr = R/8;
+                        cg = G/8;
+                        cb = B/8;
+                        x = nx/CELL;
+                        y = ny/CELL;
+                        cg += fire_g[y][x];
+                        if(cg > 255) cg = 255;
+                        fire_g[y][x] = cg;
+                        cb += fire_b[y][x];
+                        if(cb > 255) cb = 255;
+                        fire_b[y][x] = cb;
+                        cr += fire_r[y][x];
+                        if(cr > 255) cr = 255;
+                        fire_r[y][x] = cr;
+                    }
+                    else
+                    {
+                        cr = parts[i].life * 8;
+                        cg = parts[i].life * 2;
+                        cb = parts[i].life;
+                        if(cr>255) cr = 255;
+                        if(cg>192) cg = 212;
+                        if(cb>128) cb = 192;
+                        blendpixel(vid, nx, ny, cr, cg, cb, 255);
+                        blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+                        blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+                        blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+                        blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+                        blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
+                        blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
+                        blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
+                        blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
+                    }
+                    // Older Code
+                    /*if(cmode == 3||cmode==4 || cmode==6)
                     {
                         cr = parts[i].life / 4;
                         cg = parts[i].life / 16;
@@ -2065,23 +2150,42 @@ void draw_parts(pixel *vid)
             }
             if(cmode == 4&&t!=PT_FIRE&&t!=PT_PLSM&&t!=PT_HFLM&&t!=PT_NONE&&t!=PT_ACID&&t!=PT_LCRY&&t!=PT_GLOW&&t!=PT_SWCH&&t!=PT_SMKE&&t!=PT_WTRV&&!(t==PT_FIRW&&parts[i].tmp==3))
             {
-                uint8 R = PIXR(ptypes[t].pcolors);
-                uint8 G = PIXG(ptypes[t].pcolors);
-                uint8 B = PIXB(ptypes[t].pcolors);
+                if(t==PT_PHOT) {
+                    cg = 0;
+                    cb = 0;
+                    cr = 0;
+                    for(x=0; x<12; x++) {
+                        cr += (parts[i].ctype >> (x+18)) & 1;
+                        cb += (parts[i].ctype >>  x)     & 1;
+                    }
+                    for(x=0; x<14; x++)
+                        cg += (parts[i].ctype >> (x+9))  & 1;
+                    x = 624/(cr+cg+cb+1);
+                    cr *= x;
+                    cg *= x;
+                    cb *= x;
+                    cr = cr>255?255:cr;
+                    cg = cg>255?255:cg;
+                    cb = cb>255?255:cb;
+                } else {
+                    cr = PIXR(ptypes[t].pcolors);
+                    cg = PIXG(ptypes[t].pcolors);
+                    cb = PIXB(ptypes[t].pcolors);
+                }
 
                 //if(vid[(ny-1)*YRES+(nx-1)]!=0){
                 //	blendpixel(vid, nx, ny-1, R, G, B, 46);
                 //}
 
-                blendpixel(vid, nx+1, ny, R, G, B, 223);
-                blendpixel(vid, nx-1, ny, R, G, B, 223);
-                blendpixel(vid, nx, ny+1, R, G, B, 223);
-                blendpixel(vid, nx, ny-1, R, G, B, 223);
+                blendpixel(vid, nx+1, ny, cr, cg, cb, 223);
+                blendpixel(vid, nx-1, ny, cr, cg, cb, 223);
+                blendpixel(vid, nx, ny+1, cr, cg, cb, 223);
+                blendpixel(vid, nx, ny-1, cr, cg, cb, 223);
 
-                blendpixel(vid, nx+1, ny-1, R, G, B, 112);
-                blendpixel(vid, nx-1, ny-1, R, G, B, 112);
-                blendpixel(vid, nx+1, ny+1, R, G, B, 112);
-                blendpixel(vid, nx-1, ny+1, R, G, B, 112);
+                blendpixel(vid, nx+1, ny-1, cr, cg, cb, 112);
+                blendpixel(vid, nx-1, ny-1, cr, cg, cb, 112);
+                blendpixel(vid, nx+1, ny+1, cr, cg, cb, 112);
+                blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
             }
         }
 #endif

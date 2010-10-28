@@ -67,11 +67,31 @@ static menu_section msections[] =
 
 struct ui_edit
 {
-    int x, y, w, nx;
+    int x, y, w, nx, h;
     char str[256],*def;
-    int focus, cursor, hide;
+    int focus, cursor, hide, multiline;
 };
 typedef struct ui_edit ui_edit;
+
+struct save_info
+{
+    char *title;
+    char *name;
+    char *author;
+    char *date;
+    char *description;
+    int publish;
+    int voteup;
+    int votedown;
+    int vote;
+    int myvote;
+    int myfav;
+    char *tags;
+    int comment_count;
+    char *comments[6];
+    char *commentauthors[6];
+};
+typedef struct save_info save_info;
 
 struct ui_checkbox
 {
@@ -112,6 +132,7 @@ extern void *search_thumbs[GRID_X*GRID_Y];
 extern int   search_thsizes[GRID_X*GRID_Y];
 
 extern int search_own;
+extern int search_fav;
 extern int search_date;
 extern int search_page;
 extern char search_expr[256];
@@ -169,15 +190,27 @@ char *download_ui(pixel *vid_buf, char *uri, int *len);
 
 int search_ui(pixel *vid_buf);
 
+int open_ui(pixel *vid_buf, char *save_id, char *save_date);
+
+int info_parse(char *info_data, save_info *info);
+
 int search_results(char *str, int votes);
 
 int execute_tagop(pixel *vid_buf, char *op, char *tag);
 
 void execute_save(pixel *vid_buf);
 
-void execute_delete(pixel *vid_buf, char *id);
+int execute_delete(pixel *vid_buf, char *id);
+
+int execute_report(pixel *vid_buf, char *id);
+
+void execute_submit(pixel *vid_buf, char *id, char *message);
+
+void execute_fav(pixel *vid_buf, char *id);
 
 int execute_vote(pixel *vid_buf, char *id, char *action);
+
+void open_link(char *uri);
 
 #endif
 

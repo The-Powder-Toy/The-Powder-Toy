@@ -270,8 +270,11 @@ void *build_save(int *size, int x0, int y0, int w, int h)
         {
             x = (int)(parts[i].x+0.5f);
             y = (int)(parts[i].y+0.5f);
-            if(x>=x0 && x<x0+w && y>=y0 && y<y0+h)
-                m[(x-x0)+(y-y0)*w] = i+1;
+            if(x>=x0 && x<x0+w && y>=y0 && y<y0+h) {
+                if(!m[(x-x0)+(y-y0)*w] ||
+                        parts[m[(x-x0)+(y-y0)*w]-1].type == PT_PHOT)
+                    m[(x-x0)+(y-y0)*w] = i+1;
+            }
         }
     for(j=0; j<w*h; j++)
     {
@@ -319,7 +322,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
     for(j=0; j<w*h; j++)
     {
         i = m[j];
-        if(i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA))
+        if(i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA))
             d[p++] = parts[i-1].ctype;
     }
 
@@ -504,14 +507,18 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
             if(p >= size)
                 goto corrupt;
             j=d[p++];
-            if(j >= PT_NUM)
-                goto corrupt;
+            if(j >= PT_NUM) {
+                //TODO: Possibly some server side translation
+                j = PT_DUST;//goto corrupt;
+            }
             if(j)// && !(isplayer == 1 && j==PT_STKM))
             {
                 if(pmap[y][x])
                 {
                     k = pmap[y][x]>>8;
                     parts[k].type = j;
+                    if(j == PT_PHOT)
+                        parts[k].ctype = 0x3fffffff;
                     parts[k].x = (float)x;
                     parts[k].y = (float)y;
                     m[(x-x0)+(y-y0)*w] = k+1;
@@ -519,6 +526,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                 else if(i < nf)
                 {
                     parts[fp[i]].type = j;
+                    if(j == PT_PHOT)
+                        parts[fp[i]].ctype = 0x3fffffff;
                     parts[fp[i]].x = (float)x;
                     parts[fp[i]].y = (float)y;
                     m[(x-x0)+(y-y0)*w] = fp[i]+1;
@@ -629,7 +638,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
     {
         i = m[j];
         ty = d[pty+j];
-        if(i && (ty==PT_CLNE || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34)))
+        if(i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34)))
         {
             if(p >= size)
                 goto corrupt;

@@ -77,6 +77,8 @@ extern inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b,
 
 int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a);
 
+int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, int b, int a);
+
 void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a);
 
 void fillrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a);
@@ -91,12 +93,14 @@ int drawtextmax(pixel *vid, int x, int y, int w, char *s, int r, int g, int b, i
 
 int textnwidth(char *s, int n);
 
+int textnheight(char *s, int n, int w);
+
 int textwidthx(char *s, int w);
 
 #ifdef WIN32
 _inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 #else
-inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
+void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 #endif
 
 void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag);
