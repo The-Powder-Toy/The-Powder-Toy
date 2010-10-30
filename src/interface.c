@@ -2757,7 +2757,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
         }
 
         //Open Button
-		bc = openable?255:150;
+	bc = openable?255:150;
         drawrect(vid_buf, 50, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
         drawtext(vid_buf, 73, YRES+MENUSIZE-63, "Open", 255, 255, 255, bc);
         drawtext(vid_buf, 58, YRES+MENUSIZE-64, "\x81", 255, 255, 255, bc);
@@ -2772,40 +2772,40 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
         drawtext(vid_buf, 168, YRES+MENUSIZE-63, "Report", 255, 255, 255, bc);
         drawtext(vid_buf, 158, YRES+MENUSIZE-63, "!", 255, 255, 255, bc);
         //Delete Button
-		bc = authoritah?255:150;
-		drawrect(vid_buf, 200, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
-		drawtext(vid_buf, 218, YRES+MENUSIZE-63, "Delete", 255, 255, 255, bc);
-		drawtext(vid_buf, 206, YRES+MENUSIZE-64, "\xAA", 255, 255, 255, bc);
-		//Open in browser button
-		bc = 255;
+	bc = authoritah?255:150;
+	drawrect(vid_buf, 200, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
+	drawtext(vid_buf, 218, YRES+MENUSIZE-63, "Delete", 255, 255, 255, bc);
+	drawtext(vid_buf, 206, YRES+MENUSIZE-64, "\xAA", 255, 255, 255, bc);
+	//Open in browser button
+	bc = 255;
         drawrect(vid_buf, 250, YRES+MENUSIZE-68, 107, 18, 255, 255, 255, bc);
         drawtext(vid_buf, 273, YRES+MENUSIZE-63, "Open in Browser", 255, 255, 255, bc);
         drawtext(vid_buf, 258, YRES+MENUSIZE-64, "\x81", 255, 255, 255, bc);
 		
-		//Open Button
-		if(sdl_key==SDLK_RETURN && openable) {
+	//Open Button
+	if(sdl_key==SDLK_RETURN && openable) {
             queue_open = 1;
         }
-		if(mx > 50 && mx < 50+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && openable) {
+	if(mx > 50 && mx < 50+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && openable && !queue_open) {
             fillrect(vid_buf, 50, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
             if(b && !bq) {
-				//Button Clicked
+		//Button Clicked
                 queue_open = 1;
             }
         }
-		//Fav Button
-		if(mx > 100 && mx < 100+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && svf_login) {
+	//Fav Button
+	if(mx > 100 && mx < 100+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && svf_login && !queue_open) {
             fillrect(vid_buf, 100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
-			if(b && !bq) {
+		if(b && !bq) {
                 //Button Clicked
-				fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-				info_box(vid_buf, "Adding to favourites...");
-				execute_fav(vid_buf, save_id);
+		fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+		info_box(vid_buf, "Adding to favourites...");
+		execute_fav(vid_buf, save_id);
             }
-		}
-		//Report Button
-		if(mx > 150 && mx < 150+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && svf_login && info_ready) {
-            fillrect(vid_buf, 150, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
+	}
+	//Report Button
+	if(mx > 150 && mx < 150+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && svf_login && info_ready && !queue_open) {
+        	fillrect(vid_buf, 150, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
 			if(b && !bq) {
                 //Button Clicked
 				if(confirm_ui(vid_buf, "Are you sure?", "Are you sure you wish to report this save?", "Report")){
@@ -2820,7 +2820,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
             }
         }
 		//Delete Button
-		if(mx > 200 && mx < 200+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && (authoritah || myown)) {
+		if(mx > 200 && mx < 200+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && (authoritah || myown) && !queue_open) {
 			fillrect(vid_buf, 200, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
 			if(b && !bq) {
 				//Button Clicked
@@ -2846,7 +2846,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			}
 		}
 		//Open in browser button
-		if(mx > 250 && mx < 250+107 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50) {
+		if(mx > 250 && mx < 250+107 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50  && !queue_open) {
             fillrect(vid_buf, 250, YRES+MENUSIZE-68, 107, 18, 255, 255, 255, 40);
             if(b && !bq) {
 				//Button Clicked
@@ -2859,7 +2859,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
             }
         }
 	//Submit Button
-	if(mx > XRES+BARSIZE-100 && mx < XRES+BARSIZE-100+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && svf_login && info_ready) {
+	if(mx > XRES+BARSIZE-100 && mx < XRES+BARSIZE-100+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && svf_login && info_ready && !queue_open) {
 		fillrect(vid_buf, XRES+BARSIZE-100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
 		if(b && !bq) {
         		//Button Clicked
@@ -2867,6 +2867,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			info_box(vid_buf, "Submitting Comment...");
 			execute_submit(vid_buf, save_id, ed.str);
         	}
+	}
+
+	if(!(mx>50 && my>50 && mx<XRES+BARSIZE-100 && my<XRES+MENUSIZE-100) && b && !queue_open){
+		break;	
 	}
 
         sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
