@@ -2198,7 +2198,7 @@ void draw_parts(pixel *vid)
 
 void render_signs(pixel *vid_buf)
 {
-    int i, j, x, y, w, h, dx, dy;
+    int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq;
     char buff[30];  //Buffer
     for(i=0; i<MAXSIGNS; i++)
         if(signs[i].text[0])
@@ -2226,6 +2226,7 @@ void render_signs(pixel *vid_buf)
             //Usual text
             if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}"))
                 drawtext(vid_buf, x+3, y+3, signs[i].text, 255, 255, 255, 255);
+
             x = signs[i].x;
             y = signs[i].y;
             dx = 1 - signs[i].ju;
@@ -2236,6 +2237,15 @@ void render_signs(pixel *vid_buf)
                 x+=dx;
                 y+=dy;
             }
+	    if(signs[i].m==1)
+	    {
+		bq = b;
+		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
+		signs[i].x = mx;
+		signs[i].y = my;	
+	    }
         }
 }
 

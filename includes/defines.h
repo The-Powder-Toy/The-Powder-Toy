@@ -90,7 +90,7 @@ extern int death;
 
 struct sign
 {
-    int x,y,ju;
+    int x,y,ju,m;
     char text[256];
 };
 typedef struct sign sign;

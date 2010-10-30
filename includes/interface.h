@@ -153,6 +153,8 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
 
 void add_sign_ui(pixel *vid_buf, int mx, int my);
 
+void move_sign(pixel *vid_buf,int i);
+
 void ui_edit_draw(pixel *vid_buf, ui_edit *ed);
 
 void ui_edit_process(int mx, int my, int mb, ui_edit *ed);

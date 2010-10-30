@@ -97,14 +97,19 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 
 void add_sign_ui(pixel *vid_buf, int mx, int my)
 {
-    int i, w, h, x, y, nm=0, ju;
+    int i, w, h, x, y, nm=0, ju,movesign = 0;
     int x0=(XRES-192)/2,y0=(YRES-80)/2,b=1,bq;
     ui_edit ed;
-
+   
     // check if it is an existing sign
     for(i=0; i<MAXSIGNS; i++)
         if(signs[i].text[0])
         {
+	    if(signs[i].m == 1)
+		{
+		signs[i].m = 0;
+		return;
+		}
             get_sign_pos(i, &x, &y, &w, &h);
             if(mx>=x && mx<=x+w && my>=y && my<=y+h)
                 break;
@@ -119,7 +124,6 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
     }
     if(i >= MAXSIGNS)
         return;
-
     if(nm)
     {
         signs[i].x = mx;
@@ -165,6 +169,10 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
         draw_icon(vid_buf, x0+68, y0+42, 0x9E, ju == 1);
         draw_icon(vid_buf, x0+86, y0+42, 0x9F, ju == 2);
 
+	drawrect(vid_buf,x0+104,y0+42,26,15,255,255,255,255);
+
+
+
         if(!nm)
         {
             drawtext(vid_buf, x0+138, y0+45, "\x86", 160, 48, 32, 255);
@@ -187,6 +195,11 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
         if(b && !bq && mx>=x0+86 && mx<=x0+103 && my>=y0+42 && my<=y0+59)
             ju = 2;
 
+        if(b && !bq && mx>=x0+104 && mx<=x0+130 && my>=y0+42 && my<=y0+59)
+	{
+		signs[i].m = 1;
+		break;
+	}
         if(b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36)
             break;
         if(b && !bq && mx>=x0 && mx<x0+192 && my>=y0+64 && my<=y0+80)
