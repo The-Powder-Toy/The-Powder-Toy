@@ -1115,6 +1115,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 parts[i].tmp = 0;
                                 parts[i].ctype = PT_BMTL;
                             }
+                            if(parts[i].ctype==PT_PLUT)
+                            {
+                                parts[i].tmp = 0;
+                                parts[i].ctype = PT_LAVA;
+                            }
                             t = parts[i].type = parts[i].ctype;
                             parts[i].ctype = PT_NONE;
                         }
@@ -1181,6 +1186,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                         {
                             parts[i].tmp--;
                             parts[i].temp = 3500;
+                        }
+                        if(parts[i].ctype==PT_PLUT&&parts[i].tmp>0)
+                        {
+                            parts[i].tmp--;
+                            parts[i].temp = MAX_TEMP;
                         }
                     }
                     pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
@@ -1722,7 +1732,12 @@ void update_particles_i(pixel *vid, int start, int inc)
                             {
                                 if(33>rand()%100)
                                 {
-                                    create_part(r>>8, x+nx, y+ny, rand()%2 ? PT_LAVA : PT_URAN);
+                                    create_part(r>>8, x+nx, y+ny, rand()%3 ? PT_LAVA : PT_URAN);
+				    parts[r>>8].temp = MAX_TEMP;
+				    if(parts[r>>8].type==PT_LAVA){
+				    	parts[r>>8].tmp = 100;
+					parts[r>>8].ctype = PT_PLUT;
+				    }
                                 }
                                 else
                                 {
