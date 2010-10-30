@@ -95,13 +95,19 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
     if(ptypes[pt].falldown!=1 && bmap[ny/CELL][nx/CELL]==10)
         return 0;
 
-	if(ptypes[pt].properties&TYPE_ENERGY && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&TYPE_ENERGY))))
+    if(r && (r&0xFF) < PT_NUM){
+	//if(ptypes[pt].properties&TYPE_ENERGY && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&TYPE_ENERGY))))
+	if(ptypes[pt].properties&TYPE_ENERGY && ptypes[(r&0xFF)].properties&TYPE_ENERGY)
 		return 2;
 	
-	if(pt==PT_NEUT && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE))))
+	//if(pt==PT_NEUT && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE))))
+	if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPASS)
+		return 2;
+	if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE)
 		return 1;
 	if((r&0xFF)==PT_NEUT && ptypes[pt].properties&PROP_NEUTPENETRATE)
 		return 0;
+    }
 	
     if (r && ((r&0xFF) >= PT_NUM || (ptypes[pt].weight <= ptypes[(r&0xFF)].weight)))
         return 0;
@@ -2873,7 +2879,7 @@ killed:
                         kill_part(i);
                         continue;
                     }
-                    else if(t==PT_NEUT || t==PT_PHOT)
+                    else if(t==PT_NEUT || t==PT_PHOT) //Seems to break neutrons, sorry Skylark
                     {
                         r = pmap[ny][nx];
 
@@ -2909,12 +2915,14 @@ killed:
                                 continue;
                             }
                         } else {
-                            kill_part(i);
+			    if(t!=PT_NEUT)
+                            	kill_part(i);
                             continue;
                         }
 
                         if(!parts[i].ctype) {
-                            kill_part(i);
+			    if(t!=PT_NEUT)
+                            	kill_part(i);
                             continue;
                         }
                     }
