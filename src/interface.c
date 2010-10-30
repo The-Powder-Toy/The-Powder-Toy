@@ -33,6 +33,7 @@ int svf_myvote = 0;
 int svf_publish = 0;
 char svf_id[16] = "";
 char svf_name[64] = "";
+char svf_description[255] = "";
 char svf_tags[256] = "";
 void *svf_last = NULL;
 int svf_lsize;
@@ -1124,9 +1125,10 @@ finish:
 
 int save_name_ui(pixel *vid_buf)
 {
-    int x0=(XRES-192)/2,y0=(YRES-68-YRES/4)/2,b=1,bq,mx,my,ths,nd=0;
+    int x0=(XRES-400)/2,y0=(YRES-68-YRES/4)/2,b=1,bq,mx,my,ths,nd=0;
     void *th;
     ui_edit ed;
+    ui_edit ed2;
     ui_checkbox cb;
 
     th = build_thumb(&ths, 0);
@@ -1148,6 +1150,18 @@ int save_name_ui(pixel *vid_buf)
     ed.cursor = strlen(svf_name);
 	ed.multiline = 0;
     strcpy(ed.str, svf_name);
+    
+    ed2.x = x0+13;
+    ed2.y = y0+45;
+    ed2.w = 166;
+    ed2.h = 85;
+    ed2.nx = 1;
+    ed2.def = "[simulation description]";
+    ed2.focus = 0;
+    ed2.hide = 0;
+    ed2.cursor = strlen(svf_description);
+	ed2.multiline = 1;
+    strcpy(ed2.str, svf_description);
 
     cb.x = x0+10;
     cb.y = y0+53+YRES/4;
@@ -1162,16 +1176,19 @@ int save_name_ui(pixel *vid_buf)
         mx /= sdl_scale;
         my /= sdl_scale;
 
-        drawrect(vid_buf, x0, y0, 192, 90+YRES/4, 192, 192, 192, 255);
-        clearrect(vid_buf, x0, y0, 192, 90+YRES/4);
+        drawrect(vid_buf, x0, y0, 400, 90+YRES/4, 192, 192, 192, 255);
+        clearrect(vid_buf, x0, y0, 400, 90+YRES/4);
         drawtext(vid_buf, x0+8, y0+8, "New simulation name:", 255, 255, 255, 255);
         drawtext(vid_buf, x0+10, y0+23, "\x82", 192, 192, 192, 255);
         drawrect(vid_buf, x0+8, y0+20, 176, 16, 192, 192, 192, 255);
+        
+        drawrect(vid_buf, x0+8, y0+40, 176, 95, 192, 192, 192, 255);
 
         ui_edit_draw(vid_buf, &ed);
+        ui_edit_draw(vid_buf, &ed2);
 
-        drawrect(vid_buf, x0+(192-XRES/4)/2-2, y0+42, XRES/4+3, YRES/4+3, 128, 128, 128, 255);
-        render_thumb(th, ths, 0, vid_buf, x0+(192-XRES/4)/2, y0+44, 4);
+        drawrect(vid_buf, x0+(192-XRES/3)/2-2+200, y0+34, XRES/3+3, YRES/3+3, 128, 128, 128, 255);
+        render_thumb(th, ths, 0, vid_buf, x0+(200-XRES/3)/2+200, y0+36, 3);
 
         ui_checkbox_draw(vid_buf, &cb);
         drawtext(vid_buf, x0+34, y0+50+YRES/4, "Publish? (Do not publish others'\nworks without permission)", 192, 192, 192, 255);
@@ -1182,6 +1199,7 @@ int save_name_ui(pixel *vid_buf)
         sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 
         ui_edit_process(mx, my, b, &ed);
+        ui_edit_process(mx, my, b, &ed2);
         ui_checkbox_process(mx, my, b, bq, &cb);
 
         if(b && !bq && ((mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36) ||
@@ -1193,6 +1211,8 @@ int save_name_ui(pixel *vid_buf)
             nd = strcmp(svf_name, ed.str) || !svf_own;
             strncpy(svf_name, ed.str, 63);
             svf_name[63] = 0;
+            strncpy(svf_description, ed2.str, 254);
+            svf_description[254] = 0;
             if(nd)
             {
                 strcpy(svf_id, "");
@@ -1212,6 +1232,8 @@ int save_name_ui(pixel *vid_buf)
             nd = strcmp(svf_name, ed.str) || !svf_own;
             strncpy(svf_name, ed.str, 63);
             svf_name[63] = 0;
+            strncpy(svf_description, ed2.str, 254);
+            svf_description[254] = 0;
             if(nd)
             {
                 strcpy(svf_id, "");
@@ -2548,6 +2570,69 @@ finish:
     return 0;
 }
 
+int report_ui(pixel* vid_buf, char *save_id)
+{
+    int b=1,bq,mx,my;
+    ui_edit ed;
+    ed.x = 209;
+    ed.y = 159;
+    ed.w = (XRES+BARSIZE-400)-18;
+    ed.h = (YRES+MENUSIZE-300)-36;
+    ed.nx = 1;
+    ed.def = "Report details";
+    ed.focus = 0;
+    ed.hide = 0;
+	ed.multiline = 1;
+    ed.cursor = 0;
+    strcpy(ed.str, "");
+    
+    fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+    while(!sdl_poll())
+    {
+        b = SDL_GetMouseState(&mx, &my);
+        if(!b)
+            break;
+    }
+    while(!sdl_poll()){
+    	fillrect(vid_buf, 200, 150, (XRES+BARSIZE-400), (YRES+MENUSIZE-300), 0,0,0, 255);
+        drawrect(vid_buf, 200, 150, (XRES+BARSIZE-400), (YRES+MENUSIZE-300), 255, 255, 255, 255);
+        
+        drawrect(vid_buf, 205, 155, (XRES+BARSIZE-400)-10, (YRES+MENUSIZE-300)-28, 255, 255, 255, 170);
+    
+        bq = b;
+        b = SDL_GetMouseState(&mx, &my);
+        mx /= sdl_scale;
+        my /= sdl_scale;
+        
+
+        drawrect(vid_buf, 200, (YRES+MENUSIZE-150)-18, 50, 18, 255, 255, 255, 255);
+        drawtext(vid_buf, 213, (YRES+MENUSIZE-150)-13, "Cancel", 255, 255, 255, 255);
+        
+        drawrect(vid_buf, (XRES+BARSIZE-400)+150, (YRES+MENUSIZE-150)-18, 50, 18, 255, 255, 255, 255);
+        drawtext(vid_buf, (XRES+BARSIZE-400)+163, (YRES+MENUSIZE-150)-13, "Report", 255, 255, 255, 255);
+        if(mx>(XRES+BARSIZE-400)+150 && my>(YRES+MENUSIZE-150)-18 && mx<(XRES+BARSIZE-400)+200 && my<(YRES+MENUSIZE-150)){
+	        fillrect(vid_buf, (XRES+BARSIZE-400)+150, (YRES+MENUSIZE-150)-18, 50, 18, 255, 255, 255, 40);
+        	if(b){
+        		if(execute_report(vid_buf, save_id, ed.str)){
+					info_ui(vid_buf, "Success", "This save has been reported");
+					return 1;
+			    } else {
+        			return 0;
+        		}
+        	}
+        }
+        if(mx>200 && my>(YRES+MENUSIZE-150)-18 && mx<250 && my<(YRES+MENUSIZE-150)){
+        	fillrect(vid_buf, 200, (YRES+MENUSIZE-150)-18, 50, 18, 255, 255, 255, 40);
+        	if(b)
+        		return 0;
+        }
+        ui_edit_draw(vid_buf, &ed);
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+		ui_edit_process(mx, my, b, &ed);
+    }
+    return 0;
+}
+
 int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 {
     int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawnthumb=0,authoritah=0,myown=0,queue_open=0,data_size=0,retval=0,bc=255,openable=1;
@@ -2709,53 +2794,6 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			drawtext(vid_buf, XRES+BARSIZE-90, YRES+MENUSIZE-63, "Submit", 255, 255, 255, 255);
 		}
 
-        if(queue_open) {
-            if(info_ready && data_ready) {
-                // Do Open!
-                status = parse_save(data, data_size, 1, 0, 0);
-                if(!status) {
-                    //if(svf_last)
-                    //free(svf_last);
-                    svf_last = data;
-                    svf_lsize = data_size;
-
-                    svf_open = 1;
-                    svf_own = svf_login && !strcmp(info->author, svf_user);
-                    svf_publish = info->publish && svf_login && !strcmp(info->author, svf_user);
-
-                    strcpy(svf_id, save_id);
-                    strcpy(svf_name, info->name);
-                    if(info->tags)
-                    {
-                        strncpy(svf_tags, info->tags, 255);
-                        svf_tags[255] = 0;
-                    } else {
-                        svf_tags[0] = 0;
-                    }
-                    svf_myvote = info->myvote;
-                    retval = 1;
-                    break;
-                } else {
-                    queue_open = 0;
-
-                    svf_open = 0;
-                    svf_publish = 0;
-                    svf_own = 0;
-                    svf_myvote = 0;
-                    svf_id[0] = 0;
-                    svf_name[0] = 0;
-                    svf_tags[0] = 0;
-                    if(svf_last)
-                        free(svf_last);
-                    svf_last = NULL;
-                    error_ui(vid_buf, 0, "An Error Occurred");
-                }
-            } else {
-                fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 190);
-                drawtext(vid_buf, XRES+BARSIZE/2, XRES+MENUSIZE, "Loading...", 0, 0, 0, 200);
-            }
-        }
-
         //Open Button
 	bc = openable?255:150;
         drawrect(vid_buf, 50, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
@@ -2808,14 +2846,9 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
         	fillrect(vid_buf, 150, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
 			if(b && !bq) {
                 //Button Clicked
-				if(confirm_ui(vid_buf, "Are you sure?", "Are you sure you wish to report this save?", "Report")){
-					fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-					info_box(vid_buf, "Reporting...");
-					if(execute_report(vid_buf, save_id)){
-						info_ui(vid_buf, "Success", "This save has been reported");
-						retval = 0;
-						break;							
-					}
+				if(report_ui(vid_buf, save_id)){
+					retval = 0;
+					break;							
 				}
             }
         }
@@ -2870,8 +2903,58 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	}
 
 	if(!(mx>50 && my>50 && mx<XRES+BARSIZE-100 && my<XRES+MENUSIZE-100) && b && !queue_open){
+		retval = 0;
 		break;	
 	}
+
+        if(queue_open) {
+            if(info_ready && data_ready) {
+                // Do Open!
+                status = parse_save(data, data_size, 1, 0, 0);
+                if(!status) {
+                    //if(svf_last)
+                    //free(svf_last);
+                    svf_last = data;
+                    svf_lsize = data_size;
+
+                    svf_open = 1;
+                    svf_own = svf_login && !strcmp(info->author, svf_user);
+                    svf_publish = info->publish && svf_login && !strcmp(info->author, svf_user);
+
+                    strcpy(svf_id, save_id);
+                    strcpy(svf_name, info->name);
+                    strcpy(svf_description, info->description);
+                    if(info->tags)
+                    {
+                        strncpy(svf_tags, info->tags, 255);
+                        svf_tags[255] = 0;
+                    } else {
+                        svf_tags[0] = 0;
+                    }
+                    svf_myvote = info->myvote;
+                    retval = 1;
+                    break;
+                } else {
+                    queue_open = 0;
+
+                    svf_open = 0;
+                    svf_publish = 0;
+                    svf_own = 0;
+                    svf_myvote = 0;
+                    svf_id[0] = 0;
+                    svf_name[0] = 0;
+                    svf_description[0] = 0;
+                    svf_tags[0] = 0;
+                    if(svf_last)
+                        free(svf_last);
+                    svf_last = NULL;
+                    error_ui(vid_buf, 0, "An Error Occurred");
+                }
+            } else {
+                fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 190);
+                drawtext(vid_buf, 50+(XRES/4)-textwidth("Loading...")/2, 50+(YRES/4), "Loading...", 255, 255, 255, 128);
+            }
+        }
 
         sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
         memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
@@ -2879,8 +2962,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			ui_edit_process(mx, my, b, &ed);
 		}
 
-        if(sdl_key==SDLK_ESCAPE)
+        if(sdl_key==SDLK_ESCAPE){
+        	retval = 0;
             break;
+            }
 
         if(lasttime<TIMEOUT)
             lasttime++;
@@ -3324,24 +3409,26 @@ void execute_save(pixel *vid_buf)
     int status;
     char *result;
 
-    char *names[] = {"Name", "Data:save.bin", "Thumb:thumb.bin", "Publish", "ID", NULL};
-    char *parts[5];
-    int plens[5];
+    char *names[] = {"Name","Description", "Data:save.bin", "Thumb:thumb.bin", "Publish", "ID", NULL};
+    char *parts[6];
+    int plens[6];
 
     parts[0] = svf_name;
     plens[0] = strlen(svf_name);
-    parts[1] = build_save(plens+1, 0, 0, XRES, YRES);
-    parts[2] = build_thumb(plens+2, 1);
-    parts[3] = (svf_publish==1)?"Public":"Private";
-    plens[3] = strlen((svf_publish==1)?"Public":"Private");
+    parts[1] = svf_description;
+    plens[1] = strlen(svf_description);
+    parts[2] = build_save(plens+2, 0, 0, XRES, YRES);
+    parts[3] = build_thumb(plens+3, 1);
+    parts[4] = (svf_publish==1)?"Public":"Private";
+    plens[4] = strlen((svf_publish==1)?"Public":"Private");
 
     if(svf_id[0])
     {
-        parts[4] = svf_id;
-        plens[4] = strlen(svf_id);
+        parts[5] = svf_id;
+        plens[5] = strlen(svf_id);
     }
     else
-        names[4] = NULL;
+        names[5] = NULL;
 
     result = http_multipart_post(
                  "http://" SERVER "/Save.api",
@@ -3351,10 +3438,10 @@ void execute_save(pixel *vid_buf)
 
     if(svf_last)
         free(svf_last);
-    svf_last = parts[1];
-    svf_lsize = plens[1];
+    svf_last = parts[2];
+    svf_lsize = plens[2];
 
-    free(parts[2]);
+    free(parts[3]);
 
     if(status!=200)
     {
@@ -3460,15 +3547,16 @@ void execute_submit(pixel *vid_buf, char *id, char *message)
         free(result);
 }
 
-int execute_report(pixel *vid_buf, char *id)
+int execute_report(pixel *vid_buf, char *id, char *reason)
 {
     int status;
     char *result;
 
-    char *names[] = {"ID", NULL};
-    char *parts[1];
+    char *names[] = {"ID", "Reason", NULL};
+    char *parts[2];
 
     parts[0] = id;
+    parts[1] = reason;
 
     result = http_multipart_post(
                  "http://" SERVER "/Report.api",
