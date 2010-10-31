@@ -3654,13 +3654,27 @@ int execute_vote(pixel *vid_buf, char *id, char *action)
 }
 void open_link(char *uri){
 #ifdef WIN32
-	ShellExecute(0, "OPEN", uri, NULL, NULL, 0)
+	ShellExecute(0, "OPEN", uri, NULL, NULL, 0);
 #elif MACOSX
+	//char *cmd[] = { "open", uri, (char *)0 };
+	//execvp("open", cmd);
 	//LSOpenCFURLRef(CFURLCreateWithString(NULL, CFStringCreateWithCString(NULL, uri, 0) ,NULL), NULL); //TODO: Get this crap working
+	char *cmd = malloc(7+strlen(uri));
+	strcpy(cmd, "open ");
+	strappend(cmd, uri);
+	system(cmd);
 #elif LIN32
-	execvp("xdg-open", uri);
+	//execlp("xdg-open", "xdg-open", uri, (char *)0);
+	char *cmd = malloc(11+strlen(uri));
+	strcpy(cmd, "xdg-open ");
+	strappend(cmd, uri);
+	system(cmd);
 #elif LIN64
-	execvp("xdg-open", uri);
+	//execlp("xdg-open", "xdg-open", uri, (char *)0);
+	char *cmd = malloc(11+strlen(uri));
+	strcpy(cmd, "xdg-open ");
+	strappend(cmd, uri);
+	system(cmd);
 #else
 	printf("Cannot open browser\n");
 #endif
