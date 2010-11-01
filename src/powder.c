@@ -3695,7 +3695,7 @@ int create_parts(int x, int y, int r, int c)
         }
         return 1;
     }
-    if(sdl_mod & (KMOD_LALT))
+    if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
 	{
         for(j=-r; j<=r; j++)
             for(i=-r; i<=r; i++)
