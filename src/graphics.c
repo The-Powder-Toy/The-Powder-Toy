@@ -2237,7 +2237,7 @@ void render_signs(pixel *vid_buf)
                 x+=dx;
                 y+=dy;
             }
-	    if(signs[i].m==1)
+	    if(MSIGN==i)
 	    {
 		bq = b;
 		b = SDL_GetMouseState(&mx, &my);

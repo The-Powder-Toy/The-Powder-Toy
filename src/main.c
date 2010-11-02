@@ -101,6 +101,7 @@ int legacy_enable = 0; //Used to disable new features such as heat, will be set 
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
+int MSIGN =-1;
 
 sign signs[MAXSIGNS];
 

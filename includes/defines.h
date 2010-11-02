@@ -90,7 +90,7 @@ extern int death;
 
 struct sign
 {
-    int x,y,ju,m;
+    int x,y,ju;
     char text[256];
 };
 typedef struct sign sign;
@@ -103,6 +103,7 @@ struct stamp
 };
 typedef struct stamp stamp;
 
+int MSIGN;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;
