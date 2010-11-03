@@ -1848,7 +1848,7 @@ int main(int argc, char *argv[])
                         lb = b;
                         lm = 2;
                     }
-                    else if((sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)) && (sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)) && !sdl_mod & (KMOD_LALT))
+                    else if((sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)) && (sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)) && !(sdl_mod & (KMOD_LALT)))
                     {
                         if(c!=125&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM)
                             flood_parts(x, y, c, -1, -1);
