@@ -124,6 +124,7 @@ void update_air(void)
                 dy += fvy[y][x];
             }
 
+			//Pressure Caps, remove for lulz
             if(dp > 256.0f) dp = 256.0f;
             if(dp < -256.0f) dp = -256.0f;
             if(dx > 256.0f) dx = 256.0f;
