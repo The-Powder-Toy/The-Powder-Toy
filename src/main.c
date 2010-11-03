@@ -28,7 +28,6 @@
 #include <SDL/SDL.h>
 #include <bzlib.h>
 #include <time.h>
-#include <sdvsd.h>
 #ifdef WIN32
 #include <direct.h>
 #else
