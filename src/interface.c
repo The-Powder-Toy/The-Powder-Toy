@@ -2253,7 +2253,6 @@ int search_ui(pixel *vid_buf)
 
         if((b && !bq && mp!=-1 && !st && !uih) || do_open==1)
         {
-			active = 0;
             if(open_ui(vid_buf, search_ids[mp], search_dates[mp]?search_dates[mp]:NULL)==1) {
                 goto finish;
             }
@@ -2897,6 +2896,11 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
         if(!b)
             break;
     }
+	//Close open connections
+	if(http)
+        http_async_req_close(http);
+	if(http_2)
+        http_async_req_close(http_2);
     return retval;
 }
 
