@@ -2251,131 +2251,14 @@ int search_ui(pixel *vid_buf)
 
         if((b && !bq && mp!=-1 && !st && !uih) || do_open==1)
         {
+			//Cancel any ongoing requests, they cause a bug when open_ui is finished. At the moment I cannot be 100% sure this will solve the issue.
+			if(http){
+				http_async_req_close(http);
+				http = NULL;
+			}
             if(open_ui(vid_buf, search_ids[mp], search_dates[mp]?search_dates[mp]:NULL)==1) {
                 goto finish;
             }
-            /*
-            fillrect(vid_buf, 0, 0, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 255);
-            info_box(vid_buf, "Loading...");
-
-            if(search_dates[mp]) {
-                uri = malloc(strlen(search_ids[mp])*3+strlen(search_dates[mp])*3+strlen(SERVER)+71);
-                strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
-                strcaturl(uri, search_ids[mp]);
-                strappend(uri, "&Date=");
-                strcaturl(uri, search_dates[mp]);
-            } else {
-                uri = malloc(strlen(search_ids[mp])*3+strlen(SERVER)+64);
-                strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
-                strcaturl(uri, search_ids[mp]);
-            }
-            data = http_simple_get(uri, &status, &dlen);
-            free(uri);
-
-            if(status == 200)
-            {
-                status = parse_save(data, dlen, 1, 0, 0);
-                switch(status)
-                {
-                case 1:
-                    error_ui(vid_buf, 0, "Simulation corrupted");
-                    break;
-                case 2:
-                    error_ui(vid_buf, 0, "Simulation from a newer version");
-                    break;
-                case 3:
-                    error_ui(vid_buf, 0, "Simulation on a too large grid");
-                    break;
-                }
-                if(!status)
-                {
-                    char *tnames[] = {"ID", NULL};
-                    char *tparts[1];
-                    int tplens[1];
-                    if(svf_last)
-                        free(svf_last);
-                    svf_last = data;
-                    svf_lsize = dlen;
-
-                    tparts[0] = search_ids[mp];
-                    tplens[0] = strlen(search_ids[mp]);
-                    data = http_multipart_post("http://" SERVER "/Tags.api", tnames, tparts, tplens, svf_user, svf_pass, &status, NULL);
-
-                    svf_open = 1;
-                    svf_own = svf_login && !strcmp(search_owners[mp], svf_user);
-                    svf_publish = search_publish[mp] && svf_login && !strcmp(search_owners[mp], svf_user);
-
-                    strcpy(svf_id, search_ids[mp]);
-                    strcpy(svf_name, search_names[mp]);
-                    if(status == 200)
-                    {
-                        if(data)
-                        {
-                            strncpy(svf_tags, data, 255);
-                            svf_tags[255] = 0;
-                        }
-                        else
-                            svf_tags[0] = 0;
-                    }
-                    else
-                    {
-                        svf_tags[0] = 0;
-                    }
-
-                    if(svf_login)
-                    {
-                        char *names[] = {"ID", NULL};
-                        char *parts[1];
-                        parts[0] = search_ids[mp];
-                        data = http_multipart_post("http://" SERVER "/Vote.api", names, parts, NULL, svf_user, svf_pass, &status, NULL);
-                        if(status == 200)
-                        {
-                            if(data)
-                            {
-                                if(!strcmp(data, "Up"))
-                                {
-                                    svf_myvote = 1;
-                                }
-                                else if(!strcmp(data, "Down"))
-                                {
-                                    svf_myvote = -1;
-                                }
-                                else
-                                {
-                                    svf_myvote = 0;
-                                }
-                            }
-                            else
-                            {
-                                svf_myvote = 0;
-                            }
-                        }
-                        else
-                        {
-                            svf_myvote = 0;
-                        }
-                    }
-                }
-                else
-                {
-                    svf_open = 0;
-                    svf_publish = 0;
-                    svf_own = 0;
-                    svf_myvote = 0;
-                    svf_id[0] = 0;
-                    svf_name[0] = 0;
-                    svf_tags[0] = 0;
-                    if(svf_last)
-                        free(svf_last);
-                    svf_last = NULL;
-                }
-            }
-            else
-                error_ui(vid_buf, status, http_ret_text(status));
-
-            if(data)
-                free(data);
-            goto finish;*/
         }
 
         if(!last)
@@ -2908,7 +2791,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
         	}
 	}
 
-	if(!(mx>50 && my>50 && mx<XRES+BARSIZE-100 && my<XRES+MENUSIZE-100) && b && !queue_open){
+	if(!(mx>50 && my>50 && mx<XRES+BARSIZE-50 && my<XRES+MENUSIZE-50) && b && !queue_open){
 		retval = 0;
 		break;	
 	}
@@ -2975,6 +2858,13 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 
         if(lasttime<TIMEOUT)
             lasttime++;
+    }
+	//Prevent those mouse clicks being passed down.
+	while(!sdl_poll())
+    {
+        b = SDL_GetMouseState(&mx, &my);
+        if(!b)
+            break;
     }
     return retval;
 }
