@@ -2253,6 +2253,7 @@ int search_ui(pixel *vid_buf)
 
         if((b && !bq && mp!=-1 && !st && !uih) || do_open==1)
         {
+			active = 0;
             if(open_ui(vid_buf, search_ids[mp], search_dates[mp]?search_dates[mp]:NULL)==1) {
                 goto finish;
             }
