@@ -1002,18 +1002,25 @@ int textnwidth(char *s, int n)
     }
     return x-1;
 }
-int textnheight(char *s, int n, int w)
+void textnpos(char *s, int n, int w, int *cx, int *cy)
 {
     int x = 0;
+	int y = 0;
 	//TODO: Implement Textnheight for wrapped text
 	for(; *s; s++)
     {
-        if(!n)
+        if(!n){
             break;
+		}
         x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		if(x>=w) {
+			x = 0;
+			y += FONT_H+2;
+		}
         n--;
     }
-    return x-1;
+    *cx = x-1;
+	*cy = y;
 }
 
 int textwidthx(char *s, int w)
@@ -1025,6 +1032,23 @@ int textwidthx(char *s, int w)
         if(x+(cw/2) >= w)
             break;
         x += cw;
+        n++;
+    }
+    return n;
+}
+int textposxy(char *s, int width, int w, int h)
+{
+    int x=0,y=0,n=0,cw;
+    for(; *s; s++)
+    {
+        cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+        if(x+(cw/2) >= w && y+6 >= h)
+            break;
+        x += cw;
+		if(x>=width) {
+			x = 0;
+			y += FONT_H+2;
+		}
         n++;
     }
     return n;

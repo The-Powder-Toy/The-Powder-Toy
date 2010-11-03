@@ -215,7 +215,7 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
 //TODO: Finish text wrapping in text edits
 void ui_edit_draw(pixel *vid_buf, ui_edit *ed)
 {
-    int cx, i;
+    int cx, i, cy;
     char echo[256], *str;
 
     if(ed->hide)
@@ -242,9 +242,15 @@ void ui_edit_draw(pixel *vid_buf, ui_edit *ed)
         drawtext(vid_buf, ed->x, ed->y, ed->def, 128, 128, 128, 255);
     if(ed->focus)
     {
-        cx = textnwidth(str, ed->cursor);
+		if(ed->multiline){
+			textnpos(str, ed->cursor, ed->w-14, &cx, &cy);
+		} else {
+			cx = textnwidth(str, ed->cursor);
+			cy = 0;			
+		}
+		
         for(i=-3; i<9; i++)
-            drawpixel(vid_buf, ed->x+cx, ed->y+i, 255, 255, 255, 255);
+            drawpixel(vid_buf, ed->x+cx, ed->y+i+cy, 255, 255, 255, 255);
     }
 }
 
@@ -278,7 +284,7 @@ void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
 			else if(mx>=ed->x-ed->nx && mx<ed->x+ed->w && my>=ed->y-5 && my<ed->y+ed->h)
 			{
 				ed->focus = 1;
-				ed->cursor = textwidthx(str, mx-ed->x);
+				ed->cursor = textposxy(str, ed->w-14, mx-ed->x, my-ed->y);
 			}
 			else
 				ed->focus = 0;
