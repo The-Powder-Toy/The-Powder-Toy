@@ -1131,7 +1131,7 @@ finish:
 
 int save_name_ui(pixel *vid_buf)
 {
-    int x0=(XRES-400)/2,y0=(YRES-68-YRES/4)/2,b=1,bq,mx,my,ths,nd=0;
+    int x0=(XRES-420)/2,y0=(YRES-68-YRES/4)/2,b=1,bq,mx,my,ths,nd=0;
     void *th;
     ui_edit ed;
     ui_edit ed2;
@@ -1182,8 +1182,8 @@ int save_name_ui(pixel *vid_buf)
         mx /= sdl_scale;
         my /= sdl_scale;
 
-        drawrect(vid_buf, x0, y0, 400, 90+YRES/4, 192, 192, 192, 255);
-        clearrect(vid_buf, x0, y0, 400, 90+YRES/4);
+        drawrect(vid_buf, x0, y0, 420, 90+YRES/4, 192, 192, 192, 255);
+        clearrect(vid_buf, x0, y0, 420, 90+YRES/4);
         drawtext(vid_buf, x0+8, y0+8, "New simulation name:", 255, 255, 255, 255);
         drawtext(vid_buf, x0+10, y0+23, "\x82", 192, 192, 192, 255);
         drawrect(vid_buf, x0+8, y0+20, 176, 16, 192, 192, 192, 255);
@@ -1193,14 +1193,16 @@ int save_name_ui(pixel *vid_buf)
         ui_edit_draw(vid_buf, &ed);
         ui_edit_draw(vid_buf, &ed2);
 
-        drawrect(vid_buf, x0+(192-XRES/3)/2-2+200, y0+34, XRES/3+3, YRES/3+3, 128, 128, 128, 255);
-        render_thumb(th, ths, 0, vid_buf, x0+(200-XRES/3)/2+200, y0+36, 3);
+        drawrect(vid_buf, x0+(205-XRES/3)/2-2+205, y0+30, XRES/3+3, YRES/3+3, 128, 128, 128, 255);
+        render_thumb(th, ths, 0, vid_buf, x0+(205-XRES/3)/2+205, y0+32, 3);
 
         ui_checkbox_draw(vid_buf, &cb);
         drawtext(vid_buf, x0+34, y0+50+YRES/4, "Publish? (Do not publish others'\nworks without permission)", 192, 192, 192, 255);
 
         drawtext(vid_buf, x0+5, y0+79+YRES/4, "Save simulation", 255, 255, 255, 255);
         drawrect(vid_buf, x0, y0+74+YRES/4, 192, 16, 192, 192, 192, 255);
+		
+		draw_line(vid_buf, x0+192, y0, x0+192, y0+90+YRES/4, 150, 150, 150, XRES+BARSIZE);
 
         sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 
@@ -2251,11 +2253,6 @@ int search_ui(pixel *vid_buf)
 
         if((b && !bq && mp!=-1 && !st && !uih) || do_open==1)
         {
-			//Cancel any ongoing requests, they cause a bug when open_ui is finished. At the moment I cannot be 100% sure this will solve the issue.
-			if(http){
-				http_async_req_close(http);
-				http = NULL;
-			}
             if(open_ui(vid_buf, search_ids[mp], search_dates[mp]?search_dates[mp]:NULL)==1) {
                 goto finish;
             }
@@ -2525,7 +2522,9 @@ int report_ui(pixel* vid_buf, char *save_id)
 int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 {
     int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawnthumb=0,authoritah=0,myown=0,queue_open=0,data_size=0,retval=0,bc=255,openable=1;
-    char *uri, *uri_2, *o_uri;
+    int nyd,nyu,ry,lv;
+	
+	char *uri, *uri_2, *o_uri;
     void *data, *info_data;
     save_info *info = malloc(sizeof(save_info));
     void *http = NULL, *http_2 = NULL;
@@ -2649,13 +2648,44 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
             memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
         }
         if(info_ready && !hasdrawninfo) {
-            //drawtext(vid_buf, 2, 2, info->name, 255, 255, 255, 255);
+            //Render all the save information
             cix = drawtext(vid_buf, 60, (YRES/2)+60, info->name, 255, 255, 255, 255);
             cix = drawtext(vid_buf, 60, (YRES/2)+72, "Author:", 255, 255, 255, 155);
             cix = drawtext(vid_buf, cix+4, (YRES/2)+72, info->author, 255, 255, 255, 255);
             cix = drawtext(vid_buf, cix+4, (YRES/2)+72, "Date:", 255, 255, 255, 155);
             cix = drawtext(vid_buf, cix+4, (YRES/2)+72, info->date, 255, 255, 255, 255);
             drawtextwrap(vid_buf, 62, (YRES/2)+86, (XRES/2)-24, info->description, 255, 255, 255, 200);
+			
+			//Draw the score bars
+			if(info->voteup>0||info->votedown>0)
+			{
+				lv = (info->voteup>info->votedown?info->voteup:info->votedown);
+
+				if(50>lv)
+				{
+					ry = ((float)(50)/(float)lv);
+					if(lv<8)
+					{
+						ry =  ry/(8-lv);
+					}
+					nyu = info->voteup*ry;
+					nyd = info->votedown*ry;
+				}
+				else
+				{
+					ry = ((float)lv/(float)(50));
+					nyu = info->voteup/ry;
+					nyd = info->votedown/ry;
+				}
+				
+				fillrect(vid_buf, 46+(XRES/2)-51, (YRES/2)+53, 54, 6, 0, 107, 10, 255);
+				fillrect(vid_buf, 46+(XRES/2)-51, (YRES/2)+59, 54, 6, 107, 10, 0, 255);
+				drawrect(vid_buf, 46+(XRES/2)-51, (YRES/2)+53, 54, 6, 128, 128, 128, 255);
+				drawrect(vid_buf, 46+(XRES/2)-51, (YRES/2)+59, 54, 6, 128, 128, 128, 255);
+
+				fillrect(vid_buf, 48+(XRES/2)-nyu, (YRES/2)+54, nyu, 4, 57, 187, 57, 255);
+				fillrect(vid_buf, 48+(XRES/2)-nyd, (YRES/2)+60, nyd, 4, 187, 57, 57, 255);
+			}
 
             ccy = 0;
             for(cc=0; cc<info->comment_count; cc++) {
@@ -2671,7 +2701,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
             memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
         }
 		if(info_ready && svf_login){
-			
+			//Render the comment box.
 			fillrect(vid_buf, 50+(XRES/2)+1, YRES+MENUSIZE-125, XRES+BARSIZE-100-((XRES/2)+1), 75, 0, 0, 0, 255);
 			drawrect(vid_buf, 50+(XRES/2)+1, YRES+MENUSIZE-125, XRES+BARSIZE-100-((XRES/2)+1), 75, 200, 200, 200, 255);
 			
