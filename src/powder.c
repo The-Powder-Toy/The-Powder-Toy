@@ -824,7 +824,7 @@ void update_particles_i(pixel *vid, int start, int inc)
     int starti = (start*-1);
 	     if(sys_pause&&!framerender)
                 return;
-	if(CGOL>=8)
+	if(CGOL>=GSPEED)
 		{
 		  CGOL = 0;
 		  create_part(-1,0,0,PT_GOL);
@@ -862,7 +862,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 		 for(nx=0;nx<XRES;nx++)
 			 for(ny=0;ny<YRES;ny++){
 				r = pmap[ny][nx];
-				if(gol[nx][ny]>=5){
+				if(gol[nx][ny]>=5&&(parts[r>>8].type==PT_NONE||parts[r>>8].type==PT_GOL)){
 					parts[r>>8].type=PT_NONE;
 				}
 				else if(gol[nx][ny]==3){
@@ -871,7 +871,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				else if(gol[nx][ny]==2&&parts[r>>8].type==PT_GOL){
 					parts[r>>8].type=PT_NONE;
 				}
-				else if(gol[nx][ny]==1){
+				else if(gol[nx][ny]==1&&(parts[r>>8].type==PT_NONE||parts[r>>8].type==PT_GOL)){
 					parts[r>>8].type=PT_NONE;
 				}
 				gol[nx][ny]=0;
@@ -1843,6 +1843,11 @@ void update_particles_i(pixel *vid, int start, int inc)
             else if(t==PT_MORT) {
                 create_part(-1, x, y-1, PT_SMKE);
             }
+	    else if(t==PT_GOL)
+	    {
+		if(parts[i].temp>0)
+			parts[i].temp -= 50.0f;
+	    }
             else if(t==PT_LCRY)
             {
                 for(nx=-1; nx<2; nx++)

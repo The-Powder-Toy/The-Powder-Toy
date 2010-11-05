@@ -104,6 +104,7 @@ int FPSB = 0;
 int MSIGN =-1;
 int NGOL = 0;
 int CGOL = 0;
+int GSPEED = 1;
 
 sign signs[MAXSIGNS];
 
