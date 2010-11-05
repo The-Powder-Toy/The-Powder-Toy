@@ -2135,6 +2135,19 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     }
                                 }
                             }
+							//Check if there is a SWCH that is currently covered with SPRK
+							//If so check if the current SPRK is covering a NSCN
+							//If so turn the SPRK that covers the SWCH back into SWCH and turn it off
+							if(rt==PT_SPRK && parts[r>>8].ctype == PT_SWCH && t==PT_SPRK)
+                            {
+								pavg = parts_avg(r>>8, i);
+                                if(parts[i].ctype == PT_NSCN&&pavg != PT_INSL)
+								{
+									parts[r>>8].type = PT_SWCH;
+                                    parts[r>>8].ctype = PT_NONE;
+                                    parts[r>>8].life = 0;
+								}
+                            }
                             pavg = parts_avg(i, r>>8);
                             if(rt==PT_SWCH && t==PT_SPRK)
                             {
@@ -2143,7 +2156,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     parts[r>>8].life = 10;
                                 if(parts[i].ctype == PT_NSCN&&pavg != PT_INSL)
                                     parts[r>>8].life = 9;
-                                if(!(parts[i].ctype == PT_PSCN||parts[i].ctype == PT_NSCN)&&parts[r>>8].life == 10&&pavg != PT_INSL)
+                                if(!(parts[i].ctype == PT_PSCN||parts[i].ctype == PT_NSCN)&&parts[r>>8].life >= 10&&pavg != PT_INSL) //Life can be 11 too, so don't just check for 10
                                 {
                                     parts[r>>8].type = PT_SPRK;
                                     parts[r>>8].ctype = PT_SWCH;
