@@ -1244,6 +1244,7 @@ void draw_parts(pixel *vid)
     int cr, cg, cb;
     float fr, fg, fb;
     float pt = R_TEMP;
+    int gol[XRES][YRES];
     for(i = 0; i<NPART; i++) {
 #ifdef OpenGL
         if(cmode == 6) //If fire mode
@@ -2213,7 +2214,6 @@ void render_signs(pixel *vid_buf)
                 sprintf(buff, "Pressure: %3.2f", pv[signs[i].y/CELL][signs[i].x/CELL]);  //...pressure
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
             }
-
             if(strcmp(signs[i].text, "{t}")==0)
             {
                 if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)

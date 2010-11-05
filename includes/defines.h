@@ -104,6 +104,9 @@ struct stamp
 typedef struct stamp stamp;
 
 int MSIGN;
+int NGOL;
+int CGOL;
+int gol[XRES][YRES];
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;

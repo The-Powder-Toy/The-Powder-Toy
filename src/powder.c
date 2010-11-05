@@ -822,6 +822,63 @@ void update_particles_i(pixel *vid, int start, int inc)
     float c_heat = 0.0f;
     int h_count = 0;
     int starti = (start*-1);
+	     if(sys_pause&&!framerender)
+                return;
+	if(CGOL>=8)
+		{
+		  CGOL = 0;
+		  create_part(-1,0,0,PT_GOL);
+		  for(nx=0;nx<XRES;nx++)
+		  {
+			 for(ny=0;ny<YRES;ny++)
+                        {
+				r = pmap[ny][nx];
+				if((r>>8)>=NPART || !r)
+                                continue;
+				if(parts[r>>8].type==PT_GOL)
+				for(int nnx=1; nnx>-2; nnx--)
+                   		 for(int nny=1; nny>-2; nny--)
+                     		   if(nx+nnx>=0 && ny+nny>0 && nx+nnx<XRES && ny+nny<YRES)
+                       		{
+					r=pmap[ny+nny][nx+nnx]; 
+					if(gol[nx+nnx][ny+nny]>=4){
+						gol[nx+nnx][ny+nny] =5;
+					}
+					else if(gol[nx+nnx][ny+nny]==3){
+						gol[nx+nnx][ny+nny] =4;
+					}
+					else if(gol[nx+nnx][ny+nny]==2){
+						gol[nx+nnx][ny+nny] =3;
+					}
+					else if(gol[nx+nnx][ny+nny]==1){
+						gol[nx+nnx][ny+nny] =2;
+					}
+					else if(gol[nx+nnx][ny+nny]==0){
+						gol[nx+nnx][ny+nny] =1;
+					}
+				}					
+			}
+		  }
+		 for(nx=0;nx<XRES;nx++)
+			 for(ny=0;ny<YRES;ny++){
+				r = pmap[ny][nx];
+				if(gol[nx][ny]>=5){
+					parts[r>>8].type=PT_NONE;
+				}
+				else if(gol[nx][ny]==3){
+					create_part(-1,nx,ny,PT_GOL);
+				}
+				else if(gol[nx][ny]==2&&parts[r>>8].type==PT_GOL){
+					parts[r>>8].type=PT_NONE;
+				}
+				else if(gol[nx][ny]==1){
+					parts[r>>8].type=PT_NONE;
+				}
+				gol[nx][ny]=0;
+				
+			}
+		}
+		CGOL++;
     for(i=start; i<(NPART-starti); i+=inc)
         if(parts[i].type)
         {
@@ -831,10 +888,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             ly = parts[i].y;
             t = parts[i].type;
 
-            if(sys_pause&&!framerender)
-                return;
-
-            if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL)
+            if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL)
             {
                 if(!(parts[i].life==10&&(parts[i].type==PT_LCRY||parts[i].type==PT_PCLN||parts[i].type==PT_HSWC)))
                     parts[i].life--;
