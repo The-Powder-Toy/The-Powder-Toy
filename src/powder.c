@@ -824,38 +824,57 @@ void update_particles_i(pixel *vid, int start, int inc)
     int starti = (start*-1);
 	     if(sys_pause&&!framerender)
                 return;
+	gol2[0][0] = 3;
+	for(nx=0;nx<XRES;nx++)
+		for(ny=0;ny<YRES;ny++)
+		{
+			r = pmap[ny][nx];
+			if((r>>8)>=NPART || !r)
+			{
+				gol[nx][ny] = 0;
+                               	continue;
+			}
+			if(parts[r>>8].type==PT_GOL)
+				gol[nx][ny] = 1;	
+		}
+	for(nx=0;nx<XRES;nx++)
+		for(ny=0;ny<YRES;ny++)
+		{
+			if(gol[nx][ny]==1)
+				for(int nnx=-1;nnx<2;nnx++)
+					for(int nny=-1;nny<2;nny++)
+						if(nx+nnx>=0 && ny+nny>0 && nx+nnx<XRES && ny+nny<YRES)
+							gol2[nx+nnx][ny+nny] ++;
+		}
+	for(nx=0;nx<XRES;nx++)
+		for(ny=0;ny<YRES;ny++)
+		{
+			r = pmap[ny][nx];
+			if(gol2[nx][ny]==3&&gol[nx][ny]==0)
+				create_part(-1,nx,ny,PT_GOL);
+			else if(gol2[nx][ny]>=5&&gol[nx][ny]==1)
+				parts[r>>8].type = PT_NONE;
+			else if(gol2[nx][ny]<=2&&gol[nx][ny]==1)
+				parts[r>>8].type = PT_NONE;
+			gol2[nx][ny] = 0;
+		}
+	/*gol[0][0] = 3;  other gol code, still has glitch
 	if(CGOL>=GSPEED)
 		{
 		  CGOL = 0;
-		  create_part(-1,0,0,PT_GOL);
 		  for(nx=0;nx<XRES;nx++)
 		  {
 			 for(ny=0;ny<YRES;ny++)
                         {
 				r = pmap[ny][nx];
 				if((r>>8)>=NPART || !r)
-                                continue;
+                                	continue;
 				if(parts[r>>8].type==PT_GOL)
-				for(int nnx=1; nnx>-2; nnx--)
-                   		 for(int nny=1; nny>-2; nny--)
+				for(int nnx=-1; nnx<2; nnx++)
+                   		 for(int nny=-1; nny<2; nny++)
                      		   if(nx+nnx>=0 && ny+nny>0 && nx+nnx<XRES && ny+nny<YRES)
                        		{
-					r=pmap[ny+nny][nx+nnx]; 
-					if(gol[nx+nnx][ny+nny]>=4){
-						gol[nx+nnx][ny+nny] =5;
-					}
-					else if(gol[nx+nnx][ny+nny]==3){
-						gol[nx+nnx][ny+nny] =4;
-					}
-					else if(gol[nx+nnx][ny+nny]==2){
-						gol[nx+nnx][ny+nny] =3;
-					}
-					else if(gol[nx+nnx][ny+nny]==1){
-						gol[nx+nnx][ny+nny] =2;
-					}
-					else if(gol[nx+nnx][ny+nny]==0){
-						gol[nx+nnx][ny+nny] =1;
-					}
+					gol[nx+nnx][ny+nny] ++;
 				}					
 			}
 		  }
@@ -865,7 +884,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				if(gol[nx][ny]>=5&&(parts[r>>8].type==PT_NONE||parts[r>>8].type==PT_GOL)){
 					parts[r>>8].type=PT_NONE;
 				}
-				else if(gol[nx][ny]==3){
+				else if(gol[nx][ny]==3&&parts[r>>8].type==PT_NONE){
 					create_part(-1,nx,ny,PT_GOL);
 				}
 				else if(gol[nx][ny]==2&&parts[r>>8].type==PT_GOL){
@@ -878,7 +897,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				
 			}
 		}
-		CGOL++;
+		CGOL++;*/
     for(i=start; i<(NPART-starti); i+=inc)
         if(parts[i].type)
         {

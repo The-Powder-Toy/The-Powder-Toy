@@ -3614,7 +3614,7 @@ int execute_vote(pixel *vid_buf, char *id, char *action)
 }
 void open_link(char *uri){
 #ifdef WIN32
-	ShellExecute(0, "OPEN", uri, NULL, NULL, 0)
+	ShellExecute(0, "OPEN", uri, NULL, NULL, 0);
 #elif MACOSX
 	//LSOpenCFURLRef(CFURLCreateWithString(NULL, CFStringCreateWithCString(NULL, uri, 0) ,NULL), NULL); //TODO: Get this crap working
 #elif LIN32

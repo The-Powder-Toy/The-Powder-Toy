@@ -108,6 +108,7 @@ int NGOL;
 int CGOL;
 int GSPEED;
 int gol[XRES][YRES];
+int gol2[XRES][YRES];
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;

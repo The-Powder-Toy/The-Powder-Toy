@@ -104,7 +104,7 @@ int FPSB = 0;
 int MSIGN =-1;
 int NGOL = 0;
 int CGOL = 0;
-int GSPEED = 1;
+int GSPEED = 0;
 
 sign signs[MAXSIGNS];
 
@@ -521,6 +521,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                 {
                     k = pmap[y][x]>>8;
                     parts[k].type = j;
+		    if(j ==PT_GOL)
+			gol[x][y] = 1;
                     if(j == PT_PHOT)
                         parts[k].ctype = 0x3fffffff;
                     parts[k].x = (float)x;
