@@ -7,7 +7,7 @@
 #include "graphics.h"
 
 //Signum function
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline int isign(float i)
 #else
 inline int isign(float i)
@@ -20,7 +20,7 @@ inline int isign(float i)
     return 0;
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline unsigned clamp_flt(float f, float min, float max)
 #else
 inline unsigned clamp_flt(float f, float min, float max)
@@ -33,7 +33,7 @@ inline unsigned clamp_flt(float f, float min, float max)
     return (int)(255.0f*(f-min)/(max-min));
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline float restrict_flt(float f, float min, float max)
 #else
 inline float restrict_flt(float f, float min, float max)

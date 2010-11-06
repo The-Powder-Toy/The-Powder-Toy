@@ -1,7 +1,7 @@
 #ifndef DEFINE_H
 #define DEFINE_H
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 #define PATH_SEP "\\"
 #else
 #define PATH_SEP "/"

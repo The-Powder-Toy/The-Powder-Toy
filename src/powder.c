@@ -360,7 +360,7 @@ void kill_part(int i)
     pfree = i;
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline int create_part(int p, int x, int y, int t)
 #else
 inline int create_part(int p, int x, int y, int t)
@@ -656,7 +656,7 @@ static void create_cherenkov_photon(int pp)
     parts[i].vy *= r;
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline void delete_part(int x, int y)
 #else
 inline void delete_part(int x, int y)
@@ -674,7 +674,7 @@ inline void delete_part(int x, int y)
     pmap[y][x] = 0;	// just in case
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline int is_wire(int x, int y)
 #else
 inline int is_wire(int x, int y)
@@ -683,7 +683,7 @@ inline int is_wire(int x, int y)
     return bmap[y][x]==6 || bmap[y][x]==7 || bmap[y][x]==3 || bmap[y][x]==8 || bmap[y][x]==11 || bmap[y][x]==12;
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline int is_wire_off(int x, int y)
 #else
 inline int is_wire_off(int x, int y)
@@ -774,7 +774,7 @@ void set_emap(int x, int y)
             }
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline int parts_avg(int ci, int ni)
 #else
 inline int parts_avg(int ci, int ni)
@@ -950,7 +950,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
 
             // interpolator
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
             mv = max(fabsf(parts[i].vx), fabsf(parts[i].vy));
 #else
             mv = fmaxf(fabsf(parts[i].vx), fabsf(parts[i].vy));
