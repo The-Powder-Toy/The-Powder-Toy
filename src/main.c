@@ -528,6 +528,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 			gol[x][y] = 3;
 		    if(j == PT_2x2)
 			gol[x][y] = 4;
+		    if(j == PT_DANI)
+			gol[x][y] = 5;
                     if(j == PT_PHOT)
                         parts[k].ctype = 0x3fffffff;
                     parts[k].x = (float)x;

@@ -850,7 +850,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 			else if(parts[r>>8].type==PT_2x2)
 				{
 					gol[nx][ny] = 4;
-				}	
+				}
+			else if(parts[r>>8].type==PT_DANI)
+				{
+					gol[nx][ny] = 5;
+				}
 		}
 	for(nx=4;nx<XRES-4;nx++)
 		for(ny=4;ny<YRES-4;ny++)
@@ -904,7 +908,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][4]>=2)
 			{
 				create_part(-1,nx,ny,PT_2x2);
+			}	
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][5]>=2)
+			{
+				create_part(-1,nx,ny,PT_DANI);
 			}
+
 			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][1]==1)
 			{
 				create_part(-1,nx,ny,PT_GOL);
@@ -912,6 +921,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][2]==1)
 			{
 				create_part(-1,nx,ny,PT_HLIF);
+			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][4]==1)
+			{
+				create_part(-1,nx,ny,PT_2x2);
 			}
 
 			else if(v==4&&gol[nx][ny]==0&&gol2[nx][ny][3]>=2)
@@ -930,6 +943,20 @@ void update_particles_i(pixel *vid, int start, int inc)
 			else if(v==6&&gol[nx][ny]==0&&gol2[nx][ny][4]>=3)
 			{
 				create_part(-1,nx,ny,PT_2x2);
+			}
+			else if(v==6&&gol[nx][ny]==0&&gol2[nx][ny][5]>=3)
+			{
+				create_part(-1,nx,ny,PT_DANI);
+			}
+
+			else if(v==7&&gol[nx][ny]==0&&gol2[nx][ny][5]>=4)
+			{
+				create_part(-1,nx,ny,PT_DANI);
+			}
+
+			else if(v==8&&gol[nx][ny]==0&&gol2[nx][ny][5]>=4)
+			{
+				create_part(-1,nx,ny,PT_DANI);
 			}
 
 			else if(v>=5&&gol[nx][ny]==1)
@@ -957,10 +984,16 @@ void update_particles_i(pixel *vid, int start, int inc)
 			else if(v<=1&&gol[nx][ny]==4)
 				parts[r>>8].type = PT_NONE;
 
+			else if(v==6&&gol[nx][ny]==5)
+				parts[r>>8].type = PT_NONE;
+			else if(v<=3&&gol[nx][ny]==5)
+				parts[r>>8].type = PT_NONE;
+
 			gol2[nx][ny][1]=0;
 			gol2[nx][ny][2]=0;
 			gol2[nx][ny][3]=0;
 			gol2[nx][ny][4]=0;
+			gol2[nx][ny][5]=0;
 		}
 	CGOL++;
     for(i=start; i<(NPART-starti); i+=inc)

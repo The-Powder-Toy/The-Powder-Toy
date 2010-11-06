@@ -120,7 +120,8 @@
 #define PT_HLIF 79
 #define PT_ASIM 80
 #define PT_2x2 81
-#define PT_NUM  82
+#define PT_DANI 82
+#define PT_NUM  83
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -292,6 +293,7 @@ static const part_type ptypes[PT_NUM] =
     {"HLIF",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"High Life! (like GOL)", TYPE_SOLID},
     {"ASIM",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Assimilation! (like GOL)", TYPE_SOLID},
     {"2x2",	PIXPACK(0xFFFF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"2x2! (like GOL)", TYPE_SOLID},
+    {"DANI",	PIXPACK(0x00FFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Day and Night! (like GOL)", TYPE_SOLID},
     //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
 };
 
