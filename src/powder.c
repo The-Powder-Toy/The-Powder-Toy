@@ -950,7 +950,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
 
             // interpolator
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
             mv = max(fabsf(parts[i].vx), fabsf(parts[i].vy));
 #else
             mv = fmaxf(fabsf(parts[i].vx), fabsf(parts[i].vy));
