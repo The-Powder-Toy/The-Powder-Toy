@@ -824,10 +824,11 @@ void update_particles_i(pixel *vid, int start, int inc)
     int starti = (start*-1);
 	     if(sys_pause&&!framerender)
                 return;
-	gol2[0][0] = 3;
+	if(CGOL>=GSPEED)
 	for(nx=0;nx<XRES;nx++)
 		for(ny=0;ny<YRES;ny++)
 		{
+			CGOL=0;
 			r = pmap[ny][nx];
 			if((r>>8)>=NPART || !r)
 			{
@@ -858,7 +859,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 				parts[r>>8].type = PT_NONE;
 			gol2[nx][ny] = 0;
 		}
-	/*gol[0][0] = 3;  other gol code, still has glitch
+	CGOL++;
+	/*gol[0][0] = 3;  other gol code
 	if(CGOL>=GSPEED)
 		{
 		  CGOL = 0;
