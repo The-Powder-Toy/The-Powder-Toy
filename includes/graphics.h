@@ -63,13 +63,13 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc);
 
 void draw_menu(pixel *vid_buf, int i, int hover);
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 #else
 extern inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 #endif
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
 #else
 extern inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
@@ -99,7 +99,7 @@ int textwidthx(char *s, int w);
 
 int textposxy(char *s, int width, int w, int h);
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 #else
 void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
