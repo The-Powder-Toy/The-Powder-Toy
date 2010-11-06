@@ -835,34 +835,49 @@ void update_particles_i(pixel *vid, int start, int inc)
 				gol[nx][ny] = 0;
                                	continue;
 			}
-			if(parts[r>>8].type==PT_GOL)
-				gol[nx][ny] = 1;	
+			else if(parts[r>>8].type==PT_GOL)
+				{
+					gol[nx][ny] = 1;
+				}
+			else if(parts[r>>8].type==PT_HLIF)
+				{
+					gol[nx][ny] = 2;
+				}
+			else if(parts[r>>8].type==PT_ASIM)
+				{
+					gol[nx][ny] = 3;
+				}
+			else if(parts[r>>8].type==PT_2x2)
+				{
+					gol[nx][ny] = 4;
+				}	
 		}
 	for(nx=4;nx<XRES-4;nx++)
 		for(ny=4;ny<YRES-4;ny++)
 		{
-			if(gol[nx][ny]==1)
+			int z = gol[nx][ny];
+			if(z>=1)
 				for(int nnx=-1;nnx<2;nnx++)
 					for(int nny=-1;nny<2;nny++)
 					{
 						if(ny+nny<4&&nx+nnx<4)
-							gol2[XRES-5][YRES-5] ++;
+							gol2[XRES-5][YRES-5][z] ++;
 						else if(ny+nny<4&&nx+nnx>=XRES-4)
-							gol2[4][YRES-5] ++;
+							gol2[4][YRES-5][z] ++;
 						else if(ny+nny>=YRES-4&&nx+nnx<4)
-							gol2[XRES-5][4] ++;
+							gol2[XRES-5][4][z] ++;
 						else if(nx+nnx<4)
-							gol2[XRES-5][ny+nny] ++;
+							gol2[XRES-5][ny+nny][z] ++;
 						else if(ny+nny<4)
-							gol2[nx+nnx][YRES-5] ++;
+							gol2[nx+nnx][YRES-5][z] ++;
 						else if(ny+nny>=YRES-4&&nx+nnx>=XRES-4)
-							gol2[4][4] ++;
+							gol2[4][4][z] ++;
 						else if(ny+nny>=YRES-4)
-							gol2[nx+nnx][4] ++;
+							gol2[nx+nnx][4][z] ++;
 						else if(nx+nnx>=XRES-4)
-							gol2[4][ny+nny] ++;
+							gol2[4][ny+nny][z] ++;
 						else
-							gol2[nx+nnx][ny+nny] ++;
+							gol2[nx+nnx][ny+nny][z] ++;
 							
 	
 					}
@@ -871,55 +886,83 @@ void update_particles_i(pixel *vid, int start, int inc)
 		for(ny=4;ny<YRES-4;ny++)
 		{
 			r = pmap[ny][nx];
-			if(gol2[nx][ny]==3&&gol[nx][ny]==0)
+			int v = 0;
+			for(int z = 1;z<NGOL;z++)
+				v += gol2[nx][ny][z];
+			if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][1]>=2)
+			{
 				create_part(-1,nx,ny,PT_GOL);
-			else if(gol2[nx][ny]>=5&&gol[nx][ny]==1)
+			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][2]>=2)
+			{
+				create_part(-1,nx,ny,PT_HLIF);
+			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][3]>=2)
+			{
+				create_part(-1,nx,ny,PT_ASIM);
+			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][4]>=2)
+			{
+				create_part(-1,nx,ny,PT_2x2);
+			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][1]==1)
+			{
+				create_part(-1,nx,ny,PT_GOL);
+			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][2]==1)
+			{
+				create_part(-1,nx,ny,PT_HLIF);
+			}
+
+			else if(v==4&&gol[nx][ny]==0&&gol2[nx][ny][3]>=2)
+			{
+				create_part(-1,nx,ny,PT_ASIM);
+			}
+			else if(v==5&&gol[nx][ny]==0&&gol2[nx][ny][3]>=3)
+			{
+				create_part(-1,nx,ny,PT_ASIM);
+			}
+
+			else if(v==6&&gol[nx][ny]==0&&gol2[nx][ny][2]>=3)
+			{
+				create_part(-1,nx,ny,PT_HLIF);
+			}
+			else if(v==6&&gol[nx][ny]==0&&gol2[nx][ny][4]>=3)
+			{
+				create_part(-1,nx,ny,PT_2x2);
+			}
+
+			else if(v>=5&&gol[nx][ny]==1)
 				parts[r>>8].type = PT_NONE;
-			else if(gol2[nx][ny]<=2&&gol[nx][ny]==1)
+			else if(v<=2&&gol[nx][ny]==1)
 				parts[r>>8].type = PT_NONE;
-			gol2[nx][ny] = 0;
+
+			else if(v>=5&&gol[nx][ny]==2)
+				parts[r>>8].type = PT_NONE;
+			else if(v<=2&&gol[nx][ny]==2)
+				parts[r>>8].type = PT_NONE;
+
+
+			else if(v<=4&&gol[nx][ny]==3)
+				parts[r>>8].type = PT_NONE;
+			else if(v>=9&&gol[nx][ny]==3)
+				parts[r>>8].type = PT_NONE;
+
+			else if(v>=7&&gol[nx][ny]==4)
+				parts[r>>8].type = PT_NONE;
+			else if(v==4&&gol[nx][ny]==4)
+				parts[r>>8].type = PT_NONE;
+			else if(v==5&&gol[nx][ny]==4)
+				parts[r>>8].type = PT_NONE;
+			else if(v<=1&&gol[nx][ny]==4)
+				parts[r>>8].type = PT_NONE;
+
+			gol2[nx][ny][1]=0;
+			gol2[nx][ny][2]=0;
+			gol2[nx][ny][3]=0;
+			gol2[nx][ny][4]=0;
 		}
 	CGOL++;
-	/*gol[0][0] = 3;  other gol code
-	if(CGOL>=GSPEED)
-		{
-		  CGOL = 0;
-		  for(nx=0;nx<XRES;nx++)
-		  {
-			 for(ny=0;ny<YRES;ny++)
-                        {
-				r = pmap[ny][nx];
-				if((r>>8)>=NPART || !r)
-                                	continue;
-				if(parts[r>>8].type==PT_GOL)
-				for(int nnx=-1; nnx<2; nnx++)
-                   		 for(int nny=-1; nny<2; nny++)
-                     		   if(nx+nnx>=0 && ny+nny>0 && nx+nnx<XRES && ny+nny<YRES)
-                       		{
-					gol[nx+nnx][ny+nny] ++;
-				}					
-			}
-		  }
-		 for(nx=0;nx<XRES;nx++)
-			 for(ny=0;ny<YRES;ny++){
-				r = pmap[ny][nx];
-				if(gol[nx][ny]>=5&&(parts[r>>8].type==PT_NONE||parts[r>>8].type==PT_GOL)){
-					parts[r>>8].type=PT_NONE;
-				}
-				else if(gol[nx][ny]==3&&parts[r>>8].type==PT_NONE){
-					create_part(-1,nx,ny,PT_GOL);
-				}
-				else if(gol[nx][ny]==2&&parts[r>>8].type==PT_GOL){
-					parts[r>>8].type=PT_NONE;
-				}
-				else if(gol[nx][ny]==1&&(parts[r>>8].type==PT_NONE||parts[r>>8].type==PT_GOL)){
-					parts[r>>8].type=PT_NONE;
-				}
-				gol[nx][ny]=0;
-				
-			}
-		}
-		CGOL++;*/
     for(i=start; i<(NPART-starti); i+=inc)
         if(parts[i].type)
         {
@@ -1884,7 +1927,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             else if(t==PT_MORT) {
                 create_part(-1, x, y-1, PT_SMKE);
             }
-	    else if(t==PT_GOL)
+	    else if(t==PT_GOL||t==PT_HLIF||t==PT_ASIM||t==PT_2x2)
 	    {
 		if(parts[i].temp>0)
 			parts[i].temp -= 50.0f;

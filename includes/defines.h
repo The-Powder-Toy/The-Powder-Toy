@@ -18,6 +18,8 @@
 
 #define THUMB_CACHE_SIZE 256
 
+#define NGOL 5
+
 #define IMGCONNS 3
 #define TIMEOUT 100
 #define HTTP_TIMEOUT 10
@@ -104,11 +106,10 @@ struct stamp
 typedef struct stamp stamp;
 
 int MSIGN;
-int NGOL;
 int CGOL;
 int GSPEED;
 int gol[XRES][YRES];
-int gol2[XRES][YRES];
+int gol2[XRES][YRES][NGOL];
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;
