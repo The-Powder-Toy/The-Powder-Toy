@@ -825,8 +825,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 	     if(sys_pause&&!framerender)
                 return;
 	if(CGOL>=GSPEED)
-	for(nx=0;nx<XRES;nx++)
-		for(ny=0;ny<YRES;ny++)
+	for(nx=4;nx<XRES-4;nx++)
+		for(ny=4;ny<YRES-4;ny++)
 		{
 			CGOL=0;
 			r = pmap[ny][nx];
@@ -838,17 +838,37 @@ void update_particles_i(pixel *vid, int start, int inc)
 			if(parts[r>>8].type==PT_GOL)
 				gol[nx][ny] = 1;	
 		}
-	for(nx=0;nx<XRES;nx++)
-		for(ny=0;ny<YRES;ny++)
+	for(nx=4;nx<XRES-4;nx++)
+		for(ny=4;ny<YRES-4;ny++)
 		{
 			if(gol[nx][ny]==1)
 				for(int nnx=-1;nnx<2;nnx++)
 					for(int nny=-1;nny<2;nny++)
-						if(nx+nnx>=0 && ny+nny>0 && nx+nnx<XRES && ny+nny<YRES)
+					{
+						if(ny+nny<4&&nx+nnx<4)
+							gol2[XRES-5][YRES-5] ++;
+						else if(ny+nny<4&&nx+nnx>=XRES-4)
+							gol2[4][YRES-5] ++;
+						else if(ny+nny>=YRES-4&&nx+nnx<4)
+							gol2[XRES-5][4] ++;
+						else if(nx+nnx<4)
+							gol2[XRES-5][ny+nny] ++;
+						else if(ny+nny<4)
+							gol2[nx+nnx][YRES-5] ++;
+						else if(ny+nny>=YRES-4&&nx+nnx>=XRES-4)
+							gol2[4][4] ++;
+						else if(ny+nny>=YRES-4)
+							gol2[nx+nnx][4] ++;
+						else if(nx+nnx>=XRES-4)
+							gol2[4][ny+nny] ++;
+						else
 							gol2[nx+nnx][ny+nny] ++;
+							
+	
+					}
 		}
-	for(nx=0;nx<XRES;nx++)
-		for(ny=0;ny<YRES;ny++)
+	for(nx=4;nx<XRES-4;nx++)
+		for(ny=4;ny<YRES-4;ny++)
 		{
 			r = pmap[ny][nx];
 			if(gol2[nx][ny]==3&&gol[nx][ny]==0)
