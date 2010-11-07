@@ -18,7 +18,7 @@
 
 #define THUMB_CACHE_SIZE 256
 
-#define NGOL 10
+#define NGOL 11
 
 #define IMGCONNS 3
 #define TIMEOUT 100

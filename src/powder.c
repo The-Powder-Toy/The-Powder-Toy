@@ -882,7 +882,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			for(int golnum = 1;golnum<NGOL;golnum++)
 				for(int goldelete = 1;goldelete<10;goldelete++)
 			{
-				if(neighbors==goldelete&&gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=goldelete/2)
+				if(neighbors==goldelete&&gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
 				{
 					create_part(-1,nx,ny,golnum+77);
 				}
