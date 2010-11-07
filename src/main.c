@@ -530,6 +530,14 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 			gol[x][y] = 4;
 		    if(j == PT_DANI)
 			gol[x][y] = 5;
+		    if(j == PT_AMOE)
+			gol[x][y] = 6;
+		    if(j == PT_MOVE)
+			gol[x][y] = 7;
+		    if(j == PT_PGOL)
+			gol[x][y] = 8;
+		   if(j == PT_DMOE)
+			gol[x][y] = 9;
                     if(j == PT_PHOT)
                         parts[k].ctype = 0x3fffffff;
                     parts[k].x = (float)x;

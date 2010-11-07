@@ -855,6 +855,22 @@ void update_particles_i(pixel *vid, int start, int inc)
 				{
 					gol[nx][ny] = 5;
 				}
+			else if(parts[r>>8].type==PT_AMOE)
+				{
+					gol[nx][ny] = 6;
+				}
+			else if(parts[r>>8].type==PT_MOVE)
+				{
+					gol[nx][ny] = 7;
+				}
+			else if(parts[r>>8].type==PT_PGOL)
+				{
+					gol[nx][ny] = 8;
+				}
+			else if(parts[r>>8].type==PT_DMOE)
+				{
+					gol[nx][ny] = 9;
+				}
 		}
 	for(nx=4;nx<XRES-4;nx++)
 		for(ny=4;ny<YRES-4;ny++)
@@ -893,6 +909,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 			int v = 0;
 			for(int z = 1;z<NGOL;z++)
 				v += gol2[nx][ny][z];
+			//creation rules for number of neighbors , v
+			//1
+
+			//2
+
+			//3
 			if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][1]>=2)
 			{
 				create_part(-1,nx,ny,PT_GOL);
@@ -913,6 +935,22 @@ void update_particles_i(pixel *vid, int start, int inc)
 			{
 				create_part(-1,nx,ny,PT_DANI);
 			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][6]>=2)
+			{
+				create_part(-1,nx,ny,PT_AMOE);
+			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][7]>=2)
+			{
+				create_part(-1,nx,ny,PT_MOVE);
+			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][8]>=2)
+			{
+				create_part(-1,nx,ny,PT_PGOL);
+			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][9]>=2)
+			{
+				create_part(-1,nx,ny,PT_DMOE);
+			}
 
 			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][1]==1)
 			{
@@ -926,16 +964,41 @@ void update_particles_i(pixel *vid, int start, int inc)
 			{
 				create_part(-1,nx,ny,PT_2x2);
 			}
-
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][6]==1)
+			{
+				create_part(-1,nx,ny,PT_AMOE);
+			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][7]==1)
+			{
+				create_part(-1,nx,ny,PT_MOVE);
+			}
+			else if(v==3&&gol[nx][ny]==0&&gol2[nx][ny][8]==1)
+			{
+				create_part(-1,nx,ny,PT_PGOL);
+			}
+			//4
 			else if(v==4&&gol[nx][ny]==0&&gol2[nx][ny][3]>=2)
 			{
 				create_part(-1,nx,ny,PT_ASIM);
 			}
+			//5
 			else if(v==5&&gol[nx][ny]==0&&gol2[nx][ny][3]>=3)
 			{
 				create_part(-1,nx,ny,PT_ASIM);
 			}
-
+			else if(v==5&&gol[nx][ny]==0&&gol2[nx][ny][6]>=3)
+			{
+				create_part(-1,nx,ny,PT_AMOE);
+			}
+			else if(v==5&&gol[nx][ny]==0&&gol2[nx][ny][8]>=3)
+			{
+				create_part(-1,nx,ny,PT_PGOL);
+			}
+			else if(v==5&&gol[nx][ny]==0&&gol2[nx][ny][9]>=3)
+			{
+				create_part(-1,nx,ny,PT_DMOE);
+			}
+			//6
 			else if(v==6&&gol[nx][ny]==0&&gol2[nx][ny][2]>=3)
 			{
 				create_part(-1,nx,ny,PT_HLIF);
@@ -948,33 +1011,62 @@ void update_particles_i(pixel *vid, int start, int inc)
 			{
 				create_part(-1,nx,ny,PT_DANI);
 			}
-
+			else if(v==6&&gol[nx][ny]==0&&gol2[nx][ny][7]>=3)
+			{
+				create_part(-1,nx,ny,PT_MOVE);
+			}
+			else if(v==6&&gol[nx][ny]==0&&gol2[nx][ny][9]>=3)
+			{
+				create_part(-1,nx,ny,PT_DMOE);
+			}
+			//7
 			else if(v==7&&gol[nx][ny]==0&&gol2[nx][ny][5]>=4)
 			{
 				create_part(-1,nx,ny,PT_DANI);
 			}
-
+			else if(v==7&&gol[nx][ny]==0&&gol2[nx][ny][6]>=4)
+			{
+				create_part(-1,nx,ny,PT_AMOE);
+			}
+			else if(v==7&&gol[nx][ny]==0&&gol2[nx][ny][8]>=4)
+			{
+				create_part(-1,nx,ny,PT_PGOL);
+			}
+			else if(v==7&&gol[nx][ny]==0&&gol2[nx][ny][9]>=4)
+			{
+				create_part(-1,nx,ny,PT_DMOE);
+			}
+			//8
 			else if(v==8&&gol[nx][ny]==0&&gol2[nx][ny][5]>=4)
 			{
 				create_part(-1,nx,ny,PT_DANI);
 			}
-
+			else if(v==8&&gol[nx][ny]==0&&gol2[nx][ny][7]>=4)
+			{
+				create_part(-1,nx,ny,PT_MOVE);
+			}
+			else if(v==8&&gol[nx][ny]==0&&gol2[nx][ny][9]>=4)
+			{
+				create_part(-1,nx,ny,PT_DMOE);
+			}
+			//rules to kill particle
+			//GOL
 			else if(v>=5&&gol[nx][ny]==1)
 				parts[r>>8].type = PT_NONE;
 			else if(v<=2&&gol[nx][ny]==1)
 				parts[r>>8].type = PT_NONE;
-
+			//HLIF
 			else if(v>=5&&gol[nx][ny]==2)
 				parts[r>>8].type = PT_NONE;
 			else if(v<=2&&gol[nx][ny]==2)
 				parts[r>>8].type = PT_NONE;
 
-
+			//ASIM
 			else if(v<=4&&gol[nx][ny]==3)
 				parts[r>>8].type = PT_NONE;
 			else if(v>=9&&gol[nx][ny]==3)
 				parts[r>>8].type = PT_NONE;
-
+			//2x2
 			else if(v>=7&&gol[nx][ny]==4)
 				parts[r>>8].type = PT_NONE;
 			else if(v==4&&gol[nx][ny]==4)
@@ -983,17 +1075,41 @@ void update_particles_i(pixel *vid, int start, int inc)
 				parts[r>>8].type = PT_NONE;
 			else if(v<=1&&gol[nx][ny]==4)
 				parts[r>>8].type = PT_NONE;
-
+			//DANI
 			else if(v==6&&gol[nx][ny]==5)
 				parts[r>>8].type = PT_NONE;
 			else if(v<=3&&gol[nx][ny]==5)
 				parts[r>>8].type = PT_NONE;
+			//AMOE
+			else if(v==8&&gol[nx][ny]==6)
+				parts[r>>8].type = PT_NONE;
+			else if(v==7&&gol[nx][ny]==6)
+				parts[r>>8].type = PT_NONE;
+			else if(v==5&&gol[nx][ny]==6)
+				parts[r>>8].type = PT_NONE;
+			else if(v==3&&gol[nx][ny]==6)
+				parts[r>>8].type = PT_NONE;
+			else if(v==1&&gol[nx][ny]==6)
+				parts[r>>8].type = PT_NONE;
+			//MOVE
+			else if(v>=7&&gol[nx][ny]==7)
+				parts[r>>8].type = PT_NONE;
+			else if(v==4&&gol[nx][ny]==7)
+				parts[r>>8].type = PT_NONE;
+			else if(v<=2&&gol[nx][ny]==7)
+				parts[r>>8].type = PT_NONE;
+			//PGOL
+			else if((v<=8&&v>=5)&&gol[nx][ny]==8)
+				parts[r>>8].type = PT_NONE;
+			else if(v<=2&&gol[nx][ny]==8)
+				parts[r>>8].type = PT_NONE;
 
-			gol2[nx][ny][1]=0;
-			gol2[nx][ny][2]=0;
-			gol2[nx][ny][3]=0;
-			gol2[nx][ny][4]=0;
-			gol2[nx][ny][5]=0;
+			//DMOE
+			else if(v<=5&&gol[nx][ny]==9)
+				parts[r>>8].type = PT_NONE;
+
+			for(int z = 1;z<NGOL;z++)
+				gol2[nx][ny][z] = 0;
 		}
 	CGOL++;
     for(i=start; i<(NPART-starti); i+=inc)
@@ -1960,7 +2076,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             else if(t==PT_MORT) {
                 create_part(-1, x, y-1, PT_SMKE);
             }
-	    else if(t==PT_GOL||t==PT_HLIF||t==PT_ASIM||t==PT_2x2)
+	    else if(t==PT_GOL||t==PT_HLIF||t==PT_ASIM||t==PT_2x2||t==PT_DANI||t==PT_AMOE||t==PT_MOVE||t==PT_PGOL||t==PT_DMOE)
 	    {
 		if(parts[i].temp>0)
 			parts[i].temp -= 50.0f;
