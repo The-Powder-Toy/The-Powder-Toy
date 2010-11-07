@@ -822,13 +822,15 @@ void update_particles_i(pixel *vid, int start, int inc)
     float c_heat = 0.0f;
     int h_count = 0;
     int starti = (start*-1);
-	     if(sys_pause&&!framerender)
+	if(sys_pause&&!framerender)
                 return;
-	if(CGOL>=GSPEED)
-	for(nx=4;nx<XRES-4;nx++)
+	if(ISGOL==1&&CGOL>=GSPEED)//GSPEED is frames per generation
+	{
+		for(nx=4;nx<XRES-4;nx++)
 		for(ny=4;ny<YRES-4;ny++)
 		{
 			CGOL=0;
+			ISGOL=0;
 			r = pmap[ny][nx];
 			if((r>>8)>=NPART || !r)
 			{
@@ -838,61 +840,62 @@ void update_particles_i(pixel *vid, int start, int inc)
 			else 
 				for(int golnum=1;golnum<NGOL;golnum++)
 					if(parts[r>>8].type==golnum+77)
-						gol[nx][ny] = golnum;
-				
-		}
-	for(nx=4;nx<XRES-4;nx++)
-		for(ny=4;ny<YRES-4;ny++)
-		{
-			int golnum = gol[nx][ny];
-			if(golnum>=1)
-				for(int nnx=-1;nnx<2;nnx++)
-					for(int nny=-1;nny<2;nny++)
 					{
-						if(ny+nny<4&&nx+nnx<4)
-							gol2[XRES-5][YRES-5][golnum] ++;
-						else if(ny+nny<4&&nx+nnx>=XRES-4)
-							gol2[4][YRES-5][golnum] ++;
-						else if(ny+nny>=YRES-4&&nx+nnx<4)
-							gol2[XRES-5][4][golnum] ++;
-						else if(nx+nnx<4)
-							gol2[XRES-5][ny+nny][golnum] ++;
-						else if(ny+nny<4)
-							gol2[nx+nnx][YRES-5][golnum] ++;
-						else if(ny+nny>=YRES-4&&nx+nnx>=XRES-4)
-							gol2[4][4][golnum] ++;
-						else if(ny+nny>=YRES-4)
-							gol2[nx+nnx][4][golnum] ++;
-						else if(nx+nnx>=XRES-4)
-							gol2[4][ny+nny][golnum] ++;
-						else
-							gol2[nx+nnx][ny+nny][golnum] ++;
+						gol[nx][ny] = golnum;
+						for(int nnx=-1;nnx<2;nnx++)
+						  for(int nny=-1;nny<2;nny++)
+						{
+							if(ny+nny<4&&nx+nnx<4)//any way to make wrapping code smaller?
+							  gol2[XRES-5][YRES-5][golnum] ++;
+							else if(ny+nny<4&&nx+nnx>=XRES-4)
+							  gol2[4][YRES-5][golnum] ++;
+							else if(ny+nny>=YRES-4&&nx+nnx<4)
+							  gol2[XRES-5][4][golnum] ++;
+							else if(nx+nnx<4)
+							  gol2[XRES-5][ny+nny][golnum] ++;
+							else if(ny+nny<4)
+							  gol2[nx+nnx][YRES-5][golnum] ++;
+							else if(ny+nny>=YRES-4&&nx+nnx>=XRES-4)
+							  gol2[4][4][golnum] ++;
+							else if(ny+nny>=YRES-4)
+							  gol2[nx+nnx][4][golnum] ++;
+							else if(nx+nnx>=XRES-4)
+							  gol2[4][ny+nny][golnum] ++;
+							else
+							  gol2[nx+nnx][ny+nny][golnum] ++;
 							
 	
+						}
 					}
+				
 		}
-	for(nx=4;nx<XRES-4;nx++)
-		for(ny=4;ny<YRES-4;ny++)
+		for(nx=4;nx<XRES-4;nx++)
+		  for(ny=4;ny<YRES-4;ny++)
 		{
-			r = pmap[ny][nx];
 			int neighbors = 0;
 			for(int golnum = 1;golnum<NGOL;golnum++)
-				neighbors += gol2[nx][ny][golnum];
-			if(neighbors!=0)
-			for(int golnum = 1;golnum<NGOL;golnum++)
-				for(int goldelete = 1;goldelete<10;goldelete++)
 			{
-				if(neighbors==goldelete&&gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
-				{
-					create_part(-1,nx,ny,golnum+77);
-				}
-				else if(neighbors==goldelete&&gol[nx][ny]==golnum&&(grule[golnum][goldelete-1]==0||grule[golnum][goldelete-1]==2))
-					parts[r>>8].type = PT_NONE;
+				neighbors += gol2[nx][ny][golnum];
 			}
-			for(int z = 1;z<NGOL;z++)
+			if(neighbors!=0)
+			{
+			   for(int golnum = 1;golnum<NGOL;golnum++)
+				for(int goldelete = 1;goldelete<10;goldelete++)
+				{
+					if(neighbors==goldelete&&gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
+					{
+						create_part(-1,nx,ny,golnum+77);
+					}
+					else if(neighbors==goldelete&&gol[nx][ny]==golnum&&(grule[golnum][goldelete-1]==0||grule[golnum][goldelete-1]==2))
+						parts[pmap[ny][nx]>>8].type = PT_NONE;
+				}
+			    for(int z = 1;z<NGOL;z++)
 				gol2[nx][ny][z] = 0;
+			}
 		}
-	CGOL++;
+	}
+	if(ISGOL)
+		CGOL++;
     for(i=start; i<(NPART-starti); i+=inc)
         if(parts[i].type)
         {
@@ -1861,6 +1864,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 	    {
 		if(parts[i].temp>0)
 			parts[i].temp -= 50.0f;
+		ISGOL=1;
 	    }
             else if(t==PT_LCRY)
             {
