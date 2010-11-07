@@ -514,30 +514,13 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                 //TODO: Possibly some server side translation
                 j = PT_DUST;//goto corrupt;
             }
+	    gol[x][y]=0;
             if(j)// && !(isplayer == 1 && j==PT_STKM))
             {
                 if(pmap[y][x])
                 {
                     k = pmap[y][x]>>8;
                     parts[k].type = j;
-		    if(j == PT_GOL)
-			gol[x][y] = 1;
-		    if(j == PT_HLIF)
-			gol[x][y] = 2;
-		    if(j == PT_ASIM)
-			gol[x][y] = 3;
-		    if(j == PT_2x2)
-			gol[x][y] = 4;
-		    if(j == PT_DANI)
-			gol[x][y] = 5;
-		    if(j == PT_AMOE)
-			gol[x][y] = 6;
-		    if(j == PT_MOVE)
-			gol[x][y] = 7;
-		    if(j == PT_PGOL)
-			gol[x][y] = 8;
-		   if(j == PT_DMOE)
-			gol[x][y] = 9;
                     if(j == PT_PHOT)
                         parts[k].ctype = 0x3fffffff;
                     parts[k].x = (float)x;
