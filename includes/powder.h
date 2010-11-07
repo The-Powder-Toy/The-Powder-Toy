@@ -386,7 +386,20 @@ static part_state pstates[PT_NUM] =
     /* HSWC */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* IRON */ {ST_SOLID,   PT_NONE, 0.0f,		PT_LAVA, 1687.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
 };
-
+static int grule[NGOL][10] = 
+{
+//       0,1,2,3,4,5,6,7,8,9    live=1  spawn=2 spawn&live=3
+	{0,0,0,0,0,0,0,0,0,0},//blank
+	{0,0,1,3,0,0,0,0,0,0},//GOL
+	{0,0,1,3,0,0,2,0,0,0},//HLIF
+	{0,0,0,2,3,3,1,1,0,0},//ASIM
+	{0,1,1,2,0,1,2,0,0,0},//2x2
+	{0,0,0,3,1,0,3,3,3,0},//DANI
+	{0,1,0,3,0,3,0,2,1,0},//AMOE
+	{0,0,1,2,1,1,2,0,2,0},//MOVE
+	{0,0,1,3,0,2,0,2,1,0},//PGOL
+	{0,0,0,2,0,3,3,3,3,0},//DMOE
+};
 extern int isplayer;
 extern float player[27];
 
