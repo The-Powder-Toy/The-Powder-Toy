@@ -894,7 +894,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			}
 		}
 	}
-	if(ISGOL)
+	if(CGOL==0)
 		CGOL++;
     for(i=start; i<(NPART-starti); i+=inc)
         if(parts[i].type)
