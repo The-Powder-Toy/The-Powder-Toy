@@ -1568,8 +1568,7 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
                 }
-                //Life can be 11 too, so don't just check for 10
-                else if(t==PT_SWCH && parts[i].life >= 10)
+                else if(t==PT_SWCH && parts[i].tmp >= 10)
                 {
                     x = nx;
                     y = ny;
