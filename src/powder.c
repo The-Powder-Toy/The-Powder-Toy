@@ -1443,7 +1443,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                     r = create_part(-1, x, y, PT_PLSM);
                     if(r!=-1)
                         parts[r].life = 50;
-                    //goto killed;
+                    goto killed;
                 } else if (parts[i].life < 40) {
                     parts[i].life--;
                     if((rand()%100)==0) {
@@ -1460,7 +1460,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                     //t = PT_NONE;
                     kill_part(i);
                     r = create_part(-1, x, y, PT_FSEP);
-                    //goto killed;
+                    goto killed;
                 }
                 for(nx=-2; nx<3; nx++)
                     for(ny=-2; ny<3; ny++)
@@ -1486,7 +1486,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                     r = create_part(-1, x, y, PT_PLSM);
                     if(r!=-1)
                         parts[r].life = 50;
-                    //goto killed;
+                    goto killed;
                 } else if (parts[i].life < 40) {
                     parts[i].life--;
                     if((rand()%10)==0) {
@@ -1929,6 +1929,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 {
                                     parts[i].type = PT_NONE;
                                     kill_part(i);
+									goto killed;
                                 }
                                 parts[r>>8].life = 0;
                                 parts[r>>8].type = PT_NONE;
@@ -1936,7 +1937,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 if(2>(rand()/(RAND_MAX/100)))
                                     create_part(r>>8, x+nx, y+ny, PT_PHOT);
                                 pv[y/CELL][x/CELL] -= 5.0f;
-                                continue;
+                                goto killed;
                             }
                         }
             }
@@ -1994,9 +1995,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                     }
                     pv[y/CELL][x/CELL] += 20;
                     kill_part(i);
+					goto killed;
                 } else if(parts[i].tmp>=3) {
                     if(parts[i].life<=0) {
                         kill_part(i);
+						goto killed;
                     }
                 }
             }
