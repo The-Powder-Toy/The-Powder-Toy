@@ -824,7 +824,7 @@ void update_particles_i(pixel *vid, int start, int inc)
     int starti = (start*-1);
 	if(sys_pause&&!framerender)
                 return;
-	if(ISGOL==1&&CGOL>=1)//GSPEED is frames per generation
+	if(ISGOL==1&&CGOL>=GSPEED)//GSPEED is frames per generation
 	{
 		for(nx=4;nx<XRES-4;nx++)
 		for(ny=4;ny<YRES-4;ny++)
@@ -843,7 +843,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					{
 						gol[nx][ny] = golnum;
 						for(int nnx=-1;nnx<2;nnx++)
-						  for(int nny=-1;nny<2;nny++)
+						  for(int nny=-1;nny<2;nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
 						{
 							if(ny+nny<4&&nx+nnx<4){//any way to make wrapping code smaller?
 							  gol2[XRES-5][YRES-5][golnum] ++;
@@ -894,13 +894,13 @@ void update_particles_i(pixel *vid, int start, int inc)
 			if(neighbors==0)
 				continue;
 			for(int golnum = 1;golnum<NGOL;golnum++)
-			  for(int goldelete = 1;goldelete<10;goldelete++)
+			  for(int goldelete = 0;goldelete<9;goldelete++)
 				{
 					if(neighbors==goldelete&&gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
 					{
 						create_part(-1,nx,ny,golnum+77);
 					}
-					else if(neighbors==goldelete&&gol[nx][ny]==golnum&&(grule[golnum][goldelete-1]==0||grule[golnum][goldelete-1]==2))
+					else if(neighbors-1==goldelete&&gol[nx][ny]==golnum&&(grule[golnum][goldelete]==0||grule[golnum][goldelete]==2))//subtract 1 because it counted itself
 						parts[pmap[ny][nx]>>8].type = PT_NONE;
 				}
 			gol2[nx][ny][0] = 0;
