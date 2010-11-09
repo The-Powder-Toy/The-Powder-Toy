@@ -824,7 +824,7 @@ void update_particles_i(pixel *vid, int start, int inc)
     int starti = (start*-1);
 	if(sys_pause&&!framerender)
                 return;
-	if(ISGOL==1&&CGOL>=GSPEED)//GSPEED is frames per generation
+	if(ISGOL==1&&CGOL>=1)//GSPEED is frames per generation
 	{
 		for(nx=4;nx<XRES-4;nx++)
 		for(ny=4;ny<YRES-4;ny++)
@@ -1874,7 +1874,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             else if(t==PT_MORT) {
                 create_part(-1, x, y-1, PT_SMKE);
             }
-	    else if(t==PT_GOL||t==PT_HLIF||t==PT_ASIM||t==PT_2x2||t==PT_DANI||t==PT_AMOE||t==PT_MOVE||t==PT_PGOL||t==PT_DMOE)
+	    else if(t==PT_GOL||t==PT_HLIF||t==PT_ASIM||t==PT_2x2||t==PT_DANI||t==PT_AMOE||t==PT_MOVE||t==PT_PGOL||t==PT_DMOE||t==PT_34||t==PT_LLIF||t==PT_STAN)
 	    {
 		if(parts[i].temp>0)
 			parts[i].temp -= 50.0f;

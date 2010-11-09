@@ -18,8 +18,6 @@
 
 #define THUMB_CACHE_SIZE 256
 
-#define NGOL 10
-
 #define IMGCONNS 3
 #define TIMEOUT 100
 #define HTTP_TIMEOUT 10
@@ -57,6 +55,8 @@ extern unsigned char ZSIZE;
 #define STAMP_X 4
 #define STAMP_Y 4
 #define STAMP_MAX 120
+
+#define NGOL 13
 
 #ifdef PIX16
 typedef unsigned short pixel;

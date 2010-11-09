@@ -125,7 +125,10 @@
 #define PT_MOVE 84
 #define PT_PGOL 85
 #define PT_DMOE 86
-#define PT_NUM  87
+#define PT_34 87
+#define PT_LLIF 88
+#define PT_STAN 89
+#define PT_NUM  90
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -302,6 +305,9 @@ static const part_type ptypes[PT_NUM] =
     {"MOVE",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"'Move' particles! Does not move things.. it is a life type(245/368)", TYPE_SOLID},
     {"PGOL",	PIXPACK(0xE05010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Pseudo Life! (238/357)", TYPE_SOLID},
     {"DMOE",	PIXPACK(0x500000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Diamoeba! (5678/35678)", TYPE_SOLID},
+    {"34",	PIXPACK(0x500050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"34! (34/34)", TYPE_SOLID},
+    {"LLIF",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Long Life! (5/345)", TYPE_SOLID},
+    {"STAN",	PIXPACK(0x5000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Stains! (235678/3678)", TYPE_SOLID},
     //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
 };
 
@@ -386,19 +392,22 @@ static part_state pstates[PT_NUM] =
     /* HSWC */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* IRON */ {ST_SOLID,   PT_NONE, 0.0f,		PT_LAVA, 1687.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
 };
-static int grule[NGOL][10] = 
+static int grule[NGOL][9] = 
 {
 //       0,1,2,3,4,5,6,7,8,9    live=1  spawn=2 spawn&live=3
-	{0,0,0,0,0,0,0,0,0,0},//blank
-	{0,0,1,3,0,0,0,0,0,0},//GOL
-	{0,0,1,3,0,0,2,0,0,0},//HLIF
-	{0,0,0,2,3,3,1,1,0,0},//ASIM
-	{0,1,1,2,0,1,2,0,0,0},//2x2
-	{0,0,0,3,1,0,3,3,3,0},//DANI
-	{0,1,0,3,0,3,0,2,1,0},//AMOE
-	{0,0,1,2,1,1,2,0,2,0},//MOVE
-	{0,0,1,3,0,2,0,2,1,0},//PGOL
-	{0,0,0,2,0,3,3,3,3,0},//DMOE
+	{0,0,0,0,0,0,0,0,0},//blank
+	{0,0,1,3,0,0,0,0,0},//GOL
+	{0,0,1,3,0,0,2,0,0},//HLIF
+	{0,0,0,2,3,3,1,1,0},//ASIM
+	{0,1,1,2,0,1,2,0,0},//2x2
+	{0,0,0,3,1,0,3,3,3},//DANI
+	{0,1,0,3,0,3,0,2,1},//AMOE
+	{0,0,1,2,1,1,2,0,2},//MOVE
+	{0,0,1,3,0,2,0,2,1},//PGOL
+	{0,0,0,2,0,3,3,3,3},//DMOE
+	{0,0,0,3,3,0,0,0,0},//34
+	{0,0,0,2,2,3,0,0,0},//LLIF
+	{0,0,1,3,0,1,3,3,3},//STAN
 };
 extern int isplayer;
 extern float player[27];

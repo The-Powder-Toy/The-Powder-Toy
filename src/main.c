@@ -102,8 +102,8 @@ int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
 int MSIGN =-1;
-int CGOL = 0;
-int GSPEED = 1;
+//int CGOL = 0;
+//int GSPEED = 1;
 
 sign signs[MAXSIGNS];
 
