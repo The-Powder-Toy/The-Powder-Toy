@@ -299,7 +299,7 @@ static const part_type ptypes[PT_NUM] =
     {"2x2",	PIXPACK(0xFFFF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"2x2! (125/36)", TYPE_SOLID},
     {"DANI",	PIXPACK(0x00FFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Day and Night! (34678/3678)", TYPE_SOLID},
     {"AMOE",	PIXPACK(0xFF00FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Amoeba! (1358/357)", TYPE_SOLID},
-    {"MOVE",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Move particles! (245/368)", TYPE_SOLID},
+    {"MOVE",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"'Move' particles! Does not move things.. it is a life type(245/368)", TYPE_SOLID},
     {"PGOL",	PIXPACK(0xE05010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Pseudo Life! (238/357)", TYPE_SOLID},
     {"DMOE",	PIXPACK(0x500000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Diamoeba! (5678/35678)", TYPE_SOLID},
     //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
@@ -421,25 +421,25 @@ int try_move(int i, int x, int y, int nx, int ny);
 
 void kill_part(int i);
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 extern _inline int create_part(int p, int x, int y, int t);
 #else
 extern inline int create_part(int p, int x, int y, int t);
 #endif
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 extern _inline void delete_part(int x, int y);
 #else
 extern inline void delete_part(int x, int y);
 #endif
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 extern _inline int is_wire(int x, int y);
 #else
 extern inline int is_wire(int x, int y);
 #endif
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 extern _inline int is_wire_off(int x, int y);
 #else
 extern inline int is_wire_off(int x, int y);
@@ -447,7 +447,7 @@ extern inline int is_wire_off(int x, int y);
 
 void set_emap(int x, int y);
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline int parts_avg(int ci, int ni);
 #else
 int parts_avg(int ci, int ni);

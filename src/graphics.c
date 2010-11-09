@@ -757,7 +757,7 @@ void draw_menu(pixel *vid_buf, int i, int hover)
     }
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 #else
 inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
@@ -776,7 +776,7 @@ inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
     vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 #else
 inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
@@ -1030,7 +1030,7 @@ int textwidthx(char *s, int w)
     return n;
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 _inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 #else
 inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
