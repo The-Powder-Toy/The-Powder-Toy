@@ -1892,7 +1892,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				r = pmap[y+ny][x+nx];
 				if(parts[r>>8].type==PT_WATR&&5>=rand()%100)
 				{
-					parts[i].tmp++;
+					parts[i].life++;
 					parts[r>>8].type=PT_NONE;
 				}
 			}
@@ -1904,22 +1904,22 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 x+nx<XRES && y+ny<YRES && (nx || ny))
                         {
 				r = pmap[y+ny][x+nx];
-				if(((r>>8)>=NPART || !r )&&parts[i].tmp>=1)//if nothing then create water
+				if(((r>>8)>=NPART || !r )&&parts[i].life>=1)//if nothing then create water
 				{
 					create_part(-1,x+nx,y+ny,PT_WATR);
-					parts[i].tmp --;
+					parts[i].life --;
 				}
 			}
-		for(nx=-1; nx<2; nx++)
-                    for(ny=-1; ny<2; ny++)
+			nx = rand()%5-2;
+			ny = rand()%5-2;
                         if(x+nx>=0 && y+ny>0 &&
                                 x+nx<XRES && y+ny<YRES && (nx || ny))
                         {
 				r = pmap[y+ny][x+nx];
-				if(parts[r>>8].type==t&&(parts[i].tmp>parts[r>>8].tmp)&&5>=rand()%50&&parts[i].tmp>0)//diffusion
+				if(parts[r>>8].type==t&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0)//diffusion
 				{
-					parts[r>>8].tmp ++;
-					parts[i].tmp --;
+					parts[r>>8].life ++;
+					parts[i].life --;
 				}
 			}
 	    }

@@ -1349,6 +1349,20 @@ void draw_parts(pixel *vid)
                     }
 
                 }
+		else if(t==PT_CRAC)
+		{
+                    cr = PIXR(ptypes[t].pcolors) - parts[i].life*15;
+                    cg = PIXG(ptypes[t].pcolors) - parts[i].life*15;
+                    cb = PIXB(ptypes[t].pcolors) - parts[i].life*15;
+		if(cr<=50)
+			cr = 50;
+		if(cg<=50)
+			cg = 50;
+		if(cb<=20)
+			cb = 20;
+                blendpixel(vid, nx, ny, cr, cg, cb, 255);
+
+		}
                 else if(t==PT_ACID)
                 {
                     if(parts[i].life>255) parts[i].life = 255;
