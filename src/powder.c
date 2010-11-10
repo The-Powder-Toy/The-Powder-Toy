@@ -1929,15 +1929,15 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 {
                                     parts[i].type = PT_NONE;
                                     kill_part(i);
-									goto killed;
+				    goto killed;
                                 }
                                 parts[r>>8].life = 0;
                                 parts[r>>8].type = PT_NONE;
                                 kill_part(r>>8);
                                 if(2>(rand()/(RAND_MAX/100)))
-                                    create_part(r>>8, x+nx, y+ny, PT_PHOT);
+                                    create_part(-1, x+nx, y+ny, PT_PHOT);
                                 pv[y/CELL][x/CELL] -= 5.0f;
-                                goto killed;
+                                //goto killed;
                             }
                         }
             }
