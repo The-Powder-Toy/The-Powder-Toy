@@ -1910,18 +1910,18 @@ void update_particles_i(pixel *vid, int start, int inc)
 					parts[i].life --;
 				}
 			}
-			nx = rand()%5-2;
-			ny = rand()%5-2;
-                        if(x+nx>=0 && y+ny>0 &&
-                                x+nx<XRES && y+ny<YRES && (nx || ny))
-                        {
-				r = pmap[y+ny][x+nx];
-				if(parts[r>>8].type==t&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0)//diffusion
-				{
-					parts[r>>8].life ++;
-					parts[i].life --;
-				}
+		nx = rand()%5-2;
+		ny = rand()%5-2;
+                if(x+nx>=0 && y+ny>0 &&
+                        x+nx<XRES && y+ny<YRES && (nx || ny))
+                {
+			r = pmap[y+ny][x+nx];
+			if(parts[r>>8].type==t&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0&&!((r>>8)>=NPART || !r))//diffusion
+			{
+				parts[r>>8].life ++;
+				parts[i].life --;
 			}
+		}
 	    }
             else if(t==PT_LCRY)
             {
