@@ -1,14 +1,14 @@
 #ifndef DEFINE_H
 #define DEFINE_H
 
-#if defined(WIN32) && !defined(__GNUC__)
+#ifdef WIN32
 #define PATH_SEP "\\"
 #else
 #define PATH_SEP "/"
 #endif
 
 #define SAVE_VERSION 43
-#define MINOR_VERSION 0
+#define MINOR_VERSION 1
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 #define BETA
 

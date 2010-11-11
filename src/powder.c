@@ -95,13 +95,19 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
     if(ptypes[pt].falldown!=1 && bmap[ny/CELL][nx/CELL]==10)
         return 0;
 
-	if(ptypes[pt].properties&TYPE_ENERGY && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&TYPE_ENERGY))))
+    if(r && (r&0xFF) < PT_NUM){
+	//if(ptypes[pt].properties&TYPE_ENERGY && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&TYPE_ENERGY))))
+	if(ptypes[pt].properties&TYPE_ENERGY && ptypes[(r&0xFF)].properties&TYPE_ENERGY)
 		return 2;
 	
-	if(pt==PT_NEUT && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE))))
+	//if(pt==PT_NEUT && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE))))
+	if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPASS)
+		return 2;
+	if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE)
 		return 1;
 	if((r&0xFF)==PT_NEUT && ptypes[pt].properties&PROP_NEUTPENETRATE)
 		return 0;
+    }
 	
     if (r && ((r&0xFF) >= PT_NUM || (ptypes[pt].weight <= ptypes[(r&0xFF)].weight)))
         return 0;
@@ -1204,6 +1210,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 parts[i].tmp = 0;
                                 parts[i].ctype = PT_BMTL;
                             }
+                            if(parts[i].ctype==PT_PLUT)
+                            {
+                                parts[i].tmp = 0;
+                                parts[i].ctype = PT_LAVA;
+                            }
                             t = parts[i].type = parts[i].ctype;
                             parts[i].ctype = PT_NONE;
                         }
@@ -1270,6 +1281,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                         {
                             parts[i].tmp--;
                             parts[i].temp = 3500;
+                        }
+                        if(parts[i].ctype==PT_PLUT&&parts[i].tmp>0)
+                        {
+                            parts[i].tmp--;
+                            parts[i].temp = MAX_TEMP;
                         }
                     }
                     pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
@@ -1516,7 +1532,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                     r = create_part(-1, x, y, PT_PLSM);
                     if(r!=-1)
                         parts[r].life = 50;
-                    //goto killed;
+                    goto killed;
                 } else if (parts[i].life < 40) {
                     parts[i].life--;
                     if((rand()%100)==0) {
@@ -1533,7 +1549,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                     //t = PT_NONE;
                     kill_part(i);
                     r = create_part(-1, x, y, PT_FSEP);
-                    //goto killed;
+                    goto killed;
                 }
                 for(nx=-2; nx<3; nx++)
                     for(ny=-2; ny<3; ny++)
@@ -1559,7 +1575,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                     r = create_part(-1, x, y, PT_PLSM);
                     if(r!=-1)
                         parts[r].life = 50;
-                    //goto killed;
+                    goto killed;
                 } else if (parts[i].life < 40) {
                     parts[i].life--;
                     if((rand()%10)==0) {
@@ -1811,7 +1827,12 @@ void update_particles_i(pixel *vid, int start, int inc)
                             {
                                 if(33>rand()%100)
                                 {
-                                    create_part(r>>8, x+nx, y+ny, rand()%2 ? PT_LAVA : PT_URAN);
+                                    create_part(r>>8, x+nx, y+ny, rand()%3 ? PT_LAVA : PT_URAN);
+				    parts[r>>8].temp = MAX_TEMP;
+				    if(parts[r>>8].type==PT_LAVA){
+				    	parts[r>>8].tmp = 100;
+					parts[r>>8].ctype = PT_PLUT;
+				    }
                                 }
                                 else
                                 {
@@ -2046,14 +2067,15 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 {
                                     parts[i].type = PT_NONE;
                                     kill_part(i);
+				    goto killed;
                                 }
                                 parts[r>>8].life = 0;
                                 parts[r>>8].type = PT_NONE;
                                 kill_part(r>>8);
                                 if(2>(rand()/(RAND_MAX/100)))
-                                    create_part(r>>8, x+nx, y+ny, PT_PHOT);
+                                    create_part(-1, x+nx, y+ny, PT_PHOT);
                                 pv[y/CELL][x/CELL] -= 5.0f;
-                                continue;
+                                //goto killed;
                             }
                         }
             }
@@ -2111,9 +2133,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                     }
                     pv[y/CELL][x/CELL] += 20;
                     kill_part(i);
+					goto killed;
                 } else if(parts[i].tmp>=3) {
                     if(parts[i].life<=0) {
                         kill_part(i);
+						goto killed;
                     }
                 }
             }
@@ -2252,6 +2276,19 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     }
                                 }
                             }
+                            //Check if there is a SWCH that is currently covered with SPRK
+                            //If so check if the current SPRK is covering a NSCN
+                            //If so turn the SPRK that covers the SWCH back into SWCH and turn it off
+                            if(rt==PT_SPRK && parts[r>>8].ctype == PT_SWCH && t==PT_SPRK)
+                            {
+                                pavg = parts_avg(r>>8, i);
+                                if(parts[i].ctype == PT_NSCN&&pavg != PT_INSL)
+                                {
+                                    parts[r>>8].type = PT_SWCH;
+                                    parts[r>>8].ctype = PT_NONE;
+                                    parts[r>>8].life = 0;
+                                }
+                            }
                             pavg = parts_avg(i, r>>8);
                             if(rt==PT_SWCH && t==PT_SPRK)
                             {
@@ -2260,7 +2297,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     parts[r>>8].life = 10;
                                 if(parts[i].ctype == PT_NSCN&&pavg != PT_INSL)
                                     parts[r>>8].life = 9;
-                                if(!(parts[i].ctype == PT_PSCN||parts[i].ctype == PT_NSCN)&&parts[r>>8].life == 10&&pavg != PT_INSL)
+                                if(!(parts[i].ctype == PT_PSCN||parts[i].ctype == PT_NSCN)&&parts[r>>8].life >= 10&&pavg != PT_INSL) //Life can be 11 too, so don't just check for 10
                                 {
                                     parts[r>>8].type = PT_SPRK;
                                     parts[r>>8].ctype = PT_SWCH;
@@ -2996,7 +3033,7 @@ killed:
                         kill_part(i);
                         continue;
                     }
-                    else if(t==PT_NEUT || t==PT_PHOT)
+                    else if(t==PT_NEUT || t==PT_PHOT) //Seems to break neutrons, sorry Skylark
                     {
                         r = pmap[ny][nx];
 
@@ -3032,12 +3069,14 @@ killed:
                                 continue;
                             }
                         } else {
-                            kill_part(i);
+			    if(t!=PT_NEUT)
+                            	kill_part(i);
                             continue;
                         }
 
                         if(!parts[i].ctype) {
-                            kill_part(i);
+			    if(t!=PT_NEUT)
+                            	kill_part(i);
                             continue;
                         }
                     }

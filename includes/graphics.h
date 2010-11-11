@@ -93,9 +93,11 @@ int drawtextmax(pixel *vid, int x, int y, int w, char *s, int r, int g, int b, i
 
 int textnwidth(char *s, int n);
 
-int textnheight(char *s, int n, int w);
+void textnpos(char *s, int n, int w, int *cx, int *cy);
 
 int textwidthx(char *s, int w);
+
+int textposxy(char *s, int width, int w, int h);
 
 #if defined(WIN32) && !defined(__GNUC__)
 _inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a);

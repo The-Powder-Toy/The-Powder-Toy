@@ -205,7 +205,7 @@ void execute_save(pixel *vid_buf);
 
 int execute_delete(pixel *vid_buf, char *id);
 
-int execute_report(pixel *vid_buf, char *id);
+int execute_report(pixel *vid_buf, char *id, char *reason);
 
 void execute_submit(pixel *vid_buf, char *id, char *message);
 
@@ -214,6 +214,8 @@ void execute_fav(pixel *vid_buf, char *id);
 int execute_vote(pixel *vid_buf, char *id, char *action);
 
 void open_link(char *uri);
+
+int report_ui(pixel *vid_buf, char *save_id);
 
 #endif
 
