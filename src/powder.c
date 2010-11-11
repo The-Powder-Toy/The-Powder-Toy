@@ -1904,45 +1904,97 @@ void update_particles_i(pixel *vid, int start, int inc)
 	    else if(t==PT_CRAC)
 	    {
 		if(pv[y/CELL][x/CELL]<=3&&pv[y/CELL][x/CELL]>=-3)
-		{
+   		{
+       		  for(nx=-1; nx<2; nx++)
+        	    for(ny=-1; ny<2; ny++)
+           	     if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+           	     {
+            	        r = pmap[y+ny][x+nx];
+			if((r>>8)>=NPART || !r || parts[i].temp>374.0f)
+              		      	continue;
+              	        if(parts[r>>8].type==PT_WATR&&33>=rand()/(RAND_MAX/100)+1)
+                  	{
+                        	parts[i].life++;
+                        	parts[r>>8].type=PT_NONE;
+                    	}
+                     }
+    	    	}
+    	    	else
+            	for(nx=-1; nx<2; nx++)
+            	    for(ny=-1; ny<2; ny++)
+                 	if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+                 	{
+                    		r = pmap[y+ny][x+nx];
+		   	 	if((r>>8)>=NPART)
+                    			continue;
+			 	if((bmap[(y+ny)/CELL][(x+nx)/CELL]==8||bmap[(y+ny)/CELL][(x+nx)/CELL]==7||bmap[(y+ny)/CELL][(x+nx)/CELL]==2||bmap[(y+ny)/CELL][(x+nx)/CELL]==1||
+			 		bmap[(y+ny)/CELL][(x+nx)/CELL]==9||bmap[(y+ny)/CELL][(x+nx)/CELL]==10||bmap[(y+ny)/CELL][(x+nx)/CELL]==13))
+					continue;
+                    	 	if((!r)&&parts[i].life>=1)//if nothing then create water
+                    		{
+                        		create_part(-1,x+nx,y+ny,PT_WATR);
+                        		parts[i].life--;
+                    	 	}
+			}
+    	    	for(int trade = 0; trade<9;trade ++)
+    	    	{
+  	  		nx = rand()%5-2;
+  	  		ny = rand()%5-2;
+  	  		if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+ 	   		{
+  	      			r = pmap[y+ny][x+nx];
+				if((r>>8)>=NPART || !r)
+ 	             			continue;
+   	        		if(parts[r>>8].type==t&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0&&!((r>>8)>=NPART || !r))//diffusion
+   	        		{
+		   			int temp = parts[i].life - parts[r>>8].life;
+					if(temp ==1)
+					{
+            					parts[r>>8].life ++;
+     		       				parts[i].life --;
+						trade = 9;
+					}
+					else if(temp>0)
+					{
+      		      				parts[r>>8].life += temp/2;
+       		     				parts[i].life -= temp/2;
+						trade = 9;
+					}
+    	    			}
+   	    		}
+    		}
 		for(nx=-1; nx<2; nx++)
-                    for(ny=-1; ny<2; ny++)
-                        if(x+nx>=0 && y+ny>0 &&
-                                x+nx<XRES && y+ny<YRES && (nx || ny))
-                        {
-				r = pmap[y+ny][x+nx];
-				if(parts[r>>8].type==PT_WATR&&5>=rand()%100)
-				{
-					parts[i].life++;
-					parts[r>>8].type=PT_NONE;
-				}
+            	    for(ny=-1; ny<2; ny++)
+                	if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+                	{
+                    		r = pmap[y+ny][x+nx];
+		    		if((r>>8)>=NPART || !r)
+                    			continue;
+		    		if(parts[r>>8].type==PT_FIRE&&parts[i].life>0)
+		    		{
+					if(parts[i].life<=2)
+						parts[i].life --;
+					parts[i].life -= parts[i].life/3;
+		    		}
 			}
-		}
-		else
-		  for(nx=-1; nx<2; nx++)
-                    for(ny=-1; ny<2; ny++)
-                        if(x+nx>=0 && y+ny>0 &&
-                                x+nx<XRES && y+ny<YRES && (nx || ny))
-                        {
-				r = pmap[y+ny][x+nx];
-				if(((r>>8)>=NPART || !r )&&parts[i].life>=1)//if nothing then create water
-				{
-					create_part(-1,x+nx,y+ny,PT_WATR);
-					parts[i].life --;
-				}
-			}
-		nx = rand()%5-2;
-		ny = rand()%5-2;
-                if(x+nx>=0 && y+ny>0 &&
-                        x+nx<XRES && y+ny<YRES && (nx || ny))
-                {
-			r = pmap[y+ny][x+nx];
-			if(parts[r>>8].type==t&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0&&!((r>>8)>=NPART || !r))//diffusion
-			{
-				parts[r>>8].life ++;
-				parts[i].life --;
-			}
-		}
+		if(parts[i].temp>=374)
+	   	    for(nx=-1; nx<2; nx++)
+            		for(ny=-1; ny<2; ny++)
+                	if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+                	{
+                   		r = pmap[y+ny][x+nx];
+		    		if((r>>8)>=NPART)
+                    			continue;
+		    		if((bmap[(y+ny)/CELL][(x+nx)/CELL]==8||bmap[(y+ny)/CELL][(x+nx)/CELL]==3||bmap[(y+ny)/CELL][(x+nx)/CELL]==2||bmap[(y+ny)/CELL][(x+nx)/CELL]==1||bmap[(y+ny)/CELL][(x+nx)/CELL]==10))
+					continue;
+                    		if((!r)&&parts[i].life>=1)//if nothing then create steam
+                    		{
+                        		create_part(-1,x+nx,y+ny,PT_WTRV);
+                        		parts[i].life--;
+					parts[r>>8].temp = parts[i].temp;
+					parts[i].temp -= 40.0f;
+                    		}
+                	}
 	    }
             else if(t==PT_LCRY)
             {
@@ -2208,7 +2260,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             rt = parts[r>>8].type;
                             if((a || ptypes[rt].explosive) && ((rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL && rt!=PT_SWCH) || t!=PT_SPRK) &&
                                     !(t==PT_PHOT && rt==PT_INSL) &&
-                                    (t!=PT_LAVA || parts[i].life>0 || (rt!=PT_STNE && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_METL  && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SWCH && rt!=PT_INWR)) &&
+                                    (t!=PT_LAVA || parts[i].life>0 || (rt!=PT_STNE && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_METL  && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SWCH && rt!=PT_INWR)) && !(rt==PT_CRAC && parts[r>>8].life>0) &&
                                     ptypes[rt].flammable && (ptypes[rt].flammable + (int)(pv[(y+ny)/CELL][(x+nx)/CELL]*10.0f))>(rand()%1000))
                             {
                                 parts[r>>8].type = PT_FIRE;
