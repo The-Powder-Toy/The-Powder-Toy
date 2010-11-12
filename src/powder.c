@@ -1991,7 +1991,6 @@ void update_particles_i(pixel *vid, int start, int inc)
                     		{
                         		create_part(-1,x+nx,y+ny,PT_WTRV);
                         		parts[i].life--;
-					parts[r>>8].temp = parts[i].temp;
 					parts[i].temp -= 40.0f;
                     		}
                 	}

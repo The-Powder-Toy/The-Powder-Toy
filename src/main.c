@@ -1266,12 +1266,16 @@ int main(int argc, char *argv[])
         {
             set_cmode(6);
         }
+	if(sdl_key=='8')
+        {
+            set_cmode(7);
+        }
         if(sdl_key==SDLK_LEFTBRACKET) {
             if(sdl_zoom_trig==1)
             {
                 ZSIZE -= 1;
-                if(ZSIZE>32)
-                    ZSIZE = 32;
+                if(ZSIZE>60)
+                    ZSIZE = 60;
                 if(ZSIZE<2)
                     ZSIZE = 2;
                 ZFACTOR = 256/ZSIZE;
@@ -1292,8 +1296,8 @@ int main(int argc, char *argv[])
             if(sdl_zoom_trig==1)
             {
                 ZSIZE += 1;
-                if(ZSIZE>32)
-                    ZSIZE = 32;
+                if(ZSIZE>60)
+                    ZSIZE = 60;
                 if(ZSIZE<2)
                     ZSIZE = 2;
                 ZFACTOR = 256/ZSIZE;
@@ -1345,7 +1349,7 @@ int main(int argc, char *argv[])
         }
         else if(sdl_key=='c')
         {
-            set_cmode((cmode+1) % 7);
+            set_cmode((cmode+1) % 8);
             if(it > 50)
                 it = 50;
         }
@@ -1382,8 +1386,8 @@ int main(int argc, char *argv[])
             if(sdl_zoom_trig==1)
             {
                 ZSIZE += sdl_wheel;
-                if(ZSIZE>32)
-                    ZSIZE = 32;
+                if(ZSIZE>60)
+                    ZSIZE = 60;
                 if(ZSIZE<2)
                     ZSIZE = 2;
                 ZFACTOR = 256/ZSIZE;
@@ -1782,9 +1786,9 @@ int main(int argc, char *argv[])
                     if(x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
                     {
                         if(b & SDL_BUTTON_LMASK)
-                            set_cmode((cmode+1) % 7);
+                            set_cmode((cmode+1) % 8);
                         if(b & SDL_BUTTON_RMASK)
-                            set_cmode((cmode+6) % 7);
+                            set_cmode((cmode+7) % 8);
                         save_presets(0);
                     }
                     if(x>=(XRES+BARSIZE-(510-494)) && x<=(XRES+BARSIZE-(510-509)) && !bq)
