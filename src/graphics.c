@@ -1328,13 +1328,6 @@ void draw_parts(pixel *vid)
 
             nx = (int)(parts[i].x+0.5f);
             ny = (int)(parts[i].y+0.5f);
-	    if(cmode==7)//nothing display
-	    {
-		cr = PIXR(ptypes[t].pcolors);
-                cg = PIXG(ptypes[t].pcolors);
-                cb = PIXB(ptypes[t].pcolors);
-                blendpixel(vid, nx, ny, cr, cg, cb, 255);
-	    }
             else if(cmode!=CM_HEAT)
             {
                 if(t==PT_STKM)  //Just draw head here
@@ -1362,7 +1355,14 @@ void draw_parts(pixel *vid)
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
-                if(t==PT_MWAX&&cmode == 6)
+		if(cmode==7)//nothing display
+	   	{
+			cr = PIXR(ptypes[t].pcolors);
+                	cg = PIXG(ptypes[t].pcolors);
+               	 	cb = PIXB(ptypes[t].pcolors);
+                	blendpixel(vid, nx, ny, cr, cg, cb, 255);
+	    	}
+                else if(t==PT_MWAX&&cmode == 6)
                 {
                     for(x=-1; x<=1; x++)
                     {
