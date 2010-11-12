@@ -1328,7 +1328,7 @@ void draw_parts(pixel *vid)
 
             nx = (int)(parts[i].x+0.5f);
             ny = (int)(parts[i].y+0.5f);
-            else if(cmode!=CM_HEAT)
+            if(cmode!=CM_HEAT)
             {
                 if(t==PT_STKM)  //Just draw head here
                 {
