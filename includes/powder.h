@@ -129,7 +129,9 @@
 #define PT_LLIF 88
 #define PT_STAN 89
 #define PT_CRAC 90
-#define PT_NUM  91
+#define PT_RIME 91
+#define PT_FOG 92
+#define PT_NUM  93
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -311,6 +313,8 @@ static const part_type ptypes[PT_NUM] =
     {"LLIF",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Long Life! (5/345)", TYPE_SOLID},
     {"STAN",	PIXPACK(0x5000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Stains! (235678/3678)", TYPE_SOLID},
     {"CRAC",  	PIXPACK(0xFFBE30),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	20, 		0,  	1,  	30, 	1,  	100,    SC_SOLIDS,  		R_TEMP+0.0f +273.15f,   251,    "cracker64 - Spongey, Made by himself",TYPE_SOLID},
+    {"RIME",  	PIXPACK(0xCCCCCC),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	100,    SC_SOLIDS,  		R_TEMP+0.0f +273.15f,   100,    "from FOG",TYPE_SOLID},
+    {"FOG",  	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	0.4f,	0.95f,	-0.1f,	0.0f,	0.50f,	0.001f	* CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	1,    SC_GAS,  		R_TEMP+0.0f +273.15f,   100,    "hmmm",TYPE_GAS},
     //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
 };
 
@@ -408,6 +412,8 @@ static part_state pstates[PT_NUM] =
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* Crac */ {ST_SOLID,   	PT_NONE, 0.0f, 		PT_NONE, 0.0f,  	PT_NONE, 0.0f,   	PT_FIRE, 22730.0f},
+    /* RIME */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* FOG  */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 };
 static int grule[NGOL][9] = 
 {

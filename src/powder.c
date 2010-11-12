@@ -929,7 +929,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             {
                 if(!(parts[i].life==10&&(parts[i].type==PT_LCRY||parts[i].type==PT_PCLN||parts[i].type==PT_HSWC)))
                     parts[i].life--;
-                if(parts[i].life<=0 && t!=PT_METL && t!=PT_IRON && t!=PT_FIRW && t!=PT_PCLN && t!=PT_HSWC && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_NTCT && t!=PT_PTCT && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD&&t!=PT_LCRY && t!=PT_INWR && t!=PT_GLOW)
+                if(parts[i].life<=0 && t!=PT_METL && t!=PT_IRON && t!=PT_FIRW && t!=PT_PCLN && t!=PT_HSWC && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_NTCT && t!=PT_PTCT && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD&&t!=PT_LCRY && t!=PT_INWR && t!=PT_GLOW && t!= PT_FOG)
                 {
                     kill_part(i);
                     continue;
@@ -1994,6 +1994,51 @@ void update_particles_i(pixel *vid, int start, int inc)
 					parts[i].temp -= 40.0f;
                     		}
                 	}
+	    }
+	    else if(t==PT_FOG)
+	    {
+		for(nx=-1; nx<2; nx++)
+                    for(ny=-1; ny<2; ny++)
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+                            r = pmap[y+ny][x+nx];
+                            if((r>>8)>=NPART || !r)
+                                continue;
+			    if(pstates[parts[r>>8].type].state==ST_SOLID&&5>=rand()%50&&parts[i].life==0&&!(parts[r>>8].type==PT_CLNE||parts[r>>8].type==PT_PCLN))
+			    {
+				t = parts[i].type = PT_RIME;
+				parts[i].vx = 0;
+				parts[i].vy = 0;
+			    }
+			    if(parts[r>>8].type==PT_SPRK)
+                            {
+				parts[i].life += rand()%20;
+			    }
+			}
+	    }
+	    else if(t==PT_RIME)
+	    {
+		for(nx=-1; nx<2; nx++)
+                    for(ny=-1; ny<2; ny++)
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+                            r = pmap[y+ny][x+nx];
+                            if((r>>8)>=NPART || !r)
+                                continue;
+                            rt = parts[r>>8].type;
+                            if(rt==PT_SPRK)
+                            {
+				t = parts[i].type = PT_FOG;
+				parts[i].life = rand()%50 + 60;
+			    }
+			    else if(rt==PT_FOG&&parts[r>>8].life>0)
+			    {
+				t = parts[i].type = PT_FOG;
+				parts[i].life = parts[r>>8].life/2;
+			    }
+			}
 	    }
             else if(t==PT_LCRY)
             {

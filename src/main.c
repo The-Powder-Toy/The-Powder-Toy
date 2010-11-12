@@ -102,8 +102,8 @@ int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
 int MSIGN =-1;
-int CGOL = 0;
-int GSPEED = 1;//causes my .exe to crash..
+//int CGOL = 0;
+//int GSPEED = 1;//causes my .exe to crash..
 
 sign signs[MAXSIGNS];
 
@@ -2064,7 +2064,7 @@ int main(int argc, char *argv[])
             if(currentTime-pastFPS>=1000)
             {
 #ifdef BETA
-                sprintf(uitext, "Version %d (Beta %d) FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
+                sprintf(uitext, "Cracker's Version %d (Beta %d) FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
                 //printf("%s\n", uitext);
 #else
                 sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);

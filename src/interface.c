@@ -170,7 +170,7 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
         draw_icon(vid_buf, x0+68, y0+42, 0x9E, ju == 1);
         draw_icon(vid_buf, x0+86, y0+42, 0x9F, ju == 2);
 
-	drawrect(vid_buf,x0+104,y0+42,26,15,255,255,255,255);
+
 
 
 
@@ -180,6 +180,8 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
             drawtext(vid_buf, x0+138, y0+45, "\x85", 255, 255, 255, 255);
             drawtext(vid_buf, x0+152, y0+46, "Delete", 255, 255, 255, 255);
             drawrect(vid_buf, x0+134, y0+42, 50, 15, 255, 255, 255, 255);
+	    drawrect(vid_buf,x0+104,y0+42,26,15,255,255,255,255);
+	    drawtext(vid_buf, x0+110, y0+48, "Mv.", 255, 255, 255, 255);
         }
 
         drawtext(vid_buf, x0+5, y0+69, "OK", 255, 255, 255, 255);
@@ -196,7 +198,7 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
         if(b && !bq && mx>=x0+86 && mx<=x0+103 && my>=y0+42 && my<=y0+59)
             ju = 2;
 
-        if(b && !bq && mx>=x0+104 && mx<=x0+130 && my>=y0+42 && my<=y0+59)
+        if(!nm && b && !bq && mx>=x0+104 && mx<=x0+130 && my>=y0+42 && my<=y0+59)
 	{
 		MSIGN = i;
 		break;
