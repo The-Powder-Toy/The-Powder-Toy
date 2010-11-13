@@ -2036,7 +2036,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			    else if(rt==PT_FOG&&parts[r>>8].life>0)
 			    {
 				t = parts[i].type = PT_FOG;
-				parts[i].life = parts[r>>8].life/2;
+				parts[i].life = parts[r>>8].life;
 			    }
 			}
 	    }

@@ -314,7 +314,7 @@ static const part_type ptypes[PT_NUM] =
     {"STAN",	PIXPACK(0x5000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Stains! (235678/3678)", TYPE_SOLID},
     {"CRAC",  	PIXPACK(0xFFBE30),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	20, 		0,  	1,  	30, 	1,  	100,    SC_SOLIDS,  		R_TEMP+0.0f +273.15f,   251,    "cracker64 - Spongey, Made by himself",TYPE_SOLID},
     {"RIME",  	PIXPACK(0xCCCCCC),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	100,    SC_SOLIDS,  		R_TEMP+0.0f +273.15f,   100,    "from FOG",TYPE_SOLID},
-    {"FOG",  	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	0.4f,	0.95f,	-0.1f,	0.0f,	0.50f,	0.001f	* CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	1,    SC_GAS,  		R_TEMP+0.0f +273.15f,   100,    "hmmm",TYPE_GAS},
+    {"FOG",  	PIXPACK(0xAAAAAA),	0.8f,	0.00f * CFDS,	0.4f,	0.70f,	-0.1f,	0.0f,	0.99f,	0.000f	* CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	1,    SC_GAS,  		R_TEMP+0.0f +273.15f,   100,    "hmmm",TYPE_GAS},
     //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
 };
 
