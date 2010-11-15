@@ -530,6 +530,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                 else if(i < nf)
                 {
                     parts[fp[i]].type = j;
+					if(j == PT_COAL)
+						parts[fp[i]].tmp = 50;
                     if(j == PT_PHOT)
                         parts[fp[i]].ctype = 0x3fffffff;
                     parts[fp[i]].x = (float)x;
@@ -1123,11 +1125,11 @@ int main(int argc, char *argv[])
 #ifdef OpenGL
         ClearScreen();
 #else
-        if(cmode==0 || cmode==1)
+        if(cmode==CM_VEL || cmode==CM_PRESS)
         {
             draw_air(vid_buf);
         }
-        else if(cmode==2)
+        else if(cmode==CM_PERS)
         {
             memcpy(vid_buf, fire_bg, XRES*YRES*PIXELSIZE);
             memset(vid_buf+(XRES*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-(XRES*YRES*PIXELSIZE));
@@ -1140,7 +1142,7 @@ int main(int argc, char *argv[])
         update_particles(vid_buf);
         draw_parts(vid_buf);
 
-        if(cmode==2)
+        if(cmode==CM_PERS)
         {
             if(!fire_fc)
             {
@@ -1152,7 +1154,7 @@ int main(int argc, char *argv[])
             }
             fire_fc = (fire_fc+1) % 3;
         }
-        if(cmode==3||cmode==4||cmode==6)
+        if(cmode==CM_FIRE||cmode==CM_BLOB||cmode==CM_FANCY)
             render_fire(vid_buf);
 
         render_signs(vid_buf);
@@ -1240,35 +1242,35 @@ int main(int argc, char *argv[])
         }
         if(sdl_key=='1')
         {
-            set_cmode(0);
+            set_cmode(CM_VEL);
         }
         if(sdl_key=='2')
         {
-            set_cmode(1);
+            set_cmode(CM_PRESS);
         }
         if(sdl_key=='3')
         {
-            set_cmode(2);
+            set_cmode(CM_PERS);
         }
         if(sdl_key=='4')
         {
-            set_cmode(3);
+            set_cmode(CM_FIRE);
         }
         if(sdl_key=='5')
         {
-            set_cmode(4);
+            set_cmode(CM_BLOB);
         }
         if(sdl_key=='6')
         {
-            set_cmode(5);
+            set_cmode(CM_HEAT);
         }
         if(sdl_key=='7')
         {
-            set_cmode(6);
+            set_cmode(CM_FANCY);
         }
-	if(sdl_key=='8')
+		if(sdl_key=='8')
         {
-            set_cmode(7);
+            set_cmode(CM_NOTHING);
         }
         if(sdl_key==SDLK_LEFTBRACKET) {
             if(sdl_zoom_trig==1)
@@ -1349,7 +1351,7 @@ int main(int argc, char *argv[])
         }
         else if(sdl_key=='c')
         {
-            set_cmode((cmode+1) % 8);
+            set_cmode((cmode+1) % CM_COUNT);
             if(it > 50)
                 it = 50;
         }
@@ -1786,9 +1788,9 @@ int main(int argc, char *argv[])
                     if(x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
                     {
                         if(b & SDL_BUTTON_LMASK)
-                            set_cmode((cmode+1) % 8);
+                            set_cmode((cmode+1) % CM_COUNT);
                         if(b & SDL_BUTTON_RMASK)
-                            set_cmode((cmode+7) % 8);
+                            set_cmode((cmode+(CM_COUNT-1)) % CM_COUNT);
                         save_presets(0);
                     }
                     if(x>=(XRES+BARSIZE-(510-494)) && x<=(XRES+BARSIZE-(510-509)) && !bq)

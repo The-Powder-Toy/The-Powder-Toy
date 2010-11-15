@@ -528,29 +528,29 @@ void draw_svf_ui(pixel *vid_buf)
 
     switch(cmode)
     {
-    case 0:
+    case CM_VEL:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x98", 128, 160, 255, 255);
         break;
-    case 1:
+    case CM_PRESS:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x99", 255, 212, 32, 255);
         break;
-    case 2:
+    case CM_PERS:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x9A", 212, 212, 212, 255);
         break;
-    case 3:
+    case CM_FIRE:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x9B", 255, 0, 0, 255);
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x9C", 255, 255, 64, 255);
         break;
-    case 4:
+    case CM_BLOB:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBF", 55, 255, 55, 255);
         break;
-    case 5:
+    case CM_HEAT:
         drawtext(vid_buf, XRES-27+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBE", 255, 0, 0, 255);
         drawtext(vid_buf, XRES-27+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBD", 255, 255, 255, 255);
         break;
-    case 6:
+    case CM_FANCY:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xC4", 100, 150, 255, 255);
-    case 7:
+    case CM_NOTHING:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
         break;
     }
@@ -1741,39 +1741,39 @@ void set_cmode(int cm)
 {
     cmode = cm;
     itc = 51;
-    if(cmode==4)
+    if(cmode==CM_BLOB)
     {
         memset(fire_r, 0, sizeof(fire_r));
         memset(fire_g, 0, sizeof(fire_g));
         memset(fire_b, 0, sizeof(fire_b));
         strcpy(itc_msg, "Blob Display");
     }
-    else if(cmode==5)
+    else if(cmode==CM_HEAT)
     {
         strcpy(itc_msg, "Heat Display");
     }
-    else if(cmode==6)
+    else if(cmode==CM_FANCY)
     {
         memset(fire_r, 0, sizeof(fire_r));
         memset(fire_g, 0, sizeof(fire_g));
         memset(fire_b, 0, sizeof(fire_b));
         strcpy(itc_msg, "Fancy Display");
     }
-    else if(cmode==3)
+    else if(cmode==CM_FIRE)
     {
         memset(fire_r, 0, sizeof(fire_r));
         memset(fire_g, 0, sizeof(fire_g));
         memset(fire_b, 0, sizeof(fire_b));
         strcpy(itc_msg, "Fire Display");
     }
-    else if(cmode==2)
+    else if(cmode==CM_PERS)
     {
         memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
         strcpy(itc_msg, "Persistent Display");
     }
-    else if(cmode==1)
+    else if(cmode==CM_PRESS)
         strcpy(itc_msg, "Pressure Display");
-    else if(cmode==7)
+    else if(cmode==CM_NOTHING)
         strcpy(itc_msg, "Cracker Display");
     else
         strcpy(itc_msg, "Velocity Display");

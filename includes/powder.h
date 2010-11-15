@@ -5,7 +5,8 @@
 #include "defines.h"
 #include "interface.h"
 
-#define CM_COUNT 7
+#define CM_COUNT 8//todo: switch cmode==0, ect. with cmode==CM_VEL
+#define CM_NOTHING 7
 #define CM_FANCY 6
 #define CM_HEAT 5
 #define CM_BLOB 4
@@ -131,7 +132,10 @@
 #define PT_CRAC 90
 #define PT_RIME 91
 #define PT_FOG 92
-#define PT_NUM  93
+#define PT_BCLN 93
+#define PT_LOVE 94
+#define PT_WTF 95
+#define PT_NUM  96
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -313,8 +317,12 @@ static const part_type ptypes[PT_NUM] =
     {"LLIF",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Long Life! (5/345)", TYPE_SOLID},
     {"STAN",	PIXPACK(0x5000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,	40,	"Stains! (235678/3678)", TYPE_SOLID},
     {"CRAC",  	PIXPACK(0xFFBE30),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	20, 		0,  	1,  	30, 	1,  	100,    SC_SOLIDS,  		R_TEMP+0.0f +273.15f,   251,    "cracker64 - Spongey, Made by himself",TYPE_SOLID},
-    {"RIME",  	PIXPACK(0xCCCCCC),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	100,    SC_SOLIDS,  		R_TEMP+0.0f +273.15f,   100,    "from FOG",TYPE_SOLID},
-    {"FOG",  	PIXPACK(0xAAAAAA),	0.8f,	0.00f * CFDS,	0.4f,	0.70f,	-0.1f,	0.0f,	0.99f,	0.000f	* CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	1,    SC_GAS,  		R_TEMP+0.0f +273.15f,   100,    "hmmm",TYPE_GAS},
+    {"RIME",  	PIXPACK(0xCCCCCC),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	100,    SC_SOLIDS,  		243.15f,   100,    "Not quite Ice",TYPE_SOLID},
+    {"FOG",  	PIXPACK(0xAAAAAA),	0.8f,	0.00f * CFDS,	0.4f,	0.70f,	-0.1f,	0.0f,	0.99f,	0.000f	* CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	1,    SC_GAS,  			243.15f,   100,    "Not quite Steam",TYPE_GAS},
+    {"BCLN",	PIXPACK(0xFFD040),	0.1f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	12,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Breakable Clone.", TYPE_SOLID},
+    {"LOVE",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		373.0f,	40,	"Love...", TYPE_SOLID},
+    {"WTF",  	PIXPACK(0x00153F),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	29,		"WTF for catelite", TYPE_LIQUID},
+	
     //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
 };
 
@@ -344,7 +352,7 @@ static part_state pstates[PT_NUM] =
     /* PLNT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 573.0f},
     /* ACID */ {ST_LIQUID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* VOID */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* WTRV */ {ST_GAS,	PT_ICEI, 273.0f,	PT_DSTW, 371.0f,	PT_NONE, 373.0f,	PT_NONE, 0.0f},
+    /* WTRV */ {ST_GAS,	PT_RIME, 273.0f,	PT_DSTW, 371.0f,	PT_NONE, 373.0f,	PT_NONE, 0.0f},
     /* CNCT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1123.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* DSTW */ {ST_LIQUID,	PT_ICEI, 273.15f,	PT_NONE, 0.0f,		PT_WTRV, 373.0f,	PT_NONE, 0.0f},
     /* SALT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 1173.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
@@ -412,8 +420,11 @@ static part_state pstates[PT_NUM] =
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* Crac */ {ST_SOLID,   	PT_NONE, 0.0f, 		PT_NONE, 0.0f,  	PT_NONE, 0.0f,   	PT_FIRE, 22730.0f},
-    /* RIME */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* RIME */ {ST_SOLID,	PT_NONE, 0.0f,		PT_WATR, 273.15f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* FOG  */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* BCLN */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* LOVE */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+	/* WTF  */ {ST_LIQUID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 };
 static int grule[NGOL][9] = 
 {
@@ -431,6 +442,18 @@ static int grule[NGOL][9] =
 	{0,0,0,3,3,0,0,0,0},//34
 	{0,0,0,2,2,3,0,0,0},//LLIF
 	{0,0,1,3,0,1,3,3,3},//STAN
+};
+static int loverule[9][9] =
+{
+	{0,0,1,1,0,0,0,0,0},
+	{0,1,0,0,1,1,0,0,0},
+	{1,0,0,0,0,0,1,0,0},
+	{1,0,0,0,0,0,0,1,0},
+	{0,1,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,1,0},
+	{1,0,0,0,0,0,1,0,0},
+	{0,1,0,0,1,1,0,0,0},
+	{0,0,1,1,0,0,0,0,0},
 };
 extern int isplayer;
 extern float player[27];
