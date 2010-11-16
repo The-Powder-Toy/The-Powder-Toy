@@ -377,11 +377,17 @@ inline int create_part(int p, int x, int y, int t)
         {
             if(t==SPC_HEAT&&parts[pmap[y][x]>>8].temp<MAX_TEMP)
             {
-                parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 4.0f, MIN_TEMP, MAX_TEMP);
+				if((pmap[y][x]&0xFF)==PT_PUMP)
+					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 0.1f, MIN_TEMP, MAX_TEMP);
+                else 
+					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 4.0f, MIN_TEMP, MAX_TEMP);
             }
             if(t==SPC_COOL&&parts[pmap[y][x]>>8].temp>MIN_TEMP)
             {
-                parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 4.0f, MIN_TEMP, MAX_TEMP);
+				if((pmap[y][x]&0xFF)==PT_PUMP)
+					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 0.1f, MIN_TEMP, MAX_TEMP);
+                else 
+					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 4.0f, MIN_TEMP, MAX_TEMP);
             }
             return pmap[y][x]>>8;
         }
@@ -479,6 +485,9 @@ inline int create_part(int p, int x, int y, int t)
     	parts[i].life = 150;
     }
     End Testing*/
+	if(t==PT_WARP) {
+		parts[i].life = rand()%95+70;
+	}
     if(t==PT_FUSE) {
         parts[i].life = 50;
         parts[i].tmp = 50;
@@ -1022,18 +1031,40 @@ void update_particles_i(pixel *vid, int start, int inc)
             vy[y/CELL][x/CELL] *= ptypes[t].airloss;
             vx[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vx;
             vy[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vy;
-            if(t==PT_GAS||t==PT_NBLE)
+            if(t==PT_GAS||t==PT_NBLE||t==PT_PUMP)
             {
-                if(pv[y/CELL][x/CELL]<3.5f)
-                    pv[y/CELL][x/CELL] += ptypes[t].hotair*(3.5f-pv[y/CELL][x/CELL]);
-                if(y+CELL<YRES && pv[y/CELL+1][x/CELL]<3.5f)
-                    pv[y/CELL+1][x/CELL] += ptypes[t].hotair*(3.5f-pv[y/CELL+1][x/CELL]);
-                if(x+CELL<XRES)
-                {
-                    pv[y/CELL][x/CELL+1] += ptypes[t].hotair*(3.5f-pv[y/CELL][x/CELL+1]);
-                    if(y+CELL<YRES)
-                        pv[y/CELL+1][x/CELL+1] += ptypes[t].hotair*(3.5f-pv[y/CELL+1][x/CELL+1]);
-                }
+				if(t==PT_PUMP)
+				{
+					if(parts[i].temp>=256.0+273.15)
+						parts[i].temp=256.0+273.15;
+					if(parts[i].temp<= -256.0+273.15)
+						parts[i].temp = -256.0+273.15;
+						
+					if(pv[y/CELL][x/CELL]<(parts[i].temp-273.15))
+						pv[y/CELL][x/CELL] += ptypes[t].hotair*((parts[i].temp-273.15)-pv[y/CELL][x/CELL]);
+					if(y+CELL<YRES && pv[y/CELL+1][x/CELL]<(parts[i].temp-273.15))
+						pv[y/CELL+1][x/CELL] += ptypes[t].hotair*((parts[i].temp-273.15)-pv[y/CELL+1][x/CELL]);
+					if(x+CELL<XRES)
+					{
+						pv[y/CELL][x/CELL+1] += ptypes[t].hotair*((parts[i].temp-273.15)-pv[y/CELL][x/CELL+1]);
+						if(y+CELL<YRES)
+							pv[y/CELL+1][x/CELL+1] += ptypes[t].hotair*((parts[i].temp-273.15)-pv[y/CELL+1][x/CELL+1]);
+					}
+				}
+				else
+				{
+					if(pv[y/CELL][x/CELL]<3.5f)
+						pv[y/CELL][x/CELL] += ptypes[t].hotair*(3.5f-pv[y/CELL][x/CELL]);
+					if(y+CELL<YRES && pv[y/CELL+1][x/CELL]<3.5f)
+						pv[y/CELL+1][x/CELL] += ptypes[t].hotair*(3.5f-pv[y/CELL+1][x/CELL]);
+					if(x+CELL<XRES)
+					{
+						pv[y/CELL][x/CELL+1] += ptypes[t].hotair*(3.5f-pv[y/CELL][x/CELL+1]);
+						if(y+CELL<YRES)
+							pv[y/CELL+1][x/CELL+1] += ptypes[t].hotair*(3.5f-pv[y/CELL+1][x/CELL+1]);
+					}
+				}
+
             }
             else
             {
@@ -2157,6 +2188,31 @@ void update_particles_i(pixel *vid, int start, int inc)
    	    		}
 				}
     		}
+			else if(t==PT_WARP)
+			{
+				for(int trade = 0; trade<5;trade ++)
+				{
+					nx = rand()%3-1;
+					ny = rand()%3-1;
+					if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+					{
+						r = pmap[y+ny][x+nx];
+						if((r>>8)>=NPART || !r)
+								continue;
+						if(parts[r>>8].type!=PT_WARP&&parts[r>>8].type!=PT_STKM&&parts[r>>8].type!=PT_DMND&&parts[r>>8].type!=PT_CLNE&&parts[r>>8].type!=PT_BCLN&&parts[r>>8].type!=PT_PCLN&&(10>=rand()%200))
+						{
+							t = parts[i].type = parts[r>>8].type;
+							parts[i].ctype = parts[r>>8].ctype;
+							parts[i].life = parts[r>>8].life;
+							parts[i].tmp = parts[r>>8].tmp;
+							parts[i].temp = parts[r>>8].temp;
+							parts[r>>8].type = PT_WARP;
+							parts[r>>8].life = rand()%90;
+							trade = 5;
+						}
+					}
+				}				
+			}
             else if(t==PT_LCRY)
             {
                 for(nx=-1; nx<2; nx++)

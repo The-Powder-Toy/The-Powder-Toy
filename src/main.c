@@ -1866,7 +1866,7 @@ int main(int argc, char *argv[])
                         lb = 0;
                         lm = 0;
                     }
-                    else if(((sdl_mod & (KMOD_LALT||KMOD_RALT)) && !sdl_mod & (KMOD_SHIFT)) || b==SDL_BUTTON_MIDDLE)
+                    else if(((sdl_mod & (KMOD_LALT|KMOD_RALT)) && !(sdl_mod & (KMOD_SHIFT))) || b==SDL_BUTTON_MIDDLE)
                     {
                         if(y>0 && y<sdl_scale*YRES && x>0 && x<sdl_scale*XRES)
                         {
