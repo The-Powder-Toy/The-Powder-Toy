@@ -1113,17 +1113,50 @@ void draw_air(pixel *vid)
     for(y=0; y<YRES/CELL; y++)
         for(x=0; x<XRES/CELL; x++)
         {
-            if(cmode)
+            if(cmode == CM_PRESS)
             {
                 if(pv[y][x] > 0.0f)
                     c  = PIXRGB(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);
                 else
                     c  = PIXRGB(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));
             }
-            else
+            else if(cmode == CM_VEL)
+		{
                 c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),
                             clamp_flt(pv[y][x], 0.0f, 8.0f),
                             clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));
+		}
+	    else if(cmode == CM_CRACK)
+		{
+			int r;
+			int g;
+			int b;
+			r = clamp_flt(fabsf(vx[y][x]), 0.0f, 24.0f) + clamp_flt(fabsf(vy[y][x]), 0.0f, 20.0f);
+                        g = clamp_flt(fabsf(vx[y][x]), 0.0f, 20.0f) + clamp_flt(fabsf(vy[y][x]), 0.0f, 24.0f);
+                        b = clamp_flt(fabsf(vx[y][x]), 0.0f, 24.0f) + clamp_flt(fabsf(vy[y][x]), 0.0f, 20.0f);
+			if(pv[y][x] > 0.0f)
+			{
+				r += clamp_flt(pv[y][x], 0.0f, 16.0f);
+				if(r>255)
+					r=255;
+				if(g>255)
+					g=255;
+				if(b>255)
+					b=255;
+                   	 	c  = PIXRGB(r, g, b);
+			}
+                	else
+			{
+				b += clamp_flt(-pv[y][x], 0.0f, 16.0f);
+				if(r>255)
+					r=255;
+				if(g>255)
+					g=255;
+				if(b>255)
+					b=255;
+                   		c  = PIXRGB(r, g, b);
+			}
+		}
             for(j=0; j<CELL; j++)
                 for(i=0; i<CELL; i++)
                     vid[(x*CELL+i) + (y*CELL+j)*(XRES+BARSIZE)] = c;
@@ -1428,6 +1461,31 @@ void draw_parts(pixel *vid)
 			}
 
 		}
+		else if(t==PT_DUST && parts[i].life >= 1)
+                {
+                    x = nx;
+                    y = ny;
+		    if(cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY)
+                    {
+                        vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(parts[i].tmp,parts[i].ctype,parts[i].flags);
+                        cg = parts[i].tmp/4;
+                        cb = parts[i].ctype/4;
+                        cr = parts[i].flags/4;
+                        x = nx/CELL;
+                        y = ny/CELL;
+                        cg += fire_g[y][x];
+                        if(cg > 255) cg = 255;
+                        fire_g[y][x] = cg;
+                        cb += fire_b[y][x];
+                        if(cb > 255) cb = 255;
+                        fire_b[y][x] = cb;
+                        cr += fire_r[y][x];
+                        if(cr > 255) cr = 255;
+                        fire_r[y][x] = cr;
+                    }
+		    else
+			blendpixel(vid,x,y,parts[i].tmp,parts[i].ctype,parts[i].flags,255);
+                }
                 else if(t==PT_ACID)
                 {
                     if(parts[i].life>255) parts[i].life = 255;

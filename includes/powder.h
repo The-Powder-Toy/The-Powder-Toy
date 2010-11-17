@@ -5,7 +5,8 @@
 #include "defines.h"
 #include "interface.h"
 
-#define CM_COUNT 8
+#define CM_COUNT 9
+#define CM_CRACK 8
 #define CM_NOTHING 7
 #define CM_FANCY 6
 #define CM_HEAT 5
@@ -137,7 +138,8 @@
 #define PT_WTF 95
 #define PT_WARP 96
 #define PT_PUMP 97
-#define PT_NUM  98
+#define PT_FWRK 98
+#define PT_NUM  99
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -326,6 +328,7 @@ static const part_type ptypes[PT_NUM] =
     {"WTF",  	PIXPACK(0x00153F),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	251,		"WTF for catelite, volume changes with temp", TYPE_LIQUID},
     {"WARP",  	PIXPACK(0x000000),	0.8f,	0.00f * CFDS,	0.9f,	0.70f,	-0.1f,	0.0f,	3.00f,	0.000f	* CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	1,    SC_GAS,  			R_TEMP +273.15f,   100,    "This is what happens to your mind when catelite descibes an element.",TYPE_GAS},
     {"PUMP",	PIXPACK(0x9EA3B6),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.1f	* CFDS,	0,	7,		0,	0,	10,	1,	100,	SC_SPECIAL,		273.15f,	0,		"Changes pressure to its temp (use HEAT/COOL).", TYPE_SOLID},	
+    {"FWRK",	PIXPACK(0x666666),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	97,   SC_EXPLOSIVE,	R_TEMP+0.0f+273.15f,	100,	"First fireworks made, activated by heat/neutrons."},
     //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
 };
 
@@ -427,8 +430,10 @@ static part_state pstates[PT_NUM] =
     /* FOG  */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* BCLN */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* LOVE */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-	/* WTF  */ {ST_LIQUID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-	/* WARP */ {ST_GAS	,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* WTF  */ {ST_LIQUID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* WARP */ {ST_GAS	,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* PUMP */ {ST_GAS	,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* FWRK */ {ST_GAS	,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
 };
 static int grule[NGOL][9] = 
 {

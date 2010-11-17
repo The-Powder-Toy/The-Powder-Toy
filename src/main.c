@@ -1125,7 +1125,7 @@ int main(int argc, char *argv[])
 #ifdef OpenGL
         ClearScreen();
 #else
-        if(cmode==CM_VEL || cmode==CM_PRESS)
+        if(cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK)
         {
             draw_air(vid_buf);
         }
@@ -1268,9 +1268,13 @@ int main(int argc, char *argv[])
         {
             set_cmode(CM_FANCY);
         }
-		if(sdl_key=='8')
+	if(sdl_key=='8')
         {
             set_cmode(CM_NOTHING);
+        }
+	if(sdl_key=='9')
+        {
+            set_cmode(CM_CRACK);
         }
         if(sdl_key==SDLK_LEFTBRACKET) {
             if(sdl_zoom_trig==1)

@@ -552,6 +552,8 @@ void draw_svf_ui(pixel *vid_buf)
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xC4", 100, 150, 255, 255);
     case CM_NOTHING:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
+    case CM_CRACK:
+        drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
         break;
     }
     drawrect(vid_buf, XRES-32+BARSIZE/*478*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
@@ -1774,7 +1776,9 @@ void set_cmode(int cm)
     else if(cmode==CM_PRESS)
         strcpy(itc_msg, "Pressure Display");
     else if(cmode==CM_NOTHING)
-        strcpy(itc_msg, "Cracker Display");
+        strcpy(itc_msg, "Nothing Display");
+    else if(cmode==CM_CRACK)
+        strcpy(itc_msg, "Alternate Velocity Display");
     else
         strcpy(itc_msg, "Velocity Display");
 }
