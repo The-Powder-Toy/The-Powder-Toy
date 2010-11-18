@@ -1391,7 +1391,7 @@ void draw_parts(pixel *vid)
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
-		if(cmode==CM_NOTHING)//nothing display
+		if(cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY)//nothing display but show needed color changes
 	   	{
 			cr = PIXR(ptypes[t].pcolors);
                 	cg = PIXG(ptypes[t].pcolors);

@@ -115,6 +115,7 @@ int gol[XRES][YRES];
 int gol2[XRES][YRES][NGOL];
 int SEC;
 int SEC2;
+int REPLACE_MODE;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;

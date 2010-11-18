@@ -1320,6 +1320,8 @@ int main(int argc, char *argv[])
                     bs = 0;
             }
         }
+	if(sdl_key==SDLK_INSERT)
+	    REPLACE_MODE = !REPLACE_MODE;
         if(sdl_key==SDLK_SPACE)
             sys_pause = !sys_pause;
         if(sdl_key=='h')
@@ -1863,6 +1865,8 @@ int main(int argc, char *argv[])
                     }
                     else if((sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)) && (sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)) && !(sdl_mod & (KMOD_LALT)))
                     {
+			if(sdl_mod & (KMOD_CAPS))
+				c = 0;
                         if(c!=125&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM)
                             flood_parts(x, y, c, -1, -1);
                         lx = x;
@@ -2070,7 +2074,12 @@ int main(int argc, char *argv[])
             if(currentTime-pastFPS>=1000)
             {
 #ifdef BETA
-                sprintf(uitext, "Cracker's Version %d (Beta %d) FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
+		if(REPLACE_MODE)
+                sprintf(uitext, "Cracker's Version %d FPS:%d REPLACE MODE", SAVE_VERSION,FPS);
+		else if(sdl_mod&(KMOD_CAPS))
+		sprintf(uitext, "Cracker's Version %d FPS:%d CAPS LOCK ON", SAVE_VERSION, FPS);
+		else
+		sprintf(uitext, "Cracker's Version %d (Beta %d) FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
                 //printf("%s\n", uitext);
 #else
                 sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
