@@ -1479,6 +1479,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, int my)
 {
     int h,x,y,n=0,height,width,sy,rows=0;
+    SEC = SEC2;
     mx /= sdl_scale;
     my /= sdl_scale;
     rows = ceil((float)msections[i].itemcount/16.0f);
@@ -1504,6 +1505,15 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
                     h = n;
+                }
+		if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+                    h = n;
+                }
+		else if(n==SLALT)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
                 }
                 else if(n==*sl)
                 {
@@ -1624,6 +1634,13 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
             }
         }
     }
+    if(!bq&&mx>=sdl_scale*((XRES+BARSIZE)-16) && mx<sdl_scale*(XRES+BARSIZE-1) &&my>= sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)) && my<sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)+15))
+	{
+		
+		if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
+			if(i>=0&&i<SC_TOTAL)
+				SEC = i;
+	}
 
     if(h==-1)
     {
@@ -1638,21 +1655,39 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
         drawtext(vid_buf, XRES-textwidth((char *)ptypes[h].descs)-BARSIZE, sy-10, (char *)ptypes[h].descs, 255, 255, 255, 255);
     }
 
+    if(b==1&&h==-1)
+    {
+	if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT) && SEC>=0)
+	{
+		SLALT = -1;
+		SEC2 = SEC;
+	}
+    }
     if(b==1&&h!=-1)
     {
 	if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
 	{
 		SLALT = h;
+		SEC2 = -1;
 	}
 	else{
 		*sl = h;
 	}
     }
+    if(b==4&&h==-1)
+    {
+	if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT) && SEC>=0)
+	{
+		SLALT = -1;
+		SEC2 = SEC;
+	}
+    }
     if(b==4&&h!=-1)
     {
-        if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
+	if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
 	{
 		SLALT = h;
+		SEC2 = -1;
 	}
 	else{
 		*sr = h;

@@ -113,6 +113,8 @@ int GSPEED;
 int love[XRES/9][YRES/9];
 int gol[XRES][YRES];
 int gol2[XRES][YRES][NGOL];
+int SEC;
+int SEC2;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;

@@ -745,7 +745,10 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 
 void draw_menu(pixel *vid_buf, int i, int hover)
 {
-    drawrect(vid_buf, (XRES+BARSIZE)-16, (i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16), 14, 14, 255, 255, 255, 255);
+	if(i==SEC&&SEC!=0)
+		drawrect(vid_buf, (XRES+BARSIZE)-16, (i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16), 14, 14, 0, 255, 255, 255);
+	else
+		drawrect(vid_buf, (XRES+BARSIZE)-16, (i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16), 14, 14, 255, 255, 255, 255);
     if(hover==i)
     {
         fillrect(vid_buf, (XRES+BARSIZE)-16, (i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16), 14, 14, 255, 255, 255, 255);
@@ -1486,6 +1489,64 @@ void draw_parts(pixel *vid)
 		    else
 			blendpixel(vid,x,y,parts[i].tmp,parts[i].ctype,parts[i].flags,255);
                 }
+		else if(t==PT_PIPE)
+		{
+			if(parts[i].ctype==2)
+			{
+				cr = 50;
+				cg = 1;
+				cb = 1;
+			}
+			else if(parts[i].ctype==3)
+			{
+				cr = 1;
+				cg = 50;
+				cb = 1;
+			}
+			else if(parts[i].ctype==4)
+			{
+				cr = 1;
+				cg = 1;
+				cb = 50;
+			}
+			else if(parts[i].temp<272.15&&parts[i].ctype!=1)
+			    {
+				    if(parts[i].temp>173.25&&parts[i].temp<273.15)
+				    {
+					cr = 50;
+					cg = 1;
+					cb = 1;
+				    }
+				    if(parts[i].temp>73.25&&parts[i].temp<=173.15)
+				    {
+					cr = 1;
+					cg = 50;
+					cb = 1;
+				    }
+				    if(parts[i].temp>=0&&parts[i].temp<=73.15)
+				    {
+					cr = 1;
+					cg = 1;
+					cb = 50;
+				    }
+			    }
+			else
+			{
+				cr = PIXR(ptypes[t].pcolors);
+				cg = PIXG(ptypes[t].pcolors);
+				cb = PIXB(ptypes[t].pcolors);
+			}
+			if(parts[i].tmp)
+			{
+				cr = PIXR(ptypes[parts[i].tmp].pcolors);
+				cg = PIXG(ptypes[parts[i].tmp].pcolors);
+				cb = PIXB(ptypes[parts[i].tmp].pcolors);
+			}
+			blendpixel(vid, nx, ny, cr, cg, cb, 255);
+			
+			
+			
+		}
                 else if(t==PT_ACID)
                 {
                     if(parts[i].life>255) parts[i].life = 255;

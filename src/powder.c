@@ -498,6 +498,8 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].life = 110;
         parts[i].tmp = 50;
     }
+    if(t==PT_PIPE)
+	parts[i].life = 100;
     if(t==PT_BCOL)
         parts[i].life = 110;
     if(t==PT_FIRE)
@@ -678,10 +680,15 @@ inline void delete_part(int x, int y)
     i = pmap[y][x];
     if(!i || (i>>8)>=NPART)
         return;
-    if((parts[i>>8].type==SLALT)||SLALT==-1||SLALT==0)
+    if((parts[i>>8].type==SLALT)||SLALT==0)
 	{
 		kill_part(i>>8);
 		pmap[y][x] = 0;	
+	}
+    else if(ptypes[parts[i>>8].type].menusection==SEC)
+	{
+		kill_part(i>>8);
+		pmap[y][x] = 0;
 	}
 	else
 	    return;
@@ -981,7 +988,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             {
                 if(!(parts[i].life==10&&(parts[i].type==PT_LCRY||parts[i].type==PT_PCLN||parts[i].type==PT_HSWC)))
                     parts[i].life--;
-                if(parts[i].life<=0 && t!=PT_METL && t!=PT_IRON && t!=PT_FIRW && t!=PT_PCLN && t!=PT_HSWC && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_NTCT && t!=PT_PTCT && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD&&t!=PT_LCRY && t!=PT_INWR && t!=PT_GLOW && t!= PT_FOG)
+                if(parts[i].life<=0 && t!=PT_METL && t!=PT_IRON && t!=PT_FIRW && t!=PT_PCLN && t!=PT_HSWC && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_NTCT && t!=PT_PTCT && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD&&t!=PT_LCRY && t!=PT_INWR && t!=PT_GLOW && t!= PT_FOG && t!=PT_PIPE)
                 {
                     kill_part(i);
                     continue;
@@ -2164,7 +2171,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 								parts[pmap[y+ny][x+nx]>>8].temp = parts[i].temp;
                     	 	}
 					}
-				for(int trade = 0; trade<9;trade ++)
+				for(int trade = 0; trade<4;trade ++)
 				{
 				nx = rand()%5-2;
 				ny = rand()%5-2;
@@ -2180,13 +2187,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 						{
             					parts[r>>8].life ++;
      		       				parts[i].life --;
-							trade = 9;
 						}
 						else if(temp>0)
 						{
       		      				parts[r>>8].life += temp/2;
        		     				parts[i].life -= temp/2;
-							trade = 9;
 						}
 					}
    	    		}
@@ -2211,7 +2216,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							parts[i].tmp = parts[r>>8].tmp;
 							parts[i].temp = parts[r>>8].temp;
 							parts[r>>8].type = PT_WARP;
-							parts[r>>8].life = rand()%90;
+							parts[r>>8].life = rand()%90+1;
 							trade = 5;
 						}
 					}
@@ -2305,6 +2310,129 @@ void update_particles_i(pixel *vid, int start, int inc)
                             }
                         }
             }
+	    else if(t==PT_PIPE)
+	    {
+		    if(!parts[i].ctype && parts[i].life<=50)
+		    {
+			    if(parts[i].temp<272.15)
+			    {
+				    if(parts[i].temp>173.25&&parts[i].temp<273.15)
+				    {
+					    parts[i].ctype = 2;
+					    parts[i].life = 0;
+				    }
+				    if(parts[i].temp>73.25&&parts[i].temp<=173.15)
+				    {
+					    parts[i].ctype = 3;
+					    parts[i].life = 0;
+				    }
+				    if(parts[i].temp>=0&&parts[i].temp<=73.15)
+				    {
+					    parts[i].ctype = 4;
+					    parts[i].life = 0;
+				    }
+			    }
+			    else
+			    {
+				for(nx=-2; nx<3; nx++)
+				for(ny=-2; ny<3; ny++)
+				if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+				{
+					r = pmap[y+ny][x+nx];
+					if((r>>8)>=NPART )
+						continue;
+					if(!r)
+						create_part(-1,x+nx,y+ny,PT_DMND);
+				}
+				if(parts[i].life==1)
+					parts[i].ctype = 1;
+			    }
+		    }
+		    if(parts[i].ctype==1)
+		    {
+			    for(nx=-1; nx<2; nx++)
+				for(ny=-1; ny<2; ny++)
+				if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+				{
+					r = pmap[y+ny][x+nx];
+					if((r>>8)>=NPART)
+						continue;
+					if(!r&&!parts[i].life)
+					{
+						parts[i].life=50;
+						continue;
+					}
+					if(!r)
+						continue;
+				}
+			    if(parts[i].life==2)
+			    {
+				    parts[i].ctype = 2;
+				    parts[i].life = 6;
+			    }
+		    }
+		    if(parts[i].ctype>1)
+		    for(int o = 0;o<3;o++)
+		    for(int ctype = 2;ctype<5;ctype++)
+		    {
+			if(parts[i].ctype==ctype)
+			{
+			    if(parts[i].life==3)
+			    {
+					for(nx=-1; nx<2; nx++)
+					for(ny=-1; ny<2; ny++)
+					if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+					{
+						r = pmap[y+ny][x+nx];
+						if((r>>8)>=NPART || !r)
+							continue;
+						if(parts[r>>8].type==PT_PIPE&&parts[r>>8].ctype==1)
+						{
+							//parts[r>>8].ctype = (((ctype-1)%3)+2);//forward
+							parts[r>>8].ctype = (((ctype)%3)+2);//reverse
+							parts[r>>8].life = 6;
+						}
+					}
+					//if(created == 0)
+					//{
+					//	parts[i].ctype = (((ctype)%3)+2);
+					//	parts[i].life = 6; 		//causes trippyness
+					//}
+					//else
+					//	parts[i].life = 0;					
+			    }
+			    else 
+			    {
+				nx = rand()%3-1;
+				ny = rand()%3-1;
+				if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+				{
+					r = pmap[y+ny][x+nx];
+					if((r>>8)>=NPART)
+						continue;
+					else if(!r&&parts[i].tmp!=0)
+					{
+						create_part(-1,x+nx,y+ny,parts[i].tmp);
+						parts[i].tmp = 0;
+						continue;
+					}
+					else if(!r)
+						continue;
+					else if(parts[r>>8].type!=PT_PIPE && parts[r>>8].type!=PT_DMND && parts[i].tmp == 0 && (ptypes[parts[r>>8].type].falldown!= 0 || pstates[parts[r>>8].type].state == ST_GAS))
+					{
+						parts[i].tmp = parts[r>>8].type;
+						parts[r>>8].type = PT_NONE;
+					}
+					else if(parts[r>>8].type==PT_PIPE && parts[r>>8].ctype!=(((ctype)%3)+2) && parts[r>>8].tmp==0&&parts[i].tmp>0)
+					{
+						parts[r>>8].tmp = parts[i].tmp;
+						parts[i].tmp = 0;
+					}
+				}
+			    }
+			}
+		    }
+	    }
             else if(t==PT_PCLN)
             {
                 for(nx=-2; nx<3; nx++)
@@ -4235,7 +4363,7 @@ int create_parts(int x, int y, int r, int c)
     if(c == 0)
     {
 	stemp = SLALT;
-	SLALT = -1;
+	SLALT = 0;
         for(j=-r; j<=r; j++)
             for(i=-r; i<=r; i++)
                 if(i*i+j*j<=r*r)
