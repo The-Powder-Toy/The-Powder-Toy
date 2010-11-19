@@ -1489,6 +1489,30 @@ void draw_parts(pixel *vid)
 		    else
 			blendpixel(vid,x,y,parts[i].tmp,parts[i].ctype,parts[i].flags,255);
                 }
+		else if(t==PT_GRAV)
+		{
+			cr = 20;
+			cg = 20;
+			cb = 20;
+			if(parts[i].vx>0)
+				cr += (parts[i].vx)*60;
+			if(parts[i].vy>0)
+				cb += (parts[i].vy)*60;
+			if(parts[i].vx<0)
+				cg -= (parts[i].vx)*60;
+			if(parts[i].vy<0)
+			{
+				cr -= (parts[i].vy)*30;
+				cg -= (parts[i].vy)*30;
+			}
+			if(cr>255)
+				cr=255;
+			if(cg>255)
+				cg=255;
+			if(cb>255)
+				cb=255;
+			blendpixel(vid, nx, ny, cr, cg, cb, 255);
+		}
 		else if(t==PT_PIPE)
 		{
 			if(parts[i].ctype==2)
@@ -2821,7 +2845,15 @@ void render_cursor(pixel *vid, int x, int y, int t, int r)
     {
         if(r<=0)
             xor_pixel(x, y, vid);
-        else
+	else if(CURRENT_BRUSH==SQUARE_BRUSH)
+	    for(j=-r; j<=r; j++)
+		{
+			xor_pixel(x+r, y+j, vid);
+			xor_pixel(x-r, y+j, vid);
+			if(abs(j)<r) xor_pixel(x+j, y-r, vid);
+			if(abs(j)<r) xor_pixel(x+j, y+r, vid);
+		}
+        else if(CURRENT_BRUSH==CIRCLE_BRUSH)
             for(j=0; j<=r; j++)
                 for(i=0; i<=r; i++)
                     if(i*i+j*j<=r*r && ((i+1)*(i+1)+j*j>r*r || i*i+(j+1)*(j+1)>r*r))

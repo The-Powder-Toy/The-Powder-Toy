@@ -58,6 +58,10 @@ extern unsigned char ZSIZE;
 
 #define NGOL 13
 
+#define CIRCLE_BRUSH 0
+#define SQUARE_BRUSH 1
+#define BRUSH_NUM 2
+
 #ifdef PIX16
 typedef unsigned short pixel;
 #else
@@ -116,6 +120,7 @@ int gol2[XRES][YRES][NGOL];
 int SEC;
 int SEC2;
 int REPLACE_MODE;
+int CURRENT_BRUSH;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;

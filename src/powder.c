@@ -498,6 +498,8 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].life = 110;
         parts[i].tmp = 50;
     }
+    if(t==PT_FRZW)
+	    parts[i].life = 100;
     if(t==PT_PIPE)
 	parts[i].life = 60;
     if(t==PT_BCOL)
@@ -988,7 +990,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             {
                 if(!(parts[i].life==10&&(parts[i].type==PT_LCRY||parts[i].type==PT_PCLN||parts[i].type==PT_HSWC)))
                     parts[i].life--;
-                if(parts[i].life<=0 && t!=PT_METL && t!=PT_IRON && t!=PT_FIRW && t!=PT_PCLN && t!=PT_HSWC && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_NTCT && t!=PT_PTCT && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD&&t!=PT_LCRY && t!=PT_INWR && t!=PT_GLOW && t!= PT_FOG && t!=PT_PIPE)
+                if(parts[i].life<=0 && t!=PT_METL && t!=PT_IRON && t!=PT_FIRW && t!=PT_PCLN && t!=PT_HSWC && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_NTCT && t!=PT_PTCT && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD&&t!=PT_LCRY && t!=PT_INWR && t!=PT_GLOW && t!= PT_FOG && t!=PT_PIPE && t!=PT_FRZW &&(t!=PT_ICEI&&parts[i].ctype!=PT_FRZW))
                 {
                     kill_part(i);
                     continue;
@@ -1456,6 +1458,13 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
             else if(t==PT_ICEI || t==PT_SNOW)
             {
+		    if(parts[i].ctype==PT_FRZW)
+		    {
+			parts[i].temp -= 1.0f;
+			if(parts[i].temp<0)
+				parts[i].temp = 0;
+					
+		    }
                 for(nx=-2; nx<3; nx++)
                     for(ny=-2; ny<3; ny++)
                         if(x+nx>=0 && y+ny>0 &&
@@ -2427,6 +2436,57 @@ void update_particles_i(pixel *vid, int start, int inc)
 			    }
 			}
 		    }
+	    }
+	    else if(t==PT_FRZZ)
+	    {
+		   for(nx=-1; nx<2; nx++)
+                    for(ny=-1; ny<2; ny++)
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+                            r = pmap[y+ny][x+nx];
+                            if((r>>8)>=NPART || !r)
+                                continue;
+				if(parts[r>>8].type==PT_WATR&&5>rand()%100)
+				{
+					parts[r>>8].type=PT_FRZW;
+					parts[r>>8].life = 100;
+					t = parts[i].type = PT_NONE;
+				}
+					
+			}
+	    }
+	    else if(t==PT_FRZW)
+	    {
+		    for(nx=-1; nx<2; nx++)
+                    for(ny=-1; ny<2; ny++)
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+                            r = pmap[y+ny][x+nx];
+                            if((r>>8)>=NPART || !r)
+                                continue;
+				if(parts[r>>8].type==PT_WATR&&5>rand()%70)
+				{
+					parts[r>>8].type=PT_FRZW;
+				}
+			}
+			if(parts[i].life==0&&13>rand()%2500)
+			{
+				t = parts[i].type=PT_ICEI;
+				parts[i].ctype=PT_FRZW;
+				parts[i].temp -= 200.0f;
+				if(parts[i].temp<0)
+					parts[i].temp = 0;
+			}
+			else if((100-(parts[i].life))>rand()%50000)
+			{
+				t = parts[i].type=PT_ICEI;
+				parts[i].ctype=PT_FRZW;
+				parts[i].temp -= 200.0f;
+				if(parts[i].temp<0)
+					parts[i].temp = 0;
+			}
 	    }
             else if(t==PT_PCLN)
             {
@@ -4342,7 +4402,7 @@ int create_parts(int x, int y, int r, int c)
 	{
         for(j=-r; j<=r; j++)
             for(i=-r; i<=r; i++)
-                if(i*i+j*j<=r*r)
+                if((CURRENT_BRUSH==CIRCLE_BRUSH && i*i+j*j<=r*r)||CURRENT_BRUSH==SQUARE_BRUSH)
                     delete_part(x+i, y+j);
         return 1;
 	}
@@ -4350,7 +4410,7 @@ int create_parts(int x, int y, int r, int c)
 	{
         for(j=-r; j<=r; j++)
             for(i=-r; i<=r; i++)
-                if(i*i+j*j<=r*r)
+                if((CURRENT_BRUSH==CIRCLE_BRUSH && i*i+j*j<=r*r)||CURRENT_BRUSH==SQUARE_BRUSH)
                     delete_part(x+i, y+j);
 	    if(c==0)
 		return 1;
@@ -4359,7 +4419,7 @@ int create_parts(int x, int y, int r, int c)
     {
         for(j=-r; j<=r; j++)
             for(i=-r; i<=r; i++)
-                if(i*i+j*j<=r*r)
+                if((CURRENT_BRUSH==CIRCLE_BRUSH && i*i+j*j<=r*r)||CURRENT_BRUSH==SQUARE_BRUSH)
                     create_part(-1, x+i, y+j, c);
         return 1;
     }
@@ -4370,7 +4430,7 @@ int create_parts(int x, int y, int r, int c)
 	SLALT = 0;
         for(j=-r; j<=r; j++)
             for(i=-r; i<=r; i++)
-                if(i*i+j*j<=r*r)
+                if((CURRENT_BRUSH==CIRCLE_BRUSH && i*i+j*j<=r*r)||CURRENT_BRUSH==SQUARE_BRUSH)
                     delete_part(x+i, y+j);
 	SLALT = stemp;
         return 1;
@@ -4378,7 +4438,7 @@ int create_parts(int x, int y, int r, int c)
     
     for(j=-r; j<=r; j++)
         for(i=-r; i<=r; i++)
-            if(i*i+j*j<=r*r)
+            if((CURRENT_BRUSH==CIRCLE_BRUSH && i*i+j*j<=r*r)||CURRENT_BRUSH==SQUARE_BRUSH)
                 if(create_part(-1, x+i, y+j, c)==-1)
                     f = 1;
     return !f;
