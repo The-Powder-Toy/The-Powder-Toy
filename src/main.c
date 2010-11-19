@@ -993,8 +993,8 @@ int main(int argc, char *argv[])
     int vs = 0;
 #endif
     int x, y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
-    int da = 0, db = 0, it = 2047, mx, my, bs = 2;
-    float nfvx, nfvy;
+    int da = 0, db = 0, it = 2047, mx, my;
+    float nfvx, nfvy, bsx = 2, bsy = 2;
     int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
     void *load_data=NULL;
     pixel *load_img=NULL;//, *fbi_img=NULL;
@@ -1292,14 +1292,32 @@ int main(int argc, char *argv[])
             }
             else
             {
-                if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
-                    bs -= 1;
+                if(sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+		{
+		    bsx -= 1;
+		    bsy -= 1;
+		}
+		else if(sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+		{
+		    bsx -= 1;
+		}
+		else if(sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+		{
+		    bsy -= 1;
+		}
                 else
-                    bs -= ceil((bs/5)+0.5f);
-                if(bs>1224)
-                    bs = 1224;
-                if(bs<0)
-                    bs = 0;
+		{
+                    bsx -= ceil((bsx/5)+0.5f);
+		    bsy -= ceil((bsy/5)+0.5f);
+		}
+                if(bsx>1180)
+                    bsx = 1180;
+		if(bsy>1180)
+                    bsy = 1180;
+                if(bsx<0)
+                    bsx = 0;
+		if(bsy<0)
+                    bsy = 0;
             }
         }
         if(sdl_key==SDLK_RIGHTBRACKET) {
@@ -1314,14 +1332,32 @@ int main(int argc, char *argv[])
             }
             else
             {
-                if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
-                    bs += 1;
+                if(sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+		{
+		    bsx += 1;
+		    bsy += 1;
+		}
+		else if(sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+		{
+		    bsx += 1;
+		}
+		else if(sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+		{
+		    bsy += 1;
+		}
                 else
-                    bs += ceil((bs/5)+0.5f);
-                if(bs>1224)
-                    bs = 1224;
-                if(bs<0)
-                    bs = 0;
+		{
+                    bsx += ceil((bsx/5)+0.5f);
+		    bsy += ceil((bsy/5)+0.5f);
+		}
+                if(bsx>1180)
+                    bsx = 1180;
+		if(bsy>1180)
+                    bsy = 1180;
+                if(bsx<0)
+                    bsx = 0;
+		if(bsy<0)
+                    bsy = 0;
             }
         }
 	if(sdl_key==SDLK_INSERT)
@@ -1407,11 +1443,27 @@ int main(int argc, char *argv[])
             }
             else
             {
-                bs += sdl_wheel;
-                if(bs>1224)
-                    bs = 1224;
-                if(bs<0)
-                    bs = 0;
+		if(!(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+		{
+		    bsx += sdl_wheel;
+		    bsy += sdl_wheel;
+		}
+		else if(sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+		{
+		    bsx += sdl_wheel;
+		}
+		else if(sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+		{
+		    bsy += sdl_wheel;
+		}
+                if(bsx>1180)
+                    bsx = 1180;
+                if(bsx<0)
+                    bsx = 0;
+		if(bsy>1180)
+                    bsy = 1180;
+                if(bsy<0)
+                    bsy = 0;
                 sdl_wheel = 0;
                 /*if(su >= PT_NUM) {
                 	if(sl < PT_NUM)
@@ -1846,7 +1898,7 @@ int main(int argc, char *argv[])
                     }
                     else
                     {
-                        create_line(lx, ly, x, y, bs, c);
+                        create_line(lx, ly, x, y, bsx, bsy, c);
                         lx = x;
                         ly = y;
                     }
@@ -1920,7 +1972,7 @@ int main(int argc, char *argv[])
                                 cb_emap[cby][cbx] = emap[cby][cbx];
                             }
 
-                        create_parts(x, y, bs, c);
+                        create_parts(x, y, bsx, bsy, c);
                         lx = x;
                         ly = y;
                         lb = b;
@@ -1940,7 +1992,7 @@ int main(int argc, char *argv[])
                 if(lm == 1)
                 {
                     if(c!=127 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=4)
-                        create_line(lx, ly, x, y, bs, c);
+                        create_line(lx, ly, x, y, bsx, bsy, c);
                 }
                 else
                     create_box(lx, ly, x, y, c);
@@ -1964,7 +2016,7 @@ int main(int argc, char *argv[])
 
         if(zoom_en!=1 && !load_mode && !save_mode)
         {
-            render_cursor(vid_buf, mx/sdl_scale, my/sdl_scale, su, bs);
+            render_cursor(vid_buf, mx/sdl_scale, my/sdl_scale, su, bsx, bsy);
             mousex = mx/sdl_scale;
             mousey = my/sdl_scale;
         }

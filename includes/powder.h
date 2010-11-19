@@ -540,8 +540,8 @@ void create_box(int x1, int y1, int x2, int y2, int c);
 
 int flood_parts(int x, int y, int c, int cm, int bm);
 
-int create_parts(int x, int y, int r, int c);
+int create_parts(int x, int y, float rx, float ry, int c);
 
-void create_line(int x1, int y1, int x2, int y2, int r, int c);
+void create_line(int x1, int y1, int x2, int y2, float rx, float ry, int c);
 
 #endif

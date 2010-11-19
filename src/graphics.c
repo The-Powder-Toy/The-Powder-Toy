@@ -2838,25 +2838,33 @@ corrupt:
     return 1;
 }
 
-void render_cursor(pixel *vid, int x, int y, int t, int r)
+void render_cursor(pixel *vid, int x, int y, int t, float rx, float ry)
 {
     int i,j,c;
     if(t<PT_NUM||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM)
     {
-        if(r<=0)
+	if(rx<=0)
+            xor_pixel(x, y, vid);
+	else if(ry<=0)
+            xor_pixel(x, y, vid);
+	if(rx+ry<=0)
             xor_pixel(x, y, vid);
 	else if(CURRENT_BRUSH==SQUARE_BRUSH)
-	    for(j=-r; j<=r; j++)
+	{
+	    for(j=0; j<=ry; j++)
+		for(i=0; i<=rx; i++)
+		    if(i*j<=ry*rx && ((i+1)>rx || (j+1)>ry))
 		{
-			xor_pixel(x+r, y+j, vid);
-			xor_pixel(x-r, y+j, vid);
-			if(abs(j)<r) xor_pixel(x+j, y-r, vid);
-			if(abs(j)<r) xor_pixel(x+j, y+r, vid);
+			xor_pixel(x+i, y+j, vid);
+			xor_pixel(x-i, y-j, vid);
+			if(i&&j)xor_pixel(x+i, y-j, vid);
+			if(i&&j)xor_pixel(x-i, y+j, vid);
 		}
+	}
         else if(CURRENT_BRUSH==CIRCLE_BRUSH)
-            for(j=0; j<=r; j++)
-                for(i=0; i<=r; i++)
-                    if(i*i+j*j<=r*r && ((i+1)*(i+1)+j*j>r*r || i*i+(j+1)*(j+1)>r*r))
+            for(j=0; j<=ry; j++)
+                for(i=0; i<=rx; i++)
+                    if((i*i)/(rx*rx)+(j*j)/(ry*rx)<=1 && (((i+1)*(i+1))/(rx*rx)+(j*j)/(ry*rx)>1 || ((i*i)/(rx*rx)+((j+1)*(j+1))/(ry*ry)>1)))
                     {
                         xor_pixel(x+i, y+j, vid);
                         if(j) xor_pixel(x+i, y-j, vid);
@@ -2867,7 +2875,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int r)
     else
     {
         int tc;
-        c = (r/CELL) * CELL;
+        c = (rx/CELL) * CELL;
         x = (x/CELL) * CELL;
         y = (y/CELL) * CELL;
 

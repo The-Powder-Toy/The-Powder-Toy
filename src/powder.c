@@ -441,6 +441,8 @@ inline int create_part(int p, int x, int y, int t)
                 (pmap[y][x]&0xFF)!=PT_IRON &&
                 (pmap[y][x]&0xFF)!=PT_INWR)
             return -1;
+	if(parts[pmap[y][x]>>8].life!=0)
+		return -1;
         parts[pmap[y][x]>>8].type = PT_SPRK;
         parts[pmap[y][x]>>8].life = 4;
         parts[pmap[y][x]>>8].ctype = pmap[y][x]&0xFF;
@@ -1226,7 +1228,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                 nearp = nearest_part(i, PT_ETRD);
                 if(nearp!=-1&&parts_avg(i, nearp)!=PT_INSL)
                 {
-                    create_line((int)parts[i].x, (int)parts[i].y, (int)parts[nearp].x, (int)parts[nearp].y, 0, PT_PLSM);
+                    create_line((int)parts[i].x, (int)parts[i].y, (int)parts[nearp].x, (int)parts[nearp].y, 0, 0, PT_PLSM);
                     t = parts[i].type = PT_ETRD;
                     parts[i].ctype = PT_NONE;
                     parts[i].life = 20;
@@ -2698,7 +2700,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                         }
             }
             if(t==PT_SWCH)
-                if((parts[i].life>0&&parts[i].life<10)|| parts[i].life == 11)
+                if((parts[i].life>0&&parts[i].life<10)|| parts[i].life > 10)
                 {
                     parts[i].life--;
                 }
@@ -2795,7 +2797,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 {
                                     parts[r>>8].type = PT_SWCH;
                                     parts[r>>8].ctype = PT_NONE;
-                                    parts[r>>8].life = 0;
+                                    parts[r>>8].life = 9;
                                 }
                             }
                             pavg = parts_avg(i, r>>8);
@@ -2806,7 +2808,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     parts[r>>8].life = 10;
                                 if(parts[i].ctype == PT_NSCN&&pavg != PT_INSL)
                                     parts[r>>8].life = 9;
-                                if(!(parts[i].ctype == PT_PSCN||parts[i].ctype == PT_NSCN)&&parts[r>>8].life >= 10&&pavg != PT_INSL) //Life can be 11 too, so don't just check for 10
+                                if(!(parts[i].ctype == PT_PSCN||parts[i].ctype == PT_NSCN)&&parts[r>>8].life == 10&&pavg != PT_INSL)
                                 {
                                     parts[r>>8].type = PT_SPRK;
                                     parts[r>>8].ctype = PT_SWCH;
@@ -2896,7 +2898,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 if(t==PT_SPRK&&parts[i].ctype==PT_SWCH&&parts[i].life<=1)
                                 {
                                     parts[i].type = PT_SWCH;
-                                    parts[i].life = 11;
+                                    parts[i].life = 14;
                                 }
                             }
                         }
@@ -3112,7 +3114,7 @@ killed:
                         else
                         {
                             if(player[2] == SPC_AIR)
-                                create_parts(nx + 3*((((int)player[1])&0x02) == 0x02) - 3*((((int)player[1])&0x01) == 0x01), ny, 4, SPC_AIR);
+                                create_parts(nx + 3*((((int)player[1])&0x02) == 0x02) - 3*((((int)player[1])&0x01) == 0x01), ny, 4, 4, SPC_AIR);
                             else
                                 create_part(-1, nx, ny, player[2]);
 
@@ -4212,7 +4214,7 @@ void create_box(int x1, int y1, int x2, int y2, int c)
     }
     for(j=y1; j<=y2; j++)
         for(i=x1; i<=x2; i++)
-            create_parts(i, j, 1, c);
+            create_parts(i, j, 1, 1, c);
 }
 
 int flood_parts(int x, int y, int c, int cm, int bm)
@@ -4268,7 +4270,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 
     // fill span
     for(x=x1; x<=x2; x++)
-        if(!create_parts(x, y, 0, co))
+        if(!create_parts(x, y, 0, 0, co))
             return 0;
 
     // fill children
@@ -4285,7 +4287,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
     return 1;
 }
 
-int create_parts(int x, int y, int r, int c)
+int create_parts(int x, int y, float rx, float ry, int c)
 {
     int i, j, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0; //n;
 
@@ -4374,14 +4376,14 @@ int create_parts(int x, int y, int r, int c)
     }
     if(dw==1)
     {
-        r = r/CELL;
+        rx = rx/CELL;
         x = x/CELL;
         y = y/CELL;
-        x -= r/2;
-        y -= r/2;
-        for (ox=x; ox<=x+r; ox++)
+        x -= rx/2;
+        y -= rx/2;
+        for (ox=x; ox<=x+rx; ox++)
         {
-            for (oy=y; oy<=y+r; oy++)
+            for (oy=y; oy<=y+rx; oy++)
             {
                 if(ox>=0&&ox<XRES/CELL&&oy>=0&&oy<YRES/CELL)
                 {
@@ -4400,26 +4402,26 @@ int create_parts(int x, int y, int r, int c)
     }
     if(((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))|| sdl_mod & (KMOD_CAPS) )&& !REPLACE_MODE)
 	{
-        for(j=-r; j<=r; j++)
-            for(i=-r; i<=r; i++)
-                if((CURRENT_BRUSH==CIRCLE_BRUSH && i*i+j*j<=r*r)||CURRENT_BRUSH==SQUARE_BRUSH)
+        for(j=-ry; j<=ry; j++)
+            for(i=-rx; i<=rx; i++)
+                if((CURRENT_BRUSH==CIRCLE_BRUSH && (i*i)/(rx*rx)+(j*j)/(ry*rx)<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
                     delete_part(x+i, y+j);
         return 1;
 	}
     if(REPLACE_MODE)
 	{
-        for(j=-r; j<=r; j++)
-            for(i=-r; i<=r; i++)
-                if((CURRENT_BRUSH==CIRCLE_BRUSH && i*i+j*j<=r*r)||CURRENT_BRUSH==SQUARE_BRUSH)
+        for(j=-ry; j<=ry; j++)
+            for(i=-rx; i<=rx; i++)
+                if((CURRENT_BRUSH==CIRCLE_BRUSH && (i*i)/(rx*rx)+(j*j)/(ry*rx)<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
                     delete_part(x+i, y+j);
 	    if(c==0)
 		return 1;
 	}
     if(c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM)
     {
-        for(j=-r; j<=r; j++)
-            for(i=-r; i<=r; i++)
-                if((CURRENT_BRUSH==CIRCLE_BRUSH && i*i+j*j<=r*r)||CURRENT_BRUSH==SQUARE_BRUSH)
+        for(j=-ry; j<=ry; j++)
+            for(i=-rx; i<=rx; i++)
+                if((CURRENT_BRUSH==CIRCLE_BRUSH && (i*i)/(rx*rx)+(j*j)/(ry*rx)<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
                     create_part(-1, x+i, y+j, c);
         return 1;
     }
@@ -4428,23 +4430,23 @@ int create_parts(int x, int y, int r, int c)
     {
 	stemp = SLALT;
 	SLALT = 0;
-        for(j=-r; j<=r; j++)
-            for(i=-r; i<=r; i++)
-                if((CURRENT_BRUSH==CIRCLE_BRUSH && i*i+j*j<=r*r)||CURRENT_BRUSH==SQUARE_BRUSH)
+        for(j=-ry; j<=ry; j++)
+            for(i=-rx; i<=rx; i++)
+                if((CURRENT_BRUSH==CIRCLE_BRUSH && (i*i)/(rx*rx)+(j*j)/(ry*rx)<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
                     delete_part(x+i, y+j);
 	SLALT = stemp;
         return 1;
     }
     
-    for(j=-r; j<=r; j++)
-        for(i=-r; i<=r; i++)
-            if((CURRENT_BRUSH==CIRCLE_BRUSH && i*i+j*j<=r*r)||CURRENT_BRUSH==SQUARE_BRUSH)
+    for(j=-ry; j<=ry; j++)
+        for(i=-rx; i<=rx; i++)
+            if((CURRENT_BRUSH==CIRCLE_BRUSH && (i*i)/(rx*rx)+(j*j)/(ry*rx)<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
                 if(create_part(-1, x+i, y+j, c)==-1)
                     f = 1;
     return !f;
 }
 
-void create_line(int x1, int y1, int x2, int y2, int r, int c)
+void create_line(int x1, int y1, int x2, int y2, float rx, float ry, int c)
 {
     int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
     float e, de;
@@ -4478,19 +4480,19 @@ void create_line(int x1, int y1, int x2, int y2, int r, int c)
     for(x=x1; x<=x2; x++)
     {
         if(cp)
-            create_parts(y, x, r, c);
+            create_parts(y, x, rx, ry, c);
         else
-            create_parts(x, y, r, c);
+            create_parts(x, y, rx, ry, c);
         e += de;
         if(e >= 0.5f)
         {
             y += sy;
-            if(c==135 || c==140 || c==134 || c==133 || c==132 || c==131 || c==129 || c==128 || c==127 || c==125 || c==124 || c==123 || c==122 || !r)
+            if(c==135 || c==140 || c==134 || c==133 || c==132 || c==131 || c==129 || c==128 || c==127 || c==125 || c==124 || c==123 || c==122 || !(rx+ry))
             {
                 if(cp)
-                    create_parts(y, x, r, c);
+                    create_parts(y, x, rx, ry, c);
                 else
-                    create_parts(x, y, r, c);
+                    create_parts(x, y, rx, ry, c);
             }
             e -= 1.0f;
         }
