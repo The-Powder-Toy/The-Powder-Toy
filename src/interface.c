@@ -1491,7 +1491,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
     sy = y;
     if(i==SC_WALL)
     {
-        for(n = 122; n<122+UI_WALLCOUNT; n++)
+        for(n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
         {
             if(n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
             {
@@ -1500,7 +1500,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
                     x = XRES-BARSIZE-26;
                     y += 19;
                 }
-                x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
+                x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
                 if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
@@ -1528,7 +1528,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
     }
     else if(i==SC_SPECIAL)
     {
-        for(n = 122; n<122+UI_WALLCOUNT; n++)
+        for(n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
         {
             if(n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
             {
@@ -1537,7 +1537,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
                     x = XRES-BARSIZE-26;
                     y += 19;
                 }
-                x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
+                x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
                 if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);

@@ -16,13 +16,10 @@
 #define CM_PRESS 1
 #define CM_VEL 0
 
-#define UI_WALLSTART 37
-#define UI_WALLCOUNT 19
 
-#define SPC_AIR 136
-#define SPC_HEAT 137
-#define SPC_COOL 138
-#define SPC_VACUUM 139
+#define UI_WALLSTART 122
+#define UI_ACTUALSTART 22
+#define UI_WALLCOUNT 19
 
 #define WL_WALLELEC	22
 #define WL_EWALL	23
@@ -38,7 +35,15 @@
 #define WL_ALLOWSOLID	33
 #define WL_ALLOWALLELEC	34
 #define WL_EHOLE	35
+
+#define SPC_AIR 136
+#define SPC_HEAT 137
+#define SPC_COOL 138
+#define SPC_VACUUM 139
+
 #define WL_ALLOWGAS	40
+
+
 
 #define PT_NONE	0
 #define PT_DUST	1

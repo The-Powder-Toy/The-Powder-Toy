@@ -2864,7 +2864,7 @@ void render_cursor(pixel *vid, int x, int y, int t, float rx, float ry)
         else if(CURRENT_BRUSH==CIRCLE_BRUSH)
             for(j=0; j<=ry; j++)
                 for(i=0; i<=rx; i++)
-                    if((i*i)/(rx*rx)+(j*j)/(ry*rx)<=1 && (((i+1)*(i+1))/(rx*rx)+(j*j)/(ry*rx)>1 || ((i*i)/(rx*rx)+((j+1)*(j+1))/(ry*ry)>1)))
+                    if((i*i)/(rx*rx)+(j*j)/(ry*ry)<=1 && (((i+1)*(i+1))/(rx*rx)+(j*j)/(ry*ry)>1 || ((i*i)/(rx*rx)+((j+1)*(j+1))/(ry*ry)>1)))
                     {
                         xor_pixel(x+i, y+j, vid);
                         if(j) xor_pixel(x+i, y-j, vid);
