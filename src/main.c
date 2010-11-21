@@ -481,7 +481,36 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
         for(x=bx0; x<bx0+bw; x++)
         {
             if(d[p])
+		{
                 bmap[y][x] = d[p];
+		if(bmap[y][x]==1)
+			bmap[y][x]=WL_WALL;
+		if(bmap[y][x]==2)
+			bmap[y][x]=WL_DESTROYALL;
+		if(bmap[y][x]==3)
+			bmap[y][x]=WL_ALLOWLIQUID;
+		if(bmap[y][x]==4)
+			bmap[y][x]=WL_FAN;
+		if(bmap[y][x]==5)
+			bmap[y][x]=WL_STREAM;
+		if(bmap[y][x]==6)
+			bmap[y][x]=WL_DETECT;
+		if(bmap[y][x]==7)
+			bmap[y][x]=WL_EWALL;
+		if(bmap[y][x]==8)
+			bmap[y][x]=WL_WALLELEC;
+		if(bmap[y][x]==9)
+			bmap[y][x]=WL_ALLOWAIR;
+		if(bmap[y][x]==10)
+			bmap[y][x]=WL_ALLOWSOLID;
+		if(bmap[y][x]==11)
+			bmap[y][x]=WL_ALLOWALLELEC;
+		if(bmap[y][x]==12)
+			bmap[y][x]=WL_EHOLE;
+		if(bmap[y][x]==13)
+			bmap[y][x]=WL_ALLOWGAS;
+		}
+
             p++;
         }
     for(y=by0; y<by0+bh; y++)
@@ -1878,10 +1907,10 @@ int main(int argc, char *argv[])
                         {
                             nfvx = (x-lx)*0.005f;
                             nfvy = (y-ly)*0.005f;
-                            flood_parts(lx, ly, 255, -1, 4);
+                            flood_parts(lx, ly, WL_FANHELPER, -1, WL_FAN);
                             for(j=0; j<YRES/CELL; j++)
                                 for(i=0; i<XRES/CELL; i++)
-                                    if(bmap[j][i] == 255)
+                                    if(bmap[j][i] == WL_FANHELPER)
                                     {
                                         fvx[j][i] = nfvx;
                                         fvy[j][i] = nfvy;
@@ -2131,11 +2160,11 @@ int main(int argc, char *argv[])
             {
 #ifdef BETA
 		if(REPLACE_MODE)
-                sprintf(uitext, "Cracker's Version %d FPS:%d REPLACE MODE", SAVE_VERSION,FPS);
+                sprintf(uitext, "Cracker's Version %d Parts:%d REPLACE MODE", SAVE_VERSION,NUM_PARTS);
 		else if(sdl_mod&(KMOD_CAPS))
-		sprintf(uitext, "Cracker's Version %d FPS:%d CAPS LOCK ON", SAVE_VERSION, FPS);
+		sprintf(uitext, "Cracker's Version %d Parts:%d CAPS LOCK ON", SAVE_VERSION, NUM_PARTS);
 		else
-		sprintf(uitext, "Cracker's Version %d (Beta %d) FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
+		sprintf(uitext, "Cracker's Version %d Parts:%d", SAVE_VERSION, NUM_PARTS);
                 //printf("%s\n", uitext);
 #else
                 sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);

@@ -27,6 +27,7 @@
 #define WL_STREAM	25
 #define WL_SIGN	26
 #define WL_FAN	27
+#define WL_FANHELPER 255
 #define WL_ALLOWLIQUID	28
 #define WL_DESTROYALL	29
 #define WL_ERASE	30

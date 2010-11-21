@@ -2875,7 +2875,7 @@ void render_cursor(pixel *vid, int x, int y, int t, float rx, float ry)
     else
     {
         int tc;
-        c = (rx/CELL) * CELL;
+        c = ((int)rx/CELL) * CELL;
         x = (x/CELL) * CELL;
         y = (y/CELL) * CELL;
 

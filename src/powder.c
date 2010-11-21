@@ -88,6 +88,8 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
         return 0;
     if((pt==PT_NEUT ||pt==PT_PHOT) && bmap[ny/CELL][nx/CELL]==WL_EWALL && !emap[ny/CELL][nx/CELL])
         return 0;
+    if(bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL])
+        return 2;
 
     if(bmap[ny/CELL][nx/CELL]==WL_ALLOWAIR)
         return 0;
@@ -1422,7 +1424,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 
             nx = x/CELL;
             ny = y/CELL;
-            if(bmap[ny][nx]==6 && emap[ny][nx]<WL_WALLELEC)
+            if(bmap[ny][nx]==WL_DETECT && emap[ny][nx]<8)
                 set_emap(nx, ny);
 
             fe = 0;
@@ -3663,6 +3665,7 @@ void update_particles(pixel *vid)
     isplayer = 0;  //Needed for player spawning
     memset(pmap, 0, sizeof(pmap));
     r = rand()%2;
+    NUM_PARTS = 0;
     for(j=0; j<NPART; j++)
     {
         i = r ? (NPART-1-j) : j;
@@ -3675,6 +3678,7 @@ void update_particles(pixel *vid)
                 if(t!=PT_NEUT || (pmap[y][x]&0xFF)!=PT_GLAS)
                     pmap[y][x] = t|(i<<8);
             }
+	    NUM_PARTS ++;
         }
         else
         {
@@ -4250,7 +4254,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
             bm = 0;
     }
 
-    if((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm ||( (sdl_mod & (KMOD_CAPS)) && cm!=SLALT))
+    if(((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm )||( (sdl_mod & (KMOD_CAPS)) && cm!=SLALT))
         return 1;
 
     // go left as far as possible
@@ -4295,37 +4299,26 @@ int create_parts(int x, int y, float rx, float ry, int c)
     int wall = c - 100;
     for(int r=UI_ACTUALSTART;r<=UI_ACTUALSTART+UI_WALLCOUNT;r++)
     {
-	if(wall==WL_STREAM)
-	{
-		i = x / CELL;
-		j = y / CELL;
-		for(v=-1; v<2; v++)
-		for(u=-1; u<2; u++)
-                if(i+u>=0 && i+u<XRES/CELL &&
-                        j+v>=0 && j+v<YRES/CELL &&
-                        bmap[j+v][i+u] == WL_STREAM)
-			return 1;
-		bmap[j][i] = WL_STREAM;
-		return 1;
-	}
-	else if(wall==r)
+	if(wall==r)
 	    {
+		    if(c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM)
+			    break;
 		    b = wall;
 		    dw = 1;
 	    }
     }
-    if(c == 255)
+    if(c == WL_FANHELPER)
     {
-        b = 255;
+        b = WL_FANHELPER;
         dw = 1;
     }
     if(dw==1)
     {
-        rx = rx/CELL;
+        rx = (int)rx/CELL;
         x = x/CELL;
         y = y/CELL;
-        x -= rx/2;
-        y -= rx/2;
+        x -= (int)rx/2;
+        y -= (int)rx/2;
         for (ox=x; ox<=x+rx; ox++)
         {
             for (oy=y; oy<=y+rx; oy++)
@@ -4334,11 +4327,31 @@ int create_parts(int x, int y, float rx, float ry, int c)
                 {
                     i = ox;
                     j = oy;
+		    if(((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))|| sdl_mod & (KMOD_CAPS) ))
+		    {
+			    if(bmap[j][i]==SLALT-100)
+				    b = 0;
+			    else
+				    continue;
+		    }
                     if(b==WL_FAN)
                     {
                         fvx[j][i] = 0.0f;
                         fvy[j][i] = 0.0f;
                     }
+		    if(b==WL_STREAM)
+		    {
+				i = x + rx/2;
+				j = y + rx/2;
+				for(v=-1; v<2; v++)
+				for(u=-1; u<2; u++)
+				if(i+u>=0 && i+u<XRES/CELL &&
+					j+v>=0 && j+v<YRES/CELL &&
+					bmap[j+v][i+u] == WL_STREAM)
+					return 1;
+				bmap[j][i] = WL_STREAM;
+				continue;
+		    }
                     bmap[j][i] = b;
                 }
             }

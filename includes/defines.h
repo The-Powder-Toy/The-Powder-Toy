@@ -86,6 +86,8 @@ extern int amd;
 
 extern int FPSB;
 
+int NUM_PARTS;
+
 extern int legacy_enable;
 
 extern int sys_pause;
