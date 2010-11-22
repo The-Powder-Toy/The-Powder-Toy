@@ -1779,9 +1779,29 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 parts[i].life = 4;
                                 t = parts[i].type = PT_FIRE;
                             }
+			    else if((r&0xFF)==PT_SMKE && (1>rand()%250))
+			    {
+				    parts[r>>8].type = PT_NONE;
+				    parts[i].life = rand()%60 + 60;
+			    }
                             //if(t==PT_SNOW && (r&0xFF)==PT_WATR && 15>(rand()%1000))
                             //t = parts[i].type = PT_WATR;
                         }
+		if(parts[i].life==2)
+		{
+		    for(nx=-1; nx<2; nx++)
+			for(ny=-1; ny<2; ny++)
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+				r = pmap[y+ny][x+nx];
+				if((r>>8)>=NPART)
+                                continue;
+				if(!r)
+					create_part(-1,x+nx,y+ny,PT_O2);
+			}
+		    parts[i].life = 0;
+		}
             }
             else if(t==PT_THRM)
             {
@@ -1939,7 +1959,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     parts[r>>8].type = PT_FIRE;
                                     parts[r>>8].life = 4;
                                 }
-                                else if(((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && ptypes[parts[r>>8].type].hardness>(rand()%1000))&&parts[i].life>=50)
+                                else if(((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && ptypes[parts[r>>8].type].hardness>(rand()%1000))&&parts[i].life>=50&&parts_avg(i,r>>8) != PT_GLAS)
                                 {
                                     parts[i].life--;
                                     parts[r>>8].type = PT_NONE;
