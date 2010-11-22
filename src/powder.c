@@ -180,6 +180,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 
         return 0;
     }
+	if((pmap[ny][nx]&0xFF)==PT_CNCT)
+		return 0;
     if(parts[i].type==PT_CNCT && y<ny && (pmap[y+1][x]&0xFF)==PT_CNCT)
         return 0;
 
