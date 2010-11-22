@@ -96,17 +96,15 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
         return 0;
 
     if(r && (r&0xFF) < PT_NUM){
-	//if(ptypes[pt].properties&TYPE_ENERGY && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&TYPE_ENERGY))))
-	if(ptypes[pt].properties&TYPE_ENERGY && ptypes[(r&0xFF)].properties&TYPE_ENERGY)
-		return 2;
+		if(ptypes[pt].properties&TYPE_ENERGY && ptypes[(r&0xFF)].properties&TYPE_ENERGY)
+			return 2;
 	
-	//if(pt==PT_NEUT && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE))))
-	if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPASS)
-		return 2;
-	if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE)
-		return 1;
-	if((r&0xFF)==PT_NEUT && ptypes[pt].properties&PROP_NEUTPENETRATE)
-		return 0;
+		if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPASS)
+			return 2;
+		if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE)
+			return 1;
+		if((r&0xFF)==PT_NEUT && ptypes[pt].properties&PROP_NEUTPENETRATE)
+			return 0;
     }
 	
     if (r && ((r&0xFF) >= PT_NUM || (ptypes[pt].weight <= ptypes[(r&0xFF)].weight)))
