@@ -87,6 +87,13 @@ extern int amd;
 extern int FPSB;
 
 int NUM_PARTS;
+int GRAV;
+int GRAV_R;
+int GRAV_G;
+int GRAV_B;
+int GRAV_R2;
+int GRAV_G2;
+int GRAV_B2;
 
 extern int legacy_enable;
 
@@ -115,6 +122,7 @@ int MSIGN;
 int CGOL;
 int ISGOL;
 int ISLOVE;
+int ISGRAV;
 int GSPEED;
 int love[XRES/9][YRES/9];
 int gol[XRES][YRES];

@@ -149,7 +149,10 @@
 #define PT_FRZZ 100
 #define PT_FRZW 101
 #define PT_GRAV 102
-#define PT_NUM  103
+#define PT_A_A 103
+#define PT_A_AG 104
+#define PT_A_AS 105
+#define PT_NUM  106
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -343,6 +346,9 @@ static const part_type ptypes[PT_NUM] =
     {"FRZZ",	PIXPACK(0xC0E0FF),	0.7f,	0.01f * CFDS,	0.96f,	0.90f,	-0.1f,	0.05f,	0.01f,	-0.00005f* CFDS,1,	0,		0,	0,	20,	1,	50,		SC_POWDERS,		90.0f,	46,		"FREEZE", TYPE_PART},
     {"FRZW",	PIXPACK(0x1020C0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_LIQUID,		90.0f,	29,		"FREEZE WATER", TYPE_LIQUID},
     {"GRAV",	PIXPACK(0xFFE0A0),	0.7f,	0.00f * CFDS,	1.00f,	1.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Very light dust. Flammable.", TYPE_PART},    
+    {"@_@",	PIXPACK(0x00FF77),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_LIQUID,		R_TEMP+0.0f	+273.15f,	29,		"@_@", TYPE_LIQUID},
+    {"@_@G",	PIXPACK(0x00FFBB),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	2.75f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,		SC_GAS,			R_TEMP-200.0f	+273.15f,	42,		"@_@ gas", TYPE_GAS},
+    {"@_@S",	PIXPACK(0x00E455),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_SOLIDS,		R_TEMP+300.0f	+273.15f,	251,	"@_@ solid", TYPE_SOLID},    
 //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
 };
 
@@ -439,8 +445,8 @@ static part_state pstates[PT_NUM] =
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* Crac */ {ST_SOLID,   	PT_NONE, 0.0f, 		PT_NONE, 0.0f,  	PT_NONE, 0.0f,   	PT_FIRE, 22730.0f},
-    /* RIME */ {ST_SOLID,	PT_NONE, 0.0f,		PT_WATR, 273.15f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* Crac */ {ST_SOLID,   	PT_NONE, 0.0f, 		PT_NONE, 0.0f,  	PT_NONE, 0.0f,   	PT_FIRE, 2730.0f},
+    /* RIME */ {ST_SOLID,	PT_NONE, 0.0f,		PT_WATR, 273.15f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* FOG  */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* BCLN */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* LOVE */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
@@ -451,6 +457,10 @@ static part_state pstates[PT_NUM] =
     /* FWRK */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* FRZZ */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* FRZW */ {ST_LIQUID,	PT_ICEI, 53.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* GRAV */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* @_@  */ {ST_LIQUID,	PT_A_AG, 100.0f,	PT_NONE, 0.0f,		PT_A_AS, 400.0f,	PT_NONE, 0.0f},
+    /* @_@g */ {ST_GAS	,	PT_A_AG, 100.0f,	PT_A_A , 273.0f,	PT_A_AS, 400.0f,	PT_NONE, 0.0f},
+    /* @_@s */ {ST_SOLID,	PT_A_AG, 100.0f,	PT_A_A , 273.0f,	PT_A_AS, 400.0f,	PT_NONE, 0.0f},
 };
 static int grule[NGOL][9] = 
 {

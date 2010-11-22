@@ -852,9 +852,55 @@ void update_particles_i(pixel *vid, int start, int inc)
     int starti = (start*-1);
 	if(sys_pause&&!framerender)
                 return;
-
+	if(ISGRAV==1)
+	{
+		ISGRAV = 0;
+		GRAV ++;
+		GRAV_R = 60;
+		GRAV_G = 0;
+		GRAV_B = 0;
+		GRAV_R2 = 30;
+		GRAV_G2 = 30;
+		GRAV_B2 = 0;
+		for(int q = 0;q <= GRAV;q++)
+		{
+			if(GRAV_R >0 && GRAV_G==0)
+			{
+				GRAV_R--;
+				GRAV_B++;
+			}
+			if(GRAV_B >0 && GRAV_R==0)
+			{
+				GRAV_B--;
+				GRAV_G++;
+			}
+			if(GRAV_G >0 && GRAV_B==0)
+			{
+				GRAV_G--;
+				GRAV_R++;
+			}
+			if(GRAV_R2 >0 && GRAV_G2==0)
+			{
+				GRAV_R2--;
+				GRAV_B2++;
+			}
+			if(GRAV_B2 >0 && GRAV_R2==0)
+			{
+				GRAV_B2--;
+				GRAV_G2++;
+			}
+			if(GRAV_G2 >0 && GRAV_B2==0)
+			{
+				GRAV_G2--;
+				GRAV_R2++;
+			}
+		}
+		if(GRAV>180) GRAV = 0;
+	
+	}
 	if(ISLOVE==1)
 	{
+	    ISLOVE = 0;
 	    for(ny=4;ny<YRES-4;ny++)
 	    {
 		for(nx=4;nx<XRES-4;nx++)
@@ -1351,7 +1397,8 @@ void update_particles_i(pixel *vid, int start, int inc)
                         else
                         {
                             t = parts[i].type = pstates[t].gas;
-                            pv[y/CELL][x/CELL] += 0.50f;
+			    if(t!=PT_A_AS)
+				pv[y/CELL][x/CELL] += 0.50f;
                             if(t==PT_FIRE)
                                 parts[i].life = rand()%50+120;
                             if(t==PT_HFLM)
@@ -2005,6 +2052,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 	    }
 	    else if(t==PT_LOVE)
 		ISLOVE=1;
+	    else if(t==PT_GRAV)
+		ISGRAV=1;
 	    else if(t==PT_CRAC)
 	    {
 			if(pv[y/CELL][x/CELL]<=3&&pv[y/CELL][x/CELL]>=-3)
@@ -4231,11 +4280,13 @@ int flood_parts(int x, int y, int c, int cm, int bm)
     }
     if(cm==-1)
     {
-        if(c==0)
+	if(c==0)
         {
             cm = pmap[y][x]&0xFF;
             if(!cm)
                 return 0;
+	    if(REPLACE_MODE && cm!=SLALT)
+		return 0;
         }
         else
             cm = 0;
@@ -4293,7 +4344,8 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 
 int create_parts(int x, int y, float rx, float ry, int c)
 {
-    int i, j, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0; //n;
+    int i, j, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0;
+    float tempry, temprx; //n;
 
     
     int wall = c - 100;
@@ -4303,7 +4355,10 @@ int create_parts(int x, int y, float rx, float ry, int c)
 	    {
 		    if(c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM)
 			    break;
-		    b = wall;
+		    if(wall == WL_ERASE)
+			b = 0;
+		    else
+		    	b = wall;
 		    dw = 1;
 	    }
     }
@@ -4358,46 +4413,53 @@ int create_parts(int x, int y, float rx, float ry, int c)
         }
         return 1;
     }
+    temprx = rx;//fixes windows divided by 0 crashing
+    tempry = ry;
+    if(rx == 0) rx = 1;
+    
+    if(ry == 0) ry = 1;
+    
     if(((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))|| sdl_mod & (KMOD_CAPS) )&& !REPLACE_MODE)
 	{
-        for(j=-ry; j<=ry; j++)
-            for(i=-rx; i<=rx; i++)
+        for(j=-tempry; j<=tempry; j++)
+            for(i=-temprx; i<=temprx; i++)
                 if((CURRENT_BRUSH==CIRCLE_BRUSH && (i*i)/(rx*rx)+(j*j)/(ry*ry)<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
                     delete_part(x+i, y+j);
         return 1;
 	}
-    if(REPLACE_MODE)
-	{
-        for(j=-ry; j<=ry; j++)
-            for(i=-rx; i<=rx; i++)
-                if((CURRENT_BRUSH==CIRCLE_BRUSH && (i*i)/(rx*rx)+(j*j)/(ry*ry)<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
-                    delete_part(x+i, y+j);
-	    if(c==0)
-		return 1;
-	}
+
     if(c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM)
     {
-        for(j=-ry; j<=ry; j++)
-            for(i=-rx; i<=rx; i++)
+        for(j=-tempry; j<=tempry; j++)
+            for(i=-temprx; i<=temprx; i++)
                 if((CURRENT_BRUSH==CIRCLE_BRUSH && (i*i)/(rx*rx)+(j*j)/(ry*ry)<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
                     create_part(-1, x+i, y+j, c);
         return 1;
     }
 
-    if(c == 0)
+    if(c == 0 && !REPLACE_MODE)
     {
 	stemp = SLALT;
 	SLALT = 0;
-        for(j=-ry; j<=ry; j++)
-            for(i=-rx; i<=rx; i++)
+        for(j=-tempry; j<=tempry; j++)
+            for(i=-temprx; i<=temprx; i++)
                 if((CURRENT_BRUSH==CIRCLE_BRUSH && (i*i)/(rx*rx)+(j*j)/(ry*ry)<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
                     delete_part(x+i, y+j);
 	SLALT = stemp;
         return 1;
     }
-    
-    for(j=-ry; j<=ry; j++)
-        for(i=-rx; i<=rx; i++)
+    if(REPLACE_MODE) //&& c!=0)
+    {
+        for(j=-tempry; j<=tempry; j++)
+            for(i=-temprx; i<=temprx; i++)
+                if((CURRENT_BRUSH==CIRCLE_BRUSH && (i*i)/(rx*rx)+(j*j)/(ry*ry)<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
+                    delete_part(x+i, y+j);
+	if(c==0)
+		return 1;
+		
+    }
+    for(j=-tempry; j<=tempry; j++)
+        for(i=-temprx; i<=temprx; i++)
             if((CURRENT_BRUSH==CIRCLE_BRUSH && (i*i)/(rx*rx)+(j*j)/(ry*ry)<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
                 if(create_part(-1, x+i, y+j, c)==-1)
                     f = 1;

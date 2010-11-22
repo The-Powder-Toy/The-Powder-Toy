@@ -1495,15 +1495,30 @@ void draw_parts(pixel *vid)
 			cg = 20;
 			cb = 20;
 			if(parts[i].vx>0)
-				cr += (parts[i].vx)*60;
+			{
+				cr += (parts[i].vx)*GRAV_R;
+				cg += (parts[i].vx)*GRAV_G;
+				cb += (parts[i].vx)*GRAV_B;
+			}
 			if(parts[i].vy>0)
-				cb += (parts[i].vy)*60;
+			{
+				cr += (parts[i].vy)*GRAV_G;
+				cg += (parts[i].vy)*GRAV_B;
+				cb += (parts[i].vy)*GRAV_R;
+				
+			}
 			if(parts[i].vx<0)
-				cg -= (parts[i].vx)*60;
+			{
+				cr -= (parts[i].vx)*GRAV_B;
+				cg -= (parts[i].vx)*GRAV_R;
+				cb -= (parts[i].vx)*GRAV_G;
+				
+			}
 			if(parts[i].vy<0)
 			{
-				cr -= (parts[i].vy)*30;
-				cg -= (parts[i].vy)*30;
+				cr -= (parts[i].vy)*GRAV_R2;
+				cg -= (parts[i].vy)*GRAV_G2;
+				cb -= (parts[i].vy)*GRAV_B2;
 			}
 			if(cr>255)
 				cr=255;
@@ -2840,13 +2855,22 @@ corrupt:
 
 void render_cursor(pixel *vid, int x, int y, int t, float rx, float ry)
 {
-    int i,j,c;
+    int i,j,c; 
+    float temprx, tempry;
     if(t<PT_NUM||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM)
     {
+	tempry = ry;
+	temprx = rx;
 	if(rx<=0)
+	{
             xor_pixel(x, y, vid);
+	    temprx = 1;
+	}
 	else if(ry<=0)
+	{
             xor_pixel(x, y, vid);
+	    tempry = 1;
+	}
 	if(rx+ry<=0)
             xor_pixel(x, y, vid);
 	else if(CURRENT_BRUSH==SQUARE_BRUSH)
@@ -2864,7 +2888,7 @@ void render_cursor(pixel *vid, int x, int y, int t, float rx, float ry)
         else if(CURRENT_BRUSH==CIRCLE_BRUSH)
             for(j=0; j<=ry; j++)
                 for(i=0; i<=rx; i++)
-                    if((i*i)/(rx*rx)+(j*j)/(ry*ry)<=1 && (((i+1)*(i+1))/(rx*rx)+(j*j)/(ry*ry)>1 || ((i*i)/(rx*rx)+((j+1)*(j+1))/(ry*ry)>1)))
+                    if((i*i)/(temprx*temprx)+(j*j)/(tempry*tempry)<=1 && (((i+1)*(i+1))/(temprx*temprx)+(j*j)/(tempry*tempry)>1 || ((i*i)/(temprx*temprx)+((j+1)*(j+1))/(tempry*tempry)>1)))
                     {
                         xor_pixel(x+i, y+j, vid);
                         if(j) xor_pixel(x+i, y-j, vid);

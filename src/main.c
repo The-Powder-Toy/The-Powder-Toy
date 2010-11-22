@@ -2160,11 +2160,11 @@ int main(int argc, char *argv[])
             {
 #ifdef BETA
 		if(REPLACE_MODE)
-                sprintf(uitext, "Cracker's Version %d Parts:%d REPLACE MODE", SAVE_VERSION,NUM_PARTS);
+                sprintf(uitext, "Cracker's V%d FPS:%d Parts:%d REPLACE MODE", SAVE_VERSION, FPS,NUM_PARTS);
 		else if(sdl_mod&(KMOD_CAPS))
-		sprintf(uitext, "Cracker's Version %d Parts:%d CAPS LOCK ON", SAVE_VERSION, NUM_PARTS);
+		sprintf(uitext, "Cracker's V%d FPS:%d Parts:%d CAPS LOCK ON", SAVE_VERSION, FPS, NUM_PARTS);
 		else
-		sprintf(uitext, "Cracker's Version %d Parts:%d", SAVE_VERSION, NUM_PARTS);
+		sprintf(uitext, "Cracker's V%d FPS:%d Parts:%d", SAVE_VERSION, FPS, NUM_PARTS);
                 //printf("%s\n", uitext);
 #else
                 sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
