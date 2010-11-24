@@ -1017,11 +1017,17 @@ void update_particles_i(pixel *vid, int start, int inc)
                     t = parts[i].type = PT_FIRE;
             }
             if(t==PT_GAS && pv[y/CELL][x/CELL]<-6.0f)
+                {
                 t = parts[i].type = PT_OIL;
+				parts[i].temp -= 1.0;
+				}
             if(t==PT_DESL && pv[y/CELL][x/CELL]>5.0f)      // Only way I know to make it
                 t = parts[i].type = PT_FIRE;                // combust under pressure.
             if(t==PT_GAS && pv[y/CELL][x/CELL]>6.0f)
+                {
                 t = parts[i].type = PT_OIL;
+				parts[i].temp -= 1.0;
+				}
             if(t==PT_BMTL && pv[y/CELL][x/CELL]>2.5f)
                 t = parts[i].type = PT_BRMT;
             if(t==PT_BMTL && pv[y/CELL][x/CELL]>1.0f && parts[i].tmp==1)
