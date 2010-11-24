@@ -945,7 +945,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					}
 				}
 			}
-			   love[nx/9][ny/9]=0;
+			love[nx/9][ny/9]=0;
 		}
 	    }
 	}
@@ -1006,11 +1006,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 							  gol2[nx+nnx][ny+nny][golnum] ++;
 							  gol2[nx+nnx][ny+nny][0] ++;
 							}
-							
-	
 						}
 					}
-				
 		}
 		for(nx=4;nx<XRES-4;nx++)
 		  for(ny=4;ny<YRES-4;ny++)
@@ -1260,6 +1257,10 @@ void update_particles_i(pixel *vid, int start, int inc)
                 t = parts[i].type = PT_STNE;
 	    if(t==PT_PIPE && pv[y/CELL][x/CELL]>10.0f)
                 t = parts[i].type = PT_BRMT;
+	    if(t==PT_PSTE && pv[y/CELL][x/CELL]>0.5f)
+                t = parts[i].type = PT_PSTS;
+	    if(t==PT_PSTS && pv[y/CELL][x/CELL]<0.5f)
+                t = parts[i].type = PT_PSTE;
             //if(t==PT_GLAS && pv[y/CELL][x/CELL]>4.0f)
             //	t = parts[i].type = PT_BGLA;
             if(t==PT_GLAS)
@@ -1289,6 +1290,9 @@ void update_particles_i(pixel *vid, int start, int inc)
 		parts[i].vy = rr*sinf(a);
                 create_part(i, x, y, t);
             }
+	    if(t==PT_PSTE)
+		if(parts[i].temp>747.0f)
+		    t = parts[i].type = PT_BRCK;
             if(t==PT_SPRK&&parts[i].ctype==PT_ETRD&&parts[i].life==1)
             {
                 nearp = nearest_part(i, PT_ETRD);
@@ -1880,7 +1884,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                             {
                                 parts[i].life = 4;
                                 t = parts[i].type = PT_FIRE;
-
+                            }
+			    if(((r&0xFF)==PT_CNCT&&t==PT_WATR) && 1>(rand()%500))
+                            {
+                                t = parts[i].type = PT_PSTE;
+				parts[r>>8].type = PT_NONE;
                             }
                         }
             }
@@ -2026,6 +2034,22 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 pv[y/CELL][x/CELL] += 10.0f * CFDS; //Used to be 2, some people said nukes weren't powerful enough
                                 fe ++;
                             }
+			    if((r&0xFF)==PT_WTF && (rt+1)>(rand()%1000))
+			    {
+				    
+				    create_part(r>>8, x+nx, y+ny, PT_NEUT);
+                                    parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
+                                    parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
+				    if(parts[r>>8].life>0)
+				    {
+					    parts[r>>8].life --;
+					    parts[r>>8].temp += (parts[r>>8].life*17);
+					    pv[y/CELL][x/CELL] += 6.0f * CFDS;
+					    
+				    }
+				    else 
+					    parts[r>>8].type = PT_NONE;
+			    }
                             if((r&0xFF)==PT_GUNP && 15>(rand()%1000))
                                 parts[r>>8].type = PT_DUST;
                             if((r&0xFF)==PT_DYST && 15>(rand()%1000))
