@@ -559,8 +559,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                 else if(i < nf)
                 {
                     parts[fp[i]].type = j;
-					if(j == PT_COAL)
-						parts[fp[i]].tmp = 50;
+		    if(j == PT_COAL)
+			parts[fp[i]].tmp = 50;
+		    if(j == PT_FUSE)
+			parts[fp[i]].tmp = 50;
                     if(j == PT_PHOT)
                         parts[fp[i]].ctype = 0x3fffffff;
                     parts[fp[i]].x = (float)x;

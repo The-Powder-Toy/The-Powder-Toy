@@ -1428,7 +1428,7 @@ void draw_parts(pixel *vid)
                 blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
 		}
-		else if(t==PT_WTF)
+		else if(t==PT_DEUT)
 		{
                    
 			if(parts[i].life>=700&&(cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY))

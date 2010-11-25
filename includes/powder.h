@@ -141,7 +141,7 @@
 #define PT_FOG 92
 #define PT_BCLN 93
 #define PT_LOVE 94
-#define PT_WTF 95
+#define PT_DEUT 95
 #define PT_WARP 96
 #define PT_PUMP 97
 #define PT_FWRK 98
@@ -159,7 +159,8 @@
 #define PT_PRTO 110
 #define PT_PSTE 111
 #define PT_PSTS 112
-#define PT_NUM  113
+#define PT_ANAR 113
+#define PT_NUM  114
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -345,7 +346,7 @@ static const part_type ptypes[PT_NUM] =
     {"FOG",  	PIXPACK(0xAAAAAA),	0.8f,	0.00f * CFDS,	0.4f,	0.70f,	-0.1f,	0.0f,	0.99f,	0.000f	* CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	1,    SC_GAS,  			243.15f,   100,    "Not quite Steam",TYPE_GAS},
     {"BCLN",	PIXPACK(0xFFD040),	0.1f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	12,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Breakable Clone.", TYPE_SOLID},
     {"LOVE",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		373.0f,	40,	"Love...", TYPE_SOLID},
-    {"WTF",  	PIXPACK(0x00153F),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_NUCLEAR,		R_TEMP-2.0f	+273.15f,	251,		"Volume changes with temp, radioactive with neutrons.", TYPE_LIQUID|PROP_NEUTPENETRATE},
+    {"DEUT",  	PIXPACK(0x00153F),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_NUCLEAR,		R_TEMP-2.0f	+273.15f,	251,		"Deuterium oxide. Volume changes with temp, radioactive with neutrons.", TYPE_LIQUID|PROP_NEUTPENETRATE},
     {"WARP",  	PIXPACK(0x000000),	0.8f,	0.00f * CFDS,	0.9f,	0.70f,	-0.1f,	0.0f,	3.00f,	0.000f	* CFDS, 0, 	0, 		0,  	0,  	30, 	1,  	1,    SC_GAS,  			R_TEMP +273.15f,   100,    "This is what happens to your mind when catelite descibes an element.",TYPE_GAS},
     {"PUMP",	PIXPACK(0x9EA3B6),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.1f	* CFDS,	0,	7,		0,	0,	10,	1,	100,	SC_SPECIAL,		273.15f,	0,		"Changes pressure to its temp (use HEAT/COOL).", TYPE_SOLID},	
     {"FWRK",	PIXPACK(0x666666),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	97,   SC_EXPLOSIVE,	R_TEMP+0.0f+273.15f,	100,	"First fireworks made, activated by heat/neutrons."},
@@ -363,7 +364,7 @@ static const part_type ptypes[PT_NUM] =
     {"PRTO",	PIXPACK(0x0020EB),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.005f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	40,	"Portal OUT.  Things come out here", TYPE_SOLID},
     {"PSTE",	PIXPACK(0xAA99AA),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	31,		SC_CRACKER,		R_TEMP-2.0f	+273.15f,	29,		"Colloid", TYPE_LIQUID},    
     {"PSTS",	PIXPACK(0x776677),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	20,	0,	100,		SC_CRACKER,		R_TEMP-2.0f	+273.15f,	29,		"blah blah solid not in the menu", TYPE_SOLID},    
-    
+    {"ANAR",	PIXPACK(0xFFFFEE),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Very light dust. Behaves", TYPE_PART},        
 //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
 };
 
@@ -483,6 +484,8 @@ static part_state pstates[PT_NUM] =
     /* PRTO */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* PSTE */ {ST_LIQUID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* PSTS */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* ANAR */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    
 };
 static int grule[NGOL][9] = 
 {

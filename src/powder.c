@@ -545,7 +545,7 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].vy = 3.0f*sinf(a);
     }
 
-    if(t!=PT_STKM && t!=PT_PHOT && t!=PT_NEUT)
+    if(t!=PT_STKM)// && t!=PT_PHOT && t!=PT_NEUT)  is this needed? it breaks floodfill
         pmap[y][x] = t|(i<<8);
     else if(t==PT_STKM)
     {
@@ -1041,7 +1041,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             ly = parts[i].y;
             t = parts[i].type;
 
-            if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_CRAC && t!=PT_WTF)
+            if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_CRAC && t!=PT_DEUT)
             {
                 if(!(parts[i].life==10&&(parts[i].type==PT_LCRY||parts[i].type==PT_PCLN||parts[i].type==PT_HSWC)))
                     parts[i].life--;
@@ -1093,8 +1093,16 @@ void update_particles_i(pixel *vid, int start, int inc)
 
             vx[y/CELL][x/CELL] *= ptypes[t].airloss;
             vy[y/CELL][x/CELL] *= ptypes[t].airloss;
-            vx[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vx;
-            vy[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vy;
+	    if(t==PT_ANAR)
+	    {
+		vx[y/CELL][x/CELL] -= ptypes[t].airdrag*parts[i].vx;
+		vy[y/CELL][x/CELL] -= ptypes[t].airdrag*parts[i].vy; 
+	    }
+	    else
+	    {
+		vx[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vx;
+		vy[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vy;
+	    }
             if(t==PT_GAS||t==PT_NBLE||t==PT_PUMP)
             {
 				if(t==PT_PUMP)
@@ -1166,8 +1174,16 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
             else
             {
+		if(t==PT_ANAR)
+		{
+			parts[i].vx -= ptypes[t].advection*vx[y/CELL][x/CELL];
+			parts[i].vy -= ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
+		}
+		else{
                 parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
                 parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
+		
+		}
             }
 
             if(ptypes[t].diffusion)
@@ -2034,7 +2050,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 pv[y/CELL][x/CELL] += 10.0f * CFDS; //Used to be 2, some people said nukes weren't powerful enough
                                 fe ++;
                             }
-			    if((r&0xFF)==PT_WTF && (rt+1)>(rand()%1000))
+			    if((r&0xFF)==PT_DEUT && (rt+1)>(rand()%1000))
 			    {
 				    
 				    create_part(r>>8, x+nx, y+ny, PT_NEUT);
@@ -2292,7 +2308,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			    }
 			}
 		}
-	    else if(t==PT_WTF)
+	    else if(t==PT_DEUT)
 	    {
 			int maxlife = ((10000/(parts[i].temp + 1))-1);
 			if((10000%((int)parts[i].temp+1))>rand()%((int)parts[i].temp+1))
@@ -2306,7 +2322,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					r = pmap[y+ny][x+nx];
 					if((r>>8)>=NPART || !r || (parts[i].life >=maxlife))
 						continue;
-					if(parts[r>>8].type==PT_WTF&&33>=rand()/(RAND_MAX/100)+1)
+					if(parts[r>>8].type==PT_DEUT&&33>=rand()/(RAND_MAX/100)+1)
 					{
 						if((parts[i].life + parts[r>>8].life + 1) <= maxlife)
 						{
@@ -2327,9 +2343,9 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if((bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_WALLELEC||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_EWALL||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_DESTROYALL||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_WALL||
 							bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_ALLOWAIR||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_ALLOWSOLID||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_ALLOWGAS))
 								continue;
-                    	 	if((!r)&&parts[i].life>=1)//if nothing then create wtf
+                    	 	if((!r)&&parts[i].life>=1)//if nothing then create deut
                     		{
-                        		create_part(-1,x+nx,y+ny,PT_WTF);
+                        		create_part(-1,x+nx,y+ny,PT_DEUT);
                         		parts[i].life--;
 					parts[pmap[y+ny][x+nx]>>8].temp = parts[i].temp;
                     	 	}
