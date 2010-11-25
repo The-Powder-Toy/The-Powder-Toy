@@ -2542,6 +2542,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
     drawrect(vid_buf, 50, 50, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 155);
     drawrect(vid_buf, 50+(XRES/2)+1, 50, XRES+BARSIZE-100-((XRES/2)+1), YRES+MENUSIZE-100, 155, 155, 155, 255);
     drawtext(vid_buf, 50+(XRES/4)-textwidth("Loading...")/2, 50+(YRES/4), "Loading...", 255, 255, 255, 128);
+	//Also, The Game.
 
 	ed.x = 57+(XRES/2)+1;
 	ed.y = YRES+MENUSIZE-118;
@@ -2659,15 +2660,16 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			//Draw the score bars
 			if(info->voteup>0||info->votedown>0)
 			{
-				lv = (info->voteup>info->votedown?info->voteup:info->votedown);
-
+				lv = (info->voteup>info->votedown)?info->voteup:info->votedown;
+				lv = (lv>10)?lv:10;
+				
 				if(50>lv)
 				{
 					ry = ((float)(50)/(float)lv);
-					if(lv<8)
-					{
-						ry =  ry/(8-lv);
-					}
+					//if(lv<8)
+					//{
+					//	ry =  ry/(8-lv);
+					//}
 					nyu = info->voteup*ry;
 					nyd = info->votedown*ry;
 				}
@@ -2677,11 +2679,13 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 					nyu = info->voteup/ry;
 					nyd = info->votedown/ry;
 				}
+				nyu = nyu>50?50:nyu;
+				nyd = nyd>50?50:nyd;
 				
-				fillrect(vid_buf, 46+(XRES/2)-51, (YRES/2)+53, 54, 6, 0, 107, 10, 255);
-				fillrect(vid_buf, 46+(XRES/2)-51, (YRES/2)+59, 54, 6, 107, 10, 0, 255);
-				drawrect(vid_buf, 46+(XRES/2)-51, (YRES/2)+53, 54, 6, 128, 128, 128, 255);
-				drawrect(vid_buf, 46+(XRES/2)-51, (YRES/2)+59, 54, 6, 128, 128, 128, 255);
+				fillrect(vid_buf, 48+(XRES/2)-51, (YRES/2)+53, 52, 6, 0, 107, 10, 255);
+				fillrect(vid_buf, 48+(XRES/2)-51, (YRES/2)+59, 52, 6, 107, 10, 0, 255);
+				drawrect(vid_buf, 48+(XRES/2)-51, (YRES/2)+53, 52, 6, 128, 128, 128, 255);
+				drawrect(vid_buf, 48+(XRES/2)-51, (YRES/2)+59, 52, 6, 128, 128, 128, 255);
 
 				fillrect(vid_buf, 48+(XRES/2)-nyu, (YRES/2)+54, nyu, 4, 57, 187, 57, 255);
 				fillrect(vid_buf, 48+(XRES/2)-nyd, (YRES/2)+60, nyd, 4, 187, 57, 57, 255);
@@ -2693,7 +2697,9 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
                 ccy += 12;
                 ccy += drawtextwrap(vid_buf, 60+(XRES/2)+1, ccy+60, XRES+BARSIZE-100-((XRES/2)+1)-20, info->comments[cc], 255, 255, 255, 185);
                 ccy += 10;
-                draw_line(vid_buf, 50+(XRES/2)+2, ccy+52, XRES+BARSIZE-50, ccy+52, 100, 100, 100, XRES+BARSIZE);
+				if(ccy+52<YRES+MENUSIZE){ //Try not to draw off the screen.
+					draw_line(vid_buf, 50+(XRES/2)+2, ccy+52, XRES+BARSIZE-50, ccy+52, 100, 100, 100, XRES+BARSIZE);
+				}
             }
             hasdrawninfo = 1;
             myown = svf_login && !strcmp(info->author, svf_user);
@@ -2820,8 +2826,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			execute_submit(vid_buf, save_id, ed.str);
         	}
 	}
-
-	if(!(mx>50 && my>50 && mx<XRES+BARSIZE-50 && my<XRES+MENUSIZE-50) && b && !queue_open){
+	if(!(mx>50 && my>50 && mx<XRES+BARSIZE-100 && my<YRES+MENUSIZE-100) && b && !queue_open){
 		retval = 0;
 		break;	
 	}
@@ -2874,7 +2879,9 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
                 drawtext(vid_buf, 50+(XRES/4)-textwidth("Loading...")/2, 50+(YRES/4), "Loading...", 255, 255, 255, 128);
             }
         }
-
+		if(!info_ready || !data_ready){
+			info_box(vid_buf, "Loading");
+		}
         sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
         memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 		if(info_ready && svf_login){
