@@ -17,32 +17,32 @@
 #define CM_VEL 0
 
 
-#define UI_WALLSTART 122
-#define UI_ACTUALSTART 22
+#define UI_WALLSTART 222
+#define UI_ACTUALSTART 122
 #define UI_WALLCOUNT 19
 
-#define WL_WALLELEC	22
-#define WL_EWALL	23
-#define WL_DETECT	24
-#define WL_STREAM	25
-#define WL_SIGN	26
-#define WL_FAN	27
+#define WL_WALLELEC	122
+#define WL_EWALL	123
+#define WL_DETECT	124
+#define WL_STREAM	125
+#define WL_SIGN	126
+#define WL_FAN	127
 #define WL_FANHELPER 255
-#define WL_ALLOWLIQUID	28
-#define WL_DESTROYALL	29
-#define WL_ERASE	30
-#define WL_WALL	31
-#define WL_ALLOWAIR	32
-#define WL_ALLOWSOLID	33
-#define WL_ALLOWALLELEC	34
-#define WL_EHOLE	35
+#define WL_ALLOWLIQUID	128
+#define WL_DESTROYALL	129
+#define WL_ERASE	130
+#define WL_WALL	131
+#define WL_ALLOWAIR	132
+#define WL_ALLOWSOLID	133
+#define WL_ALLOWALLELEC	134
+#define WL_EHOLE	135
 
-#define SPC_AIR 136
-#define SPC_HEAT 137
-#define SPC_COOL 138
-#define SPC_VACUUM 139
+#define SPC_AIR 236
+#define SPC_HEAT 237
+#define SPC_COOL 238
+#define SPC_VACUUM 239
 
-#define WL_ALLOWGAS	40
+#define WL_ALLOWGAS	140
 
 
 
@@ -160,7 +160,12 @@
 #define PT_PSTE 111
 #define PT_PSTS 112
 #define PT_ANAR 113
-#define PT_NUM  114
+#define PT_VINE 114
+#define PT_INVIS 115
+#define PT_EQUALVEL 116//all particles equal their velocities
+#define PT_INST2 117
+#define PT_INST3 118
+#define PT_NUM  119
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -357,7 +362,7 @@ static const part_type ptypes[PT_NUM] =
     {"@_@",	PIXPACK(0x00FF77),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_CRACKER,		R_TEMP+0.0f	+273.15f,	29,		"@_@, contradicts the normal state changes.", TYPE_LIQUID},
     {"@_@G",	PIXPACK(0x00FFBB),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	2.75f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,		SC_CRACKER,			R_TEMP-200.0f	+273.15f,	42,		"@_@ gas", TYPE_GAS},
     {"@_@S",	PIXPACK(0x00E455),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER,		R_TEMP+300.0f	+273.15f,	251,	"@_@ solid", TYPE_SOLID},    
-    {"INST",	PIXPACK(0x404039),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	251,	"Instantly conducts, like walls", TYPE_SOLID|PROP_CONDUCTS},    
+    {"INST",	PIXPACK(0x404039),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	251,	"Instantly conducts, like walls, is now also a battery.", TYPE_SOLID|PROP_CONDUCTS},    
     {"ISOZ",	PIXPACK(0xAA30D0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_NUCLEAR,		R_TEMP-2.0f	+273.15f,	29,		"Radioactive liquid", TYPE_LIQUID|PROP_NEUTPENETRATE},    
     {"ISZS",	PIXPACK(0x662089),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0007f* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_NUCLEAR,		140.00f,	251,	"Solid form of ISOZ, slowly decays.", TYPE_SOLID},        
     {"PRTI",	PIXPACK(0xEB5917),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.005f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	40,	"Portal IN.  Things go in here", TYPE_SOLID},
@@ -365,6 +370,12 @@ static const part_type ptypes[PT_NUM] =
     {"PSTE",	PIXPACK(0xAA99AA),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	31,		SC_CRACKER,		R_TEMP-2.0f	+273.15f,	29,		"Colloid", TYPE_LIQUID},    
     {"PSTS",	PIXPACK(0x776677),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	20,	0,	100,		SC_CRACKER,		R_TEMP-2.0f	+273.15f,	29,		"blah blah solid not in the menu", TYPE_SOLID},    
     {"ANAR",	PIXPACK(0xFFFFEE),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Very light dust. Behaves", TYPE_PART},        
+    {"VINE",	PIXPACK(0x0A9C00),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	10,	0,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	65,		"Vine, not in menu", TYPE_SOLID},    
+    {"INVS",	PIXPACK(0x00CCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	15,	1,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	164,	"Invisible to everything while under pressure.", TYPE_SOLID},
+    {"EQVE",	PIXPACK(0xFFE0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	0,	85,		SC_CRACKER,		R_TEMP+0.0f	+273.15f,	70,		"Shared velocity test", TYPE_PART},
+    {"INST",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"helper for INST", 0},
+    {"INST",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"helper for INST", 0},
+    
 //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
 };
 
@@ -485,6 +496,11 @@ static part_state pstates[PT_NUM] =
     /* PSTE */ {ST_LIQUID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* PSTS */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* ANAR */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* VINE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 573.0f},
+    /* INVS */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* EQVE */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* INST2*/ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* INST3*/ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     
 };
 static int grule[NGOL][9] = 

@@ -447,7 +447,7 @@ void draw_tool(pixel *vid_buf, int b, int sl, int sr, unsigned pc, unsigned iswa
 int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 {
     int i, j, c;
-    if(b>=121)
+    if(b>=UI_WALLSTART)
     {
         b = b-100;
         //x = (2+32*((b-22)/1));
@@ -470,7 +470,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 }
             }
             break;
-        case 23:
+        case WL_EWALL:
             for(j=1; j<15; j++)
             {
                 for(i=1; i<6+j; i++)
@@ -489,7 +489,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 }
             }
             break;
-        case 24:
+        case WL_DETECT:
             for(j=1; j<15; j+=2)
             {
                 for(i=1+(1&(j>>1)); i<27; i+=2)
@@ -498,7 +498,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 }
             }
             break;
-        case 25:
+        case WL_STREAM:
             for(j=1; j<15; j++)
             {
                 for(i=1; i<27; i++)
@@ -512,7 +512,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 drawpixel(vid_buf, x+i, y+8+(int)(3.9f*cos(i*0.3f)), 255, 255, 255, 255);
             }
             break;
-        case 26:
+        case WL_SIGN:
             for(j=1; j<15; j++)
             {
                 for(i=1; i<27; i++)
@@ -523,7 +523,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
             drawtext(vid_buf, x+9, y+3, "\xA1", 32, 64, 128, 255);
             drawtext(vid_buf, x+9, y+3, "\xA0", 255, 255, 255, 255);
             break;
-        case 27:
+        case WL_FAN:
             for(j=1; j<15; j+=2)
             {
                 for(i=1+(1&(j>>1)); i<27; i+=2)
@@ -532,7 +532,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 }
             }
             break;
-        case 28:
+        case WL_ALLOWLIQUID:
             for(j=1; j<15; j++)
             {
                 for(i=1; i<27; i++)
@@ -544,7 +544,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 }
             }
             break;
-        case 29:
+        case WL_DESTROYALL:
             for(j=1; j<15; j+=2)
             {
                 for(i=1+(1&(j>>1)); i<27; i+=2)
@@ -553,7 +553,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 }
             }
             break;
-        case 30:
+        case WL_ERASE:
             for(j=1; j<15; j+=2)
             {
                 for(i=1+(1&(j>>1)); i<13; i+=2)
@@ -569,7 +569,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 }
             }
             break;
-        case 32:
+        case WL_ALLOWAIR:
             for(j=1; j<15; j+=2)
             {
                 for(i=1+(1&(j>>1)); i<27; i+=2)
@@ -578,7 +578,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 }
             }
             break;
-        case 33:
+        case WL_ALLOWSOLID:
             for(j=1; j<15; j+=2)
             {
                 for(i=1+(1&(j>>1)); i<27; i+=2)
@@ -587,7 +587,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 }
             }
             break;
-        case 34:
+        case WL_ALLOWALLELEC:
             for(j=1; j<15; j++)
             {
                 for(i=1; i<27; i++)
@@ -599,7 +599,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 }
             }
             break;
-        case 36:
+        case SPC_AIR-100:
             for(j=1; j<15; j++)
             {
                 for(i=1; i<27; i++)
@@ -618,7 +618,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
             }
             drawtext(vid_buf, x+14-textwidth("AIR")/2, y+4, "AIR", c, c, c, 255);
             break;
-        case 37:
+        case SPC_HEAT-100:
             for(j=1; j<15; j++)
             {
                 for(i=1; i<27; i++)
@@ -637,7 +637,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
             }
             drawtext(vid_buf, x+14-textwidth("HEAT")/2, y+4, "HEAT", c, c, c, 255);
             break;
-        case 38:
+        case SPC_COOL-100:
             for(j=1; j<15; j++)
             {
                 for(i=1; i<27; i++)
@@ -656,7 +656,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
             }
             drawtext(vid_buf, x+14-textwidth("COOL")/2, y+4, "COOL", c, c, c, 255);
             break;
-        case 39:
+        case SPC_VACUUM-100:
             for(j=1; j<15; j++)
             {
                 for(i=1; i<27; i++)
@@ -675,7 +675,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
             }
             drawtext(vid_buf, x+14-textwidth("VAC")/2, y+4, "VAC", c, c, c, 255);
             break;
-        case 40:
+        case WL_ALLOWGAS:
             for(j=1; j<15; j+=2)
             {
                 for(i=1+(1&(j>>1)); i<27; i+=2)
@@ -693,7 +693,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 }
             }
         }
-        if(b==30)
+        if(b==WL_ERASE)
         {
             for(j=4; j<12; j++)
             {
@@ -1586,6 +1586,8 @@ void draw_parts(pixel *vid)
 			
 			
 		}
+		else if(t==PT_INVIS && (pv[ny/CELL][nx/CELL]>4.0f ||pv[ny/CELL][nx/CELL]<-4.0f))
+			blendpixel(vid, nx, ny, 15, 0, 150, 100);
                 else if(t==PT_ACID)
                 {
                     if(parts[i].life>255) parts[i].life = 255;

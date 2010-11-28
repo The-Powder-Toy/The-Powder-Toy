@@ -91,25 +91,21 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
         return 0;
     if(bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL])
         return 2;
-
     if(bmap[ny/CELL][nx/CELL]==WL_ALLOWAIR)
         return 0;
 
     if(ptypes[pt].falldown!=1 && bmap[ny/CELL][nx/CELL]==WL_ALLOWSOLID)
         return 0;
-
     if(r && (r&0xFF) < PT_NUM){
-	//if(ptypes[pt].properties&TYPE_ENERGY && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&TYPE_ENERGY))))
-	if(ptypes[pt].properties&TYPE_ENERGY && ptypes[(r&0xFF)].properties&TYPE_ENERGY)
-		return 2;
+		if(ptypes[pt].properties&TYPE_ENERGY && ptypes[(r&0xFF)].properties&TYPE_ENERGY)
+			return 2;
 	
-	//if(pt==PT_NEUT && (r && ((r&0xFF) >= PT_NUM || (ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE))))
-	if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPASS)
-		return 2;
-	if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE)
-		return 1;
-	if((r&0xFF)==PT_NEUT && ptypes[pt].properties&PROP_NEUTPENETRATE)
-		return 0;
+		if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPASS)
+			return 2;
+		if(pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE)
+			return 1;
+		if((r&0xFF)==PT_NEUT && ptypes[pt].properties&PROP_NEUTPENETRATE)
+			return 0;
     }
 	
     if (r && ((r&0xFF) >= PT_NUM || (ptypes[pt].weight <= ptypes[(r&0xFF)].weight)))
@@ -132,7 +128,8 @@ int try_move(int i, int x, int y, int nx, int ny)
         return 1;
 
     e = eval_move(parts[i].type, nx, ny, &r);
-
+	if((pmap[ny][nx]&0xFF)==PT_INVIS && (pv[ny/CELL][nx/CELL]>4.0f ||pv[ny/CELL][nx/CELL]<-4.0f))
+	    return 1;
     /* half-silvered mirror */
     if(!e && parts[i].type==PT_PHOT &&
             (((r&0xFF)==PT_BMTL && rand()<RAND_MAX/2) ||
@@ -401,6 +398,25 @@ inline int create_part(int p, int x, int y, int t)
             return -1;
         }
     }
+    if(t==PT_INST2)
+	    if((pmap[y][x]&0xFF)==PT_INST)
+	    {
+		parts[pmap[y][x]>>8].type = PT_INST2;
+		parts[pmap[y][x]>>8].life += 5;
+		pmap[y][x] = (pmap[y][x]&~0xFF) | PT_INST2;
+		return pmap[y][x]>>8;
+	    }
+    if(t==PT_INST3)
+	    if((pmap[y][x]&0xFF)==PT_INST||(pmap[y][x]&0xFF)==PT_INST2)
+	    {
+		parts[pmap[y][x]>>8].type = PT_INST3;
+		if(parts[pmap[y][x]>>8].life%4==0)
+			parts[pmap[y][x]>>8].life -=0;
+		else 
+			parts[pmap[y][x]>>8].life -= 2;
+		pmap[y][x] = (pmap[y][x]&~0xFF) | PT_INST3;
+		return pmap[y][x]>>8;
+	    }
     if(t==SPC_AIR)
     {
         pv[y/CELL][x/CELL] += 0.03f;
@@ -444,8 +460,7 @@ inline int create_part(int p, int x, int y, int t)
                 (pmap[y][x]&0xFF)!=PT_BRMT &&
                 (pmap[y][x]&0xFF)!=PT_NBLE &&
                 (pmap[y][x]&0xFF)!=PT_IRON &&
-                (pmap[y][x]&0xFF)!=PT_INWR &&
-		(pmap[y][x]&0xFF)!=PT_INST)
+                (pmap[y][x]&0xFF)!=PT_INWR)
             return -1;
 	if(parts[pmap[y][x]>>8].life!=0)
 		return -1;
@@ -1043,7 +1058,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 
             if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_CRAC && t!=PT_DEUT)
             {
-                if(!(parts[i].life==10&&(parts[i].type==PT_LCRY||parts[i].type==PT_PCLN||parts[i].type==PT_HSWC)))
+                if(!(parts[i].life==10&&(parts[i].type==PT_LCRY||parts[i].type==PT_PCLN||parts[i].type==PT_HSWC)) && !(parts[i].life%4==0 && parts[i].type==PT_INST))
                     parts[i].life--;
                 if(parts[i].life<=0 && t!=PT_METL && t!=PT_IRON && t!=PT_FIRW && t!=PT_PCLN && t!=PT_HSWC && t!=PT_WATR && t!=PT_RBDM && t!=PT_LRBD && t!=PT_SLTW && t!=PT_BRMT && t!=PT_PSCN && t!=PT_NSCN && t!=PT_NTCT && t!=PT_PTCT && t!=PT_BMTL && t!=PT_SPRK && t!=PT_LAVA && t!=PT_ETRD&&t!=PT_LCRY && t!=PT_INWR && t!=PT_GLOW && t!= PT_FOG && t!=PT_PIPE && t!=PT_FRZW &&(t!=PT_ICEI&&parts[i].ctype!=PT_FRZW)&&t!=PT_INST)
                 {
@@ -1063,6 +1078,8 @@ void update_particles_i(pixel *vid, int start, int inc)
                         parts[i].life = 64;
                     if(t == PT_SLTW)
                         parts[i].life = 54;
+		    if(t == PT_SWCH)
+			parts[i].life = 15;
                 }
             }
 
@@ -1283,7 +1300,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             {
                 parts[i].pavg[0] = parts[i].pavg[1];
                 parts[i].pavg[1] = pv[y/CELL][x/CELL];
-                if(parts[i].pavg[1]-parts[i].pavg[0] > 0.05f || parts[i].pavg[1]-parts[i].pavg[0] < -0.05f)
+                if(parts[i].pavg[1]-parts[i].pavg[0] > 0.25f || parts[i].pavg[1]-parts[i].pavg[0] < -0.25f)
                 {
                     parts[i].type = PT_BGLA;
                 }
@@ -1822,6 +1839,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 				    parts[r>>8].type = PT_NONE;
 				    parts[i].life = rand()%60 + 60;
 			    }
+			    else if((r&0xFF)==PT_WOOD && (1>rand()%20) && abs(nx+ny)<=2)
+			    {
+				    create_part(-1,(x+nx)+(rand()%3)-1,(y+ny)+(rand()%3)-1,PT_VINE);
+			    }
                             //if(t==PT_SNOW && (r&0xFF)==PT_WATR && 15>(rand()%1000))
                             //t = parts[i].type = PT_WATR;
                         }
@@ -1841,6 +1862,25 @@ void update_particles_i(pixel *vid, int start, int inc)
 		    parts[i].life = 0;
 		}
             }
+	    else if(t==PT_VINE)
+	    {
+		    nx=(rand()%3)-1;
+		    ny=(rand()%3)-1;
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+				r = pmap[y+ny][x+nx];
+				if((r>>8)>=NPART)
+                                continue;
+				if(1>rand()%15)
+					parts[i].type=PT_PLNT;
+				else if(!r)
+				{
+					create_part(-1,x+nx,y+ny,PT_VINE);
+					parts[i].type=PT_PLNT;
+				}
+			}
+	    }
             else if(t==PT_THRM)
             {
                 for(nx=-2; nx<3; nx++)
@@ -2656,31 +2696,6 @@ void update_particles_i(pixel *vid, int start, int inc)
 	    }
 	    else if(t==PT_INST)
 	    {
-		    if(pmap[y-1][x]&0xFF==t&&pmap[y+1][x]&0xFF==t&&pmap[y][x-1]&0xFF==t&&pmap[y][x+1]&0xFF==t)
-		    {
-			    parts[i].tmp = 1;//x
-			    //parts[i].flags = 1;//y
-			    parts[pmap[y-1][x]].flags=1;
-			    parts[pmap[y+1][x]].flags=1;
-			    parts[pmap[y][x-1]].tmp = 1;
-			    parts[pmap[y][x+1]].tmp =1;
-		    }
-		    /*else if(pmap[y-1][x]&0xFF!=t&&pmap[y+1][x]&0xFF==t&&pmap[y][x-1]&0xFF==t&&pmap[y][x+1]&0xFF==t)
-		    {
-			    parts[i].tmp = 1;
-		    }
-		    else if(pmap[y-1][x]&0xFF==t&&pmap[y+1][x]&0xFF!=t&&pmap[y][x-1]&0xFF==t&&pmap[y][x+1]&0xFF==t)
-		    {
-			    parts[i].tmp = 1;
-		    }
-		    else if(pmap[y-1][x]&0xFF==t&&pmap[y+1][x]&0xFF==t&&pmap[y][x-1]&0xFF!=t&&pmap[y][x+1]&0xFF==t)
-		    {
-			    parts[i].flags = 1;
-		    }
-		    else if(pmap[y-1][x]&0xFF==t&&pmap[y+1][x]&0xFF==t&&pmap[y][x-1]&0xFF==t&&pmap[y][x+1]&0xFF!=t)
-		    {
-			    parts[i].flags = 1;
-		    }*/
 		    for(nx=-2; nx<3; nx++)
                     for(ny=-2; ny<3; ny++)
                         if(x+nx>=0 && y+ny>0 &&
@@ -2689,11 +2704,27 @@ void update_particles_i(pixel *vid, int start, int inc)
                             r = pmap[y+ny][x+nx];
                             if((r>>8)>=NPART || !r)
                                 continue;
-			    if(parts[r>>8].type==PT_SPRK&&(parts[r>>8].ctype==PT_PSCN))
+			    else if(parts[r>>8].type==PT_SPRK&&(parts[r>>8].ctype==PT_PSCN)&&(parts[r>>8].life>=3)&&parts[i].life%4==0)
 			    {
-				    flood_parts(x,y,PT_SPRK,PT_INST,-1);
+				    flood_parts(x,y,PT_INST2,PT_INST,-1);
+			    }
+			    else if(parts[r>>8].type==PT_NSCN&&parts[r>>8].life==0&&(parts[i].life>=4)&&parts[i].life%4<=1)
+			    {
+				    create_part(-1,x+nx,y+ny,PT_SPRK);
+				    flood_parts(x,y,PT_INST3,PT_INST,-1);
+			    }
+			    else if(parts[r>>8].type==PT_SWCH&&parts[r>>8].life==10&&(parts[i].life>=4)&&parts[i].life%4<=1)
+			    {
+				    parts[r>>8].type=PT_SPRK;
+				    parts[r>>8].ctype=PT_SWCH;
+				    parts[r>>8].life=4;
+				    flood_parts(x,y,PT_INST3,PT_INST,-1);
 			    }
 			}
+	    }
+	    else if(t==PT_INST2 || t==PT_INST3)
+	    {
+		t = parts[pmap[y][x]>>8].type=PT_INST;
 	    }
 	    else if(t==PT_PRTI)
 	    {
@@ -3146,7 +3177,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     parts[i].temp = 3500;
                                     pv[y/CELL][x/CELL] += 1;
                                 }
-                                if(t==PT_SPRK&&parts[i].ctype==PT_SWCH&&parts[i].life<=1)
+                                if(t==PT_SPRK&&parts[i].ctype==PT_SWCH&&parts[i].life<=0)
                                 {
                                     parts[i].type = PT_SWCH;
                                     parts[i].life = 14;
@@ -4474,8 +4505,8 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 {
     int x1, x2, dy = (c<PT_NUM)?1:CELL;
     int co = c;
-    if(cm==PT_INST&&co==PT_SPRK)
-	    if((pmap[y][x]&0xFF)==PT_SPRK)
+    if(cm==PT_INST&&(co==PT_INST2||co==PT_INST3))
+	    if((pmap[y][x]&0xFF)==PT_INST2 || (pmap[y][x]&0xFF)==PT_INST3)
 		    return 0;
     if(c>=UI_WALLSTART&&c<=UI_WALLSTART+UI_WALLCOUNT)
     {
@@ -4528,38 +4559,39 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 
     // fill span
     for(x=x1; x<=x2; x++)
+    {
         if(!create_parts(x, y, 0, 0, co))
             return 0;
-
+    }
     // fill children
-    if(cm==PT_INST&&co==PT_SPRK)
+    if(cm==PT_INST&&(co==PT_INST2||co==PT_INST3))
     {
 	if(y>=CELL+dy && x1==x2 &&
-		((pmap[y-1][x1-1]&0xFF)==PT_INST||(pmap[y-1][x1-1]&0xFF)==PT_SPRK) && ((pmap[y-1][x1]&0xFF)==PT_INST||(pmap[y-1][x1]&0xFF)==PT_SPRK) && ((pmap[y-1][x1+1]&0xFF)==PT_INST || (pmap[y-1][x1+1]&0xFF)==PT_SPRK) &&
-		(pmap[y-2][x1-1]&0xFF)!=PT_INST && ((pmap[y-2][x1]&0xFF)==PT_INST ||(pmap[y-2][x1]&0xFF)==PT_SPRK) && (pmap[y-2][x1+1]&0xFF)!=PT_INST)
+		((pmap[y-1][x1-1]&0xFF)==PT_INST||((pmap[y-1][x1-1]&0xFF)==PT_INST3||(pmap[y-1][x1-1]&0xFF)==PT_INST2)) && ((pmap[y-1][x1]&0xFF)==PT_INST||((pmap[y-1][x1]&0xFF)==PT_INST3||(pmap[y-1][x1]&0xFF)==PT_INST2)) && ((pmap[y-1][x1+1]&0xFF)==PT_INST || ((pmap[y-1][x1+1]&0xFF)==PT_INST3||(pmap[y-1][x1+1]&0xFF)==PT_INST2)) && 
+		(pmap[y-2][x1-1]&0xFF)!=PT_INST && ((pmap[y-2][x1]&0xFF)==PT_INST ||((pmap[y-2][x1]&0xFF)==PT_INST3||(pmap[y-2][x1]&0xFF)==PT_INST2)) && (pmap[y-2][x1+1]&0xFF)!=PT_INST)
 			flood_parts(x1, y-2, co, cm, bm);
 	else if(y>=CELL+dy)
 	    for(x=x1; x<=x2; x++)
-		if((pmap[y-1][x]&0xFF)!=PT_SPRK)
+		if((pmap[y-1][x]&0xFF)!=co)
 		{
 			if(x==x1 || x==x2 || y>=YRES-CELL-1 ||
 				(pmap[y-1][x-1]&0xFF)==PT_INST || (pmap[y-1][x+1]&0xFF)==PT_INST ||
-				(pmap[y+1][x-1]&0xFF)==PT_INST || ((pmap[y+1][x]&0xFF)!=PT_INST&&(pmap[y+1][x]&0xFF)!=PT_SPRK) || (pmap[y+1][x+1]&0xFF)==PT_INST)
+				(pmap[y+1][x-1]&0xFF)==PT_INST || ((pmap[y+1][x]&0xFF)!=PT_INST&&(pmap[y+1][x]&0xFF)!=co) || (pmap[y+1][x+1]&0xFF)==PT_INST)
 					flood_parts(x, y-dy, co, cm, bm);
 						
             }
 
 	if(y<YRES-CELL-dy && x1==x2 &&
-		((pmap[y+1][x1-1]&0xFF)==PT_INST||(pmap[y+1][x1-1]&0xFF)==PT_SPRK) && ((pmap[y+1][x1]&0xFF)==PT_INST||(pmap[y+1][x1]&0xFF)==PT_SPRK) && ((pmap[y+1][x1+1]&0xFF)==PT_INST || (pmap[y+1][x1+1]&0xFF)==PT_SPRK) &&
-		(pmap[y+2][x1-1]&0xFF)!=PT_INST && ((pmap[y+2][x1]&0xFF)==PT_INST ||(pmap[y+2][x1]&0xFF)==PT_SPRK) && (pmap[y+2][x1+1]&0xFF)!=PT_INST)
+		((pmap[y+1][x1-1]&0xFF)==PT_INST||((pmap[y+1][x1-1]&0xFF)==PT_INST3||(pmap[y+1][x1-1]&0xFF)==PT_INST2)) && ((pmap[y+1][x1]&0xFF)==PT_INST||((pmap[y+1][x1]&0xFF)==PT_INST3||(pmap[y+1][x1]&0xFF)==PT_INST2)) && ((pmap[y+1][x1+1]&0xFF)==PT_INST || ((pmap[y+1][x1+1]&0xFF)==PT_INST3||(pmap[y+1][x1+1]&0xFF)==PT_INST2)) && 
+		(pmap[y+2][x1-1]&0xFF)!=PT_INST && ((pmap[y+2][x1]&0xFF)==PT_INST ||((pmap[y+2][x1]&0xFF)==PT_INST3||(pmap[y+2][x1]&0xFF)==PT_INST2)) && (pmap[y+2][x1+1]&0xFF)!=PT_INST)
 			flood_parts(x1, y+2, co, cm, bm);
 	else if(y<YRES-CELL-dy)
             for(x=x1; x<=x2; x++)
-		if((pmap[y+1][x]&0xFF)!=PT_SPRK)
+		if((pmap[y+1][x]&0xFF)!=co)
 		{
 			if(x==x1 || x==x2 || y<0 ||
 				(pmap[y+1][x-1]&0xFF)==PT_INST || (pmap[y+1][x+1]&0xFF)==PT_INST ||
-				(pmap[y-1][x-1]&0xFF)==PT_INST || ((pmap[y-1][x]&0xFF)!=PT_INST&&(pmap[y-1][x]&0xFF)!=PT_SPRK) || (pmap[y-1][x+1]&0xFF)==PT_INST)
+				(pmap[y-1][x-1]&0xFF)==PT_INST || ((pmap[y-1][x]&0xFF)!=PT_INST&&(pmap[y-1][x]&0xFF)!=co) || (pmap[y-1][x+1]&0xFF)==PT_INST)
 					flood_parts(x, y+dy, co, cm, bm);
 						
 		}
@@ -4577,7 +4609,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
                 if(!flood_parts(x, y+dy, co, cm, bm))
                     return 0;
     }
-    if(!(cm==PT_INST&&co==PT_SPRK))
+    if(!(cm==PT_INST&&(co==PT_INST2||co==PT_INST3)))
 	return 1;
 }
 
@@ -4746,7 +4778,7 @@ void create_line(int x1, int y1, int x2, int y2, float rx, float ry, int c)
         if(e >= 0.5f)
         {
             y += sy;
-            if(c==135 || c==140 || c==134 || c==133 || c==132 || c==131 || c==129 || c==128 || c==127 || c==125 || c==124 || c==123 || c==122 || !(rx+ry))
+            if(c==WL_EHOLE || c==WL_ALLOWGAS || c==WL_ALLOWALLELEC || c==WL_ALLOWSOLID || c==WL_ALLOWAIR || c==WL_WALL || c==WL_DESTROYALL || c==WL_ALLOWLIQUID || c==WL_FAN || c==WL_STREAM || c==WL_DETECT || c==WL_EWALL || c==WL_WALLELEC || !(rx+ry))
             {
                 if(cp)
                     create_parts(y, x, rx, ry, c);
