@@ -131,6 +131,7 @@ int SEC;
 int SEC2;
 int REPLACE_MODE;
 int CURRENT_BRUSH;
+int GRID_MODE;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;

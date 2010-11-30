@@ -922,25 +922,27 @@ void update_particles_i(pixel *vid, int start, int inc)
 	if(ISLOVE==1)
 	{
 	    ISLOVE = 0;
-	    for(ny=4;ny<YRES-4;ny++)
+	    for(ny=0;ny<YRES-4;ny++)
 	    {
-		for(nx=4;nx<XRES-4;nx++)
+		for(nx=0;nx<XRES-4;nx++)
 		{
 			r=pmap[ny][nx];
 			if((r>>8)>=NPART || !r)
 			{
                                	continue;
 			}
-			if(parts[r>>8].type==PT_LOVE)
+			else if((ny<9||nx<9||ny>YRES-7||nx>XRES-10)&&parts[r>>8].type==PT_LOVE)
+				parts[r>>8].type = PT_NONE;
+			else if(parts[r>>8].type==PT_LOVE)
 			{
 				love[nx/9][ny/9] = 1;
 			}
 			
 		}
 	    }
-	    for(nx=0;nx<=XRES-4;nx++)
+	    for(nx=9;nx<=XRES-18;nx++)
 	    {
-		for(ny=0;ny<=YRES-4;ny++)
+		for(ny=9;ny<=YRES-7;ny++)
 		{
 			if(love[nx/9][ny/9]==1)
 			{
@@ -956,6 +958,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 						}
 						if(!rt&&loverule[nnx][nny]==1)
 							create_part(-1,nx+nnx,ny+nny,PT_LOVE);
+						else if(!rt)
+							continue;
 						else if(parts[rt>>8].type==PT_LOVE&&loverule[nnx][nny]==0)
 							parts[rt>>8].type=PT_NONE;
 						

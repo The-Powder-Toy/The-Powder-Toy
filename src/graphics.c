@@ -1304,6 +1304,17 @@ void draw_parts(pixel *vid)
     int cr, cg, cb;
     float fr, fg, fb;
     float pt = R_TEMP;
+    if(GRID_MODE)
+	{
+		for(ny=0;ny<YRES;ny++)
+			for(nx=0;nx<XRES;nx++)
+			{
+				if(ny%(4*GRID_MODE)==0)
+					blendpixel(vid, nx, ny, 100, 100, 100, 80);
+				if(nx%(4*GRID_MODE)==0)
+					blendpixel(vid, nx, ny, 100, 100, 100, 80);
+			}
+	}
     for(i = 0; i<NPART; i++) {
 #ifdef OpenGL
         if(cmode == CM_FANCY) //If fancy mode

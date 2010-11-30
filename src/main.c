@@ -1393,6 +1393,8 @@ int main(int argc, char *argv[])
         }
 	if(sdl_key==SDLK_INSERT)
 	    REPLACE_MODE = !REPLACE_MODE;
+	if(sdl_key=='g')
+            GRID_MODE = (GRID_MODE+1)%10;
         if(sdl_key==SDLK_SPACE)
             sys_pause = !sys_pause;
         if(sdl_key=='h')
@@ -2165,6 +2167,8 @@ int main(int argc, char *argv[])
                 sprintf(uitext, "Cracker's V%d FPS:%d Parts:%d REPLACE MODE", SAVE_VERSION, FPS,NUM_PARTS);
 		else if(sdl_mod&(KMOD_CAPS))
 		sprintf(uitext, "Cracker's V%d FPS:%d Parts:%d CAPS LOCK ON", SAVE_VERSION, FPS, NUM_PARTS);
+		else if(GRID_MODE)
+		sprintf(uitext, "Cracker's V%d FPS:%d Parts:%d Grid:%d", SAVE_VERSION, FPS, NUM_PARTS,GRID_MODE);
 		else
 		sprintf(uitext, "Cracker's V%d FPS:%d Parts:%d", SAVE_VERSION, FPS, NUM_PARTS);
                 //printf("%s\n", uitext);
