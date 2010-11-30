@@ -2086,6 +2086,22 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny+1, GR, 10, 10, 112);
                     }
                 }
+		else if(t==PT_PUMP)
+                {
+                    uint8 GR = 0x3B+(parts[i].life*19);
+                    vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(10, 10, GR);
+                    if(cmode == CM_BLOB) {
+                        blendpixel(vid, nx+1, ny, 10, 10, GR, 223);
+                        blendpixel(vid, nx-1, ny, 10, 10, GR, 223);
+                        blendpixel(vid, nx, ny+1, 10, 10, GR, 223);
+                        blendpixel(vid, nx, ny-1, 10, 10, GR, 223);
+
+                        blendpixel(vid, nx+1, ny-1, 10, 10, GR, 112);
+                        blendpixel(vid, nx-1, ny-1, 10, 10, GR, 112);
+                        blendpixel(vid, nx+1, ny+1, 10, 10, GR, 112);
+                        blendpixel(vid, nx-1, ny+1, 10, 10, GR, 112);
+                    }
+                }
                 else if(t==PT_PLSM)
                 {
                     float ttemp = (float)parts[i].life;

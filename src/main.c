@@ -1895,7 +1895,7 @@ int main(int argc, char *argv[])
             {
                 c = (b&1) ? sl : sr;
                 su = c;
-                if(c==126)
+                if(c==WL_SIGN+100)
                 {
                     if(!bq)
                         add_sign_ui(vid_buf, x, y);
@@ -1905,7 +1905,7 @@ int main(int argc, char *argv[])
                     if(lm == 1)
                     {
                         xor_line(lx, ly, x, y, vid_buf);
-                        if(c==127 && lx>=0 && ly>=0 && lx<XRES && ly<YRES && bmap[ly/CELL][lx/CELL]==WL_FAN)
+                        if(c==WL_FAN+100 && lx>=0 && ly>=0 && lx<XRES && ly<YRES && bmap[ly/CELL][lx/CELL]==WL_FAN)
                         {
                             nfvx = (x-lx)*0.005f;
                             nfvy = (y-ly)*0.005f;
@@ -2022,7 +2022,7 @@ int main(int argc, char *argv[])
                 su = c;
                 if(lm == 1)
                 {
-                    if(c!=127 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=WL_FAN)
+                    if(c!=WL_FAN+100 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=WL_FAN)
                         create_line(lx, ly, x, y, bsx, bsy, c);
                 }
                 else
