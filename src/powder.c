@@ -4767,14 +4767,14 @@ int flood_parts(int x, int y, int c, int cm, int bm)
     while(x1>=CELL)
     {
         if((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm)
-		if(cm!=PT_INST&&((pmap[y][x1-1]&0xFF)!=PT_INST2&&(pmap[y][x1-1]&0xFF)!=PT_INST3))
+		if(((pmap[y][x1-1]&0xFF)!=PT_INST2&&(pmap[y][x1-1]&0xFF)!=PT_INST3))
             break;
         x1--;
     }
     while(x2<XRES-CELL)
     {
         if((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm)
-		if(cm!=PT_INST&&((pmap[y][x2+1]&0xFF)!=PT_INST2&&(pmap[y][x2+1]&0xFF)!=PT_INST3))
+		if(((pmap[y][x2+1]&0xFF)!=PT_INST2&&(pmap[y][x2+1]&0xFF)!=PT_INST3))
             break;
         x2++;
     }
