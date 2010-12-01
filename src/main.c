@@ -1395,6 +1395,8 @@ int main(int argc, char *argv[])
 	    REPLACE_MODE = !REPLACE_MODE;
 	if(sdl_key=='g')
             GRID_MODE = (GRID_MODE+1)%10;
+	if(sdl_key=='t')
+            VINE_MODE = !VINE_MODE;
         if(sdl_key==SDLK_SPACE)
             sys_pause = !sys_pause;
         if(sdl_key=='h')
@@ -1956,7 +1958,7 @@ int main(int argc, char *argv[])
                     {
 			if(sdl_mod & (KMOD_CAPS))
 				c = 0;
-                        if(c!=125&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM)
+                        if(c!=WL_STREAM&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE)
                             flood_parts(x, y, c, -1, -1);
                         lx = x;
                         ly = y;
