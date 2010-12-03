@@ -169,7 +169,8 @@
 #define PT_SHLD2 120
 #define PT_SHLD3 121
 #define PT_SHLD4 122
-#define PT_NUM  123
+#define PT_LOLZ 123
+#define PT_NUM  124
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -379,10 +380,11 @@ static const part_type ptypes[PT_NUM] =
     {"EQVE",	PIXPACK(0xFFE0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	0,	85,		SC_CRACKER,		R_TEMP+0.0f	+273.15f,	70,		"Shared velocity test", TYPE_PART},
     {"INST",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"helper for INST", 0},
     {"INST",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"helper for INST", 0},
-    {"SHLD",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	251,	"Shield, spark it to grow", 0},
-    {"SHD2",	PIXPACK(0x777777),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	251,	"Shield lvl 2", 0},
-    {"SHD3",	PIXPACK(0x444444),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	251,	"Shield lvl 3", 0},
-    {"SHD4",	PIXPACK(0x212121),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	251,	"Shield lvl 4", 0},
+    {"SHLD",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	0,	"Shield, spark it to grow", 0},
+    {"SHD2",	PIXPACK(0x777777),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	0,	"Shield lvl 2", 0},
+    {"SHD3",	PIXPACK(0x444444),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	0,	"Shield lvl 3", 0},
+    {"SHD4",	PIXPACK(0x212121),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	0,	"Shield lvl 4", 0},
+    {"LOLZ",	PIXPACK(0x569212),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		373.0f,	40,	"Lolz", TYPE_SOLID},
    
 //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
 };
@@ -513,6 +515,8 @@ static part_state pstates[PT_NUM] =
     /* SHLD2*/ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* SHLD3*/ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* SHLD4*/ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* LOlZ */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    
 };
 static int grule[NGOL][9] = 
 {
@@ -542,6 +546,18 @@ static int loverule[9][9] =
 	{1,0,0,0,0,0,1,0,0},
 	{0,1,0,0,1,1,0,0,0},
 	{0,0,1,1,0,0,0,0,0},
+};
+static int lolzrule[9][9] =
+{
+	{0,0,0,0,0,0,0,0,0},
+	{1,0,0,0,0,0,1,0,0},
+	{1,0,0,0,0,0,1,0,0},
+	{1,0,0,1,1,0,0,1,0},
+	{1,0,1,0,0,1,0,1,0},
+	{1,0,1,0,0,1,0,1,0},
+	{0,1,0,1,1,0,0,1,0},
+	{0,1,0,0,0,0,0,1,0},
+	{0,1,0,0,0,0,0,1,0},
 };
 int portal[8][8];
 
@@ -593,9 +609,9 @@ extern inline int is_wire_off(int x, int y);
 void set_emap(int x, int y);
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline int parts_avg(int ci, int ni);
+_inline int parts_avg(int ci, int ni, int t);
 #else
-int parts_avg(int ci, int ni);
+int parts_avg(int ci, int ni, int t);
 #endif
 
 int nearest_part(int ci, int t);
@@ -610,8 +626,8 @@ void create_box(int x1, int y1, int x2, int y2, int c);
 
 int flood_parts(int x, int y, int c, int cm, int bm);
 
-int create_parts(int x, int y, float rx, float ry, int c);
+int create_parts(int x, int y, int rx, int ry, int c);
 
-void create_line(int x1, int y1, int x2, int y2, float rx, float ry, int c);
+void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c);
 
 #endif

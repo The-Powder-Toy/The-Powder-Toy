@@ -2882,24 +2882,15 @@ corrupt:
     return 1;
 }
 
-void render_cursor(pixel *vid, int x, int y, int t, float rx, float ry)
+void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 {
     int i,j,c; 
-    float temprx, tempry;
     if(t<PT_NUM||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM)
     {
-	tempry = ry;
-	temprx = rx;
 	if(rx<=0)
-	{
             xor_pixel(x, y, vid);
-	    temprx = 1;
-	}
 	else if(ry<=0)
-	{
             xor_pixel(x, y, vid);
-	    tempry = 1;
-	}
 	if(rx+ry<=0)
             xor_pixel(x, y, vid);
 	else if(CURRENT_BRUSH==SQUARE_BRUSH)
@@ -2917,7 +2908,7 @@ void render_cursor(pixel *vid, int x, int y, int t, float rx, float ry)
         else if(CURRENT_BRUSH==CIRCLE_BRUSH)
             for(j=0; j<=ry; j++)
                 for(i=0; i<=rx; i++)
-                    if((i*i)/(temprx*temprx)+(j*j)/(tempry*tempry)<=1 && (((i+1)*(i+1))/(temprx*temprx)+(j*j)/(tempry*tempry)>1 || ((i*i)/(temprx*temprx)+((j+1)*(j+1))/(tempry*tempry)>1)))
+                    if((pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1 && ((pow(i+1,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))>1 || (pow(i,2))/(pow(rx,2))+(pow(j+1,2))/(pow(ry,2))>1))
                     {
                         xor_pixel(x+i, y+j, vid);
                         if(j) xor_pixel(x+i, y-j, vid);
@@ -2928,7 +2919,7 @@ void render_cursor(pixel *vid, int x, int y, int t, float rx, float ry)
     else
     {
         int tc;
-        c = ((int)rx/CELL) * CELL;
+        c = (rx/CELL) * CELL;
         x = (x/CELL) * CELL;
         y = (y/CELL) * CELL;
 

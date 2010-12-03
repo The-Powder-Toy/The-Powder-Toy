@@ -1024,8 +1024,8 @@ int main(int argc, char *argv[])
     int vs = 0;
 #endif
     int x, y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
-    int da = 0, db = 0, it = 2047, mx, my;
-    float nfvx, nfvy, bsx = 2, bsy = 2;
+    int da = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2;
+    float nfvx, nfvy;
     int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
     void *load_data=NULL;
     pixel *load_img=NULL;//, *fbi_img=NULL;
