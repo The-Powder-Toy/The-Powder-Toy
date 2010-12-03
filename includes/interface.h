@@ -1,6 +1,7 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 #include <SDL/SDL.h>
+#include "renderer.h"
 #include "graphics.h"
 
 struct menu_section
@@ -124,8 +125,8 @@ extern char *search_ids[GRID_X*GRID_Y];
 extern char *search_dates[GRID_X*GRID_Y];
 extern int   search_votes[GRID_X*GRID_Y];
 extern int   search_publish[GRID_X*GRID_Y];
-extern int	  search_scoredown[GRID_X*GRID_Y];
-extern int	  search_scoreup[GRID_X*GRID_Y];
+extern int      search_scoredown[GRID_X*GRID_Y];
+extern int      search_scoreup[GRID_X*GRID_Y];
 extern char *search_names[GRID_X*GRID_Y];
 extern char *search_owners[GRID_X*GRID_Y];
 extern void *search_thumbs[GRID_X*GRID_Y];
@@ -150,69 +151,69 @@ void menu_count(void);
 
 void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
 
-void add_sign_ui(pixel *vid_buf, int mx, int my);
+void add_sign_ui(int mx, int my);
 
-void ui_edit_draw(pixel *vid_buf, ui_edit *ed);
+void ui_edit_draw(ui_edit *ed);
 
 void ui_edit_process(int mx, int my, int mb, ui_edit *ed);
 
-void ui_checkbox_draw(pixel *vid_buf, ui_checkbox *ed);
+void ui_checkbox_draw(ui_checkbox *ed);
 
 void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed);
 
-void draw_svf_ui(pixel *vid_buf);
+void draw_svf_ui();
 
-void error_ui(pixel *vid_buf, int err, char *txt);
+void error_ui(int err, char *txt);
 
-void info_ui(pixel *vid_buf, char *top, char *txt);
+void info_ui(char *top, char *txt);
 
-void info_box(pixel *vid_buf, char *msg);
+void info_box(char *msg);
 
-int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn);
+int confirm_ui(char *top, char *msg, char *btn);
 
-void login_ui(pixel *vid_buf);
+void login_ui();
 
-int stamp_ui(pixel *vid_buf);
+int stamp_ui();
 
-void tag_list_ui(pixel *vid_buf);
+void tag_list_ui();
 
-int save_name_ui(pixel *vid_buf);
+int save_name_ui();
 
-void menu_ui(pixel *vid_buf, int i, int *sl, int *sr);
+//void menu_ui(int i, int *sl, int *sr);
 
-void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, int my);
+void menu_ui_v3(int i, int *sl, int *sr, int b, int bq, int mx, int my);
 
 int sdl_poll(void);
 
 void set_cmode(int cm);
 
-char *download_ui(pixel *vid_buf, char *uri, int *len);
+char *download_ui(char *uri, int *len);
 
-int search_ui(pixel *vid_buf);
+int search_ui();
 
-int open_ui(pixel *vid_buf, char *save_id, char *save_date);
+int open_ui(char *save_id, char *save_date);
 
 int info_parse(char *info_data, save_info *info);
 
 int search_results(char *str, int votes);
 
-int execute_tagop(pixel *vid_buf, char *op, char *tag);
+int execute_tagop(char *op, char *tag);
 
-void execute_save(pixel *vid_buf);
+void execute_save();
 
-int execute_delete(pixel *vid_buf, char *id);
+int execute_delete(char *id);
 
-int execute_report(pixel *vid_buf, char *id, char *reason);
+int execute_report(char *id, char *reason);
 
-void execute_submit(pixel *vid_buf, char *id, char *message);
+void execute_submit(char *id, char *message);
 
-void execute_fav(pixel *vid_buf, char *id);
+void execute_fav(char *id);
 
-int execute_vote(pixel *vid_buf, char *id, char *action);
+int execute_vote(char *id, char *action);
 
 void open_link(char *uri);
 
-int report_ui(pixel *vid_buf, char *save_id);
+int report_ui(char *save_id);
 
 #endif
 

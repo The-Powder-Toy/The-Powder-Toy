@@ -14,7 +14,7 @@ float cb_pv[YRES/CELL][XRES/CELL], cb_opv[YRES/CELL][XRES/CELL];
 
 float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 
-void make_kernel(void)
+void make_kernel()
 {
     int i, j;
     float s = 0.0f;
@@ -29,7 +29,7 @@ void make_kernel(void)
         for(i=-1; i<2; i++)
             kernel[(i+1)+3*(j+1)] *= s;
 }
-void update_air(void)
+void update_air()
 {
     int x, y, i, j;
     float dp, dx, dy, f, tx, ty;
@@ -124,7 +124,7 @@ void update_air(void)
                 dy += fvy[y][x];
             }
 
-			//Pressure Caps, remove for lulz
+            //Pressure Caps, remove for lulz
             if(dp > 256.0f) dp = 256.0f;
             if(dp < -256.0f) dp = -256.0f;
             if(dx > 256.0f) dx = 256.0f;

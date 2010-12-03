@@ -14,8 +14,8 @@ extern float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 
 extern float kernel[9];
 
-void make_kernel(void);
+void make_kernel();
 
-void update_air(void);
+void update_air();
 
 #endif

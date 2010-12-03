@@ -24,21 +24,21 @@
 
 #define MENUSIZE 40
 #define BARSIZE 17
-#define XRES	612
-#define YRES	384
+#define XRES    612
+#define YRES    384
 #define NPART XRES*YRES
 
 #define MAXSIGNS 16
 #define TAG_MAX 256
 
-#define ZSIZE_D	16
-#define ZFACTOR_D	8
+#define ZSIZE_D    16
+#define ZFACTOR_D    8
 extern unsigned char ZFACTOR;
 extern unsigned char ZSIZE;
 
 #define CELL    4
 #define ISTP    (CELL/2)
-#define CFDS	(4.0f/CELL)
+#define CFDS    (4.0f/CELL)
 
 #define TSTEPP 0.3f
 #define TSTEPV 0.4f
@@ -126,5 +126,4 @@ void *build_thumb(int *size, int bzip2);
 void *build_save(int *size, int x0, int y0, int w, int h);
 int parse_save(void *save, int size, int replace, int x0, int y0);
 void del_stamp(int d);
-void sdl_seticon(void);
 #endif

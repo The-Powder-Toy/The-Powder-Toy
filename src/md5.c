@@ -118,7 +118,7 @@ void md5_final(unsigned char digest[16], struct md5_context *ctx)
 #define F4(x, y, z) (y ^ (x | ~z))
 
 #define MD5STEP(f, w, x, y, z, data, s) \
-	( w += f(x, y, z) + data, w &= 0xffffffff, w = w<<s | w>>(32-s), w += x )
+    ( w += f(x, y, z) + data, w &= 0xffffffff, w = w<<s | w>>(32-s), w += x )
 
 void md5_transform(unsigned buf[4], const unsigned char inraw[64])
 {

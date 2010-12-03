@@ -5,18 +5,18 @@
 
 #if defined(WIN32) && !defined(__GNUC__)
 #define x86_cpuid(func,af,bf,cf,df) \
-	do {\
-	__asm mov	eax, func\
-	__asm cpuid\
-	__asm mov	af, eax\
-	__asm mov	bf, ebx\
-	__asm mov	cf, ecx\
-	__asm mov	df, edx\
-	} while(0)
+    do {\
+    __asm mov    eax, func\
+    __asm cpuid\
+    __asm mov    af, eax\
+    __asm mov    bf, ebx\
+    __asm mov    cf, ecx\
+    __asm mov    df, edx\
+    } while(0)
 #else
 #define x86_cpuid(func,af,bf,cf,df) \
 __asm__ __volatile ("cpuid":\
-	"=a" (af), "=b" (bf), "=c" (cf), "=d" (df) : "a" (func));
+    "=a" (af), "=b" (bf), "=c" (cf), "=d" (df) : "a" (func));
 #endif
 
 static char hex[] = "0123456789ABCDEF";

@@ -131,52 +131,11 @@ int core_count()
 
 int mousex = 0, mousey = 0;  //They contain mouse position
 
-void sdl_seticon(void)
-{
-#ifdef WIN32
-    //SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon_w32, 32, 32, 32, 128, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-    //SDL_WM_SetIcon(icon, NULL/*app_icon_mask*/);
-#else
-#ifdef MACOSX
-    //SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon_w32, 32, 32, 32, 128, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-    //SDL_WM_SetIcon(icon, NULL/*app_icon_mask*/);
-#else
-    SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon, 16, 16, 32, 128, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-    SDL_WM_SetIcon(icon, NULL/*app_icon_mask*/);
-#endif
-#endif
-}
-
-int frame_idx=0;
-void dump_frame(pixel *src, int w, int h, int pitch)
-{
-    char frame_name[32];
-    int j,i;
-    unsigned char c[3];
-    FILE *f;
-    sprintf(frame_name,"frame%04d.ppm",frame_idx);
-    f=fopen(frame_name,"wb");
-    fprintf(f,"P6\n%d %d\n255\n",w,h);
-    for(j=0; j<h; j++)
-    {
-        for(i=0; i<w; i++)
-        {
-            c[0] = PIXR(src[i]);
-            c[1] = PIXG(src[i]);
-            c[2] = PIXB(src[i]);
-            fwrite(c,3,1,f);
-        }
-        src+=pitch;
-    }
-    fclose(f);
-    frame_idx++;
-}
-
 /***********************************************************
  *                    STATE MANAGEMENT                     *
  ***********************************************************/
 
-void *build_thumb(int *size, int bzip2)
+void *build_thumb(int *size, int bzip2) //Create thumbnail
 {
     unsigned char *d=calloc(1,XRES*YRES), *c;
     int i,j,x,y;
@@ -227,7 +186,7 @@ void *build_thumb(int *size, int bzip2)
     return d;
 }
 
-void *build_save(int *size, int x0, int y0, int w, int h)
+void *build_save(int *size, int x0, int y0, int w, int h) //Create save
 {
     unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*8+MAXSIGNS*262), *c;
     int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
@@ -353,9 +312,9 @@ void *build_save(int *size, int x0, int y0, int w, int h)
     //New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
     //This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
 
-    c[0] = 0x50;	//0x66;
-    c[1] = 0x53;	//0x75;
-    c[2] = 0x76;	//0x43;
+    c[0] = 0x50;    //0x66;
+    c[1] = 0x53;    //0x75;
+    c[2] = 0x76;    //0x43;
     c[3] = legacy_enable;
     c[4] = SAVE_VERSION;
     c[5] = CELL;
@@ -380,7 +339,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
     return c;
 }
 
-int parse_save(void *save, int size, int replace, int x0, int y0)
+int parse_save(void *save, int size, int replace, int x0, int y0) //Load save
 {
     unsigned char *d,*c=save;
     int i,j,k,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int)), ver, pty, ty, legacy_beta=0;
@@ -702,7 +661,7 @@ stamp stamps[STAMP_MAX];//[STAMP_X*STAMP_Y];
 int stamp_count = 0;
 
 unsigned last_time=0, last_name=0;
-void stamp_gen_name(char *fn)
+void stamp_gen_name(char *fn) //Generate stamp name
 {
     unsigned t=(unsigned)time(NULL);
 
@@ -717,7 +676,7 @@ void stamp_gen_name(char *fn)
     sprintf(fn, "%08x%02x", last_time, last_name);
 }
 
-void stamp_update(void)
+void stamp_update(void) //Update stamps.def
 {
     FILE *f;
     int i;
@@ -736,7 +695,7 @@ void stamp_update(void)
     fclose(f);
 }
 
-void stamp_gen_thumb(int i)
+void stamp_gen_thumb(int i)  //Create stamp thumbnails
 {
     char fn[64];
     void *data;
@@ -754,14 +713,14 @@ void stamp_gen_thumb(int i)
 
     if(data)
     {
-        stamps[i].thumb = prerender_save(data, size, &(stamps[i].thumb_w), &(stamps[i].thumb_h));
+        stamps[i].thumb = Graphics_PrerenderSave(data, size, &(stamps[i].thumb_w), &(stamps[i].thumb_h));
         if(stamps[i].thumb && (stamps[i].thumb_w>XRES/GRID_S || stamps[i].thumb_h>YRES/GRID_S))
         {
             factor_x = ceil((float)stamps[i].thumb_w/(float)(XRES/GRID_S));
             factor_y = ceil((float)stamps[i].thumb_h/(float)(YRES/GRID_S));
             if(factor_y > factor_x)
                 factor_x = factor_y;
-            tmp = rescale_img(stamps[i].thumb, stamps[i].thumb_w, stamps[i].thumb_h, &(stamps[i].thumb_w), &(stamps[i].thumb_h), factor_x);
+            tmp = Graphics_RescaleImage(stamps[i].thumb, stamps[i].thumb_w, stamps[i].thumb_h, &(stamps[i].thumb_w), &(stamps[i].thumb_h), factor_x);
             free(stamps[i].thumb);
             stamps[i].thumb = tmp;
         }
@@ -774,7 +733,7 @@ int clipboard_ready = 0;
 void *clipboard_data = 0;
 int clipboard_length = 0;
 
-void stamp_save(int x, int y, int w, int h)
+void stamp_save(int x, int y, int w, int h) //Create a stamp
 {
     FILE *f;
     int n;
@@ -811,7 +770,7 @@ void stamp_save(int x, int y, int w, int h)
     stamp_update();
 }
 
-void *stamp_load(int i, int *size)
+void *stamp_load(int i, int *size) //Load a stamp
 {
     void *data;
     char fn[64];
@@ -837,7 +796,7 @@ void *stamp_load(int i, int *size)
     return data;
 }
 
-void stamp_init(void)
+void stamp_init() //Initialise stamps
 {
     int i;
     FILE *f;
@@ -858,12 +817,13 @@ void stamp_init(void)
     fclose(f);
 }
 
-void del_stamp(int d)
+void del_stamp(int d) //Delete stamp
 {
     stamps[d].dodelete = 1;
     stamp_update();
     stamp_count = 0;
     stamp_init();
+    //TODO: Delete stampfile
 }
 
 void thumb_cache_inval(char *id);
@@ -977,10 +937,9 @@ int main(int argc, char *argv[])
     int FPS = 0;
     int pastFPS = 0;
     int past = 0;
-    pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
     void *http_ver_check;
-    char *ver_data=NULL, *tmp;
-    int i, j, bq, fire_fc=0, do_check=0, old_version=0, http_ret=0, major, minor, old_ver_len;
+    char *ver_data=NULL, *tmp, gv = 0;
+    int i, j, bq, do_check=0, old_version=0, http_ret=0, major, minor, old_ver_len;
 #ifdef INTERNAL
     int vs = 0;
 #endif
@@ -999,14 +958,14 @@ int main(int argc, char *argv[])
 #ifdef BETA
     if(is_beta)
     {
-        old_ver_len = textwidth(old_ver_msg_beta);
+        old_ver_len = GetTextWidth(old_ver_msg_beta);
     }
     else
     {
-        old_ver_len = textwidth(old_ver_msg);
+        old_ver_len = GetTextWidth(old_ver_msg);
     }
 #else
-    old_ver_len = textwidth(old_ver_msg);
+    old_ver_len = GetTextWidth(old_ver_msg);
 #endif
     menu_count();
     parts = calloc(sizeof(particle), NPART);
@@ -1015,7 +974,6 @@ int main(int argc, char *argv[])
         parts[i].life = i+1;
     parts[NPART-1].life = -1;
     pfree = 0;
-    fire_bg=calloc(XRES*YRES, PIXELSIZE);
     memset(signs, 0, sizeof(signs));
 
     //fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
@@ -1042,16 +1000,16 @@ int main(int argc, char *argv[])
     save_presets(0);
 
     make_kernel();
-    prepare_alpha();
-
+        
     stamp_init();
-
-    sdl_open();
+    
     http_init(http_proxy_string[0] ? http_proxy_string : NULL);
+    
+    Renderer_Init();
 
     if(cpu_check())
     {
-        error_ui(vid_buf, 0, "Unsupported CPU. Try another version.");
+        error_ui(0, "Unsupported CPU. Try another version.");
         return 1;
     }
 
@@ -1111,50 +1069,42 @@ int main(int argc, char *argv[])
         }
 
         if(!sys_pause||framerender)
-        {
             update_air();
-        }
-#ifdef OpenGL
-        ClearScreen();
-#else
+
         if(cmode==0 || cmode==1)
-        {
-            draw_air(vid_buf);
-        }
-        else if(cmode==2)
-        {
-            memcpy(vid_buf, fire_bg, XRES*YRES*PIXELSIZE);
-            memset(vid_buf+(XRES*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-(XRES*YRES*PIXELSIZE));
-        }
+            Renderer_DrawAir();
         else
-        {
-            memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-        }
-#endif
-        update_particles(vid_buf);
-        draw_parts(vid_buf);
-
+            Renderer_PrepareScreen();
+            
+        if(gv==2)
+            Graphics_RenderGrid();
+                
+        update_particles();
+        
+        if(cmode==4)
+            Graphics_RenderWallsBlob();
+        else
+            Graphics_RenderWalls();
+        
+        Graphics_RenderParticles();
+        
         if(cmode==2)
-        {
-            if(!fire_fc)
-            {
-                dim_copy(fire_bg, vid_buf);
-            }
-            else
-            {
-                memcpy(fire_bg, vid_buf, XRES*YRES*PIXELSIZE);
-            }
-            fire_fc = (fire_fc+1) % 3;
-        }
+            Renderer_GrabPersistent();
+
         if(cmode==3||cmode==4||cmode==6)
-            render_fire(vid_buf);
+            Renderer_DrawFire();
+        
+        if(gv==1)
+            Graphics_RenderGrid();
+        
+        Graphics_RenderSigns();
+    
+        
+        
+        Renderer_ClearMenu();
+        Renderer_ClearRectangle(XRES-2, -1, BARSIZE+3, YRES+2);
 
-        render_signs(vid_buf);
-
-        memset(vid_buf+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);
-        clearrect(vid_buf, XRES-1, 0, BARSIZE+1, YRES);
-
-        draw_svf_ui(vid_buf);
+        draw_svf_ui();
 
         if(http_ver_check)
         {
@@ -1181,7 +1131,7 @@ int main(int argc, char *argv[])
 
         if(sdl_key=='q' || sdl_key==SDLK_ESCAPE)
         {
-            if(confirm_ui(vid_buf, "You are about to quit", "Are you sure you want to quit?", "Quit"))
+            if(confirm_ui("You are about to quit", "Are you sure you want to quit?", "Quit"))
             {
                 break;
             }
@@ -1194,6 +1144,10 @@ int main(int argc, char *argv[])
         if(sdl_key=='f')
         {
             framerender = 1;
+        }
+        if(sdl_key=='g')
+        {
+            gv = (gv+1)%3;
         }
         if((sdl_key=='l' || sdl_key=='k') && stamps[0].name[0])
         {
@@ -1209,7 +1163,7 @@ int main(int argc, char *argv[])
                 it = 50;
             if(sdl_key=='k' && stamps[1].name[0])
             {
-                j = stamp_ui(vid_buf);
+                j = stamp_ui();
                 if(j>=0)
                     load_data = stamp_load(j, &load_size);
                 else
@@ -1219,7 +1173,7 @@ int main(int argc, char *argv[])
                 load_data = stamp_load(0, &load_size);
             if(load_data)
             {
-                load_img = prerender_save(load_data, load_size, &load_w, &load_h);
+                load_img = Graphics_PrerenderSave(load_data, load_size, &load_w, &load_h);
                 if(load_img)
                     load_mode = 1;
                 else
@@ -1309,7 +1263,7 @@ int main(int argc, char *argv[])
         if(sdl_key=='h')
             hud_enable = !hud_enable;
         if(sdl_key=='p')
-            dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
+            Renderer_SaveScreenshot(XRES, YRES, XRES+BARSIZE);
         if(sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
         {
             if(clipboard_ready==1)
@@ -1319,7 +1273,7 @@ int main(int argc, char *argv[])
                 load_size = clipboard_length;
                 if(load_data)
                 {
-                    load_img = prerender_save(load_data, load_size, &load_w, &load_h);
+                    load_img = Graphics_PrerenderSave(load_data, load_size, &load_w, &load_h);
                     if(load_img)
                         load_mode = 1;
                     else
@@ -1368,7 +1322,7 @@ int main(int argc, char *argv[])
         if(sdl_key=='v')
             vs = !vs;
         if(vs)
-            dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
+            Renderer_SaveScreenshot(XRES, YRES, XRES+BARSIZE);
 #endif
 
         if(sdl_wheel)
@@ -1392,10 +1346,10 @@ int main(int argc, char *argv[])
                     bs = 0;
                 sdl_wheel = 0;
                 /*if(su >= PT_NUM) {
-                	if(sl < PT_NUM)
-                		su = sl;
-                	if(sr < PT_NUM)
-                		su = sr;
+                    if(sl < PT_NUM)
+                        su = sl;
+                    if(sr < PT_NUM)
+                        su = sr;
                 }*/
             }
         }
@@ -1405,7 +1359,7 @@ int main(int argc, char *argv[])
 
         for(i=0; i<SC_TOTAL; i++)
         {
-            draw_menu(vid_buf, i, active_menu);
+            Graphics_RenderMenu(i, active_menu);
         }
 
         for(i=0; i<SC_TOTAL; i++)
@@ -1415,7 +1369,7 @@ int main(int argc, char *argv[])
                 active_menu = i;
             }
         }
-        menu_ui_v3(vid_buf, active_menu, &sl, &sr, b, bq, x, y);
+        menu_ui_v3(active_menu, &sl, &sr, b, bq, x, y);
 
         if(zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy
                 && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
@@ -1445,18 +1399,18 @@ int main(int argc, char *argv[])
         my = y;
         if(update_flag)
         {
-            info_box(vid_buf, "Finalizing update...");
+            info_box("Finalizing update...");
             if(last_major>SAVE_VERSION || (last_major==SAVE_VERSION && last_minor>=MINOR_VERSION))
             {
                 update_cleanup();
-                error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
+                error_ui(0, "Update failed - try downloading a new version.");
             }
             else
             {
                 if(update_finish())
-                    error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
+                    error_ui(0, "Update failed - try downloading a new version.");
                 else
-                    info_ui(vid_buf, "Update success", "You have successfully updated the Powder Toy!");
+                    info_ui("Update success", "You have successfully updated the Powder Toy!");
             }
             update_flag = 0;
         }
@@ -1477,10 +1431,10 @@ int main(int argc, char *argv[])
 #else
             sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", SAVE_VERSION, MINOR_VERSION, major, minor);
 #endif
-            if(confirm_ui(vid_buf, "Do you want to update The Powder Toy?", tmp, "Update"))
+            if(confirm_ui("Do you want to update The Powder Toy?", tmp, "Update"))
             {
                 free(tmp);
-                tmp = download_ui(vid_buf, my_uri, &i);
+                tmp = download_ui(my_uri, &i);
                 if(tmp)
                 {
                     save_presets(1);
@@ -1488,7 +1442,7 @@ int main(int argc, char *argv[])
                     {
                         update_cleanup();
                         save_presets(0);
-                        error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
+                        error_ui(0, "Update failed - try downloading a new version.");
                     }
                     else
                         return 0;
@@ -1695,20 +1649,20 @@ int main(int argc, char *argv[])
                 {
                     if(x>=189 && x<=202 && svf_login && svf_open && svf_myvote==0 && svf_own==0)
                     {
-                        if(execute_vote(vid_buf, svf_id, "Up"))
+                        if(execute_vote(svf_id, "Up"))
                         {
                             svf_myvote = 1;
                         }
                     }
                     if(x>=204 && x<=217 && svf_login && svf_open && svf_myvote==0 && svf_own==0)
                     {
-                        if(execute_vote(vid_buf, svf_id, "Down"))
+                        if(execute_vote(svf_id, "Down"))
                         {
                             svf_myvote = -1;
                         }
                     }
                     if(x>=219 && x<=(XRES+BARSIZE-(510-349)) && svf_login && svf_open)
-                        tag_list_ui(vid_buf);
+                        tag_list_ui();
                     if(x>=(XRES+BARSIZE-(510-351)) && x<(XRES+BARSIZE-(510-366)) && !bq)
                     {
                         legacy_enable = !legacy_enable;
@@ -1738,14 +1692,14 @@ int main(int argc, char *argv[])
                         svf_name[0] = 0;
                         svf_tags[0] = 0;
 
-                        memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+                        Renderer_ClearSecondaryBuffer();
                         memset(fire_r, 0, sizeof(fire_r));
                         memset(fire_g, 0, sizeof(fire_g));
                         memset(fire_b, 0, sizeof(fire_b));
                     }
                     if(x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
                     {
-                        login_ui(vid_buf);
+                        login_ui();
                         if(svf_login)
                             save_presets(0);
                     }
@@ -1753,11 +1707,11 @@ int main(int argc, char *argv[])
                     {
                         if(!svf_open || !svf_own || x>51)
                         {
-                            if(save_name_ui(vid_buf))
-                                execute_save(vid_buf);
+                            if(save_name_ui())
+                                execute_save();
                         }
                         else
-                            execute_save(vid_buf);
+                            execute_save();
                         while(!sdl_poll())
                             if(!SDL_GetMouseState(&x, &y))
                                 break;
@@ -1765,8 +1719,8 @@ int main(int argc, char *argv[])
                     }
                     if(x>=1 && x<=17)
                     {
-                        search_ui(vid_buf);
-                        memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+                        search_ui();
+                        Renderer_ClearSecondaryBuffer();
                         memset(fire_r, 0, sizeof(fire_r));
                         memset(fire_g, 0, sizeof(fire_g));
                         memset(fire_b, 0, sizeof(fire_b));
@@ -1793,13 +1747,13 @@ int main(int argc, char *argv[])
                 if(c==126)
                 {
                     if(!bq)
-                        add_sign_ui(vid_buf, x, y);
+                        add_sign_ui(x, y);
                 }
                 else if(lb)
                 {
                     if(lm == 1)
                     {
-                        xor_line(lx, ly, x, y, vid_buf);
+                        Renderer_XORLine(lx, ly, x, y);
                         if(c==127 && lx>=0 && ly>=0 && lx<XRES && ly<YRES && bmap[ly/CELL][lx/CELL]==4)
                         {
                             nfvx = (x-lx)*0.005f;
@@ -1817,10 +1771,10 @@ int main(int argc, char *argv[])
                     }
                     else if(lm == 2)
                     {
-                        xor_line(lx, ly, lx, y, vid_buf);
-                        xor_line(lx, y, x, y, vid_buf);
-                        xor_line(x, y, x, ly, vid_buf);
-                        xor_line(x, ly, lx, ly, vid_buf);
+                        Renderer_XORLine(lx, ly, lx, y);
+                        Renderer_XORLine(lx, y, x, y);
+                        Renderer_XORLine(x, y, x, ly);
+                        Renderer_XORLine(x, ly, lx, ly);
                     }
                     else
                     {
@@ -1927,120 +1881,120 @@ int main(int argc, char *argv[])
 
         if(load_mode)
         {
-            draw_image(vid_buf, load_img, load_x, load_y, load_w, load_h, 128);
-            xor_rect(vid_buf, load_x, load_y, load_w, load_h);
+            Renderer_DrawImage(load_img, load_x, load_y, load_w, load_h, 128);
+            Renderer_XORRectangle(load_x, load_y, load_w, load_h);
         }
 
         if(save_mode)
         {
-            xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+            Renderer_XORRectangle(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
             da = 51;
             db = 269;
         }
 
         if(zoom_en!=1 && !load_mode && !save_mode)
         {
-            render_cursor(vid_buf, mx/sdl_scale, my/sdl_scale, su, bs);
+            Graphics_RenderCursor(mx/sdl_scale, my/sdl_scale, su, bs);
             mousex = mx/sdl_scale;
             mousey = my/sdl_scale;
         }
 
         if(zoom_en)
-            render_zoom(vid_buf);
+            Renderer_DrawZoom();
 
         if(da)
             switch(db)
             {
             case 256:
-                drawtext(vid_buf, 16, YRES-24, "Add simulation tags.", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Add simulation tags.", 255, 255, 255, da*5);
                 break;
             case 257:
-                drawtext(vid_buf, 16, YRES-24, "Add and remove simulation tags.", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Add and remove simulation tags.", 255, 255, 255, da*5);
                 break;
             case 258:
-                drawtext(vid_buf, 16, YRES-24, "Save the simulation under the current name.", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Save the simulation under the current name.", 255, 255, 255, da*5);
                 break;
             case 259:
-                drawtext(vid_buf, 16, YRES-24, "Save the simulation under a new name.", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Save the simulation under a new name.", 255, 255, 255, da*5);
                 break;
             case 260:
-                drawtext(vid_buf, 16, YRES-24, "Sign into the Simulation Server.", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Sign into the Simulation Server.", 255, 255, 255, da*5);
                 break;
             case 261:
-                drawtext(vid_buf, 16, YRES-24, "Sign into the Simulation Server under a new name.", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Sign into the Simulation Server under a new name.", 255, 255, 255, da*5);
                 break;
             case 262:
-                drawtext(vid_buf, 16, YRES-24, "Find & open a simulation", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Find & open a simulation", 255, 255, 255, da*5);
                 break;
             case 263:
-                drawtext(vid_buf, 16, YRES-24, "Pause the simulation", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Pause the simulation", 255, 255, 255, da*5);
                 break;
             case 264:
-                drawtext(vid_buf, 16, YRES-24, "Resume the simulation", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Resume the simulation", 255, 255, 255, da*5);
                 break;
             case 265:
-                drawtext(vid_buf, 16, YRES-24, "Reload the simulation", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Reload the simulation", 255, 255, 255, da*5);
                 break;
             case 266:
-                drawtext(vid_buf, 16, YRES-24, "Erase all particles and walls", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Erase all particles and walls", 255, 255, 255, da*5);
                 break;
             case 267:
-                drawtext(vid_buf, 16, YRES-24, "Change display mode", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Change display mode", 255, 255, 255, da*5);
                 break;
             case 268:
-                drawtext(vid_buf, 16, YRES-24, "Annuit C\245ptis", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Annuit C\245ptis", 255, 255, 255, da*5);
                 break;
             case 269:
-                drawtext(vid_buf, 16, YRES-24, "Click-and-drag to specify a rectangle to copy (right click = cancel).", 255, 216, 32, da*5);
+                Graphics_RenderText(16, YRES-24, "Click-and-drag to specify a rectangle to copy (right click = cancel).", 255, 216, 32, da*5);
                 break;
             case 270:
-                drawtext(vid_buf, 16, YRES-24, "Enable or disable compatability mode (disables heat simulation).", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Enable or disable compatability mode (disables heat simulation).", 255, 255, 255, da*5);
                 break;
             case 271:
-                drawtext(vid_buf, 16, YRES-24, "You're a moderator", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "You're a moderator", 255, 255, 255, da*5);
                 break;
             case 272:
-                drawtext(vid_buf, 16, YRES-24, "Like/Dislike this save.", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "Like/Dislike this save.", 255, 255, 255, da*5);
                 break;
             case 273:
-                drawtext(vid_buf, 16, YRES-24, "You like this.", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "You like this.", 255, 255, 255, da*5);
                 break;
             case 274:
-                drawtext(vid_buf, 16, YRES-24, "You dislike this.", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "You dislike this.", 255, 255, 255, da*5);
                 break;
             case 275:
-                drawtext(vid_buf, 16, YRES-24, "You cannot vote on your own save.", 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, "You cannot vote on your own save.", 255, 255, 255, da*5);
                 break;
             default:
-                drawtext(vid_buf, 16, YRES-24, (char *)ptypes[db].descs, 255, 255, 255, da*5);
+                Graphics_RenderText(16, YRES-24, (char *)ptypes[db].descs, 255, 255, 255, da*5);
             }
         if(itc)
         {
             itc--;
-            drawtext(vid_buf, (XRES-textwidth(itc_msg))/2, ((YRES/2)-10), itc_msg, 255, 255, 255, itc>51?255:itc*5);
+            Graphics_RenderText((XRES-GetTextWidth(itc_msg))/2, ((YRES/2)-10), itc_msg, 255, 255, 255, itc>51?255:itc*5);
         }
         if(it)
         {
             it--;
-            drawtext(vid_buf, 16, 20, it_msg, 255, 255, 255, it>51?255:it*5);
+            Graphics_RenderText(16, 20, it_msg, 255, 255, 255, it>51?255:it*5);
         }
 
         if(old_version)
         {
-            clearrect(vid_buf, XRES-21-old_ver_len, YRES-24, old_ver_len+9, 17);
+            Renderer_ClearRectangle(XRES-21-old_ver_len, YRES-24, old_ver_len+9, 17);
 #ifdef BETA
             if(is_beta)
             {
-                drawtext(vid_buf, XRES-16-old_ver_len, YRES-19, old_ver_msg_beta, 255, 216, 32, 255);
+                Graphics_RenderText(XRES-16-old_ver_len, YRES-19, old_ver_msg_beta, 255, 216, 32, 255);
             }
             else
             {
-                drawtext(vid_buf, XRES-16-old_ver_len, YRES-19, old_ver_msg, 255, 216, 32, 255);
+                Graphics_RenderText(XRES-16-old_ver_len, YRES-19, old_ver_msg, 255, 216, 32, 255);
             }
 #else
-            drawtext(vid_buf, XRES-16-old_ver_len, YRES-19, old_ver_msg, 255, 216, 32, 255);
+            Graphics_RenderText(XRES-16-old_ver_len, YRES-19, old_ver_msg, 255, 216, 32, 255);
 #endif
-            drawrect(vid_buf, XRES-19-old_ver_len, YRES-22, old_ver_len+5, 13, 255, 216, 32, 255);
+            Renderer_DrawRectangle(XRES-19-old_ver_len, YRES-22, old_ver_len+5, 13, 255, 216, 32, 255);
         }
 
         if(hud_enable)
@@ -2067,24 +2021,24 @@ int main(int argc, char *argv[])
             {
                 if(zoom_x<XRES/2)
                 {
-                    fillrect(vid_buf, XRES-20-textwidth(heattext), 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
-                    drawtext(vid_buf, XRES-16-textwidth(heattext), 270, heattext, 255, 255, 255, 200);
+                    Renderer_FillRectangle(XRES-20-GetTextWidth(heattext), 266, GetTextWidth(heattext)+8, 15, 0, 0, 0, 140);
+                    Graphics_RenderText(XRES-16-GetTextWidth(heattext), 270, heattext, 255, 255, 255, 200);
                 }
                 else
                 {
-                    fillrect(vid_buf, 12, 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
-                    drawtext(vid_buf, 16, 270, heattext, 255, 255, 255, 200);
+                    Renderer_FillRectangle(12, 266, GetTextWidth(heattext)+8, 15, 0, 0, 0, 140);
+                    Graphics_RenderText(16, 270, heattext, 255, 255, 255, 200);
                 }
             }
             else
             {
-                fillrect(vid_buf, XRES-20-textwidth(heattext), 12, textwidth(heattext)+8, 15, 0, 0, 0, 140);
-                drawtext(vid_buf, XRES-16-textwidth(heattext), 16, heattext, 255, 255, 255, 200);
+                Renderer_FillRectangle(XRES-20-GetTextWidth(heattext), 12, GetTextWidth(heattext)+8, 15, 0, 0, 0, 140);
+                Graphics_RenderText(XRES-16-GetTextWidth(heattext), 16, heattext, 255, 255, 255, 200);
             }
-            fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
-            drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
+            Renderer_FillRectangle(12, 12, GetTextWidth(uitext)+8, 15, 0, 0, 0, 140);
+            Graphics_RenderText(16, 16, uitext, 32, 216, 255, 200);
         }
-        sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
+        Renderer_Display(0, 0, XRES+BARSIZE, YRES+MENUSIZE, XRES+BARSIZE);
 
         //Setting an element for the stick man
         if(isplayer==0)
