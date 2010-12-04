@@ -1,8 +1,15 @@
 #include <math.h>
 #include <SDL/SDL.h>
+
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <OpenGL/glext.h>
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glext.h>
+#endif
 
 #include <defines.h>
 #include <air.h>
@@ -12,11 +19,11 @@
 #include <font.h>
 #include <misc.h>
 
-//Prototypes for intern use only
-pixel Renderer_Intern_GetPixel(int x, int y);
-
 #define GLOWTEXSIZE 16
 #define BLOBTEXSIZE 4
+
+//Prototypes for intern use only
+pixel Renderer_Intern_GetPixel(int x, int y);
 
 typedef void (APIENTRY * GL_BlendEquation)(GLenum);
 GL_BlendEquation glBlendEquation = 0;

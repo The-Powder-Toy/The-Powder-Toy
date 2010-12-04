@@ -75,7 +75,7 @@ del powder-res.o
 echo Packing resources
 windres src/Resources/powder-res.rc powder-res.o
 echo Compiling
-gcc -Wall -g -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations %ARCH% %SSE% %MMX% -DX86 -mwindows -DWIN32 -oPowder -Iincludes src/*.c src/renderer/ogl.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32 -lopengl32
+gcc -Wall -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations %ARCH% %SSE% %MMX% -DX86 -mwindows -DWIN32 -oPowder -Iincludes src/*.c src/renderer/ogl.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32 -lopengl32
 IF NOT ERRORLEVEL 1 GOTO QUIT
 pause
 :QUIT
