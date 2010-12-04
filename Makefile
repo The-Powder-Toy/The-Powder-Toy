@@ -62,19 +62,19 @@ powder-x-ogl: $(SOURCES) src/renderer/ogl.c
 	strip $@
 
 win_powder-sse.exe: $(SOURCES) src/renderer/sw.c powder-res.o
-	gcc -Wall -g -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/sw.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32
+	gcc -Wall -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/sw.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32
 
 win_powder-sse2.exe: $(SOURCES) src/renderer/sw.c powder-res.o
-	gcc -Wall -g -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse2 -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/sw.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32
+	gcc -Wall -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse2 -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/sw.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32
 
 win_powder-sse3.exe: $(SOURCES) src/renderer/sw.c powder-res.o
-	gcc -Wall -g -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse3 -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/sw.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32
+	gcc -Wall -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse3 -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/sw.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32
 
 win_powder-sse-ogl.exe: $(SOURCES) src/renderer/ogl.c powder-res.o
-	gcc -Wall -g -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/ogl.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32 -lopengl32
+	gcc -Wall -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/ogl.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32 -lopengl32
 
 win_powder-sse2-ogl.exe: $(SOURCES) src/renderer/ogl.c powder-res.o
-	gcc -Wall -g -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse2 -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/ogl.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32 -lopengl32
+	gcc -Wall -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse2 -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/ogl.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32 -lopengl32
 
 win_powder-sse3-ogl.exe: $(SOURCES) src/renderer/ogl.c powder-res.o
-	gcc -Wall -g -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse3 -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/ogl.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32 -lopengl32
+	gcc -Wall -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse3 -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/ogl.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32 -lopengl32
