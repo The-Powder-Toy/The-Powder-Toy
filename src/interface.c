@@ -550,9 +550,14 @@ void draw_svf_ui(pixel *vid_buf)
         break;
     case CM_FANCY:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xC4", 100, 150, 255, 255);
+	break;
     case CM_NOTHING:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
+	break;
     case CM_CRACK:
+        drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
+	break;
+    case CM_GRAD:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
         break;
     }
@@ -1814,6 +1819,8 @@ void set_cmode(int cm)
         strcpy(itc_msg, "Nothing Display");
     else if(cmode==CM_CRACK)
         strcpy(itc_msg, "Alternate Velocity Display");
+    else if(cmode==CM_GRAD)
+        strcpy(itc_msg, "Heat Gradient Display");
     else
         strcpy(itc_msg, "Velocity Display");
 }

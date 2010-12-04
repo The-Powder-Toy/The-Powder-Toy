@@ -1112,8 +1112,16 @@ void update_particles_i(pixel *vid, int start, int inc)
 				gol2[nx][ny][z] = 0;
 		}
 	}
-	if(CGOL==0)
-		CGOL++;
+	if(ISWIRE==1)
+	{
+		CGOL = 0;
+		ISWIRE = 0;
+	}
+	if(CGOL==1)
+	{
+	 for(int q = 0;q<25;q++)
+		 wireless[q] = 0;
+	}
     for(i=start; i<(NPART-starti); i+=inc)
         if(parts[i].type)
         {
@@ -2817,12 +2825,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 	    }
 	    else if(t==PT_INST2)
 	    {
-		    if(parts[i].life%4==0)
+		    if(parts[i].life%4<=1)
 			t = parts[pmap[y][x]>>8].type=PT_INST;
 	    }
 	    else if(t==PT_INST3)
 	    {
-		    if(parts[i].life%4!=0)
+		    if(parts[i].life%4<=1)
 			t = parts[pmap[y][x]>>8].type=PT_INST;
 	    }
 	    else if(t==PT_PRTI)
@@ -2891,6 +2899,35 @@ void update_particles_i(pixel *vid, int start, int inc)
 						break;
 					}
 				}
+			    }
+			}
+	    }
+	    else if(t==PT_WIFI)
+	    {
+		CGOL = 1;
+		int temprange = 100;
+		for(int temp = 0; temp < 2500; temp += temprange)
+			if(parts[i].temp-273.15>temp&&parts[i].temp-273.15<temp+temprange)
+				parts[i].tmp = temp/100;
+		for(ny=-1; ny<2; ny++)
+                    for(nx=-1; nx<2; nx++)
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+                            r = pmap[y+ny][x+nx];
+                            if((r>>8)>=NPART || !r)
+                                continue;
+			    if(parts[r>>8].type==PT_NSCN&&parts[r>>8].life==0 && wireless[parts[i].tmp])
+			    {
+				    parts[r>>8].type = PT_SPRK;
+				    parts[r>>8].ctype = PT_NSCN;
+				    parts[r>>8].life = 4;
+			    }
+			    else if(parts[r>>8].type==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3 && !wireless[parts[i].tmp])
+			    {
+				    parts[r>>8].type = parts[r>>8].ctype;
+				    wireless[parts[i].tmp] = 1;
+				    ISWIRE = 1;
 			    }
 			}
 	    }

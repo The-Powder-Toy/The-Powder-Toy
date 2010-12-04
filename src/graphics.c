@@ -1409,6 +1409,29 @@ void draw_parts(pixel *vid)
                	 	cb = PIXB(ptypes[t].pcolors);
                 	blendpixel(vid, nx, ny, cr, cg, cb, 255);
 	    	}
+		if(cmode==CM_GRAD)
+		{
+			float frequency = 0.05;
+			int q = parts[i].temp;
+			cr = sin(frequency*q) * 16 + PIXR(ptypes[t].pcolors);
+			cg = sin(frequency*q) * 16 + PIXG(ptypes[t].pcolors);
+			cb = sin(frequency*q) * 16 + PIXB(ptypes[t].pcolors);
+			if(cr>=255)
+					cr = 255;
+			if(cg>=255)
+					cg = 255;
+			if(cb>=255)
+					cb = 255;
+			if(cr<=0)
+					cr = 0;
+			if(cg<=0)
+					cg = 0;
+			if(cb<=0)
+					cb = 0;
+			blendpixel(vid, nx, ny, cr, cg, cb, 255);
+			
+			
+		}
                 else if(t==PT_MWAX&&cmode == CM_FANCY)
                 {
                     for(x=-1; x<=1; x++)
@@ -1538,6 +1561,15 @@ void draw_parts(pixel *vid)
 			if(cb>255)
 				cb=255;
 			blendpixel(vid, nx, ny, cr, cg, cb, 255);
+		}
+		else if(t==PT_WIFI)
+		{
+			float frequency = 0.25;
+			int q = parts[i].tmp;
+			cr = sin(frequency*q + 0) * 127 + 128;
+			cg = sin(frequency*q + 2) * 127 + 128;
+			cb = sin(frequency*q + 4) * 127 + 128;
+			blendpixel(vid, nx, ny, cr, cg, cb, 255);			
 		}
 		else if(t==PT_PIPE)
 		{

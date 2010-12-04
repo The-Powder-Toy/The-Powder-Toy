@@ -124,6 +124,7 @@ int ISGOL;
 int ISLOVE;
 int ISLOLZ;
 int ISGRAV;
+int ISWIRE;
 int GSPEED;
 int love[XRES/9][YRES/9];
 int lolz[XRES/9][YRES/9];

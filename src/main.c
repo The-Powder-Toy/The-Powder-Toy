@@ -1307,6 +1307,10 @@ int main(int argc, char *argv[])
         {
             set_cmode(CM_CRACK);
         }
+	if(sdl_key=='0')
+        {
+            set_cmode(CM_GRAD);
+        }
 	if(sdl_key==SDLK_TAB)
 	{
 		CURRENT_BRUSH =(CURRENT_BRUSH + 1)%BRUSH_NUM ;

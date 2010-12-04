@@ -5,7 +5,8 @@
 #include "defines.h"
 #include "interface.h"
 
-#define CM_COUNT 9
+#define CM_COUNT 10
+#define CM_GRAD 9
 #define CM_CRACK 8
 #define CM_NOTHING 7
 #define CM_FANCY 6
@@ -170,7 +171,8 @@
 #define PT_SHLD3 121
 #define PT_SHLD4 122
 #define PT_LOLZ 123
-#define PT_NUM  124
+#define PT_WIFI 124
+#define PT_NUM  125
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -385,6 +387,7 @@ static const part_type ptypes[PT_NUM] =
     {"SHD3",	PIXPACK(0x444444),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	0,	"Shield lvl 3", 0},
     {"SHD4",	PIXPACK(0x212121),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	0,	"Shield lvl 4", 0},
     {"LOLZ",	PIXPACK(0x569212),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		373.0f,	40,	"Lolz", TYPE_SOLID},
+    {"WIFI",	PIXPACK(0x40A060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER,		R_TEMP+0.0f	+273.15f,	0,	"Wireless transmitter, color coded.", TYPE_SOLID|PROP_CONDUCTS},
    
 //Name		Colour			Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H				Ins(real world, by triclops200) Description
 };
@@ -516,6 +519,7 @@ static part_state pstates[PT_NUM] =
     /* SHLD3*/ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* SHLD4*/ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* LOlZ */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* WIFI */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     
 };
 static int grule[NGOL][9] = 
@@ -560,6 +564,7 @@ static int lolzrule[9][9] =
 	{0,1,0,0,0,0,0,1,0},
 };
 int portal[8][8];
+int wireless[25];
 
 extern int isplayer;
 extern float player[27];
