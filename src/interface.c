@@ -2824,9 +2824,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 			info_box(vid_buf, "Submitting Comment...");
 			execute_submit(vid_buf, save_id, ed.str);
+			ed.str[0] = 0;
         	}
 	}
-	if(!(mx>50 && my>50 && mx<XRES+BARSIZE-100 && my<YRES+MENUSIZE-100) && b && !queue_open){
+	if(!(mx>50 && my>50 && mx<XRES+BARSIZE-50 && my<YRES+MENUSIZE-50) && b && !queue_open){
 		retval = 0;
 		break;	
 	}
