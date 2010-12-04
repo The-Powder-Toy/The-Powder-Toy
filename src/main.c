@@ -303,8 +303,13 @@ void *build_save(int *size, int x0, int y0, int w, int h)
     for(j=0; j<w*h; j++)
     {
         i = m[j];
-        if(i)
-            d[p++] = (parts[i-1].life+3)/4;
+        if(i){
+			//Everybody loves a 16bit int
+            //d[p++] = (parts[i-1].life+3)/4;
+			int ttlife = (int)parts[i-1].life;
+            d[p++] = ((ttlife&0xFF00)>>8);
+            d[p++] = (ttlife&0x00FF);
+		}
     }
     for(j=0; j<w*h; j++)
     {
@@ -584,12 +589,25 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
         i = m[j];
         if(i)
         {
-            if(p >= size)
-                goto corrupt;
-            if(i <= NPART)
-                parts[i-1].life = d[p++]*4;
-            else
-                p++;
+			if(ver>=44){
+				if(p >= size) {
+					goto corrupt;
+				}
+				if(i <= NPART) {
+					ttv = (d[p++])<<8;
+					ttv |= (d[p++]);
+					parts[i-1].life = ttv;
+				} else {
+					p+=2;
+				}
+			} else {
+				if(p >= size)
+					goto corrupt;
+				if(i <= NPART)
+					parts[i-1].life = d[p++]*4;
+				else
+					p++;
+			}
         }
     }
     for(j=0; j<w*h; j++)
