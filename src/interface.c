@@ -101,11 +101,16 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
     int i, w, h, x, y, nm=0, ju;
     int x0=(XRES-192)/2,y0=(YRES-80)/2,b=1,bq;
     ui_edit ed;
-
+   
     // check if it is an existing sign
     for(i=0; i<MAXSIGNS; i++)
         if(signs[i].text[0])
         {
+	    if(i == MSIGN)
+		{
+		MSIGN = -1;
+		return;
+		}
             get_sign_pos(i, &x, &y, &w, &h);
             if(mx>=x && mx<=x+w && my>=y && my<=y+h)
                 break;
@@ -120,7 +125,6 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
     }
     if(i >= MAXSIGNS)
         return;
-
     if(nm)
     {
         signs[i].x = mx;
@@ -166,12 +170,18 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
         draw_icon(vid_buf, x0+68, y0+42, 0x9E, ju == 1);
         draw_icon(vid_buf, x0+86, y0+42, 0x9F, ju == 2);
 
+
+
+
+
         if(!nm)
         {
             drawtext(vid_buf, x0+138, y0+45, "\x86", 160, 48, 32, 255);
             drawtext(vid_buf, x0+138, y0+45, "\x85", 255, 255, 255, 255);
             drawtext(vid_buf, x0+152, y0+46, "Delete", 255, 255, 255, 255);
             drawrect(vid_buf, x0+134, y0+42, 50, 15, 255, 255, 255, 255);
+	    drawrect(vid_buf,x0+104,y0+42,26,15,255,255,255,255);
+	    drawtext(vid_buf, x0+110, y0+48, "Mv.", 255, 255, 255, 255);
         }
 
         drawtext(vid_buf, x0+5, y0+69, "OK", 255, 255, 255, 255);
@@ -188,6 +198,11 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
         if(b && !bq && mx>=x0+86 && mx<=x0+103 && my>=y0+42 && my<=y0+59)
             ju = 2;
 
+        if(!nm && b && !bq && mx>=x0+104 && mx<=x0+130 && my>=y0+42 && my<=y0+59)
+	{
+		MSIGN = i;
+		break;
+	}
         if(b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36)
             break;
         if(b && !bq && mx>=x0 && mx<x0+192 && my>=y0+64 && my<=y0+80)
@@ -513,28 +528,37 @@ void draw_svf_ui(pixel *vid_buf)
 
     switch(cmode)
     {
-    case 0:
+    case CM_VEL:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x98", 128, 160, 255, 255);
         break;
-    case 1:
+    case CM_PRESS:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x99", 255, 212, 32, 255);
         break;
-    case 2:
+    case CM_PERS:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x9A", 212, 212, 212, 255);
         break;
-    case 3:
+    case CM_FIRE:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x9B", 255, 0, 0, 255);
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x9C", 255, 255, 64, 255);
         break;
-    case 4:
+    case CM_BLOB:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBF", 55, 255, 55, 255);
         break;
-    case 5:
+    case CM_HEAT:
         drawtext(vid_buf, XRES-27+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBE", 255, 0, 0, 255);
         drawtext(vid_buf, XRES-27+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBD", 255, 255, 255, 255);
         break;
-    case 6:
+    case CM_FANCY:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xC4", 100, 150, 255, 255);
+	break;
+    case CM_NOTHING:
+        drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
+	break;
+    case CM_CRACK:
+        drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
+	break;
+    case CM_GRAD:
+        drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
         break;
     }
     drawrect(vid_buf, XRES-32+BARSIZE/*478*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
@@ -1460,31 +1484,41 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, int my)
 {
     int h,x,y,n=0,height,width,sy,rows=0;
+    SEC = SEC2;
     mx /= sdl_scale;
     my /= sdl_scale;
     rows = ceil((float)msections[i].itemcount/16.0f);
     height = (ceil((float)msections[i].itemcount/16.0f)*18);
     width = restrict_flt(msections[i].itemcount*31, 0, 16*31);
     h = -1;
-    x = XRES-BARSIZE-26;
+    x = XRES-BARSIZE-18;
     y = YRES+1;
     sy = y;
     if(i==SC_WALL)
     {
-        for(n = 122; n<122+UI_WALLCOUNT; n++)
+        for(n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
         {
             if(n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
             {
-                if(x-26<=20)
+                if(x-18<=20)
                 {
-                    x = XRES-BARSIZE-26;
+                    x = XRES-BARSIZE-18;
                     y += 19;
                 }
-                x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
+                x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
                 if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
                     h = n;
+                }
+		if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+                    h = n;
+                }
+		else if(n==SLALT)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
                 }
                 else if(n==*sl)
                 {
@@ -1499,20 +1533,29 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
     }
     else if(i==SC_SPECIAL)
     {
-        for(n = 122; n<122+UI_WALLCOUNT; n++)
+        for(n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
         {
             if(n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
             {
-                if(x-26<=20)
+                if(x-18<=20)
                 {
-                    x = XRES-BARSIZE-26;
+                    x = XRES-BARSIZE-18;
                     y += 19;
                 }
-                x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
+                x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
                 if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
                     h = n;
+                }
+                if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+                    h = n;
+                }
+		else if(n==SLALT)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
                 }
                 else if(n==*sl)
                 {
@@ -1528,9 +1571,9 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
         {
             if(ptypes[n].menusection==i&&ptypes[n].menu==1)
             {
-                if(x-26<=20)
+                if(x-18<=20)
                 {
-                    x = XRES-BARSIZE-26;
+                    x = XRES-BARSIZE-18;
                     y += 19;
                 }
                 x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
@@ -1538,6 +1581,15 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
                     h = n;
+                }
+                if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+                    h = n;
+                }
+		else if(n==SLALT)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
                 }
                 else if(n==*sl)
                 {
@@ -1556,9 +1608,9 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
         {
             if(ptypes[n].menusection==i&&ptypes[n].menu==1)
             {
-                if(x-26<=20)
+                if(x-18<=20)
                 {
-                    x = XRES-BARSIZE-26;
+                    x = XRES-BARSIZE-18;
                     y += 19;
                 }
                 x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
@@ -1566,6 +1618,15 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
                     h = n;
+                }
+                if(!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+                    h = n;
+                }
+		else if(n==SLALT)
+                {
+                    drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
                 }
                 else if(n==*sl)
                 {
@@ -1578,27 +1639,64 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
             }
         }
     }
+    if(!bq&&mx>=sdl_scale*((XRES+BARSIZE)-16) && mx<sdl_scale*(XRES+BARSIZE-1) &&my>= sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)) && my<sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)+15))
+	{
+		
+		if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
+			if(i>=0&&i<SC_TOTAL)
+				SEC = i;
+	}
 
     if(h==-1)
     {
         drawtext(vid_buf, XRES-textwidth((char *)msections[i].name)-BARSIZE, sy-10, (char *)msections[i].name, 255, 255, 255, 255);
     }
-    else if(i==SC_WALL||(i==SC_SPECIAL&&h>=122))
+    else if(i==SC_WALL||(i==SC_SPECIAL&&h>=UI_WALLSTART))
     {
-        drawtext(vid_buf, XRES-textwidth((char *)mwalls[h-122].descs)-BARSIZE, sy-10, (char *)mwalls[h-122].descs, 255, 255, 255, 255);
+        drawtext(vid_buf, XRES-textwidth((char *)mwalls[h-UI_WALLSTART].descs)-BARSIZE, sy-10, (char *)mwalls[h-UI_WALLSTART].descs, 255, 255, 255, 255);
     }
     else
     {
         drawtext(vid_buf, XRES-textwidth((char *)ptypes[h].descs)-BARSIZE, sy-10, (char *)ptypes[h].descs, 255, 255, 255, 255);
     }
 
+    if(b==1&&h==-1)
+    {
+	if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT) && SEC>=0)
+	{
+		SLALT = -1;
+		SEC2 = SEC;
+	}
+    }
     if(b==1&&h!=-1)
     {
-        *sl = h;
+	if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
+	{
+		SLALT = h;
+		SEC2 = -1;
+	}
+	else{
+		*sl = h;
+	}
+    }
+    if(b==4&&h==-1)
+    {
+	if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT) && SEC>=0)
+	{
+		SLALT = -1;
+		SEC2 = SEC;
+	}
     }
     if(b==4&&h!=-1)
     {
-        *sr = h;
+	if(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
+	{
+		SLALT = h;
+		SEC2 = -1;
+	}
+	else{
+		*sr = h;
+	}
     }
 }
 
@@ -1685,38 +1783,44 @@ void set_cmode(int cm)
 {
     cmode = cm;
     itc = 51;
-    if(cmode==4)
+    if(cmode==CM_BLOB)
     {
         memset(fire_r, 0, sizeof(fire_r));
         memset(fire_g, 0, sizeof(fire_g));
         memset(fire_b, 0, sizeof(fire_b));
         strcpy(itc_msg, "Blob Display");
     }
-    else if(cmode==5)
+    else if(cmode==CM_HEAT)
     {
         strcpy(itc_msg, "Heat Display");
     }
-    else if(cmode==6)
+    else if(cmode==CM_FANCY)
     {
         memset(fire_r, 0, sizeof(fire_r));
         memset(fire_g, 0, sizeof(fire_g));
         memset(fire_b, 0, sizeof(fire_b));
         strcpy(itc_msg, "Fancy Display");
     }
-    else if(cmode==3)
+    else if(cmode==CM_FIRE)
     {
         memset(fire_r, 0, sizeof(fire_r));
         memset(fire_g, 0, sizeof(fire_g));
         memset(fire_b, 0, sizeof(fire_b));
         strcpy(itc_msg, "Fire Display");
     }
-    else if(cmode==2)
+    else if(cmode==CM_PERS)
     {
         memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
         strcpy(itc_msg, "Persistent Display");
     }
-    else if(cmode==1)
+    else if(cmode==CM_PRESS)
         strcpy(itc_msg, "Pressure Display");
+    else if(cmode==CM_NOTHING)
+        strcpy(itc_msg, "Nothing Display");
+    else if(cmode==CM_CRACK)
+        strcpy(itc_msg, "Alternate Velocity Display");
+    else if(cmode==CM_GRAD)
+        strcpy(itc_msg, "Heat Gradient Display");
     else
         strcpy(itc_msg, "Velocity Display");
 }
@@ -2542,7 +2646,6 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
     drawrect(vid_buf, 50, 50, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 155);
     drawrect(vid_buf, 50+(XRES/2)+1, 50, XRES+BARSIZE-100-((XRES/2)+1), YRES+MENUSIZE-100, 155, 155, 155, 255);
     drawtext(vid_buf, 50+(XRES/4)-textwidth("Loading...")/2, 50+(YRES/4), "Loading...", 255, 255, 255, 128);
-	//Also, The Game.
 
 	ed.x = 57+(XRES/2)+1;
 	ed.y = YRES+MENUSIZE-118;

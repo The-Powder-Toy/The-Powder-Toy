@@ -137,7 +137,7 @@ pixel *prerender_save(void *save, int size, int *width, int *height);
 
 int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int py, int scl);
 
-void render_cursor(pixel *vid, int x, int y, int t, int r);
+void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry);
 
 void sdl_open(void);
 
