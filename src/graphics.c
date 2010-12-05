@@ -1765,6 +1765,30 @@ void draw_parts(pixel *vid)
                         }
                     }
                 }
+		else if(t==PT_FILT)
+		{
+			int temp_bin = (int)((parts[i].temp-273.0f)*0.025f);
+			if(temp_bin < 0) temp_bin = 0;
+			if(temp_bin > 25) temp_bin = 25;
+			parts[i].ctype = 0x1F << temp_bin;
+			cg = 0;
+			cb = 0;
+			cr = 0;
+			for(x=0; x<12; x++) {
+				cr += (parts[i].ctype >> (x+18)) & 1;
+				cb += (parts[i].ctype >>  x)     & 1;
+			}
+			for(x=0; x<14; x++)
+				cg += (parts[i].ctype >> (x+9))  & 1;
+			x = 624/(cr+cg+cb+1);
+			cr *= x;
+			cg *= x;
+			cb *= x;
+			cr = cr>255?255:cr;
+			cg = cg>255?255:cg;
+			cb = cb>255?255:cb;
+			blendpixel(vid, nx, ny, cr, cg, cb, 127);
+		}
                 else if(t==PT_PHOT)
                 {
                     if(cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY)

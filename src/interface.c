@@ -2796,12 +2796,14 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 
             ccy = 0;
             for(cc=0; cc<info->comment_count; cc++) {
-                drawtext(vid_buf, 60+(XRES/2)+1, ccy+60, info->commentauthors[cc], 255, 255, 255, 255);
-                ccy += 12;
-                ccy += drawtextwrap(vid_buf, 60+(XRES/2)+1, ccy+60, XRES+BARSIZE-100-((XRES/2)+1)-20, info->comments[cc], 255, 255, 255, 185);
-                ccy += 10;
-				if(ccy+52<YRES+MENUSIZE){ //Try not to draw off the screen.
-					draw_line(vid_buf, 50+(XRES/2)+2, ccy+52, XRES+BARSIZE-50, ccy+52, 100, 100, 100, XRES+BARSIZE);
+				if((ccy + 72 + ((textwidth(info->comments[cc])/(XRES+BARSIZE-100-((XRES/2)+1)-20)))*12)<(YRES+MENUSIZE-50)){
+					drawtext(vid_buf, 60+(XRES/2)+1, ccy+60, info->commentauthors[cc], 255, 255, 255, 255);
+					ccy += 12;
+					ccy += drawtextwrap(vid_buf, 60+(XRES/2)+1, ccy+60, XRES+BARSIZE-100-((XRES/2)+1)-20, info->comments[cc], 255, 255, 255, 185);
+					ccy += 10;
+					if(ccy+52<YRES+MENUSIZE-50){ //Try not to draw off the screen.
+						draw_line(vid_buf, 50+(XRES/2)+2, ccy+52, XRES+BARSIZE-50, ccy+52, 100, 100, 100, XRES+BARSIZE);
+					}
 				}
             }
             hasdrawninfo = 1;
@@ -2927,9 +2929,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 			info_box(vid_buf, "Submitting Comment...");
 			execute_submit(vid_buf, save_id, ed.str);
+			ed.str[0] = 0;
         	}
 	}
-	if(!(mx>50 && my>50 && mx<XRES+BARSIZE-100 && my<YRES+MENUSIZE-100) && b && !queue_open){
+	if(!(mx>50 && my>50 && mx<XRES+BARSIZE-50 && my<YRES+MENUSIZE-50) && b && !queue_open){
 		retval = 0;
 		break;	
 	}
