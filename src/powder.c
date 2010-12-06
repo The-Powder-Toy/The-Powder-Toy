@@ -1841,23 +1841,25 @@ void update_particles_i(pixel *vid, int start, int inc)
 												parts[nr].tmp = 2;
 												parts[nr].life = 2;
 											}
-										} else if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==0&&!destroy){
-											if(nyy!=0 || nxx!=0){
-												parts[r>>8].type = PT_BRAY;
-												parts[r>>8].life = 1020;
-												parts[r>>8].tmp = 1;
+										} else if(!((r>>8)>=NPART || !r)) {
+											if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==0&&!destroy){
+												if(nyy!=0 || nxx!=0){
+													parts[r>>8].type = PT_BRAY;
+													parts[r>>8].life = 1020;
+													parts[r>>8].tmp = 1;
+												}
+												docontinue = 0;
+											} else if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==1){
+												parts[r>>8].life = destroy?1:1020;
+												docontinue = 1;
+											} else if(!destroy) {
+												if(nyy!=0 || nxx!=0){
+													create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
+												}
+												docontinue = 0;
+											} else {
+												docontinue = 0;
 											}
-											docontinue = 0;
-										} else if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==1){
-											parts[r>>8].life = destroy?1:1020;
-											docontinue = 1;
-										} else if(!destroy) {
-											if(nyy!=0 || nxx!=0){
-												create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
-											}
-											docontinue = 0;
-										} else {
-											docontinue = 0;
 										}
 									}
 								}
