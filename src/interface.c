@@ -2720,9 +2720,14 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
             if(status == 200)
             {
                 pixel *full_save = prerender_save(data, data_size, &imgw, &imgh);
-                save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
-                data_ready = 1;
-                free(full_save);
+				if(full_save!=NULL){
+					save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
+					data_ready = 1;
+					free(full_save);
+				} else {
+					error_ui(vid_buf, 0, "Save may be from a newer version");
+					break;
+				}
             }
             active = 0;
             free(http);
