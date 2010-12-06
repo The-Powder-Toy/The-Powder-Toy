@@ -1789,6 +1789,21 @@ void draw_parts(pixel *vid)
 			cb = cb>255?255:cb;
 			blendpixel(vid, nx, ny, cr, cg, cb, 127);
 		}
+		else if(t==PT_BRAY && parts[i].tmp==0)
+		{
+			int trans = parts[i].life * 7;
+			blendpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), trans);
+		}
+		else if(t==PT_BRAY && parts[i].tmp==1)
+		{
+			int trans = parts[i].life/4;
+			blendpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), trans);
+		}
+		else if(t==PT_BRAY && parts[i].tmp==2)
+		{
+			int trans = parts[i].life*100;
+			blendpixel(vid, nx, ny, 255, 150, 50, trans);
+		}
                 else if(t==PT_PHOT)
                 {
                     if(cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY)

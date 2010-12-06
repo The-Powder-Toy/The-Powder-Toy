@@ -1500,7 +1500,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
         {
             if(n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
             {
-                if(x-18<=20)
+                if(x-18<=2)
                 {
                     x = XRES-BARSIZE-18;
                     y += 19;
@@ -1537,7 +1537,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
         {
             if(n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
             {
-                if(x-18<=20)
+                if(x-18<=0)
                 {
                     x = XRES-BARSIZE-18;
                     y += 19;
@@ -1571,7 +1571,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
         {
             if(ptypes[n].menusection==i&&ptypes[n].menu==1)
             {
-                if(x-18<=20)
+                if(x-18<=0)
                 {
                     x = XRES-BARSIZE-18;
                     y += 19;
@@ -1608,7 +1608,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
         {
             if(ptypes[n].menusection==i&&ptypes[n].menu==1)
             {
-                if(x-18<=20)
+                if(x-18<=0)
                 {
                     x = XRES-BARSIZE-18;
                     y += 19;
