@@ -1411,7 +1411,7 @@ void Graphics_RenderSigns()
     for(i=0; i<MAXSIGNS; i++)
         if(signs[i].text[0])
         {
-            get_sign_pos(i, &x, &y, &w, &h);
+            Interface_GetSignPosition(i, &x, &y, &w, &h);
             Renderer_ClearRectangle(x, y, w, h);
             Renderer_DrawRectangle(x, y, w, h, 192, 192, 192, 255);
 

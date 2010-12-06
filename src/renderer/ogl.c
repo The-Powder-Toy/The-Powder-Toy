@@ -33,8 +33,8 @@ GLuint GlowTexture = 0;
 GLuint BlobTexture = 0;
 int sdl_scale = 1;
 unsigned char PersistentTick=0;
-unsigned int *StateMemory;
-unsigned int *SecondaryBuffer;
+unsigned char *StateMemory;
+unsigned char *SecondaryBuffer;
 
 //Intern functions
 pixel Renderer_Intern_GetPixel(int x, int y)
@@ -47,8 +47,8 @@ pixel Renderer_Intern_GetPixel(int x, int y)
 
 void Renderer_Init()
 {
-    StateMemory = (unsigned int)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), 3);
-    SecondaryBuffer = (unsigned int)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), 3);
+    StateMemory = malloc((XRES+BARSIZE)*(YRES+MENUSIZE)*3*4);
+    SecondaryBuffer = malloc((XRES+BARSIZE)*(YRES+MENUSIZE)*3);
     int x,y,i,j;
     float temp[CELL*3][CELL*3];
     memset(temp, 0, sizeof(temp));
@@ -171,20 +171,20 @@ void Renderer_ClearSecondaryBuffer()
     memset(SecondaryBuffer, 0, (XRES+BARSIZE)*(YRES+MENUSIZE)*3);
 }
 
-void Renderer_Display(int x, int y, int w, int h, int pitch)
+void Renderer_Display()
 {
     SDL_GL_SwapBuffers();
 }
 
-void Renderer_SaveState()
+void Renderer_SaveState(unsigned char slot)
 {
-    glReadPixels(0, 0, XRES+BARSIZE, YRES+MENUSIZE, GL_RGB, GL_UNSIGNED_BYTE, StateMemory);
+    glReadPixels(0, 0, XRES+BARSIZE, YRES+MENUSIZE, GL_RGB, GL_UNSIGNED_BYTE, StateMemory+((XRES+BARSIZE)*(YRES+MENUSIZE)*3*slot));
 }
 
-void Renderer_RecallState()
+void Renderer_RecallState(unsigned char slot)
 {
     glRasterPos2i(0,YRES+MENUSIZE-1);
-    glDrawPixels(XRES+BARSIZE, YRES+MENUSIZE, GL_RGB, GL_UNSIGNED_BYTE, StateMemory);
+    glDrawPixels(XRES+BARSIZE, YRES+MENUSIZE, GL_RGB, GL_UNSIGNED_BYTE, StateMemory+((XRES+BARSIZE)*(YRES+MENUSIZE)*3*slot));
 }
 
 void Renderer_SaveScreenshot(int w, int h, int pitch)

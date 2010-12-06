@@ -11,8 +11,8 @@
 #include <misc.h>
 
 //Prototypes for intern use only
-void Renderer_Intern_BlitOne(int x, int y, int w, int h, int pitch);
-void Renderer_Intern_BlitTwo(int x, int y, int w, int h, int pitch);
+void Renderer_Intern_BlitOne();
+void Renderer_Intern_BlitTwo();
 void Renderer_Intern_DimmedCopy(pixel *dst, pixel *src);
 void Renderer_Intern_AddPixel(int x, int y, int r, int g, int b, int a);
 
@@ -25,27 +25,17 @@ pixel *SecondaryBuffer;
 pixel *StateMemory;
 
 //Intern functions
-void Renderer_Intern_BlitOne(int x, int y, int w, int h, int pitch)
+void Renderer_Intern_BlitOne()
 {
-    pixel *dst;
-    int j;
     if(SDL_MUSTLOCK(sdl_scrn))
         if(SDL_LockSurface(sdl_scrn)<0)
             return;
-    dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
-    for(j=0; j<h; j++)
-    {
-        memcpy(dst, PrimaryBuffer, w*PIXELSIZE);
-        dst+=sdl_scrn->pitch/PIXELSIZE;
-        PrimaryBuffer+=pitch;
-    }
-    PrimaryBuffer-=pitch*h;
     if(SDL_MUSTLOCK(sdl_scrn))
         SDL_UnlockSurface(sdl_scrn);
     SDL_UpdateRect(sdl_scrn,0,0,0,0);
 }
 
-void Renderer_Intern_BlitTwo(int x, int y, int w, int h, int pitch)
+void Renderer_Intern_BlitTwo()
 {
     pixel *dst;
     int j;
@@ -53,21 +43,21 @@ void Renderer_Intern_BlitTwo(int x, int y, int w, int h, int pitch)
     if(SDL_MUSTLOCK(sdl_scrn))
         if(SDL_LockSurface(sdl_scrn)<0)
             return;
-    dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
-    for(j=0; j<h; j++)
+    dst=(pixel *)sdl_scrn->pixels;
+    for(j=0; j<(YRES+MENUSIZE); j++)
     {
         for(k=0; k<sdl_scale; k++)
         {
-            for(i=0; i<w; i++)
+            for(i=0; i<(XRES+BARSIZE); i++)
             {
                 dst[i*2]=PrimaryBuffer[i];
                 dst[i*2+1]=PrimaryBuffer[i];
             }
             dst+=sdl_scrn->pitch/PIXELSIZE;
         }
-        PrimaryBuffer+=pitch;
+        PrimaryBuffer+=(XRES+BARSIZE);
     }
-    PrimaryBuffer-=pitch*h;
+    PrimaryBuffer-=(XRES+BARSIZE)*(YRES+MENUSIZE);
     if(SDL_MUSTLOCK(sdl_scrn))
         SDL_UnlockSurface(sdl_scrn);
     SDL_UpdateRect(sdl_scrn,0,0,0,0);
@@ -112,7 +102,7 @@ void Renderer_Intern_AddPixel(int x, int y, int r, int g, int b, int a)
 void Renderer_Init()
 {
     SecondaryBuffer = (pixel*) calloc(XRES*YRES, PIXELSIZE);
-    StateMemory = (pixel*) calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+    StateMemory = (pixel*) calloc((XRES+BARSIZE)*(YRES+MENUSIZE)*4, PIXELSIZE);
     PrimaryBuffer = (pixel*) calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
     int x,y,i,j;
     float temp[CELL*3][CELL*3];
@@ -172,22 +162,22 @@ void Renderer_ClearSecondaryBuffer()
     memset(SecondaryBuffer, 0, XRES*YRES*PIXELSIZE);
 }
 
-void Renderer_Display(int x, int y, int w, int h, int pitch)
+void Renderer_Display()
 {
     if(sdl_scale == 2)
-        Renderer_Intern_BlitTwo(x, y, w, h, pitch);
+        Renderer_Intern_BlitTwo();
     else
-        Renderer_Intern_BlitOne(x, y, w, h, pitch);
+        Renderer_Intern_BlitOne();
 }
 
-void Renderer_SaveState()
+void Renderer_SaveState(unsigned char slot)
 {
-    memcpy(StateMemory, PrimaryBuffer, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+    memcpy(StateMemory+(slot*(XRES+BARSIZE)*(YRES+MENUSIZE)), PrimaryBuffer, (XRES+BARSIZE)*(YRES+MENUSIZE)*PIXELSIZE);
 }
 
-void Renderer_RecallState()
+void Renderer_RecallState(unsigned char slot)
 {
-    memcpy(PrimaryBuffer, StateMemory, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+    memcpy(PrimaryBuffer, StateMemory+(slot*(XRES+BARSIZE)*(YRES+MENUSIZE)), ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 }
 
 void Renderer_SaveScreenshot(int w, int h, int pitch)

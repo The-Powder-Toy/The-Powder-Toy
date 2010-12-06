@@ -66,13 +66,13 @@ static menu_section msections[] =
     {"\xCC", "Special", 0},
 };
 
-struct ui_edit
+struct TextBox
 {
     int x, y, w, nx, h;
     char str[256],*def;
     int focus, cursor, hide, multiline;
 };
-typedef struct ui_edit ui_edit;
+typedef struct TextBox TextBox;
 
 struct save_info
 {
@@ -123,14 +123,14 @@ extern int svf_lsize;
 
 extern char *search_ids[GRID_X*GRID_Y];
 extern char *search_dates[GRID_X*GRID_Y];
-extern int   search_votes[GRID_X*GRID_Y];
-extern int   search_publish[GRID_X*GRID_Y];
-extern int      search_scoredown[GRID_X*GRID_Y];
-extern int      search_scoreup[GRID_X*GRID_Y];
+extern int  search_votes[GRID_X*GRID_Y];
+extern int  search_publish[GRID_X*GRID_Y];
+extern int  search_scoredown[GRID_X*GRID_Y];
+extern int  search_scoreup[GRID_X*GRID_Y];
 extern char *search_names[GRID_X*GRID_Y];
 extern char *search_owners[GRID_X*GRID_Y];
 extern void *search_thumbs[GRID_X*GRID_Y];
-extern int   search_thsizes[GRID_X*GRID_Y];
+extern int  search_thsizes[GRID_X*GRID_Y];
 
 extern int search_own;
 extern int search_fav;
@@ -147,51 +147,51 @@ extern int zoom_en;
 extern int zoom_x, zoom_y;
 extern int zoom_wx, zoom_wy;
 
-void menu_count(void);
+void Interface_CountMenus(void);
 
-void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
+void Interface_GetSignPosition(int i, int *x0, int *y0, int *w, int *h);
 
-void add_sign_ui(int mx, int my);
+void Interface_AddSignUI(int mx, int my);
 
-void ui_edit_draw(ui_edit *ed);
+void Interface_DrawTextBox(TextBox *ed);
 
-void ui_edit_process(int mx, int my, int mb, ui_edit *ed);
+void Interface_ProcessTextBox(int mx, int my, int mb, TextBox *ed);
 
-void ui_checkbox_draw(ui_checkbox *ed);
+void Interface_DrawCheckBox(ui_checkbox *ed);
 
-void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed);
+void Interface_ProcessCheckBox(int mx, int my, int mb, int mbq, ui_checkbox *ed);
 
-void draw_svf_ui();
+void Interface_DrawMenu();
 
-void error_ui(int err, char *txt);
+void Interface_ErrorDialog(int err, char *txt, unsigned char layer);
 
-void info_ui(char *top, char *txt);
+void Interface_InfoDialog(char *top, char *txt, unsigned char layer);
 
-void info_box(char *msg);
+void Interface_InfoBox(char *msg);
 
-int confirm_ui(char *top, char *msg, char *btn);
+int Interface_ConfirmDialog(char *top, char *msg, char *btn, unsigned char layer);
 
-void login_ui();
+void Interface_LoginUI();
 
-int stamp_ui();
+int Interface_StampUI();
 
-void tag_list_ui();
+void Interface_TagListUI();
 
-int save_name_ui();
+int Interface_SaveUI();
 
 //void menu_ui(int i, int *sl, int *sr);
 
-void menu_ui_v3(int i, int *sl, int *sr, int b, int bq, int mx, int my);
+void Interface_DrawToolbar(int i, int *sl, int *sr, int b, int bq, int mx, int my);
 
 int sdl_poll(void);
 
-void set_cmode(int cm);
+void Interface_SetCmode(int cm);
 
-char *download_ui(char *uri, int *len);
+char *Interface_DownloadUI(char *uri, int *len);
 
-int search_ui();
+int Interface_SearchUI();
 
-int open_ui(char *save_id, char *save_date);
+int Interface_OpenUI(char *save_id, char *save_date);
 
 int info_parse(char *info_data, save_info *info);
 
@@ -213,7 +213,7 @@ int execute_vote(char *id, char *action);
 
 void open_link(char *uri);
 
-int report_ui(char *save_id);
+int Interface_ReportUI(char *save_id);
 
 #endif
 

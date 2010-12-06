@@ -18,11 +18,11 @@ void Renderer_PrepareScreen();
 
 void Renderer_ClearSecondaryBuffer();
 
-void Renderer_Display(int x, int y, int w, int h, int pitch);
+void Renderer_Display();
 
-void Renderer_SaveState();
+void Renderer_SaveState(unsigned char slot);
 
-void Renderer_RecallState();
+void Renderer_RecallState(unsigned char slot);
 
 void Renderer_SaveScreenshot(int w, int h, int pitch);
 

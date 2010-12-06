@@ -67,7 +67,7 @@ int zoom_wx=0, zoom_wy=0;
 unsigned char ZFACTOR = 256/ZSIZE_D;
 unsigned char ZSIZE = ZSIZE_D;
 
-void menu_count(void)
+void Interface_CountMenus(void)
 {
     int i=0;
     msections[SC_WALL].itemcount = UI_WALLCOUNT-4;
@@ -79,7 +79,7 @@ void menu_count(void)
 
 }
 
-void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
+void Interface_GetSignPosition(int i, int *x0, int *y0, int *w, int *h)
 {
     //Changing width if sign have special content
     if(strcmp(signs[i].text, "{p}")==0)
@@ -97,17 +97,16 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
     *y0 = (signs[i].y > 18) ? signs[i].y - 18 : signs[i].y + 4;
 }
 
-void add_sign_ui(int mx, int my)
+void Interface_AddSignUI(int mx, int my)
 {
     int i, w, h, x, y, nm=0, ju;
     int x0=(XRES-192)/2,y0=(YRES-80)/2,b=1,bq;
-    ui_edit ed;
-
+    TextBox ed;
     // check if it is an existing sign
     for(i=0; i<MAXSIGNS; i++)
         if(signs[i].text[0])
         {
-            get_sign_pos(i, &x, &y, &w, &h);
+            Interface_GetSignPosition(i, &x, &y, &w, &h);
             if(mx>=x && mx<=x+w && my>=y && my<=y+h)
                 break;
         }
@@ -121,21 +120,18 @@ void add_sign_ui(int mx, int my)
     }
     if(i >= MAXSIGNS)
         return;
-
     if(nm)
     {
         signs[i].x = mx;
         signs[i].y = my;
         signs[i].ju = 1;
     }
-
     while(!sdl_poll())
     {
         b = SDL_GetMouseState(&mx, &my);
         if(!b)
             break;
     }
-
     ed.x = x0+25;
     ed.y = y0+25;
     ed.w = 158;
@@ -143,45 +139,46 @@ void add_sign_ui(int mx, int my)
     ed.def = "[message]";
     ed.focus = 1;
     ed.hide = 0;
+    ed.multiline = 0;
     ed.cursor = strlen(signs[i].text);
     strcpy(ed.str, signs[i].text);
     ju = signs[i].ju;
-
+    
     Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-    Renderer_SaveState();
+    Renderer_DrawRectangle(x0, y0, 192, 80, 192, 192, 192, 255);
+    Renderer_ClearRectangle(x0, y0, 192, 80);
+    Graphics_RenderText(x0+8, y0+8, nm ? "New sign:" : "Edit sign:", 255, 255, 255, 255);
+    Graphics_RenderText(x0+12, y0+23, "\xA1", 32, 64, 128, 255);
+    Graphics_RenderText(x0+12, y0+23, "\xA0", 255, 255, 255, 255);
+    Renderer_DrawRectangle(x0+8, y0+20, 176, 16, 192, 192, 192, 255);
+    Graphics_RenderText( x0+8, y0+46, "Justify:", 255, 255, 255, 255);
+    if(!nm)
+    {
+        Graphics_RenderText(x0+138, y0+45, "\x86", 160, 48, 32, 255);
+        Graphics_RenderText(x0+138, y0+45, "\x85", 255, 255, 255, 255);
+        Graphics_RenderText(x0+152, y0+46, "Delete", 255, 255, 255, 255);
+        Renderer_DrawRectangle(x0+134, y0+42, 50, 15, 255, 255, 255, 255);
+    }
+    Graphics_RenderText(x0+5, y0+69, "OK", 255, 255, 255, 255);
+    Renderer_DrawRectangle(x0, y0+64, 192, 16, 192, 192, 192, 255);
+    Renderer_SaveState(0);
+    
     while(!sdl_poll())
     {
         bq = b;
         b = SDL_GetMouseState(&mx, &my);
         mx /= sdl_scale;
         my /= sdl_scale;
-        Renderer_RecallState();
-        Renderer_DrawRectangle(x0, y0, 192, 80, 192, 192, 192, 255);
-        Renderer_ClearRectangle(x0, y0, 192, 80);
-        Graphics_RenderText(x0+8, y0+8, nm ? "New sign:" : "Edit sign:", 255, 255, 255, 255);
-        Graphics_RenderText(x0+12, y0+23, "\xA1", 32, 64, 128, 255);
-        Graphics_RenderText(x0+12, y0+23, "\xA0", 255, 255, 255, 255);
-        Renderer_DrawRectangle(x0+8, y0+20, 176, 16, 192, 192, 192, 255);
-        ui_edit_draw(&ed);
-        Graphics_RenderText( x0+8, y0+46, "Justify:", 255, 255, 255, 255);
+        Renderer_RecallState(0);
+        Interface_DrawTextBox(&ed);
+        
         Graphics_RenderIcon(x0+50, y0+42, 0x9D, ju == 0);
         Graphics_RenderIcon(x0+68, y0+42, 0x9E, ju == 1);
         Graphics_RenderIcon(x0+86, y0+42, 0x9F, ju == 2);
 
-        if(!nm)
-        {
-            Graphics_RenderText(x0+138, y0+45, "\x86", 160, 48, 32, 255);
-            Graphics_RenderText(x0+138, y0+45, "\x85", 255, 255, 255, 255);
-            Graphics_RenderText(x0+152, y0+46, "Delete", 255, 255, 255, 255);
-            Renderer_DrawRectangle(x0+134, y0+42, 50, 15, 255, 255, 255, 255);
-        }
+        Renderer_Display();
 
-        Graphics_RenderText(x0+5, y0+69, "OK", 255, 255, 255, 255);
-        Renderer_DrawRectangle(x0, y0+64, 192, 16, 192, 192, 192, 255);
-
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
-
-        ui_edit_process(mx, my, b, &ed);
+        Interface_ProcessTextBox(mx, my, b, &ed);
 
         if(b && !bq && mx>=x0+50 && mx<=x0+67 && my>=y0+42 && my<=y0+59)
             ju = 0;
@@ -215,7 +212,7 @@ void add_sign_ui(int mx, int my)
     signs[i].ju = ju;
 }
 //TODO: Finish text wrapping in text edits
-void ui_edit_draw(ui_edit *ed)
+void Interface_DrawTextBox(TextBox *ed)
 {
     int cx, i, cy;
     char echo[256], *str;
@@ -256,14 +253,13 @@ void ui_edit_draw(ui_edit *ed)
     }
 }
 
-void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
+void Interface_ProcessTextBox(int mx, int my, int mb, TextBox *ed)
 {
     char ch, ts[2], echo[256], *str;
     int l, i;
 #ifdef RAWINPUT
     char *p;
 #endif
-
     if(mb)
     {
         if(ed->hide)
@@ -393,7 +389,7 @@ void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
     }
 }
 
-void ui_checkbox_draw(ui_checkbox *ed)
+void Interface_DrawCheckBox(ui_checkbox *ed)
 {
     int w = 12;
     if(ed->checked)
@@ -410,7 +406,7 @@ void ui_checkbox_draw(ui_checkbox *ed)
     }
 }
 
-void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed)
+void Interface_ProcessCheckBox(int mx, int my, int mb, int mbq, ui_checkbox *ed)
 {
     int w = 12;
 
@@ -434,7 +430,7 @@ void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed)
     }
 }
 
-void draw_svf_ui()
+void Interface_DrawMenu()
 {
     int c;
 
@@ -555,7 +551,7 @@ void draw_svf_ui()
     //    Graphics_RenderText(XRES-45/*465*/, YRES+(MENUSIZE-15), "\x97", 0, 230, 153, 255); Why is this here?
 }
 
-void error_ui(int err, char *txt)
+void Interface_ErrorDialog(int err, char *txt, unsigned char layer)
 {
     int x0=(XRES-240)/2,y0=(YRES-MENUSIZE)/2,b=1,bq,mx,my;
     char *msg;
@@ -572,36 +568,32 @@ void error_ui(int err, char *txt)
         if(!b)
             break;
     }
-    Renderer_SaveState();
+    Renderer_ClearRectangle(x0-2, y0-2, 244, 64);
+    Renderer_DrawRectangle(x0, y0, 240, 60, 192, 192, 192, 255);
+    if(err)
+        Graphics_RenderText(x0+8, y0+8, "HTTP error:", 255, 64, 32, 255);
+    else
+        Graphics_RenderText(x0+8, y0+8, "Error:", 255, 64, 32, 255);
+    Graphics_RenderText(x0+5, y0+49, "Dismiss", 255, 255, 255, 255);
+    Renderer_DrawRectangle(x0, y0+44, 240, 16, 192, 192, 192, 255);
+    Graphics_RenderText(x0+8, y0+26, msg, 255, 255, 255, 255);
+    Renderer_SaveState(layer);
     while(!sdl_poll())
     {
         bq = b;
         b = SDL_GetMouseState(&mx, &my);
         mx /= sdl_scale;
         my /= sdl_scale;
-        Renderer_RecallState();
-        Renderer_ClearRectangle(x0-2, y0-2, 244, 64);
-        Renderer_DrawRectangle(x0, y0, 240, 60, 192, 192, 192, 255);
-        if(err)
-            Graphics_RenderText(x0+8, y0+8, "HTTP error:", 255, 64, 32, 255);
-        else
-            Graphics_RenderText(x0+8, y0+8, "Error:", 255, 64, 32, 255);
-        Graphics_RenderText(x0+8, y0+26, msg, 255, 255, 255, 255);
-        Graphics_RenderText(x0+5, y0+49, "Dismiss", 255, 255, 255, 255);
-        Renderer_DrawRectangle(x0, y0+44, 240, 16, 192, 192, 192, 255);
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
-
+        Renderer_RecallState(layer);
+        Renderer_Display();
         if(b && !bq && mx>=x0 && mx<x0+240 && my>=y0+44 && my<=y0+60)
             break;
-
         if(sdl_key==SDLK_RETURN)
             break;
         if(sdl_key==SDLK_ESCAPE)
             break;
     }
-
     free(msg);
-
     while(!sdl_poll())
     {
         b = SDL_GetMouseState(&mx, &my);
@@ -610,41 +602,37 @@ void error_ui(int err, char *txt)
     }
 }
 
-void info_ui(char *top, char *txt)
+void Interface_InfoDialog(char *top, char *txt, unsigned char layer)
 {
     int x0=(XRES-240)/2,y0=(YRES-MENUSIZE)/2,b=1,bq,mx,my;
-    Renderer_SaveState();
     while(!sdl_poll())
     {
         b = SDL_GetMouseState(&mx, &my);
         if(!b)
             break;
     }
-
+    Renderer_ClearRectangle(x0-2, y0-2, 244, 64);
+    Renderer_DrawRectangle(x0, y0, 240, 60, 192, 192, 192, 255);
+    Graphics_RenderText(x0+8, y0+8, top, 160, 160, 255, 255);
+    Graphics_RenderText(x0+8, y0+26, txt, 255, 255, 255, 255);
+    Graphics_RenderText(x0+5, y0+49, "OK", 255, 255, 255, 255);
+    Renderer_DrawRectangle(x0, y0+44, 240, 16, 192, 192, 192, 255);
+    Renderer_SaveState(layer);
     while(!sdl_poll())
     {
         bq = b;
         b = SDL_GetMouseState(&mx, &my);
         mx /= sdl_scale;
         my /= sdl_scale;
-        Renderer_RecallState();
-        Renderer_ClearRectangle(x0-2, y0-2, 244, 64);
-        Renderer_DrawRectangle(x0, y0, 240, 60, 192, 192, 192, 255);
-        Graphics_RenderText(x0+8, y0+8, top, 160, 160, 255, 255);
-        Graphics_RenderText(x0+8, y0+26, txt, 255, 255, 255, 255);
-        Graphics_RenderText(x0+5, y0+49, "OK", 255, 255, 255, 255);
-        Renderer_DrawRectangle(x0, y0+44, 240, 16, 192, 192, 192, 255);
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
-
+        Renderer_RecallState(layer);
+        Renderer_Display();
         if(b && !bq && mx>=x0 && mx<x0+240 && my>=y0+44 && my<=y0+60)
             break;
-
         if(sdl_key==SDLK_RETURN)
             break;
         if(sdl_key==SDLK_ESCAPE)
             break;
     }
-
     while(!sdl_poll())
     {
         b = SDL_GetMouseState(&mx, &my);
@@ -653,45 +641,42 @@ void info_ui(char *top, char *txt)
     }
 }
 
-void info_box(char *msg)
+void Interface_InfoBox(char *msg)
 {
     int w = GetTextWidth(msg)+16;
     int x0=(XRES-w)/2,y0=(YRES-24)/2;
-
     Renderer_ClearRectangle(x0-2, y0-2, w+4, 28);
     Renderer_DrawRectangle(x0, y0, w, 24, 192, 192, 192, 255);
     Graphics_RenderText(x0+8, y0+8, msg, 192, 192, 240, 255);
 }
 
-int confirm_ui(char *top, char *msg, char *btn)
+int Interface_ConfirmDialog(char *top, char *msg, char *btn, unsigned char layer)
 {
-    Renderer_SaveState();
     int x0=(XRES-240)/2,y0=(YRES-MENUSIZE)/2,b=1,bq,mx,my;
     int ret = 0;
-
     while(!sdl_poll())
     {
         b = SDL_GetMouseState(&mx, &my);
         if(!b)
             break;
     }
-
+    Renderer_ClearRectangle(x0-2, y0-2, 244, 64);
+    Renderer_DrawRectangle(x0, y0, 240, 60, 192, 192, 192, 255);
+    Graphics_RenderText(x0+8, y0+8, top, 255, 216, 32, 255);
+    Graphics_RenderText(x0+8, y0+26, msg, 255, 255, 255, 255);
+    Graphics_RenderText(x0+5, y0+49, "Cancel", 255, 255, 255, 255);
+    Graphics_RenderText(x0+165, y0+49, btn, 255, 216, 32, 255);
+    Renderer_DrawRectangle(x0, y0+44, 160, 16, 192, 192, 192, 255);
+    Renderer_DrawRectangle(x0+160, y0+44, 80, 16, 192, 192, 192, 255);
+    Renderer_SaveState(layer);
     while(!sdl_poll())
     {
         bq = b;
         b = SDL_GetMouseState(&mx, &my);
         mx /= sdl_scale;
         my /= sdl_scale;
-        Renderer_RecallState();
-        Renderer_ClearRectangle(x0-2, y0-2, 244, 64);
-        Renderer_DrawRectangle(x0, y0, 240, 60, 192, 192, 192, 255);
-        Graphics_RenderText(x0+8, y0+8, top, 255, 216, 32, 255);
-        Graphics_RenderText(x0+8, y0+26, msg, 255, 255, 255, 255);
-        Graphics_RenderText(x0+5, y0+49, "Cancel", 255, 255, 255, 255);
-        Graphics_RenderText(x0+165, y0+49, btn, 255, 216, 32, 255);
-        Renderer_DrawRectangle(x0, y0+44, 160, 16, 192, 192, 192, 255);
-        Renderer_DrawRectangle(x0+160, y0+44, 80, 16, 192, 192, 192, 255);
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
+        Renderer_RecallState(layer);
+        Renderer_Display();
 
         if(b && !bq && mx>=x0+160 && mx<x0+240 && my>=y0+44 && my<=y0+60)
         {
@@ -720,10 +705,10 @@ int confirm_ui(char *top, char *msg, char *btn)
     return ret;
 }
 
-void login_ui()
+void Interface_LoginUI()
 {
     int x0=(XRES-192)/2,y0=(YRES-80)/2,b=1,bq,mx,my,err;
-    ui_edit ed1,ed2;
+    TextBox ed1,ed2;
     char *res;
 
     while(!sdl_poll())
@@ -753,32 +738,30 @@ void login_ui()
     strcpy(ed2.str, "");
 
     Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-    Renderer_SaveState();
+    Renderer_DrawRectangle(x0, y0, 192, 80, 192, 192, 192, 255);
+    Renderer_ClearRectangle(x0, y0, 192, 80);
+    Graphics_RenderText(x0+8, y0+8, "Server login:", 255, 255, 255, 255);
+    Graphics_RenderText(x0+12, y0+23, "\x8B", 32, 64, 128, 255);
+    Graphics_RenderText(x0+12, y0+23, "\x8A", 255, 255, 255, 255);
+    Renderer_DrawRectangle(x0+8, y0+20, 176, 16, 192, 192, 192, 255);
+    Graphics_RenderText(x0+11, y0+44, "\x8C", 160, 144, 32, 255);
+    Graphics_RenderText(x0+11, y0+44, "\x84", 255, 255, 255, 255);
+    Renderer_DrawRectangle(x0+8, y0+40, 176, 16, 192, 192, 192, 255);
+    Graphics_RenderText(x0+5, y0+69, "Sign in", 255, 255, 255, 255);
+    Renderer_DrawRectangle(x0, y0+64, 192, 16, 192, 192, 192, 255);
+    Renderer_SaveState(0);
     while(!sdl_poll())
     {
         bq = b;
         b = SDL_GetMouseState(&mx, &my);
         mx /= sdl_scale;
         my /= sdl_scale;
-        Renderer_RecallState();
-        Renderer_DrawRectangle(x0, y0, 192, 80, 192, 192, 192, 255);
-        Renderer_ClearRectangle(x0, y0, 192, 80);
-        Graphics_RenderText(x0+8, y0+8, "Server login:", 255, 255, 255, 255);
-        Graphics_RenderText(x0+12, y0+23, "\x8B", 32, 64, 128, 255);
-        Graphics_RenderText(x0+12, y0+23, "\x8A", 255, 255, 255, 255);
-        Renderer_DrawRectangle(x0+8, y0+20, 176, 16, 192, 192, 192, 255);
-        Graphics_RenderText(x0+11, y0+44, "\x8C", 160, 144, 32, 255);
-        Graphics_RenderText(x0+11, y0+44, "\x84", 255, 255, 255, 255);
-        Renderer_DrawRectangle(x0+8, y0+40, 176, 16, 192, 192, 192, 255);
-        ui_edit_draw(&ed1);
-        ui_edit_draw(&ed2);
-        Graphics_RenderText(x0+5, y0+69, "Sign in", 255, 255, 255, 255);
-        Renderer_DrawRectangle(x0, y0+64, 192, 16, 192, 192, 192, 255);
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
-
-        ui_edit_process(mx, my, b, &ed1);
-        ui_edit_process(mx, my, b, &ed2);
-
+        Renderer_RecallState(0);
+        Interface_DrawTextBox(&ed1);
+        Interface_DrawTextBox(&ed2);
+        Renderer_Display();
+        Interface_ProcessTextBox(mx, my, b, &ed1);
+        Interface_ProcessTextBox(mx, my, b, &ed2);
         if(b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36)
             break;
         if(b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+42 && my<y0+46)
@@ -801,10 +784,8 @@ void login_ui()
             ed2.focus = 0;
         }
     }
-
     strcpy(svf_user, ed1.str);
     md5_ascii(svf_pass, (unsigned char *)ed2.str, 0);
-
     res = http_multipart_post(
               "http://" SERVER "/Login.api",
               NULL, NULL, NULL,
@@ -812,7 +793,7 @@ void login_ui()
               &err, NULL);
     if(err != 200)
     {
-        error_ui(err, http_ret_text(err));
+        Interface_ErrorDialog(err, http_ret_text(err), 0);
         if(res)
             free(res);
         goto fail;
@@ -840,9 +821,8 @@ void login_ui()
     }
     if(!res)
         res = mystrdup("Unspecified Error");
-    error_ui(0, res);
+    Interface_ErrorDialog(0, res, 0);
     free(res);
-
 fail:
     strcpy(svf_user, "");
     strcpy(svf_pass, "");
@@ -852,13 +832,15 @@ fail:
     svf_mod = 0;
 }
 
-int stamp_ui()
+int Interface_StampUI()
 {
     int b=1,bq,mx,my,d=-1,i,j,k,x,gx,gy,y,w,h,r=-1,stamp_page=0,per_page=STAMP_X*STAMP_Y,page_count;
     char page_info[64];
+    BOOL isnewpage = 1;
     page_count = ceil((float)stamp_count/(float)per_page);
     Renderer_ClearRectangle(-1, -1, XRES+BARSIZE+1, YRES+MENUSIZE+1);
-    Renderer_SaveState();
+    Renderer_SaveState(0);
+    Renderer_SaveState(1);
     while(!sdl_poll())
     {
         b = SDL_GetMouseState(&mx, &my);
@@ -872,9 +854,44 @@ int stamp_ui()
         b = SDL_GetMouseState(&mx, &my);
         mx /= sdl_scale;
         my /= sdl_scale;
-        Renderer_RecallState();
+        Renderer_RecallState(1);
         
-        k = stamp_page*per_page;//0;
+        if(isnewpage)
+        {
+            k = stamp_page*per_page;
+            Renderer_RecallState(0);
+            for(j=0; j<GRID_Y; j++)
+                for(i=0; i<GRID_X; i++)
+                {
+                    if(stamps[k].name[0] && stamps[k].thumb)
+                    {
+                        gx = ((XRES/GRID_X)*i) + (XRES/GRID_X-XRES/GRID_S)/2;
+                        gy = ((((YRES-MENUSIZE+20)+15)/GRID_Y)*j) + ((YRES-MENUSIZE+20)/GRID_Y-(YRES-MENUSIZE+20)/GRID_S+10)/2 + 18;
+                        gy -= 20;
+                        w = stamps[k].thumb_w;
+                        h = stamps[k].thumb_h;
+                        Renderer_DrawImage(stamps[k].thumb, gx+(((XRES/GRID_S)/2)-(w/2)), gy+(((YRES/GRID_S)/2)-(h/2)), w, h, 255);
+                        Renderer_XORRectangle(gx+(((XRES/GRID_S)/2)-(w/2)), gy+(((YRES/GRID_S)/2)-(h/2)), w, h);
+                        Graphics_RenderText(gx+XRES/(GRID_S*2)-GetTextWidth(stamps[k].name)/2, gy+YRES/GRID_S+7, stamps[k].name, 192, 192, 192, 255);
+                    }
+                    k++;
+                }
+            sprintf(page_info, "Page %d of %d", stamp_page+1, page_count);
+            Graphics_RenderText((XRES/2)-(GetTextWidth(page_info)/2), YRES+MENUSIZE-14, page_info, 255, 255, 255, 255);
+            if(stamp_page)
+            {
+                Graphics_RenderText(4, YRES+MENUSIZE-14, "\x96", 255, 255, 255, 255);
+                Renderer_DrawRectangle(1, YRES+MENUSIZE-18, 16, 16, 255, 255, 255, 255);
+            }
+            if(stamp_page<page_count-1)
+            {
+                Graphics_RenderText(XRES-15, YRES+MENUSIZE-14, "\x95", 255, 255, 255, 255);
+                Renderer_DrawRectangle(XRES-18, YRES+MENUSIZE-18, 16, 16, 255, 255, 255, 255);
+            }
+            Renderer_SaveState(1);
+            isnewpage = 0;
+        }
+        k = stamp_page*per_page;
         r = -1;
         d = -1;
         for(j=0; j<GRID_Y; j++)
@@ -891,8 +908,6 @@ int stamp_ui()
                     h = stamps[k].thumb_h;
                     x -= w/2;
                     y -= h/2;
-                    Renderer_DrawImage(stamps[k].thumb, gx+(((XRES/GRID_S)/2)-(w/2)), gy+(((YRES/GRID_S)/2)-(h/2)), w, h, 255);
-                    Renderer_XORRectangle(gx+(((XRES/GRID_S)/2)-(w/2)), gy+(((YRES/GRID_S)/2)-(h/2)), w, h);
                     if(mx>=gx+XRES/GRID_S-4 && mx<(gx+XRES/GRID_S)+6 && my>=gy-6 && my<gy+4)
                     {
                         d = k;
@@ -912,37 +927,19 @@ int stamp_ui()
                         }
                         Graphics_RenderText(gx+XRES/GRID_S-4, gy-6, "\x86", 150, 48, 32, 255);
                     }
-                    Graphics_RenderText(gx+XRES/(GRID_S*2)-GetTextWidth(stamps[k].name)/2, gy+YRES/GRID_S+7, stamps[k].name, 192, 192, 192, 255);
                     Graphics_RenderText(gx+XRES/GRID_S-4, gy-6, "\x85", 255, 255, 255, 255);
                 }
                 k++;
             }
-
-        sprintf(page_info, "Page %d of %d", stamp_page+1, page_count);
-
-        Graphics_RenderText((XRES/2)-(GetTextWidth(page_info)/2), YRES+MENUSIZE-14, page_info, 255, 255, 255, 255);
-
-        if(stamp_page)
-        {
-            Graphics_RenderText(4, YRES+MENUSIZE-14, "\x96", 255, 255, 255, 255);
-            Renderer_DrawRectangle(1, YRES+MENUSIZE-18, 16, 16, 255, 255, 255, 255);
-        }
-        if(stamp_page<page_count-1)
-        {
-            Graphics_RenderText(XRES-15, YRES+MENUSIZE-14, "\x95", 255, 255, 255, 255);
-            Renderer_DrawRectangle(XRES-18, YRES+MENUSIZE-18, 16, 16, 255, 255, 255, 255);
-        }
-
+            
+        Renderer_Display();    
         if(b==1&&d!=-1)
         {
-            if(confirm_ui("Do you want to delete?", stamps[d].name, "Delete"))
+            if(Interface_ConfirmDialog("Do you want to delete?", stamps[d].name, "Delete", 1))
             {
                 del_stamp(d);
             }
         }
-
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
-
         if(b==1&&r!=-1)
             break;
         if(b==4&&r!=-1)
@@ -950,12 +947,12 @@ int stamp_ui()
             r = -1;
             break;
         }
-
         if((b && !bq && mx>=1 && mx<=17 && my>=YRES+MENUSIZE-18 && my<YRES+MENUSIZE-2) || sdl_wheel>0)
         {
             if(stamp_page)
             {
                 stamp_page --;
+                isnewpage = 1;
             }
             sdl_wheel = 0;
         }
@@ -964,10 +961,10 @@ int stamp_ui()
             if(stamp_page<page_count-1)
             {
                 stamp_page ++;
+                isnewpage = 1;
             }
             sdl_wheel = 0;
         }
-
         if(sdl_key==SDLK_RETURN)
             break;
         if(sdl_key==SDLK_ESCAPE)
@@ -976,23 +973,21 @@ int stamp_ui()
             break;
         }
     }
-
     while(!sdl_poll())
     {
         b = SDL_GetMouseState(&mx, &my);
         if(!b)
             break;
     }
-
     return r;
 }
 
-void tag_list_ui()
+void Interface_TagListUI()
 {
     int y,d,x0=(XRES-192)/2,y0=(YRES-256)/2,b=1,bq,mx,my,vp,vn;
     char *p,*q,s;
     char *tag=NULL, *op=NULL;
-    ui_edit ed;
+    TextBox ed;
     struct strlist *vote=NULL,*down=NULL;
     ed.x = x0+25;
     ed.y = y0+221;
@@ -1005,7 +1000,15 @@ void tag_list_ui()
     strcpy(ed.str, "");
 
     Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-    Renderer_SaveState();
+    Renderer_DrawRectangle(x0, y0, 192, 256, 192, 192, 192, 255);
+    Renderer_ClearRectangle(x0, y0, 192, 256);
+    Graphics_RenderText(x0+8, y0+8, "Current tags:", 255, 255, 255, 255);
+    Graphics_RenderText(x0+11, y0+219, "\x86", 32, 144, 32, 255);
+    Graphics_RenderText(x0+11, y0+219, "\x89", 255, 255, 255, 255);
+    Renderer_DrawRectangle(x0+8, y0+216, 176, 16, 192, 192, 192, 255);
+    Graphics_RenderText(x0+5, y0+245, "Close", 255, 255, 255, 255);
+    Renderer_DrawRectangle(x0, y0+240, 192, 16, 192, 192, 192, 255);
+    Renderer_SaveState(0);
     while(!sdl_poll())
     {
         bq = b;
@@ -1014,10 +1017,8 @@ void tag_list_ui()
         my /= sdl_scale;
 
         op = tag = NULL;
-        Renderer_RecallState();
-        Renderer_DrawRectangle(x0, y0, 192, 256, 192, 192, 192, 255);
-        Renderer_ClearRectangle(x0, y0, 192, 256);
-        Graphics_RenderText(x0+8, y0+8, "Current tags:", 255, 255, 255, 255);
+        Renderer_RecallState(0);
+
         p = svf_tags;
         s = svf_tags[0] ? ' ' : 0;
         y = 36 + y0;
@@ -1071,15 +1072,11 @@ void tag_list_ui()
             p = q+1;
             y += 16;
         }
-        Graphics_RenderText(x0+11, y0+219, "\x86", 32, 144, 32, 255);
-        Graphics_RenderText(x0+11, y0+219, "\x89", 255, 255, 255, 255);
-        Renderer_DrawRectangle(x0+8, y0+216, 176, 16, 192, 192, 192, 255);
-        ui_edit_draw(&ed);
-        Graphics_RenderText(x0+5, y0+245, "Close", 255, 255, 255, 255);
-        Renderer_DrawRectangle(x0, y0+240, 192, 16, 192, 192, 192, 255);
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
+        Interface_DrawTextBox(&ed);
+        
+        Renderer_Display();
 
-        ui_edit_process(mx, my, b, &ed);
+        Interface_ProcessTextBox(mx, my, b, &ed);
 
         if(b && mx>=x0 && mx<=x0+192 && my>=y0+240 && my<y0+256)
             break;
@@ -1133,12 +1130,12 @@ finish:
     strlist_free(&vote);
 }
 
-int save_name_ui()
+int Interface_SaveUI()
 {
     int x0=(XRES-420)/2,y0=(YRES-68-YRES/4)/2,b=1,bq,mx,my,ths,nd=0;
     void *th;
-    ui_edit ed;
-    ui_edit ed2;
+    TextBox ed;
+    TextBox ed2;
     ui_checkbox cb;
 
     th = build_thumb(&ths, 0);
@@ -1179,41 +1176,33 @@ int save_name_ui()
     cb.checked = svf_publish;
 
     Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-    Renderer_SaveState();
+    Renderer_DrawRectangle(x0, y0, 420, 90+YRES/4, 192, 192, 192, 255);
+    Renderer_ClearRectangle(x0, y0, 420, 90+YRES/4);
+    Graphics_RenderText(x0+8, y0+8, "New simulation name:", 255, 255, 255, 255);
+    Graphics_RenderText(x0+10, y0+23, "\x82", 192, 192, 192, 255);
+    Renderer_DrawRectangle(x0+8, y0+20, 176, 16, 192, 192, 192, 255);
+    Renderer_DrawRectangle(x0+8, y0+40, 176, 95, 192, 192, 192, 255);
+    Renderer_DrawRectangle(x0+(205-XRES/3)/2-2+205, y0+30, XRES/3+3, YRES/3+3, 128, 128, 128, 255);
+    Graphics_RenderText(x0+34, y0+50+YRES/4, "Publish? (Do not publish others'\nworks without permission)", 192, 192, 192, 255);
+    Graphics_RenderText(x0+5, y0+79+YRES/4, "Save simulation", 255, 255, 255, 255);
+    Renderer_DrawRectangle(x0, y0+74+YRES/4, 192, 16, 192, 192, 192, 255);
+    Renderer_DrawLine(x0+192, y0, x0+192, y0+90+YRES/4, 150, 150, 150, 255);
+    Graphics_RenderThumbnail(th, ths, 0, x0+(205-XRES/3)/2+205, y0+32, 3);
+    Renderer_SaveState(0);
     while(!sdl_poll())
     {
         bq = b;
         b = SDL_GetMouseState(&mx, &my);
         mx /= sdl_scale;
         my /= sdl_scale;
-        Renderer_RecallState();
-        Renderer_DrawRectangle(x0, y0, 420, 90+YRES/4, 192, 192, 192, 255);
-        Renderer_ClearRectangle(x0, y0, 420, 90+YRES/4);
-        Graphics_RenderText(x0+8, y0+8, "New simulation name:", 255, 255, 255, 255);
-        Graphics_RenderText(x0+10, y0+23, "\x82", 192, 192, 192, 255);
-        Renderer_DrawRectangle(x0+8, y0+20, 176, 16, 192, 192, 192, 255);
-        
-        Renderer_DrawRectangle(x0+8, y0+40, 176, 95, 192, 192, 192, 255);
-
-        ui_edit_draw(&ed);
-        ui_edit_draw(&ed2);
-
-        Renderer_DrawRectangle(x0+(205-XRES/3)/2-2+205, y0+30, XRES/3+3, YRES/3+3, 128, 128, 128, 255);
-
-        ui_checkbox_draw(&cb);
-        Graphics_RenderText(x0+34, y0+50+YRES/4, "Publish? (Do not publish others'\nworks without permission)", 192, 192, 192, 255);
-
-        Graphics_RenderText(x0+5, y0+79+YRES/4, "Save simulation", 255, 255, 255, 255);
-        Renderer_DrawRectangle(x0, y0+74+YRES/4, 192, 16, 192, 192, 192, 255);
-        
-        Renderer_DrawLine(x0+192, y0, x0+192, y0+90+YRES/4, 150, 150, 150, 255);
-        
-        ui_edit_process(mx, my, b, &ed);
-        ui_edit_process(mx, my, b, &ed2);
-        ui_checkbox_process(mx, my, b, bq, &cb);
-        
-        Graphics_RenderThumbnail(th, ths, 0, x0+(205-XRES/3)/2+205, y0+32, 3);
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
+        Renderer_RecallState(0);
+        Interface_DrawTextBox(&ed);
+        Interface_DrawTextBox(&ed2);
+        Interface_DrawCheckBox(&cb);
+        Renderer_Display();
+        Interface_ProcessTextBox(mx, my, b, &ed);
+        Interface_ProcessTextBox(mx, my, b, &ed2);
+        Interface_ProcessCheckBox(mx, my, b, bq, &cb);
         
         if(b && !bq && ((mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36) ||
                         (mx>=x0 && mx<x0+192 && my>=y0+74+YRES/4 && my<y0+90+YRES/4)))
@@ -1268,201 +1257,7 @@ int save_name_ui()
     return 0;
 }
 
-/*
-void menu_ui(int i, int *sl, int *sr)
-{
-    int b=1,bq,mx,my,h,x,y,n=0,height,width,sy,rows=0;
-    Renderer_FillRectangle(-1, -1, XRES+1, YRES+MENUSIZE, 0, 0, 0, 192);
-    Renderer_SaveState();
-
-    while(!sdl_poll())
-    {
-        b = SDL_GetMouseState(&mx, &my);
-        if(!b)
-            break;
-    }
-    while(!sdl_poll())
-    {
-        bq = b;
-        b = SDL_GetMouseState(&mx, &my);
-        mx /= sdl_scale;
-        my /= sdl_scale;
-        rows = ceil((float)msections[i].itemcount/16.0f);
-        height = (ceil((float)msections[i].itemcount/16.0f)*18);
-        width = restrict_flt(msections[i].itemcount*31, 0, 16*31);
-        //Renderer_ClearRectangle(-1, -1, XRES+1, YRES+MENUSIZE+1);
-        h = -1;
-        x = XRES-BARSIZE-26;
-        y = (((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2))-(height/2)+(FONT_H/2)+1;
-        sy = y;
-        //Renderer_ClearRectangle((XRES-BARSIZE-width)+1, y-4, width+4, height+4+rows);
-        Renderer_FillRectangle((XRES-BARSIZE-width)-7, y-10, width+16, height+16+rows, 0, 0, 0, 100);
-        Renderer_DrawRectangle((XRES-BARSIZE-width)-7, y-10, width+16, height+16+rows, 255, 255, 255, 255);
-        Renderer_FillRectangle((XRES-BARSIZE)+11, (((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2))-2, 15, FONT_H+3, 0, 0, 0, 100);
-        Renderer_DrawRectangle((XRES-BARSIZE)+10, (((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2))-2, 16, FONT_H+3, 255, 255, 255, 255);
-        Renderer_DrawRectangle((XRES-BARSIZE)+9, (((YRES/SC_TOTAL)*i)+((YRES/SC_TOTAL)/2))-1, 1, FONT_H+1, 0, 0, 0, 255);
-        if(i==SC_WALL)
-        {
-            for(n = 122; n<122+UI_WALLCOUNT; n++)
-            {
-                if(n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
-                {
-                    if(x-26<=60)
-                    {
-                        x = XRES-BARSIZE-26;
-                        y += 19;
-                    }
-                    x -= Graphics_RenderToolsXY(x, y, n, mwalls[n-122].colour)+5;
-                    if(mx>=x+32 && mx<x+58 && my>=y && my< y+15)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 255, 0, 0, 255);
-                        h = n;
-                    }
-                    else if(n==*sl)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 255, 0, 0, 255);
-                    }
-                    else if(n==*sr)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 0, 0, 255, 255);
-                    }
-                }
-            }
-        }
-        else if(i==SC_SPECIAL)
-        {
-            for(n = 122; n<122+UI_WALLCOUNT; n++)
-            {
-                if(n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
-                {
-                    if(x-26<=60)
-                    {
-                        x = XRES-BARSIZE-26;
-                        y += 19;
-                    }
-                    x -= Graphics_RenderToolsXY(x, y, n, mwalls[n-122].colour)+5;
-                    if(mx>=x+32 && mx<x+58 && my>=y && my< y+15)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 255, 0, 0, 255);
-                        h = n;
-                    }
-                    else if(n==*sl)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 255, 0, 0, 255);
-                    }
-                    else if(n==*sr)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 0, 0, 255, 255);
-                    }
-                }
-            }
-            for(n = 0; n<PT_NUM; n++)
-            {
-                if(ptypes[n].menusection==i&&ptypes[n].menu==1)
-                {
-                    if(x-26<=60)
-                    {
-                        x = XRES-BARSIZE-26;
-                        y += 19;
-                    }
-                    x -= Graphics_RenderToolsXY(x, y, n, ptypes[n].pcolors)+5;
-                    if(mx>=x+32 && mx<x+58 && my>=y && my< y+15)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 255, 0, 0, 255);
-                        h = n;
-                    }
-                    else if(n==*sl)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 255, 0, 0, 255);
-                    }
-                    else if(n==*sr)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 0, 0, 255, 255);
-                    }
-                }
-            }
-        }
-        else
-        {
-            for(n = 0; n<PT_NUM; n++)
-            {
-                if(ptypes[n].menusection==i&&ptypes[n].menu==1)
-                {
-                    if(x-26<=60)
-                    {
-                        x = XRES-BARSIZE-26;
-                        y += 19;
-                    }
-                    x -= Graphics_RenderToolsXY(x, y, n, ptypes[n].pcolors)+5;
-                    if(mx>=x+32 && mx<x+58 && my>=y && my< y+15)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 255, 0, 0, 255);
-                        h = n;
-                    }
-                    else if(n==*sl)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 255, 0, 0, 255);
-                    }
-                    else if(n==*sr)
-                    {
-                        Renderer_DrawRectangle(x+30, y-1, 29, 17, 0, 0, 255, 255);
-                    }
-                }
-            }
-        }
-
-        if(h==-1)
-        {
-            Graphics_RenderText(XRES-GetTextWidth((char *)msections[i].name)-BARSIZE, sy+height+10, (char *)msections[i].name, 255, 255, 255, 255);
-        }
-        else if(i==SC_WALL||(i==SC_SPECIAL&&h>=122))
-        {
-            Graphics_RenderText(XRES-GetTextWidth((char *)mwalls[h-122].descs)-BARSIZE, sy+height+10, (char *)mwalls[h-122].descs, 255, 255, 255, 255);
-        }
-        else
-        {
-            Graphics_RenderText(XRES-GetTextWidth((char *)ptypes[h].descs)-BARSIZE, sy+height+10, (char *)ptypes[h].descs, 255, 255, 255, 255);
-        }
-
-
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
-        Renderer_RecallState();
-        if(!(mx>=(XRES-BARSIZE-width)-7 && my>=sy-10 && my<sy+height+9))
-        {
-            break;
-        }
-
-        if(b==1&&h!=-1)
-        {
-            *sl = h;
-            break;
-        }
-        if(b==4&&h!=-1)
-        {
-            *sr = h;
-            break;
-        }
-        //if(b==4&&h!=-1) {
-        //    h = -1;
-        //    break;
-        //}
-
-        if(sdl_key==SDLK_RETURN)
-            break;
-        if(sdl_key==SDLK_ESCAPE)
-            break;
-    }
-    while(!sdl_poll())
-    {
-        b = SDL_GetMouseState(&mx, &my);
-        if(!b)
-            break;
-    }
-    //Graphics_RenderText(XRES+2, (12*i)+2, msections[i].icon, 255, 255, 255, 255);
-}
-*/
-
-void menu_ui_v3(int i, int *sl, int *sr, int b, int bq, int mx, int my)
+void Interface_DrawToolbar(int i, int *sl, int *sr, int b, int bq, int mx, int my)
 {
     int h,x,y,n=0,height,width,sy,rows=0;
     mx /= sdl_scale;
@@ -1686,7 +1481,7 @@ int sdl_poll(void)
     return 0;
 }
 
-void set_cmode(int cm)
+void Interface_SetCmode(int cm)
 {
     cmode = cm;
     itc = 51;
@@ -1726,7 +1521,7 @@ void set_cmode(int cm)
         strcpy(itc_msg, "Velocity Display");
 }
 
-char *download_ui(char *uri, int *len)
+char *Interface_DownloadUI(char *uri, int *len)
 {
     int dstate = 0;
     void *http = http_async_req_start(NULL, uri, NULL, 0, 0);
@@ -1760,20 +1555,20 @@ char *download_ui(char *uri, int *len)
             Graphics_RenderText(x0+120-GetTextWidth("Waiting...")/2, y0+48, "Waiting...", 255, 216, 32, 255);
 
         Renderer_DrawRectangle(x0, y0+44, 240, 16, 192, 192, 192, 255);
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
+        Renderer_Display();
     }
 
     tmp = http_async_req_stop(http, &ret, &zlen);
     if(ret!=200)
     {
-        error_ui(ret, http_ret_text(ret));
+        Interface_ErrorDialog(ret, http_ret_text(ret), 1);
         if(tmp)
             free(tmp);
         return NULL;
     }
     if(!tmp)
     {
-        error_ui(0, "Server did not return data");
+        Interface_ErrorDialog(0, "Server did not return data", 1);
         return NULL;
     }
 
@@ -1813,19 +1608,19 @@ char *download_ui(char *uri, int *len)
     return res;
 
 corrupt:
-    error_ui(0, "Downloaded update is corrupted");
+    Interface_ErrorDialog(0, "Downloaded update is corrupted", 1);
     free(tmp);
     return NULL;
 }
 
-int search_ui()
+int Interface_SearchUI()
 {
     int uih=0,nyu,nyd,b=1,bq,mx=0,my=0,mxq=0,myq=0,mmt=0,gi,gj,gx,gy,pos,i,mp,dp,dap,own,last_own=search_own,last_fav=search_fav,page_count=0,last_page=0,last_date=0,j,w,h,st=0,lv;
     int is_p1=0, exp_res=GRID_X*GRID_Y, tp, view_own=0;
     int thumb_drawn[GRID_X*GRID_Y];
     float ry;
     time_t http_last_use=HTTP_TIMEOUT;
-    ui_edit ed;
+    TextBox ed;
 
 
     void *http = NULL;
@@ -1879,7 +1674,9 @@ int search_ui()
     strcpy(ed.str, search_expr);
 
     sdl_wheel = 0;
-
+    
+    Renderer_ClearRectangle(-1, -1, (XRES+BARSIZE)+1, YRES+MENUSIZE+1);
+    Renderer_SaveState(0);
     while(!sdl_poll())
     {
         uih = 0;
@@ -1895,8 +1692,40 @@ int search_ui()
         else if(mmt<TIMEOUT)
             mmt++;
 
-        Renderer_ClearRectangle(-1, -1, (XRES+BARSIZE)+1, YRES+MENUSIZE+1);
+        Renderer_RecallState(0);
 
+        for(gj=0; gj<GRID_Y; gj++)
+            for(gi=0; gi<GRID_X; gi++)
+            {
+                if(is_p1)
+                {
+                    pos = gi+GRID_X*(gj-GRID_Y+GRID_P);
+                    if(pos<0)
+                        break;
+                }
+                else
+                    pos = gi+GRID_X*gj;
+                gx = ((XRES/GRID_X)*gi) + (XRES/GRID_X-XRES/GRID_S)/2;
+                gy = ((((YRES-(MENUSIZE-20))+15)/GRID_Y)*gj) + ((YRES-(MENUSIZE-20))/GRID_Y-(YRES-(MENUSIZE-20))/GRID_S+10)/2 + 18;
+                if(!search_ids[pos])
+                {
+                    Renderer_ClearRectangle(gx-2, gy-2, XRES/GRID_S+3, YRES/GRID_S+3);
+                    break;
+                }
+                if(search_thumbs[pos]&&thumb_drawn[pos]==0)
+                {
+                    Graphics_RenderThumbnail(search_thumbs[pos], search_thsizes[pos], 1, gx, gy, GRID_S);
+                    Renderer_SaveState(0);
+                    thumb_drawn[pos] = 1;
+                }
+                else if(thumb_drawn[pos]==0)
+                {
+                    Renderer_ClearRectangle(gx-2, gy-2, XRES/GRID_S+3, YRES/GRID_S+3);
+                    Renderer_SaveState(0);
+                }
+            }
+        
+        
         Graphics_RenderText(11, 13, "Search:", 192, 192, 192, 255);
         if(!last || (!active && strcmp(last, ed.str)))
             Graphics_RenderText(51, 11, "\x8E", 192, 160, 32, 255);
@@ -1965,7 +1794,7 @@ int search_ui()
             Renderer_DrawRectangle(XRES-18, YRES+MENUSIZE-20, 16, 16, 255, 255, 255, 255);
         }
 
-        ui_edit_draw(&ed);
+        Interface_DrawTextBox(&ed);
 
         if((b && !bq && mx>=1 && mx<=17 && my>=YRES+MENUSIZE-20 && my<YRES+MENUSIZE-4) || sdl_wheel>0)
         {
@@ -1992,6 +1821,7 @@ int search_ui()
         tp = -1;
         if(is_p1)
         {
+            Renderer_ClearRectangle(-1, 24, (XRES+BARSIZE)+1, 106);
             Graphics_RenderText((XRES-GetTextWidth("Popular tags:"))/2, 31, "Popular tags:", 255, 192, 64, 255);
             for(gj=0; gj<((GRID_Y-GRID_P)*YRES)/(GRID_Y*14); gj++)
                 for(gi=0; gi<GRID_X; gi++)
@@ -2083,11 +1913,6 @@ int search_ui()
                 else
                     Renderer_DrawRectangle(gx-2, gy-2, XRES/GRID_S+3, YRES/GRID_S+3, 128, 128, 128, 255);
 
-                if(search_thumbs[pos]&&thumb_drawn[pos]==0)
-                {
-                    Graphics_RenderThumbnail(search_thumbs[pos], search_thsizes[pos], 1, gx, gy, GRID_S);
-                    //thumb_drawn[pos] = 1;
-                }
                 if(!search_publish[pos])
                 {
                     Graphics_RenderText(gx-6, gy-6, "\xCD", 255, 255, 255, 255);
@@ -2185,9 +2010,9 @@ int search_ui()
                 Graphics_RenderThumbnail(search_thumbs[mp], search_thsizes[mp], 1, gx+(w-(XRES/GRID_Z))/2, gy, GRID_Z);
         }
 
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
+        Renderer_Display();
 
-        ui_edit_process(mx, my, b, &ed);
+        Interface_ProcessTextBox(mx, my, b, &ed);
 
         if(sdl_key==SDLK_RETURN)
         {
@@ -2220,7 +2045,7 @@ int search_ui()
         }
 
         if(b && !bq && dp!=-1)
-            if(confirm_ui("Do you want to delete?", search_names[dp], "Delete"))
+            if(Interface_ConfirmDialog("Do you want to delete?", search_names[dp], "Delete", 1))
             {
                 execute_delete(search_ids[dp]);
                 lasttime = TIMEOUT;
@@ -2255,7 +2080,7 @@ int search_ui()
 
         if((b && !bq && mp!=-1 && !st && !uih) || do_open==1)
         {
-            if(open_ui(search_ids[mp], search_dates[mp]?search_dates[mp]:NULL)==1) {
+            if(Interface_OpenUI(search_ids[mp], search_dates[mp]?search_dates[mp]:NULL)==1) {
                 goto finish;
             }
         }
@@ -2457,10 +2282,10 @@ finish:
     return 0;
 }
 
-int report_ui( char *save_id)
+int Interface_ReportUI(char *save_id)
 {
     int b=1,bq,mx,my;
-    ui_edit ed;
+    TextBox ed;
     ed.x = 209;
     ed.y = 159;
     ed.w = (XRES+BARSIZE-400)-18;
@@ -2472,7 +2297,15 @@ int report_ui( char *save_id)
     ed.multiline = 1;
     ed.cursor = 0;
     strcpy(ed.str, "");
-
+    Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+    Renderer_FillRectangle(200, 150, (XRES+BARSIZE-400), (YRES+MENUSIZE-300), 0,0,0, 255);
+    Renderer_DrawRectangle(200, 150, (XRES+BARSIZE-400), (YRES+MENUSIZE-300), 255, 255, 255, 255);
+    Renderer_DrawRectangle(205, 155, (XRES+BARSIZE-400)-10, (YRES+MENUSIZE-300)-28, 255, 255, 255, 170);
+    Renderer_DrawRectangle(200, (YRES+MENUSIZE-150)-18, 50, 18, 255, 255, 255, 255);
+    Graphics_RenderText(213, (YRES+MENUSIZE-150)-13, "Cancel", 255, 255, 255, 255);
+    Renderer_DrawRectangle((XRES+BARSIZE-400)+150, (YRES+MENUSIZE-150)-18, 50, 18, 255, 255, 255, 255);
+    Graphics_RenderText((XRES+BARSIZE-400)+163, (YRES+MENUSIZE-150)-13, "Report", 255, 255, 255, 255);
+    Renderer_SaveState(2);
     while(!sdl_poll())
     {
         b = SDL_GetMouseState(&mx, &my);
@@ -2480,29 +2313,16 @@ int report_ui( char *save_id)
             break;
     }
     while(!sdl_poll()){
-        Renderer_RecallState();
-        Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-        Renderer_FillRectangle(200, 150, (XRES+BARSIZE-400), (YRES+MENUSIZE-300), 0,0,0, 255);
-        Renderer_DrawRectangle(200, 150, (XRES+BARSIZE-400), (YRES+MENUSIZE-300), 255, 255, 255, 255);
-        
-        Renderer_DrawRectangle(205, 155, (XRES+BARSIZE-400)-10, (YRES+MENUSIZE-300)-28, 255, 255, 255, 170);
-    
         bq = b;
         b = SDL_GetMouseState(&mx, &my);
         mx /= sdl_scale;
         my /= sdl_scale;
-        
-
-        Renderer_DrawRectangle(200, (YRES+MENUSIZE-150)-18, 50, 18, 255, 255, 255, 255);
-        Graphics_RenderText(213, (YRES+MENUSIZE-150)-13, "Cancel", 255, 255, 255, 255);
-        
-        Renderer_DrawRectangle((XRES+BARSIZE-400)+150, (YRES+MENUSIZE-150)-18, 50, 18, 255, 255, 255, 255);
-        Graphics_RenderText((XRES+BARSIZE-400)+163, (YRES+MENUSIZE-150)-13, "Report", 255, 255, 255, 255);
+        Renderer_RecallState(2);
         if(mx>(XRES+BARSIZE-400)+150 && my>(YRES+MENUSIZE-150)-18 && mx<(XRES+BARSIZE-400)+200 && my<(YRES+MENUSIZE-150)){
             Renderer_FillRectangle((XRES+BARSIZE-400)+150, (YRES+MENUSIZE-150)-18, 50, 18, 255, 255, 255, 40);
             if(b){
                 if(execute_report(save_id, ed.str)){
-                    info_ui("Success", "This save has been reported");
+                    Interface_InfoDialog("Success", "This save has been reported", 3);
                     return 1;
                 } else {
                     return 0;
@@ -2514,14 +2334,14 @@ int report_ui( char *save_id)
             if(b)
                 return 0;
         }
-        ui_edit_draw(&ed);
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
-        ui_edit_process(mx, my, b, &ed);
+        Interface_DrawTextBox(&ed);
+        Renderer_Display();
+        Interface_ProcessTextBox(mx, my, b, &ed);
     }
     return 0;
 }
 
-int open_ui(char *save_id, char *save_date)
+int Interface_OpenUI(char *save_id, char *save_date)
 {
     int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawnthumb=0,authoritah=0,myown=0,queue_open=0,data_size=0,retval=0,bc=255,openable=1;
     int nyd,nyu,ry,lv;
@@ -2534,7 +2354,7 @@ int open_ui(char *save_id, char *save_date)
     int status, status_2, info_ready = 0, data_ready = 0;
     time_t http_last_use = HTTP_TIMEOUT,  http_last_use_2 = HTTP_TIMEOUT;
     pixel *save_pic;// = malloc((XRES/2)*(YRES/2));
-    ui_edit ed;
+    TextBox ed;
 
     Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 
@@ -2556,8 +2376,6 @@ int open_ui(char *save_id, char *save_date)
     ed.cursor = 0;
     strcpy(ed.str, "");
     
-    Renderer_SaveState();
-
     while(!sdl_poll())
     {
         b = SDL_GetMouseState(&mx, &my);
@@ -2602,13 +2420,14 @@ int open_ui(char *save_id, char *save_date)
     free(uri_2);
     active = 1;
     active_2 = 1;
+    
+    Renderer_SaveState(1);
     while(!sdl_poll())
     {
         bq = b;
         b = SDL_GetMouseState(&mx, &my);
         mx /= sdl_scale;
         my /= sdl_scale;
-
         if(active && http_async_req_status(http))
         {
             int imgh, imgw, nimgh, nimgw;
@@ -2633,7 +2452,7 @@ int open_ui(char *save_id, char *save_date)
             {
                 info_ready = info_parse(info_data, info);
                 if(info_ready==-1) {
-                    error_ui(0, "Not found");
+                    Interface_ErrorDialog(0, "Not found", 1);
                     break;
                 }
             }
@@ -2647,7 +2466,7 @@ int open_ui(char *save_id, char *save_date)
             Renderer_ClearRectangle(50, 50, thumb_w+1, thumb_h+1);
             Renderer_DrawImage(save_pic, 51, 51, thumb_w, thumb_h, 255);
             hasdrawnthumb = 1;
-            Renderer_SaveState();
+            Renderer_SaveState(1);
         }
         if(info_ready && !hasdrawninfo) {
             //Render all the save information
@@ -2704,7 +2523,7 @@ int open_ui(char *save_id, char *save_date)
             hasdrawninfo = 1;
             myown = svf_login && !strcmp(info->author, svf_user);
             authoritah = svf_login && (!strcmp(info->author, svf_user) || svf_admin || svf_mod);
-            Renderer_SaveState();
+            Renderer_SaveState(1);
         }
         if(info_ready && svf_login){
             //Render the comment box.
@@ -2713,7 +2532,7 @@ int open_ui(char *save_id, char *save_date)
             
             Renderer_DrawRectangle(54+(XRES/2)+1, YRES+MENUSIZE-121, XRES+BARSIZE-108-((XRES/2)+1), 48, 255, 255, 255, 200);
             
-            ui_edit_draw(&ed);
+            Interface_DrawTextBox(&ed);
             
             Renderer_DrawRectangle(XRES+BARSIZE-100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
             Graphics_RenderText(XRES+BARSIZE-90, YRES+MENUSIZE-63, "Submit", 255, 255, 255, 255);
@@ -2762,7 +2581,7 @@ int open_ui(char *save_id, char *save_date)
         if(b && !bq) {
                 //Button Clicked
         Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-        info_box("Adding to favourites...");
+        Interface_InfoBox("Adding to favourites...");
         execute_fav(save_id);
             }
     }
@@ -2771,7 +2590,7 @@ int open_ui(char *save_id, char *save_date)
             Renderer_FillRectangle(150, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
             if(b && !bq) {
                 //Button Clicked
-                if(report_ui(save_id)){
+                if(Interface_ReportUI(save_id)){
                     retval = 0;
                     break;                            
                 }
@@ -2783,18 +2602,18 @@ int open_ui(char *save_id, char *save_date)
             if(b && !bq) {
                 //Button Clicked
                 if(myown || !info->publish){
-                    if(confirm_ui("Are you sure you wish to delete this?", "You will not be able recover it.", "Delete")){
+                    if(Interface_ConfirmDialog("Are you sure you wish to delete this?", "You will not be able recover it.", "Delete", 2)){
                         Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-                        info_box("Deleting...");
+                        Interface_InfoBox("Deleting...");
                         if(execute_delete(save_id)){
                             retval = 0;
                             break;    
                         }
                     }    
                 } else {
-                    if(confirm_ui("Are you sure?", "This save will be removed from the search index.", "Remove")){
+                    if(Interface_ConfirmDialog("Are you sure?", "This save will be removed from the search index.", "Remove", 2)){
                         Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-                        info_box("Removing...");
+                        Interface_InfoBox("Removing...");
                         if(execute_delete(save_id)){
                             retval = 0;
                             break;                            
@@ -2822,7 +2641,7 @@ int open_ui(char *save_id, char *save_date)
         if(b && !bq) {
                 //Button Clicked
             Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-            info_box("Submitting Comment...");
+            Interface_InfoBox("Submitting Comment...");
             execute_submit(save_id, ed.str);
             }
     }
@@ -2872,7 +2691,7 @@ int open_ui(char *save_id, char *save_date)
                     if(svf_last)
                         free(svf_last);
                     svf_last = NULL;
-                    error_ui(0, "An Error Occurred");
+                    Interface_ErrorDialog(0, "An Error Occurred", 2);
                 }
             } else {
                 Renderer_FillRectangle(-1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 190);
@@ -2882,13 +2701,13 @@ int open_ui(char *save_id, char *save_date)
         
         if(!info_ready || !data_ready)
         {
-            info_box("Loading");
+            Interface_InfoBox("Loading");
         }
         
-        Renderer_Display(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, (XRES+BARSIZE));
-        Renderer_RecallState();
+        Renderer_Display();
+        Renderer_RecallState(1);
         if(info_ready && svf_login){
-            ui_edit_process(mx, my, b, &ed);
+            Interface_ProcessTextBox(mx, my, b, &ed);
         }
 
         if(sdl_key==SDLK_ESCAPE){
@@ -3321,14 +3140,14 @@ int execute_tagop(char *op, char *tag)
 
     if(status!=200)
     {
-        error_ui(status, http_ret_text(status));
+        Interface_ErrorDialog(status, http_ret_text(status), 2);
         if(result)
             free(result);
         return 1;
     }
     if(result && strncmp(result, "OK", 2))
     {
-        error_ui(0, result);
+        Interface_ErrorDialog(0, result, 2);
         free(result);
         return 1;
     }
@@ -3386,14 +3205,14 @@ void execute_save()
 
     if(status!=200)
     {
-        error_ui(status, http_ret_text(status));
+        Interface_ErrorDialog(status, http_ret_text(status), 2);
         if(result)
             free(result);
         return;
     }
     if(result && strncmp(result, "OK", 2))
     {
-        error_ui(0, result);
+        Interface_ErrorDialog(0, result, 2);
         free(result);
         return;
     }
@@ -3406,7 +3225,7 @@ void execute_save()
 
     if(!svf_id[0])
     {
-        error_ui(0, "No ID supplied by server");
+        Interface_ErrorDialog(0, "No ID supplied by server", 2);
         free(result);
         return;
     }
@@ -3436,14 +3255,14 @@ int execute_delete(char *id)
 
     if(status!=200)
     {
-        error_ui(status, http_ret_text(status));
+        Interface_ErrorDialog(status, http_ret_text(status), 2);
         if(result)
             free(result);
         return 0;
     }
     if(result && strncmp(result, "OK", 2))
     {
-        error_ui(0, result);
+        Interface_ErrorDialog(0, result, 2);
         free(result);
         return 0;
     }
@@ -3472,14 +3291,14 @@ void execute_submit(char *id, char *message)
 
     if(status!=200)
     {
-        error_ui(status, http_ret_text(status));
+        Interface_ErrorDialog(status, http_ret_text(status), 2);
         if(result)
             free(result);
         return;
     }
     if(result && strncmp(result, "OK", 2))
     {
-        error_ui(0, result);
+        Interface_ErrorDialog(0, result, 2);
         free(result);
         return;
     }
@@ -3507,14 +3326,14 @@ int execute_report(char *id, char *reason)
 
     if(status!=200)
     {
-        error_ui(status, http_ret_text(status));
+        Interface_ErrorDialog(status, http_ret_text(status), 2);
         if(result)
             free(result);
         return 0;
     }
     if(result && strncmp(result, "OK", 2))
     {
-        error_ui(0, result);
+        Interface_ErrorDialog(0, result, 2);
         free(result);
         return 0;
     }
@@ -3542,14 +3361,14 @@ void execute_fav(char *id)
 
     if(status!=200)
     {
-        error_ui( status, http_ret_text(status));
+        Interface_ErrorDialog( status, http_ret_text(status), 2);
         if(result)
             free(result);
         return;
     }
     if(result && strncmp(result, "OK", 2))
     {
-        error_ui( 0, result);
+        Interface_ErrorDialog( 0, result, 2);
         free(result);
         return;
     }
@@ -3577,14 +3396,14 @@ int execute_vote(char *id, char *action)
 
     if(status!=200)
     {
-        error_ui( status, http_ret_text(status));
+        Interface_ErrorDialog( status, http_ret_text(status), 0);
         if(result)
             free(result);
         return 0;
     }
     if(result && strncmp(result, "OK", 2))
     {
-        error_ui(0, result);
+        Interface_ErrorDialog(0, result, 0);
         free(result);
         return 0;
     }

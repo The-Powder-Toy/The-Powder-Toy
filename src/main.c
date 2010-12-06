@@ -967,7 +967,7 @@ int main(int argc, char *argv[])
 #else
     old_ver_len = GetTextWidth(old_ver_msg);
 #endif
-    menu_count();
+    Interface_CountMenus();
     parts = calloc(sizeof(particle), NPART);
     cb_parts = calloc(sizeof(particle), NPART);
     for(i=0; i<NPART-1; i++)
@@ -1009,7 +1009,7 @@ int main(int argc, char *argv[])
 
     if(cpu_check())
     {
-        error_ui(0, "Unsupported CPU. Try another version.");
+        Interface_ErrorDialog(0, "Unsupported CPU. Try another version.", 0);
         return 1;
     }
 
@@ -1104,7 +1104,7 @@ int main(int argc, char *argv[])
         Renderer_ClearMenu();
         Renderer_ClearRectangle(XRES-2, -1, BARSIZE+3, YRES+2);
 
-        draw_svf_ui();
+        Interface_DrawMenu();
 
         if(http_ver_check)
         {
@@ -1131,7 +1131,7 @@ int main(int argc, char *argv[])
 
         if(sdl_key=='q' || sdl_key==SDLK_ESCAPE)
         {
-            if(confirm_ui("You are about to quit", "Are you sure you want to quit?", "Quit"))
+            if(Interface_ConfirmDialog("You are about to quit", "Are you sure you want to quit?", "Quit", 0))
             {
                 break;
             }
@@ -1163,7 +1163,7 @@ int main(int argc, char *argv[])
                 it = 50;
             if(sdl_key=='k' && stamps[1].name[0])
             {
-                j = stamp_ui();
+                j = Interface_StampUI();
                 if(j>=0)
                     load_data = stamp_load(j, &load_size);
                 else
@@ -1188,31 +1188,31 @@ int main(int argc, char *argv[])
         }
         if(sdl_key=='1')
         {
-            set_cmode(0);
+            Interface_SetCmode(0);
         }
         if(sdl_key=='2')
         {
-            set_cmode(1);
+            Interface_SetCmode(1);
         }
         if(sdl_key=='3')
         {
-            set_cmode(2);
+            Interface_SetCmode(2);
         }
         if(sdl_key=='4')
         {
-            set_cmode(3);
+            Interface_SetCmode(3);
         }
         if(sdl_key=='5')
         {
-            set_cmode(4);
+            Interface_SetCmode(4);
         }
         if(sdl_key=='6')
         {
-            set_cmode(5);
+            Interface_SetCmode(5);
         }
         if(sdl_key=='7')
         {
-            set_cmode(6);
+            Interface_SetCmode(6);
         }
         if(sdl_key==SDLK_LEFTBRACKET) {
             if(sdl_zoom_trig==1)
@@ -1293,7 +1293,7 @@ int main(int argc, char *argv[])
         }
         else if(sdl_key=='c')
         {
-            set_cmode((cmode+1) % 7);
+            Interface_SetCmode((cmode+1) % 7);
             if(it > 50)
                 it = 50;
         }
@@ -1369,7 +1369,7 @@ int main(int argc, char *argv[])
                 active_menu = i;
             }
         }
-        menu_ui_v3(active_menu, &sl, &sr, b, bq, x, y);
+        Interface_DrawToolbar(active_menu, &sl, &sr, b, bq, x, y);
 
         if(zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy
                 && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
@@ -1399,18 +1399,18 @@ int main(int argc, char *argv[])
         my = y;
         if(update_flag)
         {
-            info_box("Finalizing update...");
+            Interface_InfoBox("Finalizing update...");
             if(last_major>SAVE_VERSION || (last_major==SAVE_VERSION && last_minor>=MINOR_VERSION))
             {
                 update_cleanup();
-                error_ui(0, "Update failed - try downloading a new version.");
+                Interface_ErrorDialog(0, "Update failed - try downloading a new version.", 1);
             }
             else
             {
                 if(update_finish())
-                    error_ui(0, "Update failed - try downloading a new version.");
+                    Interface_ErrorDialog(0, "Update failed - try downloading a new version.", 1);
                 else
-                    info_ui("Update success", "You have successfully updated the Powder Toy!");
+                    Interface_InfoDialog("Update success", "You have successfully updated the Powder Toy!", 1);
             }
             update_flag = 0;
         }
@@ -1431,10 +1431,10 @@ int main(int argc, char *argv[])
 #else
             sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", SAVE_VERSION, MINOR_VERSION, major, minor);
 #endif
-            if(confirm_ui("Do you want to update The Powder Toy?", tmp, "Update"))
+            if(Interface_ConfirmDialog("Do you want to update The Powder Toy?", tmp, "Update", 0))
             {
                 free(tmp);
-                tmp = download_ui(my_uri, &i);
+                tmp = Interface_DownloadUI(my_uri, &i);
                 if(tmp)
                 {
                     save_presets(1);
@@ -1442,7 +1442,7 @@ int main(int argc, char *argv[])
                     {
                         update_cleanup();
                         save_presets(0);
-                        error_ui(0, "Update failed - try downloading a new version.");
+                        Interface_ErrorDialog(0, "Update failed - try downloading a new version.", 1);
                     }
                     else
                         return 0;
@@ -1662,7 +1662,7 @@ int main(int argc, char *argv[])
                         }
                     }
                     if(x>=219 && x<=(XRES+BARSIZE-(510-349)) && svf_login && svf_open)
-                        tag_list_ui();
+                        Interface_TagListUI();
                     if(x>=(XRES+BARSIZE-(510-351)) && x<(XRES+BARSIZE-(510-366)) && !bq)
                     {
                         legacy_enable = !legacy_enable;
@@ -1699,7 +1699,7 @@ int main(int argc, char *argv[])
                     }
                     if(x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
                     {
-                        login_ui();
+                        Interface_LoginUI();
                         if(svf_login)
                             save_presets(0);
                     }
@@ -1707,7 +1707,7 @@ int main(int argc, char *argv[])
                     {
                         if(!svf_open || !svf_own || x>51)
                         {
-                            if(save_name_ui())
+                            if(Interface_SaveUI())
                                 execute_save();
                         }
                         else
@@ -1719,7 +1719,7 @@ int main(int argc, char *argv[])
                     }
                     if(x>=1 && x<=17)
                     {
-                        search_ui();
+                        Interface_SearchUI();
                         Renderer_ClearSecondaryBuffer();
                         memset(fire_r, 0, sizeof(fire_r));
                         memset(fire_g, 0, sizeof(fire_g));
@@ -1730,9 +1730,9 @@ int main(int argc, char *argv[])
                     if(x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
                     {
                         if(b & SDL_BUTTON_LMASK)
-                            set_cmode((cmode+1) % 7);
+                            Interface_SetCmode((cmode+1) % 7);
                         if(b & SDL_BUTTON_RMASK)
-                            set_cmode((cmode+6) % 7);
+                            Interface_SetCmode((cmode+6) % 7);
                         save_presets(0);
                     }
                     if(x>=(XRES+BARSIZE-(510-494)) && x<=(XRES+BARSIZE-(510-509)) && !bq)
@@ -1747,7 +1747,7 @@ int main(int argc, char *argv[])
                 if(c==126)
                 {
                     if(!bq)
-                        add_sign_ui(x, y);
+                        Interface_AddSignUI(x, y);
                 }
                 else if(lb)
                 {
@@ -2038,7 +2038,7 @@ int main(int argc, char *argv[])
             Renderer_FillRectangle(12, 12, GetTextWidth(uitext)+8, 15, 0, 0, 0, 140);
             Graphics_RenderText(16, 16, uitext, 32, 216, 255, 200);
         }
-        Renderer_Display(0, 0, XRES+BARSIZE, YRES+MENUSIZE, XRES+BARSIZE);
+        Renderer_Display();
 
         //Setting an element for the stick man
         if(isplayer==0)
