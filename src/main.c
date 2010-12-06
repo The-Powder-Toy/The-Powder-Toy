@@ -329,7 +329,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
     for(j=0; j<w*h; j++)
     {
         i = m[j];
-        if(i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA || parts[i-1].type==PT_PIPE))
+        if(i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type ==PT_BCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA || parts[i-1].type==PT_PIPE))
             d[p++] = parts[i-1].ctype;
     }
 
@@ -692,7 +692,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
     {
         i = m[j];
         ty = d[pty+j];
-        if(i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34) || (ty==PT_PIPE && ver>=43)))
+        if(i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34) || (ty==PT_PIPE && ver>=43) || (ty==PT_BCLN && ver>=43)))
         {
             if(p >= size)
                 goto corrupt;
@@ -2195,12 +2195,12 @@ int main(int argc, char *argv[])
 #else
 			sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
 #endif
+			if(GRID_MODE)
+				sprintf(uitext, "%s [GRID: %d]", uitext, GRID_MODE);
 			if(REPLACE_MODE)
 				strappend(uitext, " [REPLACE MODE]");
 			if(sdl_mod&(KMOD_CAPS))
 				strappend(uitext, " [CAP LOCKS]");
-			if(GRID_MODE)
-				sprintf(uitext, "%s [GRID: %d]", uitext, GRID_MODE);
 			
             if(sdl_zoom_trig||zoom_en)
             {

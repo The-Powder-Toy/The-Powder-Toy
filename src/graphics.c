@@ -1409,7 +1409,7 @@ void draw_parts(pixel *vid)
                	 	cb = PIXB(ptypes[t].pcolors);
                 	blendpixel(vid, nx, ny, cr, cg, cb, 255);
 	    	}
-		else if(cmode==CM_GRAD)
+		else if(cmode==CM_GRAD)//forgot to put else, broke nothing view
 		{
 			float frequency = 0.05;
 			int q = parts[i].temp;
