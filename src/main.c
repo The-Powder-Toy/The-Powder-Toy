@@ -6,6 +6,7 @@
  * Copyright (c) 2010 Skresanov Savely
  * Copyright (c) 2010 Bryan Hoyle
  * Copyright (c) 2010 Nathan Cousins
+ * Copyright (c) 2010 cracker64
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +52,7 @@
 #include <icon.h>
 
 static const char *it_msg =
-    "\brThe Powder Toy\n"
+    "\brThe Powder Toy - http://powdertoy.co.uk/\n"
     "\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
     "\n"
     "\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
@@ -68,18 +69,16 @@ static const char *it_msg =
     "'L' will load the most recent stamp, 'K' shows a library of stamps you saved.\n"
     "'C' will cycle the display mode (Fire, Blob, Velocity and Pressure). The numbers 1 to 7 will do the same\n"
     "Use the mouse scroll wheel to change the tool size for particles.\n"
-    "'Q' will quit the application.\n"
     "The spacebar can be used to pause physics.\n"
     "'P' will take a screenshot and save it into the current directory.\n"
     "\n"
-    "\brhttp://powdertoy.co.uk/\n"
     "\bgCopyright (c) 2008-10 Stanislaw K Skowronek (\brhttp://powder.unaligned.org\bg, \bbirc.unaligned.org #wtf\bg)\n"
     "\bgCopyright (c) 2010 Simon Robertshaw (\brhttp://powdertoy.co.uk\bg, \bbirc.freenode.net #powder\bg)\n"
     "\bgCopyright (c) 2010 Skresanov Savely (Stickman)\n"
+	"\bgCopyright (c) 2010 cracker64\n"
     "\bgCopyright (c) 2010 Bryan Hoyle (New elements)\n"
     "\bgCopyright (c) 2010 Nathan Cousins (New elements, small engine mods.)\n"
     "\n"
-    "\bgSpecial thanks to Brian Ledbetter for maintaining ports.\n"
     "\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html"
     ;
 
@@ -2186,23 +2185,23 @@ int main(int argc, char *argv[])
             }
             if(currentTime-pastFPS>=1000)
             {
-#ifdef BETA
-		if(REPLACE_MODE)
-                sprintf(uitext, "Cracker's V%d FPS:%d Parts:%d REPLACE MODE", SAVE_VERSION, FPS,NUM_PARTS);
-		else if(sdl_mod&(KMOD_CAPS))
-		sprintf(uitext, "Cracker's V%d FPS:%d Parts:%d CAPS LOCK ON", SAVE_VERSION, FPS, NUM_PARTS);
-		else if(GRID_MODE)
-		sprintf(uitext, "Cracker's V%d FPS:%d Parts:%d Grid:%d", SAVE_VERSION, FPS, NUM_PARTS,GRID_MODE);
-		else
-		sprintf(uitext, "Cracker's V%d FPS:%d Parts:%d", SAVE_VERSION, FPS, NUM_PARTS);
-                //printf("%s\n", uitext);
-#else
-                sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPS);
-#endif
                 FPSB = FPS;
                 FPS = 0;
                 pastFPS = currentTime;
             }
+			
+#ifdef BETA
+			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS);
+#else
+			sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
+#endif
+			if(REPLACE_MODE)
+				strappend(uitext, " [REPLACE MODE]");
+			if(sdl_mod&(KMOD_CAPS))
+				strappend(uitext, " [CAP LOCKS]");
+			if(GRID_MODE)
+				sprintf(uitext, "%s [GRID: %d]", uitext, GRID_MODE);
+			
             if(sdl_zoom_trig||zoom_en)
             {
                 if(zoom_x<XRES/2)

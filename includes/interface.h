@@ -8,6 +8,7 @@ struct menu_section
     char *icon;
     const char *name;
     int itemcount;
+	int doshow;
 };
 typedef struct menu_section menu_section;
 
@@ -52,21 +53,21 @@ static menu_wall mwalls[] =
 #define SC_NUCLEAR 7
 #define SC_LIFE 9
 #define SC_CRACKER 10
-#define SC_TOTAL 11
+#define SC_TOTAL 10
 
 static menu_section msections[] =
 {
-    {"\xC1", "Walls", 0},
-    {"\xC2", "Electronics", 0},
-    {"\xC3", "Explosives", 0},
-    {"\xC5", "Gasses", 0},
-    {"\xC4", "Liquids", 0},
-    {"\xD0", "Powders", 0},
-    {"\xD1", "Solids", 0},
-    {"\xC6", "Radioactive", 0},
-    {"\xCC", "Special", 0},
-    {"\xC8", "Life", 0},
-    {"\xC8", "Cracker", 0},
+    {"\xC1", "Walls", 0, 1},
+    {"\xC2", "Electronics", 0, 1},
+    {"\xC3", "Explosives", 0, 1},
+    {"\xC5", "Gasses", 0, 1},
+    {"\xC4", "Liquids", 0, 1},
+    {"\xD0", "Powders", 0, 1},
+    {"\xD1", "Solids", 0, 1},
+    {"\xC6", "Radioactive", 0, 1},
+    {"\xCC", "Special", 0, 1},
+    {"\xC8", "Life", 0, 1},
+    {"\xC8", "Cracker", 0, 0},
 };
 
 struct ui_edit

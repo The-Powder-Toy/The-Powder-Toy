@@ -1491,7 +1491,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
     height = (ceil((float)msections[i].itemcount/16.0f)*18);
     width = restrict_flt(msections[i].itemcount*31, 0, 16*31);
     h = -1;
-    x = XRES-BARSIZE-26;
+    x = XRES-BARSIZE-18;
     y = YRES+1;
     sy = y;
     if(i==SC_WALL)
@@ -1500,9 +1500,9 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
         {
             if(n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
             {
-                if(x-26<=20)
+                if(x-18<=20)
                 {
-                    x = XRES-BARSIZE-26;
+                    x = XRES-BARSIZE-18;
                     y += 19;
                 }
                 x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
@@ -1537,9 +1537,9 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
         {
             if(n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
             {
-                if(x-26<=20)
+                if(x-18<=20)
                 {
-                    x = XRES-BARSIZE-26;
+                    x = XRES-BARSIZE-18;
                     y += 19;
                 }
                 x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
@@ -1571,9 +1571,9 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
         {
             if(ptypes[n].menusection==i&&ptypes[n].menu==1)
             {
-                if(x-26<=20)
+                if(x-18<=20)
                 {
-                    x = XRES-BARSIZE-26;
+                    x = XRES-BARSIZE-18;
                     y += 19;
                 }
                 x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
@@ -1608,9 +1608,9 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
         {
             if(ptypes[n].menusection==i&&ptypes[n].menu==1)
             {
-                if(x-26<=20)
+                if(x-18<=20)
                 {
-                    x = XRES-BARSIZE-26;
+                    x = XRES-BARSIZE-18;
                     y += 19;
                 }
                 x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
