@@ -1833,6 +1833,9 @@ void update_particles_i(pixel *vid, int start, int inc)
 							if((r&0xFF)==PT_SPRK){
 								int destroy = (parts[r>>8].ctype==PT_PSCN)?1:0;
 								for (int docontinue = 1, nxx = 0, nyy = 0, nxi = nx*-1, nyi = ny*-1; docontinue; nyy+=nyi, nxx+=nxi) {
+									if(!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)){
+										break;
+									}
 									r = pmap[y+nyi+nyy][x+nxi+nxx];
 									if(!((r>>8)>=NPART)) {
 										if(!r){
@@ -1841,8 +1844,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 												parts[nr].tmp = 2;
 												parts[nr].life = 2;
 											}
-										} else if(!((r>>8)>=NPART || !r)) {
-											if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==0&&!destroy){
+										} else if(!destroy) {
+											if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==0){
 												if(nyy!=0 || nxx!=0){
 													parts[r>>8].type = PT_BRAY;
 													parts[r>>8].life = 1020;
@@ -1850,15 +1853,18 @@ void update_particles_i(pixel *vid, int start, int inc)
 												}
 												docontinue = 0;
 											} else if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==1){
-												parts[r>>8].life = destroy?1:1020;
-												docontinue = 1;
-											} else if(!destroy) {
+												//parts[r>>8].life = 1020;
+												//docontinue = 1;
+											} else {
 												if(nyy!=0 || nxx!=0){
 													create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 												}
 												docontinue = 0;
-											} else {
-												docontinue = 0;
+											}
+										} else if(destroy) {
+											if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==1){
+												parts[r>>8].life = 1;
+												docontinue = 1;
 											}
 										}
 									}

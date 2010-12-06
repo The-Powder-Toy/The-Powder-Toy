@@ -1,6 +1,6 @@
 SOURCES := src/*.c
 
-CFLAGS := -Wall -std=c99 -D_POSIX_C_SOURCE=200112L -Iincludes/
+CFLAGS := -w -std=c99 -D_POSIX_C_SOURCE=200112L -Iincludes/
 OFLAGS := -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations
 LFLAGS := -lSDL -lm -lbz2 
 MFLAGS_SSE3 := -march=native -DX86 -DX86_SSE3 -msse3
