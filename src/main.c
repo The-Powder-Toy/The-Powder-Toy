@@ -233,7 +233,7 @@ void *build_thumb(int *size, int bzip2)
 
 void *build_save(int *size, int x0, int y0, int w, int h)
 {
-    unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*8+MAXSIGNS*262), *c;
+    unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*11+MAXSIGNS*262), *c;
     int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
     int bx0=x0/CELL, by0=y0/CELL, bw=(w+CELL-1)/CELL, bh=(h+CELL-1)/CELL;
 
@@ -315,6 +315,17 @@ void *build_save(int *size, int x0, int y0, int w, int h)
             d[p++] = (ttlife&0x00FF);
 		}
     }
+	for(j=0; j<w*h; j++)
+    {
+        i = m[j];
+        if(i){
+			//Now saving tmp!
+            //d[p++] = (parts[i-1].life+3)/4;
+			int tttmp = (int)parts[i-1].tmp;
+            d[p++] = ((tttmp&0xFF00)>>8);
+            d[p++] = (tttmp&0x00FF);
+		}
+    }
     for(j=0; j<w*h; j++)
     {
         i = m[j];
@@ -329,7 +340,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
     for(j=0; j<w*h; j++)
     {
         i = m[j];
-        if(i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA || parts[i-1].type==PT_PIPE))
+        if(i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA || parts[i-1].type==PT_PIPE))
             d[p++] = parts[i-1].ctype;
     }
 
@@ -365,7 +376,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
     c[0] = 0x50;	//0x66;
     c[1] = 0x53;	//0x75;
     c[2] = 0x76;	//0x43;
-    c[3] = legacy_enable;
+    c[3] = legacy_enable|((sys_pause<<1)&0x02);
     c[4] = SAVE_VERSION;
     c[5] = CELL;
     c[6] = bw;
@@ -416,10 +427,14 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
     }
     else
     {
-        if(c[3]==1||c[3]==0)
-            legacy_enable = c[3];
-        else
+        if(c[3]==1||c[3]==0||c[3]==2||c[3]==3){
+            legacy_enable = c[3]&0x01;
+			if(ver>=44){
+				sys_pause = (c[3]&0x02)>>1;
+			}
+        } else {
             legacy_beta = 1;
+		}
     }
 
     bw = c[6];
@@ -648,6 +663,25 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 			}
         }
     }
+	if(ver>=44){
+		for(j=0; j<w*h; j++)
+		{
+			i = m[j];
+			if(i)
+			{
+				if(p >= size) {
+					goto corrupt;
+				}
+				if(i <= NPART) {
+					ttv = (d[p++])<<8;
+					ttv |= (d[p++]);
+					parts[i-1].tmp = ttv;
+				} else {
+					p+=2;
+				}
+			}
+		}
+	}
     for(j=0; j<w*h; j++)
     {
         i = m[j];
@@ -692,7 +726,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
     {
         i = m[j];
         ty = d[pty+j];
-        if(i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34) || (ty==PT_PIPE && ver>=43)))
+        if(i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_BCLN && ver>=43) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34) || (ty==PT_PIPE && ver>=43)))
         {
             if(p >= size)
                 goto corrupt;

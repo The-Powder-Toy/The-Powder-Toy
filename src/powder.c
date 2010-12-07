@@ -1853,7 +1853,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 												}
 												docontinue = 0;
 											} else if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==1){
-												//parts[r>>8].life = 1020;
+												parts[r>>8].life = 1020;
 												//docontinue = 1;
 											} else {
 												if(nyy!=0 || nxx!=0){
@@ -1862,7 +1862,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 												docontinue = 0;
 											}
 										} else if(destroy) {
-											if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==1){
+											if(parts[r>>8].type==PT_BRAY){
 												parts[r>>8].life = 1;
 												docontinue = 1;
 											} else {
