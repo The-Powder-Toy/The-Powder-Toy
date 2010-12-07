@@ -1202,7 +1202,7 @@ int main(int argc, char *argv[])
 
         if(!sys_pause||framerender)
         {
-            update_air();
+			update_air();
         }
 #ifdef OpenGL
         ClearScreen();
