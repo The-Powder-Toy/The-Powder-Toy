@@ -2795,12 +2795,18 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
                         if(!(j%2) && !(i%2))
                             fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
                 break;
-            case 4:
-                for(j=0; j<CELL; j+=2)
-                    for(i=(j>>1)&1; i<CELL; i+=2)
-                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
-                k++;
-                break;
+				case 4:
+					for(j=0; j<CELL; j+=2)
+						for(i=(j>>1)&1; i<CELL; i+=2)
+							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
+					k++;
+					break;
+				case WL_FAN:
+					for(j=0; j<CELL; j+=2)
+						for(i=(j>>1)&1; i<CELL; i+=2)
+							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
+					k++;
+					break;
             case 6:
                 for(j=0; j<CELL; j+=2)
                     for(i=(j>>1)&1; i<CELL; i+=2)
@@ -2835,7 +2841,7 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
             j=d[p++];
             if(j<PT_NUM && j>0)
             {
-                /*if(j==PT_STKM)  //Stickman should be drawed another way //Was crashing TODO: FIX
+                if(j==PT_STKM)
                 {
                     //Stickman drawing
                     for(k=-2; k<=1; k++)
@@ -2850,7 +2856,7 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
                     draw_line(fb , x, y+3, x+1, y+6, 255, 255, 255, w);
                     draw_line(fb , x+1, y+6, x+3, y+12, 255, 255, 255, w);
                 }
-                else*/
+                else
                     fb[y*w+x] = ptypes[j].pcolors;
             }
         }
