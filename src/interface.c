@@ -2888,7 +2888,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
             }
         }
 		//Delete Button
-		if(mx > 200 && mx < 200+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && (authoritah || myown) && !queue_open && ) {
+		if(mx > 200 && mx < 200+50 && my > YRES+MENUSIZE-68 && my < YRES+MENUSIZE-50 && (authoritah || myown) && !queue_open) {
 			fillrect(vid_buf, 200, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
 			if(b && !bq) {
 				//Button Clicked
