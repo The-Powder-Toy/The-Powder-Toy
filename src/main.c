@@ -249,7 +249,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
             d[p++] = bmap[y][x];
     for(y=by0; y<by0+bh; y++)
         for(x=bx0; x<bx0+bw; x++)
-            if(bmap[y][x]==WL_FAN)
+            if(bmap[y][x]==WL_FAN||bmap[y][x]==4)
             {
                 i = (int)(fvx[y][x]*64.0f+127.5f);
                 if(i<0) i=0;
@@ -258,7 +258,7 @@ void *build_save(int *size, int x0, int y0, int w, int h)
             }
     for(y=by0; y<by0+bh; y++)
         for(x=bx0; x<bx0+bw; x++)
-            if(bmap[y][x]==WL_FAN)
+            if(bmap[y][x]==WL_FAN||bmap[y][x]==4)
             {
                 i = (int)(fvy[y][x]*64.0f+127.5f);
                 if(i<0) i=0;
@@ -536,7 +536,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
         }
     for(y=by0; y<by0+bh; y++)
         for(x=bx0; x<bx0+bw; x++)
-            if(d[(y-by0)*bw+(x-bx0)]==4)
+            if(d[(y-by0)*bw+(x-bx0)]==4||d[(y-by0)*bw+(x-bx0)]==WL_FAN)
             {
                 if(p >= size)
                     goto corrupt;
@@ -544,7 +544,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
             }
     for(y=by0; y<by0+bh; y++)
         for(x=bx0; x<bx0+bw; x++)
-            if(d[(y-by0)*bw+(x-bx0)]==4)
+            if(d[(y-by0)*bw+(x-bx0)]==4||d[(y-by0)*bw+(x-bx0)]==WL_FAN)
             {
                 if(p >= size)
                     goto corrupt;
