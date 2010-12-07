@@ -1223,6 +1223,17 @@ int main(int argc, char *argv[])
             memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
         }
 #endif
+		
+		//Can't be too sure...
+		if(bsx>1180)
+			bsx = 1180;
+		if(bsx<0)
+			bsx = 0;
+		if(bsy>1180)
+			bsy = 1180;
+		if(bsy<0)
+			bsy = 0;
+		
         update_particles(vid_buf);
         draw_parts(vid_buf);
 
