@@ -2835,7 +2835,7 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
             j=d[p++];
             if(j<PT_NUM && j>0)
             {
-                if(j==PT_STKM)  //Stickman should be drawed another way
+                /*if(j==PT_STKM)  //Stickman should be drawed another way //Was crashing TODO: FIX
                 {
                     //Stickman drawing
                     for(k=-2; k<=1; k++)
@@ -2850,7 +2850,7 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
                     draw_line(fb , x, y+3, x+1, y+6, 255, 255, 255, w);
                     draw_line(fb , x+1, y+6, x+3, y+12, 255, 255, 255, w);
                 }
-                else
+                else*/
                     fb[y*w+x] = ptypes[j].pcolors;
             }
         }

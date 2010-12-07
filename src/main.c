@@ -427,13 +427,15 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
     }
     else
     {
-        if(c[3]==1||c[3]==0||c[3]==2||c[3]==3){
-            legacy_enable = c[3]&0x01;
-			if(ver>=44){
-				sys_pause = (c[3]&0x02)>>1;
+		if(ver>=44){
+			legacy_enable = c[3]&0x01;
+			sys_pause = (c[3]>>1)&0x01;
+		} else {
+			if(c[3]==1||c[3]==0){
+				legacy_enable = c[3];
+			} else {
+				legacy_beta = 1;
 			}
-        } else {
-            legacy_beta = 1;
 		}
     }
 
