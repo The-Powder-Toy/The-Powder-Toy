@@ -141,7 +141,6 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry);
 
 void sdl_open(void);
 
-
 #ifdef OpenGL
 void Enable2D ();
 void RenderScene ();

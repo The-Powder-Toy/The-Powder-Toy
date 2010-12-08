@@ -8,24 +8,6 @@
 int isplayer = 0;
 float player[27]; //[0] is a command cell, [3]-[18] are legs positions, [19] is index, [19]-[26] are accelerations
 
-void draw_dust ()
-{
-  
-}
-void draw_watr ()
-{}
-void draw_oil ()
-{}
-void draw_pfire ()
-{}
-void draw_stne ()
-{}
-void draw_lava ()
-{}
-void draw_gun ()
-{}
-void draw_nitr ()
-{}
 particle *parts;
 particle *cb_parts;
 

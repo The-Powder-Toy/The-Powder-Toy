@@ -1377,7 +1377,6 @@ void draw_parts(pixel *vid)
             ny = (int)(parts[i].y+0.5f);
             if(cmode!=CM_HEAT)
             {
-              ptypes[parts[i].type].draw ();
                 if(t==PT_STKM)  //Just draw head here
                 {
                     char buff[10];  //Buffer for HP
@@ -3091,5 +3090,4 @@ void ClearScreen()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 }
-
 #endif
