@@ -1402,12 +1402,35 @@ void draw_parts(pixel *vid)
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
-		if(cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP)//nothing display but show needed color changes
+		if(cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP && t!=PT_FILT)//nothing display but show needed color changes
 	   	{
+			if(t==PT_PHOT)
+			{
+				cg = 0;
+				cb = 0;
+				cr = 0;
+				for(x=0; x<12; x++) {
+				cr += (parts[i].ctype >> (x+18)) & 1;
+				cb += (parts[i].ctype >>  x)     & 1;
+				}
+				for(x=0; x<14; x++)
+				cg += (parts[i].ctype >> (x+9))  & 1;
+				x = 624/(cr+cg+cb+1);
+				cr *= x;
+				cg *= x;
+				cb *= x;
+				cr = cr>255?255:cr;
+				cg = cg>255?255:cg;
+				cb = cb>255?255:cb;
+				blendpixel(vid, nx, ny, cr, cg, cb, 255);
+			}
+			else
+			{
 			cr = PIXR(ptypes[t].pcolors);
                 	cg = PIXG(ptypes[t].pcolors);
                	 	cb = PIXB(ptypes[t].pcolors);
                 	blendpixel(vid, nx, ny, cr, cg, cb, 255);
+			}
 	    	}
 		else if(cmode==CM_GRAD)//forgot to put else, broke nothing view
 		{
@@ -1788,6 +1811,21 @@ void draw_parts(pixel *vid)
 			cg = cg>255?255:cg;
 			cb = cb>255?255:cb;
 			blendpixel(vid, nx, ny, cr, cg, cb, 127);
+		}
+		else if(t==PT_BRAY && parts[i].tmp==0)
+		{
+			int trans = parts[i].life * 7;
+			blendpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), trans);
+		}
+		else if(t==PT_BRAY && parts[i].tmp==1)
+		{
+			int trans = parts[i].life/4;
+			blendpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), trans);
+		}
+		else if(t==PT_BRAY && parts[i].tmp==2)
+		{
+			int trans = parts[i].life*100;
+			blendpixel(vid, nx, ny, 255, 150, 50, trans);
 		}
                 else if(t==PT_PHOT)
                 {
@@ -2805,6 +2843,47 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
                         else
                             fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
                 break;
+	    case WL_WALL:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
+            case WL_DESTROYALL:
+                for(j=0; j<CELL; j+=2)
+                    for(i=(j>>1)&1; i<CELL; i+=2)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
+            case WL_ALLOWLIQUID:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        if(!(j%2) && !(i%2))
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
+                break;
+            case WL_STREAM:
+                for(j=0; j<CELL; j+=2)
+                    for(i=(j>>1)&1; i<CELL; i+=2)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
+                k++;
+                break;
+            case WL_DETECT:
+                for(j=0; j<CELL; j+=2)
+                    for(i=(j>>1)&1; i<CELL; i+=2)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0xFF8080);
+                break;
+            case WL_EWALL:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        if(!(i&j&1))
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
+            case WL_WALLELEC:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        if(!(j%2) && !(i%2))
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
+                        else
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
             }
             p++;
         }
@@ -2820,7 +2899,7 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
             j=d[p++];
             if(j<PT_NUM && j>0)
             {
-                if(j==PT_STKM)  //Stickman should be drawed another way
+                if(j==PT_STKM)
                 {
                     //Stickman drawing
                     for(k=-2; k<=1; k++)
