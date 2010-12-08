@@ -1,5 +1,5 @@
 #include <math.h>
-
+#include <bzlib.h>
 #include <renderer.h>
 #include <defines.h>
 #include <air.h>
@@ -1805,7 +1805,7 @@ int Graphics_RenderThumbnail(void *thumb, int size, int bzip2, int px, int py, i
                 g = (g*a)>>8;
                 b = (b*a)>>8;
             }
-            Renderer_BlendPixel(px+sx, py+sy, r, g, b, 255);
+            Renderer_DrawPixel(px+sx, py+sy, PIXRGB(r,g,b));
             sx++;
         }
         sy++;

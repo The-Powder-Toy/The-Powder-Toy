@@ -1,6 +1,5 @@
 #include <math.h>
 #include <SDL/SDL.h>
-#include <bzlib.h>
 
 #include <defines.h>
 #include <air.h>
@@ -9,6 +8,8 @@
 #define INCLUDE_FONTDATA
 #include <font.h>
 #include <misc.h>
+
+#define STATESLOTS 4
 
 //Prototypes for intern use only
 void Renderer_Intern_BlitOne();
@@ -102,7 +103,7 @@ void Renderer_Intern_AddPixel(int x, int y, int r, int g, int b, int a)
 void Renderer_Init()
 {
     SecondaryBuffer = (pixel*) calloc(XRES*YRES, PIXELSIZE);
-    StateMemory = (pixel*) calloc((XRES+BARSIZE)*(YRES+MENUSIZE)*4, PIXELSIZE);
+    StateMemory = (pixel*) calloc((XRES+BARSIZE)*(YRES+MENUSIZE)*STATESLOTS, PIXELSIZE);
     PrimaryBuffer = (pixel*) calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
     int x,y,i,j;
     float temp[CELL*3][CELL*3];
@@ -180,7 +181,7 @@ void Renderer_RecallState(unsigned char slot)
     memcpy(PrimaryBuffer, StateMemory+(slot*(XRES+BARSIZE)*(YRES+MENUSIZE)), ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 }
 
-void Renderer_SaveScreenshot(int w, int h, int pitch)
+void Renderer_SaveScreenshot(int w, int h)
 {
     char frame_name[32];
     int j,i;
@@ -198,9 +199,9 @@ void Renderer_SaveScreenshot(int w, int h, int pitch)
             c[2] = PIXB(PrimaryBuffer[i]);
             fwrite(c,3,1,f);
         }
-        PrimaryBuffer+=pitch;
+        PrimaryBuffer+=(XRES+BARSIZE);
     }
-    PrimaryBuffer-=pitch*h;
+    PrimaryBuffer-=(XRES+BARSIZE)*h;
     fclose(f);
     frame_idx++;
 }

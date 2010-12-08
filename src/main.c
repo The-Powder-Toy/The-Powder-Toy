@@ -26,7 +26,9 @@
 #include <string.h>
 #include <math.h>
 #include <SDL/SDL.h>
+
 #include <bzlib.h>
+
 #include <time.h>
 #ifdef WIN32
 #include <direct.h>
@@ -171,7 +173,7 @@ void *build_thumb(int *size, int bzip2) //Create thumbnail
 
         i -= 8;
 
-        if(BZ2_bzBuffToBuffCompress((char *)(c+8), (unsigned *)&i, (char *)d, j, 9, 0, 0) != BZ_OK)
+        if(BZ2_bzBuffToBuffCompress((char *)(c+8), (unsigned *)&i, (char *)d, j, 9, 0, 0) != 0)
         {
             free(d);
             free(c);
@@ -327,7 +329,7 @@ void *build_save(int *size, int x0, int y0, int w, int h) //Create save
 
     i -= 12;
 
-    if(BZ2_bzBuffToBuffCompress((char *)(c+12), (unsigned *)&i, (char *)d, p, 9, 0, 0) != BZ_OK)
+    if(BZ2_bzBuffToBuffCompress((char *)(c+12), (unsigned *)&i, (char *)d, p, 9, 0, 0) != 0)
     {
         free(d);
         free(c);
@@ -1263,7 +1265,7 @@ int main(int argc, char *argv[])
         if(sdl_key=='h')
             hud_enable = !hud_enable;
         if(sdl_key=='p')
-            Renderer_SaveScreenshot(XRES, YRES, XRES+BARSIZE);
+            Renderer_SaveScreenshot(XRES, YRES);
         if(sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
         {
             if(clipboard_ready==1)
@@ -1322,7 +1324,7 @@ int main(int argc, char *argv[])
         if(sdl_key=='v')
             vs = !vs;
         if(vs)
-            Renderer_SaveScreenshot(XRES, YRES, XRES+BARSIZE);
+            Renderer_SaveScreenshot(XRES, YRES);
 #endif
 
         if(sdl_wheel)

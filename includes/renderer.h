@@ -24,7 +24,7 @@ void Renderer_SaveState(unsigned char slot);
 
 void Renderer_RecallState(unsigned char slot);
 
-void Renderer_SaveScreenshot(int w, int h, int pitch);
+void Renderer_SaveScreenshot(int w, int h);
 
 void Renderer_DrawPixel(int x, int y, pixel color);
 

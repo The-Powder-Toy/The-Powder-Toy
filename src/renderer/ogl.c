@@ -22,8 +22,7 @@
 #define GLOWTEXSIZE 16
 #define BLOBTEXSIZE 4
 
-//Prototypes for intern use only
-pixel Renderer_Intern_GetPixel(int x, int y);
+#define STATESLOTS 4
 
 typedef void (APIENTRY * GL_BlendEquation)(GLenum);
 GL_BlendEquation glBlendEquation = 0;
@@ -36,18 +35,10 @@ unsigned char PersistentTick=0;
 unsigned char *StateMemory;
 unsigned char *SecondaryBuffer;
 
-//Intern functions
-pixel Renderer_Intern_GetPixel(int x, int y)
-{
-    pixel result;
-    glReadPixels(x, (YRES+MENUSIZE)-y-1, 1, 1, GL_BGR, GL_UNSIGNED_BYTE, &result);
-    return result;
-}
-
 
 void Renderer_Init()
 {
-    StateMemory = malloc((XRES+BARSIZE)*(YRES+MENUSIZE)*3*4);
+    StateMemory = malloc((XRES+BARSIZE)*(YRES+MENUSIZE)*3*STATESLOTS);
     SecondaryBuffer = malloc((XRES+BARSIZE)*(YRES+MENUSIZE)*3);
     int x,y,i,j;
     float temp[CELL*3][CELL*3];
@@ -122,7 +113,7 @@ void Renderer_Init()
     glPixelStorei(GL_PACK_ALIGNMENT,2);
     glPixelStorei(GL_UNPACK_ALIGNMENT,2);
     glRasterPos2i(0,YRES-2);
-    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     
     glGenTextures(1, &BlobTexture);
     glBindTexture(GL_TEXTURE_2D, BlobTexture);
@@ -187,7 +178,7 @@ void Renderer_RecallState(unsigned char slot)
     glDrawPixels(XRES+BARSIZE, YRES+MENUSIZE, GL_RGB, GL_UNSIGNED_BYTE, StateMemory+((XRES+BARSIZE)*(YRES+MENUSIZE)*3*slot));
 }
 
-void Renderer_SaveScreenshot(int w, int h, int pitch)
+void Renderer_SaveScreenshot(int w, int h)
 {
     unsigned int *dump;
     dump = (unsigned int)calloc(w*h, 3);
@@ -325,15 +316,12 @@ void Renderer_XORPixel(int x, int y)
 {
     if(x<0 || y<0 || x>=XRES || y>=YRES)
         return;
-    int c = Renderer_Intern_GetPixel(x,y);
-    c = PIXB(c) + 3*PIXG(c) + 2*PIXR(c);
+    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
     glBegin(GL_POINTS);
-    if(c<512)
-        glColor3ub(0xC0, 0xC0, 0xC0);
-    else
-        glColor3ub(0x40, 0x40, 0x40);
+    glColor3ub(0xFF, 0xFF, 0xFF);
     glVertex2i(x, y);
     glEnd();
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Renderer_XORLine(int x1, int y1, int x2, int y2)
@@ -402,12 +390,6 @@ void Renderer_DrawZoom()
     Renderer_DrawRectangle(zoom_wx-2, zoom_wy-2, ZSIZE*ZFACTOR+2, ZSIZE*ZFACTOR+2, 192, 192, 192, 255);
     Renderer_DrawRectangle(zoom_wx-1, zoom_wy-1, ZSIZE*ZFACTOR, ZSIZE*ZFACTOR, 0, 0, 0, 255);
     Renderer_ClearRectangle(zoom_wx-2, zoom_wy-2, ZSIZE*ZFACTOR+2, ZSIZE*ZFACTOR+2);
-    /*
-    glRasterPos2i(zoom_wx,YRES+MENUSIZE-(ZSIZE*ZFACTOR)+85);
-    glPixelZoom(ZFACTOR,ZFACTOR);
-    glCopyPixels(zoom_x,YRES+MENUSIZE-ZSIZE-zoom_y,ZSIZE,ZSIZE,GL_COLOR);
-    glPixelZoom(1,1);
-    */
     int i, j=0, x, y;
     unsigned char Pixels[(ZSIZE)*(ZSIZE)*4];
     glReadPixels(zoom_x, (YRES+MENUSIZE)-ZSIZE-zoom_y, ZSIZE, ZSIZE, GL_RGBA, GL_UNSIGNED_BYTE, &Pixels);

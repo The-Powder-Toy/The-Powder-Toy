@@ -156,6 +156,15 @@ struct particle
 };
 typedef struct particle particle;
 
+struct renderoption
+{
+    void (*Default)(void);
+    void (*Blob)(void);
+    void (*Fancy)(void);
+};
+
+
+
 struct part_type
 {
     const char *name;
@@ -180,6 +189,7 @@ struct part_type
     unsigned char hconduct;
     const char *descs;
     const unsigned short properties;
+    
 };
 typedef struct part_type part_type;
 

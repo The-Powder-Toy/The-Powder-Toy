@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <bzlib.h>
+
 #include <math.h>
 #include <time.h>
 #include <http.h>
@@ -836,7 +837,7 @@ int Interface_StampUI()
 {
     int b=1,bq,mx,my,d=-1,i,j,k,x,gx,gy,y,w,h,r=-1,stamp_page=0,per_page=STAMP_X*STAMP_Y,page_count;
     char page_info[64];
-    BOOL isnewpage = 1;
+    unsigned char isnewpage = 1;
     page_count = ceil((float)stamp_count/(float)per_page);
     Renderer_ClearRectangle(-1, -1, XRES+BARSIZE+1, YRES+MENUSIZE+1);
     Renderer_SaveState(0);
@@ -935,9 +936,10 @@ int Interface_StampUI()
         Renderer_Display();    
         if(b==1&&d!=-1)
         {
-            if(Interface_ConfirmDialog("Do you want to delete?", stamps[d].name, "Delete", 1))
+            if(Interface_ConfirmDialog("Do you want to delete?", stamps[d].name, "Delete", 2))
             {
                 del_stamp(d);
+                isnewpage = 1;
             }
         }
         if(b==1&&r!=-1)

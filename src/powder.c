@@ -2991,6 +2991,9 @@ void update_particles()
 
     isplayer = 0;  //Needed for player spawning
     memset(pmap, 0, sizeof(pmap));
+    
+    //Loads particles from parts[] into pmap
+    //Either from front to back or from back to front (random)
     r = rand()%2;
     for(j=0; j<NPART; j++)
     {
@@ -3014,6 +3017,7 @@ void update_particles()
     pfree=l;
     
     //Wall logic
+    //Draws pseudoparticles into pmap for blocking
     for(y=0; y<YRES/CELL; y++)
         for(x=0; x<XRES/CELL; x++)
         {
