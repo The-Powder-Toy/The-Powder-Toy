@@ -1112,7 +1112,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 	//}
 	if(ISWIRE==1)
 	{
-	 for( q = 0;q<25;q++)
+	 for( q = 0;q<99;q++)
 		if(!wireless[q][1])
 		{
 			wireless[q][0] = 0;
