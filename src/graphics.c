@@ -1402,7 +1402,7 @@ void draw_parts(pixel *vid)
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
-		if(cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP && t!=PT_FILT)//nothing display but show needed color changes
+		if(cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP && t!=PT_FILT && t!=PT_HSWC && t!=PT_PCLN && t!=PT_DEUT && t!=PT_WIFI)//nothing display but show needed color changes
 	   	{
 			if(t==PT_PHOT)
 			{
@@ -1587,12 +1587,23 @@ void draw_parts(pixel *vid)
 		}
 		else if(t==PT_WIFI)
 		{
-			float frequency = 0.25;
+			float frequency = 0.0628;
 			int q = parts[i].tmp;
 			cr = sin(frequency*q + 0) * 127 + 128;
 			cg = sin(frequency*q + 2) * 127 + 128;
 			cb = sin(frequency*q + 4) * 127 + 128;
-			blendpixel(vid, nx, ny, cr, cg, cb, 255);			
+			blendpixel(vid, nx, ny, cr, cg, cb, 255);	
+			if(mousex==(nx) && mousey==(ny))
+                    {
+			int z;
+                        for(z = 0; z<NPART; z++) {
+				if(parts[z].type)
+				{	
+					if(parts[z].type==PT_WIFI&&parts[z].tmp==parts[i].tmp)
+						xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);					
+				}
+			}
+                    }
 		}
 		else if(t==PT_PIPE)
 		{
@@ -2859,7 +2870,7 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
                         if(!(j%2) && !(i%2))
                             fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
                 break;
-            case WL_STREAM:
+            case WL_FAN:
                 for(j=0; j<CELL; j+=2)
                     for(i=(j>>1)&1; i<CELL; i+=2)
                         fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);

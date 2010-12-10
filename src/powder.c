@@ -505,7 +505,7 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].tmp = 50;
     }
     if(t==PT_DEUT)
-	    parts[i].life = 20;
+	    parts[i].life = 10;
 	if(t==PT_BRAY)
 		parts[i].life = 30;
 	if(t==PT_PUMP)
@@ -1173,7 +1173,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                       (bmap[y/CELL][x/CELL]==WL_DESTROYALL) ||
                       (bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID && ptypes[t].falldown!=2) ||
                       (bmap[y/CELL][x/CELL]==WL_ALLOWSOLID && ptypes[t].falldown!=1) ||
-                      (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && ptypes[t].falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE) ||
+                      (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && ptypes[t].falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_HFLM) ||
                       (bmap[y/CELL][x/CELL]==WL_DETECT && (t==PT_METL || t==PT_SPRK)) ||
                       (bmap[y/CELL][x/CELL]==WL_EWALL && !emap[y/CELL][x/CELL])) && (t!=PT_STKM)))
             {
@@ -1972,6 +1972,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             {
                                 t = parts[i].type = PT_PLNT;
                                 parts[r>>8].type = PT_PLNT;
+				parts[r>>8].life = 0;
                             }
                             else if((r&0xFF)==PT_LAVA && 1>(rand()%250))
                             {
@@ -1989,8 +1990,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 				    int nny = rand()%3 -1;
 				    if(x+nx+nnx>=0 && y+ny+nny>0 &&
 					x+nx+nnx<XRES && y+ny+nny<YRES && (nnx || nny))
+					{
+						if((pmap[y+ny+nny][x+nx+nnx]>>8)>=NPART||pmap[y+ny+nny][x+nx+nnx])
+							continue;
 						if(create_part(-1,x+nx+nnx,y+ny+nny,PT_VINE))
 							parts[pmap[y+ny+nny][x+nx+nnx]>>8].temp = parts[i].temp;
+					}
 			    }
                             //if(t==PT_SNOW && (r&0xFF)==PT_WATR && 15>(rand()%1000))
                             //t = parts[i].type = PT_WATR;
@@ -2940,8 +2945,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 	    else if(t==PT_WIFI)
 	    {
 		int temprange = 100;
-		for( temp = 0; temp < 2500; temp += temprange)
-			if(parts[i].temp-273.15>temp&&parts[i].temp-273.15<temp+temprange)
+		for( temp = 0; temp < MAX_TEMP; temp += temprange)
+			if(parts[i].temp-73.15>temp&&parts[i].temp-73.15 <temp+temprange)
 				parts[i].tmp = temp/100;
 		for(ny=-1; ny<2; ny++)
                     for(nx=-1; nx<2; nx++)
@@ -2957,9 +2962,15 @@ void update_particles_i(pixel *vid, int start, int inc)
 				    parts[r>>8].ctype = PT_NSCN;
 				    parts[r>>8].life = 4;
 			    }
+			    else if(parts[r>>8].type==PT_PSCN&&parts[r>>8].life==0 && wireless[parts[i].tmp][0])
+			    {
+				    parts[r>>8].type = PT_SPRK;
+				    parts[r>>8].ctype = PT_PSCN;
+				    parts[r>>8].life = 4;
+			    }
 			    else if(parts[r>>8].type==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3 && !wireless[parts[i].tmp][0])
 			    {
-				    parts[r>>8].type = parts[r>>8].ctype;
+				    //parts[r>>8].type = parts[r>>8].ctype;
 				    wireless[parts[i].tmp][0] = 1;
 				    wireless[parts[i].tmp][1] = 1;
 				    ISWIRE = 1;
