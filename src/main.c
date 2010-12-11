@@ -1406,18 +1406,18 @@ int main(int argc, char *argv[])
 		{
 		    bsy -= 1;
 		}
-		else
+                else
 		{
-            bsx -= ceil((bsx/5)+0.5f);
+                    bsx -= ceil((bsx/5)+0.5f);
 		    bsy -= ceil((bsy/5)+0.5f);
 		}
                 if(bsx>1180)
                     bsx = 1180;
-				if(bsy>1180)
+		if(bsy>1180)
                     bsy = 1180;
                 if(bsx<0)
                     bsx = 0;
-				if(bsy<0)
+		if(bsy<0)
                     bsy = 0;
             }
         }
@@ -1433,7 +1433,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-		if(sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+                if(sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
 		{
 		    bsx += 1;
 		    bsy += 1;
@@ -1446,21 +1446,36 @@ int main(int argc, char *argv[])
 		{
 		    bsy += 1;
 		}
-		else
+                else
 		{
-			bsx += ceil((bsx/5)+0.5f);
+                    bsx += ceil((bsx/5)+0.5f);
 		    bsy += ceil((bsy/5)+0.5f);
 		}
                 if(bsx>1180)
                     bsx = 1180;
-				if(bsy>1180)
+		if(bsy>1180)
                     bsy = 1180;
                 if(bsx<0)
                     bsx = 0;
-				if(bsy<0)
+		if(bsy<0)
                     bsy = 0;
             }
         }
+	if(sdl_key=='d')
+		DEBUG_MODE = !DEBUG_MODE;
+	if(sdl_key=='i')
+	{
+		int nx, ny;
+		for(nx = 0;nx<XRES/CELL;nx++)
+			for(ny = 0;ny<YRES/CELL;ny++)
+			{
+				pv[ny][nx] = -pv[ny][nx];
+				vx[ny][nx] = -vx[ny][nx];
+				vy[ny][nx] = -vy[ny][nx];				
+			}		
+	}
+	if((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
+		active_menu = 11;
 	if(sdl_key==SDLK_INSERT)
 	    REPLACE_MODE = !REPLACE_MODE;
 	if(sdl_key=='g')
@@ -1612,7 +1627,10 @@ int main(int argc, char *argv[])
 #ifdef BETA
                 sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 #else
-                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
+		if(DEBUG_MODE)
+			sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+		else
+			sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
 #endif
             }
             else
@@ -2245,7 +2263,10 @@ int main(int argc, char *argv[])
 #ifdef BETA
 			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS);
 #else
-			sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
+			if(DEBUG_MODE)
+				sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS);
+			else
+				sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
 #endif
 			if(REPLACE_MODE)
 				strappend(uitext, " [REPLACE MODE]");

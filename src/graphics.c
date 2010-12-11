@@ -1402,14 +1402,37 @@ void draw_parts(pixel *vid)
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
-		if(cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP)//nothing display but show needed color changes
+		if(cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP && t!=PT_FILT && t!=PT_HSWC && t!=PT_PCLN && t!=PT_DEUT && t!=PT_WIFI)//nothing display but show needed color changes
 	   	{
-			cr = PIXR(ptypes[t].pcolors);
-                	cg = PIXG(ptypes[t].pcolors);
-               	 	cb = PIXB(ptypes[t].pcolors);
-                	blendpixel(vid, nx, ny, cr, cg, cb, 255);
-	    	}
-		else if(cmode==CM_GRAD)
+			if(t==PT_PHOT)
+			{
+				cg = 0;
+				cb = 0;
+				cr = 0;
+				for(x=0; x<12; x++) {
+				cr += (parts[i].ctype >> (x+18)) & 1;
+				cb += (parts[i].ctype >>  x)     & 1;
+				}
+				for(x=0; x<14; x++)
+				cg += (parts[i].ctype >> (x+9))  & 1;
+				x = 624/(cr+cg+cb+1);
+				cr *= x;
+				cg *= x;
+				cb *= x;
+				cr = cr>255?255:cr;
+				cg = cg>255?255:cg;
+				cb = cb>255?255:cb;
+				blendpixel(vid, nx, ny, cr, cg, cb, 255);
+			}
+			else
+			{
+				cr = PIXR(ptypes[t].pcolors);
+                cg = PIXG(ptypes[t].pcolors);
+               	cb = PIXB(ptypes[t].pcolors);
+                blendpixel(vid, nx, ny, cr, cg, cb, 255);
+			}
+		}
+		else if(cmode==CM_GRAD)//forgot to put else, broke nothing view
 		{
 			float frequency = 0.05;
 			int q = parts[i].temp;
@@ -1564,12 +1587,23 @@ void draw_parts(pixel *vid)
 		}
 		else if(t==PT_WIFI)
 		{
-			float frequency = 0.25;
+			float frequency = 0.0628;
 			int q = parts[i].tmp;
 			cr = sin(frequency*q + 0) * 127 + 128;
 			cg = sin(frequency*q + 2) * 127 + 128;
 			cb = sin(frequency*q + 4) * 127 + 128;
-			blendpixel(vid, nx, ny, cr, cg, cb, 255);			
+			blendpixel(vid, nx, ny, cr, cg, cb, 255);	
+			if(mousex==(nx) && mousey==(ny))
+                    {
+			int z;
+                        for(z = 0; z<NPART; z++) {
+				if(parts[z].type)
+				{	
+					if(parts[z].type==PT_WIFI&&parts[z].tmp==parts[i].tmp)
+						xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);					
+				}
+			}
+                    }
 		}
 		else if(t==PT_PIPE)
 		{
@@ -2801,12 +2835,6 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
 							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
 					k++;
 					break;
-				case WL_FAN:
-					for(j=0; j<CELL; j+=2)
-						for(i=(j>>1)&1; i<CELL; i+=2)
-							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
-					k++;
-					break;
             case 6:
                 for(j=0; j<CELL; j+=2)
                     for(i=(j>>1)&1; i<CELL; i+=2)
@@ -2819,6 +2847,47 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
                             fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
                 break;
             case 8:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        if(!(j%2) && !(i%2))
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
+                        else
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
+	    case WL_WALL:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
+            case WL_DESTROYALL:
+                for(j=0; j<CELL; j+=2)
+                    for(i=(j>>1)&1; i<CELL; i+=2)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
+            case WL_ALLOWLIQUID:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        if(!(j%2) && !(i%2))
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
+                break;
+            case WL_FAN:
+                for(j=0; j<CELL; j+=2)
+                    for(i=(j>>1)&1; i<CELL; i+=2)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
+                k++;
+                break;
+            case WL_DETECT:
+                for(j=0; j<CELL; j+=2)
+                    for(i=(j>>1)&1; i<CELL; i+=2)
+                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0xFF8080);
+                break;
+            case WL_EWALL:
+                for(j=0; j<CELL; j++)
+                    for(i=0; i<CELL; i++)
+                        if(!(i&j&1))
+                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+                break;
+            case WL_WALLELEC:
                 for(j=0; j<CELL; j++)
                     for(i=0; i<CELL; i++)
                         if(!(j%2) && !(i%2))

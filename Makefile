@@ -17,10 +17,10 @@ powder-debug-64: $(SOURCES)
 	$(COMPILER) -m64 -o$@ $(FLAGS_DBUG) -DLIN64 $(SOURCES) -Iincludes/
 powder-debug: $(SOURCES)
 	$(COMPILER) -m32 -o$@ $(FLAGS_DBUG) -DLIN32 $(SOURCES) -Iincludes/ 
+
 powder-sse3: $(SOURCES)
 	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN32
 	strip $@
-	mv $@ build
 powder-sse2: $(SOURCES)
 	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE2) $(SOURCES) -DLIN32
 	strip $@
@@ -33,7 +33,6 @@ powder-64-sse3-opengl: $(SOURCES)
 powder-64-sse3: $(SOURCES)
 	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64 
 	strip $@
-	mv $@ build
 powder-64-sse2: $(SOURCES)
 	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE2) $(SOURCES) -DLIN64
 	strip $@
