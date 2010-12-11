@@ -2321,7 +2321,7 @@ int search_ui(pixel *vid_buf)
             lasttime = TIMEOUT;
         }
 
-        if(b && !bq && dp!=-1 && search_fav==0)
+        if(b && !bq && dp!=-1 && search_fav!=0)
             if(confirm_ui(vid_buf, "Do you want to delete?", search_names[dp], "Delete"))
             {
                 execute_delete(vid_buf, search_ids[dp]);
