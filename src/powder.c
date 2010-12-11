@@ -867,8 +867,8 @@ int nearest_part(int ci, int t)
 
 void update_particles_i(pixel *vid, int start, int inc)
 {
-    int i, j, x, y, t, nx, ny, r, a, s, lt, rt, fe, nt, lpv, nearp, pavg, nnx, nny, q, golnum, goldelete, z, ctype, temp, trade;
-    float mv, dx, dy, ix, iy, lx, ly, d, pp, nrx, nry, dp;
+    int i, j, x, y, t, nx, ny, r, a, s, lt, rt, fe, nt, lpv, nearp, pavg, nnx, nny, q, golnum, goldelete, z, ctype, temp, trade, docontinue, nxx, nyy, nxi, nyi;
+    float mv, dx, dy, ix, iy, lx, ly, d, pp, nrx, nry, dp, rr, rrr;
     float nn, ct1, ct2;
     float pt = R_TEMP;
     float c_heat = 0.0f;
@@ -1405,8 +1405,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 	    if((t==PT_ISOZ||t==PT_ISZS) && 1>rand()%200 && ((int)(-4.0f*(pv[y/CELL][x/CELL])))>(rand()%1000))
             {
                 t = PT_PHOT;
-		float rr = (rand()%228+128)/127.0f;
-		float a = (rand()%8) * 0.78540f;
+		rr = (rand()%228+128)/127.0f;
+		rrr = (rand()%8) * 0.78540f;
 		parts[i].life = 680;
 		parts[i].ctype = 0x3FFFFFFF;
 		parts[i].vx = rr*cosf(a);
@@ -1821,7 +1821,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 continue;
 							if((r&0xFF)==PT_SPRK){
 								int destroy = (parts[r>>8].ctype==PT_PSCN)?1:0;
-								for (int docontinue = 1, nxx = 0, nyy = 0, nxi = nx*-1, nyi = ny*-1; docontinue; nyy+=nyi, nxx+=nxi) {
+								for (docontinue = 1, nxx = 0, nyy = 0, nxi = nx*-1, nyi = ny*-1; docontinue; nyy+=nyi, nxx+=nxi) {
 									if(!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)){
 										break;
 									}
@@ -2329,8 +2329,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 				parts[i].vx *= 0.90;
                                 parts[i].vy *= 0.90;
                                 parts[r>>8].type = PT_PHOT;
-				float a = (rand()%8) * 0.78540f;
-				float rr = (rand()%128+128)/127.0f;
+				rrr = (rand()%8) * 0.78540f;
+				rr = (rand()%128+128)/127.0f;
 				parts[r>>8].life = 680;
 				parts[r>>8].ctype = 0x3FFFFFFF;
 				parts[r>>8].vx = rr*cosf(a);
@@ -2342,8 +2342,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 				parts[i].vx *= 0.90;
                                 parts[i].vy *= 0.90;
                                 parts[r>>8].type = PT_PHOT;
-				float rr = (rand()%228+128)/127.0f;
-				float a = (rand()%8) * 0.78540f;
+				rr = (rand()%228+128)/127.0f;
+				rrr = (rand()%8) * 0.78540f;
 				parts[r>>8].life = 680;
 				parts[r>>8].ctype = 0x3FFFFFFF;
 				parts[r>>8].vx = rr*cosf(a);
