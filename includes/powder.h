@@ -175,7 +175,8 @@
 #define PT_FILT 125
 #define PT_ARAY 126
 #define PT_BRAY 127
-#define PT_NUM  128
+#define PT_HETR 128
+#define PT_NUM  129
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -395,6 +396,7 @@ static const part_type ptypes[PT_NUM] =
     {"FILT",	PIXPACK(0x000056),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Filter for photons, changes the color.", TYPE_SOLID},
     {"ARAY",	PIXPACK(0xFFBB00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	251,	"Ray Emmitter. Rays create points when they collide", TYPE_SOLID},
     {"BRAY",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	0,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	251,	"Ray Point. Rays create points when they collide", TYPE_SOLID}
+	{"HETR",    PIXPACK(0xFF0000),  0.0f,   0.00f * CFDS,   1.00f,  0.00f,  0.0f,   0.0f,   0.00f,  1.000f  * CFDS, 0,  0,      0,  0,  0,  0,  100,    SC_SPECIAL,     R_TEMP+1.0f +273.15f,   251,    "A hot solid that warms particles and the air around it", TYPE_SOLID}
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -529,6 +531,7 @@ static part_state pstates[PT_NUM] =
     /* FILT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* ARAY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* BRAY */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f}
+	/* HETR */ {ST_SOLID,   PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f,      PT_NONE, 0.0f} 
     
 };
 static int grule[NGOL][9] = 
