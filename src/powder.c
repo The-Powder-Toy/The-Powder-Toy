@@ -1396,6 +1396,8 @@ void update_particles_i(pixel *vid, int start, int inc)
                 t = parts[i].type = PT_NONE;
 	    if(t==PT_SHLD4 && pv[y/CELL][x/CELL]>40.0f)
                 t = parts[i].type = PT_NONE;
+	     if(t==PT_WIFI && pv[y/CELL][x/CELL]>15.0f)
+                t = parts[i].type = PT_BRMT;
             //if(t==PT_GLAS && pv[y/CELL][x/CELL]>4.0f)
             //	t = parts[i].type = PT_BGLA;
             if(t==PT_GLAS)
