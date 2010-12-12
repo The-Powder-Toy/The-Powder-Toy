@@ -1371,11 +1371,11 @@ int main(int argc, char *argv[])
         }
 	if(sdl_key=='9')
         {
-            set_cmode(CM_CRACK);
+            set_cmode(CM_GRAD);
         }
 	if(sdl_key=='0')
         {
-            set_cmode(CM_GRAD);
+            set_cmode(CM_CRACK);
         }
 	if(sdl_key==SDLK_TAB)
 	{
@@ -1463,6 +1463,8 @@ int main(int argc, char *argv[])
         }
 	if(sdl_key=='d')
 		DEBUG_MODE = !DEBUG_MODE;
+	if(sdl_key=='r')
+		GENERATION = 0;
 	if(sdl_key=='i')
 	{
 		int nx, ny;
@@ -2264,7 +2266,7 @@ int main(int argc, char *argv[])
 			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS);
 #else
 			if(DEBUG_MODE)
-				sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS);
+				sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d Generation:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS,GENERATION);
 			else
 				sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
 #endif
