@@ -852,7 +852,7 @@ inline int parts_avg(int ci, int ni,int t)
 
 int nearest_part(int ci, int t)
 {
-    int distance = sqrt(pow(XRES, 2)+pow(YRES, 2));
+    int distance = MAX_DISTANCE;
     int ndistance = 0;
     int id = -1;
     int i = 0;
@@ -2604,15 +2604,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 								continue;
 						if(parts[r>>8].type!=PT_WARP&&parts[r>>8].type!=PT_STKM&&parts[r>>8].type!=PT_DMND&&parts[r>>8].type!=PT_CLNE&&parts[r>>8].type!=PT_BCLN&&parts[r>>8].type!=PT_PCLN&&(10>=rand()%200))
 						{
-							t = parts[i].type = parts[r>>8].type;
-							parts[i].ctype = parts[r>>8].ctype;
-							parts[i].life = parts[r>>8].life;
-							parts[i].tmp = parts[r>>8].tmp;
-							parts[i].temp = parts[r>>8].temp;
-							parts[i].vx = parts[r>>8].vx;
-							parts[i].vy = parts[r>>8].vy;
-							parts[r>>8].type = PT_WARP;
-							parts[r>>8].life = rand()%90+1;
+							parts[i].x = parts[r>>8].x;
+							parts[i].y = parts[r>>8].y;
+							parts[r>>8].x = x;
+							parts[r>>8].y = y;
+							parts[i].life += 4;
 							trade = 5;
 						}
 					}

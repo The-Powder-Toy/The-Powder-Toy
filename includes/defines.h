@@ -28,6 +28,8 @@
 #define YRES	384
 #define NPART XRES*YRES
 
+#define MAX_DISTANCE sqrt(pow(XRES, 2)+pow(YRES, 2))
+
 #define MAXSIGNS 16
 #define TAG_MAX 256
 

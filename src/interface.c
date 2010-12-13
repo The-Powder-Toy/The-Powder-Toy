@@ -555,10 +555,11 @@ void draw_svf_ui(pixel *vid_buf)
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
 	break;
     case CM_CRACK:
-        drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
+        drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xD4", 255, 55, 55, 255);
+		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xD5", 55, 255, 55, 255);
 	break;
     case CM_GRAD:
-        drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
+        drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xD3", 255, 50, 255, 255);
         break;
     }
     drawrect(vid_buf, XRES-32+BARSIZE/*478*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
@@ -2321,7 +2322,7 @@ int search_ui(pixel *vid_buf)
             lasttime = TIMEOUT;
         }
 
-        if(b && !bq && dp!=-1 && search_fav!=0)
+        if(b && !bq && dp!=-1 && search_fav==0)
             if(confirm_ui(vid_buf, "Do you want to delete?", search_names[dp], "Delete"))
             {
                 execute_delete(vid_buf, search_ids[dp]);
