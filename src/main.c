@@ -1481,7 +1481,12 @@ int main(int argc, char *argv[])
 	if(sdl_key==SDLK_INSERT)
 	    REPLACE_MODE = !REPLACE_MODE;
 	if(sdl_key=='g')
-            GRID_MODE = (GRID_MODE+1)%10;
+	{
+	    if(sdl_mod & (KMOD_SHIFT))
+		GRID_MODE = (GRID_MODE+9)%10;
+	    else 
+		GRID_MODE = (GRID_MODE+1)%10;
+	}
 	if(sdl_key=='t')
             VINE_MODE = !VINE_MODE;
         if(sdl_key==SDLK_SPACE)
@@ -1630,14 +1635,15 @@ int main(int argc, char *argv[])
                 sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 #else
 		if(DEBUG_MODE)
-		{
-			int tctype = parts[cr>>8].ctype;
-			if(tctype>=PT_NUM)
-				tctype = 0;
-			sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
-		}
-		else
+                {
+                    int tctype = parts[cr>>8].ctype;
+                    if(tctype>=PT_NUM)
+                        tctype = 0;
+                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+			//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+		} else {
 			sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
+                }
 #endif
             }
             else

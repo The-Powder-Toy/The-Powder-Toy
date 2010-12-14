@@ -147,6 +147,7 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
     ed.focus = 1;
     ed.hide = 0;
     ed.cursor = strlen(signs[i].text);
+    ed.multiline = 0;
     strcpy(ed.str, signs[i].text);
     ju = signs[i].ju;
 
@@ -763,6 +764,7 @@ void login_ui(pixel *vid_buf)
     ed1.def = "[user name]";
     ed1.focus = 1;
     ed1.hide = 0;
+    ed1.multiline = 0;
     ed1.cursor = strlen(svf_user);
     strcpy(ed1.str, svf_user);
     ed2.x = x0+25;
@@ -773,6 +775,7 @@ void login_ui(pixel *vid_buf)
     ed2.focus = 0;
     ed2.hide = 1;
     ed2.cursor = 0;
+    ed2.multiline = 0;
     strcpy(ed2.str, "");
 
     fillrect(vid_buf, -1, -1, XRES, YRES+MENUSIZE, 0, 0, 0, 192);
@@ -1024,6 +1027,7 @@ void tag_list_ui(pixel *vid_buf)
     ed.focus = 0;
     ed.hide = 0;
     ed.cursor = 0;
+    ed.multiline = 0;
     strcpy(ed.str, "");
 
     fillrect(vid_buf, -1, -1, XRES, YRES+MENUSIZE, 0, 0, 0, 192);

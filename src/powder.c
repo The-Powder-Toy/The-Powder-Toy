@@ -467,11 +467,25 @@ inline int create_part(int p, int x, int y, int t)
         pmap[y][x] = (pmap[y][x]&~0xFF) | PT_SPRK;
         return pmap[y][x]>>8;
     }
-
-    if(p==-1)
+    if(p==-1)//creating from anything but brush
+    {
+	if(pmap[y][x])
+            return -1;
+        if(pfree == -1)
+            return -1;
+        i = pfree;
+        pfree = parts[i].life;
+    }
+    else if(p==-2)//creating from brush
     {
         if(pmap[y][x])
+	{
+		if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN))
+		{
+			parts[pmap[y][x]>>8].ctype = t;	    
+		}
             return -1;
+	}
         if(pfree == -1)
             return -1;
         i = pfree;
@@ -562,7 +576,8 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].vx = 3.0f*cosf(a);
         parts[i].vy = 3.0f*sinf(a);
     }
-
+    if(t==PT_BIZR||t==PT_BIZRG)
+	    parts[i].ctype = 0x47FFFF;
     if(t!=PT_STKM)// && t!=PT_PHOT && t!=PT_NEUT)  is this needed? it breaks floodfill
         pmap[y][x] = t|(i<<8);
     else if(t==PT_STKM)
@@ -1141,7 +1156,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             ly = parts[i].y;
             t = parts[i].type;
 
-            if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_CRAC && t!=PT_DEUT)
+            if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT)
             {
                 if(!(parts[i].life==10&&(parts[i].type==PT_LCRY||parts[i].type==PT_PCLN||parts[i].type==PT_HSWC||parts[i].type==PT_PUMP)))
                     parts[i].life--;
@@ -1368,12 +1383,18 @@ void update_particles_i(pixel *vid, int start, int inc)
                 if(t==PT_GAS && pv[y/CELL][x/CELL]>6.0f)
                     t = parts[i].type = PT_OIL;
                 if(t==PT_DESL && pv[y/CELL][x/CELL]>12.0f)
+		{
                     t = parts[i].type = PT_FIRE;
+		    parts[i].life = rand()%50+120;
+		}
             }
             if(t==PT_GAS && pv[y/CELL][x/CELL]<-6.0f)
                 t = parts[i].type = PT_OIL;
-            if(t==PT_DESL && pv[y/CELL][x/CELL]>5.0f)      // Only way I know to make it
-                t = parts[i].type = PT_FIRE;                // combust under pressure.
+            if(t==PT_DESL && pv[y/CELL][x/CELL]>5.0f)
+	    {						// Only way I know to make it
+		t = parts[i].type = PT_FIRE;    		// combust under pressure.
+		parts[i].life = rand()%50+120;
+	    }						
             if(t==PT_GAS && pv[y/CELL][x/CELL]>6.0f)
                 t = parts[i].type = PT_OIL;
             if(t==PT_BMTL && pv[y/CELL][x/CELL]>2.5f)
@@ -1555,9 +1576,15 @@ void update_particles_i(pixel *vid, int start, int inc)
                         }
                         else
                         {
-                            t = parts[i].type = pstates[t].gas;
-			    if(t!=PT_BIZRS)
+			    if((t==PT_BIZR||t==PT_BIZRG||t==PT_BIZRS)&&pt>=pstates[t].gtemp)
+			    {
+				t = parts[i].type = pstates[t].gas;
+			    }
+			    else{
+				t = parts[i].type = pstates[t].gas;
 				pv[y/CELL][x/CELL] += 0.50f;
+			    }
+			    
                             if(t==PT_FIRE)
                                 parts[i].life = rand()%50+120;
                             if(t==PT_HFLM)
@@ -2381,7 +2408,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 		ISLOLZ=1;
 	    else if(t==PT_GRAV)
 		ISGRAV=1;
-	    else if(t==PT_CRAC)
+	    else if(t==PT_SPNG)
 	    {
 			if(pv[y/CELL][x/CELL]<=3&&pv[y/CELL][x/CELL]>=-3)
 			{
@@ -3262,7 +3289,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             if((r>>8)>=NPART || !r)
                                 continue;
                             rt = parts[r>>8].type;
-                            if((r&0xFF)!=PT_AMTR && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_NONE && (r&0xFF)!=PT_PHOT && (r&0xFF)!=PT_VOID && (r&0xFF)!=PT_BHOL)
+                            if((r&0xFF)!=PT_AMTR && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_NONE && (r&0xFF)!=PT_PHOT && (r&0xFF)!=PT_VOID && (r&0xFF)!=PT_BHOL && (r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO)
                             {
                                 t = parts[i].life++;
                                 if(parts[i].life==3)
@@ -3388,6 +3415,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     parts[i].life = 10;
                                 }
                             }
+			    else if(parts[r>>8].type == PT_SPRK && parts[r>>8].ctype==PT_SWCH && parts[i].life<10&&parts_avg(i,r>>8,PT_INSL)!=PT_INSL)
+			    {
+				    parts[r>>8].type = parts[r>>8].ctype;
+				    parts[r>>8].life = 9;
+			    }
                         }
             }
             if(t==PT_SWCH)
@@ -3410,7 +3442,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             rt = parts[r>>8].type;
                             if((a || ptypes[rt].explosive) && ((rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL && rt!=PT_SWCH) || t!=PT_SPRK) &&
                                     !(t==PT_PHOT && rt==PT_INSL) &&
-                                    (t!=PT_LAVA || parts[i].life>0 || (rt!=PT_STNE && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_METL  && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SWCH && rt!=PT_INWR)) && !(rt==PT_CRAC && parts[r>>8].life>0) &&
+                                    (t!=PT_LAVA || parts[i].life>0 || (rt!=PT_STNE && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_METL  && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SWCH && rt!=PT_INWR)) && !(rt==PT_SPNG && parts[r>>8].life>0) &&
                                     ptypes[rt].flammable && (ptypes[rt].flammable + (int)(pv[(y+ny)/CELL][(x+nx)/CELL]*10.0f))>(rand()%1000))
                             {
                                 parts[r>>8].type = PT_FIRE;
@@ -5120,7 +5152,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
         for(j=-ry; j<=ry; j++)
             for(i=-rx; i<=rx; i++)
                 if((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
-                    create_part(-1, x+i, y+j, c);
+                    create_part(-2, x+i, y+j, c);
         return 1;
     }
 
@@ -5147,7 +5179,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
 		    {
 			delete_part(x+i, y+j);
 			if(c!=0)
-			create_part(-1, x+i, y+j, c);
+			create_part(-2, x+i, y+j, c);
 		    }
 		}
 		return 1;
@@ -5156,7 +5188,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
     for(j=-ry; j<=ry; j++)
         for(i=-rx; i<=rx; i++)
             if((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
-                if(create_part(-1, x+i, y+j, c)==-1)
+                if(create_part(-2, x+i, y+j, c)==-1)
                     f = 1;
     return !f;
 }

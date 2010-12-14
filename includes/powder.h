@@ -137,7 +137,7 @@
 #define PT_34 87
 #define PT_LLIF 88
 #define PT_STAN 89
-#define PT_CRAC 90
+#define PT_SPNG 90
 #define PT_RIME 91
 #define PT_FOG 92
 #define PT_BCLN 93
@@ -490,7 +490,7 @@ static part_state pstates[PT_NUM] =
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
-    /* Crac */ {ST_SOLID,   	PT_NONE, 0.0f, 		PT_NONE, 0.0f,  	PT_NONE, 0.0f,   	PT_FIRE, 2730.0f},
+    /* SPNG */ {ST_SOLID,   	PT_NONE, 0.0f, 		PT_NONE, 0.0f,  	PT_NONE, 0.0f,   	PT_FIRE, 2730.0f},
     /* RIME */ {ST_SOLID,	PT_NONE, 0.0f,		PT_WATR, 273.15f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* FOG  */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* BCLN */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
