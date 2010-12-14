@@ -16,9 +16,15 @@ powder: $(SOURCES) src/renderer/sw.c
 powder-debug-64: $(SOURCES) src/renderer/sw.c
 	$(COMPILER) -m64 -o$@ $(FLAGS_DBUG) -DLIN64 $(SOURCES) src/renderer/sw.c -Iincludes/
 powder-debug: $(SOURCES) src/renderer/sw.c
-	$(COMPILER) -m32 -o$@ $(FLAGS_DBUG) -DLIN32 $(SOURCES) src/renderer/sw.c -Iincludes/ 
+	$(COMPILER) -m32 -o$@ $(FLAGS_DBUG) -DLIN32 $(SOURCES) src/renderer/sw.c -Iincludes/
+powder-debug-ogl: $(SOURCES) src/renderer/ogl.c
+	$(COMPILER) -m32 -o$@ $(FLAGS_DBUG) -DLIN32 $(SOURCES) src/renderer/ogl.c -Iincludes/ -lGL -lGLU -DOpenGL
 powder-sse3: $(SOURCES) src/renderer/sw.c
 	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) src/renderer/sw.c -DLIN32
+	strip $@
+	mv $@ build
+powder-sse3-ogl: $(SOURCES) src/renderer/ogl.c
+	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) src/renderer/ogl.c -DLIN32 -lGL -lGLU -DOpenGL
 	strip $@
 	mv $@ build
 powder-sse2: $(SOURCES) src/renderer/sw.c

@@ -18,14 +18,15 @@
 #define INCLUDE_FONTDATA
 #include <font.h>
 #include <misc.h>
+#include <icon.h>
 
 #define GLOWTEXSIZE 16
 #define BLOBTEXSIZE 4
 
 #define STATESLOTS 4
-
+ 
 typedef void (APIENTRY * GL_BlendEquation)(GLenum);
-GL_BlendEquation glBlendEquation = 0;
+GL_BlendEquation _glBlendEquation = 0;
 
 SDL_Surface *sdl_scrn;
 GLuint GlowTexture = 0;
@@ -34,7 +35,6 @@ int sdl_scale = 1;
 unsigned char PersistentTick=0;
 unsigned char *StateMemory;
 unsigned char *SecondaryBuffer;
-
 
 void Renderer_Init()
 {
@@ -79,8 +79,8 @@ void Renderer_Init()
         fprintf(stderr, "Creating window: %s\n", SDL_GetError());
         exit(1);
     }
-    glBlendEquation=(GL_BlendEquation) SDL_GL_GetProcAddress("glBlendEquation");
-    if(!glBlendEquation){
+    _glBlendEquation=(GL_BlendEquation) SDL_GL_GetProcAddress("glBlendEquation");
+    if(!_glBlendEquation){
         fprintf(stderr, "Blend Equation Extensions not present.\n");
         exit(1);
     }
@@ -140,9 +140,9 @@ void Renderer_PrepareScreen()
         if(!PersistentTick)
         {
             glDrawPixels(XRES, YRES, GL_RGB, GL_UNSIGNED_BYTE, SecondaryBuffer);
-            glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+            _glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
             Renderer_FillRectangle(-1,-1,XRES+2,YRES+2,255,255,255,1);
-            glBlendEquation(GL_FUNC_ADD);
+            _glBlendEquation(GL_FUNC_ADD);
         }
         else
         {

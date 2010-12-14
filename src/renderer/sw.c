@@ -8,6 +8,7 @@
 #define INCLUDE_FONTDATA
 #include <font.h>
 #include <misc.h>
+#include <icon.h>
 
 #define STATESLOTS 4
 
@@ -31,6 +32,7 @@ void Renderer_Intern_BlitOne()
     if(SDL_MUSTLOCK(sdl_scrn))
         if(SDL_LockSurface(sdl_scrn)<0)
             return;
+	memcpy(sdl_scrn->pixels, PrimaryBuffer, (XRES+BARSIZE)*(YRES+MENUSIZE)*PIXELSIZE);
     if(SDL_MUSTLOCK(sdl_scrn))
         SDL_UnlockSurface(sdl_scrn);
     SDL_UpdateRect(sdl_scrn,0,0,0,0);
