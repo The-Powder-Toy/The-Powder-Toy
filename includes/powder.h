@@ -212,7 +212,7 @@ struct particle
     float pavg[2];
     int flags;
     int tmp;
-    void (*update_func) ();
+    void (*update_func) (int);
 };
 typedef struct particle particle;
 
