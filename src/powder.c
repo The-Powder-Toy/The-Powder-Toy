@@ -884,7 +884,7 @@ void update_particles_i(pixel *vid, int start, int inc)
     int starti = (start*-1);
 	if(sys_pause&&!framerender)
                 return;
-	if(ISGRAV==1)
+    if(ISGRAV==1)
 	{
 		ISGRAV = 0;
 		GRAV ++;
@@ -1135,6 +1135,11 @@ void update_particles_i(pixel *vid, int start, int inc)
     for(i=start; i<(NPART-starti); i+=inc)
         if(parts[i].type)
         {
+                if (parts[i].update_func)
+                {
+                        if (parts[i].update_func (i))
+                                goto killed;
+                }
             //printf("parts[%d].type: %d\n", i, parts[i].type);
 
             lx = parts[i].x;
