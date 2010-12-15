@@ -5,6 +5,7 @@
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <OpenGL/glext.h>
+#define APIENTRY
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>

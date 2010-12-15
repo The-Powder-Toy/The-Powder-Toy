@@ -67,6 +67,14 @@ powder-x-ogl: $(SOURCES) src/renderer/ogl.c
 	gcc -o $@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS) $(SOURCES) src/renderer/ogl.c -lSDLmain -DOpenGL -DMACOSX -DPIX32BGRA -arch x86_64 -framework Cocoa -framework OpenGL -ggdb
 	strip $@
 
+osx_powder: $(SOURCES) src/renderer/sw.c
+	gcc -o $@ $(CFLAGS) -I/Library/Frameworks/SDL.framework/Headers -Iosx/ $(OFLAGS) -lm -lbz2 $(MFLAGS) $(SOURCES) src/renderer/sw.c osx/SDLmain.m -framework SDL -framework Cocoa -DMACOSX -DPIX32BGRA -arch x86_64 -ggdb
+	strip $@ 
+
+osx_powder-ogl: $(SOURCES) src/renderer/ogl.c
+	gcc -o $@ $(CFLAGS) -I/Library/Frameworks/SDL.framework/Headers -Iosx/ $(OFLAGS) -lm -lbz2 $(MFLAGS) $(SOURCES) src/renderer/ogl.c osx/SDLmain.m -framework SDL -framework Cocoa -framework OpenGL -DOpenGL -DMACOSX -DPIX32BGRA -arch x86_64 -ggdb
+	strip $@
+
 win_powder-sse.exe: $(SOURCES) src/renderer/sw.c powder-res.o
 	gcc -Wall -m32 -std=c99 -D_POSIX_C_SOURCE=200112L -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -march=native -msse -mmmx -DX86 -mwindows -DWIN32 -o$@ -Iincludes src/*.c src/renderer/sw.c powder-res.o -lmingw32 -lSDL.dll -lSDLmain -lSDL -lbz2 -lwsock32 -lws2_32
 
