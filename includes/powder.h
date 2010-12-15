@@ -175,7 +175,7 @@
 #define PT_FILT 125
 #define PT_ARAY 126
 #define PT_BRAY 127
-#define PT_HETR 128 
+#define PT_BOOM 128 
 #define PT_NUM  129
 
 #define R_TEMP 22
