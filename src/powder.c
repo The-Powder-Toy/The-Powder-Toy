@@ -4922,48 +4922,57 @@ void rotate_area(int area_x, int area_y, int area_w, int area_h)
 {
     int cx = 0;
     int cy = 0;
-    char tpmap[area_h][area_w];
-    char rtpmap[area_w][area_h];
-    unsigned char tbmap[area_h][area_w];
-    unsigned char rtbmap[area_h][area_w];
+    unsigned tpmap[area_h][area_w];
+    unsigned rtpmap[area_w][area_h];
+    unsigned char tbmap[area_h/CELL][area_w/CELL];
+    unsigned char rtbmap[area_w/CELL][area_h/CELL];
     for(cy=0; cy<area_h; cy++)
     {
-        for(cx=0; cx<area_w; cx++)
+        for(cx=0; cx<area_w; cx++)//save walls to temp
         {
 	    if(area_x + cx<XRES&&area_y + cy<YRES)
-		bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
-	    //tbmap[cy][cx] = bmap[(cy+area_y)/CELL][(cx+area_x)/CELL];//does not do walls right now, very glitchy
+	    {
+		if(bmap[(cy+area_y)/CELL][(cx+area_x)/CELL])
+			tbmap[cy/CELL][cx/CELL] = bmap[(cy+area_y)/CELL][(cx+area_x)/CELL];
+		else 
+			tbmap[cy/CELL][cx/CELL] = 0;
+	    }
         }
     }
     for(cy=0; cy<area_h; cy++)
     {
-        for(cx=0; cx<area_w; cx++)
+        for(cx=0; cx<area_w; cx++)//save particles to temp
         {
-	    if((area_x + cx<XRES&&area_y + cy<YRES) && !bmap[(cy+area_y)/CELL][(cx+area_x)/CELL])
+	    if((area_x + cx<XRES&&area_y + cy<YRES))
 	    {
-		tpmap[cy][cx] = pmap[(int)(cy+area_y+0.5f)][(int)(cx+area_x+0.5f)]&0xFF;
-		delete_part(cx+area_x, cy+area_y);
+		tpmap[cy][cx] = pmap[(int)(cy+area_y+0.5f)][(int)(cx+area_x+0.5f)];
 	    }
 	    else 
-		tpmap[cy][cx] = 0;
+		tpmap[(int)(cy+0.5f)][(int)(cx+0.5f)] = 0;
         }
     }
     for(cy=0; cy<area_w; cy++)
     {
-        for(cx=0; cx<area_h; cx++)
+        for(cx=0; cx<area_h; cx++)//rotate temp arrays
         {
-		//rtbmap[(area_h-1)-cx][cy] = tbmap[cy][cx];
-		rtpmap[(area_h-1)-cx][cy] = tpmap[cy][cx];
+		rtbmap[((area_h-1)-cx)/CELL][cy/CELL] = tbmap[cy/CELL][cx/CELL];
+		rtpmap[(area_h-1)-cx][cy] = tpmap[(int)(cy+0.5f)][(int)(cx+0.5f)];
 	}
     }
     for(cy=0; cy<area_w; cy++)
     {
-        for(cx=0; cx<area_h; cx++)
+        for(cx=0; cx<area_h; cx++)//move particles and walls
         {
-		//bmap[area_y+cy][area_x+cx] = rtbmap[cy][cx];
 		if(area_x + cx<XRES&&area_y + cy<YRES)
-			if(rtpmap[cy][cx]>0&&rtpmap[cy][cx]<PT_NUM)
-				create_part(-1,area_x + cx,area_y + cy,rtpmap[cy][cx]);
+		{
+			if((rtpmap[cy][cx]>>8)<=NPART&&rtpmap[cy][cx])
+			{
+				parts[rtpmap[(int)(cy+0.5f)][(int)(cx+0.5f)]>>8].x = area_x +cx;
+				parts[rtpmap[(int)(cy+0.5f)][(int)(cx+0.5f)]>>8].y = area_y +cy;
+			}
+			else
+			bmap[(area_y+cy)/CELL][(area_x+cx)/CELL] = rtbmap[cy/CELL][cx/CELL];
+		}
 	}
     }
 }
