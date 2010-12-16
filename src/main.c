@@ -1463,8 +1463,6 @@ int main(int argc, char *argv[])
         }
 	if(sdl_key=='d')
 		DEBUG_MODE = !DEBUG_MODE;
-	if(sdl_key=='r')
-		GENERATION = 0;
 	if(sdl_key=='i')
 	{
 		int nx, ny;
@@ -1512,6 +1510,13 @@ int main(int argc, char *argv[])
                 }
             }
         }
+	if(sdl_key=='r'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+        {
+            save_mode = 1;
+            copy_mode = 3;//rotate
+        }
+	else if(sdl_key=='r')
+		GENERATION = 0;
         if(sdl_key=='x'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
         {
             save_mode = 1;
@@ -1868,6 +1873,14 @@ int main(int argc, char *argv[])
                     copy_mode = 0;
                     clear_area(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
                 }
+		else if(copy_mode==3)//rotation
+                {
+			if(save_h>save_w)
+				save_w = save_h;
+		    rotate_area(save_x*CELL, save_y*CELL, save_w*CELL, save_w*CELL);//just do squares for now
+		    save_mode = 0;
+		    copy_mode = 0;			
+		}
                 else
                 {
                     stamp_save(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
@@ -2148,7 +2161,14 @@ int main(int argc, char *argv[])
 
         if(save_mode)
         {
-            xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+	    if(copy_mode==3)//special drawing for rotate, can remove once it can do rectangles
+	    {
+		    if(save_h>save_w)
+				save_w = save_h;
+		    xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_w*CELL);
+	    }
+	    else
+		    xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
             da = 51;
             db = 269;
         }

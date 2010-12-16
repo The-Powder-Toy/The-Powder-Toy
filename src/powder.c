@@ -4918,6 +4918,56 @@ void update_particles(pixel *vid)
 
 }
 
+void rotate_area(int area_x, int area_y, int area_w, int area_h)
+{
+    int cx = 0;
+    int cy = 0;
+    char tpmap[area_h][area_w];
+    char rtpmap[area_w][area_h];
+    unsigned char tbmap[area_h][area_w];
+    unsigned char rtbmap[area_h][area_w];
+    for(cy=0; cy<area_h; cy++)
+    {
+        for(cx=0; cx<area_w; cx++)
+        {
+	    if(area_x + cx<XRES&&area_y + cy<YRES)
+		bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
+	    //tbmap[cy][cx] = bmap[(cy+area_y)/CELL][(cx+area_x)/CELL];//does not do walls right now, very glitchy
+        }
+    }
+    for(cy=0; cy<area_h; cy++)
+    {
+        for(cx=0; cx<area_w; cx++)
+        {
+	    if((area_x + cx<XRES&&area_y + cy<YRES) && !bmap[(cy+area_y)/CELL][(cx+area_x)/CELL])
+	    {
+		tpmap[cy][cx] = pmap[(int)(cy+area_y+0.5f)][(int)(cx+area_x+0.5f)]&0xFF;
+		delete_part(cx+area_x, cy+area_y);
+	    }
+	    else 
+		tpmap[cy][cx] = 0;
+        }
+    }
+    for(cy=0; cy<area_w; cy++)
+    {
+        for(cx=0; cx<area_h; cx++)
+        {
+		//rtbmap[(area_h-1)-cx][cy] = tbmap[cy][cx];
+		rtpmap[(area_h-1)-cx][cy] = tpmap[cy][cx];
+	}
+    }
+    for(cy=0; cy<area_w; cy++)
+    {
+        for(cx=0; cx<area_h; cx++)
+        {
+		//bmap[area_y+cy][area_x+cx] = rtbmap[cy][cx];
+		if(area_x + cx<XRES&&area_y + cy<YRES)
+			if(rtpmap[cy][cx]>0&&rtpmap[cy][cx]<PT_NUM)
+				create_part(-1,area_x + cx,area_y + cy,rtpmap[cy][cx]);
+	}
+    }
+}
+
 void clear_area(int area_x, int area_y, int area_w, int area_h)
 {
     int cx = 0;
@@ -5152,7 +5202,10 @@ int create_parts(int x, int y, int rx, int ry, int c)
         for(j=-ry; j<=ry; j++)
             for(i=-rx; i<=rx; i++)
                 if((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
-                    create_part(-2, x+i, y+j, c);
+		    if(!REPLACE_MODE)
+			create_part(-2, x+i, y+j, c);
+		    else if((pmap[y+j][x+i]&0xFF)==SLALT&&SLALT!=0)
+			create_part(-2, x+i, y+j, c);
         return 1;
     }
 

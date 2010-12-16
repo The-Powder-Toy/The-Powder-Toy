@@ -634,6 +634,8 @@ void update_particles_i(pixel *vid, int start, int inc);
 
 void update_particles(pixel *vid);
 
+void rotate_area(int area_x, int area_y, int area_w, int area_h);
+
 void clear_area(int area_x, int area_y, int area_w, int area_h);
 
 void create_box(int x1, int y1, int x2, int y2, int c);
