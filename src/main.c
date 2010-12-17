@@ -1476,7 +1476,7 @@ int main(int argc, char *argv[])
 	}
 	if((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
 		active_menu = 11;
-	if(sdl_key==SDLK_INSERT)
+	if(sdl_key==SDLK_INSERT || sdl_key==SDLK_BACKQUOTE)
 	    REPLACE_MODE = !REPLACE_MODE;
 	if(sdl_key=='g')
 	{
@@ -1510,7 +1510,12 @@ int main(int argc, char *argv[])
                 }
             }
         }
-	if(sdl_key=='r'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+	if(sdl_key=='r'&&(sdl_mod & (KMOD_CTRL))&&(sdl_mod & (KMOD_SHIFT)))
+        {
+            save_mode = 1;
+            copy_mode = 4;//invert
+        }
+	else if(sdl_key=='r'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
         {
             save_mode = 1;
             copy_mode = 3;//rotate
@@ -1877,7 +1882,15 @@ int main(int argc, char *argv[])
                 {
 			if(save_h>save_w)
 				save_w = save_h;
-		    rotate_area(save_x*CELL, save_y*CELL, save_w*CELL, save_w*CELL);//just do squares for now
+		    rotate_area(save_x*CELL, save_y*CELL, save_w*CELL, save_w*CELL,0);//just do squares for now
+		    save_mode = 0;
+		    copy_mode = 0;			
+		}
+		else if(copy_mode==4)//invertion
+                {
+			if(save_h>save_w)
+				save_w = save_h;
+		    rotate_area(save_x*CELL, save_y*CELL, save_w*CELL, save_w*CELL,1);//just do squares for now
 		    save_mode = 0;
 		    copy_mode = 0;			
 		}
@@ -2161,7 +2174,7 @@ int main(int argc, char *argv[])
 
         if(save_mode)
         {
-	    if(copy_mode==3)//special drawing for rotate, can remove once it can do rectangles
+	    if(copy_mode==3||copy_mode==4)//special drawing for rotate, can remove once it can do rectangles
 	    {
 		    if(save_h>save_w)
 				save_w = save_h;

@@ -2332,6 +2332,11 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 parts[r>>8].type = PT_FWRK;
 			    if((r&0xFF)==PT_FWRK && 5>(rand()%100))
                                 parts[r>>8].ctype = PT_DUST;
+			    if((r&0xFF)==PT_ACID && 5>(rand()%100))
+			    {
+                                parts[r>>8].type = PT_ISOZ;
+				parts[r>>8].life = 0;
+			    }
                             /*if(parts[r>>8].type>1 && parts[r>>8].type!=PT_NEUT && parts[r>>8].type-1!=PT_NEUT && parts[r>>8].type-1!=PT_STKM &&
                               (ptypes[parts[r>>8].type-1].menusection==SC_LIQUID||
                               ptypes[parts[r>>8].type-1].menusection==SC_EXPLOSIVE||
@@ -2393,6 +2398,23 @@ void update_particles_i(pixel *vid, int start, int inc)
 			    }
 			}
             }
+	    else if(t==PT_GLOW)
+	    {
+		    for(nx=-1; nx<2; nx++)
+        	    for(ny=-1; ny<2; ny++)
+           	     if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+           	     {
+            	        r = pmap[y+ny][x+nx];
+			if((r>>8)>=NPART || !r)
+              		      	continue;
+			if(parts[r>>8].type==PT_WATR&&5>(rand()%2000))
+			{
+				t = parts[i].type = PT_NONE;
+				parts[r>>8].type = PT_DEUT;
+				parts[r>>8].life = 10;				
+			}
+		     }
+	    }
             else if(t==PT_MORT) {
                 create_part(-1, x, y-1, PT_SMKE);
             }
@@ -2916,6 +2938,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 	    }
 	    else if(t==PT_PRTI)
 	    {
+		int temprange = 100;
+		for( temp = 0; temp < MAX_TEMP; temp += temprange)
+			if(parts[i].temp-73.15>temp&&parts[i].temp-73.15 <temp+temprange)
+				parts[i].tmp = temp/100;
 		    int count =0;
 		    for(ny=-1; ny<2; ny++)
                     for(nx=-1; nx<2; nx++)
@@ -2928,10 +2954,10 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 continue;
 			    if(parts[r>>8].type==PT_SPRK || (parts[r>>8].type!=PT_PRTI && parts[r>>8].type!=PT_PRTO && (ptypes[parts[r>>8].type].falldown!= 0 || pstates[parts[r>>8].type].state == ST_GAS)))
 				    for( nnx=0;nnx<8;nnx++)
-					    if(!portal[count-1][nnx])
+					    if(!portal[parts[i].tmp][count-1][nnx])
 					    {
-						    portal[count-1][nnx] = parts[r>>8].type;
-						    portaltemp[count-1][nnx] = parts[r>>8].temp;
+						    portal[parts[i].tmp][count-1][nnx] = parts[r>>8].type;
+						    portaltemp[parts[i].tmp][count-1][nnx] = parts[r>>8].temp;
 						    if(parts[r>>8].type==PT_SPRK)
 							parts[r>>8].type = parts[r>>8].ctype;   
 						    else 
@@ -2942,6 +2968,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 	    }
 	    else if(t==PT_PRTO)
 	    {
+		int temprange = 100;
+		for( temp = 0; temp < MAX_TEMP; temp += temprange)
+			if(parts[i].temp-73.15>temp&&parts[i].temp-73.15 <temp+temprange)
+				parts[i].tmp = temp/100;
 		    int count = 0;
 		    for(ny=1; ny>-2; ny--)
                     for(nx=1; nx>-2; nx--)
@@ -2961,26 +2991,26 @@ void update_particles_i(pixel *vid, int start, int inc)
 						randomness=1;
 					if(randomness>8)
 						randomness=8;
-					if(portal[randomness-1][nnx]==PT_SPRK)//todo. make it look better
+					if(portal[parts[i].tmp][randomness-1][nnx]==PT_SPRK)//todo. make it look better
 					{
-						create_part(-1,x+1,y,portal[randomness-1][nnx]);
-						create_part(-1,x+1,y+1,portal[randomness-1][nnx]);
-						create_part(-1,x+1,y-1,portal[randomness-1][nnx]);
-						create_part(-1,x,y-1,portal[randomness-1][nnx]);
-						create_part(-1,x,y+1,portal[randomness-1][nnx]);
-						create_part(-1,x-1,y+1,portal[randomness-1][nnx]);
-						create_part(-1,x-1,y,portal[randomness-1][nnx]);
-						create_part(-1,x-1,y-1,portal[randomness-1][nnx]);
-						portal[randomness-1][nnx] = 0;
-						portaltemp[randomness-1][nnx] = 0;
+						create_part(-1,x+1,y,portal[parts[i].tmp][randomness-1][nnx]);
+						create_part(-1,x+1,y+1,portal[parts[i].tmp][randomness-1][nnx]);
+						create_part(-1,x+1,y-1,portal[parts[i].tmp][randomness-1][nnx]);
+						create_part(-1,x,y-1,portal[parts[i].tmp][randomness-1][nnx]);
+						create_part(-1,x,y+1,portal[parts[i].tmp][randomness-1][nnx]);
+						create_part(-1,x-1,y+1,portal[parts[i].tmp][randomness-1][nnx]);
+						create_part(-1,x-1,y,portal[parts[i].tmp][randomness-1][nnx]);
+						create_part(-1,x-1,y-1,portal[parts[i].tmp][randomness-1][nnx]);
+						portal[parts[i].tmp][randomness-1][nnx] = 0;
+						portaltemp[parts[i].tmp][randomness-1][nnx] = 0;
 						break;
 					}
-					else if(portal[randomness-1][nnx])
+					else if(portal[parts[i].tmp][randomness-1][nnx])
 					{
-						create_part(-1,x+nx,y+ny,portal[randomness-1][nnx]);
-						parts[pmap[y+ny][x+nx]>>8].temp = portaltemp[randomness-1][nnx];
-						portal[randomness-1][nnx] = 0;
-						portaltemp[randomness-1][nnx] = 0;
+						create_part(-1,x+nx,y+ny,portal[parts[i].tmp][randomness-1][nnx]);
+						parts[pmap[y+ny][x+nx]>>8].temp = portaltemp[parts[i].tmp][randomness-1][nnx];
+						portal[parts[i].tmp][randomness-1][nnx] = 0;
+						portaltemp[parts[i].tmp][randomness-1][nnx] = 0;
 						break;
 					}
 				}
@@ -4918,7 +4948,7 @@ void update_particles(pixel *vid)
 
 }
 
-void rotate_area(int area_x, int area_y, int area_w, int area_h)
+void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert)
 {
     int cx = 0;
     int cy = 0;
@@ -4955,8 +4985,16 @@ void rotate_area(int area_x, int area_y, int area_w, int area_h)
     {
         for(cx=0; cx<area_h; cx++)//rotate temp arrays
         {
-		rtbmap[((area_h-1)-cx)/CELL][cy/CELL] = tbmap[cy/CELL][cx/CELL];
-		rtpmap[(area_h-1)-cx][cy] = tpmap[(int)(cy+0.5f)][(int)(cx+0.5f)];
+		if(invert)
+		{
+			rtbmap[cy/CELL][((area_h-1)-cx)/CELL] = tbmap[cy/CELL][cx/CELL];
+			rtpmap[cy][(area_h-1)-cx] = tpmap[(int)(cy+0.5f)][(int)(cx+0.5f)];
+		}
+		else
+		{
+			rtbmap[((area_h-1)-cx)/CELL][cy/CELL] = tbmap[cy/CELL][cx/CELL];
+			rtpmap[(area_h-1)-cx][cy] = tpmap[(int)(cy+0.5f)][(int)(cx+0.5f)];
+		}
 	}
     }
     for(cy=0; cy<area_w; cy++)
@@ -4970,7 +5008,6 @@ void rotate_area(int area_x, int area_y, int area_w, int area_h)
 				parts[rtpmap[(int)(cy+0.5f)][(int)(cx+0.5f)]>>8].x = area_x +cx;
 				parts[rtpmap[(int)(cy+0.5f)][(int)(cx+0.5f)]>>8].y = area_y +cy;
 			}
-			else
 			bmap[(area_y+cy)/CELL][(area_x+cx)/CELL] = rtbmap[cy/CELL][cx/CELL];
 		}
 	}
