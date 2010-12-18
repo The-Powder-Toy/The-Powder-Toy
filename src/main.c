@@ -636,6 +636,31 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                     player[18] = parts[i].y+12;
 
                 }
+		if(parts[i].type == PT_STKM2)
+                {
+                    //player[2] = PT_DUST;
+
+                    player2[3] = parts[i].x-1;  //Setting legs positions
+                    player2[4] = parts[i].y+6;
+                    player2[5] = parts[i].x-1;
+                    player2[6] = parts[i].y+6;
+
+                    player2[7] = parts[i].x-3;
+                    player2[8] = parts[i].y+12;
+                    player2[9] = parts[i].x-3;
+                    player2[10] = parts[i].y+12;
+
+                    player2[11] = parts[i].x+1;
+                    player2[12] = parts[i].y+6;
+                    player2[13] = parts[i].x+1;
+                    player2[14] = parts[i].y+6;
+
+                    player2[15] = parts[i].x+3;
+                    player2[16] = parts[i].y+12;
+                    player2[17] = parts[i].x+3;
+                    player2[18] = parts[i].y+12;
+
+                }
             }
             else
                 p += 2;
@@ -1291,11 +1316,11 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-        if(sdl_key=='d' && isplayer)
-        {
-            death = 1;
-            //death = !(death);
-        }
+        //if(sdl_key=='d' && isplayer)
+        //{
+        //    death = 1;
+        //    //death = !(death);
+        //}
         if(sdl_key=='f')
         {
             framerender = 1;
@@ -1331,7 +1356,7 @@ int main(int argc, char *argv[])
                     free(load_data);
             }
         }
-        if(sdl_key=='s')
+        if(sdl_key=='s' && (sdl_mod & (KMOD_CTRL)))
         {
             if(it > 50)
                 it = 50;
@@ -1461,7 +1486,7 @@ int main(int argc, char *argv[])
                     bsy = 0;
             }
         }
-	if(sdl_key=='d')
+	if(sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)))
 		DEBUG_MODE = !DEBUG_MODE;
 	if(sdl_key=='i')
 	{
@@ -2351,6 +2376,13 @@ int main(int argc, char *argv[])
                 player[2] = sr;
             else
                 player[2] = PT_DUST;
+        }
+	if(isplayer2==0)
+        {
+            if(ptypes[sr].falldown>0 || sr == PT_NEUT || sr == PT_PHOT)
+                player2[2] = sr;
+            else
+                player2[2] = PT_DUST;
         }
 
     }

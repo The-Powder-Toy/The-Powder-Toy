@@ -1749,6 +1749,23 @@ int sdl_poll(void)
             {
                 player[0] = (int)(player[0])|0x04;  //Jump command
             }
+	    
+	    if(event.key.keysym.sym == SDLK_d)
+            {
+                player2[0] = (int)(player2[0])|0x02;  //Go right command
+            }
+            if(event.key.keysym.sym == SDLK_a)
+            {
+                player2[0] = (int)(player2[0])|0x01;  //Go left command
+            }
+            if(event.key.keysym.sym == SDLK_s && ((int)(player2[0])&0x08)!=0x08)
+            {
+                player2[0] = (int)(player2[0])|0x08;  //Go left command
+            }
+            if(event.key.keysym.sym == SDLK_w && ((int)(player2[0])&0x04)!=0x04)
+            {
+                player2[0] = (int)(player2[0])|0x04;  //Jump command
+            }
             break;
 
         case SDL_KEYUP:
@@ -1768,6 +1785,20 @@ int sdl_poll(void)
             if(event.key.keysym.sym == SDLK_DOWN)
             {
                 player[0] = (int)(player[0])&7;
+            }
+	    
+	    if(event.key.keysym.sym == SDLK_d || event.key.keysym.sym == SDLK_a)
+            {
+                player2[1] = player2[0];  //Saving last movement
+                player2[0] = (int)(player2[0])&12;  //Stop command
+            }
+            if(event.key.keysym.sym == SDLK_w)
+            {
+                player2[0] = (int)(player2[0])&11;
+            }
+            if(event.key.keysym.sym == SDLK_s)
+            {
+                player2[0] = (int)(player2[0])&7;
             }
             break;
         case SDL_MOUSEBUTTONDOWN:

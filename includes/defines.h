@@ -140,6 +140,7 @@ int GRID_MODE;
 int VINE_MODE;
 int DEBUG_MODE;
 int GENERATION;
+int isplayer2;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;

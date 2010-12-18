@@ -1402,6 +1402,31 @@ void draw_parts(pixel *vid)
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
+		else if(t==PT_STKM2)  //Just draw head here
+                {
+                    char buff[10];  //Buffer for HP
+
+                    if(mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3))  //If mous is in the head
+                    {
+                        sprintf(buff, "%3d", parts[i].life);  //Show HP
+                        drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
+                    }
+
+                    for(r=-2; r<=1; r++)  //Here I use r variable not as I should, but I think you will excuse me :-p
+                    {
+                        s = XRES+BARSIZE;
+                        vid[(ny-2)*s+nx+r] = ptypes[(int)player2[2]].pcolors;
+                        vid[(ny+2)*s+nx+r+1] = ptypes[(int)player2[2]].pcolors;
+                        vid[(ny+r+1)*s+nx-2] = ptypes[(int)player2[2]].pcolors;
+                        vid[(ny+r)*s+nx+2] = ptypes[(int)player2[2]].pcolors;
+                    }
+                    draw_line(vid , nx, ny+3, player2[3], player2[4], 100, 100, 255, s);
+                    draw_line(vid , player2[3], player2[4], player2[7], player2[8], 100, 100, 255, s);
+                    draw_line(vid , nx, ny+3, player2[11], player2[12], 100, 100, 255, s);
+                    draw_line(vid , player2[11], player2[12], player2[15], player2[16], 100, 100, 255, s);
+
+                    isplayer2 = 1;  //It's a secret. Tssss...
+                }
 		if(cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP && t!=PT_FILT && t!=PT_HSWC && t!=PT_PCLN && t!=PT_DEUT && t!=PT_WIFI)//nothing display but show needed color changes
 	   	{
 			if(t==PT_PHOT)
@@ -2579,6 +2604,31 @@ void draw_parts(pixel *vid)
 
                     isplayer = 1;  //It's a secret. Tssss...
                 }
+		else if(t==PT_STKM2)  //Stick man should be visible in heat mode
+                {
+                    char buff[10];  //Buffer for HP
+
+                    if(mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3))  //If mous is in the head
+                    {
+                        sprintf(buff, "%3d", parts[i].life);  //Show HP
+                        drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
+                    }
+
+                    for(r=-2; r<=1; r++)
+                    {
+                        s = XRES+BARSIZE;
+                        vid[(ny-2)*s+nx+r] = PIXRGB (R, G, B);
+                        vid[(ny+2)*s+nx+r+1] =  PIXRGB (R, G, B);
+                        vid[(ny+r+1)*s+nx-2] =  PIXRGB (R, G, B);
+                        vid[(ny+r)*s+nx+2] =  PIXRGB (R, G, B);
+                    }
+                    draw_line(vid , nx, ny+3, player2[3], player2[4], R, G, B, s);
+                    draw_line(vid , player2[3], player2[4], player2[7], player2[8], R, G, B, s);
+                    draw_line(vid , nx, ny+3, player2[11], player2[12], R, G, B, s);
+                    draw_line(vid , player2[11], player2[12], player2[15], player2[16], R, G, B, s);
+
+                    isplayer2 = 1;  //It's a secret. Tssss...
+                }
                 else
                 {
                     vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(R, G, B);
@@ -2975,6 +3025,21 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
             if(j<PT_NUM && j>0)
             {
                 if(j==PT_STKM)
+                {
+                    //Stickman drawing
+                    for(k=-2; k<=1; k++)
+                    {
+                        fb[(y-2)*w+x+k] = PIXRGB(255, 224, 178);
+                        fb[(y+2)*w+x+k+1] = PIXRGB(255, 224, 178);
+                        fb[(y+k+1)*w+x-2] = PIXRGB(255, 224, 178);
+                        fb[(y+k)*w+x+2] = PIXRGB(255, 224, 178);
+                    }
+                    draw_line(fb , x, y+3, x-1, y+6, 255, 255, 255, w);
+                    draw_line(fb , x-1, y+6, x-3, y+12, 255, 255, 255, w);
+                    draw_line(fb , x, y+3, x+1, y+6, 255, 255, 255, w);
+                    draw_line(fb , x+1, y+6, x+3, y+12, 255, 255, 255, w);
+                }
+		else if(j==PT_STKM2)
                 {
                     //Stickman drawing
                     for(k=-2; k<=1; k++)
