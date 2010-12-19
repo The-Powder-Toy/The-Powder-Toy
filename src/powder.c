@@ -1863,7 +1863,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 											} else if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==1){
 												parts[r>>8].life = 1020;
 												//docontinue = 1;
-											} else {
+											} else if(parts[r>>8].type!=PT_INWR && parts[r>>8].type!=PT_ARAY) {
 												if(nyy!=0 || nxx!=0){
 													create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 												}
