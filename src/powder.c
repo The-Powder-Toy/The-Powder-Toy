@@ -1135,16 +1135,16 @@ void update_particles_i(pixel *vid, int start, int inc)
     for(i=start; i<(NPART-starti); i+=inc)
         if(parts[i].type)
         {
-                if (parts[i].update_func)
+			lx = parts[i].x;
+            ly = parts[i].y;
+            t = parts[i].type;
+                if (ptypes[t].update_func)
                 {
-                        if (parts[i].update_func (i))
+                        if (ptypes[t].update_func (i))
                                 goto killed;
                 }
             //printf("parts[%d].type: %d\n", i, parts[i].type);
 
-            lx = parts[i].x;
-            ly = parts[i].y;
-            t = parts[i].type;
 
             if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_CRAC && t!=PT_DEUT)
             {
