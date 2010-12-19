@@ -5482,6 +5482,8 @@ void update_particles(pixel *vid)
 
 void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert)
 {
+	//TODO: MSCC doesn't like arrays who's size is determined at runtime.
+	#if !(defined(WIN32) && !defined(__GNUC__))
     int cx = 0;
     int cy = 0;
     unsigned tpmap[area_h][area_w];
@@ -5544,6 +5546,7 @@ void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert)
 		}
 	}
     }
+#endif
 }
 
 void clear_area(int area_x, int area_y, int area_w, int area_h)
