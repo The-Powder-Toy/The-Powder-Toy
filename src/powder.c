@@ -185,11 +185,31 @@ int try_move(int i, int x, int y, int nx, int ny)
 
     if((r&0xFF)==PT_VOID)
     {
+	if(parts[i].type == PT_STKM)
+	{
+		death = 1;
+		isplayer = 0;
+	}
+	if(parts[i].type == PT_STKM2)
+	{
+		death2 = 1;
+		isplayer2 = 0;
+	}
         parts[i].type=PT_NONE;
         return 0;
     }
     if((r&0xFF)==PT_BHOL)
     {
+	if(parts[i].type == PT_STKM)
+	{
+		death = 1;
+		isplayer = 0;
+	}
+	if(parts[i].type == PT_STKM2)
+	{
+		death2 = 1;
+		isplayer2 = 0;
+	}
         parts[i].type=PT_NONE;
         if(!legacy_enable)
         {
@@ -494,7 +514,7 @@ inline int create_part(int p, int x, int y, int t)
     if(p==-1)//creating from anything but brush
     {
 	if(pmap[y][x])
-		if(pmap[y][x]&0xFF!=PT_SPAWN&&pmap[y][x]&0xFF!=PT_SPAWN2)
+		if((pmap[y][x]&0xFF)!=PT_SPAWN&&(pmap[y][x]&0xFF)!=PT_SPAWN2)
 			if(t!=PT_STKM&&t!=PT_STKM2)
 				return -1;
         if(pfree == -1)
