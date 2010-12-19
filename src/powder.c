@@ -370,7 +370,24 @@ void kill_part(int i)
     if(parts[i].type != PT_PHOT) {
         x = (int)(parts[i].x+0.5f);
         y = (int)(parts[i].y+0.5f);
-
+	if(parts[i].type == PT_STKM)
+	{
+		death = 1;
+		isplayer = 0;
+	}
+	if(parts[i].type == PT_STKM2)
+	{
+		death2 = 1;
+		isplayer2 = 0;
+	}
+	if(parts[i].type == PT_SPAWN)
+	{
+		ISSPAWN1 = 0;
+	}
+	if(parts[i].type == PT_SPAWN2)
+	{
+		ISSPAWN2 = 0;
+	}
         if(x>=0 && y>=0 && x<XRES && y<YRES)
             pmap[y][x] = 0;
     }
@@ -470,10 +487,16 @@ inline int create_part(int p, int x, int y, int t)
         pmap[y][x] = (pmap[y][x]&~0xFF) | PT_SPRK;
         return pmap[y][x]>>8;
     }
+    if(t==PT_SPAWN&&ISSPAWN1)
+		return -1;
+    if(t==PT_SPAWN2&&ISSPAWN2)
+		return -1;
     if(p==-1)//creating from anything but brush
     {
 	if(pmap[y][x])
-            return -1;
+		if(pmap[y][x]&0xFF!=PT_SPAWN&&pmap[y][x]&0xFF!=PT_SPAWN2)
+			if(t!=PT_STKM&&t!=PT_STKM2)
+				return -1;
         if(pfree == -1)
             return -1;
         i = pfree;
@@ -587,6 +610,18 @@ inline int create_part(int p, int x, int y, int t)
     {
         if(isplayer==0)
         {
+	    if(pmap[y][x]&0xFF==PT_SPAWN)
+	    {
+            parts[pmap[y][x]>>8].type = PT_STKM;
+            parts[pmap[y][x]>>8].vx = 0;
+            parts[pmap[y][x]>>8].vy = 0;
+            parts[pmap[y][x]>>8].life = 100;
+            parts[pmap[y][x]>>8].ctype = 0;
+            parts[pmap[y][x]>>8].temp = ptypes[t].heat;    
+		    
+	    }
+	    else
+	    {
             parts[i].x = (float)x;
             parts[i].y = (float)y;
             parts[i].type = PT_STKM;
@@ -595,6 +630,7 @@ inline int create_part(int p, int x, int y, int t)
             parts[i].life = 100;
             parts[i].ctype = 0;
             parts[i].temp = ptypes[t].heat;
+	    }
 
 
 
@@ -620,11 +656,26 @@ inline int create_part(int p, int x, int y, int t)
 
             isplayer = 1;
         }
+		//kill_part(playerspawn);
+		create_part(-1,x,y,PT_SPAWN);
+		ISSPAWN1 = 1;
     }
     else if(t==PT_STKM2)
     {
         if(isplayer2==0)
         {
+	    if(pmap[y][x]&0xFF==PT_SPAWN2)
+	    {
+            parts[pmap[y][x]>>8].type = PT_STKM2;
+            parts[pmap[y][x]>>8].vx = 0;
+            parts[pmap[y][x]>>8].vy = 0;
+            parts[pmap[y][x]>>8].life = 100;
+            parts[pmap[y][x]>>8].ctype = 0;
+            parts[pmap[y][x]>>8].temp = ptypes[t].heat;    
+		    
+	    }
+	    else
+	    {
             parts[i].x = (float)x;
             parts[i].y = (float)y;
             parts[i].type = PT_STKM2;
@@ -633,6 +684,7 @@ inline int create_part(int p, int x, int y, int t)
             parts[i].life = 100;
             parts[i].ctype = 0;
             parts[i].temp = ptypes[t].heat;
+	    }
 
 
 
@@ -658,6 +710,9 @@ inline int create_part(int p, int x, int y, int t)
 
             isplayer2 = 1;
         }
+		//kill_part(player2spawn);
+		create_part(-1,x,y,PT_SPAWN2);
+		ISSPAWN2 = 1;
     }
 
     return i;
@@ -3712,7 +3767,6 @@ killed:
                 //Death
                 if(parts[i].life<1 || death == 1 || (pv[y/CELL][x/CELL]>=4.5f && player[2] != SPC_AIR) )  //If his HP is less that 0 or there is very big wind...
                 {
-                    death = 0;
                     for(r=-2; r<=1; r++)
                     {
                         create_part(-1, x+r, y-2, player[2]);
@@ -4101,9 +4155,8 @@ killed:
                     parts[i].temp += 1;
 
                 //Death
-                if(parts[i].life<1 || death == 1 || (pv[y/CELL][x/CELL]>=4.5f && player2[2] != SPC_AIR) )  //If his HP is less that 0 or there is very big wind...
+                if(parts[i].life<1 || death2 == 1 || (pv[y/CELL][x/CELL]>=4.5f && player2[2] != SPC_AIR) )  //If his HP is less that 0 or there is very big wind...
                 {
-                    death = 0;
                     for(r=-2; r<=1; r++)
                     {
                         create_part(-1, x+r, y-2, player2[2]);
@@ -4482,6 +4535,24 @@ killed:
 
                 isplayer2 = 1;
             }
+	    if(t==PT_SPAWN)
+	    {
+		if(death==1)
+		{
+			playerspawn = create_part(-1,x,y,PT_STKM);
+			isplayer = 1;
+		}
+		death = 0;
+	    }
+	    if(t==PT_SPAWN2)
+	    {
+		if(death2==1)
+		{
+			player2spawn = create_part(-1,x,y,PT_STKM2);
+			isplayer2 = 1;
+		}
+		death2 = 0;
+	    }
             if(t==PT_CLNE)
             {
                 if(!parts[i].ctype)
