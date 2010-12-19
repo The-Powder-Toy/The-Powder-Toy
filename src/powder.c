@@ -78,7 +78,7 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
                 (r&0xFF)==PT_GLOW || (r&0xFF)==PT_WATR ||
                 (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW ||
                 (r&0xFF)==PT_ISOZ || (r&0xFF)==PT_ISZS ||
-		(r&0xFF)==PT_FILT ||
+				(r&0xFF)==PT_FILT || (r&0xFF)==PT_INVIS ||
 		((r&0xFF)==PT_LCRY&&parts[r>>8].life > 5)))
         return 2;
 
@@ -163,16 +163,20 @@ int try_move(int i, int x, int y, int nx, int ny)
                 create_gain_photon(i);
             }
 	if(parts[i].type == PT_PHOT && (r&0xFF)==PT_FILT)
-            {
+    {
 		int temp_bin = (int)((parts[r>>8].temp-273.0f)*0.025f);
 		if(temp_bin < 0) temp_bin = 0;
 		if(temp_bin > 25) temp_bin = 25;
 		parts[i].ctype = 0x1F << temp_bin;
-	    }
-        if(parts[i].type == PT_NEUT && (r&0xFF)==PT_GLAS) {
-            if(rand() < RAND_MAX/10)
-                create_cherenkov_photon(i);
-        }
+	}
+    if(parts[i].type == PT_NEUT && (r&0xFF)==PT_GLAS) {
+        if(rand() < RAND_MAX/10)
+            create_cherenkov_photon(i);
+    }
+    if(parts[i].type == PT_PHOT && (r&0xFF)==PT_INVIS) {
+        parts[i].type = PT_NEUT;
+		parts[i].ctype = 0;
+    }
 	if((parts[i].type==PT_BIZR||parts[i].type==PT_BIZRG) && (r&0xFF)==PT_FILT)
 	    {
 		int temp_bin = (int)((parts[r>>8].temp-273.0f)*0.025f);
