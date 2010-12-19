@@ -2749,6 +2749,24 @@ void dim_copy(pixel *dst, pixel *src)
     }
 }
 
+void dim_copy_pers(pixel *dst, pixel *src)
+{
+    int i,r,g,b;
+    for(i=0; i<(XRES+BARSIZE)*YRES; i++)
+    {
+        r = PIXR(src[i]);
+        g = PIXG(src[i]);
+        b = PIXB(src[i]);
+        if(r>0)
+            r--;
+        if(g>0)
+            g--;
+        if(b>0)
+            b--;
+        dst[i] = PIXRGB(r,g,b);
+    }
+}
+
 void render_zoom(pixel *img)
 {
     int x, y, i, j;

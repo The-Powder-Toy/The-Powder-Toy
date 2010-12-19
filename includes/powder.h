@@ -212,7 +212,6 @@ struct particle
     float pavg[2];
     int flags;
     int tmp;
-    int (*update_func) (int);
 };
 typedef struct particle particle;
 
@@ -240,6 +239,7 @@ struct part_type
     unsigned char hconduct;
     const char *descs;
     const unsigned short properties;
+	int (*update_func) (int);
 };
 typedef struct part_type part_type;
 

@@ -1072,6 +1072,7 @@ int main(int argc, char *argv[])
     int pastFPS = 0;
     int past = 0;
     pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	pixel *pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
     void *http_ver_check;
     char *ver_data=NULL, *tmp;
     int i, j, bq, fire_fc=0, do_check=0, old_version=0, http_ret=0, major, minor, old_ver_len;
@@ -1217,8 +1218,8 @@ int main(int argc, char *argv[])
         }
         else if(cmode==CM_PERS)
         {
-            memcpy(vid_buf, fire_bg, XRES*YRES*PIXELSIZE);
-            memset(vid_buf+(XRES*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-(XRES*YRES*PIXELSIZE));
+            memcpy(vid_buf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
+            memset(vid_buf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
         }
         else
         {
@@ -1243,11 +1244,11 @@ int main(int argc, char *argv[])
         {
             if(!fire_fc)
             {
-                dim_copy(fire_bg, vid_buf);
+                dim_copy_pers(pers_bg, vid_buf);
             }
             else
             {
-                memcpy(fire_bg, vid_buf, XRES*YRES*PIXELSIZE);
+                memcpy(pers_bg, vid_buf, (XRES+BARSIZE)*YRES*PIXELSIZE);
             }
             fire_fc = (fire_fc+1) % 3;
         }
