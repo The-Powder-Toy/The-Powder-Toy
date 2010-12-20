@@ -240,7 +240,7 @@ struct part_type
     unsigned char hconduct;
     const char *descs;
     const unsigned short properties;
-	int (*update_func) (int);
+    int (*update_func) (int);
 };
 typedef struct part_type part_type;
 
@@ -366,7 +366,7 @@ static const part_type ptypes[PT_NUM] =
     {"LOVE",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER2,	373.0f,					40,		"Love...", TYPE_SOLID, NULL},
     {"DEUT",  	PIXPACK(0x00153F),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	31,		SC_NUCLEAR,		R_TEMP-2.0f	+273.15f,	251,	"Deuterium oxide. Volume changes with temp, radioactive with neutrons.", TYPE_LIQUID|PROP_NEUTPENETRATE, NULL},
     {"WARP",  	PIXPACK(0x000000),	0.8f,	0.00f * CFDS,	0.9f,	0.70f,	-0.1f,	0.0f,	3.00f,	0.000f	* CFDS, 0, 	0, 		0,  0,  30, 1,  1,		SC_NUCLEAR,  	R_TEMP +273.15f,		100,    "Displaces other elements.",TYPE_GAS, NULL},
-    {"PUMP",	PIXPACK(0x10103B),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	10,	1,	100,	SC_ELEC,		273.15f,				0,		"Changes pressure to its temp when activated. (use HEAT/COOL).", TYPE_SOLID, NULL},	
+    {"PUMP",	PIXPACK(0x10103B),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	10,	1,	100,	SC_ELEC,		273.15f,				0,		"Changes pressure to its temp when activated. (use HEAT/COOL).", TYPE_SOLID, NULL},
     {"FWRK",	PIXPACK(0x666666),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	1,	1,	97,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	100,	"First fireworks made, activated by heat/neutrons.", TYPE_PART, NULL},
     {"PIPE",	PIXPACK(0x444444),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		273.15f,				0,		"Moves elements around, read FAQ on website for help.", TYPE_SOLID, NULL},
     {"FRZZ",	PIXPACK(0xC0E0FF),	0.7f,	0.01f * CFDS,	0.96f,	0.90f,	-0.1f,	0.05f,	0.01f,	-0.00005f* CFDS,1,	0,		0,	0,	20,	1,	50,		SC_CRACKER2,	90.0f,					46,		"FREEZE", TYPE_PART, NULL},
@@ -374,15 +374,15 @@ static const part_type ptypes[PT_NUM] =
     {"GRAV",	PIXPACK(0xFFE0A0),	0.7f,	0.00f * CFDS,	1.00f,	1.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Very light dust. Changes colour based on velocity.", TYPE_PART, NULL},
     {"BIZR",	PIXPACK(0x00FF77),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_LIQUID,		R_TEMP+0.0f	+273.15f,	29,		"Bizarre... contradicts the normal state changes.", TYPE_LIQUID, NULL},
     {"BIZG",	PIXPACK(0x00FFBB),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	2.75f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,		SC_CRACKER2,	R_TEMP-200.0f+273.15f,	42,		"Bizarre gas", TYPE_GAS, NULL},
-    {"BIZS",	PIXPACK(0x00E455),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,	R_TEMP+300.0f+273.15f,	251,	"Bizarre solid", TYPE_SOLID, NULL},    
+    {"BIZS",	PIXPACK(0x00E455),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,	R_TEMP+300.0f+273.15f,	251,	"Bizarre solid", TYPE_SOLID, NULL},
     {"INST",	PIXPACK(0x404039),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	251,	"Instantly conducts, like walls, is now also a battery, PSCN to charge, NSCN to take.", TYPE_SOLID|PROP_CONDUCTS, NULL},
-    {"ISOZ",	PIXPACK(0xAA30D0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	24,		SC_NUCLEAR,		R_TEMP-2.0f	+273.15f,	29,		"Radioactive liquid", TYPE_LIQUID|PROP_NEUTPENETRATE, NULL},    
-    {"ISZS",	PIXPACK(0x662089),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0007f* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_NUCLEAR,		140.00f,				251,	"Solid form of ISOZ, slowly decays.", TYPE_SOLID, NULL},  
+    {"ISOZ",	PIXPACK(0xAA30D0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	24,		SC_NUCLEAR,		R_TEMP-2.0f	+273.15f,	29,		"Radioactive liquid", TYPE_LIQUID|PROP_NEUTPENETRATE, NULL},
+    {"ISZS",	PIXPACK(0x662089),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0007f* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_NUCLEAR,		140.00f,				251,	"Solid form of ISOZ, slowly decays.", TYPE_SOLID, NULL},
     {"PRTI",	PIXPACK(0xEB5917),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.005f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	40,		"Portal IN.  Things go in here", TYPE_SOLID, NULL},
     {"PRTO",	PIXPACK(0x0020EB),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.005f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	40,		"Portal OUT.  Things come out here", TYPE_SOLID, NULL},
-    {"PSTE",	PIXPACK(0xAA99AA),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	31,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	29,		"Colloid, Hardens under pressure", TYPE_LIQUID, NULL},    
-    {"PSTS",	PIXPACK(0x776677),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	20,	0,	100,	SC_CRACKER,		R_TEMP-2.0f	+273.15f,	29,		"Solid form of PSTE, temporary", TYPE_SOLID, NULL},    
-    {"ANAR",	PIXPACK(0xFFFFEE),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Very light dust. Behaves opposite gravity", TYPE_PART, NULL},        
+    {"PSTE",	PIXPACK(0xAA99AA),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	31,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	29,		"Colloid, Hardens under pressure", TYPE_LIQUID, NULL},
+    {"PSTS",	PIXPACK(0x776677),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	20,	0,	100,	SC_CRACKER,		R_TEMP-2.0f	+273.15f,	29,		"Solid form of PSTE, temporary", TYPE_SOLID, NULL},
+    {"ANAR",	PIXPACK(0xFFFFEE),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Very light dust. Behaves opposite gravity", TYPE_PART, NULL},
     {"VINE",	PIXPACK(0x079A00),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	10,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f +273.15f,	65,		"Vine, grows", TYPE_SOLID, NULL},
     {"INVS",	PIXPACK(0x00CCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	15,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	164,	"Invisible to everything while under pressure.", TYPE_SOLID | PROP_NEUTPASS, NULL},
     {"EQVE",	PIXPACK(0xFFE0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	0,	85,		SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	70,		"Shared velocity test", TYPE_PART, NULL},
@@ -397,8 +397,8 @@ static const part_type ptypes[PT_NUM] =
     {"FILT",	PIXPACK(0x000056),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Filter for photons, changes the color.", TYPE_SOLID, NULL},
     {"ARAY",	PIXPACK(0xFFBB00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	251,	"Ray Emmitter. Rays create points when they collide", TYPE_SOLID, NULL},
     {"BRAY",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	0,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	251,	"Ray Point. Rays create points when they collide", TYPE_SOLID, NULL},
-	{"STK2",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	50,		SC_SPECIAL,		R_TEMP+14.6f+273.15f,	0,		"Stickman. Don't kill him!", 0, NULL},
-	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
+    {"STK2",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	50,		SC_SPECIAL,		R_TEMP+14.6f+273.15f,	0,		"Stickman. Don't kill him!", 0, NULL},
+    //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
 static part_state pstates[PT_NUM] =
@@ -510,9 +510,9 @@ static part_state pstates[PT_NUM] =
     /* BIZR */ {ST_LIQUID,	PT_BIZRG, 100.0f,	PT_NONE, 0.0f,		PT_BIZRS, 400.0f,	PT_NONE, 0.0f},
     /* BIZRG*/ {ST_GAS	,	PT_BIZRG, 100.0f,	PT_BIZR , 273.0f,	PT_BIZRS, 400.0f,	PT_NONE, 0.0f},
     /* BIZRS*/ {ST_SOLID,	PT_BIZRG, 100.0f,	PT_BIZR , 273.0f,	PT_BIZRS, 400.0f,	PT_NONE, 0.0f},
-    /* INST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},   
-    /* ISOZ */ {ST_LIQUID,	PT_ISZS, 160.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},    
-    /* ISZS */ {ST_SOLID,	PT_NONE, 0.0f,		PT_ISOZ, 300.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},   
+    /* INST */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* ISOZ */ {ST_LIQUID,	PT_ISZS, 160.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* ISZS */ {ST_SOLID,	PT_NONE, 0.0f,		PT_ISOZ, 300.0f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* PRTI */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* PRTO */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* PSTE */ {ST_LIQUID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
@@ -535,46 +535,46 @@ static part_state pstates[PT_NUM] =
     /* STKM2*/ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 620.0f},
 
 };
-static int grule[NGOL][9] = 
+static int grule[NGOL][9] =
 {
 //   0,1,2,3,4,5,6,7,8    live=1  spawn=2 spawn&live=3
-	{0,0,0,0,0,0,0,0,0},//blank
-	{0,0,1,3,0,0,0,0,0},//GOL
-	{0,0,1,3,0,0,2,0,0},//HLIF
-	{0,0,0,2,3,3,1,1,0},//ASIM
-	{0,1,1,2,0,1,2,0,0},//2x2
-	{0,0,0,3,1,0,3,3,3},//DANI
-	{0,1,0,3,0,3,0,2,1},//AMOE
-	{0,0,1,2,1,1,2,0,2},//MOVE
-	{0,0,1,3,0,2,0,2,1},//PGOL
-	{0,0,0,2,0,3,3,3,3},//DMOE
-	{0,0,0,3,3,0,0,0,0},//34
-	{0,0,0,2,2,3,0,0,0},//LLIF
-	{0,0,1,3,0,1,3,3,3},//STAN
+    {0,0,0,0,0,0,0,0,0},//blank
+    {0,0,1,3,0,0,0,0,0},//GOL
+    {0,0,1,3,0,0,2,0,0},//HLIF
+    {0,0,0,2,3,3,1,1,0},//ASIM
+    {0,1,1,2,0,1,2,0,0},//2x2
+    {0,0,0,3,1,0,3,3,3},//DANI
+    {0,1,0,3,0,3,0,2,1},//AMOE
+    {0,0,1,2,1,1,2,0,2},//MOVE
+    {0,0,1,3,0,2,0,2,1},//PGOL
+    {0,0,0,2,0,3,3,3,3},//DMOE
+    {0,0,0,3,3,0,0,0,0},//34
+    {0,0,0,2,2,3,0,0,0},//LLIF
+    {0,0,1,3,0,1,3,3,3},//STAN
 };
 static int loverule[9][9] =
 {
-	{0,0,1,1,0,0,0,0,0},
-	{0,1,0,0,1,1,0,0,0},
-	{1,0,0,0,0,0,1,0,0},
-	{1,0,0,0,0,0,0,1,0},
-	{0,1,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,1,0},
-	{1,0,0,0,0,0,1,0,0},
-	{0,1,0,0,1,1,0,0,0},
-	{0,0,1,1,0,0,0,0,0},
+    {0,0,1,1,0,0,0,0,0},
+    {0,1,0,0,1,1,0,0,0},
+    {1,0,0,0,0,0,1,0,0},
+    {1,0,0,0,0,0,0,1,0},
+    {0,1,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,1,0},
+    {1,0,0,0,0,0,1,0,0},
+    {0,1,0,0,1,1,0,0,0},
+    {0,0,1,1,0,0,0,0,0},
 };
 static int lolzrule[9][9] =
 {
-	{0,0,0,0,0,0,0,0,0},
-	{1,0,0,0,0,0,1,0,0},
-	{1,0,0,0,0,0,1,0,0},
-	{1,0,0,1,1,0,0,1,0},
-	{1,0,1,0,0,1,0,1,0},
-	{1,0,1,0,0,1,0,1,0},
-	{0,1,0,1,1,0,0,1,0},
-	{0,1,0,0,0,0,0,1,0},
-	{0,1,0,0,0,0,0,1,0},
+    {0,0,0,0,0,0,0,0,0},
+    {1,0,0,0,0,0,1,0,0},
+    {1,0,0,0,0,0,1,0,0},
+    {1,0,0,1,1,0,0,1,0},
+    {1,0,1,0,0,1,0,1,0},
+    {1,0,1,0,0,1,0,1,0},
+    {0,1,0,1,1,0,0,1,0},
+    {0,1,0,0,0,0,0,1,0},
+    {0,1,0,0,0,0,0,1,0},
 };
 int portal[MAX_TEMP/100][8][8];
 float portaltemp[MAX_TEMP/100][8][8];
