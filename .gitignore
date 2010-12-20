@@ -1,7 +1,6 @@
 *.*.swp
-powder-64-sse3
 powder.def
-powder-debug
 gmon.out
 *.*.orig
-build/*
+build/powder*
+build/stamps/*
