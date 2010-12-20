@@ -8,7 +8,7 @@ struct menu_section
     char *icon;
     const char *name;
     int itemcount;
-    int doshow;
+	int doshow;
 };
 typedef struct menu_section menu_section;
 

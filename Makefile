@@ -2,7 +2,7 @@ SOURCES := src/*.c
 
 CFLAGS := -w -std=c99 -D_POSIX_C_SOURCE=200112L -Iincludes/
 OFLAGS := -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations
-LFLAGS := -lSDL -lm -lbz2 
+LFLAGS := -B static -lSDL -lm -lbz2 
 MFLAGS_SSE3 := -march=native -DX86 -DX86_SSE3 -msse3
 MFLAGS_SSE2 := -march=native-DX86 -DX86_SSE2 -msse2
 MFLAGS_SSE := -march=native -DX86 -DX86_SSE
