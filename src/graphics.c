@@ -1641,7 +1641,7 @@ void draw_parts(pixel *vid)
 			cg = sin(frequency*q + 2) * 127 + 128;
 			cb = sin(frequency*q + 4) * 127 + 128;
 			blendpixel(vid, nx, ny, cr, cg, cb, 255);	
-			if(mousex==(nx) && mousey==(ny))
+			if(mousex==(nx) && mousey==(ny) && DEBUG_MODE)
                     {
 			int z;
                         for(z = 0; z<NPART; z++) {

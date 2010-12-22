@@ -2794,7 +2794,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			{
 				create_part(-1, x , y-1 , PT_FWRK);
 				r = pmap[y-1][x];
-				if(parts[r>>8].type==PT_FWRK)
+				if((r&0xFF)==PT_FWRK)
 				{
 					parts[r>>8].vy = rand()%8-22;
 					parts[r>>8].vx = rand()%20-rand()%20;
@@ -3054,7 +3054,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             r = pmap[y+ny][x+nx];
                             if((r>>8)>=NPART || !r)
                                 continue;
-			    else if(parts[r>>8].type==PT_SPRK&&(parts[r>>8].ctype==PT_PSCN)&&(parts[r>>8].life>=3)&&parts[i].life%4==0)
+			    else if(parts[r>>8].type==PT_SPRK&&(parts[r>>8].ctype==PT_PSCN)&&(parts[r>>8].life>=3)&&parts[i].life%4==0&&parts_avg(i,r>>8,PT_INSL)!=PT_INSL)
 			    {
 				    flood_parts(x,y,PT_SPRK,PT_INST,-1);//add life
 				    parts[r>>8].type==parts[r>>8].ctype;
