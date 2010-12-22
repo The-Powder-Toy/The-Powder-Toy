@@ -78,7 +78,7 @@ static int eval_move(int pt, int nx, int ny, unsigned *rr)
                 (r&0xFF)==PT_GLOW || (r&0xFF)==PT_WATR ||
                 (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW ||
                 (r&0xFF)==PT_ISOZ || (r&0xFF)==PT_ISZS ||
-		(r&0xFF)==PT_FILT ||
+				(r&0xFF)==PT_FILT || (r&0xFF)==PT_INVIS ||
 		((r&0xFF)==PT_LCRY&&parts[r>>8].life > 5)))
         return 2;
 
@@ -163,16 +163,20 @@ int try_move(int i, int x, int y, int nx, int ny)
                 create_gain_photon(i);
             }
 	if(parts[i].type == PT_PHOT && (r&0xFF)==PT_FILT)
-            {
+    {
 		int temp_bin = (int)((parts[r>>8].temp-273.0f)*0.025f);
 		if(temp_bin < 0) temp_bin = 0;
 		if(temp_bin > 25) temp_bin = 25;
 		parts[i].ctype = 0x1F << temp_bin;
-	    }
-        if(parts[i].type == PT_NEUT && (r&0xFF)==PT_GLAS) {
-            if(rand() < RAND_MAX/10)
-                create_cherenkov_photon(i);
-        }
+	}
+    if(parts[i].type == PT_NEUT && (r&0xFF)==PT_GLAS) {
+        if(rand() < RAND_MAX/10)
+            create_cherenkov_photon(i);
+    }
+    if(parts[i].type == PT_PHOT && (r&0xFF)==PT_INVIS) {
+        parts[i].type = PT_NEUT;
+		parts[i].ctype = 0;
+    }
 	if((parts[i].type==PT_BIZR||parts[i].type==PT_BIZRG) && (r&0xFF)==PT_FILT)
 	    {
 		int temp_bin = (int)((parts[r>>8].temp-273.0f)*0.025f);
@@ -1015,7 +1019,7 @@ void update_particles_i(pixel *vid, int start, int inc)
     int starti = (start*-1);
 	if(sys_pause&&!framerender)
                 return;
-	if(ISGRAV==1)
+    if(ISGRAV==1)
 	{
 		ISGRAV = 0;
 		GRAV ++;
@@ -1266,11 +1270,16 @@ void update_particles_i(pixel *vid, int start, int inc)
     for(i=start; i<(NPART-starti); i+=inc)
         if(parts[i].type)
         {
-            //printf("parts[%d].type: %d\n", i, parts[i].type);
-
-            lx = parts[i].x;
+			lx = parts[i].x;
             ly = parts[i].y;
             t = parts[i].type;
+                if (ptypes[t].update_func)
+                {
+                        if (ptypes[t].update_func (i))
+                                goto killed;
+                }
+            //printf("parts[%d].type: %d\n", i, parts[i].type);
+
 
             if(parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_NBLE && t!=PT_SWCH && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT)
             {
@@ -2001,7 +2010,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 											} else if(parts[r>>8].type==PT_BRAY&&parts[r>>8].tmp==1){
 												parts[r>>8].life = 1020;
 												//docontinue = 1;
-											} else {
+											} else if(parts[r>>8].type!=PT_INWR && parts[r>>8].type!=PT_ARAY) {
 												if(nyy!=0 || nxx!=0){
 													create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 												}
@@ -2785,7 +2794,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			{
 				create_part(-1, x , y-1 , PT_FWRK);
 				r = pmap[y-1][x];
-				if(parts[r>>8].type==PT_FWRK)
+				if((r&0xFF)==PT_FWRK)
 				{
 					parts[r>>8].vy = rand()%8-22;
 					parts[r>>8].vx = rand()%20-rand()%20;
@@ -3045,7 +3054,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             r = pmap[y+ny][x+nx];
                             if((r>>8)>=NPART || !r)
                                 continue;
-			    else if(parts[r>>8].type==PT_SPRK&&(parts[r>>8].ctype==PT_PSCN)&&(parts[r>>8].life>=3)&&parts[i].life%4==0)
+			    else if(parts[r>>8].type==PT_SPRK&&(parts[r>>8].ctype==PT_PSCN)&&(parts[r>>8].life>=3)&&parts[i].life%4==0&&parts_avg(i,r>>8,PT_INSL)!=PT_INSL)
 			    {
 				    flood_parts(x,y,PT_SPRK,PT_INST,-1);//add life
 				    parts[r>>8].type==parts[r>>8].ctype;
@@ -3055,10 +3064,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 	    else if(t==PT_PRTI)
 	    {
 		int temprange = 100;
+		int count =0;
 		for( temp = 0; temp < MAX_TEMP; temp += temprange)
 			if(parts[i].temp-73.15>temp&&parts[i].temp-73.15 <temp+temprange)
 				parts[i].tmp = temp/100;
-		    int count =0;
 		    for(ny=-1; ny<2; ny++)
                     for(nx=-1; nx<2; nx++)
                         if(x+nx>=0 && y+ny>0 &&
@@ -3085,10 +3094,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 	    else if(t==PT_PRTO)
 	    {
 		int temprange = 100;
+		int count = 0;
 		for( temp = 0; temp < MAX_TEMP; temp += temprange)
 			if(parts[i].temp-73.15>temp&&parts[i].temp-73.15 <temp+temprange)
 				parts[i].tmp = temp/100;
-		    int count = 0;
 		    for(ny=1; ny>-2; ny--)
                     for(nx=1; nx>-2; nx--)
                         if(x+nx>=0 && y+ny>0 &&
@@ -5477,6 +5486,8 @@ void update_particles(pixel *vid)
 
 void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert)
 {
+	//TODO: MSCC doesn't like arrays who's size is determined at runtime.
+	#if !(defined(WIN32) && !defined(__GNUC__))
     int cx = 0;
     int cy = 0;
     unsigned tpmap[area_h][area_w];
@@ -5539,6 +5550,7 @@ void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert)
 		}
 	}
     }
+#endif
 }
 
 void clear_area(int area_x, int area_y, int area_w, int area_h)

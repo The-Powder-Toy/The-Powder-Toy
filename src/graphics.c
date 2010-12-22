@@ -1641,7 +1641,7 @@ void draw_parts(pixel *vid)
 			cg = sin(frequency*q + 2) * 127 + 128;
 			cb = sin(frequency*q + 4) * 127 + 128;
 			blendpixel(vid, nx, ny, cr, cg, cb, 255);	
-			if(mousex==(nx) && mousey==(ny))
+			if(mousex==(nx) && mousey==(ny) && DEBUG_MODE)
                     {
 			int z;
                         for(z = 0; z<NPART; z++) {
@@ -2829,6 +2829,24 @@ void dim_copy(pixel *dst, pixel *src)
 {
     int i,r,g,b;
     for(i=0; i<XRES*YRES; i++)
+    {
+        r = PIXR(src[i]);
+        g = PIXG(src[i]);
+        b = PIXB(src[i]);
+        if(r>0)
+            r--;
+        if(g>0)
+            g--;
+        if(b>0)
+            b--;
+        dst[i] = PIXRGB(r,g,b);
+    }
+}
+
+void dim_copy_pers(pixel *dst, pixel *src)
+{
+    int i,r,g,b;
+    for(i=0; i<(XRES+BARSIZE)*YRES; i++)
     {
         r = PIXR(src[i]);
         g = PIXG(src[i]);

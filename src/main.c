@@ -1097,6 +1097,7 @@ int main(int argc, char *argv[])
     int pastFPS = 0;
     int past = 0;
     pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	pixel *pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
     void *http_ver_check;
     char *ver_data=NULL, *tmp;
     int i, j, bq, fire_fc=0, do_check=0, old_version=0, http_ret=0, major, minor, old_ver_len;
@@ -1242,8 +1243,8 @@ int main(int argc, char *argv[])
         }
         else if(cmode==CM_PERS)
         {
-            memcpy(vid_buf, fire_bg, XRES*YRES*PIXELSIZE);
-            memset(vid_buf+(XRES*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-(XRES*YRES*PIXELSIZE));
+            memcpy(vid_buf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
+            memset(vid_buf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
         }
         else
         {
@@ -1268,11 +1269,11 @@ int main(int argc, char *argv[])
         {
             if(!fire_fc)
             {
-                dim_copy(fire_bg, vid_buf);
+                dim_copy_pers(pers_bg, vid_buf);
             }
             else
             {
-                memcpy(fire_bg, vid_buf, XRES*YRES*PIXELSIZE);
+                memcpy(pers_bg, vid_buf, (XRES+BARSIZE)*YRES*PIXELSIZE);
             }
             fire_fc = (fire_fc+1) % 3;
         }
@@ -1667,6 +1668,14 @@ int main(int argc, char *argv[])
             if(!((cr>>8)>=NPART || !cr))
             {
 #ifdef BETA
+		if(DEBUG_MODE)
+                {
+                    int tctype = parts[cr>>8].ctype;
+                    if(tctype>=PT_NUM)
+                        tctype = 0;
+                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+			//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+		} else
                 sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 #else
 		if(DEBUG_MODE)
@@ -2332,7 +2341,7 @@ int main(int argc, char *argv[])
             }
 			
 #ifdef BETA
-			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS);
+			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d Generation:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS,GENERATION);
 #else
 			if(DEBUG_MODE)
 				sprintf(uitext, "Version %d.%d FPS:%d Parts:%d Generation:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS,GENERATION);

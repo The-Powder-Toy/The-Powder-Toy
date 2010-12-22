@@ -131,6 +131,8 @@ void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a);
 
 void dim_copy(pixel *dst, pixel *src);
 
+void dim_copy_pers(pixel *dst, pixel *src);
+
 void render_zoom(pixel *img);
 
 pixel *prerender_save(void *save, int size, int *width, int *height);
