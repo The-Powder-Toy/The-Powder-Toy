@@ -240,7 +240,7 @@ struct part_type
     unsigned char hconduct;
     const char *descs;
     const unsigned short properties;
-	int (*update_func) (int);
+    int (*update_func) (int);
 };
 typedef struct part_type part_type;
 
