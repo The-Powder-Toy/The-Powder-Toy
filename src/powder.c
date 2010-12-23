@@ -5591,8 +5591,6 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 {
     int x1, x2, dy = (c<PT_NUM)?1:CELL;
     int co = c;
-    if(y>YRES||y<0)
-	    return 0;
     if(cm==PT_INST&&co==PT_SPRK)
 	    if((pmap[y][x]&0xFF)==PT_SPRK)
 		    return 0;
