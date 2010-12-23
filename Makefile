@@ -46,6 +46,9 @@ powder-64-sse2: $(SOURCES)
 	strip $@
 	mv $@ build
 
+powder-icc: $(SOURCES)
+       /opt/intel/Compiler/11.1/073/bin/intel64/icc -m64 -o$@ -Iincludes/ -O2 -march=core2 -msse3 -mfpmath=sse -lSDL -lbz2 -lm -xW $(SOURCES) -std=c99 -D_POSIX_C_SOURCE=200112L
+
 powder-res.o: powder-res.rc powder.ico
 	i586-mingw32msvc-windres powder-res.rc powder-res.o
 
