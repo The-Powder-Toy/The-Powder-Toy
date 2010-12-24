@@ -2425,6 +2425,55 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
                 }
+				else if(t==PT_BOMB){
+					if(parts[i].tmp==0){
+						cr = PIXR(ptypes[t].pcolors);
+						cg = PIXG(ptypes[t].pcolors);
+						cb = PIXB(ptypes[t].pcolors);
+						if(cmode != CM_NOTHING && cmode != CM_CRACK){
+							int newx = 0;
+							float gradv = 100;
+							blendpixel(vid, nx+1, ny, cr, cg, cb, 223);
+							blendpixel(vid, nx-1, ny, cr, cg, cb, 223);
+							blendpixel(vid, nx, ny+1, cr, cg, cb, 223);
+							blendpixel(vid, nx, ny-1, cr, cg, cb, 223);
+							
+							blendpixel(vid, nx+1, ny-1, cr, cg, cb, 112);
+							blendpixel(vid, nx-1, ny-1, cr, cg, cb, 112);
+							blendpixel(vid, nx+1, ny+1, cr, cg, cb, 112);
+							blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
+							for(newx = 0; gradv>0.5; newx++){
+								addpixel(vid, nx+newx, ny, cr, cg, cb, gradv);
+								addpixel(vid, nx-newx, ny, cr, cg, cb, gradv);
+								
+								addpixel(vid, nx, ny+newx, cr, cg, cb, gradv);
+								addpixel(vid, nx, ny-newx, cr, cg, cb, gradv);
+								gradv = gradv/1.1f;
+							}
+						}
+					}
+					else if(parts[i].tmp==1){
+						cr = PIXR(ptypes[t].pcolors);
+						cg = PIXG(ptypes[t].pcolors);
+						cb = PIXB(ptypes[t].pcolors);
+						if(cmode != CM_NOTHING && cmode != CM_CRACK){
+							int newx = 0;
+							float gradv = 4*parts[i].life;
+							for(newx = 0; gradv>0.5; newx++){
+								addpixel(vid, nx+newx, ny, cr, cg, cb, gradv);
+								addpixel(vid, nx-newx, ny, cr, cg, cb, gradv);
+								
+								addpixel(vid, nx, ny+newx, cr, cg, cb, gradv);
+								addpixel(vid, nx, ny-newx, cr, cg, cb, gradv);
+								gradv = gradv/1.5f;
+							}
+						}
+					}
+					else {
+						blendpixel(vid, nx, ny, 255, 255, 255, 255);
+					}
+
+				}
                 else if(t==PT_FIRE && parts[i].life)
                 {
                     float ttemp = (float)((int)(parts[i].life/2));
