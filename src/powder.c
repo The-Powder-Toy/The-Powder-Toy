@@ -5839,6 +5839,11 @@ int create_parts(int x, int y, int rx, int ry, int c)
     
     if(((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))|| sdl_mod & (KMOD_CAPS) )&& !REPLACE_MODE)
 	{
+	if(rx==0&&ry==0)
+	{
+		delete_part(x, y);
+	}
+	else
         for(j=-ry; j<=ry; j++)
             for(i=-rx; i<=rx; i++)
                 if((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
@@ -5848,6 +5853,11 @@ int create_parts(int x, int y, int rx, int ry, int c)
 
     if(c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM)
     {
+	if(rx==0&&ry==0)
+	{
+		create_part(-2, x, y, c);
+	}
+	else
         for(j=-ry; j<=ry; j++)
             for(i=-rx; i<=rx; i++)
                 if((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
@@ -5862,6 +5872,11 @@ int create_parts(int x, int y, int rx, int ry, int c)
     {
 	stemp = SLALT;
 	SLALT = 0;
+	if(rx==0&&ry==0)
+	{
+		delete_part(x, y);
+	}
+	else
         for(j=-ry; j<=ry; j++)
             for(i=-rx; i<=rx; i++)
                 if((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
@@ -5871,6 +5886,11 @@ int create_parts(int x, int y, int rx, int ry, int c)
     }
     if(REPLACE_MODE)
     {
+	if(rx==0&&ry==0)
+	{
+		create_part(-2, x, y, c);
+	}
+	else
         for(j=-ry; j<=ry; j++)
             for(i=-rx; i<=rx; i++)
                 if((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
@@ -5887,6 +5907,11 @@ int create_parts(int x, int y, int rx, int ry, int c)
 		return 1;
 		
     }
+    if(rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
+    {
+	create_part(-2, x, y, c);
+    }
+    else
     for(j=-ry; j<=ry; j++)
         for(i=-rx; i<=rx; i++)
             if((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
