@@ -2474,6 +2474,27 @@ void draw_parts(pixel *vid)
 					}
 
 				}
+				else if(ptypes[t].properties&PROP_HOT_GLOW && parts[i].temp>473.0f)
+				{
+					float frequency = 0.00146;
+					int q = (parts[i].temp>1370)?1370-473:parts[i].temp-473;
+					cr = sin(frequency*q) * 226 + PIXR(ptypes[t].pcolors);
+					cg = sin(frequency*q*4.55 +3.14) * 34 + PIXG(ptypes[t].pcolors);
+					cb = sin(frequency*q*2.22 +3.14) * 64 + PIXB(ptypes[t].pcolors);
+					if(cr>=255)
+						cr = 255;
+					if(cg>=255)
+						cg = 255;
+					if(cb>=255)
+						cb = 255;
+					if(cr<=0)
+						cr = 0;
+					if(cg<=0)
+						cg = 0;
+					if(cb<=0)
+						cb = 0;
+					blendpixel(vid, nx, ny, cr, cg, cb, 255);
+				}
                 else if(t==PT_FIRE && parts[i].life)
                 {
                     float ttemp = (float)((int)(parts[i].life/2));
