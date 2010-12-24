@@ -133,6 +133,10 @@ int try_move(int i, int x, int y, int nx, int ny)
         return 1;
 
     e = eval_move(parts[i].type, nx, ny, &r);
+	
+	if((pmap[ny][nx]&0xFF)==PT_BOMB && parts[i].type==PT_BOMB && parts[i].tmp == 1)
+		e = 2;
+	
 	if((pmap[ny][nx]&0xFF)==PT_INVIS && (pv[ny/CELL][nx/CELL]>4.0f ||pv[ny/CELL][nx/CELL]<-4.0f))
 	    return 1;
     /* half-silvered mirror */
@@ -2824,17 +2828,19 @@ void update_particles_i(pixel *vid, int start, int inc)
 											parts[nb].tmp = 1;
 											parts[nb].life = 50;
 											parts[nb].temp = MAX_TEMP;
+											parts[nb].vx = rand()%20-10;
+											parts[nb].vy = rand()%20-10;
 										}
 									}
 							for(nxj=-rad; nxj<=rad; nxj++)
 								for(nxi=-rad; nxi<=rad; nxi++)
 									if((pow(nxi,2))/(pow(rad,2))+(pow(nxj,2))/(pow(rad,2))<=1){
 										delete_part(x+nxi, y+nxj);
-										pv[(y+nxj)/CELL][(x+nxi)/CELL] += 1.0f;
+										pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
 										int nb = create_part(-1, x+nxi, y+nxj, PT_BOMB);
 										if(nb!=-1){
 											parts[nb].tmp = 2;
-											parts[nb].life = 1;
+											parts[nb].life = 2;
 											parts[nb].temp = MAX_TEMP;
 										}
 									}
