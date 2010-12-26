@@ -729,7 +729,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                         if(new_format) {
                             ttv = (d[p++])<<8;
                             ttv |= (d[p++]);
-                            parts[i-1].temp = ttv;
+                            parts[i-1].temp = ttv + 0.15;
                         } else {
                             parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
                         }

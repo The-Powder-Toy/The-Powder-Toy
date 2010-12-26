@@ -2794,6 +2794,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			}
 		else if(t==PT_BOMB)
 	    {
+		    int nb;
 			if(parts[i].tmp==1){
 				for(nx=-2; nx<3; nx++)
 					for(ny=-2; ny<3; ny++)
@@ -2823,7 +2824,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							for(nxj=-(rad+1); nxj<=(rad+1); nxj++)
 								for(nxi=-(rad+1); nxi<=(rad+1); nxi++)
 									if((pow(nxi,2))/(pow((rad+1),2))+(pow(nxj,2))/(pow((rad+1),2))<=1){
-										int nb = create_part(-1, x+nxi, y+nxj, PT_BOMB);
+										nb = create_part(-1, x+nxi, y+nxj, PT_BOMB);
 										if(nb!=-1){
 											parts[nb].tmp = 1;
 											parts[nb].life = 50;
@@ -2838,7 +2839,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 										if((pmap[y+nxj][x+nxi]&0xFF)!=PT_DMND && (pmap[y+nxj][x+nxi]&0xFF)!=PT_CLNE && (pmap[y+nxj][x+nxi]&0xFF)!=PT_PCLN && (pmap[y+nxj][x+nxi]&0xFF)!=PT_BCLN){
 											delete_part(x+nxi, y+nxj);
 											pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
-											int nb = create_part(-1, x+nxi, y+nxj, PT_BOMB);
+											nb = create_part(-1, x+nxi, y+nxj, PT_BOMB);
 											if(nb!=-1){
 												parts[nb].tmp = 2;
 												parts[nb].life = 2;
@@ -3119,10 +3120,10 @@ void update_particles_i(pixel *vid, int start, int inc)
                             r = pmap[y+ny][x+nx];
                             if((r>>8)>=NPART || !r)
                                 continue;
-			    else if(parts[r>>8].type==PT_SPRK&&(parts[r>>8].ctype==PT_PSCN)&&(parts[r>>8].life>=3)&&parts[i].life%4==0&&parts_avg(i,r>>8,PT_INSL)!=PT_INSL)
+			    else if(parts[r>>8].type==PT_SPRK&&(parts[r>>8].ctype==PT_PSCN)&&(parts[r>>8].life>=3)&&parts[i].life==0&&parts_avg(i,r>>8,PT_INSL)!=PT_INSL)
 			    {
-				    flood_parts(x,y,PT_SPRK,PT_INST,-1);//add life
-				    parts[r>>8].type==parts[r>>8].ctype;
+				    flood_parts(x,y,PT_SPRK,PT_INST,-1);//spark the wire
+				    //parts[r>>8].type=parts[r>>8].ctype;
 			    }
 			}
 	    }
