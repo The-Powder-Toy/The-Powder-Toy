@@ -1459,49 +1459,24 @@ void draw_parts(pixel *vid)
 		}
 		else if(cmode==CM_GRAD)//forgot to put else, broke nothing view
 		{
-			if((t==PT_METL||t==PT_BRMT||t==PT_BMTL)&&parts[i].temp>473&&parts[i].temp<1370)
-			{
-				float frequency = 0.00146;
-				int q = parts[i].temp-473;
-				cr = sin(frequency*q) * 226 + PIXR(ptypes[t].pcolors);
-				cg = sin(frequency*q*4.55 +3.14) * 34 + PIXG(ptypes[t].pcolors);
-				cb = sin(frequency*q*2.22 +3.14) * 64 + PIXB(ptypes[t].pcolors);
-				if(cr>=255)
-					cr = 255;
-				if(cg>=255)
-					cg = 255;
-				if(cb>=255)
-					cb = 255;
-				if(cr<=0)
-					cr = 0;
-				if(cg<=0)
-					cg = 0;
-				if(cb<=0)
-					cb = 0;
-				blendpixel(vid, nx, ny, cr, cg, cb, 255);
-			}
-			else
-			{
-				float frequency = 0.05;
-				int q = parts[i].temp-40;
-				cr = sin(frequency*q) * 16 + PIXR(ptypes[t].pcolors);
-				cg = sin(frequency*q) * 16 + PIXG(ptypes[t].pcolors);
-				cb = sin(frequency*q) * 16 + PIXB(ptypes[t].pcolors);
-				if(cr>=255)
-					cr = 255;
-				if(cg>=255)
-					cg = 255;
-				if(cb>=255)
-					cb = 255;
-				if(cr<=0)
-					cr = 0;
-				if(cg<=0)
-					cg = 0;
-				if(cb<=0)
-					cb = 0;
-				blendpixel(vid, nx, ny, cr, cg, cb, 255);
-			}
-			
+			float frequency = 0.05;
+			int q = parts[i].temp-40;
+			cr = sin(frequency*q) * 16 + PIXR(ptypes[t].pcolors);
+			cg = sin(frequency*q) * 16 + PIXG(ptypes[t].pcolors);
+			cb = sin(frequency*q) * 16 + PIXB(ptypes[t].pcolors);
+			if(cr>=255)
+				cr = 255;
+			if(cg>=255)
+				cg = 255;
+			if(cb>=255)
+				cb = 255;
+			if(cr<=0)
+				cr = 0;
+			if(cg<=0)
+				cg = 0;
+			if(cb<=0)
+				cb = 0;
+			blendpixel(vid, nx, ny, cr, cg, cb, 255);
 		}
                 else if(t==PT_MWAX&&cmode == CM_FANCY)
                 {
@@ -2425,12 +2400,13 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
                 }
-				else if(t==PT_BOMB){
+				else if(t==PT_BOMB)
+				{
 					if(parts[i].tmp==0){
 						cr = PIXR(ptypes[t].pcolors);
 						cg = PIXG(ptypes[t].pcolors);
 						cb = PIXB(ptypes[t].pcolors);
-						if(cmode != CM_NOTHING && cmode != CM_CRACK){
+						if(cmode != CM_CRACK){
 							int newx = 0;
 							float gradv = 100;
 							blendpixel(vid, nx+1, ny, cr, cg, cb, 223);
@@ -2450,13 +2426,15 @@ void draw_parts(pixel *vid)
 								addpixel(vid, nx, ny-newx, cr, cg, cb, gradv);
 								gradv = gradv/1.1f;
 							}
+						} else {
+							blendpixel(vid, nx, ny, cr, cg, cb, 255);
 						}
 					}
 					else if(parts[i].tmp==1){
 						cr = PIXR(ptypes[t].pcolors);
 						cg = PIXG(ptypes[t].pcolors);
 						cb = PIXB(ptypes[t].pcolors);
-						if(cmode != CM_NOTHING && cmode != CM_CRACK){
+						if(cmode != CM_CRACK){
 							int newx = 0;
 							float gradv = 4*parts[i].life;
 							for(newx = 0; gradv>0.5; newx++){
@@ -2467,6 +2445,8 @@ void draw_parts(pixel *vid)
 								addpixel(vid, nx, ny-newx, cr, cg, cb, gradv);
 								gradv = gradv/1.5f;
 							}
+						} else {
+							blendpixel(vid, nx, ny, cr, cg, cb, 255);
 						}
 					}
 					else {
@@ -2476,8 +2456,8 @@ void draw_parts(pixel *vid)
 				}
 				else if(ptypes[t].properties&PROP_HOT_GLOW && parts[i].temp>473.0f)
 				{
-					float frequency = 0.00146;
-					int q = (parts[i].temp>1370)?1370-473:parts[i].temp-473;
+					float frequency = 3.1415/(2*pstates[t].ltemp-473.0);
+					int q = (parts[i].temp>pstates[t].ltemp)?pstates[t].ltemp-473:parts[i].temp-473;
 					cr = sin(frequency*q) * 226 + PIXR(ptypes[t].pcolors);
 					cg = sin(frequency*q*4.55 +3.14) * 34 + PIXG(ptypes[t].pcolors);
 					cb = sin(frequency*q*2.22 +3.14) * 64 + PIXB(ptypes[t].pcolors);
