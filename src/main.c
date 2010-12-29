@@ -1357,7 +1357,7 @@ int main(int argc, char *argv[])
                     free(load_data);
             }
         }
-        if(sdl_key=='s' && (sdl_mod & (KMOD_CTRL)) || (sdl_key=='s' && !player2))
+        if(sdl_key=='s' && (sdl_mod & (KMOD_CTRL)) || (sdl_key=='s' && !isplayer2))
         {
             if(it > 50)
                 it = 50;
@@ -1491,7 +1491,7 @@ int main(int argc, char *argv[])
                     bsy = 0;
             }
         }
-	if(sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)) || (sdl_key=='d' && !player2))
+	if(sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)) || (sdl_key=='d' && !isplayer2))
 		DEBUG_MODE = !DEBUG_MODE;
 	if(sdl_key=='i')
 	{
