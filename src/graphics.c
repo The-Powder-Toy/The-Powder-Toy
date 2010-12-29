@@ -1478,6 +1478,31 @@ void draw_parts(pixel *vid)
 				cb = 0;
 			blendpixel(vid, nx, ny, cr, cg, cb, 255);
 		}
+		else if(cmode==CM_LIFE)
+		{
+			float frequency = 0.4;
+			int q;
+			if(!(parts[i].life<5))
+				q = sqrt(parts[i].life);
+			else 
+				q = parts[i].life;
+			cr = sin(frequency*q) * 100 + 128;
+			cg = sin(frequency*q) * 100 + 128;
+			cb = sin(frequency*q) * 100 + 128;
+			if(cr>=255)
+				cr = 255;
+			if(cg>=255)
+				cg = 255;
+			if(cb>=255)
+				cb = 255;
+			if(cr<=0)
+				cr = 0;
+			if(cg<=0)
+				cg = 0;
+			if(cb<=0)
+				cb = 0;
+			blendpixel(vid, nx, ny, cr, cg, cb, 255);
+		}
                 else if(t==PT_MWAX&&cmode == CM_FANCY)
                 {
                     for(x=-1; x<=1; x++)
@@ -3323,7 +3348,7 @@ void sdl_open(void)
     SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
     sdl_seticon();
     SDL_EnableUNICODE(1);
-    //SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 }
 
 #ifdef OpenGL

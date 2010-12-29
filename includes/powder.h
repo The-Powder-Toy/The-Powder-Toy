@@ -5,8 +5,9 @@
 #include "defines.h"
 #include "interface.h"
 
-#define CM_COUNT 10
-#define CM_CRACK 9
+#define CM_COUNT 11
+#define CM_CRACK 10
+#define CM_LIFE 9
 #define CM_GRAD 8
 #define CM_NOTHING 7
 #define CM_FANCY 6
@@ -582,8 +583,8 @@ static int lolzrule[9][9] =
 	{0,1,0,0,0,0,0,1,0},
 	{0,1,0,0,0,0,0,1,0},
 };
-int portal[MAX_TEMP/100][8][8];
-float portaltemp[MAX_TEMP/100][8][8];
+int portal[MAX_TEMP/100][8][80];
+float portaltemp[MAX_TEMP/100][8][80];
 int wireless[MAX_TEMP/100][2];
 
 extern int isplayer;

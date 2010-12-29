@@ -986,6 +986,7 @@ inline int parts_avg(int ci, int ni,int t)
 		else
 			return PT_NONE;
 	}
+	return PT_NONE;
 }
 
 
@@ -3165,7 +3166,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             if((r>>8)>=NPART || !r)
                                 continue;
 			    if(parts[r>>8].type==PT_SPRK || (parts[r>>8].type!=PT_PRTI && parts[r>>8].type!=PT_PRTO && (ptypes[parts[r>>8].type].falldown!= 0 || pstates[parts[r>>8].type].state == ST_GAS)))
-				    for( nnx=0;nnx<8;nnx++)
+				    for( nnx=0;nnx<80;nnx++)
 					    if(!portal[parts[i].tmp][count-1][nnx])
 					    {
 						    portal[parts[i].tmp][count-1][nnx] = parts[r>>8].type;
@@ -3196,7 +3197,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 continue;
 			    if(!r)
 			    {
-				for( nnx =0 ;nnx<8;nnx++)
+				for( nnx =0 ;nnx<80;nnx++)
 				{
 					int randomness = count + rand()%3-1;
 					if(randomness<1)
