@@ -3386,7 +3386,7 @@ void sdl_open(void)
     SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
     sdl_seticon();
     SDL_EnableUNICODE(1);
-    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+    //SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 }
 
 #ifdef OpenGL
