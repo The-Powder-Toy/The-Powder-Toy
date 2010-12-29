@@ -1357,7 +1357,7 @@ int main(int argc, char *argv[])
                     free(load_data);
             }
         }
-        if(sdl_key=='s' && (sdl_mod & (KMOD_CTRL)))
+        if(sdl_key=='s' && (sdl_mod & (KMOD_CTRL)) || (sdl_key=='s' && !player2))
         {
             if(it > 50)
                 it = 50;
@@ -1402,6 +1402,10 @@ int main(int argc, char *argv[])
 	if(sdl_key=='0')
         {
             set_cmode(CM_CRACK);
+        }
+	if(sdl_key=='1'&& (sdl_mod & (KMOD_SHIFT)) && DEBUG_MODE)
+        {
+            set_cmode(CM_LIFE);
         }
 	if(sdl_key==SDLK_TAB)
 	{
@@ -1487,7 +1491,7 @@ int main(int argc, char *argv[])
                     bsy = 0;
             }
         }
-	if(sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)))
+	if(sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)) || (sdl_key=='d' && !player2))
 		DEBUG_MODE = !DEBUG_MODE;
 	if(sdl_key=='i')
 	{
@@ -1586,10 +1590,32 @@ int main(int argc, char *argv[])
                 }
         }
 #ifdef INTERNAL
+	int counterthing;
         if(sdl_key=='v')
-            vs = !vs;
+	{
+		if(sdl_mod & (KMOD_SHIFT)){
+			if(vs>=1)
+				vs = 0;
+			else 
+				vs = 2;
+		}
+		else{
+			if(vs>=1)
+				vs = 0;
+			else 
+				vs = 1;
+		}
+		counterthing = 0;
+	}
         if(vs)
-            dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
+	{
+	    if(counterthing+1>=vs)
+	    {
+		dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
+		counterthing = 0;
+	    }
+	    counterthing = (counterthing+1)%3;
+	}
 #endif
 
         if(sdl_wheel)
@@ -2122,7 +2148,7 @@ int main(int argc, char *argv[])
                     {
 			if(sdl_mod & (KMOD_CAPS))
 				c = 0;
-                        if(c!=WL_STREAM&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE)
+                        if(c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE)
                             flood_parts(x, y, c, -1, -1);
                         lx = x;
                         ly = y;
