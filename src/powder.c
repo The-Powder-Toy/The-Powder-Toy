@@ -433,7 +433,13 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
 #endif
 {
 	int i, c;
-	
+	n = (n/10);
+	if(n<1){
+		n = 1;
+	}
+	if(n>680){
+		n = 680;
+	}
     if(x<0 || y<0 || x>=XRES || y>=YRES)
         return -1;
 	
