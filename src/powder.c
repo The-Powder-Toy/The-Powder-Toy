@@ -427,6 +427,40 @@ void kill_part(int i)
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
+_inline int create_n_parts(int n, int x, int y, int t)
+#else
+inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
+#endif
+{
+	int i, c;
+	
+    if(x<0 || y<0 || x>=XRES || y>=YRES)
+        return -1;
+	
+	for (c; c<n; c++) {
+		float r = (rand()%128+128)/127.0f;
+        float a = (rand()%360)*3.14159f/180.0f;
+		if(pfree == -1)
+            return -1;
+        i = pfree;
+        pfree = parts[i].life;
+		
+		parts[i].x = (float)x;
+        parts[i].y = (float)y;
+        parts[i].type = t;
+		parts[i].life = rand()%480+480;
+        parts[i].vx = r*cosf(a);
+        parts[i].vy = r*sinf(a);
+        parts[i].ctype = 0;
+		parts[i].temp += (n*17);
+        parts[i].tmp = 0;
+		
+		pv[y/CELL][x/CELL] += 6.0f * CFDS;
+	}
+	return 0;
+}
+
+#if defined(WIN32) && !defined(__GNUC__)
 _inline int create_part(int p, int x, int y, int t)
 #else
 inline int create_part(int p, int x, int y, int t)
@@ -1405,6 +1439,14 @@ void update_particles_i(pixel *vid, int start, int inc)
 				pv[y/CELL][x/CELL+1] += 0.1f*(singularity-pv[y/CELL][x/CELL+1]);
 				if(y+CELL<YRES)
 					pv[y/CELL+1][x/CELL+1] += 0.1f*(singularity-pv[y/CELL+1][x/CELL+1]);
+			}
+			if(y+CELL>0 && pv[y/CELL-1][x/CELL]<singularity)
+				pv[y/CELL-1][x/CELL] += 0.1f*(singularity-pv[y/CELL-1][x/CELL]);
+			if(x+CELL>0)
+			{
+				pv[y/CELL][x/CELL-1] += 0.1f*(singularity-pv[y/CELL][x/CELL-1]);
+				if(y+CELL>0)
+					pv[y/CELL-1][x/CELL-1] += 0.1f*(singularity-pv[y/CELL-1][x/CELL-1]);
 			}
 		}
             else
@@ -2462,7 +2504,9 @@ void update_particles_i(pixel *vid, int start, int inc)
                             }
 			    if((r&0xFF)==PT_DEUT && (rt+1)>(rand()%1000))
 			    {
-				    
+#ifdef SDEUT
+				    create_n_parts(parts[r>>8].life, x+nx, y+ny, parts[i].vx, parts[i].vy, PT_NEUT);
+#else
 				    create_part(r>>8, x+nx, y+ny, PT_NEUT);
                                     parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
                                     parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
@@ -2475,6 +2519,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				    }
 				    else 
 					    parts[r>>8].type = PT_NONE;
+#endif
 			    }
                             if((r&0xFF)==PT_GUNP && 15>(rand()%1000))
                                 parts[r>>8].type = PT_DUST;
@@ -3604,31 +3649,24 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 continue;
 			    if(parts[r>>8].type!=PT_DMND&&33>=rand()/(RAND_MAX/100)+1)
 			    {
-				if(parts[r>>8].life >10)
+				if(parts[r>>8].type==PT_SING && parts[r>>8].life >10)
 				{
 					if(parts[i].life+parts[r>>8].life > 255)
-					{
-						if(parts[r>>8].type!=PT_SING && 1>rand()%20000)
-						{
-							parts[r>>8].type = PT_SING;
-							parts[r>>8].life = rand()%50+60;
-						}
 						continue;
-					}
 					parts[i].life += parts[r>>8].life;
 				}
 				else
 				{
-					if(parts[i].life+1 > 255)
+					if(parts[i].life+3 > 255)
 					{
-						if(parts[r>>8].type!=PT_SING && 1>rand()%20000)
+						if(parts[r>>8].type!=PT_SING && 1>rand()%100)
 						{
 							parts[r>>8].type = PT_SING;
 							parts[r>>8].life = rand()%50+60;
 						}
 						continue;
 					}
-					parts[i].life += 1;
+					parts[i].life += 3;
 				}
 				parts[i].temp = restrict_flt(parts[r>>8].temp+parts[i].temp, MIN_TEMP, MAX_TEMP);
                         	parts[r>>8].type=PT_NONE;
