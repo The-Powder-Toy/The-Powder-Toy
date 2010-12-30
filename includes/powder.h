@@ -179,7 +179,10 @@
 #define PT_STKM2 128
 #define PT_BOMB 129
 #define PT_C5 130
-#define PT_NUM  131
+#define PT_SING 131
+#define PT_QRTZ 132
+#define PT_PQRT 133
+#define PT_NUM  134
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -403,6 +406,9 @@ static const part_type ptypes[PT_NUM] =
     {"STK2",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	50,		SC_SPECIAL,		R_TEMP+14.6f+273.15f,	0,		"Stickman. Don't kill him!", 0, NULL},
     {"BOMB",	PIXPACK(0xFFF288),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	20,	1,	30,		SC_EXPLOSIVE,	R_TEMP-2.0f	+273.15f,	29,		"Bomb.", TYPE_PART, NULL},
     {"C-5",	PIXPACK(0x2050E0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Cold explosive", TYPE_SOLID | PROP_NEUTPENETRATE, NULL},
+    {"SING",	PIXPACK(0x242424),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.12f,	0.00f,	-0.001f	* CFDS,	1,	0,		0,	0,	0,	1,	86,		SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	70,		"Singularity", TYPE_PART, NULL},
+    {"QRTZ",	PIXPACK(0xAADDDD),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	3,	"Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.", TYPE_SOLID| PROP_HOT_GLOW, NULL}, 
+    {"PQRT",	PIXPACK(0x88BBBB),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.27f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	90,	SC_POWDERS,		R_TEMP+0.0f	+273.15f,	3,	"Broken quartz.", TYPE_PART| PROP_HOT_GLOW, NULL}, 
     //Name		Colour		Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn		Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -540,7 +546,10 @@ static part_state pstates[PT_NUM] =
     /* STKM2*/ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_FIRE, 620.0f},
     /* BOMB */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* C-5  */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},    
-
+    /* SING */ {ST_SOLID,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* QRTZ */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 2573.15f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* PQRT */ {ST_SOLID,	PT_NONE, 0.0f,		PT_LAVA, 2573.15f,	PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    
 };
 static int grule[NGOL][9] = 
 {
