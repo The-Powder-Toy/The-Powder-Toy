@@ -2510,9 +2510,9 @@ void update_particles_i(pixel *vid, int start, int inc)
                             }
 			    if((r&0xFF)==PT_DEUT && (rt+1)>(rand()%1000))
 			    {
-//#ifdef SDEUT
+#ifdef SDEUT
 				    create_n_parts(parts[r>>8].life, x+nx, y+ny, parts[i].vx, parts[i].vy, PT_NEUT);
-/*#else
+#else
 				    create_part(r>>8, x+nx, y+ny, PT_NEUT);
                                     parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
                                     parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
@@ -2525,7 +2525,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				    }
 				    else 
 					    parts[r>>8].type = PT_NONE;
-#endif*/
+#endif
 			    }
                             if((r&0xFF)==PT_GUNP && 15>(rand()%1000))
                                 parts[r>>8].type = PT_DUST;
