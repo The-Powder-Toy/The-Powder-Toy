@@ -427,6 +427,40 @@ void kill_part(int i)
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
+_inline int create_n_parts(int n, int x, int y, int t)
+#else
+inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
+#endif
+{
+	int i, c;
+	
+    if(x<0 || y<0 || x>=XRES || y>=YRES)
+        return -1;
+	
+	for (c; c<n; c++) {
+		float r = (rand()%128+128)/127.0f;
+        float a = (rand()%360)*3.14159f/180.0f;
+		if(pfree == -1)
+            return -1;
+        i = pfree;
+        pfree = parts[i].life;
+		
+		parts[i].x = (float)x;
+        parts[i].y = (float)y;
+        parts[i].type = t;
+		parts[i].life = rand()%480+480;
+        parts[i].vx = r*cosf(a);
+        parts[i].vy = r*sinf(a);
+        parts[i].ctype = 0;
+		parts[i].temp += (n*17);
+        parts[i].tmp = 0;
+		
+		pv[y/CELL][x/CELL] += 6.0f * CFDS;
+	}
+	return 0;
+}
+
+#if defined(WIN32) && !defined(__GNUC__)
 _inline int create_part(int p, int x, int y, int t)
 #else
 inline int create_part(int p, int x, int y, int t)
@@ -534,13 +568,13 @@ inline int create_part(int p, int x, int y, int t)
     else if(p==-2)//creating from brush
     {
         if(pmap[y][x])
-	{
-		if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN))
 		{
-			parts[pmap[y][x]>>8].ctype = t;	    
-		}
+			if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN))
+			{
+				parts[pmap[y][x]>>8].ctype = t;	    
+			}
             return -1;
-	}
+		}
         if(pfree == -1)
             return -1;
         i = pfree;
@@ -2462,10 +2496,12 @@ void update_particles_i(pixel *vid, int start, int inc)
                             }
 			    if((r&0xFF)==PT_DEUT && (rt+1)>(rand()%1000))
 			    {
-				    
+#ifdef SDEUT
+				    create_n_parts(parts[r>>8].life, x+nx, y+ny, parts[i].vx, parts[i].vy, PT_NEUT);
+#elif
 				    create_part(r>>8, x+nx, y+ny, PT_NEUT);
-                                    parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
-                                    parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
+					parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
+                    parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
 				    if(parts[r>>8].life>0)
 				    {
 					    parts[r>>8].life --;
@@ -2474,7 +2510,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 					    
 				    }
 				    else 
-					    parts[r>>8].type = PT_NONE;
+						parts[r>>8].type = PT_NONE;
+#endif
 			    }
                             if((r&0xFF)==PT_GUNP && 15>(rand()%1000))
                                 parts[r>>8].type = PT_DUST;
