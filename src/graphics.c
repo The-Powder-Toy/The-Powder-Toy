@@ -1519,6 +1519,17 @@ void draw_parts(pixel *vid)
                     }
 
                 }
+		else if(t==PT_QRTZ || t==PT_PQRT)
+		{
+			int q = parts[i].tmp;
+			cr = q * 16 + PIXR(ptypes[t].pcolors);
+			cg = q * 16 + PIXG(ptypes[t].pcolors);
+			cb = q * 16 + PIXB(ptypes[t].pcolors);
+			cr = cr>255?255:cr;
+			cg = cg>255?255:cg;
+			cb = cb>255?255:cb;
+			blendpixel(vid, nx, ny, cr, cg, cb, 255);
+		}
 		else if(t==PT_SPNG)
 		{
                     cr = PIXR(ptypes[t].pcolors) - parts[i].life*15;
