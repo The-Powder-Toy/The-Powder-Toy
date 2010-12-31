@@ -1239,7 +1239,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			}
 			else 
 				for( golnum=1;golnum<NGOL;golnum++)
-					if(parts[r>>8].type==golnum+77)
+					if(parts[r>>8].type==goltype[golnum-1])
 					{
 						gol[nx][ny] = golnum;
 						for( nnx=-1;nnx<2;nnx++)
@@ -1295,7 +1295,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				{
 					if(neighbors==goldelete&&gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
 					{
-						if(create_part(-1,nx,ny,golnum+77))
+						if(create_part(-1,nx,ny,goltype[golnum-1]))
 							createdsomething = 1;
 					}
 					else if(neighbors-1==goldelete&&gol[nx][ny]==golnum&&(grule[golnum][goldelete]==0||grule[golnum][goldelete]==2))//subtract 1 because it counted itself
@@ -2640,7 +2640,7 @@ void update_particles_i(pixel *vid, int start, int inc)
             else if(t==PT_MORT) {
                 create_part(-1, x, y-1, PT_SMKE);
             }
-	    else if(t>77&&t<77+NGOL)
+	    else if(ptypes[t].properties&PROP_LIFE)
 	    {
 		if(parts[i].temp>0)
 			parts[i].temp -= 50.0f;
