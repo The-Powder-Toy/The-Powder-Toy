@@ -4882,7 +4882,7 @@ killed:
                             }
                         }
                     }
-		    else if(parts[i].ctype>77&&parts[i].ctype<77+NGOL) {
+		    else if(ptypes[parts[i].ctype].properties&PROP_LIFE) {
                         for(nx=-1; nx<2; nx++) {
                             for(ny=-1; ny<2; ny++) {
                                 create_part(-1, x+nx, y+ny, parts[i].ctype);
@@ -6071,7 +6071,8 @@ int create_parts(int x, int y, int rx, int ry, int c)
     }
     if(rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
     {
-	create_part(-2, x, y, c);
+	if(create_part(-2, x, y, c)==-1)
+		f = 1;
     }
     else
     for(j=-ry; j<=ry; j++)
