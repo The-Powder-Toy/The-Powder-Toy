@@ -1521,14 +1521,38 @@ void draw_parts(pixel *vid)
                 }
 		else if(t==PT_QRTZ || t==PT_PQRT)
 		{
-			int q = parts[i].tmp;
-			cr = q * 16 + PIXR(ptypes[t].pcolors);
-			cg = q * 16 + PIXG(ptypes[t].pcolors);
-			cb = q * 16 + PIXB(ptypes[t].pcolors);
-			cr = cr>255?255:cr;
-			cg = cg>255?255:cg;
-			cb = cb>255?255:cb;
-			blendpixel(vid, nx, ny, cr, cg, cb, 255);
+			int z = parts[i].tmp;
+			if(parts[i].temp>(pstates[t].ltemp-800.0f))
+			{
+				float frequency = 3.1415/(2*pstates[t].ltemp-(pstates[t].ltemp-800.0f));
+				int q = (parts[i].temp>pstates[t].ltemp)?pstates[t].ltemp-(pstates[t].ltemp-800.0f):parts[i].temp-(pstates[t].ltemp-800.0f);
+				cr = sin(frequency*q) * 226 + (z * 16 + PIXR(ptypes[t].pcolors));
+				cg = sin(frequency*q*4.55 +3.14) * 34 + (z * 16 + PIXR(ptypes[t].pcolors));
+				cb = sin(frequency*q*2.22 +3.14) * 64 + (z * 16 + PIXR(ptypes[t].pcolors));
+				if(cr>=255)
+					cr = 255;
+				if(cg>=255)
+					cg = 255;
+				if(cb>=255)
+					cb = 255;
+				if(cr<=0)
+					cr = 0;
+				if(cg<=0)
+					cg = 0;
+				if(cb<=0)
+					cb = 0;
+				blendpixel(vid, nx, ny, cr, cg, cb, 255);
+			}
+			else
+			{
+				cr = z * 16 + PIXR(ptypes[t].pcolors);
+				cg = z * 16 + PIXG(ptypes[t].pcolors);
+				cb = z * 16 + PIXB(ptypes[t].pcolors);
+				cr = cr>255?255:cr;
+				cg = cg>255?255:cg;
+				cb = cb>255?255:cb;
+				blendpixel(vid, nx, ny, cr, cg, cb, 255);
+			}
 		}
 		else if(t==PT_SPNG)
 		{
@@ -2528,10 +2552,10 @@ void draw_parts(pixel *vid)
 					}
 
 				}
-				else if(ptypes[t].properties&PROP_HOT_GLOW && parts[i].temp>473.0f)
+				else if(ptypes[t].properties&PROP_HOT_GLOW && parts[i].temp>(pstates[t].ltemp-800.0f))
 				{
-					float frequency = 3.1415/(2*pstates[t].ltemp-473.0);
-					int q = (parts[i].temp>pstates[t].ltemp)?pstates[t].ltemp-473:parts[i].temp-473;
+					float frequency = 3.1415/(2*pstates[t].ltemp-(pstates[t].ltemp-800.0f));
+					int q = (parts[i].temp>pstates[t].ltemp)?pstates[t].ltemp-(pstates[t].ltemp-800.0f):parts[i].temp-(pstates[t].ltemp-800.0f);
 					cr = sin(frequency*q) * 226 + PIXR(ptypes[t].pcolors);
 					cg = sin(frequency*q*4.55 +3.14) * 34 + PIXG(ptypes[t].pcolors);
 					cb = sin(frequency*q*2.22 +3.14) * 64 + PIXB(ptypes[t].pcolors);
