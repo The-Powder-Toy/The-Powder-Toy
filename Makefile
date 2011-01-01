@@ -4,9 +4,9 @@ CFLAGS := -w -std=c99 -D_POSIX_C_SOURCE=200112L -Iincludes/
 OFLAGS := -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations
 LFLAGS := -lSDL -lm -lbz2 
 LFLAGS_X := -lm -lbz2 -lSDLmain
-MFLAGS_SSE3 := -march=i586 -DX86 -DX86_SSE3 -msse3
-MFLAGS_SSE2 := -march=i586 -DX86 -DX86_SSE2 -msse2
-MFLAGS_SSE := -march=i586 -DX86 -DX86_SSE
+MFLAGS_SSE3 := -march=native -DX86 -DX86_SSE3 -msse3
+MFLAGS_SSE2 := -march=native -DX86 -DX86_SSE2 -msse2
+MFLAGS_SSE := -march=native -DX86 -DX86_SSE
 FLAGS_DBUG := -Wall -std=c99 -D_POSIX_C_SOURCE=200112L -pg -DX86 -DX86_SSE3 -msse3 -lSDL -lm -lbz2 -g
 COMPILER := gcc
 LINUX_TARG := powder-64-sse2 powder-sse powder-sse2
