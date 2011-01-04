@@ -2413,8 +2413,10 @@ int main(int argc, char *argv[])
 				strappend(uitext, " [CAP LOCKS]");
 			if(GRID_MODE)
 				sprintf(uitext, "%s [GRID: %d]", uitext, GRID_MODE);
+#ifdef INTERNAL
 			if(vs)
 				strappend(uitext, " [FRAME CAPTURE]");
+#endif
 			
             if(sdl_zoom_trig||zoom_en)
             {
