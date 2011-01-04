@@ -125,6 +125,7 @@ extern int svf_publish;
 extern char svf_id[16];
 extern char svf_name[64];
 extern char svf_tags[256];
+extern char svf_description[255];
 extern void *svf_last;
 extern int svf_lsize;
 

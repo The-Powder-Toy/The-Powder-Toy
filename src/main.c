@@ -477,6 +477,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 
     if(replace)
     {
+		gravityMode = 1;
         memset(bmap, 0, sizeof(bmap));
         memset(emap, 0, sizeof(emap));
         memset(signs, 0, sizeof(signs));
@@ -1515,6 +1516,29 @@ int main(int argc, char *argv[])
 	    else 
 		GRID_MODE = (GRID_MODE+1)%10;
 	}
+		
+		if(sdl_key=='w') //Gravity, by Moach
+		{
+			++gravityMode; // cycle gravity mode
+			itc = 51;
+			
+			switch (gravityMode)
+			{
+				default:
+					gravityMode = 0;
+				case 0:
+					strcpy(itc_msg, "Gravity: Off");
+					break;
+				case 1:
+					strcpy(itc_msg, "Gravity: Vertical");
+					break;
+				case 2:
+					strcpy(itc_msg, "Gravity: Radial");
+					break;
+					
+			}
+		}
+		
 	if(sdl_key=='t')
             VINE_MODE = !VINE_MODE;
         if(sdl_key==SDLK_SPACE)
@@ -2033,6 +2057,8 @@ int main(int argc, char *argv[])
                         svf_id[0] = 0;
                         svf_name[0] = 0;
                         svf_tags[0] = 0;
+						svf_description[0] = 0;
+						gravityMode = 1;
 
                         memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
                         memset(fire_r, 0, sizeof(fire_r));

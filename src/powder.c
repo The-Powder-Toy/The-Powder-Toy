@@ -12,6 +12,8 @@ float player2[27];
 particle *parts;
 particle *cb_parts;
 
+int gravityMode = 1; // starts enabled in "vertical" mode...
+
 unsigned char bmap[YRES/CELL][XRES/CELL];
 unsigned char emap[YRES/CELL][XRES/CELL];
 
@@ -1073,6 +1075,8 @@ void update_particles_i(pixel *vid, int start, int inc)
     float c_heat = 0.0f;
     int h_count = 0;
     int starti = (start*-1);
+	float pGravX, pGravY, pGravD;
+	
 	if(sys_pause&&!framerender)
                 return;
     if(ISGRAV==1)
@@ -1500,16 +1504,36 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
             else
             {
-		if(t==PT_ANAR)
-		{
-			parts[i].vx -= ptypes[t].advection*vx[y/CELL][x/CELL];
-			parts[i].vy -= ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
-		}
-		else{
-                parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL];
-                parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + ptypes[t].gravity;
-		
-		}
+				//Gravity mode by Moach
+				switch (gravityMode)
+				{
+					default:
+					case 0:
+						pGravX = pGravY = 0.0f;
+						break;
+					case 1:
+						pGravX = 0.0f;
+						pGravY = ptypes[t].gravity;
+						break;
+					case 2:
+						
+						pGravD = 0.01f - hypotf((x - XCNTR), (y - YCNTR)); 
+						
+						pGravX = ptypes[t].gravity * ((float)(x - XCNTR) / pGravD);
+						pGravY = ptypes[t].gravity * ((float)(y - YCNTR) / pGravD);
+						
+				}
+				
+				if(t==PT_ANAR)
+				{
+					parts[i].vx -= ptypes[t].advection*vx[y/CELL][x/CELL] + pGravX;
+					parts[i].vy -= ptypes[t].advection*vy[y/CELL][x/CELL] + pGravY;
+				}
+				else{
+					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + pGravX;
+					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + pGravY;
+					
+				}
             }
 
             if(ptypes[t].diffusion)
