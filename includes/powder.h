@@ -652,6 +652,8 @@ extern float player[27];
 
 extern float player2[27];
 
+extern int gravityMode;
+
 extern particle *parts;
 extern particle *cb_parts;
 
