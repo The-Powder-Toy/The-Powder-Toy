@@ -1614,32 +1614,33 @@ int main(int argc, char *argv[])
                 }
         }
 #ifdef INTERNAL
-	int counterthing;
-        if(sdl_key=='v')
-	{
-		if(sdl_mod & (KMOD_SHIFT)){
-			if(vs>=1)
-				vs = 0;
-			else 
-				vs = 2;
+		int counterthing;
+        if(sdl_key=='v'&&!(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+		{
+			if(sdl_mod & (KMOD_SHIFT)){
+				if(vs>=1)
+					vs = 0;
+				else
+					vs = 2;
+			}
+			else
+			{
+				if(vs>=1)
+					vs = 0;
+				else
+					vs = 1;
+			}
+			counterthing = 0;
 		}
-		else{
-			if(vs>=1)
-				vs = 0;
-			else 
-				vs = 1;
-		}
-		counterthing = 0;
-	}
         if(vs)
-	{
-	    if(counterthing+1>=vs)
-	    {
-		dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
-		counterthing = 0;
-	    }
-	    counterthing = (counterthing+1)%3;
-	}
+		{
+			if(counterthing+1>=vs)
+			{
+				dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
+				counterthing = 0;
+			}
+			counterthing = (counterthing+1)%3;
+		}
 #endif
 
         if(sdl_wheel)
@@ -2412,6 +2413,8 @@ int main(int argc, char *argv[])
 				strappend(uitext, " [CAP LOCKS]");
 			if(GRID_MODE)
 				sprintf(uitext, "%s [GRID: %d]", uitext, GRID_MODE);
+			if(vs)
+				strappend(uitext, " [FRAME CAPTURE]");
 			
             if(sdl_zoom_trig||zoom_en)
             {
