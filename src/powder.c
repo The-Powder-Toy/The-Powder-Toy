@@ -2097,6 +2097,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 continue;
 							if((r&0xFF)==PT_SPRK){
 								int destroy = (parts[r>>8].ctype==PT_PSCN)?1:0;
+								int nostop = (parts[r>>8].ctype==PT_INST)?1:0;
 								for (docontinue = 1, nxx = 0, nyy = 0, nxi = nx*-1, nyi = ny*-1; docontinue; nyy+=nyi, nxx+=nxi) {
 									if(!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)){
 										break;
@@ -2132,7 +2133,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 												if(nyy!=0 || nxx!=0){
 													create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 												}
-												docontinue = 0;
+												if(!(nostop && (ptypes[parts[r>>8].ctype].properties&PROP_CONDUCTS))){
+													docontinue = 0;
+												} else {
+													docontinue = 1;
+												}
 											}
 										} else if(destroy) {
 											if(parts[r>>8].type==PT_BRAY){
