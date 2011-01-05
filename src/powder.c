@@ -585,22 +585,17 @@ inline int create_part(int p, int x, int y, int t)
 		{
 			if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN&&t!=PT_STKM&&t!=PT_STKM2))
 			{
-				if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN))
-				{
-					parts[pmap[y][x]>>8].ctype = t;	    
-				}
-				return -1;
+				parts[pmap[y][x]>>8].ctype = t;	    
 			}
-			if(pfree == -1)
-				return -1;
-			i = pfree;
-			pfree = parts[i].life;
+            return -1;
 		}
-		else
-		{
-			i = p;
-		}
-	}
+        if(pfree == -1)
+            return -1;
+        i = pfree;
+        pfree = parts[i].life;
+    }
+    else
+        i = p;
 
     if(t==PT_GLAS)
     {
@@ -696,7 +691,7 @@ inline int create_part(int p, int x, int y, int t)
     }
     if(t==PT_BIZR||t==PT_BIZRG)
 	    parts[i].ctype = 0x47FFFF;
-    if(t!=PT_STKM&&t!=PT_STKM2)// && t!=PT_PHOT && t!=PT_NEUT)  is this needed? it breaks floodfill
+    if(t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT)// && t!=PT_NEUT)  is this needed? it breaks floodfill, Yes photons should not be placed in the PMAP
         pmap[y][x] = t|(i<<8);
     else if(t==PT_STKM)
     {
