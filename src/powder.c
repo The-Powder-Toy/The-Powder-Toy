@@ -564,11 +564,17 @@ inline int create_part(int p, int x, int y, int t)
 		return -1;
     if(p==-1)//creating from anything but brush
     {
-	if(pmap[y][x])
-		if((pmap[y][x]&0xFF)!=PT_SPAWN&&(pmap[y][x]&0xFF)!=PT_SPAWN2)
-			if(t!=PT_STKM&&t!=PT_STKM2)
-				return -1;
-        if(pfree == -1)
+		if(pmap[y][x])
+		{
+			if((pmap[y][x]&0xFF)!=PT_SPAWN&&(pmap[y][x]&0xFF)!=PT_SPAWN2)
+			{
+				if(t!=PT_STKM&&t!=PT_STKM2)
+				{
+					return -1;
+				}
+			}
+		}
+		if(pfree == -1)
             return -1;
         i = pfree;
         pfree = parts[i].life;
@@ -576,11 +582,11 @@ inline int create_part(int p, int x, int y, int t)
     else if(p==-2)//creating from brush
     {
         if(pmap[y][x])
-	{
-		if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN&&t!=PT_STKM&&t!=PT_STKM2))
 		{
-			parts[pmap[y][x]>>8].ctype = t;	    
-		}
+			if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN&&t!=PT_STKM&&t!=PT_STKM2))
+			{
+				parts[pmap[y][x]>>8].ctype = t;	    
+			}
             return -1;
 	}
         if(pfree == -1)
@@ -685,7 +691,7 @@ inline int create_part(int p, int x, int y, int t)
     }
     if(t==PT_BIZR||t==PT_BIZRG)
 	    parts[i].ctype = 0x47FFFF;
-    if(t!=PT_STKM&&t!=PT_STKM2)// && t!=PT_PHOT && t!=PT_NEUT)  is this needed? it breaks floodfill
+    if(t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT)// && t!=PT_NEUT)  is this needed? it breaks floodfill, Yes photons should not be placed in the PMAP
         pmap[y][x] = t|(i<<8);
     else if(t==PT_STKM)
     {
@@ -2097,6 +2103,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 continue;
 							if((r&0xFF)==PT_SPRK){
 								int destroy = (parts[r>>8].ctype==PT_PSCN)?1:0;
+								int nostop = (parts[r>>8].ctype==PT_INST)?1:0;
 								for (docontinue = 1, nxx = 0, nyy = 0, nxi = nx*-1, nyi = ny*-1; docontinue; nyy+=nyi, nxx+=nxi) {
 									if(!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)){
 										break;
@@ -2128,17 +2135,21 @@ void update_particles_i(pixel *vid, int start, int inc)
 											}
 											else if(parts[r>>8].type==PT_FILT){
 												colored = parts[r>>8].ctype;
-											}else if(parts[r>>8].type!=PT_INWR && parts[r>>8].type!=PT_ARAY && parts[r>>8].type!=PT_WIFI) {
+											}else if(parts[r>>8].type!=PT_INWR && parts[r>>8].type!=PT_ARAY && parts[r>>8].type!=PT_WIFI && !(parts[r>>8].type==PT_SWCH && parts[r>>8].life>=10)) {
 												if(nyy!=0 || nxx!=0){
 													create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 												}
-												docontinue = 0;
+												if(!(nostop && (ptypes[parts[r>>8].ctype].properties&PROP_CONDUCTS))){
+													docontinue = 0;
+												} else {
+													docontinue = 1;
+												}
 											}
 										} else if(destroy) {
 											if(parts[r>>8].type==PT_BRAY){
 												parts[r>>8].life = 1;
 												docontinue = 1;
-											} else if(parts[r>>8].type==PT_INWR || parts[r>>8].type==PT_ARAY || parts[r>>8].type==PT_WIFI) {
+											} else if(parts[r>>8].type==PT_INWR || parts[r>>8].type==PT_ARAY || parts[r>>8].type==PT_WIFI || parts[r>>8].type==PT_FILT || (parts[r>>8].type==PT_SWCH && parts[r>>8].life>=10)) {
 												docontinue = 1;
 											} else {
 												docontinue = 0;
