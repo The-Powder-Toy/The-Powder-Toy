@@ -1987,7 +1987,7 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
-				}
+			}
 		else if(t==PT_FILT)
 		{
 			int temp_bin = (int)((parts[i].temp-273.0f)*0.025f);

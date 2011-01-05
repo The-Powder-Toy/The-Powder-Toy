@@ -1516,8 +1516,19 @@ int main(int argc, char *argv[])
 	    else 
 		GRID_MODE = (GRID_MODE+1)%10;
 	}
+	if(sdl_key=='=')
+	{
+	    int nx, ny;
+		for(nx = 0;nx<XRES/CELL;nx++)
+			for(ny = 0;ny<YRES/CELL;ny++)
+			{
+				pv[ny][nx] = 0;
+				vx[ny][nx] = 0;
+				vy[ny][nx] = 0;				
+			}
+	}
 		
-		if(sdl_key=='w') //Gravity, by Moach
+		if(sdl_key=='w' && (!isplayer2 || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
 		{
 			++gravityMode; // cycle gravity mode
 			itc = 51;
@@ -1621,7 +1632,7 @@ int main(int argc, char *argv[])
 				if(vs>=1)
 					vs = 0;
 				else
-					vs = 2;
+					vs = 3;//every other frame
 			}
 			else
 			{
@@ -2060,6 +2071,10 @@ int main(int argc, char *argv[])
                         svf_tags[0] = 0;
 						svf_description[0] = 0;
 						gravityMode = 1;
+						isplayer2 = 0;
+						isplayer = 0;
+						ISSPAWN1 = 0;
+						ISSPAWN2 = 0;
 
                         memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
                         memset(fire_r, 0, sizeof(fire_r));

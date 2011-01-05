@@ -564,11 +564,17 @@ inline int create_part(int p, int x, int y, int t)
 		return -1;
     if(p==-1)//creating from anything but brush
     {
-	if(pmap[y][x])
-		if((pmap[y][x]&0xFF)!=PT_SPAWN&&(pmap[y][x]&0xFF)!=PT_SPAWN2)
-			if(t!=PT_STKM&&t!=PT_STKM2)
-				return -1;
-        if(pfree == -1)
+		if(pmap[y][x])
+		{
+			if((pmap[y][x]&0xFF)!=PT_SPAWN&&(pmap[y][x]&0xFF)!=PT_SPAWN2)
+			{
+				if(t!=PT_STKM&&t!=PT_STKM2)
+				{
+					return -1;
+				}
+			}
+		}
+		if(pfree == -1)
             return -1;
         i = pfree;
         pfree = parts[i].life;
@@ -577,19 +583,24 @@ inline int create_part(int p, int x, int y, int t)
     {
         if(pmap[y][x])
 		{
-			if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN))
+			if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN&&t!=PT_STKM&&t!=PT_STKM2))
 			{
-				parts[pmap[y][x]>>8].ctype = t;	    
+				if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN))
+				{
+					parts[pmap[y][x]>>8].ctype = t;	    
+				}
+				return -1;
 			}
-            return -1;
+			if(pfree == -1)
+				return -1;
+			i = pfree;
+			pfree = parts[i].life;
 		}
-        if(pfree == -1)
-            return -1;
-        i = pfree;
-        pfree = parts[i].life;
-    }
-    else
-        i = p;
+		else
+		{
+			i = p;
+		}
+	}
 
     if(t==PT_GLAS)
     {
@@ -2129,7 +2140,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 											}
 											else if(parts[r>>8].type==PT_FILT){
 												colored = parts[r>>8].ctype;
-											}else if(parts[r>>8].type!=PT_INWR && parts[r>>8].type!=PT_ARAY) {
+											}else if(parts[r>>8].type!=PT_INWR && parts[r>>8].type!=PT_ARAY && parts[r>>8].type!=PT_WIFI) {
 												if(nyy!=0 || nxx!=0){
 													create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 												}
@@ -2142,6 +2153,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 										} else if(destroy) {
 											if(parts[r>>8].type==PT_BRAY){
 												parts[r>>8].life = 1;
+												docontinue = 1;
+											} else if(parts[r>>8].type==PT_INWR || parts[r>>8].type==PT_ARAY || parts[r>>8].type==PT_WIFI) {
 												docontinue = 1;
 											} else {
 												docontinue = 0;
@@ -3375,6 +3388,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 			    {
 				    parts[r>>8].type = PT_SPRK;
 				    parts[r>>8].ctype = PT_PSCN;
+				    parts[r>>8].life = 4;
+			    }
+			     else if(parts[r>>8].type==PT_INWR&&parts[r>>8].life==0 && wireless[parts[i].tmp][0])
+			    {
+				    parts[r>>8].type = PT_SPRK;
+				    parts[r>>8].ctype = PT_INWR;
 				    parts[r>>8].life = 4;
 			    }
 			    else if(parts[r>>8].type==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3 && !wireless[parts[i].tmp][0])
@@ -5051,7 +5070,7 @@ killed:
                             parts[i].vx *= ptypes[t].collision;
                             parts[i].vy *= ptypes[t].collision;
                         }
-                        else if(ptypes[t].falldown>1 && parts[i].vy>fabs(parts[i].vx))
+                        else if(ptypes[t].falldown>1 && (parts[i].vy>fabs(parts[i].vx) || gravityMode==2))
                         {
                             s = 0;
                             if(!rt || nt) //nt is if there is an something else besides the current particle type, around the particle
