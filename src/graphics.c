@@ -1934,13 +1934,21 @@ void draw_parts(pixel *vid)
 		}
                 else if(t==PT_ACID)
                 {
-                    if(parts[i].life>255) parts[i].life = 255;
-                    if(parts[i].life<47) parts[i].life = 48;
-                    s = (255/((parts[i].life-46)*28));
+                    if(parts[i].life>75) parts[i].life = 75;
+                    if(parts[i].life<49) parts[i].life = 49;
+                    s = (parts[i].life-49)*3;
                     if(s==0) s = 1;
-                    cr = PIXR(ptypes[t].pcolors)/s;
-                    cg = PIXG(ptypes[t].pcolors)/s;
-                    cb = PIXB(ptypes[t].pcolors)/s;
+					cr = 0x86 + s*4;
+					cg = 0x36 + s*1;
+					cb = 0x90 + s*2;
+					
+					if(cr>=255)
+						cr = 255;
+					if(cg>=255)
+						cg = 255;
+					if(cb>=255)
+						cb = 255;
+					
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
                     if(cmode==CM_BLOB)

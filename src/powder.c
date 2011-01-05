@@ -2495,13 +2495,13 @@ void update_particles_i(pixel *vid, int start, int inc)
                                 }
                                 else if(((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && ptypes[parts[r>>8].type].hardness>(rand()%1000))&&parts[i].life>=50)
                                 {
-					if(parts_avg(i, r>>8,PT_GLAS)!= PT_GLAS)
-					{
-					parts[i].life--;
-					parts[r>>8].type = PT_NONE;
-					}
+									if(parts_avg(i, r>>8,PT_GLAS)!= PT_GLAS)
+									{
+										parts[i].life--;
+										parts[r>>8].type = PT_NONE;
+									}
                                 }
-                                else if (parts[i].life==50)
+                                else if (parts[i].life<=50)
                                 {
                                     parts[i].life = 0;
                                     t = parts[i].type = PT_NONE;
