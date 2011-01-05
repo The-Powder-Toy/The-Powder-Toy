@@ -2128,7 +2128,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 											}
 											else if(parts[r>>8].type==PT_FILT){
 												colored = parts[r>>8].ctype;
-											}else if(parts[r>>8].type!=PT_INWR && parts[r>>8].type!=PT_ARAY) {
+											}else if(parts[r>>8].type!=PT_INWR && parts[r>>8].type!=PT_ARAY && parts[r>>8].type!=PT_WIFI) {
 												if(nyy!=0 || nxx!=0){
 													create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 												}
@@ -2137,6 +2137,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 										} else if(destroy) {
 											if(parts[r>>8].type==PT_BRAY){
 												parts[r>>8].life = 1;
+												docontinue = 1;
+											} else if(parts[r>>8].type==PT_INWR || parts[r>>8].type==PT_ARAY || parts[r>>8].type==PT_WIFI) {
 												docontinue = 1;
 											} else {
 												docontinue = 0;
@@ -3370,6 +3372,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 			    {
 				    parts[r>>8].type = PT_SPRK;
 				    parts[r>>8].ctype = PT_PSCN;
+				    parts[r>>8].life = 4;
+			    }
+			     else if(parts[r>>8].type==PT_INWR&&parts[r>>8].life==0 && wireless[parts[i].tmp][0])
+			    {
+				    parts[r>>8].type = PT_SPRK;
+				    parts[r>>8].ctype = PT_INWR;
 				    parts[r>>8].life = 4;
 			    }
 			    else if(parts[r>>8].type==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3 && !wireless[parts[i].tmp][0])
