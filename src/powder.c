@@ -577,7 +577,7 @@ inline int create_part(int p, int x, int y, int t)
     {
         if(pmap[y][x])
 	{
-		if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN))
+		if(((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN&&t!=PT_STKM&&t!=PT_STKM2))
 		{
 			parts[pmap[y][x]>>8].ctype = t;	    
 		}
@@ -5046,7 +5046,7 @@ killed:
                             parts[i].vx *= ptypes[t].collision;
                             parts[i].vy *= ptypes[t].collision;
                         }
-                        else if(ptypes[t].falldown>1 && parts[i].vy>fabs(parts[i].vx))
+                        else if(ptypes[t].falldown>1 && (parts[i].vy>fabs(parts[i].vx) || gravityMode==2))
                         {
                             s = 0;
                             if(!rt || nt) //nt is if there is an something else besides the current particle type, around the particle

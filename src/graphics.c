@@ -1478,6 +1478,163 @@ void draw_parts(pixel *vid)
 				cb = 0;
 			blendpixel(vid, nx, ny, cr, cg, cb, 255);
 		}
+		else if(cmode==CM_FANCY)
+		{
+			if(ptypes[parts[i].type].properties&TYPE_LIQUID)
+			{
+				if(parts[i].type==PT_DEUT)
+				{
+					cr = PIXR(ptypes[t].pcolors) + parts[i].life*1;
+					cg = PIXG(ptypes[t].pcolors) + parts[i].life*2;
+					cb = PIXB(ptypes[t].pcolors) + parts[i].life*4;
+					if(cr>=255)
+						cr = 255;
+					if(cg>=255)
+						cg = 255;
+					if(cb>=255)
+						cb = 255;
+					blendpixel(vid, nx, ny, cr, cg, cb, 255);
+					for(x=-1; x<=1; x++)
+					{
+                       	for(y=-1; y<=1; y++)
+						{
+							if ((abs(x) == 0) && (abs(y) == 0))
+								blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
+							else if (abs(y) != 0 || abs(x) != 0)
+								blendpixel(vid,x+nx,y+ny,cr,cg,cb,50);
+						}
+					}
+				}
+				else if(parts[i].type==PT_LAVA && parts[i].life)
+				{
+					cr = parts[i].life * 2 + 0xE0;
+					cg = parts[i].life * 1 + 0x50;
+					cb = parts[i].life/2 + 0x10;
+					if(cr>255) cr = 255;
+					if(cg>192) cg = 192;
+					if(cb>128) cb = 128;
+					for(x=-1; x<=1; x++)
+					{
+						for(y=-1; y<=1; y++)
+						{
+							if ((abs(x) == 0) && (abs(y) == 0))
+								blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
+							else if (abs(y) != 0 || abs(x) != 0)
+								blendpixel(vid,x+nx,y+ny,cr,cg,cb,50);
+						}
+					}
+				}
+				else if(parts[i].type==PT_GLOW)
+				{
+					fg = 0;
+                    fb = 0;
+                    fr = 0;
+                    if(pv[ny/CELL][nx/CELL]>0) {
+                        fg = 6 * pv[ny/CELL][nx/CELL];
+                        fb = 4 * pv[ny/CELL][nx/CELL];
+                        fr = 2 * pv[ny/CELL][nx/CELL];
+                    }
+                    vid[ny*(XRES+BARSIZE)+nx] = PIXRGB((int)restrict_flt(0x44 + fr*8, 0, 255), (int)restrict_flt(0x88 + fg*8, 0, 255), (int)restrict_flt(0x44 + fb*8, 0, 255));
+
+                    /*x = nx/CELL;
+                    y = ny/CELL;
+                    fg += fire_g[y][x];
+                    if(fg > 255) fg = 255;
+						fire_g[y][x] = fg;
+                    fb += fire_b[y][x];
+                    if(fb > 255) fb = 255;
+						fire_b[y][x] = fb;
+                    fr += fire_r[y][x];
+                    if(fr > 255) fr = 255;
+						fire_r[y][x] = fr;*/
+					
+					cr = (int)restrict_flt(0x44 + fr*8, 0, 255);
+                    cg = (int)restrict_flt(0x88 + fg*8, 0, 255);
+                    cb = (int)restrict_flt(0x44 + fb*8, 0, 255);
+					for(x=-1; x<=1; x++)
+					{
+                       	for(y=-1; y<=1; y++)
+						{
+							if ((abs(x) == 0) && (abs(y) == 0))
+								blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
+							else if (abs(y) != 0 || abs(x) != 0)
+								blendpixel(vid,x+nx,y+ny,cr,cg,cb,50);
+						}
+					}
+				}
+				else
+				{
+					cr = PIXR(ptypes[t].pcolors);
+					cg = PIXG(ptypes[t].pcolors);
+					cb = PIXB(ptypes[t].pcolors);
+					for(x=-1; x<=1; x++)
+					{
+						for(y=-1; y<=1; y++)
+						{
+							if ((abs(x) == 0) && (abs(y) == 0))
+								blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
+							else if (abs(y) != 0 || abs(x) != 0)
+								blendpixel(vid,x+nx,y+ny,cr,cg,cb,50);
+						}
+					}
+				} 
+			}
+			else if (ptypes[parts[i].type].properties&TYPE_GAS)
+			{
+				//if(parts[i].type!=PT_FIRE&&parts[i].type!=PT_SMKE&&parts[i].type!=PT_PLSM&&parts[i].type!=PT_WTRV)
+				{
+					cr = PIXR(ptypes[t].pcolors);
+					cg = PIXG(ptypes[t].pcolors);
+					cb = PIXB(ptypes[t].pcolors);
+					for(x=-1; x<=1; x++)
+					{
+						for(y=-1; y<=1; y++)
+						{
+							if ((abs(x) == 0) && (abs(y) == 0))
+								blendpixel(vid,x+nx,y+ny,cr,cg,cb,180);
+							else if (abs(y) != 0 && abs(x) != 0)
+								blendpixel(vid,x+nx,y+ny,cr,cg,cb,50);
+							else
+								blendpixel(vid,x+nx,y+ny,cr,cg,cb,80);
+						}
+					}
+				}
+			}
+			else if(ptypes[parts[i].type].properties&PROP_RADIOACTIVE)
+			{
+				int tempx = 0;
+				int tempy = 0;
+				cr = PIXR(ptypes[t].pcolors);
+				cg = PIXG(ptypes[t].pcolors);
+				cb = PIXB(ptypes[t].pcolors);
+				//blendpixel(vid, nx, ny, cr, cg, cb, 192);
+				//blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+				//blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+				//blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+				//blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+				addpixel(vid, nx, ny, cr, cg, cb, 192);
+				addpixel(vid, nx+1, ny, cr, cg, cb, 96);
+				addpixel(vid, nx-1, ny, cr, cg, cb, 96);
+				addpixel(vid, nx, ny+1, cr, cg, cb, 96);
+				addpixel(vid, nx, ny-1, cr, cg, cb, 96);
+				for(tempx = 2; tempx < 7; tempx++) {
+					for(tempy = 2; tempy < 7; tempy++) {
+						addpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+						addpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+						addpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+						addpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+						//blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
+						//blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
+						//blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
+						//blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
+					}
+				}
+			}
+			else 
+			{
+				vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
+			}
+		}
 		else if(cmode==CM_LIFE)
 		{
 			float frequency = 0.4;
@@ -1503,22 +1660,6 @@ void draw_parts(pixel *vid)
 				cb = 0;
 			blendpixel(vid, nx, ny, cr, cg, cb, 255);
 		}
-                else if(t==PT_MWAX&&cmode == CM_FANCY)
-                {
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-                            if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,224,224,170,255);
-                            else if (abs(y) != 0 && abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,224,224,170,20);
-                            else
-                                blendpixel(vid,x+nx,y+ny,224,224,170,40);
-                        }
-                    }
-
-                }
 		else if(t==PT_QRTZ || t==PT_PQRT)
 		{
 			int z = parts[i].tmp;
@@ -1788,7 +1929,9 @@ void draw_parts(pixel *vid)
 			
 		}
 		else if(t==PT_INVIS && (pv[ny/CELL][nx/CELL]>4.0f ||pv[ny/CELL][nx/CELL]<-4.0f))
+		{
 			blendpixel(vid, nx, ny, 15, 0, 150, 100);
+		}
                 else if(t==PT_ACID)
                 {
                     if(parts[i].life>255) parts[i].life = 255;
@@ -1798,20 +1941,7 @@ void draw_parts(pixel *vid)
                     cr = PIXR(ptypes[t].pcolors)/s;
                     cg = PIXG(ptypes[t].pcolors)/s;
                     cb = PIXB(ptypes[t].pcolors)/s;
-                    if(cmode==CM_FANCY) {
-                        for(x=-1; x<=1; x++)
-                        {
-                            for(y=-1; y<=1; y++)
-                            {
-                                if ((abs(x) == 0) && (abs(y) == 0))
-                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
-                                else if (abs(y) != 0 || abs(x) != 0)
-                                    blendpixel(vid,x+nx,y+ny,cr,cg,cb,40);
-                            }
-                        }
-                    } else {
-                        blendpixel(vid, nx, ny, cr, cg, cb, 255);
-                    }
+					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
                     if(cmode==CM_BLOB)
                     {
@@ -1824,19 +1954,6 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 112);
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 112);
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
-                    }
-                }
-                else if(t==PT_OIL&&cmode == CM_FANCY)
-                {
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-                            if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,64,64,16,100);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,64,64,16,40);
-                        }
                     }
                 }
                 else if(t==PT_NEUT)
@@ -1869,58 +1986,6 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
-                    }
-                } else if(t==PT_PLUT&&cmode == CM_FANCY)
-                {
-                    int tempx;
-                    int tempy;
-                    cr = 0x40;
-                    cg = 0x70;
-                    cb = 0x20;
-                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
-                    blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
-                    blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
-                    blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
-                    blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-                    for(tempx = 2; tempx < 10; tempx++) {
-                        for(tempy = 2; tempy < 10; tempy++) {
-                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
-                        }
-                    }
-                } else if(t==PT_URAN&&cmode == CM_FANCY)
-                {
-                    int tempx;
-                    int tempy;
-                    cr = 0x70;
-                    cg = 0x70;
-                    cb = 0x20;
-                    blendpixel(vid, nx, ny, cr, cg, cb, 192);
-                    blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
-                    blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
-                    blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
-                    blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-                    for(tempx = 2; tempx < 10; tempx++) {
-                        for(tempy = 2; tempy < 10; tempy++) {
-                            blendpixel(vid, nx+tempx, ny-tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx+tempx, ny+tempy, cr, cg, cb, 5);
-                            blendpixel(vid, nx-tempx, ny-tempy, cr, cg, cb, 5);
-                        }
-                    }
-                } else if(t==PT_SLTW&&cmode == CM_FANCY)
-                {
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-                            if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,64,80,240,100);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,64,80,240,50);
-                        }
                     }
                 }
 		else if(t==PT_FILT)
@@ -2069,19 +2134,6 @@ void draw_parts(pixel *vid)
                     y = ny;
                     blendpixel(vid,x,y,17,217,24,255);
                 }
-                else if(t==PT_LNTG&&cmode == CM_FANCY)
-                {
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-                            if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,128,160,223,100);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,128,160,223,50);
-                        }
-                    }
-                }
                 else if(t==PT_SMKE)
                 {
                     if(cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY)
@@ -2116,93 +2168,6 @@ void draw_parts(pixel *vid)
                             }
                         }
                     }
-                }
-                else if(t==PT_WATR&&cmode == CM_FANCY)
-                {
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-                            if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,32,48,208,100);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,32,48,208,50);
-                        }
-                    }
-
-                } else if(t==PT_DSTW&&cmode == CM_FANCY)
-                {
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-                            if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,32,48,208,100);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,32,48,208,50);
-                        }
-                    }
-                }
-                else if(t==PT_NITR&&cmode == CM_FANCY)
-                {
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-                            if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,32,224,16,100);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,32,224,16,50);
-                        }
-                    }
-
-                }
-                else if(t==PT_LRBD&&cmode == CM_FANCY)
-                {
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-                            if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,170,170,170,100);
-                            else if (abs(y) != 0 || abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,170,170,170,50);
-                        }
-                    }
-
-                }
-
-                else if(t==PT_NBLE&&cmode == CM_FANCY)
-                {
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-                            if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,235,73,23,100);
-                            else if (abs(y) != 0 && abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,235,73,23,30);
-                            else
-                                blendpixel(vid,x+nx,y+ny,235,73,23,50);
-                        }
-                    }
-
-                }
-                else if(t==PT_GAS&&cmode == CM_FANCY)
-                {
-                    for(x=-1; x<=1; x++)
-                    {
-                        for(y=-1; y<=1; y++)
-                        {
-                            if ((abs(x) == 0) && (abs(y) == 0))
-                                blendpixel(vid,x+nx,y+ny,255,255,0,180);
-                            else if (abs(y) != 0 && abs(x) != 0)
-                                blendpixel(vid,x+nx,y+ny,255,255,0,50);
-                            else
-                                blendpixel(vid,x+nx,y+ny,255,255,0,80);
-                        }
-                    }
-
                 }
                 else if(t==PT_WTRV)
                 {
