@@ -134,6 +134,7 @@ int core_count()
 }
 
 int mousex = 0, mousey = 0;  //They contain mouse position
+int kiosk_enable = 0;
 
 void sdl_seticon(void)
 {
@@ -1157,6 +1158,11 @@ int main(int argc, char *argv[])
         else if(!strncmp(argv[i], "nohud", 5))
         {
             hud_enable = 0;
+        }
+		else if(!strncmp(argv[i], "kiosk", 5))
+        {
+            kiosk_enable = 1;
+			sdl_scale = 2;
         }
     }
 

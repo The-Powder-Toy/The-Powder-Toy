@@ -102,6 +102,8 @@ int GRAV_B2;
 
 extern int legacy_enable;
 
+extern int kiosk_enable;
+
 extern int sys_pause;
 extern int framerender;
 
