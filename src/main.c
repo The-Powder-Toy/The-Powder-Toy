@@ -1163,6 +1163,7 @@ int main(int argc, char *argv[])
         {
             kiosk_enable = 1;
 			sdl_scale = 2;
+			hud_enable = 0;
         }
     }
 
