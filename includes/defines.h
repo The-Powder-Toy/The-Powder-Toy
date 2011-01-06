@@ -112,16 +112,16 @@ extern int death;
 
 struct sign
 {
-    int x,y,ju;
-    char text[256];
+	int x,y,ju;
+	char text[256];
 };
 typedef struct sign sign;
 
 struct stamp
 {
-    char name[11];
-    pixel *thumb;
-    int thumb_w, thumb_h, dodelete;
+	char name[11];
+	pixel *thumb;
+	int thumb_w, thumb_h, dodelete;
 };
 typedef struct stamp stamp;
 

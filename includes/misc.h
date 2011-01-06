@@ -43,8 +43,8 @@ char *mystrdup(char *s);
 
 struct strlist
 {
-    char *str;
-    struct strlist *next;
+	char *str;
+	struct strlist *next;
 };
 
 void strlist_add(struct strlist **list, char *str);

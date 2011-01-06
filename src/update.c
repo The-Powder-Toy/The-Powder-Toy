@@ -42,160 +42,160 @@
 static char *exe_name(void)
 {
 #if defined WIN32
-    char *name= (char *)malloc(64), max=64, res;
-    while((res = (char)GetModuleFileName(NULL, name, max)) >= max)
-    {
+	char *name= (char *)malloc(64), max=64, res;
+	while ((res = (char)GetModuleFileName(NULL, name, max)) >= max)
+	{
 #elif defined MACOSX
-    char *fn=malloc(64),*name=malloc(PATH_MAX), max=64, res;
-    if(_NSGetExecutablePath(fn, &max) != 0)
-    {
-        fn = realloc(fn, max);
-        _NSGetExecutablePath(fn, &max);
-    }
-    if(realpath(fn, name) == NULL)
-    {
-        free(fn);
-        free(name);
-        return NULL;
-    }
-    res = 1;
+	char *fn=malloc(64),*name=malloc(PATH_MAX), max=64, res;
+	if (_NSGetExecutablePath(fn, &max) != 0)
+	{
+		fn = realloc(fn, max);
+		_NSGetExecutablePath(fn, &max);
+	}
+	if (realpath(fn, name) == NULL)
+	{
+		free(fn);
+		free(name);
+		return NULL;
+	}
+	res = 1;
 #else
-    char fn[64], *name=malloc(64), max=64, res;
-    sprintf(fn, "/proc/self/exe");
-    memset(name, 0, max);
-    while((res = readlink(fn, name, max)) >= max-1)
-    {
+	char fn[64], *name=malloc(64), max=64, res;
+	sprintf(fn, "/proc/self/exe");
+	memset(name, 0, max);
+	while ((res = readlink(fn, name, max)) >= max-1)
+	{
 #endif
 #ifndef MACOSX
-        max *= 2;
-        name = realloc(name, max);
-        memset(name, 0, max);
-    }
+		max *= 2;
+		name = realloc(name, max);
+		memset(name, 0, max);
+	}
 #endif
-    if(res <= 0)
-    {
-        free(name);
-        return NULL;
-    }
-    return name;
+	if (res <= 0)
+	{
+		free(name);
+		return NULL;
+	}
+	return name;
 }
 
 int update_start(char *data, int len)
 {
-    char *self=exe_name(), *temp;
+	char *self=exe_name(), *temp;
 #ifdef WIN32
-    char *p;
+	char *p;
 #endif
-    FILE *f;
-    int res = 1;
+	FILE *f;
+	int res = 1;
 
-    if(!self)
-        return 1;
+	if (!self)
+		return 1;
 
 #ifdef WIN32
-    temp = malloc(strlen(self)+12);
-    strcpy(temp, self);
-    p = temp + strlen(temp) - 4;
-    if(_stricmp(p, ".exe"))
-        p += 4;
-    strcpy(p, "_update.exe");
+	temp = malloc(strlen(self)+12);
+	strcpy(temp, self);
+	p = temp + strlen(temp) - 4;
+	if (_stricmp(p, ".exe"))
+		p += 4;
+	strcpy(p, "_update.exe");
 
-    if(!MoveFile(self, temp))
-        goto fail;
+	if (!MoveFile(self, temp))
+		goto fail;
 
-    f = fopen(self, "wb");
-    if(!f)
-        goto fail;
-    if(fwrite(data, 1, len, f) != len)
-    {
-        fclose(f);
-        DeleteFile(self);
-        goto fail;
-    }
-    fclose(f);
+	f = fopen(self, "wb");
+	if (!f)
+		goto fail;
+	if (fwrite(data, 1, len, f) != len)
+	{
+		fclose(f);
+		DeleteFile(self);
+		goto fail;
+	}
+	fclose(f);
 
-    if((int)ShellExecute(NULL, "open", self, NULL, NULL, SW_SHOWNORMAL) <= 32)
-    {
-        DeleteFile(self);
-        goto fail;
-    }
+	if ((int)ShellExecute(NULL, "open", self, NULL, NULL, SW_SHOWNORMAL) <= 32)
+	{
+		DeleteFile(self);
+		goto fail;
+	}
 
-    return 0;
+	return 0;
 #else
-    temp = malloc(strlen(self)+8);
-    strcpy(temp, self);
-    strcat(temp, "-update");
+	temp = malloc(strlen(self)+8);
+	strcpy(temp, self);
+	strcat(temp, "-update");
 
-    f = fopen(temp, "w");
-    if(!f)
-        goto fail;
-    if(fwrite(data, 1, len, f) != len)
-    {
-        fclose(f);
-        unlink(temp);
-        goto fail;
-    }
-    fclose(f);
+	f = fopen(temp, "w");
+	if (!f)
+		goto fail;
+	if (fwrite(data, 1, len, f) != len)
+	{
+		fclose(f);
+		unlink(temp);
+		goto fail;
+	}
+	fclose(f);
 
-    if(chmod(temp, 0755))
-    {
-        unlink(temp);
-        goto fail;
-    }
+	if (chmod(temp, 0755))
+	{
+		unlink(temp);
+		goto fail;
+	}
 
-    if(rename(temp, self))
-    {
-        unlink(temp);
-        goto fail;
-    }
+	if (rename(temp, self))
+	{
+		unlink(temp);
+		goto fail;
+	}
 
-    execl(self, "powder-update", NULL);
+	execl(self, "powder-update", NULL);
 #endif
 
 fail:
-    free(temp);
-    free(self);
-    return res;
+	free(temp);
+	free(self);
+	return res;
 }
 
 int update_finish(void)
 {
 #ifdef WIN32
-    char *temp, *self=exe_name(), *p;
-    int timeout = 60, err;
+	char *temp, *self=exe_name(), *p;
+	int timeout = 60, err;
 
-    temp = malloc(strlen(self)+12);
-    strcpy(temp, self);
-    p = temp + strlen(temp) - 4;
-    if(_stricmp(p, ".exe"))
-        p += 4;
-    strcpy(p, "_update.exe");
+	temp = malloc(strlen(self)+12);
+	strcpy(temp, self);
+	p = temp + strlen(temp) - 4;
+	if (_stricmp(p, ".exe"))
+		p += 4;
+	strcpy(p, "_update.exe");
 
-    while(!DeleteFile(temp))
-    {
-        err = GetLastError();
-        if(err == ERROR_FILE_NOT_FOUND)
-        {
-            // just as well, then
-            free(temp);
-            return 0;
-        }
-        Sleep(500);
-        timeout--;
-        if(timeout <= 0)
-        {
-            free(temp);
-            return 1;
-        }
-    }
-    free(temp);
+	while (!DeleteFile(temp))
+	{
+		err = GetLastError();
+		if (err == ERROR_FILE_NOT_FOUND)
+		{
+			// just as well, then
+			free(temp);
+			return 0;
+		}
+		Sleep(500);
+		timeout--;
+		if (timeout <= 0)
+		{
+			free(temp);
+			return 1;
+		}
+	}
+	free(temp);
 #endif
-    return 0;
+	return 0;
 }
 
 void update_cleanup(void)
 {
 #ifdef WIN32
-    update_finish();
+	update_finish();
 #endif
 }
