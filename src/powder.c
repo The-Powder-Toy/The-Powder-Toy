@@ -2178,6 +2178,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 								if (ct==PT_NSCN || ct==PT_INWR || ct==PT_PSCN) {}
 								else conduct_sprk = 0;
 							}
+							if (ct==PT_INWR) {
+								if (rt==PT_NSCN || rt==PT_INWR || rt==PT_PSCN) {}
+								else conduct_sprk = 0;
+							}
 							if (ct==PT_INST&&rt!=PT_NSCN) conduct_sprk = 0;
 							if (rt==PT_INST&&ct!=PT_PSCN) conduct_sprk = 0;
 							if (ct==PT_SWCH&&(rt==PT_PSCN||rt==PT_NSCN||rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR)) conduct_sprk = 0;
