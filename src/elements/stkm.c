@@ -400,4 +400,5 @@ int update_STKM(UPDATE_FUNC_ARGS) {
 		parts[i].life -= 1;
 
 	isplayer = 1;
+	return 0;
 }

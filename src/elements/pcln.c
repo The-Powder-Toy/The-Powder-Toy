@@ -39,4 +39,5 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 			create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
 		}
 	}
+	return 0;
 }
