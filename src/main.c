@@ -1113,6 +1113,7 @@ int main(int argc, char *argv[])
 	void *load_data=NULL;
 	pixel *load_img=NULL;//, *fbi_img=NULL;
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
+	GSPEED = 1;
 
 #ifdef MT
 	numCores = core_count();
