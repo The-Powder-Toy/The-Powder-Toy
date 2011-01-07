@@ -1331,18 +1331,9 @@ void update_particles_i(pixel *vid, int start, int inc)
 				continue;
 			}
 
-			vx[y/CELL][x/CELL] *= ptypes[t].airloss;
-			vy[y/CELL][x/CELL] *= ptypes[t].airloss;
-			if (t==PT_ANAR)
-			{
-				vx[y/CELL][x/CELL] -= ptypes[t].airdrag*parts[i].vx;
-				vy[y/CELL][x/CELL] -= ptypes[t].airdrag*parts[i].vy;
-			}
-			else
-			{
-				vx[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vx;
-				vy[y/CELL][x/CELL] += ptypes[t].airdrag*parts[i].vy;
-			}
+			vx[y/CELL][x/CELL] = vx[y/CELL][x/CELL]*ptypes[t].airloss + ptypes[t].airdrag*parts[i].vx;
+			vy[y/CELL][x/CELL] = vy[y/CELL][x/CELL]*ptypes[t].airloss + ptypes[t].airdrag*parts[i].vy;
+
 			if (t==PT_GAS||t==PT_NBLE)
 			{
 				if (pv[y/CELL][x/CELL]<3.5f)
@@ -1439,16 +1430,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 				}
 
-				if (t==PT_ANAR)
-				{
-					parts[i].vx -= ptypes[t].advection*vx[y/CELL][x/CELL] + pGravX;
-					parts[i].vy -= ptypes[t].advection*vy[y/CELL][x/CELL] + pGravY;
-				}
-				else {
-					parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + pGravX;
-					parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + pGravY;
-
-				}
+				parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + pGravX;
+				parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + pGravY;
 			}
 
 			if (ptypes[t].diffusion)
@@ -1720,11 +1703,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
 				}
 			}
-			if (t==PT_PTCT&&parts[i].temp>295.0f)
-			{
-				pt = parts[i].temp -= 2.5f;
-			}
-			if (t==PT_NTCT&&parts[i].temp>295.0f)
+			if ((t==PT_PTCT||t==PT_NTCT)&&parts[i].temp>295.0f)
 			{
 				pt = parts[i].temp -= 2.5f;
 			}
@@ -2089,11 +2068,6 @@ void update_particles_i(pixel *vid, int start, int inc)
 							}
 						}
 			}
-			if (t==PT_SWCH)
-				if ((parts[i].life>0&&parts[i].life<10)|| parts[i].life > 10)
-				{
-					parts[i].life--;
-				}
 			if (t==PT_SPRK) {
 				ct = parts[i].ctype;
 
