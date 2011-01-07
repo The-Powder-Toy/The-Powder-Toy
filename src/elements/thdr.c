@@ -10,7 +10,7 @@ int update_THDR(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ny][x+nx];
 				if ((r>>8)>=NPART || !r)
 					continue;
-				if ((ptypes[r&0xFF].properties&PROP_CONDUCTS) && !((r&0xFF)==PT_WATR||(r&0xFF)==PT_SLTW) && parts[r>>8].ctype!=PT_SPRK)
+				if ((ptypes[r&0xFF].properties&PROP_CONDUCTS) && parts[r>>8].life==0 && !((r&0xFF)==PT_WATR||(r&0xFF)==PT_SLTW) && parts[r>>8].ctype!=PT_SPRK)
 				{
 					parts[i].type = PT_NONE;
 					parts[r>>8].ctype = parts[r>>8].type;
