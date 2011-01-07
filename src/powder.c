@@ -3818,6 +3818,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             if((r>>8)>=NPART || !r)
                                 continue;
                             rt = parts[r>>8].type;
+			    
                             if(parts[r>>8].type == PT_SWCH&&parts_avg(i,r>>8,PT_INSL)!=PT_INSL)
                             {
                                 if(parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
@@ -3835,6 +3836,14 @@ void update_particles_i(pixel *vid, int start, int inc)
 				    parts[r>>8].life = 9;
 			    }
                         }
+		if(parts[i].life==10 && (!(pmap[y-1][x-1]&0xFF) && ((pmap[y-1][x]&0xFF)==PT_BRAY&&parts[pmap[y-1][x]>>8].tmp==2) && !(pmap[y-1][x+1]&0xFF) && ((pmap[y][x+1]&0xFF)==PT_BRAY&&parts[pmap[y][x+1]>>8].tmp==2)))
+		{
+			parts[i].life = 9;
+		}
+		else if(parts[i].life<=5 && (!(pmap[y-1][x-1]&0xFF) && (((pmap[y-1][x]&0xFF)==PT_BRAY&&parts[pmap[y-1][x]>>8].tmp==2) || ((pmap[y+1][x]&0xFF)==PT_BRAY&&parts[pmap[y+1][x]>>8].tmp==2)) && !(pmap[y-1][x+1]&0xFF) && (((pmap[y][x+1]&0xFF)==PT_BRAY&&parts[pmap[y][x+1]>>8].tmp==2) || ((pmap[y][x-1]&0xFF)==PT_BRAY&&parts[pmap[y][x-1]>>8].tmp==2))))
+		{
+			parts[i].life = 14;
+		}
             }
             if(t==PT_SWCH)
                 if((parts[i].life>0&&parts[i].life<10)|| parts[i].life > 10)
