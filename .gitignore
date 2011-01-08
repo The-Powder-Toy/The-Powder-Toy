@@ -1,4 +1,5 @@
 *.*.swp
+.directory
 powder.def
 gmon.out
 *.*.orig

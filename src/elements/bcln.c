@@ -1,6 +1,16 @@
 #include <powder.h>
 
 int update_BCLN(UPDATE_FUNC_ARGS) {
+	if (!parts[i].life)
+	{
+		if (pv[y/CELL][x/CELL]>4.0f)
+		{
+			float advection = 0.1f;
+			parts[i].vx += advection*vx[y/CELL][x/CELL];
+			parts[i].vy += advection*vy[y/CELL][x/CELL];
+			parts[i].life = rand()%40+80;
+		}
+	}
 	if (!parts[i].ctype)
 	{
 		for (nx=-1; nx<2; nx++)

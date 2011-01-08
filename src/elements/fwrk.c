@@ -1,7 +1,7 @@
 #include <powder.h>
 
 int update_FWRK(UPDATE_FUNC_ARGS) {
-	int r, a;
+	int r;
 	if ((parts[i].temp>400&&(9+parts[i].temp/40)>rand()%100000&&parts[i].life==0&&!pmap[y-1][x])||parts[i].ctype==PT_DUST)
 	{
 		create_part(-1, x , y-1 , PT_FWRK);
@@ -35,16 +35,16 @@ int update_FWRK(UPDATE_FUNC_ARGS) {
 						{
 							create_part(-1, x+nx, y+ny , PT_DUST);
 							pv[y/CELL][x/CELL] += 2.00f*CFDS;
-							a= pmap[y+ny][x+nx];
-							if (parts[a>>8].type==PT_DUST)
+							r = pmap[y+ny][x+nx];
+							if (parts[r>>8].type==PT_DUST)
 							{
-								parts[a>>8].vy = -(rand()%10-1);
-								parts[a>>8].vx = ((rand()%2)*2-1)*rand()%(5+5)+(parts[i].vx)*2 ;
-								parts[a>>8].life= rand()%37+18;
-								parts[a>>8].tmp=q;
-								parts[a>>8].flags=w;
-								parts[a>>8].ctype=e;
-								parts[a>>8].temp= rand()%20+6000;
+								parts[r>>8].vy = -(rand()%10-1);
+								parts[r>>8].vx = ((rand()%2)*2-1)*rand()%(5+5)+(parts[i].vx)*2 ;
+								parts[r>>8].life= rand()%37+18;
+								parts[r>>8].tmp=q;
+								parts[r>>8].flags=w;
+								parts[r>>8].ctype=e;
+								parts[r>>8].temp= rand()%20+6000;
 							}
 						}
 					}
