@@ -689,118 +689,126 @@ inline int create_part(int p, int x, int y, int t)
         parts[i].vx = 3.0f*cosf(a);
         parts[i].vy = 3.0f*sinf(a);
     }
-    if(t==PT_BIZR||t==PT_BIZRG)
-	    parts[i].ctype = 0x47FFFF;
-    if(t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT)// && t!=PT_NEUT)  is this needed? it breaks floodfill, Yes photons should not be placed in the PMAP
-        pmap[y][x] = t|(i<<8);
-    else if(t==PT_STKM)
+	if(t==PT_STKM)
     {
         if(isplayer==0)
         {
-	    if(pmap[y][x]&0xFF==PT_SPAWN)
-	    {
-            parts[pmap[y][x]>>8].type = PT_STKM;
-            parts[pmap[y][x]>>8].vx = 0;
-            parts[pmap[y][x]>>8].vy = 0;
-            parts[pmap[y][x]>>8].life = 100;
-            parts[pmap[y][x]>>8].ctype = 0;
-            parts[pmap[y][x]>>8].temp = ptypes[t].heat;    
-		    
-	    }
-	    else
-	    {
-            parts[i].x = (float)x;
-            parts[i].y = (float)y;
-            parts[i].type = PT_STKM;
-            parts[i].vx = 0;
-            parts[i].vy = 0;
-            parts[i].life = 100;
-            parts[i].ctype = 0;
-            parts[i].temp = ptypes[t].heat;
-	    }
-
-
-
+			if(pmap[y][x]&0xFF==PT_SPAWN)
+			{
+				parts[pmap[y][x]>>8].type = PT_STKM;
+				parts[pmap[y][x]>>8].vx = 0;
+				parts[pmap[y][x]>>8].vy = 0;
+				parts[pmap[y][x]>>8].life = 100;
+				parts[pmap[y][x]>>8].ctype = 0;
+				parts[pmap[y][x]>>8].temp = ptypes[t].heat;    
+				
+			}
+			else
+			{
+				parts[i].x = (float)x;
+				parts[i].y = (float)y;
+				parts[i].type = PT_STKM;
+				parts[i].vx = 0;
+				parts[i].vy = 0;
+				parts[i].life = 100;
+				parts[i].ctype = 0;
+				parts[i].temp = ptypes[t].heat;
+			}
+			
+			
+			
             player[3] = x-1;  //Setting legs positions
             player[4] = y+6;
             player[5] = x-1;
             player[6] = y+6;
-
+			
             player[7] = x-3;
             player[8] = y+12;
             player[9] = x-3;
             player[10] = y+12;
-
+			
             player[11] = x+1;
             player[12] = y+6;
             player[13] = x+1;
             player[14] = y+6;
-
+			
             player[15] = x+3;
             player[16] = y+12;
             player[17] = x+3;
             player[18] = y+12;
-
+			
             isplayer = 1;
         }
+		else 
+		{
+			return -1;
+		}
 		//kill_part(playerspawn);
 		create_part(-1,x,y,PT_SPAWN);
 		ISSPAWN1 = 1;
     }
-    else if(t==PT_STKM2)
+    if(t==PT_STKM2)
     {
         if(isplayer2==0)
         {
-	    if(pmap[y][x]&0xFF==PT_SPAWN2)
-	    {
-            parts[pmap[y][x]>>8].type = PT_STKM2;
-            parts[pmap[y][x]>>8].vx = 0;
-            parts[pmap[y][x]>>8].vy = 0;
-            parts[pmap[y][x]>>8].life = 100;
-            parts[pmap[y][x]>>8].ctype = 0;
-            parts[pmap[y][x]>>8].temp = ptypes[t].heat;    
-		    
-	    }
-	    else
-	    {
-            parts[i].x = (float)x;
-            parts[i].y = (float)y;
-            parts[i].type = PT_STKM2;
-            parts[i].vx = 0;
-            parts[i].vy = 0;
-            parts[i].life = 100;
-            parts[i].ctype = 0;
-            parts[i].temp = ptypes[t].heat;
-	    }
-
-
-
+			if(pmap[y][x]&0xFF==PT_SPAWN2)
+			{
+				parts[pmap[y][x]>>8].type = PT_STKM2;
+				parts[pmap[y][x]>>8].vx = 0;
+				parts[pmap[y][x]>>8].vy = 0;
+				parts[pmap[y][x]>>8].life = 100;
+				parts[pmap[y][x]>>8].ctype = 0;
+				parts[pmap[y][x]>>8].temp = ptypes[t].heat;    
+				
+			}
+			else
+			{
+				parts[i].x = (float)x;
+				parts[i].y = (float)y;
+				parts[i].type = PT_STKM2;
+				parts[i].vx = 0;
+				parts[i].vy = 0;
+				parts[i].life = 100;
+				parts[i].ctype = 0;
+				parts[i].temp = ptypes[t].heat;
+			}
+			
+			
+			
             player2[3] = x-1;  //Setting legs positions
             player2[4] = y+6;
             player2[5] = x-1;
             player2[6] = y+6;
-
+			
             player2[7] = x-3;
             player2[8] = y+12;
             player2[9] = x-3;
             player2[10] = y+12;
-
+			
             player2[11] = x+1;
             player2[12] = y+6;
             player2[13] = x+1;
             player2[14] = y+6;
-
+			
             player2[15] = x+3;
             player2[16] = y+12;
             player2[17] = x+3;
             player2[18] = y+12;
-
+			
             isplayer2 = 1;
         }
+		else 
+		{
+			return -1;
+		}
 		//kill_part(player2spawn);
 		create_part(-1,x,y,PT_SPAWN2);
 		ISSPAWN2 = 1;
     }
+    if(t==PT_BIZR||t==PT_BIZRG)
+	    parts[i].ctype = 0x47FFFF;
+    if(t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT)// && t!=PT_NEUT)  is this needed? it breaks floodfill, Yes photons should not be placed in the PMAP
+        pmap[y][x] = t|(i<<8);
 
     return i;
 }
@@ -2581,10 +2589,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                             if((r&0xFF)==PT_DYST && 15>(rand()%1000))
                                 parts[r>>8].type = PT_YEST;
                             if((r&0xFF)==PT_YEST) {
-                                if(15>(rand()%100000)&&isplayer==0)
-                                    parts[r>>8].type = PT_STKM;
-                                else
-                                    parts[r>>8].type = PT_DYST;
+								parts[r>>8].type = PT_DYST;
                             }
 
                             if((r&0xFF)==PT_WATR && 15>(rand()%100))
@@ -4083,6 +4088,11 @@ killed:
                 if((parts[i].temp<309.6f) && (parts[i].temp>=243))
                     parts[i].temp += 1;
 
+				if (isplayer) { //Already a stickman in the simulation
+					death = 1;
+					parts[i].type = PT_NONE;
+				}
+				
                 //Death
                 if(parts[i].life<1 || death == 1 || (pv[y/CELL][x/CELL]>=4.5f && player[2] != SPC_AIR) )  //If his HP is less that 0 or there is very big wind...
                 {
@@ -4473,6 +4483,11 @@ killed:
                 if((parts[i].temp<309.6f) && (parts[i].temp>=243))
                     parts[i].temp += 1;
 
+				if (isplayer2) { //Already a stickman2 in the simulation
+					death2 = 1;
+					parts[i].type = PT_NONE;
+				}
+				
                 //Death
                 if(parts[i].life<1 || death2 == 1 || (pv[y/CELL][x/CELL]>=4.5f && player2[2] != SPC_AIR) )  //If his HP is less that 0 or there is very big wind...
                 {
@@ -4484,7 +4499,7 @@ killed:
                         create_part(-1, x+2, y+r, player2[2]);
                     }
                     kill_part(i);  //Kill him
-                    goto killed;
+                    continue;
                 }
 
                 parts[i].vy += -0.7*dt;  //Head up!
