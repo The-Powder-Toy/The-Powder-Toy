@@ -649,6 +649,7 @@ static int lolzrule[9][9] =
 };
 int portal[MAX_TEMP/100][8][80];
 float portaltemp[MAX_TEMP/100][8][80];
+int portalctype[MAX_TEMP/100][8][80];
 int wireless[MAX_TEMP/100][2];
 
 extern int isplayer;
