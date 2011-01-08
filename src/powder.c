@@ -1621,10 +1621,10 @@ void update_particles_i(pixel *vid, int start, int inc)
             if(t==PT_GAS && pv[y/CELL][x/CELL]<-6.0f)
                 t = parts[i].type = PT_OIL;
             if(t==PT_DESL && pv[y/CELL][x/CELL]>5.0f)
-	    {						// Only way I know to make it
-		t = parts[i].type = PT_FIRE;    		// combust under pressure.
-		parts[i].life = rand()%50+120;
-	    }						
+			{
+				t = parts[i].type = PT_FIRE;
+				parts[i].life = rand()%50+120;
+			}						
             if(t==PT_GAS && pv[y/CELL][x/CELL]>6.0f)
                 t = parts[i].type = PT_OIL;
             if(t==PT_BMTL && pv[y/CELL][x/CELL]>2.5f)
@@ -1633,21 +1633,21 @@ void update_particles_i(pixel *vid, int start, int inc)
                 t = parts[i].type = PT_BRMT;
             if(t==PT_BRCK && pv[y/CELL][x/CELL]>8.8f)
                 t = parts[i].type = PT_STNE;
-	    if(t==PT_PIPE && pv[y/CELL][x/CELL]>10.0f)
+			if(t==PT_PIPE && pv[y/CELL][x/CELL]>10.0f)
                 t = parts[i].type = PT_BRMT;
-	    if(t==PT_PSTE && pv[y/CELL][x/CELL]>0.5f)
+			if(t==PT_PSTE && pv[y/CELL][x/CELL]>0.5f)
                 t = parts[i].type = PT_PSTS;
-	    if(t==PT_PSTS && pv[y/CELL][x/CELL]<0.5f)
+			if(t==PT_PSTS && pv[y/CELL][x/CELL]<0.5f)
                 t = parts[i].type = PT_PSTE;
-	    if(t==PT_SHLD1 && pv[y/CELL][x/CELL]>7.0f)
+			if(t==PT_SHLD1 && pv[y/CELL][x/CELL]>7.0f)
                 t = parts[i].type = PT_NONE;
-	    if(t==PT_SHLD2 && pv[y/CELL][x/CELL]>15.0f)
+			if(t==PT_SHLD2 && pv[y/CELL][x/CELL]>15.0f)
                 t = parts[i].type = PT_NONE;
-	    if(t==PT_SHLD3 && pv[y/CELL][x/CELL]>25.0f)
+			if(t==PT_SHLD3 && pv[y/CELL][x/CELL]>25.0f)
                 t = parts[i].type = PT_NONE;
-	    if(t==PT_SHLD4 && pv[y/CELL][x/CELL]>40.0f)
+			if(t==PT_SHLD4 && pv[y/CELL][x/CELL]>40.0f)
                 t = parts[i].type = PT_NONE;
-	     if(t==PT_WIFI && pv[y/CELL][x/CELL]>15.0f)
+			if(t==PT_WIFI && pv[y/CELL][x/CELL]>15.0f)
                 t = parts[i].type = PT_BRMT;
             //if(t==PT_GLAS && pv[y/CELL][x/CELL]>4.0f)
             //	t = parts[i].type = PT_BGLA;
@@ -1660,7 +1660,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                     parts[i].type = PT_BGLA;
                 }
             }
-	    if(t==PT_QRTZ)
+			if(t==PT_QRTZ)
             {
                 parts[i].pavg[0] = parts[i].pavg[1];
                 parts[i].pavg[1] = pv[y/CELL][x/CELL];
@@ -1676,20 +1676,20 @@ void update_particles_i(pixel *vid, int start, int inc)
                 t = PT_NEUT;
                 create_part(i, x, y, t);
             }
-	    if((t==PT_ISOZ||t==PT_ISZS) && 1>rand()%200 && ((int)(-4.0f*(pv[y/CELL][x/CELL])))>(rand()%1000))
+			if((t==PT_ISOZ||t==PT_ISZS) && 1>rand()%200 && ((int)(-4.0f*(pv[y/CELL][x/CELL])))>(rand()%1000))
             {
                 t = PT_PHOT;
-		rr = (rand()%228+128)/127.0f;
-		rrr = (rand()%360)*3.14159f/180.0f;
-		parts[i].life = 680;
-		parts[i].ctype = 0x3FFFFFFF;
-		parts[i].vx = rr*cosf(rrr);
-		parts[i].vy = rr*sinf(rrr);
+				rr = (rand()%228+128)/127.0f;
+				rrr = (rand()%360)*3.14159f/180.0f;
+				parts[i].life = 680;
+				parts[i].ctype = 0x3FFFFFFF;
+				parts[i].vx = rr*cosf(rrr);
+				parts[i].vy = rr*sinf(rrr);
                 create_part(i, x, y, t);
             }
-	    if(t==PT_PSTE)
-		if(parts[i].temp>747.0f)
-		    t = parts[i].type = PT_BRCK;
+			if(t==PT_PSTE)
+				if(parts[i].temp>747.0f)
+					t = parts[i].type = PT_BRCK;
             if(t==PT_SPRK&&parts[i].ctype==PT_ETRD&&parts[i].life==1)
             {
                 nearp = nearest_part(i, PT_ETRD);
@@ -1748,110 +1748,122 @@ void update_particles_i(pixel *vid, int start, int inc)
                             }
                         }
                     }
-                    if(pt>=pstates[t].btemp&&pstates[t].burn)
-                    {
-                        t = parts[i].type = pstates[t].burn;
-                        if(t==PT_FIRE||t==PT_PLSM)
-                            parts[i].life = rand()%50+120;
-                    }
-                    else if((pt<=pstates[t].stemp||(t==PT_LAVA&&(pt<=pstates[parts[i].ctype].ltemp)))&&pstates[t].solid)
-                    {
-                        if(t==PT_LAVA&&parts[i].ctype)
-                        {
-                            parts[i].life = 0;
-                            if(parts[i].ctype==PT_THRM)
-                            {
-                                parts[i].tmp = 0;
-                                parts[i].ctype = PT_BMTL;
-                            }
-                            if(parts[i].ctype==PT_PLUT)
-                            {
-                                parts[i].tmp = 0;
-                                parts[i].ctype = PT_LAVA;
-                            }
-                            t = parts[i].type = parts[i].ctype;
-                            parts[i].ctype = PT_NONE;
-                        }
-                        else if(pstates[t].solid==PT_ICEI&&pt<=pstates[t].stemp)
-                        {
-                            parts[i].ctype = parts[i].type;
-                            t = parts[i].type = PT_ICEI;
-                        }
-                        else
-                        {
-                            parts[i].life = 0;
-                            t = parts[i].type = pstates[t].solid;
-                        }
-                    }
-                    else if((pt>=pstates[t].ltemp&&(pt<=pstates[t].gtemp||!pstates[t].gas)&&pstates[t].state==ST_SOLID&&pstates[t].liquid)||(t==PT_ICEI&&pt>pstates[parts[i].ctype].stemp))
-                    {
-                        if(pstates[t].liquid==PT_LAVA)
-                        {
-                            parts[i].life = rand()%120+240;
-                            parts[i].ctype = (parts[i].type==PT_BRMT)?PT_BMTL:parts[i].type;
-                            parts[i].ctype = (parts[i].ctype==PT_SAND)?PT_GLAS:parts[i].ctype;
-                            parts[i].ctype = (parts[i].ctype==PT_BGLA)?PT_GLAS:parts[i].ctype;
-			    parts[i].ctype = (parts[i].ctype==PT_PQRT)?PT_QRTZ:parts[i].ctype;
-                            t = parts[i].type = pstates[t].liquid;
-                        }
-                        else if(t==PT_ICEI&&parts[i].ctype)
-                        {
-                            t = parts[i].type = parts[i].ctype;
-                            parts[i].ctype = PT_NONE;
-                        }
-                        else
-                        {
-                            t = parts[i].type = pstates[t].liquid;
-                        }
-                    }
-                    else if(pt-ctemp<=pstates[t].ltemp&&pstates[t].liquid&&pstates[t].state==ST_GAS)
-                    {
-                        t = parts[i].type = pstates[t].liquid;
-                    }
-                    else if(pt-ctemp>=pstates[t].gtemp&&(pstates[t].gas||parts[i].type==PT_LNTG)&&(pstates[t].state==ST_LIQUID||pstates[t].state==ST_SOLID))
-                    {
-                        if(t==PT_SLTW&&1>rand()%6)
-                        {
-                            t = parts[i].type = PT_SALT;
-                        }
-                        else
-                        {
-			    if((t==PT_BIZR||t==PT_BIZRG||t==PT_BIZRS)&&pt>=pstates[t].gtemp)
-			    {
-				t = parts[i].type = pstates[t].gas;
-			    }
-			    else{
-				t = parts[i].type = pstates[t].gas;
-				pv[y/CELL][x/CELL] += 0.50f;
-			    }
-			    
-                            if(t==PT_FIRE)
-                                parts[i].life = rand()%50+120;
-                            if(t==PT_HFLM)
-                                parts[i].life = rand()%50+120;
-                        }
-                    }
-                    if(t==PT_URAN && pv[y/CELL][x/CELL]>0.0f)
-                    {
-                        float atemp =  parts[i].temp + (-MIN_TEMP);
-                        pt = parts[i].temp = (atemp*(1+(pv[y/CELL][x/CELL]/2000)))+MIN_TEMP;
-                    }
-                    if(t==PT_LAVA)
-                    {
-                        parts[i].life = restrict_flt((pt-700)/7, 0.0f, 400.0f);
-                        if(parts[i].ctype==PT_THRM&&parts[i].tmp>0)
-                        {
-                            parts[i].tmp--;
-                            parts[i].temp = 3500;
-                        }
-                        if(parts[i].ctype==PT_PLUT&&parts[i].tmp>0)
-                        {
-                            parts[i].tmp--;
-                            parts[i].temp = MAX_TEMP;
-                        }
-                    }
-                    pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
-                }
+					if(y-2 >= 0 && y-2 < YRES && ptypes[t].properties&TYPE_LIQUID){
+						float swappage;
+						r = pmap[y-2][x];
+						if(!((r>>8)>=NPART || !r || parts[i].type != (r&0xFF))){
+							if(parts[i].temp>parts[r>>8].temp){
+								swappage = parts[i].temp;
+								parts[i].temp = parts[r>>8].temp;
+								parts[r>>8].temp = swappage;
+							}
+						}
+					}
+					
+					if(pt>=pstates[t].btemp&&pstates[t].burn)
+					{
+						t = parts[i].type = pstates[t].burn;
+						if(t==PT_FIRE||t==PT_PLSM)
+							parts[i].life = rand()%50+120;
+					}
+					else if((pt<=pstates[t].stemp||(t==PT_LAVA&&(pt<=pstates[parts[i].ctype].ltemp)))&&pstates[t].solid)
+					{
+						if(t==PT_LAVA&&parts[i].ctype)
+						{
+							parts[i].life = 0;
+							if(parts[i].ctype==PT_THRM)
+							{
+								parts[i].tmp = 0;
+								parts[i].ctype = PT_BMTL;
+							}
+							if(parts[i].ctype==PT_PLUT)
+							{
+								parts[i].tmp = 0;
+								parts[i].ctype = PT_LAVA;
+							}
+							t = parts[i].type = parts[i].ctype;
+							parts[i].ctype = PT_NONE;
+						}
+						else if(pstates[t].solid==PT_ICEI&&pt<=pstates[t].stemp)
+						{
+							parts[i].ctype = parts[i].type;
+							t = parts[i].type = PT_ICEI;
+						}
+						else
+						{
+							parts[i].life = 0;
+							t = parts[i].type = pstates[t].solid;
+						}
+					}
+					else if((pt>=pstates[t].ltemp&&(pt<=pstates[t].gtemp||!pstates[t].gas)&&pstates[t].state==ST_SOLID&&pstates[t].liquid)||(t==PT_ICEI&&pt>pstates[parts[i].ctype].stemp))
+					{
+						if(pstates[t].liquid==PT_LAVA)
+						{
+							parts[i].life = rand()%120+240;
+							parts[i].ctype = (parts[i].type==PT_BRMT)?PT_BMTL:parts[i].type;
+							parts[i].ctype = (parts[i].ctype==PT_SAND)?PT_GLAS:parts[i].ctype;
+							parts[i].ctype = (parts[i].ctype==PT_BGLA)?PT_GLAS:parts[i].ctype;
+							parts[i].ctype = (parts[i].ctype==PT_PQRT)?PT_QRTZ:parts[i].ctype;
+							t = parts[i].type = pstates[t].liquid;
+						}
+						else if(t==PT_ICEI&&parts[i].ctype)
+						{
+							t = parts[i].type = parts[i].ctype;
+							parts[i].ctype = PT_NONE;
+						}
+						else
+						{
+							t = parts[i].type = pstates[t].liquid;
+						}
+					}
+					else if(pt-ctemp<=pstates[t].ltemp&&pstates[t].liquid&&pstates[t].state==ST_GAS)
+					{
+						t = parts[i].type = pstates[t].liquid;
+					}
+					else if(pt-ctemp>=pstates[t].gtemp&&(pstates[t].gas||parts[i].type==PT_LNTG)&&(pstates[t].state==ST_LIQUID||pstates[t].state==ST_SOLID))
+					{
+						if(t==PT_SLTW&&1>rand()%6)
+						{
+							t = parts[i].type = PT_SALT;
+						}
+						else
+						{
+							if((t==PT_BIZR||t==PT_BIZRG||t==PT_BIZRS)&&pt>=pstates[t].gtemp)
+							{
+								t = parts[i].type = pstates[t].gas;
+							}
+							else{
+								t = parts[i].type = pstates[t].gas;
+								pv[y/CELL][x/CELL] += 0.50f;
+							}
+							
+							if(t==PT_FIRE)
+								parts[i].life = rand()%50+120;
+							if(t==PT_HFLM)
+								parts[i].life = rand()%50+120;
+						}
+					}
+					if(t==PT_URAN && pv[y/CELL][x/CELL]>0.0f)
+					{
+						float atemp =  parts[i].temp + (-MIN_TEMP);
+						pt = parts[i].temp = (atemp*(1+(pv[y/CELL][x/CELL]/2000)))+MIN_TEMP;
+					}
+					if(t==PT_LAVA)
+					{
+						parts[i].life = restrict_flt((pt-700)/7, 0.0f, 400.0f);
+						if(parts[i].ctype==PT_THRM&&parts[i].tmp>0)
+						{
+							parts[i].tmp--;
+							parts[i].temp = 3500;
+						}
+						if(parts[i].ctype==PT_PLUT&&parts[i].tmp>0)
+						{
+							parts[i].tmp--;
+							parts[i].temp = MAX_TEMP;
+						}
+					}
+					pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
+				}
             }
             if(t==PT_PTCT&&parts[i].temp>295.0f)
             {
