@@ -1078,6 +1078,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 	float c_heat = 0.0f;
 	int h_count = 0;
 	int starti = (start*-1);
+	unsigned surround[24];
+	int surround_hconduct[8];
 	float pGravX, pGravY, pGravD;
 
 	if (sys_pause&&!framerender)
@@ -1447,68 +1449,69 @@ void update_particles_i(pixel *vid, int start, int inc)
 				}
 			}
 
+			if (x<CELL || x>=XRES-CELL || y<CELL || y>=YRES-CELL)
+			{
+				kill_part(i);
+				continue;
+			}
+
+#if CELL<=1
+#error Cell size <= 1 means pmap bounds could be exceeded
+			// if cell size is decreased to <= 1, the code that sets surround[] would need altering to check
+			// that pmap accesses are within bounds
+#endif
+			surround[0] = pmap[y-1][x-1];
+			surround[1] = pmap[y-1][x];
+			surround[2] = pmap[y-1][x+1];
+			surround[3] = pmap[y][x-1];
+			surround[4] = pmap[y][x+1];
+			surround[5] = pmap[y+1][x-1];
+			surround[6] = pmap[y+1][x];
+			surround[7] = pmap[y+1][x+1];
+			// TODO: should surround be extended to cover radius of 2, and then passed to update_PART functions?
+
 			a = nt = 0;
-			for (nx=-1; nx<2; nx++)
-				for (ny=-1; ny<2; ny++)
-					if (x+nx>=0 && y+ny>0 &&
-					        x+nx<XRES && y+ny<YRES &&
-					        (!bmap[(y+ny)/CELL][(x+nx)/CELL] || bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_STREAM))
+			for (j=0,nx=-1; nx<2; nx++)
+				for (ny=-1; ny<2; ny++) {
+
+					if (!bmap[(y+ny)/CELL][(x+nx)/CELL] || bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_STREAM)
 					{
-						if (!pmap[y+ny][x+nx])
+						if (!surround[j])
 							a = 1;
-						if ((pmap[y+ny][x+nx]&0xFF)!=t)
+						if ((surround[j]&0xFF)!=t)
 							nt = 1;
 					}
+					if (nx||ny) j++;
+				}
+
 			if (!legacy_enable)
 			{
-				int ctemp = pv[y/CELL][x/CELL]*2;
+				memset(surround_hconduct,0,sizeof(surround_hconduct));
 				c_heat = 0.0f;
 				h_count = 0;
-				if (t==PT_ICEI && !parts[i].ctype)
-					parts[i].ctype = PT_WATR;
-				if (ptypes[t].hconduct>(rand()%250)&&(t!=PT_HSWC||parts[i].life==10))
+				if (t&&(t!=PT_HSWC||parts[i].life==10)&&ptypes[t].hconduct>(rand()%250))
 				{
-					for (nx=-1; nx<2; nx++)
+					for (j=0; j<8; j++)
 					{
-						for (ny=-1; ny<2; ny++)
+						r = surround[j];
+						if ((r>>8)>=NPART || !r)
+							continue;
+						rt = r&0xFF;
+						if (rt&&ptypes[rt].hconduct&&(rt!=PT_HSWC||parts[r>>8].life==10)
+						        &&(t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
+						        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
 						{
-							if (x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
-							{
-								r = pmap[y+ny][x+nx];
-								if ((r>>8)>=NPART || !r)
-									continue;
-								rt = parts[r>>8].type;
-								if (rt!=PT_NONE&&t!=PT_NONE&&ptypes[rt].hconduct&&(rt!=PT_HSWC||parts[r>>8].life==10)
-								        &&(t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
-								        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
-								{
-									h_count++;
-									c_heat += parts[r>>8].temp;
-								}
-							}
+							surround_hconduct[j] = 1;
+							h_count++;
+							c_heat += parts[r>>8].temp;
 						}
 					}
 					pt = parts[i].temp = (c_heat+parts[i].temp)/(h_count+1);
-					for (nx=-1; nx<2; nx++)
+					for (j=0; j<8; j++)
 					{
-						for (ny=-1; ny<2; ny++)
-						{
-							if (x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
-							{
-								r = pmap[y+ny][x+nx];
-								if ((r>>8)>=NPART || !r)
-									continue;
-								rt = parts[r>>8].type;
-								if (rt!=PT_NONE&&t!=PT_NONE&&ptypes[rt].hconduct&&(rt!=PT_HSWC||parts[r>>8].life==10)
-								        &&(t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
-								        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
-								{
-									parts[r>>8].temp = parts[i].temp;
-								}
-							}
-						}
+						if (surround_hconduct[j])
+							parts[surround[j]>>8].temp = pt;
 					}
-
 
 					s = 1;
 					if (pt>ptransitions[t].thv&&ptransitions[t].tht>-1) {
