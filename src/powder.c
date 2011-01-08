@@ -1236,8 +1236,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 	if(ISGOL==1&&CGOL>=GSPEED)//GSPEED is frames per generation
 	{
 		int createdsomething = 0;
-		for(nx=4;nx<XRES-4;nx++)
-		for(ny=4;ny<YRES-4;ny++)
+		for(nx=CELL;nx<XRES-CELL;nx++)
+		for(ny=CELL;ny<YRES-CELL;ny++)
 		{
 			CGOL=0;
 			ISGOL=0;
@@ -1255,47 +1255,13 @@ void update_particles_i(pixel *vid, int start, int inc)
 						for( nnx=-1;nnx<2;nnx++)
 						  for( nny=-1;nny<2;nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
 						{
-							if(ny+nny<4&&nx+nnx<4){//any way to make wrapping code smaller?
-							  gol2[XRES-5][YRES-5][golnum] ++;
-							  gol2[XRES-5][YRES-5][0] ++;
-							}
-							else if(ny+nny<4&&nx+nnx>=XRES-4){
-							  gol2[4][YRES-5][golnum] ++;
-							  gol2[4][YRES-5][0] ++;
-							}
-							else if(ny+nny>=YRES-4&&nx+nnx<4){
-							  gol2[XRES-5][4][golnum] ++;
-							  gol2[XRES-5][4][0] ++;
-							}
-							else if(nx+nnx<4){
-							  gol2[XRES-5][ny+nny][golnum] ++;
-							  gol2[XRES-5][ny+nny][0] ++;
-							}
-							else if(ny+nny<4){
-							  gol2[nx+nnx][YRES-5][golnum] ++;
-							  gol2[nx+nnx][YRES-5][0] ++;
-							}
-							else if(ny+nny>=YRES-4&&nx+nnx>=XRES-4){
-							  gol2[4][4][golnum] ++;
-							  gol2[4][4][0] ++;
-							}
-							else if(ny+nny>=YRES-4){
-							  gol2[nx+nnx][4][golnum] ++;
-							  gol2[nx+nnx][4][0] ++;
-							}
-							else if(nx+nnx>=XRES-4){
-							  gol2[4][ny+nny][golnum] ++;
-							  gol2[4][ny+nny][0] ++;
-							}
-							else{
-							  gol2[nx+nnx][ny+nny][golnum] ++;
-							  gol2[nx+nnx][ny+nny][0] ++;
-							}
+							gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][golnum] ++;
+							gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][0] ++;
 						}
 					}
 		}
-		for(nx=4;nx<XRES-4;nx++)
-		  for(ny=4;ny<YRES-4;ny++)
+		for(nx=CELL;nx<XRES-CELL;nx++)
+		  for(ny=CELL;ny<YRES-CELL;ny++)
 		{
 			int neighbors = gol2[nx][ny][0];
 			if(neighbors==0)
