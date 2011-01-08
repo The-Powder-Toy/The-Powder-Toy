@@ -730,7 +730,11 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                         if(new_format) {
                             ttv = (d[p++])<<8;
                             ttv |= (d[p++]);
-                            parts[i-1].temp = ttv + 0.15;
+			    if(parts[i-1].type==PT_PUMP) {
+				parts[i-1].temp = ttv + 0.15;//fix PUMP saved at 0, so that it loads at 0.
+			    } else {
+				parts[i-1].temp = ttv;
+			    }
                         } else {
                             parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
                         }
