@@ -1478,7 +1478,12 @@ void draw_parts(pixel *vid)
 				cb = 0;
 			blendpixel(vid, nx, ny, cr, cg, cb, 255);
 		}
-		else if(cmode==CM_FANCY)
+		else if(cmode==CM_FANCY &&
+				t!=PT_FIRE && t!=PT_PLSM &&	t!=PT_WTRV &&
+				t!=PT_HFLM && t!=PT_SPRK && t!=PT_FIRW &&
+				t!=PT_DUST && t!=PT_FIRW && t!=PT_FWRK &&
+				t!=PT_NEUT && t!=PT_LAVA && t!=PT_BOMB &&
+				t!=PT_PHOT && t!=PT_THDR && t!=PT_SMKE)
 		{
 			if(ptypes[parts[i].type].properties&TYPE_LIQUID)
 			{
