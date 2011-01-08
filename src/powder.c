@@ -1442,6 +1442,27 @@ void update_particles_i(pixel *vid, int start, int inc)
 					pv[y/CELL+1][x/CELL+1] += 0.1f*((parts[i].temp-273.15)-pv[y/CELL+1][x/CELL+1]);
 			}
 		}
+	     else if(t==PT_BOYL)
+		{
+			if(pv[y/CELL][x/CELL]<(parts[i].temp/100))
+				pv[y/CELL][x/CELL] += 0.001f*((parts[i].temp/100)-pv[y/CELL][x/CELL]);
+			if(y+CELL<YRES && pv[y/CELL+1][x/CELL]<(parts[i].temp/100))
+				pv[y/CELL+1][x/CELL] += 0.001f*((parts[i].temp/100)-pv[y/CELL+1][x/CELL]);
+			if(x+CELL<XRES)
+			{
+				pv[y/CELL][x/CELL+1] += 0.001f*((parts[i].temp/100)-pv[y/CELL][x/CELL+1]);
+				if(y+CELL<YRES)
+					pv[y/CELL+1][x/CELL+1] += 0.001f*((parts[i].temp/100)-pv[y/CELL+1][x/CELL+1]);
+			}
+			if(y+CELL>0 && pv[y/CELL-1][x/CELL]<(parts[i].temp/100))
+				pv[y/CELL-1][x/CELL] += 0.001f*((parts[i].temp/100)-pv[y/CELL-1][x/CELL]);
+			if(x+CELL>0)
+			{
+				pv[y/CELL][x/CELL-1] += 0.001f*((parts[i].temp/100)-pv[y/CELL][x/CELL-1]);
+				if(y+CELL>0)
+					pv[y/CELL-1][x/CELL-1] += 0.001f*((parts[i].temp/100)-pv[y/CELL-1][x/CELL-1]);
+			}
+		}
 	     else if(t==PT_SING)
 		{
 			int singularity = -parts[i].life;
@@ -3720,6 +3741,28 @@ void update_particles_i(pixel *vid, int start, int inc)
 				parts[i].temp = restrict_flt(parts[r>>8].temp+parts[i].temp, MIN_TEMP, MAX_TEMP);
                         	parts[r>>8].type=PT_NONE;
                     	    }
+			}
+	    }
+	    else if(t==PT_BOYL)
+            {
+                for(nx=-1; nx<2; nx++)
+                    for(ny=-1; ny<2; ny++)
+                        if(x+nx>=0 && y+ny>0 &&
+                                x+nx<XRES && y+ny<YRES && (nx || ny))
+                        {
+                            r = pmap[y+ny][x+nx];
+                            if((r>>8)>=NPART || !r)
+                                continue;
+			    if(parts[r>>8].type==PT_WATR && 1>rand()%30)
+			    {
+				parts[r>>8].type = PT_FOG;
+			    }
+			    if(parts[r>>8].type==PT_O2 && 1>rand()%9)
+			    {
+				parts[r>>8].type = PT_NONE;
+				t = parts[i].type = PT_WATR;
+				pv[y/CELL][x/CELL] += 4.0;
+			    }
 			}
 	    }
             else if(t==PT_FIRW) {

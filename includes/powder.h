@@ -189,7 +189,8 @@
 #define PT_GNAR 138
 #define PT_REPL 139
 #define PT_MYST 140
-#define PT_NUM  141
+#define PT_BOYL 141
+#define PT_NUM  142
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -425,6 +426,7 @@ static const part_type ptypes[PT_NUM] =
     {"GNAR",	PIXPACK(0xE5B73B),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B1/S1", TYPE_SOLID|PROP_LIFE, NULL},
     {"REPL",	PIXPACK(0x259588),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B1357/S1357", TYPE_SOLID|PROP_LIFE, NULL},
     {"MYST",	PIXPACK(0x0C3C00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B3458/S05678", TYPE_SOLID|PROP_LIFE, NULL},
+    {"BOYL",	PIXPACK(0x0A3200),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.18f,	0.000f	* CFDS,	0,	0,	0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+2.0f	+273.15f,	42,		"Rawr", TYPE_GAS, NULL},
     //Name		Colour		Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn		Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -572,6 +574,7 @@ static part_state pstates[PT_NUM] =
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* BOYL */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,  	PT_NONE, 50.0f,		PT_NONE, 0.0f},
     
 };
 static int grule[NGOL][9] = 
