@@ -3321,6 +3321,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					    {
 						    portal[parts[i].tmp][count-1][nnx] = parts[r>>8].type;
 						    portaltemp[parts[i].tmp][count-1][nnx] = parts[r>>8].temp;
+						    portalctype[parts[i].tmp][count-1][nnx] = parts[r>>8].ctype;
 						    if(parts[r>>8].type==PT_SPRK)
 							parts[r>>8].type = parts[r>>8].ctype;   
 						    else 
@@ -3372,8 +3373,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 					{
 						create_part(-1,x+nx,y+ny,portal[parts[i].tmp][randomness-1][nnx]);
 						parts[pmap[y+ny][x+nx]>>8].temp = portaltemp[parts[i].tmp][randomness-1][nnx];
+						parts[pmap[y+ny][x+nx]>>8].ctype = portalctype[parts[i].tmp][randomness-1][nnx];
 						portal[parts[i].tmp][randomness-1][nnx] = 0;
 						portaltemp[parts[i].tmp][randomness-1][nnx] = 0;
+						portalctype[parts[i].tmp][randomness-1][nnx] = 0;
 						break;
 					}
 				}
