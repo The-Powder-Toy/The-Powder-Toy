@@ -595,7 +595,7 @@ inline int create_part(int p, int x, int y, int t)
 	{
 		if (pmap[y][x])
 		{
-			if (((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||(pmap[y][x]&0xFF)==PT_PCLN)&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN&&t!=PT_STKM&&t!=PT_STKM2))
+			if (((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||((pmap[y][x]&0xFF)==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN))&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN&&t!=PT_STKM&&t!=PT_STKM2))
 			{
 				parts[pmap[y][x]>>8].ctype = t;
 			}
