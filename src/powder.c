@@ -260,14 +260,14 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 static unsigned direction_to_map(float dx, float dy)
 {
-	return (dx >= -0.1) |
-	       (((dx + dy) >= -0.1) << 1) |     /*  567  */
-	       ((dy >= -0.1) << 2) |            /*  4+0  */
-	       (((dy - dx) >= -0.1) << 3) |     /*  321  */
-	       ((dx <= 0.1) << 4) |
-	       (((dx + dy) <= 0.1) << 5) |
-	       ((dy <= 0.1) << 6) |
-	       (((dy - dx) <= 0.1) << 7);
+	return (dx >= -0.01) |
+	       (((dx + dy) >= -0.01) << 1) |     /*  567  */
+	       ((dy >= -0.01) << 2) |            /*  4+0  */
+	       (((dy - dx) >= -0.01) << 3) |     /*  321  */
+	       ((dx <= 0.01) << 4) |
+	       (((dx + dy) <= 0.01) << 5) |
+	       ((dy <= 0.01) << 6) |
+	       (((dy - dx) <= 0.01) << 7);
 }
 
 static int is_blocking(int t, int x, int y)
