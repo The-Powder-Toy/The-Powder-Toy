@@ -286,6 +286,7 @@ int update_WTRV(UPDATE_FUNC_ARGS);
 int update_YEST(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
+int update_legacy_all(UPDATE_FUNC_ARGS);
 
 
 struct particle
@@ -922,6 +923,12 @@ static void create_cherenkov_photon(int pp);
 static void create_gain_photon(int pp);
 
 void kill_part(int i);
+
+#if defined(WIN32) && !defined(__GNUC__)
+extern _inline void part_change_type(int n, int x, int y, int t);
+#else
+extern inline void part_change_type(int i, int x, int y, int t);
+#endif
 
 #if defined(WIN32) && !defined(__GNUC__)
 extern _inline int create_part(int p, int x, int y, int t);

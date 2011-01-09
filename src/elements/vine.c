@@ -1,22 +1,20 @@
 #include <powder.h>
 
 int update_VINE(UPDATE_FUNC_ARGS) {
-	int r;
-	nx=(rand()%3)-1;
-	ny=(rand()%3)-1;
-	if (x+nx>=0 && y+ny>0 &&
-	        x+nx<XRES && y+ny<YRES && (nx || ny))
+	int r, np, rx =(rand()%3)-1, ry=(rand()%3)-1;
+	if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 	{
-		r = pmap[y+ny][x+nx];
+		r = pmap[y+ry][x+rx];
 		if ((r>>8)>=NPART)
-			return 1;
+			return 0;
 		if (1>rand()%15)
-			parts[i].type=PT_PLNT;
+			part_change_type(i,x,y,PT_PLNT);
 		else if (!r)
 		{
-			create_part(-1,x+nx,y+ny,PT_VINE);
-			parts[pmap[y+ny][x+nx]>>8].temp = parts[i].temp;
-			parts[i].type=PT_PLNT;
+			np = create_part(-1,x+rx,y+ry,PT_VINE);
+			if (np<0) return 0;
+			parts[np].temp = parts[i].temp;
+			part_change_type(i,x,y,PT_PLNT);
 		}
 	}
 	return 0;

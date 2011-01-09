@@ -416,13 +416,28 @@ void kill_part(int i)
 		{
 			ISSPAWN2 = 0;
 		}
-		if (x>=0 && y>=0 && x<XRES && y<YRES)
+		if (x>=0 && y>=0 && x<XRES && y<YRES && (pmap[y][x]>>8)==i)
 			pmap[y][x] = 0;
 	}
 
 	parts[i].type = PT_NONE;
 	parts[i].life = pfree;
 	pfree = i;
+}
+
+#if defined(WIN32) && !defined(__GNUC__)
+_inline void part_change_type(int n, int x, int y, int t)
+#else
+inline void part_change_type(int i, int x, int y, int t)
+#endif
+{
+	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART)
+		return -1;
+	parts[i].type = t;
+	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT)// && t!=PT_NEUT)
+		pmap[y][x] = t|(i<<8);
+	else if ((pmap[y][x]>>8)==i)
+		pmap[y][x] = 0;
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
@@ -1676,6 +1691,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 				if ((*(ptypes[t].update_func))(i,x,y,nx,ny,lx,ly,a))
 					continue;
 			}
+			if (legacy_enable)
+				update_legacy_all(i,x,y,nx,ny,lx,ly,a);
 			if (ptypes[t].properties&PROP_LIFE)
 			{
 				if (parts[i].temp>0)
