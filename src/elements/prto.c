@@ -1,11 +1,9 @@
 #include <powder.h>
 
 int update_PRTO(UPDATE_FUNC_ARGS) {
-	int r, temp, nnx, temprange = 100;
+	int r, nnx;
 	int count = 0;
-	for ( temp = 0; temp < MAX_TEMP; temp += temprange)
-		if (parts[i].temp-73.15>temp&&parts[i].temp-73.15 <temp+temprange)
-			parts[i].tmp = temp/100;
+	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 	for (ny=1; ny>-2; ny--)
 		for (nx=1; nx>-2; nx--)
 			if (x+nx>=0 && y+ny>0 &&

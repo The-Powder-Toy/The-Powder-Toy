@@ -1,10 +1,8 @@
 #include <powder.h>
 
 int update_WIFI(UPDATE_FUNC_ARGS) {
-	int r, rx, ry, temp, temprange = 100;
-	for ( temp = 0; temp < MAX_TEMP; temp += temprange)
-		if (parts[i].temp-73.15>temp&&parts[i].temp-73.15 <temp+temprange)
-			parts[i].tmp = temp/100;
+	int r, rx, ry;
+	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))

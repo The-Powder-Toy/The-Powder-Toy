@@ -1301,7 +1301,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 	}
 	if (ISWIRE==1)
 	{
-		for ( q = 0; q<99; q++)
+		for ( q = 0; q<(int)(MAX_TEMP-73.15f)/100+2; q++)
 			if (!wireless[q][1])
 			{
 				wireless[q][0] = 0;

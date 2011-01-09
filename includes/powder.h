@@ -891,9 +891,9 @@ static int lolzrule[9][9] =
 	{0,1,0,0,0,0,0,1,0},
 	{0,1,0,0,0,0,0,1,0},
 };
-int portal[MAX_TEMP/100][8][80];
-float portaltemp[MAX_TEMP/100][8][80];
-int wireless[MAX_TEMP/100][2];
+int portal[(int)(MAX_TEMP-73.15f)/100+2][8][80];
+float portaltemp[(int)(MAX_TEMP-73.15f)/100+2][8][80];
+int wireless[(int)(MAX_TEMP-73.15f)/100+2][2];
 
 extern int isplayer;
 extern float player[27];
