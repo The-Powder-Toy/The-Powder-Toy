@@ -134,6 +134,7 @@ int core_count()
 }
 
 int mousex = 0, mousey = 0;  //They contain mouse position
+int kiosk_enable = 0;
 
 void sdl_seticon(void)
 {
@@ -1161,6 +1162,12 @@ int main(int argc, char *argv[])
         else if(!strncmp(argv[i], "nohud", 5))
         {
             hud_enable = 0;
+        }
+		else if(!strncmp(argv[i], "kiosk", 5))
+        {
+            kiosk_enable = 1;
+			sdl_scale = 2;
+			hud_enable = 0;
         }
     }
 
@@ -2202,6 +2209,8 @@ int main(int argc, char *argv[])
 				c = 0;
                         if(c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE)
                             flood_parts(x, y, c, -1, -1);
+			if(c==SPC_HEAT || c==SPC_COOL)
+			    create_parts(x, y, bsx, bsy, c);
                         lx = x;
                         ly = y;
                         lb = 0;

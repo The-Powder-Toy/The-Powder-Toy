@@ -8,9 +8,9 @@
 #endif
 
 #define SAVE_VERSION 45
-#define MINOR_VERSION 0
+#define MINOR_VERSION 1
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
-#define BETA
+//#define BETA
 
 #define SERVER "powdertoy.co.uk"
 
@@ -101,6 +101,8 @@ int GRAV_G2;
 int GRAV_B2;
 
 extern int legacy_enable;
+
+extern int kiosk_enable;
 
 extern int sys_pause;
 extern int framerender;

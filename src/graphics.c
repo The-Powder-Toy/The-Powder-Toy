@@ -1478,7 +1478,12 @@ void draw_parts(pixel *vid)
 				cb = 0;
 			blendpixel(vid, nx, ny, cr, cg, cb, 255);
 		}
-		else if(cmode==CM_FANCY)
+		else if(cmode==CM_FANCY &&
+				t!=PT_FIRE && t!=PT_PLSM &&	t!=PT_WTRV &&
+				t!=PT_HFLM && t!=PT_SPRK && t!=PT_FIRW &&
+				t!=PT_DUST && t!=PT_FIRW && t!=PT_FWRK &&
+				t!=PT_NEUT && t!=PT_LAVA && t!=PT_BOMB &&
+				t!=PT_PHOT && t!=PT_THDR && t!=PT_SMKE)
 		{
 			if(ptypes[parts[i].type].properties&TYPE_LIQUID)
 			{
@@ -1934,13 +1939,21 @@ void draw_parts(pixel *vid)
 		}
                 else if(t==PT_ACID)
                 {
-                    if(parts[i].life>255) parts[i].life = 255;
-                    if(parts[i].life<47) parts[i].life = 48;
-                    s = (255/((parts[i].life-46)*28));
+                    if(parts[i].life>75) parts[i].life = 75;
+                    if(parts[i].life<49) parts[i].life = 49;
+                    s = (parts[i].life-49)*3;
                     if(s==0) s = 1;
-                    cr = PIXR(ptypes[t].pcolors)/s;
-                    cg = PIXG(ptypes[t].pcolors)/s;
-                    cb = PIXB(ptypes[t].pcolors)/s;
+					cr = 0x86 + s*4;
+					cg = 0x36 + s*1;
+					cb = 0x90 + s*2;
+					
+					if(cr>=255)
+						cr = 255;
+					if(cg>=255)
+						cg = 255;
+					if(cb>=255)
+						cb = 255;
+					
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
                     if(cmode==CM_BLOB)
@@ -3373,9 +3386,15 @@ void sdl_open(void)
     //glFlush ();
 #else
 #ifdef PIX16
-    sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,16,SDL_SWSURFACE);
+	if(kiosk_enable)
+		sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,16,SDL_FULLSCREEN|SDL_SWSURFACE);
+	else
+		sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,16,SDL_SWSURFACE);
 #else
-    sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_SWSURFACE);
+	if(kiosk_enable)
+		sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_FULLSCREEN|SDL_SWSURFACE);
+	else
+		sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_SWSURFACE);
 #endif
 #endif
     if(!sdl_scrn)
