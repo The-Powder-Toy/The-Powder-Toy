@@ -1,16 +1,15 @@
 #include <powder.h>
 
 int update_PRTO(UPDATE_FUNC_ARGS) {
-	int r, nnx;
+	int r, nnx, rx, ry, np;
 	int count = 0;
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
-	for (ny=1; ny>-2; ny--)
-		for (nx=1; nx>-2; nx--)
-			if (x+nx>=0 && y+ny>0 &&
-			        x+nx<XRES && y+ny<YRES && (nx || ny))
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
+				r = pmap[y+ry][x+rx];
 				count ++;
-				r = pmap[y+ny][x+nx];
 				if ((r>>8)>=NPART || r)
 					continue;
 				if (!r)
@@ -22,7 +21,7 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 							randomness=1;
 						if (randomness>8)
 							randomness=8;
-						if (portal[parts[i].tmp][randomness-1][nnx]==PT_SPRK)//todo. make it look better
+						if (portal[parts[i].tmp][randomness-1][nnx]==PT_SPRK)// TODO: make it look better
 						{
 							create_part(-1,x+1,y,portal[parts[i].tmp][randomness-1][nnx]);
 							create_part(-1,x+1,y+1,portal[parts[i].tmp][randomness-1][nnx]);
@@ -38,8 +37,9 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 						}
 						else if (portal[parts[i].tmp][randomness-1][nnx])
 						{
-							create_part(-1,x+nx,y+ny,portal[parts[i].tmp][randomness-1][nnx]);
-							parts[pmap[y+ny][x+nx]>>8].temp = portaltemp[parts[i].tmp][randomness-1][nnx];
+							np = create_part(-1,x+rx,y+ry,portal[parts[i].tmp][randomness-1][nnx]);
+							if (np<0) continue;
+							parts[np].temp = portaltemp[parts[i].tmp][randomness-1][nnx];
 							portal[parts[i].tmp][randomness-1][nnx] = 0;
 							portaltemp[parts[i].tmp][randomness-1][nnx] = 0;
 							break;

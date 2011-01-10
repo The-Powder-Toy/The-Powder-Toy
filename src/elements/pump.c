@@ -1,7 +1,7 @@
 #include <powder.h>
 
 int update_PUMP(UPDATE_FUNC_ARGS) {
-	int r;
+	int r, rx, ry;
 	if (parts[i].life==10)
 	{
 		if (parts[i].temp>=256.0+273.15)
@@ -19,12 +19,11 @@ int update_PUMP(UPDATE_FUNC_ARGS) {
 			if (y+CELL<YRES)
 				pv[y/CELL+1][x/CELL+1] += 0.1f*((parts[i].temp-273.15)-pv[y/CELL+1][x/CELL+1]);
 		}
-		for (nx=-2; nx<3; nx++)
-			for (ny=-2; ny<3; ny++)
-				if (x+nx>=0 && y+ny>0 &&
-				        x+nx<XRES && y+ny<YRES && (nx || ny))
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
-					r = pmap[y+ny][x+nx];
+					r = pmap[y+ry][x+rx];
 					if ((r>>8)>=NPART || !r)
 						continue;
 					if ((r&0xFF)==PT_PUMP)

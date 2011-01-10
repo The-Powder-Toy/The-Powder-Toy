@@ -1,29 +1,29 @@
 #include <powder.h>
 
 int update_BOMB(UPDATE_FUNC_ARGS) {
-	int r, nb;
+	int r, rx, ry, nb;
 	if (parts[i].tmp==1) {
-		for (nx=-2; nx<3; nx++)
-			for (ny=-2; ny<3; ny++)
-				if (x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
-					r = pmap[y+ny][x+nx];
+					r = pmap[y+ry][x+rx];
 					if ((r>>8)>=NPART || !r)
 						continue;
-					if (parts[r>>8].type!=PT_NONE && parts[r>>8].type!=PT_BOMB) {
-						parts[i].type = PT_NONE;
+					if ((r&0xFF)!=PT_BOMB) {
+						kill_part(i);
 						return 1;
 					}
 				}
 	} else if (parts[i].tmp==0) {
-		for (nx=-2; nx<3; nx++)
-			for (ny=-2; ny<3; ny++)
-				if (x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES)
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
-					r = pmap[y+ny][x+nx];
+					r = pmap[y+ry][x+rx];
 					if ((r>>8)>=NPART || !r)
 						continue;
-					if (parts[r>>8].type!=PT_NONE && parts[r>>8].type!=PT_BOMB && parts[r>>8].type!=PT_DMND && parts[r>>8].type!=PT_CLNE && parts[r>>8].type!=PT_PCLN && parts[r>>8].type!=PT_BCLN) {
+					if ((r&0xFF)!=PT_BOMB && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_BCLN) {
 						int rad = 8;
 						int nxi;
 						int nxj;
@@ -55,7 +55,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 									}
 						//create_parts(x, y, 9, 9, PT_BOMB);
 						//create_parts(x, y, 8, 8, PT_NONE);
-						parts[i].type = PT_NONE;
+						kill_part(i);
 						return 1;
 					}
 				}

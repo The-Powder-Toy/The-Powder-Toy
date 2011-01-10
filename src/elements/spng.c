@@ -1,75 +1,75 @@
 #include <powder.h>
 
 int update_SPNG(UPDATE_FUNC_ARGS) {
-	int r, trade;
-	if (pv[y/CELL][x/CELL]<=3&&pv[y/CELL][x/CELL]>=-3)
+	int r, trade, rx, ry, tmp;
+	if (pv[y/CELL][x/CELL]<=3&&pv[y/CELL][x/CELL]>=-3&&parts[i].temp<=374.0f)
 	{
-		for (nx=-1; nx<2; nx++)
-			for (ny=-1; ny<2; ny++)
-				if (x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
-					r = pmap[y+ny][x+nx];
+					r = pmap[y+ry][x+rx];
 					if ((r>>8)>=NPART || !r || parts[i].temp>374.0f)
 						continue;
-					if (parts[r>>8].type==PT_WATR&&33>=rand()/(RAND_MAX/100)+1)
+					if ((r&0xFF)==PT_WATR&&33>=rand()/(RAND_MAX/100)+1)
 					{
 						parts[i].life++;
-						parts[r>>8].type=PT_NONE;
+						kill_part(r>>8);
 					}
 				}
 	}
 	else
-		for (nx=-1; nx<2; nx++)
-			for (ny=-1; ny<2; ny++)
-				if (x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
-					r = pmap[y+ny][x+nx];
+					r = pmap[y+ry][x+rx];
 					if ((r>>8)>=NPART)
 						continue;
-					if ((bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_WALLELEC||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_EWALL||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_DESTROYALL||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_WALL||
-					        bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_ALLOWAIR||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_ALLOWSOLID||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_ALLOWGAS))
+					if ((bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALLELEC||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_EWALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_DESTROYALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALL||
+					        bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWAIR||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWSOLID||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWGAS))
 						continue;
 					if ((!r)&&parts[i].life>=1)//if nothing then create water
 					{
-						create_part(-1,x+nx,y+ny,PT_WATR);
+						create_part(-1,x+rx,y+ry,PT_WATR);
 						parts[i].life--;
 					}
 				}
 	for ( trade = 0; trade<9; trade ++)
 	{
-		nx = rand()%5-2;
-		ny = rand()%5-2;
-		if (x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+		rx = rand()%5-2;
+		ry = rand()%5-2;
+		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 		{
-			r = pmap[y+ny][x+nx];
+			r = pmap[y+ry][x+rx];
 			if ((r>>8)>=NPART || !r)
 				continue;
-			if (parts[r>>8].type==PT_SPNG&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0)//diffusion
+			if ((r&0xFF)==PT_SPNG&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0)//diffusion
 			{
-				int temp = parts[i].life - parts[r>>8].life;
-				if (temp ==1)
+				tmp = parts[i].life - parts[r>>8].life;
+				if (tmp ==1)
 				{
 					parts[r>>8].life ++;
 					parts[i].life --;
 					trade = 9;
 				}
-				else if (temp>0)
+				else if (tmp>0)
 				{
-					parts[r>>8].life += temp/2;
-					parts[i].life -= temp/2;
+					parts[r>>8].life += tmp/2;
+					parts[i].life -= tmp/2;
 					trade = 9;
 				}
 			}
 		}
 	}
-	for (nx=-1; nx<2; nx++)
-		for (ny=-1; ny<2; ny++)
-			if (x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
-				r = pmap[y+ny][x+nx];
+				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
-				if (parts[r>>8].type==PT_FIRE&&parts[i].life>0)
+				if ((r&0xFF)==PT_FIRE&&parts[i].life>0)
 				{
 					if (parts[i].life<=2)
 						parts[i].life --;
@@ -77,18 +77,18 @@ int update_SPNG(UPDATE_FUNC_ARGS) {
 				}
 			}
 	if (parts[i].temp>=374)
-		for (nx=-1; nx<2; nx++)
-			for (ny=-1; ny<2; ny++)
-				if (x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
-					r = pmap[y+ny][x+nx];
+					r = pmap[y+ry][x+rx];
 					if ((r>>8)>=NPART)
 						continue;
-					if ((bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_WALLELEC||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_ALLOWLIQUID||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_DESTROYALL||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_WALL||bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_ALLOWSOLID))
+					if ((bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALLELEC||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWLIQUID||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_DESTROYALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWSOLID))
 						continue;
 					if ((!r)&&parts[i].life>=1)//if nothing then create steam
 					{
-						create_part(-1,x+nx,y+ny,PT_WTRV);
+						create_part(-1,x+rx,y+ry,PT_WTRV);
 						parts[i].life--;
 						parts[i].temp -= 40.0f;
 					}
