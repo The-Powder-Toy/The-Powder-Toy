@@ -1667,7 +1667,7 @@ void draw_parts(pixel *vid)
 		}
 		else if(t==PT_QRTZ || t==PT_PQRT)
 		{
-			int z = parts[i].tmp;
+			int z = parts[i].tmp - 5;
 			if(parts[i].temp>(pstates[t].ltemp-800.0f))
 			{
 				float frequency = 3.1415/(2*pstates[t].ltemp-(pstates[t].ltemp-800.0f));

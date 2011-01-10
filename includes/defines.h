@@ -8,7 +8,7 @@
 #endif
 
 #define SAVE_VERSION 45
-#define MINOR_VERSION 1
+#define MINOR_VERSION 2
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
 

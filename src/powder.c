@@ -648,9 +648,9 @@ inline int create_part(int p, int x, int y, int t)
 	if(t==PT_SING)
 		parts[i].life = rand()%50+60;
 	if(t==PT_QRTZ)
-		parts[i].tmp = (rand()%11) -5;
+		parts[i].tmp = (rand()%11);
 	if(t==PT_PQRT)
-		parts[i].tmp = (rand()%11) -5;
+		parts[i].tmp = (rand()%11);
     if(t==PT_FSEP)
         parts[i].life = 50;
     if(t==PT_COAL) {
@@ -5785,16 +5785,25 @@ void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert)
     unsigned rtpmap[area_w][area_h];
     unsigned char tbmap[area_h/CELL][area_w/CELL];
     unsigned char rtbmap[area_w/CELL][area_h/CELL];
+    float tfvy[area_h/CELL][area_w/CELL];
+    float tfvx[area_h/CELL][area_w/CELL];
     for(cy=0; cy<area_h; cy++)
     {
         for(cx=0; cx<area_w; cx++)//save walls to temp
         {
 	    if(area_x + cx<XRES&&area_y + cy<YRES)
 	    {
-		if(bmap[(cy+area_y)/CELL][(cx+area_x)/CELL])
+		if(bmap[(cy+area_y)/CELL][(cx+area_x)/CELL]){
 			tbmap[cy/CELL][cx/CELL] = bmap[(cy+area_y)/CELL][(cx+area_x)/CELL];
-		else 
+			if(bmap[(cy+area_y)/CELL][(cx+area_x)/CELL]==WL_FAN){
+				tfvx[cy/CELL][cx/CELL] = fvx[(cy+area_y)/CELL][(cx+area_x)/CELL];
+				tfvy[cy/CELL][cx/CELL] = fvy[(cy+area_y)/CELL][(cx+area_x)/CELL];
+			}
+		}else {
 			tbmap[cy/CELL][cx/CELL] = 0;
+			tfvx[cy/CELL][cx/CELL] = 0;
+			tfvy[cy/CELL][cx/CELL] = 0;
+		}
 	    }
         }
     }
@@ -5818,11 +5827,15 @@ void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert)
 		{
 			rtbmap[cy/CELL][((area_h-1)-cx)/CELL] = tbmap[cy/CELL][cx/CELL];
 			rtpmap[cy][(area_h-1)-cx] = tpmap[(int)(cy+0.5f)][(int)(cx+0.5f)];
+			tfvx[cy/CELL][((area_h-1)-cx)/CELL] = -tfvx[cy/CELL][cx/CELL];
+			tfvy[cy/CELL][((area_h-1)-cx)/CELL] = tfvy[cy/CELL][cx/CELL];
 		}
 		else
 		{
 			rtbmap[((area_h-1)-cx)/CELL][cy/CELL] = tbmap[cy/CELL][cx/CELL];
 			rtpmap[(area_h-1)-cx][cy] = tpmap[(int)(cy+0.5f)][(int)(cx+0.5f)];
+			tfvy[((area_h-1)-cx)/CELL][cy/CELL] = -tfvx[cy/CELL][cx/CELL];
+			tfvx[((area_h-1)-cx)/CELL][cy/CELL] = tfvy[cy/CELL][cx/CELL];
 		}
 	}
     }
@@ -5838,6 +5851,8 @@ void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert)
 				parts[rtpmap[(int)(cy+0.5f)][(int)(cx+0.5f)]>>8].y = area_y +cy;
 			}
 			bmap[(area_y+cy)/CELL][(area_x+cx)/CELL] = rtbmap[cy/CELL][cx/CELL];
+			fvy[(area_y+cy)/CELL][(area_x+cx)/CELL] = tfvy[cy/CELL][cx/CELL];
+			fvx[(area_y+cy)/CELL][(area_x+cx)/CELL] = tfvx[cy/CELL][cx/CELL];
 		}
 	}
     }
