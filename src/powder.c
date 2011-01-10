@@ -1486,7 +1486,6 @@ void update_particles_i(pixel *vid, int start, int inc)
 			surround[5] = pmap[y+1][x-1];
 			surround[6] = pmap[y+1][x];
 			surround[7] = pmap[y+1][x+1];
-			// TODO: should surround be extended to cover radius of 2, and then passed to update_PART functions?
 
 			a = nt = 0;
 			for (j=0,nx=-1; nx<2; nx++)
@@ -1570,6 +1569,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 										parts[i].tmp = 0;
 										t = PT_BMTL;
 									}
+									if (parts[i].ctype==PT_PLUT)
+									{
+										parts[i].tmp = 0;
+										t = parts[i].ctype = PT_LAVA;
+									}
 								}
 							}
 							else if (pt<973.0f) t = PT_STNE;
@@ -1607,6 +1611,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 						{
 							parts[i].tmp--;
 							parts[i].temp = 3500;
+						}
+						if (parts[i].ctype==PT_PLUT&&parts[i].tmp>0)
+						{
+							parts[i].tmp--;
+							parts[i].temp = MAX_TEMP;
 						}
 					}
 				}
@@ -1688,11 +1697,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 			if (ptypes[t].update_func)
 			{
-				if ((*(ptypes[t].update_func))(i,x,y,nx,ny,lx,ly,a))
+				if ((*(ptypes[t].update_func))(i,x,y,a))
 					continue;
 			}
 			if (legacy_enable)
-				update_legacy_all(i,x,y,nx,ny,lx,ly,a);
+				update_legacy_all(i,x,y,a);
 			if (ptypes[t].properties&PROP_LIFE)
 			{
 				if (parts[i].temp>0)
@@ -1759,6 +1768,7 @@ killed:
 				}
 			}
 
+			// TODO: some particles use flags for unrelated purposes
 			rt = parts[i].flags & FLAG_STAGNANT;
 			parts[i].flags &= ~FLAG_STAGNANT;
 			if (!try_move(i, x, y, nx, ny))

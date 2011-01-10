@@ -221,10 +221,9 @@
 #define PROP_RADIOACTIVE	0x2000 //8192 Radioactive 
 #define FLAG_STAGNANT	1
 
-// TODO: which of these arguments are actually used?
-#define UPDATE_FUNC_ARGS int i, int x, int y, int nx, int ny, float lx, float ly, int a
+#define UPDATE_FUNC_ARGS int i, int x, int y, int a
 // to call another update function with same arguments:
-#define UPDATE_FUNC_SUBCALL_ARGS i, x, y, nx, ny, lx, ly, a
+#define UPDATE_FUNC_SUBCALL_ARGS i, x, y, a
 
 int update_ACID(UPDATE_FUNC_ARGS);
 int update_AMTR(UPDATE_FUNC_ARGS);
@@ -286,6 +285,7 @@ int update_WTRV(UPDATE_FUNC_ARGS);
 int update_YEST(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
+int update_legacy_PYRO(UPDATE_FUNC_ARGS);
 int update_legacy_all(UPDATE_FUNC_ARGS);
 
 

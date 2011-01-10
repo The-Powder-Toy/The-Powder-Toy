@@ -1,11 +1,9 @@
 #include <powder.h>
 
 int update_COAL(UPDATE_FUNC_ARGS) {
-	int r;
+	int r, rx, ry;
 	if (parts[i].life<=0) {
-		parts[i].type = PT_NONE;
-		kill_part(i);
-		create_part(-1, x, y, PT_FIRE);
+		create_part(i, x, y, PT_FIRE);
 		return 1;
 	} else if (parts[i].life < 100) {
 		parts[i].life--;
@@ -16,17 +14,14 @@ int update_COAL(UPDATE_FUNC_ARGS) {
 	else if (parts[i].tmp<40&&parts[i].tmp>0)
 		parts[i].tmp--;
 	else if (parts[i].tmp<=0) {
-		parts[i].type = PT_NONE;
-		kill_part(i);
-		r = create_part(-1, x, y, PT_BCOL);
+		create_part(i, x, y, PT_BCOL);
 		return 1;
 	}
-	for (nx=-2; nx<3; nx++)
-		for (ny=-2; ny<3; ny++)
-			if (x+nx>=0 && y+ny>0 &&
-			        x+nx<XRES && y+ny<YRES && (nx || ny))
+	for (rx=-2; rx<3; rx++)
+		for (ry=-2; ry<3; ry++)
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
-				r = pmap[y+ny][x+nx];
+				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
 				if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM) && 1>(rand()%500))

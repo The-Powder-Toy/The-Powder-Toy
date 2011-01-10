@@ -12,7 +12,7 @@ int update_MISC(UPDATE_FUNC_ARGS) { // should probably get their own functions l
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
 		if (parts[i].pavg[1]-parts[i].pavg[0] > 0.25f || parts[i].pavg[1]-parts[i].pavg[0] < -0.25f)
 		{
-			parts[i].type = PT_BGLA;
+			part_change_type(i,x,y,PT_BGLA);
 		}
 	}
 	else if (t==PT_QRTZ)
@@ -21,7 +21,7 @@ int update_MISC(UPDATE_FUNC_ARGS) { // should probably get their own functions l
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
 		if (parts[i].pavg[1]-parts[i].pavg[0] > 0.05*(parts[i].temp/3) || parts[i].pavg[1]-parts[i].pavg[0] < -0.05*(parts[i].temp/3))
 		{
-			parts[i].type = PT_PQRT;
+			part_change_type(i,x,y,PT_PQRT);
 		}
 	}
 	else if (t==PT_PLUT && 1>rand()%100 && ((int)(5.0f*pv[y/CELL][x/CELL]))>(rand()%1000))

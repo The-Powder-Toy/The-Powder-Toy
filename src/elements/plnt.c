@@ -25,7 +25,7 @@ int update_PLNT(UPDATE_FUNC_ARGS) {
 					kill_part(r>>8);
 					parts[i].life = rand()%60 + 60;
 				}
-				else if ((r&0xFF)==PT_WOOD && (1>rand()%20) && abs(nx+ny)<=2 && VINE_MODE)
+				else if ((r&0xFF)==PT_WOOD && (1>rand()%20) && abs(rx+ry)<=2 && VINE_MODE)
 				{
 					int nnx = rand()%3 -1;
 					int nny = rand()%3 -1;

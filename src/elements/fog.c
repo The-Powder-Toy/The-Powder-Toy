@@ -1,22 +1,19 @@
 #include <powder.h>
 
 int update_FOG(UPDATE_FUNC_ARGS) {
-	int r;
-	if (parts[i].temp>=373.15)
-		parts[i].type = PT_WTRV;
-	for (nx=-1; nx<2; nx++)
-		for (ny=-1; ny<2; ny++)
-			if (x+nx>=0 && y+ny>0 &&
-			        x+nx<XRES && y+ny<YRES && (nx || ny))
+	int r, rx, ry;
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
-				r = pmap[y+ny][x+nx];
+				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
-				if (pstates[parts[r>>8].type].state==ST_SOLID&&5>=rand()%50&&parts[i].life==0&&!(parts[r>>8].type==PT_CLNE||parts[r>>8].type==PT_PCLN))
+				if (pstates[r&0xFF].state==ST_SOLID&&5>=rand()%50&&parts[i].life==0&&!((r&0xFF)==PT_CLNE||(r&0xFF)==PT_PCLN)) // TODO: should this also exclude BCLN?
 				{
-					parts[i].type = PT_RIME;
+					part_change_type(i,x,y,PT_RIME);
 				}
-				if (parts[r>>8].type==PT_SPRK)
+				if ((r&0xFF)==PT_SPRK)
 				{
 					parts[i].life += rand()%20;
 				}

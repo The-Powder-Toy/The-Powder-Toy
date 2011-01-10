@@ -1,13 +1,12 @@
 #include <powder.h>
 
 int update_PCLN(UPDATE_FUNC_ARGS) {
-	int r;
-	for (nx=-2; nx<3; nx++)
-		for (ny=-2; ny<3; ny++)
-			if (x+nx>=0 && y+ny>0 &&
-			        x+nx<XRES && y+ny<YRES && (nx || ny))
+	int r, rx, ry;
+	for (rx=-2; rx<3; rx++)
+		for (ry=-2; ry<3; ry++)
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
-				r = pmap[y+ny][x+nx];
+				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
 				if ((r&0xFF)==PT_SPRK)
@@ -26,37 +25,36 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 				}
 			}
 	if (!parts[i].ctype)
-		for (nx=-1; nx<2; nx++)
-			for (ny=-1; ny<2; ny++)
-				if (x+nx>=0 && y+ny>0 &&
-				        x+nx<XRES && y+ny<YRES &&
-				        pmap[y+ny][x+nx] &&
-				        (pmap[y+ny][x+nx]&0xFF)!=PT_CLNE &&
-				        (pmap[y+ny][x+nx]&0xFF)!=PT_PCLN &&
-				        (pmap[y+ny][x+nx]&0xFF)!=PT_BCLN &&
-				        (pmap[y+ny][x+nx]&0xFF)!=PT_SPRK &&
-				        (pmap[y+ny][x+nx]&0xFF)!=PT_NSCN &&
-				        (pmap[y+ny][x+nx]&0xFF)!=PT_PSCN &&
-				        (pmap[y+ny][x+nx]&0xFF)!=PT_STKM &&
-				        (pmap[y+ny][x+nx]&0xFF)!=PT_STKM2 &&
-				        (pmap[y+ny][x+nx]&0xFF)!=0xFF)
-					parts[i].ctype = pmap[y+ny][x+nx]&0xFF;
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES &&
+				        pmap[y+ry][x+rx] &&
+				        (pmap[y+ry][x+rx]&0xFF)!=PT_CLNE &&
+				        (pmap[y+ry][x+rx]&0xFF)!=PT_PCLN &&
+				        (pmap[y+ry][x+rx]&0xFF)!=PT_BCLN &&
+				        (pmap[y+ry][x+rx]&0xFF)!=PT_SPRK &&
+				        (pmap[y+ry][x+rx]&0xFF)!=PT_NSCN &&
+				        (pmap[y+ry][x+rx]&0xFF)!=PT_PSCN &&
+				        (pmap[y+ry][x+rx]&0xFF)!=PT_STKM &&
+				        (pmap[y+ry][x+rx]&0xFF)!=PT_STKM2 &&
+				        (pmap[y+ry][x+rx]&0xFF)!=0xFF)
+					parts[i].ctype = pmap[y+ry][x+rx]&0xFF;
 	if (parts[i].ctype && parts[i].life==10) {
 		if (parts[i].ctype==PT_PHOT) {
-			for (nx=-1; nx<2; nx++) {
-				for (ny=-1; ny<2; ny++) {
-					int r = create_part(-1, x+nx, y+ny, parts[i].ctype);
+			for (rx=-1; rx<2; rx++) {
+				for (ry=-1; ry<2; ry++) {
+					int r = create_part(-1, x+rx, y+ry, parts[i].ctype);
 					if (r!=-1) {
-						parts[r].vx = nx*3;
-						parts[r].vy = ny*3;
+						parts[r].vx = rx*3;
+						parts[r].vy = ry*3;
 					}
 				}
 			}
 		}
 		else if (ptypes[parts[i].ctype].properties&PROP_LIFE) {
-			for (nx=-1; nx<2; nx++) {
-				for (ny=-1; ny<2; ny++) {
-					create_part(-1, x+nx, y+ny, parts[i].ctype);
+			for (rx=-1; rx<2; rx++) {
+				for (ry=-1; ry<2; ry++) {
+					create_part(-1, x+rx, y+ry, parts[i].ctype);
 				}
 			}
 		} else {

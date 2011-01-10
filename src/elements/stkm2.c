@@ -11,7 +11,7 @@ int update_SPAWN2(UPDATE_FUNC_ARGS) {
 }
 
 int update_STKM2(UPDATE_FUNC_ARGS) {
-	int r;
+	int r, rx, ry;
 	float pp, d;
 	float dt = 0.9;///(FPSB*FPSB);  //Delta time in square
 	//Tempirature handling
@@ -173,56 +173,58 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 		set_emap((int)(player2[15]+0.5)/CELL, (int)(player2[16]+0.5)/CELL);
 
 	//Searching for particles near head
-	for (nx = -2; nx <= 2; nx++)
-		for (ny = 0; ny>=-2; ny--)
-		{
-			if (!pmap[ny+y][nx+x] || (pmap[ny+y][nx+x]>>8)>=NPART)
-				continue;
-			if (ptypes[pmap[ny+y][nx+x]&0xFF].falldown!=0 || (pmap[ny+y][nx+x]&0xFF) == PT_NEUT || (pmap[ny+y][nx+x]&0xFF) == PT_PHOT)
+	for (rx=-2; rx<3; rx++)
+		for (ry=-2; ry<3; ry++)
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
-				player2[2] = pmap[ny+y][nx+x]&0xFF;  //Current element
-			}
-			if ((pmap[ny+y][nx+x]&0xFF) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
-			{
-				if (parts[i].life<=95)
-					parts[i].life += 5;
-				else
-					parts[i].life = 100;
-				kill_part(pmap[ny+y][nx+x]>>8);
-			}
+				r = pmap[y+ry][x+rx];
+				if (!r || (r>>8)>=NPART)
+					continue;
+				if (ptypes[r&0xFF].falldown!=0 || (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT) // TODO: photons are not in the pmap. This line may not work as intended.
+				{
+					player2[2] = r&0xFF;  //Current element
+				}
+				if ((r&0xFF) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
+				{
+					if (parts[i].life<=95)
+						parts[i].life += 5;
+					else
+						parts[i].life = 100;
+					kill_part(r>>8);
+				}
 
-			if ((pmap[ny+y][nx+x]&0xFF) == PT_NEUT)
-			{
-				parts[i].life -= (102-parts[i].life)/2;
-				kill_part(pmap[ny+y][nx+x]>>8);
+				if ((r&0xFF) == PT_NEUT)
+				{
+					parts[i].life -= (102-parts[i].life)/2;
+					kill_part(r>>8);
+				}
+				if (bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)
+					player2[2] = SPC_AIR;
 			}
-			if (bmap[(ny+y)/CELL][(nx+x)/CELL]==WL_FAN)
-				player2[2] = SPC_AIR;
-		}
 
 	//Head position
-	nx = x + 3*((((int)player2[1])&0x02) == 0x02) - 3*((((int)player2[1])&0x01) == 0x01);
-	ny = y - 3*(player2[1] == 0);
+	rx = x + 3*((((int)player2[1])&0x02) == 0x02) - 3*((((int)player2[1])&0x01) == 0x01);
+	ry = y - 3*(player2[1] == 0);
 
 	//Spawn
 	if (((int)(player2[0])&0x08) == 0x08)
 	{
-		ny -= 2*(rand()%2)+1;
-		r = pmap[ny][nx];
+		ry -= 2*(rand()%2)+1;
+		r = pmap[ry][rx];
 		if (!((r>>8)>=NPART))
 		{
 			if (pstates[r&0xFF].state == ST_SOLID)
 			{
-				create_part(-1, nx, ny, PT_SPRK);
+				create_part(-1, rx, ry, PT_SPRK);
 			}
 			else
 			{
 				if (player2[2] == SPC_AIR)
-					create_parts(nx + 3*((((int)player2[1])&0x02) == 0x02) - 3*((((int)player2[1])&0x01) == 0x01), ny, 4, 4, SPC_AIR);
+					create_parts(rx + 3*((((int)player2[1])&0x02) == 0x02) - 3*((((int)player2[1])&0x01) == 0x01), ry, 4, 4, SPC_AIR);
 				else
-					create_part(-1, nx, ny, player2[2]);
+					create_part(-1, rx, ry, player2[2]);
 
-				r = pmap[ny][nx];
+				r = pmap[ry][rx];
 				if ( ((r>>8) < NPART) && (r>>8)>=0 && player2[2] != PT_PHOT && player2[2] != SPC_AIR)
 					parts[r>>8].vx = parts[r>>8].vx + 5*((((int)player2[1])&0x02) == 0x02) - 5*(((int)(player2[1])&0x01) == 0x01);
 				if (((r>>8) < NPART) && (r>>8)>=0 && player2[2] == PT_PHOT)
@@ -270,26 +272,26 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 	player2[12] += (player2[12]-parts[i].y)*d;
 
 	//Side collisions checking
-	for (nx = -3; nx <= 3; nx++)
+	for (rx = -3; rx <= 3; rx++)
 	{
-		r = pmap[(int)(player2[16]-2)][(int)(player2[15]+nx)];
+		r = pmap[(int)(player2[16]-2)][(int)(player2[15]+rx)];
 		if (r && pstates[r&0xFF].state != ST_GAS && pstates[r&0xFF].state != ST_LIQUID)
-			player2[15] -= nx;
+			player2[15] -= rx;
 
-		r = pmap[(int)(player2[8]-2)][(int)(player2[7]+nx)];
+		r = pmap[(int)(player2[8]-2)][(int)(player2[7]+rx)];
 		if (r && pstates[r&0xFF].state != ST_GAS && pstates[r&0xFF].state != ST_LIQUID)
-			player2[7] -= nx;
+			player2[7] -= rx;
 	}
 
 	//Collision checks
-	for (ny = -2-(int)parts[i].vy; ny<=0; ny++)
+	for (ry = -2-(int)parts[i].vy; ry<=0; ry++)
 	{
-		r = pmap[(int)(player2[8]+ny)][(int)(player2[7]+0.5)];  //This is to make coding more pleasant :-)
+		r = pmap[(int)(player2[8]+ry)][(int)(player2[7]+0.5)];  //This is to make coding more pleasant :-)
 
 		//For left leg
-		if (r && (r&0xFF)!=PT_STKM2)
+		if (r && (r&0xFF)!=PT_STKM)
 		{
-			if (pstates[r&0xFF].state == ST_LIQUID || (r&0xFF) == PT_LNTG) //Liquid checks  //Liquid checks
+			if (pstates[r&0xFF].state == ST_LIQUID || (r&0xFF) == PT_LNTG) //Liquid checks
 			{
 				if (parts[i].y<(player2[8]-10))
 					parts[i].vy = 1*dt;
@@ -302,17 +304,17 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 			{
 				if (pstates[r&0xFF].state != ST_GAS)
 				{
-					player2[8] += ny-1;
+					player2[8] += ry-1;
 					parts[i].vy -= 0.5*parts[i].vy*dt;
 				}
 			}
 			player2[9] = player2[7];
 		}
 
-		r = pmap[(int)(player2[16]+ny)][(int)(player2[15]+0.5)];
+		r = pmap[(int)(player2[16]+ry)][(int)(player2[15]+0.5)];
 
 		//For right leg
-		if (r && (r&0xFF)!=PT_STKM2)
+		if (r && (r&0xFF)!=PT_STKM)
 		{
 			if (pstates[r&0xFF].state == ST_LIQUID || (r&0xFF) == PT_LNTG)
 			{
@@ -327,7 +329,7 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 			{
 				if (pstates[r&0xFF].state != ST_GAS)
 				{
-					player2[16] += ny-1;
+					player2[16] += ry-1;
 					parts[i].vy -= 0.5*parts[i].vy*dt;
 				}
 			}
@@ -337,7 +339,7 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 		//If it falls too fast
 		if (parts[i].vy>=30)
 		{
-			parts[i].y -= (10+ny)*dt;
+			parts[i].y -= (10+ry)*dt;
 			parts[i].vy = -10*dt;
 		}
 
@@ -363,9 +365,9 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 		parts[i].life -= (int)(rand()/1000)+38;
 	}
 
-	if (r>0 && (r>>8)<NPART)  //If hot or cold
+	if (r>0 && (r>>8)<NPART)
 	{
-		if (parts[r>>8].temp>=323 || parts[r>>8].temp<=243)
+		if (parts[r>>8].temp>=323 || parts[r>>8].temp<=243) //If hot or cold
 		{
 			parts[i].life -= 2;
 			player2[26] -= 1;
@@ -402,3 +404,4 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 	isplayer2 = 1;
 	return 0;
 }
+

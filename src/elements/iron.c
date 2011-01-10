@@ -1,12 +1,12 @@
 #include <powder.h>
 
 int update_IRON(UPDATE_FUNC_ARGS) {
-	int r;
-	for (nx=-1; nx<2; nx++)
-		for (ny=-1; ny<2; ny++)
-			if (x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+	int r, rx, ry;
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
-				r = pmap[y+ny][x+nx];
+				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
 				if ((((r&0xFF) == PT_SALT && 15>(rand()/(RAND_MAX/700))) ||
@@ -17,7 +17,7 @@ int update_IRON(UPDATE_FUNC_ARGS) {
 				        (!(parts[i].life))
 				   )
 				{
-					parts[i].type=PT_BMTL;
+					part_change_type(i,x,y,PT_BMTL);
 					parts[i].tmp=(rand()/(RAND_MAX/10))+20;
 				}
 			}
