@@ -1093,7 +1093,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 	float c_heat = 0.0f;
 	int h_count = 0;
 	int starti = (start*-1);
-	unsigned surround[24];
+	int surround[24];
 	int surround_hconduct[8];
 	float pGravX, pGravY, pGravD;
 
@@ -1247,8 +1247,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			}
 		}
 	}
-	CGOL++;
-	if (ISGOL==1&&CGOL>=GSPEED)//GSPEED is frames per generation
+	if (ISGOL==1&&++CGOL>=GSPEED)//GSPEED is frames per generation
 	{
 		CGOL=0;
 		ISGOL=0;
@@ -1333,7 +1332,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			y = (int)(parts[i].y+0.5f);
 
 
-			if (x<0 || y<0 || x>=XRES || y>=YRES ||
+			if (x<CELL || y<CELL || x>=XRES-CELL || y>=YRES-CELL ||
 			        ((bmap[y/CELL][x/CELL]==WL_WALL ||
 			          bmap[y/CELL][x/CELL]==WL_WALLELEC ||
 			          bmap[y/CELL][x/CELL]==WL_ALLOWAIR ||
@@ -1383,10 +1382,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 			if ((ptypes[t].explosive&2) && pv[y/CELL][x/CELL]>2.5f)
 			{
 				parts[i].life = rand()%80+180;
-				rt = parts[i].type = PT_FIRE;
-				parts[i].temp = ptypes[PT_FIRE].heat + (ptypes[rt].flammable/2);
-				pv[y/CELL][x/CELL] += 0.25f * CFDS;
+				parts[i].temp = restrict_flt(ptypes[PT_FIRE].heat + (ptypes[t].flammable/2), MIN_TEMP, MAX_TEMP);
 				t = PT_FIRE;
+				part_change_type(i,x,y,t);
+				pv[y/CELL][x/CELL] += 0.25f * CFDS;
 			}
 
 			parts[i].vx *= ptypes[t].loss;
@@ -1423,82 +1422,20 @@ void update_particles_i(pixel *vid, int start, int inc)
 				parts[i].vy += ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
 			}
 
-			// interpolator
-#if defined(WIN32) && !defined(__GNUC__)
-			mv = max(fabsf(parts[i].vx), fabsf(parts[i].vy));
-#else
-			mv = fmaxf(fabsf(parts[i].vx), fabsf(parts[i].vy));
-#endif
-			if (mv < ISTP)
-			{
-				parts[i].x += parts[i].vx;
-				parts[i].y += parts[i].vy;
-				ix = parts[i].x;
-				iy = parts[i].y;
-			}
-			else
-			{
-				dx = parts[i].vx*ISTP/mv;
-				dy = parts[i].vy*ISTP/mv;
-				ix = parts[i].x;
-				iy = parts[i].y;
-				while (1)
-				{
-					mv -= ISTP;
-					if (mv <= 0.0f)
-					{
-						// nothing found
-						parts[i].x += parts[i].vx;
-						parts[i].y += parts[i].vy;
-						ix = parts[i].x;
-						iy = parts[i].y;
-						break;
-					}
-					ix += dx;
-					iy += dy;
-					nx = (int)(ix+0.5f);
-					ny = (int)(iy+0.5f);
-					if (nx<0 || ny<0 || nx>=XRES || ny>=YRES || pmap[ny][nx] || (bmap[ny/CELL][nx/CELL] && bmap[ny/CELL][nx/CELL]!=WL_STREAM))
-					{
-						parts[i].x = ix;
-						parts[i].y = iy;
-						break;
-					}
-				}
-			}
-
-			if (x<CELL || x>=XRES-CELL || y<CELL || y>=YRES-CELL)
-			{
-				kill_part(i);
-				continue;
-			}
-
-#if CELL<=1
-#error Cell size <= 1 means pmap bounds could be exceeded
-			// if cell size is decreased to <= 1, the code that sets surround[] would need altering to check
-			// that pmap accesses are within bounds
-#endif
-			surround[0] = pmap[y-1][x-1];
-			surround[1] = pmap[y-1][x];
-			surround[2] = pmap[y-1][x+1];
-			surround[3] = pmap[y][x-1];
-			surround[4] = pmap[y][x+1];
-			surround[5] = pmap[y+1][x-1];
-			surround[6] = pmap[y+1][x];
-			surround[7] = pmap[y+1][x+1];
-
-			a = nt = 0;
-			for (j=0,nx=-1; nx<2; nx++)
+			j = a = nt = 0;
+			for (nx=-1; nx<2; nx++)
 				for (ny=-1; ny<2; ny++) {
-
+					if (nx||ny){
+						surround[j] = r = pmap[y+ny][x+nx];
+						j++;
 					if (!bmap[(y+ny)/CELL][(x+nx)/CELL] || bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_STREAM)
 					{
-						if (!surround[j])
+						if (!(r&0xFF))
 							a = 1;
-						if ((surround[j]&0xFF)!=t)
+						if ((r&0xFF)!=t)
 							nt = 1;
 					}
-					if (nx||ny) j++;
+					}
 				}
 
 			if (!legacy_enable)
@@ -1509,7 +1446,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				{
 					for (j=0; j<8; j++)
 					{
-						surround_hconduct[j] = 0;
+						surround_hconduct[j] = -1;
 						r = surround[j];
 						if ((r>>8)>=NPART || !r)
 							continue;
@@ -1518,16 +1455,17 @@ void update_particles_i(pixel *vid, int start, int inc)
 						        &&(t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
 						        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
 						{
-							surround_hconduct[j] = 1;
-							h_count++;
+							surround_hconduct[j] = r>>8;
 							c_heat += parts[r>>8].temp;
+							h_count++;
 						}
 					}
+
 					pt = parts[i].temp = (c_heat+parts[i].temp)/(h_count+1);
 					for (j=0; j<8; j++)
 					{
-						if (surround_hconduct[j])
-							parts[surround[j]>>8].temp = pt;
+						if (surround_hconduct[j]>=0)
+							parts[surround_hconduct[j]].temp = pt;
 					}
 
 					s = 1;
@@ -1621,7 +1559,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 				}
 			}
 
-
+			if (ptypes[t].properties&PROP_LIFE)
+			{
+				parts[i].temp = restrict_flt(parts[i].temp-50.0f, MIN_TEMP, MAX_TEMP);
+				ISGOL=1;
+			}
 			if ((ptypes[t].properties&PROP_CONDUCTS) || t==PT_SPRK)
 			{
 				nx = x % CELL;
@@ -1683,18 +1625,6 @@ void update_particles_i(pixel *vid, int start, int inc)
 				}
 			}
 
-			nx = (int)(parts[i].x+0.5f);
-			ny = (int)(parts[i].y+0.5f);
-
-			if (nx<CELL || nx>=XRES-CELL ||
-			        ny<CELL || ny>=YRES-CELL)
-			{
-				parts[i].x = lx;
-				parts[i].y = ly;
-				kill_part(i);
-				continue;
-			}
-
 			if (ptypes[t].update_func)
 			{
 				if ((*(ptypes[t].update_func))(i,x,y,a))
@@ -1702,31 +1632,65 @@ void update_particles_i(pixel *vid, int start, int inc)
 			}
 			if (legacy_enable)
 				update_legacy_all(i,x,y,a);
-			if (ptypes[t].properties&PROP_LIFE)
-			{
-				if (parts[i].temp>0)
-					parts[i].temp -= 50.0f;
-				ISGOL=1;
-			}
-			if (legacy_enable)
-			{
-				if (t==PT_WTRV && pv[y/CELL][x/CELL]>4.0f)
-					parts[i].type = PT_DSTW;
-				if (t==PT_OIL && pv[y/CELL][x/CELL]<-6.0f)
-					parts[i].type = PT_GAS;
-				if (t==PT_GAS && pv[y/CELL][x/CELL]>6.0f)
-					parts[i].type = PT_OIL;
-				if (t==PT_DESL && pv[y/CELL][x/CELL]>12.0f)
-				{
-					parts[i].type = PT_FIRE;
-					parts[i].life = rand()%50+120;
-				}
-			}
+
 killed:
 			if (parts[i].type == PT_NONE)
 				continue;
 
-			if (parts[i].type == PT_PHOT) {
+
+			// interpolator
+#if defined(WIN32) && !defined(__GNUC__)
+			mv = max(fabsf(parts[i].vx), fabsf(parts[i].vy));
+#else
+			mv = fmaxf(fabsf(parts[i].vx), fabsf(parts[i].vy));
+#endif
+			if (mv < ISTP)
+			{
+				parts[i].x += parts[i].vx;
+				parts[i].y += parts[i].vy;
+				ix = parts[i].x;
+				iy = parts[i].y;
+			}
+			else
+			{
+				dx = parts[i].vx*ISTP/mv;
+				dy = parts[i].vy*ISTP/mv;
+				ix = parts[i].x;
+				iy = parts[i].y;
+				while (1)
+				{
+					mv -= ISTP;
+					if (mv <= 0.0f)
+					{
+						// nothing found
+						parts[i].x += parts[i].vx;
+						parts[i].y += parts[i].vy;
+						ix = parts[i].x;
+						iy = parts[i].y;
+						break;
+					}
+					ix += dx;
+					iy += dy;
+					nx = (int)(ix+0.5f);
+					ny = (int)(iy+0.5f);
+					if (nx<0 || ny<0 || nx>=XRES || ny>=YRES || pmap[ny][nx] || (bmap[ny/CELL][nx/CELL] && bmap[ny/CELL][nx/CELL]!=WL_STREAM))
+					{
+						parts[i].x = ix;
+						parts[i].y = iy;
+						break;
+					}
+				}
+			}
+			nx = (int)(parts[i].x+0.5f);
+			ny = (int)(parts[i].y+0.5f);
+			if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
+			{
+				kill_part(i);
+				continue;
+			}
+
+
+			if (t == PT_PHOT) {
 				rt = pmap[ny][nx] & 0xFF;
 				lt = pmap[y][x] & 0xFF;
 

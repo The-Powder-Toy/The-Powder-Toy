@@ -105,5 +105,16 @@ int update_legacy_all(UPDATE_FUNC_ARGS) {
 						part_change_type(i,x,y,PT_WATR);
 				}
 	}
+	if (t==PT_WTRV && pv[y/CELL][x/CELL]>4.0f)
+		part_change_type(i,x,y,PT_DSTW);
+	if (t==PT_OIL && pv[y/CELL][x/CELL]<-6.0f)
+		part_change_type(i,x,y,PT_GAS);
+	if (t==PT_GAS && pv[y/CELL][x/CELL]>6.0f)
+		part_change_type(i,x,y,PT_OIL);
+	if (t==PT_DESL && pv[y/CELL][x/CELL]>12.0f)
+	{
+		part_change_type(i,x,y,PT_FIRE);
+		parts[i].life = rand()%50+120;
+	}
 	return 0;
 }
