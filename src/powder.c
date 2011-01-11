@@ -6130,7 +6130,15 @@ int create_parts(int x, int y, int rx, int ry, int c)
     {
 	if(rx==0&&ry==0)
 	{
-		create_part(-2, x, y, c);
+		if((pmap[y][x]&0xFF)==SLALT || SLALT==0)
+		{
+		    if((pmap[y][x]))
+		    {
+			delete_part(x, y);
+			if(c!=0)
+			create_part(-2, x, y, c);
+		    }
+		}
 	}
 	else
         for(j=-ry; j<=ry; j++)
