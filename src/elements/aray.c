@@ -55,10 +55,10 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 										}
 									}
 								} else if (destroy) {
-									if (parts[r>>8].type==PT_BRAY) {
+									if ((r&0xFF)==PT_BRAY) {
 										parts[r>>8].life = 1;
 										docontinue = 1;
-									} else if (parts[r>>8].type==PT_INWR || parts[r>>8].type==PT_ARAY || parts[r>>8].type==PT_WIFI || parts[r>>8].type==PT_FILT || (parts[r>>8].type==PT_SWCH && parts[r>>8].life>=10)) {
+									} else if ((r&0xFF)==PT_INWR || (r&0xFF)==PT_ARAY || (r&0xFF)==PT_WIFI || (r&0xFF)==PT_FILT || ((r&0xFF)==PT_SWCH && parts[r>>8].life>=10)) {
 										docontinue = 1;
 									} else {
 										docontinue = 0;

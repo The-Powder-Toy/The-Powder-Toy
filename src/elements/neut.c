@@ -54,17 +54,17 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 #endif
 				}
 				else if ((r&0xFF)==PT_GUNP && 15>(rand()%1000))
-					part_change_type(i,x,y,PT_DUST);
+					part_change_type(r>>8,x+rx,y+ry,PT_DUST);
 				else if ((r&0xFF)==PT_DYST && 15>(rand()%1000))
-					part_change_type(i,x,y,PT_YEST);
+					part_change_type(r>>8,x+rx,y+ry,PT_YEST);
 				else if ((r&0xFF)==PT_YEST)
-					part_change_type(i,x,y,PT_DYST);
+					part_change_type(r>>8,x+rx,y+ry,PT_DYST);
 				else if ((r&0xFF)==PT_WATR && 15>(rand()%100))
 					part_change_type(r>>8,x+rx,y+ry,PT_DSTW);
 				else if ((r&0xFF)==PT_PLEX && 15>(rand()%1000))
-					part_change_type(i,x,y,PT_GOO);
+					part_change_type(r>>8,x+rx,y+ry,PT_GOO);
 				else if ((r&0xFF)==PT_NITR && 15>(rand()%1000))
-					part_change_type(i,x,y,PT_DESL);
+					part_change_type(r>>8,x+rx,y+ry,PT_DESL);
 				else if ((r&0xFF)==PT_PLNT && 5>(rand()%100))
 					create_part(r>>8, x+rx, y+ry, PT_WOOD);
 				else if ((r&0xFF)==PT_DESL && 15>(rand()%1000))

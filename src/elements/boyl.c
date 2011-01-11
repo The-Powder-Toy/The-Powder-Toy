@@ -12,12 +12,12 @@ int update_BOYL(UPDATE_FUNC_ARGS) {
 		if (y+CELL<YRES)
 			pv[y/CELL+1][x/CELL+1] += 0.001f*((parts[i].temp/100)-pv[y/CELL+1][x/CELL+1]);
 	}
-	if (y+CELL>0 && pv[y/CELL-1][x/CELL]<(parts[i].temp/100))
+	if (y-CELL>=0 && pv[y/CELL-1][x/CELL]<(parts[i].temp/100))
 		pv[y/CELL-1][x/CELL] += 0.001f*((parts[i].temp/100)-pv[y/CELL-1][x/CELL]);
-	if (x+CELL>0)
+	if (x-CELL>=0)
 	{
 		pv[y/CELL][x/CELL-1] += 0.001f*((parts[i].temp/100)-pv[y/CELL][x/CELL-1]);
-		if (y+CELL>0)
+		if (y-CELL>=0)
 			pv[y/CELL-1][x/CELL-1] += 0.001f*((parts[i].temp/100)-pv[y/CELL-1][x/CELL-1]);
 	}
 	for (rx=-1; rx<2; rx++)

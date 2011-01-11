@@ -19,7 +19,7 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 							portal[parts[i].tmp][count-1][nnx] = parts[r>>8].type;
 							portaltemp[parts[i].tmp][count-1][nnx] = parts[r>>8].temp;
 							portalctype[parts[i].tmp][count-1][nnx] = parts[r>>8].ctype;
-							if (parts[r>>8].type==PT_SPRK)
+							if ((r&0xFF)==PT_SPRK)
 								part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
 							else
 								kill_part(r>>8);

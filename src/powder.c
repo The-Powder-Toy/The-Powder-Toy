@@ -1355,7 +1355,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				continue;
 			}
 			if (bmap[y/CELL][x/CELL]==WL_DETECT && emap[y/CELL][x/CELL]<8)
-				set_emap(nx, ny);
+				set_emap(x/CELL, y/CELL);
 
 
 			vx[y/CELL][x/CELL] = vx[y/CELL][x/CELL]*ptypes[t].airloss + ptypes[t].airdrag*parts[i].vx;
