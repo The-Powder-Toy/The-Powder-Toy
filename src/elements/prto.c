@@ -40,8 +40,10 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 							np = create_part(-1,x+rx,y+ry,portal[parts[i].tmp][randomness-1][nnx]);
 							if (np<0) continue;
 							parts[np].temp = portaltemp[parts[i].tmp][randomness-1][nnx];
+							parts[np].ctype = portalctype[parts[i].tmp][randomness-1][nnx];
 							portal[parts[i].tmp][randomness-1][nnx] = 0;
 							portaltemp[parts[i].tmp][randomness-1][nnx] = 0;
+							portalctype[parts[i].tmp][randomness-1][nnx] = 0;
 							break;
 						}
 					}

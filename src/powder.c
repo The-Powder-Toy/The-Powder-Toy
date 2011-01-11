@@ -701,11 +701,7 @@ inline int create_part(int p, int x, int y, int t)
 		parts[i].vx = 3.0f*cosf(a);
 		parts[i].vy = 3.0f*sinf(a);
 	}
-	if (t==PT_BIZR||t==PT_BIZRG)
-		parts[i].ctype = 0x47FFFF;
-	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT)// && t!=PT_NEUT)  is this needed? it breaks floodfill, Yes photons should not be placed in the PMAP
-		pmap[y][x] = t|(i<<8);
-	else if (t==PT_STKM)
+	if (t==PT_STKM)
 	{
 		if (isplayer==0)
 		{
@@ -755,11 +751,15 @@ inline int create_part(int p, int x, int y, int t)
 
 			isplayer = 1;
 		}
+		else
+		{
+			return -1;
+		}
 		//kill_part(playerspawn);
 		create_part(-1,x,y,PT_SPAWN);
 		ISSPAWN1 = 1;
 	}
-	else if (t==PT_STKM2)
+	if (t==PT_STKM2)
 	{
 		if (isplayer2==0)
 		{
@@ -809,10 +809,18 @@ inline int create_part(int p, int x, int y, int t)
 
 			isplayer2 = 1;
 		}
+		else
+		{
+			return -1;
+		}
 		//kill_part(player2spawn);
 		create_part(-1,x,y,PT_SPAWN2);
 		ISSPAWN2 = 1;
 	}
+	if (t==PT_BIZR||t==PT_BIZRG)
+		parts[i].ctype = 0x47FFFF;
+	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT)// && t!=PT_NEUT)  is this needed? it breaks floodfill, Yes photons should not be placed in the PMAP
+		pmap[y][x] = t|(i<<8);
 
 	return i;
 }
@@ -1425,16 +1433,16 @@ void update_particles_i(pixel *vid, int start, int inc)
 			j = a = nt = 0;
 			for (nx=-1; nx<2; nx++)
 				for (ny=-1; ny<2; ny++) {
-					if (nx||ny){
+					if (nx||ny) {
 						surround[j] = r = pmap[y+ny][x+nx];
 						j++;
-					if (!bmap[(y+ny)/CELL][(x+nx)/CELL] || bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_STREAM)
-					{
-						if (!(r&0xFF))
-							a = 1;
-						if ((r&0xFF)!=t)
-							nt = 1;
-					}
+						if (!bmap[(y+ny)/CELL][(x+nx)/CELL] || bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_STREAM)
+						{
+							if (!(r&0xFF))
+								a = 1;
+							if ((r&0xFF)!=t)
+								nt = 1;
+						}
 					}
 				}
 
@@ -1466,6 +1474,18 @@ void update_particles_i(pixel *vid, int start, int inc)
 					{
 						if (surround_hconduct[j]>=0)
 							parts[surround_hconduct[j]].temp = pt;
+					}
+
+					if (y-2 >= 0 && y-2 < YRES && ptypes[t].properties&TYPE_LIQUID) {
+						float swappage;
+						r = pmap[y-2][x];
+						if (!((r>>8)>=NPART || !r || parts[i].type != (r&0xFF))) {
+							if (parts[i].temp>parts[r>>8].temp) {
+								swappage = parts[i].temp;
+								parts[i].temp = parts[r>>8].temp;
+								parts[r>>8].temp = swappage;
+							}
+						}
 					}
 
 					s = 1;

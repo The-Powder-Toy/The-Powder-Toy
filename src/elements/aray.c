@@ -44,7 +44,7 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 									}
 									else if ((r&0xFF)==PT_FILT) {
 										colored = parts[r>>8].ctype;
-									} else if ((r&0xFF)!=PT_INWR && (r&0xFF)!=PT_ARAY && (r&0xFF)!=PT_WIFI) {
+									} else if ((r&0xFF)!=PT_INWR && (r&0xFF)!=PT_ARAY && (r&0xFF)!=PT_WIFI && !((r&0xFF)==PT_SWCH && parts[r>>8].life>=10)) {
 										if (nyy!=0 || nxx!=0) {
 											create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 										}
@@ -58,7 +58,7 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 									if (parts[r>>8].type==PT_BRAY) {
 										parts[r>>8].life = 1;
 										docontinue = 1;
-									} else if (parts[r>>8].type==PT_INWR || parts[r>>8].type==PT_ARAY || parts[r>>8].type==PT_WIFI) {
+									} else if (parts[r>>8].type==PT_INWR || parts[r>>8].type==PT_ARAY || parts[r>>8].type==PT_WIFI || parts[r>>8].type==PT_FILT || (parts[r>>8].type==PT_SWCH && parts[r>>8].life>=10)) {
 										docontinue = 1;
 									} else {
 										docontinue = 0;

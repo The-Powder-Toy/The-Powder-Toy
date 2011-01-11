@@ -57,12 +57,8 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 					part_change_type(i,x,y,PT_DUST);
 				else if ((r&0xFF)==PT_DYST && 15>(rand()%1000))
 					part_change_type(i,x,y,PT_YEST);
-				else if ((r&0xFF)==PT_YEST) {
-					if (15>(rand()%100000)&&isplayer==0)
-						create_part(r>>8, x+rx, y+ry, PT_STKM);
-					else
-						part_change_type(i,x,y,PT_DYST);
-				}
+				else if ((r&0xFF)==PT_YEST)
+					part_change_type(i,x,y,PT_DYST);
 				else if ((r&0xFF)==PT_WATR && 15>(rand()%100))
 					part_change_type(r>>8,x+rx,y+ry,PT_DSTW);
 				else if ((r&0xFF)==PT_PLEX && 15>(rand()%1000))

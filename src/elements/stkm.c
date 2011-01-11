@@ -20,6 +20,11 @@ int update_STKM(UPDATE_FUNC_ARGS) {
 	if ((parts[i].temp<309.6f) && (parts[i].temp>=243))
 		parts[i].temp += 1;
 
+	if (isplayer) { //Already a stickman in the simulation
+		death = 1;
+		parts[i].type = PT_NONE;
+	}
+
 	//Death
 	if (parts[i].life<1 || death || (pv[y/CELL][x/CELL]>=4.5f && player[2] != SPC_AIR) ) //If his HP is less that 0 or there is very big wind...
 	{
