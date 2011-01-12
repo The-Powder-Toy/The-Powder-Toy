@@ -150,7 +150,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 
     if(!e)
     {
-        if(!legacy_enable && parts[i].type==PT_PHOT)
+        if(!legacy_enable && parts[i].type==PT_PHOT && r)
         {
             if((r & 0xFF) == PT_COAL || (r & 0xFF) == PT_BCOL)
                 parts[r>>8].temp = parts[i].temp;
