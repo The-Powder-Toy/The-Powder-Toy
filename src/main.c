@@ -2123,6 +2123,10 @@ int main(int argc, char *argv[])
                     if(x>=19 && x<=35 && svf_last && svf_open && !bq){
 						//int tpval = sys_pause;
 						parse_save(svf_last, svf_lsize, 1, 0, 0);
+						for(j= 0;j<99;j++){ //reset wifi on reload
+							wireless[j][0] = 0;
+							wireless[j][1] = 0;
+						}
 						//sys_pause = tpval;
 					}
                     if(x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)

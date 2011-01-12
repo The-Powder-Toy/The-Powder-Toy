@@ -1834,6 +1834,34 @@ void draw_parts(pixel *vid)
 			}
                     }
 		}
+		else if(t==PT_PRTI && DEBUG_MODE)
+		{
+		    if(mousex==(nx) && mousey==(ny))
+                    {
+			int z;
+                        for(z = 0; z<NPART; z++) {
+				if(parts[z].type)
+				{	
+					if(parts[z].type==PT_PRTO&&parts[z].tmp==parts[i].tmp)
+						xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);					
+				}
+			}
+                    }
+		}
+		else if(t==PT_PRTO && DEBUG_MODE)
+		{
+		    if(mousex==(nx) && mousey==(ny))
+                    {
+			int z;
+                        for(z = 0; z<NPART; z++) {
+				if(parts[z].type)
+				{	
+					if(parts[z].type==PT_PRTI&&parts[z].tmp==parts[i].tmp)
+						xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);					
+				}
+			}
+                    }
+		}
 		else if((t==PT_BIZR||t==PT_BIZRG)&&parts[i].ctype)
 		{
 			cg = 0;
