@@ -1836,6 +1836,7 @@ void draw_parts(pixel *vid)
 		}
 		else if(t==PT_PRTI && DEBUG_MODE)
 		{
+		    blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
 		    if(mousex==(nx) && mousey==(ny))
                     {
 			int z;
@@ -1850,6 +1851,7 @@ void draw_parts(pixel *vid)
 		}
 		else if(t==PT_PRTO && DEBUG_MODE)
 		{
+		    blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
 		    if(mousex==(nx) && mousey==(ny))
                     {
 			int z;
