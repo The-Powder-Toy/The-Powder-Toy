@@ -222,9 +222,9 @@
 #define PROP_RADIOACTIVE	0x2000 //8192 Radioactive 
 #define FLAG_STAGNANT	1
 
-#define UPDATE_FUNC_ARGS int i, int x, int y, int a
+#define UPDATE_FUNC_ARGS int i, int x, int y, int surround_space
 // to call another update function with same arguments:
-#define UPDATE_FUNC_SUBCALL_ARGS i, x, y, a
+#define UPDATE_FUNC_SUBCALL_ARGS i, x, y, surround_space
 
 int update_ACID(UPDATE_FUNC_ARGS);
 int update_AMTR(UPDATE_FUNC_ARGS);
@@ -461,8 +461,8 @@ static const part_type ptypes[PT_NUM] =
 	{"LLIF",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Long Life! B345/S5", TYPE_SOLID|PROP_LIFE, NULL},
 	{"STAN",	PIXPACK(0x5000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Stains! B3678/S235678", TYPE_SOLID|PROP_LIFE, NULL},
 	{"SPNG",  	PIXPACK(0xFFBE30),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	20, 	0,  1, 	30,	1, 	100,    SC_SOLIDS,  	R_TEMP+0.0f +273.15f,   251,    "A sponge, absorbs water.",TYPE_SOLID, &update_SPNG},
-	{"RIME",  	PIXPACK(0xCCCCCC),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	0, 		0, 	0, 	30,	1,  100,    SC_CRACKER2,  	243.15f,				100,    "Not quite Ice",TYPE_SOLID, &update_FOG},
-	{"FOG",  	PIXPACK(0xAAAAAA),	0.8f,	0.00f * CFDS,	0.4f,	0.70f,	-0.1f,	0.0f,	0.99f,	0.000f	* CFDS, 0, 	0, 		0,  0,  30, 1,  1,		SC_CRACKER2,  	243.15f,				100,    "Not quite Steam",TYPE_GAS, &update_RIME},
+	{"RIME",  	PIXPACK(0xCCCCCC),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	0, 		0, 	0, 	30,	1,  100,    SC_CRACKER2,  	243.15f,				100,    "Not quite Ice",TYPE_SOLID, &update_RIME},
+	{"FOG",  	PIXPACK(0xAAAAAA),	0.8f,	0.00f * CFDS,	0.4f,	0.70f,	-0.1f,	0.0f,	0.99f,	0.000f	* CFDS, 0, 	0, 		0,  0,  30, 1,  1,		SC_CRACKER2,  	243.15f,				100,    "Not quite Steam",TYPE_GAS, &update_FOG},
 	{"BCLN",	PIXPACK(0xFFD040),	0.0f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	12,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Breakable Clone.", TYPE_SOLID, &update_BCLN},
 	{"LOVE",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER2,	373.0f,					40,		"Love...", TYPE_SOLID, &update_MISC},
 	{"DEUT",  	PIXPACK(0x00153F),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	31,		SC_NUCLEAR,		R_TEMP-2.0f	+273.15f,	251,	"Deuterium oxide. Volume changes with temp, radioactive with neutrons.", TYPE_LIQUID|PROP_NEUTPENETRATE, &update_DEUT},

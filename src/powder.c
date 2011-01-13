@@ -1094,14 +1094,14 @@ int nearest_part(int ci, int t)
 
 void update_particles_i(pixel *vid, int start, int inc)
 {
-	int i, j, x, y, t, nx, ny, r, a, s, lt, rt, fe, nt, lpv, nearp, pavg, nnx, nny, q, golnum, goldelete, z, ctype, temp, trade, docontinue, nxx, nyy, nxi, nyi, ct, conduct_sprk;
-	float mv, dx, dy, ix, iy, lx, ly, d, pp, nrx, nry, dp, rr, rrr;
+	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z;
+	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp;
 	float nn, ct1, ct2;
 	float pt = R_TEMP;
 	float c_heat = 0.0f;
 	int h_count = 0;
 	int starti = (start*-1);
-	int surround[24];
+	int surround[8];
 	int surround_hconduct[8];
 	float pGravX, pGravY, pGravD;
 
@@ -1341,7 +1341,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 
 			if (x<CELL || y<CELL || x>=XRES-CELL || y>=YRES-CELL ||
-			        ((bmap[y/CELL][x/CELL]==WL_WALL ||
+			        (bmap[y/CELL][x/CELL] &&
+			         (bmap[y/CELL][x/CELL]==WL_WALL ||
 			          bmap[y/CELL][x/CELL]==WL_WALLELEC ||
 			          bmap[y/CELL][x/CELL]==WL_ALLOWAIR ||
 			          (bmap[y/CELL][x/CELL]==WL_DESTROYALL) ||
@@ -1387,19 +1388,6 @@ void update_particles_i(pixel *vid, int start, int inc)
 				}
 			}
 
-			if ((ptypes[t].explosive&2) && pv[y/CELL][x/CELL]>2.5f)
-			{
-				parts[i].life = rand()%80+180;
-				parts[i].temp = restrict_flt(ptypes[PT_FIRE].heat + (ptypes[t].flammable/2), MIN_TEMP, MAX_TEMP);
-				t = PT_FIRE;
-				part_change_type(i,x,y,t);
-				pv[y/CELL][x/CELL] += 0.25f * CFDS;
-			}
-
-			parts[i].vx *= ptypes[t].loss;
-			parts[i].vy *= ptypes[t].loss;
-
-
 			//Gravity mode by Moach
 			switch (gravityMode)
 			{
@@ -1420,6 +1408,9 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 			}
 
+			parts[i].vx *= ptypes[t].loss;
+			parts[i].vy *= ptypes[t].loss;
+
 			parts[i].vx += ptypes[t].advection*vx[y/CELL][x/CELL] + pGravX;
 			parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + pGravY;
 
@@ -1430,7 +1421,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				parts[i].vy += ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
 			}
 
-			j = a = nt = 0;
+			j = surround_space = nt = 0;
 			for (nx=-1; nx<2; nx++)
 				for (ny=-1; ny<2; ny++) {
 					if (nx||ny) {
@@ -1439,7 +1430,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if (!bmap[(y+ny)/CELL][(x+nx)/CELL] || bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_STREAM)
 						{
 							if (!(r&0xFF))
-								a = 1;
+								surround_space = 1;
 							if ((r&0xFF)!=t)
 								nt = 1;
 						}
@@ -1448,13 +1439,25 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 			if (!legacy_enable)
 			{
+				if (y-2 >= 0 && y-2 < YRES && (ptypes[t].properties&TYPE_LIQUID)) {
+					float swappage;
+					r = pmap[y-2][x];
+					if (!((r>>8)>=NPART || !r || parts[i].type != (r&0xFF))) {
+						if (parts[i].temp>parts[r>>8].temp) {
+							swappage = parts[i].temp;
+							parts[i].temp = parts[r>>8].temp;
+							parts[r>>8].temp = swappage;
+						}
+					}
+				}
+
 				c_heat = 0.0f;
 				h_count = 0;
 				if (t&&(t!=PT_HSWC||parts[i].life==10)&&ptypes[t].hconduct>(rand()%250))
 				{
 					for (j=0; j<8; j++)
 					{
-						surround_hconduct[j] = -1;
+						surround_hconduct[j] = i;
 						r = surround[j];
 						if ((r>>8)>=NPART || !r)
 							continue;
@@ -1472,24 +1475,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 					pt = parts[i].temp = (c_heat+parts[i].temp)/(h_count+1);
 					for (j=0; j<8; j++)
 					{
-						if (surround_hconduct[j]>=0)
-							parts[surround_hconduct[j]].temp = pt;
-					}
-
-					if (y-2 >= 0 && y-2 < YRES && ptypes[t].properties&TYPE_LIQUID) {
-						float swappage;
-						r = pmap[y-2][x];
-						if (!((r>>8)>=NPART || !r || parts[i].type != (r&0xFF))) {
-							if (parts[i].temp>parts[r>>8].temp) {
-								swappage = parts[i].temp;
-								parts[i].temp = parts[r>>8].temp;
-								parts[r>>8].temp = swappage;
-							}
-						}
+						parts[surround_hconduct[j]].temp = pt;
 					}
 
 					s = 1;
 					if (pt>ptransitions[t].thv&&ptransitions[t].tht>-1) {
+						// particle type change due to high temperature
 						if (ptransitions[t].tht!=PT_NUM)
 							t = ptransitions[t].tht;
 						else if (t==PT_ICEI) {
@@ -1510,6 +1501,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 						}
 						else s = 0;
 					} else if (pt<ptransitions[t].tlv&&ptransitions[t].tlt>-1) {
+						// particle type change due to low temperature
 						if (ptransitions[t].tlt!=PT_NUM)
 							t = ptransitions[t].tlt;
 						else if (t==PT_WTRV) {
@@ -1541,7 +1533,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if (s) parts[i].life = 0;
 					}
 					else s = 0;
-					if (s) {
+					if (s) { // particle type change occurred
 						if (t==PT_ICEI||t==PT_LAVA)
 							parts[i].ctype = parts[i].type;
 						if (pstates[t].state==ST_GAS&&pstates[parts[i].type].state!=ST_GAS)
@@ -1617,8 +1609,20 @@ void update_particles_i(pixel *vid, int start, int inc)
 				}
 			}
 
+
+			if ((ptypes[t].explosive&2) && pv[y/CELL][x/CELL]>2.5f)
+			{
+				parts[i].life = rand()%80+180;
+				parts[i].temp = restrict_flt(ptypes[PT_FIRE].heat + (ptypes[t].flammable/2), MIN_TEMP, MAX_TEMP);
+				t = PT_FIRE;
+				part_change_type(i,x,y,t);
+				pv[y/CELL][x/CELL] += 0.25f * CFDS;
+			}
+
+
 			s = 1;
 			if (pv[y/CELL][x/CELL]>ptransitions[t].phv&&ptransitions[t].pht>-1) {
+				// particle type change due to high pressure
 				if (ptransitions[t].pht!=PT_NUM)
 					t = ptransitions[t].pht;
 				else if (t==PT_BMTL) {
@@ -1630,12 +1634,13 @@ void update_particles_i(pixel *vid, int start, int inc)
 				}
 				else s = 0;
 			} else if (pv[y/CELL][x/CELL]<ptransitions[t].plv&&ptransitions[t].plt>-1) {
+				// particle type change due to low pressure
 				if (ptransitions[t].plt!=PT_NUM)
 					t = ptransitions[t].plt;
 				else s = 0;
 			}
 			else s = 0;
-			if (s) {
+			if (s) { // particle type change occurred
 				parts[i].type = t;
 				if (t==PT_FIRE)
 					parts[i].life = rand()%50+120;
@@ -1647,11 +1652,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 			if (ptypes[t].update_func)
 			{
-				if ((*(ptypes[t].update_func))(i,x,y,a))
+				if ((*(ptypes[t].update_func))(i,x,y,surround_space))
 					continue;
 			}
 			if (legacy_enable)
-				update_legacy_all(i,x,y,a);
+				update_legacy_all(i,x,y,surround_space);
 
 killed:
 			if (parts[i].type == PT_NONE)
@@ -1752,7 +1757,7 @@ killed:
 				}
 			}
 
-			// TODO: some particles use flags for unrelated purposes
+			// TODO: some particles (pipe, fwrk) use flags for unrelated purposes
 			rt = parts[i].flags & FLAG_STAGNANT;
 			parts[i].flags &= ~FLAG_STAGNANT;
 			if (!try_move(i, x, y, nx, ny))

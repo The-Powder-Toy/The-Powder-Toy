@@ -1192,53 +1192,6 @@ int main(int argc, char *argv[])
 
 	while (!sdl_poll())
 	{
-		for (i=0; i<YRES/CELL; i++)
-		{
-			pv[i][0] = pv[i][0]*0.8f;
-			pv[i][1] = pv[i][1]*0.8f;
-			pv[i][2] = pv[i][2]*0.8f;
-			pv[i][XRES/CELL-2] = pv[i][XRES/CELL-2]*0.8f;
-			pv[i][XRES/CELL-1] = pv[i][XRES/CELL-1]*0.8f;
-			vx[i][0] = vx[i][1]*0.9f;
-			vx[i][1] = vx[i][2]*0.9f;
-			vx[i][XRES/CELL-2] = vx[i][XRES/CELL-3]*0.9f;
-			vx[i][XRES/CELL-1] = vx[i][XRES/CELL-2]*0.9f;
-			vy[i][0] = vy[i][1]*0.9f;
-			vy[i][1] = vy[i][2]*0.9f;
-			vy[i][XRES/CELL-2] = vy[i][XRES/CELL-3]*0.9f;
-			vy[i][XRES/CELL-1] = vy[i][XRES/CELL-2]*0.9f;
-		}
-		for (i=0; i<XRES/CELL; i++)
-		{
-			pv[0][i] = pv[0][i]*0.8f;
-			pv[1][i] = pv[1][i]*0.8f;
-			pv[2][i] = pv[2][i]*0.8f;
-			pv[YRES/CELL-2][i] = pv[YRES/CELL-2][i]*0.8f;
-			pv[YRES/CELL-1][i] = pv[YRES/CELL-1][i]*0.8f;
-			vx[0][i] = vx[1][i]*0.9f;
-			vx[1][i] = vx[2][i]*0.9f;
-			vx[YRES/CELL-2][i] = vx[YRES/CELL-3][i]*0.9f;
-			vx[YRES/CELL-1][i] = vx[YRES/CELL-2][i]*0.9f;
-			vy[0][i] = vy[1][i]*0.9f;
-			vy[1][i] = vy[2][i]*0.9f;
-			vy[YRES/CELL-2][i] = vy[YRES/CELL-3][i]*0.9f;
-			vy[YRES/CELL-1][i] = vy[YRES/CELL-2][i]*0.9f;
-		}
-
-		for (j=1; j<YRES/CELL; j++)
-		{
-			for (i=1; i<XRES/CELL; i++)
-			{
-				if (bmap[j][i]==WL_WALL || bmap[j][i]==WL_WALLELEC || (bmap[j][i]==WL_EWALL && !emap[j][i]))
-				{
-					vx[j][i] = 0.0f;
-					vx[j][i-1] = 0.0f;
-					vy[j][i] = 0.0f;
-					vy[j-1][i] = 0.0f;
-				}
-			}
-		}
-
 		if (!sys_pause||framerender)
 		{
 			update_air();
