@@ -1668,10 +1668,10 @@ void draw_parts(pixel *vid)
 				else if (t==PT_QRTZ || t==PT_PQRT)
 				{
 					int z = parts[i].tmp;
-					if (parts[i].temp>(pstates[t].ltemp-800.0f))
+					if (parts[i].temp>(ptransitions[t].thv-800.0f))
 					{
-						float frequency = 3.1415/(2*pstates[t].ltemp-(pstates[t].ltemp-800.0f));
-						int q = (parts[i].temp>pstates[t].ltemp)?pstates[t].ltemp-(pstates[t].ltemp-800.0f):parts[i].temp-(pstates[t].ltemp-800.0f);
+						float frequency = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
+						int q = (parts[i].temp>ptransitions[t].thv)?ptransitions[t].thv-(ptransitions[t].thv-800.0f):parts[i].temp-(ptransitions[t].thv-800.0f);
 						cr = sin(frequency*q) * 226 + (z * 16 + PIXR(ptypes[t].pcolors));
 						cg = sin(frequency*q*4.55 +3.14) * 34 + (z * 16 + PIXR(ptypes[t].pcolors));
 						cb = sin(frequency*q*2.22 +3.14) * 64 + (z * 16 + PIXR(ptypes[t].pcolors));
@@ -2530,10 +2530,10 @@ void draw_parts(pixel *vid)
 					}
 
 				}
-				else if (ptypes[t].properties&PROP_HOT_GLOW && parts[i].temp>(pstates[t].ltemp-800.0f))
+				else if (ptypes[t].properties&PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
 				{
-					float frequency = 3.1415/(2*pstates[t].ltemp-(pstates[t].ltemp-800.0f));
-					int q = (parts[i].temp>pstates[t].ltemp)?pstates[t].ltemp-(pstates[t].ltemp-800.0f):parts[i].temp-(pstates[t].ltemp-800.0f);
+					float frequency = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
+					int q = (parts[i].temp>ptransitions[t].thv)?ptransitions[t].thv-(ptransitions[t].thv-800.0f):parts[i].temp-(ptransitions[t].thv-800.0f);
 					cr = sin(frequency*q) * 226 + PIXR(ptypes[t].pcolors);
 					cg = sin(frequency*q*4.55 +3.14) * 34 + PIXG(ptypes[t].pcolors);
 					cb = sin(frequency*q*2.22 +3.14) * 64 + PIXB(ptypes[t].pcolors);

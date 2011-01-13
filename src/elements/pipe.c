@@ -100,7 +100,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 							}
 							else if (!r)
 								continue;
-							else if (parts[i].tmp == 0 && (ptypes[r&0xFF].falldown!= 0 || pstates[r&0xFF].state == ST_GAS))
+							else if (parts[i].tmp == 0 && (ptypes[r&0xFF].falldown!= 0 || ptypes[r&0xFF].state == ST_GAS))
 							{
 								parts[i].tmp = parts[r>>8].type;
 								parts[i].temp = parts[r>>8].temp;

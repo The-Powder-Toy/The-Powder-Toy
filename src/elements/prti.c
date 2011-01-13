@@ -12,7 +12,7 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 				count ++;
 				if ((r>>8)>=NPART || !r)
 					continue;
-				if ((r&0xFF)==PT_SPRK || ((r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO && (ptypes[r&0xFF].falldown!= 0 || pstates[r&0xFF].state == ST_GAS)))
+				if ((r&0xFF)==PT_SPRK || ((r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO && (ptypes[r&0xFF].falldown!= 0 || ptypes[r&0xFF].state == ST_GAS)))
 					for ( nnx=0; nnx<80; nnx++)
 						if (!portal[parts[i].tmp][count-1][nnx])
 						{

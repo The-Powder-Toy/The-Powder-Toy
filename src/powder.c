@@ -1536,7 +1536,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					if (s) { // particle type change occurred
 						if (t==PT_ICEI||t==PT_LAVA)
 							parts[i].ctype = parts[i].type;
-						if (pstates[t].state==ST_GAS&&pstates[parts[i].type].state!=ST_GAS)
+						if (ptypes[t].state==ST_GAS&&ptypes[parts[i].type].state!=ST_GAS)
 							pv[y/CELL][x/CELL] += 0.50f;
 						parts[i].type = t;
 						if (t==PT_FIRE||t==PT_PLSM||t==PT_HFLM)
