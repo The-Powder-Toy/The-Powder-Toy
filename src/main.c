@@ -487,6 +487,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 		memset(vx, 0, sizeof(vx));
 		memset(vy, 0, sizeof(vy));
 		memset(pv, 0, sizeof(pv));
+		death = death2 = ISSPAWN1 = ISSPAWN2 = 0;
 	}
 
 	// make a catalog of free parts
@@ -2032,6 +2033,7 @@ int main(int argc, char *argv[])
 						svf_tags[0] = 0;
 						svf_description[0] = 0;
 						gravityMode = 1;
+						death = death2 = 0;
 						isplayer2 = 0;
 						isplayer = 0;
 						ISSPAWN1 = 0;

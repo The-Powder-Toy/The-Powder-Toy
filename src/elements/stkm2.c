@@ -1,6 +1,7 @@
 #include <powder.h>
 
 int update_SPAWN2(UPDATE_FUNC_ARGS) {
+	ISSPAWN2 = 1;
 	if (death2)
 	{
 		player2spawn = create_part(-1,x,y,PT_STKM2);
