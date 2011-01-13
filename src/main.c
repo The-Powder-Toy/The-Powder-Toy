@@ -56,7 +56,7 @@ static const char *it_msg =
     "\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
     "\n"
     "\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
-    "\bgTo choose a material, hover over once of the icons on the right, it will show a selection of elements in that group.\n"
+    "\bgTo choose a material, hover over one of the icons on the right, it will show a selection of elements in that group.\n"
     "\bgPick your material from the menu using mouse left/right buttons.\n"
     "Draw freeform lines by dragging your mouse left/right button across the drawing area.\n"
     "Shift+drag will create straight lines of particles.\n"
@@ -67,7 +67,7 @@ static const char *it_msg =
     "\n\boUse 'Z' for a zoom tool. Click to make the drawable zoom window stay around. Use the wheel to change the zoom strength\n"
     "Use 'S' to save parts of the window as 'stamps'.\n"
     "'L' will load the most recent stamp, 'K' shows a library of stamps you saved.\n"
-    "'C' will cycle the display mode (Fire, Blob, Velocity, ect.). The numbers on the keyboard do the same\n"
+    "'C' will cycle the display mode (Fire, Blob, Velocity, etc.). The numbers on the keyboard do the same\n"
     "Use the mouse scroll wheel to change the tool size for particles.\n"
     "The spacebar can be used to pause physics.\n"
     "'P' will take a screenshot and save it into the current directory.\n"
@@ -2313,7 +2313,7 @@ int main(int argc, char *argv[])
 				drawtext(vid_buf, 16, YRES-24, "Click-and-drag to specify a rectangle to copy (right click = cancel).", 255, 216, 32, da*5);
 				break;
 			case 270:
-				drawtext(vid_buf, 16, YRES-24, "Enable or disable compatability mode (disables heat simulation).", 255, 255, 255, da*5);
+				drawtext(vid_buf, 16, YRES-24, "Enable or disable compatibility mode (disables heat simulation).", 255, 255, 255, da*5);
 				break;
 			case 271:
 				drawtext(vid_buf, 16, YRES-24, "You're a moderator", 255, 255, 255, da*5);
