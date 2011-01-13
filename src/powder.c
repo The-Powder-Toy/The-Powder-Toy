@@ -3843,7 +3843,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                                     parts[i].life = 10;
                                 }
                             }
-			    else if(parts[r>>8].type == PT_SPRK && parts[r>>8].ctype==PT_SWCH && parts[i].life<10&&parts_avg(i,r>>8,PT_INSL)!=PT_INSL)
+			    else if(parts[r>>8].type == PT_SPRK && parts[r>>8].ctype==PT_SWCH && parts[i].life<10 && parts[i].life>0 &&parts_avg(i,r>>8,PT_INSL)!=PT_INSL)
 			    {
 				    parts[r>>8].type = parts[r>>8].ctype;
 				    parts[r>>8].life = 9;
