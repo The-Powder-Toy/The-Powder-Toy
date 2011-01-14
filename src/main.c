@@ -1737,7 +1737,11 @@ int main(int argc, char *argv[])
         if(y>0 && y<sdl_scale*YRES && x>0 && x<sdl_scale*XRES)
         {
             int cr;
-            cr = pmap[y/sdl_scale][x/sdl_scale];
+	    if(photons[y/sdl_scale][x/sdl_scale]){
+		cr = photons[y/sdl_scale][x/sdl_scale];
+	    }else{
+		cr = pmap[y/sdl_scale][x/sdl_scale];
+	    }
             if(!((cr>>8)>=NPART || !cr))
             {
 #ifdef BETA

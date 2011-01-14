@@ -673,6 +673,8 @@ extern int pfree;
 extern unsigned pmap[YRES][XRES];
 unsigned cb_pmap[YRES][XRES];
 
+unsigned photons[YRES][XRES];
+
 int try_move(int i, int x, int y, int nx, int ny);
 
 void kill_part(int i);

@@ -595,6 +595,8 @@ inline int create_part(int p, int x, int y, int t)
 			}
             return -1;
 	}
+	if(photons[y][x] && t==PT_PHOT)
+		return -1;
         if(pfree == -1)
             return -1;
         i = pfree;
@@ -699,6 +701,8 @@ inline int create_part(int p, int x, int y, int t)
 	    parts[i].ctype = 0x47FFFF;
     if(t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT)// && t!=PT_NEUT)  is this needed? it breaks floodfill, Yes photons should not be placed in the PMAP
         pmap[y][x] = t|(i<<8);
+    if(t==PT_PHOT)
+	photons[y][x] = t|(i<<8);
     else if(t==PT_STKM)
     {
         if(isplayer==0)
@@ -909,7 +913,12 @@ inline void delete_part(int x, int y)
 
     if(x<0 || y<0 || x>=XRES || y>=YRES)
         return;
-    i = pmap[y][x];
+    if(photons[y][x]){
+	i = photons[y][x];
+    } else {
+	i = pmap[y][x];
+    }
+    
     if(!i || (i>>8)>=NPART)
         return;
     if((parts[i>>8].type==SLALT)||SLALT==0)
@@ -5252,6 +5261,7 @@ void update_particles(pixel *vid)
     isplayer = 0;  //Needed for player spawning
     isplayer2 = 0;
     memset(pmap, 0, sizeof(pmap));
+    memset(photons, 0, sizeof(photons));
     r = rand()%2;
     NUM_PARTS = 0;
     for(j=0; j<NPART; j++)
@@ -5266,6 +5276,8 @@ void update_particles(pixel *vid)
                 if(t!=PT_NEUT || (pmap[y][x]&0xFF)!=PT_GLAS)
                     pmap[y][x] = t|(i<<8);
             }
+	    if(t==PT_PHOT)
+		    photons[y][x] = t|(i<<8);
 	    NUM_PARTS ++;
         }
         else
@@ -5938,7 +5950,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
     x1 = x2 = x;
     while(x1>=CELL)
     {
-        if((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm)
+        if((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm || (photons[y][x1-1]&0xFF)!=cm)
 	{
 			break;
 	}
@@ -5946,7 +5958,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
     }
     while(x2<XRES-CELL)
     {
-        if((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm)
+        if((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm || (photons[y][x1+1]&0xFF)!=cm)
 	{
 			break;
 	}
