@@ -24,6 +24,7 @@ int pfree;
 
 unsigned pmap[YRES][XRES];
 unsigned cb_pmap[YRES][XRES];
+unsigned photons[YRES][XRES];
 
 static int pn_junction_sprk(int x, int y, int pt)
 {
@@ -580,7 +581,9 @@ inline int create_part(int p, int x, int y, int t)
 				}
 			}
 		}
-		if(pfree == -1)
+	if(photons[y][x] && t==PT_PHOT)
+		return -1;
+	if(pfree == -1)
             return -1;
         i = pfree;
         pfree = parts[i].life;
@@ -5950,7 +5953,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
     x1 = x2 = x;
     while(x1>=CELL)
     {
-        if((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm || (photons[y][x1-1]&0xFF)!=cm)
+        if((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm)
 	{
 			break;
 	}
@@ -5958,7 +5961,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
     }
     while(x2<XRES-CELL)
     {
-        if((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm || (photons[y][x1+1]&0xFF)!=cm)
+        if((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm)
 	{
 			break;
 	}
