@@ -23,7 +23,6 @@ int update_WIFI(UPDATE_FUNC_ARGS) {
 				{
 					if ((r&0xFF)==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3)
 					{
-						//parts[r>>8].type = parts[r>>8].ctype;
 						wireless[parts[i].tmp][0] = 1;
 						wireless[parts[i].tmp][1] = 1;
 						ISWIRE = 1;

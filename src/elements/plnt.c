@@ -38,8 +38,6 @@ int update_PLNT(UPDATE_FUNC_ARGS) {
 						parts[np].temp = parts[i].temp;
 					}
 				}
-				//if(t==PT_SNOW && (r&0xFF)==PT_WATR && 15>(rand()%1000))
-				//t = parts[i].type = PT_WATR;
 			}
 	if (parts[i].life==2)
 	{

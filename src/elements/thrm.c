@@ -24,8 +24,6 @@ int update_THRM(UPDATE_FUNC_ARGS) {
 						parts[i].tmp = 20;
 					}
 				}
-				//if(t==PT_SNOW && (r&0xFF)==PT_WATR && 15>(rand()%1000))
-				//t = parts[i].type = PT_WATR;
 			}
 	return 0;
 }

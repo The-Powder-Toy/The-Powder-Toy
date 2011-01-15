@@ -5,7 +5,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, rt, conduct_sprk, nearp, pavg, ct = parts[i].ctype;
 	if (parts[i].life<=0)
 	{
-		if (ct!=PT_METL&&ct!=PT_PTCT&&ct!=PT_NTCT&&ct!=PT_IRON&&ct!=PT_BMTL&&ct!=PT_BRMT&&ct!=PT_LRBD&&ct!=PT_RBDM&&ct!=PT_BTRY&&ct!=PT_NBLE&&ct!=PT_QRTZ)
+		if (ct==PT_WATR||ct==PT_SLTW||ct==PT_PSCN||ct==PT_NSCN||ct==PT_ETRD)
 			parts[i].temp = R_TEMP + 273.15f;
 		if (!ct)
 			ct = PT_METL;
@@ -33,7 +33,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 			part_change_type(i,x,y,ct);
 			ct = parts[i].ctype = PT_NONE;
 			parts[i].life = 20;
-			part_change_type(i,(int)(parts[nearp].x+0.5f),(int)(parts[nearp].y+0.5f),PT_SPRK);
+			part_change_type(nearp,(int)(parts[nearp].x+0.5f),(int)(parts[nearp].y+0.5f),PT_SPRK);
 			parts[nearp].life = 9;
 			parts[nearp].ctype = PT_ETRD;
 		}
@@ -89,7 +89,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 				else if ((ct==PT_PSCN||ct==PT_NSCN) && (rt==PT_PUMP||rt==PT_HSWC||(rt==PT_LCRY&&abs(rx)<2&&abs(ry)<2)))
 				{
 					if (ct==PT_PSCN) parts[r>>8].life = 10;
-					else if (ct==PT_NSCN) parts[r>>8].life = 9;
+					else if (ct==PT_NSCN && parts[r>>8].life>=10) parts[r>>8].life = 9;
 				}
 
 

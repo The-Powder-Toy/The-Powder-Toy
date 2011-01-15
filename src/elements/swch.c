@@ -13,7 +13,7 @@ int update_SWCH(UPDATE_FUNC_ARGS) {
 					rt = r&0xFF;
 					if (rt==PT_SWCH)
 					{
-						if (parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
+						if (parts[i].life>=10&&parts[r>>8].life<10&&parts[r>>8].life>0)
 							parts[i].life = 9;
 						else if (parts[i].life==0&&parts[r>>8].life==10)
 							parts[i].life = 10;

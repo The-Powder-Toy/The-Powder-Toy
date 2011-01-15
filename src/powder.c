@@ -38,7 +38,7 @@ static int pn_junction_sprk(int x, int y, int pt)
 		return 0;
 
 	parts[r].ctype = pt;
-	parts[r].type = PT_SPRK;
+	part_change_type(r,x,y,PT_SPRK);
 	parts[r].life = 4;
 	return 1;
 }
@@ -181,7 +181,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 				create_cherenkov_photon(i);
 		}
 		if (parts[i].type == PT_PHOT && (r&0xFF)==PT_INVIS) {
-			parts[i].type = PT_NEUT;
+			part_change_type(i,x,y,PT_NEUT);
 			parts[i].ctype = 0;
 		}
 		if ((parts[i].type==PT_BIZR||parts[i].type==PT_BIZRG) && (r&0xFF)==PT_FILT)
@@ -436,8 +436,12 @@ void kill_part(int i)
 		{
 			ISSPAWN2 = 0;
 		}
-		if (x>=0 && y>=0 && x<XRES && y<YRES && (pmap[y][x]>>8)==i)
-			pmap[y][x] = 0;
+		if (x>=0 && y>=0 && x<XRES && y<YRES) {
+			if ((pmap[y][x]>>8)==i)
+				pmap[y][x] = 0;
+			else if ((photons[y][x]>>8)==i)
+				photons[y][x] = 0;
+		}
 	}
 
 	parts[i].type = PT_NONE;
@@ -494,6 +498,8 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
 		parts[i].ctype = 0;
 		parts[i].temp += (n*17);
 		parts[i].tmp = 0;
+		if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && !pmap[y][x])// && t!=PT_NEUT)
+			pmap[y][x] = t|(i<<8);
 
 		pv[y/CELL][x/CELL] += 6.0f * CFDS;
 	}
@@ -571,22 +577,8 @@ inline int create_part(int p, int x, int y, int t)
 
 	if (t==PT_SPRK)
 	{
-		if ((pmap[y][x]&0xFF)!=PT_METL &&
-		        (pmap[y][x]&0xFF)!=PT_PSCN &&
-		        (pmap[y][x]&0xFF)!=PT_NSCN &&
-		        (pmap[y][x]&0xFF)!=PT_NTCT &&
-		        (pmap[y][x]&0xFF)!=PT_PTCT &&
-		        (pmap[y][x]&0xFF)!=PT_WATR &&
-		        (pmap[y][x]&0xFF)!=PT_SLTW &&
-		        (pmap[y][x]&0xFF)!=PT_BMTL &&
-		        (pmap[y][x]&0xFF)!=PT_RBDM &&
-		        (pmap[y][x]&0xFF)!=PT_LRBD &&
-		        (pmap[y][x]&0xFF)!=PT_ETRD &&
-		        (pmap[y][x]&0xFF)!=PT_BRMT &&
-		        (pmap[y][x]&0xFF)!=PT_NBLE &&
-		        (pmap[y][x]&0xFF)!=PT_IRON &&
-		        (pmap[y][x]&0xFF)!=PT_INST &&
-		        (pmap[y][x]&0xFF)!=PT_INWR)
+		if (!((pmap[y][x]&0xFF)==PT_INST||(ptypes[pmap[y][x]&0xFF].properties&PROP_CONDUCTS))
+			|| (pmap[y][x]&0xFF)==PT_QRTZ)
 			return -1;
 		if (parts[pmap[y][x]>>8].life!=0)
 			return -1;
@@ -895,6 +887,7 @@ static void create_gain_photon(int pp)
 	parts[i].vy = parts[pp].vy;
 	parts[i].temp = parts[pmap[ny][nx] >> 8].temp;
 	parts[i].tmp = 0;
+	photons[ny][nx] = PT_PHOT|(i<<8);
 
 	temp_bin = (int)((parts[i].temp-273.0f)*0.25f);
 	if (temp_bin < 0) temp_bin = 0;
@@ -930,6 +923,7 @@ static void create_cherenkov_photon(int pp)
 	parts[i].y = parts[pp].y;
 	parts[i].temp = parts[pmap[ny][nx] >> 8].temp;
 	parts[i].tmp = 0;
+	photons[ny][nx] = PT_PHOT|(i<<8);
 
 	if (lr) {
 		parts[i].vx = parts[pp].vx - 2.5f*parts[pp].vy;
@@ -966,15 +960,14 @@ inline void delete_part(int x, int y)
 	if ((parts[i>>8].type==SLALT)||SLALT==0)
 	{
 		kill_part(i>>8);
-		pmap[y][x] = 0;
 	}
 	else if (ptypes[parts[i>>8].type].menusection==SEC)
 	{
 		kill_part(i>>8);
-		pmap[y][x] = 0;
 	}
 	else
 		return;
+	
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
@@ -1133,6 +1126,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 {
 	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z;
 	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp;
+	int fin_x, fin_y, clear_x, clear_y;
+	float fin_xf, fin_yf, clear_xf, clear_yf;
 	float nn, ct1, ct2;
 	float pt = R_TEMP;
 	float c_heat = 0.0f;
@@ -1203,7 +1198,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					continue;
 				}
 				else if ((ny<9||nx<9||ny>YRES-7||nx>XRES-10)&&parts[r>>8].type==PT_LOVE)
-					parts[r>>8].type = PT_NONE;
+					kill_part(r>>8);
 				else if (parts[r>>8].type==PT_LOVE)
 				{
 					love[nx/9][ny/9] = 1;
@@ -1232,8 +1227,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 								else if (!rt)
 									continue;
 								else if (parts[rt>>8].type==PT_LOVE&&loverule[nnx][nny]==0)
-									parts[rt>>8].type=PT_NONE;
-
+									kill_part(rt>>8);
 							}
 						}
 				}
@@ -1254,7 +1248,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					continue;
 				}
 				else if ((ny<9||nx<9||ny>YRES-7||nx>XRES-10)&&parts[r>>8].type==PT_LOLZ)
-					parts[r>>8].type = PT_NONE;
+					kill_part(r>>8);
 				else if (parts[r>>8].type==PT_LOLZ)
 				{
 					lolz[nx/9][ny/9] = 1;
@@ -1283,7 +1277,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 								else if (!rt)
 									continue;
 								else if (parts[rt>>8].type==PT_LOLZ&&lolzrule[nny][nnx]==0)
-									parts[rt>>8].type=PT_NONE;
+									kill_part(rt>>8);
 
 							}
 						}
@@ -1334,7 +1328,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 								createdsomething = 1;
 						}
 						else if (neighbors-1==goldelete&&gol[nx][ny]==golnum&&(grule[golnum][goldelete]==0||grule[golnum][goldelete]==2))//subtract 1 because it counted itself
-							parts[pmap[ny][nx]>>8].type = PT_NONE;
+							kill_part(pmap[ny][nx]>>8);
 					}
 				gol2[nx][ny][0] = 0;
 				for ( z = 1; z<NGOL; z++)
@@ -1575,7 +1569,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							parts[i].ctype = parts[i].type;
 						if (ptypes[t].state==ST_GAS&&ptypes[parts[i].type].state!=ST_GAS)
 							pv[y/CELL][x/CELL] += 0.50f;
-						parts[i].type = t;
+						part_change_type(i,x,y,t);
 						if (t==PT_FIRE||t==PT_PLSM||t==PT_HFLM)
 							parts[i].life = rand()%50+120;
 						if (t==PT_LAVA) {
@@ -1635,7 +1629,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					{
 						if (emap[ny][nx]==12 && !parts[i].life)
 						{
-							parts[i].type = PT_SPRK;
+							part_change_type(i,x,y,PT_SPRK);
 							parts[i].life = 4;
 							parts[i].ctype = t;
 							t = PT_SPRK;
@@ -1678,7 +1672,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			}
 			else s = 0;
 			if (s) { // particle type change occurred
-				parts[i].type = t;
+				part_change_type(i,x,y,t);
 				if (t==PT_FIRE)
 					parts[i].life = rand()%50+120;
 				if (t==PT_NONE) {
@@ -1699,8 +1693,9 @@ killed:
 			if (parts[i].type == PT_NONE)
 				continue;
 
-			int fin_x, fin_y, clear_x, clear_y;
-			float fin_xf, fin_yf, clear_xf, clear_yf;
+			if (!parts[i].vx&&!parts[i].vy)
+				continue;
+
 #if defined(WIN32) && !defined(__GNUC__)
 			mv = max(fabsf(parts[i].vx), fabsf(parts[i].vy));
 #else
