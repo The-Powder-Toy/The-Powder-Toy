@@ -261,31 +261,30 @@ int try_move(int i, int x, int y, int nx, int ny)
 static unsigned direction_to_map(float dx, float dy, int t)
 {
 	// TODO:
-	// adding extra directions causes some inaccuracies
-	// not adding them causes problems with some diagonal surfaces
-	// solution may involve more intelligent setting of initial i0 value in find_next_boundary?
+	// Adding extra directions causes some inaccuracies.
+	// Not adding them causes problems with some diagonal surfaces (photons absorbed instead of reflected).
+	// For now, don't add them.
+	// Solution may involve more intelligent setting of initial i0 value in find_next_boundary?
 	// or rewriting normal/boundary finding code
-	if (t & REFRACT) {
-		// extra directions cause noticeable inaccuracy for refraction (potentially breaking existing saves), so don't add them here
-		return (dx >= 0) |
-		       (((dx + dy) >= 0) << 1) |     /*  567  */
-		       ((dy >= 0) << 2) |            /*  4+0  */
-		       (((dy - dx) >= 0) << 3) |     /*  321  */
-		       ((dx <= 0) << 4) |
-		       (((dx + dy) <= 0) << 5) |
-		       ((dy <= 0) << 6) |
-		       (((dy - dx) <= 0) << 7);
-	} else {
-		// TODO: reflection still not perfect. See TODO note above.
-		return (dx >= -0.001) |
-		       (((dx + dy) >= -0.001) << 1) |     /*  567  */
-		       ((dy >= -0.001) << 2) |            /*  4+0  */
-		       (((dy - dx) >= -0.001) << 3) |     /*  321  */
-		       ((dx <= 0.001) << 4) |
-		       (((dx + dy) <= 0.001) << 5) |
-		       ((dy <= 0.001) << 6) |
-		       (((dy - dx) <= 0.001) << 7);
-	}
+	
+	return (dx >= 0) |
+	       (((dx + dy) >= 0) << 1) |     /*  567  */
+	       ((dy >= 0) << 2) |            /*  4+0  */
+	       (((dy - dx) >= 0) << 3) |     /*  321  */
+	       ((dx <= 0) << 4) |
+	       (((dx + dy) <= 0) << 5) |
+	       ((dy <= 0) << 6) |
+	       (((dy - dx) <= 0) << 7);
+	/*
+	return (dx >= -0.001) |
+	       (((dx + dy) >= -0.001) << 1) |     //  567
+	       ((dy >= -0.001) << 2) |            //  4+0
+	       (((dy - dx) >= -0.001) << 3) |     //  321
+	       ((dx <= 0.001) << 4) |
+	       (((dx + dy) <= 0.001) << 5) |
+	       ((dy <= 0.001) << 6) |
+	       (((dy - dx) <= 0.001) << 7);
+	}*/
 }
 
 static int is_blocking(int t, int x, int y)
