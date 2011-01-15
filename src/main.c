@@ -732,7 +732,11 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 						if (new_format) {
 							ttv = (d[p++])<<8;
 							ttv |= (d[p++]);
-							parts[i-1].temp = ttv + 0.15;
+							if (parts[i-1].type==PT_PUMP) {
+								parts[i-1].temp = ttv + 0.15;//fix PUMP saved at 0, so that it loads at 0.
+							} else {
+								parts[i-1].temp = ttv;
+							}
 						} else {
 							parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
 						}
@@ -1688,7 +1692,11 @@ int main(int argc, char *argv[])
 		if (y>0 && y<sdl_scale*YRES && x>0 && x<sdl_scale*XRES)
 		{
 			int cr;
-			cr = pmap[y/sdl_scale][x/sdl_scale];
+			if (photons[y/sdl_scale][x/sdl_scale]) {
+				cr = photons[y/sdl_scale][x/sdl_scale];
+			} else {
+				cr = pmap[y/sdl_scale][x/sdl_scale];
+			}
 			if (!((cr>>8)>=NPART || !cr))
 			{
 #ifdef BETA
@@ -2075,6 +2083,10 @@ int main(int argc, char *argv[])
 					if (x>=19 && x<=35 && svf_last && svf_open && !bq) {
 						//int tpval = sys_pause;
 						parse_save(svf_last, svf_lsize, 1, 0, 0);
+						for (j= 0; j<99; j++) { //reset wifi on reload
+							wireless[j][0] = 0;
+							wireless[j][1] = 0;
+						}
 						//sys_pause = tpval;
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
@@ -2161,6 +2173,8 @@ int main(int argc, char *argv[])
 							c = 0;
 						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE)
 							flood_parts(x, y, c, -1, -1);
+						if (c==SPC_HEAT || c==SPC_COOL)
+							create_parts(x, y, bsx, bsy, c);
 						lx = x;
 						ly = y;
 						lb = 0;

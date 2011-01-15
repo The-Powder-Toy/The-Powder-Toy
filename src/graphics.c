@@ -1667,7 +1667,7 @@ void draw_parts(pixel *vid)
 				}
 				else if (t==PT_QRTZ || t==PT_PQRT)
 				{
-					int z = parts[i].tmp;
+					int z = parts[i].tmp - 5;
 					if (parts[i].temp>(ptransitions[t].thv-800.0f))
 					{
 						float frequency = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
@@ -1829,6 +1829,36 @@ void draw_parts(pixel *vid)
 							if (parts[z].type)
 							{
 								if (parts[z].type==PT_WIFI&&parts[z].tmp==parts[i].tmp)
+									xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);
+							}
+						}
+					}
+				}
+				else if (t==PT_PRTI && DEBUG_MODE)
+				{
+					blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
+					if (mousex==(nx) && mousey==(ny))
+					{
+						int z;
+						for (z = 0; z<NPART; z++) {
+							if (parts[z].type)
+							{
+								if (parts[z].type==PT_PRTO&&parts[z].tmp==parts[i].tmp)
+									xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);
+							}
+						}
+					}
+				}
+				else if (t==PT_PRTO && DEBUG_MODE)
+				{
+					blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
+					if (mousex==(nx) && mousey==(ny))
+					{
+						int z;
+						for (z = 0; z<NPART; z++) {
+							if (parts[z].type)
+							{
+								if (parts[z].type==PT_PRTI&&parts[z].tmp==parts[i].tmp)
 									xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);
 							}
 						}
