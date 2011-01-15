@@ -258,16 +258,34 @@ int try_move(int i, int x, int y, int nx, int ny)
 	return 1;
 }
 
-static unsigned direction_to_map(float dx, float dy)
+static unsigned direction_to_map(float dx, float dy, int t)
 {
-	return (dx >= -0.01) |
-	       (((dx + dy) >= -0.01) << 1) |     /*  567  */
-	       ((dy >= -0.01) << 2) |            /*  4+0  */
-	       (((dy - dx) >= -0.01) << 3) |     /*  321  */
-	       ((dx <= 0.01) << 4) |
-	       (((dx + dy) <= 0.01) << 5) |
-	       ((dy <= 0.01) << 6) |
-	       (((dy - dx) <= 0.01) << 7);
+	// TODO:
+	// adding extra directions causes some inaccuracies
+	// not adding them causes problems with some diagonal surfaces
+	// solution may involve more intelligent setting of initial i0 value in find_next_boundary?
+	// or rewriting normal/boundary finding code
+	if (t & REFRACT) {
+		// extra directions cause noticeable inaccuracy for refraction (potentially breaking existing saves), so don't add them here
+		return (dx >= 0) |
+		       (((dx + dy) >= 0) << 1) |     /*  567  */
+		       ((dy >= 0) << 2) |            /*  4+0  */
+		       (((dy - dx) >= 0) << 3) |     /*  321  */
+		       ((dx <= 0) << 4) |
+		       (((dx + dy) <= 0) << 5) |
+		       ((dy <= 0) << 6) |
+		       (((dy - dx) <= 0) << 7);
+	} else {
+		// TODO: reflection still not perfect. See TODO note above.
+		return (dx >= -0.001) |
+		       (((dx + dy) >= -0.001) << 1) |     /*  567  */
+		       ((dy >= -0.001) << 2) |            /*  4+0  */
+		       (((dy - dx) >= -0.001) << 3) |     /*  321  */
+		       ((dx <= 0.001) << 4) |
+		       (((dx + dy) <= 0.001) << 5) |
+		       ((dy <= 0.001) << 6) |
+		       (((dy - dx) <= 0.001) << 7);
+	}
 }
 
 static int is_blocking(int t, int x, int y)
@@ -334,8 +352,8 @@ int get_normal(int pt, int x, int y, float dx, float dy, float *nx, float *ny)
 	if (!is_boundary(pt, x, y))
 		return 0;
 
-	ldm = direction_to_map(-dy, dx);
-	rdm = direction_to_map(dy, -dx);
+	ldm = direction_to_map(-dy, dx, pt);
+	rdm = direction_to_map(dy, -dx, pt);
 	lx = rx = x;
 	ly = ry = y;
 	lv = rv = 1;
@@ -1662,8 +1680,8 @@ killed:
 			if (parts[i].type == PT_NONE)
 				continue;
 
-
-			// interpolator
+			int fin_x, fin_y, clear_x, clear_y;
+			float fin_xf, fin_yf, clear_xf, clear_yf;
 #if defined(WIN32) && !defined(__GNUC__)
 			mv = max(fabsf(parts[i].vx), fabsf(parts[i].vy));
 #else
@@ -1671,140 +1689,233 @@ killed:
 #endif
 			if (mv < ISTP)
 			{
-				parts[i].x += parts[i].vx;
-				parts[i].y += parts[i].vy;
-				ix = parts[i].x;
-				iy = parts[i].y;
+				clear_x = x;
+				clear_y = y;
+				clear_xf = parts[i].x;
+				clear_yf = parts[i].y;
+				fin_xf = clear_xf + parts[i].vx;
+				fin_yf = clear_yf + parts[i].vy;
+				fin_x = (int)(fin_xf+0.5f);
+				fin_y = (int)(fin_yf+0.5f);
 			}
 			else
 			{
+				// interpolate to see if there is anything in the way
 				dx = parts[i].vx*ISTP/mv;
 				dy = parts[i].vy*ISTP/mv;
-				ix = parts[i].x;
-				iy = parts[i].y;
+				fin_xf = parts[i].x;
+				fin_yf = parts[i].y;
 				while (1)
 				{
 					mv -= ISTP;
+					fin_xf += dx;
+					fin_yf += dy;
+					fin_x = (int)(fin_xf+0.5f);
+					fin_y = (int)(fin_yf+0.5f);
 					if (mv <= 0.0f)
 					{
 						// nothing found
-						parts[i].x += parts[i].vx;
-						parts[i].y += parts[i].vy;
-						ix = parts[i].x;
-						iy = parts[i].y;
+						fin_xf = parts[i].x + parts[i].vx;
+						fin_yf = parts[i].y + parts[i].vy;
+						fin_x = (int)(fin_xf+0.5f);
+						fin_y = (int)(fin_yf+0.5f);
+						clear_xf = fin_xf-dx;
+						clear_yf = fin_yf-dy;
+						clear_x = (int)(clear_xf+0.5f);
+						clear_y = (int)(clear_yf+0.5f);
 						break;
 					}
-					ix += dx;
-					iy += dy;
-					nx = (int)(ix+0.5f);
-					ny = (int)(iy+0.5f);
-					if (nx<0 || ny<0 || nx>=XRES || ny>=YRES || pmap[ny][nx] || (bmap[ny/CELL][nx/CELL] && bmap[ny/CELL][nx/CELL]!=WL_STREAM))
+					if (fin_x<CELL || fin_y<CELL || fin_x>=XRES-CELL || fin_y>=YRES-CELL || pmap[fin_y][fin_x] || (bmap[fin_y/CELL][fin_x/CELL] && bmap[fin_y/CELL][fin_x/CELL]!=WL_STREAM))
 					{
-						parts[i].x = ix;
-						parts[i].y = iy;
+						// found an obstacle
+						clear_xf = fin_xf-dx;
+						clear_yf = fin_yf-dy;
+						clear_x = (int)(clear_xf+0.5f);
+						clear_y = (int)(clear_yf+0.5f);
 						break;
 					}
+
 				}
 			}
-			nx = (int)(parts[i].x+0.5f);
-			ny = (int)(parts[i].y+0.5f);
-			if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
-			{
-				kill_part(i);
-				continue;
-			}
 
+			if ((t==PT_PHOT||t==PT_NEUT)) {
+				if (t == PT_PHOT) {
+					rt = pmap[fin_y][fin_x] & 0xFF;
+					lt = pmap[y][x] & 0xFF;
 
-			if (t == PT_PHOT) {
-				rt = pmap[ny][nx] & 0xFF;
-				lt = pmap[y][x] & 0xFF;
+					r = eval_move(PT_PHOT, fin_x, fin_y, NULL);
+					if (((rt==PT_GLAS && lt!=PT_GLAS) || (rt!=PT_GLAS && lt==PT_GLAS)) && r) {
+						if (!get_normal_interp(REFRACT|t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry)) {
+							kill_part(i);
+							continue;
+						}
 
-				r = eval_move(PT_PHOT, nx, ny, NULL);
-
-				if (((rt==PT_GLAS && lt!=PT_GLAS) || (rt!=PT_GLAS && lt==PT_GLAS)) && r) {
-					if (!get_normal_interp(REFRACT|parts[i].type, x, y, parts[i].vx, parts[i].vy, &nrx, &nry)) {
+						r = get_wavelength_bin(&parts[i].ctype);
+						if (r == -1) {
+							kill_part(i);
+							continue;
+						}
+						nn = GLASS_IOR - GLASS_DISP*(r-15)/15.0f;
+						nn *= nn;
+						nrx = -nrx;
+						nry = -nry;
+						if (rt==PT_GLAS && lt!=PT_GLAS)
+							nn = 1.0f/nn;
+						ct1 = parts[i].vx*nrx + parts[i].vy*nry;
+						ct2 = 1.0f - (nn*nn)*(1.0f-(ct1*ct1));
+						if (ct2 < 0.0f) {
+							// total internal reflection
+							parts[i].vx -= 2.0f*ct1*nrx;
+							parts[i].vy -= 2.0f*ct1*nry;
+							fin_xf = parts[i].x;
+							fin_yf = parts[i].y;
+							fin_x = x;
+							fin_y = y;
+						} else {
+							// refraction
+							ct2 = sqrtf(ct2);
+							ct2 = ct2 - nn*ct1;
+							parts[i].vx = nn*parts[i].vx + ct2*nrx;
+							parts[i].vy = nn*parts[i].vy + ct2*nry;
+						}
+					}
+				}
+				if (try_move(i, x, y, fin_x, fin_y)) {
+					parts[i].x = fin_xf;
+					parts[i].y = fin_yf;
+				} else {
+					// reflection
+					parts[i].flags |= FLAG_STAGNANT;
+					if (t==PT_NEUT && 100>(rand()%1000))
+					{
 						kill_part(i);
 						continue;
 					}
+					r = pmap[fin_y][fin_x];
 
-					r = get_wavelength_bin(&parts[i].ctype);
-					if (r == -1) {
-						kill_part(i);
-						continue;
-					}
-					nn = GLASS_IOR - GLASS_DISP*(r-15)/15.0f;
-					nn *= nn;
+					// this should be replaced with a particle type attribute ("photwl" or something)
+					if ((r & 0xFF) == PT_PSCN) parts[i].ctype  = 0x00000000;
+					if ((r & 0xFF) == PT_NSCN) parts[i].ctype  = 0x00000000;
+					if ((r & 0xFF) == PT_SPRK) parts[i].ctype  = 0x00000000;
+					if ((r & 0xFF) == PT_COAL) parts[i].ctype  = 0x00000000;
+					if ((r & 0xFF) == PT_BCOL) parts[i].ctype  = 0x00000000;
+					if ((r & 0xFF) == PT_PLEX) parts[i].ctype &= 0x1F00003E;
+					if ((r & 0xFF) == PT_NITR) parts[i].ctype &= 0x0007C000;
+					if ((r & 0xFF) == PT_NBLE) parts[i].ctype &= 0x3FFF8000;
+					if ((r & 0xFF) == PT_LAVA) parts[i].ctype &= 0x3FF00000;
+					if ((r & 0xFF) == PT_ACID) parts[i].ctype &= 0x1FE001FE;
+					if ((r & 0xFF) == PT_DUST) parts[i].ctype &= 0x3FFFFFC0;
+					if ((r & 0xFF) == PT_SNOW) parts[i].ctype &= 0x03FFFFFF;
+					if ((r & 0xFF) == PT_GOO)  parts[i].ctype &= 0x3FFAAA00;
+					if ((r & 0xFF) == PT_PLNT) parts[i].ctype &= 0x0007C000;
+					if ((r & 0xFF) == PT_PLUT) parts[i].ctype &= 0x001FCE00;
+					if ((r & 0xFF) == PT_URAN) parts[i].ctype &= 0x003FC000;
 
-					nrx = -nrx;
-					nry = -nry;
-					if (rt==PT_GLAS && lt!=PT_GLAS)
-						nn = 1.0f/nn;
-					ct1 = parts[i].vx*nrx + parts[i].vy*nry;
-					ct2 = 1.0f - (nn*nn)*(1.0f-(ct1*ct1));
-					if (ct2 < 0.0f) {
-						parts[i].vx -= 2.0f*ct1*nrx;
-						parts[i].vy -= 2.0f*ct1*nry;
-						parts[i].x = lx;
-						parts[i].y = ly;
-						nx = (int)(lx + 0.5f);
-						ny = (int)(ly + 0.5f);
+					if (get_normal_interp(t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry)) {
+						dp = nrx*parts[i].vx + nry*parts[i].vy;
+						parts[i].vx -= 2.0f*dp*nrx;
+						parts[i].vy -= 2.0f*dp*nry;
+						fin_x = (int)(parts[i].x + parts[i].vx + 0.5f);
+						fin_y = (int)(parts[i].y + parts[i].vy + 0.5f);
+						// cast as int then back to float for compatibility with existing saves
+						if (try_move(i, x, y, fin_x, fin_y)) {
+							parts[i].x = (float)fin_x;
+							parts[i].y = (float)fin_y;
+						} else {
+							kill_part(i);
+							continue;
+						}
 					} else {
-						ct2 = sqrtf(ct2);
-						ct2 = ct2 - nn*ct1;
-						parts[i].vx = nn*parts[i].vx + ct2*nrx;
-						parts[i].vy = nn*parts[i].vy + ct2*nry;
+						if (t!=PT_NEUT)
+							kill_part(i);
+						continue;
+					}
+					if (!parts[i].ctype&&t!=PT_NEUT) {
+						kill_part(i);
+						continue;
 					}
 				}
 			}
-
-			// TODO: some particles (pipe, fwrk) use flags for unrelated purposes
-			rt = parts[i].flags & FLAG_STAGNANT;
-			parts[i].flags &= ~FLAG_STAGNANT;
-			if (!try_move(i, x, y, nx, ny))
+			else if (ptypes[t].falldown==0)
 			{
-				parts[i].x = lx;
-				parts[i].y = ly;
-				if (ptypes[t].falldown)
-				{
-					if (nx!=x && try_move(i, x, y, nx, y))
+				// gasses and solids (but not powders)
+				if (try_move(i, x, y, fin_x, fin_y)) {
+					parts[i].x = fin_xf;
+					parts[i].y = fin_yf;
+				} else {
+					// TODO
+					if (fin_x>x+ISTP) fin_x=x+ISTP;
+					if (fin_x<x-ISTP) fin_x=x-ISTP;
+					if (fin_y>y+ISTP) fin_y=y+ISTP;
+					if (fin_y<y-ISTP) fin_y=y-ISTP;
+					if (try_move(i, x, y, 2*x-fin_x, fin_y))
 					{
-						parts[i].x = ix;
+						parts[i].x = (float)(2*x-fin_x);
+						parts[i].y = fin_yf;
+						parts[i].vx *= ptypes[t].collision;
+					}
+					else if (try_move(i, x, y, fin_x, 2*y-fin_y))
+					{
+						parts[i].x = fin_xf;
+						parts[i].y = (float)(2*y-fin_y);
+						parts[i].vy *= ptypes[t].collision;
+					}
+					else
+					{
 						parts[i].vx *= ptypes[t].collision;
 						parts[i].vy *= ptypes[t].collision;
 					}
-					else if (ny!=y && try_move(i, x, y, x, ny))
+				}
+			}
+			else
+			{
+				// liquids and powders
+				// TODO: rewrite to operate better with radial gravity
+				if (try_move(i, x, y, fin_x, fin_y)) {
+					parts[i].x = fin_x;
+					parts[i].y = fin_y;
+				} else {
+					parts[i].x = clear_x;
+					parts[i].y = clear_y;
+					if (fin_x!=x && try_move(i, x, y, fin_x, clear_y))
 					{
-						parts[i].y = iy;
+						parts[i].x = fin_xf;
+						parts[i].vx *= ptypes[t].collision;
+						parts[i].vy *= ptypes[t].collision;
+					}
+					else if (fin_y!=y && try_move(i, x, y, clear_x, fin_y))
+					{
+						parts[i].y = fin_yf;
 						parts[i].vx *= ptypes[t].collision;
 						parts[i].vy *= ptypes[t].collision;
 					}
 					else
 					{
 						r = (rand()%2)*2-1;
-						if (ny!=y && try_move(i, x, y, x+r, ny))
+						if (fin_y!=clear_y && try_move(i, x, y, clear_x+r, fin_y))
 						{
 							parts[i].x += r;
-							parts[i].y = iy;
+							parts[i].y = fin_yf;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
-						else if (ny!=y && try_move(i, x, y, x-r, ny))
+						else if (fin_y!=clear_y && try_move(i, x, y, clear_x-r, fin_y))
 						{
 							parts[i].x -= r;
-							parts[i].y = iy;
+							parts[i].y = fin_yf;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
-						else if (nx!=x && try_move(i, x, y, nx, y+r))
+						else if (fin_x!=clear_x && try_move(i, x, y, fin_x, clear_y+r))
 						{
-							parts[i].x = ix;
+							parts[i].x = fin_xf;
 							parts[i].y += r;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
-						else if (nx!=x && try_move(i, x, y, nx, y-r))
+						else if (fin_x!=clear_x && try_move(i, x, y, fin_x, clear_y-r))
 						{
-							parts[i].x = ix;
+							parts[i].x = fin_xf;
 							parts[i].y -= r;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
@@ -1816,20 +1927,20 @@ killed:
 								rt = 30;//slight less water lag, although it changes how it moves a lot
 							else
 								rt = 10;
-							for (j=x+r; j>=0 && j>=x-rt && j<x+rt && j<XRES; j+=r)
+							for (j=clear_x+r; j>=0 && j>=clear_x-rt && j<clear_x+rt && j<XRES; j+=r)
 							{
-								if (try_move(i, x, y, j, ny))
+								if (try_move(i, x, y, j, fin_y))
 								{
-									parts[i].x += j-x;
-									parts[i].y += ny-y;
+									parts[i].x += j-clear_x;
+									parts[i].y += fin_y-clear_y;
 									x = j;
-									y = ny;
+									y = fin_y;
 									s = 1;
 									break;
 								}
-								if (try_move(i, x, y, j, y))
+								if (try_move(i, x, y, j, clear_y))
 								{
-									parts[i].x += j-x;
+									parts[i].x += j-clear_x;
 									x = j;
 									s = 1;
 									break;
@@ -1842,11 +1953,11 @@ killed:
 							else
 								r = -1;
 							if (s)
-								for (j=y+r; j>=0 && j<YRES && j>=y-rt && j<y+rt; j+=r)
+								for (j=clear_y+r; j>=0 && j<YRES && j>=clear_y-rt && j<clear_y+rt; j+=r)
 								{
-									if (try_move(i, x, y, x, j))
+									if (try_move(i, x, y, clear_x, j))
 									{
-										parts[i].y += j-y;
+										parts[i].y += j-clear_y;
 										break;
 									}
 									if ((pmap[j][x]&255)!=t || (bmap[j/CELL][x/CELL] && bmap[j/CELL][x/CELL]!=WL_STREAM))
@@ -1855,6 +1966,10 @@ killed:
 										break;
 									}
 								}
+							else if (clear_x!=x&&clear_y!=y) {
+								// if interpolation was done and haven't yet moved, try moving to last clear position
+								try_move(i, x, y, clear_x, clear_y);
+							}
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 							if (!s)
@@ -1862,94 +1977,19 @@ killed:
 						}
 						else
 						{
+							if (clear_x!=x&&clear_y!=y) {
+								// if interpolation was done, try moving to last clear position
+								try_move(i, x, y, clear_x, clear_y);
+							}
 							parts[i].flags |= FLAG_STAGNANT;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
 					}
 				}
-				else
-				{
-					parts[i].flags |= FLAG_STAGNANT;
-					if (t==PT_NEUT && 100>(rand()%1000))
-					{
-						kill_part(i);
-						continue;
-					}
-					else if (t==PT_NEUT || t==PT_PHOT) //Seems to break neutrons, sorry Skylark
-					{
-						r = pmap[ny][nx];
-
-						/* this should be replaced with a particle type attribute ("photwl" or something) */
-						if ((r & 0xFF) == PT_PSCN) parts[i].ctype  = 0x00000000;
-						if ((r & 0xFF) == PT_NSCN) parts[i].ctype  = 0x00000000;
-						if ((r & 0xFF) == PT_SPRK) parts[i].ctype  = 0x00000000;
-						if ((r & 0xFF) == PT_COAL) parts[i].ctype  = 0x00000000;
-						if ((r & 0xFF) == PT_BCOL) parts[i].ctype  = 0x00000000;
-						if ((r & 0xFF) == PT_PLEX) parts[i].ctype &= 0x1F00003E;
-						if ((r & 0xFF) == PT_NITR) parts[i].ctype &= 0x0007C000;
-						if ((r & 0xFF) == PT_NBLE) parts[i].ctype &= 0x3FFF8000;
-						if ((r & 0xFF) == PT_LAVA) parts[i].ctype &= 0x3FF00000;
-						if ((r & 0xFF) == PT_ACID) parts[i].ctype &= 0x1FE001FE;
-						if ((r & 0xFF) == PT_DUST) parts[i].ctype &= 0x3FFFFFC0;
-						if ((r & 0xFF) == PT_SNOW) parts[i].ctype &= 0x03FFFFFF;
-						if ((r & 0xFF) == PT_GOO)  parts[i].ctype &= 0x3FFAAA00;
-						if ((r & 0xFF) == PT_PLNT) parts[i].ctype &= 0x0007C000;
-						if ((r & 0xFF) == PT_PLUT) parts[i].ctype &= 0x001FCE00;
-						if ((r & 0xFF) == PT_URAN) parts[i].ctype &= 0x003FC000;
-
-						if (get_normal_interp(t, lx, ly, parts[i].vx, parts[i].vy, &nrx, &nry)) {
-							dp = nrx*parts[i].vx + nry*parts[i].vy;
-							parts[i].vx -= 2.0f*dp*nrx;
-							parts[i].vy -= 2.0f*dp*nry;
-							nx = (int)(parts[i].x + parts[i].vx + 0.5f);
-							ny = (int)(parts[i].y + parts[i].vy + 0.5f);
-							if (try_move(i, x, y, nx, ny)) {
-								parts[i].x = (float)nx;
-								parts[i].y = (float)ny;
-							} else {
-								kill_part(i);
-								continue;
-							}
-						} else {
-							if (t!=PT_NEUT)
-								kill_part(i);
-							continue;
-						}
-
-						if (!parts[i].ctype) {
-							if (t!=PT_NEUT)
-								kill_part(i);
-							continue;
-						}
-					}
-
-					else
-					{
-						if (nx>x+ISTP) nx=x+ISTP;
-						if (nx<x-ISTP) nx=x-ISTP;
-						if (ny>y+ISTP) ny=y+ISTP;
-						if (ny<y-ISTP) ny=y-ISTP;
-						if (try_move(i, x, y, 2*x-nx, ny))
-						{
-							parts[i].x = (float)(2*x-nx);
-							parts[i].y = (float)iy;
-							parts[i].vx *= ptypes[t].collision;
-						}
-						else if (try_move(i, x, y, nx, 2*y-ny))
-						{
-							parts[i].x = (float)ix;
-							parts[i].y = (float)(2*y-ny);
-							parts[i].vy *= ptypes[t].collision;
-						}
-						else
-						{
-							parts[i].vx *= ptypes[t].collision;
-							parts[i].vy *= ptypes[t].collision;
-						}
-					}
-				}
 			}
+			nx = (int)(parts[i].x+0.5f);
+			ny = (int)(parts[i].y+0.5f);
 			if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
 			{
 				kill_part(i);

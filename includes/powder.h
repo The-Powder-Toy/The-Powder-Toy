@@ -360,6 +360,7 @@ typedef struct part_transition part_transition;
  * 100 = Solid ||
  * -1 is Neutrons and Photons
  */
+// TODO: falldown, properties, state - should at least one of these be removed?
 static const part_type ptypes[PT_NUM] =
 {
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd M	Weight	Section			H						Ins		Description
