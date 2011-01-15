@@ -34,7 +34,9 @@ static int pn_junction_sprk(int x, int y, int pt)
     r >>= 8;
     if(parts[r].type != pt)
         return 0;
-
+    if(parts[r].life != 0)
+        return 0;
+	
     parts[r].ctype = pt;
     parts[r].type = PT_SPRK;
     parts[r].life = 4;
