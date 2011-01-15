@@ -1869,14 +1869,14 @@ killed:
 					if (fin_y<y-ISTP) fin_y=y-ISTP;
 					if (try_move(i, x, y, 2*x-fin_x, fin_y))
 					{
-						parts[i].x = (float)(2*x-fin_x);
-						parts[i].y = fin_yf;
+						parts[i].x = 0.25f+(float)(2*x-fin_x);
+						parts[i].y = 0.25f+fin_y;
 						parts[i].vx *= ptypes[t].collision;
 					}
 					else if (try_move(i, x, y, fin_x, 2*y-fin_y))
 					{
-						parts[i].x = fin_xf;
-						parts[i].y = (float)(2*y-fin_y);
+						parts[i].x = 0.25f+fin_x;
+						parts[i].y = 0.25f+(float)(2*y-fin_y);
 						parts[i].vy *= ptypes[t].collision;
 					}
 					else
@@ -1891,19 +1891,19 @@ killed:
 				// liquids and powders
 				// TODO: rewrite to operate better with radial gravity
 				if (try_move(i, x, y, fin_x, fin_y)) {
-					parts[i].x = fin_x;
-					parts[i].y = fin_y;
+					parts[i].x = fin_xf;
+					parts[i].y = fin_yf;
 				} else {
-					parts[i].x = clear_x;
-					parts[i].y = clear_y;
 					if (fin_x!=x && try_move(i, x, y, fin_x, clear_y))
 					{
 						parts[i].x = fin_xf;
+						parts[i].y = clear_yf;
 						parts[i].vx *= ptypes[t].collision;
 						parts[i].vy *= ptypes[t].collision;
 					}
 					else if (fin_y!=y && try_move(i, x, y, clear_x, fin_y))
 					{
+						parts[i].x = clear_xf;
 						parts[i].y = fin_yf;
 						parts[i].vx *= ptypes[t].collision;
 						parts[i].vy *= ptypes[t].collision;
@@ -1913,14 +1913,14 @@ killed:
 						r = (rand()%2)*2-1;
 						if (fin_y!=clear_y && try_move(i, x, y, clear_x+r, fin_y))
 						{
-							parts[i].x += r;
+							parts[i].x = clear_xf+r;
 							parts[i].y = fin_yf;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
 						else if (fin_y!=clear_y && try_move(i, x, y, clear_x-r, fin_y))
 						{
-							parts[i].x -= r;
+							parts[i].x = clear_xf-r;
 							parts[i].y = fin_yf;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
@@ -1928,14 +1928,14 @@ killed:
 						else if (fin_x!=clear_x && try_move(i, x, y, fin_x, clear_y+r))
 						{
 							parts[i].x = fin_xf;
-							parts[i].y += r;
+							parts[i].y = clear_yf+r;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
 						else if (fin_x!=clear_x && try_move(i, x, y, fin_x, clear_y-r))
 						{
 							parts[i].x = fin_xf;
-							parts[i].y -= r;
+							parts[i].y = clear_yf-r;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
@@ -1950,8 +1950,8 @@ killed:
 							{
 								if (try_move(i, x, y, j, fin_y))
 								{
-									parts[i].x += j-clear_x;
-									parts[i].y += fin_y-clear_y;
+									parts[i].x = clear_xf+(j-clear_x);
+									parts[i].y = fin_yf;
 									x = j;
 									y = fin_y;
 									s = 1;
@@ -1959,7 +1959,7 @@ killed:
 								}
 								if (try_move(i, x, y, j, clear_y))
 								{
-									parts[i].x += j-clear_x;
+									parts[i].x = clear_xf+(j-clear_x);
 									x = j;
 									s = 1;
 									break;
@@ -1976,7 +1976,7 @@ killed:
 								{
 									if (try_move(i, x, y, clear_x, j))
 									{
-										parts[i].y += j-clear_y;
+										parts[i].y = clear_yf+(j-clear_y);
 										break;
 									}
 									if ((pmap[j][x]&255)!=t || (bmap[j/CELL][x/CELL] && bmap[j/CELL][x/CELL]!=WL_STREAM))
@@ -1985,9 +1985,10 @@ killed:
 										break;
 									}
 								}
-							else if (clear_x!=x&&clear_y!=y) {
+							else if (clear_x!=x&&clear_y!=y && try_move(i, x, y, clear_x, clear_y)) {
 								// if interpolation was done and haven't yet moved, try moving to last clear position
-								try_move(i, x, y, clear_x, clear_y);
+								parts[i].x = clear_xf;
+								parts[i].y = clear_yf;
 							}
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
@@ -1996,9 +1997,10 @@ killed:
 						}
 						else
 						{
-							if (clear_x!=x&&clear_y!=y) {
+							if (clear_x!=x&&clear_y!=y && try_move(i, x, y, clear_x, clear_y)) {
 								// if interpolation was done, try moving to last clear position
-								try_move(i, x, y, clear_x, clear_y);
+								parts[i].x = clear_xf;
+								parts[i].y = clear_yf;
 							}
 							parts[i].flags |= FLAG_STAGNANT;
 							parts[i].vx *= ptypes[t].collision;
