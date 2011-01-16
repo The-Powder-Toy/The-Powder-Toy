@@ -405,7 +405,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 {
     unsigned char *d,*c=save;
     int i,j,k,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int)), ver, pty, ty, legacy_beta=0;
-    int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
+    int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h, q;
     int fp[NPART], nf=0, new_format = 0, ttv = 0;
 
     //New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
@@ -707,6 +707,11 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 					ttv = (d[p++])<<8;
 					ttv |= (d[p++]);
 					parts[i-1].tmp = ttv;
+					if(ptypes[parts[i-1].type].properties&PROP_LIFE && !parts[i-1].tmp)
+					for(q = 1; q<NGOL ; q++){
+						if(parts[i-1].type==goltype[q-1] && grule[q][9]==2)
+						parts[i-1].tmp = grule[q][9]-1;
+					}
 				} else {
 					p+=2;
 				}

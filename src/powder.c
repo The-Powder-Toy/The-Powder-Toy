@@ -1297,7 +1297,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 		{
 			r = pmap[ny][nx];
 			int neighbors = gol2[nx][ny][0];
-			if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !r&0xFF))
+			if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !r&0xFF) || (r>>8)>=NPART)
 				continue;
 			for( golnum = 1;golnum<NGOL;golnum++)
 			  for( goldelete = 0;goldelete<9;goldelete++)
