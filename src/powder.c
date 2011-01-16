@@ -658,6 +658,12 @@ inline int create_part(int p, int x, int y, int t)
 		parts[i].tmp = (rand()%11);
 	if(t==PT_PQRT)
 		parts[i].tmp = (rand()%11);
+	if(ptypes[t].properties&PROP_LIFE) {
+		int r;
+		for(r = 0;r<NGOL;r++)
+			if(t==goltype[r])
+				parts[i].tmp = grule[r+1][9] - 1;
+	}
     if(t==PT_FSEP)
         parts[i].life = 50;
     if(t==PT_COAL) {
@@ -1267,24 +1273,31 @@ void update_particles_i(pixel *vid, int start, int inc)
 				gol[nx][ny] = 0;
                                	continue;
 			}
-			else 
+			else
 				for( golnum=1;golnum<NGOL;golnum++)
 					if(parts[r>>8].type==goltype[golnum-1])
 					{
-						gol[nx][ny] = golnum;
-						for( nnx=-1;nnx<2;nnx++)
-						  for( nny=-1;nny<2;nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
-						{
-							gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][golnum] ++;
-							gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][0] ++;
+						if(parts[r>>8].tmp == grule[golnum][9]-1) {
+							gol[nx][ny] = golnum;
+							for( nnx=-1;nnx<2;nnx++)
+							for( nny=-1;nny<2;nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
+							{
+								gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][golnum] ++;
+								gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][0] ++;
+							}
+						} else {
+							parts[r>>8].tmp --;
+							if(parts[r>>8].tmp<=0)
+							parts[r>>8].type = PT_NONE;
 						}
 					}
 		}
 		for(nx=CELL;nx<XRES-CELL;nx++)
 		  for(ny=CELL;ny<YRES-CELL;ny++)
 		{
+			r = pmap[ny][nx];
 			int neighbors = gol2[nx][ny][0];
-			if(neighbors==0)
+			if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !r&0xFF))
 				continue;
 			for( golnum = 1;golnum<NGOL;golnum++)
 			  for( goldelete = 0;goldelete<9;goldelete++)
@@ -1294,8 +1307,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if(create_part(-1,nx,ny,goltype[golnum-1]))
 							createdsomething = 1;
 					}
-					else if(neighbors-1==goldelete&&gol[nx][ny]==golnum&&(grule[golnum][goldelete]==0||grule[golnum][goldelete]==2))//subtract 1 because it counted itself
-						parts[pmap[ny][nx]>>8].type = PT_NONE;
+					else if(neighbors-1==goldelete&&gol[nx][ny]==golnum&&(grule[golnum][goldelete]==0||grule[golnum][goldelete]==2)) {//subtract 1 because it counted itself
+						if(parts[r>>8].tmp==grule[golnum][9]-1)
+							parts[r>>8].tmp --;
+					}
+						if(parts[r>>8].tmp<=0)
+							parts[r>>8].type = PT_NONE;
 				}
 			gol2[nx][ny][0] = 0;
 			for( z = 1;z<NGOL;z++)

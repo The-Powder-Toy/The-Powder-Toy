@@ -190,7 +190,10 @@
 #define PT_REPL 139
 #define PT_MYST 140
 #define PT_BOYL 141
-#define PT_NUM  142
+#define PT_TEST 142
+#define PT_TEST2 143
+#define PT_TEST3 144
+#define PT_NUM  145
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -427,7 +430,10 @@ static const part_type ptypes[PT_NUM] =
     {"REPL",	PIXPACK(0x259588),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B1357/S1357", TYPE_SOLID|PROP_LIFE, NULL},
     {"MYST",	PIXPACK(0x0C3C00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B3458/S05678", TYPE_SOLID|PROP_LIFE, NULL},
     {"BOYL",	PIXPACK(0x0A3200),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.18f,	0.000f	* CFDS,	0,	0,	0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+2.0f	+273.15f,	42,		"Boyle, variable pressure gas. Expands when heated.", TYPE_GAS, NULL},
-    //Name		Colour		Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn		Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
+    {"TEST",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		9000.0f,				40,		"S3458/B37/4", TYPE_SOLID|PROP_LIFE, NULL}, 
+    {"TES2",	PIXPACK(0x00FF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		9000.0f,				40,		"S124/B3/3", TYPE_SOLID|PROP_LIFE, NULL}, 
+    {"TES4",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		9000.0f,				40,		"S3456/B278/6", TYPE_SOLID|PROP_LIFE, NULL}, 
+//Name		Colour		Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn		Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
 static part_state pstates[PT_NUM] =
@@ -575,31 +581,37 @@ static part_state pstates[PT_NUM] =
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* BOYL */ {ST_GAS,		PT_NONE, 0.0f,		PT_NONE, 0.0f,  	PT_NONE, 50.0f,		PT_NONE, 0.0f},
+    /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     
 };
-static int grule[NGOL][9] = 
+static int grule[NGOL][10] = 
 {
-//       0,1,2,3,4,5,6,7,8    live=1  spawn=2 spawn&live=3
-	{0,0,0,0,0,0,0,0,0},//blank
-	{0,0,1,3,0,0,0,0,0},//GOL
-	{0,0,1,3,0,0,2,0,0},//HLIF
-	{0,0,0,2,3,3,1,1,0},//ASIM
-	{0,1,1,2,0,1,2,0,0},//2x2
-	{0,0,0,3,1,0,3,3,3},//DANI
-	{0,1,0,3,0,3,0,2,1},//AMOE
-	{0,0,1,2,1,1,2,0,2},//MOVE
-	{0,0,1,3,0,2,0,2,1},//PGOL
-	{0,0,0,2,0,3,3,3,3},//DMOE
-	{0,0,0,3,3,0,0,0,0},//34
-	{0,0,0,2,2,3,0,0,0},//LLIF
-	{0,0,1,3,0,1,3,3,3},//STAN
-	{0,0,2,0,0,0,0,0,0},//SEED
-	{0,1,1,3,1,1,0,0,0},//MAZE
-	{0,0,1,3,0,1,1,3,3},//COAG
-	{0,0,1,1,3,3,2,2,2},//WALL
-	{0,3,0,0,0,0,0,0,0},//GNAR
-	{0,3,0,3,0,3,0,3,0},//REPL
-	{1,0,0,2,2,3,1,1,3},//MYST
+//       0,1,2,3,4,5,6,7,8,STATES    live=1  spawn=2 spawn&live=3   States are kind of how long until it dies, normal ones use two states(living,dead) for others the intermediate states live but do nothing
+	{0,0,0,0,0,0,0,0,0,2},//blank
+	{0,0,1,3,0,0,0,0,0,2},//GOL
+	{0,0,1,3,0,0,2,0,0,2},//HLIF
+	{0,0,0,2,3,3,1,1,0,2},//ASIM
+	{0,1,1,2,0,1,2,0,0,2},//2x2
+	{0,0,0,3,1,0,3,3,3,2},//DANI
+	{0,1,0,3,0,3,0,2,1,2},//AMOE
+	{0,0,1,2,1,1,2,0,2,2},//MOVE
+	{0,0,1,3,0,2,0,2,1,2},//PGOL
+	{0,0,0,2,0,3,3,3,3,2},//DMOE
+	{0,0,0,3,3,0,0,0,0,2},//34
+	{0,0,0,2,2,3,0,0,0,2},//LLIF
+	{0,0,1,3,0,1,3,3,3,2},//STAN
+	{0,0,2,0,0,0,0,0,0,2},//SEED
+	{0,1,1,3,1,1,0,0,0,2},//MAZE
+	{0,0,1,3,0,1,1,3,3,2},//COAG
+	{0,0,1,1,3,3,2,2,2,2},//WALL
+	{0,3,0,0,0,0,0,0,0,2},//GNAR
+	{0,3,0,3,0,3,0,3,0,2},//REPL
+	{1,0,0,2,2,3,1,1,3,2},//MYST
+	{0,0,0,3,1,1,0,2,1,4},//TEST
+	{0,1,1,2,1,0,0,0,0,3},//TEST2
+	{0,0,2,1,1,1,1,2,2,6},//TEST2
 };
 static int goltype[NGOL] = 
 {
@@ -622,6 +634,9 @@ static int goltype[NGOL] =
 	PT_GNAR,
 	PT_REPL,
 	PT_MYST,
+	PT_TEST,
+	PT_TEST2,
+	PT_TEST3,
 };
 static int loverule[9][9] =
 {
