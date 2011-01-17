@@ -52,6 +52,7 @@
 #include <icon.h>
 
 static const char *it_msg =
+    "\br HOT REMIXX -- by P0iNC4RE"
     "\brThe Powder Toy - http://powdertoy.co.uk/\n"
     "\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
     "\n"
@@ -101,8 +102,6 @@ int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
 int MSIGN =-1;
-//int CGOL = 0;
-//int GSPEED = 1;//causes my .exe to crash..
 
 sign signs[MAXSIGNS];
 
@@ -129,6 +128,15 @@ int core_count()
         printf("Multithreading enabled\n");
     else
         printf("Multithreading disabled\n");
+        printf("Not enough cores. Enable anyway? (y/n)\n");
+        char multi;
+        scanf("%c", multi);
+        if(multi == 'y') {
+           numCPU = 4;
+        }
+        else {
+           printf("Multithreading is Disabled.");
+        }
 #endif
     return numCPU;
 }
