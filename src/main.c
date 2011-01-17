@@ -1522,7 +1522,7 @@ int main(int argc, char *argv[])
 			}		
 	}
 	if((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
-		active_menu = 11;
+		active_menu = 12;
 	if(sdl_key==SDLK_INSERT || sdl_key==SDLK_BACKQUOTE)
 	    REPLACE_MODE = !REPLACE_MODE;
 	if(sdl_key=='g')

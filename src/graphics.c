@@ -1726,9 +1726,9 @@ void draw_parts(pixel *vid)
 		else if(t==PT_TEST2)
 		{
 			if(parts[i].tmp==2)
-				blendpixel(vid, nx, ny, 0, 100, 0, 255);
+				blendpixel(vid, nx, ny, 0, 100, 50, 255);
 			else
-				blendpixel(vid, nx, ny, 0, 255, 0, 255);
+				blendpixel(vid, nx, ny, 0, 255, 90, 255);
 		}
 		else if(t==PT_TEST3)
 		{
@@ -1742,6 +1742,20 @@ void draw_parts(pixel *vid)
 				blendpixel(vid, nx, ny, 0, 0, 230, 255);
 			else
 				blendpixel(vid, nx, ny, 0, 0, 70, 255);
+		}
+		else if(t==PT_FROG)
+		{
+			if(parts[i].tmp==2)
+				blendpixel(vid, nx, ny, 0, 100, 0, 255);
+			else
+				blendpixel(vid, nx, ny, 0, 255, 0, 255);
+		}
+		else if(t==PT_BRAN)
+		{
+			if(parts[i].tmp==1)
+				blendpixel(vid, nx, ny, 150, 150, 0, 255);
+			else
+				blendpixel(vid, nx, ny, 255, 255, 0, 255);
 		}
 		else if(t==PT_DEUT)
 		{

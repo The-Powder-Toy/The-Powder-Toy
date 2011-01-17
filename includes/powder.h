@@ -193,7 +193,9 @@
 #define PT_TEST 142
 #define PT_TEST2 143
 #define PT_TEST3 144
-#define PT_NUM  145
+#define PT_FROG 145
+#define PT_BRAN 146
+#define PT_NUM  147
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -430,9 +432,11 @@ static const part_type ptypes[PT_NUM] =
     {"REPL",	PIXPACK(0x259588),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B1357/S1357", TYPE_SOLID|PROP_LIFE, NULL},
     {"MYST",	PIXPACK(0x0C3C00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B3458/S05678", TYPE_SOLID|PROP_LIFE, NULL},
     {"BOYL",	PIXPACK(0x0A3200),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.18f,	0.000f	* CFDS,	0,	0,	0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+2.0f	+273.15f,	42,		"Boyle, variable pressure gas. Expands when heated.", TYPE_GAS, NULL},
-    {"TEST",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		9000.0f,				40,		"S3458/B37/4", TYPE_SOLID|PROP_LIFE, NULL}, 
-    {"TES2",	PIXPACK(0x00FF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		9000.0f,				40,		"S124/B3/3", TYPE_SOLID|PROP_LIFE, NULL}, 
-    {"TES4",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		9000.0f,				40,		"S3456/B278/6", TYPE_SOLID|PROP_LIFE, NULL}, 
+    {"LOTE",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Behaves kinda like Living on the Edge S3458/B37/4", TYPE_SOLID|PROP_LIFE, NULL}, 
+    {"FRG2",	PIXPACK(0x00FF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Like Frogs rule S124/B3/3", TYPE_SOLID|PROP_LIFE, NULL}, 
+    {"STAR",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Like Star Wars rule S3456/B278/6", TYPE_SOLID|PROP_LIFE, NULL}, 
+    {"FROG",	PIXPACK(0x00AA00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Frogs S12/B34/3", TYPE_SOLID|PROP_LIFE, NULL}, 
+    {"BRAN",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Brian 6 S6/B246/3", TYPE_SOLID|PROP_LIFE, NULL}, 
 //Name		Colour		Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn		Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -584,6 +588,8 @@ static part_state pstates[PT_NUM] =
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
+    /* GOL  */ {ST_NONE,	PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f,		PT_NONE, 0.0f},
     
 };
 static int grule[NGOL][10] = 
@@ -611,7 +617,9 @@ static int grule[NGOL][10] =
 	{1,0,0,2,2,3,1,1,3,2},//MYST
 	{0,0,0,3,1,1,0,2,1,4},//TEST
 	{0,1,1,2,1,0,0,0,0,3},//TEST2
-	{0,0,2,1,1,1,1,2,2,6},//TEST2
+	{0,0,2,1,1,1,1,2,2,6},//TEST3
+	{0,1,1,2,2,0,0,0,0,3},//FROG
+	{0,0,2,0,2,0,3,0,0,3},//BRAN
 };
 static int goltype[NGOL] = 
 {
@@ -637,6 +645,8 @@ static int goltype[NGOL] =
 	PT_TEST,
 	PT_TEST2,
 	PT_TEST3,
+	PT_FROG,
+	PT_BRAN,
 };
 static int loverule[9][9] =
 {
