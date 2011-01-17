@@ -405,7 +405,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 {
     unsigned char *d,*c=save;
     int i,j,k,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int)), ver, pty, ty, legacy_beta=0;
-    int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
+    int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h, q;
     int fp[NPART], nf=0, new_format = 0, ttv = 0;
 
     //New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
@@ -707,6 +707,11 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 					ttv = (d[p++])<<8;
 					ttv |= (d[p++]);
 					parts[i-1].tmp = ttv;
+					if(ptypes[parts[i-1].type].properties&PROP_LIFE && !parts[i-1].tmp)
+					for(q = 1; q<NGOL ; q++){
+						if(parts[i-1].type==goltype[q-1] && grule[q][9]==2)
+						parts[i-1].tmp = grule[q][9]-1;
+					}
 				} else {
 					p+=2;
 				}
@@ -731,7 +736,11 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
                         if(new_format) {
                             ttv = (d[p++])<<8;
                             ttv |= (d[p++]);
-                            parts[i-1].temp = ttv + 0.15;
+			    if(parts[i-1].type==PT_PUMP) {
+				parts[i-1].temp = ttv + 0.15;//fix PUMP saved at 0, so that it loads at 0.
+			    } else {
+				parts[i-1].temp = ttv;
+			    }
                         } else {
                             parts[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
                         }
@@ -1513,7 +1522,7 @@ int main(int argc, char *argv[])
 			}		
 	}
 	if((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
-		active_menu = 11;
+		active_menu = 12;
 	if(sdl_key==SDLK_INSERT || sdl_key==SDLK_BACKQUOTE)
 	    REPLACE_MODE = !REPLACE_MODE;
 	if(sdl_key=='g')
@@ -1733,7 +1742,11 @@ int main(int argc, char *argv[])
         if(y>0 && y<sdl_scale*YRES && x>0 && x<sdl_scale*XRES)
         {
             int cr;
-            cr = pmap[y/sdl_scale][x/sdl_scale];
+	    if(photons[y/sdl_scale][x/sdl_scale]){
+		cr = photons[y/sdl_scale][x/sdl_scale];
+	    }else{
+		cr = pmap[y/sdl_scale][x/sdl_scale];
+	    }
             if(!((cr>>8)>=NPART || !cr))
             {
 #ifdef BETA
@@ -1752,7 +1765,7 @@ int main(int argc, char *argv[])
                     int tctype = parts[cr>>8].ctype;
                     if(tctype>=PT_NUM)
                         tctype = 0;
-                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d,tmp: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life,parts[cr>>8].tmp);
 			//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 		} else {
 			sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
@@ -2119,6 +2132,10 @@ int main(int argc, char *argv[])
                     if(x>=19 && x<=35 && svf_last && svf_open && !bq){
 						//int tpval = sys_pause;
 						parse_save(svf_last, svf_lsize, 1, 0, 0);
+						for(j= 0;j<99;j++){ //reset wifi on reload
+							wireless[j][0] = 0;
+							wireless[j][1] = 0;
+						}
 						//sys_pause = tpval;
 					}
                     if(x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
@@ -2205,6 +2222,8 @@ int main(int argc, char *argv[])
 				c = 0;
                         if(c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE)
                             flood_parts(x, y, c, -1, -1);
+			if(c==SPC_HEAT || c==SPC_COOL)
+			    create_parts(x, y, bsx, bsy, c);
                         lx = x;
                         ly = y;
                         lb = 0;

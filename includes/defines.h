@@ -61,7 +61,7 @@ extern unsigned char ZSIZE;
 #define STAMP_Y 4
 #define STAMP_MAX 120
 
-#define NGOL 20
+#define NGOL 25
 
 #define CIRCLE_BRUSH 0
 #define SQUARE_BRUSH 1

@@ -1667,7 +1667,7 @@ void draw_parts(pixel *vid)
 		}
 		else if(t==PT_QRTZ || t==PT_PQRT)
 		{
-			int z = parts[i].tmp;
+			int z = parts[i].tmp - 5;
 			if(parts[i].temp>(pstates[t].ltemp-800.0f))
 			{
 				float frequency = 3.1415/(2*pstates[t].ltemp-(pstates[t].ltemp-800.0f));
@@ -1713,6 +1713,49 @@ void draw_parts(pixel *vid)
 			cb = 20;
                 blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
+		}
+		else if(t==PT_TEST)
+		{
+			if(parts[i].tmp==2)
+				blendpixel(vid, nx, ny, 255, 128, 0, 255);
+			else if(parts[i].tmp==1)
+				blendpixel(vid, nx, ny, 255, 255, 0, 255);
+			else
+				blendpixel(vid, nx, ny, 255, 0, 0, 255);
+		}
+		else if(t==PT_TEST2)
+		{
+			if(parts[i].tmp==2)
+				blendpixel(vid, nx, ny, 0, 100, 50, 255);
+			else
+				blendpixel(vid, nx, ny, 0, 255, 90, 255);
+		}
+		else if(t==PT_TEST3)
+		{
+			if(parts[i].tmp==4)
+				blendpixel(vid, nx, ny, 0, 0, 128, 255);
+			else if(parts[i].tmp==3)
+				blendpixel(vid, nx, ny, 0, 0, 150, 255);
+			else if(parts[i].tmp==2)
+				blendpixel(vid, nx, ny, 0, 0, 190, 255);
+			else if(parts[i].tmp==1)
+				blendpixel(vid, nx, ny, 0, 0, 230, 255);
+			else
+				blendpixel(vid, nx, ny, 0, 0, 70, 255);
+		}
+		else if(t==PT_FROG)
+		{
+			if(parts[i].tmp==2)
+				blendpixel(vid, nx, ny, 0, 100, 0, 255);
+			else
+				blendpixel(vid, nx, ny, 0, 255, 0, 255);
+		}
+		else if(t==PT_BRAN)
+		{
+			if(parts[i].tmp==1)
+				blendpixel(vid, nx, ny, 150, 150, 0, 255);
+			else
+				blendpixel(vid, nx, ny, 255, 255, 0, 255);
 		}
 		else if(t==PT_DEUT)
 		{
@@ -1829,6 +1872,36 @@ void draw_parts(pixel *vid)
 				if(parts[z].type)
 				{	
 					if(parts[z].type==PT_WIFI&&parts[z].tmp==parts[i].tmp)
+						xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);					
+				}
+			}
+                    }
+		}
+		else if(t==PT_PRTI && DEBUG_MODE)
+		{
+		    blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
+		    if(mousex==(nx) && mousey==(ny))
+                    {
+			int z;
+                        for(z = 0; z<NPART; z++) {
+				if(parts[z].type)
+				{	
+					if(parts[z].type==PT_PRTO&&parts[z].tmp==parts[i].tmp)
+						xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);					
+				}
+			}
+                    }
+		}
+		else if(t==PT_PRTO && DEBUG_MODE)
+		{
+		    blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
+		    if(mousex==(nx) && mousey==(ny))
+                    {
+			int z;
+                        for(z = 0; z<NPART; z++) {
+				if(parts[z].type)
+				{	
+					if(parts[z].type==PT_PRTI&&parts[z].tmp==parts[i].tmp)
 						xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);					
 				}
 			}
