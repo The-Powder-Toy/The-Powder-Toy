@@ -195,7 +195,7 @@
 #define PT_TEST3 144
 #define PT_FROG 145
 #define PT_BRAN 146
-#define PT_NUM  147
+#define PT_NUM  147 //note for future elements, please SKIP numbers 222-240 and 255, these are walls.  Element limit is now 4096 (experimental)
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -437,7 +437,7 @@ static const part_type ptypes[PT_NUM] =
     {"STAR",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Like Star Wars rule S3456/B278/6", TYPE_SOLID|PROP_LIFE, NULL}, 
     {"FROG",	PIXPACK(0x00AA00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Frogs S12/B34/3", TYPE_SOLID|PROP_LIFE, NULL}, 
     {"BRAN",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Brian 6 S6/B246/3", TYPE_SOLID|PROP_LIFE, NULL}, 
-//Name		Colour		Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn		Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
+    //Name		Colour		Advec	Airdrag		Airloss	Loss	Collid	Grav	Diffus	Hotair		Fal	Burn		Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
 static part_state pstates[PT_NUM] =

@@ -447,7 +447,7 @@ void draw_tool(pixel *vid_buf, int b, int sl, int sr, unsigned pc, unsigned iswa
 int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 {
     int i, j, c;
-    if(b>=UI_WALLSTART)
+    if(b>=UI_WALLSTART && b<=UI_WALLSTART+UI_WALLCOUNT)
     {
         b = b-100;
         //x = (2+32*((b-22)/1));
@@ -2901,8 +2901,8 @@ void render_signs(pixel *vid_buf)
             }
             if(strcmp(signs[i].text, "{t}")==0)
             {
-                if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
-                    sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...tempirature
+                if((pmap[signs[i].y][signs[i].x]>>12)>0 && (pmap[signs[i].y][signs[i].x]>>12)<NPART)
+                    sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>12].temp-273.15);  //...tempirature
                 else
                     sprintf(buff, "Temp: 0.00");  //...tempirature
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
