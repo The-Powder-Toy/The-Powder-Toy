@@ -248,7 +248,7 @@ int try_move(int i, int x, int y, int nx, int ny)
     if(parts[i].type == PT_PHOT)
         return 1;
 
-    e = r >> 8;
+    e = r >> 12;
     if(r && e<NPART)
     {
         if(parts[e].type == PT_PHOT)
@@ -866,7 +866,7 @@ static void create_gain_photon(int pp)
     parts[i].y = yy;
     parts[i].vx = parts[pp].vx;
     parts[i].vy = parts[pp].vy;
-    parts[i].temp = parts[pmap[ny][nx] >> 8].temp;
+    parts[i].temp = parts[pmap[ny][nx] >> 12].temp;
     parts[i].tmp = 0;
     photons[ny][nx] = PT_PHOT|(i<<12);
 
@@ -902,7 +902,7 @@ static void create_cherenkov_photon(int pp)
     parts[i].life = 680;
     parts[i].x = parts[pp].x;
     parts[i].y = parts[pp].y;
-    parts[i].temp = parts[pmap[ny][nx] >> 8].temp;
+    parts[i].temp = parts[pmap[ny][nx] >> 12].temp;
     parts[i].tmp = 0;
     photons[ny][nx] = PT_PHOT|(i<<12);
 
@@ -1301,7 +1301,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 		{
 			r = pmap[ny][nx];
 			int neighbors = gol2[nx][ny][0];
-			if(neighbors==0 || !(ptypes[r&0xFFF].properties&PROP_LIFE || !r&0xFFF) || (r>>12)>=NPART)
+			if(neighbors==0 || (r>>12)>=NPART || !(ptypes[r&0xFFF].properties&PROP_LIFE || !(r&0xFFF)))
 				continue;
 			for( golnum = 1;golnum<NGOL;golnum++)
 			  for( goldelete = 0;goldelete<9;goldelete++)
@@ -5026,7 +5026,7 @@ killed:
                 rt = pmap[ny][nx] & 0xFFF;
 
                 if(rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN) {
-                    lt = pmap[ny][nx] >> 8;
+                    lt = pmap[ny][nx] >> 12;
                     if(!parts[lt].ctype)
                         parts[lt].ctype = PT_PHOT;
                 }
@@ -5147,7 +5147,7 @@ killed:
                                     s = 1;
                                     break;
                                 }
-                                if((pmap[y][j]&255)!=t || (bmap[y/CELL][j/CELL] && bmap[y/CELL][j/CELL]!=WL_STREAM))
+                                if((pmap[y][j]&0xFFF)!=t || (bmap[y/CELL][j/CELL] && bmap[y/CELL][j/CELL]!=WL_STREAM))
                                     break;
                             }
                             if(parts[i].vy>0)
@@ -5162,7 +5162,7 @@ killed:
                                         parts[i].y += j-y;
                                         break;
                                     }
-                                    if((pmap[j][x]&255)!=t || (bmap[j/CELL][x/CELL] && bmap[j/CELL][x/CELL]!=WL_STREAM))
+                                    if((pmap[j][x]&0xFFF)!=t || (bmap[j/CELL][x/CELL] && bmap[j/CELL][x/CELL]!=WL_STREAM))
                                     {
                                         s = 0;
                                         break;
