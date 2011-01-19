@@ -583,8 +583,6 @@ inline int create_part(int p, int x, int y, int t)
 				}
 			}
 		}
-	if(photons[y][x] && t==PT_PHOT)
-		return -1;
 	if(pfree == -1)
             return -1;
         i = pfree;
@@ -876,6 +874,7 @@ static void create_gain_photon(int pp)
     parts[i].vy = parts[pp].vy;
     parts[i].temp = parts[pmap[ny][nx] >> 8].temp;
     parts[i].tmp = 0;
+    photons[ny][nx] = PT_PHOT|(i<<8);
 
     temp_bin = (int)((parts[i].temp-273.0f)*0.25f);
     if(temp_bin < 0) temp_bin = 0;
@@ -911,6 +910,7 @@ static void create_cherenkov_photon(int pp)
     parts[i].y = parts[pp].y;
     parts[i].temp = parts[pmap[ny][nx] >> 8].temp;
     parts[i].tmp = 0;
+    photons[ny][nx] = PT_PHOT|(i<<8);
 
     if(lr) {
         parts[i].vx = parts[pp].vx - 2.5f*parts[pp].vy;
