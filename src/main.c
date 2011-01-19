@@ -496,7 +496,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
         {
             x = (int)(parts[i].x+0.5f);
             y = (int)(parts[i].y+0.5f);
-            pmap[y][x] = (i<<PS)|1;
+            pmap[y][x] = (i<<8)|1;
         }
         else
             fp[nf++] = i;
@@ -573,7 +573,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
             {
                 if(pmap[y][x])
                 {
-                    k = pmap[y][x]>>PS;
+                    k = pmap[y][x]>>8;
                     parts[k].type = j;
                     if(j == PT_PHOT)
                         parts[k].ctype = 0x3fffffff;
@@ -1249,7 +1249,7 @@ int main(int argc, char *argv[])
 
         if(!sys_pause||framerender)
         {
-            update_air();
+			update_air();
         }
 #ifdef OpenGL
         ClearScreen();
@@ -1701,7 +1701,7 @@ int main(int argc, char *argv[])
                     bsx = 1180;
                 if(bsx<0)
                     bsx = 0;
-		if(bsy>1180)
+				if(bsy>1180)
                     bsy = 1180;
                 if(bsy<0)
                     bsy = 0;
@@ -1747,28 +1747,28 @@ int main(int argc, char *argv[])
 	    }else{
 		cr = pmap[y/sdl_scale][x/sdl_scale];
 	    }
-            if(!((cr>>PS)>=NPART || !cr))
+            if(!((cr>>8)>=NPART || !cr))
             {
 #ifdef BETA
 		if(DEBUG_MODE)
                 {
-                    int tctype = parts[cr>>PS].ctype;
+                    int tctype = parts[cr>>8].ctype;
                     if(tctype>=PT_NUM)
                         tctype = 0;
-                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&TYPE].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
-			//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&TYPE].name, ptypes[parts[cr>>PS].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
+                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+			//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 		} else
-                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&TYPE].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
+                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 #else
 		if(DEBUG_MODE)
                 {
-                    int tctype = parts[cr>>PS].ctype;
+                    int tctype = parts[cr>>8].ctype;
                     if(tctype>=PT_NUM)
                         tctype = 0;
-                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d,tmp: %d", ptypes[cr&TYPE].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life,parts[cr>>PS].tmp);
-			//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&TYPE].name, ptypes[parts[cr>>PS].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
+                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d,tmp: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life,parts[cr>>8].tmp);
+			//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 		} else {
-			sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&TYPE].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
+			sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
                 }
 #endif
             }
@@ -2076,9 +2076,6 @@ int main(int argc, char *argv[])
                         memset(bmap, 0, sizeof(bmap));
                         memset(emap, 0, sizeof(emap));
                         memset(parts, 0, sizeof(particle)*NPART);
-			memset(photons, 0,sizeof(photons));
-			memset(wireless, 0, sizeof(wireless));
-			memset(gol2, 0, sizeof(gol2));
                         for(i=0; i<NPART-1; i++)
                             parts[i].life = i+1;
                         parts[NPART-1].life = -1;
@@ -2135,7 +2132,10 @@ int main(int argc, char *argv[])
                     if(x>=19 && x<=35 && svf_last && svf_open && !bq){
 						//int tpval = sys_pause;
 						parse_save(svf_last, svf_lsize, 1, 0, 0);
-						memset(wireless, 0, sizeof(wireless));
+						for(j= 0;j<99;j++){ //reset wifi on reload
+							wireless[j][0] = 0;
+							wireless[j][1] = 0;
+						}
 						//sys_pause = tpval;
 					}
                     if(x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
@@ -2235,9 +2235,9 @@ int main(int argc, char *argv[])
                         {
                             int cr;
                             cr = pmap[y][x];
-                            if(!((cr>>PS)>=NPART || !cr))
+                            if(!((cr>>8)>=NPART || !cr))
                             {
-                                c = sl = cr&TYPE;
+                                c = sl = cr&0xFF;
                             }
                             else
                             {

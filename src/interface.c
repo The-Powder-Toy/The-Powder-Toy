@@ -1659,7 +1659,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
     {
         drawtext(vid_buf, XRES-textwidth((char *)msections[i].name)-BARSIZE, sy-10, (char *)msections[i].name, 255, 255, 255, 255);
     }
-    else if(i==SC_WALL||(i==SC_SPECIAL&&h>=UI_WALLSTART&&h<=UI_WALLSTART+UI_WALLCOUNT))
+    else if(i==SC_WALL||(i==SC_SPECIAL&&h>=UI_WALLSTART))
     {
         drawtext(vid_buf, XRES-textwidth((char *)mwalls[h-UI_WALLSTART].descs)-BARSIZE, sy-10, (char *)mwalls[h-UI_WALLSTART].descs, 255, 255, 255, 255);
     }

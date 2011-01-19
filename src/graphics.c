@@ -447,7 +447,7 @@ void draw_tool(pixel *vid_buf, int b, int sl, int sr, unsigned pc, unsigned iswa
 int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 {
     int i, j, c;
-    if(b>=UI_WALLSTART && b<=UI_WALLSTART+UI_WALLCOUNT)
+    if(b>=UI_WALLSTART)
     {
         b = b-100;
         //x = (2+32*((b-22)/1));
@@ -1451,13 +1451,13 @@ void draw_parts(pixel *vid)
 			}
 			else
 			{
-			cr = PIXR(ptypes[t].pcolors);
-                	cg = PIXG(ptypes[t].pcolors);
-               	 	cb = PIXB(ptypes[t].pcolors);
-                	blendpixel(vid, nx, ny, cr, cg, cb, 255);
+				cr = PIXR(ptypes[t].pcolors);
+                cg = PIXG(ptypes[t].pcolors);
+               	cb = PIXB(ptypes[t].pcolors);
+                blendpixel(vid, nx, ny, cr, cg, cb, 255);
 			}
-	    	}
-		else if(cmode==CM_GRAD)
+		}
+		else if(cmode==CM_GRAD)//forgot to put else, broke nothing view
 		{
 			float frequency = 0.05;
 			int q = parts[i].temp-40;
@@ -2073,7 +2073,7 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
                         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
                     }
-                }
+			}
 		else if(t==PT_FILT)
 		{
 			int temp_bin = (int)((parts[i].temp-273.0f)*0.025f);
@@ -2901,8 +2901,8 @@ void render_signs(pixel *vid_buf)
             }
             if(strcmp(signs[i].text, "{t}")==0)
             {
-                if((pmap[signs[i].y][signs[i].x]>>PS)>0 && (pmap[signs[i].y][signs[i].x]>>PS)<NPART)
-                    sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>PS].temp-273.15);  //...tempirature
+                if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
+                    sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...tempirature
                 else
                     sprintf(buff, "Temp: 0.00");  //...tempirature
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
@@ -3160,12 +3160,12 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
                         if(!(j%2) && !(i%2))
                             fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
                 break;
-            case 4:
-                for(j=0; j<CELL; j+=2)
-                    for(i=(j>>1)&1; i<CELL; i+=2)
-                        fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
-                k++;
-                break;
+				case 4:
+					for(j=0; j<CELL; j+=2)
+						for(i=(j>>1)&1; i<CELL; i+=2)
+							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
+					k++;
+					break;
             case 6:
                 for(j=0; j<CELL; j+=2)
                     for(i=(j>>1)&1; i<CELL; i+=2)
