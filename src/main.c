@@ -496,7 +496,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
         {
             x = (int)(parts[i].x+0.5f);
             y = (int)(parts[i].y+0.5f);
-            pmap[y][x] = (i<<12)|1;
+            pmap[y][x] = (i<<PS)|1;
         }
         else
             fp[nf++] = i;
@@ -573,7 +573,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
             {
                 if(pmap[y][x])
                 {
-                    k = pmap[y][x]>>12;
+                    k = pmap[y][x]>>PS;
                     parts[k].type = j;
                     if(j == PT_PHOT)
                         parts[k].ctype = 0x3fffffff;
@@ -1747,28 +1747,28 @@ int main(int argc, char *argv[])
 	    }else{
 		cr = pmap[y/sdl_scale][x/sdl_scale];
 	    }
-            if(!((cr>>12)>=NPART || !cr))
+            if(!((cr>>PS)>=NPART || !cr))
             {
 #ifdef BETA
 		if(DEBUG_MODE)
                 {
-                    int tctype = parts[cr>>12].ctype;
+                    int tctype = parts[cr>>PS].ctype;
                     if(tctype>=PT_NUM)
                         tctype = 0;
-                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>12].temp-273.15f, parts[cr>>12].life);
-			//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFFF].name, ptypes[parts[cr>>12].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>12].temp-273.15f, parts[cr>>12].life);
+                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&TYPE].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
+			//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&TYPE].name, ptypes[parts[cr>>PS].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
 		} else
-                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>12].temp-273.15f, parts[cr>>12].life);
+                sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&TYPE].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
 #else
 		if(DEBUG_MODE)
                 {
-                    int tctype = parts[cr>>12].ctype;
+                    int tctype = parts[cr>>PS].ctype;
                     if(tctype>=PT_NUM)
                         tctype = 0;
-                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d,tmp: %d", ptypes[cr&0xFFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>12].temp-273.15f, parts[cr>>12].life,parts[cr>>12].tmp);
-			//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFFF].name, ptypes[parts[cr>>12].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>12].temp-273.15f, parts[cr>>12].life);
+                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d,tmp: %d", ptypes[cr&TYPE].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life,parts[cr>>PS].tmp);
+			//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&TYPE].name, ptypes[parts[cr>>PS].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
 		} else {
-			sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>12].temp-273.15f);
+			sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&TYPE].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
                 }
 #endif
             }
@@ -2235,9 +2235,9 @@ int main(int argc, char *argv[])
                         {
                             int cr;
                             cr = pmap[y][x];
-                            if(!((cr>>12)>=NPART || !cr))
+                            if(!((cr>>PS)>=NPART || !cr))
                             {
-                                c = sl = cr&0xFFF;
+                                c = sl = cr&TYPE;
                             }
                             else
                             {

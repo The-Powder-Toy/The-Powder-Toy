@@ -2901,8 +2901,8 @@ void render_signs(pixel *vid_buf)
             }
             if(strcmp(signs[i].text, "{t}")==0)
             {
-                if((pmap[signs[i].y][signs[i].x]>>12)>0 && (pmap[signs[i].y][signs[i].x]>>12)<NPART)
-                    sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>12].temp-273.15);  //...tempirature
+                if((pmap[signs[i].y][signs[i].x]>>PS)>0 && (pmap[signs[i].y][signs[i].x]>>PS)<NPART)
+                    sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>PS].temp-273.15);  //...tempirature
                 else
                     sprintf(buff, "Temp: 0.00");  //...tempirature
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
