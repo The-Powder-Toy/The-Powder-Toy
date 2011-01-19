@@ -1539,6 +1539,16 @@ int main(int argc, char *argv[])
 	if(sdl_key=='=')
 	{
 	    int nx, ny;
+	    if(sdl_mod & (KMOD_CTRL))
+	    {
+		for(i=0;i<NPART;i++)
+			if(parts[i].type==PT_SPRK)
+			{
+				parts[i].type = parts[i].ctype;
+				parts[i].life = 0;
+			}
+	    }
+	    else
 		for(nx = 0;nx<XRES/CELL;nx++)
 			for(ny = 0;ny<YRES/CELL;ny++)
 			{
