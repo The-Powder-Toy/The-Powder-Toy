@@ -1112,7 +1112,7 @@ int nearest_part(int ci, int t)
 
 void update_particles_i(pixel *vid, int start, int inc)
 {
-    int i, j, x, y, t, nx, ny, r, a, s, lt, rt, fe, nt, lpv, nearp, pavg, nnx, nny, q, golnum, goldelete, z, ctype, temp, trade, docontinue, nxx, nyy, nxi, nyi;
+    int i, j, x, y, t, nx, ny, r, a, s, lt, rt, fe, nt, lpv, nearp, pavg, nnx, nny, q, golnum, goldelete, z, ctype, temp, trade, docontinue, nxx, nyy, nxi, nyi, neighbors;
     float mv, dx, dy, ix, iy, lx, ly, d, pp, nrx, nry, dp, rr, rrr;
     float nn, ct1, ct2;
     float pt = R_TEMP;
@@ -1308,7 +1308,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 		  for(ny=CELL;ny<YRES-CELL;ny++)
 		{
 			r = pmap[ny][nx];
-			int neighbors = gol2[nx][ny][0];
+			neighbors = gol2[nx][ny][0];
 			if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !r&0xFF) || (r>>8)>=NPART)
 				continue;
 			for( golnum = 1;golnum<NGOL;golnum++)
