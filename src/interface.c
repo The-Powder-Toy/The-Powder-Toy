@@ -2687,6 +2687,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 {
 	int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawnthumb=0,authoritah=0,myown=0,queue_open=0,data_size=0,retval=0,bc=255,openable=1;
 	int nyd,nyu,ry,lv;
+	float ryf;
 
 	char *uri, *uri_2, *o_uri;
 	void *data, *info_data;
@@ -2833,19 +2834,19 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 
 				if (50>lv)
 				{
-					ry = ((float)(50)/(float)lv);
+					ryf = 50.0f/((float)lv);
 					//if(lv<8)
 					//{
 					//	ry =  ry/(8-lv);
 					//}
-					nyu = info->voteup*ry;
-					nyd = info->votedown*ry;
+					nyu = info->voteup*ryf;
+					nyd = info->votedown*ryf;
 				}
 				else
 				{
-					ry = ((float)lv/(float)(50));
-					nyu = info->voteup/ry;
-					nyd = info->votedown/ry;
+					ryf = ((float)lv)/50.0f;
+					nyu = info->voteup/ryf;
+					nyd = info->votedown/ryf;
 				}
 				nyu = nyu>50?50:nyu;
 				nyd = nyd>50?50:nyd;
