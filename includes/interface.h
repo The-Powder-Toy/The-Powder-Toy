@@ -5,41 +5,41 @@
 
 struct menu_section
 {
-    char *icon;
-    const char *name;
-    int itemcount;
+	char *icon;
+	const char *name;
+	int itemcount;
 	int doshow;
 };
 typedef struct menu_section menu_section;
 
 struct menu_wall
 {
-    pixel colour;
-    const char *descs;
+	pixel colour;
+	const char *descs;
 };
 typedef struct menu_wall menu_wall;
 
 static menu_wall mwalls[] =
 {
-    {PIXPACK(0xC0C0C0), "Wall. Indestructible. Blocks everything. Conductive."},
-    {PIXPACK(0x808080), "E-Wall. Becomes transparent when electricity is connected."},
-    {PIXPACK(0xFF8080), "Detector. Generates electricity when a particle is inside."},
-    {PIXPACK(0x808080), "Streamline. Set start point of a streamline."},
-    {PIXPACK(0x808080), "Sign. Click on a sign to edit it or anywhere else to place a new one."},
-    {PIXPACK(0x8080FF), "Fan. Accelerates air. Use line tool to set direction and strength."},
-    {PIXPACK(0xC0C0C0), "Wall. Blocks most particles but lets liquids through. Conductive."},
-    {PIXPACK(0x808080), "Wall. Absorbs particles but lets air currents through."},
-    {PIXPACK(0x808080), "Erases walls."},
-    {PIXPACK(0x808080), "Wall. Indestructible. Blocks everything."},
-    {PIXPACK(0x3C3C3C), "Wall. Indestructible. Blocks particles, allows air"},
-    {PIXPACK(0x575757), "Wall. Indestructible. Blocks liquids and gasses, allows solids"},
-    {PIXPACK(0xFFFF22), "Conductor, allows particles, conducts electricity"},
-    {PIXPACK(0x242424), "E-Hole, absorbs particles, release them when powered"},
-    {PIXPACK(0xFFFFFF), "Air, creates airflow and pressure"},
-    {PIXPACK(0xFFBB00), "Heats the targetted element."},
-    {PIXPACK(0x00BBFF), "Cools the targetted element."},
-    {PIXPACK(0x303030), "Vacuum, reduces air pressure."},
-    {PIXPACK(0x579777), "Wall. Indestructible. Blocks liquids and solids, allows gasses"},
+	{PIXPACK(0xC0C0C0), "Wall. Indestructible. Blocks everything. Conductive."},
+	{PIXPACK(0x808080), "E-Wall. Becomes transparent when electricity is connected."},
+	{PIXPACK(0xFF8080), "Detector. Generates electricity when a particle is inside."},
+	{PIXPACK(0x808080), "Streamline. Set start point of a streamline."},
+	{PIXPACK(0x808080), "Sign. Click on a sign to edit it or anywhere else to place a new one."},
+	{PIXPACK(0x8080FF), "Fan. Accelerates air. Use line tool to set direction and strength."},
+	{PIXPACK(0xC0C0C0), "Wall. Blocks most particles but lets liquids through. Conductive."},
+	{PIXPACK(0x808080), "Wall. Absorbs particles but lets air currents through."},
+	{PIXPACK(0x808080), "Erases walls."},
+	{PIXPACK(0x808080), "Wall. Indestructible. Blocks everything."},
+	{PIXPACK(0x3C3C3C), "Wall. Indestructible. Blocks particles, allows air"},
+	{PIXPACK(0x575757), "Wall. Indestructible. Blocks liquids and gasses, allows solids"},
+	{PIXPACK(0xFFFF22), "Conductor, allows particles, conducts electricity"},
+	{PIXPACK(0x242424), "E-Hole, absorbs particles, release them when powered"},
+	{PIXPACK(0xFFFFFF), "Air, creates airflow and pressure"},
+	{PIXPACK(0xFFBB00), "Heats the targetted element."},
+	{PIXPACK(0x00BBFF), "Cools the targetted element."},
+	{PIXPACK(0x303030), "Vacuum, reduces air pressure."},
+	{PIXPACK(0x579777), "Wall. Indestructible. Blocks liquids and solids, allows gasses"},
 };
 
 #define SC_WALL 0
@@ -59,53 +59,52 @@ static menu_wall mwalls[] =
 
 static menu_section msections[] =
 {
-    {"\xC1", "Walls", 0, 1},
-    {"\xC2", "Electronics", 0, 1},
-    {"\xC3", "Explosives", 0, 1},
-    {"\xC5", "Gasses", 0, 1},
-    {"\xC4", "Liquids", 0, 1},
-    {"\xD0", "Powders", 0, 1},
-    {"\xD1", "Solids", 0, 1},
-    {"\xC6", "Radioactive", 0, 1},
-    {"\xCC", "Special", 0, 1},
-    {"\xD2", "Life", 0, 1},
-    {"\xD2", "More Life", 0, 1},
-    {"\xC8", "Cracker", 0, 0},
-    {"\xC8", "Cracker!", 0, 0},
+	{"\xC1", "Walls", 0, 1},
+	{"\xC2", "Electronics", 0, 1},
+	{"\xC3", "Explosives", 0, 1},
+	{"\xC5", "Gasses", 0, 1},
+	{"\xC4", "Liquids", 0, 1},
+	{"\xD0", "Powders", 0, 1},
+	{"\xD1", "Solids", 0, 1},
+	{"\xC6", "Radioactive", 0, 1},
+	{"\xCC", "Special", 0, 1},
+	{"\xD2", "Life", 0, 1},
+	{"\xC8", "Cracker", 0, 0},
+	{"\xC8", "Cracker!", 0, 0},
 };
 
 struct ui_edit
 {
-    int x, y, w, nx, h;
-    char str[256],*def;
-    int focus, cursor, hide, multiline;
+	int x, y, w, nx, h;
+	char str[256],*def;
+	int focus, cursor, hide, multiline;
 };
 typedef struct ui_edit ui_edit;
 
 struct save_info
 {
-    char *title;
-    char *name;
-    char *author;
-    char *date;
-    char *description;
-    int publish;
-    int voteup;
-    int votedown;
-    int vote;
-    int myvote;
-    int myfav;
-    char *tags;
-    int comment_count;
-    char *comments[6];
-    char *commentauthors[6];
+	char *title;
+	char *name;
+	char *author;
+	char *date;
+	char *description;
+	int publish;
+	int voteup;
+	int votedown;
+	int vote;
+	int myvote;
+	int myfav;
+	char *tags;
+	int comment_count;
+	char *comments[6];
+	char *commentauthors[6];
 };
 typedef struct save_info save_info;
 
 struct ui_checkbox
 {
-    int x, y;
-    int focus, checked;
+	int x, y;
+	int focus, checked;
 };
 typedef struct ui_checkbox ui_checkbox;
 
