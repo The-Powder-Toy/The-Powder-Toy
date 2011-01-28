@@ -687,9 +687,9 @@ static part_transition ptransitions[PT_NUM] =
 #undef ST
 
 
-static int grule[NGOL][9] =
+static int grule[NGOL][10] =
 {
-//       0,1,2,3,4,5,6,7,8,STATES    live=1  spawn=2 spawn&live=3   States are kind of how long until it dies, normal ones use two states(living,dead) for others the intermediate states live but do nothing
+//	 0,1,2,3,4,5,6,7,8,STATES    live=1  spawn=2 spawn&live=3   States are kind of how long until it dies, normal ones use two states(living,dead) for others the intermediate states live but do nothing
 	{0,0,0,0,0,0,0,0,0,2},//blank
 	{0,0,1,3,0,0,0,0,0,2},//GOL
 	{0,0,1,3,0,0,2,0,0,2},//HLIF
@@ -804,7 +804,7 @@ static void create_gain_photon(int pp);
 void kill_part(int i);
 
 #if defined(WIN32) && !defined(__GNUC__)
-extern _inline void part_change_type(int n, int x, int y, int t);
+extern _inline void part_change_type(int i, int x, int y, int t);
 #else
 extern inline void part_change_type(int i, int x, int y, int t);
 #endif
