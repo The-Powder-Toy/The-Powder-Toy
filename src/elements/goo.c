@@ -1,4 +1,4 @@
-#include <powder.h>
+#include <element.h>
 
 int update_GOO(UPDATE_FUNC_ARGS) {
 	if (!parts[i].life)
