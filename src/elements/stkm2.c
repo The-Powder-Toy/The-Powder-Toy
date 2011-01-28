@@ -1,4 +1,4 @@
-#include <powder.h>
+#include <element.h>
 
 int update_SPAWN2(UPDATE_FUNC_ARGS) {
 	ISSPAWN2 = 1;

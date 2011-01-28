@@ -1,4 +1,4 @@
-#include <powder.h>
+#include <element.h>
 
 int update_URAN(UPDATE_FUNC_ARGS) {
 	if (!legacy_enable && pv[y/CELL][x/CELL]>0.0f)

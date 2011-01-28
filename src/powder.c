@@ -1565,6 +1565,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					}
 					else s = 0;
 					if (s) { // particle type change occurred
+						parts[i].life = 0;
 						if (t==PT_ICEI||t==PT_LAVA)
 							parts[i].ctype = parts[i].type;
 						if (ptypes[t].state==ST_GAS&&ptypes[parts[i].type].state!=ST_GAS)
@@ -1672,6 +1673,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			}
 			else s = 0;
 			if (s) { // particle type change occurred
+				parts[i].life = 0;
 				part_change_type(i,x,y,t);
 				if (t==PT_FIRE)
 					parts[i].life = rand()%50+120;
