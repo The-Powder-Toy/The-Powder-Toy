@@ -501,7 +501,7 @@ static const part_type ptypes[PT_NUM] =
 	{"BOMB",	PIXPACK(0xFFF288),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	20,	1,	30,		SC_EXPLOSIVE,	R_TEMP-2.0f	+273.15f,	29,		"Bomb.", ST_NONE, TYPE_PART, &update_BOMB},
 	{"C-5",		PIXPACK(0x2050E0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Cold explosive", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_C5},
 	{"SING",	PIXPACK(0x242424),	0.7f,	0.36f * CFDS,	0.96f,	0.80f,	0.1f,	0.12f,	0.00f,	-0.001f	* CFDS,	1,	0,		0,	0,	0,	1,	86,		SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	70,		"Singularity", ST_SOLID, TYPE_PART, &update_SING},
-	{"QRTZ",	PIXPACK(0xAADDDD),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	3,		"Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, &update_QRTZ},
+	{"QRTZ",	PIXPACK(0xAADDDD),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	3,		"Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.", ST_SOLID, TYPE_SOLID|PROP_HOT_GLOW, &update_QRTZ},
 	{"PQRT",	PIXPACK(0x88BBBB),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.27f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	3,		"Broken quartz.", ST_SOLID, TYPE_PART| PROP_HOT_GLOW, NULL},
 	{"SEED",	PIXPACK(0xFBEC7D),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B2/S", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"MAZE",	PIXPACK(0xA8E4A0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B3/S12345", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
@@ -510,13 +510,12 @@ static const part_type ptypes[PT_NUM] =
 	{"GNAR",	PIXPACK(0xE5B73B),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B1/S1", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"REPL",	PIXPACK(0x259588),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B1357/S1357", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"MYST",	PIXPACK(0x0C3C00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B3458/S05678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-	
 	{"BOYL",	PIXPACK(0x0A3200),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.18f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+2.0f	+273.15f,	42,		"Boyle, variable pressure gas. Expands when heated.", ST_GAS, TYPE_GAS, &update_BOYL},
-	{"LOTE",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Behaves kinda like Living on the Edge S3458/B37/4", TYPE_SOLID|PROP_LIFE, NULL}, 
-	{"FRG2",	PIXPACK(0x00FF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Like Frogs rule S124/B3/3", TYPE_SOLID|PROP_LIFE, NULL}, 
-	{"STAR",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Like Star Wars rule S3456/B278/6", TYPE_SOLID|PROP_LIFE, NULL}, 
-	{"FROG",	PIXPACK(0x00AA00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Frogs S12/B34/3", TYPE_SOLID|PROP_LIFE, NULL}, 
-	{"BRAN",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Brian 6 S6/B246/3", TYPE_SOLID|PROP_LIFE, NULL}, 
+	{"LOTE",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Behaves kinda like Living on the Edge S3458/B37/4", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
+	{"FRG2",	PIXPACK(0x00FF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Like Frogs rule S124/B3/3", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
+	{"STAR",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Like Star Wars rule S3456/B278/6", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
+	{"FROG",	PIXPACK(0x00AA00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Frogs S12/B34/3", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
+	{"BRAN",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Brian 6 S6/B246/3", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -675,10 +674,10 @@ static part_transition ptransitions[PT_NUM] =
 	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* BOYL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 };
 #undef IPL
 #undef IPH

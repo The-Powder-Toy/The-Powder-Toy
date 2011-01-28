@@ -577,8 +577,7 @@ inline int create_part(int p, int x, int y, int t)
 
 	if (t==PT_SPRK)
 	{
-		if (!((pmap[y][x]&0xFF)==PT_INST||(ptypes[pmap[y][x]&0xFF].properties&PROP_CONDUCTS))
-			|| (pmap[y][x]&0xFF)==PT_QRTZ)
+		if (!((pmap[y][x]&0xFF)==PT_INST||(ptypes[pmap[y][x]&0xFF].properties&PROP_CONDUCTS)))
 			return -1;
 		if (parts[pmap[y][x]>>8].life!=0)
 			return -1;
@@ -604,8 +603,6 @@ inline int create_part(int p, int x, int y, int t)
 				}
 			}
 		}
-		if (photons[y][x] && t==PT_PHOT)
-			return -1;
 		if (pfree == -1)
 			return -1;
 		i = pfree;
@@ -967,7 +964,6 @@ inline void delete_part(int x, int y)
 	}
 	else
 		return;
-	
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
@@ -1124,7 +1120,7 @@ int nearest_part(int ci, int t)
 
 void update_particles_i(pixel *vid, int start, int inc)
 {
-	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z;
+	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z, neighbors;
 	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp;
 	int fin_x, fin_y, clear_x, clear_y;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
@@ -1316,7 +1312,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 		for (nx=CELL; nx<XRES-CELL; nx++)
 			for (ny=CELL; ny<YRES-CELL; ny++)
 			{
-				int neighbors = gol2[nx][ny][0];
+				neighbors = gol2[nx][ny][0];
 				if (neighbors==0)
 					continue;
 				for ( golnum = 1; golnum<NGOL; golnum++)
