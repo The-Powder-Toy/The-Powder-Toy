@@ -61,7 +61,7 @@ extern unsigned char ZSIZE;
 #define STAMP_Y 4
 #define STAMP_MAX 120
 
-#define NGOL 26
+#define NGOL 25
 
 #define CIRCLE_BRUSH 0
 #define SQUARE_BRUSH 1
@@ -136,7 +136,7 @@ int GSPEED;
 int love[XRES/9][YRES/9];
 int lolz[XRES/9][YRES/9];
 int gol[XRES][YRES];
-int gol2[XRES][YRES][NGOL];
+int gol2[XRES][YRES][NGOL+1];
 int SEC;
 int SEC2;
 int REPLACE_MODE;

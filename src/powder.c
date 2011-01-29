@@ -1328,7 +1328,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				neighbors = gol2[nx][ny][0];
 				if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !r&0xFF) || (r>>8)>=NPART)
 					continue;
-				for ( golnum = 1; golnum<NGOL; golnum++)
+				for ( golnum = 1; golnum<=NGOL; golnum++)
 					for ( goldelete = 0; goldelete<9; goldelete++)
 					{
 						if (neighbors==goldelete&&gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
@@ -1345,7 +1345,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							parts[r>>8].type = PT_NONE;//using kill_part makes it not work
 					}
 				gol2[nx][ny][0] = 0;
-				for ( z = 1; z<NGOL; z++)
+				for ( z = 1; z<=NGOL; z++)
 					gol2[nx][ny][z] = 0;
 			}
 		if (createdsomething)

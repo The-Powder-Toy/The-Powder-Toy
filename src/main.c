@@ -718,7 +718,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 					ttv |= (d[p++]);
 					parts[i-1].tmp = ttv;
 					if(ptypes[parts[i-1].type].properties&PROP_LIFE && !parts[i-1].tmp)
-						for(q = 1; q<NGOL ; q++) {
+						for(q = 1; q<=NGOL ; q++) {
 							if(parts[i-1].type==goltype[q-1] && grule[q][9]==2)
 								parts[i-1].tmp = grule[q][9]-1;
 						}
