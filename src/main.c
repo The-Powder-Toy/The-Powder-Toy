@@ -1495,13 +1495,25 @@ int main(int argc, char *argv[])
 		if (sdl_key=='=')
 		{
 			int nx, ny;
-			for (nx = 0; nx<XRES/CELL; nx++)
-				for (ny = 0; ny<YRES/CELL; ny++)
-				{
-					pv[ny][nx] = 0;
-					vx[ny][nx] = 0;
-					vy[ny][nx] = 0;
-				}
+			if(sdl_mod & (KMOD_CTRL))
+			{
+				for(i=0; i<NPART; i++)
+					if(parts[i].type==PT_SPRK)
+					{
+						parts[i].type = parts[i].ctype;
+						parts[i].life = 0;
+					}
+			} 
+			else
+			{
+				for (nx = 0; nx<XRES/CELL; nx++)
+					for (ny = 0; ny<YRES/CELL; ny++)
+					{
+						pv[ny][nx] = 0;
+						vx[ny][nx] = 0;
+						vy[ny][nx] = 0;
+					}
+			}
 		}
 
 		if (sdl_key=='w' && (!isplayer2 || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
@@ -2036,7 +2048,6 @@ int main(int argc, char *argv[])
 						memset(bmap, 0, sizeof(bmap));
 						memset(emap, 0, sizeof(emap));
 						memset(parts, 0, sizeof(particle)*NPART);
-						
 						memset(photons, 0, sizeof(photons));
 						memset(wireless, 0, sizeof(wireless));
 						memset(gol2, 0, sizeof(gol2));
@@ -2098,10 +2109,6 @@ int main(int argc, char *argv[])
 					if (x>=19 && x<=35 && svf_last && svf_open && !bq) {
 						//int tpval = sys_pause;
 						parse_save(svf_last, svf_lsize, 1, 0, 0);
-						for (j= 0; j<99; j++) { //reset wifi on reload
-							wireless[j][0] = 0;
-							wireless[j][1] = 0;
-						}
 						//sys_pause = tpval;
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)

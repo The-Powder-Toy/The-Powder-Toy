@@ -450,7 +450,7 @@ void kill_part(int i)
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline void part_change_type(int n, int x, int y, int t)
+_inline void part_change_type(int i, int x, int y, int t)
 #else
 inline void part_change_type(int i, int x, int y, int t)
 #endif
@@ -465,7 +465,7 @@ inline void part_change_type(int i, int x, int y, int t)
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline int create_n_parts(int n, int x, int y, int t)
+_inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
 #else
 inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
 #endif
@@ -577,8 +577,7 @@ inline int create_part(int p, int x, int y, int t)
 
 	if (t==PT_SPRK)
 	{
-		if (!((pmap[y][x]&0xFF)==PT_INST||(ptypes[pmap[y][x]&0xFF].properties&PROP_CONDUCTS))
-			|| (pmap[y][x]&0xFF)==PT_QRTZ)
+		if (!((pmap[y][x]&0xFF)==PT_INST||(ptypes[pmap[y][x]&0xFF].properties&PROP_CONDUCTS)))
 			return -1;
 		if (parts[pmap[y][x]>>8].life!=0)
 			return -1;
@@ -604,8 +603,6 @@ inline int create_part(int p, int x, int y, int t)
 				}
 			}
 		}
-		if (photons[y][x] && t==PT_PHOT)
-			return -1;
 		if (pfree == -1)
 			return -1;
 		i = pfree;
@@ -973,7 +970,6 @@ inline void delete_part(int x, int y)
 	}
 	else
 		return;
-	
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
@@ -1134,7 +1130,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp;
 	int fin_x, fin_y, clear_x, clear_y;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
-	float nn, ct1, ct2;
+	float nn, ct1, ct2, swappage;
 	float pt = R_TEMP;
 	float c_heat = 0.0f;
 	int h_count = 0;
@@ -1489,7 +1485,6 @@ void update_particles_i(pixel *vid, int start, int inc)
 			if (!legacy_enable)
 			{
 				if (y-2 >= 0 && y-2 < YRES && (ptypes[t].properties&TYPE_LIQUID)) {
-					float swappage;
 					r = pmap[y-2][x];
 					if (!((r>>8)>=NPART || !r || parts[i].type != (r&0xFF))) {
 						if (parts[i].temp>parts[r>>8].temp) {
@@ -1561,6 +1556,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							if (parts[i].ctype&&parts[i].ctype!=PT_LAVA) {
 								if (ptransitions[parts[i].ctype].tht==PT_LAVA&&pt>=ptransitions[parts[i].ctype].thv) s = 0;
 								else if (parts[i].ctype==PT_THRM&&pt>=ptransitions[PT_BMTL].thv) s = 0;
+								else if (pt>=973.0f) s = 0; // freezing point for lava with any other (not listed in ptransitions as turning into lava) ctype
 								else {
 									t = parts[i].ctype;
 									parts[i].ctype = PT_NONE;
