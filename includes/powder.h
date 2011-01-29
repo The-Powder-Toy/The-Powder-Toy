@@ -837,9 +837,9 @@ extern inline int is_wire_off(int x, int y);
 void set_emap(int x, int y);
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline int parts_avg(int ci, int ni, int t);
+extern _inline int parts_avg(int ci, int ni, int t);
 #else
-int parts_avg(int ci, int ni, int t);
+extern int parts_avg(int ci, int ni, int t);
 #endif
 
 int nearest_part(int ci, int t);

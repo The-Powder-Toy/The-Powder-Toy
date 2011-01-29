@@ -4,5 +4,6 @@
 
 #include "powder.h"
 #include "misc.h"
+#include "math.h"
 
 #endif
