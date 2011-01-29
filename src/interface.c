@@ -25,7 +25,9 @@ int svf_login = 0;
 int svf_admin = 0;
 int svf_mod = 0;
 char svf_user[64] = "";
+char svf_user_id[64] = "";
 char svf_pass[64] = "";
+char svf_session_id[64] = "";
 
 int svf_open = 0;
 int svf_own = 0;
@@ -836,7 +838,7 @@ void login_ui(pixel *vid_buf)
 	res = http_multipart_post(
 	          "http://" SERVER "/Login.api",
 	          NULL, NULL, NULL,
-	          svf_user, svf_pass,
+	          svf_user, svf_pass, NULL,
 	          &err, NULL);
 	if (err != 200)
 	{
@@ -845,14 +847,27 @@ void login_ui(pixel *vid_buf)
 			free(res);
 		goto fail;
 	}
-	if (res && !strncmp(res, "OK", 2))
+	if (res && !strncmp(res, "OK ", 3))
 	{
-		if (!strcmp(res, "OK ADMIN"))
+		char *s_id,*u_e,*nres;
+		s_id = strchr(res+3, ' ');
+		*(s_id++) = 0;
+		
+		u_e = strchr(s_id, ' ');
+		*(u_e++) = 0;
+		
+		strcpy(svf_user_id, res+3);
+		strcpy(svf_session_id, s_id);
+		nres = mystrdup(u_e);
+		
+		printf("\n{%s} {%s} {%s}\n", svf_user_id, svf_session_id, nres);
+		
+		if (!strncmp(nres, "ADMIN", 5))
 		{
 			svf_admin = 1;
 			svf_mod = 0;
 		}
-		else if (!strcmp(res, "OK MOD"))
+		else if (!strncmp(nres, "MOD", 3))
 		{
 			svf_admin = 0;
 			svf_mod = 1;
@@ -874,6 +889,8 @@ void login_ui(pixel *vid_buf)
 fail:
 	strcpy(svf_user, "");
 	strcpy(svf_pass, "");
+	strcpy(svf_user_id, "");
+	strcpy(svf_session_id, "");
 	svf_login = 0;
 	svf_own = 0;
 	svf_admin = 0;
@@ -2489,7 +2506,8 @@ int search_ui(pixel *vid_buf)
 			http = http_async_req_start(http, uri, NULL, 0, 1);
 			if (svf_login)
 			{
-				http_auth_headers(http, svf_user, svf_pass);
+				//http_auth_headers(http, svf_user, svf_pass);
+				http_auth_headers(http, svf_user_id, NULL, svf_session_id);
 			}
 			http_last_use = time(NULL);
 			free(uri);
@@ -2757,8 +2775,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	http_2 = http_async_req_start(http_2, uri_2, NULL, 0, 1);
 	if (svf_login)
 	{
-		http_auth_headers(http, svf_user, svf_pass);
-		http_auth_headers(http_2, svf_user, svf_pass);
+		//http_auth_headers(http, svf_user, svf_pass);
+		//http_auth_headers(http_2, svf_user, svf_pass);
+		http_auth_headers(http, svf_user_id, NULL, svf_session_id);
+		http_auth_headers(http_2, svf_user_id, NULL, svf_session_id);
 	}
 	http_last_use = time(NULL);
 	http_last_use_2 = time(NULL);
@@ -3483,7 +3503,7 @@ int execute_tagop(pixel *vid_buf, char *op, char *tag)
 	result = http_multipart_post(
 	             uri,
 	             names, parts, NULL,
-	             svf_user, svf_pass,
+	             svf_user_id, /*svf_pass*/NULL, svf_session_id,
 	             &status, NULL);
 
 	free(uri);
@@ -3543,7 +3563,7 @@ void execute_save(pixel *vid_buf)
 	result = http_multipart_post(
 	             "http://" SERVER "/Save.api",
 	             names, parts, plens,
-	             svf_user, svf_pass,
+	             svf_user_id, /*svf_pass*/NULL, svf_session_id,
 	             &status, NULL);
 
 	if (svf_last)
@@ -3600,7 +3620,7 @@ int execute_delete(pixel *vid_buf, char *id)
 	result = http_multipart_post(
 	             "http://" SERVER "/Delete.api",
 	             names, parts, NULL,
-	             svf_user, svf_pass,
+	             svf_user_id, /*svf_pass*/NULL, svf_session_id,
 	             &status, NULL);
 
 	if (status!=200)
@@ -3636,7 +3656,7 @@ void execute_submit(pixel *vid_buf, char *id, char *message)
 	result = http_multipart_post(
 	             "http://" SERVER "/Comment.api",
 	             names, parts, NULL,
-	             svf_user, svf_pass,
+	             svf_user_id, /*svf_pass*/NULL, svf_session_id,
 	             &status, NULL);
 
 	if (status!=200)
@@ -3671,7 +3691,7 @@ int execute_report(pixel *vid_buf, char *id, char *reason)
 	result = http_multipart_post(
 	             "http://" SERVER "/Report.api",
 	             names, parts, NULL,
-	             svf_user, svf_pass,
+	             svf_user_id, /*svf_pass*/NULL, svf_session_id,
 	             &status, NULL);
 
 	if (status!=200)
@@ -3706,7 +3726,7 @@ void execute_fav(pixel *vid_buf, char *id)
 	result = http_multipart_post(
 	             "http://" SERVER "/Favourite.api",
 	             names, parts, NULL,
-	             svf_user, svf_pass,
+	             svf_user_id, /*svf_pass*/NULL, svf_session_id,
 	             &status, NULL);
 
 	if (status!=200)
@@ -3741,7 +3761,7 @@ int execute_vote(pixel *vid_buf, char *id, char *action)
 	result = http_multipart_post(
 	             "http://" SERVER "/Vote.api",
 	             names, parts, NULL,
-	             svf_user, svf_pass,
+	             svf_user_id, /*svf_pass*/NULL, svf_session_id,
 	             &status, NULL);
 
 	if (status!=200)

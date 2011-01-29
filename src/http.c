@@ -680,7 +680,7 @@ char *http_simple_get(char *uri, int *ret, int *len)
 	return http_async_req_stop(ctx, ret, len);
 }
 static char hex[] = "0123456789abcdef";
-void http_auth_headers(void *ctx, char *user, char *pass)
+void http_auth_headers(void *ctx, char *user, char *pass, char *session_id)
 {
 	char *tmp;
 	int i;
@@ -690,7 +690,6 @@ void http_auth_headers(void *ctx, char *user, char *pass)
 
 	if (user)
 	{
-		http_async_add_header(ctx, "X-Auth-User", user);
 		if (pass)
 		{
 			md5_init(&md5);
@@ -710,9 +709,18 @@ void http_auth_headers(void *ctx, char *user, char *pass)
 			http_async_add_header(ctx, "X-Auth-Hash", tmp);
 			free(tmp);
 		}
+		if(session_id)
+		{
+			http_async_add_header(ctx, "X-Auth-User-Id", user);
+			http_async_add_header(ctx, "X-Auth-Session-Key", session_id);
+		}
+		else
+		{
+			http_async_add_header(ctx, "X-Auth-User", user);
+		}
 	}
 }
-char *http_auth_get(char *uri, char *user, char *pass, int *ret, int *len)
+char *http_auth_get(char *uri, char *user, char *pass, char *session_id, int *ret, int *len)
 {
 	void *ctx = http_async_req_start(NULL, uri, NULL, 0, 0);
 
@@ -870,7 +878,7 @@ char *http_ret_text(int ret)
 		return "Unknown Status Code";
 	}
 }
-char *http_multipart_post(char *uri, char **names, char **parts, int *plens, char *user, char *pass, int *ret, int *len)
+char *http_multipart_post(char *uri, char **names, char **parts, int *plens, char *user, char *pass, char *session_id, int *ret, int *len)
 {
 	void *ctx;
 	char *data = NULL, *tmp, *p;
@@ -965,7 +973,7 @@ retry:
 
 	if (user)
 	{
-		http_async_add_header(ctx, "X-Auth-User", user);
+		//http_async_add_header(ctx, "X-Auth-User", user);
 		if (pass)
 		{
 			md5_init(&md5);
@@ -1022,6 +1030,15 @@ retry:
 			tmp[32] = 0;
 			http_async_add_header(ctx, "X-Auth-Hash", tmp);
 			free(tmp);
+		}
+		if(session_id)
+		{
+			http_async_add_header(ctx, "X-Auth-User-Id", user);
+			http_async_add_header(ctx, "X-Auth-Session-Key", session_id);
+		}
+		else
+		{
+			http_async_add_header(ctx, "X-Auth-User", user);
 		}
 	}
 
