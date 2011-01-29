@@ -1,8 +1,9 @@
 #include <element.h>
 
 int update_SPRK(UPDATE_FUNC_ARGS) {
-	update_PYRO(UPDATE_FUNC_SUBCALL_ARGS);
 	int r, rx, ry, rt, conduct_sprk, nearp, pavg, ct = parts[i].ctype;
+	update_PYRO(UPDATE_FUNC_SUBCALL_ARGS);
+
 	if (parts[i].life<=0)
 	{
 		if (ct==PT_WATR||ct==PT_SLTW||ct==PT_PSCN||ct==PT_NSCN||ct==PT_ETRD||ct==PT_INWR)
