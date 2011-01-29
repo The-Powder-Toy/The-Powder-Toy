@@ -664,6 +664,12 @@ inline int create_part(int p, int x, int y, int t)
 		parts[i].life = 50;
 		parts[i].tmp = 50;
 	}
+	if (ptypes[t].properties&PROP_LIFE) {
+		int r;
+		for(r = 0; r<NGOL; r++)
+			if(t==goltype[r])
+				parts[i].tmp = grule[r+1][9] - 1;
+	}
 	if (t==PT_DEUT)
 		parts[i].life = 10;
 	if (t==PT_BRAY)
@@ -1297,23 +1303,30 @@ void update_particles_i(pixel *vid, int start, int inc)
 					continue;
 				}
 				else
-					for ( golnum=1; golnum<NGOL; golnum++)
+					for ( golnum=1; golnum<=NGOL; golnum++)
 						if (parts[r>>8].type==goltype[golnum-1])
 						{
-							gol[nx][ny] = golnum;
-							for ( nnx=-1; nnx<2; nnx++)
-								for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
-								{
-									gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][golnum] ++;
-									gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][0] ++;
-								}
+							if(parts[r>>8].tmp == grule[golnum][9]-1) {
+								gol[nx][ny] = golnum;
+								for ( nnx=-1; nnx<2; nnx++)
+									for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
+									{
+										gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][golnum] ++;
+										gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][0] ++;
+									}
+							} else {
+								parts[r>>8].tmp --;
+								if(parts[r>>8].tmp<=0)
+									parts[r>>8].type = PT_NONE;//using kill_part makes it not work
+							}
 						}
 			}
 		for (nx=CELL; nx<XRES-CELL; nx++)
 			for (ny=CELL; ny<YRES-CELL; ny++)
 			{
+				r = pmap[ny][nx];
 				neighbors = gol2[nx][ny][0];
-				if (neighbors==0)
+				if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !r&0xFF) || (r>>8)>=NPART)
 					continue;
 				for ( golnum = 1; golnum<NGOL; golnum++)
 					for ( goldelete = 0; goldelete<9; goldelete++)
@@ -1324,7 +1337,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 								createdsomething = 1;
 						}
 						else if (neighbors-1==goldelete&&gol[nx][ny]==golnum&&(grule[golnum][goldelete]==0||grule[golnum][goldelete]==2))//subtract 1 because it counted itself
-							kill_part(pmap[ny][nx]>>8);
+						{
+							if(parts[r>>8].tmp==grule[golnum][9]-1)
+								parts[r>>8].tmp --;
+						}
+						if(parts[r>>8].tmp<=0)
+							parts[r>>8].type = PT_NONE;//using kill_part makes it not work
 					}
 				gol2[nx][ny][0] = 0;
 				for ( z = 1; z<NGOL; z++)

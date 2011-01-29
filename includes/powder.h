@@ -191,9 +191,9 @@
 #define PT_REPL 139
 #define PT_MYST 140
 #define PT_BOYL 141
-#define PT_TEST 142
-#define PT_TEST2 143
-#define PT_TEST3 144
+#define PT_LOTE 142
+#define PT_FRG2 143
+#define PT_STAR 144
 #define PT_FROG 145
 #define PT_BRAN 146
 #define PT_NUM  147
@@ -511,11 +511,11 @@ static const part_type ptypes[PT_NUM] =
 	{"REPL",	PIXPACK(0x259588),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B1357/S1357", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"MYST",	PIXPACK(0x0C3C00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B3458/S05678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"BOYL",	PIXPACK(0x0A3200),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.18f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+2.0f	+273.15f,	42,		"Boyle, variable pressure gas. Expands when heated.", ST_GAS, TYPE_GAS, &update_BOYL},
-	{"LOTE",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Behaves kinda like Living on the Edge S3458/B37/4", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
-	{"FRG2",	PIXPACK(0x00FF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Like Frogs rule S124/B3/3", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
-	{"STAR",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Like Star Wars rule S3456/B278/6", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
-	{"FROG",	PIXPACK(0x00AA00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Frogs S12/B34/3", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
-	{"BRAN",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Brian 6 S6/B246/3", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
+	{"LOTE",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Behaves kinda like Living on the Edge S3458/B37/4", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+	{"FRG2",	PIXPACK(0x00FF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Like Frogs rule S124/B3/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+	{"STAR",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Like Star Wars rule S3456/B278/6", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+	{"FROG",	PIXPACK(0x00AA00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Frogs S12/B34/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+	{"BRAN",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE2,		9000.0f,				40,		"Brian 6 S6/B246/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -710,9 +710,9 @@ static int grule[NGOL][10] =
 	{0,3,0,0,0,0,0,0,0,2},//GNAR
 	{0,3,0,3,0,3,0,3,0,2},//REPL
 	{1,0,0,2,2,3,1,1,3,2},//MYST
-	{0,0,0,3,1,1,0,2,1,4},//TEST
-	{0,1,1,2,1,0,0,0,0,3},//TEST2
-	{0,0,2,1,1,1,1,2,2,6},//TEST3
+	{0,0,0,3,1,1,0,2,1,4},//LOTE
+	{0,1,1,2,1,0,0,0,0,3},//FRG2
+	{0,0,2,1,1,1,1,2,2,6},//STAR
 	{0,1,1,2,2,0,0,0,0,3},//FROG
 	{0,0,2,0,2,0,3,0,0,3},//BRAN
 };
@@ -737,9 +737,9 @@ static int goltype[NGOL] =
 	PT_GNAR,
 	PT_REPL,
 	PT_MYST,
-	PT_TEST,
-	PT_TEST2,
-	PT_TEST3,
+	PT_LOTE,
+	PT_FRG2,
+	PT_STAR,
 	PT_FROG,
 	PT_BRAN,
 };
@@ -836,9 +836,9 @@ extern inline int is_wire_off(int x, int y);
 void set_emap(int x, int y);
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline int parts_avg(int ci, int ni, int t);
+extern _inline int parts_avg(int ci, int ni, int t);
 #else
-int parts_avg(int ci, int ni, int t);
+extern int parts_avg(int ci, int ni, int t);
 #endif
 
 int nearest_part(int ci, int t);

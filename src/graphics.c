@@ -1714,6 +1714,49 @@ void draw_parts(pixel *vid)
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
 				}
+				else if(t==PT_LOTE)
+				{
+					if(parts[i].tmp==2)
+						blendpixel(vid, nx, ny, 255, 128, 0, 255);
+					else if(parts[i].tmp==1)
+						blendpixel(vid, nx, ny, 255, 255, 0, 255);
+					else
+						blendpixel(vid, nx, ny, 255, 0, 0, 255);
+				}
+				else if(t==PT_FRG2)
+				{
+					if(parts[i].tmp==2)
+						blendpixel(vid, nx, ny, 0, 100, 50, 255);
+					else
+						blendpixel(vid, nx, ny, 0, 255, 90, 255);
+				}
+				else if(t==PT_STAR)
+				{
+					if(parts[i].tmp==4)
+						blendpixel(vid, nx, ny, 0, 0, 128, 255);
+					else if(parts[i].tmp==3)
+						blendpixel(vid, nx, ny, 0, 0, 150, 255);
+					else if(parts[i].tmp==2)
+						blendpixel(vid, nx, ny, 0, 0, 190, 255);
+					else if(parts[i].tmp==1)
+						blendpixel(vid, nx, ny, 0, 0, 230, 255);
+					else
+						blendpixel(vid, nx, ny, 0, 0, 70, 255);
+				}
+				else if(t==PT_FROG)
+				{
+					if(parts[i].tmp==2)
+						blendpixel(vid, nx, ny, 0, 100, 0, 255);
+					else
+						blendpixel(vid, nx, ny, 0, 255, 0, 255);
+				}
+				else if(t==PT_BRAN)
+				{
+					if(parts[i].tmp==1)
+						blendpixel(vid, nx, ny, 150, 150, 0, 255);
+					else
+						blendpixel(vid, nx, ny, 255, 255, 0, 255);
+				}
 				else if (t==PT_DEUT)
 				{
 

@@ -35,12 +35,13 @@ int update_FIRW(UPDATE_FUNC_ARGS) {
 	}
 	else if (parts[i].tmp==2) {
 		int col = rand()%200+4;
+		int tmul;
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					int tmul = rand()%7;
+					tmul = rand()%7;
 					create_part(-1, x+rx, y+ry, PT_FIRW);
 					r = pmap[y+ry][x+rx];
 					if ((r>>8)>=NPART || !r)
