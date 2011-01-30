@@ -3789,3 +3789,51 @@ void open_link(char *uri) {
 	printf("Cannot open browser\n");
 #endif
 }
+char *console_ui(pixel *vid_buf) { //TODO: error messages, show previous commands
+	int mx,my,b,bq;
+	ui_edit ed;
+	ed.x = 15;
+	ed.y = 210;
+	ed.w = XRES;
+	ed.nx = 1;
+	ed.def = "";
+	strcpy(ed.str, "");
+	ed.focus = 1;
+	ed.hide = 0;
+	ed.multiline = 0;
+	ed.cursor = 0;
+	//fillrect(vid_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
+	while (!sdl_poll())
+	{
+		bq = b;
+		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
+		ed.focus = 1;
+		
+		clearrect(vid_buf, 0, 0, XRES+BARSIZE, 220);//anyway to make it transparent?
+		draw_line(vid_buf, 1, 219, XRES, 219, 228, 228, 228, XRES+BARSIZE);
+		drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.1 (by cracker64)\n"
+					  "Current commands are quit, set, reset\n"
+					  "You can set type, temp, ctype, life, x, y, vx, vy using this format ('set life particle# 9001')\n"
+					  "You can also use 'all' instead of a particle number to do it to everything\n"
+					  "Reset works with pressure, velocity, sparks, temp (ex. 'reset pressure')"
+					  ,255, 187, 187, 255);
+		ui_edit_draw(vid_buf, &ed);
+		ui_edit_process(mx, my, b, &ed);
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+		if (sdl_key==SDLK_RETURN)
+		{
+			return ed.str;
+		}
+		if (sdl_key==SDLK_ESCAPE || sdl_key==SDLK_BACKQUOTE)
+		{
+			console_mode = 0;
+			return NULL;
+		}
+		
+	}
+	
+	
+}
+

@@ -139,6 +139,7 @@ int gol[XRES][YRES];
 int gol2[XRES][YRES][NGOL];
 int SEC;
 int SEC2;
+int console_mode;
 int REPLACE_MODE;
 int CURRENT_BRUSH;
 int GRID_MODE;

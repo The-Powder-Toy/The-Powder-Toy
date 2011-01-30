@@ -1483,8 +1483,13 @@ int main(int argc, char *argv[])
 		}
 		if ((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
 			active_menu = 11;
-		if (sdl_key==SDLK_INSERT || sdl_key==SDLK_BACKQUOTE)
+		if (sdl_key==SDLK_INSERT)// || sdl_key==SDLK_BACKQUOTE)
 			REPLACE_MODE = !REPLACE_MODE;
+		if (sdl_key==SDLK_BACKQUOTE)
+		{
+			console_mode = !console_mode;
+			hud_enable = !console_mode;
+		}
 		if (sdl_key=='g')
 		{
 			if (sdl_mod & (KMOD_SHIFT))
@@ -1686,6 +1691,255 @@ int main(int argc, char *argv[])
 				}*/
 			}
 		}
+		if(console_mode)
+		{
+			int nx,ny;
+			char *console;
+			char *console2;
+			char *console3;
+			char *console4;
+			char *console5;
+			sys_pause = 1;
+			console = console_ui(vid_buf);
+			if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
+			{
+				console2 = strtok(console, " ");
+				console3 = strtok(NULL, " ");
+				console4 = strtok(NULL, " ");
+				console5 = strtok(NULL, " ");
+				if(strcmp(console2, "quit")==0)
+				{
+					break;
+				}
+				else if(strcmp(console2, "reset")==0 && console3)
+				{
+					if(strcmp(console3, "pressure")==0)
+					{
+						for (nx = 0; nx<XRES/CELL; nx++)
+							for (ny = 0; ny<YRES/CELL; ny++)
+							{
+								pv[ny][nx] = 0;
+							}
+						
+					}
+					else if(strcmp(console3, "velocity")==0)
+					{
+						for (nx = 0; nx<XRES/CELL; nx++)
+							for (ny = 0; ny<YRES/CELL; ny++)
+							{
+								vx[ny][nx] = 0;
+								vy[ny][nx] = 0;
+							}
+					}
+					else if(strcmp(console3, "sparks")==0)
+					{
+						for(i=0;i<NPART;i++)
+						{
+							if(parts[i].type==PT_SPRK)
+							{
+								parts[i].type = parts[i].ctype;
+								parts[i].life = 4;
+							}
+						}
+					}
+					else if(strcmp(console3, "temp")==0)
+					{
+						for(i=0;i<NPART;i++)
+						{
+							if(parts[i].type)
+							{
+								parts[i].temp = ptypes[parts[i].type].heat;
+							}
+						}
+					}
+				}
+				else if(strcmp(console2, "set")==0 && console3 && console4 && console5)
+				{
+					if(strcmp(console3, "life")==0)
+					{
+						if(strcmp(console4, "all")==0)
+						{
+							j = atoi(console5);
+							for(i=0;i<NPART;i++)
+							{
+								if(parts[i].type)
+									parts[i].life = j;
+							}
+						} else 
+						{
+							i = atoi(console4);
+							if(parts[i].type)
+							{
+								j = atoi(console5);
+								parts[i].life = j;
+							}
+						}
+					}				
+					if(strcmp(console3, "type")==0)
+					{
+						if(strcmp(console4, "all")==0)
+						{
+							j = atoi(console5);
+							for(i=0;i<NPART;i++)
+							{
+								if(parts[i].type)
+									parts[i].type = j;
+							}
+						} else 
+						{
+							i = atoi(console4);
+							if(parts[i].type)
+							{
+								j = atoi(console5);
+								parts[i].type = j;
+							}
+						}
+					}	
+					if(strcmp(console3, "temp")==0)
+					{
+						if(strcmp(console4, "all")==0)
+						{
+							j = atoi(console5);
+							for(i=0;i<NPART;i++)
+							{
+								if(parts[i].type)
+									parts[i].temp = j;
+							}
+						} else 
+						{
+							i = atoi(console4);
+							if(parts[i].type)
+							{
+								j = atoi(console5);
+								parts[i].temp = j;
+							}
+						}
+					}	
+					if(strcmp(console3, "tmp")==0)
+					{
+						if(strcmp(console4, "all")==0)
+						{
+							j = atoi(console5);
+							for(i=0;i<NPART;i++)
+							{
+								if(parts[i].type)
+									parts[i].tmp = j;
+							}
+						} else 
+						{
+							i = atoi(console4);
+							if(parts[i].type)
+							{
+								j = atoi(console5);
+								parts[i].tmp = j;
+							}
+						}
+					}	
+					if(strcmp(console3, "x")==0)
+					{
+						if(strcmp(console4, "all")==0)
+						{
+							j = atoi(console5);
+							for(i=0;i<NPART;i++)
+							{
+								if(parts[i].type)
+									parts[i].x = j;
+							}
+						} else 
+						{
+							i = atoi(console4);
+							if(parts[i].type)
+							{
+								j = atoi(console5);
+								parts[i].x = j;
+							}
+						}
+					}
+					if(strcmp(console3, "y")==0)
+					{
+						if(strcmp(console4, "all")==0)
+						{
+							j = atoi(console5);
+							for(i=0;i<NPART;i++)
+							{
+								if(parts[i].type)
+									parts[i].y = j;
+							}
+						} else 
+						{
+							i = atoi(console4);
+							if(parts[i].type)
+							{
+								j = atoi(console5);
+								parts[i].y = j;
+							}
+						}
+					}	
+					if(strcmp(console3, "ctype")==0)
+					{
+						if(strcmp(console4, "all")==0)
+						{
+							j = atoi(console5);
+							for(i=0;i<NPART;i++)
+							{
+								if(parts[i].type)
+									parts[i].ctype = j;
+							}
+						} else 
+						{
+							i = atoi(console4);
+							if(parts[i].type)
+							{
+								j = atoi(console5);
+								parts[i].ctype = j;
+							}
+						}
+					}	
+					if(strcmp(console3, "vx")==0)
+					{
+							if(strcmp(console4, "all")==0)
+						{
+							j = atoi(console5);
+							for(i=0;i<NPART;i++)
+							{
+								if(parts[i].type)
+									parts[i].vx = j;
+							}
+						} else 
+						{
+							i = atoi(console4);
+							if(parts[i].type)
+							{
+								j = atoi(console5);
+								parts[i].vx = j;
+							}
+						}
+					}	
+					if(strcmp(console3, "vy")==0)
+					{
+						if(strcmp(console4, "all")==0)
+						{
+							j = atoi(console5);
+							for(i=0;i<NPART;i++)
+							{
+								if(parts[i].type)
+									parts[i].vy = j;
+							}
+						} else 
+						{
+							i = atoi(console4);
+							if(parts[i].type)
+							{
+								j = atoi(console5);
+								parts[i].vy = j;
+							}
+						}
+					}
+				}
+			}
+			if(!console_mode)
+				hud_enable = 1;
+		}
 
 		bq = b;
 		b = SDL_GetMouseState(&x, &y);
@@ -1737,7 +1991,7 @@ int main(int argc, char *argv[])
 					int tctype = parts[cr>>8].ctype;
 					if (tctype>=PT_NUM)
 						tctype = 0;
-					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d, Tmp: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life ,parts[cr>>8].tmp);
+					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d, #%d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life ,cr>>8);
 					//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 				} else {
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
