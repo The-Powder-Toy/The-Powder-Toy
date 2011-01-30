@@ -118,6 +118,8 @@ extern int svf_admin;
 extern int svf_mod;
 extern char svf_user[64];
 extern char svf_pass[64];
+extern char svf_user_id[64];
+extern char svf_session_id[64];
 
 extern int svf_open;
 extern int svf_own;
@@ -223,6 +225,8 @@ int execute_vote(pixel *vid_buf, char *id, char *action);
 void open_link(char *uri);
 
 int report_ui(pixel *vid_buf, char *save_id);
+
+char *console_ui(pixel *vid_buf, char error[255]);
 
 #endif
 
