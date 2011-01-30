@@ -1707,6 +1707,7 @@ int main(int argc, char *argv[])
 			//char error[255] = "error!";
 			sys_pause = 1;
 			console = console_ui(vid_buf,error);
+			console = mystrdup(console);
 			strcpy(error,"");
 			if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
 			{
@@ -1716,6 +1717,7 @@ int main(int argc, char *argv[])
 				console5 = strtok(NULL, " ");
 				if(strcmp(console2, "quit")==0)
 				{
+					free(console);
 					break;
 				}
 				else if(strcmp(console2, "load")==0 && console3)
@@ -1955,6 +1957,7 @@ int main(int argc, char *argv[])
 				else
 					sprintf(error, "Invalid Command", console2);
 			}
+			free(console);
 			if(!console_mode)
 				hud_enable = 1;
 		}
