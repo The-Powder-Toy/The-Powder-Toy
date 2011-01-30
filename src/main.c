@@ -1117,6 +1117,7 @@ int main(int argc, char *argv[])
 	pixel *pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	void *http_ver_check;
 	char *ver_data=NULL, *tmp;
+	char error[255];
 	int i, j, bq, fire_fc=0, do_check=0, old_version=0, http_ret=0, major, minor, old_ver_len;
 #ifdef INTERNAL
 	int vs = 0;
@@ -1699,8 +1700,10 @@ int main(int argc, char *argv[])
 			char *console3;
 			char *console4;
 			char *console5;
+			//char error[255] = "error!";
 			sys_pause = 1;
-			console = console_ui(vid_buf);
+			console = console_ui(vid_buf,error);
+			strcpy(error,"");
 			if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
 			{
 				console2 = strtok(console, " ");
@@ -1710,6 +1713,15 @@ int main(int argc, char *argv[])
 				if(strcmp(console2, "quit")==0)
 				{
 					break;
+				}
+				else if(strcmp(console2, "load")==0 && console3)
+				{
+					j = atoi(console3);
+					if(j)
+					{
+						open_ui(vid_buf, console3, NULL);
+						console_mode = 0;
+					}
 				}
 				else if(strcmp(console2, "reset")==0 && console3)
 				{
@@ -1936,6 +1948,8 @@ int main(int argc, char *argv[])
 						}
 					}
 				}
+				else
+					sprintf(error, "Invalid Command", console2);
 			}
 			if(!console_mode)
 				hud_enable = 1;

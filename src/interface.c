@@ -3789,7 +3789,7 @@ void open_link(char *uri) {
 	printf("Cannot open browser\n");
 #endif
 }
-char *console_ui(pixel *vid_buf) { //TODO: error messages, show previous commands
+char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show previous commands
 	int mx,my,b,bq;
 	ui_edit ed;
 	ed.x = 15;
@@ -3814,11 +3814,14 @@ char *console_ui(pixel *vid_buf) { //TODO: error messages, show previous command
 		clearrect(vid_buf, 0, 0, XRES+BARSIZE, 220);//anyway to make it transparent?
 		draw_line(vid_buf, 1, 219, XRES, 219, 228, 228, 228, XRES+BARSIZE);
 		drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.1 (by cracker64)\n"
-					  "Current commands are quit, set, reset\n"
+					  "Current commands are quit, set, reset, load\n"
 					  "You can set type, temp, ctype, life, x, y, vx, vy using this format ('set life particle# 9001')\n"
 					  "You can also use 'all' instead of a particle number to do it to everything\n"
-					  "Reset works with pressure, velocity, sparks, temp (ex. 'reset pressure')"
+					  "Reset works with pressure, velocity, sparks, temp (ex. 'reset pressure')\n"
+					  "To load a save use load saveID (ex. load 1337)"
 					  ,255, 187, 187, 255);
+		if(error)
+			drawtext(vid_buf, 15, 190, error,255, 187, 187, 255);
 		ui_edit_draw(vid_buf, &ed);
 		ui_edit_process(mx, my, b, &ed);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
