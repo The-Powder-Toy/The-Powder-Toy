@@ -3883,7 +3883,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 			currentcommand->prev_command = last_command;
 			currentcommand->command = mystrdup(ed.str);
 			last_command = currentcommand;
-			return ed.str;
+			return currentcommand->command;
 		}
 		if (sdl_key==SDLK_ESCAPE || sdl_key==SDLK_BACKQUOTE)
 		{
@@ -3910,6 +3910,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 							currentcommand = currentcommand->prev_command;
 					}
 					strcpy(ed.str, currentcommand->command);
+					ed.cursor = strlen(ed.str);
 				}
 				else 
 				{
