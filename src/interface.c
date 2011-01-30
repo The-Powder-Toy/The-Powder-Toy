@@ -3809,8 +3809,15 @@ void open_link(char *uri) {
 	printf("Cannot open browser\n");
 #endif
 }
+struct command_history {
+	void *prev_command;
+	char *command;
+};
+typedef struct command_history command_history;
+command_history *last_command = NULL;
 char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show previous commands
-	int mx,my,b,bq;
+	int mx,my,b,bq,cc,ci = -1;
+	command_history *currentcommand;
 	ui_edit ed;
 	ed.x = 15;
 	ed.y = 210;
@@ -3840,6 +3847,30 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 					  "Reset works with pressure, velocity, sparks, temp (ex. 'reset pressure')\n"
 					  "To load a save use load saveID (ex. load 1337)"
 					  ,255, 187, 187, 255);
+		
+		cc = 0;
+		currentcommand = last_command;
+		while(cc < 10)
+		{
+			if(currentcommand==NULL)
+				break;
+			drawtext(vid_buf, 15, 175-(cc*12), currentcommand->command, 255, 255, 255, 255);
+			if(currentcommand->prev_command!=NULL)
+			{
+				if(cc<9) {
+					currentcommand = currentcommand->prev_command;
+				} else if(currentcommand->prev_command!=NULL){
+					free(currentcommand->prev_command);
+					currentcommand->prev_command = NULL;
+				}
+				cc++;
+			} 
+			else
+			{
+				break;
+			}
+		}
+		
 		if(error)
 			drawtext(vid_buf, 15, 190, error,255, 187, 187, 255);
 		ui_edit_draw(vid_buf, &ed);
@@ -3847,12 +3878,45 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 		if (sdl_key==SDLK_RETURN)
 		{
+			currentcommand = malloc(sizeof(command_history));
+			memset(currentcommand, 0, sizeof(command_history));
+			currentcommand->prev_command = last_command;
+			currentcommand->command = mystrdup(ed.str);
+			last_command = currentcommand;
 			return ed.str;
 		}
 		if (sdl_key==SDLK_ESCAPE || sdl_key==SDLK_BACKQUOTE)
 		{
 			console_mode = 0;
 			return NULL;
+		}
+		if(sdl_key==SDLK_UP || sdl_key==SDLK_DOWN)
+		{
+			ci += sdl_key==SDLK_UP?1:-1;
+			if(ci<-1)
+				ci = -1;
+			if(ci==-1)
+			{
+				strcpy(ed.str, "");
+			}
+			else
+			{
+				if(last_command!=NULL){
+					currentcommand = last_command;
+					for (cc = 0; cc<ci; cc++) {
+						if(currentcommand->prev_command==NULL)
+							ci = cc;
+						else	
+							currentcommand = currentcommand->prev_command;
+					}
+					strcpy(ed.str, currentcommand->command);
+				}
+				else 
+				{
+					ci = -1;
+					strcpy(ed.str, "");
+				}
+			}
 		}
 		
 	}
