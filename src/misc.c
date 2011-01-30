@@ -5,6 +5,7 @@
 #include "defines.h"
 #include "interface.h"
 #include "graphics.h"
+#include "powder.h"
 
 //Signum function
 #if defined(WIN32) && !defined(__GNUC__)
