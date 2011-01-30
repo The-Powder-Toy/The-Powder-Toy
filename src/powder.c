@@ -664,9 +664,9 @@ inline int create_part(int p, int x, int y, int t)
 		parts[i].life = 50;
 		parts[i].tmp = 50;
 	}
-	if(ptypes[t].properties&PROP_LIFE) {
+	if (ptypes[t].properties&PROP_LIFE) {
 		int r;
-		for(r = 0;r<NGOL;r++)
+		for(r = 0; r<NGOL; r++)
 			if(t==goltype[r])
 				parts[i].tmp = grule[r+1][9] - 1;
 	}
@@ -1317,7 +1317,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							} else {
 								parts[r>>8].tmp --;
 								if(parts[r>>8].tmp<=0)
-								parts[r>>8].type = PT_NONE;//using kill_part makes it not work
+									parts[r>>8].type = PT_NONE;//using kill_part makes it not work
 							}
 						}
 			}

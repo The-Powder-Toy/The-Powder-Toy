@@ -492,6 +492,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 		memset(vx, 0, sizeof(vx));
 		memset(vy, 0, sizeof(vy));
 		memset(pv, 0, sizeof(pv));
+		memset(photons, 0, sizeof(photons));
+		memset(wireless, 0, sizeof(wireless));
+		memset(gol2, 0, sizeof(gol2));
+		memset(portal, 0, sizeof(portal));
 		death = death2 = ISSPAWN1 = ISSPAWN2 = 0;
 	}
 
@@ -714,10 +718,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 					ttv |= (d[p++]);
 					parts[i-1].tmp = ttv;
 					if(ptypes[parts[i-1].type].properties&PROP_LIFE && !parts[i-1].tmp)
-					for(q = 1; q<NGOL ; q++){
-						if(parts[i-1].type==goltype[q-1] && grule[q][9]==2)
-						parts[i-1].tmp = grule[q][9]-1;
-					}
+						for(q = 1; q<NGOL ; q++) {
+							if(parts[i-1].type==goltype[q-1] && grule[q][9]==2)
+								parts[i-1].tmp = grule[q][9]-1;
+						}
 				} else {
 					p+=2;
 				}
@@ -1509,7 +1513,7 @@ int main(int argc, char *argv[])
 						parts[i].type = parts[i].ctype;
 						parts[i].life = 0;
 					}
-			} 
+			}
 			else
 			{
 				for (nx = 0; nx<XRES/CELL; nx++)
