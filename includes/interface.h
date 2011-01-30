@@ -226,5 +226,7 @@ void open_link(char *uri);
 
 int report_ui(pixel *vid_buf, char *save_id);
 
+char *console_ui(pixel *vid_buf, char error[255]);
+
 #endif
 
