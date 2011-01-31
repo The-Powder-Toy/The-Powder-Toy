@@ -3898,6 +3898,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 			if(ci==-1)
 			{
 				strcpy(ed.str, "");
+				ed.cursor = strlen(ed.str);
 			}
 			else
 			{
@@ -3916,6 +3917,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 				{
 					ci = -1;
 					strcpy(ed.str, "");
+					ed.cursor = strlen(ed.str);
 				}
 			}
 		}
@@ -3925,3 +3927,20 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 	
 }
 
+int console_get_type(char *element)
+{
+	int i;
+	char num[4];
+	i = atoi(element);
+	sprintf(num,"%d",i);
+	if (i>=0 && i<PT_NUM && strcmp(element,num)==0)
+		return i;
+	if (strcasecmp(element,"C4")==0) return PT_PLEX;
+	if (strcasecmp(element,"C5")==0) return PT_C5;
+	if (strcasecmp(element,"NONE")==0) return PT_NONE;
+	for (i=0; i<PT_NUM; i++) {
+		if (strcasecmp(element,ptypes[i].name)==0)
+			return i;
+	}
+	return -1;
+}
