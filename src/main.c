@@ -2503,7 +2503,7 @@ int main(int argc, char *argv[])
 	http_done();
 	return 0;
 }
-int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: delete with coords, have 'set' work with coords as well
+int process_command(pixel *vid_buf,char *console,char *console_error) {
 
 	int nx,ny,i,j;
 	char *console2;
@@ -2556,17 +2556,21 @@ int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: 
 				console_mode = 0;
 			}
 		}
-		else if(strcmp(console2, "create")==0 && console3 && console4 && console5)
+		else if (strcmp(console2, "create")==0 && console3 && console4)
 		{
-			j = console_get_type(console3);
-			if (j<0)
-				sprintf(console_error, "Particle type not recognised", console2);
-			nx = atoi(console4);
-			ny = atoi(console5);
-			if(ny < 0 || nx < 0 || ny > YRES || nx > XRES)
-				sprintf(console_error, "Invalid Coordinates", console2);
-			else
-				create_part(-1,nx,ny,j);
+			if (console_parse_type(console3, &j, console_error)
+				&& console_parse_coords(console4, &nx, &ny, console_error))
+			{
+				if (!j)
+					strcpy(console_error, "Cannot create particle with type NONE");
+				else if (create_part(-1,nx,ny,j)<0)
+					strcpy(console_error, "Could not create particle");
+			}
+		}
+		else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3)
+		{
+			if (console_parse_partref(console3, &i, console_error))
+				kill_part(i);
 		}
 		else if(strcmp(console2, "reset")==0 && console3)
 		{
@@ -2624,8 +2628,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: 
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].life = j;
@@ -2636,10 +2639,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: 
 			{
 				if(strcmp(console4, "all")==0)
 				{
-					j = console_get_type(console5);
-					if (j<0)
-						sprintf(console_error, "Particle type not recognised", console2);
-					else
+					if (console_parse_type(console5, &j, console_error))
 						for(i=0; i<NPART; i++)
 						{
 							if(parts[i].type)
@@ -2648,14 +2648,10 @@ int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: 
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error)
+						&& console_parse_type(console5, &j, console_error))
 					{
-						j = console_get_type(console5);
-						if (j<0)
-							sprintf(console_error, "Particle type not recognised", console2);
-						else
-							parts[i].type = j;
+						parts[i].type = j;
 					}
 				}
 			}
@@ -2672,8 +2668,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: 
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].temp = j;
@@ -2693,8 +2688,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: 
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].tmp = j;
@@ -2714,8 +2708,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: 
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].x = j;
@@ -2735,8 +2728,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: 
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].y = j;
@@ -2747,19 +2739,18 @@ int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: 
 			{
 				if(strcmp(console4, "all")==0)
 				{
-					j = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type)
-							parts[i].ctype = j;
-					}
+					if (console_parse_type(console5, &j, console_error))
+						for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type)
+								parts[i].ctype = j;
+						}
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error)
+						&& console_parse_type(console5, &j, console_error))
 					{
-						j = atoi(console5);
 						parts[i].ctype = j;
 					}
 				}
@@ -2777,8 +2768,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: 
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].vx = j;
@@ -2798,8 +2788,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: 
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].vy = j;
