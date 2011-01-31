@@ -1783,7 +1783,8 @@ int main(int argc, char *argv[])
 								if(parts[i].type)
 									parts[i].life = j;
 							}
-						} else
+						}
+						else
 						{
 							i = atoi(console4);
 							if(parts[i].type)
@@ -1797,19 +1798,26 @@ int main(int argc, char *argv[])
 					{
 						if(strcmp(console4, "all")==0)
 						{
-							j = atoi(console5);
-							for(i=0; i<NPART; i++)
-							{
-								if(parts[i].type)
-									parts[i].type = j;
-							}
-						} else
+							j = console_get_type(console5);
+							if (j<0)
+								sprintf(error, "Particle type not recognised", console2);
+							else
+								for(i=0; i<NPART; i++)
+								{
+									if(parts[i].type)
+										parts[i].type = j;
+								}
+						}
+						else
 						{
 							i = atoi(console4);
 							if(parts[i].type)
 							{
-								j = atoi(console5);
-								parts[i].type = j;
+								j = console_get_type(console5);
+								if (j<0)
+									sprintf(error, "Particle type not recognised", console2);
+								else
+									parts[i].type = j;
 							}
 						}
 					}
@@ -1823,7 +1831,8 @@ int main(int argc, char *argv[])
 								if(parts[i].type)
 									parts[i].temp = j;
 							}
-						} else
+						}
+						else
 						{
 							i = atoi(console4);
 							if(parts[i].type)
@@ -1843,7 +1852,8 @@ int main(int argc, char *argv[])
 								if(parts[i].type)
 									parts[i].tmp = j;
 							}
-						} else
+						}
+						else
 						{
 							i = atoi(console4);
 							if(parts[i].type)
@@ -1863,7 +1873,8 @@ int main(int argc, char *argv[])
 								if(parts[i].type)
 									parts[i].x = j;
 							}
-						} else
+						}
+						else
 						{
 							i = atoi(console4);
 							if(parts[i].type)
@@ -1883,7 +1894,8 @@ int main(int argc, char *argv[])
 								if(parts[i].type)
 									parts[i].y = j;
 							}
-						} else
+						}
+						else
 						{
 							i = atoi(console4);
 							if(parts[i].type)
@@ -1903,7 +1915,8 @@ int main(int argc, char *argv[])
 								if(parts[i].type)
 									parts[i].ctype = j;
 							}
-						} else
+						}
+						else
 						{
 							i = atoi(console4);
 							if(parts[i].type)
@@ -1923,7 +1936,8 @@ int main(int argc, char *argv[])
 								if(parts[i].type)
 									parts[i].vx = j;
 							}
-						} else
+						}
+						else
 						{
 							i = atoi(console4);
 							if(parts[i].type)
@@ -1943,7 +1957,8 @@ int main(int argc, char *argv[])
 								if(parts[i].type)
 									parts[i].vy = j;
 							}
-						} else
+						}
+						else
 						{
 							i = atoi(console4);
 							if(parts[i].type)
