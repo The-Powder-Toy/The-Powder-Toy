@@ -1963,15 +1963,15 @@ killed:
 								{
 									parts[i].x = clear_xf+(j-clear_x);
 									parts[i].y = fin_yf;
-									x = j;
-									y = fin_y;
+									nx = j;
+									ny = fin_y;
 									s = 1;
 									break;
 								}
 								if (try_move(i, x, y, j, clear_y))
 								{
 									parts[i].x = clear_xf+(j-clear_x);
-									x = j;
+									nx = j;
 									s = 1;
 									break;
 								}
@@ -1985,12 +1985,12 @@ killed:
 							if (s)
 								for (j=clear_y+r; j>=0 && j<YRES && j>=clear_y-rt && j<clear_y+rt; j+=r)
 								{
-									if (try_move(i, x, y, clear_x, j))
+									if (try_move(i, x, y, nx, j))
 									{
 										parts[i].y = clear_yf+(j-clear_y);
 										break;
 									}
-									if ((pmap[j][x]&255)!=t || (bmap[j/CELL][x/CELL] && bmap[j/CELL][x/CELL]!=WL_STREAM))
+									if ((pmap[j][nx]&255)!=t || (bmap[j/CELL][nx/CELL] && bmap[j/CELL][nx/CELL]!=WL_STREAM))
 									{
 										s = 0;
 										break;
