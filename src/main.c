@@ -2407,8 +2407,37 @@ int main(int argc, char *argv[])
 			}
 			else if (y<YRES)
 			{
+				int signi;
+				
 				c = (b&1) ? sl : sr;
 				su = c;
+				
+				if(c!=WL_SIGN+100)
+				{
+					if(!bq)
+						for(signi=0; signi<MAXSIGNS; signi++)
+							if(sregexp(signs[signi].text, "^{c:[0-9]*|.*}$")==0)
+							{
+								int signx, signy, signw, signh;
+								get_sign_pos(signi, &signx, &signy, &signw, &signh);
+								if(x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
+								{
+									char buff[256];
+									int sldr;
+									
+									memset(buff, 0, sizeof(buff));
+									
+									for(sldr=3; signs[signi].text[sldr] != '|'; sldr++)
+										buff[sldr-3] = signs[signi].text[sldr];
+									
+									char buff2[sldr-2]; //TODO: Fix this for Visual Studio
+									memset(buff2, 0, sizeof(buff2));
+									memcpy(&buff2, &buff, sldr-3);
+									open_ui(vid_buf, buff2, 0);
+								}
+							}
+				}
+				
 				if (c==WL_SIGN+100)
 				{
 					if (!bq)

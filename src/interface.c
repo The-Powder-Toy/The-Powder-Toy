@@ -89,8 +89,25 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 	if (strcmp(signs[i].text, "{t}")==0)
 		*w = textwidth("Temp: 0000.00");
 
+	if(sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
+	{
+		int sldr, startm;
+		char buff[256];
+		memset(buff, 0, sizeof(buff));
+		for(sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
+			startm = sldr + 1;
+		
+		sldr = startm;
+		while(signs[i].text[sldr] != '}')
+		{
+			buff[sldr - startm] = signs[i].text[sldr];
+			sldr++;
+		}
+		*w = textwidth(buff) + 5;
+	}
+	
 	//Ususal width
-	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}"))
+	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
 		*w = textwidth(signs[i].text) + 5;
 	*h = 14;
 	*x0 = (signs[i].ju == 2) ? signs[i].x - *w :

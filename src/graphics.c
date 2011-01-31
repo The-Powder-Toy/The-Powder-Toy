@@ -2885,10 +2885,10 @@ void draw_parts(pixel *vid)
 void render_signs(pixel *vid_buf)
 {
 	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq;
-	char buff[30];  //Buffer
 	for (i=0; i<MAXSIGNS; i++)
 		if (signs[i].text[0])
 		{
+			char buff[256];  //Buffer
 			get_sign_pos(i, &x, &y, &w, &h);
 			clearrect(vid_buf, x, y, w, h);
 			drawrect(vid_buf, x, y, w, h, 192, 192, 192, 255);
@@ -2907,9 +2907,24 @@ void render_signs(pixel *vid_buf)
 					sprintf(buff, "Temp: 0.00");  //...tempirature
 				drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
 			}
+			
+			if(sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
+			{
+				int sldr, startm;
+				memset(buff, 0, sizeof(buff));
+				for(sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
+					startm = sldr + 1;
+				sldr = startm;
+				while(signs[i].text[sldr] != '}')
+				{
+					buff[sldr - startm] = signs[i].text[sldr];
+					sldr++;
+				}
+				drawtext(vid_buf, x+3, y+3, buff, 0, 191, 255, 255);
+			}
 
 			//Usual text
-			if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}"))
+			if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
 				drawtext(vid_buf, x+3, y+3, signs[i].text, 255, 255, 255, 255);
 
 			x = signs[i].x;
