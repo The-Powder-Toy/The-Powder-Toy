@@ -1121,7 +1121,7 @@ int main(int argc, char *argv[])
 	pixel *pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	void *http_ver_check;
 	char *ver_data=NULL, *tmp;
-	char error[255];
+	char error[255] = "";
 	int i, j, bq, fire_fc=0, do_check=0, old_version=0, http_ret=0, major, minor, old_ver_len;
 #ifdef INTERNAL
 	int vs = 0;

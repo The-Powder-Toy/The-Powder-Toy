@@ -3898,6 +3898,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 			if(ci==-1)
 			{
 				strcpy(ed.str, "");
+				ed.cursor = strlen(ed.str);
 			}
 			else
 			{
@@ -3910,11 +3911,13 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 							currentcommand = currentcommand->prev_command;
 					}
 					strcpy(ed.str, currentcommand->command);
+					ed.cursor = strlen(ed.str);
 				}
 				else
 				{
 					ci = -1;
 					strcpy(ed.str, "");
+					ed.cursor = strlen(ed.str);
 				}
 			}
 		}
