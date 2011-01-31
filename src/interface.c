@@ -3866,16 +3866,17 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 		clearrect(vid_buf, 0, 0, XRES+BARSIZE, 220);//anyway to make it transparent?
 		draw_line(vid_buf, 1, 219, XRES, 219, 228, 228, 228, XRES+BARSIZE);
 		drawtext(vid_buf, 100, 15, "Welcome to The Powder Toy console v.2 (by cracker64)\n"
-		         "Current commands are quit, set, reset, load, create, file\n"
-		         "You can set type, temp, ctype, life, x, y, vx, vy using this format ('set life particle# 9001')\n"
-		         "You can also use 'all' instead of a particle number to do it to everything.\n"
-		         "You can now use particle names (ex. set type all deut)\n"
-		         "Reset works with pressure, velocity, sparks, temp (ex. 'reset pressure')\n"
-		         "To load a save use load saveID (ex. load 1337)\n"
-		         "Create particles with 'create deut x,y' where x and y are the coords\n"
-		         "Run scripts from file 'file filename'"
-		         ,255, 187, 187, 255);
-
+					  "Current commands are quit, set, reset, load, create, file, kill\n"
+					  "You can set type, temp, ctype, life, x, y, vx, vy using this format ('set life particle# 9001')\n"
+					  "You can also use 'all' instead of a particle number to do it to everything.\n"
+					  "You can now use particle names (ex. set type all deut)\n"
+					  "Reset works with pressure, velocity, sparks, temp (ex. 'reset pressure')\n"
+					  "To load a save use load saveID (ex. load 1337)\n"
+					  "Create particles with 'create deut x,y' where x and y are the coords\n"
+					  "Run scripts from file 'file filename'\n"
+					  "You can delete/kill a particle with 'kill x,y'"
+					  ,255, 187, 187, 255);
+		
 		cc = 0;
 		currentcommand = last_command;
 		while(cc < 10)

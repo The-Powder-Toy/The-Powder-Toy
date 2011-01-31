@@ -1113,6 +1113,7 @@ int main(int argc, char *argv[])
 #endif
 	char uitext[255] = "";
 	char heattext[128] = "";
+	char coordtext[13] = "";
 	int currentTime = 0;
 	int FPS = 0;
 	int pastFPS = 0;
@@ -1765,6 +1766,7 @@ int main(int argc, char *argv[])
 					if (tctype>=PT_NUM)
 						tctype = 0;
 					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d, #%d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life ,cr>>8);
+					sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 					//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 				} else {
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
@@ -1773,6 +1775,8 @@ int main(int argc, char *argv[])
 			}
 			else
 			{
+				if (DEBUG_MODE)
+					sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 				sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 			}
 		}
@@ -2494,17 +2498,32 @@ int main(int argc, char *argv[])
 				{
 					fillrect(vid_buf, XRES-20-textwidth(heattext), 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
 					drawtext(vid_buf, XRES-16-textwidth(heattext), 270, heattext, 255, 255, 255, 200);
+					if(DEBUG_MODE)
+					{
+						fillrect(vid_buf, XRES-20-textwidth(coordtext), 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
+						drawtext(vid_buf, XRES-16-textwidth(coordtext), 282, coordtext, 255, 255, 255, 200);
+					}
 				}
 				else
 				{
 					fillrect(vid_buf, 12, 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
 					drawtext(vid_buf, 16, 270, heattext, 255, 255, 255, 200);
+					if(DEBUG_MODE)
+					{
+						fillrect(vid_buf, 12, 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
+						drawtext(vid_buf, 16, 282, coordtext, 255, 255, 255, 200);
+					}
 				}
 			}
 			else
 			{
 				fillrect(vid_buf, XRES-20-textwidth(heattext), 12, textwidth(heattext)+8, 15, 0, 0, 0, 140);
 				drawtext(vid_buf, XRES-16-textwidth(heattext), 16, heattext, 255, 255, 255, 200);
+				if(DEBUG_MODE)
+				{
+					fillrect(vid_buf, XRES-20-textwidth(coordtext), 26, textwidth(coordtext)+8, 11, 0, 0, 0, 140);
+					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, 200);	
+				}
 			}
 			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
 			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
@@ -2533,7 +2552,6 @@ int main(int argc, char *argv[])
 	return 0;
 }
 int process_command(pixel *vid_buf,char *console,char *console_error) {
-
 	int nx,ny,i,j;
 	char *console2;
 	char *console3;
