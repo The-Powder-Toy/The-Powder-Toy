@@ -1121,7 +1121,7 @@ int main(int argc, char *argv[])
 	pixel *pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	void *http_ver_check;
 	char *ver_data=NULL, *tmp;
-	char error[255] = "";
+	char console_error[255] = "";
 	int i, j, bq, fire_fc=0, do_check=0, old_version=0, http_ret=0, major, minor, old_ver_len;
 #ifdef INTERNAL
 	int vs = 0;
@@ -1698,279 +1698,16 @@ int main(int argc, char *argv[])
 		}
 		if(console_mode)
 		{
-			int nx,ny;
 			char *console;
-			char *console2;
-			char *console3;
-			char *console4;
-			char *console5;
 			//char error[255] = "error!";
 			sys_pause = 1;
-			console = console_ui(vid_buf,error);
+			console = console_ui(vid_buf,console_error);
 			console = mystrdup(console);
-			strcpy(error,"");
-			if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
+			strcpy(console_error,"");
+			if(process_command(vid_buf,console,&console_error)==0)
 			{
-				console2 = strtok(console, " ");
-				console3 = strtok(NULL, " ");
-				console4 = strtok(NULL, " ");
-				console5 = strtok(NULL, " ");
-				if(strcmp(console2, "quit")==0)
-				{
-					free(console);
-					break;
-				}
-				else if(strcmp(console2, "load")==0 && console3)
-				{
-					j = atoi(console3);
-					if(j)
-					{
-						open_ui(vid_buf, console3, NULL);
-						console_mode = 0;
-					}
-				}
-				else if(strcmp(console2, "reset")==0 && console3)
-				{
-					if(strcmp(console3, "pressure")==0)
-					{
-						for (nx = 0; nx<XRES/CELL; nx++)
-							for (ny = 0; ny<YRES/CELL; ny++)
-							{
-								pv[ny][nx] = 0;
-							}
-
-					}
-					else if(strcmp(console3, "velocity")==0)
-					{
-						for (nx = 0; nx<XRES/CELL; nx++)
-							for (ny = 0; ny<YRES/CELL; ny++)
-							{
-								vx[ny][nx] = 0;
-								vy[ny][nx] = 0;
-							}
-					}
-					else if(strcmp(console3, "sparks")==0)
-					{
-						for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type==PT_SPRK)
-							{
-								parts[i].type = parts[i].ctype;
-								parts[i].life = 4;
-							}
-						}
-					}
-					else if(strcmp(console3, "temp")==0)
-					{
-						for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type)
-							{
-								parts[i].temp = ptypes[parts[i].type].heat;
-							}
-						}
-					}
-				}
-				else if(strcmp(console2, "set")==0 && console3 && console4 && console5)
-				{
-					if(strcmp(console3, "life")==0)
-					{
-						if(strcmp(console4, "all")==0)
-						{
-							j = atoi(console5);
-							for(i=0; i<NPART; i++)
-							{
-								if(parts[i].type)
-									parts[i].life = j;
-							}
-						}
-						else
-						{
-							i = atoi(console4);
-							if(parts[i].type)
-							{
-								j = atoi(console5);
-								parts[i].life = j;
-							}
-						}
-					}
-					if(strcmp(console3, "type")==0)
-					{
-						if(strcmp(console4, "all")==0)
-						{
-							j = console_get_type(console5);
-							if (j<0)
-								sprintf(error, "Particle type not recognised", console2);
-							else
-								for(i=0; i<NPART; i++)
-								{
-									if(parts[i].type)
-										parts[i].type = j;
-								}
-						}
-						else
-						{
-							i = atoi(console4);
-							if(parts[i].type)
-							{
-								j = console_get_type(console5);
-								if (j<0)
-									sprintf(error, "Particle type not recognised", console2);
-								else
-									parts[i].type = j;
-							}
-						}
-					}
-					if(strcmp(console3, "temp")==0)
-					{
-						if(strcmp(console4, "all")==0)
-						{
-							j = atoi(console5);
-							for(i=0; i<NPART; i++)
-							{
-								if(parts[i].type)
-									parts[i].temp = j;
-							}
-						}
-						else
-						{
-							i = atoi(console4);
-							if(parts[i].type)
-							{
-								j = atoi(console5);
-								parts[i].temp = j;
-							}
-						}
-					}
-					if(strcmp(console3, "tmp")==0)
-					{
-						if(strcmp(console4, "all")==0)
-						{
-							j = atoi(console5);
-							for(i=0; i<NPART; i++)
-							{
-								if(parts[i].type)
-									parts[i].tmp = j;
-							}
-						}
-						else
-						{
-							i = atoi(console4);
-							if(parts[i].type)
-							{
-								j = atoi(console5);
-								parts[i].tmp = j;
-							}
-						}
-					}
-					if(strcmp(console3, "x")==0)
-					{
-						if(strcmp(console4, "all")==0)
-						{
-							j = atoi(console5);
-							for(i=0; i<NPART; i++)
-							{
-								if(parts[i].type)
-									parts[i].x = j;
-							}
-						}
-						else
-						{
-							i = atoi(console4);
-							if(parts[i].type)
-							{
-								j = atoi(console5);
-								parts[i].x = j;
-							}
-						}
-					}
-					if(strcmp(console3, "y")==0)
-					{
-						if(strcmp(console4, "all")==0)
-						{
-							j = atoi(console5);
-							for(i=0; i<NPART; i++)
-							{
-								if(parts[i].type)
-									parts[i].y = j;
-							}
-						}
-						else
-						{
-							i = atoi(console4);
-							if(parts[i].type)
-							{
-								j = atoi(console5);
-								parts[i].y = j;
-							}
-						}
-					}
-					if(strcmp(console3, "ctype")==0)
-					{
-						if(strcmp(console4, "all")==0)
-						{
-							j = atoi(console5);
-							for(i=0; i<NPART; i++)
-							{
-								if(parts[i].type)
-									parts[i].ctype = j;
-							}
-						}
-						else
-						{
-							i = atoi(console4);
-							if(parts[i].type)
-							{
-								j = atoi(console5);
-								parts[i].ctype = j;
-							}
-						}
-					}
-					if(strcmp(console3, "vx")==0)
-					{
-						if(strcmp(console4, "all")==0)
-						{
-							j = atoi(console5);
-							for(i=0; i<NPART; i++)
-							{
-								if(parts[i].type)
-									parts[i].vx = j;
-							}
-						}
-						else
-						{
-							i = atoi(console4);
-							if(parts[i].type)
-							{
-								j = atoi(console5);
-								parts[i].vx = j;
-							}
-						}
-					}
-					if(strcmp(console3, "vy")==0)
-					{
-						if(strcmp(console4, "all")==0)
-						{
-							j = atoi(console5);
-							for(i=0; i<NPART; i++)
-							{
-								if(parts[i].type)
-									parts[i].vy = j;
-							}
-						}
-						else
-						{
-							i = atoi(console4);
-							if(parts[i].type)
-							{
-								j = atoi(console5);
-								parts[i].vy = j;
-							}
-						}
-					}
-				}
-				else
-					sprintf(error, "Invalid Command", console2);
+				free(console);
+				break;
 			}
 			free(console);
 			if(!console_mode)
@@ -2765,5 +2502,314 @@ int main(int argc, char *argv[])
 
 	http_done();
 	return 0;
+}
+int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: delete with coords, have 'set' work with coords as well
+
+	int nx,ny,i,j;
+	char *console2;
+	char *console3;
+	char *console4;
+	char *console5;
+	//sprintf(console_error, "%s", console);
+	if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
+	{
+		console2 = strtok(console, " ");
+		console3 = strtok(NULL, " ");
+		console4 = strtok(NULL, " ");
+		console5 = strtok(NULL, " ");
+		if(strcmp(console2, "quit")==0)
+		{
+			return 0;
+		}
+		else if(strcmp(console2, "file")==0 && console3)
+		{
+			FILE *f=fopen(console3, "r");
+			if(f)
+			{
+				char fileread[5000];//TODO: make this change with file size
+				char pch[5000];
+				fread(fileread,1,5000,f);
+				j = 0;
+				for(i=0; i<strlen(fileread); i++)
+				{
+					if(fileread[i] != '\n')
+						pch[i-j] = fileread[i];
+					else
+					{
+						process_command(vid_buf, pch, console_error);
+						memset(pch,0,sizeof(pch));
+						j = i+1;
+					}
+				}
+				//sprintf(console_error, "%s exists", console3);
+				fclose(f);
+			}
+			else
+				sprintf(console_error, "%s does not exist", console3);
+		}
+		else if(strcmp(console2, "load")==0 && console3)
+		{
+			j = atoi(console3);
+			if(j)
+			{
+				open_ui(vid_buf, console3, NULL);
+				console_mode = 0;
+			}
+		}
+		else if(strcmp(console2, "create")==0 && console3 && console4 && console5)
+		{
+			j = console_get_type(console3);
+			if (j<0)
+				sprintf(console_error, "Particle type not recognised", console2);
+			nx = atoi(console4);
+			ny = atoi(console5);
+			if(ny < 0 || nx < 0 || ny > YRES || nx > XRES)
+				sprintf(console_error, "Invalid Coordinates", console2);
+			else
+				create_part(-1,nx,ny,j);
+		}
+		else if(strcmp(console2, "reset")==0 && console3)
+		{
+			if(strcmp(console3, "pressure")==0)
+			{
+				for (nx = 0; nx<XRES/CELL; nx++)
+					for (ny = 0; ny<YRES/CELL; ny++)
+					{
+						pv[ny][nx] = 0;
+					}
+			}
+			else if(strcmp(console3, "velocity")==0)
+			{
+				for (nx = 0; nx<XRES/CELL; nx++)
+					for (ny = 0; ny<YRES/CELL; ny++)
+					{
+						vx[ny][nx] = 0;
+						vy[ny][nx] = 0;
+					}
+			}
+			else if(strcmp(console3, "sparks")==0)
+			{
+				for(i=0; i<NPART; i++)
+				{
+					if(parts[i].type==PT_SPRK)
+					{
+						parts[i].type = parts[i].ctype;
+						parts[i].life = 4;
+					}
+				}
+			}
+			else if(strcmp(console3, "temp")==0)
+			{
+				for(i=0; i<NPART; i++)
+				{
+					if(parts[i].type)
+					{
+						parts[i].temp = ptypes[parts[i].type].heat;
+					}
+				}
+			}
+		}
+		else if(strcmp(console2, "set")==0 && console3 && console4 && console5)
+		{
+			if(strcmp(console3, "life")==0)
+			{
+				if(strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for(i=0; i<NPART; i++)
+					{
+						if(parts[i].type)
+							parts[i].life = j;
+					}
+				}
+				else
+				{
+					i = atoi(console4);
+					if(parts[i].type)
+					{
+						j = atoi(console5);
+						parts[i].life = j;
+					}
+				}
+			}
+			if(strcmp(console3, "type")==0)
+			{
+				if(strcmp(console4, "all")==0)
+				{
+					j = console_get_type(console5);
+					if (j<0)
+						sprintf(console_error, "Particle type not recognised", console2);
+					else
+						for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type)
+								parts[i].type = j;
+						}
+				}
+				else
+				{
+					i = atoi(console4);
+					if(parts[i].type)
+					{
+						j = console_get_type(console5);
+						if (j<0)
+							sprintf(console_error, "Particle type not recognised", console2);
+						else
+							parts[i].type = j;
+					}
+				}
+			}
+			if(strcmp(console3, "temp")==0)
+			{
+				if(strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for(i=0; i<NPART; i++)
+					{
+						if(parts[i].type)
+							parts[i].temp = j;
+					}
+				}
+				else
+				{
+					i = atoi(console4);
+					if(parts[i].type)
+					{
+						j = atoi(console5);
+						parts[i].temp = j;
+					}
+				}
+			}
+			if(strcmp(console3, "tmp")==0)
+			{
+				if(strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for(i=0; i<NPART; i++)
+					{
+						if(parts[i].type)
+							parts[i].tmp = j;
+					}
+				}
+				else
+				{
+					i = atoi(console4);
+					if(parts[i].type)
+					{
+						j = atoi(console5);
+						parts[i].tmp = j;
+					}
+				}
+			}
+			if(strcmp(console3, "x")==0)
+			{
+				if(strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for(i=0; i<NPART; i++)
+					{
+						if(parts[i].type)
+							parts[i].x = j;
+					}
+				}
+				else
+				{
+					i = atoi(console4);
+					if(parts[i].type)
+					{
+						j = atoi(console5);
+						parts[i].x = j;
+					}
+				}
+			}
+			if(strcmp(console3, "y")==0)
+			{
+				if(strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for(i=0; i<NPART; i++)
+					{
+						if(parts[i].type)
+							parts[i].y = j;
+					}
+				}
+				else
+				{
+					i = atoi(console4);
+					if(parts[i].type)
+					{
+						j = atoi(console5);
+						parts[i].y = j;
+					}
+				}
+			}
+			if(strcmp(console3, "ctype")==0)
+			{
+				if(strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for(i=0; i<NPART; i++)
+					{
+						if(parts[i].type)
+							parts[i].ctype = j;
+					}
+				}
+				else
+				{
+					i = atoi(console4);
+					if(parts[i].type)
+					{
+						j = atoi(console5);
+						parts[i].ctype = j;
+					}
+				}
+			}
+			if(strcmp(console3, "vx")==0)
+			{
+				if(strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for(i=0; i<NPART; i++)
+					{
+						if(parts[i].type)
+							parts[i].vx = j;
+					}
+				}
+				else
+				{
+					i = atoi(console4);
+					if(parts[i].type)
+					{
+						j = atoi(console5);
+						parts[i].vx = j;
+					}
+				}
+			}
+			if(strcmp(console3, "vy")==0)
+			{
+				if(strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for(i=0; i<NPART; i++)
+					{
+						if(parts[i].type)
+							parts[i].vy = j;
+					}
+				}
+				else
+				{
+					i = atoi(console4);
+					if(parts[i].type)
+					{
+						j = atoi(console5);
+						parts[i].vy = j;
+					}
+				}
+			}
+		}
+		else
+			sprintf(console_error, "Invalid Command", console2);
+	}
+	return 1;
 }
 
