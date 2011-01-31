@@ -59,6 +59,8 @@ void load_presets(void);
 
 void save_string(FILE *f, char *str);
 
+int sregexp(const char *str, char *pattern);
+
 int load_string(FILE *f, char *str, int max);
 
 void strcaturl(char *dst, char *src);

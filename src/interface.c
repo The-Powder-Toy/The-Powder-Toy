@@ -89,8 +89,25 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 	if (strcmp(signs[i].text, "{t}")==0)
 		*w = textwidth("Temp: 0000.00");
 
+	if(sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
+	{
+		int sldr, startm;
+		char buff[256];
+		memset(buff, 0, sizeof(buff));
+		for(sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
+			startm = sldr + 1;
+		
+		sldr = startm;
+		while(signs[i].text[sldr] != '}')
+		{
+			buff[sldr - startm] = signs[i].text[sldr];
+			sldr++;
+		}
+		*w = textwidth(buff) + 5;
+	}
+	
 	//Ususal width
-	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}"))
+	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
 		*w = textwidth(signs[i].text) + 5;
 	*h = 14;
 	*x0 = (signs[i].ju == 2) ? signs[i].x - *w :
@@ -3841,14 +3858,15 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 		clearrect(vid_buf, 0, 0, XRES+BARSIZE, 220);//anyway to make it transparent?
 		draw_line(vid_buf, 1, 219, XRES, 219, 228, 228, 228, XRES+BARSIZE);
 		drawtext(vid_buf, 100, 15, "Welcome to The Powder Toy console v.2 (by cracker64)\n"
-					  "Current commands are quit, set, reset, load, create, file\n"
+					  "Current commands are quit, set, reset, load, create, file, kill\n"
 					  "You can set type, temp, ctype, life, x, y, vx, vy using this format ('set life particle# 9001')\n"
 					  "You can also use 'all' instead of a particle number to do it to everything.\n"
 					  "You can now use particle names (ex. set type all deut)\n"
 					  "Reset works with pressure, velocity, sparks, temp (ex. 'reset pressure')\n"
 					  "To load a save use load saveID (ex. load 1337)\n"
-					  "Create particles with 'create deut x y' where x and y are the coords\n"
-					  "Run scripts from file 'file filename'"
+					  "Create particles with 'create deut x,y' where x and y are the coords\n"
+					  "Run scripts from file 'file filename'\n"
+					  "You can delete/kill a particle with 'kill x,y'"
 					  ,255, 187, 187, 255);
 		
 		cc = 0;
@@ -3862,18 +3880,18 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 			{
 				if(cc<9) {
 					currentcommand = currentcommand->prev_command;
-				} else if(currentcommand->prev_command!=NULL){
+				} else if(currentcommand->prev_command!=NULL) {
 					free(currentcommand->prev_command);
 					currentcommand->prev_command = NULL;
 				}
 				cc++;
-			} 
+			}
 			else
 			{
 				break;
 			}
 		}
-		
+
 		if(error)
 			drawtext(vid_buf, 15, 190, error,255, 187, 187, 255);
 		ui_edit_draw(vid_buf, &ed);
@@ -3905,18 +3923,18 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 			}
 			else
 			{
-				if(last_command!=NULL){
+				if(last_command!=NULL) {
 					currentcommand = last_command;
 					for (cc = 0; cc<ci; cc++) {
 						if(currentcommand->prev_command==NULL)
 							ci = cc;
-						else	
+						else
 							currentcommand = currentcommand->prev_command;
 					}
 					strcpy(ed.str, currentcommand->command);
 					ed.cursor = strlen(ed.str);
 				}
-				else 
+				else
 				{
 					ci = -1;
 					strcpy(ed.str, "");
@@ -3924,26 +3942,101 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 				}
 			}
 		}
-		
 	}
-	
-	
+	return NULL;
 }
 
-int console_get_type(char *element)
+int console_parse_type(char *txt, int *element, char *err)
 {
-	int i;
+	int i = atoi(txt);
 	char num[4];
-	i = atoi(element);
-	sprintf(num,"%d",i);
-	if (i>=0 && i<PT_NUM && strcmp(element,num)==0)
-		return i;
-	if (strcasecmp(element,"C4")==0) return PT_PLEX;
-	if (strcasecmp(element,"C5")==0) return PT_C5;
-	if (strcasecmp(element,"NONE")==0) return PT_NONE;
-	for (i=0; i<PT_NUM; i++) {
-		if (strcasecmp(element,ptypes[i].name)==0)
-			return i;
+	if (i>=0 && i<PT_NUM)
+	{
+		sprintf(num,"%d",i);
+		if (strcmp(txt,num)==0)
+		{
+			*element = i;
+			return 1;
+		}
 	}
-	return -1;
+	i = -1;
+	// alternative names for some elements
+	if (strcasecmp(txt,"C4")==0) i = PT_PLEX;
+	else if (strcasecmp(txt,"C5")==0) i = PT_C5;
+	else if (strcasecmp(txt,"NONE")==0) i = PT_NONE;
+	if (i>=0)
+	{
+		*element = i;
+		return 1;
+	}
+	for (i=1; i<PT_NUM; i++) {
+		if (strcasecmp(txt,ptypes[i].name)==0)
+		{
+			*element = i;
+			return 1;
+		}
+	}
+	strcpy(err, "Particle type not recognised");
+	return 0;
+}
+int console_parse_coords(char *txt, int *x, int *y, char *err)
+{
+	// TODO: use regex?
+	char *coordtxt;
+	char num[10] = "";
+	int nx = -1, ny = -1;
+	txt = mystrdup(txt);
+	coordtxt = strtok(txt, ",");
+	if (coordtxt) nx = atoi(coordtxt);
+	if (nx>=0 && nx<XRES) sprintf(num,"%d",nx);
+	if (!coordtxt || strcmp(coordtxt, num)!=0)
+	{
+		strcpy(err,"Invalid coordinates");
+		free(txt);
+		return 0;
+	}
+	strcpy(num,"");
+	coordtxt = strtok(NULL, ",");
+	if (coordtxt) ny = atoi(coordtxt);
+	if (ny>=0 && ny<YRES) sprintf(num,"%d",ny);
+	if (!coordtxt || strcmp(coordtxt, num)!=0)
+	{
+		strcpy(err,"Invalid coordinates");
+		free(txt);
+		return 0;
+	}
+	*x = nx;
+	*y = ny;
+	free(txt);
+	return 1;
+}
+int console_parse_partref(char *txt, int *which, char *err)
+{
+	// TODO: use regex?
+	int i = -1, nx, ny;
+	if (console_parse_coords(txt, &nx, &ny, err))
+	{
+		i = pmap[ny][nx];
+		if (!i || (i>>8)>=NPART)
+			i = -1;
+		else
+			i = i>>8;
+	}
+	else if (txt)
+	{
+		char *num = (char*)malloc(strlen(txt)+3);
+		strcpy(err,""); // suppress error message from failed coordinate parsing
+		i = atoi(txt);
+		sprintf(num,"%d",i);
+		if (!txt || strcmp(txt,num)!=0)
+			i = -1;
+		free(num);
+	}
+	if (i>=0 && i<NPART && parts[i].type)
+	{
+		*which = i;
+		return 1;
+	}
+	strcpy(err,"Particle does not exist");
+	return 0;
 }

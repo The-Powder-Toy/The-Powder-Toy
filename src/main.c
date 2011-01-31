@@ -718,7 +718,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 					ttv |= (d[p++]);
 					parts[i-1].tmp = ttv;
 					if(ptypes[parts[i-1].type].properties&PROP_LIFE && !parts[i-1].tmp)
-						for(q = 1; q<NGOL ; q++) {
+						for(q = 1; q<=NGOL ; q++) {
 							if(parts[i-1].type==goltype[q-1] && grule[q][9]==2)
 								parts[i-1].tmp = grule[q][9]-1;
 						}
@@ -1113,6 +1113,7 @@ int main(int argc, char *argv[])
 #endif
 	char uitext[255] = "";
 	char heattext[128] = "";
+	char coordtext[13] = "";
 	int currentTime = 0;
 	int FPS = 0;
 	int pastFPS = 0;
@@ -1765,6 +1766,7 @@ int main(int argc, char *argv[])
 					if (tctype>=PT_NUM)
 						tctype = 0;
 					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d, #%d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life ,cr>>8);
+					sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 					//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 				} else {
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
@@ -1773,6 +1775,8 @@ int main(int argc, char *argv[])
 			}
 			else
 			{
+				if (DEBUG_MODE)
+					sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 				sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 			}
 		}
@@ -2159,8 +2163,37 @@ int main(int argc, char *argv[])
 			}
 			else if (y<YRES)
 			{
+				int signi;
+				
 				c = (b&1) ? sl : sr;
 				su = c;
+				
+				if(c!=WL_SIGN+100)
+				{
+					if(!bq)
+						for(signi=0; signi<MAXSIGNS; signi++)
+							if(sregexp(signs[signi].text, "^{c:[0-9]*|.*}$")==0)
+							{
+								int signx, signy, signw, signh;
+								get_sign_pos(signi, &signx, &signy, &signw, &signh);
+								if(x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
+								{
+									char buff[256];
+									int sldr;
+									
+									memset(buff, 0, sizeof(buff));
+									
+									for(sldr=3; signs[signi].text[sldr] != '|'; sldr++)
+										buff[sldr-3] = signs[signi].text[sldr];
+									
+									char buff2[sldr-2]; //TODO: Fix this for Visual Studio
+									memset(buff2, 0, sizeof(buff2));
+									memcpy(&buff2, &buff, sldr-3);
+									open_ui(vid_buf, buff2, 0);
+								}
+							}
+				}
+				
 				if (c==WL_SIGN+100)
 				{
 					if (!bq)
@@ -2465,17 +2498,32 @@ int main(int argc, char *argv[])
 				{
 					fillrect(vid_buf, XRES-20-textwidth(heattext), 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
 					drawtext(vid_buf, XRES-16-textwidth(heattext), 270, heattext, 255, 255, 255, 200);
+					if(DEBUG_MODE)
+					{
+						fillrect(vid_buf, XRES-20-textwidth(coordtext), 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
+						drawtext(vid_buf, XRES-16-textwidth(coordtext), 282, coordtext, 255, 255, 255, 200);
+					}
 				}
 				else
 				{
 					fillrect(vid_buf, 12, 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
 					drawtext(vid_buf, 16, 270, heattext, 255, 255, 255, 200);
+					if(DEBUG_MODE)
+					{
+						fillrect(vid_buf, 12, 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
+						drawtext(vid_buf, 16, 282, coordtext, 255, 255, 255, 200);
+					}
 				}
 			}
 			else
 			{
 				fillrect(vid_buf, XRES-20-textwidth(heattext), 12, textwidth(heattext)+8, 15, 0, 0, 0, 140);
 				drawtext(vid_buf, XRES-16-textwidth(heattext), 16, heattext, 255, 255, 255, 200);
+				if(DEBUG_MODE)
+				{
+					fillrect(vid_buf, XRES-20-textwidth(coordtext), 26, textwidth(coordtext)+8, 11, 0, 0, 0, 140);
+					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, 200);	
+				}
 			}
 			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
 			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
@@ -2503,7 +2551,7 @@ int main(int argc, char *argv[])
 	http_done();
 	return 0;
 }
-int process_command(pixel *vid_buf,char *console,char *console_error) { //TODO: delete with coords, have 'set' work with coords as well
+int process_command(pixel *vid_buf,char *console,char *console_error) {
 	
 int nx,ny,i,j;
 char *console2;
@@ -2556,17 +2604,21 @@ char *console5;
 				console_mode = 0;
 			}
 		}
-		else if(strcmp(console2, "create")==0 && console3 && console4 && console5)
+		else if (strcmp(console2, "create")==0 && console3 && console4)
 		{
-			j = console_get_type(console3);
-			if (j<0)
-				sprintf(console_error, "Particle type not recognised", console2);
-			nx = atoi(console4);
-			ny = atoi(console5);
-			if(ny < 0 || nx < 0 || ny > YRES || nx > XRES)
-				sprintf(console_error, "Invalid Coordinates", console2);
-			else
-				create_part(-1,nx,ny,j);			
+			if (console_parse_type(console3, &j, console_error)
+				&& console_parse_coords(console4, &nx, &ny, console_error))
+			{
+				if (!j)
+					strcpy(console_error, "Cannot create particle with type NONE");
+				else if (create_part(-1,nx,ny,j)<0)
+					strcpy(console_error, "Could not create particle");
+			}
+		}
+		else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3)
+		{
+			if (console_parse_partref(console3, &i, console_error))
+				kill_part(i);
 		}
 		else if(strcmp(console2, "reset")==0 && console3)
 		{
@@ -2624,8 +2676,7 @@ char *console5;
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].life = j;
@@ -2636,10 +2687,7 @@ char *console5;
 			{
 				if(strcmp(console4, "all")==0)
 				{
-					j = console_get_type(console5);
-					if (j<0)
-						sprintf(console_error, "Particle type not recognised", console2);
-					else
+					if (console_parse_type(console5, &j, console_error))
 						for(i=0; i<NPART; i++)
 						{
 							if(parts[i].type)
@@ -2648,14 +2696,10 @@ char *console5;
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error)
+						&& console_parse_type(console5, &j, console_error))
 					{
-						j = console_get_type(console5);
-						if (j<0)
-							sprintf(console_error, "Particle type not recognised", console2);
-						else
-							parts[i].type = j;
+						parts[i].type = j;
 					}
 				}
 			}
@@ -2672,8 +2716,7 @@ char *console5;
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].temp = j;
@@ -2693,8 +2736,7 @@ char *console5;
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].tmp = j;
@@ -2714,8 +2756,7 @@ char *console5;
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].x = j;
@@ -2735,8 +2776,7 @@ char *console5;
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].y = j;
@@ -2747,19 +2787,18 @@ char *console5;
 			{
 				if(strcmp(console4, "all")==0)
 				{
-					j = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type)
-							parts[i].ctype = j;
-					}
+					if (console_parse_type(console5, &j, console_error))
+						for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type)
+								parts[i].ctype = j;
+						}
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error)
+						&& console_parse_type(console5, &j, console_error))
 					{
-						j = atoi(console5);
 						parts[i].ctype = j;
 					}
 				}
@@ -2777,8 +2816,7 @@ char *console5;
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].vx = j;
@@ -2798,8 +2836,7 @@ char *console5;
 				}
 				else
 				{
-					i = atoi(console4);
-					if(parts[i].type)
+					if (console_parse_partref(console4, &i, console_error))
 					{
 						j = atoi(console5);
 						parts[i].vy = j;
@@ -2811,5 +2848,5 @@ char *console5;
 			sprintf(console_error, "Invalid Command", console2);
 	}
 	return 1;
-	}
+}
 
