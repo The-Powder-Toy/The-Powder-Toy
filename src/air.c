@@ -86,8 +86,8 @@ void update_air(void)
 			dp = 0.0f;
 			dp += vx[y][x-1] - vx[y][x];
 			dp += vy[y-1][x] - vy[y][x];
-			pv[y][x] *= PLOSS;
-			pv[y][x] += dp*TSTEPP;
+			pv[y][x] *= AIR_PLOSS;
+			pv[y][x] += dp*AIR_TSTEPP;
 		}
 
 	for (y=0; y<YRES/CELL-1; y++)
@@ -96,10 +96,10 @@ void update_air(void)
 			dx = dy = 0.0f;
 			dx += pv[y][x] - pv[y][x+1];
 			dy += pv[y][x] - pv[y+1][x];
-			vx[y][x] *= VLOSS;
-			vy[y][x] *= VLOSS;
-			vx[y][x] += dx*TSTEPV;
-			vy[y][x] += dy*TSTEPV;
+			vx[y][x] *= AIR_VLOSS;
+			vy[y][x] *= AIR_VLOSS;
+			vx[y][x] += dx*AIR_TSTEPV;
+			vy[y][x] += dy*AIR_TSTEPV;
 			if (bmap[y][x]==WL_WALL || bmap[y][x+1]==WL_WALL ||
 			        bmap[y][x]==WL_WALLELEC || bmap[y][x+1]==WL_WALLELEC ||
 			        (bmap[y][x]==WL_EWALL && !emap[y][x]) ||
@@ -148,20 +148,20 @@ void update_air(void)
 			if (i>=2 && i<XRES/CELL-3 &&
 			        j>=2 && j<YRES/CELL-3)
 			{
-				dx *= 1.0f - VADV;
-				dy *= 1.0f - VADV;
+				dx *= 1.0f - AIR_VADV;
+				dy *= 1.0f - AIR_VADV;
 
-				dx += VADV*(1.0f-tx)*(1.0f-ty)*vx[j][i];
-				dy += VADV*(1.0f-tx)*(1.0f-ty)*vy[j][i];
+				dx += AIR_VADV*(1.0f-tx)*(1.0f-ty)*vx[j][i];
+				dy += AIR_VADV*(1.0f-tx)*(1.0f-ty)*vy[j][i];
 
-				dx += VADV*tx*(1.0f-ty)*vx[j][i+1];
-				dy += VADV*tx*(1.0f-ty)*vy[j][i+1];
+				dx += AIR_VADV*tx*(1.0f-ty)*vx[j][i+1];
+				dy += AIR_VADV*tx*(1.0f-ty)*vy[j][i+1];
 
-				dx += VADV*(1.0f-tx)*ty*vx[j+1][i];
-				dy += VADV*(1.0f-tx)*ty*vy[j+1][i];
+				dx += AIR_VADV*(1.0f-tx)*ty*vx[j+1][i];
+				dy += AIR_VADV*(1.0f-tx)*ty*vy[j+1][i];
 
-				dx += VADV*tx*ty*vx[j+1][i+1];
-				dy += VADV*tx*ty*vy[j+1][i+1];
+				dx += AIR_VADV*tx*ty*vx[j+1][i+1];
+				dy += AIR_VADV*tx*ty*vy[j+1][i+1];
 			}
 
 			if (bmap[y][x] == WL_FAN)

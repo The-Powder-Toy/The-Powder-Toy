@@ -1113,7 +1113,7 @@ int nearest_part(int ci, int t)
 	{
 		if (parts[i].type==t&&!parts[i].life&&i!=ci)
 		{
-			ndistance = abs((cx-parts[i].x)+(cy-parts[i].y));// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
+			ndistance = abs(cx-parts[i].x)+abs(cy-parts[i].y);// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
 			if (ndistance<distance)
 			{
 				distance = ndistance;
@@ -1290,9 +1290,9 @@ void update_particles_i(pixel *vid, int start, int inc)
 	}
 	if (ISGOL==1&&++CGOL>=GSPEED)//GSPEED is frames per generation
 	{
+		int createdsomething = 0;
 		CGOL=0;
 		ISGOL=0;
-		int createdsomething = 0;
 		for (nx=CELL; nx<XRES-CELL; nx++)
 			for (ny=CELL; ny<YRES-CELL; ny++)
 			{
@@ -1553,7 +1553,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							else t = PT_DSTW;
 						}
 						else if (t==PT_LAVA) {
-							if (parts[i].ctype&&parts[i].ctype!=PT_LAVA) {
+							if (parts[i].ctype && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA) {
 								if (ptransitions[parts[i].ctype].tht==PT_LAVA&&pt>=ptransitions[parts[i].ctype].thv) s = 0;
 								else if (parts[i].ctype==PT_THRM&&pt>=ptransitions[PT_BMTL].thv) s = 0;
 								else if (pt>=973.0f) s = 0; // freezing point for lava with any other (not listed in ptransitions as turning into lava) ctype
