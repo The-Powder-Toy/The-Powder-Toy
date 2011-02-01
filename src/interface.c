@@ -867,11 +867,19 @@ void login_ui(pixel *vid_buf)
 	if (res && !strncmp(res, "OK ", 3))
 	{
 		char *s_id,*u_e,*nres;
+		printf("\n{%s}\n", res);
 		s_id = strchr(res+3, ' ');
+		if (!s_id)
+			goto fail;
 		*(s_id++) = 0;
 		
 		u_e = strchr(s_id, ' ');
-		*(u_e++) = 0;
+		if (!u_e){
+			u_e = malloc(1);
+			memset(u_e, 0, 1);
+		}
+		else
+			*(u_e++) = 0;
 		
 		strcpy(svf_user_id, res+3);
 		strcpy(svf_session_id, s_id);

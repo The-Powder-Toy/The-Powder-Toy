@@ -577,7 +577,7 @@ inline int create_part(int p, int x, int y, int t)
 
 	if (t==PT_SPRK)
 	{
-		if (!((pmap[y][x]&0xFF)==PT_INST||(ptypes[pmap[y][x]&0xFF].properties&PROP_CONDUCTS)))
+		if ((pmap[y][x]>>8)>=NPART || !((pmap[y][x]&0xFF)==PT_INST||(ptypes[pmap[y][x]&0xFF].properties&PROP_CONDUCTS)))
 			return -1;
 		if (parts[pmap[y][x]>>8].life!=0)
 			return -1;
