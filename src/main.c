@@ -2553,7 +2553,7 @@ int main(int argc, char *argv[])
 }
 int process_command(pixel *vid_buf,char *console,char *console_error) {
 	
-int nx,ny,i,j;
+int nx,ny,i,j,k;
 char *console2;
 char *console3;
 char *console4;
@@ -2674,6 +2674,15 @@ char *console5;
 							parts[i].life = j;
 					}
 				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].life = k;
+						}
+				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error))
@@ -2692,6 +2701,15 @@ char *console5;
 						{
 							if(parts[i].type)
 								parts[i].type = j;
+						}
+				}
+				else if (console_parse_type(console4, &j, console_error)
+					     && console_parse_type(console5, &k, console_error))
+				{
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].type = k;
 						}
 				}
 				else
@@ -2714,6 +2732,15 @@ char *console5;
 							parts[i].temp = j;
 					}
 				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].temp= k;
+						}
+				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error))
@@ -2733,6 +2760,15 @@ char *console5;
 						if(parts[i].type)
 							parts[i].tmp = j;
 					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].tmp = k;
+						}
 				}
 				else
 				{
@@ -2754,6 +2790,15 @@ char *console5;
 							parts[i].x = j;
 					}
 				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].x = k;
+						}
+				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error))
@@ -2774,6 +2819,15 @@ char *console5;
 							parts[i].y = j;
 					}
 				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].y = k;
+						}
+				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error))
@@ -2792,6 +2846,15 @@ char *console5;
 						{
 							if(parts[i].type)
 								parts[i].ctype = j;
+						}
+				}
+				else if (console_parse_type(console4, &j, console_error)
+					     && console_parse_type(console5, &k, console_error))
+				{
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].ctype = k;
 						}
 				}
 				else
@@ -2814,6 +2877,15 @@ char *console5;
 							parts[i].vx = j;
 					}
 				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].vx = k;
+						}
+				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error))
@@ -2833,6 +2905,15 @@ char *console5;
 						if(parts[i].type)
 							parts[i].vy = j;
 					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].vy = k;
+						}
 				}
 				else
 				{

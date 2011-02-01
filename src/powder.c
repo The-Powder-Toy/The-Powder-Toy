@@ -1328,7 +1328,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				neighbors = gol2[nx][ny][0];
 				if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !r&0xFF) || (r>>8)>=NPART)
 					continue;
-				for ( golnum = 1; golnum<NGOL; golnum++)
+				for ( golnum = 1; golnum<=NGOL; golnum++)
 					for ( goldelete = 0; goldelete<9; goldelete++)
 					{
 						if (neighbors==goldelete&&gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
@@ -1345,7 +1345,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							parts[r>>8].type = PT_NONE;//using kill_part makes it not work
 					}
 				gol2[nx][ny][0] = 0;
-				for ( z = 1; z<NGOL; z++)
+				for ( z = 1; z<=NGOL; z++)
 					gol2[nx][ny][z] = 0;
 			}
 		if (createdsomething)
@@ -1963,15 +1963,15 @@ killed:
 								{
 									parts[i].x = clear_xf+(j-clear_x);
 									parts[i].y = fin_yf;
-									x = j;
-									y = fin_y;
+									nx = j;
+									ny = fin_y;
 									s = 1;
 									break;
 								}
 								if (try_move(i, x, y, j, clear_y))
 								{
 									parts[i].x = clear_xf+(j-clear_x);
-									x = j;
+									nx = j;
 									s = 1;
 									break;
 								}
@@ -1985,12 +1985,12 @@ killed:
 							if (s)
 								for (j=clear_y+r; j>=0 && j<YRES && j>=clear_y-rt && j<clear_y+rt; j+=r)
 								{
-									if (try_move(i, x, y, clear_x, j))
+									if (try_move(i, x, y, nx, j))
 									{
 										parts[i].y = clear_yf+(j-clear_y);
 										break;
 									}
-									if ((pmap[j][x]&255)!=t || (bmap[j/CELL][x/CELL] && bmap[j/CELL][x/CELL]!=WL_STREAM))
+									if ((pmap[j][nx]&255)!=t || (bmap[j/CELL][nx/CELL] && bmap[j/CELL][nx/CELL]!=WL_STREAM))
 									{
 										s = 0;
 										break;
