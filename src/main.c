@@ -74,7 +74,7 @@ void mixaudio(void *unused, Uint8 *stream, int len)
     }
 }
 
-void PlaySound(char *file)
+void play_sound(char *file)
 {
     int index;
     SDL_AudioSpec wave;
@@ -2675,7 +2675,7 @@ char *console5;
 		}
 		else if(strcmp(console2, "sound")==0 && console3)
 		{
-			PlaySound(console3);
+			play_sound(console3);
 		}
 		else if(strcmp(console2, "load")==0 && console3)
 		{
