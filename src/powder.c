@@ -1127,7 +1127,7 @@ int nearest_part(int ci, int t)
 void update_particles_i(pixel *vid, int start, int inc)
 {
 	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z, neighbors;
-	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp;
+	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp, ctemph, ctempl;
 	int fin_x, fin_y, clear_x, clear_y;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
 	float nn, ct1, ct2, swappage;
@@ -1522,8 +1522,16 @@ void update_particles_i(pixel *vid, int start, int inc)
 						parts[surround_hconduct[j]].temp = pt;
 					}
 
+					ctemph = ctempl = pt;
+					// change boiling point with pressure
+					if ((ptypes[t].state==ST_LIQUID && ptransitions[t].tht>-1 && ptransitions[t].tht<PT_NUM && ptypes[ptransitions[t].tht].state==ST_GAS)
+						|| t==PT_LNTG || t==PT_SLTW)
+						ctemph -= 2.0f*pv[y/CELL][x/CELL];
+					else if ((ptypes[t].state==ST_GAS && ptransitions[t].tlt>-1 && ptransitions[t].tlt<PT_NUM && ptypes[ptransitions[t].tlt].state==ST_LIQUID)
+						|| t==PT_WTRV)
+						ctempl -= 2.0f*pv[y/CELL][x/CELL];
 					s = 1;
-					if (pt>ptransitions[t].thv&&ptransitions[t].tht>-1) {
+					if (ctemph>ptransitions[t].thv&&ptransitions[t].tht>-1) {
 						// particle type change due to high temperature
 						if (ptransitions[t].tht!=PT_NUM)
 							t = ptransitions[t].tht;
@@ -1544,7 +1552,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							else t = PT_WTRV;
 						}
 						else s = 0;
-					} else if (pt<ptransitions[t].tlv&&ptransitions[t].tlt>-1) {
+					} else if (ctempl<ptransitions[t].tlv&&ptransitions[t].tlt>-1) {
 						// particle type change due to low temperature
 						if (ptransitions[t].tlt!=PT_NUM)
 							t = ptransitions[t].tlt;

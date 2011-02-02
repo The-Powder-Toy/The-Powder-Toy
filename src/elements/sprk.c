@@ -97,12 +97,12 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 				// ct = spark from material, rt = spark to material. Make conduct_sprk = 0 if conduction not allowed
 
 				if (pavg == PT_INSL) conduct_sprk = 0;
-				if (!(ptypes[rt].properties&PROP_CONDUCTS||rt==PT_INST)) conduct_sprk = 0;
+				if (!(ptypes[rt].properties&PROP_CONDUCTS||rt==PT_INST||rt==PT_QRTZ)) conduct_sprk = 0;
 				if (abs(rx)+abs(ry)>=4 &&ct!=PT_SWCH&&rt!=PT_SWCH)
 					conduct_sprk = 0;
 
 
-				if (ct==PT_METL && (rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR||(rt==PT_SPRK&&(parts[r>>8].ctype==PT_NTCT||parts[r>>8].ctype==PT_PTCT))))
+				if (ct==PT_METL && (rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR||(rt==PT_SPRK&&(parts[r>>8].ctype==PT_NTCT||parts[r>>8].ctype==PT_PTCT))) && pavg!=PT_INSL)
 				{
 					parts[r>>8].temp = 473.0f;
 					if (rt==PT_NTCT||rt==PT_PTCT)
