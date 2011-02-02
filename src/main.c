@@ -543,10 +543,6 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 	if (replace)
 	{
 		gravityMode = 1;
-		memset(photons, 0, sizeof(photons));
-		memset(wireless, 0, sizeof(wireless));
-		memset(gol2, 0, sizeof(gol2));
-		memset(portal, 0, sizeof(portal));
 
 		memset(bmap, 0, sizeof(bmap));
 		memset(emap, 0, sizeof(emap));
