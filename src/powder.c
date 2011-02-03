@@ -1080,7 +1080,7 @@ inline int parts_avg(int ci, int ni,int t)
 {
 	if (t==PT_INSL)//to keep electronics working
 	{
-		int pmr = pmap[(int)((parts[ci].y + parts[ni].y)/2)][(int)((parts[ci].x + parts[ni].x)/2)];
+		int pmr = pmap[((int)(parts[ci].y+0.5f) + (int)(parts[ni].y+0.5f))/2][((int)(parts[ci].x+0.5f) + (int)(parts[ni].x+0.5f))/2];
 		if ((pmr>>8) < NPART && pmr)
 			return parts[pmr>>8].type;
 		else
