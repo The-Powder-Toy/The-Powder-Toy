@@ -3965,6 +3965,7 @@ int console_parse_type(char *txt, int *element, char *err)
 		if (strcmp(txt,num)==0)
 		{
 			*element = i;
+			strcpy(err,"");
 			return 1;
 		}
 	}
@@ -3976,12 +3977,14 @@ int console_parse_type(char *txt, int *element, char *err)
 	if (i>=0)
 	{
 		*element = i;
+		strcpy(err,"");
 		return 1;
 	}
 	for (i=1; i<PT_NUM; i++) {
 		if (strcasecmp(txt,ptypes[i].name)==0)
 		{
 			*element = i;
+			strcpy(err,"");
 			return 1;
 		}
 	}
@@ -4044,6 +4047,7 @@ int console_parse_partref(char *txt, int *which, char *err)
 	if (i>=0 && i<NPART && parts[i].type)
 	{
 		*which = i;
+		strcpy(err,"");
 		return 1;
 	}
 	strcpy(err,"Particle does not exist");
