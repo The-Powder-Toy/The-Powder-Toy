@@ -28,6 +28,7 @@
 #include <string.h>
 #include <math.h>
 #include <SDL/SDL.h>
+#include <SDL/SDL_audio.h>
 #include <bzlib.h>
 #include <time.h>
 
@@ -50,6 +51,69 @@
 #include <hmap.h>
 #include <air.h>
 #include <icon.h>
+
+#define NUM_SOUNDS 2
+struct sample {
+    Uint8 *data;
+    Uint32 dpos;
+    Uint32 dlen;
+} sounds[NUM_SOUNDS];
+
+void mixaudio(void *unused, Uint8 *stream, int len)
+{
+    int i;
+    Uint32 amount;
+
+    for ( i=0; i<NUM_SOUNDS; ++i ) {
+        amount = (sounds[i].dlen-sounds[i].dpos);
+        if ( amount > len ) {
+            amount = len;
+        }
+        SDL_MixAudio(stream, &sounds[i].data[sounds[i].dpos], amount, SDL_MIX_MAXVOLUME);
+        sounds[i].dpos += amount;
+    }
+}
+
+void play_sound(char *file)
+{
+    int index;
+    SDL_AudioSpec wave;
+    Uint8 *data;
+    Uint32 dlen;
+    SDL_AudioCVT cvt;
+
+    /* Look for an empty (or finished) sound slot */
+    for ( index=0; index<NUM_SOUNDS; ++index ) {
+        if ( sounds[index].dpos == sounds[index].dlen ) {
+            break;
+        }
+    }
+    if ( index == NUM_SOUNDS )
+        return;
+
+    /* Load the sound file and convert it to 16-bit stereo at 22kHz */
+    if ( SDL_LoadWAV(file, &wave, &data, &dlen) == NULL ) {
+        fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
+        return;
+    }
+    SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq,
+                            AUDIO_S16,   2,             22050);
+    cvt.buf = malloc(dlen*cvt.len_mult);
+    memcpy(cvt.buf, data, dlen);
+    cvt.len = dlen;
+    SDL_ConvertAudio(&cvt);
+    SDL_FreeWAV(data);
+
+    /* Put the sound data in the slot (it starts playing immediately) */
+    if ( sounds[index].data ) {
+        free(sounds[index].data);
+    }
+    SDL_LockAudio();
+    sounds[index].data = cvt.buf;
+    sounds[index].dlen = cvt.len_cvt;
+    sounds[index].dpos = 0;
+    SDL_UnlockAudio();
+}
 
 static const char *it_msg =
     "\brThe Powder Toy - http://powdertoy.co.uk/\n"
@@ -479,10 +543,6 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 	if (replace)
 	{
 		gravityMode = 1;
-		memset(photons, 0, sizeof(photons));
-		memset(wireless, 0, sizeof(wireless));
-		memset(gol2, 0, sizeof(gol2));
-		memset(portal, 0, sizeof(portal));
 
 		memset(bmap, 0, sizeof(bmap));
 		memset(emap, 0, sizeof(emap));
@@ -1135,7 +1195,22 @@ int main(int argc, char *argv[])
 	pixel *load_img=NULL;//, *fbi_img=NULL;
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
 	GSPEED = 1;
-
+	
+	SDL_AudioSpec fmt;
+	/* Set 16-bit stereo audio at 22Khz */
+	fmt.freq = 22050;
+	fmt.format = AUDIO_S16;
+	fmt.channels = 2;
+	fmt.samples = 512;
+	fmt.callback = mixaudio;
+	fmt.userdata = NULL;
+	/* Open the audio device and start playing sound! */
+	if ( SDL_OpenAudio(&fmt, NULL) < 0 )
+	{
+		fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
+		exit(1);
+	}
+	SDL_PauseAudio(0);
 #ifdef MT
 	numCores = core_count();
 #endif
@@ -2303,7 +2378,6 @@ int main(int argc, char *argv[])
 								cb_bmap[cby][cbx] = bmap[cby][cbx];
 								cb_emap[cby][cbx] = emap[cby][cbx];
 							}
-
 						create_parts(x, y, bsx, bsy, c);
 						lx = x;
 						ly = y;
@@ -2547,12 +2621,12 @@ int main(int argc, char *argv[])
 		}
 
 	}
-
+	SDL_CloseAudio();
 	http_done();
 	return 0;
 }
 int process_command(pixel *vid_buf,char *console,char *console_error) {
-	int nx,ny,i,j;
+	int nx,ny,i,j,k;
 	char *console2;
 	char *console3;
 	char *console4;
@@ -2593,6 +2667,10 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 			}
 			else
 				sprintf(console_error, "%s does not exist", console3);
+		}
+		else if(strcmp(console2, "sound")==0 && console3)
+		{
+			play_sound(console3);
 		}
 		else if(strcmp(console2, "load")==0 && console3)
 		{
@@ -2673,6 +2751,15 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 							parts[i].life = j;
 					}
 				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].life = k;
+						}
+				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error))
@@ -2691,6 +2778,15 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 						{
 							if(parts[i].type)
 								parts[i].type = j;
+						}
+				}
+				else if (console_parse_type(console4, &j, console_error)
+					     && console_parse_type(console5, &k, console_error))
+				{
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].type = k;
 						}
 				}
 				else
@@ -2713,6 +2809,15 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 							parts[i].temp = j;
 					}
 				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].temp= k;
+						}
+				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error))
@@ -2732,6 +2837,15 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 						if(parts[i].type)
 							parts[i].tmp = j;
 					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].tmp = k;
+						}
 				}
 				else
 				{
@@ -2753,6 +2867,15 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 							parts[i].x = j;
 					}
 				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].x = k;
+						}
+				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error))
@@ -2773,6 +2896,15 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 							parts[i].y = j;
 					}
 				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].y = k;
+						}
+				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error))
@@ -2791,6 +2923,15 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 						{
 							if(parts[i].type)
 								parts[i].ctype = j;
+						}
+				}
+				else if (console_parse_type(console4, &j, console_error)
+					     && console_parse_type(console5, &k, console_error))
+				{
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].ctype = k;
 						}
 				}
 				else
@@ -2813,6 +2954,15 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 							parts[i].vx = j;
 					}
 				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].vx = k;
+						}
+				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error))
@@ -2832,6 +2982,15 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 						if(parts[i].type)
 							parts[i].vy = j;
 					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for(i=0; i<NPART; i++)
+						{
+							if(parts[i].type == j)
+								parts[i].vy = k;
+						}
 				}
 				else
 				{
