@@ -25,6 +25,10 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 		kill_part(i);
 		return 1;
 	}
+	else if (ct==PT_NTCT || ct==PT_PTCT)
+	{
+		update_NPTCT(UPDATE_FUNC_SUBCALL_ARGS);
+	}
 	else if (ct==PT_ETRD&&parts[i].life==1)
 	{
 		nearp = nearest_part(i, PT_ETRD);
