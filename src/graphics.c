@@ -2907,7 +2907,7 @@ void render_signs(pixel *vid_buf)
 					sprintf(buff, "Temp: 0.00");  //...tempirature
 				drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
 			}
-			
+
 			if(sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
 			{
 				int sldr, startm;

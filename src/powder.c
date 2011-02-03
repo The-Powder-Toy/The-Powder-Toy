@@ -577,7 +577,7 @@ inline int create_part(int p, int x, int y, int t)
 
 	if (t==PT_SPRK)
 	{
-		if (!((pmap[y][x]&0xFF)==PT_INST||(ptypes[pmap[y][x]&0xFF].properties&PROP_CONDUCTS)))
+		if ((pmap[y][x]>>8)>=NPART || !((pmap[y][x]&0xFF)==PT_INST||(ptypes[pmap[y][x]&0xFF].properties&PROP_CONDUCTS)))
 			return -1;
 		if (parts[pmap[y][x]>>8].life!=0)
 			return -1;
@@ -1525,10 +1525,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 					ctemph = ctempl = pt;
 					// change boiling point with pressure
 					if ((ptypes[t].state==ST_LIQUID && ptransitions[t].tht>-1 && ptransitions[t].tht<PT_NUM && ptypes[ptransitions[t].tht].state==ST_GAS)
-						|| t==PT_LNTG || t==PT_SLTW)
+					        || t==PT_LNTG || t==PT_SLTW)
 						ctemph -= 2.0f*pv[y/CELL][x/CELL];
 					else if ((ptypes[t].state==ST_GAS && ptransitions[t].tlt>-1 && ptransitions[t].tlt<PT_NUM && ptypes[ptransitions[t].tlt].state==ST_LIQUID)
-						|| t==PT_WTRV)
+					         || t==PT_WTRV)
 						ctempl -= 2.0f*pv[y/CELL][x/CELL];
 					s = 1;
 					if (ctemph>ptransitions[t].thv&&ptransitions[t].tht>-1) {
