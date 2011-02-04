@@ -1181,9 +1181,10 @@ int main(int argc, char *argv[])
 	pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pixel *pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	void *http_ver_check;
-	char *ver_data=NULL, *tmp;
+	void *http_session_check;
+	char *ver_data=NULL, *check_data=NULL, *tmp;
 	char console_error[255] = "";
-	int i, j, bq, fire_fc=0, do_check=0, old_version=0, http_ret=0, major, minor, old_ver_len;
+	int i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -1285,6 +1286,10 @@ int main(int argc, char *argv[])
 #else
 	http_ver_check = http_async_req_start(NULL, "http://" SERVER "/Update.api?Action=CheckVersion", NULL, 0, 0);
 #endif
+	if(svf_login){
+		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
+		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
+	}
 
 	while (!sdl_poll())
 	{
@@ -1366,6 +1371,74 @@ int main(int argc, char *argv[])
 				http_ver_check = NULL;
 			}
 			do_check = (do_check+1) & 15;
+		}
+		if(http_session_check)
+		{
+			if(!do_s_check && http_async_req_status(http_session_check))
+			{
+				check_data = http_async_req_stop(http_session_check, &http_s_ret, NULL);
+				if(http_ret==200 && check_data)
+				{
+					printf("{%s}\n", check_data);
+					if(!strncmp(check_data, "EXPIRED", 7))
+					{
+						//Session expired
+						strcpy(svf_user, "");
+						strcpy(svf_pass, "");
+						strcpy(svf_user_id, "");
+						strcpy(svf_session_id, "");
+						svf_login = 0;
+						svf_own = 0;
+						svf_admin = 0;
+						svf_mod = 0;
+					}
+					else if(!strncmp(check_data, "BANNED", 6))
+					{
+						//User banned
+						strcpy(svf_user, "");
+						strcpy(svf_pass, "");
+						strcpy(svf_user_id, "");
+						strcpy(svf_session_id, "");
+						svf_login = 0;
+						svf_own = 0;
+						svf_admin = 0;
+						svf_mod = 0;
+					}
+					else if(!strncmp(check_data, "OK", 2))
+					{
+						//Session valid
+						if(strlen(check_data)>2){
+							//User is elevated
+							if (!strncmp(check_data+3, "ADMIN", 5))
+							{
+								svf_admin = 1;
+								svf_mod = 0;
+							}
+							else if (!strncmp(check_data+3, "MOD", 3))
+							{
+								svf_admin = 0;
+								svf_mod = 1;
+							}							
+						}	
+						save_presets(0);
+					}
+					else
+					{
+						//No idea, but log the user out anyway
+						strcpy(svf_user, "");
+						strcpy(svf_pass, "");
+						strcpy(svf_user_id, "");
+						strcpy(svf_session_id, "");
+						svf_login = 0;
+						svf_own = 0;
+						svf_admin = 0;
+						svf_mod = 0;
+					}
+					free(check_data);
+				}
+				http_session_check = NULL;
+			}
+			do_s_check = (do_s_check+1) & 15;
 		}
 
 		if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)

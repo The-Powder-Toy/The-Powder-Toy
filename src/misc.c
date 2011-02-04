@@ -92,7 +92,7 @@ void strlist_free(struct strlist **list)
 void save_presets(int do_update)
 {
 	FILE *f=fopen("powder.def", "wb");
-	unsigned char sig[4] = {0x50, 0x44, 0x65, 0x66};
+	unsigned char sig[4] = {0x50, 0x44, 0x65, 0x67};
 	unsigned char tmp = sdl_scale;
 	if (!f)
 		return;
@@ -136,7 +136,7 @@ void load_presets(void)
 	if (!f)
 		return;
 	fread(sig, 1, 4, f);
-	if (sig[0]!=0x50 || sig[1]!=0x44 || sig[2]!=0x65 || sig[3]!=0x66)
+	if (sig[0]!=0x50 || sig[1]!=0x44 || sig[2]!=0x65)
 	{
 		if (sig[0]==0x4D && sig[1]==0x6F && sig[2]==0x46 && sig[3]==0x6F)
 		{
@@ -158,15 +158,20 @@ void load_presets(void)
 		remove("powder.def");
 		return;
 	}
-	if (load_string(f, svf_user, 63))
-		goto fail;
-	//if (load_string(f, svf_pass, 63))
-	//goto fail;
-	if (load_string(f, svf_user_id, 63))
-		goto fail;
-	if (load_string(f, svf_session_id, 63))
-		goto fail;
-	svf_login = !!svf_user[0];
+	if(sig[3]==0x66){
+		if (load_string(f, svf_user, 63))
+			goto fail;
+		if (load_string(f, svf_pass, 63))
+			goto fail;
+	} else {
+		if (load_string(f, svf_user, 63))
+			goto fail;
+		if (load_string(f, svf_user_id, 63))
+			goto fail;
+		if (load_string(f, svf_session_id, 63))
+			goto fail;
+	}
+	svf_login = !!svf_session_id[0];
 	if (fread(&tmp, 1, 1, f) != 1)
 		goto fail;
 	sdl_scale = (tmp == 2) ? 2 : 1;
