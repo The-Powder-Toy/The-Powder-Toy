@@ -867,7 +867,7 @@ void login_ui(pixel *vid_buf)
 	if (res && !strncmp(res, "OK ", 3))
 	{
 		char *s_id,*u_e,*nres;
-		printf("\n{%s}\n", res);
+		printf("{%s}\n", res);
 		s_id = strchr(res+3, ' ');
 		if (!s_id)
 			goto fail;
@@ -885,7 +885,7 @@ void login_ui(pixel *vid_buf)
 		strcpy(svf_session_id, s_id);
 		nres = mystrdup(u_e);
 
-		printf("\n{%s} {%s} {%s}\n", svf_user_id, svf_session_id, nres);
+		printf("{%s} {%s} {%s}\n", svf_user_id, svf_session_id, nres);
 
 		if (!strncmp(nres, "ADMIN", 5))
 		{
@@ -3965,6 +3965,7 @@ int console_parse_type(char *txt, int *element, char *err)
 		if (strcmp(txt,num)==0)
 		{
 			*element = i;
+			strcpy(err,"");
 			return 1;
 		}
 	}
@@ -3976,12 +3977,14 @@ int console_parse_type(char *txt, int *element, char *err)
 	if (i>=0)
 	{
 		*element = i;
+		strcpy(err,"");
 		return 1;
 	}
 	for (i=1; i<PT_NUM; i++) {
 		if (strcasecmp(txt,ptypes[i].name)==0)
 		{
 			*element = i;
+			strcpy(err,"");
 			return 1;
 		}
 	}
@@ -3991,32 +3994,20 @@ int console_parse_type(char *txt, int *element, char *err)
 int console_parse_coords(char *txt, int *x, int *y, char *err)
 {
 	// TODO: use regex?
-	char *coordtxt;
-	char num[10] = "";
 	int nx = -1, ny = -1;
-	txt = mystrdup(txt);
-	coordtxt = strtok(txt, ",");
-	if (coordtxt) nx = atoi(coordtxt);
-	if (nx>=0 && nx<XRES) sprintf(num,"%d",nx);
-	if (!coordtxt || strcmp(coordtxt, num)!=0)
+	sscanf(txt,"%d,%d",&nx,&ny);
+	if (nx<0 && nx>=XRES)
 	{
 		strcpy(err,"Invalid coordinates");
-		free(txt);
 		return 0;
 	}
-	strcpy(num,"");
-	coordtxt = strtok(NULL, ",");
-	if (coordtxt) ny = atoi(coordtxt);
-	if (ny>=0 && ny<YRES) sprintf(num,"%d",ny);
-	if (!coordtxt || strcmp(coordtxt, num)!=0)
+	if (ny<0 && ny>=YRES)
 	{
 		strcpy(err,"Invalid coordinates");
-		free(txt);
 		return 0;
 	}
 	*x = nx;
 	*y = ny;
-	free(txt);
 	return 1;
 }
 int console_parse_partref(char *txt, int *which, char *err)
@@ -4044,6 +4035,7 @@ int console_parse_partref(char *txt, int *which, char *err)
 	if (i>=0 && i<NPART && parts[i].type)
 	{
 		*which = i;
+		strcpy(err,"");
 		return 1;
 	}
 	strcpy(err,"Particle does not exist");

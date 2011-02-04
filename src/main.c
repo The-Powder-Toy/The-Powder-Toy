@@ -1181,9 +1181,10 @@ int main(int argc, char *argv[])
 	pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pixel *pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	void *http_ver_check;
-	char *ver_data=NULL, *tmp;
+	void *http_session_check;
+	char *ver_data=NULL, *check_data=NULL, *tmp;
 	char console_error[255] = "";
-	int i, j, bq, fire_fc=0, do_check=0, old_version=0, http_ret=0, major, minor, old_ver_len;
+	int i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -1285,6 +1286,10 @@ int main(int argc, char *argv[])
 #else
 	http_ver_check = http_async_req_start(NULL, "http://" SERVER "/Update.api?Action=CheckVersion", NULL, 0, 0);
 #endif
+	if(svf_login){
+		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
+		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
+	}
 
 	while (!sdl_poll())
 	{
@@ -1366,6 +1371,74 @@ int main(int argc, char *argv[])
 				http_ver_check = NULL;
 			}
 			do_check = (do_check+1) & 15;
+		}
+		if(http_session_check)
+		{
+			if(!do_s_check && http_async_req_status(http_session_check))
+			{
+				check_data = http_async_req_stop(http_session_check, &http_s_ret, NULL);
+				if(http_ret==200 && check_data)
+				{
+					printf("{%s}\n", check_data);
+					if(!strncmp(check_data, "EXPIRED", 7))
+					{
+						//Session expired
+						strcpy(svf_user, "");
+						strcpy(svf_pass, "");
+						strcpy(svf_user_id, "");
+						strcpy(svf_session_id, "");
+						svf_login = 0;
+						svf_own = 0;
+						svf_admin = 0;
+						svf_mod = 0;
+					}
+					else if(!strncmp(check_data, "BANNED", 6))
+					{
+						//User banned
+						strcpy(svf_user, "");
+						strcpy(svf_pass, "");
+						strcpy(svf_user_id, "");
+						strcpy(svf_session_id, "");
+						svf_login = 0;
+						svf_own = 0;
+						svf_admin = 0;
+						svf_mod = 0;
+					}
+					else if(!strncmp(check_data, "OK", 2))
+					{
+						//Session valid
+						if(strlen(check_data)>2){
+							//User is elevated
+							if (!strncmp(check_data+3, "ADMIN", 5))
+							{
+								svf_admin = 1;
+								svf_mod = 0;
+							}
+							else if (!strncmp(check_data+3, "MOD", 3))
+							{
+								svf_admin = 0;
+								svf_mod = 1;
+							}							
+						}	
+						save_presets(0);
+					}
+					else
+					{
+						//No idea, but log the user out anyway
+						strcpy(svf_user, "");
+						strcpy(svf_pass, "");
+						strcpy(svf_user_id, "");
+						strcpy(svf_session_id, "");
+						svf_login = 0;
+						svf_own = 0;
+						svf_admin = 0;
+						svf_mod = 0;
+					}
+					free(check_data);
+				}
+				http_session_check = NULL;
+			}
+			do_s_check = (do_s_check+1) & 15;
 		}
 
 		if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
@@ -1780,7 +1853,7 @@ int main(int argc, char *argv[])
 			console = console_ui(vid_buf,console_error);
 			console = mystrdup(console);
 			strcpy(console_error,"");
-			if(process_command(vid_buf,console,&console_error)==0)
+			if(process_command(vid_buf,console,&console_error)==-1)
 			{
 				free(console);
 				break;
@@ -2626,38 +2699,93 @@ int main(int argc, char *argv[])
 	return 0;
 }
 int process_command(pixel *vid_buf,char *console,char *console_error) {
-	int nx,ny,i,j,k;
-	char *console2;
-	char *console3;
-	char *console4;
-	char *console5;
+	int y,x,nx,ny,i,j,k,m;
+	int do_next = 1;
+	char xcoord[10];
+	char ycoord[10];
+	char console2[15];
+	char console3[15];
+	char console4[15];
+	char console5[15];
 	//sprintf(console_error, "%s", console);
 	if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
 	{
-		console2 = strtok(console, " ");
-		console3 = strtok(NULL, " ");
-		console4 = strtok(NULL, " ");
-		console5 = strtok(NULL, " ");
+		sscanf(console,"%14s %14s %14s %14s", console2, console3, console4, console5);//why didn't i know about this function?!
 		if(strcmp(console2, "quit")==0)
 		{
-			return 0;
+			return -1;
 		}
 		else if(strcmp(console2, "file")==0 && console3)
 		{
 			FILE *f=fopen(console3, "r");
 			if(f)
 			{
+				nx = 0;
+				ny = 0;
+				j = 0;
+				m = 0;
+				if(console4)
+					console_parse_coords(console4, &nx , &ny, console_error);
 				char fileread[5000];//TODO: make this change with file size
 				char pch[5000];
+				memset(pch,0,sizeof(pch));
+				memset(fileread,0,sizeof(fileread));
+				char tokens[10];
+				int tokensize;
 				fread(fileread,1,5000,f);
-				j = 0;
 				for(i=0; i<strlen(fileread); i++)
 				{
 					if(fileread[i] != '\n')
-						pch[i-j] = fileread[i];
-					else
 					{
-						process_command(vid_buf, pch, console_error);
+						pch[i-j] = fileread[i];
+						if(fileread[i] != ' ')
+							tokens[i-m] = fileread[i];
+					}
+					if(fileread[i] == ' ' || fileread[i] == '\n')
+					{
+						if(sregexp(tokens,"^x.[0-9],y.[0-9]")==0)//TODO: fix regex matching to work with x,y ect, right now it has to have a +0 or -0
+						{
+							char temp[5];
+							int starty = 0;
+							tokensize = strlen(tokens);
+							x = 0;
+							y = 0;
+							sscanf(tokens,"x%d,y%d",&x,&y);
+							sscanf(tokens,"%9s,%9s",xcoord,ycoord);
+							x += nx;
+							y += ny;
+							sprintf(xcoord,"%d",x);
+							sprintf(ycoord,"%d",y);
+							for(k = 0; k<strlen(xcoord);k++)//rewrite pch with numbers
+							{
+								pch[i-j-tokensize+k] = xcoord[k];
+								starty = k+1;
+							}
+							pch[i-j-tokensize+starty] = ',';
+							starty++;
+							for(k=0;k<strlen(ycoord);k++)
+							{
+								pch[i-j-tokensize+starty+k] = ycoord[k];
+								
+							}
+							pch[i-j-tokensize +strlen(xcoord) +1 +strlen(ycoord)] = ' ';
+							j = j -tokensize +strlen(xcoord) +1 +strlen(ycoord);
+						}
+						memset(tokens,0,sizeof(tokens));
+						m = i+1;
+					}
+					if(fileread[i] == '\n')
+					{
+						
+						if(do_next)
+						{
+							if(strcmp(pch,"else")==0)
+								do_next = 0;
+							else
+								do_next = process_command(vid_buf, pch, console_error);
+						}
+						else if(strcmp(pch,"endif")==0 || strcmp(pch,"else")==0)
+							do_next = 1;
 						memset(pch,0,sizeof(pch));
 						j = i+1;
 					}
@@ -2679,6 +2807,22 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 			{
 				open_ui(vid_buf, console3, NULL);
 				console_mode = 0;
+			}
+		}
+		else if(strcmp(console2, "if")==0 && console3)
+		{
+			if(strcmp(console3, "type")==0)//TODO: add more than just type, and be able to check greater/less than
+			{
+				if (console_parse_partref(console4, &i, console_error)
+					&& console_parse_type(console5, &j, console_error))
+				{
+					if(parts[i].type==j)
+						return 1;
+					else
+						return 0;
+				}
+				else
+					return 0;
 			}
 		}
 		else if (strcmp(console2, "create")==0 && console3 && console4)
