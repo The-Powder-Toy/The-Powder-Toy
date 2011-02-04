@@ -2637,7 +2637,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 	//sprintf(console_error, "%s", console);
 	if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
 	{
-		sscanf(console,"%s %s %s %s", console2, console3, console4, console5);//why didn't i know about this function?!
+		sscanf(console,"%14s %14s %14s %14s", console2, console3, console4, console5);//why didn't i know about this function?!
 		if(strcmp(console2, "quit")==0)
 		{
 			return -1;
@@ -2678,7 +2678,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 							x = 0;
 							y = 0;
 							sscanf(tokens,"x%d,y%d",&x,&y);
-							sscanf(tokens,"%s,%s",xcoord,ycoord);
+							sscanf(tokens,"%9s,%9s",xcoord,ycoord);
 							x += nx;
 							y += ny;
 							sprintf(xcoord,"%d",x);
