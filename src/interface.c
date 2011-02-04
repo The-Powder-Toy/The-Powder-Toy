@@ -867,7 +867,7 @@ void login_ui(pixel *vid_buf)
 	if (res && !strncmp(res, "OK ", 3))
 	{
 		char *s_id,*u_e,*nres;
-		printf("\n{%s}\n", res);
+		printf("{%s}\n", res);
 		s_id = strchr(res+3, ' ');
 		if (!s_id)
 			goto fail;
@@ -885,7 +885,7 @@ void login_ui(pixel *vid_buf)
 		strcpy(svf_session_id, s_id);
 		nres = mystrdup(u_e);
 
-		printf("\n{%s} {%s} {%s}\n", svf_user_id, svf_session_id, nres);
+		printf("{%s} {%s} {%s}\n", svf_user_id, svf_session_id, nres);
 
 		if (!strncmp(nres, "ADMIN", 5))
 		{
