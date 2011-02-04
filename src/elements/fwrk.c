@@ -7,9 +7,9 @@ int update_FWRK(UPDATE_FUNC_ARGS) {
 		np = create_part(-1, x , y-1 , PT_FWRK);
 		if (np!=-1)
 		{
-			parts[r>>8].vy = rand()%8-22;
-			parts[r>>8].vx = rand()%20-rand()%20;
-			parts[r>>8].life=rand()%15+25;
+			parts[np].vy = rand()%8-22;
+			parts[np].vx = rand()%20-rand()%20;
+			parts[np].life=rand()%15+25;
 			kill_part(i);
 			return 1;
 		}
@@ -33,13 +33,13 @@ int update_FWRK(UPDATE_FUNC_ARGS) {
 							pv[y/CELL][x/CELL] += 2.00f*CFDS;
 							if (np!=-1)
 							{
-								parts[r>>8].vy = -(rand()%10-1);
-								parts[r>>8].vx = ((rand()%2)*2-1)*rand()%(5+5)+(parts[i].vx)*2 ;
-								parts[r>>8].life= rand()%37+18;
-								parts[r>>8].tmp=q;
-								parts[r>>8].flags=w;
-								parts[r>>8].ctype=e;
-								parts[r>>8].temp= rand()%20+6000;
+								parts[np].vy = -(rand()%10-1);
+								parts[np].vx = ((rand()%2)*2-1)*rand()%(5+5)+(parts[i].vx)*2 ;
+								parts[np].life= rand()%37+18;
+								parts[np].tmp=q;
+								parts[np].flags=w;
+								parts[np].ctype=e;
+								parts[np].temp= rand()%20+6000;
 							}
 						}
 					}

@@ -1780,7 +1780,7 @@ int main(int argc, char *argv[])
 			console = console_ui(vid_buf,console_error);
 			console = mystrdup(console);
 			strcpy(console_error,"");
-			if(process_command(vid_buf,console,&console_error)==0)
+			if(process_command(vid_buf,console,&console_error)==-1)
 			{
 				free(console);
 				break;
@@ -2626,38 +2626,93 @@ int main(int argc, char *argv[])
 	return 0;
 }
 int process_command(pixel *vid_buf,char *console,char *console_error) {
-	int nx,ny,i,j,k;
-	char *console2;
-	char *console3;
-	char *console4;
-	char *console5;
+	int y,x,nx,ny,i,j,k,m;
+	int do_next = 1;
+	char xcoord[10];
+	char ycoord[10];
+	char console2[15];
+	char console3[15];
+	char console4[15];
+	char console5[15];
 	//sprintf(console_error, "%s", console);
 	if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
 	{
-		console2 = strtok(console, " ");
-		console3 = strtok(NULL, " ");
-		console4 = strtok(NULL, " ");
-		console5 = strtok(NULL, " ");
+		sscanf(console,"%s %s %s %s", console2, console3, console4, console5);//why didn't i know about this function?!
 		if(strcmp(console2, "quit")==0)
 		{
-			return 0;
+			return -1;
 		}
 		else if(strcmp(console2, "file")==0 && console3)
 		{
 			FILE *f=fopen(console3, "r");
 			if(f)
 			{
+				nx = 0;
+				ny = 0;
+				j = 0;
+				m = 0;
+				if(console4)
+					console_parse_coords(console4, &nx , &ny, console_error);
 				char fileread[5000];//TODO: make this change with file size
 				char pch[5000];
+				memset(pch,0,sizeof(pch));
+				memset(fileread,0,sizeof(fileread));
+				char tokens[10];
+				int tokensize;
 				fread(fileread,1,5000,f);
-				j = 0;
 				for(i=0; i<strlen(fileread); i++)
 				{
 					if(fileread[i] != '\n')
-						pch[i-j] = fileread[i];
-					else
 					{
-						process_command(vid_buf, pch, console_error);
+						pch[i-j] = fileread[i];
+						if(fileread[i] != ' ')
+							tokens[i-m] = fileread[i];
+					}
+					if(fileread[i] == ' ' || fileread[i] == '\n')
+					{
+						if(sregexp(tokens,"^x.[0-9],y.[0-9]")==0)//TODO: fix regex matching to work with x,y ect, right now it has to have a +0 or -0
+						{
+							char temp[5];
+							int starty = 0;
+							tokensize = strlen(tokens);
+							x = 0;
+							y = 0;
+							sscanf(tokens,"x%d,y%d",&x,&y);
+							sscanf(tokens,"%s,%s",xcoord,ycoord);
+							x += nx;
+							y += ny;
+							sprintf(xcoord,"%d",x);
+							sprintf(ycoord,"%d",y);
+							for(k = 0; k<strlen(xcoord);k++)//rewrite pch with numbers
+							{
+								pch[i-j-tokensize+k] = xcoord[k];
+								starty = k+1;
+							}
+							pch[i-j-tokensize+starty] = ',';
+							starty++;
+							for(k=0;k<strlen(ycoord);k++)
+							{
+								pch[i-j-tokensize+starty+k] = ycoord[k];
+								
+							}
+							pch[i-j-tokensize +strlen(xcoord) +1 +strlen(ycoord)] = ' ';
+							j = j -tokensize +strlen(xcoord) +1 +strlen(ycoord);
+						}
+						memset(tokens,0,sizeof(tokens));
+						m = i+1;
+					}
+					if(fileread[i] == '\n')
+					{
+						
+						if(do_next)
+						{
+							if(strcmp(pch,"else")==0)
+								do_next = 0;
+							else
+								do_next = process_command(vid_buf, pch, console_error);
+						}
+						else if(strcmp(pch,"endif")==0 || strcmp(pch,"else")==0)
+							do_next = 1;
 						memset(pch,0,sizeof(pch));
 						j = i+1;
 					}
@@ -2679,6 +2734,22 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 			{
 				open_ui(vid_buf, console3, NULL);
 				console_mode = 0;
+			}
+		}
+		else if(strcmp(console2, "if")==0 && console3)
+		{
+			if(strcmp(console3, "type")==0)//TODO: add more than just type, and be able to check greater/less than
+			{
+				if (console_parse_partref(console4, &i, console_error)
+					&& console_parse_type(console5, &j, console_error))
+				{
+					if(parts[i].type==j)
+						return 1;
+					else
+						return 0;
+				}
+				else
+					return 0;
 			}
 		}
 		else if (strcmp(console2, "create")==0 && console3 && console4)

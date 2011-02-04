@@ -8,13 +8,11 @@
 #endif
 
 #define SAVE_VERSION 46
-#define MINOR_VERSION 0
+#define MINOR_VERSION 1
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
-//#define BETA
+#define BETA
 
 #define SERVER "powdertoy.co.uk"
-
-#undef PLOSS
 
 #define THUMB_CACHE_SIZE 256
 
@@ -45,11 +43,11 @@ extern unsigned char ZSIZE;
 #define ISTP    (CELL/2)
 #define CFDS	(4.0f/CELL)
 
-#define TSTEPP 0.3f
-#define TSTEPV 0.4f
-#define VADV 0.3f
-#define VLOSS 0.999f
-#define PLOSS 0.9999f
+#define AIR_TSTEPP 0.3f
+#define AIR_TSTEPV 0.4f
+#define AIR_VADV 0.3f
+#define AIR_VLOSS 0.999f
+#define AIR_PLOSS 0.9999f
 
 #define GRID_X 5
 #define GRID_Y 4
