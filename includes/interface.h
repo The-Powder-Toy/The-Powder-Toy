@@ -69,6 +69,8 @@ static menu_section msections[] =
 	{"\xC6", "Radioactive", 0, 1},
 	{"\xCC", "Special", 0, 1},
 	{"\xD2", "Life", 0, 1},
+	{"\xD2", "More Life", 0, 1},
+	{"\xC8", "", 0, 0},
 	{"\xC8", "Cracker", 0, 0},
 	{"\xC8", "Cracker!", 0, 0},
 };

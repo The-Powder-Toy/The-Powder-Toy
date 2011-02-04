@@ -2631,17 +2631,14 @@ int x,y,nx,ny,i,j,k,m;
 int do_next = 1;
 char xcoord[10];
 char ycoord[10];
-char *console2;
-char *console3;
-char *console4;
-char *console5;
+char console2[15];
+char console3[15];
+char console4[15];
+char console5[15];
 	//sprintf(console_error, "%s", console);
 	if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
 	{
-		console2 = strtok(console, " ");
-		console3 = strtok(NULL, " ");
-		console4 = strtok(NULL, " ");
-		console5 = strtok(NULL, " ");
+		sscanf(console,"%s %s %s %s", console2, console3, console4, console5);//why didn't i know about this function?!
 		if(strcmp(console2, "quit")==0)
 		{
 			return -1;
@@ -2681,41 +2678,8 @@ char *console5;
 							tokensize = strlen(tokens);
 							x = 0;
 							y = 0;
-							strcpy(xcoord,strtok(tokens,","));
-							strcpy(ycoord,strtok(NULL," "));
-							if(xcoord[1]=='+')//get additions
-							{
-								for(k = 2; k<strlen(xcoord);k++)
-								{
-									temp[k-2] = xcoord[k];
-								}
-								x += atoi(temp);
-							}
-							else if(xcoord[1]=='-')
-							{
-								for(k = 2; k<strlen(xcoord);k++)
-								{
-									temp[k-2] = xcoord[k];
-								}
-								x += -atoi(temp);
-							}
-							memset(temp, 0,sizeof(temp));
-							if(ycoord[1]=='+')
-							{
-								for(k = 2; k<strlen(ycoord);k++)
-								{
-									temp[k-2] = ycoord[k];
-								}
-								y += atoi(temp);
-							}
-							else if(ycoord[1]=='-')
-							{
-								for(k = 2; k<strlen(ycoord);k++)
-								{
-									temp[k-2] = ycoord[k];
-								}
-								y += -atoi(temp);
-							}
+							sscanf(tokens,"x%d,y%d",&x,&y);
+							sscanf(tokens,"%s,%s",xcoord,ycoord);
 							x += nx;
 							y += ny;
 							sprintf(xcoord,"%d",x);
