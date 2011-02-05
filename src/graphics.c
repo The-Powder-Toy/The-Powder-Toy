@@ -855,49 +855,65 @@ int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, i
 	int rh = 12;
 	int rw = 0;
 	int cw = x;
-	for (; *s; s++)
+	int wordlen;
+	int charspace;
+	while (*s)
 	{
-		if (*s == '\n')
+		wordlen = strcspn(s," .,!?\n");
+		charspace = textwidthx(s, w-(x-cw));
+		if (charspace<wordlen && wordlen && w-(x-cw)<w/3)
 		{
 			x = sx;
 			rw = 0;
-			y += FONT_H+2;
+			y+=FONT_H+2;
+			rh+=FONT_H+2;
 		}
-		else if (*s == '\b')
+		for (; *s && --wordlen>=-1; s++)
 		{
-			switch (s[1])
+			if (*s == '\n')
 			{
-			case 'w':
-				r = g = b = 255;
-				break;
-			case 'g':
-				r = g = b = 192;
-				break;
-			case 'o':
-				r = 255;
-				g = 216;
-				b = 32;
-				break;
-			case 'r':
-				r = 255;
-				g = b = 0;
-				break;
-			case 'b':
-				r = g = 0;
-				b = 255;
-				break;
-			}
-			s++;
-		}
-		else
-		{
-			if (x-cw>=w) {
 				x = sx;
 				rw = 0;
-				y+=FONT_H+2;
-				rh+=FONT_H+2;
+				y += FONT_H+2;
 			}
-			x = drawchar(vid, x, y, *(unsigned char *)s, r, g, b, a);
+			else if (*s == '\b')
+			{
+				switch (s[1])
+				{
+				case 'w':
+					r = g = b = 255;
+					break;
+				case 'g':
+					r = g = b = 192;
+					break;
+				case 'o':
+					r = 255;
+					g = 216;
+					b = 32;
+					break;
+				case 'r':
+					r = 255;
+					g = b = 0;
+					break;
+				case 'b':
+					r = g = 0;
+					b = 255;
+					break;
+				}
+				s++;
+			}
+			else
+			{
+
+				if (x-cw>=w)
+				{
+					x = sx;
+					rw = 0;
+					y+=FONT_H+2;
+					rh+=FONT_H+2;
+				}
+				x = drawchar(vid, x, y, *(unsigned char *)s, r, g, b, a);
+			}
 		}
 	}
 #endif
@@ -1009,18 +1025,29 @@ void textnpos(char *s, int n, int w, int *cx, int *cy)
 {
 	int x = 0;
 	int y = 0;
-	//TODO: Implement Textnheight for wrapped text
-	for (; *s; s++)
+	int wordlen, charspace;
+	while (*s&&n)
 	{
-		if (!n) {
-			break;
-		}
-		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
-		if (x>=w) {
+		wordlen = strcspn(s," .,!?\n");
+		charspace = textwidthx(s, w-x);
+		if (charspace<wordlen && wordlen && w-x<w/3)
+		{
 			x = 0;
 			y += FONT_H+2;
 		}
-		n--;
+		for (; *s && --wordlen>=-1; s++)
+		{
+			if (!n) {
+				break;
+			}
+			x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+			if (x>=w)
+			{
+				x = 0;
+				y += FONT_H+2;
+			}
+			n--;
+		}
 	}
 	*cx = x-1;
 	*cy = y;
@@ -1041,18 +1068,28 @@ int textwidthx(char *s, int w)
 }
 int textposxy(char *s, int width, int w, int h)
 {
-	int x=0,y=0,n=0,cw;
-	for (; *s; s++)
+	int x=0,y=0,n=0,cw, wordlen, charspace;
+	while (*s)
 	{
-		cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
-		if (x+(cw/2) >= w && y+6 >= h)
-			break;
-		x += cw;
-		if (x>=width) {
+		wordlen = strcspn(s," .,!?\n");
+		charspace = textwidthx(s, width-x);
+		if (charspace<wordlen && wordlen && width-x<width/3)
+		{
 			x = 0;
 			y += FONT_H+2;
 		}
-		n++;
+		for (; *s && --wordlen>=-1; s++)
+		{
+			cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+			if ((x+(cw/2) >= w && y+6 >= h)||(y+6 >= h+FONT_H+2))
+				return n++;
+			x += cw;
+			if (x>=width) {
+				x = 0;
+				y += FONT_H+2;
+			}
+			n++;
+		}
 	}
 	return n;
 }
