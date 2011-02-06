@@ -413,33 +413,31 @@ void kill_part(int i)
 {
 	int x, y;
 
-	if (parts[i].type != PT_PHOT) {
-		x = (int)(parts[i].x+0.5f);
-		y = (int)(parts[i].y+0.5f);
-		if (parts[i].type == PT_STKM)
-		{
-			death = 1;
-			isplayer = 0;
-		}
-		if (parts[i].type == PT_STKM2)
-		{
-			death2 = 1;
-			isplayer2 = 0;
-		}
-		if (parts[i].type == PT_SPAWN)
-		{
-			ISSPAWN1 = 0;
-		}
-		if (parts[i].type == PT_SPAWN2)
-		{
-			ISSPAWN2 = 0;
-		}
-		if (x>=0 && y>=0 && x<XRES && y<YRES) {
-			if ((pmap[y][x]>>8)==i)
-				pmap[y][x] = 0;
-			else if ((photons[y][x]>>8)==i)
-				photons[y][x] = 0;
-		}
+	x = (int)(parts[i].x+0.5f);
+	y = (int)(parts[i].y+0.5f);
+	if (parts[i].type == PT_STKM)
+	{
+		death = 1;
+		isplayer = 0;
+	}
+	if (parts[i].type == PT_STKM2)
+	{
+		death2 = 1;
+		isplayer2 = 0;
+	}
+	if (parts[i].type == PT_SPAWN)
+	{
+		ISSPAWN1 = 0;
+	}
+	if (parts[i].type == PT_SPAWN2)
+	{
+		ISSPAWN2 = 0;
+	}
+	if (x>=0 && y>=0 && x<XRES && y<YRES) {
+		if ((pmap[y][x]>>8)==i)
+			pmap[y][x] = 0;
+		else if ((photons[y][x]>>8)==i)
+			photons[y][x] = 0;
 	}
 
 	parts[i].type = PT_NONE;
@@ -456,10 +454,18 @@ inline void part_change_type(int i, int x, int y, int t)
 	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART)
 		return -1;
 	parts[i].type = t;
-	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT)// && t!=PT_NEUT)
+	if (t==PT_PHOT)// || t==PT_NEUT)
+	{
+		photons[y][x] = t|(i<<8);
+		if ((pmap[y][x]>>8)==i)
+			pmap[y][x] = 0;
+	}
+	else
+	{
 		pmap[y][x] = t|(i<<8);
-	else if ((pmap[y][x]>>8)==i)
-		pmap[y][x] = 0;
+		if ((photons[y][x]>>8)==i)
+			photons[y][x] = 0;
+	}
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
@@ -498,6 +504,8 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
 		parts[i].tmp = 0;
 		if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && !pmap[y][x])// && t!=PT_NEUT)
 			pmap[y][x] = t|(i<<8);
+		else if (t==PT_PHOT && !photons[y][x])
+			photons[y][x] = t|(i<<8);
 
 		pv[y/CELL][x/CELL] += 6.0f * CFDS;
 	}
@@ -2031,6 +2039,7 @@ killed:
 			if (ny!=y || nx!=x)
 			{
 				if ((pmap[y][x]>>8)==i) pmap[y][x] = 0;
+				else if (t==PT_PHOT&&(photons[y][x]>>8)==i) photons[y][x] = 0;
 				if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
 				{
 					kill_part(i);
