@@ -253,10 +253,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 		parts[e].x += x-nx;
 		parts[e].y += y-ny;
+		pmap[(int)(parts[e].y+0.5f)][(int)(parts[e].x+0.5f)] = (e<<8)|parts[e].type;
 	}
-
-	pmap[ny][nx] = (i<<8)|parts[i].type;
-	pmap[y][x] = r;
 
 	return 1;
 }
@@ -2030,10 +2028,18 @@ killed:
 			}
 			nx = (int)(parts[i].x+0.5f);
 			ny = (int)(parts[i].y+0.5f);
-			if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
+			if (ny!=y || nx!=x)
 			{
-				kill_part(i);
-				continue;
+				if ((pmap[y][x]>>8)==i) pmap[y][x] = 0;
+				if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
+				{
+					kill_part(i);
+					continue;
+				}
+				if (t==PT_PHOT)
+					photons[ny][nx] = t|(i<<8);
+				else
+					pmap[ny][nx] = t|(i<<8);
 			}
 		}
 	if (framerender) {
