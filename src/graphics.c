@@ -1520,7 +1520,9 @@ void draw_parts(pixel *vid)
 				         t!=PT_HFLM && t!=PT_SPRK && t!=PT_FIRW &&
 				         t!=PT_DUST && t!=PT_FIRW && t!=PT_FWRK &&
 				         t!=PT_NEUT && t!=PT_LAVA && t!=PT_BOMB &&
-				         t!=PT_PHOT && t!=PT_THDR && t!=PT_SMKE)
+				         t!=PT_PHOT && t!=PT_THDR && t!=PT_SMKE &&
+				         t!=PT_LCRY && t!=PT_SWCH && t!=PT_PCLN &&
+				         t!=PT_PUMP && t!=PT_HSWC && t!=PT_FILT)
 				{
 					if (ptypes[parts[i].type].properties&TYPE_LIQUID)
 					{
