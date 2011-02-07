@@ -3995,13 +3995,7 @@ int console_parse_coords(char *txt, int *x, int *y, char *err)
 {
 	// TODO: use regex?
 	int nx = -1, ny = -1;
-	sscanf(txt,"%d,%d",&nx,&ny);
-	if (nx<0 && nx>=XRES)
-	{
-		strcpy(err,"Invalid coordinates");
-		return 0;
-	}
-	if (ny<0 && ny>=YRES)
+	if (sscanf(txt,"%d,%d",&nx,&ny)!=2 || nx<0 || nx>=XRES || ny<0 || ny>=YRES)
 	{
 		strcpy(err,"Invalid coordinates");
 		return 0;
@@ -4012,9 +4006,10 @@ int console_parse_coords(char *txt, int *x, int *y, char *err)
 }
 int console_parse_partref(char *txt, int *which, char *err)
 {
+	strcpy(err,"");
 	// TODO: use regex?
 	int i = -1, nx, ny;
-	if (console_parse_coords(txt, &nx, &ny, err))
+	if (strchr(txt,',') && console_parse_coords(txt, &nx, &ny, err))
 	{
 		i = pmap[ny][nx];
 		if (!i || (i>>8)>=NPART)
@@ -4025,7 +4020,6 @@ int console_parse_partref(char *txt, int *which, char *err)
 	else if (txt)
 	{
 		char *num = (char*)malloc(strlen(txt)+3);
-		strcpy(err,""); // suppress error message from failed coordinate parsing
 		i = atoi(txt);
 		sprintf(num,"%d",i);
 		if (!txt || strcmp(txt,num)!=0)
@@ -4038,6 +4032,6 @@ int console_parse_partref(char *txt, int *which, char *err)
 		strcpy(err,"");
 		return 1;
 	}
-	strcpy(err,"Particle does not exist");
+	if (strcmp(err,"")==0) strcpy(err,"Particle does not exist");
 	return 0;
 }
