@@ -3957,19 +3957,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 
 int console_parse_type(char *txt, int *element, char *err)
 {
-	int i = atoi(txt);
-	char num[4];
-	if (i>=0 && i<PT_NUM)
-	{
-		sprintf(num,"%d",i);
-		if (strcmp(txt,num)==0)
-		{
-			*element = i;
-			strcpy(err,"");
-			return 1;
-		}
-	}
-	i = -1;
+	int i = -1;
 	// alternative names for some elements
 	if (strcasecmp(txt,"C4")==0) i = PT_PLEX;
 	else if (strcasecmp(txt,"C5")==0) i = PT_C5;
