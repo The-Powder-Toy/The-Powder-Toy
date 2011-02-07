@@ -767,10 +767,11 @@ static int lolzrule[9][9] =
 	{0,1,0,0,0,0,0,1,0},
 	{0,1,0,0,0,0,0,1,0},
 };
-int portal[(int)(MAX_TEMP-73.15f)/100+2][8][80];
-float portaltemp[(int)(MAX_TEMP-73.15f)/100+2][8][80];
-int portalctype[(int)(MAX_TEMP-73.15f)/100+2][8][80];
-int wireless[(int)(MAX_TEMP-73.15f)/100+2][2];
+#define CHANNELS ((int)(MAX_TEMP-73.15f)/100+2)
+int portal[CHANNELS][8][80];
+float portaltemp[CHANNELS][8][80];
+int portalctype[CHANNELS][8][80];
+int wireless[CHANNELS][2];
 
 extern int isplayer;
 extern float player[27];
