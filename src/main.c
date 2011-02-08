@@ -82,6 +82,8 @@ void play_sound(char *file)
 	Uint32 dlen;
 	SDL_AudioCVT cvt;
 
+	if (!sound_enable) return;
+
 	/* Look for an empty (or finished) sound slot */
 	for ( index=0; index<NUM_SOUNDS; ++index ) {
 		if ( sounds[index].dpos == sounds[index].dlen ) {
@@ -167,6 +169,7 @@ int FPSB = 0;
 int MSIGN =-1;
 //int CGOL = 0;
 //int GSPEED = 1;//causes my .exe to crash..
+int sound_enable;
 
 sign signs[MAXSIGNS];
 
@@ -1209,9 +1212,12 @@ int main(int argc, char *argv[])
 	if ( SDL_OpenAudio(&fmt, NULL) < 0 )
 	{
 		fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
-		exit(1);
 	}
-	SDL_PauseAudio(0);
+	else
+	{
+		sound_enable = 1;
+		SDL_PauseAudio(0);
+	}
 #ifdef MT
 	numCores = core_count();
 #endif
@@ -2797,7 +2803,8 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 		}
 		else if(strcmp(console2, "sound")==0 && console3)
 		{
-			play_sound(console3);
+			if (sound_enable) play_sound(console3);
+			else strcpy(console_error, "Audio device not available - cannot play sounds");
 		}
 		else if(strcmp(console2, "load")==0 && console3)
 		{
