@@ -54,65 +54,67 @@
 
 #define NUM_SOUNDS 2
 struct sample {
-    Uint8 *data;
-    Uint32 dpos;
-    Uint32 dlen;
+	Uint8 *data;
+	Uint32 dpos;
+	Uint32 dlen;
 } sounds[NUM_SOUNDS];
 
 void mixaudio(void *unused, Uint8 *stream, int len)
 {
-    int i;
-    Uint32 amount;
+	int i;
+	Uint32 amount;
 
-    for ( i=0; i<NUM_SOUNDS; ++i ) {
-        amount = (sounds[i].dlen-sounds[i].dpos);
-        if ( amount > len ) {
-            amount = len;
-        }
-        SDL_MixAudio(stream, &sounds[i].data[sounds[i].dpos], amount, SDL_MIX_MAXVOLUME);
-        sounds[i].dpos += amount;
-    }
+	for ( i=0; i<NUM_SOUNDS; ++i ) {
+		amount = (sounds[i].dlen-sounds[i].dpos);
+		if ( amount > len ) {
+			amount = len;
+		}
+		SDL_MixAudio(stream, &sounds[i].data[sounds[i].dpos], amount, SDL_MIX_MAXVOLUME);
+		sounds[i].dpos += amount;
+	}
 }
 
 void play_sound(char *file)
 {
-    int index;
-    SDL_AudioSpec wave;
-    Uint8 *data;
-    Uint32 dlen;
-    SDL_AudioCVT cvt;
+	int index;
+	SDL_AudioSpec wave;
+	Uint8 *data;
+	Uint32 dlen;
+	SDL_AudioCVT cvt;
 
-    /* Look for an empty (or finished) sound slot */
-    for ( index=0; index<NUM_SOUNDS; ++index ) {
-        if ( sounds[index].dpos == sounds[index].dlen ) {
-            break;
-        }
-    }
-    if ( index == NUM_SOUNDS )
-        return;
+	if (!sound_enable) return;
 
-    /* Load the sound file and convert it to 16-bit stereo at 22kHz */
-    if ( SDL_LoadWAV(file, &wave, &data, &dlen) == NULL ) {
-        fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
-        return;
-    }
-    SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq,
-                            AUDIO_S16,   2,             22050);
-    cvt.buf = malloc(dlen*cvt.len_mult);
-    memcpy(cvt.buf, data, dlen);
-    cvt.len = dlen;
-    SDL_ConvertAudio(&cvt);
-    SDL_FreeWAV(data);
+	/* Look for an empty (or finished) sound slot */
+	for ( index=0; index<NUM_SOUNDS; ++index ) {
+		if ( sounds[index].dpos == sounds[index].dlen ) {
+			break;
+		}
+	}
+	if ( index == NUM_SOUNDS )
+		return;
 
-    /* Put the sound data in the slot (it starts playing immediately) */
-    if ( sounds[index].data ) {
-        free(sounds[index].data);
-    }
-    SDL_LockAudio();
-    sounds[index].data = cvt.buf;
-    sounds[index].dlen = cvt.len_cvt;
-    sounds[index].dpos = 0;
-    SDL_UnlockAudio();
+	/* Load the sound file and convert it to 16-bit stereo at 22kHz */
+	if ( SDL_LoadWAV(file, &wave, &data, &dlen) == NULL ) {
+		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
+		return;
+	}
+	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq,
+	                  AUDIO_S16,   2,             22050);
+	cvt.buf = malloc(dlen*cvt.len_mult);
+	memcpy(cvt.buf, data, dlen);
+	cvt.len = dlen;
+	SDL_ConvertAudio(&cvt);
+	SDL_FreeWAV(data);
+
+	/* Put the sound data in the slot (it starts playing immediately) */
+	if ( sounds[index].data ) {
+		free(sounds[index].data);
+	}
+	SDL_LockAudio();
+	sounds[index].data = cvt.buf;
+	sounds[index].dlen = cvt.len_cvt;
+	sounds[index].dpos = 0;
+	SDL_UnlockAudio();
 }
 
 static const char *it_msg =
@@ -167,6 +169,7 @@ int FPSB = 0;
 int MSIGN =-1;
 //int CGOL = 0;
 //int GSPEED = 1;//causes my .exe to crash..
+int sound_enable;
 
 sign signs[MAXSIGNS];
 
@@ -1196,7 +1199,7 @@ int main(int argc, char *argv[])
 	pixel *load_img=NULL;//, *fbi_img=NULL;
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
 	GSPEED = 1;
-	
+
 	SDL_AudioSpec fmt;
 	/* Set 16-bit stereo audio at 22Khz */
 	fmt.freq = 22050;
@@ -1209,9 +1212,12 @@ int main(int argc, char *argv[])
 	if ( SDL_OpenAudio(&fmt, NULL) < 0 )
 	{
 		fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
-		exit(1);
 	}
-	SDL_PauseAudio(0);
+	else
+	{
+		sound_enable = 1;
+		SDL_PauseAudio(0);
+	}
 #ifdef MT
 	numCores = core_count();
 #endif
@@ -1930,7 +1936,7 @@ int main(int argc, char *argv[])
 					int tctype = parts[cr>>8].ctype;
 					if (tctype>=PT_NUM)
 						tctype = 0;
-					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d, #%d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life, cr>>8);
 					//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 				} else
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
@@ -1941,7 +1947,6 @@ int main(int argc, char *argv[])
 					if (tctype>=PT_NUM)
 						tctype = 0;
 					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d, #%d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life ,cr>>8);
-					sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 					//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 				} else {
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
@@ -1950,10 +1955,10 @@ int main(int argc, char *argv[])
 			}
 			else
 			{
-				if (DEBUG_MODE)
-					sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 				sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 			}
+			if (DEBUG_MODE)
+				sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 		}
 		mx = x;
 		my = y;
@@ -2340,10 +2345,10 @@ int main(int argc, char *argv[])
 			else if (y<YRES)
 			{
 				int signi;
-				
+
 				c = (b&1) ? sl : sr;
 				su = c;
-				
+
 				if(c!=WL_SIGN+100)
 				{
 					if(!bq)
@@ -2356,12 +2361,12 @@ int main(int argc, char *argv[])
 								{
 									char buff[256];
 									int sldr;
-									
+
 									memset(buff, 0, sizeof(buff));
-									
+
 									for(sldr=3; signs[signi].text[sldr] != '|'; sldr++)
 										buff[sldr-3] = signs[signi].text[sldr];
-									
+
 									char buff2[sldr-2]; //TODO: Fix this for Visual Studio
 									memset(buff2, 0, sizeof(buff2));
 									memcpy(&buff2, &buff, sldr-3);
@@ -2369,7 +2374,7 @@ int main(int argc, char *argv[])
 								}
 							}
 				}
-				
+
 				if (c==WL_SIGN+100)
 				{
 					if (!bq)
@@ -2697,7 +2702,7 @@ int main(int argc, char *argv[])
 				if(DEBUG_MODE)
 				{
 					fillrect(vid_buf, XRES-20-textwidth(coordtext), 26, textwidth(coordtext)+8, 11, 0, 0, 0, 140);
-					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, 200);	
+					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, 200);
 				}
 			}
 			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
@@ -2826,7 +2831,8 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 		}
 		else if(strcmp(console2, "sound")==0 && console3)
 		{
-			play_sound(console3);
+			if (sound_enable) play_sound(console3);
+			else strcpy(console_error, "Audio device not available - cannot play sounds");
 		}
 		else if(strcmp(console2, "load")==0 && console3)
 		{
@@ -2856,7 +2862,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 		else if (strcmp(console2, "create")==0 && console3 && console4)
 		{
 			if (console_parse_type(console3, &j, console_error)
-				&& console_parse_coords(console4, &nx, &ny, console_error))
+			        && console_parse_coords(console4, &nx, &ny, console_error))
 			{
 				if (!j)
 					strcpy(console_error, "Cannot create particle with type NONE");
@@ -2927,10 +2933,10 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].life = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].life = k;
+					}
 				}
 				else
 				{
@@ -2953,18 +2959,18 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 						}
 				}
 				else if (console_parse_type(console4, &j, console_error)
-					     && console_parse_type(console5, &k, console_error))
+				         && console_parse_type(console5, &k, console_error))
 				{
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].type = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].type = k;
+					}
 				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error)
-						&& console_parse_type(console5, &j, console_error))
+					        && console_parse_type(console5, &j, console_error))
 					{
 						parts[i].type = j;
 					}
@@ -2985,10 +2991,10 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].temp= k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].temp= k;
+					}
 				}
 				else
 				{
@@ -3014,10 +3020,10 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].tmp = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].tmp = k;
+					}
 				}
 				else
 				{
@@ -3043,10 +3049,10 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].x = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].x = k;
+					}
 				}
 				else
 				{
@@ -3072,10 +3078,10 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].y = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].y = k;
+					}
 				}
 				else
 				{
@@ -3098,18 +3104,18 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 						}
 				}
 				else if (console_parse_type(console4, &j, console_error)
-					     && console_parse_type(console5, &k, console_error))
+				         && console_parse_type(console5, &k, console_error))
 				{
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].ctype = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].ctype = k;
+					}
 				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error)
-						&& console_parse_type(console5, &j, console_error))
+					        && console_parse_type(console5, &j, console_error))
 					{
 						parts[i].ctype = j;
 					}
@@ -3130,10 +3136,10 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].vx = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].vx = k;
+					}
 				}
 				else
 				{
@@ -3159,10 +3165,10 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].vy = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].vy = k;
+					}
 				}
 				else
 				{

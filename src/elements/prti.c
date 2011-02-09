@@ -4,6 +4,8 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 	int r, nnx, rx, ry;
 	int count =0;
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
+	if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
+	else if (parts[i].tmp<0) parts[i].tmp = 0;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))

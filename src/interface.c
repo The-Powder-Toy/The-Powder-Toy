@@ -96,7 +96,7 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 		memset(buff, 0, sizeof(buff));
 		for(sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
 			startm = sldr + 1;
-		
+
 		sldr = startm;
 		while(signs[i].text[sldr] != '}')
 		{
@@ -105,7 +105,7 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 		}
 		*w = textwidth(buff) + 5;
 	}
-	
+
 	//Ususal width
 	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
 		*w = textwidth(signs[i].text) + 5;
@@ -874,13 +874,13 @@ void login_ui(pixel *vid_buf)
 		*(s_id++) = 0;
 
 		u_e = strchr(s_id, ' ');
-		if (!u_e){
+		if (!u_e) {
 			u_e = malloc(1);
 			memset(u_e, 0, 1);
 		}
 		else
 			*(u_e++) = 0;
-		
+
 		strcpy(svf_user_id, res+3);
 		strcpy(svf_session_id, s_id);
 		nres = mystrdup(u_e);
@@ -3866,18 +3866,18 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 		clearrect(vid_buf, 0, 0, XRES+BARSIZE, 220);//anyway to make it transparent?
 		draw_line(vid_buf, 1, 219, XRES, 219, 228, 228, 228, XRES+BARSIZE);
 		drawtext(vid_buf, 100, 15, "Welcome to The Powder Toy console v.2 (by cracker64)\n"
-					  "Current commands are quit, set, reset, load, create, file, kill, sound\n"
-					  "You can set type, temp, ctype, life, x, y, vx, vy using this format ('set life particle# 9001')\n"
-					  "You can also use 'all' instead of a particle number to do it to everything.\n"
-					  "You can now use particle names (ex. set type all deut)\n"
-					  "Reset works with pressure, velocity, sparks, temp (ex. 'reset pressure')\n"
-					  "To load a save use load saveID (ex. load 1337)\n"
-					  "Create particles with 'create deut x,y' where x and y are the coords\n"
-					  "Run scripts from file 'file filename'\n"
-					  "You can delete/kill a particle with 'kill x,y'"
-					  "Play a sound with (sound blah.wav)"
-					  ,255, 187, 187, 255);
-		
+		         "Current commands are quit, set, reset, load, create, file, kill, sound\n"
+		         "You can set type, temp, ctype, life, x, y, vx, vy using this format ('set life particle# 9001')\n"
+		         "You can also use 'all' instead of a particle number to do it to everything.\n"
+		         "You can now use particle names (ex. set type all deut)\n"
+		         "Reset works with pressure, velocity, sparks, temp (ex. 'reset pressure')\n"
+		         "To load a save use load saveID (ex. load 1337)\n"
+		         "Create particles with 'create deut x,y' where x and y are the coords\n"
+		         "Run scripts from file 'file filename'\n"
+		         "You can delete/kill a particle with 'kill x,y'"
+		         "Play a sound with (sound blah.wav)"
+		         ,255, 187, 187, 255);
+
 		cc = 0;
 		currentcommand = last_command;
 		while(cc < 10)
@@ -3957,19 +3957,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 
 int console_parse_type(char *txt, int *element, char *err)
 {
-	int i = atoi(txt);
-	char num[4];
-	if (i>=0 && i<PT_NUM)
-	{
-		sprintf(num,"%d",i);
-		if (strcmp(txt,num)==0)
-		{
-			*element = i;
-			strcpy(err,"");
-			return 1;
-		}
-	}
-	i = -1;
+	int i = -1;
 	// alternative names for some elements
 	if (strcasecmp(txt,"C4")==0) i = PT_PLEX;
 	else if (strcasecmp(txt,"C5")==0) i = PT_C5;
@@ -3995,13 +3983,7 @@ int console_parse_coords(char *txt, int *x, int *y, char *err)
 {
 	// TODO: use regex?
 	int nx = -1, ny = -1;
-	sscanf(txt,"%d,%d",&nx,&ny);
-	if (nx<0 && nx>=XRES)
-	{
-		strcpy(err,"Invalid coordinates");
-		return 0;
-	}
-	if (ny<0 && ny>=YRES)
+	if (sscanf(txt,"%d,%d",&nx,&ny)!=2 || nx<0 || nx>=XRES || ny<0 || ny>=YRES)
 	{
 		strcpy(err,"Invalid coordinates");
 		return 0;
@@ -4012,9 +3994,10 @@ int console_parse_coords(char *txt, int *x, int *y, char *err)
 }
 int console_parse_partref(char *txt, int *which, char *err)
 {
+	strcpy(err,"");
 	// TODO: use regex?
 	int i = -1, nx, ny;
-	if (console_parse_coords(txt, &nx, &ny, err))
+	if (strchr(txt,',') && console_parse_coords(txt, &nx, &ny, err))
 	{
 		i = pmap[ny][nx];
 		if (!i || (i>>8)>=NPART)
@@ -4025,7 +4008,6 @@ int console_parse_partref(char *txt, int *which, char *err)
 	else if (txt)
 	{
 		char *num = (char*)malloc(strlen(txt)+3);
-		strcpy(err,""); // suppress error message from failed coordinate parsing
 		i = atoi(txt);
 		sprintf(num,"%d",i);
 		if (!txt || strcmp(txt,num)!=0)
@@ -4038,6 +4020,6 @@ int console_parse_partref(char *txt, int *which, char *err)
 		strcpy(err,"");
 		return 1;
 	}
-	strcpy(err,"Particle does not exist");
+	if (strcmp(err,"")==0) strcpy(err,"Particle does not exist");
 	return 0;
 }
