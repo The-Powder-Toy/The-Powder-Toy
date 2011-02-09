@@ -13,6 +13,8 @@ particle *parts;
 particle *cb_parts;
 
 int gravityMode = 1; // starts enabled in "vertical" mode...
+int airMode = 0; 
+
 
 unsigned char bmap[YRES/CELL][XRES/CELL];
 unsigned char emap[YRES/CELL][XRES/CELL];

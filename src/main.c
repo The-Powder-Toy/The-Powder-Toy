@@ -543,7 +543,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 	if (replace)
 	{
 		gravityMode = 1;
-
+		airMode = 1;
 		memset(bmap, 0, sizeof(bmap));
 		memset(emap, 0, sizeof(emap));
 		memset(signs, 0, sizeof(signs));
@@ -1697,6 +1697,33 @@ int main(int argc, char *argv[])
 			}
 		}
 
+			if (sdl_key=='y')
+	                {
+                        ++airMode;
+                        itc = 52;
+                        switch (airMode)
+                        {
+                        default:
+                                airMode = 0;
+                        case 0:
+                                strcpy(itc_msg, "Air: On");
+                                break;
+                        case 1:
+                                strcpy(itc_msg, "Air: Pressure Off");
+                                break;
+                        case 2:
+                                strcpy(itc_msg, "Air: Velocity Off");
+                                break;
+                        case 3:
+                                strcpy(itc_msg, "Air: Off");                           
+                                break;
+                        case 4:
+                                strcpy(itc_msg, "Air: No Update");                             
+                                break;
+                        }
+                }
+
+
 		if (sdl_key=='t')
 			VINE_MODE = !VINE_MODE;
 		if (sdl_key==SDLK_SPACE)
@@ -2246,6 +2273,7 @@ int main(int argc, char *argv[])
 						svf_tags[0] = 0;
 						svf_description[0] = 0;
 						gravityMode = 1;
+						airMode = 0;
 						death = death2 = 0;
 						isplayer2 = 0;
 						isplayer = 0;
