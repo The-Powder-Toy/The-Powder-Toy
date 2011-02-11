@@ -33,6 +33,9 @@ void update_air(void)
 {
 	int x, y, i, j;
 	float dp, dx, dy, f, tx, ty;
+
+if (airMode != 4) {
+
 	for (i=0; i<YRES/CELL; i++)
 	{
 		pv[i][0] = pv[i][0]*0.8f;
@@ -177,6 +180,28 @@ void update_air(void)
 			if (dy > 256.0f) dy = 256.0f;
 			if (dy < -256.0f) dy = -256.0f;
 
+
+			switch (airMode)
+			{
+			default:
+			case 0:  //Default
+			break;
+			case 1:  //0 Pressure
+			dp = 0.0f;
+			break;
+			case 2:  //0 Velocity
+			dx = 0.0f;
+			dy = 0.0f;
+			break;
+			case 3: //0 Air
+			dx = 0.0f;
+			dy = 0.0f;
+			dp = 0.0f;
+			break;
+			case 4: //No Update
+			break;
+			}
+
 			ovx[y][x] = dx;
 			ovy[y][x] = dy;
 			opv[y][x] = dp;
@@ -184,4 +209,5 @@ void update_air(void)
 	memcpy(vx, ovx, sizeof(vx));
 	memcpy(vy, ovy, sizeof(vy));
 	memcpy(pv, opv, sizeof(pv));
+}
 }

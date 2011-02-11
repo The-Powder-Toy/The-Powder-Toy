@@ -54,65 +54,67 @@
 
 #define NUM_SOUNDS 2
 struct sample {
-    Uint8 *data;
-    Uint32 dpos;
-    Uint32 dlen;
+	Uint8 *data;
+	Uint32 dpos;
+	Uint32 dlen;
 } sounds[NUM_SOUNDS];
 
 void mixaudio(void *unused, Uint8 *stream, int len)
 {
-    int i;
-    Uint32 amount;
+	int i;
+	Uint32 amount;
 
-    for ( i=0; i<NUM_SOUNDS; ++i ) {
-        amount = (sounds[i].dlen-sounds[i].dpos);
-        if ( amount > len ) {
-            amount = len;
-        }
-        SDL_MixAudio(stream, &sounds[i].data[sounds[i].dpos], amount, SDL_MIX_MAXVOLUME);
-        sounds[i].dpos += amount;
-    }
+	for ( i=0; i<NUM_SOUNDS; ++i ) {
+		amount = (sounds[i].dlen-sounds[i].dpos);
+		if ( amount > len ) {
+			amount = len;
+		}
+		SDL_MixAudio(stream, &sounds[i].data[sounds[i].dpos], amount, SDL_MIX_MAXVOLUME);
+		sounds[i].dpos += amount;
+	}
 }
 
 void play_sound(char *file)
 {
-    int index;
-    SDL_AudioSpec wave;
-    Uint8 *data;
-    Uint32 dlen;
-    SDL_AudioCVT cvt;
+	int index;
+	SDL_AudioSpec wave;
+	Uint8 *data;
+	Uint32 dlen;
+	SDL_AudioCVT cvt;
 
-    /* Look for an empty (or finished) sound slot */
-    for ( index=0; index<NUM_SOUNDS; ++index ) {
-        if ( sounds[index].dpos == sounds[index].dlen ) {
-            break;
-        }
-    }
-    if ( index == NUM_SOUNDS )
-        return;
+	if (!sound_enable) return;
 
-    /* Load the sound file and convert it to 16-bit stereo at 22kHz */
-    if ( SDL_LoadWAV(file, &wave, &data, &dlen) == NULL ) {
-        fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
-        return;
-    }
-    SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq,
-                            AUDIO_S16,   2,             22050);
-    cvt.buf = malloc(dlen*cvt.len_mult);
-    memcpy(cvt.buf, data, dlen);
-    cvt.len = dlen;
-    SDL_ConvertAudio(&cvt);
-    SDL_FreeWAV(data);
+	/* Look for an empty (or finished) sound slot */
+	for ( index=0; index<NUM_SOUNDS; ++index ) {
+		if ( sounds[index].dpos == sounds[index].dlen ) {
+			break;
+		}
+	}
+	if ( index == NUM_SOUNDS )
+		return;
 
-    /* Put the sound data in the slot (it starts playing immediately) */
-    if ( sounds[index].data ) {
-        free(sounds[index].data);
-    }
-    SDL_LockAudio();
-    sounds[index].data = cvt.buf;
-    sounds[index].dlen = cvt.len_cvt;
-    sounds[index].dpos = 0;
-    SDL_UnlockAudio();
+	/* Load the sound file and convert it to 16-bit stereo at 22kHz */
+	if ( SDL_LoadWAV(file, &wave, &data, &dlen) == NULL ) {
+		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
+		return;
+	}
+	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq,
+	                  AUDIO_S16,   2,             22050);
+	cvt.buf = malloc(dlen*cvt.len_mult);
+	memcpy(cvt.buf, data, dlen);
+	cvt.len = dlen;
+	SDL_ConvertAudio(&cvt);
+	SDL_FreeWAV(data);
+
+	/* Put the sound data in the slot (it starts playing immediately) */
+	if ( sounds[index].data ) {
+		free(sounds[index].data);
+	}
+	SDL_LockAudio();
+	sounds[index].data = cvt.buf;
+	sounds[index].dlen = cvt.len_cvt;
+	sounds[index].dpos = 0;
+	SDL_UnlockAudio();
 }
 
 static const char *it_msg =
@@ -167,6 +169,7 @@ int FPSB = 0;
 int MSIGN =-1;
 //int CGOL = 0;
 //int GSPEED = 1;//causes my .exe to crash..
+int sound_enable;
 
 sign signs[MAXSIGNS];
 
@@ -543,7 +546,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 	if (replace)
 	{
 		gravityMode = 1;
-
+		airMode = 1;
 		memset(bmap, 0, sizeof(bmap));
 		memset(emap, 0, sizeof(emap));
 		memset(signs, 0, sizeof(signs));
@@ -1181,9 +1184,10 @@ int main(int argc, char *argv[])
 	pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pixel *pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	void *http_ver_check;
-	char *ver_data=NULL, *tmp;
+	void *http_session_check = NULL;
+	char *ver_data=NULL, *check_data=NULL, *tmp;
 	char console_error[255] = "";
-	int i, j, bq, fire_fc=0, do_check=0, old_version=0, http_ret=0, major, minor, old_ver_len;
+	int i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -1195,7 +1199,7 @@ int main(int argc, char *argv[])
 	pixel *load_img=NULL;//, *fbi_img=NULL;
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
 	GSPEED = 1;
-	
+
 	SDL_AudioSpec fmt;
 	/* Set 16-bit stereo audio at 22Khz */
 	fmt.freq = 22050;
@@ -1208,9 +1212,12 @@ int main(int argc, char *argv[])
 	if ( SDL_OpenAudio(&fmt, NULL) < 0 )
 	{
 		fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
-		exit(1);
 	}
-	SDL_PauseAudio(0);
+	else
+	{
+		sound_enable = 1;
+		SDL_PauseAudio(0);
+	}
 #ifdef MT
 	numCores = core_count();
 #endif
@@ -1285,6 +1292,10 @@ int main(int argc, char *argv[])
 #else
 	http_ver_check = http_async_req_start(NULL, "http://" SERVER "/Update.api?Action=CheckVersion", NULL, 0, 0);
 #endif
+	if(svf_login){
+		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
+		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
+	}
 
 	while (!sdl_poll())
 	{
@@ -1366,6 +1377,74 @@ int main(int argc, char *argv[])
 				http_ver_check = NULL;
 			}
 			do_check = (do_check+1) & 15;
+		}
+		if(http_session_check)
+		{
+			if(!do_s_check && http_async_req_status(http_session_check))
+			{
+				check_data = http_async_req_stop(http_session_check, &http_s_ret, NULL);
+				if(http_ret==200 && check_data)
+				{
+					printf("{%s}\n", check_data);
+					if(!strncmp(check_data, "EXPIRED", 7))
+					{
+						//Session expired
+						strcpy(svf_user, "");
+						strcpy(svf_pass, "");
+						strcpy(svf_user_id, "");
+						strcpy(svf_session_id, "");
+						svf_login = 0;
+						svf_own = 0;
+						svf_admin = 0;
+						svf_mod = 0;
+					}
+					else if(!strncmp(check_data, "BANNED", 6))
+					{
+						//User banned
+						strcpy(svf_user, "");
+						strcpy(svf_pass, "");
+						strcpy(svf_user_id, "");
+						strcpy(svf_session_id, "");
+						svf_login = 0;
+						svf_own = 0;
+						svf_admin = 0;
+						svf_mod = 0;
+					}
+					else if(!strncmp(check_data, "OK", 2))
+					{
+						//Session valid
+						if(strlen(check_data)>2){
+							//User is elevated
+							if (!strncmp(check_data+3, "ADMIN", 5))
+							{
+								svf_admin = 1;
+								svf_mod = 0;
+							}
+							else if (!strncmp(check_data+3, "MOD", 3))
+							{
+								svf_admin = 0;
+								svf_mod = 1;
+							}							
+						}	
+						save_presets(0);
+					}
+					else
+					{
+						//No idea, but log the user out anyway
+						strcpy(svf_user, "");
+						strcpy(svf_pass, "");
+						strcpy(svf_user_id, "");
+						strcpy(svf_session_id, "");
+						svf_login = 0;
+						svf_own = 0;
+						svf_admin = 0;
+						svf_mod = 0;
+					}
+					free(check_data);
+				}
+				http_session_check = NULL;
+			}
+			do_s_check = (do_s_check+1) & 15;
 		}
 
 		if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
@@ -1563,7 +1642,7 @@ int main(int argc, char *argv[])
 				}
 		}
 		if ((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
-			active_menu = 12;
+			active_menu = 11;
 		if (sdl_key==SDLK_INSERT)// || sdl_key==SDLK_BACKQUOTE)
 			REPLACE_MODE = !REPLACE_MODE;
 		if (sdl_key==SDLK_BACKQUOTE)
@@ -1623,6 +1702,33 @@ int main(int argc, char *argv[])
 
 			}
 		}
+
+			if (sdl_key=='y')
+	                {
+                        ++airMode;
+                        itc = 52;
+                        switch (airMode)
+                        {
+                        default:
+                                airMode = 0;
+                        case 0:
+                                strcpy(itc_msg, "Air: On");
+                                break;
+                        case 1:
+                                strcpy(itc_msg, "Air: Pressure Off");
+                                break;
+                        case 2:
+                                strcpy(itc_msg, "Air: Velocity Off");
+                                break;
+                        case 3:
+                                strcpy(itc_msg, "Air: Off");                           
+                                break;
+                        case 4:
+                                strcpy(itc_msg, "Air: No Update");                             
+                                break;
+                        }
+                }
+
 
 		if (sdl_key=='t')
 			VINE_MODE = !VINE_MODE;
@@ -1841,7 +1947,6 @@ int main(int argc, char *argv[])
 					if (tctype>=PT_NUM)
 						tctype = 0;
 					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d, #%d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life ,cr>>8);
-					sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 					//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 				} else {
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
@@ -1850,10 +1955,10 @@ int main(int argc, char *argv[])
 			}
 			else
 			{
-				if (DEBUG_MODE)
-					sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 				sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 			}
+			if (DEBUG_MODE)
+				sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 		}
 		mx = x;
 		my = y;
@@ -2173,6 +2278,7 @@ int main(int argc, char *argv[])
 						svf_tags[0] = 0;
 						svf_description[0] = 0;
 						gravityMode = 1;
+						airMode = 0;
 						death = death2 = 0;
 						isplayer2 = 0;
 						isplayer = 0;
@@ -2239,10 +2345,10 @@ int main(int argc, char *argv[])
 			else if (y<YRES)
 			{
 				int signi;
-				
+
 				c = (b&1) ? sl : sr;
 				su = c;
-				
+
 				if(c!=WL_SIGN+100)
 				{
 					if(!bq)
@@ -2255,12 +2361,12 @@ int main(int argc, char *argv[])
 								{
 									char buff[256];
 									int sldr;
-									
+
 									memset(buff, 0, sizeof(buff));
-									
+
 									for(sldr=3; signs[signi].text[sldr] != '|'; sldr++)
 										buff[sldr-3] = signs[signi].text[sldr];
-									
+
 									char buff2[sldr-2]; //TODO: Fix this for Visual Studio
 									memset(buff2, 0, sizeof(buff2));
 									memcpy(&buff2, &buff, sldr-3);
@@ -2268,7 +2374,7 @@ int main(int argc, char *argv[])
 								}
 							}
 				}
-				
+
 				if (c==WL_SIGN+100)
 				{
 					if (!bq)
@@ -2596,7 +2702,7 @@ int main(int argc, char *argv[])
 				if(DEBUG_MODE)
 				{
 					fillrect(vid_buf, XRES-20-textwidth(coordtext), 26, textwidth(coordtext)+8, 11, 0, 0, 0, 140);
-					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, 200);	
+					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, 200);
 				}
 			}
 			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
@@ -2626,19 +2732,18 @@ int main(int argc, char *argv[])
 	return 0;
 }
 int process_command(pixel *vid_buf,char *console,char *console_error) {
-	
-int x,y,nx,ny,i,j,k,m;
-int do_next = 1;
-char xcoord[10];
-char ycoord[10];
-char console2[15];
-char console3[15];
-char console4[15];
-char console5[15];
+	int y,x,nx,ny,i,j,k,m;
+	int do_next = 1;
+	char xcoord[10];
+	char ycoord[10];
+	char console2[15];
+	char console3[15];
+	char console4[15];
+	char console5[15];
 	//sprintf(console_error, "%s", console);
 	if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
 	{
-		sscanf(console,"%s %s %s %s", console2, console3, console4, console5);//why didn't i know about this function?!
+		sscanf(console,"%14s %14s %14s %14s", console2, console3, console4, console5);//why didn't i know about this function?!
 		if(strcmp(console2, "quit")==0)
 		{
 			return -1;
@@ -2679,7 +2784,7 @@ char console5[15];
 							x = 0;
 							y = 0;
 							sscanf(tokens,"x%d,y%d",&x,&y);
-							sscanf(tokens,"%s,%s",xcoord,ycoord);
+							sscanf(tokens,"%9s,%9s",xcoord,ycoord);
 							x += nx;
 							y += ny;
 							sprintf(xcoord,"%d",x);
@@ -2726,7 +2831,8 @@ char console5[15];
 		}
 		else if(strcmp(console2, "sound")==0 && console3)
 		{
-			play_sound(console3);
+			if (sound_enable) play_sound(console3);
+			else strcpy(console_error, "Audio device not available - cannot play sounds");
 		}
 		else if(strcmp(console2, "load")==0 && console3)
 		{
@@ -2756,7 +2862,7 @@ char console5[15];
 		else if (strcmp(console2, "create")==0 && console3 && console4)
 		{
 			if (console_parse_type(console3, &j, console_error)
-				&& console_parse_coords(console4, &nx, &ny, console_error))
+			        && console_parse_coords(console4, &nx, &ny, console_error))
 			{
 				if (!j)
 					strcpy(console_error, "Cannot create particle with type NONE");
@@ -2827,10 +2933,10 @@ char console5[15];
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].life = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].life = k;
+					}
 				}
 				else
 				{
@@ -2853,18 +2959,18 @@ char console5[15];
 						}
 				}
 				else if (console_parse_type(console4, &j, console_error)
-					     && console_parse_type(console5, &k, console_error))
+				         && console_parse_type(console5, &k, console_error))
 				{
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].type = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].type = k;
+					}
 				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error)
-						&& console_parse_type(console5, &j, console_error))
+					        && console_parse_type(console5, &j, console_error))
 					{
 						parts[i].type = j;
 					}
@@ -2885,10 +2991,10 @@ char console5[15];
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].temp= k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].temp= k;
+					}
 				}
 				else
 				{
@@ -2914,10 +3020,10 @@ char console5[15];
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].tmp = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].tmp = k;
+					}
 				}
 				else
 				{
@@ -2943,10 +3049,10 @@ char console5[15];
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].x = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].x = k;
+					}
 				}
 				else
 				{
@@ -2972,10 +3078,10 @@ char console5[15];
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].y = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].y = k;
+					}
 				}
 				else
 				{
@@ -2998,18 +3104,18 @@ char console5[15];
 						}
 				}
 				else if (console_parse_type(console4, &j, console_error)
-					     && console_parse_type(console5, &k, console_error))
+				         && console_parse_type(console5, &k, console_error))
 				{
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].ctype = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].ctype = k;
+					}
 				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error)
-						&& console_parse_type(console5, &j, console_error))
+					        && console_parse_type(console5, &j, console_error))
 					{
 						parts[i].ctype = j;
 					}
@@ -3030,10 +3136,10 @@ char console5[15];
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].vx = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].vx = k;
+					}
 				}
 				else
 				{
@@ -3059,10 +3165,10 @@ char console5[15];
 				{
 					k = atoi(console5);
 					for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type == j)
-								parts[i].vy = k;
-						}
+					{
+						if(parts[i].type == j)
+							parts[i].vy = k;
+					}
 				}
 				else
 				{
