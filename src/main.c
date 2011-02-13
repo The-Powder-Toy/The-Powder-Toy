@@ -440,11 +440,11 @@ void *build_save(int *size, int x0, int y0, int w, int h)
 
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
-
+	
 	c[0] = 0x50;	//0x66;
 	c[1] = 0x53;	//0x75;
 	c[2] = 0x76;	//0x43;
-	c[3] = legacy_enable|((sys_pause<<1)&0x02);
+	c[3] = legacy_enable|((sys_pause<<1)&0x02)|((gravityMode<<2)&0x0C)|((airMode<<4)&0x70);
 	c[4] = SAVE_VERSION;
 	c[5] = CELL;
 	c[6] = bw;
@@ -500,6 +500,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 			if (!sys_pause) {
 				sys_pause = (c[3]>>1)&0x01;
 			}
+			if(ver>=46 && replace) {
+				gravityMode = ((c[3]>>2)&0x03);// | ((c[3]>>2)&0x01);
+				airMode = ((c[3]>>4)&0x07);// | ((c[3]>>4)&0x02) | ((c[3]>>4)&0x01);
+			}
 		} else {
 			if (c[3]==1||c[3]==0) {
 				legacy_enable = c[3];
@@ -545,8 +549,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 
 	if (replace)
 	{
-		gravityMode = 1;
-		airMode = 1;
+		if(ver<46){
+			gravityMode = 0;
+			airMode = 0;
+		}
 		memset(bmap, 0, sizeof(bmap));
 		memset(emap, 0, sizeof(emap));
 		memset(signs, 0, sizeof(signs));
@@ -1174,7 +1180,7 @@ int main(int argc, char *argv[])
 #ifdef BETA
 	int is_beta = 0;
 #endif
-	char uitext[255] = "";
+	char uitext[512] = "";
 	char heattext[128] = "";
 	char coordtext[13] = "";
 	int currentTime = 0;
@@ -1691,10 +1697,10 @@ int main(int argc, char *argv[])
 			default:
 				gravityMode = 0;
 			case 0:
-				strcpy(itc_msg, "Gravity: Off");
+				strcpy(itc_msg, "Gravity: Vertical");
 				break;
 			case 1:
-				strcpy(itc_msg, "Gravity: Vertical");
+				strcpy(itc_msg, "Gravity: Off");
 				break;
 			case 2:
 				strcpy(itc_msg, "Gravity: Radial");
@@ -1702,33 +1708,32 @@ int main(int argc, char *argv[])
 
 			}
 		}
-
-			if (sdl_key=='y')
-	                {
-                        ++airMode;
-                        itc = 52;
-                        switch (airMode)
-                        {
-                        default:
-                                airMode = 0;
-                        case 0:
-                                strcpy(itc_msg, "Air: On");
-                                break;
-                        case 1:
-                                strcpy(itc_msg, "Air: Pressure Off");
-                                break;
-                        case 2:
-                                strcpy(itc_msg, "Air: Velocity Off");
-                                break;
-                        case 3:
-                                strcpy(itc_msg, "Air: Off");                           
-                                break;
-                        case 4:
-                                strcpy(itc_msg, "Air: No Update");                             
-                                break;
-                        }
-                }
-
+		if (sdl_key=='y')
+		{
+			++airMode;
+			itc = 52;
+			
+			switch (airMode)
+			{
+				default:
+					airMode = 0;
+				case 0:
+					strcpy(itc_msg, "Air: On");
+					break;
+				case 1:
+					strcpy(itc_msg, "Air: Pressure Off");
+					break;
+				case 2:
+					strcpy(itc_msg, "Air: Velocity Off");
+					break;
+				case 3:
+					strcpy(itc_msg, "Air: Off"); 
+					break;
+				case 4:
+					strcpy(itc_msg, "Air: No Update");
+					break;
+			}
+		}
 
 		if (sdl_key=='t')
 			VINE_MODE = !VINE_MODE;
@@ -2277,7 +2282,7 @@ int main(int argc, char *argv[])
 						svf_name[0] = 0;
 						svf_tags[0] = 0;
 						svf_description[0] = 0;
-						gravityMode = 1;
+						gravityMode = 0;
 						airMode = 0;
 						death = death2 = 0;
 						isplayer2 = 0;
@@ -2656,10 +2661,10 @@ int main(int argc, char *argv[])
 			}
 
 #ifdef BETA
-			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d Generation:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS,GENERATION);
+			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 #else
 			if (DEBUG_MODE)
-				sprintf(uitext, "Version %d.%d FPS:%d Parts:%d Generation:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS,GENERATION);
+				sprintf(uitext, "Version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 			else
 				sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
 #endif

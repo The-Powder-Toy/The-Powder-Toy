@@ -12,7 +12,7 @@ float player2[27];
 particle *parts;
 particle *cb_parts;
 
-int gravityMode = 1; // starts enabled in "vertical" mode...
+int gravityMode = 0; // starts enabled in "vertical" mode...
 int airMode = 0; 
 
 
@@ -1442,21 +1442,18 @@ void update_particles_i(pixel *vid, int start, int inc)
 			//Gravity mode by Moach
 			switch (gravityMode)
 			{
-			default:
-			case 0:
-				pGravX = pGravY = 0.0f;
-				break;
-			case 1:
-				pGravX = 0.0f;
-				pGravY = ptypes[t].gravity;
-				break;
-			case 2:
-
-				pGravD = 0.01f - hypotf((x - XCNTR), (y - YCNTR));
-
-				pGravX = ptypes[t].gravity * ((float)(x - XCNTR) / pGravD);
-				pGravY = ptypes[t].gravity * ((float)(y - YCNTR) / pGravD);
-
+				default:
+				case 0:
+					pGravX = 0.0f;
+					pGravY = ptypes[t].gravity;
+					break;
+				case 1:
+					pGravX = pGravY = 0.0f;
+					break;
+				case 2:
+					pGravD = 0.01f - hypotf((x - XCNTR), (y - YCNTR));
+					pGravX = ptypes[t].gravity * ((float)(x - XCNTR) / pGravD);
+					pGravY = ptypes[t].gravity * ((float)(y - YCNTR) / pGravD);
 			}
 
 			parts[i].vx *= ptypes[t].loss;
