@@ -1780,6 +1780,9 @@ killed:
 				}
 			}
 
+			rt = parts[i].flags & FLAG_STAGNANT;
+			parts[i].flags &= ~FLAG_STAGNANT;
+
 			if ((t==PT_PHOT||t==PT_NEUT)) {
 				if (t == PT_PHOT) {
 					rt = pmap[fin_y][fin_x] & 0xFF;
@@ -2008,24 +2011,25 @@ killed:
 										break;
 									}
 								}
-							else if (clear_x!=x&&clear_y!=y && try_move(i, x, y, clear_x, clear_y)) {
+							else if ((clear_x!=x||clear_y!=y) && try_move(i, x, y, clear_x, clear_y)) {
 								// if interpolation was done and haven't yet moved, try moving to last clear position
 								parts[i].x = clear_xf;
 								parts[i].y = clear_yf;
 							}
+							else
+								parts[i].flags |= FLAG_STAGNANT;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
-							if (!s)
-								parts[i].flags |= FLAG_STAGNANT;
 						}
 						else
 						{
-							if (clear_x!=x&&clear_y!=y && try_move(i, x, y, clear_x, clear_y)) {
+							if ((clear_x!=x||clear_y!=y) && try_move(i, x, y, clear_x, clear_y)) {
 								// if interpolation was done, try moving to last clear position
 								parts[i].x = clear_xf;
 								parts[i].y = clear_yf;
 							}
-							parts[i].flags |= FLAG_STAGNANT;
+							else
+								parts[i].flags |= FLAG_STAGNANT;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
