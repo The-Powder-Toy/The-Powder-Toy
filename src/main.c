@@ -2366,16 +2366,15 @@ int main(int argc, char *argv[])
 								{
 									char buff[256];
 									int sldr;
-									char *buff2;
+									char *buff2 = NULL;
 
 									memset(buff, 0, sizeof(buff));
 
 									for(sldr=3; signs[signi].text[sldr] != '|'; sldr++)
 										buff[sldr-3] = signs[signi].text[sldr];
 
-									buff2 = malloc(sldr-2);
-									memset(buff2, 0, sldr-2);
-									memcpy(&buff2, &buff, sldr-3);
+									buff[sldr-3] = '\0';
+									buff2 = strdup(buff);
 									open_ui(vid_buf, buff2, 0);
 									free(buff2);
 								}
