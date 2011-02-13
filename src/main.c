@@ -2366,7 +2366,6 @@ int main(int argc, char *argv[])
 								{
 									char buff[256];
 									int sldr;
-									char *buff2 = NULL;
 
 									memset(buff, 0, sizeof(buff));
 
@@ -2374,9 +2373,7 @@ int main(int argc, char *argv[])
 										buff[sldr-3] = signs[signi].text[sldr];
 
 									buff[sldr-3] = '\0';
-									buff2 = strdup(buff);
-									open_ui(vid_buf, buff2, 0);
-									free(buff2);
+									open_ui(vid_buf, buff, 0);
 								}
 							}
 				}
