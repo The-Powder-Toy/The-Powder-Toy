@@ -83,6 +83,10 @@ typedef unsigned int pixel;
 #define GLASS_IOR      1.9
 #define GLASS_DISP     0.07
 
+#ifdef WIN32
+#define strcasecmp stricmp
+#endif
+
 typedef unsigned char uint8;
 
 extern int amd;

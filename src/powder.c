@@ -454,7 +454,7 @@ inline void part_change_type(int i, int x, int y, int t)
 #endif
 {
 	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART)
-		return -1;
+		return;
 	parts[i].type = t;
 	if (t==PT_PHOT)// || t==PT_NEUT)
 	{

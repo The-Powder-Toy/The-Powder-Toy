@@ -1198,9 +1198,9 @@ int main(int argc, char *argv[])
 	void *load_data=NULL;
 	pixel *load_img=NULL;//, *fbi_img=NULL;
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
+	SDL_AudioSpec fmt;
 	GSPEED = 1;
 
-	SDL_AudioSpec fmt;
 	/* Set 16-bit stereo audio at 22Khz */
 	fmt.freq = 22050;
 	fmt.format = AUDIO_S16;
@@ -2361,16 +2361,18 @@ int main(int argc, char *argv[])
 								{
 									char buff[256];
 									int sldr;
+									char *buff2;
 
 									memset(buff, 0, sizeof(buff));
 
 									for(sldr=3; signs[signi].text[sldr] != '|'; sldr++)
 										buff[sldr-3] = signs[signi].text[sldr];
 
-									char buff2[sldr-2]; //TODO: Fix this for Visual Studio
-									memset(buff2, 0, sizeof(buff2));
+									buff2 = malloc(sldr-2);
+									memset(buff2, 0, sldr-2);
 									memcpy(&buff2, &buff, sldr-3);
 									open_ui(vid_buf, buff2, 0);
+									free(buff2);
 								}
 							}
 				}
@@ -2753,18 +2755,18 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 			FILE *f=fopen(console3, "r");
 			if(f)
 			{
+				char fileread[5000];//TODO: make this change with file size
+				char pch[5000];
+				char tokens[10];
+				int tokensize;
 				nx = 0;
 				ny = 0;
 				j = 0;
 				m = 0;
 				if(console4)
 					console_parse_coords(console4, &nx , &ny, console_error);
-				char fileread[5000];//TODO: make this change with file size
-				char pch[5000];
 				memset(pch,0,sizeof(pch));
 				memset(fileread,0,sizeof(fileread));
-				char tokens[10];
-				int tokensize;
 				fread(fileread,1,5000,f);
 				for(i=0; i<strlen(fileread); i++)
 				{

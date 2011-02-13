@@ -3841,7 +3841,7 @@ struct command_history {
 typedef struct command_history command_history;
 command_history *last_command = NULL;
 char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show previous commands
-	int mx,my,b,bq,cc,ci = -1;
+	int mx,my,b,cc,ci = -1;
 	command_history *currentcommand;
 	ui_edit ed;
 	ed.x = 15;
@@ -3857,7 +3857,6 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 	//fillrect(vid_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
 	while (!sdl_poll())
 	{
-		bq = b;
 		b = SDL_GetMouseState(&mx, &my);
 		mx /= sdl_scale;
 		my /= sdl_scale;
@@ -3994,9 +3993,9 @@ int console_parse_coords(char *txt, int *x, int *y, char *err)
 }
 int console_parse_partref(char *txt, int *which, char *err)
 {
+	int i = -1, nx, ny;
 	strcpy(err,"");
 	// TODO: use regex?
-	int i = -1, nx, ny;
 	if (strchr(txt,',') && console_parse_coords(txt, &nx, &ny, err))
 	{
 		i = pmap[ny][nx];
