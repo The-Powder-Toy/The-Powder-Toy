@@ -253,6 +253,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 		if (parts[e].type == PT_PHOT)
 			return 1;
 
+		if ((pmap[ny][nx]>>8)==e) pmap[ny][nx] = 0;
 		parts[e].x += x-nx;
 		parts[e].y += y-ny;
 		pmap[(int)(parts[e].y+0.5f)][(int)(parts[e].x+0.5f)] = (e<<8)|parts[e].type;
