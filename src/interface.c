@@ -105,9 +105,25 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 		}
 		*w = textwidth(buff) + 5;
 	}
+	if(sregexp(signs[i].text, "^{e:.*|.*}$")==0)//character width limit in signs need to be incresed, as most commands don't fit..
+	{
+		int sldr, startm;
+		char buff[256];
+		memset(buff, 0, sizeof(buff));
+		for(sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
+			startm = sldr + 1;
+
+		sldr = startm;
+		while(signs[i].text[sldr] != '}')
+		{
+			buff[sldr - startm] = signs[i].text[sldr];
+			sldr++;
+		}
+		*w = textwidth(buff) + 5;
+	}
 
 	//Ususal width
-	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
+	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$") && sregexp(signs[i].text, "^{e:.*|.*}$"))
 		*w = textwidth(signs[i].text) + 5;
 	*h = 14;
 	*x0 = (signs[i].ju == 2) ? signs[i].x - *w :

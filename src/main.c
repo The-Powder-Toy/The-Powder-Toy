@@ -2353,6 +2353,7 @@ int main(int argc, char *argv[])
 				{
 					if(!bq)
 						for(signi=0; signi<MAXSIGNS; signi++)
+						{
 							if(sregexp(signs[signi].text, "^{c:[0-9]*|.*}$")==0)
 							{
 								int signx, signy, signw, signh;
@@ -2373,6 +2374,27 @@ int main(int argc, char *argv[])
 									open_ui(vid_buf, buff2, 0);
 								}
 							}
+							if(sregexp(signs[signi].text, "^{e:.*|.*}$")==0)
+							{
+								int signx, signy, signw, signh;
+								get_sign_pos(signi, &signx, &signy, &signw, &signh);
+								if(x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
+								{
+									char buff[256];
+									int sldr;
+
+									memset(buff, 0, sizeof(buff));
+
+									for(sldr=3; signs[signi].text[sldr] != '|'; sldr++)
+										buff[sldr-3] = signs[signi].text[sldr];
+
+									char buff2[sldr-2]; //TODO: Fix this for Visual Studio
+									memset(buff2, 0, sizeof(buff2));
+									memcpy(&buff2, &buff, sldr-3);
+									process_command(vid_buf, buff2,console_error);
+								}
+							}
+						}
 				}
 
 				if (c==WL_SIGN+100)
