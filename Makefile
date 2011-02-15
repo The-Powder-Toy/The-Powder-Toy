@@ -47,23 +47,23 @@ powder-64-sse2: $(SOURCES)
 	mv $@ build
 
 powder-icc: $(SOURCES)
-       /opt/intel/Compiler/11.1/073/bin/intel64/icc -m64 -o$@ -Iincludes/ -O2 -march=core2 -msse3 -mfpmath=sse -lSDL -lbz2 -lm -xW $(SOURCES) -std=c99 -D_POSIX_C_SOURCE=200112L
+	/opt/intel/Compiler/11.1/073/bin/intel64/icc -m64 -o$@ -Iincludes/ -O2 -march=core2 -msse3 -mfpmath=sse -lSDL -lbz2 -lm -xW $(SOURCES) -std=c99 -D_POSIX_C_SOURCE=200112L
 
 powder-res.o: powder-res.rc powder.ico
 	i586-mingw32msvc-windres powder-res.rc powder-res.o
 
 powder-sse3.exe: $(SOURCES) powder-res.o
-	i586-mingw32msvc-gcc -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE3) $(SOURCES) powder-res.o -lmingw32 -lws2_32 -lSDLmain $(LFLAGS) -mwindows -DWIN32
+	i586-mingw32msvc-gcc -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE3) $(SOURCES) powder-res.o -lmingw32 -llibregex -lws2_32 -lSDLmain $(LFLAGS) -mwindows -DWIN32
 	strip $@
 	chmod 0644 $@
 	mv $@ build
 powder-sse2.exe: $(SOURCES) powder-res.o
-	i586-mingw32msvc-gcc -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE2) $(SOURCES) powder-res.o -lmingw32 -lws2_32 -lSDLmain $(LFLAGS) -mwindows -DWIN32
+	i586-mingw32msvc-gcc -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE2) $(SOURCES) powder-res.o -lmingw32 -llibregex -lws2_32 -lSDLmain $(LFLAGS) -mwindows -DWIN32
 	strip $@
 	chmod 0644 $@
 	mv $@ build
 powder-sse.exe: $(SOURCES) powder-res.o
-	i586-mingw32msvc-gcc -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE) $(SOURCES) powder-res.o -lmingw32 -lws2_32 -lSDLmain $(LFLAGS) -mwindows -DWIN32
+	i586-mingw32msvc-gcc -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE) $(SOURCES) powder-res.o -lmingw32 -llibregex -lws2_32 -lSDLmain $(LFLAGS) -mwindows -DWIN32
 	strip $@
 	chmod 0644 $@
 	mv $@ build
