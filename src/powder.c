@@ -454,7 +454,7 @@ _inline void part_change_type(int i, int x, int y, int t)
 inline void part_change_type(int i, int x, int y, int t)
 #endif
 {
-	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART)
+	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART || t<0 || t>=PT_NUM)
 		return;
 	parts[i].type = t;
 	if (t==PT_PHOT)// || t==PT_NEUT)
@@ -485,7 +485,7 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
 	if (n>680) {
 		n = 680;
 	}
-	if (x<0 || y<0 || x>=XRES || y>=YRES)
+	if (x<0 || y<0 || x>=XRES || y>=YRES || t<0 || t>=PT_NUM)
 		return -1;
 
 	for (c; c<n; c++) {
@@ -523,7 +523,7 @@ inline int create_part(int p, int x, int y, int t)
 {
 	int i;
 
-	if (x<0 || y<0 || x>=XRES || y>=YRES)
+	if (x<0 || y<0 || x>=XRES || y>=YRES || t<0 || t>=PT_NUM)
 		return -1;
 
 	if (t==SPC_HEAT||t==SPC_COOL)
