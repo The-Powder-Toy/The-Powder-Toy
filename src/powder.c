@@ -523,7 +523,7 @@ inline int create_part(int p, int x, int y, int t)
 {
 	int i;
 
-	if (x<0 || y<0 || x>=XRES || y>=YRES || t<0 || t>=PT_NUM)
+	if (x<0 || y<0 || x>=XRES || y>=YRES || ((t<0 || t>=PT_NUM)&&t!=SPC_HEAT&&t!=SPC_COOL&&t!=SPC_AIR&&t!=SPC_VACUUM))
 		return -1;
 
 	if (t==SPC_HEAT||t==SPC_COOL)
