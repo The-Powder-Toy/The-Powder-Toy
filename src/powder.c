@@ -2712,7 +2712,7 @@ void create_box(int x1, int y1, int x2, int y2, int c)
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			create_parts(i, j, 1, 1, c);
+			create_parts(i, j, 0, 0, c);
 }
 
 int flood_parts(int x, int y, int c, int cm, int bm)
