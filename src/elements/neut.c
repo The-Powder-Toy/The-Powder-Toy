@@ -72,9 +72,9 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 				else if ((r&0xFF)==PT_COAL && 5>(rand()%100))
 					create_part(r>>8, x+rx, y+ry, PT_WOOD);
 				else if ((r&0xFF)==PT_DUST && 5>(rand()%100))
-					create_part(r>>8, x+rx, y+ry, PT_FWRK);
+					part_change_type(r>>8, x+rx, y+ry, PT_FWRK);
 				else if ((r&0xFF)==PT_FWRK && 5>(rand()%100))
-					create_part(r>>8, x+rx, y+ry, PT_DUST);
+					parts[r>>8].ctype = PT_DUST;
 				else if ((r&0xFF)==PT_ACID && 5>(rand()%100))
 					create_part(r>>8, x+rx, y+ry, PT_ISOZ);
 				/*if(parts[r>>8].type>1 && parts[r>>8].type!=PT_NEUT && parts[r>>8].type-1!=PT_NEUT && parts[r>>8].type-1!=PT_STKM &&
