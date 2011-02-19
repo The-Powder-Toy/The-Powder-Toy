@@ -553,19 +553,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 			gravityMode = 0;
 			airMode = 0;
 		}
-		memset(bmap, 0, sizeof(bmap));
-		memset(emap, 0, sizeof(emap));
-		memset(signs, 0, sizeof(signs));
-		memset(parts, 0, sizeof(particle)*NPART);
-		memset(pmap, 0, sizeof(pmap));
-		memset(vx, 0, sizeof(vx));
-		memset(vy, 0, sizeof(vy));
-		memset(pv, 0, sizeof(pv));
-		memset(photons, 0, sizeof(photons));
-		memset(wireless, 0, sizeof(wireless));
-		memset(gol2, 0, sizeof(gol2));
-		memset(portal, 0, sizeof(portal));
-		death = death2 = ISSPAWN1 = ISSPAWN2 = 0;
+		clear_sim();
 	}
 
 	// make a catalog of free parts
@@ -897,11 +885,33 @@ corrupt:
 	if (replace)
 	{
 		legacy_enable = 0;
-		memset(signs, 0, sizeof(signs));
-		memset(parts, 0, sizeof(particle)*NPART);
-		memset(bmap, 0, sizeof(bmap));
+		clear_sim();
 	}
 	return 1;
+}
+
+void clear_sim(void)
+{
+	memset(bmap, 0, sizeof(bmap));
+	memset(emap, 0, sizeof(emap));
+	memset(signs, 0, sizeof(signs));
+	memset(parts, 0, sizeof(particle)*NPART);
+	memset(pmap, 0, sizeof(pmap));
+	memset(pv, 0, sizeof(pv));
+	memset(vx, 0, sizeof(vx));
+	memset(vy, 0, sizeof(vy));
+	memset(fvx, 0, sizeof(fvx));
+	memset(fvy, 0, sizeof(fvy));
+	memset(photons, 0, sizeof(photons));
+	memset(wireless, 0, sizeof(wireless));
+	memset(gol2, 0, sizeof(gol2));
+	memset(portal, 0, sizeof(portal));
+	death = death2 = ISSPAWN1 = ISSPAWN2 = 0;
+	memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+	memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+	memset(fire_r, 0, sizeof(fire_r));
+	memset(fire_g, 0, sizeof(fire_g));
+	memset(fire_b, 0, sizeof(fire_b));
 }
 
 // stamps library
@@ -1188,7 +1198,7 @@ int main(int argc, char *argv[])
 	int pastFPS = 0;
 	int past = 0;
 	pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
-	pixel *pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
+	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	void *http_ver_check;
 	void *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
@@ -1248,7 +1258,7 @@ int main(int argc, char *argv[])
 	parts[NPART-1].life = -1;
 	pfree = 0;
 	fire_bg=calloc(XRES*YRES, PIXELSIZE);
-	memset(signs, 0, sizeof(signs));
+	clear_sim();
 
 	//fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
 
@@ -2255,19 +2265,7 @@ int main(int argc, char *argv[])
 					}
 					if (x>=(XRES+BARSIZE-(510-367)) && x<=(XRES+BARSIZE-(510-383)) && !bq)
 					{
-						memset(signs, 0, sizeof(signs));
-						memset(pv, 0, sizeof(pv));
-						memset(vx, 0, sizeof(vx));
-						memset(vy, 0, sizeof(vy));
-						memset(fvx, 0, sizeof(fvx));
-						memset(fvy, 0, sizeof(fvy));
-						memset(bmap, 0, sizeof(bmap));
-						memset(emap, 0, sizeof(emap));
-						memset(parts, 0, sizeof(particle)*NPART);
-						memset(photons, 0, sizeof(photons));
-						memset(wireless, 0, sizeof(wireless));
-						memset(gol2, 0, sizeof(gol2));
-						memset(portal, 0, sizeof(portal));
+						clear_sim();
 						for (i=0; i<NPART-1; i++)
 							parts[i].life = i+1;
 						parts[NPART-1].life = -1;
@@ -2284,16 +2282,8 @@ int main(int argc, char *argv[])
 						svf_description[0] = 0;
 						gravityMode = 0;
 						airMode = 0;
-						death = death2 = 0;
 						isplayer2 = 0;
 						isplayer = 0;
-						ISSPAWN1 = 0;
-						ISSPAWN2 = 0;
-
-						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
-						memset(fire_r, 0, sizeof(fire_r));
-						memset(fire_g, 0, sizeof(fire_g));
-						memset(fire_b, 0, sizeof(fire_b));
 					}
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{

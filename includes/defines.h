@@ -176,6 +176,7 @@ int thumb_cache_find(char *id, void **thumb, int *size);
 void *build_thumb(int *size, int bzip2);
 void *build_save(int *size, int x0, int y0, int w, int h);
 int parse_save(void *save, int size, int replace, int x0, int y0);
+void clear_sim(void);
 void del_stamp(int d);
 void sdl_seticon(void);
 #endif

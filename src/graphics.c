@@ -31,6 +31,7 @@ unsigned char fire_b[YRES/CELL][XRES/CELL];
 
 unsigned int fire_alpha[CELL*3][CELL*3];
 pixel *fire_bg;
+pixel *pers_bg;
 
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
 {
