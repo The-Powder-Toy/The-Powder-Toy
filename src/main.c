@@ -1204,6 +1204,7 @@ int main(int argc, char *argv[])
 	pixel *load_img=NULL;//, *fbi_img=NULL;
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
 	SDL_AudioSpec fmt;
+	int username_flash = 0, username_flash_t = 1;
 	GSPEED = 1;
 
 	/* Set 16-bit stereo audio at 22Khz */
@@ -1272,7 +1273,7 @@ int main(int argc, char *argv[])
 		else if (!strncmp(argv[i], "kiosk", 5))
 		{
 			kiosk_enable = 1;
-			sdl_scale = 2;
+			//sdl_scale = 2; //Removed because some displays cannot handle the resolution
 			hud_enable = 0;
 		}
 	}
@@ -1391,7 +1392,6 @@ int main(int argc, char *argv[])
 				check_data = http_async_req_stop(http_session_check, &http_s_ret, NULL);
 				if(http_ret==200 && check_data)
 				{
-					printf("{%s}\n", check_data);
 					if(!strncmp(check_data, "EXPIRED", 7))
 					{
 						//Session expired
@@ -1415,6 +1415,7 @@ int main(int argc, char *argv[])
 						svf_own = 0;
 						svf_admin = 0;
 						svf_mod = 0;
+						error_ui(vid_buf, "Unable to log in", "Your account has been suspended, consider reading the rules.");
 					}
 					else if(!strncmp(check_data, "OK", 2))
 					{
@@ -1432,7 +1433,6 @@ int main(int argc, char *argv[])
 								svf_mod = 1;
 							}							
 						}	
-						save_presets(0);
 					}
 					else
 					{
@@ -1446,9 +1446,26 @@ int main(int argc, char *argv[])
 						svf_admin = 0;
 						svf_mod = 0;
 					}
+					save_presets(0);
 					free(check_data);
 				}
 				http_session_check = NULL;
+			} else {
+				clearrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14);
+				drawrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14, 255, 255, 255, 255);
+				drawtext(vid_buf, XRES-122+BARSIZE/*388*/, YRES+(MENUSIZE-13), "\x84", 255, 255, 255, 255);
+				if(username_flash>30){
+					username_flash_t = -1;
+					username_flash = 30;
+				} else if(username_flash<0) {
+					username_flash_t = 1;
+					username_flash = 0;
+				}
+				username_flash += username_flash_t;
+				if (svf_login)
+					drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), svf_user, 255, 255, 255, 175-(username_flash*5));
+				else
+					drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), "[checking]", 255, 255, 255, 255);
 			}
 			do_s_check = (do_s_check+1) & 15;
 		}
@@ -2299,8 +2316,10 @@ int main(int argc, char *argv[])
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{
 						login_ui(vid_buf);
-						if (svf_login)
+						if (svf_login){
 							save_presets(0);
+							http_session_check = NULL;
+						}
 					}
 					if (x>=37 && x<=187 && svf_login)
 					{
