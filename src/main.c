@@ -1188,7 +1188,6 @@ int main(int argc, char *argv[])
 	int pastFPS = 0;
 	int past = 0;
 	pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
-	pixel *pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	void *http_ver_check;
 	void *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
@@ -1248,6 +1247,7 @@ int main(int argc, char *argv[])
 	parts[NPART-1].life = -1;
 	pfree = 0;
 	fire_bg=calloc(XRES*YRES, PIXELSIZE);
+	pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	memset(signs, 0, sizeof(signs));
 
 	//fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
@@ -2291,6 +2291,7 @@ int main(int argc, char *argv[])
 						ISSPAWN2 = 0;
 
 						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 						memset(fire_r, 0, sizeof(fire_r));
 						memset(fire_g, 0, sizeof(fire_g));
 						memset(fire_b, 0, sizeof(fire_b));
@@ -2319,6 +2320,7 @@ int main(int argc, char *argv[])
 					{
 						search_ui(vid_buf);
 						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 						memset(fire_r, 0, sizeof(fire_r));
 						memset(fire_g, 0, sizeof(fire_g));
 						memset(fire_b, 0, sizeof(fire_b));
@@ -2340,7 +2342,6 @@ int main(int argc, char *argv[])
 								set_cmode((cmode+(CM_COUNT-1)) % CM_COUNT);
 							}
 						}
-						save_presets(0);
 					}
 					if (x>=(XRES+BARSIZE-(510-494)) && x<=(XRES+BARSIZE-(510-509)) && !bq)
 						sys_pause = !sys_pause;

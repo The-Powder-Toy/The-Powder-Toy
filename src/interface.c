@@ -1892,6 +1892,7 @@ void set_cmode(int cm)
 	else if (cmode==CM_PERS)
 	{
 		memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+		memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		strcpy(itc_msg, "Persistent Display");
 	}
 	else if (cmode==CM_PRESS)
@@ -1925,6 +1926,7 @@ void set_cmode(int cm)
 	{
 		strcpy(itc_msg, "Velocity Display");
 	}
+	save_presets(0);
 }
 
 char *download_ui(pixel *vid_buf, char *uri, int *len)
