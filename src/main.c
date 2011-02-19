@@ -2330,7 +2330,6 @@ int main(int argc, char *argv[])
 								set_cmode((cmode+(CM_COUNT-1)) % CM_COUNT);
 							}
 						}
-						save_presets(0);
 					}
 					if (x>=(XRES+BARSIZE-(510-494)) && x<=(XRES+BARSIZE-(510-509)) && !bq)
 						sys_pause = !sys_pause;

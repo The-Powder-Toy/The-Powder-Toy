@@ -1925,6 +1925,7 @@ void set_cmode(int cm)
 	{
 		strcpy(itc_msg, "Velocity Display");
 	}
+	save_presets(0);
 }
 
 char *download_ui(pixel *vid_buf, char *uri, int *len)
