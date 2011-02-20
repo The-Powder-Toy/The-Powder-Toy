@@ -488,7 +488,7 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
 	if (x<0 || y<0 || x>=XRES || y>=YRES || t<0 || t>=PT_NUM)
 		return -1;
 
-	for (c; c<n; c++) {
+	for (c=0; c<n; c++) {
 		float r = (rand()%128+128)/127.0f;
 		float a = (rand()%360)*3.14159f/180.0f;
 		if (pfree == -1)
@@ -741,7 +741,7 @@ inline int create_part(int p, int x, int y, int t)
 	{
 		if (isplayer==0)
 		{
-			if (pmap[y][x]&0xFF==PT_SPAWN)
+			if ((pmap[y][x]&0xFF)==PT_SPAWN)
 			{
 				parts[pmap[y][x]>>8].type = PT_STKM;
 				parts[pmap[y][x]>>8].vx = 0;
@@ -799,7 +799,7 @@ inline int create_part(int p, int x, int y, int t)
 	{
 		if (isplayer2==0)
 		{
-			if (pmap[y][x]&0xFF==PT_SPAWN2)
+			if ((pmap[y][x]&0xFF)==PT_SPAWN2)
 			{
 				parts[pmap[y][x]>>8].type = PT_STKM2;
 				parts[pmap[y][x]>>8].vx = 0;
@@ -1335,7 +1335,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			{
 				r = pmap[ny][nx];
 				neighbors = gol2[nx][ny][0];
-				if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !r&0xFF) || (r>>8)>=NPART)
+				if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !(r&0xFF)) || (r>>8)>=NPART)
 					continue;
 				for ( golnum = 1; golnum<=NGOL; golnum++)
 					for ( goldelete = 0; goldelete<9; goldelete++)
@@ -2925,10 +2925,12 @@ int create_parts(int x, int y, int rx, int ry, int c)
 			for (j=-ry; j<=ry; j++)
 				for (i=-rx; i<=rx; i++)
 					if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
+					{
 						if (!REPLACE_MODE)
 							create_part(-2, x+i, y+j, c);
 						else if ((pmap[y+j][x+i]&0xFF)==SLALT&&SLALT!=0)
 							create_part(-2, x+i, y+j, c);
+					}
 		return 1;
 	}
 

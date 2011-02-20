@@ -179,4 +179,5 @@ int parse_save(void *save, int size, int replace, int x0, int y0);
 void clear_sim(void);
 void del_stamp(int d);
 void sdl_seticon(void);
+int process_command(pixel *vid_buf, char *console, char *console_error);
 #endif

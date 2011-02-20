@@ -1510,7 +1510,7 @@ int main(int argc, char *argv[])
 					free(load_data);
 			}
 		}
-		if (sdl_key=='s' && (sdl_mod & (KMOD_CTRL)) || (sdl_key=='s' && !isplayer2))
+		if ((sdl_key=='s' && (sdl_mod & (KMOD_CTRL))) || (sdl_key=='s' && !isplayer2))
 		{
 			if (it > 50)
 				it = 50;
@@ -1644,7 +1644,7 @@ int main(int argc, char *argv[])
 					bsy = 0;
 			}
 		}
-		if (sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)) || (sdl_key=='d' && !isplayer2))
+		if ((sdl_key=='d'&&(sdl_mod & (KMOD_CTRL))) || (sdl_key=='d' && !isplayer2))
 			DEBUG_MODE = !DEBUG_MODE;
 		if (sdl_key=='i')
 		{
@@ -1901,7 +1901,7 @@ int main(int argc, char *argv[])
 			console = console_ui(vid_buf,console_error);
 			console = mystrdup(console);
 			strcpy(console_error,"");
-			if(process_command(vid_buf,console,&console_error)==-1)
+			if(process_command(vid_buf,console,console_error)==-1)
 			{
 				free(console);
 				break;
@@ -2740,7 +2740,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 		{
 			return -1;
 		}
-		else if(strcmp(console2, "file")==0 && console3)
+		else if(strcmp(console2, "file")==0)
 		{
 			FILE *f=fopen(console3, "r");
 			if(f)
@@ -2753,8 +2753,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				ny = 0;
 				j = 0;
 				m = 0;
-				if(console4)
-					console_parse_coords(console4, &nx , &ny, console_error);
+				console_parse_coords(console4, &nx , &ny, console_error);
 				memset(pch,0,sizeof(pch));
 				memset(fileread,0,sizeof(fileread));
 				fread(fileread,1,5000,f);
@@ -2821,12 +2820,12 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 			else
 				sprintf(console_error, "%s does not exist", console3);
 		}
-		else if(strcmp(console2, "sound")==0 && console3)
+		else if(strcmp(console2, "sound")==0)
 		{
 			if (sound_enable) play_sound(console3);
 			else strcpy(console_error, "Audio device not available - cannot play sounds");
 		}
-		else if(strcmp(console2, "load")==0 && console3)
+		else if(strcmp(console2, "load")==0)
 		{
 			j = atoi(console3);
 			if(j)
@@ -2835,7 +2834,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				console_mode = 0;
 			}
 		}
-		else if(strcmp(console2, "if")==0 && console3)
+		else if(strcmp(console2, "if")==0)
 		{
 			if(strcmp(console3, "type")==0)//TODO: add more than just type, and be able to check greater/less than
 			{
@@ -2851,7 +2850,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 					return 0;
 			}
 		}
-		else if (strcmp(console2, "create")==0 && console3 && console4)
+		else if (strcmp(console2, "create")==0)
 		{
 			if (console_parse_type(console3, &j, console_error)
 			        && console_parse_coords(console4, &nx, &ny, console_error))
@@ -2862,12 +2861,12 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 					strcpy(console_error, "Could not create particle");
 			}
 		}
-		else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3)
+		else if (strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0)
 		{
 			if (console_parse_partref(console3, &i, console_error))
 				kill_part(i);
 		}
-		else if(strcmp(console2, "reset")==0 && console3)
+		else if(strcmp(console2, "reset")==0)
 		{
 			if(strcmp(console3, "pressure")==0)
 			{
@@ -2908,7 +2907,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				}
 			}
 		}
-		else if(strcmp(console2, "set")==0 && console3 && console4 && console5)
+		else if(strcmp(console2, "set")==0)
 		{
 			if(strcmp(console3, "life")==0)
 			{
@@ -3173,7 +3172,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 			}
 		}
 		else
-			sprintf(console_error, "Invalid Command", console2);
+			strcpy(console_error, "Invalid Command");
 	}
 	return 1;
 }
