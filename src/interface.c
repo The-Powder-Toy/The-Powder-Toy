@@ -3953,6 +3953,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 			}
 		}
 	}
+	console_mode = 0;
 	return NULL;
 }
 
