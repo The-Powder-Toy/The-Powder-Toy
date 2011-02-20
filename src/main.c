@@ -2118,7 +2118,7 @@ int main(int argc, char *argv[])
 		if (!sdl_zoom_trig && zoom_en==1)
 			zoom_en = 0;
 
-		if (sdl_key==Z_keysym && zoom_en==2)
+		if (sdl_key=='z' && zoom_en==2)
 			zoom_en = 1;
 
 		if (load_mode)
