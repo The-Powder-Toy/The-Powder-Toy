@@ -154,8 +154,6 @@ extern char search_expr[256];
 extern char *tag_names[TAG_MAX];
 extern int tag_votes[TAG_MAX];
 
-extern int Z_keysym;
-
 extern int zoom_en;
 extern int zoom_x, zoom_y;
 extern int zoom_wx, zoom_wy;

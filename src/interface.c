@@ -60,8 +60,6 @@ char search_expr[256] = "";
 char *tag_names[TAG_MAX];
 int tag_votes[TAG_MAX];
 
-int Z_keysym = 'z';
-
 int zoom_en = 0;
 int zoom_x=(XRES-ZSIZE_D)/2, zoom_y=(YRES-ZSIZE_D)/2;
 int zoom_wx=0, zoom_wy=0;
@@ -1763,10 +1761,9 @@ int sdl_poll(void)
 			sdl_ascii=event.key.keysym.unicode;
 			if (event.key.keysym.sym == SDLK_CAPSLOCK)
 				sdl_caps = 1;
-			if (event.key.keysym.unicode=='z' || event.key.keysym.unicode=='Z')
+			if (event.key.keysym.sym=='z')
 			{
 				sdl_zoom_trig = 1;
-				Z_keysym = event.key.keysym.sym;
 			}
 			if ( event.key.keysym.sym == SDLK_PLUS)
 			{
@@ -1816,7 +1813,7 @@ int sdl_poll(void)
 		case SDL_KEYUP:
 			if (event.key.keysym.sym == SDLK_CAPSLOCK)
 				sdl_caps = 0;
-			if (event.key.keysym.sym == Z_keysym)
+			if (event.key.keysym.sym == 'z')
 				sdl_zoom_trig = 0;
 			if (event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_LEFT)
 			{
@@ -3953,6 +3950,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 			}
 		}
 	}
+	console_mode = 0;
 	return NULL;
 }
 
