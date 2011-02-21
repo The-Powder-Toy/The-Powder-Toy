@@ -448,6 +448,8 @@ void draw_tool(pixel *vid_buf, int b, int sl, int sr, unsigned pc, unsigned iswa
 int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 {
 	int i, j, c;
+	if (x > XRES-26 || x < 0)
+		return 26;
 	if (b>=UI_WALLSTART)
 	{
 		b = b-100;
