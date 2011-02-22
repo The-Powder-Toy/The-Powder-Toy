@@ -8,9 +8,9 @@
 #endif
 
 #define SAVE_VERSION 46
-#define MINOR_VERSION 1
+#define MINOR_VERSION 3
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
-#define BETA
+//#define BETA
 
 #define SERVER "powdertoy.co.uk"
 

@@ -169,7 +169,8 @@ int FPSB = 0;
 int MSIGN =-1;
 //int CGOL = 0;
 //int GSPEED = 1;//causes my .exe to crash..
-int sound_enable;
+int sound_enable = 0;
+int file_script = 0;
 
 sign signs[MAXSIGNS];
 
@@ -1215,6 +1216,7 @@ int main(int argc, char *argv[])
 	pixel *load_img=NULL;//, *fbi_img=NULL;
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
 	SDL_AudioSpec fmt;
+	int username_flash = 0, username_flash_t = 1;
 	GSPEED = 1;
 
 	/* Set 16-bit stereo audio at 22Khz */
@@ -1224,16 +1226,7 @@ int main(int argc, char *argv[])
 	fmt.samples = 512;
 	fmt.callback = mixaudio;
 	fmt.userdata = NULL;
-	/* Open the audio device and start playing sound! */
-	if ( SDL_OpenAudio(&fmt, NULL) < 0 )
-	{
-		fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
-	}
-	else
-	{
-		sound_enable = 1;
-		SDL_PauseAudio(0);
-	}
+	
 #ifdef MT
 	numCores = core_count();
 #endif
@@ -1282,9 +1275,27 @@ int main(int argc, char *argv[])
 		else if (!strncmp(argv[i], "kiosk", 5))
 		{
 			kiosk_enable = 1;
-			sdl_scale = 2;
+			//sdl_scale = 2; //Removed because some displays cannot handle the resolution
 			hud_enable = 0;
 		}
+		else if (!strncmp(argv[i], "sound", 5))
+		{
+			/* Open the audio device and start playing sound! */
+			if ( SDL_OpenAudio(&fmt, NULL) < 0 )
+			{
+				fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
+			}
+			else
+			{
+				sound_enable = 1;
+				SDL_PauseAudio(0);
+			}
+		}
+		else if (!strncmp(argv[i], "scripts", 5))
+		{
+			file_script = 1;
+		}
+
 	}
 
 	save_presets(0);
@@ -1401,7 +1412,6 @@ int main(int argc, char *argv[])
 				check_data = http_async_req_stop(http_session_check, &http_s_ret, NULL);
 				if(http_ret==200 && check_data)
 				{
-					printf("{%s}\n", check_data);
 					if(!strncmp(check_data, "EXPIRED", 7))
 					{
 						//Session expired
@@ -1425,6 +1435,7 @@ int main(int argc, char *argv[])
 						svf_own = 0;
 						svf_admin = 0;
 						svf_mod = 0;
+						error_ui(vid_buf, "Unable to log in", "Your account has been suspended, consider reading the rules.");
 					}
 					else if(!strncmp(check_data, "OK", 2))
 					{
@@ -1440,9 +1451,8 @@ int main(int argc, char *argv[])
 							{
 								svf_admin = 0;
 								svf_mod = 1;
-							}							
-						}	
-						save_presets(0);
+							}
+						}
 					}
 					else
 					{
@@ -1456,9 +1466,26 @@ int main(int argc, char *argv[])
 						svf_admin = 0;
 						svf_mod = 0;
 					}
+					save_presets(0);
 					free(check_data);
 				}
 				http_session_check = NULL;
+			} else {
+				clearrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14);
+				drawrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14, 255, 255, 255, 255);
+				drawtext(vid_buf, XRES-122+BARSIZE/*388*/, YRES+(MENUSIZE-13), "\x84", 255, 255, 255, 255);
+				if(username_flash>30){
+					username_flash_t = -1;
+					username_flash = 30;
+				} else if(username_flash<0) {
+					username_flash_t = 1;
+					username_flash = 0;
+				}
+				username_flash += username_flash_t;
+				if (svf_login)
+					drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), svf_user, 255, 255, 255, 175-(username_flash*5));
+				else
+					drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), "[checking]", 255, 255, 255, 255);
 			}
 			do_s_check = (do_s_check+1) & 15;
 		}
@@ -2282,8 +2309,10 @@ int main(int argc, char *argv[])
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{
 						login_ui(vid_buf);
-						if (svf_login)
+						if (svf_login){
 							save_presets(0);
+							http_session_check = NULL;
+						}
 					}
 					if (x>=37 && x<=187 && svf_login)
 					{
@@ -2303,6 +2332,7 @@ int main(int argc, char *argv[])
 					{
 						search_ui(vid_buf);
 						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 						memset(fire_r, 0, sizeof(fire_r));
 						memset(fire_g, 0, sizeof(fire_g));
 						memset(fire_b, 0, sizeof(fire_b));
@@ -2736,83 +2766,92 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 		}
 		else if(strcmp(console2, "file")==0)
 		{
-			FILE *f=fopen(console3, "r");
-			if(f)
-			{
-				char fileread[5000];//TODO: make this change with file size
-				char pch[5000];
-				char tokens[10];
-				int tokensize;
-				nx = 0;
-				ny = 0;
-				j = 0;
-				m = 0;
-				console_parse_coords(console4, &nx , &ny, console_error);
-				memset(pch,0,sizeof(pch));
-				memset(fileread,0,sizeof(fileread));
-				fread(fileread,1,5000,f);
-				for(i=0; i<strlen(fileread); i++)
+			if(file_script){
+				FILE *f=fopen(console3, "r");
+				if(f)
 				{
-					if(fileread[i] != '\n')
+					char fileread[5000];//TODO: make this change with file size
+					char pch[5000];
+					char tokens[10];
+					int tokensize;
+					nx = 0;
+					ny = 0;
+					j = 0;
+					m = 0;
+					console_parse_coords(console4, &nx , &ny, console_error);
+					memset(pch,0,sizeof(pch));
+					memset(fileread,0,sizeof(fileread));
+					fread(fileread,1,5000,f);
+					for(i=0; i<strlen(fileread); i++)
 					{
-						pch[i-j] = fileread[i];
-						if(fileread[i] != ' ')
-							tokens[i-m] = fileread[i];
-					}
-					if(fileread[i] == ' ' || fileread[i] == '\n')
-					{
-						if(sregexp(tokens,"^x.[0-9],y.[0-9]")==0)//TODO: fix regex matching to work with x,y ect, right now it has to have a +0 or -0
+						if(fileread[i] != '\n')
 						{
-							char temp[5];
-							int starty = 0;
-							tokensize = strlen(tokens);
-							x = 0;
-							y = 0;
-							sscanf(tokens,"x%d,y%d",&x,&y);
-							sscanf(tokens,"%9s,%9s",xcoord,ycoord);
-							x += nx;
-							y += ny;
-							sprintf(xcoord,"%d",x);
-							sprintf(ycoord,"%d",y);
-							for(k = 0; k<strlen(xcoord);k++)//rewrite pch with numbers
-							{
-								pch[i-j-tokensize+k] = xcoord[k];
-								starty = k+1;
-							}
-							pch[i-j-tokensize+starty] = ',';
-							starty++;
-							for(k=0;k<strlen(ycoord);k++)
-							{
-								pch[i-j-tokensize+starty+k] = ycoord[k];
-								
-							}
-							pch[i-j-tokensize +strlen(xcoord) +1 +strlen(ycoord)] = ' ';
-							j = j -tokensize +strlen(xcoord) +1 +strlen(ycoord);
+							pch[i-j] = fileread[i];
+							if(fileread[i] != ' ')
+								tokens[i-m] = fileread[i];
 						}
-						memset(tokens,0,sizeof(tokens));
-						m = i+1;
-					}
-					if(fileread[i] == '\n')
-					{
-						
-						if(do_next)
+						if(fileread[i] == ' ' || fileread[i] == '\n')
 						{
-							if(strcmp(pch,"else")==0)
-								do_next = 0;
-							else
-								do_next = process_command(vid_buf, pch, console_error);
+							if(sregexp(tokens,"^x.[0-9],y.[0-9]")==0)//TODO: fix regex matching to work with x,y ect, right now it has to have a +0 or -0
+							{
+								char temp[5];
+								int starty = 0;
+								tokensize = strlen(tokens);
+								x = 0;
+								y = 0;
+								sscanf(tokens,"x%d,y%d",&x,&y);
+								sscanf(tokens,"%9s,%9s",xcoord,ycoord);
+								x += nx;
+								y += ny;
+								sprintf(xcoord,"%d",x);
+								sprintf(ycoord,"%d",y);
+								for(k = 0; k<strlen(xcoord);k++)//rewrite pch with numbers
+								{
+									pch[i-j-tokensize+k] = xcoord[k];
+									starty = k+1;
+								}
+								pch[i-j-tokensize+starty] = ',';
+								starty++;
+								for(k=0;k<strlen(ycoord);k++)
+								{
+									pch[i-j-tokensize+starty+k] = ycoord[k];
+									
+								}
+								pch[i-j-tokensize +strlen(xcoord) +1 +strlen(ycoord)] = ' ';
+								j = j -tokensize +strlen(xcoord) +1 +strlen(ycoord);
+							}
+							memset(tokens,0,sizeof(tokens));
+							m = i+1;
 						}
-						else if(strcmp(pch,"endif")==0 || strcmp(pch,"else")==0)
-							do_next = 1;
-						memset(pch,0,sizeof(pch));
-						j = i+1;
+						if(fileread[i] == '\n')
+						{
+							
+							if(do_next)
+							{
+								if(strcmp(pch,"else")==0)
+									do_next = 0;
+								else
+									do_next = process_command(vid_buf, pch, console_error);
+							}
+							else if(strcmp(pch,"endif")==0 || strcmp(pch,"else")==0)
+								do_next = 1;
+							memset(pch,0,sizeof(pch));
+							j = i+1;
+						}
 					}
+					//sprintf(console_error, "%s exists", console3);
+					fclose(f);
 				}
-				//sprintf(console_error, "%s exists", console3);
-				fclose(f);
+				else
+				{
+					sprintf(console_error, "%s does not exist", console3);
+				}
 			}
-			else
-				sprintf(console_error, "%s does not exist", console3);
+			else 
+			{
+				sprintf(console_error, "Scripts are not enabled");
+			}
+
 		}
 		else if(strcmp(console2, "sound")==0)
 		{

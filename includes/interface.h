@@ -52,10 +52,9 @@ static menu_wall mwalls[] =
 #define SC_LIQUID 4
 #define SC_NUCLEAR 7
 #define SC_LIFE 9
-#define SC_LIFE2 10
 #define SC_CRACKER 12
 #define SC_CRACKER2 13
-#define SC_TOTAL 11
+#define SC_TOTAL 10
 
 static menu_section msections[] =
 {
