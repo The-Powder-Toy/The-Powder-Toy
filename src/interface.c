@@ -1653,8 +1653,8 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 	}
 	else
 	{
-		if (fwidth > XRES){
-			float overflow = fwidth-XRES+BARSIZE, location = ((float)XRES+BARSIZE)/((float)(mx-XRES+BARSIZE));
+		if (fwidth > XRES-BARSIZE){
+			float overflow = fwidth-(XRES-BARSIZE), location = ((float)XRES-BARSIZE)/((float)(mx-(XRES-BARSIZE)));
 			xoff = (int)(overflow / location);
 		}
 		for (n = 0; n<PT_NUM; n++)
