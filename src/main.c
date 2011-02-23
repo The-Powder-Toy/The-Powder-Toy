@@ -1179,7 +1179,7 @@ int main(int argc, char *argv[])
 #endif
 	char uitext[512] = "";
 	char heattext[128] = "";
-	char coordtext[13] = "";
+	char coordtext[128] = "";
 	int currentTime = 0;
 	int FPS = 0;
 	int pastFPS = 0;
