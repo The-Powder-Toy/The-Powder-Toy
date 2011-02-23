@@ -169,7 +169,8 @@ int FPSB = 0;
 int MSIGN =-1;
 //int CGOL = 0;
 //int GSPEED = 1;//causes my .exe to crash..
-int sound_enable;
+int sound_enable = 0;
+int file_script = 0;
 
 sign signs[MAXSIGNS];
 
@@ -440,11 +441,11 @@ void *build_save(int *size, int x0, int y0, int w, int h)
 
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
-
+	
 	c[0] = 0x50;	//0x66;
 	c[1] = 0x53;	//0x75;
 	c[2] = 0x76;	//0x43;
-	c[3] = legacy_enable|((sys_pause<<1)&0x02);
+	c[3] = legacy_enable|((sys_pause<<1)&0x02)|((gravityMode<<2)&0x0C)|((airMode<<4)&0x70);
 	c[4] = SAVE_VERSION;
 	c[5] = CELL;
 	c[6] = bw;
@@ -500,6 +501,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 			if (!sys_pause) {
 				sys_pause = (c[3]>>1)&0x01;
 			}
+			if(ver>=46 && replace) {
+				gravityMode = ((c[3]>>2)&0x03);// | ((c[3]>>2)&0x01);
+				airMode = ((c[3]>>4)&0x07);// | ((c[3]>>4)&0x02) | ((c[3]>>4)&0x01);
+			}
 		} else {
 			if (c[3]==1||c[3]==0) {
 				legacy_enable = c[3];
@@ -545,8 +550,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 
 	if (replace)
 	{
-		gravityMode = 1;
-		airMode = 1;
+		if(ver<46){
+			gravityMode = 0;
+			airMode = 0;
+		}
 		memset(bmap, 0, sizeof(bmap));
 		memset(emap, 0, sizeof(emap));
 		memset(signs, 0, sizeof(signs));
@@ -1174,7 +1181,7 @@ int main(int argc, char *argv[])
 #ifdef BETA
 	int is_beta = 0;
 #endif
-	char uitext[255] = "";
+	char uitext[512] = "";
 	char heattext[128] = "";
 	char coordtext[13] = "";
 	int currentTime = 0;
@@ -1182,7 +1189,6 @@ int main(int argc, char *argv[])
 	int pastFPS = 0;
 	int past = 0;
 	pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
-	pixel *pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	void *http_ver_check;
 	void *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
@@ -1198,9 +1204,10 @@ int main(int argc, char *argv[])
 	void *load_data=NULL;
 	pixel *load_img=NULL;//, *fbi_img=NULL;
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
+	SDL_AudioSpec fmt;
+	int username_flash = 0, username_flash_t = 1;
 	GSPEED = 1;
 
-	SDL_AudioSpec fmt;
 	/* Set 16-bit stereo audio at 22Khz */
 	fmt.freq = 22050;
 	fmt.format = AUDIO_S16;
@@ -1208,16 +1215,7 @@ int main(int argc, char *argv[])
 	fmt.samples = 512;
 	fmt.callback = mixaudio;
 	fmt.userdata = NULL;
-	/* Open the audio device and start playing sound! */
-	if ( SDL_OpenAudio(&fmt, NULL) < 0 )
-	{
-		fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
-	}
-	else
-	{
-		sound_enable = 1;
-		SDL_PauseAudio(0);
-	}
+	
 #ifdef MT
 	numCores = core_count();
 #endif
@@ -1242,6 +1240,7 @@ int main(int argc, char *argv[])
 	parts[NPART-1].life = -1;
 	pfree = 0;
 	fire_bg=calloc(XRES*YRES, PIXELSIZE);
+	pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	memset(signs, 0, sizeof(signs));
 
 	//fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
@@ -1266,9 +1265,27 @@ int main(int argc, char *argv[])
 		else if (!strncmp(argv[i], "kiosk", 5))
 		{
 			kiosk_enable = 1;
-			sdl_scale = 2;
+			//sdl_scale = 2; //Removed because some displays cannot handle the resolution
 			hud_enable = 0;
 		}
+		else if (!strncmp(argv[i], "sound", 5))
+		{
+			/* Open the audio device and start playing sound! */
+			if ( SDL_OpenAudio(&fmt, NULL) < 0 )
+			{
+				fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
+			}
+			else
+			{
+				sound_enable = 1;
+				SDL_PauseAudio(0);
+			}
+		}
+		else if (!strncmp(argv[i], "scripts", 5))
+		{
+			file_script = 1;
+		}
+
 	}
 
 	save_presets(0);
@@ -1385,7 +1402,6 @@ int main(int argc, char *argv[])
 				check_data = http_async_req_stop(http_session_check, &http_s_ret, NULL);
 				if(http_ret==200 && check_data)
 				{
-					printf("{%s}\n", check_data);
 					if(!strncmp(check_data, "EXPIRED", 7))
 					{
 						//Session expired
@@ -1409,6 +1425,7 @@ int main(int argc, char *argv[])
 						svf_own = 0;
 						svf_admin = 0;
 						svf_mod = 0;
+						error_ui(vid_buf, "Unable to log in", "Your account has been suspended, consider reading the rules.");
 					}
 					else if(!strncmp(check_data, "OK", 2))
 					{
@@ -1426,7 +1443,6 @@ int main(int argc, char *argv[])
 								svf_mod = 1;
 							}							
 						}	
-						save_presets(0);
 					}
 					else
 					{
@@ -1440,9 +1456,26 @@ int main(int argc, char *argv[])
 						svf_admin = 0;
 						svf_mod = 0;
 					}
+					save_presets(0);
 					free(check_data);
 				}
 				http_session_check = NULL;
+			} else {
+				clearrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14);
+				drawrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14, 255, 255, 255, 255);
+				drawtext(vid_buf, XRES-122+BARSIZE/*388*/, YRES+(MENUSIZE-13), "\x84", 255, 255, 255, 255);
+				if(username_flash>30){
+					username_flash_t = -1;
+					username_flash = 30;
+				} else if(username_flash<0) {
+					username_flash_t = 1;
+					username_flash = 0;
+				}
+				username_flash += username_flash_t;
+				if (svf_login)
+					drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), svf_user, 255, 255, 255, 175-(username_flash*5));
+				else
+					drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), "[checking]", 255, 255, 255, 255);
 			}
 			do_s_check = (do_s_check+1) & 15;
 		}
@@ -1691,10 +1724,10 @@ int main(int argc, char *argv[])
 			default:
 				gravityMode = 0;
 			case 0:
-				strcpy(itc_msg, "Gravity: Off");
+				strcpy(itc_msg, "Gravity: Vertical");
 				break;
 			case 1:
-				strcpy(itc_msg, "Gravity: Vertical");
+				strcpy(itc_msg, "Gravity: Off");
 				break;
 			case 2:
 				strcpy(itc_msg, "Gravity: Radial");
@@ -1702,33 +1735,32 @@ int main(int argc, char *argv[])
 
 			}
 		}
-
-			if (sdl_key=='y')
-	                {
-                        ++airMode;
-                        itc = 52;
-                        switch (airMode)
-                        {
-                        default:
-                                airMode = 0;
-                        case 0:
-                                strcpy(itc_msg, "Air: On");
-                                break;
-                        case 1:
-                                strcpy(itc_msg, "Air: Pressure Off");
-                                break;
-                        case 2:
-                                strcpy(itc_msg, "Air: Velocity Off");
-                                break;
-                        case 3:
-                                strcpy(itc_msg, "Air: Off");                           
-                                break;
-                        case 4:
-                                strcpy(itc_msg, "Air: No Update");                             
-                                break;
-                        }
-                }
-
+		if (sdl_key=='y')
+		{
+			++airMode;
+			itc = 52;
+			
+			switch (airMode)
+			{
+				default:
+					airMode = 0;
+				case 0:
+					strcpy(itc_msg, "Air: On");
+					break;
+				case 1:
+					strcpy(itc_msg, "Air: Pressure Off");
+					break;
+				case 2:
+					strcpy(itc_msg, "Air: Velocity Off");
+					break;
+				case 3:
+					strcpy(itc_msg, "Air: Off"); 
+					break;
+				case 4:
+					strcpy(itc_msg, "Air: No Update");
+					break;
+			}
+		}
 
 		if (sdl_key=='t')
 			VINE_MODE = !VINE_MODE;
@@ -1930,35 +1962,29 @@ int main(int argc, char *argv[])
 			}
 			if (!((cr>>8)>=NPART || !cr))
 			{
-#ifdef BETA
 				if (DEBUG_MODE)
 				{
 					int tctype = parts[cr>>8].ctype;
 					if (tctype>=PT_NUM)
 						tctype = 0;
-					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d, #%d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life, cr>>8);
-					//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
-				} else
+					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+					sprintf(coordtext, "#%d, X:%d Y:%d", cr>>8, x/sdl_scale, y/sdl_scale);
+				} else {
+#ifdef BETA
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 #else
-				if (DEBUG_MODE)
-				{
-					int tctype = parts[cr>>8].ctype;
-					if (tctype>=PT_NUM)
-						tctype = 0;
-					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d, #%d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life ,cr>>8);
-					//sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[parts[cr>>8].ctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
-				} else {
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
-				}
 #endif
+				}
 			}
 			else
 			{
 				sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
+				if (DEBUG_MODE)
+				{
+					sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
+				}
 			}
-			if (DEBUG_MODE)
-				sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 		}
 		mx = x;
 		my = y;
@@ -2109,7 +2135,7 @@ int main(int argc, char *argv[])
 		if (!sdl_zoom_trig && zoom_en==1)
 			zoom_en = 0;
 
-		if (sdl_key==Z_keysym && zoom_en==2)
+		if (sdl_key=='z' && zoom_en==2)
 			zoom_en = 1;
 
 		if (load_mode)
@@ -2277,7 +2303,7 @@ int main(int argc, char *argv[])
 						svf_name[0] = 0;
 						svf_tags[0] = 0;
 						svf_description[0] = 0;
-						gravityMode = 1;
+						gravityMode = 0;
 						airMode = 0;
 						death = death2 = 0;
 						isplayer2 = 0;
@@ -2286,6 +2312,7 @@ int main(int argc, char *argv[])
 						ISSPAWN2 = 0;
 
 						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 						memset(fire_r, 0, sizeof(fire_r));
 						memset(fire_g, 0, sizeof(fire_g));
 						memset(fire_b, 0, sizeof(fire_b));
@@ -2293,8 +2320,10 @@ int main(int argc, char *argv[])
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{
 						login_ui(vid_buf);
-						if (svf_login)
+						if (svf_login){
 							save_presets(0);
+							http_session_check = NULL;
+						}
 					}
 					if (x>=37 && x<=187 && svf_login)
 					{
@@ -2314,6 +2343,7 @@ int main(int argc, char *argv[])
 					{
 						search_ui(vid_buf);
 						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 						memset(fire_r, 0, sizeof(fire_r));
 						memset(fire_g, 0, sizeof(fire_g));
 						memset(fire_b, 0, sizeof(fire_b));
@@ -2335,7 +2365,6 @@ int main(int argc, char *argv[])
 								set_cmode((cmode+(CM_COUNT-1)) % CM_COUNT);
 							}
 						}
-						save_presets(0);
 					}
 					if (x>=(XRES+BARSIZE-(510-494)) && x<=(XRES+BARSIZE-(510-509)) && !bq)
 						sys_pause = !sys_pause;
@@ -2353,7 +2382,6 @@ int main(int argc, char *argv[])
 				{
 					if(!bq)
 						for(signi=0; signi<MAXSIGNS; signi++)
-						{
 							if(sregexp(signs[signi].text, "^{c:[0-9]*|.*}$")==0)
 							{
 								int signx, signy, signw, signh;
@@ -2368,33 +2396,10 @@ int main(int argc, char *argv[])
 									for(sldr=3; signs[signi].text[sldr] != '|'; sldr++)
 										buff[sldr-3] = signs[signi].text[sldr];
 
-									char buff2[sldr-2]; //TODO: Fix this for Visual Studio
-									memset(buff2, 0, sizeof(buff2));
-									memcpy(&buff2, &buff, sldr-3);
-									open_ui(vid_buf, buff2, 0);
+									buff[sldr-3] = '\0';
+									open_ui(vid_buf, buff, 0);
 								}
 							}
-							if(sregexp(signs[signi].text, "^{e:.*|.*}$")==0)
-							{
-								int signx, signy, signw, signh;
-								get_sign_pos(signi, &signx, &signy, &signw, &signh);
-								if(x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
-								{
-									char buff[256];
-									int sldr;
-
-									memset(buff, 0, sizeof(buff));
-
-									for(sldr=3; signs[signi].text[sldr] != '|'; sldr++)
-										buff[sldr-3] = signs[signi].text[sldr];
-
-									char buff2[sldr-2]; //TODO: Fix this for Visual Studio
-									memset(buff2, 0, sizeof(buff2));
-									memcpy(&buff2, &buff, sldr-3);
-									process_command(vid_buf, buff2,console_error);
-								}
-							}
-						}
 				}
 
 				if (c==WL_SIGN+100)
@@ -2676,10 +2681,10 @@ int main(int argc, char *argv[])
 			}
 
 #ifdef BETA
-			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d Generation:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS,GENERATION);
+			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 #else
 			if (DEBUG_MODE)
-				sprintf(uitext, "Version %d.%d FPS:%d Parts:%d Generation:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS,GENERATION);
+				sprintf(uitext, "Version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 			else
 				sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
 #endif
@@ -2772,84 +2777,93 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 		}
 		else if(strcmp(console2, "file")==0 && console3)
 		{
-			FILE *f=fopen(console3, "r");
-			if(f)
-			{
-				nx = 0;
-				ny = 0;
-				j = 0;
-				m = 0;
-				if(console4)
-					console_parse_coords(console4, &nx , &ny, console_error);
-				char fileread[5000];//TODO: make this change with file size
-				char pch[5000];
-				memset(pch,0,sizeof(pch));
-				memset(fileread,0,sizeof(fileread));
-				char tokens[10];
-				int tokensize;
-				fread(fileread,1,5000,f);
-				for(i=0; i<strlen(fileread); i++)
+			if(file_script){
+				FILE *f=fopen(console3, "r");
+				if(f)
 				{
-					if(fileread[i] != '\n')
+					char fileread[5000];//TODO: make this change with file size
+					char pch[5000];
+					char tokens[10];
+					int tokensize;
+					nx = 0;
+					ny = 0;
+					j = 0;
+					m = 0;
+					if(console4)
+						console_parse_coords(console4, &nx , &ny, console_error);
+					memset(pch,0,sizeof(pch));
+					memset(fileread,0,sizeof(fileread));
+					fread(fileread,1,5000,f);
+					for(i=0; i<strlen(fileread); i++)
 					{
-						pch[i-j] = fileread[i];
-						if(fileread[i] != ' ')
-							tokens[i-m] = fileread[i];
-					}
-					if(fileread[i] == ' ' || fileread[i] == '\n')
-					{
-						if(sregexp(tokens,"^x.[0-9],y.[0-9]")==0)//TODO: fix regex matching to work with x,y ect, right now it has to have a +0 or -0
+						if(fileread[i] != '\n')
 						{
-							char temp[5];
-							int starty = 0;
-							tokensize = strlen(tokens);
-							x = 0;
-							y = 0;
-							sscanf(tokens,"x%d,y%d",&x,&y);
-							sscanf(tokens,"%9s,%9s",xcoord,ycoord);
-							x += nx;
-							y += ny;
-							sprintf(xcoord,"%d",x);
-							sprintf(ycoord,"%d",y);
-							for(k = 0; k<strlen(xcoord);k++)//rewrite pch with numbers
-							{
-								pch[i-j-tokensize+k] = xcoord[k];
-								starty = k+1;
-							}
-							pch[i-j-tokensize+starty] = ',';
-							starty++;
-							for(k=0;k<strlen(ycoord);k++)
-							{
-								pch[i-j-tokensize+starty+k] = ycoord[k];
-								
-							}
-							pch[i-j-tokensize +strlen(xcoord) +1 +strlen(ycoord)] = ' ';
-							j = j -tokensize +strlen(xcoord) +1 +strlen(ycoord);
+							pch[i-j] = fileread[i];
+							if(fileread[i] != ' ')
+								tokens[i-m] = fileread[i];
 						}
-						memset(tokens,0,sizeof(tokens));
-						m = i+1;
-					}
-					if(fileread[i] == '\n')
-					{
-						
-						if(do_next)
+						if(fileread[i] == ' ' || fileread[i] == '\n')
 						{
-							if(strcmp(pch,"else")==0)
-								do_next = 0;
-							else
-								do_next = process_command(vid_buf, pch, console_error);
+							if(sregexp(tokens,"^x.[0-9],y.[0-9]")==0)//TODO: fix regex matching to work with x,y ect, right now it has to have a +0 or -0
+							{
+								char temp[5];
+								int starty = 0;
+								tokensize = strlen(tokens);
+								x = 0;
+								y = 0;
+								sscanf(tokens,"x%d,y%d",&x,&y);
+								sscanf(tokens,"%9s,%9s",xcoord,ycoord);
+								x += nx;
+								y += ny;
+								sprintf(xcoord,"%d",x);
+								sprintf(ycoord,"%d",y);
+								for(k = 0; k<strlen(xcoord);k++)//rewrite pch with numbers
+								{
+									pch[i-j-tokensize+k] = xcoord[k];
+									starty = k+1;
+								}
+								pch[i-j-tokensize+starty] = ',';
+								starty++;
+								for(k=0;k<strlen(ycoord);k++)
+								{
+									pch[i-j-tokensize+starty+k] = ycoord[k];
+									
+								}
+								pch[i-j-tokensize +strlen(xcoord) +1 +strlen(ycoord)] = ' ';
+								j = j -tokensize +strlen(xcoord) +1 +strlen(ycoord);
+							}
+							memset(tokens,0,sizeof(tokens));
+							m = i+1;
 						}
-						else if(strcmp(pch,"endif")==0 || strcmp(pch,"else")==0)
-							do_next = 1;
-						memset(pch,0,sizeof(pch));
-						j = i+1;
+						if(fileread[i] == '\n')
+						{
+							
+							if(do_next)
+							{
+								if(strcmp(pch,"else")==0)
+									do_next = 0;
+								else
+									do_next = process_command(vid_buf, pch, console_error);
+							}
+							else if(strcmp(pch,"endif")==0 || strcmp(pch,"else")==0)
+								do_next = 1;
+							memset(pch,0,sizeof(pch));
+							j = i+1;
+						}
 					}
+					//sprintf(console_error, "%s exists", console3);
+					fclose(f);
 				}
-				//sprintf(console_error, "%s exists", console3);
-				fclose(f);
+				else
+				{
+					sprintf(console_error, "%s does not exist", console3);
+				}
 			}
-			else
-				sprintf(console_error, "%s does not exist", console3);
+			else 
+			{
+				sprintf(console_error, "Scripts are not enabled");
+			}
+
 		}
 		else if(strcmp(console2, "sound")==0 && console3)
 		{

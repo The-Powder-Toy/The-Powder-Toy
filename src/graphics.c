@@ -31,6 +31,7 @@ unsigned char fire_b[YRES/CELL][XRES/CELL];
 
 unsigned int fire_alpha[CELL*3][CELL*3];
 pixel *fire_bg;
+pixel *pers_bg;
 
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
 {
@@ -447,6 +448,8 @@ void draw_tool(pixel *vid_buf, int b, int sl, int sr, unsigned pc, unsigned iswa
 int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 {
 	int i, j, c;
+	if (x > XRES-26 || x < 0)
+		return 26;
 	if (b>=UI_WALLSTART)
 	{
 		b = b-100;
@@ -2961,23 +2964,9 @@ void render_signs(pixel *vid_buf)
 				}
 				drawtext(vid_buf, x+3, y+3, buff, 0, 191, 255, 255);
 			}
-			if(sregexp(signs[i].text, "^{e:.*|.*}$")==0)
-			{
-				int sldr, startm;
-				memset(buff, 0, sizeof(buff));
-				for(sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
-					startm = sldr + 1;
-				sldr = startm;
-				while(signs[i].text[sldr] != '}')
-				{
-					buff[sldr - startm] = signs[i].text[sldr];
-					sldr++;
-				}
-				drawtext(vid_buf, x+3, y+3, buff, 0, 255, 215, 255);
-			}
 
 			//Usual text
-			if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$") && sregexp(signs[i].text, "^{e:.*|.*}$"))
+			if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
 				drawtext(vid_buf, x+3, y+3, signs[i].text, 255, 255, 255, 255);
 
 			x = signs[i].x;

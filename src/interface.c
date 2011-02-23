@@ -60,8 +60,6 @@ char search_expr[256] = "";
 char *tag_names[TAG_MAX];
 int tag_votes[TAG_MAX];
 
-int Z_keysym = 'z';
-
 int zoom_en = 0;
 int zoom_x=(XRES-ZSIZE_D)/2, zoom_y=(YRES-ZSIZE_D)/2;
 int zoom_wx=0, zoom_wy=0;
@@ -105,25 +103,9 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 		}
 		*w = textwidth(buff) + 5;
 	}
-	if(sregexp(signs[i].text, "^{e:.*|.*}$")==0)//character width limit in signs need to be incresed, as most commands don't fit..
-	{
-		int sldr, startm;
-		char buff[256];
-		memset(buff, 0, sizeof(buff));
-		for(sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
-			startm = sldr + 1;
-
-		sldr = startm;
-		while(signs[i].text[sldr] != '}')
-		{
-			buff[sldr - startm] = signs[i].text[sldr];
-			sldr++;
-		}
-		*w = textwidth(buff) + 5;
-	}
 
 	//Ususal width
-	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$") && sregexp(signs[i].text, "^{e:.*|.*}$"))
+	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
 		*w = textwidth(signs[i].text) + 5;
 	*h = 14;
 	*x0 = (signs[i].ju == 2) ? signs[i].x - *w :
@@ -1549,13 +1531,14 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, int my)
 {
-	int h,x,y,n=0,height,width,sy,rows=0;
+	int h,x,y,n=0,height,width,sy,rows=0,xoff=0,fwidth;
 	SEC = SEC2;
 	mx /= sdl_scale;
 	my /= sdl_scale;
 	rows = ceil((float)msections[i].itemcount/16.0f);
 	height = (ceil((float)msections[i].itemcount/16.0f)*18);
 	width = restrict_flt(msections[i].itemcount*31, 0, 16*31);
+	fwidth = msections[i].itemcount*31;
 	h = -1;
 	x = XRES-BARSIZE-18;
 	y = YRES+1;
@@ -1566,11 +1549,11 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 		{
 			if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
 			{
-				if (x-18<=2)
+				/*if (x-18<=2)
 				{
 					x = XRES-BARSIZE-18;
 					y += 19;
-				}
+				}*/
 				x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
@@ -1603,11 +1586,11 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 		{
 			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
 			{
-				if (x-18<=0)
+				/*if (x-18<=0)
 				{
 					x = XRES-BARSIZE-18;
 					y += 19;
-				}
+				}*/
 				x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
@@ -1637,11 +1620,11 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 		{
 			if (ptypes[n].menusection==i&&ptypes[n].menu==1)
 			{
-				if (x-18<=0)
+				/*if (x-18<=0)
 				{
 					x = XRES-BARSIZE-18;
 					y += 19;
-				}
+				}*/
 				x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
@@ -1670,37 +1653,36 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 	}
 	else
 	{
+		if (fwidth > XRES-BARSIZE){
+			float overflow = fwidth-(XRES-BARSIZE), location = ((float)XRES-BARSIZE)/((float)(mx-(XRES-BARSIZE)));
+			xoff = (int)(overflow / location);
+		}
 		for (n = 0; n<PT_NUM; n++)
 		{
 			if (ptypes[n].menusection==i&&ptypes[n].menu==1)
 			{
-				if (x-18<=0)
+				x -= draw_tool_xy(vid_buf, x-xoff, y, n, ptypes[n].pcolors)+5;
+				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
 				{
-					x = XRES-BARSIZE-18;
-					y += 19;
-				}
-				x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
-				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
-				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 0, 0, 255);
 					h = n;
 				}
-				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
 					h = n;
 				}
 				else if (n==SLALT)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
 				}
 				else if (n==*sl)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 0, 0, 255);
 				}
 				else if (n==*sr)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 0, 255, 255);
 				}
 			}
 		}
@@ -1779,10 +1761,9 @@ int sdl_poll(void)
 			sdl_ascii=event.key.keysym.unicode;
 			if (event.key.keysym.sym == SDLK_CAPSLOCK)
 				sdl_caps = 1;
-			if (event.key.keysym.unicode=='z' || event.key.keysym.unicode=='Z')
+			if (event.key.keysym.sym=='z')
 			{
 				sdl_zoom_trig = 1;
-				Z_keysym = event.key.keysym.sym;
 			}
 			if ( event.key.keysym.sym == SDLK_PLUS)
 			{
@@ -1832,7 +1813,7 @@ int sdl_poll(void)
 		case SDL_KEYUP:
 			if (event.key.keysym.sym == SDLK_CAPSLOCK)
 				sdl_caps = 0;
-			if (event.key.keysym.sym == Z_keysym)
+			if (event.key.keysym.sym == 'z')
 				sdl_zoom_trig = 0;
 			if (event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_LEFT)
 			{
@@ -1908,6 +1889,7 @@ void set_cmode(int cm)
 	else if (cmode==CM_PERS)
 	{
 		memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+		memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		strcpy(itc_msg, "Persistent Display");
 	}
 	else if (cmode==CM_PRESS)
@@ -1941,6 +1923,7 @@ void set_cmode(int cm)
 	{
 		strcpy(itc_msg, "Velocity Display");
 	}
+	save_presets(0);
 }
 
 char *download_ui(pixel *vid_buf, char *uri, int *len)
@@ -3857,7 +3840,7 @@ struct command_history {
 typedef struct command_history command_history;
 command_history *last_command = NULL;
 char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show previous commands
-	int mx,my,b,bq,cc,ci = -1;
+	int mx,my,b,cc,ci = -1;
 	command_history *currentcommand;
 	ui_edit ed;
 	ed.x = 15;
@@ -3873,7 +3856,6 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 	//fillrect(vid_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
 	while (!sdl_poll())
 	{
-		bq = b;
 		b = SDL_GetMouseState(&mx, &my);
 		mx /= sdl_scale;
 		my /= sdl_scale;
@@ -3968,6 +3950,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 			}
 		}
 	}
+	console_mode = 0;
 	return NULL;
 }
 
@@ -4010,9 +3993,9 @@ int console_parse_coords(char *txt, int *x, int *y, char *err)
 }
 int console_parse_partref(char *txt, int *which, char *err)
 {
+	int i = -1, nx, ny;
 	strcpy(err,"");
 	// TODO: use regex?
-	int i = -1, nx, ny;
 	if (strchr(txt,',') && console_parse_coords(txt, &nx, &ny, err))
 	{
 		i = pmap[ny][nx];

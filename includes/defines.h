@@ -8,9 +8,9 @@
 #endif
 
 #define SAVE_VERSION 46
-#define MINOR_VERSION 1
+#define MINOR_VERSION 3
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
-#define BETA
+//#define BETA
 
 #define SERVER "powdertoy.co.uk"
 
@@ -82,6 +82,10 @@ typedef unsigned int pixel;
    this way you can make roof prisms easily */
 #define GLASS_IOR      1.9
 #define GLASS_DISP     0.07
+
+#ifdef WIN32
+#define strcasecmp stricmp
+#endif
 
 typedef unsigned char uint8;
 
