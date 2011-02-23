@@ -2371,11 +2371,11 @@ void draw_parts(pixel *vid)
 				else if (t==PT_GLOW)
 				{
 					fr = restrict_flt(parts[i].temp-(275.13f+32.0f), 0, 128)/50.0f;
-					fg = restrict_flt(parts[i].life, 0, 128)/50.0f;
+					fg = restrict_flt(parts[i].ctype, 0, 128)/50.0f;
 					fb = restrict_flt(parts[i].tmp, 0, 128)/50.0f;
 					
 					cr = restrict_flt(64.0f+parts[i].temp-(275.13f+32.0f), 0, 255);
-					cg = restrict_flt(64.0f+parts[i].life, 0, 255);
+					cg = restrict_flt(64.0f+parts[i].ctype, 0, 255);
 					cb = restrict_flt(64.0f+parts[i].tmp, 0, 255);
 					
 					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cr, cg, cb);
