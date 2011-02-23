@@ -1353,10 +1353,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if (r && parts[r>>8].tmp<=0)
 							parts[r>>8].type = PT_NONE;//using kill_part makes it not work
 					}
+				for( z = 0;z<=NGOL;z++)
+					gol2[nx][ny][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
 			}
 		if (createdsomething)
 			GENERATION ++;
-		memset(gol2, 0, sizeof(gol2));
+		//memset(gol2, 0, sizeof(gol2));
 	}
 	if (ISWIRE==1)
 	{
