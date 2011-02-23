@@ -1568,10 +1568,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 						}
 						else if (t==PT_LAVA) {
 							if (parts[i].ctype && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA) {
-								if (ptransitions[parts[i].ctype].tht==PT_LAVA&&pt>=ptransitions[parts[i].ctype].thv) s = 0;
-								else if (parts[i].ctype==PT_THRM&&pt>=ptransitions[PT_BMTL].thv) s = 0;
+								if (parts[i].ctype==PT_THRM&&pt>=ptransitions[PT_BMTL].thv) s = 0;
+								else if (ptransitions[parts[i].ctype].tht==PT_LAVA) {
+									if (pt>=ptransitions[parts[i].ctype].thv) s = 0;
+								}
 								else if (pt>=973.0f) s = 0; // freezing point for lava with any other (not listed in ptransitions as turning into lava) ctype
-								else {
+								if (s) {
 									t = parts[i].ctype;
 									parts[i].ctype = PT_NONE;
 									if (t==PT_THRM) {
