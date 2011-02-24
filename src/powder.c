@@ -2864,6 +2864,10 @@ int create_parts(int x, int y, int rx, int ry, int c)
 		b = WL_FANHELPER;
 		dw = 1;
 	}
+	if (c == PT_WIND)
+	{
+		return 1;
+	}
 	if (dw==1)
 	{
 		rx = rx/CELL;
