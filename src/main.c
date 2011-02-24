@@ -1183,7 +1183,7 @@ int main(int argc, char *argv[])
 #endif
 	char uitext[512] = "";
 	char heattext[128] = "";
-	char coordtext[13] = "";
+	char coordtext[128] = "";
 	int currentTime = 0;
 	int FPS = 0;
 	int pastFPS = 0;
@@ -2436,7 +2436,18 @@ int main(int argc, char *argv[])
 					}
 					else
 					{
-						create_line(lx, ly, x, y, bsx, bsy, c);
+						if (c == PT_DRAG)
+						{
+							for (j=-bsy; j<=bsy; j++)
+								for (i=-bsx; i<=bsx; i++)
+									if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(bsx,2))+(pow(j,2))/(pow(bsy,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=bsy*bsx))
+									{
+										vx[(y+j)/CELL][(x+i)/CELL] += (x-lx)*0.01f;
+										vy[(y+j)/CELL][(x+i)/CELL] += (y-ly)*0.01f;
+									}
+						}
+						else
+							create_line(lx, ly, x, y, bsx, bsy, c);
 						lx = x;
 						ly = y;
 					}
@@ -2461,7 +2472,7 @@ int main(int argc, char *argv[])
 					{
 						if (sdl_mod & (KMOD_CAPS))
 							c = 0;
-						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE)
+						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=PT_DRAG)
 							flood_parts(x, y, c, -1, -1);
 						if (c==SPC_HEAT || c==SPC_COOL)
 							create_parts(x, y, bsx, bsy, c);
