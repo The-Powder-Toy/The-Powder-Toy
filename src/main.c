@@ -1677,7 +1677,7 @@ int main(int argc, char *argv[])
 		if (sdl_key==SDLK_BACKQUOTE)
 		{
 			console_mode = !console_mode;
-			hud_enable = !console_mode;
+			//hud_enable = !console_mode;
 		}
 		if (sdl_key=='g')
 		{
@@ -1906,23 +1906,6 @@ int main(int argc, char *argv[])
 				}*/
 			}
 		}
-		if(console_mode)
-		{
-			char *console;
-			//char error[255] = "error!";
-			sys_pause = 1;
-			console = console_ui(vid_buf,console_error);
-			console = mystrdup(console);
-			strcpy(console_error,"");
-			if(process_command(vid_buf,console,&console_error)==-1)
-			{
-				free(console);
-				break;
-			}
-			free(console);
-			if(!console_mode)
-				hud_enable = 1;
-		}
 
 		bq = b;
 		b = SDL_GetMouseState(&x, &y);
@@ -1982,6 +1965,7 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
+		
 		mx = x;
 		my = y;
 		if (update_flag)
@@ -2743,7 +2727,27 @@ int main(int argc, char *argv[])
 			}
 			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
 			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
+			
 		}
+		
+		if(console_mode)
+		{
+			char *console;
+			//char error[255] = "error!";
+			sys_pause = 1;
+			console = console_ui(vid_buf,console_error);
+			console = mystrdup(console);
+			strcpy(console_error,"");
+			if(process_command(vid_buf,console,&console_error)==-1)
+			{
+				free(console);
+				break;
+			}
+			free(console);
+			if(!console_mode)
+				hud_enable = 1;
+		}
+		
 		sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
 		//Setting an element for the stick man

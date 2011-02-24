@@ -3841,10 +3841,11 @@ typedef struct command_history command_history;
 command_history *last_command = NULL;
 char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show previous commands
 	int mx,my,b,cc,ci = -1;
+	pixel *old_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	command_history *currentcommand;
 	ui_edit ed;
 	ed.x = 15;
-	ed.y = 210;
+	ed.y = 207;
 	ed.w = XRES;
 	ed.nx = 1;
 	ed.def = "";
@@ -3854,6 +3855,13 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 	ed.multiline = 0;
 	ed.cursor = 0;
 	//fillrect(vid_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
+	memcpy(old_buf,vid_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
+	fillrect(old_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
+	cc = 0;
+	while(cc < 80){
+		fillrect(old_buf, -1, -1+cc, XRES+BARSIZE, 2, 0, 0, 0, 160-(cc*2));
+		cc++;
+	}
 	while (!sdl_poll())
 	{
 		b = SDL_GetMouseState(&mx, &my);
@@ -3861,21 +3869,12 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 		my /= sdl_scale;
 		ed.focus = 1;
 
-		clearrect(vid_buf, 0, 0, XRES+BARSIZE, 220);//anyway to make it transparent?
-		draw_line(vid_buf, 1, 219, XRES, 219, 228, 228, 228, XRES+BARSIZE);
-		drawtext(vid_buf, 100, 15, "Welcome to The Powder Toy console v.2 (by cracker64)\n"
-		         "Current commands are quit, set, reset, load, create, file, kill, sound\n"
-		         "You can set type, temp, ctype, life, x, y, vx, vy using this format ('set life particle# 9001')\n"
-		         "You can also use 'all' instead of a particle number to do it to everything.\n"
-		         "You can now use particle names (ex. set type all deut)\n"
-		         "Reset works with pressure, velocity, sparks, temp (ex. 'reset pressure')\n"
-		         "To load a save use load saveID (ex. load 1337)\n"
-		         "Create particles with 'create deut x,y' where x and y are the coords\n"
-		         "Run scripts from file 'file filename'\n"
-		         "You can delete/kill a particle with 'kill x,y'"
-		         "Play a sound with (sound blah.wav)"
-		         ,255, 187, 187, 255);
-
+		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
+		draw_line(vid_buf, 0, 219, XRES+BARSIZE-1, 219, 228, 228, 228, XRES+BARSIZE);
+		drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64)\n"
+				 "Current commands are quit, set, reset, load, create, file, kill, sound\n" //TODO: help command
+				 ,255, 255, 255, 255);
+		
 		cc = 0;
 		currentcommand = last_command;
 		while(cc < 10)
@@ -3899,8 +3898,11 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 			}
 		}
 
-		if(error)
-			drawtext(vid_buf, 15, 190, error,255, 187, 187, 255);
+		if(error && ed.str[0]=='\0')
+			drawtext(vid_buf, 20, 207, error, 255, 127, 127, 200);
+		
+		drawtext(vid_buf, 5, 207, ">", 255, 255, 255, 240);
+		
 		ui_edit_draw(vid_buf, &ed);
 		ui_edit_process(mx, my, b, &ed);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
@@ -3911,11 +3913,13 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 			currentcommand->prev_command = last_command;
 			currentcommand->command = mystrdup(ed.str);
 			last_command = currentcommand;
+			free(old_buf);
 			return currentcommand->command;
 		}
 		if (sdl_key==SDLK_ESCAPE || sdl_key==SDLK_BACKQUOTE)
 		{
 			console_mode = 0;
+			free(old_buf);
 			return NULL;
 		}
 		if(sdl_key==SDLK_UP || sdl_key==SDLK_DOWN)
@@ -3951,6 +3955,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 		}
 	}
 	console_mode = 0;
+	free(old_buf);
 	return NULL;
 }
 
