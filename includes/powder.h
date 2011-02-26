@@ -49,15 +49,15 @@
 
 
 
-#define PT_NONE	0
-#define PT_DUST	1
-#define PT_WATR	2
+#define PT_NONE 0
+#define PT_DUST 1
+#define PT_WATR 2
 #define PT_OIL 3
 #define PT_FIRE 4
 #define PT_STNE 5
 #define PT_LAVA 6
-#define PT_GUNP	7
-#define PT_NITR	8
+#define PT_GUNP 7
+#define PT_NITR 8
 #define PT_CLNE 9
 #define PT_GAS 10
 #define PT_PLEX 11
@@ -165,7 +165,7 @@
 #define PT_ANAR 113
 #define PT_VINE 114
 #define PT_INVIS 115
-#define PT_EQUALVEL 116//all particles equal their velocities
+#define PT_EQUALVEL 116 //all particles equal their velocities
 #define PT_SPAWN2 117
 #define PT_SPAWN 118
 #define PT_SHLD1 119
