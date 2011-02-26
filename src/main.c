@@ -118,7 +118,7 @@ void play_sound(char *file)
 }
 
 static const char *it_msg =
-    "\brThe Powder Toy - http://powdertoy.co.uk/\n"
+    "\brThe Powder Toy - http://powdertoy.co.uk, irc.freenode.net #powder\n"
     "\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
     "\n"
     "\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
@@ -138,12 +138,8 @@ static const char *it_msg =
     "The spacebar can be used to pause physics.\n"
     "'P' will take a screenshot and save it into the current directory.\n"
     "\n"
-    "\bgCopyright (c) 2008-10 Stanislaw K Skowronek (\brhttp://powder.unaligned.org\bg, \bbirc.unaligned.org #wtf\bg)\n"
-    "\bgCopyright (c) 2010 Simon Robertshaw (\brhttp://powdertoy.co.uk\bg, \bbirc.freenode.net #powder\bg)\n"
-    "\bgCopyright (c) 2010 Skresanov Savely (Stickman)\n"
-    "\bgCopyright (c) 2010 cracker64\n"
-    "\bgCopyright (c) 2010 Bryan Hoyle (New elements)\n"
-    "\bgCopyright (c) 2010 Nathan Cousins (New elements, small engine mods.)\n"
+    "\bgCopyright (c) 2008-11 Stanislaw K Skowronek (\brhttp://powder.unaligned.org\bg, \bbirc.unaligned.org #wtf\bg)\n"
+    "\bgCopyright (c) 2010-11 Simon Robertshaw, Skresanov Savely, cracker64, Bryan Hoyle, Nathan Cousins, jacksonmj\n"
     "\n"
     "\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html"
     ;
@@ -1193,7 +1189,7 @@ int main(int argc, char *argv[])
 #endif
 	char uitext[512] = "";
 	char heattext[128] = "";
-	char coordtext[13] = "";
+	char coordtext[128] = "";
 	int currentTime = 0;
 	int FPS = 0;
 	int pastFPS = 0;
@@ -1691,7 +1687,7 @@ int main(int argc, char *argv[])
 		if (sdl_key==SDLK_BACKQUOTE)
 		{
 			console_mode = !console_mode;
-			hud_enable = !console_mode;
+			//hud_enable = !console_mode;
 		}
 		if (sdl_key=='g')
 		{
@@ -1920,23 +1916,6 @@ int main(int argc, char *argv[])
 				}*/
 			}
 		}
-		if(console_mode)
-		{
-			char *console;
-			//char error[255] = "error!";
-			sys_pause = 1;
-			console = console_ui(vid_buf,console_error);
-			console = mystrdup(console);
-			strcpy(console_error,"");
-			if(process_command(vid_buf,console,console_error)==-1)
-			{
-				free(console);
-				break;
-			}
-			free(console);
-			if(!console_mode)
-				hud_enable = 1;
-		}
 
 		bq = b;
 		b = SDL_GetMouseState(&x, &y);
@@ -1996,6 +1975,7 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
+		
 		mx = x;
 		my = y;
 		if (update_flag)
@@ -2425,7 +2405,20 @@ int main(int argc, char *argv[])
 					}
 					else
 					{
-						create_line(lx, ly, x, y, bsx, bsy, c);
+						if (c == PT_WIND)
+						{
+							for (j=-bsy; j<=bsy; j++)
+								for (i=-bsx; i<=bsx; i++)
+									if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(bsx,2))+(pow(j,2))/(pow(bsy,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=bsy*bsx))
+									{
+										vx[(y+j)/CELL][(x+i)/CELL] += (x-lx)*0.01f;
+										vy[(y+j)/CELL][(x+i)/CELL] += (y-ly)*0.01f;
+									}
+						}
+						else
+						{
+							create_line(lx, ly, x, y, bsx, bsy, c);
+						}
 						lx = x;
 						ly = y;
 					}
@@ -2450,7 +2443,7 @@ int main(int argc, char *argv[])
 					{
 						if (sdl_mod & (KMOD_CAPS))
 							c = 0;
-						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE)
+						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&c!=PT_WIND&&!REPLACE_MODE)
 							flood_parts(x, y, c, -1, -1);
 						if (c==SPC_HEAT || c==SPC_COOL)
 							create_parts(x, y, bsx, bsy, c);
@@ -2723,7 +2716,27 @@ int main(int argc, char *argv[])
 			}
 			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
 			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
+			
 		}
+		
+		if(console_mode)
+		{
+			char *console;
+			//char error[255] = "error!";
+			sys_pause = 1;
+			console = console_ui(vid_buf,console_error);
+			console = mystrdup(console);
+			strcpy(console_error,"");
+			if(process_command(vid_buf,console,console_error)==-1)
+			{
+				free(console);
+				break;
+			}
+			free(console);
+			if(!console_mode)
+				hud_enable = 1;
+		}
+		
 		sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
 		//Setting an element for the stick man

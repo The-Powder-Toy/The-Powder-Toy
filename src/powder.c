@@ -1320,8 +1320,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 								for ( nnx=-1; nnx<2; nnx++)
 									for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
 									{
-										gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][golnum] ++;
-										gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][0] ++;
+										rt = pmap[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL];
+										if (!rt || ptypes[rt&0xFF].properties&PROP_LIFE)
+										{
+											gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][golnum] ++;
+											gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][0] ++;
+										}
 									}
 							} else {
 								parts[r>>8].tmp --;
@@ -1353,10 +1357,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if (r && parts[r>>8].tmp<=0)
 							parts[r>>8].type = PT_NONE;//using kill_part makes it not work
 					}
+				for( z = 0;z<=NGOL;z++)
+					gol2[nx][ny][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
 			}
 		if (createdsomething)
 			GENERATION ++;
-		memset(gol2, 0, sizeof(gol2));
+		//memset(gol2, 0, sizeof(gol2));
 	}
 	if (ISWIRE==1)
 	{
@@ -2857,6 +2863,10 @@ int create_parts(int x, int y, int rx, int ry, int c)
 	{
 		b = WL_FANHELPER;
 		dw = 1;
+	}
+	if (c == PT_WIND)
+	{
+		return 1;
 	}
 	if (dw==1)
 	{

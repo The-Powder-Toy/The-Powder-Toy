@@ -16,6 +16,10 @@ int update_GLOW(UPDATE_FUNC_ARGS) {
 					parts[r>>8].life = 10;
 				}
 			}
+	parts[i].ctype = pv[y/CELL][x/CELL]*16;
+	
+	parts[i].tmp = abs((int)((vx[y/CELL][x/CELL]+vy[y/CELL][x/CELL])*16.0f)) + abs((int)((parts[i].vx+parts[i].vy)*64.0f));
+	//printf("%f %f\n", parts[i].vx, parts[i].vy);
 	if (parts[i].type==PT_NONE) {
 		kill_part(i);
 		return 1;
