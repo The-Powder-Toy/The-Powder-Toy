@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
+#include "Python.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1170,6 +1171,424 @@ char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
                 "SSE"
 #endif
                 ;
+
+                
+char console_error[255] = "";
+
+/* 
+ * PYTHON FUNCTIONS
+ * instructions on making a function callable from python:
+ * first you make a function that accepts (PyObject *self, PyObject *args) as arguments
+ * then you use PyArg_ParseTuple to parse the arguments, handle everything the function should do.
+ * register the function by adding a line to static PyMethodDef EmbMethods[] = {
+ * the line should look like this:
+ * {"PyFunctionname", Functionname, METH_VARARGS,"short help string"},
+ * for more information on the PyWhatever functions look here:
+ * http://docs.python.org/extending/extending.html
+ */
+
+//functions callable from python:
+static PyObject*
+emb_create(PyObject *self, PyObject *args)
+{
+    int x,y,t;
+    if(!PyArg_ParseTuple(args, "III:create",&x,&y,&t))
+        return NULL;
+    //
+    return Py_BuildValue("i",create_part(-1,x,y,t));
+}
+//sys_pause = !sys_pause
+emb_pause(PyObject *self, PyObject *args)
+{
+    int x,y,t;
+    if(!PyArg_ParseTuple(args, ":unpause"))
+        return NULL;
+    //
+    sys_pause=1;
+    return Py_BuildValue("i",1);
+}
+
+emb_unpause(PyObject *self, PyObject *args)
+{
+    int x,y,t;
+    if(!PyArg_ParseTuple(args, ":pause"))
+        return NULL;
+    //
+    sys_pause=0;
+    return Py_BuildValue("i",1);
+}
+
+emb_toggle_pause(PyObject *self, PyObject *args)
+{
+    int x,y,t;
+    if(!PyArg_ParseTuple(args, ":toggle_pause"))
+        return NULL;
+    //
+    sys_pause=!sys_pause;
+    return Py_BuildValue("i",1);
+}
+
+//console_mode
+
+emb_toggle_console(PyObject *self, PyObject *args)
+{
+    int x,y,t;
+    if(!PyArg_ParseTuple(args, ":toggle_console"))
+        return NULL;
+    //
+    console_mode=!console_mode;
+    return Py_BuildValue("i",1);
+}
+
+emb_open_console(PyObject *self, PyObject *args)
+{
+    int x,y,t;
+    if(!PyArg_ParseTuple(args, ":toggle_console"))
+        return NULL;
+    //
+    console_mode=1;
+    return Py_BuildValue("i",1);
+}
+
+emb_close_console(PyObject *self, PyObject *args)
+{
+    int x,y,t;
+    if(!PyArg_ParseTuple(args, ":toggle_console"))
+        return NULL;
+    //
+    console_mode=0;
+    return Py_BuildValue("i",1);
+}
+
+
+emb_log(PyObject *self, PyObject *args)
+{
+    char *buffer;
+    if(!PyArg_ParseTuple(args, "s:log",&buffer))
+        return NULL;
+    //
+    strcpy(console_error,buffer);
+    puts(buffer);
+    return Py_BuildValue("i",1);
+}
+
+char console_more=0;
+
+emb_console_more(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ":log"))
+        return NULL;
+    //
+    console_more=1;
+    return Py_BuildValue("i",1);
+}
+
+emb_console_less(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ":log"))
+        return NULL;
+    //
+    console_more=0;
+    return Py_BuildValue("i",1);
+}
+
+//drawtext(vid_buf, 15, 175-(cc*12), currentcommand->command, 255, 255, 255, 255);
+
+
+emb_reset_pressure(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ":reset_pressure"))
+        return NULL;
+    //
+        for (int nx = 0; nx<XRES/CELL; nx++)
+            for (int ny = 0; ny<YRES/CELL; ny++)
+            {
+                pv[ny][nx] = 0;
+            }
+    return Py_BuildValue("i",1);
+}
+
+emb_reset_velocity(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ":reset_velocity"))
+        return NULL;
+    //
+        for (int nx = 0; nx<XRES/CELL; nx++)
+            for (int ny = 0; ny<YRES/CELL; ny++)
+            {
+                vx[ny][nx] = 0;
+                vy[ny][nx] = 0;
+            }
+    return Py_BuildValue("i",1);
+}
+
+emb_reset_sparks(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ":reset_sparks"))
+        return NULL;
+    //
+        for(int i=0; i<NPART; i++)
+        {
+            if(parts[i].type==PT_SPRK)
+            {
+                parts[i].type = parts[i].ctype;
+                parts[i].life = 4;
+            }
+        }
+    return Py_BuildValue("i",1);
+}
+
+emb_set_life(PyObject *self, PyObject *args)
+{
+    int i,life,j;
+    if(!PyArg_ParseTuple(args, "II:set_life",&j,&life))
+        return NULL;
+    //
+        if(j==-1)
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type)
+                    parts[i].life = life;
+            }
+        }
+        else
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type == j)
+                    parts[i].life = life;
+            }
+        }
+        return Py_BuildValue("i",1);
+}
+
+emb_set_type(PyObject *self, PyObject *args)
+{
+    int i,life,j;
+    if(!PyArg_ParseTuple(args, "II:set_type",&j,&life))
+        return NULL;
+    //
+        if(j==-1)
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type)
+                    parts[i].type = life;
+            }
+        }
+        else
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type == j)
+                    parts[i].type = life;
+            }
+        }
+        return Py_BuildValue("i",1);
+}
+
+emb_set_temp(PyObject *self, PyObject *args)
+{
+    int i,life,j;
+    if(!PyArg_ParseTuple(args, "II:set_temp",&j,&life))
+        return NULL;
+    //
+        if(j==-1)
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type)
+                    parts[i].temp = life;
+            }
+        }
+        else
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type == j)
+                    parts[i].temp = life;
+            }
+        }
+        return Py_BuildValue("i",1);
+}
+
+emb_set_tmp(PyObject *self, PyObject *args)
+{
+    int i,life,j;
+    if(!PyArg_ParseTuple(args, "II:set_tmp",&j,&life))
+        return NULL;
+    //
+        if(j==-1)
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type)
+                    parts[i].tmp = life;
+            }
+        }
+        else
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type == j)
+                    parts[i].tmp = life;
+            }
+        }
+        return Py_BuildValue("i",1);
+}
+
+emb_set_x(PyObject *self, PyObject *args)
+{
+    int i,life,j;
+    if(!PyArg_ParseTuple(args, "II:set_x",&j,&life))
+        return NULL;
+    //
+        if(j==-1)
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type)
+                    parts[i].x = life;
+            }
+        }
+        else
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type == j)
+                    parts[i].x = life;
+            }
+        }
+        return Py_BuildValue("i",1);
+}
+
+emb_set_y(PyObject *self, PyObject *args)
+{
+    int i,life,j;
+    if(!PyArg_ParseTuple(args, "II:set_y",&j,&life))
+        return NULL;
+    //
+        if(j==-1)
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type)
+                    parts[i].y = life;
+            }
+        }
+        else
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type == j)
+                    parts[i].y = life;
+            }
+        }
+        return Py_BuildValue("i",1);
+}
+
+emb_set_ctype(PyObject *self, PyObject *args)
+{
+    int i,life,j;
+    if(!PyArg_ParseTuple(args, "II:set_ctype",&j,&life))
+        return NULL;
+    //
+        if(j==-1)
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type)
+                    parts[i].ctype = life;
+            }
+        }
+        else
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type == j)
+                    parts[i].ctype = life;
+            }
+        }
+        return Py_BuildValue("i",1);
+}
+
+emb_set_vx(PyObject *self, PyObject *args)
+{
+    int i,life,j;
+    if(!PyArg_ParseTuple(args, "II:set_vx",&j,&life))
+        return NULL;
+    //
+        if(j==-1)
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type)
+                    parts[i].vx = life;
+            }
+        }
+        else
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type == j)
+                    parts[i].vx = life;
+            }
+        }
+        return Py_BuildValue("i",1);
+}
+
+emb_set_vy(PyObject *self, PyObject *args)
+{
+    int i,life,j;
+    if(!PyArg_ParseTuple(args, "II:set_vy",&j,&life))
+        return NULL;
+    //
+        if(j==-1)
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type)
+                    parts[i].vy = life;
+            }
+        }
+        else
+        {
+            for(i=0; i<NPART; i++)
+            {
+                if(parts[i].type == j)
+                    parts[i].vy = life;
+            }
+        }
+        return Py_BuildValue("i",1);
+}
+
+static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
+    {"create", emb_create, METH_VARARGS,"create a particle."},
+    {"log", emb_log, METH_VARARGS,"logs an error string to the console."},
+    {"reset_pressure", emb_reset_pressure, METH_VARARGS,"resets all the pressure."},
+    {"reset_velocity", emb_reset_velocity, METH_VARARGS,"resets all the velocity."},
+    {"reset_sparks", emb_reset_sparks, METH_VARARGS,"resets all the sparks."},
+    {"set_life", emb_set_life, METH_VARARGS,"sets life of a specified particle."},
+    {"set_type", emb_set_type, METH_VARARGS,"sets type of a specified particle."},
+    {"set_temp", emb_set_temp, METH_VARARGS,"sets temp of a specified particle."},
+    {"set_tmp", emb_set_tmp, METH_VARARGS,"sets tmp of a specified particle."},
+    {"set_x", emb_set_x, METH_VARARGS,"sets x of a specified particle."},
+    {"set_y", emb_set_y, METH_VARARGS,"sets y of a specified particle."},
+    {"set_ctype", emb_set_y, METH_VARARGS,"sets ctype of a specified particle."},
+    {"set_vx", emb_set_vx, METH_VARARGS,"sets vx of a specified particle."},
+    {"set_vy", emb_set_vy, METH_VARARGS,"sets vy of a specified particle."},
+    {"pause", emb_pause, METH_VARARGS,"pause the game."},
+    {"unpause", emb_unpause, METH_VARARGS,"unpause the game."},
+    {"toggle_pause", emb_toggle_pause, METH_VARARGS,"toggle game pause."},
+    {"open_console", emb_open_console, METH_VARARGS,"open the game console."},
+    {"close_console", emb_close_console, METH_VARARGS,"close the game console."},
+    {"toggle_console", emb_toggle_console, METH_VARARGS,"toggle the game console."},
+    {"console_more", emb_console_more, METH_VARARGS,"turns the more indicator on."},
+    {"console_less", emb_console_less, METH_VARARGS,"turns the more indicator off."},
+    {NULL, NULL, 0, NULL}
+};
+
 int main(int argc, char *argv[])
 {
 	int hud_enable = 1;
@@ -1188,7 +1607,7 @@ int main(int argc, char *argv[])
 	void *http_ver_check;
 	void *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
-	char console_error[255] = "";
+    //char console_error[255] = "";
 	int i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
 #ifdef INTERNAL
 	int vs = 0;
@@ -1203,6 +1622,7 @@ int main(int argc, char *argv[])
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
 	GSPEED = 1;
+    PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs;
 
 	/* Set 16-bit stereo audio at 22Khz */
 	fmt.freq = 22050;
@@ -1212,6 +1632,44 @@ int main(int argc, char *argv[])
 	fmt.callback = mixaudio;
 	fmt.userdata = NULL;
 	
+    //initialise python console
+    Py_Initialize();
+    Py_InitModule("tpt", EmbMethods);
+    //change the path to find all the correct modules
+    PyRun_SimpleString("import sys\nsys.path.append('.')");
+    PyRun_SimpleString("print 'python present.'");
+    //load the console module and whatnot
+    pname=PyString_FromString("tpt_console");//create string object
+    pmodule = PyImport_Import(pname);//import module
+    if(pmodule!=NULL)
+    {
+        Py_DECREF(pname);//throw away the string object
+        pfunc=PyObject_GetAttrString(pmodule,"handle");//get the handler function
+        if(pfunc && PyCallable_Check(pfunc))//check if it's really a function
+        {
+            //it is
+            printf("python console ready to go.\n");
+            /*pargs=Py_BuildValue("(s)","test");
+            pvalue = PyObject_CallObject(pfunc, pargs);
+            Py_DECREF(pargs);
+            pargs=NULL;
+            //Py_DECREF(pvalue);
+            //puts("a");
+            pvalue=NULL;*/
+        }
+        else
+        {
+            //oops! mangled console.py?
+            printf("unable to find handle function, mangled console.py?\n");
+            return -1;
+        }
+    }
+    else
+    {
+        printf("unable to find console module, missing file?\n");
+        return -1;
+    }
+    
 #ifdef MT
 	numCores = core_count();
 #endif
@@ -2735,10 +3193,10 @@ int main(int argc, char *argv[])
 			char *console;
 			//char error[255] = "error!";
 			sys_pause = 1;
-			console = console_ui(vid_buf,console_error);
+			console = console_ui(vid_buf,console_error,console_more);
 			console = mystrdup(console);
 			strcpy(console_error,"");
-			if(process_command(vid_buf,console,&console_error)==-1)
+			if(process_command(vid_buf,console,&console_error,pfunc)==-1)
 			{
 				free(console);
 				break;
@@ -2769,9 +3227,16 @@ int main(int argc, char *argv[])
 	}
 	SDL_CloseAudio();
 	http_done();
+    //make sure no threads are blocking us
+    //fork_unblock
+    pargs=Py_BuildValue("(s)","fork_unblock()");//this deamonises all threads.
+    pvalue = PyObject_CallObject(pfunc, pargs);
+    Py_DECREF(pargs);
+    pargs=NULL;
+    Py_Finalize();//cleanup any python stuff.
 	return 0;
 }
-int process_command(pixel *vid_buf,char *console,char *console_error) {
+int process_command(pixel *vid_buf,char *console,char *console_error,PyObject *pfunc) {
 	int y,x,nx,ny,i,j,k,m;
 	int do_next = 1;
 	char xcoord[10];
@@ -2780,6 +3245,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 	char console3[15];
 	char console4[15];
 	char console5[15];
+    PyObject *pvalue,*pargs;
 	//sprintf(console_error, "%s", console);
 	if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
 	{
@@ -2788,449 +3254,20 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 		{
 			return -1;
 		}
-		else if(strcmp(console2, "file")==0 && console3)
-		{
-			if(file_script){
-				FILE *f=fopen(console3, "r");
-				if(f)
-				{
-					char fileread[5000];//TODO: make this change with file size
-					char pch[5000];
-					char tokens[10];
-					int tokensize;
-					nx = 0;
-					ny = 0;
-					j = 0;
-					m = 0;
-					if(console4)
-						console_parse_coords(console4, &nx , &ny, console_error);
-					memset(pch,0,sizeof(pch));
-					memset(fileread,0,sizeof(fileread));
-					fread(fileread,1,5000,f);
-					for(i=0; i<strlen(fileread); i++)
-					{
-						if(fileread[i] != '\n')
-						{
-							pch[i-j] = fileread[i];
-							if(fileread[i] != ' ')
-								tokens[i-m] = fileread[i];
-						}
-						if(fileread[i] == ' ' || fileread[i] == '\n')
-						{
-							if(sregexp(tokens,"^x.[0-9],y.[0-9]")==0)//TODO: fix regex matching to work with x,y ect, right now it has to have a +0 or -0
-							{
-								char temp[5];
-								int starty = 0;
-								tokensize = strlen(tokens);
-								x = 0;
-								y = 0;
-								sscanf(tokens,"x%d,y%d",&x,&y);
-								sscanf(tokens,"%9s,%9s",xcoord,ycoord);
-								x += nx;
-								y += ny;
-								sprintf(xcoord,"%d",x);
-								sprintf(ycoord,"%d",y);
-								for(k = 0; k<strlen(xcoord);k++)//rewrite pch with numbers
-								{
-									pch[i-j-tokensize+k] = xcoord[k];
-									starty = k+1;
-								}
-								pch[i-j-tokensize+starty] = ',';
-								starty++;
-								for(k=0;k<strlen(ycoord);k++)
-								{
-									pch[i-j-tokensize+starty+k] = ycoord[k];
-									
-								}
-								pch[i-j-tokensize +strlen(xcoord) +1 +strlen(ycoord)] = ' ';
-								j = j -tokensize +strlen(xcoord) +1 +strlen(ycoord);
-							}
-							memset(tokens,0,sizeof(tokens));
-							m = i+1;
-						}
-						if(fileread[i] == '\n')
-						{
-							
-							if(do_next)
-							{
-								if(strcmp(pch,"else")==0)
-									do_next = 0;
-								else
-									do_next = process_command(vid_buf, pch, console_error);
-							}
-							else if(strcmp(pch,"endif")==0 || strcmp(pch,"else")==0)
-								do_next = 1;
-							memset(pch,0,sizeof(pch));
-							j = i+1;
-						}
-					}
-					//sprintf(console_error, "%s exists", console3);
-					fclose(f);
-				}
-				else
-				{
-					sprintf(console_error, "%s does not exist", console3);
-				}
-			}
-			else 
-			{
-				sprintf(console_error, "Scripts are not enabled");
-			}
-
-		}
-		else if(strcmp(console2, "sound")==0 && console3)
-		{
-			if (sound_enable) play_sound(console3);
-			else strcpy(console_error, "Audio device not available - cannot play sounds");
-		}
-		else if(strcmp(console2, "load")==0 && console3)
-		{
-			j = atoi(console3);
-			if(j)
-			{
-				open_ui(vid_buf, console3, NULL);
-				console_mode = 0;
-			}
-		}
-		else if(strcmp(console2, "if")==0 && console3)
-		{
-			if(strcmp(console3, "type")==0)//TODO: add more than just type, and be able to check greater/less than
-			{
-				if (console_parse_partref(console4, &i, console_error)
-					&& console_parse_type(console5, &j, console_error))
-				{
-					if(parts[i].type==j)
-						return 1;
-					else
-						return 0;
-				}
-				else
-					return 0;
-			}
-		}
-		else if (strcmp(console2, "create")==0 && console3 && console4)
-		{
-			if (console_parse_type(console3, &j, console_error)
-			        && console_parse_coords(console4, &nx, &ny, console_error))
-			{
-				if (!j)
-					strcpy(console_error, "Cannot create particle with type NONE");
-				else if (create_part(-1,nx,ny,j)<0)
-					strcpy(console_error, "Could not create particle");
-			}
-		}
-		else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3)
-		{
-			if (console_parse_partref(console3, &i, console_error))
-				kill_part(i);
-		}
-		else if(strcmp(console2, "reset")==0 && console3)
-		{
-			if(strcmp(console3, "pressure")==0)
-			{
-				for (nx = 0; nx<XRES/CELL; nx++)
-					for (ny = 0; ny<YRES/CELL; ny++)
-					{
-						pv[ny][nx] = 0;
-					}
-			}
-			else if(strcmp(console3, "velocity")==0)
-			{
-				for (nx = 0; nx<XRES/CELL; nx++)
-					for (ny = 0; ny<YRES/CELL; ny++)
-					{
-						vx[ny][nx] = 0;
-						vy[ny][nx] = 0;
-					}
-			}
-			else if(strcmp(console3, "sparks")==0)
-			{
-				for(i=0; i<NPART; i++)
-				{
-					if(parts[i].type==PT_SPRK)
-					{
-						parts[i].type = parts[i].ctype;
-						parts[i].life = 4;
-					}
-				}
-			}
-			else if(strcmp(console3, "temp")==0)
-			{
-				for(i=0; i<NPART; i++)
-				{
-					if(parts[i].type)
-					{
-						parts[i].temp = ptypes[parts[i].type].heat;
-					}
-				}
-			}
-		}
-		else if(strcmp(console2, "set")==0 && console3 && console4 && console5)
-		{
-			if(strcmp(console3, "life")==0)
-			{
-				if(strcmp(console4, "all")==0)
-				{
-					j = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type)
-							parts[i].life = j;
-					}
-				}
-				else if (console_parse_type(console4, &j, console_error))
-				{
-					k = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type == j)
-							parts[i].life = k;
-					}
-				}
-				else
-				{
-					if (console_parse_partref(console4, &i, console_error))
-					{
-						j = atoi(console5);
-						parts[i].life = j;
-					}
-				}
-			}
-			if(strcmp(console3, "type")==0)
-			{
-				if(strcmp(console4, "all")==0)
-				{
-					if (console_parse_type(console5, &j, console_error))
-						for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type)
-								parts[i].type = j;
-						}
-				}
-				else if (console_parse_type(console4, &j, console_error)
-				         && console_parse_type(console5, &k, console_error))
-				{
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type == j)
-							parts[i].type = k;
-					}
-				}
-				else
-				{
-					if (console_parse_partref(console4, &i, console_error)
-					        && console_parse_type(console5, &j, console_error))
-					{
-						parts[i].type = j;
-					}
-				}
-			}
-			if(strcmp(console3, "temp")==0)
-			{
-				if(strcmp(console4, "all")==0)
-				{
-					j = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type)
-							parts[i].temp = j;
-					}
-				}
-				else if (console_parse_type(console4, &j, console_error))
-				{
-					k = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type == j)
-							parts[i].temp= k;
-					}
-				}
-				else
-				{
-					if (console_parse_partref(console4, &i, console_error))
-					{
-						j = atoi(console5);
-						parts[i].temp = j;
-					}
-				}
-			}
-			if(strcmp(console3, "tmp")==0)
-			{
-				if(strcmp(console4, "all")==0)
-				{
-					j = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type)
-							parts[i].tmp = j;
-					}
-				}
-				else if (console_parse_type(console4, &j, console_error))
-				{
-					k = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type == j)
-							parts[i].tmp = k;
-					}
-				}
-				else
-				{
-					if (console_parse_partref(console4, &i, console_error))
-					{
-						j = atoi(console5);
-						parts[i].tmp = j;
-					}
-				}
-			}
-			if(strcmp(console3, "x")==0)
-			{
-				if(strcmp(console4, "all")==0)
-				{
-					j = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type)
-							parts[i].x = j;
-					}
-				}
-				else if (console_parse_type(console4, &j, console_error))
-				{
-					k = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type == j)
-							parts[i].x = k;
-					}
-				}
-				else
-				{
-					if (console_parse_partref(console4, &i, console_error))
-					{
-						j = atoi(console5);
-						parts[i].x = j;
-					}
-				}
-			}
-			if(strcmp(console3, "y")==0)
-			{
-				if(strcmp(console4, "all")==0)
-				{
-					j = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type)
-							parts[i].y = j;
-					}
-				}
-				else if (console_parse_type(console4, &j, console_error))
-				{
-					k = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type == j)
-							parts[i].y = k;
-					}
-				}
-				else
-				{
-					if (console_parse_partref(console4, &i, console_error))
-					{
-						j = atoi(console5);
-						parts[i].y = j;
-					}
-				}
-			}
-			if(strcmp(console3, "ctype")==0)
-			{
-				if(strcmp(console4, "all")==0)
-				{
-					if (console_parse_type(console5, &j, console_error))
-						for(i=0; i<NPART; i++)
-						{
-							if(parts[i].type)
-								parts[i].ctype = j;
-						}
-				}
-				else if (console_parse_type(console4, &j, console_error)
-				         && console_parse_type(console5, &k, console_error))
-				{
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type == j)
-							parts[i].ctype = k;
-					}
-				}
-				else
-				{
-					if (console_parse_partref(console4, &i, console_error)
-					        && console_parse_type(console5, &j, console_error))
-					{
-						parts[i].ctype = j;
-					}
-				}
-			}
-			if(strcmp(console3, "vx")==0)
-			{
-				if(strcmp(console4, "all")==0)
-				{
-					j = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type)
-							parts[i].vx = j;
-					}
-				}
-				else if (console_parse_type(console4, &j, console_error))
-				{
-					k = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type == j)
-							parts[i].vx = k;
-					}
-				}
-				else
-				{
-					if (console_parse_partref(console4, &i, console_error))
-					{
-						j = atoi(console5);
-						parts[i].vx = j;
-					}
-				}
-			}
-			if(strcmp(console3, "vy")==0)
-			{
-				if(strcmp(console4, "all")==0)
-				{
-					j = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type)
-							parts[i].vy = j;
-					}
-				}
-				else if (console_parse_type(console4, &j, console_error))
-				{
-					k = atoi(console5);
-					for(i=0; i<NPART; i++)
-					{
-						if(parts[i].type == j)
-							parts[i].vy = k;
-					}
-				}
-				else
-				{
-					if (console_parse_partref(console4, &i, console_error))
-					{
-						j = atoi(console5);
-						parts[i].vy = j;
-					}
-				}
-			}
-		}
 		else
-			sprintf(console_error, "Invalid Command", console2);
+        {
+		//	sprintf(console_error, "Invalid Command", console2);
+		//handle them command
+		pargs=Py_BuildValue("(s)",console);
+        pvalue = PyObject_CallObject(pfunc, pargs);
+        Py_DECREF(pargs);
+        pargs=NULL;
+        if(pvalue==NULL)
+            strcpy(console_error,"failed to execute code.");
+        //Py_DECREF(pvalue);
+        //puts("a");
+        pvalue=NULL;
+        }
 	}
 	return 1;
 }

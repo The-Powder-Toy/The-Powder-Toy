@@ -1,8 +1,8 @@
 SOURCES := src/*.c src/elements/*.c
 
-CFLAGS := -w -std=c99 -D_POSIX_C_SOURCE=200112L -Iincludes/
+CFLAGS := -w -std=c99 -D_POSIX_C_SOURCE=200112L -Iincludes/ 
 OFLAGS := -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations
-LFLAGS := -lSDL -lm -lbz2 
+LFLAGS := -lSDL -lm -lbz2        -lpython2.7 -lm -L/usr/lib/python2.7/config -I/usr/include/python2.7
 LFLAGS_X := -lm -lbz2 -lSDLmain
 MFLAGS_SSE3 := -march=native -DX86 -DX86_SSE3 -msse3
 MFLAGS_SSE2 := -march=native -DX86 -DX86_SSE2 -msse2
