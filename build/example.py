@@ -1,5 +1,6 @@
 import tpt
 import random
+import time
 #                    example script
 
 def noise(typ,amount=50):
@@ -7,5 +8,3 @@ def noise(typ,amount=50):
         for yy in range(184,216):
             if(random.randrange(0,100)<amount):
                 tpt.create(xx,yy,typ)
-            
-

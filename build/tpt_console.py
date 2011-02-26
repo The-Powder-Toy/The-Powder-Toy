@@ -5,12 +5,12 @@ import ctypes
 import traceback
 from threading import Thread
 print "console module loaded."
-"""#redirect stdout like this:
+#redirect stdout like this:
 class logger:
     def write(self,txt):
-        txt=txt[:254]
+        txt=txt.split("\n")[-1][:254]
         tpt.log(txt)
-sys.stdout=logger()"""
+#sys.stdout=logger()
 
 element={"none":0,"dust":1,"watr":2,"oil":3,"fire":4,"stne":5,"lava":6,"gunp":7,
     "nitr":8,"clne":9,"gas":10,"plex":11,"goo":12,"icei":13,"metl":14,"sprk":15,
@@ -36,19 +36,6 @@ element={"none":0,"dust":1,"watr":2,"oil":3,"fire":4,"stne":5,"lava":6,"gunp":7,
     "lote":142,"frg2":143,"star":144,"frog":145,"bran":146,"wind":147,
     "num":148}
 
-def _async_raise(tid, exctype):
-    '''Raises an exception in the threads with id tid'''
-    if not inspect.isclass(exctype):
-        raise TypeError("Only types can be raised (not instances)")
-    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
-    if res == 0:
-        raise ValueError("invalid thread id")
-    elif res != 1:
-        # """if it returns a number greater than one, you're in trouble, 
-        # and you should call it again with exc=NULL to revert the effect"""
-        ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, 0)
-        raise SystemError("PyThreadState_SetAsyncExc failed")
-
 class _fork(Thread):
     def __init__ (self,func):
         Thread.__init__(self)
@@ -65,6 +52,7 @@ def fork(func):
     fork.threads[fork.i]=tmp
     fork.i+=1
     tmp.start()
+    return tmp
     tpt.log("Thread #%d started"%(fork.i-1))
 def fork_status():
     count=0
@@ -86,7 +74,7 @@ def error(ex):
 def clean():
     #add any functions that must be reachable here.
     copy=["__builtins__","__name__","__doc__","__package__",'tpt','clean',
-        'element','fork','_fork','fork_status','fork_unblock']
+        'element','fork','_fork','fork_status','fork_unblock','sys']
     handle.glob={}
     for item in copy:
         handle.glob[item]=globals()[item]
@@ -104,27 +92,11 @@ def handle(txt):
         traceback.print_exc()
         
 def _handle(txt):
-    print "handling '%s'"%txt
-    tpt.console_less()
-    try:
-        #tmp=code.compile_command('\n'.join(handle.txt))
-        tmp=code.compile_command(txt)
-    except Exception as ex:
-        #tpt.log("Invalid code. see stdout for more info.")
-        error(ex)
-        print "### -------------------- trace"
-        traceback.print_exc()
-        return
-    if(tmp==None):
+    #print "handling '%s'"%txt
+    exec txt in handle.glob
+    if(False):
         tpt.console_more()
     else:
-        try:
-            #print "executing"
-            exec tmp in handle.glob
-        except Exception as ex:
-            #tpt.log("Invalid code. see stdout for more info.")
-            error(ex)
-            print "### -------------------- trace"
-            traceback.print_exc()
+        tpt.console_less()
     
     
