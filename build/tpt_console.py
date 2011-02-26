@@ -95,9 +95,12 @@ def handle(txt):
 def _handle(txt):
     #print "handling '%s'"%txt
     try:
-        exec txt
-    except Exception as ex:
-        error(ex)
+        sys.stdout.write(repr(eval(tmp)))
+    except:
+        try:
+            exec txt
+        except Exception as ex:
+            error(ex)
         
     
     
