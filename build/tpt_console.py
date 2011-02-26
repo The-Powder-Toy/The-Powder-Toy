@@ -98,7 +98,7 @@ def _handle(txt):
         sys.stdout.write(repr(eval(tmp,handle.glob)))
     except:
         try:
-            exec txt,handle.glob
+            exec txt in handle.glob
         except Exception as ex:
             error(ex)
         
