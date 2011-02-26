@@ -11,6 +11,7 @@ class logger:
         txt=txt.split("\n")[-1][:254]
         tpt.log(txt)
 #sys.stdout=logger()
+#sys.stderr=logger()
 
 element={"none":0,"dust":1,"watr":2,"oil":3,"fire":4,"stne":5,"lava":6,"gunp":7,
     "nitr":8,"clne":9,"gas":10,"plex":11,"goo":12,"icei":13,"metl":14,"sprk":15,
@@ -68,16 +69,18 @@ def fork_status():
 def fork_unblock():
     pass#i need to implement this some day.
 def error(ex):
-    name,_,_=repr(ex).partition("(")
-    tpt.log("%s: %s"%(name,str(ex)))
+    err=traceback.format_exc()
+    sys.stdout.write(err)
 
 def clean():
     #add any functions that must be reachable here.
-    copy=["__builtins__","__name__","__doc__","__package__",'tpt','clean',
+    """copy=["__builtins__","__name__","__doc__","__package__",'tpt','clean',
         'element','fork','_fork','fork_status','fork_unblock','sys']
     handle.glob={}
     for item in copy:
-        handle.glob[item]=globals()[item]
+        handle.glob[item]=globals()[item]"""
+    handle.glob=globals()
+    handle.buf=""
 
 def handle(txt):
     try:
@@ -88,15 +91,13 @@ def handle(txt):
         _handle(txt)
     except Exception as ex:
         error(ex)
-        print "### -------------------- trace"
-        traceback.print_exc()
         
 def _handle(txt):
     #print "handling '%s'"%txt
-    exec txt in handle.glob
-    if(False):
-        tpt.console_more()
-    else:
-        tpt.console_less()
+    try:
+        exec txt
+    except Exception as ex:
+        error(ex)
+        
     
     
