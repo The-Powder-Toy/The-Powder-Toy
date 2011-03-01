@@ -2763,7 +2763,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 			bm = 0;
 	}
 
-	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm )||( (sdl_mod & (KMOD_CAPS)) && cm!=SLALT))
+	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm )||( (sdl_mod & (KMOD_CAPS)) && cm!=SLALT && !(cm==PT_INST&&co==PT_SPRK)))
 		return 1;
 
 	// go left as far as possible
@@ -2788,7 +2788,12 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 	// fill span
 	for (x=x1; x<=x2; x++)
 	{
-		if (!create_parts(x, y, 0, 0, co))
+		if(cm==PT_INST&&co==PT_SPRK)
+		{
+			if(create_part(-1,x, y, co)==-1)
+				return 0;
+		}
+		else if (!create_parts(x, y, 0, 0, co))
 			return 0;
 	}
 	// fill children
@@ -2939,10 +2944,14 @@ int create_parts(int x, int y, int rx, int ry, int c)
 			for (j=-ry; j<=ry; j++)
 				for (i=-rx; i<=rx; i++)
 					if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
+					{
+						if( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
+							continue;
 						if (!REPLACE_MODE)
 							create_part(-2, x+i, y+j, c);
 						else if ((pmap[y+j][x+i]&0xFF)==SLALT&&SLALT!=0)
 							create_part(-2, x+i, y+j, c);
+					}
 		return 1;
 	}
 
@@ -2981,6 +2990,8 @@ int create_parts(int x, int y, int rx, int ry, int c)
 				for (i=-rx; i<=rx; i++)
 					if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
 					{
+						if( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
+							continue;
 						if ((pmap[y+j][x+i]&0xFF)!=SLALT&&SLALT!=0)
 							continue;
 						if ((pmap[y+j][x+i]))
