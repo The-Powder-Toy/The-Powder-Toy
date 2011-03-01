@@ -79,6 +79,9 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 	if ((r&0xFF)==PT_VOID || (r&0xFF)==PT_BHOL)
 		return 1;
 
+	if(pt==PT_SPRK)//spark shouldn't move
+		return 0;
+
 	if (pt==PT_PHOT&&(
 	            (r&0xFF)==PT_GLAS || (r&0xFF)==PT_PHOT ||
 	            (r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN ||
