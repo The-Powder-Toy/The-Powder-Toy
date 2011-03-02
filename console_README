@@ -1,0 +1,47 @@
+### CONSOLE ###
+the console in this version is a python console and will execute any command you enter.
+the api for interacting with the powder toy is contained in the tpt module and is already imported at startup.
+currently implemented api functions:
+    tpt.create(x,y,type)         create a particle of type <type> at <x>,<y>
+    tpt.reset_velocity()         resets all velocity
+    tpt.reset_pressure()         resets all pressure
+    tpt.reset_sparks()           resets all sparks
+    tpt.set_life(type,life)      sets the life of all particles with type <type>
+                                 to <life>(set <type> to -1 for all)
+    tpt.set_type(type1,type2)    sets the type of all particles with type <type1>
+                                 to <type2>(set <type1> to -1 for all)
+    tpt.set_temp(type,temp)      sets the temp of all particles with type <type>
+                                 to <temp>(set <type> to -1 for all)
+    tpt.set_tmp(type,tmp)        sets the tmp of all particles with type <type> 
+                                 to <tmp>(set <type> to -1 for all)
+    tpt.set_x(type,x)            sets the x of all particles with type <type>
+                                 to <x>(set <type> to -1 for all)
+    tpt.set_y(type,y)            sets the y of all particles with type <type>
+                                 to <y>(set <type> to -1 for all)
+    tpt.set_vx(type,vx)          sets the vx of all particles with type <type>
+                                 to <vx>(set <type> to -1 for all)
+    tpt.set_vy(type,vy)          sets the vy of all particles with type <type>
+                                 to <vy>(set <type> to -1 for all)
+    tpt.set_ctype(type,ctype)    sets the ctype of all particles with type
+                                 <type> to <ctype>(set <type> to -1 for all)
+    tpt.pause()                  pause the game(note that closing the console
+                                 pauses the game)
+    tpt.unpause()                unpause the game(note that closing the console
+                                 pauses the game)
+    tpt.toggle_pause()           toggle pause(note that closing the console
+                                 pauses the game)
+    tpt.close_console()          closes the console and pauses the game
+    tpt.open_console()           opens the console
+    tpt.toggle_console()         toggles the console
+
+NOTE: these functions don't do bounds checking, which means that they CAN AND
+      WILL CRASH the powder toy. be carefull.
+
+### TIPS&TRICKS ###
+all functions that need a particle type expect a number. but instead of doing
+tpt.set_life(32,life) you can do tpt.set_life(element['uran'],life)
+
+### COMPILING ###
+before you compile you should have python 2.x installed.
+you must run the "getheader.py" script to get the correct linking options, add
+these options to the makefile
