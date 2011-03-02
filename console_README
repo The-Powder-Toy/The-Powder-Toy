@@ -13,7 +13,7 @@ i is the particle number
 name will change all of name's type to the setto variable. It needs to be a string "dust" ect, "all" for all.
 the setto is what the particle(s) will be set to, it is a string for the type/ctype commands, and an int for the rest.
 you need to set the to* variable and one location/name/coords for it to work.
-    set_type(x=,y=,i=,name="",totype="")    
+    set_type(x=,y=,i=,name="",setto="")    
     set_life()    
     set_temp()      
     set_tmp()        
