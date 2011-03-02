@@ -32,7 +32,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 	else if (ct==PT_ETRD&&parts[i].life==1)
 	{
 		nearp = nearest_part(i, PT_ETRD);
-		if ((nearp!=-1&&parts_avg(i, nearp, PT_INSL)!=PT_INSL)&&(parts[i].tmp != 1))
+		if ((nearp!=-1&&parts_avg(i, nearp, PT_INSL)!=PT_INSL))
 		{
 			create_line(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), 0, 0, PT_PLSM);
 			part_change_type(i,x,y,ct);
@@ -41,7 +41,6 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 			part_change_type(nearp,(int)(parts[nearp].x+0.5f),(int)(parts[nearp].y+0.5f),PT_SPRK);
 			parts[nearp].life = 9;
 			parts[nearp].ctype = PT_ETRD;
-			parts[i].tmp = 1;
 		}
 	}
 	else if (ct==PT_NBLE&&parts[i].life<=1)
