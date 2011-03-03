@@ -29,9 +29,9 @@ finally:
 
 with open(fname,"r") as fid:
     for char in fid.read():
-        lst.append("0x"+hex(ord(char)))
+        lst.append(hex(ord(char)))
 tmp=",".join(lst)
-out=''.join(["unsigned char tpt_console_pyc[] = {",tmp,"};"])
+out=''.join(["#include <Python.h>\nunsigned char tpt_console_pyc[] = {",tmp,"};"])
 with open("./includes/pyconsole.h","w") as fid:
     fid.write(out)
 print "done"
