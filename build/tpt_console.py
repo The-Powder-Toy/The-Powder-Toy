@@ -1,4 +1,5 @@
 import tpt
+from tpt import *
 import sys
 import code
 import ctypes
@@ -8,10 +9,11 @@ print "console module loaded."
 #redirect stdout like this:
 class logger:
     def write(self,txt):
-        txt=txt.split("\n")[-1][:254]
+        txt=txt.strip().split("\n")[-1]
+        repr(txt)
         tpt.log(txt)
-#sys.stdout=logger()
-#sys.stderr=logger()
+sys.stdout=logger()
+sys.stderr=logger()
 
 element={"none":0,"dust":1,"watr":2,"oil":3,"fire":4,"stne":5,"lava":6,"gunp":7,
     "nitr":8,"clne":9,"gas":10,"plex":11,"goo":12,"icei":13,"metl":14,"sprk":15,
@@ -95,12 +97,9 @@ def handle(txt):
 def _handle(txt):
     #print "handling '%s'"%txt
     try:
-        sys.stdout.write(repr(eval(tmp,handle.glob)))
+        sys.stdout.write(repr(eval(txt,handle.glob)))
     except:
         try:
             exec txt in handle.glob
         except Exception as ex:
             error(ex)
-        
-    
-    

@@ -79,6 +79,9 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 	if ((r&0xFF)==PT_VOID || (r&0xFF)==PT_BHOL)
 		return 1;
 
+	if(pt==PT_SPRK)//spark shouldn't move
+		return 0;
+
 	if (pt==PT_PHOT&&(
 	            (r&0xFF)==PT_GLAS || (r&0xFF)==PT_PHOT ||
 	            (r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN ||
@@ -1135,7 +1138,7 @@ int nearest_part(int ci, int t)
 
 void update_particles_i(pixel *vid, int start, int inc)
 {
-	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z, neighbors;
+	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z, neighbors, createdsomething;
 	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp, ctemph, ctempl;
 	int fin_x, fin_y, clear_x, clear_y;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
@@ -1342,14 +1345,14 @@ void update_particles_i(pixel *vid, int start, int inc)
 				if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !r&0xFF) || (r>>8)>=NPART)
 					continue;
 				for ( golnum = 1; golnum<=NGOL; golnum++)
-					for ( goldelete = 0; goldelete<9; goldelete++)
 					{
-						if (neighbors==goldelete&&gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
+						goldelete = neighbors;
+						if (gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
 						{
 							if (create_part(-1,nx,ny,goltype[golnum-1]))
 								createdsomething = 1;
 						}
-						else if (neighbors-1==goldelete&&gol[nx][ny]==golnum&&(grule[golnum][goldelete]==0||grule[golnum][goldelete]==2))//subtract 1 because it counted itself
+						else if (gol[nx][ny]==golnum&&(grule[golnum][goldelete-1]==0||grule[golnum][goldelete-1]==2))//subtract 1 because it counted itself
 						{
 							if(parts[r>>8].tmp==grule[golnum][9]-1)
 								parts[r>>8].tmp --;
@@ -2763,7 +2766,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 			bm = 0;
 	}
 
-	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm )||( (sdl_mod & (KMOD_CAPS)) && cm!=SLALT))
+	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm )||( (sdl_mod & (KMOD_CAPS)) && cm!=SLALT && !(cm==PT_INST&&co==PT_SPRK)))
 		return 1;
 
 	// go left as far as possible
@@ -2788,7 +2791,12 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 	// fill span
 	for (x=x1; x<=x2; x++)
 	{
-		if (!create_parts(x, y, 0, 0, co))
+		if(cm==PT_INST&&co==PT_SPRK)
+		{
+			if(create_part(-1,x, y, co)==-1)
+				return 0;
+		}
+		else if (!create_parts(x, y, 0, 0, co))
 			return 0;
 	}
 	// fill children
@@ -2865,9 +2873,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
 		dw = 1;
 	}
 	if (c == PT_WIND)
-	{
 		return 1;
-	}
 	if (dw==1)
 	{
 		rx = rx/CELL;
@@ -2939,10 +2945,14 @@ int create_parts(int x, int y, int rx, int ry, int c)
 			for (j=-ry; j<=ry; j++)
 				for (i=-rx; i<=rx; i++)
 					if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
+					{
+						if( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
+							continue;
 						if (!REPLACE_MODE)
 							create_part(-2, x+i, y+j, c);
 						else if ((pmap[y+j][x+i]&0xFF)==SLALT&&SLALT!=0)
 							create_part(-2, x+i, y+j, c);
+					}
 		return 1;
 	}
 
@@ -2981,6 +2991,8 @@ int create_parts(int x, int y, int rx, int ry, int c)
 				for (i=-rx; i<=rx; i++)
 					if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
 					{
+						if( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
+							continue;
 						if ((pmap[y+j][x+i]&0xFF)!=SLALT&&SLALT!=0)
 							continue;
 						if ((pmap[y+j][x+i]))
