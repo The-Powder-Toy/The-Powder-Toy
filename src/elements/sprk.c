@@ -120,7 +120,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 					conduct_sprk = 0;
 				if (ct==PT_NSCN && rt==PT_PSCN)
 					conduct_sprk = 0;
-				if (ct==PT_ETRD && (parts[i].life!=5||!(rt==PT_METL||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN)))
+				if (ct==PT_ETRD && !(rt==PT_METL||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN))
 					conduct_sprk = 0;
 				if (ct==PT_INST&&rt!=PT_NSCN) conduct_sprk = 0;
 				if (ct==PT_SWCH && (rt==PT_PSCN||rt==PT_NSCN||rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR))
@@ -137,15 +137,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 					conduct_sprk = 0;
 
 				if (conduct_sprk) {
-					if (ct==PT_ETRD) {
-						part_change_type(i,x,y,PT_ETRD);
-						parts[i].ctype = PT_NONE;
-						parts[i].life = 20;
-						part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
-						parts[r>>8].life = 4;
-						parts[r>>8].ctype = rt;
-					}
-					else if (rt==PT_WATR||rt==PT_SLTW) {
+					if (rt==PT_WATR||rt==PT_SLTW) {
 						if (parts[r>>8].life==0 && (parts[i].life<2 || ((r>>8)<i && parts[i].life<3)))
 						{
 							part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
@@ -166,6 +158,15 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 						part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 						if (parts[r>>8].temp+10.0f<673.0f&&!legacy_enable&&(rt==PT_METL||rt==PT_BMTL||rt==PT_BRMT||rt==PT_PSCN||rt==PT_NSCN||rt==PT_ETRD||rt==PT_NBLE||rt==PT_IRON))
 							parts[r>>8].temp = parts[r>>8].temp+10.0f;
+					}
+					else if (ct==PT_ETRD && parts[i].life==5)
+					{
+						part_change_type(i,x,y,ct);
+						parts[i].ctype = PT_NONE;
+						parts[i].life = 20;
+						parts[r>>8].life = 4;
+						parts[r>>8].ctype = rt;
+						part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 					}
 				}
 			}

@@ -2549,7 +2549,8 @@ int search_ui(pixel *vid_buf)
 				memset(v_buf, 0, ((YRES+MENUSIZE)*(XRES+BARSIZE))*PIXELSIZE);
 			}
 			is_p1 = (exp_res < GRID_X*GRID_Y);
-			free(results);
+			if (results)
+				free(results);
 			active = 0;
 		}
 
@@ -2824,6 +2825,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			data = http_async_req_stop(http, &status, &data_size);
 			if (status == 200)
 			{
+				if (!data||!data_size) {
+					error_ui(vid_buf, 0, "Save data is empty (may be corrupt)");
+					break;
+				}
 				pixel *full_save = prerender_save(data, data_size, &imgw, &imgh);
 				if (full_save!=NULL) {
 					save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
@@ -2842,15 +2847,16 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		{
 			http_last_use_2 = time(NULL);
 			info_data = http_async_req_stop(http_2, &status_2, NULL);
-			if (status_2 == 200)
+			if (status_2 == 200 || !info_data)
 			{
 				info_ready = info_parse(info_data, info);
-				if (info_ready==-1) {
-					error_ui(vid_buf, 0, "Not found");
+				if (info_ready<=0) {
+					error_ui(vid_buf, 0, "Save info not found");
 					break;
 				}
 			}
-			free(info_data);
+			if (info_data)
+				free(info_data);
 			active_2 = 0;
 			free(http_2);
 			http_2 = NULL;
@@ -3546,7 +3552,7 @@ int execute_tagop(pixel *vid_buf, char *op, char *tag)
 		return 1;
 	}
 
-	if (result[2])
+	if (result && result[2])
 	{
 		strncpy(svf_tags, result+3, 255);
 		svf_id[15] = 0;
@@ -3604,14 +3610,16 @@ void execute_save(pixel *vid_buf)
 			free(result);
 		return;
 	}
-	if (result && strncmp(result, "OK", 2))
+	if (!result || strncmp(result, "OK", 2))
 	{
+		if (!result)
+			result = mystrdup("Could not save - no reply from server");
 		error_ui(vid_buf, 0, result);
 		free(result);
 		return;
 	}
 
-	if (result[2])
+	if (result && result[2])
 	{
 		strncpy(svf_id, result+3, 15);
 		svf_id[15] = 0;
