@@ -1,6 +1,7 @@
 import tpt
 import random
 import time
+import utils
 #                    example script
 
 def noise(typ,amount=50):
