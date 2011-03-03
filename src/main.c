@@ -1193,12 +1193,16 @@ char console_error[255] = "";
 
 //functions callable from python:
 static PyObject*
-emb_create(PyObject *self, PyObject *args)
+emb_create(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int x,y,t;
-    if(!PyArg_ParseTuple(args, "III:create",&x,&y,&t))
+    char *name = "";
+    char *kwlist[] = {"x","y","t","name", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "II|Is:create",kwlist, &x,&y,&t,&name))
         return NULL;
     //
+    if(strcmp(name,"")!=0)
+    	console_parse_type(name, &t, console_error);
     return Py_BuildValue("i",create_part(-1,x,y,t));
 }
 //sys_pause = !sys_pause
@@ -1384,14 +1388,14 @@ emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
 
 emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,life,j,x=-1,y=-1;
+    int i = -1,life,j=-1,x=-1,y=-1;
     char *name = "";
     char *type = "";
-    char *kwlist[] = {"setto", "from", "i", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "s|sIII:set_type",kwlist ,&type,&name,&i,&x,&y))
+    char *kwlist[] = {"setto", "settoint", "from", "i", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "|sIsIII:set_type",kwlist ,&type,&life,&name,&i,&x,&y))
         return NULL;
     //
-    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1 && j==-1)
 	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
 	console_parse_type(type, &life, console_error);
         if(strcmp(name,"all")==0)
@@ -1707,9 +1711,51 @@ emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 	}
         return Py_BuildValue("i",1);
 }
+emb_get_pmap(PyObject *self, PyObject *args)
+{
+    int x,y;
+    if(!PyArg_ParseTuple(args, "II:get_pmap",&x,&y))
+        return NULL;
+    //
+    if(x<0 || y<0 || x>=XRES || y>=YRES)
+	return Py_BuildValue("i",-1);
+
+    return Py_BuildValue("I",pmap[y][x]);
+}
+emb_get_prop(PyObject *self, PyObject *args)
+{
+    int i;
+    char *prop = "";
+    if(!PyArg_ParseTuple(args, "Is:get_pmap",&i,&prop))
+        return NULL;
+    //
+    if(parts[i].type)
+    {
+	if(strcmp(prop,"type")==0)
+		return Py_BuildValue("i",parts[i].type);
+	if(strcmp(prop,"life")==0)
+		return Py_BuildValue("i",parts[i].life);
+	if(strcmp(prop,"ctype")==0)
+		return Py_BuildValue("i",parts[i].ctype);
+	if(strcmp(prop,"temp")==0)
+		return Py_BuildValue("i",parts[i].temp);
+	if(strcmp(prop,"tmp")==0)
+		return Py_BuildValue("i",parts[i].tmp);
+	if(strcmp(prop,"vy")==0)
+		return Py_BuildValue("f",parts[i].vy);
+	if(strcmp(prop,"vx")==0)
+		return Py_BuildValue("f",parts[i].vx);
+	if(strcmp(prop,"x")==0)
+		return Py_BuildValue("i",parts[i].x);
+	if(strcmp(prop,"y")==0)
+		return Py_BuildValue("i",parts[i].y);
+    }
+
+    return Py_BuildValue("i",-1);
+}
 
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
-    {"create",		emb_create, 		METH_VARARGS,			"create a particle."},
+    {"create",		emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
     {"log", 		emb_log, 		METH_VARARGS,			"logs an error string to the console."},
     {"reset_pressure", 	emb_reset_pressure, 	METH_VARARGS,			"resets all the pressure."},
     {"reset_velocity", 	emb_reset_velocity, 	METH_VARARGS,			"resets all the velocity."},
@@ -1731,6 +1777,8 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"toggle_console", 	emb_toggle_console, 	METH_VARARGS,			"toggle the game console."},
     {"console_more", 	emb_console_more, 	METH_VARARGS,			"turns the more indicator on."},
     {"console_less", 	emb_console_less, 	METH_VARARGS,			"turns the more indicator off."},
+    {"get_pmap", 	emb_get_pmap, 		METH_VARARGS,			"get the pmap value."},
+    {"get_prop", 	emb_get_prop, 		METH_VARARGS,			"get some properties."},
     {NULL, NULL, 0, NULL}
 };
 
