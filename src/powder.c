@@ -1138,7 +1138,7 @@ int nearest_part(int ci, int t)
 
 void update_particles_i(pixel *vid, int start, int inc)
 {
-	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z, neighbors;
+	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z, neighbors, createdsomething;
 	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp, ctemph, ctempl;
 	int fin_x, fin_y, clear_x, clear_y;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
@@ -1345,14 +1345,14 @@ void update_particles_i(pixel *vid, int start, int inc)
 				if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !r&0xFF) || (r>>8)>=NPART)
 					continue;
 				for ( golnum = 1; golnum<=NGOL; golnum++)
-					for ( goldelete = 0; goldelete<9; goldelete++)
 					{
-						if (neighbors==goldelete&&gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
+						goldelete = neighbors;
+						if (gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
 						{
 							if (create_part(-1,nx,ny,goltype[golnum-1]))
 								createdsomething = 1;
 						}
-						else if (neighbors-1==goldelete&&gol[nx][ny]==golnum&&(grule[golnum][goldelete]==0||grule[golnum][goldelete]==2))//subtract 1 because it counted itself
+						else if (gol[nx][ny]==golnum&&(grule[golnum][goldelete-1]==0||grule[golnum][goldelete-1]==2))//subtract 1 because it counted itself
 						{
 							if(parts[r>>8].tmp==grule[golnum][9]-1)
 								parts[r>>8].tmp --;
@@ -2873,9 +2873,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
 		dw = 1;
 	}
 	if (c == PT_WIND)
-	{
 		return 1;
-	}
 	if (dw==1)
 	{
 		rx = rx/CELL;

@@ -3847,10 +3847,12 @@ struct command_history {
 };
 typedef struct command_history command_history;
 command_history *last_command = NULL;
+command_history *last_command2 = NULL;
 char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	int mx,my,b,cc,ci = -1;
 	pixel *old_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	command_history *currentcommand;
+	command_history *currentcommand2;
 	ui_edit ed;
 	ed.x = 15;
 	ed.y = 207;
@@ -3864,10 +3866,15 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	ed.cursor = 0;
 	//fillrect(vid_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
 	memcpy(old_buf,vid_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
-	fillrect(old_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
+	fillrect(old_buf, -1, -1, XRES+1, 220, 0, 0, 0, 190);
+	
+	currentcommand2 = malloc(sizeof(command_history));
+	memset(currentcommand2, 0, sizeof(command_history));
+	currentcommand2->prev_command = last_command2;
+	currentcommand2->command = mystrdup(error);
+	last_command2 = currentcommand2;
 	
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-	
 	cc = 0;
 	while(cc < 80){
 		fillrect(old_buf, -1, -1+cc, XRES+BARSIZE, 2, 0, 0, 0, 160-(cc*2));
@@ -3880,6 +3887,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 		my /= sdl_scale;
 		ed.focus = 1;
 
+		//clearrect(vid_buf, 0, 0, XRES+BARSIZE, 220);//anyway to make it transparent?
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 		draw_line(vid_buf, 0, 219, XRES+BARSIZE-1, 219, 228, 228, 228, XRES+BARSIZE);
 		drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python by Doxin)" //TODO: help command
@@ -3907,9 +3915,31 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 				break;
 			}
 		}
+		cc = 0;
+		currentcommand2 = last_command2;
+		while(cc < 10)
+		{
+			if(currentcommand2==NULL)
+				break;
+			drawtext(vid_buf, 215, 175-(cc*12), currentcommand2->command, 255, 225, 225, 255);
+			if(currentcommand2->prev_command!=NULL)
+			{
+				if(cc<9) {
+					currentcommand2 = currentcommand2->prev_command;
+				} else if(currentcommand2->prev_command!=NULL) {
+					free(currentcommand2->prev_command);
+					currentcommand2->prev_command = NULL;
+				}
+				cc++;
+			}
+			else
+			{
+				break;
+			}
+		}
 
-		if(error && ed.str[0]=='\0')
-			drawtext(vid_buf, 20, 207, error, 255, 127, 127, 200);
+		//if(error && ed.str[0]=='\0')
+			//drawtext(vid_buf, 20, 207, error, 255, 127, 127, 200);
 		if(console_more==0)
             drawtext(vid_buf, 5, 207, ">", 255, 255, 255, 240);
         else

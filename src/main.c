@@ -24,6 +24,8 @@
  */
 
 #include "Python.h"
+#include "pyconsole.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1189,12 +1191,16 @@ char console_error[255] = "";
 
 //functions callable from python:
 static PyObject*
-emb_create(PyObject *self, PyObject *args)
+emb_create(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int x,y,t;
-    if(!PyArg_ParseTuple(args, "III:create",&x,&y,&t))
+    char *name = "";
+    char *kwlist[] = {"x","y","t","name", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "II|Is:create",kwlist, &x,&y,&t,&name))
         return NULL;
     //
+    if(strcmp(name,"")!=0)
+    	console_parse_type(name, &t, console_error);
     return Py_BuildValue("i",create_part(-1,x,y,t));
 }
 //sys_pause = !sys_pause
@@ -1338,13 +1344,17 @@ emb_reset_sparks(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
-emb_set_life(PyObject *self, PyObject *args)
+emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i,life,j;
-    if(!PyArg_ParseTuple(args, "II:set_life",&j,&life))
+    int i = -1,life,j,x=-1,y=-1;
+    char *name = "";
+    char *kwlist[] = {"setto", "from", "i", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
         return NULL;
     //
-        if(j==-1)
+    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+        if(strcmp(name,"all")==0)
         {
             for(i=0; i<NPART; i++)
             {
@@ -1352,7 +1362,7 @@ emb_set_life(PyObject *self, PyObject *args)
                     parts[i].life = life;
             }
         }
-        else
+        else if(console_parse_type(name, &j, console_error))
         {
             for(i=0; i<NPART; i++)
             {
@@ -1360,16 +1370,33 @@ emb_set_life(PyObject *self, PyObject *args)
                     parts[i].life = life;
             }
         }
+	else if(i!=-1)
+	{
+		if(parts[i].type != PT_NONE)
+			parts[i].life = life;
+
+	}
+	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if(parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].life = life;
+	}
         return Py_BuildValue("i",1);
 }
 
-emb_set_type(PyObject *self, PyObject *args)
+emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i,life,j;
-    if(!PyArg_ParseTuple(args, "II:set_type",&j,&life))
+    int i = -1,life,j=-1,x=-1,y=-1;
+    char *name = "";
+    char *type = "";
+    char *kwlist[] = {"setto", "settoint", "from", "i", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "|sIsIII:set_type",kwlist ,&type,&life,&name,&i,&x,&y))
         return NULL;
     //
-        if(j==-1)
+    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1 && j==-1)
+	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	console_parse_type(type, &life, console_error);
+        if(strcmp(name,"all")==0)
         {
             for(i=0; i<NPART; i++)
             {
@@ -1377,7 +1404,7 @@ emb_set_type(PyObject *self, PyObject *args)
                     parts[i].type = life;
             }
         }
-        else
+        else if(console_parse_type(name, &j, console_error))
         {
             for(i=0; i<NPART; i++)
             {
@@ -1385,16 +1412,31 @@ emb_set_type(PyObject *self, PyObject *args)
                     parts[i].type = life;
             }
         }
+	else if(i!=-1)
+	{
+		if(parts[i].type != PT_NONE)
+			parts[i].type = life;
+
+	}
+	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if(parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].type = life;
+	}
         return Py_BuildValue("i",1);
 }
 
-emb_set_temp(PyObject *self, PyObject *args)
+emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i,life,j;
-    if(!PyArg_ParseTuple(args, "II:set_temp",&j,&life))
+    int i = -1,life,j,x=-1,y=-1;
+    char *name = "";
+    char *kwlist[] = {"setto", "from", "i", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
         return NULL;
     //
-        if(j==-1)
+    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+        if(strcmp(name,"all")==0)
         {
             for(i=0; i<NPART; i++)
             {
@@ -1402,7 +1444,7 @@ emb_set_temp(PyObject *self, PyObject *args)
                     parts[i].temp = life;
             }
         }
-        else
+        else if(console_parse_type(name, &j, console_error))
         {
             for(i=0; i<NPART; i++)
             {
@@ -1410,16 +1452,31 @@ emb_set_temp(PyObject *self, PyObject *args)
                     parts[i].temp = life;
             }
         }
+	else if(i!=-1)
+	{
+		if(parts[i].type != PT_NONE)
+			parts[i].temp = life;
+
+	}
+	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if(parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].temp = life;
+	}
         return Py_BuildValue("i",1);
 }
 
-emb_set_tmp(PyObject *self, PyObject *args)
+emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i,life,j;
-    if(!PyArg_ParseTuple(args, "II:set_tmp",&j,&life))
+    int i = -1,life,j,x=-1,y=-1;
+    char *name = "";
+    char *kwlist[] = {"setto", "from", "i", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
         return NULL;
     //
-        if(j==-1)
+    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+        if(strcmp(name,"all")==0)
         {
             for(i=0; i<NPART; i++)
             {
@@ -1427,7 +1484,7 @@ emb_set_tmp(PyObject *self, PyObject *args)
                     parts[i].tmp = life;
             }
         }
-        else
+        else if(console_parse_type(name, &j, console_error))
         {
             for(i=0; i<NPART; i++)
             {
@@ -1435,16 +1492,32 @@ emb_set_tmp(PyObject *self, PyObject *args)
                     parts[i].tmp = life;
             }
         }
+	else if(i!=-1)
+	{
+		if(parts[i].type != PT_NONE)
+			parts[i].tmp = life;
+
+	}
+	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if(parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].tmp = life;
+	}
         return Py_BuildValue("i",1);
 }
 
-emb_set_x(PyObject *self, PyObject *args)
+emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i,life,j;
-    if(!PyArg_ParseTuple(args, "II:set_x",&j,&life))
+    int i = -1,life,j,x=-1,y=-1;
+    char *name = "";
+    char *type = "";
+    char *kwlist[] = {"setto", "from", "i", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
         return NULL;
     //
-        if(j==-1)
+    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+        if(strcmp(name,"all")==0)
         {
             for(i=0; i<NPART; i++)
             {
@@ -1452,7 +1525,7 @@ emb_set_x(PyObject *self, PyObject *args)
                     parts[i].x = life;
             }
         }
-        else
+        else if(console_parse_type(name, &j, console_error))
         {
             for(i=0; i<NPART; i++)
             {
@@ -1460,16 +1533,31 @@ emb_set_x(PyObject *self, PyObject *args)
                     parts[i].x = life;
             }
         }
+	else if(i!=-1)
+	{
+		if(parts[i].type != PT_NONE)
+			parts[i].x = life;
+
+	}
+	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if(parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].x = life;
+	}
         return Py_BuildValue("i",1);
 }
 
-emb_set_y(PyObject *self, PyObject *args)
+emb_set_y(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i,life,j;
-    if(!PyArg_ParseTuple(args, "II:set_y",&j,&life))
+    int i = -1,life,j,x=-1,y=-1;
+    char *name = "";
+    char *kwlist[] = {"setto", "from", "i", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
         return NULL;
     //
-        if(j==-1)
+    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+        if(strcmp(name,"all")==0)
         {
             for(i=0; i<NPART; i++)
             {
@@ -1477,7 +1565,7 @@ emb_set_y(PyObject *self, PyObject *args)
                     parts[i].y = life;
             }
         }
-        else
+        else if(console_parse_type(name, &j, console_error))
         {
             for(i=0; i<NPART; i++)
             {
@@ -1485,16 +1573,34 @@ emb_set_y(PyObject *self, PyObject *args)
                     parts[i].y = life;
             }
         }
+	else if(i!=-1)
+	{
+		if(parts[i].type != PT_NONE)
+			parts[i].y = life;
+
+	}
+	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if(parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].y = life;
+	}
         return Py_BuildValue("i",1);
 }
 
-emb_set_ctype(PyObject *self, PyObject *args)
+emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i,life,j;
-    if(!PyArg_ParseTuple(args, "II:set_ctype",&j,&life))
+    int i = -1,life,j,x=-1,y=-1;
+    char *name = "";
+    char *type = "";
+    char *kwlist[] = {"setto", "toctypeint", "from", "i", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "s|IsIII:set_type",kwlist ,&type, &life, &name,&i,&x,&y))
         return NULL;
     //
-        if(j==-1)
+    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	if(!life)
+		console_parse_type(type, &life, console_error);
+        if(strcmp(name,"all")==0)
         {
             for(i=0; i<NPART; i++)
             {
@@ -1502,7 +1608,7 @@ emb_set_ctype(PyObject *self, PyObject *args)
                     parts[i].ctype = life;
             }
         }
-        else
+        else if(console_parse_type(name, &j, console_error))
         {
             for(i=0; i<NPART; i++)
             {
@@ -1510,16 +1616,31 @@ emb_set_ctype(PyObject *self, PyObject *args)
                     parts[i].ctype = life;
             }
         }
+	else if(i!=-1)
+	{
+		if(parts[i].type != PT_NONE)
+			parts[i].ctype = life;
+
+	}
+	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if(parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].ctype = life;
+	}
         return Py_BuildValue("i",1);
 }
 
-emb_set_vx(PyObject *self, PyObject *args)
+emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i,life,j;
-    if(!PyArg_ParseTuple(args, "II:set_vx",&j,&life))
+    int i = -1,life,j,x=-1,y=-1;
+    char *name = "";
+    char *kwlist[] = {"setto", "from", "i", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
         return NULL;
     //
-        if(j==-1)
+    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+        if(strcmp(name,"all")==0)
         {
             for(i=0; i<NPART; i++)
             {
@@ -1527,7 +1648,7 @@ emb_set_vx(PyObject *self, PyObject *args)
                     parts[i].vx = life;
             }
         }
-        else
+        else if(console_parse_type(name, &j, console_error))
         {
             for(i=0; i<NPART; i++)
             {
@@ -1535,16 +1656,31 @@ emb_set_vx(PyObject *self, PyObject *args)
                     parts[i].vx = life;
             }
         }
+	else if(i!=-1)
+	{
+		if(parts[i].type != PT_NONE)
+			parts[i].vx = life;
+
+	}
+	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if(parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].vx = life;
+	}
         return Py_BuildValue("i",1);
 }
 
-emb_set_vy(PyObject *self, PyObject *args)
+emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i,life,j;
-    if(!PyArg_ParseTuple(args, "II:set_vy",&j,&life))
+    int i = -1,life,j,x=-1,y=-1;
+    char *name = "";
+    char *kwlist[] = {"setto", "from", "i", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
         return NULL;
     //
-        if(j==-1)
+    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+        if(strcmp(name,"all")==0)
         {
             for(i=0; i<NPART; i++)
             {
@@ -1552,7 +1688,7 @@ emb_set_vy(PyObject *self, PyObject *args)
                     parts[i].vy = life;
             }
         }
-        else
+        else if(console_parse_type(name, &j, console_error))
         {
             for(i=0; i<NPART; i++)
             {
@@ -1560,32 +1696,87 @@ emb_set_vy(PyObject *self, PyObject *args)
                     parts[i].vy = life;
             }
         }
+	else if(i!=-1)
+	{
+		if(parts[i].type != PT_NONE)
+			parts[i].vy = life;
+
+	}
+	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if(parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].vy = life;
+	}
         return Py_BuildValue("i",1);
+}
+emb_get_pmap(PyObject *self, PyObject *args)
+{
+    int x,y;
+    if(!PyArg_ParseTuple(args, "II:get_pmap",&x,&y))
+        return NULL;
+    //
+    if(x<0 || y<0 || x>=XRES || y>=YRES)
+	return Py_BuildValue("i",-1);
+
+    return Py_BuildValue("I",pmap[y][x]);
+}
+emb_get_prop(PyObject *self, PyObject *args)
+{
+    int i;
+    char *prop = "";
+    if(!PyArg_ParseTuple(args, "Is:get_pmap",&i,&prop))
+        return NULL;
+    //
+    if(parts[i].type)
+    {
+	if(strcmp(prop,"type")==0)
+		return Py_BuildValue("i",parts[i].type);
+	if(strcmp(prop,"life")==0)
+		return Py_BuildValue("i",parts[i].life);
+	if(strcmp(prop,"ctype")==0)
+		return Py_BuildValue("i",parts[i].ctype);
+	if(strcmp(prop,"temp")==0)
+		return Py_BuildValue("i",parts[i].temp);
+	if(strcmp(prop,"tmp")==0)
+		return Py_BuildValue("i",parts[i].tmp);
+	if(strcmp(prop,"vy")==0)
+		return Py_BuildValue("f",parts[i].vy);
+	if(strcmp(prop,"vx")==0)
+		return Py_BuildValue("f",parts[i].vx);
+	if(strcmp(prop,"x")==0)
+		return Py_BuildValue("i",parts[i].x);
+	if(strcmp(prop,"y")==0)
+		return Py_BuildValue("i",parts[i].y);
+    }
+
+    return Py_BuildValue("i",-1);
 }
 
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
-    {"create", emb_create, METH_VARARGS,"create a particle."},
-    {"log", emb_log, METH_VARARGS,"logs an error string to the console."},
-    {"reset_pressure", emb_reset_pressure, METH_VARARGS,"resets all the pressure."},
-    {"reset_velocity", emb_reset_velocity, METH_VARARGS,"resets all the velocity."},
-    {"reset_sparks", emb_reset_sparks, METH_VARARGS,"resets all the sparks."},
-    {"set_life", emb_set_life, METH_VARARGS,"sets life of a specified particle."},
-    {"set_type", emb_set_type, METH_VARARGS,"sets type of a specified particle."},
-    {"set_temp", emb_set_temp, METH_VARARGS,"sets temp of a specified particle."},
-    {"set_tmp", emb_set_tmp, METH_VARARGS,"sets tmp of a specified particle."},
-    {"set_x", emb_set_x, METH_VARARGS,"sets x of a specified particle."},
-    {"set_y", emb_set_y, METH_VARARGS,"sets y of a specified particle."},
-    {"set_ctype", emb_set_y, METH_VARARGS,"sets ctype of a specified particle."},
-    {"set_vx", emb_set_vx, METH_VARARGS,"sets vx of a specified particle."},
-    {"set_vy", emb_set_vy, METH_VARARGS,"sets vy of a specified particle."},
-    {"pause", emb_pause, METH_VARARGS,"pause the game."},
-    {"unpause", emb_unpause, METH_VARARGS,"unpause the game."},
-    {"toggle_pause", emb_toggle_pause, METH_VARARGS,"toggle game pause."},
-    {"open_console", emb_open_console, METH_VARARGS,"open the game console."},
-    {"close_console", emb_close_console, METH_VARARGS,"close the game console."},
-    {"toggle_console", emb_toggle_console, METH_VARARGS,"toggle the game console."},
-    {"console_more", emb_console_more, METH_VARARGS,"turns the more indicator on."},
-    {"console_less", emb_console_less, METH_VARARGS,"turns the more indicator off."},
+    {"create",		emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
+    {"log", 		emb_log, 		METH_VARARGS,			"logs an error string to the console."},
+    {"reset_pressure", 	emb_reset_pressure, 	METH_VARARGS,			"resets all the pressure."},
+    {"reset_velocity", 	emb_reset_velocity, 	METH_VARARGS,			"resets all the velocity."},
+    {"reset_sparks", 	emb_reset_sparks, 	METH_VARARGS,			"resets all the sparks."},
+    {"set_life",	emb_set_life, 		METH_VARARGS|METH_KEYWORDS,	"sets life of a specified particle."},
+    {"set_type", 	emb_set_type, 		METH_VARARGS|METH_KEYWORDS,	"sets type of a specified particle."},
+    {"set_temp", 	emb_set_temp, 		METH_VARARGS|METH_KEYWORDS,	"sets temp of a specified particle."},
+    {"set_tmp", 	emb_set_tmp, 		METH_VARARGS|METH_KEYWORDS,	"sets tmp of a specified particle."},
+    {"set_x", 		emb_set_x, 		METH_VARARGS|METH_KEYWORDS,	"sets x of a specified particle."},
+    {"set_y", 		emb_set_y, 		METH_VARARGS|METH_KEYWORDS,	"sets y of a specified particle."},
+    {"set_ctype", 	emb_set_y, 		METH_VARARGS|METH_KEYWORDS,	"sets ctype of a specified particle."},
+    {"set_vx", 		emb_set_vx, 		METH_VARARGS|METH_KEYWORDS,	"sets vx of a specified particle."},
+    {"set_vy", 		emb_set_vy, 		METH_VARARGS|METH_KEYWORDS,	"sets vy of a specified particle."},
+    {"pause", 		emb_pause, 		METH_VARARGS,			"pause the game."},
+    {"unpause", 	emb_unpause, 		METH_VARARGS,			"unpause the game."},
+    {"toggle_pause", 	emb_toggle_pause, 	METH_VARARGS,			"toggle game pause."},
+    {"open_console", 	emb_open_console, 	METH_VARARGS,			"open the game console."},
+    {"close_console", 	emb_close_console, 	METH_VARARGS,			"close the game console."},
+    {"toggle_console", 	emb_toggle_console, 	METH_VARARGS,			"toggle the game console."},
+    {"console_more", 	emb_console_more, 	METH_VARARGS,			"turns the more indicator on."},
+    {"console_less", 	emb_console_less, 	METH_VARARGS,			"turns the more indicator off."},
+    {"get_pmap", 	emb_get_pmap, 		METH_VARARGS,			"get the pmap value."},
+    {"get_prop", 	emb_get_prop, 		METH_VARARGS,			"get some properties."},
     {NULL, NULL, 0, NULL}
 };
 
@@ -1639,11 +1830,13 @@ int main(int argc, char *argv[])
     PyRun_SimpleString("import sys\nsys.path.append('.')");
     PyRun_SimpleString("print 'python present.'");
     //load the console module and whatnot
-    pname=PyString_FromString("tpt_console");//create string object
-    pmodule = PyImport_Import(pname);//import module
+    //pname=PyString_FromString("tpt_console");//create string object
+    //pmodule = PyImport_Import(pname);//import module
+    PyObject *tpt_console_obj = PyMarshal_ReadObjectFromString(tpt_console_pyc+8, sizeof(tpt_console_pyc)-8);
+    pmodule=PyImport_ExecCodeModule("tpt_console", tpt_console_obj);
     if(pmodule!=NULL)
     {
-        Py_DECREF(pname);//throw away the string object
+        //Py_DECREF(pname);//throw away the string object
         pfunc=PyObject_GetAttrString(pmodule,"handle");//get the handler function
         if(pfunc && PyCallable_Check(pfunc))//check if it's really a function
         {
@@ -2885,9 +3078,7 @@ int main(int argc, char *argv[])
 									}
 						}
 						else
-						{
 							create_line(lx, ly, x, y, bsx, bsy, c);
-						}
 						lx = x;
 						ly = y;
 					}
@@ -2912,7 +3103,7 @@ int main(int argc, char *argv[])
 					{
 						if (sdl_mod & (KMOD_CAPS))
 							c = 0;
-						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&c!=PT_WIND&&!REPLACE_MODE)
+						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=PT_WIND)
 							flood_parts(x, y, c, -1, -1);
 						if (c==SPC_HEAT || c==SPC_COOL)
 							create_parts(x, y, bsx, bsy, c);

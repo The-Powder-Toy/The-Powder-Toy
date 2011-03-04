@@ -16,6 +16,8 @@
 
 #define THUMB_CACHE_SIZE 256
 
+//#define pyconsole
+
 #define IMGCONNS 3
 #define TIMEOUT 100
 #define HTTP_TIMEOUT 10
