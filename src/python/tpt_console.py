@@ -75,7 +75,17 @@ def _handle(txt):
         except Exception as ex:
             error(ex)
 
+#optional key handler:
+"""def keypress(key):
+    try:
+        _key(key)
+    except Exception as ex:
+        error(ex)"""
+def _key(key):
+    print "key %s"%key
 #optional step handler:
+
+"""
 def step():
     try:
         a=handle.glob
@@ -84,7 +94,7 @@ def step():
     try:
         _step()
     except Exception as ex:
-        error(ex)
+        error(ex)"""
         
 def _step():
     try:
@@ -94,9 +104,20 @@ def _step():
         step.i=0
         step.txt="!FUCK YEAH!"
     #toggle_pause()
+    mouse=tpt.get_mouse()
+    step.txt=repr(mouse)
     xx=50+abs(25-(step.i%50))
-    w=tpt.string_get_width(step.txt)+16
-    tpt.draw_fillrect(xx-8,92,w,32,0,0,0,128)
+    w=tpt.get_width(step.txt)+16
+    r=0
+    g=0
+    b=0
+    if(mouse[0]>xx-8 and mouse[0]<xx+w-8 and mouse[1]>92 and mouse[1]<92+32):
+        r=255
+    if(mouse[2][0]):
+        g=255
+    if(mouse[2][2]):
+        b=255
+    tpt.draw_fillrect(xx-8,92,w,32,r,g,b,128)
     tpt.draw_rect(xx-8,92,w,32,255,255,255)
     tpt.draw_text(xx,100,step.txt,255,255,255)
     step.i+=1

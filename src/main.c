@@ -1817,12 +1817,25 @@ emb_draw_fillrect(PyObject *self, PyObject *args)
     return Py_BuildValue("i",-1);
 }
 //int textwidth(char *s)
-emb_string_get_width(PyObject *self, PyObject *args)
+emb_get_width(PyObject *self, PyObject *args)
 {
     char *txt;
-    if(!PyArg_ParseTuple(args, "s:",&txt))
+    if(!PyArg_ParseTuple(args, "s:get_width",&txt))
         return NULL;
     return Py_BuildValue("i",textwidth(txt));
+}
+
+//SDL_GetMouseState(&x, &y)
+emb_get_mouse(PyObject *self, PyObject *args)
+{
+    int x,y,mask,b1,b2,b3;
+    if(!PyArg_ParseTuple(args, ":get_mouse"))
+        return NULL;
+    mask=SDL_GetMouseState(&x, &y);
+    b1=mask&SDL_BUTTON(1);
+    b2=mask&SDL_BUTTON(2);
+    b3=mask&SDL_BUTTON(3);
+    return Py_BuildValue("(ii(iii))",x,y,b1,b2,b3);
 }
 
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
@@ -1854,7 +1867,8 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"draw_text",    emb_draw_text,       METH_VARARGS,           "draw some text."},
     {"draw_rect",    emb_draw_rect,       METH_VARARGS,           "draw a rect."},
     {"draw_fillrect",    emb_draw_fillrect,       METH_VARARGS,           "draw a rect."},
-    {"string_get_width",    emb_string_get_width,       METH_VARARGS,           "get string width."},
+    {"get_width",    emb_get_width,       METH_VARARGS,           "get string width."},
+    {"get_mouse",    emb_get_mouse,       METH_VARARGS,           "get mouse status."},
     {NULL, NULL, 0, NULL}
 };
 
@@ -1891,7 +1905,7 @@ int main(int argc, char *argv[])
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
 	GSPEED = 1;
-    PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep;
+    PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep,*pkey;
 
 	/* Set 16-bit stereo audio at 22Khz */
 	fmt.freq = 22050;
@@ -1927,14 +1941,23 @@ int main(int argc, char *argv[])
         }
         
         pstep=PyObject_GetAttrString(pmodule,"step");//get the handler function
-        if(pstep && PyCallable_Check(pfunc))//check if it's really a function
+        if(pstep && PyCallable_Check(pstep))//check if it's really a function
         {
             printf("step function found.\n");
         }
         else
         {
             printf("unable to find step function. ignoring.\n");
-            //return -1;
+        }
+        
+        pkey=PyObject_GetAttrString(pmodule,"keypress");//get the handler function
+        if(pstep && PyCallable_Check(pkey))//check if it's really a function
+        {
+            printf("key function found.\n");
+        }
+        else
+        {
+            printf("unable to find key function. ignoring.\n");
         }
     }
     else
@@ -2206,7 +2229,20 @@ int main(int argc, char *argv[])
 			}
 			do_s_check = (do_s_check+1) & 15;
 		}
-
+        
+        if(pkey!=NULL && sdl_key!=NULL)
+        {
+            pargs=Py_BuildValue("(c)",sdl_key);
+            pvalue = PyObject_CallObject(pkey, pargs);
+            Py_DECREF(pargs);
+            pargs=NULL;
+            if(pvalue==NULL)
+                strcpy(console_error,"failed to execute key code.");
+            //Py_DECREF(pvalue);
+            //puts("a");
+            pvalue=NULL;
+        }
+        
 		if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
 		{
 			if (confirm_ui(vid_buf, "You are about to quit", "Are you sure you want to quit?", "Quit"))
