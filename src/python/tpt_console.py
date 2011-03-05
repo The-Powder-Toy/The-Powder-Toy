@@ -89,8 +89,14 @@ def step():
 def _step():
     try:
         a=step.i
+        a=step.txt
     except:
         step.i=0
+        step.txt="!FUCK YEAH!"
     #toggle_pause()
-    tpt.draw_text(step.i%100+100,100,"FUCK YEAH!",255,255,255)
+    xx=50+abs(25-(step.i%50))
+    w=tpt.string_get_width(step.txt)+16
+    tpt.draw_fillrect(xx-8,92,w,32,0,0,0,128)
+    tpt.draw_rect(xx-8,92,w,32,255,255,255)
+    tpt.draw_text(xx,100,step.txt,255,255,255)
     step.i+=1

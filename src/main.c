@@ -1758,7 +1758,7 @@ emb_draw_pixel(PyObject *self, PyObject *args)
 {
     int x,y,r,g,b,a;
     a=255;
-    if(!PyArg_ParseTuple(args, "IIIII|I:drawpixel",&x,&y,&r,&g,&b,&a))
+    if(!PyArg_ParseTuple(args, "IIIII|I:draw_pixel",&x,&y,&r,&g,&b,&a))
         return NULL;
     
     if(vid_buf!=NULL)
@@ -1776,7 +1776,7 @@ emb_draw_text(PyObject *self, PyObject *args)
     int x,y,r,g,b,a;
     char *txt;
     a=255;
-    if(!PyArg_ParseTuple(args, "IIsIII|I:drawpixel",&x,&y,&txt,&r,&g,&b,&a))
+    if(!PyArg_ParseTuple(args, "IIsIII|I:draw_text",&x,&y,&txt,&r,&g,&b,&a))
         return NULL;
     if(vid_buf!=NULL)
     {
@@ -1784,6 +1784,45 @@ emb_draw_text(PyObject *self, PyObject *args)
         return Py_BuildValue("i",1);
     }
     return Py_BuildValue("i",-1);
+}
+
+//drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
+emb_draw_rect(PyObject *self, PyObject *args)
+{
+    int x,y,w,h,r,g,b,a;
+    a=255;
+    if(!PyArg_ParseTuple(args, "IIIIIII|I:draw_rect",&x,&y,&w,&h,&r,&g,&b,&a))
+        return NULL;
+    if(vid_buf!=NULL)
+    {
+        drawrect(vid_buf,x,y,w,h,r,g,b,a);
+        //fillrect
+        return Py_BuildValue("i",1);
+    }
+    return Py_BuildValue("i",-1);
+}
+
+emb_draw_fillrect(PyObject *self, PyObject *args)
+{
+    int x,y,w,h,r,g,b,a;
+    a=255;
+    if(!PyArg_ParseTuple(args, "IIIIIII|I:draw_fillrect",&x,&y,&w,&h,&r,&g,&b,&a))
+        return NULL;
+    if(vid_buf!=NULL)
+    {
+        fillrect(vid_buf,x,y,w,h,r,g,b,a);
+        //fillrect
+        return Py_BuildValue("i",1);
+    }
+    return Py_BuildValue("i",-1);
+}
+//int textwidth(char *s)
+emb_string_get_width(PyObject *self, PyObject *args)
+{
+    char *txt;
+    if(!PyArg_ParseTuple(args, "s:",&txt))
+        return NULL;
+    return Py_BuildValue("i",textwidth(txt));
 }
 
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
@@ -1813,6 +1852,9 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"get_prop", 	emb_get_prop, 		METH_VARARGS,			"get some properties."},
     {"draw_pixel",    emb_draw_pixel,       METH_VARARGS,           "draw a pixel."},
     {"draw_text",    emb_draw_text,       METH_VARARGS,           "draw some text."},
+    {"draw_rect",    emb_draw_rect,       METH_VARARGS,           "draw a rect."},
+    {"draw_fillrect",    emb_draw_fillrect,       METH_VARARGS,           "draw a rect."},
+    {"string_get_width",    emb_string_get_width,       METH_VARARGS,           "get string width."},
     {NULL, NULL, 0, NULL}
 };
 
