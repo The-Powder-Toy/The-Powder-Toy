@@ -75,6 +75,7 @@ def _handle(txt):
         except Exception as ex:
             error(ex)
 
+#optional step handler:
 def step():
     try:
         a=handle.glob
@@ -86,6 +87,5 @@ def step():
         error(ex)
         
 def _step():
-    #print "handling '%s'"%txt
-    #print "step"
-    toggle_pause()
+    #toggle_pause()
+    tpt.draw_pixel(200,200,254,254,254)

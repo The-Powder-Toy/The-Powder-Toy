@@ -55,6 +55,8 @@
 #include <air.h>
 #include <icon.h>
 
+pixel *vid_buf;
+
 #define NUM_SOUNDS 2
 struct sample {
 	Uint8 *data;
@@ -1752,6 +1754,15 @@ emb_get_prop(PyObject *self, PyObject *args)
     return Py_BuildValue("i",-1);
 }
 
+emb_draw_pixel(PyObject *self, PyObject *args)
+{
+    int x,y,r,g,b,a;
+    a=255;
+    if(!PyArg_ParseTuple(args, "IIIII|I:drawpixel",&x,&y,&r,&g,&b,&a))
+        return NULL;
+    drawpixel(vid_buf,x,y,r,g,b,a);
+}
+
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
     {"create",		emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
     {"log", 		emb_log, 		METH_VARARGS,			"logs an error string to the console."},
@@ -1777,6 +1788,7 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"console_less", 	emb_console_less, 	METH_VARARGS,			"turns the more indicator off."},
     {"get_pmap", 	emb_get_pmap, 		METH_VARARGS,			"get the pmap value."},
     {"get_prop", 	emb_get_prop, 		METH_VARARGS,			"get some properties."},
+    {"draw_pixel",    emb_draw_pixel,       METH_VARARGS,           "draw a pixel."},
     {NULL, NULL, 0, NULL}
 };
 
@@ -1794,9 +1806,9 @@ int main(int argc, char *argv[])
 	int FPS = 0;
 	int pastFPS = 0;
 	int past = 0;
-	pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	void *http_ver_check;
 	void *http_session_check = NULL;
+    pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	char *ver_data=NULL, *check_data=NULL, *tmp;
     //char console_error[255] = "";
 	int i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
