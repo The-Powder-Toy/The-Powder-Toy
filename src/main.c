@@ -1813,7 +1813,7 @@ int main(int argc, char *argv[])
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
 	GSPEED = 1;
-    PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs;
+    PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep;
 
 	/* Set 16-bit stereo audio at 22Khz */
 	fmt.freq = 22050;
@@ -1840,26 +1840,28 @@ int main(int argc, char *argv[])
         pfunc=PyObject_GetAttrString(pmodule,"handle");//get the handler function
         if(pfunc && PyCallable_Check(pfunc))//check if it's really a function
         {
-            //it is
             printf("python console ready to go.\n");
-            /*pargs=Py_BuildValue("(s)","test");
-            pvalue = PyObject_CallObject(pfunc, pargs);
-            Py_DECREF(pargs);
-            pargs=NULL;
-            //Py_DECREF(pvalue);
-            //puts("a");
-            pvalue=NULL;*/
         }
         else
         {
-            //oops! mangled console.py?
             printf("unable to find handle function, mangled console.py?\n");
             return -1;
+        }
+        
+        pstep=PyObject_GetAttrString(pmodule,"step");//get the handler function
+        if(pstep && PyCallable_Check(pfunc))//check if it's really a function
+        {
+            printf("step function found.\n");
+        }
+        else
+        {
+            printf("unable to find step function. ignoring.\n");
+            //return -1;
         }
     }
     else
     {
-        printf("unable to find console module, missing file?\n");
+        printf("unable to find console module, missing file or mangled console.py?\n");
         return -1;
     }
     
@@ -3397,6 +3399,19 @@ int main(int argc, char *argv[])
 				hud_enable = 1;
 		}
 		
+		//execute python step hook
+		if(pstep!=NULL)
+        {
+            pargs=Py_BuildValue("()");
+            pvalue = PyObject_CallObject(pstep, pargs);
+            Py_DECREF(pargs);
+            pargs=NULL;
+            if(pvalue==NULL)
+                strcpy(console_error,"failed to execute step code.");
+            //Py_DECREF(pvalue);
+            //puts("a");
+            pvalue=NULL;
+        }
 		sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
 		//Setting an element for the stick man
@@ -3414,7 +3429,6 @@ int main(int argc, char *argv[])
 			else
 				player2[2] = PT_DUST;
 		}
-
 	}
 	SDL_CloseAudio();
 	http_done();

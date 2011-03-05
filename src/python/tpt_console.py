@@ -1,6 +1,5 @@
 import tpt
 from tpt import *
-from utils import *
 import sys
 import code
 import ctypes
@@ -75,3 +74,18 @@ def _handle(txt):
             exec txt in handle.glob
         except Exception as ex:
             error(ex)
+
+def step():
+    try:
+        a=handle.glob
+    except:
+        clean()
+    try:
+        _step()
+    except Exception as ex:
+        error(ex)
+        
+def _step():
+    #print "handling '%s'"%txt
+    #print "step"
+    toggle_pause()
