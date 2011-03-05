@@ -75,49 +75,21 @@ def _handle(txt):
         except Exception as ex:
             error(ex)
 
-#optional key handler:
-"""def keypress(key):
-    try:
-        _key(key)
-    except Exception as ex:
-        error(ex)"""
-def _key(key):
-    print "key %s"%key
-#optional step handler:
 
-"""
+_extensions=[]
+def loadext(fname):
+    _extensions.append(__import__(fname))
+
+def keypress(key):
+    try:
+        for item in _extensions:
+            item.key(key)
+    except Exception as ex:
+        error(ex)
+
 def step():
     try:
-        a=handle.glob
-    except:
-        clean()
-    try:
-        _step()
+        for item in _extensions:
+            item.step()
     except Exception as ex:
-        error(ex)"""
-        
-def _step():
-    try:
-        a=step.i
-        a=step.txt
-    except:
-        step.i=0
-        step.txt="!FUCK YEAH!"
-    #toggle_pause()
-    mouse=tpt.get_mouse()
-    step.txt=repr(mouse)
-    xx=50+abs(25-(step.i%50))
-    w=tpt.get_width(step.txt)+16
-    r=0
-    g=0
-    b=0
-    if(mouse[0]>xx-8 and mouse[0]<xx+w-8 and mouse[1]>92 and mouse[1]<92+32):
-        r=255
-    if(mouse[2][0]):
-        g=255
-    if(mouse[2][2]):
-        b=255
-    tpt.draw_fillrect(xx-8,92,w,32,r,g,b,128)
-    tpt.draw_rect(xx-8,92,w,32,255,255,255)
-    tpt.draw_text(xx,100,step.txt,255,255,255)
-    step.i+=1
+        error(ex)
