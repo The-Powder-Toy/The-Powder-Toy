@@ -2,6 +2,7 @@ import tpt
 import sys
 import time
 import socket
+import tpt_console
 
 HOST="irc.freenode.net"
 PORT=6667
@@ -19,6 +20,21 @@ s=None
 rec=[("connected.",255,0,0,128)]
 readbuffer=""
 
+def console_handle(txt):
+    """
+    :doxin!~lieuwe@unaffiliated/lieuwe JOIN :#foobar7
+    :doxin!~lieuwe@unaffiliated/lieuwe PRIVMSG #foobar7 :there
+    :doxin!~lieuwe@unaffiliated/lieuwe PRIVMSG #foobar7 :ACTION is fat
+    """
+    lst=txt.split(" ")
+    if(lst[0]=="/me"):
+        rec.append(("%s %s"%(NICK,txt[4:]),255,0,255,128))
+        raw(s,"PRIVMSG %s :\x01ACTION %s\x01"%(CHANNEL,txt[4:]))
+        tpt.console_close()
+    else:
+        rec.append(("<%s>: %s"%(NICK,txt),255,255,0,128))
+        raw(s,"PRIVMSG %s :%s"%(CHANNEL,txt))
+        tpt.console_close()
 
 def key(key) :
     #print "got %s"%key
@@ -29,11 +45,14 @@ def step():
     frame+=1
     if(frame==1):
         tpt.console_close()
+        #lets see if we can seize the console:
+        tpt_console._handle=console_handle
     if(frame==2):
         tpt.draw_fillrect(0,0,612,384,0,0,0,128)
         tpt.draw_text(32,32,"opening connection\nhold on to your pants.",255,255,255)
     if(frame==3):
-        s=socket.socket( )
+        s=socket.socket()
+        s.settimeout(5)
         s.connect((HOST, PORT))
         raw(s,"NICK %s" % NICK)
         raw(s,"USER %s %s bla :%s" % (IDENT, HOST, REALNAME))
@@ -52,13 +71,16 @@ def step():
 
             for line in temp:
                 line=line.strip()
-                #print line
+                #print repr(line)
                 line=line.split()
                 if(line[1]=="PRIVMSG"):
                     #:doxin!~lieuwe@unaffiliated/lieuwe PRIVMSG doxin[tpt] :some shit
                     frm=line[0][1:].partition("!")[0]
                     msg=' '.join(line[3:])[1:]
                     tmp=["<",frm,"> ",msg]
+                    if(msg[0]=="\x01" and msg[-1]=="\x01"):
+                        msg=msg[8:-1]#ACTION
+                        tmp=[frm," ",msg]
                     if(line[2]==NICK):
                         rec.append((''.join(tmp),255,255,255,255))
                     else:
