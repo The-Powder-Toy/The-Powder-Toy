@@ -87,5 +87,10 @@ def step():
         error(ex)
         
 def _step():
+    try:
+        a=step.i
+    except:
+        step.i=0
     #toggle_pause()
-    tpt.draw_pixel(200,200,254,254,254)
+    tpt.draw_text(step.i%100+100,100,"FUCK YEAH!",255,255,255)
+    step.i+=1
