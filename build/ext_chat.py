@@ -6,9 +6,14 @@ import tpt_console
 
 HOST="irc.freenode.net"
 PORT=6667
-NICK="doxin[tpt]"
-IDENT="doxin"
-REALNAME="lieuwe"
+name=tpt.get_name()
+print "name is %s"%repr(name)
+if(name==""):
+    #fuck. abort?
+    raise SystemExit("please log in!")
+NICK=name+"[tpt]"
+IDENT=name
+REALNAME=name
 CHANNEL="#powder"
 readbuffer=""
 
@@ -19,6 +24,7 @@ frame=0
 s=None
 rec=[("connected.",255,0,0,128)]
 readbuffer=""
+namelist=[]
 
 def console_handle(txt):
     """
@@ -41,7 +47,7 @@ def key(key) :
     pass
 
 def step():
-    global frame,s,rec,readbuffer
+    global frame,s,rec,readbuffer,namelist
     frame+=1
     if(frame==1):
         tpt.console_close()
@@ -85,13 +91,46 @@ def step():
                         rec.append((''.join(tmp),255,255,255,255))
                     else:
                         rec.append((''.join(tmp),255,255,255,128))
-                if(line[0]=="PING"):
+                elif(line[0]=="PING"):
                     raw(s,"PONG %s"%line[1])
+                elif(line[1]=="353"):
+                    #:leguin.freenode.net 353 doxin[tpt] = #powder :doxin[tpt] ZebraineZ _-_Rafael_-_ doxin bildramer BlueMaxima TheRazorsEDGE raj-k webb|AP where @devast8a Merbo FrozenKnight EppyMoon EvilJStoker Mortvert SpitfireWP @frankbro Ares
+                    names=line[4:]
+                    namelist=[]
+                    for item in names:
+                        item=item.strip()
+                        r=255
+                        g=255
+                        b=255
+                        if(item[0]==":"):
+                            item=item[1:]
+                        elif(item[0]=="@"):
+                            g=0
+                            b=0
+                        namelist.append((item,r,g,b,128))
+                elif(line[1]=="JOIN"):
+                    #':savask!~savask@95-190-25-195-xdsl-dynamic.kuzbass.net JOIN :#powder'
+                    tmp=line[0][1:].partition("!")[0]
+                    namelist.append(tmp)
+                    rec.append(("%s joined"%name,0,255,0,128))
+                elif(line[1]=="part"):
+                    #':savask!~savask@95-190-25-195-xdsl-dynamic.kuzbass.net PART #powder :"Leaving."'
+                    tmp=line[0][1:].partition("!")[0]
+                    msg=' '.join(line[2:])[1:]
+                    if(tmp in namelist):
+                        namelist.remove(tmp)
+                        rec.append("%s parted: %s"%(name,msg),0,255,0,128)
+
+                    
     
         yy=32
         if(len(rec)>20):
-            rec=rec[20:]
+            rec=rec[-20:]
         for item in rec:
             tpt.draw_text(8,yy,item[0],item[1],item[2],item[3],item[4])
+            yy+=8
+        yy=32
+        for item in namelist:
+            tpt.draw_text(604-tpt.get_width(item[0]),yy,item[0],item[1],item[2],item[3],item[4])
             yy+=8
 
