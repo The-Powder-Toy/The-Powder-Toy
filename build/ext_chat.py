@@ -11,22 +11,25 @@ print "name is %s"%repr(name)
 if(name==""):
     #fuck. abort?
     raise SystemExit("please log in!")
-NICK=name+"[tpt]"
-IDENT=name+"[tpt]"
-REALNAME=name
-CHANNEL="#foobar7"
-readbuffer=""
 
 def raw(s,st):
     s.send("%s\n\r"%st)
 
 def init():
-    global frame,s,rec,readbuffer,namelist
+    global frame,s,rec,readbuffer,namelist,typing,typed,IDENT,NICK
+    global REALNAME,CHANNEL
     frame=0
     s=None
-    rec=[("connected.",255,0,0,128)]
+    rec=([("",0,0,0,255)]*20)+[("connected.",255,0,0,128)]
     readbuffer=""
     namelist=[]
+    typing=False
+    typed=""
+    NICK=name+"[tpt]"
+    IDENT=name+"[tpt]"
+    REALNAME=name
+    CHANNEL="#foobar7"
+    readbuffer=""
 
 def exit():
     raw(s,"QUIT")
@@ -48,9 +51,50 @@ def console_handle(txt):
         raw(s,"PRIVMSG %s :%s"%(CHANNEL,txt))
         tpt.console_close()
 
-def key(key) :
-    #print "got %s"%key
-    pass
+def key(keyy) :
+    try:
+        a=key.pmod
+    except:
+        key.pmod=(False,False,False)
+    global typing,typed
+    print "got %s"%repr(keyy)
+    ctrl1,ctrl2,alt1,alt2,shift1,shift2=tpt.get_modifier()
+    mod=(ctrl1 or ctrl2,alt1 or alt2,shift1 or shift2)
+    skip=False
+    if(not key.pmod[0] and mod[0]):
+       skip=True
+    if(not key.pmod[1] and mod[1]):
+        skip=True
+    if(not key.pmod[2] and mod[2]):
+        skip=True
+    key.pmod=mod
+    if(skip):
+        return
+    
+    if(typing and ord(keyy)>=32 and ord(keyy)<=126):
+        if(mod[2]):
+            typed+=keyy.upper()#needs to be fixed for special chars
+        else:
+            typed+=keyy
+    if(keyy=="\x1b" and typing):
+        typing=False
+        typed=""
+        tpt.shortcuts_enable()
+    if(keyy=="t" and typing==False):
+        typing=True
+        tpt.shortcuts_disable()
+    if(keyy=="\r" and typing==True):
+        console_handle(typed)
+        typed=""
+        typing=False
+        tpt.shortcuts_enable()
+    #got '\t'
+    #got '\x08'
+    if(keyy=="\x08"):
+        typed=typed[:-1]
+    if(keyy=="\t"):
+        startswith=
+
 
 def step():
     global frame,s,rec,readbuffer,namelist
@@ -83,7 +127,7 @@ def step():
 
             for line in temp:
                 line=line.strip()
-                print repr(line)
+                #print repr(line)
                 line=line.split()
                 if(line[1]=="PRIVMSG"):
                     #:doxin!~lieuwe@unaffiliated/lieuwe PRIVMSG doxin[tpt] :some shit
@@ -154,6 +198,11 @@ def step():
         for item in rec:
             tpt.draw_text(8,yy,item[0],item[1],item[2],item[3],item[4])
             yy+=8
+        if(typing):
+            if(frame%30<15):
+                tpt.draw_text(8,yy,typed+"|",255,255,255,255)
+            else:
+                tpt.draw_text(8,yy,typed,255,255,255,255)
         #print namelist
         yy=32
         for item in namelist:
