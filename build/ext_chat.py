@@ -12,19 +12,25 @@ if(name==""):
     #fuck. abort?
     raise SystemExit("please log in!")
 NICK=name+"[tpt]"
-IDENT=name
+IDENT=name+"[tpt]"
 REALNAME=name
-CHANNEL="#powder"
+CHANNEL="#foobar7"
 readbuffer=""
 
 def raw(s,st):
     s.send("%s\n\r"%st)
 
-frame=0
-s=None
-rec=[("connected.",255,0,0,128)]
-readbuffer=""
-namelist=[]
+def init():
+    global frame,s,rec,readbuffer,namelist
+    frame=0
+    s=None
+    rec=[("connected.",255,0,0,128)]
+    readbuffer=""
+    namelist=[]
+
+def exit():
+    raw(s,"QUIT")
+    s.close()
 
 def console_handle(txt):
     """
@@ -77,7 +83,7 @@ def step():
 
             for line in temp:
                 line=line.strip()
-                #print repr(line)
+                print repr(line)
                 line=line.split()
                 if(line[1]=="PRIVMSG"):
                     #:doxin!~lieuwe@unaffiliated/lieuwe PRIVMSG doxin[tpt] :some shit
@@ -111,15 +117,34 @@ def step():
                 elif(line[1]=="JOIN"):
                     #':savask!~savask@95-190-25-195-xdsl-dynamic.kuzbass.net JOIN :#powder'
                     tmp=line[0][1:].partition("!")[0]
-                    namelist.append(tmp)
+                    namelist.append((tmp,255,255,255,128))
                     rec.append(("%s joined"%name,0,255,0,128))
-                elif(line[1]=="part"):
+                elif(line[1]=="PART"):
                     #':savask!~savask@95-190-25-195-xdsl-dynamic.kuzbass.net PART #powder :"Leaving."'
                     tmp=line[0][1:].partition("!")[0]
                     msg=' '.join(line[2:])[1:]
-                    if(tmp in namelist):
-                        namelist.remove(tmp)
-                        rec.append("%s parted: %s"%(name,msg),0,255,0,128)
+                    rem=None
+                    for item in namelist:
+                        if(item[0]==tmp or item[0]=="@"+tmp):
+                            rem=item
+                    rec.append(("%s parted: %s"%(name,msg),0,255,0,128))
+                    if(rem!=None):
+                        namelist.remove(rem)
+                elif(line[1]=="NICK"):
+                    #:doxin!~lieuwe@unaffiliated/lieuwe NICK :d0x1n
+                    tmp=line[0][1:].partition("!")[0]
+                    rem=None
+                    for item in namelist:
+                        if(item[0]==tmp or item[0]=="@"+tmp):
+                            rem=item
+                    rec.append(("%s is now known as %s"%(name,line[2]),0,255,0,128))
+                    if(rem!=None):
+                        if(rem[0][0]=="@"):
+                            namelist.append(("@"+line[2][1:],rem[1],rem[2],rem[3],rem[4]))
+                        else:
+                            namelist.append((line[2][1:],rem[1],rem[2],rem[3],rem[4]))
+                        namelist.remove(rem)
+
 
                     
     
@@ -129,6 +154,7 @@ def step():
         for item in rec:
             tpt.draw_text(8,yy,item[0],item[1],item[2],item[3],item[4])
             yy+=8
+        #print namelist
         yy=32
         for item in namelist:
             tpt.draw_text(604-tpt.get_width(item[0]),yy,item[0],item[1],item[2],item[3],item[4])

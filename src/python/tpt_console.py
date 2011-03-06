@@ -42,6 +42,7 @@ element={"none":0,"dust":1,"watr":2,"oil":3,"fire":4,"stne":5,"lava":6,"gunp":7,
 def fork_unblock():
     pass#i need to implement this some day.
 def error(ex):
+    traceback.print_exc()
     err=traceback.format_exc()
     sys.stdout.write(err)
 
@@ -78,18 +79,34 @@ def _handle(txt):
 
 _extensions=[]
 def loadext(fname):
-    _extensions.append(__import__(fname))
+    ext=__import__(fname)
+    ext.init()
+    _extensions.append(ext)
 
 def keypress(key):
-    try:
-        for item in _extensions:
+    unload=[]
+    for item in _extensions:
+        try:
             item.key(key)
-    except Exception as ex:
-        error(ex)
+        except Exception as ex:
+            error(ex)
+            unload.append(item)
+    for item in unload:
+        item.exit()
+        _extensions.remove(item)
+                
 
 def step():
-    try:
-        for item in _extensions:
+    unload=[]
+    for item in _extensions:
+        try:
             item.step()
-    except Exception as ex:
-        error(ex)
+        except Exception as ex:
+            error(ex)
+            unload.append(item)
+    for item in unload:
+        try:
+            item.exit()
+        except Exception as ex:
+            error(ex)
+        _extensions.remove(item)

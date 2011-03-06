@@ -1838,6 +1838,17 @@ emb_get_mouse(PyObject *self, PyObject *args)
     return Py_BuildValue("(ii(iii))",x,y,b1,b2,b3);
 }
 
+//svf_name
+emb_get_name(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ":get_name"))
+        return NULL;
+    if(svf_login)
+        return Py_BuildValue("s",svf_user);
+    else
+        return Py_BuildValue("s","");
+}
+
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
     {"create",		emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
     {"log", 		emb_log, 		METH_VARARGS,			"logs an error string to the console."},
@@ -1869,6 +1880,7 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"draw_fillrect",    emb_draw_fillrect,       METH_VARARGS,           "draw a rect."},
     {"get_width",    emb_get_width,       METH_VARARGS,           "get string width."},
     {"get_mouse",    emb_get_mouse,       METH_VARARGS,           "get mouse status."},
+    {"get_name",    emb_get_name,       METH_VARARGS,           "get name of logged in user"},
     {NULL, NULL, 0, NULL}
 };
 
@@ -3546,12 +3558,6 @@ int main(int argc, char *argv[])
 	}
 	SDL_CloseAudio();
 	http_done();
-    //make sure no threads are blocking us
-    //fork_unblock
-    pargs=Py_BuildValue("(s)","fork_unblock()");//this deamonises all threads.
-    pvalue = PyObject_CallObject(pfunc, pargs);
-    Py_DECREF(pargs);
-    pargs=NULL;
     Py_Finalize();//cleanup any python stuff.
 	return 0;
 }
