@@ -163,6 +163,7 @@ float mheat = 0.0f;
 
 int do_open = 0;
 int sys_pause = 0;
+int sys_shortcuts = 1;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by commandline or save.
 int death = 0, framerender = 0;
 int amd = 1;
@@ -1849,6 +1850,31 @@ emb_get_name(PyObject *self, PyObject *args)
         return Py_BuildValue("s","");
 }
 
+emb_shortcuts_disable(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ":shortcuts_disable"))
+        return NULL;
+    //
+    sys_shortcuts=0;
+    return Py_BuildValue("i",1);
+}
+
+emb_shortcuts_enable(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ":shortcuts_enable"))
+        return NULL;
+    //
+    sys_shortcuts=1;
+    return Py_BuildValue("i",1);
+}
+
+emb_get_modifier(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ":get_modifier"))
+        return NULL;
+     return Py_BuildValue("(iiiiii)",sdl_mod&KMOD_LCTRL,sdl_mod&KMOD_RCTRL,sdl_mod&KMOD_LALT,sdl_mod&KMOD_RALT,sdl_mod&KMOD_LSHIFT,sdl_mod&KMOD_RSHIFT);
+}
+
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
     {"create",		emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
     {"log", 		emb_log, 		METH_VARARGS,			"logs an error string to the console."},
@@ -1881,6 +1907,9 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"get_width",    emb_get_width,       METH_VARARGS,           "get string width."},
     {"get_mouse",    emb_get_mouse,       METH_VARARGS,           "get mouse status."},
     {"get_name",    emb_get_name,       METH_VARARGS,           "get name of logged in user"},
+    {"shortcuts_disable",    emb_shortcuts_disable,       METH_VARARGS,           "disable keyboard shortcuts"},
+    {"shortcuts_enable",    emb_shortcuts_enable,       METH_VARARGS,           "enable keyboard shortcuts"},
+    {"get_modifier",    emb_get_modifier,       METH_VARARGS,           "get pressed modifier keys"},
     {NULL, NULL, 0, NULL}
 };
 
@@ -1948,6 +1977,7 @@ int main(int argc, char *argv[])
         }
         else
         {
+            PyErr_Print();
             printf("unable to find handle function, mangled console.py?\n");
             return -1;
         }
@@ -1974,6 +2004,8 @@ int main(int argc, char *argv[])
     }
     else
     {
+        //sys.stderr
+        PyErr_Print();
         printf("unable to find console module, missing file or mangled console.py?\n");
         return -1;
     }
@@ -2242,6 +2274,365 @@ int main(int argc, char *argv[])
 			do_s_check = (do_s_check+1) & 15;
 		}
         
+        if(sys_shortcuts==1)
+        {
+            if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
+            {
+                if (confirm_ui(vid_buf, "You are about to quit", "Are you sure you want to quit?", "Quit"))
+                {
+                    break;
+                }
+            }
+            //if(sdl_key=='d' && isplayer)
+            //{
+            //    death = 1;
+            //    //death = !(death);
+            //}
+            if (sdl_key=='f')
+            {
+                framerender = 1;
+            }
+            if ((sdl_key=='l' || sdl_key=='k') && stamps[0].name[0])
+            {
+                if (load_mode)
+                {
+                    free(load_img);
+                    free(load_data);
+                    load_mode = 0;
+                    load_data = NULL;
+                    load_img = NULL;
+                }
+                if (it > 50)
+                    it = 50;
+                if (sdl_key=='k' && stamps[1].name[0])
+                {
+                    j = stamp_ui(vid_buf);
+                    if (j>=0)
+                        load_data = stamp_load(j, &load_size);
+                    else
+                        load_data = NULL;
+                }
+                else
+                    load_data = stamp_load(0, &load_size);
+                if (load_data)
+                {
+                    load_img = prerender_save(load_data, load_size, &load_w, &load_h);
+                    if (load_img)
+                        load_mode = 1;
+                    else
+                        free(load_data);
+                }
+            }
+            if (sdl_key=='s' && (sdl_mod & (KMOD_CTRL)) || (sdl_key=='s' && !isplayer2))
+            {
+                if (it > 50)
+                    it = 50;
+                save_mode = 1;
+            }
+            if (sdl_key=='1')
+            {
+                set_cmode(CM_VEL);
+            }
+            if (sdl_key=='2')
+            {
+                set_cmode(CM_PRESS);
+            }
+            if (sdl_key=='3')
+            {
+                set_cmode(CM_PERS);
+            }
+            if (sdl_key=='4')
+            {
+                set_cmode(CM_FIRE);
+            }
+            if (sdl_key=='5')
+            {
+                set_cmode(CM_BLOB);
+            }
+            if (sdl_key=='6')
+            {
+                set_cmode(CM_HEAT);
+            }
+            if (sdl_key=='7')
+            {
+                set_cmode(CM_FANCY);
+            }
+            if (sdl_key=='8')
+            {
+                set_cmode(CM_NOTHING);
+            }
+            if (sdl_key=='9')
+            {
+                set_cmode(CM_GRAD);
+            }
+            if (sdl_key=='0')
+            {
+                set_cmode(CM_CRACK);
+            }
+            if (sdl_key=='1'&& (sdl_mod & (KMOD_SHIFT)) && DEBUG_MODE)
+            {
+                set_cmode(CM_LIFE);
+            }
+            if (sdl_key==SDLK_TAB)
+            {
+                CURRENT_BRUSH =(CURRENT_BRUSH + 1)%BRUSH_NUM ;
+            }
+            if (sdl_key==SDLK_LEFTBRACKET) {
+                if (sdl_zoom_trig==1)
+                {
+                    ZSIZE -= 1;
+                    if (ZSIZE>60)
+                        ZSIZE = 60;
+                    if (ZSIZE<2)
+                        ZSIZE = 2;
+                    ZFACTOR = 256/ZSIZE;
+                }
+                else
+                {
+                    if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+                    {
+                        bsx -= 1;
+                        bsy -= 1;
+                    }
+                    else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+                    {
+                        bsx -= 1;
+                    }
+                    else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+                    {
+                        bsy -= 1;
+                    }
+                    else
+                    {
+                        bsx -= ceil((bsx/5)+0.5f);
+                        bsy -= ceil((bsy/5)+0.5f);
+                    }
+                    if (bsx>1180)
+                        bsx = 1180;
+                    if (bsy>1180)
+                        bsy = 1180;
+                    if (bsx<0)
+                        bsx = 0;
+                    if (bsy<0)
+                        bsy = 0;
+                }
+            }
+            if (sdl_key==SDLK_RIGHTBRACKET) {
+                if (sdl_zoom_trig==1)
+                {
+                    ZSIZE += 1;
+                    if (ZSIZE>60)
+                        ZSIZE = 60;
+                    if (ZSIZE<2)
+                        ZSIZE = 2;
+                    ZFACTOR = 256/ZSIZE;
+                }
+                else
+                {
+                    if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+                    {
+                        bsx += 1;
+                        bsy += 1;
+                    }
+                    else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+                    {
+                        bsx += 1;
+                    }
+                    else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+                    {
+                        bsy += 1;
+                    }
+                    else
+                    {
+                        bsx += ceil((bsx/5)+0.5f);
+                        bsy += ceil((bsy/5)+0.5f);
+                    }
+                    if (bsx>1180)
+                        bsx = 1180;
+                    if (bsy>1180)
+                        bsy = 1180;
+                    if (bsx<0)
+                        bsx = 0;
+                    if (bsy<0)
+                        bsy = 0;
+                }
+            }
+            if (sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)) || (sdl_key=='d' && !isplayer2))
+                DEBUG_MODE = !DEBUG_MODE;
+            if (sdl_key=='i')
+            {
+                int nx, ny;
+                for (nx = 0; nx<XRES/CELL; nx++)
+                    for (ny = 0; ny<YRES/CELL; ny++)
+                    {
+                        pv[ny][nx] = -pv[ny][nx];
+                        vx[ny][nx] = -vx[ny][nx];
+                        vy[ny][nx] = -vy[ny][nx];
+                    }
+            }
+            if ((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
+                active_menu = 11;
+            if (sdl_key==SDLK_INSERT)// || sdl_key==SDLK_BACKQUOTE)
+                REPLACE_MODE = !REPLACE_MODE;
+            if (sdl_key==SDLK_BACKQUOTE)
+            {
+                console_mode = !console_mode;
+                //hud_enable = !console_mode;
+            }
+            if (sdl_key=='g')
+            {
+                if (sdl_mod & (KMOD_SHIFT))
+                    GRID_MODE = (GRID_MODE+9)%10;
+                else
+                    GRID_MODE = (GRID_MODE+1)%10;
+            }
+            if (sdl_key=='=')
+            {
+                int nx, ny;
+                if(sdl_mod & (KMOD_CTRL))
+                {
+                    for(i=0; i<NPART; i++)
+                        if(parts[i].type==PT_SPRK)
+                        {
+                            parts[i].type = parts[i].ctype;
+                            parts[i].life = 0;
+                        }
+                }
+                else
+                {
+                    for (nx = 0; nx<XRES/CELL; nx++)
+                        for (ny = 0; ny<YRES/CELL; ny++)
+                        {
+                            pv[ny][nx] = 0;
+                            vx[ny][nx] = 0;
+                            vy[ny][nx] = 0;
+                        }
+                }
+            }
+
+            if (sdl_key=='w' && (!isplayer2 || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
+            {
+                ++gravityMode; // cycle gravity mode
+                itc = 51;
+
+                switch (gravityMode)
+                {
+                default:
+                    gravityMode = 0;
+                case 0:
+                    strcpy(itc_msg, "Gravity: Vertical");
+                    break;
+                case 1:
+                    strcpy(itc_msg, "Gravity: Off");
+                    break;
+                case 2:
+                    strcpy(itc_msg, "Gravity: Radial");
+                    break;
+
+                }
+            }
+            if (sdl_key=='y')
+            {
+                ++airMode;
+                itc = 52;
+                
+                switch (airMode)
+                {
+                    default:
+                        airMode = 0;
+                    case 0:
+                        strcpy(itc_msg, "Air: On");
+                        break;
+                    case 1:
+                        strcpy(itc_msg, "Air: Pressure Off");
+                        break;
+                    case 2:
+                        strcpy(itc_msg, "Air: Velocity Off");
+                        break;
+                    case 3:
+                        strcpy(itc_msg, "Air: Off"); 
+                        break;
+                    case 4:
+                        strcpy(itc_msg, "Air: No Update");
+                        break;
+                }
+            }
+
+            if (sdl_key=='t')
+                VINE_MODE = !VINE_MODE;
+            if (sdl_key==SDLK_SPACE)
+                sys_pause = !sys_pause;
+            if (sdl_key=='h')
+                hud_enable = !hud_enable;
+            if (sdl_key=='p')
+                dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
+            if (sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+            {
+                if (clipboard_ready==1)
+                {
+                    load_data = malloc(clipboard_length);
+                    memcpy(load_data, clipboard_data, clipboard_length);
+                    load_size = clipboard_length;
+                    if (load_data)
+                    {
+                        load_img = prerender_save(load_data, load_size, &load_w, &load_h);
+                        if (load_img)
+                            load_mode = 1;
+                        else
+                            free(load_data);
+                    }
+                }
+            }
+            if (sdl_key=='r'&&(sdl_mod & (KMOD_CTRL))&&(sdl_mod & (KMOD_SHIFT)))
+            {
+                save_mode = 1;
+                copy_mode = 4;//invert
+            }
+            else if (sdl_key=='r'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+            {
+                save_mode = 1;
+                copy_mode = 3;//rotate
+            }
+            else if (sdl_key=='r')
+                GENERATION = 0;
+            if (sdl_key=='x'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+            {
+                save_mode = 1;
+                copy_mode = 2;
+            }
+            if (sdl_key=='c'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+            {
+                save_mode = 1;
+                copy_mode = 1;
+            }
+            else if (sdl_key=='c')
+            {
+                set_cmode((cmode+1) % CM_COUNT);
+                if (it > 50)
+                    it = 50;
+            }
+            if (sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
+            {
+                int cbx, cby, cbi;
+
+                for (cbi=0; cbi<NPART; cbi++)
+                    parts[cbi] = cb_parts[cbi];
+
+                for (cby = 0; cby<YRES; cby++)
+                    for (cbx = 0; cbx<XRES; cbx++)
+                        pmap[cby][cbx] = cb_pmap[cby][cbx];
+
+                for (cby = 0; cby<(YRES/CELL); cby++)
+                    for (cbx = 0; cbx<(XRES/CELL); cbx++)
+                    {
+                        vx[cby][cbx] = cb_vx[cby][cbx];
+                        vy[cby][cbx] = cb_vy[cby][cbx];
+                        pv[cby][cbx] = cb_pv[cby][cbx];
+                        bmap[cby][cbx] = cb_bmap[cby][cbx];
+                        emap[cby][cbx] = cb_emap[cby][cbx];
+                    }
+            }
+        }
         if(pkey!=NULL && sdl_key!=NULL)
         {
             pargs=Py_BuildValue("(c)",sdl_key);
@@ -2254,363 +2645,6 @@ int main(int argc, char *argv[])
             //puts("a");
             pvalue=NULL;
         }
-        
-		if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
-		{
-			if (confirm_ui(vid_buf, "You are about to quit", "Are you sure you want to quit?", "Quit"))
-			{
-				break;
-			}
-		}
-		//if(sdl_key=='d' && isplayer)
-		//{
-		//    death = 1;
-		//    //death = !(death);
-		//}
-		if (sdl_key=='f')
-		{
-			framerender = 1;
-		}
-		if ((sdl_key=='l' || sdl_key=='k') && stamps[0].name[0])
-		{
-			if (load_mode)
-			{
-				free(load_img);
-				free(load_data);
-				load_mode = 0;
-				load_data = NULL;
-				load_img = NULL;
-			}
-			if (it > 50)
-				it = 50;
-			if (sdl_key=='k' && stamps[1].name[0])
-			{
-				j = stamp_ui(vid_buf);
-				if (j>=0)
-					load_data = stamp_load(j, &load_size);
-				else
-					load_data = NULL;
-			}
-			else
-				load_data = stamp_load(0, &load_size);
-			if (load_data)
-			{
-				load_img = prerender_save(load_data, load_size, &load_w, &load_h);
-				if (load_img)
-					load_mode = 1;
-				else
-					free(load_data);
-			}
-		}
-		if (sdl_key=='s' && (sdl_mod & (KMOD_CTRL)) || (sdl_key=='s' && !isplayer2))
-		{
-			if (it > 50)
-				it = 50;
-			save_mode = 1;
-		}
-		if (sdl_key=='1')
-		{
-			set_cmode(CM_VEL);
-		}
-		if (sdl_key=='2')
-		{
-			set_cmode(CM_PRESS);
-		}
-		if (sdl_key=='3')
-		{
-			set_cmode(CM_PERS);
-		}
-		if (sdl_key=='4')
-		{
-			set_cmode(CM_FIRE);
-		}
-		if (sdl_key=='5')
-		{
-			set_cmode(CM_BLOB);
-		}
-		if (sdl_key=='6')
-		{
-			set_cmode(CM_HEAT);
-		}
-		if (sdl_key=='7')
-		{
-			set_cmode(CM_FANCY);
-		}
-		if (sdl_key=='8')
-		{
-			set_cmode(CM_NOTHING);
-		}
-		if (sdl_key=='9')
-		{
-			set_cmode(CM_GRAD);
-		}
-		if (sdl_key=='0')
-		{
-			set_cmode(CM_CRACK);
-		}
-		if (sdl_key=='1'&& (sdl_mod & (KMOD_SHIFT)) && DEBUG_MODE)
-		{
-			set_cmode(CM_LIFE);
-		}
-		if (sdl_key==SDLK_TAB)
-		{
-			CURRENT_BRUSH =(CURRENT_BRUSH + 1)%BRUSH_NUM ;
-		}
-		if (sdl_key==SDLK_LEFTBRACKET) {
-			if (sdl_zoom_trig==1)
-			{
-				ZSIZE -= 1;
-				if (ZSIZE>60)
-					ZSIZE = 60;
-				if (ZSIZE<2)
-					ZSIZE = 2;
-				ZFACTOR = 256/ZSIZE;
-			}
-			else
-			{
-				if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
-				{
-					bsx -= 1;
-					bsy -= 1;
-				}
-				else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
-				{
-					bsx -= 1;
-				}
-				else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
-				{
-					bsy -= 1;
-				}
-				else
-				{
-					bsx -= ceil((bsx/5)+0.5f);
-					bsy -= ceil((bsy/5)+0.5f);
-				}
-				if (bsx>1180)
-					bsx = 1180;
-				if (bsy>1180)
-					bsy = 1180;
-				if (bsx<0)
-					bsx = 0;
-				if (bsy<0)
-					bsy = 0;
-			}
-		}
-		if (sdl_key==SDLK_RIGHTBRACKET) {
-			if (sdl_zoom_trig==1)
-			{
-				ZSIZE += 1;
-				if (ZSIZE>60)
-					ZSIZE = 60;
-				if (ZSIZE<2)
-					ZSIZE = 2;
-				ZFACTOR = 256/ZSIZE;
-			}
-			else
-			{
-				if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
-				{
-					bsx += 1;
-					bsy += 1;
-				}
-				else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
-				{
-					bsx += 1;
-				}
-				else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
-				{
-					bsy += 1;
-				}
-				else
-				{
-					bsx += ceil((bsx/5)+0.5f);
-					bsy += ceil((bsy/5)+0.5f);
-				}
-				if (bsx>1180)
-					bsx = 1180;
-				if (bsy>1180)
-					bsy = 1180;
-				if (bsx<0)
-					bsx = 0;
-				if (bsy<0)
-					bsy = 0;
-			}
-		}
-		if (sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)) || (sdl_key=='d' && !isplayer2))
-			DEBUG_MODE = !DEBUG_MODE;
-		if (sdl_key=='i')
-		{
-			int nx, ny;
-			for (nx = 0; nx<XRES/CELL; nx++)
-				for (ny = 0; ny<YRES/CELL; ny++)
-				{
-					pv[ny][nx] = -pv[ny][nx];
-					vx[ny][nx] = -vx[ny][nx];
-					vy[ny][nx] = -vy[ny][nx];
-				}
-		}
-		if ((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
-			active_menu = 11;
-		if (sdl_key==SDLK_INSERT)// || sdl_key==SDLK_BACKQUOTE)
-			REPLACE_MODE = !REPLACE_MODE;
-		if (sdl_key==SDLK_BACKQUOTE)
-		{
-			console_mode = !console_mode;
-			//hud_enable = !console_mode;
-		}
-		if (sdl_key=='g')
-		{
-			if (sdl_mod & (KMOD_SHIFT))
-				GRID_MODE = (GRID_MODE+9)%10;
-			else
-				GRID_MODE = (GRID_MODE+1)%10;
-		}
-		if (sdl_key=='=')
-		{
-			int nx, ny;
-			if(sdl_mod & (KMOD_CTRL))
-			{
-				for(i=0; i<NPART; i++)
-					if(parts[i].type==PT_SPRK)
-					{
-						parts[i].type = parts[i].ctype;
-						parts[i].life = 0;
-					}
-			}
-			else
-			{
-				for (nx = 0; nx<XRES/CELL; nx++)
-					for (ny = 0; ny<YRES/CELL; ny++)
-					{
-						pv[ny][nx] = 0;
-						vx[ny][nx] = 0;
-						vy[ny][nx] = 0;
-					}
-			}
-		}
-
-		if (sdl_key=='w' && (!isplayer2 || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
-		{
-			++gravityMode; // cycle gravity mode
-			itc = 51;
-
-			switch (gravityMode)
-			{
-			default:
-				gravityMode = 0;
-			case 0:
-				strcpy(itc_msg, "Gravity: Vertical");
-				break;
-			case 1:
-				strcpy(itc_msg, "Gravity: Off");
-				break;
-			case 2:
-				strcpy(itc_msg, "Gravity: Radial");
-				break;
-
-			}
-		}
-		if (sdl_key=='y')
-		{
-			++airMode;
-			itc = 52;
-			
-			switch (airMode)
-			{
-				default:
-					airMode = 0;
-				case 0:
-					strcpy(itc_msg, "Air: On");
-					break;
-				case 1:
-					strcpy(itc_msg, "Air: Pressure Off");
-					break;
-				case 2:
-					strcpy(itc_msg, "Air: Velocity Off");
-					break;
-				case 3:
-					strcpy(itc_msg, "Air: Off"); 
-					break;
-				case 4:
-					strcpy(itc_msg, "Air: No Update");
-					break;
-			}
-		}
-
-		if (sdl_key=='t')
-			VINE_MODE = !VINE_MODE;
-		if (sdl_key==SDLK_SPACE)
-			sys_pause = !sys_pause;
-		if (sdl_key=='h')
-			hud_enable = !hud_enable;
-		if (sdl_key=='p')
-			dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
-		if (sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
-		{
-			if (clipboard_ready==1)
-			{
-				load_data = malloc(clipboard_length);
-				memcpy(load_data, clipboard_data, clipboard_length);
-				load_size = clipboard_length;
-				if (load_data)
-				{
-					load_img = prerender_save(load_data, load_size, &load_w, &load_h);
-					if (load_img)
-						load_mode = 1;
-					else
-						free(load_data);
-				}
-			}
-		}
-		if (sdl_key=='r'&&(sdl_mod & (KMOD_CTRL))&&(sdl_mod & (KMOD_SHIFT)))
-		{
-			save_mode = 1;
-			copy_mode = 4;//invert
-		}
-		else if (sdl_key=='r'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
-		{
-			save_mode = 1;
-			copy_mode = 3;//rotate
-		}
-		else if (sdl_key=='r')
-			GENERATION = 0;
-		if (sdl_key=='x'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
-		{
-			save_mode = 1;
-			copy_mode = 2;
-		}
-		if (sdl_key=='c'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
-		{
-			save_mode = 1;
-			copy_mode = 1;
-		}
-		else if (sdl_key=='c')
-		{
-			set_cmode((cmode+1) % CM_COUNT);
-			if (it > 50)
-				it = 50;
-		}
-		if (sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
-		{
-			int cbx, cby, cbi;
-
-			for (cbi=0; cbi<NPART; cbi++)
-				parts[cbi] = cb_parts[cbi];
-
-			for (cby = 0; cby<YRES; cby++)
-				for (cbx = 0; cbx<XRES; cbx++)
-					pmap[cby][cbx] = cb_pmap[cby][cbx];
-
-			for (cby = 0; cby<(YRES/CELL); cby++)
-				for (cbx = 0; cbx<(XRES/CELL); cbx++)
-				{
-					vx[cby][cbx] = cb_vx[cby][cbx];
-					vy[cby][cbx] = cb_vy[cby][cbx];
-					pv[cby][cbx] = cb_pv[cby][cbx];
-					bmap[cby][cbx] = cb_bmap[cby][cbx];
-					emap[cby][cbx] = cb_emap[cby][cbx];
-				}
-		}
 #ifdef INTERNAL
 		int counterthing;
 		if (sdl_key=='v'&&!(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
@@ -2894,7 +2928,7 @@ int main(int argc, char *argv[])
 		if (!sdl_zoom_trig && zoom_en==1)
 			zoom_en = 0;
 
-		if (sdl_key=='z' && zoom_en==2)
+		if (sdl_key=='z' && zoom_en==2 && sys_shortcuts==1)
 			zoom_en = 1;
 
 		if (load_mode)

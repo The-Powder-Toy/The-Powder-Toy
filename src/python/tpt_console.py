@@ -4,6 +4,8 @@ import sys
 import code
 import ctypes
 import traceback
+DEBUG=False
+
 #print "console module loaded."
 #redirect stdout like this:
 class logger:
@@ -11,8 +13,10 @@ class logger:
         txt=txt.strip().split("\n")[-1]
         repr(txt)
         tpt.log(txt)
-sys.stdout=logger()
-sys.stderr=logger()
+if(debug==False):
+    sys.stdout=logger()
+    sys.stderr=logger()
+
 
 element={"none":0,"dust":1,"watr":2,"oil":3,"fire":4,"stne":5,"lava":6,"gunp":7,
     "nitr":8,"clne":9,"gas":10,"plex":11,"goo":12,"icei":13,"metl":14,"sprk":15,
