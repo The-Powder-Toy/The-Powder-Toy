@@ -67,6 +67,8 @@ extern unsigned char ZSIZE;
 #define SQUARE_BRUSH 1
 #define BRUSH_NUM 2
 
+#define PYCONSOLE
+
 #ifdef PIX16
 typedef unsigned short pixel;
 #else

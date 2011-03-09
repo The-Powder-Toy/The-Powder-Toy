@@ -1,10 +1,11 @@
 import tpt
 from tpt import *
-from utils import *
 import sys
 import code
 import ctypes
 import traceback
+DEBUG=False
+
 #print "console module loaded."
 #redirect stdout like this:
 class logger:
@@ -12,8 +13,10 @@ class logger:
         txt=txt.strip().split("\n")[-1]
         repr(txt)
         tpt.log(txt)
-sys.stdout=logger()
-sys.stderr=logger()
+if(DEBUG==False):
+    sys.stdout=logger()
+    sys.stderr=logger()
+
 
 element={"none":0,"dust":1,"watr":2,"oil":3,"fire":4,"stne":5,"lava":6,"gunp":7,
     "nitr":8,"clne":9,"gas":10,"plex":11,"goo":12,"icei":13,"metl":14,"sprk":15,
@@ -43,6 +46,7 @@ element={"none":0,"dust":1,"watr":2,"oil":3,"fire":4,"stne":5,"lava":6,"gunp":7,
 def fork_unblock():
     pass#i need to implement this some day.
 def error(ex):
+    traceback.print_exc()
     err=traceback.format_exc()
     sys.stdout.write(err)
 
@@ -75,3 +79,38 @@ def _handle(txt):
             exec txt in handle.glob
         except Exception as ex:
             error(ex)
+
+
+_extensions=[]
+def loadext(fname):
+    ext=__import__(fname)
+    ext.init()
+    _extensions.append(ext)
+
+def keypress(key):
+    unload=[]
+    for item in _extensions:
+        try:
+            item.key(key)
+        except Exception as ex:
+            error(ex)
+            unload.append(item)
+    for item in unload:
+        item.exit()
+        _extensions.remove(item)
+                
+
+def step():
+    unload=[]
+    for item in _extensions:
+        try:
+            item.step()
+        except Exception as ex:
+            error(ex)
+            unload.append(item)
+    for item in unload:
+        try:
+            item.exit()
+        except Exception as ex:
+            error(ex)
+        _extensions.remove(item)

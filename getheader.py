@@ -17,7 +17,7 @@ print args,"-I%s"%path
 lst=[]
 compileall.compile_dir("./src/python", force=1)
 
-print "\n\n\ngenerating pyconsole.h"
+print "generating pyconsole.h"
 
 fname="./src/python/tpt_console.pyc"
 try:
