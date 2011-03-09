@@ -23,8 +23,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
+#include <defines.h>
+
+#ifdef PYCONSOLE
 #include "Python.h"
 #include "pyconsole.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,7 +48,6 @@
 
 #include <misc.h>
 #include <font.h>
-#include <defines.h>
 #include <powder.h>
 #include <graphics.h>
 #include <version.h>
@@ -1180,6 +1183,7 @@ char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
                 
 char console_error[255] = "";
 
+#ifdef PYCONSOLE
 /* 
  * PYTHON FUNCTIONS
  * instructions on making a function callable from python:
@@ -1193,6 +1197,7 @@ char console_error[255] = "";
  */
 
 //functions callable from python:
+
 static PyObject*
 emb_create(PyObject *self, PyObject *args, PyObject *keywds)
 {
@@ -1912,6 +1917,7 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"get_modifier",    emb_get_modifier,       METH_VARARGS,           "get pressed modifier keys"},
     {NULL, NULL, 0, NULL}
 };
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -1946,7 +1952,9 @@ int main(int argc, char *argv[])
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
 	GSPEED = 1;
+    #ifdef PYCONSOLE
     PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep,*pkey;
+    #endif
 
 	/* Set 16-bit stereo audio at 22Khz */
 	fmt.freq = 22050;
@@ -1956,6 +1964,7 @@ int main(int argc, char *argv[])
 	fmt.callback = mixaudio;
 	fmt.userdata = NULL;
 	
+    #ifdef PYCONSOLE
     //initialise python console
     Py_Initialize();
     Py_InitModule("tpt", EmbMethods);
@@ -2009,7 +2018,10 @@ int main(int argc, char *argv[])
         printf("unable to find console module, missing file or mangled console.py?\n");
         return -1;
     }
-    
+#else
+        printf("python console disabled at compile time.");
+#endif
+
 #ifdef MT
 	numCores = core_count();
 #endif
@@ -2633,6 +2645,7 @@ int main(int argc, char *argv[])
                     }
             }
         }
+        #ifdef PYCONSOLE
         if(pkey!=NULL && sdl_key!=NULL)
         {
             pargs=Py_BuildValue("(c)",sdl_key);
@@ -2645,6 +2658,7 @@ int main(int argc, char *argv[])
             //puts("a");
             pvalue=NULL;
         }
+        #endif
 #ifdef INTERNAL
 		int counterthing;
 		if (sdl_key=='v'&&!(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
@@ -3543,6 +3557,7 @@ int main(int argc, char *argv[])
 		
 		if(console_mode)
 		{
+            #ifdef PYCONSOLE
 			char *console;
 			//char error[255] = "error!";
 			sys_pause = 1;
@@ -3557,9 +3572,13 @@ int main(int argc, char *argv[])
 			free(console);
 			if(!console_mode)
 				hud_enable = 1;
+            #else
+            console_mode=0;
+            #endif
 		}
 		
 		//execute python step hook
+		#ifdef PYCONSOLE
 		if(pstep!=NULL)
         {
             pargs=Py_BuildValue("()");
@@ -3572,6 +3591,7 @@ int main(int argc, char *argv[])
             //puts("a");
             pvalue=NULL;
         }
+        #endif
 		sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
 		//Setting an element for the stick man
@@ -3595,6 +3615,7 @@ int main(int argc, char *argv[])
     Py_Finalize();//cleanup any python stuff.
 	return 0;
 }
+#ifdef PYCONSOLE
 int process_command(pixel *vid_buf,char *console,char *console_error,PyObject *pfunc) {
 	int y,x,nx,ny,i,j,k,m;
 	int do_next = 1;
@@ -3630,4 +3651,4 @@ int process_command(pixel *vid_buf,char *console,char *console_error,PyObject *p
 	}
 	return 1;
 }
-
+#endif

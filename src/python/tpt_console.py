@@ -13,7 +13,7 @@ class logger:
         txt=txt.strip().split("\n")[-1]
         repr(txt)
         tpt.log(txt)
-if(debug==False):
+if(DEBUG==False):
     sys.stdout=logger()
     sys.stderr=logger()
 

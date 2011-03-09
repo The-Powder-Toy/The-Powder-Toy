@@ -92,8 +92,8 @@ def key(keyy) :
     #got '\x08'
     if(keyy=="\x08"):
         typed=typed[:-1]
-    if(keyy=="\t"):
-        startswith=
+    #if(keyy=="\t"):
+    #    startswith=
 
 
 def step():
