@@ -2,11 +2,12 @@
  * Powder Toy - Main source
  *
  * Copyright (c) 2008 - 2011 Stanislaw Skowronek.
- * Copyright (c) 2011 Simon Robertshaw
- * Copyright (c) 2011 Skresanov Savely
- * Copyright (c) 2011 Bryan Hoyle
- * Copyright (c) 2011 Nathan Cousins
- * Copyright (c) 2011 cracker64
+ * Copyright (c) 2010 - 2011 Simon Robertshaw
+ * Copyright (c) 2010 - 2011 Skresanov Savely
+ * Copyright (c) 2010 - 2011 Bryan Hoyle
+ * Copyright (c) 2010 - 2011 Nathan Cousins
+ * Copyright (c) 2010 - 2011 cracker64
+ * Copyright (c) 2011 jacksonmj
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
