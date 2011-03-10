@@ -1893,10 +1893,16 @@ void draw_parts(pixel *vid)
 					}
 					if (cr>255)
 						cr=255;
+					if (cr<0)
+						cr=0;
 					if (cg>255)
 						cg=255;
+					if (cg<0)
+						cg=0;
 					if (cb>255)
 						cb=255;
+					if (cb<0)
+						cb=0;
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 				}
 				else if (t==PT_WIFI)
@@ -2143,6 +2149,7 @@ void draw_parts(pixel *vid)
 				else if (t==PT_BRAY && parts[i].tmp==0)
 				{
 					int trans = parts[i].life * 7;
+					if (trans>255) trans = 255;
 					if (parts[i].ctype) {
 						cg = 0;
 						cb = 0;
@@ -2167,6 +2174,7 @@ void draw_parts(pixel *vid)
 				else if (t==PT_BRAY && parts[i].tmp==1)
 				{
 					int trans = parts[i].life/4;
+					if (trans>255) trans = 255;
 					if (parts[i].ctype) {
 						cg = 0;
 						cb = 0;
@@ -2191,6 +2199,7 @@ void draw_parts(pixel *vid)
 				else if (t==PT_BRAY && parts[i].tmp==2)
 				{
 					int trans = parts[i].life*100;
+					if (trans>255) trans = 255;
 					blendpixel(vid, nx, ny, 255, 150, 50, trans);
 				}
 				else if (t==PT_PHOT)
