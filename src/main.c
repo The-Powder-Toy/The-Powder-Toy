@@ -1973,13 +1973,10 @@ int main(int argc, char *argv[])
     PyRun_SimpleString("import sys\nsys.path.append('.')");
     PyRun_SimpleString("print 'python present.'");
     //load the console module and whatnot
-    //pname=PyString_FromString("tpt_console");//create string object
-    //pmodule = PyImport_Import(pname);//import module
     PyObject *tpt_console_obj = PyMarshal_ReadObjectFromString(tpt_console_pyc+8, sizeof(tpt_console_pyc)-8);
     pmodule=PyImport_ExecCodeModule("tpt_console", tpt_console_obj);
     if(pmodule!=NULL)
     {
-        //Py_DECREF(pname);//throw away the string object
         pfunc=PyObject_GetAttrString(pmodule,"handle");//get the handler function
         if(pfunc && PyCallable_Check(pfunc))//check if it's really a function
         {
