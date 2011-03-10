@@ -2549,7 +2549,8 @@ int search_ui(pixel *vid_buf)
 				memset(v_buf, 0, ((YRES+MENUSIZE)*(XRES+BARSIZE))*PIXELSIZE);
 			}
 			is_p1 = (exp_res < GRID_X*GRID_Y);
-			free(results);
+			if (results)
+				free(results);
 			active = 0;
 		}
 
@@ -2824,6 +2825,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			data = http_async_req_stop(http, &status, &data_size);
 			if (status == 200)
 			{
+				if (!data||!data_size) {
+					error_ui(vid_buf, 0, "Save data is empty (may be corrupt)");
+					break;
+				}
 				pixel *full_save = prerender_save(data, data_size, &imgw, &imgh);
 				if (full_save!=NULL) {
 					save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
@@ -2842,15 +2847,16 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		{
 			http_last_use_2 = time(NULL);
 			info_data = http_async_req_stop(http_2, &status_2, NULL);
-			if (status_2 == 200)
+			if (status_2 == 200 || !info_data)
 			{
 				info_ready = info_parse(info_data, info);
-				if (info_ready==-1) {
-					error_ui(vid_buf, 0, "Not found");
+				if (info_ready<=0) {
+					error_ui(vid_buf, 0, "Save info not found");
 					break;
 				}
 			}
-			free(info_data);
+			if (info_data)
+				free(info_data);
 			active_2 = 0;
 			free(http_2);
 			http_2 = NULL;
@@ -3546,7 +3552,7 @@ int execute_tagop(pixel *vid_buf, char *op, char *tag)
 		return 1;
 	}
 
-	if (result[2])
+	if (result && result[2])
 	{
 		strncpy(svf_tags, result+3, 255);
 		svf_id[15] = 0;
@@ -3604,14 +3610,16 @@ void execute_save(pixel *vid_buf)
 			free(result);
 		return;
 	}
-	if (result && strncmp(result, "OK", 2))
+	if (!result || strncmp(result, "OK", 2))
 	{
+		if (!result)
+			result = mystrdup("Could not save - no reply from server");
 		error_ui(vid_buf, 0, result);
 		free(result);
 		return;
 	}
 
-	if (result[2])
+	if (result && result[2])
 	{
 		strncpy(svf_id, result+3, 15);
 		svf_id[15] = 0;
@@ -3839,13 +3847,15 @@ struct command_history {
 };
 typedef struct command_history command_history;
 command_history *last_command = NULL;
-char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show previous commands
+command_history *last_command2 = NULL;
+char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	int mx,my,b,cc,ci = -1;
 	pixel *old_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	command_history *currentcommand;
+	command_history *currentcommand2;
 	ui_edit ed;
 	ed.x = 15;
-	ed.y = 210;
+	ed.y = 207;
 	ed.w = XRES;
 	ed.nx = 1;
 	ed.def = "";
@@ -3854,9 +3864,22 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 	ed.hide = 0;
 	ed.multiline = 0;
 	ed.cursor = 0;
+	//fillrect(vid_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
 	memcpy(old_buf,vid_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
-	fillrect(old_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
-
+	fillrect(old_buf, -1, -1, XRES+1, 220, 0, 0, 0, 190);
+	
+	currentcommand2 = malloc(sizeof(command_history));
+	memset(currentcommand2, 0, sizeof(command_history));
+	currentcommand2->prev_command = last_command2;
+	currentcommand2->command = mystrdup(error);
+	last_command2 = currentcommand2;
+	
+	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+	cc = 0;
+	while(cc < 80){
+		fillrect(old_buf, -1, -1+cc, XRES+BARSIZE, 2, 0, 0, 0, 160-(cc*2));
+		cc++;
+	}
 	while (!sdl_poll())
 	{
 		b = SDL_GetMouseState(&mx, &my);
@@ -3866,11 +3889,10 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 
 		//clearrect(vid_buf, 0, 0, XRES+BARSIZE, 220);//anyway to make it transparent?
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
-		draw_line(vid_buf, 1, 219, XRES, 219, 228, 228, 228, XRES+BARSIZE);
-		drawtext(vid_buf, 100, 15, "Welcome to The Powder Toy console v.3 (by cracker64)\n"
-		         "Current commands are quit, set, reset, load, create, file, kill, sound\n" //TODO: help command
-		         ,255, 187, 187, 255);
-
+		draw_line(vid_buf, 0, 219, XRES+BARSIZE-1, 219, 228, 228, 228, XRES+BARSIZE);
+		drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python by Doxin)" //TODO: help command
+				 ,255, 255, 255, 255);
+		
 		cc = 0;
 		currentcommand = last_command;
 		while(cc < 10)
@@ -3893,9 +3915,36 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 				break;
 			}
 		}
+		cc = 0;
+		currentcommand2 = last_command2;
+		while(cc < 10)
+		{
+			if(currentcommand2==NULL)
+				break;
+			drawtext(vid_buf, 215, 175-(cc*12), currentcommand2->command, 255, 225, 225, 255);
+			if(currentcommand2->prev_command!=NULL)
+			{
+				if(cc<9) {
+					currentcommand2 = currentcommand2->prev_command;
+				} else if(currentcommand2->prev_command!=NULL) {
+					free(currentcommand2->prev_command);
+					currentcommand2->prev_command = NULL;
+				}
+				cc++;
+			}
+			else
+			{
+				break;
+			}
+		}
 
-		if(error)
-			drawtext(vid_buf, 15, 190, error,255, 187, 187, 255);
+		//if(error && ed.str[0]=='\0')
+			//drawtext(vid_buf, 20, 207, error, 255, 127, 127, 200);
+		if(console_more==0)
+            drawtext(vid_buf, 5, 207, ">", 255, 255, 255, 240);
+        else
+            drawtext(vid_buf, 5, 207, "...", 255, 255, 255, 240);
+		
 		ui_edit_draw(vid_buf, &ed);
 		ui_edit_process(mx, my, b, &ed);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
@@ -3907,12 +3956,14 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 			currentcommand->command = mystrdup(ed.str);
 			last_command = currentcommand;
 			free(old_buf);
+			SDL_EnableKeyRepeat(0, SDL_DEFAULT_REPEAT_INTERVAL);
 			return currentcommand->command;
 		}
 		if (sdl_key==SDLK_ESCAPE || sdl_key==SDLK_BACKQUOTE)
 		{
 			console_mode = 0;
 			free(old_buf);
+			SDL_EnableKeyRepeat(0, SDL_DEFAULT_REPEAT_INTERVAL);
 			return NULL;
 		}
 		if(sdl_key==SDLK_UP || sdl_key==SDLK_DOWN)
@@ -3949,6 +4000,7 @@ char *console_ui(pixel *vid_buf,char error[255]) { //TODO: error messages, show 
 	}
 	console_mode = 0;
 	free(old_buf);
+	SDL_EnableKeyRepeat(0, SDL_DEFAULT_REPEAT_INTERVAL);
 	return NULL;
 }
 

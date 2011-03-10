@@ -8,13 +8,15 @@
 #endif
 
 #define SAVE_VERSION 46
-#define MINOR_VERSION 3
+#define MINOR_VERSION 4
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
 
 #define SERVER "powdertoy.co.uk"
 
 #define THUMB_CACHE_SIZE 256
+
+//#define pyconsole
 
 #define IMGCONNS 3
 #define TIMEOUT 100
@@ -64,6 +66,8 @@ extern unsigned char ZSIZE;
 #define CIRCLE_BRUSH 0
 #define SQUARE_BRUSH 1
 #define BRUSH_NUM 2
+
+#define PYCONSOLE
 
 #ifdef PIX16
 typedef unsigned short pixel;

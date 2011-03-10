@@ -1575,10 +1575,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 						}
 						else if (t==PT_LAVA) {
 							if (parts[i].ctype && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA) {
-								if (ptransitions[parts[i].ctype].tht==PT_LAVA&&pt>=ptransitions[parts[i].ctype].thv) s = 0;
-								else if (parts[i].ctype==PT_THRM&&pt>=ptransitions[PT_BMTL].thv) s = 0;
+								if (parts[i].ctype==PT_THRM&&pt>=ptransitions[PT_BMTL].thv) s = 0;
+								else if (ptransitions[parts[i].ctype].tht==PT_LAVA) {
+									if (pt>=ptransitions[parts[i].ctype].thv) s = 0;
+								}
 								else if (pt>=973.0f) s = 0; // freezing point for lava with any other (not listed in ptransitions as turning into lava) ctype
-								else {
+								if (s) {
 									t = parts[i].ctype;
 									parts[i].ctype = PT_NONE;
 									if (t==PT_THRM) {
@@ -1995,7 +1997,9 @@ killed:
 								if (try_move(i, x, y, j, clear_y))
 								{
 									parts[i].x = clear_xf+(j-clear_x);
+									parts[i].y = clear_yf;
 									nx = j;
+									ny = clear_y;
 									s = 1;
 									break;
 								}
@@ -2007,11 +2011,11 @@ killed:
 							else
 								r = -1;
 							if (s)
-								for (j=clear_y+r; j>=0 && j<YRES && j>=clear_y-rt && j<clear_y+rt; j+=r)
+								for (j=ny+r; j>=0 && j<YRES && j>=ny-rt && j<ny+rt; j+=r)
 								{
-									if (try_move(i, x, y, nx, j))
+									if (try_move(i, nx, ny, nx, j))
 									{
-										parts[i].y = clear_yf+(j-clear_y);
+										parts[i].y += j-ny;
 										break;
 									}
 									if ((pmap[j][nx]&255)!=t || (bmap[j/CELL][nx/CELL] && bmap[j/CELL][nx/CELL]!=WL_STREAM))
