@@ -479,7 +479,7 @@ void draw_svf_ui(pixel *vid_buf)
 	c = svf_login ? 255 : 128;
 	drawtext(vid_buf, 40, YRES+(MENUSIZE-14), "\x82", c, c, c, 255);
 	if (svf_open)
-		drawtext(vid_buf, 58, YRES+(MENUSIZE-12), svf_name, c, c, c, 255);
+		drawtextmax(vid_buf, 58, YRES+(MENUSIZE-12), 125, svf_name, c, c, c, 255);
 	else
 		drawtext(vid_buf, 58, YRES+(MENUSIZE-12), "[untitled simulation]", c, c, c, 255);
 	drawrect(vid_buf, 37, YRES+(MENUSIZE-16), 150, 14, c, c, c, 255);
@@ -505,7 +505,7 @@ void draw_svf_ui(pixel *vid_buf)
 
 	drawtext(vid_buf, 222, YRES+(MENUSIZE-15), "\x83", c, c, c, 255);
 	if (svf_tags[0])
-		drawtextmax(vid_buf, 240, YRES+(MENUSIZE-12), 154, svf_tags, c, c, c, 255);
+		drawtextmax(vid_buf, 240, YRES+(MENUSIZE-12), XRES+BARSIZE-405, svf_tags, c, c, c, 255);
 	else
 		drawtext(vid_buf, 240, YRES+(MENUSIZE-12), "[no tags set]", c, c, c, 255);
 
@@ -516,7 +516,7 @@ void draw_svf_ui(pixel *vid_buf)
 
 	drawtext(vid_buf, XRES-122+BARSIZE/*388*/, YRES+(MENUSIZE-13), "\x84", 255, 255, 255, 255);
 	if (svf_login)
-		drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), svf_user, 255, 255, 255, 255);
+		drawtextmax(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), 66, svf_user, 255, 255, 255, 255);
 	else
 		drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), "[sign in]", 255, 255, 255, 255);
 	drawrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14, 255, 255, 255, 255);
