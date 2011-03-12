@@ -1573,31 +1573,27 @@ void draw_parts(pixel *vid)
 						}
 						else if (parts[i].type==PT_GLOW)
 						{
-							fg = 0;
-							fb = 0;
-							fr = 0;
-							if (pv[ny/CELL][nx/CELL]>0) {
-								fg = 6 * pv[ny/CELL][nx/CELL];
-								fb = 4 * pv[ny/CELL][nx/CELL];
-								fr = 2 * pv[ny/CELL][nx/CELL];
-							}
-							vid[ny*(XRES+BARSIZE)+nx] = PIXRGB((int)restrict_flt(0x44 + fr*8, 0, 255), (int)restrict_flt(0x88 + fg*8, 0, 255), (int)restrict_flt(0x44 + fb*8, 0, 255));
+							fr = restrict_flt(parts[i].temp-(275.13f+32.0f), 0, 128)/50.0f;
+							fg = restrict_flt(parts[i].ctype, 0, 128)/50.0f;
+							fb = restrict_flt(parts[i].tmp, 0, 128)/50.0f;
+					
+							cr = restrict_flt(64.0f+parts[i].temp-(275.13f+32.0f), 0, 255);
+							cg = restrict_flt(64.0f+parts[i].ctype, 0, 255);
+							cb = restrict_flt(64.0f+parts[i].tmp, 0, 255);
 
-							/*x = nx/CELL;
+							vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cr, cg, cb);
+							x = nx/CELL;
 							y = ny/CELL;
 							fg += fire_g[y][x];
-							if(fg > 255) fg = 255;
-								fire_g[y][x] = fg;
+							if (fg > 255) fg = 255;
+							fire_g[y][x] = fg;
 							fb += fire_b[y][x];
-							if(fb > 255) fb = 255;
-								fire_b[y][x] = fb;
+							if (fb > 255) fb = 255;
+							fire_b[y][x] = fb;
 							fr += fire_r[y][x];
-							if(fr > 255) fr = 255;
-								fire_r[y][x] = fr;*/
+							if (fr > 255) fr = 255;
+							fire_r[y][x] = fr;
 
-							cr = (int)restrict_flt(0x44 + fr*8, 0, 255);
-							cg = (int)restrict_flt(0x88 + fg*8, 0, 255);
-							cb = (int)restrict_flt(0x44 + fb*8, 0, 255);
 							for (x=-1; x<=1; x++)
 							{
 								for (y=-1; y<=1; y++)
