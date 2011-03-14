@@ -23,7 +23,7 @@ powder-debug-64: $(SOURCES)
 	mv $@ build
 powder-debug: $(SOURCES)
 	$(PYCOMMAND)
-	$(COMPILER) -m32 -o$@ $(FLAGS_DBUG) -DLIN32 $(SOURCES) -Iincludes/ 
+	$(COMPILER) -DINTERNAL -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64 $(FLAGS_DBUG)
 	mv $@ build
 powder-sse3: $(SOURCES)
 	$(PYCOMMAND)

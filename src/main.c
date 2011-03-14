@@ -1214,6 +1214,7 @@ emb_create(PyObject *self, PyObject *args, PyObject *keywds)
     return Py_BuildValue("i",create_part(-1,x,y,t));
 }
 //sys_pause = !sys_pause
+static PyObject*
 emb_pause(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1224,6 +1225,7 @@ emb_pause(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_unpause(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1234,6 +1236,7 @@ emb_unpause(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_toggle_pause(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1246,6 +1249,7 @@ emb_toggle_pause(PyObject *self, PyObject *args)
 
 //console_mode
 
+static PyObject*
 emb_toggle_console(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1256,6 +1260,7 @@ emb_toggle_console(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_open_console(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1266,6 +1271,7 @@ emb_open_console(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_close_console(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1276,7 +1282,7 @@ emb_close_console(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
-
+static PyObject*
 emb_log(PyObject *self, PyObject *args)
 {
     char *buffer;
@@ -1290,6 +1296,7 @@ emb_log(PyObject *self, PyObject *args)
 
 char console_more=0;
 
+static PyObject*
 emb_console_more(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":log"))
@@ -1299,6 +1306,7 @@ emb_console_more(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_console_less(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":log"))
@@ -1310,7 +1318,7 @@ emb_console_less(PyObject *self, PyObject *args)
 
 //drawtext(vid_buf, 15, 175-(cc*12), currentcommand->command, 255, 255, 255, 255);
 
-
+static PyObject*
 emb_reset_pressure(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":reset_pressure"))
@@ -1324,6 +1332,7 @@ emb_reset_pressure(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_reset_velocity(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":reset_velocity"))
@@ -1338,6 +1347,7 @@ emb_reset_velocity(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_reset_sparks(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":reset_sparks"))
@@ -1354,6 +1364,7 @@ emb_reset_sparks(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1394,6 +1405,7 @@ emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j=-1,x=-1,y=-1;
@@ -1436,6 +1448,7 @@ emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1476,6 +1489,7 @@ emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1516,6 +1530,7 @@ emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1557,6 +1572,7 @@ emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_y(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1597,6 +1613,7 @@ emb_set_y(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1640,6 +1657,7 @@ emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1680,6 +1698,7 @@ emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1719,6 +1738,8 @@ emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 	}
         return Py_BuildValue("i",1);
 }
+
+static PyObject*
 emb_get_pmap(PyObject *self, PyObject *args)
 {
     int x,y;
@@ -1730,6 +1751,8 @@ emb_get_pmap(PyObject *self, PyObject *args)
 
     return Py_BuildValue("I",pmap[y][x]);
 }
+
+static PyObject*
 emb_get_prop(PyObject *self, PyObject *args)
 {
     int i;
@@ -1762,6 +1785,7 @@ emb_get_prop(PyObject *self, PyObject *args)
     return Py_BuildValue("i",-1);
 }
 
+static PyObject*
 emb_draw_pixel(PyObject *self, PyObject *args)
 {
     int x,y,r,g,b,a;
@@ -1779,6 +1803,7 @@ emb_draw_pixel(PyObject *self, PyObject *args)
 }
 
 //drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a)
+static PyObject*
 emb_draw_text(PyObject *self, PyObject *args)
 {
     int x,y,r,g,b,a;
@@ -1795,6 +1820,7 @@ emb_draw_text(PyObject *self, PyObject *args)
 }
 
 //drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
+static PyObject*
 emb_draw_rect(PyObject *self, PyObject *args)
 {
     int x,y,w,h,r,g,b,a;
@@ -1810,6 +1836,7 @@ emb_draw_rect(PyObject *self, PyObject *args)
     return Py_BuildValue("i",-1);
 }
 
+static PyObject*
 emb_draw_fillrect(PyObject *self, PyObject *args)
 {
     int x,y,w,h,r,g,b,a;
@@ -1824,7 +1851,9 @@ emb_draw_fillrect(PyObject *self, PyObject *args)
     }
     return Py_BuildValue("i",-1);
 }
+
 //int textwidth(char *s)
+static PyObject*
 emb_get_width(PyObject *self, PyObject *args)
 {
     char *txt;
@@ -1834,6 +1863,7 @@ emb_get_width(PyObject *self, PyObject *args)
 }
 
 //SDL_GetMouseState(&x, &y)
+static PyObject*
 emb_get_mouse(PyObject *self, PyObject *args)
 {
     int x,y,mask,b1,b2,b3;
@@ -1847,6 +1877,7 @@ emb_get_mouse(PyObject *self, PyObject *args)
 }
 
 //svf_name
+static PyObject*
 emb_get_name(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":get_name"))
@@ -1857,6 +1888,7 @@ emb_get_name(PyObject *self, PyObject *args)
         return Py_BuildValue("s","");
 }
 
+static PyObject*
 emb_shortcuts_disable(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":shortcuts_disable"))
@@ -1866,6 +1898,7 @@ emb_shortcuts_disable(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_shortcuts_enable(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":shortcuts_enable"))
@@ -1875,6 +1908,7 @@ emb_shortcuts_enable(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_get_modifier(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":get_modifier"))

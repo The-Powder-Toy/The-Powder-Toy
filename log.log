@@ -1,0 +1,1788 @@
+gcc: unrecognized option '-wall'
+In file included from src/air.c:3:0:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from src/graphics.c:17:0:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+src/graphics.c: In function ‘drawtextwrap’:
+src/graphics.c:866:3: warning: passing argument 1 of ‘textwidthx’ discards qualifiers from pointer target type
+includes/graphics.h:99:5: note: expected ‘char *’ but argument is of type ‘const char *’
+src/graphics.c: At top level:
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+In file included from src/interface.c:14:0:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from src/main.c:53:0:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+src/main.c:1920:5: warning: initialization from incompatible pointer type
+src/main.c:1925:5: warning: initialization from incompatible pointer type
+src/main.c:1926:5: warning: initialization from incompatible pointer type
+src/main.c:1927:5: warning: initialization from incompatible pointer type
+src/main.c:1928:5: warning: initialization from incompatible pointer type
+src/main.c:1929:5: warning: initialization from incompatible pointer type
+src/main.c:1930:5: warning: initialization from incompatible pointer type
+src/main.c:1931:5: warning: initialization from incompatible pointer type
+src/main.c:1932:5: warning: initialization from incompatible pointer type
+src/main.c:1933:5: warning: initialization from incompatible pointer type
+src/main.c: In function ‘main’:
+src/main.c:2017:5: warning: implicit declaration of function ‘PyMarshal_ReadObjectFromString’
+src/main.c:2017:33: warning: initialization makes pointer from integer without a cast
+src/main.c:2080:2: warning: passing argument 1 of ‘textwidth’ discards qualifiers from pointer target type
+includes/graphics.h:91:5: note: expected ‘char *’ but argument is of type ‘const char *’
+src/main.c:2275:7: warning: passing argument 2 of ‘error_ui’ makes integer from pointer without a cast
+includes/interface.h:176:6: note: expected ‘int’ but argument is of type ‘char *’
+src/main.c:2690:33: warning: comparison between pointer and integer
+src/main.c:3608:4: warning: implicit declaration of function ‘process_command’
+src/main.c: At top level:
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+In file included from src/misc.c:10:0:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from src/powder.c:4:0:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/acid.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/amtr.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/aray.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/bcln.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/bcol.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/bmtl.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/bomb.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/boyl.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/btry.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/c5.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/clne.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/coal.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/deut.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/dstw.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/elementmisc.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/firw.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/fog.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/frzw.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/frzz.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/fsep.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/fuse.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/fwrk.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/glas.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/glow.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/goo.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/hswc.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/ice.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/iron.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/isz.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/lcry.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/legacy.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/mort.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/neut.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/none.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/nptct.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/pcln.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/phot.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/pipe.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/plnt.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/plut.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/prti.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/prto.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/pump.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/pyro.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/qrtz.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/rime.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/shld.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/sing.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/sltw.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/spng.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/sprk.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/stkm2.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/stkm.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/swch.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/thdr.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/thrm.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/uran.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/vine.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/warp.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/watr.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/wifi.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/wtrv.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+In file included from includes/element.h:5:0,
+                 from src/elements/yest.c:1:
+includes/powder.h:774:1: warning: variably modified ‘portal’ at file scope
+includes/powder.h:775:1: warning: variably modified ‘portaltemp’ at file scope
+includes/powder.h:776:1: warning: variably modified ‘portalctype’ at file scope
+includes/powder.h:777:1: warning: variably modified ‘wireless’ at file scope
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+includes/misc.h:39:21: warning: inline function ‘restrict_flt’ declared but never defined
+includes/misc.h:33:24: warning: inline function ‘clamp_flt’ declared but never defined
+includes/misc.h:27:19: warning: inline function ‘isign’ declared but never defined
+includes/powder.h:838:19: warning: inline function ‘is_wire_off’ declared but never defined
+includes/powder.h:832:19: warning: inline function ‘is_wire’ declared but never defined
+includes/powder.h:826:20: warning: inline function ‘delete_part’ declared but never defined
+includes/powder.h:820:19: warning: inline function ‘create_part’ declared but never defined
+includes/powder.h:814:20: warning: inline function ‘part_change_type’ declared but never defined
+includes/graphics.h:76:19: warning: inline function ‘drawchar’ declared but never defined
+includes/graphics.h:70:20: warning: inline function ‘drawpixel’ declared but never defined
+/usr/bin/ld: Warning: alignment 8 of symbol `MSIGN' in /tmp/ccSZQdIM.o is smaller than 16 in /tmp/ccvMOqln.o
