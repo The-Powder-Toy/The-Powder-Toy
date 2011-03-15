@@ -1927,7 +1927,7 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"set_tmp", 	    (PyCFunction)emb_set_tmp, 		METH_VARARGS|METH_KEYWORDS,	"sets tmp of a specified particle."},
     {"set_x", 		    (PyCFunction)emb_set_x, 		METH_VARARGS|METH_KEYWORDS,	"sets x of a specified particle."},
     {"set_y", 		    (PyCFunction)emb_set_y, 		METH_VARARGS|METH_KEYWORDS,	"sets y of a specified particle."},
-    {"set_ctype",   	(PyCFunction)emb_set_y, 		METH_VARARGS|METH_KEYWORDS,	"sets ctype of a specified particle."},
+    {"set_ctype",   	(PyCFunction)emb_set_ctype, 		METH_VARARGS|METH_KEYWORDS,	"sets ctype of a specified particle."},
     {"set_vx", 		    (PyCFunction)emb_set_vx, 		METH_VARARGS|METH_KEYWORDS,	"sets vx of a specified particle."},
     {"set_vy", 		    (PyCFunction)emb_set_vy, 		METH_VARARGS|METH_KEYWORDS,	"sets vy of a specified particle."},
     {"pause", 		    (PyCFunction)emb_pause, 		METH_VARARGS,			"pause the game."},
