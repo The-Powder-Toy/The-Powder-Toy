@@ -27,9 +27,7 @@
 
 #ifdef PYCONSOLE
 #include "Python.h"
-#ifndef PYEXT
 #include "pyconsole.h"
-#endif
 #endif
 
 #include <stdio.h>
@@ -2009,6 +2007,7 @@ int main(int argc, char *argv[])
     PyRun_SimpleString("print 'python present.'");
     //load the console module and whatnot
     #ifdef PYEXT
+    PyRun_SimpleString(tpt_console_py);
     printf("using external python console file.\n");
     pname=PyString_FromString("tpt_console");//create string object
     pmodule = PyImport_Import(pname);//import module
