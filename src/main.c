@@ -1204,6 +1204,7 @@ int main(int argc, char *argv[])
 #ifdef INTERNAL
 	int vs = 0;
 #endif
+	int wavelength_gfx = 0;
 	int x, y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
 	int da = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2;
 	float nfvx, nfvy;
@@ -1954,7 +1955,7 @@ int main(int argc, char *argv[])
 				if (DEBUG_MODE)
 				{
 					int tctype = parts[cr>>8].ctype;
-					if (tctype>=PT_NUM)
+					if (tctype>=PT_NUM || (cr&0xFF)==PT_PHOT)
 						tctype = 0;
 					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 					sprintf(coordtext, "#%d, X:%d Y:%d", cr>>8, x/sdl_scale, y/sdl_scale);
@@ -1965,6 +1966,7 @@ int main(int argc, char *argv[])
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
 #endif
 				}
+				if ((cr&0xFF)==PT_PHOT) wavelength_gfx = parts[cr>>8].ctype;
 			}
 			else
 			{
@@ -2692,6 +2694,8 @@ int main(int argc, char *argv[])
 						fillrect(vid_buf, XRES-20-textwidth(coordtext), 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
 						drawtext(vid_buf, XRES-16-textwidth(coordtext), 282, coordtext, 255, 255, 255, 200);
 					}
+					if (wavelength_gfx)
+						draw_wavelengths(vid_buf,XRES-20-textwidth(heattext),265,2,wavelength_gfx);
 				}
 				else
 				{
@@ -2702,6 +2706,8 @@ int main(int argc, char *argv[])
 						fillrect(vid_buf, 12, 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
 						drawtext(vid_buf, 16, 282, coordtext, 255, 255, 255, 200);
 					}
+					if (wavelength_gfx)
+						draw_wavelengths(vid_buf,12,265,2,wavelength_gfx);
 				}
 			}
 			else
@@ -2713,7 +2719,10 @@ int main(int argc, char *argv[])
 					fillrect(vid_buf, XRES-20-textwidth(coordtext), 26, textwidth(coordtext)+8, 11, 0, 0, 0, 140);
 					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, 200);
 				}
+				if (wavelength_gfx)
+					draw_wavelengths(vid_buf,XRES-20-textwidth(heattext),11,2,wavelength_gfx);
 			}
+			wavelength_gfx = 0;
 			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
 			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
 			

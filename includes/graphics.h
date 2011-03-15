@@ -121,7 +121,7 @@ void xor_line(int x1, int y1, int x2, int y2, pixel *vid);
 void xor_rect(pixel *vid, int x, int y, int w, int h);
 
 void draw_parts(pixel *vid);
-
+void draw_wavelengths(pixel *vid, int x, int y, int h, int wl);
 void render_signs(pixel *vid_buf);
 
 void render_fire(pixel *dst);
