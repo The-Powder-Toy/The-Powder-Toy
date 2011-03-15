@@ -3,8 +3,8 @@
 powder.def
 gmon.out
 *.*.orig
-build/powder*
 build/stamps/*
 *~
 *.pyc
 utils/*
+*.log

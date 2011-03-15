@@ -1213,6 +1213,7 @@ emb_create(PyObject *self, PyObject *args, PyObject *keywds)
     return Py_BuildValue("i",create_part(-1,x,y,t));
 }
 //sys_pause = !sys_pause
+static PyObject*
 emb_pause(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1223,6 +1224,7 @@ emb_pause(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_unpause(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1233,6 +1235,7 @@ emb_unpause(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_toggle_pause(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1245,6 +1248,7 @@ emb_toggle_pause(PyObject *self, PyObject *args)
 
 //console_mode
 
+static PyObject*
 emb_toggle_console(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1255,6 +1259,7 @@ emb_toggle_console(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_open_console(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1265,6 +1270,7 @@ emb_open_console(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_close_console(PyObject *self, PyObject *args)
 {
     int x,y,t;
@@ -1275,7 +1281,7 @@ emb_close_console(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
-
+static PyObject*
 emb_log(PyObject *self, PyObject *args)
 {
     char *buffer;
@@ -1289,6 +1295,7 @@ emb_log(PyObject *self, PyObject *args)
 
 char console_more=0;
 
+static PyObject*
 emb_console_more(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":log"))
@@ -1298,6 +1305,7 @@ emb_console_more(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_console_less(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":log"))
@@ -1309,7 +1317,7 @@ emb_console_less(PyObject *self, PyObject *args)
 
 //drawtext(vid_buf, 15, 175-(cc*12), currentcommand->command, 255, 255, 255, 255);
 
-
+static PyObject*
 emb_reset_pressure(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":reset_pressure"))
@@ -1323,6 +1331,7 @@ emb_reset_pressure(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_reset_velocity(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":reset_velocity"))
@@ -1337,6 +1346,7 @@ emb_reset_velocity(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_reset_sparks(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":reset_sparks"))
@@ -1353,6 +1363,7 @@ emb_reset_sparks(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1393,6 +1404,7 @@ emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j=-1,x=-1,y=-1;
@@ -1435,6 +1447,7 @@ emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1475,6 +1488,7 @@ emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1515,6 +1529,7 @@ emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1556,6 +1571,7 @@ emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_y(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1596,6 +1612,7 @@ emb_set_y(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1639,6 +1656,7 @@ emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1679,6 +1697,7 @@ emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
         return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int i = -1,life,j,x=-1,y=-1;
@@ -1718,6 +1737,8 @@ emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 	}
         return Py_BuildValue("i",1);
 }
+
+static PyObject*
 emb_get_pmap(PyObject *self, PyObject *args)
 {
     int x,y;
@@ -1729,6 +1750,8 @@ emb_get_pmap(PyObject *self, PyObject *args)
 
     return Py_BuildValue("I",pmap[y][x]);
 }
+
+static PyObject*
 emb_get_prop(PyObject *self, PyObject *args)
 {
     int i;
@@ -1761,6 +1784,7 @@ emb_get_prop(PyObject *self, PyObject *args)
     return Py_BuildValue("i",-1);
 }
 
+static PyObject*
 emb_draw_pixel(PyObject *self, PyObject *args)
 {
     int x,y,r,g,b,a;
@@ -1778,6 +1802,7 @@ emb_draw_pixel(PyObject *self, PyObject *args)
 }
 
 //drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a)
+static PyObject*
 emb_draw_text(PyObject *self, PyObject *args)
 {
     int x,y,r,g,b,a;
@@ -1794,6 +1819,7 @@ emb_draw_text(PyObject *self, PyObject *args)
 }
 
 //drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
+static PyObject*
 emb_draw_rect(PyObject *self, PyObject *args)
 {
     int x,y,w,h,r,g,b,a;
@@ -1809,6 +1835,7 @@ emb_draw_rect(PyObject *self, PyObject *args)
     return Py_BuildValue("i",-1);
 }
 
+static PyObject*
 emb_draw_fillrect(PyObject *self, PyObject *args)
 {
     int x,y,w,h,r,g,b,a;
@@ -1823,7 +1850,9 @@ emb_draw_fillrect(PyObject *self, PyObject *args)
     }
     return Py_BuildValue("i",-1);
 }
+
 //int textwidth(char *s)
+static PyObject*
 emb_get_width(PyObject *self, PyObject *args)
 {
     char *txt;
@@ -1833,6 +1862,7 @@ emb_get_width(PyObject *self, PyObject *args)
 }
 
 //SDL_GetMouseState(&x, &y)
+static PyObject*
 emb_get_mouse(PyObject *self, PyObject *args)
 {
     int x,y,mask,b1,b2,b3;
@@ -1846,6 +1876,7 @@ emb_get_mouse(PyObject *self, PyObject *args)
 }
 
 //svf_name
+static PyObject*
 emb_get_name(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":get_name"))
@@ -1856,6 +1887,7 @@ emb_get_name(PyObject *self, PyObject *args)
         return Py_BuildValue("s","");
 }
 
+static PyObject*
 emb_shortcuts_disable(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":shortcuts_disable"))
@@ -1865,6 +1897,7 @@ emb_shortcuts_disable(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_shortcuts_enable(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":shortcuts_enable"))
@@ -1874,6 +1907,7 @@ emb_shortcuts_enable(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
 emb_get_modifier(PyObject *self, PyObject *args)
 {
     if(!PyArg_ParseTuple(args, ":get_modifier"))
@@ -1882,40 +1916,40 @@ emb_get_modifier(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
-    {"create",		emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
-    {"log", 		emb_log, 		METH_VARARGS,			"logs an error string to the console."},
-    {"reset_pressure", 	emb_reset_pressure, 	METH_VARARGS,			"resets all the pressure."},
-    {"reset_velocity", 	emb_reset_velocity, 	METH_VARARGS,			"resets all the velocity."},
-    {"reset_sparks", 	emb_reset_sparks, 	METH_VARARGS,			"resets all the sparks."},
-    {"set_life",	emb_set_life, 		METH_VARARGS|METH_KEYWORDS,	"sets life of a specified particle."},
-    {"set_type", 	emb_set_type, 		METH_VARARGS|METH_KEYWORDS,	"sets type of a specified particle."},
-    {"set_temp", 	emb_set_temp, 		METH_VARARGS|METH_KEYWORDS,	"sets temp of a specified particle."},
-    {"set_tmp", 	emb_set_tmp, 		METH_VARARGS|METH_KEYWORDS,	"sets tmp of a specified particle."},
-    {"set_x", 		emb_set_x, 		METH_VARARGS|METH_KEYWORDS,	"sets x of a specified particle."},
-    {"set_y", 		emb_set_y, 		METH_VARARGS|METH_KEYWORDS,	"sets y of a specified particle."},
-    {"set_ctype", 	emb_set_y, 		METH_VARARGS|METH_KEYWORDS,	"sets ctype of a specified particle."},
-    {"set_vx", 		emb_set_vx, 		METH_VARARGS|METH_KEYWORDS,	"sets vx of a specified particle."},
-    {"set_vy", 		emb_set_vy, 		METH_VARARGS|METH_KEYWORDS,	"sets vy of a specified particle."},
-    {"pause", 		emb_pause, 		METH_VARARGS,			"pause the game."},
-    {"unpause", 	emb_unpause, 		METH_VARARGS,			"unpause the game."},
-    {"pause_toggle", 	emb_toggle_pause, 	METH_VARARGS,			"toggle game pause."},
-    {"console_open", 	emb_open_console, 	METH_VARARGS,			"open the game console."},
-    {"console_close", 	emb_close_console, 	METH_VARARGS,			"close the game console."},
-    {"console_toggle", 	emb_toggle_console, 	METH_VARARGS,			"toggle the game console."},
-    {"console_more", 	emb_console_more, 	METH_VARARGS,			"turns the more indicator on."},
-    {"console_less", 	emb_console_less, 	METH_VARARGS,			"turns the more indicator off."},
-    {"get_pmap", 	emb_get_pmap, 		METH_VARARGS,			"get the pmap value."},
-    {"get_prop", 	emb_get_prop, 		METH_VARARGS,			"get some properties."},
-    {"draw_pixel",    emb_draw_pixel,       METH_VARARGS,           "draw a pixel."},
-    {"draw_text",    emb_draw_text,       METH_VARARGS,           "draw some text."},
-    {"draw_rect",    emb_draw_rect,       METH_VARARGS,           "draw a rect."},
-    {"draw_fillrect",    emb_draw_fillrect,       METH_VARARGS,           "draw a rect."},
-    {"get_width",    emb_get_width,       METH_VARARGS,           "get string width."},
-    {"get_mouse",    emb_get_mouse,       METH_VARARGS,           "get mouse status."},
-    {"get_name",    emb_get_name,       METH_VARARGS,           "get name of logged in user"},
-    {"shortcuts_disable",    emb_shortcuts_disable,       METH_VARARGS,           "disable keyboard shortcuts"},
-    {"shortcuts_enable",    emb_shortcuts_enable,       METH_VARARGS,           "enable keyboard shortcuts"},
-    {"get_modifier",    emb_get_modifier,       METH_VARARGS,           "get pressed modifier keys"},
+    {"create",		    (PyCFunction)emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
+    {"log", 		    (PyCFunction)emb_log, 		METH_VARARGS,			"logs an error string to the console."},
+    {"reset_pressure", 	(PyCFunction)emb_reset_pressure, 	METH_VARARGS,			"resets all the pressure."},
+    {"reset_velocity", 	(PyCFunction)emb_reset_velocity, 	METH_VARARGS,			"resets all the velocity."},
+    {"reset_sparks", 	(PyCFunction)emb_reset_sparks, 	METH_VARARGS,			"resets all the sparks."},
+    {"set_life",	    (PyCFunction)emb_set_life, 		METH_VARARGS|METH_KEYWORDS,	"sets life of a specified particle."},
+    {"set_type", 	    (PyCFunction)emb_set_type, 		METH_VARARGS|METH_KEYWORDS,	"sets type of a specified particle."},
+    {"set_temp", 	    (PyCFunction)emb_set_temp, 		METH_VARARGS|METH_KEYWORDS,	"sets temp of a specified particle."},
+    {"set_tmp", 	    (PyCFunction)emb_set_tmp, 		METH_VARARGS|METH_KEYWORDS,	"sets tmp of a specified particle."},
+    {"set_x", 		    (PyCFunction)emb_set_x, 		METH_VARARGS|METH_KEYWORDS,	"sets x of a specified particle."},
+    {"set_y", 		    (PyCFunction)emb_set_y, 		METH_VARARGS|METH_KEYWORDS,	"sets y of a specified particle."},
+    {"set_ctype",   	(PyCFunction)emb_set_y, 		METH_VARARGS|METH_KEYWORDS,	"sets ctype of a specified particle."},
+    {"set_vx", 		    (PyCFunction)emb_set_vx, 		METH_VARARGS|METH_KEYWORDS,	"sets vx of a specified particle."},
+    {"set_vy", 		    (PyCFunction)emb_set_vy, 		METH_VARARGS|METH_KEYWORDS,	"sets vy of a specified particle."},
+    {"pause", 		    (PyCFunction)emb_pause, 		METH_VARARGS,			"pause the game."},
+    {"unpause", 	    (PyCFunction)emb_unpause, 		METH_VARARGS,			"unpause the game."},
+    {"pause_toggle", 	(PyCFunction)emb_toggle_pause, 	METH_VARARGS,			"toggle game pause."},
+    {"console_open", 	(PyCFunction)emb_open_console, 	METH_VARARGS,			"open the game console."},
+    {"console_close", 	(PyCFunction)emb_close_console, 	METH_VARARGS,			"close the game console."},
+    {"console_toggle", 	(PyCFunction)emb_toggle_console, 	METH_VARARGS,			"toggle the game console."},
+    {"console_more", 	(PyCFunction)emb_console_more, 	METH_VARARGS,			"turns the more indicator on."},
+    {"console_less", 	(PyCFunction)emb_console_less, 	METH_VARARGS,			"turns the more indicator off."},
+    {"get_pmap", 	    (PyCFunction)emb_get_pmap, 		METH_VARARGS,			"get the pmap value."},
+    {"get_prop", 	    (PyCFunction)emb_get_prop, 		METH_VARARGS,			"get some properties."},
+    {"draw_pixel",      (PyCFunction)emb_draw_pixel,       METH_VARARGS,           "draw a pixel."},
+    {"draw_text",       (PyCFunction)emb_draw_text,       METH_VARARGS,           "draw some text."},
+    {"draw_rect",       (PyCFunction)emb_draw_rect,       METH_VARARGS,           "draw a rect."},
+    {"draw_fillrect",   (PyCFunction)emb_draw_fillrect,       METH_VARARGS,           "draw a rect."},
+    {"get_width",       (PyCFunction)emb_get_width,       METH_VARARGS,           "get string width."},
+    {"get_mouse",       (PyCFunction)emb_get_mouse,       METH_VARARGS,           "get mouse status."},
+    {"get_name",        (PyCFunction)emb_get_name,       METH_VARARGS,           "get name of logged in user"},
+    {"shortcuts_disable",    (PyCFunction)emb_shortcuts_disable,       METH_VARARGS,           "disable keyboard shortcuts"},
+    {"shortcuts_enable",     (PyCFunction)emb_shortcuts_enable,       METH_VARARGS,           "enable keyboard shortcuts"},
+    {"get_modifier",         (PyCFunction)emb_get_modifier,       METH_VARARGS,           "get pressed modifier keys"},
     {NULL, NULL, 0, NULL}
 };
 #endif
@@ -1973,8 +2007,16 @@ int main(int argc, char *argv[])
     PyRun_SimpleString("import sys\nsys.path.append('.')");
     PyRun_SimpleString("print 'python present.'");
     //load the console module and whatnot
+    #ifdef PYEXT
+    PyRun_SimpleString(tpt_console_py);
+    printf("using external python console file.\n");
+    pname=PyString_FromString("tpt_console");//create string object
+    pmodule = PyImport_Import(pname);//import module
+    Py_DECREF(pname);//throw away string
+    #else
     PyObject *tpt_console_obj = PyMarshal_ReadObjectFromString(tpt_console_pyc+8, sizeof(tpt_console_pyc)-8);
     pmodule=PyImport_ExecCodeModule("tpt_console", tpt_console_obj);
+    #endif
     if(pmodule!=NULL)
     {
         pfunc=PyObject_GetAttrString(pmodule,"handle");//get the handler function
@@ -3610,6 +3652,10 @@ int main(int argc, char *argv[])
 	}
 	SDL_CloseAudio();
 	http_done();
+    PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.py'))\nexcept:\n    pass");
+    PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.pyo'))\nexcept:\n    pass");
+    PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.pyc'))\nexcept:\n    pass");
+    
     Py_Finalize();//cleanup any python stuff.
 	return 0;
 }

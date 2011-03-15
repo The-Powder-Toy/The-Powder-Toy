@@ -68,6 +68,9 @@ extern unsigned char ZSIZE;
 #define BRUSH_NUM 2
 
 #define PYCONSOLE
+//#define PYEXT
+//WARNING pyext must be defined on 64bit!
+//also, don't add a comment on that line, it breaks.
 
 #ifdef PIX16
 typedef unsigned short pixel;
