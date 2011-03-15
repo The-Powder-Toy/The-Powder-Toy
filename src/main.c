@@ -1618,7 +1618,7 @@ emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
     int i = -1,life,j,x=-1,y=-1;
     char *name = "";
     char *type = "";
-    char *kwlist[] = {"setto", "toctypeint", "from", "i", "x", "y", NULL};
+    char *kwlist[] = {"setto", "settoint", "from", "i", "x", "y", NULL};
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "s|IsIII:set_type",kwlist ,&type, &life, &name,&i,&x,&y))
         return NULL;
     //
