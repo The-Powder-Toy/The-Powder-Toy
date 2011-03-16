@@ -2927,9 +2927,9 @@ void draw_parts(pixel *vid)
 
 void draw_wavelengths(pixel *vid, int x, int y, int h, int wl)
 {
-	fillrect(vid,x-1,y-1,30+1,h+1,64,64,64,255); // coords -1 size +1 to work around bug in fillrect - TODO: fix fillrect
 	int i,cr,cg,cb,j;
 	int tmp;
+	fillrect(vid,x-1,y-1,30+1,h+1,64,64,64,255); // coords -1 size +1 to work around bug in fillrect - TODO: fix fillrect
 	for (i=0;i<30;i++)
 	{
 		if ((wl>>i)&1)

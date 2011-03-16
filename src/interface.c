@@ -2840,11 +2840,12 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			data = http_async_req_stop(http, &status, &data_size);
 			if (status == 200)
 			{
+				pixel *full_save;
 				if (!data||!data_size) {
 					error_ui(vid_buf, 0, "Save data is empty (may be corrupt)");
 					break;
 				}
-				pixel *full_save = prerender_save(data, data_size, &imgw, &imgh);
+				full_save = prerender_save(data, data_size, &imgw, &imgh);
 				if (full_save!=NULL) {
 					save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
 					data_ready = 1;

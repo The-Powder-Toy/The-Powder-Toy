@@ -1195,7 +1195,6 @@ int main(int argc, char *argv[])
 	int pastFPS = 0;
 	int past = 0;
 	pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
-	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	void *http_ver_check;
 	void *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
@@ -1214,6 +1213,7 @@ int main(int argc, char *argv[])
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
+	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	GSPEED = 1;
 
 	/* Set 16-bit stereo audio at 22Khz */
