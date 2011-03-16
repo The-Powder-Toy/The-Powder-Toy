@@ -1,17 +1,22 @@
 import tpt
+from tpt import *
 import sys
 import code
 import ctypes
 import traceback
-from threading import Thread
-print "console module loaded."
+DEBUG=False
+
+#print "console module loaded."
 #redirect stdout like this:
 class logger:
     def write(self,txt):
-        txt=txt.split("\n")[-1][:254]
+        txt=txt.strip().split("\n")[-1]
+        repr(txt)
         tpt.log(txt)
-#sys.stdout=logger()
-#sys.stderr=logger()
+if(DEBUG==False):
+    sys.stdout=logger()
+    sys.stderr=logger()
+
 
 element={"none":0,"dust":1,"watr":2,"oil":3,"fire":4,"stne":5,"lava":6,"gunp":7,
     "nitr":8,"clne":9,"gas":10,"plex":11,"goo":12,"icei":13,"metl":14,"sprk":15,
@@ -37,38 +42,11 @@ element={"none":0,"dust":1,"watr":2,"oil":3,"fire":4,"stne":5,"lava":6,"gunp":7,
     "lote":142,"frg2":143,"star":144,"frog":145,"bran":146,"wind":147,
     "num":148}
 
-class _fork(Thread):
-    def __init__ (self,func):
-        Thread.__init__(self)
-        self.func=func
-    def run(self):
-        self.func(self)
-def fork(func):
-    try:
-        a=fork.threads
-    except:
-        fork.threads={}
-        fork.i=0
-    tmp=_fork(func)
-    fork.threads[fork.i]=tmp
-    fork.i+=1
-    tmp.start()
-    return tmp
-    tpt.log("Thread #%d started"%(fork.i-1))
-def fork_status():
-    count=0
-    remove=[]
-    for key in fork.threads:
-        if(fork.threads[key].is_alive()):
-            count+=1
-        else:
-            remove.append[key]
-    for item in remove:
-        del fork.threads[item]
-    tpt.log("%d threads alive. %d threads stopped since last status."%(count,len(remove)))
+
 def fork_unblock():
     pass#i need to implement this some day.
 def error(ex):
+    traceback.print_exc()
     err=traceback.format_exc()
     sys.stdout.write(err)
 
@@ -95,12 +73,44 @@ def handle(txt):
 def _handle(txt):
     #print "handling '%s'"%txt
     try:
-        sys.stdout.write(repr(eval(tmp,handle.glob)))
+        sys.stdout.write(repr(eval(txt,handle.glob)))
     except:
         try:
             exec txt in handle.glob
         except Exception as ex:
             error(ex)
-        
-    
-    
+
+
+_extensions=[]
+def loadext(fname):
+    ext=__import__(fname)
+    ext.init()
+    _extensions.append(ext)
+
+def keypress(key):
+    unload=[]
+    for item in _extensions:
+        try:
+            item.key(key)
+        except Exception as ex:
+            error(ex)
+            unload.append(item)
+    for item in unload:
+        item.exit()
+        _extensions.remove(item)
+                
+
+def step():
+    unload=[]
+    for item in _extensions:
+        try:
+            item.step()
+        except Exception as ex:
+            error(ex)
+            unload.append(item)
+    for item in unload:
+        try:
+            item.exit()
+        except Exception as ex:
+            error(ex)
+        _extensions.remove(item)
