@@ -2728,14 +2728,10 @@ void create_box(int x1, int y1, int x2, int y2, int c)
 int flood_parts(int x, int y, int c, int cm, int bm)
 {
 	int x1, x2, dy = (c<PT_NUM)?1:CELL;
-	int co = c, wall;
+	int co = c;
 	if (cm==PT_INST&&co==PT_SPRK)
 		if ((pmap[y][x]&0xFF)==PT_SPRK)
 			return 0;
-	if (c>=UI_WALLSTART&&c<=UI_WALLSTART+UI_WALLCOUNT)
-	{
-		wall = c-100;
-	}
 	if (cm==-1)
 	{
 		if (c==0)
@@ -2751,7 +2747,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 	}
 	if (bm==-1)
 	{
-		if (wall==WL_ERASE)
+		if (c-UI_WALLSTART+UI_ACTUALSTART==WL_ERASE)
 		{
 			bm = bmap[y/CELL][x/CELL];
 			if (!bm)
