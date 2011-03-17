@@ -250,8 +250,22 @@ int try_move(int i, int x, int y, int nx, int ny)
 	e = r >> 8;
 	if (r && e<NPART)
 	{
-		if (parts[e].type == PT_PHOT)
+		if (parts[e].type == PT_PHOT||parts[e].type == PT_NEUT)
 			return 1;
+
+		if (parts[i].type==PT_NEUT) {
+			// target material is NEUTPENETRATE, meaning it gets moved around when neutron passes
+			unsigned s = pmap[y][x];
+			if ((s&0xFF) && (s&0xFF)<PT_NUM && !(ptypes[s&0xFF].properties&PROP_NEUTPENETRATE))
+				return 1; // if the element currently underneath neutron isn't NEUTPENETRATE, don't move it around
+			if ((pmap[ny][nx]>>8)==e) pmap[ny][nx] = (s&~(0xFF))|parts[s>>8].type;
+			parts[e].x = x;
+			parts[e].y = y;
+			pmap[y][x] = (e<<8)|parts[e].type;
+			parts[s>>8].x = nx;
+			parts[s>>8].y = ny;
+			return 1;
+		}
 
 		if ((pmap[ny][nx]>>8)==e) pmap[ny][nx] = 0;
 		parts[e].x += x-nx;
@@ -457,7 +471,7 @@ inline void part_change_type(int i, int x, int y, int t)
 	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART || t<0 || t>=PT_NUM)
 		return;
 	parts[i].type = t;
-	if (t==PT_PHOT)// || t==PT_NEUT)
+	if (t==PT_PHOT || t==PT_NEUT)
 	{
 		photons[y][x] = t|(i<<8);
 		if ((pmap[y][x]>>8)==i)
@@ -505,9 +519,9 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
 		parts[i].ctype = 0;
 		parts[i].temp += (n*17);
 		parts[i].tmp = 0;
-		if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && !pmap[y][x])// && t!=PT_NEUT)
+		if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT && !pmap[y][x])
 			pmap[y][x] = t|(i<<8);
-		else if (t==PT_PHOT && !photons[y][x])
+		else if ((t==PT_PHOT||t==PT_NEUT) && !photons[y][x])
 			photons[y][x] = t|(i<<8);
 
 		pv[y/CELL][x/CELL] += 6.0f * CFDS;
@@ -627,7 +641,7 @@ inline int create_part(int p, int x, int y, int t)
 			}
 			return -1;
 		}
-		if (photons[y][x] && t==PT_PHOT)
+		if (photons[y][x] && (t==PT_PHOT||t==PT_NEUT))
 			return -1;
 		if (pfree == -1)
 			return -1;
@@ -735,8 +749,6 @@ inline int create_part(int p, int x, int y, int t)
 		parts[i].vx = 3.0f*cosf(a);
 		parts[i].vy = 3.0f*sinf(a);
 	}
-	if (t==PT_PHOT)
-		photons[y][x] = t|(i<<8);
 	if (t==PT_STKM)
 	{
 		if (isplayer==0)
@@ -855,7 +867,9 @@ inline int create_part(int p, int x, int y, int t)
 	}
 	if (t==PT_BIZR||t==PT_BIZRG)
 		parts[i].ctype = 0x47FFFF;
-	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT)// && t!=PT_NEUT)  is this needed? it breaks floodfill, Yes photons should not be placed in the PMAP
+	if (t==PT_PHOT||t==PT_NEUT)
+		photons[y][x] = t|(i<<8);
+	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT) // is this needed? it breaks floodfill, Yes photons should not be placed in the PMAP
 		pmap[y][x] = t|(i<<8);
 
 	return i;
@@ -2051,13 +2065,13 @@ killed:
 			if (ny!=y || nx!=x)
 			{
 				if ((pmap[y][x]>>8)==i) pmap[y][x] = 0;
-				else if (t==PT_PHOT&&(photons[y][x]>>8)==i) photons[y][x] = 0;
+				else if ((photons[y][x]>>8)==i) photons[y][x] = 0;
 				if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
 				{
 					kill_part(i);
 					continue;
 				}
-				if (t==PT_PHOT)
+				if (t==PT_PHOT||t==PT_NEUT)
 					photons[ny][nx] = t|(i<<8);
 				else
 					pmap[ny][nx] = t|(i<<8);
@@ -2092,12 +2106,13 @@ void update_particles(pixel *vid)
 			t = parts[i].type;
 			x = (int)(parts[i].x+0.5f);
 			y = (int)(parts[i].y+0.5f);
-			if (x>=0 && y>=0 && x<XRES && y<YRES && t!=PT_PHOT) {
-				if (t!=PT_NEUT || (pmap[y][x]&0xFF)!=PT_GLAS)
+			if (x>=0 && y>=0 && x<XRES && y<YRES)
+			{
+				if (t==PT_PHOT||t==PT_NEUT)
+					photons[y][x] = t|(i<<8);
+				else
 					pmap[y][x] = t|(i<<8);
 			}
-			if (t==PT_PHOT)
-				photons[y][x] = t|(i<<8);
 			NUM_PARTS ++;
 		}
 		else
