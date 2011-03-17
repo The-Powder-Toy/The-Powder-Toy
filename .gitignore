@@ -8,3 +8,4 @@ build/stamps/*
 *.pyc
 utils/*
 *.log
+build/ext_*

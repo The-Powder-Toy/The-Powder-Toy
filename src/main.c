@@ -1915,6 +1915,19 @@ emb_get_modifier(PyObject *self, PyObject *args)
      return Py_BuildValue("(iiiiii)",sdl_mod&KMOD_LCTRL,sdl_mod&KMOD_RCTRL,sdl_mod&KMOD_LALT,sdl_mod&KMOD_RALT,sdl_mod&KMOD_LSHIFT,sdl_mod&KMOD_RSHIFT);
 }
 
+//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+static PyObject*
+emb_set_keyrepeat(PyObject *self, PyObject *args)
+{
+    ////SDL_EnableKeyRepeat(delay,interval)
+    int keydelay,keyinterval;
+    keydelay=SDL_DEFAULT_REPEAT_DELAY;
+    keyinterval=SDL_DEFAULT_REPEAT_INTERVAL;
+    if(!PyArg_ParseTuple(args, "|ii:set_keyrepeat",&keydelay,&keyinterval))
+        return NULL;
+    return Py_BuildValue("i",SDL_EnableKeyRepeat(keydelay,keyinterval));
+}
+
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
     {"create",		    (PyCFunction)emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
     {"log", 		    (PyCFunction)emb_log, 		METH_VARARGS,			"logs an error string to the console."},
@@ -1950,6 +1963,7 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"shortcuts_disable",    (PyCFunction)emb_shortcuts_disable,       METH_VARARGS,           "disable keyboard shortcuts"},
     {"shortcuts_enable",     (PyCFunction)emb_shortcuts_enable,       METH_VARARGS,           "enable keyboard shortcuts"},
     {"get_modifier",         (PyCFunction)emb_get_modifier,       METH_VARARGS,           "get pressed modifier keys"},
+    {"set_keyrepeat",        (PyCFunction)emb_set_keyrepeat,       METH_VARARGS,           "set key repeat rate."},
     {NULL, NULL, 0, NULL}
 };
 #endif
