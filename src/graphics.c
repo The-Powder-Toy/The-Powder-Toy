@@ -2913,12 +2913,6 @@ void draw_parts(pixel *vid)
 			}
 		}
 #endif
-        if (parts[i].type==PT_WATR){
-            if(parts[i].life==0)
-                blendpixel(vid,x+nx,y+ny,0,255,0,255);
-            else
-                blendpixel(vid,x+nx,y+ny,255,0,0,255);
-        }
 	}
 #ifdef OpenGL
 	glFlush ();

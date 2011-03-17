@@ -1928,6 +1928,18 @@ emb_set_keyrepeat(PyObject *self, PyObject *args)
     return Py_BuildValue("i",SDL_EnableKeyRepeat(keydelay,keyinterval));
 }
 
+//delete_part
+static PyObject*
+emb_delete(PyObject *self, PyObject *args)
+{
+    ////SDL_EnableKeyRepeat(delay,interval)
+    int x,y;
+    if(!PyArg_ParseTuple(args, "ii:delete",&x,&y))
+        return NULL;
+    delete_part(x,y);
+    return Py_BuildValue("i",1);
+}
+
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
     {"create",		    (PyCFunction)emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
     {"log", 		    (PyCFunction)emb_log, 		METH_VARARGS,			"logs an error string to the console."},
@@ -1964,6 +1976,7 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"shortcuts_enable",     (PyCFunction)emb_shortcuts_enable,       METH_VARARGS,           "enable keyboard shortcuts"},
     {"get_modifier",         (PyCFunction)emb_get_modifier,       METH_VARARGS,           "get pressed modifier keys"},
     {"set_keyrepeat",        (PyCFunction)emb_set_keyrepeat,       METH_VARARGS,           "set key repeat rate."},
+    {"delete",        (PyCFunction)emb_delete,       METH_VARARGS,           "delete a particle"},
     {NULL, NULL, 0, NULL}
 };
 #endif
