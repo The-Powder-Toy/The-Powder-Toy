@@ -5,6 +5,7 @@
 #include "graphics.h"
 #include "defines.h"
 #include "interface.h"
+#include "misc.h"
 
 #define CM_COUNT 11
 #define CM_CRACK 10
@@ -863,5 +864,6 @@ int flood_parts(int x, int y, int c, int cm, int bm);
 int create_parts(int x, int y, int rx, int ry, int c);
 
 void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c);
+void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
 
 #endif

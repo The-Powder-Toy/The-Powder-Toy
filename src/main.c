@@ -1797,17 +1797,41 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
-		if (sdl_key=='r'&&(sdl_mod & (KMOD_CTRL))&&(sdl_mod & (KMOD_SHIFT)))
+		if (load_mode==1)
 		{
-			save_mode = 1;
-			copy_mode = 4;//invert
+			matrix2d transform = m2d_identity;
+			vector2d translate = v2d_zero;
+			void *ndata;
+			int doTransform = 0;
+			if (sdl_key=='r'&&(sdl_mod & (KMOD_CTRL))&&(sdl_mod & (KMOD_SHIFT)))
+			{
+				transform = m2d_new(-1,0,0,1); //horizontal invert
+				doTransform = 1;
+			}
+			else if (sdl_key=='r'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+			{
+				transform = m2d_new(0,-1,1,0); //rotate anticlockwise 90 degrees
+				doTransform = 1;
+			}
+			else if (sdl_mod & (KMOD_CTRL))
+			{
+				doTransform = 1;
+				if (sdl_key==SDLK_LEFT) translate = v2d_new(-1,0);
+				else if (sdl_key==SDLK_RIGHT) translate = v2d_new(1,0);
+				else if (sdl_key==SDLK_UP) translate = v2d_new(0,-1);
+				else if (sdl_key==SDLK_DOWN) translate = v2d_new(0,1);
+				else doTransform = 0;
+			}
+			if (doTransform)
+			{
+				ndata = transform_save(load_data, &load_size, transform, translate);
+				if (ndata!=load_data) free(load_data);
+				free(load_img);
+				load_data = ndata;
+				load_img = prerender_save(load_data, load_size, &load_w, &load_h);
+			}
 		}
-		else if (sdl_key=='r'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
-		{
-			save_mode = 1;
-			copy_mode = 3;//rotate
-		}
-		else if (sdl_key=='r')
+		if (sdl_key=='r'&&!(sdl_mod & (KMOD_CTRL|KMOD_SHIFT)))
 			GENERATION = 0;
 		if (sdl_key=='x'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
 		{
