@@ -12,7 +12,7 @@ if(len(sys.argv)>1 and sys.argv[1]=="--clean"):
     raise SystemExit
 
 print "zipping stdlib"
-fid=zipfile.ZipFile("./build/stdlib.zip","w",zipfile.ZIP_DEFLATED)
+fid=zipfile.ZipFile("./build/tptPython.zip","w",zipfile.ZIP_DEFLATED)
 
 #ZipFile.write(filename)
 files=os.walk("./src/python/stdlib")
