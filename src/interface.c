@@ -3076,7 +3076,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		if (queue_open) {
 			if (info_ready && data_ready) {
 				// Do Open!
-				status = parse_save(data, data_size, 1, 0, 0);
+				status = parse_save(data, data_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 				if (!status) {
 					//if(svf_last)
 					//free(svf_last);
@@ -3598,7 +3598,7 @@ void execute_save(pixel *vid_buf)
 	plens[0] = strlen(svf_name);
 	parts[1] = svf_description;
 	plens[1] = strlen(svf_description);
-	parts[2] = build_save(plens+2, 0, 0, XRES, YRES);
+	parts[2] = build_save(plens+2, 0, 0, XRES, YRES, bmap, fvx, fvy, signs, parts);
 	parts[3] = build_thumb(plens+3, 1);
 	parts[4] = (svf_publish==1)?"Public":"Private";
 	plens[4] = strlen((svf_publish==1)?"Public":"Private");

@@ -296,11 +296,12 @@ void *build_thumb(int *size, int bzip2)
 	return d;
 }
 
-void *build_save(int *size, int x0, int y0, int w, int h)
+void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
 {
 	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*11+MAXSIGNS*262), *c;
 	int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
 	int bx0=x0/CELL, by0=y0/CELL, bw=(w+CELL-1)/CELL, bh=(h+CELL-1)/CELL;
+	particle *parts = partsptr;
 
 	// normalize coordinates
 	x0 = bx0*CELL;
@@ -466,12 +467,13 @@ void *build_save(int *size, int x0, int y0, int w, int h)
 	return c;
 }
 
-int parse_save(void *save, int size, int replace, int x0, int y0)
+int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES])
 {
 	unsigned char *d,*c=save;
 	int q,i,j,k,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int)), ver, pty, ty, legacy_beta=0;
 	int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
 	int fp[NPART], nf=0, new_format = 0, ttv = 0;
+	particle *parts = partsptr;
 
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
@@ -996,7 +998,7 @@ void stamp_save(int x, int y, int w, int h)
 	FILE *f;
 	int n;
 	char fn[64], sn[16];
-	void *s=build_save(&n, x, y, w, h);
+	void *s=build_save(&n, x, y, w, h, bmap, fvx, fvy, signs, parts);
 
 #ifdef WIN32
 	_mkdir("stamps");
@@ -2146,7 +2148,7 @@ int main(int argc, char *argv[])
 			if (load_y<0) load_y=0;
 			if (bq==1 && !b)
 			{
-				parse_save(load_data, load_size, 0, load_x, load_y);
+				parse_save(load_data, load_size, 0, load_x, load_y, bmap, fvx, fvy, signs, parts, pmap);
 				free(load_data);
 				free(load_img);
 				load_mode = 0;
@@ -2188,14 +2190,14 @@ int main(int argc, char *argv[])
 			{
 				if (copy_mode==1)
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
 				}
 				else if (copy_mode==2)
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
@@ -2327,7 +2329,7 @@ int main(int argc, char *argv[])
 					}
 					if (x>=19 && x<=35 && svf_last && svf_open && !bq) {
 						//int tpval = sys_pause;
-						parse_save(svf_last, svf_lsize, 1, 0, 0);
+						parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 						//sys_pause = tpval;
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
