@@ -1810,7 +1810,7 @@ int main(int argc, char *argv[])
 			}
 			else if (sdl_key=='r'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
 			{
-				transform = m2d_new(0,-1,1,0); //rotate anticlockwise 90 degrees
+				transform = m2d_new(0,1,-1,0); //rotate anticlockwise 90 degrees
 				doTransform = 1;
 			}
 			else if (sdl_mod & (KMOD_CTRL))
@@ -2227,22 +2227,6 @@ int main(int argc, char *argv[])
 					copy_mode = 0;
 					clear_area(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
 				}
-				else if (copy_mode==3)//rotation
-				{
-					if (save_h>save_w)
-						save_w = save_h;
-					rotate_area(save_x*CELL, save_y*CELL, save_w*CELL, save_w*CELL,0);//just do squares for now
-					save_mode = 0;
-					copy_mode = 0;
-				}
-				else if (copy_mode==4)//invertion
-				{
-					if (save_h>save_w)
-						save_w = save_h;
-					rotate_area(save_x*CELL, save_y*CELL, save_w*CELL, save_w*CELL,1);//just do squares for now
-					save_mode = 0;
-					copy_mode = 0;
-				}
 				else
 				{
 					stamp_save(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
@@ -2564,14 +2548,7 @@ int main(int argc, char *argv[])
 
 		if (save_mode)
 		{
-			if (copy_mode==3||copy_mode==4)//special drawing for rotate, can remove once it can do rectangles
-			{
-				if (save_h>save_w)
-					save_w = save_h;
-				xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_w*CELL);
-			}
-			else
-				xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+			xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
 			da = 51;
 			db = 269;
 		}
