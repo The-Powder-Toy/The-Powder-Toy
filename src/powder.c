@@ -753,29 +753,14 @@ inline int create_part(int p, int x, int y, int t)
 	{
 		if (isplayer==0)
 		{
-			if ((pmap[y][x]&0xFF)==PT_SPAWN)
-			{
-				parts[pmap[y][x]>>8].type = PT_STKM;
-				parts[pmap[y][x]>>8].vx = 0;
-				parts[pmap[y][x]>>8].vy = 0;
-				parts[pmap[y][x]>>8].life = 100;
-				parts[pmap[y][x]>>8].ctype = 0;
-				parts[pmap[y][x]>>8].temp = ptypes[t].heat;
-
-			}
-			else
-			{
-				parts[i].x = (float)x;
-				parts[i].y = (float)y;
-				parts[i].type = PT_STKM;
-				parts[i].vx = 0;
-				parts[i].vy = 0;
-				parts[i].life = 100;
-				parts[i].ctype = 0;
-				parts[i].temp = ptypes[t].heat;
-			}
-
-
+			parts[i].x = (float)x;
+			parts[i].y = (float)y;
+			parts[i].type = PT_STKM;
+			parts[i].vx = 0;
+			parts[i].vy = 0;
+			parts[i].life = 100;
+			parts[i].ctype = 0;
+			parts[i].temp = ptypes[t].heat;
 
 			player[3] = x-1;  //Setting legs positions
 			player[4] = y+6;
@@ -803,7 +788,6 @@ inline int create_part(int p, int x, int y, int t)
 		{
 			return -1;
 		}
-		//kill_part(playerspawn);
 		create_part(-1,x,y,PT_SPAWN);
 		ISSPAWN1 = 1;
 	}
@@ -811,29 +795,14 @@ inline int create_part(int p, int x, int y, int t)
 	{
 		if (isplayer2==0)
 		{
-			if ((pmap[y][x]&0xFF)==PT_SPAWN2)
-			{
-				parts[pmap[y][x]>>8].type = PT_STKM2;
-				parts[pmap[y][x]>>8].vx = 0;
-				parts[pmap[y][x]>>8].vy = 0;
-				parts[pmap[y][x]>>8].life = 100;
-				parts[pmap[y][x]>>8].ctype = 0;
-				parts[pmap[y][x]>>8].temp = ptypes[t].heat;
-
-			}
-			else
-			{
-				parts[i].x = (float)x;
-				parts[i].y = (float)y;
-				parts[i].type = PT_STKM2;
-				parts[i].vx = 0;
-				parts[i].vy = 0;
-				parts[i].life = 100;
-				parts[i].ctype = 0;
-				parts[i].temp = ptypes[t].heat;
-			}
-
-
+			parts[i].x = (float)x;
+			parts[i].y = (float)y;
+			parts[i].type = PT_STKM2;
+			parts[i].vx = 0;
+			parts[i].vy = 0;
+			parts[i].life = 100;
+			parts[i].ctype = 0;
+			parts[i].temp = ptypes[t].heat;
 
 			player2[3] = x-1;  //Setting legs positions
 			player2[4] = y+6;
@@ -861,7 +830,6 @@ inline int create_part(int p, int x, int y, int t)
 		{
 			return -1;
 		}
-		//kill_part(player2spawn);
 		create_part(-1,x,y,PT_SPAWN2);
 		ISSPAWN2 = 1;
 	}
