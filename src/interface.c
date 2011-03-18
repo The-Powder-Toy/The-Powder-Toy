@@ -3851,7 +3851,7 @@ typedef struct command_history command_history;
 command_history *last_command = NULL;
 command_history *last_command2 = NULL;
 char *console_ui(pixel *vid_buf,char error[255],char console_more) {
-	int mx,my,b,cc,ci = -1;
+	int mx,my,b,cc,ci = -1,i;
 	pixel *old_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	command_history *currentcommand;
 	command_history *currentcommand2;
@@ -3892,10 +3892,14 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 		//clearrect(vid_buf, 0, 0, XRES+BARSIZE, 220);//anyway to make it transparent?
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 		draw_line(vid_buf, 0, 219, XRES+BARSIZE-1, 219, 228, 228, 228, XRES+BARSIZE);
-        if(pyready)
-            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python by Doxin)",255, 255, 255, 255);
+        if(pygood)
+            i=255;
         else
-            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)",255, 0, 0, 255);
+            i=0;
+        if(pyready)
+            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python by Doxin)",255,i,i, 255);
+        else
+            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)",255,i,i, 255);
 		
 		cc = 0;
 		currentcommand = last_command;

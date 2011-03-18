@@ -31,6 +31,7 @@
 #include "pyconsole.h"
 //#include "pystdlib.h"
 char pyready=1;
+char pygood=1;
 #endif
 
 #include <stdio.h>
@@ -1965,6 +1966,15 @@ emb_set_velocity(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
+emb_disable_python(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ":disable_python"))
+        return NULL;
+    pyready=0;
+    return Py_BuildValue("i",1);
+}
+
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
     {"create",		    (PyCFunction)emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
     {"log", 		    (PyCFunction)emb_log, 		METH_VARARGS,			"logs an error string to the console."},
@@ -2004,6 +2014,7 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"delete",        (PyCFunction)emb_delete,       METH_VARARGS,           "delete a particle"},
     {"set_pressure",        (PyCFunction)emb_set_pressure,       METH_VARARGS,           "set pressure"},
     {"set_velocity",        (PyCFunction)emb_set_velocity,       METH_VARARGS,           "set velocity"},
+    {"disable_python",        (PyCFunction)emb_disable_python,       METH_VARARGS,           "switch back to the old console."},
     {NULL, NULL, 0, NULL}
 };
 #endif
@@ -2093,6 +2104,7 @@ int main(int argc, char *argv[])
             printf("unable to find handle function, mangled console.py?\n");
             //return -1;
             pyready=0;
+            pygood=0;
         }
         
         pstep=PyObject_GetAttrString(pmodule,"step");//get the handler function
@@ -2122,6 +2134,7 @@ int main(int argc, char *argv[])
         printf("unable to find console module, missing file or mangled console.py?\n");
         //return -1;
         pyready=0;
+        pygood=0;
     }
 #else
         printf("python console disabled at compile time.");
@@ -2751,7 +2764,7 @@ int main(int argc, char *argv[])
             }
         }
         #ifdef PYCONSOLE
-        if(pyready==1)
+        if(pyready==1 && pygood==1)
             if(pkey!=NULL && sdl_key!=NULL)
             {
                 pargs=Py_BuildValue("(c)",sdl_key);
@@ -3664,7 +3677,7 @@ int main(int argc, char *argv[])
 		if(console_mode)
 		{
             #ifdef PYCONSOLE
-            if(pyready==1)
+            if(pyready==1 && pygood==1)
             {
                 char *console;
                 //char error[255] = "error!";
@@ -3716,7 +3729,7 @@ int main(int argc, char *argv[])
 		
 		//execute python step hook
 		#ifdef PYCONSOLE
-		if(pyready==1)
+		if(pyready==1 && pygood==1)
             if(pstep!=NULL)
             {
                 pargs=Py_BuildValue("()");
@@ -3907,6 +3920,11 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
             if (sound_enable) play_sound(console3);
             else strcpy(console_error, "Audio device not available - cannot play sounds");
         }
+        else if(strcmp(console2, "python")==0)
+            if(pygood==1)
+                pyready=1;
+            else
+                strcpy(console_error, "python not ready. check stdout for more info.");
         else if(strcmp(console2, "load")==0 && console3)
         {
             j = atoi(console3);

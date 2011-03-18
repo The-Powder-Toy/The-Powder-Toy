@@ -162,6 +162,7 @@ int death2;
 int ISSPAWN1;
 int ISSPAWN2;
 extern char pyready;
+extern char pygood;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;
