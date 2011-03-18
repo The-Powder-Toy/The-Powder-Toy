@@ -15,6 +15,8 @@
 #include <interface.h>
 #include <misc.h>
 
+
+//char pyready=1;
 SDLMod sdl_mod;
 int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
 
@@ -3890,8 +3892,10 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 		//clearrect(vid_buf, 0, 0, XRES+BARSIZE, 220);//anyway to make it transparent?
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 		draw_line(vid_buf, 0, 219, XRES+BARSIZE-1, 219, 228, 228, 228, XRES+BARSIZE);
-		drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python by Doxin)" //TODO: help command
-				 ,255, 255, 255, 255);
+        if(pyready)
+            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python by Doxin)",255, 255, 255, 255);
+        else
+            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)",255, 0, 0, 255);
 		
 		cc = 0;
 		currentcommand = last_command;

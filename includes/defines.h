@@ -9,7 +9,7 @@
 
 #define SAVE_VERSION 46
 #define MINOR_VERSION 4
-#define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
+#define IDENT_VERSION "D" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
 
 #define SERVER "powdertoy.co.uk"
@@ -161,6 +161,7 @@ int player2spawn;
 int death2;
 int ISSPAWN1;
 int ISSPAWN2;
+extern char pyready;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;
