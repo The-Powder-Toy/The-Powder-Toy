@@ -29,6 +29,7 @@
 #ifdef PYCONSOLE
 #include "Python.h"
 #include "pyconsole.h"
+//#include "pystdlib.h"
 #endif
 
 #include <stdio.h>
@@ -1940,6 +1941,29 @@ emb_delete(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+static PyObject*
+emb_set_pressure(PyObject *self, PyObject *args)
+{
+    ////SDL_EnableKeyRepeat(delay,interval)
+    int x,y,press;
+    if(!PyArg_ParseTuple(args, "iii:set_pressure",&x,&y,&press))
+        return NULL;
+    pv[y/CELL][x/CELL]=press;
+    return Py_BuildValue("i",1);
+}
+
+static PyObject*
+emb_set_velocity(PyObject *self, PyObject *args)
+{
+    ////SDL_EnableKeyRepeat(delay,interval)
+    int x,y,xv,yv;
+    if(!PyArg_ParseTuple(args, "iiii:set_velocity",&x,&y,&xv,&yv))
+        return NULL;
+    vx[y/CELL][x/CELL]=xv;
+    vy[y/CELL][x/CELL]=yv;
+    return Py_BuildValue("i",1);
+}
+
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
     {"create",		    (PyCFunction)emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
     {"log", 		    (PyCFunction)emb_log, 		METH_VARARGS,			"logs an error string to the console."},
@@ -1977,6 +2001,8 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"get_modifier",         (PyCFunction)emb_get_modifier,       METH_VARARGS,           "get pressed modifier keys"},
     {"set_keyrepeat",        (PyCFunction)emb_set_keyrepeat,       METH_VARARGS,           "set key repeat rate."},
     {"delete",        (PyCFunction)emb_delete,       METH_VARARGS,           "delete a particle"},
+    {"set_pressure",        (PyCFunction)emb_set_pressure,       METH_VARARGS,           "set pressure"},
+    {"set_velocity",        (PyCFunction)emb_set_velocity,       METH_VARARGS,           "set velocity"},
     {NULL, NULL, 0, NULL}
 };
 #endif
@@ -2027,11 +2053,20 @@ int main(int argc, char *argv[])
 	fmt.userdata = NULL;
 	
     #ifdef PYCONSOLE
+    //dump tpt_console_stdlib to file here
+    /*#include "pystdlib.h"
+    FILE* fid;
+    fid=fopen("stdlib.zip","w");
+    //fputs(tpt_console_stdlib,fid);
+    fwrite(&tpt_console_stdlib,1,tpt_console_stdlibsize,fid);
+    fclose(fid);*/
+    //crashes gcc
+    
     //initialise python console
     Py_Initialize();
     Py_InitModule("tpt", EmbMethods);
     //change the path to find all the correct modules
-    PyRun_SimpleString("import sys\nsys.path.append('.')");
+    PyRun_SimpleString("import sys\nsys.path.append('./stdlib.zip')\nsys.path.append('.')");
     PyRun_SimpleString("print 'python present.'");
     //load the console module and whatnot
     #ifdef PYEXT

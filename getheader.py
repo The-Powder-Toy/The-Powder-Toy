@@ -42,7 +42,7 @@ else:
     print "internal"
     #unsigned char tpt_console_pyc[] = { 0x1B, 0x57};
     lst=[]
-    compileall.compile_dir("./src/python", force=1)
+    compileall.compile_dir("./src/python", force=0)
 
     print "generating pyconsole.h"
 

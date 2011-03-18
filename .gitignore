@@ -9,3 +9,4 @@ build/stamps/*
 utils/*
 *.log
 build/ext_*
+src/python/stdlib/*
