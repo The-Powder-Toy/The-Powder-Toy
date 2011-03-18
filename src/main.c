@@ -30,6 +30,7 @@
 #include "Python.h"
 #include "pyconsole.h"
 //#include "pystdlib.h"
+char pyready=1;
 #endif
 
 #include <stdio.h>
@@ -2090,7 +2091,8 @@ int main(int argc, char *argv[])
         {
             PyErr_Print();
             printf("unable to find handle function, mangled console.py?\n");
-            return -1;
+            //return -1;
+            pyready=0;
         }
         
         pstep=PyObject_GetAttrString(pmodule,"step");//get the handler function
@@ -2118,7 +2120,8 @@ int main(int argc, char *argv[])
         //sys.stderr
         PyErr_Print();
         printf("unable to find console module, missing file or mangled console.py?\n");
-        return -1;
+        //return -1;
+        pyready=0;
     }
 #else
         printf("python console disabled at compile time.");
@@ -2748,18 +2751,19 @@ int main(int argc, char *argv[])
             }
         }
         #ifdef PYCONSOLE
-        if(pkey!=NULL && sdl_key!=NULL)
-        {
-            pargs=Py_BuildValue("(c)",sdl_key);
-            pvalue = PyObject_CallObject(pkey, pargs);
-            Py_DECREF(pargs);
-            pargs=NULL;
-            if(pvalue==NULL)
-                strcpy(console_error,"failed to execute key code.");
-            //Py_DECREF(pvalue);
-            //puts("a");
-            pvalue=NULL;
-        }
+        if(pyready==1)
+            if(pkey!=NULL && sdl_key!=NULL)
+            {
+                pargs=Py_BuildValue("(c)",sdl_key);
+                pvalue = PyObject_CallObject(pkey, pargs);
+                Py_DECREF(pargs);
+                pargs=NULL;
+                if(pvalue==NULL)
+                    strcpy(console_error,"failed to execute key code.");
+                //Py_DECREF(pvalue);
+                //puts("a");
+                pvalue=NULL;
+            }
         #endif
 #ifdef INTERNAL
 		int counterthing;
@@ -3660,6 +3664,8 @@ int main(int argc, char *argv[])
 		if(console_mode)
 		{
             #ifdef PYCONSOLE
+            if(pyready==1)
+            {
 			char *console;
 			//char error[255] = "error!";
 			sys_pause = 1;
@@ -3674,6 +3680,9 @@ int main(int argc, char *argv[])
 			free(console);
 			if(!console_mode)
 				hud_enable = 1;
+            }
+            else
+                console_mode=0;
             #else
             console_mode=0;
             #endif
@@ -3681,18 +3690,19 @@ int main(int argc, char *argv[])
 		
 		//execute python step hook
 		#ifdef PYCONSOLE
-		if(pstep!=NULL)
-        {
-            pargs=Py_BuildValue("()");
-            pvalue = PyObject_CallObject(pstep, pargs);
-            Py_DECREF(pargs);
-            pargs=NULL;
-            if(pvalue==NULL)
-                strcpy(console_error,"failed to execute step code.");
-            //Py_DECREF(pvalue);
-            //puts("a");
-            pvalue=NULL;
-        }
+		if(pyready==1)
+            if(pstep!=NULL)
+            {
+                pargs=Py_BuildValue("()");
+                pvalue = PyObject_CallObject(pstep, pargs);
+                Py_DECREF(pargs);
+                pargs=NULL;
+                if(pvalue==NULL)
+                    strcpy(console_error,"failed to execute step code.");
+                //Py_DECREF(pvalue);
+                //puts("a");
+                pvalue=NULL;
+            }
         #endif
 		sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
