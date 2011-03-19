@@ -185,8 +185,10 @@ int update_STKM(UPDATE_FUNC_ARGS) {
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r || (r>>8)>=NPART)
+					r = photons[y+ry][x+rx];
+				if (!r || (r>>8)>=NPART)
 					continue;
-				if (ptypes[r&0xFF].falldown!=0 || (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT) // TODO: photons are not in the pmap. This line may not work as intended.
+				if (ptypes[r&0xFF].falldown!=0 || (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT)
 				{
 					player[2] = r&0xFF;  //Current element
 				}
@@ -225,26 +227,27 @@ int update_STKM(UPDATE_FUNC_ARGS) {
 			}
 			else
 			{
+				int np = -1;
 				if (player[2] == SPC_AIR)
 					create_parts(rx + 3*((((int)player[1])&0x02) == 0x02) - 3*((((int)player[1])&0x01) == 0x01), ry, 4, 4, SPC_AIR);
 				else
-					create_part(-1, rx, ry, player[2]);
-
-				r = pmap[ry][rx];
-				if ( ((r>>8) < NPART) && (r>>8)>=0 && player[2] != PT_PHOT && player[2] != SPC_AIR)
-					parts[r>>8].vx = parts[r>>8].vx + 5*((((int)player[1])&0x02) == 0x02) - 5*(((int)(player[1])&0x01) == 0x01);
-				if (((r>>8) < NPART) && (r>>8)>=0 && player[2] == PT_PHOT)
+					np = create_part(-1, rx, ry, player[2]);
+				if ( (np < NPART) && np>=0 && player[2] != PT_PHOT && player[2] != SPC_AIR)
+					parts[np].vx = parts[np].vx + 5*((((int)player[1])&0x02) == 0x02) - 5*(((int)(player[1])&0x01) == 0x01);
+				if ((np < NPART) && np>=0 && player[2] == PT_PHOT)
 				{
 					int random = abs(rand()%3-1)*3;
 					if (random==0)
 					{
-						parts[r>>8].life = 0;
-						parts[r>>8].type = PT_NONE;
+						kill_part(np);
 					}
 					else
 					{
-						parts[r>>8].vy = 0;
-						parts[r>>8].vx = (((((int)player[1])&0x02) == 0x02) - (((int)(player[1])&0x01) == 0x01))*random;
+						parts[np].vy = 0;
+						if (((int)player[1])&(0x01|0x02))
+							parts[np].vx = (((((int)player[1])&0x02) == 0x02) - (((int)(player[1])&0x01) == 0x01))*random;
+						else
+							parts[np].vx = random;
 					}
 				}
 
