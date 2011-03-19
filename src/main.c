@@ -2076,10 +2076,10 @@ int main(int argc, char *argv[])
     
     //initialise python console
     Py_Initialize();
+    PyRun_SimpleString("print 'python present.'");
     Py_InitModule("tpt", EmbMethods);
     //change the path to find all the correct modules
     PyRun_SimpleString("import sys\nsys.path.append('./tptPython.zip')\nsys.path.append('.')");
-    PyRun_SimpleString("print 'python present.'");
     //load the console module and whatnot
     #ifdef PYEXT
     PyRun_SimpleString(tpt_console_py);

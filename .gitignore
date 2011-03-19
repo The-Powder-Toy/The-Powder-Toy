@@ -8,5 +8,5 @@ build/stamps/*
 *.pyc
 utils/*
 *.log
-build/ext_*
+build/*
 src/python/stdlib/*
