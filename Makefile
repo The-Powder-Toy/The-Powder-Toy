@@ -18,7 +18,7 @@ powder: $(SOURCES)
 	$(COMPILER) -DINTERNAL -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64
 	mv $@ build
 powder-debug-64: $(SOURCES)
-	$(PYCOMMAND)
+	$(PYCOMMAND) --64bit
 	$(COMPILER) -m64 -o$@ $(FLAGS_DBUG) -DLIN64 $(SOURCES) -Iincludes/
 	mv $@ build
 powder-debug: $(SOURCES)
@@ -41,17 +41,17 @@ powder-sse: $(SOURCES)
 	strip $@
 	mv $@ build
 powder-64-sse3-opengl: $(SOURCES)
-	$(PYCOMMAND)
+	$(PYCOMMAND) --64bit
 	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64 -lGL -lGLU -DOpenGL
 	strip $@
 	mv $@ build
 powder-64-sse3: $(SOURCES)
-	$(PYCOMMAND)
+	$(PYCOMMAND) --64bit
 	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64 
 	strip $@
 	mv $@ build
 powder-64-sse2: $(SOURCES)
-	$(PYCOMMAND)
+	$(PYCOMMAND) --64bit
 	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE2) $(SOURCES) -DLIN64
 	strip $@
 	mv $@ build

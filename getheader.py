@@ -14,12 +14,14 @@ print "\n windows args are"
 print args,"-I%s"%path
 
 ext=False
-#see if we're on 64bit.
+"""#see if we're on 64bit.
 with open("./includes/defines.h") as fid:
     for line in fid:
         if(line.startswith("#define") and line.count("PYEXT")>0):
             print "using external console.py"
-            ext=True
+            ext=True"""
+if("--64bit" in sys.argv):
+    ext=True
 
 if(ext):
     print "external"
