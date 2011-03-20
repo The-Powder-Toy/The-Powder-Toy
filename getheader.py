@@ -20,11 +20,15 @@ with open("./includes/defines.h") as fid:
         if(line.startswith("#define") and line.count("PYEXT")>0):
             print "using external console.py"
             ext=True"""
-if("--64bit" in sys.argv):
+#print sys.argv
+if(len(sys.argv)>=2 and sys.argv[1]=="--64bit"):
     ext=True
+    print "YEAHS"
+#raw_input("")
 
 if(ext):
     print "external"
+    #raw_input(sys.argv)
     with open("./src/python/tpt_console.py") as fid:
         consolepy=fid.read()
     script="""
@@ -42,6 +46,7 @@ with open(os.path.join(dir,"tpt_console.py"),"w") as fid:
         fid.write(''.join(out))
 else:
     print "internal"
+    #raw_input(sys.argv)
     #unsigned char tpt_console_pyc[] = { 0x1B, 0x57};
     lst=[]
     compileall.compile_dir("./src/python", force=0)
