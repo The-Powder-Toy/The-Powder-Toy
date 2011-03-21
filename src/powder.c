@@ -136,6 +136,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 	if (x==nx && y==ny)
 		return 1;
+	if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
+		return 1;
 
 	e = eval_move(parts[i].type, nx, ny, &r);
 
