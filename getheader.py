@@ -13,25 +13,59 @@ args="-lpython%s -lm -L%s"%(sys.version[:3],os.path.join(sys.exec_prefix,"lib","
 print "\n windows args are"
 print args,"-I%s"%path
 
-#unsigned char tpt_console_pyc[] = { 0x1B, 0x57};
-lst=[]
-compileall.compile_dir("./src/python", force=1)
+ext=False
+"""#see if we're on 64bit.
+with open("./includes/defines.h") as fid:
+    for line in fid:
+        if(line.startswith("#define") and line.count("PYEXT")>0):
+            print "using external console.py"
+            ext=True"""
+#print sys.argv
+if(len(sys.argv)>=2 and sys.argv[1]=="--64bit"):
+    ext=True
+    print "YEAHS"
+#raw_input("")
 
-print "generating pyconsole.h"
+if(ext):
+    print "external"
+    #raw_input(sys.argv)
+    with open("./src/python/tpt_console.py") as fid:
+        consolepy=fid.read()
+    script="""
+import tempfile,os.path,sys
+dir=tempfile.gettempdir()
+sys.path.append(dir)
+tmp=%s
+print "making console.py @ %%s"%%os.path.join(dir,"tpt_console.py")
+with open(os.path.join(dir,"tpt_console.py"),"w") as fid:
+    fid.write(tmp)
+    """%repr(consolepy)
+    tmp=[hex(ord(char)) for char in script]
+    out=["unsigned char tpt_console_py[] = {",','.join(tmp),"};"]
+    with open("./includes/pyconsole.h","w") as fid:
+        fid.write(''.join(out))
+else:
+    print "internal"
+    #raw_input(sys.argv)
+    #unsigned char tpt_console_pyc[] = { 0x1B, 0x57};
+    lst=[]
+    compileall.compile_dir("./src/python", force=0)
 
-fname="./src/python/tpt_console.pyc"
-try:
-    fid=open(fname,"r")
-except IOError:
-    fname="./src/python/tpt_console.pyo"
-finally:
-    fid.close()
+    print "generating pyconsole.h"
 
-with open(fname,"r") as fid:
-    for char in fid.read():
-        lst.append(hex(ord(char)))
-tmp=",".join(lst)
-out=''.join(["#include <Python.h>\nunsigned char tpt_console_pyc[] = {",tmp,"};"])
-with open("./includes/pyconsole.h","w") as fid:
-    fid.write(out)
+    fname="./src/python/tpt_console.pyc"
+    try:
+        fid=open(fname,"r")
+    except IOError:
+        fname="./src/python/tpt_console.pyo"
+    finally:
+        fid.close()
+
+    with open(fname,"r") as fid:
+        for char in fid.read():
+            lst.append(hex(ord(char)))
+    tmp=",".join(lst)
+    out=''.join(["#include <Python.h>\nunsigned char tpt_console_pyc[] = {",tmp,"};"])
+    with open("./includes/pyconsole.h","w") as fid:
+        fid.write(out)
 print "done"

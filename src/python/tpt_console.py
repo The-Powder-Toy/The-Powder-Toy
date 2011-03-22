@@ -16,7 +16,8 @@ class logger:
 if(DEBUG==False):
     sys.stdout=logger()
     sys.stderr=logger()
-
+    
+#raise SyntaxError()
 
 element={"none":0,"dust":1,"watr":2,"oil":3,"fire":4,"stne":5,"lava":6,"gunp":7,
     "nitr":8,"clne":9,"gas":10,"plex":11,"goo":12,"icei":13,"metl":14,"sprk":15,

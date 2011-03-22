@@ -28,7 +28,7 @@ def init():
     NICK=name+"[tpt]"
     IDENT=name+"[tpt]"
     REALNAME=name
-    CHANNEL="#foobar7"
+    CHANNEL="#powder"
     readbuffer=""
 
 def exit():
@@ -57,7 +57,7 @@ def key(keyy) :
     except:
         key.pmod=(False,False,False)
     global typing,typed
-    print "got %s"%repr(keyy)
+    #print "got %s"%repr(keyy)
     ctrl1,ctrl2,alt1,alt2,shift1,shift2=tpt.get_modifier()
     mod=(ctrl1 or ctrl2,alt1 or alt2,shift1 or shift2)
     skip=False

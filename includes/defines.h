@@ -7,8 +7,8 @@
 #define PATH_SEP "/"
 #endif
 
-#define SAVE_VERSION 46
-#define MINOR_VERSION 4
+#define SAVE_VERSION 47
+#define MINOR_VERSION 0
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 #define BETA
 
@@ -68,6 +68,9 @@ extern unsigned char ZSIZE;
 #define BRUSH_NUM 2
 
 #define PYCONSOLE
+//#define PYEXT
+//WARNING pyext must be defined on 64bit!
+//also, don't add a comment on that line, it breaks
 
 #ifdef PIX16
 typedef unsigned short pixel;
@@ -158,6 +161,8 @@ int player2spawn;
 int death2;
 int ISSPAWN1;
 int ISSPAWN2;
+extern char pyready;
+extern char pygood;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;
@@ -183,5 +188,5 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 void clear_sim(void);
 void del_stamp(int d);
 void sdl_seticon(void);
-int process_command(pixel *vid_buf, char *console, char *console_error);
+//int process_command(pixel *vid_buf, char *console, char *console_error, PyObject *pfunc);
 #endif

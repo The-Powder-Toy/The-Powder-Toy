@@ -10,10 +10,10 @@ currently implemented api functions:
 ### USING SET COMMANDS ###
 the console uses keywords to identify variables of what to set, you can specify x and y coords with x=100 y=100, ect.
 i is the particle number
-setfrom will change all of setfrom's type to the setto variable. It needs to be a string "dust" ect, "all" for all.
-the setto is what the particle(s) will be set to, it is a string for the type/ctype commands, and an int for the rest, there is a settoint for type and ctype command.
+name will change all of name's type to the setto variable. It needs to be a string "dust" ect, "all" for all.
+the setto is what the particle(s) will be set to, it is a string for the type/ctype commands, and an int for the rest.
 you need to set the to* variable and one location/name/coords for it to work.
-    set_type(x=,y=,i=,setfrom="",setto="")    
+    set_type(x=,y=,i=,name="",setto="")    
     set_life()    
     set_temp()      
     set_tmp()        
