@@ -1451,8 +1451,8 @@ int main(int argc, char *argv[])
 							{
 								svf_admin = 0;
 								svf_mod = 1;
-							}
-						}
+							}							
+						}	
 					}
 					else
 					{
@@ -2301,8 +2301,18 @@ int main(int argc, char *argv[])
 						svf_description[0] = 0;
 						gravityMode = 0;
 						airMode = 0;
+						
+						death = death2 = 0;
 						isplayer2 = 0;
 						isplayer = 0;
+						ISSPAWN1 = 0;
+						ISSPAWN2 = 0;
+
+						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+						memset(fire_r, 0, sizeof(fire_r));
+						memset(fire_g, 0, sizeof(fire_g));
+						memset(fire_b, 0, sizeof(fire_b));
 					}
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{
@@ -2461,7 +2471,7 @@ int main(int argc, char *argv[])
 					{
 						if (sdl_mod & (KMOD_CAPS))
 							c = 0;
-						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&c!=PT_WIND&&!REPLACE_MODE)
+						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=PT_WIND)
 							flood_parts(x, y, c, -1, -1);
 						if (c==SPC_HEAT || c==SPC_COOL)
 							create_parts(x, y, bsx, bsy, c);
@@ -2809,7 +2819,8 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 					ny = 0;
 					j = 0;
 					m = 0;
-					console_parse_coords(console4, &nx , &ny, console_error);
+					if(console4)
+						console_parse_coords(console4, &nx , &ny, console_error);
 					memset(pch,0,sizeof(pch));
 					memset(fileread,0,sizeof(fileread));
 					fread(fileread,1,5000,f);
