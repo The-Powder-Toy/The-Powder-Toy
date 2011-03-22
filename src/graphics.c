@@ -1573,31 +1573,27 @@ void draw_parts(pixel *vid)
 						}
 						else if (parts[i].type==PT_GLOW)
 						{
-							fg = 0;
-							fb = 0;
-							fr = 0;
-							if (pv[ny/CELL][nx/CELL]>0) {
-								fg = 6 * pv[ny/CELL][nx/CELL];
-								fb = 4 * pv[ny/CELL][nx/CELL];
-								fr = 2 * pv[ny/CELL][nx/CELL];
-							}
-							vid[ny*(XRES+BARSIZE)+nx] = PIXRGB((int)restrict_flt(0x44 + fr*8, 0, 255), (int)restrict_flt(0x88 + fg*8, 0, 255), (int)restrict_flt(0x44 + fb*8, 0, 255));
+							fr = restrict_flt(parts[i].temp-(275.13f+32.0f), 0, 128)/50.0f;
+							fg = restrict_flt(parts[i].ctype, 0, 128)/50.0f;
+							fb = restrict_flt(parts[i].tmp, 0, 128)/50.0f;
+					
+							cr = restrict_flt(64.0f+parts[i].temp-(275.13f+32.0f), 0, 255);
+							cg = restrict_flt(64.0f+parts[i].ctype, 0, 255);
+							cb = restrict_flt(64.0f+parts[i].tmp, 0, 255);
 
-							/*x = nx/CELL;
+							vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cr, cg, cb);
+							x = nx/CELL;
 							y = ny/CELL;
 							fg += fire_g[y][x];
-							if(fg > 255) fg = 255;
-								fire_g[y][x] = fg;
+							if (fg > 255) fg = 255;
+							fire_g[y][x] = fg;
 							fb += fire_b[y][x];
-							if(fb > 255) fb = 255;
-								fire_b[y][x] = fb;
+							if (fb > 255) fb = 255;
+							fire_b[y][x] = fb;
 							fr += fire_r[y][x];
-							if(fr > 255) fr = 255;
-								fire_r[y][x] = fr;*/
+							if (fr > 255) fr = 255;
+							fire_r[y][x] = fr;
 
-							cr = (int)restrict_flt(0x44 + fr*8, 0, 255);
-							cg = (int)restrict_flt(0x88 + fg*8, 0, 255);
-							cb = (int)restrict_flt(0x44 + fb*8, 0, 255);
 							for (x=-1; x<=1; x++)
 							{
 								for (y=-1; y<=1; y++)
@@ -1893,10 +1889,16 @@ void draw_parts(pixel *vid)
 					}
 					if (cr>255)
 						cr=255;
+					if (cr<0)
+						cr=0;
 					if (cg>255)
 						cg=255;
+					if (cg<0)
+						cg=0;
 					if (cb>255)
 						cb=255;
+					if (cb<0)
+						cb=0;
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 				}
 				else if (t==PT_WIFI)
@@ -2143,6 +2145,7 @@ void draw_parts(pixel *vid)
 				else if (t==PT_BRAY && parts[i].tmp==0)
 				{
 					int trans = parts[i].life * 7;
+					if (trans>255) trans = 255;
 					if (parts[i].ctype) {
 						cg = 0;
 						cb = 0;
@@ -2167,6 +2170,7 @@ void draw_parts(pixel *vid)
 				else if (t==PT_BRAY && parts[i].tmp==1)
 				{
 					int trans = parts[i].life/4;
+					if (trans>255) trans = 255;
 					if (parts[i].ctype) {
 						cg = 0;
 						cb = 0;
@@ -2191,6 +2195,7 @@ void draw_parts(pixel *vid)
 				else if (t==PT_BRAY && parts[i].tmp==2)
 				{
 					int trans = parts[i].life*100;
+					if (trans>255) trans = 255;
 					blendpixel(vid, nx, ny, 255, 150, 50, trans);
 				}
 				else if (t==PT_PHOT)
@@ -2918,6 +2923,36 @@ void draw_parts(pixel *vid)
 	glFlush ();
 #endif
 
+}
+
+void draw_wavelengths(pixel *vid, int x, int y, int h, int wl)
+{
+	int i,cr,cg,cb,j;
+	int tmp;
+	fillrect(vid,x-1,y-1,30+1,h+1,64,64,64,255); // coords -1 size +1 to work around bug in fillrect - TODO: fix fillrect
+	for (i=0;i<30;i++)
+	{
+		if ((wl>>i)&1)
+		{
+			// Need a spread of wavelengths to get a smooth spectrum, 5 bits seems to work reasonably well
+			if (i>2) tmp = 0x1F << (i-2);
+			else tmp = 0x1F >> (2-i);
+			cg = 0;
+			cb = 0;
+			cr = 0;
+			for (j=0; j<12; j++) {
+				cr += (tmp >> (j+18)) & 1;
+				cb += (tmp >>  j)     & 1;
+			}
+			for (j=0; j<14; j++)
+				cg += (tmp >> (j+9))  & 1;
+			tmp = 624/(cr+cg+cb+1);
+			cr *= tmp;
+			cg *= tmp;
+			cb *= tmp;
+			for (j=0;j<h;j++) blendpixel(vid,x+29-i,y+j,cr>255?255:cr,cg>255?255:cg,cb>255?255:cb,255);
+		}
+	}
 }
 
 void render_signs(pixel *vid_buf)

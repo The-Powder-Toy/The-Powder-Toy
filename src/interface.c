@@ -479,7 +479,7 @@ void draw_svf_ui(pixel *vid_buf)
 	c = svf_login ? 255 : 128;
 	drawtext(vid_buf, 40, YRES+(MENUSIZE-14), "\x82", c, c, c, 255);
 	if (svf_open)
-		drawtext(vid_buf, 58, YRES+(MENUSIZE-12), svf_name, c, c, c, 255);
+		drawtextmax(vid_buf, 58, YRES+(MENUSIZE-12), 125, svf_name, c, c, c, 255);
 	else
 		drawtext(vid_buf, 58, YRES+(MENUSIZE-12), "[untitled simulation]", c, c, c, 255);
 	drawrect(vid_buf, 37, YRES+(MENUSIZE-16), 150, 14, c, c, c, 255);
@@ -505,7 +505,7 @@ void draw_svf_ui(pixel *vid_buf)
 
 	drawtext(vid_buf, 222, YRES+(MENUSIZE-15), "\x83", c, c, c, 255);
 	if (svf_tags[0])
-		drawtextmax(vid_buf, 240, YRES+(MENUSIZE-12), 154, svf_tags, c, c, c, 255);
+		drawtextmax(vid_buf, 240, YRES+(MENUSIZE-12), XRES+BARSIZE-405, svf_tags, c, c, c, 255);
 	else
 		drawtext(vid_buf, 240, YRES+(MENUSIZE-12), "[no tags set]", c, c, c, 255);
 
@@ -516,7 +516,7 @@ void draw_svf_ui(pixel *vid_buf)
 
 	drawtext(vid_buf, XRES-122+BARSIZE/*388*/, YRES+(MENUSIZE-13), "\x84", 255, 255, 255, 255);
 	if (svf_login)
-		drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), svf_user, 255, 255, 255, 255);
+		drawtextmax(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), 66, svf_user, 255, 255, 255, 255);
 	else
 		drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), "[sign in]", 255, 255, 255, 255);
 	drawrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14, 255, 255, 255, 255);
@@ -1203,8 +1203,9 @@ finish:
 
 int save_name_ui(pixel *vid_buf)
 {
-	int x0=(XRES-420)/2,y0=(YRES-68-YRES/4)/2,b=1,bq,mx,my,ths,nd=0;
+	int x0=(XRES-420)/2,y0=(YRES-68-YRES/4)/2,b=1,bq,mx,my,ths,idtxtwidth,nd=0;
 	void *th;
+	char *save_id_text;
 	ui_edit ed;
 	ui_edit ed2;
 	ui_checkbox cb;
@@ -1240,6 +1241,10 @@ int save_name_ui(pixel *vid_buf)
 	ed2.cursor = strlen(svf_description);
 	ed2.multiline = 1;
 	strcpy(ed2.str, svf_description);
+	
+	save_id_text = malloc(strlen("Current save id: ")+strlen(svf_id)+1);
+	sprintf(save_id_text,"Current save id: %s",svf_id);
+	idtxtwidth = textwidth(save_id_text);
 
 	cb.x = x0+10;
 	cb.y = y0+53+YRES/4;
@@ -1275,6 +1280,12 @@ int save_name_ui(pixel *vid_buf)
 		drawrect(vid_buf, x0, y0+74+YRES/4, 192, 16, 192, 192, 192, 255);
 
 		draw_line(vid_buf, x0+192, y0, x0+192, y0+90+YRES/4, 150, 150, 150, XRES+BARSIZE);
+		
+		if (svf_id[0])
+		{
+			fillrect(vid_buf, (XRES+BARSIZE-idtxtwidth)/2-5, YRES+(MENUSIZE-16), idtxtwidth+10, 14, 0, 0, 0, 255);
+			drawtext(vid_buf, (XRES+BARSIZE-idtxtwidth)/2, YRES+MENUSIZE-12, save_id_text, 255, 255, 255, 255);
+		}
 
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 
@@ -1332,6 +1343,7 @@ int save_name_ui(pixel *vid_buf)
 		}
 	}
 	free(th);
+	if (save_id_text) free(save_id_text);
 	return 0;
 }
 
@@ -2732,7 +2744,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	int nyd,nyu,ry,lv;
 	float ryf;
 
-	char *uri, *uri_2, *o_uri;
+	char *uri, *uri_2, *o_uri, *save_id_text;
 	void *data, *info_data;
 	save_info *info = malloc(sizeof(save_info));
 	void *http = NULL, *http_2 = NULL;
@@ -2750,6 +2762,9 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	drawrect(vid_buf, 50, 50, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 155);
 	drawrect(vid_buf, 50+(XRES/2)+1, 50, XRES+BARSIZE-100-((XRES/2)+1), YRES+MENUSIZE-100, 155, 155, 155, 255);
 	drawtext(vid_buf, 50+(XRES/4)-textwidth("Loading...")/2, 50+(YRES/4), "Loading...", 255, 255, 255, 128);
+	
+	save_id_text = malloc(strlen("Save id: ")+strlen(save_id)+1);
+	sprintf(save_id_text,"Save id: %s",save_id);
 
 	ed.x = 57+(XRES/2)+1;
 	ed.y = YRES+MENUSIZE-118;
@@ -2825,11 +2840,12 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			data = http_async_req_stop(http, &status, &data_size);
 			if (status == 200)
 			{
+				pixel *full_save;
 				if (!data||!data_size) {
 					error_ui(vid_buf, 0, "Save data is empty (may be corrupt)");
 					break;
 				}
-				pixel *full_save = prerender_save(data, data_size, &imgw, &imgh);
+				full_save = prerender_save(data, data_size, &imgw, &imgh);
 				if (full_save!=NULL) {
 					save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
 					data_ready = 1;
@@ -2939,6 +2955,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			drawrect(vid_buf, XRES+BARSIZE-100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
 			drawtext(vid_buf, XRES+BARSIZE-90, YRES+MENUSIZE-63, "Submit", 255, 255, 255, 255);
 		}
+		
+		cix = textwidth(save_id_text);
+		fillrect(vid_buf, (XRES+BARSIZE-cix)/2-5, YRES+(MENUSIZE-16), cix+10, 14, 0, 0, 0, 255);
+		drawtext(vid_buf, (XRES+BARSIZE-cix)/2, YRES+MENUSIZE-12, save_id_text, 255, 255, 255, 255);
 
 		//Open Button
 		bc = openable?255:150;
@@ -3056,7 +3076,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		if (queue_open) {
 			if (info_ready && data_ready) {
 				// Do Open!
-				status = parse_save(data, data_size, 1, 0, 0);
+				status = parse_save(data, data_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 				if (!status) {
 					//if(svf_last)
 					//free(svf_last);
@@ -3125,6 +3145,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		if (!b)
 			break;
 	}
+	if (save_id_text) free(save_id_text);
 	//Close open connections
 	if (http)
 		http_async_req_close(http);
@@ -3577,7 +3598,7 @@ void execute_save(pixel *vid_buf)
 	plens[0] = strlen(svf_name);
 	parts[1] = svf_description;
 	plens[1] = strlen(svf_description);
-	parts[2] = build_save(plens+2, 0, 0, XRES, YRES);
+	parts[2] = build_save(plens+2, 0, 0, XRES, YRES, bmap, fvx, fvy, signs, parts);
 	parts[3] = build_thumb(plens+3, 1);
 	parts[4] = (svf_publish==1)?"Public":"Private";
 	plens[4] = strlen((svf_publish==1)?"Public":"Private");

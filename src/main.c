@@ -210,7 +210,7 @@ void sdl_seticon(void)
 	//SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon_w32, 32, 32, 32, 128, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 	//SDL_WM_SetIcon(icon, NULL/*app_icon_mask*/);
 #else
-	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon, 16, 16, 32, 128, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon, 16, 16, 32, 64, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 	SDL_WM_SetIcon(icon, NULL/*app_icon_mask*/);
 #endif
 #endif
@@ -296,11 +296,12 @@ void *build_thumb(int *size, int bzip2)
 	return d;
 }
 
-void *build_save(int *size, int x0, int y0, int w, int h)
+void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
 {
 	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*11+MAXSIGNS*262), *c;
 	int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
 	int bx0=x0/CELL, by0=y0/CELL, bw=(w+CELL-1)/CELL, bh=(h+CELL-1)/CELL;
+	particle *parts = partsptr;
 
 	// normalize coordinates
 	x0 = bx0*CELL;
@@ -339,7 +340,8 @@ void *build_save(int *size, int x0, int y0, int w, int h)
 			y = (int)(parts[i].y+0.5f);
 			if (x>=x0 && x<x0+w && y>=y0 && y<y0+h) {
 				if (!m[(x-x0)+(y-y0)*w] ||
-				        parts[m[(x-x0)+(y-y0)*w]-1].type == PT_PHOT)
+				        parts[m[(x-x0)+(y-y0)*w]-1].type == PT_PHOT ||
+				        parts[m[(x-x0)+(y-y0)*w]-1].type == PT_NEUT)
 					m[(x-x0)+(y-y0)*w] = i+1;
 			}
 		}
@@ -465,12 +467,13 @@ void *build_save(int *size, int x0, int y0, int w, int h)
 	return c;
 }
 
-int parse_save(void *save, int size, int replace, int x0, int y0)
+int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES])
 {
 	unsigned char *d,*c=save;
 	int q,i,j,k,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int)), ver, pty, ty, legacy_beta=0;
 	int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
 	int fp[NPART], nf=0, new_format = 0, ttv = 0;
+	particle *parts = partsptr;
 
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
@@ -550,19 +553,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0)
 			gravityMode = 0;
 			airMode = 0;
 		}
-		memset(bmap, 0, sizeof(bmap));
-		memset(emap, 0, sizeof(emap));
-		memset(signs, 0, sizeof(signs));
-		memset(parts, 0, sizeof(particle)*NPART);
-		memset(pmap, 0, sizeof(pmap));
-		memset(vx, 0, sizeof(vx));
-		memset(vy, 0, sizeof(vy));
-		memset(pv, 0, sizeof(pv));
-		memset(photons, 0, sizeof(photons));
-		memset(wireless, 0, sizeof(wireless));
-		memset(gol2, 0, sizeof(gol2));
-		memset(portal, 0, sizeof(portal));
-		death = death2 = ISSPAWN1 = ISSPAWN2 = 0;
+		clear_sim();
 	}
 
 	// make a catalog of free parts
@@ -894,11 +885,33 @@ corrupt:
 	if (replace)
 	{
 		legacy_enable = 0;
-		memset(signs, 0, sizeof(signs));
-		memset(parts, 0, sizeof(particle)*NPART);
-		memset(bmap, 0, sizeof(bmap));
+		clear_sim();
 	}
 	return 1;
+}
+
+void clear_sim(void)
+{
+	memset(bmap, 0, sizeof(bmap));
+	memset(emap, 0, sizeof(emap));
+	memset(signs, 0, sizeof(signs));
+	memset(parts, 0, sizeof(particle)*NPART);
+	memset(pmap, 0, sizeof(pmap));
+	memset(pv, 0, sizeof(pv));
+	memset(vx, 0, sizeof(vx));
+	memset(vy, 0, sizeof(vy));
+	memset(fvx, 0, sizeof(fvx));
+	memset(fvy, 0, sizeof(fvy));
+	memset(photons, 0, sizeof(photons));
+	memset(wireless, 0, sizeof(wireless));
+	memset(gol2, 0, sizeof(gol2));
+	memset(portal, 0, sizeof(portal));
+	death = death2 = ISSPAWN1 = ISSPAWN2 = 0;
+	memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+	memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+	memset(fire_r, 0, sizeof(fire_r));
+	memset(fire_g, 0, sizeof(fire_g));
+	memset(fire_b, 0, sizeof(fire_b));
 }
 
 // stamps library
@@ -985,7 +998,7 @@ void stamp_save(int x, int y, int w, int h)
 	FILE *f;
 	int n;
 	char fn[64], sn[16];
-	void *s=build_save(&n, x, y, w, h);
+	void *s=build_save(&n, x, y, w, h, bmap, fvx, fvy, signs, parts);
 
 #ifdef WIN32
 	_mkdir("stamps");
@@ -1193,6 +1206,7 @@ int main(int argc, char *argv[])
 #ifdef INTERNAL
 	int vs = 0;
 #endif
+	int wavelength_gfx = 0;
 	int x, y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
 	int da = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2;
 	float nfvx, nfvy;
@@ -1202,6 +1216,7 @@ int main(int argc, char *argv[])
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
+	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	GSPEED = 1;
 
 	/* Set 16-bit stereo audio at 22Khz */
@@ -1236,8 +1251,7 @@ int main(int argc, char *argv[])
 	parts[NPART-1].life = -1;
 	pfree = 0;
 	fire_bg=calloc(XRES*YRES, PIXELSIZE);
-	pers_bg=calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
-	memset(signs, 0, sizeof(signs));
+	clear_sim();
 
 	//fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
 
@@ -1437,8 +1451,8 @@ int main(int argc, char *argv[])
 							{
 								svf_admin = 0;
 								svf_mod = 1;
-							}							
-						}	
+							}
+						}
 					}
 					else
 					{
@@ -1523,7 +1537,7 @@ int main(int argc, char *argv[])
 					free(load_data);
 			}
 		}
-		if (sdl_key=='s' && (sdl_mod & (KMOD_CTRL)) || (sdl_key=='s' && !isplayer2))
+		if ((sdl_key=='s' && (sdl_mod & (KMOD_CTRL))) || (sdl_key=='s' && !isplayer2))
 		{
 			if (it > 50)
 				it = 50;
@@ -1657,7 +1671,7 @@ int main(int argc, char *argv[])
 					bsy = 0;
 			}
 		}
-		if (sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)) || (sdl_key=='d' && !isplayer2))
+		if ((sdl_key=='d'&&(sdl_mod & (KMOD_CTRL))) || (sdl_key=='d' && !isplayer2))
 			DEBUG_MODE = !DEBUG_MODE;
 		if (sdl_key=='i')
 		{
@@ -1783,17 +1797,41 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
-		if (sdl_key=='r'&&(sdl_mod & (KMOD_CTRL))&&(sdl_mod & (KMOD_SHIFT)))
+		if (load_mode==1)
 		{
-			save_mode = 1;
-			copy_mode = 4;//invert
+			matrix2d transform = m2d_identity;
+			vector2d translate = v2d_zero;
+			void *ndata;
+			int doTransform = 0;
+			if (sdl_key=='r'&&(sdl_mod & (KMOD_CTRL))&&(sdl_mod & (KMOD_SHIFT)))
+			{
+				transform = m2d_new(-1,0,0,1); //horizontal invert
+				doTransform = 1;
+			}
+			else if (sdl_key=='r'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+			{
+				transform = m2d_new(0,1,-1,0); //rotate anticlockwise 90 degrees
+				doTransform = 1;
+			}
+			else if (sdl_mod & (KMOD_CTRL))
+			{
+				doTransform = 1;
+				if (sdl_key==SDLK_LEFT) translate = v2d_new(-1,0);
+				else if (sdl_key==SDLK_RIGHT) translate = v2d_new(1,0);
+				else if (sdl_key==SDLK_UP) translate = v2d_new(0,-1);
+				else if (sdl_key==SDLK_DOWN) translate = v2d_new(0,1);
+				else doTransform = 0;
+			}
+			if (doTransform)
+			{
+				ndata = transform_save(load_data, &load_size, transform, translate);
+				if (ndata!=load_data) free(load_data);
+				free(load_img);
+				load_data = ndata;
+				load_img = prerender_save(load_data, load_size, &load_w, &load_h);
+			}
 		}
-		else if (sdl_key=='r'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
-		{
-			save_mode = 1;
-			copy_mode = 3;//rotate
-		}
-		else if (sdl_key=='r')
+		if (sdl_key=='r'&&!(sdl_mod & (KMOD_CTRL|KMOD_SHIFT)))
 			GENERATION = 0;
 		if (sdl_key=='x'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
 		{
@@ -1944,8 +1982,13 @@ int main(int argc, char *argv[])
 				if (DEBUG_MODE)
 				{
 					int tctype = parts[cr>>8].ctype;
-					if (tctype>=PT_NUM)
+					if (tctype>=PT_NUM || (cr&0xFF)==PT_PHOT)
 						tctype = 0;
+					if ((cr&0xFF)==PT_PIPE)
+					{
+						if (parts[cr>>8].tmp<PT_NUM) tctype = parts[cr>>8].tmp;
+						else tctype = 0;
+					}
 					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 					sprintf(coordtext, "#%d, X:%d Y:%d", cr>>8, x/sdl_scale, y/sdl_scale);
 				} else {
@@ -1955,6 +1998,7 @@ int main(int argc, char *argv[])
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
 #endif
 				}
+				if ((cr&0xFF)==PT_PHOT) wavelength_gfx = parts[cr>>8].ctype;
 			}
 			else
 			{
@@ -2128,7 +2172,7 @@ int main(int argc, char *argv[])
 			if (load_y<0) load_y=0;
 			if (bq==1 && !b)
 			{
-				parse_save(load_data, load_size, 0, load_x, load_y);
+				parse_save(load_data, load_size, 0, load_x, load_y, bmap, fvx, fvy, signs, parts, pmap);
 				free(load_data);
 				free(load_img);
 				load_mode = 0;
@@ -2170,34 +2214,18 @@ int main(int argc, char *argv[])
 			{
 				if (copy_mode==1)
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
 				}
 				else if (copy_mode==2)
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
 					clear_area(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
-				}
-				else if (copy_mode==3)//rotation
-				{
-					if (save_h>save_w)
-						save_w = save_h;
-					rotate_area(save_x*CELL, save_y*CELL, save_w*CELL, save_w*CELL,0);//just do squares for now
-					save_mode = 0;
-					copy_mode = 0;
-				}
-				else if (copy_mode==4)//invertion
-				{
-					if (save_h>save_w)
-						save_w = save_h;
-					rotate_area(save_x*CELL, save_y*CELL, save_w*CELL, save_w*CELL,1);//just do squares for now
-					save_mode = 0;
-					copy_mode = 0;
 				}
 				else
 				{
@@ -2256,19 +2284,7 @@ int main(int argc, char *argv[])
 					}
 					if (x>=(XRES+BARSIZE-(510-367)) && x<=(XRES+BARSIZE-(510-383)) && !bq)
 					{
-						memset(signs, 0, sizeof(signs));
-						memset(pv, 0, sizeof(pv));
-						memset(vx, 0, sizeof(vx));
-						memset(vy, 0, sizeof(vy));
-						memset(fvx, 0, sizeof(fvx));
-						memset(fvy, 0, sizeof(fvy));
-						memset(bmap, 0, sizeof(bmap));
-						memset(emap, 0, sizeof(emap));
-						memset(parts, 0, sizeof(particle)*NPART);
-						memset(photons, 0, sizeof(photons));
-						memset(wireless, 0, sizeof(wireless));
-						memset(gol2, 0, sizeof(gol2));
-						memset(portal, 0, sizeof(portal));
+						clear_sim();
 						for (i=0; i<NPART-1; i++)
 							parts[i].life = i+1;
 						parts[NPART-1].life = -1;
@@ -2285,17 +2301,8 @@ int main(int argc, char *argv[])
 						svf_description[0] = 0;
 						gravityMode = 0;
 						airMode = 0;
-						death = death2 = 0;
 						isplayer2 = 0;
 						isplayer = 0;
-						ISSPAWN1 = 0;
-						ISSPAWN2 = 0;
-
-						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
-						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-						memset(fire_r, 0, sizeof(fire_r));
-						memset(fire_g, 0, sizeof(fire_g));
-						memset(fire_b, 0, sizeof(fire_b));
 					}
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{
@@ -2330,7 +2337,7 @@ int main(int argc, char *argv[])
 					}
 					if (x>=19 && x<=35 && svf_last && svf_open && !bq) {
 						//int tpval = sys_pause;
-						parse_save(svf_last, svf_lsize, 1, 0, 0);
+						parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 						//sys_pause = tpval;
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
@@ -2420,7 +2427,7 @@ int main(int argc, char *argv[])
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
-									if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(bsx,2))+(pow(j,2))/(pow(bsy,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=bsy*bsx))
+									if (x+i>0 && y+j>0 && x+i<XRES && y+j<YRES && ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(bsx,2))+(pow(j,2))/(pow(bsy,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=bsy*bsx)))
 									{
 										vx[(y+j)/CELL][(x+i)/CELL] += (x-lx)*0.01f;
 										vy[(y+j)/CELL][(x+i)/CELL] += (y-ly)*0.01f;
@@ -2541,14 +2548,7 @@ int main(int argc, char *argv[])
 
 		if (save_mode)
 		{
-			if (copy_mode==3||copy_mode==4)//special drawing for rotate, can remove once it can do rectangles
-			{
-				if (save_h>save_w)
-					save_w = save_h;
-				xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_w*CELL);
-			}
-			else
-				xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+			xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
 			da = 51;
 			db = 269;
 		}
@@ -2703,6 +2703,8 @@ int main(int argc, char *argv[])
 						fillrect(vid_buf, XRES-20-textwidth(coordtext), 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
 						drawtext(vid_buf, XRES-16-textwidth(coordtext), 282, coordtext, 255, 255, 255, 200);
 					}
+					if (wavelength_gfx)
+						draw_wavelengths(vid_buf,XRES-20-textwidth(heattext),265,2,wavelength_gfx);
 				}
 				else
 				{
@@ -2713,6 +2715,8 @@ int main(int argc, char *argv[])
 						fillrect(vid_buf, 12, 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
 						drawtext(vid_buf, 16, 282, coordtext, 255, 255, 255, 200);
 					}
+					if (wavelength_gfx)
+						draw_wavelengths(vid_buf,12,265,2,wavelength_gfx);
 				}
 			}
 			else
@@ -2724,7 +2728,10 @@ int main(int argc, char *argv[])
 					fillrect(vid_buf, XRES-20-textwidth(coordtext), 26, textwidth(coordtext)+8, 11, 0, 0, 0, 140);
 					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, 200);
 				}
+				if (wavelength_gfx)
+					draw_wavelengths(vid_buf,XRES-20-textwidth(heattext),11,2,wavelength_gfx);
 			}
+			wavelength_gfx = 0;
 			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
 			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
 			
@@ -2738,7 +2745,7 @@ int main(int argc, char *argv[])
 			console = console_ui(vid_buf,console_error);
 			console = mystrdup(console);
 			strcpy(console_error,"");
-			if(process_command(vid_buf,console,&console_error)==-1)
+			if(process_command(vid_buf,console,console_error)==-1)
 			{
 				free(console);
 				break;
@@ -2788,7 +2795,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 		{
 			return -1;
 		}
-		else if(strcmp(console2, "file")==0 && console3)
+		else if(strcmp(console2, "file")==0)
 		{
 			if(file_script){
 				FILE *f=fopen(console3, "r");
@@ -2802,8 +2809,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 					ny = 0;
 					j = 0;
 					m = 0;
-					if(console4)
-						console_parse_coords(console4, &nx , &ny, console_error);
+					console_parse_coords(console4, &nx , &ny, console_error);
 					memset(pch,0,sizeof(pch));
 					memset(fileread,0,sizeof(fileread));
 					fread(fileread,1,5000,f);
@@ -2878,12 +2884,12 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 			}
 
 		}
-		else if(strcmp(console2, "sound")==0 && console3)
+		else if(strcmp(console2, "sound")==0)
 		{
 			if (sound_enable) play_sound(console3);
 			else strcpy(console_error, "Audio device not available - cannot play sounds");
 		}
-		else if(strcmp(console2, "load")==0 && console3)
+		else if(strcmp(console2, "load")==0)
 		{
 			j = atoi(console3);
 			if(j)
@@ -2892,7 +2898,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				console_mode = 0;
 			}
 		}
-		else if(strcmp(console2, "if")==0 && console3)
+		else if(strcmp(console2, "if")==0)
 		{
 			if(strcmp(console3, "type")==0)//TODO: add more than just type, and be able to check greater/less than
 			{
@@ -2908,7 +2914,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 					return 0;
 			}
 		}
-		else if (strcmp(console2, "create")==0 && console3 && console4)
+		else if (strcmp(console2, "create")==0)
 		{
 			if (console_parse_type(console3, &j, console_error)
 			        && console_parse_coords(console4, &nx, &ny, console_error))
@@ -2919,12 +2925,12 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 					strcpy(console_error, "Could not create particle");
 			}
 		}
-		else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3)
+		else if (strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0)
 		{
 			if (console_parse_partref(console3, &i, console_error))
 				kill_part(i);
 		}
-		else if(strcmp(console2, "reset")==0 && console3)
+		else if(strcmp(console2, "reset")==0)
 		{
 			if(strcmp(console3, "pressure")==0)
 			{
@@ -2965,7 +2971,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 				}
 			}
 		}
-		else if(strcmp(console2, "set")==0 && console3 && console4 && console5)
+		else if(strcmp(console2, "set")==0)
 		{
 			if(strcmp(console3, "life")==0)
 			{
@@ -3230,7 +3236,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error) {
 			}
 		}
 		else
-			sprintf(console_error, "Invalid Command", console2);
+			strcpy(console_error, "Invalid Command");
 	}
 	return 1;
 }

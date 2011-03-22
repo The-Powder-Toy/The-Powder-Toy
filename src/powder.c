@@ -139,6 +139,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 	if (x==nx && y==ny)
 		return 1;
+	if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
+		return 1;
 
 	e = eval_move(parts[i].type, nx, ny, &r);
 
@@ -253,8 +255,22 @@ int try_move(int i, int x, int y, int nx, int ny)
 	e = r >> 8;
 	if (r && e<NPART)
 	{
-		if (parts[e].type == PT_PHOT)
+		if (parts[e].type == PT_PHOT||parts[e].type == PT_NEUT)
 			return 1;
+
+		if (parts[i].type==PT_NEUT) {
+			// target material is NEUTPENETRATE, meaning it gets moved around when neutron passes
+			unsigned s = pmap[y][x];
+			if ((s&0xFF) && (s&0xFF)<PT_NUM && !(ptypes[s&0xFF].properties&PROP_NEUTPENETRATE))
+				return 1; // if the element currently underneath neutron isn't NEUTPENETRATE, don't move it around
+			if ((pmap[ny][nx]>>8)==e) pmap[ny][nx] = (s&~(0xFF))|parts[s>>8].type;
+			parts[e].x = x;
+			parts[e].y = y;
+			pmap[y][x] = (e<<8)|parts[e].type;
+			parts[s>>8].x = nx;
+			parts[s>>8].y = ny;
+			return 1;
+		}
 
 		if ((pmap[ny][nx]>>8)==e) pmap[ny][nx] = 0;
 		parts[e].x += x-nx;
@@ -460,7 +476,7 @@ inline void part_change_type(int i, int x, int y, int t)
 	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART || t<0 || t>=PT_NUM)
 		return;
 	parts[i].type = t;
-	if (t==PT_PHOT)// || t==PT_NEUT)
+	if (t==PT_PHOT || t==PT_NEUT)
 	{
 		photons[y][x] = t|(i<<8);
 		if ((pmap[y][x]>>8)==i)
@@ -491,7 +507,7 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
 	if (x<0 || y<0 || x>=XRES || y>=YRES || t<0 || t>=PT_NUM)
 		return -1;
 
-	for (c; c<n; c++) {
+	for (c=0; c<n; c++) {
 		float r = (rand()%128+128)/127.0f;
 		float a = (rand()%360)*3.14159f/180.0f;
 		if (pfree == -1)
@@ -508,9 +524,9 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
 		parts[i].ctype = 0;
 		parts[i].temp += (n*17);
 		parts[i].tmp = 0;
-		if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && !pmap[y][x])// && t!=PT_NEUT)
+		if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT && !pmap[y][x])
 			pmap[y][x] = t|(i<<8);
-		else if (t==PT_PHOT && !photons[y][x])
+		else if ((t==PT_PHOT||t==PT_NEUT) && !photons[y][x])
 			photons[y][x] = t|(i<<8);
 
 		pv[y/CELL][x/CELL] += 6.0f * CFDS;
@@ -630,7 +646,7 @@ inline int create_part(int p, int x, int y, int t)
 			}
 			return -1;
 		}
-		if (photons[y][x] && t==PT_PHOT)
+		if (photons[y][x] && (t==PT_PHOT||t==PT_NEUT))
 			return -1;
 		if (pfree == -1)
 			return -1;
@@ -738,35 +754,18 @@ inline int create_part(int p, int x, int y, int t)
 		parts[i].vx = 3.0f*cosf(a);
 		parts[i].vy = 3.0f*sinf(a);
 	}
-	if (t==PT_PHOT)
-		photons[y][x] = t|(i<<8);
 	if (t==PT_STKM)
 	{
 		if (isplayer==0)
 		{
-			if (pmap[y][x]&0xFF==PT_SPAWN)
-			{
-				parts[pmap[y][x]>>8].type = PT_STKM;
-				parts[pmap[y][x]>>8].vx = 0;
-				parts[pmap[y][x]>>8].vy = 0;
-				parts[pmap[y][x]>>8].life = 100;
-				parts[pmap[y][x]>>8].ctype = 0;
-				parts[pmap[y][x]>>8].temp = ptypes[t].heat;
-
-			}
-			else
-			{
-				parts[i].x = (float)x;
-				parts[i].y = (float)y;
-				parts[i].type = PT_STKM;
-				parts[i].vx = 0;
-				parts[i].vy = 0;
-				parts[i].life = 100;
-				parts[i].ctype = 0;
-				parts[i].temp = ptypes[t].heat;
-			}
-
-
+			parts[i].x = (float)x;
+			parts[i].y = (float)y;
+			parts[i].type = PT_STKM;
+			parts[i].vx = 0;
+			parts[i].vy = 0;
+			parts[i].life = 100;
+			parts[i].ctype = 0;
+			parts[i].temp = ptypes[t].heat;
 
 			player[3] = x-1;  //Setting legs positions
 			player[4] = y+6;
@@ -794,7 +793,6 @@ inline int create_part(int p, int x, int y, int t)
 		{
 			return -1;
 		}
-		//kill_part(playerspawn);
 		create_part(-1,x,y,PT_SPAWN);
 		ISSPAWN1 = 1;
 	}
@@ -802,29 +800,14 @@ inline int create_part(int p, int x, int y, int t)
 	{
 		if (isplayer2==0)
 		{
-			if (pmap[y][x]&0xFF==PT_SPAWN2)
-			{
-				parts[pmap[y][x]>>8].type = PT_STKM2;
-				parts[pmap[y][x]>>8].vx = 0;
-				parts[pmap[y][x]>>8].vy = 0;
-				parts[pmap[y][x]>>8].life = 100;
-				parts[pmap[y][x]>>8].ctype = 0;
-				parts[pmap[y][x]>>8].temp = ptypes[t].heat;
-
-			}
-			else
-			{
-				parts[i].x = (float)x;
-				parts[i].y = (float)y;
-				parts[i].type = PT_STKM2;
-				parts[i].vx = 0;
-				parts[i].vy = 0;
-				parts[i].life = 100;
-				parts[i].ctype = 0;
-				parts[i].temp = ptypes[t].heat;
-			}
-
-
+			parts[i].x = (float)x;
+			parts[i].y = (float)y;
+			parts[i].type = PT_STKM2;
+			parts[i].vx = 0;
+			parts[i].vy = 0;
+			parts[i].life = 100;
+			parts[i].ctype = 0;
+			parts[i].temp = ptypes[t].heat;
 
 			player2[3] = x-1;  //Setting legs positions
 			player2[4] = y+6;
@@ -852,13 +835,14 @@ inline int create_part(int p, int x, int y, int t)
 		{
 			return -1;
 		}
-		//kill_part(player2spawn);
 		create_part(-1,x,y,PT_SPAWN2);
 		ISSPAWN2 = 1;
 	}
 	if (t==PT_BIZR||t==PT_BIZRG)
 		parts[i].ctype = 0x47FFFF;
-	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT)// && t!=PT_NEUT)  is this needed? it breaks floodfill, Yes photons should not be placed in the PMAP
+	if (t==PT_PHOT||t==PT_NEUT)
+		photons[y][x] = t|(i<<8);
+	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT) // is this needed? it breaks floodfill, Yes photons should not be placed in the PMAP
 		pmap[y][x] = t|(i<<8);
 
 	return i;
@@ -1342,7 +1326,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			{
 				r = pmap[ny][nx];
 				neighbors = gol2[nx][ny][0];
-				if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !r&0xFF) || (r>>8)>=NPART)
+				if(neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !(r&0xFF)) || (r>>8)>=NPART)
 					continue;
 				for ( golnum = 1; golnum<=NGOL; golnum++)
 					for ( goldelete = 0; goldelete<9; goldelete++)
@@ -2054,13 +2038,13 @@ killed:
 			if (ny!=y || nx!=x)
 			{
 				if ((pmap[y][x]>>8)==i) pmap[y][x] = 0;
-				else if (t==PT_PHOT&&(photons[y][x]>>8)==i) photons[y][x] = 0;
+				else if ((photons[y][x]>>8)==i) photons[y][x] = 0;
 				if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
 				{
 					kill_part(i);
 					continue;
 				}
-				if (t==PT_PHOT)
+				if (t==PT_PHOT||t==PT_NEUT)
 					photons[ny][nx] = t|(i<<8);
 				else
 					pmap[ny][nx] = t|(i<<8);
@@ -2095,12 +2079,13 @@ void update_particles(pixel *vid)
 			t = parts[i].type;
 			x = (int)(parts[i].x+0.5f);
 			y = (int)(parts[i].y+0.5f);
-			if (x>=0 && y>=0 && x<XRES && y<YRES && t!=PT_PHOT) {
-				if (t!=PT_NEUT || (pmap[y][x]&0xFF)!=PT_GLAS)
+			if (x>=0 && y>=0 && x<XRES && y<YRES)
+			{
+				if (t==PT_PHOT||t==PT_NEUT)
+					photons[y][x] = t|(i<<8);
+				else
 					pmap[y][x] = t|(i<<8);
 			}
-			if (t==PT_PHOT)
-				photons[y][x] = t|(i<<8);
 			NUM_PARTS ++;
 		}
 		else
@@ -2610,90 +2595,6 @@ void update_particles(pixel *vid)
 
 }
 
-void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert)
-{
-	//TODO: MSCC doesn't like arrays who's size is determined at runtime.
-#if !(defined(WIN32) && !defined(__GNUC__))
-	int cx = 0;
-	int cy = 0;
-	unsigned tpmap[area_h][area_w];
-	unsigned rtpmap[area_w][area_h];
-	unsigned char tbmap[area_h/CELL][area_w/CELL];
-	unsigned char rtbmap[area_w/CELL][area_h/CELL];
-	float tfvy[area_h/CELL][area_w/CELL];
-	float tfvx[area_h/CELL][area_w/CELL];
-	for (cy=0; cy<area_h; cy++)
-	{
-		for (cx=0; cx<area_w; cx++)//save walls to temp
-		{
-			if (area_x + cx<XRES&&area_y + cy<YRES)
-			{
-				if (bmap[(cy+area_y)/CELL][(cx+area_x)/CELL]) {
-					tbmap[cy/CELL][cx/CELL] = bmap[(cy+area_y)/CELL][(cx+area_x)/CELL];
-					if (bmap[(cy+area_y)/CELL][(cx+area_x)/CELL]==WL_FAN) {
-						tfvx[cy/CELL][cx/CELL] = fvx[(cy+area_y)/CELL][(cx+area_x)/CELL];
-						tfvy[cy/CELL][cx/CELL] = fvy[(cy+area_y)/CELL][(cx+area_x)/CELL];
-					}
-				} else {
-					tbmap[cy/CELL][cx/CELL] = 0;
-					tfvx[cy/CELL][cx/CELL] = 0;
-					tfvy[cy/CELL][cx/CELL] = 0;
-				}
-			}
-		}
-	}
-	for (cy=0; cy<area_h; cy++)
-	{
-		for (cx=0; cx<area_w; cx++)//save particles to temp
-		{
-			if ((area_x + cx<XRES&&area_y + cy<YRES))
-			{
-				tpmap[cy][cx] = pmap[(int)(cy+area_y+0.5f)][(int)(cx+area_x+0.5f)];
-			}
-			else
-				tpmap[(int)(cy+0.5f)][(int)(cx+0.5f)] = 0;
-		}
-	}
-	for (cy=0; cy<area_w; cy++)
-	{
-		for (cx=0; cx<area_h; cx++)//rotate temp arrays
-		{
-			if (invert)
-			{
-				rtbmap[cy/CELL][((area_h-1)-cx)/CELL] = tbmap[cy/CELL][cx/CELL];
-				rtpmap[cy][(area_h-1)-cx] = tpmap[(int)(cy+0.5f)][(int)(cx+0.5f)];
-				tfvx[cy/CELL][((area_h-1)-cx)/CELL] = -tfvx[cy/CELL][cx/CELL];
-				tfvy[cy/CELL][((area_h-1)-cx)/CELL] = tfvy[cy/CELL][cx/CELL];
-			}
-			else
-			{
-				rtbmap[((area_h-1)-cx)/CELL][cy/CELL] = tbmap[cy/CELL][cx/CELL];
-				rtpmap[(area_h-1)-cx][cy] = tpmap[(int)(cy+0.5f)][(int)(cx+0.5f)];
-				tfvy[((area_h-1)-cx)/CELL][cy/CELL] = -tfvx[cy/CELL][cx/CELL];
-				tfvx[((area_h-1)-cx)/CELL][cy/CELL] = tfvy[cy/CELL][cx/CELL];
-			}
-		}
-	}
-	for (cy=0; cy<area_w; cy++)
-	{
-		for (cx=0; cx<area_h; cx++)//move particles and walls
-		{
-			if (area_x + cx<XRES&&area_y + cy<YRES)
-			{
-				if ((rtpmap[cy][cx]>>8)<=NPART&&rtpmap[cy][cx])
-				{
-					parts[rtpmap[(int)(cy+0.5f)][(int)(cx+0.5f)]>>8].x = area_x +cx;
-					parts[rtpmap[(int)(cy+0.5f)][(int)(cx+0.5f)]>>8].y = area_y +cy;
-				}
-				bmap[(area_y+cy)/CELL][(area_x+cx)/CELL] = rtbmap[cy/CELL][cx/CELL];
-				fvy[(area_y+cy)/CELL][(area_x+cx)/CELL] = tfvy[cy/CELL][cx/CELL];
-				fvx[(area_y+cy)/CELL][(area_x+cx)/CELL] = tfvx[cy/CELL][cx/CELL];
-			}
-		}
-	}
-#endif
-}
-
 void clear_area(int area_x, int area_y, int area_w, int area_h)
 {
 	int cx = 0;
@@ -2731,14 +2632,10 @@ void create_box(int x1, int y1, int x2, int y2, int c)
 int flood_parts(int x, int y, int c, int cm, int bm)
 {
 	int x1, x2, dy = (c<PT_NUM)?1:CELL;
-	int co = c, wall;
+	int co = c;
 	if (cm==PT_INST&&co==PT_SPRK)
 		if ((pmap[y][x]&0xFF)==PT_SPRK)
 			return 0;
-	if (c>=UI_WALLSTART&&c<=UI_WALLSTART+UI_WALLCOUNT)
-	{
-		wall = c-100;
-	}
 	if (cm==-1)
 	{
 		if (c==0)
@@ -2754,7 +2651,7 @@ int flood_parts(int x, int y, int c, int cm, int bm)
 	}
 	if (bm==-1)
 	{
-		if (wall==WL_ERASE)
+		if (c-UI_WALLSTART+UI_ACTUALSTART==WL_ERASE)
 		{
 			bm = bmap[y/CELL][x/CELL];
 			if (!bm)
@@ -3073,3 +2970,109 @@ void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c)
 		}
 	}
 }
+
+void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate)
+{
+	void *ndata;
+	unsigned char bmapo[YRES/CELL][XRES/CELL], bmapn[YRES/CELL][XRES/CELL];
+	particle *partst;
+	sign signst[MAXSIGNS];
+	unsigned pmapt[YRES][XRES];
+	float fvxo[YRES/CELL][XRES/CELL], fvyo[YRES/CELL][XRES/CELL];
+	float fvxn[YRES/CELL][XRES/CELL], fvyn[YRES/CELL][XRES/CELL];
+	int i, x, y, nx, ny, w, h, nw, nh;
+	vector2d pos, tmp, ctl, cbr;
+	vector2d cornerso[4];
+	unsigned char *odatac = odata;
+	memset(bmapo, 0, sizeof(bmapo));
+	memset(bmapn, 0, sizeof(bmapn));
+	memset(signst, 0, sizeof(signst));
+	memset(pmapt, 0, sizeof(pmapt));
+	memset(fvxo, 0, sizeof(fvxo));
+	memset(fvxn, 0, sizeof(fvxn));
+	memset(fvyo, 0, sizeof(fvyo));
+	memset(fvyn, 0, sizeof(fvyn));
+	partst = calloc(sizeof(particle), NPART);
+	if (parse_save(odata, *size, 0, 0, 0, bmapo, fvxo, fvyo, signst, partst, pmapt))
+	{
+		free(partst);
+		return odata;
+	}
+	w = odatac[6]*CELL;
+	h = odatac[7]*CELL;
+	// undo any translation caused by rotation
+	cornerso[0] = v2d_new(0,0);
+	cornerso[1] = v2d_new(w-1,0);
+	cornerso[2] = v2d_new(0,h-1);
+	cornerso[3] = v2d_new(w-1,h-1);
+	for (i=0;i<4;i++)
+	{
+		tmp = m2d_multiply_v2d(transform,cornerso[i]);
+		if (i==0) ctl = cbr = tmp; // top left, bottom right corner
+		if (tmp.x<ctl.x) ctl.x = tmp.x;
+		if (tmp.y<ctl.y) ctl.y = tmp.y;
+		if (tmp.x>cbr.x) cbr.x = tmp.x;
+		if (tmp.y>cbr.y) cbr.y = tmp.y;
+	}
+	// casting as int doesn't quite do what we want with negative numbers, so use floor()
+	tmp = v2d_new(floor(ctl.x+0.5f),floor(ctl.y+0.5f));
+	translate = v2d_sub(translate,tmp);
+	nw = floor(cbr.x+0.5f)-floor(ctl.x+0.5f)+1;
+	nh = floor(cbr.y+0.5f)-floor(ctl.y+0.5f)+1;
+	if (nw>XRES) nw = XRES;
+	if (nh>YRES) nh = YRES;
+	// rotate and translate signs, parts, walls
+	for (i=0; i<MAXSIGNS; i++)
+	{
+		if (!signst[i].text[0]) continue;
+		pos = v2d_new(signst[i].x, signst[i].y);
+		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
+		nx = floor(pos.x+0.5f);
+		ny = floor(pos.y+0.5f);
+		if (nx<0 || nx>=nw || ny<0 || ny>=nh)
+		{
+			signst[i].text[0] = 0;
+			continue;
+		}
+		signst[i].x = nx;
+		signst[i].y = ny;
+	}
+	for (i=0; i<NPART; i++)
+	{
+		if (!partst[i].type) continue;
+		pos = v2d_new(partst[i].x, partst[i].y);
+		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
+		nx = floor(pos.x+0.5f);
+		ny = floor(pos.y+0.5f);
+		if (nx<0 || nx>=nw || ny<0 || ny>=nh)
+		{
+			partst[i].type = PT_NONE;
+			continue;
+		}
+		partst[i].x = nx;
+		partst[i].y = ny;
+	}
+	for (y=0;y<YRES/CELL;y++)
+		for (x=0;x<XRES/CELL;x++)
+		{
+			pos = v2d_new(x*CELL+CELL*0.4f, y*CELL+CELL*0.4f);
+			pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
+			nx = pos.x/CELL;
+			ny = pos.y/CELL;
+			if (nx<0 || nx>=nw || ny<0 || ny>=nh)
+				continue;
+			if (bmapo[y][x])
+			{
+				bmapn[ny][nx] = bmapo[y][x];
+				if (bmapo[y][x]==WL_FAN)
+				{
+					fvxn[ny][nx] = fvxo[y][x];
+					fvyn[ny][nx] = fvyo[y][x];
+				}
+			}
+		}
+	ndata = build_save(size,0,0,nw,nh,bmapn,fvxn,fvyn,signst,partst);
+	free(partst);
+	return ndata;
+}
+

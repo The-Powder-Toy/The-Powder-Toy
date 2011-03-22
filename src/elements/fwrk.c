@@ -16,7 +16,7 @@ int update_FWRK(UPDATE_FUNC_ARGS) {
 	}
 	if (parts[i].life>=45)
 		parts[i].life=0;
-	if ((parts[i].life<3&&parts[i].life>0)||parts[i].vy>6&&parts[i].life>0)
+	if ((parts[i].life<3&&parts[i].life>0)||(parts[i].vy>6&&parts[i].life>0))
 	{
 		int q = (rand()%255+1);
 		int w = (rand()%255+1);
