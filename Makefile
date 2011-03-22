@@ -70,7 +70,7 @@ powder-sse.exe: $(SOURCES) powder-res.o
 powder-x: $(SOURCES)
 	gcc -o $@ $(CFLAGS) $(OFLAGS) $(LFLAGS_X) $(MFLAGS) $(SOURCES) -DMACOSX -DPIX32BGRA -arch x86_64 -framework Cocoa -framework SDL
 	strip $@ 
-	mv $@ build
+	mv $@ build/Powder.app/Contents/MacOS/
 powder-x-ogl: $(SOURCES)
 	gcc -o $@ $(CFLAGS) $(OFLAGS) $(LFLAGS_X) $(MFLAGS) $(SOURCES) -DOpenGL -DMACOSX -DPIX32BGRA -arch x86_64 -framework Cocoa -framework SDL -framework OpenGL
 	strip $@ 
