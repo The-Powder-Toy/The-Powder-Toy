@@ -16,6 +16,8 @@
 
 #define THUMB_CACHE_SIZE 256
 
+//#define pyconsole
+
 #define IMGCONNS 3
 #define TIMEOUT 100
 #define HTTP_TIMEOUT 10
@@ -64,6 +66,8 @@ extern unsigned char ZSIZE;
 #define CIRCLE_BRUSH 0
 #define SQUARE_BRUSH 1
 #define BRUSH_NUM 2
+
+#define PYCONSOLE
 
 #ifdef PIX16
 typedef unsigned short pixel;

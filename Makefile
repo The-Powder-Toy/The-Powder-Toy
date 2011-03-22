@@ -1,8 +1,8 @@
 SOURCES := src/*.c src/elements/*.c
 
-CFLAGS := -w -std=c99 -D_POSIX_C_SOURCE=200112L -Iincludes/
+CFLAGS := -w -std=c99 -D_POSIX_C_SOURCE=200112L -Iincludes/ 
 OFLAGS := -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations
-LFLAGS := -lSDL -lm -lbz2 
+LFLAGS := -lSDL -lm -lbz2
 LFLAGS_X := -lm -lbz2 -lSDLmain
 MFLAGS_SSE3 := -march=native -DX86 -DX86_SSE3 -msse3
 MFLAGS_SSE2 := -march=native -DX86 -DX86_SSE2 -msse2
@@ -68,10 +68,10 @@ powder-sse.exe: $(SOURCES) powder-res.o
 	chmod 0644 $@
 	mv $@ build
 powder-x: $(SOURCES)
-	gcc -o $@ $(CFLAGS) $(OFLAGS) $(LFLAGS_X) $(MFLAGS) $(SOURCES) -DMACOSX -DPIX32BGRA -arch x86_64 -framework Cocoa -framework SDL
+	gcc -o $@ $(CFLAGS) $(OFLAGS) $(LFLAGS_X) $(MFLAGS) $(SOURCES) -DMACOSX -DPIX32BGRA -arch x86_64 -framework Cocoa -framework SDL -framework Python
 	strip $@ 
 	mv $@ build/Powder.app/Contents/MacOS/
 powder-x-ogl: $(SOURCES)
-	gcc -o $@ $(CFLAGS) $(OFLAGS) $(LFLAGS_X) $(MFLAGS) $(SOURCES) -DOpenGL -DMACOSX -DPIX32BGRA -arch x86_64 -framework Cocoa -framework SDL -framework OpenGL
+	gcc -o $@ $(CFLAGS) $(OFLAGS) $(LFLAGS_X) $(MFLAGS) $(SOURCES) -DOpenGL -DMACOSX -DPIX32BGRA -arch x86_64 -framework Cocoa -framework SDL -framework OpenGL -framework Python
 	strip $@ 
 	mv $@ build
