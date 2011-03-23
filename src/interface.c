@@ -3593,21 +3593,21 @@ void execute_save(pixel *vid_buf)
 	char *result;
 
 	char *names[] = {"Name","Description", "Data:save.bin", "Thumb:thumb.bin", "Publish", "ID", NULL};
-	char *parts[6];
+	char *uploadparts[6];
 	int plens[6];
 
-	parts[0] = svf_name;
+	uploadparts[0] = svf_name;
 	plens[0] = strlen(svf_name);
-	parts[1] = svf_description;
+	uploadparts[1] = svf_description;
 	plens[1] = strlen(svf_description);
-	parts[2] = build_save(plens+2, 0, 0, XRES, YRES, bmap, fvx, fvy, signs, parts);
-	parts[3] = build_thumb(plens+3, 1);
-	parts[4] = (svf_publish==1)?"Public":"Private";
+	uploadparts[2] = build_save(plens+2, 0, 0, XRES, YRES, bmap, fvx, fvy, signs, parts);
+	uploadparts[3] = build_thumb(plens+3, 1);
+	uploadparts[4] = (svf_publish==1)?"Public":"Private";
 	plens[4] = strlen((svf_publish==1)?"Public":"Private");
 
 	if (svf_id[0])
 	{
-		parts[5] = svf_id;
+		uploadparts[5] = svf_id;
 		plens[5] = strlen(svf_id);
 	}
 	else
@@ -3615,16 +3615,16 @@ void execute_save(pixel *vid_buf)
 
 	result = http_multipart_post(
 	             "http://" SERVER "/Save.api",
-	             names, parts, plens,
+	             names, uploadparts, plens,
 	             svf_user_id, /*svf_pass*/NULL, svf_session_id,
 	             &status, NULL);
 
 	if (svf_last)
 		free(svf_last);
-	svf_last = parts[2];
+	svf_last = uploadparts[2];
 	svf_lsize = plens[2];
 
-	free(parts[3]);
+	free(uploadparts[3]);
 
 	if (status!=200)
 	{
