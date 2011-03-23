@@ -2164,6 +2164,22 @@ int main(int argc, char *argv[])
 		{
 			file_script = 1;
 		}
+		else if (!strncmp(argv[i], "open:", 5))
+		{ 
+			int size;
+			void *file_data;
+			char fn[64];
+
+			strncpy(fn, argv[i]+5, strlen(argv[i]+5));
+
+			file_data = file_load(fn, &size);
+
+			if(file_data)
+			{
+				it=0;
+				parse_save(file_data, size, 0, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+			}
+		}
 
 	}
 
