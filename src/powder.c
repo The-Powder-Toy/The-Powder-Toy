@@ -1369,8 +1369,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			t = parts[i].type;
 			//printf("parts[%d].type: %d\n", i, parts[i].type);
 
-
-			if (parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
+			if (parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_QRTZ && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
 			{
 				if (!(parts[i].life==10&&(t==PT_SWCH||t==PT_LCRY||t==PT_PCLN||t==PT_HSWC||t==PT_PUMP)))
 					parts[i].life--;
