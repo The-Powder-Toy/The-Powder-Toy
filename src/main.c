@@ -3200,8 +3200,14 @@ int main(int argc, char *argv[])
 					{
 						if (!svf_open || !svf_own || x>51)
 						{
-							if (save_name_ui(vid_buf))
+							if (save_name_ui(vid_buf)){
 								execute_save(vid_buf);
+								if(svf_id[0]){
+									char tmpstring[256] = "";
+									sprintf(tmpstring, "Save uploaded with the ID %s", svf_id);
+									info_ui(vid_buf, "Uploaded new save", tmpstring);
+								}
+							}
 						}
 						else
 							execute_save(vid_buf);
