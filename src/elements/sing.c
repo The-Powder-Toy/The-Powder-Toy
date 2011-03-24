@@ -1,7 +1,7 @@
 #include <element.h>
 
 int update_SING(UPDATE_FUNC_ARGS) {
-	int r, rx, ry;
+	int r, rx, ry, cry, crx, rad, nxi, nxj, nb;
 	int singularity = -parts[i].life;
 
 	if (pv[y/CELL][x/CELL]<singularity)
@@ -21,6 +21,41 @@ int update_SING(UPDATE_FUNC_ARGS) {
 		pv[y/CELL][x/CELL-1] += 0.1f*(singularity-pv[y/CELL][x/CELL-1]);
 		if (y+CELL>0)
 			pv[y/CELL-1][x/CELL-1] += 0.1f*(singularity-pv[y/CELL-1][x/CELL-1]);
+	}
+	if(parts[i].life<1){
+		//Pop!
+		for(rx=-2; rx<3; rx++){
+			crx = (x/CELL)+rx;
+			for(ry=-2; ry<3; ry++){
+				cry = (y/CELL)+ry;
+				if(cry > 0 && crx > 0 && crx < (XRES/CELL) && cry < (YRES/CELL)){
+				   pv[cry][crx] += (float)parts[i].tmp;
+				}
+			}
+		}
+		rad = (parts[i].tmp>255)?255:parts[i].tmp;
+		if(rad>=1){
+			rad = (int)(((float)rad)/8.0f);
+		}
+		if(rad>=1){
+			for (nxj=-(rad+1); nxj<=(rad+1); nxj++)
+				for (nxi=-(rad+1); nxi<=(rad+1); nxi++)
+					if ((pow(nxi,2))/(pow((rad+1),2))+(pow(nxj,2))/(pow((rad+1),2))<=1) {
+						if(rand()%2){
+							nb = create_part(-1, x+nxi, y+nxj, PT_PHOT);
+						} else {
+							nb = create_part(-1, x+nxi, y+nxj, PT_NEUT);
+						}
+						if (nb!=-1) {
+							parts[nb].life = rand()%300;
+							parts[nb].temp = MAX_TEMP/2;
+							parts[nb].vx = rand()%10-5;
+							parts[nb].vy = rand()%10-5;
+						}
+					}
+		}
+		kill_part(i);
+		return 1;
 	}
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -50,6 +85,7 @@ int update_SING(UPDATE_FUNC_ARGS) {
 							continue;
 						}
 						parts[i].life += 3;
+						parts[i].tmp++;
 					}
 					parts[i].temp = restrict_flt(parts[r>>8].temp+parts[i].temp, MIN_TEMP, MAX_TEMP);
 					kill_part(r>>8);
