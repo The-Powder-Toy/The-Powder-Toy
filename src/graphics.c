@@ -1341,6 +1341,8 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 void draw_parts(pixel *vid)
 {
 	int i, x, y, t, nx, ny, r, s;
+	int orbd[4] = {0, 0, 0, 0};
+	int orbl[4] = {0, 0, 0, 0};
 	int cr, cg, cb;
 	float fr, fg, fb;
 	float pt = R_TEMP;
@@ -1921,32 +1923,76 @@ void draw_parts(pixel *vid)
 						}
 					}
 				}
-				else if (t==PT_PRTI && DEBUG_MODE)
+				else if (t==PT_PRTI)
 				{
-					blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
-					if (mousex==(nx) && mousey==(ny))
-					{
-						int z;
-						for (z = 0; z<NPART; z++) {
-							if (parts[z].type)
-							{
-								if (parts[z].type==PT_PRTO&&parts[z].tmp==parts[i].tmp)
-									xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);
+					int nxo = 0;
+					int nyo = 0;
+					int fire_rv = 0;
+					float drad = 0.0f;
+					float ddist = 0.0f;
+					orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
+					for(r = 0; r < 4; r++){
+						ddist = ((float)orbd[r])/16.0f;
+						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
+						nxo = ddist*cos(drad);
+						nyo = ddist*sin(drad);
+						addpixel(vid, nx+nxo, ny+nyo, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 255-orbd[r]);
+						if(cmode == CM_FIRE){
+							fire_rv = fire_r[(ny+nyo)/CELL][(nx+nxo)/CELL];
+							fire_rv += (255-orbd[r])/32;
+							if(fire_rv>255) fire_rv = 255;
+							fire_r[(ny+nyo)/CELL][(nx+nxo)/CELL] = fire_rv;
+						}
+						addpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 200);
+					}
+					if(DEBUG_MODE){
+						blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
+						if (mousex==(nx) && mousey==(ny))
+						{
+							int z;
+							for (z = 0; z<NPART; z++) {
+								if (parts[z].type)
+								{
+									if (parts[z].type==PT_PRTO&&parts[z].tmp==parts[i].tmp)
+										xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);
+								}
 							}
 						}
 					}
 				}
-				else if (t==PT_PRTO && DEBUG_MODE)
+				else if (t==PT_PRTO)
 				{
-					blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
-					if (mousex==(nx) && mousey==(ny))
-					{
-						int z;
-						for (z = 0; z<NPART; z++) {
-							if (parts[z].type)
-							{
-								if (parts[z].type==PT_PRTI&&parts[z].tmp==parts[i].tmp)
-									xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);
+					int nxo = 0;
+					int nyo = 0;
+					int fire_bv = 0;
+					float drad = 0.0f;
+					float ddist = 0.0f;
+					orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
+					for(r = 0; r < 4; r++){
+						ddist = ((float)orbd[r])/16.0f;
+						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
+						nxo = ddist*cos(drad);
+						nyo = ddist*sin(drad);
+						addpixel(vid, nx+nxo, ny+nyo, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 255-orbd[r]);
+						if(cmode == CM_FIRE){
+							fire_bv = fire_b[(ny+nyo)/CELL][(nx+nxo)/CELL];
+							fire_bv += (255-orbd[r])/32;
+							if(fire_bv>255) fire_bv = 255;
+							fire_b[(ny+nyo)/CELL][(nx+nxo)/CELL] = fire_bv;
+						}
+						addpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 200);
+					}
+					if(DEBUG_MODE){
+						blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
+						if (mousex==(nx) && mousey==(ny))
+						{
+							int z;
+							for (z = 0; z<NPART; z++) {
+								if (parts[z].type)
+								{
+									if (parts[z].type==PT_PRTI&&parts[z].tmp==parts[i].tmp)
+										xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);
+								}
 							}
 						}
 					}

@@ -1370,7 +1370,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			//printf("parts[%d].type: %d\n", i, parts[i].type);
 
 
-			if (parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT)
+			if (parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
 			{
 				if (!(parts[i].life==10&&(t==PT_SWCH||t==PT_LCRY||t==PT_PCLN||t==PT_HSWC||t==PT_PUMP)))
 					parts[i].life--;
@@ -3074,5 +3074,45 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 	ndata = build_save(size,0,0,nw,nh,bmapn,fvxn,fvyn,signst,partst);
 	free(partst);
 	return ndata;
+}
+
+#if defined(WIN32) && !defined(__GNUC__)
+_inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[])
+#else
+inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[])
+#endif
+{
+	resblock1[0] = (block1&0x000000FF);
+	resblock1[1] = (block1&0x0000FF00)>>8;
+	resblock1[2] = (block1&0x00FF0000)>>16;
+	resblock1[3] = (block1&0xFF000000)>>24;
+	
+	resblock2[0] = (block2&0x000000FF);
+	resblock2[1] = (block2&0x0000FF00)>>8;
+	resblock2[2] = (block2&0x00FF0000)>>16;
+	resblock2[3] = (block2&0xFF000000)>>24;
+}
+
+#if defined(WIN32) && !defined(__GNUC__)
+_inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[])
+#else
+inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[])
+#endif
+{
+	int block1tmp = 0;
+	int block2tmp = 0;
+	
+	block1tmp = (resblock1[0]&0xFF);
+	block1tmp |= (resblock1[1]&0xFF)<<8;
+	block1tmp |= (resblock1[2]&0xFF)<<16;
+	block1tmp |= (resblock1[3]&0xFF)<<24;
+	
+	block2tmp = (resblock2[0]&0xFF);
+	block2tmp |= (resblock2[1]&0xFF)<<8;
+	block2tmp |= (resblock2[2]&0xFF)<<16;
+	block2tmp |= (resblock2[3]&0xFF)<<24;
+	
+	*block1 = block1tmp;
+	*block2 = block2tmp;
 }
 

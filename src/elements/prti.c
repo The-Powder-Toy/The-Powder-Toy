@@ -1,7 +1,7 @@
 #include <element.h>
 
 int update_PRTI(UPDATE_FUNC_ARGS) {
-	int r, nnx, rx, ry;
+	int r, nnx, rx, ry, fe = 0;
 	int count =0;
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 	if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
@@ -12,6 +12,8 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 			{
 				r = pmap[y+ry][x+rx];
 				count ++;
+				if (!r)
+					fe = 1;
 				if ((r>>8)>=NPART || !r)
 					continue;
 				if ((r&0xFF)==PT_SPRK || ((r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO && (ptypes[r&0xFF].falldown!= 0 || ptypes[r&0xFF].state == ST_GAS)))
@@ -28,5 +30,33 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 							break;
 						}
 			}
+	
+	
+	if(fe){
+		if(!parts[i].life) parts[i].life = rand();
+		if(!parts[i].ctype) parts[i].life = rand();
+		int orbd[4] = {0, 0, 0, 0};	//Orbital distances
+		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
+		orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
+		for(r = 0; r < 4; r++){
+			if(orbd[r]>1){
+				orbd[r] -= 12;
+				if(orbd[r]<1){
+					orbd[r] = (rand()%128)+128;
+					orbl[r] = rand()%255;
+				} else {
+					orbl[r] += 2;
+					orbl[r] = orbl[r]%255;
+				}
+			} else {
+				orbd[r] = (rand()%128)+128;
+				orbl[r] = rand()%255;
+			}
+		}
+		orbitalparts_set(&parts[i].life, &parts[i].ctype, orbd, orbl);
+	} else {
+		parts[i].life = 0;
+		parts[i].ctype = 0;
+	}
 	return 0;
 }

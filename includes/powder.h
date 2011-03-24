@@ -866,4 +866,18 @@ int create_parts(int x, int y, int rx, int ry, int c);
 void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c);
 void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
 
+
+#if defined(WIN32) && !defined(__GNUC__)
+extern _inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
+#else
+extern inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
+#endif
+
+
+#if defined(WIN32) && !defined(__GNUC__)
+extern _inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
+#else
+extern inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
+#endif
+
 #endif
