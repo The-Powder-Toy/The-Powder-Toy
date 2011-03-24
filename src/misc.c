@@ -369,5 +369,17 @@ vector2d v2d_new(float x, float y)
 	return result;
 }
 
+void clipboard_push_text(char * text)
+{ß
+	printf("Not implemented: put text on clipboard \"%s\"", text);
+}
+
+char * clipboard_pull_text()
+{
+	printf("Not implemented: get text from clipboard");
+	return "";
+}
+
+
 vector2d v2d_zero = {0,0};
 matrix2d m2d_identity = {1,0,0,1};
