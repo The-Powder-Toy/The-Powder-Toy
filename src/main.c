@@ -2856,7 +2856,7 @@ int main(int argc, char *argv[])
 				if (DEBUG_MODE)
 				{
 					int tctype = parts[cr>>8].ctype;
-					if (tctype>=PT_NUM || (cr&0xFF)==PT_PHOT)
+					if (tctype>=PT_NUM || tctype<0 || (cr&0xFF)==PT_PHOT)
 						tctype = 0;
 					if ((cr&0xFF)==PT_PIPE)
 					{
