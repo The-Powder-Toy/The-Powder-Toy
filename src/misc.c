@@ -370,13 +370,13 @@ vector2d v2d_new(float x, float y)
 }
 
 void clipboard_push_text(char * text)
-{ß
-	printf("Not implemented: put text on clipboard \"%s\"", text);
+{
+	printf("Not implemented: put text on clipboard \"%s\"\n", text);
 }
 
 char * clipboard_pull_text()
 {
-	printf("Not implemented: get text from clipboard");
+	printf("Not implemented: get text from clipboard\n");
 	return "";
 }
 
