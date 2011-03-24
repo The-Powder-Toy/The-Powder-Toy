@@ -1991,7 +1991,7 @@ int main(int argc, char *argv[])
 	int is_beta = 0;
 #endif
 	char uitext[512] = "";
-	char heattext[128] = "";
+	char heattext[256] = "";
 	char coordtext[128] = "";
 	int currentTime = 0;
 	int FPS = 0;
