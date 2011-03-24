@@ -18,6 +18,10 @@
 
 //#define pyconsole
 
+#ifndef M_PI
+#define M_PI 3.14159265f
+#endif
+
 #define IMGCONNS 3
 #define TIMEOUT 100
 #define HTTP_TIMEOUT 10
