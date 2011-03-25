@@ -3845,12 +3845,12 @@ int process_command(pixel *vid_buf,char *console,char *console_error,PyObject *p
 int process_command_old(pixel *vid_buf,char *console,char *console_error) {
     int y,x,nx,ny,i,j,k,m;
     int do_next = 1;
-    char xcoord[10];
-    char ycoord[10];
-    char console2[15];
-    char console3[15];
-    char console4[15];
-    char console5[15];
+    char xcoord[10] = "";
+    char ycoord[10] = "";
+    char console2[15] = "";
+    char console3[15] = "";
+    char console4[15] = "";
+    char console5[15] = "";
     //sprintf(console_error, "%s", console);
     if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
     {
@@ -3859,7 +3859,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
         {
             return -1;
         }
-        else if(strcmp(console2, "file")==0 && console3)
+        else if(strcmp(console2, "file")==0 && console3[0])
         {
             if(file_script){
                 FILE *f=fopen(console3, "r");
@@ -3873,7 +3873,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
                     ny = 0;
                     j = 0;
                     m = 0;
-                    if(console4)
+                    if(console4[0])
                         console_parse_coords(console4, &nx , &ny, console_error);
                     memset(pch,0,sizeof(pch));
                     memset(fileread,0,sizeof(fileread));
@@ -3949,7 +3949,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
             }
 
         }
-        else if(strcmp(console2, "sound")==0 && console3)
+        else if(strcmp(console2, "sound")==0 && console3[0])
         {
             if (sound_enable) play_sound(console3);
             else strcpy(console_error, "Audio device not available - cannot play sounds");
@@ -3959,7 +3959,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
                 pyready=1;
             else
                 strcpy(console_error, "python not ready. check stdout for more info.");
-        else if(strcmp(console2, "load")==0 && console3)
+        else if(strcmp(console2, "load")==0 && console3[0])
         {
             j = atoi(console3);
             if(j)
@@ -3968,7 +3968,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
                 console_mode = 0;
             }
         }
-        else if(strcmp(console2, "if")==0 && console3)
+        else if(strcmp(console2, "if")==0 && console3[0])
         {
             if(strcmp(console3, "type")==0)//TODO: add more than just type, and be able to check greater/less than
             {
@@ -3984,7 +3984,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
                     return 0;
             }
         }
-        else if (strcmp(console2, "create")==0 && console3 && console4)
+        else if (strcmp(console2, "create")==0 && console3[0] && console4[0])
         {
             if (console_parse_type(console3, &j, console_error)
                     && console_parse_coords(console4, &nx, &ny, console_error))
@@ -3995,12 +3995,12 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
                     strcpy(console_error, "Could not create particle");
             }
         }
-        else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3)
+        else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3[0])
         {
             if (console_parse_partref(console3, &i, console_error))
                 kill_part(i);
         }
-        else if(strcmp(console2, "reset")==0 && console3)
+        else if(strcmp(console2, "reset")==0 && console3[0])
         {
             if(strcmp(console3, "pressure")==0)
             {
@@ -4041,7 +4041,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
                 }
             }
         }
-        else if(strcmp(console2, "set")==0 && console3 && console4 && console5)
+        else if(strcmp(console2, "set")==0 && console3[0] && console4[0] && console5[0])
         {
             if(strcmp(console3, "life")==0)
             {
@@ -4306,7 +4306,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
             }
         }
         else
-            sprintf(console_error, "Invalid Command", console2);
+            strcpy(console_error, "Invalid Command");
     }
     return 1;
 }
