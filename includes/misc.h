@@ -69,6 +69,12 @@ void strappend(char *dst, char *src);
 
 void *file_load(char *fn, int *size);
 
+void clipboard_push_text(char * text);
+
+char * clipboard_pull_text();
+
+int register_extension();
+
 int cpu_check(void);
 
 // a b
