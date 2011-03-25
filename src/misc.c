@@ -448,7 +448,7 @@ int register_extension()
 	return 0;
 #elif defined LIN64
 	return 0;
-#elif definded MACOSX
+#elif defined MACOSX
 	return 0;
 #endif
 }
