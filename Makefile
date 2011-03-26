@@ -14,12 +14,13 @@ WIN32_TARG := powder-sse.exe powder-sse2.exe
 PYCOMMAND := python2 getheader.py
 
 powder: $(SOURCES)
+	export PATH="/usr/lib/ccache/bin/:$PATH"
 	$(PYCOMMAND)
 	$(COMPILER) -DINTERNAL -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64
 	mv $@ build
 powder-debug-64: $(SOURCES)
 	$(PYCOMMAND) --64bit
-	$(COMPILER) -m64 -o$@ $(FLAGS_DBUG) -DLIN64 $(SOURCES) -Iincludes/
+	$(COMPILER) -m64 -o$@ $(FLAGS_DBUG) -DLIN64 -DPYEXT $(SOURCES) -Iincludes/
 	mv $@ build
 powder-debug: $(SOURCES)
 	$(PYCOMMAND)
@@ -42,17 +43,17 @@ powder-sse: $(SOURCES)
 	mv $@ build
 powder-64-sse3-opengl: $(SOURCES)
 	$(PYCOMMAND) --64bit
-	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64 -lGL -lGLU -DOpenGL
+	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64 -DPYEXT -lGL -lGLU -DOpenGL
 	strip $@
 	mv $@ build
 powder-64-sse3: $(SOURCES)
 	$(PYCOMMAND) --64bit
-	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64 
+	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN64 -DPYEXT
 	strip $@
 	mv $@ build
 powder-64-sse2: $(SOURCES)
 	$(PYCOMMAND) --64bit
-	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE2) $(SOURCES) -DLIN64
+	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE2) $(SOURCES) -DLIN64 -DPYEXT
 	strip $@
 	mv $@ build
 
