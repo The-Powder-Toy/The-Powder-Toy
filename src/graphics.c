@@ -2646,23 +2646,25 @@ void draw_parts(pixel *vid)
 						cb = PIXB(ptypes[t].pcolors);
 						if (cmode != CM_CRACK) {
 							int newx = 0;
-							float gradv = 100;
-							blendpixel(vid, nx+1, ny, cr, cg, cb, 223);
-							blendpixel(vid, nx-1, ny, cr, cg, cb, 223);
-							blendpixel(vid, nx, ny+1, cr, cg, cb, 223);
-							blendpixel(vid, nx, ny-1, cr, cg, cb, 223);
-
-							blendpixel(vid, nx+1, ny-1, cr, cg, cb, 112);
-							blendpixel(vid, nx-1, ny-1, cr, cg, cb, 112);
-							blendpixel(vid, nx+1, ny+1, cr, cg, cb, 112);
-							blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
-							for (newx = 0; gradv>0.5; newx++) {
+							float flicker = rand()%20;
+							float gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
+							blendpixel(vid, nx, ny, cr, cg, cb, (gradv*4)>255?255:(gradv*4) );
+							blendpixel(vid, nx+1, ny, cr, cg, cb, (gradv*2)>255?255:(gradv*2) );
+							blendpixel(vid, nx-1, ny, cr, cg, cb, (gradv*2)>255?255:(gradv*2) );
+							blendpixel(vid, nx, ny+1, cr, cg, cb, (gradv*2)>255?255:(gradv*2) );
+							blendpixel(vid, nx, ny-1, cr, cg, cb, (gradv*2)>255?255:(gradv*2) );
+							if(gradv>255) gradv=255;
+							blendpixel(vid, nx+1, ny-1, cr, cg, cb, gradv);
+							blendpixel(vid, nx-1, ny-1, cr, cg, cb, gradv);
+							blendpixel(vid, nx+1, ny+1, cr, cg, cb, gradv);
+							blendpixel(vid, nx-1, ny+1, cr, cg, cb, gradv);
+							for (newx = 1; gradv>0.5; newx++) {
 								addpixel(vid, nx+newx, ny, cr, cg, cb, gradv);
 								addpixel(vid, nx-newx, ny, cr, cg, cb, gradv);
 
 								addpixel(vid, nx, ny+newx, cr, cg, cb, gradv);
 								addpixel(vid, nx, ny-newx, cr, cg, cb, gradv);
-								gradv = gradv/1.1f;
+								gradv = gradv/1.2f;
 							}
 						} else {
 							blendpixel(vid, nx, ny, cr, cg, cb, 255);
@@ -2674,7 +2676,8 @@ void draw_parts(pixel *vid)
 						cb = PIXB(ptypes[t].pcolors);
 						if (cmode != CM_CRACK) {
 							int newx = 0;
-							float gradv = 4*parts[i].life;
+							float flicker = rand()%20;
+							float gradv = 4*parts[i].life + flicker;
 							for (newx = 0; gradv>0.5; newx++) {
 								addpixel(vid, nx+newx, ny, cr, cg, cb, gradv);
 								addpixel(vid, nx-newx, ny, cr, cg, cb, gradv);
