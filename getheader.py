@@ -21,7 +21,7 @@ with open("./includes/defines.h") as fid:
             print "using external console.py"
             ext=True"""
 #print sys.argv
-if(len(sys.argv)>=2 and sys.argv[1]=="--64bit"):
+if(len(sys.argv)>=2 and sys.argv[1]=="--ext"):
     ext=True
     print "YEAHS"
 #raw_input("")

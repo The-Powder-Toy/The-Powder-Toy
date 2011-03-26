@@ -69,8 +69,7 @@ extern unsigned char ZSIZE;
 
 #define PYCONSOLE
 //#define PYEXT
-//WARNING pyext must be defined on 64bit!
-//also, don't add a comment on that line, it breaks.
+//no longer needed
 
 #ifdef PIX16
 typedef unsigned short pixel;

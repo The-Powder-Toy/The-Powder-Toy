@@ -30,6 +30,7 @@
 #include "Python.h"
 #include "pyconsole.h"
 //#include "pystdlib.h"
+#include <marshal.h>
 char pyready=1;
 char pygood=1;
 #endif
@@ -1992,6 +1993,7 @@ emb_set_tool(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+/*
 static PyObject*
 emb_press_mouse(PyObject *self, PyObject *args)
 {
@@ -2028,7 +2030,7 @@ emb_release_mouse(PyObject *self, PyObject *args)
     ev.button.x=x;
     ev.button.y=y;
     return Py_BuildValue("i",SDL_PushEvent(ev));
-}
+}*/
 
 
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
