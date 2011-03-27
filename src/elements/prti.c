@@ -42,10 +42,10 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 	
 	
 	if(fe){
-		if(!parts[i].life) parts[i].life = rand();
-		if(!parts[i].ctype) parts[i].life = rand();
 		int orbd[4] = {0, 0, 0, 0};	//Orbital distances
 		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
+		if(!parts[i].life) parts[i].life = rand();
+		if(!parts[i].ctype) parts[i].life = rand();
 		orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 		for(r = 0; r < 4; r++){
 			if(orbd[r]>1){

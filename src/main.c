@@ -1324,45 +1324,48 @@ static PyObject* emb_console_less(PyObject *self, PyObject *args)
 
 static PyObject* emb_reset_pressure(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, ":reset_pressure"))
-        return NULL;
-    //
-        for (int nx = 0; nx<XRES/CELL; nx++)
-            for (int ny = 0; ny<YRES/CELL; ny++)
-            {
-                pv[ny][nx] = 0;
-            }
-    return Py_BuildValue("i",1);
+	int nx, ny;
+	if(!PyArg_ParseTuple(args, ":reset_pressure"))
+		return NULL;
+	//
+	for (nx = 0; nx<XRES/CELL; nx++)
+		for (ny = 0; ny<YRES/CELL; ny++)
+		{
+			pv[ny][nx] = 0;
+		}
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_reset_velocity(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, ":reset_velocity"))
-        return NULL;
-    //
-        for (int nx = 0; nx<XRES/CELL; nx++)
-            for (int ny = 0; ny<YRES/CELL; ny++)
-            {
-                vx[ny][nx] = 0;
-                vy[ny][nx] = 0;
-            }
-    return Py_BuildValue("i",1);
+	int nx, ny;
+	if(!PyArg_ParseTuple(args, ":reset_velocity"))
+		return NULL;
+	//
+	for (nx = 0; nx<XRES/CELL; nx++)
+		for (ny = 0; ny<YRES/CELL; ny++)
+		{
+			vx[ny][nx] = 0;
+			vy[ny][nx] = 0;
+		}
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_reset_sparks(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, ":reset_sparks"))
-        return NULL;
-    //
-        for(int i=0; i<NPART; i++)
-        {
-            if(parts[i].type==PT_SPRK)
-            {
-                parts[i].type = parts[i].ctype;
-                parts[i].life = 4;
-            }
-        }
-    return Py_BuildValue("i",1);
+	int i;
+	if(!PyArg_ParseTuple(args, ":reset_sparks"))
+		return NULL;
+	//
+	for(i=0; i<NPART; i++)
+	{
+		if(parts[i].type==PT_SPRK)
+		{
+			parts[i].type = parts[i].ctype;
+			parts[i].life = 4;
+		}
+	}
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
@@ -2059,7 +2062,6 @@ int main(int argc, char *argv[])
 	int past = 0;
 	void *http_ver_check;
 	void *http_session_check = NULL;
-    vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	char *ver_data=NULL, *check_data=NULL, *tmp;
     //char console_error[255] = "";
 	int i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
@@ -2076,11 +2078,13 @@ int main(int argc, char *argv[])
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
+#ifdef PYCONSOLE
+	PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep,*pkey;
+	PyObject *tpt_console_obj;
+#endif
+	vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	GSPEED = 1;
-    #ifdef PYCONSOLE
-    PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep,*pkey;
-    #endif
 
 	/* Set 16-bit stereo audio at 22Khz */
 	fmt.freq = 22050;
@@ -2106,7 +2110,7 @@ int main(int argc, char *argv[])
     pmodule = PyImport_Import(pname);//import module
     Py_DECREF(pname);//throw away string
 #else
-    PyObject *tpt_console_obj = PyMarshal_ReadObjectFromString(tpt_console_pyc+8, sizeof(tpt_console_pyc)-8);
+    tpt_console_obj = PyMarshal_ReadObjectFromString(tpt_console_pyc+8, sizeof(tpt_console_pyc)-8);
     pmodule=PyImport_ExecCodeModule("tpt_console", tpt_console_obj);
 #endif
     if(pmodule!=NULL)

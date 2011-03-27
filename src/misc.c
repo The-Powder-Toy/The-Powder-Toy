@@ -16,6 +16,9 @@
 #include "interface.h"
 #include "graphics.h"
 #include "powder.h"
+#if defined WIN32
+#include <windows.h>
+#endif
 
 //Signum function
 #if defined(WIN32) && !defined(__GNUC__)
@@ -403,16 +406,17 @@ int register_extension()
 {
 #if defined INSTALLABLE
 #if defined WIN32
-	
 	LONG rresult;
 	HKEY newkey;
-	char *currentfilename;
+	char currentfilename[MAX_PATH] = "";
 	char *iconname;
 	char *opencommand;
-	currentfilename = exe_name();
-	iconname = malloc(strlen(currentfilename)+3);
+	if (!GetModuleFileName(NULL, currentfilename, MAX_PATH))
+		return 0;
+	currentfilename[MAX_PATH-1] = 0;
+	iconname = malloc(strlen(currentfilename)+6);
 	opencommand = malloc(strlen(currentfilename)+13);
-	sprintf(iconname, "%s,1", currentfilename);
+	sprintf(iconname, "%s,-101", currentfilename);
 	sprintf(opencommand, "\"%s\" open:\"%%1\"", currentfilename);
 	
 	//Create extension entry
