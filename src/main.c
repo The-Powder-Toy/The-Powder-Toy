@@ -29,6 +29,8 @@
 #ifdef PYCONSOLE
 #include "Python.h"
 #include "pyconsole.h"
+//#include "pystdlib.h"
+#include <marshal.h>
 char pyready=1;
 char pygood=1;
 #endif
@@ -1939,6 +1941,63 @@ static PyObject* emb_disable_python(PyObject *self, PyObject *args)
     return Py_BuildValue("i",1);
 }
 
+int bsx = 2, bsy = 2, sl=1, sr=0;
+static PyObject*
+emb_get_tool(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, ":get_tool"))
+        return NULL;
+    return Py_BuildValue("((ii)(ii)i)",bsx,bsy,sl,sr,CURRENT_BRUSH);
+}
+
+static PyObject*
+emb_set_tool(PyObject *self, PyObject *args)
+{
+    if(!PyArg_ParseTuple(args, "((ii)(ii)i):set_tool",&bsx,&bsy,&sl,&sr,&CURRENT_BRUSH))
+        return NULL;
+    return Py_BuildValue("i",1);
+}
+
+/*
+static PyObject*
+emb_press_mouse(PyObject *self, PyObject *args)
+{
+    int x,y,b;
+    SDL_Event* ev;
+    b=0;
+    if(!PyArg_ParseTuple(args, "ii|i:handle_tool",&x,&y,&b))
+        return NULL;
+    ev.type=SDL_MOUSEBUTTONDOWN;
+    if(b==2)
+        ev.button.button=SDL_BUTTON_RIGHT;
+    else
+        ev.button.button=SDL_BUTTON_LEFT;
+    ev.button.state=SDL_PRESSED;
+    ev.button.x=x;
+    ev.button.y=y;
+    return Py_BuildValue("i",SDL_PushEvent(ev));
+}
+
+static PyObject*
+emb_release_mouse(PyObject *self, PyObject *args)
+{
+    int x,y,b;
+    SDL_MouseButtonEvent ev;
+    b=0;
+    if(!PyArg_ParseTuple(args, "ii|i:handle_tool",&x,&y,&b))
+        return NULL;
+    ev.type=SDL_MOUSEBUTTONUP;
+    if(b==2)
+        ev.button.button=SDL_BUTTON_RIGHT;
+    else
+        ev.button.button=SDL_BUTTON_LEFT;
+    ev.button.state=SDL_RELEASED;
+    ev.button.x=x;
+    ev.button.y=y;
+    return Py_BuildValue("i",SDL_PushEvent(ev));
+}*/
+
+
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
     {"create",		    (PyCFunction)emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
     {"log", 		    (PyCFunction)emb_log, 		METH_VARARGS,			"logs an error string to the console."},
@@ -1979,6 +2038,8 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
     {"set_pressure",        (PyCFunction)emb_set_pressure,       METH_VARARGS,           "set pressure"},
     {"set_velocity",        (PyCFunction)emb_set_velocity,       METH_VARARGS,           "set velocity"},
     {"disable_python",        (PyCFunction)emb_disable_python,       METH_VARARGS,           "switch back to the old console."},
+    {"get_tool",        (PyCFunction)emb_get_tool,       METH_VARARGS,           "get tool size/type and selected particles"},
+    {"set_tool",        (PyCFunction)emb_set_tool,       METH_VARARGS,           "set tool size/type and selected particles"},
     {NULL, NULL, 0, NULL}
 };
 #endif
@@ -3248,7 +3309,7 @@ int main(int argc, char *argv[])
 					lb = 0;
 				}
 			}
-			else if (y<YRES)
+			else if (y<YRES)//mouse handling
 			{
 				int signi;
 

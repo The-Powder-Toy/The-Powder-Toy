@@ -12,7 +12,10 @@ class logger:
     def write(self,txt):
         txt=txt.strip().split("\n")[-1]
         repr(txt)
-        tpt.log(txt)
+        try:
+            tpt.log(txt)
+        except:#yeah, this happens.
+            pass
 if(DEBUG==False):
     sys.stdout=logger()
     sys.stderr=logger()
