@@ -2059,7 +2059,8 @@ int main(int argc, char *argv[])
 	int currentTime = 0;
 	int FPS = 0;
 	int pastFPS = 0;
-	int past = 0;
+	int elapsedTime = 0;
+	int limitFPS = 60;
 	void *http_ver_check;
 	void *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
@@ -3659,21 +3660,22 @@ int main(int argc, char *argv[])
 			drawrect(vid_buf, XRES-19-old_ver_len, YRES-22, old_ver_len+5, 13, 255, 216, 32, 255);
 		}
 
+		FPS++;
+		currentTime = SDL_GetTicks();
+		elapsedTime = currentTime-pastFPS;
+		if (elapsedTime>=1000)
+		{
+			FPSB = FPS;
+			FPS = 0;
+			pastFPS = currentTime;
+		}
+		else if (elapsedTime>20 && FPS*1000/elapsedTime>limitFPS)
+		{
+			SDL_Delay(5);
+		}
+
 		if (hud_enable)
 		{
-			currentTime = SDL_GetTicks();
-			if (currentTime-past>=16)
-			{
-				past = SDL_GetTicks();
-				FPS++;
-			}
-			if (currentTime-pastFPS>=1000)
-			{
-				FPSB = FPS;
-				FPS = 0;
-				pastFPS = currentTime;
-			}
-
 #ifdef BETA
 			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 #else
