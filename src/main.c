@@ -3818,12 +3818,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error,PyObject *p
 		if(strcmp(console2, "quit")==0)
 		{
 			return -1;
-		}
-		if(strcmp(console2, "eqvetest")==0)
-		{
-			EQVETEST = !EQVETEST;
-			return 1;
-		} else {
+		}else {
 			//handle them command
 			pargs=Py_BuildValue("(s)",console);
 			pvalue = PyObject_CallObject(pfunc, pargs);
