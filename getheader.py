@@ -1,17 +1,27 @@
 import sys
 import os.path
 import compileall
+class dummyfile():
+    def write(self,txt):
+        pass
+def log(*args):
+    try:
+        log.a
+    except:
+        log.a=sys.stdout
+    log.a.write(" ".join(args)+"\n")
+log()
+sys.stdout=dummyfile()
+
 path=os.path.join(sys.exec_prefix,"include","python%s"%sys.version[:3])
 #print "headers at ",repr(path)
 #-lpython2.3 -lm -L/usr/lib/python2.3/config
 args="-lpython%s -lm -L%s"%(sys.version[:3],os.path.join(sys.exec_prefix,"lib","python%s"%sys.version[:3],"config"))
-print " linux args are"
-print args,"-I%s"%path
+log(args,"-I%s"%path)
 
 path=os.path.join(sys.exec_prefix,"include")
 args="-lpython%s -lm -L%s"%(sys.version[:3],os.path.join(sys.exec_prefix,"lib","config"))#,"python%s"%sys.version[:3]
-print "\n windows args are"
-print args,"-I%s"%path
+log(args,"-I%s"%path)
 
 ext=False
 """#see if we're on 64bit.
@@ -23,11 +33,10 @@ with open("./includes/defines.h") as fid:
 #print sys.argv
 if(len(sys.argv)>=2 and sys.argv[1]=="--ext"):
     ext=True
-    print "YEAHS"
 #raw_input("")
 
 if(ext):
-    print "external"
+    log("external")
     #raw_input(sys.argv)
     with open("./src/python/tpt_console.py") as fid:
         consolepy=fid.read()
@@ -45,7 +54,7 @@ with open(os.path.join(dir,"tpt_console.py"),"w") as fid:
     with open("./includes/pyconsole.h","w") as fid:
         fid.write(''.join(out))
 else:
-    print "internal"
+    log("internal")
     #raw_input(sys.argv)
     #unsigned char tpt_console_pyc[] = { 0x1B, 0x57};
     lst=[]
