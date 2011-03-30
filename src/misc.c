@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #ifdef WIN32
 #include <windows.h>
+#include "update.h"
 #endif
 #include "misc.h"
 #include "defines.h"
