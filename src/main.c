@@ -87,6 +87,7 @@ void mixaudio(void *unused, Uint8 *stream, int len)
 	}
 }
 
+//plays a .wav file (sounds must be enabled)
 void play_sound(char *file)
 {
 	int index;
@@ -310,6 +311,7 @@ void *build_thumb(int *size, int bzip2)
 	return d;
 }
 
+//the saving function
 void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
 {
 	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*11+MAXSIGNS*262), *c;
@@ -1892,7 +1894,6 @@ static PyObject* emb_get_modifier(PyObject *self, PyObject *args)
 
 static PyObject* emb_set_keyrepeat(PyObject *self, PyObject *args)
 {
-    ////SDL_EnableKeyRepeat(delay,interval)
     int keydelay,keyinterval;
     keydelay=SDL_DEFAULT_REPEAT_DELAY;
     keyinterval=SDL_DEFAULT_REPEAT_INTERVAL;
@@ -1904,7 +1905,6 @@ static PyObject* emb_set_keyrepeat(PyObject *self, PyObject *args)
 //delete_part
 static PyObject* emb_delete(PyObject *self, PyObject *args)
 {
-    ////SDL_EnableKeyRepeat(delay,interval)
     int x,y;
     if(!PyArg_ParseTuple(args, "ii:delete",&x,&y))
         return NULL;
@@ -1914,7 +1914,6 @@ static PyObject* emb_delete(PyObject *self, PyObject *args)
 
 static PyObject* emb_set_pressure(PyObject *self, PyObject *args)
 {
-    ////SDL_EnableKeyRepeat(delay,interval)
     int x,y,press;
     if(!PyArg_ParseTuple(args, "iii:set_pressure",&x,&y,&press))
         return NULL;
@@ -1924,7 +1923,6 @@ static PyObject* emb_set_pressure(PyObject *self, PyObject *args)
 
 static PyObject* emb_set_velocity(PyObject *self, PyObject *args)
 {
-    ////SDL_EnableKeyRepeat(delay,interval)
     int x,y,xv,yv;
     if(!PyArg_ParseTuple(args, "iiii:set_velocity",&x,&y,&xv,&yv))
         return NULL;
@@ -2267,25 +2265,25 @@ int main(int argc, char *argv[])
 		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
 	}
 
-	while (!sdl_poll())
+	while (!sdl_poll()) //the main loop
 	{
-		if (!sys_pause||framerender)
+		if (!sys_pause||framerender) //only update air if not paused
 		{
 			update_air();
 		}
 #ifdef OpenGL
 		ClearScreen();
 #else
-		if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK)
+		if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK)//air only gets drawn in these modes
 		{
 			draw_air(vid_buf);
 		}
-		else if (cmode==CM_PERS)
+		else if (cmode==CM_PERS)//save background for persistent, then clear
 		{
 			memcpy(vid_buf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
 			memset(vid_buf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
 		}
-		else
+		else //clear screen every frame
 		{
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
@@ -2301,12 +2299,12 @@ int main(int argc, char *argv[])
 		if (bsy<0)
 			bsy = 0;
 
-		update_particles(vid_buf);
-		draw_parts(vid_buf);
+		update_particles(vid_buf); //update everything
+		draw_parts(vid_buf); //draw particles
 
 		if (cmode==CM_PERS)
 		{
-			if (!fire_fc)
+			if (!fire_fc)//fire_fc has nothing to do with fire... it is a counter for diminishing persistent view every 3 frames
 			{
 				dim_copy_pers(pers_bg, vid_buf);
 			}
@@ -2321,7 +2319,7 @@ int main(int argc, char *argv[])
 
 		render_signs(vid_buf);
 
-		memset(vid_buf+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);
+		memset(vid_buf+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);//clear menu areas
 		clearrect(vid_buf, XRES-1, 0, BARSIZE+1, YRES);
 
 		draw_svf_ui(vid_buf);
@@ -2433,7 +2431,7 @@ int main(int argc, char *argv[])
 			do_s_check = (do_s_check+1) & 15;
 		}
         
-        if(sys_shortcuts==1)
+        if(sys_shortcuts==1)//all shortcuts can be disabled by python scripts
         {
             if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
             {
@@ -2807,7 +2805,7 @@ int main(int argc, char *argv[])
         #endif
 #ifdef INTERNAL
 		int counterthing;
-		if (sdl_key=='v'&&!(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+		if (sdl_key=='v'&&!(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))//frame capture
 		{
 			if (sdl_mod & (KMOD_SHIFT)) {
 				if (vs>=1)
@@ -2837,7 +2835,7 @@ int main(int argc, char *argv[])
 
 		if (sdl_wheel)
 		{
-			if (sdl_zoom_trig==1)
+			if (sdl_zoom_trig==1)//zoom window change
 			{
 				ZSIZE += sdl_wheel;
 				if (ZSIZE>60)
@@ -2847,7 +2845,7 @@ int main(int argc, char *argv[])
 				ZFACTOR = 256/ZSIZE;
 				sdl_wheel = 0;
 			}
-			else
+			else //change brush size
 			{
 				if (!(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
 				{
@@ -2880,24 +2878,24 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		bq = b;
-		b = SDL_GetMouseState(&x, &y);
+		bq = b; // bq is previous mouse state
+		b = SDL_GetMouseState(&x, &y); // b is current mouse state
 
-		for (i=0; i<SC_TOTAL; i++)
+		for (i=0; i<SC_TOTAL; i++)//draw all the menu sections
 		{
 			draw_menu(vid_buf, i, active_menu);
 		}
 
-		for (i=0; i<SC_TOTAL; i++)
+		for (i=0; i<SC_TOTAL; i++)//check mouse position to see if it is on a menu section
 		{
 			if (!b&&x>=sdl_scale*(XRES-2) && x<sdl_scale*(XRES+BARSIZE-1) &&y>= sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)) && y<sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)+15))
 			{
 				active_menu = i;
 			}
 		}
-		menu_ui_v3(vid_buf, active_menu, &sl, &sr, b, bq, x, y);
+		menu_ui_v3(vid_buf, active_menu, &sl, &sr, b, bq, x, y); //draw the elements in the current menu
 
-		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy
+		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
 		        && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
 		        && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))
 		{
@@ -2906,7 +2904,7 @@ int main(int argc, char *argv[])
 		}
 		if (y>0 && y<sdl_scale*YRES && x>0 && x<sdl_scale*XRES)
 		{
-			int cr;
+			int cr; //cr is particle under mouse, for drawing HUD information
 			if (photons[y/sdl_scale][x/sdl_scale]) {
 				cr = photons[y/sdl_scale][x/sdl_scale];
 			} else {
@@ -3001,7 +2999,7 @@ int main(int argc, char *argv[])
 			else
 				free(tmp);
 		}
-		if (y>=sdl_scale*(YRES+(MENUSIZE-20)))
+		if (y>=sdl_scale*(YRES+(MENUSIZE-20))) //mouse checks for buttons at the bottom, to draw mouseover texts
 		{
 			if (x>=189*sdl_scale && x<=202*sdl_scale && svf_login && svf_open && svf_myvote==0)
 			{
@@ -3088,7 +3086,7 @@ int main(int argc, char *argv[])
 			else if (da > 0)
 				da --;
 		}
-		else if (da > 0)
+		else if (da > 0)//fade away mouseover text
 			da --;
 
 		if (!sdl_zoom_trig && zoom_en==1)
@@ -3119,7 +3117,7 @@ int main(int argc, char *argv[])
 				load_mode = 0;
 			}
 		}
-		else if (save_mode==1)
+		else if (save_mode==1)//getting the area you are selecting
 		{
 			save_x = (mx/sdl_scale)/CELL;
 			save_y = (my/sdl_scale)/CELL;
@@ -3147,14 +3145,14 @@ int main(int argc, char *argv[])
 			if (save_h<1) save_h = 1;
 			if (!b)
 			{
-				if (copy_mode==1)
+				if (copy_mode==1)//CTRL-C, copy
 				{
 					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
 				}
-				else if (copy_mode==2)
+				else if (copy_mode==2)//CTRL-X, cut
 				{
 					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
 					clipboard_ready = 1;
@@ -3162,7 +3160,7 @@ int main(int argc, char *argv[])
 					copy_mode = 0;
 					clear_area(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
 				}
-				else
+				else//normal save
 				{
 					stamp_save(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
 					save_mode = 0;
@@ -3187,15 +3185,15 @@ int main(int argc, char *argv[])
 			if (!b && bq)
 				zoom_en = 2;
 		}
-		else if (b)
+		else if (b)//there is a click
 		{
 			if (it > 50)
 				it = 50;
 			x /= sdl_scale;
 			y /= sdl_scale;
-			if (y>=YRES+(MENUSIZE-20))
+			if (y>=YRES+(MENUSIZE-20))//check if mouse is on menu buttons
 			{
-				if (!lb)
+				if (!lb)//mouse is NOT held down, so it is a first click
 				{
 					if (x>=189 && x<=202 && svf_login && svf_open && svf_myvote==0 && svf_own==0)
 					{
@@ -3309,11 +3307,11 @@ int main(int argc, char *argv[])
 					lb = 0;
 				}
 			}
-			else if (y<YRES)//mouse handling
+			else if (y<YRES)// mouse is in playing field
 			{
 				int signi;
 
-				c = (b&1) ? sl : sr;
+				c = (b&1) ? sl : sr; //c is element to be spawned
 				su = c;
 
 				if(c!=WL_SIGN+100)
@@ -3345,9 +3343,10 @@ int main(int argc, char *argv[])
 					if (!bq)
 						add_sign_ui(vid_buf, x, y);
 				}
-				else if (lb)
+				//for the click functions, lx and ly, are the positions of where the FIRST click happened.  x,y are current mouse position.
+				else if (lb)//lb means you are holding mouse down
 				{
-					if (lm == 1)
+					if (lm == 1)//line tool
 					{
 						xor_line(lx, ly, x, y, vid_buf);
 						if (c==WL_FAN+100 && lx>=0 && ly>=0 && lx<XRES && ly<YRES && bmap[ly/CELL][lx/CELL]==WL_FAN)
@@ -3375,14 +3374,14 @@ int main(int argc, char *argv[])
 									}
 						}
 					}
-					else if (lm == 2)
+					else if (lm == 2)//box tool
 					{
 						xor_line(lx, ly, lx, y, vid_buf);
 						xor_line(lx, y, x, y, vid_buf);
 						xor_line(x, y, x, ly, vid_buf);
 						xor_line(x, ly, lx, ly, vid_buf);
 					}
-					else
+					else//while mouse is held down, it draws lines between previous and current positions
 					{
 						if (c == PT_WIND)
 						{
@@ -3402,22 +3401,25 @@ int main(int argc, char *argv[])
 						ly = y;
 					}
 				}
-				else
+				else //it is the first click 
 				{
+					//start line tool
 					if ((sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)) && !(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL|KMOD_LALT)))
 					{
 						lx = x;
 						ly = y;
 						lb = b;
-						lm = 1;
+						lm = 1;//line
 					}
+					//start box tool
 					else if ((sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)) && !(sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)))
 					{
 						lx = x;
 						ly = y;
 						lb = b;
-						lm = 2;
+						lm = 2;//box
 					}
+					//flood fill
 					else if ((sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)) && (sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)) && !(sdl_mod & (KMOD_LALT)))
 					{
 						if (sdl_mod & (KMOD_CAPS))
@@ -3431,6 +3433,7 @@ int main(int argc, char *argv[])
 						lb = 0;
 						lm = 0;
 					}
+					//sample
 					else if (((sdl_mod & (KMOD_LALT|KMOD_RALT)) && !(sdl_mod & (KMOD_SHIFT))) || b==SDL_BUTTON_MIDDLE)
 					{
 						if (y>0 && y<sdl_scale*YRES && x>0 && x<sdl_scale*XRES)
@@ -3451,7 +3454,7 @@ int main(int argc, char *argv[])
 						lb = 0;
 						lm = 0;
 					}
-					else
+					else //normal click, spawn element
 					{
 						//Copy state before drawing any particles (for undo)7
 						int cbx, cby, cbi;
@@ -3483,38 +3486,38 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			if (lb && lm)
+			if (lb && lm) //lm is box/line tool
 			{
 				x /= sdl_scale;
 				y /= sdl_scale;
 				c = (lb&1) ? sl : sr;
 				su = c;
-				if (lm == 1)
+				if (lm == 1)//line
 				{
 					if (c!=WL_FAN+100 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=WL_FAN)
 						create_line(lx, ly, x, y, bsx, bsy, c);
 				}
-				else
+				else//box
 					create_box(lx, ly, x, y, c);
 				lm = 0;
 			}
 			lb = 0;
 		}
 
-		if (load_mode)
+		if (load_mode)//draw preview of stamp
 		{
 			draw_image(vid_buf, load_img, load_x, load_y, load_w, load_h, 128);
 			xor_rect(vid_buf, load_x, load_y, load_w, load_h);
 		}
 
-		if (save_mode)
+		if (save_mode)//draw dotted lines for selection
 		{
 			xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
-			da = 51;
-			db = 269;
+			da = 51;//draws mouseover text for the message
+			db = 269;//the save message
 		}
 
-		if (zoom_en!=1 && !load_mode && !save_mode)
+		if (zoom_en!=1 && !load_mode && !save_mode)//draw normal cursor
 		{
 			render_cursor(vid_buf, mx/sdl_scale, my/sdl_scale, su, bsx, bsy);
 			mousex = mx/sdl_scale;
@@ -3525,7 +3528,7 @@ int main(int argc, char *argv[])
 			render_zoom(vid_buf);
 
 		if (da)
-			switch (db)
+			switch (db)//various mouseover messages, da is the alpha
 			{
 			case 256:
 				drawtext(vid_buf, 16, YRES-24, "Add simulation tags.", 255, 255, 255, da*5);
@@ -3590,12 +3593,12 @@ int main(int argc, char *argv[])
 			default:
 				drawtext(vid_buf, 16, YRES-24, (char *)ptypes[db].descs, 255, 255, 255, da*5);
 			}
-		if (itc)
+		if (itc)//message in the middle of the screen, such as view mode changes
 		{
 			itc--;
 			drawtext(vid_buf, (XRES-textwidth(itc_msg))/2, ((YRES/2)-10), itc_msg, 255, 255, 255, itc>51?255:itc*5);
 		}
-		if (it)
+		if (it)//intro message
 		{
 			it--;
 			drawtext(vid_buf, 16, 20, it_msg, 255, 255, 255, it>51?255:it*5);

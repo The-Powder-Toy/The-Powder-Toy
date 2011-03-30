@@ -128,6 +128,7 @@ void sdl_blit(int x, int y, int w, int h, pixel *src, int pitch)
 #endif
 }
 
+//an easy way to draw a blob
 void drawblob(pixel *vid, int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
 {
 	blendpixel(vid, x+1, y, cr, cg, cb, 112);
@@ -141,6 +142,8 @@ void drawblob(pixel *vid, int x, int y, unsigned char cr, unsigned char cg, unsi
 	blendpixel(vid, x-1, y+1, cr, cg, cb, 64);
 }
 
+//old and unused equation to draw walls
+/*
 void draw_tool(pixel *vid_buf, int b, int sl, int sr, unsigned pc, unsigned iswall)
 {
 	int x, y, i, j, c;
@@ -444,7 +447,8 @@ void draw_tool(pixel *vid_buf, int b, int sl, int sr, unsigned pc, unsigned iswa
 		}
 	}
 }
-
+*/
+//draw walls
 int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 {
 	int i, j, c;
@@ -763,6 +767,7 @@ void draw_menu(pixel *vid_buf, int i, int hover)
 	}
 }
 
+//draws a pixel, identical to blendpixel(), except blendpixel has OpenGL support
 #if defined(WIN32) && !defined(__GNUC__)
 _inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 #else
@@ -923,6 +928,7 @@ int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, i
 	return rh;
 }
 
+//draws a rectange, (x,y) are the top left coords.
 void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
 {
 #ifdef OpenGL
@@ -948,6 +954,7 @@ void drawrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a
 #endif
 }
 
+//draws a rectangle and fills it in as well.
 void fillrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a)
 {
 #ifdef OpenGL
@@ -972,6 +979,7 @@ void clearrect(pixel *vid, int x, int y, int w, int h)
 	for (i=1; i<h; i++)
 		memset(vid+(x+1+(XRES+BARSIZE)*(y+i)), 0, PIXELSIZE*(w-1));
 }
+//draws a line of dots, where h is the height. (why is this even here)
 void drawdots(pixel *vid, int x, int y, int h, int r, int g, int b, int a)
 {
 #ifdef OpenGL
@@ -1097,6 +1105,7 @@ int textposxy(char *s, int width, int w, int h)
 	return n;
 }
 
+//the most used function for drawing a pixel, because it has OpenGL support, which is not fully implemented.
 #if defined(WIN32) && !defined(__GNUC__)
 _inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 #else
@@ -1150,7 +1159,7 @@ void draw_air(pixel *vid)
 	int x, y, i, j;
 	pixel c;
 
-	if (cmode == CM_PERS)
+	if (cmode == CM_PERS)//this should never happen anyway
 		return;
 
 	for (y=0; y<YRES/CELL; y++)
@@ -1159,27 +1168,28 @@ void draw_air(pixel *vid)
 			if (cmode == CM_PRESS)
 			{
 				if (pv[y][x] > 0.0f)
-					c  = PIXRGB(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);
+					c  = PIXRGB(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);//positive pressure is red!
 				else
-					c  = PIXRGB(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));
+					c  = PIXRGB(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));//negative pressure is blue!
 			}
 			else if (cmode == CM_VEL)
 			{
-				c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),
-				            clamp_flt(pv[y][x], 0.0f, 8.0f),
-				            clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));
+				c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
+				            clamp_flt(pv[y][x], 0.0f, 8.0f),//pressure adds green
+				            clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
 			}
 			else if (cmode == CM_CRACK)
 			{
 				int r;
 				int g;
 				int b;
+				// velocity adds grey
 				r = clamp_flt(fabsf(vx[y][x]), 0.0f, 24.0f) + clamp_flt(fabsf(vy[y][x]), 0.0f, 20.0f);
 				g = clamp_flt(fabsf(vx[y][x]), 0.0f, 20.0f) + clamp_flt(fabsf(vy[y][x]), 0.0f, 24.0f);
 				b = clamp_flt(fabsf(vx[y][x]), 0.0f, 24.0f) + clamp_flt(fabsf(vy[y][x]), 0.0f, 20.0f);
 				if (pv[y][x] > 0.0f)
 				{
-					r += clamp_flt(pv[y][x], 0.0f, 16.0f);
+					r += clamp_flt(pv[y][x], 0.0f, 16.0f);//pressure adds red!
 					if (r>255)
 						r=255;
 					if (g>255)
@@ -1190,7 +1200,7 @@ void draw_air(pixel *vid)
 				}
 				else
 				{
-					b += clamp_flt(-pv[y][x], 0.0f, 16.0f);
+					b += clamp_flt(-pv[y][x], 0.0f, 16.0f);//pressure adds blue!
 					if (r>255)
 						r=255;
 					if (g>255)
@@ -1200,7 +1210,7 @@ void draw_air(pixel *vid)
 					c  = PIXRGB(r, g, b);
 				}
 			}
-			for (j=0; j<CELL; j++)
+			for (j=0; j<CELL; j++)//draws the colors
 				for (i=0; i<CELL; i++)
 					vid[(x*CELL+i) + (y*CELL+j)*(XRES+BARSIZE)] = c;
 		}
@@ -1246,6 +1256,7 @@ void draw_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, 
 	}
 }
 
+//adds color to a pixel, does not overwrite.
 void addpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 {
 	pixel t;
@@ -1264,6 +1275,7 @@ void addpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 	vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 }
 
+//draws one of two colors, so that it is always clearly visible
 void xor_pixel(int x, int y, pixel *vid)
 {
 	int c;
@@ -1277,6 +1289,7 @@ void xor_pixel(int x, int y, pixel *vid)
 		vid[y*(XRES+BARSIZE)+x] = PIXPACK(0x404040);
 }
 
+//same as xor_pixel, but draws a line of it
 void xor_line(int x1, int y1, int x2, int y2, pixel *vid)
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
@@ -1323,6 +1336,7 @@ void xor_line(int x1, int y1, int x2, int y2, pixel *vid)
 	}
 }
 
+//same as xor_pixel, but draws a rectangle
 void xor_rect(pixel *vid, int x, int y, int w, int h)
 {
 	int i;
@@ -1338,6 +1352,7 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 	}
 }
 
+//the main function for drawing the particles
 void draw_parts(pixel *vid)
 {
 	int i, x, y, t, nx, ny, r, s;
@@ -1346,7 +1361,7 @@ void draw_parts(pixel *vid)
 	int cr, cg, cb;
 	float fr, fg, fb;
 	float pt = R_TEMP;
-	if (GRID_MODE)
+	if (GRID_MODE)//draws the grid
 	{
 		for (ny=0; ny<YRES; ny++)
 			for (nx=0; nx<XRES; nx++)
@@ -1499,7 +1514,7 @@ void draw_parts(pixel *vid)
 						blendpixel(vid, nx, ny, cr, cg, cb, 255);
 					}
 				}
-				else if (cmode==CM_GRAD)//forgot to put else, broke nothing view
+				else if (cmode==CM_GRAD)
 				{
 					float frequency = 0.05;
 					int q = parts[i].temp-40;
@@ -1520,7 +1535,7 @@ void draw_parts(pixel *vid)
 						cb = 0;
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 				}
-				else if (cmode==CM_FANCY &&
+				else if (cmode==CM_FANCY && //all fancy mode effects go here, this is a list of exceptions to skip
 				         t!=PT_FIRE && t!=PT_PLSM &&	t!=PT_WTRV &&
 				         t!=PT_HFLM && t!=PT_SPRK && t!=PT_FIRW &&
 				         t!=PT_DUST && t!=PT_FIRW && t!=PT_FWRK &&
@@ -1529,7 +1544,7 @@ void draw_parts(pixel *vid)
 				         t!=PT_LCRY && t!=PT_SWCH && t!=PT_PCLN &&
 				         t!=PT_PUMP && t!=PT_HSWC && t!=PT_FILT)
 				{
-					if (ptypes[parts[i].type].properties&TYPE_LIQUID)
+					if (ptypes[parts[i].type].properties&TYPE_LIQUID) //special effects for liquids in fancy mode
 					{
 						if (parts[i].type==PT_DEUT)
 						{
@@ -1675,7 +1690,7 @@ void draw_parts(pixel *vid)
 							}
 						}
 					}
-					else
+					else //if no fancy effects, draw a simple pixel
 					{
 						vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
 					}
@@ -1707,8 +1722,8 @@ void draw_parts(pixel *vid)
 				}
 				else if (t==PT_QRTZ || t==PT_PQRT)
 				{
-					int z = parts[i].tmp - 5;
-					if (parts[i].temp>(ptransitions[t].thv-800.0f))
+					int z = parts[i].tmp - 5;//speckles!
+					if (parts[i].temp>(ptransitions[t].thv-800.0f))//hotglow for quartz
 					{
 						float frequency = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
 						int q = (parts[i].temp>ptransitions[t].thv)?ptransitions[t].thv-(ptransitions[t].thv-800.0f):parts[i].temp-(ptransitions[t].thv-800.0f);
@@ -1754,7 +1769,7 @@ void draw_parts(pixel *vid)
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
 				}
-				else if(t==PT_LOTE)
+				else if(t==PT_LOTE)//colors for life states
 				{
 					if(parts[i].tmp==2)
 						blendpixel(vid, nx, ny, 255, 128, 0, 255);
@@ -1763,14 +1778,14 @@ void draw_parts(pixel *vid)
 					else
 						blendpixel(vid, nx, ny, 255, 0, 0, 255);
 				}
-				else if(t==PT_FRG2)
+				else if(t==PT_FRG2)//colors for life states
 				{
 					if(parts[i].tmp==2)
 						blendpixel(vid, nx, ny, 0, 100, 50, 255);
 					else
 						blendpixel(vid, nx, ny, 0, 255, 90, 255);
 				}
-				else if(t==PT_STAR)
+				else if(t==PT_STAR)//colors for life states
 				{
 					if(parts[i].tmp==4)
 						blendpixel(vid, nx, ny, 0, 0, 128, 255);
@@ -1783,14 +1798,14 @@ void draw_parts(pixel *vid)
 					else
 						blendpixel(vid, nx, ny, 0, 0, 70, 255);
 				}
-				else if(t==PT_FROG)
+				else if(t==PT_FROG)//colors for life states
 				{
 					if(parts[i].tmp==2)
 						blendpixel(vid, nx, ny, 0, 100, 0, 255);
 					else
 						blendpixel(vid, nx, ny, 0, 255, 0, 255);
 				}
-				else if(t==PT_BRAN)
+				else if(t==PT_BRAN)//colors for life states
 				{
 					if(parts[i].tmp==1)
 						blendpixel(vid, nx, ny, 150, 150, 0, 255);
@@ -1833,13 +1848,13 @@ void draw_parts(pixel *vid)
 					}
 
 				}
-				else if (t==PT_DUST && parts[i].life >= 1)
+				else if (t==PT_DUST && parts[i].life >= 1)//dust colors!
 				{
 					x = nx;
 					y = ny;
 					if (cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY)
 					{
-						vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(parts[i].tmp,parts[i].ctype,parts[i].flags);
+						vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(parts[i].tmp,parts[i].ctype,parts[i].flags);//yes i know this pixel is different color than the glow... i don't know why
 						cg = parts[i].tmp/4;
 						cb = parts[i].ctype/4;
 						cr = parts[i].flags/4;
@@ -1911,7 +1926,7 @@ void draw_parts(pixel *vid)
 					cg = sin(frequency*q + 2) * 127 + 128;
 					cb = sin(frequency*q + 4) * 127 + 128;
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
-					if (mousex==(nx) && mousey==(ny) && DEBUG_MODE)
+					if (mousex==(nx) && mousey==(ny) && DEBUG_MODE)//draw lines connecting wifi channels
 					{
 						int z;
 						for (z = 0; z<NPART; z++) {
@@ -1945,7 +1960,7 @@ void draw_parts(pixel *vid)
 						}
 						addpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 200);
 					}
-					if(DEBUG_MODE){
+					if(DEBUG_MODE){//draw lines connecting portals
 						blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
 						if (mousex==(nx) && mousey==(ny))
 						{
@@ -1982,7 +1997,7 @@ void draw_parts(pixel *vid)
 						}
 						addpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 200);
 					}
-					if(DEBUG_MODE){
+					if(DEBUG_MODE){//draw lines connecting portals
 						blendpixel(vid,nx,ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors),255);
 						if (mousex==(nx) && mousey==(ny))
 						{
@@ -2859,10 +2874,10 @@ void draw_parts(pixel *vid)
 						fire_b[y][x] = cb;
 					}
 				}
-				else
+				else //if no special effect, draw a simple pixel
 					vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
 			}
-			else
+			else //heat view
 			{
 				float ttemp = parts[i].temp+(-MIN_TEMP);
 				int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
@@ -2926,6 +2941,7 @@ void draw_parts(pixel *vid)
 					//blendpixel(vid, nx+1, ny, R, G, B, 255);
 				}
 			}
+			//blob view!
 			if (cmode == CM_BLOB&&t!=PT_FIRE&&t!=PT_PLSM&&t!=PT_HFLM&&t!=PT_NONE&&t!=PT_ACID&&t!=PT_LCRY&&t!=PT_GLOW&&t!=PT_SWCH&&t!=PT_SMKE&&t!=PT_WTRV&&!(t==PT_FIRW&&parts[i].tmp==3))
 			{
 				if (t==PT_PHOT) {
@@ -2974,6 +2990,7 @@ void draw_parts(pixel *vid)
 
 }
 
+//draws the photon colors in the HUD
 void draw_wavelengths(pixel *vid, int x, int y, int h, int wl)
 {
 	int i,cr,cg,cb,j;
@@ -3161,7 +3178,7 @@ void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a)
 		}
 }
 
-void dim_copy(pixel *dst, pixel *src)
+void dim_copy(pixel *dst, pixel *src) //old persistent, unused
 {
 	int i,r,g,b;
 	for (i=0; i<XRES*YRES; i++)
@@ -3179,7 +3196,7 @@ void dim_copy(pixel *dst, pixel *src)
 	}
 }
 
-void dim_copy_pers(pixel *dst, pixel *src)
+void dim_copy_pers(pixel *dst, pixel *src) //for persistent view, reduces rgb slowly
 {
 	int i,r,g,b;
 	for (i=0; i<(XRES+BARSIZE)*YRES; i++)
@@ -3197,7 +3214,7 @@ void dim_copy_pers(pixel *dst, pixel *src)
 	}
 }
 
-void render_zoom(pixel *img)
+void render_zoom(pixel *img) //draws the zoom box
 {
 	int x, y, i, j;
 	pixel pix;
@@ -3227,6 +3244,7 @@ void render_zoom(pixel *img)
 	}
 }
 
+//gets the thumbnail preview for stamps
 pixel *prerender_save(void *save, int size, int *width, int *height)
 {
 	unsigned char *d,*c=save;
@@ -3511,6 +3529,7 @@ corrupt:
 	return 1;
 }
 
+//draws the cursor
 void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 {
 	int i,j,c;
@@ -3545,7 +3564,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 						if (i&&j) xor_pixel(x-i, y-j, vid);
 					}
 	}
-	else
+	else //wall cursor
 	{
 		int tc;
 		c = (rx/CELL) * CELL;

@@ -25,10 +25,12 @@ int update_SWCH(UPDATE_FUNC_ARGS) {
 					}
 				}
 			}
+	//turn off SWCH from two red BRAYS
 	if (parts[i].life==10 && (!(pmap[y-1][x-1]&0xFF) && ((pmap[y-1][x]&0xFF)==PT_BRAY&&parts[pmap[y-1][x]>>8].tmp==2) && !(pmap[y-1][x+1]&0xFF) && ((pmap[y][x+1]&0xFF)==PT_BRAY&&parts[pmap[y][x+1]>>8].tmp==2)))
 	{
 		parts[i].life = 9;
 	}
+	//turn on SWCH from two red BRAYS
 	else if (parts[i].life<=5 && (!(pmap[y-1][x-1]&0xFF) && (((pmap[y-1][x]&0xFF)==PT_BRAY&&parts[pmap[y-1][x]>>8].tmp==2) || ((pmap[y+1][x]&0xFF)==PT_BRAY&&parts[pmap[y+1][x]>>8].tmp==2)) && !(pmap[y-1][x+1]&0xFF) && (((pmap[y][x+1]&0xFF)==PT_BRAY&&parts[pmap[y][x+1]>>8].tmp==2) || ((pmap[y][x-1]&0xFF)==PT_BRAY&&parts[pmap[y][x-1]>>8].tmp==2))))
 	{
 		parts[i].life = 14;

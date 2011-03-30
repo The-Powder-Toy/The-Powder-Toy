@@ -40,7 +40,7 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 				        (pmap[y+ry][x+rx]&0xFF)!=0xFF)
 					parts[i].ctype = pmap[y+ry][x+rx]&0xFF;
 	if (parts[i].ctype && parts[i].life==10) {
-		if (parts[i].ctype==PT_PHOT) {
+		if (parts[i].ctype==PT_PHOT) {//create photons a different way
 			for (rx=-1; rx<2; rx++) {
 				for (ry=-1; ry<2; ry++) {
 					int r = create_part(-1, x+rx, y+ry, parts[i].ctype);
@@ -51,7 +51,7 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 				}
 			}
 		}
-		else if (ptypes[parts[i].ctype].properties&PROP_LIFE) {
+		else if (ptypes[parts[i].ctype].properties&PROP_LIFE) {//create life a different way
 			for (rx=-1; rx<2; rx++) {
 				for (ry=-1; ry<2; ry++) {
 					create_part(-1, x+rx, y+ry, parts[i].ctype);

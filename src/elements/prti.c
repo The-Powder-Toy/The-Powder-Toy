@@ -1,5 +1,14 @@
 #include <element.h>
-
+/*these are the count vaules of where the particle gets stored, depending on where it came from
+   1 4 6
+   2 . 7
+   3 5 8
+   PRTO counts backwards, so that it will come out at the opposite place of where it came in
+   8 5 3
+   7 . 2
+   6 4 1
+   PRTO does +/-1 to the count, so it doesn't jam as easily
+*/
 int update_PRTI(UPDATE_FUNC_ARGS) {
 	int r, nnx, rx, ry, fe = 0;
 	int count =0;

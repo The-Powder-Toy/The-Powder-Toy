@@ -14,7 +14,7 @@ float cb_pv[YRES/CELL][XRES/CELL], cb_opv[YRES/CELL][XRES/CELL];
 
 float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 
-void make_kernel(void)
+void make_kernel(void) //used for velocity
 {
 	int i, j;
 	float s = 0.0f;
@@ -34,9 +34,9 @@ void update_air(void)
 	int x, y, i, j;
 	float dp, dx, dy, f, tx, ty;
 
-if (airMode != 4) {
+if (airMode != 4) { //airMode 4 is no air/pressure update
 
-	for (i=0; i<YRES/CELL; i++)
+	for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 	{
 		pv[i][0] = pv[i][0]*0.8f;
 		pv[i][1] = pv[i][1]*0.8f;
@@ -52,7 +52,7 @@ if (airMode != 4) {
 		vy[i][XRES/CELL-2] = vy[i][XRES/CELL-3]*0.9f;
 		vy[i][XRES/CELL-1] = vy[i][XRES/CELL-2]*0.9f;
 	}
-	for (i=0; i<XRES/CELL; i++)
+	for (i=0; i<XRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 	{
 		pv[0][i] = pv[0][i]*0.8f;
 		pv[1][i] = pv[1][i]*0.8f;
@@ -69,7 +69,7 @@ if (airMode != 4) {
 		vy[YRES/CELL-1][i] = vy[YRES/CELL-2][i]*0.9f;
 	}
 
-	for (j=1; j<YRES/CELL; j++)
+	for (j=1; j<YRES/CELL; j++) //clear some velocities near walls
 	{
 		for (i=1; i<XRES/CELL; i++)
 		{
@@ -83,7 +83,7 @@ if (airMode != 4) {
 		}
 	}
 
-	for (y=1; y<YRES/CELL; y++)
+	for (y=1; y<YRES/CELL; y++) //pressure adjustments from velocity
 		for (x=1; x<XRES/CELL; x++)
 		{
 			dp = 0.0f;
@@ -93,7 +93,7 @@ if (airMode != 4) {
 			pv[y][x] += dp*AIR_TSTEPP;
 		}
 
-	for (y=0; y<YRES/CELL-1; y++)
+	for (y=0; y<YRES/CELL-1; y++) //velocity adjustments from pressure
 		for (x=0; x<XRES/CELL-1; x++)
 		{
 			dx = dy = 0.0f;
@@ -115,7 +115,7 @@ if (airMode != 4) {
 				vy[y][x] = 0;
 		}
 
-	for (y=0; y<YRES/CELL; y++)
+	for (y=0; y<YRES/CELL; y++) //update velocity and pressure
 		for (x=0; x<XRES/CELL; x++)
 		{
 			dx = 0.0f;
@@ -172,7 +172,7 @@ if (airMode != 4) {
 				dx += fvx[y][x];
 				dy += fvy[y][x];
 			}
-
+			// pressure/velocity caps
 			if (dp > 256.0f) dp = 256.0f;
 			if (dp < -256.0f) dp = -256.0f;
 			if (dx > 256.0f) dx = 256.0f;

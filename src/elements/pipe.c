@@ -4,7 +4,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, np, trade, q, ctype;
 	if (!parts[i].ctype && parts[i].life<=10)
 	{
-		if (parts[i].temp<272.15)
+		if (parts[i].temp<272.15)//manual pipe colors
 		{
 			if (parts[i].temp>173.25&&parts[i].temp<273.15)
 			{
@@ -32,13 +32,13 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						if ((r>>8)>=NPART )
 							continue;
 						if (!r)
-							create_part(-1,x+rx,y+ry,PT_BRCK);
+							create_part(-1,x+rx,y+ry,PT_BRCK);//BRCK border, people didn't like DMND
 					}
 			if (parts[i].life==1)
 				parts[i].ctype = 1;
 		}
 	}
-	if (parts[i].ctype==1)
+	if (parts[i].ctype==1)//waiting for empty space
 	{
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)

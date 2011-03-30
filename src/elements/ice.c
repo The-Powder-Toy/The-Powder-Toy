@@ -2,7 +2,7 @@
 
 int update_ICEI(UPDATE_FUNC_ARGS) { //currently used for snow as well
 	int r, rx, ry;
-	if (parts[i].ctype==PT_FRZW)
+	if (parts[i].ctype==PT_FRZW)//get colder if it is from FRZW
 	{
 		parts[i].temp = restrict_flt(parts[i].temp-1.0f, MIN_TEMP, MAX_TEMP);
 	}

@@ -68,7 +68,7 @@ int zoom_wx=0, zoom_wy=0;
 unsigned char ZFACTOR = 256/ZSIZE_D;
 unsigned char ZSIZE = ZSIZE_D;
 
-void menu_count(void)
+void menu_count(void)// never used
 {
 	int i=0;
 	msections[SC_WALL].itemcount = UI_WALLCOUNT-4;
@@ -467,17 +467,20 @@ void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed)
 	}
 }
 
-void draw_svf_ui(pixel *vid_buf)
+void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 {
 	int c;
-
-	drawtext(vid_buf, 4, YRES+(MENUSIZE-14), "\x81", 255, 255, 255, 255);
+	
+	//the open browser button
+	drawtext(vid_buf, 4, YRES+(MENUSIZE-14), "\x81", 255, 255, 255, 255); 
 	drawrect(vid_buf, 1, YRES+(MENUSIZE-16), 16, 14, 255, 255, 255, 255);
 
+	// the reload button
 	c = svf_open ? 255 : 128;
-	drawtext(vid_buf, 23, YRES+(MENUSIZE-14), "\x91", c, c, c, 255);
+	drawtext(vid_buf, 23, YRES+(MENUSIZE-14), "\x91", c, c, c, 255); 
 	drawrect(vid_buf, 19, YRES+(MENUSIZE-16), 16, 14, c, c, c, 255);
 
+	// the save sim button
 	c = svf_login ? 255 : 128;
 	drawtext(vid_buf, 40, YRES+(MENUSIZE-14), "\x82", c, c, c, 255);
 	if (svf_open)
@@ -490,6 +493,7 @@ void draw_svf_ui(pixel *vid_buf)
 
 	c = (svf_login && svf_open) ? 255 : 128;
 
+	//the vote buttons
 	drawrect(vid_buf, 189, YRES+(MENUSIZE-16), 14, 14, c, c, c, 255);
 	drawrect(vid_buf, 203, YRES+(MENUSIZE-16), 14, 14, c, c, c, 255);
 
@@ -501,10 +505,10 @@ void draw_svf_ui(pixel *vid_buf)
 	{
 		fillrect(vid_buf, 203, YRES+(MENUSIZE-16), 14, 14, 108, 10, 0, 255);
 	}
-
 	drawtext(vid_buf, 192, YRES+(MENUSIZE-12), "\xCB", 0, 187, 18, c);
 	drawtext(vid_buf, 205, YRES+(MENUSIZE-14), "\xCA", 187, 40, 0, c);
 
+	//the tags button
 	drawtext(vid_buf, 222, YRES+(MENUSIZE-15), "\x83", c, c, c, 255);
 	if (svf_tags[0])
 		drawtextmax(vid_buf, 240, YRES+(MENUSIZE-12), XRES+BARSIZE-405, svf_tags, c, c, c, 255);
@@ -513,9 +517,11 @@ void draw_svf_ui(pixel *vid_buf)
 
 	drawrect(vid_buf, 219, YRES+(MENUSIZE-16), XRES+BARSIZE-380, 14, c, c, c, 255);
 
+	//the clear sim button------------some of the commented values are wrong
 	drawtext(vid_buf, XRES-139+BARSIZE/*371*/, YRES+(MENUSIZE-14), "\x92", 255, 255, 255, 255);
 	drawrect(vid_buf, XRES-143+BARSIZE/*367*/, YRES+(MENUSIZE-16), 16, 14, 255, 255, 255, 255);
 
+	//the login button
 	drawtext(vid_buf, XRES-122+BARSIZE/*388*/, YRES+(MENUSIZE-13), "\x84", 255, 255, 255, 255);
 	if (svf_login)
 		drawtextmax(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), 66, svf_user, 255, 255, 255, 255);
@@ -523,6 +529,7 @@ void draw_svf_ui(pixel *vid_buf)
 		drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), "[sign in]", 255, 255, 255, 255);
 	drawrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14, 255, 255, 255, 255);
 
+	//te pause button
 	if (sys_pause)
 	{
 		fillrect(vid_buf, XRES-17+BARSIZE/*493*/, YRES+(MENUSIZE-17), 16, 16, 255, 255, 255, 255);
@@ -534,6 +541,7 @@ void draw_svf_ui(pixel *vid_buf)
 		drawrect(vid_buf, XRES-16+BARSIZE/*494*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
 	}
 
+	//the heat sim button
 	if (!legacy_enable)
 	{
 		fillrect(vid_buf, XRES-160+BARSIZE/*493*/, YRES+(MENUSIZE-17), 16, 16, 255, 255, 255, 255);
@@ -546,6 +554,7 @@ void draw_svf_ui(pixel *vid_buf)
 		drawrect(vid_buf, XRES-159+BARSIZE/*494*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
 	}
 
+	//the view mode button
 	switch (cmode)
 	{
 	case CM_VEL:
@@ -587,6 +596,7 @@ void draw_svf_ui(pixel *vid_buf)
 	}
 	drawrect(vid_buf, XRES-32+BARSIZE/*478*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
 
+	// special icons for admin/mods
 	if (svf_admin)
 	{
 		drawtext(vid_buf, XRES-45+BARSIZE/*463*/, YRES+(MENUSIZE-14), "\xC9", 232, 127, 35, 255);
@@ -1349,6 +1359,8 @@ int save_name_ui(pixel *vid_buf)
 	return 0;
 }
 
+//unused old function, with all the elements drawn at the bottom
+/*
 void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 {
 	int b=1,bq,mx,my,h,x,y,n=0,height,width,sy,rows=0;
@@ -1542,7 +1554,8 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 	}
 	//drawtext(vid_buf, XRES+2, (12*i)+2, msections[i].icon, 255, 255, 255, 255);
 }
-
+*/
+//current menu function
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, int my)
 {
 	int h,x,y,n=0,height,width,sy,rows=0,xoff=0,fwidth;
@@ -1557,7 +1570,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 	x = XRES-BARSIZE-18;
 	y = YRES+1;
 	sy = y;
-	if (i==SC_WALL)
+	if (i==SC_WALL)//wall menu
 	{
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
@@ -1594,7 +1607,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 			}
 		}
 	}
-	else if (i==SC_SPECIAL)
+	else if (i==SC_SPECIAL)//special menu
 	{
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
@@ -1665,9 +1678,9 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 			}
 		}
 	}
-	else
+	else //all other menus
 	{
-		if (fwidth > XRES-BARSIZE){
+		if (fwidth > XRES-BARSIZE){ //fancy scrolling
 			float overflow = fwidth-(XRES-BARSIZE), location = ((float)XRES-BARSIZE)/((float)(mx-(XRES-BARSIZE)));
 			xoff = (int)(overflow / location);
 		}
@@ -1701,13 +1714,10 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 			}
 		}
 	}
-	if (!bq&&mx>=sdl_scale*((XRES+BARSIZE)-16) && mx<sdl_scale*(XRES+BARSIZE-1) &&my>= sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)) && my<sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)+15))
-	{
-
+	if (!bq && mx>=((XRES+BARSIZE)-16) ) //highlight menu section
 		if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
 			if (i>=0&&i<SC_TOTAL)
 				SEC = i;
-	}
 
 	if (h==-1)
 	{
@@ -1721,7 +1731,8 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 	{
 		drawtext(vid_buf, XRES-textwidth((char *)ptypes[h].descs)-BARSIZE, sy-10, (char *)ptypes[h].descs, 255, 255, 255, 255);
 	}
-
+	//these are click events, b=1 is left click, b=4 is right
+	//h has the value of the element it is over, and -1 if not over an element
 	if (b==1&&h==-1)
 	{
 		if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT) && SEC>=0)
@@ -1871,7 +1882,7 @@ int sdl_poll(void)
 	return 0;
 }
 
-void set_cmode(int cm)
+void set_cmode(int cm) // sets to given view mode
 {
 	cmode = cm;
 	itc = 51;
@@ -1924,7 +1935,7 @@ void set_cmode(int cm)
 	}
 	else if (cmode==CM_LIFE)
 	{
-		if (DEBUG_MODE)
+		if (DEBUG_MODE) //can only get to Life view in debug mode
 		{
 			strcpy(itc_msg, "Life Display");
 		}
@@ -1933,7 +1944,7 @@ void set_cmode(int cm)
 			set_cmode(CM_CRACK);
 		}
 	}
-	else
+	else //if no special text given, it will display this.
 	{
 		strcpy(itc_msg, "Velocity Display");
 	}
@@ -3893,7 +3904,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	currentcommand2->command = mystrdup(error);
 	last_command2 = currentcommand2;
 	
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);//enable keyrepeat for console (is disabled on console close later)
 	cc = 0;
 	while(cc < 80){
 		fillrect(old_buf, -1, -1+cc, XRES+BARSIZE, 2, 0, 0, 0, 160-(cc*2));
@@ -4028,6 +4039,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	return NULL;
 }
 
+//takes a a string and compares it to element names, and puts it value into element.
 int console_parse_type(char *txt, int *element, char *err)
 {
 	int i = -1;
@@ -4052,6 +4064,7 @@ int console_parse_type(char *txt, int *element, char *err)
 	strcpy(err, "Particle type not recognised");
 	return 0;
 }
+//takes a string of coords "x,y" and puts the values into x and y.
 int console_parse_coords(char *txt, int *x, int *y, char *err)
 {
 	// TODO: use regex?
@@ -4065,6 +4078,7 @@ int console_parse_coords(char *txt, int *x, int *y, char *err)
 	*y = ny;
 	return 1;
 }
+//takes a string of either coords or a particle number, and puts the particle number into *which
 int console_parse_partref(char *txt, int *which, char *err)
 {
 	int i = -1, nx, ny;

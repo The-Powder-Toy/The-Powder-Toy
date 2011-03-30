@@ -12,6 +12,7 @@ int update_QRTZ(UPDATE_FUNC_ARGS) {
 			part_change_type(i,x,y,PT_PQRT);
 		}
 	}
+	//new QRTZ growth
 	for (rx=-2; rx<3 && parts[i].ctype!=-1; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
