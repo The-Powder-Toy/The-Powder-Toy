@@ -1654,7 +1654,8 @@ static PyObject* emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
 
 static PyObject* emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,life,j,x=-1,y=-1;
+    int i = -1,j,x=-1,y=-1;
+    float life;
     char *name = "";
     char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "f|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
@@ -1694,7 +1695,8 @@ static PyObject* emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
 
 static PyObject* emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,life,j,x=-1,y=-1;
+    int i = -1,j,x=-1,y=-1;
+    float life;
     char *name = "";
     char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "f|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
@@ -3816,6 +3818,11 @@ int process_command(pixel *vid_buf,char *console,char *console_error,PyObject *p
 		if(strcmp(console2, "quit")==0)
 		{
 			return -1;
+		}
+		if(strcmp(console2, "eqvetest")==0)
+		{
+			EQVETEST = !EQVETEST;
+			return 1;
 		} else {
 			//handle them command
 			pargs=Py_BuildValue("(s)",console);
