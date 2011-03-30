@@ -3,6 +3,9 @@
 #include <string.h>
 #include <regex.h>
 #include <sys/types.h>
+#ifdef WIN32
+#include <windows.h>
+#endif
 #include "misc.h"
 #include "defines.h"
 #include "interface.h"
