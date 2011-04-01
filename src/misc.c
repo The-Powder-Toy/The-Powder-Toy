@@ -7,6 +7,10 @@
 #include <windows.h>
 #include "update.h"
 #endif
+#ifdef MACOSX
+///#include <Pasteboard.h>
+#include <ApplicationServices/ApplicationServices.h>
+#endif
 #include "misc.h"
 #include "defines.h"
 #include "interface.h"
@@ -375,7 +379,18 @@ vector2d v2d_new(float x, float y)
 
 void clipboard_push_text(char * text)
 {
+#ifdef MACOSX
+	PasteboardRef newclipboard; 
+	
+	if(PasteboardCreate(kPasteboardClipboard, &newclipboard)!=noErr) return;
+	if(PasteboardClear(newclipboard)!=noErr) return;
+	PasteboardSynchronize(newclipboard);
+	
+	CFDataRef data = CFDataCreate(kCFAllocatorDefault, text, strlen(text));
+	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);	
+#else 
 	printf("Not implemented: put text on clipboard \"%s\"\n", text);
+#endif
 }
 
 char * clipboard_pull_text()
