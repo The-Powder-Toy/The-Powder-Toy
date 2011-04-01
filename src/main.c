@@ -31,9 +31,9 @@
 #include "pyconsole.h"
 //#include "pystdlib.h"
 #include <marshal.h>
+#endif
 char pyready=1;
 char pygood=1;
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
