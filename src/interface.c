@@ -720,6 +720,90 @@ void info_box(pixel *vid_buf, char *msg)
 	sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 }
 
+void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt)
+{
+	int state = 0;
+	int i;
+	int g = 255;
+	int xsize = 244;
+	int ysize = 90;
+	int x0=(XRES-xsize)/2,y0=(YRES-MENUSIZE-ysize)/2,b=1,bq,mx,my;
+	int buttonx = 0;
+	int buttony = 0;
+	int buttonwidth = 0;
+	int buttonheight = 0;
+	
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+	
+	while (!sdl_poll())
+	{
+		bq = b;
+		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
+		
+		buttonwidth = textwidth(copytxt)+12;
+		buttonheight = 10+8;
+		buttony = y0+50;
+		buttonx = x0+(xsize/2)-(buttonwidth/2);
+		
+		clearrect(vid_buf, x0-2, y0-2, xsize, ysize);
+		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
+		drawtext(vid_buf, x0+8, y0+8, top, 160, 160, 255, 255);
+		drawtext(vid_buf, x0+8, y0+26, txt, 255, 255, 255, 255);
+		
+		if(my>=buttony && my<=buttony+buttonheight && mx>=buttonx && mx<=buttonx+buttonwidth && !state){
+			if(b && !bq){
+				clipboard_push_text(copytxt);
+				state = 1;
+				g = 210;
+			}
+			i = 0;
+		} else {
+			if(state==1){
+				i = 0;
+			} else {
+				i = 100;
+			}
+		}
+		
+		if(!state){
+			drawtext(vid_buf, (x0+(xsize/2))-(textwidth("Click the box to copy the text")/2), y0+38, "Click the box to copy the text", 255, 255, 255, 255-i);
+		} else {
+			drawtext(vid_buf, (x0+(xsize/2))-(textwidth("Copied!")/2), y0+38, "Copied!", 255, 255, 255, 255-i);
+		}
+		
+		drawrect(vid_buf, buttonx, buttony, buttonwidth, buttonheight, g, 255, g, 255-i);
+		drawrect(vid_buf, buttonx+1, buttony+1, buttonwidth-2, buttonheight-2, g, 255, g, 100-i);
+		drawtext(vid_buf, buttonx+6, buttony+5, copytxt, g, 255, g, 230-i);
+		
+		drawtext(vid_buf, x0+5, y0+ysize-11, "OK", 255, 255, 255, 255);
+		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
+		
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+		
+		if (b && !bq && mx>=x0 && mx<x0+xsize && my>=y0+ysize-16 && my<=y0+ysize)
+			break;
+		
+		if (sdl_key==SDLK_RETURN)
+			break;
+		if (sdl_key==SDLK_ESCAPE)
+			break;
+	}
+	
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+}
+
 int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 {
 	int x0=(XRES-240)/2,y0=(YRES-MENUSIZE)/2,b=1,bq,mx,my;
