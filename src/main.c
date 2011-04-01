@@ -657,6 +657,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				if (pmap[y][x])
 				{
 					k = pmap[y][x]>>8;
+					memset(parts+k, 0, sizeof(particle));
 					parts[k].type = j;
 					if (j == PT_PHOT)
 						parts[k].ctype = 0x3fffffff;
@@ -666,6 +667,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				}
 				else if (i < nf)
 				{
+					memset(parts+fp[i], 0, sizeof(particle));
 					parts[fp[i]].type = j;
 					if (j == PT_COAL)
 						parts[fp[i]].tmp = 50;
