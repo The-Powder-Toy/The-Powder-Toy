@@ -2410,6 +2410,16 @@ int main(int argc, char *argv[])
 					}
 					save_presets(0);
 					free(check_data);
+				} else {
+					//Unable to check session, YOU WILL BE TERMINATED
+					strcpy(svf_user, "");
+					strcpy(svf_pass, "");
+					strcpy(svf_user_id, "");
+					strcpy(svf_session_id, "");
+					svf_login = 0;
+					svf_own = 0;
+					svf_admin = 0;
+					svf_mod = 0;
 				}
 				http_session_check = NULL;
 			} else {
