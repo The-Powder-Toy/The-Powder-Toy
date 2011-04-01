@@ -1202,6 +1202,7 @@ char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
 
                 
 char console_error[255] = "";
+char console_more=0;
 
 #ifdef PYCONSOLE
 /* 
@@ -1302,8 +1303,6 @@ static PyObject* emb_log(PyObject *self, PyObject *args)
     puts(buffer);
     return Py_BuildValue("i",1);
 }
-
-char console_more=0;
 
 static PyObject* emb_console_more(PyObject *self, PyObject *args)
 {
