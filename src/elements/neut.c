@@ -1,7 +1,7 @@
 #include <element.h>
 
 int update_NEUT(UPDATE_FUNC_ARGS) {
-	int r, rx, ry;
+	int r, rx, ry, rt;
 	int pressureFactor = 3 + (int)pv[y/CELL][x/CELL];
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -84,5 +84,11 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 				  ptypes[parts[r>>8].type-1].menusection==SC_POWDERS) && 15>(rand()%1000))
 				  parts[r>>8].type--;*/
 			}
+	r = pmap[y][x];
+	rt = r&0xFF;
+	if (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN) {
+		if (!parts[r>>8].ctype)
+			parts[r>>8].ctype = PT_PHOT;
+	}
 	return 0;
 }
