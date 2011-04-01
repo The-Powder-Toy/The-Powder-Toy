@@ -3874,6 +3874,7 @@ int process_command(pixel *vid_buf,char *console,char *console_error,PyObject *p
 #endif
 int process_command_old(pixel *vid_buf,char *console,char *console_error) {
     int y,x,nx,ny,i,j,k,m;
+    float f;
     int do_next = 1;
     char xcoord[10] = "";
     char ycoord[10] = "";
@@ -4280,28 +4281,28 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
             {
                 if(strcmp(console4, "all")==0)
                 {
-                    j = atoi(console5);
+                    f = atof(console5);
                     for(i=0; i<NPART; i++)
                     {
                         if(parts[i].type)
-                            parts[i].vx = j;
+                            parts[i].vx = f;
                     }
                 }
                 else if (console_parse_type(console4, &j, console_error))
                 {
-                    k = atoi(console5);
+					f = atof(console5);
                     for(i=0; i<NPART; i++)
                     {
                         if(parts[i].type == j)
-                            parts[i].vx = k;
+                            parts[i].vx = f;
                     }
                 }
                 else
                 {
                     if (console_parse_partref(console4, &i, console_error))
                     {
-                        j = atoi(console5);
-                        parts[i].vx = j;
+                        f = atof(console5);
+                        parts[i].vx = f;
                     }
                 }
             }
@@ -4309,28 +4310,28 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
             {
                 if(strcmp(console4, "all")==0)
                 {
-                    j = atoi(console5);
+					f = atof(console5);
                     for(i=0; i<NPART; i++)
                     {
                         if(parts[i].type)
-                            parts[i].vy = j;
+                            parts[i].vy = f;
                     }
                 }
                 else if (console_parse_type(console4, &j, console_error))
                 {
-                    k = atoi(console5);
+                    f = atof(console5);
                     for(i=0; i<NPART; i++)
                     {
                         if(parts[i].type == j)
-                            parts[i].vy = k;
+                            parts[i].vy = f;
                     }
                 }
                 else
                 {
                     if (console_parse_partref(console4, &i, console_error))
                     {
-                        j = atoi(console5);
-                        parts[i].vy = j;
+                        f = atof(console5);
+                        parts[i].vy = f;
                     }
                 }
             }
