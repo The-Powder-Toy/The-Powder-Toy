@@ -3919,14 +3919,18 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 		draw_line(vid_buf, 0, 219, XRES+BARSIZE-1, 219, 228, 228, 228, XRES+BARSIZE);
-        if(pygood)
+#ifdef PYCONSOLE
+		if(pygood)
             i=255;
         else
             i=0;
         if(pyready)
-            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python by Doxin)",255,i,i, 255);
+            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python by Doxin)", 255, i, i, 255);
         else
-            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)",255,i,i, 255);
+            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)", 255, i, i, 255);
+#else
+		drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)", 255, 255, 255, 255);
+#endif
 		
 		cc = 0;
 		currentcommand = last_command;
