@@ -2385,7 +2385,7 @@ int main(int argc, char *argv[])
 						svf_own = 0;
 						svf_admin = 0;
 						svf_mod = 0;
-						error_ui(vid_buf, "Unable to log in", "Your account has been suspended, consider reading the rules.");
+						error_ui(vid_buf, 0, "Unable to log in\nYour account has been suspended, consider reading the rules.");
 					}
 					else if(!strncmp(check_data, "OK", 2))
 					{
