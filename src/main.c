@@ -1454,10 +1454,11 @@ static PyObject* emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
 
 static PyObject* emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,life,j,x=-1,y=-1;
+    int i = -1,j,x=-1,y=-1;
+    float newval;
     char *name = "";
     char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "f|sIII:set_type", kwlist, &newval, &name, &i, &x, &y))
         return NULL;
     //
     if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
@@ -1467,7 +1468,7 @@ static PyObject* emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
             for(i=0; i<NPART; i++)
             {
                 if(parts[i].type)
-                    parts[i].temp = life;
+                    parts[i].temp = newval;
             }
         }
         else if(console_parse_type(name, &j, console_error))
@@ -1475,19 +1476,19 @@ static PyObject* emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
             for(i=0; i<NPART; i++)
             {
                 if(parts[i].type == j)
-                    parts[i].temp = life;
+                    parts[i].temp = newval;
             }
         }
 	else if(i!=-1)
 	{
 		if(parts[i].type != PT_NONE)
-			parts[i].temp = life;
+			parts[i].temp = newval;
 
 	}
 	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
 		if(parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].temp = life;
+			parts[pmap[y][x]>>8].temp = newval;
 	}
         return Py_BuildValue("i",1);
 }
@@ -4138,28 +4139,28 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
             {
                 if(strcmp(console4, "all")==0)
                 {
-                    j = atoi(console5);
+                    f = atof(console5);
                     for(i=0; i<NPART; i++)
                     {
                         if(parts[i].type)
-                            parts[i].temp = j;
+                            parts[i].temp = f;
                     }
                 }
                 else if (console_parse_type(console4, &j, console_error))
                 {
-                    k = atoi(console5);
+                    f = atof(console5);
                     for(i=0; i<NPART; i++)
                     {
                         if(parts[i].type == j)
-                            parts[i].temp= k;
+                            parts[i].temp= f;
                     }
                 }
                 else
                 {
                     if (console_parse_partref(console4, &i, console_error))
                     {
-                        j = atoi(console5);
-                        parts[i].temp = j;
+                        f = atof(console5);
+                        parts[i].temp = f;
                     }
                 }
             }
