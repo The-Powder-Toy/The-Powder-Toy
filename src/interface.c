@@ -613,7 +613,7 @@ void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 
 void error_ui(pixel *vid_buf, int err, char *txt)
 {
-	int x0=(XRES-240)/2,y0=(YRES-MENUSIZE)/2,b=1,bq,mx,my;
+	int x0=(XRES-240)/2,y0=YRES/2,b=1,bq,mx,my,textheight;
 	char *msg;
 
 	msg = malloc(strlen(txt)+16);
@@ -621,6 +621,12 @@ void error_ui(pixel *vid_buf, int err, char *txt)
 		sprintf(msg, "%03d %s", err, txt);
 	else
 		sprintf(msg, "%s", txt);
+	textheight = textwrapheight(msg, 240);
+	y0 -= (52+textheight)/2;
+	if (y0<2)
+		y0 = 2;
+	if (y0+50+textheight>YRES)
+		textheight = YRES-50-y0;
 
 	while (!sdl_poll())
 	{
@@ -636,18 +642,18 @@ void error_ui(pixel *vid_buf, int err, char *txt)
 		mx /= sdl_scale;
 		my /= sdl_scale;
 
-		clearrect(vid_buf, x0-2, y0-2, 244, 64);
-		drawrect(vid_buf, x0, y0, 240, 60, 192, 192, 192, 255);
+		clearrect(vid_buf, x0-2, y0-2, 244, 52+textheight);
+		drawrect(vid_buf, x0, y0, 240, 48+textheight, 192, 192, 192, 255);
 		if (err)
 			drawtext(vid_buf, x0+8, y0+8, "HTTP error:", 255, 64, 32, 255);
 		else
 			drawtext(vid_buf, x0+8, y0+8, "Error:", 255, 64, 32, 255);
-		drawtext(vid_buf, x0+8, y0+26, msg, 255, 255, 255, 255);
-		drawtext(vid_buf, x0+5, y0+49, "Dismiss", 255, 255, 255, 255);
-		drawrect(vid_buf, x0, y0+44, 240, 16, 192, 192, 192, 255);
+		drawtextwrap(vid_buf, x0+8, y0+26, 224, msg, 255, 255, 255, 255);
+		drawtext(vid_buf, x0+5, y0+textheight+37, "Dismiss", 255, 255, 255, 255);
+		drawrect(vid_buf, x0, y0+textheight+32, 240, 16, 192, 192, 192, 255);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 
-		if (b && !bq && mx>=x0 && mx<x0+240 && my>=y0+44 && my<=y0+60)
+		if (b && !bq && mx>=x0 && mx<x0+240 && my>=y0+textheight+32 && my<=y0+textheight+48)
 			break;
 
 		if (sdl_key==SDLK_RETURN)

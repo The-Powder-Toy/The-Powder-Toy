@@ -99,6 +99,7 @@ void textnpos(char *s, int n, int w, int *cx, int *cy);
 int textwidthx(char *s, int w);
 
 int textposxy(char *s, int width, int w, int h);
+int textwrapheight(char *s, int width);
 
 #if defined(WIN32) && !defined(__GNUC__)
 _inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a);

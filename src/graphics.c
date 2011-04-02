@@ -1104,6 +1104,45 @@ int textposxy(char *s, int width, int w, int h)
 	}
 	return n;
 }
+int textwrapheight(char *s, int width)
+{
+	int x=0, height=FONT_H+2, cw;
+	int wordlen;
+	int charspace;
+	while (*s)
+	{
+		wordlen = strcspn(s," .,!?\n");
+		charspace = textwidthx(s, width-x);
+		if (charspace<wordlen && wordlen && width-x<width/3)
+		{
+			x = 0;
+			height += FONT_H+2;
+		}
+		for (; *s && --wordlen>=-1; s++)
+		{
+			if (*s == '\n')
+			{
+				x = 0;
+				height += FONT_H+2;
+			}
+			else if (*s == '\b')
+			{
+				s++;
+			}
+			else
+			{
+				cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+				if (x+cw>=width)
+				{
+					x = 0;
+					height += FONT_H+2;
+				}
+				x += cw;
+			}
+		}
+	}
+	return height;
+}
 
 //the most used function for drawing a pixel, because it has OpenGL support, which is not fully implemented.
 #if defined(WIN32) && !defined(__GNUC__)
