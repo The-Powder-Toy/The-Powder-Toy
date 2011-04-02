@@ -3786,6 +3786,12 @@ int execute_delete(pixel *vid_buf, char *id)
 			free(result);
 		return 0;
 	}
+	if (result && strncmp(result, "INFO: ", 6)==0)
+	{
+		info_ui(vid_buf, "Info", result+6);
+		free(result);
+		return 0;
+	}
 	if (result && strncmp(result, "OK", 2))
 	{
 		error_ui(vid_buf, 0, result);
