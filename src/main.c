@@ -654,7 +654,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			gol[x][y]=0;
 			if (j)// && !(isplayer == 1 && j==PT_STKM))
 			{
-				if (pmap[y][x])
+				if (pmap[y][x] && (pmap[y][x]>>8)<NPART)
 				{
 					k = pmap[y][x]>>8;
 					memset(parts+k, 0, sizeof(particle));
