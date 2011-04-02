@@ -47,10 +47,10 @@ int update_SING(UPDATE_FUNC_ARGS) {
 							nb = create_part(-1, x+nxi, y+nxj, PT_NEUT);
 						}
 						if (nb!=-1) {
-							parts[nb].life = rand()%300;
+							parts[nb].life = (rand()%300);
 							parts[nb].temp = MAX_TEMP/2;
-							parts[nb].vx = rand()%10-5;
-							parts[nb].vy = rand()%10-5;
+							parts[nb].vx = ((float)(rand()%100-50))/10.0f;
+							parts[nb].vy = ((float)(rand()%100-50))/10.0f;
 						}
 					}
 		}
