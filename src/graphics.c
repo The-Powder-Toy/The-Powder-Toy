@@ -1951,12 +1951,14 @@ void draw_parts(pixel *vid)
 						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
 						nxo = ddist*cos(drad);
 						nyo = ddist*sin(drad);
-						addpixel(vid, nx+nxo, ny+nyo, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 255-orbd[r]);
-						if(cmode == CM_FIRE){
-							fire_rv = fire_r[(ny+nyo)/CELL][(nx+nxo)/CELL];
-							fire_rv += (255-orbd[r])/32;
-							if(fire_rv>255) fire_rv = 255;
-							fire_r[(ny+nyo)/CELL][(nx+nxo)/CELL] = fire_rv;
+						if(ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES){
+							addpixel(vid, nx+nxo, ny+nyo, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 255-orbd[r]);
+							if(cmode == CM_FIRE && r == 1){
+								fire_rv = fire_r[(ny+nyo)/CELL][(nx+nxo)/CELL];
+								fire_rv += 1;
+								if(fire_rv>255) fire_rv = 255;
+								fire_r[(ny+nyo)/CELL][(nx+nxo)/CELL] = fire_rv;
+							}
 						}
 						addpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 200);
 					}
@@ -1988,12 +1990,14 @@ void draw_parts(pixel *vid)
 						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
 						nxo = ddist*cos(drad);
 						nyo = ddist*sin(drad);
-						addpixel(vid, nx+nxo, ny+nyo, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 255-orbd[r]);
-						if(cmode == CM_FIRE){
-							fire_bv = fire_b[(ny+nyo)/CELL][(nx+nxo)/CELL];
-							fire_bv += (255-orbd[r])/32;
-							if(fire_bv>255) fire_bv = 255;
-							fire_b[(ny+nyo)/CELL][(nx+nxo)/CELL] = fire_bv;
+						if(ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES){
+							addpixel(vid, nx+nxo, ny+nyo, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 255-orbd[r]);
+							if(cmode == CM_FIRE && r == 1){
+								fire_bv = fire_b[(ny+nyo)/CELL][(nx+nxo)/CELL];
+								fire_bv += 1;
+								if(fire_bv>255) fire_bv = 255;
+								fire_b[(ny+nyo)/CELL][(nx+nxo)/CELL] = fire_bv;
+							}
 						}
 						addpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), 200);
 					}
