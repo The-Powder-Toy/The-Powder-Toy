@@ -237,7 +237,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 		return 0;
 	}
-	if ((pmap[ny][nx]&0xFF)==PT_CNCT)//why is this here
+	if ((pmap[ny][nx]&0xFF)==PT_CNCT)//stops CNCT being displaced by other particles
 		return 0;
 	if (parts[i].type==PT_CNCT && y<ny && (pmap[y+1][x]&0xFF)==PT_CNCT)//check below CNCT for another CNCT
 		return 0;
@@ -262,14 +262,20 @@ int try_move(int i, int x, int y, int nx, int ny)
 		if (parts[i].type==PT_NEUT) {
 			// target material is NEUTPENETRATE, meaning it gets moved around when neutron passes
 			unsigned s = pmap[y][x];
+			if ((s>>8)>=NPART) return 0;
 			if ((s&0xFF) && (s&0xFF)<PT_NUM && !(ptypes[s&0xFF].properties&PROP_NEUTPENETRATE))
-				return 1; // if the element currently underneath neutron isn't NEUTPENETRATE, don't move it around
-			if ((pmap[ny][nx]>>8)==e) pmap[ny][nx] = (s&~(0xFF))|parts[s>>8].type;
+				return 1; // if the element currently underneath neutron isn't NEUTPENETRATE, don't move anything except the neutron
+			// if nothing is currently underneath neutron, only move target particle
+			if (s)
+			{
+				pmap[ny][nx] = (s&~(0xFF))|parts[s>>8].type;
+				parts[s>>8].x = nx;
+				parts[s>>8].y = ny;
+			}
+			else pmap[ny][nx] = 0;
 			parts[e].x = x;
 			parts[e].y = y;
 			pmap[y][x] = (e<<8)|parts[e].type;
-			parts[s>>8].x = nx;
-			parts[s>>8].y = ny;
 			return 1;
 		}
 
