@@ -416,7 +416,7 @@ int register_extension()
 	currentfilename[MAX_PATH-1] = 0;
 	iconname = malloc(strlen(currentfilename)+6);
 	opencommand = malloc(strlen(currentfilename)+13);
-	sprintf(iconname, "%s,-101", currentfilename);
+	sprintf(iconname, "%s,-102", currentfilename);
 	sprintf(opencommand, "\"%s\" open:\"%%1\"", currentfilename);
 	
 	//Create extension entry
