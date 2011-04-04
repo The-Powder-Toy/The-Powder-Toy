@@ -1329,10 +1329,11 @@ int save_name_ui(pixel *vid_buf)
 {
 	int x0=(XRES-420)/2,y0=(YRES-68-YRES/4)/2,b=1,bq,mx,my,ths,idtxtwidth,nd=0;
 	void *th;
-	char *save_id_text;
+	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	ui_edit ed;
 	ui_edit ed2;
 	ui_checkbox cb;
+	ui_copytext ctb;
 
 	th = build_thumb(&ths, 0);
 
@@ -1366,9 +1367,14 @@ int save_name_ui(pixel *vid_buf)
 	ed2.multiline = 1;
 	strcpy(ed2.str, svf_description);
 	
-	save_id_text = malloc(strlen("Current save id: ")+strlen(svf_id)+1);
-	sprintf(save_id_text,"Current save id: %s",svf_id);
-	idtxtwidth = textwidth(save_id_text);
+	ctb.x = 0;
+	ctb.y = YRES+MENUSIZE-20;
+	ctb.width = textwidth(svf_id)+12;
+	ctb.height = 10+7;
+	ctb.hover = 0;
+	ctb.state = 0;
+	strcpy(ctb.text, svf_id);
+	
 
 	cb.x = x0+10;
 	cb.y = y0+53+YRES/4;
@@ -1376,6 +1382,8 @@ int save_name_ui(pixel *vid_buf)
 	cb.checked = svf_publish;
 
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+	memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+	
 	while (!sdl_poll())
 	{
 		bq = b;
@@ -1407,11 +1415,19 @@ int save_name_ui(pixel *vid_buf)
 		
 		if (svf_id[0])
 		{
-			fillrect(vid_buf, (XRES+BARSIZE-idtxtwidth)/2-5, YRES+(MENUSIZE-16), idtxtwidth+10, 14, 0, 0, 0, 255);
-			drawtext(vid_buf, (XRES+BARSIZE-idtxtwidth)/2, YRES+MENUSIZE-12, save_id_text, 255, 255, 255, 255);
+			//Save ID text and copybox
+			idtxtwidth = textwidth("Current save ID: ");
+			idtxtwidth += ctb.width;
+			ctb.x = textwidth("Current save ID: ")+(XRES+BARSIZE-idtxtwidth)/2;
+			drawtext(vid_buf, (XRES+BARSIZE-idtxtwidth)/2, YRES+MENUSIZE-15, "Current save ID: ", 255, 255, 255, 255);
+			
+			ui_copytext_draw(vid_buf, &ctb);
+			ui_copytext_process(mx, my, b, bq, &ctb);
 		}
 
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+		
+		memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 
 		ui_edit_process(mx, my, b, &ed);
 		ui_edit_process(mx, my, b, &ed2);
@@ -1467,7 +1483,6 @@ int save_name_ui(pixel *vid_buf)
 		}
 	}
 	free(th);
-	if (save_id_text) free(save_id_text);
 	return 0;
 }
 
@@ -2868,7 +2883,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	int nyd,nyu,ry,lv;
 	float ryf;
 
-	char *uri, *uri_2, *o_uri;//, *save_id_text;
+	char *uri, *uri_2, *o_uri;
 	void *data, *info_data;
 	save_info *info = malloc(sizeof(save_info));
 	void *http = NULL, *http_2 = NULL;
@@ -2887,9 +2902,6 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	drawrect(vid_buf, 50, 50, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 155);
 	drawrect(vid_buf, 50+(XRES/2)+1, 50, XRES+BARSIZE-100-((XRES/2)+1), YRES+MENUSIZE-100, 155, 155, 155, 255);
 	drawtext(vid_buf, 50+(XRES/4)-textwidth("Loading...")/2, 50+(YRES/4), "Loading...", 255, 255, 255, 128);
-	
-	//save_id_text = malloc(strlen("Save id: ")+strlen(save_id)+1);
-	//sprintf(save_id_text,"Save id: %s",save_id);
 
 	ed.x = 57+(XRES/2)+1;
 	ed.y = YRES+MENUSIZE-118;
@@ -3282,7 +3294,6 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		if (!b)
 			break;
 	}
-	//if (save_id_text) free(save_id_text);
 	//Close open connections
 	if (http)
 		http_async_req_close(http);
