@@ -2627,7 +2627,6 @@ int search_ui(pixel *vid_buf)
 			last_page = search_page;
 			last_fav = search_fav;
 			active = 1;
-			// TODO: Create a better fix for this bug
 			uri = malloc(strlen(last)*3+180+strlen(SERVER)+strlen(svf_user)+20); //Increase "padding" from 80 to 180 to fix the search memory corruption bug
 			if (search_own || svf_admin || svf_mod)
 				tmp = "&ShowVotes=true";
@@ -2869,7 +2868,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	int nyd,nyu,ry,lv;
 	float ryf;
 
-	char *uri, *uri_2, *o_uri, *save_id_text;
+	char *uri, *uri_2, *o_uri;//, *save_id_text;
 	void *data, *info_data;
 	save_info *info = malloc(sizeof(save_info));
 	void *http = NULL, *http_2 = NULL;
@@ -2878,6 +2877,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	time_t http_last_use = HTTP_TIMEOUT,  http_last_use_2 = HTTP_TIMEOUT;
 	pixel *save_pic;// = malloc((XRES/2)*(YRES/2));
 	ui_edit ed;
+	ui_copytext ctb;
 
 	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
@@ -2888,8 +2888,8 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	drawrect(vid_buf, 50+(XRES/2)+1, 50, XRES+BARSIZE-100-((XRES/2)+1), YRES+MENUSIZE-100, 155, 155, 155, 255);
 	drawtext(vid_buf, 50+(XRES/4)-textwidth("Loading...")/2, 50+(YRES/4), "Loading...", 255, 255, 255, 128);
 	
-	save_id_text = malloc(strlen("Save id: ")+strlen(save_id)+1);
-	sprintf(save_id_text,"Save id: %s",save_id);
+	//save_id_text = malloc(strlen("Save id: ")+strlen(save_id)+1);
+	//sprintf(save_id_text,"Save id: %s",save_id);
 
 	ed.x = 57+(XRES/2)+1;
 	ed.y = YRES+MENUSIZE-118;
@@ -2902,6 +2902,14 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	ed.multiline = 1;
 	ed.cursor = 0;
 	strcpy(ed.str, "");
+	
+	ctb.x = 100;
+	ctb.y = YRES+MENUSIZE-20;
+	ctb.width = textwidth(save_id)+12;
+	ctb.height = 10+7;
+	ctb.hover = 0;
+	ctb.state = 0;
+	strcpy(ctb.text, save_id);
 
 	memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 
@@ -2940,8 +2948,6 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	http_2 = http_async_req_start(http_2, uri_2, NULL, 0, 1);
 	if (svf_login)
 	{
-		//http_auth_headers(http, svf_user, svf_pass);
-		//http_auth_headers(http_2, svf_user, svf_pass);
 		http_auth_headers(http, svf_user_id, NULL, svf_session_id);
 		http_auth_headers(http_2, svf_user_id, NULL, svf_session_id);
 	}
@@ -3081,9 +3087,14 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			drawtext(vid_buf, XRES+BARSIZE-90, YRES+MENUSIZE-63, "Submit", 255, 255, 255, 255);
 		}
 		
-		cix = textwidth(save_id_text);
-		fillrect(vid_buf, (XRES+BARSIZE-cix)/2-5, YRES+(MENUSIZE-16), cix+10, 14, 0, 0, 0, 255);
-		drawtext(vid_buf, (XRES+BARSIZE-cix)/2, YRES+MENUSIZE-12, save_id_text, 255, 255, 255, 255);
+		//Save ID text and copybox
+		cix = textwidth("Save ID: ");
+		cix += ctb.width;
+		ctb.x = textwidth("Save ID: ")+(XRES+BARSIZE-cix)/2;
+		//ctb.x = 
+		drawtext(vid_buf, (XRES+BARSIZE-cix)/2, YRES+MENUSIZE-15, "Save ID: ", 255, 255, 255, 255);
+		ui_copytext_draw(vid_buf, &ctb);
+		ui_copytext_process(mx, my, b, bq, &ctb);
 
 		//Open Button
 		bc = openable?255:150;
@@ -3174,7 +3185,6 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			fillrect(vid_buf, 250, YRES+MENUSIZE-68, 107, 18, 255, 255, 255, 40);
 			if (b && !bq) {
 				//Button Clicked
-				//TODO: Open link
 				o_uri = malloc(7+strlen(SERVER)+41+strlen(save_id)*3);
 				strcpy(o_uri, "http://" SERVER "/Browse/View.html?ID=");
 				strcaturl(o_uri, save_id);
@@ -3193,11 +3203,13 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 				ed.str[0] = 0;
 			}
 		}
-		if (!(mx>50 && my>50 && mx<XRES+BARSIZE-50 && my<YRES+MENUSIZE-50) && b && !queue_open) {
+		//If mouse was clicked outsite of the window bounds.
+		if (!(mx>50 && my>50 && mx<XRES+BARSIZE-50 && my<YRES+MENUSIZE-50) && b && !queue_open && my<YRES+MENUSIZE-21) {
 			retval = 0;
 			break;
 		}
 
+		//User opened the save, wait until we've got all the data first...
 		if (queue_open) {
 			if (info_ready && data_ready) {
 				// Do Open!
@@ -3270,7 +3282,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		if (!b)
 			break;
 	}
-	if (save_id_text) free(save_id_text);
+	//if (save_id_text) free(save_id_text);
 	//Close open connections
 	if (http)
 		http_async_req_close(http);
