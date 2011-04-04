@@ -446,7 +446,7 @@ void ui_checkbox_draw(pixel *vid_buf, ui_checkbox *ed)
 void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed)
 {
 	int w = 12;
-
+	
 	if (mb && !mbq)
 	{
 		if (mx>=ed->x && mx<=ed->x+w && my>=ed->y && my<=ed->y+w)
@@ -464,6 +464,41 @@ void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed)
 		{
 			ed->focus = 0;
 		}
+	}
+}
+
+void ui_copytext_draw(pixel *vid_buf, ui_copytext *ed)
+{
+	int g = 180, i = 0;
+	if(!ed->state){
+		if(ed->hover){
+			i = 0;
+		} else {
+			i = 100;
+		}
+		g = 255;
+		drawtext(vid_buf, (ed->x+(ed->width/2))-(textwidth("Click the box to copy the text")/2), ed->y-12, "Click the box to copy the text", 255, 255, 255, 255-i);
+	} else {
+		i = 0;
+		drawtext(vid_buf, (ed->x+(ed->width/2))-(textwidth("Copied!")/2), ed->y-12, "Copied!", 255, 255, 255, 255-i);
+		g = 190;
+	}
+	
+	drawrect(vid_buf, ed->x, ed->y, ed->width, ed->height, g, 255, g, 255-i);
+	drawrect(vid_buf, ed->x+1, ed->y+1, ed->width-2, ed->height-2, g, 255, g, 100-i);
+	drawtext(vid_buf, ed->x+6, ed->y+5, ed->text, g, 255, g, 230-i);
+}
+
+void ui_copytext_process(int mx, int my, int mb, int mbq, ui_copytext *ed)
+{
+	if(my>=ed->y && my<=ed->y+ed->height && mx>=ed->x && mx<=ed->x+ed->width && !ed->state){
+		if(mb && !mbq){
+			clipboard_push_text(ed->text);
+			ed->state = 1;
+		}
+		ed->hover = 1;
+	} else {
+		ed->hover = 0;
 	}
 }
 
@@ -738,6 +773,20 @@ void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt)
 	int buttony = 0;
 	int buttonwidth = 0;
 	int buttonheight = 0;
+	ui_copytext ed;
+	
+	buttonwidth = textwidth(copytxt)+12;
+	buttonheight = 10+8;
+	buttony = y0+50;
+	buttonx = x0+(xsize/2)-(buttonwidth/2);
+	
+	ed.x = buttonx;
+	ed.y = buttony;
+	ed.width = buttonwidth;
+	ed.height = buttonheight;
+	ed.hover = 0;
+	ed.state = 0;
+	strcpy(ed.text, copytxt);
 	
 	while (!sdl_poll())
 	{
@@ -753,40 +802,13 @@ void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt)
 		mx /= sdl_scale;
 		my /= sdl_scale;
 		
-		buttonwidth = textwidth(copytxt)+12;
-		buttonheight = 10+8;
-		buttony = y0+50;
-		buttonx = x0+(xsize/2)-(buttonwidth/2);
-		
-		clearrect(vid_buf, x0-2, y0-2, xsize, ysize);
+		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
 		drawtext(vid_buf, x0+8, y0+8, top, 160, 160, 255, 255);
 		drawtext(vid_buf, x0+8, y0+26, txt, 255, 255, 255, 255);
 		
-		if(my>=buttony && my<=buttony+buttonheight && mx>=buttonx && mx<=buttonx+buttonwidth && !state){
-			if(b && !bq){
-				clipboard_push_text(copytxt);
-				state = 1;
-				g = 210;
-			}
-			i = 0;
-		} else {
-			if(state==1){
-				i = 0;
-			} else {
-				i = 100;
-			}
-		}
-		
-		if(!state){
-			drawtext(vid_buf, (x0+(xsize/2))-(textwidth("Click the box to copy the text")/2), y0+38, "Click the box to copy the text", 255, 255, 255, 255-i);
-		} else {
-			drawtext(vid_buf, (x0+(xsize/2))-(textwidth("Copied!")/2), y0+38, "Copied!", 255, 255, 255, 255-i);
-		}
-		
-		drawrect(vid_buf, buttonx, buttony, buttonwidth, buttonheight, g, 255, g, 255-i);
-		drawrect(vid_buf, buttonx+1, buttony+1, buttonwidth-2, buttonheight-2, g, 255, g, 100-i);
-		drawtext(vid_buf, buttonx+6, buttony+5, copytxt, g, 255, g, 230-i);
+		ui_copytext_draw(vid_buf, &ed);
+		ui_copytext_process(mx, my, b, bq, &ed);
 		
 		drawtext(vid_buf, x0+5, y0+ysize-11, "OK", 255, 255, 255, 255);
 		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
