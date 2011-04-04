@@ -387,7 +387,7 @@ void clipboard_push_text(char * text)
 	CFDataRef data = CFDataCreate(kCFAllocatorDefault, text, strlen(text));
 	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);	
 #elif defined WIN32
-	if(OpenClipboard())
+	if(OpenClipboard(NULL))
 	{
 		HGLOBAL cbuffer;
 		char * glbuffer;
