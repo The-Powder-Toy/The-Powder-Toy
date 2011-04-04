@@ -20,7 +20,7 @@ int update_O2(UPDATE_FUNC_ARGS)
 
             }
 
-    if(pv[y\CELL][x\CELL] > 8.0f)
+    if(pv[y/CELL][x/CELL] > 8.0f)
     {
         for(rx=-2; rx<3; rx++)
             for(ry=-2; ry<3; ry++)
@@ -30,9 +30,10 @@ int update_O2(UPDATE_FUNC_ARGS)
 				    if ((r>>8)>=NPART || !r)
 					    continue;
                     if((r&0xFF)==PT_H2)
-                        if(50<(rand()/(RAND_MAX/100)))
-                            part_change_type(i,x,y,PT_WATR)
-                        part_change_type(r,rx,rx,PT_WATR)
+                        if(50<(rand()/(RAND_MAX/100))){
+                            part_change_type(i,x,y,PT_WATR);
+							part_change_type(r,rx,rx,PT_WATR);
+						}
                 }
     }
 
