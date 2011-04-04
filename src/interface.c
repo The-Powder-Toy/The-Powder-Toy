@@ -68,7 +68,7 @@ int zoom_wx=0, zoom_wy=0;
 unsigned char ZFACTOR = 256/ZSIZE_D;
 unsigned char ZSIZE = ZSIZE_D;
 
-void menu_count(void)// never used
+void menu_count(void)//puts the number of elements in each section into .itemcount
 {
 	int i=0;
 	msections[SC_WALL].itemcount = UI_WALLCOUNT-4;
@@ -388,6 +388,22 @@ void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
 			}
 			break;
 		default:
+			if(sdl_mod & (KMOD_CTRL) && sdl_key=='c')//copy
+			{
+				clipboard_push_text(ed->str);
+				break;
+			}
+			else if(sdl_mod & (KMOD_CTRL) && sdl_key=='v')//paste
+			{
+				char *paste = "foo"; //clipboard_pull_text();
+				int pl = strlen(paste);
+				if ((textwidth(str)+textwidth(paste) > ed->w-14 && !ed->multiline) || (float)(((textwidth(str)+textwidth(paste))/(ed->w-14)*12) > ed->h && ed->multiline))
+					break;
+				memmove(ed->str+ed->cursor+pl, ed->str+ed->cursor, l+pl-ed->cursor);
+				memcpy(ed->str+ed->cursor,paste,pl);
+				ed->cursor += pl;
+				break;
+			}
 #ifdef RAWINPUT
 			if (sdl_key>=SDLK_SPACE && sdl_key<=SDLK_z && l<255)
 			{
