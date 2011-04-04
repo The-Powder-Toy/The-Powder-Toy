@@ -3,14 +3,6 @@
 #include <string.h>
 #include <regex.h>
 #include <sys/types.h>
-#ifdef WIN32
-#include <windows.h>
-#include "update.h"
-#endif
-#ifdef MACOSX
-///#include <Pasteboard.h>
-#include <ApplicationServices/ApplicationServices.h>
-#endif
 #include "misc.h"
 #include "defines.h"
 #include "interface.h"
@@ -18,6 +10,9 @@
 #include "powder.h"
 #if defined WIN32
 #include <windows.h>
+#endif
+#ifdef MACOSX
+#include <ApplicationServices/ApplicationServices.h>
 #endif
 
 //Signum function
@@ -391,6 +386,23 @@ void clipboard_push_text(char * text)
 	
 	CFDataRef data = CFDataCreate(kCFAllocatorDefault, text, strlen(text));
 	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);	
+#elif defined WIN32
+	if(OpenClipboard())
+	{
+		HGLOBAL cbuffer;
+		char * glbuffer;
+		
+		EmptyClipboard();
+		
+		cbuffer = GlobalAlloc(GMEM_DDESHARE, strlen(text)+1);
+		glbuffer = (char*)GlobalLock(cbuffer);
+		
+		strcpy(glbuffer, text);
+		
+		GlobalUnlock(cbuffer);
+		SetClipboardData(CF_TEXT, cbuffer);
+		CloseClipboard();
+	}
 #else 
 	printf("Not implemented: put text on clipboard \"%s\"\n", text);
 #endif
