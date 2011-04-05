@@ -63,8 +63,10 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 					        ((r&0xFF) == PT_SLTW && 30>(rand()/(RAND_MAX/1000))) ||
 					        ((r&0xFF) == PT_WATR && 30>(rand()/(RAND_MAX/1000))))
 					{
-						part_change_type(r>>8,x+rx,y+ry,PT_O2);
-						//parts[r>>8].tmp=(rand()/(RAND_MAX/10))+20;
+						if (rand()<RAND_MAX/3)
+							part_change_type(r>>8,x+rx,y+ry,PT_O2);
+						else
+							part_change_type(r>>8,x+rx,y+ry,PT_H2);
 					}
 				}
 	}
