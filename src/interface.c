@@ -395,9 +395,9 @@ void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
 			}
 			else if(sdl_mod & (KMOD_CTRL) && sdl_key=='v')//paste
 			{
-				char *paste = "foo"; //clipboard_pull_text();
+				char *paste = clipboard_pull_text();
 				int pl = strlen(paste);
-				if ((textwidth(str)+textwidth(paste) > ed->w-14 && !ed->multiline) || (float)(((textwidth(str)+textwidth(paste))/(ed->w-14)*12) > ed->h && ed->multiline))
+				if ((textwidth(str)+textwidth(paste) > ed->w-14 && !ed->multiline) || (pl+strlen(ed->str)>255) || (float)(((textwidth(str)+textwidth(paste))/(ed->w-14)*12) > ed->h && ed->multiline))
 					break;
 				memmove(ed->str+ed->cursor+pl, ed->str+ed->cursor, l+pl-ed->cursor);
 				memcpy(ed->str+ed->cursor,paste,pl);
