@@ -8,6 +8,7 @@
 #include "interface.h"
 #include "graphics.h"
 #include "powder.h"
+#include <icondoc.h>
 #if defined WIN32
 #include <windows.h>
 #else
@@ -526,7 +527,22 @@ int register_extension()
 	fclose(f);
 	system("xdg-mime install powdertoy-save.xml");
 	system("xdg-desktop-menu install powdertoy-tpt.desktop");
-	// TODO: icons
+	f = fopen("powdertoy-save-32.png", "wb");
+	if (!f)
+		return 0;
+	fwrite(icon_doc_32_png, 1, sizeof(icon_doc_32_png), f);
+	fclose(f);
+	f = fopen("powdertoy-save-16.png", "wb");
+	if (!f)
+		return 0;
+	fwrite(icon_doc_16_png, 1, sizeof(icon_doc_16_png), f);
+	fclose(f);
+	system("xdg-icon-resource install --noupdate --context mimetypes --size 32 powdertoy-save-32.png application-vnd.powdertoy.save");
+	system("xdg-icon-resource install --noupdate --context mimetypes --size 16 powdertoy-save-16.png application-vnd.powdertoy.save");
+	system("xdg-icon-resource forceupdate");
+	system("xdg-mime default powdertoy-tpt.desktop application/vnd.powdertoy.save");
+	unlink("powdertoy-save-32.png");
+	unlink("powdertoy-save-16.png");
 	unlink("powdertoy-save.xml");
 	unlink("powdertoy-tpt.desktop");
 	return 1;
