@@ -42,11 +42,13 @@
 char *exe_name(void)
 {
 #if defined WIN32
-	char *name= (char *)malloc(64), max=64, res;
-	while ((res = (char)GetModuleFileName(NULL, name, max)) >= max)
+	char *name= (char *)malloc(64);
+	DWORD max=64, res;
+	while ((res = GetModuleFileName(NULL, name, max)) >= max)
 	{
 #elif defined MACOSX
-	char *fn=malloc(64),*name=malloc(PATH_MAX), max=64, res;
+	char *fn=malloc(64),*name=malloc(PATH_MAX);
+	uint32_t max=64, res;
 	if (_NSGetExecutablePath(fn, &max) != 0)
 	{
 		fn = realloc(fn, max);
@@ -60,7 +62,8 @@ char *exe_name(void)
 	}
 	res = 1;
 #else
-	char fn[64], *name=malloc(64), max=64, res;
+	char fn[64], *name=malloc(64);
+	size_t max=64, res;
 	sprintf(fn, "/proc/self/exe");
 	memset(name, 0, max);
 	while ((res = readlink(fn, name, max)) >= max-1)
