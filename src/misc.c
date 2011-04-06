@@ -416,7 +416,6 @@ char * clipboard_pull_text()
 
 int register_extension()
 {
-#if defined INSTALLABLE
 #if defined WIN32
 	LONG rresult;
 	HKEY newkey;
@@ -485,9 +484,6 @@ int register_extension()
 #elif defined LIN64
 	return 0;
 #elif defined MACOSX
-	return 0;
-#endif
-#else
 	return 0;
 #endif
 }
