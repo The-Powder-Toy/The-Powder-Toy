@@ -428,7 +428,7 @@ int register_extension()
 	iconname = malloc(strlen(currentfilename)+6);
 	opencommand = malloc(strlen(currentfilename)+13);
 	sprintf(iconname, "%s,-102", currentfilename);
-	sprintf(opencommand, "\"%s\" open:\"%%1\"", currentfilename);
+	sprintf(opencommand, "\"%s\" open \"%%1\"", currentfilename);
 
 	//Create extension entry
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.cps", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
@@ -519,7 +519,7 @@ int register_extension()
 	strcpy(desktopfiledata, desktopfiledata_tmp);
 	strappend(desktopfiledata, "Exec=");
 	strappend(desktopfiledata, currentfilename);
-	strappend(desktopfiledata, " open:%f\n");
+	strappend(desktopfiledata, " open %f\n");
 	f = fopen("powdertoy-tpt.desktop", "wb");
 	if (!f)
 		return 0;

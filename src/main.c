@@ -2232,13 +2232,11 @@ int main(int argc, char *argv[])
 		{
 			file_script = 1;
 		}
-		else if (!strncmp(argv[i], "open:", 5))
+		else if (!strncmp(argv[i], "open", 4) && i+1<argc)
 		{
 			int size;
 			void *file_data;
-			char *fn = malloc(strlen(argv[i]+5)+1);
-			strcpy(fn, argv[i]+5);
-			file_data = file_load(fn, &size);
+			file_data = file_load(argv[i+1], &size);
 			if (file_data)
 			{
 				it=0;
