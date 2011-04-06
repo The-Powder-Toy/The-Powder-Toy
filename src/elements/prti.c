@@ -36,6 +36,7 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 								part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
 							else
 								kill_part(r>>8);
+							fe = 1;
 							break;
 						}
 			}
@@ -45,7 +46,7 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 		int orbd[4] = {0, 0, 0, 0};	//Orbital distances
 		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
 		if (!parts[i].life) parts[i].life = rand();
-		if (!parts[i].ctype) parts[i].life = rand();
+		if (!parts[i].ctype) parts[i].ctype = rand();
 		orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 		for (r = 0; r < 4; r++) {
 			if (orbd[r]>1) {
