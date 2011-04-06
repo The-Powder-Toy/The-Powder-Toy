@@ -39,7 +39,7 @@
 
 #include <update.h>
 
-static char *exe_name(void)
+char *exe_name(void)
 {
 #if defined WIN32
 	char *name= (char *)malloc(64), max=64, res;
