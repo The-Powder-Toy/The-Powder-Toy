@@ -10,6 +10,8 @@
 #include "powder.h"
 #if defined WIN32
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 #ifdef MACOSX
 #include <ApplicationServices/ApplicationServices.h>
@@ -487,10 +489,47 @@ int register_extension()
 	RegCloseKey(newkey);
 
 	return 1;
-#elif defined LIN32
-	return 0;
-#elif defined LIN64
-	return 0;
+#elif defined(LIN32) || defined(LIN64)
+	char *currentfilename = exe_name();
+	FILE *f;
+	char *mimedata =
+"<?xml version=\"1.0\"?>\n"
+"	<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>\n"
+"	<mime-type type=\"application/vnd.powdertoy.save\">\n"
+"		<comment>Powder Toy save</comment>\n"
+"		<glob pattern=\"*.cps\"/>\n"
+"		<glob pattern=\"*.stm\"/>\n"
+"	</mime-type>\n"
+"</mime-info>\n";
+	f = fopen("powdertoy-save.xml", "wb");
+	if (!f)
+		return 0;
+	fwrite(mimedata, 1, strlen(mimedata), f);
+	fclose(f);
+
+	char *desktopfiledata_tmp =
+"[Desktop Entry]\n"
+"Type=Application\n"
+"Name=Powder Toy\n"
+"Comment=Physics sandbox game\n"
+"MimeType=application/vnd.powdertoy.save;\n"
+"NoDisplay=true\n";
+	char *desktopfiledata = malloc(strlen(desktopfiledata_tmp)+strlen(currentfilename)+100);
+	strcpy(desktopfiledata, desktopfiledata_tmp);
+	strappend(desktopfiledata, "Exec=");
+	strappend(desktopfiledata, currentfilename);
+	strappend(desktopfiledata, " open:%f\n");
+	f = fopen("powdertoy-tpt.desktop", "wb");
+	if (!f)
+		return 0;
+	fwrite(desktopfiledata, 1, strlen(desktopfiledata), f);
+	fclose(f);
+	system("xdg-mime install powdertoy-save.xml");
+	system("xdg-desktop-menu install powdertoy-tpt.desktop");
+	// TODO: icons
+	unlink("powdertoy-save.xml");
+	unlink("powdertoy-tpt.desktop");
+	return 1;
 #elif defined MACOSX
 	return 0;
 #endif
