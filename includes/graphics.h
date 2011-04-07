@@ -46,7 +46,6 @@ extern unsigned char fire_b[YRES/CELL][XRES/CELL];
 
 extern unsigned int fire_alpha[CELL*3][CELL*3];
 extern pixel *fire_bg;
-extern pixel *pers_bg;
 
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f);
 
@@ -99,7 +98,6 @@ void textnpos(char *s, int n, int w, int *cx, int *cy);
 int textwidthx(char *s, int w);
 
 int textposxy(char *s, int width, int w, int h);
-int textwrapheight(char *s, int width);
 
 #if defined(WIN32) && !defined(__GNUC__)
 _inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
@@ -122,7 +120,7 @@ void xor_line(int x1, int y1, int x2, int y2, pixel *vid);
 void xor_rect(pixel *vid, int x, int y, int w, int h);
 
 void draw_parts(pixel *vid);
-void draw_wavelengths(pixel *vid, int x, int y, int h, int wl);
+
 void render_signs(pixel *vid_buf);
 
 void render_fire(pixel *dst);
@@ -133,15 +131,13 @@ void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a);
 
 void dim_copy(pixel *dst, pixel *src);
 
-void dim_copy_pers(pixel *dst, pixel *src);
-
 void render_zoom(pixel *img);
 
 pixel *prerender_save(void *save, int size, int *width, int *height);
 
 int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int py, int scl);
 
-void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry);
+void render_cursor(pixel *vid, int x, int y, int t, int r);
 
 void sdl_open(void);
 
