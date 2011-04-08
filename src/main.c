@@ -2673,14 +2673,14 @@ int main(int argc, char *argv[])
 #ifdef BETA
 	if (is_beta)
 	{
-		old_ver_len = textwidth(old_ver_msg_beta);
+		old_ver_len = textwidth((char*)old_ver_msg_beta);
 	}
 	else
 	{
-		old_ver_len = textwidth(old_ver_msg);
+		old_ver_len = textwidth((char*)old_ver_msg);
 	}
 #else
-	old_ver_len = textwidth(old_ver_msg);
+	old_ver_len = textwidth((char*)old_ver_msg);
 #endif
 	menu_count();
 	parts = calloc(sizeof(particle), NPART);

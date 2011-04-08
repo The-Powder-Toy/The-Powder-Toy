@@ -868,7 +868,7 @@ int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, i
 	while (*s)
 	{
 		wordlen = strcspn(s," .,!?\n");
-		charspace = textwidthx(s, w-(x-cw));
+		charspace = textwidthx((char *)s, w-(x-cw));
 		if (charspace<wordlen && wordlen && w-(x-cw)<w/3)
 		{
 			x = sx;
