@@ -2055,7 +2055,7 @@ void draw_parts(pixel *vid)
 						}
 					}
 				}
-				else if ((t==PT_BIZR||t==PT_BIZRG)&&parts[i].ctype)
+				else if ((t==PT_BIZR||t==PT_BIZRG||t==PT_BIZRS)&&parts[i].ctype)
 				{
 					cg = 0;
 					cb = 0;
