@@ -17,4 +17,5 @@ int update_H2(UPDATE_FUNC_ARGS)
                     part_change_type(i,x,y,PT_OIL);
                 }
             }
+    return 0;
 }

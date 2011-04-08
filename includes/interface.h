@@ -52,9 +52,11 @@ static menu_wall mwalls[] =
 #define SC_LIQUID 4
 #define SC_NUCLEAR 7
 #define SC_LIFE 9
-#define SC_CRACKER 12
-#define SC_CRACKER2 13
-#define SC_TOTAL 10
+#define SC_CRACKER 13
+#define SC_CRACKER2 12
+#define SC_STICKMAN 10    //
+#define SC_NATURE 11   //
+#define SC_TOTAL 13
 
 static menu_section msections[] = //itemcount and doshow do not do anything currently.
 {
@@ -68,10 +70,10 @@ static menu_section msections[] = //itemcount and doshow do not do anything curr
 	{"\xC6", "Radioactive", 0, 1},
 	{"\xCC", "Special", 0, 1},
 	{"\xD2", "Life", 0, 1},
-	{"\xD2", "More Life", 0, 1},
-	{"\xC8", "", 0, 0},
-	{"\xC8", "Cracker", 0, 0},
-	{"\xC8", "Cracker!", 0, 0},
+    {"\xA7", "Stickman", 0, 1},
+    {"\xA4", "Nature", 0, 1},
+	{"\xC8", "Secret", 0, 1},
+	{"\xC8", "Secret", 0, 0},
 };
 
 struct ui_edit

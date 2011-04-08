@@ -91,6 +91,7 @@ powder-x: $(SOURCES)
 	gcc -o $@ $(CFLAGS) $(OFLAGS) $(LFLAGS_X) $(MFLAGS) $(SOURCES) -DMACOSX -DPIX32BGRA -arch x86_64 -framework Cocoa -framework SDL -framework Python
 	strip $@ 
 	mv $@ build/Powder.app/Contents/MacOS/
+	./build/Powder.app/Contents/MacOS/powder-x
 powder-x-ogl: $(SOURCES)
 	$(PYCOMMAND) --64bit
 	gcc -o $@ $(CFLAGS) $(OFLAGS) $(LFLAGS_X) $(MFLAGS) $(SOURCES) -DOpenGL -DMACOSX -DPIX32BGRA -arch x86_64 -framework Cocoa -framework SDL -framework OpenGL -framework Python

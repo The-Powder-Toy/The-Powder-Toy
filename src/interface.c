@@ -2076,6 +2076,14 @@ void set_cmode(int cm) // sets to given view mode
 	{
 		strcpy(itc_msg, "Heat Gradient Display");
 	}
+    else if (cmode==CM_AWESOME)
+	{
+		strcpy(itc_msg, "Awesome Velocity Display");
+	}
+    else if (cmode==CM_PREAWE)
+	{
+		strcpy(itc_msg, "Awesome Pressure Display");
+	}
 	else if (cmode==CM_LIFE)
 	{
 		if (DEBUG_MODE) //can only get to Life view in debug mode

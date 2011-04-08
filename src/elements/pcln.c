@@ -30,6 +30,8 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES &&
 				        pmap[y+ry][x+rx] &&
 				        (pmap[y+ry][x+rx]&0xFF)!=PT_CLNE &&
+                        (pmap[y+ry][x+rx]&0xFF)!=PT_GSCL &&
+                        (pmap[y+ry][x+rx]&0xFF)!=PT_LQCL &&
 				        (pmap[y+ry][x+rx]&0xFF)!=PT_PCLN &&
 				        (pmap[y+ry][x+rx]&0xFF)!=PT_BCLN &&
 				        (pmap[y+ry][x+rx]&0xFF)!=PT_SPRK &&

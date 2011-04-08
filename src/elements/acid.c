@@ -9,7 +9,7 @@ int update_ACID(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
-				if ((r&0xFF)!=PT_ACID)
+				if ((r&0xFF)!=PT_ACRN)
 				{
 					if ((r&0xFF)==PT_PLEX || (r&0xFF)==PT_NITR || (r&0xFF)==PT_GUNP || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD)
 					{
@@ -18,7 +18,7 @@ int update_ACID(UPDATE_FUNC_ARGS) {
 						parts[i].life = 4;
 						parts[r>>8].life = 4;
 					}
-					else if (((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && ptypes[r&0xFF].hardness>(rand()%1000))&&parts[i].life>=50)
+					else if (((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_ACLOUD && (r&0xFF)!=PT_PCLN && ptypes[r&0xFF].hardness>(rand()%1000))&&parts[i].life>=50)
 					{
 						if (parts_avg(i, r>>8,PT_GLAS)!= PT_GLAS)//GLAS protects stuff from acid
 						{

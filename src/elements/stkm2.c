@@ -384,10 +384,80 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 	}
 
 	if ((r&0xFF)==PT_ACID)  //If on acid
-		parts[i].life -= 5;
-
-	if ((r&0xFF)==PT_PLUT)  //If on plut
-		parts[i].life -= 1;
+        parts[i].life -= 5;
+    
+    if ((r&0xFF)==PT_ACRN)  //If on acrn
+        parts[i].life -= 5;
+    
+    if ((r&0xFF)==PT_PLUT)  //If on plut
+        parts[i].life -= 1;
+    
+    if ((r&0xFF)==PT_HEAL)  //If on heal
+        parts[i].life = 100;
+    
+    if ((r&0xFF)==PT_INV)  //If on INV
+        parts[i].life = 9999;
+    
+    if ((r&0xFF)==PT_FLY)  //If on FLY
+        player2[2] = SPC_AIR;
+    
+    if ((r&0xFF)==PT_RSPW)
+        player2[2] = PT_SPAWN;
+    
+    if ((r&0xFF)==PT_BPAD){
+        parts[i].vy = -5;
+        player2[22] -= 1;
+        player2[26] -= 1;
+    }
+    
+    if ((r&0xFF)==PT_TRAP){
+        player2[19] = 0;
+        player2[20] = 0;
+        
+        player2[21] = 0;
+        player2[22] = 0;
+        
+        player2[23] = 0;
+        player2[24] = 0;
+        
+        player2[25] = 0;
+        player2[26] = 0;
+        create_part(-1, x, y+1, PT_ACID);
+    }
+    
+    if ((r&0xFF)==PT_SPER){
+        if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
+        {
+            player2[21] = 6;
+            player2[22] = -4;
+            player2[19] = 4;
+        }
+        
+        if (pmap[(int)(player2[16]-1)][(int)(player2[15])])
+        {
+            player2[25] = 6;
+            player2[26] = -4;
+            player2[23] = 4;
+        }
+    }
+    
+    if ((r&0xFF)==PT_SPEL){
+        if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
+        {
+            player2[21] = -6;
+            player2[22] = -4;
+            player2[19] = -4;
+        }
+        
+        if (pmap[(int)(player2[16]-1)][(int)(player2[15])])
+        {
+            player2[25] = -6;
+            player2[26] = -4;
+            player2[23] = -4;
+        }
+        
+        
+    }
 
 	r = pmap[(int)(player2[16]+0.5)][(int)(player2[15]+0.5)];
 	if ((r&0xFF)==PT_SPRK && r && (r>>8)<NPART) //If on charge
@@ -405,10 +475,80 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 	}
 
 	if ((r&0xFF)==PT_ACID)  //If on acid
-		parts[i].life -= 5;
-
-	if ((r&0xFF)==PT_PLUT)  //If on plut
-		parts[i].life -= 1;
+        parts[i].life -= 5;
+    
+    if ((r&0xFF)==PT_ACRN)  //If on acrn
+        parts[i].life -= 5;
+    
+    if ((r&0xFF)==PT_PLUT)  //If on plut
+        parts[i].life -= 1;
+    
+    if ((r&0xFF)==PT_HEAL)  //If on heal
+        parts[i].life = 100;
+    
+    if ((r&0xFF)==PT_INV)  //If on INV
+        parts[i].life = 9999;
+    
+    if ((r&0xFF)==PT_FLY)  //If on FLY
+        player2[2] = SPC_AIR;
+    
+    if ((r&0xFF)==PT_RSPW)
+        player2[2] = PT_SPAWN;
+    
+    if ((r&0xFF)==PT_BPAD){
+        parts[i].vy = -5;
+        player2[22] -= 1;
+        player2[26] -= 1;
+    }
+    
+    if ((r&0xFF)==PT_TRAP){
+        player2[19] = 0;
+        player2[20] = 0;
+        
+        player2[21] = 0;
+        player2[22] = 0;
+        
+        player2[23] = 0;
+        player2[24] = 0;
+        
+        player2[25] = 0;
+        player2[26] = 0;
+        create_part(-1, x, y+1, PT_ACID);
+    }
+    
+    if ((r&0xFF)==PT_SPER){
+        if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
+        {
+            player2[21] = 6;
+            player2[22] = -4;
+            player2[19] = 4;
+        }
+        
+        if (pmap[(int)(player2[16]-1)][(int)(player2[15])])
+        {
+            player2[25] = 6;
+            player2[26] = -4;
+            player2[23] = 4;
+        }
+    }
+    
+    if ((r&0xFF)==PT_SPEL){
+        if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
+        {
+            player2[21] = -6;
+            player2[22] = -4;
+            player2[19] = -4;
+        }
+        
+        if (pmap[(int)(player2[16]-1)][(int)(player2[15])])
+        {
+            player2[25] = -6;
+            player2[26] = -4;
+            player2[23] = -4;
+        }
+        
+        
+    }
 
 	isplayer2 = 1;
 	return 0;

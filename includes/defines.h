@@ -7,10 +7,12 @@
 #define PATH_SEP "/"
 #endif
 
-#define SAVE_VERSION 47
-#define MINOR_VERSION 0
-#define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
-#define BETA
+#define ME4502_MAJOR_VERSION 1
+#define ME4502_VERSION 8
+#define SAVE_VERSION 99
+#define MINOR_VERSION 9
+#define IDENT_VERSION "M" //Change this if you're not Simon! It should be a single letter.
+//#define BETA
 
 #define SERVER "powdertoy.co.uk"
 
@@ -37,7 +39,7 @@
 
 #define MAX_DISTANCE sqrt(pow(XRES, 2)+pow(YRES, 2))
 
-#define MAXSIGNS 16
+#define MAXSIGNS 32
 #define TAG_MAX 256
 
 #define ZSIZE_D	16
@@ -63,7 +65,7 @@ extern unsigned char ZSIZE;
 
 #define STAMP_X 4
 #define STAMP_Y 4
-#define STAMP_MAX 120
+#define STAMP_MAX 240
 
 #define NGOL 25
 
@@ -142,11 +144,13 @@ int CGOL;
 int ISGOL;
 int ISLOVE;
 int ISLOLZ;
+int ISSMIL;
 int ISGRAV;
 int ISWIRE;
 int GSPEED;
 int love[XRES/9][YRES/9];
 int lolz[XRES/9][YRES/9];
+int smil[XRES/9][YRES/9];
 int gol[XRES][YRES];
 int gol2[XRES][YRES][NGOL+1];
 int SEC;

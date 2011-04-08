@@ -2555,6 +2555,14 @@ int main(int argc, char *argv[])
             {
                 set_cmode(CM_GRAD);
             }
+            if(sdl_key=='a')
+            {
+                set_cmode(CM_AWESOME);
+            }    
+            if(sdl_key=='m')
+            {
+                set_cmode(CM_PREAWE);
+            }
             if (sdl_key=='0')
             {
                 set_cmode(CM_CRACK);
@@ -3694,12 +3702,14 @@ int main(int argc, char *argv[])
 		if (hud_enable)
 		{
 #ifdef BETA
-			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+			sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 #else
-			if (DEBUG_MODE)
-				sprintf(uitext, "Version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
-			else
-				sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
+			if (DEBUG_MODE){
+				sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+            }
+			else {
+				sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB);
+            }
 #endif
 			if (REPLACE_MODE)
 				strappend(uitext, " [REPLACE MODE]");
@@ -4358,3 +4368,4 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
     }
     return 1;
 }
+

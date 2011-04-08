@@ -688,6 +688,10 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	{
 		parts[i].life = 75;
 	}
+    if (t==PT_ACRN)
+	{
+		parts[i].life = 75;
+	}
 	/*Testing
 	if(t==PT_WOOD){
 		parts[i].life = 150;
@@ -709,6 +713,8 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	if (t==PT_DEUT)
 		parts[i].life = 10;
 	if (t==PT_BRAY)
+		parts[i].life = 30;
+    if (t==PT_LAZR)
 		parts[i].life = 30;
 	if (t==PT_PUMP)
 		parts[i].life= 10;
@@ -1243,6 +1249,58 @@ void update_particles_i(pixel *vid, int start, int inc)
 			}
 		}
 	}
+    if(ISSMIL==1)
+	{
+	    ISSMIL = 0;
+	    for(ny=0;ny<YRES-4;ny++)
+	    {
+			for(nx=0;nx<XRES-4;nx++)
+			{
+				r=pmap[ny][nx];
+				if((r>>8)>=NPART || !r)
+				{
+					continue;
+				}
+				else if((ny<9||nx<9||ny>YRES-7||nx>XRES-10)&&parts[r>>8].type==PT_SMIL)
+					parts[r>>8].type = PT_NONE;
+				else if(parts[r>>8].type==PT_SMIL)
+				{
+					smil[nx/9][ny/9] = 1;
+				}
+				
+			}
+	    }
+	    for(nx=9;nx<=XRES-18;nx++)
+	    {
+			for(ny=9;ny<=YRES-7;ny++)
+			{
+				if(smil[nx/9][ny/9]==1)
+				{
+					for( nnx=0;nnx<9;nnx++)
+						for( nny=0;nny<9;nny++)
+						{
+							if(ny+nny>0&&ny+nny<YRES&&nx+nnx>=0&&nx+nnx<XRES)
+							{
+								rt=pmap[ny+nny][nx+nnx];
+								if((rt>>8)>=NPART)
+								{
+									continue;
+								}
+								if(!rt&&smilrule[nnx][nny]==1)
+									create_part(-1,nx+nnx,ny+nny,PT_SMIL);
+								else if(!rt)
+									continue;
+								else if(parts[rt>>8].type==PT_SMIL&&smilrule[nnx][nny]==0)
+									parts[rt>>8].type=PT_NONE;
+								
+							}
+						}
+				}
+				smil[nx/9][ny/9]=0;
+			}
+	    }
+	}
+
 	if (ISLOLZ==1)//LOLZ element handling
 	{
 		ISLOLZ = 0;
@@ -1382,7 +1440,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			//printf("parts[%d].type: %d\n", i, parts[i].type);
 
 			//this if is whether or not life goes down automatically.
-			if (parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
+			if (parts[i].life && t!=PT_ACID && t!=PT_ACRN && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
 			{
 				//this if is for stopping life loss when at a certain life value
 				if (!(parts[i].life==10&&(t==PT_SWCH||t==PT_LCRY||t==PT_PCLN||t==PT_HSWC||t==PT_PUMP)))
@@ -1860,6 +1918,7 @@ killed:
 					if ((r & 0xFF) == PT_NBLE) parts[i].ctype &= 0x3FFF8000;
 					if ((r & 0xFF) == PT_LAVA) parts[i].ctype &= 0x3FF00000;
 					if ((r & 0xFF) == PT_ACID) parts[i].ctype &= 0x1FE001FE;
+                    if ((r & 0xFF) == PT_ACRN) parts[i].ctype &= 0x1FE001FE;
 					if ((r & 0xFF) == PT_DUST) parts[i].ctype &= 0x3FFFFFC0;
 					if ((r & 0xFF) == PT_SNOW) parts[i].ctype &= 0x03FFFFFF;
 					if ((r & 0xFF) == PT_GOO)  parts[i].ctype &= 0x3FFAAA00;
