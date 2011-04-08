@@ -2457,6 +2457,20 @@ int main(int argc, char *argv[])
 					break;
 				}
 			}
+			if (sdl_key=='i' && (sdl_mod & KMOD_CTRL))
+			{
+				if(confirm_ui(vid_buf, "Install Powder Toy", "You are about to install The Powder Toy", "Install"))
+				{
+					if(register_extension())
+					{
+						info_ui(vid_buf, "Install success", "Powder Toy has been installed!");
+					}
+					else
+					{
+						error_ui(vid_buf, 0, "Install failed - You may not have permission or you may be on a platform that does not support installation");
+					}
+				}
+			}
 			//if(sdl_key=='d' && isplayer)
 			//{
 			//    death = 1;
