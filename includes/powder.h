@@ -814,43 +814,19 @@ static void create_gain_photon(int pp);
 
 void kill_part(int i);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline void part_change_type(int i, int x, int y, int t);
-#else
-extern inline void part_change_type(int i, int x, int y, int t);
-#endif
+void part_change_type(int i, int x, int y, int t);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline int create_part(int p, int x, int y, int t);
-#else
-extern inline int create_part(int p, int x, int y, int t);
-#endif
+int create_part(int p, int x, int y, int t);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline void delete_part(int x, int y);
-#else
-extern inline void delete_part(int x, int y);
-#endif
+void delete_part(int x, int y);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline int is_wire(int x, int y);
-#else
-extern inline int is_wire(int x, int y);
-#endif
+int is_wire(int x, int y);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline int is_wire_off(int x, int y);
-#else
-extern inline int is_wire_off(int x, int y);
-#endif
+int is_wire_off(int x, int y);
 
 void set_emap(int x, int y);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline int parts_avg(int ci, int ni, int t);
-#else
-extern int parts_avg(int ci, int ni, int t);
-#endif
+int parts_avg(int ci, int ni, int t);
 
 int nearest_part(int ci, int t);
 
@@ -869,20 +845,11 @@ int flood_parts(int x, int y, int c, int cm, int bm);
 int create_parts(int x, int y, int rx, int ry, int c);
 
 void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c);
+
 void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
 
+void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
-#else
-extern inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
-#endif
-
-
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
-#else
-extern inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
-#endif
+void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
 
 #endif

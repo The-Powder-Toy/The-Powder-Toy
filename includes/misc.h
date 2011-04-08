@@ -20,24 +20,13 @@ __asm__ __volatile ("cpuid":\
 #endif
 
 static char hex[] = "0123456789ABCDEF";
+
 //Signum function
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline int isign(float i);
-#else
-extern inline int isign(float i);
-#endif
+int isign(float i);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline unsigned clamp_flt(float f, float min, float max);
-#else
-extern inline unsigned clamp_flt(float f, float min, float max);
-#endif
+unsigned clamp_flt(float f, float min, float max);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline float restrict_flt(float f, float min, float max);
-#else
-extern inline float restrict_flt(float f, float min, float max);
-#endif
+float restrict_flt(float f, float min, float max);
 
 char *mystrdup(char *s);
 

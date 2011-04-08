@@ -64,17 +64,9 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc);
 
 void draw_menu(pixel *vid_buf, int i, int hover);
 
-#if defined(WIN32) && !defined(__GNUC__)
-_inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
-#else
-extern inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
-#endif
+void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 
-#if defined(WIN32) && !defined(__GNUC__)
-_inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
-#else
-extern inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
-#endif
+int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
 
 int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a);
 
@@ -99,13 +91,10 @@ void textnpos(char *s, int n, int w, int *cx, int *cy);
 int textwidthx(char *s, int w);
 
 int textposxy(char *s, int width, int w, int h);
+
 int textwrapheight(char *s, int width);
 
-#if defined(WIN32) && !defined(__GNUC__)
-_inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
-#else
 void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
-#endif
 
 void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag);
 
@@ -122,7 +111,9 @@ void xor_line(int x1, int y1, int x2, int y2, pixel *vid);
 void xor_rect(pixel *vid, int x, int y, int w, int h);
 
 void draw_parts(pixel *vid);
+
 void draw_wavelengths(pixel *vid, int x, int y, int h, int wl);
+
 void render_signs(pixel *vid_buf);
 
 void render_fire(pixel *dst);
