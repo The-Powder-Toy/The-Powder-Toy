@@ -8,7 +8,7 @@
 #endif
 
 #define SAVE_VERSION 47
-#define MINOR_VERSION 0
+#define MINOR_VERSION 2
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 #define BETA
 
@@ -63,7 +63,7 @@ extern unsigned char ZSIZE;
 
 #define STAMP_X 4
 #define STAMP_Y 4
-#define STAMP_MAX 120
+#define STAMP_MAX 240
 
 #define NGOL 25
 
@@ -71,7 +71,7 @@ extern unsigned char ZSIZE;
 #define SQUARE_BRUSH 1
 #define BRUSH_NUM 2
 
-#define PYCONSOLE
+//#define PYCONSOLE
 //#define PYEXT
 //no longer needed
 
