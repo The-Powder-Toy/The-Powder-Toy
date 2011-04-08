@@ -128,7 +128,7 @@ int sregexp(const char *str, char *pattern)
 {
 	int result;
 	regex_t patternc;
-	if(regcomp(&patternc, pattern,  0)!=0)
+	if (regcomp(&patternc, pattern,  0)!=0)
 		return 1;
 	result = regexec(&patternc, str, 0, NULL, 0);
 	regfree(&patternc);
@@ -164,7 +164,7 @@ void load_presets(void)
 		remove("powder.def");
 		return;
 	}
-	if(sig[3]==0x66){
+	if (sig[3]==0x66) {
 		if (load_string(f, svf_user, 63))
 			goto fail;
 		if (load_string(f, svf_pass, 63))
@@ -378,32 +378,32 @@ vector2d v2d_new(float x, float y)
 void clipboard_push_text(char * text)
 {
 #ifdef MACOSX
-	PasteboardRef newclipboard; 
-	
-	if(PasteboardCreate(kPasteboardClipboard, &newclipboard)!=noErr) return;
-	if(PasteboardClear(newclipboard)!=noErr) return;
+	PasteboardRef newclipboard;
+
+	if (PasteboardCreate(kPasteboardClipboard, &newclipboard)!=noErr) return;
+	if (PasteboardClear(newclipboard)!=noErr) return;
 	PasteboardSynchronize(newclipboard);
-	
+
 	CFDataRef data = CFDataCreate(kCFAllocatorDefault, text, strlen(text));
-	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);	
+	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);
 #elif defined WIN32
-	if(OpenClipboard(NULL))
+	if (OpenClipboard(NULL))
 	{
 		HGLOBAL cbuffer;
 		char * glbuffer;
-		
+
 		EmptyClipboard();
-		
+
 		cbuffer = GlobalAlloc(GMEM_DDESHARE, strlen(text)+1);
 		glbuffer = (char*)GlobalLock(cbuffer);
-		
+
 		strcpy(glbuffer, text);
-		
+
 		GlobalUnlock(cbuffer);
 		SetClipboardData(CF_TEXT, cbuffer);
 		CloseClipboard();
 	}
-#else 
+#else
 	printf("Not implemented: put text on clipboard \"%s\"\n", text);
 #endif
 }
@@ -429,55 +429,55 @@ int register_extension()
 	opencommand = malloc(strlen(currentfilename)+13);
 	sprintf(iconname, "%s,-102", currentfilename);
 	sprintf(opencommand, "\"%s\" open:\"%%1\"", currentfilename);
-	
+
 	//Create extension entry
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.cps", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		return 0;
 	}
 	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)"PowderToySave", strlen("PowderToySave")+1);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		RegCloseKey(newkey);
 		return 0;
 	}
 	RegCloseKey(newkey);
-	
+
 	//Create program entry
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		return 0;
 	}
 	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)"Powder Toy Save", strlen("Powder Toy Save")+1);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		RegCloseKey(newkey);
 		return 0;
 	}
 	RegCloseKey(newkey);
-	
+
 	//Set DefaultIcon
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave\\DefaultIcon", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		return 0;
 	}
 	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)iconname, strlen(iconname)+1);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		RegCloseKey(newkey);
 		return 0;
 	}
 	RegCloseKey(newkey);
-	
+
 	//Set Launch command
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave\\shell\\open\\command", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		return 0;
 	}
 	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)opencommand, strlen(opencommand)+1);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		RegCloseKey(newkey);
 		return 0;
 	}
 	RegCloseKey(newkey);
-	
+
 	return 1;
 #elif defined LIN32
 	return 0;

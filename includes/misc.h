@@ -79,11 +79,15 @@ int cpu_check(void);
 
 // a b
 // c d
-struct matrix2d {float a,b,c,d;};
+struct matrix2d {
+	float a,b,c,d;
+};
 typedef struct matrix2d matrix2d;
 
 // column vector
-struct vector2d {float x,y;};
+struct vector2d {
+	float x,y;
+};
 typedef struct vector2d vector2d;
 
 matrix2d m2d_multiply_m2d(matrix2d m1, matrix2d m2);

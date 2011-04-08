@@ -39,18 +39,18 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 							break;
 						}
 			}
-	
-	
-	if(fe){
+
+
+	if (fe) {
 		int orbd[4] = {0, 0, 0, 0};	//Orbital distances
 		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
-		if(!parts[i].life) parts[i].life = rand();
-		if(!parts[i].ctype) parts[i].life = rand();
+		if (!parts[i].life) parts[i].life = rand();
+		if (!parts[i].ctype) parts[i].life = rand();
 		orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
-		for(r = 0; r < 4; r++){
-			if(orbd[r]>1){
+		for (r = 0; r < 4; r++) {
+			if (orbd[r]>1) {
 				orbd[r] -= 12;
-				if(orbd[r]<1){
+				if (orbd[r]<1) {
 					orbd[r] = (rand()%128)+128;
 					orbl[r] = rand()%255;
 				} else {

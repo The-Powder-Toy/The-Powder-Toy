@@ -709,7 +709,7 @@ void http_auth_headers(void *ctx, char *user, char *pass, char *session_id)
 			http_async_add_header(ctx, "X-Auth-Hash", tmp);
 			free(tmp);
 		}
-		if(session_id)
+		if (session_id)
 		{
 			http_async_add_header(ctx, "X-Auth-User-Id", user);
 			http_async_add_header(ctx, "X-Auth-Session-Key", session_id);
@@ -1031,7 +1031,7 @@ retry:
 			http_async_add_header(ctx, "X-Auth-Hash", tmp);
 			free(tmp);
 		}
-		if(session_id)
+		if (session_id)
 		{
 			http_async_add_header(ctx, "X-Auth-User-Id", user);
 			http_async_add_header(ctx, "X-Auth-Session-Key", session_id);

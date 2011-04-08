@@ -22,26 +22,26 @@ int update_SING(UPDATE_FUNC_ARGS) {
 		if (y+CELL>0)
 			pv[y/CELL-1][x/CELL-1] += 0.1f*(singularity-pv[y/CELL-1][x/CELL-1]);
 	}
-	if(parts[i].life<1){
+	if (parts[i].life<1) {
 		//Pop!
-		for(rx=-2; rx<3; rx++){
+		for (rx=-2; rx<3; rx++) {
 			crx = (x/CELL)+rx;
-			for(ry=-2; ry<3; ry++){
+			for (ry=-2; ry<3; ry++) {
 				cry = (y/CELL)+ry;
-				if(cry > 0 && crx > 0 && crx < (XRES/CELL) && cry < (YRES/CELL)){
-				   pv[cry][crx] += (float)parts[i].tmp;
+				if (cry > 0 && crx > 0 && crx < (XRES/CELL) && cry < (YRES/CELL)) {
+					pv[cry][crx] += (float)parts[i].tmp;
 				}
 			}
 		}
 		rad = (parts[i].tmp>255)?255:parts[i].tmp;
-		if(rad>=1){
+		if (rad>=1) {
 			rad = (int)(((float)rad)/8.0f);
 		}
-		if(rad>=1){
+		if (rad>=1) {
 			for (nxj=-(rad+1); nxj<=(rad+1); nxj++)
 				for (nxi=-(rad+1); nxi<=(rad+1); nxi++)
 					if ((pow(nxi,2))/(pow((rad+1),2))+(pow(nxj,2))/(pow((rad+1),2))<=1) {
-						if(rand()%2){
+						if (rand()%2) {
 							nb = create_part(-1, x+nxi, y+nxj, PT_PHOT);
 						} else {
 							nb = create_part(-1, x+nxi, y+nxj, PT_NEUT);

@@ -3,7 +3,7 @@
 int update_QRTZ(UPDATE_FUNC_ARGS) {
 	int r, tmp, trade, rx, ry, np, t;
 	t = parts[i].type;
-	if(t == PT_QRTZ)
+	if (t == PT_QRTZ)
 	{
 		parts[i].pavg[0] = parts[i].pavg[1];
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
@@ -32,29 +32,29 @@ int update_QRTZ(UPDATE_FUNC_ARGS) {
 		{
 			rx = rand()%3-1;
 			ry = rand()%3-1;
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			{
+				r = pmap[y+ry][x+rx];
+				if ((r>>8)<NPART && !r && parts[i].ctype!=0)
 				{
-					r = pmap[y+ry][x+rx];
-					if ((r>>8)<NPART && !r && parts[i].ctype!=0)
+					np = create_part(-1,x+rx,y+ry,PT_QRTZ);
+					if (np>0)
 					{
-						np = create_part(-1,x+rx,y+ry,PT_QRTZ);
-						if (np>0)
+						parts[np].tmp = parts[i].tmp;
+						parts[i].ctype = 0;
+						if (5>rand()%10)
 						{
-							parts[np].tmp = parts[i].tmp;
-							parts[i].ctype = 0;
-							if(5>rand()%10)
-							{
-								parts[np].ctype=-1;//dead qrtz
-							}
-							else if(1>rand()%15)
-							{
-								parts[i].ctype=-1;
-							}
-							
-							break;
+							parts[np].ctype=-1;//dead qrtz
 						}
+						else if (1>rand()%15)
+						{
+							parts[i].ctype=-1;
+						}
+
+						break;
 					}
 				}
+			}
 		}
 	}
 	for ( trade = 0; trade<9; trade ++)
