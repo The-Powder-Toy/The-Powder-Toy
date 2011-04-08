@@ -20,6 +20,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #ifndef MACOSX
 #include <malloc.h>
 #endif
