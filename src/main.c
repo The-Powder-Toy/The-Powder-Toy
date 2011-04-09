@@ -76,7 +76,7 @@ void mixaudio(void *unused, Uint8 *stream, int len)
 {
 	int i;
 	Uint32 amount;
-
+    
 	for ( i=0; i<NUM_SOUNDS; ++i ) {
 		amount = (sounds[i].dlen-sounds[i].dpos);
 		if ( amount > len ) {
@@ -95,9 +95,9 @@ void play_sound(char *file)
 	Uint8 *data;
 	Uint32 dlen;
 	SDL_AudioCVT cvt;
-
+    
 	if (!sound_enable) return;
-
+    
 	/* Look for an empty (or finished) sound slot */
 	for ( index=0; index<NUM_SOUNDS; ++index ) {
 		if ( sounds[index].dpos == sounds[index].dlen ) {
@@ -106,7 +106,7 @@ void play_sound(char *file)
 	}
 	if ( index == NUM_SOUNDS )
 		return;
-
+    
 	/* Load the sound file and convert it to 16-bit stereo at 22kHz */
 	if ( SDL_LoadWAV(file, &wave, &data, &dlen) == NULL ) {
 		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
@@ -119,7 +119,7 @@ void play_sound(char *file)
 	cvt.len = dlen;
 	SDL_ConvertAudio(&cvt);
 	SDL_FreeWAV(data);
-
+    
 	/* Put the sound data in the slot (it starts playing immediately) */
 	if ( sounds[index].data ) {
 		free(sounds[index].data);
@@ -132,31 +132,31 @@ void play_sound(char *file)
 }
 
 static const char *it_msg =
-    "\brThe Powder Toy - http://powdertoy.co.uk, irc.freenode.net #powder\n"
-    "\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
-    "\n"
-    "\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
-    "\bgTo choose a material, hover over one of the icons on the right, it will show a selection of elements in that group.\n"
-    "\bgPick your material from the menu using mouse left/right buttons.\n"
-    "Draw freeform lines by dragging your mouse left/right button across the drawing area.\n"
-    "Shift+drag will create straight lines of particles.\n"
-    "Ctrl+drag will result in filled rectangles.\n"
-    "Ctrl+Shift+click will flood-fill a closed area.\n"
-    "Ctrl+Z will act as Undo.\n"
-    "Middle click or Alt+Click to \"sample\" the particles.\n"
-    "\n\boUse 'Z' for a zoom tool. Click to make the drawable zoom window stay around. Use the wheel to change the zoom strength\n"
-    "Use 'S' to save parts of the window as 'stamps'.\n"
-    "'L' will load the most recent stamp, 'K' shows a library of stamps you saved.\n"
-    "'C' will cycle the display mode (Fire, Blob, Velocity, etc.). The numbers on the keyboard do the same\n"
-    "Use the mouse scroll wheel to change the tool size for particles.\n"
-    "The spacebar can be used to pause physics.\n"
-    "'P' will take a screenshot and save it into the current directory.\n"
-    "\n"
-    "\bgCopyright (c) 2008-11 Stanislaw K Skowronek (\brhttp://powder.unaligned.org\bg, \bbirc.unaligned.org #wtf\bg)\n"
-    "\bgCopyright (c) 2010-11 Simon Robertshaw, Skresanov Savely, cracker64, Bryan Hoyle, Nathan Cousins, jacksonmj, Lieuwe Mosch\n"
-    "\n"
-    "\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html"
-    ;
+"\brThe Powder Toy - http://powdertoy.co.uk, irc.freenode.net #powder\n"
+"\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
+"\n"
+"\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
+"\bgTo choose a material, hover over one of the icons on the right, it will show a selection of elements in that group.\n"
+"\bgPick your material from the menu using mouse left/right buttons.\n"
+"Draw freeform lines by dragging your mouse left/right button across the drawing area.\n"
+"Shift+drag will create straight lines of particles.\n"
+"Ctrl+drag will result in filled rectangles.\n"
+"Ctrl+Shift+click will flood-fill a closed area.\n"
+"Ctrl+Z will act as Undo.\n"
+"Middle click or Alt+Click to \"sample\" the particles.\n"
+"\n\boUse 'Z' for a zoom tool. Click to make the drawable zoom window stay around. Use the wheel to change the zoom strength\n"
+"Use 'S' to save parts of the window as 'stamps'.\n"
+"'L' will load the most recent stamp, 'K' shows a library of stamps you saved.\n"
+"'C' will cycle the display mode (Fire, Blob, Velocity, etc.). The numbers on the keyboard do the same\n"
+"Use the mouse scroll wheel to change the tool size for particles.\n"
+"The spacebar can be used to pause physics.\n"
+"'P' will take a screenshot and save it into the current directory.\n"
+"\n"
+"\bgCopyright (c) 2008-11 Stanislaw K Skowronek (\brhttp://powder.unaligned.org\bg, \bbirc.unaligned.org #wtf\bg)\n"
+"\bgCopyright (c) 2010-11 Simon Robertshaw, Skresanov Savely, cracker64, Bryan Hoyle, Nathan Cousins, jacksonmj, Lieuwe Mosch\n"
+"\n"
+"\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html"
+;
 
 typedef struct
 {
@@ -202,7 +202,7 @@ int core_count()
 	numCPU = sysconf( _SC_NPROCESSORS_ONLN );
 #endif
 #endif
-
+    
 	printf("Cpus: %d\n", numCPU);
 	if (numCPU>1)
 		printf("Multithreading enabled\n");
@@ -279,12 +279,12 @@ void *build_thumb(int *size, int bzip2)
 					for (i=0; i<CELL; i++)
 						d[x*CELL+i+(y*CELL+j)*XRES] = 0xFF;
 	j = XRES*YRES;
-
+    
 	if (bzip2)
 	{
 		i = (j*101+99)/100 + 608;
 		c = malloc(i);
-
+        
 		c[0] = 0x53;
 		c[1] = 0x68;
 		c[2] = 0x49;
@@ -293,9 +293,9 @@ void *build_thumb(int *size, int bzip2)
 		c[5] = CELL;
 		c[6] = XRES/CELL;
 		c[7] = YRES/CELL;
-
+        
 		i -= 8;
-
+        
 		if (BZ2_bzBuffToBuffCompress((char *)(c+8), (unsigned *)&i, (char *)d, j, 9, 0, 0) != BZ_OK)
 		{
 			free(d);
@@ -306,7 +306,7 @@ void *build_thumb(int *size, int bzip2)
 		*size = i+8;
 		return c;
 	}
-
+    
 	*size = j;
 	return d;
 }
@@ -318,13 +318,13 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
 	int bx0=x0/CELL, by0=y0/CELL, bw=(w+CELL-1)/CELL, bh=(h+CELL-1)/CELL;
 	particle *parts = partsptr;
-
+    
 	// normalize coordinates
 	x0 = bx0*CELL;
 	y0 = by0*CELL;
 	w  = bw *CELL;
 	h  = bh *CELL;
-
+    
 	// save the required air state
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
@@ -347,7 +347,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 				if (i>255) i=255;
 				d[p++] = i;
 			}
-
+    
 	// save the particle map
 	for (i=0; i<NPART; i++)
 		if (parts[i].type)
@@ -356,8 +356,8 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 			y = (int)(parts[i].y+0.5f);
 			if (x>=x0 && x<x0+w && y>=y0 && y<y0+h) {
 				if (!m[(x-x0)+(y-y0)*w] ||
-				        parts[m[(x-x0)+(y-y0)*w]-1].type == PT_PHOT ||
-				        parts[m[(x-x0)+(y-y0)*w]-1].type == PT_NEUT)
+                    parts[m[(x-x0)+(y-y0)*w]-1].type == PT_PHOT ||
+                    parts[m[(x-x0)+(y-y0)*w]-1].type == PT_NEUT)
 					m[(x-x0)+(y-y0)*w] = i+1;
 			}
 		}
@@ -369,7 +369,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 		else
 			d[p++] = 0;
 	}
-
+    
 	// save particle properties
 	for (j=0; j<w*h; j++)
 	{
@@ -426,18 +426,18 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 		if (i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_BCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA || parts[i-1].type==PT_PIPE))
 			d[p++] = parts[i-1].ctype;
 	}
-
+    
 	j = 0;
 	for (i=0; i<MAXSIGNS; i++)
 		if (signs[i].text[0] &&
-		        signs[i].x>=x0 && signs[i].x<x0+w &&
-		        signs[i].y>=y0 && signs[i].y<y0+h)
+            signs[i].x>=x0 && signs[i].x<x0+w &&
+            signs[i].y>=y0 && signs[i].y<y0+h)
 			j++;
 	d[p++] = j;
 	for (i=0; i<MAXSIGNS; i++)
 		if (signs[i].text[0] &&
-		        signs[i].x>=x0 && signs[i].x<x0+w &&
-		        signs[i].y>=y0 && signs[i].y<y0+h)
+            signs[i].x>=x0 && signs[i].x<x0+w &&
+            signs[i].y>=y0 && signs[i].y<y0+h)
 		{
 			d[p++] = (signs[i].x-x0);
 			d[p++] = (signs[i].x-x0)>>8;
@@ -449,13 +449,13 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 			memcpy(d+p, signs[i].text, x);
 			p+=x;
 		}
-
+    
 	i = (p*101+99)/100 + 612;
 	c = malloc(i);
-
+    
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
-	
+    
 	c[0] = 0x50;	//0x66;
 	c[1] = 0x53;	//0x75;
 	c[2] = 0x76;	//0x43;
@@ -468,9 +468,9 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	c[9] = p >> 8;
 	c[10] = p >> 16;
 	c[11] = p >> 24;
-
+    
 	i -= 12;
-
+    
 	if (BZ2_bzBuffToBuffCompress((char *)(c+12), (unsigned *)&i, (char *)d, p, 9, 0, 0) != BZ_OK)
 	{
 		free(d);
@@ -478,7 +478,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 		return NULL;
 	}
 	free(d);
-
+    
 	*size = i+12;
 	return c;
 }
@@ -490,10 +490,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
 	int fp[NPART], nf=0, new_format = 0, ttv = 0;
 	particle *parts = partsptr;
-
+    
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
-
+    
 	if (size<16)
 		return 1;
 	if (!(c[2]==0x43 && c[1]==0x75 && c[0]==0x66) && !(c[2]==0x76 && c[1]==0x53 && c[0]==0x50))
@@ -504,7 +504,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	if (c[4]>SAVE_VERSION)
 		return 2;
 	ver = c[4];
-
+    
 	if (ver<34)
 	{
 		legacy_enable = 1;
@@ -516,7 +516,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			if (!sys_pause) {
 				sys_pause = (c[3]>>1)&0x01;
 			}
-			if(ver>=46 && replace) {
+			if (ver>=46 && replace) {
 				gravityMode = ((c[3]>>2)&0x03);// | ((c[3]>>2)&0x01);
 				airMode = ((c[3]>>4)&0x07);// | ((c[3]>>4)&0x02) | ((c[3]>>4)&0x01);
 			}
@@ -528,7 +528,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			}
 		}
 	}
-
+    
 	bw = c[6];
 	bh = c[7];
 	if (bx0+bw > XRES/CELL)
@@ -539,7 +539,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		bx0 = 0;
 	if (by0 < 0)
 		by0 = 0;
-
+    
 	if (c[5]!=CELL || bx0+bw>XRES/CELL || by0+bh>YRES/CELL)
 		return 3;
 	i = (unsigned)c[8];
@@ -549,29 +549,29 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	d = malloc(i);
 	if (!d)
 		return 1;
-
+    
 	if (BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), size-12, 0, 0))
 		return 1;
 	size = i;
-
+    
 	if (size < bw*bh)
 		return 1;
-
+    
 	// normalize coordinates
 	x0 = bx0*CELL;
 	y0 = by0*CELL;
 	w  = bw *CELL;
 	h  = bh *CELL;
-
+    
 	if (replace)
 	{
-		if(ver<46){
+		if (ver<46) {
 			gravityMode = 0;
 			airMode = 0;
 		}
 		clear_sim();
 	}
-
+    
 	// make a catalog of free parts
 	memset(pmap, 0, sizeof(pmap));
 	for (i=0; i<NPART; i++)
@@ -583,7 +583,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 		else
 			fp[nf++] = i;
-
+    
 	// load the required air state
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
@@ -618,7 +618,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				if (bmap[y][x]==13)
 					bmap[y][x]=WL_ALLOWGAS;
 			}
-
+            
 			p++;
 		}
 	for (y=by0; y<by0+bh; y++)
@@ -637,7 +637,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					goto corrupt;
 				fvy[y][x] = (d[p++]-127.0f)/64.0f;
 			}
-
+    
 	// load the particle map
 	i = 0;
 	pty = p;
@@ -684,7 +684,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					m[(x-x0)+(y-y0)*w] = NPART+1;
 			}
 		}
-
+    
 	// load particle properties
 	for (j=0; j<w*h; j++)
 	{
@@ -701,52 +701,52 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				if (parts[i].type == PT_STKM)
 				{
 					//player[2] = PT_DUST;
-
+                    
 					player[3] = parts[i].x-1;  //Setting legs positions
 					player[4] = parts[i].y+6;
 					player[5] = parts[i].x-1;
 					player[6] = parts[i].y+6;
-
+                    
 					player[7] = parts[i].x-3;
 					player[8] = parts[i].y+12;
 					player[9] = parts[i].x-3;
 					player[10] = parts[i].y+12;
-
+                    
 					player[11] = parts[i].x+1;
 					player[12] = parts[i].y+6;
 					player[13] = parts[i].x+1;
 					player[14] = parts[i].y+6;
-
+                    
 					player[15] = parts[i].x+3;
 					player[16] = parts[i].y+12;
 					player[17] = parts[i].x+3;
 					player[18] = parts[i].y+12;
-
+                    
 				}
 				if (parts[i].type == PT_STKM2)
 				{
 					//player[2] = PT_DUST;
-
+                    
 					player2[3] = parts[i].x-1;  //Setting legs positions
 					player2[4] = parts[i].y+6;
 					player2[5] = parts[i].x-1;
 					player2[6] = parts[i].y+6;
-
+                    
 					player2[7] = parts[i].x-3;
 					player2[8] = parts[i].y+12;
 					player2[9] = parts[i].x-3;
 					player2[10] = parts[i].y+12;
-
+                    
 					player2[11] = parts[i].x+1;
 					player2[12] = parts[i].y+6;
 					player2[13] = parts[i].x+1;
 					player2[14] = parts[i].y+6;
-
+                    
 					player2[15] = parts[i].x+3;
 					player2[16] = parts[i].y+12;
 					player2[17] = parts[i].x+3;
 					player2[18] = parts[i].y+12;
-
+                    
 				}
 			}
 			else
@@ -792,9 +792,9 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					ttv = (d[p++])<<8;
 					ttv |= (d[p++]);
 					parts[i-1].tmp = ttv;
-					if(ptypes[parts[i-1].type].properties&PROP_LIFE && !parts[i-1].tmp)
-						for(q = 1; q<=NGOL ; q++) {
-							if(parts[i-1].type==goltype[q-1] && grule[q][9]==2)
+					if (ptypes[parts[i-1].type].properties&PROP_LIFE && !parts[i-1].tmp)
+						for (q = 1; q<=NGOL ; q++) {
+							if (parts[i-1].type==goltype[q-1] && grule[q][9]==2)
 								parts[i-1].tmp = grule[q][9]-1;
 						}
 				} else {
@@ -861,7 +861,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				p++;
 		}
 	}
-
+    
 	if (p >= size)
 		goto version1;
 	j = d[p++];
@@ -893,12 +893,12 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 		p += x;
 	}
-
+    
 version1:
 	free(d);
-
+    
 	return 0;
-
+    
 corrupt:
 	if (replace)
 	{
@@ -942,7 +942,7 @@ unsigned last_time=0, last_name=0;
 void stamp_gen_name(char *fn)
 {
 	unsigned t=(unsigned)time(NULL);
-
+    
 	if (last_time!=t)
 	{
 		last_time=t;
@@ -950,7 +950,7 @@ void stamp_gen_name(char *fn)
 	}
 	else
 		last_name++;
-
+    
 	sprintf(fn, "%08x%02x", last_time, last_name);
 }
 
@@ -979,16 +979,16 @@ void stamp_gen_thumb(int i)
 	void *data;
 	int size, factor_x, factor_y;
 	pixel *tmp;
-
+    
 	if (stamps[i].thumb)
 	{
 		free(stamps[i].thumb);
 		stamps[i].thumb = NULL;
 	}
-
+    
 	sprintf(fn, "stamps" PATH_SEP "%s.stm", stamps[i].name);
 	data = file_load(fn, &size);
-
+    
 	if (data)
 	{
 		stamps[i].thumb = prerender_save(data, size, &(stamps[i].thumb_w), &(stamps[i].thumb_h));
@@ -1003,7 +1003,7 @@ void stamp_gen_thumb(int i)
 			stamps[i].thumb = tmp;
 		}
 	}
-
+    
 	free(data);
 }
 
@@ -1017,34 +1017,34 @@ void stamp_save(int x, int y, int w, int h)
 	int n;
 	char fn[64], sn[16];
 	void *s=build_save(&n, x, y, w, h, bmap, fvx, fvy, signs, parts);
-
+    
 #ifdef WIN32
 	_mkdir("stamps");
 #else
 	mkdir("stamps", 0755);
 #endif
-
+    
 	stamp_gen_name(sn);
 	sprintf(fn, "stamps" PATH_SEP "%s.stm", sn);
-
+    
 	f = fopen(fn, "wb");
 	if (!f)
 		return;
 	fwrite(s, n, 1, f);
 	fclose(f);
-
+    
 	free(s);
-
+    
 	if (stamps[STAMP_MAX-1].thumb)
 		free(stamps[STAMP_MAX-1].thumb);
 	memmove(stamps+1, stamps, sizeof(struct stamp)*(STAMP_MAX-1));
 	memset(stamps, 0, sizeof(struct stamp));
 	if (stamp_count<STAMP_MAX)
 		stamp_count++;
-
+    
 	strcpy(stamps[0].name, sn);
 	stamp_gen_thumb(0);
-
+    
 	stamp_update();
 }
 
@@ -1053,24 +1053,24 @@ void *stamp_load(int i, int *size)
 	void *data;
 	char fn[64];
 	struct stamp tmp;
-
+    
 	if (!stamps[i].thumb || !stamps[i].name[0])
 		return NULL;
-
+    
 	sprintf(fn, "stamps" PATH_SEP "%s.stm", stamps[i].name);
 	data = file_load(fn, size);
 	if (!data)
 		return NULL;
-
+    
 	if (i>0)
 	{
 		memcpy(&tmp, stamps+i, sizeof(struct stamp));
 		memmove(stamps+1, stamps, sizeof(struct stamp)*i);
 		memcpy(stamps, &tmp, sizeof(struct stamp));
-
+        
 		stamp_update();
 	}
-
+    
 	return data;
 }
 
@@ -1078,9 +1078,9 @@ void stamp_init(void)
 {
 	int i;
 	FILE *f;
-
+    
 	memset(stamps, 0, sizeof(stamps));
-
+    
 	f=fopen("stamps" PATH_SEP "stamps.def", "rb");
 	if (!f)
 		return;
@@ -1180,34 +1180,34 @@ char itc_msg[64] = "[?]";
 
 char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
 #if defined WIN32
-                "Windows32"
+"Windows32"
 #elif defined LIN32
-                "Linux32"
+"Linux32"
 #elif defined LIN64
-                "Linux64"
+"Linux64"
 #elif defined MACOSX
-                "MacOSX"
+"MacOSX"
 #else
-                "Unknown"
+"Unknown"
 #endif
-                "&InstructionSet="
+"&InstructionSet="
 #if defined X86_SSE3
-                "SSE3"
+"SSE3"
 #elif defined X86_SSE2
-                "SSE2"
+"SSE2"
 #elif defined X86_SSE
-                "SSE"
+"SSE"
 #else
-                "SSE"
+"SSE"
 #endif
-                ;
+;
 
-                
+
 char console_error[255] = "";
 char console_more=0;
 
 #ifdef PYCONSOLE
-/* 
+/*
  * PYTHON FUNCTIONS
  * instructions on making a function callable from python:
  * first you make a function that accepts (PyObject *self, PyObject *args) as arguments
@@ -1223,111 +1223,111 @@ char console_more=0;
 
 static PyObject* emb_create(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int x,y,t;
-    char *name = "";
-    char *kwlist[] = {"x","y","t","name", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "II|Is:create",kwlist, &x,&y,&t,&name))
-        return NULL;
-    //
-    if(strcmp(name,"")!=0)
-    	console_parse_type(name, &t, console_error);
-    return Py_BuildValue("i",create_part(-1,x,y,t));
+	int x,y,t;
+	char *name = "";
+	char *kwlist[] = {"x","y","t","name", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "II|Is:create",kwlist, &x,&y,&t,&name))
+		return NULL;
+	//
+	if (strcmp(name,"")!=0)
+		console_parse_type(name, &t, console_error);
+	return Py_BuildValue("i",create_part(-1,x,y,t));
 }
 
 static PyObject* emb_pause(PyObject *self, PyObject *args)
 {
-    int x,y,t;
-    if(!PyArg_ParseTuple(args, ":unpause"))
-        return NULL;
-    //
-    sys_pause=1;
-    return Py_BuildValue("i",1);
+	int x,y,t;
+	if (!PyArg_ParseTuple(args, ":unpause"))
+		return NULL;
+	//
+	sys_pause=1;
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_unpause(PyObject *self, PyObject *args)
 {
-    int x,y,t;
-    if(!PyArg_ParseTuple(args, ":pause"))
-        return NULL;
-    //
-    sys_pause=0;
-    return Py_BuildValue("i",1);
+	int x,y,t;
+	if (!PyArg_ParseTuple(args, ":pause"))
+		return NULL;
+	//
+	sys_pause=0;
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_toggle_pause(PyObject *self, PyObject *args)
 {
-    int x,y,t;
-    if(!PyArg_ParseTuple(args, ":toggle_pause"))
-        return NULL;
-    //
-    sys_pause=!sys_pause;
-    return Py_BuildValue("i",1);
+	int x,y,t;
+	if (!PyArg_ParseTuple(args, ":toggle_pause"))
+		return NULL;
+	//
+	sys_pause=!sys_pause;
+	return Py_BuildValue("i",1);
 }
 
 //console_mode
 static PyObject* emb_toggle_console(PyObject *self, PyObject *args)
 {
-    int x,y,t;
-    if(!PyArg_ParseTuple(args, ":toggle_console"))
-        return NULL;
-    //
-    console_mode=!console_mode;
-    return Py_BuildValue("i",1);
+	int x,y,t;
+	if (!PyArg_ParseTuple(args, ":toggle_console"))
+		return NULL;
+	//
+	console_mode=!console_mode;
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_open_console(PyObject *self, PyObject *args)
 {
-    int x,y,t;
-    if(!PyArg_ParseTuple(args, ":toggle_console"))
-        return NULL;
-    //
-    console_mode=1;
-    return Py_BuildValue("i",1);
+	int x,y,t;
+	if (!PyArg_ParseTuple(args, ":toggle_console"))
+		return NULL;
+	//
+	console_mode=1;
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_close_console(PyObject *self, PyObject *args)
 {
-    int x,y,t;
-    if(!PyArg_ParseTuple(args, ":toggle_console"))
-        return NULL;
-    //
-    console_mode=0;
-    return Py_BuildValue("i",1);
+	int x,y,t;
+	if (!PyArg_ParseTuple(args, ":toggle_console"))
+		return NULL;
+	//
+	console_mode=0;
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_log(PyObject *self, PyObject *args)
 {
-    char *buffer;
-    if(!PyArg_ParseTuple(args, "s:log",&buffer))
-        return NULL;
-    //
-    strcpy(console_error,buffer);
-    puts(buffer);
-    return Py_BuildValue("i",1);
+	char *buffer;
+	if (!PyArg_ParseTuple(args, "s:log",&buffer))
+		return NULL;
+	//
+	strcpy(console_error,buffer);
+	puts(buffer);
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_console_more(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, ":log"))
-        return NULL;
-    //
-    console_more=1;
-    return Py_BuildValue("i",1);
+	if (!PyArg_ParseTuple(args, ":log"))
+		return NULL;
+	//
+	console_more=1;
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_console_less(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, ":log"))
-        return NULL;
-    //
-    console_more=0;
-    return Py_BuildValue("i",1);
+	if (!PyArg_ParseTuple(args, ":log"))
+		return NULL;
+	//
+	console_more=0;
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_reset_pressure(PyObject *self, PyObject *args)
 {
 	int nx, ny;
-	if(!PyArg_ParseTuple(args, ":reset_pressure"))
+	if (!PyArg_ParseTuple(args, ":reset_pressure"))
 		return NULL;
 	//
 	for (nx = 0; nx<XRES/CELL; nx++)
@@ -1341,7 +1341,7 @@ static PyObject* emb_reset_pressure(PyObject *self, PyObject *args)
 static PyObject* emb_reset_velocity(PyObject *self, PyObject *args)
 {
 	int nx, ny;
-	if(!PyArg_ParseTuple(args, ":reset_velocity"))
+	if (!PyArg_ParseTuple(args, ":reset_velocity"))
 		return NULL;
 	//
 	for (nx = 0; nx<XRES/CELL; nx++)
@@ -1356,12 +1356,12 @@ static PyObject* emb_reset_velocity(PyObject *self, PyObject *args)
 static PyObject* emb_reset_sparks(PyObject *self, PyObject *args)
 {
 	int i;
-	if(!PyArg_ParseTuple(args, ":reset_sparks"))
+	if (!PyArg_ParseTuple(args, ":reset_sparks"))
 		return NULL;
 	//
-	for(i=0; i<NPART; i++)
+	for (i=0; i<NPART; i++)
 	{
-		if(parts[i].type==PT_SPRK)
+		if (parts[i].type==PT_SPRK)
 		{
 			parts[i].type = parts[i].ctype;
 			parts[i].life = 4;
@@ -1372,682 +1372,1184 @@ static PyObject* emb_reset_sparks(PyObject *self, PyObject *args)
 
 static PyObject* emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,life,j,x=-1,y=-1;
-    char *name = "";
-    char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
-        return NULL;
-    //
-    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
-	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
-        if(strcmp(name,"all")==0)
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type)
-                    parts[i].life = life;
-            }
-        }
-        else if(console_parse_type(name, &j, console_error))
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type == j)
-                    parts[i].life = life;
-            }
-        }
-	else if(i!=-1)
+	int i = -1,life,j,x=-1,y=-1;
+	char *name = "";
+	char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
+		return NULL;
+	//
+	if (strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+		return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	if (strcmp(name,"all")==0)
 	{
-		if(parts[i].type != PT_NONE)
-			parts[i].life = life;
-
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type)
+				parts[i].life = life;
+		}
 	}
-	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	else if (console_parse_type(name, &j, console_error))
 	{
-		if(parts[pmap[y][x]>>8].type != PT_NONE)
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type == j)
+				parts[i].life = life;
+		}
+	}
+	else if (i!=-1)
+	{
+		if (parts[i].type != PT_NONE)
+			parts[i].life = life;
+        
+	}
+	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
 			parts[pmap[y][x]>>8].life = life;
 	}
-        return Py_BuildValue("i",1);
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,life,j=-1,x=-1,y=-1;
-    char *name = "";
-    char *type = "";
-    char *kwlist[] = {"setto", "settoint", "setfrom", "i", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "|sIsIII:set_type",kwlist ,&type,&life,&name,&i,&x,&y))
-        return NULL;
-    //
-    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1 && j==-1)
-	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	int i = -1,life,j=-1,x=-1,y=-1;
+	char *name = "";
+	char *type = "";
+	char *kwlist[] = {"setto", "settoint", "setfrom", "i", "x", "y", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "|sIsIII:set_type",kwlist ,&type,&life,&name,&i,&x,&y))
+		return NULL;
+	//
+	if (strcmp(name,"")==0 && x==-1 && y==-1 && i==-1 && j==-1)
+		return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
 	console_parse_type(type, &life, console_error);
-        if(strcmp(name,"all")==0)
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type)
-                    parts[i].type = life;
-            }
-        }
-        else if(console_parse_type(name, &j, console_error))
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type == j)
-                    parts[i].type = life;
-            }
-        }
-	else if(i!=-1)
+	if (strcmp(name,"all")==0)
 	{
-		if(parts[i].type != PT_NONE)
-			parts[i].type = life;
-
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type)
+				parts[i].type = life;
+		}
 	}
-	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	else if (console_parse_type(name, &j, console_error))
 	{
-		if(parts[pmap[y][x]>>8].type != PT_NONE)
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type == j)
+				parts[i].type = life;
+		}
+	}
+	else if (i!=-1)
+	{
+		if (parts[i].type != PT_NONE)
+			parts[i].type = life;
+        
+	}
+	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
 			parts[pmap[y][x]>>8].type = life;
 	}
-        return Py_BuildValue("i",1);
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,j,x=-1,y=-1;
-    float newval;
-    char *name = "";
-    char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "f|sIII:set_type", kwlist, &newval, &name, &i, &x, &y))
-        return NULL;
-    //
-    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
-	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
-        if(strcmp(name,"all")==0)
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type)
-                    parts[i].temp = newval;
-            }
-        }
-        else if(console_parse_type(name, &j, console_error))
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type == j)
-                    parts[i].temp = newval;
-            }
-        }
-	else if(i!=-1)
+	int i = -1,j,x=-1,y=-1;
+	float newval;
+	char *name = "";
+	char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "f|sIII:set_type", kwlist, &newval, &name, &i, &x, &y))
+		return NULL;
+	//
+	if (strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+		return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	if (strcmp(name,"all")==0)
 	{
-		if(parts[i].type != PT_NONE)
-			parts[i].temp = newval;
-
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type)
+				parts[i].temp = newval;
+		}
 	}
-	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	else if (console_parse_type(name, &j, console_error))
 	{
-		if(parts[pmap[y][x]>>8].type != PT_NONE)
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type == j)
+				parts[i].temp = newval;
+		}
+	}
+	else if (i!=-1)
+	{
+		if (parts[i].type != PT_NONE)
+			parts[i].temp = newval;
+        
+	}
+	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
 			parts[pmap[y][x]>>8].temp = newval;
 	}
-        return Py_BuildValue("i",1);
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,life,j,x=-1,y=-1;
-    char *name = "";
-    char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
-        return NULL;
-    //
-    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
-	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
-        if(strcmp(name,"all")==0)
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type)
-                    parts[i].tmp = life;
-            }
-        }
-        else if(console_parse_type(name, &j, console_error))
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type == j)
-                    parts[i].tmp = life;
-            }
-        }
-	else if(i!=-1)
+	int i = -1,life,j,x=-1,y=-1;
+	char *name = "";
+	char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
+		return NULL;
+	//
+	if (strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+		return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	if (strcmp(name,"all")==0)
 	{
-		if(parts[i].type != PT_NONE)
-			parts[i].tmp = life;
-
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type)
+				parts[i].tmp = life;
+		}
 	}
-	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	else if (console_parse_type(name, &j, console_error))
 	{
-		if(parts[pmap[y][x]>>8].type != PT_NONE)
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type == j)
+				parts[i].tmp = life;
+		}
+	}
+	else if (i!=-1)
+	{
+		if (parts[i].type != PT_NONE)
+			parts[i].tmp = life;
+        
+	}
+	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
 			parts[pmap[y][x]>>8].tmp = life;
 	}
-        return Py_BuildValue("i",1);
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,life,j,x=-1,y=-1;
-    char *name = "";
-    char *type = "";
-    char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
-        return NULL;
-    //
-    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
-	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
-        if(strcmp(name,"all")==0)
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type)
-                    parts[i].x = life;
-            }
-        }
-        else if(console_parse_type(name, &j, console_error))
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type == j)
-                    parts[i].x = life;
-            }
-        }
-	else if(i!=-1)
+	int i = -1,life,j,x=-1,y=-1;
+	char *name = "";
+	char *type = "";
+	char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
+		return NULL;
+	//
+	if (strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+		return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	if (strcmp(name,"all")==0)
 	{
-		if(parts[i].type != PT_NONE)
-			parts[i].x = life;
-
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type)
+				parts[i].x = life;
+		}
 	}
-	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	else if (console_parse_type(name, &j, console_error))
 	{
-		if(parts[pmap[y][x]>>8].type != PT_NONE)
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type == j)
+				parts[i].x = life;
+		}
+	}
+	else if (i!=-1)
+	{
+		if (parts[i].type != PT_NONE)
+			parts[i].x = life;
+        
+	}
+	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
 			parts[pmap[y][x]>>8].x = life;
 	}
-        return Py_BuildValue("i",1);
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_set_y(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,life,j,x=-1,y=-1;
-    char *name = "";
-    char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
-        return NULL;
-    //
-    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
-	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
-        if(strcmp(name,"all")==0)
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type)
-                    parts[i].y = life;
-            }
-        }
-        else if(console_parse_type(name, &j, console_error))
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type == j)
-                    parts[i].y = life;
-            }
-        }
-	else if(i!=-1)
+	int i = -1,life,j,x=-1,y=-1;
+	char *name = "";
+	char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
+		return NULL;
+	//
+	if (strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+		return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	if (strcmp(name,"all")==0)
 	{
-		if(parts[i].type != PT_NONE)
-			parts[i].y = life;
-
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type)
+				parts[i].y = life;
+		}
 	}
-	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	else if (console_parse_type(name, &j, console_error))
 	{
-		if(parts[pmap[y][x]>>8].type != PT_NONE)
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type == j)
+				parts[i].y = life;
+		}
+	}
+	else if (i!=-1)
+	{
+		if (parts[i].type != PT_NONE)
+			parts[i].y = life;
+        
+	}
+	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
 			parts[pmap[y][x]>>8].y = life;
 	}
-        return Py_BuildValue("i",1);
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,life,j,x=-1,y=-1;
-    char *name = "";
-    char *type = "";
-    char *kwlist[] = {"setto", "settoint", "setfrom", "i", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "|sIsIII:set_type",kwlist ,&type, &life, &name,&i,&x,&y))
-        return NULL;
-    //
-    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
-	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
-	if(!life)
+	int i = -1,life,j,x=-1,y=-1;
+	char *name = "";
+	char *type = "";
+	char *kwlist[] = {"setto", "settoint", "setfrom", "i", "x", "y", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "|sIsIII:set_type",kwlist ,&type, &life, &name,&i,&x,&y))
+		return NULL;
+	//
+	if (strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+		return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	if (!life)
 		console_parse_type(type, &life, console_error);
-        if(strcmp(name,"all")==0)
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type)
-                    parts[i].ctype = life;
-            }
-        }
-        else if(console_parse_type(name, &j, console_error))
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type == j)
-                    parts[i].ctype = life;
-            }
-        }
-	else if(i!=-1)
+	if (strcmp(name,"all")==0)
 	{
-		if(parts[i].type != PT_NONE)
-			parts[i].ctype = life;
-
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type)
+				parts[i].ctype = life;
+		}
 	}
-	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	else if (console_parse_type(name, &j, console_error))
 	{
-		if(parts[pmap[y][x]>>8].type != PT_NONE)
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type == j)
+				parts[i].ctype = life;
+		}
+	}
+	else if (i!=-1)
+	{
+		if (parts[i].type != PT_NONE)
+			parts[i].ctype = life;
+        
+	}
+	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
 			parts[pmap[y][x]>>8].ctype = life;
 	}
-        return Py_BuildValue("i",1);
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,j,x=-1,y=-1;
-    float life;
-    char *name = "";
-    char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "f|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
-        return NULL;
-    //
-    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
-	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
-        if(strcmp(name,"all")==0)
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type)
-                    parts[i].vx = life;
-            }
-        }
-        else if(console_parse_type(name, &j, console_error))
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type == j)
-                    parts[i].vx = life;
-            }
-        }
-	else if(i!=-1)
+	int i = -1,j,x=-1,y=-1;
+	float life;
+	char *name = "";
+	char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "f|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
+		return NULL;
+	//
+	if (strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+		return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	if (strcmp(name,"all")==0)
 	{
-		if(parts[i].type != PT_NONE)
-			parts[i].vx = life;
-
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type)
+				parts[i].vx = life;
+		}
 	}
-	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	else if (console_parse_type(name, &j, console_error))
 	{
-		if(parts[pmap[y][x]>>8].type != PT_NONE)
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type == j)
+				parts[i].vx = life;
+		}
+	}
+	else if (i!=-1)
+	{
+		if (parts[i].type != PT_NONE)
+			parts[i].vx = life;
+        
+	}
+	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
 			parts[pmap[y][x]>>8].vx = life;
 	}
-        return Py_BuildValue("i",1);
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    int i = -1,j,x=-1,y=-1;
-    float life;
-    char *name = "";
-    char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "f|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
-        return NULL;
-    //
-    if(strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
-	return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
-        if(strcmp(name,"all")==0)
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type)
-                    parts[i].vy = life;
-            }
-        }
-        else if(console_parse_type(name, &j, console_error))
-        {
-            for(i=0; i<NPART; i++)
-            {
-                if(parts[i].type == j)
-                    parts[i].vy = life;
-            }
-        }
-	else if(i!=-1)
+	int i = -1,j,x=-1,y=-1;
+	float life;
+	char *name = "";
+	char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "f|sIII:set_type",kwlist ,&life,&name,&i,&x,&y))
+		return NULL;
+	//
+	if (strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+		return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	if (strcmp(name,"all")==0)
 	{
-		if(parts[i].type != PT_NONE)
-			parts[i].vy = life;
-
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type)
+				parts[i].vy = life;
+		}
 	}
-	else if(x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	else if (console_parse_type(name, &j, console_error))
 	{
-		if(parts[pmap[y][x]>>8].type != PT_NONE)
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type == j)
+				parts[i].vy = life;
+		}
+	}
+	else if (i!=-1)
+	{
+		if (parts[i].type != PT_NONE)
+			parts[i].vy = life;
+        
+	}
+	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
 			parts[pmap[y][x]>>8].vy = life;
 	}
-        return Py_BuildValue("i",1);
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_get_pmap(PyObject *self, PyObject *args)
 {
-    int x,y;
-    if(!PyArg_ParseTuple(args, "II:get_pmap",&x,&y))
-        return NULL;
-    //
-    if(x<0 || y<0 || x>=XRES || y>=YRES)
-	return Py_BuildValue("i",-1);
-
-    return Py_BuildValue("I",pmap[y][x]);
+	int x,y;
+	if (!PyArg_ParseTuple(args, "II:get_pmap",&x,&y))
+		return NULL;
+	//
+	if (x<0 || y<0 || x>=XRES || y>=YRES)
+		return Py_BuildValue("i",-1);
+    
+	return Py_BuildValue("I",pmap[y][x]);
 }
 
 static PyObject* emb_get_prop(PyObject *self, PyObject *args)
 {
-    int i;
-    char *prop = "";
-    if(!PyArg_ParseTuple(args, "Is:get_pmap",&i,&prop))
-        return NULL;
-    //
-    if(parts[i].type)
-    {
-	if(strcmp(prop,"type")==0)
-		return Py_BuildValue("i",parts[i].type);
-	if(strcmp(prop,"life")==0)
-		return Py_BuildValue("i",parts[i].life);
-	if(strcmp(prop,"ctype")==0)
-		return Py_BuildValue("i",parts[i].ctype);
-	if(strcmp(prop,"temp")==0)
-		return Py_BuildValue("i",parts[i].temp);
-	if(strcmp(prop,"tmp")==0)
-		return Py_BuildValue("i",parts[i].tmp);
-	if(strcmp(prop,"vy")==0)
-		return Py_BuildValue("f",parts[i].vy);
-	if(strcmp(prop,"vx")==0)
-		return Py_BuildValue("f",parts[i].vx);
-	if(strcmp(prop,"x")==0)
-		return Py_BuildValue("i",parts[i].x);
-	if(strcmp(prop,"y")==0)
-		return Py_BuildValue("i",parts[i].y);
-    }
-
-    return Py_BuildValue("i",-1);
+	int i;
+	char *prop = "";
+	if (!PyArg_ParseTuple(args, "Is:get_pmap",&i,&prop))
+		return NULL;
+	//
+	if (parts[i].type)
+	{
+		if (strcmp(prop,"type")==0)
+			return Py_BuildValue("i",parts[i].type);
+		if (strcmp(prop,"life")==0)
+			return Py_BuildValue("i",parts[i].life);
+		if (strcmp(prop,"ctype")==0)
+			return Py_BuildValue("i",parts[i].ctype);
+		if (strcmp(prop,"temp")==0)
+			return Py_BuildValue("i",parts[i].temp);
+		if (strcmp(prop,"tmp")==0)
+			return Py_BuildValue("i",parts[i].tmp);
+		if (strcmp(prop,"vy")==0)
+			return Py_BuildValue("f",parts[i].vy);
+		if (strcmp(prop,"vx")==0)
+			return Py_BuildValue("f",parts[i].vx);
+		if (strcmp(prop,"x")==0)
+			return Py_BuildValue("i",parts[i].x);
+		if (strcmp(prop,"y")==0)
+			return Py_BuildValue("i",parts[i].y);
+	}
+    
+	return Py_BuildValue("i",-1);
 }
 
 static PyObject* emb_draw_pixel(PyObject *self, PyObject *args)
 {
-    int x,y,r,g,b,a;
-    a=255;
-    if(!PyArg_ParseTuple(args, "IIIII|I:draw_pixel",&x,&y,&r,&g,&b,&a))
-        return NULL;
+	int x,y,r,g,b,a;
+	a=255;
+	if (!PyArg_ParseTuple(args, "IIIII|I:draw_pixel",&x,&y,&r,&g,&b,&a))
+		return NULL;
     
-    if(vid_buf!=NULL)
-    {
-        drawpixel(vid_buf,x,y,r,g,b,a);
-        return Py_BuildValue("i",1);
-    }
-    return Py_BuildValue("i",-1);
+	if (vid_buf!=NULL)
+	{
+		drawpixel(vid_buf,x,y,r,g,b,a);
+		return Py_BuildValue("i",1);
+	}
+	return Py_BuildValue("i",-1);
     
 }
 
 static PyObject* emb_draw_text(PyObject *self, PyObject *args)
 {
-    int x,y,r,g,b,a;
-    char *txt;
-    a=255;
-    if(!PyArg_ParseTuple(args, "IIsIII|I:draw_text",&x,&y,&txt,&r,&g,&b,&a))
-        return NULL;
-    if(vid_buf!=NULL)
-    {
-        drawtext(vid_buf,x,y,txt,r,g,b,a);
-        return Py_BuildValue("i",1);
-    }
-    return Py_BuildValue("i",-1);
+	int x,y,r,g,b,a;
+	char *txt;
+	a=255;
+	if (!PyArg_ParseTuple(args, "IIsIII|I:draw_text",&x,&y,&txt,&r,&g,&b,&a))
+		return NULL;
+	if (vid_buf!=NULL)
+	{
+		drawtext(vid_buf,x,y,txt,r,g,b,a);
+		return Py_BuildValue("i",1);
+	}
+	return Py_BuildValue("i",-1);
 }
 
 static PyObject* emb_draw_rect(PyObject *self, PyObject *args)
 {
-    int x,y,w,h,r,g,b,a;
-    a=255;
-    if(!PyArg_ParseTuple(args, "IIIIIII|I:draw_rect",&x,&y,&w,&h,&r,&g,&b,&a))
-        return NULL;
-    if(vid_buf!=NULL)
-    {
-        drawrect(vid_buf,x,y,w,h,r,g,b,a);
-        //fillrect
-        return Py_BuildValue("i",1);
-    }
-    return Py_BuildValue("i",-1);
+	int x,y,w,h,r,g,b,a;
+	a=255;
+	if (!PyArg_ParseTuple(args, "IIIIIII|I:draw_rect",&x,&y,&w,&h,&r,&g,&b,&a))
+		return NULL;
+	if (vid_buf!=NULL)
+	{
+		drawrect(vid_buf,x,y,w,h,r,g,b,a);
+		//fillrect
+		return Py_BuildValue("i",1);
+	}
+	return Py_BuildValue("i",-1);
 }
 
 static PyObject* emb_draw_fillrect(PyObject *self, PyObject *args)
 {
-    int x,y,w,h,r,g,b,a;
-    a=255;
-    if(!PyArg_ParseTuple(args, "IIIIIII|I:draw_fillrect",&x,&y,&w,&h,&r,&g,&b,&a))
-        return NULL;
-    if(vid_buf!=NULL)
-    {
-        fillrect(vid_buf,x,y,w,h,r,g,b,a);
-        //fillrect
-        return Py_BuildValue("i",1);
-    }
-    return Py_BuildValue("i",-1);
+	int x,y,w,h,r,g,b,a;
+	a=255;
+	if (!PyArg_ParseTuple(args, "IIIIIII|I:draw_fillrect",&x,&y,&w,&h,&r,&g,&b,&a))
+		return NULL;
+	if (vid_buf!=NULL)
+	{
+		fillrect(vid_buf,x,y,w,h,r,g,b,a);
+		//fillrect
+		return Py_BuildValue("i",1);
+	}
+	return Py_BuildValue("i",-1);
 }
 
 static PyObject* emb_get_width(PyObject *self, PyObject *args)
 {
-    char *txt;
-    if(!PyArg_ParseTuple(args, "s:get_width",&txt))
-        return NULL;
-    return Py_BuildValue("i",textwidth(txt));
+	char *txt;
+	if (!PyArg_ParseTuple(args, "s:get_width",&txt))
+		return NULL;
+	return Py_BuildValue("i",textwidth(txt));
 }
 
 static PyObject* emb_get_mouse(PyObject *self, PyObject *args)
 {
-    int x,y,mask,b1,b2,b3;
-    if(!PyArg_ParseTuple(args, ":get_mouse"))
-        return NULL;
-    mask=SDL_GetMouseState(&x, &y);
-    b1=mask&SDL_BUTTON(1);
-    b2=mask&SDL_BUTTON(2);
-    b3=mask&SDL_BUTTON(3);
-    return Py_BuildValue("(ii(iii))",x,y,b1,b2,b3);
+	int x,y,mask,b1,b2,b3;
+	if (!PyArg_ParseTuple(args, ":get_mouse"))
+		return NULL;
+	mask=SDL_GetMouseState(&x, &y);
+	b1=mask&SDL_BUTTON(1);
+	b2=mask&SDL_BUTTON(2);
+	b3=mask&SDL_BUTTON(3);
+	return Py_BuildValue("(ii(iii))",x,y,b1,b2,b3);
 }
 
 static PyObject* emb_get_name(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, ":get_name"))
-        return NULL;
-    if(svf_login)
-        return Py_BuildValue("s",svf_user);
-    else
-        return Py_BuildValue("s","");
+	if (!PyArg_ParseTuple(args, ":get_name"))
+		return NULL;
+	if (svf_login)
+		return Py_BuildValue("s",svf_user);
+	else
+		return Py_BuildValue("s","");
 }
 
 static PyObject* emb_shortcuts_disable(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, ":shortcuts_disable"))
-        return NULL;
-    //
-    sys_shortcuts=0;
-    return Py_BuildValue("i",1);
+	if (!PyArg_ParseTuple(args, ":shortcuts_disable"))
+		return NULL;
+	//
+	sys_shortcuts=0;
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_shortcuts_enable(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, ":shortcuts_enable"))
-        return NULL;
-    //
-    sys_shortcuts=1;
-    return Py_BuildValue("i",1);
+	if (!PyArg_ParseTuple(args, ":shortcuts_enable"))
+		return NULL;
+	//
+	sys_shortcuts=1;
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_get_modifier(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, ":get_modifier"))
-        return NULL;
-     return Py_BuildValue("(iiiiii)",sdl_mod&KMOD_LCTRL,sdl_mod&KMOD_RCTRL,sdl_mod&KMOD_LALT,sdl_mod&KMOD_RALT,sdl_mod&KMOD_LSHIFT,sdl_mod&KMOD_RSHIFT);
+	if (!PyArg_ParseTuple(args, ":get_modifier"))
+		return NULL;
+	return Py_BuildValue("(iiiiii)",sdl_mod&KMOD_LCTRL,sdl_mod&KMOD_RCTRL,sdl_mod&KMOD_LALT,sdl_mod&KMOD_RALT,sdl_mod&KMOD_LSHIFT,sdl_mod&KMOD_RSHIFT);
 }
 
 static PyObject* emb_set_keyrepeat(PyObject *self, PyObject *args)
 {
-    int keydelay,keyinterval;
-    keydelay=SDL_DEFAULT_REPEAT_DELAY;
-    keyinterval=SDL_DEFAULT_REPEAT_INTERVAL;
-    if(!PyArg_ParseTuple(args, "|ii:set_keyrepeat",&keydelay,&keyinterval))
-        return NULL;
-    return Py_BuildValue("i",SDL_EnableKeyRepeat(keydelay,keyinterval));
+	int keydelay,keyinterval;
+	keydelay=SDL_DEFAULT_REPEAT_DELAY;
+	keyinterval=SDL_DEFAULT_REPEAT_INTERVAL;
+	if (!PyArg_ParseTuple(args, "|ii:set_keyrepeat",&keydelay,&keyinterval))
+		return NULL;
+	return Py_BuildValue("i",SDL_EnableKeyRepeat(keydelay,keyinterval));
 }
 
 //delete_part
 static PyObject* emb_delete(PyObject *self, PyObject *args)
 {
-    int x,y;
-    if(!PyArg_ParseTuple(args, "ii:delete",&x,&y))
-        return NULL;
-    delete_part(x,y);
-    return Py_BuildValue("i",1);
+	int x,y;
+	if (!PyArg_ParseTuple(args, "ii:delete",&x,&y))
+		return NULL;
+	delete_part(x,y);
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_set_pressure(PyObject *self, PyObject *args)
 {
-    int x,y,press;
-    if(!PyArg_ParseTuple(args, "iii:set_pressure",&x,&y,&press))
-        return NULL;
-    pv[y/CELL][x/CELL]=press;
-    return Py_BuildValue("i",1);
+	int x,y,press;
+	if (!PyArg_ParseTuple(args, "iii:set_pressure",&x,&y,&press))
+		return NULL;
+	pv[y/CELL][x/CELL]=press;
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_set_velocity(PyObject *self, PyObject *args)
 {
-    int x,y,xv,yv;
-    if(!PyArg_ParseTuple(args, "iiii:set_velocity",&x,&y,&xv,&yv))
-        return NULL;
-    vx[y/CELL][x/CELL]=xv;
-    vy[y/CELL][x/CELL]=yv;
-    return Py_BuildValue("i",1);
+	int x,y,xv,yv;
+	if (!PyArg_ParseTuple(args, "iiii:set_velocity",&x,&y,&xv,&yv))
+		return NULL;
+	vx[y/CELL][x/CELL]=xv;
+	vy[y/CELL][x/CELL]=yv;
+	return Py_BuildValue("i",1);
 }
 
 static PyObject* emb_disable_python(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, ":disable_python"))
-        return NULL;
-    pyready=0;
-    return Py_BuildValue("i",1);
+	if (!PyArg_ParseTuple(args, ":disable_python"))
+		return NULL;
+	pyready=0;
+	return Py_BuildValue("i",1);
 }
 
 int bsx = 2, bsy = 2, sl=1, sr=0;
 static PyObject*
 emb_get_tool(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, ":get_tool"))
-        return NULL;
-    return Py_BuildValue("((ii)(ii)i)",bsx,bsy,sl,sr,CURRENT_BRUSH);
+	if (!PyArg_ParseTuple(args, ":get_tool"))
+		return NULL;
+	return Py_BuildValue("((ii)(ii)i)",bsx,bsy,sl,sr,CURRENT_BRUSH);
 }
 
 static PyObject*
 emb_set_tool(PyObject *self, PyObject *args)
 {
-    if(!PyArg_ParseTuple(args, "((ii)(ii)i):set_tool",&bsx,&bsy,&sl,&sr,&CURRENT_BRUSH))
-        return NULL;
-    return Py_BuildValue("i",1);
+	if (!PyArg_ParseTuple(args, "((ii)(ii)i):set_tool",&bsx,&bsy,&sl,&sr,&CURRENT_BRUSH))
+		return NULL;
+	return Py_BuildValue("i",1);
 }
 
 /*
-static PyObject*
-emb_press_mouse(PyObject *self, PyObject *args)
-{
-    int x,y,b;
-    SDL_Event* ev;
-    b=0;
-    if(!PyArg_ParseTuple(args, "ii|i:handle_tool",&x,&y,&b))
-        return NULL;
-    ev.type=SDL_MOUSEBUTTONDOWN;
-    if(b==2)
-        ev.button.button=SDL_BUTTON_RIGHT;
-    else
-        ev.button.button=SDL_BUTTON_LEFT;
-    ev.button.state=SDL_PRESSED;
-    ev.button.x=x;
-    ev.button.y=y;
-    return Py_BuildValue("i",SDL_PushEvent(ev));
-}
-
-static PyObject*
-emb_release_mouse(PyObject *self, PyObject *args)
-{
-    int x,y,b;
-    SDL_MouseButtonEvent ev;
-    b=0;
-    if(!PyArg_ParseTuple(args, "ii|i:handle_tool",&x,&y,&b))
-        return NULL;
-    ev.type=SDL_MOUSEBUTTONUP;
-    if(b==2)
-        ev.button.button=SDL_BUTTON_RIGHT;
-    else
-        ev.button.button=SDL_BUTTON_LEFT;
-    ev.button.state=SDL_RELEASED;
-    ev.button.x=x;
-    ev.button.y=y;
-    return Py_BuildValue("i",SDL_PushEvent(ev));
-}*/
+ static PyObject*
+ emb_press_mouse(PyObject *self, PyObject *args)
+ {
+ int x,y,b;
+ SDL_Event* ev;
+ b=0;
+ if(!PyArg_ParseTuple(args, "ii|i:handle_tool",&x,&y,&b))
+ return NULL;
+ ev.type=SDL_MOUSEBUTTONDOWN;
+ if(b==2)
+ ev.button.button=SDL_BUTTON_RIGHT;
+ else
+ ev.button.button=SDL_BUTTON_LEFT;
+ ev.button.state=SDL_PRESSED;
+ ev.button.x=x;
+ ev.button.y=y;
+ return Py_BuildValue("i",SDL_PushEvent(ev));
+ }
+ 
+ static PyObject*
+ emb_release_mouse(PyObject *self, PyObject *args)
+ {
+ int x,y,b;
+ SDL_MouseButtonEvent ev;
+ b=0;
+ if(!PyArg_ParseTuple(args, "ii|i:handle_tool",&x,&y,&b))
+ return NULL;
+ ev.type=SDL_MOUSEBUTTONUP;
+ if(b==2)
+ ev.button.button=SDL_BUTTON_RIGHT;
+ else
+ ev.button.button=SDL_BUTTON_LEFT;
+ ev.button.state=SDL_RELEASED;
+ ev.button.x=x;
+ ev.button.y=y;
+ return Py_BuildValue("i",SDL_PushEvent(ev));
+ }*/
 
 
 static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your function here!
-    {"create",		    (PyCFunction)emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
-    {"log", 		    (PyCFunction)emb_log, 		METH_VARARGS,			"logs an error string to the console."},
-    {"reset_pressure", 	(PyCFunction)emb_reset_pressure, 	METH_VARARGS,			"resets all the pressure."},
-    {"reset_velocity", 	(PyCFunction)emb_reset_velocity, 	METH_VARARGS,			"resets all the velocity."},
-    {"reset_sparks", 	(PyCFunction)emb_reset_sparks, 	METH_VARARGS,			"resets all the sparks."},
-    {"set_life",	    (PyCFunction)emb_set_life, 		METH_VARARGS|METH_KEYWORDS,	"sets life of a specified particle."},
-    {"set_type", 	    (PyCFunction)emb_set_type, 		METH_VARARGS|METH_KEYWORDS,	"sets type of a specified particle."},
-    {"set_temp", 	    (PyCFunction)emb_set_temp, 		METH_VARARGS|METH_KEYWORDS,	"sets temp of a specified particle."},
-    {"set_tmp", 	    (PyCFunction)emb_set_tmp, 		METH_VARARGS|METH_KEYWORDS,	"sets tmp of a specified particle."},
-    {"set_x", 		    (PyCFunction)emb_set_x, 		METH_VARARGS|METH_KEYWORDS,	"sets x of a specified particle."},
-    {"set_y", 		    (PyCFunction)emb_set_y, 		METH_VARARGS|METH_KEYWORDS,	"sets y of a specified particle."},
-    {"set_ctype",   	(PyCFunction)emb_set_ctype, 		METH_VARARGS|METH_KEYWORDS,	"sets ctype of a specified particle."},
-    {"set_vx", 		    (PyCFunction)emb_set_vx, 		METH_VARARGS|METH_KEYWORDS,	"sets vx of a specified particle."},
-    {"set_vy", 		    (PyCFunction)emb_set_vy, 		METH_VARARGS|METH_KEYWORDS,	"sets vy of a specified particle."},
-    {"pause", 		    (PyCFunction)emb_pause, 		METH_VARARGS,			"pause the game."},
-    {"unpause", 	    (PyCFunction)emb_unpause, 		METH_VARARGS,			"unpause the game."},
-    {"pause_toggle", 	(PyCFunction)emb_toggle_pause, 	METH_VARARGS,			"toggle game pause."},
-    {"console_open", 	(PyCFunction)emb_open_console, 	METH_VARARGS,			"open the game console."},
-    {"console_close", 	(PyCFunction)emb_close_console, 	METH_VARARGS,			"close the game console."},
-    {"console_toggle", 	(PyCFunction)emb_toggle_console, 	METH_VARARGS,			"toggle the game console."},
-    {"console_more", 	(PyCFunction)emb_console_more, 	METH_VARARGS,			"turns the more indicator on."},
-    {"console_less", 	(PyCFunction)emb_console_less, 	METH_VARARGS,			"turns the more indicator off."},
-    {"get_pmap", 	    (PyCFunction)emb_get_pmap, 		METH_VARARGS,			"get the pmap value."},
-    {"get_prop", 	    (PyCFunction)emb_get_prop, 		METH_VARARGS,			"get some properties."},
-    {"draw_pixel",      (PyCFunction)emb_draw_pixel,       METH_VARARGS,           "draw a pixel."},
-    {"draw_text",       (PyCFunction)emb_draw_text,       METH_VARARGS,           "draw some text."},
-    {"draw_rect",       (PyCFunction)emb_draw_rect,       METH_VARARGS,           "draw a rect."},
-    {"draw_fillrect",   (PyCFunction)emb_draw_fillrect,       METH_VARARGS,           "draw a rect."},
-    {"get_width",       (PyCFunction)emb_get_width,       METH_VARARGS,           "get string width."},
-    {"get_mouse",       (PyCFunction)emb_get_mouse,       METH_VARARGS,           "get mouse status."},
-    {"get_name",        (PyCFunction)emb_get_name,       METH_VARARGS,           "get name of logged in user"},
-    {"shortcuts_disable",    (PyCFunction)emb_shortcuts_disable,       METH_VARARGS,           "disable keyboard shortcuts"},
-    {"shortcuts_enable",     (PyCFunction)emb_shortcuts_enable,       METH_VARARGS,           "enable keyboard shortcuts"},
-    {"get_modifier",         (PyCFunction)emb_get_modifier,       METH_VARARGS,           "get pressed modifier keys"},
-    {"set_keyrepeat",        (PyCFunction)emb_set_keyrepeat,       METH_VARARGS,           "set key repeat rate."},
-    {"delete",        (PyCFunction)emb_delete,       METH_VARARGS,           "delete a particle"},
-    {"set_pressure",        (PyCFunction)emb_set_pressure,       METH_VARARGS,           "set pressure"},
-    {"set_velocity",        (PyCFunction)emb_set_velocity,       METH_VARARGS,           "set velocity"},
-    {"disable_python",        (PyCFunction)emb_disable_python,       METH_VARARGS,           "switch back to the old console."},
-    {"get_tool",        (PyCFunction)emb_get_tool,       METH_VARARGS,           "get tool size/type and selected particles"},
-    {"set_tool",        (PyCFunction)emb_set_tool,       METH_VARARGS,           "set tool size/type and selected particles"},
-    {NULL, NULL, 0, NULL}
+	{"create",		    (PyCFunction)emb_create, 		METH_VARARGS|METH_KEYWORDS,	"create a particle."},
+	{"log", 		    (PyCFunction)emb_log, 		METH_VARARGS,			"logs an error string to the console."},
+	{"reset_pressure", 	(PyCFunction)emb_reset_pressure, 	METH_VARARGS,			"resets all the pressure."},
+	{"reset_velocity", 	(PyCFunction)emb_reset_velocity, 	METH_VARARGS,			"resets all the velocity."},
+	{"reset_sparks", 	(PyCFunction)emb_reset_sparks, 	METH_VARARGS,			"resets all the sparks."},
+	{"set_life",	    (PyCFunction)emb_set_life, 		METH_VARARGS|METH_KEYWORDS,	"sets life of a specified particle."},
+	{"set_type", 	    (PyCFunction)emb_set_type, 		METH_VARARGS|METH_KEYWORDS,	"sets type of a specified particle."},
+	{"set_temp", 	    (PyCFunction)emb_set_temp, 		METH_VARARGS|METH_KEYWORDS,	"sets temp of a specified particle."},
+	{"set_tmp", 	    (PyCFunction)emb_set_tmp, 		METH_VARARGS|METH_KEYWORDS,	"sets tmp of a specified particle."},
+	{"set_x", 		    (PyCFunction)emb_set_x, 		METH_VARARGS|METH_KEYWORDS,	"sets x of a specified particle."},
+	{"set_y", 		    (PyCFunction)emb_set_y, 		METH_VARARGS|METH_KEYWORDS,	"sets y of a specified particle."},
+	{"set_ctype",   	(PyCFunction)emb_set_ctype, 		METH_VARARGS|METH_KEYWORDS,	"sets ctype of a specified particle."},
+	{"set_vx", 		    (PyCFunction)emb_set_vx, 		METH_VARARGS|METH_KEYWORDS,	"sets vx of a specified particle."},
+	{"set_vy", 		    (PyCFunction)emb_set_vy, 		METH_VARARGS|METH_KEYWORDS,	"sets vy of a specified particle."},
+	{"pause", 		    (PyCFunction)emb_pause, 		METH_VARARGS,			"pause the game."},
+	{"unpause", 	    (PyCFunction)emb_unpause, 		METH_VARARGS,			"unpause the game."},
+	{"pause_toggle", 	(PyCFunction)emb_toggle_pause, 	METH_VARARGS,			"toggle game pause."},
+	{"console_open", 	(PyCFunction)emb_open_console, 	METH_VARARGS,			"open the game console."},
+	{"console_close", 	(PyCFunction)emb_close_console, 	METH_VARARGS,			"close the game console."},
+	{"console_toggle", 	(PyCFunction)emb_toggle_console, 	METH_VARARGS,			"toggle the game console."},
+	{"console_more", 	(PyCFunction)emb_console_more, 	METH_VARARGS,			"turns the more indicator on."},
+	{"console_less", 	(PyCFunction)emb_console_less, 	METH_VARARGS,			"turns the more indicator off."},
+	{"get_pmap", 	    (PyCFunction)emb_get_pmap, 		METH_VARARGS,			"get the pmap value."},
+	{"get_prop", 	    (PyCFunction)emb_get_prop, 		METH_VARARGS,			"get some properties."},
+	{"draw_pixel",      (PyCFunction)emb_draw_pixel,       METH_VARARGS,           "draw a pixel."},
+	{"draw_text",       (PyCFunction)emb_draw_text,       METH_VARARGS,           "draw some text."},
+	{"draw_rect",       (PyCFunction)emb_draw_rect,       METH_VARARGS,           "draw a rect."},
+	{"draw_fillrect",   (PyCFunction)emb_draw_fillrect,       METH_VARARGS,           "draw a rect."},
+	{"get_width",       (PyCFunction)emb_get_width,       METH_VARARGS,           "get string width."},
+	{"get_mouse",       (PyCFunction)emb_get_mouse,       METH_VARARGS,           "get mouse status."},
+	{"get_name",        (PyCFunction)emb_get_name,       METH_VARARGS,           "get name of logged in user"},
+	{"shortcuts_disable",    (PyCFunction)emb_shortcuts_disable,       METH_VARARGS,           "disable keyboard shortcuts"},
+	{"shortcuts_enable",     (PyCFunction)emb_shortcuts_enable,       METH_VARARGS,           "enable keyboard shortcuts"},
+	{"get_modifier",         (PyCFunction)emb_get_modifier,       METH_VARARGS,           "get pressed modifier keys"},
+	{"set_keyrepeat",        (PyCFunction)emb_set_keyrepeat,       METH_VARARGS,           "set key repeat rate."},
+	{"delete",        (PyCFunction)emb_delete,       METH_VARARGS,           "delete a particle"},
+	{"set_pressure",        (PyCFunction)emb_set_pressure,       METH_VARARGS,           "set pressure"},
+	{"set_velocity",        (PyCFunction)emb_set_velocity,       METH_VARARGS,           "set velocity"},
+	{"disable_python",        (PyCFunction)emb_disable_python,       METH_VARARGS,           "switch back to the old console."},
+	{"get_tool",        (PyCFunction)emb_get_tool,       METH_VARARGS,           "get tool size/type and selected particles"},
+	{"set_tool",        (PyCFunction)emb_set_tool,       METH_VARARGS,           "set tool size/type and selected particles"},
+	{NULL, NULL, 0, NULL}
 };
 #endif
+
+#ifdef PYCONSOLE
+int process_command(pixel *vid_buf,char *console,char *console_error,PyObject *pfunc) {
+	int y,x,nx,ny,i,j,k,m;
+	int do_next = 1;
+	char xcoord[10];
+	char ycoord[10];
+	char console2[15];
+	char console3[15];
+	char console4[15];
+	char console5[15];
+	PyObject *pvalue,*pargs;
+	//sprintf(console_error, "%s", console);
+	if (console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
+	{
+		sscanf(console,"%14s %14s %14s %14s", console2, console3, console4, console5);//why didn't i know about this function?!
+		if (strcmp(console2, "quit")==0)
+		{
+			return -1;
+		} else {
+			//handle them command
+			pargs=Py_BuildValue("(s)",console);
+			pvalue = PyObject_CallObject(pfunc, pargs);
+			Py_DECREF(pargs);
+			pargs=NULL;
+			if (pvalue==NULL)
+				strcpy(console_error,"failed to execute code.");
+			pvalue=NULL;
+		}
+	}
+	return 1;
+}
+#endif
+int process_command_old(pixel *vid_buf,char *console,char *console_error) {
+	int y,x,nx,ny,i,j,k,m;
+	float f;
+	int do_next = 1;
+	char xcoord[10] = "";
+	char ycoord[10] = "";
+	char console2[15] = "";
+	char console3[15] = "";
+	char console4[15] = "";
+	char console5[15] = "";
+	//sprintf(console_error, "%s", console);
+	if (console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
+	{
+		sscanf(console,"%14s %14s %14s %14s", console2, console3, console4, console5);//why didn't i know about this function?!
+		if (strcmp(console2, "quit")==0)
+		{
+			return -1;
+		}
+		else if (strcmp(console2, "file")==0 && console3[0])
+		{
+			if (file_script) {
+				FILE *f=fopen(console3, "r");
+				if (f)
+				{
+					char fileread[5000];//TODO: make this change with file size
+					char pch[5000];
+					char tokens[10];
+					int tokensize;
+					nx = 0;
+					ny = 0;
+					j = 0;
+					m = 0;
+					if (console4[0])
+						console_parse_coords(console4, &nx , &ny, console_error);
+					memset(pch,0,sizeof(pch));
+					memset(fileread,0,sizeof(fileread));
+					fread(fileread,1,5000,f);
+					for (i=0; i<strlen(fileread); i++)
+					{
+						if (fileread[i] != '\n')
+						{
+							pch[i-j] = fileread[i];
+							if (fileread[i] != ' ')
+								tokens[i-m] = fileread[i];
+						}
+						if (fileread[i] == ' ' || fileread[i] == '\n')
+						{
+							if (sregexp(tokens,"^x.[0-9],y.[0-9]")==0)//TODO: fix regex matching to work with x,y ect, right now it has to have a +0 or -0
+							{
+								char temp[5];
+								int starty = 0;
+								tokensize = strlen(tokens);
+								x = 0;
+								y = 0;
+								sscanf(tokens,"x%d,y%d",&x,&y);
+								sscanf(tokens,"%9s,%9s",xcoord,ycoord);
+								x += nx;
+								y += ny;
+								sprintf(xcoord,"%d",x);
+								sprintf(ycoord,"%d",y);
+								for (k = 0; k<strlen(xcoord); k++)//rewrite pch with numbers
+								{
+									pch[i-j-tokensize+k] = xcoord[k];
+									starty = k+1;
+								}
+								pch[i-j-tokensize+starty] = ',';
+								starty++;
+								for (k=0; k<strlen(ycoord); k++)
+								{
+									pch[i-j-tokensize+starty+k] = ycoord[k];
+                                    
+								}
+								pch[i-j-tokensize +strlen(xcoord) +1 +strlen(ycoord)] = ' ';
+								j = j -tokensize +strlen(xcoord) +1 +strlen(ycoord);
+							}
+							memset(tokens,0,sizeof(tokens));
+							m = i+1;
+						}
+						if (fileread[i] == '\n')
+						{
+                            
+							if (do_next)
+							{
+								if (strcmp(pch,"else")==0)
+									do_next = 0;
+								else
+									do_next = process_command_old(vid_buf, pch, console_error);
+							}
+							else if (strcmp(pch,"endif")==0 || strcmp(pch,"else")==0)
+								do_next = 1;
+							memset(pch,0,sizeof(pch));
+							j = i+1;
+						}
+					}
+					//sprintf(console_error, "%s exists", console3);
+					fclose(f);
+				}
+				else
+				{
+					sprintf(console_error, "%s does not exist", console3);
+				}
+			}
+			else
+			{
+				sprintf(console_error, "Scripts are not enabled");
+			}
+            
+		}
+		else if (strcmp(console2, "sound")==0 && console3[0])
+		{
+			if (sound_enable) play_sound(console3);
+			else strcpy(console_error, "Audio device not available - cannot play sounds");
+		}
+		else if (strcmp(console2, "python")==0)
+			if (pygood==1)
+				pyready=1;
+			else
+				strcpy(console_error, "python not ready. check stdout for more info.");
+			else if (strcmp(console2, "load")==0 && console3[0])
+			{
+				j = atoi(console3);
+				if (j)
+				{
+					open_ui(vid_buf, console3, NULL);
+					console_mode = 0;
+				}
+			}
+			else if (strcmp(console2, "if")==0 && console3[0])
+			{
+				if (strcmp(console3, "type")==0)//TODO: add more than just type, and be able to check greater/less than
+				{
+					if (console_parse_partref(console4, &i, console_error)
+				        && console_parse_type(console5, &j, console_error))
+					{
+						if (parts[i].type==j)
+							return 1;
+						else
+							return 0;
+					}
+					else
+						return 0;
+				}
+			}
+			else if (strcmp(console2, "create")==0 && console3[0] && console4[0])
+			{
+				if (console_parse_type(console3, &j, console_error)
+			        && console_parse_coords(console4, &nx, &ny, console_error))
+				{
+					if (!j)
+						strcpy(console_error, "Cannot create particle with type NONE");
+					else if (create_part(-1,nx,ny,j)<0)
+						strcpy(console_error, "Could not create particle");
+				}
+			}
+			else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3[0])
+			{
+				if (console_parse_partref(console3, &i, console_error))
+					kill_part(i);
+			}
+			else if (strcmp(console2, "reset")==0 && console3[0])
+			{
+				if (strcmp(console3, "pressure")==0)
+				{
+					for (nx = 0; nx<XRES/CELL; nx++)
+						for (ny = 0; ny<YRES/CELL; ny++)
+						{
+							pv[ny][nx] = 0;
+						}
+				}
+				else if (strcmp(console3, "velocity")==0)
+				{
+					for (nx = 0; nx<XRES/CELL; nx++)
+						for (ny = 0; ny<YRES/CELL; ny++)
+						{
+							vx[ny][nx] = 0;
+							vy[ny][nx] = 0;
+						}
+				}
+				else if (strcmp(console3, "sparks")==0)
+				{
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type==PT_SPRK)
+						{
+							parts[i].type = parts[i].ctype;
+							parts[i].life = 4;
+						}
+					}
+				}
+				else if (strcmp(console3, "temp")==0)
+				{
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type)
+						{
+							parts[i].temp = ptypes[parts[i].type].heat;
+						}
+					}
+				}
+			}
+			else if (strcmp(console2, "set")==0 && console3[0] && console4[0] && console5[0])
+			{
+				if (strcmp(console3, "life")==0)
+				{
+					if (strcmp(console4, "all")==0)
+					{
+						j = atoi(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type)
+								parts[i].life = j;
+						}
+					}
+					else if (console_parse_type(console4, &j, console_error))
+					{
+						k = atoi(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type == j)
+								parts[i].life = k;
+						}
+					}
+					else
+					{
+						if (console_parse_partref(console4, &i, console_error))
+						{
+							j = atoi(console5);
+							parts[i].life = j;
+						}
+					}
+				}
+				if (strcmp(console3, "type")==0)
+				{
+					if (strcmp(console4, "all")==0)
+					{
+						if (console_parse_type(console5, &j, console_error))
+							for (i=0; i<NPART; i++)
+							{
+								if (parts[i].type)
+									parts[i].type = j;
+							}
+					}
+					else if (console_parse_type(console4, &j, console_error)
+							 && console_parse_type(console5, &k, console_error))
+					{
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type == j)
+								parts[i].type = k;
+						}
+					}
+					else
+					{
+						if (console_parse_partref(console4, &i, console_error)
+					        && console_parse_type(console5, &j, console_error))
+						{
+							parts[i].type = j;
+						}
+					}
+				}
+				if (strcmp(console3, "temp")==0)
+				{
+					if (strcmp(console4, "all")==0)
+					{
+						f = atof(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type)
+								parts[i].temp = f;
+						}
+					}
+					else if (console_parse_type(console4, &j, console_error))
+					{
+						f = atof(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type == j)
+								parts[i].temp= f;
+						}
+					}
+					else
+					{
+						if (console_parse_partref(console4, &i, console_error))
+						{
+							f = atof(console5);
+							parts[i].temp = f;
+						}
+					}
+				}
+				if (strcmp(console3, "tmp")==0)
+				{
+					if (strcmp(console4, "all")==0)
+					{
+						j = atoi(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type)
+								parts[i].tmp = j;
+						}
+					}
+					else if (console_parse_type(console4, &j, console_error))
+					{
+						k = atoi(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type == j)
+								parts[i].tmp = k;
+						}
+					}
+					else
+					{
+						if (console_parse_partref(console4, &i, console_error))
+						{
+							j = atoi(console5);
+							parts[i].tmp = j;
+						}
+					}
+				}
+				if (strcmp(console3, "x")==0)
+				{
+					if (strcmp(console4, "all")==0)
+					{
+						j = atoi(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type)
+								parts[i].x = j;
+						}
+					}
+					else if (console_parse_type(console4, &j, console_error))
+					{
+						k = atoi(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type == j)
+								parts[i].x = k;
+						}
+					}
+					else
+					{
+						if (console_parse_partref(console4, &i, console_error))
+						{
+							j = atoi(console5);
+							parts[i].x = j;
+						}
+					}
+				}
+				if (strcmp(console3, "y")==0)
+				{
+					if (strcmp(console4, "all")==0)
+					{
+						j = atoi(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type)
+								parts[i].y = j;
+						}
+					}
+					else if (console_parse_type(console4, &j, console_error))
+					{
+						k = atoi(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type == j)
+								parts[i].y = k;
+						}
+					}
+					else
+					{
+						if (console_parse_partref(console4, &i, console_error))
+						{
+							j = atoi(console5);
+							parts[i].y = j;
+						}
+					}
+				}
+				if (strcmp(console3, "ctype")==0)
+				{
+					if (strcmp(console4, "all")==0)
+					{
+						if (console_parse_type(console5, &j, console_error))
+							for (i=0; i<NPART; i++)
+							{
+								if (parts[i].type)
+									parts[i].ctype = j;
+							}
+					}
+					else if (console_parse_type(console4, &j, console_error)
+							 && console_parse_type(console5, &k, console_error))
+					{
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type == j)
+								parts[i].ctype = k;
+						}
+					}
+					else
+					{
+						if (console_parse_partref(console4, &i, console_error)
+					        && console_parse_type(console5, &j, console_error))
+						{
+							parts[i].ctype = j;
+						}
+					}
+				}
+				if (strcmp(console3, "vx")==0)
+				{
+					if (strcmp(console4, "all")==0)
+					{
+						f = atof(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type)
+								parts[i].vx = f;
+						}
+					}
+					else if (console_parse_type(console4, &j, console_error))
+					{
+						f = atof(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type == j)
+								parts[i].vx = f;
+						}
+					}
+					else
+					{
+						if (console_parse_partref(console4, &i, console_error))
+						{
+							f = atof(console5);
+							parts[i].vx = f;
+						}
+					}
+				}
+				if (strcmp(console3, "vy")==0)
+				{
+					if (strcmp(console4, "all")==0)
+					{
+						f = atof(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type)
+								parts[i].vy = f;
+						}
+					}
+					else if (console_parse_type(console4, &j, console_error))
+					{
+						f = atof(console5);
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type == j)
+								parts[i].vy = f;
+						}
+					}
+					else
+					{
+						if (console_parse_partref(console4, &i, console_error))
+						{
+							f = atof(console5);
+							parts[i].vy = f;
+						}
+					}
+				}
+			}
+			else
+				strcpy(console_error, "Invalid Command");
+	}
+	return 1;
+}
 
 int main(int argc, char *argv[])
 {
@@ -2067,7 +2569,7 @@ int main(int argc, char *argv[])
 	void *http_ver_check;
 	void *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
-    //char console_error[255] = "";
+	//char console_error[255] = "";
 	int i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
 #ifdef INTERNAL
 	int vs = 0;
@@ -2089,7 +2591,7 @@ int main(int argc, char *argv[])
 	vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	GSPEED = 1;
-
+    
 	/* Set 16-bit stereo audio at 22Khz */
 	fmt.freq = 22050;
 	fmt.format = AUDIO_S16;
@@ -2097,88 +2599,88 @@ int main(int argc, char *argv[])
 	fmt.samples = 512;
 	fmt.callback = mixaudio;
 	fmt.userdata = NULL;
-	
+    
 #ifdef PYCONSOLE
-    //initialise python console
-    Py_Initialize();
-    PyRun_SimpleString("print 'python present.'");
-    Py_InitModule("tpt", EmbMethods);
-	
-    //change the path to find all the correct modules
-    PyRun_SimpleString("import sys\nsys.path.append('./tptPython.zip')\nsys.path.append('.')");
-    //load the console module and whatnot
+	//initialise python console
+	Py_Initialize();
+	PyRun_SimpleString("print 'python present.'");
+	Py_InitModule("tpt", EmbMethods);
+    
+	//change the path to find all the correct modules
+	PyRun_SimpleString("import sys\nsys.path.append('./tptPython.zip')\nsys.path.append('.')");
+	//load the console module and whatnot
 #ifdef PYEXT
-    PyRun_SimpleString(tpt_console_py);
-    printf("using external python console file.\n");
-    pname=PyString_FromString("tpt_console");//create string object
-    pmodule = PyImport_Import(pname);//import module
-    Py_DECREF(pname);//throw away string
+	PyRun_SimpleString(tpt_console_py);
+	printf("using external python console file.\n");
+	pname=PyString_FromString("tpt_console");//create string object
+	pmodule = PyImport_Import(pname);//import module
+	Py_DECREF(pname);//throw away string
 #else
-    tpt_console_obj = PyMarshal_ReadObjectFromString(tpt_console_pyc+8, sizeof(tpt_console_pyc)-8);
-    pmodule=PyImport_ExecCodeModule("tpt_console", tpt_console_obj);
+	tpt_console_obj = PyMarshal_ReadObjectFromString(tpt_console_pyc+8, sizeof(tpt_console_pyc)-8);
+	pmodule=PyImport_ExecCodeModule("tpt_console", tpt_console_obj);
 #endif
-    if(pmodule!=NULL)
-    {
-        pfunc=PyObject_GetAttrString(pmodule,"handle");//get the handler function
-        if(pfunc && PyCallable_Check(pfunc))//check if it's really a function
-        {
-            printf("python console ready to go.\n");
-        }
-        else
-        {
-            PyErr_Print();
-            printf("unable to find handle function, mangled console.py?\n");
-            pyready = 0;
-            pygood = 0;
-        }
-        
-        pstep=PyObject_GetAttrString(pmodule,"step");//get the handler function
-        if(pstep && PyCallable_Check(pstep))//check if it's really a function
-        {
-            printf("step function found.\n");
-        }
-        else
-        {
-            printf("unable to find step function. ignoring.\n");
-        }
-        
-        pkey=PyObject_GetAttrString(pmodule,"keypress");//get the handler function
-        if(pstep && PyCallable_Check(pkey))//check if it's really a function
-        {
-            printf("key function found.\n");
-        }
-        else
-        {
-            printf("unable to find key function. ignoring.\n");
-        }
-    }
-    else
-    {
-        //sys.stderr
-        PyErr_Print();
-        printf("unable to find console module, missing file or mangled console.py?\n");
-        pyready = 0;
-        pygood = 0;
-    }
-#else
-        printf("python console disabled at compile time.");
-#endif
-
-#ifdef MT
-	numCores = core_count();
-#endif
-//TODO: Move out version stuff
-#ifdef BETA
-	if (is_beta)
+	if (pmodule!=NULL)
 	{
-		old_ver_len = textwidth(old_ver_msg_beta);
+		pfunc=PyObject_GetAttrString(pmodule,"handle");//get the handler function
+		if (pfunc && PyCallable_Check(pfunc))//check if it's really a function
+		{
+			printf("python console ready to go.\n");
+		}
+		else
+		{
+			PyErr_Print();
+			printf("unable to find handle function, mangled console.py?\n");
+			pyready = 0;
+			pygood = 0;
+		}
+        
+		pstep=PyObject_GetAttrString(pmodule,"step");//get the handler function
+		if (pstep && PyCallable_Check(pstep))//check if it's really a function
+		{
+			printf("step function found.\n");
+		}
+		else
+		{
+			printf("unable to find step function. ignoring.\n");
+		}
+        
+		pkey=PyObject_GetAttrString(pmodule,"keypress");//get the handler function
+		if (pstep && PyCallable_Check(pkey))//check if it's really a function
+		{
+			printf("key function found.\n");
+		}
+		else
+		{
+			printf("unable to find key function. ignoring.\n");
+		}
 	}
 	else
 	{
-		old_ver_len = textwidth(old_ver_msg);
+		//sys.stderr
+		PyErr_Print();
+		printf("unable to find console module, missing file or mangled console.py?\n");
+		pyready = 0;
+		pygood = 0;
 	}
 #else
-	old_ver_len = textwidth(old_ver_msg);
+	printf("python console disabled at compile time.");
+#endif
+    
+#ifdef MT
+	numCores = core_count();
+#endif
+    //TODO: Move out version stuff
+#ifdef BETA
+	if (is_beta)
+	{
+		old_ver_len = textwidth((char*)old_ver_msg_beta);
+	}
+	else
+	{
+		old_ver_len = textwidth((char*)old_ver_msg);
+	}
+#else
+	old_ver_len = textwidth((char*)old_ver_msg);
 #endif
 	menu_count();
 	parts = calloc(sizeof(particle), NPART);
@@ -2189,11 +2691,11 @@ int main(int argc, char *argv[])
 	pfree = 0;
 	fire_bg=calloc(XRES*YRES, PIXELSIZE);
 	clear_sim();
-
+    
 	//fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
-
+    
 	load_presets();
-
+    
 	for (i=1; i<argc; i++)
 	{
 		if (!strncmp(argv[i], "scale:", 6))
@@ -2232,48 +2734,46 @@ int main(int argc, char *argv[])
 		{
 			file_script = 1;
 		}
-		else if (!strncmp(argv[i], "open:", 5))
-		{ 
+		else if (!strncmp(argv[i], "open", 4) && i+1<argc)
+		{
 			int size;
 			void *file_data;
-			char fn[64];
-			strncpy(fn, argv[i]+5, strlen(argv[i]+5));
-			file_data = file_load(fn, &size);
-			if(file_data)
+			file_data = file_load(argv[i+1], &size);
+			if (file_data)
 			{
 				it=0;
 				parse_save(file_data, size, 0, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 			}
 		}
-
+        
 	}
-
+    
 	save_presets(0);
-
+    
 	make_kernel();
 	prepare_alpha();
-
+    
 	stamp_init();
-
+    
 	sdl_open();
 	http_init(http_proxy_string[0] ? http_proxy_string : NULL);
-	
+    
 	if (cpu_check())
 	{
 		error_ui(vid_buf, 0, "Unsupported CPU. Try another version.");
 		return 1;
 	}
-
+    
 #ifdef BETA
 	http_ver_check = http_async_req_start(NULL, "http://" SERVER "/Update.api?Action=CheckVersion", NULL, 0, 0);
 #else
 	http_ver_check = http_async_req_start(NULL, "http://" SERVER "/Update.api?Action=CheckVersion", NULL, 0, 0);
 #endif
-	if(svf_login){
+	if (svf_login) {
 		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
 		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
 	}
-
+    
 	while (!sdl_poll()) //the main loop
 	{
 		if (!sys_pause||framerender) //only update air if not paused
@@ -2283,7 +2783,7 @@ int main(int argc, char *argv[])
 #ifdef OpenGL
 		ClearScreen();
 #else
-		if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK)//air only gets drawn in these modes
+		if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK || cmode==CM_AWESOME || cmode==CM_PREAWE)//air only gets drawn in these modes
 		{
 			draw_air(vid_buf);
 		}
@@ -2297,7 +2797,7 @@ int main(int argc, char *argv[])
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
 #endif
-
+        
 		//Can't be too sure...
 		if (bsx>1180)
 			bsx = 1180;
@@ -2307,10 +2807,10 @@ int main(int argc, char *argv[])
 			bsy = 1180;
 		if (bsy<0)
 			bsy = 0;
-
+        
 		update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
-
+        
 		if (cmode==CM_PERS)
 		{
 			if (!fire_fc)//fire_fc has nothing to do with fire... it is a counter for diminishing persistent view every 3 frames
@@ -2323,16 +2823,16 @@ int main(int argc, char *argv[])
 			}
 			fire_fc = (fire_fc+1) % 3;
 		}
-		if (cmode==CM_FIRE||cmode==CM_BLOB||cmode==CM_FANCY)
+		if (cmode==CM_FIRE||cmode==CM_BLOB||cmode==CM_FANCY||cmode==CM_AWESOME||cmode==CM_PREAWE)
 			render_fire(vid_buf);
-
+        
 		render_signs(vid_buf);
-
+        
 		memset(vid_buf+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);//clear menu areas
 		clearrect(vid_buf, XRES-1, 0, BARSIZE+1, YRES);
-
+        
 		draw_svf_ui(vid_buf);
-
+        
 		if (http_ver_check)
 		{
 			if (!do_check && http_async_req_status(http_ver_check))
@@ -2355,14 +2855,14 @@ int main(int argc, char *argv[])
 			}
 			do_check = (do_check+1) & 15;
 		}
-		if(http_session_check)
+		if (http_session_check)
 		{
-			if(!do_s_check && http_async_req_status(http_session_check))
+			if (!do_s_check && http_async_req_status(http_session_check))
 			{
 				check_data = http_async_req_stop(http_session_check, &http_s_ret, NULL);
-				if(http_ret==200 && check_data)
+				if (http_ret==200 && check_data)
 				{
-					if(!strncmp(check_data, "EXPIRED", 7))
+					if (!strncmp(check_data, "EXPIRED", 7))
 					{
 						//Session expired
 						strcpy(svf_user, "");
@@ -2374,7 +2874,7 @@ int main(int argc, char *argv[])
 						svf_admin = 0;
 						svf_mod = 0;
 					}
-					else if(!strncmp(check_data, "BANNED", 6))
+					else if (!strncmp(check_data, "BANNED", 6))
 					{
 						//User banned
 						strcpy(svf_user, "");
@@ -2387,10 +2887,10 @@ int main(int argc, char *argv[])
 						svf_mod = 0;
 						error_ui(vid_buf, 0, "Unable to log in\nYour account has been suspended, consider reading the rules.");
 					}
-					else if(!strncmp(check_data, "OK", 2))
+					else if (!strncmp(check_data, "OK", 2))
 					{
 						//Session valid
-						if(strlen(check_data)>2){
+						if (strlen(check_data)>2) {
 							//User is elevated
 							if (!strncmp(check_data+3, "ADMIN", 5))
 							{
@@ -2401,8 +2901,8 @@ int main(int argc, char *argv[])
 							{
 								svf_admin = 0;
 								svf_mod = 1;
-							}							
-						}	
+							}
+						}
 					}
 					else
 					{
@@ -2434,10 +2934,10 @@ int main(int argc, char *argv[])
 				clearrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14);
 				drawrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14, 255, 255, 255, 255);
 				drawtext(vid_buf, XRES-122+BARSIZE/*388*/, YRES+(MENUSIZE-13), "\x84", 255, 255, 255, 255);
-				if(username_flash>30){
+				if (username_flash>30) {
 					username_flash_t = -1;
 					username_flash = 30;
-				} else if(username_flash<0) {
+				} else if (username_flash<0) {
 					username_flash_t = 1;
 					username_flash = 0;
 				}
@@ -2450,15 +2950,15 @@ int main(int argc, char *argv[])
 			do_s_check = (do_s_check+1) & 15;
 		}
         
-        if(sys_shortcuts==1)//all shortcuts can be disabled by python scripts
-        {
-            if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
-            {
-                if (confirm_ui(vid_buf, "You are about to quit", "Are you sure you want to quit?", "Quit"))
-                {
-                    break;
-                }
-            }
+		if (sys_shortcuts==1)//all shortcuts can be disabled by python scripts
+		{
+			if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
+			{
+				if (confirm_ui(vid_buf, "You are about to quit", "Are you sure you want to quit?", "Quit"))
+				{
+					break;
+				}
+			}
 			if (sdl_key=='i' && (sdl_mod & KMOD_CTRL))
 			{
 				if(confirm_ui(vid_buf, "Install Powder Toy", "You are about to install The Powder Toy", "Install"))
@@ -2473,269 +2973,269 @@ int main(int argc, char *argv[])
 					}
 				}
 			}
-            //if(sdl_key=='d' && isplayer)
-            //{
-            //    death = 1;
-            //    //death = !(death);
-            //}
-            if (sdl_key=='f')
-            {
-                framerender = 1;
-            }
-            if ((sdl_key=='l' || sdl_key=='k') && stamps[0].name[0])
-            {
-                if (load_mode)
-                {
-                    free(load_img);
-                    free(load_data);
-                    load_mode = 0;
-                    load_data = NULL;
-                    load_img = NULL;
-                }
-                if (it > 50)
-                    it = 50;
-                if (sdl_key=='k' && stamps[1].name[0])
-                {
-                    j = stamp_ui(vid_buf);
-                    if (j>=0)
-                        load_data = stamp_load(j, &load_size);
-                    else
-                        load_data = NULL;
-                }
-                else
-                    load_data = stamp_load(0, &load_size);
-                if (load_data)
-                {
-                    load_img = prerender_save(load_data, load_size, &load_w, &load_h);
-                    if (load_img)
-                        load_mode = 1;
-                    else
-                        free(load_data);
-                }
-            }
-            if (sdl_key=='s' && (sdl_mod & (KMOD_CTRL)) || (sdl_key=='s' && !isplayer2))
-            {
-                if (it > 50)
-                    it = 50;
-                save_mode = 1;
-            }
-            if (sdl_key=='1')
-            {
-                set_cmode(CM_VEL);
-            }
-            if (sdl_key=='2')
-            {
-                set_cmode(CM_PRESS);
-            }
-            if (sdl_key=='3')
-            {
-                set_cmode(CM_PERS);
-            }
-            if (sdl_key=='4')
-            {
-                set_cmode(CM_FIRE);
-            }
-            if (sdl_key=='5')
-            {
-                set_cmode(CM_BLOB);
-            }
-            if (sdl_key=='6')
-            {
-                set_cmode(CM_HEAT);
-            }
-            if (sdl_key=='7')
-            {
-                set_cmode(CM_FANCY);
-            }
-            if (sdl_key=='8')
-            {
-                set_cmode(CM_NOTHING);
-            }
-            if (sdl_key=='9')
-            {
-                set_cmode(CM_GRAD);
-            }
-            if(sdl_key=='a')
-            {
-                set_cmode(CM_AWESOME);
-            }    
-            if(sdl_key=='m')
-            {
-                set_cmode(CM_PREAWE);
-            }
-            if (sdl_key=='0')
-            {
-                set_cmode(CM_CRACK);
-            }
-            if (sdl_key=='1'&& (sdl_mod & (KMOD_SHIFT)) && DEBUG_MODE)
-            {
-                set_cmode(CM_LIFE);
-            }
-            if (sdl_key==SDLK_TAB)
-            {
-                CURRENT_BRUSH =(CURRENT_BRUSH + 1)%BRUSH_NUM ;
-            }
-            if (sdl_key==SDLK_LEFTBRACKET) {
-                if (sdl_zoom_trig==1)
-                {
-                    ZSIZE -= 1;
-                    if (ZSIZE>60)
-                        ZSIZE = 60;
-                    if (ZSIZE<2)
-                        ZSIZE = 2;
-                    ZFACTOR = 256/ZSIZE;
-                }
-                else
-                {
-                    if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
-                    {
-                        bsx -= 1;
-                        bsy -= 1;
-                    }
-                    else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
-                    {
-                        bsx -= 1;
-                    }
-                    else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
-                    {
-                        bsy -= 1;
-                    }
-                    else
-                    {
-                        bsx -= ceil((bsx/5)+0.5f);
-                        bsy -= ceil((bsy/5)+0.5f);
-                    }
-                    if (bsx>1180)
-                        bsx = 1180;
-                    if (bsy>1180)
-                        bsy = 1180;
-                    if (bsx<0)
-                        bsx = 0;
-                    if (bsy<0)
-                        bsy = 0;
-                }
-            }
-            if (sdl_key==SDLK_RIGHTBRACKET) {
-                if (sdl_zoom_trig==1)
-                {
-                    ZSIZE += 1;
-                    if (ZSIZE>60)
-                        ZSIZE = 60;
-                    if (ZSIZE<2)
-                        ZSIZE = 2;
-                    ZFACTOR = 256/ZSIZE;
-                }
-                else
-                {
-                    if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
-                    {
-                        bsx += 1;
-                        bsy += 1;
-                    }
-                    else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
-                    {
-                        bsx += 1;
-                    }
-                    else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
-                    {
-                        bsy += 1;
-                    }
-                    else
-                    {
-                        bsx += ceil((bsx/5)+0.5f);
-                        bsy += ceil((bsy/5)+0.5f);
-                    }
-                    if (bsx>1180)
-                        bsx = 1180;
-                    if (bsy>1180)
-                        bsy = 1180;
-                    if (bsx<0)
-                        bsx = 0;
-                    if (bsy<0)
-                        bsy = 0;
-                }
-            }
-            if (sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)) || (sdl_key=='d' && !isplayer2))
-                DEBUG_MODE = !DEBUG_MODE;
-            if (sdl_key=='i')
-            {
-                int nx, ny;
-                for (nx = 0; nx<XRES/CELL; nx++)
-                    for (ny = 0; ny<YRES/CELL; ny++)
-                    {
-                        pv[ny][nx] = -pv[ny][nx];
-                        vx[ny][nx] = -vx[ny][nx];
-                        vy[ny][nx] = -vy[ny][nx];
-                    }
-            }
-            if ((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
-                active_menu = 11;
-            if (sdl_key==SDLK_INSERT)// || sdl_key==SDLK_BACKQUOTE)
-                REPLACE_MODE = !REPLACE_MODE;
-            if (sdl_key==SDLK_BACKQUOTE)
-            {
-                console_mode = !console_mode;
-                //hud_enable = !console_mode;
-            }
-            if (sdl_key=='g')
-            {
-                if (sdl_mod & (KMOD_SHIFT))
-                    GRID_MODE = (GRID_MODE+9)%10;
-                else
-                    GRID_MODE = (GRID_MODE+1)%10;
-            }
-            if (sdl_key=='=')
-            {
-                int nx, ny;
-                if(sdl_mod & (KMOD_CTRL))
-                {
-                    for(i=0; i<NPART; i++)
-                        if(parts[i].type==PT_SPRK)
-                        {
-                            parts[i].type = parts[i].ctype;
-                            parts[i].life = 0;
-                        }
-                }
-                else
-                {
-                    for (nx = 0; nx<XRES/CELL; nx++)
-                        for (ny = 0; ny<YRES/CELL; ny++)
-                        {
-                            pv[ny][nx] = 0;
-                            vx[ny][nx] = 0;
-                            vy[ny][nx] = 0;
-                        }
-                }
-            }
-
-            if (sdl_key=='w' && (!isplayer2 || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
-            {
-                ++gravityMode; // cycle gravity mode
-                itc = 51;
-
-                switch (gravityMode)
-                {
-                default:
-                    gravityMode = 0;
-                case 0:
-                    strcpy(itc_msg, "Gravity: Vertical");
-                    break;
-                case 1:
-                    strcpy(itc_msg, "Gravity: Off");
-                    break;
-                case 2:
-                    strcpy(itc_msg, "Gravity: Radial");
-                    break;
-
-                }
-            }
-            if (sdl_key=='y')
-            {
-                ++airMode;
-                itc = 52;
+			//if(sdl_key=='d' && isplayer)
+			//{
+			//    death = 1;
+			//    //death = !(death);
+			//}
+			if (sdl_key=='f')
+			{
+				framerender = 1;
+			}
+			if ((sdl_key=='l' || sdl_key=='k') && stamps[0].name[0])
+			{
+				if (load_mode)
+				{
+					free(load_img);
+					free(load_data);
+					load_mode = 0;
+					load_data = NULL;
+					load_img = NULL;
+				}
+				if (it > 50)
+					it = 50;
+				if (sdl_key=='k' && stamps[1].name[0])
+				{
+					j = stamp_ui(vid_buf);
+					if (j>=0)
+						load_data = stamp_load(j, &load_size);
+					else
+						load_data = NULL;
+				}
+				else
+					load_data = stamp_load(0, &load_size);
+				if (load_data)
+				{
+					load_img = prerender_save(load_data, load_size, &load_w, &load_h);
+					if (load_img)
+						load_mode = 1;
+					else
+						free(load_data);
+				}
+			}
+			if (sdl_key=='s' && (sdl_mod & (KMOD_CTRL)) || (sdl_key=='s' && !isplayer2))
+			{
+				if (it > 50)
+					it = 50;
+				save_mode = 1;
+			}
+			if (sdl_key=='1')
+			{
+				set_cmode(CM_VEL);
+			}
+			if (sdl_key=='2')
+			{
+				set_cmode(CM_PRESS);
+			}
+			if (sdl_key=='3')
+			{
+				set_cmode(CM_PERS);
+			}
+			if (sdl_key=='4')
+			{
+				set_cmode(CM_FIRE);
+			}
+			if (sdl_key=='5')
+			{
+				set_cmode(CM_BLOB);
+			}
+			if (sdl_key=='6')
+			{
+				set_cmode(CM_HEAT);
+			}
+			if (sdl_key=='7')
+			{
+				set_cmode(CM_FANCY);
+			}
+			if (sdl_key=='8')
+			{
+				set_cmode(CM_NOTHING);
+			}
+			if (sdl_key=='9')
+			{
+				set_cmode(CM_GRAD);
+			}
+            if (sdl_key=='a')
+			{
+				set_cmode(CM_AWESOME);
+			}
+            if (sdl_key=='m')
+			{
+				set_cmode(CM_PREAWE);
+			}
+			if (sdl_key=='0')
+			{
+				set_cmode(CM_CRACK);
+			}
+			if (sdl_key=='1'&& (sdl_mod & (KMOD_SHIFT)) && DEBUG_MODE)
+			{
+				set_cmode(CM_LIFE);
+			}
+			if (sdl_key==SDLK_TAB)
+			{
+				CURRENT_BRUSH =(CURRENT_BRUSH + 1)%BRUSH_NUM ;
+			}
+			if (sdl_key==SDLK_LEFTBRACKET) {
+				if (sdl_zoom_trig==1)
+				{
+					ZSIZE -= 1;
+					if (ZSIZE>60)
+						ZSIZE = 60;
+					if (ZSIZE<2)
+						ZSIZE = 2;
+					ZFACTOR = 256/ZSIZE;
+				}
+				else
+				{
+					if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+					{
+						bsx -= 1;
+						bsy -= 1;
+					}
+					else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+					{
+						bsx -= 1;
+					}
+					else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+					{
+						bsy -= 1;
+					}
+					else
+					{
+						bsx -= ceil((bsx/5)+0.5f);
+						bsy -= ceil((bsy/5)+0.5f);
+					}
+					if (bsx>1180)
+						bsx = 1180;
+					if (bsy>1180)
+						bsy = 1180;
+					if (bsx<0)
+						bsx = 0;
+					if (bsy<0)
+						bsy = 0;
+				}
+			}
+			if (sdl_key==SDLK_RIGHTBRACKET) {
+				if (sdl_zoom_trig==1)
+				{
+					ZSIZE += 1;
+					if (ZSIZE>60)
+						ZSIZE = 60;
+					if (ZSIZE<2)
+						ZSIZE = 2;
+					ZFACTOR = 256/ZSIZE;
+				}
+				else
+				{
+					if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+					{
+						bsx += 1;
+						bsy += 1;
+					}
+					else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+					{
+						bsx += 1;
+					}
+					else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+					{
+						bsy += 1;
+					}
+					else
+					{
+						bsx += ceil((bsx/5)+0.5f);
+						bsy += ceil((bsy/5)+0.5f);
+					}
+					if (bsx>1180)
+						bsx = 1180;
+					if (bsy>1180)
+						bsy = 1180;
+					if (bsx<0)
+						bsx = 0;
+					if (bsy<0)
+						bsy = 0;
+				}
+			}
+			if (sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)) || (sdl_key=='d' && !isplayer2))
+				DEBUG_MODE = !DEBUG_MODE;
+			if (sdl_key=='i')
+			{
+				int nx, ny;
+				for (nx = 0; nx<XRES/CELL; nx++)
+					for (ny = 0; ny<YRES/CELL; ny++)
+					{
+						pv[ny][nx] = -pv[ny][nx];
+						vx[ny][nx] = -vx[ny][nx];
+						vy[ny][nx] = -vy[ny][nx];
+					}
+			}
+			if ((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
+				active_menu = 11;
+			if (sdl_key==SDLK_INSERT)// || sdl_key==SDLK_BACKQUOTE)
+				REPLACE_MODE = !REPLACE_MODE;
+			if (sdl_key==SDLK_BACKQUOTE)
+			{
+				console_mode = !console_mode;
+				//hud_enable = !console_mode;
+			}
+			if (sdl_key=='g')
+			{
+				if (sdl_mod & (KMOD_SHIFT))
+					GRID_MODE = (GRID_MODE+9)%10;
+				else
+					GRID_MODE = (GRID_MODE+1)%10;
+			}
+			if (sdl_key=='=')
+			{
+				int nx, ny;
+				if (sdl_mod & (KMOD_CTRL))
+				{
+					for (i=0; i<NPART; i++)
+						if (parts[i].type==PT_SPRK)
+						{
+							parts[i].type = parts[i].ctype;
+							parts[i].life = 0;
+						}
+				}
+				else
+				{
+					for (nx = 0; nx<XRES/CELL; nx++)
+						for (ny = 0; ny<YRES/CELL; ny++)
+						{
+							pv[ny][nx] = 0;
+							vx[ny][nx] = 0;
+							vy[ny][nx] = 0;
+						}
+				}
+			}
+            
+			if (sdl_key=='w' && (!isplayer2 || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
+			{
+				++gravityMode; // cycle gravity mode
+				itc = 51;
                 
-                switch (airMode)
-                {
+				switch (gravityMode)
+				{
+                    default:
+                        gravityMode = 0;
+                    case 0:
+                        strcpy(itc_msg, "Gravity: Vertical");
+                        break;
+                    case 1:
+                        strcpy(itc_msg, "Gravity: Off");
+                        break;
+                    case 2:
+                        strcpy(itc_msg, "Gravity: Radial");
+                        break;
+                        
+				}
+			}
+			if (sdl_key=='y')
+			{
+				++airMode;
+				itc = 52;
+                
+				switch (airMode)
+				{
                     default:
                         airMode = 0;
                     case 0:
@@ -2748,40 +3248,40 @@ int main(int argc, char *argv[])
                         strcpy(itc_msg, "Air: Velocity Off");
                         break;
                     case 3:
-                        strcpy(itc_msg, "Air: Off"); 
+                        strcpy(itc_msg, "Air: Off");
                         break;
                     case 4:
                         strcpy(itc_msg, "Air: No Update");
                         break;
-                }
-            }
-
-            if (sdl_key=='t')
-                VINE_MODE = !VINE_MODE;
-            if (sdl_key==SDLK_SPACE)
-                sys_pause = !sys_pause;
-            if (sdl_key=='h')
-                hud_enable = !hud_enable;
-            if (sdl_key=='p')
-                dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
-            if (sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
-            {
-                if (clipboard_ready==1)
-                {
-                    load_data = malloc(clipboard_length);
-                    memcpy(load_data, clipboard_data, clipboard_length);
-                    load_size = clipboard_length;
-                    if (load_data)
-                    {
-                        load_img = prerender_save(load_data, load_size, &load_w, &load_h);
-                        if (load_img)
-                            load_mode = 1;
-                        else
-                            free(load_data);
-                    }
-                }
-            }
-            if (load_mode==1)
+				}
+			}
+            
+			if (sdl_key=='t')
+				VINE_MODE = !VINE_MODE;
+			if (sdl_key==SDLK_SPACE)
+				sys_pause = !sys_pause;
+			if (sdl_key=='h')
+				hud_enable = !hud_enable;
+			if (sdl_key=='p')
+				dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
+			if (sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+			{
+				if (clipboard_ready==1)
+				{
+					load_data = malloc(clipboard_length);
+					memcpy(load_data, clipboard_data, clipboard_length);
+					load_size = clipboard_length;
+					if (load_data)
+					{
+						load_img = prerender_save(load_data, load_size, &load_w, &load_h);
+						if (load_img)
+							load_mode = 1;
+						else
+							free(load_data);
+					}
+				}
+			}
+			if (load_mode==1)
 			{
 				matrix2d transform = m2d_identity;
 				vector2d translate = v2d_zero;
@@ -2817,57 +3317,57 @@ int main(int argc, char *argv[])
 			}
 			if (sdl_key=='r'&&!(sdl_mod & (KMOD_CTRL|KMOD_SHIFT)))
 				GENERATION = 0;
-            if (sdl_key=='x'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
-            {
-                save_mode = 1;
-                copy_mode = 2;
-            }
-            if (sdl_key=='c'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
-            {
-                save_mode = 1;
-                copy_mode = 1;
-            }
-            else if (sdl_key=='c')
-            {
-                set_cmode((cmode+1) % CM_COUNT);
-                if (it > 50)
-                    it = 50;
-            }
-            if (sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
-            {
-                int cbx, cby, cbi;
-
-                for (cbi=0; cbi<NPART; cbi++)
-                    parts[cbi] = cb_parts[cbi];
-
-                for (cby = 0; cby<YRES; cby++)
-                    for (cbx = 0; cbx<XRES; cbx++)
-                        pmap[cby][cbx] = cb_pmap[cby][cbx];
-
-                for (cby = 0; cby<(YRES/CELL); cby++)
-                    for (cbx = 0; cbx<(XRES/CELL); cbx++)
-                    {
-                        vx[cby][cbx] = cb_vx[cby][cbx];
-                        vy[cby][cbx] = cb_vy[cby][cbx];
-                        pv[cby][cbx] = cb_pv[cby][cbx];
-                        bmap[cby][cbx] = cb_bmap[cby][cbx];
-                        emap[cby][cbx] = cb_emap[cby][cbx];
-                    }
-            }
-        }
-        #ifdef PYCONSOLE
-        if(pyready==1 && pygood==1)
-            if(pkey!=NULL && sdl_key!=NULL)
-            {
-                pargs=Py_BuildValue("(c)",sdl_key);
-                pvalue = PyObject_CallObject(pkey, pargs);
-                Py_DECREF(pargs);
-                pargs=NULL;
-                if(pvalue==NULL)
-                    strcpy(console_error,"failed to execute key code.");
-                pvalue=NULL;
-            }
-        #endif
+			if (sdl_key=='x'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+			{
+				save_mode = 1;
+				copy_mode = 2;
+			}
+			if (sdl_key=='c'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
+			{
+				save_mode = 1;
+				copy_mode = 1;
+			}
+			else if (sdl_key=='c')
+			{
+				set_cmode((cmode+1) % CM_COUNT);
+				if (it > 50)
+					it = 50;
+			}
+			if (sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
+			{
+				int cbx, cby, cbi;
+                
+				for (cbi=0; cbi<NPART; cbi++)
+					parts[cbi] = cb_parts[cbi];
+                
+				for (cby = 0; cby<YRES; cby++)
+					for (cbx = 0; cbx<XRES; cbx++)
+						pmap[cby][cbx] = cb_pmap[cby][cbx];
+                
+				for (cby = 0; cby<(YRES/CELL); cby++)
+					for (cbx = 0; cbx<(XRES/CELL); cbx++)
+					{
+						vx[cby][cbx] = cb_vx[cby][cbx];
+						vy[cby][cbx] = cb_vy[cby][cbx];
+						pv[cby][cbx] = cb_pv[cby][cbx];
+						bmap[cby][cbx] = cb_bmap[cby][cbx];
+						emap[cby][cbx] = cb_emap[cby][cbx];
+					}
+			}
+		}
+#ifdef PYCONSOLE
+		if (pyready==1 && pygood==1)
+			if (pkey!=NULL && sdl_key!=NULL)
+			{
+				pargs=Py_BuildValue("(c)",sdl_key);
+				pvalue = PyObject_CallObject(pkey, pargs);
+				Py_DECREF(pargs);
+				pargs=NULL;
+				if (pvalue==NULL)
+					strcpy(console_error,"failed to execute key code.");
+				pvalue=NULL;
+			}
+#endif
 #ifdef INTERNAL
 		int counterthing;
 		if (sdl_key=='v'&&!(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))//frame capture
@@ -2897,7 +3397,7 @@ int main(int argc, char *argv[])
 			counterthing = (counterthing+1)%3;
 		}
 #endif
-
+        
 		if (sdl_wheel)
 		{
 			if (sdl_zoom_trig==1)//zoom window change
@@ -2935,22 +3435,22 @@ int main(int argc, char *argv[])
 					bsy = 0;
 				sdl_wheel = 0;
 				/*if(su >= PT_NUM) {
-					if(sl < PT_NUM)
-						su = sl;
-					if(sr < PT_NUM)
-						su = sr;
-				}*/
+                 if(sl < PT_NUM)
+                 su = sl;
+                 if(sr < PT_NUM)
+                 su = sr;
+                 }*/
 			}
 		}
-
+        
 		bq = b; // bq is previous mouse state
 		b = SDL_GetMouseState(&x, &y); // b is current mouse state
-
+        
 		for (i=0; i<SC_TOTAL; i++)//draw all the menu sections
 		{
 			draw_menu(vid_buf, i, active_menu);
 		}
-
+        
 		for (i=0; i<SC_TOTAL; i++)//check mouse position to see if it is on a menu section
 		{
 			if (!b&&x>=sdl_scale*(XRES-2) && x<sdl_scale*(XRES+BARSIZE-1) &&y>= sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)) && y<sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)+15))
@@ -2959,10 +3459,10 @@ int main(int argc, char *argv[])
 			}
 		}
 		menu_ui_v3(vid_buf, active_menu, &sl, &sr, b, bq, x, y); //draw the elements in the current menu
-
+        
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
-		        && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
-		        && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))
+            && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
+            && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))
 		{
 			x = (((x/sdl_scale-zoom_wx)/ZFACTOR)+zoom_x)*sdl_scale;
 			y = (((y/sdl_scale-zoom_wy)/ZFACTOR)+zoom_y)*sdl_scale;
@@ -3007,7 +3507,7 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
-		
+        
 		mx = x;
 		my = y;
 		if (update_flag)
@@ -3027,9 +3527,9 @@ int main(int argc, char *argv[])
 			}
 			update_flag = 0;
 		}
-
+        
 		if (b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
-		        x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
+            x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
 		{
 			tmp = malloc(64);
 #ifdef BETA
@@ -3153,13 +3653,13 @@ int main(int argc, char *argv[])
 		}
 		else if (da > 0)//fade away mouseover text
 			da --;
-
+        
 		if (!sdl_zoom_trig && zoom_en==1)
 			zoom_en = 0;
-
+        
 		if (sdl_key=='z' && zoom_en==2 && sys_shortcuts==1)
 			zoom_en = 1;
-
+        
 		if (load_mode)
 		{
 			load_x = CELL*((mx/sdl_scale-load_w/2+CELL/2)/CELL);
@@ -3287,7 +3787,7 @@ int main(int argc, char *argv[])
 							parts[i].life = i+1;
 						parts[NPART-1].life = -1;
 						pfree = 0;
-
+                        
 						legacy_enable = 0;
 						svf_myvote = 0;
 						svf_open = 0;
@@ -3299,13 +3799,13 @@ int main(int argc, char *argv[])
 						svf_description[0] = 0;
 						gravityMode = 0;
 						airMode = 0;
-						
+                        
 						death = death2 = 0;
 						isplayer2 = 0;
 						isplayer = 0;
 						ISSPAWN1 = 0;
 						ISSPAWN2 = 0;
-
+                        
 						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
 						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 						memset(fire_r, 0, sizeof(fire_r));
@@ -3315,7 +3815,7 @@ int main(int argc, char *argv[])
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{
 						login_ui(vid_buf);
-						if (svf_login){
+						if (svf_login) {
 							save_presets(0);
 							http_session_check = NULL;
 						}
@@ -3324,9 +3824,9 @@ int main(int argc, char *argv[])
 					{
 						if (!svf_open || !svf_own || x>51)
 						{
-							if (save_name_ui(vid_buf)){
+							if (save_name_ui(vid_buf)) {
 								execute_save(vid_buf);
-								if(svf_id[0]){
+								if (svf_id[0]) {
 									copytext_ui(vid_buf, "Save ID", "Saved successfully!", svf_id);
 								}
 							}
@@ -3373,34 +3873,34 @@ int main(int argc, char *argv[])
 			else if (y<YRES)// mouse is in playing field
 			{
 				int signi;
-
+                
 				c = (b&1) ? sl : sr; //c is element to be spawned
 				su = c;
-
-				if(c!=WL_SIGN+100)
+                
+				if (c!=WL_SIGN+100)
 				{
-					if(!bq)
-						for(signi=0; signi<MAXSIGNS; signi++)
-							if(sregexp(signs[signi].text, "^{c:[0-9]*|.*}$")==0)
+					if (!bq)
+						for (signi=0; signi<MAXSIGNS; signi++)
+							if (sregexp(signs[signi].text, "^{c:[0-9]*|.*}$")==0)
 							{
 								int signx, signy, signw, signh;
 								get_sign_pos(signi, &signx, &signy, &signw, &signh);
-								if(x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
+								if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
 								{
 									char buff[256];
 									int sldr;
-
+                                    
 									memset(buff, 0, sizeof(buff));
-
-									for(sldr=3; signs[signi].text[sldr] != '|'; sldr++)
+                                    
+									for (sldr=3; signs[signi].text[sldr] != '|'; sldr++)
 										buff[sldr-3] = signs[signi].text[sldr];
-
+                                    
 									buff[sldr-3] = '\0';
 									open_ui(vid_buf, buff, 0);
 								}
 							}
 				}
-
+                
 				if (c==WL_SIGN+100)
 				{
 					if (!bq)
@@ -3464,7 +3964,7 @@ int main(int argc, char *argv[])
 						ly = y;
 					}
 				}
-				else //it is the first click 
+				else //it is the first click
 				{
 					//start line tool
 					if ((sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)) && !(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL|KMOD_LALT)))
@@ -3521,14 +4021,14 @@ int main(int argc, char *argv[])
 					{
 						//Copy state before drawing any particles (for undo)7
 						int cbx, cby, cbi;
-
+                        
 						for (cbi=0; cbi<NPART; cbi++)
 							cb_parts[cbi] = parts[cbi];
-
+                        
 						for (cby = 0; cby<YRES; cby++)
 							for (cbx = 0; cbx<XRES; cbx++)
 								cb_pmap[cby][cbx] = pmap[cby][cbx];
-
+                        
 						for (cby = 0; cby<(YRES/CELL); cby++)
 							for (cbx = 0; cbx<(XRES/CELL); cbx++)
 							{
@@ -3566,33 +4066,33 @@ int main(int argc, char *argv[])
 			}
 			lb = 0;
 		}
-
+        
 		if (load_mode)//draw preview of stamp
 		{
 			draw_image(vid_buf, load_img, load_x, load_y, load_w, load_h, 128);
 			xor_rect(vid_buf, load_x, load_y, load_w, load_h);
 		}
-
+        
 		if (save_mode)//draw dotted lines for selection
 		{
 			xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
 			da = 51;//draws mouseover text for the message
 			db = 269;//the save message
 		}
-
+        
 		if (zoom_en!=1 && !load_mode && !save_mode)//draw normal cursor
 		{
 			render_cursor(vid_buf, mx/sdl_scale, my/sdl_scale, su, bsx, bsy);
 			mousex = mx/sdl_scale;
 			mousey = my/sdl_scale;
 		}
-
+        
 		if (zoom_en)
 			render_zoom(vid_buf);
-
+        
 		if (da)
 			switch (db)//various mouseover messages, da is the alpha
-			{
+        {
 			case 256:
 				drawtext(vid_buf, 16, YRES-24, "Add simulation tags.", 255, 255, 255, da*5);
 				break;
@@ -3655,7 +4155,7 @@ int main(int argc, char *argv[])
 				break;
 			default:
 				drawtext(vid_buf, 16, YRES-24, (char *)ptypes[db].descs, 255, 255, 255, da*5);
-			}
+        }
 		if (itc)//message in the middle of the screen, such as view mode changes
 		{
 			itc--;
@@ -3666,7 +4166,7 @@ int main(int argc, char *argv[])
 			it--;
 			drawtext(vid_buf, 16, 20, it_msg, 255, 255, 255, it>51?255:it*5);
 		}
-
+        
 		if (old_version)
 		{
 			clearrect(vid_buf, XRES-21-old_ver_len, YRES-24, old_ver_len+9, 17);
@@ -3684,7 +4184,7 @@ int main(int argc, char *argv[])
 #endif
 			drawrect(vid_buf, XRES-19-old_ver_len, YRES-22, old_ver_len+5, 13, 255, 216, 32, 255);
 		}
-
+        
 		FPS++;
 		currentTime = SDL_GetTicks();
 		elapsedTime = currentTime-pastFPS;
@@ -3698,18 +4198,16 @@ int main(int argc, char *argv[])
 		{
 			SDL_Delay(5);
 		}
-
+        
 		if (hud_enable)
 		{
 #ifdef BETA
 			sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 #else
-			if (DEBUG_MODE){
+			if (DEBUG_MODE)
 				sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
-            }
-			else {
+			else
 				sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB);
-            }
 #endif
 			if (REPLACE_MODE)
 				strappend(uitext, " [REPLACE MODE]");
@@ -3721,14 +4219,14 @@ int main(int argc, char *argv[])
 			if (vs)
 				strappend(uitext, " [FRAME CAPTURE]");
 #endif
-
+            
 			if (sdl_zoom_trig||zoom_en)
 			{
 				if (zoom_x<XRES/2)
 				{
 					fillrect(vid_buf, XRES-20-textwidth(heattext), 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
 					drawtext(vid_buf, XRES-16-textwidth(heattext), 270, heattext, 255, 255, 255, 200);
-					if(DEBUG_MODE)
+					if (DEBUG_MODE)
 					{
 						fillrect(vid_buf, XRES-20-textwidth(coordtext), 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
 						drawtext(vid_buf, XRES-16-textwidth(coordtext), 282, coordtext, 255, 255, 255, 200);
@@ -3740,7 +4238,7 @@ int main(int argc, char *argv[])
 				{
 					fillrect(vid_buf, 12, 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
 					drawtext(vid_buf, 16, 270, heattext, 255, 255, 255, 200);
-					if(DEBUG_MODE)
+					if (DEBUG_MODE)
 					{
 						fillrect(vid_buf, 12, 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
 						drawtext(vid_buf, 16, 282, coordtext, 255, 255, 255, 200);
@@ -3753,7 +4251,7 @@ int main(int argc, char *argv[])
 			{
 				fillrect(vid_buf, XRES-20-textwidth(heattext), 12, textwidth(heattext)+8, 15, 0, 0, 0, 140);
 				drawtext(vid_buf, XRES-16-textwidth(heattext), 16, heattext, 255, 255, 255, 200);
-				if(DEBUG_MODE)
+				if (DEBUG_MODE)
 				{
 					fillrect(vid_buf, XRES-20-textwidth(coordtext), 26, textwidth(coordtext)+8, 11, 0, 0, 0, 140);
 					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, 200);
@@ -3764,80 +4262,80 @@ int main(int argc, char *argv[])
 			wavelength_gfx = 0;
 			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
 			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
-			
+            
 		}
-		
-		if(console_mode)
+        
+		if (console_mode)
 		{
-            #ifdef PYCONSOLE
-            if(pyready==1 && pygood==1)
-            {
-                char *console;
-                //char error[255] = "error!";
-                sys_pause = 1;
-                console = console_ui(vid_buf,console_error,console_more);
-                console = mystrdup(console);
-                strcpy(console_error,"");
-                if(process_command(vid_buf,console,&console_error,pfunc)==-1)
-                {
-                    free(console);
-                    break;
-                }
-                free(console);
-                if(!console_mode)
-                    hud_enable = 1;
-            }
-            else
-            {
-                char *console;
-                sys_pause = 1;
-                console = console_ui(vid_buf,console_error,console_more);
-                console = mystrdup(console);
-                strcpy(console_error,"");
-                if(process_command_old(vid_buf,console,&console_error)==-1)
-                {
-                    free(console);
-                    break;
-                }
-                free(console);
-                if(!console_mode)
-                    hud_enable = 1;
-            }
-            #else
-            char *console;
-            sys_pause = 1;
-            console = console_ui(vid_buf,console_error,console_more);
-            console = mystrdup(console);
-            strcpy(console_error,"");
-            if(process_command_old(vid_buf,console,&console_error)==-1)
-            {
-                free(console);
-                break;
-            }
-            free(console);
-            if(!console_mode)
-                hud_enable = 1;
-            #endif
+#ifdef PYCONSOLE
+			if (pyready==1 && pygood==1)
+			{
+				char *console;
+				//char error[255] = "error!";
+				sys_pause = 1;
+				console = console_ui(vid_buf,console_error,console_more);
+				console = mystrdup(console);
+				strcpy(console_error,"");
+				if (process_command(vid_buf, console, console_error,pfunc)==-1)
+				{
+					free(console);
+					break;
+				}
+				free(console);
+				if (!console_mode)
+					hud_enable = 1;
+			}
+			else
+			{
+				char *console;
+				sys_pause = 1;
+				console = console_ui(vid_buf,console_error,console_more);
+				console = mystrdup(console);
+				strcpy(console_error,"");
+				if (process_command_old(vid_buf, console, console_error)==-1)
+				{
+					free(console);
+					break;
+				}
+				free(console);
+				if (!console_mode)
+					hud_enable = 1;
+			}
+#else
+			char *console;
+			sys_pause = 1;
+			console = console_ui(vid_buf, console_error, console_more);
+			console = mystrdup(console);
+			strcpy(console_error,"");
+			if (process_command_old(vid_buf, console, console_error)==-1)
+			{
+				free(console);
+				break;
+			}
+			free(console);
+			if (!console_mode)
+				hud_enable = 1;
+#endif
 		}
-		
+        
 		//execute python step hook
-		#ifdef PYCONSOLE
-		if(pyready==1 && pygood==1)
-            if(pstep!=NULL)
-            {
-                pargs=Py_BuildValue("()");
-                pvalue = PyObject_CallObject(pstep, pargs);
-                Py_DECREF(pargs);
-                pargs=NULL;
-                if(pvalue==NULL)
-                    strcpy(console_error,"failed to execute step code.");
-                //Py_DECREF(pvalue);
-                //puts("a");
-                pvalue=NULL;
-            }
-        #endif
+#ifdef PYCONSOLE
+		if (pyready==1 && pygood==1)
+			if (pstep!=NULL)
+			{
+				pargs=Py_BuildValue("()");
+				pvalue = PyObject_CallObject(pstep, pargs);
+				Py_DECREF(pargs);
+				pargs=NULL;
+				if (pvalue==NULL)
+					strcpy(console_error,"failed to execute step code.");
+				//Py_DECREF(pvalue);
+				//puts("a");
+				pvalue=NULL;
+			}
+#endif
 		sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
-
+        
 		//Setting an element for the stick man
 		if (isplayer==0)
 		{
@@ -3856,516 +4354,14 @@ int main(int argc, char *argv[])
 	}
 	SDL_CloseAudio();
 	http_done();
-	
-#ifdef PYCONSOLE
-	
-    PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.py'))\nexcept:\n    pass");
-    PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.pyo'))\nexcept:\n    pass");
-    PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.pyc'))\nexcept:\n    pass");
     
-    Py_Finalize();//cleanup any python stuff.
+#ifdef PYCONSOLE
+    
+	PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.py'))\nexcept:\n    pass");
+	PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.pyo'))\nexcept:\n    pass");
+	PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.pyc'))\nexcept:\n    pass");
+    
+	Py_Finalize();//cleanup any python stuff.
 #endif
 	return 0;
 }
-#ifdef PYCONSOLE
-int process_command(pixel *vid_buf,char *console,char *console_error,PyObject *pfunc) {
-	int y,x,nx,ny,i,j,k,m;
-	int do_next = 1;
-	char xcoord[10];
-	char ycoord[10];
-	char console2[15];
-	char console3[15];
-	char console4[15];
-	char console5[15];
-    PyObject *pvalue,*pargs;
-	//sprintf(console_error, "%s", console);
-	if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
-	{
-		sscanf(console,"%14s %14s %14s %14s", console2, console3, console4, console5);//why didn't i know about this function?!
-		if(strcmp(console2, "quit")==0)
-		{
-			return -1;
-		}else {
-			//handle them command
-			pargs=Py_BuildValue("(s)",console);
-			pvalue = PyObject_CallObject(pfunc, pargs);
-			Py_DECREF(pargs);
-			pargs=NULL;
-			if(pvalue==NULL)
-				strcpy(console_error,"failed to execute code.");
-			pvalue=NULL;
-        }
-	}
-	return 1;
-}
-#endif
-int process_command_old(pixel *vid_buf,char *console,char *console_error) {
-    int y,x,nx,ny,i,j,k,m;
-    float f;
-    int do_next = 1;
-    char xcoord[10] = "";
-    char ycoord[10] = "";
-    char console2[15] = "";
-    char console3[15] = "";
-    char console4[15] = "";
-    char console5[15] = "";
-    //sprintf(console_error, "%s", console);
-    if(console && strcmp(console, "")!=0 && strncmp(console, " ", 1)!=0)
-    {
-        sscanf(console,"%14s %14s %14s %14s", console2, console3, console4, console5);//why didn't i know about this function?!
-        if(strcmp(console2, "quit")==0)
-        {
-            return -1;
-        }
-        else if(strcmp(console2, "file")==0 && console3[0])
-        {
-            if(file_script){
-                FILE *f=fopen(console3, "r");
-                if(f)
-                {
-                    char fileread[5000];//TODO: make this change with file size
-                    char pch[5000];
-                    char tokens[10];
-                    int tokensize;
-                    nx = 0;
-                    ny = 0;
-                    j = 0;
-                    m = 0;
-                    if(console4[0])
-                        console_parse_coords(console4, &nx , &ny, console_error);
-                    memset(pch,0,sizeof(pch));
-                    memset(fileread,0,sizeof(fileread));
-                    fread(fileread,1,5000,f);
-                    for(i=0; i<strlen(fileread); i++)
-                    {
-                        if(fileread[i] != '\n')
-                        {
-                            pch[i-j] = fileread[i];
-                            if(fileread[i] != ' ')
-                                tokens[i-m] = fileread[i];
-                        }
-                        if(fileread[i] == ' ' || fileread[i] == '\n')
-                        {
-                            if(sregexp(tokens,"^x.[0-9],y.[0-9]")==0)//TODO: fix regex matching to work with x,y ect, right now it has to have a +0 or -0
-                            {
-                                char temp[5];
-                                int starty = 0;
-                                tokensize = strlen(tokens);
-                                x = 0;
-                                y = 0;
-                                sscanf(tokens,"x%d,y%d",&x,&y);
-                                sscanf(tokens,"%9s,%9s",xcoord,ycoord);
-                                x += nx;
-                                y += ny;
-                                sprintf(xcoord,"%d",x);
-                                sprintf(ycoord,"%d",y);
-                                for(k = 0; k<strlen(xcoord);k++)//rewrite pch with numbers
-                                {
-                                    pch[i-j-tokensize+k] = xcoord[k];
-                                    starty = k+1;
-                                }
-                                pch[i-j-tokensize+starty] = ',';
-                                starty++;
-                                for(k=0;k<strlen(ycoord);k++)
-                                {
-                                    pch[i-j-tokensize+starty+k] = ycoord[k];
-
-                                }
-                                pch[i-j-tokensize +strlen(xcoord) +1 +strlen(ycoord)] = ' ';
-                                j = j -tokensize +strlen(xcoord) +1 +strlen(ycoord);
-                            }
-                            memset(tokens,0,sizeof(tokens));
-                            m = i+1;
-                        }
-                        if(fileread[i] == '\n')
-                        {
-
-                            if(do_next)
-                            {
-                                if(strcmp(pch,"else")==0)
-                                    do_next = 0;
-                                else
-                                    do_next = process_command_old(vid_buf, pch, console_error);
-                            }
-                            else if(strcmp(pch,"endif")==0 || strcmp(pch,"else")==0)
-                                do_next = 1;
-                            memset(pch,0,sizeof(pch));
-                            j = i+1;
-                        }
-                    }
-                    //sprintf(console_error, "%s exists", console3);
-                    fclose(f);
-                }
-                else
-                {
-                    sprintf(console_error, "%s does not exist", console3);
-                }
-            }
-            else 
-            {
-                sprintf(console_error, "Scripts are not enabled");
-            }
-
-        }
-        else if(strcmp(console2, "sound")==0 && console3[0])
-        {
-            if (sound_enable) play_sound(console3);
-            else strcpy(console_error, "Audio device not available - cannot play sounds");
-        }
-        else if(strcmp(console2, "python")==0)
-            if(pygood==1)
-                pyready=1;
-            else
-                strcpy(console_error, "python not ready. check stdout for more info.");
-        else if(strcmp(console2, "load")==0 && console3[0])
-        {
-            j = atoi(console3);
-            if(j)
-            {
-                open_ui(vid_buf, console3, NULL);
-                console_mode = 0;
-            }
-        }
-        else if(strcmp(console2, "if")==0 && console3[0])
-        {
-            if(strcmp(console3, "type")==0)//TODO: add more than just type, and be able to check greater/less than
-            {
-                if (console_parse_partref(console4, &i, console_error)
-                    && console_parse_type(console5, &j, console_error))
-                {
-                    if(parts[i].type==j)
-                        return 1;
-                    else
-                        return 0;
-                }
-                else
-                    return 0;
-            }
-        }
-        else if (strcmp(console2, "create")==0 && console3[0] && console4[0])
-        {
-            if (console_parse_type(console3, &j, console_error)
-                    && console_parse_coords(console4, &nx, &ny, console_error))
-            {
-                if (!j)
-                    strcpy(console_error, "Cannot create particle with type NONE");
-                else if (create_part(-1,nx,ny,j)<0)
-                    strcpy(console_error, "Could not create particle");
-            }
-        }
-        else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3[0])
-        {
-            if (console_parse_partref(console3, &i, console_error))
-                kill_part(i);
-        }
-        else if(strcmp(console2, "reset")==0 && console3[0])
-        {
-            if(strcmp(console3, "pressure")==0)
-            {
-                for (nx = 0; nx<XRES/CELL; nx++)
-                    for (ny = 0; ny<YRES/CELL; ny++)
-                    {
-                        pv[ny][nx] = 0;
-                    }
-            }
-            else if(strcmp(console3, "velocity")==0)
-            {
-                for (nx = 0; nx<XRES/CELL; nx++)
-                    for (ny = 0; ny<YRES/CELL; ny++)
-                    {
-                        vx[ny][nx] = 0;
-                        vy[ny][nx] = 0;
-                    }
-            }
-            else if(strcmp(console3, "sparks")==0)
-            {
-                for(i=0; i<NPART; i++)
-                {
-                    if(parts[i].type==PT_SPRK)
-                    {
-                        parts[i].type = parts[i].ctype;
-                        parts[i].life = 4;
-                    }
-                }
-            }
-            else if(strcmp(console3, "temp")==0)
-            {
-                for(i=0; i<NPART; i++)
-                {
-                    if(parts[i].type)
-                    {
-                        parts[i].temp = ptypes[parts[i].type].heat;
-                    }
-                }
-            }
-        }
-        else if(strcmp(console2, "set")==0 && console3[0] && console4[0] && console5[0])
-        {
-            if(strcmp(console3, "life")==0)
-            {
-                if(strcmp(console4, "all")==0)
-                {
-                    j = atoi(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type)
-                            parts[i].life = j;
-                    }
-                }
-                else if (console_parse_type(console4, &j, console_error))
-                {
-                    k = atoi(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type == j)
-                            parts[i].life = k;
-                    }
-                }
-                else
-                {
-                    if (console_parse_partref(console4, &i, console_error))
-                    {
-                        j = atoi(console5);
-                        parts[i].life = j;
-                    }
-                }
-            }
-            if(strcmp(console3, "type")==0)
-            {
-                if(strcmp(console4, "all")==0)
-                {
-                    if (console_parse_type(console5, &j, console_error))
-                        for(i=0; i<NPART; i++)
-                        {
-                            if(parts[i].type)
-                                parts[i].type = j;
-                        }
-                }
-                else if (console_parse_type(console4, &j, console_error)
-                         && console_parse_type(console5, &k, console_error))
-                {
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type == j)
-                            parts[i].type = k;
-                    }
-                }
-                else
-                {
-                    if (console_parse_partref(console4, &i, console_error)
-                            && console_parse_type(console5, &j, console_error))
-                    {
-                        parts[i].type = j;
-                    }
-                }
-            }
-            if(strcmp(console3, "temp")==0)
-            {
-                if(strcmp(console4, "all")==0)
-                {
-                    f = atof(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type)
-                            parts[i].temp = f;
-                    }
-                }
-                else if (console_parse_type(console4, &j, console_error))
-                {
-                    f = atof(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type == j)
-                            parts[i].temp= f;
-                    }
-                }
-                else
-                {
-                    if (console_parse_partref(console4, &i, console_error))
-                    {
-                        f = atof(console5);
-                        parts[i].temp = f;
-                    }
-                }
-            }
-            if(strcmp(console3, "tmp")==0)
-            {
-                if(strcmp(console4, "all")==0)
-                {
-                    j = atoi(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type)
-                            parts[i].tmp = j;
-                    }
-                }
-                else if (console_parse_type(console4, &j, console_error))
-                {
-                    k = atoi(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type == j)
-                            parts[i].tmp = k;
-                    }
-                }
-                else
-                {
-                    if (console_parse_partref(console4, &i, console_error))
-                    {
-                        j = atoi(console5);
-                        parts[i].tmp = j;
-                    }
-                }
-            }
-            if(strcmp(console3, "x")==0)
-            {
-                if(strcmp(console4, "all")==0)
-                {
-                    j = atoi(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type)
-                            parts[i].x = j;
-                    }
-                }
-                else if (console_parse_type(console4, &j, console_error))
-                {
-                    k = atoi(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type == j)
-                            parts[i].x = k;
-                    }
-                }
-                else
-                {
-                    if (console_parse_partref(console4, &i, console_error))
-                    {
-                        j = atoi(console5);
-                        parts[i].x = j;
-                    }
-                }
-            }
-            if(strcmp(console3, "y")==0)
-            {
-                if(strcmp(console4, "all")==0)
-                {
-                    j = atoi(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type)
-                            parts[i].y = j;
-                    }
-                }
-                else if (console_parse_type(console4, &j, console_error))
-                {
-                    k = atoi(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type == j)
-                            parts[i].y = k;
-                    }
-                }
-                else
-                {
-                    if (console_parse_partref(console4, &i, console_error))
-                    {
-                        j = atoi(console5);
-                        parts[i].y = j;
-                    }
-                }
-            }
-            if(strcmp(console3, "ctype")==0)
-            {
-                if(strcmp(console4, "all")==0)
-                {
-                    if (console_parse_type(console5, &j, console_error))
-                        for(i=0; i<NPART; i++)
-                        {
-                            if(parts[i].type)
-                                parts[i].ctype = j;
-                        }
-                }
-                else if (console_parse_type(console4, &j, console_error)
-                         && console_parse_type(console5, &k, console_error))
-                {
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type == j)
-                            parts[i].ctype = k;
-                    }
-                }
-                else
-                {
-                    if (console_parse_partref(console4, &i, console_error)
-                            && console_parse_type(console5, &j, console_error))
-                    {
-                        parts[i].ctype = j;
-                    }
-                }
-            }
-            if(strcmp(console3, "vx")==0)
-            {
-                if(strcmp(console4, "all")==0)
-                {
-                    f = atof(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type)
-                            parts[i].vx = f;
-                    }
-                }
-                else if (console_parse_type(console4, &j, console_error))
-                {
-					f = atof(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type == j)
-                            parts[i].vx = f;
-                    }
-                }
-                else
-                {
-                    if (console_parse_partref(console4, &i, console_error))
-                    {
-                        f = atof(console5);
-                        parts[i].vx = f;
-                    }
-                }
-            }
-            if(strcmp(console3, "vy")==0)
-            {
-                if(strcmp(console4, "all")==0)
-                {
-					f = atof(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type)
-                            parts[i].vy = f;
-                    }
-                }
-                else if (console_parse_type(console4, &j, console_error))
-                {
-                    f = atof(console5);
-                    for(i=0; i<NPART; i++)
-                    {
-                        if(parts[i].type == j)
-                            parts[i].vy = f;
-                    }
-                }
-                else
-                {
-                    if (console_parse_partref(console4, &i, console_error))
-                    {
-                        f = atof(console5);
-                        parts[i].vy = f;
-                    }
-                }
-            }
-        }
-        else
-            strcpy(console_error, "Invalid Command");
-    }
-    return 1;
-}
-

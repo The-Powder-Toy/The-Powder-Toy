@@ -596,6 +596,29 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		}
 		return -1;
 	}
+    if (t==PT_PAIN)
+	{
+		pv[y/CELL][x/CELL] += 100.03f;
+		if (y+CELL<YRES)
+			pv[y/CELL+1][x/CELL] += 100.03f;
+		if (x+CELL<XRES)
+		{
+			pv[y/CELL][x/CELL+1] += 100.03f;
+			if (y+CELL<YRES)
+				pv[y/CELL+1][x/CELL+1] += 100.03f;
+		}
+        if (t==PT_PAIN&&parts[pmap[y][x]>>8].temp<MAX_TEMP)
+        {
+            if ((pmap[y][x]&0xFF)==PT_PUMP) {
+                parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 100.1f, MIN_TEMP, MAX_TEMP);
+            } else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL))) {
+                parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 5000.0f, MIN_TEMP, MAX_TEMP);
+            } else {
+                parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 400.0f, MIN_TEMP, MAX_TEMP);
+            }
+        }
+		return -1;
+	}
 	if (t==SPC_VACUUM)
 	{
 		pv[y/CELL][x/CELL] -= 0.03f;
@@ -703,6 +726,14 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	if (t==PT_FUSE) {
 		parts[i].life = 50;
 		parts[i].tmp = 50;
+	}
+    if (t==PT_CFUS) {
+		parts[i].life = 50;
+		parts[i].tmp = 50;
+	}
+    if (t==PT_FUSE2) {
+		parts[i].life = 25;
+		parts[i].tmp = 25;
 	}
 	if (ptypes[t].properties&PROP_LIFE) {
 		int r;
@@ -1440,7 +1471,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			//printf("parts[%d].type: %d\n", i, parts[i].type);
 
 			//this if is whether or not life goes down automatically.
-			if (parts[i].life && t!=PT_ACID && t!=PT_ACRN && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
+			if (parts[i].life && t!=PT_ACID && t!=PT_ACRN && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FUSE2 && t!=PT_CFUS && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
 			{
 				//this if is for stopping life loss when at a certain life value
 				if (!(parts[i].life==10&&(t==PT_SWCH||t==PT_LCRY||t==PT_PCLN||t==PT_HSWC||t==PT_PUMP)))

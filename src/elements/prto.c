@@ -1,14 +1,14 @@
 #include <element.h>
 /*these are the count vaules of where the particle gets stored, depending on where it came from
-   1 4 6
-   2 . 7
-   3 5 8
-   PRTO counts backwards, so that it will come out at the opposite place of where it came in
-   8 5 3
-   7 . 2
-   6 4 1
-   PRTO does +/-1 to the count, so it doesn't jam as easily
-*/
+ 1 4 6
+ 2 . 7
+ 3 5 8
+ PRTO counts backwards, so that it will come out at the opposite place of where it came in
+ 8 5 3
+ 7 . 2
+ 6 4 1
+ PRTO does +/-1 to the count, so it doesn't jam as easily
+ */
 int update_PRTO(UPDATE_FUNC_ARGS) {
 	int r, nnx, rx, ry, np, fe = 0;
 	int count = 0;
@@ -62,16 +62,16 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 					}
 				}
 			}
-	if(fe){
+	if (fe) {
 		int orbd[4] = {0, 0, 0, 0};	//Orbital distances
 		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
-		if(!parts[i].life) parts[i].life = rand();
-		if(!parts[i].ctype) parts[i].life = rand();
+		if (!parts[i].life) parts[i].life = rand();
+		if (!parts[i].ctype) parts[i].life = rand();
 		orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
-		for(r = 0; r < 4; r++){
-			if(orbd[r]<254){
+		for (r = 0; r < 4; r++) {
+			if (orbd[r]<254) {
 				orbd[r] += 16;
-				if(orbd[r]>254){
+				if (orbd[r]>254) {
 					orbd[r] = 0;
 					orbl[r] = rand()%255;
 				}

@@ -20,6 +20,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #ifndef MACOSX
 #include <malloc.h>
 #endif
@@ -39,14 +40,14 @@
 
 #include <update.h>
 
-static char *exe_name(void)
+char *exe_name(void)
 {
 #if defined WIN32
 	char *name= (char *)malloc(64), max=64, res;
 	while ((res = (char)GetModuleFileName(NULL, name, max)) >= max)
 	{
 #elif defined MACOSX
-	char *fn=malloc(64),*name=malloc(PATH_MAX), max=64, res;
+        char *fn=malloc(64),*name=malloc(PATH_MAX), max=64, res;
 	if (_NSGetExecutablePath(fn, &max) != 0)
 	{
 		fn = realloc(fn, max);

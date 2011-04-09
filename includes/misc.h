@@ -20,24 +20,13 @@ __asm__ __volatile ("cpuid":\
 #endif
 
 static char hex[] = "0123456789ABCDEF";
+
 //Signum function
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline int isign(float i);
-#else
-extern inline int isign(float i);
-#endif
+int isign(float i);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline unsigned clamp_flt(float f, float min, float max);
-#else
-extern inline unsigned clamp_flt(float f, float min, float max);
-#endif
+unsigned clamp_flt(float f, float min, float max);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline float restrict_flt(float f, float min, float max);
-#else
-extern inline float restrict_flt(float f, float min, float max);
-#endif
+float restrict_flt(float f, float min, float max);
 
 char *mystrdup(char *s);
 
@@ -79,11 +68,15 @@ int cpu_check(void);
 
 // a b
 // c d
-struct matrix2d {float a,b,c,d;};
+struct matrix2d {
+    float a,b,c,d;
+};
 typedef struct matrix2d matrix2d;
 
 // column vector
-struct vector2d {float x,y;};
+struct vector2d {
+    float x,y;
+};
 typedef struct vector2d vector2d;
 
 matrix2d m2d_multiply_m2d(matrix2d m1, matrix2d m2);

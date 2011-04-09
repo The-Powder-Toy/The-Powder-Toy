@@ -360,7 +360,6 @@ int update_CFIR(UPDATE_FUNC_ARGS);
 int update_BULL(UPDATE_FUNC_ARGS);
 int update_TNT(UPDATE_FUNC_ARGS);
 int update_MGMA(UPDATE_FUNC_ARGS);
-int update_PAIN(UPDATE_FUNC_ARGS);
 int update_VIRS(UPDATE_FUNC_ARGS);
 int update_DICE(UPDATE_FUNC_ARGS);
 int update_ZAP(UPDATE_FUNC_ARGS);
@@ -368,6 +367,7 @@ int update_MPOS(UPDATE_FUNC_ARGS);
 int update_MNEG(UPDATE_FUNC_ARGS);
 int update_IFIL(UPDATE_FUNC_ARGS);
 int update_LGUN(UPDATE_FUNC_ARGS);
+int update_CFUS(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -517,7 +517,7 @@ static const part_type ptypes[PT_NUM] =
 	{"BCOL",	PIXPACK(0x333333),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	2,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	150,	"Broken Coal. Heavy particles. See COAL", ST_SOLID, TYPE_PART, &update_BCOL},
 	{"PCLN",	PIXPACK(0x3B3B10),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Solid. When activated, duplicates any particles it touches.", ST_NONE, TYPE_SOLID, &update_PCLN},
 	{"HSWC",	PIXPACK(0x3B1010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Heat switch. Conducts Heat only when activated", ST_NONE, TYPE_SOLID, &update_HSWC},
-	{"IRON",	PIXPACK(0x707070),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_CRACKER2,	R_TEMP+0.0f +273.15f,	251,	"Rusts with salt, can be used for electrolysis of WATR", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_IRON},
+	{"IRON",	PIXPACK(0x707070),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_ELEC,	R_TEMP+0.0f +273.15f,	251,	"Rusts with salt, can be used for electrolysis of WATR", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_IRON},
 	{"MORT",	PIXPACK(0xE0E0E0),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_CRACKER2,	R_TEMP+4.0f	+273.15f,	60,		"Steam Train.", ST_NONE, TYPE_PART, &update_MORT},
 	{"GOL",		PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Game Of Life! B3/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"HLIF",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"High Life! B36/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
@@ -615,7 +615,7 @@ static const part_type ptypes[PT_NUM] =
 	{"SPER",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little speed boost to the right", ST_SOLID, TYPE_SOLID, NULL},
 	{"POT",		PIXPACK(0xCC883F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	3,	"A plant pot. Breaks Under Pressure.", ST_SOLID, TYPE_SOLID| PROP_HOT_GLOW, NULL}, 
 	{"GRAS",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_NATURE,		0,	251,		"Will slowly grow until it needs to be mowed.", ST_SOLID, TYPE_SOLID, &update_GRAS},
-	{"CFUS",	PIXPACK(0x2E8B9E),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. A cold Fuse. Activated by Cold Flame.", ST_SOLID, TYPE_SOLID, NULL},
+	{"CFUS",	PIXPACK(0x2E8B9E),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. A cold Fuse. Activated by Cold Flame.", ST_SOLID, TYPE_SOLID, &update_CFUS},
 	{"ANT",		PIXPACK(0xC0A060),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Ant. Builds a nest in other particles.", ST_SOLID, TYPE_PART|PROP_DEADLY, &update_CFIR},
 	{"SMIL",	PIXPACK(0xFFFF00),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER2,	373.0f,					40,		"Smile :)", ST_SOLID, TYPE_SOLID, &update_MISC},
     {"SEAL",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+2.0f	+273.15f,				40,		"An Air Seal... Change the temperature to change Max Pressure", ST_SOLID, TYPE_SOLID, NULL}, 	
@@ -624,7 +624,7 @@ static const part_type ptypes[PT_NUM] =
     {"TNT",		PIXPACK(0xF50C10),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	5,      0,  0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Solid. Pressure sensitive explosive.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_TNT},
     {"MGMA",	PIXPACK(0xBF3C02),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_LIQUID,		R_TEMP+1500.0f+273.15f,	60,		"Magma. Like Lava but underground.", ST_LIQUID, TYPE_LIQUID, &update_MGMA},
     {"RAND",	PIXPACK(0x72FC92),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	100,	SC_LIFE,		9000.0f,				40,		"...", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
-    {"DANG",	PIXPACK(0xFF9500),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  1,  100,	SC_SPECIAL,		0.0f,					40,		"Extremely Dangerous Element. Destroys everything with immense heat/pressure", ST_NONE, ST_NONE, &update_PAIN},
+    {"DANG",	PIXPACK(0xFF9500),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  1,  100,	SC_SPECIAL,		0.0f,					40,		"Extremely Dangerous Element. Destroys everything with immense heat/pressure", ST_NONE, ST_NONE, NULL},
     {"VIRS",	PIXPACK(0xFF00FF),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_LIQUID,		R_TEMP,	60,		"Virus. Takes Over Other Elements.", ST_LIQUID, TYPE_LIQUID, &update_VIRS},
     {"O3",		PIXPACK(0xC0FAF9),	2.0f,   0.00f * CFDS,   0,      0.01f,	-0.1f,	0.0f,	0.50f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_GAS,		 	R_TEMP,   70,		"Ozone. Blocks out radiation and pressure and harms plants", ST_GAS, TYPE_GAS | PROP_NEUTABSORB | PROP_DEADLY, NULL},
     {"DICE",	PIXPACK(0xA0C0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,      0,	0,	20,	1,	100,    SC_SOLIDS,		-273.0f,	46,		"Dry Ice. Creates Smoke when in contact with water", ST_SOLID, TYPE_SOLID, &update_DICE},
@@ -797,7 +797,7 @@ static part_transition ptransitions[PT_NUM] =
 	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* WIND */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* H2   */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT}, 
+	/* H2   */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* NTRG  */ {IPL,	NT,			IPH,	NT,			120.0f,	PT_LNTG,     ITH,	PT_NONE},
     /* LQCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* GSCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
@@ -981,43 +981,19 @@ static void create_gain_photon(int pp);
 
 void kill_part(int i);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline void part_change_type(int i, int x, int y, int t);
-#else
-extern inline void part_change_type(int i, int x, int y, int t);
-#endif
+void part_change_type(int i, int x, int y, int t);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline int create_part(int p, int x, int y, int t);
-#else
-extern inline int create_part(int p, int x, int y, int t);
-#endif
+int create_part(int p, int x, int y, int t);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline void delete_part(int x, int y);
-#else
-extern inline void delete_part(int x, int y);
-#endif
+void delete_part(int x, int y);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline int is_wire(int x, int y);
-#else
-extern inline int is_wire(int x, int y);
-#endif
+int is_wire(int x, int y);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline int is_wire_off(int x, int y);
-#else
-extern inline int is_wire_off(int x, int y);
-#endif
+int is_wire_off(int x, int y);
 
 void set_emap(int x, int y);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline int parts_avg(int ci, int ni, int t);
-#else
-extern int parts_avg(int ci, int ni, int t);
-#endif
+int parts_avg(int ci, int ni, int t);
 
 int nearest_part(int ci, int t);
 
@@ -1036,20 +1012,11 @@ int flood_parts(int x, int y, int c, int cm, int bm);
 int create_parts(int x, int y, int rx, int ry, int c);
 
 void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c);
+
 void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
 
+void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
-#else
-extern inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
-#endif
-
-
-#if defined(WIN32) && !defined(__GNUC__)
-extern _inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
-#else
-extern inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
-#endif
+void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
 
 #endif

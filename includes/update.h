@@ -20,7 +20,7 @@
 #ifndef UPDATE_H
 #define UPDATE_H
 
-static char *exe_name(void);
+char *exe_name(void);
 int update_start(char *data, int len);
 int update_finish(void);
 void update_cleanup(void);

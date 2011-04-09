@@ -419,12 +419,9 @@ int register_extension()
 #if defined WIN32
 	LONG rresult;
 	HKEY newkey;
-	char currentfilename[MAX_PATH] = "";
+	char *currentfilename = exe_name();
 	char *iconname;
 	char *opencommand;
-	if (!GetModuleFileName(NULL, currentfilename, MAX_PATH))
-		return 0;
-	currentfilename[MAX_PATH-1] = 0;
 	iconname = malloc(strlen(currentfilename)+6);
 	opencommand = malloc(strlen(currentfilename)+13);
 	sprintf(iconname, "%s,-102", currentfilename);
@@ -441,7 +438,18 @@ int register_extension()
 		return 0;
 	}
 	RegCloseKey(newkey);
-	
+    
+    rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.stm", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
+    if (rresult !=ERROR_SUCCESS) {
+        return 0;
+    }
+	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)"PowderToySave", strlen("PowderToySave")+1;
+    if (rresult!= ERROR_SUCCESS) {
+        RegCloseKey(newkey);
+        return 0;
+    }
+    RegCloseKey(newkey);
+    
 	//Create program entry
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
 	if(rresult != ERROR_SUCCESS){
