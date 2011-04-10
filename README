@@ -1,4 +1,4 @@
-The Powder Toy - March 2011
+The Powder Toy - April 2011
 
 
 
@@ -13,18 +13,18 @@ Thanks:
 ---------------------------------------------------------------------------
 
 Stanislaw K Skowronek - Designed the original
-Simon Robertshaw -
-Skresanov Savely -
-cracker64 -
-Bryan Hoyle -
-Nathan Cousins -
-(This isn't filled in but not sure what to put)
+Simon Robertshaw
+Skresanov Savely
+cracker64
+Bryan Hoyle
+Nathan Cousins
+jacksonmj
+Lieuwe Mosch
     
-
 
 Instructions:
 
-------------------------------------------------------------------------------
+---------------------------------------------------------------------------
 
 Click on the elements with the mouse and draw in the field, like in MS Paint. The rest of the game is learning what happens next.
 
@@ -32,7 +32,7 @@ Click on the elements with the mouse and draw in the field, like in MS Paint. Th
 
 Controls:
 
-------------------------------------------------------------------------------
+---------------------------------------------------------------------------
 
 Caps Lock 	Specific Element Erase
 Insert 		Replace mode
@@ -85,12 +85,22 @@ scale:1 - Normal window resolution
 scale:2 - Doubled window resolution
 kiosk -   Fullscreen mode
 proxy:server:port (ie, proxy:wwwcache.lancs.ac.uk:8080)
+open:file - Opens the file as a stamp or game save
 
 
 History:
 
 ---------------------------------------------------------------------------
 
+*  Version 47.3
+      o Enhanced visual effects for Portals
+      o Glow now has more stimuli (Green: Pressure, Blue: Movement, Red: Heat)
+      o Python console (Unavailable in current beta)
+      o Fixed issue where you appear to be logged in but aren't.
+      o Changes to Quartz (Grows like crystal when exposed to salt water)
+      o Singularity explodes upon death
+      o Save ID shown after saving and on Open Dialog
+      o Rearrangement of some elements (Photons in Radioactive, Thunder in Explosive, etc)
 *  Version 46.3
       o Major game engine and performance improvements.
       o New GOL elements.
