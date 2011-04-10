@@ -11,7 +11,7 @@ int update_PYRO(UPDATE_FUNC_ARGS) {
 	if(t==PT_FIRE && parts[i].life <=1)
 	{
 		if (parts[i].tmp==3){
-			t = PT_WATR;
+			t = PT_DSTW;
 			part_change_type(i,x,y,t);
 			parts[i].life = 0;
 		}
