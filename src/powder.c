@@ -103,7 +103,7 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 		return 0;
 	if (ptypes[pt].falldown!=2 && bmap[ny/CELL][nx/CELL]==WL_ALLOWLIQUID)
 		return 0;
-	if ((pt==PT_NEUT ||pt==PT_PHOT) && bmap[ny/CELL][nx/CELL]==WL_EWALL && !emap[ny/CELL][nx/CELL])
+	if ((pt==PT_NEUT || pt==PT_ZAP ||pt==PT_PHOT) && bmap[ny/CELL][nx/CELL]==WL_EWALL && !emap[ny/CELL][nx/CELL])
 		return 0;
 	if (bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL])
 		return 2;
@@ -747,6 +747,8 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		parts[i].life = 30;
     if (t==PT_LAZR)
 		parts[i].life = 30;
+    if (t==PT_FREZ)
+		parts[i].life = 30;
 	if (t==PT_PUMP)
 		parts[i].life= 10;
 	if (t==PT_SING)
@@ -769,6 +771,8 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		parts[i].life = 110;
 	if (t==PT_FIRE)
 		parts[i].life = rand()%50+120;
+    if (t==PT_BFLM)
+		parts[i].life = rand()%50+120;
 	if (t==PT_PLSM)
 		parts[i].life = rand()%150+50;
 	if (t==PT_HFLM)
@@ -786,6 +790,14 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		parts[i].life = rand()%480+480;
 		parts[i].vx = r*cosf(a);
 		parts[i].vy = r*sinf(a);
+	}
+    if (t==PT_ZAP)
+	{
+        float r = (rand()%128+128)/127.0f;
+        float a = (rand()%360)*3.14159f/180.0f;
+        parts[i].life = rand()%480+480;
+        parts[i].vx = r*cosf(a);
+        parts[i].vy = r*sinf(a);
 	}
 	if (t==PT_MORT)
 	{
@@ -1695,7 +1707,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if (ptypes[t].state==ST_GAS&&ptypes[parts[i].type].state!=ST_GAS)
 							pv[y/CELL][x/CELL] += 0.50f;
 						part_change_type(i,x,y,t);
-						if (t==PT_FIRE||t==PT_PLSM||t==PT_HFLM)
+						if (t==PT_FIRE||t==PT_PLSM||t==PT_HFLM||t==PT_BFLM)
 							parts[i].life = rand()%50+120;
 						if (t==PT_LAVA) {
 							if (parts[i].ctype==PT_BRMT) parts[i].ctype = PT_BMTL;

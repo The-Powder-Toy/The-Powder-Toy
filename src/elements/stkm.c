@@ -441,6 +441,12 @@ int update_STKM(UPDATE_FUNC_ARGS) {
         player[22] -= 1;
         player[26] -= 1;
     }
+    if ((r&0xFF)==PT_LAZR){
+        parts[i].life = 0;
+    }
+    if ((r&0xFF)==PT_FREZ){
+        parts[i].life = 0;
+    }
     
     if ((r&0xFF)==PT_TRAP){
         player[19] = 0;
@@ -564,7 +570,12 @@ int update_STKM(UPDATE_FUNC_ARGS) {
         player[22] -= 1;
         player[26] -= 1;
     }
-    
+    if ((r&0xFF)==PT_LAZR){
+        parts[i].life = 0;
+    }
+    if ((r&0xFF)==PT_FREZ){
+        parts[i].life = 0;
+    }
     if ((r&0xFF)==PT_TRAP){
         player[19] = 0;
         player[20] = 0;

@@ -245,12 +245,20 @@
 #define PT_IFIL 190
 #define PT_LGUN 191
 #define PT_LAZR 192
-#define PT_NUM  193
+#define PT_IBAT 193
+#define PT_FGUN 194
+#define PT_FREZ 195
+#define PT_SPMG 196
+#define PT_SNMG 197
+#define PT_OSMT 198
+#define PT_ROOT 199
+#define PT_BFLM 200
+#define PT_NUM  201
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
 #define MIN_TEMP 0
-#define O_MAX_TEMP 35000
+#define O_MAX_TEMP 99726
 #define O_MIN_TEMP -273
 
 #define ST_NONE 0
@@ -367,10 +375,19 @@ int update_MPOS(UPDATE_FUNC_ARGS);
 int update_MNEG(UPDATE_FUNC_ARGS);
 int update_IFIL(UPDATE_FUNC_ARGS);
 int update_LGUN(UPDATE_FUNC_ARGS);
+int update_FGUN(UPDATE_FUNC_ARGS);
 int update_CFUS(UPDATE_FUNC_ARGS);
+int update_IBAT(UPDATE_FUNC_ARGS);
+int update_LAZR(UPDATE_FUNC_ARGS);
+int update_FREZ(UPDATE_FUNC_ARGS);
+int update_SPMG(UPDATE_FUNC_ARGS);
+int update_SNMG(UPDATE_FUNC_ARGS);
+int update_ROOT(UPDATE_FUNC_ARGS);
+int update_EQUALVEL(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
+int update_legacy_BFLM(UPDATE_FUNC_ARGS);
 int update_legacy_all(UPDATE_FUNC_ARGS);
 
 
@@ -557,7 +574,7 @@ static const part_type ptypes[PT_NUM] =
 	{"ANAR",	PIXPACK(0xFFFFEE),	-0.7f,	-0.02f * CFDS,	0.96f,	0.80f,	0.1f,	-0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Very light dust. Behaves opposite gravity", ST_SOLID, TYPE_PART, NULL},
 	{"VINE",	PIXPACK(0x079A00),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	10,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f +273.15f,	65,		"Vine, grows", ST_SOLID, TYPE_SOLID, &update_VINE},
 	{"INVS",	PIXPACK(0x00CCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	15,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	164,	"Invisible to everything while under pressure.", ST_SOLID, TYPE_SOLID | PROP_NEUTPASS, NULL},
-	{"EQVE",	PIXPACK(0xFFE0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	70,		"Shared velocity test", ST_SOLID, TYPE_PART, NULL},
+	{"EQVE",	PIXPACK(0xFFE0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	70,		"Shared velocity test", ST_SOLID, TYPE_PART, &update_EQUALVEL},
 	{"SPWN2",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_CRACKER2,		R_TEMP+0.0f	+273.15f,	0,		"STK2 spawn point", ST_SOLID, 0, &update_SPAWN2},
 	{"SPWN",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_CRACKER2,		R_TEMP+0.0f	+273.15f,	0,		"STKM spawn point", ST_SOLID, 0, &update_SPAWN},
 	{"SHLD",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	0,		"Shield, spark it to grow", ST_SOLID, 0, &update_SHLD1},
@@ -568,7 +585,7 @@ static const part_type ptypes[PT_NUM] =
 	{"WIFI",	PIXPACK(0x40A060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	2,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	0,		"Wireless transmitter, color coded.", ST_SOLID, TYPE_SOLID, &update_WIFI},
 	{"FILT",	PIXPACK(0x000056),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Filter for photons, changes the color.", ST_SOLID, TYPE_SOLID, NULL},
 	{"ARAY",	PIXPACK(0xFFBB00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	251,	"Ray Emitter. Rays create points when they collide", ST_SOLID, TYPE_SOLID, &update_ARAY},
-	{"BRAY",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	251,	"Ray Point. Rays create points when they collide", ST_SOLID, TYPE_SOLID, NULL},
+	{"BRAY",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,		R_TEMP+0.0f +273.15f,	251,	"Ray Point. Rays create points when they collide", ST_SOLID, TYPE_SOLID, NULL},
 	{"STK2",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	50,		SC_STICKMAN,		R_TEMP+14.6f+273.15f,	0,		"Stickman. Don't kill him!", ST_NONE, 0, &update_STKM2},
 	{"BOMB",	PIXPACK(0xFFF288),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	20,	1,	30,		SC_EXPLOSIVE,	R_TEMP-2.0f	+273.15f,	29,		"Bomb.", ST_NONE, TYPE_PART, &update_BOMB},
 	{"C-5",		PIXPACK(0x2050E0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Cold explosive", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_C5},
@@ -614,7 +631,7 @@ static const part_type ptypes[PT_NUM] =
 	{"SPEL",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little speed boost to the left", ST_SOLID, TYPE_SOLID, NULL},
 	{"SPER",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little speed boost to the right", ST_SOLID, TYPE_SOLID, NULL},
 	{"POT",		PIXPACK(0xCC883F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	3,	"A plant pot. Breaks Under Pressure.", ST_SOLID, TYPE_SOLID| PROP_HOT_GLOW, NULL}, 
-	{"GRAS",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_NATURE,		0,	251,		"Will slowly grow until it needs to be mowed.", ST_SOLID, TYPE_SOLID, &update_GRAS},
+	{"GRAS",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f,	251,		"Will slowly grow until it needs to be mowed.", ST_SOLID, TYPE_SOLID, &update_GRAS},
 	{"CFUS",	PIXPACK(0x2E8B9E),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. A cold Fuse. Activated by Cold Flame.", ST_SOLID, TYPE_SOLID, &update_CFUS},
 	{"ANT",		PIXPACK(0xC0A060),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Ant. Builds a nest in other particles.", ST_SOLID, TYPE_PART|PROP_DEADLY, &update_CFIR},
 	{"SMIL",	PIXPACK(0xFFFF00),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER2,	373.0f,					40,		"Smile :)", ST_SOLID, TYPE_SOLID, &update_MISC},
@@ -631,9 +648,17 @@ static const part_type ptypes[PT_NUM] =
     {"GOLD",	PIXPACK(0xFFD445),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	0,	"Gold. Indestructible Conductor.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
     {"MPOS",	PIXPACK(0xFC0D48),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_ELEC,	R_TEMP+0.0f +273.15f,	251,	"Positively Charged Magnet", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_MPOS},
     {"MNEG",	PIXPACK(0xE3D5D5),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_ELEC,	R_TEMP+0.0f +273.15f,	251,	"Negatively charged Magnet", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_MNEG},
-    {"IFIL",	PIXPACK(0xDAE6DE),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	211,	"Iron Fillings.", ST_SOLID, TYPE_PART|PROP_HOT_GLOW, NULL},
+    {"IFIL",	PIXPACK(0xDAE6DE),	0.4f,	0.01f * CFDS,	0.94f,	0.95f,	-0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	211,	"Iron Fillings.", ST_SOLID, TYPE_PART|PROP_HOT_GLOW, NULL},
     {"LGUN",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	0,	"Lazer Emmitter. Creates Lazers.", ST_SOLID, TYPE_SOLID, &update_LGUN},
-    {"LAZR",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		MAX_TEMP,	251,	"Lazer", ST_SOLID, TYPE_SOLID, NULL},
+    {"LAZR",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,		MAX_TEMP,	251,	"Lazer", ST_SOLID, TYPE_SOLID|PROP_DEADLY, &update_LAZR},
+    {"IBAT",	PIXPACK(0x858505),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Generates Electricity. Doesn't react to heat.", ST_SOLID, TYPE_SOLID, &update_IBAT},
+    {"FGUN",	PIXPACK(0x6BEBFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	0,	"Freeze Ray Emmitter. Creates Freeze Rays.", ST_SOLID, TYPE_SOLID, &update_FGUN},
+    {"FREZ",	PIXPACK(0x6BEBFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,		0.0f,	251,	"Freeze Ray", ST_SOLID, TYPE_SOLID|PROP_DEADLY, &update_FREZ},
+    {"SPMG",	PIXPACK(0xFF8800),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_ELEC,	R_TEMP+0.0f +273.15f,	251,	"Positively Charged Super Magnet", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_SPMG},
+    {"SNMG",	PIXPACK(0xCCE2EB),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_ELEC,	R_TEMP+0.0f +273.15f,	251,	"Negatively Charged Super Magnet", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_SNMG},
+    {"OSMT",	PIXPACK(0x404060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"One Shot Metal. Conducts electricity. Meltable. After Carrying Spark Dissapears.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
+    {"ROOT",	PIXPACK(0xA65005),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f,	251,		"Aids the growth of grass and.", ST_SOLID, TYPE_SOLID, &update_ROOT},
+    {"BFLM",	PIXPACK(0x4C76F5),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	MAX_TEMP,	88,		"Ignites flammable materials. Heats air.", ST_GAS, TYPE_GAS, &update_PYRO},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -842,6 +867,15 @@ static part_transition ptransitions[PT_NUM] =
      /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
          /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+     /* IBAT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* lgun */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* frez */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* spmg */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* snmg */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* 1SHOTMETL */ {IPL,	NT,			IPH,	NT,		ITL,	NT,			1273.0f,PT_LAVA},
+    /* root */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,    NT},
+    /* BIRE */ {IPL,	NT,         IPH,	NT,         ITL,	NT,         ITH,    NT},
+
 };
 #undef IPL
 #undef IPH

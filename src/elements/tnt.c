@@ -24,6 +24,43 @@ int update_TNT(UPDATE_FUNC_ARGS) {
                     parts[r>>8].type = PT_FIRE;
                     parts[r>>8].life = 128;
                 }
+                if ((r&0xFF)==PT_PLSM){
+                    int temporaro = 1000;
+                    while (temporaro > -1001){
+                        create_part(-1,x+1,y+1,PT_PLSM);
+                        create_part(-1,x-1,y-1,PT_PLSM);
+                        create_part(-1,x-1,y+1,PT_PLSM);
+                        create_part(-1,x+1,y-1,PT_PLSM);
+                        create_part(-1,x,y,PT_PAIN);
+                        temporaro--;
+                    }
+                    parts[r>>8].type = PT_PLSM;
+                    parts[r>>8].life = 128;
+                }
+                if ((r&0xFF)==PT_BFLM){
+                    int temporaro = 1000;
+                    while (temporaro > -1001){
+                        create_part(-1,x+1,y+1,PT_PAIN);
+                        create_part(-1,x-1,y-1,PT_PAIN);
+                        create_part(-1,x-1,y+1,PT_PAIN);
+                        create_part(-1,x+1,y-1,PT_PAIN);
+                        create_part(-1,x,y,PT_PAIN);
+                        temporaro--;
+                    }
+                    parts[r>>8].type = PT_BFLM;
+                    parts[r>>8].life = 128;
+                }
+                if ((r&0xFF)==PT_SPRK){
+                    int temporaro = 1000;
+                    while (temporaro > -1001){
+                        create_part(-1,x+1,y+1,PT_FIRE);
+                        create_part(-1,x-1,y-1,PT_FIRE);
+                        create_part(-1,x-1,y+1,PT_FIRE);
+                        create_part(-1,x+1,y-1,PT_FIRE);
+                        create_part(-1,x,y,PT_PAIN);
+                        temporaro--;
+                    }
+                }
             }
     return 0;
 }

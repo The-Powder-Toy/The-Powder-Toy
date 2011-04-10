@@ -357,6 +357,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 			if (x>=x0 && x<x0+w && y>=y0 && y<y0+h) {
 				if (!m[(x-x0)+(y-y0)*w] ||
                     parts[m[(x-x0)+(y-y0)*w]-1].type == PT_PHOT ||
+                    parts[m[(x-x0)+(y-y0)*w]-1].type == PT_ZAP ||
                     parts[m[(x-x0)+(y-y0)*w]-1].type == PT_NEUT)
 					m[(x-x0)+(y-y0)*w] = i+1;
 			}

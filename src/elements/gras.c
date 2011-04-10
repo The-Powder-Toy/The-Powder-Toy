@@ -80,6 +80,11 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                             if(create_part(-1,x+rx+nrx,y+ry+nry,PT_GRAS))
                                 parts[pmap[y+ry+nry][x+rx+nrx]>>8].temp = 0;
                         }
+                        if (rand()%8000 < 1){
+                            if (parts[r>>8].type==PT_DIRT){
+                                parts[r>>8].type = PT_ROOT;
+                            }
+                        }
                     }
                     
                     

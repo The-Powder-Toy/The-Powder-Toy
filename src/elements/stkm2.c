@@ -409,7 +409,12 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
         player2[22] -= 1;
         player2[26] -= 1;
     }
-    
+    if ((r&0xFF)==PT_LAZR){
+        parts[i].life = 0;
+    }
+    if ((r&0xFF)==PT_FREZ){
+        parts[i].life = 0;
+    }
     if ((r&0xFF)==PT_TRAP){
         player2[19] = 0;
         player2[20] = 0;
@@ -495,6 +500,12 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
     if ((r&0xFF)==PT_RSPW)
         player2[2] = PT_SPAWN;
     
+    if ((r&0xFF)==PT_LAZR){
+        parts[i].life = 0;
+    }
+    if ((r&0xFF)==PT_FREZ){
+        parts[i].life = 0;
+    }
     if ((r&0xFF)==PT_BPAD){
         parts[i].vy = -5;
         player2[22] -= 1;
