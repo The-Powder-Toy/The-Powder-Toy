@@ -8,11 +8,19 @@ int update_PYRO(UPDATE_FUNC_ARGS) {
 		part_change_type(i,x,y,t);
 		parts[i].life = 0;
 	}
-	if (t==PT_FIRE && parts[i].life <=1 && parts[i].temp<625)
+	if(t==PT_FIRE && parts[i].life <=1)
 	{
-		t = PT_SMKE;
-		part_change_type(i,x,y,t);
-		parts[i].life = rand()%20+250;
+		if (parts[i].tmp==3){
+			t = PT_WATR;
+			part_change_type(i,x,y,t);
+			parts[i].life = 0;
+		}
+		else if (parts[i].temp<625)
+		{
+			t = PT_SMKE;
+			part_change_type(i,x,y,t);
+			parts[i].life = rand()%20+250;
+		}
 	}
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
