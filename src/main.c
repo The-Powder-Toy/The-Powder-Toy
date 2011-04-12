@@ -2556,7 +2556,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 #ifdef RENDERER
 int main(int argc, char *argv[])
 {
-	pixel *vid_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	pixel *vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	int load_size, i=0, j=0;
 	void *load_data = file_load(argv[1], &load_size);
 	unsigned char c[3];
@@ -2569,12 +2569,9 @@ int main(int argc, char *argv[])
 		parts[i].life = i+1;
 	parts[NPART-1].life = -1;
 	pfree = 0;
-	fire_bg=calloc(XRES*YRES, PIXELSIZE);
-	memset(fire_r, 0, sizeof(fire_r));
-	memset(fire_g, 0, sizeof(fire_g));
-	memset(fire_b, 0, sizeof(fire_b));
-	memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
 	
+	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
+	fire_bg = calloc(XRES*YRES, PIXELSIZE);
 	
 	prepare_alpha();
 	
@@ -2584,11 +2581,10 @@ int main(int argc, char *argv[])
 		parsestate = parse_save(load_data, load_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 		
 		for(i=0; i<30; i++){
-			
+			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 			update_particles(vid_buf);
 			draw_parts(vid_buf);
 			render_fire(vid_buf);
-			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
 		
 		render_signs(vid_buf);
