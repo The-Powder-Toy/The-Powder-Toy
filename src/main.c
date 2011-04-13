@@ -2873,12 +2873,6 @@ int main(int argc, char *argv[])
 			bsy = 1180;
 		if (bsy<0)
 			bsy = 0;
-
-		memcpy(mmapx_o, mmapx, sizeof(mmapx));
-		memcpy(mmapy_o, mmapy, sizeof(mmapy));
-		
-		memset(mmapx, 0, sizeof(mmapx));
-		memset(mmapy, 0, sizeof(mmapy));
 		
 		update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
