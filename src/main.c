@@ -477,9 +477,11 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	{
 		free(d);
 		free(c);
+		free(m);
 		return NULL;
 	}
 	free(d);
+	free(m);
 
 	*size = i+12;
 	return c;
@@ -487,8 +489,8 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 
 int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES])
 {
-	unsigned char *d,*c=save;
-	int q,i,j,k,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int)), ver, pty, ty, legacy_beta=0;
+	unsigned char *d=NULL,*c=save;
+	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
 	int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
 	int fp[NPART], nf=0, new_format = 0, ttv = 0;
 	particle *parts = partsptr;
@@ -573,6 +575,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 		clear_sim();
 	}
+	m = calloc(XRES*YRES, sizeof(int));
 
 	// make a catalog of free parts
 	memset(pmap, 0, sizeof(pmap));
@@ -897,11 +900,14 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	}
 
 version1:
-	free(d);
+	if (m) free(m);
+	if (d) free(d);
 
 	return 0;
 
 corrupt:
+	if (m) free(m);
+	if (d) free(d);
 	if (replace)
 	{
 		legacy_enable = 0;
