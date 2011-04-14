@@ -8,17 +8,17 @@
 #endif
 
 #define ME4502_MAJOR_VERSION 1
-#define ME4502_VERSION 8
+#define ME4502_VERSION 9
 #define SAVE_VERSION 99
-#define MINOR_VERSION 9
-#define IDENT_VERSION "M" //Change this if you're not Simon! It should be a single letter.
+#define MINOR_VERSION 10
+#define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
 
 #define SERVER "powdertoy.co.uk"
 
 #define THUMB_CACHE_SIZE 256
 
-//#define pyconsole
+#define pyconsole
 
 #ifndef M_PI
 #define M_PI 3.14159265f
@@ -28,8 +28,14 @@
 #define TIMEOUT 100
 #define HTTP_TIMEOUT 10
 
+
+#ifdef RENDERER	
+#define MENUSIZE 0
+#define BARSIZE 0
+#else
 #define MENUSIZE 40
 #define BARSIZE 17
+#endif
 #define XRES	612
 #define YRES	384
 #define NPART XRES*YRES
@@ -73,7 +79,7 @@ extern unsigned char ZSIZE;
 #define SQUARE_BRUSH 1
 #define BRUSH_NUM 2
 
-#define PYCONSOLE
+//#define PYCONSOLE
 //#define PYEXT
 //no longer needed
 

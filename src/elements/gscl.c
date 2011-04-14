@@ -10,6 +10,7 @@ int update_GSCL(UPDATE_FUNC_ARGS) {
 				        pmap[y+ry][x+rx] &&
 				        (pmap[y+ry][x+rx]&0xFF)!=PT_CLNE &&
                         (pmap[y+ry][x+rx]&0xFF)!=PT_GSCL &&
+                        (pmap[y+ry][x+rx]&0xFF)!=PT_PDCL &&
                         (pmap[y+ry][x+rx]&0xFF)!=PT_LQCL &&
 				        (pmap[y+ry][x+rx]&0xFF)!=PT_BCLN &&
 				        (pmap[y+ry][x+rx]&0xFF)!=PT_PCLN &&

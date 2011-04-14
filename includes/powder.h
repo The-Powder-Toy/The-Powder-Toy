@@ -253,12 +253,13 @@
 #define PT_OSMT 198
 #define PT_ROOT 199
 #define PT_BFLM 200
-#define PT_NUM  201
+#define PT_PDCL 201
+#define PT_NUM  202
 
 #define R_TEMP 22
-#define MAX_TEMP 99999
+#define MAX_TEMP 9999
 #define MIN_TEMP 0
-#define O_MAX_TEMP 99726
+#define O_MAX_TEMP 3500
 #define O_MIN_TEMP -273
 
 #define ST_NONE 0
@@ -384,6 +385,7 @@ int update_SPMG(UPDATE_FUNC_ARGS);
 int update_SNMG(UPDATE_FUNC_ARGS);
 int update_ROOT(UPDATE_FUNC_ARGS);
 int update_EQUALVEL(UPDATE_FUNC_ARGS);
+int update_PDCL(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -496,7 +498,7 @@ static const part_type ptypes[PT_NUM] =
 	{"PSCN",	PIXPACK(0x805050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"P-Type Silicon, Will transfer current to any conductor.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, NULL},
 	{"NSCN",	PIXPACK(0x505080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"N-Type Silicon, Will not transfer current to P-Type Silicon.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, NULL},
 	{"LN2",		PIXPACK(0x80A0DF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	0,	1,	30,		SC_LIQUID,		70.15f,					70,		"Liquid Nitrogen. Very cold.", ST_SOLID, TYPE_LIQUID, NULL},
-	{"INSL",	PIXPACK(0x9EA3B6),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	7,		0,	0,	10,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	0,		"Insulator, does not conduct heat or electricity.", ST_SOLID, TYPE_SOLID, NULL},
+	{"INSL",	PIXPACK(0x9EA3B6),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	7,		0,	0,	10,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	0,		"Insulator, does not conduct heat or electricity.", ST_SOLID, TYPE_SOLID, NULL},
 	{"BHOL",	PIXPACK(0x202020),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.01f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP+70.0f+273.15f,	255,	"Black hole, sucks in other particles and heats up.", ST_NONE, TYPE_SOLID, NULL},
 	{"WHOL",	PIXPACK(0xEFEFEF),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.010f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP-16.0f+273.15f,	255,	"White hole, pushes other particles away.", ST_NONE, TYPE_SOLID, NULL},
 	{"RBDM",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	1,	50,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	240,	"Rubidium, explosive, especially on contact with water, low melting point", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, NULL},
@@ -526,7 +528,7 @@ static const part_type ptypes[PT_NUM] =
 	{"THRM",	PIXPACK(0xA08090),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	90,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	211,	"Thermite. Burns at extremely high temperature.", ST_SOLID, TYPE_PART, &update_THRM},
 	{"GLOW",	PIXPACK(0x445464),	0.3f,	0.02f * CFDS,	0.98f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	2,	1,	40,		SC_LIQUID,		R_TEMP+20.0f+273.15f,	44,		"Glow, Glows under pressure", ST_LIQUID, TYPE_LIQUID, &update_GLOW},
 	{"BRCK",	PIXPACK(0x808080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Brick, breakable building material.", ST_SOLID, TYPE_SOLID|PROP_HOT_GLOW, NULL},
-	{"CFLM",	PIXPACK(0x8080FF),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.0005f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	0.0f,					88,		"Sub-zero flame.", ST_LIQUID, TYPE_GAS, NULL},
+	{"CFLM",	PIXPACK(0x8080FF),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.0005f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	0.0f,					88,		"Sub-zero flame.", ST_GAS, TYPE_GAS, NULL},
 	{"FIRW",	PIXPACK(0xFFA040),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	-0.99f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	55,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	70,		"Fireworks!", ST_SOLID, TYPE_PART, &update_FIRW},
 	{"FUSE",	PIXPACK(0x0A5706),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. Burns slowly. Ignites at somewhat high temperatures and electricity.", ST_SOLID, TYPE_SOLID, &update_FUSE},
 	{"FSEP",	PIXPACK(0x63AD5F),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	70,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Fuse Powder. See FUSE.", ST_SOLID, TYPE_PART, &update_FSEP},
@@ -659,6 +661,7 @@ static const part_type ptypes[PT_NUM] =
     {"OSMT",	PIXPACK(0x404060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"One Shot Metal. Conducts electricity. Meltable. After Carrying Spark Dissapears.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
     {"ROOT",	PIXPACK(0xA65005),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f,	251,		"Aids the growth of grass and.", ST_SOLID, TYPE_SOLID, &update_ROOT},
     {"BFLM",	PIXPACK(0x4C76F5),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	MAX_TEMP,	88,		"Ignites flammable materials. Heats air.", ST_GAS, TYPE_GAS, &update_PYRO},
+    {"PDCL",	PIXPACK(0xFFD010),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Powder. Duplicates any particles it touches.", ST_SOLID, TYPE_PART, &update_PDCL},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -875,7 +878,8 @@ static part_transition ptransitions[PT_NUM] =
     /* 1SHOTMETL */ {IPL,	NT,			IPH,	NT,		ITL,	NT,			1273.0f,PT_LAVA},
     /* root */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,    NT},
     /* BIRE */ {IPL,	NT,         IPH,	NT,         ITL,	NT,         ITH,    NT},
-
+    /* PDCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    
 };
 #undef IPL
 #undef IPH

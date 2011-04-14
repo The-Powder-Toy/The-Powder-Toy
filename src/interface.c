@@ -72,7 +72,7 @@ void menu_count(void)//puts the number of elements in each section into .itemcou
 {
 	int i=0;
 	msections[SC_WALL].itemcount = UI_WALLCOUNT-4;
-	msections[SC_SPECIAL].itemcount = 4;
+	//msections[SC_SPECIAL].itemcount = 4;
 	for (i=0; i<PT_NUM; i++)
 	{
 		msections[ptypes[i].menusection].itemcount+=ptypes[i].menu;
@@ -774,7 +774,9 @@ void info_box(pixel *vid_buf, char *msg)
 	clearrect(vid_buf, x0-2, y0-2, w+4, 28);
 	drawrect(vid_buf, x0, y0, w, 24, 192, 192, 192, 255);
 	drawtext(vid_buf, x0+8, y0+8, msg, 192, 192, 240, 255);
-	sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+#ifndef RENDERER
+        sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+#endif
 }
 
 void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt)
@@ -1503,7 +1505,7 @@ int save_name_ui(pixel *vid_buf)
 }
 
 //unused old function, with all the elements drawn at the bottom
-/*
+
 void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 {
 	int b=1,bq,mx,my,h,x,y,n=0,height,width,sy,rows=0;
@@ -1697,7 +1699,8 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 	}
 	//drawtext(vid_buf, XRES+2, (12*i)+2, msections[i].icon, 255, 255, 255, 255);
 }
-*/
+ 
+
 //current menu function
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, int my)
 {
@@ -1720,10 +1723,10 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 			if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
 			{
 				/*if (x-18<=2)
-				{
-					x = XRES-BARSIZE-18;
-					y += 19;
-				}*/
+                 {
+                 x = XRES-BARSIZE-18;
+                 y += 19;
+                 }*/
 				x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
@@ -1752,15 +1755,22 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 	}
 	else if (i==SC_SPECIAL)//special menu
 	{
+        if (fwidth > XRES-BARSIZE){ //fancy scrolling
+			float overflow = fwidth-(XRES-BARSIZE), location = ((float)XRES-BARSIZE)/((float)(mx-(XRES-BARSIZE)));
+			xoff = (int)(overflow / location);
+		}
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
 			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
 			{
+                
 				/*if (x-18<=0)
-				{
-					x = XRES-BARSIZE-18;
-					y += 19;
-				}*/
+                 {
+                 x = XRES-BARSIZE-18;
+                 y += 19;
+                 }
+                 */
+                
 				x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
@@ -1785,41 +1795,74 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
 				}
 			}
-		}
-		for (n = 0; n<PT_NUM; n++)
+		} 
+		/*for (n = 0; n<PT_NUM; n++)
+         {
+         if (ptypes[n].menusection==i&&ptypes[n].menu==1)
+         {
+         if (x-18<=0)
+         {
+         x = XRES-BARSIZE-18;
+         y += 19;
+         }
+         
+         
+         x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
+         if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+         {
+         drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+         h = n;
+         }
+         if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+         {
+         drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+         h = n;
+         }
+         else if (n==SLALT)
+         {
+         drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+         }
+         else if (n==*sl)
+         {
+         drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+         }
+         else if (n==*sr)
+         {
+         drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+         }
+         }
+         }
+         */
+        for (n = 0; n<PT_NUM; n++)
 		{
 			if (ptypes[n].menusection==i&&ptypes[n].menu==1)
 			{
-				/*if (x-18<=0)
+				x -= draw_tool_xy(vid_buf, x-xoff, y, n, ptypes[n].pcolors)+5;
+				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
 				{
-					x = XRES-BARSIZE-18;
-					y += 19;
-				}*/
-				x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
-				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
-				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 0, 0, 255);
 					h = n;
 				}
-				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
 					h = n;
 				}
 				else if (n==SLALT)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
 				}
 				else if (n==*sl)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 0, 0, 255);
 				}
 				else if (n==*sr)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 0, 255, 255);
 				}
 			}
-		}
+        }
+        
 	}
 	else //all other menus
 	{
@@ -1861,7 +1904,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 		if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
 			if (i>=0&&i<SC_TOTAL)
 				SEC = i;
-
+    
 	if (h==-1)
 	{
 		drawtext(vid_buf, XRES-textwidth((char *)msections[i].name)-BARSIZE, sy-10, (char *)msections[i].name, 255, 255, 255, 255);
@@ -1915,6 +1958,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 		}
 	}
 }
+
 
 int sdl_poll(void)
 {
@@ -3288,6 +3332,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 						free(svf_last);
 					svf_last = NULL;
 					error_ui(vid_buf, 0, "An Error Occurred");
+                     
 				}
 			} else {
 				fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 190);

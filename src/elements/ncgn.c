@@ -13,8 +13,8 @@ int update_NCGN(UPDATE_FUNC_ARGS) {
                 if (parts[r>>8].type==PT_PLUT){
                     create_part(-1, nx, ny,PT_NCWS);
                     rt = 3 + (int)pv[y/CELL][x/CELL];
-                    for(nx=-2; nx<3; nx++)
-                        for(ny=-2; ny<3; ny++)
+                    for(nx=-12; nx<12; nx++)
+                        for(ny=-12; ny<12; ny++)
                             if(x+nx>=0 && y+ny>0 &&
                                x+nx<XRES && y+ny<YRES && (nx || ny))
                             {

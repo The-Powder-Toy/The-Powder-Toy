@@ -167,7 +167,7 @@ typedef struct
 #ifdef BETA
 static const char *old_ver_msg_beta = "A new beta is available - click here!";
 #endif
-static const char *old_ver_msg = "A new version is available - click here!";
+static const char *old_ver_msg = "A new version is available - check the thread at http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=2821!";
 float mheat = 0.0f;
 
 int do_open = 0;
@@ -178,6 +178,7 @@ int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
 int MSIGN =-1;
+int frameidx = 0;
 //int CGOL = 0;
 //int GSPEED = 1;//causes my .exe to crash..
 int sound_enable = 0;
@@ -461,7 +462,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	c[1] = 0x53;	//0x75;
 	c[2] = 0x76;	//0x43;
 	c[3] = legacy_enable|((sys_pause<<1)&0x02)|((gravityMode<<2)&0x0C)|((airMode<<4)&0x70);
-	c[4] = SAVE_VERSION;
+	c[4] = ME4502_MAJOR_VERSION;
 	c[5] = CELL;
 	c[6] = bw;
 	c[7] = bh;
@@ -502,7 +503,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	if (c[2]==0x76 && c[1]==0x53 && c[0]==0x50) {
 		new_format = 1;
 	}
-	if (c[4]>SAVE_VERSION)
+    /*
+	if (c[4]>ME4502_MAJOR_VERSION)
 		return 2;
 	ver = c[4];
     
@@ -529,7 +531,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			}
 		}
 	}
-    
+    */
 	bw = c[6];
 	bh = c[7];
 	if (bx0+bw > XRES/CELL)
@@ -1179,7 +1181,7 @@ char *tag = "(c) 2008-9 Stanislaw Skowronek";
 int itc = 0;
 char itc_msg[64] = "[?]";
 
-char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
+char my_uri[] = "http://powdertoy.co.uk/Update.api?Action=Download&Architecture="
 #if defined WIN32
 "Windows32"
 #elif defined LIN32
@@ -2552,6 +2554,71 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 	return 1;
 }
 
+#ifdef RENDERER
+int main(int argc, char *argv[])
+{
+ 	  pixel *vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+ 	  int load_size, i=0, j=0;
+ 	  void *load_data = file_load(argv[1], &load_size);
+ 	  unsigned char c[3];
+ 	  FILE *f;
+ 	  
+ 	  cmode = CM_FIRE;
+ 	  sys_pause = 1;
+ 	  parts = calloc(sizeof(particle), NPART);
+ 	  for (i=0; i<NPART-1; i++)
+            parts[i].life = i+1;
+            parts[NPART-1].life = -1;
+            pfree = 0;
+    
+        fire_bg = calloc(XRES*YRES, PIXELSIZE);
+ 	  pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
+          
+          
+          prepare_alpha();
+          
+          if(load_data && load_size){
+                int parsestate = 0;
+                //parsestate = parse_save(load_data, load_size, 1, 0, 0);
+                parsestate = parse_save(load_data, load_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+                
+                for(i=0; i<30; i++){
+                      
+                      memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+                      update_particles(vid_buf);
+                      draw_parts(vid_buf);
+                      render_fire(vid_buf);
+                      
+                    }
+                
+                render_signs(vid_buf);
+                
+                if(parsestate>0){
+                      //return 0;
+                      info_box(vid_buf, "Save file invalid or from newer version");
+                    }
+                
+                f=fopen(argv[2],"wb");
+                fprintf(f,"P6\n%d %d\n255\n",XRES,YRES);
+                for (j=0; j<YRES; j++)
+                    {
+                          for (i=0; i<XRES; i++)
+                              {
+                                    c[0] = PIXR(vid_buf[i]);
+                                    c[1] = PIXG(vid_buf[i]);
+                                    c[2] = PIXB(vid_buf[i]);
+                                    fwrite(c,3,1,f);
+                                  }
+                          vid_buf+=XRES+BARSIZE;
+                        }
+                fclose(f);
+                
+                return 1;
+              }
+ 	  
+ 	  return 0;
+}
+#else
 int main(int argc, char *argv[])
 {
 	int hud_enable = 1;
@@ -2766,9 +2833,9 @@ int main(int argc, char *argv[])
 	}
     
 #ifdef BETA
-	http_ver_check = http_async_req_start(NULL, "http://" SERVER "/Update.api?Action=CheckVersion", NULL, 0, 0);
+	http_ver_check = http_async_req_start(NULL, "http://bbgmod.webs.com/version.txt", NULL, 0, 0);
 #else
-	http_ver_check = http_async_req_start(NULL, "http://" SERVER "/Update.api?Action=CheckVersion", NULL, 0, 0);
+	http_ver_check = http_async_req_start(NULL, "http://bbgmod.webs.com/version.txt", NULL, 0, 0);
 #endif
 	if (svf_login) {
 		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
@@ -2777,6 +2844,8 @@ int main(int argc, char *argv[])
     
 	while (!sdl_poll()) //the main loop
 	{
+        frameidx++;
+        frameidx %= 30;
 		if (!sys_pause||framerender) //only update air if not paused
 		{
 			update_air();
@@ -2808,6 +2877,13 @@ int main(int argc, char *argv[])
 			bsy = 1180;
 		if (bsy<0)
 			bsy = 0;
+        
+        
+        //memcpy(mmapx_o, mmapx, sizeof(mmapx));
+		//memcpy(mmapy_o, mmapy, sizeof(mmapy));
+        
+		//memset(mmapx, 0, sizeof(mmapx));
+		//memset(mmapy, 0, sizeof(mmapy));
         
 		update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
@@ -2843,11 +2919,11 @@ int main(int argc, char *argv[])
 				{
 #ifdef BETA
 					if (sscanf(ver_data, "%d.%d.%d", &major, &minor, &is_beta)==3)
-						if (major>SAVE_VERSION || (major==SAVE_VERSION && minor>MINOR_VERSION) || (major==SAVE_VERSION && is_beta == 0))
+						if (major>ME4502_MAJOR_VERSION || (major==ME4502_MAJOR_VERSION && minor>ME4502_VERSION) || (major==ME4502_MAJOR_VERSION && is_beta == 0))
 							old_version = 1;
 #else
 					if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
-						if (major>SAVE_VERSION || (major==SAVE_VERSION && minor>MINOR_VERSION))
+						if (major>ME4502_MAJOR_VERSION || (major==ME4502_MAJOR_VERSION && minor>ME4502_VERSION))
 							old_version = 1;
 #endif
 					free(ver_data);
@@ -3460,6 +3536,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		menu_ui_v3(vid_buf, active_menu, &sl, &sr, b, bq, x, y); //draw the elements in the current menu
+        //menu_ui(vid_buf, active_menu, &sl, &sr); //For a completely Messed Up Menu
         
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
             && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
@@ -3514,7 +3591,7 @@ int main(int argc, char *argv[])
 		if (update_flag)
 		{
 			info_box(vid_buf, "Finalizing update...");
-			if (last_major>SAVE_VERSION || (last_major==SAVE_VERSION && last_minor>=MINOR_VERSION))
+			if (last_major>ME4502_MAJOR_VERSION || (last_major==ME4502_MAJOR_VERSION && last_minor>=ME4502_VERSION))
 			{
 				update_cleanup();
 				error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
@@ -3533,38 +3610,17 @@ int main(int argc, char *argv[])
             x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
 		{
 			tmp = malloc(64);
-#ifdef BETA
-			if (is_beta)
-			{
-				sprintf(tmp, "Your version: %d (Beta %d), new version: %d (Beta %d).", SAVE_VERSION, MINOR_VERSION, major, minor);
-			}
-			else
-			{
-				sprintf(tmp, "Your version: %d (Beta %d), new version: %d.%d.", SAVE_VERSION, MINOR_VERSION, major, minor);
-			}
+            if (confirm_ui(vid_buf, "Open Webpage", "You are about to open the webpage", "Open"))
+            {
+#ifdef WIN32
+                ShellExecute(NULL, "open", "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=2821", NULL, NULL, SW_SHOWNORMAL);
+#elif MACOSX
+                system("open http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=2821");
 #else
-			sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", SAVE_VERSION, MINOR_VERSION, major, minor);
+                error_ui(vid_buf, 0, "Open Failed - Your OS does not support This Feature.");
 #endif
-			if (confirm_ui(vid_buf, "Do you want to update The Powder Toy?", tmp, "Update"))
-			{
-				free(tmp);
-				tmp = download_ui(vid_buf, my_uri, &i);
-				if (tmp)
-				{
-					save_presets(1);
-					if (update_start(tmp, i))
-					{
-						update_cleanup();
-						save_presets(0);
-						error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
-					}
-					else
-						return 0;
-				}
-			}
-			else
-				free(tmp);
-		}
+            }    
+        }
 		if (y>=sdl_scale*(YRES+(MENUSIZE-20))) //mouse checks for buttons at the bottom, to draw mouseover texts
 		{
 			if (x>=189*sdl_scale && x<=202*sdl_scale && svf_login && svf_open && svf_myvote==0)
@@ -4366,3 +4422,4 @@ int main(int argc, char *argv[])
 #endif
 	return 0;
 }
+#endif
