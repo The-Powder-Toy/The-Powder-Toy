@@ -23,22 +23,29 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 				count ++;
 				if (!r)
 					fe = 1;
-				if ((r>>8)>=NPART || !r)
+				if ((r>>8)>=NPART)
 					continue;
-				if ((r&0xFF)==PT_SPRK || ((r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO && (ptypes[r&0xFF].falldown!= 0 || ptypes[r&0xFF].state == ST_GAS)))
-					for ( nnx=0; nnx<80; nnx++)
-						if (!portal[parts[i].tmp][count-1][nnx])
-						{
-							portal[parts[i].tmp][count-1][nnx] = parts[r>>8].type;
-							portaltemp[parts[i].tmp][count-1][nnx] = parts[r>>8].temp;
-							portalctype[parts[i].tmp][count-1][nnx] = parts[r>>8].ctype;
-							if ((r&0xFF)==PT_SPRK)
-								part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
-							else
-								kill_part(r>>8);
-							fe = 1;
-							break;
-						}
+				if (!r || (r&0xFF)==PT_PRTI || (r&0xFF)==PT_PRTO || (ptypes[r&0xFF].falldown== 0 && ptypes[r&0xFF].state != ST_GAS && (r&0xFF)!=PT_SPRK))
+				{
+					r = photons[y+ry][x+rx];
+					if ((r>>8)>=NPART)
+						continue;
+					if (!r || (r&0xFF)==PT_PRTI || (r&0xFF)==PT_PRTO || (ptypes[r&0xFF].falldown== 0 && ptypes[r&0xFF].state != ST_GAS && (r&0xFF)!=PT_SPRK))
+						continue;
+				}
+				for ( nnx=0; nnx<80; nnx++)
+					if (!portal[parts[i].tmp][count-1][nnx])
+					{
+						portal[parts[i].tmp][count-1][nnx] = parts[r>>8].type;
+						portaltemp[parts[i].tmp][count-1][nnx] = parts[r>>8].temp;
+						portalctype[parts[i].tmp][count-1][nnx] = parts[r>>8].ctype;
+						if ((r&0xFF)==PT_SPRK)
+							part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
+						else
+							kill_part(r>>8);
+						fe = 1;
+						break;
+					}
 			}
 
 
