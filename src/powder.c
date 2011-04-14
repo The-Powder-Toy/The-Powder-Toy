@@ -2995,28 +2995,30 @@ void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c)
 void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate)
 {
 	void *ndata;
-	unsigned char bmapo[YRES/CELL][XRES/CELL], bmapn[YRES/CELL][XRES/CELL];
-	particle *partst;
-	sign signst[MAXSIGNS];
-	unsigned pmapt[YRES][XRES];
-	float fvxo[YRES/CELL][XRES/CELL], fvyo[YRES/CELL][XRES/CELL];
-	float fvxn[YRES/CELL][XRES/CELL], fvyn[YRES/CELL][XRES/CELL];
+	unsigned char (*bmapo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
+	unsigned char (*bmapn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
+	particle *partst = calloc(sizeof(particle), NPART);
+	sign *signst = calloc(MAXSIGNS, sizeof(sign));
+	unsigned (*pmapt)[XRES] = calloc(YRES*XRES, sizeof(unsigned));
+	float (*fvxo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*fvyo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*fvxn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*fvyn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
 	int i, x, y, nx, ny, w, h, nw, nh;
 	vector2d pos, tmp, ctl, cbr;
 	vector2d cornerso[4];
 	unsigned char *odatac = odata;
-	memset(bmapo, 0, sizeof(bmapo));
-	memset(bmapn, 0, sizeof(bmapn));
-	memset(signst, 0, sizeof(signst));
-	memset(pmapt, 0, sizeof(pmapt));
-	memset(fvxo, 0, sizeof(fvxo));
-	memset(fvxn, 0, sizeof(fvxn));
-	memset(fvyo, 0, sizeof(fvyo));
-	memset(fvyn, 0, sizeof(fvyn));
-	partst = calloc(sizeof(particle), NPART);
 	if (parse_save(odata, *size, 0, 0, 0, bmapo, fvxo, fvyo, signst, partst, pmapt))
 	{
+		free(bmapo);
+		free(bmapn);
 		free(partst);
+		free(signst);
+		free(pmapt);
+		free(fvxo);
+		free(fvyo);
+		free(fvxn);
+		free(fvyn);
 		return odata;
 	}
 	w = odatac[6]*CELL;
@@ -3093,7 +3095,15 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 			}
 		}
 	ndata = build_save(size,0,0,nw,nh,bmapn,fvxn,fvyn,signst,partst);
+	free(bmapo);
+	free(bmapn);
 	free(partst);
+	free(signst);
+	free(pmapt);
+	free(fvxo);
+	free(fvyo);
+	free(fvxn);
+	free(fvyn);
 	return ndata;
 }
 
