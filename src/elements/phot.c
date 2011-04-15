@@ -3,6 +3,10 @@
 int update_PHOT(UPDATE_FUNC_ARGS) {
 	int r, rt, rx, ry;
 	float rr, rrr;
+	if (!parts[i].ctype) {
+		kill_part(i);
+		return 1;
+	}
 	if (1>rand()%10) update_PYRO(UPDATE_FUNC_SUBCALL_ARGS);
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
