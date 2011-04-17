@@ -2646,7 +2646,7 @@ int main(int argc, char *argv[])
 #endif
 	int wavelength_gfx = 0;
 	int x, y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
-	int da = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2;
+	int da = 0, dae = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2;
 	float nfvx, nfvy;
 	int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
 	void *load_data=NULL;
@@ -3248,6 +3248,16 @@ int main(int argc, char *argv[])
 				else
 					GRID_MODE = (GRID_MODE+1)%10;
 			}
+			if (sdl_key=='m')
+			{
+				if(sl!=sr)
+				{
+					sl ^= sr;
+					sr ^= sl;
+					sl ^= sr;
+				}
+				dae = 51;
+			}
 			if (sdl_key=='=')
 			{
 				int nx, ny;
@@ -3522,7 +3532,7 @@ int main(int argc, char *argv[])
 				active_menu = i;
 			}
 		}
-		menu_ui_v3(vid_buf, active_menu, &sl, &sr, b, bq, x, y); //draw the elements in the current menu
+		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &dae, b, bq, x, y); //draw the elements in the current menu
 
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
 		        && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
@@ -3718,6 +3728,9 @@ int main(int argc, char *argv[])
 		else if (da > 0)//fade away mouseover text
 			da --;
 
+		if (dae > 0) //Fade away selected elements
+			dae --;
+		
 		if (!sdl_zoom_trig && zoom_en==1)
 			zoom_en = 0;
 
