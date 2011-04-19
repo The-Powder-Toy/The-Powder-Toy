@@ -23,6 +23,13 @@ int update_BCOL(UPDATE_FUNC_ARGS) {
 						parts[i].life = 99;
 					}
 				}
+				if ((r&0xFF)==PT_LAVA && 1>(rand()%500))
+				{
+					if (parts[r>>8].ctype == 76) {
+						parts[r>>8].ctype = 14;
+						kill_part(i);
+					}
+				}
 			}
 	return 0;
 }
