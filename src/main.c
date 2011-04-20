@@ -2110,41 +2110,43 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 		else if (strcmp(console2, "file")==0 && console3[0])
 		{
 			if (file_script) {
-				FILE *f=fopen(console3, "r");
-				if (f)
+				int filesize;
+				char *fileread = file_load(console3, &filesize);
+				nx = 0;
+				ny = 0;
+				if (console4[0] && !console_parse_coords(console4, &nx , &ny, console_error))
 				{
-					char fileread[5000];//TODO: make this change with file size
-					char pch[5000];
-					char tokens[10];
+					free(fileread);
+					return 1;
+				}
+				if (fileread)
+				{
+					char pch[501];
+					char tokens[31];
 					int tokensize;
-					nx = 0;
-					ny = 0;
-					j = 0;
-					m = 0;
-					if (console4[0])
-						console_parse_coords(console4, &nx , &ny, console_error);
+					j = 0; // line start position in fileread
+					m = 0; // token start position in fileread
 					memset(pch,0,sizeof(pch));
-					memset(fileread,0,sizeof(fileread));
-					fread(fileread,1,5000,f);
-					for (i=0; i<strlen(fileread); i++)
+					for (i=0; i<filesize; i++)
 					{
-						if (fileread[i] != '\n')
+						if (fileread[i] != '\n' && i-m<30)
 						{
 							pch[i-j] = fileread[i];
 							if (fileread[i] != ' ')
 								tokens[i-m] = fileread[i];
 						}
-						if (fileread[i] == ' ' || fileread[i] == '\n')
+						if ((fileread[i] == ' ' || fileread[i] == '\n') && i-j<400)
 						{
-							if (sregexp(tokens,"^x.[0-9],y.[0-9]")==0)//TODO: fix regex matching to work with x,y ect, right now it has to have a +0 or -0
+							if (sregexp(tokens,"^x.\\{0,1\\}[0-9]*,y.\\{0,1\\}[0-9]*")==0)
 							{
-								char temp[5];
 								int starty = 0;
 								tokensize = strlen(tokens);
 								x = 0;
 								y = 0;
-								sscanf(tokens,"x%d,y%d",&x,&y);
-								sscanf(tokens,"%9s,%9s",xcoord,ycoord);
+								if (tokens[1]!=',')
+									sscanf(tokens,"x%d,y%d",&x,&y);
+								else
+									sscanf(tokens,"x,y%d",&y);
 								x += nx;
 								y += ny;
 								sprintf(xcoord,"%d",x);
@@ -2159,7 +2161,6 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 								for (k=0; k<strlen(ycoord); k++)
 								{
 									pch[i-j-tokensize+starty+k] = ycoord[k];
-									
 								}
 								pch[i-j-tokensize +strlen(xcoord) +1 +strlen(ycoord)] = ' ';
 								j = j -tokensize +strlen(xcoord) +1 +strlen(ycoord);
@@ -2183,8 +2184,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 							j = i+1;
 						}
 					}
-					//sprintf(console_error, "%s exists", console3);
-					fclose(f);
+					free(fileread);
 				}
 				else
 				{
