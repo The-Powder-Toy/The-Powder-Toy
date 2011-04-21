@@ -464,11 +464,11 @@ void kill_part(int i)//kills particle number i
 	}
 	if (parts[i].type == PT_SOAP)
 	{
-		if (parts[i].ctype&0x02 == 0x02)
-			parts[parts[i].tmp].ctype ^= 0x04;
+		if ((parts[i].ctype&2) == 2)
+			parts[parts[i].tmp].ctype ^= 4;
 
-		if (parts[i].ctype&0x04 == 0x04)
-			parts[parts[i].tmp2].ctype ^= 0x02;
+		if ((parts[i].ctype&4) == 4)
+			parts[parts[i].tmp2].ctype ^= 2;
 	}
 	if (x>=0 && y>=0 && x<XRES && y<YRES) {
 		if ((pmap[y][x]>>8)==i)
@@ -647,6 +647,11 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		parts[i].temp = ptypes[t].heat;
 		parts[i].tmp = 0;
 		parts[i].tmp2 = 0;
+	}
+	if (t==PT_SOAP)
+	{
+		parts[i].tmp = -1;
+		parts[i].tmp2 = -1;
 	}
 	//now set various properties that we want at spawn.
 	if (t==PT_ACID)
@@ -1353,7 +1358,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				if (!(parts[i].life==10&&(t==PT_SWCH||t==PT_LCRY||t==PT_PCLN||t==PT_HSWC||t==PT_PUMP)))
 					parts[i].life--;
 				//this if is for stopping death when life hits 0
-				if (parts[i].life<=0 && !(ptypes[t].properties&PROP_CONDUCTS) && t!=PT_ARAY && t!=PT_FIRW && t!=PT_SWCH && t!=PT_PCLN && t!=PT_HSWC && t!=PT_PUMP && t!=PT_SPRK && t!=PT_LAVA && t!=PT_LCRY && t!=PT_QRTZ && t!=PT_GLOW && t!= PT_FOG && t!=PT_PIPE && t!=PT_FRZW &&!(t==PT_ICEI&&parts[i].ctype==PT_FRZW)&&t!=PT_INST && t!=PT_SHLD1&& t!=PT_SHLD2&& t!=PT_SHLD3&& t!=PT_SHLD4 && t!=PT_SING)
+				if (parts[i].life<=0 && !(ptypes[t].properties&PROP_CONDUCTS) && t!=PT_SOAP && t!=PT_ARAY && t!=PT_FIRW && t!=PT_SWCH && t!=PT_PCLN && t!=PT_HSWC && t!=PT_PUMP && t!=PT_SPRK && t!=PT_LAVA && t!=PT_LCRY && t!=PT_QRTZ && t!=PT_GLOW && t!= PT_FOG && t!=PT_PIPE && t!=PT_FRZW &&!(t==PT_ICEI&&parts[i].ctype==PT_FRZW)&&t!=PT_INST && t!=PT_SHLD1&& t!=PT_SHLD2&& t!=PT_SHLD3&& t!=PT_SHLD4 && t!=PT_SING)
 				{
 					kill_part(i);
 					continue;
