@@ -4267,15 +4267,20 @@ int main(int argc, char *argv[])
 		FPS++;
 		currentTime = SDL_GetTicks();
 		elapsedTime = currentTime-pastFPS;
+		if ((FPS>2 || elapsedTime>1000*2/limitFPS) && elapsedTime && FPS*1000/elapsedTime>limitFPS)
+		{
+			while (FPS*1000/elapsedTime>limitFPS)
+			{
+				SDL_Delay(1);
+				currentTime = SDL_GetTicks();
+				elapsedTime = currentTime-pastFPS;
+			}
+		}
 		if (elapsedTime>=1000)
 		{
 			FPSB = FPS;
 			FPS = 0;
 			pastFPS = currentTime;
-		}
-		else if (elapsedTime>20 && FPS*1000/elapsedTime>limitFPS)
-		{
-			SDL_Delay(5);
 		}
 
 		if (hud_enable)
