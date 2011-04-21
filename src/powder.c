@@ -2811,7 +2811,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
 				{
 					i = ox;
 					j = oy;
-					if (((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))|| sdl_mod & (KMOD_CAPS) ))
+					if (((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))|| ((sdl_mod & (KMOD_CAPS)) && b!=WL_FANHELPER) ))
 					{
 						if (bmap[j][i]==SLALT-100)
 							b = 0;
