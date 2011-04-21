@@ -9,12 +9,14 @@
 
 #define ME4502_MAJOR_VERSION 2
 #define ME4502_VERSION 0
-#define SAVE_VERSION 99
-#define MINOR_VERSION 10
+#define SAVE_VERSION 47
+#define MINOR_VERSION 4
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
 
+//#define SERVER "powdertoy.co.uk"
 #define SERVER "powdertoy.co.uk"
+
 
 #define THUMB_CACHE_SIZE 256
 
@@ -29,7 +31,7 @@
 #define HTTP_TIMEOUT 10
 
 
-#ifdef RENDERER
+#ifdef RENDERER	
 #define MENUSIZE 0
 #define BARSIZE 0
 #else

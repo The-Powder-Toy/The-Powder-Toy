@@ -8,6 +8,7 @@
 int isplayer = 0;
 float player[27]; //[0] is a command cell, [3]-[18] are legs positions, [19] is index, [19]-[26] are accelerations
 float player2[27];
+float box[27];
 
 particle *parts;
 particle *cb_parts;
@@ -99,7 +100,7 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 		return 2;
 	if ((pt==PT_BIZR||pt==PT_BIZRG)&&(r&0xFF)==PT_FILT)
 		return 2;
-	if (bmap[ny/CELL][nx/CELL]==WL_ALLOWGAS && ptypes[pt].falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
+	if (bmap[ny/CELL][nx/CELL]==WL_ALLOWGAS && ptypes[pt].falldown!=0 && pt!=PT_FIRE && pt!=PT_DWFM && pt!=PT_SMKE)
 		return 0;
 	if (ptypes[pt].falldown!=2 && bmap[ny/CELL][nx/CELL]==WL_ALLOWLIQUID)
 		return 0;
@@ -711,6 +712,10 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	{
 		parts[i].life = 75;
 	}
+    if (t==PT_AGAS)
+	{
+		parts[i].life = 75;
+	}
     if (t==PT_ACRN)
 	{
 		parts[i].life = 75;
@@ -770,6 +775,8 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	if (t==PT_BCOL)
 		parts[i].life = 110;
 	if (t==PT_FIRE)
+		parts[i].life = rand()%50+120;
+    if (t==PT_DWFM)
 		parts[i].life = rand()%50+120;
     if (t==PT_BFLM)
 		parts[i].life = rand()%50+120;
@@ -852,6 +859,37 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		}
 		create_part(-1,x,y,PT_SPAWN);
 		ISSPAWN1 = 1;
+	}
+    if (t==PT_BOX)
+	{
+			parts[i].x = (float)x;
+			parts[i].y = (float)y;
+			parts[i].type = PT_BOX;
+			parts[i].vx = 0;
+			parts[i].vy = 0;
+			parts[i].life = 100;
+			parts[i].ctype = 0;
+			parts[i].temp = ptypes[t].heat;
+            
+			box[3] = x-1;  //Setting legs positions
+			box[4] = y+6;
+			box[5] = x-1;
+			box[6] = y+6;
+            
+			box[7] = x-3;
+			box[8] = y+12;
+			box[9] = x-3;
+			box[10] = y+12;
+            
+			box[11] = x+1;
+			box[12] = y+6;
+			box[13] = x+1;
+			box[14] = y+6;
+            
+			box[15] = x+3;
+			box[16] = y+12;
+			box[17] = x+3;
+			box[18] = y+12;
 	}
 	if (t==PT_STKM2)
 	{
@@ -1483,7 +1521,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			//printf("parts[%d].type: %d\n", i, parts[i].type);
 
 			//this if is whether or not life goes down automatically.
-			if (parts[i].life && t!=PT_ACID && t!=PT_ACRN && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FUSE2 && t!=PT_CFUS && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
+			if (parts[i].life && t!=PT_ACID && t!=PT_AGAS && t!=PT_ACRN && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FUSE2 && t!=PT_CFUS && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
 			{
 				//this if is for stopping life loss when at a certain life value
 				if (!(parts[i].life==10&&(t==PT_SWCH||t==PT_LCRY||t==PT_PCLN||t==PT_HSWC||t==PT_PUMP)))
@@ -1707,7 +1745,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if (ptypes[t].state==ST_GAS&&ptypes[parts[i].type].state!=ST_GAS)
 							pv[y/CELL][x/CELL] += 0.50f;
 						part_change_type(i,x,y,t);
-						if (t==PT_FIRE||t==PT_PLSM||t==PT_HFLM||t==PT_BFLM)
+						if (t==PT_FIRE||t==PT_PLSM||t==PT_HFLM||t==PT_BFLM||t==PT_DWFM)
 							parts[i].life = rand()%50+120;
 						if (t==PT_LAVA) {
 							if (parts[i].ctype==PT_BRMT) parts[i].ctype = PT_BMTL;
@@ -1813,6 +1851,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 				parts[i].life = 0;
 				part_change_type(i,x,y,t);
 				if (t==PT_FIRE)
+					parts[i].life = rand()%50+120;
+                if (t==PT_DWFM)
 					parts[i].life = rand()%50+120;
 				if (t==PT_NONE) {
 					kill_part(i);
@@ -1961,6 +2001,7 @@ killed:
 					if ((r & 0xFF) == PT_NBLE) parts[i].ctype &= 0x3FFF8000;
 					if ((r & 0xFF) == PT_LAVA) parts[i].ctype &= 0x3FF00000;
 					if ((r & 0xFF) == PT_ACID) parts[i].ctype &= 0x1FE001FE;
+                    if ((r & 0xFF) == PT_AGAS) parts[i].ctype &= 0x1FE001FE;
                     if ((r & 0xFF) == PT_ACRN) parts[i].ctype &= 0x1FE001FE;
 					if ((r & 0xFF) == PT_DUST) parts[i].ctype &= 0x3FFFFFC0;
 					if ((r & 0xFF) == PT_SNOW) parts[i].ctype &= 0x03FFFFFF;
@@ -2255,6 +2296,29 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 						fire_g[y][x] = cg;
 						cb += fire_b[y][x];
 						if (cb > 255) cb = 255;
+						fire_b[y][x] = cb;
+					}
+				}
+                if (bmap[y][x]==WL_ELEMENTONLY)
+				{
+					for (j=0; j<CELL; j++)
+						for (i=0; i<CELL; i++)
+							if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
+							{
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0xF0C0C0);
+								drawblob(vid, (x*CELL+i), (y*CELL+j), 0xC0, 0xC0, 0xC0);
+							}
+					if (emap[y][x])
+					{
+						cr = cg = cb = 16;
+						cr += fire_r[y][x];
+						if (cr > 255) cr = 123;
+						fire_r[y][x] = cr;
+						cg += fire_g[y][x];
+						if (cg > 255) cg = 123;
+						fire_g[y][x] = cg;
+						cb += fire_b[y][x];
+						if (cb > 255) cb = 123;
 						fire_b[y][x] = cb;
 					}
 				}
@@ -3082,7 +3146,7 @@ void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c)
 		if (e >= 0.5f)
 		{
 			y += sy;
-			if (c==WL_EHOLE || c==WL_ALLOWGAS || c==WL_ALLOWALLELEC || c==WL_ALLOWSOLID || c==WL_ALLOWAIR || c==WL_WALL || c==WL_DESTROYALL || c==WL_ALLOWLIQUID || c==WL_FAN || c==WL_STREAM || c==WL_DETECT || c==WL_EWALL || c==WL_WALLELEC || !(rx+ry))
+			if (c==WL_EHOLE || c==WL_ALLOWGAS || c==WL_ALLOWALLELEC || c==WL_ALLOWSOLID || c==WL_ELEMENTONLY || c==WL_ALLOWAIR || c==WL_WALL || c==WL_DESTROYALL || c==WL_ALLOWLIQUID || c==WL_FAN || c==WL_STREAM || c==WL_DETECT || c==WL_EWALL || c==WL_WALLELEC || !(rx+ry))
 			{
 				if (cp)
 					create_parts(y, x, rx, ry, c);
@@ -3097,28 +3161,28 @@ void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c)
 void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate)
 {
 	void *ndata;
-	unsigned char bmapo[YRES/CELL][XRES/CELL], bmapn[YRES/CELL][XRES/CELL];
-	particle *partst;
-	sign signst[MAXSIGNS];
-	unsigned pmapt[YRES][XRES];
-	float fvxo[YRES/CELL][XRES/CELL], fvyo[YRES/CELL][XRES/CELL];
-	float fvxn[YRES/CELL][XRES/CELL], fvyn[YRES/CELL][XRES/CELL];
-	int i, x, y, nx, ny, w, h, nw, nh;
+	unsigned char (*bmapo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
+ 	unsigned char (*bmapn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
+ 	particle *partst = calloc(sizeof(particle), NPART);
+ 	sign *signst = calloc(MAXSIGNS, sizeof(sign));
+ 	unsigned (*pmapt)[XRES] = calloc(YRES*XRES, sizeof(unsigned));
+ 	float (*fvxo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+ 	float (*fvyo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+ 	float (*fvxn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+ 	float (*fvyn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));	int i, x, y, nx, ny, w, h, nw, nh;
 	vector2d pos, tmp, ctl, cbr;
 	vector2d cornerso[4];
-	unsigned char *odatac = odata;
-	memset(bmapo, 0, sizeof(bmapo));
-	memset(bmapn, 0, sizeof(bmapn));
-	memset(signst, 0, sizeof(signst));
-	memset(pmapt, 0, sizeof(pmapt));
-	memset(fvxo, 0, sizeof(fvxo));
-	memset(fvxn, 0, sizeof(fvxn));
-	memset(fvyo, 0, sizeof(fvyo));
-	memset(fvyn, 0, sizeof(fvyn));
-	partst = calloc(sizeof(particle), NPART);
-	if (parse_save(odata, *size, 0, 0, 0, bmapo, fvxo, fvyo, signst, partst, pmapt))
+	unsigned char *odatac = odata;	if (parse_save(odata, *size, 0, 0, 0, bmapo, fvxo, fvyo, signst, partst, pmapt))
 	{
-		free(partst);
+		free(bmapo);
+        free(bmapn);
+        free(partst);
+        free(signst);
+        free(pmapt);
+        free(fvxo);
+        free(fvyo);
+        free(fvxn);
+        free(fvyn);
 		return odata;
 	}
 	w = odatac[6]*CELL;
@@ -3195,7 +3259,15 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 			}
 		}
 	ndata = build_save(size,0,0,nw,nh,bmapn,fvxn,fvyn,signst,partst);
-	free(partst);
+	free(bmapo);
+ 	free(bmapn);
+    free(partst);
+ 	free(signst);
+ 	free(pmapt);
+ 	free(fvxo);
+ 	free(fvyo);
+ 	free(fvxn);
+ 	free(fvyn);
 	return ndata;
 }
 

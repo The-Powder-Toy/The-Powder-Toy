@@ -40,6 +40,7 @@ static menu_wall mwalls[] =
 	{PIXPACK(0x00BBFF), "Cools the targetted element."},
 	{PIXPACK(0x303030), "Vacuum, reduces air pressure."},
 	{PIXPACK(0x579777), "Wall. Indestructible. Blocks liquids and solids, allows gasses"},
+    {PIXPACK(0x579777), "Allows A Specific Element"},
 };
 
 #define SC_WALL 0
@@ -207,7 +208,7 @@ int save_name_ui(pixel *vid_buf);
 
 void menu_ui(pixel *vid_buf, int i, int *sl, int *sr);
 
-void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, int my);
+void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq, int mx, int my);
 
 int sdl_poll(void);
 

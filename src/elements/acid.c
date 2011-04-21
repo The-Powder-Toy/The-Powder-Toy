@@ -9,7 +9,7 @@ int update_ACID(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
-				if ((r&0xFF)!=PT_ACRN)
+				if ((r&0xFF)!=PT_ACID)
 				{
 					if ((r&0xFF)==PT_PLEX || (r&0xFF)==PT_NITR || (r&0xFF)==PT_GUNP || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD)
 					{

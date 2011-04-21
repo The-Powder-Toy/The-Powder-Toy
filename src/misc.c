@@ -8,6 +8,8 @@
 #include "interface.h"
 #include "graphics.h"
 #include "powder.h"
+#include <icondoc.h>
+#include <update.h>
 #if defined WIN32
 #include <windows.h>
 #endif

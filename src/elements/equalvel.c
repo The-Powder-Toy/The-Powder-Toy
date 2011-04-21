@@ -27,6 +27,8 @@ int update_EQUALVEL(UPDATE_FUNC_ARGS) {
                         }else{
                             parts[r>>8].vx = (((parts[i].x)-(parts[r>>8].x))/140)*(rand()%5+10/10);
                             parts[r>>8].vy = (((parts[i].y)-(parts[r>>8].y))/140)*(rand()%5+10/10);
+                            parts[i].vx = parts[r>>8].vx;
+                            parts[i].vy = parts[r>>8].vy;
                         }
                     }
                 }

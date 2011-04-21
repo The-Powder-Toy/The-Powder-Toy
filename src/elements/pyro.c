@@ -22,6 +22,20 @@ int update_PYRO(UPDATE_FUNC_ARGS) {
 			parts[i].life = rand()%20+250;
 		}
 	}
+    if(t==PT_DWFM && parts[i].life <=1)
+	{
+		if (parts[i].tmp==3){
+			t = PT_DSTW;
+			part_change_type(i,x,y,t);
+			parts[i].life = 0;
+		}
+		else if (parts[i].temp<625)
+		{
+			t = PT_SMKE;
+			part_change_type(i,x,y,t);
+			parts[i].life = rand()%20+250;
+		}
+	}
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))

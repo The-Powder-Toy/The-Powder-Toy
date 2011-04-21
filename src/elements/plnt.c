@@ -32,6 +32,11 @@ int update_PLNT(UPDATE_FUNC_ARGS) {
                         parts[r>>8].type = PT_NONE;
                         parts[i].life = rand()%60 + 60;
                     }
+                    else if((r&0xFF)==PT_C02)
+                    {
+                        parts[r>>8].type = PT_NONE;
+                        parts[i].life = rand()%60 + 60;
+                    }
                     else if((r&0xFF)==PT_WOOD)
                     {
                         int nnx = rand()%3 -1;

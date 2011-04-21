@@ -49,6 +49,7 @@
 #define SPC_VACUUM 239
 
 #define WL_ALLOWGAS	140
+#define WL_ELEMENTONLY	141
 
 
 
@@ -254,7 +255,14 @@
 #define PT_ROOT 199
 #define PT_BFLM 200
 #define PT_PDCL 201
-#define PT_NUM  202
+#define PT_MNSR 202
+#define PT_BOX 203
+#define PT_AGAS 204
+#define PT_DWFM 205
+#define PT_COPR 206
+#define PT_C02 207
+#define PT_CLAY 208
+#define PT_NUM  209
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -290,6 +298,7 @@
 #define UPDATE_FUNC_SUBCALL_ARGS i, x, y, surround_space
 
 int update_ACID(UPDATE_FUNC_ARGS);
+int update_AGAS(UPDATE_FUNC_ARGS);
 int update_AMTR(UPDATE_FUNC_ARGS);
 int update_ARAY(UPDATE_FUNC_ARGS);
 int update_BCLN(UPDATE_FUNC_ARGS);
@@ -386,6 +395,9 @@ int update_SNMG(UPDATE_FUNC_ARGS);
 int update_ROOT(UPDATE_FUNC_ARGS);
 int update_EQUALVEL(UPDATE_FUNC_ARGS);
 int update_PDCL(UPDATE_FUNC_ARGS);
+int update_MNSR(UPDATE_FUNC_ARGS);
+int update_SAND(UPDATE_FUNC_ARGS);
+int update_BOX(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -635,7 +647,7 @@ static const part_type ptypes[PT_NUM] =
 	{"POT",		PIXPACK(0xCC883F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	3,	"A plant pot. Breaks Under Pressure.", ST_SOLID, TYPE_SOLID| PROP_HOT_GLOW, NULL}, 
 	{"GRAS",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f,	251,		"Will slowly grow until it needs to be mowed.", ST_SOLID, TYPE_SOLID, &update_GRAS},
 	{"CFUS",	PIXPACK(0x2E8B9E),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. A cold Fuse. Activated by Cold Flame.", ST_SOLID, TYPE_SOLID, &update_CFUS},
-	{"ANT",		PIXPACK(0xC0A060),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Ant. Builds a nest in other particles.", ST_SOLID, TYPE_PART|PROP_DEADLY, &update_CFIR},
+	{"ANT",		PIXPACK(0xC0A060),	0.0f,	0.00f * CFDS,	0.96f,	0.80f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Ant. Builds a nest in other particles.", ST_SOLID, TYPE_PART|PROP_DEADLY, &update_CFIR},
 	{"SMIL",	PIXPACK(0xFFFF00),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER2,	373.0f,					40,		"Smile :)", ST_SOLID, TYPE_SOLID, &update_MISC},
     {"SEAL",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+2.0f	+273.15f,				40,		"An Air Seal... Change the temperature to change Max Pressure", ST_SOLID, TYPE_SOLID, NULL}, 	
     {"BULL",    PIXPACK(0x736D6E),  0.0f,	0.00f * CFDS,	1.00f,	1.00f,	0.0f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_SPECIAL,     MAX_TEMP,	251,		"Bullet, a deadly projectile that flies out of a gun.", ST_SOLID, TYPE_SOLID, &update_BULL}, 
@@ -662,6 +674,13 @@ static const part_type ptypes[PT_NUM] =
     {"ROOT",	PIXPACK(0xA65005),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f,	251,		"Aids the growth of grass and.", ST_SOLID, TYPE_SOLID, &update_ROOT},
     {"BFLM",	PIXPACK(0x4C76F5),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	MAX_TEMP,	88,		"Ignites flammable materials. Heats air.", ST_GAS, TYPE_GAS, &update_PYRO},
     {"PDCL",	PIXPACK(0xFFD010),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Powder. Duplicates any particles it touches.", ST_SOLID, TYPE_PART, &update_PDCL},
+    {"MNSR",	PIXPACK(0xFFE0A0),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  1,  100,	SC_STICKMAN,		0.0f,					40,		"Monster", ST_NONE, ST_NONE, &update_MNSR},
+    {"BOX ",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	50,		SC_STICKMAN,		R_TEMP+14.6f+273.15f,	0,		"Box", ST_NONE, 0, &update_BOX},
+    {"AGAS",	PIXPACK(0xFF00EA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,      SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Acidic.", ST_GAS, TYPE_GAS, &update_AGAS},
+    {"DWFM",	PIXPACK(0xFF1000),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	R_TEMP+400.0f+273.15f,	88,		"Ignites flammable materials. Heats air. Goes Down.", ST_GAS, TYPE_GAS, &update_PYRO},
+    {"COPR",	PIXPACK(0xB88700),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	250,	"Solid. Conducts electricity slowly. Meltable.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
+    {"CO2",		PIXPACK(0xCCCCCC),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	2,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Ignites easily.", ST_GAS, TYPE_GAS, NULL},
+    {"CLAY",	PIXPACK(0xC4B099),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,     SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Powder. Turns to POT under heat.", ST_SOLID, TYPE_PART|PROP_NEUTPENETRATE|PROP_HOT_GLOW, NULL},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -838,6 +857,8 @@ static part_transition ptransitions[PT_NUM] =
     /* CLOD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* RWTR */ {IPL,	NT,			IPH,	NT,			273.0f,	PT_ICEI,	337.0f,	PT_WTRV},
     /* ACLO */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* VOLT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* VOLB */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* DIRT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* INVI */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* FLYS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
@@ -847,31 +868,29 @@ static part_transition ptransitions[PT_NUM] =
     /* BPAD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* SPEL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* SPER */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* POT  */ {IPL,	NT,			20,     PT_DUST,	ITL,	NT,			ITH,	NT},
+    /* POT  */ {IPL,	NT,			60.0f,  PT_DUST,	ITL,	NT,			1673.0f,PT_LAVA},
     /* GRAS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* CFUS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* CFIR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* SMIL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* SEAL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* BULL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* PPLT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* TNT  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* MGMA */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* RAND */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* PAIN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* VIRS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* 03   */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* DICE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			196.0f,	PT_C02},
     /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-         /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* IBAT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* mpos */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* mneg */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* ifil */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* lgun */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* lazr */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+     /* IBAT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* fgun */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* frez */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* spmg */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* snmg */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
@@ -879,6 +898,14 @@ static part_transition ptransitions[PT_NUM] =
     /* root */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,    NT},
     /* BIRE */ {IPL,	NT,         IPH,	NT,         ITL,	NT,         ITH,    NT},
     /* PDCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+     /* mnst */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* box */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			620.0f,	PT_FIRE},
+    /* AGAS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* DWFM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* COPR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+     /* CO2 */ {IPL,	NT,			IPH,	NT,			194.0f,	PT_DICE,	ITH,	NT},
+    /* CLAY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			773.0f,	PT_POT},
+
     
 };
 #undef IPL
@@ -989,6 +1016,8 @@ int wireless[CHANNELS][2];
 
 extern int isplayer;
 extern float player[27];
+
+extern float box[27];
 
 extern float player2[27];
 

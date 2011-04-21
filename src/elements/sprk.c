@@ -6,13 +6,15 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 
 	if (parts[i].life<=0)
 	{
-		if (ct==PT_WATR||ct==PT_SLTW||ct==PT_PSCN||ct==PT_NSCN||ct==PT_ETRD||ct==PT_INWR)
+		if (ct==PT_WATR||ct==PT_COPR||ct==PT_SLTW||ct==PT_PSCN||ct==PT_NSCN||ct==PT_ETRD||ct==PT_INWR)
 			parts[i].temp = R_TEMP + 273.15f;
 		if (!ct)
 			ct = PT_METL;
 		part_change_type(i,x,y,ct);
 		parts[i].life = 4;
 		if (ct == PT_WATR)
+			parts[i].life = 64;
+        if (ct == PT_COPR)
 			parts[i].life = 64;
 		if (ct == PT_SLTW)
 			parts[i].life = 54;
@@ -24,6 +26,11 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 	{
 		kill_part(i);
 		return 1;
+	}
+    if (ct==PT_COPR)
+	{
+        parts[i].temp = parts[i].temp + 1000;
+		parts[r>>8].temp = parts[i].temp;
 	}
 	else if (ct==PT_NTCT || ct==PT_PTCT)
 	{

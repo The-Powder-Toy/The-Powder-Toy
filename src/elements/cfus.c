@@ -15,7 +15,7 @@ int update_CFUS(UPDATE_FUNC_ARGS) {
 				parts[r].life = 50;
 		}
 	}
-	if ((pv[y/CELL][x/CELL] > 2.7f)&&parts[i].tmp>40)
+	if ((pv[y/CELL][x/CELL] < 2.7f)&&parts[i].tmp>40)
 		parts[i].tmp=39;
 	else if (parts[i].tmp<40&&parts[i].tmp>0)
 		parts[i].tmp--;

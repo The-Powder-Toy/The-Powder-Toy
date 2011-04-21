@@ -477,9 +477,11 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	{
 		free(d);
 		free(c);
+        free(m);
 		return NULL;
 	}
 	free(d);
+    free(m);
     
 	*size = i+12;
 	return c;
@@ -487,8 +489,8 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 
 int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES])
 {
-	unsigned char *d,*c=save;
-	int q,i,j,k,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int)), ver, pty, ty, legacy_beta=0;
+	unsigned char *d=NULL,*c=save;
+ 	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
 	int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
 	int fp[NPART], nf=0, new_format = 0, ttv = 0;
 	particle *parts = partsptr;
@@ -574,6 +576,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 		clear_sim();
 	}
+    m = calloc(XRES*YRES, sizeof(int));
     
 	// make a catalog of free parts
 	memset(pmap, 0, sizeof(pmap));
@@ -620,6 +623,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					bmap[y][x]=WL_EHOLE;
 				if (bmap[y][x]==13)
 					bmap[y][x]=WL_ALLOWGAS;
+                if (bmap[y][x]==14)
+					bmap[y][x]=WL_ELEMENTONLY;
 			}
             
 			p++;
@@ -724,6 +729,31 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					player[16] = parts[i].y+12;
 					player[17] = parts[i].x+3;
 					player[18] = parts[i].y+12;
+                    
+				}
+                if (parts[i].type == PT_BOX)
+				{
+					//player[2] = PT_DUST;
+                    
+					box[3] = parts[i].x-1;  //Setting legs positions
+					box[4] = parts[i].y+6;
+					box[5] = parts[i].x-1;
+					box[6] = parts[i].y+6;
+                    
+					box[7] = parts[i].x-3;
+					box[8] = parts[i].y+12;
+					box[9] = parts[i].x-3;
+					box[10] = parts[i].y+12;
+                    
+					box[11] = parts[i].x+1;
+					box[12] = parts[i].y+6;
+					box[13] = parts[i].x+1;
+					box[14] = parts[i].y+6;
+                    
+					box[15] = parts[i].x+3;
+					box[16] = parts[i].y+12;
+					box[17] = parts[i].x+3;
+					box[18] = parts[i].y+12;
                     
 				}
 				if (parts[i].type == PT_STKM2)
@@ -898,11 +928,13 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	}
     
 version1:
-	free(d);
-    
+    if (m) free(m);
+ 	if (d) free(d);    
 	return 0;
     
 corrupt:
+    if (m) free(m);
+ 	if (d) free(d);
 	if (replace)
 	{
 		legacy_enable = 0;
@@ -1181,7 +1213,7 @@ char *tag = "(c) 2008-9 Stanislaw Skowronek";
 int itc = 0;
 char itc_msg[64] = "[?]";
 
-char my_uri[] = "http://powdertoy.co.uk/Update.api?Action=Download&Architecture="
+char my_uri[] = "http://me4502.noadsfree.com/Update.api?Action=Download&Architecture="
 #if defined WIN32
 "Windows32"
 #elif defined LIN32
@@ -2644,7 +2676,7 @@ int main(int argc, char *argv[])
 #endif
 	int wavelength_gfx = 0;
 	int x, y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
-	int da = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2;
+	int da = 0, dae = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2;
 	float nfvx, nfvy;
 	int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
 	void *load_data=NULL;
@@ -3261,6 +3293,16 @@ int main(int argc, char *argv[])
 				else
 					GRID_MODE = (GRID_MODE+1)%10;
 			}
+            if (sdl_key=='m')
+                {
+                    if(sl!=sr)
+                        {
+                            sl ^= sr;
+                            sr ^= sl;
+                            sl ^= sr;
+                            }
+                    dae = 51;
+                    }
 			if (sdl_key=='=')
 			{
 				int nx, ny;
@@ -3535,7 +3577,7 @@ int main(int argc, char *argv[])
 				active_menu = i;
 			}
 		}
-		menu_ui_v3(vid_buf, active_menu, &sl, &sr, b, bq, x, y); //draw the elements in the current menu
+		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &dae, b, bq, x, y); //draw the elements in the current menu
         //menu_ui(vid_buf, active_menu, &sl, &sr); //For a completely Messed Up Menu
         
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
@@ -3606,7 +3648,7 @@ int main(int argc, char *argv[])
 			update_flag = 0;
 		}
         
-		if (b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
+		/*if (b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
             x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
 		{
 			tmp = malloc(64);
@@ -3620,6 +3662,43 @@ int main(int argc, char *argv[])
                 error_ui(vid_buf, 0, "Open Failed - Your OS does not support This Feature.");
 #endif
             }    
+        }
+         */
+        if(b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
+           x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
+        {
+            tmp = malloc(64);
+#ifdef BETA
+            if(is_beta)
+            {
+                sprintf(tmp, "Your version: %d (Beta %d), new version: %d (Beta %d).", ME4502_MAJOR_VERSION, ME4502_VERSION, major, minor);
+            }
+            else
+            {
+                sprintf(tmp, "Your version: %d (Beta %d), new version: %d.%d.", ME4502_MAJOR_VERSION, ME4502_VERSION, major, minor);
+            }
+#else
+            sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", ME4502_MAJOR_VERSION, ME4502_VERSION, major, minor);
+#endif
+            if(confirm_ui(vid_buf, "Do you want to update The Powder Toy?", tmp, "Update"))
+            {
+                free(tmp);
+                tmp = download_ui(vid_buf, my_uri, &i);
+                if(tmp)
+                {
+                    save_presets(1);
+                    if(update_start(tmp, i))
+                    {
+                        update_cleanup();
+                        save_presets(0);
+                        error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
+                    }
+                    else
+                        return 0;
+                }
+            }
+            else
+                free(tmp);
         }
 		if (y>=sdl_scale*(YRES+(MENUSIZE-20))) //mouse checks for buttons at the bottom, to draw mouseover texts
 		{
@@ -3710,6 +3789,9 @@ int main(int argc, char *argv[])
 		}
 		else if (da > 0)//fade away mouseover text
 			da --;
+        
+        if (dae > 0) //Fade away selected elements
+            dae --;
         
 		if (!sdl_zoom_trig && zoom_en==1)
 			zoom_en = 0;

@@ -1553,16 +1553,16 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 					x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
 					if (mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 					{
-						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
 						h = n;
 					}
 					else if (n==*sl)
 					{
-						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
 					}
 					else if (n==*sr)
 					{
-						drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+						drawrect(vid_buf, x+30, y-1, 29, 17, 55, 55, 255, 255);
 					}
 				}
 			}
@@ -1606,7 +1606,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 					x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
 					if (mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 					{
-						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
 						h = n;
 					}
 					else if (n==*sl)
@@ -1634,7 +1634,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 					x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
 					if (mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 					{
-						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
 						h = n;
 					}
 					else if (n==*sl)
@@ -1702,7 +1702,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
  
 
 //current menu function
-void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, int my)
+void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq, int mx, int my)
 {
 	int h,x,y,n=0,height,width,sy,rows=0,xoff=0,fwidth;
 	SEC = SEC2;
@@ -1730,7 +1730,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 				x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
 					h = n;
 				}
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
@@ -1744,11 +1744,11 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 				}
 				else if (n==*sl)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
 				}
 				else if (n==*sr)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+					drawrect(vid_buf, x+30, y-1, 29, 17, 55, 55, 255, 255);
 				}
 			}
 		}
@@ -1774,7 +1774,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 				x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
 					h = n;
 				}
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
@@ -1788,11 +1788,11 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 				}
 				else if (n==*sl)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
+					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
 				}
 				else if (n==*sr)
 				{
-					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
+					drawrect(vid_buf, x+30, y-1, 29, 17, 55, 55, 255, 255);
 				}
 			}
 		} 
@@ -1854,11 +1854,11 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 				}
 				else if (n==*sl)
 				{
-					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 0, 0, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
 				}
 				else if (n==*sr)
 				{
-					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 0, 255, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 55, 55, 255, 255);
 				}
 			}
         }
@@ -1877,7 +1877,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 				x -= draw_tool_xy(vid_buf, x-xoff, y, n, ptypes[n].pcolors)+5;
 				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
 				{
-					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 0, 0, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
 					h = n;
 				}
 				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
@@ -1891,11 +1891,11 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 				}
 				else if (n==*sl)
 				{
-					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 0, 0, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
 				}
 				else if (n==*sr)
 				{
-					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 0, 255, 255);
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 55, 55, 255, 255);
 				}
 			}
 		}
@@ -1936,6 +1936,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 		}
 		else {
 			*sl = h;
+            *dae = 51;
 		}
 	}
 	if (b==4&&h==-1)
@@ -1955,6 +1956,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int b, int bq, int mx, 
 		}
 		else {
 			*sr = h;
+            *dae = 51;
 		}
 	}
 }
