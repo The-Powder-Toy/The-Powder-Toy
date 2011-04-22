@@ -24,6 +24,10 @@
 
 SDLMod sdl_mod;
 int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
+#if (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+SDL_SysWMinfo sdl_wminfo;
+Atom XA_CLIPBOARD, XA_TARGETS;
+#endif
 
 char *shift_0="`1234567890-=[]\\;',./";
 char *shift_1="~!@#$%^&*()_+{}|:\"<>?";
@@ -2255,6 +2259,50 @@ int sdl_poll(void)
 			break;
 		case SDL_QUIT:
 			return 1;
+		case SDL_SYSWMEVENT:
+#if (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+			if (event.syswm.msg->subsystem != SDL_SYSWM_X11)
+				break;
+			sdl_wminfo.info.x11.lock_func();
+			XEvent xe = event.syswm.msg->event.xevent;
+			if (xe.type==SelectionClear)
+			{
+				if (clipboard_text!=NULL) {
+					free(clipboard_text);
+					clipboard_text = NULL;
+				}
+			}
+			else if (xe.type==SelectionRequest)
+			{
+				XEvent xr;
+				xr.xselection.type = SelectionNotify;
+				xr.xselection.requestor = xe.xselectionrequest.requestor;
+				xr.xselection.selection = xe.xselectionrequest.selection;
+				xr.xselection.target = xe.xselectionrequest.target;
+				xr.xselection.property = xe.xselectionrequest.property;
+				xr.xselection.time = xe.xselectionrequest.time;
+				if (xe.xselectionrequest.target==XA_TARGETS)
+				{
+					// send list of supported formats
+					Atom targets[] = {XA_TARGETS, XA_STRING};
+					xr.xselection.property = xe.xselectionrequest.property;
+					XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, XA_ATOM, 32, PropModeReplace, (unsigned char*)targets, (int)(sizeof(targets)/sizeof(Atom)));
+				}
+				// TODO: Supporting more targets would be nice
+				else if (xe.xselectionrequest.target==XA_STRING && clipboard_text)
+				{
+					XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, xe.xselectionrequest.target, 8, PropModeReplace, clipboard_text, strlen(clipboard_text)+1);
+				}
+				else
+				{
+					// refuse clipboard request
+					xr.xselection.property = None;
+				}
+				XSendEvent(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, 0, 0, &xr);
+			}
+			sdl_wminfo.info.x11.unlock_func();
+#endif
+			continue;
 		}
 	}
 	sdl_mod = SDL_GetModState();
