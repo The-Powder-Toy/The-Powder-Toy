@@ -2869,8 +2869,9 @@ int main(int argc, char *argv[])
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
 #endif
+		draw_grav(vid_buf);
 
-		//Can't be too sure...
+		//Can't be too sure (Limit the cursor size)
 		if (bsx>1180)
 			bsx = 1180;
 		if (bsx<0)
@@ -2881,6 +2882,7 @@ int main(int argc, char *argv[])
 			bsy = 0;
 		
 		update_particles(vid_buf); //update everything
+		update_grav();
 		draw_parts(vid_buf); //draw particles
 
 		if (cmode==CM_PERS)
@@ -3577,7 +3579,7 @@ int main(int argc, char *argv[])
 				sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 				if (DEBUG_MODE)
 				{
-					sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
+					sprintf(coordtext, "X:%d Y:%d. GX: %.2f GY: %.2f", x/sdl_scale, y/sdl_scale, gravx[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], gravy[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 				}
 			}
 		}

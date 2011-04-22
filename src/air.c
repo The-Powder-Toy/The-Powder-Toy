@@ -4,6 +4,11 @@
 #include <defines.h>
 float kernel[9];
 
+float ogravmap[YRES/CELL][XRES/CELL];
+float gravmap[YRES/CELL][XRES/CELL];
+float gravx[YRES/CELL][XRES/CELL];
+float gravy[YRES/CELL][XRES/CELL];
+
 float vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
 float vy[YRES/CELL][XRES/CELL], ovy[YRES/CELL][XRES/CELL];
 float pv[YRES/CELL][XRES/CELL], opv[YRES/CELL][XRES/CELL];
@@ -28,6 +33,48 @@ void make_kernel(void) //used for velocity
 	for (j=-1; j<2; j++)
 		for (i=-1; i<2; i++)
 			kernel[(i+1)+3*(j+1)] *= s;
+}
+void update_grav(void)
+{
+	int x, y, i, j, changed = 0;
+	//Find any changed cells
+	for (i=0; i<YRES/CELL; i++)
+	{
+		if(changed)
+			break;
+		for (j=0; j<XRES/CELL; j++)
+		{
+			if(ogravmap[i][j]!=gravmap[i][j]){
+				changed = 1;
+				break;
+			}
+		}
+	}
+	if(changed)
+	{
+		memset(gravy, 0, sizeof(gravy));
+		memset(gravx, 0, sizeof(gravx));
+		for (i=0; i<YRES/CELL; i++)
+		{
+			for (j=0; j<XRES/CELL; j++)
+			{
+				if(gravmap[i][j]>0.0f) //Only calculate with populated or changed cells.
+					for (y=0; y<YRES/CELL; y++)
+					{
+						for (x=0; x<XRES/CELL; x++)
+						{
+							if(x == j && y == i)//Ensure it doesn't calculate with itself
+								continue;
+							float distance = sqrt(pow(j - x, 2) + pow(i - y, 2));
+							gravx[y][x] += M_GRAV*gravmap[i][j]*(j - x)/pow(distance, 3);
+							gravy[y][x] += M_GRAV*gravmap[i][j]*(i - y)/pow(distance, 3);
+						}
+					}
+			}
+		}
+	}
+	memcpy(ogravmap, gravmap, sizeof(gravmap));
+	memset(gravmap, 0, sizeof(gravmap));
 }
 void update_air(void)
 {

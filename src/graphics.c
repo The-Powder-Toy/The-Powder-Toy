@@ -1255,6 +1255,30 @@ void draw_air(pixel *vid)
 		}
 }
 
+void draw_grav(pixel *vid)
+{
+	int x, y, i;
+	float nx, ny, dist;
+
+	for (y=0; y<YRES/CELL; y++)
+	{
+		for (x=0; x<XRES/CELL; x++)
+		{
+			if(fabsf(gravx[y][x]) <= 0.001f && fabsf(gravy[y][x]) <= 0.001f)
+				continue;
+			nx = x*CELL;
+			ny = y*CELL;
+			dist = fabsf(gravx[y][x])+fabsf(gravy[y][x]);
+			for(i = 0; i < 4; i++)
+			{
+				nx -= gravx[y][x]*0.5f;
+				ny -= gravy[y][x]*0.5f;
+				addpixel(vid, (int)(nx+0.5f), (int)(ny+0.5f), 255, 255, 255, (int)(dist*20.0f));
+			}
+		}
+	}
+}
+
 void draw_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, int a)  //Draws a line
 {
 	int dx, dy, i, sx, sy, check, e, x, y;

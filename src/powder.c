@@ -1463,6 +1463,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 				pGravX = ptypes[t].gravity * ((float)(x - XCNTR) / pGravD);
 				pGravY = ptypes[t].gravity * ((float)(y - YCNTR) / pGravD);
 			}
+			//Get some gravity from the gravity map
+			if(!(ptypes[t].properties & TYPE_SOLID))
+			{
+				pGravX += gravx[y/CELL][x/CELL];
+				pGravY += gravy[y/CELL][x/CELL];
+			}
 			//velocity updates for the particle
 			parts[i].vx *= ptypes[t].loss;
 			parts[i].vy *= ptypes[t].loss;
