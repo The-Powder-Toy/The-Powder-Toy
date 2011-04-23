@@ -19,11 +19,11 @@ int update_WATR(UPDATE_FUNC_ARGS) {
 					part_change_type(i,x,y,PT_FIRE);
 					parts[i].life = 4;
 				}
-				if ((r&0xFF)==PT_CNCT && 1>(rand()%500))
+				/*if ((r&0xFF)==PT_CNCT && 1>(rand()%500))	Concrete+Water to paste, not very popular
 				{
 					part_change_type(i,x,y,PT_PSTE);
 					kill_part(r>>8);
-				}
+				}*/
 			}
 	return 0;
 }
