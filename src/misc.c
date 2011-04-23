@@ -552,5 +552,73 @@ int register_extension()
 #endif
 }
 
+void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255 HSV values to 0-255 RGB
+{
+	float hh, ss, vv, c, x;
+	int m;
+	hh = h/42.667f;//normalize values
+	ss = s/256.0f;
+	vv = v/256.0f;
+	c = vv * ss;
+	x = c * ( 1 - fabsf(fmod(hh,2.0) -1) );
+	if(hh<1){
+		*r = (int)(c*256.0);
+		*g = (int)(x*256.0);
+		*b = 0;
+	}
+	else if(hh<2){
+		*r = (int)(x*256.0);
+		*g = (int)(c*256.0);
+		*b = 0;
+	}
+	else if(hh<3){
+		*r = 0;
+		*g = (int)(c*256.0);
+		*b = (int)(x*256.0);
+	}
+	else if(hh<4){
+		*r = 0;
+		*g = (int)(x*256.0);
+		*b = (int)(c*256.0);
+	}
+	else if(hh<5){
+		*r = (int)(x*256.0);
+		*g = 0;
+		*b = (int)(c*256.0);
+	}
+	else if(hh<6){
+		*r = (int)(c*256.0);
+		*g = 0;
+		*b = (int)(x*256.0);
+	}
+	m = (int)((vv-c)*256.0);
+	*r += m;
+	*g += m;
+	*b += m;
+}
+
+void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 HSV values to 0-255 RGB
+{
+	float rr, gg, bb, a,x,c,d;
+	rr = r/256.0f;//normalize values
+	gg = g/256.0f;
+	bb = b/256.0f;
+	a = fmin(rr,gg);
+	a = fmin(a,bb);
+	x = fmax(rr,gg);
+	x = fmax(x,bb);
+	if (a==x)//greyscale
+	{
+		*h = 0;
+		*s = 0;
+		*v = a;
+	}
+
+ 	c = (rr==a) ? gg-bb : ((bb==a) ? rr-gg : bb-rr);
+ 	d = (rr==a) ? 3 : ((bb==a) ? 1 : 5);
+ 	*h = (int)(42.667*(d - c/(x - a)));
+ 	*s = (int)(256.0*((x - a)/x));
+ 	*v = (int)(256.0*x);
+}
 vector2d v2d_zero = {0,0};
 matrix2d m2d_identity = {1,0,0,1};

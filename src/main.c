@@ -2658,6 +2658,7 @@ int main(int argc, char *argv[])
 	PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep,*pkey;
 	PyObject *tpt_console_obj;
 #endif
+	pixel *decorations = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	GSPEED = 1;
@@ -3243,6 +3244,8 @@ int main(int argc, char *argv[])
 				console_mode = !console_mode;
 				//hud_enable = !console_mode;
 			}
+			if (sdl_key=='b')
+				decorations_ui(vid_buf,decorations,&bsx,&bsy);//decoration_mode = !decoration_mode;
 			if (sdl_key=='g')
 			{
 				if (sdl_mod & (KMOD_SHIFT))
@@ -3535,7 +3538,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &dae, b, bq, x, y); //draw the elements in the current menu
-
+		draw_decorations(vid_buf,decorations);
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
 		        && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
 		        && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))

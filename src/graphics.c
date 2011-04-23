@@ -3056,6 +3056,18 @@ void draw_parts(pixel *vid)
 #endif
 
 }
+void draw_decorations(pixel *vid_buf,pixel *decorations)
+{
+	int i,r,g,b;
+	for (i=0; i<(XRES+BARSIZE)*YRES; i++)
+	{
+		r = PIXR(decorations[i]);
+		g = PIXG(decorations[i]);
+		b = PIXB(decorations[i]);
+		if (r>0 || g>0 || b>0)
+			vid_buf[i] = PIXRGB(r,g,b);
+	}
+}
 
 //draws the photon colors in the HUD
 void draw_wavelengths(pixel *vid, int x, int y, int h, int wl)
