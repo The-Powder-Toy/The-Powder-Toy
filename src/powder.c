@@ -1562,10 +1562,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 										parts[i].tmp = 0;
 										t = PT_BMTL;
 									}
-									if (parts[i].ctype==PT_PLUT)
+									if (t==PT_PLUT)
 									{
 										parts[i].tmp = 0;
-										t = parts[i].ctype = PT_LAVA;
+										t = PT_LAVA;
 									}
 								}
 							}
