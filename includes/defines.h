@@ -16,8 +16,6 @@
 
 #define THUMB_CACHE_SIZE 256
 
-//#define pyconsole
-
 #ifndef M_PI
 #define M_PI 3.14159265f
 #endif
@@ -173,8 +171,6 @@ int player2spawn;
 int death2;
 int ISSPAWN1;
 int ISSPAWN2;
-extern char pyready;
-extern char pygood;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;
@@ -183,8 +179,10 @@ extern char itc_msg[64];
 
 extern int do_open;
 extern int sys_pause;
+extern int sys_shortcuts;
 extern int legacy_enable; //Used to disable new features such as heat, will be set by commandline or save.
 extern int death, death2, framerender;
+extern pixel *vid_buf;
 
 extern unsigned char last_major, last_minor, update_flag;
 
@@ -200,5 +198,5 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 void clear_sim(void);
 void del_stamp(int d);
 void sdl_seticon(void);
-//int process_command(pixel *vid_buf, char *console, char *console_error, PyObject *pfunc);
+void play_sound(char *file);
 #endif
