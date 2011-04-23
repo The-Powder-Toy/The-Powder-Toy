@@ -613,12 +613,14 @@ void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 HSV value
 		*s = 0;
 		*v = a;
 	}
-
- 	c = (rr==a) ? gg-bb : ((bb==a) ? rr-gg : bb-rr);
- 	d = (rr==a) ? 3 : ((bb==a) ? 1 : 5);
- 	*h = (int)(42.667*(d - c/(x - a)));
- 	*s = (int)(256.0*((x - a)/x));
- 	*v = (int)(256.0*x);
+	else
+	{
+ 		c = (rr==a) ? gg-bb : ((bb==a) ? rr-gg : bb-rr);
+ 		d = (rr==a) ? 3 : ((bb==a) ? 1 : 5);
+ 		*h = (int)(42.667*(d - c/(x - a)));
+ 		*s = (int)(256.0*((x - a)/x));
+ 		*v = (int)(256.0*x);
+	}
 }
 vector2d v2d_zero = {0,0};
 matrix2d m2d_identity = {1,0,0,1};
