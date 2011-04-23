@@ -3068,6 +3068,86 @@ void draw_decorations(pixel *vid_buf,pixel *decorations)
 			vid_buf[i] = PIXRGB(r,g,b);
 	}
 }
+void create_decorations(pixel *decorations,int x, int y, int rx, int ry, int r, int g, int b)
+{
+	int i,j;
+	for (j=-ry; j<=ry; j++)
+		for (i=-rx; i<=rx; i++)
+			if(y+j>=0 && x+i>=0 && x+i<XRES && y+j<YRES)
+				if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
+					decorations[(y+j)*(XRES+BARSIZE)+(x+i)] = PIXRGB(r, g, b);
+}
+void line_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b)
+{
+	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
+	float e, de;
+	if (cp)
+	{
+		y = x1;
+		x1 = y1;
+		y1 = y;
+		y = x2;
+		x2 = y2;
+		y2 = y;
+	}
+	if (x1 > x2)
+	{
+		y = x1;
+		x1 = x2;
+		x2 = y;
+		y = y1;
+		y1 = y2;
+		y2 = y;
+	}
+	dx = x2 - x1;
+	dy = abs(y2 - y1);
+	e = 0.0f;
+	if (dx)
+		de = dy/(float)dx;
+	else
+		de = 0.0f;
+	y = y1;
+	sy = (y1<y2) ? 1 : -1;
+	for (x=x1; x<=x2; x++)
+	{
+		if (cp)
+			create_decorations(decorations,y, x, rx, ry, r, g, b);
+		else
+			create_decorations(decorations,x, y, rx, ry, r, g, b);
+		e += de;
+		if (e >= 0.5f)
+		{
+			y += sy;
+			if (!(rx+ry))
+			{
+				if (cp)
+					create_decorations(decorations,y, x, rx, ry, r, g, b);
+				else
+					create_decorations(decorations,x, y, rx, ry, r, g, b);
+			}
+			e -= 1.0f;
+		}
+	}
+}
+void box_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int r, int g, int b)
+{
+	int i, j;
+	if (x1>x2)
+	{
+		i = x2;
+		x2 = x1;
+		x1 = i;
+	}
+	if (y1>y2)
+	{
+		j = y2;
+		y2 = y1;
+		y1 = j;
+	}
+	for (j=y1; j<=y2; j++)
+		for (i=x1; i<=x2; i++)
+			create_decorations(decorations,i, j, 0, 0, r, g, b);
+}
 
 //draws the photon colors in the HUD
 void draw_wavelengths(pixel *vid, int x, int y, int h, int wl)

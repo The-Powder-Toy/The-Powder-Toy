@@ -4278,7 +4278,7 @@ int console_parse_partref(char *txt, int *which, char *err)
 
 void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 {
-	int i,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j;
+	int i,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0;
 	int window_offset_x_left = 2;
 	int window_offset_x_right = XRES - 279;
 	int window_offset_y = 2;
@@ -4341,9 +4341,6 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 		draw_decorations(vid_buf,decorations);
-		ui_edit_draw(vid_buf, &box_R);
-		ui_edit_draw(vid_buf, &box_G);
-		ui_edit_draw(vid_buf, &box_B);
 		ui_edit_process(mx, my, b, &box_R);
 		ui_edit_process(mx, my, b, &box_G);
 		ui_edit_process(mx, my, b, &box_B);
@@ -4368,10 +4365,14 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 			box_G.x = XRES - 254 + 40;
 			box_B.x = XRES - 254 + 75;
 		}
+		clearrect(vid_buf, window_offset_x, window_offset_y, 2+255+4+10+5, 2+255+20);
 		drawrect(vid_buf, window_offset_x, window_offset_y, 2+255+4+10+5, 2+255+20, 255, 255, 255, 255);//window around whole thing
 		drawrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, 255, 255, 255, 255);
-		HSV_to_RGB(h,s,v,&cr,&cg,&cb);
-		fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, cr, cg, cb, 255);
+		ui_edit_draw(vid_buf, &box_R);
+		ui_edit_draw(vid_buf, &box_G);
+		ui_edit_draw(vid_buf, &box_B);
+
+		render_cursor(vid_buf, mx, my, PT_DUST, *bsx, *bsy);
 		for(int ss=0; ss<=255; ss++)
 			for(int hh=0;hh<=255;hh++)
 			{
@@ -4390,7 +4391,13 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 				HSV_to_RGB(0,0,vv,&cr,&cg,&cb);
 				vid_buf[(vv+grid_offset_y)*(XRES+BARSIZE)+(i+grid_offset_x+255+4)] = PIXRGB(cr, cg, cb);
 			}
-		if(mx >= window_offset_x && my >= window_offset_y && mx <= window_offset_x+255+4+10+5 && my <= window_offset_y+255+20)//in the main window
+		HSV_to_RGB(h,s,v,&cr,&cg,&cb);
+		fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, cr, cg, cb, 255);
+		sprintf(box_R.str,"%d",cr);
+		sprintf(box_G.str,"%d",cg);
+		sprintf(box_B.str,"%d",cb);
+
+		if(!lb && mx >= window_offset_x && my >= window_offset_y && mx <= window_offset_x+255+4+10+5 && my <= window_offset_y+255+20)//in the main window
 		{
 			if(mx >= grid_offset_x +255+4 && my >= grid_offset_y && mx <= grid_offset_x+255+4+10 && my <= grid_offset_y+255)
 			{
@@ -4423,24 +4430,71 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 				sprintf(box_G.str,"%d",cg);
 				sprintf(box_B.str,"%d",cb);
 			}
+			if(b && mx >= window_offset_x + onleft_button_offset_x && my >= window_offset_y +255+4 && mx <= window_offset_x + onleft_button_offset_x +13 && my <= window_offset_y +255+4 +13)
+				on_left = !on_left;
+		}
+		else if (b)//there is a click, outside window
+		{
+			if (lb)//mouse is held down
+			{
+				if (lm == 1)//line tool
+				{
+					xor_line(lx, ly, mx, my, vid_buf);
+				}
+				else if (lm == 2)//box tool
+				{
+					xor_line(lx, ly, lx, my, vid_buf);
+					xor_line(lx, my, mx, my, vid_buf);
+					xor_line(mx, my, mx, ly, vid_buf);
+					xor_line(mx, ly, lx, ly, vid_buf);
+				}
+				else//while mouse is held down, it draws lines between previous and current positions
+				{
+					line_decorations(decorations,lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+					lx = mx;
+					ly = my;
+				}
+			}
+			else //first click
+			{
+				if ((sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)) && !(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL|KMOD_LALT)))
+				{
+					lx = mx;
+					ly = my;
+					lb = b;
+					lm = 1;//line
+				}
+				//start box tool
+				else if ((sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)) && !(sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)))
+				{
+					lx = mx;
+					ly = my;
+					lb = b;
+					lm = 2;//box
+				}
+				else //normal click, draw deco
+				{
+					create_decorations(decorations,mx,my,*bsx,*bsy,cr,cg,cb);
+					lx = mx;
+					ly = my;
+					lb = b;
+					lm = 0;
+				}
+			}
 		}
 		else
 		{
-			render_cursor(vid_buf, mx, my, PT_DUST, *bsx, *bsy);
-			HSV_to_RGB(h,s,v,&cr,&cg,&cb);
-			if (b)
+			if (lb && lm) //lm is box/line tool
 			{
-				for (j=-*bsy; j<=*bsy; j++)
-					for (i=-*bsx; i<=*bsx; i++)
-						if(my+j>=0 && mx+i>=0 && mx+i<XRES && my+j<YRES)
-							if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(*bsx,2))+(pow(j,2))/(pow(*bsy,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=(*bsy)*(*bsx)))
-								decorations[(my+j)*(XRES+BARSIZE)+(mx+i)] = PIXRGB(cr, cg, cb);
+				if (lm == 1)//line
+					line_decorations(decorations,lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+				else//box
+					box_decorations(decorations,lx, ly, mx, my, cr, cg, cb);
+				lm = 0;
 			}
-			sprintf(box_R.str,"%d",cr);
-			sprintf(box_G.str,"%d",cg);
-			sprintf(box_B.str,"%d",cb);
-		}
+			lb = 0;
 
+		}
 		addpixel(vid_buf,grid_offset_x + h,grid_offset_y-1,255,255,255,255);
 		addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-s),255,255,255,255);
 
@@ -4451,8 +4505,7 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 		addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y +v,255,255,255,255);
 
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
-		if(b && mx >= window_offset_x + onleft_button_offset_x && my >= window_offset_y +255+4 && mx <= window_offset_x + onleft_button_offset_x +13 && my <= window_offset_y +255+4 +13)
-			on_left = !on_left;
+
 		if (sdl_wheel)
 		{
 			//change brush size
