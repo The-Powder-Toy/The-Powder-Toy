@@ -46,7 +46,7 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 					if (parts[r>>8].life>0)
 					{
 						parts[r>>8].life --;
-						parts[r>>8].temp += (parts[r>>8].life*17);
+						parts[r>>8].temp = restrict_flt(parts[r>>8].temp + parts[r>>8].life*17, MIN_TEMP, MAX_TEMP);
 						pv[y/CELL][x/CELL] += 6.0f * CFDS;
 					}
 					else

@@ -14,7 +14,7 @@ particle *parts;
 particle *cb_parts;
 
 int gravityMode = 0; // starts enabled in "vertical" mode...
-int airMode = 0; 
+int airMode = 0;
 
 
 unsigned char bmap[YRES/CELL][XRES/CELL];
@@ -201,7 +201,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 		}
 		return 1;
 	}
-	//else e=1 , we are trying to swap the particles, return 0 no swap/move, 1 is still overlap/move, because the swap takes place later 
+	//else e=1 , we are trying to swap the particles, return 0 no swap/move, 1 is still overlap/move, because the swap takes place later
 
 	if ((r&0xFF)==PT_VOID) //this is where void eats particles
 	{
@@ -870,22 +870,22 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 			parts[i].life = 100;
 			parts[i].ctype = 0;
 			parts[i].temp = ptypes[t].heat;
-            
+
 			box[3] = x-1;  //Setting legs positions
 			box[4] = y+6;
 			box[5] = x-1;
 			box[6] = y+6;
-            
+
 			box[7] = x-3;
 			box[8] = y+12;
 			box[9] = x-3;
 			box[10] = y+12;
-            
+
 			box[11] = x+1;
 			box[12] = y+6;
 			box[13] = x+1;
 			box[14] = y+6;
-            
+
 			box[15] = x+3;
 			box[16] = y+12;
 			box[17] = x+3;
@@ -1348,7 +1348,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				{
 					smil[nx/9][ny/9] = 1;
 				}
-				
+
 			}
 	    }
 	    for(nx=9;nx<=XRES-18;nx++)
@@ -1373,7 +1373,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 									continue;
 								else if(parts[rt>>8].type==PT_SMIL&&smilrule[nnx][nny]==0)
 									parts[rt>>8].type=PT_NONE;
-								
+
 							}
 						}
 				}
@@ -1601,6 +1601,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 					pGravD = 0.01f - hypotf((x - XCNTR), (y - YCNTR));
 					pGravX = ptypes[t].gravity * ((float)(x - XCNTR) / pGravD);
 					pGravY = ptypes[t].gravity * ((float)(y - YCNTR) / pGravD);
+			}
+			//Get some gravity from the gravity map
+			if(!(ptypes[t].properties & TYPE_SOLID))
+			{
+			    pGravX += gravx[y/CELL][x/CELL];
+			    pGravY += gravy[y/CELL][x/CELL];
 			}
 			//velocity updates for the particle
 			parts[i].vx *= ptypes[t].loss;
@@ -2971,7 +2977,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
 				{
 					i = ox;
 					j = oy;
-					if (((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))|| sdl_mod & (KMOD_CAPS) ))
+					if (((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))|| ((sdl_mod & (KMOD_CAPS)) && b!=WL_FANHELPER) ))
 					{
 						if (bmap[j][i]==SLALT-100)
 							b = 0;
@@ -3281,7 +3287,7 @@ inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblo
 	resblock1[1] = (block1&0x0000FF00)>>8;
 	resblock1[2] = (block1&0x00FF0000)>>16;
 	resblock1[3] = (block1&0xFF000000)>>24;
-	
+
 	resblock2[0] = (block2&0x000000FF);
 	resblock2[1] = (block2&0x0000FF00)>>8;
 	resblock2[2] = (block2&0x00FF0000)>>16;
@@ -3296,17 +3302,17 @@ inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resb
 {
 	int block1tmp = 0;
 	int block2tmp = 0;
-	
+
 	block1tmp = (resblock1[0]&0xFF);
 	block1tmp |= (resblock1[1]&0xFF)<<8;
 	block1tmp |= (resblock1[2]&0xFF)<<16;
 	block1tmp |= (resblock1[3]&0xFF)<<24;
-	
+
 	block2tmp = (resblock2[0]&0xFF);
 	block2tmp |= (resblock2[1]&0xFF)<<8;
 	block2tmp |= (resblock2[2]&0xFF)<<16;
 	block2tmp |= (resblock2[3]&0xFF)<<24;
-	
+
 	*block1 = block1tmp;
 	*block2 = block2tmp;
 }

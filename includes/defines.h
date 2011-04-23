@@ -26,12 +26,16 @@
 #define M_PI 3.14159265f
 #endif
 
+#ifndef M_GRAV
+#define M_GRAV 6.67300e-1
+#endif
+
 #define IMGCONNS 3
 #define TIMEOUT 100
 #define HTTP_TIMEOUT 10
 
 
-#ifdef RENDERER	
+#ifdef RENDERER
 #define MENUSIZE 0
 #define BARSIZE 0
 #else

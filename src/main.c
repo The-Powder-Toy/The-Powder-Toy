@@ -76,7 +76,7 @@ void mixaudio(void *unused, Uint8 *stream, int len)
 {
 	int i;
 	Uint32 amount;
-    
+
 	for ( i=0; i<NUM_SOUNDS; ++i ) {
 		amount = (sounds[i].dlen-sounds[i].dpos);
 		if ( amount > len ) {
@@ -95,9 +95,9 @@ void play_sound(char *file)
 	Uint8 *data;
 	Uint32 dlen;
 	SDL_AudioCVT cvt;
-    
+
 	if (!sound_enable) return;
-    
+
 	/* Look for an empty (or finished) sound slot */
 	for ( index=0; index<NUM_SOUNDS; ++index ) {
 		if ( sounds[index].dpos == sounds[index].dlen ) {
@@ -106,7 +106,7 @@ void play_sound(char *file)
 	}
 	if ( index == NUM_SOUNDS )
 		return;
-    
+
 	/* Load the sound file and convert it to 16-bit stereo at 22kHz */
 	if ( SDL_LoadWAV(file, &wave, &data, &dlen) == NULL ) {
 		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
@@ -119,7 +119,7 @@ void play_sound(char *file)
 	cvt.len = dlen;
 	SDL_ConvertAudio(&cvt);
 	SDL_FreeWAV(data);
-    
+
 	/* Put the sound data in the slot (it starts playing immediately) */
 	if ( sounds[index].data ) {
 		free(sounds[index].data);
@@ -203,7 +203,7 @@ int core_count()
 	numCPU = sysconf( _SC_NPROCESSORS_ONLN );
 #endif
 #endif
-    
+
 	printf("Cpus: %d\n", numCPU);
 	if (numCPU>1)
 		printf("Multithreading enabled\n");
@@ -280,12 +280,12 @@ void *build_thumb(int *size, int bzip2)
 					for (i=0; i<CELL; i++)
 						d[x*CELL+i+(y*CELL+j)*XRES] = 0xFF;
 	j = XRES*YRES;
-    
+
 	if (bzip2)
 	{
 		i = (j*101+99)/100 + 608;
 		c = malloc(i);
-        
+
 		c[0] = 0x53;
 		c[1] = 0x68;
 		c[2] = 0x49;
@@ -294,9 +294,9 @@ void *build_thumb(int *size, int bzip2)
 		c[5] = CELL;
 		c[6] = XRES/CELL;
 		c[7] = YRES/CELL;
-        
+
 		i -= 8;
-        
+
 		if (BZ2_bzBuffToBuffCompress((char *)(c+8), (unsigned *)&i, (char *)d, j, 9, 0, 0) != BZ_OK)
 		{
 			free(d);
@@ -307,7 +307,7 @@ void *build_thumb(int *size, int bzip2)
 		*size = i+8;
 		return c;
 	}
-    
+
 	*size = j;
 	return d;
 }
@@ -319,13 +319,13 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
 	int bx0=x0/CELL, by0=y0/CELL, bw=(w+CELL-1)/CELL, bh=(h+CELL-1)/CELL;
 	particle *parts = partsptr;
-    
+
 	// normalize coordinates
 	x0 = bx0*CELL;
 	y0 = by0*CELL;
 	w  = bw *CELL;
 	h  = bh *CELL;
-    
+
 	// save the required air state
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
@@ -348,7 +348,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 				if (i>255) i=255;
 				d[p++] = i;
 			}
-    
+
 	// save the particle map
 	for (i=0; i<NPART; i++)
 		if (parts[i].type)
@@ -371,7 +371,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 		else
 			d[p++] = 0;
 	}
-    
+
 	// save particle properties
 	for (j=0; j<w*h; j++)
 	{
@@ -428,7 +428,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 		if (i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_BCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA || parts[i-1].type==PT_PIPE))
 			d[p++] = parts[i-1].ctype;
 	}
-    
+
 	j = 0;
 	for (i=0; i<MAXSIGNS; i++)
 		if (signs[i].text[0] &&
@@ -451,13 +451,13 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 			memcpy(d+p, signs[i].text, x);
 			p+=x;
 		}
-    
+
 	i = (p*101+99)/100 + 612;
 	c = malloc(i);
-    
+
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
-    
+
 	c[0] = 0x50;	//0x66;
 	c[1] = 0x53;	//0x75;
 	c[2] = 0x76;	//0x43;
@@ -470,9 +470,9 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	c[9] = p >> 8;
 	c[10] = p >> 16;
 	c[11] = p >> 24;
-    
+
 	i -= 12;
-    
+
 	if (BZ2_bzBuffToBuffCompress((char *)(c+12), (unsigned *)&i, (char *)d, p, 9, 0, 0) != BZ_OK)
 	{
 		free(d);
@@ -482,7 +482,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	}
 	free(d);
     free(m);
-    
+
 	*size = i+12;
 	return c;
 }
@@ -490,14 +490,14 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES])
 {
 	unsigned char *d=NULL,*c=save;
- 	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
+	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
 	int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
 	int fp[NPART], nf=0, new_format = 0, ttv = 0;
 	particle *parts = partsptr;
-    
+
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
-    
+
 	if (size<16)
 		return 1;
 	if (!(c[2]==0x43 && c[1]==0x75 && c[0]==0x66) && !(c[2]==0x76 && c[1]==0x53 && c[0]==0x50))
@@ -505,11 +505,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	if (c[2]==0x76 && c[1]==0x53 && c[0]==0x50) {
 		new_format = 1;
 	}
-    /*
-	if (c[4]>ME4502_MAJOR_VERSION)
+	if (c[4]>SAVE_VERSION)
 		return 2;
 	ver = c[4];
-    
+
 	if (ver<34)
 	{
 		legacy_enable = 1;
@@ -533,7 +532,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			}
 		}
 	}
-    */
+
 	bw = c[6];
 	bh = c[7];
 	if (bx0+bw > XRES/CELL)
@@ -544,7 +543,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		bx0 = 0;
 	if (by0 < 0)
 		by0 = 0;
-    
+
 	if (c[5]!=CELL || bx0+bw>XRES/CELL || by0+bh>YRES/CELL)
 		return 3;
 	i = (unsigned)c[8];
@@ -554,20 +553,20 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	d = malloc(i);
 	if (!d)
 		return 1;
-    
+
 	if (BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), size-12, 0, 0))
 		return 1;
 	size = i;
-    
+
 	if (size < bw*bh)
 		return 1;
-    
+
 	// normalize coordinates
 	x0 = bx0*CELL;
 	y0 = by0*CELL;
 	w  = bw *CELL;
 	h  = bh *CELL;
-    
+
 	if (replace)
 	{
 		if (ver<46) {
@@ -576,8 +575,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 		clear_sim();
 	}
-    m = calloc(XRES*YRES, sizeof(int));
-    
+	m = calloc(XRES*YRES, sizeof(int));
+
 	// make a catalog of free parts
 	memset(pmap, 0, sizeof(pmap));
 	for (i=0; i<NPART; i++)
@@ -589,7 +588,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 		else
 			fp[nf++] = i;
-    
+
 	// load the required air state
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
@@ -623,10 +622,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					bmap[y][x]=WL_EHOLE;
 				if (bmap[y][x]==13)
 					bmap[y][x]=WL_ALLOWGAS;
-                if (bmap[y][x]==14)
-					bmap[y][x]=WL_ELEMENTONLY;
 			}
-            
+
 			p++;
 		}
 	for (y=by0; y<by0+bh; y++)
@@ -645,7 +642,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					goto corrupt;
 				fvy[y][x] = (d[p++]-127.0f)/64.0f;
 			}
-    
+
 	// load the particle map
 	i = 0;
 	pty = p;
@@ -692,7 +689,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					m[(x-x0)+(y-y0)*w] = NPART+1;
 			}
 		}
-    
+
 	// load particle properties
 	for (j=0; j<w*h; j++)
 	{
@@ -709,77 +706,52 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				if (parts[i].type == PT_STKM)
 				{
 					//player[2] = PT_DUST;
-                    
+
 					player[3] = parts[i].x-1;  //Setting legs positions
 					player[4] = parts[i].y+6;
 					player[5] = parts[i].x-1;
 					player[6] = parts[i].y+6;
-                    
+
 					player[7] = parts[i].x-3;
 					player[8] = parts[i].y+12;
 					player[9] = parts[i].x-3;
 					player[10] = parts[i].y+12;
-                    
+
 					player[11] = parts[i].x+1;
 					player[12] = parts[i].y+6;
 					player[13] = parts[i].x+1;
 					player[14] = parts[i].y+6;
-                    
+
 					player[15] = parts[i].x+3;
 					player[16] = parts[i].y+12;
 					player[17] = parts[i].x+3;
 					player[18] = parts[i].y+12;
-                    
-				}
-                if (parts[i].type == PT_BOX)
-				{
-					//player[2] = PT_DUST;
-                    
-					box[3] = parts[i].x-1;  //Setting legs positions
-					box[4] = parts[i].y+6;
-					box[5] = parts[i].x-1;
-					box[6] = parts[i].y+6;
-                    
-					box[7] = parts[i].x-3;
-					box[8] = parts[i].y+12;
-					box[9] = parts[i].x-3;
-					box[10] = parts[i].y+12;
-                    
-					box[11] = parts[i].x+1;
-					box[12] = parts[i].y+6;
-					box[13] = parts[i].x+1;
-					box[14] = parts[i].y+6;
-                    
-					box[15] = parts[i].x+3;
-					box[16] = parts[i].y+12;
-					box[17] = parts[i].x+3;
-					box[18] = parts[i].y+12;
-                    
+
 				}
 				if (parts[i].type == PT_STKM2)
 				{
 					//player[2] = PT_DUST;
-                    
+
 					player2[3] = parts[i].x-1;  //Setting legs positions
 					player2[4] = parts[i].y+6;
 					player2[5] = parts[i].x-1;
 					player2[6] = parts[i].y+6;
-                    
+
 					player2[7] = parts[i].x-3;
 					player2[8] = parts[i].y+12;
 					player2[9] = parts[i].x-3;
 					player2[10] = parts[i].y+12;
-                    
+
 					player2[11] = parts[i].x+1;
 					player2[12] = parts[i].y+6;
 					player2[13] = parts[i].x+1;
 					player2[14] = parts[i].y+6;
-                    
+
 					player2[15] = parts[i].x+3;
 					player2[16] = parts[i].y+12;
 					player2[17] = parts[i].x+3;
 					player2[18] = parts[i].y+12;
-                    
+
 				}
 			}
 			else
@@ -894,7 +866,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				p++;
 		}
 	}
-    
+
 	if (p >= size)
 		goto version1;
 	j = d[p++];
@@ -926,15 +898,16 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 		p += x;
 	}
-    
+
 version1:
-    if (m) free(m);
- 	if (d) free(d);    
+	if (m) free(m);
+	if (d) free(d);
+
 	return 0;
-    
+
 corrupt:
-    if (m) free(m);
- 	if (d) free(d);
+	if (m) free(m);
+	if (d) free(d);
 	if (replace)
 	{
 		legacy_enable = 0;
@@ -977,7 +950,7 @@ unsigned last_time=0, last_name=0;
 void stamp_gen_name(char *fn)
 {
 	unsigned t=(unsigned)time(NULL);
-    
+
 	if (last_time!=t)
 	{
 		last_time=t;
@@ -985,7 +958,7 @@ void stamp_gen_name(char *fn)
 	}
 	else
 		last_name++;
-    
+
 	sprintf(fn, "%08x%02x", last_time, last_name);
 }
 
@@ -1014,16 +987,16 @@ void stamp_gen_thumb(int i)
 	void *data;
 	int size, factor_x, factor_y;
 	pixel *tmp;
-    
+
 	if (stamps[i].thumb)
 	{
 		free(stamps[i].thumb);
 		stamps[i].thumb = NULL;
 	}
-    
+
 	sprintf(fn, "stamps" PATH_SEP "%s.stm", stamps[i].name);
 	data = file_load(fn, &size);
-    
+
 	if (data)
 	{
 		stamps[i].thumb = prerender_save(data, size, &(stamps[i].thumb_w), &(stamps[i].thumb_h));
@@ -1038,7 +1011,7 @@ void stamp_gen_thumb(int i)
 			stamps[i].thumb = tmp;
 		}
 	}
-    
+
 	free(data);
 }
 
@@ -1052,34 +1025,34 @@ void stamp_save(int x, int y, int w, int h)
 	int n;
 	char fn[64], sn[16];
 	void *s=build_save(&n, x, y, w, h, bmap, fvx, fvy, signs, parts);
-    
+
 #ifdef WIN32
 	_mkdir("stamps");
 #else
 	mkdir("stamps", 0755);
 #endif
-    
+
 	stamp_gen_name(sn);
 	sprintf(fn, "stamps" PATH_SEP "%s.stm", sn);
-    
+
 	f = fopen(fn, "wb");
 	if (!f)
 		return;
 	fwrite(s, n, 1, f);
 	fclose(f);
-    
+
 	free(s);
-    
+
 	if (stamps[STAMP_MAX-1].thumb)
 		free(stamps[STAMP_MAX-1].thumb);
 	memmove(stamps+1, stamps, sizeof(struct stamp)*(STAMP_MAX-1));
 	memset(stamps, 0, sizeof(struct stamp));
 	if (stamp_count<STAMP_MAX)
 		stamp_count++;
-    
+
 	strcpy(stamps[0].name, sn);
 	stamp_gen_thumb(0);
-    
+
 	stamp_update();
 }
 
@@ -1088,24 +1061,24 @@ void *stamp_load(int i, int *size)
 	void *data;
 	char fn[64];
 	struct stamp tmp;
-    
+
 	if (!stamps[i].thumb || !stamps[i].name[0])
 		return NULL;
-    
+
 	sprintf(fn, "stamps" PATH_SEP "%s.stm", stamps[i].name);
 	data = file_load(fn, size);
 	if (!data)
 		return NULL;
-    
+
 	if (i>0)
 	{
 		memcpy(&tmp, stamps+i, sizeof(struct stamp));
 		memmove(stamps+1, stamps, sizeof(struct stamp)*i);
 		memcpy(stamps, &tmp, sizeof(struct stamp));
-        
+
 		stamp_update();
 	}
-    
+
 	return data;
 }
 
@@ -1113,9 +1086,9 @@ void stamp_init(void)
 {
 	int i;
 	FILE *f;
-    
+
 	memset(stamps, 0, sizeof(stamps));
-    
+
 	f=fopen("stamps" PATH_SEP "stamps.def", "rb");
 	if (!f)
 		return;
@@ -1435,7 +1408,7 @@ static PyObject* emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
 	{
 		if (parts[i].type != PT_NONE)
 			parts[i].life = life;
-        
+
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
@@ -1477,7 +1450,7 @@ static PyObject* emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
 	{
 		if (parts[i].type != PT_NONE)
 			parts[i].type = life;
-        
+
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
@@ -1518,7 +1491,7 @@ static PyObject* emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
 	{
 		if (parts[i].type != PT_NONE)
 			parts[i].temp = newval;
-        
+
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
@@ -1558,7 +1531,7 @@ static PyObject* emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
 	{
 		if (parts[i].type != PT_NONE)
 			parts[i].tmp = life;
-        
+
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
@@ -1599,7 +1572,7 @@ static PyObject* emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
 	{
 		if (parts[i].type != PT_NONE)
 			parts[i].x = life;
-        
+
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
@@ -1639,7 +1612,7 @@ static PyObject* emb_set_y(PyObject *self, PyObject *args, PyObject *keywds)
 	{
 		if (parts[i].type != PT_NONE)
 			parts[i].y = life;
-        
+
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
@@ -1682,7 +1655,7 @@ static PyObject* emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
 	{
 		if (parts[i].type != PT_NONE)
 			parts[i].ctype = life;
-        
+
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
@@ -1723,7 +1696,7 @@ static PyObject* emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
 	{
 		if (parts[i].type != PT_NONE)
 			parts[i].vx = life;
-        
+
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
@@ -1764,7 +1737,7 @@ static PyObject* emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 	{
 		if (parts[i].type != PT_NONE)
 			parts[i].vy = life;
-        
+
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
@@ -1782,7 +1755,7 @@ static PyObject* emb_get_pmap(PyObject *self, PyObject *args)
 	//
 	if (x<0 || y<0 || x>=XRES || y>=YRES)
 		return Py_BuildValue("i",-1);
-    
+
 	return Py_BuildValue("I",pmap[y][x]);
 }
 
@@ -1814,7 +1787,7 @@ static PyObject* emb_get_prop(PyObject *self, PyObject *args)
 		if (strcmp(prop,"y")==0)
 			return Py_BuildValue("i",parts[i].y);
 	}
-    
+
 	return Py_BuildValue("i",-1);
 }
 
@@ -1824,14 +1797,14 @@ static PyObject* emb_draw_pixel(PyObject *self, PyObject *args)
 	a=255;
 	if (!PyArg_ParseTuple(args, "IIIII|I:draw_pixel",&x,&y,&r,&g,&b,&a))
 		return NULL;
-    
+
 	if (vid_buf!=NULL)
 	{
 		drawpixel(vid_buf,x,y,r,g,b,a);
 		return Py_BuildValue("i",1);
 	}
 	return Py_BuildValue("i",-1);
-    
+
 }
 
 static PyObject* emb_draw_text(PyObject *self, PyObject *args)
@@ -2017,7 +1990,7 @@ emb_set_tool(PyObject *self, PyObject *args)
  ev.button.y=y;
  return Py_BuildValue("i",SDL_PushEvent(ev));
  }
- 
+
  static PyObject*
  emb_release_mouse(PyObject *self, PyObject *args)
  {
@@ -2186,7 +2159,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 								for (k=0; k<strlen(ycoord); k++)
 								{
 									pch[i-j-tokensize+starty+k] = ycoord[k];
-                                    
+
 								}
 								pch[i-j-tokensize +strlen(xcoord) +1 +strlen(ycoord)] = ' ';
 								j = j -tokensize +strlen(xcoord) +1 +strlen(ycoord);
@@ -2196,7 +2169,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 						}
 						if (fileread[i] == '\n')
 						{
-                            
+
 							if (do_next)
 							{
 								if (strcmp(pch,"else")==0)
@@ -2222,7 +2195,7 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 			{
 				sprintf(console_error, "Scripts are not enabled");
 			}
-            
+
 		}
 		else if (strcmp(console2, "sound")==0 && console3[0])
 		{
@@ -2594,7 +2567,7 @@ int main(int argc, char *argv[])
  	  void *load_data = file_load(argv[1], &load_size);
  	  unsigned char c[3];
  	  FILE *f;
- 	  
+
  	  cmode = CM_FIRE;
  	  sys_pause = 1;
  	  parts = calloc(sizeof(particle), NPART);
@@ -2602,34 +2575,34 @@ int main(int argc, char *argv[])
             parts[i].life = i+1;
             parts[NPART-1].life = -1;
             pfree = 0;
-    
+
         fire_bg = calloc(XRES*YRES, PIXELSIZE);
  	  pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
-          
-          
+
+
           prepare_alpha();
-          
+
           if(load_data && load_size){
                 int parsestate = 0;
                 //parsestate = parse_save(load_data, load_size, 1, 0, 0);
                 parsestate = parse_save(load_data, load_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
-                
+
                 for(i=0; i<30; i++){
-                      
+
                       memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
                       update_particles(vid_buf);
                       draw_parts(vid_buf);
                       render_fire(vid_buf);
-                      
+
                     }
-                
+
                 render_signs(vid_buf);
-                
+
                 if(parsestate>0){
                       //return 0;
                       info_box(vid_buf, "Save file invalid or from newer version");
                     }
-                
+
                 f=fopen(argv[2],"wb");
                 fprintf(f,"P6\n%d %d\n255\n",XRES,YRES);
                 for (j=0; j<YRES; j++)
@@ -2644,10 +2617,10 @@ int main(int argc, char *argv[])
                           vid_buf+=XRES+BARSIZE;
                         }
                 fclose(f);
-                
+
                 return 1;
               }
- 	  
+
  	  return 0;
 }
 #else
@@ -2691,7 +2664,7 @@ int main(int argc, char *argv[])
 	vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	GSPEED = 1;
-    
+
 	/* Set 16-bit stereo audio at 22Khz */
 	fmt.freq = 22050;
 	fmt.format = AUDIO_S16;
@@ -2699,13 +2672,13 @@ int main(int argc, char *argv[])
 	fmt.samples = 512;
 	fmt.callback = mixaudio;
 	fmt.userdata = NULL;
-    
+
 #ifdef PYCONSOLE
 	//initialise python console
 	Py_Initialize();
 	PyRun_SimpleString("print 'python present.'");
 	Py_InitModule("tpt", EmbMethods);
-    
+
 	//change the path to find all the correct modules
 	PyRun_SimpleString("import sys\nsys.path.append('./tptPython.zip')\nsys.path.append('.')");
 	//load the console module and whatnot
@@ -2733,7 +2706,7 @@ int main(int argc, char *argv[])
 			pyready = 0;
 			pygood = 0;
 		}
-        
+
 		pstep=PyObject_GetAttrString(pmodule,"step");//get the handler function
 		if (pstep && PyCallable_Check(pstep))//check if it's really a function
 		{
@@ -2743,7 +2716,7 @@ int main(int argc, char *argv[])
 		{
 			printf("unable to find step function. ignoring.\n");
 		}
-        
+
 		pkey=PyObject_GetAttrString(pmodule,"keypress");//get the handler function
 		if (pstep && PyCallable_Check(pkey))//check if it's really a function
 		{
@@ -2765,7 +2738,7 @@ int main(int argc, char *argv[])
 #else
 	printf("python console disabled at compile time.");
 #endif
-    
+
 #ifdef MT
 	numCores = core_count();
 #endif
@@ -2791,11 +2764,11 @@ int main(int argc, char *argv[])
 	pfree = 0;
 	fire_bg=calloc(XRES*YRES, PIXELSIZE);
 	clear_sim();
-    
+
 	//fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
-    
+
 	load_presets();
-    
+
 	for (i=1; i<argc; i++)
 	{
 		if (!strncmp(argv[i], "scale:", 6))
@@ -2845,25 +2818,25 @@ int main(int argc, char *argv[])
 				parse_save(file_data, size, 0, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 			}
 		}
-        
+
 	}
-    
+
 	save_presets(0);
-    
+
 	make_kernel();
 	prepare_alpha();
-    
+
 	stamp_init();
-    
+
 	sdl_open();
 	http_init(http_proxy_string[0] ? http_proxy_string : NULL);
-    
+
 	if (cpu_check())
 	{
 		error_ui(vid_buf, 0, "Unsupported CPU. Try another version.");
 		return 1;
 	}
-    
+
 #ifdef BETA
 	http_ver_check = http_async_req_start(NULL, "http://bbgmod.webs.com/version.txt", NULL, 0, 0);
 #else
@@ -2873,7 +2846,7 @@ int main(int argc, char *argv[])
 		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
 		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
 	}
-    
+
 	while (!sdl_poll()) //the main loop
 	{
         frameidx++;
@@ -2899,8 +2872,8 @@ int main(int argc, char *argv[])
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
 #endif
-        
-		//Can't be too sure...
+        draw_grav(vid_buf);
+		//Can't be too sure (Limit the cursor size)
 		if (bsx>1180)
 			bsx = 1180;
 		if (bsx<0)
@@ -2909,17 +2882,18 @@ int main(int argc, char *argv[])
 			bsy = 1180;
 		if (bsy<0)
 			bsy = 0;
-        
-        
+
+
         //memcpy(mmapx_o, mmapx, sizeof(mmapx));
 		//memcpy(mmapy_o, mmapy, sizeof(mmapy));
-        
+
 		//memset(mmapx, 0, sizeof(mmapx));
 		//memset(mmapy, 0, sizeof(mmapy));
-        
+
 		update_particles(vid_buf); //update everything
+		update_grav();
 		draw_parts(vid_buf); //draw particles
-        
+
 		if (cmode==CM_PERS)
 		{
 			if (!fire_fc)//fire_fc has nothing to do with fire... it is a counter for diminishing persistent view every 3 frames
@@ -2934,14 +2908,14 @@ int main(int argc, char *argv[])
 		}
 		if (cmode==CM_FIRE||cmode==CM_BLOB||cmode==CM_FANCY||cmode==CM_AWESOME||cmode==CM_PREAWE)
 			render_fire(vid_buf);
-        
+
 		render_signs(vid_buf);
-        
+
 		memset(vid_buf+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);//clear menu areas
 		clearrect(vid_buf, XRES-1, 0, BARSIZE+1, YRES);
-        
+
 		draw_svf_ui(vid_buf);
-        
+
 		if (http_ver_check)
 		{
 			if (!do_check && http_async_req_status(http_ver_check))
@@ -3058,7 +3032,7 @@ int main(int argc, char *argv[])
 			}
 			do_s_check = (do_s_check+1) & 15;
 		}
-        
+
 		if (sys_shortcuts==1)//all shortcuts can be disabled by python scripts
 		{
 			if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
@@ -3326,12 +3300,12 @@ int main(int argc, char *argv[])
 						}
 				}
 			}
-            
+
 			if (sdl_key=='w' && (!isplayer2 || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
 			{
 				++gravityMode; // cycle gravity mode
 				itc = 51;
-                
+
 				switch (gravityMode)
 				{
                     default:
@@ -3345,14 +3319,14 @@ int main(int argc, char *argv[])
                     case 2:
                         strcpy(itc_msg, "Gravity: Radial");
                         break;
-                        
+
 				}
 			}
 			if (sdl_key=='y')
 			{
 				++airMode;
 				itc = 52;
-                
+
 				switch (airMode)
 				{
                     default:
@@ -3374,7 +3348,7 @@ int main(int argc, char *argv[])
                         break;
 				}
 			}
-            
+
 			if (sdl_key=='t')
 				VINE_MODE = !VINE_MODE;
 			if (sdl_key==SDLK_SPACE)
@@ -3455,14 +3429,14 @@ int main(int argc, char *argv[])
 			if (sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
 			{
 				int cbx, cby, cbi;
-                
+
 				for (cbi=0; cbi<NPART; cbi++)
 					parts[cbi] = cb_parts[cbi];
-                
+
 				for (cby = 0; cby<YRES; cby++)
 					for (cbx = 0; cbx<XRES; cbx++)
 						pmap[cby][cbx] = cb_pmap[cby][cbx];
-                
+
 				for (cby = 0; cby<(YRES/CELL); cby++)
 					for (cbx = 0; cbx<(XRES/CELL); cbx++)
 					{
@@ -3516,7 +3490,7 @@ int main(int argc, char *argv[])
 			counterthing = (counterthing+1)%3;
 		}
 #endif
-        
+
 		if (sdl_wheel)
 		{
 			if (sdl_zoom_trig==1)//zoom window change
@@ -3561,15 +3535,15 @@ int main(int argc, char *argv[])
                  }*/
 			}
 		}
-        
+
 		bq = b; // bq is previous mouse state
 		b = SDL_GetMouseState(&x, &y); // b is current mouse state
-        
+
 		for (i=0; i<SC_TOTAL; i++)//draw all the menu sections
 		{
 			draw_menu(vid_buf, i, active_menu);
 		}
-        
+
 		for (i=0; i<SC_TOTAL; i++)//check mouse position to see if it is on a menu section
 		{
 			if (!b&&x>=sdl_scale*(XRES-2) && x<sdl_scale*(XRES+BARSIZE-1) &&y>= sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)) && y<sdl_scale*((i*16)+YRES+MENUSIZE-16-(SC_TOTAL*16)+15))
@@ -3579,7 +3553,7 @@ int main(int argc, char *argv[])
 		}
 		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &dae, b, bq, x, y); //draw the elements in the current menu
         //menu_ui(vid_buf, active_menu, &sl, &sr); //For a completely Messed Up Menu
-        
+
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
             && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
             && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))
@@ -3623,11 +3597,11 @@ int main(int argc, char *argv[])
 				sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 				if (DEBUG_MODE)
 				{
-					sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
+					sprintf(coordtext, "X:%d Y:%d. GX: %.2f GY: %.2f", x/sdl_scale, y/sdl_scale, gravx[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], gravy[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 				}
 			}
 		}
-        
+
 		mx = x;
 		my = y;
 		if (update_flag)
@@ -3647,7 +3621,7 @@ int main(int argc, char *argv[])
 			}
 			update_flag = 0;
 		}
-        
+
 		/*if (b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
             x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
 		{
@@ -3661,7 +3635,7 @@ int main(int argc, char *argv[])
 #else
                 error_ui(vid_buf, 0, "Open Failed - Your OS does not support This Feature.");
 #endif
-            }    
+            }
         }
          */
         if(b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
@@ -3789,16 +3763,16 @@ int main(int argc, char *argv[])
 		}
 		else if (da > 0)//fade away mouseover text
 			da --;
-        
+
         if (dae > 0) //Fade away selected elements
             dae --;
-        
+
 		if (!sdl_zoom_trig && zoom_en==1)
 			zoom_en = 0;
-        
+
 		if (sdl_key=='z' && zoom_en==2 && sys_shortcuts==1)
 			zoom_en = 1;
-        
+
 		if (load_mode)
 		{
 			load_x = CELL*((mx/sdl_scale-load_w/2+CELL/2)/CELL);
@@ -3926,7 +3900,7 @@ int main(int argc, char *argv[])
 							parts[i].life = i+1;
 						parts[NPART-1].life = -1;
 						pfree = 0;
-                        
+
 						legacy_enable = 0;
 						svf_myvote = 0;
 						svf_open = 0;
@@ -3938,13 +3912,13 @@ int main(int argc, char *argv[])
 						svf_description[0] = 0;
 						gravityMode = 0;
 						airMode = 0;
-                        
+
 						death = death2 = 0;
 						isplayer2 = 0;
 						isplayer = 0;
 						ISSPAWN1 = 0;
 						ISSPAWN2 = 0;
-                        
+
 						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
 						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 						memset(fire_r, 0, sizeof(fire_r));
@@ -4012,10 +3986,10 @@ int main(int argc, char *argv[])
 			else if (y<YRES)// mouse is in playing field
 			{
 				int signi;
-                
+
 				c = (b&1) ? sl : sr; //c is element to be spawned
 				su = c;
-                
+
 				if (c!=WL_SIGN+100)
 				{
 					if (!bq)
@@ -4028,18 +4002,18 @@ int main(int argc, char *argv[])
 								{
 									char buff[256];
 									int sldr;
-                                    
+
 									memset(buff, 0, sizeof(buff));
-                                    
+
 									for (sldr=3; signs[signi].text[sldr] != '|'; sldr++)
 										buff[sldr-3] = signs[signi].text[sldr];
-                                    
+
 									buff[sldr-3] = '\0';
 									open_ui(vid_buf, buff, 0);
 								}
 							}
 				}
-                
+
 				if (c==WL_SIGN+100)
 				{
 					if (!bq)
@@ -4160,14 +4134,14 @@ int main(int argc, char *argv[])
 					{
 						//Copy state before drawing any particles (for undo)7
 						int cbx, cby, cbi;
-                        
+
 						for (cbi=0; cbi<NPART; cbi++)
 							cb_parts[cbi] = parts[cbi];
-                        
+
 						for (cby = 0; cby<YRES; cby++)
 							for (cbx = 0; cbx<XRES; cbx++)
 								cb_pmap[cby][cbx] = pmap[cby][cbx];
-                        
+
 						for (cby = 0; cby<(YRES/CELL); cby++)
 							for (cbx = 0; cbx<(XRES/CELL); cbx++)
 							{
@@ -4205,30 +4179,30 @@ int main(int argc, char *argv[])
 			}
 			lb = 0;
 		}
-        
+
 		if (load_mode)//draw preview of stamp
 		{
 			draw_image(vid_buf, load_img, load_x, load_y, load_w, load_h, 128);
 			xor_rect(vid_buf, load_x, load_y, load_w, load_h);
 		}
-        
+
 		if (save_mode)//draw dotted lines for selection
 		{
 			xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
 			da = 51;//draws mouseover text for the message
 			db = 269;//the save message
 		}
-        
+
 		if (zoom_en!=1 && !load_mode && !save_mode)//draw normal cursor
 		{
 			render_cursor(vid_buf, mx/sdl_scale, my/sdl_scale, su, bsx, bsy);
 			mousex = mx/sdl_scale;
 			mousey = my/sdl_scale;
 		}
-        
+
 		if (zoom_en)
 			render_zoom(vid_buf);
-        
+
 		if (da)
 			switch (db)//various mouseover messages, da is the alpha
         {
@@ -4305,7 +4279,7 @@ int main(int argc, char *argv[])
 			it--;
 			drawtext(vid_buf, 16, 20, it_msg, 255, 255, 255, it>51?255:it*5);
 		}
-        
+
 		if (old_version)
 		{
 			clearrect(vid_buf, XRES-21-old_ver_len, YRES-24, old_ver_len+9, 17);
@@ -4323,21 +4297,26 @@ int main(int argc, char *argv[])
 #endif
 			drawrect(vid_buf, XRES-19-old_ver_len, YRES-22, old_ver_len+5, 13, 255, 216, 32, 255);
 		}
-        
+
 		FPS++;
 		currentTime = SDL_GetTicks();
 		elapsedTime = currentTime-pastFPS;
+		if ((FPS>2 || elapsedTime>1000*2/limitFPS) && elapsedTime && FPS*1000/elapsedTime>limitFPS)
+ 	{
+ 	      while (FPS*1000/elapsedTime>limitFPS)
+ 	      {
+ 	        SDL_Delay(1);
+ 	        currentTime = SDL_GetTicks();
+ 	        elapsedTime = currentTime-pastFPS;
+ 	      }
+ 	    }
 		if (elapsedTime>=1000)
 		{
 			FPSB = FPS;
 			FPS = 0;
 			pastFPS = currentTime;
 		}
-		else if (elapsedTime>20 && FPS*1000/elapsedTime>limitFPS)
-		{
-			SDL_Delay(5);
-		}
-        
+
 		if (hud_enable)
 		{
 #ifdef BETA
@@ -4358,7 +4337,7 @@ int main(int argc, char *argv[])
 			if (vs)
 				strappend(uitext, " [FRAME CAPTURE]");
 #endif
-            
+
 			if (sdl_zoom_trig||zoom_en)
 			{
 				if (zoom_x<XRES/2)
@@ -4401,9 +4380,9 @@ int main(int argc, char *argv[])
 			wavelength_gfx = 0;
 			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
 			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
-            
+
 		}
-        
+
 		if (console_mode)
 		{
 #ifdef PYCONSOLE
@@ -4456,7 +4435,7 @@ int main(int argc, char *argv[])
 				hud_enable = 1;
 #endif
 		}
-        
+
 		//execute python step hook
 #ifdef PYCONSOLE
 		if (pyready==1 && pygood==1)
@@ -4474,7 +4453,7 @@ int main(int argc, char *argv[])
 			}
 #endif
 		sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
-        
+
 		//Setting an element for the stick man
 		if (isplayer==0)
 		{
@@ -4493,13 +4472,13 @@ int main(int argc, char *argv[])
 	}
 	SDL_CloseAudio();
 	http_done();
-    
+
 #ifdef PYCONSOLE
-    
+
 	PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.py'))\nexcept:\n    pass");
 	PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.pyo'))\nexcept:\n    pass");
 	PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.pyc'))\nexcept:\n    pass");
-    
+
 	Py_Finalize();//cleanup any python stuff.
 #endif
 	return 0;

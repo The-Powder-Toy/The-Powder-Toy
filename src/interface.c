@@ -462,7 +462,7 @@ void ui_checkbox_draw(pixel *vid_buf, ui_checkbox *ed)
 void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed)
 {
 	int w = 12;
-	
+
 	if (mb && !mbq)
 	{
 		if (mx>=ed->x && mx<=ed->x+w && my>=ed->y && my<=ed->y+w)
@@ -499,7 +499,7 @@ void ui_copytext_draw(pixel *vid_buf, ui_copytext *ed)
 		drawtext(vid_buf, (ed->x+(ed->width/2))-(textwidth("Copied!")/2), ed->y-12, "Copied!", 255, 255, 255, 255-i);
 		g = 190;
 	}
-	
+
 	drawrect(vid_buf, ed->x, ed->y, ed->width, ed->height, g, 255, g, 255-i);
 	drawrect(vid_buf, ed->x+1, ed->y+1, ed->width-2, ed->height-2, g, 255, g, 100-i);
 	drawtext(vid_buf, ed->x+6, ed->y+5, ed->text, g, 255, g, 230-i);
@@ -521,14 +521,14 @@ void ui_copytext_process(int mx, int my, int mb, int mbq, ui_copytext *ed)
 void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 {
 	int c;
-	
+
 	//the open browser button
-	drawtext(vid_buf, 4, YRES+(MENUSIZE-14), "\x81", 255, 255, 255, 255); 
+	drawtext(vid_buf, 4, YRES+(MENUSIZE-14), "\x81", 255, 255, 255, 255);
 	drawrect(vid_buf, 1, YRES+(MENUSIZE-16), 16, 14, 255, 255, 255, 255);
 
 	// the reload button
 	c = svf_open ? 255 : 128;
-	drawtext(vid_buf, 23, YRES+(MENUSIZE-14), "\x91", c, c, c, 255); 
+	drawtext(vid_buf, 23, YRES+(MENUSIZE-14), "\x91", c, c, c, 255);
 	drawrect(vid_buf, 19, YRES+(MENUSIZE-16), 16, 14, c, c, c, 255);
 
 	// the save sim button
@@ -792,12 +792,12 @@ void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt)
 	int buttonwidth = 0;
 	int buttonheight = 0;
 	ui_copytext ed;
-	
+
 	buttonwidth = textwidth(copytxt)+12;
 	buttonheight = 10+8;
 	buttony = y0+50;
 	buttonx = x0+(xsize/2)-(buttonwidth/2);
-	
+
 	ed.x = buttonx;
 	ed.y = buttony;
 	ed.width = buttonwidth;
@@ -805,43 +805,43 @@ void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt)
 	ed.hover = 0;
 	ed.state = 0;
 	strcpy(ed.text, copytxt);
-	
+
 	while (!sdl_poll())
 	{
 		b = SDL_GetMouseState(&mx, &my);
 		if (!b)
 			break;
 	}
-	
+
 	while (!sdl_poll())
 	{
 		bq = b;
 		b = SDL_GetMouseState(&mx, &my);
 		mx /= sdl_scale;
 		my /= sdl_scale;
-		
+
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
 		drawtext(vid_buf, x0+8, y0+8, top, 160, 160, 255, 255);
 		drawtext(vid_buf, x0+8, y0+26, txt, 255, 255, 255, 255);
-		
+
 		ui_copytext_draw(vid_buf, &ed);
 		ui_copytext_process(mx, my, b, bq, &ed);
-		
+
 		drawtext(vid_buf, x0+5, y0+ysize-11, "OK", 255, 255, 255, 255);
 		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
-		
+
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
-		
+
 		if (b && !bq && mx>=x0 && mx<x0+xsize && my>=y0+ysize-16 && my<=y0+ysize)
 			break;
-		
+
 		if (sdl_key==SDLK_RETURN)
 			break;
 		if (sdl_key==SDLK_ESCAPE)
 			break;
 	}
-	
+
 	while (!sdl_poll())
 	{
 		b = SDL_GetMouseState(&mx, &my);
@@ -1384,7 +1384,7 @@ int save_name_ui(pixel *vid_buf)
 	ed2.cursor = strlen(svf_description);
 	ed2.multiline = 1;
 	strcpy(ed2.str, svf_description);
-	
+
 	ctb.x = 0;
 	ctb.y = YRES+MENUSIZE-20;
 	ctb.width = textwidth(svf_id)+12;
@@ -1392,7 +1392,7 @@ int save_name_ui(pixel *vid_buf)
 	ctb.hover = 0;
 	ctb.state = 0;
 	strcpy(ctb.text, svf_id);
-	
+
 
 	cb.x = x0+10;
 	cb.y = y0+53+YRES/4;
@@ -1401,7 +1401,7 @@ int save_name_ui(pixel *vid_buf)
 
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 	memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
-	
+
 	while (!sdl_poll())
 	{
 		bq = b;
@@ -1430,7 +1430,7 @@ int save_name_ui(pixel *vid_buf)
 		drawrect(vid_buf, x0, y0+74+YRES/4, 192, 16, 192, 192, 192, 255);
 
 		draw_line(vid_buf, x0+192, y0, x0+192, y0+90+YRES/4, 150, 150, 150, XRES+BARSIZE);
-		
+
 		if (svf_id[0])
 		{
 			//Save ID text and copybox
@@ -1438,13 +1438,13 @@ int save_name_ui(pixel *vid_buf)
 			idtxtwidth += ctb.width;
 			ctb.x = textwidth("Current save ID: ")+(XRES+BARSIZE-idtxtwidth)/2;
 			drawtext(vid_buf, (XRES+BARSIZE-idtxtwidth)/2, YRES+MENUSIZE-15, "Current save ID: ", 255, 255, 255, 255);
-			
+
 			ui_copytext_draw(vid_buf, &ctb);
 			ui_copytext_process(mx, my, b, bq, &ctb);
 		}
 
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
-		
+
 		memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 
 		ui_edit_process(mx, my, b, &ed);
@@ -1699,7 +1699,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 	}
 	//drawtext(vid_buf, XRES+2, (12*i)+2, msections[i].icon, 255, 255, 255, 255);
 }
- 
+
 
 //current menu function
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq, int mx, int my)
@@ -1763,14 +1763,14 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 		{
 			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
 			{
-                
+
 				/*if (x-18<=0)
                  {
                  x = XRES-BARSIZE-18;
                  y += 19;
                  }
                  */
-                
+
 				x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
@@ -1795,7 +1795,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 					drawrect(vid_buf, x+30, y-1, 29, 17, 55, 55, 255, 255);
 				}
 			}
-		} 
+		}
 		/*for (n = 0; n<PT_NUM; n++)
          {
          if (ptypes[n].menusection==i&&ptypes[n].menu==1)
@@ -1805,8 +1805,8 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
          x = XRES-BARSIZE-18;
          y += 19;
          }
-         
-         
+
+
          x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
          if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
          {
@@ -1862,7 +1862,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 				}
 			}
         }
-        
+
 	}
 	else //all other menus
 	{
@@ -1904,7 +1904,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 		if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
 			if (i>=0&&i<SC_TOTAL)
 				SEC = i;
-    
+
 	if (h==-1)
 	{
 		drawtext(vid_buf, XRES-textwidth((char *)msections[i].name)-BARSIZE, sy-10, (char *)msections[i].name, 255, 255, 255, 255);
@@ -2984,7 +2984,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	ed.multiline = 1;
 	ed.cursor = 0;
 	strcpy(ed.str, "");
-	
+
 	ctb.x = 100;
 	ctb.y = YRES+MENUSIZE-20;
 	ctb.width = textwidth(save_id)+12;
@@ -3168,12 +3168,12 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			drawrect(vid_buf, XRES+BARSIZE-100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
 			drawtext(vid_buf, XRES+BARSIZE-90, YRES+MENUSIZE-63, "Submit", 255, 255, 255, 255);
 		}
-		
+
 		//Save ID text and copybox
 		cix = textwidth("Save ID: ");
 		cix += ctb.width;
 		ctb.x = textwidth("Save ID: ")+(XRES+BARSIZE-cix)/2;
-		//ctb.x = 
+		//ctb.x =
 		drawtext(vid_buf, (XRES+BARSIZE-cix)/2, YRES+MENUSIZE-15, "Save ID: ", 255, 255, 255, 255);
 		ui_copytext_draw(vid_buf, &ctb);
 		ui_copytext_process(mx, my, b, bq, &ctb);
@@ -3334,7 +3334,6 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 						free(svf_last);
 					svf_last = NULL;
 					error_ui(vid_buf, 0, "An Error Occurred");
-                     
 				}
 			} else {
 				fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 190);
@@ -4109,13 +4108,13 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	memcpy(old_buf,vid_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 
 	fillrect(old_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
-	
+
 	currentcommand2 = malloc(sizeof(command_history));
 	memset(currentcommand2, 0, sizeof(command_history));
 	currentcommand2->prev_command = last_command2;
 	currentcommand2->command = mystrdup(error);
 	last_command2 = currentcommand2;
-	
+
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);//enable keyrepeat for console (is disabled on console close later)
 	cc = 0;
 	while(cc < 80){
@@ -4143,7 +4142,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 #else
 		drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)", 255, 255, 255, 255);
 #endif
-		
+
 		cc = 0;
 		currentcommand = last_command;
 		while(cc < 10)
@@ -4195,7 +4194,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
             drawtext(vid_buf, 5, 207, ">", 255, 255, 255, 240);
         else
             drawtext(vid_buf, 5, 207, "...", 255, 255, 255, 240);
-		
+
 		ui_edit_draw(vid_buf, &ed);
 		ui_edit_process(mx, my, b, &ed);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
