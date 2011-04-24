@@ -43,6 +43,7 @@ char pygood=1;
 #include <SDL/SDL_audio.h>
 #include <bzlib.h>
 #include <time.h>
+#include <pthread.h>
 
 #ifdef WIN32
 #include <direct.h>
@@ -188,6 +189,10 @@ int file_script = 0;
 sign signs[MAXSIGNS];
 
 int numCores = 4;
+
+pthread_t gravthread;// = NULL;
+pthread_mutex_t gravmutex = NULL;
+int grav_ready = 0;
 
 int core_count()
 {
@@ -2559,6 +2564,24 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 	return 1;
 }
 
+void update_grav_async()
+{
+	int done = 0;
+	while(1){
+		if(!done){
+			update_grav();
+			done = 1;
+			pthread_mutex_lock(&gravmutex);
+			grav_ready = done;
+			pthread_mutex_unlock(&gravmutex);
+		} else {
+			pthread_mutex_lock(&gravmutex);
+		    done = grav_ready;
+			pthread_mutex_unlock(&gravmutex);
+		}
+	}
+}
+
 #ifdef RENDERER
 int main(int argc, char *argv[])
 {
@@ -2632,15 +2655,11 @@ int main(int argc, char *argv[])
 	char heattext[256] = "";
 	char coordtext[128] = "";
 	int currentTime = 0;
-	int FPS = 0;
-	int pastFPS = 0;
-	int elapsedTime = 0;
-	int limitFPS = 60;
-	void *http_ver_check;
-	void *http_session_check = NULL;
+	int FPS = 0, pastFPS = 0, elapsedTime = 0, limitFPS = 60;
+	void *http_ver_check, *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
 	//char console_error[255] = "";
-	int i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
+	int result, i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -2844,7 +2863,11 @@ int main(int argc, char *argv[])
 		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
 		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
 	}
+	pthread_mutexattr_t gma;
 
+	pthread_mutexattr_init(&gma);
+	pthread_mutex_init (&gravmutex, NULL);
+	pthread_create(&gravthread, NULL, update_grav_async, NULL); //Asynchronous gravity simulation //(void *) &thread_args[i]);
 	while (!sdl_poll()) //the main loop
 	{
 		frameidx++;
@@ -2881,9 +2904,22 @@ int main(int argc, char *argv[])
 			bsy = 1180;
 		if (bsy<0)
 			bsy = 0;
-		
+
+		memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
 		update_particles(vid_buf); //update everything
-		update_grav();
+
+		pthread_mutex_lock(&gravmutex);
+		result = grav_ready;
+		//pthread_mutex_unlock(&gravmutex);
+		if(result) //Did the gravity thread finish?
+		{
+			memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
+			memcpy(gravy, th_gravy, sizeof(gravy));	//Hmm, Gravy
+			memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
+			grav_ready = 0; //Tell the other thread that we're ready for it to continue
+		}
+		pthread_mutex_unlock(&gravmutex);
+		//update_grav();
 		draw_parts(vid_buf); //draw particles
 
 		if (cmode==CM_PERS)
