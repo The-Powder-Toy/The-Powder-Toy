@@ -4278,7 +4278,7 @@ int console_parse_partref(char *txt, int *which, char *err)
 
 void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 {
-	int i,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0;
+	int i,ss,hh,vv,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0;
 	int window_offset_x_left = 2;
 	int window_offset_x_right = XRES - 279;
 	int window_offset_y = 2;
@@ -4293,6 +4293,7 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 	int onleft_button_offset_x;
 	int h = 0, s = 255, v = 127; 
 	int th = 0, ts =255, tv=127;
+	pixel *old_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	ui_edit box_R;
 	ui_edit box_G;
 	ui_edit box_B;
@@ -4330,7 +4331,7 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 	box_B.multiline = 0;
 	box_B.cursor = 0;
 
-	pixel *old_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+
 	memcpy(old_buf,vid_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 	while (!sdl_poll())
 	{
@@ -4381,8 +4382,8 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 		ui_edit_draw(vid_buf, &box_G);
 		ui_edit_draw(vid_buf, &box_B);
 
-		for(int ss=0; ss<=255; ss++)
-			for(int hh=0;hh<=255;hh++)
+		for(ss=0; ss<=255; ss++)
+			for(hh=0;hh<=255;hh++)
 			{
 				cr = 0;
 				cg = 0;
@@ -4390,7 +4391,7 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 				HSV_to_RGB(hh,255-ss,255,&cr,&cg,&cb);
 				vid_buf[(ss+grid_offset_y)*(XRES+BARSIZE)+(hh+grid_offset_x)] = PIXRGB(cr, cg, cb);
 			}
-		for(int vv=0; vv<=255; vv++)
+		for(vv=0; vv<=255; vv++)
 			for( i=0; i<10; i++)
 			{
 				cr = 0;
