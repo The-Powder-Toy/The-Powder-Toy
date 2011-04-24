@@ -4339,11 +4339,11 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 		mx /= sdl_scale;
 		my /= sdl_scale;
 
-		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
+		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*(YRES+MENUSIZE)*PIXELSIZE);
 		draw_decorations(vid_buf,decorations);
-		ui_edit_process(mx, my, b, &box_R);
-		ui_edit_process(mx, my, b, &box_G);
-		ui_edit_process(mx, my, b, &box_B);
+		//ui_edit_process(mx, my, b, &box_R);
+		//ui_edit_process(mx, my, b, &box_G);
+		//ui_edit_process(mx, my, b, &box_B);
 		//HSV_to_RGB(h,s,v,&cr,&cg,&cb);
 		//if(cr != atoi(box_R.str))
 			//RGB_to_HSV(atoi(box_R.str),cg,cb,&h,&s,&v);
@@ -4365,14 +4365,22 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 			box_G.x = XRES - 254 + 40;
 			box_B.x = XRES - 254 + 75;
 		}
+		render_cursor(vid_buf, mx, my, PT_DUST, *bsx, *bsy);
+
+		drawrect(vid_buf, -1, -1, XRES+1, YRES+1, 220, 220, 220, 255);
+		drawrect(vid_buf, -1, -1, XRES+2, YRES+2, 70, 70, 70, 255);
+
 		clearrect(vid_buf, window_offset_x, window_offset_y, 2+255+4+10+5, 2+255+20);
 		drawrect(vid_buf, window_offset_x, window_offset_y, 2+255+4+10+5, 2+255+20, 255, 255, 255, 255);//window around whole thing
+
 		drawrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, 255, 255, 255, 255);
+		drawrect(vid_buf, window_offset_x + 230, window_offset_y +255+6, 26, 12, 255, 255, 255, 255);
+		drawtext(vid_buf, window_offset_x + 232, window_offset_y +255+9, "Clear", 255, 255, 255, 255);
+		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.1 (by cracker64) \nThis space should be used for basic color swatches to click on, and maybe some other tool buttons.\nPro tip: click the current color to move the selector to the other side. ", 255, 255, 255, 255);
 		ui_edit_draw(vid_buf, &box_R);
 		ui_edit_draw(vid_buf, &box_G);
 		ui_edit_draw(vid_buf, &box_B);
 
-		render_cursor(vid_buf, mx, my, PT_DUST, *bsx, *bsy);
 		for(int ss=0; ss<=255; ss++)
 			for(int hh=0;hh<=255;hh++)
 			{
@@ -4430,11 +4438,22 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 				sprintf(box_G.str,"%d",cg);
 				sprintf(box_B.str,"%d",cb);
 			}
-			if(b && mx >= window_offset_x + onleft_button_offset_x && my >= window_offset_y +255+4 && mx <= window_offset_x + onleft_button_offset_x +13 && my <= window_offset_y +255+4 +13)
+			if(b && mx >= window_offset_x + onleft_button_offset_x +1 && my >= window_offset_y +255+6 && mx <= window_offset_x + onleft_button_offset_x +13 && my <= window_offset_y +255+5 +13)
+			{
 				on_left = !on_left;
+				lb = 3;//prevent immediate drawing after clicking
+			}
+			if(b && mx >= window_offset_x + 230 && my >= window_offset_y +255+6 && mx <= window_offset_x + 230 +26 && my <= window_offset_y +255+5 +13)
+				memset(decorations, 0,(XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
 		else if (b)//there is a click, outside window
 		{
+			if (!(b&1))
+			{
+				cr = 0;
+				cg = 0;
+				cb = 0;
+			}
 			if (lb)//mouse is held down
 			{
 				if (lm == 1)//line tool
@@ -4448,7 +4467,7 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 					xor_line(mx, my, mx, ly, vid_buf);
 					xor_line(mx, ly, lx, ly, vid_buf);
 				}
-				else//while mouse is held down, it draws lines between previous and current positions
+				else if(lb!=3)//while mouse is held down, it draws lines between previous and current positions
 				{
 					line_decorations(decorations,lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
 					lx = mx;
@@ -4484,6 +4503,12 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 		}
 		else
 		{
+			if (!(lb&1))
+			{
+				cr = 0;
+				cg = 0;
+				cb = 0;
+			}
 			if (lb && lm) //lm is box/line tool
 			{
 				if (lm == 1)//line
@@ -4540,7 +4565,7 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 				}*/
 			}
 		}
-		if(sdl_key=='b')
+		if(sdl_key=='b' || sdl_key==SDLK_ESCAPE)
 		{
 			free(old_buf);
 			return;

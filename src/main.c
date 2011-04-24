@@ -3281,7 +3281,10 @@ int main(int argc, char *argv[])
 				//hud_enable = !console_mode;
 			}
 			if (sdl_key=='b')
+			{
 				decorations_ui(vid_buf,decorations,&bsx,&bsy);//decoration_mode = !decoration_mode;
+				sys_pause=1;
+			}
 			if (sdl_key=='g')
 			{
 				if (sdl_mod & (KMOD_SHIFT))
@@ -3924,11 +3927,7 @@ int main(int argc, char *argv[])
 						ISSPAWN1 = 0;
 						ISSPAWN2 = 0;
 
-						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
-						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-						memset(fire_r, 0, sizeof(fire_r));
-						memset(fire_g, 0, sizeof(fire_g));
-						memset(fire_b, 0, sizeof(fire_b));
+						memset(decorations, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 					}
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{
