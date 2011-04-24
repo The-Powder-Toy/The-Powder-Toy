@@ -62,7 +62,7 @@ void update_grav(void)
 		{
 			for (j=0; j<XRES/CELL; j++)
 			{
-				if(th_gravmap[i][j]>0.0f) //Only calculate with populated or changed cells.
+				if(th_gravmap[i][j]>0.0001f || th_gravmap[i][j]<-0.0001f) //Only calculate with populated or changed cells.
 					for (y=0; y<YRES/CELL; y++)
 					{
 						for (x=0; x<XRES/CELL; x++)
