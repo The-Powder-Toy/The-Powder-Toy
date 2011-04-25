@@ -174,6 +174,7 @@ int GRID_MODE;
 int VINE_MODE;
 int DEBUG_MODE;
 int GENERATION;
+int CTYPESIGN;
 int isplayer2;
 int playerspawn;
 int player2spawn;

@@ -1231,7 +1231,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 	int surround[8];
 	int surround_hconduct[8];
 	float pGravX, pGravY, pGravD;
-
+    
 	if (sys_pause&&!framerender)//do nothing if paused
 		return;
 	if (ISGRAV==1)//crappy grav color handling, i will change this someday

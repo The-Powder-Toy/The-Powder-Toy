@@ -3104,6 +3104,21 @@ int main(int argc, char *argv[])
 			{
 				framerender = 1;
 			}
+            if(sdl_key=='x')
+            {
+                if(kiosk_enable==0)
+                {
+                    kiosk_enable = 1;
+                    sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_FULLSCREEN|SDL_SWSURFACE);
+                    info_ui(vid_buf, "Fullscreen", "Fullscreen Enabled!");
+                }
+                else if(kiosk_enable==1)
+                {
+                    kiosk_enable = 0;
+                    sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_SWSURFACE);
+                    info_ui(vid_buf, "Fullscreen", "Fullscreen Disabled!");
+                }
+            }
 			if ((sdl_key=='l' || sdl_key=='k') && stamps[0].name[0])
 			{
 				if (load_mode)
@@ -3665,7 +3680,7 @@ int main(int argc, char *argv[])
 			update_flag = 0;
 		}
 
-		/*if (b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
+		if (b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
             x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
 		{
 			tmp = malloc(64);
@@ -3676,12 +3691,12 @@ int main(int argc, char *argv[])
 #elif MACOSX
                 system("open http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=2821");
 #else
-                error_ui(vid_buf, 0, "Open Failed - Your OS does not support This Feature.");
+                error_ui(vid_buf, 0, "Open Failed - Your OS does not support This Feature. Yet... ;)");
 #endif
             }
         }
-         */
-        if(b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
+         
+        /*if(b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
            x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
         {
             tmp = malloc(64);
@@ -3717,6 +3732,7 @@ int main(int argc, char *argv[])
             else
                 free(tmp);
         }
+         */
 		if (y>=sdl_scale*(YRES+(MENUSIZE-20))) //mouse checks for buttons at the bottom, to draw mouseover texts
 		{
 			if (x>=189*sdl_scale && x<=202*sdl_scale && svf_login && svf_open && svf_myvote==0)

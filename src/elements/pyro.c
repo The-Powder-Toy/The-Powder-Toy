@@ -60,6 +60,22 @@ int update_PYRO(UPDATE_FUNC_ARGS) {
 						pv[y/CELL][x/CELL] += 0.25f * CFDS;
 					continue;
 				}
+                if (parts[i].type==PT_LAVA){
+                    if (parts[r>>8].type==PT_LAVA){
+                        if (parts[i].ctype==PT_TIN){
+                            if (parts[r>>8].ctype==PT_COPR){
+                                parts[i].type = PT_BRNZ;
+                                parts[r>>8].type = PT_BRNZ;
+                            }
+                        }
+                        if (parts[i].ctype==PT_TIN){
+                            if (parts[r>>8].ctype==PT_COPR){
+                                parts[i].type = PT_BRNZ;
+                                parts[r>>8].type = PT_BRNZ;
+                            }
+                        }
+                    }
+                }
 			}
 	if (legacy_enable) update_legacy_PYRO(UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;

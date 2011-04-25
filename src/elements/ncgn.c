@@ -2,8 +2,8 @@
 
 int update_NCGN(UPDATE_FUNC_ARGS) {
 	int r, nx, ny, rt;
-    for(nx=-1; nx<2; nx++)
-        for(ny=-1; ny<2; ny++)
+    for(nx=-2; nx<4; nx++)
+        for(ny=-2; ny<4; ny++)
             if(x+nx>=0 && y+ny>0 &&
                x+nx<XRES && y+ny<YRES && (nx || ny))
             {

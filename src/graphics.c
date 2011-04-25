@@ -3657,7 +3657,7 @@ void draw_wavelengths(pixel *vid, int x, int y, int h, int wl)
 
 void render_signs(pixel *vid_buf)
 {
-	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq;
+	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq,r;
 	for (i=0; i<MAXSIGNS; i++)
 		if (signs[i].text[0])
 		{
@@ -3667,19 +3667,49 @@ void render_signs(pixel *vid_buf)
 			drawrect(vid_buf, x, y, w, h, 192, 192, 192, 255);
 
 			//Displaying special information
-			if (strcmp(signs[i].text, "{p}")==0)
-			{
-				sprintf(buff, "Pressure: %3.2f", pv[signs[i].y/CELL][signs[i].x/CELL]);  //...pressure
-				drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
-			}
-			if (strcmp(signs[i].text, "{t}")==0)
-			{
-				if ((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
-					sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...tempirature
-				else
-					sprintf(buff, "Temp: 0.00");  //...tempirature
-				drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
-			}
+            if(strcmp(signs[i].text, "{p}")==0)
+            {
+                sprintf(buff, "Pressure: %3.2f", pv[signs[i].y/CELL][signs[i].x/CELL]);  //...pressure
+                drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+            }
+            if(strcmp(signs[i].text, "{t}")==0)
+            {
+                if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
+                    sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...tempirature
+                else
+                    sprintf(buff, "Temp: 0.00");  //...tempirature
+                drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+            }
+            if(strcmp(signs[i].text, "{type}")==0)
+            {
+                if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
+                    sprintf(buff, "Type: %s", ptypes[pmap[signs[i].y][signs[i].x]&0xFF].name);  //...type
+                else
+                    sprintf(buff, "Type: Nil");  //...type
+                drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+            }
+            if(strcmp(signs[i].text, "{ctype}")==0)
+            {
+                r = pmap[y][x];
+                if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
+                    sprintf(buff, "Ctype: Soon");  //...ctype
+                else
+                    sprintf(buff, "Ctype: Soon");  //...type
+                drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+            }
+            if(strcmp(signs[i].text, "{life}")==0)
+            {
+                if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
+                    sprintf(buff, "Life: %d", parts[pmap[signs[i].y][signs[i].x]>>8].life);  //...life
+                else
+                    sprintf(buff, "Life: Nil");  //...life
+                drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+            }
+            if(strcmp(signs[i].text, "{G}")==0)
+            {
+                sprintf(buff, "Generation: %d", GENERATION);  //...generation
+                drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+            }
 
 			if(sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
 			{
@@ -3697,7 +3727,8 @@ void render_signs(pixel *vid_buf)
 			}
 
 			//Usual text
-			if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
+			if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && strcmp(signs[i].text, "{type}") 
+               && strcmp(signs[i].text, "{life}") && strcmp(signs[i].text, "{G}") && strcmp(signs[i].text, "{ctype}"))
 				drawtext(vid_buf, x+3, y+3, signs[i].text, 255, 255, 255, 255);
 
 			x = signs[i].x;

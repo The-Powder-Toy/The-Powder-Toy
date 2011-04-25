@@ -10,56 +10,52 @@ int update_TNT(UPDATE_FUNC_ARGS) {
                 if((r>>8)>=NPART || !r)
                     continue;
                 if ((r&0xFF)==PT_FIRE){
-                    int temporaro = 1000;
-                    while (temporaro > -1001){
-                        create_part(-1,x+1,y+1,PT_FIRE);
-                        create_part(-1,x-1,y-1,PT_FIRE);
-                        create_part(-1,x-1,y+1,PT_FIRE);
-                        create_part(-1,x+1,y-1,PT_FIRE);
-                        create_part(-1,x,y,PT_PAIN);
-                        temporaro--;
+                    pv[y/CELL][x/CELL] += 30.0f;
+                    if (y+CELL<YRES)
+                        pv[y/CELL+1][x/CELL] += 30.0f;
+                    if (x+CELL<XRES)
+                    {
+                        pv[y/CELL][x/CELL+1] += 30.0f;
+                        if (y+CELL<YRES)
+                            pv[y/CELL+1][x/CELL+1] += 30.0f;
                     }
-                    parts[i].type = PT_FIRE;
-                    parts[i].life = 128;
-                    parts[r>>8].type = PT_FIRE;
-                    parts[r>>8].life = 128;
+                    parts[i].type = PT_NONE;
                 }
                 if ((r&0xFF)==PT_PLSM){
-                    int temporaro = 1000;
-                    while (temporaro > -1001){
-                        create_part(-1,x+1,y+1,PT_PLSM);
-                        create_part(-1,x-1,y-1,PT_PLSM);
-                        create_part(-1,x-1,y+1,PT_PLSM);
-                        create_part(-1,x+1,y-1,PT_PLSM);
-                        create_part(-1,x,y,PT_PAIN);
-                        temporaro--;
+                    pv[y/CELL][x/CELL] += 30.0f;
+                    if (y+CELL<YRES)
+                        pv[y/CELL+1][x/CELL] += 30.0f;
+                    if (x+CELL<XRES)
+                    {
+                        pv[y/CELL][x/CELL+1] += 30.0f;
+                        if (y+CELL<YRES)
+                            pv[y/CELL+1][x/CELL+1] += 30.0f;
                     }
-                    parts[r>>8].type = PT_PLSM;
-                    parts[r>>8].life = 128;
+                    parts[i].type = PT_NONE;
                 }
                 if ((r&0xFF)==PT_BFLM){
-                    int temporaro = 1000;
-                    while (temporaro > -1001){
-                        create_part(-1,x+1,y+1,PT_PAIN);
-                        create_part(-1,x-1,y-1,PT_PAIN);
-                        create_part(-1,x-1,y+1,PT_PAIN);
-                        create_part(-1,x+1,y-1,PT_PAIN);
-                        create_part(-1,x,y,PT_PAIN);
-                        temporaro--;
+                    pv[y/CELL][x/CELL] += 30.0f;
+                    if (y+CELL<YRES)
+                        pv[y/CELL+1][x/CELL] += 30.0f;
+                    if (x+CELL<XRES)
+                    {
+                        pv[y/CELL][x/CELL+1] += 30.0f;
+                        if (y+CELL<YRES)
+                            pv[y/CELL+1][x/CELL+1] += 30.0f;
                     }
-                    parts[r>>8].type = PT_BFLM;
-                    parts[r>>8].life = 128;
+                    parts[i].type = PT_NONE;
                 }
                 if ((r&0xFF)==PT_SPRK){
-                    int temporaro = 1000;
-                    while (temporaro > -1001){
-                        create_part(-1,x+1,y+1,PT_FIRE);
-                        create_part(-1,x-1,y-1,PT_FIRE);
-                        create_part(-1,x-1,y+1,PT_FIRE);
-                        create_part(-1,x+1,y-1,PT_FIRE);
-                        create_part(-1,x,y,PT_PAIN);
-                        temporaro--;
+                    pv[y/CELL][x/CELL] += 30.0f;
+                    if (y+CELL<YRES)
+                        pv[y/CELL+1][x/CELL] += 30.0f;
+                    if (x+CELL<XRES)
+                    {
+                        pv[y/CELL][x/CELL+1] += 30.0f;
+                        if (y+CELL<YRES)
+                            pv[y/CELL+1][x/CELL+1] += 30.0f;
                     }
+                    parts[i].type = PT_NONE;
                 }
             }
     return 0;

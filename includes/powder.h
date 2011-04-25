@@ -267,7 +267,11 @@
 #define PT_C6 212
 #define PT_CNVR 213
 #define PT_ASH 214
-#define PT_NUM  215
+#define PT_GREN 215
+#define PT_NUKE 216
+#define PT_TIN 217
+#define PT_BRNZ 218
+#define PT_NUM  219
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -407,6 +411,8 @@ int update_NMTR(UPDATE_FUNC_ARGS);
 int update_CNVR(UPDATE_FUNC_ARGS);
 int update_C6(UPDATE_FUNC_ARGS);
 int update_ASH(UPDATE_FUNC_ARGS);
+int update_GREN(UPDATE_FUNC_ARGS);
+int update_NUKE(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -423,6 +429,7 @@ struct particle
 	float pavg[2];
 	int flags;
 	int tmp;
+    int tmp2;
 };
 typedef struct particle particle;
 
@@ -695,7 +702,11 @@ static const part_type ptypes[PT_NUM] =
     {"BFGN",	PIXPACK(0x6BEBFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	0,	"Freeze Ray Emmitter. Creates Freeze Rays. Breaks under Pressure.", ST_SOLID, TYPE_SOLID, &update_FGUN},
     {"C-6",		PIXPACK(0x2050E0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Blue Flame Explosive", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_C6},
     {"CNVR",	PIXPACK(0xFFD010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Turns every particle into the particle it first touches.", ST_SOLID, TYPE_SOLID, &update_CNVR},
-    {"ASH",     PIXPACK(0x666266),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+450.0f	+273.15f,	70,		"Assh. Ignites flammable items.", ST_SOLID, TYPE_PART, &update_ASH},
+    {"ASH",     PIXPACK(0x666266),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+450.0f+273.15f,	70,		"Assh. Ignites flammable items.", ST_SOLID, TYPE_PART, &update_ASH},
+    {"GREN",	PIXPACK(0x768760),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	250,	"Grenade. A Shrapnel Explosive.", ST_SOLID, TYPE_SOLID, &update_GREN},
+    {"NUKE",	PIXPACK(0xA1E84A),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	5,      0,  0,	1,	1,	100,	SC_NUCLEAR,     R_TEMP+0.0f	+273.15f,	88,		"Solid. EXTREME RadioActive Pressure sensitive explosive.", ST_SOLID, TYPE_SOLID|PROP_NEUTPENETRATE|PROP_RADIOACTIVE, &update_NUKE},
+    {"TIN",     PIXPACK(0xC7C7C7),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_SOLIDS,	R_TEMP+0.0f +273.15f,	251,	"Smelts Together With COPR to make BRNZ", ST_SOLID, TYPE_SOLID|PROP_HOT_GLOW, NULL},
+    {"BRNZ",	PIXPACK(0xA67032),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_SOLIDS,	R_TEMP+0.0f +273.15f,	251,	"Bronze. Bad Conductor. Strong Metal.", ST_SOLID, TYPE_SOLID|PROP_HOT_GLOW|PROP_CONDUCTS, NULL},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -909,7 +920,7 @@ static part_transition ptransitions[PT_NUM] =
     /* frez */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* spmg */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* snmg */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* 1SHOTMETL */ {IPL,	NT,			IPH,	NT,		ITL,	NT,			1273.0f,PT_LAVA},
+    /* 1SHOL */ {IPL,	NT,			IPH,	NT,         ITL,	NT,			1273.0f,PT_LAVA},
     /* root */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,    NT},
     /* BIRE */ {IPL,	NT,         IPH,	NT,         ITL,	NT,         ITH,    NT},
     /* PDCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
@@ -917,15 +928,20 @@ static part_transition ptransitions[PT_NUM] =
     /* box */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			620.0f,	PT_FIRE},
     /* AGAS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* DWFM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* COPR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* COPR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1357.0f,PT_LAVA},
      /* CO2 */ {IPL,	NT,			IPH,	NT,			194.0f,	PT_DICE,	ITH,	NT},
     /* CLAY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			773.0f,	PT_POT},
     /* NMTR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
      /* BLGN */ {IPL,	NT,			50.0f,  PT_PLSM,	ITL,	NT,			ITH,    NT},
      /* BFGN  */ {IPL,	NT,			50.0f,  PT_HFLM,	ITL,	NT,			ITH,    NT},
-    /* C6 */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* C6 */    {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
      /* CNVR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* ASH */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* ASH */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* gren */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* nuke */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* tin */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			505.08f,PT_LAVA},
+    /* brnz */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			1223.0f,PT_LAVA},
+
 
 
 };
