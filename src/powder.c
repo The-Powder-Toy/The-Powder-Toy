@@ -79,6 +79,9 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 	if ((r&0xFF)==PT_VOID || (r&0xFF)==PT_BHOL)
 		return 1;
 
+	if ((r&0xFF)==PT_WHOL && pt==PT_ANAR)
+		return 1;
+
 	if (pt==PT_SPRK)//spark shouldn't move
 		return 0;
 
@@ -237,7 +240,17 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 		return 0;
 	}
-	if ((pmap[ny][nx]&0xFF)==PT_CNCT)//stops CNCT being displaced by other particles
+	if ((r&0xFF)==PT_WHOL && parts[i].type==PT_ANAR) //whitehole eats anar
+	{
+		parts[i].type=PT_NONE;
+		if (!legacy_enable)
+		{
+			parts[r>>8].temp = restrict_flt(parts[r>>8].temp- (MAX_TEMP-parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
+		}
+
+		return 0;
+	}
+	if ((r&0xFF)==PT_CNCT)//stops CNCT being displaced by other particles
 		return 0;
 	if (parts[i].type==PT_CNCT && y<ny && (pmap[y+1][x]&0xFF)==PT_CNCT)//check below CNCT for another CNCT
 		return 0;
