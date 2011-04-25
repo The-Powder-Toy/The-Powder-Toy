@@ -932,7 +932,7 @@ void clear_sim(void)
 	memset(photons, 0, sizeof(photons));
 	memset(wireless, 0, sizeof(wireless));
 	memset(gol2, 0, sizeof(gol2));
-	memset(portal, 0, sizeof(portal));
+	memset(portalp, 0, sizeof(portalp));
 	death = death2 = ISSPAWN1 = ISSPAWN2 = 0;
 	memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 	memset(fire_bg, 0, XRES*YRES*PIXELSIZE);

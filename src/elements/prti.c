@@ -34,11 +34,9 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 						continue;
 				}
 				for ( nnx=0; nnx<80; nnx++)
-					if (!portal[parts[i].tmp][count-1][nnx])
+					if (!portalp[parts[i].tmp][count-1][nnx].type)
 					{
-						portal[parts[i].tmp][count-1][nnx] = parts[r>>8].type;
-						portaltemp[parts[i].tmp][count-1][nnx] = parts[r>>8].temp;
-						portalctype[parts[i].tmp][count-1][nnx] = parts[r>>8].ctype;
+						portalp[parts[i].tmp][count-1][nnx] = parts[r>>8];
 						if ((r&0xFF)==PT_SPRK)
 							part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
 						else
