@@ -186,8 +186,8 @@ sign signs[MAXSIGNS];
 
 int numCores = 4;
 
-pthread_t gravthread;// = NULL;
-pthread_mutex_t gravmutex = NULL;
+pthread_t gravthread;
+pthread_mutex_t gravmutex;
 int grav_ready = 0;
 
 int core_count()
