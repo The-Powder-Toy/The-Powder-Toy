@@ -170,7 +170,8 @@ float mheat = 0.0f;
 int do_open = 0;
 int sys_pause = 0;
 int sys_shortcuts = 1;
-int legacy_enable = 0; //Used to disable new features such as heat, will be set by commandline or save.
+int legacy_enable = 0; //Used to disable new features such as heat, will be set by save.
+int ngrav_enable = 1; //Newtonian gravity, will be set by save TODO: Make this actually do something
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
@@ -2545,7 +2546,8 @@ int main(int argc, char *argv[])
 						tag_list_ui(vid_buf);
 					if (x>=(XRES+BARSIZE-(510-351)) && x<(XRES+BARSIZE-(510-366)) && !bq)
 					{
-						legacy_enable = !legacy_enable;
+						//legacy_enable = !legacy_enable;
+						simulation_ui(vid_buf);
 					}
 					if (x>=(XRES+BARSIZE-(510-367)) && x<=(XRES+BARSIZE-(510-383)) && !bq)
 					{

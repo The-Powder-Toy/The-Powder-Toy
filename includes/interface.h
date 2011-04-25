@@ -241,6 +241,8 @@ int report_ui(pixel *vid_buf, char *save_id);
 
 char *console_ui(pixel *vid_buf, char error[255],char console_more);
 
-void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy);
+void simulation_ui(pixel *vid_buf);
+
+void decorations_ui(pixel *vid_buf, pixel *decorations, int *bsx, int *bsy);
 #endif
 
