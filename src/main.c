@@ -1540,7 +1540,6 @@ int main(int argc, char *argv[])
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
 #endif
-		draw_grav(vid_buf);
 
 		//Can't be too sure (Limit the cursor size)
 		if (bsx>1180)
@@ -1552,21 +1551,23 @@ int main(int argc, char *argv[])
 		if (bsy<0)
 			bsy = 0;
 
-		memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
-		update_particles(vid_buf); //update everything
-
 		pthread_mutex_lock(&gravmutex);
 		result = grav_ready;
-		//pthread_mutex_unlock(&gravmutex);
 		if(result) //Did the gravity thread finish?
 		{
 			memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
 			memcpy(gravy, th_gravy, sizeof(gravy));	//Hmm, Gravy
 			memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
-			grav_ready = 0; //Tell the other thread that we're ready for it to continue
+			if (!sys_pause||framerender) //Only update if not paused
+				grav_ready = 0; //Tell the other thread that we're ready for it to continue
 		}
 		pthread_mutex_unlock(&gravmutex);
-		//update_grav();
+
+		if (!sys_pause||framerender) //Only update if not paused
+			memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
+
+		draw_grav(vid_buf);
+		update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
 
 		if (cmode==CM_PERS)

@@ -103,6 +103,8 @@ typedef unsigned int pixel;
 #define strcasecmp stricmp
 #endif
 
+#define SDEUT
+
 typedef unsigned char uint8;
 
 extern int amd;
