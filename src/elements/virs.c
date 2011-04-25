@@ -10,7 +10,7 @@ int update_VIRS(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ny][x+nx];
                 if((r>>8)>=NPART || !r)
                     continue;
-                if((r&0xFF)!=PT_DMND||(r&0xFF)!=PT_GOLD)
+                if((r&0xFF)!=PT_DMND||(r&0xFF)!=PT_GOLD||(r&0xFF)!=PT_CLNE||(r&0xFF)!=PT_CNVR||(r&0xFF)!=PT_VOID||(r&0xFF)!=PT_WHOL||(r&0xFF)!=PT_BHOL)
                     parts[r>>8].type=PT_VIRS;
             }
     return 0;

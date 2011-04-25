@@ -43,6 +43,7 @@ char pygood=1;
 #include <SDL/SDL_audio.h>
 #include <bzlib.h>
 #include <time.h>
+#include <pthread.h>
 
 #ifdef WIN32
 #include <direct.h>
@@ -187,6 +188,10 @@ int file_script = 0;
 sign signs[MAXSIGNS];
 
 int numCores = 4;
+
+pthread_t gravthread;// = NULL;
+pthread_mutex_t gravmutex;// = NULL;
+int grav_ready = 0;
 
 int core_count()
 {
@@ -2559,6 +2564,25 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 	return 1;
 }
 
+void update_grav_async()
+{
+ 	  int done = 0;
+ 	  while(1){
+            if(!done){
+                  update_grav();
+                  done = 1;
+                  pthread_mutex_lock(&gravmutex);
+                  grav_ready = done;
+                  pthread_mutex_unlock(&gravmutex);
+                } else {
+                      pthread_mutex_lock(&gravmutex);
+                        done = grav_ready;
+                      pthread_mutex_unlock(&gravmutex);
+                    }
+          }
+ 	}
+
+
 #ifdef RENDERER
 int main(int argc, char *argv[])
 {
@@ -2635,15 +2659,11 @@ int main(int argc, char *argv[])
 	char heattext[256] = "";
 	char coordtext[128] = "";
 	int currentTime = 0;
-	int FPS = 0;
-	int pastFPS = 0;
-	int elapsedTime = 0;
-	int limitFPS = 60;
-	void *http_ver_check;
-	void *http_session_check = NULL;
+    int FPS = 0, pastFPS = 0, elapsedTime = 0, limitFPS = 60;
+    void *http_ver_check, *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
 	//char console_error[255] = "";
-	int i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
+	int result, i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -2661,6 +2681,7 @@ int main(int argc, char *argv[])
 	PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep,*pkey;
 	PyObject *tpt_console_obj;
 #endif
+    pixel *decorations = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	GSPEED = 1;
@@ -2846,6 +2867,11 @@ int main(int argc, char *argv[])
 		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
 		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
 	}
+    pthread_mutexattr_t gma;
+    
+    pthread_mutexattr_init(&gma);
+    pthread_mutex_init (&gravmutex, NULL);
+    pthread_create(&gravthread, NULL, update_grav_async, NULL); //Asynchronous gravity simulation //(void *) &thread_args[i]);
 
 	while (!sdl_poll()) //the main loop
 	{
@@ -2890,8 +2916,21 @@ int main(int argc, char *argv[])
 		//memset(mmapx, 0, sizeof(mmapx));
 		//memset(mmapy, 0, sizeof(mmapy));
 
+        memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
 		update_particles(vid_buf); //update everything
-		update_grav();
+        
+        pthread_mutex_lock(&gravmutex);
+        result = grav_ready;
+        //pthread_mutex_unlock(&gravmutex);
+        if(result) //Did the gravity thread finish?
+            {
+                memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
+                memcpy(gravy, th_gravy, sizeof(gravy));  //Hmm, Gravy
+                memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
+                grav_ready = 0; //Tell the other thread that we're ready for it to continue
+            }
+        pthread_mutex_unlock(&gravmutex);
+        //update_grav();
 		draw_parts(vid_buf); //draw particles
 
 		if (cmode==CM_PERS)
@@ -3260,6 +3299,10 @@ int main(int argc, char *argv[])
 				console_mode = !console_mode;
 				//hud_enable = !console_mode;
 			}
+            if (sdl_key=='b'){
+                decorations_ui(vid_buf,decorations,&bsx,&bsy);//decoration_mode = !decoration_mode;
+                sys_pause=1;
+            }
 			if (sdl_key=='g')
 			{
 				if (sdl_mod & (KMOD_SHIFT))
@@ -3553,7 +3596,7 @@ int main(int argc, char *argv[])
 		}
 		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &dae, b, bq, x, y); //draw the elements in the current menu
         //menu_ui(vid_buf, active_menu, &sl, &sr); //For a completely Messed Up Menu
-
+        draw_decorations(vid_buf,decorations);
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
             && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
             && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))
@@ -3919,11 +3962,7 @@ int main(int argc, char *argv[])
 						ISSPAWN1 = 0;
 						ISSPAWN2 = 0;
 
-						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
-						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-						memset(fire_r, 0, sizeof(fire_r));
-						memset(fire_g, 0, sizeof(fire_g));
-						memset(fire_b, 0, sizeof(fire_b));
+						memset(decorations, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 					}
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{
@@ -3990,7 +4029,7 @@ int main(int argc, char *argv[])
 				c = (b&1) ? sl : sr; //c is element to be spawned
 				su = c;
 
-				if (c!=WL_SIGN+100)
+				if (c!=WL_SIGN+200)
 				{
 					if (!bq)
 						for (signi=0; signi<MAXSIGNS; signi++)
@@ -4014,7 +4053,7 @@ int main(int argc, char *argv[])
 							}
 				}
 
-				if (c==WL_SIGN+100)
+				if (c==WL_SIGN+200)
 				{
 					if (!bq)
 						add_sign_ui(vid_buf, x, y);
@@ -4025,7 +4064,7 @@ int main(int argc, char *argv[])
 					if (lm == 1)//line tool
 					{
 						xor_line(lx, ly, x, y, vid_buf);
-						if (c==WL_FAN+100 && lx>=0 && ly>=0 && lx<XRES && ly<YRES && bmap[ly/CELL][lx/CELL]==WL_FAN)
+						if (c==WL_FAN+200 && lx>=0 && ly>=0 && lx<XRES && ly<YRES && bmap[ly/CELL][lx/CELL]==WL_FAN)
 						{
 							nfvx = (x-lx)*0.005f;
 							nfvy = (y-ly)*0.005f;

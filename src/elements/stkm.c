@@ -12,7 +12,8 @@ int update_SPAWN(UPDATE_FUNC_ARGS) {
 }
 
 int update_STKM(UPDATE_FUNC_ARGS) {
-	int r, rx, ry, rt;
+	int r, rx, ry, rt, nnx;
+    int count=0;
 	float pp, d;
 	float dt = 0.9;///(FPSB*FPSB);  //Delta time in square
 	//Tempirature handling
@@ -516,8 +517,8 @@ int update_STKM(UPDATE_FUNC_ARGS) {
         parts[i].life -= 5;
     
     if ((r&0xFF)==PT_PPLT){
-        for(rx=-2; rx<4; rx++)
-            for(ry=-2; ry<4; ry++)
+        for(rx=-8; rx<16; rx++)
+            for(ry=-8; ry<16; ry++)
                 if(x+rx>=0 && y+ry>0 &&
                    x+rx<XRES && y+ry<YRES && (rx || ry))
                 {

@@ -456,7 +456,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 		return 26;
 	if (b>=UI_WALLSTART)
 	{
-		b = b-100;
+		b = b-200;
 		//x = (2+32*((b-22)/1));
 		//y = YRES+2+40;
 		switch (b)
@@ -606,7 +606,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				}
 			}
 			break;
-		case SPC_AIR-100:
+		case SPC_AIR-200:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<27; i++)
@@ -625,7 +625,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 			}
 			drawtext(vid_buf, x+14-textwidth("AIR")/2, y+4, "AIR", c, c, c, 255);
 			break;
-		case SPC_HEAT-100:
+		case SPC_HEAT-200:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<27; i++)
@@ -644,7 +644,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 			}
 			drawtext(vid_buf, x+14-textwidth("HEAT")/2, y+4, "HEAT", c, c, c, 255);
 			break;
-		case SPC_COOL-100:
+		case SPC_COOL-200:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<27; i++)
@@ -663,7 +663,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 			}
 			drawtext(vid_buf, x+14-textwidth("COOL")/2, y+4, "COOL", c, c, c, 255);
 			break;
-		case SPC_VACUUM-100:
+		case SPC_VACUUM-200:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<27; i++)
@@ -691,15 +691,6 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				}
 			}
 			break;
-        case WL_ELEMENTONLY:
-            for (j=1; j<15; j+=2)
-            {
-                for (i=1+(1&(j>>1)); i<27; i+=2)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-                }
-            }
-            break;
 		default:
 			for (j=1; j<15; j++)
 			{
@@ -2720,7 +2711,7 @@ void draw_parts(pixel *vid)
                         }
                     }
                 }
-				else if (t==PT_THDR)
+                else if (t==PT_THDR)
 				{
 					if (cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY || cmode==CM_AWESOME || cmode==CM_PREAWE)
 					{
@@ -3541,7 +3532,98 @@ void draw_parts(pixel *vid)
 #endif
 
 }
-
+void draw_decorations(pixel *vid_buf,pixel *decorations)
+{
+	int i,r,g,b;
+	for (i=0; i<(XRES+BARSIZE)*YRES; i++)
+	{
+		r = PIXR(decorations[i]);
+		g = PIXG(decorations[i]);
+		b = PIXB(decorations[i]);
+		if (r>0 || g>0 || b>0)
+			vid_buf[i] = PIXRGB(r,g,b);
+	}
+}
+void create_decorations(pixel *decorations,int x, int y, int rx, int ry, int r, int g, int b)
+{
+	int i,j;
+	for (j=-ry; j<=ry; j++)
+		for (i=-rx; i<=rx; i++)
+			if(y+j>=0 && x+i>=0 && x+i<XRES && y+j<YRES)
+				if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
+					decorations[(y+j)*(XRES+BARSIZE)+(x+i)] = PIXRGB(r, g, b);
+}
+void line_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b)
+{
+	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
+	float e, de;
+	if (cp)
+	{
+		y = x1;
+		x1 = y1;
+		y1 = y;
+		y = x2;
+		x2 = y2;
+		y2 = y;
+	}
+	if (x1 > x2)
+	{
+		y = x1;
+		x1 = x2;
+		x2 = y;
+		y = y1;
+		y1 = y2;
+		y2 = y;
+	}
+	dx = x2 - x1;
+	dy = abs(y2 - y1);
+	e = 0.0f;
+	if (dx)
+		de = dy/(float)dx;
+	else
+		de = 0.0f;
+	y = y1;
+	sy = (y1<y2) ? 1 : -1;
+	for (x=x1; x<=x2; x++)
+	{
+		if (cp)
+			create_decorations(decorations,y, x, rx, ry, r, g, b);
+		else
+			create_decorations(decorations,x, y, rx, ry, r, g, b);
+		e += de;
+		if (e >= 0.5f)
+		{
+			y += sy;
+			if (!(rx+ry))
+			{
+				if (cp)
+					create_decorations(decorations,y, x, rx, ry, r, g, b);
+				else
+					create_decorations(decorations,x, y, rx, ry, r, g, b);
+			}
+			e -= 1.0f;
+		}
+	}
+}
+void box_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int r, int g, int b)
+{
+	int i, j;
+	if (x1>x2)
+	{
+		i = x2;
+		x2 = x1;
+		x1 = i;
+	}
+	if (y1>y2)
+	{
+		j = y2;
+		y2 = y1;
+		y1 = j;
+	}
+	for (j=y1; j<=y2; j++)
+		for (i=x1; i<=x2; i++)
+			create_decorations(decorations,i, j, 0, 0, r, g, b);
+}
 //draws the photon colors in the HUD
 void draw_wavelengths(pixel *vid, int x, int y, int h, int wl)
 {
@@ -3925,12 +4007,6 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
 						if (!(i&j&1))
 							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
 				break;
-            case WL_ELEMENTONLY:
-                for (j=0; j<CELL; j++)
-                    for (i=0; i<CELL; i++)
-                        if (!(i&j&1))
-                            fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
-                break;
 			case WL_WALLELEC:
 				for (j=0; j<CELL; j++)
 					for (i=0; i<CELL; i++)

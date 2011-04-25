@@ -2305,29 +2305,6 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 						fire_b[y][x] = cb;
 					}
 				}
-                if (bmap[y][x]==WL_ELEMENTONLY)
-				{
-					for (j=0; j<CELL; j++)
-						for (i=0; i<CELL; i++)
-							if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
-							{
-								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0xF0C0C0);
-								drawblob(vid, (x*CELL+i), (y*CELL+j), 0xC0, 0xC0, 0xC0);
-							}
-					if (emap[y][x])
-					{
-						cr = cg = cb = 16;
-						cr += fire_r[y][x];
-						if (cr > 255) cr = 123;
-						fire_r[y][x] = cr;
-						cg += fire_g[y][x];
-						if (cg > 255) cg = 123;
-						fire_g[y][x] = cg;
-						cb += fire_b[y][x];
-						if (cb > 255) cb = 123;
-						fire_b[y][x] = cb;
-					}
-				}
 				if (bmap[y][x]==WL_FAN)
 					for (j=0; j<CELL; j+=2)
 						for (i=(j>>1)&1; i<CELL; i+=2)
@@ -2939,7 +2916,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
 {
 	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0;//n;
 
-	int wall = c - 100;
+	int wall = c - 200;
 	for (r=UI_ACTUALSTART; r<=UI_ACTUALSTART+UI_WALLCOUNT; r++)
 	{
 		if (wall==r)
@@ -3152,7 +3129,7 @@ void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c)
 		if (e >= 0.5f)
 		{
 			y += sy;
-			if (c==WL_EHOLE || c==WL_ALLOWGAS || c==WL_ALLOWALLELEC || c==WL_ALLOWSOLID || c==WL_ELEMENTONLY || c==WL_ALLOWAIR || c==WL_WALL || c==WL_DESTROYALL || c==WL_ALLOWLIQUID || c==WL_FAN || c==WL_STREAM || c==WL_DETECT || c==WL_EWALL || c==WL_WALLELEC || !(rx+ry))
+			if (c==WL_EHOLE || c==WL_ALLOWGAS || c==WL_ALLOWALLELEC || c==WL_ALLOWSOLID || c==WL_ALLOWAIR || c==WL_WALL || c==WL_DESTROYALL || c==WL_ALLOWLIQUID || c==WL_FAN || c==WL_STREAM || c==WL_DETECT || c==WL_EWALL || c==WL_WALLELEC || !(rx+ry))
 			{
 				if (cp)
 					create_parts(y, x, rx, ry, c);

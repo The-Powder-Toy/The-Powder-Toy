@@ -23,7 +23,7 @@
 #define CM_VEL 0
 
 
-#define UI_WALLSTART 222
+#define UI_WALLSTART 322
 #define UI_ACTUALSTART 122
 #define UI_WALLCOUNT 19
 
@@ -43,13 +43,12 @@
 #define WL_ALLOWALLELEC	134
 #define WL_EHOLE	135
 
-#define SPC_AIR 236
-#define SPC_HEAT 237
-#define SPC_COOL 238
-#define SPC_VACUUM 239
+#define SPC_AIR 336
+#define SPC_HEAT 337
+#define SPC_COOL 338
+#define SPC_VACUUM 339
 
 #define WL_ALLOWGAS	140
-#define WL_ELEMENTONLY	141
 
 
 
@@ -263,7 +262,12 @@
 #define PT_C02 207
 #define PT_CLAY 208
 #define PT_NMTR 209
-#define PT_NUM  210
+#define PT_BLGN 210
+#define PT_BFGN 211
+#define PT_C6 212
+#define PT_CNVR 213
+#define PT_ASH 214
+#define PT_NUM  215
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -400,6 +404,9 @@ int update_MNSR(UPDATE_FUNC_ARGS);
 int update_SAND(UPDATE_FUNC_ARGS);
 int update_BOX(UPDATE_FUNC_ARGS);
 int update_NMTR(UPDATE_FUNC_ARGS);
+int update_CNVR(UPDATE_FUNC_ARGS);
+int update_C6(UPDATE_FUNC_ARGS);
+int update_ASH(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -649,10 +656,10 @@ static const part_type ptypes[PT_NUM] =
 	{"POT",		PIXPACK(0xCC883F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	3,	"A plant pot. Breaks Under Pressure.", ST_SOLID, TYPE_SOLID| PROP_HOT_GLOW, NULL},
 	{"GRAS",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f,	251,		"Will slowly grow until it needs to be mowed.", ST_SOLID, TYPE_SOLID, &update_GRAS},
 	{"CFUS",	PIXPACK(0x2E8B9E),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. A cold Fuse. Activated by Cold Flame.", ST_SOLID, TYPE_SOLID, &update_CFUS},
-	{"ANT",		PIXPACK(0xC0A060),	0.0f,	0.00f * CFDS,	0.96f,	0.80f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Ant. Builds a nest in other particles.", ST_SOLID, TYPE_PART|PROP_DEADLY, &update_CFIR},
+	{"ANT",		PIXPACK(0xC0A060),	0.0f,	0.00f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Ant. Builds a nest in other particles.", ST_SOLID, TYPE_PART|PROP_DEADLY, &update_CFIR},
 	{"SMIL",	PIXPACK(0xFFFF00),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER2,	373.0f,					40,		"Smile :)", ST_SOLID, TYPE_SOLID, &update_MISC},
     {"SEAL",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+2.0f	+273.15f,				40,		"An Air Seal... Change the temperature to change Max Pressure", ST_SOLID, TYPE_SOLID, NULL},
-    {"BULL",    PIXPACK(0x736D6E),  0.0f,	0.00f * CFDS,	1.00f,	1.00f,	0.0f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_SPECIAL,     MAX_TEMP,	251,		"Bullet, a deadly projectile that flies out of a gun.", ST_SOLID, TYPE_SOLID, &update_BULL},
+    {"BULL",    PIXPACK(0x736D6E),  0.0f,	0.00f * CFDS,	1.00f,	1.00f,	0.0f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_EXPLOSIVE,     MAX_TEMP,	251,		"Bullet, a deadly projectile that flies out of a gun.", ST_SOLID, TYPE_SOLID, &update_BULL},
     {"PPLT",	PIXPACK(0x9E9680),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Send off electric current when a stickman stands on it", ST_SOLID, TYPE_SOLID, NULL},
     {"TNT",		PIXPACK(0xF50C10),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	5,      0,  0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Solid. Pressure sensitive explosive.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_TNT},
     {"MGMA",	PIXPACK(0xBF3C02),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_LIQUID,		R_TEMP+1500.0f+273.15f,	60,		"Magma. Like Lava but underground.", ST_LIQUID, TYPE_LIQUID, &update_MGMA},
@@ -684,6 +691,11 @@ static const part_type ptypes[PT_NUM] =
     {"CO2",		PIXPACK(0xCCCCCC),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	2,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Ignites easily.", ST_GAS, TYPE_GAS, NULL},
     {"CLAY",	PIXPACK(0xC4B099),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,     SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Powder. Turns to POT under heat.", ST_SOLID, TYPE_PART|PROP_NEUTPENETRATE|PROP_HOT_GLOW, NULL},
     {"NMTR",	PIXPACK(0x444444),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	70,	"Neutron Matter. Very heavy. Increases Weight Under High Temperature.", ST_SOLID, TYPE_PART, &update_NMTR},
+    {"BLGN",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	0,	"Lazer Emmitter. Creates Lazers. Breaks under Pressure.", ST_SOLID, TYPE_SOLID, &update_LGUN},
+    {"BFGN",	PIXPACK(0x6BEBFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	0,	"Freeze Ray Emmitter. Creates Freeze Rays. Breaks under Pressure.", ST_SOLID, TYPE_SOLID, &update_FGUN},
+    {"C-6",		PIXPACK(0x2050E0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Blue Flame Explosive", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_C6},
+    {"CNVR",	PIXPACK(0xFFD010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Turns every particle into the particle it first touches.", ST_SOLID, TYPE_SOLID, &update_CNVR},
+    {"ASH",     PIXPACK(0x666266),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+450.0f	+273.15f,	70,		"Assh. Ignites flammable items.", ST_SOLID, TYPE_PART, &update_ASH},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -909,6 +921,11 @@ static part_transition ptransitions[PT_NUM] =
      /* CO2 */ {IPL,	NT,			IPH,	NT,			194.0f,	PT_DICE,	ITH,	NT},
     /* CLAY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			773.0f,	PT_POT},
     /* NMTR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+     /* BLGN */ {IPL,	NT,			50.0f,  PT_PLSM,	ITL,	NT,			ITH,    NT},
+     /* BFGN  */ {IPL,	NT,			50.0f,  PT_HFLM,	ITL,	NT,			ITH,    NT},
+    /* C6 */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+     /* CNVR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* ASH */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 
 
 };

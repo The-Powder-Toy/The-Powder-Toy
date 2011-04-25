@@ -4325,3 +4325,302 @@ int console_parse_partref(char *txt, int *which, char *err)
 	if (strcmp(err,"")==0) strcpy(err,"Particle does not exist");
 	return 0;
 }
+
+void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
+{
+	int i,ss,hh,vv,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0;
+	int window_offset_x_left = 2;
+	int window_offset_x_right = XRES - 279;
+	int window_offset_y = 2;
+	int grid_offset_x_left = 5;
+	int grid_offset_x_right = XRES - 274;
+	int grid_offset_y = 5;
+	int onleft_button_offset_x_left = 259;
+	int onleft_button_offset_x_right = 4;
+	int on_left = 1;
+	int grid_offset_x;
+	int window_offset_x;
+	int onleft_button_offset_x;
+	int h = 0, s = 255, v = 127; 
+	int th = 0, ts =255, tv=127;
+	pixel *old_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	ui_edit box_R;
+	ui_edit box_G;
+	ui_edit box_B;
+    
+	box_R.x = 5;
+	box_R.y = 5+255+4;
+	box_R.w = 30;
+	box_R.nx = 1;
+	box_R.def = "";
+	strcpy(box_R.str, "127");
+	box_R.focus = 0;
+	box_R.hide = 0;
+	box_R.multiline = 0;
+	box_R.cursor = 0;
+    
+	box_G.x = 40;
+	box_G.y = 5+255+4;
+	box_G.w = 30;
+	box_G.nx = 1;
+	box_G.def = "";
+	strcpy(box_G.str, "");
+	box_G.focus = 0;
+	box_G.hide = 0;
+	box_G.multiline = 0;
+	box_G.cursor = 0;
+    
+	box_B.x = 75;
+	box_B.y = 5+255+4;
+	box_B.w = 30;
+	box_B.nx = 1;
+	box_B.def = "";
+	strcpy(box_B.str, "");
+	box_B.focus = 0;
+	box_B.hide = 0;
+	box_B.multiline = 0;
+	box_B.cursor = 0;
+    
+    
+	memcpy(old_buf,vid_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
+	while (!sdl_poll())
+	{
+		bq = b;
+		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
+        
+		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*(YRES+MENUSIZE)*PIXELSIZE);
+		draw_decorations(vid_buf,decorations);
+		//ui_edit_process(mx, my, b, &box_R);
+		//ui_edit_process(mx, my, b, &box_G);
+		//ui_edit_process(mx, my, b, &box_B);
+		//HSV_to_RGB(h,s,v,&cr,&cg,&cb);
+		//if(cr != atoi(box_R.str))
+        //RGB_to_HSV(atoi(box_R.str),cg,cb,&h,&s,&v);
+		if(on_left==1)
+		{
+			grid_offset_x = grid_offset_x_left;
+			window_offset_x = window_offset_x_left;
+			onleft_button_offset_x = onleft_button_offset_x_left;
+			box_R.x = 5;
+			box_G.x = 40;
+			box_B.x = 75;
+		}
+		else
+		{
+			grid_offset_x = grid_offset_x_right;
+			window_offset_x = window_offset_x_right;
+			onleft_button_offset_x = onleft_button_offset_x_right;
+			box_R.x = XRES - 254 + 5;
+			box_G.x = XRES - 254 + 40;
+			box_B.x = XRES - 254 + 75;
+		}
+		render_cursor(vid_buf, mx, my, PT_DUST, *bsx, *bsy);
+        
+		drawrect(vid_buf, -1, -1, XRES+1, YRES+1, 220, 220, 220, 255);
+		drawrect(vid_buf, -1, -1, XRES+2, YRES+2, 70, 70, 70, 255);
+        
+		clearrect(vid_buf, window_offset_x, window_offset_y, 2+255+4+10+5, 2+255+20);
+		drawrect(vid_buf, window_offset_x, window_offset_y, 2+255+4+10+5, 2+255+20, 255, 255, 255, 255);//window around whole thing
+        
+		drawrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, 255, 255, 255, 255);
+		drawrect(vid_buf, window_offset_x + 230, window_offset_y +255+6, 26, 12, 255, 255, 255, 255);
+		drawtext(vid_buf, window_offset_x + 232, window_offset_y +255+9, "Clear", 255, 255, 255, 255);
+		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.1 (by cracker64) \nThis space should be used for basic color swatches to click on, and maybe some other tool buttons.\nPro tip: click the current color to move the selector to the other side. ", 255, 255, 255, 255);
+		ui_edit_draw(vid_buf, &box_R);
+		ui_edit_draw(vid_buf, &box_G);
+		ui_edit_draw(vid_buf, &box_B);
+        
+		for(ss=0; ss<=255; ss++)
+			for(hh=0;hh<=255;hh++)
+			{
+				cr = 0;
+				cg = 0;
+				cb = 0;
+				HSV_to_RGB(hh,255-ss,255,&cr,&cg,&cb);
+				vid_buf[(ss+grid_offset_y)*(XRES+BARSIZE)+(hh+grid_offset_x)] = PIXRGB(cr, cg, cb);
+			}
+		for(vv=0; vv<=255; vv++)
+			for( i=0; i<10; i++)
+			{
+				cr = 0;
+				cg = 0;
+				cb = 0;
+				HSV_to_RGB(0,0,vv,&cr,&cg,&cb);
+				vid_buf[(vv+grid_offset_y)*(XRES+BARSIZE)+(i+grid_offset_x+255+4)] = PIXRGB(cr, cg, cb);
+			}
+		HSV_to_RGB(h,s,v,&cr,&cg,&cb);
+		fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, cr, cg, cb, 255);
+		sprintf(box_R.str,"%d",cr);
+		sprintf(box_G.str,"%d",cg);
+		sprintf(box_B.str,"%d",cb);
+        
+		if(!lb && mx >= window_offset_x && my >= window_offset_y && mx <= window_offset_x+255+4+10+5 && my <= window_offset_y+255+20)//in the main window
+		{
+			if(mx >= grid_offset_x +255+4 && my >= grid_offset_y && mx <= grid_offset_x+255+4+10 && my <= grid_offset_y+255)
+			{
+				tv =  my - grid_offset_y;
+				if(b)
+				{
+					v =my - grid_offset_y;
+				}
+				HSV_to_RGB(h,s,tv,&cr,&cg,&cb);
+				//clearrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6,12,12);
+				fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, cr, cg, cb, 255);
+				sprintf(box_R.str,"%d",cr);
+				sprintf(box_G.str,"%d",cg);
+				sprintf(box_B.str,"%d",cb);
+			}
+			if(mx >= grid_offset_x && my >= grid_offset_y && mx <= grid_offset_x+255 && my <= grid_offset_y+255)
+			{
+				th = mx - grid_offset_x;
+				ts = 255 - (my - grid_offset_y);
+				if(b)
+				{
+					h = mx - grid_offset_x;
+					s = 255 - (my - grid_offset_y);
+				}
+				HSV_to_RGB(th,ts,v,&cr,&cg,&cb);
+				//clearrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6,12,12);
+				fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, cr, cg, cb, 255);
+				//sprintf(box_R.def,"%d",cr);
+				sprintf(box_R.str,"%d",cr);
+				sprintf(box_G.str,"%d",cg);
+				sprintf(box_B.str,"%d",cb);
+			}
+			if(b && mx >= window_offset_x + onleft_button_offset_x +1 && my >= window_offset_y +255+6 && mx <= window_offset_x + onleft_button_offset_x +13 && my <= window_offset_y +255+5 +13)
+			{
+				on_left = !on_left;
+				lb = 3;//prevent immediate drawing after clicking
+			}
+			if(b && mx >= window_offset_x + 230 && my >= window_offset_y +255+6 && mx <= window_offset_x + 230 +26 && my <= window_offset_y +255+5 +13)
+				memset(decorations, 0,(XRES+BARSIZE)*YRES*PIXELSIZE);
+		}
+		else if (b)//there is a click, outside window
+		{
+			if (!(b&1))
+			{
+				cr = 0;
+				cg = 0;
+				cb = 0;
+			}
+			if (lb)//mouse is held down
+			{
+				if (lm == 1)//line tool
+				{
+					xor_line(lx, ly, mx, my, vid_buf);
+				}
+				else if (lm == 2)//box tool
+				{
+					xor_line(lx, ly, lx, my, vid_buf);
+					xor_line(lx, my, mx, my, vid_buf);
+					xor_line(mx, my, mx, ly, vid_buf);
+					xor_line(mx, ly, lx, ly, vid_buf);
+				}
+				else if(lb!=3)//while mouse is held down, it draws lines between previous and current positions
+				{
+					line_decorations(decorations,lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+					lx = mx;
+					ly = my;
+				}
+			}
+			else //first click
+			{
+				if ((sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)) && !(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL|KMOD_LALT)))
+				{
+					lx = mx;
+					ly = my;
+					lb = b;
+					lm = 1;//line
+				}
+				//start box tool
+				else if ((sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)) && !(sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)))
+				{
+					lx = mx;
+					ly = my;
+					lb = b;
+					lm = 2;//box
+				}
+				else //normal click, draw deco
+				{
+					create_decorations(decorations,mx,my,*bsx,*bsy,cr,cg,cb);
+					lx = mx;
+					ly = my;
+					lb = b;
+					lm = 0;
+				}
+			}
+		}
+		else
+		{
+			if (!(lb&1))
+			{
+				cr = 0;
+				cg = 0;
+				cb = 0;
+			}
+			if (lb && lm) //lm is box/line tool
+			{
+				if (lm == 1)//line
+					line_decorations(decorations,lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+				else//box
+					box_decorations(decorations,lx, ly, mx, my, cr, cg, cb);
+				lm = 0;
+			}
+			lb = 0;
+            
+		}
+		addpixel(vid_buf,grid_offset_x + h,grid_offset_y-1,255,255,255,255);
+		addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-s),255,255,255,255);
+        
+		addpixel(vid_buf,grid_offset_x + th,grid_offset_y-1,100,100,100,255);
+		addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-ts),100,100,100,255);
+        
+		addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y+tv,100,100,100,255);
+		addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y +v,255,255,255,255);
+        
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+        
+		if (sdl_wheel)
+		{
+			//change brush size
+			{
+				if (!(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+				{
+					*bsx += sdl_wheel;
+					*bsy += sdl_wheel;
+				}
+				else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+				{
+					*bsx += sdl_wheel;
+				}
+				else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+				{
+					*bsy += sdl_wheel;
+				}
+				if (*bsx>1180)
+					*bsx = 1180;
+				if (*bsx<0)
+					*bsx = 0;
+				if (*bsy>1180)
+					*bsy = 1180;
+				if (*bsy<0)
+					*bsy = 0;
+				sdl_wheel = 0;
+				/*if(su >= PT_NUM) {
+                 if(sl < PT_NUM)
+                 su = sl;
+                 if(sr < PT_NUM)
+                 su = sr;
+                 }*/
+			}
+		}
+		if(sdl_key=='b' || sdl_key==SDLK_ESCAPE)
+		{
+			free(old_buf);
+			return;
+		}
+	}
+	free(old_buf);
+}

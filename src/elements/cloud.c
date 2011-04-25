@@ -2,7 +2,7 @@
 
 int update_CLOUD(UPDATE_FUNC_ARGS) {
 	int r,rx,ry,tmp = parts[i].tmp;
-    if (rand()%16000){
+    if (rand()%100 == 1){
         if (parts[i].tmp = 1){
             parts[i].tmp = 0;
         }
@@ -14,10 +14,19 @@ int update_CLOUD(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
+                if ((r&0xFF) == PT_RWTR){
+                    if (rand()%1000 == 1){
+                        if (!(parts[r>>8].y < parts[i].y+2)){
+                            parts[r>>8].type=PT_CLOUD;
+                        }
+                    }
+                }
                 if ((r&0xFF) == PT_CLOUD){
                     if (parts[i].y >= parts[r>>8].y){
                         if (parts[i].tmp != 1){
-                            create_part(-1, x+rand()%3-1, y+rand()%5-1, PT_RWTR);
+                            if (rand()%10 == 1){
+                                create_part(-1, x+rand()%3-1, y+rand()%6+1, PT_RWTR);
+                            }
                         }
                     } else {
                         parts[i].tmp = 1;

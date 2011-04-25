@@ -12,6 +12,8 @@
 #include <update.h>
 #if defined WIN32
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 #ifdef MACOSX
 #include <ApplicationServices/ApplicationServices.h>
@@ -117,9 +119,9 @@ void save_presets(int do_update)
 	tmp = svf_mod;
 	fwrite(&tmp, 1, 1, f);
 	save_string(f, http_proxy_string);
-	tmp = ME4502_MAJOR_VERSION;
+	tmp = SAVE_VERSION;
 	fwrite(&tmp, 1, 1, f);
-	tmp = ME4502_VERSION;
+	tmp = MINOR_VERSION;
 	fwrite(&tmp, 1, 1, f);
 	tmp = do_update;
 	fwrite(&tmp, 1, 1, f);
@@ -130,7 +132,7 @@ int sregexp(const char *str, char *pattern)
 {
 	int result;
 	regex_t patternc;
-	if(regcomp(&patternc, pattern,  0)!=0)
+	if (regcomp(&patternc, pattern,  0)!=0)
 		return 1;
 	result = regexec(&patternc, str, 0, NULL, 0);
 	regfree(&patternc);
@@ -166,7 +168,7 @@ void load_presets(void)
 		remove("powder.def");
 		return;
 	}
-	if(sig[3]==0x66){
+	if (sig[3]==0x66) {
 		if (load_string(f, svf_user, 63))
 			goto fail;
 		if (load_string(f, svf_pass, 63))
@@ -233,14 +235,14 @@ void strcaturl(char *dst, char *src)
 {
 	char *d;
 	unsigned char *s;
-
+    
 	for (d=dst; *d; d++) ;
-
+    
 	for (s=(unsigned char *)src; *s; s++)
 	{
 		if ((*s>='0' && *s<='9') ||
-		        (*s>='a' && *s<='z') ||
-		        (*s>='A' && *s<='Z'))
+            (*s>='a' && *s<='z') ||
+            (*s>='A' && *s<='Z'))
 			*(d++) = *s;
 		else
 		{
@@ -256,9 +258,9 @@ void strappend(char *dst, char *src)
 {
 	char *d;
 	unsigned char *s;
-
+    
 	for (d=dst; *d; d++) ;
-
+    
 	for (s=(unsigned char *)src; *s; s++)
 	{
 		*(d++) = *s;
@@ -270,7 +272,7 @@ void *file_load(char *fn, int *size)
 {
 	FILE *f = fopen(fn, "rb");
 	void *s;
-
+    
 	if (!f)
 		return NULL;
 	fseek(f, 0, SEEK_END);
@@ -381,26 +383,26 @@ void clipboard_push_text(char * text)
 {
 #ifdef MACOSX
 	PasteboardRef newclipboard;
-
-	if(PasteboardCreate(kPasteboardClipboard, &newclipboard)!=noErr) return;
-	if(PasteboardClear(newclipboard)!=noErr) return;
+    
+	if (PasteboardCreate(kPasteboardClipboard, &newclipboard)!=noErr) return;
+	if (PasteboardClear(newclipboard)!=noErr) return;
 	PasteboardSynchronize(newclipboard);
-
+    
 	CFDataRef data = CFDataCreate(kCFAllocatorDefault, text, strlen(text));
 	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);
 #elif defined WIN32
-	if(OpenClipboard(NULL))
+	if (OpenClipboard(NULL))
 	{
 		HGLOBAL cbuffer;
 		char * glbuffer;
-
+        
 		EmptyClipboard();
-
+        
 		cbuffer = GlobalAlloc(GMEM_DDESHARE, strlen(text)+1);
 		glbuffer = (char*)GlobalLock(cbuffer);
-
+        
 		strcpy(glbuffer, text);
-
+        
 		GlobalUnlock(cbuffer);
 		SetClipboardData(CF_TEXT, cbuffer);
 		CloseClipboard();
@@ -427,76 +429,198 @@ int register_extension()
 	iconname = malloc(strlen(currentfilename)+6);
 	opencommand = malloc(strlen(currentfilename)+13);
 	sprintf(iconname, "%s,-102", currentfilename);
-	sprintf(opencommand, "\"%s\" open:\"%%1\"", currentfilename);
-
+	sprintf(opencommand, "\"%s\" open \"%%1\"", currentfilename);
+    
 	//Create extension entry
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.cps", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		return 0;
 	}
 	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)"PowderToySave", strlen("PowderToySave")+1);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		RegCloseKey(newkey);
 		return 0;
 	}
 	RegCloseKey(newkey);
-
-    rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.stm", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
-    if (rresult !=ERROR_SUCCESS) {
-        return 0;
-    }
+    
+	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.stm", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
+	if (rresult != ERROR_SUCCESS) {
+		return 0;
+	}
 	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)"PowderToySave", strlen("PowderToySave")+1);
-    if (rresult!= ERROR_SUCCESS) {
-        RegCloseKey(newkey);
-        return 0;
-    }
-    RegCloseKey(newkey);
-
+	if (rresult != ERROR_SUCCESS) {
+		RegCloseKey(newkey);
+		return 0;
+	}
+	RegCloseKey(newkey);
+    
 	//Create program entry
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		return 0;
 	}
 	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)"Powder Toy Save", strlen("Powder Toy Save")+1);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		RegCloseKey(newkey);
 		return 0;
 	}
 	RegCloseKey(newkey);
-
+    
 	//Set DefaultIcon
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave\\DefaultIcon", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		return 0;
 	}
 	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)iconname, strlen(iconname)+1);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		RegCloseKey(newkey);
 		return 0;
 	}
 	RegCloseKey(newkey);
-
+    
 	//Set Launch command
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave\\shell\\open\\command", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		return 0;
 	}
 	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)opencommand, strlen(opencommand)+1);
-	if(rresult != ERROR_SUCCESS){
+	if (rresult != ERROR_SUCCESS) {
 		RegCloseKey(newkey);
 		return 0;
 	}
 	RegCloseKey(newkey);
-
+    
 	return 1;
-#elif defined LIN32
-	return 0;
-#elif defined LIN64
-	return 0;
+#elif defined(LIN32) || defined(LIN64)
+	char *currentfilename = exe_name();
+	FILE *f;
+	char *mimedata =
+    "<?xml version=\"1.0\"?>\n"
+    "	<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>\n"
+    "	<mime-type type=\"application/vnd.powdertoy.save\">\n"
+    "		<comment>Powder Toy save</comment>\n"
+    "		<glob pattern=\"*.cps\"/>\n"
+    "		<glob pattern=\"*.stm\"/>\n"
+    "	</mime-type>\n"
+    "</mime-info>\n";
+	f = fopen("powdertoy-save.xml", "wb");
+	if (!f)
+		return 0;
+	fwrite(mimedata, 1, strlen(mimedata), f);
+	fclose(f);
+    
+	char *desktopfiledata_tmp =
+    "[Desktop Entry]\n"
+    "Type=Application\n"
+    "Name=Powder Toy\n"
+    "Comment=Physics sandbox game\n"
+    "MimeType=application/vnd.powdertoy.save;\n"
+    "NoDisplay=true\n";
+	char *desktopfiledata = malloc(strlen(desktopfiledata_tmp)+strlen(currentfilename)+100);
+	strcpy(desktopfiledata, desktopfiledata_tmp);
+	strappend(desktopfiledata, "Exec=");
+	strappend(desktopfiledata, currentfilename);
+	strappend(desktopfiledata, " open %f\n");
+	f = fopen("powdertoy-tpt.desktop", "wb");
+	if (!f)
+		return 0;
+	fwrite(desktopfiledata, 1, strlen(desktopfiledata), f);
+	fclose(f);
+	system("xdg-mime install powdertoy-save.xml");
+	system("xdg-desktop-menu install powdertoy-tpt.desktop");
+	f = fopen("powdertoy-save-32.png", "wb");
+	if (!f)
+		return 0;
+	fwrite(icon_doc_32_png, 1, sizeof(icon_doc_32_png), f);
+	fclose(f);
+	f = fopen("powdertoy-save-16.png", "wb");
+	if (!f)
+		return 0;
+	fwrite(icon_doc_16_png, 1, sizeof(icon_doc_16_png), f);
+	fclose(f);
+	system("xdg-icon-resource install --noupdate --context mimetypes --size 32 powdertoy-save-32.png application-vnd.powdertoy.save");
+	system("xdg-icon-resource install --noupdate --context mimetypes --size 16 powdertoy-save-16.png application-vnd.powdertoy.save");
+	system("xdg-icon-resource forceupdate");
+	system("xdg-mime default powdertoy-tpt.desktop application/vnd.powdertoy.save");
+	unlink("powdertoy-save-32.png");
+	unlink("powdertoy-save-16.png");
+	unlink("powdertoy-save.xml");
+	unlink("powdertoy-tpt.desktop");
+	return 1;
 #elif defined MACOSX
 	return 0;
 #endif
 }
 
+void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255 HSV values to 0-255 RGB
+{
+	float hh, ss, vv, c, x;
+	int m;
+	hh = h/42.667f;//normalize values
+	ss = s/256.0f;
+	vv = v/256.0f;
+	c = vv * ss;
+	x = c * ( 1 - fabsf(fmod(hh,2.0) -1) );
+	if(hh<1){
+		*r = (int)(c*256.0);
+		*g = (int)(x*256.0);
+		*b = 0;
+	}
+	else if(hh<2){
+		*r = (int)(x*256.0);
+		*g = (int)(c*256.0);
+		*b = 0;
+	}
+	else if(hh<3){
+		*r = 0;
+		*g = (int)(c*256.0);
+		*b = (int)(x*256.0);
+	}
+	else if(hh<4){
+		*r = 0;
+		*g = (int)(x*256.0);
+		*b = (int)(c*256.0);
+	}
+	else if(hh<5){
+		*r = (int)(x*256.0);
+		*g = 0;
+		*b = (int)(c*256.0);
+	}
+	else if(hh<6){
+		*r = (int)(c*256.0);
+		*g = 0;
+		*b = (int)(x*256.0);
+	}
+	m = (int)((vv-c)*256.0);
+	*r += m;
+	*g += m;
+	*b += m;
+}
+
+void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 HSV values to 0-255 RGB
+{
+	float rr, gg, bb, a,x,c,d;
+	rr = r/256.0f;//normalize values
+	gg = g/256.0f;
+	bb = b/256.0f;
+	a = fmin(rr,gg);
+	a = fmin(a,bb);
+	x = fmax(rr,gg);
+	x = fmax(x,bb);
+	if (a==x)//greyscale
+	{
+		*h = 0;
+		*s = 0;
+		*v = a;
+	}
+	else
+	{
+ 		c = (rr==a) ? gg-bb : ((bb==a) ? rr-gg : bb-rr);
+ 		d = (rr==a) ? 3 : ((bb==a) ? 1 : 5);
+ 		*h = (int)(42.667*(d - c/(x - a)));
+ 		*s = (int)(256.0*((x - a)/x));
+ 		*v = (int)(256.0*x);
+	}
+}
 vector2d v2d_zero = {0,0};
 matrix2d m2d_identity = {1,0,0,1};
