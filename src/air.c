@@ -56,6 +56,8 @@ void update_grav(void)
 			}
 		}
 	}
+	if(!changed)
+		goto fin;
 	memset(th_gravy, 0, sizeof(th_gravy));
 	memset(th_gravx, 0, sizeof(th_gravx));
 #endif
@@ -65,7 +67,7 @@ void update_grav(void)
 			if (th_ogravmap[i][j] != th_gravmap[i][j])
 			{
 #else
-			if ((th_gravmap[i][j] > 0.0001f || th_gravmap[i][j]<-0.0001f) && changed) //Only calculate with populated or changed cells.
+			if (th_gravmap[i][j] > 0.0001f || th_gravmap[i][j]<-0.0001f) //Only calculate with populated or changed cells.
 			{
 #endif
 				for (y = 0; y < YRES / CELL; y++) {
@@ -85,6 +87,7 @@ void update_grav(void)
 			}
 		}
 	}
+fin:
 	memcpy(th_ogravmap, th_gravmap, sizeof(th_gravmap));
 	memset(th_gravmap, 0, sizeof(th_gravmap));
 }
