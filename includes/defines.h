@@ -43,6 +43,8 @@
 
 #define MAX_DISTANCE sqrt(pow(XRES, 2)+pow(YRES, 2))
 
+#define GRAV_DIFF
+
 #define MAXSIGNS 16
 #define TAG_MAX 256
 
