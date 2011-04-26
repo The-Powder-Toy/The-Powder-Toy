@@ -1668,8 +1668,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 				if (ptransitions[t].plt!=PT_NUM)
 					t = ptransitions[t].plt;
 				else s = 0;
-			}
-			else s = 0;
+			} else if ((fabsf(gravy[y/CELL][x/CELL])+fabsf(gravx[y/CELL][x/CELL]))>(ptransitions[t].phv/4.0f)&&ptransitions[t].pht>-1) {
+				// particle type change due to high gravity
+				if (ptransitions[t].pht!=PT_NUM)
+					t = ptransitions[t].pht;
+				else s = 0;
+			} else s = 0;
 			if (s) { // particle type change occurred
 				parts[i].life = 0;
 				part_change_type(i,x,y,t);
