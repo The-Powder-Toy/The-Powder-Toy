@@ -174,7 +174,8 @@ float mheat = 0.0f;
 int do_open = 0;
 int sys_pause = 0;
 int sys_shortcuts = 1;
-int legacy_enable = 0; //Used to disable new features such as heat, will be set by commandline or save.
+int legacy_enable = 0; //Used to disable new features such as heat, will be set by save.
+int ngrav_enable = 1; //Newtonian gravity, will be set by save TODO: Make this actually do something
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
@@ -189,8 +190,8 @@ sign signs[MAXSIGNS];
 
 int numCores = 4;
 
-pthread_t gravthread;// = NULL;
-pthread_mutex_t gravmutex;// = NULL;
+pthread_t gravthread;
+pthread_mutex_t gravmutex;
 int grav_ready = 0;
 
 int core_count()
@@ -936,7 +937,7 @@ void clear_sim(void)
 	memset(photons, 0, sizeof(photons));
 	memset(wireless, 0, sizeof(wireless));
 	memset(gol2, 0, sizeof(gol2));
-	memset(portal, 0, sizeof(portal));
+	memset(portalp, 0, sizeof(portalp));
 	death = death2 = ISSPAWN1 = ISSPAWN2 = 0;
 	memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 	memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
@@ -2898,7 +2899,7 @@ int main(int argc, char *argv[])
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
 #endif
-        draw_grav(vid_buf);
+        
 		//Can't be too sure (Limit the cursor size)
 		if (bsx>1180)
 			bsx = 1180;
@@ -2908,29 +2909,24 @@ int main(int argc, char *argv[])
 			bsy = 1180;
 		if (bsy<0)
 			bsy = 0;
-
-
-        //memcpy(mmapx_o, mmapx, sizeof(mmapx));
-		//memcpy(mmapy_o, mmapy, sizeof(mmapy));
-
-		//memset(mmapx, 0, sizeof(mmapx));
-		//memset(mmapy, 0, sizeof(mmapy));
-
-        memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
-		update_particles(vid_buf); //update everything
         
         pthread_mutex_lock(&gravmutex);
         result = grav_ready;
-        //pthread_mutex_unlock(&gravmutex);
         if(result) //Did the gravity thread finish?
             {
                 memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
                 memcpy(gravy, th_gravy, sizeof(gravy));  //Hmm, Gravy
                 memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
-                grav_ready = 0; //Tell the other thread that we're ready for it to continue
+                if (!sys_pause||framerender) //Only update if not paused
+                    grav_ready = 0; //Tell the other thread that we're ready for it to continue
             }
         pthread_mutex_unlock(&gravmutex);
-        //update_grav();
+        
+        if (!sys_pause||framerender) //Only update if not paused
+            memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
+        
+        draw_grav(vid_buf);
+        update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
 
 		if (cmode==CM_PERS)
@@ -3216,8 +3212,8 @@ int main(int argc, char *argv[])
 				if (sdl_zoom_trig==1)
 				{
 					ZSIZE -= 1;
-					if (ZSIZE>60)
-						ZSIZE = 60;
+					if (ZSIZE>120)
+						ZSIZE = 120;
 					if (ZSIZE<2)
 						ZSIZE = 2;
 					ZFACTOR = 256/ZSIZE;
@@ -3256,8 +3252,8 @@ int main(int argc, char *argv[])
 				if (sdl_zoom_trig==1)
 				{
 					ZSIZE += 1;
-					if (ZSIZE>60)
-						ZSIZE = 60;
+					if (ZSIZE>120)
+						ZSIZE = 120;
 					if (ZSIZE<2)
 						ZSIZE = 2;
 					ZFACTOR = 256/ZSIZE;
@@ -3554,8 +3550,8 @@ int main(int argc, char *argv[])
 			if (sdl_zoom_trig==1)//zoom window change
 			{
 				ZSIZE += sdl_wheel;
-				if (ZSIZE>60)
-					ZSIZE = 60;
+				if (ZSIZE>120)
+					ZSIZE = 120;
 				if (ZSIZE<2)
 					ZSIZE = 2;
 				ZFACTOR = 256/ZSIZE;
@@ -3950,7 +3946,8 @@ int main(int argc, char *argv[])
 						tag_list_ui(vid_buf);
 					if (x>=(XRES+BARSIZE-(510-351)) && x<(XRES+BARSIZE-(510-366)) && !bq)
 					{
-						legacy_enable = !legacy_enable;
+						//legacy_enable = !legacy_enable;
+                        simulation_ui(vid_buf);
 					}
 					if (x>=(XRES+BARSIZE-(510-367)) && x<=(XRES+BARSIZE-(510-383)) && !bq)
 					{
@@ -4304,7 +4301,7 @@ int main(int argc, char *argv[])
 				drawtext(vid_buf, 16, YRES-24, "Click-and-drag to specify a rectangle to copy (right click = cancel).", 255, 216, 32, da*5);
 				break;
 			case 270:
-				drawtext(vid_buf, 16, YRES-24, "Enable or disable compatibility mode (disables heat simulation).", 255, 255, 255, da*5);
+				drawtext(vid_buf, 16, YRES-24, "Opens the options menu.", 255, 255, 255, da*5);
 				break;
 			case 271:
 				drawtext(vid_buf, 16, YRES-24, "You're a moderator", 255, 255, 255, da*5);

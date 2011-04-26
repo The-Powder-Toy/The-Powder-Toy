@@ -248,5 +248,7 @@ int console_parse_type(char *txt, int *element, char *err);
 int console_parse_partref(char *txt, int *which, char *err);
 
 void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy);
+
+void simulation_ui(pixel *vid_buf);
 #endif
 

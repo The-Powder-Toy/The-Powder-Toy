@@ -605,17 +605,17 @@ void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 		drawrect(vid_buf, XRES-16+BARSIZE/*494*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
 	}
 
-	//the heat sim button
-	if (!legacy_enable)
+	//The simulation options button, used to be the heat sim button
+	/*if (!legacy_enable)
 	{
-		fillrect(vid_buf, XRES-160+BARSIZE/*493*/, YRES+(MENUSIZE-17), 16, 16, 255, 255, 255, 255);
-		drawtext(vid_buf, XRES-154+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBE", 255, 0, 0, 255);
-		drawtext(vid_buf, XRES-154+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBD", 0, 0, 0, 255);
+		fillrect(vid_buf, XRES-160+BARSIZE, YRES+(MENUSIZE-17), 16, 16, 255, 255, 255, 255);
+		drawtext(vid_buf, XRES-154+BARSIZE, YRES+(MENUSIZE-13), "\xBE", 255, 0, 0, 255);
+		drawtext(vid_buf, XRES-154+BARSIZE, YRES+(MENUSIZE-13), "\xBD", 0, 0, 0, 255);
 	}
-	else
+	else*/
 	{
-		drawtext(vid_buf, XRES-154+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBD", 255, 255, 255, 255);
-		drawrect(vid_buf, XRES-159+BARSIZE/*494*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
+		drawtext(vid_buf, XRES-156+BARSIZE, YRES+(MENUSIZE-13), "\xCF", 255, 255, 255, 255); //TODO: More suitable icon - Done :D
+		drawrect(vid_buf, XRES-159+BARSIZE, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
 	}
 
 	//the view mode button
@@ -4636,4 +4636,79 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 		}
 	}
 	free(old_buf);
+}
+void simulation_ui(pixel * vid_buf)
+{
+	int xsize = 300;
+	int ysize = 100;
+	int x0=(XRES-xsize)/2,y0=(YRES-MENUSIZE-ysize)/2,b=1,bq,mx,my;
+	ui_checkbox cb;
+	ui_checkbox cb2;
+    
+	cb.x = x0+xsize-16;
+	cb.y = y0+23;
+	cb.focus = 0;
+	cb.checked = !legacy_enable;
+    
+	cb2.x = x0+xsize-16;
+	cb2.y = y0+51;
+	cb2.focus = 0;
+	cb2.checked = ngrav_enable;
+    
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+    
+	while (!sdl_poll())
+	{
+		bq = b;
+		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
+        
+		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
+		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
+		drawtext(vid_buf, x0+8, y0+8, "Simulation options", 255, 216, 32, 255);
+        
+		drawtext(vid_buf, x0+8, y0+26, "Heat simulation", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("Heat simulation"), y0+26, "Introduced in version 34.", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+12, y0+40, "Older saves may behave oddly with this enabled.", 255, 255, 255, 180);
+        
+		drawtext(vid_buf, x0+8, y0+54, "Newtonian gravity", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("Newtonian gravity"), y0+54, "Introduced in version 48.", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+12, y0+68, "May also cause slow performance on older computers", 255, 255, 255, 180);
+        
+		//TODO: Options for Air and Normal gravity
+		//Maybe save/load defaults too.
+        
+		drawtext(vid_buf, x0+5, y0+ysize-11, "OK", 255, 255, 255, 255);
+		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
+        
+		ui_checkbox_draw(vid_buf, &cb);
+		ui_checkbox_draw(vid_buf, &cb2);
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+		ui_checkbox_process(mx, my, b, bq, &cb);
+		ui_checkbox_process(mx, my, b, bq, &cb2);
+        
+		if (b && !bq && mx>=x0 && mx<x0+xsize && my>=y0+ysize-16 && my<=y0+ysize)
+			break;
+        
+		if (sdl_key==SDLK_RETURN)
+			break;
+		if (sdl_key==SDLK_ESCAPE)
+			break;
+	}
+    
+	legacy_enable = !cb.checked;
+	ngrav_enable = cb2.checked;
+    
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
 }

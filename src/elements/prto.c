@@ -34,29 +34,27 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 							randomness=1;
 						if (randomness>8)
 							randomness=8;
-						if (portal[parts[i].tmp][randomness-1][nnx]==PT_SPRK)// TODO: make it look better, spark creation
+						if (portalp[parts[i].tmp][randomness-1][nnx].type==PT_SPRK)// TODO: make it look better, spark creation
 						{
-							create_part(-1,x+1,y,portal[parts[i].tmp][randomness-1][nnx]);
-							create_part(-1,x+1,y+1,portal[parts[i].tmp][randomness-1][nnx]);
-							create_part(-1,x+1,y-1,portal[parts[i].tmp][randomness-1][nnx]);
-							create_part(-1,x,y-1,portal[parts[i].tmp][randomness-1][nnx]);
-							create_part(-1,x,y+1,portal[parts[i].tmp][randomness-1][nnx]);
-							create_part(-1,x-1,y+1,portal[parts[i].tmp][randomness-1][nnx]);
-							create_part(-1,x-1,y,portal[parts[i].tmp][randomness-1][nnx]);
-							create_part(-1,x-1,y-1,portal[parts[i].tmp][randomness-1][nnx]);
-							portal[parts[i].tmp][randomness-1][nnx] = 0;
-							portaltemp[parts[i].tmp][randomness-1][nnx] = 0;
+							create_part(-1,x+1,y,PT_SPRK);
+							create_part(-1,x+1,y+1,PT_SPRK);
+							create_part(-1,x+1,y-1,PT_SPRK);
+							create_part(-1,x,y-1,PT_SPRK);
+							create_part(-1,x,y+1,PT_SPRK);
+							create_part(-1,x-1,y+1,PT_SPRK);
+							create_part(-1,x-1,y,PT_SPRK);
+							create_part(-1,x-1,y-1,PT_SPRK);
+							portalp[parts[i].tmp][randomness-1][nnx] = emptyparticle;
 							break;
 						}
-						else if (portal[parts[i].tmp][randomness-1][nnx])
+						else if (portalp[parts[i].tmp][randomness-1][nnx].type)
 						{
-							np = create_part(-1,x+rx,y+ry,portal[parts[i].tmp][randomness-1][nnx]);
+							np = create_part(-1,x+rx,y+ry,portalp[parts[i].tmp][randomness-1][nnx].type);
 							if (np<0) continue;
-							parts[np].temp = portaltemp[parts[i].tmp][randomness-1][nnx];
-							parts[np].ctype = portalctype[parts[i].tmp][randomness-1][nnx];
-							portal[parts[i].tmp][randomness-1][nnx] = 0;
-							portaltemp[parts[i].tmp][randomness-1][nnx] = 0;
-							portalctype[parts[i].tmp][randomness-1][nnx] = 0;
+							parts[np] = portalp[parts[i].tmp][randomness-1][nnx];
+							parts[np].x = x+rx;
+							parts[np].y = y+ry;
+							portalp[parts[i].tmp][randomness-1][nnx] = emptyparticle;
 							break;
 						}
 					}

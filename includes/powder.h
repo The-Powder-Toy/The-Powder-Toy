@@ -1046,9 +1046,8 @@ static int smilrule[9][9] =
 	{0,0,0,0,0,0,0,0,0},
 };
 #define CHANNELS ((int)(MAX_TEMP-73.15f)/100+2)
-int portal[CHANNELS][8][80];
-float portaltemp[CHANNELS][8][80];
-int portalctype[CHANNELS][8][80];
+particle portalp[CHANNELS][8][80];
+const particle emptyparticle;
 int wireless[CHANNELS][2];
 
 extern int isplayer;

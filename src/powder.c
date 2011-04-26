@@ -499,50 +499,6 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
-#else
-inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)//testing a new deut create part
-#endif
-{
-	int i, c;
-	n = (n/10);
-	if (n<1) {
-		n = 1;
-	}
-	if (n>680) {
-		n = 680;
-	}
-	if (x<0 || y<0 || x>=XRES || y>=YRES || t<0 || t>=PT_NUM)
-		return -1;
-
-	for (c=0; c<n; c++) {
-		float r = (rand()%128+128)/127.0f;
-		float a = (rand()%360)*3.14159f/180.0f;
-		if (pfree == -1)
-			return -1;
-		i = pfree;
-		pfree = parts[i].life;
-
-		parts[i].x = (float)x;
-		parts[i].y = (float)y;
-		parts[i].type = t;
-		parts[i].life = rand()%480+480;
-		parts[i].vx = r*cosf(a);
-		parts[i].vy = r*sinf(a);
-		parts[i].ctype = 0;
-		parts[i].temp += (n*17);
-		parts[i].tmp = 0;
-		if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT && !pmap[y][x])
-			pmap[y][x] = t|(i<<8);
-		else if ((t==PT_PHOT||t==PT_NEUT) && !photons[y][x])
-			photons[y][x] = t|(i<<8);
-
-		pv[y/CELL][x/CELL] += 6.0f * CFDS;
-	}
-	return 0;
-}
-
-#if defined(WIN32) && !defined(__GNUC__)
 _inline int create_part(int p, int x, int y, int t)
 #else
 inline int create_part(int p, int x, int y, int t)//the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
