@@ -852,7 +852,7 @@ int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, i
 #ifdef OpenGL
 #else
 	int sx = x;
-	int rh = 12;
+    int rh = 12;
 	int rw = 0;
 	int cw = x;
 	int wordlen;

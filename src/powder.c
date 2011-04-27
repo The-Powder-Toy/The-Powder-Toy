@@ -668,6 +668,10 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	{
 		parts[i].life = 75;
 	}
+    if (t==PT_CFCN)
+	{
+		parts[i].life = 10;
+	}
     if (t==PT_AGAS)
 	{
 		parts[i].life = 75;
@@ -1176,7 +1180,7 @@ int nearest_part(int ci, int t)
 void update_particles_i(pixel *vid, int start, int inc)
 {
 	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z, neighbors, createdsomething;
-	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp, ctemph, ctempl;
+	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp, ctemph, ctempl, gravtot;
 	int fin_x, fin_y, clear_x, clear_y;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
 	float nn, ct1, ct2, swappage;
@@ -1477,7 +1481,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			//printf("parts[%d].type: %d\n", i, parts[i].type);
 
 			//this if is whether or not life goes down automatically.
-			if (parts[i].life && t!=PT_ACID && t!=PT_AGAS && t!=PT_ACRN && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FUSE2 && t!=PT_CFUS && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
+			if (parts[i].life && t!=PT_ACID && t!=PT_CFCN && t!=PT_AGAS && t!=PT_ACRN && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FUSE2 && t!=PT_CFUS && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
 			{
 				//this if is for stopping life loss when at a certain life value
 				if (!(parts[i].life==10&&(t==PT_SWCH||t==PT_LCRY||t==PT_PCLN||t==PT_HSWC||t==PT_PUMP)))
@@ -1790,6 +1794,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 
 			s = 1;
+            gravtot = fabsf(gravy[y/CELL][x/CELL])+fabsf(gravx[y/CELL][x/CELL]);
 			if (pv[y/CELL][x/CELL]>ptransitions[t].phv&&ptransitions[t].pht>-1) {
 				// particle type change due to high pressure
 				if (ptransitions[t].pht!=PT_NUM)
@@ -1807,8 +1812,19 @@ void update_particles_i(pixel *vid, int start, int inc)
 				if (ptransitions[t].plt!=PT_NUM)
 					t = ptransitions[t].plt;
 				else s = 0;
-			}
-			else s = 0;
+            } else if (gravtot>(ptransitions[t].phv/4.0f)&&ptransitions[t].pht>-1) {
+                // particle type change due to high gravity
+                if (ptransitions[t].pht!=PT_NUM)
+                    t = ptransitions[t].pht;
+                else if (t==PT_BMTL) {
+                    if (gravtot>0.625f)
+                        t = PT_BRMT;
+                    else if (gravtot>0.25f && parts[i].tmp==1)
+                        t = PT_BRMT;
+                    else s = 0;
+                    }
+                else s = 0;
+            } else s = 0;
 			if (s) { // particle type change occurred
 				parts[i].life = 0;
 				part_change_type(i,x,y,t);
