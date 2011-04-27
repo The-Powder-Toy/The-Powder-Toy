@@ -2769,10 +2769,12 @@ int main(int argc, char *argv[])
 					//sample
 					else if (((sdl_mod & (KMOD_LALT|KMOD_RALT)) && !(sdl_mod & (KMOD_SHIFT))) || b==SDL_BUTTON_MIDDLE)
 					{
-						if (y>0 && y<sdl_scale*YRES && x>0 && x<sdl_scale*XRES)
+						if (y>=0 && y<YRES && x>=0 && x<XRES)
 						{
 							int cr;
 							cr = pmap[y][x];
+							if ((cr>>8)>=NPART || !cr)
+								cr = photons[y][x];
 							if (!((cr>>8)>=NPART || !cr))
 							{
 								c = sl = cr&0xFF;
