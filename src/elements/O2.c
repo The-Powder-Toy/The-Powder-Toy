@@ -15,6 +15,9 @@ int update_O2(UPDATE_FUNC_ARGS)
 				{
 					parts[r>>8].temp+=(rand()/(RAND_MAX/100));
 					parts[r>>8].tmp |= 2;
+				}
+				if ((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM)
+				{
 					create_part(i,x,y,PT_FIRE);
 					parts[i].temp+=(rand()/(RAND_MAX/100));
 					parts[i].tmp |= 2;
