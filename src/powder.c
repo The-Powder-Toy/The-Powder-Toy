@@ -1459,13 +1459,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 					if (nx||ny) {
 						surround[j] = r = pmap[y+ny][x+nx];
 						j++;
-						if (!bmap[(y+ny)/CELL][(x+nx)/CELL] || bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_STREAM)
-						{
-							if (!(r&0xFF))
-								surround_space = 1;//there is empty space
-							if ((r&0xFF)!=t)
-								nt = 1;//there is nothing or a different particle
-						}
+						if (!(r&0xFF))
+							surround_space = 1;//there is empty space
+						if ((r&0xFF)!=t)
+							nt = 1;//there is nothing or a different particle
 					}
 				}
 
@@ -1972,7 +1969,7 @@ killed:
 							else s = 0;
 						}
 						else s = 0;
-						// s==0 means particle has not yet moved, allow liquids code to run
+						// s==0 means particle has not yet moved, allow rest of movement code to run
 						if (s==0 && ptypes[t].falldown>1 && (parts[i].vy>fabs(parts[i].vx) || gravityMode==2))
 						{
 							s = 0;
@@ -2032,7 +2029,7 @@ killed:
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
-						else
+						else if (s==0)
 						{
 							if ((clear_x!=x||clear_y!=y) && try_move(i, x, y, clear_x, clear_y)) {
 								// if interpolation was done, try moving to last clear position
