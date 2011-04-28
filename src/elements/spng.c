@@ -1,7 +1,7 @@
 #include <element.h>
 
 int update_SPNG(UPDATE_FUNC_ARGS) {
-	int r, trade, rx, ry, tmp;
+	int r, trade, rx, ry, tmp, np;
 	if (pv[y/CELL][x/CELL]<=3&&pv[y/CELL][x/CELL]>=-3&&parts[i].temp<=374.0f)
 	{
 		for (rx=-1; rx<2; rx++)
@@ -62,21 +62,31 @@ int update_SPNG(UPDATE_FUNC_ARGS) {
 			}
 		}
 	}
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
-					continue;
-				if ((r&0xFF)==PT_FIRE&&parts[i].life>0)
+	tmp = 0;
+	if (parts[i].life>0)
+	{
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
-					if (parts[i].life<=2)
-						parts[i].life --;
-					parts[i].life -= parts[i].life/3;
+					r = pmap[y+ry][x+rx];
+					if ((r>>8)>=NPART || !r)
+						continue;
+					if ((r&0xFF)==PT_FIRE)
+					{
+						tmp++;
+						if (parts[r>>8].life>60)
+							parts[r>>8].life -= parts[r>>8].life/60;
+						else if (parts[r>>8].life>2)
+							parts[r>>8].life--;
+					}
 				}
-			}
-	if (parts[i].temp>=374)
+	}
+	if (tmp && parts[i].life>3)
+		parts[i].life -= parts[i].life/3;
+	if (tmp>1)
+		tmp = tmp/2;
+	if (tmp || parts[i].temp>=374)
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -88,10 +98,22 @@ int update_SPNG(UPDATE_FUNC_ARGS) {
 						continue;
 					if ((!r)&&parts[i].life>=1)//if nothing then create steam
 					{
-						create_part(-1,x+rx,y+ry,PT_WTRV);
+						np = create_part(-1,x+rx,y+ry,PT_WTRV);
+						if (np>-1)
+						{
+							parts[np].temp = parts[i].temp;
+							tmp--;
+						}
 						parts[i].life--;
-						parts[i].temp -= 40.0f;
+						parts[i].temp -= 20.0f;
 					}
 				}
+	if (tmp>0)
+	{
+		if (parts[i].life>tmp)
+			parts[i].life -= tmp;
+		else
+			parts[i].life = 0;
+	}
 	return 0;
 }
