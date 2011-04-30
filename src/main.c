@@ -667,6 +667,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					parts[k].type = j;
 					if (j == PT_PHOT)
 						parts[k].ctype = 0x3fffffff;
+					if (j == PT_SOAP)
+						parts[k].ctype = 0;
 					parts[k].x = (float)x;
 					parts[k].y = (float)y;
 					m[(x-x0)+(y-y0)*w] = k+1;
@@ -681,6 +683,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 						parts[fp[i]].tmp = 50;
 					if (j == PT_PHOT)
 						parts[fp[i]].ctype = 0x3fffffff;
+					if (j == PT_SOAP)
+						parts[k].ctype = 0;
 					parts[fp[i]].x = (float)x;
 					parts[fp[i]].y = (float)y;
 					m[(x-x0)+(y-y0)*w] = fp[i]+1;
