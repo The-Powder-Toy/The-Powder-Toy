@@ -1911,7 +1911,6 @@ killed:
 			else
 			{
 				// liquids and powders
-				// TODO: rewrite to operate better with radial gravity
 				if (try_move(i, x, y, fin_x, fin_y)) {
 					parts[i].x = fin_xf;
 					parts[i].y = fin_yf;
@@ -1934,44 +1933,43 @@ killed:
 					{
 						s = 1;
 						r = (rand()%2)*2-1;
-						if (clear_x!=x || clear_y!=y || nt || surround_space)
+						if ((clear_x!=x || clear_y!=y || nt || surround_space) &&
+							(fabsf(parts[i].vx)>0.01f || fabsf(parts[i].vy)>0.01f))
 						{
 							// allow diagonal movement if target position is blocked
 							// but no point trying this if particle is stuck in a block of identical particles
-							if (fin_y!=clear_y && try_move(i, x, y, clear_x+r, fin_y))
+							dx = parts[i].vx - parts[i].vy*r;
+							dy = parts[i].vy + parts[i].vx*r;
+							if (fabsf(dy)>fabsf(dx)) {
+								dx /= fabsf(dy);
+								dy /= fabsf(dy);
+							} else {
+								dx /= fabsf(dx);
+								dy /= fabsf(dx);
+							}
+							if (try_move(i, x, y, (int)(clear_xf+dx+0.5f), (int)(clear_yf+dy+0.5f)))
 							{
-								parts[i].x = clear_xf+r;
-								parts[i].y = fin_yf;
+								parts[i].x = clear_xf+dx;
+								parts[i].y = clear_yf+dy;
 								parts[i].vx *= ptypes[t].collision;
 								parts[i].vy *= ptypes[t].collision;
+								goto movedone;
 							}
-							else if (fin_y!=clear_y && try_move(i, x, y, clear_x-r, fin_y))
+							swappage = dx;
+							dx = dy*r;
+							dy = -swappage*r;
+							if (try_move(i, x, y, (int)(clear_xf+dx+0.5f), (int)(clear_yf+dy+0.5f)))
 							{
-								parts[i].x = clear_xf-r;
-								parts[i].y = fin_yf;
+								parts[i].x = clear_xf+dx;
+								parts[i].y = clear_yf+dy;
 								parts[i].vx *= ptypes[t].collision;
 								parts[i].vy *= ptypes[t].collision;
+								goto movedone;
 							}
-							else if (fin_x!=clear_x && try_move(i, x, y, fin_x, clear_y+r))
-							{
-								parts[i].x = fin_xf;
-								parts[i].y = clear_yf+r;
-								parts[i].vx *= ptypes[t].collision;
-								parts[i].vy *= ptypes[t].collision;
-							}
-							else if (fin_x!=clear_x && try_move(i, x, y, fin_x, clear_y-r))
-							{
-								parts[i].x = fin_xf;
-								parts[i].y = clear_yf-r;
-								parts[i].vx *= ptypes[t].collision;
-								parts[i].vy *= ptypes[t].collision;
-							}
-							else s = 0;
 						}
-						else s = 0;
-						// s==0 means particle has not yet moved, allow rest of movement code to run
-						if (s==0 && ptypes[t].falldown>1 && (parts[i].vy>fabs(parts[i].vx) || gravityMode==2))
+						if (ptypes[t].falldown>1 && (parts[i].vy>fabsf(parts[i].vx) || gravityMode==2))
 						{
+							// TODO: rewrite to operate better with radial gravity
 							s = 0;
 							// rt is true if FLAG_STAGNANT was set for this particle in previous frame
 							if (!rt || nt) //nt is if there is an something else besides the current particle type, around the particle
@@ -2029,7 +2027,7 @@ killed:
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
-						else if (s==0)
+						else
 						{
 							if ((clear_x!=x||clear_y!=y) && try_move(i, x, y, clear_x, clear_y)) {
 								// if interpolation was done, try moving to last clear position
@@ -2044,6 +2042,7 @@ killed:
 					}
 				}
 			}
+movedone:
 			nx = (int)(parts[i].x+0.5f);
 			ny = (int)(parts[i].y+0.5f);
 			if (ny!=y || nx!=x)
