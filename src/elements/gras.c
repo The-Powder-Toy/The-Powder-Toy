@@ -24,7 +24,7 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                         parts[i].life = rand()%60 + 60;
                         create_part(-1,x+rx+nrx,y+ry+nry,PT_O2);
                     }
-                    else if((r&0xFF)==PT_WOOD)
+                    else if ((r&0xFF)==PT_WOOD && (1>rand()%20) && abs(rx+ry)<=2 && VINE_MODE)
                     {
                         int nrx = rand()%3 -1;
                         int nry = rand()%3 -1;
@@ -42,7 +42,7 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                         t = parts[i].type = PT_GRAS;
                         parts[r>>8].type = PT_GRAS;
                         parts[r>>8].life = 0;
-                    }							
+                    }
                     else if((r&0xFF)==PT_LAVA && 1>(rand()%250))
                     {
                         parts[i].life = 4;
@@ -68,7 +68,7 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                             }
                         }
                     }
-                    else if((r&0xFF)==PT_DIRT)
+                    else if((r&0xFF)==PT_DIRT && (1>rand()%20))
                     {
                         int nrx = rand()%3 -1;
                         int nry = rand()%3 -1;
@@ -86,8 +86,8 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                             }
                         }
                     }
-                    
-                    
+
+
                 }
 	return 0;
 }

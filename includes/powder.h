@@ -435,8 +435,16 @@ struct particle
 	int tmp;
     int tmp2;
 };
-typedef struct particle particle;
 
+typedef struct particle particle;
+struct particle_connection
+{
+    int other;
+    particle* pointer;
+    float dist;
+    float spring; //normally 0.1
+};
+typedef struct particle_connection particle_connection;
 struct part_type
 {
 	const char *name;

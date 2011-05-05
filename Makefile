@@ -21,11 +21,6 @@ WIN_RES := windres
 LINUX_TARG := powder-64-sse2 powder-sse powder-sse2
 WIN32_TARG := powder-sse.exe powder-sse2.exe
 
-powder: $(SOURCES)
-	$(PYCOMMAND)
-	$(COMPILER) -DINTERNAL -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE3) $(SOURCES) $(LFLAGS) -DLIN64
-	mv $@ build
-
 render: $(SOURCES)
 	$(PYCOMMAND)
 	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(LFLAGS) $(MFLAGS_SSE3) $(SOURCES) -DLIN32 -DRENDERER
@@ -36,6 +31,11 @@ render-x: $(SOURCES)
 	$(PYCOMMAND)
 	$(COMPILER) -o $@ $(CFLAGS) $(OFLAGS) $(LFLAGS_X) -lSDL $(MFLAGS) $(SOURCES) -framework Cocoa -DMACOSX -DRENDERER -arch x86_64
 	strip $@
+	mv $@ build
+
+powder: $(SOURCES)
+	$(PYCOMMAND)
+	$(COMPILER) -DINTERNAL -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE3) $(SOURCES) $(LFLAGS) -DLIN64
 	mv $@ build
 
 powder-debug-64: $(SOURCES)
