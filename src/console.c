@@ -1108,6 +1108,32 @@ int process_command_old(pixel *vid_buf, char *console, char *console_error)
 						strcpy(console_error, "Could not create particle");
 				}
 			}
+			else if (strcmp(console2, "bubble")==0 && console3[0])
+			{
+				if (console_parse_coords(console3, &nx, &ny, console_error))
+				{
+					int first, rem1, rem2;
+
+					first = create_part(-1, nx+18, ny, PT_SOAP);
+					rem1 = first;
+
+					for (i = 1; i<=30; i++)
+					{
+						rem2 = create_part(-1, nx+18*cosf(i/5.0), ny+18*sinf(i/5.0), PT_SOAP);
+
+						parts[rem1].ctype = 7;
+						parts[rem1].tmp = rem2;
+						parts[rem2].tmp2 = rem1;
+
+						rem1 = rem2;
+					}
+
+					parts[rem1].ctype = 7;
+					parts[rem1].tmp = first;
+					parts[first].tmp2 = rem1;
+					parts[first].ctype = 7;
+				}
+			}
 			else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3[0])
 			{
 				if (console_parse_partref(console3, &i, console_error))
