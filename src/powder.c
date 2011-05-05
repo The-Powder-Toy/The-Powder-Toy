@@ -462,6 +462,14 @@ void kill_part(int i)//kills particle number i
 	{
 		ISSPAWN2 = 0;
 	}
+	if (parts[i].type == PT_SOAP)
+	{
+		if (parts[i].ctype&0x02 == 0x02)
+			parts[parts[i].tmp].ctype ^= 0x04;
+
+		if (parts[i].ctype&0x04 == 0x04)
+			parts[parts[i].tmp2].ctype ^= 0x02;
+	}
 	if (x>=0 && y>=0 && x<XRES && y<YRES) {
 		if ((pmap[y][x]>>8)==i)
 			pmap[y][x] = 0;
@@ -638,6 +646,7 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		parts[i].ctype = 0;
 		parts[i].temp = ptypes[t].heat;
 		parts[i].tmp = 0;
+		parts[i].tmp2 = 0;
 	}
 	//now set various properties that we want at spawn.
 	if (t==PT_ACID)

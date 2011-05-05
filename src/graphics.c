@@ -1495,6 +1495,13 @@ void draw_parts(pixel *vid)
 
 			nx = (int)(parts[i].x+0.5f);
 			ny = (int)(parts[i].y+0.5f);
+
+			if (t==PT_SOAP)
+			{
+				//if ((parts[i].ctype&0x01 == 0x01) && (parts[i].ctype&0x02 == 0x02))
+				//	draw_line(vid, nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), 245, 245, 220, XRES+BARSIZE);
+			}
+
 			if (cmode!=CM_HEAT)
 			{
 				if (t==PT_STKM) //Just draw head here
