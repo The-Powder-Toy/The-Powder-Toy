@@ -456,12 +456,33 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 		return 26;
 	if (b>=UI_WALLSTART)
 	{
-		b = b-100;
+		int ds = 0;
+		if (b-UI_WALLSTART>=0 && b-UI_WALLSTART<UI_WALLCOUNT)
+			ds = wtypes[b-UI_WALLSTART].drawstyle;
 		//x = (2+32*((b-22)/1));
 		//y = YRES+2+40;
+		if (ds==1)
+		{
+			for (j=1; j<15; j+=2)
+				for (i=1+(1&(j>>1)); i<27; i+=2)
+					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
+		}
+		else if (ds==2)
+		{
+			for (j=1; j<15; j+=2)
+				for (i=1; i<27; i+=2)
+					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
+		}
+		else if (ds==3)
+		{
+			for (j=1; j<15; j++)
+				for (i=1; i<27; i++)
+					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
+		}
+		else
 		switch (b)
 		{
-		case WL_WALLELEC:
+		case WL_WALLELEC+100:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<27; i++)
@@ -477,7 +498,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				}
 			}
 			break;
-		case WL_EWALL:
+		case WL_EWALL+100:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<6+j; i++)
@@ -496,16 +517,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				}
 			}
 			break;
-		case WL_DETECT:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			break;
-		case WL_STREAM:
+		case WL_STREAM+100:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<27; i++)
@@ -519,7 +531,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				drawpixel(vid_buf, x+i, y+8+(int)(3.9f*cos(i*0.3f)), 255, 255, 255, 255);
 			}
 			break;
-		case WL_SIGN:
+		case WL_SIGN+100:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<27; i++)
@@ -530,37 +542,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 			drawtext(vid_buf, x+9, y+3, "\xA1", 32, 64, 128, 255);
 			drawtext(vid_buf, x+9, y+3, "\xA0", 255, 255, 255, 255);
 			break;
-		case WL_FAN:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			break;
-		case WL_ALLOWLIQUID:
-			for (j=1; j<15; j++)
-			{
-				for (i=1; i<27; i++)
-				{
-					if (!(i%2) && !(j%2))
-					{
-						vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-					}
-				}
-			}
-			break;
-		case WL_DESTROYALL:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			break;
-		case WL_ERASE:
+		case WL_ERASE+100:
 			for (j=1; j<15; j+=2)
 			{
 				for (i=1+(1&(j>>1)); i<13; i+=2)
@@ -576,44 +558,13 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				}
 			}
 			break;
-		case WL_ALLOWAIR:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			break;
-		case WL_ALLOWSOLID:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			break;
-		case WL_ALLOWALLELEC:
+		case SPC_AIR:
+		case SPC_HEAT:
+		case SPC_COOL:
+		case SPC_VACUUM:
 			for (j=1; j<15; j++)
-			{
 				for (i=1; i<27; i++)
-				{
-					if (!(i%2) && !(j%2))
-					{
-						vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-					}
-				}
-			}
-			break;
-		case SPC_AIR-100:
-			for (j=1; j<15; j++)
-			{
-				for (i=1; i<27; i++)
-				{
 					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
 			c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
 			if (c<544)
 			{
@@ -623,84 +574,21 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 			{
 				c = 0;
 			}
-			drawtext(vid_buf, x+14-textwidth("AIR")/2, y+4, "AIR", c, c, c, 255);
-			break;
-		case SPC_HEAT-100:
-			for (j=1; j<15; j++)
-			{
-				for (i=1; i<27; i++)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-			if (c<544)
-			{
-				c = 255;
-			}
-			else
-			{
-				c = 0;
-			}
-			drawtext(vid_buf, x+14-textwidth("HEAT")/2, y+4, "HEAT", c, c, c, 255);
-			break;
-		case SPC_COOL-100:
-			for (j=1; j<15; j++)
-			{
-				for (i=1; i<27; i++)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-			if (c<544)
-			{
-				c = 255;
-			}
-			else
-			{
-				c = 0;
-			}
-			drawtext(vid_buf, x+14-textwidth("COOL")/2, y+4, "COOL", c, c, c, 255);
-			break;
-		case SPC_VACUUM-100:
-			for (j=1; j<15; j++)
-			{
-				for (i=1; i<27; i++)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-			if (c<544)
-			{
-				c = 255;
-			}
-			else
-			{
-				c = 0;
-			}
-			drawtext(vid_buf, x+14-textwidth("VAC")/2, y+4, "VAC", c, c, c, 255);
-			break;
-		case WL_ALLOWGAS:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
+			if (b==SPC_AIR)
+				drawtext(vid_buf, x+14-textwidth("AIR")/2, y+4, "AIR", c, c, c, 255);
+			else if (b==SPC_HEAT)
+				drawtext(vid_buf, x+14-textwidth("HEAT")/2, y+4, "HEAT", c, c, c, 255);
+			else if (b==SPC_COOL)
+				drawtext(vid_buf, x+14-textwidth("COOL")/2, y+4, "COOL", c, c, c, 255);
+			else if (b==SPC_VACUUM)
+				drawtext(vid_buf, x+14-textwidth("VAC")/2, y+4, "VAC", c, c, c, 255);
 			break;
 		default:
 			for (j=1; j<15; j++)
-			{
 				for (i=1; i<27; i++)
-				{
 					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
 		}
-		if (b==WL_ERASE)
+		if (b==WL_ERASE+100)
 		{
 			for (j=4; j<12; j++)
 			{
@@ -3073,6 +2961,8 @@ void draw_walls(pixel *vid)
 			if (bmap[y][x])
 			{
 				wt = bmap[y][x]-UI_ACTUALSTART;
+				if (wt<0 || wt>=UI_WALLCOUNT)
+					continue;
 				pc = wtypes[wt].colour;
 
 				// standard wall patterns
