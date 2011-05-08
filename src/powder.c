@@ -82,7 +82,7 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 
     if ((r&0xFF)==PT_WHOL && pt==PT_ANAR)
         return 1;
-    
+
 	if(pt==PT_SPRK)//spark shouldn't move
 		return 0;
 
@@ -153,10 +153,10 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 	if ((pmap[ny][nx]&0xFF)==PT_INVIS && (pv[ny/CELL][nx/CELL]>4.0f ||pv[ny/CELL][nx/CELL]<-4.0f))
 		return 1;
-    
+
     if ((pmap[ny][nx]&0xFF)==PT_PIVS && parts[r>>8].life >= 10)
 		return 1;
-    
+
 	/* half-silvered mirror */
 	if (!e && parts[i].type==PT_PHOT &&
 	        (((r&0xFF)==PT_BMTL && rand()<RAND_MAX/2) ||
@@ -173,6 +173,10 @@ int try_move(int i, int x, int y, int nx, int ny)
 			if ((r & 0xFF) < PT_NUM && ptypes[r&0xFF].hconduct)
 				parts[i].temp = parts[r>>8].temp = restrict_flt((parts[r>>8].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
+        if (parts[i].type==PT_NEUT && ((r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN || (r&0xFF)==PT_BCLN)) {
+            if (!parts[r>>8].ctype)
+              parts[r>>8].ctype = PT_NEUT;
+        }
 		return 0;
 	}
 
@@ -252,19 +256,19 @@ int try_move(int i, int x, int y, int nx, int ny)
                 {
                     parts[r>>8].temp = restrict_flt(parts[r>>8].temp- (MAX_TEMP-parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
                     }
-            
+
             return 0;
             }
  	if ((r&0xFF)==PT_CNCT)//stops CNCT being displaced by other particles
 		return 0;
     if ((r&0xFF)==PT_PMIC)//stops PMIC being displaced by other particles
 		return 0;
-    
+
 	if (parts[i].type==PT_CNCT && y<ny && (pmap[y+1][x]&0xFF)==PT_CNCT)//check below CNCT for another CNCT
 		return 0;
     if (parts[i].type==PT_PMIC && y<ny && (pmap[y+1][x]&0xFF)==PT_PMIC)//check below PMIC for another PMIC
 		return 0;
-    
+
 	if (bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL])
 		return 1;
 	if ((bmap[y/CELL][x/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL]) && (bmap[ny/CELL][nx/CELL]!=WL_EHOLE && !emap[ny/CELL][nx/CELL]))
@@ -489,7 +493,7 @@ void kill_part(int i)//kills particle number i
         {
             if ((parts[i].ctype&2) == 2)
                 parts[parts[i].tmp].ctype ^= 4;
-            
+
             if ((parts[i].ctype&4) == 4)
                 parts[parts[i].tmp2].ctype ^= 2;
         }
@@ -1233,7 +1237,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 	int surround[8];
 	int surround_hconduct[8];
 	float pGravX, pGravY, pGravD;
-    
+
 	if (sys_pause&&!framerender)//do nothing if paused
 		return;
 	if (ISGRAV==1)//crappy grav color handling, i will change this someday

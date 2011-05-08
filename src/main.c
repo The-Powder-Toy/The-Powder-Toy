@@ -192,6 +192,7 @@ int numCores = 4;
 
 pthread_t gravthread;
 pthread_mutex_t gravmutex;
+pthread_cond_t gravcv;
 int grav_ready = 0;
 
 int core_count()
@@ -468,7 +469,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	c[1] = 0x53;	//0x75;
 	c[2] = 0x76;	//0x43;
 	c[3] = legacy_enable|((sys_pause<<1)&0x02)|((gravityMode<<2)&0x0C)|((airMode<<4)&0x70);
-	c[4] = ME4502_MAJOR_VERSION;
+	c[4] = SAVE_VERSION;
 	c[5] = CELL;
 	c[6] = bw;
 	c[7] = bh;
@@ -2261,18 +2262,18 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 
                             first = create_part(-1, nx+18, ny, PT_SOAP);
                             rem1 = first;
-                            
+
                             for (i = 1; i<=30; i++)
                                 {
                                     rem2 = create_part(-1, nx+18*cosf(i/5.0), ny+18*sinf(i/5.0), PT_SOAP);
-                                    
+
                                     parts[rem1].ctype = 7;
                                     parts[rem1].tmp = rem2;
                                     parts[rem2].tmp2 = rem1;
-                                    
+
                                     rem1 = rem2;
                                     }
-                            
+
                             parts[rem1].ctype = 7;
                             parts[rem1].tmp = first;
                             parts[first].tmp2 = rem1;
@@ -2607,6 +2608,7 @@ void update_grav_async()
                   pthread_mutex_unlock(&gravmutex);
                 } else {
                       pthread_mutex_lock(&gravmutex);
+                      pthread_cond_wait(&gravcv, &gravmutex);
                         done = grav_ready;
                       pthread_mutex_unlock(&gravmutex);
                     }
@@ -2709,6 +2711,7 @@ int main(int argc, char *argv[])
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
+	pthread_mutexattr_t gma;
 #ifdef PYCONSOLE
 	PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep,*pkey;
 	PyObject *tpt_console_obj;
@@ -2899,10 +2902,10 @@ int main(int argc, char *argv[])
 		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
 		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
 	}
-    pthread_mutexattr_t gma;
-    
+
     pthread_mutexattr_init(&gma);
     pthread_mutex_init (&gravmutex, NULL);
+    pthread_cond_init(&gravcv, NULL);
     pthread_create(&gravthread, NULL, update_grav_async, NULL); //Asynchronous gravity simulation //(void *) &thread_args[i]);
 
 	while (!sdl_poll()) //the main loop
@@ -2930,7 +2933,7 @@ int main(int argc, char *argv[])
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
 #endif
-        
+
 		//Can't be too sure (Limit the cursor size)
 		if (bsx>1180)
 			bsx = 1180;
@@ -2940,7 +2943,7 @@ int main(int argc, char *argv[])
 			bsy = 1180;
 		if (bsy<0)
 			bsy = 0;
-        
+
         pthread_mutex_lock(&gravmutex);
         result = grav_ready;
         if(result) //Did the gravity thread finish?
@@ -2949,13 +2952,16 @@ int main(int argc, char *argv[])
                 memcpy(gravy, th_gravy, sizeof(gravy));  //Hmm, Gravy
                 memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
                 if (!sys_pause||framerender) //Only update if not paused
+                {
                     grav_ready = 0; //Tell the other thread that we're ready for it to continue
+                    pthread_cond_signal(&gravcv);
+                }
             }
         pthread_mutex_unlock(&gravmutex);
-        
+
         if (!sys_pause||framerender) //Only update if not paused
             memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
-        
+
         draw_grav(vid_buf);
         update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
@@ -3722,7 +3728,7 @@ int main(int argc, char *argv[])
 #endif
             }
         }
-         
+
         /*if(b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
            x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
         {

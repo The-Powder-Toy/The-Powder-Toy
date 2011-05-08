@@ -16,7 +16,7 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)//testi
 	}
 	if (x<0 || y<0 || x>=XRES || y>=YRES || t<0 || t>=PT_NUM)
 		return -1;
-    
+
 	for (c=0; c<n; c++) {
 		float r = (rand()%128+128)/127.0f;
 		float a = (rand()%360)*M_PI/180.0f;
@@ -24,7 +24,7 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)//testi
 			return -1;
 		i = pfree;
 		pfree = parts[i].life;
-        
+
 		parts[i].x = (float)x;
 		parts[i].y = (float)y;
 		parts[i].type = t;
@@ -38,7 +38,7 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)//testi
 			pmap[y][x] = t|(i<<8);
 		else if ((t==PT_PHOT||t==PT_NEUT) && !photons[y][x])
 			photons[y][x] = t|(i<<8);
-        
+
 		pv[y/CELL][x/CELL] += 6.0f * CFDS;
 	}
 	return 0;
@@ -132,11 +132,5 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 				  ptypes[parts[r>>8].type-1].menusection==SC_POWDERS) && 15>(rand()%1000))
 				  parts[r>>8].type--;*/
 			}
-	r = pmap[y][x];
-	rt = r&0xFF;
-	if (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN) {
-		if (!parts[r>>8].ctype)
-			parts[r>>8].ctype = PT_PHOT;
-	}
 	return 0;
 }
