@@ -46,10 +46,10 @@ int update_PYRO(UPDATE_FUNC_ARGS) {
 				if (bmap[(y+ry)/CELL][(x+rx)/CELL] && bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_STREAM)
 					continue;
 				rt = parts[r>>8].type;
-				if ((surround_space || ptypes[rt].explosive) && (t!=PT_SPRK || (rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL && rt!=PT_SWCH)) &&
-                    !(t==PT_PHOT && rt==PT_INSL) &&
-                    (t!=PT_LAVA || parts[i].life>0 || (rt!=PT_STNE && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_METL  && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SWCH && rt!=PT_INWR && rt!=PT_QRTZ))
-                    && !(rt==PT_SPNG && parts[r>>8].life>0) &&
+				if ((surround_space || ptypes[rt].explosive) &&
+                    (t!=PT_SPRK || (rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL)) &&
+                    (t!=PT_PHOT || rt!=PT_INSL) &&
+                    (rt!=PT_SPNG || parts[r>>8].life==0) &&
                     ptypes[rt].flammable && (ptypes[rt].flammable + (int)(pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
 				{
 					part_change_type(r>>8,x+rx,y+ry,PT_FIRE);
@@ -58,7 +58,6 @@ int update_PYRO(UPDATE_FUNC_ARGS) {
 					parts[r>>8].tmp = parts[r>>8].ctype = 0;
 					if (ptypes[rt].explosive)
 						pv[y/CELL][x/CELL] += 0.25f * CFDS;
-					continue;
 				}
                 if (parts[i].type==PT_LAVA){
                     if (parts[r>>8].type==PT_LAVA){

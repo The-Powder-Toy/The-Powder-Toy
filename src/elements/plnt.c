@@ -37,6 +37,23 @@ int update_PLNT(UPDATE_FUNC_ARGS) {
                         parts[r>>8].type = PT_NONE;
                         parts[i].life = rand()%60 + 60;
                     }
+                    else if(parts[r>>8].type==PT_ROOT && parts[r>>8].tmp2==1)
+                    {
+                        parts[r>>8].tmp2 = 2;
+                        parts[i].ctype = PT_ROOT;
+                    }
+                    if (parts[i].ctype==PT_ROOT)
+                    { 
+                        int nrx = rand()%3 -1;
+                        int nry = rand()%3 -1;
+                        if (parts[r>>8].type == PT_PLNT && parts[r>>8].ctype != PT_ROOT && (1>rand()%50))
+                            parts[r>>8].ctype = PT_ROOT;
+
+                        if(create_part(-1,x+rx+nrx,y+ry+nry,PT_PLNT))
+                            parts[pmap[y+ry+nry][x+rx+nrx]>>8].temp = parts[i].temp;
+                        if (1>rand()%2)
+                            parts[i].ctype=PT_NONE;
+                    }
                     else if ((r&0xFF)==PT_WOOD && (1>rand()%20) && abs(rx+ry)<=2 && VINE_MODE)
                     {
                         int nrx = rand()%3 -1;
@@ -50,7 +67,6 @@ int update_PLNT(UPDATE_FUNC_ARGS) {
                                 parts[pmap[y+ry+nry][x+rx+nrx]>>8].temp = parts[i].temp;
                         }
                     }
-                    // && (1>rand()%20) && abs(rx+ry)<=2 && VINE_MODE
                     else if((r&0xFF)==PT_DIRT && (1>rand()%20))
                     {
                         int nrx = rand()%3 -1;

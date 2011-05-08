@@ -52,6 +52,23 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                     {
                         t = parts[i].type = PT_FIRE;
                     }
+                    else if(parts[r>>8].type==PT_ROOT && parts[r>>8].tmp2==1)
+                    {
+                        parts[r>>8].tmp2 = 2;
+                        parts[i].ctype = PT_ROOT;
+                    }
+                    if (parts[i].ctype==PT_ROOT)
+                    { 
+                        int nrx = rand()%3 -1;
+                        int nry = rand()%3 -1;
+                        if (parts[r>>8].type == PT_GRAS && parts[r>>8].ctype != PT_ROOT && (1>rand()%50))
+                            parts[r>>8].ctype = PT_ROOT;
+                        
+                        if(create_part(-1,x+rx+nrx,y+ry+nry,PT_GRAS))
+                            parts[pmap[y+ry+nry][x+rx+nrx]>>8].temp = parts[i].temp;
+                        if (1>rand()%2)
+                            parts[i].ctype=PT_NONE;
+                    }
                     else if((r&0xFF)==PT_GRAS)
                     {
                         if(rand()%8000 < 1){
@@ -64,7 +81,7 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                                 if((pmap[y+ry+nry][x+rx+nrx]>>8)>=NPART||pmap[y+ry+nry][x+rx+nrx])
                                     continue;
                                 if(create_part(-1,x+rx+nrx,y+ry+nry,PT_GRAS))
-                                    parts[pmap[y+ry+nry][x+rx+nrx]>>8].temp = 0;
+                                    parts[pmap[y+ry+nry][x+rx+nrx]>>8].temp = parts[i].temp;
                             }
                         }
                     }
@@ -78,12 +95,11 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                             if((pmap[y+ry+nry][x+rx+nrx]>>8)>=NPART||pmap[y+ry+nry][x+rx+nrx])
                                 continue;
                             if(create_part(-1,x+rx+nrx,y+ry+nry,PT_GRAS))
-                                parts[pmap[y+ry+nry][x+rx+nrx]>>8].temp = 0;
+                                parts[pmap[y+ry+nry][x+rx+nrx]>>8].temp = parts[i].temp;
                         }
-                        if (rand()%8000 < 1){
-                            if (parts[r>>8].type==PT_DIRT){
-                                parts[r>>8].type = PT_ROOT;
-                            }
+                        if (rand()%800 < 1){
+                            parts[r>>8].type = PT_ROOT;
+                            parts[r>>8].tmp2=0;
                         }
                     }
 

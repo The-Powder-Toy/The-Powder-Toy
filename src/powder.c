@@ -80,6 +80,9 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 	if ((r&0xFF)==PT_VOID || (r&0xFF)==PT_BHOL)
 		return 1;
 
+    if ((r&0xFF)==PT_WHOL && pt==PT_ANAR)
+        return 1;
+    
 	if(pt==PT_SPRK)//spark shouldn't move
 		return 0;
 
@@ -150,6 +153,10 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 	if ((pmap[ny][nx]&0xFF)==PT_INVIS && (pv[ny/CELL][nx/CELL]>4.0f ||pv[ny/CELL][nx/CELL]<-4.0f))
 		return 1;
+    
+    if ((pmap[ny][nx]&0xFF)==PT_PIVS && parts[r>>8].life >= 10)
+		return 1;
+    
 	/* half-silvered mirror */
 	if (!e && parts[i].type==PT_PHOT &&
 	        (((r&0xFF)==PT_BMTL && rand()<RAND_MAX/2) ||
@@ -238,11 +245,26 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 		return 0;
 	}
-	if ((pmap[ny][nx]&0xFF)==PT_CNCT)//stops CNCT being displaced by other particles
+	if ((r&0xFF)==PT_WHOL && parts[i].type==PT_ANAR) //whitehole eats anar
+        {
+            parts[i].type=PT_NONE;
+            if (!legacy_enable)
+                {
+                    parts[r>>8].temp = restrict_flt(parts[r>>8].temp- (MAX_TEMP-parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
+                    }
+            
+            return 0;
+            }
+ 	if ((r&0xFF)==PT_CNCT)//stops CNCT being displaced by other particles
 		return 0;
+    if ((r&0xFF)==PT_PMIC)//stops PMIC being displaced by other particles
+		return 0;
+    
 	if (parts[i].type==PT_CNCT && y<ny && (pmap[y+1][x]&0xFF)==PT_CNCT)//check below CNCT for another CNCT
 		return 0;
-
+    if (parts[i].type==PT_PMIC && y<ny && (pmap[y+1][x]&0xFF)==PT_PMIC)//check below PMIC for another PMIC
+		return 0;
+    
 	if (bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL])
 		return 1;
 	if ((bmap[y/CELL][x/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL]) && (bmap[ny/CELL][nx/CELL]!=WL_EHOLE && !emap[ny/CELL][nx/CELL]))
@@ -463,6 +485,14 @@ void kill_part(int i)//kills particle number i
 	{
 		ISSPAWN2 = 0;
 	}
+    if (parts[i].type == PT_SOAP)
+        {
+            if ((parts[i].ctype&2) == 2)
+                parts[parts[i].tmp].ctype ^= 4;
+            
+            if ((parts[i].ctype&4) == 4)
+                parts[parts[i].tmp2].ctype ^= 2;
+        }
 	if (x>=0 && y>=0 && x<XRES && y<YRES) {
 		if ((pmap[y][x]>>8)==i)
 			pmap[y][x] = 0;
@@ -662,7 +692,15 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		parts[i].ctype = 0;
 		parts[i].temp = ptypes[t].heat;
 		parts[i].tmp = 0;
+        parts[i].tmp2 = 0;
+        parts[i].tmpx = 0;
+        parts[i].tmpy = 0;
 	}
+    if (t==PT_SOAP)
+        {
+            parts[i].tmp = -1;
+            parts[i].tmp2 = -1;
+        }
 	//now set various properties that we want at spawn.
 	if (t==PT_ACID)
 	{
@@ -679,6 +717,10 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
     if (t==PT_ACRN)
 	{
 		parts[i].life = 75;
+	}
+    if (t==PT_PMIC)
+	{
+		parts[i].tmpx = parts[i].x;
 	}
 	/*Testing
 	if(t==PT_WOOD){
@@ -1484,10 +1526,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 			if (parts[i].life && t!=PT_ACID && t!=PT_CFCN && t!=PT_AGAS && t!=PT_ACRN && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FUSE2 && t!=PT_CFUS && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
 			{
 				//this if is for stopping life loss when at a certain life value
-				if (!(parts[i].life==10&&(t==PT_SWCH||t==PT_LCRY||t==PT_PCLN||t==PT_HSWC||t==PT_PUMP)))
+				if (!(parts[i].life==10&&(t==PT_SWCH||t==PT_LCRY||t==PT_PCLN||t==PT_HSWC||t==PT_PIVS||t==PT_PUMP)))
 					parts[i].life--;
 				//this if is for stopping death when life hits 0
-				if (parts[i].life<=0 && !(ptypes[t].properties&PROP_CONDUCTS) && t!=PT_ARAY && t!=PT_FIRW && t!=PT_SWCH && t!=PT_PCLN && t!=PT_HSWC && t!=PT_PUMP && t!=PT_SPRK && t!=PT_LAVA && t!=PT_LCRY && t!=PT_QRTZ && t!=PT_GLOW && t!= PT_FOG && t!=PT_PIPE && t!=PT_FRZW &&!(t==PT_ICEI&&parts[i].ctype==PT_FRZW)&&t!=PT_INST && t!=PT_SHLD1&& t!=PT_SHLD2&& t!=PT_SHLD3&& t!=PT_SHLD4 && t!=PT_SING)
+				if (parts[i].life<=0 && !(ptypes[t].properties&PROP_CONDUCTS) && t!=PT_SOAP && t!=PT_ARAY && t!=PT_FIRW && t!=PT_SWCH && t!=PT_PCLN && t!=PT_HSWC && t!=PT_PIVS && t!=PT_PUMP && t!=PT_SPRK && t!=PT_LAVA && t!=PT_LCRY && t!=PT_QRTZ && t!=PT_GLOW && t!= PT_FOG && t!=PT_PIPE && t!=PT_FRZW &&!(t==PT_ICEI&&parts[i].ctype==PT_FRZW)&&t!=PT_INST && t!=PT_SHLD1&& t!=PT_SHLD2&& t!=PT_SHLD3&& t!=PT_SHLD4 && t!=PT_SING)
 				{
 					kill_part(i);
 					continue;
@@ -1588,13 +1630,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 					if (nx||ny) {
 						surround[j] = r = pmap[y+ny][x+nx];
 						j++;
-						if (!bmap[(y+ny)/CELL][(x+nx)/CELL] || bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_STREAM)
-						{
-							if (!(r&0xFF))
-								surround_space = 1;//there is empty space
-							if ((r&0xFF)!=t)
-								nt = 1;//there is nothing or a different particle
-						}
+						if (!(r&0xFF))
+                            surround_space = 1;//there is empty space
+                        if ((r&0xFF)!=t)
+                            nt = 1;//there is nothing or a different particle
 					}
 				}
 
@@ -1691,10 +1730,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 										parts[i].tmp = 0;
 										t = PT_BMTL;
 									}
-									if (parts[i].ctype==PT_PLUT)
+									if (t==PT_PLUT)
 									{
 										parts[i].tmp = 0;
-										t = parts[i].ctype = PT_LAVA;
+										t = PT_LAVA;
 									}
 								}
 							}
@@ -2047,7 +2086,6 @@ killed:
 			else
 			{
 				// liquids and powders
-				// TODO: rewrite to operate better with radial gravity
 				if (try_move(i, x, y, fin_x, fin_y)) {
 					parts[i].x = fin_xf;
 					parts[i].y = fin_yf;
@@ -2068,38 +2106,47 @@ killed:
 					}
 					else
 					{
+                        s = 1;
 						r = (rand()%2)*2-1;
-						if (fin_y!=clear_y && try_move(i, x, y, clear_x+r, fin_y))
+						if ((clear_x!=x || clear_y!=y || nt || surround_space) &&
+                            (fabsf(parts[i].vx)>0.01f || fabsf(parts[i].vy)>0.01f))
 						{
-							parts[i].x = clear_xf+r;
-							parts[i].y = fin_yf;
-							parts[i].vx *= ptypes[t].collision;
-							parts[i].vy *= ptypes[t].collision;
-						}
-						else if (fin_y!=clear_y && try_move(i, x, y, clear_x-r, fin_y))
+                            // allow diagonal movement if target position is blocked
+                            // but no point trying this if particle is stuck in a block of identical particles
+                            dx = parts[i].vx - parts[i].vy*r;
+                            dy = parts[i].vy + parts[i].vx*r;
+                            if (fabsf(dy)>fabsf(dx)) {
+                                dx /= fabsf(dy);
+                                dy /= fabsf(dy);
+                                } else {
+                                    dx /= fabsf(dx);
+                                    dy /= fabsf(dx);
+                                    }
+                            if (try_move(i, x, y, (int)(clear_xf+dx+0.5f), (int)(clear_yf+dy+0.5f)))
+                                {
+                                    parts[i].x = clear_xf+dx;
+                                    parts[i].y = clear_yf+dy;
+                                    parts[i].vx *= ptypes[t].collision;
+                                    parts[i].vy *= ptypes[t].collision;
+                                    goto movedone;
+                                    }
+                            swappage = dx;
+                            dx = dy*r;
+                            dy = -swappage*r;
+                            if (try_move(i, x, y, (int)(clear_xf+dx+0.5f), (int)(clear_yf+dy+0.5f)))
+                                {
+                                    parts[i].x = clear_xf+dx;
+                                    parts[i].y = clear_yf+dy;
+                                    parts[i].vx *= ptypes[t].collision;
+                                    parts[i].vy *= ptypes[t].collision;
+                                    goto movedone;
+                                    }
+                        }
+						if (ptypes[t].falldown>1 && (parts[i].vy>fabsf(parts[i].vx) || gravityMode==2))
 						{
-							parts[i].x = clear_xf-r;
-							parts[i].y = fin_yf;
-							parts[i].vx *= ptypes[t].collision;
-							parts[i].vy *= ptypes[t].collision;
-						}
-						else if (fin_x!=clear_x && try_move(i, x, y, fin_x, clear_y+r))
-						{
-							parts[i].x = fin_xf;
-							parts[i].y = clear_yf+r;
-							parts[i].vx *= ptypes[t].collision;
-							parts[i].vy *= ptypes[t].collision;
-						}
-						else if (fin_x!=clear_x && try_move(i, x, y, fin_x, clear_y-r))
-						{
-							parts[i].x = fin_xf;
-							parts[i].y = clear_yf-r;
-							parts[i].vx *= ptypes[t].collision;
-							parts[i].vy *= ptypes[t].collision;
-						}
-						else if (ptypes[t].falldown>1 && (parts[i].vy>fabs(parts[i].vx) || gravityMode==2))
-						{
+                            // TODO: rewrite to operate better with radial gravity
 							s = 0;
+                            // rt is true if FLAG_STAGNANT was set for this particle in previous frame
 							if (!rt || nt) //nt is if there is an something else besides the current particle type, around the particle
 								rt = 30;//slight less water lag, although it changes how it moves a lot
 							else
@@ -2170,6 +2217,7 @@ killed:
 					}
 				}
 			}
+            movedone:
 			nx = (int)(parts[i].x+0.5f);
 			ny = (int)(parts[i].y+0.5f);
 			if (ny!=y || nx!=x)

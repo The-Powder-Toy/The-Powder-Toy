@@ -155,7 +155,7 @@ static const char *it_msg =
 "\n"
 "\bgCopyright (c) 2008-11 Stanislaw K Skowronek (\brhttp://powder.unaligned.org\bg, \bbirc.unaligned.org #wtf\bg)\n"
 "\bgCopyright (c) 2010-11 Simon Robertshaw, Skresanov Savely, cracker64, Bryan Hoyle, Nathan Cousins, jacksonmj, Lieuwe Mosch\n"
-"\n"
+"\bgMod Created By Me4502\n"
 "\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html"
 ;
 
@@ -166,9 +166,9 @@ typedef struct
 } upstruc;
 
 #ifdef BETA
-static const char *old_ver_msg_beta = "A new beta is available - click here!";
+static const char *old_ver_msg_beta = "A new beta version is available - click here!";
 #endif
-static const char *old_ver_msg = "A new version is available - check the thread at http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=2821!";
+static const char *old_ver_msg = "A new version is available - click here!";
 float mheat = 0.0f;
 
 int do_open = 0;
@@ -672,6 +672,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					parts[k].type = j;
 					if (j == PT_PHOT)
 						parts[k].ctype = 0x3fffffff;
+                    if (j == PT_SOAP)
+                        parts[k].ctype = 0;
 					parts[k].x = (float)x;
 					parts[k].y = (float)y;
 					m[(x-x0)+(y-y0)*w] = k+1;
@@ -686,6 +688,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 						parts[fp[i]].tmp = 50;
 					if (j == PT_PHOT)
 						parts[fp[i]].ctype = 0x3fffffff;
+                    if (j == PT_SOAP)
+                        parts[k].ctype = 0;
 					parts[fp[i]].x = (float)x;
 					parts[fp[i]].y = (float)y;
 					m[(x-x0)+(y-y0)*w] = fp[i]+1;
@@ -2249,6 +2253,32 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 						strcpy(console_error, "Could not create particle");
 				}
 			}
+            else if (strcmp(console2, "bubble")==0 && console3[0])
+                {
+                    if (console_parse_coords(console3, &nx, &ny, console_error))
+                        {
+                            int first, rem1, rem2;
+
+                            first = create_part(-1, nx+18, ny, PT_SOAP);
+                            rem1 = first;
+                            
+                            for (i = 1; i<=30; i++)
+                                {
+                                    rem2 = create_part(-1, nx+18*cosf(i/5.0), ny+18*sinf(i/5.0), PT_SOAP);
+                                    
+                                    parts[rem1].ctype = 7;
+                                    parts[rem1].tmp = rem2;
+                                    parts[rem2].tmp2 = rem1;
+                                    
+                                    rem1 = rem2;
+                                    }
+                            
+                            parts[rem1].ctype = 7;
+                            parts[rem1].tmp = first;
+                            parts[first].tmp2 = rem1;
+                            parts[first].ctype = 7;
+                            }
+                    }
 			else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3[0])
 			{
 				if (console_parse_partref(console3, &i, console_error))
@@ -2661,6 +2691,7 @@ int main(int argc, char *argv[])
 	char coordtext[128] = "";
 	int currentTime = 0;
     int FPS = 0, pastFPS = 0, elapsedTime = 0, limitFPS = 60;
+    //int FPS = 0, pastFPS = 0, elapsedTime = 0, limitFPS = 120; //CHANGED FPS LIMIT
     void *http_ver_check, *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
 	//char console_error[255] = "";
@@ -2860,7 +2891,7 @@ int main(int argc, char *argv[])
 	}
 
 #ifdef BETA
-	http_ver_check = http_async_req_start(NULL, "http://bbgmod.webs.com/version.txt", NULL, 0, 0);
+	http_ver_check = http_async_req_start(NULL, "http://bbgmod.webs.com/versionbeta.txt", NULL, 0, 0);
 #else
 	http_ver_check = http_async_req_start(NULL, "http://bbgmod.webs.com/version.txt", NULL, 0, 0);
 #endif
@@ -4164,10 +4195,12 @@ int main(int argc, char *argv[])
 					//sample
 					else if (((sdl_mod & (KMOD_LALT|KMOD_RALT)) && !(sdl_mod & (KMOD_SHIFT))) || b==SDL_BUTTON_MIDDLE)
 					{
-						if (y>0 && y<sdl_scale*YRES && x>0 && x<sdl_scale*XRES)
+						if (y>=0 && y<YRES && x>=0 && x<XRES)
 						{
 							int cr;
 							cr = pmap[y][x];
+                            if ((cr>>8)>=NPART || !cr)
+                                cr = photons[y][x];
 							if (!((cr>>8)>=NPART || !cr))
 							{
 								c = sl = cr&0xFF;

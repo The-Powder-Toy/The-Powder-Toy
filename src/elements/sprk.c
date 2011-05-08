@@ -20,17 +20,14 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 			parts[i].life = 54;
 		if (ct == PT_SWCH)
 			parts[i].life = 14;
+        if (ct == PT_PIVS)
+			parts[i].life = 14;
 		return 0;
 	}
 	if (ct==PT_SPRK)
 	{
 		kill_part(i);
 		return 1;
-	}
-    if (ct==PT_COPR)
-	{
-        parts[i].temp = parts[i].temp + 1000;
-		parts[r>>8].temp = parts[i].temp;
 	}
 	else if (ct==PT_NTCT || ct==PT_PTCT)
 	{
@@ -105,6 +102,11 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 					}
 				}
 				else if ((ct==PT_PSCN||ct==PT_NSCN) && (rt==PT_PUMP||rt==PT_HSWC||(rt==PT_LCRY&&abs(rx)<2&&abs(ry)<2)))
+				{
+					if (ct==PT_PSCN) parts[r>>8].life = 10;
+					else if (ct==PT_NSCN && parts[r>>8].life>=10) parts[r>>8].life = 9;
+				}
+                else if ((ct==PT_PSCN||ct==PT_NSCN) && (rt==PT_PIVS))
 				{
 					if (ct==PT_PSCN) parts[r>>8].life = 10;
 					else if (ct==PT_NSCN && parts[r>>8].life>=10) parts[r>>8].life = 9;

@@ -13,14 +13,14 @@ int update_ROOT(UPDATE_FUNC_ARGS) {
                     if((r&0xFF)==PT_WATR && 1>(rand()%250))
                     {
                         t = parts[i].type = PT_ROOT;
-                        parts[r>>8].type = PT_PLNT;
-                        parts[r>>8].life = 0;
+                        parts[r>>8].type = PT_NONE;
+                        parts[i].tmp2 = 1;
                     }
                     else if((r&0xFF)==PT_RWTR && 1>(rand()%250))
                     {
                         t = parts[i].type = PT_ROOT;
-                        parts[r>>8].type = PT_PLNT;
-                        parts[r>>8].life = 0;
+                        parts[r>>8].type = PT_NONE;
+                        parts[i].tmp2 = 1;
                     }							
                     else if((r&0xFF)==PT_O3)
                     {
@@ -37,6 +37,15 @@ int update_ROOT(UPDATE_FUNC_ARGS) {
                                 }
                             }
                         }
+                    }
+                    if (parts[i].tmp2==1 && parts[r>>8].tmp2!=1 && parts[r>>8].tmp2!=2){
+                        if ((r&0xFF)==PT_ROOT){
+                                parts[r>>8].tmp2=1;
+                                parts[i].tmp2=0;
+                        }
+                    }
+                    if (parts[r>>8].tmp2==2 && 1>(rand()%5)){
+                        parts[r>>8].tmp2=0;
                     }
                     
                     

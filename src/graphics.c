@@ -1482,6 +1482,11 @@ void draw_parts(pixel *vid)
 
 			nx = (int)(parts[i].x+0.5f);
 			ny = (int)(parts[i].y+0.5f);
+            if (t==PT_SOAP)
+                {
+                    if ((parts[i].ctype&0x01 == 0x01) && (parts[i].ctype&0x02 == 0x02))
+                      draw_line(vid, nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), 245, 245, 220, XRES+BARSIZE);
+                }
 			if (cmode!=CM_HEAT)
 			{
 				if (t==PT_STKM) //Just draw head here
@@ -1861,6 +1866,51 @@ void draw_parts(pixel *vid)
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
 				}
+                else if (t==PT_ROOT)
+				{
+                    if (parts[i].tmp2==0){
+                        cr = 143;
+                        cg = 105;
+                        cb = 23;
+                        /*if (cr<=50)
+                         cr = 50;
+                         if (cg<=50)
+                         cg = 50;
+                         if (cb<=20)
+                         cb = 20;*/
+                    } else if (parts[i].tmp2==1){
+                        cr = 236;
+                        cg = 128;
+                        cb = 61;
+                        /*if (cr<=50)
+                         cr = 50;
+                         if (cg<=50)
+                         cg = 50;
+                         if (cb<=20)
+                         cb = 20;*/
+                        blendpixel(vid, nx+1, ny, cr, cg, cb, 255);
+						blendpixel(vid, nx-1, ny, cr, cg, cb, 255);
+						blendpixel(vid, nx, ny+1, cr, cg, cb, 255);
+						blendpixel(vid, nx, ny-1, cr, cg, cb, 255);
+						blendpixel(vid, nx+1, ny-1, cr, cg, cb, 255);
+						blendpixel(vid, nx-1, ny+1, cr, cg, cb, 255);
+						blendpixel(vid, nx+1, ny+1, cr, cg, cb, 255);
+						blendpixel(vid, nx-1, ny-1, cr, cg, cb, 255);
+                    }
+                    else if (parts[i].tmp2==2){
+                        cr = 30;
+                        cg = 30;
+                        cb = 30;
+                        /*if (cr<=50)
+                         cr = 50;
+                         if (cg<=50)
+                         cg = 50;
+                         if (cb<=20)
+                         cb = 20;*/
+                    }
+					blendpixel(vid, nx, ny, cr, cg, cb, 255);
+                    
+				}
 				else if(t==PT_LOTE)//colors for life states
 				{
 					if(parts[i].tmp==2)
@@ -2208,6 +2258,10 @@ void draw_parts(pixel *vid)
 
 				}
 				else if (t==PT_INVIS && (pv[ny/CELL][nx/CELL]>4.0f ||pv[ny/CELL][nx/CELL]<-4.0f))
+				{
+					blendpixel(vid, nx, ny, 15, 0, 150, 100);
+				}
+                else if (t==PT_PIVS && parts[i].life >= 10)
 				{
 					blendpixel(vid, nx, ny, 15, 0, 150, 100);
 				}
