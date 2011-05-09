@@ -1883,6 +1883,13 @@ killed:
 						fin_x = (int)(parts[i].x + parts[i].vx + 0.5f);
 						fin_y = (int)(parts[i].y + parts[i].vy + 0.5f);
 						// cast as int then back to float for compatibility with existing saves
+						if (t==PT_PHOT) {
+							s = eval_move(PT_PHOT, fin_x, fin_y, &r);
+							if ((((r&0xFF)==PT_GLAS && lt!=PT_GLAS) || ((r&0xFF)!=PT_GLAS && lt==PT_GLAS)) && s) {
+								// if movement will involve refraction, leave it until next frame so that refraction happens correctly
+								goto movedone;
+							}
+						}
 						if (try_move(i, x, y, fin_x, fin_y)) {
 							parts[i].x = (float)fin_x;
 							parts[i].y = (float)fin_y;
