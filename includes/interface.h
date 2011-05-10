@@ -26,7 +26,7 @@ typedef struct menu_section menu_section;
 #define SC_CRACKER2 13
 #define SC_TOTAL 10
 
-static menu_section msections[] = //itemcount and doshow do not do anything currently.
+static menu_section msections[] = //doshow does not do anything currently.
 {
 	{"\xC1", "Walls", 0, 1},
 	{"\xC2", "Electronics", 0, 1},
@@ -42,6 +42,23 @@ static menu_section msections[] = //itemcount and doshow do not do anything curr
 	{"\xC8", "", 0, 0},
 	{"\xC8", "Cracker", 0, 0},
 	{"\xC8", "Cracker!", 0, 0},
+};
+
+static menu_section colorsections[] = //doshow does not do anything currently.
+{
+	{"\xD1", "Colors", 7, 1},
+	{"\xC5", "Tools", 0, 1},
+};
+
+static menu_wall colorlist[] =
+{
+	{PIXPACK(0xFF0000), "Red"},
+	{PIXPACK(0x00FF00), "Green"},
+	{PIXPACK(0x0000FF), "Blue"},
+	{PIXPACK(0xFFFF00), "Yellow"},
+	{PIXPACK(0xFF00FF), "Pink"},
+	{PIXPACK(0x00FFFF), "Cyan"},
+	{PIXPACK(0xFFFFFF), "White"},
 };
 
 struct ui_edit
@@ -176,6 +193,8 @@ int save_name_ui(pixel *vid_buf);
 void menu_ui(pixel *vid_buf, int i, int *sl, int *sr);
 
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq, int mx, int my);
+
+int color_menu_ui(pixel *vid_buf, int i, int *cr, int *cg, int *cb, int b, int bq, int mx, int my);
 
 int sdl_poll(void);
 

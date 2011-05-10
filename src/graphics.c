@@ -448,7 +448,7 @@ void draw_tool(pixel *vid_buf, int b, int sl, int sr, unsigned pc, unsigned iswa
 	}
 }
 */
-//draw walls
+//draws walls and elements for menu
 int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 {
 	int i, j, c;
@@ -3139,6 +3139,11 @@ void draw_decorations(pixel *vid_buf,pixel *decorations)
 void create_decorations(pixel *decorations,int x, int y, int rx, int ry, int r, int g, int b)
 {
 	int i,j;
+	if (rx==0 && ry==0)
+	{
+		decorations[(y)*(XRES+BARSIZE)+(x)] = PIXRGB(r, g, b);
+		return;
+	}
 	for (j=-ry; j<=ry; j++)
 		for (i=-rx; i<=rx; i++)
 			if(y+j>=0 && x+i>=0 && x+i<XRES && y+j<YRES)

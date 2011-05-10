@@ -1918,6 +1918,52 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 		}
 	}
 }
+int color_menu_ui(pixel *vid_buf, int i, int *cr, int *cg, int *cb, int b, int bq, int mx, int my)
+{
+	int h,x,y,n=0,height,width,sy,rows=0,xoff=0,fwidth,a,c;
+	fwidth = colorsections[i].itemcount*31;
+	h = -1;
+	x = XRES-BARSIZE-18;
+	y = YRES+5;
+	sy = y;
+	if(i==1) //color menu
+	{
+		if (fwidth > XRES-BARSIZE) { //fancy scrolling
+			float overflow = fwidth-(XRES-BARSIZE), location = ((float)XRES-BARSIZE)/((float)(mx-(XRES-BARSIZE)));
+			xoff = (int)(overflow / location);
+		}
+		for (n = 0; n<7; n++)
+		{
+				for (a=1; a<15; a++)
+				{
+					for (c=1; c<27; c++)
+					{
+						vid_buf[(XRES+BARSIZE)*(y+a)+((x-xoff)+c)] = colorlist[n].colour;
+					}
+				}
+				x -= 26+5;
+				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
+				{
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
+					h = n;
+				}
+		}
+	}
+	if(h!=-1)
+	{
+		drawtext(vid_buf, XRES-textwidth((char *)colorlist[h].descs)-BARSIZE, sy-14, (char *)colorlist[h].descs, 255, 255, 255, 255);
+	}
+	//these are click events, b=1 is left click, b=4 is right
+	//h has the value of the element it is over, and -1 if not over an element
+	if (b==1 && h!=-1)
+	{
+		*cr = PIXR(colorlist[h].colour);
+		*cg = PIXG(colorlist[h].colour);
+		*cb = PIXB(colorlist[h].colour);
+		return 1;
+	}
+	return 0;
+}
 
 int sdl_poll(void)
 {
@@ -4304,7 +4350,7 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 		drawrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, 255, 255, 255, 255);
 		drawrect(vid_buf, window_offset_x + 230, window_offset_y +255+6, 26, 12, 255, 255, 255, 255);
 		drawtext(vid_buf, window_offset_x + 232, window_offset_y +255+9, "Clear", 255, 255, 255, 255);
-		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.1 (by cracker64) \nThis space should be used for basic color swatches to click on, and maybe some other tool buttons.\nPro tip: click the current color to move the selector to the other side. ", 255, 255, 255, 255);
+		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.1 (by cracker64) \n\nPro tip: click the current color to move the selector to the other side. Left click is eraser. ", 255, 255, 255, 255);
 		ui_edit_draw(vid_buf, &box_R);
 		ui_edit_draw(vid_buf, &box_G);
 		ui_edit_draw(vid_buf, &box_B);
@@ -4327,7 +4373,11 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 				HSV_to_RGB(0,0,vv,&cr,&cg,&cb);
 				vid_buf[(vv+grid_offset_y)*(XRES+BARSIZE)+(i+grid_offset_x+255+4)] = PIXRGB(cr, cg, cb);
 			}
+		if( color_menu_ui(vid_buf, 1, &cr, &cg, &cb, b, bq, mx, my) )
+			RGB_to_HSV(cr,cg,cb,&h,&s,&v);
+
 		HSV_to_RGB(h,s,v,&cr,&cg,&cb);
+
 		fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, cr, cg, cb, 255);
 		sprintf(box_R.str,"%d",cr);
 		sprintf(box_G.str,"%d",cg);
@@ -4373,6 +4423,10 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 			}
 			if(b && mx >= window_offset_x + 230 && my >= window_offset_y +255+6 && mx <= window_offset_x + 230 +26 && my <= window_offset_y +255+5 +13)
 				memset(decorations, 0,(XRES+BARSIZE)*YRES*PIXELSIZE);
+		}
+		else if (mx > XRES || my > YRES)
+		{
+			//click outside normal drawing area
 		}
 		else if (b)//there is a click, outside window
 		{
