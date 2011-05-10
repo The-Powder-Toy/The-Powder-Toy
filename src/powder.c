@@ -306,6 +306,35 @@ int try_move(int i, int x, int y, int nx, int ny)
 	return 1;
 }
 
+// try to move particle, and if successful update pmap and parts[i].x,y
+int do_move(int i, int x, int y, float nxf, float nyf)
+{
+	int nx = (int)(nxf+0.5f), ny = (int)(nyf+0.5f);
+	int result = try_move(i, x, y, nx, ny);
+	if (result)
+	{
+		int t = parts[i].type;
+		parts[i].x = nxf;
+		parts[i].y = nyf;
+		if (ny!=y || nx!=x)
+		{
+			if ((pmap[y][x]>>8)==i) pmap[y][x] = 0;
+			else if ((photons[y][x]>>8)==i) photons[y][x] = 0;
+			if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)//kill_part if particle is out of bounds
+			{
+				kill_part(i);
+				return -1;
+			}
+			if (t==PT_PHOT||t==PT_NEUT)
+				photons[ny][nx] = t|(i<<8);
+			else
+				pmap[ny][nx] = t|(i<<8);
+		}
+	}
+	return result;
+}
+
+
 static unsigned direction_to_map(float dx, float dy, int t)
 {
 	// TODO:
@@ -1845,10 +1874,8 @@ killed:
 						}
 					}
 				}
-				if (try_move(i, x, y, fin_x, fin_y)) {
-					parts[i].x = fin_xf;
-					parts[i].y = fin_yf;
-				} else {
+				if (!do_move(i, x, y, fin_xf, fin_yf))
+				{
 					// reflection
 					parts[i].flags |= FLAG_STAGNANT;
 					if (t==PT_NEUT && 100>(rand()%1000))
@@ -1882,7 +1909,6 @@ killed:
 						parts[i].vy -= 2.0f*dp*nry;
 						fin_x = (int)(parts[i].x + parts[i].vx + 0.5f);
 						fin_y = (int)(parts[i].y + parts[i].vy + 0.5f);
-						// cast as int then back to float for compatibility with existing saves
 						if (t==PT_PHOT) {
 							s = eval_move(PT_PHOT, fin_x, fin_y, &r);
 							if ((((r&0xFF)==PT_GLAS && lt!=PT_GLAS) || ((r&0xFF)!=PT_GLAS && lt==PT_GLAS)) && s) {
@@ -1890,10 +1916,8 @@ killed:
 								goto movedone;
 							}
 						}
-						if (try_move(i, x, y, fin_x, fin_y)) {
-							parts[i].x = (float)fin_x;
-							parts[i].y = (float)fin_y;
-						} else {
+						// cast coords as int then back to float for compatibility with existing saves
+						if (!do_move(i, x, y, (float)fin_x, (float)fin_y)) {
 							kill_part(i);
 							continue;
 						}
@@ -1911,25 +1935,20 @@ killed:
 			else if (ptypes[t].falldown==0)
 			{
 				// gasses and solids (but not powders)
-				if (try_move(i, x, y, fin_x, fin_y)) {
-					parts[i].x = fin_xf;
-					parts[i].y = fin_yf;
-				} else {
+				if (!do_move(i, x, y, fin_xf, fin_yf))
+				{
+					// can't move there, so bounce off
 					// TODO
 					if (fin_x>x+ISTP) fin_x=x+ISTP;
 					if (fin_x<x-ISTP) fin_x=x-ISTP;
 					if (fin_y>y+ISTP) fin_y=y+ISTP;
 					if (fin_y<y-ISTP) fin_y=y-ISTP;
-					if (try_move(i, x, y, 2*x-fin_x, fin_y))
+					if (do_move(i, x, y, 0.25f+(float)(2*x-fin_x), 0.25f+fin_y))
 					{
-						parts[i].x = 0.25f+(float)(2*x-fin_x);
-						parts[i].y = 0.25f+fin_y;
 						parts[i].vx *= ptypes[t].collision;
 					}
-					else if (try_move(i, x, y, fin_x, 2*y-fin_y))
+					else if (do_move(i, x, y, 0.25f+fin_x, 0.25f+(float)(2*y-fin_y)))
 					{
-						parts[i].x = 0.25f+fin_x;
-						parts[i].y = 0.25f+(float)(2*y-fin_y);
 						parts[i].vy *= ptypes[t].collision;
 					}
 					else
@@ -1942,21 +1961,15 @@ killed:
 			else
 			{
 				// liquids and powders
-				if (try_move(i, x, y, fin_x, fin_y)) {
-					parts[i].x = fin_xf;
-					parts[i].y = fin_yf;
-				} else {
-					if (fin_x!=x && try_move(i, x, y, fin_x, clear_y))
+				if (!do_move(i, x, y, fin_xf, fin_yf))
+				{
+					if (fin_x!=x && do_move(i, x, y, fin_xf, clear_yf))
 					{
-						parts[i].x = fin_xf;
-						parts[i].y = clear_yf;
 						parts[i].vx *= ptypes[t].collision;
 						parts[i].vy *= ptypes[t].collision;
 					}
-					else if (fin_y!=y && try_move(i, x, y, clear_x, fin_y))
+					else if (fin_y!=y && do_move(i, x, y, clear_xf, fin_yf))
 					{
-						parts[i].x = clear_xf;
-						parts[i].y = fin_yf;
 						parts[i].vx *= ptypes[t].collision;
 						parts[i].vy *= ptypes[t].collision;
 					}
@@ -1978,10 +1991,8 @@ killed:
 								dx /= fabsf(dx);
 								dy /= fabsf(dx);
 							}
-							if (try_move(i, x, y, (int)(clear_xf+dx+0.5f), (int)(clear_yf+dy+0.5f)))
+							if (do_move(i, x, y, clear_xf+dx, clear_yf+dy))
 							{
-								parts[i].x = clear_xf+dx;
-								parts[i].y = clear_yf+dy;
 								parts[i].vx *= ptypes[t].collision;
 								parts[i].vy *= ptypes[t].collision;
 								goto movedone;
@@ -1989,10 +2000,8 @@ killed:
 							swappage = dx;
 							dx = dy*r;
 							dy = -swappage*r;
-							if (try_move(i, x, y, (int)(clear_xf+dx+0.5f), (int)(clear_yf+dy+0.5f)))
+							if (do_move(i, x, y, clear_xf+dx, clear_yf+dy))
 							{
-								parts[i].x = clear_xf+dx;
-								parts[i].y = clear_yf+dy;
 								parts[i].vx *= ptypes[t].collision;
 								parts[i].vy *= ptypes[t].collision;
 								goto movedone;
@@ -2009,22 +2018,16 @@ killed:
 								rt = 10;
 							for (j=clear_x+r; j>=0 && j>=clear_x-rt && j<clear_x+rt && j<XRES; j+=r)
 							{
-								if (try_move(i, x, y, j, fin_y))
+								if (s=do_move(i, x, y, (float)j, fin_yf))
 								{
-									parts[i].x = clear_xf+(j-clear_x);
-									parts[i].y = fin_yf;
-									nx = j;
-									ny = fin_y;
-									s = 1;
+									nx = (int)(parts[i].x+0.5f);
+									ny = (int)(parts[i].y+0.5f);
 									break;
 								}
-								if (try_move(i, x, y, j, clear_y))
+								if (fin_y!=clear_y && (s=do_move(i, x, y, (float)j, clear_yf)))
 								{
-									parts[i].x = clear_xf+(j-clear_x);
-									parts[i].y = clear_yf;
-									nx = j;
-									ny = clear_y;
-									s = 1;
+									nx = (int)(parts[i].x+0.5f);
+									ny = (int)(parts[i].y+0.5f);
 									break;
 								}
 								if ((pmap[y][j]&255)!=t || (bmap[y/CELL][j/CELL] && bmap[y/CELL][j/CELL]!=WL_STREAM))
@@ -2034,39 +2037,25 @@ killed:
 								r = 1;
 							else
 								r = -1;
-							if (s)
+							if (s==1)
 								for (j=ny+r; j>=0 && j<YRES && j>=ny-rt && j<ny+rt; j+=r)
 								{
-									if (try_move(i, nx, ny, nx, j))
-									{
-										parts[i].y += j-ny;
+									if (do_move(i, nx, ny, (float)nx, (float)j))
 										break;
-									}
 									if ((pmap[j][nx]&255)!=t || (bmap[j/CELL][nx/CELL] && bmap[j/CELL][nx/CELL]!=WL_STREAM))
-									{
-										s = 0;
 										break;
-									}
 								}
-							else if ((clear_x!=x||clear_y!=y) && try_move(i, x, y, clear_x, clear_y)) {
-								// if interpolation was done and haven't yet moved, try moving to last clear position
-								parts[i].x = clear_xf;
-								parts[i].y = clear_yf;
-							}
-							else
-								parts[i].flags |= FLAG_STAGNANT;
+							else if (s==-1) {} // particle is out of bounds
+							else if ((clear_x!=x||clear_y!=y) && do_move(i, x, y, clear_xf, clear_yf)) {}
+							else parts[i].flags |= FLAG_STAGNANT;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
 						else
 						{
-							if ((clear_x!=x||clear_y!=y) && try_move(i, x, y, clear_x, clear_y)) {
-								// if interpolation was done, try moving to last clear position
-								parts[i].x = clear_xf;
-								parts[i].y = clear_yf;
-							}
-							else
-								parts[i].flags |= FLAG_STAGNANT;
+							// if interpolation was done, try moving to last clear position
+							if ((clear_x!=x||clear_y!=y) && do_move(i, x, y, clear_xf, clear_yf)) {}
+							else parts[i].flags |= FLAG_STAGNANT;
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
@@ -2074,22 +2063,7 @@ killed:
 				}
 			}
 movedone:
-			nx = (int)(parts[i].x+0.5f);
-			ny = (int)(parts[i].y+0.5f);
-			if (ny!=y || nx!=x)
-			{
-				if ((pmap[y][x]>>8)==i) pmap[y][x] = 0;
-				else if ((photons[y][x]>>8)==i) photons[y][x] = 0;
-				if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)//kill_part if particle is out of bounds
-				{
-					kill_part(i);
-					continue;
-				}
-				if (t==PT_PHOT||t==PT_NEUT)
-					photons[ny][nx] = t|(i<<8);
-				else
-					pmap[ny][nx] = t|(i<<8);
-			}
+			continue;
 		}
 	if (framerender) {
 		framerender = 0;
