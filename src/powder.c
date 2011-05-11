@@ -2308,6 +2308,8 @@ int create_parts(int x, int y, int rx, int ry, int c)
 	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0;//n;
 
 	int wall = c - 100;
+	if (c==SPC_WIND)
+		return 0;
 	for (r=UI_ACTUALSTART; r<=UI_ACTUALSTART+UI_WALLCOUNT; r++)
 	{
 		if (wall==r)
@@ -2325,10 +2327,6 @@ int create_parts(int x, int y, int rx, int ry, int c)
 	{
 		b = WL_FANHELPER;
 		dw = 1;
-	}
-	if (c == PT_WIND)
-	{
-		return 1;
 	}
 	if (dw==1)
 	{
