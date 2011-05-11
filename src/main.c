@@ -59,7 +59,7 @@
 #include "pyconsole.h"
 #endif
 
-pixel *vid_buf;
+pixel *vid_buf, *decorations;
 
 #define NUM_SOUNDS 2
 struct sample {
@@ -317,7 +317,7 @@ void *build_thumb(int *size, int bzip2)
 }
 
 //the saving function
-void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
+void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, pixel *decorations)
 {
 	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*11+MAXSIGNS*262), *c;
 	int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
@@ -490,7 +490,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	return c;
 }
 
-int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES])
+int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES], pixel *decorations)
 {
 	unsigned char *d=NULL,*c=save;
 	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
@@ -578,6 +578,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 		clear_sim();
 	}
+	clearrect(decorations, x0, y0, w, h);
 	m = calloc(XRES*YRES, sizeof(int));
 
 	// make a catalog of free parts
@@ -1031,7 +1032,7 @@ void stamp_save(int x, int y, int w, int h)
 	FILE *f;
 	int n;
 	char fn[64], sn[16];
-	void *s=build_save(&n, x, y, w, h, bmap, fvx, fvy, signs, parts);
+	void *s=build_save(&n, x, y, w, h, bmap, fvx, fvy, signs, parts, decorations);
 
 #ifdef WIN32
 	_mkdir("stamps");
@@ -1305,8 +1306,7 @@ int main(int argc, char *argv[])
 	
 	if(load_data && load_size){
 		int parsestate = 0;
-		//parsestate = parse_save(load_data, load_size, 1, 0, 0);
-		parsestate = parse_save(load_data, load_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+		parsestate = parse_save(load_data, load_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap, decorations);
 		
 		for(i=0; i<30; i++){
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
@@ -1377,7 +1377,7 @@ int main(int argc, char *argv[])
 	PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep,*pkey;
 	PyObject *tpt_console_obj;
 #endif
-	pixel *decorations = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
+	decorations = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	GSPEED = 1;
@@ -1532,7 +1532,7 @@ int main(int argc, char *argv[])
 			if (file_data)
 			{
 				it=0;
-				parse_save(file_data, size, 0, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+				parse_save(file_data, size, 0, 0, 0, bmap, fvx, fvy, signs, parts, pmap, decorations);
 			}
 		}
 
@@ -2493,7 +2493,7 @@ int main(int argc, char *argv[])
 			if (load_y<0) load_y=0;
 			if (bq==1 && !b)
 			{
-				parse_save(load_data, load_size, 0, load_x, load_y, bmap, fvx, fvy, signs, parts, pmap);
+				parse_save(load_data, load_size, 0, load_x, load_y, bmap, fvx, fvy, signs, parts, pmap, decorations);
 				free(load_data);
 				free(load_img);
 				load_mode = 0;
@@ -2535,14 +2535,14 @@ int main(int argc, char *argv[])
 			{
 				if (copy_mode==1)//CTRL-C, copy
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
+					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts, decorations);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
 				}
 				else if (copy_mode==2)//CTRL-X, cut
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
+					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts, decorations);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
@@ -2669,7 +2669,7 @@ int main(int argc, char *argv[])
 					}
 					if (x>=19 && x<=35 && svf_last && svf_open && !bq) {
 						//int tpval = sys_pause;
-						parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+						parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap, decorations);
 						//sys_pause = tpval;
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
