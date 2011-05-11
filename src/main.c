@@ -873,6 +873,18 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			else
 				p++;
 		}
+		// no more particle properties to load, so we can change type here without messing up loading
+		if (i && i<=NPART)
+		{
+			if (ver<48 && (ty==OLD_PT_WIND || (ty==PT_BRAY&&parts[i-1].life==0)))
+			{
+				// Replace invisible particles with something sensible and add decoration to hide it
+				x = (int)(parts[i-1].x+0.5f);
+				y = (int)(parts[i-1].y+0.5f);
+				decorations[y*(XRES+BARSIZE)+x] = PIXPACK(0x010101);
+				parts[i-1].type = PT_DMND;
+			}
+		}
 	}
 
 	if (p >= size)
