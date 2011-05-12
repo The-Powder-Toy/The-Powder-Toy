@@ -189,6 +189,7 @@ int numCores = 4;
 pthread_t gravthread;
 pthread_mutex_t gravmutex;
 int grav_ready = 0;
+int gravthread_done = 0;
 
 int core_count()
 {
@@ -1218,19 +1219,27 @@ char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
 void update_grav_async()
 {
 	int done = 0;
-	while(1){
+	int thread_done = 0;
+	memset(th_ogravmap, 0, sizeof(th_ogravmap));
+	memset(th_gravmap, 0, sizeof(th_gravmap));
+	memset(th_gravy, 0, sizeof(th_gravy));
+	memset(th_gravx, 0, sizeof(th_gravx));
+	while(!thread_done){
 		if(!done){
 			update_grav();
 			done = 1;
 			pthread_mutex_lock(&gravmutex);
 			grav_ready = done;
+			thread_done = gravthread_done;
 			pthread_mutex_unlock(&gravmutex);
 		} else {
 			pthread_mutex_lock(&gravmutex);
 		    done = grav_ready;
+			thread_done = gravthread_done;
 			pthread_mutex_unlock(&gravmutex);
 		}
 	}
+	pthread_exit(NULL);
 }
 
 void start_grav_async()
@@ -1238,6 +1247,7 @@ void start_grav_async()
 	if(!ngrav_enable){
 		/*pthread_mutexattr_t gma; //I do not know why this is here
 		pthread_mutexattr_init(&gma);*/
+		gravthread_done = 0;
 		pthread_mutex_init (&gravmutex, NULL);
 		pthread_create(&gravthread, NULL, update_grav_async, NULL); //Start asynchronous gravity simulation
 		ngrav_enable = 1;
@@ -1247,7 +1257,10 @@ void start_grav_async()
 void stop_grav_async()
 {
 	if(ngrav_enable){
-		pthread_cancel(gravthread); //Terminate the thread, we don't really care if it finished or not
+		pthread_mutex_lock(&gravmutex);
+		gravthread_done = 1;
+		pthread_mutex_unlock(&gravmutex);
+		pthread_join(gravthread, NULL);
 		pthread_mutex_destroy(&gravmutex); //Destroy the mutex
 		memset(gravy, 0, sizeof(gravy)); //Clear the grav velocities
 		memset(gravx, 0, sizeof(gravx)); //Clear the grav velocities
@@ -1589,8 +1602,8 @@ int main(int argc, char *argv[])
 
 		if (!sys_pause||framerender) //Only update if not paused
 			memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
-
-		draw_grav(vid_buf);
+		if(ngrav_enable)
+			draw_grav(vid_buf);
 		update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
 
