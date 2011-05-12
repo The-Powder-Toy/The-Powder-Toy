@@ -171,7 +171,7 @@ int do_open = 0;
 int sys_pause = 0;
 int sys_shortcuts = 1;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by save.
-int ngrav_enable = 1; //Newtonian gravity, will be set by save TODO: Make this actually do something
+int ngrav_enable = 0; //Newtonian gravity, will be set by save
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
@@ -1233,6 +1233,28 @@ void update_grav_async()
 	}
 }
 
+void start_grav_async()
+{
+	if(!ngrav_enable){
+		/*pthread_mutexattr_t gma; //I do not know why this is here
+		pthread_mutexattr_init(&gma);*/
+		pthread_mutex_init (&gravmutex, NULL);
+		pthread_create(&gravthread, NULL, update_grav_async, NULL); //Start asynchronous gravity simulation
+		ngrav_enable = 1;
+	}
+}
+
+void stop_grav_async()
+{
+	if(ngrav_enable){
+		pthread_cancel(gravthread); //Terminate the thread, we don't really care if it finished or not
+		pthread_mutex_destroy(&gravmutex); //Destroy the mutex
+		memset(gravy, 0, sizeof(gravy)); //Clear the grav velocities
+		memset(gravx, 0, sizeof(gravx)); //Clear the grav velocities
+		ngrav_enable = 0;
+	}
+}
+
 #ifdef RENDERER
 int main(int argc, char *argv[])
 {
@@ -1514,11 +1536,7 @@ int main(int argc, char *argv[])
 		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
 		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
 	}
-	pthread_mutexattr_t gma;
-
-	pthread_mutexattr_init(&gma);
-	pthread_mutex_init (&gravmutex, NULL);
-	pthread_create(&gravthread, NULL, update_grav_async, NULL); //Asynchronous gravity simulation //(void *) &thread_args[i]);
+	
 	while (!sdl_poll()) //the main loop
 	{
 		frameidx++;
@@ -1555,17 +1573,19 @@ int main(int argc, char *argv[])
 		if (bsy<0)
 			bsy = 0;
 
-		pthread_mutex_lock(&gravmutex);
-		result = grav_ready;
-		if(result) //Did the gravity thread finish?
-		{
-			memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
-			memcpy(gravy, th_gravy, sizeof(gravy));	//Hmm, Gravy
-			memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
-			if (!sys_pause||framerender) //Only update if not paused
-				grav_ready = 0; //Tell the other thread that we're ready for it to continue
+		if(ngrav_enable){
+			pthread_mutex_lock(&gravmutex);
+			result = grav_ready;
+			if(result) //Did the gravity thread finish?
+			{
+				memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
+				memcpy(gravy, th_gravy, sizeof(gravy));	//Hmm, Gravy
+				memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
+				if (!sys_pause||framerender) //Only update if not paused
+					grav_ready = 0; //Tell the other thread that we're ready for it to continue
+			}
+			pthread_mutex_unlock(&gravmutex);
 		}
-		pthread_mutex_unlock(&gravmutex);
 
 		if (!sys_pause||framerender) //Only update if not paused
 			memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap

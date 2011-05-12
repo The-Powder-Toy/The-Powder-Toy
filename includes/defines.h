@@ -204,4 +204,6 @@ void clear_sim(void);
 void del_stamp(int d);
 void sdl_seticon(void);
 void play_sound(char *file);
+void start_grav_async(void);
+void stop_grav_async(void);
 #endif

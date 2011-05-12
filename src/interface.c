@@ -4568,7 +4568,13 @@ void simulation_ui(pixel * vid_buf)
 	}
 
 	legacy_enable = !cb.checked;
-	ngrav_enable = cb2.checked;
+	if(ngrav_enable != cb2.checked)
+	{
+		if(cb2.checked)
+			start_grav_async();
+		else
+			stop_grav_async();
+	}
 
 	while (!sdl_poll())
 	{
