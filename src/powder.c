@@ -1396,8 +1396,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 			lx = parts[i].x;
 			ly = parts[i].y;
 			t = parts[i].type;
-			if (t>=PT_NUM)
+			if (t<0 || t>=PT_NUM)
+			{
+				kill_part(i);
 				continue;
+			}
 			//printf("parts[%d].type: %d\n", i, parts[i].type);
 
 			if (parts[i].life>0 && (ptypes[t].properties&PROP_LIFE_DEC))
@@ -1599,7 +1602,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							else t = PT_DSTW;
 						}
 						else if (t==PT_LAVA) {
-							if (parts[i].ctype && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA) {
+							if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA) {
 								if (parts[i].ctype==PT_THRM&&pt>=ptransitions[PT_BMTL].thv) s = 0;
 								else if (ptransitions[parts[i].ctype].tht==PT_LAVA) {
 									if (pt>=ptransitions[parts[i].ctype].thv) s = 0;
