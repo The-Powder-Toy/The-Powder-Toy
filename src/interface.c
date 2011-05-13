@@ -4505,10 +4505,12 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 void simulation_ui(pixel * vid_buf)
 {
 	int xsize = 300;
-	int ysize = 100;
+	int ysize = 114;
 	int x0=(XRES-xsize)/2,y0=(YRES-MENUSIZE-ysize)/2,b=1,bq,mx,my;
+	int new_scale;
 	ui_checkbox cb;
 	ui_checkbox cb2;
+	ui_checkbox cb3;
 
 	cb.x = x0+xsize-16;
 	cb.y = y0+23;
@@ -4519,6 +4521,11 @@ void simulation_ui(pixel * vid_buf)
 	cb2.y = y0+51;
 	cb2.focus = 0;
 	cb2.checked = ngrav_enable;
+	
+	cb3.x = x0+xsize-16;
+	cb3.y = y0+77;
+	cb3.focus = 0;
+	cb3.checked = (sdl_scale==2)?1:0;
 
 	while (!sdl_poll())
 	{
@@ -4545,6 +4552,10 @@ void simulation_ui(pixel * vid_buf)
 		drawtext(vid_buf, x0+8, y0+54, "Newtonian gravity", 255, 255, 255, 255);
 		drawtext(vid_buf, x0+12+textwidth("Newtonian gravity"), y0+54, "Introduced in version 48.", 255, 255, 255, 180);
 		drawtext(vid_buf, x0+12, y0+68, "May also cause slow performance on older computers", 255, 255, 255, 180);
+		
+		drawtext(vid_buf, x0+8, y0+80, "Large window", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("Large window"), y0+80, "Double window size for small screens", 255, 255, 255, 180);
+		//drawtext(vid_buf, x0+12, y0+68, "May also cause slow performance on older computers", 255, 255, 255, 180);
 
 		//TODO: Options for Air and Normal gravity
 		//Maybe save/load defaults too.
@@ -4554,9 +4565,11 @@ void simulation_ui(pixel * vid_buf)
 
 		ui_checkbox_draw(vid_buf, &cb);
 		ui_checkbox_draw(vid_buf, &cb2);
+		ui_checkbox_draw(vid_buf, &cb3);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 		ui_checkbox_process(mx, my, b, bq, &cb);
 		ui_checkbox_process(mx, my, b, bq, &cb2);
+		ui_checkbox_process(mx, my, b, bq, &cb3);
 
 		if (b && !bq && mx>=x0 && mx<x0+xsize && my>=y0+ysize-16 && my<=y0+ysize)
 			break;
@@ -4568,6 +4581,9 @@ void simulation_ui(pixel * vid_buf)
 	}
 
 	legacy_enable = !cb.checked;
+	new_scale = (cb3.checked)?2:1;
+	if(new_scale!=sdl_scale)
+		set_scale(new_scale);	
 	if(ngrav_enable != cb2.checked)
 	{
 		if(cb2.checked)

@@ -1216,6 +1216,12 @@ char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
 #endif
                 ;
 
+void set_scale(int scale){
+	sdl_scale = scale;
+	sdl_open();
+	return;
+}
+				
 void update_grav_async()
 {
 	int done = 0;
