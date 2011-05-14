@@ -11,6 +11,11 @@ int file_script = 0;
 int console_parse_type(char *txt, int *element, char *err)
 {
 	int i = -1;
+	if (strcasecmp(txt,"WIND")==0)
+	{
+		strcpy(err, "Particle type not recognised");
+		return 0;
+	}
 	// alternative names for some elements
 	if (strcasecmp(txt,"C4")==0) i = PT_PLEX;
 	else if (strcasecmp(txt,"C5")==0) i = PT_C5;
