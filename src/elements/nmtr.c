@@ -22,5 +22,8 @@ int update_NMTR(UPDATE_FUNC_ARGS) {
             }
             parts[i].vy = parts[i].temp/100;
         }
+    if (ngrav_enable==1){
+        gravmap[y/CELL][x/CELL] += 0.01f;
+    }
 	return 0;
 }

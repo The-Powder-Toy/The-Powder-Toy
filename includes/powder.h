@@ -7,7 +7,8 @@
 #include "interface.h"
 #include "misc.h"
 
-#define CM_COUNT 13
+#define CM_COUNT 14
+#define CM_GRAV 13
 #define CM_PREAWE 12
 #define CM_AWESOME 11
 #define CM_CRACK 10
@@ -25,7 +26,7 @@
 
 #define UI_WALLSTART 322
 #define UI_ACTUALSTART 122
-#define UI_WALLCOUNT 19
+#define UI_WALLCOUNT 20
 
 #define WL_WALLELEC	122
 #define WL_EWALL	123
@@ -47,6 +48,7 @@
 #define SPC_HEAT 337
 #define SPC_COOL 338
 #define SPC_VACUUM 339
+#define SPC_WIND 341
 
 #define WL_ALLOWGAS	140
 
@@ -199,7 +201,7 @@
 #define PT_STAR 144
 #define PT_FROG 145
 #define PT_BRAN 146
-#define PT_WIND 147
+#define OLD_PT_WIND 147
 #define PT_H2   148
 #define PT_SOAP 149
 #define PT_NTRG  150
@@ -255,8 +257,8 @@
 #define PT_ROOT 200
 #define PT_BFLM 201
 #define PT_PDCL 202
-#define PT_MNSR 203
-#define PT_BOX 204
+#define PT_WCHP 203
+#define PT_SUN 204
 #define PT_AGAS 205
 #define PT_DWFM 206
 #define PT_COPR 207
@@ -276,7 +278,8 @@
 #define PT_SVOI 221
 #define PT_PMIC 222
 #define PT_PIVS 223
-#define PT_NUM  224
+#define PT_LEAF 224
+#define PT_NUM  225
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -411,9 +414,8 @@ int update_SNMG(UPDATE_FUNC_ARGS);
 int update_ROOT(UPDATE_FUNC_ARGS);
 int update_EQUALVEL(UPDATE_FUNC_ARGS);
 int update_PDCL(UPDATE_FUNC_ARGS);
-int update_MNSR(UPDATE_FUNC_ARGS);
 int update_SAND(UPDATE_FUNC_ARGS);
-int update_BOX(UPDATE_FUNC_ARGS);
+int update_SUN(UPDATE_FUNC_ARGS);
 int update_NMTR(UPDATE_FUNC_ARGS);
 int update_CNVR(UPDATE_FUNC_ARGS);
 int update_C6(UPDATE_FUNC_ARGS);
@@ -424,6 +426,7 @@ int update_SVOI(UPDATE_FUNC_ARGS);
 int update_CFC(UPDATE_FUNC_ARGS);
 int update_PMIC(UPDATE_FUNC_ARGS);
 int update_PIVS(UPDATE_FUNC_ARGS);
+int update_LEAF(UPDATE_FUNC_ARGS);
 
 
 int update_MISC(UPDATE_FUNC_ARGS);
@@ -506,49 +509,49 @@ typedef struct part_transition part_transition;
 //What each section does
 /*
  Name: The name of the element. Always use four letters, even if the element has a three letter name.
- 
+
  Colour: Color in hexadecimal code. Go to http://www.colorpicker.com/ to find the hexadecimal code (at the top) for your color. The hexadecimal code goes AFTER the “0x” prefix, always.
- 
+
  Advec: How much the particle is accelerated by moving air.
- 
+
  Airdrag: How much air the particle generates in the direction of travel.
- 
+
  Airloss: How much the particle slows down moving air (although this won't have as big an effect as a wall). 1 = no effect, 0 = maximum effect.
- 
+
  Loss: How much velocity the particle loses each frame. 1 = no loss, .5 = half loss.
- 
+
  Collid: Velocity is multiplied by this when the particle collides with something.
- 
+
  Grav: How fast the particle falls. A negative number means it floats.
- 
+
  Diffus: How much the particle “wiggles” around (think GAS).
- 
+
  Hotair: How much the particle increases the pressure by.
- 
+
  Fal: How does the particle move? 0 = solid, 1 = powder, 2 = liquid
- 
+
  Burn: Does it burn? 0 = no, higher numbers = higher “burnage”.
- 
+
  Exp: Does it explode? 0 = no, higher numbers = higher pressure generated.
- 
+
  Mel: Does it melt? 1 = yes, 0 = no.
- 
+
  Hrd: How much does acid affect it? 0 = no effect, higher numbers = higher effect.
- 
+
  M: Does it show up on the menu? 1 = yes, 0 = no.
- 
+
  Weight: Heavier elements sink beneath lighter ones. 1 = Gas. 2 = Light, 98 = Heavy (liquids 0-49, powder 50-99). 100 = Solid. -1 is Neutrons and Photons.
- 
+
  Section: The section of the menu it is in. Prefix everything with 'SC_'.
- 
+
  H: What temperature does it have when created? Temperature is in Kelvin (Kelvin = degrees C + 273.15). R_TEMP+273.15f gives room temperature.
- 
+
  Ins: specific heat value (how fast it transfers heat to particles touching it), can be found by using the real life heat value in J/G K (or KJ/KG K) by 96.635/RealLifeValue. 0 - no heat transfer, 250 - maximum heat transfer speed.
- 
+
  Description: A short one sentence description of the element, shown when you mouse over it in-game.
- 
+
  State: What state is this element? Options are ST_NONE, ST_SOLID, ST_LIQUID, ST_GAS.
- 
+
  Properties: Does this element have special properties? The properties can be found at ~214. Separate each property with | inside the property variable.
 */
 
@@ -703,7 +706,7 @@ static const part_type ptypes[PT_NUM] =
 	{"STAR",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Like Star Wars rule S3456/B278/6", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"FROG",	PIXPACK(0x00AA00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Frogs S12/B34/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"BRAN",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Brian 6 S6/B246/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-	{"WIND",	PIXPACK(0x000000),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  1,  100,	SC_SPECIAL,		0.0f,					40,		"Drag tool", ST_NONE, ST_NONE, NULL},
+    {"WIND",  PIXPACK(0x101010),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_SPECIAL,    0.0f,          40,    "", ST_NONE, ST_NONE, NULL},
 	{"H2",		PIXPACK(0x5070FF),	2.0f,	0.00f * CFDS,	0.99f,	0.30f,	-0.10f,	0.00f,	3.00f,	0.000f	* CFDS, 0,  0,		0,	0,	0,	1,	1,		SC_GAS,			R_TEMP+0.0f +273.15f,	251,	"Combines with O2 to make WATR", ST_GAS, TYPE_GAS, &update_H2},
     {"SOAP",  PIXPACK(0xF5F5DC),  0.6f,  0.01f * CFDS,  0.98f,  0.95f,  0.0f,  0.1f,  0.00f,  0.000f  * CFDS,  2,  0,    0,  0,  20,  1,  35,    SC_LIQUID,    R_TEMP-2.0f  +273.15f,  29,    "Soap. Creates bubbles.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE, &update_SOAP},
     {"NTRG",	PIXPACK(0x80A0AA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,  	"Nitrogen in its gas form.", ST_GAS, TYPE_GAS, NULL},
@@ -759,8 +762,8 @@ static const part_type ptypes[PT_NUM] =
     {"ROOT",	PIXPACK(0xA65005),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f +273.15f,	        251,		"Aids the growth of grass and plant.", ST_SOLID, TYPE_SOLID, &update_ROOT},
     {"BFLM",	PIXPACK(0x4C76F5),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	MAX_TEMP +273.15f,	            88,		"Ignites flammable materials. Heats air.", ST_GAS, TYPE_GAS, &update_PYRO},
     {"PDCL",	PIXPACK(0xFFD010),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Powder. Duplicates any particles it touches.", ST_SOLID, TYPE_PART, &update_PDCL},
-    {"MNSR",	PIXPACK(0xFFE0A0),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  1,  100,	SC_CRACKER2,	0.0f,					40,		"Monster", ST_NONE, ST_NONE, &update_MNSR},
-    {"BOX ",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	50,		SC_CRACKER2,	R_TEMP+14.6f+273.15f,	0,		"Box", ST_NONE, 0, &update_BOX},
+    {"WCHP",	PIXPACK(0xC0A040),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	2,	1,	50,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	150,	"Wood Chip. See Wood", ST_SOLID, TYPE_PART, NULL},
+    {"SUN",	    PIXPACK(0xFFD010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SPECIAL,		R_TEMP+9000.0f +273.15f,251,	"The Sun. A centre of gravity.", ST_SOLID, TYPE_SOLID, &update_SUN},
     {"AGAS",	PIXPACK(0xFF00EA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,      SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Acidic.", ST_GAS, TYPE_GAS, &update_AGAS},
     {"DWFM",	PIXPACK(0xFF1000),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	R_TEMP+400.0f+273.15f,	88,		"Ignites flammable materials. Heats air. Goes Down.", ST_GAS, TYPE_GAS, &update_PYRO},
     {"COPR",	PIXPACK(0xB88700),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	250,	"Solid. Conducts electricity slowly. Meltable.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
@@ -780,6 +783,7 @@ static const part_type ptypes[PT_NUM] =
     {"SVOI",	PIXPACK(0x790B0B),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	251,	"Hole, will drain away first particle it touches.", ST_SOLID, TYPE_SOLID|PROP_DEADLY, &update_SVOI},
     {"PMIC",	PIXPACK(0xC0C0C0),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	1,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	100,	"Pumice. Stacks and floats on water.", ST_SOLID, TYPE_PART, &update_PMIC},
     {"PIVS",	PIXPACK(0x00CCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	15,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	164,	"Powered Invisible. Invisible to everything when sparked with PSCN. Opaque again with NSCN.", ST_SOLID, TYPE_SOLID | PROP_NEUTPASS, &update_PIVS},
+    {"LEAF",	PIXPACK(0x0CAC00),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	20,	1,	85,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	65,		"Leaves. Dry out and become flammable in heat.", ST_SOLID, TYPE_PART|PROP_NEUTPENETRATE, &update_LEAF},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -812,10 +816,10 @@ static part_transition ptransitions[PT_NUM] =
 	/* METL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1273.0f,PT_LAVA},
 	/* SPRK */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* SNOW */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			273.0f,	PT_WATR},
-	/* WOOD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			873.0f,	PT_FIRE},
+	/* WOOD */ {IPL,	NT,			6.0f,	PT_WCHP,	ITL,	NT,			873.0f,	PT_FIRE},
 	/* NEUT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* PLUT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* PLNT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			573.0f,	PT_FIRE},
+	/* PLNT */ {IPL,	NT,			6.0f,	PT_LEAF,			ITL,	NT,			573.0f,	PT_FIRE},
 	/* ACID */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* VOID */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* WTRV */ {IPL,	NT,			IPH,	NT,			371.0f,	ST,			ITH,	NT},
@@ -999,7 +1003,7 @@ static part_transition ptransitions[PT_NUM] =
     /* BIRE */ {IPL,	NT,         IPH,	NT,         ITL,	NT,         ITH,    NT},
     /* PDCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
      /* mnst */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* box */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			620.0f,	PT_FIRE},
+    /* box */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* AGAS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* DWFM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* COPR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1357.0f,PT_LAVA},
@@ -1019,6 +1023,7 @@ static part_transition ptransitions[PT_NUM] =
     /* svoi */    {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* pumice */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1123.0f,PT_LAVA},
     /* PIVS */    {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* leaf */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2000.0f,PT_FIRE},
 
 
 };
@@ -1122,6 +1127,48 @@ static int smilrule[9][9] =
 	{0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0},
 };
+struct menu_wall
+{
+	pixel colour;
+	pixel eglow; // if emap set, add this to fire glow
+	int drawstyle;
+	const char *descs;
+};
+typedef struct menu_wall menu_wall;
+
+static menu_wall wtypes[] =
+{
+	{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 0, "Wall. Indestructible. Blocks everything. Conductive."},
+ 	{PIXPACK(0x808080), PIXPACK(0x808080), 0, "E-Wall. Becomes transparent when electricity is connected."},
+ 	{PIXPACK(0xFF8080), PIXPACK(0xFF2008), 1, "Detector. Generates electricity when a particle is inside."},
+ 	{PIXPACK(0x808080), PIXPACK(0x000000), 0, "Streamline. Set start point of a streamline."},
+ 	{PIXPACK(0x808080), PIXPACK(0x000000), 0, "Sign. Click on a sign to edit it or anywhere else to place a new one."},
+ 	{PIXPACK(0x8080FF), PIXPACK(0x000000), 1, "Fan. Accelerates air. Use line tool to set direction and strength."},
+ 	{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 2, "Wall. Blocks most particles but lets liquids through. Conductive."},
+    {PIXPACK(0x808080), PIXPACK(0x000000), 1, "Wall. Absorbs particles but lets air currents through."},
+ 	{PIXPACK(0x808080), PIXPACK(0x000000), 1, "Erases walls."},
+ 	{PIXPACK(0x808080), PIXPACK(0x000000), 3, "Wall. Indestructible. Blocks everything."},
+ 	{PIXPACK(0x3C3C3C), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks particles, allows air"},
+ 	{PIXPACK(0x575757), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and gasses, allows solids"},
+ 	{PIXPACK(0xFFFF22), PIXPACK(0x101010), 2, "Conductor, allows particles, conducts electricity"},
+ 	{PIXPACK(0x242424), PIXPACK(0x101010), 0, "E-Hole, absorbs particles, release them when powered"},
+    {PIXPACK(0xFFFFFF), PIXPACK(0x000000), -1, "Air, creates airflow and pressure"},
+    {PIXPACK(0xFFBB00), PIXPACK(0x000000), -1, "Heats the targetted element."},
+    {PIXPACK(0x00BBFF), PIXPACK(0x000000), -1, "Cools the targetted element."},
+    {PIXPACK(0x303030), PIXPACK(0x000000), -1, "Vacuum, reduces air pressure."},
+	{PIXPACK(0x579777), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and solids, allows gasses"},
+    {PIXPACK(0x000000), PIXPACK(0x000000), -1, "Drag tool"},
+};
+static menu_wall colorlist[] =
+{
+ 	{PIXPACK(0xFF0000), "Red"},
+ 	{PIXPACK(0x00FF00), "Green"},
+ 	{PIXPACK(0x0000FF), "Blue"},
+ 	{PIXPACK(0xFFFF00), "Yellow"},
+ 	{PIXPACK(0xFF00FF), "Pink"},
+ 	{PIXPACK(0x00FFFF), "Cyan"},
+ 	{PIXPACK(0xFFFFFF), "White"},
+};
 #define CHANNELS ((int)(MAX_TEMP-73.15f)/100+2)
 particle portalp[CHANNELS][8][80];
 const particle emptyparticle;
@@ -1129,8 +1176,6 @@ int wireless[CHANNELS][2];
 
 extern int isplayer;
 extern float player[27];
-
-extern float box[27];
 
 extern float player2[27];
 

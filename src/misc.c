@@ -556,53 +556,53 @@ void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255 HSV value
 {
 	float hh, ss, vv, c, x;
 	int m;
-	hh = h/42.667f;//normalize values
-	ss = s/256.0f;
-	vv = v/256.0f;
+	hh = h/42.66667f;//normalize values
+	ss = s/255.0f;
+	vv = v/255.0f;
 	c = vv * ss;
 	x = c * ( 1 - fabsf(fmod(hh,2.0) -1) );
 	if(hh<1){
-		*r = (int)(c*256.0);
-		*g = (int)(x*256.0);
+		*r = (int)(c*255.0);
+		*g = (int)(x*255.0);
 		*b = 0;
 	}
 	else if(hh<2){
-		*r = (int)(x*256.0);
-		*g = (int)(c*256.0);
+		*r = (int)(x*255.0);
+		*g = (int)(c*255.0);
 		*b = 0;
 	}
 	else if(hh<3){
 		*r = 0;
-		*g = (int)(c*256.0);
-		*b = (int)(x*256.0);
+		*g = (int)(c*255.0);
+		*b = (int)(x*255.0);
 	}
 	else if(hh<4){
 		*r = 0;
-		*g = (int)(x*256.0);
-		*b = (int)(c*256.0);
+		*g = (int)(x*255.0);
+		*b = (int)(c*255.0);
 	}
 	else if(hh<5){
-		*r = (int)(x*256.0);
+		*r = (int)(x*255.0);
 		*g = 0;
-		*b = (int)(c*256.0);
+		*b = (int)(c*255.0);
 	}
 	else if(hh<6){
-		*r = (int)(c*256.0);
+		*r = (int)(c*255.0);
 		*g = 0;
-		*b = (int)(x*256.0);
+		*b = (int)(x*255.0);
 	}
-	m = (int)((vv-c)*256.0);
+	m = (int)((vv-c)*255.0);
 	*r += m;
 	*g += m;
 	*b += m;
 }
 
-void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 HSV values to 0-255 RGB
+void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB values to 0-255 HSV
 {
 	float rr, gg, bb, a,x,c,d;
-	rr = r/256.0f;//normalize values
-	gg = g/256.0f;
-	bb = b/256.0f;
+	rr = r/255.0f;//normalize values
+	gg = g/255.0f;
+	bb = b/255.0f;
 	a = fmin(rr,gg);
 	a = fmin(a,bb);
 	x = fmax(rr,gg);
@@ -611,15 +611,15 @@ void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 HSV value
 	{
 		*h = 0;
 		*s = 0;
-		*v = a;
+		*v = (int)(a*255.0);
 	}
 	else
 	{
  		c = (rr==a) ? gg-bb : ((bb==a) ? rr-gg : bb-rr);
  		d = (rr==a) ? 3 : ((bb==a) ? 1 : 5);
- 		*h = (int)(42.667*(d - c/(x - a)));
- 		*s = (int)(256.0*((x - a)/x));
- 		*v = (int)(256.0*x);
+ 		*h = (int)(42.66667*(d - c/(x - a)));
+ 		*s = (int)(255.0*((x - a)/x));
+ 		*v = (int)(255.0*x);
 	}
 }
 vector2d v2d_zero = {0,0};

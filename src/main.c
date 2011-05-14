@@ -64,7 +64,7 @@ char pygood=1;
 #include <air.h>
 #include <icon.h>
 
-pixel *vid_buf;
+pixel *vid_buf, *decorations;
 
 #define NUM_SOUNDS 2
 struct sample {
@@ -175,7 +175,7 @@ int do_open = 0;
 int sys_pause = 0;
 int sys_shortcuts = 1;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by save.
-int ngrav_enable = 1; //Newtonian gravity, will be set by save TODO: Make this actually do something
+int ngrav_enable = 0; //Newtonian gravity, will be set by save TODO: Make this actually do something
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
@@ -320,7 +320,7 @@ void *build_thumb(int *size, int bzip2)
 }
 
 //the saving function
-void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
+void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, pixel *decorations)
 {
 	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*11+MAXSIGNS*262), *c;
 	int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
@@ -494,7 +494,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	return c;
 }
 
-int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES])
+int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES], pixel *decorations)
 {
 	unsigned char *d=NULL,*c=save;
 	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
@@ -519,6 +519,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	if (ver<34)
 	{
 		legacy_enable = 1;
+	}
+    if (ver<48)
+	{
+		ngrav_enable = 0;
 	}
 	else
 	{
@@ -582,6 +586,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 		clear_sim();
 	}
+	clearrect(decorations, x0, y0, w, h);
 	m = calloc(XRES*YRES, sizeof(int));
 
 	// make a catalog of free parts
@@ -876,6 +881,18 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			else
 				p++;
 		}
+		// no more particle properties to load, so we can change type here without messing up loading
+ 	if (i && i<=NPART)
+ 	{
+        if (ver<48 && (ty==OLD_PT_WIND || (ty==PT_BRAY&&parts[i-1].life==0)))
+        {
+            // Replace invisible particles with something sensible and add decoration to hide it
+            x = (int)(parts[i-1].x+0.5f);
+            y = (int)(parts[i-1].y+0.5f);
+            decorations[y*(XRES+BARSIZE)+x] = PIXPACK(0x010101);
+            parts[i-1].type = PT_DMND;
+        }
+ 	}
 	}
 
 	if (p >= size)
@@ -1035,7 +1052,7 @@ void stamp_save(int x, int y, int w, int h)
 	FILE *f;
 	int n;
 	char fn[64], sn[16];
-	void *s=build_save(&n, x, y, w, h, bmap, fvx, fvy, signs, parts);
+	void *s=build_save(&n, x, y, w, h, bmap, fvx, fvy, signs, parts, decorations);
 
 #ifdef WIN32
 	_mkdir("stamps");
@@ -2595,7 +2612,11 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 	}
 	return 1;
 }
-
+void set_scale(int scale){
+ 	sdl_scale = scale;
+ 	sdl_open();
+ 	return;
+}
 void update_grav_async()
 {
  	  int done = 0;
@@ -2641,13 +2662,13 @@ int main(int argc, char *argv[])
 
           if(load_data && load_size){
                 int parsestate = 0;
-                //parsestate = parse_save(load_data, load_size, 1, 0, 0);
-                parsestate = parse_save(load_data, load_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+                parsestate = parse_save(load_data, load_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap, decorations);
 
                 for(i=0; i<30; i++){
 
                       memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
                       update_particles(vid_buf);
+                      draw_walls(vid_buf);
                       draw_parts(vid_buf);
                       render_fire(vid_buf);
 
@@ -2716,7 +2737,7 @@ int main(int argc, char *argv[])
 	PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep,*pkey;
 	PyObject *tpt_console_obj;
 #endif
-    pixel *decorations = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
+    decorations = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	GSPEED = 1;
@@ -2871,7 +2892,7 @@ int main(int argc, char *argv[])
 			if (file_data)
 			{
 				it=0;
-				parse_save(file_data, size, 0, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+				parse_save(file_data, size, 0, 0, 0, bmap, fvx, fvy, signs, parts, pmap, decorations);
 			}
 		}
 
@@ -2963,6 +2984,7 @@ int main(int argc, char *argv[])
             memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
 
         draw_grav(vid_buf);
+        draw_walls(vid_buf);
         update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
 
@@ -3137,21 +3159,6 @@ int main(int argc, char *argv[])
 			{
 				framerender = 1;
 			}
-            if(sdl_key=='x')
-            {
-                if(kiosk_enable==0)
-                {
-                    kiosk_enable = 1;
-                    sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_FULLSCREEN|SDL_SWSURFACE);
-                    info_ui(vid_buf, "Fullscreen", "Fullscreen Enabled!");
-                }
-                else if(kiosk_enable==1)
-                {
-                    kiosk_enable = 0;
-                    sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_SWSURFACE);
-                    info_ui(vid_buf, "Fullscreen", "Fullscreen Disabled!");
-                }
-            }
 			if ((sdl_key=='l' || sdl_key=='k') && stamps[0].name[0])
 			{
 				if (load_mode)
@@ -3224,14 +3231,6 @@ int main(int argc, char *argv[])
 			if (sdl_key=='9')
 			{
 				set_cmode(CM_GRAD);
-			}
-            if (sdl_key=='a')
-			{
-				set_cmode(CM_AWESOME);
-			}
-            if (sdl_key=='m')
-			{
-				set_cmode(CM_PREAWE);
 			}
 			if (sdl_key=='0')
 			{
@@ -3675,10 +3674,14 @@ int main(int argc, char *argv[])
 					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 					sprintf(coordtext, "#%d, X:%d Y:%d", cr>>8, x/sdl_scale, y/sdl_scale);
 				} else {
+				    const char *tempname = ptypes[cr&0xFF].name;
+				    if (tempname=="LEAF" && parts[cr>>8].life>10){
+				        tempname = "DLEF";
+				    }
 #ifdef BETA
-					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 #else
-					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", ptypes[cr&0xFF].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
+					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
 #endif
 				}
 				if ((cr&0xFF)==PT_PHOT) wavelength_gfx = parts[cr>>8].ctype;
@@ -3875,7 +3878,7 @@ int main(int argc, char *argv[])
 			if (load_y<0) load_y=0;
 			if (bq==1 && !b)
 			{
-				parse_save(load_data, load_size, 0, load_x, load_y, bmap, fvx, fvy, signs, parts, pmap);
+				parse_save(load_data, load_size, 0, load_x, load_y, bmap, fvx, fvy, signs, parts, pmap, decorations);
 				free(load_data);
 				free(load_img);
 				load_mode = 0;
@@ -3917,14 +3920,14 @@ int main(int argc, char *argv[])
 			{
 				if (copy_mode==1)//CTRL-C, copy
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
+					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts, decorations);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
 				}
 				else if (copy_mode==2)//CTRL-X, cut
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
+					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts, decorations);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
@@ -4051,7 +4054,7 @@ int main(int argc, char *argv[])
 					}
 					if (x>=19 && x<=35 && svf_last && svf_open && !bq) {
 						//int tpval = sys_pause;
-						parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+						parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap, decorations);
 						//sys_pause = tpval;
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
@@ -4128,7 +4131,7 @@ int main(int argc, char *argv[])
 										bmap[j][i] = WL_FAN;
 									}
 						}
-						if (c == PT_WIND)
+						if (c == SPC_WIND)
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
@@ -4148,7 +4151,7 @@ int main(int argc, char *argv[])
 					}
 					else//while mouse is held down, it draws lines between previous and current positions
 					{
-						if (c == PT_WIND)
+						if (c == SPC_WIND)
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
@@ -4189,7 +4192,7 @@ int main(int argc, char *argv[])
 					{
 						if (sdl_mod & (KMOD_CAPS))
 							c = 0;
-						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=PT_WIND)
+						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=SPC_WIND)
 							flood_parts(x, y, c, -1, -1);
 						if (c==SPC_HEAT || c==SPC_COOL)
 							create_parts(x, y, bsx, bsy, c);
