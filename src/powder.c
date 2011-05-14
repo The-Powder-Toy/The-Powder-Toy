@@ -1367,20 +1367,26 @@ void update_particles_i(pixel *vid, int start, int inc)
 			lx = parts[i].x;
 			ly = parts[i].y;
 			t = parts[i].type;
+			if (t>=PT_NUM)
+				continue;
 			//printf("parts[%d].type: %d\n", i, parts[i].type);
 
-			//this if is whether or not life goes down automatically.
-			if (parts[i].life && t!=PT_ACID  && t!=PT_COAL && t!=PT_WOOD && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FUSE && t!=PT_FSEP && t!=PT_BCOL && t!=PT_GOL && t!=PT_SPNG && t!=PT_DEUT && t!=PT_PRTO && t!=PT_PRTI)
+			if (parts[i].life>0 && (ptypes[t].properties&PROP_LIFE_DEC))
 			{
-				//this if is for stopping life loss when at a certain life value
-				if (!(parts[i].life==10&&(t==PT_SWCH||t==PT_LCRY||t==PT_PCLN||t==PT_HSWC||t==PT_PUMP)))
-					parts[i].life--;
-				//this if is for stopping death when life hits 0
-				if (parts[i].life<=0 && !(ptypes[t].properties&PROP_CONDUCTS) && t!=PT_SOAP && t!=PT_ARAY && t!=PT_FIRW && t!=PT_SWCH && t!=PT_PCLN && t!=PT_HSWC && t!=PT_PUMP && t!=PT_SPRK && t!=PT_LAVA && t!=PT_LCRY && t!=PT_QRTZ && t!=PT_GLOW && t!= PT_FOG && t!=PT_PIPE && t!=PT_FRZW &&!(t==PT_ICEI&&parts[i].ctype==PT_FRZW)&&t!=PT_INST && t!=PT_SHLD1&& t!=PT_SHLD2&& t!=PT_SHLD3&& t!=PT_SHLD4 && t!=PT_SING)
+				// automatically decrease life
+				parts[i].life--;
+				if (parts[i].life<=0 && (ptypes[t].properties&(PROP_LIFE_KILL_DEC|PROP_LIFE_KILL)))
 				{
+					// kill on change to no life
 					kill_part(i);
 					continue;
 				}
+			}
+			else if (parts[i].life<=0 && (ptypes[t].properties&PROP_LIFE_KILL))
+			{
+				// kill if no life
+				kill_part(i);
+				continue;
 			}
 
 			x = (int)(parts[i].x+0.5f);

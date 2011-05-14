@@ -2,6 +2,8 @@
 
 int update_HSWC(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	if (parts[i].life>0 && parts[i].life!=10)
+		parts[i].life--;
 	if (parts[i].life==10)
 	{
 		for (rx=-2; rx<3; rx++)

@@ -1,6 +1,8 @@
 #include <element.h>
 
 int update_LCRY(UPDATE_FUNC_ARGS) {
+	if (parts[i].life>0 && parts[i].life!=10)
+		parts[i].life--;
 	if (parts[i].life==10)
 	{
 		int r, rx, ry;
