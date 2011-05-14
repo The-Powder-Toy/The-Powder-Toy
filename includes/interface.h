@@ -12,6 +12,13 @@ struct menu_section
 };
 typedef struct menu_section menu_section;
 
+struct menu_wall
+{
+	pixel colour;
+	const char *descs;
+};
+typedef struct menu_wall menu_wall;
+
 #define SC_WALL 0
 #define SC_SPECIAL 8
 #define SC_POWDERS 5
