@@ -1310,6 +1310,7 @@ int main(int argc, char *argv[])
 		
 		for(i=0; i<30; i++){
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+			draw_walls(vid_buf);
 			update_particles(vid_buf);
 			draw_parts(vid_buf);
 			render_fire(vid_buf);
@@ -1616,8 +1617,10 @@ int main(int argc, char *argv[])
 
 		if (!sys_pause||framerender) //Only update if not paused
 			memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
+		
 		if(ngrav_enable)
 			draw_grav(vid_buf);
+		draw_walls(vid_buf);
 		update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
 

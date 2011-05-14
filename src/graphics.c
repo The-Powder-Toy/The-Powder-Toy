@@ -3063,6 +3063,174 @@ void draw_parts(pixel *vid)
 #endif
 
 }
+void draw_walls(pixel *vid)
+{
+	int x, y, i, j, cr, cg, cb;
+	unsigned char wt;
+	pixel pc;
+	for (y=0; y<YRES/CELL; y++)
+		for (x=0; x<XRES/CELL; x++)
+			if (bmap[y][x])
+			{
+				wt = bmap[y][x]-UI_ACTUALSTART;
+				pc = wtypes[wt].colour;
+
+				// standard wall patterns
+				if (wtypes[wt].drawstyle==1)
+				{
+					for (j=0; j<CELL; j+=2)
+						for (i=(j>>1)&1; i<CELL; i+=2)
+							vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+				}
+				else if (wtypes[wt].drawstyle==2)
+				{
+					for (j=0; j<CELL; j+=2)
+						for (i=0; i<CELL; i+=2)
+							vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+				}
+				else if (wtypes[wt].drawstyle==3)
+				{
+					for (j=0; j<CELL; j++)
+						for (i=0; i<CELL; i++)
+							vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+				}
+
+				// special rendering for some walls
+				if (bmap[y][x]==WL_EWALL)
+				{
+					if (emap[y][x])
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								if (i&j&1)
+									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+					}
+					else
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								if (!(i&j&1))
+									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+					}
+				}
+				else if (bmap[y][x]==WL_WALLELEC)
+				{
+					for (j=0; j<CELL; j++)
+						for (i=0; i<CELL; i++)
+						{
+							if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+							else
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x808080);
+						}
+				}
+				else if (bmap[y][x]==WL_EHOLE)
+				{
+					if (emap[y][x])
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x242424);
+						for (j=0; j<CELL; j+=2)
+							for (i=0; i<CELL; i+=2)
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x000000);
+					}
+					else
+					{
+						for (j=0; j<CELL; j+=2)
+							for (i=0; i<CELL; i+=2)
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x242424);
+					}
+				}
+				
+				if (cmode==CM_BLOB)
+				{
+					// when in blob view, draw some blobs...
+					if (wtypes[wt].drawstyle==1)
+					{
+						for (j=0; j<CELL; j+=2)
+							for (i=(j>>1)&1; i<CELL; i+=2)
+								drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+					else if (wtypes[wt].drawstyle==2)
+					{
+						for (j=0; j<CELL; j+=2)
+							for (i=0; i<CELL; i+=2)
+								drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+					else if (wtypes[wt].drawstyle==3)
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+
+					if (bmap[y][x]==WL_EWALL)
+					{
+						if (emap[y][x])
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									if (i&j&1)
+										drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+						}
+						else
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									if (!(i&j&1))
+										drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+						}
+					}
+					else if (bmap[y][x]==WL_WALLELEC)
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+							{
+								if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
+									drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								else
+									drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+							}
+					}
+					else if (bmap[y][x]==WL_EHOLE)
+					{
+						if (emap[y][x])
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									drawblob(vid, (x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+							for (j=0; j<CELL; j+=2)
+								for (i=0; i<CELL; i+=2)
+									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x000000);
+						}
+						else
+						{
+							for (j=0; j<CELL; j+=2)
+								for (i=0; i<CELL; i+=2)
+									drawblob(vid, (x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+						}
+					}
+				}
+
+				if (wtypes[wt].eglow && emap[y][x])
+				{
+					// glow if electrified
+					pc = wtypes[wt].eglow;
+					cr = fire_r[y][x] + PIXR(pc);
+					if (cr > 255) cr = 255;
+					fire_r[y][x] = cr;
+					cg = fire_g[y][x] + PIXG(pc);
+					if (cg > 255) cg = 255;
+					fire_g[y][x] = cg;
+					cb = fire_b[y][x] + PIXB(pc);
+					if (cb > 255) cb = 255;
+					fire_b[y][x] = cb;
+					
+				}
+			}
+}
+
 void draw_decorations(pixel *vid_buf,pixel *decorations)
 {
 	int i,r,g,b;

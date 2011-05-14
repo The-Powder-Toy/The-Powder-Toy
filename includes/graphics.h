@@ -114,6 +114,8 @@ void xor_rect(pixel *vid, int x, int y, int w, int h);
 
 void draw_parts(pixel *vid);
 
+void draw_walls(pixel *vid);
+
 void draw_decorations(pixel *vid_buf,pixel *decorations);
 
 void draw_wavelengths(pixel *vid, int x, int y, int h, int wl);

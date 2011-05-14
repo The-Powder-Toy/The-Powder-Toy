@@ -1725,7 +1725,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 					x = XRES-BARSIZE-18;
 					y += 19;
 				}*/
-				x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
+				x -= draw_tool_xy(vid_buf, x, y, n, wtypes[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
 					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
@@ -1762,7 +1762,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 					x = XRES-BARSIZE-18;
 					y += 19;
 				}*/
-				x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
+				x -= draw_tool_xy(vid_buf, x, y, n, wtypes[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
 					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
@@ -1869,7 +1869,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 	}
 	else if (i==SC_WALL||(i==SC_SPECIAL&&h>=UI_WALLSTART))
 	{
-		drawtext(vid_buf, XRES-textwidth((char *)mwalls[h-UI_WALLSTART].descs)-BARSIZE, sy-10, (char *)mwalls[h-UI_WALLSTART].descs, 255, 255, 255, 255);
+		drawtext(vid_buf, XRES-textwidth((char *)wtypes[h-UI_WALLSTART].descs)-BARSIZE, sy-10, (char *)wtypes[h-UI_WALLSTART].descs, 255, 255, 255, 255);
 	}
 	else
 	{
