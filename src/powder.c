@@ -1472,10 +1472,13 @@ void update_particles_i(pixel *vid, int start, int inc)
 					if (nx||ny) {
 						surround[j] = r = pmap[y+ny][x+nx];
 						j++;
-						if (!(r&0xFF))
-							surround_space = 1;//there is empty space
-						if ((r&0xFF)!=t)
-							nt = 1;//there is nothing or a different particle
+						if (!bmap[(y+ny)/CELL][(x+nx)/CELL] || bmap[(y+ny)/CELL][(x+nx)/CELL]==WL_STREAM)
+						{
+							if (!(r&0xFF))
+								surround_space = 1;//there is empty space
+							if ((r&0xFF)!=t)
+								nt = 1;//there is nothing or a different particle
+						}
 					}
 				}
 
@@ -1980,7 +1983,9 @@ killed:
 								goto movedone;
 							}
 						}
-						if (ptypes[t].falldown>1 && (parts[i].vy>fabsf(parts[i].vx) || gravityMode==2))
+						else s = 0;
+						// s==0 means particle has not yet moved, allow liquids code to run
+						if (s==0 && ptypes[t].falldown>1 && (parts[i].vy>fabs(parts[i].vx) || gravityMode==2))
 						{
 							// TODO: rewrite to operate better with radial gravity
 							s = 0;
