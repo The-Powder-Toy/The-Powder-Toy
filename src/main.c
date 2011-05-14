@@ -188,6 +188,7 @@ int numCores = 4;
 
 pthread_t gravthread;
 pthread_mutex_t gravmutex;
+pthread_cond_t gravcv;
 int grav_ready = 0;
 int gravthread_done = 0;
 
@@ -1235,13 +1236,18 @@ void update_grav_async()
 			update_grav();
 			done = 1;
 			pthread_mutex_lock(&gravmutex);
+			
 			grav_ready = done;
 			thread_done = gravthread_done;
+			
 			pthread_mutex_unlock(&gravmutex);
 		} else {
 			pthread_mutex_lock(&gravmutex);
-		    done = grav_ready;
+			pthread_cond_wait(&gravcv, &gravmutex);
+		    
+			done = grav_ready;
 			thread_done = gravthread_done;
+			
 			pthread_mutex_unlock(&gravmutex);
 		}
 	}
@@ -1255,6 +1261,7 @@ void start_grav_async()
 		pthread_mutexattr_init(&gma);*/
 		gravthread_done = 0;
 		pthread_mutex_init (&gravmutex, NULL);
+		pthread_cond_init(&gravcv, NULL);
 		pthread_create(&gravthread, NULL, update_grav_async, NULL); //Start asynchronous gravity simulation
 		ngrav_enable = 1;
 	}
@@ -1555,7 +1562,6 @@ int main(int argc, char *argv[])
 		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
 		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
 	}
-	
 	while (!sdl_poll()) //the main loop
 	{
 		frameidx++;
@@ -1600,8 +1606,10 @@ int main(int argc, char *argv[])
 				memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
 				memcpy(gravy, th_gravy, sizeof(gravy));	//Hmm, Gravy
 				memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
-				if (!sys_pause||framerender) //Only update if not paused
+				if (!sys_pause||framerender){ //Only update if not paused
 					grav_ready = 0; //Tell the other thread that we're ready for it to continue
+					pthread_cond_signal(&gravcv);
+				}
 			}
 			pthread_mutex_unlock(&gravmutex);
 		}
