@@ -168,6 +168,10 @@ int try_move(int i, int x, int y, int nx, int ny)
 			if ((r & 0xFF) < PT_NUM && ptypes[r&0xFF].hconduct)
 				parts[i].temp = parts[r>>8].temp = restrict_flt((parts[r>>8].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
+		if (parts[i].type==PT_NEUT && ((r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN || (r&0xFF)==PT_BCLN)) {
+			if (!parts[r>>8].ctype)
+				parts[r>>8].ctype = PT_NEUT;
+		}
 		return 0;
 	}
 
@@ -250,7 +254,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 		return 0;
 	}
-	if ((r&0xFF)==PT_CNCT)//stops CNCT being displaced by other particles
+
+	if ((pmap[ny][nx]&0xFF)==PT_CNCT)//stops CNCT being displaced by other particles
 		return 0;
 	if (parts[i].type==PT_CNCT && y<ny && (pmap[y+1][x]&0xFF)==PT_CNCT)//check below CNCT for another CNCT
 		return 0;
