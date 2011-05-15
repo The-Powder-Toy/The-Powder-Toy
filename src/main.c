@@ -1230,8 +1230,9 @@ char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
 #endif
                 ;
 
-void set_scale(int scale){
+void set_scale(int scale, int kiosk){
 	sdl_scale = scale;
+	kiosk_enable = kiosk;
 	sdl_open();
 	return;
 }
