@@ -2022,13 +2022,12 @@ killed:
 							// but no point trying this if particle is stuck in a block of identical particles
 							dx = parts[i].vx - parts[i].vy*r;
 							dy = parts[i].vy + parts[i].vx*r;
-							if (fabsf(dy)>fabsf(dx)) {
-								dx /= fabsf(dy);
-								dy /= fabsf(dy);
-							} else {
-								dx /= fabsf(dx);
-								dy /= fabsf(dx);
-							}
+							if (fabsf(dy)>fabsf(dx))
+								mv = fabsf(dy);
+							else
+								mv = fabsf(dx);
+							dx /= mv;
+							dy /= mv;
 							if (do_move(i, x, y, clear_xf+dx, clear_yf+dy))
 							{
 								parts[i].vx *= ptypes[t].collision;
