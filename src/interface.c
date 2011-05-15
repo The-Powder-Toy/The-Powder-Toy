@@ -1556,14 +1556,14 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 		{
 			for (n = 122; n<122+UI_WALLCOUNT; n++)
 			{
-				if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM&&n!=SPC_WIND)
+				if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
 				{
 					if (x-26<=60)
 					{
 						x = XRES-BARSIZE-26;
 						y += 19;
 					}
-					x -= draw_tool_xy(vid_buf, x, y, n, wtypes[n-122].colour)+5;
+					x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
 					if (mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 					{
 						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
@@ -1584,14 +1584,14 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 		{
 			for (n = 122; n<122+UI_WALLCOUNT; n++)
 			{
-				if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM||n==SPC_WIND)
+				if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
 				{
-					{
 					if (x-26<=60)
+					{
 						x = XRES-BARSIZE-26;
 						y += 19;
 					}
-					x -= draw_tool_xy(vid_buf, x, y, n, wtypes[n-122].colour)+5;
+					x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
 					if (mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 					{
 						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
@@ -1668,7 +1668,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 		}
 		else if (i==SC_WALL||(i==SC_SPECIAL&&h>=122))
 		{
-			drawtext(vid_buf, XRES-textwidth((char *)wtypes[h-122].descs)-BARSIZE, sy+height+10, (char *)wtypes[h-122].descs, 255, 255, 255, 255);
+			drawtext(vid_buf, XRES-textwidth((char *)mwalls[h-122].descs)-BARSIZE, sy+height+10, (char *)mwalls[h-122].descs, 255, 255, 255, 255);
 		}
 		else
 		{
@@ -1734,14 +1734,14 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 	{
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
-			if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM&&n!=SPC_WIND)
+			if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
 			{
 				/*if (x-18<=2)
                  {
                  x = XRES-BARSIZE-18;
                  y += 19;
                  }*/
-				x -= draw_tool_xy(vid_buf, x, y, n, wtypes[n-UI_WALLSTART].colour)+5;
+				x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
 					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
@@ -1771,7 +1771,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 	{
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
-			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM||n==SPC_WIND)
+			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
 			{
 
 				/*if (x-18<=0)
@@ -1781,7 +1781,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
                  }
                  */
 
-				x -= draw_tool_xy(vid_buf, x-xoff, y, n, wtypes[n-UI_WALLSTART].colour)+5;
+				x -= draw_tool_xy(vid_buf, x-xoff, y, n, mwalls[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
                 {
                     drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
@@ -1885,7 +1885,6 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
         {
             if (ptypes[n].menusection==i&&ptypes[n].menu==1)
             {
-                if(msections[i].doshow==1){
 
                 x -= draw_tool_xy(vid_buf, x-xoff, y, n, ptypes[n].pcolors)+5;
                 if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
@@ -1910,7 +1909,6 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
                 {
                     drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 55, 55, 255, 255);
                 }
-                }
             }
         }
 
@@ -1926,7 +1924,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 	}
 	else if (i==SC_WALL||(i==SC_SPECIAL&&h>=UI_WALLSTART))
 	{
-        drawtext(vid_buf, XRES-textwidth((char *)wtypes[h-UI_WALLSTART].descs)-BARSIZE, sy-10, (char *)wtypes[h-UI_WALLSTART].descs, 255, 255, 255, 255);
+		drawtext(vid_buf, XRES-textwidth((char *)mwalls[h-UI_WALLSTART].descs)-BARSIZE, sy-10, (char *)mwalls[h-UI_WALLSTART].descs, 255, 255, 255, 255);
 	}
 	else
 	{
@@ -2021,6 +2019,7 @@ int color_menu_ui(pixel *vid_buf, int i, int *cr, int *cg, int *cb, int b, int b
 	}
 	return 0;
 }
+
 int sdl_poll(void)
 {
 	SDL_Event event;
@@ -2188,11 +2187,10 @@ void set_cmode(int cm) // sets to given view mode
     else if (cmode==CM_PREAWE)
 	{
 		strcpy(itc_msg, "Awesome Pressure Display");
-	}
-	else if (cmode==CM_GRAV)
-	{
-		strcpy(itc_msg, "Gravity Display");
-	}
+	}else if (cmode==CM_GRAV)
+ 	{
+        strcpy(itc_msg, "Gravity Display");
+ 	}
 	else if (cmode==CM_LIFE)
 	{
 		if (DEBUG_MODE) //can only get to Life view in debug mode
@@ -4513,8 +4511,8 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 				HSV_to_RGB(0,0,vv,&cr,&cg,&cb);
 				vid_buf[(vv+grid_offset_y)*(XRES+BARSIZE)+(i+grid_offset_x+255+4)] = PIXRGB(cr, cg, cb);
 			}
-        if( color_menu_ui(vid_buf, 1, &cr, &cg, &cb, b, bq, mx, my) )
-            RGB_to_HSV(cr,cg,cb,&h,&s,&v);
+			if( color_menu_ui(vid_buf, 1, &cr, &cg, &cb, b, bq, mx, my) )
+			RGB_to_HSV(cr,cg,cb,&h,&s,&v);
 
 		HSV_to_RGB(h,s,v,&cr,&cg,&cb);
 
@@ -4564,10 +4562,10 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 			if(b && mx >= window_offset_x + 230 && my >= window_offset_y +255+6 && mx <= window_offset_x + 230 +26 && my <= window_offset_y +255+5 +13)
 				memset(decorations, 0,(XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
-        else if (mx > XRES || my > YRES)
-        {
-            //click outside normal drawing area
-        }
+		else if (mx > XRES || my > YRES)
+		{
+		    //click outside normal drawing area
+		}
 		else if (b)//there is a click, outside window
 		{
 			if (!(b&1))
@@ -4718,14 +4716,14 @@ void simulation_ui(pixel * vid_buf)
 	cb2.checked = ngrav_enable;
 
 	cb3.x = x0+xsize-16;
- 	cb3.y = y0+77;
- 	cb3.focus = 0;
- 	cb3.checked = (sdl_scale==2)?1:0;
+	cb3.y = y0+77;
+	cb3.focus = 0;
+	cb3.checked = (sdl_scale==2)?1:0;
 
- 	cb4.x = x0+xsize-16;
- 	cb4.y = y0+90;
- 	cb4.focus = 0;
- 	cb4.checked = (kiosk_enable);
+	cb4.x = x0+xsize-16;
+	cb4.y = y0+90;
+	cb4.focus = 0;
+	cb4.checked = (kiosk_enable);
 
 	while (!sdl_poll())
 	{
@@ -4754,12 +4752,12 @@ void simulation_ui(pixel * vid_buf)
 		drawtext(vid_buf, x0+12, y0+68, "May also cause slow performance on older computers", 255, 255, 255, 180);
 
 		drawtext(vid_buf, x0+8, y0+80, "Large window", 255, 255, 255, 255);
-        drawtext(vid_buf, x0+12+textwidth("Large window"), y0+80, "Double window size for small screens", 255, 255, 255, 180);
-        //drawtext(vid_buf, x0+12, y0+68, "May also cause slow performance on older computers", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+12+textwidth("Large window"), y0+80, "Double window size for small screens", 255, 255, 255, 180);
+		//drawtext(vid_buf, x0+12, y0+68, "May also cause slow performance on older computers", 255, 255, 255, 180);
 
-        drawtext(vid_buf, x0+8, y0+93, "FullScreen", 255, 255, 255, 255);
-        drawtext(vid_buf, x0+12+textwidth("FullScreen"), y0+93, "Fullscreen", 255, 255, 255, 180);
-        //drawtext(vid_buf, x0+12, y0+68, "May also cause slow performance on older computers", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+8, y0+93, "FullScreen", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("FullScreen"), y0+93, "Fullscreen", 255, 255, 255, 180);
+		//drawtext(vid_buf, x0+12, y0+68, "May also cause slow performance on older computers", 255, 255, 255, 180);
 
 		//TODO: Options for Air and Normal gravity
 		//Maybe save/load defaults too.
@@ -4788,16 +4786,16 @@ void simulation_ui(pixel * vid_buf)
 
 	legacy_enable = !cb.checked;
 	new_scale = (cb3.checked)?2:1;
-    if(new_scale!=sdl_scale)
+	if(new_scale!=sdl_scale)
         set_scale(new_scale);
 	ngrav_enable = cb2.checked;
-	if(cb4.checked==0){
+	if(cb4.checked==0 && kiosk_enable==1){
 	    sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_SWSURFACE);
 	    kiosk_enable = 0;
-	} else if(cb4.checked==1) {
+    } else if(cb4.checked==1 && kiosk_enable==0) {
         sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_FULLSCREEN|SDL_SWSURFACE);
         kiosk_enable = 1;
-	}
+    }
 
 	while (!sdl_poll())
 	{

@@ -175,7 +175,7 @@ int do_open = 0;
 int sys_pause = 0;
 int sys_shortcuts = 1;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by save.
-int ngrav_enable = 0; //Newtonian gravity, will be set by save TODO: Make this actually do something
+int ngrav_enable = 0; //Newtonian gravity, will be set by save
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
@@ -520,9 +520,9 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	{
 		legacy_enable = 1;
 	}
-    if (ver<48)
+	if (ver<48)
 	{
-		ngrav_enable = 0;
+	    ngrav_enable = 0;
 	}
 	else
 	{
@@ -637,6 +637,18 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			}
 
 			p++;
+		}
+		// no more particle properties to load, so we can change type here without messing up loading
+		if (i && i<=NPART)
+		{
+		    if (ver<48 && (ty==PT_WIND || (ty==PT_BRAY&&parts[i-1].life==0)))
+		    {
+		        // Replace invisible particles with something sensible and add decoration to hide it
+		        x = (int)(parts[i-1].x+0.5f);
+		        y = (int)(parts[i-1].y+0.5f);
+		        decorations[y*(XRES+BARSIZE)+x] = PIXPACK(0x010101);
+		        parts[i-1].type = PT_DMND;
+		    }
 		}
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
@@ -881,18 +893,6 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			else
 				p++;
 		}
-		// no more particle properties to load, so we can change type here without messing up loading
- 	if (i && i<=NPART)
- 	{
-        if (ver<48 && (ty==OLD_PT_WIND || (ty==PT_BRAY&&parts[i-1].life==0)))
-        {
-            // Replace invisible particles with something sensible and add decoration to hide it
-            x = (int)(parts[i-1].x+0.5f);
-            y = (int)(parts[i-1].y+0.5f);
-            decorations[y*(XRES+BARSIZE)+x] = PIXPACK(0x010101);
-            parts[i-1].type = PT_DMND;
-        }
- 	}
 	}
 
 	if (p >= size)
@@ -2613,9 +2613,9 @@ int process_command_old(pixel *vid_buf,char *console,char *console_error) {
 	return 1;
 }
 void set_scale(int scale){
- 	sdl_scale = scale;
- 	sdl_open();
- 	return;
+   sdl_scale = scale;
+   sdl_open();
+   return;
 }
 void update_grav_async()
 {
@@ -2668,7 +2668,6 @@ int main(int argc, char *argv[])
 
                       memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
                       update_particles(vid_buf);
-                      draw_walls(vid_buf);
                       draw_parts(vid_buf);
                       render_fire(vid_buf);
 
@@ -2737,7 +2736,7 @@ int main(int argc, char *argv[])
 	PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep,*pkey;
 	PyObject *tpt_console_obj;
 #endif
-    decorations = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
+    pixel *decorations = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	GSPEED = 1;
@@ -2982,9 +2981,7 @@ int main(int argc, char *argv[])
 
         if (!sys_pause||framerender) //Only update if not paused
             memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
-
         draw_grav(vid_buf);
-        draw_walls(vid_buf);
         update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
 
@@ -4131,7 +4128,7 @@ int main(int argc, char *argv[])
 										bmap[j][i] = WL_FAN;
 									}
 						}
-						if (c == SPC_WIND)
+						if (c == PT_WIND)
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
@@ -4151,7 +4148,7 @@ int main(int argc, char *argv[])
 					}
 					else//while mouse is held down, it draws lines between previous and current positions
 					{
-						if (c == SPC_WIND)
+						if (c == PT_WIND)
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
@@ -4192,7 +4189,7 @@ int main(int argc, char *argv[])
 					{
 						if (sdl_mod & (KMOD_CAPS))
 							c = 0;
-						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=SPC_WIND)
+						if (c!=WL_STREAM+200&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=PT_WIND)
 							flood_parts(x, y, c, -1, -1);
 						if (c==SPC_HEAT || c==SPC_COOL)
 							create_parts(x, y, bsx, bsy, c);
@@ -4264,7 +4261,7 @@ int main(int argc, char *argv[])
 				su = c;
 				if (lm == 1)//line
 				{
-					if (c!=WL_FAN+100 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=WL_FAN)
+					if (c!=WL_FAN+200 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=WL_FAN)
 						create_line(lx, ly, x, y, bsx, bsy, c);
 				}
 				else//box

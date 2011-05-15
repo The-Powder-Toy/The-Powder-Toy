@@ -235,9 +235,9 @@ void strcaturl(char *dst, char *src)
 {
 	char *d;
 	unsigned char *s;
-    
+
 	for (d=dst; *d; d++) ;
-    
+
 	for (s=(unsigned char *)src; *s; s++)
 	{
 		if ((*s>='0' && *s<='9') ||
@@ -258,9 +258,9 @@ void strappend(char *dst, char *src)
 {
 	char *d;
 	unsigned char *s;
-    
+
 	for (d=dst; *d; d++) ;
-    
+
 	for (s=(unsigned char *)src; *s; s++)
 	{
 		*(d++) = *s;
@@ -272,7 +272,7 @@ void *file_load(char *fn, int *size)
 {
 	FILE *f = fopen(fn, "rb");
 	void *s;
-    
+
 	if (!f)
 		return NULL;
 	fseek(f, 0, SEEK_END);
@@ -383,11 +383,11 @@ void clipboard_push_text(char * text)
 {
 #ifdef MACOSX
 	PasteboardRef newclipboard;
-    
+
 	if (PasteboardCreate(kPasteboardClipboard, &newclipboard)!=noErr) return;
 	if (PasteboardClear(newclipboard)!=noErr) return;
 	PasteboardSynchronize(newclipboard);
-    
+
 	CFDataRef data = CFDataCreate(kCFAllocatorDefault, text, strlen(text));
 	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);
 #elif defined WIN32
@@ -395,14 +395,14 @@ void clipboard_push_text(char * text)
 	{
 		HGLOBAL cbuffer;
 		char * glbuffer;
-        
+
 		EmptyClipboard();
-        
+
 		cbuffer = GlobalAlloc(GMEM_DDESHARE, strlen(text)+1);
 		glbuffer = (char*)GlobalLock(cbuffer);
-        
+
 		strcpy(glbuffer, text);
-        
+
 		GlobalUnlock(cbuffer);
 		SetClipboardData(CF_TEXT, cbuffer);
 		CloseClipboard();
@@ -430,7 +430,7 @@ int register_extension()
 	opencommand = malloc(strlen(currentfilename)+13);
 	sprintf(iconname, "%s,-102", currentfilename);
 	sprintf(opencommand, "\"%s\" open \"%%1\"", currentfilename);
-    
+
 	//Create extension entry
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.cps", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
 	if (rresult != ERROR_SUCCESS) {
@@ -442,7 +442,7 @@ int register_extension()
 		return 0;
 	}
 	RegCloseKey(newkey);
-    
+
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.stm", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
 	if (rresult != ERROR_SUCCESS) {
 		return 0;
@@ -453,7 +453,7 @@ int register_extension()
 		return 0;
 	}
 	RegCloseKey(newkey);
-    
+
 	//Create program entry
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
 	if (rresult != ERROR_SUCCESS) {
@@ -465,7 +465,7 @@ int register_extension()
 		return 0;
 	}
 	RegCloseKey(newkey);
-    
+
 	//Set DefaultIcon
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave\\DefaultIcon", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
 	if (rresult != ERROR_SUCCESS) {
@@ -477,7 +477,7 @@ int register_extension()
 		return 0;
 	}
 	RegCloseKey(newkey);
-    
+
 	//Set Launch command
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave\\shell\\open\\command", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
 	if (rresult != ERROR_SUCCESS) {
@@ -489,7 +489,7 @@ int register_extension()
 		return 0;
 	}
 	RegCloseKey(newkey);
-    
+
 	return 1;
 #elif defined(LIN32) || defined(LIN64)
 	char *currentfilename = exe_name();
@@ -508,7 +508,7 @@ int register_extension()
 		return 0;
 	fwrite(mimedata, 1, strlen(mimedata), f);
 	fclose(f);
-    
+
 	char *desktopfiledata_tmp =
     "[Desktop Entry]\n"
     "Type=Application\n"

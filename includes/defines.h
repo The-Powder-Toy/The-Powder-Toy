@@ -8,7 +8,7 @@
 #endif
 
 #define ME4502_MAJOR_VERSION 2
-#define ME4502_VERSION 3
+#define ME4502_VERSION 4
 #define SAVE_VERSION 48
 #define MINOR_VERSION 0
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
@@ -198,7 +198,6 @@ extern int do_open;
 extern int sys_pause;
 extern int legacy_enable; //Used to disable new features such as heat, will be set by commandline or save.
 extern int death, death2, framerender;
-extern int menuutotal;
 extern pixel *vid_buf, *decorations;
 
 extern unsigned char last_major, last_minor, update_flag;
@@ -215,7 +214,5 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 void clear_sim(void);
 void del_stamp(int d);
 void sdl_seticon(void);
-void start_grav_async(void);
-void stop_grav_async(void);
 //int process_command(pixel *vid_buf, char *console, char *console_error, PyObject *pfunc);
 #endif

@@ -9,14 +9,14 @@ int update_C6(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
-				if (((r&0xFF)!=PT_C6 && parts[r>>8].temp<100)||(r&0xFF)==PT_BFLM)
+				if (((r&0xFF)!=PT_C6 && parts[r>>8].temp>1000)||(r&0xFF)==PT_BFLM ||(r&0xFF)==PT_PLSM ||(r&0xFF)==PT_FIRE)
 				{
 					if (1>rand()%6)
 					{
 						part_change_type(i,x,y,PT_BFLM);
 						parts[r>>8].temp = parts[i].temp = MAX_TEMP;
 						parts[i].life = rand()%150+50;
-						pv[y/CELL][x/CELL] += 5.0;
+						pv[y/CELL][x/CELL] += 10.0;
 					}
 				}
 			}
