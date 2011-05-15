@@ -1285,6 +1285,7 @@ void stop_grav_async()
 	if(ngrav_enable){
 		pthread_mutex_lock(&gravmutex);
 		gravthread_done = 1;
+		pthread_cond_signal(&gravcv);
 		pthread_mutex_unlock(&gravmutex);
 		pthread_join(gravthread, NULL);
 		pthread_mutex_destroy(&gravmutex); //Destroy the mutex
