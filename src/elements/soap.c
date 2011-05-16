@@ -17,9 +17,10 @@ void detach(int i)
 	parts[i].ctype = 0;
 }
 
-int update_SOAP(UPDATE_FUNC_ARGS) 
+int update_SOAP(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
+	int r, rx, ry, target, ii, buf;
+	float d, dx, dy, ax, ay;
 
 	//0x01 - bubble on/off
 	//0x02 - first mate yes/no
@@ -31,7 +32,6 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 		{
 			if ((parts[i].ctype&6) != 6 && parts[i].ctype>1)
 			{
-				int target;
 
 				target = i;
 
@@ -73,7 +73,7 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 						if ((r>>8)>=NPART || !r)
 							continue;
 
-						if ((parts[r>>8].type == PT_SOAP) && ((parts[r>>8].ctype&1) == 1) 
+						if ((parts[r>>8].type == PT_SOAP) && ((parts[r>>8].ctype&1) == 1)
 								&& ((parts[r>>8].ctype&4) != 4))
 						{
 							if ((parts[r>>8].ctype&2) == 2)
@@ -109,8 +109,8 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 							if ((r>>8)>=NPART || !r)
 								continue;
 
-							if (((r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS) 
-									|| (parts[r>>8].ctype == 0 && (r&0xFF) == PT_SOAP 
+							if (((r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS)
+									|| (parts[r>>8].ctype == 0 && (r&0xFF) == PT_SOAP
 									&& (abs(parts[r>>8].vx)<2 || abs(parts[r>>8].vy)<2)))
 							{
 								detach(i);
@@ -119,7 +119,6 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 
 							if ((r&0xFF) == PT_SOAP && parts[r>>8].ctype == 1)
 							{
-								int buf;
 
 								buf = parts[i].tmp;
 
@@ -132,7 +131,6 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 
 							if ((r&0xFF) == PT_SOAP && parts[r>>8].ctype == 7 && parts[i].tmp != r>>8 && parts[i].tmp2 != r>>8)
 							{
-								int buf;
 
 								parts[parts[i].tmp].tmp2 = parts[r>>8].tmp2;
 								parts[parts[r>>8].tmp2].tmp = parts[i].tmp;
@@ -144,7 +142,7 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 
 		if((parts[i].ctype&2) == 2)
 		{
-			float d, dx, dy;
+
 
 			dx = parts[i].x - parts[parts[i].tmp].x;
 			dy = parts[i].y - parts[parts[i].tmp].y;
@@ -157,10 +155,9 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 			parts[i].vx += dx*d;
 			parts[i].vy += dy*d;
 
-			if (((parts[parts[i].tmp].ctype&2) == 2) && ((parts[parts[i].tmp].ctype&1) == 1) 
+			if (((parts[parts[i].tmp].ctype&2) == 2) && ((parts[parts[i].tmp].ctype&1) == 1)
 					&& ((parts[parts[parts[i].tmp].tmp].ctype&2) == 2) && ((parts[parts[parts[i].tmp].tmp].ctype&1) == 1))
 			{
-				int ii;
 
 				ii = parts[parts[parts[i].tmp].tmp].tmp;
 
@@ -199,8 +196,6 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 
 						parts[i].vy *= 0.5f;
 						parts[i].vx *= 0.5f;
-
-						float ax, ay;
 
 						ax = (parts[i].vx + parts[r>>8].vx)/2;
 						ay = (parts[i].vy + parts[r>>8].vy)/2;

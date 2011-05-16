@@ -278,7 +278,9 @@
 #define PT_PMIC 222
 #define PT_PIVS 223
 #define PT_LEAF 224
-#define PT_NUM  225
+#define PT_PLAN 225
+#define PT_BSHL 226
+#define PT_NUM  227
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -426,6 +428,7 @@ int update_CFC(UPDATE_FUNC_ARGS);
 int update_PMIC(UPDATE_FUNC_ARGS);
 int update_PIVS(UPDATE_FUNC_ARGS);
 int update_LEAF(UPDATE_FUNC_ARGS);
+int update_PLAN(UPDATE_FUNC_ARGS);
 
 
 int update_MISC(UPDATE_FUNC_ARGS);
@@ -442,17 +445,11 @@ struct particle
 	float pavg[2];
 	int flags;
 	int tmp, tmp2, tmpx, tmpy;
+	const char *planetname;
 };
 
 typedef struct particle particle;
-struct particle_connection
-{
-    int other;
-    particle* pointer;
-    float dist;
-    float spring; //normally 0.1
-};
-typedef struct particle_connection particle_connection;
+
 struct part_type
 {
 	const char *name;
@@ -782,7 +779,9 @@ static const part_type ptypes[PT_NUM] =
     {"SVOI",	PIXPACK(0x790B0B),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	251,	"Hole, will drain away first particle it touches.", ST_SOLID, TYPE_SOLID|PROP_DEADLY, &update_SVOI},
     {"PMIC",	PIXPACK(0xC0C0C0),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	1,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	100,	"Pumice. Stacks and floats on water.", ST_SOLID, TYPE_PART, &update_PMIC},
     {"PIVS",	PIXPACK(0x00CCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	15,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	164,	"Powered Invisible. Invisible to everything when sparked with PSCN. Opaque again with NSCN.", ST_SOLID, TYPE_SOLID | PROP_NEUTPASS, &update_PIVS},
-    {"LEAF",    PIXPACK(0x0CAC00),  0.7f,  0.02f * CFDS,  0.96f,  0.80f,  0.0f,  0.1f,  0.00f,  0.000f  * CFDS,  1,  0,    0,  0,  20,  1,  85,  SC_NATURE,    R_TEMP+0.0f  +273.15f,  65,    "Leaves. Dry out and become flammable in heat.", ST_SOLID, TYPE_PART|PROP_NEUTPENETRATE, &update_LEAF},
+    {"LEAF",    PIXPACK(0x0CAC00),  0.7f,   0.02f * CFDS,   0.96f,  0.80f,  0.0f,   0.1f,   0.00f,  0.000f  * CFDS, 1,  0,      0,  0,  20, 1,  85,     SC_NATURE,      R_TEMP+0.0f  +273.15f,  65,    "Leaves. Dry out and become flammable in heat.", ST_SOLID, TYPE_PART|PROP_NEUTPENETRATE, &update_LEAF},
+    {"PLAN",    PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,	0,		0,	0,	0,	1,	100,     SC_NATURE,      R_TEMP+0.0f  +273.15f,  65,    "Planet. Can be modified using console. GravityAmount:'set tmp plan 4'.", ST_SOLID, TYPE_SOLID, &update_PLAN},
+    {"BSHL",	PIXPACK(0x808080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,		R_TEMP+0.0f	+273.15f,	251,	"Bomb Shell. Can store explosives without breaking. Destroyed by Pressure and Heat.", ST_SOLID, TYPE_SOLID, NULL},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -835,7 +834,7 @@ static part_transition ptransitions[PT_NUM] =
 	/* MWAX */ {IPL,	NT,			IPH,	NT,			318.0f,	PT_WAX,		673.0f,	PT_FIRE},
 	/* PSCN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
 	/* NSCN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
-	/* LN2  */ {IPL,	NT,			IPH,	NT,			63.0f,	PT_NICE,	77.0f,	PT_NTRG},
+	/* LN2  */ {IPL,	NT,			IPH,	NT,			63.0f,	PT_NICE,	ITH,	PT_NTRG}, //200
 	/* INSL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* BHOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* WHOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
@@ -1023,6 +1022,8 @@ static part_transition ptransitions[PT_NUM] =
     /* pumice */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1123.0f,PT_LAVA},
     /* PIVS */    {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* leaf */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2000.0f,PT_FIRE},
+    /* plan */    {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* bshl */    {-2.0f,PT_NONE,	2.0f,	PT_NONE,	ITL,	NT,			MAX_TEMP,	PT_NONE},
 
 
 };

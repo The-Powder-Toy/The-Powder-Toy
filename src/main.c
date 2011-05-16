@@ -320,7 +320,7 @@ void *build_thumb(int *size, int bzip2)
 }
 
 //the saving function
-void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, pixel *decorations)
+void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
 {
 	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*11+MAXSIGNS*262), *c;
 	int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
@@ -494,7 +494,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	return c;
 }
 
-int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES], pixel *decorations)
+int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES])
 {
 	unsigned char *d=NULL,*c=save;
 	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
@@ -586,7 +586,6 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 		clear_sim();
 	}
-	clearrect(decorations, x0, y0, w, h);
 	m = calloc(XRES*YRES, sizeof(int));
 
 	// make a catalog of free parts
@@ -637,18 +636,6 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			}
 
 			p++;
-		}
-		// no more particle properties to load, so we can change type here without messing up loading
-		if (i && i<=NPART)
-		{
-		    if (ver<48 && (ty==PT_WIND || (ty==PT_BRAY&&parts[i-1].life==0)))
-		    {
-		        // Replace invisible particles with something sensible and add decoration to hide it
-		        x = (int)(parts[i-1].x+0.5f);
-		        y = (int)(parts[i-1].y+0.5f);
-		        decorations[y*(XRES+BARSIZE)+x] = PIXPACK(0x010101);
-		        parts[i-1].type = PT_DMND;
-		    }
 		}
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
@@ -1052,7 +1039,7 @@ void stamp_save(int x, int y, int w, int h)
 	FILE *f;
 	int n;
 	char fn[64], sn[16];
-	void *s=build_save(&n, x, y, w, h, bmap, fvx, fvy, signs, parts, decorations);
+	void *s=build_save(&n, x, y, w, h, bmap, fvx, fvy, signs, parts);
 
 #ifdef WIN32
 	_mkdir("stamps");
@@ -1568,7 +1555,47 @@ static PyObject* emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	return Py_BuildValue("i",1);
 }
+static PyObject* emb_set_planet(PyObject *self, PyObject *args, PyObject *keywds)
+{
+	int i = -1,life,j,x=-1,y=-1;
+	const char *datastorage;
+	char *name = "";
+	char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist,datastorage,&life,&name,&i,&x,&y))
+		return NULL;
+	//
+	if (strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
+		return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
+	if (strcmp(name,"all")==0)
+	{
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type)
+				parts[i].planetname = datastorage;
+		}
+	}
+	else if (console_parse_type(name, &j, console_error))
+	{
+		for (i=0; i<NPART; i++)
+		{
+			if (parts[i].type == j)
+				parts[i].planetname = datastorage;
+		}
+	}
+	else if (i!=-1)
+	{
+		if (parts[i].type != PT_NONE)
+			parts[i].planetname = datastorage;
 
+	}
+	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
+	{
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].planetname = datastorage;
+	}
+	parts[i].planetname = keywds;
+	return Py_BuildValue("i",1);
+}
 static PyObject* emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
 {
 	int i = -1,life,j,x=-1,y=-1;
@@ -2049,6 +2076,7 @@ static PyMethodDef EmbMethods[] = { //WARNING! don't forget to register your fun
 	{"set_type", 	    (PyCFunction)emb_set_type, 		METH_VARARGS|METH_KEYWORDS,	"sets type of a specified particle."},
 	{"set_temp", 	    (PyCFunction)emb_set_temp, 		METH_VARARGS|METH_KEYWORDS,	"sets temp of a specified particle."},
 	{"set_tmp", 	    (PyCFunction)emb_set_tmp, 		METH_VARARGS|METH_KEYWORDS,	"sets tmp of a specified particle."},
+	{"set_planet", 	    (PyCFunction)emb_set_planet, 		METH_VARARGS|METH_KEYWORDS,	"Sets the planet name to input."},
 	{"set_x", 		    (PyCFunction)emb_set_x, 		METH_VARARGS|METH_KEYWORDS,	"sets x of a specified particle."},
 	{"set_y", 		    (PyCFunction)emb_set_y, 		METH_VARARGS|METH_KEYWORDS,	"sets y of a specified particle."},
 	{"set_ctype",   	(PyCFunction)emb_set_ctype, 		METH_VARARGS|METH_KEYWORDS,	"sets ctype of a specified particle."},
@@ -2891,7 +2919,7 @@ int main(int argc, char *argv[])
 			if (file_data)
 			{
 				it=0;
-				parse_save(file_data, size, 0, 0, 0, bmap, fvx, fvy, signs, parts, pmap, decorations);
+				parse_save(file_data, size, 0, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 			}
 		}
 
@@ -3675,6 +3703,9 @@ int main(int argc, char *argv[])
 				    if (tempname=="LEAF" && parts[cr>>8].life>10){
 				        tempname = "DLEF";
 				    }
+				    else if (tempname=="PLAN"){
+				        tempname = parts[cr>>8].planetname;
+				    }
 #ifdef BETA
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 #else
@@ -3875,7 +3906,7 @@ int main(int argc, char *argv[])
 			if (load_y<0) load_y=0;
 			if (bq==1 && !b)
 			{
-				parse_save(load_data, load_size, 0, load_x, load_y, bmap, fvx, fvy, signs, parts, pmap, decorations);
+				parse_save(load_data, load_size, 0, load_x, load_y, bmap, fvx, fvy, signs, parts, pmap);
 				free(load_data);
 				free(load_img);
 				load_mode = 0;
@@ -3917,14 +3948,14 @@ int main(int argc, char *argv[])
 			{
 				if (copy_mode==1)//CTRL-C, copy
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts, decorations);
+					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
 				}
 				else if (copy_mode==2)//CTRL-X, cut
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts, decorations);
+					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
@@ -4051,7 +4082,7 @@ int main(int argc, char *argv[])
 					}
 					if (x>=19 && x<=35 && svf_last && svf_open && !bq) {
 						//int tpval = sys_pause;
-						parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap, decorations);
+						parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 						//sys_pause = tpval;
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
@@ -4414,7 +4445,7 @@ int main(int argc, char *argv[])
 			sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 #else
 			if (DEBUG_MODE)
-				sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+				sprintf(uitext, "Me's Mod FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 			else
 				sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB);
 #endif

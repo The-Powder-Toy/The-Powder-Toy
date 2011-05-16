@@ -90,10 +90,10 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 		*w = textwidth("Temp: 0000.00");
 
     if(strcmp(signs[i].text, "{type}")==0)
-        *w = textwidth("Type: WATERY");
+        *w = textwidth("Type: WATER");
 
     if(strcmp(signs[i].text, "{ctype}")==0)
-        *w = textwidth("CType: WATERY");
+        *w = textwidth("CType: WATER");
 
     if(strcmp(signs[i].text, "{life}")==0)
         *w = textwidth("Life: 00000");
@@ -101,16 +101,16 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
     if(strcmp(signs[i].text, "{G}")==0)
         *w = textwidth("Generation: 000000000");
 
-	if(sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
+	if (sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
 	{
 		int sldr, startm;
 		char buff[256];
 		memset(buff, 0, sizeof(buff));
-		for(sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
+		for (sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
 			startm = sldr + 1;
 
 		sldr = startm;
-		while(signs[i].text[sldr] != '}')
+		while (signs[i].text[sldr] != '}')
 		{
 			buff[sldr - startm] = signs[i].text[sldr];
 			sldr++;
@@ -119,15 +119,13 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 	}
 
 	//Ususal width
-	if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && strcmp(signs[i].text, "{type}")
-       && strcmp(signs[i].text, "{life}") && strcmp(signs[i].text, "{ctype}")  && strcmp(signs[i].text, "{G}"))
+	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && strcmp(signs[i].text, "{type}") && strcmp(signs[i].text, "{ctype}") && strcmp(signs[i].text, "{life}") && strcmp(signs[i].text, "{G}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
 		*w = textwidth(signs[i].text) + 5;
 	*h = 14;
 	*x0 = (signs[i].ju == 2) ? signs[i].x - *w :
 	      (signs[i].ju == 1) ? signs[i].x - *w/2 : signs[i].x;
 	*y0 = (signs[i].y > 18) ? signs[i].y - 18 : signs[i].y + 4;
 }
-
 void add_sign_ui(pixel *vid_buf, int mx, int my)
 {
 	int i, w, h, x, y, nm=0, ju;
@@ -917,6 +915,79 @@ int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 	}
 
 	return ret;
+}
+char *input_ui(pixel *vid_buf, char *top)
+{
+    const char *dataoutput;
+	int x0=(XRES-192)/2,y0=(YRES-80)/2,b=1,bq,mx,my,err;
+	ui_edit ed1;
+	char *res;
+
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+
+	ed1.x = x0+25;
+	ed1.y = y0+25;
+	ed1.w = 158;
+	ed1.nx = 1;
+	ed1.def = "[user name]";
+	ed1.focus = 1;
+	ed1.hide = 0;
+	ed1.multiline = 0;
+	ed1.cursor = strlen(dataoutput);
+	strcpy(ed1.str, dataoutput);
+
+	fillrect(vid_buf, -1, -1, XRES, YRES+MENUSIZE, 0, 0, 0, 192);
+	while (!sdl_poll())
+	{
+		bq = b;
+		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
+
+		drawrect(vid_buf, x0, y0, 192, 80, 192, 192, 192, 255);
+		clearrect(vid_buf, x0, y0, 192, 80);
+		drawtext(vid_buf, x0+8, y0+8, top, 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12, y0+23, "\x8B", 32, 64, 128, 255);
+		drawtext(vid_buf, x0+12, y0+23, "\x8A", 255, 255, 255, 255);
+		drawrect(vid_buf, x0+8, y0+20, 176, 16, 192, 192, 192, 255);
+		drawtext(vid_buf, x0+11, y0+44, "\x8C", 160, 144, 32, 255);
+		drawtext(vid_buf, x0+11, y0+44, "\x84", 255, 255, 255, 255);
+		drawrect(vid_buf, x0+8, y0+40, 176, 16, 192, 192, 192, 255);
+		ui_edit_draw(vid_buf, &ed1);
+		drawtext(vid_buf, x0+5, y0+69, "OK", 255, 255, 255, 255);
+		drawrect(vid_buf, x0, y0+64, 192, 16, 192, 192, 192, 255);
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+
+		ui_edit_process(mx, my, b, &ed1);
+
+		if (b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36)
+			break;
+		if (b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+42 && my<y0+46)
+			break;
+		if (b && !bq && mx>=x0 && mx<x0+192 && my>=y0+64 && my<=y0+80)
+			break;
+
+		if (sdl_key==SDLK_RETURN || sdl_key==SDLK_TAB)
+		{
+			if (!ed1.focus)
+				break;
+			ed1.focus = 0;
+        }
+		if (sdl_key==SDLK_ESCAPE)
+		{
+			if (!ed1.focus)
+				return;
+			ed1.focus = 0;
+		}
+	}
+
+	strcpy(dataoutput, ed1.str);
+
 }
 
 void login_ui(pixel *vid_buf)
@@ -3356,7 +3427,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		if (queue_open) {
 			if (info_ready && data_ready) {
 				// Do Open!
-				status = parse_save(data, data_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap, decorations);
+				status = parse_save(data, data_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 				if (!status) {
 					//if(svf_last)
 					//free(svf_last);
@@ -3877,7 +3948,7 @@ void execute_save(pixel *vid_buf)
 	plens[0] = strlen(svf_name);
 	uploadparts[1] = svf_description;
 	plens[1] = strlen(svf_description);
-	uploadparts[2] = build_save(plens+2, 0, 0, XRES, YRES, bmap, fvx, fvy, signs, parts, decorations);
+	uploadparts[2] = build_save(plens+2, 0, 0, XRES, YRES, bmap, fvx, fvy, signs, parts);
 	uploadparts[3] = build_thumb(plens+3, 1);
 	uploadparts[4] = (svf_publish==1)?"Public":"Private";
 	plens[4] = strlen((svf_publish==1)?"Public":"Private");

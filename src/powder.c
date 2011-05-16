@@ -710,6 +710,11 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	{
 		parts[i].life = 75;
 	}
+	if (t==PT_PLAN)
+	{
+        parts[i].tmp = 1;
+        parts[i].planetname = "PLAN";
+	}
     if (t==PT_CFCN)
 	{
 		parts[i].life = 10;
@@ -808,7 +813,7 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	{
         float r = (rand()%128+128)/127.0f;
         float a = (rand()%360)*3.14159f/180.0f;
-        parts[i].life = rand()%480+480;
+        parts[i].life = rand()%240;
         parts[i].vx = r*cosf(a);
         parts[i].vy = r*sinf(a);
 	}
@@ -2088,13 +2093,12 @@ killed:
                             // but no point trying this if particle is stuck in a block of identical particles
                             dx = parts[i].vx - parts[i].vy*r;
                             dy = parts[i].vy + parts[i].vx*r;
-                            if (fabsf(dy)>fabsf(dx)) {
-                                dx /= fabsf(dy);
-                                dy /= fabsf(dy);
-                                } else {
-                                    dx /= fabsf(dx);
-                                    dy /= fabsf(dx);
-                                    }
+                            if (fabsf(dy)>fabsf(dx))
+                                mv = fabsf(dy);
+                            else
+                                mv = fabsf(dx);
+                            dx /= mv;
+                            dy /= mv;
                             if (try_move(i, x, y, (int)(clear_xf+dx+0.5f), (int)(clear_yf+dy+0.5f)))
                                 {
                                     parts[i].x = clear_xf+dx;
@@ -3146,14 +3150,11 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
  	float (*fvyo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
  	float (*fvxn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
  	float (*fvyn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
- 	pixel *decorationso = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
- 	pixel *decorationsn = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
  	int i, x, y, nx, ny, w, h, nw, nh;
- 	pixel px;
 	vector2d pos, tmp, ctl, cbr;
 	vector2d cornerso[4];
 	unsigned char *odatac = odata;
-	if (parse_save(odata, *size, 0, 0, 0, bmapo, fvxo, fvyo, signst, partst, pmapt, decorationso))
+	if (parse_save(odata, *size, 0, 0, 0, bmapo, fvxo, fvyo, signst, partst, pmapt))
 	{
 		free(bmapo);
         free(bmapn);
@@ -3164,8 +3165,6 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
         free(fvyo);
         free(fvxn);
         free(fvyn);
-        free(decorationso);
-        free(decorationsn);
 		return odata;
 	}
 	w = odatac[6]*CELL;
@@ -3222,30 +3221,26 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 		partst[i].x = nx;
 		partst[i].y = ny;
 	}
-	for (y=0; y<h; y++)
-		for (y=0; y<h; y++)
+	for (y=0; y<YRES/CELL; y++)
+		for (x=0; x<XRES/CELL; x++)
 		{
-			px = decorationso[y*(XRES+BARSIZE)+x];
-			if (!PIXR(px) && !PIXG(px) && !PIXB(px))
-                continue;
-            pos = v2d_new(x, y);
+			pos = v2d_new(x*CELL+CELL*0.4f, y*CELL+CELL*0.4f);
 			pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
-			nx = floor(pos.x+0.5f);
-			ny = floor(pos.y+0.5f);
+			nx = pos.x/CELL;
+			ny = pos.y/CELL;
 			if (nx<0 || nx>=nw || ny<0 || ny>=nh)
 				continue;
-			/*if (bmapo[y][x])
-			{
-				bmapn[ny][nx] = bmapo[y][x];
-				if (bmapo[y][x]==WL_FAN)
-				{
-					fvxn[ny][nx] = fvxo[y][x];
-					fvyn[ny][nx] = fvyo[y][x];
-				}
-			}*/
-			decorationsn[ny*(XRES+BARSIZE)+nx] = px;
+				if (bmapo[y][x])
+      {
+        bmapn[ny][nx] = bmapo[y][x];
+        if (bmapo[y][x]==WL_FAN)
+        {
+          fvxn[ny][nx] = fvxo[y][x];
+          fvyn[ny][nx] = fvyo[y][x];
+        }
+      }
 		}
-	ndata = build_save(size,0,0,nw,nh,bmapn,fvxn,fvyn,signst,partst,decorationsn);
+	ndata = build_save(size,0,0,nw,nh,bmapn,fvxn,fvyn,signst,partst);
 	free(bmapo);
  	free(bmapn);
     free(partst);
@@ -3255,8 +3250,6 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
  	free(fvyo);
  	free(fvxn);
  	free(fvyn);
- 	free(decorationso);
- 	free(decorationsn);
 	return ndata;
 }
 

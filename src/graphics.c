@@ -1485,8 +1485,8 @@ void draw_parts(pixel *vid)
 			ny = (int)(parts[i].y+0.5f);
             if (t==PT_SOAP)
                 {
-                    if ((parts[i].ctype&0x01 == 0x01) && (parts[i].ctype&0x02 == 0x02))
-                      draw_line(vid, nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), 245, 245, 220, XRES+BARSIZE);
+                    if (((parts[i].ctype&1) == 1) && ((parts[i].ctype&2) == 2))
+                        draw_line(vid, nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), 245, 245, 220, XRES+BARSIZE);
                 }
 			if (cmode!=CM_HEAT)
 			{
@@ -3561,6 +3561,11 @@ void draw_decorations(pixel *vid_buf,pixel *decorations)
 void create_decorations(pixel *decorations,int x, int y, int rx, int ry, int r, int g, int b)
 {
 	int i,j;
+	if (rx==0 && ry==0)
+    {
+        decorations[(y)*(XRES+BARSIZE)+(x)] = PIXRGB(r, g, b);
+        return;
+    }
 	for (j=-ry; j<=ry; j++)
 		for (i=-rx; i<=rx; i++)
 			if(y+j>=0 && x+i>=0 && x+i<XRES && y+j<YRES)
@@ -3681,19 +3686,34 @@ void render_signs(pixel *vid_buf)
 			drawrect(vid_buf, x, y, w, h, 192, 192, 192, 255);
 
 			//Displaying special information
-            if(strcmp(signs[i].text, "{p}")==0)
-            {
-                sprintf(buff, "Pressure: %3.2f", pv[signs[i].y/CELL][signs[i].x/CELL]);  //...pressure
-                drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
-            }
-            if(strcmp(signs[i].text, "{t}")==0)
-            {
-                if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
-                    sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...tempirature
-                else
-                    sprintf(buff, "Temp: 0.00");  //...tempirature
-                drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
-            }
+			if (strcmp(signs[i].text, "{p}")==0)
+			{
+				sprintf(buff, "Pressure: %3.2f", pv[signs[i].y/CELL][signs[i].x/CELL]);  //...pressure
+				drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+			}
+			if (strcmp(signs[i].text, "{t}")==0)
+			{
+				if ((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
+					sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...tempirature
+				else
+					sprintf(buff, "Temp: 0.00");  //...tempirature
+				drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
+			}
+
+			if (sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
+			{
+				int sldr, startm;
+				memset(buff, 0, sizeof(buff));
+				for (sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
+					startm = sldr + 1;
+				sldr = startm;
+				while (signs[i].text[sldr] != '}')
+				{
+					buff[sldr - startm] = signs[i].text[sldr];
+					sldr++;
+				}
+				drawtext(vid_buf, x+3, y+3, buff, 0, 191, 255, 255);
+			}
             if(strcmp(signs[i].text, "{type}")==0)
             {
                 if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
@@ -3725,24 +3745,8 @@ void render_signs(pixel *vid_buf)
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
             }
 
-			if(sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
-			{
-				int sldr, startm;
-				memset(buff, 0, sizeof(buff));
-				for(sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
-					startm = sldr + 1;
-				sldr = startm;
-				while(signs[i].text[sldr] != '}')
-				{
-					buff[sldr - startm] = signs[i].text[sldr];
-					sldr++;
-				}
-				drawtext(vid_buf, x+3, y+3, buff, 0, 191, 255, 255);
-			}
-
 			//Usual text
-			if(strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && strcmp(signs[i].text, "{type}")
-               && strcmp(signs[i].text, "{life}") && strcmp(signs[i].text, "{G}") && strcmp(signs[i].text, "{ctype}"))
+			if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && strcmp(signs[i].text, "{type}") && strcmp(signs[i].text, "{ctype}") && strcmp(signs[i].text, "{life}") && strcmp(signs[i].text, "{G}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
 				drawtext(vid_buf, x+3, y+3, signs[i].text, 255, 255, 255, 255);
 
 			x = signs[i].x;
