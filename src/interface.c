@@ -22,6 +22,7 @@ int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
 char *shift_0="`1234567890-=[]\\;',./";
 char *shift_1="~!@#$%^&*()_+{}|:\"<>?";
 
+int svf_messages = 0;
 int svf_login = 0;
 int svf_admin = 0;
 int svf_mod = 0;
