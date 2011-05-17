@@ -3759,26 +3759,16 @@ int main(int argc, char *argv[])
 			tmp = malloc(64);
             if (confirm_ui(vid_buf, "Open Webpage", "You are about to open the webpage", "Open"))
             {
-#ifdef WIN32
-                ShellExecute(NULL, "open", "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=2821", NULL, NULL, SW_SHOWNORMAL);
-#elif MACOSX
-                system("open http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=2821");
-#else
-                error_ui(vid_buf, 0, "Open Failed - Your OS does not support This Feature. Yet... ;)");
-#endif
+                open_link("http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=2821");
             }
         }
         if (b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
-            x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && svf_messages){
+            x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && !svf_messages){
                 if (confirm_ui(vid_buf, "Open Webpage", "You are about to open the conversations page", "Open"))
                 {
-#ifdef WIN32
-                    ShellExecute(NULL, "open", "http://powdertoy.co.uk/Conversations.html", NULL, NULL, SW_SHOWNORMAL);
-#elif MACOSX
-                    system("open http://powdertoy.co.uk/Conversations.html");
-#else
-                    error_ui(vid_buf, 0, "Open Failed - Your OS does not support This Feature. Yet... ;)");
-#endif
+                    //ShellExecute(NULL, "open", "http://powdertoy.co.uk/Conversations.html", NULL, NULL, SW_SHOWNORMAL);
+                    //system("open http://powdertoy.co.uk/Conversations.html");
+                    open_link("http://powdertoy.co.uk/Conversations.html");
                 }
             }
 
