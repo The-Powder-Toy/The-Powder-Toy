@@ -1,8 +1,11 @@
 #include <element.h>
 
 
+#if defined(WIN32) && !defined(__GNUC__)
+_inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
+#else
 inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)//testing a new deut create part
-
+#endif
 {
 	int i, c;
 	n = (n/50);
@@ -80,7 +83,7 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 #ifdef SDEUT
 				else if ((r&0xFF)==PT_DEUT && (pressureFactor+1+(parts[i].life/100))>(rand()%1000))
 				{
-					//create_n_parts(parts[r>>8].life, x+rx, y+ry, parts[i].vx, parts[i].vy, PT_NEUT);
+					create_n_parts(parts[r>>8].life, x+rx, y+ry, parts[i].vx, parts[i].vy, PT_NEUT);
 					kill_part(r>>8);
 				}
 #else
