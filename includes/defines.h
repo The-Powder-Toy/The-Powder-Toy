@@ -8,7 +8,7 @@
 #endif
 
 #define ME4502_MAJOR_VERSION 2
-#define ME4502_VERSION 5
+#define ME4502_VERSION 6
 #define SAVE_VERSION 48
 #define MINOR_VERSION 0
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.

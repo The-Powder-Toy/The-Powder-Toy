@@ -156,6 +156,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 
     if ((pmap[ny][nx]&0xFF)==PT_PIVS && parts[r>>8].life >= 10)
 		return 1;
+    if ((pmap[ny][nx]&0xFF)==PT_LTNG)
+		return 1;
 
 	/* half-silvered mirror */
 	if (!e && parts[i].type==PT_PHOT &&
@@ -177,6 +179,37 @@ int try_move(int i, int x, int y, int nx, int ny)
             if (!parts[r>>8].ctype)
               parts[r>>8].ctype = PT_NEUT;
         }
+		if ((r&0xFF)==PT_PRTI && (parts[i].type==PT_PHOT || parts[i].type==PT_NEUT || parts[i].type==PT_ZAP))
+		{
+			int nnx, count;
+			if (nx-x<0)
+			{
+				if (ny-y<0) count = 1;
+				else if (ny-y==0) count = 2;
+				else count = 3;
+			}
+			else if (nx-x==0)
+			{
+				if (ny-y<0) count = 4;
+				else count = 5;
+			}
+			else
+			{
+				if (ny-y<0) count = 6;
+				else if (ny-y==0) count = 7;
+				else count = 8;
+			}
+			parts[r>>8].tmp = (int)((parts[r>>8].temp-73.15f)/100+1);
+			if (parts[r>>8].tmp>=CHANNELS) parts[r>>8].tmp = CHANNELS-1;
+			else if (parts[r>>8].tmp<0) parts[r>>8].tmp = 0;
+			for ( nnx=0; nnx<80; nnx++)
+				if (!portalp[parts[r>>8].tmp][count-1][nnx].type)
+				{
+					portalp[parts[r>>8].tmp][count-1][nnx] = parts[i];
+					parts[i].type=PT_NONE;
+					break;
+				}
+		}
 		return 0;
 	}
 
@@ -283,7 +316,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 	e = r >> 8; //e is now the particle number at r (pmap[ny][nx])
 	if (r && e<NPART)//the swap part, if we make it this far, swap
 	{
-		if (parts[e].type == PT_PHOT||parts[e].type == PT_NEUT)
+		if (parts[e].type == PT_PHOT||parts[e].type == PT_NEUT||parts[e].type == PT_ZAP)
 			return 1;
 
 		if (parts[i].type==PT_NEUT) {
@@ -518,7 +551,7 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
 	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART || t<0 || t>=PT_NUM)
 		return;
 	parts[i].type = t;
-	if (t==PT_PHOT || t==PT_NEUT)
+	if (t==PT_PHOT || t==PT_NEUT || t==PT_ZAP)
 	{
 		photons[y][x] = t|(i<<8);
 		if ((pmap[y][x]>>8)==i)
@@ -667,7 +700,7 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 			}
 			return -1;
 		}
-		if (photons[y][x] && (t==PT_PHOT||t==PT_NEUT))
+		if (photons[y][x] && (t==PT_PHOT||t==PT_NEUT||t==PT_ZAP))
 			return -1;
 		if (pfree == -1)
 			return -1;
@@ -719,6 +752,13 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	{
 		parts[i].life = 10;
 	}
+	if (t==PT_CLOUD)
+	{
+	    if (rand()%2==1)
+            parts[i].tmp2 = 1;
+        else
+            parts[i].tmp2 = 2;
+	}
     if (t==PT_AGAS)
 	{
 		parts[i].life = 75;
@@ -761,10 +801,12 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		parts[i].life = 10;
 	if (t==PT_BRAY)
 		parts[i].life = 30;
+    if (t==PT_LTNG)
+		parts[i].life = 30;
     if (t==PT_LAZR)
-		parts[i].life = 30;
+		parts[i].life = 60;
     if (t==PT_FREZ)
-		parts[i].life = 30;
+		parts[i].life = 60;
 	if (t==PT_PUMP)
 		parts[i].life= 10;
 	if (t==PT_SING)
@@ -916,9 +958,9 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	if (t==PT_BIZR||t==PT_BIZRG)
 		parts[i].ctype = 0x47FFFF;
 	//and finally set the pmap/photon maps to the newly created particle
-	if (t==PT_PHOT||t==PT_NEUT)
+	if (t==PT_PHOT||t==PT_NEUT||t==PT_ZAP)
 		photons[y][x] = t|(i<<8);
-	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT)
+	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT && t!=PT_ZAP)
 		pmap[y][x] = t|(i<<8);
 
 	return i;
@@ -1930,7 +1972,7 @@ killed:
 			rt = parts[i].flags & FLAG_STAGNANT;
 			parts[i].flags &= ~FLAG_STAGNANT;
 
-			if ((t==PT_PHOT||t==PT_NEUT)) {
+			if ((t==PT_PHOT||t==PT_NEUT||t==PT_ZAP)) {
 				if (t == PT_PHOT) {
 					rt = pmap[fin_y][fin_x] & 0xFF;
 					lt = pmap[y][x] & 0xFF;
@@ -2206,9 +2248,9 @@ killed:
 					kill_part(i);
 					continue;
 				}
-				if (t==PT_PHOT||t==PT_NEUT)
+				if (t==PT_PHOT||t==PT_NEUT||t==PT_ZAP)
 					photons[ny][nx] = t|(i<<8);
-				else
+				else if (t)
 					pmap[ny][nx] = t|(i<<8);
 			}
 		}
@@ -2243,7 +2285,7 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 			y = (int)(parts[i].y+0.5f);
 			if (x>=0 && y>=0 && x<XRES && y<YRES)
 			{
-				if (t==PT_PHOT||t==PT_NEUT)
+				if (t==PT_PHOT||t==PT_NEUT||t==PT_ZAP)
 					photons[y][x] = t|(i<<8);
 				else
 					pmap[y][x] = t|(i<<8);

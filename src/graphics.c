@@ -1593,7 +1593,7 @@ void draw_parts(pixel *vid)
 				}
 				else if (cmode==CM_FANCY && //all fancy mode effects go here, this is a list of exceptions to skip
                          t!=PT_BFLM && t!=PT_FIRE && t!=PT_DWFM &&
-                         t!=PT_PLSM && t!=PT_WTRV &&
+                         t!=PT_PLSM && t!=PT_WTRV && t!=PT_CLOUD && t!=PT_ACLOUD &&
                          t!=PT_HFLM && t!=PT_SPRK && t!=PT_FIRW &&
                          t!=PT_DUST && t!=PT_FIRW && t!=PT_FWRK &&
                          t!=PT_NEUT && t!=PT_LAVA && t!=PT_BOMB &&
@@ -2377,6 +2377,62 @@ void draw_parts(pixel *vid)
 					cb = cb>255?255:cb;
 					blendpixel(vid, nx, ny, cr, cg, cb, 127);
 				}
+				else if (t==PT_LTNG && parts[i].tmp==0)
+				{
+					int trans = parts[i].life * 7;
+					if (trans>255) trans = 255;
+					if (parts[i].ctype) {
+						cg = 0;
+						cb = 0;
+						cr = 0;
+						for (x=0; x<12; x++) {
+							cr += (parts[i].ctype >> (x+18)) & 1;
+							cb += (parts[i].ctype >>  x)     & 1;
+						}
+						for (x=0; x<14; x++)
+							cg += (parts[i].ctype >> (x+9))  & 1;
+						x = 624/(cr+cg+cb+1);
+						cr *= x;
+						cg *= x;
+						cb *= x;
+						cr = cr>255?255:cr;
+						cg = cg>255?255:cg;
+						cb = cb>255?255:cb;
+						blendpixel(vid, nx, ny, cr, cg, cb, trans);
+					} else
+						blendpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), trans);
+				}
+				else if (t==PT_LTNG && parts[i].tmp==1)
+				{
+					int trans = parts[i].life/4;
+					if (trans>255) trans = 255;
+					if (parts[i].ctype) {
+						cg = 0;
+						cb = 0;
+						cr = 0;
+						for (x=0; x<12; x++) {
+							cr += (parts[i].ctype >> (x+18)) & 1;
+							cb += (parts[i].ctype >>  x)     & 1;
+						}
+						for (x=0; x<14; x++)
+							cg += (parts[i].ctype >> (x+9))  & 1;
+						x = 624/(cr+cg+cb+1);
+						cr *= x;
+						cg *= x;
+						cb *= x;
+						cr = cr>255?255:cr;
+						cg = cg>255?255:cg;
+						cb = cb>255?255:cb;
+						blendpixel(vid, nx, ny, cr, cg, cb, trans);
+					} else
+						blendpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), trans);
+				}
+				else if (t==PT_LTNG && parts[i].tmp==2)
+				{
+					int trans = parts[i].life*100;
+					if (trans>255) trans = 255;
+					blendpixel(vid, nx, ny, 255, 150, 50, trans);
+				}
 				else if (t==PT_BRAY && parts[i].tmp==0)
 				{
 					int trans = parts[i].life * 7;
@@ -2760,9 +2816,15 @@ void draw_parts(pixel *vid)
                     {
                         x = nx/CELL;
                         y = ny/CELL;
-                        cg = PIXG(ptypes[t].pcolors)/3;
-                        cb = PIXB(ptypes[t].pcolors)/3;
-                        cr = PIXR(ptypes[t].pcolors)/3;
+                        if (parts[i].tmp2 == 2){
+                            cg = PIXG(ptypes[t].pcolors);
+                            cb = PIXB(ptypes[t].pcolors);
+                            cr = PIXR(ptypes[t].pcolors);
+                        } else {
+                            cg = PIXG(ptypes[t].pcolors)/4;
+                            cb = PIXB(ptypes[t].pcolors)/4;
+                            cr = PIXR(ptypes[t].pcolors)/4;
+                        }
                         cg += fire_g[y][x];
                         if(cg > PIXG(ptypes[t].pcolors)/2) cg = PIXG(ptypes[t].pcolors)/2;
                         fire_g[y][x] = cg;
@@ -3726,9 +3788,9 @@ void render_signs(pixel *vid_buf)
             {
                 r = pmap[y][x];
                 if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
-                    sprintf(buff, "Ctype: Soon");  //...ctype
+                    sprintf(buff, "CType: %d", parts[pmap[signs[i].y][signs[i].x]>>8].ctype);
                 else
-                    sprintf(buff, "Ctype: Soon");  //...type
+                    sprintf(buff, "CType: Nil");  //...Ctype
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
             }
             if(strcmp(signs[i].text, "{life}")==0)

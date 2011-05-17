@@ -280,7 +280,9 @@
 #define PT_LEAF 224
 #define PT_PLAN 225
 #define PT_BSHL 226
-#define PT_NUM  227
+#define PT_LTNG 227
+#define PT_CTRD 228
+#define PT_NUM  229
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -759,7 +761,7 @@ static const part_type ptypes[PT_NUM] =
     {"BFLM",	PIXPACK(0x4C76F5),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	MAX_TEMP +273.15f,	            88,		"Ignites flammable materials. Heats air.", ST_GAS, TYPE_GAS, &update_PYRO},
     {"PDCL",	PIXPACK(0xFFD010),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Powder. Duplicates any particles it touches.", ST_SOLID, TYPE_PART, &update_PDCL},
     {"WCHP",    PIXPACK(0xC0A040),  0.4f,  0.04f * CFDS,  0.94f,  0.95f,  -0.1f,  0.3f,  0.00f,  0.000f  * CFDS,  1,  20,    0,  5,  2,  1,  50,    SC_NATURE,    R_TEMP+0.0f  +273.15f,  150,  "Wood Chip. See Wood", ST_SOLID, TYPE_PART, NULL},
-    {"SUN",     PIXPACK(0xFFD010),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  1,  1,  100,  SC_SPECIAL,    R_TEMP+9000.0f +273.15f,251,  "The Sun. A centre of gravity.", ST_SOLID, TYPE_SOLID, &update_SUN},
+    {"SUN",     PIXPACK(0xFFD010),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  1,  1,  100,  SC_SPECIAL,    R_TEMP+50000.0f +273.15f,251,  "The Sun. A centre of gravity.", ST_SOLID, TYPE_SOLID, &update_SUN},
     {"AGAS",	PIXPACK(0xFF00EA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,      SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Acidic.", ST_GAS, TYPE_GAS, &update_AGAS},
     {"DWFM",	PIXPACK(0xFF1000),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	R_TEMP+400.0f+273.15f,	88,		"Ignites flammable materials. Heats air. Goes Down.", ST_GAS, TYPE_GAS, &update_PYRO},
     {"COPR",	PIXPACK(0xB88700),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	250,	"Solid. Conducts electricity slowly. Meltable.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
@@ -782,6 +784,8 @@ static const part_type ptypes[PT_NUM] =
     {"LEAF",    PIXPACK(0x0CAC00),  0.7f,   0.02f * CFDS,   0.96f,  0.80f,  0.0f,   0.1f,   0.00f,  0.000f  * CFDS, 1,  0,      0,  0,  20, 1,  85,     SC_NATURE,      R_TEMP+0.0f  +273.15f,  65,    "Leaves. Dry out and become flammable in heat.", ST_SOLID, TYPE_PART|PROP_NEUTPENETRATE, &update_LEAF},
     {"PLAN",    PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,	0,		0,	0,	0,	1,	100,     SC_NATURE,      R_TEMP+0.0f  +273.15f,  65,    "Planet. Can be modified using console. GravityAmount:'set tmp plan 4'.", ST_SOLID, TYPE_SOLID, &update_PLAN},
     {"BSHL",	PIXPACK(0x808080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,		R_TEMP+0.0f	+273.15f,	251,	"Bomb Shell. Can store explosives without breaking. Destroyed by Pressure and Heat.", ST_SOLID, TYPE_SOLID, NULL},
+    {"LTNG",	PIXPACK(0xECFF1F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,		R_TEMP+0.0f +273.15f,	251,	"Lightning Strike", ST_SOLID, TYPE_SOLID, NULL},
+    {"CTRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Cold Electrode. Creates a surface that allows Cold Flame arcs. (Use sparingly)", ST_NONE, TYPE_SOLID|PROP_CONDUCTS, NULL},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -1024,6 +1028,9 @@ static part_transition ptransitions[PT_NUM] =
     /* leaf */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2000.0f,PT_FIRE},
     /* plan */    {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* bshl */    {-2.0f,PT_NONE,	2.0f,	PT_NONE,	ITL,	NT,			MAX_TEMP,	PT_NONE},
+    /* ltng */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* ctrd */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+
 
 
 };

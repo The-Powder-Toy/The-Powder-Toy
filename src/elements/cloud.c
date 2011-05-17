@@ -7,6 +7,29 @@ int update_CLOUD(UPDATE_FUNC_ARGS) {
             parts[i].tmp = 0;
         }
     }
+    if (rand()%1000 == 1 && rand()%700 == 1 && parts[i].tmp2 == 2){
+        int pt1;
+        int pt2;
+        int num = YRES/4;
+        if (rand()%2 == 1){
+            pt1 = rand()%16;
+            pt2 = rand()%32;
+            create_line(x,       y,         x - pt1, y + num*1, 0, 0, PT_LTNG);
+            create_line(x - pt1, y + num,   x + pt2, y + num*2, 0, 0, PT_LTNG);
+            create_line(x + pt2, y + num*2, x - pt1, y + num*3, 0, 0, PT_LTNG);
+            create_line(x - pt1, y + num*3, x + pt2, y + num*4, 0, 0, PT_LTNG);
+        } else {
+            pt1 = rand()%32;
+            pt2 = rand()%16;
+            create_line(x,       y,         x + pt1, y + num*1, 0, 0, PT_LTNG);
+            create_line(x + pt1, y + num*1, x - pt2, y + num*2, 0, 0, PT_LTNG);
+            create_line(x - pt2, y + num*2, x + pt1, y + num*3, 0, 0, PT_LTNG);
+            create_line(x + pt1, y + num*3, x - pt2, y + num*4, 0, 0, PT_LTNG);
+        }
+
+
+
+    }
     for (rx=-8; rx<12; rx++)
 		for (ry=-8; ry<12; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -32,7 +55,7 @@ int update_CLOUD(UPDATE_FUNC_ARGS) {
                         parts[i].tmp = 1;
                     }
                 }
-        
+
             }
 	return 0;
 }

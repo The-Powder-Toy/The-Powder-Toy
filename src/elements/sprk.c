@@ -51,6 +51,20 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 			parts[nearp].ctype = PT_ETRD;
 		}
 	}
+	else if (ct==PT_CTRD&&parts[i].life==1)
+	{
+		nearp = nearest_part(i, PT_CTRD);
+		if (nearp!=-1&&parts_avg(i, nearp, PT_INSL)!=PT_INSL)
+		{
+			create_line(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), 0, 0, PT_HFLM);
+			part_change_type(i,x,y,ct);
+			ct = parts[i].ctype = PT_NONE;
+			parts[i].life = 20;
+			part_change_type(nearp,(int)(parts[nearp].x+0.5f),(int)(parts[nearp].y+0.5f),PT_SPRK);
+			parts[nearp].life = 9;
+			parts[nearp].ctype = PT_CTRD;
+		}
+	}
 	else if (ct==PT_NBLE&&parts[i].life<=1)
 	{
 		parts[i].life = rand()%150+50;

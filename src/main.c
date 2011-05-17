@@ -169,6 +169,7 @@ typedef struct
 static const char *old_ver_msg_beta = "A new beta version is available - click here!";
 #endif
 static const char *old_ver_msg = "A new version is available - click here!";
+char new_message_msg[255];
 float mheat = 0.0f;
 
 int do_open = 0;
@@ -2745,7 +2746,7 @@ int main(int argc, char *argv[])
     void *http_ver_check, *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
 	//char console_error[255] = "";
-	int result, i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len;
+	int result, i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len, new_message_len;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -3075,6 +3076,7 @@ int main(int argc, char *argv[])
 						svf_own = 0;
 						svf_admin = 0;
 						svf_mod = 0;
+						svf_messages = 0;
 					}
 					else if (!strncmp(check_data, "BANNED", 6))
 					{
@@ -3087,6 +3089,7 @@ int main(int argc, char *argv[])
 						svf_own = 0;
 						svf_admin = 0;
 						svf_mod = 0;
+						svf_messages = 0;
 						error_ui(vid_buf, 0, "Unable to log in\nYour account has been suspended, consider reading the rules.");
 					}
 					else if (!strncmp(check_data, "OK", 2))
@@ -3094,7 +3097,7 @@ int main(int argc, char *argv[])
 						//Session valid
 						if (strlen(check_data)>2) {
 							//User is elevated
-							if (!strncmp(check_data+3, "ADMIN", 5))
+							if (!strncmp(check_data+3, "ADM", 5))
 							{
 								svf_admin = 1;
 								svf_mod = 0;
@@ -3104,7 +3107,11 @@ int main(int argc, char *argv[])
 								svf_admin = 0;
 								svf_mod = 1;
 							}
+							//Check for messages
+							svf_messages = atoi(check_data+7);
+							printf("%d\n", svf_messages);
 						}
+						printf("%s\n", check_data);
 					}
 					else
 					{
@@ -3117,6 +3124,7 @@ int main(int argc, char *argv[])
 						svf_own = 0;
 						svf_admin = 0;
 						svf_mod = 0;
+						svf_messages = 0;
 					}
 					save_presets(0);
 					free(check_data);
@@ -3130,6 +3138,7 @@ int main(int argc, char *argv[])
 					svf_own = 0;
 					svf_admin = 0;
 					svf_mod = 0;
+					svf_messages = 0;
 				}
 				http_session_check = NULL;
 			} else {
@@ -3759,6 +3768,19 @@ int main(int argc, char *argv[])
 #endif
             }
         }
+        if (b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
+            x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && svf_messages){
+                if (confirm_ui(vid_buf, "Open Webpage", "You are about to open the conversations page", "Open"))
+                {
+#ifdef WIN32
+                    ShellExecute(NULL, "open", "http://powdertoy.co.uk/Conversations.html", NULL, NULL, SW_SHOWNORMAL);
+#elif MACOSX
+                    system("open http://powdertoy.co.uk/Conversations.html");
+#else
+                    error_ui(vid_buf, 0, "Open Failed - Your OS does not support This Feature. Yet... ;)");
+#endif
+                }
+            }
 
         /*if(b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
            x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
@@ -4418,6 +4440,16 @@ int main(int argc, char *argv[])
 			drawtext(vid_buf, XRES-16-old_ver_len, YRES-19, old_ver_msg, 255, 216, 32, 255);
 #endif
 			drawrect(vid_buf, XRES-19-old_ver_len, YRES-22, old_ver_len+5, 13, 255, 216, 32, 255);
+		}
+
+		if (svf_messages)
+		{
+		    sprintf(new_message_msg, "You have %d new message%s! Click here to go to your Conversations Page.", svf_messages, (svf_messages>1)?"s":"");
+		    new_message_len = textwidth(new_message_msg);
+
+		    clearrect(vid_buf, XRES-21-new_message_len, YRES-24, new_message_len+9, 17);
+		    drawtext(vid_buf, XRES-16-new_message_len, YRES-19, new_message_msg, 255, 216, 32, 255);
+		    drawrect(vid_buf, XRES-19-new_message_len, YRES-22, new_message_len+5, 13, 255, 216, 32, 255);
 		}
 
 		FPS++;
