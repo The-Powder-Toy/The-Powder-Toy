@@ -3763,7 +3763,7 @@ int main(int argc, char *argv[])
             }
         }
         if (b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
-            x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && !svf_messages){
+            x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && svf_messages){
                 if (confirm_ui(vid_buf, "Open Webpage", "You are about to open the conversations page", "Open"))
                 {
                     //ShellExecute(NULL, "open", "http://powdertoy.co.uk/Conversations.html", NULL, NULL, SW_SHOWNORMAL);
