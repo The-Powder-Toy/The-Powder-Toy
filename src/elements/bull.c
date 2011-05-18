@@ -25,7 +25,7 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                     r = pmap[y+ny][x+nx];
                     if((r>>8)>=NPART || !r)
                         continue;
-                    if(parts[r>>8].type!=PT_NONE && parts[r>>8].type!=PT_BULL && parts[r>>8].type!=PT_DMND && parts[r>>8].type!=PT_GOLD && parts[r>>8].type!=PT_BSHL && parts[r>>8].type!=PT_PDCL && parts[r>>8].type!=PT_LQCL && parts[r>>8].type!=PT_GSCL && parts[r>>8].type!=PT_CLNE && parts[r>>8].type!=PT_PCLN && parts[r>>8].type!=PT_BCLN){
+                    if(parts[r>>8].type!=PT_NONE && parts[r>>8].type!=PT_BULL && parts[r>>8].type!=PT_DMND && parts[r>>8].type!=PT_C0 && parts[r>>8].type!=PT_GOLD && parts[r>>8].type!=PT_BSHL && parts[r>>8].type!=PT_PDCL && parts[r>>8].type!=PT_LQCL && parts[r>>8].type!=PT_GSCL && parts[r>>8].type!=PT_CLNE && parts[r>>8].type!=PT_PCLN && parts[r>>8].type!=PT_BCLN){
                         int rad = 8;
                         int nxi;
                         int nxj;

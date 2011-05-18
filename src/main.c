@@ -4464,7 +4464,7 @@ int main(int argc, char *argv[])
 		if (hud_enable)
 		{
 #ifdef BETA
-			sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+			sprintf(uitext, "Me's Mod version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 #else
 			if (DEBUG_MODE)
 				sprintf(uitext, "Me's Mod FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);

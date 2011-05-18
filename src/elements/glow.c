@@ -15,9 +15,18 @@ int update_GLOW(UPDATE_FUNC_ARGS) {
 					part_change_type(r>>8,x+rx,y+ry,PT_DEUT);
 					parts[r>>8].life = 10;
 				}
+				if ((r&0xFF)==PT_SPRK || parts[r>>8].tmp2==2 && 2>(rand()%16)){
+                    parts[i].tmp2 = 2;
+				}
+				if (parts[i].tmp2==2 && 2>(rand()%5)){
+                    parts[i].tmp2=1;
+				}
+				if(parts[i].tmp2==2 && parts[r>>8].tmp2!=2 && parts[r>>8].type==PT_GLOW){
+                    parts[r>>8].tmp2 = 2;
+				}
 			}
 	parts[i].ctype = pv[y/CELL][x/CELL]*16;
-	
+
 	parts[i].tmp = abs((int)((vx[y/CELL][x/CELL]+vy[y/CELL][x/CELL])*16.0f)) + abs((int)((parts[i].vx+parts[i].vy)*64.0f));
 	//printf("%f %f\n", parts[i].vx, parts[i].vy);
 	if (parts[i].type==PT_NONE) {

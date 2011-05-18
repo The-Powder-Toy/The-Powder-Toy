@@ -2889,13 +2889,24 @@ void draw_parts(pixel *vid)
 				}
 				else if (t==PT_GLOW)
 				{
-					fr = restrict_flt(parts[i].temp-(275.13f+32.0f), 0, 128)/50.0f;
-					fg = restrict_flt(parts[i].ctype, 0, 128)/50.0f;
-					fb = restrict_flt(parts[i].tmp, 0, 128)/50.0f;
+				    if(parts[i].tmp2 == 2){
+                        fr = 255;
+                        fg = 255;
+                        fb = 255;
 
-					cr = restrict_flt(64.0f+parts[i].temp-(275.13f+32.0f), 0, 255);
-					cg = restrict_flt(64.0f+parts[i].ctype, 0, 255);
-					cb = restrict_flt(64.0f+parts[i].tmp, 0, 255);
+                        cr = 255;
+                        cg = 255;
+                        cb = restrict_flt(255, 255, 255);
+					} else {
+                        fr = restrict_flt(parts[i].temp-(275.13f+32.0f), 0, 128)/50.0f;
+                        fg = restrict_flt(parts[i].ctype, 0, 128)/50.0f;
+                        fb = restrict_flt(parts[i].tmp, 0, 128)/50.0f;
+
+                        cr = restrict_flt(64.0f+parts[i].temp-(275.13f+32.0f), 0, 255);
+                        cg = restrict_flt(64.0f+parts[i].ctype, 0, 255);
+                        cb = restrict_flt(64.0f+parts[i].tmp, 0, 255);
+					}
+
 
 					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cr, cg, cb);
 					if (cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY || cmode==CM_AWESOME || cmode==CM_PREAWE)
@@ -4376,7 +4387,7 @@ void sdl_open(void)
 		fprintf(stderr, "Creating window: %s\n", SDL_GetError());
 		exit(1);
 	}
-	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
+	SDL_WM_SetCaption("Me4502's Mod", "Powder Toy");
 	sdl_seticon();
 	SDL_EnableUNICODE(1);
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);

@@ -787,6 +787,9 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		parts[i].life = 50;
 		parts[i].tmp = 50;
 	}
+	if (t==PT_C0) {
+		parts[i].tmp2 = 5;
+	}
     if (t==PT_FUSE2) {
 		parts[i].life = 50;
 		parts[i].tmp = 50;

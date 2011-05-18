@@ -15,12 +15,12 @@ int update_CFUS(UPDATE_FUNC_ARGS) {
 				parts[r].life = 50;
 		}
 	}
-	if ((pv[y/CELL][x/CELL] < 2.7f)&&parts[i].tmp>40)
+	if ((pv[y/CELL][x/CELL] > 2.7f)&&parts[i].tmp>40)
 		parts[i].tmp=39;
 	else if (parts[i].tmp<40&&parts[i].tmp>0)
 		parts[i].tmp--;
 	else if (parts[i].tmp<=0) {
-		create_part(i, x, y, PT_LNTG);
+		create_part(i, x, y, PT_SNOW);
 		return 1;
 	}
 	for (rx=-2; rx<3; rx++)
@@ -30,7 +30,7 @@ int update_CFUS(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
-				if ((r&0xFF)==PT_SPRK || ((parts[i].temp>=(273.15+700.0f)) && 1>(rand()%20)))
+				if ((r&0xFF)==PT_SPRK || ((parts[i].temp<=200.0f) && 1>(rand()%10)))
 				{
 					if (parts[i].life>40) {
 						parts[i].life = 39;

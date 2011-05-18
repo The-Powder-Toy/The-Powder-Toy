@@ -135,7 +135,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 					conduct_sprk = 0;
 
 
-				if (ct==PT_METL && (rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR||(rt==PT_SPRK&&(parts[r>>8].ctype==PT_NTCT||parts[r>>8].ctype==PT_PTCT))) && pavg!=PT_INSL)
+				if (ct==PT_METL && (rt==PT_NTCT||rt==PT_PTCT||rt==PT_NCGN||rt==PT_INWR||(rt==PT_SPRK&&(parts[r>>8].ctype==PT_NTCT||parts[r>>8].ctype==PT_PTCT))) && pavg!=PT_INSL)
 				{
 					parts[r>>8].temp = 473.0f;
 					if (rt==PT_NTCT||rt==PT_PTCT)

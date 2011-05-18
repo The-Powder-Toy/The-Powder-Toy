@@ -282,7 +282,8 @@
 #define PT_BSHL 226
 #define PT_LTNG 227
 #define PT_CTRD 228
-#define PT_NUM  229
+#define PT_C0 229
+#define PT_NUM  230
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -431,6 +432,7 @@ int update_PMIC(UPDATE_FUNC_ARGS);
 int update_PIVS(UPDATE_FUNC_ARGS);
 int update_LEAF(UPDATE_FUNC_ARGS);
 int update_PLAN(UPDATE_FUNC_ARGS);
+int update_C0(UPDATE_FUNC_ARGS);
 
 
 int update_MISC(UPDATE_FUNC_ARGS);
@@ -725,7 +727,7 @@ static const part_type ptypes[PT_NUM] =
 	{"INV",		PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives any Stickman an Invincible Power Up", ST_SOLID, TYPE_SOLID, NULL},
 	{"FLY",		PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives any Stickman the ability to Fly", ST_SOLID, TYPE_SOLID, NULL},
 	{"RSPW",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Allows the player to move its Spawn Point", ST_SOLID, TYPE_SOLID, NULL},
-	{"NCGN",	PIXPACK(0x756D6F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	251,	"Generates Nuclear Energy When Touching Plutonium.", ST_SOLID, TYPE_SOLID, &update_NCGN},
+	{"NCGN",	PIXPACK(0x756D6F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	251,	"Generates Nuclear Energy When Touching Plutonium.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_NCGN},
 	{"TRAP",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Traps the stickman when he stands on it", ST_SOLID, TYPE_SOLID, NULL},
 	{"BPAD",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little boost", ST_SOLID, TYPE_SOLID, NULL},
 	{"SPEL",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little speed boost to the left", ST_SOLID, TYPE_SOLID, NULL},
@@ -786,6 +788,7 @@ static const part_type ptypes[PT_NUM] =
     {"BSHL",	PIXPACK(0x808080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,		R_TEMP+0.0f	+273.15f,	251,	"Bomb Shell. Can store explosives without breaking. Destroyed by Pressure and Heat.", ST_SOLID, TYPE_SOLID, NULL},
     {"LTNG",	PIXPACK(0xECFF1F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,		R_TEMP+0.0f +273.15f,	251,	"Lightning Strike", ST_SOLID, TYPE_SOLID, NULL},
     {"CTRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Cold Electrode. Creates a surface that allows Cold Flame arcs. (Use sparingly)", ST_NONE, TYPE_SOLID|PROP_CONDUCTS, NULL},
+    {"C-0",		PIXPACK(0xBFBFBF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,	    0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	251,		"Explodes into first touched particle.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_C0},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -1030,6 +1033,7 @@ static part_transition ptransitions[PT_NUM] =
     /* bshl */    {-2.0f,PT_NONE,	2.0f,	PT_NONE,	ITL,	NT,			MAX_TEMP,	PT_NONE},
     /* ltng */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* ctrd */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* C0 */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 
 
 
