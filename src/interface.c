@@ -917,11 +917,11 @@ int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 
 	return ret;
 }
-char *input_ui(pixel *vid_buf, char *top)
+const char *input_ui(pixel *vid_buf, char *top)
 {
     const char *dataoutput;
 	int x0=(XRES-192)/2,y0=(YRES-80)/2,b=1,bq,mx,my,err;
-	ui_edit ed1;
+	ui_edit ed1, ed2;
 	char *res;
 
 	while (!sdl_poll())
@@ -931,7 +931,7 @@ char *input_ui(pixel *vid_buf, char *top)
 			break;
 	}
 
-	ed1.x = x0+25;
+	ed1.x = x0+15;//25
 	ed1.y = y0+25;
 	ed1.w = 158;
 	ed1.nx = 1;
@@ -939,10 +939,19 @@ char *input_ui(pixel *vid_buf, char *top)
 	ed1.focus = 1;
 	ed1.hide = 0;
 	ed1.multiline = 0;
-	ed1.cursor = strlen(dataoutput);
-	strcpy(ed1.str, dataoutput);
+	ed2.x = x0+21324;//25
+	ed2.y = y0+1341234;
+	ed2.w = 1241234;
+	ed2.nx = 3;
+	ed2.def = "";
+	ed2.focus = 0;
+	ed2.hide = 1;
+	ed2.multiline = 0;
+	//ed1.cursor = strlen(dataoutput);
+	//strcpy(ed1.str, dataoutput);
+	dataoutput=ed1.str;
 
-	fillrect(vid_buf, -1, -1, XRES, YRES+MENUSIZE, 0, 0, 0, 192);
+	fillrect(vid_buf, -1, -1, XRES, YRES+MENUSIZE, 0, 0, 0, 192); //192
 	while (!sdl_poll())
 	{
 		bq = b;
@@ -953,41 +962,54 @@ char *input_ui(pixel *vid_buf, char *top)
 		drawrect(vid_buf, x0, y0, 192, 80, 192, 192, 192, 255);
 		clearrect(vid_buf, x0, y0, 192, 80);
 		drawtext(vid_buf, x0+8, y0+8, top, 255, 255, 255, 255);
-		drawtext(vid_buf, x0+12, y0+23, "\x8B", 32, 64, 128, 255);
-		drawtext(vid_buf, x0+12, y0+23, "\x8A", 255, 255, 255, 255);
+		//drawtext(vid_buf, x0+12, y0+23, "\x8B", 32, 64, 128, 255);
+		//drawtext(vid_buf, x0+12, y0+23, "\x8A", 255, 255, 255, 255);
 		drawrect(vid_buf, x0+8, y0+20, 176, 16, 192, 192, 192, 255);
-		drawtext(vid_buf, x0+11, y0+44, "\x8C", 160, 144, 32, 255);
-		drawtext(vid_buf, x0+11, y0+44, "\x84", 255, 255, 255, 255);
-		drawrect(vid_buf, x0+8, y0+40, 176, 16, 192, 192, 192, 255);
 		ui_edit_draw(vid_buf, &ed1);
 		drawtext(vid_buf, x0+5, y0+69, "OK", 255, 255, 255, 255);
 		drawrect(vid_buf, x0, y0+64, 192, 16, 192, 192, 192, 255);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
-
+        dataoutput = ed1.str;
 		ui_edit_process(mx, my, b, &ed1);
+		ui_edit_process(mx, my, b, &ed2);
+		dataoutput=ed1.str;
 
-		if (b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36)
+		if (b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36){
+            dataoutput=ed1.str;
 			break;
-		if (b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+42 && my<y0+46)
+			return dataoutput;
+        }
+		if (b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+42 && my<y0+46){
+            dataoutput=ed1.str;
 			break;
-		if (b && !bq && mx>=x0 && mx<x0+192 && my>=y0+64 && my<=y0+80)
+			return dataoutput;
+        }
+		if (b && !bq && mx>=x0 && mx<x0+192 && my>=y0+64 && my<=y0+80){
+            dataoutput=ed1.str;
 			break;
+			return dataoutput;
+        }
 
 		if (sdl_key==SDLK_RETURN || sdl_key==SDLK_TAB)
 		{
 			if (!ed1.focus)
 				break;
 			ed1.focus = 0;
-        }
+			ed2.focus = 1;
+		}
 		if (sdl_key==SDLK_ESCAPE)
 		{
-			if (!ed1.focus)
+			if (!ed1.focus && !ed2.focus)
 				return;
 			ed1.focus = 0;
+			ed2.focus = 0;
 		}
+		dataoutput=ed1.str;
 	}
+	dataoutput=ed1.str;
 
-	strcpy(dataoutput, ed1.str);
+    //strcpy(dataoutput, ed1.str);
+    return dataoutput;
 
 }
 

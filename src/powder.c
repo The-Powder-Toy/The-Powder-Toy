@@ -746,7 +746,7 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	if (t==PT_PLAN)
 	{
         parts[i].tmp = 1;
-        parts[i].planetname = "PLAN";
+        //parts[i].planetname = input_ui(vid_buf, "Planet Name");
 	}
     if (t==PT_CFCN)
 	{

@@ -215,6 +215,8 @@ void info_box(pixel *vid_buf, char *msg);
 
 int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn);
 
+const char *input_ui(pixel *vid_buf, char *top);
+
 void login_ui(pixel *vid_buf);
 
 int stamp_ui(pixel *vid_buf);
