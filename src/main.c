@@ -1726,21 +1726,24 @@ int main(int argc, char *argv[])
 						//Session valid
 						if (strlen(check_data)>2) {
 							//User is elevated
-							if (!strncmp(check_data+3, "ADM", 5))
+							if (!strncmp(check_data+3, "ADMIN", 5))
 							{
+								//Check for messages
+								svf_messages = atoi(check_data+9);
 								svf_admin = 1;
 								svf_mod = 0;
 							}
 							else if (!strncmp(check_data+3, "MOD", 3))
 							{
+								//Check for messages
+								svf_messages = atoi(check_data+7);
 								svf_admin = 0;
 								svf_mod = 1;
+							} else {
+								//Check for messages
+								svf_messages = atoi(check_data+3);
 							}
-							//Check for messages
-							svf_messages = atoi(check_data+7);
-							printf("%d\n", svf_messages);
 						}
-						printf("%s\n", check_data);
 					}
 					else
 					{
