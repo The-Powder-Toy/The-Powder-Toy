@@ -2353,6 +2353,11 @@ int main(int argc, char *argv[])
 
 		mx = x;
 		my = y;
+		if (b && !bq && x>=(XRES-19-new_message_len)*sdl_scale &&
+		        x<=(XRES-14)*sdl_scale && y>=(YRES-37)*sdl_scale && y<=(YRES-24)*sdl_scale && svf_messages)
+		{
+			open_link("http://" SERVER "/Conversations.html");
+		}
 		if (update_flag)
 		{
 			info_box(vid_buf, "Finalizing update...");
@@ -3032,12 +3037,12 @@ int main(int argc, char *argv[])
 		
 		if (svf_messages)
 		{
-			sprintf(new_message_msg, "You have %d new message%s", svf_messages, (svf_messages>1)?"s":"");
+			sprintf(new_message_msg, "You have %d new message%s, Click to view", svf_messages, (svf_messages>1)?"s":"");
 			new_message_len = textwidth(new_message_msg);
 			
-			clearrect(vid_buf, XRES-21-new_message_len, YRES-24, new_message_len+9, 17);
-			drawtext(vid_buf, XRES-16-new_message_len, YRES-19, new_message_msg, 255, 216, 32, 255);
-			drawrect(vid_buf, XRES-19-new_message_len, YRES-22, new_message_len+5, 13, 255, 216, 32, 255);
+			clearrect(vid_buf, XRES-21-new_message_len, YRES-39, new_message_len+9, 17);
+			drawtext(vid_buf, XRES-16-new_message_len, YRES-34, new_message_msg, 255, 186, 32, 255);
+			drawrect(vid_buf, XRES-19-new_message_len, YRES-37, new_message_len+5, 13, 255, 186, 32, 255);
 		}
 
 		FPS++;
