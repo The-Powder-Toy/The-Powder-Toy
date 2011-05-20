@@ -1006,26 +1006,33 @@ void login_ui(pixel *vid_buf)
 	}
 	if (res && !strncmp(res, "OK ", 3))
 	{
-		char *s_id,*u_e,*nres;
-		printf("{%s}\n", res);
+		char *s_id,*u_e,*nres,*u_m,*mres;
 		s_id = strchr(res+3, ' ');
 		if (!s_id)
 			goto fail;
 		*(s_id++) = 0;
 
 		u_e = strchr(s_id, ' ');
-		if (!u_e) {
-			u_e = malloc(1);
-			memset(u_e, 0, 1);
+		if (!u_e)
+			goto fail;
+		*(u_e++) = 0;
+			
+		u_m = strchr(u_e, ' ');
+		if (!u_m) {
+			u_m = malloc(1);
+			memset(u_m, 0, 1);
 		}
 		else
-			*(u_e++) = 0;
+			*(u_m++) = 0;
 
 		strcpy(svf_user_id, res+3);
 		strcpy(svf_session_id, s_id);
-		nres = mystrdup(u_e);
+		mres = mystrdup(u_e);
+		nres = mystrdup(u_m);
 
-		printf("{%s} {%s} {%s}\n", svf_user_id, svf_session_id, nres);
+		#ifdef DEBUG
+		printf("{%s} {%s} {%s} {%s}\n", svf_user_id, svf_session_id, nres, mres);
+		#endif
 
 		if (!strncmp(nres, "ADMIN", 5))
 		{
@@ -1042,6 +1049,7 @@ void login_ui(pixel *vid_buf)
 			svf_admin = 0;
 			svf_mod = 0;
 		}
+		svf_messages = atoi(mres);
 		free(res);
 		svf_login = 1;
 		return;
@@ -1060,6 +1068,7 @@ fail:
 	svf_own = 0;
 	svf_admin = 0;
 	svf_mod = 0;
+	svf_messages = 0;
 }
 
 int stamp_ui(pixel *vid_buf)
