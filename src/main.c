@@ -173,6 +173,7 @@ int sys_pause = 0;
 int sys_shortcuts = 1;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by save.
 int ngrav_enable = 0; //Newtonian gravity, will be set by save
+int decorations_enable = 1;
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
@@ -2003,8 +2004,6 @@ int main(int argc, char *argv[])
 						vy[ny][nx] = -vy[ny][nx];
 					}
 			}
-			if ((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
-				active_menu = 11;
 			if (sdl_key==SDLK_INSERT)// || sdl_key==SDLK_BACKQUOTE)
 				REPLACE_MODE = !REPLACE_MODE;
 			if (sdl_key==SDLK_BACKQUOTE)
@@ -2014,8 +2013,19 @@ int main(int argc, char *argv[])
 			}
 			if (sdl_key=='b')
 			{
-				decorations_ui(vid_buf,decorations,&bsx,&bsy);//decoration_mode = !decoration_mode;
-				sys_pause=1;
+				if (sdl_mod & KMOD_CTRL)
+				{
+					decorations_enable = !decorations_enable;
+					itc = 51;
+					if (decorations_enable) strcpy(itc_msg, "Decorations layer: On");
+					else strcpy(itc_msg, "Decorations layer: Off");
+				}
+				else
+				{
+					decorations_ui(vid_buf,decorations,&bsx,&bsy);//decoration_mode = !decoration_mode;
+					decorations_enable = 1;
+					sys_pause=1;
+				}
 			}
 			if (sdl_key=='g')
 			{
@@ -2309,7 +2319,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &dae, b, bq, x, y); //draw the elements in the current menu
-		draw_decorations(vid_buf,decorations);
+		if (decorations_enable) draw_decorations(vid_buf,decorations);
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
 		        && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
 		        && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))

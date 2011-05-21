@@ -4360,7 +4360,7 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 		drawrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, 255, 255, 255, 255);
 		drawrect(vid_buf, window_offset_x + 230, window_offset_y +255+6, 26, 12, 255, 255, 255, 255);
 		drawtext(vid_buf, window_offset_x + 232, window_offset_y +255+9, "Clear", 255, 255, 255, 255);
-		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.1 (by cracker64) \n\nPro tip: click the current color to move the selector to the other side. Left click is eraser. ", 255, 255, 255, 255);
+		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.1 (by cracker64) \n\nPro tip: click the current color to move the selector to the other side. Right click is eraser. ", 255, 255, 255, 255);
 		ui_edit_draw(vid_buf, &box_R);
 		ui_edit_draw(vid_buf, &box_G);
 		ui_edit_draw(vid_buf, &box_B);
@@ -4556,6 +4556,62 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 						su = sr;
 				}*/
 			}
+		}
+		if (sdl_key==SDLK_LEFTBRACKET) {
+			if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+			{
+				*bsx -= 1;
+				*bsy -= 1;
+			}
+			else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+			{
+				*bsx -= 1;
+			}
+			else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+			{
+				*bsy -= 1;
+			}
+			else
+			{
+				*bsx -= ceil((*bsx/5)+0.5f);
+				*bsy -= ceil((*bsy/5)+0.5f);
+			}
+			if (*bsx>1180)
+				*bsx = 1180;
+			if (*bsy>1180)
+				*bsy = 1180;
+			if (*bsx<0)
+				*bsx = 0;
+			if (*bsy<0)
+				*bsy = 0;
+		}
+		if (sdl_key==SDLK_RIGHTBRACKET) {
+			if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+			{
+				*bsx += 1;
+				*bsy += 1;
+			}
+			else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+			{
+				*bsx += 1;
+			}
+			else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+			{
+				*bsy += 1;
+			}
+			else
+			{
+				*bsx += ceil((*bsx/5)+0.5f);
+				*bsy += ceil((*bsy/5)+0.5f);
+			}
+			if (*bsx>1180)
+				*bsx = 1180;
+			if (*bsy>1180)
+				*bsy = 1180;
+			if (*bsx<0)
+				*bsx = 0;
+			if (*bsy<0)
+				*bsy = 0;
 		}
 		if(sdl_key=='b' || sdl_key==SDLK_ESCAPE)
 		{
