@@ -1583,7 +1583,7 @@ void draw_parts(pixel *vid)
 
 			if (t==PT_SOAP)
 			{
-				if (((parts[i].ctype&1) == 1) && ((parts[i].ctype&2) == 2))
+				if ((parts[i].ctype&7) == 7)
 					draw_line(vid, nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), 245, 245, 220, XRES+BARSIZE);
 			}
 

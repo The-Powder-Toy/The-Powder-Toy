@@ -1,22 +1,5 @@
 #include <element.h>
 
-void detach(int i)
-{
-	if ((parts[i].ctype&2) == 2)
-	{
-		if ((parts[parts[i].tmp].ctype&4) == 4)
-			parts[parts[i].tmp].ctype ^= 4;
-	}
-
-	if ((parts[i].ctype&4) == 4)
-	{
-		if ((parts[parts[i].tmp2].ctype&2) == 2)
-			parts[parts[i].tmp2].ctype ^= 2;
-	}
-
-	parts[i].ctype = 0;
-}
-
 int update_SOAP(UPDATE_FUNC_ARGS) 
 {
 	int r, rx, ry;

@@ -33,6 +33,10 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 					if (!r || (r&0xFF)==PT_PRTI || (r&0xFF)==PT_PRTO || (ptypes[r&0xFF].falldown== 0 && ptypes[r&0xFF].state != ST_GAS && (r&0xFF)!=PT_SPRK))
 						continue;
 				}
+
+				if ((r&0xFF) == PT_SOAP)
+					detach(r>>8);
+
 				for ( nnx=0; nnx<80; nnx++)
 					if (!portalp[parts[i].tmp][count-1][nnx].type)
 					{
