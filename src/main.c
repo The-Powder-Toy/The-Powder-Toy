@@ -2993,7 +2993,7 @@ int main(int argc, char *argv[])
 				drawtext(vid_buf, 16, YRES-24, "Click-and-drag to specify a rectangle to copy (right click = cancel).", 255, 216, 32, da*5);
 				break;
 			case 270:
-				drawtext(vid_buf, 16, YRES-24, "Enable or disable compatibility mode (disables heat simulation).", 255, 255, 255, da*5);
+				drawtext(vid_buf, 16, YRES-24, "Simulation options", 255, 255, 255, da*5);
 				break;
 			case 271:
 				drawtext(vid_buf, 16, YRES-24, "You're a moderator", 255, 255, 255, da*5);
