@@ -1394,6 +1394,7 @@ int main(int argc, char *argv[])
 	void *load_data=NULL;
 	pixel *load_img=NULL;//, *fbi_img=NULL;
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
+	unsigned int hsvSave = PIXRGB(0,255,127);//this is hsv format
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
 #ifdef PYCONSOLE
@@ -2011,7 +2012,7 @@ int main(int argc, char *argv[])
 						vy[ny][nx] = -vy[ny][nx];
 					}
 			}
-			if (sdl_key==SDLK_INSERT)// || sdl_key==SDLK_BACKQUOTE)
+			if (sdl_key==SDLK_INSERT || sdl_key == SDLK_SEMICOLON)// || sdl_key==SDLK_BACKQUOTE)
 				REPLACE_MODE = !REPLACE_MODE;
 			if (sdl_key==SDLK_BACKQUOTE)
 			{
@@ -2022,7 +2023,6 @@ int main(int argc, char *argv[])
 			{
 				if (sdl_mod & KMOD_CTRL)
 				{
-<<<<<<< HEAD
 					decorations_enable = !decorations_enable;
 					itc = 51;
 					if (decorations_enable) strcpy(itc_msg, "Decorations layer: On");
@@ -2030,23 +2030,10 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					decorations_ui(vid_buf,decorations,&bsx,&bsy);//decoration_mode = !decoration_mode;
+					hsvSave = decorations_ui(vid_buf,decorations,&bsx,&bsy,hsvSave);//decoration_mode = !decoration_mode;
 					decorations_enable = 1;
 					sys_pause=1;
 				}
-=======
-         				decorations_enable = !decorations_enable;
-          				itc = 51;
-        				if (decorations_enable) strcpy(itc_msg, "Decorations layer: On");
-        				else strcpy(itc_msg, "Decorations layer: Off");	
-       				 }	
-       				 else	
-       				 {	
-        				decorations_ui(vid_buf,decorations,&bsx,&bsy);//decoration_mode = !decoration_mode;
-        				decorations_enable = 1;
-					sys_pause=1;	
-       				 }
->>>>>>> fb9f01d... jacksonmj's decoration commit
 			}
 			if (sdl_key=='g')
 			{
