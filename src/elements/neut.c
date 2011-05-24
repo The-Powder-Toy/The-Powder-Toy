@@ -2,9 +2,9 @@
 
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
+_inline int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)
 #else
-inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)//testing a new deut create part
+inline int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)//testing a new deut create part
 #endif
 {
 	int i, c;
@@ -33,7 +33,7 @@ inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)//testi
 		parts[i].vx = r*cosf(a);
 		parts[i].vy = r*sinf(a);
 		parts[i].ctype = 0;
-		parts[i].temp += (n*170);
+		parts[i].temp = temp;
 		parts[i].tmp = 0;
 		if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT && !pmap[y][x])
 			pmap[y][x] = t|(i<<8);
@@ -81,9 +81,9 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 					update_PYRO(UPDATE_FUNC_SUBCALL_ARGS);
 				}
 #ifdef SDEUT
-				else if ((r&0xFF)==PT_DEUT && (pressureFactor+1+(parts[i].life/100))>(rand()%1000))
+				else if ((r&0xFF)==PT_DEUT && (pressureFactor+1+(parts[r>>8].life/100))>(rand()%1000))
 				{
-					create_n_parts(parts[r>>8].life, x+rx, y+ry, parts[i].vx, parts[i].vy, PT_NEUT);
+					create_n_parts(parts[r>>8].life, x+rx, y+ry, parts[i].vx, parts[i].vy, restrict_flt(parts[r>>8].temp + parts[r>>8].life*500, MIN_TEMP, MAX_TEMP), PT_NEUT);
 					kill_part(r>>8);
 				}
 #else
