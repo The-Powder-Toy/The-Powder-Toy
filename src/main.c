@@ -1231,11 +1231,18 @@ char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
 #endif
                 ;
 
-void set_scale(int scale, int kiosk){
+int set_scale(int scale, int kiosk){
+	int old_scale = sdl_scale, old_kiosk = kiosk_enable;
 	sdl_scale = scale;
 	kiosk_enable = kiosk;
-	sdl_open();
-	return;
+	if (!sdl_open())
+	{
+		sdl_scale = old_scale;
+		kiosk_enable = old_kiosk;
+		sdl_open();
+		return 0;
+	}
+	return 1;
 }
 				
 void update_grav_async()
@@ -1564,7 +1571,7 @@ int main(int argc, char *argv[])
 
 	stamp_init();
 
-	sdl_open();
+	if (!sdl_open()) exit(1);
 	http_init(http_proxy_string[0] ? http_proxy_string : NULL);
 
 	if (cpu_check())

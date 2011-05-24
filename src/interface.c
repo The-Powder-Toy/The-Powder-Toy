@@ -4659,7 +4659,10 @@ void simulation_ui(pixel * vid_buf)
 	new_scale = (cb3.checked)?2:1;
 	new_kiosk = (cb4.checked)?1:0;
 	if(new_scale!=sdl_scale || new_kiosk!=kiosk_enable)
-		set_scale(new_scale, new_kiosk);	
+	{
+		if (!set_scale(new_scale, new_kiosk))
+			error_ui(vid_buf, 0, "Could not change display options");
+	}
 	if(ngrav_enable != cb2.checked)
 	{
 		if(cb2.checked)

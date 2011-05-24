@@ -3824,12 +3824,12 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 	}
 }
 
-void sdl_open(void)
+int sdl_open(void)
 {
 	if (SDL_Init(SDL_INIT_VIDEO)<0)
 	{
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
-		exit(1);
+		return 0;
 	}
 	atexit(SDL_Quit);
 #ifdef OpenGL
@@ -3861,12 +3861,22 @@ void sdl_open(void)
 	if (!sdl_scrn)
 	{
 		fprintf(stderr, "Creating window: %s\n", SDL_GetError());
-		exit(1);
+		return 0;
 	}
 	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
 	sdl_seticon();
 	SDL_EnableUNICODE(1);
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+#if (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+	SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
+	SDL_VERSION(&sdl_wminfo.version);
+	SDL_GetWMInfo(&sdl_wminfo);
+	sdl_wminfo.info.x11.lock_func();
+	XA_CLIPBOARD = XInternAtom(sdl_wminfo.info.x11.display, "CLIPBOARD", 1);
+	XA_TARGETS = XInternAtom(sdl_wminfo.info.x11.display, "TARGETS", 1);
+	sdl_wminfo.info.x11.unlock_func();
+#endif
+	return 1;
 }
 
 #ifdef OpenGL

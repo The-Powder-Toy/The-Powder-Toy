@@ -206,5 +206,5 @@ void sdl_seticon(void);
 void play_sound(char *file);
 void start_grav_async(void);
 void stop_grav_async(void);
-void set_scale(int scale, int kiosk);
+int set_scale(int scale, int kiosk);
 #endif
