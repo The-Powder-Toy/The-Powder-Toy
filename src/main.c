@@ -2022,6 +2022,7 @@ int main(int argc, char *argv[])
 			{
 				if (sdl_mod & KMOD_CTRL)
 				{
+<<<<<<< HEAD
 					decorations_enable = !decorations_enable;
 					itc = 51;
 					if (decorations_enable) strcpy(itc_msg, "Decorations layer: On");
@@ -2033,6 +2034,19 @@ int main(int argc, char *argv[])
 					decorations_enable = 1;
 					sys_pause=1;
 				}
+=======
+         				decorations_enable = !decorations_enable;
+          				itc = 51;
+        				if (decorations_enable) strcpy(itc_msg, "Decorations layer: On");
+        				else strcpy(itc_msg, "Decorations layer: Off");	
+       				 }	
+       				 else	
+       				 {	
+        				decorations_ui(vid_buf,decorations,&bsx,&bsy);//decoration_mode = !decoration_mode;
+        				decorations_enable = 1;
+					sys_pause=1;	
+       				 }
+>>>>>>> fb9f01d... jacksonmj's decoration commit
 			}
 			if (sdl_key=='g')
 			{
