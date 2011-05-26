@@ -192,8 +192,10 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if (!r || (r>>8)>=NPART)
 					r = photons[y+ry][x+rx];
-				if (!r || (r>>8)>=NPART)
+
+				if ((!r || (r>>8)>=NPART) && !bmap[(y+ry)/CELL][(x+rx)/CELL])
 					continue;
+				
 				if (ptypes[r&0xFF].falldown!=0 || (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT)
 				{
 					player2[2] = r&0xFF;  //Current element
@@ -304,7 +306,7 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 		r = pmap[(int)(player2[8]+ry)][(int)(player2[7]+0.5)];  //This is to make coding more pleasant :-)
 
 		//For left leg
-		if (r && (r&0xFF)!=PT_STKM)
+		if (r && (r&0xFF)!=PT_STKM2)
 		{
 			if ((r&0xFF)<PT_NUM && (ptypes[r&0xFF].state == ST_LIQUID || (r&0xFF) == PT_LNTG)) //Liquid checks
 			{
@@ -329,7 +331,7 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 		r = pmap[(int)(player2[16]+ry)][(int)(player2[15]+0.5)];
 
 		//For right leg
-		if (r && (r&0xFF)!=PT_STKM)
+		if (r && (r&0xFF)!=PT_STKM2)
 		{
 			if ((r&0xFF)<PT_NUM && (ptypes[r&0xFF].state == ST_LIQUID || (r&0xFF) == PT_LNTG))
 			{

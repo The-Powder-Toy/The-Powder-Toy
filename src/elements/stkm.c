@@ -192,8 +192,10 @@ int update_STKM(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if (!r || (r>>8)>=NPART)
 					r = photons[y+ry][x+rx];
-				if (!r || (r>>8)>=NPART)
+
+				if ((!r || (r>>8)>=NPART) && !bmap[(y+ry)/CELL][(x+rx)/CELL])
 					continue;
+				
 				if (ptypes[r&0xFF].falldown!=0 || (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT)
 				{
 					player[2] = r&0xFF;  //Current element
