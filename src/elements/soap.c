@@ -10,41 +10,44 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 
 	if ((parts[i].ctype&1) == 1)
 	{
-		if (parts[i].life<=0)
+		if (parts[i].temp>0)
 		{
-			if ((parts[i].ctype&6) != 6 && parts[i].ctype>1)
+			if (parts[i].life<=0)
 			{
-				int target;
-
-				target = i;
-
-				while((parts[target].ctype&6) != 6 && parts[target].ctype>1)
+				if ((parts[i].ctype&6) != 6 && parts[i].ctype>1)
 				{
-					if ((parts[target].ctype&2) == 2)
-					{
-						target = parts[target].tmp;
-						detach(target);
-					}
+					int target;
 
-					if ((parts[target].ctype&4) == 4)
+					target = i;
+
+					while((parts[target].ctype&6) != 6 && parts[target].ctype>1)
 					{
-						target = parts[target].tmp2;
-						detach(target);
+						if ((parts[target].ctype&2) == 2)
+						{
+							target = parts[target].tmp;
+							detach(target);
+						}
+
+						if ((parts[target].ctype&4) == 4)
+						{
+							target = parts[target].tmp2;
+							detach(target);
+						}
 					}
 				}
+
+				if ((parts[i].ctype&6) != 6)
+					parts[i].ctype = 0;
+
+				if ((parts[i].ctype&6) == 6 && (parts[parts[i].tmp].ctype&6) == 6 && parts[parts[i].tmp].tmp == i)
+					detach(i);
 			}
 
-			if ((parts[i].ctype&6) != 6)
-				parts[i].ctype = 0;
+			parts[i].vy -= 0.1f;
 
-			if ((parts[i].ctype&6) == 6 && (parts[parts[i].tmp].ctype&6) == 6 && parts[parts[i].tmp].tmp == i)
-				detach(i);
+			parts[i].vy *= 0.5f;
+			parts[i].vx *= 0.5f;
 		}
-
-		parts[i].vy -= 0.1f;
-
-		parts[i].vy *= 0.5f;
-		parts[i].vx *= 0.5f;
 
 		if((parts[i].ctype&2) != 2)
 		{
@@ -89,15 +92,19 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 						if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 						{
 							r = pmap[y+ry][x+rx];
-							if ((r>>8)>=NPART || !r)
+							if (((r>>8)>=NPART || !r) && !bmap[(y+ry)/CELL][(x+rx)/CELL])
 								continue;
 
-							if (((r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS) 
-									|| (parts[r>>8].ctype == 0 && (r&0xFF) == PT_SOAP 
-									&& (abs(parts[r>>8].vx)<2 || abs(parts[r>>8].vy)<2)))
+							if (parts[i].temp>0)
 							{
-								detach(i);
-								continue;
+								if (bmap[(y+ry)/CELL][(x+rx)/CELL] 
+										|| ((r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS) 
+										|| (parts[r>>8].ctype == 0 && (r&0xFF) == PT_SOAP 
+											&& (abs(parts[r>>8].vx)<2 || abs(parts[r>>8].vy)<2)))
+								{
+									detach(i);
+									continue;
+								}
 							}
 
 							if ((r&0xFF) == PT_SOAP && parts[r>>8].ctype == 1)
