@@ -329,6 +329,7 @@ struct particle
 	int flags;
 	int tmp;
 	int tmp2;
+	int dcolour;
 };
 typedef struct particle particle;
 

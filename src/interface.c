@@ -4326,7 +4326,7 @@ unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy,
 		my /= sdl_scale;
 
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*(YRES+MENUSIZE)*PIXELSIZE);
-		draw_decorations(vid_buf,decorations);
+		draw_parts(vid_buf);//draw_decorations(vid_buf,decorations);
 		//ui_edit_process(mx, my, b, &box_R);
 		//ui_edit_process(mx, my, b, &box_G);
 		//ui_edit_process(mx, my, b, &box_B);

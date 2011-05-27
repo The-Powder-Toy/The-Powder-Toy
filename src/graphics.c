@@ -2946,6 +2946,7 @@ void draw_parts(pixel *vid)
 				blendpixel(vid, nx+1, ny+1, cr, cg, cb, 112);
 				blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
 			}
+			blendpixel(vid, nx, ny, (parts[i].dcolour>>16)&0xFF, (parts[i].dcolour>>8)&0xFF, (parts[i].dcolour)&0xFF, (parts[i].dcolour>>24)&0xFF);
 		}
 #endif
 	}
@@ -3126,29 +3127,36 @@ void draw_walls(pixel *vid)
 
 void draw_decorations(pixel *vid_buf,pixel *decorations)
 {
-	int i,r,g,b;
+	/*int i,r,g,b;
 	for (i=0; i<(XRES+BARSIZE)*YRES; i++)
 	{
-		r = PIXR(decorations[i]);
-		g = PIXG(decorations[i]);
-		b = PIXB(decorations[i]);
+		r = (decorations[i]&0xFF0000)>>16;
+		g = (decorations[i]&0x00FF00)>>8;
+		b = decorations[i]&0x0000FF;
 		if (r>0 || g>0 || b>0)
 			vid_buf[i] = PIXRGB(r,g,b);
-	}
+	}*/
 }
 void create_decorations(pixel *decorations,int x, int y, int rx, int ry, int r, int g, int b)
 {
-	int i,j;
+	int i,j,rp;
 	if (rx==0 && ry==0)
 	{
-		decorations[(y)*(XRES+BARSIZE)+(x)] = PIXRGB(r, g, b);
+		rp = pmap[y][x];
+		if ((rp>>8)>=NPART || !rp)
+			return;
+		parts[rp>>8].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);//decorations[(y)*(XRES+BARSIZE)+(x)] = PIXRGB(r, g, b);
 		return;
 	}
 	for (j=-ry; j<=ry; j++)
 		for (i=-rx; i<=rx; i++)
 			if(y+j>=0 && x+i>=0 && x+i<XRES && y+j<YRES)
-				if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
-					decorations[(y+j)*(XRES+BARSIZE)+(x+i)] = PIXRGB(r, g, b);
+				if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx)){
+					rp = pmap[y+j][x+i];
+					if ((rp>>8)>=NPART || !rp)
+						continue;
+					parts[rp>>8].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
+				}
 }
 void line_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b)
 {
