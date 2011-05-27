@@ -76,10 +76,10 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 	if (rr)
 		*rr = r;
 
-	if ((r&0xFF)==PT_VOID || (r&0xFF)==PT_BHOL)
+	if ((r&0xFF)==PT_VOID || (r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL)
 		return 1;
 
-	if ((r&0xFF)==PT_WHOL && pt==PT_ANAR)
+	if (((r&0xFF)==PT_WHOL||(r&0xFF)==PT_NWHL) && pt==PT_ANAR)
 		return 1;
 
 	if (pt==PT_SPRK)//spark shouldn't move
@@ -255,7 +255,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 		parts[i].type=PT_NONE;
 		return 0;
 	}
-	if ((r&0xFF)==PT_BHOL) //this is where blackhole eats particles
+	if ((r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) //this is where blackhole eats particles
 	{
 		if (parts[i].type == PT_STKM)
 		{
@@ -275,7 +275,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 		return 0;
 	}
-	if ((r&0xFF)==PT_WHOL && parts[i].type==PT_ANAR) //whitehole eats anar
+	if (((r&0xFF)==PT_WHOL||(r&0xFF)==PT_NWHL) && parts[i].type==PT_ANAR) //whitehole eats anar
 	{
 		parts[i].type=PT_NONE;
 		if (!legacy_enable)
@@ -1525,7 +1525,13 @@ void update_particles_i(pixel *vid, int start, int inc)
 				pGravY = ptypes[t].gravity * ((float)(y - YCNTR) / pGravD);
 			}
 			//Get some gravity from the gravity map
-			if(!(ptypes[t].properties & TYPE_SOLID))
+			if (t==PT_ANAR)
+			{
+				// perhaps we should have a ptypes variable for this
+				pGravX -= gravx[y/CELL][x/CELL];
+				pGravY -= gravy[y/CELL][x/CELL];
+			}
+			else if(!(ptypes[t].properties & TYPE_SOLID))
 			{
 				pGravX += gravx[y/CELL][x/CELL];
 				pGravY += gravy[y/CELL][x/CELL];
