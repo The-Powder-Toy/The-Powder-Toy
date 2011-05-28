@@ -2851,7 +2851,7 @@ int search_ui(pixel *vid_buf)
 					if (search_dates[pos]) {
 						char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+1);
 						uri = malloc(strlen(search_ids[pos])*3+strlen(search_dates[pos])*3+strlen(SERVER)+71);
-						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbbm&ID=");
+						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbsmall&ID=");
 						strcaturl(uri, search_ids[pos]);
 						strappend(uri, "&Date=");
 						strcaturl(uri, search_dates[pos]);
@@ -2862,7 +2862,7 @@ int search_ui(pixel *vid_buf)
 						img_id[i] = mystrdup(id_d_temp);
 					} else {
 						uri = malloc(strlen(search_ids[pos])*3+strlen(SERVER)+64);
-						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbbm&ID=");
+						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbsmall&ID=");
 						strcaturl(uri, search_ids[pos]);
 						img_id[i] = mystrdup(search_ids[pos]);
 					}
@@ -2963,18 +2963,21 @@ int report_ui(pixel* vid_buf, char *save_id)
 
 int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 {
-	int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawnthumb=0,authoritah=0,myown=0,queue_open=0,data_size=0,retval=0,bc=255,openable=1;
+	int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,active_3=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawncthumb=0,hasdrawnthumb=0,authoritah=0,myown=0,queue_open=0,data_size=0,full_thumb_data_size=0,retval=0,bc=255,openable=1;
 	int nyd,nyu,ry,lv;
 	float ryf;
 
-	char *uri, *uri_2, *o_uri;
-	void *data, *info_data;
+	char *uri, *uri_2, *o_uri, *uri_3;
+	void *data, *info_data, *thumb_data_full;
 	save_info *info = malloc(sizeof(save_info));
-	void *http = NULL, *http_2 = NULL;
+	void *http = NULL, *http_2 = NULL, *http_3 = NULL;
 	int lasttime = TIMEOUT;
-	int status, status_2, info_ready = 0, data_ready = 0;
-	time_t http_last_use = HTTP_TIMEOUT,  http_last_use_2 = HTTP_TIMEOUT;
+	int status, status_2, info_ready = 0, data_ready = 0, thumb_data_ready = 0;
+	time_t http_last_use = HTTP_TIMEOUT,  http_last_use_2 = HTTP_TIMEOUT,  http_last_use_3 = HTTP_TIMEOUT;
 	pixel *save_pic;// = malloc((XRES/2)*(YRES/2));
+	pixel *save_pic_thumb = NULL;
+	char *thumb_data = NULL;
+	int thumb_data_size = 0;
 	ui_edit ed;
 	ui_copytext ctb;
 
@@ -3016,6 +3019,21 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			break;
 	}
 
+	//Try to load the thumbnail from the cache
+	if(!thumb_cache_find(save_id, &thumb_data, &thumb_data_size)){
+		thumb_data = NULL;	
+	} else {
+		//We found a thumbnail in the cache, we'll draw this one while we wait for the full image to load.
+		int finw, finh;
+		pixel *thumb_imgdata = ptif_unpack(thumb_data, thumb_data_size, &finw, &finh);
+		if(thumb_imgdata!=NULL){
+			save_pic_thumb = resample_img(thumb_imgdata, finw, finh, XRES/2, YRES/2);
+			//draw_image(vid_buf, save_pic_thumb, 51, 51, XRES/2, YRES/2, 255);	
+		}
+		free(thumb_imgdata);
+		//rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
+	}
+
 	//Begin Async loading of data
 	if (save_date) {
 		// We're loading an historical save
@@ -3030,6 +3048,12 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		strcaturl(uri_2, save_id);
 		strappend(uri_2, "&Date=");
 		strcaturl(uri_2, save_date);
+
+		uri_3 = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
+		strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
+		strcaturl(uri_3, save_id);
+		strappend(uri_3, "&Date=");
+		strcaturl(uri_3, save_date);
 	} else {
 		//We're loading a normal save
 		uri = malloc(strlen(save_id)*3+strlen(SERVER)+64);
@@ -3039,9 +3063,14 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		uri_2 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
 		strcpy(uri_2, "http://" SERVER "/Info.api?ID=");
 		strcaturl(uri_2, save_id);
+
+		uri_3 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
+		strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
+		strcaturl(uri_3, save_id);
 	}
 	http = http_async_req_start(http, uri, NULL, 0, 1);
 	http_2 = http_async_req_start(http_2, uri_2, NULL, 0, 1);
+	http_3 = http_async_req_start(http_3, uri_3, NULL, 0, 1);
 	if (svf_login)
 	{
 		http_auth_headers(http, svf_user_id, NULL, svf_session_id);
@@ -3049,10 +3078,13 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	}
 	http_last_use = time(NULL);
 	http_last_use_2 = time(NULL);
+	http_last_use_3 = time(NULL);
 	free(uri);
 	free(uri_2);
+	free(uri_3);
 	active = 1;
 	active_2 = 1;
+	active_3 = 1;
 	while (!sdl_poll())
 	{
 		bq = b;
@@ -3074,7 +3106,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 				}
 				full_save = prerender_save(data, data_size, &imgw, &imgh);
 				if (full_save!=NULL) {
-					save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
+					//save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
 					data_ready = 1;
 					free(full_save);
 				} else {
@@ -3104,9 +3136,43 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			free(http_2);
 			http_2 = NULL;
 		}
-
-		if (data_ready && !hasdrawnthumb) {
-			draw_image(vid_buf, save_pic, 51, 51, thumb_w, thumb_h, 255);
+		if (active_3 && http_async_req_status(http_3))
+		{
+			int imgh, imgw, nimgh, nimgw;
+			http_last_use_3 = time(NULL);
+			thumb_data_full = http_async_req_stop(http_3, &status, &full_thumb_data_size);
+			if (status == 200)
+			{
+				pixel *full_thumb;
+				if (!thumb_data_full||!full_thumb_data_size) {
+					//error_ui(vid_buf, 0, "Save data is empty (may be corrupt)");
+					//break;
+				} else {
+					full_thumb = ptif_unpack(thumb_data_full, full_thumb_data_size, &imgw, &imgh);//prerender_save(data, data_size, &imgw, &imgh);
+					if (full_thumb!=NULL) {
+						save_pic = resample_img(full_thumb, imgw, imgh, XRES/2, YRES/2);
+						thumb_data_ready = 1;
+						free(full_thumb);
+					}
+				}
+			}
+			if(thumb_data_full)
+				free(thumb_data_full);
+			active_3 = 0;
+			free(http_3);
+			http_3 = NULL;
+		}
+		if (save_pic_thumb!=NULL && !hasdrawncthumb) {
+			draw_image(vid_buf, save_pic_thumb, 51, 51, XRES/2, YRES/2, 255);
+			free(save_pic_thumb);
+			save_pic_thumb = NULL;		
+			hasdrawncthumb = 1;
+			memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+		}
+		if (thumb_data_ready && !hasdrawnthumb) {
+			draw_image(vid_buf, save_pic, 51, 51, XRES/2, YRES/2, 255);
+			free(save_pic);
+			save_pic = NULL;
 			hasdrawnthumb = 1;
 			memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 		}
