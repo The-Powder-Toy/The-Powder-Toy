@@ -79,7 +79,7 @@ void *ptif_pack(pixel *src, int w, int h, int *result_size){
 }
 
 pixel *ptif_unpack(void *datain, int size, int *w, int *h){
-	int width, height, i, cx, cy;
+	int width, height, i, cx, cy, resCode;
 	unsigned char *red_chan;
 	unsigned char *green_chan;
 	unsigned char *blue_chan;
@@ -103,8 +103,9 @@ pixel *ptif_unpack(void *datain, int size, int *w, int *h){
 	blue_chan = calloc(1, width*height); 
 	result = calloc(width*height, PIXELSIZE);
 	
-	if (BZ2_bzBuffToBuffDecompress((char *)undata, (unsigned *)&i, (char *)(data+8), size-8, 0, 0)){
-		printf("Decompression failure\n");
+	resCode = BZ2_bzBuffToBuffDecompress((char *)undata, (unsigned *)&i, (char *)(data+8), size-8, 0, 0);
+	if (resCode){
+		printf("Decompression failure, %d\n", resCode);
 		free(red_chan);
 		free(green_chan);
 		free(blue_chan);
@@ -112,7 +113,7 @@ pixel *ptif_unpack(void *datain, int size, int *w, int *h){
 		return NULL;
 	}
 	if(i != (width*height)*3){
-		printf("Result buffer size mismatch\n");
+		printf("Result buffer size mismatch, %d != %d\n", i, (width*height)*3);
 		free(red_chan);
 		free(green_chan);
 		free(blue_chan);
