@@ -709,6 +709,7 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	else
 		i = p;
 
+	parts[i].dcolour = 0;
 	if (t==PT_GLAS)
 	{
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];

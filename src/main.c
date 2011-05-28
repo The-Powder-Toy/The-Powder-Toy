@@ -989,7 +989,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				// Replace invisible particles with something sensible and add decoration to hide it
 				x = (int)(parts[i-1].x+0.5f);
 				y = (int)(parts[i-1].y+0.5f);
-				parts[i-1].dcolour = 0x010101;
+				parts[i-1].dcolour = 0xFF000000;
 				parts[i-1].type = PT_DMND;
 			}
 		}
