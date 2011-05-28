@@ -8,13 +8,13 @@ int update_NCGN(UPDATE_FUNC_ARGS) {
                x+nx<XRES && y+ny<YRES && (nx || ny))
             {
                 r = pmap[y+ny][x+nx];
-                if((r>>8)>=NPART || !r)
+                if((r>>PS)>=NPART || !r)
                     continue;
-                if (parts[r>>8].type==PT_PLUT){
+                if (parts[r>>PS].type==PT_PLUT){
                     parts[i].ctype=PT_NCGN;
                     parts[i].life = 4;
                     parts[i].type = PT_SPRK;
-                    parts[r>>8].type = PT_NCWS;
+                    parts[r>>PS].type = PT_NCWS;
                 }
             }
 	return 0;

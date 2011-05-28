@@ -70,29 +70,29 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r>>8)>=NPART || !r)
+						if ((r>>PS)>=NPART || !r)
 							continue;
 
-						if ((parts[r>>8].type == PT_SOAP) && ((parts[r>>8].ctype&1) == 1)
-								&& ((parts[r>>8].ctype&4) != 4))
+						if ((parts[r>>PS].type == PT_SOAP) && ((parts[r>>PS].ctype&1) == 1)
+								&& ((parts[r>>PS].ctype&4) != 4))
 						{
-							if ((parts[r>>8].ctype&2) == 2)
+							if ((parts[r>>PS].ctype&2) == 2)
 							{
-								parts[i].tmp = r>>8;
-								parts[r>>8].tmp2 = i;
+								parts[i].tmp = r>>PS;
+								parts[r>>PS].tmp2 = i;
 
 								parts[i].ctype |= 2;
-								parts[r>>8].ctype |= 4;
+								parts[r>>PS].ctype |= 4;
 							}
 							else
 							{
 								if ((parts[i].ctype&2) != 2)
 								{
-									parts[i].tmp = r>>8;
-									parts[r>>8].tmp2 = i;
+									parts[i].tmp = r>>PS;
+									parts[r>>PS].tmp2 = i;
 
 									parts[i].ctype |= 2;
-									parts[r>>8].ctype |= 4;
+									parts[r>>PS].ctype |= 4;
 								}
 							}
 						}
@@ -106,36 +106,36 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 						if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 						{
 							r = pmap[y+ry][x+rx];
-							if ((r>>8)>=NPART || !r)
+							if ((r>>PS)>=NPART || !r)
 								continue;
 
-							if (((r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS)
-									|| (parts[r>>8].ctype == 0 && (r&0xFF) == PT_SOAP
-									&& (abs(parts[r>>8].vx)<2 || abs(parts[r>>8].vy)<2)))
+							if (((r&TYPE) != PT_SOAP && (r&TYPE) != PT_GLAS)
+									|| (parts[r>>PS].ctype == 0 && (r&TYPE) == PT_SOAP
+									&& (abs(parts[r>>PS].vx)<2 || abs(parts[r>>PS].vy)<2)))
 							{
 								detach(i);
 								continue;
 							}
 
-							if ((r&0xFF) == PT_SOAP && parts[r>>8].ctype == 1)
+							if ((r&TYPE) == PT_SOAP && parts[r>>PS].ctype == 1)
 							{
 
 								buf = parts[i].tmp;
 
-								parts[i].tmp = r>>8;
-								parts[buf].tmp2 = r>>8;
-								parts[r>>8].tmp2 = i;
-								parts[r>>8].tmp = buf;
-								parts[r>>8].ctype = 7;
+								parts[i].tmp = r>>PS;
+								parts[buf].tmp2 = r>>PS;
+								parts[r>>PS].tmp2 = i;
+								parts[r>>PS].tmp = buf;
+								parts[r>>PS].ctype = 7;
 							}
 
-							if ((r&0xFF) == PT_SOAP && parts[r>>8].ctype == 7 && parts[i].tmp != r>>8 && parts[i].tmp2 != r>>8)
+							if ((r&TYPE) == PT_SOAP && parts[r>>PS].ctype == 7 && parts[i].tmp != r>>PS && parts[i].tmp2 != r>>PS)
 							{
 
-								parts[parts[i].tmp].tmp2 = parts[r>>8].tmp2;
-								parts[parts[r>>8].tmp2].tmp = parts[i].tmp;
-								parts[r>>8].tmp2 = i;
-								parts[i].tmp = r>>8;
+								parts[parts[i].tmp].tmp2 = parts[r>>PS].tmp2;
+								parts[parts[r>>PS].tmp2].tmp = parts[i].tmp;
+								parts[r>>PS].tmp2 = i;
+								parts[i].tmp = r>>PS;
 							}
 						}
 		}
@@ -187,23 +187,23 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART || !r)
+					if ((r>>PS)>=NPART || !r)
 						continue;
 
-					if ((r&0xFF) == PT_OIL)
+					if ((r&TYPE) == PT_OIL)
 					{
 						parts[i].vy -= 0.1f;
 
 						parts[i].vy *= 0.5f;
 						parts[i].vx *= 0.5f;
 
-						ax = (parts[i].vx + parts[r>>8].vx)/2;
-						ay = (parts[i].vy + parts[r>>8].vy)/2;
+						ax = (parts[i].vx + parts[r>>PS].vx)/2;
+						ay = (parts[i].vy + parts[r>>PS].vy)/2;
 
 						parts[i].vx = ax;
 						parts[i].vy = ay;
-						parts[r>>8].vx = ax;
-						parts[r>>8].vy = ay;
+						parts[r>>PS].vx = ax;
+						parts[r>>PS].vy = ay;
 					}
 				}
 	}

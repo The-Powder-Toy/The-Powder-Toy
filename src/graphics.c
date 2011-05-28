@@ -2945,7 +2945,7 @@ void draw_parts(pixel *vid)
                         fb = 0 * pv[ny/CELL][nx/CELL];
                         fr = 0 * pv[ny/CELL][nx/CELL];
                     }
-                    vid[ny*(XRES+BARSIZE)+nx] = PIXRGB((int)restrict_flt(0x44 + fr*8, 0, 255), (int)restrict_flt(0x88 + fg*8, 0, 255), (int)restrict_flt(0x44 + fb*8, 0, 255));
+                    vid[ny*(XRES+BARSIZE)+nx] = PIXRGB((int)restrict_flt(0x44 + fr, 0, 255), (int)restrict_flt(0x88 + fg*8, 0, 255), (int)restrict_flt(0x44 + fb*8, 0, 255));
 					if(cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY || cmode==CM_AWESOME || cmode==CM_PREAWE)
                     {
                         x = nx/CELL;
@@ -3081,7 +3081,22 @@ void draw_parts(pixel *vid)
 						blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
 						blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
 					}
-				} else if (t==PT_HFLM)
+				}
+				else if (t==PT_HETR)
+				{
+				    if(parts[i].tmp == 1){
+						cr = 255;
+						cg = 0;
+						cb = 0;
+						blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    } else if(parts[i].tmp == 2){
+                        cr = 0;
+						cg = 0;
+						cb = 255;
+						blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                    }
+                }
+                else if (t==PT_HFLM)
 				{
 					float ttemp = (float)parts[i].life;
 					int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
@@ -3766,8 +3781,8 @@ void render_signs(pixel *vid_buf)
 			}
 			if (strcmp(signs[i].text, "{t}")==0)
 			{
-				if ((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
-					sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...tempirature
+				if ((pmap[signs[i].y][signs[i].x]>>PS)>0 && (pmap[signs[i].y][signs[i].x]>>PS)<NPART)
+					sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>PS].temp-273.15);  //...tempirature
 				else
 					sprintf(buff, "Temp: 0.00");  //...tempirature
 				drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
@@ -3789,8 +3804,8 @@ void render_signs(pixel *vid_buf)
 			}
             if(strcmp(signs[i].text, "{type}")==0)
             {
-                if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
-                    sprintf(buff, "Type: %s", ptypes[pmap[signs[i].y][signs[i].x]&0xFF].name);  //...type
+                if((pmap[signs[i].y][signs[i].x]>>PS)>0 && (pmap[signs[i].y][signs[i].x]>>PS)<NPART)
+                    sprintf(buff, "Type: %s", ptypes[pmap[signs[i].y][signs[i].x]&TYPE].name);  //...type
                 else
                     sprintf(buff, "Type: Nil");  //...type
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
@@ -3798,16 +3813,16 @@ void render_signs(pixel *vid_buf)
             if(strcmp(signs[i].text, "{ctype}")==0)
             {
                 r = pmap[y][x];
-                if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
-                    sprintf(buff, "CType: %d", parts[pmap[signs[i].y][signs[i].x]>>8].ctype);
+                if((pmap[signs[i].y][signs[i].x]>>PS)>0 && (pmap[signs[i].y][signs[i].x]>>PS)<NPART)
+                    sprintf(buff, "CType: %d", parts[pmap[signs[i].y][signs[i].x]>>PS].ctype);
                 else
                     sprintf(buff, "CType: Nil");  //...Ctype
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
             }
             if(strcmp(signs[i].text, "{life}")==0)
             {
-                if((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
-                    sprintf(buff, "Life: %d", parts[pmap[signs[i].y][signs[i].x]>>8].life);  //...life
+                if((pmap[signs[i].y][signs[i].x]>>PS)>0 && (pmap[signs[i].y][signs[i].x]>>PS)<NPART)
+                    sprintf(buff, "Life: %d", parts[pmap[signs[i].y][signs[i].x]>>PS].life);  //...life
                 else
                     sprintf(buff, "Life: Nil");  //...life
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);
@@ -4244,7 +4259,7 @@ int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int p
 				for (i=0; i<scl; i++)
 				{
 					t = d[(y+j)*XRES+(x+i)];
-					if (t==0xFF)
+					if (t==TYPE)
 					{
 						r += 256;
 						g += 256;

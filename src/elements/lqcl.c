@@ -9,15 +9,15 @@ int update_LQCL(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
                 {
                     r = photons[y+ry][x+rx];
-                    if (!r || (r>>8)>=NPART)
+                    if (!r || (r>>PS)>=NPART)
                         r = pmap[y+ry][x+rx];
-                    if (!r || (r>>8)>=NPART)
+                    if (!r || (r>>PS)>=NPART)
                         continue;
-                    if ((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN &&
-                    (r&0xFF)!=PT_BCLN && (r&0xFF)!=PT_STKM &&
-                    (r&0xFF)!=PT_STKM2 && (r&0xFF)!=PT_PDCL &&
-                    (r&0xFF)!=PT_GSCL && (r&0xFF)!=PT_LQCL && (r&0xFF)<PT_NUM)
-                        parts[i].ctype = r&0xFF;
+                    if ((r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN &&
+                    (r&TYPE)!=PT_BCLN && (r&TYPE)!=PT_STKM &&
+                    (r&TYPE)!=PT_STKM2 && (r&TYPE)!=PT_PDCL &&
+                    (r&TYPE)!=PT_GSCL && (r&TYPE)!=PT_LQCL && (r&TYPE)<PT_NUM)
+                        parts[i].ctype = r&TYPE;
                 }
 	}
 	else {

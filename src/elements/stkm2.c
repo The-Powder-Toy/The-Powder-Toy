@@ -85,10 +85,10 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 	player2[26] = 0;
 
 	//Go left
-	if (((int)(player2[0])&0x01) == 0x01 && ptypes[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_GAS)
+	if (((int)(player2[0])&0x01) == 0x01 && ptypes[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&TYPE].state != ST_GAS)
 	{
-		if (ptypes[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID
-		        && (pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF) != PT_LNTG)
+		if (ptypes[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&TYPE].state != ST_LIQUID
+		        && (pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&TYPE) != PT_LNTG)
 		{
 			if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
 			{
@@ -123,10 +123,10 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 	}
 
 	//Go right
-	if (((int)(player2[0])&0x02) == 0x02 && ptypes[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_GAS)
+	if (((int)(player2[0])&0x02) == 0x02 && ptypes[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&TYPE].state != ST_GAS)
 	{
-		if (ptypes[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF].state != ST_LIQUID
-		        && (pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&0xFF) != PT_LNTG)
+		if (ptypes[pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&TYPE].state != ST_LIQUID
+		        && (pmap[(int)(parts[i].y+10)][(int)(parts[i].x)]&TYPE) != PT_LNTG)
 		{
 			if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
 			{
@@ -162,7 +162,7 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 	}
 
 	//Jump
-	if (((int)(player2[0])&0x04) == 0x04 && (ptypes[pmap[(int)(player2[8]-0.5)][(int)(player2[7])]&0xFF].state != ST_GAS || ptypes[pmap[(int)(player2[16]-0.5)][(int)(player2[15])]&0xFF].state != ST_GAS))
+	if (((int)(player2[0])&0x04) == 0x04 && (ptypes[pmap[(int)(player2[8]-0.5)][(int)(player2[7])]&TYPE].state != ST_GAS || ptypes[pmap[(int)(player2[16]-0.5)][(int)(player2[15])]&TYPE].state != ST_GAS))
 	{
 		if (pmap[(int)(player2[8]-0.5)][(int)(player2[7])] || pmap[(int)(player2[16]-0.5)][(int)(player2[15])])
 		{
@@ -184,27 +184,27 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if (!r || (r>>8)>=NPART)
+				if (!r || (r>>PS)>=NPART)
 					r = photons[y+ry][x+rx];
-				if (!r || (r>>8)>=NPART)
+				if (!r || (r>>PS)>=NPART)
 					continue;
-				if (ptypes[r&0xFF].falldown!=0 || (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT)
+				if (ptypes[r&TYPE].falldown!=0 || (r&TYPE) == PT_NEUT || (r&TYPE) == PT_PHOT)
 				{
-					player2[2] = r&0xFF;  //Current element
+					player2[2] = r&TYPE;  //Current element
 				}
-				if ((r&0xFF) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
+				if ((r&TYPE) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
 				{
 					if (parts[i].life<=95)
 						parts[i].life += 5;
 					else
 						parts[i].life = 100;
-					kill_part(r>>8);
+					kill_part(r>>PS);
 				}
 
-				if ((r&0xFF) == PT_NEUT)
+				if ((r&TYPE) == PT_NEUT)
 				{
 					parts[i].life -= (102-parts[i].life)/2;
-					kill_part(r>>8);
+					kill_part(r>>PS);
 				}
 				if (bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)
 					player2[2] = SPC_AIR;
@@ -219,9 +219,9 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 	{
 		ry -= 2*(rand()%2)+1;
 		r = pmap[ry][rx];
-		if (!((r>>8)>=NPART))
+		if (!((r>>PS)>=NPART))
 		{
-			if (ptypes[r&0xFF].state == ST_SOLID)
+			if (ptypes[r&TYPE].state == ST_SOLID)
 			{
 				create_part(-1, rx, ry, PT_SPRK);
 			}
@@ -284,11 +284,11 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 	for (rx = -3; rx <= 3; rx++)
 	{
 		r = pmap[(int)(player2[16]-2)][(int)(player2[15]+rx)];
-		if (r && ptypes[r&0xFF].state != ST_GAS && ptypes[r&0xFF].state != ST_LIQUID)
+		if (r && ptypes[r&TYPE].state != ST_GAS && ptypes[r&TYPE].state != ST_LIQUID)
 			player2[15] -= rx;
 
 		r = pmap[(int)(player2[8]-2)][(int)(player2[7]+rx)];
-		if (r && ptypes[r&0xFF].state != ST_GAS && ptypes[r&0xFF].state != ST_LIQUID)
+		if (r && ptypes[r&TYPE].state != ST_GAS && ptypes[r&TYPE].state != ST_LIQUID)
 			player2[7] -= rx;
 	}
 
@@ -298,9 +298,9 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 		r = pmap[(int)(player2[8]+ry)][(int)(player2[7]+0.5)];  //This is to make coding more pleasant :-)
 
 		//For left leg
-		if (r && (r&0xFF)!=PT_STKM)
+		if (r && (r&TYPE)!=PT_STKM)
 		{
-			if (ptypes[r&0xFF].state == ST_LIQUID || (r&0xFF) == PT_LNTG) //Liquid checks
+			if (ptypes[r&TYPE].state == ST_LIQUID || (r&TYPE) == PT_LNTG) //Liquid checks
 			{
 				if (parts[i].y<(player2[8]-10))
 					parts[i].vy = 1*dt;
@@ -311,7 +311,7 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 			}
 			else
 			{
-				if (ptypes[r&0xFF].state != ST_GAS)
+				if (ptypes[r&TYPE].state != ST_GAS)
 				{
 					player2[8] += ry-1;
 					parts[i].vy -= 0.5*parts[i].vy*dt;
@@ -323,9 +323,9 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 		r = pmap[(int)(player2[16]+ry)][(int)(player2[15]+0.5)];
 
 		//For right leg
-		if (r && (r&0xFF)!=PT_STKM)
+		if (r && (r&TYPE)!=PT_STKM)
 		{
-			if (ptypes[r&0xFF].state == ST_LIQUID || (r&0xFF) == PT_LNTG)
+			if (ptypes[r&TYPE].state == ST_LIQUID || (r&TYPE) == PT_LNTG)
 			{
 				if (parts[i].y<(player2[16]-10))
 					parts[i].vy = 1*dt;
@@ -336,7 +336,7 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 			}
 			else
 			{
-				if (ptypes[r&0xFF].state != ST_GAS)
+				if (ptypes[r&TYPE].state != ST_GAS)
 				{
 					player2[16] += ry-1;
 					parts[i].vy -= 0.5*parts[i].vy*dt;
@@ -369,75 +369,75 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 
 	//If legs touch something
 	r = pmap[(int)(player2[8]+0.5)][(int)(player2[7]+0.5)];
-	if ((r&0xFF)==PT_SPRK && r && (r>>8)<NPART) //If on charge
+	if ((r&TYPE)==PT_SPRK && r && (r>>PS)<NPART) //If on charge
 	{
 		parts[i].life -= (int)(rand()/1000)+38;
 	}
 
-	if (r>0 && (r>>8)<NPART)
+	if (r>0 && (r>>PS)<NPART)
 	{
-		if (parts[r>>8].temp>=323 || parts[r>>8].temp<=243) //If hot or cold
+		if (parts[r>>PS].temp>=323 || parts[r>>PS].temp<=243) //If hot or cold
 		{
 			parts[i].life -= 2;
 			player2[26] -= 1;
 		}
 	}
 
-	if ((r&0xFF)==PT_ACID)  //If on acid
+	if ((r&TYPE)==PT_ACID)  //If on acid
         parts[i].life -= 5;
-    
-    if ((r&0xFF)==PT_ACRN)  //If on acrn
+
+    if ((r&TYPE)==PT_ACRN)  //If on acrn
         parts[i].life -= 5;
-    
-    if ((r&0xFF)==PT_PLUT)  //If on plut
+
+    if ((r&TYPE)==PT_PLUT)  //If on plut
         parts[i].life -= 1;
-    
-    if ((r&0xFF)==PT_HEAL)  //If on heal
+
+    if ((r&TYPE)==PT_HEAL)  //If on heal
         parts[i].life = 100;
-    
-    if ((r&0xFF)==PT_INV)  //If on INV
+
+    if ((r&TYPE)==PT_INV)  //If on INV
         parts[i].life = 9999;
-    
-    if ((r&0xFF)==PT_FLY)  //If on FLY
+
+    if ((r&TYPE)==PT_FLY)  //If on FLY
         player2[2] = SPC_AIR;
-    
-    if ((r&0xFF)==PT_RSPW)
+
+    if ((r&TYPE)==PT_RSPW)
         player2[2] = PT_SPAWN;
-    
-    if ((r&0xFF)==PT_BPAD){
+
+    if ((r&TYPE)==PT_BPAD){
         parts[i].vy = -5;
         player2[22] -= 1;
         player2[26] -= 1;
     }
-    if ((r&0xFF)==PT_LAZR){
+    if ((r&TYPE)==PT_LAZR){
         parts[i].life = 0;
     }
-    if ((r&0xFF)==PT_FREZ){
+    if ((r&TYPE)==PT_FREZ){
         parts[i].life = 0;
     }
-    if ((r&0xFF)==PT_TRAP){
+    if ((r&TYPE)==PT_TRAP){
         player2[19] = 0;
         player2[20] = 0;
-        
+
         player2[21] = 0;
         player2[22] = 0;
-        
+
         player2[23] = 0;
         player2[24] = 0;
-        
+
         player2[25] = 0;
         player2[26] = 0;
         create_part(-1, x, y+1, PT_ACID);
     }
-    
-    if ((r&0xFF)==PT_SPER){
+
+    if ((r&TYPE)==PT_SPER){
         if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
         {
             player2[21] = 6;
             player2[22] = -4;
             player2[19] = 4;
         }
-        
+
         if (pmap[(int)(player2[16]-1)][(int)(player2[15])])
         {
             player2[25] = 6;
@@ -445,96 +445,96 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
             player2[23] = 4;
         }
     }
-    
-    if ((r&0xFF)==PT_SPEL){
+
+    if ((r&TYPE)==PT_SPEL){
         if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
         {
             player2[21] = -6;
             player2[22] = -4;
             player2[19] = -4;
         }
-        
+
         if (pmap[(int)(player2[16]-1)][(int)(player2[15])])
         {
             player2[25] = -6;
             player2[26] = -4;
             player2[23] = -4;
         }
-        
-        
+
+
     }
 
 	r = pmap[(int)(player2[16]+0.5)][(int)(player2[15]+0.5)];
-	if ((r&0xFF)==PT_SPRK && r && (r>>8)<NPART) //If on charge
+	if ((r&TYPE)==PT_SPRK && r && (r>>PS)<NPART) //If on charge
 	{
 		parts[i].life -= (int)(rand()/1000)+38;
 	}
 
-	if (r>0 && (r>>8)<NPART) //If hot or cold
+	if (r>0 && (r>>PS)<NPART) //If hot or cold
 	{
-		if (parts[r>>8].temp>=323 || parts[r>>8].temp<=243)
+		if (parts[r>>PS].temp>=323 || parts[r>>PS].temp<=243)
 		{
 			parts[i].life -= 2;
 			player2[22] -= 1;
 		}
 	}
 
-	if ((r&0xFF)==PT_ACID)  //If on acid
+	if ((r&TYPE)==PT_ACID)  //If on acid
         parts[i].life -= 5;
-    
-    if ((r&0xFF)==PT_ACRN)  //If on acrn
+
+    if ((r&TYPE)==PT_ACRN)  //If on acrn
         parts[i].life -= 5;
-    
-    if ((r&0xFF)==PT_PLUT)  //If on plut
+
+    if ((r&TYPE)==PT_PLUT)  //If on plut
         parts[i].life -= 1;
-    
-    if ((r&0xFF)==PT_HEAL)  //If on heal
+
+    if ((r&TYPE)==PT_HEAL)  //If on heal
         parts[i].life = 100;
-    
-    if ((r&0xFF)==PT_INV)  //If on INV
+
+    if ((r&TYPE)==PT_INV)  //If on INV
         parts[i].life = 9999;
-    
-    if ((r&0xFF)==PT_FLY)  //If on FLY
+
+    if ((r&TYPE)==PT_FLY)  //If on FLY
         player2[2] = SPC_AIR;
-    
-    if ((r&0xFF)==PT_RSPW)
+
+    if ((r&TYPE)==PT_RSPW)
         player2[2] = PT_SPAWN;
-    
-    if ((r&0xFF)==PT_LAZR){
+
+    if ((r&TYPE)==PT_LAZR){
         parts[i].life = 0;
     }
-    if ((r&0xFF)==PT_FREZ){
+    if ((r&TYPE)==PT_FREZ){
         parts[i].life = 0;
     }
-    if ((r&0xFF)==PT_BPAD){
+    if ((r&TYPE)==PT_BPAD){
         parts[i].vy = -5;
         player2[22] -= 1;
         player2[26] -= 1;
     }
-    
-    if ((r&0xFF)==PT_TRAP){
+
+    if ((r&TYPE)==PT_TRAP){
         player2[19] = 0;
         player2[20] = 0;
-        
+
         player2[21] = 0;
         player2[22] = 0;
-        
+
         player2[23] = 0;
         player2[24] = 0;
-        
+
         player2[25] = 0;
         player2[26] = 0;
         create_part(-1, x, y+1, PT_ACID);
     }
-    
-    if ((r&0xFF)==PT_SPER){
+
+    if ((r&TYPE)==PT_SPER){
         if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
         {
             player2[21] = 6;
             player2[22] = -4;
             player2[19] = 4;
         }
-        
+
         if (pmap[(int)(player2[16]-1)][(int)(player2[15])])
         {
             player2[25] = 6;
@@ -542,23 +542,23 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
             player2[23] = 4;
         }
     }
-    
-    if ((r&0xFF)==PT_SPEL){
+
+    if ((r&TYPE)==PT_SPEL){
         if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
         {
             player2[21] = -6;
             player2[22] = -4;
             player2[19] = -4;
         }
-        
+
         if (pmap[(int)(player2[16]-1)][(int)(player2[15])])
         {
             player2[25] = -6;
             player2[26] = -4;
             player2[23] = -4;
         }
-        
-        
+
+
     }
 
 	isplayer2 = 1;

@@ -4457,10 +4457,10 @@ int console_parse_partref(char *txt, int *which, char *err)
 	if (strchr(txt,',') && console_parse_coords(txt, &nx, &ny, err))
 	{
 		i = pmap[ny][nx];
-		if (!i || (i>>8)>=NPART)
+		if (!i || (i>>PS)>=NPART)
 			i = -1;
 		else
-			i = i>>8;
+			i = i>>PS;
 	}
 	else if (txt)
 	{
@@ -4481,9 +4481,9 @@ int console_parse_partref(char *txt, int *which, char *err)
 	return 0;
 }
 
-void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
-{
-	int i,ss,hh,vv,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0;
+unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy, unsigned int savedColor)
+{//TODO: have the text boxes be editable and update the color. Maybe use 0-360 for H in hsv to fix minor inaccuracies (rgb of 0,0,255 , comes back as 0,3,255)
+	int i,ss,hh,vv,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0,hidden=0;
 	int window_offset_x_left = 2;
 	int window_offset_x_right = XRES - 279;
 	int window_offset_y = 2;
@@ -4496,12 +4496,14 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 	int grid_offset_x;
 	int window_offset_x;
 	int onleft_button_offset_x;
-	int h = 0, s = 255, v = 127;
-	int th = 0, ts =255, tv=127;
+	int h = PIXR(savedColor), s = PIXG(savedColor), v = PIXB(savedColor);
+	int th = h, ts = s, tv=v;
 	pixel *old_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	ui_edit box_R;
 	ui_edit box_G;
 	ui_edit box_B;
+
+	zoom_en = 0;
 
 	box_R.x = 5;
 	box_R.y = 5+255+4;
@@ -4552,7 +4554,7 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 		//ui_edit_process(mx, my, b, &box_B);
 		//HSV_to_RGB(h,s,v,&cr,&cg,&cb);
 		//if(cr != atoi(box_R.str))
-        //RGB_to_HSV(atoi(box_R.str),cg,cb,&h,&s,&v);
+			//RGB_to_HSV(atoi(box_R.str),cg,cb,&h,&s,&v);
 		if(on_left==1)
 		{
 			grid_offset_x = grid_offset_x_left;
@@ -4571,51 +4573,77 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 			box_G.x = XRES - 254 + 40;
 			box_B.x = XRES - 254 + 75;
 		}
-		render_cursor(vid_buf, mx, my, PT_DUST, *bsx, *bsy);
+		if (zoom_en && mx>=zoom_wx && my>=zoom_wy //change mouse position while it is in a zoom window
+		        && mx<(zoom_wx+ZFACTOR*ZSIZE)
+		        && my<(zoom_wy+ZFACTOR*ZSIZE))
+		{
+			mx = (((mx-zoom_wx)/ZFACTOR)+zoom_x);
+			my = (((my-zoom_wy)/ZFACTOR)+zoom_y);
+		}
 
 		drawrect(vid_buf, -1, -1, XRES+1, YRES+1, 220, 220, 220, 255);
 		drawrect(vid_buf, -1, -1, XRES+2, YRES+2, 70, 70, 70, 255);
+		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.2 (by cracker64) \n\nClicking the current color on the window will move it to the other side. Right click is eraser. ", 255, 255, 255, 255);
 
-		clearrect(vid_buf, window_offset_x, window_offset_y, 2+255+4+10+5, 2+255+20);
-		drawrect(vid_buf, window_offset_x, window_offset_y, 2+255+4+10+5, 2+255+20, 255, 255, 255, 255);//window around whole thing
+		if(!hidden)
+		{
+			clearrect(vid_buf, window_offset_x, window_offset_y, 2+255+4+10+5, 2+255+20);
+			drawrect(vid_buf, window_offset_x, window_offset_y, 2+255+4+10+5, 2+255+20, 255, 255, 255, 255);//window around whole thing
 
-		drawrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, 255, 255, 255, 255);
-		drawrect(vid_buf, window_offset_x + 230, window_offset_y +255+6, 26, 12, 255, 255, 255, 255);
-		drawtext(vid_buf, window_offset_x + 232, window_offset_y +255+9, "Clear", 255, 255, 255, 255);
-		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.1 (by cracker64) \n\nPro tip: click the current color to move the selector to the other side. Left click is eraser. ", 255, 255, 255, 255);
-		ui_edit_draw(vid_buf, &box_R);
-		ui_edit_draw(vid_buf, &box_G);
-		ui_edit_draw(vid_buf, &box_B);
+			drawrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, 255, 255, 255, 255);
+			drawrect(vid_buf, window_offset_x + 230, window_offset_y +255+6, 26, 12, 255, 255, 255, 255);
+			drawtext(vid_buf, window_offset_x + 232, window_offset_y +255+9, "Clear", 255, 255, 255, 255);
+			ui_edit_draw(vid_buf, &box_R);
+			ui_edit_draw(vid_buf, &box_G);
+			ui_edit_draw(vid_buf, &box_B);
 
-		for(ss=0; ss<=255; ss++)
-			for(hh=0;hh<=255;hh++)
-			{
-				cr = 0;
-				cg = 0;
-				cb = 0;
-				HSV_to_RGB(hh,255-ss,255,&cr,&cg,&cb);
-				vid_buf[(ss+grid_offset_y)*(XRES+BARSIZE)+(hh+grid_offset_x)] = PIXRGB(cr, cg, cb);
-			}
-		for(vv=0; vv<=255; vv++)
-			for( i=0; i<10; i++)
-			{
-				cr = 0;
-				cg = 0;
-				cb = 0;
-				HSV_to_RGB(0,0,vv,&cr,&cg,&cb);
-				vid_buf[(vv+grid_offset_y)*(XRES+BARSIZE)+(i+grid_offset_x+255+4)] = PIXRGB(cr, cg, cb);
-			}
-			if( color_menu_ui(vid_buf, 1, &cr, &cg, &cb, b, bq, mx, my) )
+			for(ss=0; ss<=255; ss++)
+				for(hh=0;hh<=255;hh++)
+				{
+					cr = 0;
+					cg = 0;
+					cb = 0;
+					HSV_to_RGB(hh,255-ss,255,&cr,&cg,&cb);
+					vid_buf[(ss+grid_offset_y)*(XRES+BARSIZE)+(hh+grid_offset_x)] = PIXRGB(cr, cg, cb);
+				}
+			for(vv=0; vv<=255; vv++)
+				for( i=0; i<10; i++)
+				{
+					cr = 0;
+					cg = 0;
+					cb = 0;
+					HSV_to_RGB(0,0,vv,&cr,&cg,&cb);
+					vid_buf[(vv+grid_offset_y)*(XRES+BARSIZE)+(i+grid_offset_x+255+4)] = PIXRGB(cr, cg, cb);
+				}
+			addpixel(vid_buf,grid_offset_x + h,grid_offset_y-1,255,255,255,255);
+			addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-s),255,255,255,255);
+
+			addpixel(vid_buf,grid_offset_x + th,grid_offset_y-1,100,100,100,255);
+			addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-ts),100,100,100,255);
+
+			addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y+tv,100,100,100,255);
+			addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y +v,255,255,255,255);
+
+			HSV_to_RGB(h,s,v,&cr,&cg,&cb);
+			fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, cr, cg, cb, 255);
+		}
+		if( color_menu_ui(vid_buf, 1, &cr, &cg, &cb, b, bq, mx, my) )
 			RGB_to_HSV(cr,cg,cb,&h,&s,&v);
 
 		HSV_to_RGB(h,s,v,&cr,&cg,&cb);
 
-		fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, cr, cg, cb, 255);
 		sprintf(box_R.str,"%d",cr);
 		sprintf(box_G.str,"%d",cg);
 		sprintf(box_B.str,"%d",cb);
+		fillrect(vid_buf, 250, YRES+4, 40, 15, cr, cg, cb, 255);
 
-		if(!lb && mx >= window_offset_x && my >= window_offset_y && mx <= window_offset_x+255+4+10+5 && my <= window_offset_y+255+20)//in the main window
+		drawrect(vid_buf, 295, YRES+5, 25, 12, 255, 255, 255, 255);
+		if(hidden)
+			drawtext(vid_buf, 297, YRES+5 +3, "Show", 255, 255, 255, 255);
+		else
+			drawtext(vid_buf, 297, YRES+5 +3, "Hide", 255, 255, 255, 255);
+
+		if(!lb && !hidden && mx >= window_offset_x && my >= window_offset_y && mx <= window_offset_x+255+4+10+5 && my <= window_offset_y+255+20)//in the main window
 		{
 			if(mx >= grid_offset_x +255+4 && my >= grid_offset_y && mx <= grid_offset_x+255+4+10 && my <= grid_offset_y+255)
 			{
@@ -4648,19 +4676,39 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 				sprintf(box_G.str,"%d",cg);
 				sprintf(box_B.str,"%d",cb);
 			}
-			if(b && mx >= window_offset_x + onleft_button_offset_x +1 && my >= window_offset_y +255+6 && mx <= window_offset_x + onleft_button_offset_x +13 && my <= window_offset_y +255+5 +13)
+			if(b && !bq && mx >= window_offset_x + onleft_button_offset_x +1 && my >= window_offset_y +255+6 && mx <= window_offset_x + onleft_button_offset_x +13 && my <= window_offset_y +255+5 +13)
 			{
 				on_left = !on_left;
 				lb = 3;//prevent immediate drawing after clicking
 			}
-			if(b && mx >= window_offset_x + 230 && my >= window_offset_y +255+6 && mx <= window_offset_x + 230 +26 && my <= window_offset_y +255+5 +13)
-				memset(decorations, 0,(XRES+BARSIZE)*YRES*PIXELSIZE);
+			if(b && !bq && mx >= window_offset_x + 230 && my >= window_offset_y +255+6 && mx <= window_offset_x + 230 +26 && my <= window_offset_y +255+5 +13)
+				if (confirm_ui(vid_buf, "Reset Decoration Layer", "Do you really want to erase everything?", "Erase") )
+					memset(decorations, 0,(XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
 		else if (mx > XRES || my > YRES)
 		{
-		    //click outside normal drawing area
+			//click outside normal drawing area
+			if (!zoom_en && b && !bq && mx >= 295 && mx <= 295+25 && my >= YRES+5 && my<= YRES+5+12)
+				hidden = !hidden;
 		}
-		else if (b)//there is a click, outside window
+		else if (sdl_zoom_trig && zoom_en<2)
+		{
+			mx -= ZSIZE/2;
+			my -= ZSIZE/2;
+			if (mx<0) mx=0;
+			if (my<0) my=0;
+			if (mx>XRES-ZSIZE) mx=XRES-ZSIZE;
+			if (my>YRES-ZSIZE) my=YRES-ZSIZE;
+			zoom_x = mx;
+			zoom_y = my;
+			zoom_wx = (mx<XRES/2) ? XRES-ZSIZE*ZFACTOR : 0;
+			zoom_wy = 0;
+			zoom_en = 1;
+			hidden = 1;
+			if (!b && bq)
+				zoom_en = 2;
+		}
+		else if (b)//there is a click, outside color window
 		{
 			if (!(b&1))
 			{
@@ -4705,6 +4753,23 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 					lb = b;
 					lm = 2;//box
 				}
+				//sample tool
+				else if (((sdl_mod & (KMOD_LALT|KMOD_RALT)) && !(sdl_mod & (KMOD_SHIFT))) || b==SDL_BUTTON_MIDDLE)
+				{
+					if (my>=0 && my<YRES && mx>=0 && mx<XRES)
+					{
+						unsigned int tempcolor = vid_buf[(my)*(XRES+BARSIZE)+(mx)];
+						cr = PIXR(tempcolor);
+						cg = PIXG(tempcolor);
+						cb = PIXB(tempcolor);
+						if (cr || cg || cb)
+							RGB_to_HSV(cr,cg,cb,&h,&s,&v);
+					}
+					lx = mx;
+					ly = my;
+					lb = 0;
+					lm = 0;
+				}
 				else //normal click, draw deco
 				{
 					create_decorations(decorations,mx,my,*bsx,*bsy,cr,cg,cb);
@@ -4734,20 +4799,27 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 			lb = 0;
 
 		}
-		addpixel(vid_buf,grid_offset_x + h,grid_offset_y-1,255,255,255,255);
-		addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-s),255,255,255,255);
+		if (zoom_en!=1)
+			render_cursor(vid_buf, mx, my, PT_DUST, *bsx, *bsy);
 
-		addpixel(vid_buf,grid_offset_x + th,grid_offset_y-1,100,100,100,255);
-		addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-ts),100,100,100,255);
-
-		addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y+tv,100,100,100,255);
-		addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y +v,255,255,255,255);
+		if (zoom_en)
+			render_zoom(vid_buf);
 
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 
 		if (sdl_wheel)
 		{
-			//change brush size
+			if (sdl_zoom_trig==1)//zoom window change
+			{
+				ZSIZE += sdl_wheel;
+				if (ZSIZE>60)
+					ZSIZE = 60;
+				if (ZSIZE<2)
+					ZSIZE = 2;
+				ZFACTOR = 256/ZSIZE;
+				sdl_wheel = 0;
+			}
+			else //change brush size
 			{
 				if (!(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
 				{
@@ -4772,21 +4844,114 @@ void decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy)
 					*bsy = 0;
 				sdl_wheel = 0;
 				/*if(su >= PT_NUM) {
-                 if(sl < PT_NUM)
-                 su = sl;
-                 if(sr < PT_NUM)
-                 su = sr;
-                 }*/
+					if(sl < PT_NUM)
+						su = sl;
+					if(sr < PT_NUM)
+						su = sr;
+				}*/
 			}
 		}
+		if (sdl_key==SDLK_LEFTBRACKET) {
+			if (sdl_zoom_trig==1)
+			{
+				ZSIZE -= 1;
+				if (ZSIZE>60)
+					ZSIZE = 60;
+				if (ZSIZE<2)
+					ZSIZE = 2;
+				ZFACTOR = 256/ZSIZE;
+			}
+			else
+			{
+				if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+				{
+					*bsx -= 1;
+					*bsy -= 1;
+				}
+				else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+				{
+					*bsx -= 1;
+				}
+				else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+				{
+					*bsy -= 1;
+				}
+				else
+				{
+					*bsx -= ceil((*bsx/5)+0.5f);
+					*bsy -= ceil((*bsy/5)+0.5f);
+				}
+				if (*bsx>1180)
+					*bsx = 1180;
+				if (*bsy>1180)
+					*bsy = 1180;
+				if (*bsx<0)
+					*bsx = 0;
+				if (*bsy<0)
+					*bsy = 0;
+			}
+		}
+		if (sdl_key==SDLK_RIGHTBRACKET) {
+			if (sdl_zoom_trig==1)
+			{
+				ZSIZE += 1;
+				if (ZSIZE>60)
+					ZSIZE = 60;
+				if (ZSIZE<2)
+					ZSIZE = 2;
+				ZFACTOR = 256/ZSIZE;
+			}
+			else
+			{
+				if (sdl_mod & (KMOD_LALT|KMOD_RALT) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL)))
+				{
+					*bsx += 1;
+					*bsy += 1;
+				}
+				else if (sdl_mod & (KMOD_SHIFT) && !(sdl_mod & (KMOD_CTRL)))
+				{
+					*bsx += 1;
+				}
+				else if (sdl_mod & (KMOD_CTRL) && !(sdl_mod & (KMOD_SHIFT)))
+				{
+					*bsy += 1;
+				}
+				else
+				{
+					*bsx += ceil((*bsx/5)+0.5f);
+					*bsy += ceil((*bsy/5)+0.5f);
+				}
+				if (*bsx>1180)
+					*bsx = 1180;
+				if (*bsy>1180)
+					*bsy = 1180;
+				if (*bsx<0)
+					*bsx = 0;
+				if (*bsy<0)
+					*bsy = 0;
+			}
+		}
+
+		if (!sdl_zoom_trig && zoom_en==1)
+		{
+			zoom_en = 0;
+		}
+		if (sdl_key=='z' && zoom_en==2)
+		{
+			zoom_en = 1;
+			hidden = 1;
+		}
+
 		if(sdl_key=='b' || sdl_key==SDLK_ESCAPE)
 		{
 			free(old_buf);
-			return;
+			return PIXRGB(h,s,v);
 		}
 	}
 	free(old_buf);
+	return PIXRGB(h,s,v);
 }
+
 void simulation_ui(pixel * vid_buf)
 {
 	int xsize = 300;

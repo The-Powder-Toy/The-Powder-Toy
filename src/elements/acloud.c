@@ -12,17 +12,17 @@ int update_ACLOUD(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if ((r>>PS)>=NPART || !r)
 					continue;
-                if ((r&0xFF) == PT_ACRN){
+                if ((r&TYPE) == PT_ACRN){
                     if (rand()%1000 == 1){
-                        if (parts[r>>8].y > parts[i].y+2){
-                            parts[r>>8].type=PT_ACLOUD;
+                        if (parts[r>>PS].y > parts[i].y+2){
+                            parts[r>>PS].type=PT_ACLOUD;
                         }
                     }
                 }
-                if ((r&0xFF) == PT_ACLOUD){
-                    if (parts[i].y >= parts[r>>8].y){
+                if ((r&TYPE) == PT_ACLOUD){
+                    if (parts[i].y >= parts[r>>PS].y){
                         if (parts[i].tmp != 1){
                             if (rand()%10 == 1){
                             create_part(-1, x+rand()%3-1, y+rand()%6+1, PT_ACRN);
@@ -32,7 +32,7 @@ int update_ACLOUD(UPDATE_FUNC_ARGS) {
                     parts[i].tmp = 1;
                 }
                 }
-                
+
             }
 	return 0;
 }

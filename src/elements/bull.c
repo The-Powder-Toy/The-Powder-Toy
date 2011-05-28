@@ -10,9 +10,9 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                 if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
                 {
                     r = pmap[y+ny][x+nx];
-                    if((r>>8)>=NPART || !r)
+                    if((r>>PS)>=NPART || !r)
                         continue;
-                    if(parts[r>>8].type!=PT_NONE && parts[r>>8].type!=PT_BULL){
+                    if(parts[r>>PS].type!=PT_NONE && parts[r>>PS].type!=PT_BULL){
                         parts[i].type = PT_NONE;
                         kill_part(i);
                     }
@@ -23,9 +23,9 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                 if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES)
                 {
                     r = pmap[y+ny][x+nx];
-                    if((r>>8)>=NPART || !r)
+                    if((r>>PS)>=NPART || !r)
                         continue;
-                    if(parts[r>>8].type!=PT_NONE && parts[r>>8].type!=PT_BULL && parts[r>>8].type!=PT_DMND && parts[r>>8].type!=PT_C0 && parts[r>>8].type!=PT_GOLD && parts[r>>8].type!=PT_BSHL && parts[r>>8].type!=PT_PDCL && parts[r>>8].type!=PT_LQCL && parts[r>>8].type!=PT_GSCL && parts[r>>8].type!=PT_CLNE && parts[r>>8].type!=PT_PCLN && parts[r>>8].type!=PT_BCLN){
+                    if(parts[r>>PS].type!=PT_NONE && parts[r>>PS].type!=PT_BULL && parts[r>>PS].type!=PT_DMND && parts[r>>PS].type!=PT_C0 && parts[r>>PS].type!=PT_GOLD && parts[r>>PS].type!=PT_BSHL && parts[r>>PS].type!=PT_PDCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_BCLN){
                         int rad = 8;
                         int nxi;
                         int nxj;
@@ -45,7 +45,7 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                         for(nxj=-rad; nxj<=rad; nxj++)
                             for(nxi=-rad; nxi<=rad; nxi++)
                                 if((pow(nxi,2))/(pow(rad,2))+(pow(nxj,2))/(pow(rad,2))<=1)
-                                    if((pmap[y+nxj][x+nxi]&0xFF)!=PT_DMND && (pmap[y+nxj][x+nxi]&0xFF)!=PT_GOLD && (pmap[y+nxj][x+nxi]&0xFF)!=PT_CLNE && (pmap[y+nxj][x+nxi]&0xFF)!=PT_PCLN && (pmap[y+nxj][x+nxi]&0xFF)!=PT_BCLN){
+                                    if((pmap[y+nxj][x+nxi]&TYPE)!=PT_DMND && (pmap[y+nxj][x+nxi]&TYPE)!=PT_GOLD && (pmap[y+nxj][x+nxi]&TYPE)!=PT_CLNE && (pmap[y+nxj][x+nxi]&TYPE)!=PT_PCLN && (pmap[y+nxj][x+nxi]&TYPE)!=PT_BCLN){
                                         delete_part(x+nxi, y+nxj);
                                         pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
                                         nb = create_part(-1, x+nxi, y+nxj, PT_BULL);

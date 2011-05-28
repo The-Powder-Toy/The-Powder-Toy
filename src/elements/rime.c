@@ -9,17 +9,17 @@ int update_RIME(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&0xFF)==PT_SPRK)
+				if ((r&TYPE)==PT_SPRK)
 				{
 					part_change_type(i,x,y,PT_FOG);
 					parts[i].life = rand()%50 + 60;
 				}
-				else if ((r&0xFF)==PT_FOG&&parts[r>>8].life>0)
+				else if ((r&TYPE)==PT_FOG&&parts[r>>PS].life>0)
 				{
 					part_change_type(i,x,y,PT_FOG);
-					parts[i].life = parts[r>>8].life;
+					parts[i].life = parts[r>>PS].life;
 				}
 			}
 	return 0;

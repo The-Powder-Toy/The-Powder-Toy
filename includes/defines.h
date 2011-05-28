@@ -8,9 +8,9 @@
 #endif
 
 #define ME4502_MAJOR_VERSION 2
-#define ME4502_VERSION 6
+#define ME4502_VERSION 7
 #define SAVE_VERSION 48
-#define MINOR_VERSION 0
+#define MINOR_VERSION 2
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
 
@@ -46,8 +46,8 @@
 #define YRES	384
 #define NPART XRES*YRES
 
-#define XCNTR   306
-#define YCNTR   192
+#define XCNTR   XRES/2
+#define YCNTR   YRES/2
 
 #define MAX_DISTANCE sqrt(pow(XRES, 2)+pow(YRES, 2))
 
@@ -55,6 +55,9 @@
 
 #define MAXSIGNS 32
 #define TAG_MAX 256
+
+#define PS 8 //the particle number shift that also determines element limit
+#define TYPE 0xFF //where the type of the particle is stored in pmap //(int)pow(2,PS)-1
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8

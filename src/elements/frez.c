@@ -8,7 +8,7 @@ int update_FREZ(UPDATE_FUNC_ARGS) {
                    x+rx<XRES && y+ry<YRES && (rx || ry))
                 {
                     r = pmap[y+ry][x+rx];
-                    if((r>>8)>=NPART || !r)
+                    if((r>>PS)>=NPART || !r)
                         continue;
                         if(rand()%4000 < 1){
                             int nrx = rand()%3 -1;
@@ -17,13 +17,13 @@ int update_FREZ(UPDATE_FUNC_ARGS) {
                             if(x+rx+nrx>=0 && y+ry+nry>0 &&
                                x+rx+nrx<XRES && y+ry+nry<YRES && (nrx || nry))
                             {
-                                if((pmap[y+ry+nry][x+rx+nrx]>>8)>=NPART||pmap[y+ry+nry][x+rx+nrx])
+                                if((pmap[y+ry+nry][x+rx+nrx]>>PS)>=NPART||pmap[y+ry+nry][x+rx+nrx])
                                     continue;
                                 if(create_part(-1,x+rx+nrx,y+ry+nry,PT_HFLM))
-                                    parts[pmap[y+ry+nry][x+rx+nrx]>>8].temp = 0;
+                                    parts[pmap[y+ry+nry][x+rx+nrx]>>PS].temp = 0;
                             }
                         }
-                    
+
                 }
 	return 0;
 }

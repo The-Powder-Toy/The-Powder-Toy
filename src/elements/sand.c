@@ -6,29 +6,29 @@ int update_SAND(UPDATE_FUNC_ARGS) {
 		for (ry=-1; ry<2; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry)){
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if ((r>>PS)>=NPART || !r)
 					continue;
-				if((r&0xFF)==PT_EQUALVEL){
-					parts[r>>8].vx = 0;
-					parts[r>>8].vy = 0;
-					parts[r>>8].ctype = PT_EQUALVEL;
+				if((r&TYPE)==PT_EQUALVEL){
+					parts[r>>PS].vx = 0;
+					parts[r>>PS].vy = 0;
+					parts[r>>PS].ctype = PT_EQUALVEL;
 				}
 			}
     for (rx=-24; rx<24; rx++)
         for (ry=-24; ry<24; ry++)
             if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry)){
                 r = pmap[y+ry][x+rx];
-                if ((r>>8)>=NPART || !r)
+                if ((r>>PS)>=NPART || !r)
                     continue;
-                if ((r&0xFF)==PT_EQUALVEL){
-                    if ((parts[r>>8].ctype != PT_EQUALVEL)||(parts[i].y<parts[r>>8].y)){
-                        parts[r>>8].vx = (((parts[i].x)-(parts[r>>8].x))/10)*(rand()%5+10/10);
-                        parts[r>>8].vy = (((parts[i].y)-(parts[r>>8].y))/10)*(rand()%5+10/10);
+                if ((r&TYPE)==PT_EQUALVEL){
+                    if ((parts[r>>PS].ctype != PT_EQUALVEL)||(parts[i].y<parts[r>>PS].y)){
+                        parts[r>>PS].vx = (((parts[i].x)-(parts[r>>PS].x))/10)*(rand()%5+10/10);
+                        parts[r>>PS].vy = (((parts[i].y)-(parts[r>>PS].y))/10)*(rand()%5+10/10);
                     }else{
-                        parts[r>>8].vx = (((parts[i].x)-(parts[r>>8].x))/140)*(rand()%5+10/10);
-                        parts[r>>8].vy = (((parts[i].y)-(parts[r>>8].y))/140)*(rand()%5+10/10);
-                        parts[i].vx = parts[r>>8].vx;
-                        parts[i].vy = parts[r>>8].vy;
+                        parts[r>>PS].vx = (((parts[i].x)-(parts[r>>PS].x))/140)*(rand()%5+10/10);
+                        parts[r>>PS].vy = (((parts[i].y)-(parts[r>>PS].y))/140)*(rand()%5+10/10);
+                        parts[i].vx = parts[r>>PS].vx;
+                        parts[i].vy = parts[r>>PS].vy;
                     }
                 }
             }

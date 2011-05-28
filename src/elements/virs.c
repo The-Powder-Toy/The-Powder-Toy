@@ -8,10 +8,10 @@ int update_VIRS(UPDATE_FUNC_ARGS) {
                x+nx<XRES && y+ny<YRES && (nx || ny))
             {
                 r = pmap[y+ny][x+nx];
-                if((r>>8)>=NPART || !r)
+                if((r>>PS)>=NPART || !r)
                     continue;
-                if((r&0xFF)!=PT_DMND||(r&0xFF)!=PT_GOLD||(r&0xFF)!=PT_CLNE||(r&0xFF)!=PT_CNVR||(r&0xFF)!=PT_VOID||(r&0xFF)!=PT_WHOL||(r&0xFF)!=PT_BHOL)
-                    parts[r>>8].type=PT_VIRS;
+                if((r&TYPE)!=PT_DMND||(r&TYPE)!=PT_GOLD||(r&TYPE)!=PT_CLNE||(r&TYPE)!=PT_CNVR||(r&TYPE)!=PT_VOID||(r&TYPE)!=PT_WHOL||(r&TYPE)!=PT_BHOL)
+                    parts[r>>PS].type=PT_VIRS;
             }
     return 0;
 }

@@ -177,6 +177,7 @@ int sys_pause = 0;
 int sys_shortcuts = 1;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by save.
 int ngrav_enable = 0; //Newtonian gravity, will be set by save
+int decorations_enable = 1;
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
@@ -450,9 +451,9 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
             signs[i].y>=y0 && signs[i].y<y0+h)
 		{
 			d[p++] = (signs[i].x-x0);
-			d[p++] = (signs[i].x-x0)>>8;
+			d[p++] = (signs[i].x-x0)>>PS;
 			d[p++] = (signs[i].y-y0);
-			d[p++] = (signs[i].y-y0)>>8;
+			d[p++] = (signs[i].y-y0)>>PS;
 			d[p++] = signs[i].ju;
 			x = strlen(signs[i].text);
 			d[p++] = x;
@@ -596,7 +597,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		{
 			x = (int)(parts[i].x+0.5f);
 			y = (int)(parts[i].y+0.5f);
-			pmap[y][x] = (i<<8)|1;
+			pmap[y][x] = (i<<PS)|1;
 		}
 		else
 			fp[nf++] = i;
@@ -671,9 +672,9 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			gol[x][y]=0;
 			if (j)// && !(isplayer == 1 && j==PT_STKM))
 			{
-				if (pmap[y][x] && (pmap[y][x]>>8)<NPART)
+				if (pmap[y][x] && (pmap[y][x]>>PS)<NPART)
 				{
-					k = pmap[y][x]>>8;
+					k = pmap[y][x]>>PS;
 					memset(parts+k, 0, sizeof(particle));
 					parts[k].type = j;
 					if (j == PT_PHOT)
@@ -1428,8 +1429,8 @@ static PyObject* emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].life = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].life = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -1470,8 +1471,8 @@ static PyObject* emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].type = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].type = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -1511,8 +1512,8 @@ static PyObject* emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].temp = newval;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].temp = newval;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -1551,8 +1552,8 @@ static PyObject* emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].tmp = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].tmp = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -1591,8 +1592,8 @@ static PyObject* emb_set_planet(PyObject *self, PyObject *args, PyObject *keywds
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].planetname = datastorage;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].planetname = datastorage;
 	}
 	parts[i].planetname = keywds;
 	return Py_BuildValue("i",1);
@@ -1632,8 +1633,8 @@ static PyObject* emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].x = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].x = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -1672,8 +1673,8 @@ static PyObject* emb_set_y(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].y = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].y = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -1715,8 +1716,8 @@ static PyObject* emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].ctype = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].ctype = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -1756,8 +1757,8 @@ static PyObject* emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].vx = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].vx = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -1797,8 +1798,8 @@ static PyObject* emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].vy = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].vy = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -2758,6 +2759,7 @@ int main(int argc, char *argv[])
 	void *load_data=NULL;
 	pixel *load_img=NULL;//, *fbi_img=NULL;
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
+	unsigned int hsvSave = PIXRGB(0,255,127);//this is hsv format
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
 	pthread_mutexattr_t gma;
@@ -3371,9 +3373,7 @@ int main(int argc, char *argv[])
 						vy[ny][nx] = -vy[ny][nx];
 					}
 			}
-			if ((sdl_mod & (KMOD_RCTRL) )&&( sdl_mod & (KMOD_RALT)))
-				active_menu = 11;
-			if (sdl_key==SDLK_INSERT)// || sdl_key==SDLK_BACKQUOTE)
+			if (sdl_key==SDLK_INSERT || sdl_key == SDLK_SEMICOLON)// || sdl_key==SDLK_BACKQUOTE)
 				REPLACE_MODE = !REPLACE_MODE;
 			if (sdl_key==SDLK_BACKQUOTE)
 			{
@@ -3381,8 +3381,19 @@ int main(int argc, char *argv[])
 				//hud_enable = !console_mode;
 			}
             if (sdl_key=='b'){
-                decorations_ui(vid_buf,decorations,&bsx,&bsy);//decoration_mode = !decoration_mode;
+                if (sdl_mod & KMOD_CTRL)
+                {
+                decorations_enable = !decorations_enable;
+                itc = 51;
+                if (decorations_enable) strcpy(itc_msg, "Decorations layer: On");
+                else strcpy(itc_msg, "Decorations layer: Off");
+                }
+                else
+                {
+                hsvSave = decorations_ui(vid_buf,decorations,&bsx,&bsy,hsvSave);//decoration_mode = !decoration_mode;
+                decorations_enable = 1;
                 sys_pause=1;
+            }
             }
 			if (sdl_key=='g')
 			{
@@ -3677,7 +3688,7 @@ int main(int argc, char *argv[])
 		}
 		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &dae, b, bq, x, y); //draw the elements in the current menu
         //menu_ui(vid_buf, active_menu, &sl, &sr); //For a completely Messed Up Menu
-        draw_decorations(vid_buf,decorations);
+        if (decorations_enable) draw_decorations(vid_buf,decorations);
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
             && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
             && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))
@@ -3693,35 +3704,42 @@ int main(int argc, char *argv[])
 			} else {
 				cr = pmap[y/sdl_scale][x/sdl_scale];
 			}
-			if (!((cr>>8)>=NPART || !cr))
+			if (!((cr>>PS)>=NPART || !cr))
 			{
 				if (DEBUG_MODE)
 				{
-					int tctype = parts[cr>>8].ctype;
-					if (tctype>=PT_NUM || tctype<0 || (cr&0xFF)==PT_PHOT)
+					int tctype = parts[cr>>PS].ctype;
+					if (tctype>=PT_NUM || tctype<0 || (cr&TYPE)==PT_PHOT)
 						tctype = 0;
-					if ((cr&0xFF)==PT_PIPE)
+					if ((cr&TYPE)==PT_PIPE)
 					{
-						if (parts[cr>>8].tmp<PT_NUM) tctype = parts[cr>>8].tmp;
+						if (parts[cr>>PS].tmp<PT_NUM) tctype = parts[cr>>PS].tmp;
 						else tctype = 0;
 					}
-					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
-					sprintf(coordtext, "#%d, X:%d Y:%d", cr>>8, x/sdl_scale, y/sdl_scale);
+					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&TYPE].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
+					sprintf(coordtext, "#%d, X:%d Y:%d", cr>>PS, x/sdl_scale, y/sdl_scale);
 				} else {
-				    const char *tempname = ptypes[cr&0xFF].name;
-				    if (tempname=="LEAF" && parts[cr>>8].life>10){
+				    //Change the name of a particle realtime
+				    const char *tempname = ptypes[cr&TYPE].name;
+				    if (tempname=="LEAF" && parts[cr>>PS].life>10){
 				        tempname = "DLEF";
 				    }
 				    else if (tempname=="PLAN"){
-				        tempname = parts[cr>>8].planetname;
+				        tempname = parts[cr>>PS].planetname;
+				    }
+				    else if (tempname=="HETR" && parts[cr>>PS].tmp==1){
+				        tempname = "HETR";
+				    }
+				    else if (tempname=="HETR" && parts[cr>>PS].tmp==2){
+				        tempname = "COLR";
 				    }
 #ifdef BETA
-					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
 #else
-					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
+					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
 #endif
 				}
-				if ((cr&0xFF)==PT_PHOT) wavelength_gfx = parts[cr>>8].ctype;
+				if ((cr&TYPE)==PT_PHOT) wavelength_gfx = parts[cr>>PS].ctype;
 			}
 			else
 			{
@@ -4248,11 +4266,11 @@ int main(int argc, char *argv[])
 						{
 							int cr;
 							cr = pmap[y][x];
-                            if ((cr>>8)>=NPART || !cr)
+                            if ((cr>>PS)>=NPART || !cr)
                                 cr = photons[y][x];
-							if (!((cr>>8)>=NPART || !cr))
+							if (!((cr>>PS)>=NPART || !cr))
 							{
-								c = sl = cr&0xFF;
+								c = sl = cr&TYPE;
 							}
 							else
 							{

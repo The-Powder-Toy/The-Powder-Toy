@@ -9,13 +9,13 @@ int update_IFIL(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART || !r)
+					if ((r>>PS)>=NPART || !r)
 						continue;
-					rt = parts[r>>8].type;
+					rt = parts[r>>PS].type;
 					if ((rt==PT_METL || rt==PT_IRON) && 1>(rand()/(RAND_MAX/100)))
 					{
-						part_change_type(r>>8,x+rx,y+ry,PT_IFIL);
-						parts[r>>8].tmp=(parts[i].tmp<=7)?parts[i].tmp=1:parts[i].tmp-(rand()%5);//rand()/(RAND_MAX/300)+100;
+						part_change_type(r>>PS,x+rx,y+ry,PT_IFIL);
+						parts[r>>PS].tmp=(parts[i].tmp<=7)?parts[i].tmp=1:parts[i].tmp-(rand()%5);//rand()/(RAND_MAX/300)+100;
 					}
 				}
 	} else if (parts[i].tmp==1 && 1>rand()%1000) {

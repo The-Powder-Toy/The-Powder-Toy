@@ -8,7 +8,7 @@ int update_NMTR(UPDATE_FUNC_ARGS) {
 	{
 		rx=rand()%3-1;
 		ry=rand()%3-1;
-		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry) && !pmap[y+ry][x+rx] && (!((r>>8)>=NPART)))
+		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry) && !pmap[y+ry][x+rx] && (!((r>>PS)>=NPART)))
 		{
 			int dp=create_part(-1,x+rx,y+ry,PT_PLSM);
 			parts[dp].temp=MAX_TEMP;

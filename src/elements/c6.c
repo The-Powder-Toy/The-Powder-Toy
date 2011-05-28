@@ -7,14 +7,14 @@ int update_C6(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (((r&0xFF)!=PT_C6 && parts[r>>8].temp>1000)||(r&0xFF)==PT_BFLM ||(r&0xFF)==PT_PLSM ||(r&0xFF)==PT_FIRE)
+				if (((r&TYPE)!=PT_C6 && parts[r>>PS].temp>1000)||(r&TYPE)==PT_BFLM ||(r&TYPE)==PT_PLSM ||(r&TYPE)==PT_FIRE)
 				{
 					if (1>rand()%6)
 					{
 						part_change_type(i,x,y,PT_BFLM);
-						parts[r>>8].temp = parts[i].temp = MAX_TEMP;
+						parts[r>>PS].temp = parts[i].temp = MAX_TEMP;
 						parts[i].life = rand()%150+50;
 						pv[y/CELL][x/CELL] += 10.0;
 					}

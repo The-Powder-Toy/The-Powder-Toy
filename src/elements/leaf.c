@@ -9,16 +9,16 @@ int update_LEAF(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART || !r)
+					if ((r>>PS)>=NPART || !r)
 						continue;
-                    if ((r&0xFF)==PT_WATR || (r&0xFF)==PT_WTRV || (r&0xFF)==PT_DSTW){
+                    if ((r&TYPE)==PT_WATR || (r&TYPE)==PT_WTRV || (r&TYPE)==PT_DSTW){
                         if(parts[i].life>0)
                         parts[i].life--;
                     }
 					if (parts[i].temp>774.0f&&33>=rand()/(RAND_MAX/100)+1)
 					{
 						parts[i].life++;
-						if ((r&0xFF)==PT_FIRE)
+						if ((r&TYPE)==PT_FIRE)
                         {
                             tmp++;
                             parts[i].type=PT_FIRE;
@@ -32,7 +32,7 @@ int update_LEAF(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART)
+					if ((r>>PS)>=NPART)
 						continue;
 					if ((bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALLELEC||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_EWALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_DESTROYALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALL||
 					        bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWAIR||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWSOLID||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWGAS))
@@ -45,20 +45,20 @@ int update_LEAF(UPDATE_FUNC_ARGS) {
 		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
-			if ((r>>8)>=NPART || !r)
+			if ((r>>PS)>=NPART || !r)
 				continue;
-			if ((r&0xFF)==PT_SPNG&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0)//diffusion
+			if ((r&TYPE)==PT_SPNG&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
 			{
-				tmp = parts[i].life - parts[r>>8].life;
+				tmp = parts[i].life - parts[r>>PS].life;
 				if (tmp ==1)
 				{
-					parts[r>>8].life ++;
+					parts[r>>PS].life ++;
 					parts[i].life --;
 					trade = 9;
 				}
 				else if (tmp>0)
 				{
-					parts[r>>8].life += tmp/2;
+					parts[r>>PS].life += tmp/2;
 					parts[i].life -= tmp/2;
 					trade = 9;
 				}
@@ -73,7 +73,7 @@ int update_LEAF(UPDATE_FUNC_ARGS) {
                     if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-                    if ((r>>8)>=NPART || !r)
+                    if ((r>>PS)>=NPART || !r)
                         continue;
 				}
         }
@@ -87,7 +87,7 @@ int update_LEAF(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART)
+					if ((r>>PS)>=NPART)
 						continue;
 					if ((bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALLELEC||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWLIQUID||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_DESTROYALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWSOLID))
 						continue;

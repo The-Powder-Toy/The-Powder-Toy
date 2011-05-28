@@ -6,9 +6,9 @@
 
 #ifdef PIX16
 #define PIXELSIZE 2
-#define PIXPACK(x) ((((x)>>8)&0xF800)|(((x)>>5)&0x07E0)|(((x)>>3)&0x001F))
+#define PIXPACK(x) ((((x)>>PS)&0xF800)|(((x)>>5)&0x07E0)|(((x)>>3)&0x001F))
 #define PIXRGB(r,g,b) ((((r)<<8)&0xF800)|(((g)<<3)&0x07E0)|(((b)>>3)&0x001F))
-#define PIXR(x) (((x)>>8)&0xF8)
+#define PIXR(x) (((x)>>PS)&0xF8)
 #define PIXG(x) (((x)>>3)&0xFC)
 #define PIXB(x) (((x)<<3)&0xF8)
 #else
@@ -16,22 +16,22 @@
 #ifdef PIX32BGR
 #define PIXPACK(x) ((((x)>>16)&0x0000FF)|((x)&0x00FF00)|(((x)<<16)&0xFF0000))
 #define PIXRGB(r,g,b) (((b)<<16)|((g)<<8)|((r)))// (((b)<<16)|((g)<<8)|(r))
-#define PIXR(x) ((x)&0xFF)
-#define PIXG(x) (((x)>>8)&0xFF)
+#define PIXR(x) ((x)&TYPE)
+#define PIXG(x) (((x)>>PS)&TYPE)
 #define PIXB(x) ((x)>>16)
 #else
 #ifdef PIX32BGRA
-#define PIXPACK(x) ((((x)>>8)&0x0000FF00)|(((x)<<8)&0x00FF0000)|(((x)<<24)&0xFF000000))
+#define PIXPACK(x) ((((x)>>PS)&0x0000FF00)|(((x)<<8)&0x00FF0000)|(((x)<<24)&0xFF000000))
 #define PIXRGB(r,g,b) (((b)<<24)|((g)<<16)|((r)<<8))
-#define PIXR(x) (((x)>>8)&0xFF)
-#define PIXG(x) (((x)>>16)&0xFF)
+#define PIXR(x) (((x)>>PS)&TYPE)
+#define PIXG(x) (((x)>>16)&TYPE)
 #define PIXB(x) (((x)>>24))
 #else
 #define PIXPACK(x) (x)
 #define PIXRGB(r,g,b) (((r)<<16)|((g)<<8)|(b))
 #define PIXR(x) ((x)>>16)
-#define PIXG(x) (((x)>>8)&0xFF)
-#define PIXB(x) ((x)&0xFF)
+#define PIXG(x) (((x)>>PS)&TYPE)
+#define PIXB(x) ((x)&TYPE)
 #endif
 #endif
 #endif

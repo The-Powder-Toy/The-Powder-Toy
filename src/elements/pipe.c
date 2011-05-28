@@ -29,7 +29,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r>>8)>=NPART )
+						if ((r>>PS)>=NPART )
 							continue;
 						if (!r)
 							create_part(-1,x+rx,y+ry,PT_BRCK);//BRCK border, people didn't like DMND
@@ -45,7 +45,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART)
+					if ((r>>PS)>=NPART)
 						continue;
 					if (!r&&!parts[i].life)
 						parts[i].life=50;
@@ -69,12 +69,12 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 								if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 								{
 									r = pmap[y+ry][x+rx];
-									if ((r>>8)>=NPART || !r)
+									if ((r>>PS)>=NPART || !r)
 										continue;
-									if ((r&0xFF)==PT_PIPE&&parts[r>>8].ctype==1)
+									if ((r&TYPE)==PT_PIPE&&parts[r>>PS].ctype==1)
 									{
-										parts[r>>8].ctype = (((ctype)%3)+2);//reverse
-										parts[r>>8].life = 6;
+										parts[r>>PS].ctype = (((ctype)%3)+2);//reverse
+										parts[r>>PS].life = 6;
 									}
 								}
 					}
@@ -85,7 +85,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 						{
 							r = pmap[y+ry][x+rx];
-							if ((r>>8)>=NPART)
+							if ((r>>PS)>=NPART)
 								continue;
 							else if (!r&&parts[i].tmp!=0)
 							{
@@ -100,18 +100,18 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 							}
 							else if (!r)
 								continue;
-							else if (parts[i].tmp == 0 && (ptypes[r&0xFF].falldown!= 0 || ptypes[r&0xFF].state == ST_GAS))
+							else if (parts[i].tmp == 0 && (ptypes[r&TYPE].falldown!= 0 || ptypes[r&TYPE].state == ST_GAS))
 							{
-								parts[i].tmp = parts[r>>8].type;
-								parts[i].temp = parts[r>>8].temp;
-								parts[i].flags = parts[r>>8].life;
-								kill_part(r>>8);
+								parts[i].tmp = parts[r>>PS].type;
+								parts[i].temp = parts[r>>PS].temp;
+								parts[i].flags = parts[r>>PS].life;
+								kill_part(r>>PS);
 							}
-							else if ((r&0xFF)==PT_PIPE && parts[r>>8].ctype!=(((ctype)%3)+2) && parts[r>>8].tmp==0&&parts[i].tmp>0)
+							else if ((r&TYPE)==PT_PIPE && parts[r>>PS].ctype!=(((ctype)%3)+2) && parts[r>>PS].tmp==0&&parts[i].tmp>0)
 							{
-								parts[r>>8].tmp = parts[i].tmp;
-								parts[r>>8].temp = parts[i].temp;
-								parts[r>>8].flags = parts[i].flags;
+								parts[r>>PS].tmp = parts[i].tmp;
+								parts[r>>PS].temp = parts[i].temp;
+								parts[r>>PS].flags = parts[i].flags;
 								parts[i].tmp = 0;
 							}
 						}

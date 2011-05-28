@@ -62,24 +62,24 @@ int update_SING(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&0xFF)!=PT_DMND&&33>=rand()/(RAND_MAX/100)+1)
+				if ((r&TYPE)!=PT_DMND&&33>=rand()/(RAND_MAX/100)+1)
 				{
-					if ((r&0xFF)==PT_SING && parts[r>>8].life >10)
+					if ((r&TYPE)==PT_SING && parts[r>>PS].life >10)
 					{
-						if (parts[i].life+parts[r>>8].life > 255)
+						if (parts[i].life+parts[r>>PS].life > 255)
 							continue;
-						parts[i].life += parts[r>>8].life;
+						parts[i].life += parts[r>>PS].life;
 					}
 					else
 					{
 						if (parts[i].life+3 > 255)
 						{
-							if (parts[r>>8].type!=PT_SING && 1>rand()%100)
+							if (parts[r>>PS].type!=PT_SING && 1>rand()%100)
 							{
 								int np;
-								np = create_part(r>>8,x+rx,y+ry,PT_SING);
+								np = create_part(r>>PS,x+rx,y+ry,PT_SING);
 								parts[np].life = rand()%50+60;
 							}
 							continue;
@@ -87,8 +87,8 @@ int update_SING(UPDATE_FUNC_ARGS) {
 						parts[i].life += 3;
 						parts[i].tmp++;
 					}
-					parts[i].temp = restrict_flt(parts[r>>8].temp+parts[i].temp, MIN_TEMP, MAX_TEMP);
-					kill_part(r>>8);
+					parts[i].temp = restrict_flt(parts[r>>PS].temp+parts[i].temp, MIN_TEMP, MAX_TEMP);
+					kill_part(r>>PS);
 				}
 			}
 	return 0;
