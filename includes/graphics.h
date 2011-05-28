@@ -48,6 +48,10 @@ extern unsigned int fire_alpha[CELL*3][CELL*3];
 extern pixel *fire_bg;
 extern pixel *pers_bg;
 
+void *ptif_pack(pixel *src, int w, int h, int *result_size);
+
+pixel *ptif_unpack(void *datain, int size, int *w, int *h);
+
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f);
 
 void sdl_blit_1(int x, int y, int w, int h, pixel *src, int pitch);

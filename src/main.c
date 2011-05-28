@@ -1322,6 +1322,7 @@ int main(int argc, char *argv[])
 	parts[NPART-1].life = -1;
 	pfree = 0;
 	
+	decorations = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	fire_bg = calloc(XRES*YRES, PIXELSIZE);
 	
@@ -1345,21 +1346,35 @@ int main(int argc, char *argv[])
 			//return 0;
 			info_box(vid_buf, "Save file invalid or from newer version");
 		}
-		
-		f=fopen(argv[2],"wb");
-		fprintf(f,"P6\n%d %d\n255\n",XRES,YRES);
-		for (j=0; j<YRES; j++)
-		{
-			for (i=0; i<XRES; i++)
-			{
-				c[0] = PIXR(vid_buf[i]);
-				c[1] = PIXG(vid_buf[i]);
-				c[2] = PIXB(vid_buf[i]);
-				fwrite(c,3,1,f);
+
+		if(!strncmp(argv[3], "pti", 3)){
+			char * datares = NULL, *scaled_buf;
+			int res = 0, sw, sh;
+			scaled_buf = rescale_img(vid_buf, XRES, YRES, &sw, &sh, 4);
+			datares = ptif_pack(scaled_buf, sw, sh, &res);
+			if(datares!=NULL){
+				f=fopen(argv[2], "wb");
+				fwrite(datares, res, 1, f);
+				fclose(f);
+				free(datares);
 			}
-			vid_buf+=XRES+BARSIZE;
+			free(scaled_buf);
+		} else {	
+			f=fopen(argv[2],"wb");
+			fprintf(f,"P6\n%d %d\n255\n",XRES,YRES);
+			for (j=0; j<YRES; j++)
+			{
+				for (i=0; i<XRES; i++)
+				{
+					c[0] = PIXR(vid_buf[i]);
+					c[1] = PIXG(vid_buf[i]);
+					c[2] = PIXB(vid_buf[i]);
+					fwrite(c,3,1,f);
+				}
+				vid_buf+=XRES+BARSIZE;
+			}
+			fclose(f);
 		}
-		fclose(f);
 		
 		return 1;
 	}
@@ -1481,7 +1496,7 @@ int main(int argc, char *argv[])
 		pygood = 0;
 	}
 #else
-	printf("python console disabled at compile time.");
+	printf("python console disabled at compile time.\n");
 #endif
 
 #ifdef MT
