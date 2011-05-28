@@ -138,6 +138,23 @@ pixel *ptif_unpack(void *datain, int size, int *w, int *h){
 	return result;
 }
 
+pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
+{
+	int y, x;
+	//int i,j,x,y,w,h,r,g,b,c;
+	pixel *q;
+	q = malloc(rw*rh*PIXELSIZE);
+	//TODO: Actual resampling, this is just cheap nearest pixel crap
+	for (y=0; y<rh; y++)
+		for (x=0; x<rw; x++)
+		{
+			q[rw*y+x] = src[sw*(y*sh/rh)+(x*sw/rw)];
+		}
+	//*qw = w;
+	//*qh = h;
+	return q;
+}
+
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
 {
 	int i,j,x,y,w,h,r,g,b,c;

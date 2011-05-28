@@ -52,6 +52,8 @@ void *ptif_pack(pixel *src, int w, int h, int *result_size);
 
 pixel *ptif_unpack(void *datain, int size, int *w, int *h);
 
+pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh);
+
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f);
 
 void sdl_blit_1(int x, int y, int w, int h, pixel *src, int pitch);

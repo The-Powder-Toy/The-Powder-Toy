@@ -2493,10 +2493,13 @@ int search_ui(pixel *vid_buf)
 				{
 					//render_thumb(search_thumbs[pos], search_thsizes[pos], 1, v_buf, gx, gy, GRID_S);
 					int finh, finw;
-					char *thumb_imgdata = ptif_unpack(search_thumbs[pos], search_thsizes[pos], &finw, &finh);
+					pixel *thumb_rsdata = NULL;
+					pixel *thumb_imgdata = ptif_unpack(search_thumbs[pos], search_thsizes[pos], &finw, &finh);
 					if(thumb_imgdata!=NULL){
-						draw_image(v_buf, thumb_imgdata, gx, gy, finw, finh, 255);					
+						thumb_rsdata = resample_img(thumb_imgdata, finw, finh, XRES/GRID_S, YRES/GRID_S);
+						draw_image(v_buf, thumb_rsdata, gx, gy, XRES/GRID_S, YRES/GRID_S, 255);					
 						free(thumb_imgdata);
+						free(thumb_rsdata);
 					}
 					thumb_drawn[pos] = 1;
 				}
