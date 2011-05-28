@@ -126,6 +126,7 @@ extern int legacy_enable;
 extern int ngrav_enable; //Newtonian gravity
 extern int sound_enable;
 extern int kiosk_enable;
+extern int decorations_enable;
 
 extern int sys_pause;
 extern int framerender;

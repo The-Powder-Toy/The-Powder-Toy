@@ -240,6 +240,6 @@ char *console_ui(pixel *vid_buf, char error[255],char console_more);
 
 void simulation_ui(pixel *vid_buf);
 
-unsigned int decorations_ui(pixel *vid_buf, pixel *decorations, int *bsx, int *bsy, unsigned int savedColor);
+unsigned int decorations_ui(pixel *vid_buf, int *bsx, int *bsy, unsigned int savedColor);
 #endif
 

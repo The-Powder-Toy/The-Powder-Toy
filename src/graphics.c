@@ -3070,7 +3070,8 @@ void draw_parts(pixel *vid)
 				blendpixel(vid, nx+1, ny+1, cr, cg, cb, 112);
 				blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
 			}
-			blendpixel(vid, nx, ny, (parts[i].dcolour>>16)&0xFF, (parts[i].dcolour>>8)&0xFF, (parts[i].dcolour)&0xFF, (parts[i].dcolour>>24)&0xFF);
+			if (decorations_enable)
+				blendpixel(vid, nx, ny, (parts[i].dcolour>>16)&0xFF, (parts[i].dcolour>>8)&0xFF, (parts[i].dcolour)&0xFF, (parts[i].dcolour>>24)&0xFF);
 		}
 #endif
 	}
@@ -3249,19 +3250,7 @@ void draw_walls(pixel *vid)
 			}
 }
 
-void draw_decorations(pixel *vid_buf,pixel *decorations)
-{
-	/*int i,r,g,b;
-	for (i=0; i<(XRES+BARSIZE)*YRES; i++)
-	{
-		r = (decorations[i]&0xFF0000)>>16;
-		g = (decorations[i]&0x00FF00)>>8;
-		b = decorations[i]&0x0000FF;
-		if (r>0 || g>0 || b>0)
-			vid_buf[i] = PIXRGB(r,g,b);
-	}*/
-}
-void create_decorations(pixel *decorations,int x, int y, int rx, int ry, int r, int g, int b)
+void create_decorations(int x, int y, int rx, int ry, int r, int g, int b)
 {
 	int i,j,rp;
 	if (rx==0 && ry==0)
@@ -3269,7 +3258,7 @@ void create_decorations(pixel *decorations,int x, int y, int rx, int ry, int r, 
 		rp = pmap[y][x];
 		if ((rp>>8)>=NPART || !rp)
 			return;
-		parts[rp>>8].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);//decorations[(y)*(XRES+BARSIZE)+(x)] = PIXRGB(r, g, b);
+		parts[rp>>8].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
 		return;
 	}
 	for (j=-ry; j<=ry; j++)
@@ -3282,7 +3271,7 @@ void create_decorations(pixel *decorations,int x, int y, int rx, int ry, int r, 
 					parts[rp>>8].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
 				}
 }
-void line_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b)
+void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b)
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
 	float e, de;
@@ -3316,9 +3305,9 @@ void line_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int rx,
 	for (x=x1; x<=x2; x++)
 	{
 		if (cp)
-			create_decorations(decorations,y, x, rx, ry, r, g, b);
+			create_decorations(y, x, rx, ry, r, g, b);
 		else
-			create_decorations(decorations,x, y, rx, ry, r, g, b);
+			create_decorations(x, y, rx, ry, r, g, b);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -3326,15 +3315,15 @@ void line_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int rx,
 			if (!(rx+ry))
 			{
 				if (cp)
-					create_decorations(decorations,y, x, rx, ry, r, g, b);
+					create_decorations(y, x, rx, ry, r, g, b);
 				else
-					create_decorations(decorations,x, y, rx, ry, r, g, b);
+					create_decorations(x, y, rx, ry, r, g, b);
 			}
 			e -= 1.0f;
 		}
 	}
 }
-void box_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int r, int g, int b)
+void box_decorations(int x1, int y1, int x2, int y2, int r, int g, int b)
 {
 	int i, j;
 	if (x1>x2)
@@ -3351,7 +3340,7 @@ void box_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int r, i
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			create_decorations(decorations,i, j, 0, 0, r, g, b);
+			create_decorations(i, j, 0, 0, r, g, b);
 }
 
 //draws the photon colors in the HUD

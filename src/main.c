@@ -1437,8 +1437,7 @@ int main(int argc, char *argv[])
 		parts[i].life = i+1;
 	parts[NPART-1].life = -1;
 	pfree = 0;
-	
-	decorations = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
+
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	fire_bg = calloc(XRES*YRES, PIXELSIZE);
 	
@@ -2173,7 +2172,7 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					hsvSave = decorations_ui(vid_buf,decorations,&bsx,&bsy,hsvSave);//decoration_mode = !decoration_mode;
+					hsvSave = decorations_ui(vid_buf,&bsx,&bsy,hsvSave);//decoration_mode = !decoration_mode;
 					decorations_enable = 1;
 					sys_pause=1;
 				}
@@ -2470,7 +2469,6 @@ int main(int argc, char *argv[])
 			}
 		}
 		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &dae, b, bq, x, y); //draw the elements in the current menu
-		if (decorations_enable) draw_decorations(vid_buf,decorations);
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
 		        && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
 		        && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))
@@ -2825,8 +2823,6 @@ int main(int argc, char *argv[])
 						isplayer = 0;
 						ISSPAWN1 = 0;
 						ISSPAWN2 = 0;
-
-						memset(decorations, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 					}
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{

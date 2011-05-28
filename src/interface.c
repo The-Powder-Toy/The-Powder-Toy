@@ -4334,7 +4334,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	return NULL;
 }
 
-unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy, unsigned int savedColor)
+unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int savedColor)
 {//TODO: have the text boxes be editable and update the color. Maybe use 0-360 for H in hsv to fix minor inaccuracies (rgb of 0,0,255 , comes back as 0,3,255)
 	int i,ss,hh,vv,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0,hidden=0;
 	int window_offset_x_left = 2;
@@ -4401,7 +4401,7 @@ unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy,
 		my /= sdl_scale;
 
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*(YRES+MENUSIZE)*PIXELSIZE);
-		draw_parts(vid_buf);//draw_decorations(vid_buf,decorations);
+		draw_parts(vid_buf);
 		//ui_edit_process(mx, my, b, &box_R);
 		//ui_edit_process(mx, my, b, &box_G);
 		//ui_edit_process(mx, my, b, &box_B);
@@ -4536,7 +4536,11 @@ unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy,
 			}
 			if(b && !bq && mx >= window_offset_x + 230 && my >= window_offset_y +255+6 && mx <= window_offset_x + 230 +26 && my <= window_offset_y +255+5 +13)
 				if (confirm_ui(vid_buf, "Reset Decoration Layer", "Do you really want to erase everything?", "Erase") )
-					memset(decorations, 0,(XRES+BARSIZE)*YRES*PIXELSIZE);
+				{
+					int i;
+					for (i=0;i<NPART;i++)
+						parts[i].dcolour = 0;
+				}
 		}
 		else if (mx > XRES || my > YRES)
 		{
@@ -4584,7 +4588,7 @@ unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy,
 				}
 				else if(lb!=3)//while mouse is held down, it draws lines between previous and current positions
 				{
-					line_decorations(decorations,lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
 					lx = mx;
 					ly = my;
 				}
@@ -4625,7 +4629,7 @@ unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy,
 				}
 				else //normal click, draw deco
 				{
-					create_decorations(decorations,mx,my,*bsx,*bsy,cr,cg,cb);
+					create_decorations(mx,my,*bsx,*bsy,cr,cg,cb);
 					lx = mx;
 					ly = my;
 					lb = b;
@@ -4644,9 +4648,9 @@ unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy,
 			if (lb && lm) //lm is box/line tool
 			{
 				if (lm == 1)//line
-					line_decorations(decorations,lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
 				else//box
-					box_decorations(decorations,lx, ly, mx, my, cr, cg, cb);
+					box_decorations(lx, ly, mx, my, cr, cg, cb);
 				lm = 0;
 			}
 			lb = 0;
