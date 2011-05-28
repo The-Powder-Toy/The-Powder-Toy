@@ -57,6 +57,81 @@ static void photoelectric_effect(int nx, int ny)//create sparks from PHOT when h
 			pn_junction_sprk(nx, ny, PT_PSCN);
 	}
 }
+
+unsigned char can_move[PT_NUM][PT_NUM];
+
+void init_can_move()
+{
+	// can_move[moving type][type at destination]
+	//  0 = No move/Bounce
+	//  1 = Swap
+	//  2 = Both particles occupy the same space.
+	//  3 = Varies, go run some extra checks
+	int t, rt;
+	for (rt=0;rt<PT_NUM;rt++)
+		can_move[0][rt] = 0; // particles that don't exist shouldn't move...
+	for (t=1;t<PT_NUM;t++)
+		for (rt=0;rt<PT_NUM;rt++)
+			can_move[t][rt] = 1;
+	for (rt=1;rt<PT_NUM;rt++)
+	{
+		can_move[PT_PHOT][rt] = 2;
+	}
+	for (t=1;t<PT_NUM;t++)
+	{
+		for (rt=1;rt<PT_NUM;rt++)
+		{
+			// weight check, also prevents particles of same type displacing each other
+			if (ptypes[t].weight <= ptypes[rt].weight) can_move[t][rt] = 0;
+			if (t==PT_NEUT && ptypes[rt].properties&PROP_NEUTPASS)
+				can_move[t][rt] = 2;
+			if (t==PT_NEUT && ptypes[rt].properties&PROP_NEUTPENETRATE)
+				can_move[t][rt] = 1;
+			if (ptypes[t].properties&PROP_NEUTPENETRATE && rt==PT_NEUT)
+				can_move[t][rt] = 0;
+			if (ptypes[t].properties&TYPE_ENERGY && ptypes[rt].properties&TYPE_ENERGY)
+				can_move[t][rt] = 2;
+		}
+	}
+	can_move[PT_BIZR][PT_FILT] = 2;
+	can_move[PT_BIZRG][PT_FILT] = 2;
+	for (t=0;t<PT_NUM;t++)
+	{
+		//spark shouldn't move
+		can_move[PT_SPRK][t] = 0;
+		//all stickman collisions are done in stickman update function
+		can_move[PT_STKM][t] = 2;
+		can_move[PT_STKM2][t] = 2;
+	}
+	for (t=0;t<PT_NUM;t++)
+	{
+		// make them eat things
+		can_move[t][PT_VOID] = 1;
+		can_move[t][PT_BHOL] = 1;
+		can_move[t][PT_NBHL] = 1;
+		//all stickman collisions are done in stickman update function
+		can_move[t][PT_STKM] = 2;
+		can_move[t][PT_STKM2] = 2;
+		//INVIS behaviour varies with pressure
+		can_move[t][PT_INVIS] = 3;
+		//stop CNCT being displaced by other particles
+		can_move[t][PT_CNCT] = 0;
+	}
+	for (t=0;t<PT_NUM;t++)
+	{
+		if (t==PT_GLAS || t==PT_PHOT || t==PT_CLNE || t==PT_PCLN
+			|| t==PT_GLOW || t==PT_WATR || t==PT_DSTW || t==PT_SLTW
+			|| t==PT_ISOZ || t==PT_ISZS || t==PT_FILT || t==PT_INVIS
+			|| t==PT_QRTZ || t==PT_PQRT)
+			can_move[PT_PHOT][t] = 2;
+	}
+	can_move[PT_PHOT][PT_LCRY] = 3;//varies according to LCRY life
+	can_move[PT_NEUT][PT_INVIS] = 2;
+	//whol eats anar
+	can_move[PT_ANAR][PT_WHOL] = 2;
+	can_move[PT_ANAR][PT_NWHL] = 2;
+}
+
 /*
    RETURN-value explenation
 1 = Swap
@@ -66,6 +141,7 @@ static void photoelectric_effect(int nx, int ny)//create sparks from PHOT when h
 int eval_move(int pt, int nx, int ny, unsigned *rr)
 {
 	unsigned r;
+	int result;
 
 	if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
 		return 0;
@@ -75,65 +151,34 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 		r = (r&~0xFF) | parts[r>>8].type;
 	if (rr)
 		*rr = r;
-
-	if ((r&0xFF)==PT_VOID || (r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL)
-		return 1;
-
-	if (((r&0xFF)==PT_WHOL||(r&0xFF)==PT_NWHL) && pt==PT_ANAR)
-		return 1;
-
-	if (pt==PT_SPRK)//spark shouldn't move
+	if (pt>=PT_NUM || (r&0xFF)>=PT_NUM)
 		return 0;
-
-	if (pt==PT_PHOT&&(
-	            (r&0xFF)==PT_GLAS || (r&0xFF)==PT_PHOT ||
-	            (r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN ||
-	            (r&0xFF)==PT_GLOW || (r&0xFF)==PT_WATR ||
-	            (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW ||
-	            (r&0xFF)==PT_ISOZ || (r&0xFF)==PT_ISZS ||
-	            (r&0xFF)==PT_FILT || (r&0xFF)==PT_INVIS ||
-	            (r&0xFF)==PT_QRTZ || (r&0xFF)==PT_PQRT ||
-	            ((r&0xFF)==PT_LCRY&&parts[r>>8].life > 5)))
-		return 2;
-
-	if (pt==PT_STKM) //Stick man's head shouldn't collide
-		return 2;
-	if (pt==PT_STKM2) //Stick man's head shouldn't collide
-		return 2;
-	if ((pt==PT_BIZR||pt==PT_BIZRG)&&(r&0xFF)==PT_FILT)
-		return 2;
-	if (bmap[ny/CELL][nx/CELL]==WL_ALLOWGAS && ptypes[pt].falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
-		return 0;
-	if (ptypes[pt].falldown!=2 && bmap[ny/CELL][nx/CELL]==WL_ALLOWLIQUID)
-		return 0;
-	if ((pt==PT_NEUT ||pt==PT_PHOT) && bmap[ny/CELL][nx/CELL]==WL_EWALL && !emap[ny/CELL][nx/CELL])
-		return 0;
-	if (bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL])
-		return 2;
-	if (bmap[ny/CELL][nx/CELL]==WL_ALLOWAIR)
-		return 0;
-
-	if (ptypes[pt].falldown!=1 && bmap[ny/CELL][nx/CELL]==WL_ALLOWSOLID)
-		return 0;
-	if (r && (r&0xFF) < PT_NUM) {
-		if (ptypes[pt].properties&TYPE_ENERGY && ptypes[(r&0xFF)].properties&TYPE_ENERGY)
-			return 2;
-
-		if (pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPASS)
-			return 2;
-		if (pt==PT_NEUT && ptypes[(r&0xFF)].properties&PROP_NEUTPENETRATE)
-			return 1;
-		if ((r&0xFF)==PT_NEUT && ptypes[pt].properties&PROP_NEUTPENETRATE)
-			return 0;
+	result = can_move[pt][r&0xFF];
+	if (result==3)
+	{
+		if (pt==PT_PHOT && (r&0xFF)==PT_LCRY)
+			result = (parts[r>>8].life > 5)? 2 : 0;
+		if ((r&0xFF)==PT_INVIS)
+		{
+			if (pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f) result = 2;
+			else result = 0;
+		}
 	}
-
-	if (r && ((r&0xFF) >= PT_NUM || (ptypes[pt].weight <= ptypes[(r&0xFF)].weight))) //the particle weight check
-		return 0;
-
-	if (pt == PT_PHOT)
-		return 2;
-
-	return 1;
+	if (bmap[ny/CELL][nx/CELL])
+	{
+		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWGAS && ptypes[pt].falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
+			return 0;
+		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWLIQUID && ptypes[pt].falldown!=2)
+			return 0;
+		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWSOLID && ptypes[pt].falldown!=1)
+			return 0;
+		// blocking by WL_WALL, WL_WALLELEC and unpowered WL_EWALL is currently done by putting 0x7FFFFFFF in pmap
+		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWAIR)
+			return 0;
+		if (bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL])
+			return 2;
+	}
+	return result;
 }
 
 int try_move(int i, int x, int y, int nx, int ny)
@@ -147,11 +192,9 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 	e = eval_move(parts[i].type, nx, ny, &r);
 
-	if ((pmap[ny][nx]&0xFF)==PT_BOMB && parts[i].type==PT_BOMB && parts[i].tmp == 1)
+	if ((r&0xFF)==PT_BOMB && parts[i].type==PT_BOMB && parts[i].tmp == 1)
 		e = 2;
 
-	if ((pmap[ny][nx]&0xFF)==PT_INVIS && (pv[ny/CELL][nx/CELL]>4.0f ||pv[ny/CELL][nx/CELL]<-4.0f))
-		return 1;
 	/* half-silvered mirror */
 	if (!e && parts[i].type==PT_PHOT &&
 	        (((r&0xFF)==PT_BMTL && rand()<RAND_MAX/2) ||
@@ -160,6 +203,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 	if (!e) //if no movement
 	{
+		if (parts[i].type!=PT_NEUT && parts[i].type!=PT_PHOT)
+			return 0;
 		if (!legacy_enable && parts[i].type==PT_PHOT && r)//PHOT heat conduction
 		{
 			if ((r & 0xFF) == PT_COAL || (r & 0xFF) == PT_BCOL)
@@ -286,28 +331,15 @@ int try_move(int i, int x, int y, int nx, int ny)
 		return 0;
 	}
 
-	if ((pmap[ny][nx]&0xFF)==PT_CNCT)//stops CNCT being displaced by other particles
-		return 0;
 	if (parts[i].type==PT_CNCT && y<ny && (pmap[y+1][x]&0xFF)==PT_CNCT)//check below CNCT for another CNCT
 		return 0;
 
-	if (bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL])
-		return 1;
-	if ((bmap[y/CELL][x/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL]) && (bmap[ny/CELL][nx/CELL]!=WL_EHOLE && !emap[ny/CELL][nx/CELL]))
+	if ((bmap[y/CELL][x/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL]) && !(bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL]))
 		return 0;
-
-	if (r && (r>>8)<NPART && ptypes[r&0xFF].falldown!=2 && bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID)
-		return 0;
-
-	if (parts[i].type == PT_PHOT)
-		return 1;
 
 	e = r >> 8; //e is now the particle number at r (pmap[ny][nx])
 	if (r && e<NPART)//the swap part, if we make it this far, swap
 	{
-		if (parts[e].type == PT_PHOT||parts[e].type == PT_NEUT)
-			return 1;
-
 		if (parts[i].type==PT_NEUT) {
 			// target material is NEUTPENETRATE, meaning it gets moved around when neutron passes
 			unsigned s = pmap[y][x];

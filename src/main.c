@@ -1650,6 +1650,7 @@ int main(int argc, char *argv[])
 	parts[NPART-1].life = -1;
 	pfree = 0;
 	fire_bg=calloc(XRES*YRES, PIXELSIZE);
+	init_can_move();
 	clear_sim();
 
 	//fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
