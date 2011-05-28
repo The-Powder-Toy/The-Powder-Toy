@@ -3060,6 +3060,13 @@ void draw_parts(pixel *vid)
 				//	blendpixel(vid, nx, ny-1, R, G, B, 46);
 				//}
 
+				if (decorations_enable && parts[i].dcolour)
+				{
+					int a = (parts[i].dcolour>>24)&0xFF;
+					cr = (a*((parts[i].dcolour>>16)&0xFF) + (255-a)*cr) >> 8;
+					cg = (a*((parts[i].dcolour>>8)&0xFF) + (255-a)*cg) >> 8;
+					cb = (a*((parts[i].dcolour)&0xFF) + (255-a)*cb) >> 8;
+				}
 				blendpixel(vid, nx+1, ny, cr, cg, cb, 223);
 				blendpixel(vid, nx-1, ny, cr, cg, cb, 223);
 				blendpixel(vid, nx, ny+1, cr, cg, cb, 223);
@@ -3070,7 +3077,7 @@ void draw_parts(pixel *vid)
 				blendpixel(vid, nx+1, ny+1, cr, cg, cb, 112);
 				blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
 			}
-			if (decorations_enable)
+			if (decorations_enable && cmode!=CM_HEAT && cmode!=CM_LIFE && parts[i].dcolour)
 				blendpixel(vid, nx, ny, (parts[i].dcolour>>16)&0xFF, (parts[i].dcolour>>8)&0xFF, (parts[i].dcolour)&0xFF, (parts[i].dcolour>>24)&0xFF);
 		}
 #endif
