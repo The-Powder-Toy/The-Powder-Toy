@@ -2587,14 +2587,11 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 	float (*fvyo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
 	float (*fvxn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
 	float (*fvyn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	pixel *decorationso = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
-	pixel *decorationsn = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	int i, x, y, nx, ny, w, h, nw, nh;
-	pixel px;
 	vector2d pos, tmp, ctl, cbr;
 	vector2d cornerso[4];
 	unsigned char *odatac = odata;
-	if (parse_save(odata, *size, 0, 0, 0, bmapo, fvxo, fvyo, signst, partst, pmapt, decorationso))
+	if (parse_save(odata, *size, 0, 0, 0, bmapo, fvxo, fvyo, signst, partst, pmapt))
 	{
 		free(bmapo);
 		free(bmapn);
@@ -2605,8 +2602,6 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 		free(fvyo);
 		free(fvxn);
 		free(fvyn);
-		free(decorationso);
-		free(decorationsn);
 		return odata;
 	}
 	w = odatac[6]*CELL;
@@ -2663,21 +2658,26 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 		partst[i].x = nx;
 		partst[i].y = ny;
 	}
-	for (y=0; y<h; y++)
-		for (x=0; x<w; x++)
+	for (y=0; y<YRES/CELL; y++)
+		for (x=0; x<XRES/CELL; x++)
 		{
-			px = decorationso[y*(XRES+BARSIZE)+x];
-			if (!PIXR(px) && !PIXG(px) && !PIXB(px))
-				continue;
-			pos = v2d_new(x, y);
+			pos = v2d_new(x*CELL+CELL*0.4f, y*CELL+CELL*0.4f);
 			pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
-			nx = floor(pos.x+0.5f);
-			ny = floor(pos.y+0.5f);
+			nx = pos.x/CELL;
+			ny = pos.y/CELL;
 			if (nx<0 || nx>=nw || ny<0 || ny>=nh)
 				continue;
-			decorationsn[ny*(XRES+BARSIZE)+nx] = px;
+			if (bmapo[y][x])
+			{
+				bmapn[ny][nx] = bmapo[y][x];
+				if (bmapo[y][x]==WL_FAN)
+				{
+					fvxn[ny][nx] = fvxo[y][x];
+					fvyn[ny][nx] = fvyo[y][x];
+				}
+			}
 		}
-	ndata = build_save(size,0,0,nw,nh,bmapn,fvxn,fvyn,signst,partst,decorationsn);
+	ndata = build_save(size,0,0,nw,nh,bmapn,fvxn,fvyn,signst,partst);
 	free(bmapo);
 	free(bmapn);
 	free(partst);
@@ -2687,8 +2687,6 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 	free(fvyo);
 	free(fvxn);
 	free(fvyn);
-	free(decorationso);
-	free(decorationsn);
 	return ndata;
 }
 
