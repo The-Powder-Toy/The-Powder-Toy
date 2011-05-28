@@ -97,6 +97,7 @@ pixel *ptif_unpack(void *datain, int size, int *w, int *h){
 	width = data[4]|(data[5]<<8);
 	height = data[6]|(data[7]<<8);
 	
+	i = (width*height)*3;
 	undata = calloc(1, (width*height)*3);
 	red_chan = calloc(1, width*height); 
 	green_chan = calloc(1, width*height); 
