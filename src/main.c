@@ -466,7 +466,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	c[0] = 0x50;	//0x66;
 	c[1] = 0x53;	//0x75;
 	c[2] = 0x76;	//0x43;
-	c[3] = legacy_enable|((sys_pause<<1)&0x02)|((gravityMode<<2)&0x0C)|((airMode<<4)&0x70);
+	c[3] = legacy_enable|((sys_pause<<1)&0x02)|((gravityMode<<2)&0x0C)|((airMode<<4)&0x70)|((ngrav_enable<<7)&0x80);
 	c[4] = SAVE_VERSION;
 	c[5] = CELL;
 	c[6] = bw;
@@ -495,7 +495,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES], pixel *decorations)
 {
 	unsigned char *d=NULL,*c=save;
-	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
+	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0, tempGrav = 0;
 	int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
 	int fp[NPART], nf=0, new_format = 0, ttv = 0;
 	particle *parts = partsptr;
@@ -528,6 +528,9 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			if (ver>=46 && replace) {
 				gravityMode = ((c[3]>>2)&0x03);// | ((c[3]>>2)&0x01);
 				airMode = ((c[3]>>4)&0x07);// | ((c[3]>>4)&0x02) | ((c[3]>>4)&0x01);
+			}
+			if (ver>=49 && replace) {
+				tempGrav = ((c[3]>>7)&0x01);			
 			}
 		} else {
 			if (c[3]==1||c[3]==0) {
@@ -883,10 +886,19 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				// Replace invisible particles with something sensible and add decoration to hide it
 				x = (int)(parts[i-1].x+0.5f);
 				y = (int)(parts[i-1].y+0.5f);
-				decorations[y*(XRES+BARSIZE)+x] = PIXPACK(0x010101);
+				parts[i-1].dcolour = 0x010101;
 				parts[i-1].type = PT_DMND;
 			}
 		}
+	}
+
+	//Change the gravity state
+	if(ngrav_enable != tempGrav && replace)
+	{
+		if(tempGrav)
+			start_grav_async();
+		else
+			stop_grav_async();
 	}
 
 	if (p >= size)
