@@ -2491,7 +2491,13 @@ int search_ui(pixel *vid_buf)
 					drawtext(vid_buf, gx+XRES/(GRID_S*2)-j/2, gy+YRES/GRID_S+20, search_owners[pos], 128, 128, 128, 255);
 				if (search_thumbs[pos]&&thumb_drawn[pos]==0)
 				{
-					render_thumb(search_thumbs[pos], search_thsizes[pos], 1, v_buf, gx, gy, GRID_S);
+					//render_thumb(search_thumbs[pos], search_thsizes[pos], 1, v_buf, gx, gy, GRID_S);
+					int finh, finw;
+					char *thumb_imgdata = ptif_unpack(search_thumbs[pos], search_thsizes[pos], &finw, &finh);
+					if(thumb_imgdata!=NULL){
+						draw_image(v_buf, thumb_imgdata, gx, gy, finw, finh, 255);					
+						free(thumb_imgdata);
+					}
 					thumb_drawn[pos] = 1;
 				}
 				own = svf_login && (!strcmp(svf_user, search_owners[pos]) || svf_admin || svf_mod);
@@ -2609,8 +2615,8 @@ int search_ui(pixel *vid_buf)
 			if (gy+h>=YRES+(MENUSIZE-2)) gy=YRES+(MENUSIZE-3)-h;
 			clearrect(vid_buf, gx-2, gy-3, w+4, h);
 			drawrect(vid_buf, gx-2, gy-3, w+4, h, 160, 160, 192, 255);
-			if (search_thumbs[mp])
-				render_thumb(search_thumbs[mp], search_thsizes[mp], 1, vid_buf, gx+(w-(XRES/GRID_Z))/2, gy, GRID_Z);
+			//if (search_thumbs[mp])
+				//render_thumb(search_thumbs[mp], search_thsizes[mp], 1, vid_buf, gx+(w-(XRES/GRID_Z))/2, gy, GRID_Z);
 			drawtext(vid_buf, gx+(w-i)/2, gy+YRES/GRID_Z+4, search_names[mp], 192, 192, 192, 255);
 			drawtext(vid_buf, gx+(w-textwidth(search_owners[mp]))/2, gy+YRES/GRID_Z+16, search_owners[mp], 128, 128, 128, 255);
 		}
@@ -2842,7 +2848,7 @@ int search_ui(pixel *vid_buf)
 					if (search_dates[pos]) {
 						char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+1);
 						uri = malloc(strlen(search_ids[pos])*3+strlen(search_dates[pos])*3+strlen(SERVER)+71);
-						strcpy(uri, "http://" SERVER "/Get.api?Op=thumb&ID=");
+						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbbm&ID=");
 						strcaturl(uri, search_ids[pos]);
 						strappend(uri, "&Date=");
 						strcaturl(uri, search_dates[pos]);
@@ -2853,7 +2859,7 @@ int search_ui(pixel *vid_buf)
 						img_id[i] = mystrdup(id_d_temp);
 					} else {
 						uri = malloc(strlen(search_ids[pos])*3+strlen(SERVER)+64);
-						strcpy(uri, "http://" SERVER "/Get.api?Op=thumb&ID=");
+						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbbm&ID=");
 						strcaturl(uri, search_ids[pos]);
 						img_id[i] = mystrdup(search_ids[pos]);
 					}
