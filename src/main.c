@@ -321,7 +321,7 @@ void *build_thumb(int *size, int bzip2)
 //the saving function
 void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, pixel *decorations)
 {
-	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*11+MAXSIGNS*262), *c;
+	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*15+MAXSIGNS*262), *c;
 	int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
 	int bx0=x0/CELL, by0=y0/CELL, bw=(w+CELL-1)/CELL, bh=(h+CELL-1)/CELL;
 	particle *parts = partsptr;
@@ -414,6 +414,38 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 			int tttmp = (int)parts[i-1].tmp;
 			d[p++] = ((tttmp&0xFF00)>>8);
 			d[p++] = (tttmp&0x00FF);
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Save colour (ALPHA)
+			d[p++] = (parts[i-1].dcolour&0xFF000000)>>24;
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Save colour (RED)
+			d[p++] = (parts[i-1].dcolour&0x00FF0000)>>16;
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Save colour (GREEN)
+			d[p++] = (parts[i-1].dcolour&0x0000FF00)>>8;
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Save colour (BLUE)
+			d[p++] = (parts[i-1].dcolour&0x000000FF);
 		}
 	}
 	for (j=0; j<w*h; j++)
@@ -821,6 +853,78 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			}
 		}
 	}
+	//Read ALPHA component
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i)
+		{
+			if (ver>=49) {
+				if (p >= size) {
+					goto corrupt;
+				}
+				if (i <= NPART) {
+					parts[i-1].dcolour = d[p++]<<24;
+				} else {
+					p++;
+				}
+			}
+		}
+	}
+	//Read RED component
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i)
+		{
+			if (ver>=49) {
+				if (p >= size) {
+					goto corrupt;
+				}
+				if (i <= NPART) {
+					parts[i-1].dcolour |= d[p++]<<16;
+				} else {
+					p++;
+				}
+			}
+		}
+	}
+	//Read GREEN component
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i)
+		{
+			if (ver>=49) {
+				if (p >= size) {
+					goto corrupt;
+				}
+				if (i <= NPART) {
+					parts[i-1].dcolour |= d[p++]<<8;
+				} else {
+					p++;
+				}
+			}
+		}
+	}
+	//Read BLUE component
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i)
+		{
+			if (ver>=49) {
+				if (p >= size) {
+					goto corrupt;
+				}
+				if (i <= NPART) {
+					parts[i-1].dcolour |= d[p++];
+				} else {
+					p++;
+				}
+			}
+		}
+	}
 	for (j=0; j<w*h; j++)
 	{
 		i = m[j];
@@ -864,7 +968,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				parts[i-1].temp = ptypes[parts[i-1].type].heat;
 			}
 		}
-	}
+	} 
 	for (j=0; j<w*h; j++)
 	{
 		i = m[j];
