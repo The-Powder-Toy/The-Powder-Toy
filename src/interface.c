@@ -59,7 +59,7 @@ int search_date = 0;
 int search_page = 0;
 char search_expr[256] = "";
 
-char server_motd[256] = "";
+char server_motd[512] = "";
 
 char *tag_names[TAG_MAX];
 int tag_votes[TAG_MAX];
@@ -517,6 +517,99 @@ void ui_copytext_process(int mx, int my, int mb, int mbq, ui_copytext *ed)
 		ed->hover = 1;
 	} else {
 		ed->hover = 0;
+	}
+}
+
+void ui_richtext_draw(pixel *vid_buf, ui_richtext *ed)
+{
+	ed->str[511] = 0;
+	ed->printstr[511] = 0;
+	drawtext(vid_buf, ed->x, ed->y, ed->printstr, 255, 255, 255, 255);
+}
+
+int markup_getregion(char *text, char *action, char *data, char *atext){
+	int datamarker = 0;
+	int terminator = 0;
+	int minit;
+	if (sregexp(text, "^{a:.*|.*}")==0)
+	{
+		*action = text[1];
+		for (minit=3; text[minit-1] != '|'; minit++)
+			datamarker = minit + 1;
+		for (minit=datamarker; text[minit-1] != '}'; minit++)
+			terminator = minit + 1;
+		strncpy(data, text+3, datamarker-4);
+		strncpy(atext, text+datamarker, terminator-datamarker-1);
+		return terminator;
+	}
+	else
+	{
+		return 0;
+	}	
+}
+
+void ui_richtext_settext(char *text, ui_richtext *ed)
+{
+	int pos = 0, action = 0, ppos = 0, ipos = 0;
+	strcpy(ed->str, text);
+	//strcpy(ed->printstr, text);
+	for(action = 0; action < 6; action++){
+		ed->action[action] = 0;	
+		memset(ed->actiondata[action], 0, 256);
+		memset(ed->actiontext[action], 0, 256);
+	}
+	action = 0;
+	for(pos = 0; pos<512; ){
+		if(!ed->str[pos])
+			break;
+		if(ed->str[pos] == '{'){
+			int mulen = 0;
+			mulen = markup_getregion(ed->str+pos, &ed->action[action], ed->actiondata[action], ed->actiontext[action]);
+			if(mulen){
+				ed->regionss[action] = ipos;
+				ed->regionsf[action] = ipos + strlen(ed->actiontext[action]);
+				//printf("%c, %s, %s [%d, %d]\n", ed->action[action], ed->actiondata[action], ed->actiontext[action], ed->regionss[action], ed->regionsf[action]);
+				strcpy(ed->printstr+ppos, ed->actiontext[action]);
+				ppos+=strlen(ed->actiontext[action]);
+				ipos+=strlen(ed->actiontext[action]);
+				pos+=mulen;
+				action++;			
+			} 
+			else
+			{
+				pos++;			
+			}
+		} else {
+			ed->printstr[ppos] = ed->str[pos];
+			ppos++;
+			pos++;
+			ipos++;
+			if(ed->str[pos] == '\b'){
+				ipos-=2;			
+			}
+		}
+	}
+	ed->printstr[ppos] = 0;
+	//printf("%s\n", ed->printstr);
+}
+
+void ui_richtext_process(int mx, int my, int mb, int mbq, ui_richtext *ed)
+{
+	int action = 0;
+	int currentpos = 0;
+	if(mx>ed->x && mx < ed->x+textwidth(ed->printstr) && my > ed->y && my < ed->y + 10 && mb && !mbq){
+		currentpos = textwidthx(ed->printstr, mx-ed->x);
+		for(action = 0; action < 6; action++){
+			if(currentpos >= ed->regionss[action] && currentpos <= ed->regionsf[action])
+			{	
+				//Do action
+				if(ed->action[action]=='a'){
+					//Open link
+					open_link(ed->actiondata[action]);	
+				}
+				break;
+			}
+		}
 	}
 }
 
@@ -2256,6 +2349,7 @@ int search_ui(pixel *vid_buf)
 	float ry;
 	time_t http_last_use=HTTP_TIMEOUT;
 	ui_edit ed;
+	ui_richtext motd;
 
 
 	void *http = NULL;
@@ -2309,6 +2403,10 @@ int search_ui(pixel *vid_buf)
 	ed.cursor = strlen(search_expr);
 	ed.multiline = 0;
 	strcpy(ed.str, search_expr);
+
+	motd.x = 20;
+	motd.y = 33;
+	motd.str[0] = 0;
 
 	sdl_wheel = 0;
 
@@ -2427,8 +2525,8 @@ int search_ui(pixel *vid_buf)
 		if (is_p1)
 		{	
 			//Message of the day
-			//TODO: Some sort of rich text control that can be used for clickable links here (To saves or URLs for rules, etc)
-			drawtext(vid_buf, (XRES-textwidth(server_motd))/2, 33, server_motd, 255, 220, 150, 255);
+			ui_richtext_process(mx, my, b, bq, &motd);
+			ui_richtext_draw(vid_buf, &motd);
 			//Popular tags
 			drawtext(vid_buf, (XRES-textwidth("Popular tags:"))/2, 49, "Popular tags:", 255, 192, 64, 255);
 			for (gj=0; gj<((GRID_Y-GRID_P)*YRES)/(GRID_Y*14); gj++)
@@ -2788,6 +2886,9 @@ int search_ui(pixel *vid_buf)
 				page_count = search_results(results, last_own||svf_admin||svf_mod);
 				memset(thumb_drawn, 0, sizeof(thumb_drawn));
 				memset(v_buf, 0, ((YRES+MENUSIZE)*(XRES+BARSIZE))*PIXELSIZE);
+			
+				ui_richtext_settext(server_motd, &motd);
+				motd.x = (XRES-textwidth(motd.printstr))/2;
 			}
 			is_p1 = (exp_res < GRID_X*GRID_Y);
 			if (results)
