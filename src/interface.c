@@ -59,6 +59,8 @@ int search_date = 0;
 int search_page = 0;
 char search_expr[256] = "";
 
+char server_motd[256] = "";
+
 char *tag_names[TAG_MAX];
 int tag_votes[TAG_MAX];
 
@@ -2423,12 +2425,16 @@ int search_ui(pixel *vid_buf)
 
 		tp = -1;
 		if (is_p1)
-		{
-			drawtext(vid_buf, (XRES-textwidth("Popular tags:"))/2, 31, "Popular tags:", 255, 192, 64, 255);
+		{	
+			//Message of the day
+			//TODO: Some sort of rich text control that can be used for clickable links here (To saves or URLs for rules, etc)
+			drawtext(vid_buf, (XRES-textwidth(server_motd))/2, 33, server_motd, 255, 220, 150, 255);
+			//Popular tags
+			drawtext(vid_buf, (XRES-textwidth("Popular tags:"))/2, 49, "Popular tags:", 255, 192, 64, 255);
 			for (gj=0; gj<((GRID_Y-GRID_P)*YRES)/(GRID_Y*14); gj++)
-				for (gi=0; gi<GRID_X; gi++)
+				for (gi=0; gi<(GRID_X+1); gi++)
 				{
-					pos = gi+GRID_X*gj;
+					pos = gi+(GRID_X+1)*gj;
 					if (pos>TAG_MAX || !tag_names[pos])
 						break;
 					if (tag_votes[0])
@@ -2436,18 +2442,18 @@ int search_ui(pixel *vid_buf)
 					else
 						i = 192;
 					w = textwidth(tag_names[pos]);
-					if (w>XRES/GRID_X-5)
-						w = XRES/GRID_X-5;
-					gx = (XRES/GRID_X)*gi;
-					gy = gj*14 + 46;
-					if (mx>=gx && mx<gx+(XRES/GRID_X) && my>=gy && my<gy+14)
+					if (w>XRES/(GRID_X+1)-5)
+						w = XRES/(GRID_X+1)-5;
+					gx = (XRES/(GRID_X+1))*gi;
+					gy = gj*13 + 62;
+					if (mx>=gx && mx<gx+(XRES/((GRID_X+1)+1)) && my>=gy && my<gy+14)
 					{
 						j = (i*5)/6;
 						tp = pos;
 					}
 					else
 						j = i;
-					drawtextmax(vid_buf, gx+(XRES/GRID_X-w)/2, gy, XRES/GRID_X-5, tag_names[pos], j, j, i, 255);
+					drawtextmax(vid_buf, gx+(XRES/(GRID_X+1)-w)/2, gy, XRES/(GRID_X+1)-5, tag_names[pos], j, j, i, 255);
 				}
 		}
 
@@ -3599,6 +3605,7 @@ int search_results(char *str, int votes)
 			free(tag_names[j]);
 			tag_names[j] = NULL;
 		}
+	server_motd[0] = 0;
 
 	if (!str || !*str)
 		return 0;
@@ -3748,6 +3755,10 @@ int search_results(char *str, int votes)
 				search_votes[i] = atoi(s);
 			thumb_cache_find(str+8, search_thumbs+i, search_thsizes+i);
 			i++;
+		}
+		else if (!strncmp(str, "MOTD ", 5))
+		{
+			memcpy(server_motd, str+5, strlen(str+5));
 		}
 		else if (!strncmp(str, "TAG ", 4))
 		{
