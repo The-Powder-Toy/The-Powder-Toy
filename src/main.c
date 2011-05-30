@@ -58,6 +58,9 @@
 #ifdef PYCONSOLE
 #include "pyconsole.h"
 #endif
+#ifdef LUACONSOLE
+#include "luaconsole.h"
+#endif
 
 pixel *vid_buf;
 
@@ -1560,6 +1563,9 @@ int main(int argc, char *argv[])
 	fmt.callback = mixaudio;
 	fmt.userdata = NULL;
 
+#ifdef LUACONSOLE
+	luacon_open();
+#endif
 #ifdef PYCONSOLE
 	//initialise python console
 	Py_Initialize();
@@ -2366,6 +2372,9 @@ int main(int argc, char *argv[])
 					}
 			}
 		}
+#ifdef LUACONSOLE
+	luacon_keypress(sdl_key);
+#endif
 #ifdef PYCONSOLE
 		if (pyready==1 && pygood==1)
 			if (pkey!=NULL && sdl_key!=NULL)
@@ -3331,6 +3340,20 @@ int main(int argc, char *argv[])
 				if (!console_mode)
 					hud_enable = 1;
 			}
+#elif defined LUACONSOLE
+			char *console;
+			sys_pause = 1;
+			console = console_ui(vid_buf, console_error, console_more);
+			console = mystrdup(console);
+			strcpy(console_error,"");
+			if (process_command_lua(vid_buf, console, console_error)==-1)
+			{
+				free(console);
+				break;
+			}
+			free(console);
+			if (!console_mode)
+				hud_enable = 1;
 #else
 			char *console;
 			sys_pause = 1;
@@ -3349,6 +3372,9 @@ int main(int argc, char *argv[])
 		}
 
 		//execute python step hook
+#ifdef LUACONSOLE
+		luacon_step();
+#endif
 #ifdef PYCONSOLE
 		if (pyready==1 && pygood==1)
 			if (pstep!=NULL)
@@ -3384,6 +3410,9 @@ int main(int argc, char *argv[])
 	}
 	SDL_CloseAudio();
 	http_done();
+#ifdef LUACONSOLE
+	luacon_close();
+#endif
 #ifdef PYCONSOLE
 
 	PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.py'))\nexcept:\n    pass");
