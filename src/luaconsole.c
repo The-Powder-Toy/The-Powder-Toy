@@ -61,6 +61,7 @@ void luacon_close(){
 int process_command_lua(pixel *vid_buf, char *console, char *console_error)
 {
 	int commandret;
+	char * tmp_error;
 	char console2[15];
 	char console3[15];
 	char console4[15];
@@ -74,8 +75,11 @@ int process_command_lua(pixel *vid_buf, char *console, char *console_error)
 			return -1;
 		} else {
 			commandret = luacon_eval(console);
-			if (commandret)
-				strcpy(console_error, luacon_geterror());
+			if (commandret){
+				tmp_error = luacon_geterror();
+				strncpy(console_error, tmp_error, 254);
+				printf("%s\n", tmp_error);
+			}
 		}
 	}
 	return 1;
