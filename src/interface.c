@@ -4451,7 +4451,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 }
 
 unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int savedColor)
-{//TODO: have the text boxes be editable and update the color. Maybe use 0-360 for H in hsv to fix minor inaccuracies (rgb of 0,0,255 , comes back as 0,3,255)
+{//TODO: have the text boxes be editable and update the color.
 	int i,ss,hh,vv,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0,hidden=0;
 	int window_offset_x_left = 2;
 	int window_offset_x_right = XRES - 279;
@@ -4552,7 +4552,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 
 		drawrect(vid_buf, -1, -1, XRES+1, YRES+1, 220, 220, 220, 255);
 		drawrect(vid_buf, -1, -1, XRES+2, YRES+2, 70, 70, 70, 255);
-		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.2 (by cracker64) \n\nClicking the current color on the window will move it to the other side. Right click is eraser. ", 255, 255, 255, 255);
+		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.3 (by cracker64) \n\nClicking the current color on the window will move it to the other side. Right click is eraser. ", 255, 255, 255, 255);
 
 		if(!hidden)
 		{
@@ -4567,13 +4567,13 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			ui_edit_draw(vid_buf, &box_B);
 
 			for(ss=0; ss<=255; ss++)
-				for(hh=0;hh<=255;hh++)
+				for(hh=0;hh<=359;hh++)
 				{
 					cr = 0;
 					cg = 0;
 					cb = 0;
-					HSV_to_RGB(hh,255-ss,255,&cr,&cg,&cb);
-					vid_buf[(ss+grid_offset_y)*(XRES+BARSIZE)+(hh+grid_offset_x)] = PIXRGB(cr, cg, cb);
+					HSV_to_RGB(hh,255-ss,255-ss,&cr,&cg,&cb);
+					vid_buf[(ss+grid_offset_y)*(XRES+BARSIZE)+(clamp_flt(hh, 0, 359)+grid_offset_x)] = PIXRGB(cr, cg, cb);
 				}
 			for(vv=0; vv<=255; vv++)
 				for( i=0; i<10; i++)
@@ -4581,13 +4581,13 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 					cr = 0;
 					cg = 0;
 					cb = 0;
-					HSV_to_RGB(0,0,vv,&cr,&cg,&cb);
+					HSV_to_RGB(h,s,vv,&cr,&cg,&cb);
 					vid_buf[(vv+grid_offset_y)*(XRES+BARSIZE)+(i+grid_offset_x+255+4)] = PIXRGB(cr, cg, cb);
 				}
-			addpixel(vid_buf,grid_offset_x + h,grid_offset_y-1,255,255,255,255);
+			addpixel(vid_buf,grid_offset_x + clamp_flt(h, 0, 359),grid_offset_y-1,255,255,255,255);
 			addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-s),255,255,255,255);
 
-			addpixel(vid_buf,grid_offset_x + th,grid_offset_y-1,100,100,100,255);
+			addpixel(vid_buf,grid_offset_x + clamp_flt(th, 0, 359),grid_offset_y-1,100,100,100,255);
 			addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-ts),100,100,100,255);
 
 			addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y+tv,100,100,100,255);
@@ -4631,11 +4631,12 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			if(mx >= grid_offset_x && my >= grid_offset_y && mx <= grid_offset_x+255 && my <= grid_offset_y+255)
 			{
 				th = mx - grid_offset_x;
+				th = (int)( th*359/255 );
 				ts = 255 - (my - grid_offset_y);
 				if(b)
 				{
-					h = mx - grid_offset_x;
-					s = 255 - (my - grid_offset_y);
+					h = th;
+					s = ts;
 				}
 				HSV_to_RGB(th,ts,v,&cr,&cg,&cb);
 				//clearrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6,12,12);
@@ -4704,7 +4705,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 				}
 				else if(lb!=3)//while mouse is held down, it draws lines between previous and current positions
 				{
-					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb, b);
 					lx = mx;
 					ly = my;
 				}
@@ -4745,7 +4746,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 				}
 				else //normal click, draw deco
 				{
-					create_decorations(mx,my,*bsx,*bsy,cr,cg,cb);
+					create_decorations(mx,my,*bsx,*bsy,cr,cg,cb,b);
 					lx = mx;
 					ly = my;
 					lb = b;
@@ -4764,9 +4765,9 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			if (lb && lm) //lm is box/line tool
 			{
 				if (lm == 1)//line
-					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb, b);
 				else//box
-					box_decorations(lx, ly, mx, my, cr, cg, cb);
+					box_decorations(lx, ly, mx, my, cr, cg, cb, b);
 				lm = 0;
 			}
 			lb = 0;

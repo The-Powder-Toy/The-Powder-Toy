@@ -552,15 +552,15 @@ int register_extension()
 #endif
 }
 
-void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255 HSV values to 0-255 RGB
+void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255(0-360 for H) HSV values to 0-255 RGB
 {
 	float hh, ss, vv, c, x;
 	int m;
-	hh = h/42.66667f;//normalize values
+	hh = h/60.0f;//normalize values
 	ss = s/255.0f;
 	vv = v/255.0f;
 	c = vv * ss;
-	x = c * ( 1 - fabsf(fmod(hh,2.0) -1) );
+	x = c * ( 1 - fabs(fmod(hh,2.0) -1) );
 	if(hh<1){
 		*r = (int)(c*255.0);
 		*g = (int)(x*255.0);
@@ -597,7 +597,7 @@ void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255 HSV value
 	*b += m;
 }
 
-void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB values to 0-255 HSV
+void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB values to 0-255(0-360 for H) HSV
 {
 	float rr, gg, bb, a,x,c,d;
 	rr = r/255.0f;//normalize values
@@ -617,7 +617,7 @@ void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB value
 	{
  		c = (rr==a) ? gg-bb : ((bb==a) ? rr-gg : bb-rr);
  		d = (rr==a) ? 3 : ((bb==a) ? 1 : 5);
- 		*h = (int)(42.66667*(d - c/(x - a)));
+ 		*h = (int)(60.0*(d - c/(x - a)));
  		*s = (int)(255.0*((x - a)/x));
  		*v = (int)(255.0*x);
 	}
