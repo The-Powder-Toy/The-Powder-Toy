@@ -33,6 +33,128 @@ unsigned int fire_alpha[CELL*3][CELL*3];
 pixel *fire_bg;
 pixel *pers_bg;
 
+void *ptif_pack(pixel *src, int w, int h, int *result_size){
+	int i = 0, datalen = (w*h)*3, cx = 0, cy = 0;
+	unsigned char *red_chan = calloc(1, w*h);
+	unsigned char *green_chan = calloc(1, w*h);
+	unsigned char *blue_chan = calloc(1, w*h);
+	unsigned char *data = malloc(((w*h)*3)+8);
+	unsigned char *result = malloc(((w*h)*3)+8);
+
+	for(cx = 0; cx<w; cx++){
+		for(cy = 0; cy<h; cy++){
+			red_chan[w*(cy)+(cx)] = PIXR(src[w*(cy)+(cx)]);
+			green_chan[w*(cy)+(cx)] = PIXG(src[w*(cy)+(cx)]);
+			blue_chan[w*(cy)+(cx)] = PIXB(src[w*(cy)+(cx)]);
+		}
+	}
+
+	memcpy(data, red_chan, w*h);
+	memcpy(data+(w*h), green_chan, w*h);
+	memcpy(data+((w*h)*2), blue_chan, w*h);
+	free(red_chan);
+	free(green_chan);
+	free(blue_chan);
+
+	result[0] = 'P';
+	result[1] = 'T';
+	result[2] = 'i';
+	result[3] = 1;
+	result[4] = w;
+	result[5] = w>>8;
+	result[6] = h;
+	result[7] = h>>8;
+
+	i -= 8;
+
+	if(BZ2_bzBuffToBuffCompress((char *)(result+8), (unsigned *)&i, (char *)data, datalen, 9, 0, 0) != BZ_OK){
+		free(data);
+		free(result);
+		return NULL;
+	}
+
+	*result_size = i+8;
+	free(data);
+	return result;
+}
+
+pixel *ptif_unpack(void *datain, int size, int *w, int *h){
+	int width, height, i, cx, cy, resCode;
+	unsigned char *red_chan;
+	unsigned char *green_chan;
+	unsigned char *blue_chan;
+	unsigned char *data = datain;
+	unsigned char *undata;
+	pixel *result;
+	if(size<16){
+		printf("Image empty\n");
+		return NULL;
+	}
+	if(!(data[0]=='P' && data[1]=='T' && data[2]=='i')){
+		printf("Image header invalid\n");
+		return NULL;
+	}
+	width = data[4]|(data[5]<<8);
+	height = data[6]|(data[7]<<8);
+
+    i = (width*height)*3;
+	undata = calloc(1, (width*height)*3);
+	red_chan = calloc(1, width*height);
+	green_chan = calloc(1, width*height);
+	blue_chan = calloc(1, width*height);
+	result = calloc(width*height, PIXELSIZE);
+
+	resCode = BZ2_bzBuffToBuffDecompress((char *)undata, (unsigned *)&i, (char *)(data+8), size-8, 0, 0);
+	if (resCode){
+		printf("Decompression failure, %d\n", resCode);
+		free(red_chan);
+		free(green_chan);
+		free(blue_chan);
+		free(undata);
+		return NULL;
+	}
+	if(i != (width*height)*3){
+		printf("Result buffer size mismatch, %d != %d\n", i, (width*height)*3);
+		free(red_chan);
+		free(green_chan);
+		free(blue_chan);
+		free(undata);
+		return NULL;
+	}
+	memcpy(red_chan, undata, width*height);
+	memcpy(green_chan, undata+(width*height), width*height);
+	memcpy(blue_chan, undata+((width*height)*2), width*height);
+
+	for(cx = 0; cx<width; cx++){
+		for(cy = 0; cy<height; cy++){
+			result[width*(cy)+(cx)] = PIXRGB(red_chan[width*(cy)+(cx)], green_chan[width*(cy)+(cx)], blue_chan[width*(cy)+(cx)]);
+		}
+	}
+
+	*w = width;
+	*h = height;
+	free(red_chan);
+	free(green_chan);
+	free(blue_chan);
+	free(undata);
+	return result;
+}
+pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
+{
+	int y, x;
+	//int i,j,x,y,w,h,r,g,b,c;
+	pixel *q;
+	q = malloc(rw*rh*PIXELSIZE);
+	//TODO: Actual resampling, this is just cheap nearest pixel crap
+	for (y=0; y<rh; y++)
+		for (x=0; x<rw; x++)
+		{
+			q[rw*y+x] = src[sw*(y*sh/rh)+(x*sw/rw)];
+		}
+	//*qw = w;
+	//*qh = h;
+	return q;
+}
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
 {
 	int i,j,x,y,w,h,r,g,b,c;
@@ -3616,6 +3738,14 @@ void draw_parts(pixel *vid)
 				//	blendpixel(vid, nx, ny-1, R, G, B, 46);
 				//}
 
+				if (decorations_enable && parts[i].dcolour)
+                        {
+                            int a = (parts[i].dcolour>>24)&0xFF;
+                            cr = (a*((parts[i].dcolour>>16)&0xFF) + (255-a)*cr) >> 8;
+                            cg = (a*((parts[i].dcolour>>8)&0xFF) + (255-a)*cg) >> 8;
+                            cb = (a*((parts[i].dcolour)&0xFF) + (255-a)*cb) >> 8;
+                        }
+
 				blendpixel(vid, nx+1, ny, cr, cg, cb, 223);
 				blendpixel(vid, nx-1, ny, cr, cg, cb, 223);
 				blendpixel(vid, nx, ny+1, cr, cg, cb, 223);
@@ -3626,6 +3756,8 @@ void draw_parts(pixel *vid)
 				blendpixel(vid, nx+1, ny+1, cr, cg, cb, 112);
 				blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
 			}
+			if (decorations_enable && cmode!=CM_HEAT && cmode!=CM_LIFE && parts[i].dcolour)
+                blendpixel(vid, nx, ny, (parts[i].dcolour>>16)&0xFF, (parts[i].dcolour>>8)&0xFF, (parts[i].dcolour)&0xFF, (parts[i].dcolour>>24)&0xFF);
 		}
 #endif
 	}
@@ -3634,33 +3766,28 @@ void draw_parts(pixel *vid)
 #endif
 
 }
-void draw_decorations(pixel *vid_buf,pixel *decorations)
+void create_decorations(int x, int y, int rx, int ry, int r, int g, int b)
 {
-	int i,r,g,b;
-	for (i=0; i<(XRES+BARSIZE)*YRES; i++)
-	{
-		r = PIXR(decorations[i]);
-		g = PIXG(decorations[i]);
-		b = PIXB(decorations[i]);
-		if (r>0 || g>0 || b>0)
-			vid_buf[i] = PIXRGB(r,g,b);
-	}
-}
-void create_decorations(pixel *decorations,int x, int y, int rx, int ry, int r, int g, int b)
-{
-	int i,j;
+	int i,j,rp;
 	if (rx==0 && ry==0)
     {
-        decorations[(y)*(XRES+BARSIZE)+(x)] = PIXRGB(r, g, b);
+        rp = pmap[y][x];
+        if ((rp>>PS)>=NPART || !rp)
+            return;
+        parts[rp>>PS].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
         return;
     }
 	for (j=-ry; j<=ry; j++)
 		for (i=-rx; i<=rx; i++)
 			if(y+j>=0 && x+i>=0 && x+i<XRES && y+j<YRES)
-				if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
-					decorations[(y+j)*(XRES+BARSIZE)+(x+i)] = PIXRGB(r, g, b);
+				if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx)){
+					rp = pmap[y+j][x+i];
+					if ((rp>>PS)>=NPART || !rp)
+                        continue;
+                    parts[rp>>PS].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
+				}
 }
-void line_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b)
+void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b)
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
 	float e, de;
@@ -3694,9 +3821,9 @@ void line_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int rx,
 	for (x=x1; x<=x2; x++)
 	{
 		if (cp)
-			create_decorations(decorations,y, x, rx, ry, r, g, b);
+			create_decorations(y, x, rx, ry, r, g, b);
 		else
-			create_decorations(decorations,x, y, rx, ry, r, g, b);
+			create_decorations(x, y, rx, ry, r, g, b);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -3704,15 +3831,15 @@ void line_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int rx,
 			if (!(rx+ry))
 			{
 				if (cp)
-					create_decorations(decorations,y, x, rx, ry, r, g, b);
+					create_decorations(y, x, rx, ry, r, g, b);
 				else
-					create_decorations(decorations,x, y, rx, ry, r, g, b);
+					create_decorations(x, y, rx, ry, r, g, b);
 			}
 			e -= 1.0f;
 		}
 	}
 }
-void box_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int r, int g, int b)
+void box_decorations(int x1, int y1, int x2, int y2, int r, int g, int b)
 {
 	int i, j;
 	if (x1>x2)
@@ -3729,7 +3856,7 @@ void box_decorations(pixel *decorations,int x1, int y1, int x2, int y2, int r, i
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			create_decorations(decorations,i, j, 0, 0, r, g, b);
+			create_decorations(i, j, 0, 0, r, g, b);
 }
 //draws the photon colors in the HUD
 void draw_wavelengths(pixel *vid, int x, int y, int h, int wl)

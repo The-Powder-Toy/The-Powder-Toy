@@ -59,6 +59,7 @@ int search_fav = 0;
 int search_date = 0;
 int search_page = 0;
 char search_expr[256] = "";
+char server_motd[512] = "";
 
 char *tag_names[TAG_MAX];
 int tag_votes[TAG_MAX];
@@ -529,7 +530,98 @@ void ui_copytext_process(int mx, int my, int mb, int mbq, ui_copytext *ed)
 		ed->hover = 0;
 	}
 }
+void ui_richtext_draw(pixel *vid_buf, ui_richtext *ed)
+{
+	ed->str[511] = 0;
+	ed->printstr[511] = 0;
+	drawtext(vid_buf, ed->x, ed->y, ed->printstr, 255, 255, 255, 255);
+}
 
+int markup_getregion(char *text, char *action, char *data, char *atext){
+	int datamarker = 0;
+	int terminator = 0;
+	int minit;
+	if (sregexp(text, "^{a:.*|.*}")==0)
+	{
+		*action = text[1];
+		for (minit=3; text[minit-1] != '|'; minit++)
+			datamarker = minit + 1;
+		for (minit=datamarker; text[minit-1] != '}'; minit++)
+			terminator = minit + 1;
+		strncpy(data, text+3, datamarker-4);
+		strncpy(atext, text+datamarker, terminator-datamarker-1);
+		return terminator;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+void ui_richtext_settext(char *text, ui_richtext *ed)
+{
+	int pos = 0, action = 0, ppos = 0, ipos = 0;
+	strcpy(ed->str, text);
+	//strcpy(ed->printstr, text);
+	for(action = 0; action < 6; action++){
+		ed->action[action] = 0;
+		memset(ed->actiondata[action], 0, 256);
+		memset(ed->actiontext[action], 0, 256);
+	}
+	action = 0;
+	for(pos = 0; pos<512; ){
+		if(!ed->str[pos])
+			break;
+		if(ed->str[pos] == '{'){
+			int mulen = 0;
+			mulen = markup_getregion(ed->str+pos, &ed->action[action], ed->actiondata[action], ed->actiontext[action]);
+			if(mulen){
+				ed->regionss[action] = ipos;
+				ed->regionsf[action] = ipos + strlen(ed->actiontext[action]);
+				//printf("%c, %s, %s [%d, %d]\n", ed->action[action], ed->actiondata[action], ed->actiontext[action], ed->regionss[action], ed->regionsf[action]);
+				strcpy(ed->printstr+ppos, ed->actiontext[action]);
+				ppos+=strlen(ed->actiontext[action]);
+				ipos+=strlen(ed->actiontext[action]);
+				pos+=mulen;
+				action++;
+			}
+			else
+			{
+				pos++;
+			}
+		} else {
+			ed->printstr[ppos] = ed->str[pos];
+			ppos++;
+			pos++;
+			ipos++;
+			if(ed->str[pos] == '\b'){
+				ipos-=2;
+			}
+		}
+	}
+	ed->printstr[ppos] = 0;
+	//printf("%s\n", ed->printstr);
+}
+
+void ui_richtext_process(int mx, int my, int mb, int mbq, ui_richtext *ed)
+{
+	int action = 0;
+	int currentpos = 0;
+	if(mx>ed->x && mx < ed->x+textwidth(ed->printstr) && my > ed->y && my < ed->y + 10 && mb && !mbq){
+		currentpos = textwidthx(ed->printstr, mx-ed->x);
+		for(action = 0; action < 6; action++){
+			if(currentpos >= ed->regionss[action] && currentpos <= ed->regionsf[action])
+			{
+				//Do action
+				if(ed->action[action]=='a'){
+					//Open link
+					open_link(ed->actiondata[action]);
+				}
+				break;
+			}
+		}
+	}
+}
 void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 {
 	int c;
@@ -2404,6 +2496,7 @@ int search_ui(pixel *vid_buf)
 	float ry;
 	time_t http_last_use=HTTP_TIMEOUT;
 	ui_edit ed;
+	ui_richtext motd;
 
 
 	void *http = NULL;
@@ -2457,6 +2550,10 @@ int search_ui(pixel *vid_buf)
 	ed.cursor = strlen(search_expr);
 	ed.multiline = 0;
 	strcpy(ed.str, search_expr);
+
+	motd.x = 20;
+    motd.y = 33;
+    motd.str[0] = 0;
 
 	sdl_wheel = 0;
 
@@ -2574,11 +2671,15 @@ int search_ui(pixel *vid_buf)
 		tp = -1;
 		if (is_p1)
 		{
-			drawtext(vid_buf, (XRES-textwidth("Popular tags:"))/2, 31, "Popular tags:", 255, 192, 64, 255);
+            //Message of the day
+            ui_richtext_process(mx, my, b, bq, &motd);
+            ui_richtext_draw(vid_buf, &motd);
+            //Popular tags
+            drawtext(vid_buf, (XRES-textwidth("Popular tags:"))/2, 49, "Popular tags:", 255, 192, 64, 255);
 			for (gj=0; gj<((GRID_Y-GRID_P)*YRES)/(GRID_Y*14); gj++)
-				for (gi=0; gi<GRID_X; gi++)
+				for (gi=0; gi<(GRID_X+1); gi++)
 				{
-					pos = gi+GRID_X*gj;
+					pos = gi+(GRID_X+1)*gj;
 					if (pos>TAG_MAX || !tag_names[pos])
 						break;
 					if (tag_votes[0])
@@ -2586,18 +2687,18 @@ int search_ui(pixel *vid_buf)
 					else
 						i = 192;
 					w = textwidth(tag_names[pos]);
-					if (w>XRES/GRID_X-5)
-						w = XRES/GRID_X-5;
-					gx = (XRES/GRID_X)*gi;
-					gy = gj*14 + 46;
-					if (mx>=gx && mx<gx+(XRES/GRID_X) && my>=gy && my<gy+14)
+					if (w>XRES/(GRID_X+1)-5)
+                        w = XRES/(GRID_X+1)-5;
+                    gx = (XRES/(GRID_X+1))*gi;
+                    gy = gj*13 + 62;
+                    if (mx>=gx && mx<gx+(XRES/((GRID_X+1)+1)) && my>=gy && my<gy+14)
 					{
 						j = (i*5)/6;
 						tp = pos;
 					}
 					else
 						j = i;
-					drawtextmax(vid_buf, gx+(XRES/GRID_X-w)/2, gy, XRES/GRID_X-5, tag_names[pos], j, j, i, 255);
+					drawtextmax(vid_buf, gx+(XRES/(GRID_X+1)-w)/2, gy, XRES/(GRID_X+1)-5, tag_names[pos], j, j, i, 255);
 				}
 		}
 
@@ -2641,7 +2742,16 @@ int search_ui(pixel *vid_buf)
 					drawtext(vid_buf, gx+XRES/(GRID_S*2)-j/2, gy+YRES/GRID_S+20, search_owners[pos], 128, 128, 128, 255);
 				if (search_thumbs[pos]&&thumb_drawn[pos]==0)
 				{
-					render_thumb(search_thumbs[pos], search_thsizes[pos], 1, v_buf, gx, gy, GRID_S);
+                    //render_thumb(search_thumbs[pos], search_thsizes[pos], 1, v_buf, gx, gy, GRID_S);
+                    int finh, finw;
+                    pixel *thumb_rsdata = NULL;
+                    pixel *thumb_imgdata = ptif_unpack(search_thumbs[pos], search_thsizes[pos], &finw, &finh);
+                    if(thumb_imgdata!=NULL){
+                        thumb_rsdata = resample_img(thumb_imgdata, finw, finh, XRES/GRID_S, YRES/GRID_S);
+                        draw_image(v_buf, thumb_rsdata, gx, gy, XRES/GRID_S, YRES/GRID_S, 255);
+                        free(thumb_imgdata);
+                        free(thumb_rsdata);
+                    }
 					thumb_drawn[pos] = 1;
 				}
 				own = svf_login && (!strcmp(svf_user, search_owners[pos]) || svf_admin || svf_mod);
@@ -2759,8 +2869,8 @@ int search_ui(pixel *vid_buf)
 			if (gy+h>=YRES+(MENUSIZE-2)) gy=YRES+(MENUSIZE-3)-h;
 			clearrect(vid_buf, gx-2, gy-3, w+4, h);
 			drawrect(vid_buf, gx-2, gy-3, w+4, h, 160, 160, 192, 255);
-			if (search_thumbs[mp])
-				render_thumb(search_thumbs[mp], search_thsizes[mp], 1, vid_buf, gx+(w-(XRES/GRID_Z))/2, gy, GRID_Z);
+			//if (search_thumbs[mp])
+			//	render_thumb(search_thumbs[mp], search_thsizes[mp], 1, vid_buf, gx+(w-(XRES/GRID_Z))/2, gy, GRID_Z);
 			drawtext(vid_buf, gx+(w-i)/2, gy+YRES/GRID_Z+4, search_names[mp], 192, 192, 192, 255);
 			drawtext(vid_buf, gx+(w-textwidth(search_owners[mp]))/2, gy+YRES/GRID_Z+16, search_owners[mp], 128, 128, 128, 255);
 		}
@@ -2923,6 +3033,9 @@ int search_ui(pixel *vid_buf)
 				page_count = search_results(results, last_own||svf_admin||svf_mod);
 				memset(thumb_drawn, 0, sizeof(thumb_drawn));
 				memset(v_buf, 0, ((YRES+MENUSIZE)*(XRES+BARSIZE))*PIXELSIZE);
+
+				ui_richtext_settext(server_motd, &motd);
+                motd.x = (XRES-textwidth(motd.printstr))/2;
 			}
 			is_p1 = (exp_res < GRID_X*GRID_Y);
 			if (results)
@@ -2992,7 +3105,7 @@ int search_ui(pixel *vid_buf)
 					if (search_dates[pos]) {
 						char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+1);
 						uri = malloc(strlen(search_ids[pos])*3+strlen(search_dates[pos])*3+strlen(SERVER)+71);
-						strcpy(uri, "http://" SERVER "/Get.api?Op=thumb&ID=");
+						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbsmall&ID=");
 						strcaturl(uri, search_ids[pos]);
 						strappend(uri, "&Date=");
 						strcaturl(uri, search_dates[pos]);
@@ -3003,7 +3116,7 @@ int search_ui(pixel *vid_buf)
 						img_id[i] = mystrdup(id_d_temp);
 					} else {
 						uri = malloc(strlen(search_ids[pos])*3+strlen(SERVER)+64);
-						strcpy(uri, "http://" SERVER "/Get.api?Op=thumb&ID=");
+						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbsmall&ID=");
 						strcaturl(uri, search_ids[pos]);
 						img_id[i] = mystrdup(search_ids[pos]);
 					}
@@ -3104,18 +3217,21 @@ int report_ui(pixel* vid_buf, char *save_id)
 
 int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 {
-	int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawnthumb=0,authoritah=0,myown=0,queue_open=0,data_size=0,retval=0,bc=255,openable=1;
+	int b=1,bq,mx,my,ca=0,thumb_w,thumb_h,active=0,active_2=0,active_3=0,cc=0,ccy=0,cix=0,hasdrawninfo=0,hasdrawncthumb=0,hasdrawnthumb=0,authoritah=0,myown=0,queue_open=0,data_size=0,full_thumb_data_size=0,retval=0,bc=255,openable=1;
 	int nyd,nyu,ry,lv;
 	float ryf;
 
-	char *uri, *uri_2, *o_uri;
-	void *data, *info_data;
+	char *uri, *uri_2, *o_uri, *uri_3;
+	void *data, *info_data, *thumb_data_full;
 	save_info *info = malloc(sizeof(save_info));
-	void *http = NULL, *http_2 = NULL;
+	void *http = NULL, *http_2 = NULL, *http_3 = NULL;
 	int lasttime = TIMEOUT;
-	int status, status_2, info_ready = 0, data_ready = 0;
-	time_t http_last_use = HTTP_TIMEOUT,  http_last_use_2 = HTTP_TIMEOUT;
+	int status, status_2, info_ready = 0, data_ready = 0, thumb_data_ready = 0;
+	time_t http_last_use = HTTP_TIMEOUT,  http_last_use_2 = HTTP_TIMEOUT,  http_last_use_3 = HTTP_TIMEOUT;
 	pixel *save_pic;// = malloc((XRES/2)*(YRES/2));
+	pixel *save_pic_thumb = NULL;
+	char *thumb_data = NULL;
+	int thumb_data_size = 0;
 	ui_edit ed;
 	ui_copytext ctb;
 
@@ -3156,7 +3272,20 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		if (!b)
 			break;
 	}
-
+//Try to load the thumbnail from the cache
+  if(!thumb_cache_find(save_id, &thumb_data, &thumb_data_size)){
+    thumb_data = NULL;
+  } else {
+    //We found a thumbnail in the cache, we'll draw this one while we wait for the full image to load.
+    int finw, finh;
+    pixel *thumb_imgdata = ptif_unpack(thumb_data, thumb_data_size, &finw, &finh);
+    if(thumb_imgdata!=NULL){
+      save_pic_thumb = resample_img(thumb_imgdata, finw, finh, XRES/2, YRES/2);
+      //draw_image(vid_buf, save_pic_thumb, 51, 51, XRES/2, YRES/2, 255);
+    }
+    free(thumb_imgdata);
+    //rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
+  }
 	//Begin Async loading of data
 	if (save_date) {
 		// We're loading an historical save
@@ -3171,6 +3300,11 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		strcaturl(uri_2, save_id);
 		strappend(uri_2, "&Date=");
 		strcaturl(uri_2, save_date);
+		uri_3 = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
+        strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
+        strcaturl(uri_3, save_id);
+        strappend(uri_3, "&Date=");
+        strcaturl(uri_3, save_date);
 	} else {
 		//We're loading a normal save
 		uri = malloc(strlen(save_id)*3+strlen(SERVER)+64);
@@ -3180,9 +3314,13 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		uri_2 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
 		strcpy(uri_2, "http://" SERVER "/Info.api?ID=");
 		strcaturl(uri_2, save_id);
+		uri_3 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
+        strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
+        strcaturl(uri_3, save_id);
 	}
 	http = http_async_req_start(http, uri, NULL, 0, 1);
 	http_2 = http_async_req_start(http_2, uri_2, NULL, 0, 1);
+	http_3 = http_async_req_start(http_3, uri_3, NULL, 0, 1);
 	if (svf_login)
 	{
 		http_auth_headers(http, svf_user_id, NULL, svf_session_id);
@@ -3190,10 +3328,13 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	}
 	http_last_use = time(NULL);
 	http_last_use_2 = time(NULL);
+	http_last_use_3 = time(NULL);
 	free(uri);
 	free(uri_2);
+	free(uri_3);
 	active = 1;
 	active_2 = 1;
+	active_3 = 1;
 	while (!sdl_poll())
 	{
 		bq = b;
@@ -3215,7 +3356,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 				}
 				full_save = prerender_save(data, data_size, &imgw, &imgh);
 				if (full_save!=NULL) {
-					save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
+					//save_pic = rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
 					data_ready = 1;
 					free(full_save);
 				} else {
@@ -3246,8 +3387,43 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			http_2 = NULL;
 		}
 
-		if (data_ready && !hasdrawnthumb) {
-			draw_image(vid_buf, save_pic, 51, 51, thumb_w, thumb_h, 255);
+		if (active_3 && http_async_req_status(http_3))
+    {
+      int imgh, imgw, nimgh, nimgw;
+      http_last_use_3 = time(NULL);
+      thumb_data_full = http_async_req_stop(http_3, &status, &full_thumb_data_size);
+      if (status == 200)
+      {
+        pixel *full_thumb;
+        if (!thumb_data_full||!full_thumb_data_size) {
+          //error_ui(vid_buf, 0, "Save data is empty (may be corrupt)");
+          //break;
+        } else {
+          full_thumb = ptif_unpack(thumb_data_full, full_thumb_data_size, &imgw, &imgh);//prerender_save(data, data_size, &imgw, &imgh);
+          if (full_thumb!=NULL) {
+            save_pic = resample_img(full_thumb, imgw, imgh, XRES/2, YRES/2);
+            thumb_data_ready = 1;
+            free(full_thumb);
+          }
+        }
+      }
+      if(thumb_data_full)
+        free(thumb_data_full);
+      active_3 = 0;
+      free(http_3);
+      http_3 = NULL;
+    }
+    if (save_pic_thumb!=NULL && !hasdrawncthumb) {
+      draw_image(vid_buf, save_pic_thumb, 51, 51, XRES/2, YRES/2, 255);
+      free(save_pic_thumb);
+      save_pic_thumb = NULL;
+      hasdrawncthumb = 1;
+      memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+    }
+    if (thumb_data_ready && !hasdrawnthumb) {
+      draw_image(vid_buf, save_pic, 51, 51, XRES/2, YRES/2, 255);
+      free(save_pic);
+        save_pic = NULL;
 			hasdrawnthumb = 1;
 			memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 		}
@@ -3674,6 +3850,7 @@ int search_results(char *str, int votes)
 			free(tag_names[j]);
 			tag_names[j] = NULL;
 		}
+		server_motd[0] = 0;
 
 	if (!str || !*str)
 		return 0;
@@ -3824,6 +4001,10 @@ int search_results(char *str, int votes)
 			thumb_cache_find(str+8, search_thumbs+i, search_thsizes+i);
 			i++;
 		}
+		else if (!strncmp(str, "MOTD ", 5))
+        {
+            memcpy(server_motd, str+5, strlen(str+5));
+        }
 		else if (!strncmp(str, "TAG ", 4))
 		{
 			if (j >= TAG_MAX)
@@ -4481,7 +4662,7 @@ int console_parse_partref(char *txt, int *which, char *err)
 	return 0;
 }
 
-unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy, unsigned int savedColor)
+unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int savedColor)
 {//TODO: have the text boxes be editable and update the color. Maybe use 0-360 for H in hsv to fix minor inaccuracies (rgb of 0,0,255 , comes back as 0,3,255)
 	int i,ss,hh,vv,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0,hidden=0;
 	int window_offset_x_left = 2;
@@ -4548,13 +4729,13 @@ unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy,
 		my /= sdl_scale;
 
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*(YRES+MENUSIZE)*PIXELSIZE);
-		draw_decorations(vid_buf,decorations);
+		draw_parts(vid_buf);
 		//ui_edit_process(mx, my, b, &box_R);
 		//ui_edit_process(mx, my, b, &box_G);
 		//ui_edit_process(mx, my, b, &box_B);
 		//HSV_to_RGB(h,s,v,&cr,&cg,&cb);
 		//if(cr != atoi(box_R.str))
-			//RGB_to_HSV(atoi(box_R.str),cg,cb,&h,&s,&v);
+        //RGB_to_HSV(atoi(box_R.str),cg,cb,&h,&s,&v);
 		if(on_left==1)
 		{
 			grid_offset_x = grid_offset_x_left;
@@ -4683,7 +4864,11 @@ unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy,
 			}
 			if(b && !bq && mx >= window_offset_x + 230 && my >= window_offset_y +255+6 && mx <= window_offset_x + 230 +26 && my <= window_offset_y +255+5 +13)
 				if (confirm_ui(vid_buf, "Reset Decoration Layer", "Do you really want to erase everything?", "Erase") )
-					memset(decorations, 0,(XRES+BARSIZE)*YRES*PIXELSIZE);
+                {
+                    int i;
+                    for (i=0;i<NPART;i++)
+                        parts[i].dcolour = 0;
+                }
 		}
 		else if (mx > XRES || my > YRES)
 		{
@@ -4731,7 +4916,7 @@ unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy,
 				}
 				else if(lb!=3)//while mouse is held down, it draws lines between previous and current positions
 				{
-					line_decorations(decorations,lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
 					lx = mx;
 					ly = my;
 				}
@@ -4772,7 +4957,7 @@ unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy,
 				}
 				else //normal click, draw deco
 				{
-					create_decorations(decorations,mx,my,*bsx,*bsy,cr,cg,cb);
+					create_decorations(mx,my,*bsx,*bsy,cr,cg,cb);
 					lx = mx;
 					ly = my;
 					lb = b;
@@ -4791,9 +4976,9 @@ unsigned int decorations_ui(pixel *vid_buf,pixel *decorations,int *bsx,int *bsy,
 			if (lb && lm) //lm is box/line tool
 			{
 				if (lm == 1)//line
-					line_decorations(decorations,lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
 				else//box
-					box_decorations(decorations,lx, ly, mx, my, cr, cg, cb);
+					box_decorations(lx, ly, mx, my, cr, cg, cb);
 				lm = 0;
 			}
 			lb = 0;

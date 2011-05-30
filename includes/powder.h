@@ -284,7 +284,7 @@
 #define PT_CTRD 228
 #define PT_C0 229
 #define PT_HETR 230
-#define PT_NUM  231
+#define PT_NUM  231 //ignore wall ones... starts at 322 also ignore 255
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -453,6 +453,7 @@ struct particle
 	int flags;
 	int tmp, tmp2, tmpx, tmpy;
 	const char *planetname;
+	unsigned int dcolour;
 };
 
 typedef struct particle particle;

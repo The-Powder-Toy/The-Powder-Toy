@@ -709,6 +709,7 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	}
 	else
 		i = p;
+    parts[i].dcolour = 0;
 
 	if (t==PT_GLAS)
 	{
@@ -3329,15 +3330,15 @@ inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resb
 	int block1tmp = 0;
 	int block2tmp = 0;
 
-	block1tmp = (resblock1[0]&TYPE);
-	block1tmp |= (resblock1[1]&TYPE)<<8;
-	block1tmp |= (resblock1[2]&TYPE)<<16;
-	block1tmp |= (resblock1[3]&TYPE)<<24;
+	block1tmp = (resblock1[0]&0xFF);
+	block1tmp |= (resblock1[1]&0xFF)<<8;
+	block1tmp |= (resblock1[2]&0xFF)<<16;
+	block1tmp |= (resblock1[3]&0xFF)<<24;
 
-	block2tmp = (resblock2[0]&TYPE);
-	block2tmp |= (resblock2[1]&TYPE)<<8;
-	block2tmp |= (resblock2[2]&TYPE)<<16;
-	block2tmp |= (resblock2[3]&TYPE)<<24;
+	block2tmp = (resblock2[0]&0xFF);
+	block2tmp |= (resblock2[1]&0xFF)<<8;
+	block2tmp |= (resblock2[2]&0xFF)<<16;
+	block2tmp |= (resblock2[3]&0xFF)<<24;
 
 	*block1 = block1tmp;
 	*block2 = block2tmp;

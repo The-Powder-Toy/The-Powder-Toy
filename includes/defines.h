@@ -9,8 +9,8 @@
 
 #define ME4502_MAJOR_VERSION 2
 #define ME4502_VERSION 7
-#define SAVE_VERSION 48
-#define MINOR_VERSION 2
+#define SAVE_VERSION 49
+#define MINOR_VERSION 0
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
 
@@ -57,7 +57,7 @@
 #define TAG_MAX 256
 
 #define PS 8 //the particle number shift that also determines element limit
-#define TYPE 0xFF //where the type of the particle is stored in pmap //(int)pow(2,PS)-1
+#define TYPE (int)pow(2,PS)-1
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
@@ -137,6 +137,7 @@ extern int legacy_enable;
 extern int ngrav_enable; //Newtonian gravity
 extern int sound_enable;
 extern int kiosk_enable;
+extern int decorations_enable;
 
 extern int sys_pause;
 extern int framerender;

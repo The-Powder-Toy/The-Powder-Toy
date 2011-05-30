@@ -11,6 +11,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 		if (!ct)
 			ct = PT_METL;
 		part_change_type(i,x,y,ct);
+		parts[i].ctype = PT_NONE;
 		parts[i].life = 4;
 		if (ct == PT_WATR)
 			parts[i].life = 64;

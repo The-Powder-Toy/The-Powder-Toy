@@ -420,6 +420,34 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 			d[p++] = (tttmp&0x00FF);
 		}
 	}
+	if (i) {
+			//Save colour (ALPHA)
+			d[p++] = (parts[i-1].dcolour&0xFF000000)>>24;
+		}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Save colour (RED)
+			d[p++] = (parts[i-1].dcolour&0x00FF0000)>>16;
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Save colour (GREEN)
+			d[p++] = (parts[i-1].dcolour&0x0000FF00)>>8;
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Save colour (BLUE)
+			d[p++] = (parts[i-1].dcolour&0x000000FF);
+		}
+	}
 	for (j=0; j<w*h; j++)
 	{
 		i = m[j];
@@ -451,9 +479,9 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
             signs[i].y>=y0 && signs[i].y<y0+h)
 		{
 			d[p++] = (signs[i].x-x0);
-			d[p++] = (signs[i].x-x0)>>PS;
+			d[p++] = (signs[i].x-x0)>>8;
 			d[p++] = (signs[i].y-y0);
-			d[p++] = (signs[i].y-y0)>>PS;
+			d[p++] = (signs[i].y-y0)>>8;
 			d[p++] = signs[i].ju;
 			x = strlen(signs[i].text);
 			d[p++] = x;
@@ -470,7 +498,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	c[0] = 0x50;	//0x66;
 	c[1] = 0x53;	//0x75;
 	c[2] = 0x76;	//0x43;
-	c[3] = legacy_enable|((sys_pause<<1)&0x02)|((gravityMode<<2)&0x0C)|((airMode<<4)&0x70);
+	c[3] = legacy_enable|((sys_pause<<1)&0x02)|((gravityMode<<2)&0x0C)|((airMode<<4)&0x70)|((ngrav_enable<<7)&0x80);
 	c[4] = SAVE_VERSION;
 	c[5] = CELL;
 	c[6] = bw;
@@ -499,7 +527,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES])
 {
 	unsigned char *d=NULL,*c=save;
-	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
+	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0, tempGrav = 0;
 	int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
 	int fp[NPART], nf=0, new_format = 0, ttv = 0;
 	particle *parts = partsptr;
@@ -522,10 +550,6 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	{
 		legacy_enable = 1;
 	}
-	if (ver<48)
-	{
-	    ngrav_enable = 0;
-	}
 	else
 	{
 		if (ver>=44) {
@@ -536,6 +560,9 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			if (ver>=46 && replace) {
 				gravityMode = ((c[3]>>2)&0x03);// | ((c[3]>>2)&0x01);
 				airMode = ((c[3]>>4)&0x07);// | ((c[3]>>4)&0x02) | ((c[3]>>4)&0x01);
+			}
+			if (ver>=49 && replace) {
+			    tempGrav = ((c[3]>>7)&0x01);
 			}
 		} else {
 			if (c[3]==1||c[3]==0) {
@@ -825,6 +852,78 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			}
 		}
 	}
+	//Read ALPHA component
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i)
+		{
+			if (ver>=49) {
+				if (p >= size) {
+					goto corrupt;
+				}
+				if (i <= NPART) {
+					parts[i-1].dcolour = d[p++]<<24;
+				} else {
+					p++;
+				}
+			}
+		}
+	}
+	//Read RED component
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i)
+		{
+			if (ver>=49) {
+				if (p >= size) {
+					goto corrupt;
+				}
+				if (i <= NPART) {
+					parts[i-1].dcolour |= d[p++]<<16;
+				} else {
+					p++;
+				}
+			}
+		}
+	}
+	//Read GREEN component
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i)
+		{
+			if (ver>=49) {
+				if (p >= size) {
+					goto corrupt;
+				}
+				if (i <= NPART) {
+					parts[i-1].dcolour |= d[p++]<<8;
+				} else {
+					p++;
+				}
+			}
+		}
+	}
+	//Read BLUE component
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i)
+		{
+			if (ver>=49) {
+				if (p >= size) {
+					goto corrupt;
+				}
+				if (i <= NPART) {
+					parts[i-1].dcolour |= d[p++];
+				} else {
+					p++;
+				}
+			}
+		}
+	}
 	for (j=0; j<w*h; j++)
 	{
 		i = m[j];
@@ -869,6 +968,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			}
 		}
 	}
+
 	for (j=0; j<w*h; j++)
 	{
 		i = m[j];
@@ -883,7 +983,14 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				p++;
 		}
 	}
-
+//Change the gravity state
+  if(ngrav_enable != tempGrav && replace)
+  {
+    if(tempGrav)
+      ngrav_enable = 1;
+    else
+      ngrav_enable = 0;
+  }
 	if (p >= size)
 		goto version1;
 	j = d[p++];
@@ -1555,47 +1662,6 @@ static PyObject* emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
 		if (parts[pmap[y][x]>>PS].type != PT_NONE)
 			parts[pmap[y][x]>>PS].tmp = life;
 	}
-	return Py_BuildValue("i",1);
-}
-static PyObject* emb_set_planet(PyObject *self, PyObject *args, PyObject *keywds)
-{
-	int i = -1,life,j,x=-1,y=-1;
-	const char *datastorage;
-	char *name = "";
-	char *kwlist[] = {"setto", "setfrom", "i", "x", "y", NULL};
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "I|sIII:set_type",kwlist,datastorage,&life,&name,&i,&x,&y))
-		return NULL;
-	//
-	if (strcmp(name,"")==0 && x==-1 && y==-1 && i==-1)
-		return Py_BuildValue("s","Need more args(coords,i,or a particle name)");
-	if (strcmp(name,"all")==0)
-	{
-		for (i=0; i<NPART; i++)
-		{
-			if (parts[i].type)
-				parts[i].planetname = datastorage;
-		}
-	}
-	else if (console_parse_type(name, &j, console_error))
-	{
-		for (i=0; i<NPART; i++)
-		{
-			if (parts[i].type == j)
-				parts[i].planetname = datastorage;
-		}
-	}
-	else if (i!=-1)
-	{
-		if (parts[i].type != PT_NONE)
-			parts[i].planetname = datastorage;
-
-	}
-	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
-	{
-		if (parts[pmap[y][x]>>PS].type != PT_NONE)
-			parts[pmap[y][x]>>PS].planetname = datastorage;
-	}
-	parts[i].planetname = keywds;
 	return Py_BuildValue("i",1);
 }
 static PyObject* emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
@@ -2681,10 +2747,10 @@ int main(int argc, char *argv[])
  	  parts = calloc(sizeof(particle), NPART);
  	  for (i=0; i<NPART-1; i++)
             parts[i].life = i+1;
-            parts[NPART-1].life = -1;
-            pfree = 0;
+        parts[NPART-1].life = -1;
+        pfree = 0;
 
-        fire_bg = calloc(XRES*YRES, PIXELSIZE);
+      fire_bg = calloc(XRES*YRES, PIXELSIZE);
  	  pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 
 
@@ -2710,20 +2776,34 @@ int main(int argc, char *argv[])
                       info_box(vid_buf, "Save file invalid or from newer version");
                     }
 
-                f=fopen(argv[2],"wb");
-                fprintf(f,"P6\n%d %d\n255\n",XRES,YRES);
-                for (j=0; j<YRES; j++)
-                    {
-                          for (i=0; i<XRES; i++)
-                              {
-                                    c[0] = PIXR(vid_buf[i]);
-                                    c[1] = PIXG(vid_buf[i]);
-                                    c[2] = PIXB(vid_buf[i]);
-                                    fwrite(c,3,1,f);
+                if(!strncmp(argv[3], "pti", 3)){
+      char * datares = NULL, *scaled_buf;
+      int res = 0, sw, sh;
+      scaled_buf = resample_img(vid_buf, XRES, YRES, XRES/4, YRES/4);
+      datares = ptif_pack(scaled_buf, XRES/4, YRES/4, &res);
+      if(datares!=NULL){
+        f=fopen(argv[2], "wb");
+        fwrite(datares, res, 1, f);
+        fclose(f);
+        free(datares);
+      }
+      free(scaled_buf);
+    } else {
+      f=fopen(argv[2],"wb");
+      fprintf(f,"P6\n%d %d\n255\n",XRES,YRES);
+      for (j=0; j<YRES; j++)
+      {
+        for (i=0; i<XRES; i++)
+        {
+          c[0] = PIXR(vid_buf[i]);
+          c[1] = PIXG(vid_buf[i]);
+          c[2] = PIXB(vid_buf[i]);
+          fwrite(c,3,1,f);
+        }
+        vid_buf+=XRES+BARSIZE;
                                   }
-                          vid_buf+=XRES+BARSIZE;
+                                  fclose(f);
                         }
-                fclose(f);
 
                 return 1;
               }
@@ -2843,7 +2923,7 @@ int main(int argc, char *argv[])
 		pygood = 0;
 	}
 #else
-	printf("python console disabled at compile time.");
+	printf("python console disabled at compile time.\n");
 #endif
 
 #ifdef MT
@@ -3390,7 +3470,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                hsvSave = decorations_ui(vid_buf,decorations,&bsx,&bsy,hsvSave);//decoration_mode = !decoration_mode;
+                hsvSave = decorations_ui(vid_buf,&bsx,&bsy,hsvSave);//decoration_mode = !decoration_mode;
                 decorations_enable = 1;
                 sys_pause=1;
             }
@@ -3687,8 +3767,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &dae, b, bq, x, y); //draw the elements in the current menu
-        //menu_ui(vid_buf, active_menu, &sl, &sr); //For a completely Messed Up Menu
-        if (decorations_enable) draw_decorations(vid_buf,decorations);
+        //menu_ui(vid_buf, active_menu, &sl, &sr); //For a completely Messed Up Menus
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
             && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
             && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))
@@ -4072,8 +4151,6 @@ int main(int argc, char *argv[])
 						isplayer = 0;
 						ISSPAWN1 = 0;
 						ISSPAWN2 = 0;
-
-						memset(decorations, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 					}
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{
