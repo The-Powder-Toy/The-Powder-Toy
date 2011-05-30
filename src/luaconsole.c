@@ -70,11 +70,11 @@ int luatpt_drawtext(lua_State* l)
 	int textx, texty, textred, textgreen, textblue, textalpha;
 	textx = luaL_optint(l, 1, 0);
 	texty = luaL_optint(l, 2, 0);
-	string = luaL_optstring(l, 3, 0);
-	textred = luaL_optint(l, 4, 0);
-	textgreen = luaL_optint(l, 5, 0);
-	textblue = luaL_optint(l, 6, 0);
-	textalpha = luaL_optint(l, 7, 0);
+	string = luaL_optstring(l, 3, "");
+	textred = luaL_optint(l, 4, 255);
+	textgreen = luaL_optint(l, 5, 255);
+	textblue = luaL_optint(l, 6, 255);
+	textalpha = luaL_optint(l, 7, 255);
 	if(vid_buf!=NULL){
 		drawtext(vid_buf, textx, texty, string, textred, textgreen, textblue, textalpha);
 		return 0;	
