@@ -14,4 +14,5 @@ int process_command_lua(pixel *vid_buf, char *console, char *console_error);
 
 //TPT Interface
 int luatpt_test(lua_State* l);
+int luatpt_drawtext(lua_State* l);
 #endif

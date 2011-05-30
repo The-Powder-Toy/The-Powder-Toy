@@ -5,9 +5,9 @@ lua_State *l;
 void luacon_open(){
 	const static struct luaL_reg tptluaapi [] = {
 		{"test", &luatpt_test},
+		{"drawtext", &luatpt_drawtext},
 		{NULL,NULL}
 	};
-
 
 	l = lua_open();
 	luaL_openlibs(l);
@@ -56,6 +56,23 @@ int luatpt_test(lua_State* l)
 	testint = luaL_optint(l, 1, 0);
 	printf("Test successful, got %d\n", testint);
 	return 1;
+}
+int luatpt_drawtext(lua_State* l)
+{
+    char *string;
+	int textx, texty, textred, textgreen, textblue, textalpha;
+	textx = luaL_optint(l, 1, 0);
+	texty = luaL_optint(l, 2, 0);
+	string = luaL_optstring(l, 3, 0);
+	textred = luaL_optint(l, 4, 0);
+	textgreen = luaL_optint(l, 5, 0);
+	textblue = luaL_optint(l, 6, 0);
+	textalpha = luaL_optint(l, 7, 0);
+	if(vid_buf!=NULL){
+		drawtext(vid_buf, textx, texty, string, textred, textgreen, textblue, textalpha);
+		return 0;	
+	}
+	return -1;
 }
 
 #endif
