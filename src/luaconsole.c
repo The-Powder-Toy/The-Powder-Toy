@@ -4,6 +4,7 @@
 #include <luaconsole.h>
 
 lua_State *l;
+char *step_function = "";
 void luacon_open(){
 	const static struct luaL_reg tptluaapi [] = {
 		{"test", &luatpt_test},
@@ -25,6 +26,7 @@ void luacon_open(){
 		{"get_name", &luatpt_get_name},
 		{"set_shortcuts", &luatpt_set_shortcuts},
 		{"delete", &luatpt_delete},
+		{"register_step", &luatpt_register_step},
 		{NULL,NULL}
 	};
 
@@ -33,7 +35,10 @@ void luacon_open(){
 	luaL_openlib(l, "tpt", tptluaapi, 0);
 }
 int luacon_step(){
-	//Nothing here yet
+	if(step_function && step_function[0]){
+		lua_getfield(l, LUA_GLOBALSINDEX, step_function);
+		lua_call(l, 0, 0);
+	}
 	return 0;
 }
 int luacon_keypress(char key){
@@ -367,5 +372,11 @@ int luatpt_delete(lua_State* l)
 	lua_error(l);
 	//TODO: Implement luatpt_delete (Delete particle)
 	return -1;
+}
+
+int luatpt_register_step(lua_State* l)
+{
+	step_function = luaL_optstring(l, 1, "");
+	return 0;
 }
 #endif

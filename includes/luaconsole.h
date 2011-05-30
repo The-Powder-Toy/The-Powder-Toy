@@ -33,4 +33,5 @@ int luatpt_textwidth(lua_State* l);
 int luatpt_get_name(lua_State* l);
 int luatpt_set_shortcuts(lua_State* l);
 int luatpt_delete(lua_State* l);
+int luatpt_register_step(lua_State* l);
 #endif
