@@ -9,6 +9,7 @@ void luacon_open();
 int luacon_step();
 int luacon_keypress(char key);
 int luacon_eval(char *command);
+char *luacon_geterror();
 void luacon_close();
 int process_command_lua(pixel *vid_buf, char *console, char *console_error);
 

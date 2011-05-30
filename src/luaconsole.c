@@ -24,6 +24,13 @@ int luacon_keypress(char key){
 int luacon_eval(char *command){
 	return luaL_dostring (l, command);
 }
+char *luacon_geterror(){
+	char *error = lua_tostring(l, -1);
+	if(error==NULL || !error[0]){
+		error = "failed to execute";	
+	}
+	return error;
+}
 void luacon_close(){
 	lua_close(l);
 }
@@ -44,7 +51,7 @@ int process_command_lua(pixel *vid_buf, char *console, char *console_error)
 		} else {
 			commandret = luacon_eval(console);
 			if (commandret)
-				strcpy(console_error,"failed to execute code.");
+				strcpy(console_error, luacon_geterror());
 		}
 	}
 	return 1;
