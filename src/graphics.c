@@ -861,6 +861,11 @@ int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a
 				r = g = 0;
 				b = 255;
 				break;
+			case 't':
+				b = 255;
+				g = 170;
+				r = 32;
+				break;
 			}
 			s++;
 		}

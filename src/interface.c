@@ -551,6 +551,8 @@ int markup_getregion(char *text, char *action, char *data, char *atext){
 void ui_richtext_settext(char *text, ui_richtext *ed)
 {
 	int pos = 0, action = 0, ppos = 0, ipos = 0;
+	memset(ed->printstr, 0, 512);
+	memset(ed->str, 0, 512);
 	strcpy(ed->str, text);
 	//strcpy(ed->printstr, text);
 	for(action = 0; action < 6; action++){
