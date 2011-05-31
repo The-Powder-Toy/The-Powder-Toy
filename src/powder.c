@@ -270,7 +270,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 			if (rand() < RAND_MAX/10)
 				create_cherenkov_photon(i);
 		}
-		if (parts[i].type == PT_PHOT && (r&0xFF)==PT_INVIS) {
+		if (parts[i].type == PT_PHOT && (r&0xFF)==PT_INVIS && pv[ny/CELL][nx/CELL]<=4.0f && pv[ny/CELL][nx/CELL]>=-4.0f) {
 			part_change_type(i,x,y,PT_NEUT);
 			parts[i].ctype = 0;
 		}
