@@ -9,4 +9,6 @@ function do_step()
 		increment = 2
 	end
 	tpt.drawtext(numberthing, 50, "Oh my god, this is amazing", 255, 255, 255, 255)
+	tpt.drawtext(mousex, mousey, "Oh my god, this is amazing", 255, 255, 255, 255)
+	return true
 end

@@ -34,15 +34,21 @@ void luacon_open(){
 	luaL_openlibs(l);
 	luaL_openlib(l, "tpt", tptluaapi, 0);
 }
-int luacon_step(){
+int luacon_step(int mx, int my, int mb, int mbq, char key){
 	if(step_function && step_function[0]){
+		//Set mouse globals
+		lua_pushinteger(l, mbq);
+		lua_pushinteger(l, mb);
+		lua_pushinteger(l, my);
+		lua_pushinteger(l, mx);
+		lua_setfield(l, LUA_GLOBALSINDEX, "mousex");
+		lua_setfield(l, LUA_GLOBALSINDEX, "mousey");
+		lua_setfield(l, LUA_GLOBALSINDEX, "mouseb");
+		lua_setfield(l, LUA_GLOBALSINDEX, "mousebq");
 		lua_getfield(l, LUA_GLOBALSINDEX, step_function);
 		lua_call(l, 0, 0);
+		return lua_toboolean(l, -1);
 	}
-	return 0;
-}
-int luacon_keypress(char key){
-	//Nothing here yet
 	return 0;
 }
 int luacon_eval(char *command){

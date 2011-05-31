@@ -6,7 +6,7 @@
 #include <defines.h>
 
 void luacon_open();
-int luacon_step();
+int luacon_step(int mx, int my, int mb, int mbq, char key);
 int luacon_keypress(char key);
 int luacon_eval(char *command);
 char *luacon_geterror();
