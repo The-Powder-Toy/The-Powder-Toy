@@ -112,9 +112,26 @@ int luatpt_drawtext(lua_State* l)
 
 int luatpt_create(lua_State* l)
 {
-	lua_pushstring(l, "not implemented");
-	lua_error(l);
-	//TODO: Implement luatpt_create (Create a particle)
+	int x, y, retid, t = 0;
+	char * name;
+	x = abs(luaL_optint(l, 1, 0));
+	y = abs(luaL_optint(l, 2, 0));
+	if(x < XRES && y < YRES){
+		if(lua_isnumber(l, 3)){
+			t = luaL_optint(l, 3, 0);
+			if(t >= PT_NUM)
+				return -1;
+		} else {
+			name = luaL_optstring(l, 3, "dust");
+			if (name[0]!=0)
+				console_parse_type(name, &t, console_error);
+		}
+		retid = create_part(-1, x, y, t);
+		if(retid==-1)
+			return -1;
+		lua_pushinteger(l, retid);
+		return 1;	
+	}
 	return -1;
 }
 
@@ -372,9 +389,18 @@ int luatpt_set_shortcuts(lua_State* l)
 
 int luatpt_delete(lua_State* l)
 {
-	lua_pushstring(l, "not implemented");
-	lua_error(l);
-	//TODO: Implement luatpt_delete (Delete particle)
+	int arg1, arg2;
+	arg1 = abs(luaL_optint(l, 1, 0));
+	arg2 = luaL_optint(l, 2, -1);
+	if(arg2 == -1 && arg1 < NPART){
+		kill_part(arg1);
+		return 0;
+	}
+	arg2 = abs(arg2);
+	if(arg2 < YRES && arg1 < XRES){
+		delete_part(arg1, arg2);
+		return 0;
+	}
 	return -1;
 }
 
