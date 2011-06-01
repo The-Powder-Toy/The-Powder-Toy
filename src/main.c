@@ -176,6 +176,7 @@ int sys_pause = 0;
 int sys_shortcuts = 1;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by save.
 int ngrav_enable = 0; //Newtonian gravity, will be set by save
+int aheat_enable; //Ambient heat
 int decorations_enable = 1;
 int death = 0, framerender = 0;
 int amd = 1;
@@ -1747,11 +1748,13 @@ int main(int argc, char *argv[])
 		if (!sys_pause||framerender) //only update air if not paused
 		{
 			update_air();
+			if(aheat_enable)
+				update_airh();
 		}
 #ifdef OpenGL
 		ClearScreen();
 #else
-		if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK)//air only gets drawn in these modes
+		if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK || (cmode==CM_HEAT && aheat_enable))//air only gets drawn in these modes
 		{
 			draw_air(vid_buf);
 		}
@@ -1778,7 +1781,7 @@ int main(int argc, char *argv[])
 		
 		if(ngrav_enable)
 			draw_grav(vid_buf);
-		draw_walls(vid_buf);
+		draw_walls(vid_buf); 
 		update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
 		
@@ -2277,6 +2280,8 @@ int main(int argc, char *argv[])
 				VINE_MODE = !VINE_MODE;
 			if (sdl_key==SDLK_SPACE)
 				sys_pause = !sys_pause;
+			if (sdl_key=='u')
+				aheat_enable = !aheat_enable;
 			if (sdl_key=='h')
 				hud_enable = !hud_enable;
 			if (sdl_key=='p')

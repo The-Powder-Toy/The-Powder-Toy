@@ -79,6 +79,7 @@ extern unsigned char ZSIZE;
 #define SQUARE_BRUSH 1
 #define BRUSH_NUM 2
 
+//#define LUACONSOLE
 //#define PYCONSOLE
 //#define PYEXT
 //no longer needed
@@ -126,6 +127,7 @@ extern int legacy_enable;
 extern int ngrav_enable; //Newtonian gravity
 extern int sound_enable;
 extern int kiosk_enable;
+extern int aheat_enable;
 extern int decorations_enable;
 
 extern int sys_pause;
