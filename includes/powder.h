@@ -873,6 +873,8 @@ static void create_gain_photon(int pp);
 
 void kill_part(int i);
 
+void detach(int i);
+
 void part_change_type(int i, int x, int y, int t);
 
 int create_part(int p, int x, int y, int t);
