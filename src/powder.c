@@ -1610,23 +1610,16 @@ void update_particles_i(pixel *vid, int start, int inc)
 				}
 
 				//heat transfer code
-				c_heat = 0.0f;
 				h_count = 0;
 				if (t&&(t!=PT_HSWC||parts[i].life==10)&&ptypes[t].hconduct>(rand()%250))
 				{
 					if (aheat_enable)
 					{
-						if (hv[y/CELL][x/CELL] < parts[i].temp)
-						{
-							hv[y/CELL][x/CELL] = hv[y/CELL][x/CELL] + parts[i].temp*0.04;
-							parts[i].temp = parts[i].temp - hv[y/CELL][x/CELL]*0.04;
-						}
-						else
-						{
-							hv[y/CELL][x/CELL] = hv[y/CELL][x/CELL] - parts[i].temp*0.04;
-							parts[i].temp = parts[i].temp + hv[y/CELL][x/CELL]*0.04;
-						}
-					} 
+						c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
+						parts[i].temp += c_heat;
+						hv[y/CELL][x/CELL] -= c_heat;
+					}
+					c_heat = 0.0f;
 					for (j=0; j<8; j++)
 					{
 						surround_hconduct[j] = i;
