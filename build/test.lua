@@ -10,5 +10,9 @@ function do_step()
 	end
 	tpt.drawtext(numberthing, 50, "Oh my god, this is amazing", 255, 255, 255, 255)
 	tpt.drawtext(mousex, mousey, "Oh my god, this is amazing", 255, 255, 255, 255)
-	return true
+	tpt.reset_velocity(10, 10, 20, 20)
+	tpt.reset_gravity_field(10, 10, 20, 20)
+	tpt.set_pressure(10, 10, 20, 20)
+	tpt.set_gravity(75, 45, 1, 1, 8)
+	return false
 end

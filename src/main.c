@@ -1775,7 +1775,13 @@ int main(int argc, char *argv[])
 			bsy = 1180;
 		if (bsy<0)
 			bsy = 0;
-
+		
+		if(ngrav_enable)
+			draw_grav(vid_buf);
+		draw_walls(vid_buf);
+		update_particles(vid_buf); //update everything
+		draw_parts(vid_buf); //draw particles
+		
 		if(ngrav_enable){
 			pthread_mutex_lock(&gravmutex);
 			result = grav_ready;
@@ -1794,12 +1800,6 @@ int main(int argc, char *argv[])
 
 		if (!sys_pause||framerender) //Only update if not paused
 			memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
-		
-		if(ngrav_enable)
-			draw_grav(vid_buf);
-		draw_walls(vid_buf);
-		update_particles(vid_buf); //update everything
-		draw_parts(vid_buf); //draw particles
 
 		if (cmode==CM_PERS)
 		{

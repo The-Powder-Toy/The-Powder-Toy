@@ -14,7 +14,9 @@ void luacon_open(){
 		{"toggle_pause", &luatpt_togglepause},
 		{"set_console", &luatpt_setconsole},
 		{"log", &luatpt_log},
-		{"reset_pressure", &luatpt_reset_pressure},
+		{"set_pressure", &luatpt_set_pressure},
+		{"set_gravity", &luatpt_set_gravity},
+		{"reset_gravity_field", &luatpt_reset_gravity_field},
 		{"reset_velocity", &luatpt_reset_velocity},
 		{"reset_spark", &luatpt_reset_spark},
 		{"set_property", &luatpt_set_property},
@@ -35,6 +37,7 @@ void luacon_open(){
 	luaL_openlib(l, "tpt", tptluaapi, 0);
 }
 int luacon_step(int mx, int my, int mb, int mbq, char key){
+	int tempret = 0;
 	if(step_function && step_function[0]){
 		//Set mouse globals
 		lua_pushinteger(l, mbq);
@@ -46,8 +49,12 @@ int luacon_step(int mx, int my, int mb, int mbq, char key){
 		lua_setfield(l, LUA_GLOBALSINDEX, "mouseb");
 		lua_setfield(l, LUA_GLOBALSINDEX, "mousebq");
 		lua_getfield(l, LUA_GLOBALSINDEX, step_function);
-		lua_call(l, 0, 0);
-		return lua_toboolean(l, -1);
+		lua_call(l, 0, 1);
+		if(lua_isboolean(l, -1)){
+			tempret = lua_toboolean(l, -1);
+			lua_pop(l, 1);
+			return tempret;
+		}
 	}
 	return 0;
 }
@@ -171,7 +178,7 @@ int luatpt_log(lua_State* l)
 	return 0;
 }
 
-int luatpt_reset_pressure(lua_State* l)
+int luatpt_set_pressure(lua_State* l)
 {
 	int nx, ny;
 	int x1, y1, width, height;
@@ -198,6 +205,62 @@ int luatpt_reset_pressure(lua_State* l)
 		for (ny = y1; ny<y1+height; ny++)
 		{
 			pv[ny][nx] = value;
+		}
+	return 0;
+}
+
+int luatpt_set_gravity(lua_State* l)
+{
+	int nx, ny;
+	int x1, y1, width, height;
+	float value;
+	x1 = abs(luaL_optint(l, 1, 0));
+	y1 = abs(luaL_optint(l, 2, 0));
+	width = abs(luaL_optint(l, 3, XRES/CELL));
+	height = abs(luaL_optint(l, 4, YRES/CELL));
+	value = (float)luaL_optint(l, 5, 0.0f);
+	if(value > 256.0f)
+		value = 256.0f;
+	else if(value < -256.0f)
+		value = -256.0f;	
+	
+	if(x1 > (XRES/CELL)-1)
+		x1 = (XRES/CELL)-1;
+	if(y1 > (YRES/CELL)-1) 
+		y1 = (YRES/CELL)-1;	
+	if(x1+width > (XRES/CELL)-1)
+		width = (XRES/CELL)-x1;
+	if(y1+height > (YRES/CELL)-1)
+		height = (YRES/CELL)-y1;
+	for (nx = x1; nx<x1+width; nx++)
+		for (ny = y1; ny<y1+height; ny++)
+		{
+			gravmap[ny][nx] = value;
+		}
+	return 0;
+}
+
+int luatpt_reset_gravity_field(lua_State* l)
+{
+	int nx, ny;
+	int x1, y1, width, height;
+	x1 = abs(luaL_optint(l, 1, 0));
+	y1 = abs(luaL_optint(l, 2, 0));
+	width = abs(luaL_optint(l, 3, XRES/CELL));
+	height = abs(luaL_optint(l, 4, YRES/CELL));
+	if(x1 > (XRES/CELL)-1)
+		x1 = (XRES/CELL)-1;
+	if(y1 > (YRES/CELL)-1) 
+		y1 = (YRES/CELL)-1;	
+	if(x1+width > (XRES/CELL)-1)
+		width = (XRES/CELL)-x1;
+	if(y1+height > (YRES/CELL)-1)
+		height = (YRES/CELL)-y1;
+	for (nx = x1; nx<x1+width; nx++)
+		for (ny = y1; ny<y1+height; ny++)
+		{
+			gravx[ny][nx] = 0;
+			gravy[ny][nx] = 0;
 		}
 	return 0;
 }
