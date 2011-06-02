@@ -20,8 +20,6 @@
 
 #define THUMB_CACHE_SIZE 256
 
-#define pyconsole
-
 #ifndef M_PI
 #define M_PI 3.14159265f
 #endif
@@ -56,7 +54,7 @@
 #define MAXSIGNS 32
 #define TAG_MAX 256
 
-#define PS 8 //the particle number shift that also determines element limit
+#define PS 12 //the particle number shift that also determines element limit
 #define TYPE (int)pow(2,PS)-1
 
 #define ZSIZE_D	16
@@ -90,6 +88,7 @@ extern unsigned char ZSIZE;
 #define SQUARE_BRUSH 1
 #define BRUSH_NUM 2
 
+//#define LUACONSOLE
 //#define PYCONSOLE
 //#define PYEXT
 //no longer needed
@@ -138,6 +137,7 @@ extern int ngrav_enable; //Newtonian gravity
 extern int sound_enable;
 extern int kiosk_enable;
 extern int decorations_enable;
+extern int aheat_enable;
 
 extern int sys_pause;
 extern int framerender;
@@ -190,8 +190,6 @@ int player2spawn;
 int death2;
 int ISSPAWN1;
 int ISSPAWN2;
-extern char pyready;
-extern char pygood;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;
@@ -200,6 +198,7 @@ extern char itc_msg[64];
 
 extern int do_open;
 extern int sys_pause;
+extern int sys_shortcuts;
 extern int legacy_enable; //Used to disable new features such as heat, will be set by commandline or save.
 extern int death, death2, framerender;
 extern pixel *vid_buf;
@@ -218,5 +217,5 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 void clear_sim(void);
 void del_stamp(int d);
 void sdl_seticon(void);
-//int process_command(pixel *vid_buf, char *console, char *console_error, PyObject *pfunc);
+void play_sound(char *file);
 #endif

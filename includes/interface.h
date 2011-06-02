@@ -79,7 +79,7 @@ static menu_section msections[] = //doshow does not do anything currently.
 
 static menu_section colorsections[] = //doshow does not do anything currently.
 {
- 	{"\xD1", "Colors", 7, 1},
+ 	{"\xD1", "Colors", 9, 1},
  	{"\xC5", "Tools", 0, 1},
 };
 static menu_wall colorlist[] =
@@ -91,6 +91,8 @@ static menu_wall colorlist[] =
   {PIXPACK(0xFF00FF), "Pink"},
   {PIXPACK(0x00FFFF), "Cyan"},
   {PIXPACK(0xFFFFFF), "White"},
+  {PIXPACK(0xFF8000), "Orange"},
+  {PIXPACK(0xD900FF), "Purple"},
 };
 
 struct ui_edit
@@ -283,9 +285,6 @@ void open_link(char *uri);
 int report_ui(pixel *vid_buf, char *save_id);
 
 char *console_ui(pixel *vid_buf, char error[255],char console_more);
-int console_parse_coords(char *txt, int *x, int *y, char *err);
-int console_parse_type(char *txt, int *element, char *err);
-int console_parse_partref(char *txt, int *which, char *err);
 
 unsigned int decorations_ui(pixel *vid_buf, int *bsx, int *bsy, unsigned int savedColor);
 

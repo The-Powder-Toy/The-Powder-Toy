@@ -12,9 +12,13 @@ int update_HETR(UPDATE_FUNC_ARGS) {
                     if (parts[i].tmp==1){
                         parts[r>>PS].temp += 2;
                         parts[i].temp = 373.15;
+                        if(aheat_enable)
+                            hv[y/CELL][x/CELL] += 2;
                     } else if (parts[i].tmp==2){
                         parts[r>>PS].temp += -2;
                         parts[i].temp = 173.15;
+                        if(aheat_enable)
+                            hv[y/CELL][x/CELL] -= 2;
                     }
 
 				}

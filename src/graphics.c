@@ -960,6 +960,11 @@ int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a
 				r = g = 0;
 				b = 255;
 				break;
+            case 't':
+                b = 255;
+                g = 170;
+                r = 32;
+                break;
 			}
 			s++;
 		}
@@ -1325,7 +1330,16 @@ void draw_air(pixel *vid)
 			{
 				c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				            clamp_flt(pv[y][x], 0.0f, 8.0f),//pressure adds green
-				            clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
+                            clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
+            }
+            else if (cmode == CM_HEAT && aheat_enable)
+            {
+                float ttemp = hv[y][x]+(-MIN_TEMP);
+                int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
+                c = PIXRGB((unsigned char)color_data[caddress], (unsigned char)color_data[caddress+1], (unsigned char)color_data[caddress+2]);
+                //c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
+                //  clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
+                //  clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
 			}
 			else if (cmode == CM_CRACK)
 			{
@@ -3774,7 +3788,11 @@ void create_decorations(int x, int y, int rx, int ry, int r, int g, int b)
         rp = pmap[y][x];
         if ((rp>>PS)>=NPART || !rp)
             return;
-        parts[rp>>PS].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
+        if(r==0 && g==0 && b==0){
+            parts[rp>>PS].dcolour = ptypes[rp>>PS].pcolors;
+        } else {
+            parts[rp>>PS].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
+        }
         return;
     }
 	for (j=-ry; j<=ry; j++)
@@ -3784,7 +3802,11 @@ void create_decorations(int x, int y, int rx, int ry, int r, int g, int b)
 					rp = pmap[y+j][x+i];
 					if ((rp>>PS)>=NPART || !rp)
                         continue;
-                    parts[rp>>PS].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
+                        if(r==0 && g==0 && b==0){
+                            parts[rp>>PS].dcolour = ptypes[rp>>PS].pcolors;
+                        } else {
+                            parts[rp>>PS].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
+                        }
 				}
 }
 void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b)

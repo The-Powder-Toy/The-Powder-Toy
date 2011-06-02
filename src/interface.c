@@ -14,9 +14,8 @@
 #include <powder.h>
 #include <interface.h>
 #include <misc.h>
+#include <console.h>
 
-
-//char pyready=1;
 SDLMod sdl_mod;
 int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
 
@@ -563,6 +562,8 @@ void ui_richtext_settext(char *text, ui_richtext *ed)
 	int pos = 0, action = 0, ppos = 0, ipos = 0;
 	strcpy(ed->str, text);
 	//strcpy(ed->printstr, text);
+	memset(ed->printstr, 0, 512);
+    memset(ed->str, 0, 512);
 	for(action = 0; action < 6; action++){
 		ed->action[action] = 0;
 		memset(ed->actiondata[action], 0, 256);
@@ -4588,78 +4589,6 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	free(old_buf);
 	SDL_EnableKeyRepeat(0, SDL_DEFAULT_REPEAT_INTERVAL);
 	return NULL;
-}
-
-//takes a a string and compares it to element names, and puts it value into element.
-int console_parse_type(char *txt, int *element, char *err)
-{
-	int i = -1;
-	// alternative names for some elements
-	if (strcasecmp(txt,"C4")==0) i = PT_PLEX;
-	else if (strcasecmp(txt,"C5")==0) i = PT_C5;
-	else if (strcasecmp(txt,"NONE")==0) i = PT_NONE;
-	if (i>=0)
-	{
-		*element = i;
-		strcpy(err,"");
-		return 1;
-	}
-	for (i=1; i<PT_NUM; i++) {
-		if (strcasecmp(txt,ptypes[i].name)==0)
-		{
-			*element = i;
-			strcpy(err,"");
-			return 1;
-		}
-	}
-	strcpy(err, "Particle type not recognised");
-	return 0;
-}
-//takes a string of coords "x,y" and puts the values into x and y.
-int console_parse_coords(char *txt, int *x, int *y, char *err)
-{
-	// TODO: use regex?
-	int nx = -1, ny = -1;
-	if (sscanf(txt,"%d,%d",&nx,&ny)!=2 || nx<0 || nx>=XRES || ny<0 || ny>=YRES)
-	{
-		strcpy(err,"Invalid coordinates");
-		return 0;
-	}
-	*x = nx;
-	*y = ny;
-	return 1;
-}
-//takes a string of either coords or a particle number, and puts the particle number into *which
-int console_parse_partref(char *txt, int *which, char *err)
-{
-	int i = -1, nx, ny;
-	strcpy(err,"");
-	// TODO: use regex?
-	if (strchr(txt,',') && console_parse_coords(txt, &nx, &ny, err))
-	{
-		i = pmap[ny][nx];
-		if (!i || (i>>PS)>=NPART)
-			i = -1;
-		else
-			i = i>>PS;
-	}
-	else if (txt)
-	{
-		char *num = (char*)malloc(strlen(txt)+3);
-		i = atoi(txt);
-		sprintf(num,"%d",i);
-		if (!txt || strcmp(txt,num)!=0)
-			i = -1;
-		free(num);
-	}
-	if (i>=0 && i<NPART && parts[i].type)
-	{
-		*which = i;
-		strcpy(err,"");
-		return 1;
-	}
-	if (strcmp(err,"")==0) strcpy(err,"Particle does not exist");
-	return 0;
 }
 
 unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int savedColor)

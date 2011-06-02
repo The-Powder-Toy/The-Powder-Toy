@@ -342,7 +342,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 		if ((pmap[ny][nx]>>PS)==e) pmap[ny][nx] = 0;
 		parts[e].x += x-nx;
 		parts[e].y += y-ny;
-		pmap[(int)(parts[e].y+0.5f)][(int)(parts[e].x+0.5f)] = (e<<8)|parts[e].type;
+		pmap[(int)(parts[e].y+0.5f)][(int)(parts[e].x+0.5f)] = (e<<PS)|parts[e].type;
 	}
 
 	return 1;
@@ -1684,6 +1684,19 @@ void update_particles_i(pixel *vid, int start, int inc)
 				h_count = 0;
 				if (t&&(t!=PT_HSWC||parts[i].life==10)&&ptypes[t].hconduct>(rand()%250))
 				{
+				    if (aheat_enable)
+                    {
+                        if (hv[y/CELL][x/CELL] < parts[i].temp)
+                        {
+                            hv[y/CELL][x/CELL] = hv[y/CELL][x/CELL] + parts[i].temp*0.04;
+                            parts[i].temp = parts[i].temp - hv[y/CELL][x/CELL]*0.04;
+                        }
+                        else
+                        {
+                            hv[y/CELL][x/CELL] = hv[y/CELL][x/CELL] - parts[i].temp*0.04;
+                            parts[i].temp = parts[i].temp + hv[y/CELL][x/CELL]*0.04;
+                        }
+                    }
 					for (j=0; j<8; j++)
 					{
 						surround_hconduct[j] = i;

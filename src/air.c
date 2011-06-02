@@ -23,6 +23,8 @@ float cb_pv[YRES/CELL][XRES/CELL], cb_opv[YRES/CELL][XRES/CELL];
 
 float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 
+float hv[YRES/CELL][XRES/CELL], ohv[YRES/CELL][XRES/CELL]; // For Ambient Heat
+
 void make_kernel(void) //used for velocity
 {
 	int i, j;
@@ -38,6 +40,55 @@ void make_kernel(void) //used for velocity
 		for (i=-1; i<2; i++)
 			kernel[(i+1)+3*(j+1)] *= s;
 }
+void update_airh(void)
+{
+	int x, y, i, j;
+	float dh, dp, f, tx, ty;
+	for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame
+	{
+		hv[i][0] = 295.15f;
+		hv[i][1] = 295.15f;
+		hv[i][XRES/CELL-3] = 295.15f;
+		hv[i][XRES/CELL-2] = 295.15f;
+		hv[i][XRES/CELL-1] = 295.15f;
+	}
+	for (i=0; i<XRES/CELL; i++) //reduces pressure/velocity on the edges every frame
+	{
+		hv[0][i] = 295.15f;
+		hv[1][i] = 295.15f;
+		hv[YRES/CELL-3][i] = 295.15f;
+		hv[YRES/CELL-2][i] = 295.15f;
+		hv[YRES/CELL-1][i] = 295.15f;
+	}
+	for (y=0; y<YRES/CELL; y++) //update velocity and pressure
+		for (x=0; x<XRES/CELL; x++)
+		{
+			dh = 0.0f;
+			for (j=-1; j<2; j++)
+				for (i=-1; i<2; i++)
+					if (y+j>0 && y+j<YRES/CELL-2 &&
+					        x+i>0 && x+i<XRES/CELL-2 &&
+					        bmap[y+j][x+i]!=WL_WALL &&
+					        bmap[y+j][x+i]!=WL_WALLELEC &&
+					        (bmap[y+j][x+i]!=WL_EWALL || emap[y+j][x+i]))
+						{
+						f = kernel[i+1+(j+1)*3];
+						dh += hv[y+j][x+i]*f;
+					}
+					else
+					{
+						f = kernel[i+1+(j+1)*3];
+						dh += hv[y][x]*f;
+					}
+			i = (int)tx;
+			j = (int)ty;
+			tx -= i;
+			ty -= j;
+			ohv[y][x] = dh;
+		}
+	memcpy(hv, ohv, sizeof(hv));
+}
+
 void update_grav(void)
 {
 	int x, y, i, j, changed = 0;
@@ -95,9 +146,9 @@ void update_air(void)
 {
 	int x, y, i, j;
 	float dp, dx, dy, f, tx, ty;
-    
+
 	if (airMode != 4) { //airMode 4 is no air/pressure update
-        
+
 		for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 		{
 			pv[i][0] = pv[i][0]*0.8f;
@@ -130,7 +181,7 @@ void update_air(void)
 			vy[YRES/CELL-2][i] = vy[YRES/CELL-3][i]*0.9f;
 			vy[YRES/CELL-1][i] = vy[YRES/CELL-2][i]*0.9f;
 		}
-        
+
 		for (j=1; j<YRES/CELL; j++) //clear some velocities near walls
 		{
 			for (i=1; i<XRES/CELL; i++)
@@ -144,7 +195,7 @@ void update_air(void)
 				}
 			}
 		}
-        
+
 		for (y=1; y<YRES/CELL; y++) //pressure adjustments from velocity
 			for (x=1; x<XRES/CELL; x++)
 			{
@@ -154,7 +205,7 @@ void update_air(void)
 				pv[y][x] *= AIR_PLOSS;
 				pv[y][x] += dp*AIR_TSTEPP;
 			}
-        
+
 		for (y=0; y<YRES/CELL-1; y++) //velocity adjustments from pressure
 			for (x=0; x<XRES/CELL-1; x++)
 			{
@@ -176,7 +227,7 @@ void update_air(void)
                     (bmap[y+1][x]==WL_EWALL && !emap[y+1][x]))
 					vy[y][x] = 0;
 			}
-        
+
 		for (y=0; y<YRES/CELL; y++) //update velocity and pressure
 			for (x=0; x<XRES/CELL; x++)
 			{
@@ -203,7 +254,7 @@ void update_air(void)
 							dy += vy[y][x]*f;
 							dp += pv[y][x]*f;
 						}
-                
+
 				tx = x - dx*0.7f;
 				ty = y - dy*0.7f;
 				i = (int)tx;
@@ -215,20 +266,20 @@ void update_air(void)
 				{
 					dx *= 1.0f - AIR_VADV;
 					dy *= 1.0f - AIR_VADV;
-                    
+
 					dx += AIR_VADV*(1.0f-tx)*(1.0f-ty)*vx[j][i];
 					dy += AIR_VADV*(1.0f-tx)*(1.0f-ty)*vy[j][i];
-                    
+
 					dx += AIR_VADV*tx*(1.0f-ty)*vx[j][i+1];
 					dy += AIR_VADV*tx*(1.0f-ty)*vy[j][i+1];
-                    
+
 					dx += AIR_VADV*(1.0f-tx)*ty*vx[j+1][i];
 					dy += AIR_VADV*(1.0f-tx)*ty*vy[j+1][i];
-                    
+
 					dx += AIR_VADV*tx*ty*vx[j+1][i+1];
 					dy += AIR_VADV*tx*ty*vy[j+1][i+1];
 				}
-                
+
 				if (bmap[y][x] == WL_FAN)
 				{
 					dx += fvx[y][x];
@@ -241,8 +292,8 @@ void update_air(void)
 				if (dx < -256.0f) dx = -256.0f;
 				if (dy > 256.0f) dy = 256.0f;
 				if (dy < -256.0f) dy = -256.0f;*/
-                
-                
+
+
 				switch (airMode)
 				{
                     default:
@@ -263,7 +314,7 @@ void update_air(void)
                     case 4: //No Update
                         break;
 				}
-                
+
 				ovx[y][x] = dx;
 				ovy[y][x] = dy;
 				opv[y][x] = dp;

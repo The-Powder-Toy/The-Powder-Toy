@@ -21,9 +21,13 @@ extern float cb_pv[YRES/CELL][XRES/CELL], cb_opv[YRES/CELL][XRES/CELL];
 
 extern float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 
+extern float hv[YRES/CELL][XRES/CELL], ohv[YRES/CELL][XRES/CELL]; // Ambient Heat
+
 extern float kernel[9];
 
 void make_kernel(void);
+
+void update_airh(void);
 
 void update_grav(void);
 
