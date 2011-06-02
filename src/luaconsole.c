@@ -306,18 +306,125 @@ int luatpt_reset_spark(lua_State* l)
 
 int luatpt_set_property(lua_State* l)
 {
-	lua_pushstring(l, "not implemented");
-	lua_error(l);
-	//TODO: Implement luatpt_set_property
+	char *prop, *name;
+	int i, x, y, w, h, t, format, nx, ny, partsel = 0, acount;
+	float f;
+	size_t offset;
+	acount = lua_gettop(l);
+	prop = luaL_optstring(l, 1, "");
+	if(lua_isnumber(l, 3))
+		i = luaL_optint(l, 3, -1);
+	else
+		i = -1;
+	if(lua_isnumber(l, 4))
+		y = luaL_optint(l, 4, -1);
+	else
+		y = -1;
+	if(lua_isnumber(l, 5))
+		w = luaL_optint(l, 5, -1);
+	else
+		w = -1;
+	if(lua_isnumber(l, 6))
+		h = luaL_optint(l, 6, -1);
+	else
+		h = -1;
+	if (strcmp(prop,"type")==0){
+		offset = offsetof(particle, type);
+		format = 3;
+	} else if (strcmp(prop,"life")==0){
+		offset = offsetof(particle, life);
+		format = 1;
+	} else if (strcmp(prop,"ctype")==0){
+		offset = offsetof(particle, ctype);
+		format = 3;
+	} else if (strcmp(prop,"temp")==0){
+		offset = offsetof(particle, temp);
+		format = 1;
+	} else if (strcmp(prop,"tmp")==0){
+		offset = offsetof(particle, tmp);
+		format = 1;
+	} else if (strcmp(prop,"vy")==0){
+		offset = offsetof(particle, vy);
+		format = 2;
+	} else if (strcmp(prop,"vx")==0){
+		offset = offsetof(particle, vx);
+		format = 2;
+	} else if (strcmp(prop,"x")==0){
+		offset = offsetof(particle, x);
+		format = 1;
+	} else if (strcmp(prop,"y")==0){
+		offset = offsetof(particle, y);
+		format = 1;
+	} else {
+		lua_pushstring(l, "invalid property");
+		lua_error(l);
+	}
+	if(acount>2){
+		if(!lua_isnumber(l, acount) && lua_isstring(l, acount)){
+			name = luaL_optstring(l, acount, "none");
+			if (name[0]!=0)
+				console_parse_type(name, &partsel, console_error);
+		}
+	}
+	if(lua_isnumber(l, 2)){
+		if(format==2){
+			f = luaL_optnumber(l, 2, 0);
+		} else {
+			t = luaL_optint(l, 2, 0);
+		}
+		if(t >= PT_NUM && format == 3)
+			return -1;
+	} else {
+		name = luaL_optstring(l, 2, "dust");
+		if (name[0]!=0)
+			console_parse_type(name, &t, console_error);
+	}
+	if(i == -1 || (w != -1 && h != -1)){
+		// Got a region
+		if(i == -1){
+			i = 0;
+			y = 0;
+			w = XRES;
+			h = YRES;
+		}
+		x = i;
+		for (nx = x; nx<x+w; nx++)
+			for (ny = y; ny<y+h; ny++){
+				i = pmap[ny][nx]>>8;
+				if (i < 0 || i >= NPART || (partsel && partsel != parts[i].type))
+					continue;
+				if(format==2){
+					*((float*)(((void*)&parts[i])+offset)) = f;
+				} else {
+					*((int*)(((void*)&parts[i])+offset)) = t;
+				}
+			}
+	} else {
+		// Got coords or particle index
+		if(i != -1 && y != -1){
+			i = pmap[y][i]>>8;
+		}
+		if (i < 0 || i >= NPART || (partsel && partsel != parts[i].type))
+			return -1;
+		if(format==2){
+			*((float*)(((void*)&parts[i])+offset)) = f;
+		} else {
+			*((int*)(((void*)&parts[i])+offset)) = t;
+		}
+	}
 	return -1;
 }
 
 int luatpt_get_property(lua_State* l)
 {
-	int i;
+	int i, y;
 	char *prop;
 	prop = luaL_optstring(l, 1, "");
 	i = luaL_optint(l, 2, 0);
+	y = luaL_optint(l, 3, -1);
+	if(y!=-1 && y < YRES && y > 0 && i < XRES && i > 0){
+		i = pmap[y][i]>>8;
+	}
 	if (i < 0 || i >= NPART)
 		return -1;
 	if (parts[i].type)
