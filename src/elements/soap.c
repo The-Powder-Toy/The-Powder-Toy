@@ -98,7 +98,8 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 							if (parts[i].temp>0)
 							{
 								if (bmap[(y+ry)/CELL][(x+rx)/CELL] 
-										|| ((r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS) 
+										|| (r && ptypes[r&0xFF].state != ST_GAS 
+											&& (r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS) 
 										|| (parts[r>>8].ctype == 0 && (r&0xFF) == PT_SOAP 
 											&& (abs(parts[r>>8].vx)<2 || abs(parts[r>>8].vy)<2)))
 								{
