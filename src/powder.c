@@ -232,7 +232,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 			if (rand() < RAND_MAX/10)
 				create_cherenkov_photon(i);
 		}
-		if (parts[i].type == PT_PHOT && (r&TYPE)==PT_INVIS) {
+		if (parts[i].type == PT_PHOT && (r&TYPE)==PT_INVIS && pv[ny/CELL][nx/CELL]<=4.0f && pv[ny/CELL][nx/CELL]>=-4.0f) {
 			part_change_type(i,x,y,PT_NEUT);
 			parts[i].ctype = 0;
 		}
@@ -1680,23 +1680,16 @@ void update_particles_i(pixel *vid, int start, int inc)
 				}
 
 				//heat transfer code
-				c_heat = 0.0f;
 				h_count = 0;
 				if (t&&(t!=PT_HSWC||parts[i].life==10)&&ptypes[t].hconduct>(rand()%250))
 				{
 				    if (aheat_enable)
                     {
-                        if (hv[y/CELL][x/CELL] < parts[i].temp)
-                        {
-                            hv[y/CELL][x/CELL] = hv[y/CELL][x/CELL] + parts[i].temp*0.04;
-                            parts[i].temp = parts[i].temp - hv[y/CELL][x/CELL]*0.04;
-                        }
-                        else
-                        {
-                            hv[y/CELL][x/CELL] = hv[y/CELL][x/CELL] - parts[i].temp*0.04;
-                            parts[i].temp = parts[i].temp + hv[y/CELL][x/CELL]*0.04;
-                        }
+                        c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
+                        parts[i].temp += c_heat;
+                        hv[y/CELL][x/CELL] -= c_heat;
                     }
+                    c_heat = 0.0f;
 					for (j=0; j<8; j++)
 					{
 						surround_hconduct[j] = i;
@@ -1978,7 +1971,7 @@ killed:
 						clear_y = (int)(clear_yf+0.5f);
 						break;
 					}
-					if (fin_x<CELL || fin_y<CELL || fin_x>=XRES-CELL || fin_y>=YRES-CELL || pmap[fin_y][fin_x] || (bmap[fin_y/CELL][fin_x/CELL] && bmap[fin_y/CELL][fin_x/CELL]!=WL_STREAM))
+					if (fin_x<CELL || fin_y<CELL || fin_x>=XRES-CELL || fin_y>=YRES-CELL || pmap[fin_y][fin_x] || (bmap[fin_y/CELL][fin_x/CELL] && !eval_move(t,fin_x,fin_y,NULL)))
 					{
 						// found an obstacle
 						clear_xf = fin_xf-dx;

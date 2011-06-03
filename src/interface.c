@@ -4476,8 +4476,10 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
             drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python by Doxin)", 255, i, i, 255);
         else
             drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)", 255, i, i, 255);
+#elif defined(LUACONSOLE)
+            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.4 (by cracker64, Lua enabled)", 255, 255, 255, 255);
 #else
-		drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)", 255, 255, 255, 255);
+        drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)", 255, 255, 255, 255);
 #endif
 
 		cc = 0;
