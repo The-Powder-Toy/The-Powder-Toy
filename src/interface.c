@@ -2344,10 +2344,11 @@ corrupt:
 
 int search_ui(pixel *vid_buf)
 {
-	int uih=0,nyu,nyd,b=1,bq,mx=0,my=0,mxq=0,myq=0,mmt=0,gi,gj,gx,gy,pos,i,mp,dp,dap,own,last_own=search_own,last_fav=search_fav,page_count=0,last_page=0,last_date=0,j,w,h,st=0,lv;
+	int nmp,uih=0,nyu,nyd,b=1,bq,mx=0,my=0,mxq=0,myq=0,mmt=0,gi,gj,gx,gy,pos,i,mp,dp,dap,own,last_own=search_own,last_fav=search_fav,page_count=0,last_page=0,last_date=0,j,w,h,st=0,lv;
 	int is_p1=0, exp_res=GRID_X*GRID_Y, tp, view_own=0;
 	int thumb_drawn[GRID_X*GRID_Y];
 	pixel *v_buf = (pixel *)malloc(((YRES+MENUSIZE)*(XRES+BARSIZE))*PIXELSIZE);
+	pixel *bthumb_rsdata = NULL;
 	float ry;
 	time_t http_last_use=HTTP_TIMEOUT;
 	ui_edit ed;
@@ -2739,8 +2740,22 @@ int search_ui(pixel *vid_buf)
 			if (gy+h>=YRES+(MENUSIZE-2)) gy=YRES+(MENUSIZE-3)-h;
 			clearrect(vid_buf, gx-2, gy-3, w+4, h);
 			drawrect(vid_buf, gx-2, gy-3, w+4, h, 160, 160, 192, 255);
-			//if (search_thumbs[mp])
-				//render_thumb(search_thumbs[mp], search_thsizes[mp], 1, vid_buf, gx+(w-(XRES/GRID_Z))/2, gy, GRID_Z);
+			if (search_thumbs[mp]){
+				if(mp != nmp && bthumb_rsdata){
+					free(bthumb_rsdata);
+					bthumb_rsdata = NULL;
+				}
+				if(!bthumb_rsdata){
+					int finh, finw;
+					pixel *thumb_imgdata = ptif_unpack(search_thumbs[mp], search_thsizes[mp], &finw, &finh);
+					if(thumb_imgdata!=NULL){
+						bthumb_rsdata = resample_img(thumb_imgdata, finw, finh, XRES/GRID_Z, YRES/GRID_Z);				
+						free(thumb_imgdata);
+					}
+				}
+				draw_image(vid_buf, bthumb_rsdata, gx+(w-(XRES/GRID_Z))/2, gy, XRES/GRID_Z, YRES/GRID_Z, 255);
+				nmp = mp;
+			}
 			drawtext(vid_buf, gx+(w-i)/2, gy+YRES/GRID_Z+4, search_names[mp], 192, 192, 192, 255);
 			drawtext(vid_buf, gx+(w-textwidth(search_owners[mp]))/2, gy+YRES/GRID_Z+16, search_owners[mp], 128, 128, 128, 255);
 		}
@@ -3030,6 +3045,11 @@ finish:
 	for (i=0; i<IMGCONNS; i++)
 		if (img_http[i])
 			http_async_req_close(img_http[i]);
+			
+	if(bthumb_rsdata){
+		free(bthumb_rsdata);
+		bthumb_rsdata = NULL;
+	}
 
 	search_results("", 0);
 
