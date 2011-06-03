@@ -147,7 +147,8 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 	pixel *q;
 	q = malloc(rw*rh*PIXELSIZE);
 	//TODO: Actual resampling, this is just cheap nearest pixel crap
-	if(rw > sw && rh > sh){
+	//if(rw > sw && rh > sh){
+	//if(1){
 		float fx, fy, fyc, fxc, intp;
 		pixel tr, tl, br, bl;
 		//Bilinear interpolation for upscaling
@@ -168,13 +169,13 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 					(int)(((((float)PIXB(tl))*(1.0f-fxc))+(((float)PIXB(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXB(bl))*(1.0f-fxc))+(((float)PIXB(br))*(fxc)))*(fyc))
 					);				
 			}
-	} else {
-		for (y=0; y<rh; y++)
-			for (x=0; x<rw; x++)
-			{
-				q[rw*y+x] = src[sw*(y*sh/rh)+(x*sw/rw)];
-			}
-	}
+	//} else {
+	//	for (y=0; y<rh; y++)
+	//		for (x=0; x<rw; x++)
+	//		{
+	//			q[rw*y+x] = src[sw*(y*sh/rh)+(x*sw/rw)];
+	//		}
+	//}
 	//*qw = w;
 	//*qh = h;
 	return q;
