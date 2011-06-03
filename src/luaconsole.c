@@ -4,7 +4,7 @@
 #include <luaconsole.h>
 
 lua_State *l;
-char *step_function = "";
+int step_functions[6] = {0, 0, 0, 0, 0, 0};
 void luacon_open(){
 	const static struct luaL_reg tptluaapi [] = {
 		{"test", &luatpt_test},
@@ -29,6 +29,7 @@ void luacon_open(){
 		{"set_shortcuts", &luatpt_set_shortcuts},
 		{"delete", &luatpt_delete},
 		{"register_step", &luatpt_register_step},
+		{"unregister_step", &luatpt_unregister_step},
 		{NULL,NULL}
 	};
 
@@ -37,8 +38,8 @@ void luacon_open(){
 	luaL_openlib(l, "tpt", tptluaapi, 0);
 }
 int luacon_step(int mx, int my, int mb, int mbq, char key){
-	int tempret = 0;
-	if(step_function && step_function[0]){
+	int tempret = 0, tempb, i;
+	if(step_functions[0]){
 		//Set mouse globals
 		lua_pushinteger(l, mbq);
 		lua_pushinteger(l, mb);
@@ -48,13 +49,22 @@ int luacon_step(int mx, int my, int mb, int mbq, char key){
 		lua_setfield(l, LUA_GLOBALSINDEX, "mousey");
 		lua_setfield(l, LUA_GLOBALSINDEX, "mouseb");
 		lua_setfield(l, LUA_GLOBALSINDEX, "mousebq");
-		lua_getfield(l, LUA_GLOBALSINDEX, step_function);
-		lua_call(l, 0, 1);
-		if(lua_isboolean(l, -1)){
-			tempret = lua_toboolean(l, -1);
-			lua_pop(l, 1);
-			return tempret;
+		for(i = 0; i<6; i++){
+			if(step_functions[i]){
+				lua_rawgeti(l, LUA_REGISTRYINDEX, step_functions[i]);
+				lua_call(l, 0, 1);
+				if(lua_isboolean(l, -1)){
+					tempb = lua_toboolean(l, -1);
+					lua_pop(l, 1);
+					if(tempb){	//Mouse click has been handled, set the global for future calls
+						lua_pushinteger(l, mb);	
+						lua_setfield(l, LUA_GLOBALSINDEX, "mouseb");
+					}
+					tempret |= tempb;
+				}
+			}
 		}
+		return tempret;
 	}
 	return 0;
 }
@@ -582,7 +592,28 @@ int luatpt_delete(lua_State* l)
 
 int luatpt_register_step(lua_State* l)
 {
-	step_function = luaL_optstring(l, 1, "");
+	int ref, i;
+	if(lua_isfunction(l, 1)){
+		for(i = 0; i<6; i++){
+			if(!step_functions[i]){
+				ref = luaL_ref(l, LUA_REGISTRYINDEX);
+				step_functions[i] = ref;
+				break;
+			} else { //Supposed to prevent the registration of 2 functions, but this isn't working TODO: FIX!
+				lua_rawgeti(l, LUA_REGISTRYINDEX, step_functions[i]);
+				if(lua_equal(l, 1, lua_gettop(l))){
+					lua_pushstring(l, "function already registered");
+					lua_error(l);
+					return -1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+int luatpt_unregister_step(lua_State* l)
+{
+	//step_function = luaL_optstring(l, 1, "");
 	return 0;
 }
 #endif
