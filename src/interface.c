@@ -2439,7 +2439,7 @@ int search_ui(pixel *vid_buf)
 		drawtext(vid_buf, 51, 11, "\x8F", 255, 255, 255, 255);
 		drawrect(vid_buf, 48, 8, XRES-182, 16, 192, 192, 192, 255);
 
-		if (!svf_login)
+		if (!svf_login || search_fav)
 		{
 			search_own = 0;
 			drawrect(vid_buf, XRES-64+16, 8, 56, 16, 96, 96, 96, 255);
@@ -2462,7 +2462,13 @@ int search_ui(pixel *vid_buf)
 			drawtext(vid_buf, XRES-46+16, 13, "My Own", 255, 255, 255, 255);
 		}
 
-		if (search_fav)
+		if(!svf_login)
+		{
+			search_fav = 0;
+			drawrect(vid_buf, XRES-134, 8, 16, 16, 192, 192, 192, 255);
+			drawtext(vid_buf, XRES-130, 11, "\xCC", 120, 120, 120, 255);
+		}
+		else if (search_fav)
 		{
 			fillrect(vid_buf, XRES-134, 7, 18, 18, 255, 255, 255, 255);
 			drawtext(vid_buf, XRES-130, 11, "\xCC", 192, 160, 64, 255);
@@ -2473,7 +2479,16 @@ int search_ui(pixel *vid_buf)
 			drawtext(vid_buf, XRES-130, 11, "\xCC", 192, 160, 32, 255);
 		}
 
-		if (search_date)
+		if(search_fav)
+		{
+			search_date = 0;
+			drawrect(vid_buf, XRES-129+16, 8, 60, 16, 96, 96, 96, 255);
+			drawtext(vid_buf, XRES-126+16, 11, "\xA9", 44, 48, 32, 255);
+			drawtext(vid_buf, XRES-126+16, 11, "\xA8", 32, 44, 32, 255);
+			drawtext(vid_buf, XRES-126+16, 11, "\xA7", 128, 128, 128, 255);
+			drawtext(vid_buf, XRES-111+16, 13, "By votes", 128, 128, 128, 255);
+		}
+		else if (search_date)
 		{
 			fillrect(vid_buf, XRES-130+16, 7, 62, 18, 255, 255, 255, 255);
 			drawtext(vid_buf, XRES-126+16, 11, "\xA6", 32, 32, 32, 255);
@@ -2633,7 +2648,7 @@ int search_ui(pixel *vid_buf)
 					drawrect(vid_buf, gx-2, gy-2, XRES/GRID_S+3, YRES/GRID_S+3, 160, 160, 192, 255);
 				else
 					drawrect(vid_buf, gx-2, gy-2, XRES/GRID_S+3, YRES/GRID_S+3, 128, 128, 128, 255);
-				if (own && search_fav!=1)
+				if (own || search_fav)
 				{
 					if (dp == pos)
 						drawtext(vid_buf, gx+XRES/GRID_S-4, gy-6, "\x86", 255, 48, 32, 255);
@@ -2748,33 +2763,49 @@ int search_ui(pixel *vid_buf)
 		if (sdl_key==SDLK_ESCAPE)
 			goto finish;
 
-		if (b && !bq && mx>=XRES-64+16 && mx<=XRES-8+16 && my>=8 && my<=24 && svf_login)
+		if (b && !bq && mx>=XRES-64+16 && mx<=XRES-8+16 && my>=8 && my<=24 && svf_login && !search_fav)
 		{
 			search_own = !search_own;
 			lasttime = TIMEOUT;
 		}
-		if (b && !bq && mx>=XRES-129+16 && mx<=XRES-65+16 && my>=8 && my<=24)
+		if (b && !bq && mx>=XRES-129+16 && mx<=XRES-65+16 && my>=8 && my<=24 && !search_fav)
 		{
 			search_date = !search_date;
 			lasttime = TIMEOUT;
 		}
-		if (b && !bq && mx>=XRES-134 && mx<=XRES-134+16 && my>=8 && my<=24)
+		if (b && !bq && mx>=XRES-134 && mx<=XRES-134+16 && my>=8 && my<=24 && svf_login)
 		{
 			search_fav = !search_fav;
+			search_own = 0;
+			search_date = 0;
 			lasttime = TIMEOUT;
 		}
 
-		if (b && !bq && dp!=-1 && search_fav==0)
-			if (confirm_ui(vid_buf, "Do you want to delete?", search_names[dp], "Delete"))
-			{
-				execute_delete(vid_buf, search_ids[dp]);
-				lasttime = TIMEOUT;
-				if (last)
+		if (b && !bq && dp!=-1)
+		{
+			if (search_fav){
+				if(confirm_ui(vid_buf, "Remove from favourites?", search_names[dp], "Remove")){
+					execute_unfav(vid_buf, search_ids[dp]);
+					lasttime = TIMEOUT;
+					if (last)
+					{
+						free(last);
+						last = NULL;
+					}
+				}
+			} else {
+				if (confirm_ui(vid_buf, "Do you want to delete?", search_names[dp], "Delete"))
 				{
-					free(last);
-					last = NULL;
+					execute_delete(vid_buf, search_ids[dp]);
+					lasttime = TIMEOUT;
+					if (last)
+					{
+						free(last);
+						last = NULL;
+					}
 				}
 			}
+		}
 		if (b && !bq && dap!=-1)
 		{
 			sprintf(ed.str, "history:%s", search_ids[dap]);
@@ -2837,7 +2868,7 @@ int search_ui(pixel *vid_buf)
 				tmp = "&ShowVotes=true";
 			else
 				tmp = "";
-			if (!search_own && !search_date && !*last)
+			if (!search_own && !search_date && !search_fav && !*last)
 			{
 				if (search_page)
 				{
@@ -4196,6 +4227,40 @@ void execute_fav(pixel *vid_buf, char *id)
 
 	result = http_multipart_post(
 	             "http://" SERVER "/Favourite.api",
+	             names, parts, NULL,
+	             svf_user_id, /*svf_pass*/NULL, svf_session_id,
+	             &status, NULL);
+
+	if (status!=200)
+	{
+		error_ui(vid_buf, status, http_ret_text(status));
+		if (result)
+			free(result);
+		return;
+	}
+	if (result && strncmp(result, "OK", 2))
+	{
+		error_ui(vid_buf, 0, result);
+		free(result);
+		return;
+	}
+
+	if (result)
+		free(result);
+}
+
+void execute_unfav(pixel *vid_buf, char *id)
+{
+	int status;
+	char *result;
+
+	char *names[] = {"ID", NULL};
+	char *parts[1];
+
+	parts[0] = id;
+
+	result = http_multipart_post(
+	             "http://" SERVER "/Favourite.api?Action=Remove",
 	             names, parts, NULL,
 	             svf_user_id, /*svf_pass*/NULL, svf_session_id,
 	             &status, NULL);

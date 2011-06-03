@@ -249,6 +249,8 @@ void execute_submit(pixel *vid_buf, char *id, char *message);
 
 void execute_fav(pixel *vid_buf, char *id);
 
+void execute_unfav(pixel *vid_buf, char *id);
+
 int execute_vote(pixel *vid_buf, char *id, char *action);
 
 void open_link(char *uri);
