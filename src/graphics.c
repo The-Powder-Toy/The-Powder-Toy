@@ -147,11 +147,34 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 	pixel *q;
 	q = malloc(rw*rh*PIXELSIZE);
 	//TODO: Actual resampling, this is just cheap nearest pixel crap
-	for (y=0; y<rh; y++)
-		for (x=0; x<rw; x++)
-		{
-			q[rw*y+x] = src[sw*(y*sh/rh)+(x*sw/rw)];
-		}
+	if(rw > sw && rh > sh){
+		float fx, fy, fyc, fxc, intp;
+		pixel tr, tl, br, bl;
+		//Bilinear interpolation for upscaling
+		for (y=0; y<rh; y++)
+			for (x=0; x<rw; x++)
+			{
+				fx = ((float)x)*((float)sw)/((float)rw);
+				fy = ((float)y)*((float)sh)/((float)rh);
+				fxc = modf(fx, &intp);
+				fyc = modf(fy, &intp);
+				tr = src[sw*(int)floor(fy)+(int)ceil(fx)];
+				tl = src[sw*(int)floor(fy)+(int)floor(fx)];
+				br = src[sw*(int)ceil(fy)+(int)ceil(fx)];
+				bl = src[sw*(int)ceil(fy)+(int)floor(fx)];
+				q[rw*y+x] = PIXRGB(
+					(int)(((((float)PIXR(tl))*(1.0f-fxc))+(((float)PIXR(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXR(bl))*(1.0f-fxc))+(((float)PIXR(br))*(fxc)))*(fyc)),
+					(int)(((((float)PIXG(tl))*(1.0f-fxc))+(((float)PIXG(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXG(bl))*(1.0f-fxc))+(((float)PIXG(br))*(fxc)))*(fyc)),
+					(int)(((((float)PIXB(tl))*(1.0f-fxc))+(((float)PIXB(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXB(bl))*(1.0f-fxc))+(((float)PIXB(br))*(fxc)))*(fyc))
+					);				
+			}
+	} else {
+		for (y=0; y<rh; y++)
+			for (x=0; x<rw; x++)
+			{
+				q[rw*y+x] = src[sw*(y*sh/rh)+(x*sw/rw)];
+			}
+	}
 	//*qw = w;
 	//*qh = h;
 	return q;
