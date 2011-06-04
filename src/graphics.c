@@ -144,13 +144,12 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 {
 	int y, x;
 	//int i,j,x,y,w,h,r,g,b,c;
-	pixel *q;
-	q = malloc(rw*rh*PIXELSIZE);
+	pixel *q = NULL;
 	//TODO: Actual resampling, this is just cheap nearest pixel crap
-	//if(rw > sw && rh > sh){
-	//if(1){
+	if(rw > sw && rh > sh){
 		float fx, fy, fyc, fxc, intp;
 		pixel tr, tl, br, bl;
+		q = malloc(rw*rh*PIXELSIZE);
 		//Bilinear interpolation for upscaling
 		for (y=0; y<rh; y++)
 			for (x=0; x<rw; x++)
@@ -169,15 +168,48 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 					(int)(((((float)PIXB(tl))*(1.0f-fxc))+(((float)PIXB(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXB(bl))*(1.0f-fxc))+(((float)PIXB(br))*(fxc)))*(fyc))
 					);				
 			}
-	//} else {
-	//	for (y=0; y<rh; y++)
-	//		for (x=0; x<rw; x++)
-	//		{
-	//			q[rw*y+x] = src[sw*(y*sh/rh)+(x*sw/rw)];
-	//		}
-	//}
-	//*qw = w;
-	//*qh = h;
+	} else {
+		//Stairstepping
+		float fx, fy, fyc, fxc, intp;
+		pixel tr, tl, br, bl;
+		int rrw = rw, rrh = rh;
+		pixel * oq;
+		oq = malloc(sw*sh*PIXELSIZE);
+		memcpy(oq, src, sw*sh*PIXELSIZE);
+		rw = sw;
+		rh = sh;
+		while(rrw != rw && rrh != rh){
+			rw *= 0.7;
+			rh *= 0.7;
+			if(rw <= rrw || rh <= rrh){
+				rw = rrw;
+				rh = rrh;
+			}
+			q = malloc(rw*rh*PIXELSIZE);
+			//Bilinear interpolation for upscaling
+			for (y=0; y<rh; y++)
+				for (x=0; x<rw; x++)
+				{
+					fx = ((float)x)*((float)sw)/((float)rw);
+					fy = ((float)y)*((float)sh)/((float)rh);
+					fxc = modf(fx, &intp);
+					fyc = modf(fy, &intp);
+					tr = oq[sw*(int)floor(fy)+(int)ceil(fx)];
+					tl = oq[sw*(int)floor(fy)+(int)floor(fx)];
+					br = oq[sw*(int)ceil(fy)+(int)ceil(fx)];
+					bl = oq[sw*(int)ceil(fy)+(int)floor(fx)];
+					q[rw*y+x] = PIXRGB(
+						(int)(((((float)PIXR(tl))*(1.0f-fxc))+(((float)PIXR(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXR(bl))*(1.0f-fxc))+(((float)PIXR(br))*(fxc)))*(fyc)),
+						(int)(((((float)PIXG(tl))*(1.0f-fxc))+(((float)PIXG(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXG(bl))*(1.0f-fxc))+(((float)PIXG(br))*(fxc)))*(fyc)),
+						(int)(((((float)PIXB(tl))*(1.0f-fxc))+(((float)PIXB(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXB(bl))*(1.0f-fxc))+(((float)PIXB(br))*(fxc)))*(fyc))
+						);				
+				}
+			free(oq);
+			oq = q;
+			sw = rw;
+			sh = rh;
+		}
+	}
 	return q;
 }
 
