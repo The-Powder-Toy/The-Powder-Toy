@@ -349,7 +349,7 @@ int luatpt_set_property(lua_State* l)
 		format = 3;
 	} else if (strcmp(prop,"temp")==0){
 		offset = offsetof(particle, temp);
-		format = 1;
+		format = 2;
 	} else if (strcmp(prop,"tmp")==0){
 		offset = offsetof(particle, tmp);
 		format = 1;
@@ -361,10 +361,10 @@ int luatpt_set_property(lua_State* l)
 		format = 2;
 	} else if (strcmp(prop,"x")==0){
 		offset = offsetof(particle, x);
-		format = 1;
+		format = 2;
 	} else if (strcmp(prop,"y")==0){
 		offset = offsetof(particle, y);
-		format = 1;
+		format = 2;
 	} else {
 		lua_pushstring(l, "invalid property");
 		lua_error(l);
@@ -452,7 +452,7 @@ int luatpt_get_property(lua_State* l)
 			return 1;
 		}
 		if (strcmp(prop,"temp")==0){
-			lua_pushinteger(l, parts[i].temp);
+			lua_pushnumber(l, parts[i].temp);
 			return 1;
 		}
 		if (strcmp(prop,"tmp")==0){
@@ -468,11 +468,11 @@ int luatpt_get_property(lua_State* l)
 			return 1;
 		}
 		if (strcmp(prop,"x")==0){
-			lua_pushinteger(l, parts[i].x);
+			lua_pushnumber(l, parts[i].x);
 			return 1;
 		}
 		if (strcmp(prop,"y")==0){
-			lua_pushinteger(l, parts[i].y);
+			lua_pushnumber(l, parts[i].y);
 			return 1;
 		}
 	}
