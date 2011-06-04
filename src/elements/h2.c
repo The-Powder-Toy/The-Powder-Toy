@@ -21,7 +21,7 @@ int update_H2(UPDATE_FUNC_ARGS)
 					parts[r>>8].temp+=(rand()/(RAND_MAX/100));
 					parts[r>>8].tmp |= 1;
 				}
-				if ((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM || (r&0xFF)==PT_SPRK || (r&0xFF)==PT_LAVA)
+				if ((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM || (r&0xFF)==PT_LAVA)
 				{
 					create_part(i,x,y,PT_FIRE);
 					parts[i].temp+=(rand()/(RAND_MAX/100));
