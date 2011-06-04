@@ -96,7 +96,13 @@ int process_command_lua(pixel *vid_buf, char *console, char *console_error)
 		if (strcmp(console2, "quit")==0)
 		{
 			return -1;
-		} else {
+		}
+		else if(strncmp(console, "!", 1)==0)
+		{
+			return process_command_old(vid_buf, console+1, console_error);
+		}
+		else
+		{
 			commandret = luacon_eval(console);
 			if (commandret){
 				tmp_error = luacon_geterror();
