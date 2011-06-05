@@ -169,7 +169,7 @@ int luatpt_create(lua_State* l)
 				return luaL_error(l, "Unrecognised element number '%d'", t);
 		} else {
 			name = luaL_optstring(l, 3, "dust");
-			if (!console_parse_type(name, &t, console_error))
+			if (!console_parse_type(name, &t, NULL))
 				return luaL_error(l,"Unrecognised element '%s'", name);
 		}
 		retid = create_part(-1, x, y, t);
@@ -393,7 +393,7 @@ int luatpt_set_property(lua_State* l)
 	if(acount>2){
 		if(!lua_isnumber(l, acount) && lua_isstring(l, acount)){
 			name = luaL_optstring(l, acount, "none");
-			if (!console_parse_type(name, &partsel, console_error))
+			if (!console_parse_type(name, &partsel, NULL))
 				return luaL_error(l, "Unrecognised element '%s'", name);
 		}
 	}
@@ -409,7 +409,7 @@ int luatpt_set_property(lua_State* l)
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 	} else {
 		name = luaL_optstring(l, 2, "dust");
-		if (!console_parse_type(name, &t, console_error))
+		if (!console_parse_type(name, &t, NULL))
 			return luaL_error(l, "Unrecognised element '%s'", name);
 	}
 	if(i == -1 || (w != -1 && h != -1)){
