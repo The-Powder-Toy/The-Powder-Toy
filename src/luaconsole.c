@@ -205,7 +205,7 @@ int luatpt_log(lua_State* l)
 {
 	char *buffer;
 	buffer = luaL_optstring(l, 1, "");
-	strcpy(console_error, buffer);
+	strncpy(console_error, buffer, 254);
 	return 0;
 }
 
@@ -626,10 +626,10 @@ int luatpt_textwidth(lua_State* l)
 int luatpt_get_name(lua_State* l)
 {
 	if (svf_login){
-		lua_pushstring(l, "");
+		lua_pushstring(l, svf_user);
 		return 1;
 	}
-	lua_pushstring(l, svf_user);
+	lua_pushstring(l, "");
 	return 1;
 }
 
