@@ -807,6 +807,8 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	}
 	if (t==PT_DEUT)
 		parts[i].life = 10;
+	if (t==PT_MERC)
+		parts[i].tmp = 10;
 	if (t==PT_BRAY)
 		parts[i].life = 30;
 	if (t==PT_PUMP)
