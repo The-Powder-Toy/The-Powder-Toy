@@ -53,9 +53,10 @@ int luacon_step(int mx, int my, int mb, int mbq, char key){
 			if(step_functions[i]){
 				lua_rawgeti(l, LUA_REGISTRYINDEX, step_functions[i]);
 				callret = lua_pcall(l, 0, 1, 0);
-				if (!callret)
+				if (callret)
 				{
-					// failed, TODO: error reporting
+					// failed, TODO: better error reporting
+					printf("%s\n",luacon_geterror());
 				}
 				if(lua_isboolean(l, -1)){
 					tempb = lua_toboolean(l, -1);
@@ -660,26 +661,46 @@ int luatpt_delete(lua_State* l)
 
 int luatpt_register_step(lua_State* l)
 {
-	int ref, i;
+	int ref, i, ifree = -1;
 	if(lua_isfunction(l, 1)){
 		for(i = 0; i<6; i++){
 			if(!step_functions[i]){
-				ref = luaL_ref(l, LUA_REGISTRYINDEX);
-				step_functions[i] = ref;
-				break;
-			} else { //Supposed to prevent the registration of 2 functions, but this isn't working TODO: FIX!
+				if (ifree<0) ifree = i;
+			} else {
 				lua_rawgeti(l, LUA_REGISTRYINDEX, step_functions[i]);
 				if(lua_equal(l, 1, lua_gettop(l))){
+					lua_pop(l, 1);
 					return luaL_error(l, "Function already registered");
 				}
+				lua_pop(l, 1);
 			}
 		}
+		if (ifree>=0)
+		{
+			ref = luaL_ref(l, LUA_REGISTRYINDEX);
+			step_functions[ifree] = ref;
+			return 0;
+		}
+		else return luaL_error(l, "Step function limit reached");
 	}
 	return 0;
 }
 int luatpt_unregister_step(lua_State* l)
 {
-	//step_function = luaL_optstring(l, 1, "");
+	int i;
+	if(lua_isfunction(l, 1)){
+		for(i = 0; i<6; i++){
+			if (step_functions[i]){
+				lua_rawgeti(l, LUA_REGISTRYINDEX, step_functions[i]);
+				if(lua_equal(l, 1, lua_gettop(l))){
+					lua_pop(l, 1);
+					luaL_unref(l, LUA_REGISTRYINDEX, step_functions[i]);
+					step_functions[i] = 0;
+				}
+				else lua_pop(l, 1);
+			}
+		}
+	}
 	return 0;
 }
 #endif
