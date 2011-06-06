@@ -9,11 +9,11 @@ int update_DICE(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ry][x+rx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if ((r&TYPE)==PT_WATR){
+                if (parts[r>>PS].type==PT_WATR){
                     create_part(-1,x-1,y+1,PT_SMKE);
                     create_part(-1,x+1,y+1,PT_SMKE);
                 }
-                if ((r&TYPE)==PT_ICEI){
+                if (parts[r>>PS].type==PT_ICEI){
                     parts[r>>PS].type=PT_WATR;
                 }
             }

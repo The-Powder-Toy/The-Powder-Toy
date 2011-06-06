@@ -11,7 +11,7 @@ int update_LCRY(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if ((r&TYPE)==PT_LCRY)
+					if (r&TYPE==PT_LCRY)
 					{
 						if (parts[r>>PS].life<10&&parts[r>>PS].life>0)
 							parts[i].life = 9;

@@ -13,10 +13,10 @@ int update_CLNE(UPDATE_FUNC_ARGS) {
                         r = pmap[y+ry][x+rx];
                     if (!r || (r>>PS)>=NPART)
                         continue;
-                    if ((r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN &&
-                    (r&TYPE)!=PT_BCLN && (r&TYPE)!=PT_STKM &&
-                    (r&TYPE)!=PT_STKM2 && (r&TYPE)!=PT_PDCL &&
-                    (r&TYPE)!=PT_GSCL && (r&TYPE)!=PT_LQCL && (r&TYPE)<PT_NUM)
+                    if (r&TYPE!=PT_CLNE && r&TYPE!=PT_PCLN &&
+                    r&TYPE!=PT_BCLN && r&TYPE!=PT_STKM &&
+                    r&TYPE!=PT_STKM2 && r&TYPE!=PT_PDCL &&
+                    r&TYPE!=PT_GSCL && r&TYPE!=PT_LQCL && r&TYPE<PT_NUM)
                         parts[i].ctype = r&TYPE;
                 }
 	}

@@ -14,12 +14,12 @@ int update_legacy_all(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if (((r&TYPE)==PT_WATR||(r&TYPE)==PT_DSTW||(r&TYPE)==PT_SLTW) && 1>(rand()%1000))
+					if ((r&TYPE==PT_WATR||r&TYPE==PT_DSTW||r&TYPE==PT_SLTW) && 1>(rand()%1000))
 					{
 						part_change_type(i,x,y,PT_WATR);
 						part_change_type(r>>PS,x+rx,y+ry,PT_WATR);
 					}
-					if (((r&TYPE)==PT_ICEI || (r&TYPE)==PT_SNOW) && 1>(rand()%1000))
+					if ((r&TYPE==PT_ICEI || r&TYPE==PT_SNOW) && 1>(rand()%1000))
 					{
 						part_change_type(i,x,y,PT_WATR);
 						if (1>(rand()%1000))
@@ -36,7 +36,7 @@ int update_legacy_all(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if (((r&TYPE)==PT_FIRE || (r&TYPE)==PT_LAVA) && 1>(rand()%10))
+					if ((r&TYPE==PT_FIRE || r&TYPE==PT_LAVA) && 1>(rand()%10))
 					{
 						part_change_type(i,x,y,PT_WTRV);
 					}
@@ -51,7 +51,7 @@ int update_legacy_all(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if (((r&TYPE)==PT_FIRE || (r&TYPE)==PT_LAVA) && 1>(rand()%10))
+					if ((r&TYPE==PT_FIRE || r&TYPE==PT_LAVA) && 1>(rand()%10))
 					{
 						part_change_type(i,x,y,PT_SALT);
 						part_change_type(r>>PS,x+rx,y+ry,PT_WTRV);
@@ -67,7 +67,7 @@ int update_legacy_all(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if (((r&TYPE)==PT_FIRE || (r&TYPE)==PT_LAVA) && 1>(rand()%10))
+					if ((r&TYPE==PT_FIRE || r&TYPE==PT_LAVA) && 1>(rand()%10))
 					{
 						part_change_type(i,x,y,PT_WTRV);
 					}
@@ -81,7 +81,7 @@ int update_legacy_all(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if (((r&TYPE)==PT_WATR || (r&TYPE)==PT_DSTW) && 1>(rand()%1000))
+					if ((r&TYPE==PT_WATR || r&TYPE==PT_DSTW) && 1>(rand()%1000))
 					{
 						part_change_type(i,x,y,PT_ICEI);
 						part_change_type(r>>PS,x+rx,y+ry,PT_ICEI);
@@ -96,12 +96,12 @@ int update_legacy_all(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if (((r&TYPE)==PT_WATR || (r&TYPE)==PT_DSTW) && 1>(rand()%1000))
+					if ((r&TYPE==PT_WATR || r&TYPE==PT_DSTW) && 1>(rand()%1000))
 					{
 						part_change_type(i,x,y,PT_ICEI);
 						part_change_type(r>>PS,x+rx,y+ry,PT_ICEI);
 					}
-					if (((r&TYPE)==PT_WATR || (r&TYPE)==PT_DSTW) && 15>(rand()%1000))
+					if ((r&TYPE==PT_WATR || r&TYPE==PT_DSTW) && 15>(rand()%1000))
 						part_change_type(i,x,y,PT_WATR);
 				}
 	}

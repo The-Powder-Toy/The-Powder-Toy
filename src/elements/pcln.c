@@ -9,14 +9,14 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&TYPE)==PT_SPRK)
+				if (r&TYPE==PT_SPRK)
 				{
 					if (parts[r>>PS].ctype==PT_PSCN)
 						parts[i].life = 10;
 					else if (parts[r>>PS].ctype==PT_NSCN)
 						parts[i].life = 9;
 				}
-				if ((r&TYPE)==PT_PCLN)
+				if (r&TYPE==PT_PCLN)
 				{
 					if (parts[i].life==10&&parts[r>>PS].life<10&&parts[r>>PS].life>0)
 						parts[i].life = 9;
@@ -34,12 +34,12 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
  	            r = pmap[y+ry][x+rx];
  	          if (!r || (r>>PS)>=NPART)
  	            continue;
- 	          if ((r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN &&
- 	                (r&TYPE)!=PT_BCLN &&  (r&TYPE)!=PT_SPRK &&
- 	                (r&TYPE)!=PT_NSCN && (r&TYPE)!=PT_PSCN &&
- 	                (r&TYPE)!=PT_STKM && (r&TYPE)!=PT_STKM2 && (r&TYPE)!=PT_PDCL &&
-                    (r&TYPE)!=PT_GSCL && (r&TYPE)!=PT_LQCL &&
- 	                (r&TYPE)<PT_NUM)
+ 	          if (r&TYPE!=PT_CLNE && r&TYPE!=PT_PCLN &&
+ 	                r&TYPE!=PT_BCLN &&  r&TYPE!=PT_SPRK &&
+ 	                r&TYPE!=PT_NSCN && r&TYPE!=PT_PSCN &&
+ 	                r&TYPE!=PT_STKM && r&TYPE!=PT_STKM2 && r&TYPE!=PT_PDCL &&
+                    r&TYPE!=PT_GSCL && r&TYPE!=PT_LQCL &&
+ 	                r&TYPE<PT_NUM)
  	          parts[i].ctype = r&TYPE;
  	        }
 	if (parts[i].ctype && parts[i].life==10) {

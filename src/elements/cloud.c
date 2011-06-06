@@ -37,14 +37,14 @@ int update_CLOUD(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-                if ((r&TYPE) == PT_RWTR){
+                if (parts[r>>PS].type == PT_RWTR){
                     if (rand()%1000 == 1){
                         if (!(parts[r>>PS].y < parts[i].y+2)){
                             parts[r>>PS].type=PT_CLOUD;
                         }
                     }
                 }
-                if ((r&TYPE) == PT_CLOUD){
+                if (parts[r>>PS].type == PT_CLOUD){
                     if (parts[i].y >= parts[r>>PS].y){
                         if (parts[i].tmp != 1){
                             if (rand()%10 == 1){

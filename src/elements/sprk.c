@@ -100,7 +100,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				rt = parts[r>>PS].type;
+				rt = (r&TYPE);
 				conduct_sprk = 1;
 
 

@@ -9,59 +9,35 @@ int update_NUKE(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ny][x+nx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if ((r&TYPE)==PT_FIRE){
+                if (parts[r>>PS].type==PT_FIRE || parts[r>>PS].type==PT_PLSM || parts[r>>PS].type==PT_BFLM){
                     int temporaro = 1000;
                     while (temporaro > -1001){
                         create_part(-1,x+1,y+1,PT_NCWS);
                         create_part(-1,x-1,y-1,PT_PLUT);
                         create_part(-1,x-1,y+1,PT_NCWS);
                         create_part(-1,x+1,y-1,PT_PLUT);
-                        create_part(-1,x,y,PT_ZAP);
+                        if (rand()%100 < 1)
+                            create_part(-1,x,y,PT_ZAP);
                         temporaro--;
                     }
                     create_part(-1,x,y,PT_PAIN);
                     parts[r>>PS].type = PT_NCWS;
                     parts[r>>PS].life = 128;
+                    kill_part(i);
                 }
-                if ((r&TYPE)==PT_PLSM){
+                if (parts[r>>PS].type==PT_SPRK){
                     int temporaro = 1000;
                     while (temporaro > -1001){
                         create_part(-1,x+1,y+1,PT_NCWS);
                         create_part(-1,x-1,y-1,PT_PLUT);
                         create_part(-1,x-1,y+1,PT_NCWS);
                         create_part(-1,x+1,y-1,PT_PLUT);
-                        create_part(-1,x,y,PT_ZAP);
+                        if (rand()%100 < 1)
+                            create_part(-1,x,y,PT_ZAP);
                         temporaro--;
                     }
                     create_part(-1,x,y,PT_PAIN);
-                    parts[r>>PS].type = PT_NCWS;
-                    parts[r>>PS].life = 128;
-                }
-                if ((r&TYPE)==PT_BFLM){
-                    int temporaro = 1000;
-                    while (temporaro > -1001){
-                        create_part(-1,x+1,y+1,PT_NCWS);
-                        create_part(-1,x-1,y-1,PT_PLUT);
-                        create_part(-1,x-1,y+1,PT_NCWS);
-                        create_part(-1,x+1,y-1,PT_PLUT);
-                        create_part(-1,x,y,PT_ZAP);
-                        temporaro--;
-                    }
-                    create_part(-1,x,y,PT_PAIN);
-                    parts[r>>PS].type = PT_NCWS;
-                    parts[r>>PS].life = 128;
-                }
-                if ((r&TYPE)==PT_SPRK){
-                    int temporaro = 1000;
-                    while (temporaro > -1001){
-                        create_part(-1,x+1,y+1,PT_NCWS);
-                        create_part(-1,x-1,y-1,PT_PLUT);
-                        create_part(-1,x-1,y+1,PT_NCWS);
-                        create_part(-1,x+1,y-1,PT_PLUT);
-                        create_part(-1,x,y,PT_ZAP);
-                        temporaro--;
-                    }
-                    create_part(-1,x,y,PT_PAIN);
+                    kill_part(i);
                 }
             }
     return 0;

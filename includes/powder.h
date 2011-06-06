@@ -203,93 +203,96 @@
 #define PT_WIND 147
 #define PT_H2   148
 #define PT_SOAP 149
-#define PT_NTRG  150
-#define PT_LQCL  151
-#define PT_GSCL  152
-#define PT_BOOM  153
-#define PT_HEAL  154
-#define PT_FUSE2  155
-#define PT_ZAP  156
-#define PT_NCWS  157
-#define PT_ACRN  158
-#define PT_CLOUD  159
-#define PT_RWTR  160
-#define PT_ACLOUD  161
-#define PT_VOLT  162
-#define PT_VOLB  163
-#define PT_DIRT  164
-#define PT_INV  165
-#define PT_FLY  166
-#define PT_RSPW  167
-#define PT_NCGN  168
-#define PT_TRAP  169
-#define PT_BPAD  170
-#define PT_SPEL  171
-#define PT_SPER  172
-#define PT_POT  173
-#define PT_GRAS  174
-#define PT_CFUS  175
-#define PT_CFIR  176
-#define PT_SMIL  177
-#define PT_SEAL 178
-#define PT_BULL 179
-#define PT_PPLT 180
-#define PT_TNT 181
-#define PT_MGMA 182
-#define PT_RAND 183
-#define PT_PAIN 184
-#define PT_VIRS 185
-#define PT_O3 186
-#define PT_DICE 187
-#define PT_GOLD 188
-#define PT_MPOS 189
-#define PT_MNEG 190
-#define PT_IFIL 191
-#define PT_LGUN 192
-#define PT_LAZR 193
-#define PT_IBAT 194
-#define PT_FGUN 195
-#define PT_FREZ 196
-#define PT_SPMG 197
-#define PT_SNMG 198
-#define PT_OSMT 199
-#define PT_ROOT 200
-#define PT_BFLM 201
-#define PT_PDCL 202
-#define PT_WCHP 203
-#define PT_SUN 204
-#define PT_AGAS 205
-#define PT_DWFM 206
-#define PT_COPR 207
-#define PT_C02 208
-#define PT_CLAY 209
-#define PT_NMTR 210
-#define PT_BLGN 211
-#define PT_BFGN 212
-#define PT_C6 213
-#define PT_CNVR 214
-#define PT_ASH 215
-#define PT_GREN 216
-#define PT_NUKE 217
-#define PT_TIN 218
-#define PT_BRNZ 219
-#define PT_CFCN 220
-#define PT_SVOI 221
-#define PT_PMIC 222
-#define PT_PIVS 223
-#define PT_LEAF 224
-#define PT_PLAN 225
-#define PT_BSHL 226
-#define PT_LTNG 227
-#define PT_CTRD 228
-#define PT_C0 229
-#define PT_HETR 230
-#define PT_NUM  231 //ignore wall ones... starts at 322 also ignore 255
+#define PT_NBHL 150
+#define PT_NWHL 151
+#define PT_MERC 152
+#define PT_NTRG  153
+#define PT_LQCL  154
+#define PT_GSCL  155
+#define PT_BOOM  156
+#define PT_HEAL  157
+#define PT_FUSE2  158
+#define PT_ZAP  159
+#define PT_NCWS  160
+#define PT_ACRN  161
+#define PT_CLOUD  162
+#define PT_RWTR  163
+#define PT_ACLOUD  164
+#define PT_VOLT  165
+#define PT_VOLB  166
+#define PT_DIRT  167
+#define PT_INV  168
+#define PT_FLY  169
+#define PT_RSPW  170
+#define PT_NCGN  171
+#define PT_TRAP  172
+#define PT_BPAD  173
+#define PT_SPEL  174
+#define PT_SPER  175
+#define PT_POT  176
+#define PT_GRAS  177
+#define PT_CFUS  178
+#define PT_CFIR  179
+#define PT_SMIL  180
+#define PT_SEAL 181
+#define PT_BULL 182
+#define PT_PPLT 183
+#define PT_TNT 184
+#define PT_MGMA 185
+#define PT_RAND 186
+#define PT_PAIN 187
+#define PT_VIRS 188
+#define PT_O3 189
+#define PT_DICE 190
+#define PT_GOLD 191
+#define PT_MPOS 192
+#define PT_MNEG 193
+#define PT_IFIL 194
+#define PT_LGUN 195
+#define PT_LAZR 196
+#define PT_IBAT 197
+#define PT_FGUN 198
+#define PT_FREZ 199
+#define PT_SPMG 200
+#define PT_SNMG 201
+#define PT_OSMT 202
+#define PT_ROOT 203
+#define PT_BFLM 204
+#define PT_PDCL 205
+#define PT_WCHP 206
+#define PT_SUN 207
+#define PT_AGAS 208
+#define PT_DWFM 209
+#define PT_COPR 210
+#define PT_C02 211
+#define PT_CLAY 212
+#define PT_NMTR 213
+#define PT_BLGN 214
+#define PT_BFGN 215
+#define PT_C6 216
+#define PT_CNVR 217
+#define PT_ASH 218
+#define PT_GREN 219
+#define PT_NUKE 220
+#define PT_TIN 221
+#define PT_BRNZ 222
+#define PT_CFCN 223
+#define PT_SVOI 224
+#define PT_PMIC 225
+#define PT_PIVS 226
+#define PT_LEAF 227
+#define PT_PLAN 228
+#define PT_BSHL 229
+#define PT_LTNG 230
+#define PT_CTRD 231
+#define PT_C0 232
+#define PT_HETR 233
+#define PT_NUM  234 //note for future elements, please SKIP numbers 222-240 and 255, these are walls.  Element limit is now 4096 (experimental)
 
 #define R_TEMP 22
-#define MAX_TEMP 99999
+#define MAX_TEMP 9999
 #define MIN_TEMP 0
-#define O_MAX_TEMP 35000
+#define O_MAX_TEMP 3500
 #define O_MIN_TEMP -273
 
 #define ST_NONE 0
@@ -436,6 +439,9 @@ int update_LEAF(UPDATE_FUNC_ARGS);
 int update_PLAN(UPDATE_FUNC_ARGS);
 int update_HETR(UPDATE_FUNC_ARGS);
 int update_C0(UPDATE_FUNC_ARGS);
+int update_NBHL(UPDATE_FUNC_ARGS);
+int update_NWHL(UPDATE_FUNC_ARGS);
+int update_MERC(UPDATE_FUNC_ARGS);
 
 
 int update_MISC(UPDATE_FUNC_ARGS);
@@ -602,8 +608,8 @@ static const part_type ptypes[PT_NUM] =
 	{"NSCN",	PIXPACK(0x505080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"N-Type Silicon, Will not transfer current to P-Type Silicon.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, NULL},
 	{"LN2",		PIXPACK(0x80A0DF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	0,	1,	30,		SC_LIQUID,		70.15f,					70,		"Liquid Nitrogen. Very cold.", ST_SOLID, TYPE_LIQUID, NULL},
 	{"INSL",	PIXPACK(0x9EA3B6),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	7,		0,	0,	10,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	0,		"Insulator, does not conduct heat or electricity.", ST_SOLID, TYPE_SOLID|PROP_INSULATE, NULL},
-	{"BHOL",	PIXPACK(0x202020),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.01f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP+70.0f+273.15f,	255,	"Black hole, sucks in other particles and heats up.", ST_NONE, TYPE_SOLID, NULL},
-	{"WHOL",	PIXPACK(0xEFEFEF),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.010f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP-16.0f+273.15f,	255,	"White hole, pushes other particles away.", ST_NONE, TYPE_SOLID, NULL},
+	{"VACU",	PIXPACK(0x303030),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.01f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP+70.0f+273.15f,	255,	"Vacuum, sucks in other particles and heats up.", ST_NONE, TYPE_SOLID, NULL},
+	{"VENT",	PIXPACK(0xEFEFEF),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.010f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP-16.0f+273.15f,	255,	"Air vent, creates pressure and pushes other particles away.", ST_NONE, TYPE_SOLID, NULL},
 	{"RBDM",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	1,	50,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	240,	"Rubidium, explosive, especially on contact with water, low melting point", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, NULL},
 	{"LRBD",	PIXPACK(0xAAAAAA),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000001f* CFDS,2,	1000,	1,	0,	2,	1,	45,		SC_EXPLOSIVE,	R_TEMP+45.0f+273.15f,	170,	"Liquid Rubidium.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS, NULL},
 	{"NTCT",	PIXPACK(0x505040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Semi-conductor. Only conducts electricity when hot (More than 100C)", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_NPTCT},
@@ -712,7 +718,10 @@ static const part_type ptypes[PT_NUM] =
 	{"BRAN",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Brian 6 S6/B246/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"WIND",	PIXPACK(0x000000),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  1,  100,	SC_SPECIAL,		0.0f,					40,		"Drag tool", ST_NONE, ST_NONE, NULL},
 	{"H2",		PIXPACK(0x5070FF),	2.0f,	0.00f * CFDS,	0.99f,	0.30f,	-0.10f,	0.00f,	3.00f,	0.000f	* CFDS, 0,  0,		0,	0,	0,	1,	1,		SC_GAS,			R_TEMP+0.0f +273.15f,	251,	"Combines with O2 to make WATR", ST_GAS, TYPE_GAS, &update_H2},
-    {"SOAP",  PIXPACK(0xF5F5DC),  0.6f,  0.01f * CFDS,  0.98f,  0.95f,  0.0f,  0.1f,  0.00f,  0.000f  * CFDS,  2,  0,    0,  0,  20,  1,  35,    SC_LIQUID,    R_TEMP-2.0f  +273.15f,  29,    "Soap. Creates bubbles.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE, &update_SOAP},
+    {"SOAP",    PIXPACK(0xF5F5DC),  0.6f,  0.01f * CFDS,  0.98f,  0.95f,  0.0f,  0.1f,  0.00f,  0.000f  * CFDS,  2,  0,    0,  0,  20,  1,  35,    SC_LIQUID,    R_TEMP-2.0f  +273.15f,  29,    "Soap. Creates bubbles.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE, &update_SOAP},
+    {"BHOL",    PIXPACK(0x202020),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  1,  100,  SC_SPACE,    R_TEMP+0.0f  +273.15f,  186,  "Black hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NBHL},
+    {"WHOL",    PIXPACK(0xFFFFFF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  1,  100,  SC_SPACE,    R_TEMP+0.0f  +273.15f,  186,  "White hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NWHL},
+    {"MERC",    PIXPACK(0x736B6D),  0.4f,  0.04f * CFDS,  0.94f,  0.80f,  0.0f,  0.3f,  0.00f,  0.000f  * CFDS,  2,  0,    0,  0,  20,  1,  91,    SC_ELEC,    R_TEMP+0.0f  +273.15f,  251,  "Mercury. Volume changes with temperature, Conductive.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB, &update_MERC},
     {"NTRG",	PIXPACK(0x80A0AA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,  	"Nitrogen in its gas form.", ST_GAS, TYPE_GAS, NULL},
     {"LQCL",	PIXPACK(0xFFD010),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	29,		"Liquid. Duplicates any particles it touches.", ST_LIQUID, TYPE_LIQUID, &update_LQCL},
     {"GSCL",	PIXPACK(0xFFD010),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Gas. Duplicates any particles it touches.", ST_GAS, TYPE_GAS, &update_GSCL},
@@ -767,7 +776,7 @@ static const part_type ptypes[PT_NUM] =
     {"BFLM",	PIXPACK(0x4C76F5),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	MAX_TEMP +273.15f,	            88,		"Ignites flammable materials. Heats air.", ST_GAS, TYPE_GAS, &update_PYRO},
     {"PDCL",	PIXPACK(0xFFD010),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Powder. Duplicates any particles it touches.", ST_SOLID, TYPE_PART, &update_PDCL},
     {"WCHP",    PIXPACK(0xC0A040),  0.4f,  0.04f * CFDS,  0.94f,  0.95f,  -0.1f,  0.3f,  0.00f,  0.000f  * CFDS,  1,  20,    0,  5,  2,  1,  50,    SC_NATURE,    R_TEMP+0.0f  +273.15f,  150,  "Wood Chip. See Wood", ST_SOLID, TYPE_PART, NULL},
-    {"SUN",     PIXPACK(0xFFD010),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  1,  1,  100,  SC_SPECIAL,    R_TEMP+50000.0f +273.15f,251,  "The Sun. A centre of gravity.", ST_SOLID, TYPE_SOLID, &update_SUN},
+    {"STAR",     PIXPACK(0xFFD010),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  1,  1,  100,  SC_SPACE,    R_TEMP+50000.0f +273.15f,251,  "A Star. A centre of gravity and a solar system.", ST_SOLID, TYPE_SOLID, &update_SUN},
     {"AGAS",	PIXPACK(0xFF00EA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,      SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Acidic.", ST_GAS, TYPE_GAS, &update_AGAS},
     {"DWFM",	PIXPACK(0xFF1000),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	R_TEMP+400.0f+273.15f,	88,		"Ignites flammable materials. Heats air. Goes Down.", ST_GAS, TYPE_GAS, &update_PYRO},
     {"COPR",	PIXPACK(0xB88700),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	250,	"Solid. Conducts electricity slowly. Meltable.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
@@ -788,11 +797,11 @@ static const part_type ptypes[PT_NUM] =
     {"PMIC",	PIXPACK(0xC0C0C0),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	1,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	100,	"Pumice. Stacks and floats on water.", ST_SOLID, TYPE_PART, &update_PMIC},
     {"PIVS",	PIXPACK(0x00CCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	15,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	164,	"Powered Invisible. Invisible to everything when sparked with PSCN. Opaque again with NSCN.", ST_SOLID, TYPE_SOLID | PROP_NEUTPASS, &update_PIVS},
     {"LEAF",    PIXPACK(0x0CAC00),  0.7f,   0.02f * CFDS,   0.96f,  0.80f,  0.0f,   0.1f,   0.00f,  0.000f  * CFDS, 1,  0,      0,  0,  20, 1,  85,     SC_NATURE,      R_TEMP+0.0f  +273.15f,  65,    "Leaves. Dry out and become flammable in heat.", ST_SOLID, TYPE_PART|PROP_NEUTPENETRATE, &update_LEAF},
-    {"PLAN",    PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,	0,		0,	0,	0,	1,	100,     SC_NATURE,      R_TEMP+0.0f  +273.15f,  65,    "Planet. Can be modified using console. GravityAmount:'set tmp plan 4'.", ST_SOLID, TYPE_SOLID, &update_PLAN},
+    {"PLAN",    PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,	0,		0,	0,	0,	1,	100,     SC_SPACE,      R_TEMP+0.0f  +273.15f,  65,    "Planet. Can be modified using console. GravityAmount:'set tmp plan 4'.", ST_SOLID, TYPE_SOLID, &update_PLAN},
     {"BSHL",	PIXPACK(0x808080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,		R_TEMP+0.0f	+273.15f,	251,	"Bomb Shell. Can store explosives without breaking. Destroyed by Pressure and Heat.", ST_SOLID, TYPE_SOLID, NULL},
     {"LTNG",	PIXPACK(0xECFF1F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,		R_TEMP+0.0f +273.15f,	251,	"Lightning Strike", ST_SOLID, TYPE_SOLID, NULL},
     {"CTRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Cold Electrode. Creates a surface that allows Cold Flame arcs. (Use sparingly)", ST_NONE, TYPE_SOLID|PROP_CONDUCTS, NULL},
-    {"C-0",		PIXPACK(0xBFBFBF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,	    0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	251,		"Explodes into first touched particle.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_C0},
+    {"C-0",		PIXPACK(0xBFBFBF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,	    0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	251,		"Explodes into first touched particle. Detonates under pressure.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_C0},
     {"HETR",	PIXPACK(0xFFD010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,		"Heater/Cooler - set via tmp value 1=h,2=c", ST_SOLID, TYPE_SOLID, &update_HETR},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
@@ -959,6 +968,9 @@ static part_transition ptransitions[PT_NUM] =
 	/* WIND */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* H2   */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
      /* SOAP */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITL,  NT},
+     /* NBHL */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
+   /* NWHL */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
+  /* MERC */ {IPL,    NT,         IPH,    NT,         ITL,    NT,         ITH,  NT},
     /* NTRG  */ {IPL,	NT,			IPH,	NT,			120.0f,	PT_LNTG,     ITH,	PT_NONE},
     /* LQCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* GSCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
@@ -1180,6 +1192,8 @@ static void create_cherenkov_photon(int pp);
 static void create_gain_photon(int pp);
 
 void kill_part(int i);
+
+void detach(int i);
 
 void part_change_type(int i, int x, int y, int t);
 

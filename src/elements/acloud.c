@@ -14,14 +14,14 @@ int update_ACLOUD(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-                if ((r&TYPE) == PT_ACRN){
+                if (parts[r>>PS].type == PT_ACRN){
                     if (rand()%1000 == 1){
                         if (parts[r>>PS].y > parts[i].y+2){
                             parts[r>>PS].type=PT_ACLOUD;
                         }
                     }
                 }
-                if ((r&TYPE) == PT_ACLOUD){
+                if (parts[r>>PS].type == PT_ACLOUD){
                     if (parts[i].y >= parts[r>>PS].y){
                         if (parts[i].tmp != 1){
                             if (rand()%10 == 1){

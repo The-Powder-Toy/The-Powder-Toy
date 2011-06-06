@@ -1068,6 +1068,8 @@ stamp stamps[STAMP_MAX];//[STAMP_X*STAMP_Y];
 
 int stamp_count = 0;
 
+int save_count = 0;
+
 unsigned last_time=0, last_name=0;
 void stamp_gen_name(char *fn)
 {
@@ -1083,7 +1085,6 @@ void stamp_gen_name(char *fn)
 
 	sprintf(fn, "%08x%02x", last_time, last_name);
 }
-
 void stamp_update(void)
 {
 	FILE *f;
@@ -1177,7 +1178,45 @@ void stamp_save(int x, int y, int w, int h)
 
 	stamp_update();
 }
+void local_save(int x, int y, int w, int h)
+{
+	FILE *f;
+	int n;
+	char fn[64], sn[16];
+	char name[64];
+	void *s=build_save(&n, x, y, w, h, bmap, fvx, fvy, signs, parts);
 
+#ifdef WIN32
+	_mkdir("saves");
+#else
+	mkdir("saves", 0755);
+#endif
+
+	stamp_gen_name(sn);
+	sprintf(fn, "saves" PATH_SEP "%s.cps", sn);
+	sprintf(name, "Check the saves folder for %s.cps", sn);
+
+	f = fopen(fn, "wb");
+	if (!f)
+		return;
+	fwrite(s, n, 1, f);
+	fclose(f);
+
+	free(s);
+
+	if (stamps[STAMP_MAX-1].thumb)
+		free(stamps[STAMP_MAX-1].thumb);
+	memmove(stamps+1, stamps, sizeof(struct stamp)*(STAMP_MAX-1));
+	memset(stamps, 0, sizeof(struct stamp));
+	if (stamp_count<STAMP_MAX)
+		stamp_count++;
+
+	strcpy(stamps[0].name, sn);
+	stamp_gen_thumb(0);
+
+	stamp_update();
+	info_ui(vid_buf, "Saved Save Locally", name);
+}
 void *stamp_load(int i, int *size)
 {
 	void *data;
@@ -1899,11 +1938,10 @@ luacon_open();
 					}
 				}
 			}
-			//if(sdl_key=='d' && isplayer)
-			//{
-			//    death = 1;
-			//    //death = !(death);
-			//}
+			if(sdl_key=='r')
+			{
+			    local_save(0, 0, XRES, YRES);
+			}
 			if (sdl_key=='f')
 			{
 				framerender = 1;
@@ -2501,8 +2539,6 @@ luacon_open();
             x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && svf_messages){
                 if (confirm_ui(vid_buf, "Open Webpage", "You are about to open the conversations page", "Open"))
                 {
-                    //ShellExecute(NULL, "open", "http://powdertoy.co.uk/Conversations.html", NULL, NULL, SW_SHOWNORMAL);
-                    //system("open http://powdertoy.co.uk/Conversations.html");
                     open_link("http://powdertoy.co.uk/Conversations.html");
                 }
             }

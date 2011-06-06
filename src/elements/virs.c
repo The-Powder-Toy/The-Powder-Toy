@@ -10,7 +10,7 @@ int update_VIRS(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ny][x+nx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if((r&TYPE)!=PT_DMND||(r&TYPE)!=PT_GOLD||(r&TYPE)!=PT_CLNE||(r&TYPE)!=PT_CNVR||(r&TYPE)!=PT_VOID||(r&TYPE)!=PT_WHOL||(r&TYPE)!=PT_BHOL)
+                if(parts[r>>PS].type!=PT_DMND||parts[r>>PS].type!=PT_GOLD||parts[r>>PS].type!=PT_CLNE||parts[r>>PS].type!=PT_CNVR||parts[r>>PS].type!=PT_VOID||parts[r>>PS].type!=PT_WHOL||parts[r>>PS].type!=PT_BHOL)
                     parts[r>>PS].type=PT_VIRS;
             }
     return 0;

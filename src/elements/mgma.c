@@ -10,7 +10,7 @@ int update_MGMA(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ry][x+rx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if(rand()%4000 < 1){
+                if(rand()%8000 < 1){
                     int nnx = rand()%3 -1;
                     //int nny = rand()%3 -1;
                     int nny = -1;
@@ -25,7 +25,7 @@ int update_MGMA(UPDATE_FUNC_ARGS) {
                 }
 
             }
-    if (parts[i].temp< R_TEMP + 1500)
-        parts[i].temp = R_TEMP + 1500;
+    if(rand()%1000 < 1)
+        parts[i].temp += 50;
     return 0;
 }

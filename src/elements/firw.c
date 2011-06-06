@@ -10,7 +10,7 @@ int update_FIRW(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					rt = parts[r>>PS].type;
+					rt = r&TYPE;
 					if (rt==PT_FIRE||rt==PT_PLSM||rt==PT_THDR)
 					{
 						parts[i].tmp = 1;
@@ -46,7 +46,7 @@ int update_FIRW(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if ((r&TYPE)==PT_FIRW) {
+					if (r&TYPE==PT_FIRW) {
 						parts[r>>PS].vx = (rand()%3-1)*tmul;
 						parts[r>>PS].vy = (rand()%3-1)*tmul;
 						parts[r>>PS].tmp = col;

@@ -8,9 +8,9 @@
 #endif
 
 #define ME4502_MAJOR_VERSION 2
-#define ME4502_VERSION 7
-#define SAVE_VERSION 49
-#define MINOR_VERSION 0
+#define ME4502_VERSION 8
+#define SAVE_VERSION 50
+#define MINOR_VERSION 1
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
 
@@ -55,7 +55,7 @@
 #define TAG_MAX 256
 
 #define PS 12 //the particle number shift that also determines element limit
-#define TYPE (int)pow(2,PS)-1
+#define TYPE 0xFFF //(int)pow(2,PS)-1 //Changes where particles are allocated !DO NOT TOUCH!
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
@@ -193,6 +193,7 @@ int ISSPAWN2;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;
+extern int save_count;
 extern int itc;
 extern char itc_msg[64];
 

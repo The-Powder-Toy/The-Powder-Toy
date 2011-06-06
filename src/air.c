@@ -286,12 +286,12 @@ void update_air(void)
 					dy += fvy[y][x];
 				}
 				// pressure/velocity caps
-				/*if (dp > 256.0f) dp = 256.0f;
+				if (dp > 256.0f) dp = 256.0f;
 				if (dp < -256.0f) dp = -256.0f;
 				if (dx > 256.0f) dx = 256.0f;
 				if (dx < -256.0f) dx = -256.0f;
 				if (dy > 256.0f) dy = 256.0f;
-				if (dy < -256.0f) dy = -256.0f;*/
+				if (dy < -256.0f) dy = -256.0f;
 
 
 				switch (airMode)

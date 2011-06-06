@@ -9,11 +9,11 @@ int update_FRZZ(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&TYPE)==PT_WATR&&5>rand()%100)
+				if (r&TYPE==PT_WATR&&5>rand()%100)
 				{
 					part_change_type(r>>PS,x+rx,y+ry,PT_FRZW);
 					parts[r>>PS].life = 100;
-					parts[i].type = PT_NONE;
+					kill_part(i);
 				}
 
 			}

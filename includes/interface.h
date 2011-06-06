@@ -44,20 +44,21 @@ static menu_wall mwalls[] =
 };
 
 #define SC_WALL 0
-#define SC_SPECIAL 8
-#define SC_POWDERS 5
-#define SC_SOLIDS 6
 #define SC_ELEC 1
 #define SC_EXPLOSIVE 2
 #define SC_GAS 3
 #define SC_LIQUID 4
+#define SC_POWDERS 5
+#define SC_SOLIDS 6
 #define SC_NUCLEAR 7
+#define SC_SPECIAL 8
 #define SC_LIFE 9
+#define SC_STICKMAN 10
+#define SC_NATURE 11
+#define SC_SPACE 12
+#define SC_CRACKER2 13
 #define SC_CRACKER 13
-#define SC_CRACKER2 12
-#define SC_STICKMAN 10    //
-#define SC_NATURE 11   //
-#define SC_TOTAL 13
+#define SC_TOTAL 14
 
 static menu_section msections[] = //doshow does not do anything currently.
 {
@@ -73,6 +74,7 @@ static menu_section msections[] = //doshow does not do anything currently.
 	{"\xD2", "Life", 0, 1},
     {"\xA7", "Stickman", 0, 1},
     {"\xA4", "Nature", 0, 1},
+    {"\xD1", "Space", 0, 1},
 	{"\xC8", "Secret", 0, 1},
 	{"\xC8", "Secret", 0, 0},
 };
@@ -277,6 +279,8 @@ int execute_report(pixel *vid_buf, char *id, char *reason);
 void execute_submit(pixel *vid_buf, char *id, char *message);
 
 void execute_fav(pixel *vid_buf, char *id);
+
+void execute_unfav(pixel *vid_buf, char *id);
 
 int execute_vote(pixel *vid_buf, char *id, char *action);
 

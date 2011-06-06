@@ -10,23 +10,23 @@ int update_ROOT(UPDATE_FUNC_ARGS) {
                     r = pmap[y+ry][x+rx];
                     if((r>>PS)>=NPART || !r)
                         continue;
-                    if((r&TYPE)==PT_WATR && 1>(rand()%250))
+                    if(parts[r>>PS].type==PT_WATR && 1>(rand()%250))
                     {
                         t = parts[i].type = PT_ROOT;
                         parts[r>>PS].type = PT_NONE;
                         parts[i].tmp2 = 1;
                     }
-                    else if((r&TYPE)==PT_RWTR && 1>(rand()%250))
+                    else if(parts[r>>PS].type==PT_RWTR && 1>(rand()%250))
                     {
                         t = parts[i].type = PT_ROOT;
                         parts[r>>PS].type = PT_NONE;
                         parts[i].tmp2 = 1;
                     }
-                    else if((r&TYPE)==PT_O3)
+                    else if(parts[r>>PS].type==PT_O3)
                     {
                         t = parts[i].type = PT_FIRE;
                     }
-                    else if((r&TYPE)==PT_DIRT)
+                    else if(parts[r>>PS].type==PT_DIRT)
                     {
                         if (rand()%8000 < 1){
                             if (parts[r>>PS].type == PT_DIRT){
@@ -39,7 +39,7 @@ int update_ROOT(UPDATE_FUNC_ARGS) {
                         }
                     }
                     if (parts[i].tmp2==1 && parts[r>>PS].tmp2!=1 && parts[r>>PS].tmp2!=2){
-                        if ((r&TYPE)==PT_ROOT){
+                        if (parts[r>>PS].type==PT_ROOT){
                                 parts[r>>PS].tmp2=1;
                                 parts[i].tmp2=0;
                         }

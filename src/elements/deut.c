@@ -14,7 +14,7 @@ int update_DEUT(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r || (parts[i].life >=maxlife))
 						continue;
-					if ((r&TYPE)==PT_DEUT&&33>=rand()/(RAND_MAX/100)+1)
+					if (r&TYPE==PT_DEUT&&33>=rand()/(RAND_MAX/100)+1)
 					{
 						if ((parts[i].life + parts[r>>PS].life + 1) <= maxlife)
 						{
@@ -53,7 +53,7 @@ int update_DEUT(UPDATE_FUNC_ARGS) {
 			r = pmap[y+ry][x+rx];
 			if ((r>>PS)>=NPART || !r)
 				continue;
-			if ((r&TYPE)==PT_DEUT&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
+			if (r&TYPE==PT_DEUT&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
 			{
 				int temp = parts[i].life - parts[r>>PS].life;
 				if (temp ==1)

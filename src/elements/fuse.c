@@ -30,7 +30,7 @@ int update_FUSE(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&TYPE)==PT_SPRK || ((parts[i].temp>=(273.15+700.0f)) && 1>(rand()%20)))
+				if (r&TYPE==PT_SPRK || ((parts[i].temp>=(273.15+700.0f)) && 1>(rand()%20)))
 				{
 					if (parts[i].life>40) {
 						parts[i].life = 39;

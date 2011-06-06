@@ -12,7 +12,7 @@ int update_ANAR(UPDATE_FUNC_ARGS) {
                                 r = pmap[y+ry][x+rx];
                                 if ((r>>PS)>=NPART || !r)
                                         continue;
-                                if ((r&TYPE)==PT_HFLM)
+                                if (r&TYPE==PT_HFLM)
                                 {
                                         if (1>rand()%22)
                                         {

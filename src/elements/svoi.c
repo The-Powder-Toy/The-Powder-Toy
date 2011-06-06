@@ -49,7 +49,7 @@ int update_SVOI(UPDATE_FUNC_ARGS) {
                             parts[r>>PS].type = PT_NONE;
                         }
                     }
-                    if ((r&TYPE)==PT_SVOI){
+                    if (parts[r>>PS].type==PT_SVOI){
                         parts[r>>PS].ctype=parts[i].ctype;
                     }
                 }

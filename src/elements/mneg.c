@@ -2,7 +2,7 @@
 
 int update_MNEG(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
-    if((r&TYPE)==PT_BRMT){
+    if(r&TYPE==PT_BRMT){
         parts[r>>PS].vx = 0;
         parts[r>>PS].vy = 0;
         parts[r>>PS].ctype = PT_BRMT;
@@ -14,7 +14,7 @@ int update_MNEG(UPDATE_FUNC_ARGS) {
                     r = pmap[y+ry][x+rx];
                     if ((r>>PS)>=NPART || !r)
                         continue;
-                    if ((r&TYPE)==PT_BRMT){
+                    if (r&TYPE==PT_BRMT){
                         if ((parts[r>>PS].ctype != PT_BRMT)||(parts[i].y<parts[r>>PS].y)){
                             parts[r>>PS].tmp = (((parts[i].x)-(parts[r>>PS].x))/10)*(rand()%5+10/10);
                             parts[r>>PS].vx = parts[r>>PS].tmp - parts[r>>PS].tmp - parts[r>>PS].tmp;
@@ -29,7 +29,7 @@ int update_MNEG(UPDATE_FUNC_ARGS) {
 				}
             }
     }
-    if((r&TYPE)==PT_IFIL){
+    if(r&TYPE==PT_IFIL){
         parts[r>>PS].vx = 0;
         parts[r>>PS].vy = 0;
         parts[r>>PS].ctype = PT_IFIL;
@@ -41,7 +41,7 @@ int update_MNEG(UPDATE_FUNC_ARGS) {
                     r = pmap[y+ry][x+rx];
                     if ((r>>PS)>=NPART || !r)
                         continue;
-                    if ((r&TYPE)==PT_IFIL){
+                    if (r&TYPE==PT_IFIL){
                         if ((parts[r>>PS].ctype != PT_IFIL)||(parts[i].y<parts[r>>PS].y)){
                             parts[r>>PS].tmp = (((parts[i].x)-(parts[r>>PS].x))/20)*(rand()%5+20/20);
                             parts[r>>PS].vx = parts[r>>PS].tmp - parts[r>>PS].tmp - parts[r>>PS].tmp;

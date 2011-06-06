@@ -43,7 +43,7 @@ int update_CNVR(UPDATE_FUNC_ARGS) {
 				        (pmap[y+ry][x+rx]&TYPE)!=TYPE){
                             parts[r>>PS].type = parts[i].ctype;
                     }
-                    if ((r&TYPE)==PT_CNVR){
+                    if (parts[r>>PS].type==PT_CNVR){
                         parts[r>>PS].ctype=parts[i].ctype;
                     }
                 }

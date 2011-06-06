@@ -9,7 +9,7 @@ int update_GREN(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ny][x+nx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if ((r&TYPE)==PT_FIRE){
+                if (r&TYPE==PT_FIRE){
                     int temporaro = 1000;
                     while (temporaro > -1001){
                         create_part(-1,x+1,y+1,PT_BRMT);
@@ -28,9 +28,9 @@ int update_GREN(UPDATE_FUNC_ARGS) {
                         if (y+CELL<YRES)
                             pv[y/CELL+1][x/CELL+1] += 2.0f;
                     }
-                    parts[i].type = PT_NONE;
+                    kill_part(i);
                 }
-                if ((r&TYPE)==PT_PLSM){
+                if (r&TYPE==PT_PLSM){
                     int temporaro = 1000;
                     while (temporaro > -1001){
                         create_part(-1,x+1,y+1,PT_BRMT);
@@ -49,9 +49,9 @@ int update_GREN(UPDATE_FUNC_ARGS) {
                         if (y+CELL<YRES)
                             pv[y/CELL+1][x/CELL+1] += 2.0f;
                     }
-                    parts[i].type = PT_NONE;
+                    kill_part(i);
                 }
-                if ((r&TYPE)==PT_BFLM){
+                if (r&TYPE==PT_BFLM){
                     int temporaro = 1000;
                     while (temporaro > -1001){
                         create_part(-1,x+1,y+1,PT_BRMT);
@@ -70,9 +70,9 @@ int update_GREN(UPDATE_FUNC_ARGS) {
                         if (y+CELL<YRES)
                             pv[y/CELL+1][x/CELL+1] += 10.0f;
                     }
-                    parts[i].type = PT_NONE;
+                    kill_part(i);
                 }
-                if ((r&TYPE)==PT_SPRK){
+                if (r&TYPE==PT_SPRK){
                     int temporaro = 1000;
                     while (temporaro > -1001){
                         create_part(-1,x+1,y+1,PT_BRMT);
@@ -91,7 +91,7 @@ int update_GREN(UPDATE_FUNC_ARGS) {
                         if (y+CELL<YRES)
                             pv[y/CELL+1][x/CELL+1] += 2.0f;
                     }
-                    parts[i].type = PT_NONE;
+                    kill_part(i);
                 }
             }
     return 0;

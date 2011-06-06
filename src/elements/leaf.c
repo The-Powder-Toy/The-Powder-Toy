@@ -11,14 +11,14 @@ int update_LEAF(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-                    if ((r&TYPE)==PT_WATR || (r&TYPE)==PT_WTRV || (r&TYPE)==PT_DSTW){
+                    if (r&TYPE==PT_WATR || r&TYPE==PT_WTRV || r&TYPE==PT_DSTW){
                         if(parts[i].life>0)
                         parts[i].life--;
                     }
 					if (parts[i].temp>774.0f&&33>=rand()/(RAND_MAX/100)+1)
 					{
 						parts[i].life++;
-						if ((r&TYPE)==PT_FIRE)
+						if (r&TYPE==PT_FIRE)
                         {
                             tmp++;
                             parts[i].type=PT_FIRE;
@@ -47,7 +47,7 @@ int update_LEAF(UPDATE_FUNC_ARGS) {
 			r = pmap[y+ry][x+rx];
 			if ((r>>PS)>=NPART || !r)
 				continue;
-			if ((r&TYPE)==PT_SPNG&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
+			if (r&TYPE==PT_SPNG&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
 			{
 				tmp = parts[i].life - parts[r>>PS].life;
 				if (tmp ==1)

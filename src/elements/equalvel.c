@@ -11,7 +11,7 @@ int update_EQUALVEL(UPDATE_FUNC_ARGS) {
                     continue;
                 parts[i].vx = parts[r>>PS].vx;
                 parts[i].vy = parts[r>>PS].vy;
-                if((r&TYPE)==PT_SAND){
+                if(r&TYPE==PT_SAND){
                     parts[i].vx ++;
                     parts[i].vy ++;
                     parts[i].x = parts[r>>PS].x;
