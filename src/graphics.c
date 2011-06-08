@@ -140,6 +140,18 @@ pixel *ptif_unpack(void *datain, int size, int *w, int *h){
 	return result;
 }
 
+pixel *resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
+{
+	int y, x;
+	pixel *q = NULL;
+	q = malloc(rw*rh*PIXELSIZE);
+	for (y=0; y<rh; y++)
+		for (x=0; x<rw; x++){
+			q[rw*y+x] = src[sw*(y*sh/rh)+(x*sw/rw)];
+		}
+	return q;
+}
+
 pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 {
 	int y, x;

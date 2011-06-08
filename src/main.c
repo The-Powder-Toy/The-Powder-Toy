@@ -1482,8 +1482,8 @@ int main(int argc, char *argv[])
 			free(datares);
 			datares = NULL;
 		}
-		scaled_buf = resample_img(vid_buf, XRES, YRES, XRES/4, YRES/4);
-		datares = ptif_pack(scaled_buf, XRES/4, YRES/4, &res);
+		scaled_buf = resample_img(vid_buf, XRES, YRES, XRES/GRID_Z, YRES/GRID_Z);
+		datares = ptif_pack(scaled_buf, XRES/GRID_Z, YRES/GRID_Z, &res);
 		if(datares!=NULL){
 			f=fopen(ptismallfilename, "wb");
 			fwrite(datares, res, 1, f);
