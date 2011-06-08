@@ -1741,6 +1741,9 @@ int main(int argc, char *argv[])
 		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
 		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
 	}
+#ifdef LUACONSOLE
+	luacon_eval("dofile(\"autorun.lua\")"); //Autorun lua script
+#endif
 	while (!sdl_poll()) //the main loop
 	{
 		frameidx++;

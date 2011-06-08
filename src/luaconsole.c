@@ -30,6 +30,8 @@ void luacon_open(){
 		{"delete", &luatpt_delete},
 		{"register_step", &luatpt_register_step},
 		{"unregister_step", &luatpt_unregister_step},
+		{"input", &luatpt_input},
+		{"message_box", &luatpt_message_box},
 		{NULL,NULL}
 	};
 
@@ -702,5 +704,46 @@ int luatpt_unregister_step(lua_State* l)
 		}
 	}
 	return 0;
+}
+int luatpt_input(lua_State* l)
+{
+	char *prompt, *title, *result, *shadow, *text;
+	title = mystrdup(luaL_optstring(l, 1, "Title"));
+	prompt = mystrdup(luaL_optstring(l, 2, "Enter some text:"));
+	text = mystrdup(luaL_optstring(l, 3, ""));
+	shadow = mystrdup(luaL_optstring(l, 4, ""));
+
+	if (vid_buf!=NULL)
+	{
+		result = input_ui(vid_buf, title, prompt, text, shadow);
+		lua_pushstring(l, result);
+		free(result);
+		free(title);
+		free(prompt);
+		free(text);
+		free(shadow);
+		return 1;
+	}
+	free(title);
+	free(prompt);
+	free(text);
+	free(shadow);
+	return luaL_error(l, "Screen buffer does not exist");
+}
+int luatpt_message_box(lua_State* l)
+{
+	char *title, *text;
+	title = mystrdup(luaL_optstring(l, 1, "Title"));
+	text = mystrdup(luaL_optstring(l, 2, "Message"));
+	if (vid_buf!=NULL)
+	{
+		info_ui(vid_buf, title, text);
+		free(title);
+		free(text);
+		return 0;
+	}
+	free(title);
+	free(text);
+	return luaL_error(l, "Screen buffer does not exist");;
 }
 #endif

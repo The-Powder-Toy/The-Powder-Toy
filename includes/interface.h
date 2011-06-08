@@ -207,6 +207,8 @@ void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt);
 
 void info_box(pixel *vid_buf, char *msg);
 
+char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shadow);
+
 int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn);
 
 void login_ui(pixel *vid_buf);

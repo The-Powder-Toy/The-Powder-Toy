@@ -820,6 +820,75 @@ void error_ui(pixel *vid_buf, int err, char *txt)
 	}
 }
 
+char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shadow)
+{
+	int xsize = 244;
+	int ysize = 90;
+	int edity, editx;
+	int x0=(XRES-xsize)/2,y0=(YRES-MENUSIZE-ysize)/2,b=1,bq,mx,my;
+	ui_edit ed;
+
+	edity = y0+50;
+	editx = x0+12;
+
+	ed.x = editx;
+	ed.y = edity;
+	ed.w = xsize - 20;
+	ed.nx = 1;
+	ed.def = shadow;
+	ed.focus = 0;
+	ed.hide = 0;
+	ed.cursor = 0;
+	ed.multiline = 0;
+	strncpy(ed.str, text, 254);
+
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+
+	while (!sdl_poll())
+	{
+		bq = b;
+		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
+
+		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
+		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
+		drawtext(vid_buf, x0+8, y0+8, title, 160, 160, 255, 255);
+		drawtext(vid_buf, x0+8, y0+26, prompt, 255, 255, 255, 255);
+		
+		drawrect(vid_buf, ed.x-4, ed.y-5, ed.w+4, 16, 192, 192, 192, 255);
+
+		ui_edit_draw(vid_buf, &ed);
+		ui_edit_process(mx, my, b, &ed);
+
+		drawtext(vid_buf, x0+5, y0+ysize-11, "OK", 255, 255, 255, 255);
+		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
+
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+
+		if (b && !bq && mx>=x0 && mx<x0+xsize && my>=y0+ysize-16 && my<=y0+ysize)
+			break;
+
+		if (sdl_key==SDLK_RETURN)
+			break;
+		if (sdl_key==SDLK_ESCAPE)
+			break;
+	}
+
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+	return mystrdup(ed.str);
+}
+
 void info_ui(pixel *vid_buf, char *top, char *txt)
 {
 	int x0=(XRES-240)/2,y0=(YRES-MENUSIZE)/2,b=1,bq,mx,my;
@@ -2618,7 +2687,7 @@ int search_ui(pixel *vid_buf)
 					pixel *thumb_rsdata = NULL;
 					pixel *thumb_imgdata = ptif_unpack(search_thumbs[pos], search_thsizes[pos], &finw, &finh);
 					if(thumb_imgdata!=NULL){
-						thumb_rsdata = resample_img(thumb_imgdata, finw, finh, XRES/GRID_S, YRES/GRID_S);
+						thumb_rsdata = resample_img_nn(thumb_imgdata, finw, finh, XRES/GRID_S, YRES/GRID_S);
 						draw_image(v_buf, thumb_rsdata, gx, gy, XRES/GRID_S, YRES/GRID_S, 255);					
 						free(thumb_imgdata);
 						free(thumb_rsdata);
