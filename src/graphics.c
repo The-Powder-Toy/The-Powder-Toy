@@ -158,7 +158,11 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 	//int i,j,x,y,w,h,r,g,b,c;
 	pixel *q = NULL;
 	//TODO: Actual resampling, this is just cheap nearest pixel crap
-	if(rw > sw && rh > sh){
+	if(rw == sw && rh == sh){
+		//Don't resample
+		q = malloc(rw*rh*PIXELSIZE);
+		memcpy(q, src, rw*rh*PIXELSIZE);
+	} else if(rw > sw && rh > sh){
 		float fx, fy, fyc, fxc, intp;
 		pixel tr, tl, br, bl;
 		q = malloc(rw*rh*PIXELSIZE);
