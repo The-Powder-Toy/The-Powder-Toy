@@ -1036,6 +1036,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		{
 			memcpy(signs[k].text, d+p, x);
 			signs[k].text[x] = 0;
+			clean_text(signs[k].text, 158-14 /* Current max sign length */);
 		}
 		p += x;
 	}

@@ -99,6 +99,19 @@ void strlist_free(struct strlist **list)
 	}
 }
 
+void clean_text(char *text, int vwidth)
+{
+	int i = 0;
+	if(textwidth(text) > vwidth){
+		text[textwidthx(text, vwidth)] = 0;	
+	}
+	for(i = 0; i < strlen(text); i++){
+		if(! (text[i]>=' ' && text[i]<127)){
+			text[i] = ' ';
+		}
+	}
+}
+
 void save_presets(int do_update)
 {
 	FILE *f=fopen("powder.def", "wb");

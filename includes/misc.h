@@ -44,6 +44,8 @@ void strlist_free(struct strlist **list);
 
 void save_presets(int do_update);
 
+void clean_text(char *text, int vwidth);
+
 void load_presets(void);
 
 void save_string(FILE *f, char *str);
