@@ -15,6 +15,7 @@
 #include <interface.h>
 #include <misc.h>
 #include <console.h>
+#include <images.h>
 
 SDLMod sdl_mod;
 int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
@@ -1074,7 +1075,7 @@ int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 
 void login_ui(pixel *vid_buf)
 {
-	int x0=(XRES-192)/2,y0=(YRES-80)/2,b=1,bq,mx,my,err;
+	int x0=(XRES+BARSIZE-192)/2,y0=(YRES+MENUSIZE-80)/2,b=1,bq,mx,my,err;
 	ui_edit ed1,ed2;
 	char *res;
 
@@ -1106,7 +1107,7 @@ void login_ui(pixel *vid_buf)
 	ed2.multiline = 0;
 	strcpy(ed2.str, "");
 
-	fillrect(vid_buf, -1, -1, XRES, YRES+MENUSIZE, 0, 0, 0, 192);
+	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 	while (!sdl_poll())
 	{
 		bq = b;
@@ -1575,6 +1576,8 @@ int save_name_ui(pixel *vid_buf)
 	cb.checked = svf_publish;
 
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+	draw_rgba_image(vid_buf, save_to_server_image, 0, 0, 0.7);
+	
 	memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 
 	while (!sdl_poll())
@@ -1617,7 +1620,6 @@ int save_name_ui(pixel *vid_buf)
 			ui_copytext_draw(vid_buf, &ctb);
 			ui_copytext_process(mx, my, b, bq, &ctb);
 		}
-
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 
 		memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);

@@ -3624,6 +3624,26 @@ pixel *render_packed_rgb(void *image, int width, int height, int cmp_size)
 	return res;
 }
 
+void draw_rgba_image(pixel *vid, unsigned char *data, int x, int y, float alpha)
+{
+	unsigned char w, h;
+	int i, j;
+	unsigned char r, g, b, a;
+	w = *(data++)&0xFF;
+	h = *(data++)&0xFF;
+	for (j=0; j<h; j++)
+	{
+		for (i=0; i<w; i++)
+		{
+			r = *(data++)&0xFF;
+			g = *(data++)&0xFF;
+			b = *(data++)&0xFF;
+			a = *(data++)&0xFF;
+			drawpixel(vid, x+i, y+j, r, g, b, a*alpha);
+		}
+	}
+}
+
 void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a)
 {
 	int i, j, r, g, b;

@@ -48,6 +48,8 @@ extern unsigned int fire_alpha[CELL*3][CELL*3];
 extern pixel *fire_bg;
 extern pixel *pers_bg;
 
+void draw_rgba_image(pixel *vid, unsigned char *data, int x, int y, float a);
+
 void *ptif_pack(pixel *src, int w, int h, int *result_size);
 
 pixel *ptif_unpack(void *datain, int size, int *w, int *h);
