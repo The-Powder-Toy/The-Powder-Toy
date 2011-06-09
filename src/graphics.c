@@ -154,7 +154,7 @@ pixel *resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
 
 pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 {
-	int y, x;
+	int y, x, fxceil, fyceil;
 	//int i,j,x,y,w,h,r,g,b,c;
 	pixel *q = NULL;
 	//TODO: Actual resampling, this is just cheap nearest pixel crap
@@ -174,10 +174,14 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 				fy = ((float)y)*((float)sh)/((float)rh);
 				fxc = modf(fx, &intp);
 				fyc = modf(fy, &intp);
-				tr = src[sw*(int)floor(fy)+(int)ceil(fx)];
+				fxceil = (int)ceil(fx);
+				fyceil = (int)ceil(fy);
+				if (fxceil>=sw) fxceil = sw-1;
+				if (fyceil>=sh) fxceil = sh-1;
+				tr = src[sw*(int)floor(fy)+fxceil];
 				tl = src[sw*(int)floor(fy)+(int)floor(fx)];
-				br = src[sw*(int)ceil(fy)+(int)ceil(fx)];
-				bl = src[sw*(int)ceil(fy)+(int)floor(fx)];
+				br = src[sw*fyceil+fxceil];
+				bl = src[sw*fyceil+(int)floor(fx)];
 				q[rw*y+x] = PIXRGB(
 					(int)(((((float)PIXR(tl))*(1.0f-fxc))+(((float)PIXR(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXR(bl))*(1.0f-fxc))+(((float)PIXR(br))*(fxc)))*(fyc)),
 					(int)(((((float)PIXG(tl))*(1.0f-fxc))+(((float)PIXG(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXG(bl))*(1.0f-fxc))+(((float)PIXG(br))*(fxc)))*(fyc)),
@@ -210,10 +214,14 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 					fy = ((float)y)*((float)sh)/((float)rh);
 					fxc = modf(fx, &intp);
 					fyc = modf(fy, &intp);
-					tr = oq[sw*(int)floor(fy)+(int)ceil(fx)];
+					fxceil = (int)ceil(fx);
+					fyceil = (int)ceil(fy);
+					if (fxceil>=sw) fxceil = sw-1;
+					if (fyceil>=sh) fxceil = sh-1;
+					tr = oq[sw*(int)floor(fy)+fxceil];
 					tl = oq[sw*(int)floor(fy)+(int)floor(fx)];
-					br = oq[sw*(int)ceil(fy)+(int)ceil(fx)];
-					bl = oq[sw*(int)ceil(fy)+(int)floor(fx)];
+					br = oq[sw*fyceil+fxceil];
+					bl = oq[sw*fyceil+(int)floor(fx)];
 					q[rw*y+x] = PIXRGB(
 						(int)(((((float)PIXR(tl))*(1.0f-fxc))+(((float)PIXR(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXR(bl))*(1.0f-fxc))+(((float)PIXR(br))*(fxc)))*(fyc)),
 						(int)(((((float)PIXG(tl))*(1.0f-fxc))+(((float)PIXG(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXG(bl))*(1.0f-fxc))+(((float)PIXG(br))*(fxc)))*(fyc)),
