@@ -1,5 +1,6 @@
 #include <powder.h>
 #include <console.h>
+#include <math.h>
 
 char pyready=1;
 char pygood=1;

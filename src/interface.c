@@ -1628,10 +1628,11 @@ int save_name_ui(pixel *vid_buf)
 		ui_edit_process(mx, my, b, &ed2);
 		ui_checkbox_process(mx, my, b, bq, &cb);
 
-		if (b && !bq && ((mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36) ||
+		if ((b && !bq && ((mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36) ||
 		                 (mx>=x0 && mx<x0+192 && my>=y0+74+YRES/4 && my<y0+90+YRES/4)))
+			|| sdl_key==SDLK_RETURN)
 		{
-			free(th);
+			if (th) free(th);
 			if (!ed.str[0])
 				return 0;
 			nd = strcmp(svf_name, ed.str) || !svf_own;
@@ -1647,27 +1648,7 @@ int save_name_ui(pixel *vid_buf)
 			svf_open = 1;
 			svf_own = 1;
 			svf_publish = cb.checked;
-			return nd+1;
-		}
-
-		if (sdl_key==SDLK_RETURN)
-		{
-			free(th);
-			if (!ed.str[0])
-				return 0;
-			nd = strcmp(svf_name, ed.str) || !svf_own;
-			strncpy(svf_name, ed.str, 63);
-			svf_name[63] = 0;
-			strncpy(svf_description, ed2.str, 254);
-			svf_description[254] = 0;
-			if (nd)
-			{
-				strcpy(svf_id, "");
-				strcpy(svf_tags, "");
-			}
-			svf_open = 1;
-			svf_own = 1;
-			svf_publish = cb.checked;
+			free(old_vid);
 			return nd+1;
 		}
 		if (sdl_key==SDLK_ESCAPE)
@@ -1677,7 +1658,8 @@ int save_name_ui(pixel *vid_buf)
 			ed.focus = 0;
 		}
 	}
-	free(th);
+	if (th) free(th);
+	free(old_vid);
 	return 0;
 }
 
@@ -3123,6 +3105,7 @@ finish:
 
 	strcpy(search_expr, ed.str);
 
+	free(v_buf);
 	return 0;
 }
 
@@ -3196,8 +3179,8 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	float ryf;
 
 	char *uri, *uri_2, *o_uri, *uri_3;
-	void *data, *info_data, *thumb_data_full;
-	save_info *info = malloc(sizeof(save_info));
+	void *data = NULL, *info_data, *thumb_data_full;
+	save_info *info = calloc(sizeof(save_info), 1);
 	void *http = NULL, *http_2 = NULL, *http_3 = NULL;
 	int lasttime = TIMEOUT;
 	int status, status_2, info_ready = 0, data_ready = 0, thumb_data_ready = 0;
@@ -3605,9 +3588,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 				// Do Open!
 				status = parse_save(data, data_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 				if (!status) {
-					//if(svf_last)
-					//free(svf_last);
+					if(svf_last)
+						free(svf_last);
 					svf_last = data;
+					data = NULL; //so we don't free it when returning
 					svf_lsize = data_size;
 
 					svf_open = 1;
@@ -3677,6 +3661,12 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		http_async_req_close(http);
 	if (http_2)
 		http_async_req_close(http_2);
+	if (http_3)
+		http_async_req_close(http_3);
+	info_parse("", info);
+	free(info);
+	free(old_vid);
+	if (data) free(data);
 	return retval;
 }
 
@@ -3685,6 +3675,17 @@ int info_parse(char *info_data, save_info *info)
 	int i,j;
 	char *p,*q,*r,*s,*vu,*vd,*pu,*sd;
 
+	if (info->title) free(info->title);
+	if (info->name) free(info->name);
+	if (info->author) free(info->author);
+	if (info->date) free(info->date);
+	if (info->description) free(info->description);
+	if (info->tags) free(info->tags);
+	for (i=0;i<6;i++)
+	{
+		if (info->comments[i]) free(info->comments[i]);
+		if (info->commentauthors[i]) free(info->commentauthors[i]);
+	}
 	memset(info, 0, sizeof(save_info));
 
 	if (!info_data || !*info_data)

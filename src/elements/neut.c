@@ -1,11 +1,7 @@
 #include <element.h>
 
 
-#if defined(WIN32) && !defined(__GNUC__)
-_inline int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)
-#else
-inline int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)//testing a new deut create part
-#endif
+int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)//testing a new deut create part
 {
 	int i, c;
 	n = (n/50);

@@ -1378,7 +1378,7 @@ int set_scale(int scale, int kiosk){
 	return 1;
 }
 				
-void update_grav_async()
+void* update_grav_async(void* unused)
 {
 	int done = 0;
 	int thread_done = 0;
@@ -2044,7 +2044,7 @@ int main(int argc, char *argv[])
 						free(load_data);
 				}
 			}
-			if (sdl_key=='s' && (sdl_mod & (KMOD_CTRL)) || (sdl_key=='s' && !isplayer2))
+			if (sdl_key=='s' && ((sdl_mod & (KMOD_CTRL)) || !isplayer2))
 			{
 				if (it > 50)
 					it = 50;
@@ -2178,7 +2178,7 @@ int main(int argc, char *argv[])
 						bsy = 0;
 				}
 			}
-			if (sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)) || (sdl_key=='d' && !isplayer2))
+			if (sdl_key=='d' && ((sdl_mod & (KMOD_CTRL)) || !isplayer2))
 				DEBUG_MODE = !DEBUG_MODE;
 			if (sdl_key=='i')
 			{

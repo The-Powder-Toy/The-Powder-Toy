@@ -86,10 +86,10 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 
 	//Go left
 	r = pmap[(int)(parts[i].y+10)][(int)(parts[i].x)];
-	if (((int)(player2[0])&0x01) == 0x01 && ((r&0xFF>=PT_NUM) || ptypes[r&0xFF].state != ST_GAS))
+	if (((int)(player2[0])&0x01) == 0x01 && (((r&0xFF)>=PT_NUM) || ptypes[r&0xFF].state != ST_GAS))
 	{
-		if (r>=PT_NUM || ptypes[r&0xFF].state != ST_LIQUID
-			&& (r&0xFF) != PT_LNTG)
+		if (r>=PT_NUM || (ptypes[r&0xFF].state != ST_LIQUID
+			&& (r&0xFF) != PT_LNTG))
 		{
 			if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
 			{
@@ -125,7 +125,7 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 
 	//Go right
 	r = pmap[(int)(parts[i].y+10)][(int)(parts[i].x)];
-	if (((int)(player2[0])&0x02) == 0x02 && ((r&0xFF>=PT_NUM) || ptypes[r&0xFF].state != ST_GAS))
+	if (((int)(player2[0])&0x02) == 0x02 && (((r&0xFF)>=PT_NUM) || ptypes[r&0xFF].state != ST_GAS))
 	{
 		if (r>=PT_NUM || (ptypes[r&0xFF].state != ST_LIQUID
 			&& (r&0xFF) != PT_LNTG))

@@ -186,12 +186,12 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 
 					if ((r&0xFF) == PT_OIL)
 					{
+						float ax, ay;
+
 						parts[i].vy -= 0.1f;
 
 						parts[i].vy *= 0.5f;
 						parts[i].vx *= 0.5f;
-
-						float ax, ay;
 
 						ax = (parts[i].vx + parts[r>>8].vx)/2;
 						ay = (parts[i].vy + parts[r>>8].vy)/2;
