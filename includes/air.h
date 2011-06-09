@@ -5,6 +5,7 @@
 extern float gravmap[YRES/CELL][XRES/CELL]; //Maps to be used by the main thread
 extern float gravx[YRES/CELL][XRES/CELL];
 extern float gravy[YRES/CELL][XRES/CELL];
+extern unsigned gravmask[YRES/CELL][XRES/CELL];
 
 extern float th_ogravmap[YRES/CELL][XRES/CELL]; // Maps to be processed by the gravity thread
 extern float th_gravmap[YRES/CELL][XRES/CELL];

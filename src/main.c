@@ -1007,6 +1007,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		else
 			stop_grav_async();
 	}
+	
+	gravity_mask();
 
 	if (p >= size)
 		goto version1;
@@ -1060,6 +1062,7 @@ corrupt:
 
 void clear_sim(void)
 {
+	int x, y;
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
 	memset(signs, 0, sizeof(signs));
@@ -1080,6 +1083,15 @@ void clear_sim(void)
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
 	memset(fire_b, 0, sizeof(fire_b));
+	memset(gravmask, 0xFF, sizeof(gravmask));
+	memset(gravy, 0, sizeof(gravy));
+	memset(gravx, 0, sizeof(gravx));
+	for(x = 0; x < XRES/CELL; x++){
+		for(y = 0; y < YRES/CELL; y++){
+			hv[y][x] = 273.15f+22.0f; //Set to room temperature
+		}
+	}
+	gravity_mask();
 }
 
 // stamps library
@@ -1758,6 +1770,12 @@ int main(int argc, char *argv[])
 #ifdef OpenGL
 		ClearScreen();
 #else
+		if(gravwl_timeout)
+		{
+			if(gravwl_timeout==1)
+				gravity_mask();
+			gravwl_timeout--;
+		}
 		if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK || (cmode==CM_HEAT && aheat_enable))//air only gets drawn in these modes
 		{
 			draw_air(vid_buf);
@@ -1788,6 +1806,8 @@ int main(int argc, char *argv[])
 		draw_walls(vid_buf); 
 		update_particles(vid_buf); //update everything
 		draw_parts(vid_buf); //draw particles
+		if(sl == WL_GRAV+100 || sr == WL_GRAV+100)
+			draw_grav_zones(vid_buf);
 		
 		if(ngrav_enable){
 			pthread_mutex_lock(&gravmutex);
@@ -1803,6 +1823,9 @@ int main(int argc, char *argv[])
 				}
 			}
 			pthread_mutex_unlock(&gravmutex);
+			//Apply the gravity mask
+			membwand(gravy, gravmask, sizeof(gravy), sizeof(gravmask));
+			membwand(gravx, gravmask, sizeof(gravx), sizeof(gravmask));
 		}
 
 		if (!sys_pause||framerender) //Only update if not paused

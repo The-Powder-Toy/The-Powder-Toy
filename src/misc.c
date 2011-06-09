@@ -635,5 +635,15 @@ void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB value
  		*v = (int)(255.0*x);
 	}
 }
+
+void membwand(void * destv, void * srcv, size_t destsize, size_t srcsize)
+{
+	size_t i;
+	unsigned char * dest = destv;
+	unsigned char * src = srcv;
+	for(i = 0; i < destsize; i++){
+		dest[i] = dest[i] & src[i%srcsize];
+	}
+}
 vector2d v2d_zero = {0,0};
 matrix2d m2d_identity = {1,0,0,1};

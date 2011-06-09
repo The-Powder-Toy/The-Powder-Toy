@@ -23,7 +23,7 @@
 
 #define UI_WALLSTART 222
 #define UI_ACTUALSTART 122
-#define UI_WALLCOUNT 20
+#define UI_WALLCOUNT 21
 
 #define WL_WALLELEC	122
 #define WL_EWALL	123
@@ -40,6 +40,7 @@
 #define WL_ALLOWSOLID	133
 #define WL_ALLOWALLELEC	134
 #define WL_EHOLE	135
+#define WL_GRAV		142
 
 #define SPC_AIR 236
 #define SPC_HEAT 237
@@ -832,12 +833,15 @@ static wall_type wtypes[] =
 	{PIXPACK(0x303030), PIXPACK(0x000000), -1, "Vacuum, reduces air pressure."},
 	{PIXPACK(0x579777), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and solids, allows gasses"},
 	{PIXPACK(0x000000), PIXPACK(0x000000), -1, "Drag tool"},
+	{PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, "Gravity wall"},
 };
 
 #define CHANNELS ((int)(MAX_TEMP-73.15f)/100+2)
 particle portalp[CHANNELS][8][80];
 const particle emptyparticle;
 int wireless[CHANNELS][2];
+
+extern int gravwl_timeout;
 
 extern int isplayer;
 extern float player[27];
@@ -912,5 +916,7 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 
 void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
+
+void gravity_mask();
 
 #endif

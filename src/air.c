@@ -7,6 +7,7 @@ float kernel[9];
 float gravmap[YRES/CELL][XRES/CELL];  //Maps to be used by the main thread
 float gravx[YRES/CELL][XRES/CELL];
 float gravy[YRES/CELL][XRES/CELL];
+unsigned gravmask[YRES/CELL][XRES/CELL];
 
 float th_ogravmap[YRES/CELL][XRES/CELL]; // Maps to be processed by the gravity thread
 float th_gravmap[YRES/CELL][XRES/CELL];

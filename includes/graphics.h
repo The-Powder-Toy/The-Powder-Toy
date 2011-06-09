@@ -110,6 +110,8 @@ void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag);
 
 void draw_air(pixel *vid);
 
+void draw_grav_zones(pixel *vid);
+
 void draw_grav(pixel *vid);
 
 void draw_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, int a);

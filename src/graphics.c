@@ -656,13 +656,17 @@ void draw_tool(pixel *vid_buf, int b, int sl, int sr, unsigned pc, unsigned iswa
 int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 {
 	int i, j, c;
+	pixel gc;
 	if (x > XRES-26 || x < 0)
 		return 26;
 	if (b>=UI_WALLSTART)
 	{
 		int ds = 0;
 		if (b-UI_WALLSTART>=0 && b-UI_WALLSTART<UI_WALLCOUNT)
+		{
 			ds = wtypes[b-UI_WALLSTART].drawstyle;
+			gc = wtypes[b-UI_WALLSTART].eglow;
+		}
 		//x = (2+32*((b-22)/1));
 		//y = YRES+2+40;
 		if (ds==1)
@@ -682,6 +686,17 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 			for (j=1; j<15; j++)
 				for (i=1; i<27; i++)
 					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
+		}
+		else if (ds==4)
+		{
+			for (j=1; j<15; j++)
+				for (i=1; i<27; i++)
+					if(i%CELL == j%CELL)
+						vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
+					else if  (i%CELL == (j%CELL)+1 || (i%CELL == 0 && j%CELL == CELL-1))
+						vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = gc;
+					else 
+						vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = PIXPACK(0x202020);
 		}
 		else
 		switch (b)
@@ -1362,6 +1377,26 @@ void draw_air(pixel *vid)
 				for (i=0; i<CELL; i++)
 					vid[(x*CELL+i) + (y*CELL+j)*(XRES+BARSIZE)] = c;
 		}
+}
+
+void draw_grav_zones(pixel * vid)
+{
+	int x, y, i, j;
+	for (y=0; y<YRES/CELL; y++)
+	{
+		for (x=0; x<XRES/CELL; x++)
+		{
+			if(gravmask[y][x])
+			{
+				for (j=0; j<CELL; j++)//draws the colors
+					for (i=0; i<CELL; i++)
+						if(i == j)
+							drawpixel(vid, x*CELL+i, y*CELL+j, 255, 200, 0, 120);
+						else 
+							drawpixel(vid, x*CELL+i, y*CELL+j, 32, 32, 32, 120);
+			}
+		}
+	}
 }
 
 void draw_grav(pixel *vid)
@@ -3186,6 +3221,7 @@ void draw_walls(pixel *vid)
 	int x, y, i, j, cr, cg, cb;
 	unsigned char wt;
 	pixel pc;
+	pixel gc;
 	for (y=0; y<YRES/CELL; y++)
 		for (x=0; x<XRES/CELL; x++)
 			if (bmap[y][x])
@@ -3194,6 +3230,7 @@ void draw_walls(pixel *vid)
 				if (wt<0 || wt>=UI_WALLCOUNT)
 					continue;
 				pc = wtypes[wt].colour;
+				gc = wtypes[wt].eglow;
 
 				// standard wall patterns
 				if (wtypes[wt].drawstyle==1)
@@ -3213,6 +3250,17 @@ void draw_walls(pixel *vid)
 					for (j=0; j<CELL; j++)
 						for (i=0; i<CELL; i++)
 							vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+				}
+				else if (wtypes[wt].drawstyle==4)
+				{
+					for (j=0; j<CELL; j++)
+						for (i=0; i<CELL; i++)
+							if(i == j)
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+							else if  (i == j+1 || (i == 0 && j == CELL-1))
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = gc;
+							else 
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x202020);
 				}
 
 				// special rendering for some walls
@@ -3284,7 +3332,17 @@ void draw_walls(pixel *vid)
 							for (i=0; i<CELL; i++)
 								drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
 					}
-
+					else if (wtypes[wt].drawstyle==4)
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								if(i == j)
+									drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								else if  (i == j+1 || (i == 0 && j == CELL-1))
+									drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(gc), PIXG(gc), PIXB(gc));
+								else 
+									drawblob(vid, (x*CELL+i), (y*CELL+j), 0x20, 0x20, 0x20);
+					}
 					if (bmap[y][x]==WL_EWALL)
 					{
 						if (emap[y][x])
