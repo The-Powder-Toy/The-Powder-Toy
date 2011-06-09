@@ -177,7 +177,7 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 				fxceil = (int)ceil(fx);
 				fyceil = (int)ceil(fy);
 				if (fxceil>=sw) fxceil = sw-1;
-				if (fyceil>=sh) fxceil = sh-1;
+				if (fyceil>=sh) fyceil = sh-1;
 				tr = src[sw*(int)floor(fy)+fxceil];
 				tl = src[sw*(int)floor(fy)+(int)floor(fx)];
 				br = src[sw*fyceil+fxceil];
@@ -217,7 +217,7 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 					fxceil = (int)ceil(fx);
 					fyceil = (int)ceil(fy);
 					if (fxceil>=sw) fxceil = sw-1;
-					if (fyceil>=sh) fxceil = sh-1;
+					if (fyceil>=sh) fyceil = sh-1;
 					tr = oq[sw*(int)floor(fy)+fxceil];
 					tl = oq[sw*(int)floor(fy)+(int)floor(fx)];
 					br = oq[sw*fyceil+fxceil];
