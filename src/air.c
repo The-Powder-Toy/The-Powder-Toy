@@ -44,7 +44,7 @@ void make_kernel(void) //used for velocity
 void update_airh(void)
 {
 	int x, y, i, j;
-	float dh, dp, f, tx, ty;
+	float dh, dx, dy, f, tx, ty;
 	for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 	{
 		hv[i][0] = 295.15f;
@@ -62,31 +62,54 @@ void update_airh(void)
 		hv[YRES/CELL-1][i] = 295.15f;
 	}
 	for (y=0; y<YRES/CELL; y++) //update velocity and pressure
+	{
 		for (x=0; x<XRES/CELL; x++)
 		{
 			dh = 0.0f;
+			dx = 0.0f;
+			dy = 0.0f;
 			for (j=-1; j<2; j++)
+			{
 				for (i=-1; i<2; i++)
+				{
 					if (y+j>0 && y+j<YRES/CELL-2 &&
 					        x+i>0 && x+i<XRES/CELL-2 &&
 					        bmap[y+j][x+i]!=WL_WALL &&
 					        bmap[y+j][x+i]!=WL_WALLELEC &&
+					        bmap[y+j][x+i]!=WL_GRAV && 
 					        (bmap[y+j][x+i]!=WL_EWALL || emap[y+j][x+i]))
 						{
 						f = kernel[i+1+(j+1)*3];
 						dh += hv[y+j][x+i]*f;
+						dx += vx[y+j][x+i]*f;
+						dy += vy[y+j][x+i]*f;
 					}
 					else
 					{
 						f = kernel[i+1+(j+1)*3];
 						dh += hv[y][x]*f;
+						dx += vx[y][x]*f;
+						dy += vy[y][x]*f;
 					}
+				}
+			}
+			tx = x - dx*0.7f;
+			ty = y - dy*0.7f;
 			i = (int)tx;
 			j = (int)ty;
 			tx -= i;
 			ty -= j;
+			if (i>=2 && i<XRES/CELL-3 && j>=2 && j<YRES/CELL-3)
+			{
+				dh *= 1.0f - AIR_VADV;
+				dh += AIR_VADV*(1.0f-tx)*(1.0f-ty)*hv[j][i];
+				dh += AIR_VADV*tx*(1.0f-ty)*hv[j][i+1];
+				dh += AIR_VADV*(1.0f-tx)*ty*hv[j+1][i];
+				dh += AIR_VADV*tx*ty*hv[j+1][i+1];
+			}
 			ohv[y][x] = dh;
 		}
+	}
 	memcpy(hv, ohv, sizeof(hv));
 }
 
