@@ -7,6 +7,7 @@ float kernel[9];
 float gravmap[YRES/CELL][XRES/CELL];  //Maps to be used by the main thread
 float gravx[YRES/CELL][XRES/CELL];
 float gravy[YRES/CELL][XRES/CELL];
+unsigned gravmask[YRES/CELL][XRES/CELL];
 
 float th_ogravmap[YRES/CELL][XRES/CELL]; // Maps to be processed by the gravity thread
 float th_gravmap[YRES/CELL][XRES/CELL];
@@ -43,7 +44,7 @@ void make_kernel(void) //used for velocity
 void update_airh(void)
 {
 	int x, y, i, j;
-	float dh, dp, f, tx, ty;
+	float dh, dx, dy, f, tx, ty;
 	for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 	{
 		hv[i][0] = 295.15f;
@@ -61,31 +62,54 @@ void update_airh(void)
 		hv[YRES/CELL-1][i] = 295.15f;
 	}
 	for (y=0; y<YRES/CELL; y++) //update velocity and pressure
+	{
 		for (x=0; x<XRES/CELL; x++)
 		{
 			dh = 0.0f;
+			dx = 0.0f;
+			dy = 0.0f;
 			for (j=-1; j<2; j++)
+			{
 				for (i=-1; i<2; i++)
+				{
 					if (y+j>0 && y+j<YRES/CELL-2 &&
 					        x+i>0 && x+i<XRES/CELL-2 &&
 					        bmap[y+j][x+i]!=WL_WALL &&
 					        bmap[y+j][x+i]!=WL_WALLELEC &&
+					        bmap[y+j][x+i]!=WL_GRAV &&
 					        (bmap[y+j][x+i]!=WL_EWALL || emap[y+j][x+i]))
 						{
 						f = kernel[i+1+(j+1)*3];
 						dh += hv[y+j][x+i]*f;
+						dx += vx[y+j][x+i]*f;
+						dy += vy[y+j][x+i]*f;
 					}
 					else
 					{
 						f = kernel[i+1+(j+1)*3];
 						dh += hv[y][x]*f;
+						dx += vx[y][x]*f;
+						dy += vy[y][x]*f;
 					}
+				}
+			}
+			tx = x - dx*0.7f;
+			ty = y - dy*0.7f;
 			i = (int)tx;
 			j = (int)ty;
 			tx -= i;
 			ty -= j;
+			if (i>=2 && i<XRES/CELL-3 && j>=2 && j<YRES/CELL-3)
+			{
+				dh *= 1.0f - AIR_VADV;
+				dh += AIR_VADV*(1.0f-tx)*(1.0f-ty)*hv[j][i];
+				dh += AIR_VADV*tx*(1.0f-ty)*hv[j][i+1];
+				dh += AIR_VADV*(1.0f-tx)*ty*hv[j+1][i];
+				dh += AIR_VADV*tx*ty*hv[j+1][i+1];
+			}
 			ohv[y][x] = dh;
 		}
+	}
 	memcpy(hv, ohv, sizeof(hv));
 }
 
@@ -107,8 +131,8 @@ void update_grav(void)
 			}
 		}
 	}
-    if(!changed)
-        goto fin;
+	if(!changed)
+		goto fin;
 	memset(th_gravy, 0, sizeof(th_gravy));
 	memset(th_gravx, 0, sizeof(th_gravx));
 #endif
@@ -118,30 +142,30 @@ void update_grav(void)
 			if (th_ogravmap[i][j] != th_gravmap[i][j])
 			{
 #else
-                if (th_gravmap[i][j] > 0.0001f || th_gravmap[i][j]<-0.0001f) //Only calculate with populated or changed cells.
-                {
+			if (th_gravmap[i][j] > 0.0001f || th_gravmap[i][j]<-0.0001f) //Only calculate with populated or changed cells.
+			{
 #endif
-                    for (y = 0; y < YRES / CELL; y++) {
-                        for (x = 0; x < XRES / CELL; x++) {
-                            if (x == j && y == i)//Ensure it doesn't calculate with itself
-                                continue;
-                            distance = sqrt(pow(j - x, 2) + pow(i - y, 2));
+				for (y = 0; y < YRES / CELL; y++) {
+					for (x = 0; x < XRES / CELL; x++) {
+						if (x == j && y == i)//Ensure it doesn't calculate with itself
+							continue;
+						distance = sqrt(pow(j - x, 2) + pow(i - y, 2));
 #ifdef GRAV_DIFF
-                            val = th_gravmap[i][j] - th_ogravmap[i][j];
+						val = th_gravmap[i][j] - th_ogravmap[i][j];
 #else
-                            val = th_gravmap[i][j];
+						val = th_gravmap[i][j];
 #endif
-                            th_gravx[y][x] += M_GRAV * val * (j - x) / pow(distance, 3);
-                            th_gravy[y][x] += M_GRAV * val * (i - y) / pow(distance, 3);
-                        }
-                    }
-                }
-            }
-        }
-        fin:
-        memcpy(th_ogravmap, th_gravmap, sizeof(th_gravmap));
-        memset(th_gravmap, 0, sizeof(th_gravmap));
-    }
+						th_gravx[y][x] += M_GRAV * val * (j - x) / pow(distance, 3);
+						th_gravy[y][x] += M_GRAV * val * (i - y) / pow(distance, 3);
+					}
+				}
+			}
+		}
+	}
+fin:
+	memcpy(th_ogravmap, th_gravmap, sizeof(th_gravmap));
+	memset(th_gravmap, 0, sizeof(th_gravmap));
+}
 void update_air(void)
 {
 	int x, y, i, j;
@@ -217,14 +241,14 @@ void update_air(void)
 				vx[y][x] += dx*AIR_TSTEPV;
 				vy[y][x] += dy*AIR_TSTEPV;
 				if (bmap[y][x]==WL_WALL || bmap[y][x+1]==WL_WALL ||
-                    bmap[y][x]==WL_WALLELEC || bmap[y][x+1]==WL_WALLELEC ||
-                    (bmap[y][x]==WL_EWALL && !emap[y][x]) ||
-                    (bmap[y][x+1]==WL_EWALL && !emap[y][x+1]))
+				        bmap[y][x]==WL_WALLELEC || bmap[y][x+1]==WL_WALLELEC ||
+				        (bmap[y][x]==WL_EWALL && !emap[y][x]) ||
+				        (bmap[y][x+1]==WL_EWALL && !emap[y][x+1]))
 					vx[y][x] = 0;
 				if (bmap[y][x]==WL_WALL || bmap[y+1][x]==WL_WALL ||
-                    bmap[y][x]==WL_WALLELEC || bmap[y+1][x]==WL_WALLELEC ||
-                    (bmap[y][x]==WL_EWALL && !emap[y][x]) ||
-                    (bmap[y+1][x]==WL_EWALL && !emap[y+1][x]))
+				        bmap[y][x]==WL_WALLELEC || bmap[y+1][x]==WL_WALLELEC ||
+				        (bmap[y][x]==WL_EWALL && !emap[y][x]) ||
+				        (bmap[y+1][x]==WL_EWALL && !emap[y+1][x]))
 					vy[y][x] = 0;
 			}
 
@@ -237,10 +261,10 @@ void update_air(void)
 				for (j=-1; j<2; j++)
 					for (i=-1; i<2; i++)
 						if (y+j>0 && y+j<YRES/CELL-1 &&
-                            x+i>0 && x+i<XRES/CELL-1 &&
-                            bmap[y+j][x+i]!=WL_WALL &&
-                            bmap[y+j][x+i]!=WL_WALLELEC &&
-                            (bmap[y+j][x+i]!=WL_EWALL || emap[y+j][x+i]))
+						        x+i>0 && x+i<XRES/CELL-1 &&
+						        bmap[y+j][x+i]!=WL_WALL &&
+						        bmap[y+j][x+i]!=WL_WALLELEC &&
+						        (bmap[y+j][x+i]!=WL_EWALL || emap[y+j][x+i]))
 						{
 							f = kernel[i+1+(j+1)*3];
 							dx += vx[y+j][x+i]*f;
@@ -262,7 +286,7 @@ void update_air(void)
 				tx -= i;
 				ty -= j;
 				if (i>=2 && i<XRES/CELL-3 &&
-                    j>=2 && j<YRES/CELL-3)
+				        j>=2 && j<YRES/CELL-3)
 				{
 					dx *= 1.0f - AIR_VADV;
 					dy *= 1.0f - AIR_VADV;
@@ -296,23 +320,23 @@ void update_air(void)
 
 				switch (airMode)
 				{
-                    default:
-                    case 0:  //Default
-                        break;
-                    case 1:  //0 Pressure
-                        dp = 0.0f;
-                        break;
-                    case 2:  //0 Velocity
-                        dx = 0.0f;
-                        dy = 0.0f;
-                        break;
-                    case 3: //0 Air
-                        dx = 0.0f;
-                        dy = 0.0f;
-                        dp = 0.0f;
-                        break;
-                    case 4: //No Update
-                        break;
+				default:
+				case 0:  //Default
+					break;
+				case 1:  //0 Pressure
+					dp = 0.0f;
+					break;
+				case 2:  //0 Velocity
+					dx = 0.0f;
+					dy = 0.0f;
+					break;
+				case 3: //0 Air
+					dx = 0.0f;
+					dy = 0.0f;
+					dp = 0.0f;
+					break;
+				case 4: //No Update
+					break;
 				}
 
 				ovx[y][x] = dx;

@@ -8,7 +8,7 @@ int update_SAND(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if(r&TYPE==PT_EQUALVEL){
+				if((r&TYPE)==PT_EQUALVEL){
 					parts[r>>PS].vx = 0;
 					parts[r>>PS].vy = 0;
 					parts[r>>PS].ctype = PT_EQUALVEL;
@@ -20,7 +20,7 @@ int update_SAND(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ry][x+rx];
                 if ((r>>PS)>=NPART || !r)
                     continue;
-                if (r&TYPE==PT_EQUALVEL){
+                if ((r&TYPE)==PT_EQUALVEL){
                     if ((parts[r>>PS].ctype != PT_EQUALVEL)||(parts[i].y<parts[r>>PS].y)){
                         parts[r>>PS].vx = (((parts[i].x)-(parts[r>>PS].x))/10)*(rand()%5+10/10);
                         parts[r>>PS].vy = (((parts[i].y)-(parts[r>>PS].y))/10)*(rand()%5+10/10);

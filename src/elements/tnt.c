@@ -9,43 +9,7 @@ int update_TNT(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ny][x+nx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if (r&TYPE==PT_FIRE){
-                    pv[y/CELL][x/CELL] += 15.0f;
-                    if (y+CELL<YRES)
-                        pv[y/CELL+1][x/CELL] += 15.0f;
-                    if (x+CELL<XRES)
-                    {
-                        pv[y/CELL][x/CELL+1] += 15.0f;
-                        if (y+CELL<YRES)
-                            pv[y/CELL+1][x/CELL+1] += 15.0f;
-                    }
-                    kill_part(i);
-                }
-                if (r&TYPE==PT_PLSM){
-                    pv[y/CELL][x/CELL] += 15.0f;
-                    if (y+CELL<YRES)
-                        pv[y/CELL+1][x/CELL] += 15.0f;
-                    if (x+CELL<XRES)
-                    {
-                        pv[y/CELL][x/CELL+1] += 15.0f;
-                        if (y+CELL<YRES)
-                            pv[y/CELL+1][x/CELL+1] += 15.0f;
-                    }
-                    kill_part(i);
-                }
-                if (r&TYPE==PT_BFLM){
-                    pv[y/CELL][x/CELL] += 15.0f;
-                    if (y+CELL<YRES)
-                        pv[y/CELL+1][x/CELL] += 15.0f;
-                    if (x+CELL<XRES)
-                    {
-                        pv[y/CELL][x/CELL+1] += 15.0f;
-                        if (y+CELL<YRES)
-                            pv[y/CELL+1][x/CELL+1] += 15.0f;
-                    }
-                    kill_part(i);
-                }
-                if (r&TYPE==PT_SPRK){
+                if ((r&TYPE)==PT_SPRK || (r&TYPE)==PT_BFLM || (r&TYPE)==PT_PLSM || (r&TYPE)==PT_FIRE){
                     pv[y/CELL][x/CELL] += 15.0f;
                     if (y+CELL<YRES)
                         pv[y/CELL+1][x/CELL] += 15.0f;

@@ -9,11 +9,11 @@ int update_IRON(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (((r&TYPE == PT_SALT && 15>(rand()/(RAND_MAX/700))) ||
-				        (r&TYPE == PT_SLTW && 30>(rand()/(RAND_MAX/2000))) ||
-				        (r&TYPE == PT_WATR && 5 >(rand()/(RAND_MAX/6000))) ||
-				        (r&TYPE == PT_O2   && 2 >(rand()/(RAND_MAX/500))) ||
-				        (r&TYPE == PT_LO2))&&
+				if ((((r&TYPE) == PT_SALT && 15>(rand()/(RAND_MAX/700))) ||
+				        ((r&TYPE) == PT_SLTW && 30>(rand()/(RAND_MAX/2000))) ||
+				        ((r&TYPE) == PT_WATR && 5 >(rand()/(RAND_MAX/6000))) ||
+				        ((r&TYPE) == PT_O2   && 2 >(rand()/(RAND_MAX/500))) ||
+				        ((r&TYPE) == PT_LO2))&&
 				        (!(parts[i].life))
 				   )
 				{

@@ -11,7 +11,7 @@ int update_LGUN(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if (r&TYPE==PT_SPRK) {
+					if ((r&TYPE)==PT_SPRK) {
 						int destroy = (parts[r>>PS].ctype==PT_PSCN)?1:0;
 						int nostop = (parts[r>>PS].ctype==PT_INST)?1:0;
 						for (docontinue = 1, nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1; docontinue; nyy+=nyi, nxx+=nxi) {
@@ -30,7 +30,7 @@ int update_LGUN(UPDATE_FUNC_ARGS) {
 											parts[nr].ctype = colored;
 									}
 								} else if (!destroy) {
-									if (r&TYPE==PT_LAZR&&parts[r>>PS].tmp==0) {//if it hits another LAZR that isn't red
+									if ((r&TYPE)==PT_LAZR&&parts[r>>PS].tmp==0) {//if it hits another LAZR that isn't red
 										if (nyy!=0 || nxx!=0) {
 											parts[r>>PS].life = 1020;//makes it last a while
 											parts[r>>PS].tmp = 1;
@@ -38,11 +38,11 @@ int update_LGUN(UPDATE_FUNC_ARGS) {
 												parts[r>>PS].ctype = colored;
 										}
 										docontinue = 0;//then stop it
-									} else if (r&TYPE==PT_LAZR&&parts[r>>PS].tmp==1) {//if it hits one that already was a long life, reset it
+									} else if ((r&TYPE)==PT_LAZR&&parts[r>>PS].tmp==1) {//if it hits one that already was a long life, reset it
 										parts[r>>PS].life = 1020;
 										//docontinue = 1;
 									}
-									else if (r&TYPE!=PT_INWR && r&TYPE!=PT_LGUN && r&TYPE!=PT_WIFI && !(r&TYPE==PT_SWCH && parts[r>>PS].life>=10)) {
+									else if ((r&TYPE)!=PT_INWR && (r&TYPE)!=PT_LGUN && (r&TYPE)!=PT_WIFI && !((r&TYPE)==PT_SWCH && parts[r>>PS].life>=10)) {
 										if (nyy!=0 || nxx!=0) {
 											//create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 										}
@@ -53,11 +53,11 @@ int update_LGUN(UPDATE_FUNC_ARGS) {
 										}
 									}
 								} else if (destroy) {
-									if (r&TYPE==PT_LAZR) {
+									if ((r&TYPE)==PT_LAZR) {
 										parts[r>>PS].life = 1;
 										docontinue = 1;
                                         //this if prevents red LAZR from stopping on certain materials
-									} else if (r&TYPE==PT_INWR || r&TYPE==PT_LGUN || r&TYPE==PT_WIFI || r&TYPE==PT_FILT || (r&TYPE==PT_SWCH && parts[r>>PS].life>=10)) {
+									} else if ((r&TYPE)==PT_INWR || (r&TYPE)==PT_LGUN || (r&TYPE)==PT_WIFI || (r&TYPE)==PT_FILT || ((r&TYPE)==PT_SWCH && parts[r>>PS].life>=10)) {
 										docontinue = 1;
 									} else {
 										docontinue = 0;

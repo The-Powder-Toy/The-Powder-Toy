@@ -10,7 +10,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if (r&TYPE!=PT_BOMB) {
+					if ((r&TYPE)!=PT_BOMB) {
 						kill_part(i);
 						return 1;
 					}
@@ -23,7 +23,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if (r&TYPE!=PT_BOMB && r&TYPE!=PT_DMND && r&TYPE!=PT_BSHL && r&TYPE!=PT_C0 && r&TYPE!=PT_LQCL && r&TYPE!=PT_PDCL && r&TYPE!=PT_GSCL && r&TYPE!=PT_CLNE && r&TYPE!=PT_PCLN && r&TYPE!=PT_BCLN) {
+					if ((r&TYPE)!=PT_BOMB && (r&TYPE)!=PT_DMND && (r&TYPE)!=PT_BSHL && (r&TYPE)!=PT_C0 && (r&TYPE)!=PT_LQCL && (r&TYPE)!=PT_PDCL && (r&TYPE)!=PT_GSCL && (r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN && (r&TYPE)!=PT_BCLN) {
 						int rad = 8;
 						int nxi;
 						int nxj;

@@ -9,49 +9,7 @@ int update_GREN(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ny][x+nx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if (r&TYPE==PT_FIRE){
-                    int temporaro = 1000;
-                    while (temporaro > -1001){
-                        create_part(-1,x+1,y+1,PT_BRMT);
-                        create_part(-1,x-1,y-1,PT_IFIL);
-                        create_part(-1,x-1,y+1,PT_BRMT);
-                        create_part(-1,x+1,y-1,PT_IFIL);
-                        create_part(-1,x,y,PT_BMTL);
-                        temporaro--;
-                    }
-                    pv[y/CELL][x/CELL] += 2.0f;
-                    if (y+CELL<YRES)
-                        pv[y/CELL+1][x/CELL] += 2.0f;
-                    if (x+CELL<XRES)
-                    {
-                        pv[y/CELL][x/CELL+1] += 2.0f;
-                        if (y+CELL<YRES)
-                            pv[y/CELL+1][x/CELL+1] += 2.0f;
-                    }
-                    kill_part(i);
-                }
-                if (r&TYPE==PT_PLSM){
-                    int temporaro = 1000;
-                    while (temporaro > -1001){
-                        create_part(-1,x+1,y+1,PT_BRMT);
-                        create_part(-1,x-1,y-1,PT_IFIL);
-                        create_part(-1,x-1,y+1,PT_BRMT);
-                        create_part(-1,x+1,y-1,PT_IFIL);
-                        create_part(-1,x,y,PT_BMTL);
-                        temporaro--;
-                    }
-                    pv[y/CELL][x/CELL] += 2.0f;
-                    if (y+CELL<YRES)
-                        pv[y/CELL+1][x/CELL] += 2.0f;
-                    if (x+CELL<XRES)
-                    {
-                        pv[y/CELL][x/CELL+1] += 2.0f;
-                        if (y+CELL<YRES)
-                            pv[y/CELL+1][x/CELL+1] += 2.0f;
-                    }
-                    kill_part(i);
-                }
-                if (r&TYPE==PT_BFLM){
+                if ((r&TYPE)==PT_BFLM){
                     int temporaro = 1000;
                     while (temporaro > -1001){
                         create_part(-1,x+1,y+1,PT_BRMT);
@@ -72,7 +30,7 @@ int update_GREN(UPDATE_FUNC_ARGS) {
                     }
                     kill_part(i);
                 }
-                if (r&TYPE==PT_SPRK){
+                if ((r&TYPE)==PT_SPRK || (r&TYPE)==PT_FIRE || (r&TYPE)==PT_PLSM){
                     int temporaro = 1000;
                     while (temporaro > -1001){
                         create_part(-1,x+1,y+1,PT_BRMT);

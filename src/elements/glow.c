@@ -9,19 +9,19 @@ int update_GLOW(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (r&TYPE==PT_WATR&&5>(rand()%2000))
+				if ((r&TYPE)==PT_WATR&&5>(rand()%2000))
 				{
 					kill_part(i);
 					part_change_type(r>>PS,x+rx,y+ry,PT_DEUT);
 					parts[r>>PS].life = 10;
 				}
-				if (r&TYPE==PT_SPRK || parts[r>>PS].tmp2==2 && 2>(rand()%16)){
+				if ((r&TYPE)==PT_SPRK || parts[r>>PS].tmp2==2 && 2>(rand()%16)){
                     parts[i].tmp2 = 2;
 				}
 				if (parts[i].tmp2==2 && 2>(rand()%5)){
                     parts[i].tmp2=1;
 				}
-				if(parts[i].tmp2==2 && parts[r>>PS].tmp2!=2 && r&TYPE==PT_GLOW){
+				if(parts[i].tmp2==2 && parts[r>>PS].tmp2!=2 && (r&TYPE)==PT_GLOW){
                     parts[r>>PS].tmp2 = 2;
 				}
 			}

@@ -14,16 +14,16 @@ int update_WIFI(UPDATE_FUNC_ARGS) {
 					continue;
 				if (wireless[parts[i].tmp][0])
 				{
-					if ((r&TYPE==PT_NSCN||r&TYPE==PT_PSCN||r&TYPE==PT_INWR)&&parts[r>>PS].life==0 && wireless[parts[i].tmp][0])
+					if (((r&TYPE)==PT_NSCN||(r&TYPE)==PT_PSCN||(r&TYPE)==PT_INWR)&&parts[r>>PS].life==0 && wireless[parts[i].tmp][0])
 					{
-						parts[r>>PS].ctype = r&TYPE;
+						parts[r>>PS].ctype = parts[r>>PS].type;
 						part_change_type(r>>PS,x+rx,y+ry,PT_SPRK);
 						parts[r>>PS].life = 4;
 					}
 				}
 				else
 				{
-					if (r&TYPE==PT_SPRK && parts[r>>PS].ctype!=PT_NSCN && parts[r>>PS].life>=3)
+					if ((r&TYPE)==PT_SPRK && parts[r>>PS].ctype!=PT_NSCN && parts[r>>PS].life>=3)
 					{
 						wireless[parts[i].tmp][0] = 1;
 						wireless[parts[i].tmp][1] = 1;

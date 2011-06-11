@@ -9,18 +9,6 @@ int update_MNSR(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-                //OLD CODE
-                /*
-				create_part(-1, x+1, y, PT_SAND);
-                create_part(-1, x+1, y+1, PT_SAND);
-                create_part(-1, x, y+1, PT_SAND);
-                create_part(-1, x-1, y+1, PT_SAND);
-                create_part(-1, x-1, y, PT_SAND);
-                create_part(-1, x-1, y-1, PT_SAND);
-                create_part(-1, x, y-1, PT_SAND);
-                create_part(-1, x+1, y-1, PT_SAND);
-                parts[i].type=PT_EQUALVEL;
-                 */
                 create_part(-1, x+1, y, PT_SAND);
                 create_part(-1, x+1, y+1, PT_SAND);
                 create_part(-1, x, y+1, PT_SAND);

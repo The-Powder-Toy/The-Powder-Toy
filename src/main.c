@@ -989,6 +989,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
     else
       ngrav_enable = 0;
   }
+  gravity_mask();
 	if (p >= size)
 		goto version1;
 	j = d[p++];
@@ -1017,6 +1018,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		{
 			memcpy(signs[k].text, d+p, x);
 			signs[k].text[x] = 0;
+			clean_text(signs[k].text, 158-14 /* Current max sign length */);
 		}
 		p += x;
 	}
@@ -1040,6 +1042,7 @@ corrupt:
 
 void clear_sim(void)
 {
+    int x, y;
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
 	memset(signs, 0, sizeof(signs));
@@ -1060,6 +1063,15 @@ void clear_sim(void)
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
 	memset(fire_b, 0, sizeof(fire_b));
+	memset(gravmask, TYPE, sizeof(gravmask));
+    memset(gravy, 0, sizeof(gravy));
+    memset(gravx, 0, sizeof(gravx));
+    for(x = 0; x < XRES/CELL; x++){
+        for(y = 0; y < YRES/CELL; y++){
+            hv[y][x] = 273.15f+22.0f; //Set to room temperature
+        }
+    }
+    gravity_mask();
 }
 
 // stamps library
@@ -1427,6 +1439,7 @@ int main(int argc, char *argv[])
 
                       memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
                       update_particles(vid_buf);
+                      draw_walls(vid_buf);
                       draw_parts(vid_buf);
                       render_fire(vid_buf);
 
@@ -1442,8 +1455,8 @@ int main(int argc, char *argv[])
                 if(!strncmp(argv[3], "pti", 3)){
       char * datares = NULL, *scaled_buf;
       int res = 0, sw, sh;
-      scaled_buf = resample_img(vid_buf, XRES, YRES, XRES/4, YRES/4);
-      datares = ptif_pack(scaled_buf, XRES/4, YRES/4, &res);
+      scaled_buf = resample_img(vid_buf, XRES, YRES, XRES/GRID_Z, YRES/GRID_Z);
+      datares = ptif_pack(scaled_buf, XRES/GRID_Z, YRES/GRID_Z, &res);
       if(datares!=NULL){
         f=fopen(argv[2], "wb");
         fwrite(datares, res, 1, f);
@@ -1490,7 +1503,7 @@ int main(int argc, char *argv[])
     void *http_ver_check, *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
 	//char console_error[255] = "";
-	int result, i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len, new_message_len;
+	int result, i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len, new_message_len=0;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -1619,6 +1632,7 @@ luacon_open();
 	parts[NPART-1].life = -1;
 	pfree = 0;
 	fire_bg=calloc(XRES*YRES, PIXELSIZE);
+	init_can_move();
 	clear_sim();
 
 	//fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
@@ -1721,6 +1735,12 @@ luacon_open();
 #ifdef OpenGL
 		ClearScreen();
 #else
+        if(gravwl_timeout)
+        {
+            if(gravwl_timeout==1)
+                gravity_mask();
+            gravwl_timeout--;
+        }
 		if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK || cmode==CM_AWESOME || cmode==CM_PREAWE || (cmode==CM_HEAT && aheat_enable))//air only gets drawn in these modes
 		{
 			draw_air(vid_buf);
@@ -1748,7 +1768,10 @@ luacon_open();
 
         draw_grav(vid_buf);
         update_particles(vid_buf); //update everything
+        draw_walls(vid_buf);
 		draw_parts(vid_buf); //draw particles
+		if(sl == WL_GRAV+200 || sr == WL_GRAV+200)
+            draw_grav_zones(vid_buf);
 
         pthread_mutex_lock(&gravmutex);
         result = grav_ready;
@@ -1764,7 +1787,9 @@ luacon_open();
                 }
             }
         pthread_mutex_unlock(&gravmutex);
-
+        //Apply the gravity mask
+        membwand(gravy, gravmask, sizeof(gravy), sizeof(gravmask));
+        membwand(gravx, gravmask, sizeof(gravx), sizeof(gravmask));
         if (!sys_pause||framerender) //Only update if not paused
             memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
 
@@ -1937,10 +1962,6 @@ luacon_open();
 						error_ui(vid_buf, 0, "Install failed - You may not have permission or you may be on a platform that does not support installation");
 					}
 				}
-			}
-			if(sdl_key=='r')
-			{
-			    local_save(0, 0, XRES, YRES);
 			}
 			if (sdl_key=='f')
 			{
@@ -2488,6 +2509,15 @@ luacon_open();
 				    else if (tempname=="HETR" && parts[cr>>PS].tmp==2){
 				        tempname = "COLR";
 				    }
+				    else if (tempname=="PLSM" && parts[cr>>PS].ctype==PT_NBLE){
+				        tempname = "NBLE";
+				    }
+				    else if (tempname=="PLSM" && parts[cr>>PS].ctype==PT_ARGN){
+				        tempname = "ARGN";
+				    }
+				    else if (tempname=="SPRK"){
+				        tempname = ptypes[parts[cr>>PS].ctype].name;
+				    }
 #ifdef BETA
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
 #else
@@ -2793,7 +2823,9 @@ luacon_open();
 							svf_myvote = -1;
 						}
 					}
-					if (x>=219 && x<=(XRES+BARSIZE-(510-349)) && svf_login && svf_open)
+					if (x>=217 && x<=239)
+						local_save(0, 0, XRES, YRES);
+					if (x>=241 && x<=(XRES+BARSIZE-(510-349)) && svf_login && svf_open)
 						tag_list_ui(vid_buf);
 					if (x>=(XRES+BARSIZE-(510-351)) && x<(XRES+BARSIZE-(510-366)) && !bq)
 					{
@@ -2940,7 +2972,7 @@ luacon_open();
 										bmap[j][i] = WL_FAN;
 									}
 						}
-						if (c == PT_WIND)
+						if (c == SPC_WIND)
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
@@ -2960,7 +2992,7 @@ luacon_open();
 					}
 					else//while mouse is held down, it draws lines between previous and current positions
 					{
-						if (c == PT_WIND)
+						if (c == SPC_WIND)
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
@@ -3001,7 +3033,7 @@ luacon_open();
 					{
 						if (sdl_mod & (KMOD_CAPS))
 							c = 0;
-						if (c!=WL_STREAM+200&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=PT_WIND)
+						if (c!=WL_STREAM+200&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=SPC_WIND)
 							flood_parts(x, y, c, -1, -1);
 						if (c==SPC_HEAT || c==SPC_COOL)
 							create_parts(x, y, bsx, bsy, c);

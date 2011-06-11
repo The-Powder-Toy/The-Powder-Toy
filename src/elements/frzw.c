@@ -9,7 +9,7 @@ int update_FRZW(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (r&TYPE==PT_WATR&&5>rand()%70)
+				if ((r&TYPE)==PT_WATR&&5>rand()%70)
 				{
 					part_change_type(r>>PS,x+rx,y+ry,PT_FRZW);
 				}

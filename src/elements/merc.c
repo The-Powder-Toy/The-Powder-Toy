@@ -14,7 +14,7 @@ int update_MERC(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r || (parts[i].tmp >=maxtmp))
 						continue;
-					if (r&TYPE==PT_MERC&&33>=rand()/(RAND_MAX/100)+1)
+					if ((r&TYPE)==PT_MERC&&33>=rand()/(RAND_MAX/100)+1)
 					{
 						if ((parts[i].tmp + parts[r>>PS].tmp + 1) <= maxtmp)
 						{

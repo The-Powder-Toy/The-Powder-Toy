@@ -9,11 +9,11 @@ int update_FOG(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (ptypes[r&TYPE].state==ST_SOLID&&5>=rand()%50&&parts[i].life==0&&!(r&TYPE==PT_CLNE||r&TYPE==PT_PCLN)) // TODO: should this also exclude BCLN?
+				if (ptypes[r&TYPE].state==ST_SOLID&&5>=rand()%50&&parts[i].life==0&&!((r&TYPE)==PT_CLNE||(r&TYPE)==PT_PCLN)) // TODO: should this also exclude BCLN?
 				{
 					part_change_type(i,x,y,PT_RIME);
 				}
-				if (r&TYPE==PT_SPRK)
+				if ((r&TYPE)==PT_SPRK)
 				{
 					parts[i].life += rand()%20;
 				}

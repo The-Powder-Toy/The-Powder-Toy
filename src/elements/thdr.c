@@ -9,14 +9,14 @@ int update_THDR(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((ptypes[r&TYPE].properties&PROP_CONDUCTS) && parts[r>>PS].life==0 && !(r&TYPE==PT_WATR||r&TYPE==PT_SLTW) && parts[r>>PS].ctype!=PT_SPRK)
+				if ((ptypes[r&TYPE].properties&PROP_CONDUCTS) && parts[r>>PS].life==0 && !((r&TYPE)==PT_WATR||(r&TYPE)==PT_SLTW) && parts[r>>PS].ctype!=PT_SPRK)
 				{
 					kill_part(i);
-					parts[r>>PS].ctype = r&TYPE;
+					parts[r>>PS].ctype = parts[r>>PS].type;
 					part_change_type(r>>PS,x+rx,y+ry,PT_SPRK);
 					parts[r>>PS].life = 4;
 				}
-				else if (r&TYPE!=PT_CLNE&&r&TYPE!=PT_THDR&&r&TYPE!=PT_SPRK&&r&TYPE!=PT_DMND&&r&TYPE!=PT_C0&&r&TYPE!=PT_FIRE&&r&TYPE!=PT_BSHL&&r&TYPE!=PT_PDCL&&r&TYPE!=PT_GSCL&&r&TYPE!=PT_LQCL&&r&TYPE!=PT_NEUT&&r&TYPE!=PT_PHOT&&r&TYPE)
+				else if ((r&TYPE)!=PT_CLNE&&(r&TYPE)!=PT_THDR&&(r&TYPE)!=PT_SPRK&&(r&TYPE)!=PT_DMND&&(r&TYPE)!=PT_C0&&(r&TYPE)!=PT_FIRE&&(r&TYPE)!=PT_BSHL&&(r&TYPE)!=PT_PDCL&&(r&TYPE)!=PT_GSCL&&(r&TYPE)!=PT_LQCL&&(r&TYPE)!=PT_NEUT&&(r&TYPE)!=PT_PHOT&&(r&TYPE))
 				{
 					pv[y/CELL][x/CELL] += 100.0f;
 					if (legacy_enable&&1>(rand()%200))

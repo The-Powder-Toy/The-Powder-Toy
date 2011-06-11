@@ -54,12 +54,12 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (r&TYPE==PT_WATR || r&TYPE==PT_ICEI || r&TYPE==PT_SNOW)
+				if ((r&TYPE)==PT_WATR || (r&TYPE)==PT_ICEI || (r&TYPE)==PT_SNOW)
 				{
 					parts[i].vx *= 0.995;
 					parts[i].vy *= 0.995;
 				}
-				if (r&TYPE==PT_PLUT && pressureFactor>(rand()%1000))
+				if ((r&TYPE)==PT_PLUT && pressureFactor>(rand()%1000))
 				{
 					if (33>rand()%100)
 					{
@@ -80,13 +80,13 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 					update_PYRO(UPDATE_FUNC_SUBCALL_ARGS);
 				}
 #ifdef SDEUT
-                else if (r&TYPE==PT_DEUT && (pressureFactor+1+(parts[i].life/100))>(rand()%1000))
+                else if ((r&TYPE)==PT_DEUT && (pressureFactor+1+(parts[i].life/100))>(rand()%1000))
                 {
 					create_n_parts(parts[r>>PS].life, x+rx, y+ry, parts[i].vx, parts[i].vy, PT_NEUT);
                     kill_part(r>>PS);
                 }
 #else
-                else if (r&TYPE==PT_DEUT && (pressureFactor+1)>(rand()%1000))
+                else if ((r&TYPE)==PT_DEUT && (pressureFactor+1)>(rand()%1000))
                 {
 					create_part(r>>PS, x+rx, y+ry, PT_NEUT);
 					parts[r>>PS].vx = 0.25f*parts[r>>PS].vx + parts[i].vx;
@@ -101,36 +101,30 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 						kill_part(r>>PS);
 				}
 #endif
-				else if (r&TYPE==PT_GUNP && 15>(rand()%1000))
+				else if ((r&TYPE)==PT_GUNP && 15>(rand()%1000))
 					part_change_type(r>>PS,x+rx,y+ry,PT_DUST);
-				else if (r&TYPE==PT_DYST && 15>(rand()%1000))
+				else if ((r&TYPE)==PT_DYST && 15>(rand()%1000))
 					part_change_type(r>>PS,x+rx,y+ry,PT_YEST);
-				else if (r&TYPE==PT_YEST)
+				else if ((r&TYPE)==PT_YEST)
 					part_change_type(r>>PS,x+rx,y+ry,PT_DYST);
-				else if (r&TYPE==PT_WATR && 15>(rand()%100))
+				else if ((r&TYPE)==PT_WATR && 15>(rand()%100))
 					part_change_type(r>>PS,x+rx,y+ry,PT_DSTW);
-				else if (r&TYPE==PT_PLEX && 15>(rand()%1000))
+				else if ((r&TYPE)==PT_PLEX && 15>(rand()%1000))
 					part_change_type(r>>PS,x+rx,y+ry,PT_GOO);
-				else if (r&TYPE==PT_NITR && 15>(rand()%1000))
+				else if ((r&TYPE)==PT_NITR && 15>(rand()%1000))
 					part_change_type(r>>PS,x+rx,y+ry,PT_DESL);
-				else if (r&TYPE==PT_PLNT && 5>(rand()%100))
+				else if ((r&TYPE)==PT_PLNT && 5>(rand()%100))
 					create_part(r>>PS, x+rx, y+ry, PT_WOOD);
-				else if (r&TYPE==PT_DESL && 15>(rand()%1000))
+				else if ((r&TYPE)==PT_DESL && 15>(rand()%1000))
 					part_change_type(r>>PS,x+rx,y+ry,PT_GAS);
-				else if (r&TYPE==PT_COAL && 5>(rand()%100))
+				else if ((r&TYPE)==PT_COAL && 5>(rand()%100))
 					create_part(r>>PS, x+rx, y+ry, PT_WOOD);
-				else if (r&TYPE==PT_DUST && 5>(rand()%100))
+				else if ((r&TYPE)==PT_DUST && 5>(rand()%100))
 					part_change_type(r>>PS, x+rx, y+ry, PT_FWRK);
-				else if (r&TYPE==PT_FWRK && 5>(rand()%100))
+				else if ((r&TYPE)==PT_FWRK && 5>(rand()%100))
 					parts[r>>PS].ctype = PT_DUST;
-				else if (r&TYPE==PT_ACID && 5>(rand()%100))
+				else if ((r&TYPE)==PT_ACID && 5>(rand()%100))
 					create_part(r>>PS, x+rx, y+ry, PT_ISOZ);
-				/*if(r&TYPE>1 && r&TYPE!=PT_NEUT && r&TYPE-1!=PT_NEUT && r&TYPE-1!=PT_STKM &&
-				  (ptypes[r&TYPE-1].menusection==SC_LIQUID||
-				  ptypes[r&TYPE-1].menusection==SC_EXPLOSIVE||
-				  ptypes[r&TYPE-1].menusection==SC_GAS||
-				  ptypes[r&TYPE-1].menusection==SC_POWDERS) && 15>(rand()%1000))
-				  r&TYPE--;*/
 			}
 	return 0;
 }

@@ -47,7 +47,7 @@ int update_LEAF(UPDATE_FUNC_ARGS) {
 			r = pmap[y+ry][x+rx];
 			if ((r>>PS)>=NPART || !r)
 				continue;
-			if (r&TYPE==PT_SPNG&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
+			if ((r&TYPE)==PT_SPNG&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
 			{
 				tmp = parts[i].life - parts[r>>PS].life;
 				if (tmp ==1)

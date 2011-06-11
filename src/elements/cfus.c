@@ -30,7 +30,7 @@ int update_CFUS(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (r&TYPE==PT_SPRK || ((parts[i].temp<=200.0f) && 1>(rand()%10)))
+				if ((r&TYPE)==PT_SPRK || ((parts[i].temp<=200.0f) && 1>(rand()%10)))
 				{
 					if (parts[i].life>40) {
 						parts[i].life = 39;

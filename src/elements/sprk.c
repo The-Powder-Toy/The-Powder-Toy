@@ -71,6 +71,20 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 		parts[i].life = rand()%150+50;
 		part_change_type(i,x,y,PT_PLSM);
 		parts[i].ctype = PT_NBLE;
+		parts[i].r = 235;
+		parts[i].g = 73;
+		parts[i].b = 23;
+		parts[i].temp = 3500;
+		pv[y/CELL][x/CELL] += 1;
+	}
+	else if (ct==PT_ARGN&&parts[i].life<=1)
+	{
+		parts[i].life = rand()%150+50;
+		part_change_type(i,x,y,PT_PLSM);
+		parts[i].ctype = PT_ARGN;
+		parts[i].r = 227;
+		parts[i].g = 73;
+		parts[i].b = 206;
 		parts[i].temp = 3500;
 		pv[y/CELL][x/CELL] += 1;
 	}
@@ -100,7 +114,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				rt = (r&TYPE);
+				rt = parts[r>>PS].type;
 				conduct_sprk = 1;
 
 

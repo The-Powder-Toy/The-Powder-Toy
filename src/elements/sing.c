@@ -64,9 +64,9 @@ int update_SING(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (r&TYPE!=PT_DMND&&33>=rand()/(RAND_MAX/100)+1)
+				if ((r&TYPE)!=PT_DMND&&33>=rand()/(RAND_MAX/100)+1)
 				{
-					if (r&TYPE==PT_SING && parts[r>>PS].life >10)
+					if ((r&TYPE)==PT_SING && parts[r>>PS].life >10)
 					{
 						if (parts[i].life+parts[r>>PS].life > 255)
 							continue;
@@ -76,7 +76,7 @@ int update_SING(UPDATE_FUNC_ARGS) {
 					{
 						if (parts[i].life+3 > 255)
 						{
-							if (r&TYPE!=PT_SING && 1>rand()%100)
+							if ((r&TYPE)!=PT_SING && 1>rand()%100)
 							{
 								int np;
 								np = create_part(r>>PS,x+rx,y+ry,PT_SING);

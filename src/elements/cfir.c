@@ -11,7 +11,7 @@ int update_CFIR(UPDATE_FUNC_ARGS) {
 			r = pmap[y+ry][x+rx];
 			if ((r>>PS)>=NPART || !r)
 				continue;
-			if (r&TYPE!=PT_WARP&&r&TYPE!=PT_POT&&r&TYPE!=PT_STKM&&r&TYPE!=PT_STKM2&&r&TYPE!=PT_DMND&&r&TYPE!=PT_CLNE&&r&TYPE!=PT_BCLN&&r&TYPE!=PT_PCLN&&(10>=rand()%200))
+			if ((r&TYPE)!=PT_WARP&&(r&TYPE)!=PT_POT&&(r&TYPE)!=PT_STKM&&(r&TYPE)!=PT_STKM2&&(r&TYPE)!=PT_DMND&&(r&TYPE)!=PT_CLNE&&(r&TYPE)!=PT_BCLN&&(r&TYPE)!=PT_PCLN&&(10>=rand()%200))
 			{
                 int nrx = rand()%3 -1;
                 int nry = rand()%3 -1;

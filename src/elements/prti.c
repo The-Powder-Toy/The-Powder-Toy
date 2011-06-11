@@ -25,15 +25,15 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 					fe = 1;
 				if ((r>>PS)>=NPART)
 					continue;
-				if (!r || r&TYPE==PT_PRTI || r&TYPE==PT_PRTO || (ptypes[r&TYPE].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && r&TYPE!=PT_SPRK))
+				if (!r || (r&TYPE)==PT_PRTI || (r&TYPE)==PT_PRTO || (ptypes[r&TYPE].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && (r&TYPE)!=PT_SPRK))
 				{
 					r = photons[y+ry][x+rx];
 					if ((r>>PS)>=NPART)
 						continue;
-					if (!r || r&TYPE==PT_PRTI || r&TYPE==PT_PRTO || (ptypes[r&TYPE].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && r&TYPE!=PT_SPRK))
+					if (!r || (r&TYPE)==PT_PRTI || (r&TYPE)==PT_PRTO || (ptypes[r&TYPE].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && (r&TYPE)!=PT_SPRK))
 						continue;
 
-                    if (r&TYPE == PT_SOAP)
+                    if ((r&TYPE) == PT_SOAP)
                         detach(r>>PS);
 				}
 				for ( nnx=0; nnx<80; nnx++)

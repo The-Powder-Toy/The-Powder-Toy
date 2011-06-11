@@ -10,7 +10,7 @@ int update_SWCH(UPDATE_FUNC_ARGS) {
 				if ((r>>PS)>=NPART || !r)
 					continue;
 				if (parts_avg(i,r>>PS,PT_INSL)!=PT_INSL) {
-					rt = r&TYPE;
+					rt = parts[r>>PS].type;
 					if (rt==PT_SWCH)
 					{
 						if (parts[i].life>=10&&parts[r>>PS].life<10&&parts[r>>PS].life>0)

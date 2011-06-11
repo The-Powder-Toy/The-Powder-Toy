@@ -97,7 +97,7 @@ pixel *ptif_unpack(void *datain, int size, int *w, int *h){
 	width = data[4]|(data[5]<<8);
 	height = data[6]|(data[7]<<8);
 
-    i = (width*height)*3;
+	i = (width*height)*3;
 	undata = calloc(1, (width*height)*3);
 	red_chan = calloc(1, width*height);
 	green_chan = calloc(1, width*height);
@@ -139,13 +139,30 @@ pixel *ptif_unpack(void *datain, int size, int *w, int *h){
 	free(undata);
 	return result;
 }
-pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
+
+pixel *resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
 {
 	int y, x;
+	pixel *q = NULL;
+	q = malloc(rw*rh*PIXELSIZE);
+	for (y=0; y<rh; y++)
+		for (x=0; x<rw; x++){
+			q[rw*y+x] = src[sw*(y*sh/rh)+(x*sw/rw)];
+		}
+	return q;
+}
+
+pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
+{
+	int y, x, fxceil, fyceil;
 	//int i,j,x,y,w,h,r,g,b,c;
 	pixel *q = NULL;
 	//TODO: Actual resampling, this is just cheap nearest pixel crap
-	if(rw > sw && rh > sh){
+	if(rw == sw && rh == sh){
+		//Don't resample
+		q = malloc(rw*rh*PIXELSIZE);
+		memcpy(q, src, rw*rh*PIXELSIZE);
+	} else if(rw > sw && rh > sh){
 		float fx, fy, fyc, fxc, intp;
 		pixel tr, tl, br, bl;
 		q = malloc(rw*rh*PIXELSIZE);
@@ -157,10 +174,14 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 				fy = ((float)y)*((float)sh)/((float)rh);
 				fxc = modf(fx, &intp);
 				fyc = modf(fy, &intp);
-				tr = src[sw*(int)floor(fy)+(int)ceil(fx)];
+				fxceil = (int)ceil(fx);
+				fyceil = (int)ceil(fy);
+				if (fxceil>=sw) fxceil = sw-1;
+				if (fyceil>=sh) fyceil = sh-1;
+				tr = src[sw*(int)floor(fy)+fxceil];
 				tl = src[sw*(int)floor(fy)+(int)floor(fx)];
-				br = src[sw*(int)ceil(fy)+(int)ceil(fx)];
-				bl = src[sw*(int)ceil(fy)+(int)floor(fx)];
+				br = src[sw*fyceil+fxceil];
+				bl = src[sw*fyceil+(int)floor(fx)];
 				q[rw*y+x] = PIXRGB(
 					(int)(((((float)PIXR(tl))*(1.0f-fxc))+(((float)PIXR(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXR(bl))*(1.0f-fxc))+(((float)PIXR(br))*(fxc)))*(fyc)),
 					(int)(((((float)PIXG(tl))*(1.0f-fxc))+(((float)PIXG(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXG(bl))*(1.0f-fxc))+(((float)PIXG(br))*(fxc)))*(fyc)),
@@ -193,10 +214,14 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 					fy = ((float)y)*((float)sh)/((float)rh);
 					fxc = modf(fx, &intp);
 					fyc = modf(fy, &intp);
-					tr = oq[sw*(int)floor(fy)+(int)ceil(fx)];
+					fxceil = (int)ceil(fx);
+					fyceil = (int)ceil(fy);
+					if (fxceil>=sw) fxceil = sw-1;
+					if (fyceil>=sh) fyceil = sh-1;
+					tr = oq[sw*(int)floor(fy)+fxceil];
 					tl = oq[sw*(int)floor(fy)+(int)floor(fx)];
-					br = oq[sw*(int)ceil(fy)+(int)ceil(fx)];
-					bl = oq[sw*(int)ceil(fy)+(int)floor(fx)];
+					br = oq[sw*fyceil+fxceil];
+					bl = oq[sw*fyceil+(int)floor(fx)];
 					q[rw*y+x] = PIXRGB(
 						(int)(((((float)PIXR(tl))*(1.0f-fxc))+(((float)PIXR(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXR(bl))*(1.0f-fxc))+(((float)PIXR(br))*(fxc)))*(fyc)),
 						(int)(((((float)PIXG(tl))*(1.0f-fxc))+(((float)PIXG(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXG(bl))*(1.0f-fxc))+(((float)PIXG(br))*(fxc)))*(fyc)),
@@ -211,6 +236,7 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 	}
 	return q;
 }
+
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
 {
 	int i,j,x,y,w,h,r,g,b,c;
@@ -630,16 +656,52 @@ void draw_tool(pixel *vid_buf, int b, int sl, int sr, unsigned pc, unsigned iswa
 int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 {
 	int i, j, c;
+    pixel gc;
 	if (x > XRES-26 || x < 0)
 		return 26;
 	if (b>=UI_WALLSTART)
 	{
-		b = b-200;
+		int ds = 0;
+        if (b-UI_WALLSTART>=0 && b-UI_WALLSTART<UI_WALLCOUNT)
+        {
+            ds = wtypes[b-UI_WALLSTART].drawstyle;
+            gc = wtypes[b-UI_WALLSTART].eglow;
+        }
 		//x = (2+32*((b-22)/1));
 		//y = YRES+2+40;
+		if (ds==1)
+        {
+        for (j=1; j<15; j+=2)
+            for (i=1+(1&(j>>1)); i<27; i+=2)
+                vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
+        }
+        else if (ds==2)
+        {
+        for (j=1; j<15; j+=2)
+            for (i=1; i<27; i+=2)
+                vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
+        }
+        else if (ds==3)
+        {
+        for (j=1; j<15; j++)
+            for (i=1; i<27; i++)
+                vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
+        }
+        else if (ds==4)
+        {
+        for (j=1; j<15; j++)
+            for (i=1; i<27; i++)
+            if(i%CELL == j%CELL)
+                vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
+            else if  (i%CELL == (j%CELL)+1 || (i%CELL == 0 && j%CELL == CELL-1))
+                vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = gc;
+            else
+                vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = PIXPACK(0x202020);
+        }
+        else
 		switch (b)
 		{
-		case WL_WALLELEC:
+		case WL_WALLELEC+200:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<27; i++)
@@ -655,7 +717,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				}
 			}
 			break;
-		case WL_EWALL:
+		case WL_EWALL+200:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<6+j; i++)
@@ -674,16 +736,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				}
 			}
 			break;
-		case WL_DETECT:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			break;
-		case WL_STREAM:
+		case WL_STREAM+200:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<27; i++)
@@ -697,7 +750,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				drawpixel(vid_buf, x+i, y+8+(int)(3.9f*cos(i*0.3f)), 255, 255, 255, 255);
 			}
 			break;
-		case WL_SIGN:
+		case WL_SIGN+200:
 			for (j=1; j<15; j++)
 			{
 				for (i=1; i<27; i++)
@@ -708,37 +761,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 			drawtext(vid_buf, x+9, y+3, "\xA1", 32, 64, 128, 255);
 			drawtext(vid_buf, x+9, y+3, "\xA0", 255, 255, 255, 255);
 			break;
-		case WL_FAN:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			break;
-		case WL_ALLOWLIQUID:
-			for (j=1; j<15; j++)
-			{
-				for (i=1; i<27; i++)
-				{
-					if (!(i%2) && !(j%2))
-					{
-						vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-					}
-				}
-			}
-			break;
-		case WL_DESTROYALL:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			break;
-		case WL_ERASE:
+		case WL_ERASE+200:
 			for (j=1; j<15; j+=2)
 			{
 				for (i=1+(1&(j>>1)); i<13; i+=2)
@@ -754,44 +777,14 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				}
 			}
 			break;
-		case WL_ALLOWAIR:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			break;
-		case WL_ALLOWSOLID:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			break;
-		case WL_ALLOWALLELEC:
+            case SPC_AIR:
+            case SPC_HEAT:
+            case SPC_COOL:
+            case SPC_VACUUM:
+            case SPC_WIND:
 			for (j=1; j<15; j++)
-			{
 				for (i=1; i<27; i++)
-				{
-					if (!(i%2) && !(j%2))
-					{
-						vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-					}
-				}
-			}
-			break;
-		case SPC_AIR-200:
-			for (j=1; j<15; j++)
-			{
-				for (i=1; i<27; i++)
-				{
 					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
 			c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
 			if (c<544)
 			{
@@ -801,73 +794,16 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 			{
 				c = 0;
 			}
-			drawtext(vid_buf, x+14-textwidth("AIR")/2, y+4, "AIR", c, c, c, 255);
-			break;
-		case SPC_HEAT-200:
-			for (j=1; j<15; j++)
-			{
-				for (i=1; i<27; i++)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-			if (c<544)
-			{
-				c = 255;
-			}
-			else
-			{
-				c = 0;
-			}
-			drawtext(vid_buf, x+14-textwidth("HEAT")/2, y+4, "HEAT", c, c, c, 255);
-			break;
-		case SPC_COOL-200:
-			for (j=1; j<15; j++)
-			{
-				for (i=1; i<27; i++)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-			if (c<544)
-			{
-				c = 255;
-			}
-			else
-			{
-				c = 0;
-			}
-			drawtext(vid_buf, x+14-textwidth("COOL")/2, y+4, "COOL", c, c, c, 255);
-			break;
-		case SPC_VACUUM-200:
-			for (j=1; j<15; j++)
-			{
-				for (i=1; i<27; i++)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
-			c = PIXR(pc) + 3*PIXG(pc) + 2*PIXB(pc);
-			if (c<544)
-			{
-				c = 255;
-			}
-			else
-			{
-				c = 0;
-			}
-			drawtext(vid_buf, x+14-textwidth("VAC")/2, y+4, "VAC", c, c, c, 255);
-			break;
-		case WL_ALLOWGAS:
-			for (j=1; j<15; j+=2)
-			{
-				for (i=1+(1&(j>>1)); i<27; i+=2)
-				{
-					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
-				}
-			}
+			if (b==SPC_AIR)
+                drawtext(vid_buf, x+14-textwidth("AIR")/2, y+4, "AIR", c, c, c, 255);
+            else if (b==SPC_HEAT)
+                drawtext(vid_buf, x+14-textwidth("HEAT")/2, y+4, "HEAT", c, c, c, 255);
+            else if (b==SPC_COOL)
+                drawtext(vid_buf, x+14-textwidth("COOL")/2, y+4, "COOL", c, c, c, 255);
+            else if (b==SPC_VACUUM)
+                drawtext(vid_buf, x+14-textwidth("VAC")/2, y+4, "VAC", c, c, c, 255);
+            else if (b==SPC_WIND)
+                drawtext(vid_buf, x+14-textwidth("WIND")/2, y+4, "WIND", c, c, c, 255);
 			break;
 		default:
 			for (j=1; j<15; j++)
@@ -878,7 +814,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				}
 			}
 		}
-		if (b==WL_ERASE)
+		if (b==WL_ERASE+200)
 		{
 			for (j=4; j<12; j++)
 			{
@@ -1433,6 +1369,25 @@ void draw_air(pixel *vid)
 				for (i=0; i<CELL; i++)
 					vid[(x*CELL+i) + (y*CELL+j)*(XRES+BARSIZE)] = c;
 		}
+}
+void draw_grav_zones(pixel * vid)
+{
+  int x, y, i, j;
+  for (y=0; y<YRES/CELL; y++)
+  {
+    for (x=0; x<XRES/CELL; x++)
+    {
+      if(gravmask[y][x])
+      {
+        for (j=0; j<CELL; j++)//draws the colors
+          for (i=0; i<CELL; i++)
+            if(i == j)
+              drawpixel(vid, x*CELL+i, y*CELL+j, 255, 200, 0, 120);
+            else
+              drawpixel(vid, x*CELL+i, y*CELL+j, 32, 32, 32, 120);
+      }
+    }
+  }
 }
 void draw_grav(pixel *vid)
 {
@@ -2004,6 +1959,13 @@ void draw_parts(pixel *vid)
 						cb = cb>255?255:cb;
 						blendpixel(vid, nx, ny, cr, cg, cb, 255);
 					}
+				}
+				else if (t==PT_PLAN)
+				{
+                    cr = 0;
+                    cb = 0;
+                    cg = 0;
+                    blendpixel(vid, nx, ny, cr, cg, cb, 255);
 				}
 				else if (t==PT_VIRS)
 				{
@@ -3236,43 +3198,54 @@ void draw_parts(pixel *vid)
 				}
 				else if (t==PT_PLSM)
 				{
-					float ttemp = (float)parts[i].life;
-					int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
-					uint8 R = plasma_data[caddress];
-					uint8 G = plasma_data[caddress+1];
-					uint8 B = plasma_data[caddress+2];
-					if (cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY || cmode==CM_AWESOME || cmode==CM_PREAWE)
-					{
-						cr = R/8;
-						cg = G/8;
-						cb = B/8;
-						x = nx/CELL;
-						y = ny/CELL;
-						cg += fire_g[y][x];
-						if (cg > 255) cg = 255;
-						fire_g[y][x] = cg;
-						cb += fire_b[y][x];
-						if (cb > 255) cb = 255;
-						fire_b[y][x] = cb;
-						cr += fire_r[y][x];
-						if (cr > 255) cr = 255;
-						fire_r[y][x] = cr;
+				    uint8 R,G,B;
+				    if (parts[i].ctype == PT_NBLE || parts[i].ctype == PT_ARGN){
+				        cr = parts[i].r;
+                        cg = parts[i].g;
+                        cb = parts[i].b;
+					} else {
+					    float ttemp = (float)parts[i].life;
+                        int caddress = restrict_flt(restrict_flt(ttemp, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+                        R = plasma_data[caddress];
+                        G = plasma_data[caddress+1];
+                        B = plasma_data[caddress+2];
 					}
-					else
-					{
-						cr = R;
-						cg = G;
-						cb = B;
-						blendpixel(vid, nx, ny, cr, cg, cb, 192);
-						blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
-						blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
-						blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
-						blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-						blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
-						blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
-						blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
-						blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
-					}
+                        if (cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY || cmode==CM_AWESOME || cmode==CM_PREAWE)
+                        {
+                            if (parts[i].ctype != PT_NBLE && parts[i].ctype != PT_ARGN){
+                                cr = R/8;
+                                cg = G/8;
+                                cb = B/8;
+                            }
+                            x = nx/CELL;
+                            y = ny/CELL;
+                            cg += fire_g[y][x];
+                            if (cg > 255) cg = 255;
+                            fire_g[y][x] = cg;
+                            cb += fire_b[y][x];
+                            if (cb > 255) cb = 255;
+                            fire_b[y][x] = cb;
+                            cr += fire_r[y][x];
+                            if (cr > 255) cr = 255;
+                            fire_r[y][x] = cr;
+                        }
+                        else
+                        {
+                            if (parts[i].ctype != PT_NBLE || parts[i].ctype != PT_ARGN){
+                                cr = R;
+                                cg = G;
+                                cb = B;
+                            }
+                            blendpixel(vid, nx, ny, cr, cg, cb, 192);
+                            blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+                            blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+                            blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+                            blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+                            blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
+                            blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
+                            blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
+                            blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
+                        }
 				}
 				else if (t==PT_HETR)
 				{
@@ -3717,7 +3690,7 @@ void draw_parts(pixel *vid)
 			else //heat view
 			{
 				float ttemp = parts[i].temp+(-MIN_TEMP);
-				int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
+				int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, /*MAX_TEMP*/9999+(-MIN_TEMP)) / ((/*MAX_TEMP*/9999+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
 				uint8 R = color_data[caddress];
 				uint8 G = color_data[caddress+1];
 				uint8 B = color_data[caddress+2];
@@ -3835,6 +3808,196 @@ void draw_parts(pixel *vid)
 	glFlush ();
 #endif
 
+}
+void draw_walls(pixel *vid)
+{
+	int x, y, i, j, cr, cg, cb;
+	unsigned char wt;
+	pixel pc;
+	pixel gc;
+	for (y=0; y<YRES/CELL; y++)
+		for (x=0; x<XRES/CELL; x++)
+			if (bmap[y][x])
+			{
+				wt = bmap[y][x]-UI_ACTUALSTART;
+				if (wt<0 || wt>=UI_WALLCOUNT)
+                    continue;
+				pc = wtypes[wt].colour;
+                gc = wtypes[wt].eglow;
+				// standard wall patterns
+				if (wtypes[wt].drawstyle==1)
+				{
+					for (j=0; j<CELL; j+=2)
+						for (i=(j>>1)&1; i<CELL; i+=2)
+							vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+				}
+				else if (wtypes[wt].drawstyle==2)
+				{
+					for (j=0; j<CELL; j+=2)
+						for (i=0; i<CELL; i+=2)
+							vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+				}
+				else if (wtypes[wt].drawstyle==3)
+				{
+					for (j=0; j<CELL; j++)
+						for (i=0; i<CELL; i++)
+							vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+				}
+                else if (wtypes[wt].drawstyle==4)
+                {
+                    for (j=0; j<CELL; j++)
+                        for (i=0; i<CELL; i++)
+                            if(i == j)
+                                vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+                            else if  (i == j+1 || (i == 0 && j == CELL-1))
+                                vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = gc;
+                            else
+                                vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x202020);
+                }
+				// special rendering for some walls
+				if (bmap[y][x]==WL_EWALL)
+				{
+					if (emap[y][x])
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								if (i&j&1)
+									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+					}
+					else
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								if (!(i&j&1))
+									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+					}
+				}
+				else if (bmap[y][x]==WL_WALLELEC)
+				{
+					for (j=0; j<CELL; j++)
+						for (i=0; i<CELL; i++)
+						{
+							if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+							else
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x808080);
+						}
+				}
+				else if (bmap[y][x]==WL_EHOLE)
+				{
+					if (emap[y][x])
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x242424);
+						for (j=0; j<CELL; j+=2)
+							for (i=0; i<CELL; i+=2)
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x000000);
+					}
+					else
+					{
+						for (j=0; j<CELL; j+=2)
+							for (i=0; i<CELL; i+=2)
+								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x242424);
+					}
+				}
+
+				if (cmode==CM_BLOB)
+				{
+					// when in blob view, draw some blobs...
+					if (wtypes[wt].drawstyle==1)
+					{
+						for (j=0; j<CELL; j+=2)
+							for (i=(j>>1)&1; i<CELL; i+=2)
+								drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+					else if (wtypes[wt].drawstyle==2)
+					{
+						for (j=0; j<CELL; j+=2)
+							for (i=0; i<CELL; i+=2)
+								drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+					else if (wtypes[wt].drawstyle==3)
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+                    else if (wtypes[wt].drawstyle==4)
+                    {
+                        for (j=0; j<CELL; j++)
+                            for (i=0; i<CELL; i++)
+                                if(i == j)
+                                    drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+                                else if  (i == j+1 || (i == 0 && j == CELL-1))
+                                    drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(gc), PIXG(gc), PIXB(gc));
+                                else
+                                    drawblob(vid, (x*CELL+i), (y*CELL+j), 0x20, 0x20, 0x20);
+                    }
+					if (bmap[y][x]==WL_EWALL)
+					{
+						if (emap[y][x])
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									if (i&j&1)
+										drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+						}
+						else
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									if (!(i&j&1))
+										drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+						}
+					}
+					else if (bmap[y][x]==WL_WALLELEC)
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+							{
+								if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
+									drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								else
+									drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+							}
+					}
+					else if (bmap[y][x]==WL_EHOLE)
+					{
+						if (emap[y][x])
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									drawblob(vid, (x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+							for (j=0; j<CELL; j+=2)
+								for (i=0; i<CELL; i+=2)
+									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x000000);
+						}
+						else
+						{
+							for (j=0; j<CELL; j+=2)
+								for (i=0; i<CELL; i+=2)
+									drawblob(vid, (x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+						}
+					}
+				}
+
+				if (wtypes[wt].eglow && emap[y][x])
+				{
+					// glow if electrified
+					pc = wtypes[wt].eglow;
+					cr = fire_r[y][x] + PIXR(pc);
+					if (cr > 255) cr = 255;
+					fire_r[y][x] = cr;
+					cg = fire_g[y][x] + PIXG(pc);
+					if (cg > 255) cg = 255;
+					fire_g[y][x] = cg;
+					cb = fire_b[y][x] + PIXB(pc);
+					if (cb > 255) cb = 255;
+					fire_b[y][x] = cb;
+
+				}
+			}
 }
 void create_decorations(int x, int y, int rx, int ry, int r, int g, int b)
 {
@@ -4139,7 +4302,25 @@ pixel *render_packed_rgb(void *image, int width, int height, int cmp_size)
 	free(tmp);
 	return res;
 }
-
+void draw_rgba_image(pixel *vid, unsigned char *data, int x, int y, float alpha)
+{
+  unsigned char w, h;
+  int i, j;
+  unsigned char r, g, b, a;
+  w = *(data++)&0xFF;
+  h = *(data++)&0xFF;
+  for (j=0; j<h; j++)
+  {
+    for (i=0; i<w; i++)
+    {
+      r = *(data++)&0xFF;
+      g = *(data++)&0xFF;
+      b = *(data++)&0xFF;
+      a = *(data++)&0xFF;
+      drawpixel(vid, x+i, y+j, r, g, b, a*alpha);
+    }
+  }
+}
 void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a)
 {
 	int i, j, r, g, b;
@@ -4509,7 +4690,7 @@ corrupt:
 void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 {
 	int i,j,c;
-	if (t<PT_NUM||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM)
+	if (t<PT_NUM||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND)
 	{
 		if (rx<=0)
 			xor_pixel(x, y, vid);
