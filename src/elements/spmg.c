@@ -2,7 +2,7 @@
 
 int update_SPMG(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
-    if(r&TYPE==PT_BRMT){
+    if((r&TYPE)==PT_BRMT){
         parts[r>>PS].vx = 0;
         parts[r>>PS].vy = 0;
         parts[r>>PS].ctype = PT_BRMT;

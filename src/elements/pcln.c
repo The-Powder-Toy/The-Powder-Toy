@@ -40,7 +40,7 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
  	                (r&TYPE)!=PT_STKM && (r&TYPE)!=PT_STKM2 && (r&TYPE)!=PT_PDCL &&
                     (r&TYPE)!=PT_GSCL && (r&TYPE)!=PT_LQCL &&
  	                (r&TYPE)<PT_NUM)
- 	          parts[i].ctype = r&TYPE;
+ 	          parts[i].ctype = (r&TYPE);
  	        }
 	if (parts[i].ctype && parts[i].life==10) {
 		if (parts[i].ctype==PT_PHOT) {//create photons a different way

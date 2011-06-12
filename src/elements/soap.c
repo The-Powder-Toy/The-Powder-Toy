@@ -59,7 +59,7 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 						if ((r>>PS)>=NPART || !r)
 							continue;
 
-						if (((r&TYPE) == PT_SOAP) && ((parts[r>>PS].ctype&1) == 1)
+						if ((((r&TYPE)) == PT_SOAP) && ((parts[r>>PS].ctype&1) == 1)
 								&& ((parts[r>>PS].ctype&4) != 4))
 						{
 							if ((parts[r>>PS].ctype&2) == 2)
@@ -186,12 +186,11 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 
 					if ((r&TYPE) == PT_OIL)
 					{
+					    float ax, ay;
 						parts[i].vy -= 0.1f;
 
 						parts[i].vy *= 0.5f;
 						parts[i].vx *= 0.5f;
-
-						float ax, ay;
 
 						ax = (parts[i].vx + parts[r>>PS].vx)/2;
 						ay = (parts[i].vy + parts[r>>PS].vy)/2;

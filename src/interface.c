@@ -665,9 +665,9 @@ void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 	drawtext(vid_buf, 192, YRES+(MENUSIZE-12), "\xCB", 0, 187, 18, c);
 	drawtext(vid_buf, 205, YRES+(MENUSIZE-14), "\xCA", 187, 40, 0, c);
 
-    //Local save button
-    drawrect(vid_buf, 217, YRES+(MENUSIZE-16), 19, 14, c, c, c, 255);
-	drawtext(vid_buf, 220, YRES+(MENUSIZE-14), "\x82", c, c, c, 255);
+	//Local save button
+    drawrect(vid_buf, 217, YRES+(MENUSIZE-16), 19, 14, 255, 255, 255, 255);
+    drawtext(vid_buf, 220, YRES+(MENUSIZE-14), "\x82", 255, 255, 255, 255);
 
 	//the tags button
 	drawtext(vid_buf, 241, YRES+(MENUSIZE-15), "\x83", c, c, c, 255);
@@ -768,16 +768,8 @@ void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 	{
 		drawtext(vid_buf, XRES-45+BARSIZE/*463*/, YRES+(MENUSIZE-14), "\xC9", 35, 127, 232, 255);
 		drawtext(vid_buf, XRES-45+BARSIZE/*463*/, YRES+(MENUSIZE-14), "\xC7", 255, 255, 255, 255);
-	}
-	else if (svf_user_id=="5886")
-	{
-	    svf_admin = 1;
-		drawtext(vid_buf, XRES-45+BARSIZE/*463*/, YRES+(MENUSIZE-14), "\xC9", 232, 127, 35, 255);
-		drawtext(vid_buf, XRES-45+BARSIZE/*463*/, YRES+(MENUSIZE-14), "\xC7", 255, 255, 255, 255);
-		drawtext(vid_buf, XRES-45+BARSIZE/*463*/, YRES+(MENUSIZE-14), "\xC8", 255, 255, 255, 255);
 	}//else if(amd)
 	//	drawtext(vid_buf, XRES-45/*465*/, YRES+(MENUSIZE-15), "\x97", 0, 230, 153, 255); Why is this here?
-	//info_ui(vid_buf, "hi", svf_user_id);
 }
 
 void error_ui(pixel *vid_buf, int err, char *txt)
@@ -1125,6 +1117,7 @@ void login_ui(pixel *vid_buf)
 	strcpy(ed2.str, "");
 
 	fillrect(vid_buf, -1, -1, XRES, YRES+MENUSIZE, 0, 0, 0, 192);
+
 	while (!sdl_poll())
 	{
 		bq = b;
@@ -1585,7 +1578,6 @@ int save_name_ui(pixel *vid_buf)
 
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 	draw_rgba_image(vid_buf, save_to_server_image, 0, 0, 0.7);
-
 	memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 
 	while (!sdl_poll())
@@ -1628,6 +1620,7 @@ int save_name_ui(pixel *vid_buf)
 			ui_copytext_draw(vid_buf, &ctb);
 			ui_copytext_process(mx, my, b, bq, &ctb);
 		}
+
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 
 		memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
@@ -1636,10 +1629,11 @@ int save_name_ui(pixel *vid_buf)
 		ui_edit_process(mx, my, b, &ed2);
 		ui_checkbox_process(mx, my, b, bq, &cb);
 
-		if (b && !bq && ((mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36) ||
+		if ((b && !bq && ((mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36) ||
 		                 (mx>=x0 && mx<x0+192 && my>=y0+74+YRES/4 && my<y0+90+YRES/4)))
+        || sdl_key==SDLK_RETURN)
 		{
-			free(th);
+			if (th) free(th);
 			if (!ed.str[0])
 				return 0;
 			nd = strcmp(svf_name, ed.str) || !svf_own;
@@ -1655,27 +1649,7 @@ int save_name_ui(pixel *vid_buf)
 			svf_open = 1;
 			svf_own = 1;
 			svf_publish = cb.checked;
-			return nd+1;
-		}
-
-		if (sdl_key==SDLK_RETURN)
-		{
-			free(th);
-			if (!ed.str[0])
-				return 0;
-			nd = strcmp(svf_name, ed.str) || !svf_own;
-			strncpy(svf_name, ed.str, 63);
-			svf_name[63] = 0;
-			strncpy(svf_description, ed2.str, 254);
-			svf_description[254] = 0;
-			if (nd)
-			{
-				strcpy(svf_id, "");
-				strcpy(svf_tags, "");
-			}
-			svf_open = 1;
-			svf_own = 1;
-			svf_publish = cb.checked;
+			free(old_vid);
 			return nd+1;
 		}
 		if (sdl_key==SDLK_ESCAPE)
@@ -1685,7 +1659,8 @@ int save_name_ui(pixel *vid_buf)
 			ed.focus = 0;
 		}
 	}
-	free(th);
+	if (th) free(th);
+    free(old_vid);
 	return 0;
 }
 
@@ -1728,7 +1703,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 		{
 			for (n = 122; n<122+UI_WALLCOUNT; n++)
 			{
-				if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM&&n!=SPC_WIND)
+				if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
 				{
 					if (x-26<=60)
 					{
@@ -1756,7 +1731,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 		{
 			for (n = 122; n<122+UI_WALLCOUNT; n++)
 			{
-				if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM||n==SPC_WIND)
+				if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
 				{
 					if (x-26<=60)
 					{
@@ -1906,7 +1881,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 	{
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
-			if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM&&n!=SPC_WIND)
+			if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
 			{
 				/*if (x-18<=2)
                  {
@@ -1943,7 +1918,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 	{
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
-			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM||n==SPC_WIND)
+			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
 			{
 
 				/*if (x-18<=0)
@@ -3183,6 +3158,7 @@ finish:
 
 	strcpy(search_expr, ed.str);
 
+    free(v_buf);
 	return 0;
 }
 
@@ -3256,8 +3232,8 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	float ryf;
 
 	char *uri, *uri_2, *o_uri, *uri_3;
-	void *data, *info_data, *thumb_data_full;
-	save_info *info = malloc(sizeof(save_info));
+	void *data = NULL, *info_data, *thumb_data_full;
+    save_info *info = calloc(sizeof(save_info), 1);
 	void *http = NULL, *http_2 = NULL, *http_3 = NULL;
 	int lasttime = TIMEOUT;
 	int status, status_2, info_ready = 0, data_ready = 0, thumb_data_ready = 0;
@@ -3306,25 +3282,23 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		if (!b)
 			break;
 	}
-
-	//Try to load the thumbnail from the cache
-	if(!thumb_cache_find(save_id, &thumb_data, &thumb_data_size)){
-		thumb_data = NULL;
-	} else {
-		//We found a thumbnail in the cache, we'll draw this one while we wait for the full image to load.
-		int finw, finh;
-		pixel *thumb_imgdata = ptif_unpack(thumb_data, thumb_data_size, &finw, &finh);
-		if(thumb_imgdata!=NULL){
-			save_pic_thumb = resample_img(thumb_imgdata, finw, finh, XRES/2, YRES/2);
-			//draw_image(vid_buf, save_pic_thumb, 51, 51, XRES/2, YRES/2, 255);
-		}
-		free(thumb_imgdata);
-		//rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
-	}
-
+//Try to load the thumbnail from the cache
+  if(!thumb_cache_find(save_id, &thumb_data, &thumb_data_size)){
+    thumb_data = NULL;
+  } else {
+    //We found a thumbnail in the cache, we'll draw this one while we wait for the full image to load.
+    int finw, finh;
+    pixel *thumb_imgdata = ptif_unpack(thumb_data, thumb_data_size, &finw, &finh);
+    if(thumb_imgdata!=NULL){
+      save_pic_thumb = resample_img(thumb_imgdata, finw, finh, XRES/2, YRES/2);
+      //draw_image(vid_buf, save_pic_thumb, 51, 51, XRES/2, YRES/2, 255);
+    }
+    free(thumb_imgdata);
+    //rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
+  }
 	//Begin Async loading of data
 	if (save_date) {
-		// We're loading an historical save
+		// We're loading a historical save
 		uri = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
 		strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
 		strcaturl(uri, save_id);
@@ -3336,12 +3310,11 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		strcaturl(uri_2, save_id);
 		strappend(uri_2, "&Date=");
 		strcaturl(uri_2, save_date);
-
 		uri_3 = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
-		strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
-		strcaturl(uri_3, save_id);
-		strappend(uri_3, "&Date=");
-		strcaturl(uri_3, save_date);
+        strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
+        strcaturl(uri_3, save_id);
+        strappend(uri_3, "&Date=");
+        strcaturl(uri_3, save_date);
 	} else {
 		//We're loading a normal save
 		uri = malloc(strlen(save_id)*3+strlen(SERVER)+64);
@@ -3351,10 +3324,9 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		uri_2 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
 		strcpy(uri_2, "http://" SERVER "/Info.api?ID=");
 		strcaturl(uri_2, save_id);
-
 		uri_3 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
-		strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
-		strcaturl(uri_3, save_id);
+        strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
+        strcaturl(uri_3, save_id);
 	}
 	http = http_async_req_start(http, uri, NULL, 0, 1);
 	http_2 = http_async_req_start(http_2, uri_2, NULL, 0, 1);
@@ -3424,9 +3396,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			free(http_2);
 			http_2 = NULL;
 		}
+
 		if (active_3 && http_async_req_status(http_3))
-		{
-			int imgh, imgw, nimgh, nimgw;
+    {
+      int imgh, imgw, nimgh, nimgw;
 			http_last_use_3 = time(NULL);
 			thumb_data_full = http_async_req_stop(http_3, &status, &full_thumb_data_size);
 			if (status == 200)
@@ -3665,9 +3638,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 				// Do Open!
 				status = parse_save(data, data_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 				if (!status) {
-					//if(svf_last)
-					//free(svf_last);
-					svf_last = data;
+					if(svf_last)
+                        free(svf_last);
+                    svf_last = data;
+                    data = NULL; //so we don't free it when returning
 					svf_lsize = data_size;
 
 					svf_open = 1;
@@ -3737,6 +3711,12 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		http_async_req_close(http);
 	if (http_2)
 		http_async_req_close(http_2);
+    if (http_3)
+        http_async_req_close(http_3);
+    info_parse("", info);
+    free(info);
+    free(old_vid);
+    if (data) free(data);
 	return retval;
 }
 
@@ -3744,6 +3724,18 @@ int info_parse(char *info_data, save_info *info)
 {
 	int i,j;
 	char *p,*q,*r,*s,*vu,*vd,*pu,*sd;
+
+	if (info->title) free(info->title);
+    if (info->name) free(info->name);
+    if (info->author) free(info->author);
+    if (info->date) free(info->date);
+    if (info->description) free(info->description);
+    if (info->tags) free(info->tags);
+    for (i=0;i<6;i++)
+    {
+        if (info->comments[i]) free(info->comments[i]);
+        if (info->commentauthors[i]) free(info->commentauthors[i]);
+    }
 
 	memset(info, 0, sizeof(save_info));
 

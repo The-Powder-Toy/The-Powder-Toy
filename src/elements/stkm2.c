@@ -190,7 +190,7 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 					continue;
 				if (ptypes[r&TYPE].falldown!=0 || (r&TYPE) == PT_NEUT || (r&TYPE) == PT_PHOT)
 				{
-					player2[2] = parts[r>>PS].type;  //Current element
+					player2[2] = (r&TYPE);  //Current element
 				}
 				if ((r&TYPE) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
 				{
@@ -300,7 +300,7 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 		//For left leg
 		if (r && (r&TYPE)!=PT_STKM2)
 		{
-			if (ptypes[r&TYPE].state == ST_LIQUID || (r&TYPE) == PT_LNTG) //Liquid checks
+			if (ptypes[r&TYPE].state == ST_LIQUID || r&TYPE == PT_LNTG) //Liquid checks
 			{
 				if (parts[i].y<(player2[8]-10))
 					parts[i].vy = 1*dt;
@@ -325,7 +325,7 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 		//For right leg
 		if (r && (r&TYPE)!=PT_STKM2)
 		{
-			if (ptypes[r&TYPE].state == ST_LIQUID || r&TYPE == PT_LNTG)
+			if (ptypes[r&TYPE].state == ST_LIQUID || (r&TYPE) == PT_LNTG)
 			{
 				if (parts[i].y<(player2[16]-10))
 					parts[i].vy = 1*dt;

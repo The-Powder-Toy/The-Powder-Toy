@@ -1,10 +1,6 @@
 #include <element.h>
 
-#if defined(WIN32) && !defined(__GNUC__)
-_inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)
-#else
-inline int create_n_parts(int n, int x, int y, float vx, float vy, int t)//testing a new deut create part
-#endif
+int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)//testing a new deut create part
 {
 	int i, c;
 	n = (n/50);
@@ -65,7 +61,7 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 					{
 						create_part(r>>PS, x+rx, y+ry, rand()%3 ? PT_LAVA : PT_URAN);
 						parts[r>>PS].temp = MAX_TEMP;
-						if (r&TYPE==PT_LAVA) {
+						if ((r&TYPE)==PT_LAVA) {
 							parts[r>>PS].tmp = 100;
 							parts[r>>PS].ctype = PT_PLUT;
 						}
@@ -82,7 +78,7 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 #ifdef SDEUT
                 else if ((r&TYPE)==PT_DEUT && (pressureFactor+1+(parts[i].life/100))>(rand()%1000))
                 {
-					create_n_parts(parts[r>>PS].life, x+rx, y+ry, parts[i].vx, parts[i].vy, PT_NEUT);
+					create_n_parts(parts[r>>PS].life, x+rx, y+ry, parts[i].vx, parts[i].vy, restrict_flt(parts[r>>PS].temp + parts[r>>PS].life*500, MIN_TEMP, MAX_TEMP), PT_NEUT);
                     kill_part(r>>PS);
                 }
 #else

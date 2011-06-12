@@ -40,7 +40,7 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 					if (!portalp[parts[i].tmp][count-1][nnx].type)
 					{
 						portalp[parts[i].tmp][count-1][nnx] = parts[r>>PS];
-						if (r&TYPE==PT_SPRK)
+						if ((r&TYPE)==PT_SPRK)
 							part_change_type(r>>PS,x+rx,y+ry,parts[r>>PS].ctype);
 						else
 							kill_part(r>>PS);

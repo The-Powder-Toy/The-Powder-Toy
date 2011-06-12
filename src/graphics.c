@@ -97,7 +97,7 @@ pixel *ptif_unpack(void *datain, int size, int *w, int *h){
 	width = data[4]|(data[5]<<8);
 	height = data[6]|(data[7]<<8);
 
-	i = (width*height)*3;
+    i = (width*height)*3;
 	undata = calloc(1, (width*height)*3);
 	red_chan = calloc(1, width*height);
 	green_chan = calloc(1, width*height);
@@ -139,7 +139,6 @@ pixel *ptif_unpack(void *datain, int size, int *w, int *h){
 	free(undata);
 	return result;
 }
-
 pixel *resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
 {
 	int y, x;
@@ -172,8 +171,8 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 			{
 				fx = ((float)x)*((float)sw)/((float)rw);
 				fy = ((float)y)*((float)sh)/((float)rh);
-				fxc = modf(fx, &intp);
-				fyc = modf(fy, &intp);
+				fxc = modff(fx, &intp);
+				fyc = modff(fy, &intp);
 				fxceil = (int)ceil(fx);
 				fyceil = (int)ceil(fy);
 				if (fxceil>=sw) fxceil = sw-1;
@@ -212,8 +211,8 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 				{
 					fx = ((float)x)*((float)sw)/((float)rw);
 					fy = ((float)y)*((float)sh)/((float)rh);
-					fxc = modf(fx, &intp);
-					fyc = modf(fy, &intp);
+					fxc = modff(fx, &intp);
+					fyc = modff(fy, &intp);
 					fxceil = (int)ceil(fx);
 					fyceil = (int)ceil(fy);
 					if (fxceil>=sw) fxceil = sw-1;
@@ -236,7 +235,6 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 	}
 	return q;
 }
-
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
 {
 	int i,j,x,y,w,h,r,g,b,c;
@@ -781,7 +779,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
             case SPC_HEAT:
             case SPC_COOL:
             case SPC_VACUUM:
-            case SPC_WIND:
+//            case SPC_WIND:
 			for (j=1; j<15; j++)
 				for (i=1; i<27; i++)
 					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
@@ -802,8 +800,8 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
                 drawtext(vid_buf, x+14-textwidth("COOL")/2, y+4, "COOL", c, c, c, 255);
             else if (b==SPC_VACUUM)
                 drawtext(vid_buf, x+14-textwidth("VAC")/2, y+4, "VAC", c, c, c, 255);
-            else if (b==SPC_WIND)
-                drawtext(vid_buf, x+14-textwidth("WIND")/2, y+4, "WIND", c, c, c, 255);
+            //else if (b==SPC_WIND)
+             //   drawtext(vid_buf, x+14-textwidth("WIND")/2, y+4, "WIND", c, c, c, 255);
 			break;
 		default:
 			for (j=1; j<15; j++)
@@ -1961,12 +1959,12 @@ void draw_parts(pixel *vid)
 					}
 				}
 				else if (t==PT_PLAN)
-				{
+                {
                     cr = 0;
                     cb = 0;
                     cg = 0;
                     blendpixel(vid, nx, ny, cr, cg, cb, 255);
-				}
+                }
 				else if (t==PT_VIRS)
 				{
 				    if (cmode==CM_AWESOME || cmode==CM_PREAWE){
@@ -4690,7 +4688,7 @@ corrupt:
 void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 {
 	int i,j,c;
-	if (t<PT_NUM||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND)
+	if (t<PT_NUM||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM)
 	{
 		if (rx<=0)
 			xor_pixel(x, y, vid);

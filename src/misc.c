@@ -3,6 +3,7 @@
 #include <string.h>
 #include <regex.h>
 #include <sys/types.h>
+#include <math.h>
 #include "misc.h"
 #include "defines.h"
 #include "interface.h"

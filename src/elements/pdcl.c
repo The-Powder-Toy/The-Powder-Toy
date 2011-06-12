@@ -17,7 +17,7 @@ int update_PDCL(UPDATE_FUNC_ARGS) {
                     (r&TYPE)!=PT_BCLN && (r&TYPE)!=PT_STKM &&
                     (r&TYPE)!=PT_STKM2 && (r&TYPE)!=PT_PDCL &&
                     (r&TYPE)!=PT_GSCL && (r&TYPE)!=PT_LQCL && (r&TYPE)<PT_NUM)
-                        parts[i].ctype = parts[r>>PS].type;
+                        parts[i].ctype = (r&TYPE);
                 }
 	}
 	else {

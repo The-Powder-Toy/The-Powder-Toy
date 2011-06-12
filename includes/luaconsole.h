@@ -1,8 +1,8 @@
 #ifndef LUACONSOLEH
 #define LUACONSOLEH
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
+#include <lua5.1/lua.h>
+#include <lua5.1/lauxlib.h>
+#include <lua5.1/lualib.h>
 #include <defines.h>
 
 void luacon_open();
@@ -21,7 +21,9 @@ int luatpt_setpause(lua_State* l);
 int luatpt_togglepause(lua_State* l);
 int luatpt_setconsole(lua_State* l);
 int luatpt_log(lua_State* l);
-int luatpt_reset_pressure(lua_State* l);
+int luatpt_set_pressure(lua_State* l);
+int luatpt_set_gravity(lua_State* l);
+int luatpt_reset_gravity_field(lua_State* l);
 int luatpt_reset_velocity(lua_State* l);
 int luatpt_reset_spark(lua_State* l);
 int luatpt_set_property(lua_State* l);
@@ -34,4 +36,7 @@ int luatpt_get_name(lua_State* l);
 int luatpt_set_shortcuts(lua_State* l);
 int luatpt_delete(lua_State* l);
 int luatpt_register_step(lua_State* l);
+int luatpt_unregister_step(lua_State* l);
+int luatpt_input(lua_State* l);
+int luatpt_message_box(lua_State* l);
 #endif

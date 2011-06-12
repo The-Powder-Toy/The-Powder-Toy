@@ -989,7 +989,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
     else
       ngrav_enable = 0;
   }
-  gravity_mask();
+  //gravity_mask();
 	if (p >= size)
 		goto version1;
 	j = d[p++];
@@ -1071,7 +1071,7 @@ void clear_sim(void)
             hv[y][x] = 273.15f+22.0f; //Set to room temperature
         }
     }
-    gravity_mask();
+    //gravity_mask();
 }
 
 // stamps library
@@ -1735,7 +1735,7 @@ luacon_open();
 #ifdef OpenGL
 		ClearScreen();
 #else
-        if(gravwl_timeout)
+if(gravwl_timeout)
         {
             if(gravwl_timeout==1)
                 gravity_mask();
@@ -1787,6 +1787,7 @@ luacon_open();
                 }
             }
         pthread_mutex_unlock(&gravmutex);
+
         //Apply the gravity mask
         membwand(gravy, gravmask, sizeof(gravy), sizeof(gravmask));
         membwand(gravx, gravmask, sizeof(gravx), sizeof(gravmask));
@@ -1998,7 +1999,7 @@ luacon_open();
 						free(load_data);
 				}
 			}
-			if (sdl_key=='s' && (sdl_mod & (KMOD_CTRL)) || (sdl_key=='s' && !isplayer2))
+			if (sdl_key=='s' && ((sdl_mod & (KMOD_CTRL)) || !isplayer2))
 			{
 				if (it > 50)
 					it = 50;
@@ -2132,7 +2133,7 @@ luacon_open();
 						bsy = 0;
 				}
 			}
-			if (sdl_key=='d'&&(sdl_mod & (KMOD_CTRL)) || (sdl_key=='d' && !isplayer2))
+			if (sdl_key=='d' && ((sdl_mod & (KMOD_CTRL)) || !isplayer2))
 				DEBUG_MODE = !DEBUG_MODE;
 			if (sdl_key=='i')
 			{
@@ -2509,15 +2510,12 @@ luacon_open();
 				    else if (tempname=="HETR" && parts[cr>>PS].tmp==2){
 				        tempname = "COLR";
 				    }
-				    else if (tempname=="PLSM" && parts[cr>>PS].ctype==PT_NBLE){
-				        tempname = "NBLE";
-				    }
-				    else if (tempname=="PLSM" && parts[cr>>PS].ctype==PT_ARGN){
-				        tempname = "ARGN";
-				    }
-				    else if (tempname=="SPRK"){
-				        tempname = ptypes[parts[cr>>PS].ctype].name;
-				    }
+				    else if (tempname=="PLSM" && parts[cr>>PS].ctype){
+                        tempname = ptypes[parts[cr>>PS].ctype].name;
+                    }
+                    else if (tempname=="SPRK"){
+                        tempname = ptypes[parts[cr>>PS].ctype].name;
+                    }
 #ifdef BETA
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
 #else
@@ -2528,7 +2526,12 @@ luacon_open();
 			}
 			else
 			{
-				sprintf(heattext, "Empty, Pressure: %3.2f, Temp: %4.2f C", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], hv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
+			    if (aheat_enable){
+                    int temper = hv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL];
+                    sprintf(heattext, "Empty, Pressure: %3.2f, Air Temp: %4.2f C", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], temper - 273.15f);
+                } else {
+                    sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
+                }
 				if (DEBUG_MODE)
 				{
 					sprintf(coordtext, "X:%d Y:%d. GX: %.2f GY: %.2f", x/sdl_scale, y/sdl_scale, gravx[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], gravy[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
@@ -2610,7 +2613,7 @@ luacon_open();
                 free(tmp);
         }
          */
-		if (y>=sdl_scale*(YRES+(MENUSIZE-20))) //mouse checks for buttons at the bottom, to draw mouseover texts
+		if (y>=sdl_scale*(YRES+(MENUSIZE-20))) //mouse checks for buttons at the bottom, to draw mouseover texts //BEEPO
 		{
 			if (x>=189*sdl_scale && x<=202*sdl_scale && svf_login && svf_open && svf_myvote==0)
 			{
@@ -2630,7 +2633,13 @@ luacon_open();
 				if (da < 51)
 					da ++;
 			}
-			else if (x>=219*sdl_scale && x<=((XRES+BARSIZE-(510-349))*sdl_scale) && svf_login && svf_open)
+			else if (x>=219*sdl_scale && x<=239)
+			{
+				db = 276;
+				if (da < 51)
+					da ++;
+			}
+			else if (x>=241*sdl_scale && x<=((XRES+BARSIZE-(510-349))*sdl_scale) && svf_login && svf_open)
 			{
 				db = svf_own ? 257 : 256;
 				if (da < 51)
@@ -2824,8 +2833,8 @@ luacon_open();
 						}
 					}
 					if (x>=217 && x<=239)
-						local_save(0, 0, XRES, YRES);
-					if (x>=241 && x<=(XRES+BARSIZE-(510-349)) && svf_login && svf_open)
+                        local_save(0, 0, XRES, YRES);
+                    if (x>=241 && x<=(XRES+BARSIZE-(510-349)) && svf_login && svf_open)
 						tag_list_ui(vid_buf);
 					if (x>=(XRES+BARSIZE-(510-351)) && x<(XRES+BARSIZE-(510-366)) && !bq)
 					{
@@ -2972,7 +2981,7 @@ luacon_open();
 										bmap[j][i] = WL_FAN;
 									}
 						}
-						if (c == SPC_WIND)
+						if (c == PT_WIND)
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
@@ -2992,7 +3001,7 @@ luacon_open();
 					}
 					else//while mouse is held down, it draws lines between previous and current positions
 					{
-						if (c == SPC_WIND)
+						if (c == PT_WIND)
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
@@ -3033,7 +3042,7 @@ luacon_open();
 					{
 						if (sdl_mod & (KMOD_CAPS))
 							c = 0;
-						if (c!=WL_STREAM+200&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=SPC_WIND)
+						if (c!=WL_STREAM+200&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=PT_WIND)
 							flood_parts(x, y, c, -1, -1);
 						if (c==SPC_HEAT || c==SPC_COOL)
 							create_parts(x, y, bsx, bsy, c);
@@ -3201,6 +3210,9 @@ luacon_open();
 			case 275:
 				drawtext(vid_buf, 16, YRES-24, "You cannot vote on your own save.", 255, 255, 255, da*5);
 				break;
+            case 276:
+				drawtext(vid_buf, 16, YRES-24, "Save to your computer.", 255, 255, 255, da*5);
+				break;
 			default:
 				drawtext(vid_buf, 16, YRES-24, (char *)ptypes[db].descs, 255, 255, 255, da*5);
         }
@@ -3268,7 +3280,7 @@ luacon_open();
 			sprintf(uitext, "Me's Mod version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 #else
 			if (DEBUG_MODE)
-				sprintf(uitext, "Me's Mod FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+				sprintf(uitext, "Me's Mod FPS:%d Parts:%d Gen:%d Grav:%d Air:%d", FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 			else
 				sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB);
 #endif

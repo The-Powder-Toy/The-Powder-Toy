@@ -1,5 +1,6 @@
 #include <powder.h>
 #include <console.h>
+#include <math.h>
 
 char pyready=1;
 char pygood=1;
@@ -13,7 +14,7 @@ int console_parse_type(char *txt, int *element, char *err)
 	int i = -1;
 	if (strcasecmp(txt,"WIND")==0)
 	{
-		strcpy(err, "Particle type not recognised");
+		if (err) strcpy(err, "Particle type not recognised");
 		return 0;
 	}
 	// alternative names for some elements
@@ -23,18 +24,18 @@ int console_parse_type(char *txt, int *element, char *err)
 	if (i>=0)
 	{
 		*element = i;
-		strcpy(err,"");
+		if (err) strcpy(err,"");
 		return 1;
 	}
 	for (i=1; i<PT_NUM; i++) {
 		if (strcasecmp(txt,ptypes[i].name)==0)
 		{
 			*element = i;
-			strcpy(err,"");
+			if (err) strcpy(err,"");
 			return 1;
 		}
 	}
-	strcpy(err, "Particle type not recognised");
+	if (err) strcpy(err, "Particle type not recognised");
 	return 0;
 }
 //takes a string of coords "x,y" and puts the values into x and y.
@@ -43,7 +44,7 @@ int console_parse_coords(char *txt, int *x, int *y, char *err)
 	int nx = -1, ny = -1;
 	if (sscanf(txt,"%d,%d",&nx,&ny)!=2 || nx<0 || nx>=XRES || ny<0 || ny>=YRES)
 	{
-		strcpy(err,"Invalid coordinates");
+		if (err) strcpy(err,"Invalid coordinates");
 		return 0;
 	}
 	*x = nx;
@@ -54,14 +55,14 @@ int console_parse_coords(char *txt, int *x, int *y, char *err)
 int console_parse_partref(char *txt, int *which, char *err)
 {
 	int i = -1, nx, ny;
-	strcpy(err,"");
+	if (err) strcpy(err,"");
 	if (strchr(txt,',') && console_parse_coords(txt, &nx, &ny, err))
 	{
 		i = pmap[ny][nx];
-		if (!i || (i>>PS)>=NPART)
+		if (!i || (i>>8)>=NPART)
 			i = -1;
 		else
-			i = i>>PS;
+			i = i>>8;
 	}
 	else if (txt)
 	{
@@ -75,10 +76,10 @@ int console_parse_partref(char *txt, int *which, char *err)
 	if (i>=0 && i<NPART && parts[i].type)
 	{
 		*which = i;
-		strcpy(err,"");
+		if (err) strcpy(err,"");
 		return 1;
 	}
-	if (strcmp(err,"")==0) strcpy(err,"Particle does not exist");
+	if (err && strcmp(err,"")==0) strcpy(err,"Particle does not exist");
 	return 0;
 }
 
@@ -282,8 +283,8 @@ static PyObject* emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>PS].type != PT_NONE)
-			parts[pmap[y][x]>>PS].life = life;
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].life = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -324,8 +325,8 @@ static PyObject* emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>PS].type != PT_NONE)
-			parts[pmap[y][x]>>PS].type = life;
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].type = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -365,8 +366,8 @@ static PyObject* emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>PS].type != PT_NONE)
-			parts[pmap[y][x]>>PS].temp = newval;
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].temp = newval;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -405,8 +406,8 @@ static PyObject* emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>PS].type != PT_NONE)
-			parts[pmap[y][x]>>PS].tmp = life;
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].tmp = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -446,8 +447,8 @@ static PyObject* emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>PS].type != PT_NONE)
-			parts[pmap[y][x]>>PS].x = life;
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].x = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -486,8 +487,8 @@ static PyObject* emb_set_y(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>PS].type != PT_NONE)
-			parts[pmap[y][x]>>PS].y = life;
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].y = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -529,8 +530,8 @@ static PyObject* emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>PS].type != PT_NONE)
-			parts[pmap[y][x]>>PS].ctype = life;
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].ctype = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -570,8 +571,8 @@ static PyObject* emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>PS].type != PT_NONE)
-			parts[pmap[y][x]>>PS].vx = life;
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].vx = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -611,8 +612,8 @@ static PyObject* emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>PS].type != PT_NONE)
-			parts[pmap[y][x]>>PS].vy = life;
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].vy = life;
 	}
 	return Py_BuildValue("i",1);
 }

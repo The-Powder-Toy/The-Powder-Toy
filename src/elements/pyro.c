@@ -9,11 +9,11 @@ int update_PYRO(UPDATE_FUNC_ARGS) {
 		parts[i].life = 0;
 	}
 	if (t==PT_PLSM&&parts[i].ctype == PT_ARGN&&parts[i].life <=1)
-	{
-		t = PT_ARGN;
-		part_change_type(i,x,y,t);
-		parts[i].life = 0;
-	}
+    {
+        t = PT_ARGN;
+        part_change_type(i,x,y,t);
+        parts[i].life = 0;
+    }
 	if(t==PT_FIRE && parts[i].life <=1)
 	{
 		if (parts[i].tmp==3){
@@ -97,7 +97,7 @@ int update_legacy_PYRO(UPDATE_FUNC_ARGS) {
 					continue;
 				if (bmap[(y+ry)/CELL][(x+rx)/CELL] && bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_STREAM)
 					continue;
-				rt = parts[r>>PS].type;
+				rt = (r&TYPE);
 				lpv = (int)pv[(y+ry)/CELL][(x+rx)/CELL];
 				if (lpv < 1) lpv = 1;
 				if (t!=PT_SPRK && ptypes[rt].meltable  && ((rt!=PT_RBDM && rt!=PT_LRBD) || t!=PT_SPRK) && ((t!=PT_FIRE&&t!=PT_PLSM&&t!=PT_BFLM) || (rt!=PT_METL && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SALT && rt!=PT_INWR)) &&

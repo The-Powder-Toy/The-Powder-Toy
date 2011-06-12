@@ -56,7 +56,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						continue;
 					else if (parts[i].tmp == 0 && (ptypes[r&TYPE].falldown!= 0 || ptypes[r&TYPE].state == ST_GAS))
 					{
-						parts[i].tmp = r&TYPE;
+						parts[i].tmp = (r&TYPE);
 						parts[i].temp = parts[r>>PS].temp;
 						parts[i].flags = parts[r>>PS].life;
 						kill_part(r>>PS);

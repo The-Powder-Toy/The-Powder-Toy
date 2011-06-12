@@ -16,7 +16,7 @@ int update_WIFI(UPDATE_FUNC_ARGS) {
 				{
 					if (((r&TYPE)==PT_NSCN||(r&TYPE)==PT_PSCN||(r&TYPE)==PT_INWR)&&parts[r>>PS].life==0 && wireless[parts[i].tmp][0])
 					{
-						parts[r>>PS].ctype = parts[r>>PS].type;
+						parts[r>>PS].ctype = (r&TYPE);
 						part_change_type(r>>PS,x+rx,y+ry,PT_SPRK);
 						parts[r>>PS].life = 4;
 					}

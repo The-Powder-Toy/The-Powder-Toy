@@ -6,12 +6,12 @@ int update_HETR(UPDATE_FUNC_ARGS) {
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
-                    if (parts[i].tmp && parts[r>>PS].type==PT_HETR){
-                        parts[r>>PS].tmp = parts[i].tmp;
-                    }
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
+                    if (parts[i].tmp && parts[r>>PS].type==PT_HETR){
+                        parts[r>>PS].tmp = parts[i].tmp;
+                    }
                     if (parts[i].tmp==1){
                         parts[r>>PS].temp += 2;
                         parts[i].temp = 373.15;

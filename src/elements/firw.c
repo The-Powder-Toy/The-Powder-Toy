@@ -10,7 +10,7 @@ int update_FIRW(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					rt = parts[r>>PS].type;
+					rt = (r&TYPE);
 					if (rt==PT_FIRE||rt==PT_PLSM||rt==PT_THDR)
 					{
 						parts[i].tmp = 1;

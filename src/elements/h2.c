@@ -8,7 +8,7 @@ int update_H2(UPDATE_FUNC_ARGS)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				rt = parts[r>>PS].type;
+				rt = (r&TYPE);
 				if ((r>>PS)>=NPART || !r)
 					continue;
 				if (pv[y/CELL][x/CELL] > 8.0f && rt == PT_DESL) // This will not work. DESL turns to fire above 5.0 pressure
@@ -21,7 +21,7 @@ int update_H2(UPDATE_FUNC_ARGS)
 					parts[r>>PS].temp+=(rand()/(RAND_MAX/100));
 					parts[r>>PS].tmp |= 1;
                 }
-                if ((r&TYPE)==PT_FIRE || (r&TYPE)==PT_PLSM || (r&TYPE)==PT_LAVA)
+                if ((r&TYPE)==PT_FIRE || (r&TYPE)==PT_PLSM || (r&TYPE)==PT_SPRK || (r&TYPE)==PT_LAVA)
                 {
 					create_part(i,x,y,PT_FIRE);
 					parts[i].temp+=(rand()/(RAND_MAX/100));

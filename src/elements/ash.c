@@ -9,7 +9,7 @@ int update_ASH(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-                    rt = parts[r>>PS].type;
+                    rt = r&TYPE;
                     if(rt==PT_WOOD||rt==PT_COAL||rt==PT_BCOL||rt==PT_PLNT||rt==PT_VINE||rt==PT_GRAS||rt==PT_OIL||rt==PT_GAS||rt==PT_PLEX||rt==PT_NITR||rt==PT_RBDM||rt==PT_LRBD||rt==PT_THRM||rt==PT_GUNP||rt==PT_BOOM||rt==PT_TNT||rt==PT_FUSE||rt==PT_FUSE2||rt==PT_FSEP||rt==PT_DUST){
                         parts[i].temp+=(rand()/(RAND_MAX/100));
                         parts[i].life = rand()%50+120;

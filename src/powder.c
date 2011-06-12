@@ -385,7 +385,6 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 	return 1;
 }
-
 static unsigned direction_to_map(float dx, float dy, int t)
 {
 	// TODO:
@@ -783,10 +782,6 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
         parts[i].tmp2 = 0;
         parts[i].tmpx = 0;
         parts[i].tmpy = 0;
-        //parts[i].planetname = "PLAN";
-        //parts[i].red = 1000;
-        //parts[i].green = 1000;
-        //parts[i].blue = 1000;
 	}
     if (t==PT_SOAP)
         {
@@ -798,13 +793,13 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	{
 		parts[i].life = 75;
 	}
-    if (t==PT_CPPA)
-	{
-		parts[i].tmp = rand()%PT_NUM+1;
-		if (parts[i].tmp == 0 || parts[i].tmp == 188 || parts[i].tmp == 55 || parts[i].tmp == 128 || parts[i].tmp == 234){
+	if (t==PT_CPPA)
+    {
+        parts[i].tmp = rand()%PT_NUM+1;
+        if (parts[i].tmp == 0 || parts[i].tmp == 188 || parts[i].tmp == 55 || parts[i].tmp == 128 || parts[i].tmp == 234){
             parts[i].tmp = 1;
-		}
-	}
+        }
+    }
 	if (t==PT_PLAN)
 	{
         parts[i].tmp = 1;
@@ -812,6 +807,7 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	}
 	if (t==PT_HETR)
 	{
+        parts[i].tmp = 1;
         /*char *temp;
         temp = input_ui(vid_buf, "Type", "heater or cooler.", "heater", "heater");
         if (temp=="heater"){
@@ -822,7 +818,6 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
             kill_part(i);
         }
         */
-        parts[i].tmp = 1;
 	}
     if (t==PT_CFCN)
 	{
@@ -923,7 +918,7 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	if (t==PT_NBLE)
 		parts[i].life = 0;
     if (t==PT_ARGN)
-		parts[i].life = 0;
+        parts[i].life = 0;
 	if (t==PT_ICEI)
 		parts[i].ctype = PT_WATR;
 	if (t==PT_NEUT)
@@ -1098,7 +1093,7 @@ static void create_gain_photon(int pp)//photons from PHOT going through GLOW
 static void create_cherenkov_photon(int pp)//photons from NEUT going through GLAS
 {
 	int i, lr, nx, ny;
-	float r/*, eff_ior*/;
+	float r, eff_ior;
 
 	if (pfree == -1)
 		return;
@@ -1555,7 +1550,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				}
 				else
 					for ( golnum=1; golnum<=NGOL; golnum++)
-						if ((r&TYPE)==goltype[golnum-1])
+						if (parts[r>>PS].type==goltype[golnum-1])
 						{
 							if(parts[r>>PS].tmp == grule[golnum][9]-1) {
 								gol[nx][ny] = golnum;
@@ -2404,7 +2399,6 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 
 	update_particles_i(vid, 0, 1);
 
-
 // this should probably be elsewhere
 	for (y=0; y<YRES/CELL; y++)
 		for (x=0; x<XRES/CELL; x++)
@@ -2588,13 +2582,11 @@ int create_parts(int x, int y, int rx, int ry, int c)
 	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0;//n;
 
 	int wall = c - 200;
-	if (c==SPC_WIND)
-        return 0;
 	for (r=UI_ACTUALSTART; r<=UI_ACTUALSTART+UI_WALLCOUNT; r++)
 	{
 		if (wall==r)
 		{
-			if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c==SPC_WIND)
+			if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM)
 				break;
 			if (wall == WL_ERASE)
 				b = 0;
@@ -2607,6 +2599,10 @@ int create_parts(int x, int y, int rx, int ry, int c)
 	{
 		b = WL_FANHELPER;
 		dw = 1;
+	}
+	if (c == PT_WIND)
+	{
+		return 1;
 	}
 	if (wall == WL_GRAV)
     {
@@ -2929,11 +2925,11 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 	return ndata;
 }
 
-/*#if defined(WIN32) && !defined(__GNUC__)
+#if defined(WIN32) && !defined(__GNUC__)
 _inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[])
-#else*/
+#else
 inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[])
-//#endif
+#endif
 {
 	resblock1[0] = (block1&0x000000FF);
 	resblock1[1] = (block1&0x0000FF00)>>8;
@@ -2946,11 +2942,11 @@ inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblo
 	resblock2[3] = (block2&0xFF000000)>>24;
 }
 
-/*#if defined(WIN32) && !defined(__GNUC__)
+#if defined(WIN32) && !defined(__GNUC__)
 _inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[])
-#else*/
+#else
 inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[])
-//#endif
+#endif
 {
 	int block1tmp = 0;
 	int block2tmp = 0;
