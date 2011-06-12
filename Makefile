@@ -7,10 +7,10 @@ PY_INCPATH := $(shell $(PY_BIN) -c "import os.path,sys;print os.path.join(sys.ex
 PY_LDFLAGS := $(shell $(PY_BIN) -c "import distutils.sysconfig;print distutils.sysconfig.get_config_var('LINKFORSHARED')")
 PYCOMMAND := $(PY_BIN) getheader.py
 
-CFLAGS := -w -std=c99 -D_POSIX_C_SOURCE=200112L -DLUACONSOLE -Iincludes/ $(pkg-config --cflags 'lua >= 5.1')
+CFLAGS := -w -std=c99 -D_POSIX_C_SOURCE=200112L -DLUACONSOLE -Iincludes/ $$(pkg-config --cflags 'lua >= 5.1')
 CFLAGS_WIN32 := -w -std=c99 -D_POSIX_C_SOURCE=200112L -DLUACONSOLE -Iincludes/
 OFLAGS := -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations
-LFLAGS := -lpthread -lm -lbz2 `pkg-config --libs 'sdl lua >= 5.1'` #-lpython$(PY_VERSION) -L$(PY_LIBPATH) -I$(PY_INCPATH) $(PY_LDFLAGS)
+LFLAGS := -lpthread -lm -lbz2 $$(pkg-config --libs 'sdl lua >= 5.1') #-lpython$(PY_VERSION) -L$(PY_LIBPATH) -I$(PY_INCPATH) $(PY_LDFLAGS)
 LFLAGS_WIN32:= -lpthread -lSDL -lm -lbz2 -llua5.1 #-lpython$(PY_VERSION) -L$(PY_LIBPATH) -I$(PY_INCPATH) $(PY_LDFLAGS)
 LFLAGS_X := -lm -lbz2 -lSDLmain -I/Library/Frameworks/Python.framework/Versions/$(PY_VERSION)/include/python$(PY_VERSION)
 MFLAGS_SSE3 := -march=native -DX86 -DX86_SSE3 -msse3
