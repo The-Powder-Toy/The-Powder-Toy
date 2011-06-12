@@ -235,6 +235,8 @@ int search_ui(pixel *vid_buf);
 
 int open_ui(pixel *vid_buf, char *save_id, char *save_date);
 
+void catalogue_ui(pixel * vid_buf);
+
 int info_parse(char *info_data, save_info *info);
 
 int search_results(char *str, int votes);

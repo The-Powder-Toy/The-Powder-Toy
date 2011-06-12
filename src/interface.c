@@ -16,6 +16,7 @@
 #include <misc.h>
 #include <console.h>
 #include <images.h>
+#include <dirent.h>
 
 SDLMod sdl_mod;
 int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
@@ -5078,6 +5079,268 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 	}
 	free(old_buf);
 	return PIXRGB(h,s,v);
+}
+struct savelist_e {
+	char *filename;
+	char *name;
+	pixel *image;
+	void *next;
+	void *prev;
+};
+typedef struct savelist_e savelist_e;
+savelist_e *get_local_saves(char *folder, char *search, int *results_ret)
+{
+	int index = 0, results = 0;
+	struct dirent *derp;
+	savelist_e *new_savelist = NULL;
+	savelist_e *current_item = NULL;
+	DIR *directory = opendir(folder);
+	if(!directory)
+	{
+		printf("Unable to open directory\n");
+		*results_ret = 0;
+		return;
+	}
+	while(derp = readdir(directory)){
+		char *ext;
+		if(strlen(derp->d_name)>4)
+		{
+			ext = derp->d_name+(strlen(derp->d_name)-4);
+			if((!strncmp(ext, ".cps", 4) || !strncmp(ext, ".stm", 4)) && (search==NULL || strstr(derp->d_name, search)))
+			{
+				if(new_savelist==NULL){
+					new_savelist = malloc(sizeof(savelist_e));
+					new_savelist->filename = malloc(strlen(folder)+strlen(derp->d_name)+1);
+					sprintf(new_savelist->filename, "%s%s", folder, derp->d_name);
+					new_savelist->name = mystrdup(derp->d_name);
+					new_savelist->image = NULL;
+					new_savelist->next = NULL;
+					new_savelist->prev = NULL;
+					current_item = new_savelist;
+				} else {
+					savelist_e *prev_item = current_item;
+					current_item->next = malloc(sizeof(savelist_e));
+					current_item = current_item->next;
+					current_item->filename = malloc(strlen(folder)+strlen(derp->d_name)+1);
+					sprintf(current_item->filename, "%s%s", folder, derp->d_name);
+					current_item->name = mystrdup(derp->d_name);
+					current_item->image = NULL;
+					current_item->next = NULL;
+					current_item->prev = prev_item;
+				}
+				results++;
+			}
+		}
+	}
+	*results_ret = results;
+	closedir(directory);
+	return new_savelist;
+}
+
+void free_saveslist(savelist_e *saves)
+{
+	if(!saves)
+		return;
+	if(saves->next!=NULL)
+		free_saveslist(saves->next);
+	if(saves->filename!=NULL)
+		free(saves->filename);
+	if(saves->name!=NULL)
+		free(saves->name);
+	if(saves->image!=NULL)
+		free(saves->image);
+}
+
+void catalogue_ui(pixel * vid_buf)
+{
+	int xsize = 8+(XRES/CATALOGUE_S+8)*CATALOGUE_X;
+	int ysize = 48+(YRES/CATALOGUE_S+20)*CATALOGUE_Y;
+	int x0=(XRES+BARSIZE-xsize)/2,y0=(YRES+MENUSIZE-ysize)/2,b=1,bq,mx,my;
+	int rescount, imageoncycle = 0, currentstart = 0, currentoffset = 0, thidden = 0;
+	int listy = 0, listxc;
+	int listx = 0, listyc;
+	float scrollvel, offsetf = 0.0f;
+	char savetext[128] = "";
+	char * last = mystrdup("");
+	ui_edit ed;
+	
+	ed.w = xsize-16-4;
+	ed.x = x0+11;
+	ed.y = y0+29;
+	ed.multiline = 0;
+	ed.def = "[search]";
+	ed.focus = 0;
+	ed.hide = 0;
+	ed.cursor = 0;
+	ed.nx = 0;
+	strcpy(ed.str, "");
+
+	savelist_e *saves = get_local_saves(LOCAL_SAVE_DIR PATH_SEP, NULL, &rescount);
+	savelist_e *cssave = saves;
+	savelist_e *csave = saves;
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+	
+	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		sprintf(savetext, "Found %d saves", rescount);
+		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
+		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
+		drawtext(vid_buf, x0+8, y0+8, "Saves", 255, 216, 32, 255);
+		drawtext(vid_buf, x0+xsize-8-textwidth(savetext), y0+8, savetext, 255, 216, 32, 255);
+		drawrect(vid_buf, x0+8, y0+24, xsize-16, 16, 255, 255, 255, 180);
+		if(strcmp(ed.str, last)){
+			free(last);
+			last = mystrdup(ed.str);
+			currentstart = 0;
+			if(saves!=NULL) free_saveslist(saves);
+			saves = get_local_saves(LOCAL_SAVE_DIR PATH_SEP, last, &rescount);
+			cssave = saves;
+			scrollvel = 0.0f;
+			offsetf = 0.0f;
+			thidden = 0;
+		}
+		//Scrolling
+		if (sdl_wheel!=0)
+		{
+			scrollvel -= (float)sdl_wheel;
+			if(scrollvel > 3.0f) scrollvel = 3.0f;
+			if(scrollvel < -3.0f) scrollvel = -3.0f;
+			sdl_wheel = 0;
+		}
+		offsetf += scrollvel;
+		scrollvel*=0.99f;
+		if(offsetf >= (YRES/CATALOGUE_S+20))
+		{
+			if(rescount - thidden > 4)
+			{
+				cssave = cssave->next; //Loops are overrated
+				cssave = cssave->next;
+				cssave = cssave->next;
+				cssave = cssave->next;
+				offsetf -= (YRES/CATALOGUE_S+20);
+				thidden += 4;
+			} else {
+				offsetf = (YRES/CATALOGUE_S+20);
+			}
+		} 
+		if(offsetf < 0.0f)
+		{
+			if(thidden >= 4)
+			{
+				cssave = cssave->prev; //Loops are overrated
+				cssave = cssave->prev;
+				cssave = cssave->prev;
+				cssave = cssave->prev;
+				offsetf += (YRES/CATALOGUE_S+20);
+				thidden -= 4;
+			} else {
+				offsetf = 0.0f;
+			}
+		}
+		currentoffset = (int)offsetf;
+		csave = cssave;
+		//Diplay
+		if(csave!=NULL && rescount)
+		{
+			listx = 0;
+			listy = 0;
+			while(csave!=NULL)
+			{
+				listxc = x0+8+listx*(XRES/CATALOGUE_S+8);
+				listyc = y0+48-currentoffset+listy*(YRES/CATALOGUE_S+20);
+				if(listyc > y0+ysize) //Stop when we get to the bottom of the viewable
+					break;
+				//Generate an image
+				if(csave->image==NULL && !imageoncycle){ //imageoncycle: Don't read/parse more than one image per cycle, makes it more resposive for slower computers
+					int imgwidth, imgheight, size;
+					pixel *tmpimage = NULL;
+					void *data = NULL;
+					data = file_load(csave->filename, &size);
+					if(data!=NULL){
+						tmpimage = prerender_save(data, size, &imgwidth, &imgheight);
+						if(tmpimage!=NULL)
+						{
+							csave->image = resample_img(tmpimage, imgwidth, imgheight, XRES/CATALOGUE_S, YRES/CATALOGUE_S);
+							free(tmpimage);
+						} else {
+							//Blank image, this should default to something else
+							csave->image = malloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S)*PIXELSIZE);
+						}
+						free(data);
+					} else {
+						//Blank image, this should default to something else
+						csave->image = malloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S)*PIXELSIZE);
+					}
+					imageoncycle = 1;
+				}
+				if(csave->image!=NULL)
+					draw_image(vid_buf, csave->image, listxc, listyc, XRES/CATALOGUE_S, YRES/CATALOGUE_S, 255);
+				drawrect(vid_buf, listxc, listyc, XRES/CATALOGUE_S, YRES/CATALOGUE_S, 255, 255, 255, 190);
+				drawtext(vid_buf, listxc+((XRES/CATALOGUE_S)/2-textwidth(csave->name)/2), listyc+YRES/CATALOGUE_S+2, csave->name, 255, 255, 255, 255);
+				csave = csave->next;
+				if(++listx==CATALOGUE_X){
+					listx = 0;
+					listy++;
+				}
+				if(my > listyc && my < listyc+YRES/CATALOGUE_S+2 && mx > listxc && mx < listxc+XRES/CATALOGUE_S && my > y0+48 && my < y0+ysize)
+				{
+					if(b)
+					{
+						int status, size;
+						void *data;
+						data = file_load(csave->filename, &size);
+						if(data){
+							status = parse_save(data, size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+							if(!status)
+							{
+								svf_open = 0;
+								svf_publish = 0;
+								svf_own = 0;
+								svf_myvote = 0;
+								svf_id[0] = 0;
+								svf_name[0] = 0;
+								svf_description[0] = 0;
+								svf_tags[0] = 0;
+								goto openfin;
+							} else {
+								error_ui(vid_buf, 0, "Save data corrupt");
+							}
+						} else {
+							error_ui(vid_buf, 0, "Unable to read save file");
+						}
+					}
+				}
+			}
+			imageoncycle = 0;
+		} else {
+			drawtext(vid_buf, x0+8, y0+8, "No saves found", 255, 255, 255, 180);
+		}
+		ui_edit_draw(vid_buf, &ed);
+		ui_edit_process(mx, my, b, &ed);
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+		if (sdl_key==SDLK_RETURN)
+			break;
+		if (sdl_key==SDLK_ESCAPE)
+			break;
+	}
+openfin:	
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+
+	if(saves)
+		free_saveslist(saves);
+	return;
 }
 
 void simulation_ui(pixel * vid_buf)
