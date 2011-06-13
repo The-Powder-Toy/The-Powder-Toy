@@ -5156,13 +5156,16 @@ void catalogue_ui(pixel * vid_buf)
 	int xsize = 8+(XRES/CATALOGUE_S+8)*CATALOGUE_X;
 	int ysize = 48+(YRES/CATALOGUE_S+20)*CATALOGUE_Y;
 	int x0=(XRES+BARSIZE-xsize)/2,y0=(YRES+MENUSIZE-ysize)/2,b=1,bq,mx,my;
-	int rescount, imageoncycle = 0, currentstart = 0, currentoffset = 0, thidden = 0;
+	int rescount, imageoncycle = 0, currentstart = 0, currentoffset = 0, thidden = 0, cactive = 0;
 	int listy = 0, listxc;
 	int listx = 0, listyc;
+	pixel * vid_buf2;
 	float scrollvel, offsetf = 0.0f;
 	char savetext[128] = "";
 	char * last = mystrdup("");
 	ui_edit ed;
+	
+	vid_buf2 = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	
 	ed.w = xsize-16-4;
 	ed.x = x0+11;
@@ -5191,6 +5194,7 @@ void catalogue_ui(pixel * vid_buf)
 		b = SDL_GetMouseState(&mx, &my);
 		sprintf(savetext, "Found %d saves", rescount);
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
+		clearrect(vid_buf2, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
 		drawtext(vid_buf, x0+8, y0+8, "Saves", 255, 216, 32, 255);
 		drawtext(vid_buf, x0+xsize-8-textwidth(savetext), y0+8, savetext, 255, 216, 32, 255);
@@ -5210,36 +5214,44 @@ void catalogue_ui(pixel * vid_buf)
 		if (sdl_wheel!=0)
 		{
 			scrollvel -= (float)sdl_wheel;
-			if(scrollvel > 3.0f) scrollvel = 3.0f;
-			if(scrollvel < -3.0f) scrollvel = -3.0f;
+			if(scrollvel > 5.0f) scrollvel = 5.0f;
+			if(scrollvel < -5.0f) scrollvel = -5.0f;
 			sdl_wheel = 0;
 		}
 		offsetf += scrollvel;
 		scrollvel*=0.99f;
 		if(offsetf >= (YRES/CATALOGUE_S+20))
 		{
-			if(rescount - thidden > 4)
+			if(rescount - thidden > CATALOGUE_X*(CATALOGUE_Y+1))
 			{
-				cssave = cssave->next; //Loops are overrated
-				cssave = cssave->next;
-				cssave = cssave->next;
-				cssave = cssave->next;
+				int i = 0;
+				for(i = 0; i < CATALOGUE_X; i++){
+					if(cssave->next==NULL)
+						break;
+					cssave = cssave->next;
+				}
 				offsetf -= (YRES/CATALOGUE_S+20);
-				thidden += 4;
+				thidden += CATALOGUE_X;
 			} else {
 				offsetf = (YRES/CATALOGUE_S+20);
 			}
 		} 
+		if(offsetf > 0.0f && rescount <= CATALOGUE_X*CATALOGUE_Y)
+		{
+			offsetf = 0.0f;
+		}
 		if(offsetf < 0.0f)
 		{
-			if(thidden >= 4)
+			if(thidden >= CATALOGUE_X)
 			{
-				cssave = cssave->prev; //Loops are overrated
-				cssave = cssave->prev;
-				cssave = cssave->prev;
-				cssave = cssave->prev;
+				int i = 0;
+				for(i = 0; i < CATALOGUE_X; i++){
+					if(cssave->prev==NULL)
+						break;
+					cssave = cssave->prev;
+				}
 				offsetf += (YRES/CATALOGUE_S+20);
-				thidden -= 4;
+				thidden -= CATALOGUE_X;
 			} else {
 				offsetf = 0.0f;
 			}
@@ -5257,38 +5269,7 @@ void catalogue_ui(pixel * vid_buf)
 				listyc = y0+48-currentoffset+listy*(YRES/CATALOGUE_S+20);
 				if(listyc > y0+ysize) //Stop when we get to the bottom of the viewable
 					break;
-				//Generate an image
-				if(csave->image==NULL && !imageoncycle){ //imageoncycle: Don't read/parse more than one image per cycle, makes it more resposive for slower computers
-					int imgwidth, imgheight, size;
-					pixel *tmpimage = NULL;
-					void *data = NULL;
-					data = file_load(csave->filename, &size);
-					if(data!=NULL){
-						tmpimage = prerender_save(data, size, &imgwidth, &imgheight);
-						if(tmpimage!=NULL)
-						{
-							csave->image = resample_img(tmpimage, imgwidth, imgheight, XRES/CATALOGUE_S, YRES/CATALOGUE_S);
-							free(tmpimage);
-						} else {
-							//Blank image, this should default to something else
-							csave->image = malloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S)*PIXELSIZE);
-						}
-						free(data);
-					} else {
-						//Blank image, this should default to something else
-						csave->image = malloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S)*PIXELSIZE);
-					}
-					imageoncycle = 1;
-				}
-				if(csave->image!=NULL)
-					draw_image(vid_buf, csave->image, listxc, listyc, XRES/CATALOGUE_S, YRES/CATALOGUE_S, 255);
-				drawrect(vid_buf, listxc, listyc, XRES/CATALOGUE_S, YRES/CATALOGUE_S, 255, 255, 255, 190);
-				drawtext(vid_buf, listxc+((XRES/CATALOGUE_S)/2-textwidth(csave->name)/2), listyc+YRES/CATALOGUE_S+2, csave->name, 255, 255, 255, 255);
-				csave = csave->next;
-				if(++listx==CATALOGUE_X){
-					listx = 0;
-					listy++;
-				}
+				cactive = 0;
 				if(my > listyc && my < listyc+YRES/CATALOGUE_S+2 && mx > listxc && mx < listxc+XRES/CATALOGUE_S && my > y0+48 && my < y0+ysize)
 				{
 					if(b)
@@ -5316,14 +5297,61 @@ void catalogue_ui(pixel * vid_buf)
 							error_ui(vid_buf, 0, "Unable to read save file");
 						}
 					}
+					cactive = 1;
+				}
+				//Generate an image
+				if(csave->image==NULL && !imageoncycle){ //imageoncycle: Don't read/parse more than one image per cycle, makes it more resposive for slower computers
+					int imgwidth, imgheight, size;
+					pixel *tmpimage = NULL;
+					void *data = NULL;
+					data = file_load(csave->filename, &size);
+					if(data!=NULL){
+						tmpimage = prerender_save(data, size, &imgwidth, &imgheight);
+						if(tmpimage!=NULL)
+						{
+							csave->image = resample_img(tmpimage, imgwidth, imgheight, XRES/CATALOGUE_S, YRES/CATALOGUE_S);
+							free(tmpimage);
+						} else {
+							//Blank image, this should default to something else
+							csave->image = malloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S)*PIXELSIZE);
+						}
+						free(data);
+					} else {
+						//Blank image, this should default to something else
+						csave->image = malloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S)*PIXELSIZE);
+					}
+					imageoncycle = 1;
+				}
+				if(csave->image!=NULL)
+					draw_image(vid_buf2, csave->image, listxc, listyc, XRES/CATALOGUE_S, YRES/CATALOGUE_S, 255);
+				drawrect(vid_buf2, listxc, listyc, XRES/CATALOGUE_S, YRES/CATALOGUE_S, 255, 255, 255, 190);
+				if(cactive)
+					drawtext(vid_buf2, listxc+((XRES/CATALOGUE_S)/2-textwidth(csave->name)/2), listyc+YRES/CATALOGUE_S+3, csave->name, 255, 255, 255, 255);
+				else
+					drawtext(vid_buf2, listxc+((XRES/CATALOGUE_S)/2-textwidth(csave->name)/2), listyc+YRES/CATALOGUE_S+3, csave->name, 240, 240, 255, 180);
+				csave = csave->next;
+				if(++listx==CATALOGUE_X){
+					listx = 0;
+					listy++;
 				}
 			}
 			imageoncycle = 0;
 		} else {
-			drawtext(vid_buf, x0+8, y0+8, "No saves found", 255, 255, 255, 180);
+			drawtext(vid_buf2, x0+8, y0+8, "No saves found", 255, 255, 255, 180);
 		}
 		ui_edit_draw(vid_buf, &ed);
 		ui_edit_process(mx, my, b, &ed);
+		//Draw the scrollable area onto the main buffer
+		{
+			pixel *srctemp = vid_buf2, *desttemp = vid_buf;
+			int j = 0;
+			for (j = y0+48; j < y0+ysize; j++)
+			{
+				memcpy(desttemp+j*(XRES+BARSIZE)+x0+1, srctemp+j*(XRES+BARSIZE)+x0+1, (xsize-1)*PIXELSIZE);
+				//desttemp+=(XRES+BARSIZE);//*PIXELSIZE;
+				//srctemp+=(XRES+BARSIZE);//*PIXELSIZE;
+			}
+		}
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 		if (sdl_key==SDLK_RETURN)
 			break;
