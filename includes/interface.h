@@ -219,6 +219,8 @@ void tag_list_ui(pixel *vid_buf);
 
 int save_name_ui(pixel *vid_buf);
 
+int save_filename_ui(pixel *vid_buf);
+
 void menu_ui(pixel *vid_buf, int i, int *sl, int *sr);
 
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq, int mx, int my);

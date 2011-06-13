@@ -5151,6 +5151,132 @@ void free_saveslist(savelist_e *saves)
 		free(saves->image);
 }
 
+int save_filename_ui(pixel *vid_buf)
+{
+	int xsize = 16+(XRES/3);
+	int ysize = 64+(YRES/3);
+	float ca = 0;
+	int x0=(XRES+BARSIZE-xsize)/2,y0=(YRES+MENUSIZE-ysize)/2,b=1,bq,mx,my;
+	int idtxtwidth, nd=0, imgw, imgh, save_size;
+	void *save_data;
+	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	pixel *save_tmp;
+	pixel *save_data_image;
+	pixel *save = calloc((XRES/3)*(YRES/3), PIXELSIZE);
+	ui_edit ed;
+
+	save_data = build_save(&save_size, 0, 0, XRES, YRES, bmap, fvx, fvy, signs, parts);
+	save_data_image = prerender_save(save_data, save_size, &imgw, &imgh);
+	save = resample_img(save_data_image, imgw, imgh, XRES/3, YRES/3);	
+
+	ed.x = x0+11;
+	ed.y = y0+25;
+	ed.w = xsize-4-16;
+	ed.nx = 1;
+	ed.def = "[filename]";
+	ed.focus = 1;
+	ed.hide = 0;
+	ed.cursor = strlen(svf_name);
+	ed.multiline = 0;
+	strcpy(ed.str, "");
+
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+
+	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+	draw_rgba_image(vid_buf, save_to_disk_image, 0, 0, 0.7);
+	
+	memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+
+	while (!sdl_poll())
+	{
+		bq = b;
+		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
+
+		b = SDL_GetMouseState(&mx, &my);
+		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
+		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
+		drawtext(vid_buf, x0+8, y0+8, "Filename:", 255, 255, 255, 255);
+		drawrect(vid_buf, x0+8, y0+20, xsize-16, 16, 255, 255, 255, 180);
+		draw_image(vid_buf, save, x0+8, y0+40, XRES/3, YRES/3, 255);
+		drawrect(vid_buf, x0+8, y0+40, XRES/3, YRES/3, 192, 192, 192, 255);
+		
+		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
+		fillrect(vid_buf, x0, y0+ysize-16, xsize, 16, 170, 170, 192, (int)ca);
+		drawtext(vid_buf, x0+8, y0+ysize-12, "Save", 255, 255, 255, 255);
+
+		ui_edit_draw(vid_buf, &ed);
+		drawtext(vid_buf, x0+12+textwidth(ed.str), y0+25, ".cps", 240, 240, 255, 180);
+
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+
+		memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+
+		ui_edit_process(mx, my, b, &ed);
+		
+		if(mx > x0 && mx < x0+xsize && my > y0+ysize-16 && my < y0+ysize)
+		{
+			if(b && !bq)
+			{
+				FILE *f = NULL;
+				char *filename = malloc(strlen(LOCAL_SAVE_DIR)+strlen(PATH_SEP)+strlen(ed.str)+5);
+				sprintf(filename, "%s%s%s.cps", LOCAL_SAVE_DIR, PATH_SEP, ed.str);
+			
+#ifdef WIN32
+				_mkdir(LOCAL_SAVE_DIR);
+#else
+				mkdir(LOCAL_SAVE_DIR, 0755);
+#endif
+				f = fopen(filename, "r");
+				if(!f || confirm_ui(vid_buf, "A save with the name already exists.", filename, "Overwrite"))
+				{
+					if(f)
+					{
+						fclose(f);
+						f = NULL;
+					}
+					f = fopen(filename, "wb");
+					if (f)
+					{
+						fwrite(save_data, save_size, 1, f);
+						fclose(f);
+						break;
+					} else {
+						error_ui(vid_buf, 0, "Unable to write to save file.");
+					}
+				}
+				fclose(f);
+			}
+		}
+
+		if (sdl_key==SDLK_ESCAPE)
+		{
+			if (!ed.focus)
+				break;
+			ed.focus = 0;
+		}
+	}
+		
+savefin:
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+	free(save_data_image);
+	free(save_data);
+	free(old_vid);
+	free(save);
+	return 0;
+}
+
 void catalogue_ui(pixel * vid_buf)
 {
 	int xsize = 8+(XRES/CATALOGUE_S+8)*CATALOGUE_X;
