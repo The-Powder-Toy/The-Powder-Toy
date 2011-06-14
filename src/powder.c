@@ -1629,7 +1629,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 				//heat transfer code
 				h_count = 0;
-				if (t&&(t!=PT_HSWC||parts[i].life==10)&&ptypes[t].hconduct)
+				if (t&&(t!=PT_HSWC||parts[i].life==10)&&ptypes[t].hconduct>(rand()%250))
 				{
 					if (aheat_enable)
 					{
@@ -1640,25 +1640,27 @@ void update_particles_i(pixel *vid, int start, int inc)
 					c_heat = 0.0f;
 					for (j=0; j<8; j++)
 					{
+						surround_hconduct[j] = i;
 						r = surround[j];
 						if ((r>>8)>=NPART || !r)
 							continue;
 						rt = r&0xFF;
-						if ((parts[r>>8].temp < parts[i].temp)&&rt&&ptypes[rt].hconduct&&(rt!=PT_HSWC||parts[r>>8].life==10)
+						if (rt&&ptypes[rt].hconduct&&(rt!=PT_HSWC||parts[r>>8].life==10)
 						        &&(t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
 						        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
 						{
-							float dq, dt;
-
-							dt = parts[i].temp - parts[r>>8].temp;
-							dq = 0.347*ptypes[t].weight*dt; //It's constant for now
-
-							parts[i].temp -= dq*ptypes[t].hconduct/(96.635*ptypes[t].weight);
-							parts[r>>8].temp += dq*ptypes[rt].hconduct/(96.635*ptypes[rt].weight);
+							surround_hconduct[j] = r>>8;
+							c_heat += parts[r>>8].temp;
+							h_count++;
 						}
 					}
 
-					pt = parts[i].temp;
+					pt = parts[i].temp = (c_heat+parts[i].temp)/(h_count+1);
+					for (j=0; j<8; j++)
+					{
+						parts[surround_hconduct[j]].temp = pt;
+					}
+
 					ctemph = ctempl = pt;
 					// change boiling point with pressure
 					if ((ptypes[t].state==ST_LIQUID && ptransitions[t].tht>-1 && ptransitions[t].tht<PT_NUM && ptypes[ptransitions[t].tht].state==ST_GAS)
