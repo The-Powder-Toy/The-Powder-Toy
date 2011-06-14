@@ -197,7 +197,7 @@ void ui_richtext_settext(char *text, ui_richtext *ed);
 
 void ui_richtext_process(int mx, int my, int mb, int mbq, ui_richtext *ed);
 
-void draw_svf_ui(pixel *vid_buf);
+void draw_svf_ui(pixel *vid_buf, int alternate);
 
 void error_ui(pixel *vid_buf, int err, char *txt);
 
@@ -219,6 +219,8 @@ void tag_list_ui(pixel *vid_buf);
 
 int save_name_ui(pixel *vid_buf);
 
+int save_filename_ui(pixel *vid_buf);
+
 void menu_ui(pixel *vid_buf, int i, int *sl, int *sr);
 
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq, int mx, int my);
@@ -234,6 +236,8 @@ char *download_ui(pixel *vid_buf, char *uri, int *len);
 int search_ui(pixel *vid_buf);
 
 int open_ui(pixel *vid_buf, char *save_id, char *save_date);
+
+void catalogue_ui(pixel * vid_buf);
 
 int info_parse(char *info_data, save_info *info);
 
