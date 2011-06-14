@@ -197,7 +197,7 @@ void ui_richtext_settext(char *text, ui_richtext *ed);
 
 void ui_richtext_process(int mx, int my, int mb, int mbq, ui_richtext *ed);
 
-void draw_svf_ui(pixel *vid_buf);
+void draw_svf_ui(pixel *vid_buf, int alternate);
 
 void error_ui(pixel *vid_buf, int err, char *txt);
 

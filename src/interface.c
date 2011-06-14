@@ -617,13 +617,19 @@ void ui_richtext_process(int mx, int my, int mb, int mbq, ui_richtext *ed)
 	}
 }
 
-void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
+void draw_svf_ui(pixel *vid_buf, int alternate)// all the buttons at the bottom
 {
 	int c;
 
 	//the open browser button
-	drawtext(vid_buf, 4, YRES+(MENUSIZE-14), "\x81", 255, 255, 255, 255);
-	drawrect(vid_buf, 1, YRES+(MENUSIZE-16), 16, 14, 255, 255, 255, 255);
+	if(alternate)
+	{
+		fillrect(vid_buf, 0, YRES+(MENUSIZE-16)-1, 18, 16, 255, 255, 255, 255);
+		drawtext(vid_buf, 4, YRES+(MENUSIZE-14), "\x81", 0, 0, 0, 255);
+	} else {
+		drawtext(vid_buf, 4, YRES+(MENUSIZE-14), "\x81", 255, 255, 255, 255);
+		drawrect(vid_buf, 1, YRES+(MENUSIZE-16), 16, 14, 255, 255, 255, 255);
+	}
 
 	// the reload button
 	c = svf_open ? 255 : 128;
@@ -631,15 +637,22 @@ void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 	drawrect(vid_buf, 19, YRES+(MENUSIZE-16), 16, 14, c, c, c, 255);
 
 	// the save sim button
-	c = svf_login ? 255 : 128;
-	drawtext(vid_buf, 40, YRES+(MENUSIZE-14), "\x82", c, c, c, 255);
-	if (svf_open)
-		drawtextmax(vid_buf, 58, YRES+(MENUSIZE-12), 125, svf_name, c, c, c, 255);
-	else
-		drawtext(vid_buf, 58, YRES+(MENUSIZE-12), "[untitled simulation]", c, c, c, 255);
-	drawrect(vid_buf, 37, YRES+(MENUSIZE-16), 150, 14, c, c, c, 255);
-	if (svf_open && svf_own)
-		drawdots(vid_buf, 55, YRES+(MENUSIZE-15), 12, c, c, c, 255);
+	if(alternate)
+	{
+		fillrect(vid_buf, 36, YRES+(MENUSIZE-16)-1, 152, 16, 255, 255, 255, 255);
+		drawtext(vid_buf, 40, YRES+(MENUSIZE-14), "\x82", 0, 0, 0, 255);
+		drawtext(vid_buf, 58, YRES+(MENUSIZE-12), "[save to disk]", 0, 0, 0, 255);
+	} else {
+		c = svf_login ? 255 : 128;
+		drawtext(vid_buf, 40, YRES+(MENUSIZE-14), "\x82", c, c, c, 255);
+		if (svf_open)
+			drawtextmax(vid_buf, 58, YRES+(MENUSIZE-12), 125, svf_name, c, c, c, 255);
+		else
+			drawtext(vid_buf, 58, YRES+(MENUSIZE-12), "[untitled simulation]", c, c, c, 255);
+		drawrect(vid_buf, 37, YRES+(MENUSIZE-16), 150, 14, c, c, c, 255);
+		if (svf_open && svf_own)
+			drawdots(vid_buf, 55, YRES+(MENUSIZE-15), 12, c, c, c, 255);
+	}
 
 	c = (svf_login && svf_open) ? 255 : 128;
 
@@ -700,7 +713,7 @@ void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 	}
 	else*/
 	{
-		drawtext(vid_buf, XRES-154+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBD", 255, 255, 255, 255); //TODO: More suitable icon
+		drawtext(vid_buf, XRES-154+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xCF", 255, 255, 255, 255);
 		drawrect(vid_buf, XRES-159+BARSIZE/*494*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
 	}
 

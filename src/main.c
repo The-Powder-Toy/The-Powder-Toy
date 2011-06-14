@@ -1851,7 +1851,7 @@ int main(int argc, char *argv[])
 		memset(vid_buf+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);//clear menu areas
 		clearrect(vid_buf, XRES-1, 0, BARSIZE+1, YRES);
 
-		draw_svf_ui(vid_buf);
+		draw_svf_ui(vid_buf, sdl_mod & (KMOD_LCTRL|KMOD_RCTRL));
 
 		if (http_ver_check)
 		{
@@ -2663,13 +2663,22 @@ int main(int argc, char *argv[])
 				if (da < 51)
 					da ++;
 			}
-			else if (x>=37*sdl_scale && x<=187*sdl_scale && svf_login)
+			else if (x>=37*sdl_scale && x<=187*sdl_scale)
 			{
-				db = 259;
-				if (svf_open && svf_own && x<=55*sdl_scale)
-					db = 258;
-				if (da < 51)
-					da ++;
+				if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
+				{
+					db = 277;
+					if (da < 51)
+						da ++;
+				}
+				else if(svf_login)
+				{
+					db = 259;
+					if (svf_open && svf_own && x<=55*sdl_scale)
+						db = 258;
+					if (da < 51)
+						da ++;
+				}
 			}
 			else if (x>=((XRES+BARSIZE-(510-385))*sdl_scale) && x<=((XRES+BARSIZE-(510-476))*sdl_scale))
 			{
@@ -2687,7 +2696,10 @@ int main(int argc, char *argv[])
 			}
 			else if (x>=sdl_scale && x<=17*sdl_scale)
 			{
-				db = 262;
+				if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
+					db = 276;
+				else
+					db = 262;
 				if (da < 51)
 					da ++;
 			}
@@ -2879,32 +2891,45 @@ int main(int argc, char *argv[])
 							http_session_check = NULL;
 						}
 					}
-					if (x>=37 && x<=187 && svf_login)
+					if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
 					{
-						if (!svf_open || !svf_own || x>51)
+						if (x>=37 && x<=187)
 						{
-							if (save_name_ui(vid_buf)) {
-								execute_save(vid_buf);
-								if (svf_id[0]) {
-									copytext_ui(vid_buf, "Save ID", "Saved successfully!", svf_id);
+							save_filename_ui(vid_buf);
+									
+						}
+						if (x>=1 && x<=17)
+						{
+							catalogue_ui(vid_buf);
+						}
+					} else {
+						if (x>=37 && x<=187 && svf_login)
+						{
+							if (!svf_open || !svf_own || x>51)
+							{
+								if (save_name_ui(vid_buf)) {
+									execute_save(vid_buf);
+									if (svf_id[0]) {
+										copytext_ui(vid_buf, "Save ID", "Saved successfully!", svf_id);
+									}
 								}
 							}
+							else
+								execute_save(vid_buf);
+							while (!sdl_poll())
+								if (!SDL_GetMouseState(&x, &y))
+									break;
+							b = bq = 0;
 						}
-						else
-							execute_save(vid_buf);
-						while (!sdl_poll())
-							if (!SDL_GetMouseState(&x, &y))
-								break;
-						b = bq = 0;
-					}
-					if (x>=1 && x<=17)
-					{
-						search_ui(vid_buf);
-						memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
-						memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-						memset(fire_r, 0, sizeof(fire_r));
-						memset(fire_g, 0, sizeof(fire_g));
-						memset(fire_b, 0, sizeof(fire_b));
+						if (x>=1 && x<=17)
+						{
+							search_ui(vid_buf);
+							memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
+							memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+							memset(fire_r, 0, sizeof(fire_r));
+							memset(fire_g, 0, sizeof(fire_g));
+							memset(fire_b, 0, sizeof(fire_b));
+						}
 					}
 					if (x>=19 && x<=35 && svf_last && svf_open && !bq) {
 						//int tpval = sys_pause;
@@ -3213,6 +3238,12 @@ int main(int argc, char *argv[])
 				break;
 			case 275:
 				drawtext(vid_buf, 16, YRES-24, "You cannot vote on your own save.", 255, 255, 255, da*5);
+				break;
+			case 276:
+				drawtext(vid_buf, 16, YRES-24, "Open a simulation from your hard drive.", 255, 255, 255, da*5);
+				break;
+			case 277:
+				drawtext(vid_buf, 16, YRES-24, "Save the simulation to your hard drive.", 255, 255, 255, da*5);
 				break;
 			default:
 				drawtext(vid_buf, 16, YRES-24, (char *)ptypes[db].descs, 255, 255, 255, da*5);
