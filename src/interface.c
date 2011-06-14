@@ -5112,7 +5112,7 @@ savelist_e *get_local_saves(char *folder, char *search, int *results_ret)
 	{
 		printf("Unable to open directory\n");
 		*results_ret = 0;
-		return;
+		return NULL;
 	}
 	while(derp = readdir(directory)){
 		char *ext;
@@ -5331,7 +5331,7 @@ void catalogue_ui(pixel * vid_buf)
 	while (!sdl_poll())
 	{
 		b = SDL_GetMouseState(&mx, &my);
-		sprintf(savetext, "Found %d saves", rescount);
+		sprintf(savetext, "Found %d save%s", rescount, rescount==1?"":"s");
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		clearrect(vid_buf2, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
@@ -5359,7 +5359,7 @@ void catalogue_ui(pixel * vid_buf)
 		}
 		offsetf += scrollvel;
 		scrollvel*=0.99f;
-		if(offsetf >= (YRES/CATALOGUE_S+20))
+		if(offsetf >= (YRES/CATALOGUE_S+20) && rescount)
 		{
 			if(rescount - thidden > CATALOGUE_X*(CATALOGUE_Y+1))
 			{
@@ -5375,11 +5375,11 @@ void catalogue_ui(pixel * vid_buf)
 				offsetf = (YRES/CATALOGUE_S+20);
 			}
 		} 
-		if(offsetf > 0.0f && rescount <= CATALOGUE_X*CATALOGUE_Y)
+		if(offsetf > 0.0f && rescount <= CATALOGUE_X*CATALOGUE_Y && rescount)
 		{
 			offsetf = 0.0f;
 		}
-		if(offsetf < 0.0f)
+		if(offsetf < 0.0f && rescount)
 		{
 			if(thidden >= CATALOGUE_X)
 			{
@@ -5476,7 +5476,7 @@ void catalogue_ui(pixel * vid_buf)
 			}
 			imageoncycle = 0;
 		} else {
-			drawtext(vid_buf2, x0+8, y0+8, "No saves found", 255, 255, 255, 180);
+			drawtext(vid_buf2, x0+(xsize/2)-(textwidth("No saves found")/2), y0+(ysize/2)+20, "No saves found", 255, 255, 255, 180);
 		}
 		ui_edit_draw(vid_buf, &ed);
 		ui_edit_process(mx, my, b, &ed);
