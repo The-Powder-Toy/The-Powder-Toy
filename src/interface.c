@@ -5189,9 +5189,9 @@ int save_filename_ui(pixel *vid_buf)
 	ed.def = "[filename]";
 	ed.focus = 1;
 	ed.hide = 0;
-	ed.cursor = strlen(svf_name);
+	ed.cursor = 0;
 	ed.multiline = 0;
-	strcpy(ed.str, "");
+	ed.str[0] = 0;
 
 	while (!sdl_poll())
 	{
