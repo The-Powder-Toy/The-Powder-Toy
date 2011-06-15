@@ -1638,7 +1638,6 @@ void update_particles_i(pixel *vid, int start, int inc)
 						hv[y/CELL][x/CELL] -= c_heat;
 					}
 					c_heat = 0.0f;
-					float c_Cm = 0.0f;
 					for (j=0; j<8; j++)
 					{
 						surround_hconduct[j] = i;
@@ -1651,14 +1650,12 @@ void update_particles_i(pixel *vid, int start, int inc)
 						        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
 						{
 							surround_hconduct[j] = r>>8;
-							c_heat += parts[r>>8].temp*96.645/ptypes[rt].hconduct*ptypes[rt].weight;
-							c_Cm += 96.645/ptypes[rt].hconduct*ptypes[rt].weight;
+							c_heat += parts[r>>8].temp;
 							h_count++;
 						}
 					}
 
-					pt = parts[i].temp = (c_heat+parts[i].temp*96.645/ptypes[t].hconduct*ptypes[t].weight)
-						/(c_Cm+96.645/ptypes[t].hconduct*ptypes[t].weight);
+					pt = parts[i].temp = (c_heat+parts[i].temp)/(h_count+1);
 					for (j=0; j<8; j++)
 					{
 						parts[surround_hconduct[j]].temp = pt;
