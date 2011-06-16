@@ -1831,6 +1831,11 @@ int main(int argc, char *argv[])
 		if (!sys_pause||framerender) //Only update if not paused
 			memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
 
+		if (framerender) {
+			framerender = 0;
+			sys_pause = 1;
+		}
+
 		if (cmode==CM_PERS)
 		{
 			if (!fire_fc)//fire_fc has nothing to do with fire... it is a counter for diminishing persistent view every 3 frames
