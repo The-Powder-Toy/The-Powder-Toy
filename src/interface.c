@@ -2998,6 +2998,7 @@ int search_ui(pixel *vid_buf)
 				page_count = search_results(results, last_own||svf_admin||svf_mod);
 				memset(thumb_drawn, 0, sizeof(thumb_drawn));
 				memset(v_buf, 0, ((YRES+MENUSIZE)*(XRES+BARSIZE))*PIXELSIZE);
+				nmp = -1;
 			
 				ui_richtext_settext(server_motd, &motd);
 				motd.x = (XRES-textwidth(motd.printstr))/2;
@@ -5072,6 +5073,10 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 				if (*bsy<0)
 					*bsy = 0;
 			}
+		}
+		if (sdl_key==SDLK_TAB)
+		{
+			CURRENT_BRUSH =(CURRENT_BRUSH + 1)%BRUSH_NUM ;
 		}
 
 		if (!sdl_zoom_trig && zoom_en==1)
