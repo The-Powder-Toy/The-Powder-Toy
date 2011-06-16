@@ -282,11 +282,33 @@ void sdl_blit_1(int x, int y, int w, int h, pixel *src, int pitch)
 		if (SDL_LockSurface(sdl_scrn)<0)
 			return;
 	dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
-	for (j=0; j<h; j++)
+	if (SDL_MapRGB(sdl_scrn->format,0x33,0x55,0x77)!=PIXPACK(0x335577))
 	{
-		memcpy(dst, src, w*PIXELSIZE);
-		dst+=sdl_scrn->pitch/PIXELSIZE;
-		src+=pitch;
+		//pixel format conversion
+		int i;
+		pixel px;
+		SDL_PixelFormat *fmt = sdl_scrn->format;
+		for (j=0; j<h; j++)
+		{
+			for (i=0; i<w; i++)
+			{
+				px = src[i];
+				dst[i] = ((PIXR(px)>>fmt->Rloss)<<fmt->Rshift)|
+						((PIXG(px)>>fmt->Gloss)<<fmt->Gshift)|
+						((PIXB(px)>>fmt->Bloss)<<fmt->Bshift);
+			}
+			dst+=sdl_scrn->pitch/PIXELSIZE;
+			src+=pitch;
+		}
+	}
+	else
+	{
+		for (j=0; j<h; j++)
+		{
+			memcpy(dst, src, w*PIXELSIZE);
+			dst+=sdl_scrn->pitch/PIXELSIZE;
+			src+=pitch;
+		}
 	}
 	if (SDL_MUSTLOCK(sdl_scrn))
 		SDL_UnlockSurface(sdl_scrn);
@@ -302,18 +324,44 @@ void sdl_blit_2(int x, int y, int w, int h, pixel *src, int pitch)
 		if (SDL_LockSurface(sdl_scrn)<0)
 			return;
 	dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
-	for (j=0; j<h; j++)
+	if (SDL_MapRGB(sdl_scrn->format,0x33,0x55,0x77)!=PIXPACK(0x335577))
 	{
-		for (k=0; k<sdl_scale; k++)
+		//pixel format conversion
+		pixel px;
+		SDL_PixelFormat *fmt = sdl_scrn->format;
+		for (j=0; j<h; j++)
 		{
-			for (i=0; i<w; i++)
+			for (k=0; k<sdl_scale; k++)
 			{
-				dst[i*2]=src[i];
-				dst[i*2+1]=src[i];
+				for (i=0; i<w; i++)
+				{
+					px = src[i];
+					px = ((PIXR(px)>>fmt->Rloss)<<fmt->Rshift)|
+						((PIXG(px)>>fmt->Gloss)<<fmt->Gshift)|
+						((PIXB(px)>>fmt->Bloss)<<fmt->Bshift);
+					dst[i*2]=px;
+					dst[i*2+1]=px;
+				}
+				dst+=sdl_scrn->pitch/PIXELSIZE;
 			}
-			dst+=sdl_scrn->pitch/PIXELSIZE;
+			src+=pitch;
 		}
-		src+=pitch;
+	}
+	else
+	{
+		for (j=0; j<h; j++)
+		{
+			for (k=0; k<sdl_scale; k++)
+			{
+				for (i=0; i<w; i++)
+				{
+					dst[i*2]=src[i];
+					dst[i*2+1]=src[i];
+				}
+				dst+=sdl_scrn->pitch/PIXELSIZE;
+			}
+			src+=pitch;
+		}
 	}
 	if (SDL_MUSTLOCK(sdl_scrn))
 		SDL_UnlockSurface(sdl_scrn);
