@@ -1651,6 +1651,7 @@ void draw_parts(pixel *vid)
 				if (t==PT_STKM) //Just draw head here
 				{
 					char buff[10];  //Buffer for HP
+					pixel pc;
 
 					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
 					{
@@ -1658,13 +1659,15 @@ void draw_parts(pixel *vid)
 						drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
 					}
 
+					if ((int)player[2]<PT_NUM) pc = ptypes[(int)player[2]].pcolors;
+					else pc = PIXPACK(0xFFFFFF);
 					for (r=-2; r<=1; r++) //Here I use r variable not as I should, but I think you will excuse me :-p
 					{
 						s = XRES+BARSIZE;
-						vid[(ny-2)*s+nx+r] = ptypes[(int)player[2]].pcolors;
-						vid[(ny+2)*s+nx+r+1] = ptypes[(int)player[2]].pcolors;
-						vid[(ny+r+1)*s+nx-2] = ptypes[(int)player[2]].pcolors;
-						vid[(ny+r)*s+nx+2] = ptypes[(int)player[2]].pcolors;
+						vid[(ny-2)*s+nx+r] = pc;
+						vid[(ny+2)*s+nx+r+1] = pc;
+						vid[(ny+r+1)*s+nx-2] = pc;
+						vid[(ny+r)*s+nx+2] = pc;
 					}
 					draw_line(vid , nx, ny+3, player[3], player[4], 255, 255, 255, s);
 					draw_line(vid , player[3], player[4], player[7], player[8], 255, 255, 255, s);
@@ -1676,6 +1679,7 @@ void draw_parts(pixel *vid)
 				else if (t==PT_STKM2) //Just draw head here
 				{
 					char buff[10];  //Buffer for HP
+					pixel pc;
 
 					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
 					{
@@ -1683,13 +1687,15 @@ void draw_parts(pixel *vid)
 						drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
 					}
 
+					if ((int)player2[2]<PT_NUM) pc = ptypes[(int)player2[2]].pcolors;
+					else pc = PIXPACK(0xFFFFFF);
 					for (r=-2; r<=1; r++) //Here I use r variable not as I should, but I think you will excuse me :-p
 					{
 						s = XRES+BARSIZE;
-						vid[(ny-2)*s+nx+r] = ptypes[(int)player2[2]].pcolors;
-						vid[(ny+2)*s+nx+r+1] = ptypes[(int)player2[2]].pcolors;
-						vid[(ny+r+1)*s+nx-2] = ptypes[(int)player2[2]].pcolors;
-						vid[(ny+r)*s+nx+2] = ptypes[(int)player2[2]].pcolors;
+						vid[(ny-2)*s+nx+r] = pc;
+						vid[(ny+2)*s+nx+r+1] = pc;
+						vid[(ny+r+1)*s+nx-2] = pc;
+						vid[(ny+r)*s+nx+2] = pc;
 					}
 					draw_line(vid , nx, ny+3, player2[3], player2[4], 100, 100, 255, s);
 					draw_line(vid , player2[3], player2[4], player2[7], player2[8], 100, 100, 255, s);
