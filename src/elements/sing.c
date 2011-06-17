@@ -1,8 +1,9 @@
 #include <element.h>
 
 int update_SING(UPDATE_FUNC_ARGS) {
-	int r, rx, ry, cry, crx, rad, nxi, nxj, nb;
+	int r, rx, ry, cry, crx, rad, nxi, nxj, nb, j, spawncount;
 	int singularity = -parts[i].life;
+	float angle, v;
 
 	if (pv[y/CELL][x/CELL]<singularity)
 		pv[y/CELL][x/CELL] += 0.1f*(singularity-pv[y/CELL][x/CELL]);
@@ -33,26 +34,27 @@ int update_SING(UPDATE_FUNC_ARGS) {
 				}
 			}
 		}
-		rad = (parts[i].tmp>255)?255:parts[i].tmp;
-		if (rad>=1) {
-			rad = (int)(((float)rad)/8.0f);
-		}
-		if (rad>=1) {
-			for (nxj=-(rad+1); nxj<=(rad+1); nxj++)
-				for (nxi=-(rad+1); nxi<=(rad+1); nxi++)
-					if ((pow(nxi,2))/(pow((rad+1),2))+(pow(nxj,2))/(pow((rad+1),2))<=1) {
-						if (rand()%2) {
-							nb = create_part(-1, x+nxi, y+nxj, PT_PHOT);
-						} else {
-							nb = create_part(-1, x+nxi, y+nxj, PT_NEUT);
-						}
-						if (nb!=-1) {
-							parts[nb].life = (rand()%300);
-							parts[nb].temp = MAX_TEMP/2;
-							parts[nb].vx = ((float)(rand()%100-50))/10.0f;
-							parts[nb].vy = ((float)(rand()%100-50))/10.0f;
-						}
-					}
+		spawncount = (parts[i].tmp>255)?255:parts[i].tmp;
+		if (spawncount>=1)
+			spawncount = spawncount/8;
+		spawncount = spawncount*spawncount*M_PI;
+		for (j=0;j<spawncount;j++)
+		{
+			if (rand()%2) {
+				nb = create_part(-3, x, y, PT_PHOT);
+			} else {
+				nb = create_part(-3, x, y, PT_NEUT);
+			}
+			if (nb!=-1) {
+				parts[nb].life = (rand()%300);
+				parts[nb].temp = MAX_TEMP/2;
+				angle = rand()*2.0f*M_PI/RAND_MAX;
+				v = (float)(rand())*5.0f/RAND_MAX;
+				parts[nb].vx = v*cosf(angle);
+				parts[nb].vy = v*sinf(angle);
+			}
+			else if (pfree==-1)
+				break;//if we've run out of particles, stop trying to create them - saves a lot of lag on "sing bomb" saves
 		}
 		kill_part(i);
 		return 1;

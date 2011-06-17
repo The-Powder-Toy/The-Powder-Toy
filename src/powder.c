@@ -754,6 +754,13 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		i = pfree;
 		pfree = parts[i].life;
 	}
+	else if (p==-3)//skip pmap checks, e.g. for sing explosion
+	{
+		if (pfree == -1)
+			return -1;
+		i = pfree;
+		pfree = parts[i].life;
+	}
 	else
 		i = p;
 
