@@ -2109,9 +2109,8 @@ killed:
 								goto movedone;
 							}
 						}
-						if (ptypes[t].falldown>1 && (parts[i].vy>fabsf(parts[i].vx) || gravityMode==2))
+						if (ptypes[t].falldown>1 && !ngrav_enable && gravityMode==0 && parts[i].vy>fabsf(parts[i].vx))
 						{
-							// TODO: rewrite to operate better with radial gravity
 							s = 0;
 							// stagnant is true if FLAG_STAGNANT was set for this particle in previous frame
 							if (!stagnant || nt) //nt is if there is an something else besides the current particle type, around the particle
@@ -2149,6 +2148,106 @@ killed:
 									if ((pmap[j][nx]&255)!=t || (bmap[j/CELL][nx/CELL] && bmap[j/CELL][nx/CELL]!=WL_STREAM))
 										break;
 								}
+							else if (s==-1) {} // particle is out of bounds
+							else if ((clear_x!=x||clear_y!=y) && do_move(i, x, y, clear_xf, clear_yf)) {}
+							else parts[i].flags |= FLAG_STAGNANT;
+							parts[i].vx *= ptypes[t].collision;
+							parts[i].vy *= ptypes[t].collision;
+						}
+						else if (ptypes[t].falldown>1 && fabsf(pGravX*parts[i].vx+pGravY*parts[i].vy)>fabsf(pGravY*parts[i].vx+pGravX*parts[i].vy))
+						{
+							float nxf, nyf, ptGrav = ptypes[t].gravity;
+							s = 0;
+							// stagnant is true if FLAG_STAGNANT was set for this particle in previous frame
+							if (!stagnant || nt) //nt is if there is an something else besides the current particle type, around the particle
+								rt = 30;//slight less water lag, although it changes how it moves a lot
+							else
+								rt = 10;
+							nxf = clear_xf;
+							nyf = clear_yf;
+							for (j=0;j<rt;j++)
+							{
+								switch (gravityMode)
+								{
+									default:
+									case 0:
+										pGravX = 0.0f;
+										pGravY = ptGrav;
+										break;
+									case 1:
+										pGravX = pGravY = 0.0f;
+										break;
+									case 2:
+										pGravD = 0.01f - hypotf((nx - XCNTR), (ny - YCNTR));
+										pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
+										pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
+								}
+								pGravX += gravx[ny/CELL][nx/CELL];
+								pGravY += gravy[ny/CELL][nx/CELL];
+								if (fabsf(pGravY)>fabsf(pGravX))
+									mv = fabsf(pGravY);
+								else
+									mv = fabsf(pGravX);
+								if (mv<0.0001f) break;
+								pGravX /= mv;
+								pGravY /= mv;
+								nxf += r*pGravY;
+								nyf -= r*pGravX;
+								nx = (int)(nxf+0.5f);
+								ny = (int)(nyf+0.5f);
+								if (nx<0 || ny<0 || nx>=XRES || ny >=YRES)
+									break;
+								if ((pmap[ny][nx]&0xFF)!=t || bmap[ny/CELL][nx/CELL])
+								{
+									s = do_move(i, x, y, nxf, nyf);
+									if (s || bmap[ny/CELL][nx/CELL]!=WL_STREAM)
+										break;
+								}
+							}
+							if (s==1)
+							{
+								clear_x = nx;
+								clear_y = ny;
+								for (j=0;j<rt;j++)
+								{
+									switch (gravityMode)
+									{
+										default:
+										case 0:
+											pGravX = 0.0f;
+											pGravY = ptGrav;
+											break;
+										case 1:
+											pGravX = pGravY = 0.0f;
+											break;
+										case 2:
+											pGravD = 0.01f - hypotf((nx - XCNTR), (ny - YCNTR));
+											pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
+											pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
+									}
+									pGravX += gravx[ny/CELL][nx/CELL];
+									pGravY += gravy[ny/CELL][nx/CELL];
+									if (fabsf(pGravY)>fabsf(pGravX))
+										mv = fabsf(pGravY);
+									else
+										mv = fabsf(pGravX);
+									if (mv<0.0001f) break;
+									pGravX /= mv;
+									pGravY /= mv;
+									nxf += pGravX;
+									nyf += pGravY;
+									nx = (int)(nxf+0.5f);
+									ny = (int)(nyf+0.5f);
+									if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
+										break;
+									if ((pmap[ny][nx]&0xFF)!=t || bmap[ny/CELL][nx/CELL])
+									{
+										s = do_move(i, clear_x, clear_y, nxf, nyf);
+										if (s || bmap[ny/CELL][nx/CELL]!=WL_STREAM)
+											break;
+									}
+								}
+							}
 							else if (s==-1) {} // particle is out of bounds
 							else if ((clear_x!=x||clear_y!=y) && do_move(i, x, y, clear_xf, clear_yf)) {}
 							else parts[i].flags |= FLAG_STAGNANT;
