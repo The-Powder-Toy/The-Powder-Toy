@@ -290,7 +290,12 @@
 #define PT_HETR 233
 #define PT_CPPA 234
 #define PT_ARGN 235
-#define PT_NUM  236 //note for future elements, please SKIP numbers 222-240 and 255, these are walls.  Element limit is now 4096 (experimental)
+#define PT_PRTN 236
+#define PT_XNON 237
+#define PT_RDON 238
+#define PT_KPTN 239
+#define PT_HLIM 240
+#define PT_NUM  241 //note for future elements, please SKIP numbers 222-240 and 255, these are walls.  Element limit is now 4096 (experimental)
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -445,6 +450,7 @@ int update_NBHL(UPDATE_FUNC_ARGS);
 int update_NWHL(UPDATE_FUNC_ARGS);
 int update_MERC(UPDATE_FUNC_ARGS);
 int update_CPPA(UPDATE_FUNC_ARGS);
+int update_PRTN(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -728,7 +734,7 @@ static const part_type ptypes[PT_NUM] =
     {"NTRG",	PIXPACK(0x80A0AA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,  	"Nitrogen in its gas form.", ST_GAS, TYPE_GAS, NULL},
     {"LQCL",	PIXPACK(0xFFD010),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	29,		"Liquid. Duplicates any particles it touches.", ST_LIQUID, TYPE_LIQUID, &update_LQCL},
     {"GSCL",	PIXPACK(0xFFD010),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Gas. Duplicates any particles it touches.", ST_GAS, TYPE_GAS, &update_GSCL},
-	{"BOOM",	PIXPACK(0xEB4917),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	90,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	97,		"Heavy heat activated explosive", ST_SOLID, TYPE_PART, NULL},
+	{"BOOM",	PIXPACK(0xEB4917),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	90,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	97,		"Heavy heat activated explosive", ST_SOLID, TYPE_PART, &update_PYRO},
 	{"HEAL",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,	R_TEMP+0.0f	+273.15f,	251,	"Heals Stickmen", ST_SOLID, TYPE_SOLID, NULL},
 	{"FUSE2",	PIXPACK(0xC0A050),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. A better fuse than fuse.", ST_SOLID, TYPE_SOLID, &update_FUSE2},
 	{"ELCT",    PIXPACK(0xFFD010),  0.0f,  0.00f * CFDS,    0.00f,  1.00f,  -0.99f,  0.0f,  0.01f,  0.002f  * CFDS,  0,  0,     0,  0,  0,  1,  -1,    SC_ELEC,    R_TEMP+4.0f  +273.15f,  60,  "Electrons. Transfer spark to conductive materials.", ST_GAS, TYPE_ENERGY, &update_ZAP},
@@ -808,6 +814,11 @@ static const part_type ptypes[PT_NUM] =
     {"HETR",	PIXPACK(0xFFD010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,		"Heater/Cooler - set via tmp value 1=h,2=c", ST_SOLID, TYPE_SOLID, &update_HETR},
     {"CPPA",    PIXPACK(0x000000),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  1,  1,  100,  SC_CRACKER2,    R_TEMP+0.0f  +273.15f,  251,  "Chappapa. Turns into a random particle on creation.", ST_SOLID, TYPE_SOLID, &update_CPPA},
     {"ARGN",    PIXPACK(0xE349CE),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Argon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
+    {"PRTN",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	-1,		SC_NUCLEAR,		R_TEMP+273.15f,	255,	"Protons. Will do something.", ST_GAS, TYPE_ENERGY, &update_PRTN},
+    {"XNON",    PIXPACK(0xEDD8DD),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Xenon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
+    {"RDON",    PIXPACK(0x08A32C),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Radon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
+    {"KPTN",    PIXPACK(0xEDE3D5),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Krypton Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
+    {"HLIM",    PIXPACK(0xFFC94D),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Helium Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -1059,9 +1070,11 @@ static part_transition ptransitions[PT_NUM] =
     /* hetr*/ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* cppa*/ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
     /* argn*/ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
-
-
-
+    /* prtn */ {IPL,	NT,			IPH,	NT,			371.0f,	ST,			ITH,	NT},
+    /* xnon */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* rdon */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* kptn */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* hlim */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 };
 #undef IPL
 #undef IPH
@@ -1069,7 +1082,6 @@ static part_transition ptransitions[PT_NUM] =
 #undef ITH
 #undef NT
 #undef ST
-
 
 static int grule[NGOL+1][10] =
 {

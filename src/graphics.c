@@ -1960,9 +1960,9 @@ void draw_parts(pixel *vid)
 				}
 				else if (t==PT_PLAN)
                 {
-                    cr = 0;
-                    cb = 0;
-                    cg = 0;
+                    cr = 255;
+                    cb = 255;
+                    cg = 255;
                     blendpixel(vid, nx, ny, cr, cg, cb, 255);
                 }
 				else if (t==PT_VIRS)
@@ -3197,7 +3197,7 @@ void draw_parts(pixel *vid)
 				else if (t==PT_PLSM)
 				{
 				    uint8 R,G,B;
-				    if (parts[i].ctype == PT_NBLE || parts[i].ctype == PT_ARGN){
+				    if (parts[i].ctype == PT_NBLE || parts[i].ctype == PT_ARGN || parts[i].ctype == PT_HLIM || parts[i].ctype == PT_RDON || parts[i].ctype == PT_XNON || parts[i].ctype == PT_KPTN){
 				        cr = parts[i].r;
                         cg = parts[i].g;
                         cb = parts[i].b;
@@ -3210,7 +3210,17 @@ void draw_parts(pixel *vid)
 					}
                         if (cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY || cmode==CM_AWESOME || cmode==CM_PREAWE)
                         {
-                            if (parts[i].ctype != PT_NBLE && parts[i].ctype != PT_ARGN){
+                            if (parts[i].ctype != PT_NBLE && parts[i].ctype != PT_RDON && parts[i].ctype != PT_HLIM && parts[i].ctype != PT_ARGN && parts[i].ctype != PT_XNON && parts[i].ctype != PT_KPTN){
+                                cr = R/8;
+                                cg = G/8;
+                                cb = B/8;
+                                R = 255;
+                                G = 255;
+                                B = 255;
+                            } else {
+                                R = parts[i].r;
+                                G = parts[i].g;
+                                B = parts[i].b;
                                 cr = R/8;
                                 cg = G/8;
                                 cb = B/8;
@@ -3218,18 +3228,18 @@ void draw_parts(pixel *vid)
                             x = nx/CELL;
                             y = ny/CELL;
                             cg += fire_g[y][x];
-                            if (cg > 255) cg = 255;
+                            if (cg > G) cg = G;
                             fire_g[y][x] = cg;
                             cb += fire_b[y][x];
-                            if (cb > 255) cb = 255;
+                            if (cb > B) cb = B;
                             fire_b[y][x] = cb;
                             cr += fire_r[y][x];
-                            if (cr > 255) cr = 255;
+                            if (cr > R) cr = R;
                             fire_r[y][x] = cr;
                         }
                         else
                         {
-                            if (parts[i].ctype != PT_NBLE || parts[i].ctype != PT_ARGN){
+                            if (parts[i].ctype != PT_NBLE || parts[i].ctype != PT_ARGN|| parts[i].ctype != PT_HLIM|| parts[i].ctype != PT_RDON|| parts[i].ctype != PT_XNON|| parts[i].ctype != PT_KPTN){
                                 cr = R;
                                 cg = G;
                                 cb = B;

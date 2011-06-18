@@ -8,7 +8,7 @@
 #endif
 
 #define ME4502_MAJOR_VERSION 2
-#define ME4502_VERSION 8
+#define ME4502_VERSION 9
 #define SAVE_VERSION 50
 #define MINOR_VERSION 3
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
@@ -17,6 +17,9 @@
 //#define SERVER "powdertoy.co.uk"
 #define SERVER "powdertoy.co.uk"
 
+//Languages
+#define ENGLISH
+//#define INDONESIAN
 
 #define THUMB_CACHE_SIZE 256
 

@@ -78,6 +78,7 @@ void init_can_move()
 	for (rt=1;rt<PT_NUM;rt++)
 	{
 		can_move[PT_PHOT][rt] = 2;
+		can_move[PT_PRTN][rt] = 2;
 	}
 	for (t=1;t<PT_NUM;t++)
 	{
@@ -122,11 +123,16 @@ void init_can_move()
 	}
 	for (t=0;t<PT_NUM;t++)
 	{
-		if (t==PT_GLAS || t==PT_PHOT || t==PT_CLNE || t==PT_PCLN
+		if (t==PT_GLAS || t==PT_PHOT || t==PT_PRTN || t==PT_CLNE || t==PT_PCLN
 			|| t==PT_GLOW || t==PT_WATR || t==PT_DSTW || t==PT_SLTW
 			|| t==PT_ISOZ || t==PT_ISZS || t==PT_FILT || t==PT_INVIS
 			|| t==PT_QRTZ || t==PT_PQRT)
 			can_move[PT_PHOT][t] = 2;
+        if (t==PT_GLAS || t==PT_PHOT || t==PT_PRTN || t==PT_CLNE || t==PT_PCLN
+			|| t==PT_GLOW || t==PT_WATR || t==PT_DSTW || t==PT_SLTW
+			|| t==PT_ISOZ || t==PT_ISZS || t==PT_FILT || t==PT_INVIS
+			|| t==PT_QRTZ || t==PT_PQRT)
+			can_move[PT_PRTN][t] = 2;
 	}
 	can_move[PT_PHOT][PT_LCRY] = 3;//varies according to LCRY life
 	can_move[PT_NEUT][PT_INVIS] = 2;
@@ -532,6 +538,8 @@ int get_normal_interp(int pt, float x0, float y0, float dx, float dy, float *nx,
 	if (pt == PT_PHOT)
 		photoelectric_effect(x, y);
 
+    if (pt == PT_PRTN)
+		photoelectric_effect(x, y);
 	return get_normal(pt, x, y, dx, dy, nx, ny);
 }
 //For soap only
@@ -600,7 +608,7 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
 	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART || t<0 || t>=PT_NUM)
 		return;
 	parts[i].type = t;
-	if (t==PT_PHOT || t==PT_NEUT || t==PT_ZAP)
+	if (t==PT_PHOT || t==PT_PRTN || t==PT_NEUT || t==PT_ZAP)
 	{
 		photons[y][x] = t|(i<<PS);
 		if ((pmap[y][x]>>PS)==i)
@@ -749,7 +757,7 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 			}
 			return -1;
 		}
-		if (photons[y][x] && (t==PT_PHOT||t==PT_NEUT||t==PT_ZAP))
+		if (photons[y][x] && (t==PT_PHOT||t==PT_NEUT||t==PT_PRTN||t==PT_ZAP))
 			return -1;
 		if (pfree == -1)
 			return -1;
@@ -917,6 +925,14 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		parts[i].life = rand()%120+240;
 	if (t==PT_NBLE)
 		parts[i].life = 0;
+    if (t==PT_HLIM)
+		parts[i].life = 0;
+    if (t==PT_KPTN)
+		parts[i].life = 0;
+    if (t==PT_RDON)
+		parts[i].life = 0;
+    if (t==PT_XNON)
+		parts[i].life = 0;
     if (t==PT_ARGN)
         parts[i].life = 0;
 	if (t==PT_ICEI)
@@ -931,9 +947,9 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	}
     if (t==PT_ZAP)
 	{
-        float r = (rand()%128+128)/127.0f;
-        float a = (rand()%360)*3.14159f/180.0f;
-        parts[i].life = rand()%240;
+        float r = (rand()%256+256)/127.0f;
+        float a = (rand()%720)*M_PI/180.0f;
+        parts[i].life = rand()%120;
         parts[i].vx = r*cosf(a);
         parts[i].vy = r*sinf(a);
 	}
@@ -948,6 +964,14 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		parts[i].ctype = 0x3FFFFFFF;
 		parts[i].vx = 3.0f*cosf(a);
 		parts[i].vy = 3.0f*sinf(a);
+	}
+	if (t==PT_PRTN)
+	{
+		float a = (rand()%16) * XRES;
+		parts[i].life = 340;
+		parts[i].ctype = 0x3FFFFFFF;
+		parts[i].vx = 6.0f*cosf(a);
+		parts[i].vy = 6.0f*sinf(a);
 	}
 	if (t==PT_STKM)
 	{
@@ -1036,9 +1060,9 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	if (t==PT_BIZR||t==PT_BIZRG)
 		parts[i].ctype = 0x47FFFF;
 	//and finally set the pmap/photon maps to the newly created particle
-	if (t==PT_PHOT||t==PT_NEUT||t==PT_ZAP)
+	if (t==PT_PHOT||t==PT_PRTN||t==PT_NEUT||t==PT_ZAP)
 		photons[y][x] = t|(i<<PS);
-	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT && t!=PT_ZAP)
+	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_PRTN && t!=PT_NEUT && t!=PT_ZAP)
 		pmap[y][x] = t|(i<<PS);
 
 	return i;
@@ -1660,7 +1684,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			vx[y/CELL][x/CELL] = vx[y/CELL][x/CELL]*ptypes[t].airloss + ptypes[t].airdrag*parts[i].vx;
 			vy[y/CELL][x/CELL] = vy[y/CELL][x/CELL]*ptypes[t].airloss + ptypes[t].airdrag*parts[i].vy;
 
-			if (t==PT_GAS||t==PT_NBLE||t==PT_ARGN)
+			if (t==PT_GAS||t==PT_NBLE||t==PT_HLIM||t==PT_RDON||t==PT_XNON||t==PT_ARGN||t==PT_KPTN)
 			{
 				if (pv[y/CELL][x/CELL]<3.5f)
 					pv[y/CELL][x/CELL] += ptypes[t].hotair*(3.5f-pv[y/CELL][x/CELL]);
@@ -1768,7 +1792,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 						rt = parts[r>>PS].type;
 						if (rt&&ptypes[rt].hconduct&&(rt!=PT_HSWC||parts[r>>PS].life==10)
 						        &&(t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
-						        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
+						        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_PRTN&&t!=PT_BIZR&&t!=PT_BIZRG)))
 						{
 							surround_hconduct[j] = r>>PS;
 							c_heat += parts[r>>PS].temp;
@@ -2056,7 +2080,7 @@ killed:
 			rt = parts[i].flags & FLAG_STAGNANT;
 			parts[i].flags &= ~FLAG_STAGNANT;
 
-			if ((t==PT_PHOT||t==PT_NEUT||t==PT_ZAP)) {
+			if ((t==PT_PHOT||t==PT_PRTN||t==PT_NEUT||t==PT_ZAP)) {
 				if (t == PT_PHOT) {
 					rt = pmap[fin_y][fin_x] & TYPE;
 					lt = pmap[y][x] & TYPE;
@@ -2120,6 +2144,10 @@ killed:
 					if ((r & TYPE) == PT_PLEX) parts[i].ctype &= 0x1F00003E;
 					if ((r & TYPE) == PT_NITR) parts[i].ctype &= 0x0007C000;
 					if ((r & TYPE) == PT_NBLE) parts[i].ctype &= 0x3FFF8000;
+					if ((r & TYPE) == PT_KPTN) parts[i].ctype &= 0x3FFF8000;
+					if ((r & TYPE) == PT_RDON) parts[i].ctype &= 0x3FFF8000;
+					if ((r & TYPE) == PT_HLIM) parts[i].ctype &= 0x3FFF8000;
+					if ((r & TYPE) == PT_XNON) parts[i].ctype &= 0x3FFF8000;
 					if ((r & TYPE) == PT_ARGN) parts[i].ctype &= 0x3FFF8000;
 					if ((r & TYPE) == PT_LAVA) parts[i].ctype &= 0x3FF00000;
 					if ((r & TYPE) == PT_ACID) parts[i].ctype &= 0x1FE001FE;
@@ -2333,7 +2361,7 @@ killed:
 					kill_part(i);
 					continue;
 				}
-				if (t==PT_PHOT||t==PT_NEUT||t==PT_ZAP)
+				if (t==PT_PHOT||t==PT_PRTN||t==PT_NEUT||t==PT_ZAP)
 					photons[ny][nx] = t|(i<<PS);
 				else if (t)
 					pmap[ny][nx] = t|(i<<PS);
@@ -2370,7 +2398,7 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 			y = (int)(parts[i].y+0.5f);
 			if (x>=0 && y>=0 && x<XRES && y<YRES)
 			{
-				if (t==PT_PHOT||t==PT_NEUT||t==PT_ZAP)
+				if (t==PT_PHOT||t==PT_PRTN||t==PT_NEUT||t==PT_ZAP)
 					photons[y][x] = t|(i<<PS);
 				else
 					pmap[y][x] = t|(i<<PS);

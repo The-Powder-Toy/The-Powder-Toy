@@ -14,6 +14,30 @@ int update_PYRO(UPDATE_FUNC_ARGS) {
         part_change_type(i,x,y,t);
         parts[i].life = 0;
     }
+    if (t==PT_PLSM&&parts[i].ctype == PT_XNON&&parts[i].life <=1)
+    {
+        t = PT_XNON;
+        part_change_type(i,x,y,t);
+        parts[i].life = 0;
+    }
+    if (t==PT_PLSM&&parts[i].ctype == PT_HLIM&&parts[i].life <=1)
+    {
+        t = PT_HLIM;
+        part_change_type(i,x,y,t);
+        parts[i].life = 0;
+    }
+    if (t==PT_PLSM&&parts[i].ctype == PT_KPTN&&parts[i].life <=1)
+    {
+        t = PT_KPTN;
+        part_change_type(i,x,y,t);
+        parts[i].life = 0;
+    }
+    if (t==PT_PLSM&&parts[i].ctype == PT_RDON&&parts[i].life <=1)
+    {
+        t = PT_RDON;
+        part_change_type(i,x,y,t);
+        parts[i].life = 0;
+    }
 	if(t==PT_FIRE && parts[i].life <=1)
 	{
 		if (parts[i].tmp==3){
@@ -65,6 +89,14 @@ int update_PYRO(UPDATE_FUNC_ARGS) {
 					if (ptypes[rt].explosive)
 						pv[y/CELL][x/CELL] += 0.25f * CFDS;
 				}
+				if(t==PT_BOOM && rt==PT_FUSE2 || t==PT_BOOM && rt==PT_BFLM || t==PT_BOOM && rt==PT_FUSE || t==PT_BOOM && rt==PT_FIRE)
+                {
+                        int tmporaro = PT_BFLM, pie;
+                        part_change_type(i,x,y,tmporaro);
+                        parts[i].temp = MAX_TEMP;
+                        create_part(-1,x+rx,y+ry,tmporaro);
+                        parts[i].life = rand()%50+120;
+                }
                 if (parts[i].type==PT_LAVA){
                     if (parts[r>>PS].type==PT_LAVA){
                         if (parts[i].ctype==PT_TIN){

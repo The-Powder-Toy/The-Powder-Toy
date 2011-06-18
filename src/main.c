@@ -55,6 +55,7 @@
 #include <air.h>
 #include <icon.h>
 #include <console.h>
+#include <language.h>
 #ifdef PYCONSOLE
 #include "pyconsole.h"
 #endif
@@ -365,6 +366,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 			if (x>=x0 && x<x0+w && y>=y0 && y<y0+h) {
 				if (!m[(x-x0)+(y-y0)*w] ||
                     parts[m[(x-x0)+(y-y0)*w]-1].type == PT_PHOT ||
+                    parts[m[(x-x0)+(y-y0)*w]-1].type == PT_PRTN ||
                     parts[m[(x-x0)+(y-y0)*w]-1].type == PT_ZAP ||
                     parts[m[(x-x0)+(y-y0)*w]-1].type == PT_NEUT)
 					m[(x-x0)+(y-y0)*w] = i+1;
@@ -3151,16 +3153,16 @@ if(gravwl_timeout)
 			switch (db)//various mouseover messages, da is the alpha
         {
 			case 256:
-				drawtext(vid_buf, 16, YRES-24, "Add simulation tags.", 255, 255, 255, da*5);
+				drawtext(vid_buf, 16, YRES-24, add_simulation_tags, 255, 255, 255, da*5);
 				break;
 			case 257:
-				drawtext(vid_buf, 16, YRES-24, "Add and remove simulation tags.", 255, 255, 255, da*5);
+				drawtext(vid_buf, 16, YRES-24, add_remove_simulation_tags, 255, 255, 255, da*5);
 				break;
 			case 258:
-				drawtext(vid_buf, 16, YRES-24, "Save the simulation under the current name.", 255, 255, 255, da*5);
+				drawtext(vid_buf, 16, YRES-24, save_under_current_name, 255, 255, 255, da*5);
 				break;
 			case 259:
-				drawtext(vid_buf, 16, YRES-24, "Save the simulation under a new name.", 255, 255, 255, da*5);
+				drawtext(vid_buf, 16, YRES-24, save_under_new_name, 255, 255, 255, da*5);
 				break;
 			case 260:
 				drawtext(vid_buf, 16, YRES-24, "Sign into the Simulation Server.", 255, 255, 255, da*5);
@@ -3211,7 +3213,7 @@ if(gravwl_timeout)
 				drawtext(vid_buf, 16, YRES-24, "You cannot vote on your own save.", 255, 255, 255, da*5);
 				break;
             case 276:
-				drawtext(vid_buf, 16, YRES-24, "Save to your computer.", 255, 255, 255, da*5);
+				drawtext(vid_buf, 16, YRES-24, local_save_text, 255, 255, 255, da*5);
 				break;
 			default:
 				drawtext(vid_buf, 16, YRES-24, (char *)ptypes[db].descs, 255, 255, 255, da*5);
@@ -3277,12 +3279,12 @@ if(gravwl_timeout)
 		if (hud_enable)
 		{
 #ifdef BETA
-			sprintf(uitext, "Me's Mod version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+			sprintf(uitext, beta_hud_text, ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 #else
 			if (DEBUG_MODE)
-				sprintf(uitext, "Me's Mod FPS:%d Parts:%d Gen:%d Grav:%d Air:%d", FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+				sprintf(uitext, debug_hud_text, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 			else
-				sprintf(uitext, "Me4502's Mod version %d.%d FPS:%d", ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB);
+				sprintf(uitext, hud_text, ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB);
 #endif
 			if (REPLACE_MODE)
 				strappend(uitext, " [REPLACE MODE]");

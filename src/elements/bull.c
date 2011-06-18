@@ -14,7 +14,6 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                         continue;
                     if((r&TYPE)!=PT_NONE && (r&TYPE)!=PT_BULL){
                         kill_part(i);
-                        kill_part(i);
                     }
                 }
     } else if(parts[i].tmp==0){
@@ -57,7 +56,6 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                                     }
                         //create_parts(x, y, 9, 9, PT_BULL);
                         //create_parts(x, y, 8, 8, PT_NONE);
-                        kill_part(i);
                         kill_part(i);
                     }
                 }
