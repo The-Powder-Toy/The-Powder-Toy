@@ -1244,7 +1244,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 {
 	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z, neighbors, createdsomething;
 	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp, ctemph, ctempl, gravtot;
-	int fin_x, fin_y, clear_x, clear_y;
+	int fin_x, fin_y, clear_x, clear_y, stagnant;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
 	float nn, ct1, ct2, swappage;
 	float pt = R_TEMP;
@@ -1937,7 +1937,7 @@ killed:
 				}
 			}
 
-			rt = parts[i].flags & FLAG_STAGNANT;
+			stagnant = parts[i].flags & FLAG_STAGNANT;
 			parts[i].flags &= ~FLAG_STAGNANT;
 
 			if ((t==PT_PHOT||t==PT_NEUT)) {
@@ -1982,7 +1982,15 @@ killed:
 						}
 					}
 				}
-				if (!do_move(i, x, y, fin_xf, fin_yf))
+				if (stagnant)//FLAG_STAGNANT set, was reflected on previous frame
+				{
+					// cast coords as int then back to float for compatibility with existing saves
+					if (!do_move(i, x, y, (float)fin_x, (float)fin_y)) {
+						kill_part(i);
+						continue;
+					}
+				}
+				else if (!do_move(i, x, y, fin_xf, fin_yf))
 				{
 					// reflection
 					parts[i].flags |= FLAG_STAGNANT;
@@ -2015,20 +2023,7 @@ killed:
 						dp = nrx*parts[i].vx + nry*parts[i].vy;
 						parts[i].vx -= 2.0f*dp*nrx;
 						parts[i].vy -= 2.0f*dp*nry;
-						fin_x = (int)(parts[i].x + parts[i].vx + 0.5f);
-						fin_y = (int)(parts[i].y + parts[i].vy + 0.5f);
-						if (t==PT_PHOT) {
-							s = eval_move(PT_PHOT, fin_x, fin_y, &r);
-							if ((((r&0xFF)==PT_GLAS && lt!=PT_GLAS) || ((r&0xFF)!=PT_GLAS && lt==PT_GLAS)) && s) {
-								// if movement will involve refraction, leave it until next frame so that refraction happens correctly
-								goto movedone;
-							}
-						}
-						// cast coords as int then back to float for compatibility with existing saves
-						if (!do_move(i, x, y, (float)fin_x, (float)fin_y)) {
-							kill_part(i);
-							continue;
-						}
+						// leave the actual movement until next frame so that reflection of fast particles and refraction happen correctly
 					} else {
 						if (t!=PT_NEUT)
 							kill_part(i);
@@ -2118,8 +2113,8 @@ killed:
 						{
 							// TODO: rewrite to operate better with radial gravity
 							s = 0;
-							// rt is true if FLAG_STAGNANT was set for this particle in previous frame
-							if (!rt || nt) //nt is if there is an something else besides the current particle type, around the particle
+							// stagnant is true if FLAG_STAGNANT was set for this particle in previous frame
+							if (!stagnant || nt) //nt is if there is an something else besides the current particle type, around the particle
 								rt = 30;//slight less water lag, although it changes how it moves a lot
 							else
 								rt = 10;
