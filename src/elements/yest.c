@@ -7,9 +7,9 @@ int update_YEST(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)>=NPART || !r)
+				if ((r>>8)>=NPART || !r)
 					continue;
-				if (((r&TYPE))==PT_DYST && 1>(rand()%30) && !legacy_enable)
+				if ((r&0xFF)==PT_DYST && 1>(rand()%30) && !legacy_enable)
 				{
 					part_change_type(i,x,y,PT_DYST);
 				}

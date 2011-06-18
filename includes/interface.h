@@ -20,27 +20,24 @@ struct menu_wall
 typedef struct menu_wall menu_wall;
 
 #define SC_WALL 0
+#define SC_SPECIAL 8
+#define SC_POWDERS 5
+#define SC_SOLIDS 6
 #define SC_ELEC 1
 #define SC_EXPLOSIVE 2
 #define SC_GAS 3
 #define SC_LIQUID 4
-#define SC_POWDERS 5
-#define SC_SOLIDS 6
 #define SC_NUCLEAR 7
-#define SC_SPECIAL 8
 #define SC_LIFE 9
-#define SC_STICKMAN 10
-#define SC_NATURE 11
-#define SC_SPACE 12
+#define SC_CRACKER 12
 #define SC_CRACKER2 13
-#define SC_CRACKER 13
-#define SC_TOTAL 14
+#define SC_TOTAL 10
 
 static menu_section msections[] = //doshow does not do anything currently.
 {
 	{"\xC1", "Walls", 0, 1},
 	{"\xC2", "Electronics", 0, 1},
-	{"\xC3", "Explosives", 0, },
+	{"\xC3", "Explosives", 0, 1},
 	{"\xC5", "Gasses", 0, 1},
 	{"\xC4", "Liquids", 0, 1},
 	{"\xD0", "Powders", 0, 1},
@@ -48,29 +45,27 @@ static menu_section msections[] = //doshow does not do anything currently.
 	{"\xC6", "Radioactive", 0, 1},
 	{"\xCC", "Special", 0, 1},
 	{"\xD2", "Life", 0, 1},
-    {"\xA7", "Stickman", 0, 1},
-    {"\xA4", "Nature", 0, 1},
-    {"\xD1", "Space", 0, 1},
-	{"\xC8", "Secret", 0, 1},
-	{"\xC8", "Secret", 0, 0},
+	{"\xD2", "More Life", 0, 1},
+	{"\xC8", "", 0, 0},
+	{"\xC8", "Cracker", 0, 0},
+	{"\xC8", "Cracker!", 0, 0},
 };
 
 static menu_section colorsections[] = //doshow does not do anything currently.
 {
- 	{"\xD1", "Colors", 9, 1},
- 	{"\xC5", "Tools", 0, 1},
+	{"\xD1", "Colors", 7, 1},
+	{"\xC5", "Tools", 0, 1},
 };
+
 static menu_wall colorlist[] =
 {
-  {PIXPACK(0xFF0000), "Red"},
-  {PIXPACK(0x00FF00), "Green"},
-  {PIXPACK(0x0000FF), "Blue"},
-  {PIXPACK(0xFFFF00), "Yellow"},
-  {PIXPACK(0xFF00FF), "Pink"},
-  {PIXPACK(0x00FFFF), "Cyan"},
-  {PIXPACK(0xFFFFFF), "White"},
-  {PIXPACK(0xFF8000), "Orange"},
-  {PIXPACK(0xD900FF), "Purple"},
+	{PIXPACK(0xFF0000), "Red"},
+	{PIXPACK(0x00FF00), "Green"},
+	{PIXPACK(0x0000FF), "Blue"},
+	{PIXPACK(0xFFFF00), "Yellow"},
+	{PIXPACK(0xFF00FF), "Pink"},
+	{PIXPACK(0x00FFFF), "Cyan"},
+	{PIXPACK(0xFFFFFF), "White"},
 };
 
 struct ui_edit
@@ -118,14 +113,14 @@ typedef struct ui_checkbox ui_checkbox;
 
 struct ui_richtext
 {
-  int x, y;
-  char str[512];
-  char printstr[512];
-  int regionss[6];
-  int regionsf[6];
-  char action[6];
-  char actiondata[6][256];
-  char actiontext[6][256];
+	int x, y;
+	char str[512];
+	char printstr[512];
+	int regionss[6];
+	int regionsf[6];
+	char action[6];
+	char actiondata[6][256];
+	char actiontext[6][256];
 };
 typedef struct ui_richtext ui_richtext;
 
@@ -202,7 +197,7 @@ void ui_richtext_settext(char *text, ui_richtext *ed);
 
 void ui_richtext_process(int mx, int my, int mb, int mbq, ui_richtext *ed);
 
-void draw_svf_ui(pixel *vid_buf);
+void draw_svf_ui(pixel *vid_buf, int alternate);
 
 void error_ui(pixel *vid_buf, int err, char *txt);
 
@@ -224,6 +219,8 @@ void tag_list_ui(pixel *vid_buf);
 
 int save_name_ui(pixel *vid_buf);
 
+int save_filename_ui(pixel *vid_buf);
+
 void menu_ui(pixel *vid_buf, int i, int *sl, int *sr);
 
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq, int mx, int my);
@@ -239,6 +236,8 @@ char *download_ui(pixel *vid_buf, char *uri, int *len);
 int search_ui(pixel *vid_buf);
 
 int open_ui(pixel *vid_buf, char *save_id, char *save_date);
+
+void catalogue_ui(pixel * vid_buf);
 
 int info_parse(char *info_data, save_info *info);
 
@@ -266,8 +265,8 @@ int report_ui(pixel *vid_buf, char *save_id);
 
 char *console_ui(pixel *vid_buf, char error[255],char console_more);
 
-unsigned int decorations_ui(pixel *vid_buf, int *bsx, int *bsy, unsigned int savedColor);
-
 void simulation_ui(pixel *vid_buf);
+
+unsigned int decorations_ui(pixel *vid_buf, int *bsx, int *bsy, unsigned int savedColor);
 #endif
 

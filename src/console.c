@@ -59,10 +59,10 @@ int console_parse_partref(char *txt, int *which, char *err)
 	if (strchr(txt,',') && console_parse_coords(txt, &nx, &ny, err))
 	{
 		i = pmap[ny][nx];
-		if (!i || (i>>PS)>=NPART)
+		if (!i || (i>>8)>=NPART)
 			i = -1;
 		else
-			i = i>>PS;
+			i = i>>8;
 	}
 	else if (txt)
 	{
@@ -283,8 +283,8 @@ static PyObject* emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>PS].type != PT_NONE)
-			parts[pmap[y][x]>>PS].life = life;
+		if (parts[pmap[y][x]>>8].type != PT_NONE)
+			parts[pmap[y][x]>>8].life = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -1041,7 +1041,7 @@ int process_command_old(pixel *vid_buf, char *console, char *console_error)
 						}
 						if (fileread[i] == '\n')
 						{
-
+							
 							if (do_next)
 							{
 								if (strcmp(pch,"else")==0)
@@ -1066,7 +1066,7 @@ int process_command_old(pixel *vid_buf, char *console, char *console_error)
 			{
 				sprintf(console_error, "Scripts are not enabled");
 			}
-
+			
 		}
 		else if (strcmp(console2, "sound")==0 && console3[0])
 		{

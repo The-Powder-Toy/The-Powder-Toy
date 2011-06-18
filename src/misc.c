@@ -99,18 +99,20 @@ void strlist_free(struct strlist **list)
 		free(item);
 	}
 }
+
 void clean_text(char *text, int vwidth)
 {
-  int i = 0;
-  if(textwidth(text) > vwidth){
-    text[textwidthx(text, vwidth)] = 0;
-  }
-  for(i = 0; i < strlen(text); i++){
-    if(! (text[i]>=' ' && text[i]<127)){
-      text[i] = ' ';
-    }
-  }
+	int i = 0;
+	if(textwidth(text) > vwidth){
+		text[textwidthx(text, vwidth)] = 0;	
+	}
+	for(i = 0; i < strlen(text); i++){
+		if(! (text[i]>=' ' && text[i]<127)){
+			text[i] = ' ';
+		}
+	}
 }
+
 void save_presets(int do_update)
 {
 	FILE *f=fopen("powder.def", "wb");
@@ -253,8 +255,8 @@ void strcaturl(char *dst, char *src)
 	for (s=(unsigned char *)src; *s; s++)
 	{
 		if ((*s>='0' && *s<='9') ||
-            (*s>='a' && *s<='z') ||
-            (*s>='A' && *s<='Z'))
+		        (*s>='a' && *s<='z') ||
+		        (*s>='A' && *s<='Z'))
 			*(d++) = *s;
 		else
 		{
@@ -507,14 +509,14 @@ int register_extension()
 	char *currentfilename = exe_name();
 	FILE *f;
 	char *mimedata =
-    "<?xml version=\"1.0\"?>\n"
-    "	<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>\n"
-    "	<mime-type type=\"application/vnd.powdertoy.save\">\n"
-    "		<comment>Powder Toy save</comment>\n"
-    "		<glob pattern=\"*.cps\"/>\n"
-    "		<glob pattern=\"*.stm\"/>\n"
-    "	</mime-type>\n"
-    "</mime-info>\n";
+"<?xml version=\"1.0\"?>\n"
+"	<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>\n"
+"	<mime-type type=\"application/vnd.powdertoy.save\">\n"
+"		<comment>Powder Toy save</comment>\n"
+"		<glob pattern=\"*.cps\"/>\n"
+"		<glob pattern=\"*.stm\"/>\n"
+"	</mime-type>\n"
+"</mime-info>\n";
 	f = fopen("powdertoy-save.xml", "wb");
 	if (!f)
 		return 0;
@@ -522,12 +524,12 @@ int register_extension()
 	fclose(f);
 
 	char *desktopfiledata_tmp =
-    "[Desktop Entry]\n"
-    "Type=Application\n"
-    "Name=Powder Toy\n"
-    "Comment=Physics sandbox game\n"
-    "MimeType=application/vnd.powdertoy.save;\n"
-    "NoDisplay=true\n";
+"[Desktop Entry]\n"
+"Type=Application\n"
+"Name=Powder Toy\n"
+"Comment=Physics sandbox game\n"
+"MimeType=application/vnd.powdertoy.save;\n"
+"NoDisplay=true\n";
 	char *desktopfiledata = malloc(strlen(desktopfiledata_tmp)+strlen(currentfilename)+100);
 	strcpy(desktopfiledata, desktopfiledata_tmp);
 	strappend(desktopfiledata, "Exec=");
@@ -564,15 +566,15 @@ int register_extension()
 #endif
 }
 
-void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255 HSV values to 0-255 RGB
+void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255(0-360 for H) HSV values to 0-255 RGB
 {
 	float hh, ss, vv, c, x;
 	int m;
-	hh = h/42.66667f;//normalize values
+	hh = h/60.0f;//normalize values
 	ss = s/255.0f;
 	vv = v/255.0f;
 	c = vv * ss;
-	x = c * ( 1 - fabsf(fmod(hh,2.0) -1) );
+	x = c * ( 1 - fabs(fmod(hh,2.0) -1) );
 	if(hh<1){
 		*r = (int)(c*255.0);
 		*g = (int)(x*255.0);
@@ -609,7 +611,7 @@ void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255 HSV value
 	*b += m;
 }
 
-void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB values to 0-255 HSV
+void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB values to 0-255(0-360 for H) HSV
 {
 	float rr, gg, bb, a,x,c,d;
 	rr = r/255.0f;//normalize values
@@ -629,19 +631,20 @@ void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB value
 	{
  		c = (rr==a) ? gg-bb : ((bb==a) ? rr-gg : bb-rr);
  		d = (rr==a) ? 3 : ((bb==a) ? 1 : 5);
- 		*h = (int)(42.66667*(d - c/(x - a)));
+ 		*h = (int)(60.0*(d - c/(x - a)));
  		*s = (int)(255.0*((x - a)/x));
  		*v = (int)(255.0*x);
 	}
 }
+
 void membwand(void * destv, void * srcv, size_t destsize, size_t srcsize)
 {
-  size_t i;
-  unsigned char * dest = destv;
-  unsigned char * src = srcv;
-  for(i = 0; i < destsize; i++){
-    dest[i] = dest[i] & src[i%srcsize];
-  }
+	size_t i;
+	unsigned char * dest = destv;
+	unsigned char * src = srcv;
+	for(i = 0; i < destsize; i++){
+		dest[i] = dest[i] & src[i%srcsize];
+	}
 }
 vector2d v2d_zero = {0,0};
 matrix2d m2d_identity = {1,0,0,1};

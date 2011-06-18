@@ -12,14 +12,14 @@ int update_DEUT(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>PS)>=NPART || !r || (parts[i].life >=maxlife))
+					if ((r>>8)>=NPART || !r || (parts[i].life >=maxlife))
 						continue;
-					if ((r&TYPE)==PT_DEUT&&33>=rand()/(RAND_MAX/100)+1)
+					if ((r&0xFF)==PT_DEUT&&33>=rand()/(RAND_MAX/100)+1)
 					{
-						if ((parts[i].life + parts[r>>PS].life + 1) <= maxlife)
+						if ((parts[i].life + parts[r>>8].life + 1) <= maxlife)
 						{
-							parts[i].life += parts[r>>PS].life + 1;
-							kill_part(r>>PS);
+							parts[i].life += parts[r>>8].life + 1;
+							kill_part(r>>8);
 						}
 					}
 				}
@@ -30,7 +30,7 @@ int update_DEUT(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>PS)>=NPART || (parts[i].life<=maxlife))
+					if ((r>>8)>=NPART || (parts[i].life<=maxlife))
 						continue;
 					if ((bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALLELEC||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_EWALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_DESTROYALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALL||
 					        bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWAIR||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWSOLID||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWGAS))
@@ -51,19 +51,19 @@ int update_DEUT(UPDATE_FUNC_ARGS) {
 		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
-			if ((r>>PS)>=NPART || !r)
+			if ((r>>8)>=NPART || !r)
 				continue;
-			if ((r&TYPE)==PT_DEUT&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
+			if ((r&0xFF)==PT_DEUT&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0)//diffusion
 			{
-				int temp = parts[i].life - parts[r>>PS].life;
+				int temp = parts[i].life - parts[r>>8].life;
 				if (temp ==1)
 				{
-					parts[r>>PS].life ++;
+					parts[r>>8].life ++;
 					parts[i].life --;
 				}
 				else if (temp>0)
 				{
-					parts[r>>PS].life += temp/2;
+					parts[r>>8].life += temp/2;
 					parts[i].life -= temp/2;
 				}
 			}

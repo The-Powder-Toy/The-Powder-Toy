@@ -108,9 +108,9 @@ void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 
 void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag);
 
-void draw_grav_zones(pixel *vid);
-
 void draw_air(pixel *vid);
+
+void draw_grav_zones(pixel *vid);
 
 void draw_grav(pixel *vid);
 
@@ -124,9 +124,15 @@ void xor_line(int x1, int y1, int x2, int y2, pixel *vid);
 
 void xor_rect(pixel *vid, int x, int y, int w, int h);
 
+void draw_parts(pixel *vid);
+
 void draw_walls(pixel *vid);
 
-void draw_parts(pixel *vid);
+void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int click);
+
+void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b, int click);
+
+void box_decorations(int x1, int y1, int x2, int y2, int r, int g, int b, int click);
 
 void draw_wavelengths(pixel *vid, int x, int y, int h, int wl);
 
@@ -150,7 +156,7 @@ int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int p
 
 void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry);
 
-void sdl_open(void);
+int sdl_open(void);
 
 #ifdef OpenGL
 void Enable2D ();

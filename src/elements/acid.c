@@ -7,23 +7,23 @@ int update_ACID(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)>=NPART || !r)
+				if ((r>>8)>=NPART || !r)
 					continue;
-				if (parts[r>>PS].type!=PT_ACID)
+				if ((r&0xFF)!=PT_ACID)
 				{
-					if (parts[r>>PS].type==PT_PLEX || parts[r>>PS].type==PT_NITR || parts[r>>PS].type==PT_GUNP || parts[r>>PS].type==PT_RBDM || parts[r>>PS].type==PT_LRBD)
+					if ((r&0xFF)==PT_PLEX || (r&0xFF)==PT_NITR || (r&0xFF)==PT_GUNP || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD)
 					{
 						part_change_type(i,x,y,PT_FIRE);
-						part_change_type(r>>PS,x+rx,y+ry,PT_FIRE);
+						part_change_type(r>>8,x+rx,y+ry,PT_FIRE);
 						parts[i].life = 4;
-						parts[r>>PS].life = 4;
+						parts[r>>8].life = 4;
 					}
-					else if ((parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_ACLOUD && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_BSHL && parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].type!=PT_PDCL && ptypes[parts[r>>PS].type].hardness>(rand()%1000))&&parts[i].life>=50)
+					else if (((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && ptypes[r&0xFF].hardness>(rand()%1000))&&parts[i].life>=50)
 					{
-						if (parts_avg(i, r>>PS,PT_GLAS)!= PT_GLAS)//GLAS protects stuff from acid
+						if (parts_avg(i, r>>8,PT_GLAS)!= PT_GLAS)//GLAS protects stuff from acid
 						{
 							parts[i].life--;
-							kill_part(r>>PS);
+							kill_part(r>>8);
 						}
 					}
 					else if (parts[i].life<=50)

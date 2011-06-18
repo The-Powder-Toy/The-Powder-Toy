@@ -6,27 +6,21 @@
 #else
 #define PATH_SEP "/"
 #endif
-
-#define ME4502_MAJOR_VERSION 2
-#define ME4502_VERSION 9
+ 
 #define SAVE_VERSION 50
-#define MINOR_VERSION 3
+#define MINOR_VERSION 6
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
 
-//#define SERVER "powdertoy.co.uk"
 #define SERVER "powdertoy.co.uk"
 
-//Languages
-#define ENGLISH
-//#define INDONESIAN
+#define LOCAL_SAVE_DIR "Saves"
 
 #define THUMB_CACHE_SIZE 256
 
 #ifndef M_PI
 #define M_PI 3.14159265f
 #endif
-
 #ifndef M_GRAV
 #define M_GRAV 6.67300e-1
 #endif
@@ -34,7 +28,6 @@
 #define IMGCONNS 3
 #define TIMEOUT 100
 #define HTTP_TIMEOUT 10
-
 
 #ifdef RENDERER
 #define MENUSIZE 0
@@ -47,18 +40,15 @@
 #define YRES	384
 #define NPART XRES*YRES
 
-#define XCNTR   XRES/2
-#define YCNTR   YRES/2
+#define XCNTR   306
+#define YCNTR   192
 
 #define MAX_DISTANCE sqrt(pow(XRES, 2)+pow(YRES, 2))
 
 #define GRAV_DIFF
 
-#define MAXSIGNS 32
+#define MAXSIGNS 16
 #define TAG_MAX 256
-
-#define PS 12 //the particle number shift that also determines element limit
-#define TYPE 0xFFF //(int)pow(2,PS)-1 //Changes where particles are allocated !DO NOT TOUCH!
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
@@ -80,6 +70,11 @@ extern unsigned char ZSIZE;
 #define GRID_P 3
 #define GRID_S 6
 #define GRID_Z 3
+
+#define CATALOGUE_X 4
+#define CATALOGUE_Y 3
+#define CATALOGUE_S 6
+#define CATALOGUE_Z 3
 
 #define STAMP_X 4
 #define STAMP_Y 4
@@ -139,8 +134,8 @@ extern int legacy_enable;
 extern int ngrav_enable; //Newtonian gravity
 extern int sound_enable;
 extern int kiosk_enable;
-extern int decorations_enable;
 extern int aheat_enable;
+extern int decorations_enable;
 
 extern int sys_pause;
 extern int framerender;
@@ -163,18 +158,17 @@ struct stamp
 };
 typedef struct stamp stamp;
 
+int frameidx;
 int MSIGN;
 int CGOL;
 int ISGOL;
 int ISLOVE;
 int ISLOLZ;
-int ISSMIL;
 int ISGRAV;
 int ISWIRE;
 int GSPEED;
 int love[XRES/9][YRES/9];
 int lolz[XRES/9][YRES/9];
-int smil[XRES/9][YRES/9];
 unsigned char gol[XRES][YRES];
 unsigned char gol2[XRES][YRES][NGOL+1];
 int SEC;
@@ -186,7 +180,6 @@ int GRID_MODE;
 int VINE_MODE;
 int DEBUG_MODE;
 int GENERATION;
-int CTYPESIGN;
 int isplayer2;
 int playerspawn;
 int player2spawn;
@@ -196,7 +189,6 @@ int ISSPAWN2;
 extern sign signs[MAXSIGNS];
 extern stamp stamps[STAMP_MAX];
 extern int stamp_count;
-extern int save_count;
 extern int itc;
 extern char itc_msg[64];
 
@@ -222,4 +214,7 @@ void clear_sim(void);
 void del_stamp(int d);
 void sdl_seticon(void);
 void play_sound(char *file);
+void start_grav_async(void);
+void stop_grav_async(void);
+int set_scale(int scale, int kiosk);
 #endif

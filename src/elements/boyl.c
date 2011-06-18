@@ -26,15 +26,15 @@ int update_BOYL(UPDATE_FUNC_ARGS) {
 			        x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)>=NPART || !r)
+				if ((r>>8)>=NPART || !r)
 					continue;
-				if ((r&TYPE)==PT_WATR && 1>rand()%30)
+				if ((r&0xFF)==PT_WATR && 1>rand()%30)
 				{
-					part_change_type(r>>PS,x+rx,y+ry,PT_FOG);
+					part_change_type(r>>8,x+rx,y+ry,PT_FOG);
 				}
-				else if ((r&TYPE)==PT_O2 && 1>rand()%9)
+				else if ((r&0xFF)==PT_O2 && 1>rand()%9)
 				{
-					kill_part(r>>PS);
+					kill_part(r>>8);
 					part_change_type(i,x,y,PT_WATR);
 					pv[y/CELL][x/CELL] += 4.0;
 				}

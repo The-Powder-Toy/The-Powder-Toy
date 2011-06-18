@@ -2,6 +2,8 @@
 
 int update_PUMP(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	if (parts[i].life>0 && parts[i].life!=10)
+		parts[i].life--;
 	if (parts[i].life==10)
 	{
 		if (parts[i].temp>=256.0+273.15)
@@ -24,14 +26,14 @@ int update_PUMP(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>PS)>=NPART || !r)
+					if ((r>>8)>=NPART || !r)
 						continue;
-					if ((r&TYPE)==PT_PUMP)
+					if ((r&0xFF)==PT_PUMP)
 					{
-						if (parts[r>>PS].life<10&&parts[r>>PS].life>0)
+						if (parts[r>>8].life<10&&parts[r>>8].life>0)
 							parts[i].life = 9;
-						else if (parts[r>>PS].life==0)
-							parts[r>>PS].life = 10;
+						else if (parts[r>>8].life==0)
+							parts[r>>8].life = 10;
 					}
 				}
 	}

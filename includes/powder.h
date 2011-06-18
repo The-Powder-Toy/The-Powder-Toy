@@ -7,10 +7,7 @@
 #include "interface.h"
 #include "misc.h"
 
-#define CM_COUNT 14
-#define CM_GRAV 13
-#define CM_PREAWE 12
-#define CM_AWESOME 11
+#define CM_COUNT 11
 #define CM_CRACK 10
 #define CM_LIFE 9
 #define CM_GRAD 8
@@ -24,9 +21,9 @@
 #define CM_VEL 0
 
 
-#define UI_WALLSTART 322
+#define UI_WALLSTART 222
 #define UI_ACTUALSTART 122
-#define UI_WALLCOUNT 20
+#define UI_WALLCOUNT 21
 
 #define WL_WALLELEC	122
 #define WL_EWALL	123
@@ -43,12 +40,13 @@
 #define WL_ALLOWSOLID	133
 #define WL_ALLOWALLELEC	134
 #define WL_EHOLE	135
-#define WL_GRAV 142
+#define WL_GRAV		142
 
-#define SPC_AIR 336
-#define SPC_HEAT 337
-#define SPC_COOL 338
-#define SPC_VACUUM 339
+#define SPC_AIR 236
+#define SPC_HEAT 237
+#define SPC_COOL 238
+#define SPC_VACUUM 239
+#define SPC_WIND 241
 
 #define WL_ALLOWGAS	140
 
@@ -201,101 +199,13 @@
 #define PT_STAR 144
 #define PT_FROG 145
 #define PT_BRAN 146
-#define PT_WIND 147
+#define OLD_PT_WIND 147
 #define PT_H2   148
 #define PT_SOAP 149
 #define PT_NBHL 150
 #define PT_NWHL 151
 #define PT_MERC 152
-#define PT_NTRG  153
-#define PT_LQCL  154
-#define PT_GSCL  155
-#define PT_BOOM  156
-#define PT_HEAL  157
-#define PT_FUSE2  158
-#define PT_ZAP  159
-#define PT_NCWS  160
-#define PT_ACRN  161
-#define PT_CLOUD  162
-#define PT_RWTR  163
-#define PT_ACLOUD  164
-#define PT_VOLT  165
-#define PT_VOLB  166
-#define PT_DIRT  167
-#define PT_INV  168
-#define PT_FLY  169
-#define PT_RSPW  170
-#define PT_NCGN  171
-#define PT_TRAP  172
-#define PT_BPAD  173
-#define PT_SPEL  174
-#define PT_SPER  175
-#define PT_POT  176
-#define PT_GRAS  177
-#define PT_CFUS  178
-#define PT_CFIR  179
-#define PT_SMIL  180
-#define PT_SEAL 181
-#define PT_BULL 182
-#define PT_PPLT 183
-#define PT_TNT 184
-#define PT_MGMA 185
-#define PT_RAND 186
-#define PT_PAIN 187
-#define PT_VIRS 188
-#define PT_O3 189
-#define PT_DICE 190
-#define PT_GOLD 191
-#define PT_MPOS 192
-#define PT_MNEG 193
-#define PT_IFIL 194
-#define PT_LGUN 195
-#define PT_LAZR 196
-#define PT_IBAT 197
-#define PT_FGUN 198
-#define PT_FREZ 199
-#define PT_SPMG 200
-#define PT_SNMG 201
-#define PT_OSMT 202
-#define PT_ROOT 203
-#define PT_BFLM 204
-#define PT_PDCL 205
-#define PT_WCHP 206
-#define PT_SUN 207
-#define PT_AGAS 208
-#define PT_DWFM 209
-#define PT_COPR 210
-#define PT_C02 211
-#define PT_CLAY 212
-#define PT_NMTR 213
-#define PT_BLGN 214
-#define PT_BFGN 215
-#define PT_C6 216
-#define PT_CNVR 217
-#define PT_ASH 218
-#define PT_GREN 219
-#define PT_NUKE 220
-#define PT_TIN 221
-#define PT_BRNZ 222
-#define PT_CFCN 223
-#define PT_SVOI 224
-#define PT_PMIC 225
-#define PT_PIVS 226
-#define PT_LEAF 227
-#define PT_PLAN 228
-#define PT_BSHL 229
-#define PT_LTNG 230
-#define PT_CTRD 231
-#define PT_C0 232
-#define PT_HETR 233
-#define PT_CPPA 234
-#define PT_ARGN 235
-#define PT_PRTN 236
-#define PT_XNON 237
-#define PT_RDON 238
-#define PT_KPTN 239
-#define PT_HLIM 240
-#define PT_NUM  241 //note for future elements, please SKIP numbers 222-240 and 255, these are walls.  Element limit is now 4096 (experimental)
+#define PT_NUM  153
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -315,15 +225,19 @@
 #define TYPE_SOLID			0x0004 //4 Solids
 #define TYPE_GAS			0x0008 //8 Gasses (Includes plasma)
 #define TYPE_ENERGY			0x0010 //16 Energy (Thunder, Light, Neutrons etc.)
-#define PROP_CONDUCTS		0x0020 //32 Conducts electricity (Currently Unused)
-#define PROP_BLACK			0x0040 //64 Absorbs Photons
+#define PROP_CONDUCTS		0x0020 //32 Conducts electricity
+#define PROP_BLACK			0x0040 //64 Absorbs Photons (not currently implemented or used, a photwl attribute might be better)
 #define PROP_NEUTPENETRATE	0x0080 //128 Penetrated by neutrons
-#define PROP_NEUTABSORB		0x0100 //256 Absorbs neutrons, reflect is default
+#define PROP_NEUTABSORB		0x0100 //256 Absorbs neutrons, reflect is default (not currently implemented or used)
 #define PROP_NEUTPASS		0x0200 //512 Neutrons pass through, such as with glass
-#define PROP_DEADLY			0x0400 //1024 Is deadly for stickman.
+#define PROP_DEADLY			0x0400 //1024 Is deadly for stickman (not currently implemented or used)
 #define PROP_HOT_GLOW		0x0800 //2048 Hot Metal Glow
 #define PROP_LIFE			0x1000 //4096 Is a GoL type
 #define PROP_RADIOACTIVE	0x2000 //8192 Radioactive
+#define PROP_LIFE_DEC		0x4000 //2^14 Life decreases by one every frame if > zero
+#define PROP_LIFE_KILL		0x8000 //2^15 Kill when life value is <= zero
+#define PROP_LIFE_KILL_DEC	0x10000 //2^16 Kill when life value is decremented to <= zero
+
 #define FLAG_STAGNANT	1
 
 #define UPDATE_FUNC_ARGS int i, int x, int y, int surround_space
@@ -332,7 +246,6 @@
 
 int update_ACID(UPDATE_FUNC_ARGS);
 int update_ANAR(UPDATE_FUNC_ARGS);
-int update_AGAS(UPDATE_FUNC_ARGS);
 int update_AMTR(UPDATE_FUNC_ARGS);
 int update_ARAY(UPDATE_FUNC_ARGS);
 int update_BCLN(UPDATE_FUNC_ARGS);
@@ -400,57 +313,9 @@ int update_YEST(UPDATE_FUNC_ARGS);
 int update_SOAP(UPDATE_FUNC_ARGS);
 int update_O2(UPDATE_FUNC_ARGS);
 int update_H2(UPDATE_FUNC_ARGS);
-int update_GSCL(UPDATE_FUNC_ARGS);
-int update_LQCL(UPDATE_FUNC_ARGS);
-int update_FUSE2(UPDATE_FUNC_ARGS);
-int update_ACRN(UPDATE_FUNC_ARGS);
-int update_CLOUD(UPDATE_FUNC_ARGS);
-int update_ACLOUD(UPDATE_FUNC_ARGS);
-int update_VOLT(UPDATE_FUNC_ARGS);
-int update_NCGN(UPDATE_FUNC_ARGS);
-int update_GRAS(UPDATE_FUNC_ARGS);
-int update_CFIR(UPDATE_FUNC_ARGS);
-int update_BULL(UPDATE_FUNC_ARGS);
-int update_TNT(UPDATE_FUNC_ARGS);
-int update_MGMA(UPDATE_FUNC_ARGS);
-int update_VIRS(UPDATE_FUNC_ARGS);
-int update_DICE(UPDATE_FUNC_ARGS);
-int update_ZAP(UPDATE_FUNC_ARGS);
-int update_MPOS(UPDATE_FUNC_ARGS);
-int update_MNEG(UPDATE_FUNC_ARGS);
-int update_IFIL(UPDATE_FUNC_ARGS);
-int update_LGUN(UPDATE_FUNC_ARGS);
-int update_FGUN(UPDATE_FUNC_ARGS);
-int update_CFUS(UPDATE_FUNC_ARGS);
-int update_IBAT(UPDATE_FUNC_ARGS);
-int update_LAZR(UPDATE_FUNC_ARGS);
-int update_FREZ(UPDATE_FUNC_ARGS);
-int update_SPMG(UPDATE_FUNC_ARGS);
-int update_SNMG(UPDATE_FUNC_ARGS);
-int update_ROOT(UPDATE_FUNC_ARGS);
-int update_EQUALVEL(UPDATE_FUNC_ARGS);
-int update_PDCL(UPDATE_FUNC_ARGS);
-int update_SAND(UPDATE_FUNC_ARGS);
-int update_SUN(UPDATE_FUNC_ARGS);
-int update_NMTR(UPDATE_FUNC_ARGS);
-int update_CNVR(UPDATE_FUNC_ARGS);
-int update_C6(UPDATE_FUNC_ARGS);
-int update_ASH(UPDATE_FUNC_ARGS);
-int update_GREN(UPDATE_FUNC_ARGS);
-int update_NUKE(UPDATE_FUNC_ARGS);
-int update_SVOI(UPDATE_FUNC_ARGS);
-int update_CFC(UPDATE_FUNC_ARGS);
-int update_PMIC(UPDATE_FUNC_ARGS);
-int update_PIVS(UPDATE_FUNC_ARGS);
-int update_LEAF(UPDATE_FUNC_ARGS);
-int update_PLAN(UPDATE_FUNC_ARGS);
-int update_HETR(UPDATE_FUNC_ARGS);
-int update_C0(UPDATE_FUNC_ARGS);
 int update_NBHL(UPDATE_FUNC_ARGS);
 int update_NWHL(UPDATE_FUNC_ARGS);
 int update_MERC(UPDATE_FUNC_ARGS);
-int update_CPPA(UPDATE_FUNC_ARGS);
-int update_PRTN(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -465,12 +330,10 @@ struct particle
 	float temp;
 	float pavg[2];
 	int flags;
-	int tmp, tmp2, tmpx, tmpy;
-	const char *planetname;
+	int tmp;
+	int tmp2;
 	unsigned int dcolour;
-	int col, r, g, b;
 };
-
 typedef struct particle particle;
 
 struct part_type
@@ -497,7 +360,7 @@ struct part_type
 	unsigned char hconduct;
 	const char *descs;
 	char state;
-	const unsigned short properties;
+	const unsigned int properties;
 	int (*update_func) (UPDATE_FUNC_ARGS);
 };
 typedef struct part_type part_type;
@@ -524,137 +387,87 @@ typedef struct part_transition part_transition;
  * 100 = Solid ||
  * -1 is Neutrons and Photons
  */
-
-//What each section does
-/*
- Name: The name of the element. Always use four letters, even if the element has a three letter name.
-
- Colour: Color in hexadecimal code. Go to http://www.colorpicker.com/ to find the hexadecimal code (at the top) for your color. The hexadecimal code goes AFTER the Ò0xÓ prefix, always.
-
- Advec: How much the particle is accelerated by moving air.
-
- Airdrag: How much air the particle generates in the direction of travel.
-
- Airloss: How much the particle slows down moving air (although this won't have as big an effect as a wall). 1 = no effect, 0 = maximum effect.
-
- Loss: How much velocity the particle loses each frame. 1 = no loss, .5 = half loss.
-
- Collid: Velocity is multiplied by this when the particle collides with something.
-
- Grav: How fast the particle falls. A negative number means it floats.
-
- Diffus: How much the particle ÒwigglesÓ around (think GAS).
-
- Hotair: How much the particle increases the pressure by.
-
- Fal: How does the particle move? 0 = solid, 1 = powder, 2 = liquid
-
- Burn: Does it burn? 0 = no, higher numbers = higher ÒburnageÓ.
-
- Exp: Does it explode? 0 = no, higher numbers = higher pressure generated.
-
- Mel: Does it melt? 1 = yes, 0 = no.
-
- Hrd: How much does acid affect it? 0 = no effect, higher numbers = higher effect.
-
- M: Does it show up on the menu? 1 = yes, 0 = no.
-
- Weight: Heavier elements sink beneath lighter ones. 1 = Gas. 2 = Light, 98 = Heavy (liquids 0-49, powder 50-99). 100 = Solid. -1 is Neutrons and Photons.
-
- Section: The section of the menu it is in. Prefix everything with 'SC_'.
-
- H: What temperature does it have when created? Temperature is in Kelvin (Kelvin = degrees C + 273.15). R_TEMP+273.15f gives room temperature.
-
- Ins: specific heat value (how fast it transfers heat to particles touching it), can be found by using the real life heat value in J/G K (or KJ/KG K) by 96.635/RealLifeValue. 0 - no heat transfer, 250 - maximum heat transfer speed.
-
- Description: A short one sentence description of the element, shown when you mouse over it in-game.
-
- State: What state is this element? Options are ST_NONE, ST_SOLID, ST_LIQUID, ST_GAS.
-
- Properties: Does this element have special properties? The properties can be found at ~214. Separate each property with | inside the property variable.
-*/
-
 // TODO: falldown, properties, state - should at least one of these be removed?
 static const part_type ptypes[PT_NUM] =
 {
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd M	Weight	Section			H						Ins		Description
 	{"",		PIXPACK(0x000000),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Erases particles.", ST_NONE, 0, NULL},
-	{"DUST",	PIXPACK(0xFFE0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Very light dust. Flammable.", ST_SOLID, TYPE_PART, NULL},
-	{"WATR",	PIXPACK(0x2030D0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	29,		"Liquid. Conducts electricity. Freezes. Extinguishes fires.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTPENETRATE, &update_WATR},
+	{"DUST",	PIXPACK(0xFFE0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Very light dust. Flammable.", ST_SOLID, TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, NULL},
+	{"WATR",	PIXPACK(0x2030D0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	29,		"Liquid. Conducts electricity. Freezes. Extinguishes fires.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE, &update_WATR},
 	{"OIL",		PIXPACK(0x404010),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	20,		0,	0,	5,	1,	20,		SC_LIQUID,		R_TEMP+0.0f	+273.15f,	42,		"Liquid. Flammable.", ST_LIQUID, TYPE_LIQUID, NULL},
-	{"FIRE",	PIXPACK(0xFF1000),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	R_TEMP+400.0f+273.15f,	88,		"Ignites flammable materials. Heats air.", ST_GAS, TYPE_GAS, &update_PYRO},
+	{"FIRE",	PIXPACK(0xFF1000),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	R_TEMP+400.0f+273.15f,	88,		"Ignites flammable materials. Heats air.", ST_GAS, TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL, &update_PYRO},
 	{"STNE",	PIXPACK(0xA0A0A0),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	150,	"Heavy particles. Meltable.", ST_SOLID, TYPE_PART, NULL},
-	{"LAVA",	PIXPACK(0xE05010),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_LIQUID,		R_TEMP+1500.0f+273.15f,	60,		"Heavy liquid. Ignites flammable materials. Solidifies when cold.", ST_LIQUID, TYPE_LIQUID, &update_PYRO},
+	{"LAVA",	PIXPACK(0xE05010),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_LIQUID,		R_TEMP+1500.0f+273.15f,	60,		"Heavy liquid. Ignites flammable materials. Solidifies when cold.", ST_LIQUID, TYPE_LIQUID|PROP_LIFE_DEC, &update_PYRO},
 	{"GUN",		PIXPACK(0xC0C0D0),	0.7f,	0.02f * CFDS,	0.94f,	0.80f,	-0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	600,	1,	0,	10,	1,	85,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	97,		"Light dust. Explosive.", ST_SOLID, TYPE_PART, NULL},
 	{"NITR",	PIXPACK(0x20E010),	0.5f,	0.02f * CFDS,	0.92f,	0.97f,	0.0f,	0.2f,	0.00f,	0.000f	* CFDS,	2,	1000,	2,	0,	3,	1,	23,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	50,		"Liquid. Pressure sensitive explosive.", ST_LIQUID, TYPE_LIQUID, NULL},
 	{"CLNE",	PIXPACK(0xFFD010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Duplicates any particles it touches.", ST_SOLID, TYPE_SOLID, &update_CLNE},
 	{"GAS",		PIXPACK(0xE0FF20),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	600,	0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+2.0f	+273.15f,	42,		"Gas. Diffuses. Flammable. Liquefies under pressure.", ST_GAS, TYPE_GAS, NULL},
 	{"C-4",		PIXPACK(0xD080E0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	2,	50,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Solid. Pressure sensitive explosive.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, NULL},
-	{"GOO",		PIXPACK(0x804000),	0.0f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	12,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	75,		"Solid. Deforms and disappears under pressure.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_GOO},
-	{"ICE",		PIXPACK(0xA0C0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP-50.0f+273.15f,	46,		"Solid. Freezes water. Crushes under pressure. Cools down air.", ST_SOLID, TYPE_SOLID, &update_ICEI},
-	{"METL",	PIXPACK(0x404060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Conducts electricity. Meltable.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
-	{"SPRK",	PIXPACK(0xFFFF80),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Electricity. Conducted by metal and water.", ST_SOLID, TYPE_SOLID, &update_SPRK},
-	{"SNOW",	PIXPACK(0xC0E0FF),	0.7f,	0.01f * CFDS,	0.96f,	0.90f,	-0.1f,	0.05f,	0.01f,	-0.00005f* CFDS,1,	0,		0,	0,	20,	1,	50,		SC_POWDERS,		R_TEMP-30.0f+273.15f,	46,		"Light particles.", ST_SOLID, TYPE_PART, &update_ICEI},
-	{"WOOD",	PIXPACK(0xC0A040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	15,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	164,	"Solid. Flammable.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, NULL},
-	{"NEUT",	PIXPACK(0x20E0FF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_NUCLEAR,		R_TEMP+4.0f	+273.15f,	60,		"Neutrons. Interact with matter in odd ways.", ST_GAS, TYPE_ENERGY, &update_NEUT},
+	{"GOO",		PIXPACK(0x804000),	0.0f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	12,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	75,		"Solid. Deforms and disappears under pressure.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_GOO},
+	{"ICE",		PIXPACK(0xA0C0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP-50.0f+273.15f,	46,		"Solid. Freezes water. Crushes under pressure. Cools down air.", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_ICEI},
+	{"METL",	PIXPACK(0x404060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Conducts electricity. Meltable.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW, NULL},
+	{"SPRK",	PIXPACK(0xFFFF80),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Electricity. Conducted by metal and water.", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_SPRK},
+	{"SNOW",	PIXPACK(0xC0E0FF),	0.7f,	0.01f * CFDS,	0.96f,	0.90f,	-0.1f,	0.05f,	0.01f,	-0.00005f* CFDS,1,	0,		0,	0,	20,	1,	50,		SC_POWDERS,		R_TEMP-30.0f+273.15f,	46,		"Light particles.", ST_SOLID, TYPE_PART|PROP_LIFE_DEC, &update_ICEI},
+	{"WOOD",	PIXPACK(0xC0A040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	15,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	164,	"Solid. Flammable.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, NULL},
+	{"NEUT",	PIXPACK(0x20E0FF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_NUCLEAR,		R_TEMP+4.0f	+273.15f,	60,		"Neutrons. Interact with matter in odd ways.", ST_GAS, TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_NEUT},
 	{"PLUT",	PIXPACK(0x407020),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	90,		SC_NUCLEAR,		R_TEMP+4.0f	+273.15f,	251,	"Heavy particles. Fissile. Generates neutrons under pressure.", ST_SOLID, TYPE_PART|PROP_NEUTPENETRATE|PROP_RADIOACTIVE, &update_PLUT},
-	{"PLNT",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	10,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	65,		"Plant, drinks water and grows.", ST_SOLID, TYPE_SOLID|PROP_NEUTPENETRATE, &update_PLNT},
+	{"PLNT",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	10,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	65,		"Plant, drinks water and grows.", ST_SOLID, TYPE_SOLID|PROP_NEUTPENETRATE|PROP_LIFE_DEC, &update_PLNT},
 	{"ACID",	PIXPACK(0xED55FF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	40,		0,	0,	1,	1,	10,		SC_LIQUID,		R_TEMP+0.0f	+273.15f,	34,		"Dissolves almost everything.", ST_LIQUID, TYPE_LIQUID, &update_ACID},
-	{"VOID",	PIXPACK(0x790B0B),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	251,	"Hole, will drain away any particles.", ST_SOLID, TYPE_SOLID, NULL},
+	{"VOID",	PIXPACK(0x790B0B),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Hole, will drain away any particles.", ST_SOLID, TYPE_SOLID, NULL},
 	{"WTRV",	PIXPACK(0xA0A0FF),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	-0.1f,	0.75f,	0.0003f	* CFDS,	0,	0,		0,	0,	4,	1,	1,		SC_GAS,			R_TEMP+100.0f+273.15f,	48,		"Steam, heats up air, produced from hot water.", ST_GAS, TYPE_GAS, &update_WTRV},
 	{"CNCT",	PIXPACK(0xC0C0C0),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	55,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	100,	"Concrete, stronger than stone.", ST_SOLID, TYPE_PART, NULL},
 	{"DSTW",	PIXPACK(0x1020C0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	23,		"Distilled water, does not conduct electricity.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE, &update_DSTW},
 	{"SALT",	PIXPACK(0xFFFFFF),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	75,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	110,	"Salt, dissolves in water.", ST_SOLID, TYPE_PART, NULL},
-	{"SLTW",	PIXPACK(0x4050F0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	35,		SC_LIQUID,		R_TEMP+0.0f	+273.15f,	75,		"Saltwater, conducts electricity, difficult to freeze.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTPENETRATE, &update_SLTW},
-	{"DMND",	PIXPACK(0xCCFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	186,	"Diamond. Indestructible.", ST_SOLID, TYPE_SOLID, NULL},
-	{"BMTL",	PIXPACK(0x505070),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Breakable metal.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, &update_BMTL},
-	{"BRMT",	PIXPACK(0x705060),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	211,	"Broken metal.", ST_SOLID, TYPE_PART|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
-	{"PHOT",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_NUCLEAR,		R_TEMP+900.0f+273.15f,	251,	"Photons. Travel in straight lines.", ST_GAS, TYPE_ENERGY, &update_PHOT},
+	{"SLTW",	PIXPACK(0x4050F0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	35,		SC_LIQUID,		R_TEMP+0.0f	+273.15f,	75,		"Saltwater, conducts electricity, difficult to freeze.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE, &update_SLTW},
+	{"DMND",	PIXPACK(0xCCFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	186,	"Diamond. Indestructible.", ST_SOLID, TYPE_SOLID, NULL},
+	{"BMTL",	PIXPACK(0x505070),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Breakable metal.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW, &update_BMTL},
+	{"BRMT",	PIXPACK(0x705060),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	211,	"Broken metal.", ST_SOLID, TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW, NULL},
+	{"PHOT",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_NUCLEAR,		R_TEMP+900.0f+273.15f,	251,	"Photons. Travel in straight lines.", ST_GAS, TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_PHOT},
 	{"URAN",	PIXPACK(0x707020),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	90,		SC_NUCLEAR,		R_TEMP+30.0f+273.15f,	251,	"Heavy particles. Generates heat under pressure.", ST_SOLID, TYPE_PART | PROP_RADIOACTIVE, &update_URAN},
 	{"WAX",		PIXPACK(0xF0F0BB),  0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	10,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	44,		"Wax. Melts at moderately high temperatures.", ST_SOLID, TYPE_SOLID, NULL},
 	{"MWAX",	PIXPACK(0xE0E0AA),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000001f* CFDS,2,	5,		0,	0,	2,	1,	25,		SC_LIQUID,		R_TEMP+28.0f+273.15f,	44,		"Liquid Wax.", ST_LIQUID, TYPE_LIQUID, NULL},
-	{"PSCN",	PIXPACK(0x805050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"P-Type Silicon, Will transfer current to any conductor.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, NULL},
-	{"NSCN",	PIXPACK(0x505080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"N-Type Silicon, Will not transfer current to P-Type Silicon.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, NULL},
+	{"PSCN",	PIXPACK(0x805050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"P-Type Silicon, Will transfer current to any conductor.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, NULL},
+	{"NSCN",	PIXPACK(0x505080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"N-Type Silicon, Will not transfer current to P-Type Silicon.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, NULL},
 	{"LN2",		PIXPACK(0x80A0DF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	0,	1,	30,		SC_LIQUID,		70.15f,					70,		"Liquid Nitrogen. Very cold.", ST_SOLID, TYPE_LIQUID, NULL},
-    {"INSL",    PIXPACK(0x9EA3B6),  0.0f,  0.00f * CFDS,    0.95f,  0.00f,  0.0f,   0.0f,  0.00f,  0.000f  * CFDS,  0,  7,      0,  0,  10,  1,  100,  SC_ELEC,    R_TEMP+0.0f  +273.15f,  0,    "Insulator, does not conduct heat or electricity.", ST_SOLID, TYPE_SOLID, NULL},
+	{"INSL",	PIXPACK(0x9EA3B6),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	7,		0,	0,	10,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	0,		"Insulator, does not conduct heat or electricity.", ST_SOLID, TYPE_SOLID, NULL},
 	{"VACU",	PIXPACK(0x303030),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.01f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP+70.0f+273.15f,	255,	"Vacuum, sucks in other particles and heats up.", ST_NONE, TYPE_SOLID, NULL},
 	{"VENT",	PIXPACK(0xEFEFEF),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.010f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP-16.0f+273.15f,	255,	"Air vent, creates pressure and pushes other particles away.", ST_NONE, TYPE_SOLID, NULL},
-	{"RBDM",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	1,	50,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	240,	"Rubidium, explosive, especially on contact with water, low melting point", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, NULL},
-	{"LRBD",	PIXPACK(0xAAAAAA),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000001f* CFDS,2,	1000,	1,	0,	2,	1,	45,		SC_EXPLOSIVE,	R_TEMP+45.0f+273.15f,	170,	"Liquid Rubidium.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS, NULL},
-	{"NTCT",	PIXPACK(0x505040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Semi-conductor. Only conducts electricity when hot (More than 100C)", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_NPTCT},
+	{"RBDM",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	1,	50,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	240,	"Rubidium, explosive, especially on contact with water, low melting point", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, NULL},
+	{"LRBD",	PIXPACK(0xAAAAAA),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000001f* CFDS,2,	1000,	1,	0,	2,	1,	45,		SC_EXPLOSIVE,	R_TEMP+45.0f+273.15f,	170,	"Liquid Rubidium.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC, NULL},
+	{"NTCT",	PIXPACK(0x505040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Semi-conductor. Only conducts electricity when hot (More than 100C)", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, &update_NPTCT},
 	{"SAND",	PIXPACK(0xFFD090),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	150,	"Sand, Heavy particles. Meltable.", ST_SOLID, TYPE_PART, NULL},
 	{"GLAS",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	150,	"Solid. Meltable. Shatters under pressure", ST_SOLID, TYPE_SOLID | PROP_NEUTPASS | PROP_HOT_GLOW, &update_GLAS},
-	{"PTCT",	PIXPACK(0x405050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Semi-conductor. Only conducts electricity when cold (Less than 100C)", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_NPTCT},
+	{"PTCT",	PIXPACK(0x405050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Semi-conductor. Only conducts electricity when cold (Less than 100C)", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, &update_NPTCT},
 	{"BGLA",	PIXPACK(0x606060),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	2,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	150,	"Broken Glass, Heavy particles. Meltable. Bagels.", ST_SOLID, TYPE_PART | PROP_HOT_GLOW, NULL},
-	{"THDR",	PIXPACK(0xFFFFA0),	0.0f,	0.00f * CFDS,	1.0f,	0.30f,	-0.99f,	0.6f,	0.62f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,		SC_EXPLOSIVE,		9000.0f		+273.15f,	251,	"Lightning! Very hot, inflicts damage upon most materials, transfers current to metals.", ST_NONE, TYPE_ENERGY, &update_THDR},
-	{"PLSM",	PIXPACK(0xBB99FF),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.30f,	0.001f	* CFDS,	0,	0,		0,	0,	0,	1,	1,		SC_GAS,			9000.0f		+273.15f,	115,	"Plasma, extremely hot.", ST_NONE, TYPE_GAS, &update_PYRO},
-	{"ETRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)", ST_NONE, TYPE_SOLID|PROP_CONDUCTS, NULL},
+	{"THDR",	PIXPACK(0xFFFFA0),	0.0f,	0.00f * CFDS,	1.0f,	0.30f,	-0.99f,	0.6f,	0.62f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,		SC_EXPLOSIVE,	9000.0f		+273.15f,	251,	"Lightning! Very hot, inflicts damage upon most materials, transfers current to metals.", ST_NONE, TYPE_ENERGY, &update_THDR},
+	{"PLSM",	PIXPACK(0xBB99FF),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.30f,	0.001f	* CFDS,	0,	0,		0,	0,	0,	1,	1,		SC_GAS,			9000.0f		+273.15f,	115,	"Plasma, extremely hot.", ST_NONE, TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL, &update_PYRO},
+	{"ETRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)", ST_NONE, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, NULL},
 	{"NICE",	PIXPACK(0xC0E0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0005f* CFDS,	0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		35.0f,					46,		"Nitrogen Ice.", ST_SOLID, TYPE_SOLID, NULL},
-	{"NEON",    PIXPACK(0xEB4917),  0.7f,  0.01f * CFDS,    0.99f,  0.30f,  -0.1f,  0.0f,  0.50f,  0.001f  * CFDS,  0,  0,      0,  0,  1,  1,  1,      SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Neon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
+	{"NBLE",	PIXPACK(0xEB4917),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+2.0f	+273.15f,	106,	"Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS|PROP_LIFE_DEC, NULL},
 	{"BTRY",	PIXPACK(0x858505),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Generates Electricity.", ST_SOLID, TYPE_SOLID, &update_BTRY},
 	{"LCRY",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)", ST_SOLID, TYPE_SOLID, &update_LCRY},
-	{"STKM",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	50,		SC_STICKMAN,		R_TEMP+14.6f+273.15f,	0,		"Stickman. Don't kill him!", ST_NONE, 0, &update_STKM},
+	{"STKM",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	50,		SC_SPECIAL,		R_TEMP+14.6f+273.15f,	0,		"Stickman. Don't kill him!", ST_NONE, 0, &update_STKM},
 	{"SWCH",	PIXPACK(0x103B11),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f  * CFDS, 0,	0,		0,	0,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Only conducts when switched on. (PSCN switches on, NSCN switches off)", ST_SOLID, TYPE_SOLID, &update_SWCH},
-	{"SMKE",	PIXPACK(0x222222),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+320.0f+273.15f,	88,		"Smoke", ST_SOLID, TYPE_GAS, NULL},
+	{"SMKE",	PIXPACK(0x222222),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+320.0f+273.15f,	88,		"Smoke", ST_SOLID, TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, NULL},
 	{"DESL",	PIXPACK(0x440000),	1.0f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.0f,	0.0f	* CFDS,	2,	2,		0,	0,	5,	1,	15,		SC_LIQUID,		R_TEMP+0.0f	+273.15f,	42,		"Liquid. Explodes under high pressure and temperatures", ST_LIQUID, TYPE_LIQUID, NULL},
 	{"COAL",	PIXPACK(0x222222),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. Burns slowly.", ST_SOLID, TYPE_SOLID, &update_COAL},
 	{"LO2",		PIXPACK(0x80A0EF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	5000,  	0,	0,	0,	1,	30,		SC_LIQUID,		80.0f,					70,		"Liquid Oxygen. Very cold. Reacts with fire", ST_LIQUID, TYPE_LIQUID, NULL},
 	{"O2",		PIXPACK(0x80A0FF),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Ignites easily.", ST_GAS, TYPE_GAS, &update_O2},
-	{"INWR",	PIXPACK(0x544141),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Insulated Wire. Doesn't conduct to metal or semiconductors.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, NULL},
+	{"INWR",	PIXPACK(0x544141),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Insulated Wire. Doesn't conduct to metal or semiconductors.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, NULL},
 	{"YEST",	PIXPACK(0xEEE0C0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	15,		0,	0,	30,	1,	80,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Yeast, grows when warm (~37C).", ST_SOLID, TYPE_PART, &update_YEST},
-	{"DYST",	PIXPACK(0xBBB0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	20,		0,	0,	30,	1,	80,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Dead Yeast.", ST_SOLID, TYPE_PART, NULL},
+	{"DYST",	PIXPACK(0xBBB0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	20,		0,	0,	30,	0,	80,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Dead Yeast.", ST_SOLID, TYPE_PART, NULL},
 	{"THRM",	PIXPACK(0xA08090),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	90,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	211,	"Thermite. Burns at extremely high temperature.", ST_SOLID, TYPE_PART, &update_THRM},
-	{"GLOW",	PIXPACK(0x445464),	0.3f,	0.02f * CFDS,	0.98f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	2,	1,	40,		SC_LIQUID,		R_TEMP+20.0f+273.15f,	44,		"Glow, Glows under pressure", ST_LIQUID, TYPE_LIQUID, &update_GLOW},
+	{"GLOW",	PIXPACK(0x445464),	0.3f,	0.02f * CFDS,	0.98f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	2,	1,	40,		SC_LIQUID,		R_TEMP+20.0f+273.15f,	44,		"Glow, Glows under pressure", ST_LIQUID, TYPE_LIQUID|PROP_LIFE_DEC, &update_GLOW},
 	{"BRCK",	PIXPACK(0x808080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Brick, breakable building material.", ST_SOLID, TYPE_SOLID|PROP_HOT_GLOW, NULL},
-	{"CFLM",	PIXPACK(0x8080FF),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.0005f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	0.0f,					88,		"Sub-zero flame.", ST_GAS, TYPE_GAS, NULL},
-	{"FIRW",	PIXPACK(0xFFA040),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	-0.99f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	55,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	70,		"Fireworks!", ST_SOLID, TYPE_PART, &update_FIRW},
+	{"CFLM",	PIXPACK(0x8080FF),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.0005f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	0.0f,					88,		"Sub-zero flame.", ST_LIQUID, TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL, NULL},
+	{"FIRW",	PIXPACK(0xFFA040),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	-0.99f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	55,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	70,		"Fireworks!", ST_SOLID, TYPE_PART|PROP_LIFE_DEC, &update_FIRW},
 	{"FUSE",	PIXPACK(0x0A5706),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. Burns slowly. Ignites at somewhat high temperatures and electricity.", ST_SOLID, TYPE_SOLID, &update_FUSE},
 	{"FSEP",	PIXPACK(0x63AD5F),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	70,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Fuse Powder. See FUSE.", ST_SOLID, TYPE_PART, &update_FSEP},
 	{"AMTR",	PIXPACK(0x808080),	0.7f,   0.02f * CFDS,   0.96f,  0.80f,  0.00f,  0.10f,  1.00f,  0.0000f * CFDS, 0,	0,		0,	0,	0,	1,	100,	SC_NUCLEAR,	 	R_TEMP+0.0f +273.15f,	70,		"Anti-Matter, Destroys a majority of particles", ST_NONE, TYPE_PART, &update_AMTR}, //Maybe TYPE_ENERGY?
 	{"BCOL",	PIXPACK(0x333333),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	2,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	150,	"Broken Coal. Heavy particles. See COAL", ST_SOLID, TYPE_PART, &update_BCOL},
 	{"PCLN",	PIXPACK(0x3B3B10),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Solid. When activated, duplicates any particles it touches.", ST_NONE, TYPE_SOLID, &update_PCLN},
 	{"HSWC",	PIXPACK(0x3B1010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Heat switch. Conducts Heat only when activated", ST_NONE, TYPE_SOLID, &update_HSWC},
-	{"IRON",	PIXPACK(0x707070),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_ELEC,	R_TEMP+0.0f +273.15f,	251,	"Rusts with salt, can be used for electrolysis of WATR", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, &update_IRON},
+	{"IRON",	PIXPACK(0x707070),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f +273.15f,	251,	"Rusts with salt, can be used for electrolysis of WATR", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW, &update_IRON},
 	{"MORT",	PIXPACK(0xE0E0E0),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_CRACKER2,	R_TEMP+4.0f	+273.15f,	60,		"Steam Train.", ST_NONE, TYPE_PART, &update_MORT},
 	{"GOL",		PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Game Of Life! B3/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"HLIF",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"High Life! B36/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
@@ -670,47 +483,47 @@ static const part_type ptypes[PT_NUM] =
 	{"STAN",	PIXPACK(0x5000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Stains! B3678/S235678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"SPNG",  	PIXPACK(0xFFBE30),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	20, 	0,  1, 	30,	1, 	100,    SC_SOLIDS,  	R_TEMP+0.0f +273.15f,   251,    "A sponge, absorbs water.", ST_SOLID, TYPE_SOLID, &update_SPNG},
 	{"RIME",  	PIXPACK(0xCCCCCC),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	0, 		0, 	0, 	30,	1,  100,    SC_CRACKER2,  	243.15f,				100,    "Not quite Ice", ST_SOLID, TYPE_SOLID, &update_RIME},
-	{"FOG",  	PIXPACK(0xAAAAAA),	0.8f,	0.00f * CFDS,	0.4f,	0.70f,	-0.1f,	0.0f,	0.99f,	0.000f	* CFDS, 0, 	0, 		0,  0,  30, 1,  1,		SC_CRACKER2,  	243.15f,				100,    "Not quite Steam", ST_GAS, TYPE_GAS, &update_FOG},
-	{"BCLN",	PIXPACK(0xFFD040),	0.0f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	12,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Breakable Clone.", ST_NONE, TYPE_SOLID, &update_BCLN},
+	{"FOG",  	PIXPACK(0xAAAAAA),	0.8f,	0.00f * CFDS,	0.4f,	0.70f,	-0.1f,	0.0f,	0.99f,	0.000f	* CFDS, 0, 	0, 		0,  0,  30, 1,  1,		SC_CRACKER2,  	243.15f,				100,    "Not quite Steam", ST_GAS, TYPE_GAS|PROP_LIFE_DEC, &update_FOG},
+	{"BCLN",	PIXPACK(0xFFD040),	0.0f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	12,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Breakable Clone.", ST_NONE, TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_BCLN},
 	{"LOVE",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER2,	373.0f,					40,		"Love...", ST_GAS, TYPE_SOLID, &update_MISC},
 	{"DEUT",  	PIXPACK(0x00153F),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	31,		SC_NUCLEAR,		R_TEMP-2.0f	+273.15f,	251,	"Deuterium oxide. Volume changes with temp, radioactive with neutrons.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE, &update_DEUT},
-	{"WARP",  	PIXPACK(0x000000),	0.8f,	0.00f * CFDS,	0.9f,	0.70f,	-0.1f,	0.0f,	3.00f,	0.000f	* CFDS, 0, 	0, 		0,  0,  30, 1,  1,		SC_NUCLEAR,  	R_TEMP +273.15f,		100,    "Displaces other elements.", ST_GAS, TYPE_GAS, &update_WARP},
+	{"WARP",  	PIXPACK(0x000000),	0.8f,	0.00f * CFDS,	0.9f,	0.70f,	-0.1f,	0.0f,	3.00f,	0.000f	* CFDS, 0, 	0, 		0,  0,  30, 1,  1,		SC_NUCLEAR,  	R_TEMP +273.15f,		100,    "Displaces other elements.", ST_GAS, TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL, &update_WARP},
 	{"PUMP",	PIXPACK(0x10103B),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	10,	1,	100,	SC_ELEC,		273.15f,				0,		"Changes pressure to its temp when activated. (use HEAT/COOL).", ST_SOLID, TYPE_SOLID, &update_PUMP},
-	{"FWRK",	PIXPACK(0x666666),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	1,	1,	97,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	100,	"First fireworks made, activated by heat/neutrons.", ST_SOLID, TYPE_PART, &update_FWRK},
-	{"PIPE",	PIXPACK(0x444444),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		273.15f,				0,		"Moves elements around, read FAQ on website for help.", ST_SOLID, TYPE_SOLID, &update_PIPE},
+	{"FWRK",	PIXPACK(0x666666),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	1,	1,	97,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	100,	"First fireworks made, activated by heat/neutrons.", ST_SOLID, TYPE_PART|PROP_LIFE_DEC, &update_FWRK},
+	{"PIPE",	PIXPACK(0x444444),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		273.15f,				0,		"Moves elements around, read FAQ on website for help.", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_PIPE},
 	{"FRZZ",	PIXPACK(0xC0E0FF),	0.7f,	0.01f * CFDS,	0.96f,	0.90f,	-0.1f,	0.05f,	0.01f,	-0.00005f* CFDS,1,	0,		0,	0,	20,	1,	50,		SC_CRACKER2,	90.0f,					46,		"FREEZE", ST_SOLID, TYPE_PART, &update_FRZZ},
-	{"FRZW",	PIXPACK(0x1020C0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_CRACKER2,	120.0f,					29,		"FREEZE WATER", ST_LIQUID, TYPE_LIQUID, &update_FRZW},
+	{"FRZW",	PIXPACK(0x1020C0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_CRACKER2,	120.0f,					29,		"FREEZE WATER", ST_LIQUID, TYPE_LIQUID||PROP_LIFE_DEC, &update_FRZW},
 	{"GRAV",	PIXPACK(0xFFE0A0),	0.7f,	0.00f * CFDS,	1.00f,	1.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Very light dust. Changes colour based on velocity.", ST_SOLID, TYPE_PART, &update_MISC},
 	{"BIZR",	PIXPACK(0x00FF77),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_LIQUID,		R_TEMP+0.0f	+273.15f,	29,		"Bizarre... contradicts the normal state changes.", ST_LIQUID, TYPE_LIQUID, NULL},
 	{"BIZG",	PIXPACK(0x00FFBB),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	2.75f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,		SC_CRACKER2,	R_TEMP-200.0f+273.15f,	42,		"Bizarre gas", ST_GAS, TYPE_GAS, NULL},
 	{"BIZS",	PIXPACK(0x00E455),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,	R_TEMP+300.0f+273.15f,	251,	"Bizarre solid", ST_SOLID, TYPE_SOLID, NULL},
-	{"INST",	PIXPACK(0x404039),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Instantly conducts, PSCN to charge, NSCN to take.", ST_SOLID, TYPE_SOLID, NULL},
+	{"INST",	PIXPACK(0x404039),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Instantly conducts, PSCN to charge, NSCN to take.", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, NULL},
 	{"ISOZ",	PIXPACK(0xAA30D0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	0,	1,	24,		SC_NUCLEAR,		R_TEMP-2.0f	+273.15f,	29,		"Radioactive liquid", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE, &update_ISZ},
 	{"ISZS",	PIXPACK(0x662089),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0007f* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_NUCLEAR,		140.00f,				251,	"Solid form of ISOZ, slowly decays.", ST_SOLID, TYPE_SOLID, &update_ISZ},
 	{"PRTI",	PIXPACK(0xEB5917),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.005f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	0,		"Portal IN.  Things go in here, now with channels (same as WIFI)", ST_SOLID, TYPE_SOLID, &update_PRTI},
 	{"PRTO",	PIXPACK(0x0020EB),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.005f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	0,		"Portal OUT.  Things come out here, now with channels (same as WIFI)", ST_SOLID, TYPE_SOLID, &update_PRTO},
 	{"PSTE",	PIXPACK(0xAA99AA),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	31,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	29,		"Colloid, Hardens under pressure", ST_LIQUID, TYPE_LIQUID, NULL},
-	{"PSTS",	PIXPACK(0x776677),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	20,	1,	100,	SC_CRACKER2,		R_TEMP-2.0f	+273.15f,	29,		"Solid form of PSTE, temporary", ST_SOLID, TYPE_SOLID, NULL},
-	{"ANAR",    PIXPACK(0xFFFFEE),  -0.7f,  -0.02f * CFDS,  0.96f,  0.80f,  0.1f,  -0.1f,  0.00f,  0.000f  * CFDS,  1,  0,    0,  0,  30,  1,  85,    SC_POWDERS,    R_TEMP+0.0f  +273.15f,  70,    "Very light dust. Behaves opposite gravity", ST_SOLID, TYPE_PART, &update_ANAR},
+	{"PSTS",	PIXPACK(0x776677),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	20,	0,	100,	SC_CRACKER,		R_TEMP-2.0f	+273.15f,	29,		"Solid form of PSTE, temporary", ST_SOLID, TYPE_SOLID, NULL},
+	{"ANAR",	PIXPACK(0xFFFFEE),	-0.7f,	-0.02f * CFDS,	0.96f,	0.80f,	0.1f,	-0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Very light dust. Behaves opposite gravity", ST_SOLID, TYPE_PART, &update_ANAR},
 	{"VINE",	PIXPACK(0x079A00),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	10,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f +273.15f,	65,		"Vine, grows", ST_SOLID, TYPE_SOLID, &update_VINE},
 	{"INVS",	PIXPACK(0x00CCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	15,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	164,	"Invisible to everything while under pressure.", ST_SOLID, TYPE_SOLID | PROP_NEUTPASS, NULL},
-	{"EQVE",	PIXPACK(0xFFE0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	70,		"Shared velocity test", ST_SOLID, TYPE_PART, &update_EQUALVEL},
-	{"SPWN2",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_CRACKER2,		R_TEMP+0.0f	+273.15f,	0,		"STK2 spawn point", ST_SOLID, TYPE_SOLID, &update_SPAWN2},
-	{"SPWN",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_CRACKER2,		R_TEMP+0.0f	+273.15f,	0,		"STKM spawn point", ST_SOLID, TYPE_SOLID, &update_SPAWN},
-	{"SHLD",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	0,		"Shield, spark it to grow", ST_SOLID, TYPE_SOLID, &update_SHLD1},
-	{"SHD2",	PIXPACK(0x777777),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	0,		"Shield lvl 2", ST_SOLID, TYPE_SOLID, &update_SHLD2},
-	{"SHD3",	PIXPACK(0x444444),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	0,		"Shield lvl 3", ST_SOLID, TYPE_SOLID, &update_SHLD3},
-	{"SHD4",	PIXPACK(0x212121),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	0,		"Shield lvl 4", ST_SOLID, TYPE_SOLID, &update_SHLD4},
+	{"EQVE",	PIXPACK(0xFFE0A0),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	0,	85,		SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	70,		"Shared velocity test", ST_SOLID, TYPE_PART, NULL},
+	{"SPWN2",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	0,		"STK2 spawn point", ST_SOLID, TYPE_SOLID, &update_SPAWN2},
+	{"SPWN",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	0,		"STKM spawn point", ST_SOLID, TYPE_SOLID, &update_SPAWN},
+	{"SHLD",	PIXPACK(0xAAAAAA),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	0,		"Shield, spark it to grow", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_SHLD1},
+	{"SHD2",	PIXPACK(0x777777),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	0,		"Shield lvl 2", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_SHLD2},
+	{"SHD3",	PIXPACK(0x444444),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	0,		"Shield lvl 3", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_SHLD3},
+	{"SHD4",	PIXPACK(0x212121),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	0,	100,	SC_CRACKER2,	R_TEMP+0.0f	+273.15f,	0,		"Shield lvl 4", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_SHLD4},
 	{"LOLZ",	PIXPACK(0x569212),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER2,	373.0f,					40,		"Lolz", ST_GAS, TYPE_SOLID, &update_MISC},
 	{"WIFI",	PIXPACK(0x40A060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	2,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	0,		"Wireless transmitter, color coded.", ST_SOLID, TYPE_SOLID, &update_WIFI},
 	{"FILT",	PIXPACK(0x000056),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Filter for photons, changes the color.", ST_SOLID, TYPE_SOLID, NULL},
-	{"ARAY",	PIXPACK(0xFFBB00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	251,	"Ray Emitter. Rays create points when they collide", ST_SOLID, TYPE_SOLID, &update_ARAY},
-	{"BRAY",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,		R_TEMP+0.0f +273.15f,	251,	"Ray Point. Rays create points when they collide", ST_SOLID, TYPE_SOLID, NULL},
-	{"STK2",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	50,		SC_STICKMAN,		R_TEMP+14.6f+273.15f,	0,		"Stickman. Don't kill him!", ST_NONE, 0, &update_STKM2},
-	{"BOMB",	PIXPACK(0xFFF288),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	20,	1,	30,		SC_EXPLOSIVE,	R_TEMP-2.0f	+273.15f,	29,		"Bomb.", ST_NONE, TYPE_PART, &update_BOMB},
+	{"ARAY",	PIXPACK(0xFFBB00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	251,	"Ray Emitter. Rays create points when they collide", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_ARAY},
+	{"BRAY",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	0,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	251,	"Ray Point. Rays create points when they collide", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL, NULL},
+	{"STK2",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	50,		SC_SPECIAL,		R_TEMP+14.6f+273.15f,	0,		"Stickman. Don't kill him!", ST_NONE, 0, &update_STKM2},
+	{"BOMB",	PIXPACK(0xFFF288),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	20,	1,	30,		SC_EXPLOSIVE,	R_TEMP-2.0f	+273.15f,	29,		"Bomb.", ST_NONE, TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_BOMB},
 	{"C-5",		PIXPACK(0x2050E0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Cold explosive", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_C5},
-	{"SING",	PIXPACK(0x242424),	0.7f,	0.36f * CFDS,	0.96f,	0.80f,	0.1f,	0.12f,	0.00f,	-0.001f	* CFDS,	1,	0,		0,	0,	0,	1,	86,		SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	70,		"Singularity", ST_SOLID, TYPE_PART, &update_SING},
-	{"QRTZ",	PIXPACK(0xAADDDD),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	3,		"Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.", ST_SOLID, TYPE_SOLID|PROP_HOT_GLOW, &update_QRTZ},
+	{"SING",	PIXPACK(0x242424),	0.7f,	0.36f * CFDS,	0.96f,	0.80f,	0.1f,	0.12f,	0.00f,	-0.001f	* CFDS,	1,	0,		0,	0,	0,	1,	86,		SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	70,		"Singularity", ST_SOLID, TYPE_PART|PROP_LIFE_DEC, &update_SING},
+	{"QRTZ",	PIXPACK(0xAADDDD),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	3,		"Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.", ST_SOLID, TYPE_SOLID|PROP_HOT_GLOW|PROP_LIFE_DEC, &update_QRTZ},
 	{"PQRT",	PIXPACK(0x88BBBB),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.27f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	3,		"Broken quartz.", ST_SOLID, TYPE_PART| PROP_HOT_GLOW, &update_QRTZ},
 	{"SEED",	PIXPACK(0xFBEC7D),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B2/S", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"MAZE",	PIXPACK(0xA8E4A0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B3/S12345", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
@@ -725,100 +538,12 @@ static const part_type ptypes[PT_NUM] =
 	{"STAR",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Like Star Wars rule S3456/B278/6", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"FROG",	PIXPACK(0x00AA00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Frogs S12/B34/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"BRAN",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Brian 6 S6/B246/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-	{"WIND",	PIXPACK(0x000000),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  1,  100,	SC_SPECIAL,		0.0f,					40,		"Drag tool", ST_NONE, ST_NONE, NULL},
+	{"WIND",	PIXPACK(0x101010),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  0,  100,	SC_SPECIAL,		0.0f,					40,		"", ST_NONE, ST_NONE, NULL},
 	{"H2",		PIXPACK(0x5070FF),	2.0f,	0.00f * CFDS,	0.99f,	0.30f,	-0.10f,	0.00f,	3.00f,	0.000f	* CFDS, 0,  0,		0,	0,	0,	1,	1,		SC_GAS,			R_TEMP+0.0f +273.15f,	251,	"Combines with O2 to make WATR", ST_GAS, TYPE_GAS, &update_H2},
-    {"SOAP",    PIXPACK(0xF5F5DC),  0.6f,  0.01f * CFDS,  0.98f,  0.95f,  0.0f,  0.1f,  0.00f,  0.000f  * CFDS,  2,  0,    0,  0,  20,  1,  35,    SC_LIQUID,    R_TEMP-2.0f  +273.15f,  29,    "Soap. Creates bubbles.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE, &update_SOAP},
-    {"BHOL",    PIXPACK(0x202020),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  1,  100,  SC_SPACE,    R_TEMP+0.0f  +273.15f,  186,  "Black hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NBHL},
-    {"WHOL",    PIXPACK(0xFFFFFF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  1,  100,  SC_SPACE,    R_TEMP+0.0f  +273.15f,  186,  "White hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NWHL},
-    {"MERC",    PIXPACK(0x736B6D),  0.4f,  0.04f * CFDS,  0.94f,  0.80f,  0.0f,  0.3f,  0.00f,  0.000f  * CFDS,  2,  0,    0,  0,  20,  1,  91,    SC_ELEC,    R_TEMP+0.0f  +273.15f,  251,  "Mercury. Volume changes with temperature, Conductive.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB, &update_MERC},
-    {"NTRG",	PIXPACK(0x80A0AA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,  	"Nitrogen in its gas form.", ST_GAS, TYPE_GAS, NULL},
-    {"LQCL",	PIXPACK(0xFFD010),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	29,		"Liquid. Duplicates any particles it touches.", ST_LIQUID, TYPE_LIQUID, &update_LQCL},
-    {"GSCL",	PIXPACK(0xFFD010),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Gas. Duplicates any particles it touches.", ST_GAS, TYPE_GAS, &update_GSCL},
-	{"BOOM",	PIXPACK(0xEB4917),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	90,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	97,		"Heavy heat activated explosive", ST_SOLID, TYPE_PART, &update_PYRO},
-	{"HEAL",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,	R_TEMP+0.0f	+273.15f,	251,	"Heals Stickmen", ST_SOLID, TYPE_SOLID, NULL},
-	{"FUSE2",	PIXPACK(0xC0A050),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. A better fuse than fuse.", ST_SOLID, TYPE_SOLID, &update_FUSE2},
-	{"ELCT",    PIXPACK(0xFFD010),  0.0f,  0.00f * CFDS,    0.00f,  1.00f,  -0.99f,  0.0f,  0.01f,  0.002f  * CFDS,  0,  0,     0,  0,  0,  1,  -1,    SC_ELEC,    R_TEMP+4.0f  +273.15f,  60,  "Electrons. Transfer spark to conductive materials.", ST_GAS, TYPE_ENERGY, &update_ZAP},
-	{"NCWS",	PIXPACK(0x09FF00),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_NUCLEAR,		R_TEMP+1500.0f+273.15f,	60,		"Dangerous Radioactive Liquid.", ST_LIQUID, TYPE_LIQUID, NULL},
-	{"ACRN",	PIXPACK(0x73FABB),	0.0f,	0.00f * CFDS,	0.00f,	0.80f,	0.0f,	1.0f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	70,		SC_CRACKER2,		R_TEMP-2.0f	+273.15f,	29,		"An Acidic Form Of Rain", ST_LIQUID, TYPE_LIQUID, &update_ACRN},
-	{"CLOU",	PIXPACK(0xE8E8E8),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.40f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	251,	"Provides an endless rainshower.", ST_GAS, TYPE_GAS, &update_CLOUD},
-	{"RWTR",	PIXPACK(0x0080FF),	0.0f,	0.00f * CFDS,	0.00f,	0.80f,	0.0f,	1.0f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	70,		SC_CRACKER2,		R_TEMP-2.0f	+273.15f,	29,		"Rain.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS, NULL},
-	{"ACLO",	PIXPACK(0xA8B5AF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.40f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	251,	"Provides an endless acidic rainshower.", ST_GAS, TYPE_GAS, &update_ACLOUD},
-	{"VOLT",	PIXPACK(0xD98F07),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+1000.0f	+273.15f,	251,	"The Erupting Part Of A Volcano.", ST_SOLID, TYPE_SOLID, &update_VOLT},
-	{"VOLB",	PIXPACK(0x734C03),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+1000.0f	+273.15f,	251,	"The Safe but HOT Part Of A Volcano.", ST_SOLID, TYPE_SOLID, NULL},
-	{"DIRT",	PIXPACK(0x8C5C03),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	90,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	150,	"Dirt, Perfect for gardening..", ST_SOLID, TYPE_PART, NULL},
-	{"INV",		PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives any Stickman an Invincible Power Up", ST_SOLID, TYPE_SOLID, NULL},
-	{"FLY",		PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives any Stickman the ability to Fly", ST_SOLID, TYPE_SOLID, NULL},
-	{"RSPW",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Allows the player to move its Spawn Point", ST_SOLID, TYPE_SOLID, NULL},
-	{"NCGN",	PIXPACK(0x756D6F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	251,	"Generates Nuclear Energy When Touching Plutonium.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_NCGN},
-	{"TRAP",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Traps the stickman when he stands on it", ST_SOLID, TYPE_SOLID, NULL},
-	{"BPAD",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little boost", ST_SOLID, TYPE_SOLID, NULL},
-	{"SPEL",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little speed boost to the left", ST_SOLID, TYPE_SOLID, NULL},
-	{"SPER",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little speed boost to the right", ST_SOLID, TYPE_SOLID, NULL},
-	{"PTRY",		PIXPACK(0xCC883F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	3,	"Pottery. Breaks Under Pressure.", ST_SOLID, TYPE_SOLID| PROP_HOT_GLOW, NULL},
-	{"GRAS",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f +271.15f,	251,		"Will slowly grow until it needs to be mowed.", ST_SOLID, TYPE_SOLID, &update_GRAS},
-	{"CFUS",	PIXPACK(0x2E8B9E),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. A cold Fuse. Activated by Cold Flame.", ST_SOLID, TYPE_SOLID, &update_CFUS},
-	{"ANT",		PIXPACK(0xC0A060),	0.0f,	0.00f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Ant. Builds a nest in other particles.", ST_SOLID, TYPE_PART|PROP_DEADLY, &update_CFIR},
-	{"SMIL",	PIXPACK(0xFFFF00),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER2,	373.0f,					40,		"Smile :)", ST_SOLID, TYPE_SOLID, &update_MISC},
-    {"SEAL",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+2.0f	+273.15f,				40,		"An Air Seal... Change the temperature to change Max Pressure", ST_SOLID, TYPE_SOLID, NULL},
-    {"BULL",    PIXPACK(0x736D6E),  0.0f,	0.00f * CFDS,	1.00f,	1.00f,	0.0f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_EXPLOSIVE,     MAX_TEMP,	251,		"Bullet, a deadly projectile that flies out of a gun.", ST_SOLID, TYPE_SOLID, &update_BULL},
-    {"PPLT",	PIXPACK(0x9E9680),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Send off electric current when a stickman stands on it", ST_SOLID, TYPE_SOLID, NULL},
-    {"TNT",		PIXPACK(0xF50C10),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	5,      0,  0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Solid. Pressure sensitive explosive.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_TNT},
-    {"MGMA",	PIXPACK(0xBF3C02),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_LIQUID,		R_TEMP+1500.0f+273.15f,	60,		"Magma. Like Lava but underground.", ST_LIQUID, TYPE_LIQUID, &update_MGMA},
-    {"RAND",	PIXPACK(0x72FC92),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	100,	SC_LIFE,		9000.0f,				40,		"...", ST_SOLID, TYPE_SOLID|PROP_LIFE, NULL},
-    {"DANG",	PIXPACK(0xFF9500),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  1,  100,	SC_SPECIAL,		0.0f,					40,		"Extremely Dangerous Element. Destroys everything with immense heat/pressure", ST_NONE, ST_NONE, NULL},
-    {"VIRS",	PIXPACK(0xFF00FF),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_LIQUID,		R_TEMP,                 60,		"Virus. Takes Over Other Elements.", ST_LIQUID, TYPE_LIQUID, &update_VIRS},
-    {"O3",		PIXPACK(0xC0FAF9),	0.1f,   0.00f * CFDS,   0,      0.01f,	-0.1f,	0.0f,	0.40f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_GAS,		 	R_TEMP,                 0,		"Ozone. Blocks out radiation and pressure and harms plants", ST_GAS, TYPE_GAS | PROP_NEUTABSORB | PROP_DEADLY, NULL},
-    {"DICE",	PIXPACK(0xA0C0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,      0,	0,	20,	1,	100,    SC_SOLIDS,		0,                      46,		"Dry Ice. Creates Smoke when in contact with water", ST_SOLID, TYPE_SOLID, &update_DICE},
-    {"GOLD",	PIXPACK(0xFFD445),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	0,	"Gold. Unbreakable Conductor.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
-    {"MPOS",	PIXPACK(0xFC0D48),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_ELEC,	R_TEMP+0.0f +273.15f,	251,	"Positively Charged Magnet", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_MPOS},
-    {"MNEG",	PIXPACK(0xE3D5D5),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_ELEC,	R_TEMP+0.0f +273.15f,	251,	"Negatively charged Magnet", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_MNEG},
-    {"IFIL",	PIXPACK(0xDAE6DE),	0.4f,	0.01f * CFDS,	0.94f,	0.95f,	-0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	211,	"Iron Fillings.", ST_SOLID, TYPE_PART|PROP_HOT_GLOW, NULL},
-    {"LGUN",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	0,	"Lazer Emmitter. Creates Lazers.", ST_SOLID, TYPE_SOLID, &update_LGUN},
-    {"LAZR",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,		MAX_TEMP,	251,	"Lazer", ST_SOLID, TYPE_SOLID|PROP_DEADLY, &update_LAZR},
-    {"IBAT",	PIXPACK(0x858505),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Generates Electricity. Doesn't react to heat.", ST_SOLID, TYPE_SOLID, &update_IBAT},
-    {"FGUN",	PIXPACK(0x6BEBFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	0,	"Freeze Ray Emmitter. Creates Freeze Rays.", ST_SOLID, TYPE_SOLID, &update_FGUN},
-    {"FREZ",	PIXPACK(0x6BEBFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,	0.0f,	                251,	"Freeze Ray", ST_SOLID, TYPE_SOLID|PROP_DEADLY, &update_FREZ},
-    {"SPMG",	PIXPACK(0xFF8800),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_ELEC,	    R_TEMP+0.0f +273.15f,	251,	"Positively Charged Super Magnet", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_SPMG},
-    {"SNMG",	PIXPACK(0xCCE2EB),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_ELEC,	    R_TEMP+0.0f +273.15f,	251,	"Negatively Charged Super Magnet", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_SNMG},
-    {"OSMT",	PIXPACK(0x404060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"One Shot Metal. Conducts electricity. Meltable. After Carrying Spark Dissapears.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
-    {"ROOT",	PIXPACK(0xA65005),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f +273.15f,	        251,		"Aids the growth of grass and plant.", ST_SOLID, TYPE_SOLID, &update_ROOT},
-    {"BFLM",	PIXPACK(0x4C76F5),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	MAX_TEMP +273.15f,	            88,		"Ignites flammable materials. Heats air.", ST_GAS, TYPE_GAS, &update_PYRO},
-    {"PDCL",	PIXPACK(0xFFD010),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Powder. Duplicates any particles it touches.", ST_SOLID, TYPE_PART, &update_PDCL},
-    {"WCHP",    PIXPACK(0xC0A040),  0.4f,  0.04f * CFDS,  0.94f,  0.95f,  -0.1f,  0.3f,  0.00f,  0.000f  * CFDS,  1,  20,    0,  5,  2,  1,  50,    SC_NATURE,    R_TEMP+0.0f  +273.15f,  150,  "Wood Chip. See Wood", ST_SOLID, TYPE_PART, NULL},
-    {"STAR",     PIXPACK(0xFFD010),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  1,  1,  100,  SC_SPACE,    R_TEMP+50000.0f +273.15f,251,  "A Star. A centre of gravity and a solar system.", ST_SOLID, TYPE_SOLID, &update_SUN},
-    {"AGAS",	PIXPACK(0xFF00EA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,      SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Acidic.", ST_GAS, TYPE_GAS, &update_AGAS},
-    {"DWFM",	PIXPACK(0xFF1000),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	R_TEMP+400.0f+273.15f,	88,		"Ignites flammable materials. Heats air. Goes Down.", ST_GAS, TYPE_GAS, &update_PYRO},
-    {"COPR",	PIXPACK(0xB88700),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	250,	"Solid. Conducts electricity slowly. Meltable.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW, NULL},
-    {"CO2",		PIXPACK(0xCCCCCC),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	2,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Creates O2 with Plant.", ST_GAS, TYPE_GAS, NULL},
-    {"CLAY",	PIXPACK(0xC4B099),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,     SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Powder. Turns to Pottery under heat.", ST_SOLID, TYPE_PART|PROP_NEUTPENETRATE|PROP_HOT_GLOW, NULL},
-    {"NMTR",	PIXPACK(0x444444),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	5.0f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	1,	1,	99,		SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	100,	"Neutron Matter. Very heavy. Increases Weight Under High Temperature.", ST_SOLID, TYPE_PART, &update_NMTR},
-    {"BLGN",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	0,	"Lazer Emmitter. Creates Lazers. Breaks under Pressure.", ST_SOLID, TYPE_SOLID, &update_LGUN},
-    {"BFGN",	PIXPACK(0x6BEBFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f +273.15f,	0,	"Freeze Ray Emmitter. Creates Freeze Rays. Breaks under Pressure.", ST_SOLID, TYPE_SOLID, &update_FGUN},
-    {"C-6",		PIXPACK(0x2050E0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Blue Flame Explosive", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_C6},
-    {"CNVR",	PIXPACK(0xFFD010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Turns every particle into the particle it first touches.", ST_SOLID, TYPE_SOLID, &update_CNVR},
-    {"ASH",     PIXPACK(0x666266),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_POWDERS,		R_TEMP+450.0f+273.15f,	70,		"Ash. Ignites flammable items.", ST_SOLID, TYPE_PART, &update_ASH},
-    {"GREN",	PIXPACK(0x768760),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	250,	"Grenade. A Shrapnel Explosive.", ST_SOLID, TYPE_SOLID, &update_GREN},
-    {"NUKE",	PIXPACK(0xA1E84A),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	5,      0,  0,	1,	1,	100,	SC_NUCLEAR,     R_TEMP+0.0f	+273.15f,	88,		"Solid. EXTREME RadioActive Pressure sensitive explosive.", ST_SOLID, TYPE_SOLID|PROP_NEUTPENETRATE|PROP_RADIOACTIVE, &update_NUKE},
-    {"TIN",     PIXPACK(0xC7C7C7),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_SOLIDS,      R_TEMP+0.0f +273.15f,	251,	"Smelts Together With COPR to make BRNZ", ST_SOLID, TYPE_SOLID|PROP_HOT_GLOW, NULL},
-    {"BRNZ",	PIXPACK(0xA67032),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_SOLIDS,      R_TEMP+0.0f +273.15f,	251,	"Bronze. Bad Conductor. Strong Metal.", ST_SOLID, TYPE_SOLID|PROP_HOT_GLOW|PROP_CONDUCTS, NULL},
-    {"CFC",		PIXPACK(0x7AEBDC),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.75f,	0.001f	* CFDS,	0,	0,		0,	0,	1,	1,	1,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Chlorofluorocarbons. Destroys Ozone. Also known as Freon.", ST_GAS, TYPE_GAS|PROP_DEADLY, &update_CFC},
-    {"SVOI",	PIXPACK(0x790B0B),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	251,	"Hole, will drain away first particle it touches.", ST_SOLID, TYPE_SOLID|PROP_DEADLY, &update_SVOI},
-    {"PMIC",	PIXPACK(0xC0C0C0),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	1,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	100,	"Pumice. Stacks and floats on water.", ST_SOLID, TYPE_PART, &update_PMIC},
-    {"PIVS",	PIXPACK(0x00CCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	15,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	164,	"Powered Invisible. Invisible to everything when sparked with PSCN. Opaque again with NSCN.", ST_SOLID, TYPE_SOLID | PROP_NEUTPASS, &update_PIVS},
-    {"LEAF",    PIXPACK(0x0CAC00),  0.7f,   0.02f * CFDS,   0.96f,  0.80f,  0.0f,   0.1f,   0.00f,  0.000f  * CFDS, 1,  0,      0,  0,  20, 1,  85,     SC_NATURE,      R_TEMP+0.0f  +273.15f,  65,    "Leaves. Dry out and become flammable in heat.", ST_SOLID, TYPE_PART|PROP_NEUTPENETRATE, &update_LEAF},
-    {"PLAN",    PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,	0,		0,	0,	0,	1,	100,     SC_SPACE,      R_TEMP+0.0f  +273.15f,  65,    "Planet. Can be modified using console. GravityAmount:'set tmp plan 4'.", ST_SOLID, TYPE_SOLID, &update_PLAN},
-    {"BSHL",	PIXPACK(0x808080),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,		R_TEMP+0.0f	+273.15f,	251,	"Bomb Shell. Can store explosives without breaking. Destroyed by Pressure and Heat.", ST_SOLID, TYPE_SOLID, NULL},
-    {"LTNG",	PIXPACK(0xECFF1F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_CRACKER2,		R_TEMP+0.0f +273.15f,	251,	"Lightning Strike", ST_SOLID, TYPE_SOLID, NULL},
-    {"CTRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Cold Electrode. Creates a surface that allows Cold Flame arcs. (Use sparingly)", ST_NONE, TYPE_SOLID|PROP_CONDUCTS, NULL},
-    {"C-0",		PIXPACK(0xBFBFBF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,	    0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	251,		"Explodes into first touched particle. Detonates under pressure.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_C0},
-    {"HETR",	PIXPACK(0xFFD010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,		"Heater/Cooler - set via tmp value 1=h,2=c", ST_SOLID, TYPE_SOLID, &update_HETR},
-    {"CPPA",    PIXPACK(0x000000),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  1,  1,  100,  SC_CRACKER2,    R_TEMP+0.0f  +273.15f,  251,  "Chappapa. Turns into a random particle on creation.", ST_SOLID, TYPE_SOLID, &update_CPPA},
-    {"ARGN",    PIXPACK(0xE349CE),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Argon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
-    {"PRTN",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	-1,		SC_NUCLEAR,		R_TEMP+273.15f,	255,	"Protons. Will do something.", ST_GAS, TYPE_ENERGY, &update_PRTN},
-    {"XNON",    PIXPACK(0xEDD8DD),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Xenon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
-    {"RDON",    PIXPACK(0x08A32C),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Radon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
-    {"KPTN",    PIXPACK(0xEDE3D5),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Krypton Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
-    {"HLIM",    PIXPACK(0xFFC94D),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Helium Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
+	{"SOAP",	PIXPACK(0xF5F5DC),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	35,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	29,		"Soap. Creates bubbles.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE|PROP_LIFE_DEC, &update_SOAP},
+	{"BHOL",	PIXPACK(0x202020),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	186,	"Black hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NBHL},
+	{"WHOL",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	186,	"White hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NWHL},
+	{"MERC",    PIXPACK(0x736B6D),	0.4f,	0.04f * CFDS,	0.94f,	0.80f,	0.0f,	0.3f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	91,		SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Mercury. Volume changes with temperature, Conductive.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB|PROP_LIFE_DEC, &update_MERC},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -851,10 +576,10 @@ static part_transition ptransitions[PT_NUM] =
 	/* METL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1273.0f,PT_LAVA},
 	/* SPRK */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* SNOW */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			273.0f,	PT_WATR},
-	/* WOOD */ {IPL,	NT,			6.0f,	PT_WCHP,	ITL,	NT,			873.0f,	PT_FIRE},
+	/* WOOD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			873.0f,	PT_FIRE},
 	/* NEUT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* PLUT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* PLNT */ {IPL,	NT,			6.0f,	PT_LEAF,			ITL,	NT,			573.0f,	PT_FIRE},
+	/* PLNT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			573.0f,	PT_FIRE},
 	/* ACID */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* VOID */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* WTRV */ {IPL,	NT,			IPH,	NT,			371.0f,	ST,			ITH,	NT},
@@ -871,10 +596,10 @@ static part_transition ptransitions[PT_NUM] =
 	/* MWAX */ {IPL,	NT,			IPH,	NT,			318.0f,	PT_WAX,		673.0f,	PT_FIRE},
 	/* PSCN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
 	/* NSCN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
-	/* LN2  */ {IPL,	NT,			IPH,	NT,			63.0f,	PT_NICE,	ITH,	PT_NTRG}, //200
+	/* LN2  */ {IPL,	NT,			IPH,	NT,			63.0f,	PT_NICE,	77.0f,	PT_NONE},
 	/* INSL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* BHOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* WHOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* VACU */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* VENT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* RBDM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			312.0f,	PT_LRBD},
 	/* LRBD */ {IPL,	NT,			IPH,	NT,			311.0f,	PT_RBDM,	961.0f,	PT_FIRE},
 	/* NTCT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
@@ -983,98 +708,10 @@ static part_transition ptransitions[PT_NUM] =
 	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* WIND */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* H2   */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* SOAP */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITL,  NT},
-     /* NBHL */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
-   /* NWHL */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
-  /* MERC */ {IPL,    NT,         IPH,    NT,         ITL,    NT,         ITH,  NT},
-    /* NTRG  */ {IPL,	NT,			IPH,	NT,			120.0f,	PT_LNTG,     ITH,	PT_NONE},
-    /* LQCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* GSCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* BOOM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			400.0f,	PT_PLSM},
-    /* HEAL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* FUSE2 */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* ZAP */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* NCWS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* ACRN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* CLOD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* RWTR */ {IPL,	NT,			IPH,	NT,			273.0f,	PT_ICEI,	337.0f,	PT_WTRV},
-    /* ACLO */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* VOLT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* VOLB */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* DIRT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* INVI */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* FLYS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* RSPW */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* NCGN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* TRAP */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* BPAD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* SPEL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* SPER */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* POT  */ {IPL,	NT,			60.0f,  PT_DUST,	ITL,	NT,			1673.0f,PT_LAVA},
-    /* GRAS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* CFUS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* CFIR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* SMIL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* SEAL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* BULL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* PPLT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* TNT  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* MGMA */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* RAND */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* PAIN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* VIRS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* 03   */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* DICE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			196.0f,	PT_C02},
-    /* GOLD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* mpos */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* mneg */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* ifil */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* lgun */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* lazr */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* IBAT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* fgun */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* frez */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* spmg */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* snmg */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* 1SHOL */ {IPL,	NT,			IPH,	NT,         ITL,	NT,			1273.0f,PT_LAVA},
-    /* root */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,    NT},
-    /* BIRE */ {IPL,	NT,         IPH,	NT,         ITL,	NT,         ITH,    NT},
-    /* PDCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* mnst */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* box */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* AGAS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* DWFM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* COPR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1357.0f,PT_LAVA},
-     /* CO2 */ {IPL,	NT,			IPH,	NT,			194.0f,	PT_DICE,	ITH,	NT},
-    /* CLAY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			773.0f,	PT_POT},
-    /* NMTR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* BLGN */ {IPL,	NT,			50.0f,  PT_PLSM,	ITL,	NT,			ITH,    NT},
-     /* BFGN  */ {IPL,	NT,			50.0f,  PT_HFLM,	ITL,	NT,			ITH,    NT},
-    /* C6 */    {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* CNVR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* ASH */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* gren */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* nuke */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* tin */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			505.08f,PT_LAVA},
-    /* brnz */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			1223.0f,PT_LAVA},
-    /* freo */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* svoi */    {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* pumice */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1123.0f,PT_LAVA},
-    /* PIVS */    {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* leaf */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2000.0f,PT_FIRE},
-    /* plan */    {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* bshl */    {-2.0f,PT_NONE,	2.0f,	PT_NONE,	ITL,	NT,			MAX_TEMP,	PT_NONE},
-    /* ltng */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* ctrd */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* C0 */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* hetr*/ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* cppa*/ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
-    /* argn*/ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
-    /* prtn */ {IPL,	NT,			IPH,	NT,			371.0f,	ST,			ITH,	NT},
-    /* xnon */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* rdon */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* kptn */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-    /* hlim */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* SOAP */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITL,	NT},
+	/* NBHL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* NWHL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* MERC */ {IPL,    NT,         IPH,    NT,         ITL,    NT,         ITH,	NT},
 };
 #undef IPL
 #undef IPH
@@ -1082,6 +719,7 @@ static part_transition ptransitions[PT_NUM] =
 #undef ITH
 #undef NT
 #undef ST
+
 
 static int grule[NGOL+1][10] =
 {
@@ -1163,51 +801,41 @@ static int lolzrule[9][9] =
 	{0,1,0,0,0,0,0,1,0},
 	{0,1,0,0,0,0,0,1,0},
 };
-static int smilrule[9][9] =
-{
-	{0,0,0,0,0,0,0,0,0},
-	{0,0,0,1,0,1,0,0,0},
-	{0,0,0,1,0,1,0,0,0},
-	{0,0,0,1,0,1,0,0,0},
-	{0,1,0,0,0,0,0,1,0},
-	{0,1,0,0,0,0,0,1,0},
-	{0,0,1,1,1,1,1,0,0},
-	{0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0},
-};
+
 struct wall_type
 {
-  pixel colour;
-  pixel eglow; // if emap set, add this to fire glow
-  int drawstyle;
-  const char *descs;
+	pixel colour;
+	pixel eglow; // if emap set, add this to fire glow
+	int drawstyle;
+	const char *descs;
 };
 typedef struct wall_type wall_type;
 
 static wall_type wtypes[] =
 {
-  {PIXPACK(0xC0C0C0), PIXPACK(0x101010), 0, "Wall. Indestructible. Blocks everything. Conductive."},
-  {PIXPACK(0x808080), PIXPACK(0x808080), 0, "E-Wall. Becomes transparent when electricity is connected."},
-  {PIXPACK(0xFF8080), PIXPACK(0xFF2008), 1, "Detector. Generates electricity when a particle is inside."},
-  {PIXPACK(0x808080), PIXPACK(0x000000), 0, "Streamline. Set start point of a streamline."},
-  {PIXPACK(0x808080), PIXPACK(0x000000), 0, "Sign. Click on a sign to edit it or anywhere else to place a new one."},
-  {PIXPACK(0x8080FF), PIXPACK(0x000000), 1, "Fan. Accelerates air. Use line tool to set direction and strength."},
-  {PIXPACK(0xC0C0C0), PIXPACK(0x101010), 2, "Wall. Blocks most particles but lets liquids through. Conductive."},
-  {PIXPACK(0x808080), PIXPACK(0x000000), 1, "Wall. Absorbs particles but lets air currents through."},
-  {PIXPACK(0x808080), PIXPACK(0x000000), 0, "Erases walls."},
-  {PIXPACK(0x808080), PIXPACK(0x000000), 3, "Wall. Indestructible. Blocks everything."},
-  {PIXPACK(0x3C3C3C), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks particles, allows air"},
-  {PIXPACK(0x575757), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and gasses, allows solids"},
-  {PIXPACK(0xFFFF22), PIXPACK(0x101010), 2, "Conductor, allows particles, conducts electricity"},
-  {PIXPACK(0x242424), PIXPACK(0x101010), 0, "E-Hole, absorbs particles, release them when powered"},
-  {PIXPACK(0xFFFFFF), PIXPACK(0x000000), -1, "Air, creates airflow and pressure"},
-  {PIXPACK(0xFFBB00), PIXPACK(0x000000), -1, "Heats the targetted element."},
-  {PIXPACK(0x00BBFF), PIXPACK(0x000000), -1, "Cools the targetted element."},
-  {PIXPACK(0x303030), PIXPACK(0x000000), -1, "Vacuum, reduces air pressure."},
-  {PIXPACK(0x579777), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and solids, allows gasses"},
-  //{PIXPACK(0x000000), PIXPACK(0x000000), -1, "Drag tool"},
-  {PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, "Gravity wall"},
+	{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 0, "Wall. Indestructible. Blocks everything. Conductive."},
+	{PIXPACK(0x808080), PIXPACK(0x808080), 0, "E-Wall. Becomes transparent when electricity is connected."},
+	{PIXPACK(0xFF8080), PIXPACK(0xFF2008), 1, "Detector. Generates electricity when a particle is inside."},
+	{PIXPACK(0x808080), PIXPACK(0x000000), 0, "Streamline. Set start point of a streamline."},
+	{PIXPACK(0x808080), PIXPACK(0x000000), 0, "Sign. Click on a sign to edit it or anywhere else to place a new one."},
+	{PIXPACK(0x8080FF), PIXPACK(0x000000), 1, "Fan. Accelerates air. Use line tool to set direction and strength."},
+	{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 2, "Wall. Blocks most particles but lets liquids through. Conductive."},
+	{PIXPACK(0x808080), PIXPACK(0x000000), 1, "Wall. Absorbs particles but lets air currents through."},
+	{PIXPACK(0x808080), PIXPACK(0x000000), 0, "Erases walls."},
+	{PIXPACK(0x808080), PIXPACK(0x000000), 3, "Wall. Indestructible. Blocks everything."},
+	{PIXPACK(0x3C3C3C), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks particles, allows air"},
+	{PIXPACK(0x575757), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and gasses, allows solids"},
+	{PIXPACK(0xFFFF22), PIXPACK(0x101010), 2, "Conductor, allows particles, conducts electricity"},
+	{PIXPACK(0x242424), PIXPACK(0x101010), 0, "E-Hole, absorbs particles, release them when powered"},
+	{PIXPACK(0xFFFFFF), PIXPACK(0x000000), -1, "Air, creates airflow and pressure"},
+	{PIXPACK(0xFFBB00), PIXPACK(0x000000), -1, "Heats the targetted element."},
+	{PIXPACK(0x00BBFF), PIXPACK(0x000000), -1, "Cools the targetted element."},
+	{PIXPACK(0x303030), PIXPACK(0x000000), -1, "Vacuum, reduces air pressure."},
+	{PIXPACK(0x579777), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and solids, allows gasses"},
+	{PIXPACK(0x000000), PIXPACK(0x000000), -1, "Drag tool"},
+	{PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, "Gravity wall"},
 };
+
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
 particle portalp[CHANNELS][8][80];
 const particle emptyparticle;
@@ -1239,6 +867,7 @@ unsigned cb_pmap[YRES][XRES];
 
 unsigned photons[YRES][XRES];
 
+int do_move(int i, int x, int y, float nxf, float nyf);
 int try_move(int i, int x, int y, int nx, int ny);
 int eval_move(int pt, int nx, int ny, unsigned *rr);
 void init_can_move();

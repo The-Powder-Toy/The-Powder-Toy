@@ -15,12 +15,12 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r>>PS)>=NPART || !r)
+						if ((r>>8)>=NPART || !r)
 							continue;
-						if ((r&TYPE)==PT_PIPE&&parts[r>>PS].ctype==1)
+						if ((r&0xFF)==PT_PIPE&&parts[r>>8].ctype==1)
 						{
-							parts[r>>PS].ctype = (((parts[i].ctype)%3)+2);//reverse
-							parts[r>>PS].life = 6;
+							parts[r>>8].ctype = (((parts[i].ctype)%3)+2);//reverse
+							parts[r>>8].life = 6;
 						}
 					}
 		}
@@ -39,7 +39,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>PS)>=NPART)
+					if ((r>>8)>=NPART)
 						continue;
 					else if (!r&&parts[i].tmp!=0)
 					{
@@ -54,18 +54,18 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 					}
 					else if (!r)
 						continue;
-					else if (parts[i].tmp == 0 && (ptypes[r&TYPE].falldown!= 0 || ptypes[r&TYPE].state == ST_GAS))
+					else if (parts[i].tmp == 0 && (ptypes[r&0xFF].falldown!= 0 || ptypes[r&0xFF].state == ST_GAS))
 					{
-						parts[i].tmp = (r&TYPE);
-						parts[i].temp = parts[r>>PS].temp;
-						parts[i].flags = parts[r>>PS].life;
-						kill_part(r>>PS);
+						parts[i].tmp = parts[r>>8].type;
+						parts[i].temp = parts[r>>8].temp;
+						parts[i].flags = parts[r>>8].life;
+						kill_part(r>>8);
 					}
-					else if ((r&TYPE)==PT_PIPE && parts[r>>PS].ctype!=ctype && parts[r>>PS].tmp==0&&parts[i].tmp>0)
+					else if ((r&0xFF)==PT_PIPE && parts[r>>8].ctype!=ctype && parts[r>>8].tmp==0&&parts[i].tmp>0)
 					{
-						parts[r>>PS].tmp = parts[i].tmp;
-						parts[r>>PS].temp = parts[i].temp;
-						parts[r>>PS].flags = parts[i].flags;
+						parts[r>>8].tmp = parts[i].tmp;
+						parts[r>>8].temp = parts[i].temp;
+						parts[r>>8].flags = parts[i].flags;
 						parts[i].tmp = 0;
 					}
 				}

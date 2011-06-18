@@ -1,14 +1,14 @@
 #include <element.h>
 /*these are the count vaules of where the particle gets stored, depending on where it came from
- 1 4 6
- 2 . 7
- 3 5 8
- PRTO counts backwards, so that it will come out at the opposite place of where it came in
- 8 5 3
- 7 . 2
- 6 4 1
- PRTO does +/-1 to the count, so it doesn't jam as easily
- */
+   1 4 6
+   2 . 7
+   3 5 8
+   PRTO counts backwards, so that it will come out at the opposite place of where it came in
+   8 5 3
+   7 . 2
+   6 4 1
+   PRTO does +/-1 to the count, so it doesn't jam as easily
+*/
 int update_PRTI(UPDATE_FUNC_ARGS) {
 	int r, nnx, rx, ry, fe = 0;
 	int count =0;
@@ -23,27 +23,28 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 				count ++;
 				if (!r)
 					fe = 1;
-				if ((r>>PS)>=NPART)
+				if ((r>>8)>=NPART)
 					continue;
-				if (!r || (r&TYPE)==PT_PRTI || (r&TYPE)==PT_PRTO || (ptypes[r&TYPE].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && (r&TYPE)!=PT_SPRK))
+				if (!r || (r&0xFF)==PT_PRTI || (r&0xFF)==PT_PRTO || (ptypes[r&0xFF].falldown== 0 && ptypes[r&0xFF].state != ST_GAS && (r&0xFF)!=PT_SPRK))
 				{
 					r = photons[y+ry][x+rx];
-					if ((r>>PS)>=NPART)
+					if ((r>>8)>=NPART)
 						continue;
-					if (!r || (r&TYPE)==PT_PRTI || (r&TYPE)==PT_PRTO || (ptypes[r&TYPE].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && (r&TYPE)!=PT_SPRK))
+					if (!r || (r&0xFF)==PT_PRTI || (r&0xFF)==PT_PRTO || (ptypes[r&0xFF].falldown== 0 && ptypes[r&0xFF].state != ST_GAS && (r&0xFF)!=PT_SPRK))
 						continue;
-
-                    if ((r&TYPE) == PT_SOAP)
-                        detach(r>>PS);
 				}
+
+				if ((r&0xFF) == PT_SOAP)
+					detach(r>>8);
+
 				for ( nnx=0; nnx<80; nnx++)
 					if (!portalp[parts[i].tmp][count-1][nnx].type)
 					{
-						portalp[parts[i].tmp][count-1][nnx] = parts[r>>PS];
-						if ((r&TYPE)==PT_SPRK)
-							part_change_type(r>>PS,x+rx,y+ry,parts[r>>PS].ctype);
+						portalp[parts[i].tmp][count-1][nnx] = parts[r>>8];
+						if ((r&0xFF)==PT_SPRK)
+							part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
 						else
-							kill_part(r>>PS);
+							kill_part(r>>8);
 						fe = 1;
 						break;
 					}

@@ -8,7 +8,5 @@ int update_MISC(UPDATE_FUNC_ARGS) {
 		ISLOLZ=1;
 	else if (t==PT_GRAV)
 		ISGRAV=1;
-    else if (t==PT_SMIL)
-		ISSMIL=1;
 	return 0;
 }

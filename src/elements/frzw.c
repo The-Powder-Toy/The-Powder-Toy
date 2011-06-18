@@ -7,11 +7,11 @@ int update_FRZW(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)>=NPART || !r)
+				if ((r>>8)>=NPART || !r)
 					continue;
-				if ((r&TYPE)==PT_WATR&&5>rand()%70)
+				if ((r&0xFF)==PT_WATR&&5>rand()%70)
 				{
-					part_change_type(r>>PS,x+rx,y+ry,PT_FRZW);
+					part_change_type(r>>8,x+rx,y+ry,PT_FRZW);
 				}
 			}
 	if (parts[i].life==0&&13>rand()%2500)

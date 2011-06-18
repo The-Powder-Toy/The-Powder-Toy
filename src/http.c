@@ -709,7 +709,7 @@ void http_auth_headers(void *ctx, char *user, char *pass, char *session_id)
 			http_async_add_header(ctx, "X-Auth-Hash", tmp);
 			free(tmp);
 		}
-		if(session_id)
+		if (session_id)
 		{
 			http_async_add_header(ctx, "X-Auth-User-Id", user);
 			http_async_add_header(ctx, "X-Auth-Session-Key", session_id);
@@ -830,8 +830,8 @@ char *http_ret_text(int ret)
 		return "Requested Range Not Satisfiable";
 	case 417:
 		return "Expectation Failed";
-    case 418:
-        return "I'm a teapot";
+	case 418:
+		return "I'm a teapot";
 	case 422:
 		return "Unprocessable Entity";
 	case 423:
@@ -842,12 +842,13 @@ char *http_ret_text(int ret)
 		return "Unordered Collection";
 	case 426:
 		return "Upgrade Required";
-    case 444:
-        return "No Response";
-    case 450:
-        return "Blocked by Windows Parental Controls";
-    case 499:
-        return "Client Closed Request";
+	case 444:
+		return "No Response";
+	case 450:
+		return "Blocked by Windows Parental Controls";
+	case 499:
+		return "Client Closed Request";
+
 	case 500:
 		return "Internal Server Error";
 	case 501:
@@ -1038,7 +1039,7 @@ retry:
 			http_async_add_header(ctx, "X-Auth-Hash", tmp);
 			free(tmp);
 		}
-		if(session_id)
+		if (session_id)
 		{
 			http_async_add_header(ctx, "X-Auth-User-Id", user);
 			http_async_add_header(ctx, "X-Auth-Session-Key", session_id);

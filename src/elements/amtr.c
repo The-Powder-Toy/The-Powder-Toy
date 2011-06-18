@@ -7,9 +7,9 @@ int update_AMTR(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)>=NPART || !r)
+				if ((r>>8)>=NPART || !r)
 					continue;
-				if ((r&TYPE)!=PT_AMTR && (r&TYPE)!=PT_DMND && (r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN && (r&TYPE)!=PT_NONE && (r&TYPE)!=PT_PHOT && (r&TYPE)!=PT_VOID && (r&TYPE)!=PT_BHOL && (r&TYPE)!=PT_PRTI && (r&TYPE)!=PT_PRTO)
+				if ((r&0xFF)!=PT_AMTR && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_NONE && (r&0xFF)!=PT_PHOT && (r&0xFF)!=PT_VOID && (r&0xFF)!=PT_BHOL && (r&0xFF)!=PT_NBHL && (r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO)
 				{
 					parts[i].life++;
 					if (parts[i].life==4)
@@ -18,9 +18,9 @@ int update_AMTR(UPDATE_FUNC_ARGS) {
 						return 1;
 					}
 					if (10>(rand()/(RAND_MAX/100)))
-						create_part(r>>PS, x+rx, y+ry, PT_PHOT);
+						create_part(r>>8, x+rx, y+ry, PT_PHOT);
 					else
-						kill_part(r>>PS);
+						kill_part(r>>8);
 					pv[y/CELL][x/CELL] -= 2.0f;
 				}
 			}

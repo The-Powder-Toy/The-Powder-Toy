@@ -16,6 +16,7 @@
 #include <misc.h>
 #include <console.h>
 #include <images.h>
+#include <dirent.h>
 
 SDLMod sdl_mod;
 int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
@@ -59,6 +60,7 @@ int search_fav = 0;
 int search_date = 0;
 int search_page = 0;
 char search_expr[256] = "";
+
 char server_motd[512] = "";
 
 char *tag_names[TAG_MAX];
@@ -74,7 +76,7 @@ void menu_count(void)//puts the number of elements in each section into .itemcou
 {
 	int i=0;
 	msections[SC_WALL].itemcount = UI_WALLCOUNT-4;
-	//msections[SC_SPECIAL].itemcount = 4;
+	msections[SC_SPECIAL].itemcount = 4;
 	for (i=0; i<PT_NUM; i++)
 	{
 		msections[ptypes[i].menusection].itemcount+=ptypes[i].menu;
@@ -90,18 +92,6 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 
 	if (strcmp(signs[i].text, "{t}")==0)
 		*w = textwidth("Temp: 0000.00");
-
-    if(strcmp(signs[i].text, "{type}")==0)
-        *w = textwidth("Type: WATER");
-
-    if(strcmp(signs[i].text, "{ctype}")==0)
-        *w = textwidth("CType: WATER");
-
-    if(strcmp(signs[i].text, "{life}")==0)
-        *w = textwidth("Life: 00000");
-
-    if(strcmp(signs[i].text, "{G}")==0)
-        *w = textwidth("Generation: 000000000");
 
 	if (sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
 	{
@@ -121,13 +111,14 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 	}
 
 	//Ususal width
-	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && strcmp(signs[i].text, "{type}") && strcmp(signs[i].text, "{ctype}") && strcmp(signs[i].text, "{life}") && strcmp(signs[i].text, "{G}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
+	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
 		*w = textwidth(signs[i].text) + 5;
 	*h = 14;
 	*x0 = (signs[i].ju == 2) ? signs[i].x - *w :
 	      (signs[i].ju == 1) ? signs[i].x - *w/2 : signs[i].x;
 	*y0 = (signs[i].y > 18) ? signs[i].y - 18 : signs[i].y + 4;
 }
+
 void add_sign_ui(pixel *vid_buf, int mx, int my)
 {
 	int i, w, h, x, y, nm=0, ju;
@@ -183,7 +174,7 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
 	strcpy(ed.str, signs[i].text);
 	ju = signs[i].ju;
 
-	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+	fillrect(vid_buf, -1, -1, XRES, YRES+MENUSIZE, 0, 0, 0, 192);
 	while (!sdl_poll())
 	{
 		bq = b;
@@ -499,8 +490,8 @@ void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed)
 void ui_copytext_draw(pixel *vid_buf, ui_copytext *ed)
 {
 	int g = 180, i = 0;
-	if(!ed->state){
-		if(ed->hover){
+	if (!ed->state) {
+		if (ed->hover) {
 			i = 0;
 		} else {
 			i = 100;
@@ -520,8 +511,8 @@ void ui_copytext_draw(pixel *vid_buf, ui_copytext *ed)
 
 void ui_copytext_process(int mx, int my, int mb, int mbq, ui_copytext *ed)
 {
-	if(my>=ed->y && my<=ed->y+ed->height && mx>=ed->x && mx<=ed->x+ed->width && !ed->state){
-		if(mb && !mbq){
+	if (my>=ed->y && my<=ed->y+ed->height && mx>=ed->x && mx<=ed->x+ed->width && !ed->state) {
+		if (mb && !mbq) {
 			clipboard_push_text(ed->text);
 			ed->state = 1;
 		}
@@ -530,6 +521,7 @@ void ui_copytext_process(int mx, int my, int mb, int mbq, ui_copytext *ed)
 		ed->hover = 0;
 	}
 }
+
 void ui_richtext_draw(pixel *vid_buf, ui_richtext *ed)
 {
 	ed->str[511] = 0;
@@ -555,18 +547,18 @@ int markup_getregion(char *text, char *action, char *data, char *atext){
 	else
 	{
 		return 0;
-	}
+	}	
 }
 
 void ui_richtext_settext(char *text, ui_richtext *ed)
 {
 	int pos = 0, action = 0, ppos = 0, ipos = 0;
+	memset(ed->printstr, 0, 512);
+	memset(ed->str, 0, 512);
 	strcpy(ed->str, text);
 	//strcpy(ed->printstr, text);
-	memset(ed->printstr, 0, 512);
-    memset(ed->str, 0, 512);
 	for(action = 0; action < 6; action++){
-		ed->action[action] = 0;
+		ed->action[action] = 0;	
 		memset(ed->actiondata[action], 0, 256);
 		memset(ed->actiontext[action], 0, 256);
 	}
@@ -585,11 +577,11 @@ void ui_richtext_settext(char *text, ui_richtext *ed)
 				ppos+=strlen(ed->actiontext[action]);
 				ipos+=strlen(ed->actiontext[action]);
 				pos+=mulen;
-				action++;
-			}
+				action++;			
+			} 
 			else
 			{
-				pos++;
+				pos++;			
 			}
 		} else {
 			ed->printstr[ppos] = ed->str[pos];
@@ -597,7 +589,7 @@ void ui_richtext_settext(char *text, ui_richtext *ed)
 			pos++;
 			ipos++;
 			if(ed->str[pos] == '\b'){
-				ipos-=2;
+				ipos-=2;			
 			}
 		}
 	}
@@ -613,24 +605,31 @@ void ui_richtext_process(int mx, int my, int mb, int mbq, ui_richtext *ed)
 		currentpos = textwidthx(ed->printstr, mx-ed->x);
 		for(action = 0; action < 6; action++){
 			if(currentpos >= ed->regionss[action] && currentpos <= ed->regionsf[action])
-			{
+			{	
 				//Do action
 				if(ed->action[action]=='a'){
 					//Open link
-					open_link(ed->actiondata[action]);
+					open_link(ed->actiondata[action]);	
 				}
 				break;
 			}
 		}
 	}
 }
-void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
+
+void draw_svf_ui(pixel *vid_buf, int alternate)// all the buttons at the bottom
 {
 	int c;
 
 	//the open browser button
-	drawtext(vid_buf, 4, YRES+(MENUSIZE-14), "\x81", 255, 255, 255, 255);
-	drawrect(vid_buf, 1, YRES+(MENUSIZE-16), 16, 14, 255, 255, 255, 255);
+	if(alternate)
+	{
+		fillrect(vid_buf, 0, YRES+(MENUSIZE-16)-1, 18, 16, 255, 255, 255, 255);
+		drawtext(vid_buf, 4, YRES+(MENUSIZE-14), "\x81", 0, 0, 0, 255);
+	} else {
+		drawtext(vid_buf, 4, YRES+(MENUSIZE-14), "\x81", 255, 255, 255, 255);
+		drawrect(vid_buf, 1, YRES+(MENUSIZE-16), 16, 14, 255, 255, 255, 255);
+	}
 
 	// the reload button
 	c = svf_open ? 255 : 128;
@@ -638,15 +637,22 @@ void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 	drawrect(vid_buf, 19, YRES+(MENUSIZE-16), 16, 14, c, c, c, 255);
 
 	// the save sim button
-	c = svf_login ? 255 : 128;
-	drawtext(vid_buf, 40, YRES+(MENUSIZE-14), "\x82", c, c, c, 255);
-	if (svf_open)
-		drawtextmax(vid_buf, 58, YRES+(MENUSIZE-12), 125, svf_name, c, c, c, 255);
-	else
-		drawtext(vid_buf, 58, YRES+(MENUSIZE-12), "[untitled simulation]", c, c, c, 255);
-	drawrect(vid_buf, 37, YRES+(MENUSIZE-16), 150, 14, c, c, c, 255);
-	if (svf_open && svf_own)
-		drawdots(vid_buf, 55, YRES+(MENUSIZE-15), 12, c, c, c, 255);
+	if(alternate)
+	{
+		fillrect(vid_buf, 36, YRES+(MENUSIZE-16)-1, 152, 16, 255, 255, 255, 255);
+		drawtext(vid_buf, 40, YRES+(MENUSIZE-14), "\x82", 0, 0, 0, 255);
+		drawtext(vid_buf, 58, YRES+(MENUSIZE-12), "[save to disk]", 0, 0, 0, 255);
+	} else {
+		c = svf_login ? 255 : 128;
+		drawtext(vid_buf, 40, YRES+(MENUSIZE-14), "\x82", c, c, c, 255);
+		if (svf_open)
+			drawtextmax(vid_buf, 58, YRES+(MENUSIZE-12), 125, svf_name, c, c, c, 255);
+		else
+			drawtext(vid_buf, 58, YRES+(MENUSIZE-12), "[untitled simulation]", c, c, c, 255);
+		drawrect(vid_buf, 37, YRES+(MENUSIZE-16), 150, 14, c, c, c, 255);
+		if (svf_open && svf_own)
+			drawdots(vid_buf, 55, YRES+(MENUSIZE-15), 12, c, c, c, 255);
+	}
 
 	c = (svf_login && svf_open) ? 255 : 128;
 
@@ -665,18 +671,14 @@ void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 	drawtext(vid_buf, 192, YRES+(MENUSIZE-12), "\xCB", 0, 187, 18, c);
 	drawtext(vid_buf, 205, YRES+(MENUSIZE-14), "\xCA", 187, 40, 0, c);
 
-	//Local save button
-    drawrect(vid_buf, 217, YRES+(MENUSIZE-16), 19, 14, 255, 255, 255, 255);
-    drawtext(vid_buf, 220, YRES+(MENUSIZE-14), "\x82", 255, 255, 255, 255);
-
 	//the tags button
-	drawtext(vid_buf, 241, YRES+(MENUSIZE-15), "\x83", c, c, c, 255);
+	drawtext(vid_buf, 222, YRES+(MENUSIZE-15), "\x83", c, c, c, 255);
 	if (svf_tags[0])
-		drawtextmax(vid_buf, 259, YRES+(MENUSIZE-12), XRES+BARSIZE-405, svf_tags, c, c, c, 255);
+		drawtextmax(vid_buf, 240, YRES+(MENUSIZE-12), XRES+BARSIZE-405, svf_tags, c, c, c, 255);
 	else
-		drawtext(vid_buf, 259, YRES+(MENUSIZE-12), "[no tags set]", c, c, c, 255);
+		drawtext(vid_buf, 240, YRES+(MENUSIZE-12), "[no tags set]", c, c, c, 255);
 
-	drawrect(vid_buf, 238, YRES+(MENUSIZE-16), XRES+BARSIZE-380, 14, c, c, c, 255);
+	drawrect(vid_buf, 219, YRES+(MENUSIZE-16), XRES+BARSIZE-380, 14, c, c, c, 255);
 
 	//the clear sim button------------some of the commented values are wrong
 	drawtext(vid_buf, XRES-139+BARSIZE/*371*/, YRES+(MENUSIZE-14), "\x92", 255, 255, 255, 255);
@@ -711,8 +713,8 @@ void draw_svf_ui(pixel *vid_buf)// all the buttons at the bottom
 	}
 	else*/
 	{
-		drawtext(vid_buf, XRES-156+BARSIZE, YRES+(MENUSIZE-13), "\xCF", 255, 255, 255, 255); //TODO: More suitable icon - Done :D
-		drawrect(vid_buf, XRES-159+BARSIZE, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
+		drawtext(vid_buf, XRES-156+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xCF", 255, 255, 255, 255);
+		drawrect(vid_buf, XRES-159+BARSIZE/*494*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
 	}
 
 	//the view mode button
@@ -832,6 +834,7 @@ void error_ui(pixel *vid_buf, int err, char *txt)
 			break;
 	}
 }
+
 char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shadow)
 {
 	int xsize = 244;
@@ -872,7 +875,7 @@ char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shad
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
 		drawtext(vid_buf, x0+8, y0+8, title, 160, 160, 255, 255);
 		drawtext(vid_buf, x0+8, y0+26, prompt, 255, 255, 255, 255);
-
+		
 		drawrect(vid_buf, ed.x-4, ed.y-5, ed.w+4, 16, 192, 192, 192, 255);
 
 		ui_edit_draw(vid_buf, &ed);
@@ -900,6 +903,7 @@ char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shad
 	}
 	return mystrdup(ed.str);
 }
+
 void info_ui(pixel *vid_buf, char *top, char *txt)
 {
 	int x0=(XRES-240)/2,y0=(YRES-MENUSIZE)/2,b=1,bq,mx,my;
@@ -952,7 +956,7 @@ void info_box(pixel *vid_buf, char *msg)
 	drawrect(vid_buf, x0, y0, w, 24, 192, 192, 192, 255);
 	drawtext(vid_buf, x0+8, y0+8, msg, 192, 192, 240, 255);
 #ifndef RENDERER
-        sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+	sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 #endif
 }
 
@@ -1082,6 +1086,7 @@ int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 
 	return ret;
 }
+
 void login_ui(pixel *vid_buf)
 {
 	int x0=(XRES+BARSIZE-192)/2,y0=(YRES+MENUSIZE-80)/2,b=1,bq,mx,my,err;
@@ -1116,8 +1121,7 @@ void login_ui(pixel *vid_buf)
 	ed2.multiline = 0;
 	strcpy(ed2.str, "");
 
-	fillrect(vid_buf, -1, -1, XRES, YRES+MENUSIZE, 0, 0, 0, 192);
-
+	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 	while (!sdl_poll())
 	{
 		bq = b;
@@ -1183,26 +1187,33 @@ void login_ui(pixel *vid_buf)
 	}
 	if (res && !strncmp(res, "OK ", 3))
 	{
-		char *s_id,*u_e,*nres;
-		printf("{%s}\n", res);
+		char *s_id,*u_e,*nres,*u_m,*mres;
 		s_id = strchr(res+3, ' ');
 		if (!s_id)
 			goto fail;
 		*(s_id++) = 0;
 
 		u_e = strchr(s_id, ' ');
-		if (!u_e) {
-			u_e = malloc(1);
-			memset(u_e, 0, 1);
+		if (!u_e)
+			goto fail;
+		*(u_e++) = 0;
+			
+		u_m = strchr(u_e, ' ');
+		if (!u_m) {
+			u_m = malloc(1);
+			memset(u_m, 0, 1);
 		}
 		else
-			*(u_e++) = 0;
+			*(u_m++) = 0;
 
 		strcpy(svf_user_id, res+3);
 		strcpy(svf_session_id, s_id);
-		nres = mystrdup(u_e);
+		mres = mystrdup(u_e);
+		nres = mystrdup(u_m);
 
-		printf("{%s} {%s} {%s}\n", svf_user_id, svf_session_id, nres);
+		#ifdef DEBUG
+		printf("{%s} {%s} {%s} {%s}\n", svf_user_id, svf_session_id, nres, mres);
+		#endif
 
 		if (!strncmp(nres, "ADMIN", 5))
 		{
@@ -1219,6 +1230,7 @@ void login_ui(pixel *vid_buf)
 			svf_admin = 0;
 			svf_mod = 0;
 		}
+		svf_messages = atoi(mres);
 		free(res);
 		svf_login = 1;
 		return;
@@ -1237,6 +1249,7 @@ fail:
 	svf_own = 0;
 	svf_admin = 0;
 	svf_mod = 0;
+	svf_messages = 0;
 }
 
 int stamp_ui(pixel *vid_buf)
@@ -1578,6 +1591,7 @@ int save_name_ui(pixel *vid_buf)
 
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 	draw_rgba_image(vid_buf, save_to_server_image, 0, 0, 0.7);
+	
 	memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 
 	while (!sdl_poll())
@@ -1620,7 +1634,6 @@ int save_name_ui(pixel *vid_buf)
 			ui_copytext_draw(vid_buf, &ctb);
 			ui_copytext_process(mx, my, b, bq, &ctb);
 		}
-
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 
 		memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
@@ -1631,7 +1644,7 @@ int save_name_ui(pixel *vid_buf)
 
 		if ((b && !bq && ((mx>=x0+9 && mx<x0+23 && my>=y0+22 && my<y0+36) ||
 		                 (mx>=x0 && mx<x0+192 && my>=y0+74+YRES/4 && my<y0+90+YRES/4)))
-        || sdl_key==SDLK_RETURN)
+			|| sdl_key==SDLK_RETURN)
 		{
 			if (th) free(th);
 			if (!ed.str[0])
@@ -1660,12 +1673,12 @@ int save_name_ui(pixel *vid_buf)
 		}
 	}
 	if (th) free(th);
-    free(old_vid);
+	free(old_vid);
 	return 0;
 }
 
 //unused old function, with all the elements drawn at the bottom
-
+/*
 void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 {
 	int b=1,bq,mx,my,h,x,y,n=0,height,width,sy,rows=0;
@@ -1710,19 +1723,19 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 						x = XRES-BARSIZE-26;
 						y += 19;
 					}
-					x -= draw_tool_xy(vid_buf, x, y, n, wtypes[n-122].colour)+5;
+					x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
 					if (mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 					{
-						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
+						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
 						h = n;
 					}
 					else if (n==*sl)
 					{
-						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
+						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
 					}
 					else if (n==*sr)
 					{
-						drawrect(vid_buf, x+30, y-1, 29, 17, 55, 55, 255, 255);
+						drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
 					}
 				}
 			}
@@ -1738,7 +1751,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 						x = XRES-BARSIZE-26;
 						y += 19;
 					}
-					x -= draw_tool_xy(vid_buf, x, y, n, wtypes[n-122].colour)+5;
+					x -= draw_tool_xy(vid_buf, x, y, n, mwalls[n-122].colour)+5;
 					if (mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 					{
 						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
@@ -1766,7 +1779,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 					x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
 					if (mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 					{
-						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
+						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
 						h = n;
 					}
 					else if (n==*sl)
@@ -1794,7 +1807,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 					x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
 					if (mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 					{
-						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
+						drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
 						h = n;
 					}
 					else if (n==*sl)
@@ -1815,7 +1828,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 		}
 		else if (i==SC_WALL||(i==SC_SPECIAL&&h>=122))
 		{
-			drawtext(vid_buf, XRES-textwidth((char *)wtypes[h-122].descs)-BARSIZE, sy+height+10, (char *)wtypes[h-122].descs, 255, 255, 255, 255);
+			drawtext(vid_buf, XRES-textwidth((char *)mwalls[h-122].descs)-BARSIZE, sy+height+10, (char *)mwalls[h-122].descs, 255, 255, 255, 255);
 		}
 		else
 		{
@@ -1859,13 +1872,11 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 	}
 	//drawtext(vid_buf, XRES+2, (12*i)+2, msections[i].icon, 255, 255, 255, 255);
 }
-
-
+*/
 //current menu function
 void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq, int mx, int my)
 {
 	int h,x,y,n=0,height,width,sy,rows=0,xoff=0,fwidth;
-    SDL_Event event;
 	SEC = SEC2;
 	mx /= sdl_scale;
 	my /= sdl_scale;
@@ -1881,13 +1892,13 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 	{
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
-			if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM)
+			if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM&&n!=SPC_WIND)
 			{
 				/*if (x-18<=2)
-                 {
-                 x = XRES-BARSIZE-18;
-                 y += 19;
-                 }*/
+				{
+					x = XRES-BARSIZE-18;
+					y += 19;
+				}*/
 				x -= draw_tool_xy(vid_buf, x, y, n, wtypes[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
@@ -1918,147 +1929,108 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 	{
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
-			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM)
+			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM||n==SPC_WIND)
 			{
-
 				/*if (x-18<=0)
-                 {
-                 x = XRES-BARSIZE-18;
-                 y += 19;
-                 }
-                 */
-
-				x -= draw_tool_xy(vid_buf, x-xoff, y, n, wtypes[n-UI_WALLSTART].colour)+5;
-				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
-                    h = n;
-                }
-                if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
-                    h = n;
-                }
-                else if (n==SLALT)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
-                }
-                else if (n==*sl)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
-                }
-                else if (n==*sr)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 55, 55, 255, 255);
-                }
+				{
+					x = XRES-BARSIZE-18;
+					y += 19;
+				}*/
+				x -= draw_tool_xy(vid_buf, x, y, n, wtypes[n-UI_WALLSTART].colour)+5;
+				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
+					h = n;
+				}
+				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+					h = n;
+				}
+				else if (n==SLALT)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+				}
+				else if (n==*sl)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
+				}
+				else if (n==*sr)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 55, 55, 255, 255);
+				}
 			}
 		}
-		/*for (n = 0; n<PT_NUM; n++)
-         {
-         if (ptypes[n].menusection==i&&ptypes[n].menu==1)
-         {
-         if (x-18<=0)
-         {
-         x = XRES-BARSIZE-18;
-         y += 19;
-         }
-
-
-         x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
-         if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
-         {
-         drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
-         h = n;
-         }
-         if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
-         {
-         drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
-         h = n;
-         }
-         else if (n==SLALT)
-         {
-         drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
-         }
-         else if (n==*sl)
-         {
-         drawrect(vid_buf, x+30, y-1, 29, 17, 255, 0, 0, 255);
-         }
-         else if (n==*sr)
-         {
-         drawrect(vid_buf, x+30, y-1, 29, 17, 0, 0, 255, 255);
-         }
-         }
-         }
-         */
-        for (n = 0; n<PT_NUM; n++)
-        {
-            if (ptypes[n].menusection==i&&ptypes[n].menu==1)
-            {
-
-                x -= draw_tool_xy(vid_buf, x-xoff, y, n, ptypes[n].pcolors)+5;
-                if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
-                    h = n;
-                }
-                if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
-                    h = n;
-                }
-                else if (n==SLALT)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
-                }
-                else if (n==*sl)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
-                }
-                else if (n==*sr)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 55, 55, 255, 255);
-                }
-            }
-        }
-
+		for (n = 0; n<PT_NUM; n++)
+		{
+			if (ptypes[n].menusection==i&&ptypes[n].menu==1)
+			{
+				/*if (x-18<=0)
+				{
+					x = XRES-BARSIZE-18;
+					y += 19;
+				}*/
+				x -= draw_tool_xy(vid_buf, x, y, n, ptypes[n].pcolors)+5;
+				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
+					h = n;
+				}
+				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+					h = n;
+				}
+				else if (n==SLALT)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
+				}
+				else if (n==*sl)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
+				}
+				else if (n==*sr)
+				{
+					drawrect(vid_buf, x+30, y-1, 29, 17, 55, 55, 255, 255);
+				}
+			}
+		}
 	}
 	else //all other menus
 	{
-		if (fwidth > (XRES-BARSIZE)){ //fancy scrolling
+		if (fwidth > XRES-BARSIZE) { //fancy scrolling
 			float overflow = fwidth-(XRES-BARSIZE), location = ((float)XRES-BARSIZE)/((float)(mx-(XRES-BARSIZE)));
 			xoff = (int)(overflow / location);
-        }
-        for (n = 0; n<PT_NUM; n++)
-        {
-            if (ptypes[n].menusection==i&&ptypes[n].menu==1)
-            {
-
-                x -= draw_tool_xy(vid_buf, x-xoff, y, n, ptypes[n].pcolors)+5;
-                if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
-                    h = n;
-                }
-                if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
-                    h = n;
-                }
-                else if (n==SLALT)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
-                }
-                else if (n==*sl)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
-                }
-                else if (n==*sr)
-                {
-                    drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 55, 55, 255, 255);
-                }
-            }
-        }
-
+		}
+		for (n = 0; n<PT_NUM; n++)
+		{
+			if (ptypes[n].menusection==i&&ptypes[n].menu==1)
+			{
+				x -= draw_tool_xy(vid_buf, x-xoff, y, n, ptypes[n].pcolors)+5;
+				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
+				{
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
+					h = n;
+				}
+				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+				{
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
+					h = n;
+				}
+				else if (n==SLALT)
+				{
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
+				}
+				else if (n==*sl)
+				{
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
+				}
+				else if (n==*sr)
+				{
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 55, 55, 255, 255);
+				}
+			}
+		}
 	}
 	if (!bq && mx>=((XRES+BARSIZE)-16) ) //highlight menu section
 		if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
@@ -2096,7 +2068,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 		}
 		else {
 			*sl = h;
-            *dae = 51;
+			*dae = 51;
 		}
 	}
 	if (b==4&&h==-1)
@@ -2116,7 +2088,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 		}
 		else {
 			*sr = h;
-            *dae = 51;
+			*dae = 51;
 		}
 	}
 }
@@ -2136,19 +2108,19 @@ int color_menu_ui(pixel *vid_buf, int i, int *cr, int *cg, int *cb, int b, int b
 		}
 		for (n = 0; n<7; n++)
 		{
-            for (a=1; a<15; a++)
-            {
-                for (c=1; c<27; c++)
-                {
-                    vid_buf[(XRES+BARSIZE)*(y+a)+((x-xoff)+c)] = colorlist[n].colour;
-                }
-            }
-            x -= 26+5;
-            if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
-            {
-                drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
-                h = n;
-            }
+				for (a=1; a<15; a++)
+				{
+					for (c=1; c<27; c++)
+					{
+						vid_buf[(XRES+BARSIZE)*(y+a)+((x-xoff)+c)] = colorlist[n].colour;
+					}
+				}
+				x -= 26+5;
+				if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
+				{
+					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
+					h = n;
+				}
 		}
 	}
 	if(h!=-1)
@@ -2327,17 +2299,6 @@ void set_cmode(int cm) // sets to given view mode
 	{
 		strcpy(itc_msg, "Heat Gradient Display");
 	}
-    else if (cmode==CM_AWESOME)
-	{
-		strcpy(itc_msg, "Awesome Velocity Display");
-	}
-    else if (cmode==CM_PREAWE)
-	{
-		strcpy(itc_msg, "Awesome Pressure Display");
-	}else if (cmode==CM_GRAV)
- 	{
-        strcpy(itc_msg, "Gravity Display");
- 	}
 	else if (cmode==CM_LIFE)
 	{
 		if (DEBUG_MODE) //can only get to Life view in debug mode
@@ -2514,8 +2475,8 @@ int search_ui(pixel *vid_buf)
 	strcpy(ed.str, search_expr);
 
 	motd.x = 20;
-    motd.y = 33;
-    motd.str[0] = 0;
+	motd.y = 33;
+	motd.str[0] = 0;
 
 	sdl_wheel = 0;
 
@@ -2570,12 +2531,12 @@ int search_ui(pixel *vid_buf)
 		}
 
 		if(!svf_login)
-        {
-            search_fav = 0;
-            drawrect(vid_buf, XRES-134, 8, 16, 16, 192, 192, 192, 255);
-            drawtext(vid_buf, XRES-130, 11, "\xCC", 120, 120, 120, 255);
-        }
-        else if (search_fav)
+		{
+			search_fav = 0;
+			drawrect(vid_buf, XRES-134, 8, 16, 16, 192, 192, 192, 255);
+			drawtext(vid_buf, XRES-130, 11, "\xCC", 120, 120, 120, 255);
+		}
+		else if (search_fav)
 		{
 			fillrect(vid_buf, XRES-134, 7, 18, 18, 255, 255, 255, 255);
 			drawtext(vid_buf, XRES-130, 11, "\xCC", 192, 160, 64, 255);
@@ -2587,15 +2548,15 @@ int search_ui(pixel *vid_buf)
 		}
 
 		if(search_fav)
-        {
-            search_date = 0;
-            drawrect(vid_buf, XRES-129+16, 8, 60, 16, 96, 96, 96, 255);
-            drawtext(vid_buf, XRES-126+16, 11, "\xA9", 44, 48, 32, 255);
-            drawtext(vid_buf, XRES-126+16, 11, "\xA8", 32, 44, 32, 255);
-            drawtext(vid_buf, XRES-126+16, 11, "\xA7", 128, 128, 128, 255);
-            drawtext(vid_buf, XRES-111+16, 13, "By votes", 128, 128, 128, 255);
-        }
-        else if (search_date)
+		{
+			search_date = 0;
+			drawrect(vid_buf, XRES-129+16, 8, 60, 16, 96, 96, 96, 255);
+			drawtext(vid_buf, XRES-126+16, 11, "\xA9", 44, 48, 32, 255);
+			drawtext(vid_buf, XRES-126+16, 11, "\xA8", 32, 44, 32, 255);
+			drawtext(vid_buf, XRES-126+16, 11, "\xA7", 128, 128, 128, 255);
+			drawtext(vid_buf, XRES-111+16, 13, "By votes", 128, 128, 128, 255);
+		}
+		else if (search_date)
 		{
 			fillrect(vid_buf, XRES-130+16, 7, 62, 18, 255, 255, 255, 255);
 			drawtext(vid_buf, XRES-126+16, 11, "\xA6", 32, 32, 32, 255);
@@ -2647,12 +2608,12 @@ int search_ui(pixel *vid_buf)
 
 		tp = -1;
 		if (is_p1)
-		{
-            //Message of the day
-            ui_richtext_process(mx, my, b, bq, &motd);
-            ui_richtext_draw(vid_buf, &motd);
-            //Popular tags
-            drawtext(vid_buf, (XRES-textwidth("Popular tags:"))/2, 49, "Popular tags:", 255, 192, 64, 255);
+		{	
+			//Message of the day
+			ui_richtext_process(mx, my, b, bq, &motd);
+			ui_richtext_draw(vid_buf, &motd);
+			//Popular tags
+			drawtext(vid_buf, (XRES-textwidth("Popular tags:"))/2, 49, "Popular tags:", 255, 192, 64, 255);
 			for (gj=0; gj<((GRID_Y-GRID_P)*YRES)/(GRID_Y*14); gj++)
 				for (gi=0; gi<(GRID_X+1); gi++)
 				{
@@ -2665,10 +2626,10 @@ int search_ui(pixel *vid_buf)
 						i = 192;
 					w = textwidth(tag_names[pos]);
 					if (w>XRES/(GRID_X+1)-5)
-                        w = XRES/(GRID_X+1)-5;
-                    gx = (XRES/(GRID_X+1))*gi;
-                    gy = gj*13 + 62;
-                    if (mx>=gx && mx<gx+(XRES/((GRID_X+1)+1)) && my>=gy && my<gy+14)
+						w = XRES/(GRID_X+1)-5;
+					gx = (XRES/(GRID_X+1))*gi;
+					gy = gj*13 + 62;
+					if (mx>=gx && mx<gx+(XRES/((GRID_X+1)+1)) && my>=gy && my<gy+14)
 					{
 						j = (i*5)/6;
 						tp = pos;
@@ -2719,16 +2680,16 @@ int search_ui(pixel *vid_buf)
 					drawtext(vid_buf, gx+XRES/(GRID_S*2)-j/2, gy+YRES/GRID_S+20, search_owners[pos], 128, 128, 128, 255);
 				if (search_thumbs[pos]&&thumb_drawn[pos]==0)
 				{
-                    //render_thumb(search_thumbs[pos], search_thsizes[pos], 1, v_buf, gx, gy, GRID_S);
-                    int finh, finw;
-                    pixel *thumb_rsdata = NULL;
-                    pixel *thumb_imgdata = ptif_unpack(search_thumbs[pos], search_thsizes[pos], &finw, &finh);
-                    if(thumb_imgdata!=NULL){
-                        thumb_rsdata = resample_img_nn(thumb_imgdata, finw, finh, XRES/GRID_S, YRES/GRID_S);
-                        draw_image(v_buf, thumb_rsdata, gx, gy, XRES/GRID_S, YRES/GRID_S, 255);
-                        free(thumb_imgdata);
-                        free(thumb_rsdata);
-                    }
+					//render_thumb(search_thumbs[pos], search_thsizes[pos], 1, v_buf, gx, gy, GRID_S);
+					int finh, finw;
+					pixel *thumb_rsdata = NULL;
+					pixel *thumb_imgdata = ptif_unpack(search_thumbs[pos], search_thsizes[pos], &finw, &finh);
+					if(thumb_imgdata!=NULL){
+						thumb_rsdata = resample_img_nn(thumb_imgdata, finw, finh, XRES/GRID_S, YRES/GRID_S);
+						draw_image(v_buf, thumb_rsdata, gx, gy, XRES/GRID_S, YRES/GRID_S, 255);					
+						free(thumb_imgdata);
+						free(thumb_rsdata);
+					}
 					thumb_drawn[pos] = 1;
 				}
 				own = svf_login && (!strcmp(svf_user, search_owners[pos]) || svf_admin || svf_mod);
@@ -2737,12 +2698,12 @@ int search_ui(pixel *vid_buf)
 				if ((own || search_fav) && mx>=gx+XRES/GRID_S-4 && mx<=gx+XRES/GRID_S+6 && my>=gy-6 && my<=gy+4)
 				{
 					mp = -1;
-                    dp = pos;
-                }
-                if (own && !search_dates[pos] && mx>=gx-6 && mx<=gx+4 && my>=gy+YRES/GRID_S-4 && my<=gy+YRES/GRID_S+6)
-                {
-                    mp = -1;
-                    dap = pos;
+					dp = pos;
+				}
+				if (own && !search_dates[pos] && mx>=gx-6 && mx<=gx+4 && my>=gy+YRES/GRID_S-4 && my<=gy+YRES/GRID_S+6)
+				{
+					mp = -1;
+					dap = pos;
 				}
 				drawrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2, 6, YRES/GRID_S+3, 128, 128, 128, 255);
 				fillrect(vid_buf, gx-2+(XRES/GRID_S)+5, gy-2, 6, 1+(YRES/GRID_S+3)/2, 0, 107, 10, 255);
@@ -2844,21 +2805,21 @@ int search_ui(pixel *vid_buf)
 			clearrect(vid_buf, gx-2, gy-3, w+4, h);
 			drawrect(vid_buf, gx-2, gy-3, w+4, h, 160, 160, 192, 255);
 			if (search_thumbs[mp]){
-        if(mp != nmp && bthumb_rsdata){
-          free(bthumb_rsdata);
-          bthumb_rsdata = NULL;
-        }
-        if(!bthumb_rsdata){
-          int finh, finw;
-          pixel *thumb_imgdata = ptif_unpack(search_thumbs[mp], search_thsizes[mp], &finw, &finh);
-          if(thumb_imgdata!=NULL){
-            bthumb_rsdata = resample_img(thumb_imgdata, finw, finh, XRES/GRID_Z, YRES/GRID_Z);
-            free(thumb_imgdata);
-          }
-        }
-        draw_image(vid_buf, bthumb_rsdata, gx+(w-(XRES/GRID_Z))/2, gy, XRES/GRID_Z, YRES/GRID_Z, 255);
-        nmp = mp;
-      }
+				if(mp != nmp && bthumb_rsdata){
+					free(bthumb_rsdata);
+					bthumb_rsdata = NULL;
+				}
+				if(!bthumb_rsdata){
+					int finh, finw;
+					pixel *thumb_imgdata = ptif_unpack(search_thumbs[mp], search_thsizes[mp], &finw, &finh);
+					if(thumb_imgdata!=NULL){
+						bthumb_rsdata = resample_img(thumb_imgdata, finw, finh, XRES/GRID_Z, YRES/GRID_Z);				
+						free(thumb_imgdata);
+					}
+				}
+				draw_image(vid_buf, bthumb_rsdata, gx+(w-(XRES/GRID_Z))/2, gy, XRES/GRID_Z, YRES/GRID_Z, 255);
+				nmp = mp;
+			}
 			drawtext(vid_buf, gx+(w-i)/2, gy+YRES/GRID_Z+4, search_names[mp], 192, 192, 192, 255);
 			drawtext(vid_buf, gx+(w-textwidth(search_owners[mp]))/2, gy+YRES/GRID_Z+16, search_owners[mp], 128, 128, 128, 255);
 		}
@@ -2900,30 +2861,30 @@ int search_ui(pixel *vid_buf)
 		}
 
 		if (b && !bq && dp!=-1)
-        {
-        if (search_fav){
-            if(confirm_ui(vid_buf, "Remove from favourites?", search_names[dp], "Remove")){
-                execute_unfav(vid_buf, search_ids[dp]);
-                lasttime = TIMEOUT;
-                if (last)
-                {
-                    free(last);
-                    last = NULL;
-                }
-            }
-      } else {
-        if (confirm_ui(vid_buf, "Do you want to delete?", search_names[dp], "Delete"))
-        {
-            execute_delete(vid_buf, search_ids[dp]);
-            lasttime = TIMEOUT;
-            if (last)
-            {
-                free(last);
-                last = NULL;
-            }
-        }
-        }
-        }
+		{
+			if (search_fav){
+				if(confirm_ui(vid_buf, "Remove from favourites?", search_names[dp], "Remove")){
+					execute_unfav(vid_buf, search_ids[dp]);
+					lasttime = TIMEOUT;
+					if (last)
+					{
+						free(last);
+						last = NULL;
+					}
+				}
+			} else {
+				if (confirm_ui(vid_buf, "Do you want to delete?", search_names[dp], "Delete"))
+				{
+					execute_delete(vid_buf, search_ids[dp]);
+					lasttime = TIMEOUT;
+					if (last)
+					{
+						free(last);
+						last = NULL;
+					}
+				}
+			}
+		}
 		if (b && !bq && dap!=-1)
 		{
 			sprintf(ed.str, "history:%s", search_ids[dap]);
@@ -3037,9 +2998,9 @@ int search_ui(pixel *vid_buf)
 				page_count = search_results(results, last_own||svf_admin||svf_mod);
 				memset(thumb_drawn, 0, sizeof(thumb_drawn));
 				memset(v_buf, 0, ((YRES+MENUSIZE)*(XRES+BARSIZE))*PIXELSIZE);
-
+			
 				ui_richtext_settext(server_motd, &motd);
-                motd.x = (XRES-textwidth(motd.printstr))/2;
+				motd.x = (XRES-textwidth(motd.printstr))/2;
 			}
 			is_p1 = (exp_res < GRID_X*GRID_Y);
 			if (results)
@@ -3148,17 +3109,17 @@ finish:
 	for (i=0; i<IMGCONNS; i++)
 		if (img_http[i])
 			http_async_req_close(img_http[i]);
-
-    if(bthumb_rsdata){
-        free(bthumb_rsdata);
-        bthumb_rsdata = NULL;
-    }
+			
+	if(bthumb_rsdata){
+		free(bthumb_rsdata);
+		bthumb_rsdata = NULL;
+	}
 
 	search_results("", 0);
 
 	strcpy(search_expr, ed.str);
 
-    free(v_buf);
+	free(v_buf);
 	return 0;
 }
 
@@ -3233,7 +3194,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 
 	char *uri, *uri_2, *o_uri, *uri_3;
 	void *data = NULL, *info_data, *thumb_data_full;
-    save_info *info = calloc(sizeof(save_info), 1);
+	save_info *info = calloc(sizeof(save_info), 1);
 	void *http = NULL, *http_2 = NULL, *http_3 = NULL;
 	int lasttime = TIMEOUT;
 	int status, status_2, info_ready = 0, data_ready = 0, thumb_data_ready = 0;
@@ -3282,23 +3243,25 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		if (!b)
 			break;
 	}
-//Try to load the thumbnail from the cache
-  if(!thumb_cache_find(save_id, &thumb_data, &thumb_data_size)){
-    thumb_data = NULL;
-  } else {
-    //We found a thumbnail in the cache, we'll draw this one while we wait for the full image to load.
-    int finw, finh;
-    pixel *thumb_imgdata = ptif_unpack(thumb_data, thumb_data_size, &finw, &finh);
-    if(thumb_imgdata!=NULL){
-      save_pic_thumb = resample_img(thumb_imgdata, finw, finh, XRES/2, YRES/2);
-      //draw_image(vid_buf, save_pic_thumb, 51, 51, XRES/2, YRES/2, 255);
-    }
-    free(thumb_imgdata);
-    //rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
-  }
+
+	//Try to load the thumbnail from the cache
+	if(!thumb_cache_find(save_id, &thumb_data, &thumb_data_size)){
+		thumb_data = NULL;	
+	} else {
+		//We found a thumbnail in the cache, we'll draw this one while we wait for the full image to load.
+		int finw, finh;
+		pixel *thumb_imgdata = ptif_unpack(thumb_data, thumb_data_size, &finw, &finh);
+		if(thumb_imgdata!=NULL){
+			save_pic_thumb = resample_img(thumb_imgdata, finw, finh, XRES/2, YRES/2);
+			//draw_image(vid_buf, save_pic_thumb, 51, 51, XRES/2, YRES/2, 255);	
+		}
+		free(thumb_imgdata);
+		//rescale_img(full_save, imgw, imgh, &thumb_w, &thumb_h, 2);
+	}
+
 	//Begin Async loading of data
 	if (save_date) {
-		// We're loading a historical save
+		// We're loading an historical save
 		uri = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
 		strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
 		strcaturl(uri, save_id);
@@ -3310,11 +3273,12 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		strcaturl(uri_2, save_id);
 		strappend(uri_2, "&Date=");
 		strcaturl(uri_2, save_date);
+
 		uri_3 = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
-        strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
-        strcaturl(uri_3, save_id);
-        strappend(uri_3, "&Date=");
-        strcaturl(uri_3, save_date);
+		strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
+		strcaturl(uri_3, save_id);
+		strappend(uri_3, "&Date=");
+		strcaturl(uri_3, save_date);
 	} else {
 		//We're loading a normal save
 		uri = malloc(strlen(save_id)*3+strlen(SERVER)+64);
@@ -3324,9 +3288,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		uri_2 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
 		strcpy(uri_2, "http://" SERVER "/Info.api?ID=");
 		strcaturl(uri_2, save_id);
+
 		uri_3 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
-        strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
-        strcaturl(uri_3, save_id);
+		strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
+		strcaturl(uri_3, save_id);
 	}
 	http = http_async_req_start(http, uri, NULL, 0, 1);
 	http_2 = http_async_req_start(http_2, uri_2, NULL, 0, 1);
@@ -3396,10 +3361,9 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			free(http_2);
 			http_2 = NULL;
 		}
-
 		if (active_3 && http_async_req_status(http_3))
-    {
-      int imgh, imgw, nimgh, nimgw;
+		{
+			int imgh, imgw, nimgh, nimgw;
 			http_last_use_3 = time(NULL);
 			thumb_data_full = http_async_req_stop(http_3, &status, &full_thumb_data_size);
 			if (status == 200)
@@ -3426,7 +3390,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		if (save_pic_thumb!=NULL && !hasdrawncthumb) {
 			draw_image(vid_buf, save_pic_thumb, 51, 51, XRES/2, YRES/2, 255);
 			free(save_pic_thumb);
-			save_pic_thumb = NULL;
+			save_pic_thumb = NULL;		
 			hasdrawncthumb = 1;
 			memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 		}
@@ -3639,9 +3603,9 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 				status = parse_save(data, data_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 				if (!status) {
 					if(svf_last)
-                        free(svf_last);
-                    svf_last = data;
-                    data = NULL; //so we don't free it when returning
+						free(svf_last);
+					svf_last = data;
+					data = NULL; //so we don't free it when returning
 					svf_lsize = data_size;
 
 					svf_open = 1;
@@ -3711,12 +3675,12 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		http_async_req_close(http);
 	if (http_2)
 		http_async_req_close(http_2);
-    if (http_3)
-        http_async_req_close(http_3);
-    info_parse("", info);
-    free(info);
-    free(old_vid);
-    if (data) free(data);
+	if (http_3)
+		http_async_req_close(http_3);
+	info_parse("", info);
+	free(info);
+	free(old_vid);
+	if (data) free(data);
 	return retval;
 }
 
@@ -3726,17 +3690,16 @@ int info_parse(char *info_data, save_info *info)
 	char *p,*q,*r,*s,*vu,*vd,*pu,*sd;
 
 	if (info->title) free(info->title);
-    if (info->name) free(info->name);
-    if (info->author) free(info->author);
-    if (info->date) free(info->date);
-    if (info->description) free(info->description);
-    if (info->tags) free(info->tags);
-    for (i=0;i<6;i++)
-    {
-        if (info->comments[i]) free(info->comments[i]);
-        if (info->commentauthors[i]) free(info->commentauthors[i]);
-    }
-
+	if (info->name) free(info->name);
+	if (info->author) free(info->author);
+	if (info->date) free(info->date);
+	if (info->description) free(info->description);
+	if (info->tags) free(info->tags);
+	for (i=0;i<6;i++)
+	{
+		if (info->comments[i]) free(info->comments[i]);
+		if (info->commentauthors[i]) free(info->commentauthors[i]);
+	}
 	memset(info, 0, sizeof(save_info));
 
 	if (!info_data || !*info_data)
@@ -3879,7 +3842,7 @@ int search_results(char *str, int votes)
 			free(tag_names[j]);
 			tag_names[j] = NULL;
 		}
-		server_motd[0] = 0;
+	server_motd[0] = 0;
 
 	if (!str || !*str)
 		return 0;
@@ -4031,9 +3994,9 @@ int search_results(char *str, int votes)
 			i++;
 		}
 		else if (!strncmp(str, "MOTD ", 5))
-        {
-            memcpy(server_motd, str+5, strlen(str+5));
-        }
+		{
+			memcpy(server_motd, str+5, strlen(str+5));
+		}
 		else if (!strncmp(str, "TAG ", 4))
 		{
 			if (j >= TAG_MAX)
@@ -4388,38 +4351,39 @@ void execute_fav(pixel *vid_buf, char *id)
 	if (result)
 		free(result);
 }
+
 void execute_unfav(pixel *vid_buf, char *id)
 {
-  int status;
-  char *result;
+	int status;
+	char *result;
 
-  char *names[] = {"ID", NULL};
-  char *parts[1];
+	char *names[] = {"ID", NULL};
+	char *parts[1];
 
-  parts[0] = id;
+	parts[0] = id;
 
-  result = http_multipart_post(
-               "http://" SERVER "/Favourite.api?Action=Remove",
-               names, parts, NULL,
-               svf_user_id, /*svf_pass*/NULL, svf_session_id,
-               &status, NULL);
+	result = http_multipart_post(
+	             "http://" SERVER "/Favourite.api?Action=Remove",
+	             names, parts, NULL,
+	             svf_user_id, /*svf_pass*/NULL, svf_session_id,
+	             &status, NULL);
 
-  if (status!=200)
-  {
-    error_ui(vid_buf, status, http_ret_text(status));
-    if (result)
-      free(result);
-    return;
-  }
-  if (result && strncmp(result, "OK", 2))
-  {
-    error_ui(vid_buf, 0, result);
-    free(result);
-    return;
-  }
+	if (status!=200)
+	{
+		error_ui(vid_buf, status, http_ret_text(status));
+		if (result)
+			free(result);
+		return;
+	}
+	if (result && strncmp(result, "OK", 2))
+	{
+		error_ui(vid_buf, 0, result);
+		free(result);
+		return;
+	}
 
-  if (result)
-    free(result);
+	if (result)
+		free(result);
 }
 
 int execute_vote(pixel *vid_buf, char *id, char *action)
@@ -4515,7 +4479,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);//enable keyrepeat for console (is disabled on console close later)
 	cc = 0;
-	while(cc < 80){
+	while (cc < 80) {
 		fillrect(old_buf, -1, -1+cc, XRES+BARSIZE, 2, 0, 0, 0, 160-(cc*2));
 		cc++;
 	}
@@ -4529,32 +4493,32 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 		draw_line(vid_buf, 0, 219, XRES+BARSIZE-1, 219, 228, 228, 228, XRES+BARSIZE);
 #ifdef PYCONSOLE
-		if(pygood)
-            i=255;
-        else
-            i=0;
-        if(pyready)
-            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python by Doxin)", 255, i, i, 255);
-        else
-            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)", 255, i, i, 255);
+		if (pygood)
+			i=255;
+		else
+			i=0;
+		if (pyready)
+			drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python by Doxin)", 255, i, i, 255);
+		else
+			drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)", 255, i, i, 255);
 #elif defined(LUACONSOLE)
-            drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.4 (by cracker64, Lua enabled)", 255, 255, 255, 255);
+		drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.4 (by cracker64, Lua enabled)", 255, 255, 255, 255);
 #else
-        drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)", 255, 255, 255, 255);
+		drawtext(vid_buf, 15, 15, "Welcome to The Powder Toy console v.3 (by cracker64, python disabled)", 255, 255, 255, 255);
 #endif
 
 		cc = 0;
 		currentcommand = last_command;
-		while(cc < 10)
+		while (cc < 10)
 		{
-			if(currentcommand==NULL)
+			if (currentcommand==NULL)
 				break;
 			drawtext(vid_buf, 15, 175-(cc*12), currentcommand->command, 255, 255, 255, 255);
-			if(currentcommand->prev_command!=NULL)
+			if (currentcommand->prev_command!=NULL)
 			{
-				if(cc<9) {
+				if (cc<9) {
 					currentcommand = currentcommand->prev_command;
-				} else if(currentcommand->prev_command!=NULL) {
+				} else if (currentcommand->prev_command!=NULL) {
 					free(currentcommand->prev_command);
 					currentcommand->prev_command = NULL;
 				}
@@ -4567,16 +4531,16 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 		}
 		cc = 0;
 		currentcommand2 = last_command2;
-		while(cc < 10)
+		while (cc < 10)
 		{
-			if(currentcommand2==NULL)
+			if (currentcommand2==NULL)
 				break;
 			drawtext(vid_buf, 215, 175-(cc*12), currentcommand2->command, 255, 225, 225, 255);
-			if(currentcommand2->prev_command!=NULL)
+			if (currentcommand2->prev_command!=NULL)
 			{
-				if(cc<9) {
+				if (cc<9) {
 					currentcommand2 = currentcommand2->prev_command;
-				} else if(currentcommand2->prev_command!=NULL) {
+				} else if (currentcommand2->prev_command!=NULL) {
 					free(currentcommand2->prev_command);
 					currentcommand2->prev_command = NULL;
 				}
@@ -4589,11 +4553,11 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 		}
 
 		//if(error && ed.str[0]=='\0')
-			//drawtext(vid_buf, 20, 207, error, 255, 127, 127, 200);
-		if(console_more==0)
-            drawtext(vid_buf, 5, 207, ">", 255, 255, 255, 240);
-        else
-            drawtext(vid_buf, 5, 207, "...", 255, 255, 255, 240);
+		//drawtext(vid_buf, 20, 207, error, 255, 127, 127, 200);
+		if (console_more==0)
+			drawtext(vid_buf, 5, 207, ">", 255, 255, 255, 240);
+		else
+			drawtext(vid_buf, 5, 207, "...", 255, 255, 255, 240);
 
 		ui_edit_draw(vid_buf, &ed);
 		ui_edit_process(mx, my, b, &ed);
@@ -4616,22 +4580,22 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 			SDL_EnableKeyRepeat(0, SDL_DEFAULT_REPEAT_INTERVAL);
 			return NULL;
 		}
-		if(sdl_key==SDLK_UP || sdl_key==SDLK_DOWN)
+		if (sdl_key==SDLK_UP || sdl_key==SDLK_DOWN)
 		{
 			ci += sdl_key==SDLK_UP?1:-1;
-			if(ci<-1)
+			if (ci<-1)
 				ci = -1;
-			if(ci==-1)
+			if (ci==-1)
 			{
 				strcpy(ed.str, "");
 				ed.cursor = strlen(ed.str);
 			}
 			else
 			{
-				if(last_command!=NULL) {
+				if (last_command!=NULL) {
 					currentcommand = last_command;
 					for (cc = 0; cc<ci; cc++) {
-						if(currentcommand->prev_command==NULL)
+						if (currentcommand->prev_command==NULL)
 							ci = cc;
 						else
 							currentcommand = currentcommand->prev_command;
@@ -4655,7 +4619,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 }
 
 unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int savedColor)
-{//TODO: have the text boxes be editable and update the color. Maybe use 0-360 for H in hsv to fix minor inaccuracies (rgb of 0,0,255 , comes back as 0,3,255)
+{//TODO: have the text boxes be editable and update the color.
 	int i,ss,hh,vv,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0,hidden=0;
 	int window_offset_x_left = 2;
 	int window_offset_x_right = XRES - 279;
@@ -4669,7 +4633,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 	int grid_offset_x;
 	int window_offset_x;
 	int onleft_button_offset_x;
-	int h = PIXR(savedColor), s = PIXG(savedColor), v = PIXB(savedColor);
+	int h = PIXR(savedColor), s = PIXG(savedColor), v = PIXB(savedColor); 
 	int th = h, ts = s, tv=v;
 	pixel *old_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	ui_edit box_R;
@@ -4727,7 +4691,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 		//ui_edit_process(mx, my, b, &box_B);
 		//HSV_to_RGB(h,s,v,&cr,&cg,&cb);
 		//if(cr != atoi(box_R.str))
-        //RGB_to_HSV(atoi(box_R.str),cg,cb,&h,&s,&v);
+			//RGB_to_HSV(atoi(box_R.str),cg,cb,&h,&s,&v);
 		if(on_left==1)
 		{
 			grid_offset_x = grid_offset_x_left;
@@ -4756,7 +4720,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 
 		drawrect(vid_buf, -1, -1, XRES+1, YRES+1, 220, 220, 220, 255);
 		drawrect(vid_buf, -1, -1, XRES+2, YRES+2, 70, 70, 70, 255);
-		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.2 (by cracker64) \n\nClicking the current color on the window will move it to the other side. Right click is eraser. ", 255, 255, 255, 255);
+		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.3 (by cracker64) \n\nClicking the current color on the window will move it to the other side. Right click is eraser. ", 255, 255, 255, 255);
 
 		if(!hidden)
 		{
@@ -4771,13 +4735,13 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			ui_edit_draw(vid_buf, &box_B);
 
 			for(ss=0; ss<=255; ss++)
-				for(hh=0;hh<=255;hh++)
+				for(hh=0;hh<=359;hh++)
 				{
 					cr = 0;
 					cg = 0;
 					cb = 0;
-					HSV_to_RGB(hh,255-ss,255,&cr,&cg,&cb);
-					vid_buf[(ss+grid_offset_y)*(XRES+BARSIZE)+(hh+grid_offset_x)] = PIXRGB(cr, cg, cb);
+					HSV_to_RGB(hh,255-ss,255-ss,&cr,&cg,&cb);
+					vid_buf[(ss+grid_offset_y)*(XRES+BARSIZE)+(clamp_flt(hh, 0, 359)+grid_offset_x)] = PIXRGB(cr, cg, cb);
 				}
 			for(vv=0; vv<=255; vv++)
 				for( i=0; i<10; i++)
@@ -4785,13 +4749,13 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 					cr = 0;
 					cg = 0;
 					cb = 0;
-					HSV_to_RGB(0,0,vv,&cr,&cg,&cb);
+					HSV_to_RGB(h,s,vv,&cr,&cg,&cb);
 					vid_buf[(vv+grid_offset_y)*(XRES+BARSIZE)+(i+grid_offset_x+255+4)] = PIXRGB(cr, cg, cb);
 				}
-			addpixel(vid_buf,grid_offset_x + h,grid_offset_y-1,255,255,255,255);
+			addpixel(vid_buf,grid_offset_x + clamp_flt(h, 0, 359),grid_offset_y-1,255,255,255,255);
 			addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-s),255,255,255,255);
 
-			addpixel(vid_buf,grid_offset_x + th,grid_offset_y-1,100,100,100,255);
+			addpixel(vid_buf,grid_offset_x + clamp_flt(th, 0, 359),grid_offset_y-1,100,100,100,255);
 			addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-ts),100,100,100,255);
 
 			addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y+tv,100,100,100,255);
@@ -4835,11 +4799,12 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			if(mx >= grid_offset_x && my >= grid_offset_y && mx <= grid_offset_x+255 && my <= grid_offset_y+255)
 			{
 				th = mx - grid_offset_x;
+				th = (int)( th*359/255 );
 				ts = 255 - (my - grid_offset_y);
 				if(b)
 				{
-					h = mx - grid_offset_x;
-					s = 255 - (my - grid_offset_y);
+					h = th;
+					s = ts;
 				}
 				HSV_to_RGB(th,ts,v,&cr,&cg,&cb);
 				//clearrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6,12,12);
@@ -4856,11 +4821,11 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			}
 			if(b && !bq && mx >= window_offset_x + 230 && my >= window_offset_y +255+6 && mx <= window_offset_x + 230 +26 && my <= window_offset_y +255+5 +13)
 				if (confirm_ui(vid_buf, "Reset Decoration Layer", "Do you really want to erase everything?", "Erase") )
-                {
-                    int i;
-                    for (i=0;i<NPART;i++)
-                        parts[i].dcolour = 0;
-                }
+				{
+					int i;
+					for (i=0;i<NPART;i++)
+						parts[i].dcolour = 0;
+				}
 		}
 		else if (mx > XRES || my > YRES)
 		{
@@ -4908,7 +4873,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 				}
 				else if(lb!=3)//while mouse is held down, it draws lines between previous and current positions
 				{
-					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb, b);
 					lx = mx;
 					ly = my;
 				}
@@ -4949,7 +4914,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 				}
 				else //normal click, draw deco
 				{
-					create_decorations(mx,my,*bsx,*bsy,cr,cg,cb);
+					create_decorations(mx,my,*bsx,*bsy,cr,cg,cb,b);
 					lx = mx;
 					ly = my;
 					lb = b;
@@ -4968,9 +4933,9 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			if (lb && lm) //lm is box/line tool
 			{
 				if (lm == 1)//line
-					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb);
+					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb, b);
 				else//box
-					box_decorations(lx, ly, mx, my, cr, cg, cb);
+					box_decorations(lx, ly, mx, my, cr, cg, cb, b);
 				lm = 0;
 			}
 			lb = 0;
@@ -5128,44 +5093,459 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 	free(old_buf);
 	return PIXRGB(h,s,v);
 }
+struct savelist_e {
+	char *filename;
+	char *name;
+	pixel *image;
+	void *next;
+	void *prev;
+};
+typedef struct savelist_e savelist_e;
+savelist_e *get_local_saves(char *folder, char *search, int *results_ret)
+{
+	int index = 0, results = 0;
+	struct dirent *derp;
+	savelist_e *new_savelist = NULL;
+	savelist_e *current_item = NULL;
+	DIR *directory = opendir(folder);
+	if(!directory)
+	{
+		printf("Unable to open directory\n");
+		*results_ret = 0;
+		return NULL;
+	}
+	while(derp = readdir(directory)){
+		char *ext;
+		if(strlen(derp->d_name)>4)
+		{
+			ext = derp->d_name+(strlen(derp->d_name)-4);
+			if((!strncmp(ext, ".cps", 4) || !strncmp(ext, ".stm", 4)) && (search==NULL || strstr(derp->d_name, search)))
+			{
+				if(new_savelist==NULL){
+					new_savelist = malloc(sizeof(savelist_e));
+					new_savelist->filename = malloc(strlen(folder)+strlen(derp->d_name)+1);
+					sprintf(new_savelist->filename, "%s%s", folder, derp->d_name);
+					new_savelist->name = mystrdup(derp->d_name);
+					new_savelist->image = NULL;
+					new_savelist->next = NULL;
+					new_savelist->prev = NULL;
+					current_item = new_savelist;
+				} else {
+					savelist_e *prev_item = current_item;
+					current_item->next = malloc(sizeof(savelist_e));
+					current_item = current_item->next;
+					current_item->filename = malloc(strlen(folder)+strlen(derp->d_name)+1);
+					sprintf(current_item->filename, "%s%s", folder, derp->d_name);
+					current_item->name = mystrdup(derp->d_name);
+					current_item->image = NULL;
+					current_item->next = NULL;
+					current_item->prev = prev_item;
+				}
+				results++;
+			}
+		}
+	}
+	*results_ret = results;
+	closedir(directory);
+	return new_savelist;
+}
+
+void free_saveslist(savelist_e *saves)
+{
+	if(!saves)
+		return;
+	if(saves->next!=NULL)
+		free_saveslist(saves->next);
+	if(saves->filename!=NULL)
+		free(saves->filename);
+	if(saves->name!=NULL)
+		free(saves->name);
+	if(saves->image!=NULL)
+		free(saves->image);
+}
+
+int save_filename_ui(pixel *vid_buf)
+{
+	int xsize = 16+(XRES/3);
+	int ysize = 64+(YRES/3);
+	float ca = 0;
+	int x0=(XRES+BARSIZE-xsize)/2,y0=(YRES+MENUSIZE-ysize)/2,b=1,bq,mx,my;
+	int idtxtwidth, nd=0, imgw, imgh, save_size;
+	void *save_data;
+	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	pixel *save_tmp;
+	pixel *save_data_image;
+	pixel *save = calloc((XRES/3)*(YRES/3), PIXELSIZE);
+	ui_edit ed;
+
+	save_data = build_save(&save_size, 0, 0, XRES, YRES, bmap, fvx, fvy, signs, parts);
+	save_data_image = prerender_save(save_data, save_size, &imgw, &imgh);
+	save = resample_img(save_data_image, imgw, imgh, XRES/3, YRES/3);	
+
+	ed.x = x0+11;
+	ed.y = y0+25;
+	ed.w = xsize-4-16;
+	ed.nx = 1;
+	ed.def = "[filename]";
+	ed.focus = 1;
+	ed.hide = 0;
+	ed.cursor = 0;
+	ed.multiline = 0;
+	ed.str[0] = 0;
+
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+
+	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+	draw_rgba_image(vid_buf, save_to_disk_image, 0, 0, 0.7);
+	
+	memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+
+	while (!sdl_poll())
+	{
+		bq = b;
+		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
+
+		b = SDL_GetMouseState(&mx, &my);
+		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
+		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
+		drawtext(vid_buf, x0+8, y0+8, "Filename:", 255, 255, 255, 255);
+		drawrect(vid_buf, x0+8, y0+20, xsize-16, 16, 255, 255, 255, 180);
+		draw_image(vid_buf, save, x0+8, y0+40, XRES/3, YRES/3, 255);
+		drawrect(vid_buf, x0+8, y0+40, XRES/3, YRES/3, 192, 192, 192, 255);
+		
+		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
+		fillrect(vid_buf, x0, y0+ysize-16, xsize, 16, 170, 170, 192, (int)ca);
+		drawtext(vid_buf, x0+8, y0+ysize-12, "Save", 255, 255, 255, 255);
+
+		ui_edit_draw(vid_buf, &ed);
+		drawtext(vid_buf, x0+12+textwidth(ed.str), y0+25, ".cps", 240, 240, 255, 180);
+
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+
+		memcpy(vid_buf, old_vid, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
+
+		ui_edit_process(mx, my, b, &ed);
+		
+		if(mx > x0 && mx < x0+xsize && my > y0+ysize-16 && my < y0+ysize)
+		{
+			if(b && !bq)
+			{
+				FILE *f = NULL;
+				char *filename = malloc(strlen(LOCAL_SAVE_DIR)+strlen(PATH_SEP)+strlen(ed.str)+5);
+				sprintf(filename, "%s%s%s.cps", LOCAL_SAVE_DIR, PATH_SEP, ed.str);
+			
+#ifdef WIN32
+				_mkdir(LOCAL_SAVE_DIR);
+#else
+				mkdir(LOCAL_SAVE_DIR, 0755);
+#endif
+				f = fopen(filename, "r");
+				if(!f || confirm_ui(vid_buf, "A save with the name already exists.", filename, "Overwrite"))
+				{
+					if(f)
+					{
+						fclose(f);
+						f = NULL;
+					}
+					f = fopen(filename, "wb");
+					if (f)
+					{
+						fwrite(save_data, save_size, 1, f);
+						fclose(f);
+						break;
+					} else {
+						error_ui(vid_buf, 0, "Unable to write to save file.");
+					}
+				}
+				fclose(f);
+			}
+		}
+
+		if (sdl_key==SDLK_ESCAPE)
+		{
+			if (!ed.focus)
+				break;
+			ed.focus = 0;
+		}
+	}
+		
+savefin:
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+	free(save_data_image);
+	free(save_data);
+	free(old_vid);
+	free(save);
+	return 0;
+}
+
+void catalogue_ui(pixel * vid_buf)
+{
+	int xsize = 8+(XRES/CATALOGUE_S+8)*CATALOGUE_X;
+	int ysize = 48+(YRES/CATALOGUE_S+20)*CATALOGUE_Y;
+	int x0=(XRES+BARSIZE-xsize)/2,y0=(YRES+MENUSIZE-ysize)/2,b=1,bq,mx,my;
+	int rescount, imageoncycle = 0, currentstart = 0, currentoffset = 0, thidden = 0, cactive = 0;
+	int listy = 0, listxc;
+	int listx = 0, listyc;
+	pixel * vid_buf2;
+	float scrollvel, offsetf = 0.0f;
+	char savetext[128] = "";
+	char * last = mystrdup("");
+	ui_edit ed;
+	
+	vid_buf2 = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	
+	ed.w = xsize-16-4;
+	ed.x = x0+11;
+	ed.y = y0+29;
+	ed.multiline = 0;
+	ed.def = "[search]";
+	ed.focus = 0;
+	ed.hide = 0;
+	ed.cursor = 0;
+	ed.nx = 0;
+	strcpy(ed.str, "");
+
+	savelist_e *saves = get_local_saves(LOCAL_SAVE_DIR PATH_SEP, NULL, &rescount);
+	savelist_e *cssave = saves;
+	savelist_e *csave = saves;
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+	
+	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		sprintf(savetext, "Found %d save%s", rescount, rescount==1?"":"s");
+		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
+		clearrect(vid_buf2, x0-2, y0-2, xsize+4, ysize+4);
+		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
+		drawtext(vid_buf, x0+8, y0+8, "Saves", 255, 216, 32, 255);
+		drawtext(vid_buf, x0+xsize-8-textwidth(savetext), y0+8, savetext, 255, 216, 32, 255);
+		drawrect(vid_buf, x0+8, y0+24, xsize-16, 16, 255, 255, 255, 180);
+		if(strcmp(ed.str, last)){
+			free(last);
+			last = mystrdup(ed.str);
+			currentstart = 0;
+			if(saves!=NULL) free_saveslist(saves);
+			saves = get_local_saves(LOCAL_SAVE_DIR PATH_SEP, last, &rescount);
+			cssave = saves;
+			scrollvel = 0.0f;
+			offsetf = 0.0f;
+			thidden = 0;
+		}
+		//Scrolling
+		if (sdl_wheel!=0)
+		{
+			scrollvel -= (float)sdl_wheel;
+			if(scrollvel > 5.0f) scrollvel = 5.0f;
+			if(scrollvel < -5.0f) scrollvel = -5.0f;
+			sdl_wheel = 0;
+		}
+		offsetf += scrollvel;
+		scrollvel*=0.99f;
+		if(offsetf >= (YRES/CATALOGUE_S+20) && rescount)
+		{
+			if(rescount - thidden > CATALOGUE_X*(CATALOGUE_Y+1))
+			{
+				int i = 0;
+				for(i = 0; i < CATALOGUE_X; i++){
+					if(cssave->next==NULL)
+						break;
+					cssave = cssave->next;
+				}
+				offsetf -= (YRES/CATALOGUE_S+20);
+				thidden += CATALOGUE_X;
+			} else {
+				offsetf = (YRES/CATALOGUE_S+20);
+			}
+		} 
+		if(offsetf > 0.0f && rescount <= CATALOGUE_X*CATALOGUE_Y && rescount)
+		{
+			offsetf = 0.0f;
+		}
+		if(offsetf < 0.0f && rescount)
+		{
+			if(thidden >= CATALOGUE_X)
+			{
+				int i = 0;
+				for(i = 0; i < CATALOGUE_X; i++){
+					if(cssave->prev==NULL)
+						break;
+					cssave = cssave->prev;
+				}
+				offsetf += (YRES/CATALOGUE_S+20);
+				thidden -= CATALOGUE_X;
+			} else {
+				offsetf = 0.0f;
+			}
+		}
+		currentoffset = (int)offsetf;
+		csave = cssave;
+		//Diplay
+		if(csave!=NULL && rescount)
+		{
+			listx = 0;
+			listy = 0;
+			while(csave!=NULL)
+			{
+				listxc = x0+8+listx*(XRES/CATALOGUE_S+8);
+				listyc = y0+48-currentoffset+listy*(YRES/CATALOGUE_S+20);
+				if(listyc > y0+ysize) //Stop when we get to the bottom of the viewable
+					break;
+				cactive = 0;
+				if(my > listyc && my < listyc+YRES/CATALOGUE_S+2 && mx > listxc && mx < listxc+XRES/CATALOGUE_S && my > y0+48 && my < y0+ysize)
+				{
+					if(b)
+					{
+						int status, size;
+						void *data;
+						data = file_load(csave->filename, &size);
+						if(data){
+							status = parse_save(data, size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+							if(!status)
+							{
+								svf_open = 0;
+								svf_publish = 0;
+								svf_own = 0;
+								svf_myvote = 0;
+								svf_id[0] = 0;
+								svf_name[0] = 0;
+								svf_description[0] = 0;
+								svf_tags[0] = 0;
+								goto openfin;
+							} else {
+								error_ui(vid_buf, 0, "Save data corrupt");
+							}
+						} else {
+							error_ui(vid_buf, 0, "Unable to read save file");
+						}
+					}
+					cactive = 1;
+				}
+				//Generate an image
+				if(csave->image==NULL && !imageoncycle){ //imageoncycle: Don't read/parse more than one image per cycle, makes it more resposive for slower computers
+					int imgwidth, imgheight, size;
+					pixel *tmpimage = NULL;
+					void *data = NULL;
+					data = file_load(csave->filename, &size);
+					if(data!=NULL){
+						tmpimage = prerender_save(data, size, &imgwidth, &imgheight);
+						if(tmpimage!=NULL)
+						{
+							csave->image = resample_img(tmpimage, imgwidth, imgheight, XRES/CATALOGUE_S, YRES/CATALOGUE_S);
+							free(tmpimage);
+						} else {
+							//Blank image, this should default to something else
+							csave->image = malloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S)*PIXELSIZE);
+						}
+						free(data);
+					} else {
+						//Blank image, this should default to something else
+						csave->image = malloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S)*PIXELSIZE);
+					}
+					imageoncycle = 1;
+				}
+				if(csave->image!=NULL)
+					draw_image(vid_buf2, csave->image, listxc, listyc, XRES/CATALOGUE_S, YRES/CATALOGUE_S, 255);
+				drawrect(vid_buf2, listxc, listyc, XRES/CATALOGUE_S, YRES/CATALOGUE_S, 255, 255, 255, 190);
+				if(cactive)
+					drawtext(vid_buf2, listxc+((XRES/CATALOGUE_S)/2-textwidth(csave->name)/2), listyc+YRES/CATALOGUE_S+3, csave->name, 255, 255, 255, 255);
+				else
+					drawtext(vid_buf2, listxc+((XRES/CATALOGUE_S)/2-textwidth(csave->name)/2), listyc+YRES/CATALOGUE_S+3, csave->name, 240, 240, 255, 180);
+				csave = csave->next;
+				if(++listx==CATALOGUE_X){
+					listx = 0;
+					listy++;
+				}
+			}
+			imageoncycle = 0;
+		} else {
+			drawtext(vid_buf2, x0+(xsize/2)-(textwidth("No saves found")/2), y0+(ysize/2)+20, "No saves found", 255, 255, 255, 180);
+		}
+		ui_edit_draw(vid_buf, &ed);
+		ui_edit_process(mx, my, b, &ed);
+		//Draw the scrollable area onto the main buffer
+		{
+			pixel *srctemp = vid_buf2, *desttemp = vid_buf;
+			int j = 0;
+			for (j = y0+48; j < y0+ysize; j++)
+			{
+				memcpy(desttemp+j*(XRES+BARSIZE)+x0+1, srctemp+j*(XRES+BARSIZE)+x0+1, (xsize-1)*PIXELSIZE);
+				//desttemp+=(XRES+BARSIZE);//*PIXELSIZE;
+				//srctemp+=(XRES+BARSIZE);//*PIXELSIZE;
+			}
+		}
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+		if (sdl_key==SDLK_RETURN)
+			break;
+		if (sdl_key==SDLK_ESCAPE)
+			break;
+	}
+openfin:	
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+
+	if(saves)
+		free_saveslist(saves);
+	return;
+}
 
 void simulation_ui(pixel * vid_buf)
 {
 	int xsize = 300;
 	int ysize = 164;
 	int x0=(XRES-xsize)/2,y0=(YRES-MENUSIZE-ysize)/2,b=1,bq,mx,my;
-	int new_scale;
-	int full_scale;
+	int new_scale, new_kiosk;
 	ui_checkbox cb;
 	ui_checkbox cb2;
 	ui_checkbox cb3;
 	ui_checkbox cb4;
 	ui_checkbox cb5;
 
-	cb.x = x0+xsize-16;    //Heat simulation
+	cb.x = x0+xsize-16;		//Heat simulation
 	cb.y = y0+23;
 	cb.focus = 0;
 	cb.checked = !legacy_enable;
 
-	cb2.x = x0+xsize-16;  //Newt. Gravity
-    cb2.y = y0+79;
+	cb2.x = x0+xsize-16;	//Newt. Gravity
+	cb2.y = y0+79;
 	cb2.focus = 0;
 	cb2.checked = ngrav_enable;
-
-	cb3.x = x0+xsize-16;  //Large window
-    cb3.y = y0+113;
+	
+	cb3.x = x0+xsize-16;	//Large window
+	cb3.y = y0+113;
 	cb3.focus = 0;
 	cb3.checked = (sdl_scale==2)?1:0;
-
-	cb4.x = x0+xsize-16;  //Fullscreen
-    cb4.y = y0+129;
+	
+	cb4.x = x0+xsize-16;	//Fullscreen
+	cb4.y = y0+129;
 	cb4.focus = 0;
-	cb4.checked = (kiosk_enable);
-
-	cb5.x = x0+xsize-16;  //Ambient heat
-    cb5.y = y0+51;
-    cb5.focus = 0;
-    cb5.checked = aheat_enable;
+	cb4.checked = (kiosk_enable==1)?1:0;
+	
+	cb5.x = x0+xsize-16;	//Ambient heat
+	cb5.y = y0+51;
+	cb5.focus = 0;
+	cb5.checked = aheat_enable;
 
 	while (!sdl_poll())
 	{
@@ -5188,22 +5568,22 @@ void simulation_ui(pixel * vid_buf)
 		drawtext(vid_buf, x0+8, y0+26, "Heat simulation", 255, 255, 255, 255);
 		drawtext(vid_buf, x0+12+textwidth("Heat simulation"), y0+26, "Introduced in version 34.", 255, 255, 255, 180);
 		drawtext(vid_buf, x0+12, y0+40, "Older saves may behave oddly with this enabled.", 255, 255, 255, 120);
-
-        drawtext(vid_buf, x0+8, y0+54, "Ambient heat simulation", 255, 255, 255, 255);
-        drawtext(vid_buf, x0+12+textwidth("Ambient heat simulation"), y0+54, "Introduced in version 50.", 255, 255, 255, 180);
-        drawtext(vid_buf, x0+12, y0+68, "Older saves may behave oddly with this enabled.", 255, 255, 255, 120);
+		
+		drawtext(vid_buf, x0+8, y0+54, "Ambient heat simulation", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("Ambient heat simulation"), y0+54, "Introduced in version 50.", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+12, y0+68, "Older saves may behave oddly with this enabled.", 255, 255, 255, 120);
 
 		drawtext(vid_buf, x0+8, y0+82, "Newtonian gravity", 255, 255, 255, 255);
-        drawtext(vid_buf, x0+12+textwidth("Newtonian gravity"), y0+82, "Introduced in version 48.", 255, 255, 255, 180);
-        drawtext(vid_buf, x0+12, y0+96, "May also cause slow performance on older computers", 255, 255, 255, 120);
-
-        draw_line(vid_buf, x0, y0+110, x0+xsize, y0+110, 150, 150, 150, XRES+BARSIZE);
-
+		drawtext(vid_buf, x0+12+textwidth("Newtonian gravity"), y0+82, "Introduced in version 48.", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+12, y0+96, "May also cause slow performance on older computers", 255, 255, 255, 120);
+		
+		draw_line(vid_buf, x0, y0+110, x0+xsize, y0+110, 150, 150, 150, XRES+BARSIZE);
+		
 		drawtext(vid_buf, x0+8, y0+116, "Large window", 255, 255, 255, 255);
-        drawtext(vid_buf, x0+12+textwidth("Large window"), y0+116, "Double window size for small screens", 255, 255, 255, 180);
-
+		drawtext(vid_buf, x0+12+textwidth("Large window"), y0+116, "Double window size for small screens", 255, 255, 255, 180);
+		
 		drawtext(vid_buf, x0+8, y0+132, "Fullscreen", 255, 255, 255, 255);
-        drawtext(vid_buf, x0+12+textwidth("Fullscreen"), y0+132, "Fill the entire screen", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+12+textwidth("Fullscreen"), y0+132, "Fill the entire screen", 255, 255, 255, 180);
 
 		//TODO: Options for Air and Normal gravity
 		//Maybe save/load defaults too.
@@ -5235,16 +5615,19 @@ void simulation_ui(pixel * vid_buf)
 	legacy_enable = !cb.checked;
 	aheat_enable = cb5.checked;
 	new_scale = (cb3.checked)?2:1;
-	if(new_scale!=sdl_scale)
-        set_scale(new_scale);
-	ngrav_enable = cb2.checked;
-	if(cb4.checked==0 && kiosk_enable==1){
-	    sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_SWSURFACE);
-	    kiosk_enable = 0;
-    } else if(cb4.checked==1 && kiosk_enable==0) {
-        sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_FULLSCREEN|SDL_SWSURFACE);
-        kiosk_enable = 1;
-    }
+	new_kiosk = (cb4.checked)?1:0;
+	if(new_scale!=sdl_scale || new_kiosk!=kiosk_enable)
+	{
+		if (!set_scale(new_scale, new_kiosk))
+			error_ui(vid_buf, 0, "Could not change display options");
+	}
+	if(ngrav_enable != cb2.checked)
+	{
+		if(cb2.checked)
+			start_grav_async();
+		else
+			stop_grav_async();
+	}
 
 	while (!sdl_poll())
 	{

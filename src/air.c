@@ -24,7 +24,7 @@ float cb_pv[YRES/CELL][XRES/CELL], cb_opv[YRES/CELL][XRES/CELL];
 
 float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 
-float hv[YRES/CELL][XRES/CELL], ohv[YRES/CELL][XRES/CELL]; // For Ambient Heat
+float hv[YRES/CELL][XRES/CELL], ohv[YRES/CELL][XRES/CELL]; // For Ambient Heat 
 
 void make_kernel(void) //used for velocity
 {
@@ -76,7 +76,7 @@ void update_airh(void)
 					        x+i>0 && x+i<XRES/CELL-2 &&
 					        bmap[y+j][x+i]!=WL_WALL &&
 					        bmap[y+j][x+i]!=WL_WALLELEC &&
-					        bmap[y+j][x+i]!=WL_GRAV &&
+					        bmap[y+j][x+i]!=WL_GRAV && 
 					        (bmap[y+j][x+i]!=WL_EWALL || emap[y+j][x+i]))
 						{
 						f = kernel[i+1+(j+1)*3];

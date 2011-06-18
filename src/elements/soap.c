@@ -1,6 +1,6 @@
 #include <element.h>
 
-int update_SOAP(UPDATE_FUNC_ARGS)
+int update_SOAP(UPDATE_FUNC_ARGS) 
 {
 	int r, rx, ry;
 
@@ -56,29 +56,29 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r>>PS)>=NPART || !r)
+						if ((r>>8)>=NPART || !r)
 							continue;
 
-						if ((((r&TYPE)) == PT_SOAP) && ((parts[r>>PS].ctype&1) == 1)
-								&& ((parts[r>>PS].ctype&4) != 4))
+						if ((parts[r>>8].type == PT_SOAP) && ((parts[r>>8].ctype&1) == 1) 
+								&& ((parts[r>>8].ctype&4) != 4))
 						{
-							if ((parts[r>>PS].ctype&2) == 2)
+							if ((parts[r>>8].ctype&2) == 2)
 							{
-								parts[i].tmp = r>>PS;
-								parts[r>>PS].tmp2 = i;
+								parts[i].tmp = r>>8;
+								parts[r>>8].tmp2 = i;
 
 								parts[i].ctype |= 2;
-								parts[r>>PS].ctype |= 4;
+								parts[r>>8].ctype |= 4;
 							}
 							else
 							{
 								if ((parts[i].ctype&2) != 2)
 								{
-									parts[i].tmp = r>>PS;
-									parts[r>>PS].tmp2 = i;
+									parts[i].tmp = r>>8;
+									parts[r>>8].tmp2 = i;
 
 									parts[i].ctype |= 2;
-									parts[r>>PS].ctype |= 4;
+									parts[r>>8].ctype |= 4;
 								}
 							}
 						}
@@ -92,43 +92,43 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 						if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 						{
 							r = pmap[y+ry][x+rx];
-							if (((r>>PS)>=NPART || !r) && !bmap[(y+ry)/CELL][(x+rx)/CELL])
+							if (((r>>8)>=NPART || !r) && !bmap[(y+ry)/CELL][(x+rx)/CELL])
 								continue;
 
 							if (parts[i].temp>0)
 							{
-								if (bmap[(y+ry)/CELL][(x+rx)/CELL]
-										|| (r && ptypes[r&TYPE].state != ST_GAS
-											&& (r&TYPE) != PT_SOAP && (r&TYPE) != PT_GLAS)
-										|| (parts[r>>PS].ctype == 0 && (r&TYPE) == PT_SOAP
-											&& (abs(parts[r>>PS].vx)<2 || abs(parts[r>>PS].vy)<2)))
+								if (bmap[(y+ry)/CELL][(x+rx)/CELL] 
+										|| (r && ptypes[r&0xFF].state != ST_GAS 
+											&& (r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS) 
+										|| (parts[r>>8].ctype == 0 && (r&0xFF) == PT_SOAP 
+											&& (abs(parts[r>>8].vx)<2 || abs(parts[r>>8].vy)<2)))
 								{
 									detach(i);
 									continue;
 								}
 							}
 
-							if ((r&TYPE) == PT_SOAP && parts[r>>PS].ctype == 1)
+							if ((r&0xFF) == PT_SOAP && parts[r>>8].ctype == 1)
 							{
 								int buf;
 
 								buf = parts[i].tmp;
 
-								parts[i].tmp = r>>PS;
-								parts[buf].tmp2 = r>>PS;
-								parts[r>>PS].tmp2 = i;
-								parts[r>>PS].tmp = buf;
-								parts[r>>PS].ctype = 7;
+								parts[i].tmp = r>>8;
+								parts[buf].tmp2 = r>>8;
+								parts[r>>8].tmp2 = i;
+								parts[r>>8].tmp = buf;
+								parts[r>>8].ctype = 7;
 							}
 
-							if ((r&TYPE) == PT_SOAP && parts[r>>PS].ctype == 7 && parts[i].tmp != r>>PS && parts[i].tmp2 != r>>PS)
+							if ((r&0xFF) == PT_SOAP && parts[r>>8].ctype == 7 && parts[i].tmp != r>>8 && parts[i].tmp2 != r>>8)
 							{
 								int buf;
 
-								parts[parts[i].tmp].tmp2 = parts[r>>PS].tmp2;
-								parts[parts[r>>PS].tmp2].tmp = parts[i].tmp;
-								parts[r>>PS].tmp2 = i;
-								parts[i].tmp = r>>PS;
+								parts[parts[i].tmp].tmp2 = parts[r>>8].tmp2;
+								parts[parts[r>>8].tmp2].tmp = parts[i].tmp;
+								parts[r>>8].tmp2 = i;
+								parts[i].tmp = r>>8;
 							}
 						}
 		}
@@ -148,7 +148,7 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 			parts[i].vx += dx*d;
 			parts[i].vy += dy*d;
 
-			if (((parts[parts[i].tmp].ctype&2) == 2) && ((parts[parts[i].tmp].ctype&1) == 1)
+			if (((parts[parts[i].tmp].ctype&2) == 2) && ((parts[parts[i].tmp].ctype&1) == 1) 
 					&& ((parts[parts[parts[i].tmp].tmp].ctype&2) == 2) && ((parts[parts[parts[i].tmp].tmp].ctype&1) == 1))
 			{
 				int ii;
@@ -181,24 +181,25 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>PS)>=NPART || !r)
+					if ((r>>8)>=NPART || !r)
 						continue;
 
-					if ((r&TYPE) == PT_OIL)
+					if ((r&0xFF) == PT_OIL)
 					{
-					    float ax, ay;
+						float ax, ay;
+
 						parts[i].vy -= 0.1f;
 
 						parts[i].vy *= 0.5f;
 						parts[i].vx *= 0.5f;
 
-						ax = (parts[i].vx + parts[r>>PS].vx)/2;
-						ay = (parts[i].vy + parts[r>>PS].vy)/2;
+						ax = (parts[i].vx + parts[r>>8].vx)/2;
+						ay = (parts[i].vy + parts[r>>8].vy)/2;
 
 						parts[i].vx = ax;
 						parts[i].vy = ay;
-						parts[r>>PS].vx = ax;
-						parts[r>>PS].vy = ay;
+						parts[r>>8].vx = ax;
+						parts[r>>8].vy = ay;
 					}
 				}
 	}

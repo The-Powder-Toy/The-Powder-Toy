@@ -2,25 +2,27 @@
 
 int update_PCLN(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	if (parts[i].life>0 && parts[i].life!=10)
+		parts[i].life--;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)>=NPART || !r)
+				if ((r>>8)>=NPART || !r)
 					continue;
-				if ((r&TYPE)==PT_SPRK)
+				if ((r&0xFF)==PT_SPRK)
 				{
-					if (parts[r>>PS].ctype==PT_PSCN)
+					if (parts[r>>8].ctype==PT_PSCN)
 						parts[i].life = 10;
-					else if (parts[r>>PS].ctype==PT_NSCN)
+					else if (parts[r>>8].ctype==PT_NSCN)
 						parts[i].life = 9;
 				}
-				if ((r&TYPE)==PT_PCLN)
+				if ((r&0xFF)==PT_PCLN)
 				{
-					if (parts[i].life==10&&parts[r>>PS].life<10&&parts[r>>PS].life>0)
+					if (parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
 						parts[i].life = 9;
-					else if (parts[i].life==0&&parts[r>>PS].life==10)
+					else if (parts[i].life==0&&parts[r>>8].life==10)
 						parts[i].life = 10;
 				}
 			}
@@ -28,20 +30,19 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
- 	        {
- 	          r = photons[y+ry][x+rx];
- 	          if (!r || (r>>PS)>=NPART)
- 	            r = pmap[y+ry][x+rx];
- 	          if (!r || (r>>PS)>=NPART)
- 	            continue;
- 	          if ((r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN &&
- 	                (r&TYPE)!=PT_BCLN &&  (r&TYPE)!=PT_SPRK &&
- 	                (r&TYPE)!=PT_NSCN && (r&TYPE)!=PT_PSCN &&
- 	                (r&TYPE)!=PT_STKM && (r&TYPE)!=PT_STKM2 && (r&TYPE)!=PT_PDCL &&
-                    (r&TYPE)!=PT_GSCL && (r&TYPE)!=PT_LQCL &&
- 	                (r&TYPE)<PT_NUM)
- 	          parts[i].ctype = (r&TYPE);
- 	        }
+				{
+					r = photons[y+ry][x+rx];
+					if (!r || (r>>8)>=NPART)
+						r = pmap[y+ry][x+rx];
+					if (!r || (r>>8)>=NPART)
+						continue;
+					if ((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN &&
+				        (r&0xFF)!=PT_BCLN &&  (r&0xFF)!=PT_SPRK &&
+				        (r&0xFF)!=PT_NSCN && (r&0xFF)!=PT_PSCN &&
+				        (r&0xFF)!=PT_STKM && (r&0xFF)!=PT_STKM2 &&
+				        (r&0xFF)<PT_NUM)
+					parts[i].ctype = r&0xFF;
+				}
 	if (parts[i].ctype && parts[i].life==10) {
 		if (parts[i].ctype==PT_PHOT) {//create photons a different way
 			for (rx=-1; rx<2; rx++) {

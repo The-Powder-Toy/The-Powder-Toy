@@ -7,9 +7,9 @@ int update_THRM(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)>=NPART || !r)
+				if ((r>>8)>=NPART || !r)
 					continue;
-				if (((r&TYPE)==PT_FIRE || (r&TYPE)==PT_PLSM || (r&TYPE)==PT_LAVA || (r&TYPE)==PT_MGMA)) // TODO: could this go in update_PYRO?
+				if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM || (r&0xFF)==PT_LAVA)) // TODO: could this go in update_PYRO?
 				{
 					if (1>(rand()%500)) {
 						part_change_type(i,x,y,PT_LAVA);
@@ -22,12 +22,6 @@ int update_THRM(UPDATE_FUNC_ARGS) {
 						parts[i].ctype = PT_THRM;
 						parts[i].temp = 3500.0f;
 						parts[i].tmp = 20;
-					}
-                    if (1>(rand()%500)) {
-						part_change_type(i,x,y,PT_MGMA);
-						parts[i].ctype = PT_MGMA;
-						parts[i].temp = 99999.0f;
-						pv[y/CELL][x/CELL] += 10.0f;
 					}
 				}
 			}
