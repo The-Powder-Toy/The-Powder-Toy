@@ -2154,7 +2154,7 @@ killed:
 							parts[i].vx *= ptypes[t].collision;
 							parts[i].vy *= ptypes[t].collision;
 						}
-						else if (ptypes[t].falldown>1 && fabsf(pGravX*parts[i].vx+pGravY*parts[i].vy)>fabsf(pGravY*parts[i].vx+pGravX*parts[i].vy))
+						else if (ptypes[t].falldown>1 && fabsf(pGravX*parts[i].vx+pGravY*parts[i].vy)>fabsf(pGravY*parts[i].vx-pGravX*parts[i].vy))
 						{
 							float nxf, nyf, ptGrav = ptypes[t].gravity;
 							s = 0;
@@ -2191,8 +2191,8 @@ killed:
 								if (mv<0.0001f) break;
 								pGravX /= mv;
 								pGravY /= mv;
-								nxf += r*pGravY;
-								nyf -= r*pGravX;
+								nxf += r*pGravY + 0.1f*pGravX;
+								nyf += -r*pGravX + 0.1f*pGravY;
 								nx = (int)(nxf+0.5f);
 								ny = (int)(nyf+0.5f);
 								if (nx<0 || ny<0 || nx>=XRES || ny >=YRES)
@@ -2200,7 +2200,13 @@ killed:
 								if ((pmap[ny][nx]&0xFF)!=t || bmap[ny/CELL][nx/CELL])
 								{
 									s = do_move(i, x, y, nxf, nyf);
-									if (s || bmap[ny/CELL][nx/CELL]!=WL_STREAM)
+									if (s)
+									{
+										nx = (int)(parts[i].x+0.5f);
+										ny = (int)(parts[i].y+0.5f);
+										break;
+									}
+									if (bmap[ny/CELL][nx/CELL]!=WL_STREAM)
 										break;
 								}
 							}
