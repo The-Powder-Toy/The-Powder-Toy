@@ -2404,6 +2404,7 @@ int main(int argc, char *argv[])
 						vx[cby][cbx] = cb_vx[cby][cbx];
 						vy[cby][cbx] = cb_vy[cby][cbx];
 						pv[cby][cbx] = cb_pv[cby][cbx];
+						hv[cby][cbx] = cb_hv[cby][cbx];
 						bmap[cby][cbx] = cb_bmap[cby][cbx];
 						emap[cby][cbx] = cb_emap[cby][cbx];
 					}
@@ -3126,6 +3127,7 @@ int main(int argc, char *argv[])
 								cb_vx[cby][cbx] = vx[cby][cbx];
 								cb_vy[cby][cbx] = vy[cby][cbx];
 								cb_pv[cby][cbx] = pv[cby][cbx];
+								cb_hv[cby][cbx] = hv[cby][cbx];
 								cb_bmap[cby][cbx] = bmap[cby][cbx];
 								cb_emap[cby][cbx] = emap[cby][cbx];
 							}
