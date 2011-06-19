@@ -164,10 +164,6 @@ typedef struct
 	pixel *vid;
 } upstruc;
 
-#ifdef BETA
-static const char *old_ver_msg_beta = "A new beta is available - click here!";
-#endif
-static const char *old_ver_msg = "A new version is available - click here!";
 char new_message_msg[255];
 float mheat = 0.0f;
 
@@ -1412,30 +1408,6 @@ char *tag = "(c) 2008-9 Stanislaw Skowronek";
 int itc = 0;
 char itc_msg[64] = "[?]";
 
-char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
-#if defined WIN32
-                "Windows32"
-#elif defined LIN32
-                "Linux32"
-#elif defined LIN64
-                "Linux64"
-#elif defined MACOSX
-                "MacOSX"
-#else
-                "Unknown"
-#endif
-                "&InstructionSet="
-#if defined X86_SSE3
-                "SSE3"
-#elif defined X86_SSE2
-                "SSE2"
-#elif defined X86_SSE
-                "SSE"
-#else
-                "SSE"
-#endif
-                ;
-
 int set_scale(int scale, int kiosk){
 	int old_scale = sdl_scale, old_kiosk = kiosk_enable;
 	sdl_scale = scale;
@@ -1615,9 +1587,9 @@ int main(int argc, char *argv[])
 	int currentTime = 0;
 	int FPS = 0, pastFPS = 0, elapsedTime = 0; 
 	void *http_ver_check, *http_session_check = NULL;
-	char *ver_data=NULL, *check_data=NULL, *tmp;
+	char *check_data=NULL, *tmp;
 	//char console_error[255] = "";
-	int result, i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len, new_message_len=0;
+	int result, i, j, bq, fire_fc=0, do_s_check=0, http_ret=0,http_s_ret=0, new_message_len=0;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -1668,19 +1640,6 @@ int main(int argc, char *argv[])
 
 #ifdef MT
 	numCores = core_count();
-#endif
-//TODO: Move out version stuff
-#ifdef BETA
-	if (is_beta)
-	{
-		old_ver_len = textwidth((char*)old_ver_msg_beta);
-	}
-	else
-	{
-		old_ver_len = textwidth((char*)old_ver_msg);
-	}
-#else
-	old_ver_len = textwidth((char*)old_ver_msg);
 #endif
 	menu_count();
 	parts = calloc(sizeof(particle), NPART);
@@ -1762,7 +1721,6 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	http_ver_check = http_async_req_start(NULL, "http://" SERVER "/Update.api?Action=CheckVersion", NULL, 0, 0);
 	if (svf_login) {
 		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
 		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
@@ -1904,28 +1862,6 @@ int main(int argc, char *argv[])
 			draw_debug_info(vid_buf, lm, lx, ly, x, y);
 		}
 
-		if (http_ver_check)
-		{
-			if (!do_check && http_async_req_status(http_ver_check))
-			{
-				ver_data = http_async_req_stop(http_ver_check, &http_ret, NULL);
-				if (http_ret==200 && ver_data)
-				{
-#ifdef BETA
-					if (sscanf(ver_data, "%d.%d.%d", &major, &minor, &is_beta)==3)
-						if (major>SAVE_VERSION || (major==SAVE_VERSION && minor>MINOR_VERSION) || (major==SAVE_VERSION && is_beta == 0))
-							old_version = 1;
-#else
-					if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
-						if (major>SAVE_VERSION || (major==SAVE_VERSION && minor>MINOR_VERSION))
-							old_version = 1;
-#endif
-					free(ver_data);
-				}
-				http_ver_check = NULL;
-			}
-			do_check = (do_check+1) & 15;
-		}
 		if (http_session_check)
 		{
 			if (!do_s_check && http_async_req_status(http_session_check))
@@ -2640,60 +2576,9 @@ int main(int argc, char *argv[])
 		{
 			open_link("http://" SERVER "/Conversations.html");
 		}
-		if (update_flag)
-		{
-			info_box(vid_buf, "Finalizing update...");
-			if (last_major>SAVE_VERSION || (last_major==SAVE_VERSION && last_minor>=MINOR_VERSION))
-			{
-				update_cleanup();
-				error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
-			}
-			else
-			{
-				if (update_finish())
-					error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
-				else
-					info_ui(vid_buf, "Update success", "You have successfully updated the Powder Toy!");
-			}
-			update_flag = 0;
-		}
+		if (update_flag) update_finalize(vid_buf);
+		if (version_check) update_notify_ui_process(vid_buf, b, bq, x, y);
 
-		if (b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
-		        x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
-		{
-			tmp = malloc(64);
-#ifdef BETA
-			if (is_beta)
-			{
-				sprintf(tmp, "Your version: %d (Beta %d), new version: %d (Beta %d).", SAVE_VERSION, MINOR_VERSION, major, minor);
-			}
-			else
-			{
-				sprintf(tmp, "Your version: %d (Beta %d), new version: %d.%d.", SAVE_VERSION, MINOR_VERSION, major, minor);
-			}
-#else
-			sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", SAVE_VERSION, MINOR_VERSION, major, minor);
-#endif
-			if (confirm_ui(vid_buf, "Do you want to update The Powder Toy?", tmp, "Update"))
-			{
-				free(tmp);
-				tmp = download_ui(vid_buf, my_uri, &i);
-				if (tmp)
-				{
-					save_presets(1);
-					if (update_start(tmp, i))
-					{
-						update_cleanup();
-						save_presets(0);
-						error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
-					}
-					else
-						return 0;
-				}
-			}
-			else
-				free(tmp);
-		}
 		if (y>=sdl_scale*(YRES+(MENUSIZE-20))) //mouse checks for buttons at the bottom, to draw mouseover texts
 		{
 			if (x>=189*sdl_scale && x<=202*sdl_scale && svf_login && svf_open && svf_myvote==0)
@@ -3339,24 +3224,8 @@ int main(int argc, char *argv[])
 			drawtext(vid_buf, 16, 20, it_msg, 255, 255, 255, it>51?255:it*5);
 		}
 
-		if (old_version)
-		{
-			clearrect(vid_buf, XRES-21-old_ver_len, YRES-24, old_ver_len+9, 17);
-#ifdef BETA
-			if (is_beta)
-			{
-				drawtext(vid_buf, XRES-16-old_ver_len, YRES-19, old_ver_msg_beta, 255, 216, 32, 255);
-			}
-			else
-			{
-				drawtext(vid_buf, XRES-16-old_ver_len, YRES-19, old_ver_msg, 255, 216, 32, 255);
-			}
-#else
-			drawtext(vid_buf, XRES-16-old_ver_len, YRES-19, old_ver_msg, 255, 216, 32, 255);
-#endif
-			drawrect(vid_buf, XRES-19-old_ver_len, YRES-22, old_ver_len+5, 13, 255, 216, 32, 255);
-		}
-		
+		if (version_check) update_notify_ui_draw(vid_buf);
+
 		if (svf_messages)
 		{
 			sprintf(new_message_msg, "You have %d new message%s, Click to view", svf_messages, (svf_messages>1)?"s":"");

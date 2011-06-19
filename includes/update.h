@@ -20,9 +20,16 @@
 #ifndef UPDATE_H
 #define UPDATE_H
 
+#include <defines.h>
+
+extern int version_check;
+
 char *exe_name(void);
 int update_start(char *data, int len);
 int update_finish(void);
 void update_cleanup(void);
+void update_finalize(pixel *vid_buf);
+void update_notify_ui_draw(pixel *vid_buf);
+void update_notify_ui_process(pixel *vid_buf, int mb, int mbq, int mx, int my);
 
 #endif
