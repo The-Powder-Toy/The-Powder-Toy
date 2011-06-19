@@ -5554,17 +5554,17 @@ void lua_preset_ui(pixel * vid_buf)
 	cb2.y = y0+54;
 	cb2.focus = 0;
 	cb2.checked = luatextdrawing;
-/*
-	cb3.x = x0+xsize-16;	//Large window
-	cb3.y = y0+113;
+
+	cb3.x = x0+xsize-16;	//No Sparking
+	cb3.y = y0+82;
 	cb3.focus = 0;
-	cb3.checked = (sdl_scale==2)?1:0;
+	cb3.checked = nosparklua;
 
-	cb4.x = x0+xsize-16;	//Fullscreen
-	cb4.y = y0+129;
+	cb4.x = x0+xsize-16;	//No Air/Gravity
+	cb4.y = y0+110;
 	cb4.focus = 0;
-	cb4.checked = (kiosk_enable==1)?1:0;
-
+	cb4.checked = noairgrav;
+/*
 	cb5.x = x0+xsize-16;	//Ambient heat
 	cb5.y = y0+51;
 	cb5.focus = 0;
@@ -5586,7 +5586,7 @@ void lua_preset_ui(pixel * vid_buf)
 
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
-		drawtext(vid_buf, x0+8, y0+8, "Lua Goodies", 255, 216, 32, 255);
+		drawtext(vid_buf, x0+8, y0+8, "Lua Goodies. NOTE: May cause lag", 255, 216, 32, 255);
 
 		drawtext(vid_buf, x0+8, y0+26, "Classic Powder", 255, 255, 255, 255);
 		drawtext(vid_buf, x0+12+textwidth("Classic Powder"), y0+26, "Based off wiki.", 255, 255, 255, 180);
@@ -5596,16 +5596,15 @@ void lua_preset_ui(pixel * vid_buf)
 		drawtext(vid_buf, x0+12+textwidth("Text Drawing"), y0+54, "Created by Mniip.", 255, 255, 255, 180);
 		drawtext(vid_buf, x0+12, y0+68, "Use of mniipstext.drawln(text example,x,y,element name).", 255, 255, 255, 120);
 
-		/*drawtext(vid_buf, x0+8, y0+82, "Newtonian gravity", 255, 255, 255, 255);
-		drawtext(vid_buf, x0+12+textwidth("Newtonian gravity"), y0+82, "Introduced in version 48.", 255, 255, 255, 180);
-		drawtext(vid_buf, x0+12, y0+96, "May also cause slow performance on older computers", 255, 255, 255, 120);
+		drawtext(vid_buf, x0+8, y0+82, "No Spark", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("No Spark"), y0+82, "By Me4502.", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+12, y0+96, "Disables sparking and electrical flow.", 255, 255, 255, 120);
 
-		draw_line(vid_buf, x0, y0+110, x0+xsize, y0+110, 150, 150, 150, XRES+BARSIZE);
+		drawtext(vid_buf, x0+8, y0+110, "No Air/Grav", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("No Air/Grav"), y0+110, "By Me4502.", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+12, y0+124, "Disables Air and Newtonian Gravity.", 255, 255, 255, 120);
 
-		drawtext(vid_buf, x0+8, y0+116, "Large window", 255, 255, 255, 255);
-		drawtext(vid_buf, x0+12+textwidth("Large window"), y0+116, "Double window size for small screens", 255, 255, 255, 180);
-
-		drawtext(vid_buf, x0+8, y0+132, "Fullscreen", 255, 255, 255, 255);
+		/*drawtext(vid_buf, x0+8, y0+132, "Fullscreen", 255, 255, 255, 255);
 		drawtext(vid_buf, x0+12+textwidth("Fullscreen"), y0+132, "Fill the entire screen", 255, 255, 255, 180);*/
 
 		//TODO: Options for Air and Normal gravity
@@ -5616,15 +5615,15 @@ void lua_preset_ui(pixel * vid_buf)
 
 		ui_checkbox_draw(vid_buf, &cb);
 		ui_checkbox_draw(vid_buf, &cb2);
-		/*ui_checkbox_draw(vid_buf, &cb3);
+		ui_checkbox_draw(vid_buf, &cb3);
 		ui_checkbox_draw(vid_buf, &cb4);
-		ui_checkbox_draw(vid_buf, &cb5);*/
+		//ui_checkbox_draw(vid_buf, &cb5);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 		ui_checkbox_process(mx, my, b, bq, &cb);
 		ui_checkbox_process(mx, my, b, bq, &cb2);
-		/*ui_checkbox_process(mx, my, b, bq, &cb3);
+		ui_checkbox_process(mx, my, b, bq, &cb3);
 		ui_checkbox_process(mx, my, b, bq, &cb4);
-		ui_checkbox_process(mx, my, b, bq, &cb5);*/
+		//ui_checkbox_process(mx, my, b, bq, &cb5);
 
 		if (b && !bq && mx>=x0 && mx<x0+xsize && my>=y0+ysize-16 && my<=y0+ysize)
 			break;
@@ -5633,6 +5632,8 @@ void lua_preset_ui(pixel * vid_buf)
 			break;
 		if (sdl_key==SDLK_ESCAPE)
 			break;
+        if (sdl_key=='o')
+			break;
 	}
 
 	classicpowder = cb.checked;
@@ -5640,28 +5641,26 @@ void lua_preset_ui(pixel * vid_buf)
         luacon_eval("tpt.unregister_step(ClassicPowder)");
         luacon_eval("tpt.unregister_step(ClassicText)");
 	} else if (classicpowder == 1){
-        luacon_eval("dofile(\"classic.lua\")"); //Autorun lua script
+        luacon_eval("dofile(\"1.lua\")"); //Autorun lua script
 	}
 	luatextdrawing = cb2.checked;
 	if (luatextdrawing == 0){
-        info_ui(vid_buf, "Notice", "Restart the powder toy to turn off text drawing");
+        //info_ui(vid_buf, "Notice", "Restart the powder toy to turn off text drawing");
 	} else if (luatextdrawing == 1){
-        luacon_eval("dofile(\"text.lua\")"); //Autorun lua script
+        luacon_eval("dofile(\"2.lua\")"); //Autorun lua script
 	}
-	/*new_scale = (cb3.checked)?2:1;
-	new_kiosk = (cb4.checked)?1:0;
-	if(new_scale!=sdl_scale || new_kiosk!=kiosk_enable)
-	{
-		if (!set_scale(new_scale, new_kiosk))
-			error_ui(vid_buf, 0, "Could not change display options");
+	nosparklua = cb3.checked;
+	if (nosparklua == 0){
+        luacon_eval("tpt.unregister_step(noSprk)");
+	} else if (nosparklua == 1){
+        luacon_eval("dofile(\"3.lua\")"); //Autorun lua script
 	}
-	if(ngrav_enable != cb2.checked)
-	{
-		if(cb2.checked)
-			start_grav_async();
-		else
-			stop_grav_async();
-	}*/
+	noairgrav = cb4.checked;
+	if (noairgrav == 0){
+        luacon_eval("tpt.unregister_step(noAirGrav)");
+	} else if (noairgrav == 1){
+        luacon_eval("dofile(\"4.lua\")"); //Autorun lua script
+	}
 
 	while (!sdl_poll())
 	{

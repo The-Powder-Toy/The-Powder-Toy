@@ -147,8 +147,12 @@ extern int aheat_enable;
 extern int decorations_enable;
 extern int classicpowder;
 extern int luatextdrawing;
+extern int nosparklua;
+extern int active_menu;
+extern int noairgrav;
 
 extern int sys_pause;
+extern int hud_enable;
 extern int framerender;
 
 extern int mousex, mousey;

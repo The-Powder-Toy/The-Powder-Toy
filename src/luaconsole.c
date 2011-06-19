@@ -2,6 +2,7 @@
 #include <powder.h>
 #include <console.h>
 #include <luaconsole.h>
+#include <defines.h>
 
 lua_State *l;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
@@ -32,6 +33,11 @@ void luacon_open(){
 		{"unregister_step", &luatpt_unregister_step},
 		{"input", &luatpt_input},
 		{"message_box", &luatpt_message_box},
+		{"hud", &luatpt_hud},
+		{"newtonian_gravity", &luatpt_gravity},
+		{"ambient_heat", &luatpt_airheat},
+		{"active_menu", &luatpt_active_menu},
+		{"decorations_enable", &luatpt_decorations_enable},
 		{NULL,NULL}
 	};
 
@@ -63,7 +69,7 @@ int luacon_step(int mx, int my, int mb, int mbq, char key){
 				if(lua_isboolean(l, -1)){
 					tempb = lua_toboolean(l, -1);
 					if(tempb){	//Mouse click has been handled, set the global for future calls
-						lua_pushinteger(l, mb);	
+						lua_pushinteger(l, mb);
 						lua_setfield(l, LUA_GLOBALSINDEX, "mouseb");
 					}
 					tempret |= tempb;
@@ -81,7 +87,7 @@ int luacon_eval(char *command){
 char *luacon_geterror(){
 	char *error = lua_tostring(l, -1);
 	if(error==NULL || !error[0]){
-		error = "failed to execute";	
+		error = "failed to execute";
 	}
 	return error;
 }
@@ -151,7 +157,7 @@ int luatpt_drawtext(lua_State* l)
 	if (textalpha>255) textalpha = 255;
 	if(vid_buf!=NULL){
 		drawtext(vid_buf, textx, texty, string, textred, textgreen, textblue, textalpha);
-		return 0;	
+		return 0;
 	}
 	return luaL_error(l, "Screen buffer does not exist");
 }
@@ -177,7 +183,7 @@ int luatpt_create(lua_State* l)
 		retid = create_part(-1, x, y, t);
 		// failing to create a particle often happens (e.g. if space is already occupied) and isn't usually important, so don't raise an error
 		lua_pushinteger(l, retid);
-		return 1;	
+		return 1;
 	}
 	return luaL_error(l, "Coordinates out of range (%d,%d)", x, y);
 }
@@ -225,12 +231,12 @@ int luatpt_set_pressure(lua_State* l)
 	if(value > 256.0f)
 		value = 256.0f;
 	else if(value < -256.0f)
-		value = -256.0f;	
-	
+		value = -256.0f;
+
 	if(x1 > (XRES/CELL)-1)
 		x1 = (XRES/CELL)-1;
-	if(y1 > (YRES/CELL)-1) 
-		y1 = (YRES/CELL)-1;	
+	if(y1 > (YRES/CELL)-1)
+		y1 = (YRES/CELL)-1;
 	if(x1+width > (XRES/CELL)-1)
 		width = (XRES/CELL)-x1;
 	if(y1+height > (YRES/CELL)-1)
@@ -256,12 +262,12 @@ int luatpt_set_gravity(lua_State* l)
 	if(value > 256.0f)
 		value = 256.0f;
 	else if(value < -256.0f)
-		value = -256.0f;	
-	
+		value = -256.0f;
+
 	if(x1 > (XRES/CELL)-1)
 		x1 = (XRES/CELL)-1;
-	if(y1 > (YRES/CELL)-1) 
-		y1 = (YRES/CELL)-1;	
+	if(y1 > (YRES/CELL)-1)
+		y1 = (YRES/CELL)-1;
 	if(x1+width > (XRES/CELL)-1)
 		width = (XRES/CELL)-x1;
 	if(y1+height > (YRES/CELL)-1)
@@ -284,8 +290,8 @@ int luatpt_reset_gravity_field(lua_State* l)
 	height = abs(luaL_optint(l, 4, YRES/CELL));
 	if(x1 > (XRES/CELL)-1)
 		x1 = (XRES/CELL)-1;
-	if(y1 > (YRES/CELL)-1) 
-		y1 = (YRES/CELL)-1;	
+	if(y1 > (YRES/CELL)-1)
+		y1 = (YRES/CELL)-1;
 	if(x1+width > (XRES/CELL)-1)
 		width = (XRES/CELL)-x1;
 	if(y1+height > (YRES/CELL)-1)
@@ -309,8 +315,8 @@ int luatpt_reset_velocity(lua_State* l)
 	height = abs(luaL_optint(l, 4, YRES/CELL));
 	if(x1 > (XRES/CELL)-1)
 		x1 = (XRES/CELL)-1;
-	if(y1 > (YRES/CELL)-1) 
-		y1 = (YRES/CELL)-1;	
+	if(y1 > (YRES/CELL)-1)
+		y1 = (YRES/CELL)-1;
 	if(x1+width > (XRES/CELL)-1)
 		width = (XRES/CELL)-x1;
 	if(y1+height > (YRES/CELL)-1)
@@ -745,5 +751,44 @@ int luatpt_message_box(lua_State* l)
 	free(title);
 	free(text);
 	return luaL_error(l, "Screen buffer does not exist");;
+}
+int luatpt_hud(lua_State* l)
+{
+	int hudstate;
+	hudstate = luaL_optint(l, 1, 0);
+	hud_enable = (hudstate==0?0:1);
+	return 0;
+}
+int luatpt_gravity(lua_State* l)
+{
+	int gravstate;
+	gravstate = luaL_optint(l, 1, 0);
+	if(gravstate)
+			start_grav_async();
+		else
+			stop_grav_async();
+	ngrav_enable = (gravstate==0?0:1);
+	return 0;
+}
+int luatpt_airheat(lua_State* l)
+{
+	int aheatstate;
+	aheatstate = luaL_optint(l, 1, 0);
+	aheat_enable = (aheatstate==0?0:1);
+	return 0;
+}
+int luatpt_active_menu(lua_State* l)
+{
+	int aheatstate;
+	aheatstate = luaL_optint(l, 1, menu_count);
+	active_menu = aheatstate;
+	return 0;
+}
+int luatpt_decorations_enable(lua_State* l)
+{
+	int aheatstate;
+	aheatstate = luaL_optint(l, 1, 0);
+	decorations_enable = (aheatstate==0?0:1);
+	return 0;
 }
 #endif

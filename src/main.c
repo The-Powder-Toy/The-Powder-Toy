@@ -187,7 +187,11 @@ int ngrav_enable = 0; //Newtonian gravity, will be set by save
 int aheat_enable; //Ambient heat
 int classicpowder = 0;
 int luatextdrawing = 0;
+int nosparklua = 0;
+int noairgrav = 0;
+int hud_enable = 1;
 int decorations_enable = 1;
+int active_menu = 0;
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
@@ -196,7 +200,6 @@ int frameidx = 0;
 //int CGOL = 0;
 //int GSPEED = 1;//causes my .exe to crash..
 int sound_enable = 0;
-
 
 sign signs[MAXSIGNS];
 
@@ -1620,8 +1623,6 @@ int main(int argc, char *argv[])
 #else
 int main(int argc, char *argv[])
 {
-    int hud_enable = 1;
-    int active_menu = 0;
 #ifdef BETA
     int is_beta = 0;
 #endif
