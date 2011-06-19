@@ -39,8 +39,6 @@ function ClassicPowder()
 	for i=0, 10 do
 		tpt.create(x + i, y, "DEUT")
 	end
-	tpt.reset_velocity(0, 0, 612, 384)
-	tpt.reset_gravity_field(0, 0, 612, 384)
 	return false
 end
 function ClassicText()

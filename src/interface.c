@@ -5635,7 +5635,7 @@ void lua_preset_ui(pixel * vid_buf)
         if (sdl_key=='o')
 			break;
 	}
-
+#ifdef LUACONSOLE
 	classicpowder = cb.checked;
 	if (classicpowder == 0){
         luacon_eval("tpt.unregister_step(ClassicPowder)");
@@ -5661,7 +5661,7 @@ void lua_preset_ui(pixel * vid_buf)
 	} else if (noairgrav == 1){
         luacon_eval("dofile(\"4.lua\")"); //Autorun lua script
 	}
-
+#endif
 	while (!sdl_poll())
 	{
 		b = SDL_GetMouseState(&mx, &my);

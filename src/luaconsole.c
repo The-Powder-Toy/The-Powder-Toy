@@ -39,6 +39,8 @@ void luacon_open(){
 		{"active_menu", &luatpt_active_menu},
 		{"decorations_enable", &luatpt_decorations_enable},
 		{"display_mode", &luatpt_cmode_set},
+		{"get_mousey", &luatpt_get_mousey},
+		{"get_mousex", &luatpt_get_mousex},
 		{NULL,NULL}
 	};
 
@@ -798,5 +800,13 @@ int luatpt_cmode_set(lua_State* l)
 	aheatstate = luaL_optint(l, 1, CM_COUNT);
 	cmode = aheatstate;
 	return 0;
+}
+int luatpt_get_mousex(lua_State* l)
+{
+	return mousex;
+}
+int luatpt_get_mousey(lua_State* l)
+{
+	return mousey;
 }
 #endif
