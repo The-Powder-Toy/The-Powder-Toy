@@ -6,13 +6,19 @@
 #else
 #define PATH_SEP "/"
 #endif
- 
+
+#define ME4502_MAJOR_VERSION 3
+#define ME4502_VERSION 0
 #define SAVE_VERSION 50
 #define MINOR_VERSION 6
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
 
 #define SERVER "powdertoy.co.uk"
+
+//Languages
+#define ENGLISH
+//#define INDONESIAN
 
 #define LOCAL_SAVE_DIR "Saves"
 
@@ -49,6 +55,9 @@
 
 #define MAXSIGNS 16
 #define TAG_MAX 256
+
+#define PS 8 //the particle number shift that also determines element limit
+#define TYPE 0xFF //(int)pow(2,PS)-1 //Changes where particles are allocated !DO NOT TOUCH!
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
@@ -136,6 +145,8 @@ extern int sound_enable;
 extern int kiosk_enable;
 extern int aheat_enable;
 extern int decorations_enable;
+extern int classicpowder;
+extern int luatextdrawing;
 
 extern int sys_pause;
 extern int framerender;
@@ -164,11 +175,13 @@ int CGOL;
 int ISGOL;
 int ISLOVE;
 int ISLOLZ;
+int ISSMIL;
 int ISGRAV;
 int ISWIRE;
 int GSPEED;
 int love[XRES/9][YRES/9];
 int lolz[XRES/9][YRES/9];
+int smil[XRES/9][YRES/9];
 unsigned char gol[XRES][YRES];
 unsigned char gol2[XRES][YRES][NGOL+1];
 int SEC;

@@ -104,7 +104,7 @@ void clean_text(char *text, int vwidth)
 {
 	int i = 0;
 	if(textwidth(text) > vwidth){
-		text[textwidthx(text, vwidth)] = 0;	
+		text[textwidthx(text, vwidth)] = 0;
 	}
 	for(i = 0; i < strlen(text); i++){
 		if(! (text[i]>=' ' && text[i]<127)){
@@ -437,7 +437,7 @@ int register_extension()
 #if defined WIN32
 	LONG rresult;
 	HKEY newkey;
-	char *currentfilename = exe_name();
+	char *currentfilename = zip_name();
 	char *iconname;
 	char *opencommand;
 	iconname = malloc(strlen(currentfilename)+6);
@@ -506,7 +506,7 @@ int register_extension()
 
 	return 1;
 #elif defined(LIN32) || defined(LIN64)
-	char *currentfilename = exe_name();
+	char *currentfilename = zip_name();
 	FILE *f;
 	char *mimedata =
 "<?xml version=\"1.0\"?>\n"

@@ -23,6 +23,12 @@ int update_THRM(UPDATE_FUNC_ARGS) {
 						parts[i].temp = 3500.0f;
 						parts[i].tmp = 20;
 					}
+					if (1>(rand()%500)) {
+						part_change_type(i,x,y,PT_MGMA);
+						parts[i].ctype = PT_MGMA;
+						parts[i].temp = 99999.0f;
+						pv[y/CELL][x/CELL] += 10.0f;
+					}
 				}
 			}
 	return 0;

@@ -20,18 +20,21 @@ struct menu_wall
 typedef struct menu_wall menu_wall;
 
 #define SC_WALL 0
-#define SC_SPECIAL 8
-#define SC_POWDERS 5
-#define SC_SOLIDS 6
 #define SC_ELEC 1
 #define SC_EXPLOSIVE 2
 #define SC_GAS 3
 #define SC_LIQUID 4
+#define SC_POWDERS 5
+#define SC_SOLIDS 6
 #define SC_NUCLEAR 7
+#define SC_SPECIAL 8
 #define SC_LIFE 9
-#define SC_CRACKER 12
+#define SC_STICKMAN 10
+#define SC_NATURE 11
+#define SC_SPACE 12
 #define SC_CRACKER2 13
-#define SC_TOTAL 10
+#define SC_CRACKER 13
+#define SC_TOTAL 14
 
 static menu_section msections[] = //doshow does not do anything currently.
 {
@@ -45,27 +48,29 @@ static menu_section msections[] = //doshow does not do anything currently.
 	{"\xC6", "Radioactive", 0, 1},
 	{"\xCC", "Special", 0, 1},
 	{"\xD2", "Life", 0, 1},
-	{"\xD2", "More Life", 0, 1},
-	{"\xC8", "", 0, 0},
-	{"\xC8", "Cracker", 0, 0},
-	{"\xC8", "Cracker!", 0, 0},
+    {"\xA7", "Stickman", 0, 1},
+    {"\xA4", "Nature", 0, 1},
+    {"\xD1", "Space", 0, 1},
+	{"\xC8", "Secret", 0, 1},
+	{"\xC8", "Secret", 0, 0},
 };
 
 static menu_section colorsections[] = //doshow does not do anything currently.
 {
-	{"\xD1", "Colors", 7, 1},
-	{"\xC5", "Tools", 0, 1},
+ 	{"\xD1", "Colors", 9, 1},
+ 	{"\xC5", "Tools", 0, 1},
 };
-
 static menu_wall colorlist[] =
 {
-	{PIXPACK(0xFF0000), "Red"},
-	{PIXPACK(0x00FF00), "Green"},
-	{PIXPACK(0x0000FF), "Blue"},
-	{PIXPACK(0xFFFF00), "Yellow"},
-	{PIXPACK(0xFF00FF), "Pink"},
-	{PIXPACK(0x00FFFF), "Cyan"},
-	{PIXPACK(0xFFFFFF), "White"},
+  {PIXPACK(0xFF0000), "Red"},
+  {PIXPACK(0x00FF00), "Green"},
+  {PIXPACK(0x0000FF), "Blue"},
+  {PIXPACK(0xFFFF00), "Yellow"},
+  {PIXPACK(0xFF00FF), "Pink"},
+  {PIXPACK(0x00FFFF), "Cyan"},
+  {PIXPACK(0xFFFFFF), "White"},
+  {PIXPACK(0xFF8000), "Orange"},
+  {PIXPACK(0xD900FF), "Purple"},
 };
 
 struct ui_edit
@@ -264,6 +269,8 @@ void open_link(char *uri);
 int report_ui(pixel *vid_buf, char *save_id);
 
 char *console_ui(pixel *vid_buf, char error[255],char console_more);
+
+void lua_preset_ui(pixel *vid_buf);
 
 void simulation_ui(pixel *vid_buf);
 

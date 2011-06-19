@@ -11,8 +11,7 @@ char *add_simulation_tags = "Add simulation tags.";
 char *add_remove_simulation_tags = "Add and remove simulation tags.";
 char *save_under_current_name = "Save the simulation under the current name.";
 char *save_under_new_name = "Save the simulation under a new name.";
-
-char *local_save_text = "Save to your computer.";
+char *replace_mode_text = " [REPLACE MODE]";
 
 #elif defined INDONESIAN //Indonesian
 
