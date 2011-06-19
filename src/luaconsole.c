@@ -38,6 +38,7 @@ void luacon_open(){
 		{"ambient_heat", &luatpt_airheat},
 		{"active_menu", &luatpt_active_menu},
 		{"decorations_enable", &luatpt_decorations_enable},
+		{"display_mode", &luatpt_cmode_set},
 		{NULL,NULL}
 	};
 
@@ -789,6 +790,13 @@ int luatpt_decorations_enable(lua_State* l)
 	int aheatstate;
 	aheatstate = luaL_optint(l, 1, 0);
 	decorations_enable = (aheatstate==0?0:1);
+	return 0;
+}
+int luatpt_cmode_set(lua_State* l)
+{
+	int aheatstate;
+	aheatstate = luaL_optint(l, 1, CM_COUNT);
+	cmode = aheatstate;
 	return 0;
 }
 #endif
