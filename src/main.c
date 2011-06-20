@@ -735,9 +735,9 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
             gol[x][y]=0;
             if (j)// && !(isplayer == 1 && j==PT_STKM))
             {
-                if (pmap[y][x] && (pmap[y][x]>>8)<NPART)
+                if (pmap[y][x] && (pmap[y][x]>>PS)<NPART)
                 {
-                    k = pmap[y][x]>>8;
+                    k = pmap[y][x]>>PS;
                     memset(parts+k, 0, sizeof(particle));
                     parts[k].type = j;
                     if (j == PT_PHOT)
@@ -2489,10 +2489,6 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                 if (it > 50)
                     it = 50;
             }
-            else if (sdl_key=='o')
-            {
-                lua_preset_ui(vid_buf);
-            }
             if (sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
             {
                 int cbx, cby, cbi;
@@ -2646,20 +2642,20 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
             {
                 cr = pmap[y/sdl_scale][x/sdl_scale];
             }
-            if (!((cr>>8)>=NPART || !cr))
+            if (!((cr>>PS)>=NPART || !cr))
             {
                 if (DEBUG_MODE)
                 {
-                    int tctype = parts[cr>>8].ctype;
-                    if (tctype>=PT_NUM || tctype<0 || (cr&0xFF)==PT_PHOT)
+                    int tctype = parts[cr>>PS].ctype;
+                    if (tctype>=PT_NUM || tctype<0 || (cr&TYPE)==PT_PHOT)
                         tctype = 0;
-                    if ((cr&0xFF)==PT_PIPE)
+                    if ((cr&TYPE)==PT_PIPE)
                     {
-                        if (parts[cr>>8].tmp<PT_NUM) tctype = parts[cr>>8].tmp;
+                        if (parts[cr>>PS].tmp<PT_NUM) tctype = parts[cr>>PS].tmp;
                         else tctype = 0;
                     }
-                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
-                    sprintf(coordtext, "#%d, X:%d Y:%d", cr>>8, x/sdl_scale, y/sdl_scale);
+                    sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&TYPE].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
+                    sprintf(coordtext, "#%d, X:%d Y:%d", cr>>PS, x/sdl_scale, y/sdl_scale);
                 }
                 else
                 {
@@ -3021,11 +3017,6 @@ sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", ME4502_MAJOR_VERSION, M
                     }
                     if (x>=219 && x<=(XRES+BARSIZE-(510-349)) && svf_login && svf_open)
                         tag_list_ui(vid_buf);
-                    if (x>=(XRES+BARSIZE-(510-351)) && x<(XRES+BARSIZE-(510-366)) && !bq)
-                    {
-                        //legacy_enable = !legacy_enable;
-                        simulation_ui(vid_buf);
-                    }
                     if (x>=(XRES+BARSIZE-(510-367)) && x<=(XRES+BARSIZE-(510-383)) && !bq)
                     {
                         clear_sim();
@@ -3063,6 +3054,10 @@ sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", ME4502_MAJOR_VERSION, M
                     }
                     if(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
                     {
+                        if (x>=(XRES+BARSIZE-(510-351)) && x<(XRES+BARSIZE-(510-366)) && !bq)
+                        {
+                            lua_preset_ui(vid_buf);
+                        }
                         if (x>=37 && x<=187)
                         {
                             save_filename_ui(vid_buf);
@@ -3075,6 +3070,10 @@ sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", ME4502_MAJOR_VERSION, M
                     }
                     else
                     {
+                        if (x>=(XRES+BARSIZE-(510-351)) && x<(XRES+BARSIZE-(510-366)) && !bq)
+                        {
+                            simulation_ui(vid_buf);
+                        }
                         if (x>=37 && x<=187 && svf_login)
                         {
                             if (!svf_open || !svf_own || x>51)
@@ -3267,11 +3266,11 @@ sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", ME4502_MAJOR_VERSION, M
                         {
                             int cr;
                             cr = pmap[y][x];
-                            if ((cr>>8)>=NPART || !cr)
+                            if ((cr>>PS)>=NPART || !cr)
                                 cr = photons[y][x];
-                            if (!((cr>>8)>=NPART || !cr))
+                            if (!((cr>>PS)>=NPART || !cr))
                             {
-                                c = sl = cr&0xFF;
+                                c = sl = cr&TYPE;
                             }
                             else
                             {
@@ -3670,6 +3669,16 @@ if (!console_mode)
     pthread_win32_thread_detach_np();
     pthread_win32_process_detach_np();
 #endif
+    return 0;
+}
+int exists(const char *fname)
+{
+    FILE *file;
+    if (file = fopen(fname, "r"))
+    {
+        fclose(file);
+        return 1;
+    }
     return 0;
 }
 #endif

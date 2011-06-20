@@ -74,21 +74,21 @@ int update_PYRO(UPDATE_FUNC_ARGS)
             if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
             {
                 r = pmap[y+ry][x+rx];
-                if ((r>>8)>=NPART || !r)
+                if ((r>>PS)>=NPART || !r)
                     continue;
                 if (bmap[(y+ry)/CELL][(x+rx)/CELL] && bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_STREAM)
                     continue;
-                rt = parts[r>>8].type;
+                rt = parts[r>>PS].type;
                 if ((surround_space || ptypes[rt].explosive) &&
                         (t!=PT_SPRK || (rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL)) &&
                         (t!=PT_PHOT || rt!=PT_INSL) &&
-                        (rt!=PT_SPNG || parts[r>>8].life==0) &&
+                        (rt!=PT_SPNG || parts[r>>PS].life==0) &&
                         ptypes[rt].flammable && (ptypes[rt].flammable + (int)(pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
                 {
-                    part_change_type(r>>8,x+rx,y+ry,PT_FIRE);
-                    parts[r>>8].temp = restrict_flt(ptypes[PT_FIRE].heat + (ptypes[rt].flammable/2), MIN_TEMP, MAX_TEMP);
-                    parts[r>>8].life = rand()%80+180;
-                    parts[r>>8].tmp = parts[r>>8].ctype = 0;
+                    part_change_type(r>>PS,x+rx,y+ry,PT_FIRE);
+                    parts[r>>PS].temp = restrict_flt(ptypes[PT_FIRE].heat + (ptypes[rt].flammable/2), MIN_TEMP, MAX_TEMP);
+                    parts[r>>PS].life = rand()%80+180;
+                    parts[r>>PS].tmp = parts[r>>PS].ctype = 0;
                     if (ptypes[rt].explosive)
                         pv[y/CELL][x/CELL] += 0.25f * CFDS;
                 }
@@ -135,11 +135,11 @@ int update_legacy_PYRO(UPDATE_FUNC_ARGS)
             if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
             {
                 r = pmap[y+ry][x+rx];
-                if ((r>>8)>=NPART || !r)
+                if ((r>>PS)>=NPART || !r)
                     continue;
                 if (bmap[(y+ry)/CELL][(x+rx)/CELL] && bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_STREAM)
                     continue;
-                rt = r&0xFF;
+                rt = r&TYPE;
                 lpv = (int)pv[(y+ry)/CELL][(x+rx)/CELL];
                 if (lpv < 1) lpv = 1;
                 if (t!=PT_SPRK && ptypes[rt].meltable  && ((rt!=PT_RBDM && rt!=PT_LRBD) || t!=PT_SPRK) && ((t!=PT_FIRE&&t!=PT_PLSM) || (rt!=PT_METL && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SALT && rt!=PT_INWR)) &&
@@ -147,10 +147,10 @@ int update_legacy_PYRO(UPDATE_FUNC_ARGS)
                 {
                     if (t!=PT_LAVA || parts[i].life>0)
                     {
-                        parts[r>>8].ctype = (rt==PT_BRMT)?PT_BMTL:parts[r>>8].type;
-                        parts[r>>8].ctype = (parts[r>>8].ctype==PT_SAND)?PT_GLAS:parts[r>>8].ctype;
-                        part_change_type(r>>8,x+rx,y+ry,PT_LAVA);
-                        parts[r>>8].life = rand()%120+240;
+                        parts[r>>PS].ctype = (rt==PT_BRMT)?PT_BMTL:parts[r>>PS].type;
+                        parts[r>>PS].ctype = (parts[r>>PS].ctype==PT_SAND)?PT_GLAS:parts[r>>PS].ctype;
+                        part_change_type(r>>PS,x+rx,y+ry,PT_LAVA);
+                        parts[r>>PS].life = rand()%120+240;
                     }
                     else
                     {
@@ -163,7 +163,7 @@ int update_legacy_PYRO(UPDATE_FUNC_ARGS)
                 }
                 if (t!=PT_SPRK && (rt==PT_ICEI || rt==PT_SNOW))
                 {
-                    parts[r>>8].type = PT_WATR;
+                    parts[r>>PS].type = PT_WATR;
                     if (t==PT_FIRE)
                     {
                         kill_part(i);
@@ -178,7 +178,7 @@ int update_legacy_PYRO(UPDATE_FUNC_ARGS)
                 }
                 if (t!=PT_SPRK && (rt==PT_WATR || rt==PT_DSTW || rt==PT_SLTW))
                 {
-                    kill_part(r>>8);
+                    kill_part(r>>PS);
                     if (t==PT_FIRE)
                     {
                         kill_part(i);

@@ -8,9 +8,9 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART || !r)
+					if ((r>>PS)>=NPART || !r)
 						continue;
-					if ((r&0xFF)!=PT_BOMB) {
+					if ((r&TYPE)!=PT_BOMB) {
 						kill_part(i);
 						return 1;
 					}
@@ -21,9 +21,9 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART || !r)
+					if ((r>>PS)>=NPART || !r)
 						continue;
-					if ((r&0xFF)!=PT_BOMB && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_BCLN) {
+					if ((r&TYPE)!=PT_BOMB && (r&TYPE)!=PT_DMND && (r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN && (r&TYPE)!=PT_BCLN) {
 						int rad = 8;
 						int nxi;
 						int nxj;
@@ -43,7 +43,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 						for (nxj=-rad; nxj<=rad; nxj++)
 							for (nxi=-rad; nxi<=rad; nxi++)
 								if ((pow(nxi,2))/(pow(rad,2))+(pow(nxj,2))/(pow(rad,2))<=1)
-									if ((pmap[y+nxj][x+nxi]&0xFF)!=PT_DMND && (pmap[y+nxj][x+nxi]&0xFF)!=PT_CLNE && (pmap[y+nxj][x+nxi]&0xFF)!=PT_PCLN && (pmap[y+nxj][x+nxi]&0xFF)!=PT_BCLN) {
+									if ((pmap[y+nxj][x+nxi]&TYPE)!=PT_DMND && (pmap[y+nxj][x+nxi]&TYPE)!=PT_CLNE && (pmap[y+nxj][x+nxi]&TYPE)!=PT_PCLN && (pmap[y+nxj][x+nxi]&TYPE)!=PT_BCLN) {
 										delete_part(x+nxi, y+nxj);//it SHOULD kill anything but the exceptions above, doesn't seem to always work
 										pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
 										nb = create_part(-1, x+nxi, y+nxj, PT_BOMB);

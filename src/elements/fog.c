@@ -7,13 +7,13 @@ int update_FOG(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (ptypes[r&0xFF].state==ST_SOLID&&5>=rand()%50&&parts[i].life==0&&!((r&0xFF)==PT_CLNE||(r&0xFF)==PT_PCLN)) // TODO: should this also exclude BCLN?
+				if (ptypes[r&TYPE].state==ST_SOLID&&5>=rand()%50&&parts[i].life==0&&!((r&TYPE)==PT_CLNE||(r&TYPE)==PT_PCLN)) // TODO: should this also exclude BCLN?
 				{
 					part_change_type(i,x,y,PT_RIME);
 				}
-				if ((r&0xFF)==PT_SPRK)
+				if ((r&TYPE)==PT_SPRK)
 				{
 					parts[i].life += rand()%20;
 				}

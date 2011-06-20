@@ -23,7 +23,7 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 				count ++;
 				if (!r)
 					fe = 1;
-				if ((r>>8)>=NPART || r)
+				if ((r>>PS)>=NPART || r)
 					continue;
 				if (!r)
 				{

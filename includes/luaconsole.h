@@ -53,4 +53,5 @@ int luatpt_decorations_enable(lua_State* l);
 int luatpt_cmode_set(lua_State* l);
 int luatpt_get_mousex(lua_State* l);
 int luatpt_get_mousey(lua_State* l);
+int luatpt_draw_rectangle(lua_State* l);
 #endif

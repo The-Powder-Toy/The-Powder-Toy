@@ -68,6 +68,9 @@ extern unsigned char ZSIZE;
 #define ISTP    (CELL/2)
 #define CFDS	(4.0f/CELL)
 
+#define MAXVELOCITY 256.0f
+#define MINVELOCITY -256.0f
+
 #define AIR_TSTEPP 0.3f
 #define AIR_TSTEPV 0.4f
 #define AIR_VADV 0.3f
@@ -234,4 +237,5 @@ void play_sound(char *file);
 void start_grav_async(void);
 void stop_grav_async(void);
 int set_scale(int scale, int kiosk);
+int exists(const char *fname);
 #endif

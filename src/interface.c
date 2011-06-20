@@ -716,13 +716,12 @@ void draw_svf_ui(pixel *vid_buf, int alternate)// all the buttons at the bottom
 	}
 
 	//The simulation options button, used to be the heat sim button
-	/*if (!legacy_enable)
+	if(alternate)
 	{
-		fillrect(vid_buf, XRES-160+BARSIZE, YRES+(MENUSIZE-17), 16, 16, 255, 255, 255, 255);
-		drawtext(vid_buf, XRES-154+BARSIZE, YRES+(MENUSIZE-13), "\xBE", 255, 0, 0, 255);
-		drawtext(vid_buf, XRES-154+BARSIZE, YRES+(MENUSIZE-13), "\xBD", 0, 0, 0, 255);
+		fillrect(vid_buf, XRES-159+BARSIZE, YRES+(MENUSIZE-16)-1, 15, 16, 255, 255, 255, 255);
+		drawtext(vid_buf, XRES-156+BARSIZE, YRES+(MENUSIZE-13), "\xCF", 0, 0, 0, 255);
 	}
-	else*/
+	else
 	{
 		drawtext(vid_buf, XRES-156+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xCF", 255, 255, 255, 255);
 		drawrect(vid_buf, XRES-159+BARSIZE/*494*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
@@ -5535,7 +5534,7 @@ openfin:
 
 void lua_preset_ui(pixel * vid_buf)
 {
-	int xsize = 300;
+	int xsize = 350;
 	int ysize = 164;
 	int x0=(XRES-xsize)/2,y0=(YRES-MENUSIZE-ysize)/2,b=1,bq,mx,my;
 	int new_scale, new_kiosk;
@@ -5550,7 +5549,7 @@ void lua_preset_ui(pixel * vid_buf)
 	cb.focus = 0;
 	cb.checked = classicpowder;
 
-	cb2.x = x0+xsize-16;	//Mniip Text Drawer
+	cb2.x = x0+xsize-16;	//Mniip Particle Graphics
 	cb2.y = y0+54;
 	cb2.focus = 0;
 	cb2.checked = luatextdrawing;
@@ -5586,15 +5585,15 @@ void lua_preset_ui(pixel * vid_buf)
 
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
-		drawtext(vid_buf, x0+8, y0+8, "Lua Goodies. NOTE: May cause lag", 255, 216, 32, 255);
+		drawtext(vid_buf, x0+8, y0+8, "Lua Goodies. NOTE: May cause lag, If checkbox missing file is missing.", 255, 216, 32, 255);
 
 		drawtext(vid_buf, x0+8, y0+26, "Classic Powder", 255, 255, 255, 255);
 		drawtext(vid_buf, x0+12+textwidth("Classic Powder"), y0+26, "Based off wiki.", 255, 255, 255, 180);
 		drawtext(vid_buf, x0+12, y0+40, "Makes Particles and Text at top.", 255, 255, 255, 120);
 
-		drawtext(vid_buf, x0+8, y0+54, "Text Drawing", 255, 255, 255, 255);
-		drawtext(vid_buf, x0+12+textwidth("Text Drawing"), y0+54, "Created by Mniip.", 255, 255, 255, 180);
-		drawtext(vid_buf, x0+12, y0+68, "Use of mniipstext.drawln(text example,x,y,element name).", 255, 255, 255, 120);
+		drawtext(vid_buf, x0+8, y0+54, "Particle Creations", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("Particle Creations"), y0+54, "Created by Mniip.", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+12, y0+68, "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=8253", 255, 255, 255, 120);
 
 		drawtext(vid_buf, x0+8, y0+82, "No Spark", 255, 255, 255, 255);
 		drawtext(vid_buf, x0+12+textwidth("No Spark"), y0+82, "By Me4502.", 255, 255, 255, 180);
@@ -5607,22 +5606,27 @@ void lua_preset_ui(pixel * vid_buf)
 		/*drawtext(vid_buf, x0+8, y0+132, "Fullscreen", 255, 255, 255, 255);
 		drawtext(vid_buf, x0+12+textwidth("Fullscreen"), y0+132, "Fill the entire screen", 255, 255, 255, 180);*/
 
-		//TODO: Options for Air and Normal gravity
-		//Maybe save/load defaults too.
-
 		drawtext(vid_buf, x0+5, y0+ysize-11, "OK", 255, 255, 255, 255);
 		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
 
-		ui_checkbox_draw(vid_buf, &cb);
-		ui_checkbox_draw(vid_buf, &cb2);
-		ui_checkbox_draw(vid_buf, &cb3);
-		ui_checkbox_draw(vid_buf, &cb4);
+        if (exists("1.lua")==1)
+            ui_checkbox_draw(vid_buf, &cb);
+        if (exists("2.lua")==1)
+            ui_checkbox_draw(vid_buf, &cb2);
+        if (exists("3.lua")==1)
+            ui_checkbox_draw(vid_buf, &cb3);
+        if (exists("4.lua")==1)
+            ui_checkbox_draw(vid_buf, &cb4);
 		//ui_checkbox_draw(vid_buf, &cb5);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
-		ui_checkbox_process(mx, my, b, bq, &cb);
-		ui_checkbox_process(mx, my, b, bq, &cb2);
-		ui_checkbox_process(mx, my, b, bq, &cb3);
-		ui_checkbox_process(mx, my, b, bq, &cb4);
+        if (exists("1.lua")==1)
+            ui_checkbox_process(mx, my, b, bq, &cb);
+        if (exists("2.lua")==1)
+            ui_checkbox_process(mx, my, b, bq, &cb2);
+        if (exists("3.lua")==1)
+            ui_checkbox_process(mx, my, b, bq, &cb3);
+        if (exists("4.lua")==1)
+            ui_checkbox_process(mx, my, b, bq, &cb4);
 		//ui_checkbox_process(mx, my, b, bq, &cb5);
 
 		if (b && !bq && mx>=x0 && mx<x0+xsize && my>=y0+ysize-16 && my<=y0+ysize)
@@ -5631,8 +5635,6 @@ void lua_preset_ui(pixel * vid_buf)
 		if (sdl_key==SDLK_RETURN)
 			break;
 		if (sdl_key==SDLK_ESCAPE)
-			break;
-        if (sdl_key=='o')
 			break;
 	}
 #ifdef LUACONSOLE

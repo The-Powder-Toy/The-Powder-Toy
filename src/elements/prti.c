@@ -23,28 +23,28 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 				count ++;
 				if (!r)
 					fe = 1;
-				if ((r>>8)>=NPART)
+				if ((r>>PS)>=NPART)
 					continue;
-				if (!r || (r&0xFF)==PT_PRTI || (r&0xFF)==PT_PRTO || (ptypes[r&0xFF].falldown== 0 && ptypes[r&0xFF].state != ST_GAS && (r&0xFF)!=PT_SPRK))
+				if (!r || (r&TYPE)==PT_PRTI || (r&TYPE)==PT_PRTO || (ptypes[r&TYPE].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && (r&TYPE)!=PT_SPRK))
 				{
 					r = photons[y+ry][x+rx];
-					if ((r>>8)>=NPART)
+					if ((r>>PS)>=NPART)
 						continue;
-					if (!r || (r&0xFF)==PT_PRTI || (r&0xFF)==PT_PRTO || (ptypes[r&0xFF].falldown== 0 && ptypes[r&0xFF].state != ST_GAS && (r&0xFF)!=PT_SPRK))
+					if (!r || (r&TYPE)==PT_PRTI || (r&TYPE)==PT_PRTO || (ptypes[r&TYPE].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && (r&TYPE)!=PT_SPRK))
 						continue;
 				}
 
-				if ((r&0xFF) == PT_SOAP)
-					detach(r>>8);
+				if ((r&TYPE) == PT_SOAP)
+					detach(r>>PS);
 
 				for ( nnx=0; nnx<80; nnx++)
 					if (!portalp[parts[i].tmp][count-1][nnx].type)
 					{
-						portalp[parts[i].tmp][count-1][nnx] = parts[r>>8];
-						if ((r&0xFF)==PT_SPRK)
-							part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
+						portalp[parts[i].tmp][count-1][nnx] = parts[r>>PS];
+						if ((r&TYPE)==PT_SPRK)
+							part_change_type(r>>PS,x+rx,y+ry,parts[r>>PS].ctype);
 						else
-							kill_part(r>>8);
+							kill_part(r>>PS);
 						fe = 1;
 						break;
 					}

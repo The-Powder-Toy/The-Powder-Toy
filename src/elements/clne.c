@@ -10,9 +10,9 @@ int update_CLNE(UPDATE_FUNC_ARGS)
                 if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
                 {
                     r = photons[y+ry][x+rx];
-                    if (!r || (r>>8)>=NPART)
+                    if (!r || (r>>PS)>=NPART)
                         r = pmap[y+ry][x+rx];
-                    if (!r || (r>>8)>=NPART)
+                    if (!r || (r>>PS)>=NPART)
                         continue;
                     if ((r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN &&
                             (r&TYPE)!=PT_BCLN && (r&TYPE)!=PT_STKM &&

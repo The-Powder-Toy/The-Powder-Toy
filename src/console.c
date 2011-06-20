@@ -59,10 +59,10 @@ int console_parse_partref(char *txt, int *which, char *err)
 	if (strchr(txt,',') && console_parse_coords(txt, &nx, &ny, err))
 	{
 		i = pmap[ny][nx];
-		if (!i || (i>>8)>=NPART)
+		if (!i || (i>>PS)>=NPART)
 			i = -1;
 		else
-			i = i>>8;
+			i = i>>PS;
 	}
 	else if (txt)
 	{
@@ -283,8 +283,8 @@ static PyObject* emb_set_life(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].life = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].life = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -325,8 +325,8 @@ static PyObject* emb_set_type(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].type = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].type = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -366,8 +366,8 @@ static PyObject* emb_set_temp(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].temp = newval;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].temp = newval;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -406,8 +406,8 @@ static PyObject* emb_set_tmp(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].tmp = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].tmp = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -447,8 +447,8 @@ static PyObject* emb_set_x(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].x = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].x = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -487,8 +487,8 @@ static PyObject* emb_set_y(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].y = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].y = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -530,8 +530,8 @@ static PyObject* emb_set_ctype(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].ctype = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].ctype = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -571,8 +571,8 @@ static PyObject* emb_set_vx(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].vx = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].vx = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -612,8 +612,8 @@ static PyObject* emb_set_vy(PyObject *self, PyObject *args, PyObject *keywds)
 	}
 	else if (x!=-1 && y!=-1 && x>=0 && x<XRES && y>=0 && y<YRES)
 	{
-		if (parts[pmap[y][x]>>8].type != PT_NONE)
-			parts[pmap[y][x]>>8].vy = life;
+		if (parts[pmap[y][x]>>PS].type != PT_NONE)
+			parts[pmap[y][x]>>PS].vy = life;
 	}
 	return Py_BuildValue("i",1);
 }
@@ -1041,7 +1041,7 @@ int process_command_old(pixel *vid_buf, char *console, char *console_error)
 						}
 						if (fileread[i] == '\n')
 						{
-							
+
 							if (do_next)
 							{
 								if (strcmp(pch,"else")==0)
@@ -1066,7 +1066,7 @@ int process_command_old(pixel *vid_buf, char *console, char *console_error)
 			{
 				sprintf(console_error, "Scripts are not enabled");
 			}
-			
+
 		}
 		else if (strcmp(console2, "sound")==0 && console3[0])
 		{

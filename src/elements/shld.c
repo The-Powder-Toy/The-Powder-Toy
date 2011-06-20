@@ -7,9 +7,9 @@ int update_SHLD1(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if ((r>>PS)>=NPART || !r)
 					continue;
-				else if ((r&0xFF)==PT_SPRK&&parts[i].life==0)
+				else if ((r&TYPE)==PT_SPRK&&parts[i].life==0)
 				{
 					if (55>rand()%200&&parts[i].life==0)
 					{
@@ -22,11 +22,11 @@ int update_SHLD1(UPDATE_FUNC_ARGS) {
 							if (!pmap[y+ry+nny][x+rx+nnx])
 							{
 								create_part(-1,x+rx+nnx,y+ry+nny,PT_SHLD1);
-								//parts[pmap[y+ny+nny][x+nx+nnx]>>8].life=7;
+								//parts[pmap[y+ny+nny][x+nx+nnx]>>PS].life=7;
 							}
 						}
 				}
-				else if ((r&0xFF)==PT_SHLD3&&4>rand()%10)
+				else if ((r&TYPE)==PT_SHLD3&&4>rand()%10)
 				{
 					part_change_type(i,x,y,PT_SHLD2);
 					parts[i].life = 7;
@@ -42,13 +42,13 @@ int update_SHLD2(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART)
+				if ((r>>PS)>=NPART)
 					continue;
 				if (!r && parts[i].life>0)
 					create_part(-1,x+rx,y+ry,PT_SHLD1);
 				if (!r)
 					continue;
-				else if ((r&0xFF)==PT_SPRK&&parts[i].life==0)
+				else if ((r&TYPE)==PT_SPRK&&parts[i].life==0)
 				{
 					if (25>rand()%200&&parts[i].life==0)
 					{
@@ -66,7 +66,7 @@ int update_SHLD2(UPDATE_FUNC_ARGS) {
 							}
 						}
 				}
-				else if ((r&0xFF)==PT_SHLD4&&4>rand()%10)
+				else if ((r&TYPE)==PT_SHLD4&&4>rand()%10)
 				{
 					part_change_type(i,x,y,PT_SHLD3);
 					parts[i].life = 7;
@@ -82,7 +82,7 @@ int update_SHLD3(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART)
+				if ((r>>PS)>=NPART)
 					continue;
 				if (!r)
 				{
@@ -97,12 +97,12 @@ int update_SHLD3(UPDATE_FUNC_ARGS) {
 						continue;
 
 				}
-				if ((r&0xFF)==PT_SHLD1 && parts[i].life>3)
+				if ((r&TYPE)==PT_SHLD1 && parts[i].life>3)
 				{
-					part_change_type(r>>8,x+rx,y+ry,PT_SHLD2);
-					parts[r>>8].life=7;
+					part_change_type(r>>PS,x+rx,y+ry,PT_SHLD2);
+					parts[r>>PS].life=7;
 				}
-				else if ((r&0xFF)==PT_SPRK&&parts[i].life==0)
+				else if ((r&TYPE)==PT_SPRK&&parts[i].life==0)
 				{
 					if (18>rand()%3000&&parts[i].life==0)
 					{
@@ -132,7 +132,7 @@ int update_SHLD4(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART)
+				if ((r>>PS)>=NPART)
 					continue;
 				if (!r)
 				{
@@ -147,12 +147,12 @@ int update_SHLD4(UPDATE_FUNC_ARGS) {
 						continue;
 
 				}
-				if ((r&0xFF)==PT_SHLD2 && parts[i].life>3)
+				if ((r&TYPE)==PT_SHLD2 && parts[i].life>3)
 				{
-					part_change_type(r>>8,x+rx,y+ry,PT_SHLD3);
-					parts[r>>8].life = 7;
+					part_change_type(r>>PS,x+rx,y+ry,PT_SHLD3);
+					parts[r>>PS].life = 7;
 				}
-				else if ((r&0xFF)==PT_SPRK&&parts[i].life==0)
+				else if ((r&TYPE)==PT_SPRK&&parts[i].life==0)
 					for ( nnx=-1; nnx<2; nnx++)
 						for ( nny=-1; nny<2; nny++)
 						{

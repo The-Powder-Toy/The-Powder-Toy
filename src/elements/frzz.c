@@ -7,12 +7,12 @@ int update_FRZZ(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&0xFF)==PT_WATR&&5>rand()%100)
+				if ((r&TYPE)==PT_WATR&&5>rand()%100)
 				{
-					part_change_type(r>>8,x+rx,y+ry,PT_FRZW);
-					parts[r>>8].life = 100;
+					part_change_type(r>>PS,x+rx,y+ry,PT_FRZW);
+					parts[r>>PS].life = 100;
 					parts[i].type = PT_NONE;
 				}
 

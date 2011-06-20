@@ -4146,12 +4146,12 @@ void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int c
     if (rx==0 && ry==0)
     {
         rp = pmap[y][x];
-        if ((rp>>8)>=NPART || !rp)
+        if ((rp>>PS)>=NPART || !rp)
             return;
         if (click == 4)
-            parts[rp>>8].dcolour = 0;
+            parts[rp>>PS].dcolour = 0;
         else
-            parts[rp>>8].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
+            parts[rp>>PS].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
         return;
     }
     for (j=-ry; j<=ry; j++)
@@ -4160,12 +4160,12 @@ void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int c
                 if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
                 {
                     rp = pmap[y+j][x+i];
-                    if ((rp>>8)>=NPART || !rp)
+                    if ((rp>>PS)>=NPART || !rp)
                         continue;
                     if (click == 4)
-                        parts[rp>>8].dcolour = 0;
+                        parts[rp>>PS].dcolour = 0;
                     else
-                        parts[rp>>8].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
+                        parts[rp>>PS].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
                 }
 }
 void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b, int click)
@@ -4291,8 +4291,8 @@ void render_signs(pixel *vid_buf)
             }
             if (strcmp(signs[i].text, "{t}")==0)
             {
-                if ((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
-                    sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...tempirature
+                if ((pmap[signs[i].y][signs[i].x]>>PS)>0 && (pmap[signs[i].y][signs[i].x]>>PS)<NPART)
+                    sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>PS].temp-273.15);  //...tempirature
                 else
                     sprintf(buff, "Temp: 0.00");  //...tempirature
                 drawtext(vid_buf, x+3, y+3, buff, 255, 255, 255, 255);

@@ -15,18 +15,18 @@ int update_BCOL(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM) && 1>(rand()%500))
+				if (((r&TYPE)==PT_FIRE || (r&TYPE)==PT_PLSM) && 1>(rand()%500))
 				{
 					if (parts[i].life>100) {
 						parts[i].life = 99;
 					}
 				}
-				if ((r&0xFF)==PT_LAVA && 1>(rand()%500))
+				if ((r&TYPE)==PT_LAVA && 1>(rand()%500))
 				{
-					if (parts[r>>8].ctype == PT_IRON) {
-						parts[r>>8].ctype = PT_METL;
+					if (parts[r>>PS].ctype == PT_IRON) {
+						parts[r>>PS].ctype = PT_METL;
 						kill_part(i);
                                                 return 1;
 					}

@@ -8,15 +8,15 @@ int update_O2(UPDATE_FUNC_ARGS)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if ((r>>PS)>=NPART || !r)
 					continue;
 
-				if ((r&0xFF)==PT_FIRE)
+				if ((r&TYPE)==PT_FIRE)
 				{
-					parts[r>>8].temp+=(rand()/(RAND_MAX/100));
-					parts[r>>8].tmp |= 2;
+					parts[r>>PS].temp+=(rand()/(RAND_MAX/100));
+					parts[r>>PS].tmp |= 2;
 				}
-				if ((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM)
+				if ((r&TYPE)==PT_FIRE || (r&TYPE)==PT_PLSM)
 				{
 					create_part(i,x,y,PT_FIRE);
 					parts[i].temp+=(rand()/(RAND_MAX/100));
