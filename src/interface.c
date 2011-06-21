@@ -5217,7 +5217,6 @@ int save_filename_ui(pixel *vid_buf)
 		mx /= sdl_scale;
 		my /= sdl_scale;
 
-		b = SDL_GetMouseState(&mx, &my);
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
 		drawtext(vid_buf, x0+8, y0+8, "Filename:", 255, 255, 255, 255);
@@ -5336,6 +5335,8 @@ void catalogue_ui(pixel * vid_buf)
 	while (!sdl_poll())
 	{
 		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
 		sprintf(savetext, "Found %d save%s", rescount, rescount==1?"":"s");
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		clearrect(vid_buf2, x0-2, y0-2, xsize+4, ysize+4);
