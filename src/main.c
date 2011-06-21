@@ -533,8 +533,9 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	unsigned char *d=NULL,*c=save;
 	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0, tempGrav = 0;
 	int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
-	int fp[NPART], nf=0, new_format = 0, ttv = 0;
+	int nf=0, new_format = 0, ttv = 0;
 	particle *parts = partsptr;
+	int *fp = malloc(NPART*sizeof(int));
 
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
@@ -1046,12 +1047,14 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 version1:
 	if (m) free(m);
 	if (d) free(d);
+	if (fp) free(fp);
 
 	return 0;
 
 corrupt:
 	if (m) free(m);
 	if (d) free(d);
+	if (fp) free(fp);
 	if (replace)
 	{
 		legacy_enable = 0;
