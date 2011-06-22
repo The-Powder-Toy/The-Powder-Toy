@@ -163,7 +163,8 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 		q = malloc(rw*rh*PIXELSIZE);
 		memcpy(q, src, rw*rh*PIXELSIZE);
 	} else if(rw > sw && rh > sh){
-		float fx, fy, fyc, fxc, intp;
+		float fx, fy, fyc, fxc;
+		double intp;
 		pixel tr, tl, br, bl;
 		q = malloc(rw*rh*PIXELSIZE);
 		//Bilinear interpolation for upscaling
@@ -172,8 +173,8 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 			{
 				fx = ((float)x)*((float)sw)/((float)rw);
 				fy = ((float)y)*((float)sh)/((float)rh);
-				fxc = modff(fx, &intp);
-				fyc = modff(fy, &intp);
+				fxc = modf(fx, &intp);
+				fyc = modf(fy, &intp);
 				fxceil = (int)ceil(fx);
 				fyceil = (int)ceil(fy);
 				if (fxceil>=sw) fxceil = sw-1;
@@ -190,7 +191,8 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 			}
 	} else {
 		//Stairstepping
-		float fx, fy, fyc, fxc, intp;
+		float fx, fy, fyc, fxc;
+		double intp;
 		pixel tr, tl, br, bl;
 		int rrw = rw, rrh = rh;
 		pixel * oq;
@@ -212,8 +214,8 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh)
 				{
 					fx = ((float)x)*((float)sw)/((float)rw);
 					fy = ((float)y)*((float)sh)/((float)rh);
-					fxc = modff(fx, &intp);
-					fyc = modff(fy, &intp);
+					fxc = modf(fx, &intp);
+					fyc = modf(fy, &intp);
 					fxceil = (int)ceil(fx);
 					fyceil = (int)ceil(fy);
 					if (fxceil>=sw) fxceil = sw-1;

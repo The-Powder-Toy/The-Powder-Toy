@@ -112,6 +112,12 @@ typedef unsigned int pixel;
 #ifdef WIN32
 #define strcasecmp stricmp
 #endif
+#if defined(WIN32) && !defined(__GNUC__)
+#define fmin min
+#define fminf min
+#define fmax max
+#define fmaxf max
+#endif
 
 #define SDEUT
 
