@@ -211,7 +211,8 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 
 				if ((r&0xFF) == PT_NEUT)
 				{
-					parts[i].life -= (102-parts[i].life)/2;
+					if (parts[i].life<=100) parts[i].life -= (102-parts[i].life)/2;
+					else parts[i].life *= 0.9f;
 					kill_part(r>>8);
 				}
 				if (bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)

@@ -1698,7 +1698,7 @@ void draw_parts(pixel *vid)
 			{
 				if (t==PT_STKM) //Just draw head here
 				{
-					char buff[10];  //Buffer for HP
+					char buff[20];  //Buffer for HP
 					pixel pc;
 
 					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
@@ -1726,7 +1726,7 @@ void draw_parts(pixel *vid)
 				}
 				else if (t==PT_STKM2) //Just draw head here
 				{
-					char buff[10];  //Buffer for HP
+					char buff[20];  //Buffer for HP
 					pixel pc;
 
 					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
