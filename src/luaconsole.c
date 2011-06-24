@@ -345,7 +345,7 @@ int luatpt_reset_spark(lua_State* l)
 int luatpt_set_property(lua_State* l)
 {
 	char *prop, *name;
-	int i, x, y, w, h, t, format, nx, ny, partsel = 0, acount;
+	int r, i, x, y, w, h, t, format, nx, ny, partsel = 0, acount;
 	float f;
 	size_t offset;
 	acount = lua_gettop(l);
@@ -374,7 +374,7 @@ int luatpt_set_property(lua_State* l)
 		format = 1;
 	} else if (strcmp(prop,"ctype")==0){
 		offset = offsetof(particle, ctype);
-		format = 3;
+		format = 4;
 	} else if (strcmp(prop,"temp")==0){
 		offset = offsetof(particle, temp);
 		format = 2;
@@ -409,8 +409,6 @@ int luatpt_set_property(lua_State* l)
 		} else {
 			t = luaL_optint(l, 2, 0);
 		}
-		if (format == 3 && t==OLD_PT_WIND)
-			return 0;
 		if (format == 3 && (t<0 || t>=PT_NUM))
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 	} else {
@@ -435,9 +433,14 @@ int luatpt_set_property(lua_State* l)
 			h = YRES-y;
 		for (nx = x; nx<x+w; nx++)
 			for (ny = y; ny<y+h; ny++){
-				i = pmap[ny][nx]>>8;
-				if (!(pmap[ny][nx]&0xFF) || i < 0 || i >= NPART || (partsel && partsel != parts[i].type))
-					continue;
+				r = pmap[ny][nx];
+				if (!r || (r>>8) >= NPART || (partsel && partsel != parts[r>>8].type))
+				{
+					r = photons[ny][nx];
+					if (!r || (partsel && partsel != parts[r>>8].type))
+						continue;
+				}
+				i = r>>8;
 				if(format==2){
 					*((float*)(((void*)&parts[i])+offset)) = f;
 				} else {
@@ -449,9 +452,10 @@ int luatpt_set_property(lua_State* l)
 		if(i != -1 && y != -1){
 			if (i>=XRES || y>=YRES)
 				return luaL_error(l, "Coordinates out of range (%d,%d)", i, y);
-			i = pmap[y][i]>>8;
-			if (i >= NPART)
-				return 0;
+			r = pmap[y][i];
+			if (!r || (r>>8)>=NPART || (partsel && partsel != parts[r>>8].type))
+				r = photons[y][i];
+			i = r>>8;
 		}
 		if (i < 0 || i >= NPART)
 			return luaL_error(l, "Invalid particle ID '%d'", i);
@@ -470,15 +474,16 @@ int luatpt_set_property(lua_State* l)
 
 int luatpt_get_property(lua_State* l)
 {
-	int i, y;
+	int i, r, y;
 	char *prop;
 	prop = luaL_optstring(l, 1, "");
 	i = luaL_optint(l, 2, 0);
 	y = luaL_optint(l, 3, -1);
 	if(y!=-1 && y < YRES && y >= 0 && i < XRES && i >= 0){
-		i = pmap[y][i]>>8;
-		if (i >= NPART)
-			return 0;
+		r = pmap[y][i];
+		if (!r || (r>>8)>=NPART)
+			r = photons[y][i];
+		i = r>>8;
 	}
 	else if (y!=-1)
 		return luaL_error(l, "Coordinates out of range (%d,%d)", i, y);

@@ -26,7 +26,7 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 						parts[i].life = 10;
 				}
 			}
-	if (!parts[i].ctype)
+	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM)
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
@@ -43,7 +43,7 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 				        (r&0xFF)<PT_NUM)
 					parts[i].ctype = r&0xFF;
 				}
-	if (parts[i].ctype && parts[i].life==10) {
+	if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].life==10) {
 		if (parts[i].ctype==PT_PHOT) {//create photons a different way
 			for (rx=-1; rx<2; rx++) {
 				for (ry=-1; ry<2; ry++) {

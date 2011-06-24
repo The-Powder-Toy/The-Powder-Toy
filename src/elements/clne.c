@@ -1,7 +1,7 @@
 #include <element.h>
 
 int update_CLNE(UPDATE_FUNC_ARGS) {
-	if (!parts[i].ctype)
+	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM)
 	{
 		int r, rx, ry;
 		for (rx=-1; rx<2; rx++)

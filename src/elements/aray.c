@@ -49,7 +49,7 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 										if (nyy!=0 || nxx!=0) {
 											create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 										}
-										if (!(nostop && (ptypes[parts[r>>8].ctype].properties&PROP_CONDUCTS))) {
+										if (!(nostop && (ptypes[r&0xFF].properties&PROP_CONDUCTS))) {//don't need to check r&0xFF<PT_NUM here because it should have been excluded by (r>>8)>=NPART
 											docontinue = 0;
 										} else {
 											docontinue = 1;
