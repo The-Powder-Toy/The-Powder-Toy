@@ -48,6 +48,8 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						{
 							parts[np].temp = parts[i].temp;//pipe saves temp and life now
 							parts[np].life = parts[i].flags;
+							parts[np].tmp = parts[i].pavg[0];
+							parts[np].ctype = parts[i].pavg[1];
 						}
 						parts[i].tmp = 0;
 						continue;
@@ -59,6 +61,8 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						parts[i].tmp = parts[r>>8].type;
 						parts[i].temp = parts[r>>8].temp;
 						parts[i].flags = parts[r>>8].life;
+						parts[i].pavg[0] = parts[r>>8].tmp;
+						parts[i].pavg[1] = parts[r>>8].ctype;
 						kill_part(r>>8);
 					}
 					else if ((r&0xFF)==PT_PIPE && parts[r>>8].ctype!=ctype && parts[r>>8].tmp==0&&parts[i].tmp>0)
@@ -66,6 +70,8 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						parts[r>>8].tmp = parts[i].tmp;
 						parts[r>>8].temp = parts[i].temp;
 						parts[r>>8].flags = parts[i].flags;
+						parts[r>>8].pavg[0] = parts[i].pavg[0];
+						parts[r>>8].pavg[1] = parts[i].pavg[1];
 						parts[i].tmp = 0;
 					}
 				}
