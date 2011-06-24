@@ -2508,7 +2508,7 @@ int main(int argc, char *argv[])
 		b = SDL_GetMouseState(&x, &y); // b is current mouse state
 
 #ifdef LUACONSOLE
-		if(luacon_step(x, y, b, bq, sdl_key))
+		if(luacon_step(x/sdl_scale, y/sdl_scale, b, bq, sdl_key))
 			b = 0; //Mouse click was handled by Lua step
 #endif
 

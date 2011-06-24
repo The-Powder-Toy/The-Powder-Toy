@@ -436,7 +436,7 @@ int luatpt_set_property(lua_State* l)
 		for (nx = x; nx<x+w; nx++)
 			for (ny = y; ny<y+h; ny++){
 				i = pmap[ny][nx]>>8;
-				if (i < 0 || i >= NPART || (partsel && partsel != parts[i].type))
+				if (!(pmap[ny][nx]&0xFF) || i < 0 || i >= NPART || (partsel && partsel != parts[i].type))
 					continue;
 				if(format==2){
 					*((float*)(((void*)&parts[i])+offset)) = f;
@@ -455,6 +455,8 @@ int luatpt_set_property(lua_State* l)
 		}
 		if (i < 0 || i >= NPART)
 			return luaL_error(l, "Invalid particle ID '%d'", i);
+		if (!parts[i].type)
+			return 0;
 		if (partsel && partsel != parts[i].type)
 			return 0;
 		if(format==2){
