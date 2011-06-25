@@ -41,7 +41,6 @@ void luacon_open(){
 		{"display_mode", &luatpt_cmode_set},
 		{"get_mousey", &luatpt_get_mousey},
 		{"get_mousex", &luatpt_get_mousex},
-		{"draw_rect", &luatpt_draw_rectangle},
 		{NULL,NULL}
 	};
 
@@ -809,38 +808,5 @@ int luatpt_get_mousex(lua_State* l)
 int luatpt_get_mousey(lua_State* l)
 {
 	return mousey;
-}
-int luatpt_draw_rectangle(lua_State* l)
-{
-    int x,y,w,h,r,g,b,a;
-    x = luaL_optint(l, 1, 0);
-    y = luaL_optint(l, 2, 0);
-    w = luaL_optint(l, 3, 10);
-    h = luaL_optint(l, 4, 10);
-    r = luaL_optint(l, 5, 255);
-    g = luaL_optint(l, 6, 255);
-    b = luaL_optint(l, 7, 255);
-    a = luaL_optint(l, 8, 255);
-#ifdef OpenGL
-    glBegin(GL_LINE_LOOP);
-    glColor4ub(r, g, b, a);
-    glVertex2i(x, y);
-    glVertex2i(x+w, y);
-    glVertex2i(x+w, y+h);
-    glVertex2i(x, y+h);
-    glEnd();
-#else
-    int i;
-    for (i=0; i<=w; i++)
-    {
-        drawpixel(vid_buf, x+i, y, r, g, b, a);
-        drawpixel(vid_buf, x+i, y+h, r, g, b, a);
-    }
-    for (i=1; i<h; i++)
-    {
-        drawpixel(vid_buf, x, y+i, r, g, b, a);
-        drawpixel(vid_buf, x+w, y+i, r, g, b, a);
-    }
-#endif
 }
 #endif

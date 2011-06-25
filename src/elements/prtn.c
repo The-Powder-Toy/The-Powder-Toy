@@ -19,7 +19,7 @@ int update_PRTN(UPDATE_FUNC_ARGS) {
                 }
             }
 	r = pmap[y][x];
-	rt = (r&TYPE);
+	rt = r&TYPE;
 	if (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN) {
 		if (!parts[r>>PS].ctype)
 			parts[r>>PS].ctype = PT_PHOT;

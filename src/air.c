@@ -311,11 +311,11 @@ void update_air(void)
 				}
 				// pressure/velocity caps
 				if (dp > MAXVELOCITY) dp = MAXVELOCITY;
-				if (dp < MINVELOCITY) dp = MINVELOCITY;
-				if (dx > MAXVELOCITY) dx = MAXVELOCITY;
-				if (dx < MINVELOCITY) dx = MINVELOCITY;
-				if (dy > MAXVELOCITY) dy = MAXVELOCITY;
-				if (dy < MINVELOCITY) dy = MINVELOCITY;
+                if (dp < MINVELOCITY) dp = MINVELOCITY;
+                if (dx > MAXVELOCITY) dx = MAXVELOCITY;
+                if (dx < MINVELOCITY) dx = MINVELOCITY;
+                if (dy > MAXVELOCITY) dy = MAXVELOCITY;
+                if (dy < MINVELOCITY) dy = MINVELOCITY;
 
 
 				switch (airMode)

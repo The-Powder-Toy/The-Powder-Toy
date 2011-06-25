@@ -301,7 +301,7 @@ void *build_thumb(int *size, int bzip2)
             if (bmap[y][x])
                 for (j=0; j<CELL; j++)
                     for (i=0; i<CELL; i++)
-                        d[x*CELL+i+(y*CELL+j)*XRES] = 0xFF;
+                        d[x*CELL+i+(y*CELL+j)*XRES] = TYPE;
     j = XRES*YRES;
 
     if (bzip2)
@@ -659,7 +659,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
         {
             x = (int)(parts[i].x+0.5f);
             y = (int)(parts[i].y+0.5f);
-            pmap[y][x] = (i<<8)|1;
+            pmap[y][x] = (i<<PS)|1;
         }
         else
             fp[nf++] = i;
@@ -2688,7 +2688,7 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
 #ifdef BETA
                     sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
 #else
-sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
+                    sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
 #endif
                 }
                 if ((cr&TYPE)==PT_PHOT) wavelength_gfx = parts[cr>>PS].ctype;

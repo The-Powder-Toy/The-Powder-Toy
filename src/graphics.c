@@ -4789,7 +4789,7 @@ int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int p
                 for (i=0; i<scl; i++)
                 {
                     t = d[(y+j)*XRES+(x+i)];
-                    if (t==0xFF)
+                    if (t==TYPE)
                     {
                         r += 256;
                         g += 256;
@@ -4932,7 +4932,7 @@ int sdl_open(void)
         fprintf(stderr, "Creating window: %s\n", SDL_GetError());
         return 0;
     }
-    SDL_WM_SetCaption("Me4502's Mod", "Me's Mod");
+    SDL_WM_SetCaption("The Chapapa Toy", "Chapapa Toy");
     sdl_seticon();
     SDL_EnableUNICODE(1);
     //SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);

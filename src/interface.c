@@ -719,7 +719,7 @@ void draw_svf_ui(pixel *vid_buf, int alternate)// all the buttons at the bottom
 	if(alternate)
 	{
 		fillrect(vid_buf, XRES-159+BARSIZE, YRES+(MENUSIZE-16)-1, 15, 16, 255, 255, 255, 255);
-		drawtext(vid_buf, XRES-156+BARSIZE, YRES+(MENUSIZE-13), "\xCF", 0, 0, 0, 255);
+        drawtext(vid_buf, XRES-156+BARSIZE, YRES+(MENUSIZE-13), "\xCF", 0, 0, 0, 255);
 	}
 	else
 	{
@@ -5549,7 +5549,7 @@ void lua_preset_ui(pixel * vid_buf)
 	cb.focus = 0;
 	cb.checked = classicpowder;
 
-	cb2.x = x0+xsize-16;	//Mniip Particle Graphics
+	cb2.x = x0+xsize-16;	//Mniip Text Drawer
 	cb2.y = y0+54;
 	cb2.focus = 0;
 	cb2.checked = luatextdrawing;
@@ -5585,15 +5585,19 @@ void lua_preset_ui(pixel * vid_buf)
 
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
-		drawtext(vid_buf, x0+8, y0+8, "Lua Goodies. NOTE: May cause lag, If checkbox missing file is missing.", 255, 216, 32, 255);
+		if (exists("4.lua")!=1 || exists("3.lua")!=1 || exists("2.lua")!=1 || exists("1.lua")!=1){
+            drawtext(vid_buf, x0+8, y0+8, "Lua Goodies. NOTE: Some Files Missing.", 255, 216, 32, 255);
+        } else {
+            drawtext(vid_buf, x0+8, y0+8, "Lua Goodies.", 255, 216, 32, 255);
+        }
 
 		drawtext(vid_buf, x0+8, y0+26, "Classic Powder", 255, 255, 255, 255);
 		drawtext(vid_buf, x0+12+textwidth("Classic Powder"), y0+26, "Based off wiki.", 255, 255, 255, 180);
 		drawtext(vid_buf, x0+12, y0+40, "Makes Particles and Text at top.", 255, 255, 255, 120);
 
 		drawtext(vid_buf, x0+8, y0+54, "Particle Creations", 255, 255, 255, 255);
-		drawtext(vid_buf, x0+12+textwidth("Particle Creations"), y0+54, "Created by Mniip.", 255, 255, 255, 180);
-		drawtext(vid_buf, x0+12, y0+68, "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=8253", 255, 255, 255, 120);
+        drawtext(vid_buf, x0+12+textwidth("Particle Creations"), y0+54, "Created by Mniip.", 255, 255, 255, 180);
+        drawtext(vid_buf, x0+12, y0+68, "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=8253", 255, 255, 255, 120);
 
 		drawtext(vid_buf, x0+8, y0+82, "No Spark", 255, 255, 255, 255);
 		drawtext(vid_buf, x0+12+textwidth("No Spark"), y0+82, "By Me4502.", 255, 255, 255, 180);
@@ -5609,7 +5613,7 @@ void lua_preset_ui(pixel * vid_buf)
 		drawtext(vid_buf, x0+5, y0+ysize-11, "OK", 255, 255, 255, 255);
 		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
 
-        if (exists("1.lua")==1)
+		if (exists("1.lua")==1)
             ui_checkbox_draw(vid_buf, &cb);
         if (exists("2.lua")==1)
             ui_checkbox_draw(vid_buf, &cb2);
@@ -5619,7 +5623,7 @@ void lua_preset_ui(pixel * vid_buf)
             ui_checkbox_draw(vid_buf, &cb4);
 		//ui_checkbox_draw(vid_buf, &cb5);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
-        if (exists("1.lua")==1)
+		if (exists("1.lua")==1)
             ui_checkbox_process(mx, my, b, bq, &cb);
         if (exists("2.lua")==1)
             ui_checkbox_process(mx, my, b, bq, &cb2);

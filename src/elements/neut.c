@@ -32,9 +32,9 @@ int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)//
 		parts[i].temp = temp;
 		parts[i].tmp = 0;
 		if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT && !pmap[y][x])
-			pmap[y][x] = t|(i<<8);
+			pmap[y][x] = t|(i<<PS);
 		else if ((t==PT_PHOT||t==PT_NEUT) && !photons[y][x])
-			photons[y][x] = t|(i<<8);
+			photons[y][x] = t|(i<<PS);
 
 		pv[y/CELL][x/CELL] += 6.0f * CFDS;
 	}

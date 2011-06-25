@@ -48,6 +48,8 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						{
 							parts[np].temp = parts[i].temp;//pipe saves temp and life now
 							parts[np].life = parts[i].flags;
+							parts[np].tmp = parts[i].tmp2;
+							parts[np].ctype = parts[i].tmpx;
 						}
 						parts[i].tmp = 0;
 						continue;

@@ -19,7 +19,7 @@ int update_WARP(UPDATE_FUNC_ARGS) {
 				parts[r>>PS].y = y;
 				parts[i].life += 4;
 				pmap[y][x] = r;
-				pmap[y+ry][x+rx] = (i<<8)|parts[i].type;
+				pmap[y+ry][x+rx] = (i<<PS)|parts[i].type;
 				trade = 5;
 			}
 		}
