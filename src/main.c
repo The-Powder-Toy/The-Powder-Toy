@@ -567,7 +567,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				airMode = ((c[3]>>4)&0x07);// | ((c[3]>>4)&0x02) | ((c[3]>>4)&0x01);
 			}
 			if (ver>=49 && replace) {
-				tempGrav = ((c[3]>>7)&0x01);			
+				tempGrav = ((c[3]>>7)&0x01);		
 			}
 		} else {
 			if (c[3]==1||c[3]==0) {
@@ -2875,6 +2875,8 @@ int main(int argc, char *argv[])
 						pfree = 0;
 
 						legacy_enable = 0;
+						svf_filename[0] = 0;
+						svf_fileopen = 0;
 						svf_myvote = 0;
 						svf_open = 0;
 						svf_publish = 0;
@@ -2940,7 +2942,7 @@ int main(int argc, char *argv[])
 							memset(fire_b, 0, sizeof(fire_b));
 						}
 					}
-					if (x>=19 && x<=35 && svf_last && svf_open && !bq) {
+					if (x>=19 && x<=35 && svf_last && (svf_open || svf_fileopen) && !bq) {
 						//int tpval = sys_pause;
 						parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 						//sys_pause = tpval;

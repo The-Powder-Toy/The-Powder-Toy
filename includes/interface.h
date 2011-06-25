@@ -138,6 +138,9 @@ extern char svf_pass[64];
 extern char svf_user_id[64];
 extern char svf_session_id[64];
 
+
+extern char svf_filename[255];
+extern int svf_fileopen;
 extern int svf_open;
 extern int svf_own;
 extern int svf_myvote;
