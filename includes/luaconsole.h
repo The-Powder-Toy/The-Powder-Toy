@@ -19,6 +19,8 @@ char *luacon_geterror();
 void luacon_close();
 int process_command_lua(pixel *vid_buf, char *console, char *console_error);
 
+int getPartIndex_curIdx;
+
 //TPT Interface
 int luatpt_test(lua_State* l);
 int luatpt_drawtext(lua_State* l);
@@ -45,4 +47,8 @@ int luatpt_register_step(lua_State* l);
 int luatpt_unregister_step(lua_State* l);
 int luatpt_input(lua_State* l);
 int luatpt_message_box(lua_State* l);
+int luatpt_get_numOfParts(lua_State* l);
+int luatpt_start_getPartIndex(lua_State* l);
+int luatpt_getPartIndex(lua_State* l);
+int luatpt_next_getPartIndex(lua_State* l);
 #endif
