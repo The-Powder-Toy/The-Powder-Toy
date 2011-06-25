@@ -5232,7 +5232,12 @@ int save_filename_ui(pixel *vid_buf)
 	ed.str[0] = 0;
 	
 	if(svf_fileopen){
+		char * dotloc = NULL;
 		strncpy(ed.str, svf_filename, 255);
+		if(dotloc = strstr(ed.str, "."))
+		{
+			dotloc[0] = 0;
+		}
 		ed.cursor = strlen(ed.str);
 	}
 
