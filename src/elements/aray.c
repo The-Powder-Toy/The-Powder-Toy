@@ -50,7 +50,7 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 											create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 										}
 										//if (!(nostop && (ptypes[r&0xFF].properties&PROP_CONDUCTS))) {//don't need to check r&0xFF<PT_NUM here because it should have been excluded by (r>>8)>=NPART //Not sure why you changed checking "ctype" to "type"
-										if (!(nostop && (ptypes[parts[r>>8].ctype].properties&PROP_CONDUCTS))) {
+										if (!(nostop && parts[r>>8].ctype >= 0 && parts[r>>8].ctype < PT_NUM && (ptypes[parts[r>>8].ctype].properties&PROP_CONDUCTS))) {
 											docontinue = 0;
 										} else {
 											docontinue = 1;
