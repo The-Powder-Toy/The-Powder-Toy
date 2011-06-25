@@ -108,6 +108,12 @@ void update_airh(void)
 				dh += AIR_VADV*(1.0f-tx)*ty*hv[j+1][i];
 				dh += AIR_VADV*tx*ty*hv[j+1][i+1];
 			}
+			if(!gravityMode){ //Vertical gravity only for the time being
+				float airdiff = dh-hv[y][x];
+				pv[y][x] += airdiff/5000.0f;
+				if(airdiff>0)	
+					vy[y][x] -= airdiff/5000.0f;
+			}
 			ohv[y][x] = dh;
 		}
 	}
