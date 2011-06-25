@@ -40,7 +40,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 										parts[nb].vy = rand()%20-10;
 									}
 								}
-						for (nxj=-rad; nxj<=rad; nxj++)
+						/*for (nxj=-rad; nxj<=rad; nxj++)
 							for (nxi=-rad; nxi<=rad; nxi++)
 								if ((pow(nxi,2))/(pow(rad,2))+(pow(nxj,2))/(pow(rad,2))<=1)
 									if ((pmap[y+nxj][x+nxi]&TYPE)!=PT_DMND && (pmap[y+nxj][x+nxi]&TYPE)!=PT_CLNE && (pmap[y+nxj][x+nxi]&TYPE)!=PT_PCLN && (pmap[y+nxj][x+nxi]&TYPE)!=PT_BCLN) {
@@ -52,7 +52,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 											parts[nb].life = 2;
 											parts[nb].temp = MAX_TEMP;
 										}
-									}
+									}*/
 						//create_parts(x, y, 9, 9, PT_BOMB);
 						//create_parts(x, y, 8, 8, PT_NONE);
 						kill_part(i);

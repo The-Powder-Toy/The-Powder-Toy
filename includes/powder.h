@@ -298,7 +298,8 @@
 #define PT_HLIM 240
 #define PT_GEL 242
 #define PT_DPAR 243
-#define PT_NUM  244
+#define PT_GENR 244
+#define PT_NUM  245
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -461,6 +462,7 @@ int update_PRTN(UPDATE_FUNC_ARGS);
 int update_GEL(UPDATE_FUNC_ARGS);
 int update_SEAL(UPDATE_FUNC_ARGS);
 int update_LTNG(UPDATE_FUNC_ARGS);
+int update_GENR(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -759,7 +761,7 @@ static const part_type ptypes[PT_NUM] =
     {"INV",		PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives any Stickman an Invincible Power Up", ST_SOLID, TYPE_SOLID, NULL},
     {"FLY",		PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives any Stickman the ability to Fly", ST_SOLID, TYPE_SOLID, NULL},
     {"RSPW",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Allows the player to move its Spawn Point", ST_SOLID, TYPE_SOLID, NULL},
-    {"NCGN",	PIXPACK(0x756D6F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	251,	"Generates Nuclear Energy When Touching Plutonium.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_NCGN},
+    {"NCGN",	PIXPACK(0x756D6F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	251,	"Generates Nuclear Energy When Touching Plutonium.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, &update_NCGN},
     {"TRAP",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Traps the stickman when he stands on it", ST_SOLID, TYPE_SOLID, NULL},
     {"BPAD",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little boost", ST_SOLID, TYPE_SOLID, NULL},
     {"SPEL",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little speed boost to the left", ST_SOLID, TYPE_SOLID, NULL},
@@ -770,7 +772,7 @@ static const part_type ptypes[PT_NUM] =
     {"ANT",		PIXPACK(0xC0A060),	0.0f,	0.00f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Ant. Builds a nest in other particles.", ST_SOLID, TYPE_PART|PROP_DEADLY, &update_CFIR},
     {"SMIL",	PIXPACK(0xFFFF00),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_CRACKER2,	373.0f,					40,		"Smile :)", ST_SOLID, TYPE_SOLID, &update_MISC},
     {"SEAL",    PIXPACK(0xCCCC00),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  0,  1,  100,    SC_SOLIDS,    R_TEMP+2.0f  +273.15f,        40,    "An Air Seal... Change the temperature to change Max Pressure", ST_SOLID, TYPE_SOLID, &update_SEAL},
-    {"BULL",    PIXPACK(0x736D6E),  0.0f,	0.00f * CFDS,	1.00f,	1.00f,	0.0f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_EXPLOSIVE,     MAX_TEMP,	251,		"Bullet, a deadly projectile that flies out of a gun.", ST_SOLID, TYPE_SOLID, &update_BULL},
+    {"BULL",    PIXPACK(0x736D6E),  0.0f,	0.00f * CFDS,	1.00f,	1.00f,	0.0f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_EXPLOSIVE,     MAX_TEMP,	251,		"Bullet, a deadly projectile that flies out of a gun.", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_BULL},
     {"PPLT",	PIXPACK(0x9E9680),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Send off electric current when a stickman stands on it", ST_SOLID, TYPE_SOLID, NULL},
     {"TNT",		PIXPACK(0xF50C10),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	5,      0,  0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Solid. Pressure sensitive explosive.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_TNT},
     {"MGMA",	PIXPACK(0xBF3C02),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_LIQUID,		R_TEMP+1500.0f+273.15f,	60,		"Magma. Like Lava but underground.", ST_LIQUID, TYPE_LIQUID, &update_MGMA},
@@ -831,6 +833,7 @@ static const part_type ptypes[PT_NUM] =
     {"HLIM",    PIXPACK(0xFFC94D),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Helium Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
     {"GEL",  PIXPACK(0xC7F2AA),  0.6f,  0.01f * CFDS,  0.98f,  0.95f,  0.0f,  0.1f,  0.00f,  0.000f  * CFDS,  2,  0,    0,  0,  20,  1,  31,    SC_LIQUID,    R_TEMP-2.0f  +273.15f,  251,    "Gel. Does Gel Stuff", ST_LIQUID, TYPE_LIQUID, &update_GEL},
     {"DPAR",	PIXPACK(0x000111),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,		"Put Decorations On Me :D", ST_SOLID, TYPE_SOLID, NULL},
+    {"GENR",	PIXPACK(0xAADDDD),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,		"Produces electricity under pressure.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, &update_GENR},
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -1090,6 +1093,7 @@ static part_transition ptransitions[PT_NUM] =
     /* hlim */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* gel */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
     /* dpar */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
+    /* genr */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
 };
 #undef IPL
 #undef IPH

@@ -1904,11 +1904,11 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 		{
 			if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM&&n!=SPC_WIND)
 			{
-				/*if (x-18<=2)
+				if (x-18<=2)
 				{
 					x = XRES-BARSIZE-18;
 					y += 19;
-				}*/
+				}
 				x -= draw_tool_xy(vid_buf, x, y, n, wtypes[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{
@@ -1941,11 +1941,11 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 		{
 			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM||n==SPC_WIND)
 			{
-				/*if (x-18<=0)
+				if (x-18<=0)
 				{
 					x = XRES-BARSIZE-18;
 					y += 19;
-				}*/
+				}
 				x -= draw_tool_xy(vid_buf, x, y, n, wtypes[n-UI_WALLSTART].colour)+5;
 				if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15)
 				{

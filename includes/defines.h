@@ -16,8 +16,6 @@
 
 #define SERVER "powdertoy.co.uk"
 
-#define PS 12
-#define TYPE 0xFFF
 //Languages
 #define ENGLISH
 //#define INDONESIAN
@@ -57,6 +55,9 @@
 
 #define MAXSIGNS 16
 #define TAG_MAX 256
+
+#define PS 12 //the particle number shift that also determines element limit
+#define TYPE (int)pow(2,PS)-1 //where the type of the particle is stored in pmap
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8

@@ -678,7 +678,7 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
     pixel gc;
     if (x > XRES-26 || x < 0)
         return 26;
-    if (b>=UI_WALLSTART)
+    if (b>=UI_WALLSTART && b<=UI_WALLSTART+UI_WALLCOUNT)
     {
         int ds = 0;
         if (b-UI_WALLSTART>=0 && b-UI_WALLSTART<UI_WALLCOUNT)
