@@ -1690,6 +1690,9 @@ void draw_parts(pixel *vid)
 			nx = (int)(parts[i].x+0.5f);
 			ny = (int)(parts[i].y+0.5f);
 
+			if(photons[ny][nx]&0xFF && !(ptypes[t].properties & TYPE_ENERGY))
+				continue;
+
 			if (t==PT_SOAP)
 			{
 				if ((parts[i].ctype&7) == 7)
