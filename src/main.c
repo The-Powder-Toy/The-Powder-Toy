@@ -1804,7 +1804,7 @@ int main(int argc, char *argv[])
 		if (bsy<0)
 			bsy = 0;
 		
-		if(ngrav_enable)
+		if(ngrav_enable && drawgrav_enable)
 			draw_grav(vid_buf);
 		draw_walls(vid_buf); 
 		update_particles(vid_buf); //update everything
@@ -2224,10 +2224,17 @@ int main(int argc, char *argv[])
 			}
 			if (sdl_key=='g')
 			{
-				if (sdl_mod & (KMOD_SHIFT))
-					GRID_MODE = (GRID_MODE+9)%10;
+				if(sdl_mod & (KMOD_CTRL))
+				{
+					drawgrav_enable =! drawgrav_enable;
+				}
 				else
-					GRID_MODE = (GRID_MODE+1)%10;
+				{
+					if (sdl_mod & (KMOD_SHIFT))
+						GRID_MODE = (GRID_MODE+9)%10;
+					else
+						GRID_MODE = (GRID_MODE+1)%10;
+				}
 			}
 			if (sdl_key=='m')
 			{

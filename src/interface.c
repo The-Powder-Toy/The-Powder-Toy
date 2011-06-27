@@ -78,6 +78,8 @@ int zoom_wx=0, zoom_wy=0;
 unsigned char ZFACTOR = 256/ZSIZE_D;
 unsigned char ZSIZE = ZSIZE_D;
 
+int drawgrav_enable = 0;
+
 void menu_count(void)//puts the number of elements in each section into .itemcount
 {
 	int i=0;

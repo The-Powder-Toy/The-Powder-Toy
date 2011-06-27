@@ -769,9 +769,14 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	{
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
 	}
-	if (t==PT_QRTZ)
+	else if (t==PT_QRTZ)
 	{
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
+	}
+	else
+	{
+		parts[i].pavg[0] = 0.0f;
+		parts[i].pavg[1] = 0.0f;
 	}
 	if (t!=PT_STKM&&t!=PT_STKM2)//set everything to default values first, except for stickman.
 	{

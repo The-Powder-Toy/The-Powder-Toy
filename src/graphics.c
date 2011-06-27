@@ -2553,7 +2553,7 @@ void draw_parts(pixel *vid)
 						cr *= x;
 						cg *= x;
 						cb *= x;
-						vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cr>255?255:cr,cg>255?255:cg,cb>255?255:cb);
+						vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cr>255?255:cr,cg>255?255:cg,cb>255?255:cb);						
 						cr >>= 4;
 						cg >>= 4;
 						cb >>= 4;
@@ -2587,15 +2587,26 @@ void draw_parts(pixel *vid)
 						cr = cr>255?255:cr;
 						cg = cg>255?255:cg;
 						cb = cb>255?255:cb;
-						blendpixel(vid, nx, ny, cr, cg, cb, 192);
-						blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
-						blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
-						blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
-						blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-						blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
-						blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
-						blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
-						blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
+						if(cmode == CM_PERS){
+							if(parts[i].pavg[0] && parts[i].pavg[1])
+							{
+								draw_line(vid, nx, ny, parts[i].pavg[0], parts[i].pavg[1], cr, cg, cb, XRES+BARSIZE);
+							}
+							else
+							{
+								vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cr, cg, cb);	
+							}
+						} else {
+							blendpixel(vid, nx, ny, cr, cg, cb, 192);
+							blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
+							blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
+							blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
+							blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
+							blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
+							blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
+							blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
+							blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
+						}
 					}
 				}
 				//Life can be 11 too, so don't just check for 10

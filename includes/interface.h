@@ -176,6 +176,8 @@ extern int zoom_en;
 extern int zoom_x, zoom_y;
 extern int zoom_wx, zoom_wy;
 
+extern int drawgrav_enable;
+
 void menu_count(void);
 
 void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
