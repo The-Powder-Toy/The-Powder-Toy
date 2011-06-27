@@ -1244,6 +1244,40 @@ int nearest_part(int ci, int t)
 	return id;
 }
 
+void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type)
+{
+	int i;
+	float xint, yint;
+	int *xmid, *ymid;
+	int voffset = variance/2;
+	xmid = calloc(midpoints + 2, sizeof(int));
+	ymid = calloc(midpoints + 2, sizeof(int));
+	xint = (float)(dx-sx)/(float)(midpoints+1.0f);
+	yint = (float)(dy-sy)/(float)(midpoints+1.0f);
+	xmid[0] = sx;
+	xmid[midpoints+1] = dx;
+	ymid[0] = sy;
+	ymid[midpoints+1] = dy;
+	
+	for(i = 1; i <= midpoints; i++)
+	{
+		ymid[i] = ymid[i-1]+yint;
+		xmid[i] = xmid[i-1]+xint;
+	}
+	
+	for(i = 0; i <= midpoints; i++)
+	{
+		if(i!=midpoints)
+		{
+			xmid[i+1] += (rand()%variance)-voffset;
+			ymid[i+1] += (rand()%variance)-voffset;
+		}	
+		create_line(xmid[i], ymid[i], xmid[i+1], ymid[i+1], 0, 0, type);
+	}
+	free(xmid);
+	free(ymid);
+}
+
 //the main function for updating particles
 void update_particles_i(pixel *vid, int start, int inc)
 {
