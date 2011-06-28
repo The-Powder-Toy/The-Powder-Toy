@@ -1,9 +1,22 @@
 #include <element.h>
 
-int update_PCLN(UPDATE_FUNC_ARGS) {
+int update_PBCN(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
+	if (!parts[i].tmp && pv[y/CELL][x/CELL]>4.0f)
+		parts[i].tmp = rand()%40+80;
+	if (parts[i].tmp)
+	{
+		float advection = 0.1f;
+		parts[i].vx += advection*vx[y/CELL][x/CELL];
+		parts[i].vy += advection*vy[y/CELL][x/CELL];
+		parts[i].tmp--;
+		if(!parts[i].tmp){
+			kill_part(i);
+			return 1;
+		}
+	}
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -18,7 +31,7 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 					else if (parts[r>>8].ctype==PT_NSCN)
 						parts[i].life = 9;
 				}
-				if ((r&0xFF)==PT_PCLN)
+				if ((r&0xFF)==PT_PBCN)
 				{
 					if (parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
 						parts[i].life = 9;

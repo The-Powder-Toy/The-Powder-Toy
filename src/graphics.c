@@ -1757,7 +1757,7 @@ void draw_parts(pixel *vid)
 
 					isplayer2 = 1;  //It's a secret. Tssss...
 				}
-				if (cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP && t!=PT_FILT && t!=PT_HSWC && t!=PT_PCLN && t!=PT_DEUT && t!=PT_WIFI)//nothing display but show needed color changes
+				if (cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP && t!=PT_GPMP && t!=PT_PBCN && t!=PT_FILT && t!=PT_HSWC && t!=PT_PCLN && t!=PT_DEUT && t!=PT_WIFI)//nothing display but show needed color changes
 				{
 					if (t==PT_PHOT)
 					{
@@ -1815,7 +1815,8 @@ void draw_parts(pixel *vid)
 				         t!=PT_NEUT && t!=PT_LAVA && t!=PT_BOMB &&
 				         t!=PT_PHOT && t!=PT_THDR && t!=PT_SMKE &&
 				         t!=PT_LCRY && t!=PT_SWCH && t!=PT_PCLN &&
-				         t!=PT_PUMP && t!=PT_HSWC && t!=PT_FILT)
+				         t!=PT_PUMP && t!=PT_HSWC && t!=PT_FILT &&
+				         t!=PT_GPMP && t!=PT_PBCN)
 				{
 					if (ptypes[parts[i].type].properties&TYPE_LIQUID) //special effects for liquids in fancy mode
 					{
@@ -2791,6 +2792,22 @@ void draw_parts(pixel *vid)
 						blendpixel(vid, nx-1, ny+1, GR, GR, 10, 112);
 					}
 				}
+				else if (t==PT_PBCN)
+				{
+					uint8 GR = 0x3B+((parts[i].life>10?10:parts[i].life)*19);
+					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(GR, GR/2, 10);
+					if (cmode == CM_BLOB) {
+						blendpixel(vid, nx+1, ny, GR, GR/2, 10, 223);
+						blendpixel(vid, nx-1, ny, GR, GR/2, 10, 223);
+						blendpixel(vid, nx, ny+1, GR, GR/2, 10, 223);
+						blendpixel(vid, nx, ny-1, GR, GR/2, 10, 223);
+
+						blendpixel(vid, nx+1, ny-1, GR, GR/2, 10, 112);
+						blendpixel(vid, nx-1, ny-1, GR, GR/2, 10, 112);
+						blendpixel(vid, nx+1, ny+1, GR, GR/2, 10, 112);
+						blendpixel(vid, nx-1, ny+1, GR, GR/2, 10, 112);
+					}
+				}
 				else if (t==PT_HSWC)
 				{
 					uint8 GR = 0x3B+((parts[i].life>10?10:parts[i].life)*19);
@@ -2821,6 +2838,22 @@ void draw_parts(pixel *vid)
 						blendpixel(vid, nx-1, ny-1, 10, 10, GR, 112);
 						blendpixel(vid, nx+1, ny+1, 10, 10, GR, 112);
 						blendpixel(vid, nx-1, ny+1, 10, 10, GR, 112);
+					}
+				}
+				else if (t==PT_GPMP)
+				{
+					uint8 GR = 0x3B+((parts[i].life>10?10:parts[i].life)*19);
+					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(10, GR, GR);
+					if (cmode == CM_BLOB) {
+						blendpixel(vid, nx+1, ny, 10, GR/2, GR, 223);
+						blendpixel(vid, nx-1, ny, 10, GR/2, GR, 223);
+						blendpixel(vid, nx, ny+1, 10, GR/2, GR, 223);
+						blendpixel(vid, nx, ny-1, 10, GR/2, GR, 223);
+
+						blendpixel(vid, nx+1, ny-1, 10, GR/2, GR, 112);
+						blendpixel(vid, nx-1, ny-1, 10, GR/2, GR, 112);
+						blendpixel(vid, nx+1, ny+1, 10, GR/2, GR, 112);
+						blendpixel(vid, nx-1, ny+1, 10, GR/2, GR, 112);
 					}
 				}
 				else if (t==PT_PLSM)

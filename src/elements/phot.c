@@ -3,6 +3,8 @@
 int update_PHOT(UPDATE_FUNC_ARGS) {
 	int r, rt, rx, ry;
 	float rr, rrr;
+	parts[i].pavg[0] = x;
+	parts[i].pavg[1] = y;
 	if (!parts[i].ctype) {
 		kill_part(i);
 		return 1;
@@ -37,12 +39,12 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 					pv[y/CELL][x/CELL] -= 15.0f * CFDS;
 				}
 			}
-	r = pmap[y][x];
-	rt = r&0xFF;
-	if (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN) {
+	//r = pmap[y][x];
+	//rt = r&0xFF;
+	/*if (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN || rt==PT_PBCN) {
 		if (!parts[r>>8].ctype)
 			parts[r>>8].ctype = PT_PHOT;
-	}
+	}*/
 
 	return 0;
 }

@@ -215,7 +215,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 			if ((r & 0xFF) < PT_NUM && ptypes[r&0xFF].hconduct)
 				parts[i].temp = parts[r>>8].temp = restrict_flt((parts[r>>8].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
-		if (parts[i].type==PT_NEUT && ((r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN || (r&0xFF)==PT_BCLN)) {
+		if (parts[i].type==PT_NEUT && ((r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN || (r&0xFF)==PT_BCLN || (r&0xFF)==PT_PBCN)) {
 			if (!parts[r>>8].ctype)
 				parts[r>>8].ctype = PT_NEUT;
 		}
@@ -652,7 +652,7 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		{
 			if (t==SPC_HEAT&&parts[pmap[y][x]>>8].temp<MAX_TEMP)
 			{
-				if ((pmap[y][x]&0xFF)==PT_PUMP) {
+				if ((pmap[y][x]&0xFF)==PT_PUMP || (pmap[y][x]&0xFF)==PT_GPMP) {
 					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 0.1f, MIN_TEMP, MAX_TEMP);
 				} else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL))) {
 					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 50.0f, MIN_TEMP, MAX_TEMP);
@@ -662,7 +662,7 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 			}
 			if (t==SPC_COOL&&parts[pmap[y][x]>>8].temp>MIN_TEMP)
 			{
-				if ((pmap[y][x]&0xFF)==PT_PUMP) {
+				if ((pmap[y][x]&0xFF)==PT_PUMP || (pmap[y][x]&0xFF)==PT_GPMP) {
 					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 0.1f, MIN_TEMP, MAX_TEMP);
 				} else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL))) {
 					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 50.0f, MIN_TEMP, MAX_TEMP);
@@ -741,7 +741,16 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 	{
 		if (pmap[y][x])
 		{
-			if (((pmap[y][x]&0xFF)==PT_CLNE||(pmap[y][x]&0xFF)==PT_BCLN||((pmap[y][x]&0xFF)==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN))&&(t!=PT_CLNE&&t!=PT_PCLN&&t!=PT_BCLN&&t!=PT_STKM&&t!=PT_STKM2))
+			if ((
+				(pmap[y][x]&0xFF)==PT_CLNE||
+				(pmap[y][x]&0xFF)==PT_BCLN||
+				((pmap[y][x]&0xFF)==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN)||
+				((pmap[y][x]&0xFF)==PT_PBCN&&t!=PT_PSCN&&t!=PT_NSCN)
+			)&&(
+				t!=PT_CLNE&&t!=PT_PCLN&&
+				t!=PT_BCLN&&t!=PT_STKM&&
+				t!=PT_STKM2&&t!=PT_PBCN)
+			)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
 			}

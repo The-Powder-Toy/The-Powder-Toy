@@ -94,7 +94,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 						parts[r>>8].life = 9;
 					}
 				}
-				else if ((ct==PT_PSCN||ct==PT_NSCN) && (rt==PT_PUMP||rt==PT_HSWC||(rt==PT_LCRY&&abs(rx)<2&&abs(ry)<2)))
+				else if ((ct==PT_PSCN||ct==PT_NSCN) && (rt==PT_PUMP||rt==PT_GPMP||rt==PT_HSWC||(rt==PT_LCRY&&abs(rx)<2&&abs(ry)<2))) // PROP_PTOGGLE, Maybe? We seem to use 2 different methods for handling actived elements, this one seems better
 				{
 					if (ct==PT_PSCN) parts[r>>8].life = 10;
 					else if (ct==PT_NSCN && parts[r>>8].life>=10) parts[r>>8].life = 9;
