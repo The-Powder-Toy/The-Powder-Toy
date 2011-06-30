@@ -9,7 +9,7 @@ int update_GREN(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ny][x+nx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if ((r&TYPE)==PT_BFLM){
+                if (parts[r>>PS].type==PT_BFLM){
                     int temporaro = 1000;
                     while (temporaro > -1001){
                         create_part(-1,x+1,y+1,PT_BRMT);
@@ -30,7 +30,7 @@ int update_GREN(UPDATE_FUNC_ARGS) {
                     }
                     kill_part(i);
                 }
-                if ((r&TYPE)==PT_SPRK || (r&TYPE)==PT_FIRE || (r&TYPE)==PT_PLSM){
+                if (parts[r>>PS].type==PT_SPRK || parts[r>>PS].type==PT_FIRE || parts[r>>PS].type==PT_PLSM){
                     int temporaro = 1000;
                     while (temporaro > -1001){
                         create_part(-1,x+1,y+1,PT_BRMT);

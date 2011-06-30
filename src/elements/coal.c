@@ -29,14 +29,14 @@ int update_COAL(UPDATE_FUNC_ARGS)
                 r = pmap[y+ry][x+rx];
                 if ((r>>PS)>=NPART || !r)
                     continue;
-                if (((r&TYPE)==PT_FIRE || (r&TYPE)==PT_PLSM) && 1>(rand()%500))
+                if ((parts[r>>PS].type==PT_FIRE || parts[r>>PS].type==PT_PLSM) && 1>(rand()%500))
                 {
                     if (parts[i].life>100)
                     {
                         parts[i].life = 99;
                     }
                 }
-                if ((r&TYPE)==PT_LAVA && 1>(rand()%500))
+                if (parts[r>>PS].type==PT_LAVA && 1>(rand()%500))
                 {
                     if (parts[r>>PS].ctype == PT_IRON)
                     {

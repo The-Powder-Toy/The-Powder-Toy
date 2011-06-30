@@ -9,16 +9,16 @@ int update_PMIC(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if ((r>>PS)>=NPART || !r)
 							continue;
-                        if ((r&TYPE)==PT_WATR && parts[r>>PS].y < parts[i].y){
+                        if (parts[r>>PS].type==PT_WATR && parts[r>>PS].y < parts[i].y){
                             parts[i].y--;
                         }
-                        if ((r&TYPE)==PT_RWTR && parts[r>>PS].y < parts[i].y){
+                        if (parts[r>>PS].type==PT_RWTR && parts[r>>PS].y < parts[i].y){
                             parts[i].y--;
                         }
-                        if ((r&TYPE)==PT_DSTW && parts[r>>PS].y < parts[i].y){
+                        if (parts[r>>PS].type==PT_DSTW && parts[r>>PS].y < parts[i].y){
                             parts[i].y--;
                         }
-                        if ((r&TYPE)==PT_SLTW && parts[r>>PS].y < parts[i].y){
+                        if (parts[r>>PS].type==PT_SLTW && parts[r>>PS].y < parts[i].y){
                             parts[i].y--;
                         }
 					}

@@ -12,7 +12,7 @@ int update_CFIR(UPDATE_FUNC_ARGS)
                 r = pmap[y+ry][x+rx];
                 if ((r>>PS)>=NPART || !r)
                     continue;
-                if ((r&TYPE)!=PT_WARP&&(r&TYPE)!=PT_POT&&(r&TYPE)!=PT_STKM&&(r&TYPE)!=PT_STKM2&&(r&TYPE)!=PT_DMND&&(r&TYPE)!=PT_CLNE&&(r&TYPE)!=PT_BCLN&&(r&TYPE)!=PT_PCLN&&(10>=rand()%2))
+                if (parts[r>>PS].type!=PT_WARP&&parts[r>>PS].type!=PT_POT&&parts[r>>PS].type!=PT_STKM&&parts[r>>PS].type!=PT_STKM2&&parts[r>>PS].type!=PT_DMND&&parts[r>>PS].type!=PT_CLNE&&parts[r>>PS].type!=PT_BCLN&&parts[r>>PS].type!=PT_PCLN&&(10>=rand()%2))
                 {
                     int nrx = rand()%3 -1;
                     int nry = rand()%3 -1;
@@ -21,7 +21,7 @@ int update_CFIR(UPDATE_FUNC_ARGS)
                     {
                         if((pmap[y+ry+nry][x+rx+nrx]>>PS)>=NPART||pmap[y+ry+nry][x+rx+nrx])
                             continue;
-                        if ((r&TYPE)!=PT_CFIR)
+                        if (parts[r>>PS].type!=PT_CFIR)
                         {
                             create_part(-1, x+rx+nrx, y+ry+nry, PT_WARP);
                         }

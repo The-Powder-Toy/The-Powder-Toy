@@ -99,8 +99,8 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 							{
 								if (bmap[(y+ry)/CELL][(x+rx)/CELL]
 										|| (r && ptypes[r&TYPE].state != ST_GAS
-											&& (r&TYPE) != PT_SOAP && (r&TYPE) != PT_GLAS)
-										|| (parts[r>>PS].ctype == 0 && (r&TYPE) == PT_SOAP
+											&& parts[r>>PS].type != PT_SOAP && parts[r>>PS].type != PT_GLAS)
+										|| (parts[r>>PS].ctype == 0 && parts[r>>PS].type == PT_SOAP
 											&& (abs(parts[r>>PS].vx)<2 || abs(parts[r>>PS].vy)<2)))
 								{
 									detach(i);
@@ -108,7 +108,7 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 								}
 							}
 
-							if ((r&TYPE) == PT_SOAP && parts[r>>PS].ctype == 1)
+							if (parts[r>>PS].type == PT_SOAP && parts[r>>PS].ctype == 1)
 							{
 								int buf;
 
@@ -121,7 +121,7 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 								parts[r>>PS].ctype = 7;
 							}
 
-							if ((r&TYPE) == PT_SOAP && parts[r>>PS].ctype == 7 && parts[i].tmp != r>>PS && parts[i].tmp2 != r>>PS)
+							if (parts[r>>PS].type == PT_SOAP && parts[r>>PS].ctype == 7 && parts[i].tmp != r>>PS && parts[i].tmp2 != r>>PS)
 							{
 								int buf;
 
@@ -184,7 +184,7 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 					if ((r>>PS)>=NPART || !r)
 						continue;
 
-					if ((r&TYPE) == PT_OIL)
+					if (parts[r>>PS].type == PT_OIL)
 					{
 						float ax, ay;
 

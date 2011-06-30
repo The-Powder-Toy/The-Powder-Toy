@@ -9,7 +9,7 @@ int update_TNT(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ny][x+nx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if ((r&TYPE)==PT_SPRK || (r&TYPE)==PT_BFLM || (r&TYPE)==PT_PLSM || (r&TYPE)==PT_FIRE){
+                if (parts[r>>PS].type==PT_SPRK || parts[r>>PS].type==PT_BFLM || parts[r>>PS].type==PT_PLSM || parts[r>>PS].type==PT_FIRE){
                     pv[y/CELL][x/CELL] += 15.0f;
                     if (y+CELL<YRES)
                         pv[y/CELL+1][x/CELL] += 15.0f;

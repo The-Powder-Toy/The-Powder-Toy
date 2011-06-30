@@ -12,7 +12,7 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                     r = pmap[y+ny][x+nx];
                     if((r>>PS)>=NPART || !r)
                         continue;
-                    if((r&TYPE)!=PT_NONE && (r&TYPE)!=PT_BULL){
+                    if(parts[r>>PS].type!=PT_NONE && parts[r>>PS].type!=PT_BULL){
                         kill_part(i);
                     }
                 }
@@ -24,7 +24,7 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                     r = pmap[y+ny][x+nx];
                     if((r>>PS)>=NPART || !r)
                         continue;
-                    if((r&TYPE)!=PT_NONE && (r&TYPE)!=PT_BULL && (r&TYPE)!=PT_DMND && (r&TYPE)!=PT_C0 && (r&TYPE)!=PT_GOLD && (r&TYPE)!=PT_BSHL && (r&TYPE)!=PT_PDCL && (r&TYPE)!=PT_LQCL && (r&TYPE)!=PT_GSCL && (r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN && (r&TYPE)!=PT_BCLN){
+                    if(parts[r>>PS].type!=PT_NONE && parts[r>>PS].type!=PT_BULL && parts[r>>PS].type!=PT_DMND && parts[r>>PS].type!=PT_C0 && parts[r>>PS].type!=PT_GOLD && parts[r>>PS].type!=PT_BSHL && parts[r>>PS].type!=PT_PDCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_BCLN){
                         int rad = 8;
                         int nxi;
                         int nxj;

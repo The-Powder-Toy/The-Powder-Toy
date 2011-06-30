@@ -11,7 +11,7 @@ int update_IFIL(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					rt = (r&TYPE);
+					rt = parts[r>>PS].type;
 					if ((rt==PT_METL || rt==PT_IRON) && 1>(rand()/(RAND_MAX/100)))
 					{
 						part_change_type(r>>PS,x+rx,y+ry,PT_IFIL);

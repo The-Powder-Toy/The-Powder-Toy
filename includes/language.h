@@ -22,6 +22,7 @@ char *add_simulation_tags = "Tambahkan tag simulasi.";
 char *add_remove_simulation_tags = "Menambah dan menghapus tag simulasi.";
 char *save_under_current_name = "Simpan simulasi dengan nama saat ini.";
 char *save_under_new_name = "Simpan simulasi di bawah nama baru.";
+char *replace_mode_text = " [MENGGANTI MODUS]";
 #else //No Language Entered
 
 char *beta_hud_text = "%d.%d %d %d %d %d %d";
@@ -31,6 +32,7 @@ char *add_simulation_tags = "";
 char *add_remove_simulation_tags = "";
 char *save_under_current_name = "";
 char *save_under_new_name = "";
+char *replace_mode_text = "";
 
 #endif
 #endif

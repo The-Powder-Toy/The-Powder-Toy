@@ -9,7 +9,7 @@ int update_THRM(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (((r&TYPE)==PT_FIRE || (r&TYPE)==PT_PLSM || (r&TYPE)==PT_LAVA)) // TODO: could this go in update_PYRO?
+				if ((parts[r>>PS].type==PT_FIRE || parts[r>>PS].type==PT_PLSM || parts[r>>PS].type==PT_LAVA)) // TODO: could this go in update_PYRO?
 				{
 					if (1>(rand()%500)) {
 						part_change_type(i,x,y,PT_LAVA);

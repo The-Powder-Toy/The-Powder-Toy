@@ -11,12 +11,12 @@ int update_O2(UPDATE_FUNC_ARGS)
 				if ((r>>PS)>=NPART || !r)
 					continue;
 
-				if ((r&TYPE)==PT_FIRE)
+				if (parts[r>>PS].type==PT_FIRE)
 				{
 					parts[r>>PS].temp+=(rand()/(RAND_MAX/100));
 					parts[r>>PS].tmp |= 2;
 				}
-				if ((r&TYPE)==PT_FIRE || (r&TYPE)==PT_PLSM)
+				if (parts[r>>PS].type==PT_FIRE || parts[r>>PS].type==PT_PLSM)
 				{
 					create_part(i,x,y,PT_FIRE);
 					parts[i].temp+=(rand()/(RAND_MAX/100));

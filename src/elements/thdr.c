@@ -9,14 +9,14 @@ int update_THDR(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((ptypes[r&TYPE].properties&PROP_CONDUCTS) && parts[r>>PS].life==0 && !((r&TYPE)==PT_WATR||(r&TYPE)==PT_SLTW) && parts[r>>PS].ctype!=PT_SPRK)
+				if ((ptypes[r&TYPE].properties&PROP_CONDUCTS) && parts[r>>PS].life==0 && !(parts[r>>PS].type==PT_WATR||parts[r>>PS].type==PT_SLTW) && parts[r>>PS].ctype!=PT_SPRK)
 				{
 					parts[i].type = PT_NONE;
 					parts[r>>PS].ctype = parts[r>>PS].type;
 					part_change_type(r>>PS,x+rx,y+ry,PT_SPRK);
 					parts[r>>PS].life = 4;
 				}
-				else if ((r&TYPE)!=PT_CLNE&&(r&TYPE)!=PT_THDR&&(r&TYPE)!=PT_SPRK&&(r&TYPE)!=PT_DMND&&(r&TYPE)!=PT_FIRE&&(r&TYPE)!=PT_NEUT&&(r&TYPE)!=PT_PHOT&&(r&TYPE))
+				else if (parts[r>>PS].type!=PT_CLNE&&parts[r>>PS].type!=PT_THDR&&parts[r>>PS].type!=PT_SPRK&&parts[r>>PS].type!=PT_DMND&&parts[r>>PS].type!=PT_FIRE&&parts[r>>PS].type!=PT_NEUT&&parts[r>>PS].type!=PT_PHOT&&parts[r>>PS].type)
 				{
 					pv[y/CELL][x/CELL] += 100.0f;
 					if (legacy_enable&&1>(rand()%200))

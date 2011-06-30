@@ -3,6 +3,8 @@
 int update_PHOT(UPDATE_FUNC_ARGS) {
 	int r, rt, rx, ry;
 	float rr, rrr;
+	parts[i].pavg[0] = x;
+    parts[i].pavg[1] = y;
 	if (!parts[i].ctype) {
 		kill_part(i);
 		return 1;
@@ -14,7 +16,7 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&TYPE)==PT_ISOZ && 5>(rand()%2000))
+				if (parts[r>>PS].type==PT_ISOZ && 5>(rand()%2000))
 				{
 					parts[i].vx *= 0.90;
 					parts[i].vy *= 0.90;
@@ -25,7 +27,7 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 					parts[r>>PS].vy = rr*sinf(rrr);
 					pv[y/CELL][x/CELL] -= 15.0f * CFDS;
 				}
-				if ((r&TYPE)==PT_ISZS && 5>(rand()%2000))
+				if (parts[r>>PS].type==PT_ISZS && 5>(rand()%2000))
 				{
 					parts[i].vx *= 0.90;
 					parts[i].vy *= 0.90;

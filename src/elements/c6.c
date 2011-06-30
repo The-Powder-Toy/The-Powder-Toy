@@ -9,7 +9,7 @@ int update_C6(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (((r&TYPE)!=PT_C6 && parts[r>>PS].temp>1000)||(r&TYPE)==PT_BFLM ||(r&TYPE)==PT_PLSM ||(r&TYPE)==PT_FIRE)
+				if ((parts[r>>PS].type!=PT_C6 && parts[r>>PS].temp>1000)||parts[r>>PS].type==PT_BFLM ||parts[r>>PS].type==PT_PLSM ||parts[r>>PS].type==PT_FIRE)
 				{
 					if (1>rand()%6)
 					{

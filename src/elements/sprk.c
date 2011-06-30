@@ -9,7 +9,7 @@ int update_SPRK(UPDATE_FUNC_ARGS)
     {
         if (ct==PT_WATR||ct==PT_COPR||ct==PT_SLTW||ct==PT_PSCN||ct==PT_NSCN||ct==PT_ETRD||ct==PT_INWR)
             parts[i].temp = R_TEMP + 273.15f;
-        if (!ct)
+        if (ct<=0 || ct>=PT_NUM)
             ct = PT_METL;
         part_change_type(i,x,y,ct);
         parts[i].ctype = PT_NONE;
@@ -136,9 +136,9 @@ int update_SPRK(UPDATE_FUNC_ARGS)
                     r = pmap[y+ry][x+rx];
                     if ((r>>PS)>=NPART || !r)
                         continue;
-                    if (((r&TYPE) == PT_DSTW && 30>(rand()/(RAND_MAX/1000))) ||
-                            ((r&TYPE) == PT_SLTW && 30>(rand()/(RAND_MAX/1000))) ||
-                            ((r&TYPE) == PT_WATR && 30>(rand()/(RAND_MAX/1000))))
+                    if ((parts[r>>PS].type == PT_DSTW && 30>(rand()/(RAND_MAX/1000))) ||
+                            (parts[r>>PS].type == PT_SLTW && 30>(rand()/(RAND_MAX/1000))) ||
+                            (parts[r>>PS].type == PT_WATR && 30>(rand()/(RAND_MAX/1000))))
                     {
                         if (rand()<RAND_MAX/3)
                             part_change_type(r>>PS,x+rx,y+ry,PT_O2);
@@ -172,7 +172,7 @@ int update_SPRK(UPDATE_FUNC_ARGS)
                         parts[r>>PS].life = 9;
                     }
                 }
-                else if ((ct==PT_PSCN||ct==PT_NSCN) && (rt==PT_PUMP||rt==PT_HSWC||rt==PT_PIVS||(rt==PT_LCRY&&abs(rx)<2&&abs(ry)<2)))
+                else if ((ct==PT_PSCN||ct==PT_NSCN) && (rt==PT_PUMP||rt==PT_GPMP||rt==PT_HSWC||(rt==PT_LCRY&&abs(rx)<2&&abs(ry)<2))) // PROP_PTOGGLE, Maybe? We seem to use 2 different methods for handling actived elements, this one seems better
                 {
                     if (ct==PT_PSCN) parts[r>>PS].life = 10;
                     else if (ct==PT_NSCN && parts[r>>PS].life>=10) parts[r>>PS].life = 9;

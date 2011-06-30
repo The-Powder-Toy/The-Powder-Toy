@@ -28,11 +28,11 @@ int update_BOYL(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&TYPE)==PT_WATR && 1>rand()%30)
+				if (parts[r>>PS].type==PT_WATR && 1>rand()%30)
 				{
 					part_change_type(r>>PS,x+rx,y+ry,PT_FOG);
 				}
-				else if ((r&TYPE)==PT_O2 && 1>rand()%9)
+				else if (parts[r>>PS].type==PT_O2 && 1>rand()%9)
 				{
 					kill_part(r>>PS);
 					part_change_type(i,x,y,PT_WATR);

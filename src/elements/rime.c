@@ -11,12 +11,12 @@ int update_RIME(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&TYPE)==PT_SPRK)
+				if (parts[r>>PS].type==PT_SPRK)
 				{
 					part_change_type(i,x,y,PT_FOG);
 					parts[i].life = rand()%50 + 60;
 				}
-				else if ((r&TYPE)==PT_FOG&&parts[r>>PS].life>0)
+				else if (parts[r>>PS].type==PT_FOG&&parts[r>>PS].life>0)
 				{
 					part_change_type(i,x,y,PT_FOG);
 					parts[i].life = parts[r>>PS].life;

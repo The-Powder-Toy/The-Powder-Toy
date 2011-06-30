@@ -9,10 +9,10 @@ int update_ZAP(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((ptypes[r&TYPE].properties&PROP_CONDUCTS) && parts[r>>PS].life==0 && !((r&TYPE)==PT_WATR||(r&TYPE)==PT_SLTW) && parts[r>>PS].ctype!=PT_SPRK)
+				if ((ptypes[r&TYPE].properties&PROP_CONDUCTS) && parts[r>>PS].life==0 && !(parts[r>>PS].type==PT_WATR||parts[r>>PS].type==PT_SLTW) && parts[r>>PS].ctype!=PT_SPRK)
 				{
 					kill_part(i);
-					parts[r>>PS].ctype = (r&TYPE);
+					parts[r>>PS].ctype = parts[r>>PS].type;
 					part_change_type(r>>PS,x+rx,y+ry,PT_SPRK);
 					parts[r>>PS].life = 4;
 				}

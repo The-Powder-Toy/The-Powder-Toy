@@ -11,7 +11,7 @@ int update_SPNG(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r || parts[i].temp>374.0f)
 						continue;
-					if ((r&TYPE)==PT_WATR&&33>=rand()/(RAND_MAX/100)+1)
+					if (parts[r>>PS].type==PT_WATR&&33>=rand()/(RAND_MAX/100)+1)
 					{
 						parts[i].life++;
 						kill_part(r>>PS);
@@ -44,7 +44,7 @@ int update_SPNG(UPDATE_FUNC_ARGS) {
 			r = pmap[y+ry][x+rx];
 			if ((r>>PS)>=NPART || !r)
 				continue;
-			if ((r&TYPE)==PT_SPNG&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
+			if (parts[r>>PS].type==PT_SPNG&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
 			{
 				tmp = parts[i].life - parts[r>>PS].life;
 				if (tmp ==1)
@@ -72,7 +72,7 @@ int update_SPNG(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if ((r&TYPE)==PT_FIRE)
+					if (parts[r>>PS].type==PT_FIRE)
 					{
 						tmp++;
 						if (parts[r>>PS].life>60)

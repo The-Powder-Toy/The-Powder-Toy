@@ -21,25 +21,27 @@ typedef struct menu_wall menu_wall;
 
 #define SC_WALL 0
 #define SC_ELEC 1
-#define SC_EXPLOSIVE 2
-#define SC_GAS 3
-#define SC_LIQUID 4
-#define SC_POWDERS 5
-#define SC_SOLIDS 6
-#define SC_NUCLEAR 7
-#define SC_SPECIAL 8
-#define SC_LIFE 9
-#define SC_STICKMAN 10
-#define SC_NATURE 11
-#define SC_SPACE 12
-#define SC_CRACKER2 13
-#define SC_CRACKER 13
-#define SC_TOTAL 14
+#define SC_POWERED 2
+#define SC_EXPLOSIVE 3
+#define SC_GAS 4
+#define SC_LIQUID 5
+#define SC_POWDERS 6
+#define SC_SOLIDS 7
+#define SC_NUCLEAR 8
+#define SC_SPECIAL 9
+#define SC_LIFE 10
+#define SC_STICKMAN 11
+#define SC_NATURE 12
+#define SC_SPACE 13
+#define SC_CRACKER2 14
+#define SC_CRACKER 15
+#define SC_TOTAL 16
 
 static menu_section msections[] = //doshow does not do anything currently.
 {
 	{"\xC1", "Walls", 0, 1},
 	{"\xC2", "Electronics", 0, 1},
+	{"\xD6", "Powered Materials", 0, 1},
 	{"\xC3", "Explosives", 0, 1},
 	{"\xC5", "Gasses", 0, 1},
 	{"\xC4", "Liquids", 0, 1},
@@ -143,6 +145,9 @@ extern char svf_pass[64];
 extern char svf_user_id[64];
 extern char svf_session_id[64];
 
+extern char svf_filename[255];
+extern int svf_fileopen;
+
 extern int svf_open;
 extern int svf_own;
 extern int svf_myvote;
@@ -177,6 +182,8 @@ extern int tag_votes[TAG_MAX];
 extern int zoom_en;
 extern int zoom_x, zoom_y;
 extern int zoom_wx, zoom_wy;
+
+extern int drawgrav_enable;
 
 void menu_count(void);
 

@@ -9,7 +9,7 @@ int update_CFC(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&TYPE)==PT_O3)
+				if (parts[r>>PS].type==PT_O3)
 				{
                     parts[i].life--;
                     kill_part(r>>PS);

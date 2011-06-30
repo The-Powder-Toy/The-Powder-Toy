@@ -10,29 +10,29 @@ int update_PLNT(UPDATE_FUNC_ARGS)
                 r = pmap[y+ry][x+rx];
                 if ((r>>PS)>=NPART || !r)
                     continue;
-                if ((r&TYPE)==PT_WATR && 1>(rand()%250))
+                if (parts[r>>PS].type==PT_WATR && 1>(rand()%250))
                 {
                     np = create_part(r>>PS,x+rx,y+ry,PT_PLNT);
                     if (np<0) continue;
                     parts[np].life = 0;
                 }
-                if ((r&TYPE)==PT_RWTR && 1>(rand()%250))
+                if (parts[r>>PS].type==PT_RWTR && 1>(rand()%250))
                 {
                     np = create_part(r>>PS,x+rx,y+ry,PT_PLNT);
                     if (np<0) continue;
                     parts[np].life = 0;
                 }
-                else if ((r&TYPE)==PT_LAVA && 1>(rand()%250))
+                else if (parts[r>>PS].type==PT_LAVA && 1>(rand()%250))
                 {
                     part_change_type(i,x,y,PT_FIRE);
                     parts[i].life = 4;
                 }
-                else if ((r&TYPE)==PT_SMKE && (1>rand()%250))
+                else if (parts[r>>PS].type==PT_SMKE && (1>rand()%250))
                 {
                     kill_part(r>>PS);
                     parts[i].life = rand()%60 + 60;
                 }
-                else if ((r&TYPE)==PT_C02 && (1>rand()%250))
+                else if (parts[r>>PS].type==PT_C02 && (1>rand()%250))
                 {
                     kill_part(r>>PS);
                     parts[i].life = rand()%60 + 60;
@@ -54,7 +54,7 @@ int update_PLNT(UPDATE_FUNC_ARGS)
                     if (1>rand()%2)
                         parts[i].ctype=PT_NONE;
                 }
-                else if ((r&TYPE)==PT_WOOD && (1>rand()%20) && abs(rx+ry)<=2 && VINE_MODE)
+                else if (parts[r>>PS].type==PT_WOOD && (1>rand()%20) && abs(rx+ry)<=2 && VINE_MODE)
                 {
                     int nnx = rand()%3 -1;
                     int nny = rand()%3 -1;

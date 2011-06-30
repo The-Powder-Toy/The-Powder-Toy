@@ -9,7 +9,7 @@ int update_AMTR(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&TYPE)!=PT_AMTR && (r&TYPE)!=PT_DMND && (r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN && (r&TYPE)!=PT_NONE && (r&TYPE)!=PT_PHOT && (r&TYPE)!=PT_VOID && (r&TYPE)!=PT_BHOL && (r&TYPE)!=PT_NBHL && (r&TYPE)!=PT_PRTI && (r&TYPE)!=PT_PRTO)
+				if (parts[r>>PS].type!=PT_AMTR && parts[r>>PS].type!=PT_DMND && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_NONE && parts[r>>PS].type!=PT_PHOT && parts[r>>PS].type!=PT_VOID && parts[r>>PS].type!=PT_BHOL && parts[r>>PS].type!=PT_NBHL && parts[r>>PS].type!=PT_PRTI && parts[r>>PS].type!=PT_PRTO)
 				{
 					parts[i].life++;
 					if (parts[i].life==4)

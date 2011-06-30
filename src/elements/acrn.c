@@ -9,16 +9,16 @@ int update_ACRN(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ry][x+rx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if((r&TYPE)!=PT_ACRN)
+                if(parts[r>>PS].type!=PT_ACRN)
                 {
-                    if ((r&TYPE)==PT_PLEX || (r&TYPE)==PT_NITR || (r&TYPE)==PT_GUNP || (r&TYPE)==PT_RBDM || (r&TYPE)==PT_LRBD)
+                    if (parts[r>>PS].type==PT_PLEX || parts[r>>PS].type==PT_NITR || parts[r>>PS].type==PT_GUNP || parts[r>>PS].type==PT_RBDM || parts[r>>PS].type==PT_LRBD)
                     {
                         parts[i].type = PT_FIRE;
                         parts[i].life = 4;
                         parts[r>>PS].type = PT_FIRE;
                         parts[r>>PS].life = 4;
                     }
-                    else if((((r&TYPE)!=PT_ACLOUD && (r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN && (r&TYPE)!=PT_GSCL && (r&TYPE)!=PT_LQCL && ptypes[parts[r>>PS].type].hardness>(rand()%1000)))&&parts[i].life>=50)
+                    else if(((parts[r>>PS].type!=PT_ACLOUD && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_LQCL && ptypes[parts[r>>PS].type].hardness>(rand()%1000)))&&parts[i].life>=50)
                     {
                         if(parts_avg(i, r>>PS,PT_GLAS)!= PT_GLAS)
                         {

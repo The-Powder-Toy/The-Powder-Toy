@@ -18,9 +18,10 @@ float vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
 float vy[YRES/CELL][XRES/CELL], ovy[YRES/CELL][XRES/CELL];
 float pv[YRES/CELL][XRES/CELL], opv[YRES/CELL][XRES/CELL];
 
-float cb_vx[YRES/CELL][XRES/CELL], cb_ovx[YRES/CELL][XRES/CELL];
-float cb_vy[YRES/CELL][XRES/CELL], cb_ovy[YRES/CELL][XRES/CELL];
-float cb_pv[YRES/CELL][XRES/CELL], cb_opv[YRES/CELL][XRES/CELL];
+float cb_vx[YRES/CELL][XRES/CELL];
+float cb_vy[YRES/CELL][XRES/CELL];
+float cb_pv[YRES/CELL][XRES/CELL];
+float cb_hv[YRES/CELL][XRES/CELL];
 
 float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 
@@ -107,6 +108,12 @@ void update_airh(void)
 				dh += AIR_VADV*(1.0f-tx)*ty*hv[j+1][i];
 				dh += AIR_VADV*tx*ty*hv[j+1][i+1];
 			}
+			if(!gravityMode){ //Vertical gravity only for the time being
+                float airdiff = dh-hv[y][x];
+                pv[y][x] += airdiff/5000.0f;
+                if(airdiff>0)
+                    vy[y][x] -= airdiff/5000.0f;
+            }
 			ohv[y][x] = dh;
 		}
 	}

@@ -13,7 +13,7 @@ int update_PIVS(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if ((r&TYPE)==PT_PIVS)
+					if (parts[r>>PS].type==PT_PIVS)
 					{
 						if (parts[r>>PS].life<10&&parts[r>>PS].life>0)
 							parts[i].life = 9;

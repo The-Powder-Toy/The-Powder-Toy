@@ -17,7 +17,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						r = pmap[y+ry][x+rx];
 						if ((r>>PS)>=NPART || !r)
 							continue;
-						if ((r&TYPE)==PT_PIPE&&parts[r>>PS].ctype==1)
+						if (parts[r>>PS].type==PT_PIPE&&parts[r>>PS].ctype==1)
 						{
 							parts[r>>PS].ctype = (((parts[i].ctype)%3)+2);//reverse
 							parts[r>>PS].life = 6;
@@ -48,8 +48,8 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						{
 							parts[np].temp = parts[i].temp;//pipe saves temp and life now
 							parts[np].life = parts[i].flags;
-							parts[np].tmp = parts[i].tmp2;
-							parts[np].ctype = parts[i].tmpx;
+							parts[np].tmp = parts[i].pavg[0];
+                            parts[np].ctype = parts[i].pavg[1];
 						}
 						parts[i].tmp = 0;
 						continue;
@@ -61,13 +61,17 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						parts[i].tmp = parts[r>>PS].type;
 						parts[i].temp = parts[r>>PS].temp;
 						parts[i].flags = parts[r>>PS].life;
+						parts[i].pavg[0] = parts[r>>PS].tmp;
+                        parts[i].pavg[1] = parts[r>>PS].ctype;
 						kill_part(r>>PS);
 					}
-					else if ((r&TYPE)==PT_PIPE && parts[r>>PS].ctype!=ctype && parts[r>>PS].tmp==0&&parts[i].tmp>0)
+					else if (parts[r>>PS].type==PT_PIPE && parts[r>>PS].ctype!=ctype && parts[r>>PS].tmp==0&&parts[i].tmp>0)
 					{
 						parts[r>>PS].tmp = parts[i].tmp;
 						parts[r>>PS].temp = parts[i].temp;
 						parts[r>>PS].flags = parts[i].flags;
+						parts[r>>PS].pavg[0] = parts[i].pavg[0];
+                        parts[r>>PS].pavg[1] = parts[i].pavg[1];
 						parts[i].tmp = 0;
 					}
 				}

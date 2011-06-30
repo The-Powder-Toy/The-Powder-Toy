@@ -553,8 +553,9 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
     unsigned char *d=NULL,*c=save;
     int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0, tempGrav = 0;
     int bx0=x0/CELL, by0=y0/CELL, bw, bh, w, h;
-    int fp[NPART], nf=0, new_format = 0, ttv = 0;
+    int nf=0, new_format = 0, ttv = 0;
     particle *parts = partsptr;
+    int *fp = malloc(NPART*sizeof(int));
 
     //New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
     //This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
@@ -743,7 +744,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
                     if (j == PT_PHOT)
                         parts[k].ctype = 0x3fffffff;
                     if (j == PT_SOAP)
-                        parts[k].ctype = 0;
+                        parts[fp[i]].ctype = 0;
                     parts[k].x = (float)x;
                     parts[k].y = (float)y;
                     m[(x-x0)+(y-y0)*w] = k+1;
@@ -1119,6 +1120,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
     }
 
 version1:
+    if (fp) free(fp);
     if (m) free(m);
     if (d) free(d);
 
@@ -1127,6 +1129,7 @@ version1:
 corrupt:
     if (m) free(m);
     if (d) free(d);
+    if (fp) free(fp);
     if (replace)
     {
         legacy_enable = 0;
@@ -1894,7 +1897,7 @@ else //clear screen every frame
         if (bsy<0)
             bsy = 0;
 
-        if(ngrav_enable)
+        if(ngrav_enable && drawgrav_enable)
             draw_grav(vid_buf);
         draw_walls(vid_buf);
         update_particles(vid_buf); //update everything
@@ -1925,6 +1928,12 @@ else //clear screen every frame
 
         if (!sys_pause||framerender) //Only update if not paused
             memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
+
+        if (framerender)
+        {
+            framerender = 0;
+            sys_pause = 1;
+        }
 
         if (cmode==CM_PERS)
         {
@@ -2323,10 +2332,21 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
             }
             if (sdl_key=='g')
             {
-                if (sdl_mod & (KMOD_SHIFT))
-                    GRID_MODE = (GRID_MODE+9)%10;
+                if(sdl_mod & (KMOD_CTRL))
+                {
+                    drawgrav_enable =! drawgrav_enable;
+                    itc = 51;
+                    if (drawgrav_enable) strcpy(itc_msg, "Gravity Display: On");
+                    else strcpy(itc_msg, "Gravity Display: Off");
+
+                }
                 else
-                    GRID_MODE = (GRID_MODE+1)%10;
+                {
+                    if (sdl_mod & (KMOD_SHIFT))
+                        GRID_MODE = (GRID_MODE+9)%10;
+                    else
+                        GRID_MODE = (GRID_MODE+1)%10;
+                }
             }
             if (sdl_key=='m')
             {
@@ -2506,6 +2526,7 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                         vx[cby][cbx] = cb_vx[cby][cbx];
                         vy[cby][cbx] = cb_vy[cby][cbx];
                         pv[cby][cbx] = cb_pv[cby][cbx];
+                        hv[cby][cbx] = cb_hv[cby][cbx];
                         bmap[cby][cbx] = cb_bmap[cby][cbx];
                         emap[cby][cbx] = cb_emap[cby][cbx];
                     }
@@ -2607,7 +2628,7 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
         b = SDL_GetMouseState(&x, &y); // b is current mouse state
 
 #ifdef LUACONSOLE
-        if(luacon_step(x, y, b, bq, sdl_key))
+        if(luacon_step(x/sdl_scale, y/sdl_scale, b, bq, sdl_key))
             b = 0; //Mouse click was handled by Lua step
 #endif
 
@@ -2647,9 +2668,9 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                 if (DEBUG_MODE)
                 {
                     int tctype = parts[cr>>PS].ctype;
-                    if (tctype>=PT_NUM || tctype<0 || (cr&TYPE)==PT_PHOT)
+                    if (tctype>=PT_NUM || tctype<0 || parts[cr>>PS].type==PT_PHOT)
                         tctype = 0;
-                    if ((cr&TYPE)==PT_PIPE)
+                    if (parts[cr>>PS].type==PT_PIPE)
                     {
                         if (parts[cr>>PS].tmp<PT_NUM) tctype = parts[cr>>PS].tmp;
                         else tctype = 0;
@@ -2660,7 +2681,7 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                 else
                 {
                     //Change the name of a particle realtime
-                    const char *tempname = ptypes[cr&TYPE].name;
+                    const char *tempname = ptypes[parts[cr>>PS].type].name;
                     if (tempname=="LEAF" && parts[cr>>PS].life>10)
                     {
                         tempname = "DLEF";
@@ -2688,10 +2709,10 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
 #ifdef BETA
                     sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
 #else
-                    sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
+sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", tempname, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
 #endif
                 }
-                if ((cr&TYPE)==PT_PHOT) wavelength_gfx = parts[cr>>PS].ctype;
+                if (parts[cr>>PS].type==PT_PHOT) wavelength_gfx = parts[cr>>PS].ctype;
             }
             else
             {
@@ -2752,44 +2773,44 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                 open_link("http://powdertoy.co.uk/Conversations.html");
             }
         }
-/*
-        if(b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
-                x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
-        {
-            tmp = malloc(64);
+        /*
+                if(b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
+                        x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
+                {
+                    tmp = malloc(64);
 #ifdef BETA
-            if(is_beta)
-            {
-                sprintf(tmp, "Your version: %d (Beta %d), new version: %d (Beta %d).", ME4502_MAJOR_VERSION, ME4502_VERSION, major, minor);
-            }
-            else
-            {
-                sprintf(tmp, "Your version: %d (Beta %d), new version: %d.%d.", ME4502_MAJOR_VERSION, ME4502_VERSION, major, minor);
-            }
+                    if(is_beta)
+                    {
+                        sprintf(tmp, "Your version: %d (Beta %d), new version: %d (Beta %d).", ME4502_MAJOR_VERSION, ME4502_VERSION, major, minor);
+                    }
+                    else
+                    {
+                        sprintf(tmp, "Your version: %d (Beta %d), new version: %d.%d.", ME4502_MAJOR_VERSION, ME4502_VERSION, major, minor);
+                    }
 #else
 sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", ME4502_MAJOR_VERSION, ME4502_VERSION, major, minor);
 #endif
-            if(confirm_ui(vid_buf, "Do you want to update The Powder Toy?", tmp, "Update"))
-            {
-                free(tmp);
-                tmp = download_ui(vid_buf, my_uri, &i);
-                if(tmp)
-                {
-                    save_presets(1);
-                    if(update_start(tmp, i))
+                    if(confirm_ui(vid_buf, "Do you want to update The Powder Toy?", tmp, "Update"))
                     {
-                        //update_cleanup();
-                        save_presets(0);
-                        error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
+                        free(tmp);
+                        tmp = download_ui(vid_buf, my_uri, &i);
+                        if(tmp)
+                        {
+                            save_presets(1);
+                            if(update_start(tmp, i))
+                            {
+                                //update_cleanup();
+                                save_presets(0);
+                                error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
+                            }
+                            else
+                                return 0;
+                        }
                     }
                     else
-                        return 0;
+                        free(tmp);
                 }
-            }
-            else
-                free(tmp);
-        }
-*/
+        */
         if (y>=sdl_scale*(YRES+(MENUSIZE-20))) //mouse checks for buttons at the bottom, to draw mouseover texts
         {
             if (x>=189*sdl_scale && x<=202*sdl_scale && svf_login && svf_open && svf_myvote==0)
@@ -3026,6 +3047,8 @@ sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", ME4502_MAJOR_VERSION, M
                         pfree = 0;
 
                         legacy_enable = 0;
+                        svf_filename[0] = 0;
+                        svf_fileopen = 0;
                         svf_myvote = 0;
                         svf_open = 0;
                         svf_publish = 0;
@@ -3104,7 +3127,7 @@ sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", ME4502_MAJOR_VERSION, M
                             memset(fire_b, 0, sizeof(fire_b));
                         }
                     }
-                    if (x>=19 && x<=35 && svf_last && svf_open && !bq)
+                    if (x>=19 && x<=35 && svf_last && (svf_open || svf_fileopen) && !bq)
                     {
                         //int tpval = sys_pause;
                         parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
@@ -3270,7 +3293,7 @@ sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", ME4502_MAJOR_VERSION, M
                                 cr = photons[y][x];
                             if (!((cr>>PS)>=NPART || !cr))
                             {
-                                c = sl = cr&TYPE;
+                                c = sl = parts[cr>>PS].type;
                             }
                             else
                             {
@@ -3300,6 +3323,7 @@ sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", ME4502_MAJOR_VERSION, M
                                 cb_vx[cby][cbx] = vx[cby][cbx];
                                 cb_vy[cby][cbx] = vy[cby][cbx];
                                 cb_pv[cby][cbx] = pv[cby][cbx];
+                                cb_hv[cby][cbx] = hv[cby][cbx];
                                 cb_bmap[cby][cbx] = bmap[cby][cbx];
                                 cb_emap[cby][cbx] = emap[cby][cbx];
                             }
@@ -3639,14 +3663,14 @@ if (!console_mode)
         //Setting an element for the stick man
         if (isplayer==0)
         {
-            if (ptypes[sr].falldown>0 || sr == PT_NEUT || sr == PT_PHOT)
+            if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT)
                 player[2] = sr;
             else
                 player[2] = PT_DUST;
         }
         if (isplayer2==0)
         {
-            if (ptypes[sr].falldown>0 || sr == PT_NEUT || sr == PT_PHOT)
+            if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT)
                 player2[2] = sr;
             else
                 player2[2] = PT_DUST;

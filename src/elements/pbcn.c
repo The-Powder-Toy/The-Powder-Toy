@@ -1,9 +1,22 @@
 #include <element.h>
 
-int update_PCLN(UPDATE_FUNC_ARGS) {
+int update_PBCN(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
+	if (!parts[i].tmp && pv[y/CELL][x/CELL]>4.0f)
+		parts[i].tmp = rand()%40+80;
+	if (parts[i].tmp)
+	{
+		float advection = 0.1f;
+		parts[i].vx += advection*vx[y/CELL][x/CELL];
+		parts[i].vy += advection*vy[y/CELL][x/CELL];
+		parts[i].tmp--;
+		if(!parts[i].tmp){
+			kill_part(i);
+			return 1;
+		}
+	}
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -11,14 +24,14 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (parts[r>>PS].type==PT_SPRK)
+				if ((r&TYPE)==PT_SPRK)
 				{
 					if (parts[r>>PS].ctype==PT_PSCN)
 						parts[i].life = 10;
 					else if (parts[r>>PS].ctype==PT_NSCN)
 						parts[i].life = 9;
 				}
-				if (parts[r>>PS].type==PT_PCLN)
+				if ((r&TYPE)==PT_PBCN)
 				{
 					if (parts[i].life==10&&parts[r>>PS].life<10&&parts[r>>PS].life>0)
 						parts[i].life = 9;
@@ -36,11 +49,11 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 						r = pmap[y+ry][x+rx];
 					if (!r || (r>>PS)>=NPART)
 						continue;
-					if (parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN &&
-				        parts[r>>PS].type!=PT_BCLN &&  parts[r>>PS].type!=PT_SPRK &&
-				        parts[r>>PS].type!=PT_NSCN && parts[r>>PS].type!=PT_PSCN &&
-				        parts[r>>PS].type!=PT_STKM && parts[r>>PS].type!=PT_STKM2 &&
-				        parts[r>>PS].type<PT_NUM)
+					if ((r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN &&
+				        (r&TYPE)!=PT_BCLN &&  (r&TYPE)!=PT_SPRK &&
+				        (r&TYPE)!=PT_NSCN && (r&TYPE)!=PT_PSCN &&
+				        (r&TYPE)!=PT_STKM && (r&TYPE)!=PT_STKM2 &&
+				        (r&TYPE)!=PT_PBCN && (r&TYPE)<PT_NUM)
 					parts[i].ctype = r&TYPE;
 				}
 	if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].life==10) {

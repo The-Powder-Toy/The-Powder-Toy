@@ -9,7 +9,7 @@ int update_YEST(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if ((r&TYPE)==PT_DYST && 1>(rand()%30) && !legacy_enable)
+				if (parts[r>>PS].type==PT_DYST && 1>(rand()%30) && !legacy_enable)
 				{
 					part_change_type(i,x,y,PT_DYST);
 				}

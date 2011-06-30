@@ -53,11 +53,13 @@
 
 #define GRAV_DIFF
 
+//#define OpenGL
+
 #define MAXSIGNS 16
 #define TAG_MAX 256
 
 #define PS 12 //the particle number shift that also determines element limit
-#define TYPE (int)pow(2,PS)-1 //where the type of the particle is stored in pmap
+#define TYPE 0xFFF//(int)pow(2,PS)-1 //where the type of the particle is stored in pmap
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
@@ -123,6 +125,13 @@ typedef unsigned int pixel;
 
 #ifdef WIN32
 #define strcasecmp stricmp
+#endif
+
+#if defined(WIN32) && !defined(__GNUC__)
+#define fmin min
+#define fminf min
+#define fmax max
+#define fmaxf max
 #endif
 
 #define SDEUT

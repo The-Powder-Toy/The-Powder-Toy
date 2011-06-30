@@ -9,7 +9,7 @@ int update_WTRV(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (((r&TYPE)==PT_RBDM||(r&TYPE)==PT_LRBD) && !legacy_enable && parts[i].temp>(273.15f+12.0f) && 1>(rand()%500))
+				if ((parts[r>>PS].type==PT_RBDM||parts[r>>PS].type==PT_LRBD) && !legacy_enable && parts[i].temp>(273.15f+12.0f) && 1>(rand()%500))
 				{
 					part_change_type(i,x,y,PT_FIRE);
 					parts[i].life = 4;

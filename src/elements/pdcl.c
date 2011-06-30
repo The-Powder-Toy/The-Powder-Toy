@@ -13,11 +13,11 @@ int update_PDCL(UPDATE_FUNC_ARGS) {
                         r = pmap[y+ry][x+rx];
                     if (!r || (r>>PS)>=NPART)
                         continue;
-                    if ((r&TYPE)!=PT_CLNE && (r&TYPE)!=PT_PCLN &&
-                    (r&TYPE)!=PT_BCLN && (r&TYPE)!=PT_STKM &&
-                    (r&TYPE)!=PT_STKM2 && (r&TYPE)!=PT_PDCL &&
-                    (r&TYPE)!=PT_GSCL && (r&TYPE)!=PT_LQCL && (r&TYPE)<PT_NUM)
-                        parts[i].ctype = (r&TYPE);
+                    if (parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN &&
+                    parts[r>>PS].type!=PT_BCLN && parts[r>>PS].type!=PT_STKM &&
+                    parts[r>>PS].type!=PT_STKM2 && parts[r>>PS].type!=PT_PDCL &&
+                    parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].type<PT_NUM)
+                        parts[i].ctype = parts[r>>PS].type;
                 }
 	}
 	else {
