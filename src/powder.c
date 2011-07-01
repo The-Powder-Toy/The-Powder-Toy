@@ -1684,8 +1684,15 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 				//heat transfer code
 				h_count = 0;
+#ifdef REALHEAT
+				if (t&&(t!=PT_HSWC||parts[i].life==10))
+				{
+					float c_Cm = 0.0f;
+#else
 				if (t&&(t!=PT_HSWC||parts[i].life==10)&&ptypes[t].hconduct>(rand()%250))
 				{
+					float c_Cm = 0.0f;
+#endif
 					if (aheat_enable)
 					{
 						c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
@@ -1705,12 +1712,24 @@ void update_particles_i(pixel *vid, int start, int inc)
 						        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
 						{
 							surround_hconduct[j] = r>>8;
+#ifdef REALHEAT
+							c_heat += parts[r>>8].temp*96.645/ptypes[rt].hconduct*fabs(ptypes[rt].weight);
+							c_Cm += 96.645/ptypes[rt].hconduct*fabs(ptypes[rt].weight);
+#else
 							c_heat += parts[r>>8].temp;
+#endif
 							h_count++;
 						}
 					}
-
+#ifdef REALHEAT
+					if (t == PT_PHOT)
+						pt = (c_heat+parts[i].temp*96.645)/(c_Cm+96.645);
+					else
+						pt = (c_heat+parts[i].temp*96.645/ptypes[t].hconduct*fabs(ptypes[t].weight))/(c_Cm+96.645/ptypes[t].hconduct*fabs(ptypes[t].weight));
+					
+#else
 					pt = parts[i].temp = (c_heat+parts[i].temp)/(h_count+1);
+#endif
 					for (j=0; j<8; j++)
 					{
 						parts[surround_hconduct[j]].temp = pt;

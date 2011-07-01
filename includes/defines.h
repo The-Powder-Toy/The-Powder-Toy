@@ -120,6 +120,7 @@ typedef unsigned int pixel;
 #endif
 
 #define SDEUT
+//#define REALHEAT
 
 typedef unsigned char uint8;
 
