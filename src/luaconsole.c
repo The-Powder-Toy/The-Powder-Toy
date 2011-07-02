@@ -455,6 +455,8 @@ int luatpt_set_property(lua_State* l)
 			r = pmap[y][i];
 			if (!r || (r>>8)>=NPART || (partsel && partsel != parts[r>>8].type))
 				r = photons[y][i];
+			if (!r || (r>>8)>=NPART || (partsel && partsel != parts[r>>8].type))
+				return 0;
 			i = r>>8;
 		}
 		if (i < 0 || i >= NPART)
@@ -483,6 +485,14 @@ int luatpt_get_property(lua_State* l)
 		r = pmap[y][i];
 		if (!r || (r>>8)>=NPART)
 			r = photons[y][i];
+		if (!r || (r>>8)>=NPART)
+		{
+			if (strcmp(prop,"type")==0){
+				lua_pushinteger(l, 0);
+				return 1;
+			}
+			return luaL_error(l, "Particle does not exist");
+		}
 		i = r>>8;
 	}
 	else if (y!=-1)
@@ -528,7 +538,11 @@ int luatpt_get_property(lua_State* l)
 			return 1;
 		}
 	}
-	return luaL_error(l, "Particle does not exist", i);
+	else if (strcmp(prop,"type")==0){
+		lua_pushinteger(l, 0);
+		return 1;
+	}
+	return luaL_error(l, "Particle does not exist");
 }
 
 int luatpt_drawpixel(lua_State* l)
