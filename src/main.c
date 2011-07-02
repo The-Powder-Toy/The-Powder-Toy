@@ -1462,6 +1462,7 @@ int main(int argc, char *argv[])
 	fire_bg = calloc(XRES*YRES, PIXELSIZE);
 	
 	prepare_alpha();
+	player[2] = player2[2] = PT_DUST;
 
 	sprintf(ppmfilename, "%s.ppm", argv[2]);
 	sprintf(ptifilename, "%s.pti", argv[2]);
