@@ -3790,6 +3790,7 @@ void draw_rgba_image(pixel *vid, unsigned char *data, int x, int y, float alpha)
 	unsigned char w, h;
 	int i, j;
 	unsigned char r, g, b, a;
+	if (!data) return;
 	w = *(data++)&0xFF;
 	h = *(data++)&0xFF;
 	for (j=0; j<h; j++)
@@ -3808,6 +3809,7 @@ void draw_rgba_image(pixel *vid, unsigned char *data, int x, int y, float alpha)
 void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a)
 {
 	int i, j, r, g, b;
+	if (!img) return;
 	for (j=0; j<h; j++)
 		for (i=0; i<w; i++)
 		{
