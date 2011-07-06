@@ -17,28 +17,6 @@ int update_PBCN(UPDATE_FUNC_ARGS) {
 			return 1;
 		}
 	}
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
-					continue;
-				if ((r&0xFF)==PT_SPRK)
-				{
-					if (parts[r>>8].ctype==PT_PSCN)
-						parts[i].life = 10;
-					else if (parts[r>>8].ctype==PT_NSCN)
-						parts[i].life = 9;
-				}
-				if ((r&0xFF)==PT_PBCN)
-				{
-					if (parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
-						parts[i].life = 9;
-					else if (parts[i].life==0&&parts[r>>8].life==10)
-						parts[i].life = 10;
-				}
-			}
 	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM)
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
@@ -56,6 +34,25 @@ int update_PBCN(UPDATE_FUNC_ARGS) {
 				        (r&0xFF)!=PT_PBCN && (r&0xFF)<PT_NUM)
 					parts[i].ctype = r&0xFF;
 				}
+	if (parts[i].life==10)
+	{
+		
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				{
+					r = pmap[y+ry][x+rx];
+					if ((r>>8)>=NPART || !r)
+						continue;
+					if ((r&0xFF)==PT_PBCN)
+					{
+						if (parts[r>>8].life<10&&parts[r>>8].life>0)
+							parts[i].life = 9;
+						else if (parts[r>>8].life==0)
+							parts[r>>8].life = 10;
+					}
+				}
+	}
 	if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].life==10) {
 		if (parts[i].ctype==PT_PHOT) {//create photons a different way
 			for (rx=-1; rx<2; rx++) {
