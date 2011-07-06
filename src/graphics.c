@@ -2377,7 +2377,7 @@ void draw_parts(pixel *vid)
 						cg = PIXG(ptypes[t].pcolors);
 						cb = PIXB(ptypes[t].pcolors);
 					}
-					if (parts[i].tmp)
+					if (parts[i].tmp>0 && parts[i].tmp<PT_NUM)
 					{
 						cr = PIXR(ptypes[parts[i].tmp].pcolors);
 						cg = PIXG(ptypes[parts[i].tmp].pcolors);

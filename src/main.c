@@ -2553,13 +2553,13 @@ int main(int argc, char *argv[])
 				if (DEBUG_MODE)
 				{
 					int tctype = parts[cr>>8].ctype;
-					if (tctype>=PT_NUM || tctype<0 || (cr&0xFF)==PT_PHOT)
-						tctype = 0;
 					if ((cr&0xFF)==PT_PIPE)
 					{
 						if (parts[cr>>8].tmp<PT_NUM) tctype = parts[cr>>8].tmp;
 						else tctype = 0;
 					}
+					if (tctype>=PT_NUM || tctype<0 || (cr&0xFF)==PT_PHOT)
+						tctype = 0;
 					sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&0xFF].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
 					sprintf(coordtext, "#%d, X:%d Y:%d", cr>>8, x/sdl_scale, y/sdl_scale);
 				} else {
