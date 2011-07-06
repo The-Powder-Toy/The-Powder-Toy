@@ -1496,7 +1496,8 @@ void draw_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, 
 	e = (dy<<2)-dx;
 	for (i=0; i<=dx; i++)
 	{
-		vid[x+y*a] =PIXRGB(r, g, b);
+		if (x>=0 && y>=0 && x<a && y<YRES+MENUSIZE)
+			vid[x+y*a] =PIXRGB(r, g, b);
 		if (e>=0)
 		{
 			if (check==1)
@@ -1701,7 +1702,7 @@ void draw_parts(pixel *vid)
 
 			if (cmode!=CM_HEAT)
 			{
-				if (t==PT_STKM) //Just draw head here
+				if (t==PT_STKM)
 				{
 					char buff[20];  //Buffer for HP
 					pixel pc;
@@ -1714,14 +1715,13 @@ void draw_parts(pixel *vid)
 
 					if ((int)player[2]<PT_NUM) pc = ptypes[(int)player[2]].pcolors;
 					else pc = PIXPACK(0xFFFFFF);
-					for (r=-2; r<=1; r++) //Here I use r variable not as I should, but I think you will excuse me :-p
-					{
-						s = XRES+BARSIZE;
-						vid[(ny-2)*s+nx+r] = pc;
-						vid[(ny+2)*s+nx+r+1] = pc;
-						vid[(ny+r+1)*s+nx-2] = pc;
-						vid[(ny+r)*s+nx+2] = pc;
-					}
+					s = XRES+BARSIZE;
+					//head
+					draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					draw_line(vid , nx-2, ny-2, nx+2, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					//legs
 					draw_line(vid , nx, ny+3, player[3], player[4], 255, 255, 255, s);
 					draw_line(vid , player[3], player[4], player[7], player[8], 255, 255, 255, s);
 					draw_line(vid , nx, ny+3, player[11], player[12], 255, 255, 255, s);
@@ -1729,7 +1729,7 @@ void draw_parts(pixel *vid)
 
 					isplayer = 1;  //It's a secret. Tssss...
 				}
-				else if (t==PT_STKM2) //Just draw head here
+				else if (t==PT_STKM2)
 				{
 					char buff[20];  //Buffer for HP
 					pixel pc;
@@ -1742,14 +1742,13 @@ void draw_parts(pixel *vid)
 
 					if ((int)player2[2]<PT_NUM) pc = ptypes[(int)player2[2]].pcolors;
 					else pc = PIXPACK(0xFFFFFF);
-					for (r=-2; r<=1; r++) //Here I use r variable not as I should, but I think you will excuse me :-p
-					{
-						s = XRES+BARSIZE;
-						vid[(ny-2)*s+nx+r] = pc;
-						vid[(ny+2)*s+nx+r+1] = pc;
-						vid[(ny+r+1)*s+nx-2] = pc;
-						vid[(ny+r)*s+nx+2] = pc;
-					}
+					s = XRES+BARSIZE;
+					//head
+					draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					draw_line(vid , nx-2, ny-2, nx+2, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					//legs
 					draw_line(vid , nx, ny+3, player2[3], player2[4], 100, 100, 255, s);
 					draw_line(vid , player2[3], player2[4], player2[7], player2[8], 100, 100, 255, s);
 					draw_line(vid , nx, ny+3, player2[11], player2[12], 100, 100, 255, s);
