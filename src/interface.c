@@ -3216,10 +3216,12 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	pixel *save_pic;// = malloc((XRES/2)*(YRES/2));
 	pixel *save_pic_thumb = NULL;
 	char *thumb_data = NULL;
+	char viewcountbuffer[11];
 	int thumb_data_size = 0;
 	ui_edit ed;
 	ui_copytext ctb;
 
+	viewcountbuffer[0] = 0;
 	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 
@@ -3364,6 +3366,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			if (status_2 == 200 || !info_data)
 			{
 				info_ready = info_parse(info_data, info);
+				sprintf(viewcountbuffer, "%d", info->downloadcount);
 				if (info_ready<=0) {
 					error_ui(vid_buf, 0, "Save info not found");
 					break;
@@ -3422,6 +3425,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			cix = drawtext(vid_buf, cix+4, (YRES/2)+72, info->author, 255, 255, 255, 255);
 			cix = drawtext(vid_buf, cix+4, (YRES/2)+72, "Date:", 255, 255, 255, 155);
 			cix = drawtext(vid_buf, cix+4, (YRES/2)+72, info->date, 255, 255, 255, 255);
+			if(info->downloadcount){
+				drawtext(vid_buf, 48+(XRES/2)-textwidth(viewcountbuffer)-textwidth("Views:")-4, (YRES/2)+72, "Views:", 255, 255, 255, 155);
+				drawtext(vid_buf, 48+(XRES/2)-textwidth(viewcountbuffer), (YRES/2)+72, viewcountbuffer, 255, 255, 255, 255);
+			}
 			drawtextwrap(vid_buf, 62, (YRES/2)+86, (XRES/2)-24, info->description, 255, 255, 255, 200);
 
 			//Draw the score bars
@@ -3505,7 +3512,11 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		//Fav Button
 		bc = svf_login?255:150;
 		drawrect(vid_buf, 100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
-		drawtext(vid_buf, 122, YRES+MENUSIZE-63, "Fav.", 255, 255, 255, bc);
+		if(info->myfav && svf_login){
+			drawtext(vid_buf, 122, YRES+MENUSIZE-63, "Unfav.", 255, 230, 230, bc);
+		} else {
+			drawtext(vid_buf, 122, YRES+MENUSIZE-63, "Fav.", 255, 255, 255, bc);
+		}
 		drawtext(vid_buf, 107, YRES+MENUSIZE-64, "\xCC", 255, 255, 255, bc);
 		//Report Button
 		bc = (svf_login && info_ready)?255:150;
@@ -3539,9 +3550,17 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			fillrect(vid_buf, 100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 40);
 			if (b && !bq) {
 				//Button Clicked
-				fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-				info_box(vid_buf, "Adding to favourites...");
-				execute_fav(vid_buf, save_id);
+				if(info->myfav){
+					fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+					info_box(vid_buf, "Removing from favourites...");
+					execute_unfav(vid_buf, save_id);
+					info->myfav = 0;
+				} else {
+					fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+					info_box(vid_buf, "Adding to favourites...");
+					execute_fav(vid_buf, save_id);
+					info->myfav = 1;
+				}
 			}
 		}
 		//Report Button
@@ -3780,6 +3799,11 @@ int info_parse(char *info_data, save_info *info)
 		else if (!strncmp(info_data, "MYVOTE ", 7))
 		{
 			info->myvote = atoi(info_data+7);
+			j++;
+		}
+		else if (!strncmp(info_data, "DOWNLOADS ", 10))
+		{
+			info->downloadcount = atoi(info_data+10);
 			j++;
 		}
 		else if (!strncmp(info_data, "MYFAV ", 6))
