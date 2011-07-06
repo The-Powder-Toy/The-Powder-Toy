@@ -440,8 +440,28 @@ void clipboard_push_text(char * text)
 
 char * clipboard_pull_text()
 {
+#ifdef MACOSX
+#elif defined WIN32
+	if (OpenClipboard(NULL))
+	{
+		HANDLE cbuffer;
+		char * glbuffer;
+
+		cbuffer = GetClipboardData(CF_TEXT);
+		glbuffer = (char*)GlobalLock(cbuffer);
+		GlobalUnlock(cbuffer);
+		CloseClipboard();
+		if(glbuffer!=NULL){
+			return mystrdup(glbuffer);
+		} else {
+			return "";
+		}
+	}
+#elif (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+#else
 	printf("Not implemented: get text from clipboard\n");
 	return "";
+#endif
 }
 
 int register_extension()
