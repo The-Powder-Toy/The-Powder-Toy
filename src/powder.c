@@ -1935,11 +1935,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 			//call the particle update function, if there is one
 			if (ptypes[t].update_func)
 			{
-				if ((*(ptypes[t].update_func))(i,x,y,surround_space))
+				if ((*(ptypes[t].update_func))(i,x,y,surround_space,nt))
 					continue;
 			}
 			if (legacy_enable)//if heat sim is off
-				update_legacy_all(i,x,y,surround_space);
+				update_legacy_all(i,x,y,surround_space,nt);
 
 killed:
 			if (parts[i].type == PT_NONE)//if its dead, skip to next particle

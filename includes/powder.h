@@ -242,9 +242,9 @@
 
 #define FLAG_STAGNANT	1
 
-#define UPDATE_FUNC_ARGS int i, int x, int y, int surround_space
+#define UPDATE_FUNC_ARGS int i, int x, int y, int surround_space, int nt
 // to call another update function with same arguments:
-#define UPDATE_FUNC_SUBCALL_ARGS i, x, y, surround_space
+#define UPDATE_FUNC_SUBCALL_ARGS i, x, y, surround_space, nt
 
 int update_ACID(UPDATE_FUNC_ARGS);
 int update_ANAR(UPDATE_FUNC_ARGS);

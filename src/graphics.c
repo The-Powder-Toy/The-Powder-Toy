@@ -2377,11 +2377,11 @@ void draw_parts(pixel *vid)
 						cg = PIXG(ptypes[t].pcolors);
 						cb = PIXB(ptypes[t].pcolors);
 					}
-					if (parts[i].tmp>0 && parts[i].tmp<PT_NUM)
+					if ((parts[i].tmp&0xFF)>0 && (parts[i].tmp&0xFF)<PT_NUM)
 					{
-						cr = PIXR(ptypes[parts[i].tmp].pcolors);
-						cg = PIXG(ptypes[parts[i].tmp].pcolors);
-						cb = PIXB(ptypes[parts[i].tmp].pcolors);
+						cr = PIXR(ptypes[parts[i].tmp&0xFF].pcolors);
+						cg = PIXG(ptypes[parts[i].tmp&0xFF].pcolors);
+						cb = PIXB(ptypes[parts[i].tmp&0xFF].pcolors);
 					}
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
