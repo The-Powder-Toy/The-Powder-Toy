@@ -3,6 +3,8 @@
 int update_PYRO(UPDATE_FUNC_ARGS)
 {
     int r, rx, ry, rt, t = parts[i].type;
+
+    //NOBLE GASES
     if (t==PT_PLSM&&parts[i].ctype == PT_NBLE&&parts[i].life <=1)
     {
         t = PT_NBLE;
@@ -39,6 +41,25 @@ int update_PYRO(UPDATE_FUNC_ARGS)
         part_change_type(i,x,y,t);
         parts[i].life = 0;
     }
+    //SHRAPNEL
+    if(t==PT_SHPN){
+        if (parts[i].life < 1){
+            if (rand()%2 == 1){
+                parts[i].type = PT_BRMT;
+                pv[y/CELL][x/CELL] += 2.25f;
+                parts[i].temp = 3000.0f+273.15f;
+            } else {
+                if (parts[i].tmp > 0){
+                    create_part(-1,x+1,y+1,PT_SHPN);
+                    parts[i].life = parts[i].tmp - 25;
+                } else {
+                    parts[i].type = PT_SING;
+                }
+            }
+        }
+    }
+
+    //OTHER
     if(t==PT_FIRE && parts[i].life <=1)
     {
         if (parts[i].tmp==3)
@@ -80,7 +101,7 @@ int update_PYRO(UPDATE_FUNC_ARGS)
                     continue;
                 rt = parts[r>>PS].type;
                 if ((surround_space || ptypes[rt].explosive) &&
-                        (t!=PT_SPRK || (rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL)) &&
+                        (t!=PT_SPRK || (rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_CSIM && rt!=PT_INSL)) &&
                         (t!=PT_PHOT || rt!=PT_INSL) &&
                         (rt!=PT_SPNG || parts[r>>PS].life==0) &&
                         ptypes[rt].flammable && (ptypes[rt].flammable + (int)(pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
@@ -142,7 +163,7 @@ int update_legacy_PYRO(UPDATE_FUNC_ARGS)
                 rt = r&TYPE;
                 lpv = (int)pv[(y+ry)/CELL][(x+rx)/CELL];
                 if (lpv < 1) lpv = 1;
-                if (t!=PT_SPRK && ptypes[rt].meltable  && ((rt!=PT_RBDM && rt!=PT_LRBD) || t!=PT_SPRK) && ((t!=PT_FIRE&&t!=PT_PLSM) || (rt!=PT_METL && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SALT && rt!=PT_INWR)) &&
+                if (t!=PT_SPRK && ptypes[rt].meltable  && ((rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_CSIM) || t!=PT_SPRK) && ((t!=PT_FIRE&&t!=PT_PLSM) || (rt!=PT_METL && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SALT && rt!=PT_INWR)) &&
                         ptypes[rt].meltable*lpv>(rand()%1000))
                 {
                     if (t!=PT_LAVA || parts[i].life>0)

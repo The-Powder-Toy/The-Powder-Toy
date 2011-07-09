@@ -1809,6 +1809,26 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx, ny, cr, cg, cb, 255);
                     }
                 }
+                if (cmode == CM_CLONE){
+                    if (t==PT_CLNE||t==PT_BCLN||t==PT_PCLN||t==PT_PBCN||t==PT_GSCL||t==PT_LQCL||t==PT_PDCL||t==PT_CNVR||t==PT_SVOI){
+                        if (parts[i].ctype){
+                            cr = PIXR(ptypes[parts[i].ctype].pcolors);
+                            cg = PIXG(ptypes[parts[i].ctype].pcolors);
+                            cb = PIXB(ptypes[parts[i].ctype].pcolors);
+                            blendpixel(vid, nx, ny, cr, cg, cb, 255);
+                        } else {
+                            cr = PIXR(ptypes[t].pcolors);
+                            cg = PIXG(ptypes[t].pcolors);
+                            cb = PIXB(ptypes[t].pcolors);
+                            blendpixel(vid, nx, ny, cr, cg, cb, 255);
+                        }
+                    } else {
+                        cr = PIXR(ptypes[t].pcolors);
+                        cg = PIXG(ptypes[t].pcolors);
+                        cb = PIXB(ptypes[t].pcolors);
+                        blendpixel(vid, nx, ny, cr, cg, cb, 255);
+                    }
+                }
                 else if (cmode==CM_GRAD)
                 {
                     float frequency = 0.05;
@@ -1845,6 +1865,29 @@ void draw_parts(pixel *vid)
                     if (ptypes[parts[i].type].properties&TYPE_LIQUID) //special effects for liquids in fancy mode
                     {
                         if (parts[i].type==PT_DEUT)
+                        {
+                            cr = PIXR(ptypes[t].pcolors) + parts[i].life*1;
+                            cg = PIXG(ptypes[t].pcolors) + parts[i].life*2;
+                            cb = PIXB(ptypes[t].pcolors) + parts[i].life*4;
+                            if (cr>=255)
+                                cr = 255;
+                            if (cg>=255)
+                                cg = 255;
+                            if (cb>=255)
+                                cb = 255;
+                            blendpixel(vid, nx, ny, cr, cg, cb, 255);
+                            for (x=-1; x<=1; x++)
+                            {
+                                for (y=-1; y<=1; y++)
+                                {
+                                    if ((abs(x) == 0) && (abs(y) == 0))
+                                        blendpixel(vid,x+nx,y+ny,cr,cg,cb,100);
+                                    else if (abs(y) != 0 || abs(x) != 0)
+                                        blendpixel(vid,x+nx,y+ny,cr,cg,cb,50);
+                                }
+                            }
+                        }
+                         if (parts[i].type==PT_GEL)
                         {
                             cr = PIXR(ptypes[t].pcolors) + parts[i].life*1;
                             cg = PIXG(ptypes[t].pcolors) + parts[i].life*2;
@@ -2213,6 +2256,42 @@ void draw_parts(pixel *vid)
                 {
 
                     if (parts[i].life>=700&&(cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY || cmode==CM_AWESOME || cmode==CM_PREAWE))
+                    {
+                        x = nx/CELL;
+                        y = ny/CELL;
+                        cr = 20;
+                        cg = 20;
+                        cb = 20;
+                        cg += fire_g[y][x];
+                        if (cg > 255) cg = 255;
+                        fire_g[y][x] = cg;
+                        cb += fire_b[y][x];
+                        if (cb > 255) cb = 255;
+                        fire_b[y][x] = cb;
+                        cr += fire_r[y][x];
+                        if (cr > 255) cr = 255;
+                        fire_r[y][x] = cr;
+                    }
+                    else
+                    {
+                        cr = PIXR(ptypes[t].pcolors) + parts[i].life*1;
+                        cg = PIXG(ptypes[t].pcolors) + parts[i].life*2;
+                        cb = PIXB(ptypes[t].pcolors) + parts[i].life*4;
+                        if (cr>=255)
+                            cr = 255;
+                        if (cg>=255)
+                            cg = 255;
+                        if (cb>=255)
+                            cb = 255;
+                        blendpixel(vid, nx, ny, cr, cg, cb, 255);
+
+                    }
+
+                }
+                else if (t==PT_GEL)
+                {
+
+                    if (parts[i].life>=256&&(cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY || cmode==CM_AWESOME || cmode==CM_PREAWE))
                     {
                         x = nx/CELL;
                         y = ny/CELL;
@@ -3383,6 +3462,28 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny-1, 10, 10, GR, 112);
                         blendpixel(vid, nx+1, ny+1, 10, 10, GR, 112);
                         blendpixel(vid, nx-1, ny+1, 10, 10, GR, 112);
+                    }
+                }
+                else if (t==PT_CPCT)
+                {
+                    uint8 GR = ((parts[i].life+500)/10);
+                    if (parts[i].tmp < 10 && GR/10 > 0){
+                        GR = GR/2;
+                    }
+                    if (GR > 255)
+                        GR = 255;
+                    vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(GR, GR, GR);
+                    if (cmode == CM_BLOB)
+                    {
+                        blendpixel(vid, nx+1, ny, GR, GR, GR, 223);
+                        blendpixel(vid, nx-1, ny, GR, GR, GR, 223);
+                        blendpixel(vid, nx, ny+1, GR, GR, GR, 223);
+                        blendpixel(vid, nx, ny-1, GR, GR, GR, 223);
+
+                        blendpixel(vid, nx+1, ny-1, GR, GR, GR, 112);
+                        blendpixel(vid, nx-1, ny-1, GR, GR, GR, 112);
+                        blendpixel(vid, nx+1, ny+1, GR, GR, GR, 112);
+                        blendpixel(vid, nx-1, ny+1, GR, GR, GR, 112);
                     }
                 }
                 else if (t==PT_GPMP)

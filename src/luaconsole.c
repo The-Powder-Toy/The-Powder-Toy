@@ -438,6 +438,21 @@ int luatpt_set_property(lua_State* l)
         offset = offsetof(particle, y);
         format = 2;
     }
+    else if (strcmp(prop,"r")==0)
+    {
+        offset = offsetof(particle, r);
+        format = 2;
+    }
+    else if (strcmp(prop,"g")==0)
+    {
+        offset = offsetof(particle, g);
+        format = 2;
+    }
+    else if (strcmp(prop,"b")==0)
+    {
+        offset = offsetof(particle, b);
+        format = 2;
+    }
     else
     {
         return luaL_error(l, "Invalid property '%s'", prop);

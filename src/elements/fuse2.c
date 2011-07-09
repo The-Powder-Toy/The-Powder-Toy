@@ -3,14 +3,14 @@
 int update_FUSE2(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
 	if (parts[i].life<=0) {
-		r = create_part(i, x, y, PT_PLSM);
+		r = create_part(i, x, y, PT_BFLM);
 		if (r!=-1)
 			parts[r].life = 50;
 		return 1;
 	} else if (parts[i].life < 40) {
 		parts[i].life--;
 		if ((rand()%100)==0) {
-			r = create_part(-1, (rx=x+rand()%3-1), (ry=y+rand()%3-1), PT_PLSM);
+			r = create_part(-1, (rx=x+rand()%3-1), (ry=y+rand()%3-1), PT_BFLM);
 			if (r!=-1)
 				parts[r].life = 50;
 		}
@@ -30,7 +30,7 @@ int update_FUSE2(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				if (parts[r>>PS].type==PT_SPRK || ((parts[i].temp>=(273.15+700.0f)) && 1>(rand()%20)))
+				if (parts[r>>PS].type==PT_SPRK || ((parts[i].temp>=(273.15+15000.0f)) && 1>(rand()%20)))
 				{
 					if (parts[i].life>40) {
 						parts[i].life = 39;

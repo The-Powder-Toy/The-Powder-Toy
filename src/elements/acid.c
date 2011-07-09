@@ -11,7 +11,7 @@ int update_ACID(UPDATE_FUNC_ARGS) {
 					continue;
 				if (parts[r>>PS].type!=PT_ACID)
 				{
-					if (parts[r>>PS].type==PT_PLEX || parts[r>>PS].type==PT_NITR || parts[r>>PS].type==PT_GUNP || parts[r>>PS].type==PT_RBDM || parts[r>>PS].type==PT_LRBD)
+					if (parts[r>>PS].type==PT_PLEX || parts[r>>PS].type==PT_NITR || parts[r>>PS].type==PT_GUNP || parts[r>>PS].type==PT_RBDM || parts[r>>PS].type==PT_CSIM || parts[r>>PS].type==PT_LRBD)
 					{
 						part_change_type(i,x,y,PT_FIRE);
 						part_change_type(r>>PS,x+rx,y+ry,PT_FIRE);

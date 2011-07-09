@@ -2,6 +2,7 @@
 
 int update_MISC(UPDATE_FUNC_ARGS)
 {
+    int r,rx,ry;
     int t = parts[i].type;
     if (t==PT_LOVE)
         ISLOVE=1;

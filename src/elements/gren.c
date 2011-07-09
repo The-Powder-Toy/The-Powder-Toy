@@ -12,11 +12,10 @@ int update_GREN(UPDATE_FUNC_ARGS) {
                 if (parts[r>>PS].type==PT_BFLM){
                     int temporaro = 1000;
                     while (temporaro > -1001){
-                        create_part(-1,x+1,y+1,PT_BRMT);
-                        create_part(-1,x-1,y-1,PT_IFIL);
-                        create_part(-1,x-1,y+1,PT_BRMT);
-                        create_part(-1,x+1,y-1,PT_IFIL);
-                        create_part(-1,x,y,PT_BMTL);
+                        create_part(-1,x+1,y+1,PT_SHPN);
+                        create_part(-1,x-1,y-1,PT_SHPN);
+                        create_part(-1,x-1,y+1,PT_SHPN);
+                        create_part(-1,x+1,y-1,PT_SHPN);
                         temporaro--;
                     }
                     pv[y/CELL][x/CELL] += 10.0f;
@@ -33,11 +32,10 @@ int update_GREN(UPDATE_FUNC_ARGS) {
                 if (parts[r>>PS].type==PT_SPRK || parts[r>>PS].type==PT_FIRE || parts[r>>PS].type==PT_PLSM){
                     int temporaro = 1000;
                     while (temporaro > -1001){
-                        create_part(-1,x+1,y+1,PT_BRMT);
-                        create_part(-1,x-1,y-1,PT_IFIL);
-                        create_part(-1,x-1,y+1,PT_BRMT);
-                        create_part(-1,x+1,y-1,PT_IFIL);
-                        create_part(-1,x,y,PT_BMTL);
+                        create_part(-1,x+1,y+1,PT_SHPN);
+                        create_part(-1,x-1,y-1,PT_SHPN);
+                        create_part(-1,x-1,y+1,PT_SHPN);
+                        create_part(-1,x+1,y-1,PT_SHPN);
                         temporaro--;
                     }
                     pv[y/CELL][x/CELL] += 2.0f;

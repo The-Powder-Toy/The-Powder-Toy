@@ -310,7 +310,7 @@ int try_move(int i, int x, int y, int nx, int ny)
     }
     //else e=1 , we are trying to swap the particles, return 0 no swap/move, 1 is still overlap/move, because the swap takes place later
 
-    if (parts[r>>PS].type==PT_VOID) //this is where void eats particles
+    if ((r&TYPE)==PT_VOID) //this is where void eats particles
     {
         if (parts[i].type == PT_STKM)
         {
@@ -325,7 +325,7 @@ int try_move(int i, int x, int y, int nx, int ny)
         parts[i].type=PT_NONE;
         return 0;
     }
-    if (parts[r>>PS].type==PT_BHOL || parts[r>>PS].type==PT_NBHL) //this is where blackhole eats particles
+    if ((r&TYPE)==PT_BHOL || (r&TYPE)==PT_NBHL) //this is where blackhole eats particles
     {
         if (parts[i].type == PT_STKM)
         {
@@ -763,6 +763,34 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
         }
         return -1;
     }
+    if (t==PT_ADAN)
+    {
+        pv[y/CELL][x/CELL] -= 100.03f;
+        if (y+CELL<YRES)
+            pv[y/CELL+1][x/CELL] -= 100.03f;
+        if (x+CELL<XRES)
+        {
+            pv[y/CELL][x/CELL+1] -= 100.03f;
+            if (y+CELL<YRES)
+                pv[y/CELL+1][x/CELL+1] -= 100.03f;
+        }
+        if (t==PT_ADAN&&parts[pmap[y][x]>>PS].temp<MAX_TEMP)
+        {
+            if ((pmap[y][x]&TYPE)==PT_PUMP)
+            {
+                parts[pmap[y][x]>>PS].temp = restrict_flt(parts[pmap[y][x]>>PS].temp - 100.1f, MIN_TEMP, MAX_TEMP);
+            }
+            else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)))
+            {
+                parts[pmap[y][x]>>PS].temp = restrict_flt(parts[pmap[y][x]>>PS].temp - 5000.0f, MIN_TEMP, MAX_TEMP);
+            }
+            else
+            {
+                parts[pmap[y][x]>>PS].temp = restrict_flt(parts[pmap[y][x]>>PS].temp - 400.0f, MIN_TEMP, MAX_TEMP);
+            }
+        }
+        return -1;
+    }
     if (t==SPC_VACUUM)
     {
         pv[y/CELL][x/CELL] -= 0.03f;
@@ -886,10 +914,15 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
     {
         parts[i].life = 75;
     }
+    if (t==PT_SHPN)
+    {
+        parts[i].life = 25;
+        parts[i].tmp = 25;
+    }
     if (t==PT_CPPA)
     {
         parts[i].tmp = rand()%PT_NUM+1;
-        if (parts[i].tmp == PT_NONE || parts[i].tmp == PT_VIRS || parts[i].tmp == PT_STKM || parts[i].tmp == PT_STKM2 || parts[i].tmp == PT_CPPA || parts[i].tmp == PT_PLAN)
+        if (parts[i].tmp == PT_NONE || parts[i].tmp == PT_VIRS || parts[i].tmp == PT_STKM || parts[i].tmp == PT_STKM2 || parts[i].tmp == PT_CPPA || parts[i].tmp == PT_PLAN || parts[i].tmp == PT_NUM || parts[i].tmp > PT_NUM)
         {
             parts[i].tmp = 1;
         }
@@ -2653,7 +2686,7 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
                 else
                     pmap[y][x] = t|(i<<PS);
             }
-            //NUM_PARTS ++;
+            NUM_PARTS ++;
         }
         else
         {

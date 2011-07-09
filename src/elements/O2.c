@@ -22,7 +22,11 @@ int update_O2(UPDATE_FUNC_ARGS)
 					parts[i].temp+=(rand()/(RAND_MAX/100));
 					parts[i].tmp |= 2;
 				}
-
+				if ((parts[r>>PS].type==PT_CSIM) && !legacy_enable && parts[i].temp>(273.15f+12.0f) && 1>(rand()%500))
+				{
+					part_change_type(i,x,y,PT_FIRE);
+					parts[i].life = 4;
+				}
 			}
 	return 0;
 }

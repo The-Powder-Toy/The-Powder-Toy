@@ -128,7 +128,6 @@ void get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
         }
         *w = textwidth(buff) + 5;
     }
-
     //Ususal width
     if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && strcmp(signs[i].text, "{type}") && strcmp(signs[i].text, "{ctype}") && strcmp(signs[i].text, "{life}") && strcmp(signs[i].text, "{G}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
         *w = textwidth(signs[i].text) + 5;
@@ -183,7 +182,7 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
 
     ed.x = x0+25;
     ed.y = y0+25;
-    ed.w = 158;
+    ed.w = 158;//158
     ed.nx = 1;
     ed.def = "[message]";
     ed.focus = 1;
@@ -789,6 +788,9 @@ void draw_svf_ui(pixel *vid_buf, int alternate)// all the buttons at the bottom
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x9C", 255, 255, 64, 255);
         break;
     case CM_BLOB:
+        drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBF", 55, 255, 55, 255);
+        break;
+    case CM_CLONE:
         drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBF", 55, 255, 55, 255);
         break;
     case CM_HEAT:
@@ -2368,6 +2370,10 @@ void set_cmode(int cm) // sets to given view mode
     else if (cmode==CM_PREAWE)
     {
         strcpy(itc_msg, "Awesome Pressure Display");
+    }
+    else if (cmode==CM_CLONE)
+    {
+        strcpy(itc_msg, "Clone Display");
     }
     else if (cmode==CM_LIFE)
     {
