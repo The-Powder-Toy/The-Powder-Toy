@@ -709,7 +709,31 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 	pixel gc;
 	if (x > XRES-26 || x < 0)
 		return 26;
-	if (b>=UI_WALLSTART)
+	if ((b&0xFF) == PT_LIFE)
+	{
+#ifdef OpenGL
+		fillrect(vid_buf, x, y, 28, 16, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+#else
+		for (j=1; j<15; j++)
+		{
+			for (i=1; i<27; i++)
+			{
+				vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
+			}
+		}
+#endif
+		c = PIXB(pc) + 3*PIXG(pc) + 2*PIXR(pc);
+		if (c<544)
+		{
+			c = 255;
+		}
+		else
+		{
+			c = 0;
+		}
+		drawtext(vid_buf, x+14-textwidth((char *)gmenu[(b>>8)&0xFF].name)/2, y+4, (char *)gmenu[(b>>8)&0xFF].name, c, c, c, 255);
+	}
+	else if (b>=UI_WALLSTART)
 	{
 		int ds = 0;
 		if (b-UI_WALLSTART>=0 && b-UI_WALLSTART<UI_WALLCOUNT)
@@ -2042,48 +2066,52 @@ void draw_parts(pixel *vid)
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
 				}
-				else if (t==PT_LOTE)//colors for life states
-				{
-					if (parts[i].tmp==2)
-						blendpixel(vid, nx, ny, 255, 128, 0, 255);
-					else if (parts[i].tmp==1)
-						blendpixel(vid, nx, ny, 255, 255, 0, 255);
-					else
-						blendpixel(vid, nx, ny, 255, 0, 0, 255);
-				}
-				else if (t==PT_FRG2)//colors for life states
-				{
-					if (parts[i].tmp==2)
-						blendpixel(vid, nx, ny, 0, 100, 50, 255);
-					else
-						blendpixel(vid, nx, ny, 0, 255, 90, 255);
-				}
-				else if (t==PT_STAR)//colors for life states
-				{
-					if (parts[i].tmp==4)
-						blendpixel(vid, nx, ny, 0, 0, 128, 255);
-					else if (parts[i].tmp==3)
-						blendpixel(vid, nx, ny, 0, 0, 150, 255);
-					else if (parts[i].tmp==2)
-						blendpixel(vid, nx, ny, 0, 0, 190, 255);
-					else if (parts[i].tmp==1)
-						blendpixel(vid, nx, ny, 0, 0, 230, 255);
-					else
-						blendpixel(vid, nx, ny, 0, 0, 70, 255);
-				}
-				else if (t==PT_FROG)//colors for life states
-				{
-					if (parts[i].tmp==2)
-						blendpixel(vid, nx, ny, 0, 100, 0, 255);
-					else
-						blendpixel(vid, nx, ny, 0, 255, 0, 255);
-				}
-				else if (t==PT_BRAN)//colors for life states
-				{
-					if (parts[i].tmp==1)
-						blendpixel(vid, nx, ny, 150, 150, 0, 255);
-					else
-						blendpixel(vid, nx, ny, 255, 255, 0, 255);
+				if(t==PT_LIFE && parts[i].ctype < NGOLALT){
+					if (parts[i].ctype==NGT_LOTE)//colors for life states
+					{
+						if (parts[i].tmp==2)
+							blendpixel(vid, nx, ny, 255, 128, 0, 255);
+						else if (parts[i].tmp==1)
+							blendpixel(vid, nx, ny, 255, 255, 0, 255);
+						else
+							blendpixel(vid, nx, ny, 255, 0, 0, 255);
+					}
+					else if (parts[i].ctype==NGT_FRG2)//colors for life states
+					{
+						if (parts[i].tmp==2)
+							blendpixel(vid, nx, ny, 0, 100, 50, 255);
+						else
+							blendpixel(vid, nx, ny, 0, 255, 90, 255);
+					}
+					else if (parts[i].ctype==NGT_STAR)//colors for life states
+					{
+						if (parts[i].tmp==4)
+							blendpixel(vid, nx, ny, 0, 0, 128, 255);
+						else if (parts[i].tmp==3)
+							blendpixel(vid, nx, ny, 0, 0, 150, 255);
+						else if (parts[i].tmp==2)
+							blendpixel(vid, nx, ny, 0, 0, 190, 255);
+						else if (parts[i].tmp==1)
+							blendpixel(vid, nx, ny, 0, 0, 230, 255);
+						else
+							blendpixel(vid, nx, ny, 0, 0, 70, 255);
+					}
+					else if (parts[i].ctype==NGT_FROG)//colors for life states
+					{
+						if (parts[i].tmp==2)
+							blendpixel(vid, nx, ny, 0, 100, 0, 255);
+						else
+							blendpixel(vid, nx, ny, 0, 255, 0, 255);
+					}
+					else if (parts[i].ctype==NGT_BRAN)//colors for life states
+					{
+						if (parts[i].tmp==1)
+							blendpixel(vid, nx, ny, 150, 150, 0, 255);
+						else
+							blendpixel(vid, nx, ny, 255, 255, 0, 255);
+					} else {
+						blendpixel(vid, nx, ny, PIXR(gmenu[parts[i].ctype].colour), PIXG(gmenu[parts[i].ctype].colour), PIXB(gmenu[parts[i].ctype].colour), 255);
+					}
 				}
 				else if (t==PT_DEUT)
 				{

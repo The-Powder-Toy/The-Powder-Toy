@@ -636,11 +636,14 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
 #if defined(WIN32) && !defined(__GNUC__)
 _inline int create_part(int p, int x, int y, int t)
 #else
-inline int create_part(int p, int x, int y, int t)//the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
+inline int create_part(int p, int x, int y, int tv)//the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
 #endif
 {
 	int i;
 
+	int t = tv & 0xFF;
+	int v = (tv >> 8) & 0xFF;
+	
 	if (x<0 || y<0 || x>=XRES || y>=YRES || ((t<0 || t>=PT_NUM)&&t!=SPC_HEAT&&t!=SPC_COOL&&t!=SPC_AIR&&t!=SPC_VACUUM))
 		return -1;
 	if (t==OLD_PT_WIND)
@@ -822,12 +825,18 @@ inline int create_part(int p, int x, int y, int t)//the function for creating a 
 		parts[i].life = 50;
 		parts[i].tmp = 50;
 	}
-	if (ptypes[t].properties&PROP_LIFE) {
+	/*if (ptypes[t].properties&PROP_LIFE) {
 		int r;
 		for (r = 0; r<NGOL; r++)
 			if (t==goltype[r])
 				parts[i].tmp = grule[r+1][9] - 1;
+	}*/
+	if (t==PT_LIFE)
+	{
+		parts[i].tmp = grule[v+1][9] - 1;
+		parts[i].ctype = v;
 	}
+	
 	if (t==PT_DEUT)
 		parts[i].life = 10;
 	if (t==PT_MERC)
@@ -1458,7 +1467,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 		int createdsomething = 0;
 		CGOL=0;
 		ISGOL=0;
-		for (nx=CELL; nx<XRES-CELL; nx++)//go through every particle and set neighbor map
+		for (nx=CELL; nx<XRES-CELL; nx++)
+		{//go through every particle and set neighbor map
 			for (ny=CELL; ny<YRES-CELL; ny++)
 			{
 				r = pmap[ny][nx];
@@ -1468,41 +1478,50 @@ void update_particles_i(pixel *vid, int start, int inc)
 					continue;
 				}
 				else
-					for ( golnum=1; golnum<=NGOL; golnum++)
-						if (parts[r>>8].type==goltype[golnum-1])
+				{
+					//for ( golnum=1; golnum<=NGOL; golnum++) //This shouldn't be necessary any more.
+					//{
+						if (parts[r>>8].type==PT_LIFE/* && parts[r>>8].ctype==golnum-1*/)
 						{
+							golnum = parts[r>>8].ctype+1;
 							if (parts[r>>8].tmp == grule[golnum][9]-1) {
 								gol[nx][ny] = golnum;
 								for ( nnx=-1; nnx<2; nnx++)
+								{
 									for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
 									{
 										rt = pmap[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL];
-										if (!rt || ptypes[rt&0xFF].properties&PROP_LIFE)
+										if (!rt || (rt&0xFF)==PT_LIFE)
 										{
 											gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][golnum] ++;
 											gol2[((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][0] ++;
 										}
 									}
+								}
 							} else {
 								parts[r>>8].tmp --;
 								if (parts[r>>8].tmp<=0)
 									parts[r>>8].type = PT_NONE;//using kill_part makes it not work
 							}
 						}
+					//}
+				}
 			}
-		for (nx=CELL; nx<XRES-CELL; nx++)//go through every particle again, but check neighbor map, then update particles
+		}
+		for (nx=CELL; nx<XRES-CELL; nx++)
+		{ //go through every particle again, but check neighbor map, then update particles
 			for (ny=CELL; ny<YRES-CELL; ny++)
 			{
 				r = pmap[ny][nx];
 				neighbors = gol2[nx][ny][0];
-				if (neighbors==0 || !(ptypes[r&0xFF].properties&PROP_LIFE || !(r&0xFF)) || (r>>8)>=NPART)
+				if (neighbors==0 || !((r&0xFF)==PT_LIFE || !(r&0xFF)) || (r>>8)>=NPART)
 					continue;
 				for ( golnum = 1; golnum<=NGOL; golnum++)
 				{
 					goldelete = neighbors;
 					if (gol[nx][ny]==0&&grule[golnum][goldelete]>=2&&gol2[nx][ny][golnum]>=(goldelete%2)+goldelete/2)
 					{
-						if (create_part(-1,nx,ny,goltype[golnum-1]))
+						if (create_part(-1, nx, ny, PT_LIFE|((golnum-1)<<8)))
 							createdsomething = 1;
 					}
 					else if (gol[nx][ny]==golnum&&(grule[golnum][goldelete-1]==0||grule[golnum][goldelete-1]==2))//subtract 1 because it counted itself
@@ -1516,6 +1535,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				for ( z = 0; z<=NGOL; z++)
 					gol2[nx][ny][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
 			}
+		}
 		if (createdsomething)
 			GENERATION ++;
 		//memset(gol2, 0, sizeof(gol2));
@@ -1839,7 +1859,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				}
 			}
 
-			if (ptypes[t].properties&PROP_LIFE)
+			if (t==PT_LIFE)
 			{
 				parts[i].temp = restrict_flt(parts[i].temp-50.0f, MIN_TEMP, MAX_TEMP);
 				ISGOL=1;//means there is a life particle on screen
