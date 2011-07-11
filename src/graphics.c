@@ -2066,7 +2066,7 @@ void draw_parts(pixel *vid)
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
 				}
-				if(t==PT_LIFE && parts[i].ctype < NGOLALT){
+				else if (t==PT_LIFE && parts[i].ctype < NGOLALT) {
 					if (parts[i].ctype==NGT_LOTE)//colors for life states
 					{
 						if (parts[i].tmp==2)
