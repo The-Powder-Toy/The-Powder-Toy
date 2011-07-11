@@ -5063,9 +5063,9 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			if (lb && lm) //lm is box/line tool
 			{
 				if (lm == 1)//line
-					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb, b);
+					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb, lb);
 				else//box
-					box_decorations(lx, ly, mx, my, cr, cg, cb, b);
+					box_decorations(lx, ly, mx, my, cr, cg, cb, lb);
 				lm = 0;
 			}
 			lb = 0;
