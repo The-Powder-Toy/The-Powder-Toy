@@ -563,7 +563,7 @@ static part_transition ptransitions[PT_NUM] =
 	/* GUN  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			673.0f,	PT_FIRE},
 	/* NITR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			673.0f,	PT_FIRE},
 	/* CLNE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GAS  */ {-6.0f,	PT_OIL,		6.0f,	PT_OIL,		ITL,	NT,			573.0f,	PT_FIRE},
+	/* GAS  */ {IPL,	NT,		6.0f,	PT_OIL,		ITL,	NT,			573.0f,	PT_FIRE},
 	/* C-4  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			673.0f,	PT_FIRE},
 	/* GOO  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* ICE  */ {IPL,	NT,			0.8f,	PT_SNOW,	ITL,	NT,			233.0f,	ST},
