@@ -1561,7 +1561,7 @@ int main(int argc, char *argv[])
 	int vs = 0;
 #endif
 	int wavelength_gfx = 0;
-	int x, y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
+	int x, y, line_x, line_y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
 	int da = 0, dae = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2;
 	float nfvx, nfvy;
 	int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
@@ -3024,11 +3024,23 @@ int main(int argc, char *argv[])
 				{
 					if (lm == 1)//line tool
 					{
-						xor_line(lx, ly, x, y, vid_buf);
+						if (sdl_mod & KMOD_ALT)
+						{
+							float snap_angle = floor(atan2(y-ly, x-lx)/(M_PI*0.25)+0.5)*M_PI*0.25;
+							float line_mag = sqrtf(pow(x-lx,2)+pow(y-ly,2));
+							line_x = (int)(line_mag*cos(snap_angle)+lx+0.5f);
+							line_y = (int)(line_mag*sin(snap_angle)+ly+0.5f);
+						}
+						else
+						{
+							line_x = x;
+							line_y = y;
+						}
+						xor_line(lx, ly, line_x, line_y, vid_buf);
 						if (c==WL_FAN+100 && lx>=0 && ly>=0 && lx<XRES && ly<YRES && bmap[ly/CELL][lx/CELL]==WL_FAN)
 						{
-							nfvx = (x-lx)*0.005f;
-							nfvy = (y-ly)*0.005f;
+							nfvx = (line_x-lx)*0.005f;
+							nfvy = (line_y-ly)*0.005f;
 							flood_parts(lx, ly, WL_FANHELPER, -1, WL_FAN);
 							for (j=0; j<YRES/CELL; j++)
 								for (i=0; i<XRES/CELL; i++)
@@ -3045,8 +3057,8 @@ int main(int argc, char *argv[])
 								for (i=-bsx; i<=bsx; i++)
 									if (lx+i>=0 && ly+j>=0 && lx+i<XRES && ly+j<YRES && ((CURRENT_BRUSH==CIRCLE_BRUSH && pow(i,2)*pow(bsy,2)+pow(j,2)*pow(bsx,2)<=pow(bsx,2)*pow(bsy,2))||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=bsy*bsx)))
 									{
-										vx[(ly+j)/CELL][(lx+i)/CELL] += (x-lx)*0.002f;
-										vy[(ly+j)/CELL][(lx+i)/CELL] += (y-ly)*0.002f;
+										vx[(ly+j)/CELL][(lx+i)/CELL] += (line_x-lx)*0.002f;
+										vy[(ly+j)/CELL][(lx+i)/CELL] += (line_y-ly)*0.002f;
 									}
 						}
 					}
@@ -3080,7 +3092,7 @@ int main(int argc, char *argv[])
 				else //it is the first click
 				{
 					//start line tool
-					if ((sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)) && !(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL|KMOD_LALT)))
+					if ((sdl_mod & (KMOD_SHIFT)) && !(sdl_mod & (KMOD_CTRL)))
 					{
 						lx = x;
 						ly = y;
@@ -3088,7 +3100,7 @@ int main(int argc, char *argv[])
 						lm = 1;//line
 					}
 					//start box tool
-					else if ((sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)) && !(sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)))
+					else if ((sdl_mod & (KMOD_CTRL)) && !(sdl_mod & (KMOD_SHIFT|KMOD_ALT)))
 					{
 						lx = x;
 						ly = y;
@@ -3096,7 +3108,7 @@ int main(int argc, char *argv[])
 						lm = 2;//box
 					}
 					//flood fill
-					else if ((sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)) && (sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)) && !(sdl_mod & (KMOD_LALT)))
+					else if ((sdl_mod & (KMOD_CTRL)) && (sdl_mod & (KMOD_SHIFT)) && !(sdl_mod & (KMOD_ALT)))
 					{
 						if (sdl_mod & (KMOD_CAPS))
 							c = 0;
@@ -3110,7 +3122,7 @@ int main(int argc, char *argv[])
 						lm = 0;
 					}
 					//sample
-					else if (((sdl_mod & (KMOD_LALT|KMOD_RALT)) && !(sdl_mod & (KMOD_SHIFT))) || b==SDL_BUTTON_MIDDLE)
+					else if (((sdl_mod & (KMOD_ALT)) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL))) || b==SDL_BUTTON_MIDDLE)
 					{
 						if (y>=0 && y<YRES && x>=0 && x<XRES)
 						{
@@ -3169,12 +3181,14 @@ int main(int argc, char *argv[])
 			{
 				x /= sdl_scale;
 				y /= sdl_scale;
+				line_x /= sdl_scale;
+				line_y /= sdl_scale;
 				c = (lb&1) ? sl : sr;
 				su = c;
 				if (lm == 1)//line
 				{
 					if (c!=WL_FAN+100 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=WL_FAN)
-						create_line(lx, ly, x, y, bsx, bsy, c);
+						create_line(lx, ly, line_x, line_y, bsx, bsy, c);
 				}
 				else//box
 					create_box(lx, ly, x, y, c);
