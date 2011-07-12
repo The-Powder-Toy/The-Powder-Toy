@@ -22,6 +22,11 @@ int update_ACID(UPDATE_FUNC_ARGS) {
 					{
 						if (parts_avg(i, r>>8,PT_GLAS)!= PT_GLAS)//GLAS protects stuff from acid
 						{
+							float newtemp = ((60.0f-(float)ptypes[r&0xFF].hardness))*7.0f;
+							if(newtemp < 0){
+								newtemp = 0;
+							}
+							parts[i].temp += newtemp;
 							parts[i].life--;
 							kill_part(r>>8);
 						}
