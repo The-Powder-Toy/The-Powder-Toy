@@ -831,7 +831,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			if (t==goltype[r])
 				parts[i].tmp = grule[r+1][9] - 1;
 	}*/
-	if (t==PT_LIFE)
+	if (t==PT_LIFE && v<NGOLALT)
 	{
 		parts[i].tmp = grule[v+1][9] - 1;
 		parts[i].ctype = v;
@@ -1486,6 +1486,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if (parts[r>>8].type==PT_LIFE/* && parts[r>>8].ctype==golnum-1*/)
 						{
 							golnum = parts[r>>8].ctype+1;
+							if (golnum<=0 || golnum>NGOLALT) {
+								parts[r>>8].type = PT_NONE;
+								continue;
+							}
 							if (parts[r>>8].tmp == grule[golnum][9]-1) {
 								gol[nx][ny] = golnum;
 								for ( nnx=-1; nnx<2; nnx++)
