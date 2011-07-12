@@ -3181,8 +3181,6 @@ int main(int argc, char *argv[])
 			{
 				x /= sdl_scale;
 				y /= sdl_scale;
-				line_x /= sdl_scale;
-				line_y /= sdl_scale;
 				c = (lb&1) ? sl : sr;
 				su = c;
 				if (lm == 1)//line
