@@ -3567,7 +3567,7 @@ void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int c
 	for (j=-ry; j<=ry; j++)
 		for (i=-rx; i<=rx; i++)
 			if(y+j>=0 && x+i>=0 && x+i<XRES && y+j<YRES)
-				if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx)){
+				if (InCurrentBrush(i, j, rx, ry)){
 					rp = pmap[y+j][x+i];
 					if ((rp>>8)>=NPART || !rp)
 						continue;
@@ -4235,6 +4235,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 					}
 		}
 		else if (CURRENT_BRUSH==CIRCLE_BRUSH)
+		{
 			for (j=0; j<=ry; j++)
 				for (i=0; i<=rx; i++)
 					if ((pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1 && ((pow(i+1,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))>1 || (pow(i,2))/(pow(rx,2))+(pow(j+1,2))/(pow(ry,2))>1))
@@ -4244,6 +4245,17 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 						if (i) xor_pixel(x-i, y+j, vid);
 						if (i&&j) xor_pixel(x-i, y-j, vid);
 					}
+		}
+		else if (CURRENT_BRUSH==TRI_BRUSH)
+		{
+			for (j=-ry; j<=ry; j++)
+				for (i=-rx; i<=rx; i++)
+					if ((j <= ry ) && ( j >= (((-2.0*ry)/rx)*i) -ry) && ( j >= (((-2.0*ry)/(-rx))*i)-ry ) && (j+1>ry || (j-1 < (((-2.0*ry)/rx)*i) -ry) || ( j-1 < (((-2.0*ry)/(-rx))*i)-ry )) )
+					{
+						xor_pixel(x+i, y+j, vid);
+					}
+		}
+
 	}
 	else //wall cursor
 	{

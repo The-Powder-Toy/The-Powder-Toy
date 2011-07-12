@@ -969,6 +969,8 @@ void detach(int i);
 
 void part_change_type(int i, int x, int y, int t);
 
+int InCurrentBrush(int i, int j, int rx, int ry);
+
 int create_part(int p, int x, int y, int t);
 
 void delete_part(int x, int y);

@@ -85,7 +85,9 @@ extern unsigned char ZSIZE;
 
 #define CIRCLE_BRUSH 0
 #define SQUARE_BRUSH 1
-#define BRUSH_NUM 2
+#define TRI_BRUSH 2
+#define BRUSH_NUM 3
+
 
 //#define LUACONSOLE
 //#define PYCONSOLE
