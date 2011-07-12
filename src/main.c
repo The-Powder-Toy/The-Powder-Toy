@@ -3055,7 +3055,7 @@ int main(int argc, char *argv[])
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
-									if (x+i>0 && y+j>0 && x+i<XRES && y+j<YRES && InCurrentBrush(i,j,bsx,bsy))
+									if (lx+i>0 && ly+j>0 && lx+i<XRES && ly+j<YRES && InCurrentBrush(i,j,bsx,bsy))
 									{
 										vx[(ly+j)/CELL][(lx+i)/CELL] += (line_x-lx)*0.002f;
 										vy[(ly+j)/CELL][(lx+i)/CELL] += (line_y-ly)*0.002f;
