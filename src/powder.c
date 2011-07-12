@@ -2791,6 +2791,9 @@ int InCurrentBrush(int i, int j, int rx, int ry)
 		case TRI_BRUSH:
 			return (j <= ry ) && ( j >= (((-2.0*ry)/rx)*i) -ry) && ( j >= (((-2.0*ry)/(-rx))*i)-ry ) ;
 			break;
+		default:
+			return 0;
+			break;
 	}
 }
 void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c)

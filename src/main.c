@@ -3055,7 +3055,7 @@ int main(int argc, char *argv[])
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
-									if (lx+i>=0 && ly+j>=0 && lx+i<XRES && ly+j<YRES && ((CURRENT_BRUSH==CIRCLE_BRUSH && pow(i,2)*pow(bsy,2)+pow(j,2)*pow(bsx,2)<=pow(bsx,2)*pow(bsy,2))||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=bsy*bsx)))
+									if (x+i>0 && y+j>0 && x+i<XRES && y+j<YRES && InCurrentBrush(i,j,bsx,bsy))
 									{
 										vx[(ly+j)/CELL][(lx+i)/CELL] += (line_x-lx)*0.002f;
 										vy[(ly+j)/CELL][(lx+i)/CELL] += (line_y-ly)*0.002f;
@@ -3075,7 +3075,7 @@ int main(int argc, char *argv[])
 						{
 							for (j=-bsy; j<=bsy; j++)
 								for (i=-bsx; i<=bsx; i++)
-									if (x+i>0 && y+j>0 && x+i<XRES && y+j<YRES && ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(bsx,2))+(pow(j,2))/(pow(bsy,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=bsy*bsx)))
+									if (x+i>0 && y+j>0 && x+i<XRES && y+j<YRES && InCurrentBrush(i,j,bsx,bsy))
 									{
 										vx[(y+j)/CELL][(x+i)/CELL] += (x-lx)*0.01f;
 										vy[(y+j)/CELL][(x+i)/CELL] += (y-ly)*0.01f;

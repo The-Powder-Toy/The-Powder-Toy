@@ -16,7 +16,16 @@ int update_CLST(UPDATE_FUNC_ARGS) {
 				}
 				if ((r&0xFF)==PT_CLST)
 				{
-					parts[i].vx += 0.01*rx; parts[i].vy += 0.01*ry;
+					if(parts[i].temp <195)
+						cxy = 0.05;
+					if(parts[i].temp >= 195 && parts[i].temp <295)
+						cxy = 0.015;
+					if(parts[i].temp >= 295 && parts[i].temp <350)
+						cxy = 0.01;
+					if(parts[i].temp > 350)
+						cxy = 0.005;
+					parts[i].vx += cxy*rx;
+					parts[i].vy += cxy*ry;//These two can be set not to calculate over 350 later. They do virtually nothing over 0.005.
 				}
 			}
 	return 0;
