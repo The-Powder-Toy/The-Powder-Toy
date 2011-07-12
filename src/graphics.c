@@ -4249,14 +4249,13 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 		else if (CURRENT_BRUSH==TRI_BRUSH)
  		{
 			for (j=-ry; j<=ry; j++)
-			for (i=-rx; i<=0; i++)
-			if ((j <= ry ) && ( j >= (((-2.0*ry)/(rx))*i)-ry ) && (j+1>ry || ( j-1 < (((-2.0*ry)/(rx))*i)-ry )) )
-				{
-					xor_pixel(x+i, y+j, vid);
-					if (i) xor_pixel(x-i, y+j, vid);
-				}
+				for (i=-rx; i<=0; i++)
+					if ((j <= ry ) && ( j >= (((-2.0*ry)/(rx))*i)-ry ) && (j+1>ry || ( j-1 < (((-2.0*ry)/(rx))*i)-ry )) )
+						{
+							xor_pixel(x+i, y+j, vid);
+							if (i) xor_pixel(x-i, y+j, vid);
+						}
 		}
-
 	}
 	else //wall cursor
 	{
