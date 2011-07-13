@@ -2249,7 +2249,7 @@ killed:
 						}
 						else if (ptypes[t].falldown>1 && fabsf(pGravX*parts[i].vx+pGravY*parts[i].vy)>fabsf(pGravY*parts[i].vx-pGravX*parts[i].vy))
 						{
-							float nxf, nyf, ptGrav = ptypes[t].gravity;
+							float nxf, nyf, prev_pGravX, prev_pGravY, ptGrav = ptypes[t].gravity;
 							s = 0;
 							// stagnant is true if FLAG_STAGNANT was set for this particle in previous frame
 							if (!stagnant || nt) //nt is if there is an something else besides the current particle type, around the particle
@@ -2284,8 +2284,18 @@ killed:
 								if (mv<0.0001f) break;
 								pGravX /= mv;
 								pGravY /= mv;
-								nxf += r*pGravY + 0.1f*pGravX;
-								nyf += -r*pGravX + 0.1f*pGravY;
+								if (j)
+								{
+									nxf += r*(pGravY*2.0f-prev_pGravY);
+									nyf += -r*(pGravX*2.0f-prev_pGravX);
+								}
+								else
+								{
+									nxf += r*pGravY;
+									nyf += -r*pGravX;
+								}
+								prev_pGravX = pGravX;
+								prev_pGravY = pGravY;
 								nx = (int)(nxf+0.5f);
 								ny = (int)(nyf+0.5f);
 								if (nx<0 || ny<0 || nx>=XRES || ny >=YRES)
