@@ -4268,7 +4268,9 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 		{
 			for (j=0; j<=ry; j++)
 				for (i=0; i<=rx; i++)
-					if ((pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1 && ((pow(i+1,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))>1 || (pow(i,2))/(pow(rx,2))+(pow(j+1,2))/(pow(ry,2))>1))
+					if (pow(i,2)*pow(ry,2)+pow(j,2)*pow(rx,2)<=pow(rx,2)*pow(ry,2) &&
+					  (pow(i+1,2)*pow(ry,2)+pow(j,2)*pow(rx,2)>pow(rx,2)*pow(ry,2) ||
+					   pow(i,2)*pow(ry,2)+pow(j+1,2)*pow(rx,2)>pow(rx,2)*pow(ry,2)))
 					{
 						xor_pixel(x+i, y+j, vid);
 						if (j) xor_pixel(x+i, y-j, vid);
