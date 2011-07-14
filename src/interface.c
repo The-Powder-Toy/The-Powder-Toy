@@ -24,6 +24,10 @@
 
 SDLMod sdl_mod;
 int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
+#if (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+SDL_SysWMinfo sdl_wminfo;
+Atom XA_CLIPBOARD, XA_TARGETS;
+#endif
 
 char *shift_0="`1234567890-=[]\\;',./";
 char *shift_1="~!@#$%^&*()_+{}|:\"<>?";
@@ -83,6 +87,7 @@ int drawgrav_enable = 0;
 void menu_count(void)//puts the number of elements in each section into .itemcount
 {
     int i=0;
+    msections[SC_LIFE].itemcount = NGOLALT;
     msections[SC_WALL].itemcount = UI_WALLCOUNT-4;
     msections[SC_SPECIAL].itemcount = 4;
     for (i=0; i<PT_NUM; i++)
@@ -2056,6 +2061,41 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
             }
         }
     }
+    else if(i==SC_LIFE)
+	{
+		int n2;
+		if (fwidth > XRES-BARSIZE) { //fancy scrolling
+			float overflow = fwidth-(XRES-BARSIZE), location = ((float)XRES-BARSIZE)/((float)(mx-(XRES-BARSIZE)));
+			xoff = (int)(overflow / location);
+		}
+		for (n2 = 0; n2<NGOLALT; n2++)
+		{
+			n = PT_LIFE | (n2<<PS);
+			x -= draw_tool_xy(vid_buf, x-xoff, y, n, gmenu[n2].colour)+5;
+			if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15)
+			{
+				drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
+				h = n;
+			}
+			if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+			{
+				drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
+				h = n;
+			}
+			else if (n==SLALT)
+			{
+				drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
+			}
+			else if (n==*sl)
+			{
+				drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
+			}
+			else if (n==*sr)
+			{
+				drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 55, 55, 255, 255);
+			}
+		}
+	}
     else //all other menus
     {
         if (fwidth > XRES-BARSIZE)   //fancy scrolling
@@ -2105,6 +2145,10 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
     else if (i==SC_WALL||(i==SC_SPECIAL&&h>=UI_WALLSTART))
     {
         drawtext(vid_buf, XRES-textwidth((char *)wtypes[h-UI_WALLSTART].descs)-BARSIZE, sy-10, (char *)wtypes[h-UI_WALLSTART].descs, 255, 255, 255, 255);
+    }
+    else if (i==SC_LIFE)
+    {
+        drawtext(vid_buf, XRES-textwidth((char *)gmenu[(h>>PS)&TYPE].description)-BARSIZE, sy-10, (char *)gmenu[(h>>PS)&TYPE].description, 255, 255, 255, 255);
     }
     else
     {
@@ -2306,6 +2350,50 @@ int sdl_poll(void)
             break;
         case SDL_QUIT:
             return 1;
+        case SDL_SYSWMEVENT:
+#if (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+			if (event.syswm.msg->subsystem != SDL_SYSWM_X11)
+				break;
+			sdl_wminfo.info.x11.lock_func();
+			XEvent xe = event.syswm.msg->event.xevent;
+			if (xe.type==SelectionClear)
+			{
+				if (clipboard_text!=NULL) {
+					free(clipboard_text);
+					clipboard_text = NULL;
+				}
+			}
+			else if (xe.type==SelectionRequest)
+			{
+				XEvent xr;
+				xr.xselection.type = SelectionNotify;
+				xr.xselection.requestor = xe.xselectionrequest.requestor;
+				xr.xselection.selection = xe.xselectionrequest.selection;
+				xr.xselection.target = xe.xselectionrequest.target;
+				xr.xselection.property = xe.xselectionrequest.property;
+				xr.xselection.time = xe.xselectionrequest.time;
+				if (xe.xselectionrequest.target==XA_TARGETS)
+				{
+					// send list of supported formats
+					Atom targets[] = {XA_TARGETS, XA_STRING};
+					xr.xselection.property = xe.xselectionrequest.property;
+					XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, XA_ATOM, 32, PropModeReplace, (unsigned char*)targets, (int)(sizeof(targets)/sizeof(Atom)));
+				}
+				// TODO: Supporting more targets would be nice
+				else if (xe.xselectionrequest.target==XA_STRING && clipboard_text)
+				{
+					XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, xe.xselectionrequest.target, 8, PropModeReplace, clipboard_text, strlen(clipboard_text)+1);
+				}
+				else
+				{
+					// refuse clipboard request
+					xr.xselection.property = None;
+				}
+				XSendEvent(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, 0, 0, &xr);
+			}
+			sdl_wminfo.info.x11.unlock_func();
+#endif
+			continue;
         }
     }
     sdl_mod = SDL_GetModState();
@@ -3309,9 +3397,12 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
     pixel *save_pic;// = malloc((XRES/2)*(YRES/2));
     pixel *save_pic_thumb = NULL;
     char *thumb_data = NULL;
+    char viewcountbuffer[11];
     int thumb_data_size = 0;
     ui_edit ed;
     ui_copytext ctb;
+
+    viewcountbuffer[0] = 0;
 
     pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
     fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
@@ -3468,6 +3559,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
             if (status_2 == 200 || !info_data)
             {
                 info_ready = info_parse(info_data, info);
+                sprintf(viewcountbuffer, "%d", info->downloadcount);
                 if (info_ready<=0)
                 {
                     error_ui(vid_buf, 0, "Save info not found");
@@ -3534,6 +3626,10 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
             cix = drawtext(vid_buf, cix+4, (YRES/2)+72, info->author, 255, 255, 255, 255);
             cix = drawtext(vid_buf, cix+4, (YRES/2)+72, "Date:", 255, 255, 255, 155);
             cix = drawtext(vid_buf, cix+4, (YRES/2)+72, info->date, 255, 255, 255, 255);
+            if(info->downloadcount){
+                drawtext(vid_buf, 48+(XRES/2)-textwidth(viewcountbuffer)-textwidth("Views:")-4, (YRES/2)+72, "Views:", 255, 255, 255, 155);
+                drawtext(vid_buf, 48+(XRES/2)-textwidth(viewcountbuffer), (YRES/2)+72, viewcountbuffer, 255, 255, 255, 255);
+            }
             drawtextwrap(vid_buf, 62, (YRES/2)+86, (XRES/2)-24, info->description, 255, 255, 255, 200);
 
             //Draw the score bars
@@ -3621,7 +3717,11 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
         //Fav Button
         bc = svf_login?255:150;
         drawrect(vid_buf, 100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
-        drawtext(vid_buf, 122, YRES+MENUSIZE-63, "Fav.", 255, 255, 255, bc);
+        if(info->myfav && svf_login){
+            drawtext(vid_buf, 122, YRES+MENUSIZE-63, "Unfav.", 255, 230, 230, bc);
+        } else {
+            drawtext(vid_buf, 122, YRES+MENUSIZE-63, "Fav.", 255, 255, 255, bc);
+        }
         drawtext(vid_buf, 107, YRES+MENUSIZE-64, "\xCC", 255, 255, 255, bc);
         //Report Button
         bc = (svf_login && info_ready)?255:150;
@@ -3660,9 +3760,17 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
             if (b && !bq)
             {
                 //Button Clicked
-                fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
-                info_box(vid_buf, "Adding to favourites...");
-                execute_fav(vid_buf, save_id);
+                if(info->myfav){
+                    fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+                    info_box(vid_buf, "Removing from favourites...");
+                    execute_unfav(vid_buf, save_id);
+                    info->myfav = 0;
+                } else {
+                    fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+                    info_box(vid_buf, "Adding to favourites...");
+                    execute_fav(vid_buf, save_id);
+                    info->myfav = 1;
+                }
             }
         }
         //Report Button
@@ -3930,6 +4038,11 @@ int info_parse(char *info_data, save_info *info)
         else if (!strncmp(info_data, "MYVOTE ", 7))
         {
             info->myvote = atoi(info_data+7);
+            j++;
+        }
+        else if (!strncmp(info_data, "DOWNLOADS ", 10))
+        {
+            info->downloadcount = atoi(info_data+10);
             j++;
         }
         else if (!strncmp(info_data, "MYFAV ", 6))

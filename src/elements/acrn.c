@@ -18,7 +18,7 @@ int update_ACRN(UPDATE_FUNC_ARGS) {
                         parts[r>>PS].type = PT_FIRE;
                         parts[r>>PS].life = 4;
                     }
-                    else if(((parts[r>>PS].type!=PT_ACLOUD && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_LQCL && ptypes[parts[r>>PS].type].hardness>(rand()%1000)))&&parts[i].life>=50)
+                    else if(((parts[r>>PS].type!=PT_ACLOUD && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].hardness>(rand()%1000)))&&parts[i].life>=50)
                     {
                         if(parts_avg(i, r>>PS,PT_GLAS)!= PT_GLAS)
                         {

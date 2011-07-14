@@ -201,7 +201,7 @@ int update_STKM2(UPDATE_FUNC_ARGS)
                 if ((!r || (r>>PS)>=NPART) && !bmap[(y+ry)/CELL][(x+rx)/CELL])
                     continue;
 
-                if (ptypes[r&TYPE].falldown!=0 || parts[r>>PS].type == PT_NEUT || parts[r>>PS].type == PT_PHOT)
+                if (parts[r>>PS].falldown!=0 || parts[r>>PS].type == PT_NEUT || parts[r>>PS].type == PT_PHOT)
                 {
                     player2[2] = r&TYPE;  //Current element
                 }

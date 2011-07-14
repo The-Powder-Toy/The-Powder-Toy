@@ -64,6 +64,8 @@ void clipboard_push_text(char * text);
 
 char * clipboard_pull_text();
 
+extern char *clipboard_text;
+
 int register_extension();
 
 int cpu_check(void);

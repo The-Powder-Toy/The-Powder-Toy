@@ -18,7 +18,7 @@ int update_AGAS(UPDATE_FUNC_ARGS) {
 						parts[i].life = 4;
 						parts[r>>PS].life = 4;
 					}
-					else if ((parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_ACLOUD && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_BSHL && parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].type!=PT_PDCL && ptypes[r&TYPE].hardness>(rand()%1000))&&parts[i].life>=50)
+					else if ((parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_ACLOUD && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_BSHL && parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].type!=PT_PDCL && parts[r>>PS].hardness>(rand()%1000))&&parts[i].life>=50)
 					{
 						if (parts_avg(i, r>>PS,PT_GLAS)!= PT_GLAS)//GLAS protects stuff from acid
 						{

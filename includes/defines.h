@@ -9,8 +9,8 @@
 
 #define ME4502_MAJOR_VERSION 3
 #define ME4502_VERSION 0
-#define SAVE_VERSION 50
-#define MINOR_VERSION 6
+#define SAVE_VERSION 51
+#define MINOR_VERSION 0
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
 
@@ -95,6 +95,7 @@ extern unsigned char ZSIZE;
 #define STAMP_MAX 240
 
 #define NGOL 25
+#define NGOLALT 24 //NGOL should be 24, but use this var until I find out why
 
 #define CIRCLE_BRUSH 0
 #define SQUARE_BRUSH 1
@@ -135,6 +136,7 @@ typedef unsigned int pixel;
 #endif
 
 #define SDEUT
+//#define REALHEAT
 
 typedef unsigned char uint8;
 

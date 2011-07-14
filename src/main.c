@@ -486,7 +486,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
     for (j=0; j<w*h; j++)
     {
         i = m[j];
-        if (i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_BCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA || parts[i-1].type==PT_PIPE))
+        if (i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_BCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA || parts[i-1].type==PT_PIPE || parts[i-1].type==PT_LIFE))
             d[p++] = parts[i-1].ctype;
     }
 
@@ -774,8 +774,9 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
     // load particle properties
     for (j=0; j<w*h; j++)
     {
+        int gnum = 0;
         i = m[j];
-        if (i)
+        if (i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_BCLN && ver>=44) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34) || (ty==PT_PIPE && ver>=43) || (ty==PT_LIFE && ver>=51)))
         {
             i--;
             if (p+1 >= size)
@@ -1050,6 +1051,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
     }
     for (j=0; j<w*h; j++)
     {
+        int gnum = 0;
         i = m[j];
         ty = d[pty+j];
         if (i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_BCLN && ver>=44) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34) || (ty==PT_PIPE && ver>=43)))
@@ -1071,6 +1073,17 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
                 y = (int)(parts[i-1].y+0.5f);
                 parts[i-1].dcolour = 0xFF000000;
                 parts[i-1].type = PT_DMND;
+            }
+            if(ver<51 && ((ty>=78 && ty<=89) || (ty>=134 && ty<=146 && ty!=141)))
+            {
+                //Replace old GOL
+                parts[i-1].type = PT_LIFE;
+                for (gnum = 0; gnum<NGOLALT; gnum++)
+                {
+                    if (ty==goltype[gnum])
+                        parts[i-1].ctype = gnum;
+                }
+                ty = PT_LIFE;
             }
         }
     }
@@ -1551,6 +1564,7 @@ int main(int argc, char *argv[])
     fire_bg = calloc(XRES*YRES, PIXELSIZE);
 
     prepare_alpha();
+    player[2] = player2[2] = PT_DUST;
 
     sprintf(ppmfilename, "%s.ppm", argv[2]);
     sprintf(ptifilename, "%s.pti", argv[2]);
@@ -2668,27 +2682,27 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                 if (DEBUG_MODE)
                 {
                     int tctype = parts[cr>>PS].ctype;
-                    if (tctype>=PT_NUM || tctype<0 || parts[cr>>PS].type==PT_PHOT)
-                        tctype = 0;
                     if (parts[cr>>PS].type==PT_PIPE)
                     {
                         if (parts[cr>>PS].tmp<PT_NUM) tctype = parts[cr>>PS].tmp;
                         else tctype = 0;
                     }
+                    if (tctype>=PT_NUM || tctype<0 || (cr&TYPE)==PT_PHOT)
+                        tctype = 0;
                     sprintf(heattext, "%s (%s), Pressure: %3.2f, Temp: %4.2f C, Life: %d", ptypes[cr&TYPE].name, ptypes[tctype].name, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
                     sprintf(coordtext, "#%d, X:%d Y:%d", cr>>PS, x/sdl_scale, y/sdl_scale);
                 }
                 else
                 {
                     //Change the name of a particle realtime
-                    const char *tempname = ptypes[parts[cr>>PS].type].name;
+                    char *tempname = ptypes[parts[cr>>PS].type].name;
                     if (tempname=="LEAF" && parts[cr>>PS].life>10)
                     {
                         tempname = "DLEF";
                     }
                     else if (tempname=="PLAN")
                     {
-                        tempname = parts[cr>>PS].planetname;
+                        tempname = parts[cr>>PS].name;
                     }
                     else if (tempname=="HETR" && parts[cr>>PS].tmp==1)
                     {

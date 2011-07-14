@@ -133,18 +133,7 @@
 #define PT_HSWC 75
 #define PT_IRON 76
 #define PT_MORT 77
-#define PT_GOL 78
-#define PT_HLIF 79
-#define PT_ASIM 80
-#define PT_2x2 81
-#define PT_DANI 82
-#define PT_AMOE 83
-#define PT_MOVE 84
-#define PT_PGOL 85
-#define PT_DMOE 86
-#define PT_34 87
-#define PT_LLIF 88
-#define PT_STAN 89
+#define PT_LIFE 78
 #define PT_SPNG 90
 #define PT_RIME 91
 #define PT_FOG 92
@@ -189,6 +178,7 @@
 #define PT_SING 131
 #define PT_QRTZ 132
 #define PT_PQRT 133
+
 #define PT_SEED 134
 #define PT_MAZE 135
 #define PT_COAG 136
@@ -197,11 +187,7 @@
 #define PT_REPL 139
 #define PT_MYST 140
 #define PT_BOYL 141
-#define PT_LOTE 142
-#define PT_FRG2 143
-#define PT_STAR 144
-#define PT_FROG 145
-#define PT_BRAN 146
+
 #define OLD_PT_WIND 147
 #define PT_H2   148
 #define PT_SOAP 149
@@ -304,7 +290,8 @@
 #define PT_SHPN 246
 #define PT_CSIM 247
 #define PT_CPCT 248
-#define PT_NUM  249
+#define PT_RUBR 249
+#define PT_NUM  250
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -339,9 +326,9 @@
 
 #define FLAG_STAGNANT	1
 
-#define UPDATE_FUNC_ARGS int i, int x, int y, int surround_space
+#define UPDATE_FUNC_ARGS int i, int x, int y, int surround_space, int nt
 // to call another update function with same arguments:
-#define UPDATE_FUNC_SUBCALL_ARGS i, x, y, surround_space
+#define UPDATE_FUNC_SUBCALL_ARGS i, x, y, surround_space, nt
 
 int update_ACID(UPDATE_FUNC_ARGS);
 int update_ANAR(UPDATE_FUNC_ARGS);
@@ -471,6 +458,7 @@ int update_GENR(UPDATE_FUNC_ARGS);
 int update_PBCN(UPDATE_FUNC_ARGS);
 int update_GPMP(UPDATE_FUNC_ARGS);
 int update_CPCT(UPDATE_FUNC_ARGS);
+int update_RUBR(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -485,36 +473,34 @@ struct particle
     float temp;
     float pavg[2];
     int flags;
-    char *planetname;
-    int tmp;
-    int tmp2;
-    int tmpx;
-    int tmpy;
-    int a1,a2,a3,a4,a5,a6,a7,a8,ay1,ay2,ay3,ay4,ay5,ay6,ay7,ay8,num;
+    char *name;
+    int tmp,tmp2,tmpx,tmpy;
     unsigned int dcolour;
     int r, g, b;
+    int weight,flammable,falldown,explosive,meltable,hardness;
+    float collision,airdrag,gravity,airloss,loss,hotair;
 };
 typedef struct particle particle;
 
 struct part_type
 {
-    const char *name;
+    const char *name;//
     pixel pcolors;
     float advection;
-    float airdrag;
-    float airloss;
-    float loss;
-    float collision;
-    float gravity;
+    float airdrag;//
+    float airloss;//
+    float loss;//
+    float collision;//
+    float gravity;//
     float diffusion;
-    float hotair;
-    int falldown;
-    int flammable;
-    int explosive;
-    int meltable;
-    int hardness;
+    float hotair;//
+    int falldown;//
+    int flammable;//
+    int explosive;//
+    int meltable;//
+    int hardness;//
     int menu;
-    int weight;
+    int weight;//
     int menusection;
     float heat;
     unsigned char hconduct;
@@ -647,8 +633,8 @@ static const part_type ptypes[PT_NUM] =
     {"GLAS",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	150,	"Solid. Meltable. Shatters under pressure", ST_SOLID, TYPE_SOLID | PROP_NEUTPASS | PROP_HOT_GLOW, &update_GLAS},
     {"PTCT",	PIXPACK(0x405050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Semi-conductor. Only conducts electricity when cold (Less than 100C)", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, &update_NPTCT},
     {"BGLA",	PIXPACK(0x606060),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	2,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	150,	"Broken Glass, Heavy particles. Meltable. Bagels.", ST_SOLID, TYPE_PART | PROP_HOT_GLOW, NULL},
-    {"THDR",	PIXPACK(0xFFFFA0),	0.0f,	0.00f * CFDS,	1.0f,	0.30f,	-0.99f,	0.6f,	0.62f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,		SC_EXPLOSIVE,	9000.0f		+273.15f,	251,	"Lightning! Very hot, inflicts damage upon most materials, transfers current to metals.", ST_NONE, TYPE_ENERGY, &update_THDR},
-    {"PLSM",	PIXPACK(0xBB99FF),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.30f,	0.001f	* CFDS,	0,	0,		0,	0,	0,	1,	1,		SC_GAS,			9000.0f		+273.15f,	115,	"Plasma, extremely hot.", ST_NONE, TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL, &update_PYRO},
+    {"THDR",    PIXPACK(0xFFFFA0),  0.0f,  0.00f * CFDS,  1.0f,  0.30f,  -0.99f,  0.6f,  0.62f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  1,  1,    SC_EXPLOSIVE,  9000.0f    +273.15f,  1,  "Lightning! Very hot, inflicts damage upon most materials, transfers current to metals.", ST_NONE, TYPE_ENERGY, &update_THDR},
+    {"PLSM",    PIXPACK(0xBB99FF),  0.9f,  0.04f * CFDS,  0.97f,  0.20f,  0.0f,  -0.1f,  0.30f,  0.001f  * CFDS,  0,  0,    0,  0,  0,  1,  1,    SC_GAS,      10000.0f    +273.15f,  5,  "Plasma, extremely hot.", ST_NONE, TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL, &update_PYRO},
     {"ETRD",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)", ST_NONE, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, NULL},
     {"NICE",	PIXPACK(0xC0E0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0005f* CFDS,	0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		35.0f,					46,		"Nitrogen Ice.", ST_SOLID, TYPE_SOLID, NULL},
     {"NEON",    PIXPACK(0xEB4917),  0.7f,   0.01f * CFDS,    0.99f,  0.30f,  -0.1f,  0.0f,  0.50f,  0.001f  * CFDS,  0,  0,      0,  0,  1,  1,  1,      SC_GAS,        R_TEMP+2.0f  +273.15f,  106,  "Neon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS|PROP_LIFE_DEC, NULL},
@@ -677,18 +663,18 @@ static const part_type ptypes[PT_NUM] =
     {"HSWC",  PIXPACK(0x3B1010),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  1,  1,  1,  100,  SC_POWERED,    R_TEMP+0.0f  +273.15f,  251,  "Heat switch. Conducts Heat only when activated", ST_NONE, TYPE_SOLID, &update_HSWC},
     {"IRON",	PIXPACK(0x707070),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f +273.15f,	251,	"Rusts with salt, can be used for electrolysis of WATR", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW, &update_IRON},
     {"MORT",	PIXPACK(0xE0E0E0),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_CRACKER2,	R_TEMP+4.0f	+273.15f,	60,		"Steam Train.", ST_NONE, TYPE_PART, &update_MORT},
-    {"GOL",		PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Game Of Life! B3/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"HLIF",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"High Life! B36/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"ASIM",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Assimilation! B345/S4567", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"2x2",		PIXPACK(0xFFFF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"2x2! B36/S125", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"DANI",	PIXPACK(0x00FFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Day and Night! B3678/S34678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"AMOE",	PIXPACK(0xFF00FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Amoeba! B357/S1358", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"MOVE",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"'Move' particles! Does not move things.. it is a life type B368/S245", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"PGOL",	PIXPACK(0xE05010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Pseudo Life! B357/S238", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"DMOE",	PIXPACK(0x500000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Diamoeba! B35678/S5678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"34",		PIXPACK(0x500050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"34! B34/S34)", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"LLIF",	PIXPACK(0x505050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Long Life! B345/S5", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"STAN",	PIXPACK(0x5000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Stains! B3678/S235678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    {"LIFE",  PIXPACK(0x0CAC00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Game Of Life! B3/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"HLIF",  PIXPACK(0xFF0000),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "High Life! B36/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"ASIM",  PIXPACK(0x0000FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Assimilation! B345/S4567", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"2x2",    PIXPACK(0xFFFF00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "2x2! B36/S125", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"DANI",  PIXPACK(0x00FFFF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Day and Night! B3678/S34678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"AMOE",  PIXPACK(0xFF00FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Amoeba! B357/S1358", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"MOVE",  PIXPACK(0xFFFFFF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "'Move' particles! Does not move things.. it is a life type B368/S245", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"PGOL",  PIXPACK(0xE05010),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Pseudo Life! B357/S238", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"DMOE",  PIXPACK(0x500000),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Diamoeba! B35678/S5678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"34",    PIXPACK(0x500050),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "34! B34/S34)", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"LLIF",  PIXPACK(0x505050),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Long Life! B345/S5", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"STAN",  PIXPACK(0x5000FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Stains! B3678/S235678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
     {"SPNG",  	PIXPACK(0xFFBE30),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	20, 	0,  1, 	30,	1, 	100,    SC_SOLIDS,  	R_TEMP+0.0f +273.15f,   251,    "A sponge, absorbs water.", ST_SOLID, TYPE_SOLID, &update_SPNG},
     {"RIME",  	PIXPACK(0xCCCCCC),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	0, 		0, 	0, 	30,	1,  100,    SC_CRACKER2,  	243.15f,				100,    "Not quite Ice", ST_SOLID, TYPE_SOLID, &update_RIME},
     {"FOG",  	PIXPACK(0xAAAAAA),	0.8f,	0.00f * CFDS,	0.4f,	0.70f,	-0.1f,	0.0f,	0.99f,	0.000f	* CFDS, 0, 	0, 		0,  0,  30, 1,  1,		SC_CRACKER2,  	243.15f,				100,    "Not quite Steam", ST_GAS, TYPE_GAS|PROP_LIFE_DEC, &update_FOG},
@@ -733,19 +719,19 @@ static const part_type ptypes[PT_NUM] =
     {"SING",    PIXPACK(0x242424),  0.7f,   0.36f * CFDS,   0.96f,  0.80f,  0.1f,  0.12f,  0.00f,  -0.001f  * CFDS,  1,  0,    0,  0,  0,  1,  86,    SC_POWERED,    R_TEMP+0.0f  +273.15f,  70,    "Singularity", ST_SOLID, TYPE_PART|PROP_LIFE_DEC, &update_SING},
     {"QRTZ",	PIXPACK(0xAADDDD),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	3,		"Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.", ST_SOLID, TYPE_SOLID|PROP_HOT_GLOW|PROP_LIFE_DEC, &update_QRTZ},
     {"PQRT",	PIXPACK(0x88BBBB),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.27f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	3,		"Broken quartz.", ST_SOLID, TYPE_PART| PROP_HOT_GLOW, &update_QRTZ},
-    {"SEED",	PIXPACK(0xFBEC7D),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B2/S", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"MAZE",	PIXPACK(0xA8E4A0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B3/S12345", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"COAG",	PIXPACK(0x9ACD32),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B378/S235678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"WALL",	PIXPACK(0x0047AB),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B45678/S2345", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"GNAR",	PIXPACK(0xE5B73B),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B1/S1", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"REPL",	PIXPACK(0x259588),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B1357/S1357", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"MYST",	PIXPACK(0x0C3C00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"B3458/S05678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"SEED",  PIXPACK(0xFBEC7D),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "B2/S", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"MAZE",  PIXPACK(0xA8E4A0),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "B3/S12345", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"COAG",  PIXPACK(0x9ACD32),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "B378/S235678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"WALL",  PIXPACK(0x0047AB),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "B45678/S2345", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"GNAR",  PIXPACK(0xE5B73B),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "B1/S1", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"REPL",  PIXPACK(0x259588),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "B1357/S1357", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"MYST",  PIXPACK(0x0C3C00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "B3458/S05678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
     {"BOYL",	PIXPACK(0x0A3200),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.18f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+2.0f	+273.15f,	42,		"Boyle, variable pressure gas. Expands when heated.", ST_GAS, TYPE_GAS, &update_BOYL},
-    {"LOTE",	PIXPACK(0xFF0000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Behaves kinda like Living on the Edge S3458/B37/4", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"FRG2",	PIXPACK(0x00FF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Like Frogs rule S124/B3/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"STAR",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Like Star Wars rule S3456/B278/6", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"FROG",	PIXPACK(0x00AA00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Frogs S12/B34/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-    {"BRAN",	PIXPACK(0xCCCC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Brian 6 S6/B246/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"LOTE",  PIXPACK(0xFF0000),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Behaves kinda like Living on the Edge S3458/B37/4", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"FRG2",  PIXPACK(0x00FF00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Like Frogs rule S124/B3/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"STAR",  PIXPACK(0x0000FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Like Star Wars rule S3456/B278/6", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"FROG",  PIXPACK(0x00AA00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Frogs S12/B34/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+  /*FREE*/{"BRAN",  PIXPACK(0xCCCC00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Brian 6 S6/B246/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
     {"WIND",	PIXPACK(0x101010),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  0,  100,	SC_SPECIAL,		0.0f,					40,		"", ST_NONE, ST_NONE, NULL},
     {"H2",		PIXPACK(0x5070FF),	2.0f,	0.00f * CFDS,	0.99f,	0.30f,	-0.10f,	0.00f,	3.00f,	0.000f	* CFDS, 0,  0,		0,	0,	0,	1,	1,		SC_GAS,			R_TEMP+0.0f +273.15f,	251,	"Combines with O2 to make WATR", ST_GAS, TYPE_GAS, &update_H2},
     {"SOAP",	PIXPACK(0xF5F5DC),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	35,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	29,		"Soap. Creates bubbles.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE|PROP_LIFE_DEC, &update_SOAP},
@@ -777,7 +763,7 @@ static const part_type ptypes[PT_NUM] =
     {"BPAD",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little boost", ST_SOLID, TYPE_SOLID, NULL},
     {"SPEL",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little speed boost to the left", ST_SOLID, TYPE_SOLID, NULL},
     {"SPER",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives the stickman a little speed boost to the right", ST_SOLID, TYPE_SOLID, NULL},
-    {"PTRY",		PIXPACK(0xCC883F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	3,	"Pottery. Breaks Under Pressure.", ST_SOLID, TYPE_SOLID| PROP_HOT_GLOW, NULL},
+    {"PTRY",	PIXPACK(0xCC883F),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	3,	"Pottery. Breaks Under Pressure.", ST_SOLID, TYPE_SOLID| PROP_HOT_GLOW, NULL},
     {"GRAS",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f +271.15f,	251,		"Will slowly grow until it needs to be mowed.", ST_SOLID, TYPE_SOLID, &update_GRAS},
     {"CFUS",	PIXPACK(0x2E8B9E),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. A cold Fuse. Activated by Cold Flame.", ST_SOLID, TYPE_SOLID, &update_CFUS},
     {"ANT",		PIXPACK(0xC0A060),	0.0f,	0.00f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	10,		0,	0,	30,	1,	85,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	70,	"Ant. Builds a nest in other particles.", ST_SOLID, TYPE_PART|PROP_DEADLY, &update_CFIR},
@@ -787,7 +773,7 @@ static const part_type ptypes[PT_NUM] =
     {"PPLT",	PIXPACK(0x9E9680),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Send off electric current when a stickman stands on it", ST_SOLID, TYPE_SOLID, NULL},
     {"TNT",		PIXPACK(0xF50C10),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	5,      0,  0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Solid. Pressure sensitive explosive.", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_TNT},
     {"MGMA",	PIXPACK(0xBF3C02),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_LIQUID,		R_TEMP+1500.0f+273.15f,	60,		"Magma. Like Lava but underground.", ST_LIQUID, TYPE_LIQUID, &update_MGMA},
-    {"DPAR",	PIXPACK(0x000111),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,		"Put Decorations On Me :D", ST_NONE, TYPE_SOLID, NULL},
+    {"DPAR",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,		"Put Decorations On Me :D", ST_NONE, TYPE_SOLID, NULL},
     {"DANG",	PIXPACK(0xFF9500),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  1,  100,	SC_SPECIAL,		0.0f,					40,		"Extremely Dangerous Element. Destroys everything with immense heat/pressure", ST_NONE, ST_NONE, NULL},
     {"VIRS",	PIXPACK(0xFF00FF),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_LIQUID,		R_TEMP,                 60,		"Virus. Takes Over Other Elements.", ST_LIQUID, TYPE_LIQUID, &update_VIRS},
     {"O3",		PIXPACK(0xC0FAF9),	0.1f,   0.00f * CFDS,   0,      0.01f,	-0.1f,	0.0f,	0.40f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_GAS,		 	R_TEMP,                 0,		"Ozone. Blocks out radiation and pressure and harms plants", ST_GAS, TYPE_GAS | PROP_NEUTABSORB | PROP_DEADLY, NULL},
@@ -848,6 +834,7 @@ static const part_type ptypes[PT_NUM] =
     {"SHPN",	PIXPACK(0x696465),	0.7f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	90,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	97,		"Shrapnel. Creates smaller explosions.", ST_SOLID, TYPE_PART|PROP_LIFE_DEC, &update_PYRO},
     {"CSIM",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	1,	50,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	240,	"Caesium, explosive, especially on contact with oxygen.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, NULL},
     {"CPCT",	PIXPACK(0x969393),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Capacitor. Stores Spark.", ST_SOLID, TYPE_SOLID, &update_CPCT},
+    {"RUBR",	PIXPACK(0x404060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Rubber, Bouncy.", ST_SOLID, TYPE_SOLID, &update_RUBR},
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -1114,6 +1101,7 @@ static part_transition ptransitions[PT_NUM] =
     /* spnl */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
     /* csim */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
     /* cpct */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
+    /* rubr */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
 };
 #undef IPL
 #undef IPH
@@ -1122,6 +1110,94 @@ static part_transition ptransitions[PT_NUM] =
 #undef NT
 #undef ST
 
+//Old IDs for GOL types
+#define GT_GOL 78
+#define GT_HLIF 79
+#define GT_ASIM 80
+#define GT_2x2 81
+#define GT_DANI 82
+#define GT_AMOE 83
+#define GT_MOVE 84
+#define GT_PGOL 85
+#define GT_DMOE 86
+#define GT_34 87
+#define GT_LLIF 88
+#define GT_STAN 89
+#define GT_SEED 134
+#define GT_MAZE 135
+#define GT_COAG 136
+#define GT_WALL 137
+#define GT_GNAR 138
+#define GT_REPL 139
+#define GT_MYST 140
+#define GT_LOTE 142
+#define GT_FRG2 143
+#define GT_STAR 144
+#define GT_FROG 145
+#define GT_BRAN 146
+
+//New IDs for GOL types
+#define NGT_GOL 0
+#define NGT_HLIF 1
+#define NGT_ASIM 2
+#define NGT_2x2 3
+#define NGT_DANI 4
+#define NGT_AMOE 5
+#define NGT_MOVE 6
+#define NGT_PGOL 7
+#define NGT_DMOE 8
+#define NGT_34 9
+#define NGT_LLIF 10
+#define NGT_STAN 11
+#define NGT_SEED 12
+#define NGT_MAZE 13
+#define NGT_COAG 14
+#define NGT_WALL 15
+#define NGT_GNAR 16
+#define NGT_REPL 17
+#define NGT_MYST 18
+#define NGT_LOTE 19
+#define NGT_FRG2 20
+#define NGT_STAR 21
+#define NGT_FROG 22
+#define NGT_BRAN 23
+
+struct gol_menu
+{
+	const char *name;
+	pixel colour;
+	int goltype;
+	const char *description;
+};
+typedef struct gol_menu gol_menu;
+
+static gol_menu gmenu[NGOL] =
+{
+	{"GOL",		PIXPACK(0x0CAC00), 0, "GOL"},
+	{"HLIF",	PIXPACK(0xFF0000), 1, "GOL"},
+	{"ASIM",	PIXPACK(0x0000FF), 2, "GOL"},
+	{"2x2",		PIXPACK(0xFFFF00), 3, "GOL"},
+	{"DANI",	PIXPACK(0x00FFFF), 4, "GOL"},
+	{"AMOE",	PIXPACK(0xFF00FF), 5, "GOL"},
+	{"MOVE",	PIXPACK(0xFFFFFF), 6, "GOL"},
+	{"PGOL",	PIXPACK(0xE05010), 7, "GOL"},
+	{"DMOE",	PIXPACK(0x500000), 8, "GOL"},
+	{"34",		PIXPACK(0x500050), 9, "GOL"},
+	{"LLIF",	PIXPACK(0x505050), 10, "GOL"},
+	{"STAN",	PIXPACK(0x5000FF), 11, "GOL"},
+	{"SEED",	PIXPACK(0xFBEC7D), 12, "GOL"},
+	{"MAZE",	PIXPACK(0xA8E4A0), 13, "GOL"},
+	{"COAG",	PIXPACK(0x9ACD32), 14, "GOL"},
+	{"WALL",	PIXPACK(0x0047AB), 15, "GOL"},
+	{"GNAR",	PIXPACK(0xE5B73B), 16, "GOL"},
+	{"REPL",	PIXPACK(0x259588), 17, "GOL"},
+	{"MYST",	PIXPACK(0x0C3C00), 18, "GOL"},
+	{"LOTE",	PIXPACK(0xFF0000), 19, "GOL"},
+	{"FRG2",	PIXPACK(0x00FF00), 20, "GOL"},
+	{"STAR",	PIXPACK(0x0000FF), 21, "GOL"},
+	{"FROG",	PIXPACK(0x00AA00), 22, "GOL"},
+	{"BRAN",	PIXPACK(0xCCCC00), 23, "GOL"}
+};
 
 static int grule[NGOL+1][10] =
 {
@@ -1154,30 +1230,30 @@ static int grule[NGOL+1][10] =
 };
 static int goltype[NGOL] =
 {
-    PT_GOL,
-    PT_HLIF,
-    PT_ASIM,
-    PT_2x2,
-    PT_DANI,
-    PT_AMOE,
-    PT_MOVE,
-    PT_PGOL,
-    PT_DMOE,
-    PT_34,
-    PT_LLIF,
-    PT_STAN,
-    PT_SEED,
-    PT_MAZE,
-    PT_COAG,
-    PT_WALL,
-    PT_GNAR,
-    PT_REPL,
-    PT_MYST,
-    PT_LOTE,
-    PT_FRG2,
-    PT_STAR,
-    PT_FROG,
-    PT_BRAN,
+	GT_GOL,
+	GT_HLIF,
+	GT_ASIM,
+	GT_2x2,
+	GT_DANI,
+	GT_AMOE,
+	GT_MOVE,
+	GT_PGOL,
+	GT_DMOE,
+	GT_34,
+	GT_LLIF,
+	GT_STAN,
+	GT_SEED,
+	GT_MAZE,
+	GT_COAG,
+	GT_WALL,
+	GT_GNAR,
+	GT_REPL,
+	GT_MYST,
+	GT_LOTE,
+	GT_FRG2,
+	GT_STAR,
+	GT_FROG,
+	GT_BRAN,
 };
 static int loverule[9][9] =
 {

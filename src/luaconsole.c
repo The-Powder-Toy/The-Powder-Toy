@@ -371,7 +371,7 @@ int luatpt_reset_spark(lua_State* l)
 
 int luatpt_set_property(lua_State* l)
 {
-    char *prop, *name;
+    char *prop, *name, *s;
     int r, i, x, y, w, h, t, format, nx, ny, partsel = 0, acount;
     float f;
     size_t offset;
@@ -441,16 +441,81 @@ int luatpt_set_property(lua_State* l)
     else if (strcmp(prop,"r")==0)
     {
         offset = offsetof(particle, r);
-        format = 2;
+        format = 1;
     }
     else if (strcmp(prop,"g")==0)
     {
         offset = offsetof(particle, g);
-        format = 2;
+        format = 1;
     }
     else if (strcmp(prop,"b")==0)
     {
         offset = offsetof(particle, b);
+        format = 1;
+    }
+    else if (strcmp(prop,"collision")==0)
+    {
+        offset = offsetof(particle, collision);
+        format = 2;
+    }
+    else if (strcmp(prop,"airdrag")==0)
+    {
+        offset = offsetof(particle, airdrag);
+        format = 2;
+    }
+    else if (strcmp(prop,"flammable")==0)
+    {
+        offset = offsetof(particle, flammable);
+        format = 1;
+    }
+    else if (strcmp(prop,"weight")==0)
+    {
+        offset = offsetof(particle, weight);
+        format = 1;
+    }
+    else if (strcmp(prop,"falldown")==0)
+    {
+        offset = offsetof(particle, falldown);
+        format = 1;
+    }
+    else if (strcmp(prop,"gravity")==0)
+    {
+        offset = offsetof(particle, gravity);
+        format = 2;
+    }
+    else if (strcmp(prop,"explosive")==0)
+    {
+        offset = offsetof(particle, explosive);
+        format = 1;
+    }
+    else if (strcmp(prop,"meltable")==0)
+    {
+        offset = offsetof(particle, meltable);
+        format = 1;
+    }
+    else if (strcmp(prop,"hardness")==0)
+    {
+        offset = offsetof(particle, hardness);
+        format = 1;
+    }
+    else if (strcmp(prop,"name")==NULL)
+    {
+        offset = offsetof(particle, name);
+        format = 4;
+    }
+    else if (strcmp(prop,"airloss")==0)
+    {
+        offset = offsetof(particle, airloss);
+        format = 2;
+    }
+    else if (strcmp(prop,"loss")==0)
+    {
+        offset = offsetof(particle, loss);
+        format = 2;
+    }
+    else if (strcmp(prop,"hotair")==0)
+    {
+        offset = offsetof(particle, hotair);
         format = 2;
     }
     else
@@ -466,25 +531,21 @@ int luatpt_set_property(lua_State* l)
                 return luaL_error(l, "Unrecognised element '%s'", name);
         }
     }
-    if(lua_isnumber(l, 2))
-    {
-        if(format==2)
-        {
-            f = luaL_optnumber(l, 2, 0);
-        }
-        else
-        {
-            t = luaL_optint(l, 2, 0);
-        }
-        if (format == 3 && (t<0 || t>=PT_NUM))
-            return luaL_error(l, "Unrecognised element number '%d'", t);
-    }
-    else
-    {
-        name = luaL_optstring(l, 2, "dust");
-        if (!console_parse_type(name, &t, NULL))
-            return luaL_error(l, "Unrecognised element '%s'", name);
-    }
+    if(lua_isnumber(l, 2)){
+		if(format==2){
+			f = luaL_optnumber(l, 2, 0);
+		} else {
+			t = luaL_optint(l, 2, 0);
+		}
+		if (format == 3 && (t<0 || t>=PT_NUM))
+			return luaL_error(l, "Unrecognised element number '%d'", t);
+	} else if(format==4 && lua_isstring(l,2)) {
+        s = luaL_optstring(l, 2, "");
+	} else {
+		name = luaL_optstring(l, 2, "dust");
+		if (!console_parse_type(name, &t, NULL))
+			return luaL_error(l, "Unrecognised element '%s'", name);
+	}
     if(i == -1 || (w != -1 && h != -1))
     {
         // Got a region
@@ -517,6 +578,10 @@ int luatpt_set_property(lua_State* l)
                 {
                     *((float*)(((void*)&parts[i])+offset)) = f;
                 }
+                else if(format==4)
+                {
+                    *((char*)(((void*)&parts[i])+offset)) = s;
+                }
                 else
                 {
                     *((int*)(((void*)&parts[i])+offset)) = t;
@@ -533,6 +598,8 @@ int luatpt_set_property(lua_State* l)
             r = pmap[y][i];
             if (!r || (r>>PS)>=NPART || (partsel && partsel != parts[r>>PS].type))
                 r = photons[y][i];
+            if (!r || (r>>PS)>=NPART || (partsel && partsel != parts[r>>PS].type))
+                return 0;
             i = r>>PS;
         }
         if (i < 0 || i >= NPART)
@@ -545,10 +612,15 @@ int luatpt_set_property(lua_State* l)
         {
             *((float*)(((void*)&parts[i])+offset)) = f;
         }
+        else if(format==4)
+        {
+            *((char*)(((void*)&parts[i])+offset)) = s;
+        }
         else
         {
             *((int*)(((void*)&parts[i])+offset)) = t;
         }
+
     }
     return 0;
 }
@@ -565,6 +637,15 @@ int luatpt_get_property(lua_State* l)
         r = pmap[y][i];
         if (!r || (r>>PS)>=NPART)
             r = photons[y][i];
+        if (!r || (r>>PS)>=NPART)
+        {
+            if (strcmp(prop,"type")==0)
+            {
+                lua_pushinteger(l, 0);
+                return 1;
+            }
+            return luaL_error(l, "Particle does not exist");
+        }
         i = r>>PS;
     }
     else if (y!=-1)
@@ -619,7 +700,12 @@ int luatpt_get_property(lua_State* l)
             return 1;
         }
     }
-    return luaL_error(l, "Particle does not exist", i);
+    else if (strcmp(prop,"type")==0)
+    {
+        lua_pushinteger(l, 0);
+        return 1;
+    }
+    return luaL_error(l, "Particle does not exist");
 }
 
 int luatpt_drawpixel(lua_State* l)

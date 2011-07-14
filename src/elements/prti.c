@@ -25,12 +25,12 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 					fe = 1;
 				if ((r>>PS)>=NPART)
 					continue;
-				if (!r || parts[r>>PS].type==PT_PRTI || parts[r>>PS].type==PT_PRTO || (ptypes[r&TYPE].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && parts[r>>PS].type!=PT_SPRK))
+				if (!r || parts[r>>PS].type==PT_PRTI || parts[r>>PS].type==PT_PRTO || (parts[r>>PS].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && parts[r>>PS].type!=PT_SPRK))
 				{
 					r = photons[y+ry][x+rx];
 					if ((r>>PS)>=NPART)
 						continue;
-					if (!r || parts[r>>PS].type==PT_PRTI || parts[r>>PS].type==PT_PRTO || (ptypes[r&TYPE].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && parts[r>>PS].type!=PT_SPRK))
+					if (!r || parts[r>>PS].type==PT_PRTI || parts[r>>PS].type==PT_PRTO || (parts[r>>PS].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && parts[r>>PS].type!=PT_SPRK))
 						continue;
 				}
 

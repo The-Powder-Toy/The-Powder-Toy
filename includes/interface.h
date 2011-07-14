@@ -1,6 +1,9 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 #include <SDL/SDL.h>
+#if (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+#include <SDL/SDL_syswm.h>
+#endif
 #include "graphics.h"
 
 struct menu_section
@@ -103,6 +106,7 @@ struct save_info
 	int votedown;
 	int vote;
 	int myvote;
+	int downloadcount;
 	int myfav;
 	char *tags;
 	int comment_count;
@@ -134,6 +138,11 @@ typedef struct ui_richtext ui_richtext;
 int SLALT;
 extern SDLMod sdl_mod;
 extern int sdl_key, sdl_wheel, sdl_caps, sdl_ascii, sdl_zoom_trig;
+#if (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+extern SDL_SysWMinfo sdl_wminfo;
+extern Atom XA_CLIPBOARD, XA_TARGETS;
+#endif
+
 extern char *shift_0;
 extern char *shift_1;
 extern int svf_messages;

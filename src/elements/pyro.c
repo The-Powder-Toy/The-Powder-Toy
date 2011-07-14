@@ -100,17 +100,17 @@ int update_PYRO(UPDATE_FUNC_ARGS)
                 if (bmap[(y+ry)/CELL][(x+rx)/CELL] && bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_STREAM)
                     continue;
                 rt = parts[r>>PS].type;
-                if ((surround_space || ptypes[rt].explosive) &&
+                if ((surround_space || parts[r>>PS].explosive) &&
                         (t!=PT_SPRK || (rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_CSIM && rt!=PT_INSL)) &&
                         (t!=PT_PHOT || rt!=PT_INSL) &&
                         (rt!=PT_SPNG || parts[r>>PS].life==0) &&
-                        ptypes[rt].flammable && (ptypes[rt].flammable + (int)(pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
+                        parts[r>>PS].flammable && (parts[r>>PS].flammable + (int)(pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
                 {
                     part_change_type(r>>PS,x+rx,y+ry,PT_FIRE);
-                    parts[r>>PS].temp = restrict_flt(ptypes[PT_FIRE].heat + (ptypes[rt].flammable/2), MIN_TEMP, MAX_TEMP);
+                    parts[r>>PS].temp = restrict_flt(ptypes[PT_FIRE].heat + (parts[r>>PS].flammable/2), MIN_TEMP, MAX_TEMP);
                     parts[r>>PS].life = rand()%80+180;
                     parts[r>>PS].tmp = parts[r>>PS].ctype = 0;
-                    if (ptypes[rt].explosive)
+                    if (parts[r>>PS].explosive)
                         pv[y/CELL][x/CELL] += 0.25f * CFDS;
                 }
                 if(t==PT_BOOM && rt==PT_FUSE2 || t==PT_BOOM && rt==PT_BFLM || t==PT_BOOM && rt==PT_FUSE || t==PT_BOOM && rt==PT_FIRE)
@@ -163,8 +163,8 @@ int update_legacy_PYRO(UPDATE_FUNC_ARGS)
                 rt = r&TYPE;
                 lpv = (int)pv[(y+ry)/CELL][(x+rx)/CELL];
                 if (lpv < 1) lpv = 1;
-                if (t!=PT_SPRK && ptypes[rt].meltable  && ((rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_CSIM) || t!=PT_SPRK) && ((t!=PT_FIRE&&t!=PT_PLSM) || (rt!=PT_METL && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SALT && rt!=PT_INWR)) &&
-                        ptypes[rt].meltable*lpv>(rand()%1000))
+                if (t!=PT_SPRK && parts[r>>PS].meltable  && ((rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_CSIM) || t!=PT_SPRK) && ((t!=PT_FIRE&&t!=PT_PLSM) || (rt!=PT_METL && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SALT && rt!=PT_INWR)) &&
+                        parts[r>>PS].meltable*lpv>(rand()%1000))
                 {
                     if (t!=PT_LAVA || parts[i].life>0)
                     {

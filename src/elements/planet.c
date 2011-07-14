@@ -9,10 +9,10 @@ int update_PLAN(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ry][x+rx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if (parts[i].planetname){
-                    parts[r>>PS].planetname = parts[i].planetname;
+                if (parts[i].name){
+                    parts[r>>PS].name = parts[i].name;
                 } else {
-                    parts[i].planetname = input_ui(vid_buf, "Planet Name", "Enter planet name", "Earth", "255");
+                    parts[i].name = input_ui(vid_buf, "Planet Name", "Enter planet name", "Earth", "255");
                 }
             }
 

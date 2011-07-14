@@ -20,6 +20,8 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
+char *clipboard_text = NULL;
+
 //Signum function
 #if defined(WIN32) && !defined(__GNUC__)
 _inline int isign(float i)
@@ -421,6 +423,16 @@ void clipboard_push_text(char * text)
 		SetClipboardData(CF_TEXT, cbuffer);
 		CloseClipboard();
 	}
+#elif (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+	if (clipboard_text!=NULL) {
+		free(clipboard_text);
+		clipboard_text = NULL;
+	}
+	clipboard_text = mystrdup(text);
+	sdl_wminfo.info.x11.lock_func();
+	XSetSelectionOwner(sdl_wminfo.info.x11.display, XA_CLIPBOARD, sdl_wminfo.info.x11.window, CurrentTime);
+	XFlush(sdl_wminfo.info.x11.display);
+	sdl_wminfo.info.x11.unlock_func();
 #else
 	printf("Not implemented: put text on clipboard \"%s\"\n", text);
 #endif
@@ -428,8 +440,28 @@ void clipboard_push_text(char * text)
 
 char * clipboard_pull_text()
 {
+#ifdef MACOSX
+#elif defined WIN32
+	if (OpenClipboard(NULL))
+	{
+		HANDLE cbuffer;
+		char * glbuffer;
+
+		cbuffer = GetClipboardData(CF_TEXT);
+		glbuffer = (char*)GlobalLock(cbuffer);
+		GlobalUnlock(cbuffer);
+		CloseClipboard();
+		if(glbuffer!=NULL){
+			return mystrdup(glbuffer);
+		} else {
+			return "";
+		}
+	}
+#elif (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+#else
 	printf("Not implemented: get text from clipboard\n");
 	return "";
+#endif
 }
 
 int register_extension()
