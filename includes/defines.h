@@ -92,6 +92,7 @@ extern unsigned char ZSIZE;
 #define BRUSH_NUM 3
 
 
+//#define GRAVFFT
 //#define LUACONSOLE
 //#define PYCONSOLE
 //#define PYEXT

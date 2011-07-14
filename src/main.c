@@ -1450,6 +1450,9 @@ void* update_grav_async(void* unused)
 	memset(th_gravmap, 0, sizeof(th_gravmap));
 	memset(th_gravy, 0, sizeof(th_gravy));
 	memset(th_gravx, 0, sizeof(th_gravx));
+#ifdef GRAVFFT
+	grav_fft_init();
+#endif
 	while(!thread_done){
 		if(!done){
 			update_grav();
@@ -1476,8 +1479,6 @@ void* update_grav_async(void* unused)
 void start_grav_async()
 {
 	if(!ngrav_enable){
-		/*pthread_mutexattr_t gma; //I do not know why this is here
-		pthread_mutexattr_init(&gma);*/
 		gravthread_done = 0;
 		pthread_mutex_init (&gravmutex, NULL);
 		pthread_cond_init(&gravcv, NULL);
@@ -3617,6 +3618,9 @@ int main(int argc, char *argv[])
 	}
 	SDL_CloseAudio();
 	http_done();
+#ifdef GRAVFFT
+	grav_fft_cleanup();
+#endif
 #ifdef LUACONSOLE
 	luacon_close();
 #endif
