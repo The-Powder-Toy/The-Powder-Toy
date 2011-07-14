@@ -313,6 +313,7 @@ int update_CLST(UPDATE_FUNC_ARGS);
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
 int update_legacy_all(UPDATE_FUNC_ARGS);
+int run_stickman(float* playerp, UPDATE_FUNC_ARGS);
 
 
 struct particle
@@ -931,10 +932,8 @@ int wireless[CHANNELS][2];
 
 extern int gravwl_timeout;
 
-extern int isplayer;
-extern float player[27];
-
-extern float player2[27];
+extern float player[28];
+extern float player2[28];
 
 extern int gravityMode;
 extern int airMode;
