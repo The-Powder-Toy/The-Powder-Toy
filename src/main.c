@@ -1543,6 +1543,8 @@ int main(int argc, char *argv[])
 #else
 int main(int argc, char *argv[])
 {
+	pixel *part_vbuf; //Extra video buffer
+	pixel *part_vbuf_store;
 	int hud_enable = 1;
 	int active_menu = 0;
 #ifdef BETA
@@ -1580,7 +1582,18 @@ int main(int argc, char *argv[])
     pthread_win32_thread_attach_np();
 #endif
 	vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	part_vbuf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE); //Extra video buffer
+	part_vbuf_store = part_vbuf;
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
+
+	//Allocate full size Gravmaps
+	th_gravyf = calloc(XRES*YRES, sizeof(float));
+	th_gravxf = calloc(XRES*YRES, sizeof(float));
+	th_gravpf = calloc(XRES*YRES, sizeof(float));
+	gravyf = calloc(XRES*YRES, sizeof(float));
+	gravxf = calloc(XRES*YRES, sizeof(float));
+	gravpf = calloc(XRES*YRES, sizeof(float));
+
 	GSPEED = 1;
 
 	/* Set 16-bit stereo audio at 22Khz */
@@ -1784,6 +1797,15 @@ int main(int argc, char *argv[])
 #ifdef OpenGL
 		ClearScreen();
 #else
+
+		if(cmode==CM_FANCY)
+		{
+			part_vbuf = part_vbuf_store;
+			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+		} else {
+			part_vbuf = vid_buf;
+		}
+
 		if(gravwl_timeout)
 		{
 			if(gravwl_timeout==1)
@@ -1792,16 +1814,16 @@ int main(int argc, char *argv[])
 		}
 		if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK || (cmode==CM_HEAT && aheat_enable))//air only gets drawn in these modes
 		{
-			draw_air(vid_buf);
+			draw_air(part_vbuf);
 		}
 		else if (cmode==CM_PERS)//save background for persistent, then clear
 		{
-			memcpy(vid_buf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
-			memset(vid_buf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
-		}
+			memcpy(part_vbuf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
+			memset(part_vbuf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
+}
 		else //clear screen every frame
 		{
-			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
 #endif
 
@@ -1817,11 +1839,11 @@ int main(int argc, char *argv[])
 		
 		if(ngrav_enable && drawgrav_enable)
 			draw_grav(vid_buf);
-		draw_walls(vid_buf); 
-		update_particles(vid_buf); //update everything
-		draw_parts(vid_buf); //draw particles
+		draw_walls(part_vbuf);
+		update_particles(part_vbuf); //update everything
+		draw_parts(part_vbuf); //draw particles
 		if(sl == WL_GRAV+100 || sr == WL_GRAV+100)
-			draw_grav_zones(vid_buf);
+			draw_grav_zones(part_vbuf);
 		
 		if(ngrav_enable){
 			pthread_mutex_lock(&gravmutex);
@@ -1831,6 +1853,22 @@ int main(int argc, char *argv[])
 				memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
 				memcpy(gravy, th_gravy, sizeof(gravy));	//Hmm, Gravy
 				memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
+				memcpy(gravp, th_gravp, sizeof(gravp));
+
+				//Switch the full size gravmaps, we don't really need the two above any more
+				float *tmpf;
+				tmpf = gravyf;
+				gravyf = th_gravyf;
+				th_gravyf = tmpf;
+
+				tmpf = gravxf;
+				gravxf = th_gravxf;
+				th_gravxf = tmpf;
+
+				tmpf = gravpf;
+				gravpf = th_gravpf;
+				th_gravpf = tmpf;
+
 				if (!sys_pause||framerender){ //Only update if not paused
 					grav_ready = 0; //Tell the other thread that we're ready for it to continue
 					pthread_cond_signal(&gravcv);
@@ -1863,9 +1901,12 @@ int main(int argc, char *argv[])
 			fire_fc = (fire_fc+1) % 3;
 		}
 		if (cmode==CM_FIRE||cmode==CM_BLOB||cmode==CM_FANCY)
-			render_fire(vid_buf);
+			render_fire(part_vbuf);
 
-		render_signs(vid_buf);
+		render_signs(part_vbuf);
+
+		if(cmode==CM_FANCY)
+			render_gravlensing(part_vbuf, vid_buf);
 
 		memset(vid_buf+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);//clear menu areas
 		clearrect(vid_buf, XRES-1, 0, BARSIZE+1, YRES);

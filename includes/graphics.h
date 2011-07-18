@@ -60,6 +60,8 @@ pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh);
 
 pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f);
 
+void render_gravlensing(pixel *src, pixel * dst);
+
 void sdl_blit_1(int x, int y, int w, int h, pixel *src, int pitch);
 
 void sdl_blit_2(int x, int y, int w, int h, pixel *src, int pitch);

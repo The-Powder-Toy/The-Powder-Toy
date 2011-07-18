@@ -7,12 +7,20 @@ float kernel[9];
 float gravmap[YRES/CELL][XRES/CELL];  //Maps to be used by the main thread
 float gravx[YRES/CELL][XRES/CELL];
 float gravy[YRES/CELL][XRES/CELL];
+float gravp[YRES/CELL][XRES/CELL];
+float *gravpf;
+float *gravyf;
+float *gravxf;
 unsigned gravmask[YRES/CELL][XRES/CELL];
 
 float th_ogravmap[YRES/CELL][XRES/CELL]; // Maps to be processed by the gravity thread
 float th_gravmap[YRES/CELL][XRES/CELL];
 float th_gravx[YRES/CELL][XRES/CELL];
 float th_gravy[YRES/CELL][XRES/CELL];
+float th_gravp[YRES/CELL][XRES/CELL];
+float *th_gravpf;
+float *th_gravyf;
+float *th_gravxf;
 
 float vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
 float vy[YRES/CELL][XRES/CELL], ovy[YRES/CELL][XRES/CELL];
@@ -119,6 +127,31 @@ void update_airh(void)
 	}
 	memcpy(hv, ohv, sizeof(hv));
 }
+void bilinear_interpolation(float *src, float *dst, int sw, int sh, int rw, int rh)
+{
+	int y, x, fxceil, fyceil;
+	float fx, fy, fyc, fxc;
+	double intp;
+	float tr, tl, br, bl;
+	//Bilinear interpolation for upscaling
+	for (y=0; y<rh; y++)
+		for (x=0; x<rw; x++)
+		{
+			fx = ((float)x)*((float)sw)/((float)rw);
+			fy = ((float)y)*((float)sh)/((float)rh);
+			fxc = modf(fx, &intp);
+			fyc = modf(fy, &intp);
+			fxceil = (int)ceil(fx);
+			fyceil = (int)ceil(fy);
+			if (fxceil>=sw) fxceil = sw-1;
+			if (fyceil>=sh) fyceil = sh-1;
+			tr = src[sw*(int)floor(fy)+fxceil];
+			tl = src[sw*(int)floor(fy)+(int)floor(fx)];
+			br = src[sw*fyceil+fxceil];
+			bl = src[sw*fyceil+(int)floor(fx)];
+			dst[rw*y+x] = ((tl*(1.0f-fxc))+(tr*(fxc)))*(1.0f-fyc) + ((bl*(1.0f-fxc))+(br*(fxc)))*(fyc);				
+		}
+}
 
 void update_grav(void)
 {
@@ -164,11 +197,15 @@ void update_grav(void)
 #endif
 						th_gravx[y][x] += M_GRAV * val * (j - x) / pow(distance, 3);
 						th_gravy[y][x] += M_GRAV * val * (i - y) / pow(distance, 3);
+						th_gravp[y][x] += M_GRAV * val / pow(distance, 2);
 					}
 				}
 			}
 		}
 	}
+	bilinear_interpolation(th_gravy, th_gravyf, XRES/CELL, YRES/CELL, XRES, YRES);
+	bilinear_interpolation(th_gravx, th_gravxf, XRES/CELL, YRES/CELL, XRES, YRES);
+	bilinear_interpolation(th_gravp, th_gravpf, XRES/CELL, YRES/CELL, XRES, YRES);
 fin:
 	memcpy(th_ogravmap, th_gravmap, sizeof(th_gravmap));
 	memset(th_gravmap, 0, sizeof(th_gravmap));
