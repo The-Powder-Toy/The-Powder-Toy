@@ -2,9 +2,10 @@
 
 int update_FWRK(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, np;
+	int self = parts[i].type;
 	if ((parts[i].temp>400&&(9+parts[i].temp/40)>rand()%100000&&parts[i].life==0&&!pmap[y-1][x])||parts[i].ctype==PT_DUST)
 	{
-		np = create_part(-1, x , y-1 , PT_FWRK);
+		np = create_part(-1, x , y-1 , self);
 		if (np!=-1)
 		{
 			parts[np].vy = rand()%8-22;

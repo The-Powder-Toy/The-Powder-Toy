@@ -2,6 +2,7 @@
 
 int update_BCOL(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	int self = parts[i].type;
 	if (parts[i].life<=0) {
 		create_part(i, x, y, PT_FIRE);
 		return 1;

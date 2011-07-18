@@ -6,6 +6,7 @@ signed char pos_1_ry[] = {-1, 0, 1,-1, 1,-1, 0, 1};
 void pushParticle(int i, int count, int original)
 {
 	int rndstore, rnd, rx, ry, r, x, y, np, q, notctype=(((parts[i].ctype)%3)+2);
+	int self = parts[i].type;
 	if ((parts[i].tmp&TYPE) == 0 || count >= 2)//don't push if there is nothing there, max speed of 2 per frame
 		return;
 	x = (int)(parts[i].x+0.5f);
@@ -27,7 +28,7 @@ void pushParticle(int i, int count, int original)
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-				else if ((r&TYPE)==PT_PIPE && parts[r>>PS].ctype!=notctype && (parts[r>>PS].tmp&TYPE)==0)
+				else if ((r&TYPE)==self && parts[r>>PS].ctype!=notctype && (parts[r>>PS].tmp&TYPE)==0)
 				{
 					parts[r>>PS].tmp = (parts[r>>PS].tmp&~TYPE) | (parts[i].tmp&TYPE);
 					parts[r>>PS].temp = parts[i].temp;
@@ -50,7 +51,7 @@ void pushParticle(int i, int count, int original)
 		if ((r>>PS)>=NPART || !r)
 		{
 		}
-		else if ((r&TYPE)==PT_PIPE && parts[r>>PS].ctype!=notctype && (parts[r>>PS].tmp&TYPE)==0)
+		else if ((r&TYPE)==self && parts[r>>PS].ctype!=notctype && (parts[r>>PS].tmp&TYPE)==0)
 		{
 			parts[r>>PS].tmp = (parts[r>>PS].tmp&~TYPE) | (parts[i].tmp&TYPE);
 			parts[r>>PS].temp = parts[i].temp;
@@ -71,6 +72,7 @@ void pushParticle(int i, int count, int original)
 
 int update_PIPE(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, np;
+	int self = parts[i].type;
 	int rnd, rndstore;
 	if (parts[i].ctype>=2 && parts[i].ctype<=4)
 	{
@@ -87,7 +89,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						r = pmap[y+ry][x+rx];
 						if ((r>>PS)>=NPART || !r)
 							continue;
-						if ((r&TYPE)==PT_PIPE&&parts[r>>PS].ctype==1)
+						if ((r&TYPE)==self&&parts[r>>PS].ctype==1)
 						{
 							parts[r>>PS].ctype = (((parts[i].ctype)%3)+2);//reverse
 							parts[r>>PS].life = 6;
@@ -99,7 +101,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 							neighborcount ++;
 							lastneighbor = r>>PS;
 						}
-						else if ((r&TYPE)==PT_PIPE&&parts[r>>PS].ctype!=(((parts[i].ctype-1)%3)+2))
+						else if ((r&TYPE)==self&&parts[r>>PS].ctype!=(((parts[i].ctype-1)%3)+2))
 						{
 							neighborcount ++;
 							lastneighbor = r>>PS;
@@ -213,7 +215,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r&TYPE)==PT_PIPE && parts[i].ctype==1 && parts[i].life )
+						if ((r&TYPE)==self && parts[i].ctype==1 && parts[i].life )
 							issingle = 0;
 					}
 					if (issingle)

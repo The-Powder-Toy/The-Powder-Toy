@@ -2,6 +2,7 @@
 
 int update_FIRW(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, rt;
+	int self = parts[i].type;
 	if (parts[i].tmp==0) {
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
@@ -42,11 +43,11 @@ int update_FIRW(UPDATE_FUNC_ARGS) {
 				{
 					r = pmap[y+ry][x+rx];
 					tmul = rand()%7;
-					create_part(-1, x+rx, y+ry, PT_FIRW);
+					create_part(-1, x+rx, y+ry, self);
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if (parts[r>>PS].type==PT_FIRW) {
+					if (parts[r>>PS].type==self) {
 						parts[r>>PS].vx = (rand()%3-1)*tmul;
 						parts[r>>PS].vy = (rand()%3-1)*tmul;
 						parts[r>>PS].tmp = col;

@@ -2,6 +2,7 @@
 
 int update_ARAY(UPDATE_FUNC_ARGS) {
 	int r, nxx, nyy, docontinue, nxi, nyi, rx, ry, nr;
+	int self = parts[i].type;
 	if (parts[i].life==0) {
 		int colored =0;
 		for (rx=-1; rx<2; rx++)
@@ -45,7 +46,7 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 									else if (parts[r>>PS].type==PT_FILT) {//get color if passed through FILT
 										colored = parts[r>>PS].ctype;
 										//this if prevents BRAY from stopping on certain materials
-									} else if (parts[r>>PS].type!=PT_INWR && parts[r>>PS].type!=PT_ARAY && parts[r>>PS].type!=PT_WIFI && !(parts[r>>PS].type==PT_SWCH && parts[r>>PS].life>=10)) {
+									} else if (parts[r>>PS].type!=PT_INWR && parts[r>>PS].type!=PT_ARAY && parts[r>>PS].type!=self && parts[r>>PS].type!=PT_WIFI && !(parts[r>>PS].type==PT_SWCH && parts[r>>PS].life>=10)) {
 										if (nyy!=0 || nxx!=0) {
 											create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 										}
@@ -60,7 +61,7 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 										parts[r>>PS].life = 1;
 										docontinue = 1;
 										//this if prevents red BRAY from stopping on certain materials
-									} else if (parts[r>>PS].type==PT_INWR || parts[r>>PS].type==PT_ARAY || parts[r>>PS].type==PT_WIFI || parts[r>>PS].type==PT_FILT || (parts[r>>PS].type==PT_SWCH && parts[r>>PS].life>=10)) {
+									} else if (parts[r>>PS].type==PT_INWR || parts[r>>PS].type==PT_ARAY || parts[r>>PS].type==self || parts[r>>PS].type==PT_WIFI || parts[r>>PS].type==PT_FILT || (parts[r>>PS].type==PT_SWCH && parts[r>>PS].life>=10)) {
 										docontinue = 1;
 									} else {
 										docontinue = 0;

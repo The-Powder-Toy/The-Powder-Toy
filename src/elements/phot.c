@@ -2,6 +2,7 @@
 
 int update_PHOT(UPDATE_FUNC_ARGS) {
 	int r, rt, rx, ry;
+	int self = parts[i].type;
 	float rr, rrr;
 	parts[i].pavg[0] = x;
     parts[i].pavg[1] = y;
@@ -20,7 +21,7 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 				{
 					parts[i].vx *= 0.90;
 					parts[i].vy *= 0.90;
-					create_part(r>>PS, x+rx, y+ry, PT_PHOT);
+					create_part(r>>PS, x+rx, y+ry, self);
 					rrr = (rand()%360)*3.14159f/180.0f;
 					rr = (rand()%128+128)/127.0f;
 					parts[r>>PS].vx = rr*cosf(rrr);
@@ -31,7 +32,7 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 				{
 					parts[i].vx *= 0.90;
 					parts[i].vy *= 0.90;
-					create_part(r>>PS, x+rx, y+ry, PT_PHOT);
+					create_part(r>>PS, x+rx, y+ry, self);
 					rr = (rand()%228+128)/127.0f;
 					rrr = (rand()%360)*3.14159f/180.0f;
 					parts[r>>PS].vx = rr*cosf(rrr);
@@ -43,7 +44,7 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 	rt = r&TYPE;
 	if (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN) {
 		if (!parts[r>>PS].ctype)
-			parts[r>>PS].ctype = PT_PHOT;
+			parts[r>>PS].ctype = self;
 	}
 
 	return 0;

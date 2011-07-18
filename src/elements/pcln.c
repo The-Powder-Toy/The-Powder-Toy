@@ -2,6 +2,7 @@
 
 int update_PCLN(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	int self = parts[i].type;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
 	for (rx=-2; rx<3; rx++)
@@ -18,7 +19,7 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 					else if (parts[r>>PS].ctype==PT_NSCN)
 						parts[i].life = 9;
 				}
-				if (parts[r>>PS].type==PT_PCLN)
+				if (parts[r>>PS].type==self)
 				{
 					if (parts[i].life==10&&parts[r>>PS].life<10&&parts[r>>PS].life>0)
 						parts[i].life = 9;
@@ -40,7 +41,7 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 				        parts[r>>PS].type!=PT_BCLN &&  parts[r>>PS].type!=PT_SPRK &&
 				        parts[r>>PS].type!=PT_NSCN && parts[r>>PS].type!=PT_PSCN &&
 				        parts[r>>PS].type!=PT_STKM && parts[r>>PS].type!=PT_STKM2 &&
-				        parts[r>>PS].type<PT_NUM)
+				        parts[r>>PS].type!=self && parts[r>>PS].type<PT_NUM)
 					parts[i].ctype = r&TYPE;
 				}
 	if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].life==10) {

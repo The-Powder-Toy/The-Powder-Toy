@@ -2,6 +2,7 @@
 
 int update_IFIL(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, rt;
+	int self = parts[i].type;
 	if (parts[i].tmp>1) {
 		parts[i].tmp--;
 		for (rx=-1; rx<2; rx++)
@@ -14,13 +15,13 @@ int update_IFIL(UPDATE_FUNC_ARGS) {
 					rt = parts[r>>PS].type;
 					if ((rt==PT_METL || rt==PT_IRON) && 1>(rand()/(RAND_MAX/100)))
 					{
-						part_change_type(r>>PS,x+rx,y+ry,PT_IFIL);
+						part_change_type(r>>PS,x+rx,y+ry,self);
 						parts[r>>PS].tmp=(parts[i].tmp<=7)?parts[i].tmp=1:parts[i].tmp-(rand()%5);//rand()/(RAND_MAX/300)+100;
 					}
 				}
 	} else if (parts[i].tmp==1 && 1>rand()%1000) {
 		parts[i].tmp = 0;
-		part_change_type(i,x,y,PT_IFIL);
+		part_change_type(i,x,y,self);
 	}
 	return 0;
 }

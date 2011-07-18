@@ -2,6 +2,7 @@
 
 int update_BOYL(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	int self = parts[i].type;
 	if (pv[y/CELL][x/CELL]<(parts[i].temp/100))
 		pv[y/CELL][x/CELL] += 0.001f*((parts[i].temp/100)-pv[y/CELL][x/CELL]);
 	if (y+CELL<YRES && pv[y/CELL+1][x/CELL]<(parts[i].temp/100))

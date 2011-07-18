@@ -43,6 +43,7 @@ int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)//
 
 int update_NEUT(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, rt;
+	int self = parts[i].type;
 	int pressureFactor = 3 + (int)pv[y/CELL][x/CELL];
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -69,7 +70,7 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 					}
 					else
 					{
-						create_part(r>>PS, x+rx, y+ry, PT_NEUT);
+						create_part(r>>PS, x+rx, y+ry, self);
 						parts[r>>PS].vx = 0.25f*parts[r>>PS].vx + parts[i].vx;
 						parts[r>>PS].vy = 0.25f*parts[r>>PS].vy + parts[i].vy;
 					}
@@ -79,13 +80,13 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 #ifdef SDEUT
 				else if (parts[r>>PS].type==PT_DEUT && (pressureFactor+1+(parts[r>>PS].life/100))>(rand()%1000))
 				{
-					create_n_parts(parts[r>>PS].life, x+rx, y+ry, parts[i].vx, parts[i].vy, restrict_flt(parts[r>>PS].temp + parts[r>>PS].life*500, MIN_TEMP, MAX_TEMP), PT_NEUT);
+					create_n_parts(parts[r>>PS].life, x+rx, y+ry, parts[i].vx, parts[i].vy, restrict_flt(parts[r>>PS].temp + parts[r>>PS].life*500, MIN_TEMP, MAX_TEMP), self);
 					kill_part(r>>PS);
 				}
 #else
 				else if (parts[r>>PS].type==PT_DEUT && (pressureFactor+1)>(rand()%1000))
 				{
-					create_part(r>>PS, x+rx, y+ry, PT_NEUT);
+					create_part(r>>PS, x+rx, y+ry, self);
 					parts[r>>PS].vx = 0.25f*parts[r>>PS].vx + parts[i].vx;
 					parts[r>>PS].vy = 0.25f*parts[r>>PS].vy + parts[i].vy;
 					if (parts[r>>PS].life>0)
@@ -122,7 +123,7 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 					parts[r>>PS].ctype = PT_DUST;
 				else if (parts[r>>PS].type==PT_ACID && 5>(rand()%100))
 					create_part(r>>PS, x+rx, y+ry, PT_ISOZ);
-				/*if(parts[r>>PS].type>1 && parts[r>>PS].type!=PT_NEUT && parts[r>>PS].type-1!=PT_NEUT && parts[r>>PS].type-1!=PT_STKM &&
+				/*if(parts[r>>PS].type>1 && parts[r>>PS].type!=self && parts[r>>PS].type-1!=self && parts[r>>PS].type-1!=PT_STKM &&
 				  (ptypes[parts[r>>PS].type-1].menusection==SC_LIQUID||
 				  ptypes[parts[r>>PS].type-1].menusection==SC_EXPLOSIVE||
 				  ptypes[parts[r>>PS].type-1].menusection==SC_GAS||

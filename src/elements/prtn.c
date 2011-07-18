@@ -2,6 +2,7 @@
 
 int update_PRTN(UPDATE_FUNC_ARGS) {
 	int r, rt, rx, ry, tmpo;
+	int self = parts[i].type;
 	float rr, rrr;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

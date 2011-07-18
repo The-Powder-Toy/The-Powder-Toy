@@ -2,6 +2,7 @@
 
 int update_WIFI(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	int self = parts[i].type;
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 	if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
 	else if (parts[i].tmp<0) parts[i].tmp = 0;

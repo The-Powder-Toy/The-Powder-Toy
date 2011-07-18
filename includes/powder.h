@@ -196,102 +196,103 @@
 #define PT_MERC 152
 #define PT_PBCN 153
 #define PT_GPMP 154
-#define PT_NTRG  155
-#define PT_LQCL  156
-#define PT_GSCL  157
-#define PT_BOOM  158
-#define PT_HEAL  159
-#define PT_FUSE2  160
-#define PT_ZAP  161
-#define PT_NCWS  162
-#define PT_ACRN  163
-#define PT_CLOUD  164
-#define PT_RWTR  165
-#define PT_ACLOUD  166
-#define PT_VOLT  167
-#define PT_VOLB  168
-#define PT_DIRT  169
-#define PT_INV  170
-#define PT_FLY  171
-#define PT_RSPW  172
-#define PT_NCGN  173
-#define PT_TRAP  174
-#define PT_BPAD  175
-#define PT_SPEL  176
-#define PT_SPER  177
-#define PT_POT  178
-#define PT_GRAS  179
-#define PT_CFUS  180
-#define PT_CFIR  181
-#define PT_SMIL  182
-#define PT_SEAL 183
-#define PT_BULL 184
-#define PT_PPLT 185
-#define PT_TNT 186
-#define PT_MGMA 187
-#define PT_DPAR 188
-#define PT_PAIN 189
-#define PT_VIRS 190
-#define PT_O3 191
-#define PT_DICE 192
-#define PT_GOLD 193
-#define PT_MPOS 194
-#define PT_MNEG 195
-#define PT_IFIL 196
-#define PT_LGUN 197
-#define PT_LAZR 198
-#define PT_IBAT 199
-#define PT_FGUN 200
-#define PT_FREZ 201
-#define PT_SPMG 202
-#define PT_SNMG 203
-#define PT_OSMT 204
-#define PT_ROOT 205
-#define PT_BFLM 206
-#define PT_PDCL 207
-#define PT_WCHP 208
-#define PT_SUN 209
-#define PT_AGAS 210
-#define PT_DWFM 211
-#define PT_COPR 212
-#define PT_C02 213
-#define PT_CLAY 214
-#define PT_NMTR 215
-#define PT_BLGN 216
-#define PT_BFGN 217
-#define PT_C6 218
-#define PT_CNVR 219
-#define PT_ASH 220
-#define PT_GREN 221
-#define PT_NUKE 222
-#define PT_TIN 223
-#define PT_BRNZ 224
-#define PT_CFCN 225
-#define PT_SVOI 226
-#define PT_PMIC 227
-#define PT_PIVS 228
-#define PT_LEAF 229
-#define PT_PLAN 230
-#define PT_BSHL 231
-#define PT_LTNG 232
-#define PT_CTRD 233
-#define PT_C0 234
-#define PT_HETR 235
-#define PT_CPPA 236
-#define PT_ARGN 237
-#define PT_PRTN 238
-#define PT_XNON 239
-#define PT_RDON 240
-#define PT_KPTN 241
-#define PT_HLIM 242
-#define PT_GEL 243
-#define PT_GENR 244
-#define PT_ADAN 245
-#define PT_SHPN 246
-#define PT_CSIM 247
-#define PT_CPCT 248
-#define PT_RUBR 249
-#define PT_NUM  250
+#define PT_CLST 155
+#define PT_NTRG  156
+#define PT_LQCL  157
+#define PT_GSCL  158
+#define PT_BOOM  159
+#define PT_HEAL  160
+#define PT_FUSE2  161
+#define PT_ZAP  162
+#define PT_NCWS  163
+#define PT_ACRN  164
+#define PT_CLOUD  165
+#define PT_RWTR  166
+#define PT_ACLOUD  167
+#define PT_VOLT  168
+#define PT_VOLB  169
+#define PT_DIRT  170
+#define PT_INV  171
+#define PT_FLY  172
+#define PT_RSPW  173
+#define PT_NCGN  174
+#define PT_TRAP  175
+#define PT_BPAD  176
+#define PT_SPEL  177
+#define PT_SPER  178
+#define PT_POT  179
+#define PT_GRAS  180
+#define PT_CFUS  181
+#define PT_CFIR  182
+#define PT_SMIL  183
+#define PT_SEAL 184
+#define PT_BULL 185
+#define PT_PPLT 186
+#define PT_TNT 187
+#define PT_MGMA 188
+#define PT_DPAR 189
+#define PT_PAIN 190
+#define PT_VIRS 191
+#define PT_O3 192
+#define PT_DICE 193
+#define PT_GOLD 194
+#define PT_MPOS 195
+#define PT_MNEG 196
+#define PT_IFIL 197
+#define PT_LGUN 198
+#define PT_LAZR 199
+#define PT_IBAT 200
+#define PT_FGUN 201
+#define PT_FREZ 202
+#define PT_SPMG 203
+#define PT_SNMG 204
+#define PT_OSMT 205
+#define PT_ROOT 206
+#define PT_BFLM 207
+#define PT_PDCL 208
+#define PT_WCHP 209
+#define PT_SUN 210
+#define PT_AGAS 211
+#define PT_DWFM 212
+#define PT_COPR 213
+#define PT_C02 214
+#define PT_CLAY 215
+#define PT_NMTR 216
+#define PT_BLGN 217
+#define PT_BFGN 218
+#define PT_C6 219
+#define PT_CNVR 220
+#define PT_ASH 221
+#define PT_GREN 222
+#define PT_NUKE 223
+#define PT_TIN 224
+#define PT_BRNZ 225
+#define PT_CFCN 226
+#define PT_SVOI 227
+#define PT_PMIC 228
+#define PT_PIVS 229
+#define PT_LEAF 230
+#define PT_PLAN 231
+#define PT_BSHL 232
+#define PT_LTNG 233
+#define PT_CTRD 234
+#define PT_C0 235
+#define PT_HETR 236
+#define PT_CPPA 237
+#define PT_ARGN 238
+#define PT_PRTN 239
+#define PT_XNON 240
+#define PT_RDON 241
+#define PT_KPTN 242
+#define PT_HLIM 243
+#define PT_GEL 244
+#define PT_GENR 245
+#define PT_ADAN 246
+#define PT_SHPN 247
+#define PT_CSIM 248
+#define PT_CPCT 249
+#define PT_RUBR 250
+#define PT_NUM  251
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -332,7 +333,6 @@
 
 int update_ACID(UPDATE_FUNC_ARGS);
 int update_ANAR(UPDATE_FUNC_ARGS);
-int update_AGAS(UPDATE_FUNC_ARGS);
 int update_AMTR(UPDATE_FUNC_ARGS);
 int update_ARAY(UPDATE_FUNC_ARGS);
 int update_BCLN(UPDATE_FUNC_ARGS);
@@ -400,10 +400,7 @@ int update_YEST(UPDATE_FUNC_ARGS);
 int update_SOAP(UPDATE_FUNC_ARGS);
 int update_O2(UPDATE_FUNC_ARGS);
 int update_H2(UPDATE_FUNC_ARGS);
-int update_GSCL(UPDATE_FUNC_ARGS);
-int update_LQCL(UPDATE_FUNC_ARGS);
 int update_FUSE2(UPDATE_FUNC_ARGS);
-int update_ACRN(UPDATE_FUNC_ARGS);
 int update_CLOUD(UPDATE_FUNC_ARGS);
 int update_ACLOUD(UPDATE_FUNC_ARGS);
 int update_VOLT(UPDATE_FUNC_ARGS);
@@ -429,7 +426,6 @@ int update_SPMG(UPDATE_FUNC_ARGS);
 int update_SNMG(UPDATE_FUNC_ARGS);
 int update_ROOT(UPDATE_FUNC_ARGS);
 int update_EQUALVEL(UPDATE_FUNC_ARGS);
-int update_PDCL(UPDATE_FUNC_ARGS);
 int update_SAND(UPDATE_FUNC_ARGS);
 int update_SUN(UPDATE_FUNC_ARGS);
 int update_NMTR(UPDATE_FUNC_ARGS);
@@ -459,6 +455,7 @@ int update_PBCN(UPDATE_FUNC_ARGS);
 int update_GPMP(UPDATE_FUNC_ARGS);
 int update_CPCT(UPDATE_FUNC_ARGS);
 int update_RUBR(UPDATE_FUNC_ARGS);
+int update_CLST(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -479,6 +476,9 @@ struct particle
     int r, g, b;
     int weight,flammable,falldown,explosive,meltable,hardness;
     float collision,airdrag,gravity,airloss,loss,hotair;
+    int actas;
+    int (*update_func) (UPDATE_FUNC_ARGS);
+    unsigned int properties;
 };
 typedef struct particle particle;
 
@@ -506,8 +506,8 @@ struct part_type
     unsigned char hconduct;
     const char *descs;
     char state;
-    const unsigned int properties;
-    int (*update_func) (UPDATE_FUNC_ARGS);
+    unsigned int properties;// const
+    int (*update_func) (UPDATE_FUNC_ARGS);//
 };
 typedef struct part_type part_type;
 
@@ -609,7 +609,7 @@ static const part_type ptypes[PT_NUM] =
     {"ACID",	PIXPACK(0xED55FF),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	40,		0,	0,	1,	1,	10,		SC_LIQUID,		R_TEMP+0.0f	+273.15f,	34,		"Dissolves almost everything.", ST_LIQUID, TYPE_LIQUID, &update_ACID},
     {"VOID",	PIXPACK(0x790B0B),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_NUCLEAR,		R_TEMP+0.0f	+273.15f,	251,	"Hole, will drain away any particles.", ST_SOLID, TYPE_SOLID, NULL},
     {"WTRV",	PIXPACK(0xA0A0FF),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	-0.1f,	0.75f,	0.0003f	* CFDS,	0,	0,		0,	0,	4,	1,	1,		SC_GAS,			R_TEMP+100.0f+273.15f,	48,		"Steam, heats up air, produced from hot water.", ST_GAS, TYPE_GAS, &update_WTRV},
-    {"CNCT",	PIXPACK(0xC0C0C0),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	55,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	100,	"Concrete, stronger than stone.", ST_SOLID, TYPE_PART, NULL},
+    {"CNCT",    PIXPACK(0xC0C0C0),  0.4f,   0.04f * CFDS,   0.94f,  0.95f,  -0.1f,  0.3f,   0.00f,  0.000f  * CFDS, 1,  0,      0,  2,  2,  1,  55,     SC_POWDERS,    R_TEMP+0.0f  +273.15f,  100,  "Concrete, stronger than stone.", ST_SOLID, TYPE_PART|PROP_HOT_GLOW, NULL},
     {"DSTW",	PIXPACK(0x1020C0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	23,		"Distilled water, does not conduct electricity.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE, &update_DSTW},
     {"SALT",	PIXPACK(0xFFFFFF),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	75,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	110,	"Salt, dissolves in water.", ST_SOLID, TYPE_PART, NULL},
     {"SLTW",	PIXPACK(0x4050F0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	35,		SC_LIQUID,		R_TEMP+0.0f	+273.15f,	75,		"Saltwater, conducts electricity, difficult to freeze.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE, &update_SLTW},
@@ -664,17 +664,17 @@ static const part_type ptypes[PT_NUM] =
     {"IRON",	PIXPACK(0x707070),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f +273.15f,	251,	"Rusts with salt, can be used for electrolysis of WATR", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW, &update_IRON},
     {"MORT",	PIXPACK(0xE0E0E0),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	-1,		SC_CRACKER2,	R_TEMP+4.0f	+273.15f,	60,		"Steam Train.", ST_NONE, TYPE_PART, &update_MORT},
     {"LIFE",  PIXPACK(0x0CAC00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Game Of Life! B3/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"HLIF",  PIXPACK(0xFF0000),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "High Life! B36/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"ASIM",  PIXPACK(0x0000FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Assimilation! B345/S4567", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"2x2",    PIXPACK(0xFFFF00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "2x2! B36/S125", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"DANI",  PIXPACK(0x00FFFF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Day and Night! B3678/S34678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"AMOE",  PIXPACK(0xFF00FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Amoeba! B357/S1358", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"MOVE",  PIXPACK(0xFFFFFF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "'Move' particles! Does not move things.. it is a life type B368/S245", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"PGOL",  PIXPACK(0xE05010),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Pseudo Life! B357/S238", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"DMOE",  PIXPACK(0x500000),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Diamoeba! B35678/S5678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"34",    PIXPACK(0x500050),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "34! B34/S34)", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"LLIF",  PIXPACK(0x505050),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Long Life! B345/S5", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"STAN",  PIXPACK(0x5000FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Stains! B3678/S235678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"HLIF",  PIXPACK(0xFF0000),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "High Life! B36/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"ASIM",  PIXPACK(0x0000FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Assimilation! B345/S4567", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"2x2",    PIXPACK(0xFFFF00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "2x2! B36/S125", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"DANI",  PIXPACK(0x00FFFF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Day and Night! B3678/S34678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"AMOE",  PIXPACK(0xFF00FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Amoeba! B357/S1358", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"MOVE",  PIXPACK(0xFFFFFF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "'Move' particles! Does not move things.. it is a life type B368/S245", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"PGOL",  PIXPACK(0xE05010),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Pseudo Life! B357/S238", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"DMOE",  PIXPACK(0x500000),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Diamoeba! B35678/S5678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"34",    PIXPACK(0x500050),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "34! B34/S34)", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"LLIF",  PIXPACK(0x505050),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Long Life! B345/S5", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"STAN",  PIXPACK(0x5000FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Stains! B3678/S235678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
     {"SPNG",  	PIXPACK(0xFFBE30),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	20, 	0,  1, 	30,	1, 	100,    SC_SOLIDS,  	R_TEMP+0.0f +273.15f,   251,    "A sponge, absorbs water.", ST_SOLID, TYPE_SOLID, &update_SPNG},
     {"RIME",  	PIXPACK(0xCCCCCC),	0.00f, 	0.00f * CFDS,   0.00f,  1.00f,   0.00f, 0.0f,   0.00f,  0.000f  * CFDS, 0, 	0, 		0, 	0, 	30,	1,  100,    SC_CRACKER2,  	243.15f,				100,    "Not quite Ice", ST_SOLID, TYPE_SOLID, &update_RIME},
     {"FOG",  	PIXPACK(0xAAAAAA),	0.8f,	0.00f * CFDS,	0.4f,	0.70f,	-0.1f,	0.0f,	0.99f,	0.000f	* CFDS, 0, 	0, 		0,  0,  30, 1,  1,		SC_CRACKER2,  	243.15f,				100,    "Not quite Steam", ST_GAS, TYPE_GAS|PROP_LIFE_DEC, &update_FOG},
@@ -716,7 +716,7 @@ static const part_type ptypes[PT_NUM] =
     {"STK2",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	50,		SC_STICKMAN,		R_TEMP+14.6f+273.15f,	0,		"Stickman. Don't kill him!", ST_NONE, 0, &update_STKM2},
     {"BOMB",	PIXPACK(0xFFF288),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	20,	1,	30,		SC_EXPLOSIVE,	R_TEMP-2.0f	+273.15f,	29,		"Bomb.", ST_NONE, TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_BOMB},
     {"C-5",		PIXPACK(0x2050E0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	88,		"Cold explosive", ST_SOLID, TYPE_SOLID | PROP_NEUTPENETRATE, &update_C5},
-    {"SING",    PIXPACK(0x242424),  0.7f,   0.36f * CFDS,   0.96f,  0.80f,  0.1f,  0.12f,  0.00f,  -0.001f  * CFDS,  1,  0,    0,  0,  0,  1,  86,    SC_POWERED,    R_TEMP+0.0f  +273.15f,  70,    "Singularity", ST_SOLID, TYPE_PART|PROP_LIFE_DEC, &update_SING},
+    {"SING",    PIXPACK(0x242424),  0.7f,   0.36f * CFDS,   0.96f,  0.80f,  0.1f,  0.12f,  0.00f,  -0.001f  * CFDS,  1,  0,    0,  0,  0,  1,  86,    SC_NUCLEAR,    R_TEMP+0.0f  +273.15f,  70,    "Singularity", ST_SOLID, TYPE_PART|PROP_LIFE_DEC, &update_SING},
     {"QRTZ",	PIXPACK(0xAADDDD),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	3,		"Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.", ST_SOLID, TYPE_SOLID|PROP_HOT_GLOW|PROP_LIFE_DEC, &update_QRTZ},
     {"PQRT",	PIXPACK(0x88BBBB),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.27f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	3,		"Broken quartz.", ST_SOLID, TYPE_PART| PROP_HOT_GLOW, &update_QRTZ},
     /*FREE*/{"SEED",  PIXPACK(0xFBEC7D),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "B2/S", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
@@ -728,27 +728,29 @@ static const part_type ptypes[PT_NUM] =
     /*FREE*/{"MYST",  PIXPACK(0x0C3C00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "B3458/S05678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
     {"BOYL",	PIXPACK(0x0A3200),	1.0f,	0.01f * CFDS,	0.99f,	0.30f,	-0.1f,	0.0f,	0.18f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+2.0f	+273.15f,	42,		"Boyle, variable pressure gas. Expands when heated.", ST_GAS, TYPE_GAS, &update_BOYL},
     /*FREE*/{"LOTE",  PIXPACK(0xFF0000),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Behaves kinda like Living on the Edge S3458/B37/4", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"FRG2",  PIXPACK(0x00FF00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Like Frogs rule S124/B3/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"STAR",  PIXPACK(0x0000FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Like Star Wars rule S3456/B278/6", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"FROG",  PIXPACK(0x00AA00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Frogs S12/B34/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
-  /*FREE*/{"BRAN",  PIXPACK(0xCCCC00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Brian 6 S6/B246/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"FRG2",  PIXPACK(0x00FF00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Like Frogs rule S124/B3/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"STAR",  PIXPACK(0x0000FF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Like Star Wars rule S3456/B278/6", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"FROG",  PIXPACK(0x00AA00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Frogs S12/B34/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+    /*FREE*/{"BRAN",  PIXPACK(0xCCCC00),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  0,  0,  100,  SC_LIFE,    9000.0f,        40,    "Brian 6 S6/B246/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
     {"WIND",	PIXPACK(0x101010),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  0,  100,	SC_SPECIAL,		0.0f,					40,		"", ST_NONE, ST_NONE, NULL},
     {"H2",		PIXPACK(0x5070FF),	2.0f,	0.00f * CFDS,	0.99f,	0.30f,	-0.10f,	0.00f,	3.00f,	0.000f	* CFDS, 0,  0,		0,	0,	0,	1,	1,		SC_GAS,			R_TEMP+0.0f +273.15f,	251,	"Combines with O2 to make WATR", ST_GAS, TYPE_GAS, &update_H2},
-    {"SOAP",	PIXPACK(0xF5F5DC),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	35,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	29,		"Soap. Creates bubbles.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE|PROP_LIFE_DEC, &update_SOAP},
-    {"BHOL",	PIXPACK(0x202020),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPACE,		R_TEMP+0.0f	+273.15f,	186,	"Black hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NBHL},
-    {"WHOL",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SPACE,		R_TEMP+0.0f	+273.15f,	186,	"White hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NWHL},
-    {"MERC",    PIXPACK(0x736B6D),	0.4f,	0.04f * CFDS,	0.94f,	0.80f,	0.0f,	0.3f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	91,		SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Mercury. Volume changes with temperature, Conductive.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB|PROP_LIFE_DEC, &update_MERC},
-    {"PBCN",  PIXPACK(0x3B4010),  0.0f,  0.00f * CFDS,  0.97f,  0.50f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  12,  1,  100,  SC_POWERED,    R_TEMP+0.0f  +273.15f,  251,  "Powered breakable clone", ST_NONE, TYPE_SOLID, &update_PBCN},
-    {"GPMP",  PIXPACK(0x103B3B),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  1,  1,  1,  100,  SC_POWERED,    0.0f    +273.15f,  0,    "Changes gravity to its temp when activated. (use HEAT/COOL).", ST_NONE, TYPE_SOLID, &update_GPMP},
+    {"SOAP",  PIXPACK(0xF5F5DC),  0.6f,  0.01f * CFDS,  0.98f,  0.95f,  0.0f,  0.1f,  0.00f,  0.000f  * CFDS,  2,  0,  0,  0,  20,  1,  35,    SC_LIQUID,    R_TEMP-2.0f  +273.15f,  29,    "Soap. Creates bubbles.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE|PROP_LIFE_DEC, &update_SOAP},
+    {"BHOL",  PIXPACK(0x202020),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,  0,  0,  0,  1,  100,  SC_SPACE,    R_TEMP+0.0f  +273.15f,  186,  "Black hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NBHL},
+    {"WHOL",  PIXPACK(0xFFFFFF),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,  0,  0,  0,  1,  100,  SC_SPACE,    R_TEMP+0.0f  +273.15f,  186,  "White hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NWHL},
+    {"MERC",      PIXPACK(0x736B6D),  0.4f,  0.04f * CFDS,  0.94f,  0.80f,  0.0f,  0.3f,  0.00f,  0.000f  * CFDS,  2,  0,  0,  0,  20,  1,  91,    SC_ELEC,    R_TEMP+0.0f  +273.15f,  251,  "Mercury. Volume changes with temperature, Conductive.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB|PROP_LIFE_DEC, &update_MERC},
+    {"PBCN",  PIXPACK(0x3B4010),  0.0f,  0.00f * CFDS,  0.97f,  0.50f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,  0,  0,  12,  1,  100,  SC_POWERED,    R_TEMP+0.0f  +273.15f,  251,  "Powered breakable clone", ST_NONE, TYPE_SOLID, &update_PBCN},
+    {"GPMP",  PIXPACK(0x103B3B),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,  0,  1,  1,  1,  100,  SC_POWERED,    0.0f    +273.15f,  0,    "Changes gravity to its temp when activated. (use HEAT/COOL).", ST_NONE, TYPE_SOLID, &update_GPMP},
+    {"CLST",  PIXPACK(0xE4A4A4),  0.7f,  0.02f * CFDS,  0.94f,  0.95f,  0.0f,  0.2f,  0.00f,  0.000f  * CFDS,  1,  0,  0,  2,  2,  1,  55,        SC_POWDERS,    R_TEMP+0.0f  +273.15f,  70,    "Clay dust. Produces paste when mixed with water.", ST_SOLID, TYPE_PART, &update_CLST},
+//  {"CNCT",  PIXPACK(0xC0C0C0),  0.0f,  0.04f * CFDS,  0.94f,  0.95f,  -0.1f,  0.3f,  0.00f,  0.000f  * CFDS,  1,  0,  0,  2,  2,  1,  55,    SC_POWDERS,    R_TEMP+0.0f  +273.15f,  100,  "Concrete, stronger than stone.", ST_SOLID, TYPE_PART, NULL},
     {"NTRG",	PIXPACK(0x80A0AA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,  	"Nitrogen in its gas form.", ST_GAS, TYPE_GAS, NULL},
-    {"LQCL",	PIXPACK(0xFFD010),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	29,		"Liquid. Duplicates any particles it touches.", ST_LIQUID, TYPE_LIQUID, &update_LQCL},
-    {"GSCL",	PIXPACK(0xFFD010),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Gas. Duplicates any particles it touches.", ST_GAS, TYPE_GAS, &update_GSCL},
+    {"LQCL",	PIXPACK(0xFFD010),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	30,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	29,		"Liquid. Duplicates any particles it touches.", ST_LIQUID, TYPE_LIQUID, &update_CLNE},
+    {"GSCL",	PIXPACK(0xFFD010),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Gas. Duplicates any particles it touches.", ST_GAS, TYPE_GAS, &update_CLNE},
     {"BOOM",	PIXPACK(0xEB4917),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	90,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	97,		"Heavy heat activated explosive", ST_SOLID, TYPE_PART, &update_PYRO},
     {"HEAL",	PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_STICKMAN,	R_TEMP+0.0f	+273.15f,	251,	"Heals Stickmen", ST_SOLID, TYPE_SOLID, NULL},
     {"FUSE2",	PIXPACK(0xC0A050),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. A better fuse than fuse.", ST_SOLID, TYPE_SOLID, &update_FUSE2},
     {"ELCT",    PIXPACK(0xFFD010),  0.0f,   0.00f * CFDS,   0.00f,  1.00f,  -0.99f,  0.0f,  0.01f,  0.002f  * CFDS,  0,  0,     0,  0,  0,  1,  -1,    SC_ELEC,    R_TEMP+4.0f  +273.15f,  60,  "Electrons. Transfer spark to conductive materials.", ST_GAS, TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_ZAP},
     {"NCWS",	PIXPACK(0x09FF00),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	45,		SC_NUCLEAR,		R_TEMP+1500.0f+273.15f,	60,		"Dangerous Radioactive Liquid.", ST_LIQUID, TYPE_LIQUID, NULL},
-    {"ACRN",	PIXPACK(0x73FABB),	0.0f,	0.00f * CFDS,	0.00f,	0.80f,	0.0f,	1.0f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	70,		SC_CRACKER2,		R_TEMP-2.0f	+273.15f,	29,		"An Acidic Form Of Rain", ST_LIQUID, TYPE_LIQUID, &update_ACRN},
+    {"ACRN",	PIXPACK(0x73FABB),	0.0f,	0.00f * CFDS,	0.00f,	0.80f,	0.0f,	1.0f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	70,		SC_CRACKER2,		R_TEMP-2.0f	+273.15f,	29,		"An Acidic Form Of Rain", ST_LIQUID, TYPE_LIQUID, &update_ACID},
     {"CLOU",	PIXPACK(0xE8E8E8),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.40f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	251,	"Provides an endless rainshower.", ST_GAS, TYPE_GAS, &update_CLOUD},
     {"RWTR",	PIXPACK(0x0080FF),	0.0f,	0.00f * CFDS,	0.00f,	0.80f,	0.0f,	1.0f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	70,		SC_CRACKER2,		R_TEMP-2.0f	+273.15f,	29,		"Rain.", ST_LIQUID, TYPE_LIQUID, NULL},
     {"ACLO",	PIXPACK(0xA8B5AF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.40f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	251,	"Provides an endless acidic rainshower.", ST_GAS, TYPE_GAS, &update_ACLOUD},
@@ -792,10 +794,10 @@ static const part_type ptypes[PT_NUM] =
     {"OSMT",	PIXPACK(0x404060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"One Shot Metal. Conducts electricity. Meltable. After Carrying Spark Dissapears.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC, NULL},
     {"ROOT",	PIXPACK(0xA65005),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	20,		0,	0,	1,	1,	100,	SC_NATURE,		R_TEMP+0.0f +273.15f,	        251,		"Aids the growth of grass and plant.", ST_SOLID, TYPE_SOLID, &update_ROOT},
     {"BFLM",	PIXPACK(0x4C76F5),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	MAX_TEMP +273.15f,	            88,		"Ignites flammable materials. Heats air.", ST_GAS, TYPE_GAS, &update_PYRO},
-    {"PDCL",	PIXPACK(0xFFD010),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Powder. Duplicates any particles it touches.", ST_SOLID, TYPE_PART, &update_PDCL},
+    {"PDCL",	PIXPACK(0xFFD010),	0.7f,	0.02f * CFDS,	0.96f,	0.80f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	30,	1,	85,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Powder. Duplicates any particles it touches.", ST_SOLID, TYPE_PART, &update_CLNE},
     {"WCHP",    PIXPACK(0xC0A040),  0.4f,  0.04f * CFDS,  0.94f,  0.95f,  -0.1f,  0.3f,  0.00f,  0.000f  * CFDS,  1,  20,    0,  5,  2,  1,  50,    SC_NATURE,    R_TEMP+0.0f  +273.15f,  150,  "Wood Chip. See Wood", ST_SOLID, TYPE_PART, NULL},
     {"STAR",     PIXPACK(0xFFD010),  0.0f,  0.00f * CFDS,  0.90f,  0.00f,  0.0f,  0.0f,  0.00f,  0.000f  * CFDS,  0,  0,    0,  0,  1,  1,  100,  SC_SPACE,    R_TEMP+50000.0f +273.15f,251,  "A Star. A centre of gravity and a solar system.", ST_SOLID, TYPE_SOLID, &update_SUN},
-    {"AGAS",	PIXPACK(0xFF00EA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,      SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Acidic.", ST_GAS, TYPE_GAS, &update_AGAS},
+    {"AGAS",	PIXPACK(0xFF00EA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,      SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Acidic.", ST_GAS, TYPE_GAS, &update_ACID},
     {"DWFM",	PIXPACK(0xFF1000),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	2,		SC_EXPLOSIVE,	R_TEMP+400.0f+273.15f,	88,		"Ignites flammable materials. Heats air. Goes Down.", ST_GAS, TYPE_GAS, &update_PYRO},
     {"COPR",	PIXPACK(0xB88700),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	250,	"Solid. Conducts electricity slowly. Meltable.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC, NULL},
     {"CO2",		PIXPACK(0xCCCCCC),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	2,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,		"Gas. Creates O2 with Plant.", ST_GAS, TYPE_GAS, NULL},
@@ -834,7 +836,7 @@ static const part_type ptypes[PT_NUM] =
     {"SHPN",	PIXPACK(0x696465),	0.7f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	90,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	97,		"Shrapnel. Creates smaller explosions.", ST_SOLID, TYPE_PART|PROP_LIFE_DEC, &update_PYRO},
     {"CSIM",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	1,	50,	1,	1,	100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	240,	"Caesium, explosive, especially on contact with oxygen.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, NULL},
     {"CPCT",	PIXPACK(0x969393),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Capacitor. Stores Spark.", ST_SOLID, TYPE_SOLID, &update_CPCT},
-    {"RUBR",	PIXPACK(0x404060),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Rubber, Bouncy.", ST_SOLID, TYPE_SOLID, &update_RUBR},
+    {"RUBR",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Rubber, Bouncy.", ST_SOLID, TYPE_SOLID, &update_RUBR},
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
 };
 
@@ -851,161 +853,162 @@ static part_transition ptransitions[PT_NUM] =
 {
     //			if low pressure		if high pressure	if low temperature	if high temperature
 // Name		plv		plt	 		phv		pht			tlv		tlt	 		thv		tht
-	/* NONE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* DUST */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* WATR */ {IPL,	NT,			IPH,	NT,			273.15f,PT_ICEI,	373.0f,	PT_WTRV},
-	/* OIL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			333.0f,	PT_GAS},
-	/* FIRE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2773.0f,PT_PLSM},
-	/* STNE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			983.0f,	PT_LAVA},
-	/* LAVA */ {IPL,	NT,			IPH,	NT,			2573.15f,ST,		ITH,	NT}, // 2573.15f is highest melt pt of possible ctypes
-	/* GUN  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			673.0f,	PT_FIRE},
-	/* NITR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			673.0f,	PT_FIRE},
-	/* CLNE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GAS  */ {-6.0f,	PT_OIL,		6.0f,	PT_OIL,		ITL,	NT,			573.0f,	PT_FIRE},
-	/* C-4  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			673.0f,	PT_FIRE},
-	/* GOO  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* ICE  */ {IPL,	NT,			0.8f,	PT_SNOW,	ITL,	NT,			233.0f,	ST},
-	/* METL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1273.0f,PT_LAVA},
-	/* SPRK */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* SNOW */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			273.0f,	PT_WATR},
-	/* WOOD */ {IPL,	NT,			6.0f,	PT_WCHP,	ITL,	NT,			873.0f,	PT_FIRE},
-	/* NEUT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* PLUT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* PLNT */ {IPL,	NT,			6.0f,	PT_LEAF,			ITL,	NT,			573.0f,	PT_FIRE},
-	/* ACID */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* VOID */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* WTRV */ {IPL,	NT,			IPH,	NT,			371.0f,	ST,			ITH,	NT},
-	/* CNCT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1123.0f,PT_LAVA},
-	/* DSTW */ {IPL,	NT,			IPH,	NT,			273.15f,PT_ICEI,	373.0f,	PT_WTRV},
-	/* SALT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1173.0f,PT_LAVA},
-	/* SLTW */ {IPL,	NT,			IPH,	NT,			233.0f,	PT_ICEI,	483.0f,	ST},
-	/* DMND */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* BMTL */ {IPL,	NT,			1.0f,	ST,			ITL,	NT,			1273.0f,PT_LAVA},
-	/* BRMT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1273.0f,PT_LAVA},
-	/* PHOT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* URAN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* WAX  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			319.0f,	PT_MWAX},
-	/* MWAX */ {IPL,	NT,			IPH,	NT,			318.0f,	PT_WAX,		673.0f,	PT_FIRE},
-	/* PSCN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
-	/* NSCN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
-	/* LN2  */ {IPL,	NT,			IPH,	NT,			63.0f,	PT_NICE,	ITH,	PT_NTRG}, //200
-	/* INSL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* BHOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* WHOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* RBDM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			312.0f,	PT_LRBD},
-	/* LRBD */ {IPL,	NT,			IPH,	NT,			311.0f,	PT_RBDM,	961.0f,	PT_FIRE},
-	/* NTCT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
-	/* SAND */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1973.0f,PT_LAVA},
-	/* GLAS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1973.0f,PT_LAVA},
-	/* PTCT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1414.0f,PT_LAVA},
-	/* BGLA */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1973.0f,PT_LAVA},
-	/* THDR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* PLSM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* ETRD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* NICE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			63.1f,	PT_LNTG},
-	/* NBLE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* BTRY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2273.0f,PT_PLSM},
-	/* LCRY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1273.0f,PT_BGLA},
-	/* STKM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			620.0f,	PT_FIRE},
-	/* SWCH */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* SMKE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			625.0f,	PT_FIRE},
-	/* DESL */ {IPL,	NT,			5.0f,	PT_FIRE,	ITL,	NT,			335.0f,	PT_FIRE},
-	/* COAL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* LO2  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			90.1f,	PT_O2},
-	/* O2   */ {IPL,	NT,			IPH,	NT,			90.0f,	PT_LO2,		ITH,	NT},
-	/* INWR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
-	/* YEST */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			373.0f,	PT_DYST},
-	/* DYST */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			473.0f,	PT_DUST},
-	/* THRM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GLOW */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* BRCK */ {IPL,	NT,			8.8f,	PT_STNE,	ITL,	NT,			1223.0f,PT_LAVA},
-	/* CFLM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* FIRW */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* FUSE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* FSEP */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* AMTR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* BCOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* PCLN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* HSWC */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* IRON */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
-	/* MORT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* SPNG */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2730.0f,PT_FIRE},
-	/* RIME */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			273.15f,PT_WATR},
-	/* FOG  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			373.15f,PT_WTRV},
-	/* BCLN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* LOVE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* DEUT  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* WARP */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* PUMP */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* FWRK */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* PIPE */ {IPL,	NT,			10.0f,	PT_BRMT,	ITL,	NT,			ITH,	NT},
-	/* FRZZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* FRZW */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			53.0f,	PT_ICEI},
-	/* GRAV */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* BIZR */ {IPL,	NT,			IPH,	NT,			100.0f,	PT_BIZRG,	400.0f,	PT_BIZRS},
-	/* BIZRG*/ {IPL,	NT,			IPH,	NT,			ITL,	NT,			100.0f,	PT_BIZR},//,	400.0f,	PT_BIZRS},
-	/* BIZRS*/ {IPL,	NT,			IPH,	NT,			400.0f,	PT_BIZR,	ITH,	NT},//	100.0f,	PT_BIZRG},
-	/* INST */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* ISOZ */ {IPL,	NT,			IPH,	NT,			160.0f,	PT_ISZS,	ITH,	NT},
-	/* ISZS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			300.0f,	PT_ISOZ},
-	/* PRTI */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* PRTO */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* PSTE */ {IPL,	NT,			0.5f,	PT_PSTS,	ITL,	NT,			747.0f,	PT_BRCK},
-	/* PSTS */ {0.5f,	PT_PSTE,	IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* ANAR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* VINE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			573.0f,	PT_FIRE},
-	/* INVS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* EQVE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* SPWN2*/ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* SPAWN*/ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* SHLD1*/ {IPL,	NT,			7.0f,	PT_NONE,	ITL,	NT,			ITH,	NT},
-	/* SHLD2*/ {IPL,	NT,			15.0f,	PT_NONE,	ITL,	NT,			ITH,	NT},
-	/* SHLD3*/ {IPL,	NT,			25.0f,	PT_NONE,	ITL,	NT,			ITH,	NT},
-	/* SHLD4*/ {IPL,	NT,			40.0f,	PT_NONE,	ITL,	NT,			ITH,	NT},
-	/* LOlZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* WIFI */ {IPL,	NT,			15.0f,	PT_BRMT,	ITL,	NT,			ITH,	NT},
-	/* FILT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* ARAY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* BRAY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* STKM2*/ {IPL,	NT,			IPH,	NT,			ITL,	NT,			620.0f,	PT_FIRE},
-	/* BOMB */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* C-5  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* SING */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* QRTZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2573.15f,PT_LAVA},
-	/* PQRT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2573.15f,PT_LAVA},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* BOYL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* WIND */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* H2   */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* SOAP */ {IPL,   NT,         IPH,    NT,         ITL,  NT,      ITL,  NT},
-     /* NBHL */ {IPL,   NT,         IPH,    NT,         ITL,  NT,      ITH,  NT},
+    /* NONE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* DUST */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* WATR */ {IPL,	NT,			IPH,	NT,			273.15f,PT_ICEI,	373.0f,	PT_WTRV},
+    /* OIL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			333.0f,	PT_GAS},
+    /* FIRE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2773.0f,PT_PLSM},
+    /* STNE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			983.0f,	PT_LAVA},
+    /* LAVA */ {IPL,	NT,			IPH,	NT,			2573.15f,ST,		ITH,	NT}, // 2573.15f is highest melt pt of possible ctypes
+    /* GUN  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			673.0f,	PT_FIRE},
+    /* NITR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			673.0f,	PT_FIRE},
+    /* CLNE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GAS  */ {IPL,    NT,  		6.0f,	PT_OIL,		ITL,	NT,			573.0f,	PT_FIRE},
+    /* C-4  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			673.0f,	PT_FIRE},
+    /* GOO  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* ICE  */ {IPL,	NT,			0.8f,	PT_SNOW,	ITL,	NT,			233.0f,	ST},
+    /* METL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1273.0f,PT_LAVA},
+    /* SPRK */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* SNOW */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			273.0f,	PT_WATR},
+    /* WOOD */ {IPL,	NT,			6.0f,	PT_WCHP,	ITL,	NT,			873.0f,	PT_FIRE},
+    /* NEUT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* PLUT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* PLNT */ {IPL,	NT,			6.0f,	PT_LEAF,			ITL,	NT,			573.0f,	PT_FIRE},
+    /* ACID */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* VOID */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* WTRV */ {IPL,	NT,			IPH,	NT,			371.0f,	ST,			ITH,	NT},
+    /* CNCT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1123.0f,PT_LAVA},
+    /* DSTW */ {IPL,	NT,			IPH,	NT,			273.15f,PT_ICEI,	373.0f,	PT_WTRV},
+    /* SALT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1173.0f,PT_LAVA},
+    /* SLTW */ {IPL,	NT,			IPH,	NT,			233.0f,	PT_ICEI,	483.0f,	ST},
+    /* DMND */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* BMTL */ {IPL,	NT,			1.0f,	ST,			ITL,	NT,			1273.0f,PT_LAVA},
+    /* BRMT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1273.0f,PT_LAVA},
+    /* PHOT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* URAN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* WAX  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			319.0f,	PT_MWAX},
+    /* MWAX */ {IPL,	NT,			IPH,	NT,			318.0f,	PT_WAX,		673.0f,	PT_FIRE},
+    /* PSCN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
+    /* NSCN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
+    /* LN2  */ {IPL,	NT,			IPH,	NT,			63.0f,	PT_NICE,	ITH,	PT_NTRG}, //200
+    /* INSL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* BHOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* WHOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* RBDM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			312.0f,	PT_LRBD},
+    /* LRBD */ {IPL,	NT,			IPH,	NT,			311.0f,	PT_RBDM,	961.0f,	PT_FIRE},
+    /* NTCT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
+    /* SAND */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1973.0f,PT_LAVA},
+    /* GLAS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1973.0f,PT_LAVA},
+    /* PTCT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1414.0f,PT_LAVA},
+    /* BGLA */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1973.0f,PT_LAVA},
+    /* THDR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* PLSM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* ETRD */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* NICE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			63.1f,	PT_LNTG},
+    /* NBLE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* BTRY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2273.0f,PT_PLSM},
+    /* LCRY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1273.0f,PT_BGLA},
+    /* STKM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			620.0f,	PT_FIRE},
+    /* SWCH */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* SMKE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			625.0f,	PT_FIRE},
+    /* DESL */ {IPL,	NT,			5.0f,	PT_FIRE,	ITL,	NT,			335.0f,	PT_FIRE},
+    /* COAL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* LO2  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			90.1f,	PT_O2},
+    /* O2   */ {IPL,	NT,			IPH,	NT,			90.0f,	PT_LO2,		ITH,	NT},
+    /* INWR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
+    /* YEST */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			373.0f,	PT_DYST},
+    /* DYST */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			473.0f,	PT_DUST},
+    /* THRM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GLOW */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* BRCK */ {IPL,	NT,			8.8f,	PT_STNE,	ITL,	NT,			1223.0f,PT_LAVA},
+    /* CFLM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* FIRW */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* FUSE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* FSEP */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* AMTR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* BCOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* PCLN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* HSWC */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* IRON */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
+    /* MORT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* SPNG */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2730.0f,PT_FIRE},
+    /* RIME */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			273.15f,PT_WATR},
+    /* FOG  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			373.15f,PT_WTRV},
+    /* BCLN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* LOVE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* DEUT  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* WARP */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* PUMP */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* FWRK */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* PIPE */ {IPL,	NT,			10.0f,	PT_BRMT,	ITL,	NT,			ITH,	NT},
+    /* FRZZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* FRZW */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			53.0f,	PT_ICEI},
+    /* GRAV */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* BIZR */ {IPL,	NT,			IPH,	NT,			100.0f,	PT_BIZRG,	400.0f,	PT_BIZRS},
+    /* BIZRG*/ {IPL,	NT,			IPH,	NT,			ITL,	NT,			100.0f,	PT_BIZR},//,	400.0f,	PT_BIZRS},
+    /* BIZRS*/ {IPL,	NT,			IPH,	NT,			400.0f,	PT_BIZR,	ITH,	NT},//	100.0f,	PT_BIZRG},
+    /* INST */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* ISOZ */ {IPL,	NT,			IPH,	NT,			160.0f,	PT_ISZS,	ITH,	NT},
+    /* ISZS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			300.0f,	PT_ISOZ},
+    /* PRTI */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* PRTO */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* PSTE */ {IPL,	NT,			0.5f,	PT_PSTS,	ITL,	NT,			747.0f,	PT_BRCK},
+    /* PSTS */ {0.5f,	PT_PSTE,	IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* ANAR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* VINE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			573.0f,	PT_FIRE},
+    /* INVS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* EQVE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* SPWN2*/ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* SPAWN*/ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* SHLD1*/ {IPL,	NT,			7.0f,	PT_NONE,	ITL,	NT,			ITH,	NT},
+    /* SHLD2*/ {IPL,	NT,			15.0f,	PT_NONE,	ITL,	NT,			ITH,	NT},
+    /* SHLD3*/ {IPL,	NT,			25.0f,	PT_NONE,	ITL,	NT,			ITH,	NT},
+    /* SHLD4*/ {IPL,	NT,			40.0f,	PT_NONE,	ITL,	NT,			ITH,	NT},
+    /* LOlZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* WIFI */ {IPL,	NT,			15.0f,	PT_BRMT,	ITL,	NT,			ITH,	NT},
+    /* FILT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* ARAY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* BRAY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* STKM2*/ {IPL,	NT,			IPH,	NT,			ITL,	NT,			620.0f,	PT_FIRE},
+    /* BOMB */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* C-5  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* SING */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* QRTZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2573.15f,PT_LAVA},
+    /* PQRT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			2573.15f,PT_LAVA},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* BOYL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* WIND */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* H2   */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* SOAP */ {IPL,   NT,         IPH,    NT,         ITL,  NT,      ITL,  NT},
+    /* NBHL */ {IPL,   NT,         IPH,    NT,         ITL,  NT,      ITH,  NT},
     /* NWHL */ {IPL,    NT,         IPH,    NT,         ITL,  NT,      ITH,  NT},
     /* MERC */ {IPL,    NT,         IPH,    NT,         ITL,    NT,         ITH,  NT},
     /* PBCN */ {IPL,    NT,         IPH,    NT,         ITL,  NT,      ITH,  NT},
     /* GPMP */ {IPL,    NT,         IPH,    NT,         ITL,    NT,         ITH,  NT},
+    /* CLST */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      1256.0f,  PT_LAVA},
     /* NTRG  */ {IPL,	NT,			IPH,	NT,			120.0f,	PT_LNTG,     ITH,	PT_NONE},
     /* LQCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* GSCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
@@ -1050,7 +1053,7 @@ static part_transition ptransitions[PT_NUM] =
     /* ifil */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* lgun */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* lazr */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* IBAT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* IBAT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* fgun */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* frez */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* spmg */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
@@ -1059,18 +1062,18 @@ static part_transition ptransitions[PT_NUM] =
     /* root */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,    NT},
     /* BIRE */ {IPL,	NT,         IPH,	NT,         ITL,	NT,         ITH,    NT},
     /* PDCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* mnst */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* mnst */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* box */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* AGAS */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* DWFM */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* COPR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1357.0f,PT_LAVA},
-     /* CO2 */ {IPL,	NT,			IPH,	NT,			194.0f,	PT_DICE,	ITH,	NT},
+    /* CO2 */ {IPL,	NT,			IPH,	NT,			194.0f,	PT_DICE,	ITH,	NT},
     /* CLAY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			773.0f,	PT_POT},
     /* NMTR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* BLGN */ {IPL,	NT,			50.0f,  PT_PLSM,	ITL,	NT,			ITH,    NT},
-     /* BFGN  */ {IPL,	NT,			50.0f,  PT_HFLM,	ITL,	NT,			ITH,    NT},
+    /* BLGN */ {IPL,	NT,			50.0f,  PT_PLSM,	ITL,	NT,			ITH,    NT},
+    /* BFGN  */ {IPL,	NT,			50.0f,  PT_HFLM,	ITL,	NT,			ITH,    NT},
     /* C6 */    {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-     /* CNVR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* CNVR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* ASH */   {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* gren */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* nuke */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
@@ -1164,39 +1167,39 @@ static part_transition ptransitions[PT_NUM] =
 
 struct gol_menu
 {
-	const char *name;
-	pixel colour;
-	int goltype;
-	const char *description;
+    const char *name;
+    pixel colour;
+    int goltype;
+    const char *description;
 };
 typedef struct gol_menu gol_menu;
 
 static gol_menu gmenu[NGOL] =
 {
-	{"GOL",		PIXPACK(0x0CAC00), 0, "GOL"},
-	{"HLIF",	PIXPACK(0xFF0000), 1, "GOL"},
-	{"ASIM",	PIXPACK(0x0000FF), 2, "GOL"},
-	{"2x2",		PIXPACK(0xFFFF00), 3, "GOL"},
-	{"DANI",	PIXPACK(0x00FFFF), 4, "GOL"},
-	{"AMOE",	PIXPACK(0xFF00FF), 5, "GOL"},
-	{"MOVE",	PIXPACK(0xFFFFFF), 6, "GOL"},
-	{"PGOL",	PIXPACK(0xE05010), 7, "GOL"},
-	{"DMOE",	PIXPACK(0x500000), 8, "GOL"},
-	{"34",		PIXPACK(0x500050), 9, "GOL"},
-	{"LLIF",	PIXPACK(0x505050), 10, "GOL"},
-	{"STAN",	PIXPACK(0x5000FF), 11, "GOL"},
-	{"SEED",	PIXPACK(0xFBEC7D), 12, "GOL"},
-	{"MAZE",	PIXPACK(0xA8E4A0), 13, "GOL"},
-	{"COAG",	PIXPACK(0x9ACD32), 14, "GOL"},
-	{"WALL",	PIXPACK(0x0047AB), 15, "GOL"},
-	{"GNAR",	PIXPACK(0xE5B73B), 16, "GOL"},
-	{"REPL",	PIXPACK(0x259588), 17, "GOL"},
-	{"MYST",	PIXPACK(0x0C3C00), 18, "GOL"},
-	{"LOTE",	PIXPACK(0xFF0000), 19, "GOL"},
-	{"FRG2",	PIXPACK(0x00FF00), 20, "GOL"},
-	{"STAR",	PIXPACK(0x0000FF), 21, "GOL"},
-	{"FROG",	PIXPACK(0x00AA00), 22, "GOL"},
-	{"BRAN",	PIXPACK(0xCCCC00), 23, "GOL"}
+    {"GOL",		PIXPACK(0x0CAC00), 0, "GOL"},
+    {"HLIF",	PIXPACK(0xFF0000), 1, "GOL"},
+    {"ASIM",	PIXPACK(0x0000FF), 2, "GOL"},
+    {"2x2",		PIXPACK(0xFFFF00), 3, "GOL"},
+    {"DANI",	PIXPACK(0x00FFFF), 4, "GOL"},
+    {"AMOE",	PIXPACK(0xFF00FF), 5, "GOL"},
+    {"MOVE",	PIXPACK(0xFFFFFF), 6, "GOL"},
+    {"PGOL",	PIXPACK(0xE05010), 7, "GOL"},
+    {"DMOE",	PIXPACK(0x500000), 8, "GOL"},
+    {"34",		PIXPACK(0x500050), 9, "GOL"},
+    {"LLIF",	PIXPACK(0x505050), 10, "GOL"},
+    {"STAN",	PIXPACK(0x5000FF), 11, "GOL"},
+    {"SEED",	PIXPACK(0xFBEC7D), 12, "GOL"},
+    {"MAZE",	PIXPACK(0xA8E4A0), 13, "GOL"},
+    {"COAG",	PIXPACK(0x9ACD32), 14, "GOL"},
+    {"WALL",	PIXPACK(0x0047AB), 15, "GOL"},
+    {"GNAR",	PIXPACK(0xE5B73B), 16, "GOL"},
+    {"REPL",	PIXPACK(0x259588), 17, "GOL"},
+    {"MYST",	PIXPACK(0x0C3C00), 18, "GOL"},
+    {"LOTE",	PIXPACK(0xFF0000), 19, "GOL"},
+    {"FRG2",	PIXPACK(0x00FF00), 20, "GOL"},
+    {"STAR",	PIXPACK(0x0000FF), 21, "GOL"},
+    {"FROG",	PIXPACK(0x00AA00), 22, "GOL"},
+    {"BRAN",	PIXPACK(0xCCCC00), 23, "GOL"}
 };
 
 static int grule[NGOL+1][10] =
@@ -1230,30 +1233,30 @@ static int grule[NGOL+1][10] =
 };
 static int goltype[NGOL] =
 {
-	GT_GOL,
-	GT_HLIF,
-	GT_ASIM,
-	GT_2x2,
-	GT_DANI,
-	GT_AMOE,
-	GT_MOVE,
-	GT_PGOL,
-	GT_DMOE,
-	GT_34,
-	GT_LLIF,
-	GT_STAN,
-	GT_SEED,
-	GT_MAZE,
-	GT_COAG,
-	GT_WALL,
-	GT_GNAR,
-	GT_REPL,
-	GT_MYST,
-	GT_LOTE,
-	GT_FRG2,
-	GT_STAR,
-	GT_FROG,
-	GT_BRAN,
+    GT_GOL,
+    GT_HLIF,
+    GT_ASIM,
+    GT_2x2,
+    GT_DANI,
+    GT_AMOE,
+    GT_MOVE,
+    GT_PGOL,
+    GT_DMOE,
+    GT_34,
+    GT_LLIF,
+    GT_STAN,
+    GT_SEED,
+    GT_MAZE,
+    GT_COAG,
+    GT_WALL,
+    GT_GNAR,
+    GT_REPL,
+    GT_MYST,
+    GT_LOTE,
+    GT_FRG2,
+    GT_STAR,
+    GT_FROG,
+    GT_BRAN,
 };
 static int loverule[9][9] =
 {
@@ -1281,15 +1284,15 @@ static int lolzrule[9][9] =
 };
 static int smilrule[9][9] =
 {
-	{0,0,0,0,0,0,0,0,0},
-	{0,0,0,1,0,1,0,0,0},
-	{0,0,0,1,0,1,0,0,0},
-	{0,0,0,1,0,1,0,0,0},
-	{0,1,0,0,0,0,0,1,0},
-	{0,1,0,0,0,0,0,1,0},
-	{0,0,1,1,1,1,1,0,0},
-	{0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0},
+    {0,0,0,1,0,1,0,0,0},
+    {0,0,0,1,0,1,0,0,0},
+    {0,0,0,1,0,1,0,0,0},
+    {0,1,0,0,0,0,0,1,0},
+    {0,1,0,0,0,0,0,1,0},
+    {0,0,1,1,1,1,1,0,0},
+    {0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0},
 };
 
 struct wall_type
@@ -1370,6 +1373,8 @@ void kill_part(int i);
 void detach(int i);
 
 void part_change_type(int i, int x, int y, int t);
+
+int InCurrentBrush(int i, int j, int rx, int ry);
 
 int create_part(int p, int x, int y, int t);
 

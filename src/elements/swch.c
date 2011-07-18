@@ -2,6 +2,7 @@
 
 int update_SWCH(UPDATE_FUNC_ARGS) {
 	int r, rt, rx, ry;
+	int self = parts[i].type;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
 	for (rx=-2; rx<3; rx++)
@@ -13,7 +14,7 @@ int update_SWCH(UPDATE_FUNC_ARGS) {
 					continue;
 				if (parts_avg(i,r>>PS,PT_INSL)!=PT_INSL) {
 					rt = r&TYPE;
-					if (rt==PT_SWCH)
+					if (rt==self)
 					{
 						if (parts[i].life>=10&&parts[r>>PS].life<10&&parts[r>>PS].life>0)
 							parts[i].life = 9;
@@ -22,7 +23,7 @@ int update_SWCH(UPDATE_FUNC_ARGS) {
 					}
 					else if (rt==PT_SPRK&&parts[i].life==10&&parts[r>>PS].ctype!=PT_PSCN&&parts[r>>PS].ctype!=PT_NSCN) {
 						part_change_type(i,x,y,PT_SPRK);
-						parts[i].ctype = PT_SWCH;
+						parts[i].ctype = self;
 						parts[i].life = 4;
 					}
 				}

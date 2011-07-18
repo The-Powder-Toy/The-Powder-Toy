@@ -1970,7 +1970,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
                     h = n;
                 }
-                if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+                if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL)))
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
                     h = n;
@@ -2007,7 +2007,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
                     h = n;
                 }
-                if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+                if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL)))
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
                     h = n;
@@ -2041,7 +2041,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
                     drawrect(vid_buf, x+30, y-1, 29, 17, 255, 55, 55, 255);
                     h = n;
                 }
-                if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+                if (!bq && mx>=x+32 && mx<x+58 && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL)))
                 {
                     drawrect(vid_buf, x+30, y-1, 29, 17, 0, 255, 255, 255);
                     h = n;
@@ -2077,7 +2077,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 				drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 255, 55, 55, 255);
 				h = n;
 			}
-			if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT)))
+			if (!bq && mx>=x+32-xoff && mx<x+58-xoff && my>=y && my< y+15&&(sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL)))
 			{
 				drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 0, 255, 255, 255);
 				h = n;
@@ -2134,7 +2134,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
         }
     }
     if (!bq && mx>=((XRES+BARSIZE)-16) ) //highlight menu section
-        if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
+        if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL))
             if (i>=0&&i<SC_TOTAL)
                 SEC = i;
 
@@ -2158,7 +2158,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
     //h has the value of the element it is over, and -1 if not over an element
     if (b==1&&h==-1)
     {
-        if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT) && SEC>=0)
+        if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL) && SEC>=0)
         {
             SLALT = -1;
             SEC2 = SEC;
@@ -2166,7 +2166,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
     }
     if (b==1&&h!=-1)
     {
-        if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
+        if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL))
         {
             SLALT = h;
             SEC2 = -1;
@@ -2179,7 +2179,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
     }
     if (b==4&&h==-1)
     {
-        if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT) && SEC>=0)
+        if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL) && SEC>=0)
         {
             SLALT = -1;
             SEC2 = SEC;
@@ -2187,7 +2187,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
     }
     if (b==4&&h!=-1)
     {
-        if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_SHIFT))
+        if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL))
         {
             SLALT = h;
             SEC2 = -1;
@@ -5180,7 +5180,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
             }
             else //first click
             {
-                if ((sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)) && !(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL|KMOD_LALT)))
+                if ((sdl_mod & (KMOD_SHIFT)) && !(sdl_mod & (KMOD_CTRL)))
                 {
                     lx = mx;
                     ly = my;
@@ -5188,7 +5188,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
                     lm = 1;//line
                 }
                 //start box tool
-                else if ((sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)) && !(sdl_mod & (KMOD_LSHIFT|KMOD_RSHIFT)))
+                else if ((sdl_mod & (KMOD_CTRL)) && !(sdl_mod & (KMOD_SHIFT|KMOD_ALT)))
                 {
                     lx = mx;
                     ly = my;
@@ -5196,7 +5196,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
                     lm = 2;//box
                 }
                 //sample tool
-                else if (((sdl_mod & (KMOD_LALT|KMOD_RALT)) && !(sdl_mod & (KMOD_SHIFT))) || b==SDL_BUTTON_MIDDLE)
+                else if (((sdl_mod & (KMOD_ALT)) && !(sdl_mod & (KMOD_SHIFT|KMOD_CTRL))) || b==SDL_BUTTON_MIDDLE)
                 {
                     if (my>=0 && my<YRES && mx>=0 && mx<XRES)
                     {
@@ -5233,9 +5233,9 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
             if (lb && lm) //lm is box/line tool
             {
                 if (lm == 1)//line
-                    line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb, b);
+                    line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb, lb);
                 else//box
-                    box_decorations(lx, ly, mx, my, cr, cg, cb, b);
+                    box_decorations(lx, ly, mx, my, cr, cg, cb, lb);
                 lm = 0;
             }
             lb = 0;

@@ -2,6 +2,7 @@
 
 int update_BCLN(UPDATE_FUNC_ARGS)
 {
+    int self = parts[i].type;
     if (!parts[i].life && pv[y/CELL][x/CELL]>4.0f)
         parts[i].life = rand()%40+80;
     if (parts[i].life)
@@ -24,7 +25,7 @@ int update_BCLN(UPDATE_FUNC_ARGS)
                         continue;
                     if (parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN &&
                             parts[r>>PS].type!=PT_BCLN && parts[r>>PS].type!=PT_STKM &&
-                            parts[r>>PS].type!=PT_STKM2 && parts[r>>PS].type!=PT_PDCL &&
+                            parts[r>>PS].type!=PT_STKM2 && parts[r>>PS].type!=PT_PDCL && parts[r>>PS].type!=self &&
                             parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].type<PT_NUM)
                         parts[i].ctype = r&TYPE;
                 }

@@ -2,6 +2,7 @@
 
 int update_DEUT(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, trade, np;
+	int self = parts[i].type;
 	int maxlife = ((10000/(parts[i].temp + 1))-1);
 	if ((10000%((int)parts[i].temp+1))>rand()%((int)parts[i].temp+1))
 		maxlife ++;
@@ -14,7 +15,7 @@ int update_DEUT(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r || (parts[i].life >=maxlife))
 						continue;
-					if (parts[r>>PS].type==PT_DEUT&&33>=rand()/(RAND_MAX/100)+1)
+					if (parts[r>>PS].type==self&&33>=rand()/(RAND_MAX/100)+1)
 					{
 						if ((parts[i].life + parts[r>>PS].life + 1) <= maxlife)
 						{
@@ -37,7 +38,7 @@ int update_DEUT(UPDATE_FUNC_ARGS) {
 						continue;
 					if ((!r)&&parts[i].life>=1)//if nothing then create deut
 					{
-						np = create_part(-1,x+rx,y+ry,PT_DEUT);
+						np = create_part(-1,x+rx,y+ry,self);
 						if (np<0) continue;
 						parts[i].life--;
 						parts[np].temp = parts[i].temp;
@@ -53,7 +54,7 @@ int update_DEUT(UPDATE_FUNC_ARGS) {
 			r = pmap[y+ry][x+rx];
 			if ((r>>PS)>=NPART || !r)
 				continue;
-			if (parts[r>>PS].type==PT_DEUT&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
+			if (parts[r>>PS].type==self&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
 			{
 				int temp = parts[i].life - parts[r>>PS].life;
 				if (temp ==1)

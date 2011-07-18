@@ -2,6 +2,7 @@
 
 int update_TNT(UPDATE_FUNC_ARGS) {
 	int r,nx,ny;
+	int self = parts[i].type;
     for(nx=-2; nx<3; nx++)
         for(ny=-2; ny<3; ny++)
             if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))

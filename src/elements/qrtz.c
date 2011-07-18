@@ -2,8 +2,9 @@
 
 int update_QRTZ(UPDATE_FUNC_ARGS) {
 	int r, tmp, trade, rx, ry, np, t;
+	int self = parts[i].type;
 	t = parts[i].type;
-	if (t == PT_QRTZ)
+	if (t == self)
 	{
 		parts[i].pavg[0] = parts[i].pavg[1];
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
@@ -39,7 +40,7 @@ int update_QRTZ(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)<NPART && !r && parts[i].ctype!=0)
 				{
-					np = create_part(-1,x+rx,y+ry,PT_QRTZ);
+					np = create_part(-1,x+rx,y+ry,self);
 					if (np>-1)
 					{
 						parts[np].tmp = parts[i].tmp;

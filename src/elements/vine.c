@@ -2,6 +2,7 @@
 
 int update_VINE(UPDATE_FUNC_ARGS) {
 	int r, np, rx =(rand()%3)-1, ry=(rand()%3)-1;
+	int self = parts[i].type;
 	if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 	{
 		r = pmap[y+ry][x+rx];
@@ -11,7 +12,7 @@ int update_VINE(UPDATE_FUNC_ARGS) {
 			part_change_type(i,x,y,PT_PLNT);
 		else if (!r)
 		{
-			np = create_part(-1,x+rx,y+ry,PT_VINE);
+			np = create_part(-1,x+rx,y+ry,self);
 			if (np<0) return 0;
 			parts[np].temp = parts[i].temp;
 			part_change_type(i,x,y,PT_PLNT);

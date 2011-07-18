@@ -1,6 +1,7 @@
 #include <element.h>
 
 int update_FUSE(UPDATE_FUNC_ARGS) {
+    int self = parts[i].type;
 	int r, rx, ry;
 	if (parts[i].life<=0) {
 		r = create_part(i, x, y, PT_PLSM);

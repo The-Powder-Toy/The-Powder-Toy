@@ -1,6 +1,7 @@
 #include <element.h>
 
 int update_CNVR(UPDATE_FUNC_ARGS) {
+    int self = parts[i].type;
 	if (!parts[i].ctype)
 	{
 		int rx, ry;
@@ -17,6 +18,7 @@ int update_CNVR(UPDATE_FUNC_ARGS) {
 				        (pmap[y+ry][x+rx]&TYPE)!=PT_PCLN &&
 				        (pmap[y+ry][x+rx]&TYPE)!=PT_STKM &&
 				        (pmap[y+ry][x+rx]&TYPE)!=PT_STKM2 &&
+                        (pmap[y+ry][x+rx]&TYPE)!=self     &&
 				        (pmap[y+ry][x+rx]&TYPE)!=TYPE)
                         parts[i].ctype = pmap[y+ry][x+rx]&TYPE;
 	}
@@ -40,10 +42,11 @@ int update_CNVR(UPDATE_FUNC_ARGS) {
 				        (pmap[y+ry][x+rx]&TYPE)!=PT_PCLN &&
 				        (pmap[y+ry][x+rx]&TYPE)!=PT_STKM &&
 				        (pmap[y+ry][x+rx]&TYPE)!=PT_STKM2 &&
+				        (pmap[y+ry][x+rx]&TYPE)!=self     &&
 				        (pmap[y+ry][x+rx]&TYPE)!=TYPE){
                             parts[r>>PS].type = parts[i].ctype;
                     }
-                    if (parts[r>>PS].type==PT_CNVR){
+                    if (parts[r>>PS].type==self){
                         parts[r>>PS].ctype=parts[i].ctype;
                     }
                 }

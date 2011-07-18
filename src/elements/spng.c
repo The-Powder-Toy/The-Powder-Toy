@@ -2,6 +2,7 @@
 
 int update_SPNG(UPDATE_FUNC_ARGS) {
 	int r, trade, rx, ry, tmp, np;
+	int self = parts[i].type;
 	if (pv[y/CELL][x/CELL]<=3&&pv[y/CELL][x/CELL]>=-3&&parts[i].temp<=374.0f)
 	{
 		for (rx=-1; rx<2; rx++)
@@ -44,7 +45,7 @@ int update_SPNG(UPDATE_FUNC_ARGS) {
 			r = pmap[y+ry][x+rx];
 			if ((r>>PS)>=NPART || !r)
 				continue;
-			if (parts[r>>PS].type==PT_SPNG&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
+			if (parts[r>>PS].type==self&&(parts[i].life>parts[r>>PS].life)&&parts[i].life>0)//diffusion
 			{
 				tmp = parts[i].life - parts[r>>PS].life;
 				if (tmp ==1)

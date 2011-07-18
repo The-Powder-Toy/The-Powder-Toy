@@ -2,6 +2,7 @@
 
 int update_MERC(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, trade, np;
+	int self = parts[i].type;
 	int maxtmp = ((10000/(parts[i].temp + 1))-1);
 	if ((10000%((int)parts[i].temp+1))>rand()%((int)parts[i].temp+1))
 		maxtmp ++;
@@ -14,7 +15,7 @@ int update_MERC(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r || (parts[i].tmp >=maxtmp))
 						continue;
-					if (parts[r>>PS].type==PT_MERC&&33>=rand()/(RAND_MAX/100)+1)
+					if (parts[r>>PS].type==self&&33>=rand()/(RAND_MAX/100)+1)
 					{
 						if ((parts[i].tmp + parts[r>>PS].tmp + 1) <= maxtmp)
 						{
@@ -37,7 +38,7 @@ int update_MERC(UPDATE_FUNC_ARGS) {
 						continue;
 					if ((!r)&&parts[i].tmp>=1)//if nothing then create deut
 					{
-						np = create_part(-1,x+rx,y+ry,PT_MERC);
+						np = create_part(-1,x+rx,y+ry,self);
 						if (np<0) continue;
 						parts[i].tmp--;
 						parts[np].temp = parts[i].temp;
@@ -53,7 +54,7 @@ int update_MERC(UPDATE_FUNC_ARGS) {
 			r = pmap[y+ry][x+rx];
 			if ((r>>PS)>=NPART || !r)
 				continue;
-			if (parts[r>>PS].type==PT_MERC&&(parts[i].tmp>parts[r>>PS].tmp)&&parts[i].tmp>0)//diffusion
+			if (parts[r>>PS].type==self&&(parts[i].tmp>parts[r>>PS].tmp)&&parts[i].tmp>0)//diffusion
 			{
 				int temp = parts[i].tmp - parts[r>>PS].tmp;
 				if (temp ==1)

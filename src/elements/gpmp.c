@@ -2,6 +2,7 @@
 
 int update_GPMP(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	int self = parts[i].type;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
 	if (parts[i].life==10)
@@ -21,7 +22,7 @@ int update_GPMP(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if ((r&TYPE)==PT_GPMP)
+					if ((r&TYPE)==self)
 					{
 						if (parts[r>>PS].life<10&&parts[r>>PS].life>0)
 							parts[i].life = 9;

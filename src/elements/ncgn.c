@@ -2,6 +2,7 @@
 
 int update_NCGN(UPDATE_FUNC_ARGS) {
 	int r, nx, ny, rt;
+	int self = parts[i].type;
     for(nx=-1; nx<2; nx++)
         for(ny=-1; ny<2; ny++)
             if(x+nx>=0 && y+ny>0 &&
@@ -11,7 +12,7 @@ int update_NCGN(UPDATE_FUNC_ARGS) {
                 if((r>>PS)>=NPART || !r)
                     continue;
                 if (parts[r>>PS].type==PT_PLUT){
-                    parts[i].ctype=PT_NCGN;
+                    parts[i].ctype=self;
                     parts[i].life = 4;
                     parts[i].type = PT_SPRK;
                     parts[r>>PS].type = PT_NCWS;

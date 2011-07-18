@@ -1,6 +1,7 @@
 #include <element.h>
 
 int update_FRZZ(UPDATE_FUNC_ARGS) {
+    int self = parts[i].type;
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

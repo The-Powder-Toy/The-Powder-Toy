@@ -3,6 +3,7 @@
 int update_GLOW(UPDATE_FUNC_ARGS)
 {
     int r, rx, ry;
+    int self = parts[i].type;
     for (rx=-1; rx<2; rx++)
         for (ry=-1; ry<2; ry++)
             if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -24,7 +25,7 @@ int update_GLOW(UPDATE_FUNC_ARGS)
                 {
                     parts[i].tmp2=1;
                 }
-                if(parts[i].tmp2==2 && parts[r>>PS].tmp2!=2 && parts[r>>PS].type==PT_GLOW)
+                if(parts[i].tmp2==2 && parts[r>>PS].tmp2!=2 && parts[r>>PS].type==self)
                 {
                     parts[r>>PS].tmp2 = 2;
                 }

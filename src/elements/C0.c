@@ -2,6 +2,7 @@
 
 int update_C0(UPDATE_FUNC_ARGS)
 {
+    int self = parts[i].type;
     if (!parts[i].ctype)
     {
         int r, rx, ry;
@@ -14,12 +15,12 @@ int update_C0(UPDATE_FUNC_ARGS)
                         r = pmap[y+ry][x+rx];
                     if (!r || (r>>PS)>=NPART)
                         continue;
-                    if (parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_C0 &&
+                    if (parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type != self &&
                             parts[r>>PS].type!=PT_BCLN && parts[r>>PS].type!=PT_STKM &&
                             parts[r>>PS].type!=PT_STKM2 && parts[r>>PS].type!=PT_PDCL &&
                             parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].type<PT_NUM)
                         parts[i].ctype = parts[r>>PS].type;
-                    if(parts[r>>PS].type==PT_C0 && parts[r>>PS].ctype!=0)
+                    if(parts[r>>PS].type==self && parts[r>>PS].ctype!=0)
                     {
                         parts[i].ctype = parts[r>>PS].ctype;
                     }

@@ -3,6 +3,7 @@
 int update_PLNT(UPDATE_FUNC_ARGS)
 {
     int r, rx, ry, np;
+    int self = parts[i].type;
     for (rx=-2; rx<3; rx++)
         for (ry=-2; ry<3; ry++)
             if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -12,13 +13,13 @@ int update_PLNT(UPDATE_FUNC_ARGS)
                     continue;
                 if (parts[r>>PS].type==PT_WATR && 1>(rand()%250))
                 {
-                    np = create_part(r>>PS,x+rx,y+ry,PT_PLNT);
+                    np = create_part(r>>PS,x+rx,y+ry,self);
                     if (np<0) continue;
                     parts[np].life = 0;
                 }
                 if (parts[r>>PS].type==PT_RWTR && 1>(rand()%250))
                 {
-                    np = create_part(r>>PS,x+rx,y+ry,PT_PLNT);
+                    np = create_part(r>>PS,x+rx,y+ry,self);
                     if (np<0) continue;
                     parts[np].life = 0;
                 }
@@ -46,10 +47,10 @@ int update_PLNT(UPDATE_FUNC_ARGS)
                 {
                     int nrx = rand()%3 -1;
                     int nry = rand()%3 -1;
-                    if (parts[r>>PS].type == PT_PLNT && parts[r>>PS].ctype != PT_ROOT && (1>rand()%50))
+                    if (parts[r>>PS].type == self && parts[r>>PS].ctype != PT_ROOT && (1>rand()%50))
                         parts[r>>PS].ctype = PT_ROOT;
 
-                    if(create_part(-1,x+rx+nrx,y+ry+nry,PT_PLNT))
+                    if(create_part(-1,x+rx+nrx,y+ry+nry,self))
                         parts[pmap[y+ry+nry][x+rx+nrx]>>PS].temp = parts[i].temp;
                     if (1>rand()%2)
                         parts[i].ctype=PT_NONE;

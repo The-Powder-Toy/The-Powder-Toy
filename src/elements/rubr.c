@@ -3,13 +3,14 @@
 int update_RUBR(UPDATE_FUNC_ARGS)
 {
     int r,rx,ry,t;
+    int self = parts[i].type;
     for(rx=-2; rx<3; rx++)
         for(ry=-2; ry<3; ry++)
             if(x+rx>=0 && y+ry>0 &&
                     x+rx<XRES && y+ry<YRES && (rx || ry))
             {
                 r = pmap[y+ry][x+rx];
-                if((r>>PS)>=NPART || !r || parts[r>>PS].type==PT_RUBR)
+                if((r>>PS)>=NPART || !r || parts[r>>PS].type==self)
                     continue;
                 parts[r>>PS].collision = -2.5f;
                 parts[r>>PS].airdrag = 0;
@@ -20,7 +21,7 @@ int update_RUBR(UPDATE_FUNC_ARGS)
                     x+rx<XRES && y+ry<YRES && (rx || ry))
             {
                 r = pmap[y+ry][x+rx];
-                if((r>>PS)>=NPART || !r || parts[r>>PS].type==PT_RUBR)
+                if((r>>PS)>=NPART || !r || parts[r>>PS].type==self)
                     continue;
                     if (parts[i].x > parts[r>>PS].x + 5 || parts[i].x < parts[r>>PS].x - 5 || parts[i].y > parts[r>>PS].y + 5 || parts[i].y < parts[r>>PS].y - 5){
                         parts[r>>PS].collision = ptypes[parts[r>>PS].type].collision;

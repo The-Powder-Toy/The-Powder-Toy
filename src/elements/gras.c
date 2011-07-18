@@ -2,6 +2,7 @@
 
 int update_GRAS(UPDATE_FUNC_ARGS) {
 	int r,rx,ry,t;
+	int self = parts[i].type;
         for(rx=-2; rx<3; rx++)
             for(ry=-2; ry<3; ry++)
                 if(x+rx>=0 && y+ry>0 &&
@@ -12,8 +13,8 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                         continue;
                     if(parts[r>>PS].type==PT_WATR && 1>(rand()%250))
                     {
-                        t = parts[i].type = PT_GRAS;
-                        parts[r>>PS].type = PT_GRAS;
+                        t = parts[i].type = self;
+                        parts[r>>PS].type = self;
                         parts[r>>PS].life = 0;
                     }
                     else if(parts[r>>PS].type==PT_SMKE)
@@ -39,8 +40,8 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                     }
                     else if(parts[r>>PS].type==PT_RWTR && 1>(rand()%250))
                     {
-                        t = parts[i].type = PT_GRAS;
-                        parts[r>>PS].type = PT_GRAS;
+                        t = parts[i].type = self;
+                        parts[r>>PS].type = self;
                         parts[r>>PS].life = 0;
                     }
                     else if(parts[r>>PS].type==PT_LAVA && 1>(rand()%250))
@@ -61,15 +62,15 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                     {
                         int nrx = rand()%3 -1;
                         int nry = rand()%3 -1;
-                        if (parts[r>>PS].type == PT_GRAS && parts[r>>PS].ctype != PT_ROOT && (1>rand()%50))
+                        if (parts[r>>PS].type == self && parts[r>>PS].ctype != PT_ROOT && (1>rand()%50))
                             parts[r>>PS].ctype = PT_ROOT;
 
-                        if(create_part(-1,x+rx+nrx,y+ry+nry,PT_GRAS))
+                        if(create_part(-1,x+rx+nrx,y+ry+nry,self))
                             parts[pmap[y+ry+nry][x+rx+nrx]>>PS].temp = parts[i].temp;
                         if (1>rand()%2)
                             parts[i].ctype=PT_NONE;
                     }
-                    else if(parts[r>>PS].type==PT_GRAS)
+                    else if(parts[r>>PS].type==self)
                     {
                         if(rand()%8000 < 1){
                             int nrx = rand()%3 -1;
@@ -80,7 +81,7 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                             {
                                 if((pmap[y+ry+nry][x+rx+nrx]>>PS)>=NPART||pmap[y+ry+nry][x+rx+nrx])
                                     continue;
-                                if(create_part(-1,x+rx+nrx,y+ry+nry,PT_GRAS))
+                                if(create_part(-1,x+rx+nrx,y+ry+nry,self))
                                     parts[pmap[y+ry+nry][x+rx+nrx]>>PS].temp = parts[i].temp;
                             }
                         }
@@ -94,7 +95,7 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                         {
                             if((pmap[y+ry+nry][x+rx+nrx]>>PS)>=NPART||pmap[y+ry+nry][x+rx+nrx])
                                 continue;
-                            if(create_part(-1,x+rx+nrx,y+ry+nry,PT_GRAS))
+                            if(create_part(-1,x+rx+nrx,y+ry+nry,self))
                                 parts[pmap[y+ry+nry][x+rx+nrx]>>PS].temp = parts[i].temp;
                         }
                         if (rand()%800 < 1){

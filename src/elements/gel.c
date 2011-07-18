@@ -2,10 +2,11 @@
 
 int update_GEL(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, trade, np;
-	if(parts[r>>PS].type==PT_GEL){
+	int self = parts[i].type;
+	if(parts[r>>PS].type==self){
         parts[r>>PS].vx = 0;
         parts[r>>PS].vy = 0;
-        parts[r>>PS].ctype = PT_GEL;
+        parts[r>>PS].ctype = self;
     }
 	for (rx=-4; rx<5; rx++)
             for (ry=-4; ry<5; ry++)
@@ -13,8 +14,8 @@ int update_GEL(UPDATE_FUNC_ARGS) {
                     r = pmap[y+ry][x+rx];
                     if ((r>>PS)>=NPART || !r)
                         continue;
-                    if (parts[r>>PS].type==PT_GEL){
-                        if ((parts[r>>PS].ctype != PT_GEL)||(parts[i].y<parts[r>>PS].y)){
+                    if (parts[r>>PS].type==self){
+                        if ((parts[r>>PS].ctype != self)||(parts[i].y<parts[r>>PS].y)){
                             parts[r>>PS].vx = (((parts[i].x)-(parts[r>>PS].x))/100)*(rand()%5+100/100);
                             parts[r>>PS].vy = (((parts[i].y)-(parts[r>>PS].y))/100)*(rand()%5+100/100);
                     }else{

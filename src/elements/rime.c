@@ -2,6 +2,7 @@
 
 int update_RIME(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	int self = parts[i].type;
 	parts[i].vx = 0;
 	parts[i].vy = 0;
 	for (rx=-1; rx<2; rx++)

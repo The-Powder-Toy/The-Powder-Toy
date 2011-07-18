@@ -1740,7 +1740,7 @@ void draw_parts(pixel *vid)
 
             nx = (int)(parts[i].x+0.5f);
             ny = (int)(parts[i].y+0.5f);
-            if(photons[ny][nx]&0xFF && !(ptypes[t].properties & TYPE_ENERGY))
+            if(photons[ny][nx]&0xFF && !(parts[i].properties & TYPE_ENERGY))
                 continue;
             if (t==PT_SOAP)
             {
@@ -1892,7 +1892,7 @@ void draw_parts(pixel *vid)
                          t!=PT_MGMA && t!=PT_FILT && t!=PT_O3 &&
                          t!=PT_GPMP && t!=PT_PBCN)
                 {
-                    if (ptypes[parts[i].type].properties&TYPE_LIQUID) //special effects for liquids in fancy mode
+                    if (parts[i].properties&TYPE_LIQUID) //special effects for liquids in fancy mode
                     {
                         if (parts[i].type==PT_DEUT)
                         {
@@ -2010,7 +2010,7 @@ void draw_parts(pixel *vid)
                             }
                         }
                     }
-                    else if (ptypes[parts[i].type].properties&TYPE_GAS)
+                    else if (parts[i].properties&TYPE_GAS)
                     {
                         //if(parts[i].type!=PT_FIRE&&parts[i].type!=PT_SMKE&&parts[i].type!=PT_PLSM&&parts[i].type!=PT_WTRV)
                         {
@@ -2031,7 +2031,7 @@ void draw_parts(pixel *vid)
                             }
                         }
                     }
-                    else if (ptypes[parts[i].type].properties&PROP_RADIOACTIVE)
+                    else if (parts[i].properties&PROP_RADIOACTIVE)
                     {
                         int tempx = 0;
                         int tempy = 0;
@@ -2176,6 +2176,17 @@ void draw_parts(pixel *vid)
                     blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
                 }
+                else if (t==PT_CLST)
+                {
+                    int z = parts[i].tmp - 5;//speckles!
+                    cr = z * 16 + PIXR(ptypes[t].pcolors);
+                    cg = z * 16 + PIXG(ptypes[t].pcolors);
+                    cb = z * 16 + PIXB(ptypes[t].pcolors);
+                    cr = cr>255?255:cr;
+                    cg = cg>255?255:cg;
+                    cb = cb>255?255:cb;
+                    blendpixel(vid, nx, ny, cr, cg, cb, 255);
+                }
                 else if (t==PT_SPNG)
                 {
                     cr = PIXR(ptypes[t].pcolors) - parts[i].life*15;
@@ -2239,7 +2250,7 @@ void draw_parts(pixel *vid)
                     blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
                 }
-                if(t==PT_LIFE && parts[i].ctype < NGOLALT){
+                else if (t==PT_LIFE && parts[i].ctype>=0 && parts[i].ctype < NGOLALT) {
 					if (parts[i].ctype==NGT_LOTE)//colors for life states
 					{
 						if (parts[i].tmp==2)
@@ -3771,7 +3782,7 @@ void draw_parts(pixel *vid)
                     }
 
                 }
-                else if (ptypes[t].properties&PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
+                else if (parts[i].properties&PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
                 {
                     float frequency = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
                     int q = (parts[i].temp>ptransitions[t].thv)?ptransitions[t].thv-(ptransitions[t].thv-800.0f):parts[i].temp-(ptransitions[t].thv-800.0f);
@@ -4397,7 +4408,7 @@ void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int c
     for (j=-ry; j<=ry; j++)
         for (i=-rx; i<=rx; i++)
             if(y+j>=0 && x+i>=0 && x+i<XRES && y+j<YRES)
-                if ((CURRENT_BRUSH==CIRCLE_BRUSH && (pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1)||(CURRENT_BRUSH==SQUARE_BRUSH&&i*j<=ry*rx))
+                if (InCurrentBrush(i, j, rx, ry))
                 {
                     rp = pmap[y+j][x+i];
                     if ((rp>>PS)>=NPART || !rp)
@@ -5076,7 +5087,7 @@ corrupt:
 void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 {
     int i,j,c;
-    if (t<PT_NUM||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND)
+    if (t<PT_NUM||(t&TYPE)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND)
     {
         if (rx<=0)
             xor_pixel(x, y, vid);
@@ -5097,6 +5108,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
                     }
         }
         else if (CURRENT_BRUSH==CIRCLE_BRUSH)
+        {
             for (j=0; j<=ry; j++)
                 for (i=0; i<=rx; i++)
                     if ((pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1 && ((pow(i+1,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))>1 || (pow(i,2))/(pow(rx,2))+(pow(j+1,2))/(pow(ry,2))>1))
@@ -5106,6 +5118,17 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
                         if (i) xor_pixel(x-i, y+j, vid);
                         if (i&&j) xor_pixel(x-i, y-j, vid);
                     }
+        }
+    else if (CURRENT_BRUSH==TRI_BRUSH)
+    {
+      for (j=-ry; j<=ry; j++)
+        for (i=-rx; i<=0; i++)
+          if ((j <= ry ) && ( j >= (((-2.0*ry)/(rx))*i)-ry ) && (j+1>ry || ( j-1 < (((-2.0*ry)/(rx))*i)-ry )) )
+            {
+              xor_pixel(x+i, y+j, vid);
+              if (i) xor_pixel(x-i, y+j, vid);
+            }
+        }
     }
     else //wall cursor
     {

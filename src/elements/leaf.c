@@ -2,6 +2,7 @@
 
 int update_LEAF(UPDATE_FUNC_ARGS) {
 	int r, trade, rx, ry, tmp, np;
+	int self = parts[i].type;
 	if (1==1)
 	{
 		for (rx=-1; rx<2; rx++)

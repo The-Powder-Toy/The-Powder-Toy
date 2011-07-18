@@ -2,6 +2,7 @@
 
 int update_PBCN(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	int self = parts[i].type;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
 	if (!parts[i].tmp && pv[y/CELL][x/CELL]>4.0f)
@@ -31,7 +32,7 @@ int update_PBCN(UPDATE_FUNC_ARGS) {
 				        (r&TYPE)!=PT_BCLN &&  (r&TYPE)!=PT_SPRK &&
 				        (r&TYPE)!=PT_NSCN && (r&TYPE)!=PT_PSCN &&
 				        (r&TYPE)!=PT_STKM && (r&TYPE)!=PT_STKM2 &&
-				        (r&TYPE)!=PT_PBCN && (r&TYPE)<PT_NUM)
+				        (r&TYPE)!=PT_PBCN && (r&TYPE)!=self && (r&TYPE)<PT_NUM)
 					parts[i].ctype = r&TYPE;
 				}
 	if (parts[i].life==10)
@@ -44,7 +45,7 @@ int update_PBCN(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if ((r&TYPE)==PT_PBCN)
+					if ((r&TYPE)==self)
 					{
 						if (parts[r>>PS].life<10&&parts[r>>PS].life>0)
 							parts[i].life = 9;

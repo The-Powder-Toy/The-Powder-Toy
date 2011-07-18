@@ -2,6 +2,7 @@
 
 int update_SUN(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	int self = parts[i].type;
 	if (ngrav_enable==1){
         gravmap[y/CELL][x/CELL] += 0.8f;
     }

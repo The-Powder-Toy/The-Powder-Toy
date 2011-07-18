@@ -2,6 +2,7 @@
 
 int update_CFUS(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	int self = parts[i].type;
 	if (parts[i].life<=0) {
 		r = create_part(i, x, y, PT_HFLM);
 		if (r!=-1)

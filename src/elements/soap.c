@@ -3,7 +3,7 @@
 int update_SOAP(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
-
+    int self = parts[i].type;
 	//0x01 - bubble on/off
 	//0x02 - first mate yes/no
 	//0x04 - "back" mate yes/no
@@ -59,7 +59,7 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 						if ((r>>PS)>=NPART || !r)
 							continue;
 
-						if ((parts[r>>PS].type == PT_SOAP) && ((parts[r>>PS].ctype&1) == 1)
+						if ((parts[r>>PS].type == self) && ((parts[r>>PS].ctype&1) == 1)
 								&& ((parts[r>>PS].ctype&4) != 4))
 						{
 							if ((parts[r>>PS].ctype&2) == 2)
@@ -99,8 +99,8 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 							{
 								if (bmap[(y+ry)/CELL][(x+rx)/CELL]
 										|| (r && ptypes[r&TYPE].state != ST_GAS
-											&& parts[r>>PS].type != PT_SOAP && parts[r>>PS].type != PT_GLAS)
-										|| (parts[r>>PS].ctype == 0 && parts[r>>PS].type == PT_SOAP
+											&& parts[r>>PS].type != self && parts[r>>PS].type != PT_GLAS)
+										|| (parts[r>>PS].ctype == 0 && parts[r>>PS].type == self
 											&& (abs(parts[r>>PS].vx)<2 || abs(parts[r>>PS].vy)<2)))
 								{
 									detach(i);
@@ -108,7 +108,7 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 								}
 							}
 
-							if (parts[r>>PS].type == PT_SOAP && parts[r>>PS].ctype == 1)
+							if (parts[r>>PS].type == self && parts[r>>PS].ctype == 1)
 							{
 								int buf;
 
@@ -121,7 +121,7 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 								parts[r>>PS].ctype = 7;
 							}
 
-							if (parts[r>>PS].type == PT_SOAP && parts[r>>PS].ctype == 7 && parts[i].tmp != r>>PS && parts[i].tmp2 != r>>PS)
+							if (parts[r>>PS].type == self && parts[r>>PS].ctype == 7 && parts[i].tmp != r>>PS && parts[i].tmp2 != r>>PS)
 							{
 								int buf;
 

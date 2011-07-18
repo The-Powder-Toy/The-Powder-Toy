@@ -2,6 +2,7 @@
 
 int update_IBAT(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, rt;
+	int self = parts[i].type;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -12,7 +13,7 @@ int update_IBAT(UPDATE_FUNC_ARGS) {
 				rt = parts[r>>PS].type;
 				if (parts_avg(i,r>>PS,PT_INSL) != PT_INSL)
 				{
-					if ((ptypes[rt].properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>PS].life==0 && abs(rx)+abs(ry) < 4)
+					if ((parts[r>>PS].properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>PS].life==0 && abs(rx)+abs(ry) < 4)
 					{
 						parts[r>>PS].life = 4;
 						parts[r>>PS].ctype = rt;

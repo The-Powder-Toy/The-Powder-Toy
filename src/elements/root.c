@@ -2,6 +2,7 @@
 
 int update_ROOT(UPDATE_FUNC_ARGS) {
 	int r,rx,ry,t;
+	int self = parts[i].type;
         for(rx=-2; rx<3; rx++)
             for(ry=-2; ry<3; ry++)
                 if(x+rx>=0 && y+ry>0 &&
@@ -12,13 +13,13 @@ int update_ROOT(UPDATE_FUNC_ARGS) {
                         continue;
                     if(parts[r>>PS].type==PT_WATR && 1>(rand()%250))
                     {
-                        t = parts[i].type = PT_ROOT;
+                        t = parts[i].type = self;
                         parts[r>>PS].type = PT_NONE;
                         parts[i].tmp2 = 1;
                     }
                     else if(parts[r>>PS].type==PT_RWTR && 1>(rand()%250))
                     {
-                        t = parts[i].type = PT_ROOT;
+                        t = parts[i].type = self;
                         parts[r>>PS].type = PT_NONE;
                         parts[i].tmp2 = 1;
                     }
@@ -30,16 +31,16 @@ int update_ROOT(UPDATE_FUNC_ARGS) {
                     {
                         if (rand()%8000 < 1){
                             if (parts[r>>PS].type == PT_DIRT){
-                                if (parts[r>>PS].type != PT_ROOT){
+                                if (parts[r>>PS].type != self){
                                     if (parts[r>>PS].type != PT_GRAS){
-                                        parts[r>>PS].type = PT_ROOT;
+                                        parts[r>>PS].type = self;
                                     }
                                 }
                             }
                         }
                     }
                     if (parts[i].tmp2==1 && parts[r>>PS].tmp2!=1 && parts[r>>PS].tmp2!=2){
-                        if (parts[r>>PS].type==PT_ROOT){
+                        if (parts[r>>PS].type==self){
                                 parts[r>>PS].tmp2=1;
                                 parts[i].tmp2=0;
                         }

@@ -3,7 +3,7 @@
 int update_CPCT(UPDATE_FUNC_ARGS)
 {
     int r,rx,ry,rp,rt,ct;
-
+    int self = parts[i].type;
     for(rx=-1; rx<2; rx++)
         for(ry=-1; ry<2; ry++)
             if(x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -30,7 +30,7 @@ int update_CPCT(UPDATE_FUNC_ARGS)
                     if(rt==PT_SPRK && parts[rp].life==4 && ct==PT_METL)
                         parts[i].life++;
 
-                    if(rt==PT_CPCT && parts[i].life > parts[rp].life)
+                    if(rt==self && parts[i].life > parts[rp].life)
                         parts[rp].life=parts[i].life;
                 }
 //Discharge
@@ -42,12 +42,14 @@ int update_CPCT(UPDATE_FUNC_ARGS)
                         parts[rp].life=4;
                         parts[rp].type=PT_SPRK;
                         parts[i].life--;
+                        if (parts[i].life > 0)
+                            parts[i].life--;
                     }
-                    if(rt==PT_CPCT && parts[i].life < parts[rp].life)
+                    if(rt==self && parts[i].life < parts[rp].life)
                         parts[rp].life=parts[i].life;
                 }
 //Share status with adjoining pixels
-                if(rt==PT_CPCT)
+                if(rt==self)
                 {
                     if(parts[i].tmp==10&&parts[rp].tmp<10&&parts[rp].tmp>0)
                         parts[i].tmp = 9;

@@ -2,6 +2,7 @@
 
 int update_SING(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, cry, crx, rad, nxi, nxj, nb, j, spawncount;
+	int self = parts[i].type;
 	int singularity = -parts[i].life;
 	float angle, v;
 
@@ -68,7 +69,7 @@ int update_SING(UPDATE_FUNC_ARGS) {
 					continue;
 				if (parts[r>>PS].type!=PT_DMND&&33>=rand()/(RAND_MAX/100)+1)
 				{
-					if (parts[r>>PS].type==PT_SING && parts[r>>PS].life >10)
+					if (parts[r>>PS].type==self && parts[r>>PS].life >10)
 					{
 						if (parts[i].life+parts[r>>PS].life > 255)
 							continue;
@@ -78,10 +79,10 @@ int update_SING(UPDATE_FUNC_ARGS) {
 					{
 						if (parts[i].life+3 > 255)
 						{
-							if (parts[r>>PS].type!=PT_SING && 1>rand()%100)
+							if (parts[r>>PS].type!=self && 1>rand()%100)
 							{
 								int np;
-								np = create_part(r>>PS,x+rx,y+ry,PT_SING);
+								np = create_part(r>>PS,x+rx,y+ry,self);
 								parts[np].life = rand()%50+60;
 							}
 							continue;

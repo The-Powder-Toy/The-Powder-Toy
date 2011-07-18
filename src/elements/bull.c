@@ -2,6 +2,7 @@
 
 int update_BULL(UPDATE_FUNC_ARGS) {
 	int r,rx,ry, nx, ny;
+	int self = parts[i].type;
     parts[i].vx=3;
     int nb;
     if(parts[i].tmp==1){
@@ -12,7 +13,7 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                     r = pmap[y+ny][x+nx];
                     if((r>>PS)>=NPART || !r)
                         continue;
-                    if(parts[r>>PS].type!=PT_NONE && parts[r>>PS].type!=PT_BULL){
+                    if(parts[r>>PS].type!=PT_NONE && parts[r>>PS].type!=self){
                         kill_part(i);
                     }
                 }
@@ -24,7 +25,7 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                     r = pmap[y+ny][x+nx];
                     if((r>>PS)>=NPART || !r)
                         continue;
-                    if(parts[r>>PS].type!=PT_NONE && parts[r>>PS].type!=PT_BULL && parts[r>>PS].type!=PT_DMND && parts[r>>PS].type!=PT_C0 && parts[r>>PS].type!=PT_GOLD && parts[r>>PS].type!=PT_BSHL && parts[r>>PS].type!=PT_PDCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_BCLN){
+                    if(parts[r>>PS].type!=PT_NONE && parts[r>>PS].type!=PT_BULL && parts[r>>PS].type!=self && parts[r>>PS].type!=PT_DMND && parts[r>>PS].type!=PT_C0 && parts[r>>PS].type!=PT_GOLD && parts[r>>PS].type!=PT_BSHL && parts[r>>PS].type!=PT_PDCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_BCLN){
                         int rad = 8;
                         int nxi;
                         int nxj;
@@ -32,7 +33,7 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                         for(nxj=-(rad+1); nxj<=(rad+1); nxj++)
                             for(nxi=-(rad+1); nxi<=(rad+1); nxi++)
                                 if((pow(nxi,2))/(pow((rad+1),2))+(pow(nxj,2))/(pow((rad+1),2))<=1){
-                                    nb = create_part(-1, x+nxi, y+nxj, PT_BULL);
+                                    nb = create_part(-1, x+nxi, y+nxj, self);
                                     if(nb!=-1){
                                         parts[nb].tmp = 1;
                                         parts[nb].life = 50;
@@ -47,7 +48,7 @@ int update_BULL(UPDATE_FUNC_ARGS) {
                                     if((pmap[y+nxj][x+nxi]&TYPE)!=PT_DMND && (pmap[y+nxj][x+nxi]&TYPE)!=PT_GOLD && (pmap[y+nxj][x+nxi]&TYPE)!=PT_CLNE && (pmap[y+nxj][x+nxi]&TYPE)!=PT_PCLN && (pmap[y+nxj][x+nxi]&TYPE)!=PT_BCLN){
                                         delete_part(x+nxi, y+nxj);
                                         pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
-                                        nb = create_part(-1, x+nxi, y+nxj, PT_BULL);
+                                        nb = create_part(-1, x+nxi, y+nxj, self);
                                         if(nb!=-1){
                                             parts[nb].tmp = 2;
                                             parts[nb].life = 2;

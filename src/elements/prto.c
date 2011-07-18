@@ -11,6 +11,7 @@
 */
 int update_PRTO(UPDATE_FUNC_ARGS) {
 	int r, nnx, rx, ry, np, fe = 0;
+	int self = parts[i].type;
 	int count = 0;
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 	if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;

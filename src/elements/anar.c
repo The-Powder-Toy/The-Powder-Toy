@@ -2,7 +2,7 @@
 
 int update_ANAR(UPDATE_FUNC_ARGS) {
         int r, rx, ry;
-
+        int self = parts[i].type;
         //if (parts[i].temp >= 0.23)
                // parts[i].temp --;
         for (rx=-2; rx<3; rx++)

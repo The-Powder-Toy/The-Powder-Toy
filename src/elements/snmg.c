@@ -2,6 +2,7 @@
 
 int update_SNMG(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	int self = parts[i].type;
     if(parts[r>>PS].type==PT_BRMT){
         parts[r>>PS].vx = 0;
         parts[r>>PS].vy = 0;

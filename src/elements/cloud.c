@@ -2,6 +2,7 @@
 
 int update_CLOUD(UPDATE_FUNC_ARGS) {
 	int r,rx,ry,tmp = parts[i].tmp;
+	int self = parts[i].type;
     if (rand()%100 == 1){
         if (parts[i].tmp = 1){
             parts[i].tmp = 0;
@@ -40,11 +41,11 @@ int update_CLOUD(UPDATE_FUNC_ARGS) {
                 if (parts[r>>PS].type == PT_RWTR){
                     if (rand()%1000 == 1){
                         if (!(parts[r>>PS].y < parts[i].y+2)){
-                            parts[r>>PS].type=PT_CLOUD;
+                            parts[r>>PS].type=self;
                         }
                     }
                 }
-                if (parts[r>>PS].type == PT_CLOUD){
+                if (parts[r>>PS].type == self){
                     if (parts[i].y >= parts[r>>PS].y){
                         if (parts[i].tmp != 1){
                             if (rand()%10 == 1){
@@ -62,6 +63,7 @@ int update_CLOUD(UPDATE_FUNC_ARGS) {
 
 int update_ACLOUD(UPDATE_FUNC_ARGS) {
 	int r,rx,ry,tmp = parts[i].tmp;
+	int self = parts[i].type;
     if (rand()%100 == 1){
         if (parts[i].tmp = 1){
             parts[i].tmp = 0;
@@ -77,11 +79,11 @@ int update_ACLOUD(UPDATE_FUNC_ARGS) {
                 if (parts[r>>PS].type == PT_ACRN){
                     if (rand()%1000 == 1){
                         if (parts[r>>PS].y > parts[i].y+2){
-                            parts[r>>PS].type=PT_ACLOUD;
+                            parts[r>>PS].type=self;
                         }
                     }
                 }
-                if (parts[r>>PS].type == PT_ACLOUD){
+                if (parts[r>>PS].type == self){
                     if (parts[i].y >= parts[r>>PS].y){
                         if (parts[i].tmp != 1){
                             if (rand()%10 == 1){

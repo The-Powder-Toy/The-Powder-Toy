@@ -2,6 +2,7 @@
 
 int update_NMTR(UPDATE_FUNC_ARGS) {
     int r,rx,ry;
+    int self = parts[i].type;
 	if (parts[i].tmp)
 		parts[i].tmp--;
 	if (parts[i].temp>2500)

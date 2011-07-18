@@ -1,6 +1,7 @@
 #include <element.h>
 
 int update_ASH(UPDATE_FUNC_ARGS) {
+    int self = parts[i].type;
 	int r, rx, ry, rt;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)

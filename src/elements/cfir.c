@@ -3,6 +3,7 @@
 int update_CFIR(UPDATE_FUNC_ARGS)
 {
     int r,rx,ry, trade;
+    int self = parts[i].type;
     rx = rand()%3-1;
     ry = rand()%3-1;
     for (rx=-2; rx<3; rx++)
@@ -21,11 +22,11 @@ int update_CFIR(UPDATE_FUNC_ARGS)
                     {
                         if((pmap[y+ry+nry][x+rx+nrx]>>PS)>=NPART||pmap[y+ry+nry][x+rx+nrx])
                             continue;
-                        if (parts[r>>PS].type!=PT_CFIR)
+                        if (parts[r>>PS].type!=self)
                         {
                             create_part(-1, x+rx+nrx, y+ry+nry, PT_WARP);
                         }
-                        else if (parts[r>>PS].type==PT_CFIR)
+                        else if (parts[r>>PS].type==self)
                         {
                             parts[i].x = rand()%3;
                             parts[i].x = rand()%-3;
@@ -38,7 +39,7 @@ int update_CFIR(UPDATE_FUNC_ARGS)
                         }
                     }
                     parts[i].life += 100;
-                    create_part(-1, x, y, PT_CFIR);
+                    create_part(-1, x, y, self);
                 }
             }
     return 0;
