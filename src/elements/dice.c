@@ -15,7 +15,7 @@ int update_DICE(UPDATE_FUNC_ARGS) {
                     create_part(-1,x+1,y+1,PT_SMKE);
                 }
                 if (parts[r>>PS].type==PT_ICEI){
-                    parts[r>>PS].type=PT_WATR;
+                    part_change_type(r>>PS,x+rx,y+ry,PT_WATR);
                 }
             }
     return 0;

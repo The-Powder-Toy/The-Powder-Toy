@@ -1,13 +1,13 @@
 #include <element.h>
 
 int update_NUKE(UPDATE_FUNC_ARGS) {
-	int r,nx,ny;
+	int r,rx,ry;
 	int self = parts[i].type;
-    for(nx=-2; nx<3; nx++)
-        for(ny=-2; ny<3; ny++)
-            if(x+nx>=0 && y+ny>0 && x+nx<XRES && y+ny<YRES && (nx || ny))
+    for(rx=-2; rx<3; rx++)
+        for(ry=-2; ry<3; ry++)
+            if(x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
             {
-                r = pmap[y+ny][x+nx];
+                r = pmap[y+ry][x+rx];
                 if((r>>PS)>=NPART || !r)
                     continue;
                 if (parts[r>>PS].type==PT_FIRE || parts[r>>PS].type==PT_PLSM || parts[r>>PS].type==PT_BFLM){
@@ -22,7 +22,7 @@ int update_NUKE(UPDATE_FUNC_ARGS) {
                         temporaro--;
                     }
                     create_part(-1,x,y,PT_PAIN);
-                    parts[r>>PS].type = PT_NCWS;
+                    part_change_type(r>>PS,x+rx,y+ry,PT_NCWS);
                     parts[r>>PS].life = 128;
                     kill_part(i);
                 }

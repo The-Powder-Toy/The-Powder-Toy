@@ -12,7 +12,7 @@ int update_THDR(UPDATE_FUNC_ARGS) {
 					continue;
 				if ((parts[r>>PS].properties&PROP_CONDUCTS) && parts[r>>PS].life==0 && !(parts[r>>PS].type==PT_WATR||parts[r>>PS].type==PT_SLTW) && parts[r>>PS].ctype!=PT_SPRK)
 				{
-					parts[i].type = PT_NONE;
+					kill_part(i);
 					parts[r>>PS].ctype = parts[r>>PS].type;
 					part_change_type(r>>PS,x+rx,y+ry,PT_SPRK);
 					parts[r>>PS].life = 4;
@@ -27,7 +27,7 @@ int update_THDR(UPDATE_FUNC_ARGS) {
 					}
 					else
 					{
-						parts[i].type = PT_NONE;
+						kill_part(i);
 					}
 				}
 			}

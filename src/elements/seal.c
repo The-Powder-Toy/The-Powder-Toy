@@ -13,7 +13,7 @@ int update_SEAL(UPDATE_FUNC_ARGS)
                     continue;
                 if (pv[y/CELL][x/CELL] > parts[i].temp - 273.15)
                 {
-                    parts[i].type = PT_GOO;
+                    part_change_type(i,x,y,PT_NONE);
                 }
                 if (parts[i].temp - 273.15 > MAXVELOCITY){
                     parts[i].temp = MAXVELOCITY + 273.15;

@@ -672,6 +672,7 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
     }
     parts[i].actas = 0;
     parts[i].weight = ptypes[t].weight;
+    parts[i].menusection = ptypes[t].menusection;
     parts[i].collision = ptypes[t].collision;
     parts[i].airdrag = ptypes[t].airdrag;
     parts[i].flammable = ptypes[t].flammable;
@@ -900,6 +901,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     parts[i].dcolour = 0;
     parts[i].actas = 0;
     parts[i].weight = ptypes[t].weight;
+    parts[i].menusection = ptypes[t].menusection;
     parts[i].collision = ptypes[t].collision;
     parts[i].airdrag = ptypes[t].airdrag;
     parts[i].flammable = ptypes[t].flammable;
@@ -2172,6 +2174,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                     {
                         parts[i].actas = 0;
                         parts[i].weight = ptypes[t].weight;
+                        parts[i].menusection = ptypes[t].menusection;
                         parts[i].collision = ptypes[t].collision;
                         parts[i].airdrag = ptypes[t].airdrag;
                         parts[i].flammable = ptypes[t].flammable;
@@ -2808,7 +2811,7 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
             if (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || (bmap[y][x]==WL_EWALL&&!emap[y][x]))
                 for (j=0; j<CELL; j++)
                     for (i=0; i<CELL; i++)
-                        pmap[y*CELL+j][x*CELL+i] = 0x7FFFFFFF;
+                        //pmap[y*CELL+j][x*CELL+i] = 0x7FFFFFFF;    - caused crash for me :S
             if (emap[y][x] && (!sys_pause||framerender))
                 emap[y][x] --;
         }

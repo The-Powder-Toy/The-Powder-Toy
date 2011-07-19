@@ -14,13 +14,13 @@ int update_ROOT(UPDATE_FUNC_ARGS) {
                     if(parts[r>>PS].type==PT_WATR && 1>(rand()%250))
                     {
                         t = parts[i].type = self;
-                        parts[r>>PS].type = PT_NONE;
+                        kill_part(r>>PS);
                         parts[i].tmp2 = 1;
                     }
                     else if(parts[r>>PS].type==PT_RWTR && 1>(rand()%250))
                     {
                         t = parts[i].type = self;
-                        parts[r>>PS].type = PT_NONE;
+                        kill_part(r>>PS);
                         parts[i].tmp2 = 1;
                     }
                     else if(parts[r>>PS].type==PT_O3)
@@ -33,7 +33,7 @@ int update_ROOT(UPDATE_FUNC_ARGS) {
                             if (parts[r>>PS].type == PT_DIRT){
                                 if (parts[r>>PS].type != self){
                                     if (parts[r>>PS].type != PT_GRAS){
-                                        parts[r>>PS].type = self;
+                                        part_change_type(r>>PS,x+rx,y+ry,self);
                                     }
                                 }
                             }

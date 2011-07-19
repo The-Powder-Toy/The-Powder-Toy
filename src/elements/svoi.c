@@ -47,7 +47,7 @@ int update_SVOI(UPDATE_FUNC_ARGS) {
                         (pmap[y+ry][x+rx]&TYPE)!=PT_VOID &&
 				        (pmap[y+ry][x+rx]&TYPE)!=TYPE){
                         if (parts[r>>PS].type == parts[i].ctype){
-                            parts[r>>PS].type = PT_NONE;
+                            kill_part(r>>PS);
                         }
                     }
                     if (parts[r>>PS].type==self){

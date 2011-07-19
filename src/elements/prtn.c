@@ -10,7 +10,11 @@ int update_PRTN(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>PS)>=NPART || !r)
 					continue;
-                if (parts[i].life<10){
+                if (parts[r>>PS].type!=PT_PRTN && parts[r>>PS].type!=PT_CLNE){
+                    parts[i].temp += parts[r>>PS].temp / 5;
+                }
+                if (parts[i].life < 10){
+                    pv[y/CELL][x/CELL] += parts[i].temp/10;
                     tmpo = 1000;
                     while (tmpo > 0){
                         rt = create_parts(x,y,rx,ry,PT_NEUT);
@@ -23,7 +27,7 @@ int update_PRTN(UPDATE_FUNC_ARGS) {
 	rt = r&TYPE;
 	if (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN) {
 		if (!parts[r>>PS].ctype)
-			parts[r>>PS].ctype = PT_PHOT;
+			parts[r>>PS].ctype = PT_PRTN;
 	}
 	return 0;
 }

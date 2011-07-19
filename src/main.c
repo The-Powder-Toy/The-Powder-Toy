@@ -1017,6 +1017,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
             parts[i-1].airloss = ptypes[t].airloss;
             parts[i-1].loss = ptypes[t].loss;
             parts[i-1].hotair = ptypes[t].hotair;
+            parts[i-1].menusection = ptypes[t].menusection;
 			if (ver<48 && (ty==OLD_PT_WIND || (ty==PT_BRAY&&parts[i-1].life==0)))
 			{
 				// Replace invisible particles with something sensible and add decoration to hide it
@@ -1723,14 +1724,16 @@ old_ver_len = textwidth((char*)old_ver_msg);
     menu_count();
     parts = calloc(sizeof(particle), NPART);
     cb_parts = calloc(sizeof(particle), NPART);
-    for (i=0; i<NPART-1; i++)
+    for (i=0; i<NPART-1; i++){
         parts[i].life = i+1;
+        int t = parts[i].type;
+        ptypes[t].menusection = parts[i].menusection;
+    }
     parts[NPART-1].life = -1;
     pfree = 0;
     fire_bg=calloc(XRES*YRES, PIXELSIZE);
     init_can_move();
     clear_sim();
-
     //fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
 
     load_presets();

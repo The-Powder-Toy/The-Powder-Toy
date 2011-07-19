@@ -18,6 +18,6 @@ int update_PAIN(UPDATE_FUNC_ARGS) {
         else
             parts[pmap[y][x]>>PS].temp = restrict_flt(parts[pmap[y][x]>>PS].temp + 1000.0f, MIN_TEMP, MAX_TEMP);
     }
-    parts[i].type=PT_NONE;
+    kill_part(i);
     return -1;
 }

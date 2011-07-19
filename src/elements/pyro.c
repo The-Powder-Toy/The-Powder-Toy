@@ -45,7 +45,7 @@ int update_PYRO(UPDATE_FUNC_ARGS)
     if(t==PT_SHPN){
         if (parts[i].life < 1){
             if (rand()%2 == 1){
-                parts[i].type = PT_BRMT;
+                part_change_type(i,x,y,PT_BRMT);
                 pv[y/CELL][x/CELL] += 2.25f;
                 parts[i].temp = 3000.0f+273.15f;
             } else {
@@ -53,7 +53,7 @@ int update_PYRO(UPDATE_FUNC_ARGS)
                     create_part(-1,x+1,y+1,PT_SHPN);
                     parts[i].life = parts[i].tmp - 25;
                 } else {
-                    parts[i].type = PT_SING;
+                    part_change_type(i,x,y,PT_SING);
                 }
             }
         }
@@ -129,16 +129,16 @@ int update_PYRO(UPDATE_FUNC_ARGS)
                         {
                             if (parts[r>>PS].ctype==PT_COPR)
                             {
-                                parts[i].type = PT_BRNZ;
-                                parts[r>>PS].type = PT_BRNZ;
+                                part_change_type(i,x,y,PT_BRNZ);
+                                part_change_type(r>>PS,x+rx,y+ry,PT_BRNZ);
                             }
                         }
                         if (parts[i].ctype==PT_TIN)
                         {
                             if (parts[r>>PS].ctype==PT_COPR)
                             {
-                                parts[i].type = PT_BRNZ;
-                                parts[r>>PS].type = PT_BRNZ;
+                                part_change_type(i,x,y,PT_BRNZ);
+                                part_change_type(r>>PS,x+rx,y+ry,PT_BRNZ);
                             }
                         }
                     }
@@ -184,7 +184,7 @@ int update_legacy_PYRO(UPDATE_FUNC_ARGS)
                 }
                 if (t!=PT_SPRK && (rt==PT_ICEI || rt==PT_SNOW))
                 {
-                    parts[r>>PS].type = PT_WATR;
+                    part_change_type(r>>PS,x+rx,y+ry,PT_WATR);
                     if (t==PT_FIRE)
                     {
                         kill_part(i);

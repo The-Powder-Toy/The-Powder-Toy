@@ -523,6 +523,11 @@ int luatpt_set_property(lua_State* l)
         offset = offsetof(particle, actas);
         format = 3;
     }
+    else if (strcmp(prop,"menusection")==0)
+    {
+        offset = offsetof(particle, menusection);
+        format = 1;
+    }
     else
     {
         return luaL_error(l, "Invalid property '%s'", prop);

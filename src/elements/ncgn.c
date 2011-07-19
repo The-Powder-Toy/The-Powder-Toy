@@ -1,21 +1,21 @@
 #include <element.h>
 
 int update_NCGN(UPDATE_FUNC_ARGS) {
-	int r, nx, ny, rt;
+	int r, rx, ry, rt;
 	int self = parts[i].type;
-    for(nx=-1; nx<2; nx++)
-        for(ny=-1; ny<2; ny++)
-            if(x+nx>=0 && y+ny>0 &&
-               x+nx<XRES && y+ny<YRES && (nx || ny))
+    for(rx=-1; rx<2; rx++)
+        for(ry=-1; ry<2; ry++)
+            if(x+rx>=0 && y+ry>0 &&
+               x+rx<XRES && y+ry<YRES && (rx || ry))
             {
-                r = pmap[y+ny][x+nx];
+                r = pmap[y+ry][x+rx];
                 if((r>>PS)>=NPART || !r)
                     continue;
                 if (parts[r>>PS].type==PT_PLUT){
                     parts[i].ctype=self;
                     parts[i].life = 4;
-                    parts[i].type = PT_SPRK;
-                    parts[r>>PS].type = PT_NCWS;
+                    part_change_type(i,x,y,PT_SPRK);
+                    part_change_type(r>>PS,x+rx,y+ry,PT_NCWS);
                 }
             }
 	return 0;

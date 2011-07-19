@@ -13,7 +13,7 @@ int update_GLOW(UPDATE_FUNC_ARGS)
                     continue;
                 if (parts[r>>PS].type==PT_WATR&&5>(rand()%2000))
                 {
-                    parts[i].type = PT_NONE;
+                    kill_part(i);
                     part_change_type(r>>PS,x+rx,y+ry,PT_DEUT);
                     parts[r>>PS].life = 10;
                 }

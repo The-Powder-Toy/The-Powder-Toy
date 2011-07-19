@@ -14,7 +14,7 @@ int update_FRZZ(UPDATE_FUNC_ARGS) {
 				{
 					part_change_type(r>>PS,x+rx,y+ry,PT_FRZW);
 					parts[r>>PS].life = 100;
-					parts[i].type = PT_NONE;
+					kill_part(i);
 				}
 
 			}

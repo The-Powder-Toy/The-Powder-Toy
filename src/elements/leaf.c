@@ -22,7 +22,7 @@ int update_LEAF(UPDATE_FUNC_ARGS) {
 						if (parts[r>>PS].type==PT_FIRE)
                         {
                             tmp++;
-                            parts[i].type=PT_FIRE;
+                            part_change_type(i,x,y,PT_FIRE);
                             }
 					}
 				}

@@ -25,6 +25,7 @@ int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)//
 		parts[i].x = (float)x;
 		parts[i].y = (float)y;
 		parts[i].type = t;
+		//part_change_type(i,x,y,t);
 		parts[i].life = rand()%480+480;
 		parts[i].vx = r*cosf(a);
 		parts[i].vy = r*sinf(a);

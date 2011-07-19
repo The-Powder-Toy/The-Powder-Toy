@@ -474,7 +474,7 @@ struct particle
     int tmp,tmp2,tmpx,tmpy;
     unsigned int dcolour;
     int r, g, b;
-    int weight,flammable,falldown,explosive,meltable,hardness;
+    int weight,flammable,falldown,explosive,meltable,hardness,menusection;
     float collision,airdrag,gravity,airloss,loss,hotair;
     int actas;
     int (*update_func) (UPDATE_FUNC_ARGS);
@@ -582,7 +582,7 @@ typedef struct part_transition part_transition;
 
  Properties: Does this element have special properties? The properties can be found at ~214. Separate each property with | inside the property variable.
 */
-static const part_type ptypes[PT_NUM] =
+static part_type ptypes[PT_NUM] =
 {
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd M	Weight	Section			H						Ins		Description
     {"",		PIXPACK(0x000000),	0.0f,	0.00f * CFDS,	1.00f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	100,	SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	251,	"Erases particles.", ST_NONE, 0, NULL},
@@ -829,8 +829,8 @@ static const part_type ptypes[PT_NUM] =
     {"XNON",    PIXPACK(0xEDD8DD),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Xenon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
     {"RDON",    PIXPACK(0x08A32C),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Radon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
     {"KPTN",    PIXPACK(0xEDE3D5),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Krypton Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
-    {"HLIM",    PIXPACK(0xFFC94D),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Helium Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
-    {"GEL",     PIXPACK(0xC7F2AA),  0.6f,  0.01f * CFDS,  0.98f,  0.95f,  0.0f,  0.1f,  0.00f,  0.000f  * CFDS,  2,  0,    0,  0,  20,  1,  31,    SC_LIQUID,    R_TEMP-2.0f  +273.15f,  251,    "Gel. Does Gel Stuff", ST_LIQUID, TYPE_LIQUID, &update_GEL},
+    {"HLIM",    PIXPACK(0xFFC94D),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  -0.99f, 0.50f,  0.001f  * CFDS,  0,  0,    0,  0,  1,  1,  1,    SC_GAS,      R_TEMP+2.0f  +273.15f,  106,  "Helium Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL},
+    {"GEL",     PIXPACK(0xC7F2AA),  0.6f,   0.01f * CFDS,   0.98f,  0.95f,  0.0f,   0.1f,   0.00f,  0.000f  * CFDS,  2,  0,    0,  0,  20,  1,  31,    SC_LIQUID,    R_TEMP-2.0f  +273.15f,  251,    "Gel. Does Gel Stuff", ST_LIQUID, TYPE_LIQUID, &update_GEL},
     {"GENR",	PIXPACK(0xAADDDD),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,		"Produces electricity under pressure.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, &update_GENR},
     {"ADAN",	PIXPACK(0x006AFF),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  1,  100,	SC_SPECIAL,		0.0f,					40,		"Extremely Dangerous Element. Destroys everything with immense Frost/negative-pressure", ST_NONE, ST_NONE, NULL},
     {"SHPN",	PIXPACK(0x696465),	0.7f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	90,		SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	97,		"Shrapnel. Creates smaller explosions.", ST_SOLID, TYPE_PART|PROP_LIFE_DEC, &update_PYRO},

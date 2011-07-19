@@ -41,7 +41,7 @@ int update_CLOUD(UPDATE_FUNC_ARGS) {
                 if (parts[r>>PS].type == PT_RWTR){
                     if (rand()%1000 == 1){
                         if (!(parts[r>>PS].y < parts[i].y+2)){
-                            parts[r>>PS].type=self;
+                            part_change_type(r>>PS,x+rx,y+ry,self);
                         }
                     }
                 }
@@ -79,7 +79,7 @@ int update_ACLOUD(UPDATE_FUNC_ARGS) {
                 if (parts[r>>PS].type == PT_ACRN){
                     if (rand()%1000 == 1){
                         if (parts[r>>PS].y > parts[i].y+2){
-                            parts[r>>PS].type=self;
+                            part_change_type(r>>PS,x+rx,y+ry,self);
                         }
                     }
                 }

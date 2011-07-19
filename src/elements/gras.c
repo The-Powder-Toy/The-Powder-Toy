@@ -14,14 +14,14 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                     if(parts[r>>PS].type==PT_WATR && 1>(rand()%250))
                     {
                         t = parts[i].type = self;
-                        parts[r>>PS].type = self;
+                        part_change_type(r>>PS,x+rx,y+ry,self);
                         parts[r>>PS].life = 0;
                     }
                     else if(parts[r>>PS].type==PT_SMKE)
                     {
                         int nrx = rand()%3 -1;
                         int nry = rand()%3 -1;
-                        parts[r>>PS].type = PT_NONE;
+                        kill_part(r>>PS);
                         parts[i].life = rand()%60 + 60;
                         create_part(-1,x+rx+nrx,y+ry+nry,PT_O2);
                     }
@@ -41,13 +41,13 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                     else if(parts[r>>PS].type==PT_RWTR && 1>(rand()%250))
                     {
                         t = parts[i].type = self;
-                        parts[r>>PS].type = self;
+                        part_change_type(r>>PS,x+rx,y+ry,self);
                         parts[r>>PS].life = 0;
                     }
                     else if(parts[r>>PS].type==PT_LAVA && 1>(rand()%250))
                     {
                         parts[i].life = 4;
-                        t = parts[i].type = PT_FIRE;
+                        part_change_type(i,x,y,PT_FIRE);// t =
                     }
                     else if(parts[r>>PS].type==PT_O3)
                     {
@@ -99,7 +99,7 @@ int update_GRAS(UPDATE_FUNC_ARGS) {
                                 parts[pmap[y+ry+nry][x+rx+nrx]>>PS].temp = parts[i].temp;
                         }
                         if (rand()%800 < 1){
-                            parts[r>>PS].type = PT_ROOT;
+                            part_change_type(r>>PS,x+rx,y+ry,PT_ROOT);
                             parts[r>>PS].tmp2=0;
                         }
                     }
