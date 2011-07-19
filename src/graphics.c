@@ -4619,9 +4619,51 @@ void render_signs(pixel *vid_buf)
         }
 }
 
-void render_fire(pixel *dst)
+void render_gravlensing(pixel *src, pixel * dst)
 {
-    int i,j,x,y,r,g,b;
+  int nx, ny, rx, ry, gx, gy, bx, by;
+  for(nx = 0; nx < XRES; nx++)
+  {
+    for(ny = 0; ny < YRES; ny++)
+    {
+      rx = nx-(gravxf[(ny*XRES)+nx]*0.5f);
+      ry = ny-(gravyf[(ny*XRES)+nx]*0.5f);
+      gx = nx-(gravxf[(ny*XRES)+nx]*0.75f);
+      gy = ny-(gravyf[(ny*XRES)+nx]*0.75f);
+      bx = nx-(gravxf[(ny*XRES)+nx]);
+      by = ny-(gravyf[(ny*XRES)+nx]);
+      if(rx > 0 && rx < XRES && ry > 0 && ry < YRES && gx > 0 && gx < XRES && gy > 0 && gy < YRES && bx > 0 && bx < XRES && by > 0 && by < YRES)
+        addpixel(dst, nx, ny, PIXR(src[ry*(XRES+BARSIZE)+rx]), PIXG(src[gy*(XRES+BARSIZE)+gx]), PIXB(src[by*(XRES+BARSIZE)+bx]), 255);
+      /*rx = nx+(gravxf[(ny*XRES)+nx]*0.5f);
+ 	3765
++      ry = ny+(gravyf[(ny*XRES)+nx]*0.5f);
+ 	3766
++      gx = nx+(gravxf[(ny*XRES)+nx]*0.75f);
+ 	3767
++      gy = ny+(gravyf[(ny*XRES)+nx]*0.75f);
+ 	3768
++      bx = nx+(gravxf[(ny*XRES)+nx]);
+ 	3769
++      by = ny+(gravyf[(ny*XRES)+nx]);
+ 	3770
++      if(rx > 0 && rx < XRES && ry > 0 && ry < YRES && gravp[ny/CELL][nx/CELL]*0.5f > -8.0f)
+ 	3771
++        addpixel(dst, rx, ry, PIXR(src[ry*(XRES+BARSIZE)+rx]), 0, 0, 255);
+ 	3772
++      if(gx > 0 && gx < XRES && gy > 0 && gy < YRES && gravp[ny/CELL][nx/CELL]*0.75f > -8.0f)
+ 	3773
++        addpixel(dst, gx, gy, 0, PIXG(src[ry*(XRES+BARSIZE)+rx]), 0, 255);
+ 	3774
++      if(bx > 0 && bx < XRES && by > 0 && by < YRES && gravp[ny/CELL][nx/CELL] > -8.0f)
+ 	3775
++        addpixel(dst, bx, by, 0, 0, PIXB(src[ry*(XRES+BARSIZE)+rx]), 255);*/
+    }
+  }
+}
+
+void render_fire(pixel *vid)
+{
+    int i,j,x,y,r,g,b,nx,ny;
     for (j=0; j<YRES/CELL; j++)
         for (i=0; i<XRES/CELL; i++)
         {
@@ -4631,7 +4673,7 @@ void render_fire(pixel *dst)
             if (r || g || b)
                 for (y=-CELL+1; y<2*CELL; y++)
                     for (x=-CELL+1; x<2*CELL; x++)
-                        addpixel(dst, i*CELL+x, j*CELL+y, r, g, b, fire_alpha[y+CELL][x+CELL]);
+                        addpixel(vid, i*CELL+x, j*CELL+y, r, g, b, fire_alpha[y+CELL][x+CELL]);
             for (y=-1; y<2; y++)
                 for (x=-1; x<2; x++)
                     if (i+x>=0 && j+y>=0 && i+x<XRES/CELL && j+y<YRES/CELL && (x || y))
