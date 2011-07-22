@@ -51,4 +51,10 @@ int luatpt_get_numOfParts(lua_State* l);
 int luatpt_start_getPartIndex(lua_State* l);
 int luatpt_getPartIndex(lua_State* l);
 int luatpt_next_getPartIndex(lua_State* l);
+int luatpt_hud(lua_State* l);
+int luatpt_gravity(lua_State* l);
+int luatpt_airheat(lua_State* l);
+int luatpt_active_menu(lua_State* l);
+int luatpt_decorations_enable(lua_State* l);
+int luatpt_cmode_set(lua_State* l);
 #endif
