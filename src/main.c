@@ -1009,6 +1009,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				}
 				ty = PT_LIFE;
 			}
+			if (!ptypes[parts[i-1].type].enabled)
+				parts[i-1].type = PT_NONE;
 		}
 	}
 

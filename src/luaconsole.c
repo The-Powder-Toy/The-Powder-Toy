@@ -175,9 +175,7 @@ int luatpt_create(lua_State* l)
 	if(x < XRES && y < YRES){
 		if(lua_isnumber(l, 3)){
 			t = luaL_optint(l, 3, 0);
-			if (t==OLD_PT_WIND)
-				return 0;
-			if (t<0 || t >= PT_NUM)
+			if (t<0 || t >= PT_NUM || !ptypes[t].enabled)
 				return luaL_error(l, "Unrecognised element number '%d'", t);
 		} else {
 			name = luaL_optstring(l, 3, "dust");

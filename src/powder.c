@@ -616,7 +616,7 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
 {
 	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART || t<0 || t>=PT_NUM)
 		return;
-	if (t==OLD_PT_WIND)
+	if (!ptypes[t].enabled)
 		t = PT_NONE;
 	parts[i].type = t;
 	if (t==PT_PHOT || t==PT_NEUT)
@@ -646,7 +646,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	
 	if (x<0 || y<0 || x>=XRES || y>=YRES || ((t<0 || t>=PT_NUM)&&t!=SPC_HEAT&&t!=SPC_COOL&&t!=SPC_AIR&&t!=SPC_VACUUM))
 		return -1;
-	if (t==OLD_PT_WIND)
+	if (t>=0 && t<PT_NUM && !ptypes[t].enabled)
 		return -1;
 
 	if (t==SPC_HEAT||t==SPC_COOL)
