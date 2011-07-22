@@ -425,6 +425,14 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 	for (j=0; j<w*h; j++)
 	{
 		i = m[j];
+		if (i && (parts[i-1].type==PT_PBCN)) {
+			//Save tmp2
+			d[p++] = parts[i-1].tmp2;
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
 		if (i) {
 			//Save colour (ALPHA)
 			d[p++] = (parts[i-1].dcolour&0xFF000000)>>24;
@@ -848,14 +856,35 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					ttv = (d[p++])<<8;
 					ttv |= (d[p++]);
 					parts[i-1].tmp = ttv;
-					if (ptypes[parts[i-1].type].properties&PROP_LIFE && !parts[i-1].tmp)
-						for (q = 1; q<=NGOL ; q++) {
+					if (ver<53 && !parts[i-1].tmp)
+						for (q = 1; q<=NGOLALT; q++) {
 							if (parts[i-1].type==goltype[q-1] && grule[q][9]==2)
 								parts[i-1].tmp = grule[q][9]-1;
 						}
+					if (ver>=51 && ver<53 && parts[i-1].type==PT_PBCN)
+					{
+						parts[i-1].tmp2 = parts[i-1].tmp;
+						parts[i-1].tmp = 0;
+					}
 				} else {
 					p+=2;
 				}
+			}
+		}
+	}
+	if (ver>=53) {
+		for (j=0; j<w*h; j++)
+		{
+			i = m[j];
+			ty = d[pty+j];
+			if (i && ty==PT_PBCN)
+			{
+				if (p >= size)
+					goto corrupt;
+				if (i <= NPART)
+					parts[i-1].tmp2 = d[p++];
+				else
+					p++;
 			}
 		}
 	}
@@ -1008,6 +1037,16 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 						parts[i-1].ctype = gnum;
 				}
 				ty = PT_LIFE;
+			}
+			if(ver<52 && (ty==PT_CLNE || ty==PT_PCLN || ty==PT_BCLN)){
+				//Replace old GOL ctypes in clone
+				for (gnum = 0; gnum<NGOLALT; gnum++){
+					if (parts[i-1].ctype==goltype[gnum])
+					{
+						parts[i-1].ctype = PT_LIFE;
+						parts[i-1].tmp = gnum;
+					}
+				}
 			}
 			if (!ptypes[parts[i-1].type].enabled)
 				parts[i-1].type = PT_NONE;
