@@ -47,6 +47,7 @@ void luacon_open()
         {"start_getPartIndex", &luatpt_start_getPartIndex},
         {"next_getPartIndex", &luatpt_next_getPartIndex},
         {"getPartIndex", &luatpt_getPartIndex},
+        {"set_global_property", &luatpt_set_global_property},
         {NULL,NULL}
     };
 
@@ -541,21 +542,29 @@ int luatpt_set_property(lua_State* l)
                 return luaL_error(l, "Unrecognised element '%s'", name);
         }
     }
-    if(lua_isnumber(l, 2)){
-		if(format==2){
-			f = luaL_optnumber(l, 2, 0);
-		} else {
-			t = luaL_optint(l, 2, 0);
-		}
-		if (format == 3 && (t<0 || t>=PT_NUM))
-			return luaL_error(l, "Unrecognised element number '%d'", t);
-	} else if(format==4 && lua_isstring(l,2)) {
+    if(lua_isnumber(l, 2))
+    {
+        if(format==2)
+        {
+            f = luaL_optnumber(l, 2, 0);
+        }
+        else
+        {
+            t = luaL_optint(l, 2, 0);
+        }
+        if (format == 3 && (t<0 || t>=PT_NUM))
+            return luaL_error(l, "Unrecognised element number '%d'", t);
+    }
+    else if(format==4 && lua_isstring(l,2))
+    {
         s = luaL_optstring(l, 2, "");
-	} else {
-		name = luaL_optstring(l, 2, "dust");
-		if (!console_parse_type(name, &t, NULL))
-			return luaL_error(l, "Unrecognised element '%s'", name);
-	}
+    }
+    else
+    {
+        name = luaL_optstring(l, 2, "dust");
+        if (!console_parse_type(name, &t, NULL))
+            return luaL_error(l, "Unrecognised element '%s'", name);
+    }
     if(i == -1 || (w != -1 && h != -1))
     {
         // Got a region
@@ -717,7 +726,205 @@ int luatpt_get_property(lua_State* l)
     }
     return luaL_error(l, "Particle does not exist");
 }
+int luatpt_set_global_property(lua_State* l)
+{
+    char *prop, *name, *s;
+    int r, i, x, y, w, h, t, format, nx, ny, partsel = 0, acount;
+    float f;
+    size_t offset;
+    acount = lua_gettop(l);
+    prop = luaL_optstring(l, 1, "");
+    if(lua_isnumber(l, 3))
+        i = abs(luaL_optint(l, 3, -1));
+    else
+        i = -1;
+    if(lua_isnumber(l, 4))
+        y = abs(luaL_optint(l, 4, -1));
+    else
+        y = -1;
+    if(lua_isnumber(l, 5))
+        w = abs(luaL_optint(l, 5, -1));
+    else
+        w = -1;
+    if(lua_isnumber(l, 6))
+        h = abs(luaL_optint(l, 6, -1));
+    else
+        h = -1;
+    if (strcmp(prop,"collision")==0)
+    {
+        offset = offsetof(part_type, collision);
+        format = 2;
+    }
+    else if (strcmp(prop,"airdrag")==0)
+    {
+        offset = offsetof(part_type, airdrag);
+        format = 2;
+    }
+    else if (strcmp(prop,"flammable")==0)
+    {
+        offset = offsetof(part_type, flammable);
+        format = 1;
+    }
+    else if (strcmp(prop,"weight")==0)
+    {
+        offset = offsetof(part_type, weight);
+        format = 1;
+    }
+    else if (strcmp(prop,"falldown")==0)
+    {
+        offset = offsetof(part_type, falldown);
+        format = 1;
+    }
+    else if (strcmp(prop,"gravity")==0)
+    {
+        offset = offsetof(part_type, gravity);
+        format = 2;
+    }
+    else if (strcmp(prop,"explosive")==0)
+    {
+        offset = offsetof(part_type, explosive);
+        format = 1;
+    }
+    else if (strcmp(prop,"meltable")==0)
+    {
+        offset = offsetof(part_type, meltable);
+        format = 1;
+    }
+    else if (strcmp(prop,"hardness")==0)
+    {
+        offset = offsetof(part_type, hardness);
+        format = 1;
+    }
+    else if (strcmp(prop,"name")==NULL)
+    {
+        offset = offsetof(part_type, name);
+        format = 4;
+    }
+    else if (strcmp(prop,"airloss")==0)
+    {
+        offset = offsetof(part_type, airloss);
+        format = 2;
+    }
+    else if (strcmp(prop,"loss")==0)
+    {
+        offset = offsetof(part_type, loss);
+        format = 2;
+    }
+    else if (strcmp(prop,"hotair")==0)
+    {
+        offset = offsetof(part_type, hotair);
+        format = 2;
+    }
+    else
+    {
+        return luaL_error(l, "Invalid property '%s'", prop);
+    }
+    if(acount>2)
+    {
+        if(!lua_isnumber(l, acount) && lua_isstring(l, acount))
+        {
+            name = luaL_optstring(l, acount, "none");
+            if (!console_parse_type(name, &partsel, NULL))
+                return luaL_error(l, "Unrecognised element '%s'", name);
+        }
+    }
+    if(lua_isnumber(l, 2))
+    {
+        if(format==2)
+        {
+            f = luaL_optnumber(l, 2, 0);
+        }
+        else
+        {
+            t = luaL_optint(l, 2, 0);
+        }
+        if (format == 3 && (t<0 || t>=PT_NUM))
+            return luaL_error(l, "Unrecognised element number '%d'", t);
+    }
+    else if(format==4 && lua_isstring(l,2))
+    {
+        s = luaL_optstring(l, 2, "");
+    }
+    else
+    {
+        name = luaL_optstring(l, 2, "dust");
+        if (!console_parse_type(name, &t, NULL))
+            return luaL_error(l, "Unrecognised element '%s'", name);
+    }
+    if(i == -1 || (w != -1 && h != -1))
+    {
+        // Got a region
+        if(i == -1)
+        {
+            i = 0;
+            y = 0;
+            w = XRES;
+            h = YRES;
+        }
+        if (i>=XRES || y>=YRES)
+            return luaL_error(l, "Coordinates out of range (%d,%d)", i, y);
+        x = i;
+        if(x+w > XRES)
+            w = XRES-x;
+        if(y+h > YRES)
+            h = YRES-y;
+        for (nx = x; nx<x+w; nx++)
+            for (ny = y; ny<y+h; ny++)
+            {
+                r = pmap[ny][nx];
+                if (!r || (r>>PS) >= NPART || (partsel))
+                {
+                    r = photons[ny][nx];
+                    if (!r || (partsel))
+                        continue;
+                }
+                i = r>>PS;
+                if(format==2)
+                {
+                    *((float*)(((void*)&ptypes[i])+offset)) = f;
+                }
+                else if(format==4)
+                {
+                    *((char*)(((void*)&ptypes[i])+offset)) = s;
+                }
+                else
+                {
+                    *((int*)(((void*)&ptypes[i])+offset)) = t;
+                }
+            }
+    }
+    else
+    {
+        // Got coords or particle index
+        if(i != -1 && y != -1)
+        {
+            if (i>=XRES || y>=YRES)
+                return luaL_error(l, "Coordinates out of range (%d,%d)", i, y);
+            r = pmap[y][i];
+            if (!r || (r>>PS)>=NPART || (partsel))
+                r = photons[y][i];
+            if (!r || (r>>PS)>=NPART || (partsel))
+                return 0;
+            i = r>>PS;
+        }
+        if (i < 0 || i >= NPART)
+            return luaL_error(l, "Invalid particle ID '%d'", i);
+        if(format==2)
+        {
+            *((float*)(((void*)&ptypes[i])+offset)) = f;
+        }
+        else if(format==4)
+        {
+            *((char*)(((void*)&ptypes[i])+offset)) = s;
+        }
+        else
+        {
+            *((int*)(((void*)&ptypes[i])+offset)) = t;
+        }
 
+    }
+    return 0;
+}
 int luatpt_drawpixel(lua_State* l)
 {
     int x, y, r, g, b, a;

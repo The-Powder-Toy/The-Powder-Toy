@@ -40,7 +40,7 @@ int update_CPCT(UPDATE_FUNC_ARGS)
                     {
                         parts[rp].ctype=parts[rp].type;
                         parts[rp].life=4;
-                        parts[rp].type=PT_SPRK;
+                        part_change_type(rp,x+rx,y+ry,PT_SPRK);
                         parts[i].life--;
                         if (parts[i].life > 0)
                             parts[i].life--;

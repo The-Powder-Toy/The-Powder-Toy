@@ -36,8 +36,8 @@ typedef struct menu_wall menu_wall;
 #define SC_STICKMAN 11
 #define SC_NATURE 12
 #define SC_SPACE 13
-#define SC_CRACKER2 14
-#define SC_CRACKER 15
+#define SC_DRAWING 14
+#define SC_MISC 15
 #define SC_TOTAL 16
 
 static menu_section msections[] = //doshow does not do anything currently.
@@ -56,8 +56,8 @@ static menu_section msections[] = //doshow does not do anything currently.
     {"\xA7", "Stickman", 0, 1},
     {"\xA4", "Nature", 0, 1},
     {"\xD1", "Space", 0, 1},
-	{"\xC8", "Secret", 0, 1},
-	{"\xC8", "Secret", 0, 0},
+	{"\xCC", "Drawing", 0, 1},
+	{"\xCC", "Miscellaneous", 0, 0},
 };
 
 static menu_section colorsections[] = //doshow does not do anything currently.

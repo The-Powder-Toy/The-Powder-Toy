@@ -28,7 +28,7 @@ int update_STKM2(UPDATE_FUNC_ARGS)
     if (isplayer2)   //Already a stickman2 in the simulation
     {
         death2 = 1;
-        parts[i].type = PT_NONE;
+        kill_part(i);
     }
 
     //Death
@@ -217,7 +217,7 @@ int update_STKM2(UPDATE_FUNC_ARGS)
                 if (parts[r>>PS].type == PT_NEUT)
                 {
                     if (parts[i].life<=100) parts[i].life -= (102-parts[i].life)/2;
-                        else parts[i].life *= 0.9f;
+                    else parts[i].life *= 0.9f;
                     kill_part(r>>PS);
                 }
                 if (bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)
@@ -450,38 +450,26 @@ int update_STKM2(UPDATE_FUNC_ARGS)
 
     if (parts[r>>PS].type==PT_SPER)
     {
-        if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
-        {
-            player2[21] = 6;
-            player2[22] = -4;
-            player2[19] = 4;
-        }
-
-        if (pmap[(int)(player2[16]-1)][(int)(player2[15])])
-        {
-            player2[25] = 6;
-            player2[26] = -4;
-            player2[23] = 4;
-        }
+        player2[19] = 2;
+        player2[20] = 2;
+        player2[21] = 2;
+        player2[22] = -2;
+        player2[23] = 2;
+        player2[24] = 2;
+        player2[25] = 2;
+        player2[26] = -2;
     }
 
     if (parts[r>>PS].type==PT_SPEL)
     {
-        if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
-        {
-            player2[21] = -6;
-            player2[22] = -4;
-            player2[19] = -4;
-        }
-
-        if (pmap[(int)(player2[16]-1)][(int)(player2[15])])
-        {
-            player2[25] = -6;
-            player2[26] = -4;
-            player2[23] = -4;
-        }
-
-
+        player2[19] = -2;
+        player2[20] = -2;
+        player2[21] = -2;
+        player2[22] = -2;
+        player2[23] = -2;
+        player2[24] = -2;
+        player2[25] = -2;
+        player2[26] = -2;
     }
 
     r = pmap[(int)(player2[16]+0.5)][(int)(player2[15]+0.5)];
@@ -567,23 +555,28 @@ int update_STKM2(UPDATE_FUNC_ARGS)
         }
     }
 
+    if (parts[r>>PS].type==PT_SPER)
+    {
+        player2[19] = 2;
+        player2[20] = 2;
+        player2[21] = 2;
+        player2[22] = -2;
+        player2[23] = 2;
+        player2[24] = 2;
+        player2[25] = 2;
+        player2[26] = -2;
+    }
+
     if (parts[r>>PS].type==PT_SPEL)
     {
-        if (pmap[(int)(player2[8]-1)][(int)(player2[7])])
-        {
-            player2[21] = -6;
-            player2[22] = -4;
-            player2[19] = -4;
-        }
-
-        if (pmap[(int)(player2[16]-1)][(int)(player2[15])])
-        {
-            player2[25] = -6;
-            player2[26] = -4;
-            player2[23] = -4;
-        }
-
-
+        player2[19] = -2;
+        player2[20] = -2;
+        player2[21] = -2;
+        player2[22] = -2;
+        player2[23] = -2;
+        player2[24] = -2;
+        player2[25] = -2;
+        player2[26] = -2;
     }
 
     isplayer2 = 1;

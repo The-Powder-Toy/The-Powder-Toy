@@ -2368,7 +2368,7 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                     for (i=0; i<NPART; i++)
                         if (parts[i].type==PT_SPRK)
                         {
-                            parts[i].type = parts[i].ctype;
+                            part_change_type(i,x,y,parts[i].ctype);
                             parts[i].life = 0;
                         }
                 }
@@ -2534,9 +2534,9 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                     }
             }
         }
-//#ifdef LUACONSOLE
+#ifdef LUACONSOLE
         //luacon_keypress(sdl_key);
-//#endif
+#endif
 #ifdef PYCONSOLE
         if (pyready==1 && pygood==1)
             if (pkey!=NULL && sdl_key!=NULL)

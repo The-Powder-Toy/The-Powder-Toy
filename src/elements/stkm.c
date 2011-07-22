@@ -219,7 +219,7 @@ int update_STKM(UPDATE_FUNC_ARGS)
                 if (parts[r>>PS].type == PT_NEUT)
                 {
                     if (parts[i].life<=100) parts[i].life -= (102-parts[i].life)/2;
-                        else parts[i].life *= 0.9f;
+                    else parts[i].life *= 0.9f;
                     kill_part(r>>PS);
                 }
                 if (bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)
@@ -486,38 +486,26 @@ int update_STKM(UPDATE_FUNC_ARGS)
 
     if (parts[r>>PS].type==PT_SPER)
     {
-        if (pmap[(int)(player[8]-1)][(int)(player[7])])
-        {
-            player[21] = 6;
-            player[22] = -4;
-            player[19] = 4;
-        }
-
-        if (pmap[(int)(player[16]-1)][(int)(player[15])])
-        {
-            player[25] = 6;
-            player[26] = -4;
-            player[23] = 4;
-        }
+        player[19] = 2;
+        player[20] = 2;
+        player[21] = 2;
+        player[22] = -2;
+        player[23] = 2;
+        player[24] = 2;
+        player[25] = 2;
+        player[26] = -2;
     }
 
     if (parts[r>>PS].type==PT_SPEL)
     {
-        if (pmap[(int)(player[8]-1)][(int)(player[7])])
-        {
-            player[21] = -6;
-            player[22] = -4;
-            player[19] = -4;
-        }
-
-        if (pmap[(int)(player[16]-1)][(int)(player[15])])
-        {
-            player[25] = -6;
-            player[26] = -4;
-            player[23] = -4;
-        }
-
-
+        player[19] = -2;
+        player[20] = -2;
+        player[21] = -2;
+        player[22] = -2;
+        player[23] = -2;
+        player[24] = -2;
+        player[25] = -2;
+        player[26] = -2;
     }
 
     r = pmap[(int)(player[16]+0.5)][(int)(player[15]+0.5)];
@@ -622,38 +610,26 @@ int update_STKM(UPDATE_FUNC_ARGS)
 
     if (parts[r>>PS].type==PT_SPER)
     {
-        if (pmap[(int)(player[8]-1)][(int)(player[7])])
-        {
-            player[21] = 6;
-            player[22] = -4;
-            player[19] = 4;
-        }
-
-        if (pmap[(int)(player[16]-1)][(int)(player[15])])
-        {
-            player[25] = 6;
-            player[26] = -4;
-            player[23] = 4;
-        }
+        player[19] = 2;
+        player[20] = 2;
+        player[21] = 2;
+        player[22] = -2;
+        player[23] = 2;
+        player[24] = 2;
+        player[25] = 2;
+        player[26] = -2;
     }
 
     if (parts[r>>PS].type==PT_SPEL)
     {
-        if (pmap[(int)(player[8]-1)][(int)(player[7])])
-        {
-            player[21] = -6;
-            player[22] = -4;
-            player[19] = -4;
-        }
-
-        if (pmap[(int)(player[16]-1)][(int)(player[15])])
-        {
-            player[25] = -6;
-            player[26] = -4;
-            player[23] = -4;
-        }
-
-
+        player[19] = -2;
+        player[20] = -2;
+        player[21] = -2;
+        player[22] = -2;
+        player[23] = -2;
+        player[24] = -2;
+        player[25] = -2;
+        player[26] = -2;
     }
 
     isplayer = 1;
