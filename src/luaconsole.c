@@ -37,11 +37,11 @@ void luacon_open(){
 		{"next_getPartIndex", &luatpt_next_getPartIndex},
 		{"getPartIndex", &luatpt_getPartIndex},
 		{"hud", &luatpt_hud},
-        	{"newtonian_gravity", &luatpt_gravity},
-        	{"ambient_heat", &luatpt_airheat},
-        	{"active_menu", &luatpt_active_menu},
-        	{"decorations_enable", &luatpt_decorations_enable},
-        	{"display_mode", &luatpt_cmode_set}
+		{"newtonian_gravity", &luatpt_gravity},
+		{"ambient_heat", &luatpt_airheat},
+		{"active_menu", &luatpt_active_menu},
+		{"decorations_enable", &luatpt_decorations_enable},
+		{"display_mode", &luatpt_cmode_set},
 		{NULL,NULL}
 	};
 
