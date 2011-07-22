@@ -3379,51 +3379,6 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
                     }
                 }
-                else if(t==PT_NCWS)
-                {
-                    fg = 255;
-                    fb = 0;
-                    fr = 0;
-                    if(pv[ny/CELL][nx/CELL]>0)
-                    {
-                        fg = 255 * pv[ny/CELL][nx/CELL];
-                        fb = 0 * pv[ny/CELL][nx/CELL];
-                        fr = 0 * pv[ny/CELL][nx/CELL];
-                    }
-                    vid[ny*(XRES+BARSIZE)+nx] = PIXRGB((int)restrict_flt(0x44 + fr, 0, 255), (int)restrict_flt(0x88 + fg*8, 0, 255), (int)restrict_flt(0x44 + fb*8, 0, 255));
-                    if(cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY || cmode==CM_AWESOME || cmode==CM_PREAWE)
-                    {
-                        x = nx/CELL;
-                        y = ny/CELL;
-                        fg += fire_g[y][x];
-                        if(fg > 255) fg = 255;
-                        fire_g[y][x] = fg;
-                        fb += fire_b[y][x];
-                        if(fb > 255) fb = 255;
-                        fire_b[y][x] = fb;
-                        fr += fire_r[y][x];
-                        if(fr > 255) fr = 255;
-                        fire_r[y][x] = fr;
-                    }
-                    if(cmode == CM_BLOB)
-                    {
-                        uint8 R = (int)restrict_flt(0x44 + fr*8, 0, 255);
-                        uint8 G = (int)restrict_flt(0x88 + fg*8, 0, 255);
-                        uint8 B = (int)restrict_flt(0x44 + fb*8, 0, 255);
-
-                        blendpixel(vid, nx+1, ny, R, G, B, 223);
-                        blendpixel(vid, nx-1, ny, R, G, B, 223);
-                        blendpixel(vid, nx, ny+1, R, G, B, 223);
-                        blendpixel(vid, nx, ny-1, R, G, B, 223);
-
-                        blendpixel(vid, nx+1, ny-1, R, G, B, 112);
-                        blendpixel(vid, nx-1, ny-1, R, G, B, 112);
-                        blendpixel(vid, nx+1, ny+1, R, G, B, 112);
-                        blendpixel(vid, nx-1, ny+1, R, G, B, 112);
-                    }
-
-                }
-
                 else if (t==PT_LCRY)
                 {
                     uint8 GR = 0x50+((parts[i].life>10?10:parts[i].life)*10);
@@ -4068,6 +4023,10 @@ void draw_parts(pixel *vid)
                         if (cb > 255) cb = 255;
                         fire_b[y][x] = cb;
                     }
+                }
+                else if (ptypes[t].graphic_func){
+                    if ((*(ptypes[t].graphic_func))(i,nx,ny,vid))
+                        continue;
                 }
                 else //if no special effect, draw a simple pixel
                     vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;

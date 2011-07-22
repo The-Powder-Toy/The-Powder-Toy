@@ -760,20 +760,20 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     }
     if (t==PT_PAIN)
     {
-        pv[y/CELL][x/CELL] += 100.03f;
+        pv[y/CELL][x/CELL] = MAXVELOCITY;
         if (y+CELL<YRES)
-            pv[y/CELL+1][x/CELL] += 100.03f;
+            pv[y/CELL+1][x/CELL] = MAXVELOCITY;
         if (x+CELL<XRES)
         {
-            pv[y/CELL][x/CELL+1] += 100.03f;
+            pv[y/CELL][x/CELL+1] = MAXVELOCITY;
             if (y+CELL<YRES)
-                pv[y/CELL+1][x/CELL+1] += 100.03f;
+                pv[y/CELL+1][x/CELL+1] = MAXVELOCITY;
         }
         if (t==PT_PAIN&&parts[pmap[y][x]>>PS].temp<MAX_TEMP)
         {
             if ((pmap[y][x]&TYPE)==PT_PUMP)
             {
-                parts[pmap[y][x]>>PS].temp = restrict_flt(parts[pmap[y][x]>>PS].temp + 100.1f, MIN_TEMP, MAX_TEMP);
+                parts[pmap[y][x]>>PS].temp = restrict_flt(parts[pmap[y][x]>>PS].temp + MAXVELOCITY, MIN_TEMP, MAX_TEMP);
             }
             else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)))
             {
@@ -788,20 +788,20 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     }
     if (t==PT_ADAN)
     {
-        pv[y/CELL][x/CELL] -= 100.03f;
+        pv[y/CELL][x/CELL] = MINVELOCITY;
         if (y+CELL<YRES)
-            pv[y/CELL+1][x/CELL] -= 100.03f;
+            pv[y/CELL+1][x/CELL] = MINVELOCITY;
         if (x+CELL<XRES)
         {
-            pv[y/CELL][x/CELL+1] -= 100.03f;
+            pv[y/CELL][x/CELL+1] = MINVELOCITY;
             if (y+CELL<YRES)
-                pv[y/CELL+1][x/CELL+1] -= 100.03f;
+                pv[y/CELL+1][x/CELL+1] = MINVELOCITY;
         }
         if (t==PT_ADAN&&parts[pmap[y][x]>>PS].temp<MAX_TEMP)
         {
             if ((pmap[y][x]&TYPE)==PT_PUMP)
             {
-                parts[pmap[y][x]>>PS].temp = restrict_flt(parts[pmap[y][x]>>PS].temp - 100.1f, MIN_TEMP, MAX_TEMP);
+                parts[pmap[y][x]>>PS].temp = restrict_flt(parts[pmap[y][x]>>PS].temp - MINVELOCITY, MIN_TEMP, MAX_TEMP);
             }
             else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)))
             {
