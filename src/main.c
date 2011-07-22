@@ -178,6 +178,8 @@ int legacy_enable = 0; //Used to disable new features such as heat, will be set 
 int ngrav_enable = 0; //Newtonian gravity, will be set by save
 int aheat_enable; //Ambient heat
 int decorations_enable = 1;
+int hud_enable = 1;
+int active_menu = 0;
 int death = 0, framerender = 0;
 int amd = 1;
 int FPSB = 0;
@@ -1545,8 +1547,6 @@ int main(int argc, char *argv[])
 {
 	pixel *part_vbuf; //Extra video buffer
 	pixel *part_vbuf_store;
-	int hud_enable = 1;
-	int active_menu = 0;
 #ifdef BETA
 	int is_beta = 0;
 #endif
@@ -2375,6 +2375,7 @@ int main(int argc, char *argv[])
 			if (sdl_key==SDLK_SPACE)
 				sys_pause = !sys_pause;
 			if (sdl_key=='u')
+
 				aheat_enable = !aheat_enable;
 			if (sdl_key=='h')
 				hud_enable = !hud_enable;

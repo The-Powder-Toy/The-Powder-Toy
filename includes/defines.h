@@ -146,6 +146,9 @@ extern int sound_enable;
 extern int kiosk_enable;
 extern int aheat_enable;
 extern int decorations_enable;
+extern int hud_enable;
+
+extern int active_menu;
 
 extern int sys_pause;
 extern int framerender;
