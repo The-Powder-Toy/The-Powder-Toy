@@ -25,6 +25,7 @@ float *th_gravxf;
 float vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
 float vy[YRES/CELL][XRES/CELL], ovy[YRES/CELL][XRES/CELL];
 float pv[YRES/CELL][XRES/CELL], opv[YRES/CELL][XRES/CELL];
+unsigned char bmap_blockair[YRES/CELL][XRES/CELL];
 
 float cb_vx[YRES/CELL][XRES/CELL];
 float cb_vy[YRES/CELL][XRES/CELL];
@@ -215,6 +216,11 @@ void update_air(void)
 	int x, y, i, j;
 	float dp, dx, dy, f, tx, ty;
 
+	for (y=0; y<YRES/CELL; y++)
+		for (x=0; x<XRES/CELL; x++)
+		{
+			bmap_blockair[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || (bmap[y][x]==WL_EWALL && !emap[y][x]));
+		}
 	if (airMode != 4) { //airMode 4 is no air/pressure update
 
 		for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame
@@ -254,7 +260,7 @@ void update_air(void)
 		{
 			for (i=1; i<XRES/CELL; i++)
 			{
-				if (bmap[j][i]==WL_WALL || bmap[j][i]==WL_WALLELEC || (bmap[j][i]==WL_EWALL && !emap[j][i]))
+				if (bmap_blockair[j][i])
 				{
 					vx[j][i] = 0.0f;
 					vx[j][i-1] = 0.0f;
@@ -284,15 +290,9 @@ void update_air(void)
 				vy[y][x] *= AIR_VLOSS;
 				vx[y][x] += dx*AIR_TSTEPV;
 				vy[y][x] += dy*AIR_TSTEPV;
-				if (bmap[y][x]==WL_WALL || bmap[y][x+1]==WL_WALL ||
-				        bmap[y][x]==WL_WALLELEC || bmap[y][x+1]==WL_WALLELEC ||
-				        (bmap[y][x]==WL_EWALL && !emap[y][x]) ||
-				        (bmap[y][x+1]==WL_EWALL && !emap[y][x+1]))
+				if (bmap_blockair[y][x] || bmap_blockair[y][x+1])
 					vx[y][x] = 0;
-				if (bmap[y][x]==WL_WALL || bmap[y+1][x]==WL_WALL ||
-				        bmap[y][x]==WL_WALLELEC || bmap[y+1][x]==WL_WALLELEC ||
-				        (bmap[y][x]==WL_EWALL && !emap[y][x]) ||
-				        (bmap[y+1][x]==WL_EWALL && !emap[y+1][x]))
+				if (bmap_blockair[y][x] || bmap_blockair[y+1][x])
 					vy[y][x] = 0;
 			}
 
@@ -306,9 +306,7 @@ void update_air(void)
 					for (i=-1; i<2; i++)
 						if (y+j>0 && y+j<YRES/CELL-1 &&
 						        x+i>0 && x+i<XRES/CELL-1 &&
-						        bmap[y+j][x+i]!=WL_WALL &&
-						        bmap[y+j][x+i]!=WL_WALLELEC &&
-						        (bmap[y+j][x+i]!=WL_EWALL || emap[y+j][x+i]))
+						        !bmap_blockair[y+j][x+i])
 						{
 							f = kernel[i+1+(j+1)*3];
 							dx += vx[y+j][x+i]*f;
