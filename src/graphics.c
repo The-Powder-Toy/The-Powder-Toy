@@ -2717,38 +2717,6 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
                     }
                 }
-                else if (t==PT_NEUT)
-                {
-                    if (cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY || cmode==CM_AWESOME || cmode==CM_PREAWE)
-                    {
-                        vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
-                        cg = 8;
-                        cb = 12;
-                        x = nx/CELL;
-                        y = ny/CELL;
-                        cg += fire_g[y][x];
-                        if (cg > 255) cg = 255;
-                        fire_g[y][x] = cg;
-                        cb += fire_b[y][x];
-                        if (cb > 255) cb = 255;
-                        fire_b[y][x] = cb;
-                    }
-                    else
-                    {
-                        cr = 0x20;
-                        cg = 0xE0;
-                        cb = 0xFF;
-                        blendpixel(vid, nx, ny, cr, cg, cb, 192);
-                        blendpixel(vid, nx+1, ny, cr, cg, cb, 96);
-                        blendpixel(vid, nx-1, ny, cr, cg, cb, 96);
-                        blendpixel(vid, nx, ny+1, cr, cg, cb, 96);
-                        blendpixel(vid, nx, ny-1, cr, cg, cb, 96);
-                        blendpixel(vid, nx+1, ny-1, cr, cg, cb, 32);
-                        blendpixel(vid, nx-1, ny+1, cr, cg, cb, 32);
-                        blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
-                        blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
-                    }
-                }
                 else if (t==PT_FILT)
                 {
                     int temp_bin = (int)((parts[i].temp-273.0f)*0.025f);
