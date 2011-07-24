@@ -1896,21 +1896,21 @@ int main(int argc, char *argv[])
 				memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
 				memcpy(gravp, th_gravp, sizeof(gravp));
 
-				//Switch the full size gravmaps, we don't really need the two above any more
-				float *tmpf;
-				tmpf = gravyf;
-				gravyf = th_gravyf;
-				th_gravyf = tmpf;
-
-				tmpf = gravxf;
-				gravxf = th_gravxf;
-				th_gravxf = tmpf;
-
-				tmpf = gravpf;
-				gravpf = th_gravpf;
-				th_gravpf = tmpf;
-
 				if (!sys_pause||framerender){ //Only update if not paused
+					//Switch the full size gravmaps, we don't really need the two above any more
+					float *tmpf;
+					tmpf = gravyf;
+					gravyf = th_gravyf;
+					th_gravyf = tmpf;
+
+					tmpf = gravxf;
+					gravxf = th_gravxf;
+					th_gravxf = tmpf;
+
+					tmpf = gravpf;
+					gravpf = th_gravpf;
+					th_gravpf = tmpf;
+
 					grav_ready = 0; //Tell the other thread that we're ready for it to continue
 					pthread_cond_signal(&gravcv);
 				}
@@ -2673,6 +2673,7 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
+
 
 		mx = x;
 		my = y;
