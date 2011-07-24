@@ -3749,18 +3749,34 @@ void render_signs(pixel *vid_buf)
 void render_gravlensing(pixel *src, pixel * dst)
 {
 	int nx, ny, rx, ry, gx, gy, bx, by;
+	int r, g, b;
+	pixel t;
 	for(nx = 0; nx < XRES; nx++)
 	{
 		for(ny = 0; ny < YRES; ny++)
 		{
-			rx = nx-(gravxf[(ny*XRES)+nx]*0.5f);
-			ry = ny-(gravyf[(ny*XRES)+nx]*0.5f);
-			gx = nx-(gravxf[(ny*XRES)+nx]*0.75f);
-			gy = ny-(gravyf[(ny*XRES)+nx]*0.75f);
+			rx = nx-(gravxf[(ny*XRES)+nx]*0.75f);
+			ry = ny-(gravyf[(ny*XRES)+nx]*0.75f);
+			gx = nx-(gravxf[(ny*XRES)+nx]*0.875f);
+			gy = ny-(gravyf[(ny*XRES)+nx]*0.875f);
 			bx = nx-(gravxf[(ny*XRES)+nx]);
 			by = ny-(gravyf[(ny*XRES)+nx]);
 			if(rx > 0 && rx < XRES && ry > 0 && ry < YRES && gx > 0 && gx < XRES && gy > 0 && gy < YRES && bx > 0 && bx < XRES && by > 0 && by < YRES)
-				addpixel(dst, nx, ny, PIXR(src[ry*(XRES+BARSIZE)+rx]), PIXG(src[gy*(XRES+BARSIZE)+gx]), PIXB(src[by*(XRES+BARSIZE)+bx]), 255);
+			{
+				t = dst[ny*(XRES+BARSIZE)+nx];
+				r = PIXR(src[ry*(XRES+BARSIZE)+rx]) + PIXR(t);
+				g = PIXG(src[gy*(XRES+BARSIZE)+gx]) + PIXG(t);
+				b = PIXB(src[by*(XRES+BARSIZE)+bx]) + PIXB(t);
+				if (r>255)
+					r = 255;
+				if (g>255)
+					g = 255;
+				if (b>255)
+					b = 255;
+				dst[ny*(XRES+BARSIZE)+nx] = PIXRGB(r,g,b);
+				//	addpixel(dst, nx, ny, PIXR(src[ry*(XRES+BARSIZE)+rx]), PIXG(src[gy*(XRES+BARSIZE)+gx]), PIXB(src[by*(XRES+BARSIZE)+bx]), 255);
+			}
+
 			/*rx = nx+(gravxf[(ny*XRES)+nx]*0.5f);
 			ry = ny+(gravyf[(ny*XRES)+nx]*0.5f);
 			gx = nx+(gravxf[(ny*XRES)+nx]*0.75f);
