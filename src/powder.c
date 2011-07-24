@@ -689,7 +689,7 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline int create_part(int p, int x, int y, int t)
+_inline int create_part(int p, int x, int y, int tv)
 #else
 inline int create_part(int p, int x, int y, int tv)//the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
 #endif
@@ -2731,8 +2731,18 @@ killed:
                                 if (mv<0.0001f) break;
                                 pGravX /= mv;
                                 pGravY /= mv;
-                                nxf += r*pGravY + 0.1f*pGravX;
-                                nyf += -r*pGravX + 0.1f*pGravY;
+				if (j)
+				{
+					nxf += r*(pGravY*2.0f-prev_pGravY);
+					nyf += -r*(pGravX*2.0f-prev_pGravX);
+				}
+				else
+				{
+					nxf += r*pGravY;
+					nyf += -r*pGravX;
+				}
+				prev_pGravX = pGravX;
+				prev_pGravY = pGravY;
                                 nx = (int)(nxf+0.5f);
                                 ny = (int)(nyf+0.5f);
                                 if (nx<0 || ny<0 || nx>=XRES || ny >=YRES)
