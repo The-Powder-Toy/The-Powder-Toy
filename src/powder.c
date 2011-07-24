@@ -634,7 +634,7 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline int create_part(int p, int x, int y, int t)
+_inline int create_part(int p, int x, int y, int tv)
 #else
 inline int create_part(int p, int x, int y, int tv)//the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
 #endif
