@@ -1126,6 +1126,7 @@ void clear_sim(void)
 	memset(emap, 0, sizeof(emap));
 	memset(signs, 0, sizeof(signs));
 	memset(parts, 0, sizeof(particle)*NPART);
+	pfree = -1;
 	memset(pmap, 0, sizeof(pmap));
 	memset(pv, 0, sizeof(pv));
 	memset(vx, 0, sizeof(vx));
@@ -1736,10 +1737,6 @@ int main(int argc, char *argv[])
 	menu_count();
 	parts = calloc(sizeof(particle), NPART);
 	cb_parts = calloc(sizeof(particle), NPART);
-	for (i=0; i<NPART-1; i++)
-		parts[i].life = i+1;
-	parts[NPART-1].life = -1;
-	pfree = 0;
 	fire_bg=calloc(XRES*YRES, PIXELSIZE);
 	init_can_move();
 	clear_sim();

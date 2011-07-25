@@ -3798,17 +3798,20 @@ void render_fire(pixel *vid)
 				for (y=-CELL+1; y<2*CELL; y++)
 					for (x=-CELL+1; x<2*CELL; x++)
 						addpixel(vid, i*CELL+x, j*CELL+y, r, g, b, fire_alpha[y+CELL][x+CELL]);
+			r *= 8;
+			g *= 8;
+			b *= 8;
 			for (y=-1; y<2; y++)
 				for (x=-1; x<2; x++)
-					if (i+x>=0 && j+y>=0 && i+x<XRES/CELL && j+y<YRES/CELL && (x || y))
+					if ((x || y) && i+x>=0 && j+y>=0 && i+x<XRES/CELL && j+y<YRES/CELL)
 					{
-						r += fire_r[j+y][i+x] / 8;
-						g += fire_g[j+y][i+x] / 8;
-						b += fire_b[j+y][i+x] / 8;
+						r += fire_r[j+y][i+x];
+						g += fire_g[j+y][i+x];
+						b += fire_b[j+y][i+x];
 					}
-			r /= 2;
-			g /= 2;
-			b /= 2;
+			r /= 16;
+			g /= 16;
+			b /= 16;
 			fire_r[j][i] = r>4 ? r-4 : 0;
 			fire_g[j][i] = g>4 ? g-4 : 0;
 			fire_b[j][i] = b>4 ? b-4 : 0;
