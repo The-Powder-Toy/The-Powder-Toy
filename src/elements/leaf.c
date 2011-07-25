@@ -14,16 +14,17 @@ int update_LEAF(UPDATE_FUNC_ARGS) {
 						continue;
                     if (parts[r>>PS].type==PT_WATR || parts[r>>PS].type==PT_WTRV || parts[r>>PS].type==PT_DSTW){
                         if(parts[i].life>0)
-                        parts[i].life--;
+                            parts[i].life--;
                     }
 					if (parts[i].temp>774.0f&&33>=rand()/(RAND_MAX/100)+1)
 					{
+					    parts[i].flammable = 1000;
 						parts[i].life++;
 						if (parts[r>>PS].type==PT_FIRE)
                         {
                             tmp++;
                             part_change_type(i,x,y,PT_FIRE);
-                            }
+                        }
 					}
 				}
 	}

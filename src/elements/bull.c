@@ -1,9 +1,28 @@
 #include <element.h>
 
 int update_BULL(UPDATE_FUNC_ARGS) {
-	int r,rx,ry, nx, ny;
+	int r,rx,ry, nx, ny,tmp = parts[i].tmp2;
 	int self = parts[i].type;
-    parts[i].vx=3;
+	if (tmp==1)
+	{
+        parts[i].vx=3;
+        parts[i].vy=0;
+	}
+    else if (tmp==2)
+    {
+        parts[i].vx=-3;
+        parts[i].vy=0;
+    }
+    else if (tmp==3)
+    {
+        parts[i].vy=3;
+        parts[i].vx=0;
+    }
+    else if (tmp==4)
+    {
+        parts[i].vy=-3;
+        parts[i].vx=0;
+    }
     int nb;
     if(parts[i].tmp==1){
         for(nx=-2; nx<3; nx++)

@@ -1772,8 +1772,6 @@ void draw_parts(pixel *vid)
                     draw_line(vid , player[3], player[4], player[7], player[8], 255, 255, 255, s);
                     draw_line(vid , nx, ny+3, player[11], player[12], 255, 255, 255, s);
                     draw_line(vid , player[11], player[12], player[15], player[16], 255, 255, 255, s);
-
-                    isplayer = 1;  //It's a secret. Tssss...
                 }
                 else if (t==PT_STKM2)
                 {
@@ -1798,8 +1796,6 @@ void draw_parts(pixel *vid)
                     draw_line(vid , player2[3], player2[4], player2[7], player2[8], 100, 100, 255, s);
                     draw_line(vid , nx, ny+3, player2[11], player2[12], 100, 100, 255, s);
                     draw_line(vid , player2[11], player2[12], player2[15], player2[16], 100, 100, 255, s);
-
-                    isplayer2 = 1;  //It's a secret. Tssss...
                 }
                 if (cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP && t!=PT_GPMP && t!=PT_PBCN && t!=PT_FILT && t!=PT_HSWC && t!=PT_PCLN && t!=PT_DEUT && t!=PT_WIFI)//nothing display but show needed color changes
                 {
@@ -3391,8 +3387,6 @@ void draw_parts(pixel *vid)
                     draw_line(vid , player[3], player[4], player[7], player[8], R, G, B, s);
                     draw_line(vid , nx, ny+3, player[11], player[12], R, G, B, s);
                     draw_line(vid , player[11], player[12], player[15], player[16], R, G, B, s);
-
-                    isplayer = 1;  //It's a secret. Tssss...
                 }
                 else if (t==PT_STKM2) //Stick man should be visible in heat mode
                 {
@@ -3416,8 +3410,6 @@ void draw_parts(pixel *vid)
                     draw_line(vid , player2[3], player2[4], player2[7], player2[8], R, G, B, s);
                     draw_line(vid , nx, ny+3, player2[11], player2[12], R, G, B, s);
                     draw_line(vid , player2[11], player2[12], player2[15], player2[16], R, G, B, s);
-
-                    isplayer2 = 1;  //It's a secret. Tssss...
                 }
                 else
                 {

@@ -192,7 +192,7 @@ int noairgrav = 0;
 int hud_enable = 1;
 int decorations_enable = 1;
 int active_menu = 0;
-int death = 0, framerender = 0;
+int framerender = 0;
 int amd = 1;
 int FPSB = 0;
 int MSIGN =-1;
@@ -723,7 +723,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				j = PT_DUST;//goto corrupt;
 			}
 			gol[x][y]=0;
-			if (j)// && !(isplayer == 1 && j==PT_STKM))
+			if (j)// && !(player[27] == 1 && j==PT_STKM))
 			{
 				if (pmap[y][x] && (pmap[y][x]>>8)<NPART)
 				{
@@ -797,6 +797,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					player[17] = parts[i].x+3;
 					player[18] = parts[i].y+12;
 
+					player[27] = 1;
 				}
 				if (parts[i].type == PT_STKM2)
 				{
@@ -822,6 +823,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					player2[17] = parts[i].x+3;
 					player2[18] = parts[i].y+12;
 
+                    player2[27] = 1;
 				}
 			}
 			else
@@ -1159,7 +1161,7 @@ void clear_sim(void)
     memset(wireless, 0, sizeof(wireless));
     memset(gol2, 0, sizeof(gol2));
     memset(portalp, 0, sizeof(portalp));
-    death = death2 = ISSPAWN1 = ISSPAWN2 = 0;
+    ISSPAWN1 = ISSPAWN2 = 0;
     memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
     memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
     memset(fire_r, 0, sizeof(fire_r));
@@ -2161,11 +2163,6 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                     }
                 }
             }
-            //if(sdl_key=='d' && isplayer)
-            //{
-            //    death = 1;
-            //    //death = !(death);
-            //}
             if (sdl_key=='f')
             {
                 framerender = 1;
@@ -2201,7 +2198,7 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                         free(load_data);
                 }
             }
-            if (sdl_key=='s' && ((sdl_mod & (KMOD_CTRL)) || !isplayer2))
+            if (sdl_key=='s' && ((sdl_mod & (KMOD_CTRL)) || !player2[27]))
             {
                 if (it > 50)
                     it = 50;
@@ -2337,7 +2334,7 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                         bsy = 0;
                 }
             }
-            if (sdl_key=='d' && ((sdl_mod & (KMOD_CTRL)) || !isplayer2))
+            if (sdl_key=='d' && ((sdl_mod & (KMOD_CTRL)) || !player2[27]))
                 DEBUG_MODE = !DEBUG_MODE;
             if (sdl_key=='i')
             {
@@ -2425,7 +2422,7 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                 }
             }
 
-            if (sdl_key=='w' && (!isplayer2 || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
+            if (sdl_key=='w' && (!player2[27] || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
             {
                 ++gravityMode; // cycle gravity mode
                 itc = 51;
@@ -3103,9 +3100,8 @@ sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", ME4502_MAJOR_VERSION, M
                         gravityMode = 0;
                         airMode = 0;
 
-                        death = death2 = 0;
-                        isplayer2 = 0;
-                        isplayer = 0;
+                        player2[27] = 0;
+                        player[27] = 0;
                         ISSPAWN1 = 0;
                         ISSPAWN2 = 0;
                     }
@@ -3716,14 +3712,14 @@ if (!console_mode)
         sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
         //Setting an element for the stick man
-        if (isplayer==0)
+        if (player[27]==0)
         {
             if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT)
                 player[2] = sr;
             else
                 player[2] = PT_DUST;
         }
-        if (isplayer2==0)
+        if (player2[27]==0)
         {
             if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT)
                 player2[2] = sr;

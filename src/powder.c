@@ -7,9 +7,8 @@
 
 int gravwl_timeout = 0;
 
-int isplayer = 0;
-float player[27]; //[0] is a command cell, [3]-[18] are legs positions, [19] is index, [19]-[26] are accelerations
-float player2[27];
+float player[28]; //[0] is a command cell, [3]-[18] are legs positions, [19]-[26] are accelerations, [27] shows if player was spawned
+float player2[28];
 
 particle *parts;
 particle *cb_parts;
@@ -318,13 +317,11 @@ int try_move(int i, int x, int y, int nx, int ny)
     {
         if (parts[i].type == PT_STKM)
         {
-            death = 1;
-            isplayer = 0;
+            player[27] = 0;
         }
         if (parts[i].type == PT_STKM2)
         {
-            death2 = 1;
-            isplayer2 = 0;
+            player2[27] = 0;
         }
         parts[i].type=PT_NONE;
         return 0;
@@ -333,13 +330,11 @@ int try_move(int i, int x, int y, int nx, int ny)
     {
         if (parts[i].type == PT_STKM)
         {
-            death = 1;
-            isplayer = 0;
+            player[27] = 0;
         }
         if (parts[i].type == PT_STKM2)
         {
-            death2 = 1;
-            isplayer2 = 0;
+            player2[27] = 0;
         }
         parts[i].type=PT_NONE;
         if (!legacy_enable)
@@ -613,13 +608,11 @@ void kill_part(int i)//kills particle number i
     y = (int)(parts[i].y+0.5f);
     if (parts[i].type == PT_STKM)
     {
-        death = 1;
-        isplayer = 0;
+        player[27] = 0;
     }
     if (parts[i].type == PT_STKM2)
     {
-        death2 = 1;
-        isplayer2 = 0;
+        player2[27] = 0;
     }
     if (parts[i].type == PT_SPAWN)
     {
@@ -656,6 +649,11 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
         return;
     if (!ptypes[t].enabled)
         t = PT_NONE;
+    if (parts[i].type == PT_STKM)
+        player[27] = 0;
+
+    if (parts[i].type == PT_STKM2)
+        player2[27] = 0;
     parts[i].type = t;
     if (t==PT_PHOT || t==PT_NEUT)
     {
@@ -689,7 +687,7 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline int create_part(int p, int x, int y, int tv)
+_inline int create_part(int p, int x, int y, int t)
 #else
 inline int create_part(int p, int x, int y, int tv)//the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
 #endif
@@ -1149,6 +1147,9 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
         parts[i].vx = 3.0f*cosf(a);
         parts[i].vy = 3.0f*sinf(a);
     }
+    if (t==PT_BULL){
+        parts[i].tmp2=1;
+    }
     if (t==PT_PRTN)
     {
         float a = (rand()%16) * XRES;
@@ -1159,7 +1160,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     }
     if (t==PT_STKM)
     {
-        if (isplayer==0)
+        if (player[27]==0)
         {
             parts[i].x = (float)x;
             parts[i].y = (float)y;
@@ -1190,7 +1191,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
             player[17] = x+3;
             player[18] = y+12;
 
-            isplayer = 1;
+            player[27] = 1;
         }
         else
         {
@@ -1201,7 +1202,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     }
     if (t==PT_STKM2)
     {
-        if (isplayer2==0)
+        if (player2[27]==0)
         {
             parts[i].x = (float)x;
             parts[i].y = (float)y;
@@ -1232,7 +1233,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
             player2[17] = x+3;
             player2[18] = y+12;
 
-            isplayer2 = 1;
+            player2[27] = 1;
         }
         else
         {
@@ -1734,16 +1735,16 @@ void update_particles_i(pixel *vid, int start, int inc)
     if (ISME==1)//LOLZ element handling
     {
         ISME = 0;
-        for (ny=0; ny<YRES-4; ny++)
+        for (ny=0; ny<YRES-8; ny++)
         {
-            for (nx=0; nx<XRES-4; nx++)
+            for (nx=0; nx<XRES-8; nx++)
             {
                 r=pmap[ny][nx];
                 if ((r>>PS)>=NPART || !r)
                 {
                     continue;
                 }
-                else if ((ny<9||nx<9||ny>YRES-7||nx>XRES-10)&&parts[r>>PS].type==PT_ME)
+                else if ((ny<18||nx<9||ny>YRES-28||nx>XRES-40)&&parts[r>>PS].type==PT_ME)
                     kill_part(r>>PS);
                 else if (parts[r>>PS].type==PT_ME)
                 {
@@ -1752,14 +1753,14 @@ void update_particles_i(pixel *vid, int start, int inc)
 
             }
         }
-        for (nx=18; nx<=XRES-36; nx++)
+        for (nx=36; nx<=XRES-72; nx++)
         {
-            for (ny=9; ny<=YRES-7; ny++)
+            for (ny=36; ny<=YRES-28; ny++)
             {
                 if (me[nx/18][ny/9]==1)
                 {
-                    for ( nnx=0; nnx<18; nnx++)
-                        for ( nny=0; nny<9; nny++)
+                    for ( nnx=0; nnx<36; nnx++)
+                        for ( nny=0; nny<36; nny++)
                         {
                             if (ny+nny>0&&ny+nny<YRES&&nx+nnx>=0&&nx+nnx<XRES)
                             {
@@ -2740,18 +2741,8 @@ killed:
                                 if (mv<0.0001f) break;
                                 pGravX /= mv;
                                 pGravY /= mv;
-				if (j)
-				{
-					nxf += r*(pGravY*2.0f-prev_pGravY);
-					nyf += -r*(pGravX*2.0f-prev_pGravX);
-				}
-				else
-				{
-					nxf += r*pGravY;
-					nyf += -r*pGravX;
-				}
-				prev_pGravX = pGravX;
-				prev_pGravY = pGravY;
+                                nxf += r*pGravY + 0.1f*pGravX;
+                                nyf += -r*pGravX + 0.1f*pGravY;
                                 nx = (int)(nxf+0.5f);
                                 ny = (int)(nyf+0.5f);
                                 if (nx<0 || ny<0 || nx>=XRES || ny >=YRES)
@@ -2844,8 +2835,6 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
     pthread_t *InterThreads;
 #endif
 
-    isplayer = 0;  //Needed for player spawning
-    isplayer2 = 0;
     memset(pmap, 0, sizeof(pmap));
     memset(photons, 0, sizeof(photons));
     r = rand()%2;

@@ -171,7 +171,6 @@ extern int hud_enable;
 extern int framerender;
 
 extern int mousex, mousey;
-extern int death;
 
 struct sign
 {
@@ -214,10 +213,6 @@ int GRID_MODE;
 int VINE_MODE;
 int DEBUG_MODE;
 int GENERATION;
-int isplayer2;
-int playerspawn;
-int player2spawn;
-int death2;
 int ISSPAWN1;
 int ISSPAWN2;
 extern sign signs[MAXSIGNS];
@@ -230,7 +225,7 @@ extern int do_open;
 extern int sys_pause;
 extern int sys_shortcuts;
 extern int legacy_enable; //Used to disable new features such as heat, will be set by commandline or save.
-extern int death, death2, framerender;
+extern int framerender;
 extern pixel *vid_buf;
 
 extern unsigned char last_major, last_minor, update_flag;

@@ -474,6 +474,7 @@ int graphics_HFLM(GRAPHIC_FUNC_ARGS);
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
 int update_legacy_all(UPDATE_FUNC_ARGS);
+int run_stickman(float* playerp, UPDATE_FUNC_ARGS);
 
 
 struct particle
@@ -852,8 +853,8 @@ static part_type ptypes[PT_NUM] =
     {"CSIM",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	1000,	1,	50,	1,	1,	1,  100,	SC_EXPLOSIVE,	R_TEMP+0.0f	+273.15f,	240,	"Caesium, explosive, especially on contact with oxygen.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC, NULL, NULL},
     {"CPCT",	PIXPACK(0x969393),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	1,  100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Capacitor. Stores Spark.", ST_SOLID, TYPE_SOLID, &update_CPCT, NULL},
     {"RUBR",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	1,  100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Rubber, Bouncy.", ST_SOLID, TYPE_SOLID, &update_RUBR, NULL},
-    {"Me4502",	PIXPACK(0x569212),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	1,  100,	SC_DRAWING,	373.0f,					40,		"Me4502", ST_GAS, TYPE_SOLID, &update_MISC, NULL},
-    //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	Weights	Section			H						Ins		Description
+    {"Me4502",	PIXPACK(0x569212),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	1,  100,	SC_DRAWING,	    373.0f,					40,		"Me4502", ST_GAS, TYPE_SOLID, &update_MISC, NULL},
+    //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	E   Weights	Section			H						Ins		Description
 };
 
 // temporarily define abbreviations for impossible p/t values
@@ -1364,10 +1365,8 @@ int wireless[CHANNELS][2];
 
 extern int gravwl_timeout;
 
-extern int isplayer;
-extern float player[27];
-
-extern float player2[27];
+extern float player[28];
+extern float player2[28];
 
 extern int gravityMode;
 extern int airMode;
