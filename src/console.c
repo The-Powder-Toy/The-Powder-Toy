@@ -12,23 +12,18 @@ int file_script = 0;
 int console_parse_type(char *txt, int *element, char *err)
 {
 	int i = -1;
-	if (strcasecmp(txt,"WIND")==0)
-	{
-		if (err) strcpy(err, "Particle type not recognised");
-		return 0;
-	}
 	// alternative names for some elements
 	if (strcasecmp(txt,"C4")==0) i = PT_PLEX;
 	else if (strcasecmp(txt,"C5")==0) i = PT_C5;
 	else if (strcasecmp(txt,"NONE")==0) i = PT_NONE;
-	if (i>=0)
+	if (i>=0 && i<PT_NUM && ptypes[i].enabled)
 	{
 		*element = i;
 		if (err) strcpy(err,"");
 		return 1;
 	}
 	for (i=1; i<PT_NUM; i++) {
-		if (strcasecmp(txt,ptypes[i].name)==0)
+		if (strcasecmp(txt,ptypes[i].name)==0 && ptypes[i].enabled)
 		{
 			*element = i;
 			if (err) strcpy(err,"");

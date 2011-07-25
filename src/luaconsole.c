@@ -195,9 +195,7 @@ int luatpt_create(lua_State* l)
         if(lua_isnumber(l, 3))
         {
             t = luaL_optint(l, 3, 0);
-            if (t==OLD_PT_WIND)
-                return 0;
-            if (t<0 || t >= PT_NUM)
+            if (t<0 || t >= PT_NUM || !ptypes[t].enabled)
                 return luaL_error(l, "Unrecognised element number '%d'", t);
         }
         else
@@ -527,6 +525,11 @@ int luatpt_set_property(lua_State* l)
     else if (strcmp(prop,"menusection")==0)
     {
         offset = offsetof(particle, menusection);
+        format = 1;
+    }
+    else if (strcmp(prop,"dcolour")==0)
+    {
+        offset = offsetof(particle, dcolour);
         format = 1;
     }
     else

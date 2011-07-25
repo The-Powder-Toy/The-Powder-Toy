@@ -3,7 +3,7 @@
 int update_CLNE(UPDATE_FUNC_ARGS)
 {
     int self = parts[i].type;
-    if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM)
+    if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOLALT)))
     {
         int r, rx, ry;
         for (rx=-1; rx<2; rx++)
@@ -19,12 +19,17 @@ int update_CLNE(UPDATE_FUNC_ARGS)
                             parts[r>>PS].type!=PT_BCLN && parts[r>>PS].type!=PT_STKM &&
                             parts[r>>PS].type!=PT_STKM2 && parts[r>>PS].type!=PT_PDCL && parts[r>>PS].type!=self &&
                             parts[r>>PS].type!=PT_GSCL && parts[r>>PS].type!=PT_LQCL && parts[r>>PS].type<PT_NUM)
-                        parts[i].ctype = r&TYPE;
+                        {
+                            parts[i].ctype = r&TYPE;
+                            if ((r&TYPE)==PT_LIFE)
+                                parts[i].tmp = parts[r>>PS].ctype;
+          }
                 }
     }
     else
     {
-        create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+        if (parts[i].ctype==PT_LIFE) create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype|(parts[i].tmp<<PS));
+        else create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
     }
     return 0;
 }

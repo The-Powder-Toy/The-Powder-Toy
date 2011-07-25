@@ -119,8 +119,8 @@ void init_can_move()
         //INVIS behaviour varies with pressure
         can_move[t][PT_INVIS] = 3;
         //Cloude
-        can_move[t][PT_CLOUD] = 2;
-        can_move[t][PT_ACLOUD] = 2;
+        can_move[PT_RWTR][PT_CLOUD] = 2;
+        can_move[PT_ACRN][PT_ACLOUD] = 2;
         //stop CNCT being displaced by other particles
         can_move[t][PT_CNCT] = 0;
         can_move[t][PT_PMIC] = 0;
@@ -654,7 +654,7 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
 {
     if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART || t<0 || t>=PT_NUM)
         return;
-    if (t==OLD_PT_WIND)
+    if (!ptypes[t].enabled)
         t = PT_NONE;
     parts[i].type = t;
     if (t==PT_PHOT || t==PT_NEUT)
@@ -701,7 +701,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 
     if (x<0 || y<0 || x>=XRES || y>=YRES || ((t<0 || t>=PT_NUM)&&t!=SPC_HEAT&&t!=SPC_COOL&&t!=SPC_AIR&&t!=SPC_VACUUM))
         return -1;
-    if (t==OLD_PT_WIND)
+    if (t>=0 && t<PT_NUM && !ptypes[t].enabled)
         return -1;
 
     if (t==SPC_HEAT||t==SPC_COOL)
@@ -878,6 +878,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
                )
             {
                 parts[pmap[y][x]>>PS].ctype = t;
+                if (t==PT_LIFE && v<NGOLALT) parts[pmap[y][x]>>PS].tmp = v;
             }
             return -1;
         }
@@ -941,8 +942,6 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
         parts[i].tmp = 0;
         parts[i].tmp2 = 0;
         parts[i].tmp2 = 0;
-        parts[i].tmpx = 0;
-        parts[i].tmpy = 0;
     }
     if (t==PT_SOAP)
     {
@@ -1007,7 +1006,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     }
     if (t==PT_PMIC)
     {
-        parts[i].tmpx = parts[i].x;
+        //parts[i].tmpx = parts[i].x;
     }
     if (t==PT_SOAP)
     {
@@ -2696,15 +2695,25 @@ killed:
                         }
                         else if (parts[i].falldown>1 && fabsf(pGravX*parts[i].vx+pGravY*parts[i].vy)>fabsf(pGravY*parts[i].vx-pGravX*parts[i].vy))
                         {
-                            float nxf, nyf, ptGrav = parts[i].gravity;
+                            float nxf, nyf, prev_pGravX, prev_pGravY, ptGrav = parts[i].gravity;
                             s = 0;
                             // stagnant is true if FLAG_STAGNANT was set for this particle in previous frame
                             if (!stagnant || nt) //nt is if there is an something else besides the current particle type, around the particle
                                 rt = 30;//slight less water lag, although it changes how it moves a lot
                             else
                                 rt = 10;
-                            nxf = clear_xf;
-                            nyf = clear_yf;
+                            if (j)
+                            {
+                                nxf += r*(pGravY*2.0f-prev_pGravY);
+                                nyf += -r*(pGravX*2.0f-prev_pGravX);
+                            }
+                            else
+                            {
+                                nxf += r*pGravY;
+                                nyf += -r*pGravX;
+                            }
+                            prev_pGravX = pGravX;
+                            prev_pGravY = pGravY;
                             for (j=0; j<rt; j++)
                             {
                                 switch (gravityMode)
@@ -3096,7 +3105,10 @@ int create_parts(int x, int y, int rx, int ry, int c)
                     if (((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL))|| ((sdl_mod & (KMOD_CAPS)) && b!=WL_FANHELPER) ))
                     {
                         if (bmap[j][i]==SLALT-200)
+                        {
                             b = 0;
+                            if (SLALT==WL_GRAV) gravwl_timeout = 60;
+                        }
                         else
                             continue;
                     }
@@ -3118,6 +3130,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
                         bmap[j][i] = WL_STREAM;
                         continue;
                     }
+                    if (b==0 && bmap[j][i]==WL_GRAV) gravwl_timeout = 60;
                     bmap[j][i] = b;
                 }
             }
@@ -3231,7 +3244,7 @@ int InCurrentBrush(int i, int j, int rx, int ry)
     switch(CURRENT_BRUSH)
     {
     case CIRCLE_BRUSH:
-        return ((pow(i,2))/(pow(rx,2))+(pow(j,2))/(pow(ry,2))<=1);
+        return (pow(i,2)*pow(ry,2)+pow(j,2)*pow(rx,2)<=pow(rx,2)*pow(ry,2));
         break;
     case SQUARE_BRUSH:
         return (i*j<=ry*rx);

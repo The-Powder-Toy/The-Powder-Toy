@@ -9,7 +9,7 @@
 
 #define ME4502_MAJOR_VERSION 3
 #define ME4502_VERSION 0
-#define SAVE_VERSION 52
+#define SAVE_VERSION 53
 #define MINOR_VERSION 0
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 //#define BETA
