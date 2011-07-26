@@ -19,6 +19,8 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 			parts[i].life = 54;
 		if (ct == PT_SWCH)
 			parts[i].life = 14;
+		if (ct == PT_DLAY)
+			parts[i].temp = *((float*)(&parts[i].tmp2));
 		return 0;
 	}
 	if (ct==PT_SPRK)
@@ -128,6 +130,8 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 				if (ct==PT_INST&&rt!=PT_NSCN) conduct_sprk = 0;
 				if (ct==PT_SWCH && (rt==PT_PSCN||rt==PT_NSCN||rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR))
 					conduct_sprk = 0;
+				if (ct==PT_DLAY && !((rt==PT_PSCN || rt==PT_NSCN) && parts[i].tmp!=(r>>8)))
+					conduct_sprk = 0;
 				if (rt==PT_QRTZ && !((ct==PT_NSCN||ct==PT_METL||ct==PT_PSCN||ct==PT_QRTZ) && (parts[r>>8].temp<173.15||pv[(y+ry)/CELL][(x+rx)/CELL]>8)))
 					conduct_sprk = 0;
 				if (rt==PT_NTCT && !(ct==PT_NSCN || ct==PT_NTCT || (ct==PT_PSCN&&parts[r>>8].temp>373.0f)))
@@ -137,6 +141,8 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 				if (rt==PT_INWR && !(ct==PT_NSCN || ct==PT_INWR || ct==PT_PSCN))
 					conduct_sprk = 0;
 				if (rt==PT_INST&&ct!=PT_PSCN)
+					conduct_sprk = 0;
+				if (rt==PT_DLAY && !(ct==PT_PSCN || ct==PT_NSCN))
 					conduct_sprk = 0;
 
 				if (conduct_sprk) {
@@ -156,11 +162,19 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 						}
 					}
 					else if (parts[r>>8].life==0 && (parts[i].life<3 || ((r>>8)<i && parts[i].life<4))) {
-						parts[r>>8].life = 4;
-						parts[r>>8].ctype = rt;
-						part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
-						if (parts[r>>8].temp+10.0f<673.0f&&!legacy_enable&&(rt==PT_METL||rt==PT_BMTL||rt==PT_BRMT||rt==PT_PSCN||rt==PT_NSCN||rt==PT_ETRD||rt==PT_NBLE||rt==PT_IRON))
-							parts[r>>8].temp = parts[r>>8].temp+10.0f;
+						if (rt==PT_DLAY) {
+							parts[r>>8].life = (int)(parts[r>>8].temp - 273.15f);
+							parts[r>>8].tmp = i;
+							parts[r>>8].tmp2 = *((int*)(&parts[r>>8].temp));
+							parts[r>>8].ctype = rt;
+							part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+						} else {
+							parts[r>>8].life = 4;
+							parts[r>>8].ctype = rt;
+							part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+							if (parts[r>>8].temp+10.0f<673.0f&&!legacy_enable&&(rt==PT_METL||rt==PT_BMTL||rt==PT_BRMT||rt==PT_PSCN||rt==PT_NSCN||rt==PT_ETRD||rt==PT_NBLE||rt==PT_IRON))
+								parts[r>>8].temp = parts[r>>8].temp+10.0f;
+						}
 					}
 					else if (ct==PT_ETRD && parts[i].life==5)
 					{
