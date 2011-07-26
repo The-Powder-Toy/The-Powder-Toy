@@ -660,6 +660,7 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
         photons[y][x] = t|(i<<PS);
         if ((pmap[y][x]>>PS)==i)
             pmap[y][x] = 0;
+        if(parts[i].type!=PT_CPPA)
         t = i<<PS;
     }
     else
