@@ -1138,6 +1138,8 @@ void clear_sim(void)
 	memset(gol2, 0, sizeof(gol2));
 	memset(portalp, 0, sizeof(portalp));
 	ISSPAWN1 = ISSPAWN2 = 0;
+	player[27] = 0;
+	player2[27] = 0;
 	memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 	memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
 	memset(fire_r, 0, sizeof(fire_r));
@@ -2999,11 +3001,6 @@ int main(int argc, char *argv[])
 						svf_description[0] = 0;
 						gravityMode = 0;
 						airMode = 0;
-
-						player2[27] = 0;
-						player[27] = 0;
-						ISSPAWN1 = 0;
-						ISSPAWN2 = 0;
 					}
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{
