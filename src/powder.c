@@ -984,6 +984,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	}
 	if (t==PT_BIZR||t==PT_BIZRG)
 		parts[i].ctype = 0x47FFFF;
+	if (t==PT_DLAY)
+		parts[i].tmp2 = *((int*)(&parts[i].temp));
 	//and finally set the pmap/photon maps to the newly created particle
 	if (t==PT_PHOT||t==PT_NEUT)
 		photons[y][x] = t|(i<<8);
