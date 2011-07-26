@@ -715,8 +715,10 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			return -1;
 		if ((pmap[y][x]&0xFF)==PT_DLAY) {
 			parts[pmap[y][x]>>8].type = PT_SPRK;
-			parts[pmap[y][x]>>8].life = (int)parts[pmap[y][x]>>8].temp;
+			parts[pmap[y][x]>>8].ctype = PT_DLAY;
+			parts[pmap[y][x]>>8].life = (int)(parts[pmap[y][x]>>8].temp - 273.15f);
 			parts[pmap[y][x]>>8].tmp2 = *((int*)(&parts[pmap[y][x]>>8].temp));
+			pmap[y][x] = (pmap[y][x]&~0xFF) | PT_SPRK;
 		} else {
 			parts[pmap[y][x]>>8].type = PT_SPRK;
 			parts[pmap[y][x]>>8].life = 4;
