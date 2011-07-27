@@ -713,16 +713,10 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			return -1;
 		if (parts[pmap[y][x]>>8].life!=0)
 			return -1;
-		if ((pmap[y][x]&0xFF)==PT_DLAY) {
-			parts[pmap[y][x]>>8].type = PT_SPRK;
-			parts[pmap[y][x]>>8].life = (int)parts[pmap[y][x]>>8].temp;
-			parts[pmap[y][x]>>8].tmp2 = *((int*)(&parts[pmap[y][x]>>8].temp));
-		} else {
-			parts[pmap[y][x]>>8].type = PT_SPRK;
-			parts[pmap[y][x]>>8].life = 4;
-			parts[pmap[y][x]>>8].ctype = pmap[y][x]&0xFF;
-			pmap[y][x] = (pmap[y][x]&~0xFF) | PT_SPRK;
-		}
+		parts[pmap[y][x]>>8].type = PT_SPRK;
+		parts[pmap[y][x]>>8].life = 4;
+		parts[pmap[y][x]>>8].ctype = pmap[y][x]&0xFF;
+		pmap[y][x] = (pmap[y][x]&~0xFF) | PT_SPRK;
 		return pmap[y][x]>>8;
 	}
 	if (t==PT_SPAWN&&ISSPAWN1)
@@ -990,6 +984,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	}
 	if (t==PT_BIZR||t==PT_BIZRG)
 		parts[i].ctype = 0x47FFFF;
+	if (t==PT_DLAY)
+		parts[i].tmp2 = *((int*)(&parts[i].temp));
 	//and finally set the pmap/photon maps to the newly created particle
 	if (t==PT_PHOT||t==PT_NEUT)
 		photons[y][x] = t|(i<<8);
