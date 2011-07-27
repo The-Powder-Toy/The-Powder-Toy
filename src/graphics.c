@@ -2856,6 +2856,31 @@ void draw_parts(pixel *vid)
 						blendpixel(vid, nx-1, ny+1, GR, GR/2, 10, 112);
 					}
 				}
+				else if (t==PT_DLAY)
+				{
+					int stage = (int)(((float)parts[i].life/(parts[i].temp-273.15))*100.0f);
+					cr = PIXR(ptypes[t].pcolors)+stage;
+					cg = PIXG(ptypes[t].pcolors)+stage;
+					cb = PIXB(ptypes[t].pcolors)+stage;
+					if(cr>255)
+						cr = 255;
+					if(cg>255)
+						cg = 255;
+					if(cb>255)
+						cb = 255;
+					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cr, cg, cb);
+					if (cmode == CM_BLOB) {
+						blendpixel(vid, nx+1, ny, cr, cg, cb, 223);
+						blendpixel(vid, nx-1, ny, cr, cg, cb, 223);
+						blendpixel(vid, nx, ny+1, cr, cg, cb, 223);
+						blendpixel(vid, nx, ny-1, cr, cg, cb, 223);
+
+						blendpixel(vid, nx+1, ny-1, cr, cg, cb, 112);
+						blendpixel(vid, nx-1, ny-1, cr, cg, cb, 112);
+						blendpixel(vid, nx+1, ny+1, cr, cg, cb, 112);
+						blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
+					}
+				}
 				else if (t==PT_HSWC)
 				{
 					uint8 GR = 0x3B+((parts[i].life>10?10:parts[i].life)*19);
