@@ -327,7 +327,7 @@ void *build_thumb(int *size, int bzip2)
 //the saving function
 void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
 {
-	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*19+MAXSIGNS*262), *c;
+	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*17+MAXSIGNS*262), *c;
 	int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
 	int bx0=x0/CELL, by0=y0/CELL, bw=(w+CELL-1)/CELL, bh=(h+CELL-1)/CELL;
 	particle *parts = partsptr;
@@ -418,17 +418,15 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 			//Now saving tmp!
 			//d[p++] = (parts[i-1].life+3)/4;
 			int tttmp = (int)parts[i-1].tmp;
-			d[p++] = ((tttmp&0xFF0000)>>24);
-			d[p++] = ((tttmp&0x00FF0000)>>16);
-			d[p++] = ((tttmp&0x0000FF00)>>8);
-			d[p++] = (tttmp&0x000000FF);
+			d[p++] = ((tttmp&0xFF00)>>8);
+			d[p++] = (tttmp&0x00FF);
 		}
 	}
 	for (j=0; j<w*h; j++)
 	{
 		i = m[j];
 		if (i) {
-			//Save tmp2
+			// Save tmp2
 			int tttmp2;
 			if (parts[i-1].type == PT_DLAY)
 				tttmp2 = (int)(*((float*)(&parts[i].tmp2)));
@@ -861,14 +859,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					goto corrupt;
 				}
 				if (i <= NPART) {
-					if (ver > 52) {
-						ttv = (d[p++])<<24;
-						ttv |= (d[p++])<<16;
-						ttv |= (d[p++])<<8;
-					} else {
-						ttv = (d[p++])<<8;
-					}
-
+					ttv = (d[p++])<<8;
 					ttv |= (d[p++]);
 					parts[i-1].tmp = ttv;
 					if (ptypes[parts[i-1].type].properties&PROP_LIFE && !parts[i-1].tmp)
@@ -877,7 +868,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 								parts[i-1].tmp = grule[q][9]-1;
 						}
 				} else {
-					p += (ver > 52) ? 4 : 2;
+					p+=2;
 				}
 			}
 		}
@@ -901,16 +892,12 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			}
 		}
 	}
-	//Read ALPHA component
-	for (j=0; j<w*h; j++)
-	{
-		i = m[j];
-		if (i)
-		{
-			if (ver>=49) {
-				if (p >= size) {
-					goto corrupt;
-				}
+	if (ver >= 49) {
+		// Read ALPHA component
+		for (j=0; j<w*h; j++) {
+			i = m[j];
+			if (i) {
+				if (p >= size) goto corrupt;
 				if (i <= NPART) {
 					parts[i-1].dcolour = d[p++]<<24;
 				} else {
@@ -918,17 +905,11 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				}
 			}
 		}
-	}
-	//Read RED component
-	for (j=0; j<w*h; j++)
-	{
-		i = m[j];
-		if (i)
-		{
-			if (ver>=49) {
-				if (p >= size) {
-					goto corrupt;
-				}
+		// Read RED component
+		for (j=0; j<w*h; j++) {
+			i = m[j];
+			if (i) {
+				if (p >= size) goto corrupt;
 				if (i <= NPART) {
 					parts[i-1].dcolour |= d[p++]<<16;
 				} else {
@@ -936,17 +917,11 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				}
 			}
 		}
-	}
-	//Read GREEN component
-	for (j=0; j<w*h; j++)
-	{
-		i = m[j];
-		if (i)
-		{
-			if (ver>=49) {
-				if (p >= size) {
-					goto corrupt;
-				}
+		// Read GREEN component
+		for (j=0; j<w*h; j++) {
+			i = m[j];
+			if (i) {
+				if (p >= size) goto corrupt;
 				if (i <= NPART) {
 					parts[i-1].dcolour |= d[p++]<<8;
 				} else {
@@ -954,17 +929,11 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				}
 			}
 		}
-	}
-	//Read BLUE component
-	for (j=0; j<w*h; j++)
-	{
-		i = m[j];
-		if (i)
-		{
-			if (ver>=49) {
-				if (p >= size) {
-					goto corrupt;
-				}
+		// Read BLUE component
+		for (j=0; j<w*h; j++) {
+			i = m[j];
+			if (i) {
+				if (p >= size) goto corrupt;
 				if (i <= NPART) {
 					parts[i-1].dcolour |= d[p++];
 				} else {

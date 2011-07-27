@@ -130,7 +130,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 				if (ct==PT_INST&&rt!=PT_NSCN) conduct_sprk = 0;
 				if (ct==PT_SWCH && (rt==PT_PSCN||rt==PT_NSCN||rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR))
 					conduct_sprk = 0;
-				if (ct==PT_DLAY && !((rt==PT_PSCN || rt==PT_NSCN) && parts[i].tmp!=(r>>8)))
+				if (ct==PT_DLAY && (rt==PT_PSCN || rt==PT_NSCN) && (parts[i].tmp & 0xF)==(rx+2) && ((parts[i].tmp>>4) & 0xF)==(ry+2))
 					conduct_sprk = 0;
 				if (rt==PT_QRTZ && !((ct==PT_NSCN||ct==PT_METL||ct==PT_PSCN||ct==PT_QRTZ) && (parts[r>>8].temp<173.15||pv[(y+ry)/CELL][(x+rx)/CELL]>8)))
 					conduct_sprk = 0;
@@ -164,7 +164,8 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 					else if (parts[r>>8].life==0 && (parts[i].life<3 || ((r>>8)<i && parts[i].life<4))) {
 						if (rt==PT_DLAY) {
 							parts[r>>8].life = (int)(parts[r>>8].temp - 273.15f);
-							parts[r>>8].tmp = i;
+							parts[r>>8].tmp = ((x - (int)parts[r>>8].x) + 2) & 0xF; //(rx + 2) & 0xF;
+							parts[r>>8].tmp |= ((y - (int)parts[r>>8].y) + 2) << 4; //(ry + 2) << 4;
 							parts[r>>8].tmp2 = *((int*)(&parts[r>>8].temp));
 							parts[r>>8].ctype = rt;
 							part_change_type(r>>8,x+rx,y+ry,PT_SPRK);

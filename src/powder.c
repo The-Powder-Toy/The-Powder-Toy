@@ -717,6 +717,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			parts[pmap[y][x]>>8].type = PT_SPRK;
 			parts[pmap[y][x]>>8].ctype = PT_DLAY;
 			parts[pmap[y][x]>>8].life = (int)(parts[pmap[y][x]>>8].temp - 273.15f);
+			parts[pmap[y][x]>>8].tmp = 0;
 			parts[pmap[y][x]>>8].tmp2 = *((int*)(&parts[pmap[y][x]>>8].temp));
 			pmap[y][x] = (pmap[y][x]&~0xFF) | PT_SPRK;
 		} else {
