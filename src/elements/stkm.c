@@ -204,7 +204,10 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 				else
 					np = create_part(-1, rx, ry, playerp[2]);
 				if ( (np < NPART) && np>=0 && playerp[2] != PT_PHOT && playerp[2] != SPC_AIR)
+				{
 					parts[np].vx = parts[np].vx + 5*((((int)playerp[1])&0x02) == 0x02) - 5*(((int)(playerp[1])&0x01) == 0x01);
+					parts[i].vx -= (ptypes[(int)playerp[2]].weight*parts[np].vx)/1000;
+				}
 				if ((np < NPART) && np>=0 && playerp[2] == PT_PHOT)
 				{
 					int random = abs(rand()%3-1)*3;
