@@ -911,7 +911,7 @@ static part_transition ptransitions[PT_NUM] =
     /* MWAX */ {IPL,	NT,			IPH,	NT,			318.0f,	PT_WAX,		673.0f,	PT_FIRE},
     /* PSCN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
     /* NSCN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1687.0f,PT_LAVA},
-    /* LN2  */ {IPL,	NT,			IPH,	NT,			63.0f,	PT_NICE,	ITH,	PT_NTRG}, //200
+    /* LN2  */ {IPL,	NT,			IPH,	NT,			63.0f,	PT_NICE,	77.0f,	PT_NONE},
     /* INSL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* BHOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* WHOL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
