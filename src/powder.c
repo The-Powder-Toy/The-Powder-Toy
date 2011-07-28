@@ -959,10 +959,6 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     if (t==PT_CPPA)
     {
         parts[i].tmp = rand()%PT_NUM+1;
-        if (parts[i].tmp == PT_NONE || parts[i].tmp == PT_VIRS || parts[i].tmp == PT_STKM || parts[i].tmp == PT_STKM2 || parts[i].tmp == PT_CPPA || parts[i].tmp == PT_PLAN || parts[i].tmp == PT_NUM || parts[i].tmp > PT_NUM)
-        {
-            parts[i].tmp = 1;
-        }
     }
     if (t==PT_PLAN)
     {

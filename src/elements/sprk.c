@@ -244,6 +244,11 @@ int update_SPRK(UPDATE_FUNC_ARGS)
                         part_change_type(r>>PS,x+rx,y+ry,self);
                         if (parts[r>>PS].temp+10.0f<673.0f&&!legacy_enable&&(rt==PT_METL||rt==PT_BMTL||rt==PT_BRMT||rt==PT_PSCN||rt==PT_NSCN||rt==PT_ETRD||rt==PT_NBLE||rt==PT_IRON))
                             parts[r>>PS].temp = parts[r>>PS].temp+10.0f;
+                        parts[r>>PS].life = 4;
+                        parts[r>>PS].ctype = rt;
+                        part_change_type(r>>PS,x+rx,y+ry,PT_SPRK);
+                        if (parts[r>>PS].temp+10.0f<673.0f&&!legacy_enable&&(rt==PT_METL||rt==PT_BMTL||rt==PT_BRMT||rt==PT_PSCN||rt==PT_NSCN||rt==PT_ETRD||rt==PT_NBLE||rt==PT_IRON))
+                            parts[r>>PS].temp = parts[r>>PS].temp+10.0f;
                     }
                     else if (ct==PT_ETRD && parts[i].life==5)
                     {
