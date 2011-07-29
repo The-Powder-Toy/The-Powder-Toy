@@ -22,8 +22,7 @@ int update_WIRE(UPDATE_FUNC_ARGS) {
             if(x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && pmap[y+ry][x+rx] && (rx!=0 || ry!=0) && (pmap[y+ry][x+rx]&0xFF)!=0xFF)
                 {
                 r = pmap[y+ry][x+rx];
-                if((r&0xFF)==PT_NSCN && parts[s>>8].tmp==1){create_part(-1, x+rx, y+ry, PT_SPRK);}
-                if((r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_PSCN){parts[s>>8].ctype=1; return 0;}
+                if((r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_PSCN){parts[s>>8].ctype=1; parts[r>>8].life=0; return 0;}
                 if((r&0xFF)==PT_WIRE && parts[r>>8].tmp==1){count++;}
                 }
             }
