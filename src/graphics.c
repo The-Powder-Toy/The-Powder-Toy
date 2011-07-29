@@ -1732,6 +1732,8 @@ void draw_parts(pixel *vid)
 			    blendpixel(vid, nx, ny, 0, 0, 255, 255);
 			else
 			    blendpixel(vid, nx, ny, 255, 255, 255, 255);
+			
+			continue;
 			}
 
 			if (cmode!=CM_HEAT)
