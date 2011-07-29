@@ -42,6 +42,10 @@ int update_DLAY(UPDATE_FUNC_ARGS) {
 					{
 						create_part(-1, x+rx, y+ry, PT_SPRK);
 					}
+					else if((r&0xFF)==PT_WIRE && oldl==1)
+					{
+					parts[r>>8].ctype=1;
+					}
 				}
 	//}
 	return 0;
