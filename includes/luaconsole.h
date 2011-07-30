@@ -60,4 +60,6 @@ int luatpt_start_getPartIndex(lua_State* l);
 int luatpt_getPartIndex(lua_State* l);
 int luatpt_next_getPartIndex(lua_State* l);
 int luatpt_set_global_property(lua_State* l);
+int luatpt_error(lua_State* l);
+int luatpt_heat(lua_State* l);
 #endif

@@ -45,6 +45,8 @@ int update_PYRO(UPDATE_FUNC_ARGS)
     if(t==PT_SHPN){
         if (parts[i].life < 1){
             if (rand()%2 == 1){
+                x = parts[i].x;
+                y = parts[i].y;
                 part_change_type(i,x,y,PT_BRMT);
                 pv[y/CELL][x/CELL] += 2.25f;
                 parts[i].temp = 3000.0f+273.15f;
