@@ -199,103 +199,104 @@
 #define PT_PBCN 153
 #define PT_GPMP 154
 #define PT_CLST 155
-#define PT_NTRG  156
-#define PT_LQCL  157
-#define PT_GSCL  158
-#define PT_BOOM  159
-#define PT_HEAL  160
-#define PT_FUSE2  161
-#define PT_ZAP  162
-#define PT_NCWS  163
-#define PT_ACRN  164
-#define PT_CLOUD  165
-#define PT_RWTR  166
-#define PT_ACLOUD  167
-#define PT_VOLT  168
-#define PT_VOLB  169
-#define PT_DIRT  170
-#define PT_INV  171
-#define PT_FLY  172
-#define PT_RSPW  173
-#define PT_NCGN  174
-#define PT_TRAP  175
-#define PT_BPAD  176
-#define PT_SPEL  177
-#define PT_SPER  178
-#define PT_POT  179
-#define PT_GRAS  180
-#define PT_CFUS  181
-#define PT_CFIR  182
-#define PT_SMIL  183
-#define PT_SEAL 184
-#define PT_BULL 185
-#define PT_PPLT 186
-#define PT_TNT 187
-#define PT_MGMA 188
-#define PT_DPAR 189
-#define PT_PAIN 190
-#define PT_VIRS 191
-#define PT_O3 192
-#define PT_DICE 193
-#define PT_GOLD 194
-#define PT_MPOS 195
-#define PT_MNEG 196
-#define PT_IFIL 197
-#define PT_LGUN 198
-#define PT_LAZR 199
-#define PT_IBAT 200
-#define PT_FGUN 201
-#define PT_FREZ 202
-#define PT_SPMG 203
-#define PT_SNMG 204
-#define PT_OSMT 205
-#define PT_ROOT 206
-#define PT_BFLM 207
-#define PT_PDCL 208
-#define PT_WCHP 209
-#define PT_SUN 210
-#define PT_AGAS 211
-#define PT_DWFM 212
-#define PT_COPR 213
-#define PT_C02 214
-#define PT_CLAY 215
-#define PT_NMTR 216
-#define PT_BLGN 217
-#define PT_BFGN 218
-#define PT_C6 219
-#define PT_CNVR 220
-#define PT_ASH 221
-#define PT_GREN 222
-#define PT_NUKE 223
-#define PT_TIN 224
-#define PT_BRNZ 225
-#define PT_CFCN 226
-#define PT_SVOI 227
-#define PT_PMIC 228
-#define PT_PIVS 229
-#define PT_LEAF 230
-#define PT_PLAN 231
-#define PT_BSHL 232
-#define PT_LTNG 233
-#define PT_CTRD 234
-#define PT_C0 235
-#define PT_HETR 236
-#define PT_CPPA 237
-#define PT_ARGN 238
-#define PT_PRTN 239
-#define PT_XNON 240
-#define PT_RDON 241
-#define PT_KPTN 242
-#define PT_HLIM 243
-#define PT_GEL 244
-#define PT_GENR 245
-#define PT_ADAN 246
-#define PT_SHPN 247
-#define PT_CSIM 248
-#define PT_CPCT 249
-#define PT_RUBR 250
-#define PT_ME 251
-#define PT_NUM  252
+#define PT_CDMD 156
+#define PT_NTRG  157
+#define PT_LQCL  158
+#define PT_GSCL  159
+#define PT_BOOM  160
+#define PT_HEAL  161
+#define PT_FUSE2  162
+#define PT_ZAP  163
+#define PT_NCWS  164
+#define PT_ACRN  165
+#define PT_CLOUD  166
+#define PT_RWTR  167
+#define PT_ACLOUD  168
+#define PT_VOLT  169
+#define PT_VOLB  170
+#define PT_DIRT  171
+#define PT_INV  172
+#define PT_FLY  173
+#define PT_RSPW  174
+#define PT_NCGN  175
+#define PT_TRAP  176
+#define PT_BPAD  177
+#define PT_SPEL  178
+#define PT_SPER  179
+#define PT_POT  180
+#define PT_GRAS  181
+#define PT_CFUS  182
+#define PT_CFIR  183
+#define PT_SMIL  184
+#define PT_SEAL 185
+#define PT_BULL 186
+#define PT_PPLT 187
+#define PT_TNT 188
+#define PT_MGMA 189
+#define PT_DPAR 190
+#define PT_PAIN 191
+#define PT_VIRS 192
+#define PT_O3 193
+#define PT_DICE 194
+#define PT_GOLD 195
+#define PT_MPOS 196
+#define PT_MNEG 197
+#define PT_IFIL 198
+#define PT_LGUN 199
+#define PT_LAZR 200
+#define PT_IBAT 201
+#define PT_FGUN 202
+#define PT_FREZ 203
+#define PT_SPMG 204
+#define PT_SNMG 205
+#define PT_OSMT 206
+#define PT_ROOT 207
+#define PT_BFLM 208
+#define PT_PDCL 209
+#define PT_WCHP 210
+#define PT_SUN 211
+#define PT_AGAS 212
+#define PT_DWFM 213
+#define PT_COPR 214
+#define PT_C02 215
+#define PT_CLAY 216
+#define PT_NMTR 217
+#define PT_BLGN 218
+#define PT_BFGN 219
+#define PT_C6 220
+#define PT_CNVR 221
+#define PT_ASH 222
+#define PT_GREN 223
+#define PT_NUKE 224
+#define PT_TIN 225
+#define PT_BRNZ 226
+#define PT_CFCN 227
+#define PT_SVOI 228
+#define PT_PMIC 229
+#define PT_PIVS 230
+#define PT_LEAF 231
+#define PT_PLAN 232
+#define PT_BSHL 233
+#define PT_LTNG 234
+#define PT_CTRD 235
+#define PT_C0 236
+#define PT_HETR 237
+#define PT_CPPA 238
+#define PT_ARGN 239
+#define PT_PRTN 240
+#define PT_XNON 241
+#define PT_RDON 242
+#define PT_KPTN 243
+#define PT_HLIM 244
+#define PT_GEL 245
+#define PT_GENR 246
+#define PT_ADAN 247
+#define PT_SHPN 248
+#define PT_CSIM 249
+#define PT_CPCT 250
+#define PT_RUBR 251
+#define PT_ME 252
+#define PT_NUM  253
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -461,6 +462,7 @@ int update_CPCT(UPDATE_FUNC_ARGS);
 int update_RUBR(UPDATE_FUNC_ARGS);
 int update_CLST(UPDATE_FUNC_ARGS);
 int update_DLAY(UPDATE_FUNC_ARGS);
+int update_VOLB(UPDATE_FUNC_ARGS);
 
 int graphics_NCWS(GRAPHIC_FUNC_ARGS);
 int graphics_NEUT(GRAPHIC_FUNC_ARGS);
@@ -474,6 +476,7 @@ int graphics_PLSM(GRAPHIC_FUNC_ARGS);
 int graphics_FIRW(GRAPHIC_FUNC_ARGS);
 int graphics_HFLM(GRAPHIC_FUNC_ARGS);
 int graphics_DLAY(GRAPHIC_FUNC_ARGS);
+int graphics_O3(GRAPHIC_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -762,6 +765,7 @@ static part_type ptypes[PT_NUM] =
     {"PBCN",    PIXPACK(0x3B1D0A),  0.0f,   0.00f * CFDS,   0.97f,  0.50f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  12, 1,  1,  100,    SC_POWERED,    R_TEMP+0.0f  +273.15f,  251,  "Powered breakable clone", ST_NONE, TYPE_SOLID, &update_PBCN, NULL},
     {"GPMP",    PIXPACK(0x0A3B3B),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  1,  1,  1,  1,  100,    SC_POWERED,    0.0f    +273.15f,  0,    "Changes gravity to its temp when activated. (use HEAT/COOL).", ST_NONE, TYPE_SOLID, &update_GPMP, NULL},
     {"CLST",    PIXPACK(0xE4A4A4),  0.7f,   0.02f * CFDS,   0.94f,  0.95f,  0.0f,   0.2f,   0.00f,  0.000f  * CFDS, 1,  0,      0,  2,  2,  1,  1,  55,     SC_POWDERS,    R_TEMP+0.0f  +273.15f,  70,    "Clay dust. Produces paste when mixed with water.", ST_SOLID, TYPE_PART, &update_CLST, NULL},
+    {"CDMD",    PIXPACK(0x00111D),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  0,  1,  1,  100,    SC_SOLIDS,    R_TEMP+0.0f  +273.15f,  186,  "Clear Diamond, can refract PHOT", ST_SOLID, TYPE_SOLID, NULL, NULL},
     {"NTRG",	PIXPACK(0x80A0AA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,  1,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,  	"Nitrogen in its gas form.", ST_GAS, TYPE_GAS, NULL, NULL},
     {"LQCL",	PIXPACK(0xFFD010),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	1,  30,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	29,		"Liquid. Duplicates any particles it touches.", ST_LIQUID, TYPE_LIQUID, &update_CLNE, NULL},
     {"GSCL",	PIXPACK(0xFFD010),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,  1,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,   70,		"Gas. Duplicates any particles it touches.", ST_GAS, TYPE_GAS, &update_CLNE, NULL},
@@ -775,7 +779,7 @@ static part_type ptypes[PT_NUM] =
     {"RWTR",	PIXPACK(0x0080FF),	0.0f,	0.00f * CFDS,	0.00f,	0.80f,	0.0f,	1.0f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	1,  70,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	29,		"Rain.", ST_LIQUID, TYPE_LIQUID, NULL, NULL},
     {"ACLO",	PIXPACK(0xA8B5AF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.40f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,  100,	SC_NATURE,		R_TEMP+0.0f	+273.15f,	251,	"Provides an endless acidic rainshower.", ST_GAS, TYPE_GAS, &update_ACLOUD, &graphics_CLOUD},
     {"VOLT",	PIXPACK(0xD98F07),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,  100,	SC_NATURE,		R_TEMP+1000.0f	+273.15f,	251,	"The Erupting Part Of A Volcano.", ST_SOLID, TYPE_SOLID, &update_VOLT, NULL},
-    {"VOLB",	PIXPACK(0x734C03),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,  100,	SC_NATURE,		R_TEMP+1000.0f	+273.15f,	251,	"The Safe but HOT Part Of A Volcano.", ST_SOLID, TYPE_SOLID, NULL, NULL},
+    {"VOLB",	PIXPACK(0x734C03),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,  100,	SC_NATURE,		R_TEMP+1000.0f	+273.15f,	251,	"The Safe but HOT Part Of A Volcano.", ST_SOLID, TYPE_SOLID, &update_VOLB, NULL},
     {"DIRT",	PIXPACK(0x8C5C03),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	5,	1,	1,	1,  90,		SC_NATURE,		R_TEMP+0.0f	+273.15f,	150,	"Dirt, Perfect for gardening..", ST_SOLID, TYPE_PART, NULL, NULL},
     {"INV",		PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,  100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives any Stickman an Invincible Power Up", ST_SOLID, TYPE_SOLID, NULL, NULL},
     {"FLY",		PIXPACK(0xFF30FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,  100,	SC_STICKMAN,		R_TEMP+0.0f	+273.15f,	251,		"Gives any Stickman the ability to Fly", ST_SOLID, TYPE_SOLID, NULL, NULL},
@@ -798,7 +802,7 @@ static part_type ptypes[PT_NUM] =
     {"DPAR",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,  100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,		"Put Decorations On Me :D", ST_NONE, TYPE_SOLID, NULL, NULL},
     {"DANG",	PIXPACK(0xFF9500),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  1,  1,  100,	SC_SPECIAL,		0.0f,					40,		"Extremely Dangerous Element. Destroys everything with immense heat/pressure", ST_NONE, ST_NONE, NULL, NULL},
     {"VIRS",	PIXPACK(0xFF00FF),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.0003f	* CFDS,	2,	0,		0,	0,	2,	1,	1,  45,		SC_LIQUID,		R_TEMP,                 60,		"Virus. Takes Over Other Elements.", ST_LIQUID, TYPE_LIQUID, &update_VIRS, NULL},
-    {"O3",		PIXPACK(0xC0FAF9),	0.1f,   0.00f * CFDS,   0,      0.01f,	-0.1f,	0.0f,	0.40f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,  1,		SC_GAS,		 	R_TEMP,                 0,		"Ozone. Blocks out radiation and pressure and harms plants", ST_GAS, TYPE_GAS | PROP_NEUTABSORB | PROP_DEADLY, NULL, NULL},
+    {"O3",		PIXPACK(0xC0FAF9),	0.1f,   0.00f * CFDS,   0,      0.01f,	-0.1f,	0.0f,	0.40f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,  1,		SC_GAS,		 	R_TEMP,                 0,		"Ozone. Blocks out radiation and pressure and harms plants", ST_GAS, TYPE_GAS | PROP_NEUTABSORB | PROP_DEADLY, NULL, &graphics_O3},
     {"DICE",	PIXPACK(0xA0C0FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0003f* CFDS,	0,	0,      0,	0,	20,	1,	1,  100,    SC_SOLIDS,		0,                      46,		"Dry Ice. Creates Smoke when in contact with water", ST_SOLID, TYPE_SOLID, &update_DICE, NULL},
     {"GOLD",	PIXPACK(0xFFD445),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	0,	"Gold. Unbreakable Conductor.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC, NULL, NULL},
     {"MPOS",	PIXPACK(0xFC0D48),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f	* CFDS, 0,	0,		0,	1,	50,	1,	1,  100,	SC_ELEC,	R_TEMP+0.0f +273.15f,	251,	"Positively Charged Magnet", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS, &update_MPOS, NULL},
@@ -1030,6 +1034,7 @@ static part_transition ptransitions[PT_NUM] =
     /* PBCN */ {IPL,    NT,         IPH,    NT,         ITL,  NT,      ITH,  NT},
     /* GPMP */ {IPL,    NT,         IPH,    NT,         ITL,    NT,         ITH,  NT},
     /* CLST */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      1256.0f,  PT_LAVA},
+    /* CDMD */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
     /* NTRG  */ {IPL,	NT,			IPH,	NT,			120.0f,	PT_LNTG,     ITH,	PT_NONE},
     /* LQCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* GSCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},

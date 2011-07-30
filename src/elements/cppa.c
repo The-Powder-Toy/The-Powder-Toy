@@ -9,7 +9,8 @@ int update_CPPA(UPDATE_FUNC_ARGS)
             tmp == PT_NUM || tmp == PT_PHOT || tmp==PT_NEUT ||
             tmp > PT_NUM || ptypes[tmp].menusection==SC_DRAWING ||
             tmp == PT_SPAWN || tmp == PT_SPAWN2 || ptypes[tmp].enabled==0 ||
-            tmp == PT_ZAP || tmp == PT_PRTN || tmp == PT_LIFE || tmp == PT_SPRK)
+            tmp == PT_ZAP || tmp == PT_PRTN || tmp == PT_LIFE ||
+            tmp == PT_SPRK || tmp == PT_PAIN || tmp == PT_ADAN)
     {
         tmp = 1;
     }

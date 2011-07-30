@@ -132,7 +132,7 @@ void init_can_move()
         if (t==PT_GLAS || t==PT_PHOT || t==PT_PRTN || t==PT_CLNE || t==PT_PCLN
                 || t==PT_GLOW || t==PT_WATR || t==PT_DSTW || t==PT_SLTW
                 || t==PT_ISOZ || t==PT_ISZS || t==PT_FILT || t==PT_INVIS || t==PT_DPAR
-                || t==PT_QRTZ || t==PT_PQRT)
+                || t==PT_QRTZ || t==PT_PQRT || t==PT_CDMD)
         {
             can_move[PT_PHOT][t] = 2;
             can_move[PT_PRTN][t] = 2;
@@ -291,7 +291,7 @@ int try_move(int i, int x, int y, int nx, int ny)
             if (temp_bin > 25) temp_bin = 25;
             parts[i].ctype = 0x1F << temp_bin;
         }
-        if (parts[i].type == PT_NEUT && parts[r>>PS].type==PT_GLAS)
+        if (parts[i].type == PT_NEUT && ((r&TYPE)==PT_GLAS||(r&TYPE)==PT_CDMD))
         {
             if (rand() < RAND_MAX/10)
                 create_cherenkov_photon(i);
@@ -460,7 +460,7 @@ static int is_blocking(int t, int x, int y)
     {
         if (x<0 || y<0 || x>=XRES || y>=YRES)
             return 0;
-        if ((pmap[y][x] & TYPE) == PT_GLAS)
+        if ((pmap[y][x] & TYPE) == PT_GLAS||(pmap[y][x] & TYPE) == PT_CDMD)
             return 1;
         return 0;
     }
@@ -660,7 +660,6 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
         photons[y][x] = t|(i<<PS);
         if ((pmap[y][x]>>PS)==i)
             pmap[y][x] = 0;
-        if(parts[i].type!=PT_CPPA)
         t = i<<PS;
     }
     else
@@ -2472,7 +2471,7 @@ killed:
                     lt = pmap[y][x] & TYPE;
 
                     r = eval_move(PT_PHOT, fin_x, fin_y, NULL);
-                    if (((rt==PT_GLAS && lt!=PT_GLAS) || (rt!=PT_GLAS && lt==PT_GLAS)) && r)
+                    if ((((rt==PT_GLAS && lt!=PT_GLAS) || (rt!=PT_GLAS && lt==PT_GLAS))||((rt==PT_CDMD && lt!=PT_CDMD) || (rt!=PT_CDMD && lt==PT_CDMD))) && r)
                     {
                         if (!get_normal_interp(REFRACT|t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry))
                         {
@@ -2490,7 +2489,7 @@ killed:
                         nn *= nn;
                         nrx = -nrx;
                         nry = -nry;
-                        if (rt==PT_GLAS && lt!=PT_GLAS)
+                        if ((rt==PT_GLAS && lt!=PT_GLAS)|| (rt==PT_CDMD && lt!=PT_CDMD))
                             nn = 1.0f/nn;
                         ct1 = parts[i].vx*nrx + parts[i].vy*nry;
                         ct2 = 1.0f - (nn*nn)*(1.0f-(ct1*ct1));

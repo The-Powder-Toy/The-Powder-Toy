@@ -134,6 +134,15 @@ struct ui_richtext
 	char actiontext[6][256];
 };
 typedef struct ui_richtext ui_richtext;
+struct modlist_e
+{
+    char *filename;
+    void *next;
+    void *prev;
+};
+typedef struct modlist_e modlist_e;
+
+modlist_e *get_local_mods(char *folder, char *search, int *results_ret);
 
 int SLALT;
 extern SDLMod sdl_mod;

@@ -24,7 +24,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>PS)>=NPART || !r)
 						continue;
-					if (parts[r>>PS].type!=PT_BOMB && parts[r>>PS].type!=self && parts[r>>PS].type!=PT_DMND && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_BCLN) {
+					if (parts[r>>PS].type!=PT_BOMB && parts[r>>PS].type!=self && parts[r>>PS].type!=PT_DMND && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_BCLN && parts[r>>PS].type!=PT_C0) {
 						int rad = 8;
 						int nxi;
 						int nxj;

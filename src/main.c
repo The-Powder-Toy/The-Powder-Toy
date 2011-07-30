@@ -1862,7 +1862,6 @@ old_ver_len = textwidth((char*)old_ver_msg);
     //fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
 
     load_presets();
-
     for (i=1; i<argc; i++)
     {
         if (!strncmp(argv[i], "scale:", 6))
@@ -2766,7 +2765,7 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
         if (y>0 && y<sdl_scale*YRES && x>0 && x<sdl_scale*XRES)
         {
             int cr; //cr is particle under mouse, for drawing HUD information
-            char *nametext;//char *tempname = ptypes[parts[cr>>PS].type].name;
+            char nametext[50];//char *tempname = ptypes[parts[cr>>PS].type].name;
             if (photons[y/sdl_scale][x/sdl_scale])
             {
                 cr = photons[y/sdl_scale][x/sdl_scale];
@@ -2777,9 +2776,33 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
             }
             if (!((cr>>PS)>=NPART || !cr))
             {
-                if ((cr&TYPE)==PT_LIFE && parts[cr>>PS].ctype>=0 && parts[cr>>PS].ctype<NGOLALT)
+                if (parts[cr>>PS].type==PT_LIFE && parts[cr>>PS].ctype>=0 && parts[cr>>PS].ctype<NGOLALT)
                 {
                     sprintf(nametext, "%s (%s)", ptypes[cr&TYPE].name, gmenu[parts[cr>>PS].ctype].name);
+                }
+                else if (parts[cr>>PS].type==PT_LEAF && parts[cr>>PS].life>10)
+                {
+                    sprintf(nametext, "%s", "DLEF");
+                }
+                else if (parts[cr>>PS].type==PT_PLAN)
+                {
+                    sprintf(nametext, "%s", parts[cr>>PS].name);
+                }
+                else if (parts[cr>>PS].type==PT_HETR && parts[cr>>PS].tmp==1)
+                {
+                    sprintf(nametext, "%s", "HETR");
+                }
+                else if (parts[cr>>PS].type==PT_HETR && parts[cr>>PS].tmp==2)
+                {
+                    sprintf(nametext, "%s", "COLR");
+                }
+                else if (parts[cr>>PS].type==PT_PLSM && parts[cr>>PS].ctype)
+                {
+                    sprintf(nametext, "%s", ptypes[parts[cr>>PS].ctype].name);
+                }
+                else if (parts[cr>>PS].type==PT_SPRK)
+                {
+                    sprintf(nametext, "%s", ptypes[parts[cr>>PS].ctype].name);
                 }
                 else if (DEBUG_MODE)
                 {
@@ -2789,7 +2812,7 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                         if (parts[cr>>PS].tmp<PT_NUM) tctype = parts[cr>>PS].tmp;
                         else tctype = 0;
                     }
-                    if (tctype>=PT_NUM || tctype<0 || (cr&TYPE)==PT_PHOT)
+                    if (tctype>=PT_NUM || tctype<0 || parts[cr>>PS].type==PT_PHOT)
                         tctype = 0;
                     sprintf(nametext, "%s (%s)", ptypes[cr&TYPE].name, ptypes[tctype].name);
                 }
@@ -2805,35 +2828,10 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                 else
                 {
                     //Change the name of a particle realtime
-
-                    if (nametext=="LEAF" && parts[cr>>PS].life>10)
-                    {
-                        nametext = "DLEF";
-                    }
-                    else if (nametext=="PLAN")
-                    {
-                        nametext = parts[cr>>PS].name;
-                    }
-                    else if (nametext=="HETR" && parts[cr>>PS].tmp==1)
-                    {
-                        nametext = "HETR";
-                    }
-                    else if (nametext=="HETR" && parts[cr>>PS].tmp==2)
-                    {
-                        nametext = "COLR";
-                    }
-                    else if (nametext=="PLSM" && parts[cr>>PS].ctype)
-                    {
-                        nametext = ptypes[parts[cr>>PS].ctype].name;
-                    }
-                    else if (nametext=="SPRK")
-                    {
-                        nametext = ptypes[parts[cr>>PS].ctype].name;
-                    }
 #ifdef BETA
                     sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
 #else
-sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
+                    sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
 #endif
                 }
                 if (parts[cr>>PS].type==PT_PHOT) wavelength_gfx = parts[cr>>PS].ctype;

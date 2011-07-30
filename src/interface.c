@@ -5491,6 +5491,73 @@ void free_saveslist(savelist_e *saves)
         free(saves->image);
 }
 
+modlist_e *get_local_mods(char *folder, char *search, int *results_ret)
+{
+    int index = 0, results = 0;
+    modlist_e *new_modlist = NULL;
+    modlist_e *current_item = NULL, *new_item = NULL;
+    char *fname;
+#if defined(WIN32) && !defined(__GNUC__)
+    struct _finddata_t current_file;
+    intptr_t findfile_handle;
+    char *filematch = malloc(strlen(folder)+4);
+    sprintf(filematch, "%s%s", folder, "*.*");
+    findfile_handle = _findfirst(filematch, &current_file);
+    free(filematch);
+    if (findfile_handle == -1L)
+    {
+        *results_ret = 0;
+        return NULL;
+    }
+    do
+    {
+        fname = current_file.name;
+#else
+    struct dirent *derp;
+    DIR *directory = opendir(folder);
+    if(!directory)
+    {
+        printf("Unable to open directory\n");
+        *results_ret = 0;
+        return NULL;
+    }
+    while(derp = readdir(directory))
+    {
+        fname = derp->d_name;
+#endif
+        if(strlen(fname)>4)
+        {
+            char *ext = fname+(strlen(fname)-4);
+            if((!strncmp(ext, ".lua", 4)) && (search==NULL || strstr(fname, search)))
+            {
+                new_item = malloc(sizeof(modlist_e));
+                new_item->filename = malloc(strlen(folder)+strlen(fname)+1);
+                sprintf(new_item->filename, "%s%s", folder, fname);
+                new_item->next = NULL;
+                if(new_modlist==NULL)
+                {
+                    new_modlist = new_item;
+                    new_item->prev = NULL;
+                }
+                else
+                {
+                    current_item->next = new_item;
+                    new_item->prev = current_item;
+                }
+                current_item = new_item;
+                results++;
+            }
+        }
+    }
+#if defined(WIN32) && !defined(__GNUC__)
+    while (_findnext(findfile_handle, &current_file) == 0);
+    _findclose(findfile_handle);
+#else
+    closedir(directory);
+#endif
+    *results_ret = results;
+    return new_modlist;
+}
 int save_filename_ui(pixel *vid_buf)
 {
     int xsize = 16+(XRES/3);
