@@ -143,9 +143,14 @@ int luatpt_test(lua_State* l)
 int luatpt_error(lua_State* l)
 {
 	char *error = "";
-	error = luaL_optstring(l, 1, 0);	
-	error_ui(vid_buf, 0, error);	
-    return 0;
+	error = mystrdup(luaL_optstring(l, 1, "Error text"));
+	if(vid_buf!=NULL){
+		error_ui(vid_buf, 0, error);
+		free(error);
+		return 0;
+	}
+	free(error);
+	return luaL_error(l, "Screen buffer does not exist");
 }
 int luatpt_drawtext(lua_State* l)
 {
