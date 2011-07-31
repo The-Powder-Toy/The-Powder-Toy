@@ -7,10 +7,13 @@
 #define PATH_SEP "/"
 #endif
  
+//VersionInfoStart
 #define SAVE_VERSION 53
 #define MINOR_VERSION 0
-#define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 #define BETA
+//VersionInfoEnd
+
+#define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 
 #define SERVER "powdertoy.co.uk"
 
