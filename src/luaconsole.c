@@ -42,6 +42,8 @@ void luacon_open(){
 		{"active_menu", &luatpt_active_menu},
 		{"decorations_enable", &luatpt_decorations_enable},
 		{"display_mode", &luatpt_cmode_set},
+		{"throw_error", &luatpt_error},
+		{"heat", &luatpt_heat},
 		{NULL,NULL}
 	};
 
@@ -137,6 +139,13 @@ int luatpt_test(lua_State* l)
 	testint = luaL_optint(l, 1, 0);
 	printf("Test successful, got %d\n", testint);
 	return 0;
+}
+int luatpt_error(lua_State* l)
+{
+	char *error = "";
+	error = luaL_optstring(l, 1, 0);	
+	error_ui(vid_buf, 0, error);	
+    return 0;
 }
 int luatpt_drawtext(lua_State* l)
 {
@@ -852,6 +861,14 @@ int luatpt_decorations_enable(lua_State* l)
     aheatstate = luaL_optint(l, 1, 0);
     decorations_enable = (aheatstate==0?0:1);
     return 0;
+}
+
+int luatpt_heat(lua_State* l)
+{
+	int heatstate;	
+	heatstate = luaL_optint(l, 1, 0);	
+	legacy_enable = (heatstate==1?0:1);
+	return 0;	
 }
 int luatpt_cmode_set(lua_State* l)
 {
