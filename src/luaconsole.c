@@ -855,12 +855,12 @@ int luatpt_airheat(lua_State* l)
 }
 int luatpt_active_menu(lua_State* l)
 {
-    int aheatstate;
-    aheatstate = luaL_optint(l, 1, menu_count);
-    if (aheatstate < SC_TOTAL)
-        active_menu = aheatstate;
+    int menuid;
+    menuid = luaL_optint(l, 1, 0);
+    if (menuid < SC_TOTAL && menuid > 0)
+        active_menu = menuid;
     else
-        return luaL_error(l, "Menu does not exist");
+        return luaL_error(l, "Invalid menu");
     return 0;
 }
 int luatpt_decorations_enable(lua_State* l)
