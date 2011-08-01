@@ -857,7 +857,10 @@ int luatpt_active_menu(lua_State* l)
 {
     int aheatstate;
     aheatstate = luaL_optint(l, 1, menu_count);
-    active_menu = aheatstate;
+    if (aheatstate < SC_TOTAL)
+        active_menu = aheatstate;
+    else
+        return luaL_error(l, "Menu does not exist");
     return 0;
 }
 int luatpt_decorations_enable(lua_State* l)
