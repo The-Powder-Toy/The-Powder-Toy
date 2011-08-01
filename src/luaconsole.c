@@ -48,7 +48,8 @@ void luacon_open()
         {"set_global_property", &luatpt_set_global_property},
         {"throw_error", &luatpt_error},
         {"get_selected_particle", &luatpt_getSelectedParticle},
-        {NULL,NULL}
+        {"getscript", &luatpt_getscript},
+	{NULL,NULL}
     };
 
     l = lua_open();
@@ -1281,5 +1282,8 @@ int luatpt_getSelectedParticle(lua_State* l)
 {
     lua_pushinteger(l,selparticle);
     return 1;
+}
+int luatpt_getscript(lua_State* l)
+{
 }
 #endif
