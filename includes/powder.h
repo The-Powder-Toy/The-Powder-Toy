@@ -1380,6 +1380,8 @@ extern float player2[28];
 extern int gravityMode;
 extern int airMode;
 
+extern int selparticle;
+
 extern particle *parts;
 extern particle *cb_parts;
 

@@ -41,15 +41,13 @@ void luacon_open()
         {"active_menu", &luatpt_active_menu},
         {"decorations_enable", &luatpt_decorations_enable},
         {"display_mode", &luatpt_cmode_set},
-        {"get_mousey", &luatpt_get_mousey},
-        {"get_mousex", &luatpt_get_mousex},
         {"get_numOfParts", &luatpt_get_numOfParts},
         {"start_getPartIndex", &luatpt_start_getPartIndex},
         {"next_getPartIndex", &luatpt_next_getPartIndex},
         {"getPartIndex", &luatpt_getPartIndex},
         {"set_global_property", &luatpt_set_global_property},
-        {"error", &luatpt_error},
-        {"heat", &luatpt_heat},
+        {"throw_error", &luatpt_error},
+        {"get_selected_particle", &luatpt_getSelectedParticle},
         {NULL,NULL}
     };
 
@@ -57,20 +55,23 @@ void luacon_open()
     luaL_openlibs(l);
     luaL_openlib(l, "tpt", tptluaapi, 0);
 }
-int luacon_step(int mx, int my, int mb, int mbq, char key)
+int luacon_step(int mx, int my, int mb, int mbq, char keyzz)
 {
     int tempret = 0, tempb, i, callret;
     if(step_functions[0])
     {
+        int key = atoi(&keyzz);
         //Set mouse globals
         lua_pushinteger(l, mbq);
         lua_pushinteger(l, mb);
         lua_pushinteger(l, my);
         lua_pushinteger(l, mx);
+        lua_pushinteger(l, key);
         lua_setfield(l, LUA_GLOBALSINDEX, "mousex");
         lua_setfield(l, LUA_GLOBALSINDEX, "mousey");
         lua_setfield(l, LUA_GLOBALSINDEX, "mouseb");
         lua_setfield(l, LUA_GLOBALSINDEX, "mousebq");
+        lua_setfield(l, LUA_GLOBALSINDEX, "key");
         for(i = 0; i<6; i++)
         {
             if(step_functions[i])
@@ -160,9 +161,14 @@ int luatpt_test(lua_State* l)
 int luatpt_error(lua_State* l)
 {
     char *error = "";
-    error = luaL_optstring(l, 1, 0);
-    error_ui(vid_buf, 0, error);
-    return 0;
+    error = mystrdup(luaL_optstring(l, 1, "Error text"));
+    if(vid_buf!=NULL){
+        error_ui(vid_buf, 0, error);
+        free(error);
+        return 0;
+    }
+    free(error);
+    return luaL_error(l, "Screen buffer does not exist");
 }
 int luatpt_drawtext(lua_State* l)
 {
@@ -1205,7 +1211,10 @@ int luatpt_active_menu(lua_State* l)
 {
     int aheatstate;
     aheatstate = luaL_optint(l, 1, menu_count);
-    active_menu = aheatstate;
+    if (aheatstate < SC_TOTAL)
+        active_menu = aheatstate;
+    else
+        return luaL_error(l, "Menu does not exist");
     return 0;
 }
 int luatpt_decorations_enable(lua_State* l)
@@ -1219,7 +1228,7 @@ int luatpt_heat(lua_State* l)
 {
     int heatstate;
     heatstate = luaL_optint(l, 1, 0);
-    legacy_enable = (heatstate==0?0:1);
+    legacy_enable = (heatstate==1?0:1);
     return 0;
 }
 int luatpt_cmode_set(lua_State* l)
@@ -1228,14 +1237,6 @@ int luatpt_cmode_set(lua_State* l)
     aheatstate = luaL_optint(l, 1, CM_COUNT);
     cmode = aheatstate;
     return 0;
-}
-int luatpt_get_mousex(lua_State* l)
-{
-    return mousex;
-}
-int luatpt_get_mousey(lua_State* l)
-{
-    return mousey;
 }
 int luatpt_get_numOfParts(lua_State* l)
 {
@@ -1274,6 +1275,11 @@ int luatpt_getPartIndex(lua_State* l)
         return 1;
     }
     lua_pushinteger(l, getPartIndex_curIdx);
+    return 1;
+}
+int luatpt_getSelectedParticle(lua_State* l)
+{
+    lua_pushinteger(l,selparticle);
     return 1;
 }
 #endif

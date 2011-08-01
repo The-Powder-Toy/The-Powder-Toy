@@ -7,12 +7,16 @@
 #define PATH_SEP "/"
 #endif
 
+//VersionInfoStart
 #define ME4502_MAJOR_VERSION 3
 #define ME4502_VERSION 0
 #define SAVE_VERSION 53
 #define MINOR_VERSION 0
+#define BETA_VERSION 11
+#define BETA
+//VersionInfoEnd
+
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
-//#define BETA
 
 #define SERVER "powdertoy.co.uk"
 
@@ -70,8 +74,8 @@ extern unsigned char ZSIZE;
 #define ISTP    (CELL/2)
 #define CFDS	(4.0f/CELL)
 
-#define MAXVELOCITY 256.0f
-#define MINVELOCITY -256.0f
+#define MAXVELOCITY 512.0f
+#define MINVELOCITY -512.0f
 
 #define AIR_TSTEPP 0.3f
 #define AIR_TSTEPV 0.4f

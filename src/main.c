@@ -3642,12 +3642,12 @@ drawtext(vid_buf, XRES-16-old_ver_len, YRES-19, old_ver_msg, 255, 216, 32, 255);
         if (hud_enable)
         {
 #ifdef BETA
-            sprintf(uitext, beta_hud_text, ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+            sprintf(uitext, beta_hud_text, ME4502_MAJOR_VERSION, ME4502_VERSION, BETA_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 #else
-if (DEBUG_MODE)
-    sprintf(uitext, debug_hud_text, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
-else
-    sprintf(uitext, hud_text, ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB);
+            if (DEBUG_MODE)
+                sprintf(uitext, debug_hud_text, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+            else
+                sprintf(uitext, hud_text, ME4502_MAJOR_VERSION, ME4502_VERSION, FPSB);
 #endif
             if (REPLACE_MODE)
                 strappend(uitext, replace_mode_text);

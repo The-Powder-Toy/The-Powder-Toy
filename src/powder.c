@@ -29,6 +29,8 @@ unsigned pmap[YRES][XRES];
 unsigned cb_pmap[YRES][XRES];
 unsigned photons[YRES][XRES];
 
+int selparticle;
+
 static int pn_junction_sprk(int x, int y, int pt)
 {
     unsigned r = pmap[y][x];
@@ -192,6 +194,8 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
         if (bmap[ny/CELL][nx/CELL]==WL_WALL)
             return 0;
         if (bmap[ny/CELL][nx/CELL]==WL_WALLELEC)
+            return 0;
+        if (bmap[ny/CELL][nx/CELL]==WL_EWALL && !emap[ny/CELL][nx/CELL])
             return 0;
         if (bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL])
             return 2;
@@ -1393,7 +1397,7 @@ _inline int is_wire_off(int x, int y)
 inline int is_wire_off(int x, int y)
 #endif
 {
-    return (bmap[y][x]==WL_DETECT || bmap[y][x]==WL_EWALL || bmap[y][x]==WL_ALLOWLIQUID || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_ALLOWALLELEC || bmap[y][x]==WL_EHOLE) && emap[y][x]<8;
+    return (bmap[y][x]==WL_DETECT || bmap[y][x]==WL_EWALL || bmap[y][x]==WL_ALLOWLIQUID || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_ALLOWALLELEC || bmap[y][x]==WL_EHOLE) && emap[y][x]<PS;
 }
 
 int get_wavelength_bin(int *wm)
@@ -2302,7 +2306,7 @@ void update_particles_i(pixel *vid, int start, int inc)
                 {
                     if (t!=PT_SPRK)
                     {
-                        if (emap[ny][nx]==12 && !parts[i].life)
+                        if (emap[ny][nx]==PS+4 && !parts[i].life)
                         {
                             part_change_type(i,x,y,PT_SPRK);
                             parts[i].life = 4;
@@ -3056,7 +3060,7 @@ int flood_parts(int x, int y, int fullc, int cm, int bm)
 int create_parts(int x, int y, int rx, int ry, int c)
 {
     int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0;//n;
-
+    selparticle = c;
     int wall = c - 200;
     if (c==SPC_WIND)
         return 0;

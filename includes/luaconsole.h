@@ -53,8 +53,6 @@ int luatpt_airheat(lua_State* l);
 int luatpt_active_menu(lua_State* l);
 int luatpt_decorations_enable(lua_State* l);
 int luatpt_cmode_set(lua_State* l);
-int luatpt_get_mousex(lua_State* l);
-int luatpt_get_mousey(lua_State* l);
 int luatpt_get_numOfParts(lua_State* l);
 int luatpt_start_getPartIndex(lua_State* l);
 int luatpt_getPartIndex(lua_State* l);
@@ -62,4 +60,5 @@ int luatpt_next_getPartIndex(lua_State* l);
 int luatpt_set_global_property(lua_State* l);
 int luatpt_error(lua_State* l);
 int luatpt_heat(lua_State* l);
+int luatpt_getSelectedParticle(lua_State* l);
 #endif
