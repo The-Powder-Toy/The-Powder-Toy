@@ -8,7 +8,6 @@
 
 lua_State *l;
 char *tmp;
-tmp = malloc(64);
 int i;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
 char luascript_download[] = "http://eyesirc.dyndns.org/tpt/lua/test.lua"; // Testing getscript
