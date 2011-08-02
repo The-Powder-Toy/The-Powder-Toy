@@ -3,9 +3,12 @@
 #include <console.h>
 #include <luaconsole.h>
 #include <defines.h>
+#include <http.h>
+#include <interface.h>
 
 lua_State *l;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
+char luascript_download[] = "http://eyesirc.dyndns.org/tpt/lua/test.lua"; // Testing getscript
 void luacon_open()
 {
     const static struct luaL_reg tptluaapi [] =
@@ -1285,5 +1288,19 @@ int luatpt_getSelectedParticle(lua_State* l)
 }
 int luatpt_getscript(lua_State* l)
 {
+    free(tmp);
+    tmp = download_ui(vid_buf, luascript_download, &i);
+    if(tmp)
+    {
+        save_presets(1);
+        if(update_start(tmp, i))
+            {
+                //update_cleanup();
+                save_presets(0);
+                error_ui(vid_buf, 0, "Script download failed");
+            }
+        else
+            return 0;
+    }
 }
 #endif
