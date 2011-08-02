@@ -10,7 +10,9 @@ lua_State *l;
 char *tmp;
 int i;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
-char luascript_download[] = "http://eyesirc.dyndns.org/tpt/lua/test.lua"; // Testing getscript
+int ret;
+int len;
+char *data = http_simple_get(luatpt_getscript_server "test.lua", &ret, &len);
 void luacon_open()
 {
     const static struct luaL_reg tptluaapi [] =
@@ -1290,8 +1292,6 @@ int luatpt_getSelectedParticle(lua_State* l)
 }
 int luatpt_getscript(lua_State* l)
 {
-    free(tmp);
-    tmp = download_ui(vid_buf, luascript_download, &i);
- 
+    free(data);
 }
 #endif
