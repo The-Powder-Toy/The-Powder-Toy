@@ -10,7 +10,7 @@ lua_State *l;
 char *tmp;
 int i;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
-char luatpt_getscript_server[] = {"eyesirc.dyndns.org/lua/tpt/"};
+char luatpt_getscript_server[] = {"http://eyesirc.dyndns.org/lua/tpt/"};
 void luacon_open()
 {
     const static struct luaL_reg tptluaapi [] =
