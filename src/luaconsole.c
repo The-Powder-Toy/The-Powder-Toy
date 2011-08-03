@@ -3,9 +3,17 @@
 #include <console.h>
 #include <luaconsole.h>
 #include <defines.h>
+#include <http.h>
+#include <interface.h>
 
 lua_State *l;
+char *tmp;
+int i;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
+int ret;
+int len;
+char *data;// = http_simple_get(luatpt_getscript_server, NULL, &ret, &len);
+char luatpt_getscript_server[] = "eyesirc.dyndns.org/lua/tpt/";
 void luacon_open()
 {
     const static struct luaL_reg tptluaapi [] =
@@ -48,7 +56,7 @@ void luacon_open()
         {"set_global_property", &luatpt_set_global_property},
         {"throw_error", &luatpt_error},
         {"get_selected_particle", &luatpt_getSelectedParticle},
-        {"download", &luatpt_download_script},
+        {"getscript", &luatpt_getscript},
         {NULL,NULL}
     };
 
@@ -1284,18 +1292,8 @@ int luatpt_getSelectedParticle(lua_State* l)
     lua_pushinteger(l,selparticle);
     return 1;
 }
-int luatpt_download_script(lua_State* l)
+int luatpt_getscript(lua_State* l)
 {
-    char *my_script;
-    my_script = luaL_optstring(l,1,"hello");
-    char *tmp = malloc(64);
-    int i;
-    free(tmp);
-    tmp = download_ui(vid_buf, my_script, &i);
-    if(!tmp)
-    {
-        return luaL_error(l, "Failed to download file");
-    }
-    return 0;
+    free(data);
 }
 #endif

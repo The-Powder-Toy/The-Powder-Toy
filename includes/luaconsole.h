@@ -16,6 +16,7 @@ int luacon_step(int mx, int my, int mb, int mbq, char key);
 int luacon_keypress(char key);
 int luacon_eval(char *command);
 char *luacon_geterror();
+extern char luatpt_getscript_server[];
 void luacon_close();
 int process_command_lua(pixel *vid_buf, char *console, char *console_error);
 
@@ -61,5 +62,5 @@ int luatpt_set_global_property(lua_State* l);
 int luatpt_error(lua_State* l);
 int luatpt_heat(lua_State* l);
 int luatpt_getSelectedParticle(lua_State* l);
-int luatpt_download_script(lua_State* l);
+int luatpt_getscript(lua_State* l);
 #endif
