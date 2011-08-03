@@ -1291,20 +1291,29 @@ int luatpt_getSelectedParticle(lua_State* l)
 }
 int luatpt_getscript(lua_State* l)
 {
-    free(luatpt_getscript_server);
-    char *name;
-    int ret;
-    int len;
-    char *data;
-    name = luaL_optstring(l,1,"Download text");
-    data = luaL_optstring(l,1,"Download text");
-    sprintf(data, "%s%s", luatpt_getscript_server, name);
-    printf(data, "\n");
-    char *fileread = http_simple_get(data, &ret, &len);
-    printf(name, "\n");
-    FILE *f=fopen(name, "wb");
-    if (!f)
-        return;
-    fclose(f);
+    char *uri, *filename, *data = NULL;
+    int ret, len;
+    filename = mystrdup(luaL_optstring(l,1,""));
+	uri = malloc(strlen(luatpt_getscript_server)+strlen(filename)+1);
+    sprintf(uri, "%s%s", luatpt_getscript_server, filename);;
+    data = http_simple_get(data, &ret, &len);
+	if(data && len && ret == 200){
+		FILE *f = fopen(filename, "wb");
+		if(f){
+			fwrite(data, 1, len, f);
+			fclose(f);
+		} else {
+			return luaL_error("Cannot open file for writing"); //If file doesn't exist or is readonly
+		}
+		free(data);
+		free(filename);
+		free(uri);
+	} else {
+		if(data)
+			free(data);
+		free(filename);
+		free(uri);
+		return luaL_error("Unable to get file from server"); //If the file could not be found on the server, or the request failed for another reason
+	}
 }
 #endif
