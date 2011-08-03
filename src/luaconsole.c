@@ -10,10 +10,7 @@ lua_State *l;
 char *tmp;
 int i;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
-int ret;
-int len;
-char *data;// = http_simple_get(luatpt_getscript_server, NULL, &ret, &len);
-char luatpt_getscript_server[] = "eyesirc.dyndns.org/lua/tpt/";
+char luatpt_getscript_server[] = {"eyesirc.dyndns.org/lua/tpt/"};
 void luacon_open()
 {
     const static struct luaL_reg tptluaapi [] =
@@ -1294,6 +1291,20 @@ int luatpt_getSelectedParticle(lua_State* l)
 }
 int luatpt_getscript(lua_State* l)
 {
-    free(data);
+    free(luatpt_getscript_server);
+    char *name;
+    int ret;
+    int len;
+    char *data;
+    name = luaL_optstring(l,1,"Download text");
+    data = luaL_optstring(l,1,"Download text");
+    sprintf(data, "%s%s", luatpt_getscript_server, name);
+    printf(data, "\n");
+    char *fileread = http_simple_get(data, &ret, &len);
+    printf(name, "\n");
+    FILE *f=fopen(name, "wb");
+    if (!f)
+        return;
+    fclose(f);
 }
 #endif

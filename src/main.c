@@ -1987,7 +1987,7 @@ if (exists("lua" PATH_SEP "mods.txt")!=1)
         0x72, 0x65, 0x61, 0x64, 0x28, 0x29, 0x0A, 0x65, 0x6E, 0x64, 0x0A,
     };
     luacon_eval(modloader_script);
-    printf(luacon_geterror());
+    //printf(luacon_geterror(), "/n");
 #endif
     while (!sdl_poll()) //the main loop
     {
