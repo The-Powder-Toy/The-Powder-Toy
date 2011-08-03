@@ -3471,13 +3471,13 @@ void grav_mask_r(int x, int y, char checkmap[YRES/CELL][XRES/CELL], char shape[Y
         *shapeout = 1;
     checkmap[y][x] = 1;
     shape[y][x] = 1;
-    if(x-1 >= 0 && !checkmap[y][x-1] && bmap[y][x-1]!=WL_GRAV+100)
+    if(x-1 >= 0 && !checkmap[y][x-1] && bmap[y][x-1]!=WL_GRAV+200)
         grav_mask_r(x-1, y, checkmap, shape, shapeout);
-    if(y-1 >= 0 && !checkmap[y-1][x] && bmap[y-1][x]!=WL_GRAV+100)
+    if(y-1 >= 0 && !checkmap[y-1][x] && bmap[y-1][x]!=WL_GRAV+200)
         grav_mask_r(x, y-1, checkmap, shape, shapeout);
-    if(x+1 < XRES/CELL && !checkmap[y][x+1] && bmap[y][x+1]!=WL_GRAV+100)
+    if(x+1 < XRES/CELL && !checkmap[y][x+1] && bmap[y][x+1]!=WL_GRAV+200)
         grav_mask_r(x+1, y, checkmap, shape, shapeout);
-    if(y+1 < YRES/CELL && !checkmap[y+1][x] && bmap[y+1][x]!=WL_GRAV+100)
+    if(y+1 < YRES/CELL && !checkmap[y+1][x] && bmap[y+1][x]!=WL_GRAV+200)
         grav_mask_r(x, y+1, checkmap, shape, shapeout);
     return;
 }
@@ -3508,7 +3508,7 @@ void gravity_mask()
     {
         for(y = 0; y < YRES/CELL; y++)
         {
-            if(bmap[y][x]!=WL_GRAV+100 && checkmap[y][x] == 0)
+            if(bmap[y][x]!=WL_GRAV+200 && checkmap[y][x] == 0)
             {
                 //Create a new shape
                 if(t_mask_el==NULL)

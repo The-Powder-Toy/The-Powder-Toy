@@ -48,6 +48,7 @@ void luacon_open()
         {"set_global_property", &luatpt_set_global_property},
         {"throw_error", &luatpt_error},
         {"get_selected_particle", &luatpt_getSelectedParticle},
+        {"download", &luatpt_download_script},
         {NULL,NULL}
     };
 
@@ -162,7 +163,8 @@ int luatpt_error(lua_State* l)
 {
     char *error = "";
     error = mystrdup(luaL_optstring(l, 1, "Error text"));
-    if(vid_buf!=NULL){
+    if(vid_buf!=NULL)
+    {
         error_ui(vid_buf, 0, error);
         free(error);
         return 0;
@@ -1209,12 +1211,12 @@ int luatpt_airheat(lua_State* l)
 }
 int luatpt_active_menu(lua_State* l)
 {
-    int aheatstate;
-    aheatstate = luaL_optint(l, 1, menu_count);
-    if (aheatstate < SC_TOTAL)
-        active_menu = aheatstate;
+    int menuid;
+    menuid = luaL_optint(l, 1, 0);
+    if (menuid < SC_TOTAL && menuid > 0)
+        active_menu = menuid;
     else
-        return luaL_error(l, "Menu does not exist");
+        return luaL_error(l, "Invalid Menu");
     return 0;
 }
 int luatpt_decorations_enable(lua_State* l)
@@ -1281,5 +1283,19 @@ int luatpt_getSelectedParticle(lua_State* l)
 {
     lua_pushinteger(l,selparticle);
     return 1;
+}
+int luatpt_download_script(lua_State* l)
+{
+    char *my_script;
+    my_script = luaL_optstring(l,1,"hello");
+    char *tmp = malloc(64);
+    int i;
+    free(tmp);
+    tmp = download_ui(vid_buf, my_script, &i);
+    if(!tmp)
+    {
+        return luaL_error(l, "Failed to download file");
+    }
+    return 0;
 }
 #endif
