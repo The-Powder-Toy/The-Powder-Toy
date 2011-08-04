@@ -1298,7 +1298,7 @@ int luatpt_getscript(lua_State* l)
     sprintf(uri, "%s%s", luatpt_getscript_server, filename);
     data = http_simple_get(uri, &ret, &len);
     printf(uri,"/n");
-	if(data && len && ret == 200){
+	if(data && ret == 200){
 		FILE *f = fopen(filename, "wb");
 		if(f){
 			fwrite(data, 1, len, f);

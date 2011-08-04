@@ -12,3 +12,11 @@ build/*
 src/python/stdlib/*
 builder
 mod-me4502
+Run/Saves/*
+*.*.DS_Store
+Run/lua/*
+Run/stdout.txt
+Run/Mod Win.zip
+Run/Play
+Run/pac-man.lua
+Run/.DS_Store

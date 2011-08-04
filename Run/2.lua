@@ -2,7 +2,6 @@
 -- Interface:
 --
 --
---
 -- mgr.drawln(line,x,y,type of particles)
 -- draws line of letters
 -- returns line length
