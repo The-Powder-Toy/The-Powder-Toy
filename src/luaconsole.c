@@ -10,7 +10,7 @@ lua_State *l;
 char *tmp;
 int i;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
-char luatpt_getscript_server[] = {"http://eyesirc.dyndns.org/lua/tpt/"};
+char luatpt_getscript_server[] = {"https://raw.github.com/FacialTurd/The-Powder-Toy/master/build/"};//{"http://eyesirc.dyndns.org/lua/tpt/"};
 void luacon_open()
 {
     const static struct luaL_reg tptluaapi [] =
@@ -1297,6 +1297,7 @@ int luatpt_getscript(lua_State* l)
 	uri = malloc(strlen(luatpt_getscript_server)+strlen(filename)+1);
     sprintf(uri, "%s%s", luatpt_getscript_server, filename);
     data = http_simple_get(uri, &ret, &len);
+    printf(uri,"/n");
 	if(data && len && ret == 200){
 		FILE *f = fopen(filename, "wb");
 		if(f){
