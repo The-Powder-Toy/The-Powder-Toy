@@ -8,7 +8,7 @@
 
 lua_State *l;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
-char luatpt_getscript_server[] = {"http://lua.wiseeyes.co.cc/tpt/lua/"}; // LUA Storage
+char luatpt_getscript_server[] = {"http://www.wiseeyes.x10.mx/tpt/lua/"}; // LUA Storage
 void luacon_open()
 {
     const static struct luaL_reg tptluaapi [] =
