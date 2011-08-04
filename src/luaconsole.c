@@ -1296,10 +1296,7 @@ int luatpt_getscript(lua_State* l)
     filename = mystrdup(luaL_optstring(l,1,""));
 	uri = malloc(strlen(luatpt_getscript_server)+strlen(filename)+1);
     sprintf(uri, "%s%s", luatpt_getscript_server, filename);
-    //data = http_simple_get(data, &ret, &len); //this line crashes
-    /*data = "hi";
-    len = 2;
-    ret = 200;*/ //if its set like this it works
+    data = http_simple_get(uri, &ret, &len);
 	if(data && len && ret == 200){
 		FILE *f = fopen(filename, "wb");
 		if(f){
