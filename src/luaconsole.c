@@ -1295,15 +1295,18 @@ int luatpt_getscript(lua_State* l)
     int ret, len;
     filename = mystrdup(luaL_optstring(l,1,""));
 	uri = malloc(strlen(luatpt_getscript_server)+strlen(filename)+1);
-    sprintf(uri, "%s%s", luatpt_getscript_server, filename);;
-    data = http_simple_get(data, &ret, &len);
+    sprintf(uri, "%s%s", luatpt_getscript_server, filename);
+    //data = http_simple_get(data, &ret, &len); //this line crashes
+    /*data = "hi";
+    len = 2;
+    ret = 200;*/ //if its set like this it works
 	if(data && len && ret == 200){
 		FILE *f = fopen(filename, "wb");
 		if(f){
 			fwrite(data, 1, len, f);
 			fclose(f);
 		} else {
-			return luaL_error("Cannot open file for writing"); //If file doesn't exist or is readonly
+			return luaL_error(l, "Cannot open file for writing"); //If file doesn't exist or is readonly
 		}
 		free(data);
 		free(filename);
@@ -1313,7 +1316,7 @@ int luatpt_getscript(lua_State* l)
 			free(data);
 		free(filename);
 		free(uri);
-		return luaL_error("Unable to get file from server"); //If the file could not be found on the server, or the request failed for another reason
+		return luaL_error(l, "Unable to get file from server"); //If the file could not be found on the server, or the request failed for another reason
 	}
 }
 #endif
