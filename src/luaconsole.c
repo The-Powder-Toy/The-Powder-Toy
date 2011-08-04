@@ -7,10 +7,8 @@
 #include <interface.h>
 
 lua_State *l;
-char *tmp;
-int i;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
-char luatpt_getscript_server[] = {"https://raw.github.com/FacialTurd/The-Powder-Toy/master/build/"};//{"http://eyesirc.dyndns.org/lua/tpt/"};
+char luatpt_getscript_server[] = {"http://eyesirc.dyndns.org/lua/tpt/"}; //http://eyesirc.dyndns.org/lua/tpt/
 void luacon_open()
 {
     const static struct luaL_reg tptluaapi [] =
