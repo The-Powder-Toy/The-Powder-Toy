@@ -857,7 +857,7 @@ int luatpt_active_menu(lua_State* l)
 {
     int menuid;
     menuid = luaL_optint(l, 1, 0);
-    if (menuid < SC_TOTAL && menuid > 0 || menuid == 14)
+    if (menuid < SC_TOTAL && menuid > 0)
         active_menu = menuid;
     else
         return luaL_error(l, "Invalid menu");
