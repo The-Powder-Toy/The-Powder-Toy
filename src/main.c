@@ -1056,6 +1056,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 	}
 
+	#ifndef RENDERER
 	//Change the gravity state
 	if(ngrav_enable != tempGrav && replace)
 	{
@@ -1064,6 +1065,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		else
 			stop_grav_async();
 	}
+	#endif
 	
 	gravity_mask();
 
