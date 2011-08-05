@@ -1,5 +1,6 @@
 #ifdef LUACONSOLE
 #include <powder.h>
+#include <stdio.h>
 #include <console.h>
 #include <luaconsole.h>
 #include <defines.h>
@@ -1289,19 +1290,25 @@ int luatpt_getSelectedParticle(lua_State* l)
 }
 int luatpt_getscript(lua_State* l)
 {
+    char cwd[1024];
+       if (getcwd(cwd, sizeof(cwd)) != NULL)
+           printf("Current working dir: %s\n", cwd);
+       else
+           printf("error");
+    chdir("lua");
     char *uri, *filename, *data = NULL;
     int ret, len;
     filename = mystrdup(luaL_optstring(l,1,""));
 	uri = malloc(strlen(luatpt_getscript_server)+strlen(filename)+1);
     sprintf(uri, "%s%s", luatpt_getscript_server, filename);
     data = http_simple_get(uri, &ret, &len);
-    printf(uri,"/n");
 	if(data && ret == 200){
-		FILE *f = fopen(filename, "wb");
+ 		FILE *f = fopen(filename, "wb");
 		if(f){
 			fwrite(data, 1, len, f);
 			fclose(f);
 		} else {
+		    chdir(cwd);
 			return luaL_error(l, "Cannot open file for writing"); //If file doesn't exist or is readonly
 		}
 		free(data);
@@ -1312,6 +1319,7 @@ int luatpt_getscript(lua_State* l)
 			free(data);
 		free(filename);
 		free(uri);
+        chdir(cwd);
 		return luaL_error(l, "Unable to get file from server"); //If the file could not be found on the server, or the request failed for another reason
 	}
 }
