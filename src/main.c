@@ -2083,7 +2083,12 @@ int main(int argc, char *argv[])
 			}
 			do_s_check = (do_s_check+1) & 15;
 		}
-
+#ifdef LUACONSOLE
+	if(sdl_key){
+		if(!luacon_keypress(sdl_key, sdl_mod))
+			sdl_key = 0;
+	}
+#endif
 		if (sys_shortcuts==1)//all shortcuts can be disabled by python scripts
 		{
 			if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
@@ -2511,9 +2516,6 @@ int main(int argc, char *argv[])
 					}
 			}
 		}
-//#ifdef LUACONSOLE
-	//luacon_keypress(sdl_key);
-//#endif
 #ifdef PYCONSOLE
 		if (pyready==1 && pygood==1)
 			if (pkey!=NULL && sdl_key!=NULL)
@@ -2606,8 +2608,12 @@ int main(int argc, char *argv[])
 		b = SDL_GetMouseState(&x, &y); // b is current mouse state
 
 #ifdef LUACONSOLE
-		if(luacon_step(x/sdl_scale, y/sdl_scale, b, bq, sdl_key))
-			b = 0; //Mouse click was handled by Lua step
+		if(b){
+			if(!luacon_mouseclick(x/sdl_scale, y/sdl_scale, b, bq)){
+				b = 0;
+			}
+		}
+		luacon_step(x/sdl_scale, y/sdl_scale);
 #endif
 
 		for (i=0; i<SC_TOTAL; i++)//draw all the menu sections
