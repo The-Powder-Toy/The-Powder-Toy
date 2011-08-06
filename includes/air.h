@@ -41,6 +41,11 @@ void update_airh(void);
 
 void update_grav(void);
 
+#ifdef GRAVFFT
+void grav_fft_init();
+void grav_fft_cleanup();
+#endif
+
 void update_air(void);
 
 #endif
