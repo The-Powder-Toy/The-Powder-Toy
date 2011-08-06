@@ -2619,10 +2619,6 @@ void draw_parts(pixel *vid)
                 {
                     blendpixel(vid, nx, ny, 15, 0, 150, 100);
                 }
-                else if (t==PT_PIVS && parts[i].life >= 10)
-                {
-                    blendpixel(vid, nx, ny, 15, 0, 150, 100);
-                }
                 else if (t==PT_FILT)
                 {
                     int temp_bin = (int)((parts[i].temp-273.0f)*0.025f);
@@ -2923,6 +2919,23 @@ void draw_parts(pixel *vid)
                         blendpixel(vid, nx-1, ny-1, GR, GR/2, 10, 112);
                         blendpixel(vid, nx+1, ny+1, GR, GR/2, 10, 112);
                         blendpixel(vid, nx-1, ny+1, GR, GR/2, 10, 112);
+                    }
+                }
+                else if (t==PT_PIVS)
+                {
+                    uint8 GR = 0x3B+((parts[i].life>10?10:parts[i].life)*10);
+                    vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(0, GR, GR);
+                    if (cmode == CM_BLOB)
+                    {
+                        blendpixel(vid, nx+1, ny, 0, GR, GR, 223);
+                        blendpixel(vid, nx-1, ny, 0, GR, GR, 223);
+                        blendpixel(vid, nx, ny+1, 0, GR, GR, 223);
+                        blendpixel(vid, nx, ny-1, 0, GR, GR, 223);
+
+                        blendpixel(vid, nx+1, ny-1, 0, GR, GR, 112);
+                        blendpixel(vid, nx-1, ny-1, 0, GR, GR, 112);
+                        blendpixel(vid, nx+1, ny+1, 0, GR, GR, 112);
+                        blendpixel(vid, nx-1, ny+1, 0, GR, GR, 112);
                     }
                 }
                 else if (t==PT_HSWC)
