@@ -2827,11 +2827,11 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                 {
                     sprintf(nametext, "%s", parts[cr>>PS].name);
                 }
-                else if (parts[cr>>PS].type==PT_HETR && parts[cr>>PS].tmp==1)
+                else if (parts[cr>>PS].type==PT_HETR && parts[cr>>PS].tmp==0)
                 {
                     sprintf(nametext, "%s", "HETR");
                 }
-                else if (parts[cr>>PS].type==PT_HETR && parts[cr>>PS].tmp==2)
+                else if (parts[cr>>PS].type==PT_HETR && parts[cr>>PS].tmp > 0)
                 {
                     sprintf(nametext, "%s", "COLR");
                 }
@@ -2868,9 +2868,9 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                 {
                     //Change the name of a particle realtime
 #ifdef BETA
-                    sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
+                    sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d Tmp: %d", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life, parts[cr>>PS].tmp);
 #else
-sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
+                    sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
 #endif
                 }
                 if (parts[cr>>PS].type==PT_PHOT) wavelength_gfx = parts[cr>>PS].ctype;

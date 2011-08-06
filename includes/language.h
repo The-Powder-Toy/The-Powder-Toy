@@ -3,7 +3,7 @@
 
 #ifdef ENGLISH //English
 
-char *beta_hud_text = "Me's Mod version %d.%d Beta %d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d";
+char *beta_hud_text = "Me's Mod version %d.%d Beta %d FPS:%d Parts:%d Gen:%d Grav:%d Air:%d";
 char *debug_hud_text = "Me's Mod FPS:%d Parts:%d Gen:%d Grav:%d Air:%d";
 char *hud_text = "Me4502's Mod version %d.%d FPS:%d";
 char *add_simulation_tags = "Add simulation tags.";
@@ -14,7 +14,7 @@ char *replace_mode_text = " [REPLACE MODE]";
 
 #elif defined INDONESIAN //Indonesian
 
-char *beta_hud_text = "Me's Mod versi %d.%d Beta %d FPS:%d Bagian:%d Generation:%d Gravity:%d Udara:%d";
+char *beta_hud_text = "Me's Mod versi %d.%d Beta %d FPS:%d Bagian:%d Gen:%d Grav:%d Udara:%d";
 char *debug_hud_text = "Aku Mod FPS:%d Bagian:%d Gen:%d Grav:%d Udara:%d";
 char *hud_text = "Me4502's Mod versi %d.%d FPS:%d";
 char *add_simulation_tags = "Tambahkan tag simulasi.";

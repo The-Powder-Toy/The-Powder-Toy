@@ -971,17 +971,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     }
     if (t==PT_HETR)
     {
-        parts[i].tmp = 1;
-        /*char *temp;
-        temp = input_ui(vid_buf, "Type", "heater or cooler.", "heater", "heater");
-        if (temp=="heater"){
-            parts[i].tmp=1;
-        } else if(temp=="cooler"){
-            parts[i].tmp=2;
-        } else {
-            kill_part(i);
-        }
-        */
+        parts[i].tmp = 0;
+        parts[i].life=0;
     }
     if (t==PT_CFCN)
     {
