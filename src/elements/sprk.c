@@ -180,8 +180,8 @@ int update_SPRK(UPDATE_FUNC_ARGS)
                 }
                 else if ((ct==PT_PTCT||ct==PT_NTCT) && (rt==PT_HETR)) // PROP_PTOGGLE, Maybe? We seem to use 2 different methods for handling actived elements, this one seems better. Yes, use this one for new elements, PCLN is different for compatibility with existing saves
                 {
-                    if (ct==PT_PTCT) parts[r>>PS].tmp = 10;
-                    else if (ct==PT_NTCT && parts[r>>PS].tmp>=10) parts[r>>PS].tmp = 9;
+                    if (ct==PT_NTCT) parts[r>>PS].tmp = 10;
+                    else if (ct==PT_PTCT && parts[r>>PS].tmp>=10) parts[r>>PS].tmp = 9;
                 }
 
                 // ct = spark from material, rt = spark to material. Make conduct_sprk = 0 if conduction not allowed

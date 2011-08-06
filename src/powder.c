@@ -659,14 +659,14 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
     if (parts[i].type == PT_STKM2)
         player2[27] = 0;
     parts[i].type = t;
-    if (t==PT_PHOT || t==PT_NEUT)
+    if (t==PT_PHOT && parts[i].type != PT_CPPA || t==PT_NEUT && parts[i].type != PT_CPPA)
     {
         photons[y][x] = t|(i<<PS);
         if ((pmap[y][x]>>PS)==i)
             pmap[y][x] = 0;
         t = i<<PS;
     }
-    else
+    else if (parts[i].type != PT_CPPA)
     {
         pmap[y][x] = t|(i<<PS);
         if ((photons[y][x]>>PS)==i)

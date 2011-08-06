@@ -1,24 +1,24 @@
 #include <element.h>
 
 int update_BULL(UPDATE_FUNC_ARGS) {
-	int r,rx,ry, nx, ny,tmp = parts[i].tmp2;
+	int r,rx,ry, nx, ny,tmp2 = parts[i].tmp2;
 	int self = parts[i].type;
-	if (tmp==1)
+	if (tmp2==1)
 	{
         parts[i].vx=3;
         parts[i].vy=0;
 	}
-    else if (tmp==2)
+    else if (tmp2==2)
     {
         parts[i].vx=-3;
         parts[i].vy=0;
     }
-    else if (tmp==3)
+    else if (tmp2==3)
     {
         parts[i].vy=3;
         parts[i].vx=0;
     }
-    else if (tmp==4)
+    else if (tmp2==4)
     {
         parts[i].vy=-3;
         parts[i].vx=0;
