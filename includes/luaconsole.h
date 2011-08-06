@@ -12,8 +12,9 @@
 #include <defines.h>
 
 void luacon_open();
-int luacon_step(int mx, int my, int mb, int mbq, char key);
-int luacon_keypress(char key);
+int luacon_step(int mx, int my);
+int luacon_mouseclick(int mx, int my, int mb, int mbq);
+int luacon_keypress(char key, int modifier);
 int luacon_eval(char *command);
 char *luacon_geterror();
 extern char luatpt_getscript_server[];
@@ -46,6 +47,10 @@ int luatpt_set_shortcuts(lua_State* l);
 int luatpt_delete(lua_State* l);
 int luatpt_register_step(lua_State* l);
 int luatpt_unregister_step(lua_State* l);
+int luatpt_register_mouseclick(lua_State* l);
+int luatpt_unregister_mouseclick(lua_State* l);
+int luatpt_register_keypress(lua_State* l);
+int luatpt_unregister_keypress(lua_State* l);
 int luatpt_input(lua_State* l);
 int luatpt_message_box(lua_State* l);
 int luatpt_hud(lua_State* l);

@@ -11,8 +11,8 @@
 #define ME4502_MAJOR_VERSION 3
 #define ME4502_VERSION 0
 #define SAVE_VERSION 53
-#define MINOR_VERSION 0
-#define BETA_VERSION 11
+#define MINOR_VERSION 3
+#define BETA_VERSION 12
 #define BETA
 //VersionInfoEnd
 

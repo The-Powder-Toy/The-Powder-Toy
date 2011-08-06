@@ -1148,7 +1148,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
                 parts[i-1].type = PT_NONE;
         }
     }
-
+#ifndef RENDERER
     //Change the gravity state
     if(ngrav_enable != tempGrav && replace)
     {
@@ -1157,7 +1157,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
         else
             stop_grav_async();
     }
-
+#endif
     gravity_mask();
 
     if (p >= size)
@@ -1701,6 +1701,16 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+int exists(const char *fname)
+{
+    FILE *file;
+    if (file = fopen(fname, "r"))
+    {
+        fclose(file);
+        return 1;
+    }
+    return 0;
+}
 #else
 int main(int argc, char *argv[])
 {
@@ -2232,7 +2242,12 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
             }
             do_s_check = (do_s_check+1) & 15;
         }
-
+#ifdef LUACONSOLE
+  if(sdl_key){
+    if(!luacon_keypress(sdl_key, sdl_mod))
+      sdl_key = 0;
+  }
+#endif
         if (sys_shortcuts==1)//all shortcuts can be disabled by python scripts
         {
             if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
@@ -2665,9 +2680,6 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                     }
             }
         }
-#ifdef LUACONSOLE
-        //luacon_keypress(sdl_key);
-#endif
 #ifdef PYCONSOLE
         if (pyready==1 && pygood==1)
             if (pkey!=NULL && sdl_key!=NULL)
@@ -2761,8 +2773,12 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
         b = SDL_GetMouseState(&x, &y); // b is current mouse state
 
 #ifdef LUACONSOLE
-        if(luacon_step(x/sdl_scale, y/sdl_scale, b, bq, sdl_key))
-            b = 0; //Mouse click was handled by Lua step
+        if(b){
+            if(!luacon_mouseclick(x/sdl_scale, y/sdl_scale, b, bq)){
+                b = 0;
+            }
+        }
+        luacon_step(x/sdl_scale, y/sdl_scale);
 #endif
 
         for (i=0; i<SC_TOTAL; i++)//draw all the menu sections
