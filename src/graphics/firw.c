@@ -44,7 +44,7 @@ int graphics_FIRW(GRAPHIC_FUNC_ARGS)
             blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
         }
     } else {
-        vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
+        vid[ny*(XRES+BARSIZE)+nx] = parts[i].dcolour;
     }
     return 0;
 }

@@ -672,6 +672,7 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
         if ((photons[y][x]>>PS)==i)
             photons[y][x] = 0;
     }
+    parts[i].dcolour = ptypes[t].pcolors;
     parts[i].actas = 0;
     parts[i].weight = ptypes[t].weight;
     parts[i].menusection = ptypes[t].menusection;
@@ -901,7 +902,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     else
         i = p;
 
-    parts[i].dcolour = 0;
+    parts[i].dcolour = ptypes[t].pcolors;
     parts[i].actas = 0;
     parts[i].weight = ptypes[t].weight;
     parts[i].menusection = ptypes[t].menusection;
@@ -918,6 +919,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     parts[i].hotair = ptypes[t].hotair;
     parts[i].update_func = ptypes[t].update_func;
     parts[i].properties = ptypes[t].properties;
+
     if (t==PT_GLAS)
     {
         parts[i].pavg[1] = pv[y/CELL][x/CELL];
@@ -942,7 +944,6 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
         parts[i].ctype = 0;
         parts[i].temp = ptypes[t].heat;
         parts[i].tmp = 0;
-        parts[i].tmp2 = 0;
         parts[i].tmp2 = 0;
     }
     if (t==PT_SOAP)
@@ -993,10 +994,6 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     {
         parts[i].life = 75;
     }
-    if (t==PT_PMIC)
-    {
-        //parts[i].tmpx = parts[i].x;
-    }
     if (t==PT_SOAP)
     {
         parts[i].tmp = -1;
@@ -1007,11 +1004,6 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     {
         parts[i].life = 75;
     }
-    /*Testing
-    if(t==PT_WOOD){
-    	parts[i].life = 150;
-    }
-    End Testing*/
     if (t==PT_WARP)
     {
         parts[i].life = rand()%95+70;
@@ -1035,13 +1027,6 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
         parts[i].life = 50;
         parts[i].tmp = 50;
     }
-    /*if (ptypes[t].properties&PROP_LIFE) {
-    {
-        int r;
-        for (r = 0; r<NGOL; r++)
-            if (t==goltype[r])
-                parts[i].tmp = grule[r+1][9] - 1;
-                }*/
     if (t==PT_LIFE && v<NGOLALT)
     {
         parts[i].tmp = grule[v+1][9] - 1;
@@ -1138,7 +1123,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
         parts[i].vx = 3.0f*cosf(a);
         parts[i].vy = 3.0f*sinf(a);
     }
-    if (t==PT_BULL){
+    if (t==PT_BULL)
+    {
         parts[i].tmp2=1;
     }
     if (t==PT_PRTN)
@@ -2377,15 +2363,20 @@ void update_particles_i(pixel *vid, int start, int inc)
             }
 
             //call the particle update function, if there is one
-            if (parts[i].actas!=0){
+            if (parts[i].actas!=0)
+            {
                 parts[i].update_func = ptypes[parts[i].actas].update_func;
                 parts[i].properties = ptypes[parts[i].actas].properties;
             }
-            if (parts[i].update_func){
-                if (parts[i].actas!=0){
+            if (parts[i].update_func)
+            {
+                if (parts[i].actas!=0)
+                {
                     if ((*(parts[i].update_func))(i,x,y,surround_space,nt))
                         continue;
-                } else {
+                }
+                else
+                {
                     if ((*(ptypes[t].update_func))(i,x,y,surround_space,nt))
                         continue;
                 }
@@ -2864,8 +2855,8 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
                 for (j=0; j<CELL; j++)
                     for (i=0; i<CELL; i++)
                         //pmap[y*CELL+j][x*CELL+i] = 0x7FFFFFFF;    - caused crash for me :S
-            if (emap[y][x] && (!sys_pause||framerender))
-                emap[y][x] --;
+                        if (emap[y][x] && (!sys_pause||framerender))
+                            emap[y][x] --;
         }
     }
 

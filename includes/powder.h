@@ -477,6 +477,7 @@ int graphics_FIRW(GRAPHIC_FUNC_ARGS);
 int graphics_HFLM(GRAPHIC_FUNC_ARGS);
 int graphics_DLAY(GRAPHIC_FUNC_ARGS);
 int graphics_O3(GRAPHIC_FUNC_ARGS);
+int graphics_PHOT(GRAPHIC_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -640,7 +641,7 @@ static part_type ptypes[PT_NUM] =
     {"DMND",	PIXPACK(0xCCFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	186,	"Diamond. Indestructible.", ST_SOLID, TYPE_SOLID, NULL, NULL},
     {"BMTL",	PIXPACK(0x505070),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	1,  100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Breakable metal.", ST_SOLID, TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW, &update_BMTL, NULL},
     {"BRMT",	PIXPACK(0x705060),	0.4f,	0.04f * CFDS,	0.94f,	0.95f,	-0.1f,	0.3f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	1,  90,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	211,	"Broken metal.", ST_SOLID, TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW, NULL, NULL},
-    {"PHOT",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  -1,		SC_NUCLEAR,		R_TEMP+900.0f+273.15f,	251,	"Photons. Travel in straight lines.", ST_GAS, TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_PHOT, NULL},
+    {"PHOT",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  -1,		SC_NUCLEAR,		R_TEMP+900.0f+273.15f,	251,	"Photons. Travel in straight lines.", ST_GAS, TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_PHOT, &graphics_PHOT},
     {"URAN",	PIXPACK(0x707020),	0.4f,	0.01f * CFDS,	0.99f,	0.95f,	0.0f,	0.4f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	1,  90,		SC_NUCLEAR,		R_TEMP+30.0f+273.15f,	251,	"Heavy particles. Generates heat under pressure.", ST_SOLID, TYPE_PART | PROP_RADIOACTIVE, &update_URAN, NULL},
     {"WAX",		PIXPACK(0xF0F0BB),  0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	10,	1,	1,  100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	44,		"Wax. Melts at moderately high temperatures.", ST_SOLID, TYPE_SOLID, NULL, NULL},
     {"MWAX",	PIXPACK(0xE0E0AA),	0.3f,	0.02f * CFDS,	0.95f,	0.80f,	0.0f,	0.15f,	0.00f,	0.000001f* CFDS,2,	5,		0,	0,	2,	1,	1,  25,		SC_LIQUID,		R_TEMP+28.0f+273.15f,	44,		"Liquid Wax.", ST_LIQUID, TYPE_LIQUID, NULL},
@@ -849,7 +850,7 @@ static part_type ptypes[PT_NUM] =
     {"HETR",	PIXPACK(0xFFD010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,  100,	SC_POWERED,		R_TEMP+0.0f	+273.15f,	251,		"Heater/Cooler, Can be turned on/off, toggle heat/cool with ptct and ntct", ST_SOLID, TYPE_SOLID, &update_HETR, NULL},
     {"CPPA",    PIXPACK(0x000000),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  1,  1,  1,  100,    SC_MISC,        R_TEMP+0.0f  +273.15f,  251,  "Chapapa. Turns into a random particle on creation.", ST_SOLID, TYPE_SOLID, &update_CPPA, NULL},
     {"ARGN",    PIXPACK(0xE349CE),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS, 0,  0,      0,  0,  1,  1,  1,  1,      SC_GAS,         R_TEMP+2.0f  +273.15f,  106,  "Argon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL, NULL},
-    {"PRTN",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	1,  -1,		SC_NUCLEAR,		R_TEMP+273.15f,	255,	"Protons. Will do something.", ST_GAS, TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_PRTN, NULL},
+    {"PRTN",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	0,	1,	1,  -1,		SC_NUCLEAR,		R_TEMP+273.15f,	        255,	"Protons. Heat on bouncing.", ST_GAS, TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_PRTN, &graphics_PHOT},
     {"XNON",    PIXPACK(0xEDD8DD),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS, 0,  0,      0,  0,  1,  1,  1,  1,      SC_GAS,         R_TEMP+2.0f  +273.15f,  106,  "Xenon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL, NULL},
     {"RDON",    PIXPACK(0x08A32C),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS, 0,  0,      0,  0,  1,  1,  1,  1,      SC_GAS,         R_TEMP+2.0f  +273.15f,  106,  "Radon Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL, NULL},
     {"KPTN",    PIXPACK(0xEDE3D5),  0.7f,   0.01f * CFDS,   0.99f,  0.30f,  -0.1f,  0.0f,   0.50f,  0.001f  * CFDS, 0,  0,      0,  0,  1,  1,  1,  1,      SC_GAS,         R_TEMP+2.0f  +273.15f,  106,  "Krypton Noble Gas. Diffuses. Conductive. Ionizes into plasma when introduced to electricity", ST_GAS, TYPE_GAS|PROP_CONDUCTS, NULL, NULL},

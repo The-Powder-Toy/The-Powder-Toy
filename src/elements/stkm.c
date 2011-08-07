@@ -4,7 +4,7 @@ int update_SPAWN(UPDATE_FUNC_ARGS)
 {
     if (!player[27])
         create_part(-1, x, y, PT_STKM);
-  return 0;
+    return 0;
 }
 
 int update_STKM(UPDATE_FUNC_ARGS)
@@ -18,7 +18,8 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS)
     int r, rx, ry, rt;
     float pp, d;
     float dt = 0.9;///(FPSB*FPSB);  //Delta time in square
-
+    if (parts[i].tmp2>0)
+        parts[i].tmp2--;
     if ((parts[i].ctype>0 && parts[i].ctype<PT_NUM && ptypes[parts[i].ctype].falldown>0) || parts[i].ctype==SPC_AIR || parts[i].ctype == PT_NEUT || parts[i].ctype == PT_PHOT)
         playerp[2] = parts[i].ctype;
 
@@ -46,32 +47,32 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS)
 
     //Verlet integration
     pp = 2*playerp[3]-playerp[5]+playerp[19]*dt*dt;;
-  playerp[5] = playerp[3];
-  playerp[3] = pp;
-  pp = 2*playerp[4]-playerp[6]+playerp[20]*dt*dt;;
-  playerp[6] = playerp[4];
-  playerp[4] = pp;
+    playerp[5] = playerp[3];
+    playerp[3] = pp;
+    pp = 2*playerp[4]-playerp[6]+playerp[20]*dt*dt;;
+    playerp[6] = playerp[4];
+    playerp[4] = pp;
 
-  pp = 2*playerp[7]-playerp[9]+playerp[21]*dt*dt;;
-  playerp[9] = playerp[7];
-  playerp[7] = pp;
-  pp = 2*playerp[8]-playerp[10]+(playerp[22]+1)*dt*dt;;
-  playerp[10] = playerp[8];
-  playerp[8] = pp;
+    pp = 2*playerp[7]-playerp[9]+playerp[21]*dt*dt;;
+    playerp[9] = playerp[7];
+    playerp[7] = pp;
+    pp = 2*playerp[8]-playerp[10]+(playerp[22]+1)*dt*dt;;
+    playerp[10] = playerp[8];
+    playerp[8] = pp;
 
-  pp = 2*playerp[11]-playerp[13]+playerp[23]*dt*dt;;
-  playerp[13] = playerp[11];
-  playerp[11] = pp;
-  pp = 2*playerp[12]-playerp[14]+playerp[24]*dt*dt;;
-  playerp[14] = playerp[12];
-  playerp[12] = pp;
+    pp = 2*playerp[11]-playerp[13]+playerp[23]*dt*dt;;
+    playerp[13] = playerp[11];
+    playerp[11] = pp;
+    pp = 2*playerp[12]-playerp[14]+playerp[24]*dt*dt;;
+    playerp[14] = playerp[12];
+    playerp[12] = pp;
 
-  pp = 2*playerp[15]-playerp[17]+playerp[25]*dt*dt;;
-  playerp[17] = playerp[15];
-  playerp[15] = pp;
-  pp = 2*playerp[16]-playerp[18]+(playerp[26]+1)*dt*dt;;
-  playerp[18] = playerp[16];
-  playerp[16] = pp;
+    pp = 2*playerp[15]-playerp[17]+playerp[25]*dt*dt;;
+    playerp[17] = playerp[15];
+    playerp[15] = pp;
+    pp = 2*playerp[16]-playerp[18]+(playerp[26]+1)*dt*dt;;
+    playerp[18] = playerp[16];
+    playerp[16] = pp;
 
     //Setting acceleration to 0
     playerp[19] = 0;
@@ -268,28 +269,28 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS)
 
     //Simulation of joints
     d = 25/(pow((playerp[3]-playerp[7]), 2) + pow((playerp[4]-playerp[8]), 2)+25) - 0.5;  //Fast distance
-  playerp[7] -= (playerp[3]-playerp[7])*d;
-  playerp[8] -= (playerp[4]-playerp[8])*d;
-  playerp[3] += (playerp[3]-playerp[7])*d;
-  playerp[4] += (playerp[4]-playerp[8])*d;
+    playerp[7] -= (playerp[3]-playerp[7])*d;
+    playerp[8] -= (playerp[4]-playerp[8])*d;
+    playerp[3] += (playerp[3]-playerp[7])*d;
+    playerp[4] += (playerp[4]-playerp[8])*d;
 
-  d = 25/(pow((playerp[11]-playerp[15]), 2) + pow((playerp[12]-playerp[16]), 2)+25) - 0.5;
-  playerp[15] -= (playerp[11]-playerp[15])*d;
-  playerp[16] -= (playerp[12]-playerp[16])*d;
-  playerp[11] += (playerp[11]-playerp[15])*d;
-  playerp[12] += (playerp[12]-playerp[16])*d;
+    d = 25/(pow((playerp[11]-playerp[15]), 2) + pow((playerp[12]-playerp[16]), 2)+25) - 0.5;
+    playerp[15] -= (playerp[11]-playerp[15])*d;
+    playerp[16] -= (playerp[12]-playerp[16])*d;
+    playerp[11] += (playerp[11]-playerp[15])*d;
+    playerp[12] += (playerp[12]-playerp[16])*d;
 
-  d = 36/(pow((playerp[3]-parts[i].x), 2) + pow((playerp[4]-parts[i].y), 2)+36) - 0.5;
-  parts[i].vx -= (playerp[3]-parts[i].x)*d;
-  parts[i].vy -= (playerp[4]-parts[i].y)*d;
-  playerp[3] += (playerp[3]-parts[i].x)*d;
-  playerp[4] += (playerp[4]-parts[i].y)*d;
+    d = 36/(pow((playerp[3]-parts[i].x), 2) + pow((playerp[4]-parts[i].y), 2)+36) - 0.5;
+    parts[i].vx -= (playerp[3]-parts[i].x)*d;
+    parts[i].vy -= (playerp[4]-parts[i].y)*d;
+    playerp[3] += (playerp[3]-parts[i].x)*d;
+    playerp[4] += (playerp[4]-parts[i].y)*d;
 
-  d = 36/(pow((playerp[11]-parts[i].x), 2) + pow((playerp[12]-parts[i].y), 2)+36) - 0.5;
-  parts[i].vx -= (playerp[11]-parts[i].x)*d;
-  parts[i].vy -= (playerp[12]-parts[i].y)*d;
-  playerp[11] += (playerp[11]-parts[i].x)*d;
-  playerp[12] += (playerp[12]-parts[i].y)*d;
+    d = 36/(pow((playerp[11]-parts[i].x), 2) + pow((playerp[12]-parts[i].y), 2)+36) - 0.5;
+    parts[i].vx -= (playerp[11]-parts[i].x)*d;
+    parts[i].vy -= (playerp[12]-parts[i].y)*d;
+    playerp[11] += (playerp[11]-parts[i].x)*d;
+    playerp[12] += (playerp[12]-parts[i].y)*d;
 
     //Side collisions checking
     for (rx = -3; rx <= 3; rx++)
@@ -393,7 +394,8 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS)
             playerp[26] -= 1;
         }
     }
-
+    if (parts[i].tmp2 == 0)
+        parts[i].gravity = ptypes[parts[i].type].gravity;
     if (parts[r>>PS].type==PT_ACID)  //If on acid
         parts[i].life -= 5;
 
@@ -413,16 +415,16 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS)
                                     x+rx<XRES && y+ry<YRES && (rx || ry))
                             {
                                 r = pmap[y+ry][x+rx];
-                                if((r>>16)>=NPART || !r)
+                                if((r>>PS)>=NPART || !r)
                                     continue;
-                                rt = parts[r>>16].type;
-                                if(parts_avg(i,r>>16,PT_INSL) != PT_INSL)
+                                rt = parts[r>>PS].type;
+                                if(parts_avg(i,r>>PS,PT_INSL) != PT_INSL)
                                 {
-                                    if((rt==PT_METL||rt==PT_GOLD||rt==PT_IRON||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE)&&parts[r>>16].life==0 && abs(rx)+abs(ry) < 8)
+                                    if((rt==PT_METL||rt==PT_GOLD||rt==PT_IRON||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE)&&parts[r>>PS].life==0 && abs(rx)+abs(ry) < PS)
                                     {
-                                        parts[r>>16].life = 4;
-                                        parts[r>>16].ctype = rt;
-                                        parts[r>>16].type = PT_SPRK;
+                                        parts[r>>PS].life = 4;
+                                        parts[r>>PS].ctype = rt;
+                                        parts[r>>PS].type = PT_SPRK;
                                     }
                                 }
                             }
@@ -442,8 +444,11 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS)
     if (parts[r>>PS].type==PT_INV)  //If on INV
         parts[i].life = 9999;
 
-    if (parts[r>>PS].type==PT_FLY)  //If on FLY
-        playerp[2] = SPC_AIR;
+    if (parts[r>>PS].type==PT_FLY)   //If on FLY
+    {
+        parts[i].gravity = -1;
+        parts[i].tmp2 = 100;
+    }
 
     if (parts[r>>PS].type==PT_RSPW)
         playerp[2] = PT_SPAWN;
@@ -537,16 +542,16 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS)
                                     x+rx<XRES && y+ry<YRES && (rx || ry))
                             {
                                 r = pmap[y+ry][x+rx];
-                                if((r>>16)>=NPART || !r)
+                                if((r>>PS)>=NPART || !r)
                                     continue;
-                                rt = parts[r>>16].type;
-                                if(parts_avg(i,r>>16,PT_INSL) != PT_INSL)
+                                rt = parts[r>>PS].type;
+                                if(parts_avg(i,r>>PS,PT_INSL) != PT_INSL)
                                 {
-                                    if((rt==PT_METL||rt==PT_GOLD||rt==PT_IRON||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE)&&parts[r>>16].life==0 && abs(rx)+abs(ry) < 8)
+                                    if((rt==PT_METL||rt==PT_GOLD||rt==PT_IRON||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN||rt==PT_NBLE)&&parts[r>>PS].life==0 && abs(rx)+abs(ry) < PS)
                                     {
-                                        parts[r>>16].life = 4;
-                                        parts[r>>16].ctype = rt;
-                                        parts[r>>16].type = PT_SPRK;
+                                        parts[r>>PS].life = 4;
+                                        parts[r>>PS].ctype = rt;
+                                        parts[r>>PS].type = PT_SPRK;
                                     }
                                 }
                             }
@@ -566,8 +571,11 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS)
     if (parts[r>>PS].type==PT_INV)  //If on INV
         parts[i].life = 9999;
 
-    if (parts[r>>PS].type==PT_FLY)  //If on FLY
-        player[2] = SPC_AIR;
+    if (parts[r>>PS].type==PT_FLY)   //If on FLY
+    {
+        parts[i].gravity = -1;
+        parts[i].tmp2 = 100;
+    }
 
     if (parts[r>>PS].type==PT_RSPW)
         player[2] = PT_SPAWN;

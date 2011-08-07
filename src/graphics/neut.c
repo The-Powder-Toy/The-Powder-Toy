@@ -6,7 +6,7 @@ int graphics_NEUT(GRAPHIC_FUNC_ARGS)
     t = parts[i].type;
     if (cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY || cmode==CM_AWESOME || cmode==CM_PREAWE)
     {
-        vid[ny*(XRES+BARSIZE)+nx] = ptypes[t].pcolors;
+        vid[ny*(XRES+BARSIZE)+nx] = parts[i].dcolour;
         cg = 8;
         cb = 12;
         x = nx/CELL;
