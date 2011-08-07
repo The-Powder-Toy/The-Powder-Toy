@@ -34,7 +34,7 @@
 #define WL_STREAM	125
 #define WL_SIGN	126
 #define WL_FAN	127
-#define WL_FANHELPER 255
+#define WL_FANHELPER 355
 #define WL_ALLOWLIQUID	128
 #define WL_DESTROYALL	129
 #define WL_ERASE	130
@@ -296,7 +296,10 @@
 #define PT_CPCT 250
 #define PT_RUBR 251
 #define PT_ME 252
-#define PT_NUM  253
+#define PT_RDOT 253
+#define PT_RDOW 254
+#define PT_RDOB 255
+#define PT_NUM  256
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -463,6 +466,7 @@ int update_RUBR(UPDATE_FUNC_ARGS);
 int update_CLST(UPDATE_FUNC_ARGS);
 int update_DLAY(UPDATE_FUNC_ARGS);
 int update_VOLB(UPDATE_FUNC_ARGS);
+int update_RDOT(UPDATE_FUNC_ARGS);
 
 int graphics_NCWS(GRAPHIC_FUNC_ARGS);
 int graphics_NEUT(GRAPHIC_FUNC_ARGS);
@@ -507,7 +511,7 @@ typedef struct particle particle;
 
 struct part_type
 {
-    const char *name;//
+    char *name;//
     pixel pcolors;
     float advection;
     float airdrag;//
@@ -528,7 +532,7 @@ struct part_type
     int menusection;
     float heat;
     unsigned char hconduct;
-    const char *descs;
+    char *descs;
     char state;
     unsigned int properties;// const
     int (*update_func) (UPDATE_FUNC_ARGS);//
@@ -863,6 +867,9 @@ static part_type ptypes[PT_NUM] =
     {"CPCT",	PIXPACK(0x969393),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	1,  100,	SC_POWERED,		R_TEMP+0.0f	+273.15f,	251,	"Capacitor. Stores Spark.", ST_SOLID, TYPE_SOLID, &update_CPCT, NULL},
     {"RUBR",	PIXPACK(0x404040),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	1,  100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	251,	"Rubber, Bouncy.", ST_SOLID, TYPE_SOLID, &update_RUBR, NULL},
     {"Me4502",	PIXPACK(0x569212),	0.0f,	0.00f * CFDS,	0.00f,	0.00f,	0.0f,	0.0f,	0.0f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	1,  100,	SC_DRAWING,	    373.0f,					40,		"Me4502", ST_GAS, TYPE_SOLID, &update_MISC, NULL},
+    {"RDOT",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	186,	"Radio Transmitter.", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_RDOT, NULL},
+    {"RDOW",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  -1,		SC_MISC,		R_TEMP+900.0f+273.15f,	251,	"Radio Waves.", ST_GAS, TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_LIFE_KILL, NULL, NULL},
+    {"RDOB",	PIXPACK(0x8C6666),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	186,	"Radio Blocker.", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, NULL, NULL},
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	E   Weights	Section			H						Ins		Description
 };
 
@@ -1132,6 +1139,9 @@ static part_transition ptransitions[PT_NUM] =
     /* csim */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
     /* cpct */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
     /* rubr */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
+    /* LOlZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* LOlZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+    /* LOlZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* LOlZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 };
 #undef IPL

@@ -2156,7 +2156,10 @@ void draw_parts(pixel *vid)
                     }
                     else
                     {
-                        blendpixel(vid, nx, ny, 255, 110, 180, 255);
+                        cr = ((ptypes[t].pcolors>>16)&0xFF);
+                        cg = ((ptypes[t].pcolors>>8)&0xFF);
+                        cb = ((ptypes[t].pcolors)&0xFF);
+                        blendpixel(vid, nx, ny, cr, cg, cb, 255);
                     }
                 }
                 else if (t==PT_LEAF)

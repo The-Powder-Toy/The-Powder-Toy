@@ -876,8 +876,10 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
             {
                 if (p >= size)
                     goto corrupt;
-                if (i <= NPART)
+                if (i <= NPART){
+                    parts[i-1].dcolour = ptypes[parts[i-1].type].pcolors;
                     parts[i-1].life = d[p++]*4;
+                }
                 else
                     p++;
             }
@@ -1099,6 +1101,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
         if (i && i<=NPART)
         {
             int t = parts[i-1].type;
+            if (!parts[i].dcolour)
+                parts[i-1].dcolour = ptypes[t].pcolors;
             parts[i-1].actas = parts[i-1].type;
             parts[i-1].weight = ptypes[t].weight;
             parts[i-1].collision = ptypes[t].collision;

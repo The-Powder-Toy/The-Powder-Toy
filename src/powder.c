@@ -126,6 +126,8 @@ void init_can_move()
         can_move[t][PT_CNCT] = 0;
         can_move[t][PT_PMIC] = 0;
 
+        can_move[t][PT_RDOW] = 3;
+
         //DPAR does DPAR stuff
         can_move[t][PT_DPAR] = 3;
     }
@@ -179,6 +181,10 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
             if (pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f) result = 2;
             else result = 0;
         }
+        if (pt==PT_RDOW)
+        {
+            result = 2;
+        }
     }
     if (bmap[ny/CELL][nx/CELL])
     {
@@ -218,6 +224,8 @@ int try_move(int i, int x, int y, int nx, int ny)
         e = 2;
     if ((pmap[ny][nx]&TYPE)==PT_PIVS && parts[r>>PS].life >= 10)
         return 1;
+    if (parts[i].type==PT_RDOW)
+        e = 2;
 
     if ((pmap[ny][nx]&TYPE)==PT_DPAR)
         return 1;
@@ -288,6 +296,14 @@ int try_move(int i, int x, int y, int nx, int ny)
                 parts[r>>PS].life = 120;
                 create_gain_photon(i);
             }
+        if (parts[i].type == PT_RDOW && r)
+        {
+            parts[i].life--;
+            parts[i].life--;
+            parts[i].life--;
+            if (parts[i].life <= 0 || parts[r>>PS].type==PT_RDOB)
+                kill_part(i);
+        }
         if (parts[i].type == PT_PHOT && parts[r>>PS].type==PT_FILT)
         {
             int temp_bin = (int)((parts[r>>PS].temp-273.0f)*0.025f);
@@ -923,6 +939,10 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
     if (t==PT_GLAS)
     {
         parts[i].pavg[1] = pv[y/CELL][x/CELL];
+    }
+    else if (t==PT_RDOW)
+    {
+        parts[i].life = 1;
     }
     else if (t==PT_QRTZ)
     {
@@ -3085,7 +3105,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
                 {
                     i = ox;
                     j = oy;
-                    if (((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL))|| ((sdl_mod & (KMOD_CAPS)) && b!=WL_FANHELPER) ))
+                    if (((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL))|| ((sdl_mod & (KMOD_CAPS)) && b!=WL_FANHELPER-100) ))
                     {
                         if (bmap[j][i]==SLALT-200)
                         {
