@@ -8,8 +8,8 @@ int update_GEL(UPDATE_FUNC_ARGS) {
         parts[r>>PS].vy = 0;
         parts[r>>PS].ctype = self;
     }
-	for (rx=-4; rx<5; rx++)
-            for (ry=-4; ry<5; ry++)
+	for (rx=-3; rx<4; rx++)
+            for (ry=-3; ry<4; ry++)
                 if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry)){
                     r = pmap[y+ry][x+rx];
                     if ((r>>PS)>=NPART || !r)

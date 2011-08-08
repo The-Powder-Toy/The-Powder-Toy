@@ -299,7 +299,8 @@
 #define PT_RDOT 253
 #define PT_RDOW 254
 #define PT_RDOB 255
-#define PT_NUM  256
+#define PT_RDOR 256
+#define PT_NUM  257
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -467,6 +468,7 @@ int update_CLST(UPDATE_FUNC_ARGS);
 int update_DLAY(UPDATE_FUNC_ARGS);
 int update_VOLB(UPDATE_FUNC_ARGS);
 int update_RDOT(UPDATE_FUNC_ARGS);
+int update_RDOR(UPDATE_FUNC_ARGS);
 
 int graphics_NCWS(GRAPHIC_FUNC_ARGS);
 int graphics_NEUT(GRAPHIC_FUNC_ARGS);
@@ -670,7 +672,7 @@ static part_type ptypes[PT_NUM] =
     {"BTRY",	PIXPACK(0x858505),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	1,  100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Generates Electricity.", ST_SOLID, TYPE_SOLID, &update_BTRY, NULL},
     {"LCRY",    PIXPACK(0x505050),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  1,  1,  1,  1,  100,    SC_POWERED,     R_TEMP+0.0f  +273.15f,  251,  "Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)", ST_SOLID, TYPE_SOLID, &update_LCRY, NULL},
     {"STKM",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  50,		SC_STICKMAN,		R_TEMP+14.6f+273.15f,	0,		"Stickman. Don't kill him!", ST_NONE, 0, &update_STKM, NULL},
-    {"SWCH",	PIXPACK(0x103B11),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f  * CFDS, 0,	0,		0,	0,	1,	1,	1,  100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Only conducts when switched on. (PSCN switches on, NSCN switches off)", ST_SOLID, TYPE_SOLID, &update_SWCH, NULL},
+    {"SWCH",	PIXPACK(0x103B11),	0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,  0.000f  * CFDS, 0,	0,		0,	0,	1,	1,	1,  100,	SC_POWERED,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Only conducts when switched on. (PSCN switches on, NSCN switches off)", ST_SOLID, TYPE_SOLID, &update_SWCH, NULL},
     {"SMKE",	PIXPACK(0x222222),	0.9f,	0.04f * CFDS,	0.97f,	0.20f,	0.0f,	-0.1f,	0.00f,	0.001f	* CFDS,	1,	0,		0,	0,	1,	1,	1,  1,		SC_GAS,			R_TEMP+320.0f+273.15f,	88,		"Smoke", ST_SOLID, TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, NULL, NULL},
     {"DESL",	PIXPACK(0x440000),	1.0f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.0f,	0.0f	* CFDS,	2,	2,		0,	0,	5,	1,	1,  15,		SC_LIQUID,		R_TEMP+0.0f	+273.15f,	42,		"Liquid. Explodes under high pressure and temperatures", ST_LIQUID, TYPE_LIQUID, NULL, NULL},
     {"COAL",	PIXPACK(0x222222),	0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.0f,   0.0f	* CFDS, 0,	0,		0,	0,	20,	1,	1,  100,	SC_SOLIDS,		R_TEMP+0.0f	+273.15f,	200,	"Solid. Burns slowly.", ST_SOLID, TYPE_SOLID, &update_COAL, NULL},
@@ -870,6 +872,7 @@ static part_type ptypes[PT_NUM] =
     {"RDOT",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	186,	"Radio Transmitter.", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_RDOT, NULL},
     {"RDOW",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  -1,		SC_MISC,		R_TEMP+900.0f+273.15f,	251,	"Radio Waves.", ST_GAS, TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_LIFE_KILL, NULL, NULL},
     {"RDOB",	PIXPACK(0x8C6666),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	186,	"Radio Blocker.", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, NULL, NULL},
+    {"RDOR",	PIXPACK(0xCCCCCC),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,  100,	SC_ELEC,		R_TEMP+0.0f	+273.15f,	186,	"Radio Reciever.", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_RDOR, NULL},
     //Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd	M	E   Weights	Section			H						Ins		Description
 };
 
@@ -1139,6 +1142,7 @@ static part_transition ptransitions[PT_NUM] =
     /* csim */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
     /* cpct */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
     /* rubr */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
+    /* LOlZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* LOlZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* LOlZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
     /* LOlZ */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
