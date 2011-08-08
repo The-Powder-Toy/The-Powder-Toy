@@ -3,6 +3,8 @@
 #include <string.h>
 #include <math.h>
 
+#define INCLUDE_FONTDATA
+
 #include "font.h"
 
 #define CELLW	12
