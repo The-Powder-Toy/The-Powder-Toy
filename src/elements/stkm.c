@@ -41,34 +41,59 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 		return 1;
 	}
 
-	parts[i].vy += -0.7*dt;  //Head up!
+	//Follow gravity
+	float gvx, gvy;
+	gvx = gvy = 0.0f;
+	switch (gravityMode)
+	{
+		default:
+		case 0:
+			gvy = 1;
+			break;
+		case 1:
+			gvy = gvx = 0.0f;
+			break;
+		case 2:
+			{
+				float gravd;
+				gravd = 0.01f - hypotf((parts[i].x - XCNTR), (parts[i].y - YCNTR));
+				gvx = ((float)(parts[i].x - XCNTR) / gravd);
+				gvy = ((float)(parts[i].y - YCNTR) / gravd);
+			}
+	}
+
+	gvx += gravx[(int)parts[i].y/CELL][(int)parts[i].x/CELL];
+	gvy += gravy[(int)parts[i].y/CELL][(int)parts[i].x/CELL];
+
+	parts[i].vx -= gvx*dt;  //Head up!
+	parts[i].vy -= gvy*dt;
 
 	//Verlet integration
-	pp = 2*playerp[3]-playerp[5]+playerp[19]*dt*dt;;
+	pp = 2*playerp[3]-playerp[5]+playerp[19]*dt*dt;
 	playerp[5] = playerp[3];
 	playerp[3] = pp;
-	pp = 2*playerp[4]-playerp[6]+playerp[20]*dt*dt;;
+	pp = 2*playerp[4]-playerp[6]+playerp[20]*dt*dt;
 	playerp[6] = playerp[4];
 	playerp[4] = pp;
 
-	pp = 2*playerp[7]-playerp[9]+playerp[21]*dt*dt;;
+	pp = 2*playerp[7]-playerp[9]+(playerp[21]+gvx)*dt*dt;
 	playerp[9] = playerp[7];
 	playerp[7] = pp;
-	pp = 2*playerp[8]-playerp[10]+(playerp[22]+1)*dt*dt;;
+	pp = 2*playerp[8]-playerp[10]+(playerp[22]+gvy)*dt*dt;
 	playerp[10] = playerp[8];
 	playerp[8] = pp;
 
-	pp = 2*playerp[11]-playerp[13]+playerp[23]*dt*dt;;
+	pp = 2*playerp[11]-playerp[13]+playerp[23]*dt*dt;
 	playerp[13] = playerp[11];
 	playerp[11] = pp;
-	pp = 2*playerp[12]-playerp[14]+playerp[24]*dt*dt;;
+	pp = 2*playerp[12]-playerp[14]+playerp[24]*dt*dt;
 	playerp[14] = playerp[12];
 	playerp[12] = pp;
 
-	pp = 2*playerp[15]-playerp[17]+playerp[25]*dt*dt;;
+	pp = 2*playerp[15]-playerp[17]+(playerp[25]+gvx)*dt*dt;
 	playerp[17] = playerp[15];
 	playerp[15] = pp;
-	pp = 2*playerp[16]-playerp[18]+(playerp[26]+1)*dt*dt;;
+	pp = 2*playerp[16]-playerp[18]+(playerp[26]+gvy)*dt*dt;
 	playerp[18] = playerp[16];
 	playerp[16] = pp;
 
@@ -92,18 +117,18 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 		{
 			if (!eval_move(PT_DUST, playerp[7], playerp[8], NULL))
 			{
-				playerp[21] = -3;
-				playerp[19] = -1;
-				playerp[22] = -3;
+				playerp[21] = -3*gvy;
+				playerp[19] = -1*gvy;
+				playerp[22] = -3*gvy;
 			}
 		}
 		else
 		{
 			if (!eval_move(PT_DUST, playerp[15], playerp[16], NULL))
 			{
-				playerp[25] = -3;
-				playerp[19] = -1;
-				playerp[26] = -3;
+				playerp[25] = -3*gvy;
+				playerp[19] = -1*gvy;
+				playerp[26] = -3*gvy;
 			}
 		}
 	}
@@ -115,18 +140,18 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 		{
 			if (!eval_move(PT_DUST, playerp[7], playerp[8], NULL))
 			{
-				playerp[21] = 3;
-				playerp[19] = 1;
-				playerp[22] = -3;
+				playerp[21] = 3*gvy;
+				playerp[19] = 1*gvy;
+				playerp[22] = -3*gvy;
 			}
 		}
 		else
 		{
 			if (!eval_move(PT_DUST, playerp[15], playerp[16], NULL))
 			{
-				playerp[25] = 3;
-				playerp[19] = 1;
-				playerp[26] = -3;
+				playerp[25] = 3*gvy;
+				playerp[19] = 1*gvy;
+				playerp[26] = -3*gvy;
 			}
 		}
 	}
@@ -135,9 +160,9 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 	if (((int)(playerp[0])&0x04) == 0x04 && 
 			(!eval_move(PT_DUST, playerp[7], playerp[8], NULL) || !eval_move(PT_DUST, playerp[15], playerp[16], NULL)))
 	{
-		parts[i].vy = -5;
-		playerp[22] -= 1;
-		playerp[26] -= 1;
+		parts[i].vy -= 4*gvy;
+		playerp[22] -= gvy;
+		playerp[26] -= gvy;
 	}
 
 	//Charge detector wall if foot inside
@@ -205,7 +230,8 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 					np = create_part(-1, rx, ry, playerp[2]);
 				if ( (np < NPART) && np>=0 && playerp[2] != PT_PHOT && playerp[2] != SPC_AIR)
 				{
-					parts[np].vx = parts[np].vx + 5*((((int)playerp[1])&0x02) == 0x02) - 5*(((int)(playerp[1])&0x01) == 0x01);
+					parts[np].vx -= -gvy*(5*((((int)playerp[1])&0x02) == 0x02) - 5*(((int)(playerp[1])&0x01) == 0x01));
+					parts[np].vy -= gvx*(5*((((int)playerp[1])&0x02) == 0x02) - 5*(((int)(playerp[1])&0x01) == 0x01));
 					parts[i].vx -= (ptypes[(int)playerp[2]].weight*parts[np].vx)/1000;
 				}
 				if ((np < NPART) && np>=0 && playerp[2] == PT_PHOT)
@@ -282,16 +308,36 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 	}
 
 	//Keeping legs distance
-	if (pow((playerp[7] - playerp[15]), 2)<16 && pow((playerp[8]-playerp[16]), 2)<1)
+	if ((pow((playerp[7] - playerp[15]), 2) + pow((playerp[8]-playerp[16]), 2))<16)
 	{
-		playerp[21] -= 0.2;
-		playerp[25] += 0.2;
+		float tvx, tvy;
+		tvx = -gvy;
+		tvy = gvx;
+
+		if (tvx || tvy)
+		{
+			playerp[21] -= 0.2*tvx/hypot(tvx, tvy);
+			playerp[22] -= 0.2*tvy/hypot(tvx, tvy);
+
+			playerp[25] += 0.2*tvx/hypot(tvx, tvy);
+			playerp[26] += 0.2*tvy/hypot(tvx, tvy);
+		}
 	}
 
-	if (pow((playerp[3] - playerp[11]), 2)<16 && pow((playerp[4]-playerp[12]), 2)<1)
+	if ((pow((playerp[3] - playerp[11]), 2) + pow((playerp[4]-playerp[12]), 2))<16)
 	{
-		playerp[19] -= 0.2;
-		playerp[23] += 0.2;
+		float tvx, tvy;
+		tvx = -gvy;
+		tvy = gvx;
+
+		if (tvx || tvy)
+		{
+			playerp[19] -= 0.2*tvx/hypot(tvx, tvy);
+			playerp[20] -= 0.2*tvy/hypot(tvx, tvy);
+
+			playerp[23] += 0.2*tvx/hypot(tvx, tvy);
+			playerp[24] += 0.2*tvy/hypot(tvx, tvy);
+		}
 	}
 
 	//If legs touch something
