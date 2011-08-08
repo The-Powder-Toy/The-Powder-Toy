@@ -936,7 +936,7 @@ particle portalp[CHANNELS][8][80];
 const particle emptyparticle;
 int wireless[CHANNELS][2];
 
-extern int ISWIRE;
+extern int wire_placed;
 
 extern int gravwl_timeout;
 
