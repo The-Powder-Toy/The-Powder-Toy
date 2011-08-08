@@ -936,6 +936,8 @@ particle portalp[CHANNELS][8][80];
 const particle emptyparticle;
 int wireless[CHANNELS][2];
 
+extern int ISWIRE;
+
 extern int gravwl_timeout;
 
 extern float player[28];

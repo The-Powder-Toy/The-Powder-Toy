@@ -7,6 +7,8 @@
 
 int gravwl_timeout = 0;
 
+int ISWIRE = 0;
+
 float player[28]; //[0] is a command cell, [3]-[18] are legs positions, [19]-[26] are accelerations, [27] shows if player was spawned
 float player2[28];
 
@@ -709,11 +711,6 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 
 	if (t==PT_SPRK)
 	{
-	    if((pmap[y][x]>>8)==PT_WIRE)
-	        {
-	        parts[pmap[y][x]>>8].ctype=1;
-	        return -1;
-	        }
 		if ((pmap[y][x]>>8)>=NPART || !((pmap[y][x]&0xFF)==PT_INST||(ptypes[pmap[y][x]&0xFF].properties&PROP_CONDUCTS)))
 			return -1;
 		if (parts[pmap[y][x]>>8].life!=0)
@@ -1472,14 +1469,18 @@ void update_particles_i(pixel *vid, int start, int inc)
 		}
 	}
 	//wire!
-	for (nx=0; nx<XRES; nx++)
-	    for (ny=0; ny<YRES; ny++)
-			    {
-				    r = pmap[ny][nx];
-				    if ((r>>8)>=NPART || !r)
-				        continue;
-				    parts[r>>8].tmp=parts[r>>8].ctype;
-			    }
+	if(ISWIRE == 1)
+	{
+		ISWIRE = 0;
+		for (nx=0; nx<XRES; nx++)
+			for (ny=0; ny<YRES; ny++)
+		    {
+			    r = pmap[ny][nx];
+			    if ((r>>8)>=NPART || !r)
+			        continue;
+			    parts[r>>8].tmp=parts[r>>8].ctype;
+		    }
+	}
 	//game of life!
 	if (ISGOL==1&&++CGOL>=GSPEED)//GSPEED is frames per generation
 	{
@@ -1886,6 +1887,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 			{
 				parts[i].temp = restrict_flt(parts[i].temp-50.0f, MIN_TEMP, MAX_TEMP);
 				ISGOL=1;//means there is a life particle on screen
+			}
+			if (t==PT_WIRE)
+			{
+				ISWIRE = 1;
 			}
 			//spark updates from walls
 			if ((ptypes[t].properties&PROP_CONDUCTS) || t==PT_SPRK)
