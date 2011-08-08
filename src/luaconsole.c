@@ -437,6 +437,9 @@ int luatpt_set_property(lua_State* l)
 	} else if (strcmp(prop,"tmp")==0){
 		offset = offsetof(particle, tmp);
 		format = 1;
+	} else if (strcmp(prop,"tmp2")==0){
+		offset = offsetof(particle, tmp2);
+		format = 1;
 	} else if (strcmp(prop,"vy")==0){
 		offset = offsetof(particle, vy);
 		format = 2;
@@ -575,6 +578,10 @@ int luatpt_get_property(lua_State* l)
 		}
 		if (strcmp(prop,"tmp")==0){
 			lua_pushinteger(l, parts[i].tmp);
+			return 1;
+		}
+		if (strcmp(prop,"tmp2")==0){
+			lua_pushinteger(l, parts[i].tmp2);
 			return 1;
 		}
 		if (strcmp(prop,"vy")==0){
@@ -1004,8 +1011,8 @@ int luatpt_airheat(lua_State* l)
 int luatpt_active_menu(lua_State* l)
 {
     int menuid;
-    menuid = luaL_optint(l, 1, 0);
-    if (menuid < SC_TOTAL && menuid > 0)
+    menuid = luaL_optint(l, 1, -1);
+    if (menuid < SC_TOTAL && menuid >= 0)
         active_menu = menuid;
     else
         return luaL_error(l, "Invalid menu");
