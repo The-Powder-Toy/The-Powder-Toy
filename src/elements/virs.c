@@ -11,8 +11,11 @@ int update_VIRS(UPDATE_FUNC_ARGS) {
                 r = pmap[y+ry][x+rx];
                 if((r>>PS)>=NPART || !r)
                     continue;
-                if(parts[r>>PS].type!=PT_DMND||parts[r>>PS].type!=PT_GOLD||parts[r>>PS].type!=PT_CLNE||parts[r>>PS].type!=PT_CNVR||parts[r>>PS].type!=PT_VOID||parts[r>>PS].type!=PT_WHOL||parts[r>>PS].type!=PT_BHOL)
-                    part_change_type(r>>PS,x+rx,y+ry,self);
+                if(parts[r>>PS].type!=PT_DMND && parts[r>>PS].type!=PT_GOLD && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_CNVR && parts[r>>PS].type!=PT_VOID && parts[r>>PS].type!=PT_WHOL && parts[r>>PS].type!=PT_BHOL)
+                {
+                    if (1>rand()%25)
+                        part_change_type(r>>PS,x+rx,y+ry,self);
+                }
             }
     return 0;
 }

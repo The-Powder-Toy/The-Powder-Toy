@@ -199,108 +199,109 @@
 #define PT_PBCN 153
 #define PT_GPMP 154
 #define PT_CLST 155
-#define PT_CDMD 156
-#define PT_NTRG  157
-#define PT_LQCL  158
-#define PT_GSCL  159
-#define PT_BOOM  160
-#define PT_HEAL  161
-#define PT_FUSE2  162
-#define PT_ZAP  163
-#define PT_NCWS  164
-#define PT_ACRN  165
-#define PT_CLOUD  166
-#define PT_RWTR  167
-#define PT_ACLOUD  168
-#define PT_VOLT  169
-#define PT_VOLB  170
-#define PT_DIRT  171
-#define PT_INV  172
-#define PT_FLY  173
-#define PT_RSPW  174
-#define PT_NCGN  175
-#define PT_TRAP  176
-#define PT_BPAD  177
-#define PT_SPEL  178
-#define PT_SPER  179
-#define PT_POT  180
-#define PT_GRAS  181
-#define PT_CFUS  182
-#define PT_CFIR  183
-#define PT_SMIL  184
-#define PT_SEAL 185
-#define PT_BULL 186
-#define PT_PPLT 187
-#define PT_TNT 188
-#define PT_MGMA 189
-#define PT_DPAR 190
-#define PT_PAIN 191
-#define PT_VIRS 192
-#define PT_O3 193
-#define PT_DICE 194
-#define PT_GOLD 195
-#define PT_MPOS 196
-#define PT_MNEG 197
-#define PT_IFIL 198
-#define PT_LGUN 199
-#define PT_LAZR 200
-#define PT_IBAT 201
-#define PT_FGUN 202
-#define PT_FREZ 203
-#define PT_SPMG 204
-#define PT_SNMG 205
-#define PT_OSMT 206
-#define PT_ROOT 207
-#define PT_BFLM 208
-#define PT_PDCL 209
-#define PT_WCHP 210
-#define PT_SUN 211
-#define PT_AGAS 212
-#define PT_DWFM 213
-#define PT_COPR 214
-#define PT_C02 215
-#define PT_CLAY 216
-#define PT_NMTR 217
-#define PT_BLGN 218
-#define PT_BFGN 219
-#define PT_C6 220
-#define PT_CNVR 221
-#define PT_ASH 222
-#define PT_GREN 223
-#define PT_NUKE 224
-#define PT_TIN 225
-#define PT_BRNZ 226
-#define PT_CFCN 227
-#define PT_SVOI 228
-#define PT_PMIC 229
-#define PT_PIVS 230
-#define PT_LEAF 231
-#define PT_PLAN 232
-#define PT_BSHL 233
-#define PT_LTNG 234
-#define PT_CTRD 235
-#define PT_C0 236
-#define PT_HETR 237
-#define PT_CPPA 238
-#define PT_ARGN 239
-#define PT_PRTN 240
-#define PT_XNON 241
-#define PT_RDON 242
-#define PT_KPTN 243
-#define PT_HLIM 244
-#define PT_GEL 245
-#define PT_GENR 246
-#define PT_ADAN 247
-#define PT_SHPN 248
-#define PT_CSIM 249
-#define PT_CPCT 250
-#define PT_RUBR 251
-#define PT_ME 252
-#define PT_RDOT 253
-#define PT_RDOW 254
-#define PT_RDOB 255
-#define PT_RDOR 256
-#define PT_NUM  257
+#define PT_WIRE 156
+#define PT_CDMD 157
+#define PT_NTRG  158
+#define PT_LQCL  159
+#define PT_GSCL  160
+#define PT_BOOM  161
+#define PT_HEAL  162
+#define PT_FUSE2  163
+#define PT_ZAP  164
+#define PT_NCWS  165
+#define PT_ACRN  166
+#define PT_CLOUD  167
+#define PT_RWTR  168
+#define PT_ACLOUD  169
+#define PT_VOLT  170
+#define PT_VOLB  171
+#define PT_DIRT  172
+#define PT_INV  173
+#define PT_FLY  174
+#define PT_RSPW  175
+#define PT_NCGN  176
+#define PT_TRAP  177
+#define PT_BPAD  178
+#define PT_SPEL  179
+#define PT_SPER  180
+#define PT_POT  181
+#define PT_GRAS  182
+#define PT_CFUS  183
+#define PT_CFIR  184
+#define PT_SMIL  185
+#define PT_SEAL 186
+#define PT_BULL 187
+#define PT_PPLT 188
+#define PT_TNT 189
+#define PT_MGMA 190
+#define PT_DPAR 191
+#define PT_PAIN 192
+#define PT_VIRS 193
+#define PT_O3 194
+#define PT_DICE 195
+#define PT_GOLD 196
+#define PT_MPOS 197
+#define PT_MNEG 198
+#define PT_IFIL 199
+#define PT_LGUN 200
+#define PT_LAZR 201
+#define PT_IBAT 202
+#define PT_FGUN 203
+#define PT_FREZ 204
+#define PT_SPMG 205
+#define PT_SNMG 206
+#define PT_OSMT 207
+#define PT_ROOT 208
+#define PT_BFLM 209
+#define PT_PDCL 210
+#define PT_WCHP 211
+#define PT_SUN 212
+#define PT_AGAS 213
+#define PT_DWFM 214
+#define PT_COPR 215
+#define PT_C02 216
+#define PT_CLAY 217
+#define PT_NMTR 218
+#define PT_BLGN 219
+#define PT_BFGN 220
+#define PT_C6 221
+#define PT_CNVR 222
+#define PT_ASH 223
+#define PT_GREN 224
+#define PT_NUKE 225
+#define PT_TIN 226
+#define PT_BRNZ 227
+#define PT_CFCN 228
+#define PT_SVOI 229
+#define PT_PMIC 230
+#define PT_PIVS 231
+#define PT_LEAF 232
+#define PT_PLAN 233
+#define PT_BSHL 234
+#define PT_LTNG 235
+#define PT_CTRD 236
+#define PT_C0 237
+#define PT_HETR 238
+#define PT_CPPA 239
+#define PT_ARGN 240
+#define PT_PRTN 241
+#define PT_XNON 242
+#define PT_RDON 243
+#define PT_KPTN 244
+#define PT_HLIM 245
+#define PT_GEL 246
+#define PT_GENR 247
+#define PT_ADAN 248
+#define PT_SHPN 249
+#define PT_CSIM 250
+#define PT_CPCT 251
+#define PT_RUBR 252
+#define PT_ME 253
+#define PT_RDOT 254
+#define PT_RDOW 255
+#define PT_RDOB 256
+#define PT_RDOR 257
+#define PT_NUM  258
 
 #define R_TEMP 22
 #define MAX_TEMP 99999
@@ -469,21 +470,7 @@ int update_DLAY(UPDATE_FUNC_ARGS);
 int update_VOLB(UPDATE_FUNC_ARGS);
 int update_RDOT(UPDATE_FUNC_ARGS);
 int update_RDOR(UPDATE_FUNC_ARGS);
-
-int graphics_NCWS(GRAPHIC_FUNC_ARGS);
-int graphics_NEUT(GRAPHIC_FUNC_ARGS);
-int graphics_ACID(GRAPHIC_FUNC_ARGS);
-int graphics_GEL(GRAPHIC_FUNC_ARGS);
-int graphics_DEUT(GRAPHIC_FUNC_ARGS);
-int graphics_BRAY(GRAPHIC_FUNC_ARGS);
-int graphics_CLOUD(GRAPHIC_FUNC_ARGS);
-int graphics_GLOW(GRAPHIC_FUNC_ARGS);
-int graphics_PLSM(GRAPHIC_FUNC_ARGS);
-int graphics_FIRW(GRAPHIC_FUNC_ARGS);
-int graphics_HFLM(GRAPHIC_FUNC_ARGS);
-int graphics_DLAY(GRAPHIC_FUNC_ARGS);
-int graphics_O3(GRAPHIC_FUNC_ARGS);
-int graphics_PHOT(GRAPHIC_FUNC_ARGS);
+int update_WIRE(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -765,13 +752,14 @@ static part_type ptypes[PT_NUM] =
     /*FREE*/{"BRAN",PIXPACK(0xCCCC00),0.0f, 0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  0,  0,  0,  100,    SC_LIFE,    9000.0f,        40,    "Brian 6 S6/B246/3", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL, NULL},
     {"WIND",	PIXPACK(0x101010),  0.0f,	0.00f * CFDS,	0.90f,  0.00f,  0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,  0,		0,  0,  0,  0,  0,  100,    SC_SPECIAL,		0.0f,					40,		"", ST_NONE, ST_NONE, NULL, NULL},
     {"H2",		PIXPACK(0x5070FF),	2.0f,	0.00f * CFDS,	0.99f,	0.30f,	-0.10f,	0.00f,	3.00f,	0.000f	* CFDS, 0,  0,		0,	0,	0,	1,	1,  1,		SC_GAS,			R_TEMP+0.0f +273.15f,	251,	"Combines with O2 to make WATR", ST_GAS, TYPE_GAS, &update_H2, NULL},
-    {"SOAP",    PIXPACK(0xF5F5DC),  0.6f,   0.01f * CFDS,   0.98f,  0.95f,  0.0f,   0.1f,   0.00f,  0.000f  * CFDS, 2,  0,      0,  0,  20, 1,  1,  35,     SC_LIQUID,    R_TEMP-2.0f  +273.15f,  29,    "Soap. Creates bubbles.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE|PROP_LIFE_DEC, &update_SOAP, NULL},
+    {"SOAP",    PIXPACK(0xF5F5DC),  0.6f,   0.01f * CFDS,   0.98f,  0.95f,  0.0f,   0.1f,   0.00f,  0.000f  * CFDS, 2,  0,      0,  0,  20, 1,  1,  35,     SC_LIQUID,    R_TEMP-2.0f  +273.15f,  29,    "Soap. Creates bubbles.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE|PROP_LIFE_DEC, &update_SOAP, &graphics_SOAP},
     {"BHOL",    PIXPACK(0x202020),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  0,  1,  1,  100,    SC_SPACE,    R_TEMP+0.0f  +273.15f,  186,  "Black hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NBHL, NULL},
     {"WHOL",    PIXPACK(0xFFFFFF),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  0,  1,  1,  100,    SC_SPACE,    R_TEMP+0.0f  +273.15f,  186,  "White hole (Requires newtonian gravity)", ST_SOLID, TYPE_SOLID, &update_NWHL, NULL},
     {"MERC",    PIXPACK(0x736B6D),  0.4f,   0.04f * CFDS,   0.94f,  0.80f,  0.0f,   0.3f,   0.00f,  0.000f  * CFDS, 2,  0,      0,  0,  20, 1,  1,  91,     SC_ELEC,    R_TEMP+0.0f  +273.15f,  251,  "Mercury. Volume changes with temperature, Conductive.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB|PROP_LIFE_DEC, &update_MERC, NULL},
     {"PBCN",    PIXPACK(0x3B1D0A),  0.0f,   0.00f * CFDS,   0.97f,  0.50f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  12, 1,  1,  100,    SC_POWERED,    R_TEMP+0.0f  +273.15f,  251,  "Powered breakable clone", ST_NONE, TYPE_SOLID, &update_PBCN, NULL},
     {"GPMP",    PIXPACK(0x0A3B3B),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  1,  1,  1,  1,  100,    SC_POWERED,    0.0f    +273.15f,  0,    "Changes gravity to its temp when activated. (use HEAT/COOL).", ST_NONE, TYPE_SOLID, &update_GPMP, NULL},
     {"CLST",    PIXPACK(0xE4A4A4),  0.7f,   0.02f * CFDS,   0.94f,  0.95f,  0.0f,   0.2f,   0.00f,  0.000f  * CFDS, 1,  0,      0,  2,  2,  1,  1,  55,     SC_POWDERS,    R_TEMP+0.0f  +273.15f,  70,    "Clay dust. Produces paste when mixed with water.", ST_SOLID, TYPE_PART, &update_CLST, NULL},
+    {"WIRE",    PIXPACK(0xFFCC00),  0.0f,   0.00f * CFDS,   0.00f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  0,  1,  1,  0,      SC_ELEC,        R_TEMP+0.0f +273.15f,   250,    "WireWorld wires.",ST_SOLID,TYPE_SOLID,&update_WIRE},
     {"CDMD",    PIXPACK(0x00111D),  0.0f,   0.00f * CFDS,   0.90f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  0,  1,  1,  100,    SC_SOLIDS,    R_TEMP+0.0f  +273.15f,  186,  "Clear Diamond, can refract PHOT", ST_SOLID, TYPE_SOLID, NULL, NULL},
     {"NTRG",	PIXPACK(0x80A0AA),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.0f,	3.0f,	0.000f	* CFDS,	0,	0,  	0,	0,	0,	1,	1,  1,		SC_GAS,		 	R_TEMP+0.0f	+273.15f,   70,  	"Nitrogen in its gas form.", ST_GAS, TYPE_GAS, NULL, NULL},
     {"LQCL",	PIXPACK(0xFFD010),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	1,  30,		SC_SPECIAL,		R_TEMP+0.0f	+273.15f,	29,		"Liquid. Duplicates any particles it touches.", ST_LIQUID, TYPE_LIQUID, &update_CLNE, NULL},
@@ -1045,6 +1033,7 @@ static part_transition ptransitions[PT_NUM] =
     /* PBCN */ {IPL,    NT,         IPH,    NT,         ITL,  NT,      ITH,  NT},
     /* GPMP */ {IPL,    NT,         IPH,    NT,         ITL,    NT,         ITH,  NT},
     /* CLST */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      1256.0f,  PT_LAVA},
+    /* WIRE */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT, PT_WIRE},
     /* CDMD */ {IPL,  NT,      IPH,  NT,      ITL,  NT,      ITH,  NT},
     /* NTRG  */ {IPL,	NT,			IPH,	NT,			120.0f,	PT_LNTG,     ITH,	PT_NONE},
     /* LQCL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
@@ -1386,6 +1375,8 @@ static wall_type wtypes[] =
 particle portalp[CHANNELS][8][80];
 const particle emptyparticle;
 int wireless[CHANNELS][2];
+
+extern int wire_placed;
 
 extern int gravwl_timeout;
 

@@ -1734,7 +1734,7 @@ void draw_parts(pixel *vid)
             glEnd ();
         }
 #else
-        if (parts[i].type)
+        if (parts[i].type) //start of it
         {
             t = parts[i].type;
 
@@ -1742,10 +1742,15 @@ void draw_parts(pixel *vid)
             ny = (int)(parts[i].y+0.5f);
             if(photons[ny][nx]&TYPE && !(parts[i].properties & TYPE_ENERGY))
                 continue;
-            if (t==PT_SOAP)
+            if(t==PT_WIRE)
             {
-                if ((parts[i].ctype&7) == 7)
-                    draw_line(vid, nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), 245, 245, 220, XRES+BARSIZE);
+                if (parts[i].ctype==0)
+                    blendpixel(vid, nx, ny, 255, 204, 0, 255);
+                else if(parts[i].ctype==1)
+                    blendpixel(vid, nx, ny, 0, 0, 255, 255);
+                else
+                    blendpixel(vid, nx, ny, 255, 255, 255, 255);
+                continue;
             }
             if (cmode!=CM_HEAT)
             {

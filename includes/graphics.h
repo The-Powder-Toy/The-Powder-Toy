@@ -48,6 +48,23 @@ extern unsigned int fire_alpha[CELL*3][CELL*3];
 extern pixel *fire_bg;
 extern pixel *pers_bg;
 
+//pointers
+int graphics_NCWS(GRAPHIC_FUNC_ARGS);
+int graphics_NEUT(GRAPHIC_FUNC_ARGS);
+int graphics_ACID(GRAPHIC_FUNC_ARGS);
+int graphics_GEL(GRAPHIC_FUNC_ARGS);
+int graphics_DEUT(GRAPHIC_FUNC_ARGS);
+int graphics_BRAY(GRAPHIC_FUNC_ARGS);
+int graphics_CLOUD(GRAPHIC_FUNC_ARGS);
+int graphics_GLOW(GRAPHIC_FUNC_ARGS);
+int graphics_PLSM(GRAPHIC_FUNC_ARGS);
+int graphics_FIRW(GRAPHIC_FUNC_ARGS);
+int graphics_HFLM(GRAPHIC_FUNC_ARGS);
+int graphics_DLAY(GRAPHIC_FUNC_ARGS);
+int graphics_O3(GRAPHIC_FUNC_ARGS);
+int graphics_PHOT(GRAPHIC_FUNC_ARGS);
+int graphics_SOAP(GRAPHIC_FUNC_ARGS);
+
 void draw_rgba_image(pixel *vid, unsigned char *data, int x, int y, float a);
 
 void *ptif_pack(pixel *src, int w, int h, int *result_size);

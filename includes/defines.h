@@ -10,8 +10,8 @@
 //VersionInfoStart
 #define ME4502_MAJOR_VERSION 3
 #define ME4502_VERSION 0
-#define SAVE_VERSION 53
-#define MINOR_VERSION 3
+#define SAVE_VERSION 55
+#define MINOR_VERSION 0
 #define BETA_VERSION 13
 #define BETA
 //VersionInfoEnd
@@ -161,6 +161,7 @@ int GRAV_B2;
 
 extern int legacy_enable;
 extern int ngrav_enable; //Newtonian gravity
+extern int mgrav_enable; //Me4502ian gravity
 extern int sound_enable;
 extern int kiosk_enable;
 extern int aheat_enable;

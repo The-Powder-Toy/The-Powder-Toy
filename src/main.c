@@ -184,6 +184,7 @@ int sys_pause = 0;
 int sys_shortcuts = 1;
 int legacy_enable = 0; //Used to disable new features such as heat, will be set by save.
 int ngrav_enable = 0; //Newtonian gravity, will be set by save
+int mgrav_enable = 0;//Me4502ian Gravity
 int aheat_enable; //Ambient heat
 int classicpowder = 0;
 int luatextdrawing = 0;
@@ -495,7 +496,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
     for (j=0; j<w*h; j++)
     {
         i = m[j];
-        if (i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_BCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA || parts[i-1].type==PT_PIPE || parts[i-1].type==PT_LIFE || parts[i-1].type==PT_PBCN))
+        if (i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_BCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA || parts[i-1].type==PT_PIPE || parts[i-1].type==PT_LIFE || parts[i-1].type==PT_PBCN || parts[i-1].type==PT_WIRE))
             d[p++] = parts[i-1].ctype;
     }
 
@@ -1088,7 +1089,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
         int gnum = 0;
         i = m[j];
         ty = d[pty+j];
-        if (i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_BCLN && ver>=44) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34) || (ty==PT_PIPE && ver>=43) || (ty==PT_LIFE && ver>=51) || (ty==PT_PBCN && ver>=52)))
+        if (i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_BCLN && ver>=44) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34) || (ty==PT_PIPE && ver>=43) || (ty==PT_LIFE && ver>=51) || (ty==PT_PBCN && ver>=52) || (ty==PT_WIRE && ver>=55)))
         {
             if (p >= size)
                 goto corrupt;
