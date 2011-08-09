@@ -1654,7 +1654,7 @@ void draw_parts(pixel *vid)
 					blendpixel(vid, nx, ny, 100, 100, 100, 80);
 			}
 	}
-	for (i = 0; i<NPART; i++) {
+	for (i = 0; i<=parts_lastActiveIndex; i++) {
 #ifdef OpenGL
 		if (cmode == CM_FANCY) //If fancy mode
 		{

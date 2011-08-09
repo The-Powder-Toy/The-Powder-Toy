@@ -948,6 +948,7 @@ extern int airMode;
 
 extern particle *parts;
 extern particle *cb_parts;
+extern int parts_lastActiveIndex;
 
 extern unsigned char bmap[YRES/CELL][XRES/CELL];
 extern unsigned char emap[YRES/CELL][XRES/CELL];

@@ -779,6 +779,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	else
 		i = p;
 
+	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
+
 	parts[i].dcolour = 0;
 	if (t==PT_GLAS)
 	{
@@ -1254,7 +1256,7 @@ int nearest_part(int ci, int t)
 	int i = 0;
 	int cx = (int)parts[ci].x;
 	int cy = (int)parts[ci].y;
-	for (i=0; i<NPART; i++)
+	for (i=0; i<=parts_lastActiveIndex; i++)
 	{
 		if (parts[i].type==t&&!parts[i].life&&i!=ci)
 		{
@@ -1578,7 +1580,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				wireless[q][1] = 0;
 	}
 	//the main particle loop function, goes over all particles.
-	for (i=start; i<(NPART-starti); i+=inc)
+	for (i=0; i<=parts_lastActiveIndex; i++)
 		if (parts[i].type)
 		{
 			lx = parts[i].x;
@@ -2404,10 +2406,13 @@ movedone:
 		}
 }
 
+int parts_lastActiveIndex = NPART-1;
 void update_particles(pixel *vid)//doesn't update the particles themselves, but some other things
 {
 	int i, j, x, y, t, nx, ny, r, cr,cg,cb, l = -1;
 	float lx, ly;
+	int lastPartUsed = 0;
+	int lastPartUnused = -1;
 #ifdef MT
 	int pt = 0, pc = 0;
 	pthread_t *InterThreads;
@@ -2415,11 +2420,9 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 
 	memset(pmap, 0, sizeof(pmap));
 	memset(photons, 0, sizeof(photons));
-	r = rand()%2;
 	NUM_PARTS = 0;
-	for (j=0; j<NPART; j++)//the particle loop that resets the pmap/photon maps every frame, to update them.
+	for (i=0; i<=parts_lastActiveIndex; i++)//the particle loop that resets the pmap/photon maps every frame, to update them.
 	{
-		i = r ? (NPART-1-j) : j;
 		if (parts[i].type)
 		{
 			t = parts[i].type;
@@ -2432,15 +2435,19 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 				else
 					pmap[y][x] = t|(i<<8);
 			}
+			lastPartUsed = i;
 			NUM_PARTS ++;
 		}
 		else
 		{
-			parts[i].life = l;
-			l = i;
+			if (lastPartUnused<0) pfree = i;
+			else parts[lastPartUnused].life = i;
+			lastPartUnused = i;
 		}
 	}
-	pfree=l;
+	if (parts_lastActiveIndex>=NPART-1) parts[lastPartUnused].life = -1;
+	else parts[lastPartUnused].life = parts_lastActiveIndex+1;
+	parts_lastActiveIndex = lastPartUsed;
 	for (y=0; y<YRES/CELL; y++)
 	{
 		for (x=0; x<XRES/CELL; x++)
