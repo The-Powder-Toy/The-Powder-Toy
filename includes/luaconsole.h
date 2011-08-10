@@ -68,4 +68,5 @@ int luatpt_error(lua_State* l);
 int luatpt_heat(lua_State* l);
 int luatpt_getSelectedParticle(lua_State* l);
 int luatpt_getscript(lua_State* l);
+int luatpt_set_glow(lua_State* l);
 #endif

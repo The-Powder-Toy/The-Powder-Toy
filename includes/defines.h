@@ -150,6 +150,8 @@ extern int amd;
 
 extern int FPSB;
 
+extern int fire_intensity;
+
 int NUM_PARTS;
 int GRAV;
 int GRAV_R;

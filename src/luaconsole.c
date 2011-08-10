@@ -63,6 +63,7 @@ void luacon_open()
         {"throw_error", &luatpt_error},
         {"get_selected_particle", &luatpt_getSelectedParticle},
         {"getscript", &luatpt_getscript},
+        {"set_glow", &luatpt_set_glow},
         {NULL,NULL}
     };
 
@@ -1514,5 +1515,15 @@ int luatpt_getscript(lua_State* l)
         chdir(cwd);
         return luaL_error(l, "Unable to get file from server"); //If the file could not be found on the server, or the request failed for another reason
     }
+}
+int luatpt_set_glow(lua_State* l)
+{
+    int glow;
+    glow = luaL_optint(l, 1, 0);
+    if (glow < 11 && glow >= 1)
+         fire_intensity = glow;
+    else
+        return luaL_error(l, "Invalid Glow");
+    return 0;
 }
 #endif

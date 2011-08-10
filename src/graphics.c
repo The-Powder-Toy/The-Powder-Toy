@@ -24,6 +24,7 @@
 unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
+int fire_intensity = 10;
 
 unsigned char fire_r[YRES/CELL][XRES/CELL];
 unsigned char fire_g[YRES/CELL][XRES/CELL];
@@ -3954,9 +3955,29 @@ void render_fire(pixel *vid)
     for (j=0; j<YRES/CELL; j++)
         for (i=0; i<XRES/CELL; i++)
         {
-            r = fire_r[j][i];
-            g = fire_g[j][i];
-            b = fire_b[j][i];
+            if (fire_intensity == 10)
+            {
+                r = fire_r[j][i];
+                g = fire_g[j][i];
+                b = fire_b[j][i];
+            }
+            else if (fire_intensity < 10 && fire_intensity > 1)
+            {
+                float tmp,tmp2;
+                tmp = fire_intensity - 10;
+                tmp2 = tmp - tmp - tmp;
+                tmp = tmp2 / 4;
+                if (tmp < 1)
+                    tmp = 1;
+                r = fire_r[j][i] / tmp;
+                g = fire_g[j][i] / tmp;
+                b = fire_b[j][i] / tmp;
+            }
+            else
+            {
+                addpixel(vid, i*CELL+x, j*CELL+y, 255, 255, 255, 255);
+                continue;
+            }
             if (r || g || b)
                 for (y=-CELL+1; y<2*CELL; y++)
                     for (x=-CELL+1; x<2*CELL; x++)
@@ -3968,9 +3989,29 @@ void render_fire(pixel *vid)
                 for (x=-1; x<2; x++)
                     if ((x || y) && i+x>=0 && j+y>=0 && i+x<XRES/CELL && j+y<YRES/CELL)
                     {
-                        r += fire_r[j+y][i+x];
-                        g += fire_g[j+y][i+x];
-                        b += fire_b[j+y][i+x];
+                        if (fire_intensity == 10)
+                        {
+                            r += fire_r[j+y][i+x];
+                            g += fire_g[j+y][i+x];
+                            b += fire_b[j+y][i+x];
+                        }
+                        else if (fire_intensity < 10 && fire_intensity > 1)
+                        {
+                            float tmp,tmp2;
+                            tmp = fire_intensity - 10;
+                            tmp2 = tmp - tmp - tmp;
+                            tmp = tmp2 / 4;
+                            if (tmp < 1)
+                                tmp = 1;
+                            r += fire_r[j+y][i+x] / tmp;
+                            g += fire_g[j+y][i+x] / tmp;
+                            b += fire_b[j+y][i+x] / tmp;
+                        }
+                        else
+                        {
+                            addpixel(vid, i*CELL+x, j*CELL+y, 255, 255, 255, 255);
+                            continue;
+                        }
                     }
             r /= 16;
             g /= 16;
