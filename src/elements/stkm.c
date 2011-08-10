@@ -110,25 +110,34 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 	playerp[25] = 0;
 	playerp[26] = 0;
 
+	float gx, gy, dl, dr;
+
+	gx = (player[7] + player[15])/2 - gvy;
+	gy = (player[8] + player[16])/2 + gvx;
+	dl = pow(gx - player[7], 2) + pow(gy - player[8], 2);
+	dr = pow(gx - player[15], 2) + pow(gy - player[16], 2);
+	
 	//Go left
 	if (((int)(playerp[0])&0x01) == 0x01)
 	{
-		if (playerp[7]>playerp[15])
+		if (dl>dr)
 		{
 			if (!eval_move(PT_DUST, playerp[7], playerp[8], NULL))
 			{
-				playerp[21] = -3*gvy;
-				playerp[19] = -1*gvy;
-				playerp[22] = -3*gvy;
+				playerp[21] = -3*gvy-3*gvx;
+				playerp[22] = 3*gvx-3*gvy;
+				playerp[19] = -gvy;
+				playerp[20] = gvx;
 			}
 		}
 		else
 		{
 			if (!eval_move(PT_DUST, playerp[15], playerp[16], NULL))
 			{
-				playerp[25] = -3*gvy;
-				playerp[19] = -1*gvy;
-				playerp[26] = -3*gvy;
+				playerp[25] = -3*gvy-3*gvx;
+				playerp[26] = 3*gvx-3*gvy;
+				playerp[19] = -gvy;
+				playerp[20] = gvx;
 			}
 		}
 	}
@@ -136,22 +145,24 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 	//Go right
 	if (((int)(playerp[0])&0x02) == 0x02)
 	{
-		if (playerp[7]<playerp[15])
+		if (dl<dr)
 		{
 			if (!eval_move(PT_DUST, playerp[7], playerp[8], NULL))
 			{
-				playerp[21] = 3*gvy;
-				playerp[19] = 1*gvy;
-				playerp[22] = -3*gvy;
+				playerp[21] = 3*gvy-3*gvx;
+				playerp[22] = -3*gvx-3*gvy;
+				playerp[19] = gvy;
+				playerp[20] = -gvx;
 			}
 		}
 		else
 		{
 			if (!eval_move(PT_DUST, playerp[15], playerp[16], NULL))
 			{
-				playerp[25] = 3*gvy;
-				playerp[19] = 1*gvy;
-				playerp[26] = -3*gvy;
+				playerp[25] = 3*gvy-3*gvx;
+				playerp[26] = -3*gvx-3*gvy;
+				playerp[19] = gvy;
+				playerp[20] = -gvx;
 			}
 		}
 	}
