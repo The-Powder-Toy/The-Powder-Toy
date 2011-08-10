@@ -112,10 +112,10 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 
 	float gx, gy, dl, dr;
 
-	gx = (player[7] + player[15])/2 - gvy;
-	gy = (player[8] + player[16])/2 + gvx;
-	dl = pow(gx - player[7], 2) + pow(gy - player[8], 2);
-	dr = pow(gx - player[15], 2) + pow(gy - player[16], 2);
+	gx = (playerp[7] + playerp[15])/2 - gvy;
+	gy = (playerp[8] + playerp[16])/2 + gvx;
+	dl = pow(gx - playerp[7], 2) + pow(gy - playerp[8], 2);
+	dr = pow(gx - playerp[15], 2) + pow(gy - playerp[16], 2);
 	
 	//Go left
 	if (((int)(playerp[0])&0x01) == 0x01)
