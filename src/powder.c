@@ -1026,6 +1026,7 @@ static void create_gain_photon(int pp)//photons from PHOT going through GLOW
 		return;
 
 	pfree = parts[i].life;
+	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
 	parts[i].type = PT_PHOT;
 	parts[i].life = 680;
@@ -1062,6 +1063,7 @@ static void create_cherenkov_photon(int pp)//photons from NEUT going through GLA
 		return;
 
 	pfree = parts[i].life;
+	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
 	lr = rand() % 2;
 

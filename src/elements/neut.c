@@ -21,6 +21,7 @@ int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)//
 			return -1;
 		i = pfree;
 		pfree = parts[i].life;
+		if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
 		parts[i].x = (float)x;
 		parts[i].y = (float)y;
