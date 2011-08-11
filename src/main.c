@@ -1525,7 +1525,7 @@ int main(int argc, char *argv[])
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	fire_bg = calloc(XRES*YRES, PIXELSIZE);
 	
-	prepare_alpha();
+	prepare_alpha(4, 1.0f);
 	player[2] = player2[2] = PT_DUST;
 
 	sprintf(ppmfilename, "%s.ppm", argv[2]);
@@ -1807,7 +1807,7 @@ int main(int argc, char *argv[])
 	save_presets(0);
 
 	make_kernel();
-	prepare_alpha();
+	prepare_alpha(4, 1.0f);
 
 	stamp_init();
 
