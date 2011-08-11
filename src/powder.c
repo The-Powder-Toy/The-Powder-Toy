@@ -2447,8 +2447,16 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 			lastPartUnused = i;
 		}
 	}
-	if (parts_lastActiveIndex>=NPART-1) parts[lastPartUnused].life = -1;
-	else parts[lastPartUnused].life = parts_lastActiveIndex+1;
+	if (lastPartUnused==-1)
+	{
+		if (parts_lastActiveIndex>=NPART-1) pfree = -1;
+		else pfree = parts_lastActiveIndex+1;
+	}
+	else
+	{
+		if (parts_lastActiveIndex>=NPART-1) parts[lastPartUnused].life = -1;
+		else parts[lastPartUnused].life = parts_lastActiveIndex+1;
+	}
 	parts_lastActiveIndex = lastPartUsed;
 	for (y=0; y<YRES/CELL; y++)
 	{
