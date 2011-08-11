@@ -1840,21 +1840,21 @@ void update_particles_i(pixel *vid, int start, int inc)
         }
     }
     //wire!
-  if(wire_placed == 1)
-  {
-    wire_placed = 0;
-    for (nx=0; nx<XRES; nx++)
+    if(wire_placed == 1)
     {
-      for (ny=0; ny<YRES; ny++)
+        wire_placed = 0;
+        for (nx=0; nx<XRES; nx++)
         {
-          r = pmap[ny][nx];
-          if ((r>>PS)>=NPART || !r)
-              continue;
-          if(parts[r>>PS].type==PT_WIRE)
-            parts[r>>PS].tmp=parts[r>>PS].ctype;
+            for (ny=0; ny<YRES; ny++)
+            {
+                r = pmap[ny][nx];
+                if ((r>>PS)>=NPART || !r)
+                    continue;
+                if(parts[r>>PS].type==PT_WIRE)
+                    parts[r>>PS].tmp=parts[r>>PS].ctype;
+            }
         }
     }
-  }
     //game of life!
     if (ISGOL==1&&++CGOL>=GSPEED)//GSPEED is frames per generation
     {
@@ -2897,8 +2897,16 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
             lastPartUnused = i;
         }
     }
-    if (parts_lastActiveIndex>=NPART-1) parts[lastPartUnused].life = -1;
-    else parts[lastPartUnused].life = parts_lastActiveIndex+1;
+    if (lastPartUnused==-1)
+    {
+        if (parts_lastActiveIndex>=NPART-1) pfree = -1;
+        else pfree = parts_lastActiveIndex+1;
+    }
+    else
+    {
+        if (parts_lastActiveIndex>=NPART-1) parts[lastPartUnused].life = -1;
+        else parts[lastPartUnused].life = parts_lastActiveIndex+1;
+    }
     parts_lastActiveIndex = lastPartUsed;
     for (y=0; y<YRES/CELL; y++)
     {
