@@ -142,7 +142,7 @@ void render_signs(pixel *vid_buf);
 
 void render_fire(pixel *dst);
 
-void prepare_alpha(void);
+void prepare_alpha(int size, float intensity);
 
 void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a);
 

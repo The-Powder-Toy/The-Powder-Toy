@@ -3869,9 +3869,11 @@ void render_fire(pixel *vid)
 		}
 }
 
-void prepare_alpha(void)
+void prepare_alpha(int size, float intensity)
 {
+	//TODO: implement size
 	int x,y,i,j;
+	float multiplier = 255.0f*intensity;
 	float temp[CELL*3][CELL*3];
 	memset(temp, 0, sizeof(temp));
 	for (x=0; x<CELL; x++)
@@ -3881,7 +3883,7 @@ void prepare_alpha(void)
 					temp[y+CELL+j][x+CELL+i] += expf(-0.1f*(i*i+j*j));
 	for (x=0; x<CELL*3; x++)
 		for (y=0; y<CELL*3; y++)
-			fire_alpha[y][x] = (int)(255.0f*temp[y][x]/(CELL*CELL));
+			fire_alpha[y][x] = (int)(multiplier*temp[y][x]/(CELL*CELL));
 }
 
 pixel *render_packed_rgb(void *image, int width, int height, int cmp_size)

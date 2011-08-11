@@ -64,4 +64,5 @@ int luatpt_decorations_enable(lua_State* l);
 int luatpt_cmode_set(lua_State* l);
 int luatpt_error(lua_State* l);
 int luatpt_heat(lua_State* l);
+int luatpt_setfire(lua_State* l);
 #endif
