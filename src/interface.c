@@ -768,7 +768,7 @@ void draw_svf_ui(pixel *vid_buf, int alternate)// all the buttons at the bottom
     if(alternate)
     {
         fillrect(vid_buf, XRES-159+BARSIZE, YRES+(MENUSIZE-16)-1, 15, 16, 255, 255, 255, 255);
-        drawtext(vid_buf, XRES-156+BARSIZE, YRES+(MENUSIZE-13), "\xCF", 0, 0, 0, 255);
+        drawtext(vid_buf, XRES-156+BARSIZE, YRES+(MENUSIZE-13), "\xDC", 0, 0, 0, 255);
     }
     else
     {

@@ -53,11 +53,11 @@ static menu_section msections[] = //doshow does not do anything currently.
 	{"\xC6", "Radioactive", 0, 1},
 	{"\xCC", "Special", 0, 1},
 	{"\xD2", "Life", 0, 1},
-    {"\xA7", "Stickman", 0, 1},
-    {"\xA4", "Nature", 0, 1},
-    {"\xD1", "Space", 0, 1},
-	{"\xCC", "Drawing", 0, 1},
-	{"\xCC", "Miscellaneous", 0, 0},
+    {"\xDB", "Stickman", 0, 1},
+    {"\xD7", "Nature", 0, 1},
+    {"\xD9", "Space", 0, 1},
+	{"\xD8", "Drawing", 0, 1},
+	{"\xDA", "Miscellaneous", 0, 0},
 };
 
 static menu_section colorsections[] = //doshow does not do anything currently.
