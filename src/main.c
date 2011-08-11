@@ -188,6 +188,7 @@ int frameidx = 0;
 //int CGOL = 0;
 //int GSPEED = 1;//causes my .exe to crash..
 int sound_enable = 0;
+int debug_flags = 0;
 
 
 sign signs[MAXSIGNS];
@@ -1960,6 +1961,11 @@ int main(int argc, char *argv[])
 		clearrect(vid_buf, XRES-1, 0, BARSIZE+1, YRES);
 
 		draw_svf_ui(vid_buf, sdl_mod & (KMOD_LCTRL|KMOD_RCTRL));
+		
+		if(debug_flags)
+		{
+			draw_debug_info(vid_buf);
+		}
 
 		if (http_ver_check)
 		{

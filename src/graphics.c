@@ -4436,6 +4436,26 @@ int sdl_open(void)
 	return 1;
 }
 
+int draw_debug_info(pixel* vid)
+{
+	if(debug_flags & DEBUG_PARTS)
+	{
+		int i = 0, x = 0, y = 0;
+		for(i = 0; i < NPART; i++){
+			if(parts[i].type){
+				drawpixel(vid, x, y, 255, 255, 255, 120);
+			} else {
+				drawpixel(vid, x, y, 0, 0, 0, 120);
+			}
+			x++;
+			if(x>=XRES){
+				y++;
+				x = 0;
+			}
+		}
+	}
+}
+
 #ifdef OpenGL
 void Enable2D ()
 {

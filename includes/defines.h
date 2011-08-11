@@ -129,6 +129,9 @@ typedef unsigned int pixel;
 #define SDEUT
 //#define REALHEAT
 
+#define DEBUG_PARTS		0x0001
+#define DEBUG_PARTCOUNT	0x0002
+
 typedef unsigned char uint8;
 
 extern int amd;
@@ -151,6 +154,7 @@ extern int kiosk_enable;
 extern int aheat_enable;
 extern int decorations_enable;
 extern int hud_enable;
+extern int debug_flags;
 
 extern int active_menu;
 

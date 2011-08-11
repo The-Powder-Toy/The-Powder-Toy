@@ -54,6 +54,7 @@ void luacon_open(){
 		{"throw_error", &luatpt_error},
 		{"heat", &luatpt_heat},
 		{"setfire", &luatpt_setfire},
+		{"setdebug", &luatpt_setdebug},
 		{NULL,NULL}
 	};
 
@@ -1046,6 +1047,12 @@ int luatpt_setfire(lua_State* l)
 	int firesize = luaL_optint(l, 2, 4);
 	float fireintensity = (float)luaL_optnumber(l, 1, 1.0f);
 	prepare_alpha(firesize, fireintensity);
+	return 0;
+}
+int luatpt_setdebug(lua_State* l)
+{
+	int debug = luaL_optint(l, 1, 0);
+	debug_flags = debug;
 	return 0;
 }
 #endif
