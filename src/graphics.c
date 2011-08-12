@@ -4440,12 +4440,19 @@ int draw_debug_info(pixel* vid)
 {
 	if(debug_flags & DEBUG_PARTS)
 	{
-		int i = 0, x = 0, y = 0;
+		char infobuf[256];
+		int i = 0, x = 0, y = 0, lpx = 0, lpy = 0;
+		sprintf(infobuf, "%d/%d (%.2f%%)", parts_lastActiveIndex, NPART, (((float)parts_lastActiveIndex)/((float)NPART))*100.0f);
 		for(i = 0; i < NPART; i++){
 			if(parts[i].type){
-				drawpixel(vid, x, y, 255, 255, 255, 120);
+				drawpixel(vid, x, y, 255, 255, 255, 180);
 			} else {
-				drawpixel(vid, x, y, 0, 0, 0, 120);
+				drawpixel(vid, x, y, 0, 0, 0, 180);
+			}
+			if(i == parts_lastActiveIndex)
+			{
+				lpx = x;
+				lpy = y;
 			}
 			x++;
 			if(x>=XRES){
@@ -4453,6 +4460,17 @@ int draw_debug_info(pixel* vid)
 				x = 0;
 			}
 		}
+		draw_line(vid, 0, lpy, XRES, lpy, 0, 255, 120, XRES+BARSIZE);
+		draw_line(vid, lpx, 0, lpx, YRES, 0, 255, 120, XRES+BARSIZE);
+		drawpixel(vid, lpx, lpy, 255, 50, 50, 220);
+				
+		drawpixel(vid, lpx+1, lpy, 255, 50, 50, 120);
+		drawpixel(vid, lpx-1, lpy, 255, 50, 50, 120);
+		drawpixel(vid, lpx, lpy+1, 255, 50, 50, 120);
+		drawpixel(vid, lpx, lpy-1, 255, 50, 50, 120);
+		
+		fillrect(vid, 7, YRES-26, textwidth(infobuf)+5, 14, 0, 0, 0, 180);		
+		drawtext(vid, 10, YRES-22, infobuf, 255, 255, 255, 255);
 	}
 }
 
