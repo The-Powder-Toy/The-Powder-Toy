@@ -1688,7 +1688,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				pGravX -= gravx[y/CELL][x/CELL];
 				pGravY -= gravy[y/CELL][x/CELL];
 			}
-			else if(!(ptypes[t].properties & TYPE_SOLID))
+			else if(t!=PT_STKM && t!=PT_STKM2 && !(ptypes[t].properties & TYPE_SOLID))
 			{
 				pGravX += gravx[y/CELL][x/CELL];
 				pGravY += gravy[y/CELL][x/CELL];
