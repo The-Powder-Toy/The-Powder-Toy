@@ -3462,7 +3462,24 @@ void draw_parts(pixel *vid)
 				blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
 			}
 			if (decorations_enable && cmode!=CM_HEAT && cmode!=CM_LIFE && parts[i].dcolour)
-				blendpixel(vid, nx, ny, (parts[i].dcolour>>16)&0xFF, (parts[i].dcolour>>8)&0xFF, (parts[i].dcolour)&0xFF, (parts[i].dcolour>>24)&0xFF);
+				if(t==PT_LCRY){
+					cr = (parts[i].dcolour>>16)&0xFF;
+					cg = (parts[i].dcolour>>8)&0xFF;
+					cb = (parts[i].dcolour)&0xFF;
+					
+					if(parts[i].life<10){
+						cr /= 10-parts[i].life;
+						cg /= 10-parts[i].life;
+						cb /= 10-parts[i].life;
+					}
+					
+					/*cr = cr>255?255:cr;
+					cg = cg>255?255:cg;
+					cb = cb>255?255:cb;*/
+					blendpixel(vid, nx, ny, cr, cg, cb, (parts[i].dcolour>>24)&0xFF);
+				} else {
+					blendpixel(vid, nx, ny, (parts[i].dcolour>>16)&0xFF, (parts[i].dcolour>>8)&0xFF, (parts[i].dcolour)&0xFF, (parts[i].dcolour>>24)&0xFF);
+				}
 		}
 #endif
 	}
