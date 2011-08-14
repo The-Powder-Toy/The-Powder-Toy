@@ -14,6 +14,8 @@ int update_O2(UPDATE_FUNC_ARGS)
 				if ((r&0xFF)==PT_FIRE)
 				{
 					parts[r>>8].temp+=(rand()/(RAND_MAX/100));
+					if(parts[r>>8].tmp&0x01)
+					parts[r>>8].temp=3473;
 					parts[r>>8].tmp |= 2;
 				}
 				if ((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM)

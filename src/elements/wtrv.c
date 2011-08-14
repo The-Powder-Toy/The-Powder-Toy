@@ -15,5 +15,7 @@ int update_WTRV(UPDATE_FUNC_ARGS) {
 					parts[i].life = 4;
 				}
 			}
+	if(parts[i].temp>1273&&parts[i].ctype==PT_FIRE)
+		parts[i].temp-=parts[i].temp/1000;
 	return 0;
 }

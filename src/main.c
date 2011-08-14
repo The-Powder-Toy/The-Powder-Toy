@@ -714,7 +714,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				j = PT_DUST;//goto corrupt;
 			}
 			gol[x][y]=0;
-			if (j)// && !(player[27] == 1 && j==PT_STKM))
+			if (j && !(player[27] == 1 && j==PT_STKM) && !(player2[27] == 1 && j==PT_STKM2)) //Don't comment this, it's needed
 			{
 				if (pmap[y][x] && (pmap[y][x]>>8)<NPART)
 				{

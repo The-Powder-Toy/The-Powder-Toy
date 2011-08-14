@@ -14,6 +14,7 @@ int update_PYRO(UPDATE_FUNC_ARGS) {
 			t = PT_DSTW;
 			part_change_type(i,x,y,t);
 			parts[i].life = 0;
+			parts[i].ctype = PT_FIRE;
 		}
 		else if (parts[i].temp<625)
 		{

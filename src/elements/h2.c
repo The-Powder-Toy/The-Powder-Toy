@@ -18,7 +18,9 @@ int update_H2(UPDATE_FUNC_ARGS)
 				}
 				if ((r&0xFF)==PT_FIRE)
 				{
-					parts[r>>8].temp+=(rand()/(RAND_MAX/100));
+					parts[r>>8].temp=2473.15;
+					if(parts[r>>8].tmp&0x02)
+					parts[r>>8].temp=3473;
 					parts[r>>8].tmp |= 1;
 				}
 				if ((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM || (r&0xFF)==PT_LAVA)
