@@ -1044,6 +1044,18 @@ int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a
 #endif
 	return x;
 }
+
+//Draw text with an outline
+int drawtext_outline(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a, int or, int og, int ob, int oa)
+{
+	drawtext(vid, x-1, y-1, s, or, og, ob, oa);
+	drawtext(vid, x+1, y+1, s, or, og, ob, oa);
+	
+	drawtext(vid, x-1, y+1, s, or, og, ob, oa);
+	drawtext(vid, x+1, y-1, s, or, og, ob, oa);
+	
+	return drawtext(vid, x, y, s, r, g, b, a);
+}
 int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, int b, int a)
 {
 #ifdef OpenGL
@@ -1609,6 +1621,53 @@ void xor_line(int x1, int y1, int x2, int y2, pixel *vid)
 			xor_pixel(y, x, vid);
 		else
 			xor_pixel(x, y, vid);
+		e += de;
+		if (e >= 0.5f)
+		{
+			y += sy;
+			e -= 1.0f;
+		}
+	}
+}
+
+//same as blend_pixel, but draws a line of it
+void blend_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, int a)
+{
+	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
+	float e, de;
+	if (cp)
+	{
+		y = x1;
+		x1 = y1;
+		y1 = y;
+		y = x2;
+		x2 = y2;
+		y2 = y;
+	}
+	if (x1 > x2)
+	{
+		y = x1;
+		x1 = x2;
+		x2 = y;
+		y = y1;
+		y1 = y2;
+		y2 = y;
+	}
+	dx = x2 - x1;
+	dy = abs(y2 - y1);
+	e = 0.0f;
+	if (dx)
+		de = dy/(float)dx;
+	else
+		de = 0.0f;
+	y = y1;
+	sy = (y1<y2) ? 1 : -1;
+	for (x=x1; x<=x2; x++)
+	{
+		if (cp)
+			blendpixel(vid, y, x, r, g, b, a);
+		else
+			blendpixel(vid, x, y, r, g, b, a);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -4524,11 +4583,34 @@ int sdl_open(void)
 	return 1;
 }
 
-int draw_debug_info(pixel* vid)
+int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy)
 {
+	char infobuf[256];
+	if(debug_flags & DEBUG_DRAWTOOL)
+	{
+		if(lm == 1) //Line tool
+		{
+			blend_line(vid, 0, cy, XRES, cy, 255, 255, 255, 120);
+			blend_line(vid, cx, 0, cx, YRES, 255, 255, 255, 120);
+	
+			blend_line(vid, 0, ly, XRES, ly, 255, 255, 255, 120);
+			blend_line(vid, lx, 0, lx, YRES, 255, 255, 255, 120);
+			
+			sprintf(infobuf, "%d x %d", lx, ly);
+			drawtext_outline(vid, lx+(lx>cx?3:-textwidth(infobuf)-3), ly+(ly<cy?-10:3), infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
+			
+			sprintf(infobuf, "%d x %d", cx, cy);
+			drawtext_outline(vid, cx+(lx<cx?3:-textwidth(infobuf)-2), cy+(ly>cy?-10:3), infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
+			
+			sprintf(infobuf, "%d", abs(cx-lx));
+			drawtext_outline(vid, cx+(lx<cx?-(cx-lx)/2:(lx-cx)/2)-textwidth(infobuf)/2, cy+(ly>cy?-10:3), infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
+			
+			sprintf(infobuf, "%d", abs(cy-ly));
+			drawtext_outline(vid, cx+(lx<cx?3:-textwidth(infobuf)-2), cy+(ly>cy?-(cy-ly)/2:(ly-cy)/2)-3, infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
+		}
+	}
 	if(debug_flags & DEBUG_PARTS)
 	{
-		char infobuf[256];
 		int i = 0, x = 0, y = 0, lpx = 0, lpy = 0;
 		sprintf(infobuf, "%d/%d (%.2f%%)", parts_lastActiveIndex, NPART, (((float)parts_lastActiveIndex)/((float)NPART))*100.0f);
 		for(i = 0; i < NPART; i++){

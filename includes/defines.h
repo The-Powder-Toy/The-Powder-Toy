@@ -131,6 +131,7 @@ typedef unsigned int pixel;
 
 #define DEBUG_PARTS		0x0001
 #define DEBUG_PARTCOUNT	0x0002
+#define DEBUG_DRAWTOOL	0x0004
 
 typedef unsigned char uint8;
 

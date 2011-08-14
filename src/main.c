@@ -1964,7 +1964,7 @@ int main(int argc, char *argv[])
 		
 		if(debug_flags)
 		{
-			draw_debug_info(vid_buf);
+			draw_debug_info(vid_buf, lm, lx, ly, x, y);
 		}
 
 		if (http_ver_check)
