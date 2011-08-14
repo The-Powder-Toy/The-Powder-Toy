@@ -23,7 +23,7 @@ WIN32_TARG := powder-sse.exe powder-sse2.exe
 
 powder: $(SOURCES)
 	$(PYCOMMAND)
-	$(COMPILER) -DINTERNAL -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE3) $(SOURCES) $(LFLAGS) -DLIN64
+	$(COMPILER) -DINTERNAL -D_GNU_SOURCE -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE3) $(SOURCES) $(LFLAGS) -DLIN64
 	mv $@ build
 
 powder-debug-64: $(SOURCES)

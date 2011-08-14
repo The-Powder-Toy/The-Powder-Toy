@@ -3,7 +3,11 @@
 #include <console.h>
 #include <luaconsole.h>
 
+struct lua_sockets* socks;
+int socks_count;
+
 lua_State *l;
+int allow_networking = 0;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
 int keypress_function_count = 0;
 int *keypress_functions = NULL;
@@ -55,6 +59,11 @@ void luacon_open(){
 		{"heat", &luatpt_heat},
 		{"setfire", &luatpt_setfire},
 		{"setdebug", &luatpt_setdebug},
+		{"toggle_networking", &luatpt_togglenetworking},
+		{"open_socket", &luatpt_opensocket},
+		{"send", &luatpt_sendpacket},
+		{"recv", &luatpt_recvpacket},
+		{"close_socket", &luatpt_closesocket},
 		{NULL,NULL}
 	};
 
@@ -70,7 +79,7 @@ void luacon_open(){
 	lua_setfield(l, tptProperties, "mousey");
 }
 int luacon_keypress(char key, int modifier){
-	int i = 0, kpcontinue = 1;
+        int i = 0, kpcontinue = 1;
 	if(keypress_function_count){
 		for(i = 0; i < keypress_function_count && kpcontinue; i++){
 			lua_rawgeti(l, LUA_REGISTRYINDEX, keypress_functions[i]);
@@ -1053,6 +1062,105 @@ int luatpt_setdebug(lua_State* l)
 {
 	int debug = luaL_optint(l, 1, 0);
 	debug_flags = debug;
+	return 0;
+}
+int luatpt_togglenetworking(lua_State* l)
+{
+	int tmpvar = luaL_optint(l, 1, 0);
+	if(tmpvar == NULL || tmpvar<0 || tmpvar>1) return luaL_error(l, "Invalid state!");
+	if(tmpvar == 0){
+		allow_networking = tmpvar;
+		return 0;
+	}
+	socks = (struct lua_sockets*)malloc(1*sizeof(struct lua_sockets));
+	char* answer = mystrdup(input_ui(vid_buf, "WARNING - Activating Networking!", "Activating networking can put your computer\nin danger. Would you like to continue(yes/no)?", "", ""));
+	if(strcmp(answer, "yes") == 0) allow_networking = tmpvar;
+	else return -1;
+	return 0;
+}
+int luatpt_opensocket(lua_State* l)
+{
+	if(allow_networking == 0) return luaL_error(l, "Networking is disabled for security! Enable it with toggle_networking(1)!");
+	if(socks_count >= 1024) return luaL_error(l, "Socket limit reached!");
+	socks = realloc(socks, (socks_count+1)*sizeof(struct lua_sockets));
+	#ifdef WIN32
+	socks[socks_count].error = WSAStartup(MAKEWORD(2, 2), &socks[socks_count].wsaData);
+	if (socks[socks_count].error == -1){
+		return luaL_error(l, "Cannot initialize socket! WSAStartup Failed!");
+	}
+	#endif
+	socks[socks_count].sock = socket(AF_INET, SOCK_STREAM, 0);
+	char* server = mystrdup(luaL_optstring(l, 1, "Server"));
+	if(server == NULL) return luaL_error(l, "Invalid host! server variable was NULL!");
+	socks[socks_count].host_entry = gethostbyname(server);
+	if(socks[socks_count].host_entry == NULL){
+		return luaL_error(l, "Invalid host! gethostbyname failed!");
+	}
+	socks[socks_count].client.sin_family = AF_INET;
+	int port = luaL_optint(l, 2, 0);
+	if(port == NULL || port < 0 || port > 65535) return luaL_error(l, "Invalid port! port was null or out of range!");
+	socks[socks_count].client.sin_port = htons((unsigned short)port);
+	socks[socks_count].client.sin_addr.s_addr = *(unsigned long*) socks[socks_count].host_entry->h_addr;
+
+	socks[socks_count].error = connect(socks[socks_count].sock, (struct sockaddr*)&socks[socks_count].client, sizeof(socks[socks_count].client));
+
+	if(socks[socks_count].error != 0){
+		return luaL_error(l, "Cannot connect socket! connect failed!");
+	}
+	socks_count = socks_count+1;
+	char buffer[254];
+	sprintf(buffer, "Opened socket #%d.", socks_count-1);
+	strncpy(console_error, buffer, 254);
+	int result = socks_count-1;
+	lua_pushnumber(l, result);
+	return 0;
+}
+int luatpt_sendpacket(lua_State* l)
+{
+	if(allow_networking == 0) return luaL_error(l, "Networking is disabled for security! Enable it with toggle_networking(1)!");
+	int socket = (int)luaL_optint(l, 1, 0);
+	if(socket > socks_count || socket == NULL || socket < 0) return luaL_error(l, "Invalid socket!");
+	char* buffer = mystrdup(luaL_optstring(l, 2, "Buffer"));
+	if(buffer == NULL) return luaL_error(l, "Invalid buffer! buffer was NULL!");
+	socks[socket].error = send(socks[socket].sock, buffer, strlen(buffer), 0);
+	if(socks[socket].error == -1) return luaL_error(l, "Cannot send buffer! send failed!");
+	return 0;
+}
+int luatpt_recvpacket(lua_State* l)
+{
+	if(allow_networking == 0) return luaL_error(l, "Networking is disabled for security! Enable it with toggle_networking(1)!");
+	int socket = (int)luaL_optint(l, 1, 0);
+	if(socket > socks_count || socket == NULL || socket < 0) return luaL_error(l, "Invalid socket!");
+	char* data = (char*)malloc(1024*sizeof(char));
+	socks[socket].error = 1;
+	while(socks[socket].error != 0){
+		if(socks[socket].error == -1) return luaL_error(l, "Cannot read buffer! recv failed!");
+		socks[socket].error = recv(socks[socket].sock, data, 1000, 0);
+	}
+	if(data != NULL){
+		lua_pushstring(l, data);
+		free(data);
+	}
+	return 0;
+}
+
+int luatpt_closesocket(lua_State* l){
+	if(allow_networking == 0) return luaL_error(l, "Networking is disabled for security! Enable it with toggle_networking(1)!");
+	int socket = (int)luaL_optint(l, 1, 0);
+	if(socket > socks_count) return luaL_error(l, "Invalid socket!");
+	#ifdef WIN32
+		closesocket(socks[socket].sock);
+		WSACleanup();
+	#else
+		close(socks[socket].sock);
+	#endif
+	socks[socket].error = NULL;
+	#ifdef WIN32
+	socks[socket].wsaData = NULL;
+	socks[socket].sock = NULL;
+	#else
+	socks[socket].sock = NULL;
+	#endif
 	return 0;
 }
 #endif

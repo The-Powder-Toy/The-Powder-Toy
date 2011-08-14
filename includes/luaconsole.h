@@ -21,7 +21,24 @@ void luacon_close();
 int process_command_lua(pixel *vid_buf, char *console, char *console_error);
 
 int getPartIndex_curIdx;
-
+#ifdef WIN32
+#include <winsock2.h>
+#else
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#endif
+struct lua_sockets{
+	int error;
+	#ifdef WIN32
+	WSAData wsaData;
+	SOCKET sock;
+        #else
+        int sock;
+        #endif
+        struct sockaddr_in client;
+        struct hostent* host_entry;
+};
 //TPT Interface
 int luatpt_test(lua_State* l);
 int luatpt_drawtext(lua_State* l);
@@ -66,4 +83,9 @@ int luatpt_error(lua_State* l);
 int luatpt_heat(lua_State* l);
 int luatpt_setfire(lua_State* l);
 int luatpt_setdebug(lua_State* l);
+int luatpt_togglenetworking(lua_State* l);
+int luatpt_opensocket(lua_State* l);
+int luatpt_sendpacket(lua_State* l);
+int luatpt_recvpacket(lua_State* l);
+int luatpt_closesocket(lua_State* l);
 #endif
