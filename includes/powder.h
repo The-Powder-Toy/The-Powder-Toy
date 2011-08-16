@@ -23,7 +23,7 @@
 
 #define UI_WALLSTART 222
 #define UI_ACTUALSTART 122
-#define UI_WALLCOUNT 21
+#define UI_WALLCOUNT 23
 
 #define WL_WALLELEC	122
 #define WL_EWALL	123
@@ -47,6 +47,8 @@
 #define SPC_COOL 238
 #define SPC_VACUUM 239
 #define SPC_WIND 241
+#define SPC_PGRV 243
+#define SPC_NGRV 244
 
 #define WL_ALLOWGAS	140
 
@@ -933,6 +935,9 @@ static wall_type wtypes[] =
 	{PIXPACK(0x579777), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and solids, allows gasses"},
 	{PIXPACK(0x000000), PIXPACK(0x000000), -1, "Drag tool"},
 	{PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, "Gravity wall"},
+	{PIXPACK(0x0000BB), PIXPACK(0x000000), -1, "Postive gravity tool."},
+	{PIXPACK(0x000099), PIXPACK(0x000000), -1, "Negative gravity tool."},
+	
 };
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
