@@ -1598,7 +1598,6 @@ int main(int argc, char *argv[])
 #else
 int main(int argc, char *argv[])
 {
-	limitFPS = 60;
 	pixel *part_vbuf; //Extra video buffer
 	pixel *part_vbuf_store;
 #ifdef BETA
@@ -1608,7 +1607,7 @@ int main(int argc, char *argv[])
 	char heattext[256] = "";
 	char coordtext[128] = "";
 	int currentTime = 0;
-	int FPS = 0, pastFPS = 0, elapsedTime = 0; 
+	int FPS = 0, pastFPS = 0, elapsedTime = 0, limitFPS = 60;
 	void *http_ver_check, *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
 	//char console_error[255] = "";
