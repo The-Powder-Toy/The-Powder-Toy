@@ -3256,6 +3256,10 @@ void draw_parts(pixel *vid)
 					fire_g[y][x] = (int)((float)parts[i].life/100.0 * 50);
 					fire_b[y][x] = (int)((float)parts[i].life/100.0 * 255);
 						}
+						else
+						{
+						blendpixel(vid, nx, ny, 25,50,255, 255);
+						}
 				
 
 				}
