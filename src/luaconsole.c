@@ -55,6 +55,7 @@ void luacon_open(){
 		{"heat", &luatpt_heat},
 		{"setfire", &luatpt_setfire},
 		{"setdebug", &luatpt_setdebug},
+		{"setfpscap",&luatpt_setfpscap},
 		{NULL,NULL}
 	};
 
@@ -1054,5 +1055,11 @@ int luatpt_setdebug(lua_State* l)
 	int debug = luaL_optint(l, 1, 0);
 	debug_flags = debug;
 	return 0;
+}
+int luatpt_setfpscap(lua_State* l)
+{
+int fpscap = luaL_optint(l, 1, 0);
+limitFPS = fpscap;
+return 0;
 }
 #endif
