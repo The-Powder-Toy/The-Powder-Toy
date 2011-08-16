@@ -1125,8 +1125,9 @@ int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, i
 			}
 		}
 	}
-#endif
+
 	return rh;
+	#endif
 }
 
 //draws a rectange, (x,y) are the top left coords.

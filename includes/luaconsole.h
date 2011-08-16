@@ -66,4 +66,5 @@ int luatpt_error(lua_State* l);
 int luatpt_heat(lua_State* l);
 int luatpt_setfire(lua_State* l);
 int luatpt_setdebug(lua_State* l);
+int luatpt_setfpscap(lua_State* l);
 #endif

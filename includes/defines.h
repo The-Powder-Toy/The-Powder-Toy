@@ -156,6 +156,7 @@ extern int aheat_enable;
 extern int decorations_enable;
 extern int hud_enable;
 extern int debug_flags;
+int limitFPS;
 
 extern int active_menu;
 

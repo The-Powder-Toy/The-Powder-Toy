@@ -57,6 +57,11 @@ powder-64-sse3-opengl: $(SOURCES)
 	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE3) $(SOURCES) $(LFLAGS) -DLIN64 -lGL -lGLU -DOpenGL
 	strip $@
 	mv $@ build
+powder-sse3-opengl: $(SOURCES)
+	$(PYCOMMAND)
+	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE3) $(SOURCES) $(LFLAGS) -DLIN32 -lGL -lGLU -DOpenGL
+	strip $@
+	mv $@ build
 powder-64-sse3: $(SOURCES)
 	$(PYCOMMAND)
 	$(COMPILER) -m64 -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE3) $(SOURCES) $(LFLAGS) -DLIN64
