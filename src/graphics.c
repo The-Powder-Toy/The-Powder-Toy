@@ -3249,18 +3249,59 @@ void draw_parts(pixel *vid)
 				}
 				else if (t==PT_GBMB)
 				{
-					x = nx/CELL;
-					y = ny/CELL;
-					if (parts[i].tmp==1) {
-					fire_r[y][x] = (int)((float)parts[i].life/60.0 * 25);
-					fire_g[y][x] = (int)((float)parts[i].life/60.0 * 50);
-					fire_b[y][x] = (int)((float)parts[i].life/60.0 * 255);
+				if (parts[i].tmp==0) {
+						cr = PIXR(ptypes[t].pcolors);
+						cg = PIXG(ptypes[t].pcolors);
+						cb = PIXB(ptypes[t].pcolors);
+						if (cmode != CM_CRACK) {
+							int newx = 0;
+							float flicker = rand()%20;
+							float gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
+							blendpixel(vid, nx, ny, cr, cg, cb, (gradv*4)>255?255:(gradv*4) );
+							blendpixel(vid, nx+1, ny, cr, cg, cb, (gradv*2)>255?255:(gradv*2) );
+							blendpixel(vid, nx-1, ny, cr, cg, cb, (gradv*2)>255?255:(gradv*2) );
+							blendpixel(vid, nx, ny+1, cr, cg, cb, (gradv*2)>255?255:(gradv*2) );
+							blendpixel(vid, nx, ny-1, cr, cg, cb, (gradv*2)>255?255:(gradv*2) );
+							if (gradv>255) gradv=255;
+							blendpixel(vid, nx+1, ny-1, cr, cg, cb, gradv);
+							blendpixel(vid, nx-1, ny-1, cr, cg, cb, gradv);
+							blendpixel(vid, nx+1, ny+1, cr, cg, cb, gradv);
+							blendpixel(vid, nx-1, ny+1, cr, cg, cb, gradv);
+							for (newx = 1; gradv>0.5; newx++) {
+								addpixel(vid, nx+newx, ny, cr, cg, cb, gradv);
+								addpixel(vid, nx-newx, ny, cr, cg, cb, gradv);
+
+								addpixel(vid, nx, ny+newx, cr, cg, cb, gradv);
+								addpixel(vid, nx, ny-newx, cr, cg, cb, gradv);
+								gradv = gradv/1.2f;
+							}
+						} else {
+							blendpixel(vid, nx, ny, cr, cg, cb, 255);
 						}
-						else
-						{
-						blendpixel(vid, nx, ny, 25,50,255, 255);
+					}
+					else if (parts[i].tmp==1) {
+						cr = PIXR(ptypes[t].pcolors);
+						cg = PIXG(ptypes[t].pcolors);
+						cb = PIXB(ptypes[t].pcolors);
+						if (cmode != CM_CRACK) {
+							int newx = 0;
+							float flicker = rand()%20;
+							float gradv = 4*parts[i].life + flicker;
+							for (newx = 0; gradv>0.5; newx++) {
+								addpixel(vid, nx+newx, ny, cr, cg, cb, gradv);
+								addpixel(vid, nx-newx, ny, cr, cg, cb, gradv);
+
+								addpixel(vid, nx, ny+newx, cr, cg, cb, gradv);
+								addpixel(vid, nx, ny-newx, cr, cg, cb, gradv);
+								gradv = gradv/1.5f;
+							}
+						} else {
+							blendpixel(vid, nx, ny, cr, cg, cb, 255);
 						}
-				
+					}
+					else {
+						blendpixel(vid, nx, ny, 255, 255, 255, 255);
+					}
 
 				}
 				else if (ptypes[t].properties&PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
