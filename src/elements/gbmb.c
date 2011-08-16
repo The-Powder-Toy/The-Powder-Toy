@@ -9,12 +9,15 @@ int update_GBMB(UPDATE_FUNC_ARGS) {
 				   (r&0xFF)!=PT_GBMB&&
 				   (r&0xFF)!=PT_CLNE&&
 				   (r&0xFF)!=PT_PCLN&&
+				   (r&0xFF)!=PT_DMND&&
 				   !parts[i].tmp){					
-					parts[i].life=100;
+					parts[i].life=60;
 					parts[i].tmp = 1;
 				}
 				}
-	if(parts[i].life>1)
-	gravmap[y/CELL][x/CELL] = -20;
+	if(parts[i].life>20)
+	gravmap[y/CELL][x/CELL] = 20;
+	if(parts[i].life<20 && parts[i].life>=1)
+	gravmap[y/CELL][x/CELL] = -80;
 return 0;
 }

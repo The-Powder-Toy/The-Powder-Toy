@@ -3252,9 +3252,9 @@ void draw_parts(pixel *vid)
 					x = nx/CELL;
 					y = ny/CELL;
 					if (parts[i].tmp==1) {
-					fire_r[y][x] = (int)((float)parts[i].life/100.0 * 25);
-					fire_g[y][x] = (int)((float)parts[i].life/100.0 * 50);
-					fire_b[y][x] = (int)((float)parts[i].life/100.0 * 255);
+					fire_r[y][x] = (int)((float)parts[i].life/60.0 * 25);
+					fire_g[y][x] = (int)((float)parts[i].life/60.0 * 50);
+					fire_b[y][x] = (int)((float)parts[i].life/60.0 * 255);
 						}
 						else
 						{
