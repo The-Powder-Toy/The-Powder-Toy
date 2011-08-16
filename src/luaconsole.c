@@ -4,7 +4,7 @@
 #include <luaconsole.h>
 
 struct lua_sockets* socks;
-int socks_count;
+int socks_count = 0;
 
 lua_State *l;
 int allow_networking = 0;
@@ -1111,8 +1111,7 @@ int luatpt_opensocket(lua_State* l)
 	char buffer[254];
 	sprintf(buffer, "Opened socket #%d.", socks_count-1);
 	strncpy(console_error, buffer, 254);
-	int result = socks_count-1;
-	lua_pushnumber(l, result);
+	lua_pushinteger(l, (socks_count-1));
 	return 0;
 }
 int luatpt_sendpacket(lua_State* l)
@@ -1124,6 +1123,7 @@ int luatpt_sendpacket(lua_State* l)
 	if(buffer == NULL) return luaL_error(l, "Invalid buffer! buffer was NULL!");
 	socks[socket].error = send(socks[socket].sock, buffer, strlen(buffer), 0);
 	if(socks[socket].error == -1) return luaL_error(l, "Cannot send buffer! send failed!");
+	free(buffer);
 	return 0;
 }
 int luatpt_recvpacket(lua_State* l)
@@ -1139,6 +1139,10 @@ int luatpt_recvpacket(lua_State* l)
 	}
 	if(data != NULL){
 		lua_pushstring(l, data);
+		free(data);
+	}
+	else {
+		lua_pushstring(l, "(null)");
 		free(data);
 	}
 	return 0;
