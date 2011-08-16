@@ -757,11 +757,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 				t!=PT_STKM2&&t!=PT_PBCN)
 			)
 			{
-				if(!parts[pmap[y][x]>>8].ctype){
-					parts[pmap[y][x]>>8].ctype = t;
-					if (t==PT_LIFE && v<NGOLALT) 
-						parts[pmap[y][x]>>8].tmp = v;
-			}
+				parts[pmap[y][x]>>8].ctype = t;
+				if (t==PT_LIFE && v<NGOLALT) parts[pmap[y][x]>>8].tmp = v;
 			}
 			return -1;
 		}
