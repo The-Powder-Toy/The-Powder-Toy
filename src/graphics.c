@@ -3257,9 +3257,6 @@ void draw_parts(pixel *vid)
 					fire_b[y][x] = (int)((float)parts[i].life/100.0 * 255);
 						}
 				
-					else {
-						blendpixel(vid, nx, ny, 255, 255, 255, 255);
-					}
 
 				}
 				else if (ptypes[t].properties&PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
