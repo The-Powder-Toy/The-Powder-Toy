@@ -3247,6 +3247,21 @@ void draw_parts(pixel *vid)
 					}
 
 				}
+				else if (t==PT_GBMB)
+				{
+					x = nx/CELL;
+					y = ny/CELL;
+					if (parts[i].tmp==1) {
+					fire_r[y][x] = (int)((float)parts[i].life/100.0 * 25);
+					fire_g[y][x] = (int)((float)parts[i].life/100.0 * 50);
+					fire_b[y][x] = (int)((float)parts[i].life/100.0 * 255);
+						}
+				
+					else {
+						blendpixel(vid, nx, ny, 255, 255, 255, 255);
+					}
+
+				}
 				else if (ptypes[t].properties&PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
 				{
 					float frequency = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));

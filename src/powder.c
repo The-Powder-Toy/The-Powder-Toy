@@ -364,7 +364,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 		parts[e].y += y-ny;
 		pmap[(int)(parts[e].y+0.5f)][(int)(parts[e].x+0.5f)] = (e<<8)|parts[e].type;
 	}
-
+	if(parts[i].type==PT_GBMB&&parts[i].tmp==1)
+		return 0;
 	return 1;
 }
 
