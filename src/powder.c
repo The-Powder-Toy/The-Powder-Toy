@@ -690,7 +690,6 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
         if ((photons[y][x]>>PS)==i)
             photons[y][x] = 0;
     }
-    parts[i].dcolour = ptypes[t].pcolors;
     parts[i].actas = 0;
     parts[i].weight = ptypes[t].weight;
     parts[i].menusection = ptypes[t].menusection;
@@ -922,7 +921,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 
     if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
-    parts[i].dcolour = ptypes[t].pcolors;
+    parts[i].dcolour = 0;
     parts[i].actas = 0;
     parts[i].weight = ptypes[t].weight;
     parts[i].menusection = ptypes[t].menusection;

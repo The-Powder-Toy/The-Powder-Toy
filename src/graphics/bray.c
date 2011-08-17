@@ -31,7 +31,7 @@ int graphics_BRAY(GRAPHIC_FUNC_ARGS)
             blendpixel(vid, nx, ny, cr, cg, cb, trans);
         }
         else
-            blendpixel(vid, nx, ny, PIXR(parts[i].dcolour), PIXG(parts[i].dcolour), PIXB(parts[i].dcolour), trans);
+            blendpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), trans);
     }
     else if (parts[i].tmp==1)
     {
@@ -59,7 +59,7 @@ int graphics_BRAY(GRAPHIC_FUNC_ARGS)
             blendpixel(vid, nx, ny, cr, cg, cb, trans);
         }
         else
-            blendpixel(vid, nx, ny, PIXR(parts[i].dcolour), PIXG(parts[i].dcolour), PIXB(parts[i].dcolour), trans);
+            blendpixel(vid, nx, ny, PIXR(ptypes[t].pcolors), PIXG(ptypes[t].pcolors), PIXB(ptypes[t].pcolors), trans);
     }
     else if (parts[i].tmp==2)
     {
@@ -67,5 +67,5 @@ int graphics_BRAY(GRAPHIC_FUNC_ARGS)
         if (trans>255) trans = 255;
         blendpixel(vid, nx, ny, 255, 150, 50, trans);
     }
-    return 0;
+    return 1;
 }

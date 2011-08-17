@@ -23,9 +23,9 @@ int graphics_DEUT(GRAPHIC_FUNC_ARGS)
     }
     else
     {
-        cr = PIXR(parts[i].dcolour) + parts[i].life*1;
-        cg = PIXG(parts[i].dcolour) + parts[i].life*2;
-        cb = PIXB(parts[i].dcolour) + parts[i].life*4;
+        cr = PIXR(ptypes[t].pcolors) + parts[i].life*1;
+        cg = PIXG(ptypes[t].pcolors) + parts[i].life*2;
+        cb = PIXB(ptypes[t].pcolors) + parts[i].life*4;
         if (cr>=255)
             cr = 255;
         if (cg>=255)
@@ -35,5 +35,5 @@ int graphics_DEUT(GRAPHIC_FUNC_ARGS)
         blendpixel(vid, nx, ny, cr, cg, cb, 255);
 
     }
-    return 0;
+    return 1;
 }

@@ -2,14 +2,15 @@
 
 int graphics_PLSM(GRAPHIC_FUNC_ARGS)
 {
-    int fr,fg,fb,cr,cg,cb,x,y,t;
+    int fr,fg,fb,cr,cg,cb,x,y,t,ct;
     t = parts[i].type;
+    ct = parts[i].ctype;
     uint8 R,G,B;
     if (parts[i].ctype == PT_NBLE || parts[i].ctype == PT_ARGN || parts[i].ctype == PT_HLIM || parts[i].ctype == PT_RDON || parts[i].ctype == PT_XNON || parts[i].ctype == PT_KPTN)
     {
-        cr = parts[i].r;
-        cg = parts[i].g;
-        cb = parts[i].b;
+        cr = PIXR(ptypes[ct].pcolors);
+        cg = PIXG(ptypes[ct].pcolors);
+        cb = PIXB(ptypes[ct].pcolors);
     }
     else
     {
@@ -32,9 +33,9 @@ int graphics_PLSM(GRAPHIC_FUNC_ARGS)
         }
         else
         {
-            R = parts[i].r;
-            G = parts[i].g;
-            B = parts[i].b;
+            R = PIXR(ptypes[ct].pcolors);
+            G = PIXG(ptypes[ct].pcolors);
+            B = PIXB(ptypes[ct].pcolors);
             cr = R/8;
             cg = G/8;
             cb = B/8;
@@ -69,5 +70,5 @@ int graphics_PLSM(GRAPHIC_FUNC_ARGS)
         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
     }
-    return 0;
+    return 1;
 }

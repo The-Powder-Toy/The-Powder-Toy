@@ -74,18 +74,12 @@ int update_SPRK(UPDATE_FUNC_ARGS)
         part_change_type(i,x,y,PT_PLSM);
         parts[i].ctype = PT_NBLE;
         parts[i].temp = R_TEMP+273.15f;
-        parts[i].r = 235;
-        parts[i].g = 73;
-        parts[i].b = 23;
     }
     else if (ct==PT_ARGN&&parts[i].life<=1)
     {
         parts[i].life = rand()%150+50;
         part_change_type(i,x,y,PT_PLSM);
         parts[i].ctype = PT_ARGN;
-        parts[i].r = 227;
-        parts[i].g = 73;
-        parts[i].b = 206;
         parts[i].temp = R_TEMP+273.15f;
     }
     else if (ct==PT_XNON&&parts[i].life<=1)
@@ -93,9 +87,6 @@ int update_SPRK(UPDATE_FUNC_ARGS)
         parts[i].life = rand()%150+50;
         part_change_type(i,x,y,PT_PLSM);
         parts[i].ctype = PT_XNON;
-        parts[i].r = 237;
-        parts[i].g = 216;
-        parts[i].b = 221;
         parts[i].temp = R_TEMP+273.15f;
     }
     else if (ct==PT_HLIM&&parts[i].life<=1)
@@ -103,9 +94,6 @@ int update_SPRK(UPDATE_FUNC_ARGS)
         parts[i].life = rand()%150+50;
         part_change_type(i,x,y,PT_PLSM);
         parts[i].ctype = PT_HLIM;
-        parts[i].r = 255;
-        parts[i].g = 201;
-        parts[i].b = 77;
         parts[i].temp = R_TEMP+273.15f;
     }
     else if (ct==PT_KPTN&&parts[i].life<=1)
@@ -113,9 +101,6 @@ int update_SPRK(UPDATE_FUNC_ARGS)
         parts[i].life = rand()%150+50;
         part_change_type(i,x,y,PT_PLSM);
         parts[i].ctype = PT_KPTN;
-        parts[i].r = 237;
-        parts[i].g = 227;
-        parts[i].b = 213;
         parts[i].temp = R_TEMP+273.15f;
     }
     else if (ct==PT_RDON&&parts[i].life<=1)
@@ -123,9 +108,6 @@ int update_SPRK(UPDATE_FUNC_ARGS)
         parts[i].life = rand()%150+50;
         part_change_type(i,x,y,PT_PLSM);
         parts[i].ctype = PT_RDON;
-        parts[i].r = 8;
-        parts[i].g = 163;
-        parts[i].b = 44;
         parts[i].temp = R_TEMP+273.15f;
     }
     else if (ct==PT_IRON)

@@ -64,6 +64,7 @@ void luacon_open()
         {"get_selected_particle", &luatpt_getSelectedParticle},
         {"getscript", &luatpt_getscript},
         {"set_glow", &luatpt_set_glow},
+        {"setfire", &luatpt_setfire},
         {NULL,NULL}
     };
 
@@ -502,21 +503,6 @@ int luatpt_set_property(lua_State* l)
     {
         offset = offsetof(particle, y);
         format = 2;
-    }
-    else if (strcmp(prop,"r")==0)
-    {
-        offset = offsetof(particle, r);
-        format = 1;
-    }
-    else if (strcmp(prop,"g")==0)
-    {
-        offset = offsetof(particle, g);
-        format = 1;
-    }
-    else if (strcmp(prop,"b")==0)
-    {
-        offset = offsetof(particle, b);
-        format = 1;
     }
     else if (strcmp(prop,"collision")==0)
     {
@@ -1427,7 +1413,7 @@ int luatpt_heat(lua_State* l)
 int luatpt_cmode_set(lua_State* l)
 {
     int aheatstate;
-    aheatstate = luaL_optint(l, 1, CM_COUNT);
+    aheatstate = luaL_optint(l, 1, CM_FIRE);
     cmode = aheatstate;
     return 0;
 }
@@ -1525,5 +1511,12 @@ int luatpt_set_glow(lua_State* l)
     else
         return luaL_error(l, "Invalid Glow");
     return 0;
+}
+int luatpt_setfire(lua_State* l)
+{
+  int firesize = luaL_optint(l, 2, 4);
+  float fireintensity = (float)luaL_optnumber(l, 1, 1.0f);
+  prepare_alpha(firesize, fireintensity);
+  return 0;
 }
 #endif

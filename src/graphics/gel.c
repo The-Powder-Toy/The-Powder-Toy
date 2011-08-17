@@ -37,5 +37,5 @@ int fg,fb,fr,x,y;
         blendpixel(vid, nx+1, ny+1, R, G, B, 112);
         blendpixel(vid, nx-1, ny+1, R, G, B, 112);
     }
-    return 0;
+    return 1;
 }

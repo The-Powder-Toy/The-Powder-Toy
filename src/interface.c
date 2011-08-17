@@ -89,7 +89,7 @@ void menu_count(void)//puts the number of elements in each section into .itemcou
     int i=0;
     msections[SC_LIFE].itemcount = NGOLALT;
     msections[SC_WALL].itemcount = UI_WALLCOUNT-4;
-    msections[SC_SPECIAL].itemcount = 4;
+    //msections[SC_SPECIAL].itemcount = 5;
     for (i=0; i<PT_NUM; i++)
     {
         msections[ptypes[i].menusection].itemcount+=ptypes[i].menu;

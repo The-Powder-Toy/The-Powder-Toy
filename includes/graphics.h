@@ -49,10 +49,10 @@ extern pixel *fire_bg;
 extern pixel *pers_bg;
 
 //pointers
-int graphics_NCWS(GRAPHIC_FUNC_ARGS);
+int graphics_effect_GLOW(GRAPHIC_FUNC_ARGS);
+int graphics_effect_GAS(GRAPHIC_FUNC_ARGS);
 int graphics_NEUT(GRAPHIC_FUNC_ARGS);
 int graphics_ACID(GRAPHIC_FUNC_ARGS);
-int graphics_GEL(GRAPHIC_FUNC_ARGS);
 int graphics_DEUT(GRAPHIC_FUNC_ARGS);
 int graphics_BRAY(GRAPHIC_FUNC_ARGS);
 int graphics_CLOUD(GRAPHIC_FUNC_ARGS);
@@ -61,7 +61,6 @@ int graphics_PLSM(GRAPHIC_FUNC_ARGS);
 int graphics_FIRW(GRAPHIC_FUNC_ARGS);
 int graphics_HFLM(GRAPHIC_FUNC_ARGS);
 int graphics_DLAY(GRAPHIC_FUNC_ARGS);
-int graphics_O3(GRAPHIC_FUNC_ARGS);
 int graphics_PHOT(GRAPHIC_FUNC_ARGS);
 int graphics_SOAP(GRAPHIC_FUNC_ARGS);
 
@@ -159,7 +158,7 @@ void render_signs(pixel *vid_buf);
 
 void render_fire(pixel *dst);
 
-void prepare_alpha(void);
+void prepare_alpha(int size, float intensity);
 
 void draw_image(pixel *vid, pixel *img, int x, int y, int w, int h, int a);
 

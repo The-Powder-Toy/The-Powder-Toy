@@ -1935,7 +1935,7 @@ old_ver_len = textwidth((char*)old_ver_msg);
     save_presets(0);
 
     make_kernel();
-    prepare_alpha();
+    prepare_alpha(4, 1.0f);
 
     stamp_init();
 
@@ -2870,13 +2870,13 @@ if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
                 if (DEBUG_MODE)
                 {
                     sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
-                    sprintf(coordtext, "#%d, X:%d Y:%d", cr>>PS, x/sdl_scale, y/sdl_scale);
+                    sprintf(coordtext, "#%d, X:%d Y:%d tmp:%d tmp2:%d", cr>>PS, x/sdl_scale, y/sdl_scale, parts[cr>>PS].tmp, parts[cr>>PS].tmp2);
                 }
                 else
                 {
                     //Change the name of a particle realtime
 #ifdef BETA
-                    sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d Tmp: %d", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life, parts[cr>>PS].tmp);
+                    sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f, parts[cr>>PS].life);
 #else
                     sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>PS].temp-273.15f);
 #endif

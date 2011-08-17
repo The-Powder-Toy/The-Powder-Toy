@@ -38,5 +38,5 @@ int graphics_ACID(GRAPHIC_FUNC_ARGS)
         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 112);
         blendpixel(vid, nx-1, ny+1, cr, cg, cb, 112);
     }
-    return 0;
+    return 1;
 }

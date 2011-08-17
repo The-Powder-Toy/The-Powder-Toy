@@ -41,5 +41,5 @@ int graphics_HFLM(GRAPHIC_FUNC_ARGS)
         blendpixel(vid, nx+1, ny+1, cr, cg, cb, 32);
         blendpixel(vid, nx-1, ny-1, cr, cg, cb, 32);
     }
-    return 0;
+    return 1;
 }
