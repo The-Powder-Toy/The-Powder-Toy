@@ -2,9 +2,8 @@
 
 int update_QRTZ(UPDATE_FUNC_ARGS) {
 	int r, tmp, trade, rx, ry, np, t;
-	int self = parts[i].type;
 	t = parts[i].type;
-	if (t == self)
+	if (t == PT_QRTZ)
 	{
 		parts[i].pavg[0] = parts[i].pavg[1];
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
@@ -20,11 +19,11 @@ int update_QRTZ(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>PS)>=NPART || !r)
+					if ((r>>8)>=NPART || !r)
 						continue;
-					else if (parts[r>>PS].type==PT_SLTW && (1>rand()%2500))
+					else if ((r&0xFF)==PT_SLTW && (1>rand()%2500))
 					{
-						kill_part(r>>PS);
+						kill_part(r>>8);
 						parts[i].ctype ++;
 					}
 				}
@@ -38,9 +37,9 @@ int update_QRTZ(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)<NPART && !r && parts[i].ctype!=0)
+				if ((r>>8)<NPART && !r && parts[i].ctype!=0)
 				{
-					np = create_part(-1,x+rx,y+ry,self);
+					np = create_part(-1,x+rx,y+ry,PT_QRTZ);
 					if (np>-1)
 					{
 						parts[np].tmp = parts[i].tmp;
@@ -70,20 +69,20 @@ int update_QRTZ(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)>=NPART || !r)
+				if ((r>>8)>=NPART || !r)
 					continue;
-				if (parts[r>>PS].type==t && (parts[i].ctype>parts[r>>PS].ctype) && parts[r>>PS].ctype>=0 )//diffusion
+				if ((r&0xFF)==t && (parts[i].ctype>parts[r>>8].ctype) && parts[r>>8].ctype>=0 )//diffusion
 				{
-					tmp = parts[i].ctype - parts[r>>PS].ctype;
+					tmp = parts[i].ctype - parts[r>>8].ctype;
 					if (tmp ==1)
 					{
-						parts[r>>PS].ctype ++;
+						parts[r>>8].ctype ++;
 						parts[i].ctype --;
 						break;
 					}
 					if (tmp>0)
 					{
-						parts[r>>PS].ctype += tmp/2;
+						parts[r>>8].ctype += tmp/2;
 						parts[i].ctype -= tmp/2;
 						break;
 					}

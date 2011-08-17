@@ -33,12 +33,9 @@ typedef struct menu_wall menu_wall;
 #define SC_NUCLEAR 8
 #define SC_SPECIAL 9
 #define SC_LIFE 10
-#define SC_STICKMAN 11
-#define SC_NATURE 12
-#define SC_SPACE 13
-#define SC_DRAWING 14
-#define SC_MISC 15
-#define SC_TOTAL 16
+#define SC_CRACKER 13
+#define SC_CRACKER2 14
+#define SC_TOTAL 11
 
 static menu_section msections[] = //doshow does not do anything currently.
 {
@@ -53,29 +50,27 @@ static menu_section msections[] = //doshow does not do anything currently.
 	{"\xC6", "Radioactive", 0, 1},
 	{"\xCC", "Special", 0, 1},
 	{"\xD2", "Life", 0, 1},
-    {"\xDB", "Stickman", 0, 1},
-    {"\xD7", "Nature", 0, 1},
-    {"\xD9", "Space", 0, 1},
-	{"\xD8", "Drawing", 0, 1},
-	{"\xDA", "Miscellaneous", 0, 0},
+	{"\xD2", "More Life", 0, 1},
+	{"\xC8", "", 0, 0},
+	{"\xC8", "Cracker", 0, 0},
+	{"\xC8", "Cracker!", 0, 0},
 };
 
 static menu_section colorsections[] = //doshow does not do anything currently.
 {
- 	{"\xD1", "Colors", 9, 1},
- 	{"\xC5", "Tools", 0, 1},
+	{"\xD1", "Colors", 7, 1},
+	{"\xC5", "Tools", 0, 1},
 };
+
 static menu_wall colorlist[] =
 {
-  {PIXPACK(0xFF0000), "Red"},
-  {PIXPACK(0x00FF00), "Green"},
-  {PIXPACK(0x0000FF), "Blue"},
-  {PIXPACK(0xFFFF00), "Yellow"},
-  {PIXPACK(0xFF00FF), "Pink"},
-  {PIXPACK(0x00FFFF), "Cyan"},
-  {PIXPACK(0xFFFFFF), "White"},
-  {PIXPACK(0xFF8000), "Orange"},
-  {PIXPACK(0xD900FF), "Purple"},
+	{PIXPACK(0xFF0000), "Red"},
+	{PIXPACK(0x00FF00), "Green"},
+	{PIXPACK(0x0000FF), "Blue"},
+	{PIXPACK(0xFFFF00), "Yellow"},
+	{PIXPACK(0xFF00FF), "Pink"},
+	{PIXPACK(0x00FFFF), "Cyan"},
+	{PIXPACK(0xFFFFFF), "White"},
 };
 
 struct ui_edit
@@ -134,15 +129,6 @@ struct ui_richtext
 	char actiontext[6][256];
 };
 typedef struct ui_richtext ui_richtext;
-struct modlist_e
-{
-    char *filename;
-    void *next;
-    void *prev;
-};
-typedef struct modlist_e modlist_e;
-
-modlist_e *get_local_mods(char *folder, char *search, int *results_ret);
 
 int SLALT;
 extern SDLMod sdl_mod;
@@ -163,9 +149,9 @@ extern char svf_pass[64];
 extern char svf_user_id[64];
 extern char svf_session_id[64];
 
+
 extern char svf_filename[255];
 extern int svf_fileopen;
-
 extern int svf_open;
 extern int svf_own;
 extern int svf_myvote;
@@ -294,8 +280,6 @@ void open_link(char *uri);
 int report_ui(pixel *vid_buf, char *save_id);
 
 char *console_ui(pixel *vid_buf, char error[255],char console_more);
-
-void lua_preset_ui(pixel *vid_buf);
 
 void simulation_ui(pixel *vid_buf);
 

@@ -11,7 +11,7 @@ void pushParticle(int i, int count, int original)
 	x = (int)(parts[i].x+0.5f);
 	y = (int)(parts[i].y+0.5f);
 	if( !(parts[i].tmp&0x200) )
-	{
+	{ 
 		//normal random push
 		rndstore = rand();
 		// RAND_MAX is at least 32767 on all platforms i.e. pow(8,5)-1
@@ -25,20 +25,20 @@ void pushParticle(int i, int count, int original)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)>=NPART || !r)
+				if ((r>>8)>=NPART || !r)
 					continue;
-				else if (parts[r>>PS].type==PT_PIPE && parts[r>>PS].ctype!=notctype && (parts[r>>PS].tmp&0xFF)==0)
+				else if ((r&0xFF)==PT_PIPE && parts[r>>8].ctype!=notctype && (parts[r>>8].tmp&0xFF)==0)
 				{
-					parts[r>>PS].tmp = (parts[r>>PS].tmp&~0xFF) | (parts[i].tmp&0xFF);
-					parts[r>>PS].temp = parts[i].temp;
-					parts[r>>PS].flags = parts[i].flags;
-					parts[r>>PS].pavg[0] = parts[i].pavg[0];
-					parts[r>>PS].pavg[1] = parts[i].pavg[1];
-					if (r>>PS > original)
-						parts[r>>PS].tmp2 = 1;//skip particle push, normalizes speed
+					parts[r>>8].tmp = (parts[r>>8].tmp&~0xFF) | (parts[i].tmp&0xFF);
+					parts[r>>8].temp = parts[i].temp;
+					parts[r>>8].flags = parts[i].flags;
+					parts[r>>8].pavg[0] = parts[i].pavg[0];
+					parts[r>>8].pavg[1] = parts[i].pavg[1];
+					if (r>>8 > original)
+						parts[r>>8].tmp2 = 1;//skip particle push, normalizes speed
 					parts[i].tmp &= ~0xFF;
 					count++;
-					pushParticle(r>>PS,count,original);
+					pushParticle(r>>8,count,original);
 				}
 			}
 		}
@@ -47,21 +47,21 @@ void pushParticle(int i, int count, int original)
 	{
 		int coords = 7 - (parts[i].tmp>>10);
 		r = pmap[y+ pos_1_ry[coords]][x+ pos_1_rx[coords]];
-		if ((r>>PS)>=NPART || !r)
+		if ((r>>8)>=NPART || !r)
 		{
 		}
-		else if (parts[r>>PS].type==PT_PIPE && parts[r>>PS].ctype!=notctype && (parts[r>>PS].tmp&0xFF)==0)
+		else if ((r&0xFF)==PT_PIPE && parts[r>>8].ctype!=notctype && (parts[r>>8].tmp&0xFF)==0)
 		{
-			parts[r>>PS].tmp = (parts[r>>PS].tmp&~0xFF) | (parts[i].tmp&0xFF);
-			parts[r>>PS].temp = parts[i].temp;
-			parts[r>>PS].flags = parts[i].flags;
-			parts[r>>PS].pavg[0] = parts[i].pavg[0];
-			parts[r>>PS].pavg[1] = parts[i].pavg[1];
-			if (r>>PS > original)
-				parts[r>>PS].tmp2 = 1;//skip particle push, normalizes speed
+			parts[r>>8].tmp = (parts[r>>8].tmp&~0xFF) | (parts[i].tmp&0xFF);
+			parts[r>>8].temp = parts[i].temp;
+			parts[r>>8].flags = parts[i].flags;
+			parts[r>>8].pavg[0] = parts[i].pavg[0];
+			parts[r>>8].pavg[1] = parts[i].pavg[1];
+			if (r>>8 > original)
+				parts[r>>8].tmp2 = 1;//skip particle push, normalizes speed
 			parts[i].tmp &= ~0xFF;
 			count++;
-			pushParticle(r>>PS,count,original);
+			pushParticle(r>>8,count,original);
 		}
 
 
@@ -85,24 +85,24 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r>>PS)>=NPART || !r)
+						if ((r>>8)>=NPART || !r)
 							continue;
-						if (parts[r>>PS].type==PT_PIPE&&parts[r>>PS].ctype==1)
+						if ((r&0xFF)==PT_PIPE&&parts[r>>8].ctype==1)
 						{
-							parts[r>>PS].ctype = (((parts[i].ctype)%3)+2);//reverse
-							parts[r>>PS].life = 6;
+							parts[r>>8].ctype = (((parts[i].ctype)%3)+2);//reverse
+							parts[r>>8].life = 6;
 							if ( parts[i].tmp&0x100)//is a single pixel pipe
 							{
-								parts[r>>PS].tmp |= 0x200;//will transfer to a single pixel pipe
-								parts[r>>PS].tmp |= count<<10;//coords of where it came from
+								parts[r>>8].tmp |= 0x200;//will transfer to a single pixel pipe
+								parts[r>>8].tmp |= count<<10;//coords of where it came from
 							}
 							neighborcount ++;
-							lastneighbor = r>>PS;
+							lastneighbor = r>>8;
 						}
-						else if (parts[r>>PS].type==PT_PIPE&&parts[r>>PS].ctype!=(((parts[i].ctype-1)%3)+2))
+						else if ((r&0xFF)==PT_PIPE&&parts[r>>8].ctype!=(((parts[i].ctype-1)%3)+2))
 						{
 							neighborcount ++;
-							lastneighbor = r>>PS;
+							lastneighbor = r>>8;
 						}
 						count++;
 					}
@@ -130,7 +130,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>PS)>=NPART)
+					if ((r>>8)>=NPART)
 						return 0;
 					if (surround_space && !r && (parts[i].tmp&0xFF)!=0)  //creating at end
 					{
@@ -147,12 +147,12 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 					//try eating particle at entrance
 					else if ((parts[i].tmp&0xFF) == 0 && (ptypes[r&0xFF].falldown!= 0 || ptypes[r&0xFF].state == ST_GAS))
 					{
-						parts[i].tmp =  (parts[i].tmp&~0xFF) | parts[r>>PS].type;
-						parts[i].temp = parts[r>>PS].temp;
-						parts[i].flags = parts[r>>PS].life;
-						parts[i].pavg[0] = parts[r>>PS].tmp;
-						parts[i].pavg[1] = parts[r>>PS].ctype;
-						kill_part(r>>PS);
+						parts[i].tmp =  (parts[i].tmp&~0xFF) | parts[r>>8].type;
+						parts[i].temp = parts[r>>8].temp;
+						parts[i].flags = parts[r>>8].life;
+						parts[i].pavg[0] = parts[r>>8].tmp;
+						parts[i].pavg[1] = parts[r>>8].ctype;
+						kill_part(r>>8);
 					}
 				}
 			}
@@ -213,7 +213,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if (parts[r>>PS].type==PT_PIPE && parts[i].ctype==1 && parts[i].life )
+						if ((r&0xFF)==PT_PIPE && parts[i].ctype==1 && parts[i].life )
 							issingle = 0;
 					}
 					if (issingle)

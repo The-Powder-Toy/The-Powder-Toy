@@ -2,7 +2,6 @@
 
 int update_BOYL(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
-	int self = parts[i].type;
 	if (pv[y/CELL][x/CELL]<(parts[i].temp/100))
 		pv[y/CELL][x/CELL] += 0.001f*((parts[i].temp/100)-pv[y/CELL][x/CELL]);
 	if (y+CELL<YRES && pv[y/CELL+1][x/CELL]<(parts[i].temp/100))
@@ -27,15 +26,15 @@ int update_BOYL(UPDATE_FUNC_ARGS) {
 			        x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)>=NPART || !r)
+				if ((r>>8)>=NPART || !r)
 					continue;
-				if (parts[r>>PS].type==PT_WATR && 1>rand()%30)
+				if ((r&0xFF)==PT_WATR && 1>rand()%30)
 				{
-					part_change_type(r>>PS,x+rx,y+ry,PT_FOG);
+					part_change_type(r>>8,x+rx,y+ry,PT_FOG);
 				}
-				else if (parts[r>>PS].type==PT_O2 && 1>rand()%9)
+				else if ((r&0xFF)==PT_O2 && 1>rand()%9)
 				{
-					kill_part(r>>PS);
+					kill_part(r>>8);
 					part_change_type(i,x,y,PT_WATR);
 					pv[y/CELL][x/CELL] += 4.0;
 				}

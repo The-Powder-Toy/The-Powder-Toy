@@ -10,7 +10,6 @@
    PRTO does +/-1 to the count, so it doesn't jam as easily
 */
 int update_PRTI(UPDATE_FUNC_ARGS) {
-    int self = parts[i].type;
 	int r, nnx, rx, ry, fe = 0;
 	int count =0;
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
@@ -24,28 +23,28 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 				count ++;
 				if (!r)
 					fe = 1;
-				if ((r>>PS)>=NPART)
+				if ((r>>8)>=NPART)
 					continue;
-				if (!r || parts[r>>PS].type==self || parts[r>>PS].type==PT_PRTO || (parts[r>>PS].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && parts[r>>PS].type!=PT_SPRK))
+				if (!r || (r&0xFF)==PT_PRTI || (r&0xFF)==PT_PRTO || (ptypes[r&0xFF].falldown== 0 && ptypes[r&0xFF].state != ST_GAS && (r&0xFF)!=PT_SPRK))
 				{
 					r = photons[y+ry][x+rx];
-					if ((r>>PS)>=NPART)
+					if ((r>>8)>=NPART)
 						continue;
-					if (!r || parts[r>>PS].type==self || parts[r>>PS].type==PT_PRTO || (parts[r>>PS].falldown== 0 && ptypes[r&TYPE].state != ST_GAS && parts[r>>PS].type!=PT_SPRK))
+					if (!r || (r&0xFF)==PT_PRTI || (r&0xFF)==PT_PRTO || (ptypes[r&0xFF].falldown== 0 && ptypes[r&0xFF].state != ST_GAS && (r&0xFF)!=PT_SPRK))
 						continue;
 				}
 
-				if (parts[r>>PS].type == PT_SOAP)
-					detach(r>>PS);
+				if ((r&0xFF) == PT_SOAP)
+					detach(r>>8);
 
 				for ( nnx=0; nnx<80; nnx++)
 					if (!portalp[parts[i].tmp][count-1][nnx].type)
 					{
-						portalp[parts[i].tmp][count-1][nnx] = parts[r>>PS];
-						if (parts[r>>PS].type==PT_SPRK)
-							part_change_type(r>>PS,x+rx,y+ry,parts[r>>PS].ctype);
+						portalp[parts[i].tmp][count-1][nnx] = parts[r>>8];
+						if ((r&0xFF)==PT_SPRK)
+							part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
 						else
-							kill_part(r>>PS);
+							kill_part(r>>8);
 						fe = 1;
 						break;
 					}

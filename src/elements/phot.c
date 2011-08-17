@@ -2,10 +2,9 @@
 
 int update_PHOT(UPDATE_FUNC_ARGS) {
 	int r, rt, rx, ry;
-	int self = parts[i].type;
 	float rr, rrr;
 	parts[i].pavg[0] = x;
-    parts[i].pavg[1] = y;
+	parts[i].pavg[1] = y;
 	if (!parts[i].ctype) {
 		kill_part(i);
 		return 1;
@@ -15,37 +14,37 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 		for (ry=-1; ry<2; ry++)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry)) {
 				r = pmap[y+ry][x+rx];
-				if ((r>>PS)>=NPART || !r)
+				if ((r>>8)>=NPART || !r)
 					continue;
-				if (parts[r>>PS].type==PT_ISOZ && 5>(rand()%2000))
+				if ((r&0xFF)==PT_ISOZ && 5>(rand()%2000))
 				{
 					parts[i].vx *= 0.90;
 					parts[i].vy *= 0.90;
-					create_part(r>>PS, x+rx, y+ry, self);
+					create_part(r>>8, x+rx, y+ry, PT_PHOT);
 					rrr = (rand()%360)*3.14159f/180.0f;
 					rr = (rand()%128+128)/127.0f;
-					parts[r>>PS].vx = rr*cosf(rrr);
-					parts[r>>PS].vy = rr*sinf(rrr);
+					parts[r>>8].vx = rr*cosf(rrr);
+					parts[r>>8].vy = rr*sinf(rrr);
 					pv[y/CELL][x/CELL] -= 15.0f * CFDS;
 				}
-				if (parts[r>>PS].type==PT_ISZS && 5>(rand()%2000))
+				if ((r&0xFF)==PT_ISZS && 5>(rand()%2000))
 				{
 					parts[i].vx *= 0.90;
 					parts[i].vy *= 0.90;
-					create_part(r>>PS, x+rx, y+ry, self);
+					create_part(r>>8, x+rx, y+ry, PT_PHOT);
 					rr = (rand()%228+128)/127.0f;
 					rrr = (rand()%360)*3.14159f/180.0f;
-					parts[r>>PS].vx = rr*cosf(rrr);
-					parts[r>>PS].vy = rr*sinf(rrr);
+					parts[r>>8].vx = rr*cosf(rrr);
+					parts[r>>8].vy = rr*sinf(rrr);
 					pv[y/CELL][x/CELL] -= 15.0f * CFDS;
 				}
 			}
-	r = pmap[y][x];
-	rt = r&TYPE;
-	if (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN) {
-		if (!parts[r>>PS].ctype)
-			parts[r>>PS].ctype = self;
-	}
+	//r = pmap[y][x];
+	//rt = r&0xFF;
+	/*if (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN || rt==PT_PBCN) {
+		if (!parts[r>>8].ctype)
+			parts[r>>8].ctype = PT_PHOT;
+	}*/
 
 	return 0;
 }

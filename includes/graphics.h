@@ -48,22 +48,6 @@ extern unsigned int fire_alpha[CELL*3][CELL*3];
 extern pixel *fire_bg;
 extern pixel *pers_bg;
 
-//pointers
-int graphics_effect_GLOW(GRAPHIC_FUNC_ARGS);
-int graphics_effect_GAS(GRAPHIC_FUNC_ARGS);
-int graphics_NEUT(GRAPHIC_FUNC_ARGS);
-int graphics_ACID(GRAPHIC_FUNC_ARGS);
-int graphics_DEUT(GRAPHIC_FUNC_ARGS);
-int graphics_BRAY(GRAPHIC_FUNC_ARGS);
-int graphics_CLOUD(GRAPHIC_FUNC_ARGS);
-int graphics_GLOW(GRAPHIC_FUNC_ARGS);
-int graphics_PLSM(GRAPHIC_FUNC_ARGS);
-int graphics_FIRW(GRAPHIC_FUNC_ARGS);
-int graphics_HFLM(GRAPHIC_FUNC_ARGS);
-int graphics_DLAY(GRAPHIC_FUNC_ARGS);
-int graphics_PHOT(GRAPHIC_FUNC_ARGS);
-int graphics_SOAP(GRAPHIC_FUNC_ARGS);
-
 void draw_rgba_image(pixel *vid, unsigned char *data, int x, int y, float a);
 
 void *ptif_pack(pixel *src, int w, int h, int *result_size);
@@ -97,6 +81,8 @@ void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
 int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
 
 int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a);
+
+int drawtext_outline(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a, int or, int og, int ob, int oa);
 
 int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, int b, int a);
 
@@ -142,6 +128,8 @@ void xor_line(int x1, int y1, int x2, int y2, pixel *vid);
 
 void xor_rect(pixel *vid, int x, int y, int w, int h);
 
+void blend_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, int a);
+
 void draw_parts(pixel *vid);
 
 void draw_walls(pixel *vid);
@@ -175,6 +163,8 @@ int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int p
 void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry);
 
 int sdl_open(void);
+
+int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy);
 
 #ifdef OpenGL
 void Enable2D ();

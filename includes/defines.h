@@ -6,23 +6,16 @@
 #else
 #define PATH_SEP "/"
 #endif
-
+ 
 //VersionInfoStart
-#define ME4502_MAJOR_VERSION 3
-#define ME4502_VERSION 0
-#define SAVE_VERSION 55
+#define SAVE_VERSION 56
 #define MINOR_VERSION 0
-#define BETA_VERSION 0
-//#define BETA
+#define BETA
 //VersionInfoEnd
 
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 
 #define SERVER "powdertoy.co.uk"
-
-//Languages
-#define ENGLISH
-//#define INDONESIAN
 
 #define LOCAL_SAVE_DIR "Saves"
 
@@ -57,13 +50,8 @@
 
 #define GRAV_DIFF
 
-//#define OpenGL
-
 #define MAXSIGNS 16
 #define TAG_MAX 256
-
-#define PS 12 //the particle number shift that also determines element limit
-#define TYPE 0xFFF//(int)pow(2,PS)-1 //where the type of the particle is stored in pmap
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
@@ -73,9 +61,6 @@ extern unsigned char ZSIZE;
 #define CELL    4
 #define ISTP    (CELL/2)
 #define CFDS	(4.0f/CELL)
-
-#define MAXVELOCITY 512.0f
-#define MINVELOCITY -512.0f
 
 #define AIR_TSTEPP 0.3f
 #define AIR_TSTEPV 0.4f
@@ -106,6 +91,7 @@ extern unsigned char ZSIZE;
 #define TRI_BRUSH 2
 #define BRUSH_NUM 3
 
+
 //#define GRAVFFT
 //#define LUACONSOLE
 //#define PYCONSOLE
@@ -133,7 +119,6 @@ typedef unsigned int pixel;
 #ifdef WIN32
 #define strcasecmp stricmp
 #endif
-
 #if defined(WIN32) && !defined(__GNUC__)
 #define fmin min
 #define fminf min
@@ -144,13 +129,15 @@ typedef unsigned int pixel;
 #define SDEUT
 //#define REALHEAT
 
+#define DEBUG_PARTS		0x0001
+#define DEBUG_PARTCOUNT	0x0002
+#define DEBUG_DRAWTOOL	0x0004
+
 typedef unsigned char uint8;
 
 extern int amd;
 
 extern int FPSB;
-
-extern int fire_intensity;
 
 int NUM_PARTS;
 int GRAV;
@@ -163,19 +150,17 @@ int GRAV_B2;
 
 extern int legacy_enable;
 extern int ngrav_enable; //Newtonian gravity
-extern int mgrav_enable; //Me4502ian gravity
 extern int sound_enable;
 extern int kiosk_enable;
 extern int aheat_enable;
 extern int decorations_enable;
-extern int classicpowder;
-extern int luatextdrawing;
-extern int nosparklua;
+extern int hud_enable;
+extern int debug_flags;
+int limitFPS;
+
 extern int active_menu;
-extern int noairgrav;
 
 extern int sys_pause;
-extern int hud_enable;
 extern int framerender;
 
 extern int mousex, mousey;
@@ -201,15 +186,11 @@ int CGOL;
 int ISGOL;
 int ISLOVE;
 int ISLOLZ;
-int ISME;
-int ISSMIL;
 int ISGRAV;
 int ISWIRE;
 int GSPEED;
 int love[XRES/9][YRES/9];
-int me[XRES/18][YRES/9];
 int lolz[XRES/9][YRES/9];
-int smil[XRES/9][YRES/9];
 unsigned char gol[XRES][YRES];
 unsigned char gol2[XRES][YRES][NGOL+1];
 int SEC;
@@ -254,5 +235,4 @@ void play_sound(char *file);
 void start_grav_async(void);
 void stop_grav_async(void);
 int set_scale(int scale, int kiosk);
-int exists(const char *fname);
 #endif

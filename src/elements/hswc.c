@@ -2,7 +2,6 @@
 
 int update_HSWC(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
-	int self = parts[i].type;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
 	if (parts[i].life==10)
@@ -12,14 +11,14 @@ int update_HSWC(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>PS)>=NPART || !r)
+					if ((r>>8)>=NPART || !r)
 						continue;
-					if (parts[r>>PS].type==self)
+					if ((r&0xFF)==PT_HSWC)
 					{
-						if (parts[r>>PS].life<10&&parts[r>>PS].life>0)
+						if (parts[r>>8].life<10&&parts[r>>8].life>0)
 							parts[i].life = 9;
-						else if (parts[r>>PS].life==0)
-							parts[r>>PS].life = 10;
+						else if (parts[r>>8].life==0)
+							parts[r>>8].life = 10;
 					}
 				}
 	}

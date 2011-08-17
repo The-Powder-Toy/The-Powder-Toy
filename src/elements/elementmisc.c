@@ -1,18 +1,12 @@
 #include <element.h>
 
-int update_MISC(UPDATE_FUNC_ARGS)
-{
-    int r,rx,ry;
-    int t = parts[i].type;
-    if (t==PT_LOVE)
-        ISLOVE=1;
-    else if (t==PT_LOLZ)
-        ISLOLZ=1;
-    else if (t==PT_GRAV)
-        ISGRAV=1;
-    else if (t==PT_SMIL)
-        ISSMIL=1;
-    else if (t==PT_ME)
-        ISME=1;
-    return 0;
+int update_MISC(UPDATE_FUNC_ARGS) {
+	int t = parts[i].type;
+	if (t==PT_LOVE)
+		ISLOVE=1;
+	else if (t==PT_LOLZ)
+		ISLOLZ=1;
+	else if (t==PT_GRAV)
+		ISGRAV=1;
+	return 0;
 }

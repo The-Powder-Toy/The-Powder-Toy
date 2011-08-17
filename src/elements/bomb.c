@@ -2,16 +2,15 @@
 
 int update_BOMB(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, nb;
-	int self = parts[i].type;
 	if (parts[i].tmp==1) {
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>PS)>=NPART || !r)
+					if ((r>>8)>=NPART || !r)
 						continue;
-					if (parts[r>>PS].type!=self) {
+					if ((r&0xFF)!=PT_BOMB) {
 						kill_part(i);
 						return 1;
 					}
@@ -22,9 +21,9 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>PS)>=NPART || !r)
+					if ((r>>8)>=NPART || !r)
 						continue;
-					if (parts[r>>PS].type!=PT_BOMB && parts[r>>PS].type!=self && parts[r>>PS].type!=PT_DMND && parts[r>>PS].type!=PT_CLNE && parts[r>>PS].type!=PT_PCLN && parts[r>>PS].type!=PT_BCLN && parts[r>>PS].type!=PT_C0) {
+					if ((r&0xFF)!=PT_BOMB && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_BCLN) {
 						int rad = 8;
 						int nxi;
 						int nxj;
@@ -32,7 +31,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 						for (nxj=-(rad+1); nxj<=(rad+1); nxj++)
 							for (nxi=-(rad+1); nxi<=(rad+1); nxi++)
 								if ((pow(nxi,2))/(pow((rad+1),2))+(pow(nxj,2))/(pow((rad+1),2))<=1) {
-									nb = create_part(-1, x+nxi, y+nxj, self);
+									nb = create_part(-1, x+nxi, y+nxj, PT_BOMB);
 									if (nb!=-1) {
 										parts[nb].tmp = 1;
 										parts[nb].life = 50;
@@ -44,10 +43,10 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 						for (nxj=-rad; nxj<=rad; nxj++)
 							for (nxi=-rad; nxi<=rad; nxi++)
 								if ((pow(nxi,2))/(pow(rad,2))+(pow(nxj,2))/(pow(rad,2))<=1)
-									if ((pmap[y+nxj][x+nxi]&TYPE)!=PT_DMND && (pmap[y+nxj][x+nxi]&TYPE)!=PT_CLNE && (pmap[y+nxj][x+nxi]&TYPE)!=PT_PCLN && (pmap[y+nxj][x+nxi]&TYPE)!=PT_BCLN) {
+									if ((pmap[y+nxj][x+nxi]&0xFF)!=PT_DMND && (pmap[y+nxj][x+nxi]&0xFF)!=PT_CLNE && (pmap[y+nxj][x+nxi]&0xFF)!=PT_PCLN && (pmap[y+nxj][x+nxi]&0xFF)!=PT_BCLN) {
 										delete_part(x+nxi, y+nxj);//it SHOULD kill anything but the exceptions above, doesn't seem to always work
 										pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
-										nb = create_part(-1, x+nxi, y+nxj, self);
+										nb = create_part(-1, x+nxi, y+nxj, PT_BOMB);
 										if (nb!=-1) {
 											parts[nb].tmp = 2;
 											parts[nb].life = 2;

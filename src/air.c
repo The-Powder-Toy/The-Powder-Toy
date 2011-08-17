@@ -39,7 +39,7 @@ float cb_hv[YRES/CELL][XRES/CELL];
 
 float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 
-float hv[YRES/CELL][XRES/CELL], ohv[YRES/CELL][XRES/CELL]; // For Ambient Heat
+float hv[YRES/CELL][XRES/CELL], ohv[YRES/CELL][XRES/CELL]; // For Ambient Heat 
 
 void make_kernel(void) //used for velocity
 {
@@ -91,7 +91,7 @@ void update_airh(void)
 					        x+i>0 && x+i<XRES/CELL-2 &&
 					        bmap[y+j][x+i]!=WL_WALL &&
 					        bmap[y+j][x+i]!=WL_WALLELEC &&
-					        bmap[y+j][x+i]!=WL_GRAV &&
+					        bmap[y+j][x+i]!=WL_GRAV && 
 					        (bmap[y+j][x+i]!=WL_EWALL || emap[y+j][x+i]))
 						{
 						f = kernel[i+1+(j+1)*3];
@@ -123,11 +123,11 @@ void update_airh(void)
 				dh += AIR_VADV*tx*ty*hv[j+1][i+1];
 			}
 			if(!gravityMode){ //Vertical gravity only for the time being
-                float airdiff = dh-hv[y][x];
-                pv[y][x] += airdiff/5000.0f;
-                if(airdiff>0)
-                    vy[y][x] -= airdiff/5000.0f;
-            }
+				float airdiff = dh-hv[y][x];
+				pv[y][x] += airdiff/5000.0f;
+				if(airdiff>0)	
+					vy[y][x] -= airdiff/5000.0f;
+			}
 			ohv[y][x] = dh;
 		}
 	}
@@ -135,29 +135,30 @@ void update_airh(void)
 }
 void bilinear_interpolation(float *src, float *dst, int sw, int sh, int rw, int rh)
 {
-  int y, x, fxceil, fyceil;
-  float fx, fy, fyc, fxc;
-  double intp;
-  float tr, tl, br, bl;
-  //Bilinear interpolation for upscaling
-  for (y=0; y<rh; y++)
-    for (x=0; x<rw; x++)
-    {
-      fx = ((float)x)*((float)sw)/((float)rw);
-      fy = ((float)y)*((float)sh)/((float)rh);
-      fxc = modf(fx, &intp);
-      fyc = modf(fy, &intp);
-      fxceil = (int)ceil(fx);
-      fyceil = (int)ceil(fy);
-      if (fxceil>=sw) fxceil = sw-1;
-      if (fyceil>=sh) fyceil = sh-1;
-      tr = src[sw*(int)floor(fy)+fxceil];
-      tl = src[sw*(int)floor(fy)+(int)floor(fx)];
-      br = src[sw*fyceil+fxceil];
-      bl = src[sw*fyceil+(int)floor(fx)];
-      dst[rw*y+x] = ((tl*(1.0f-fxc))+(tr*(fxc)))*(1.0f-fyc) + ((bl*(1.0f-fxc))+(br*(fxc)))*(fyc);
-    }
+	int y, x, fxceil, fyceil;
+	float fx, fy, fyc, fxc;
+	double intp;
+	float tr, tl, br, bl;
+	//Bilinear interpolation for upscaling
+	for (y=0; y<rh; y++)
+		for (x=0; x<rw; x++)
+		{
+			fx = ((float)x)*((float)sw)/((float)rw);
+			fy = ((float)y)*((float)sh)/((float)rh);
+			fxc = modf(fx, &intp);
+			fyc = modf(fy, &intp);
+			fxceil = (int)ceil(fx);
+			fyceil = (int)ceil(fy);
+			if (fxceil>=sw) fxceil = sw-1;
+			if (fyceil>=sh) fyceil = sh-1;
+			tr = src[sw*(int)floor(fy)+fxceil];
+			tl = src[sw*(int)floor(fy)+(int)floor(fx)];
+			br = src[sw*fyceil+fxceil];
+			bl = src[sw*fyceil+(int)floor(fx)];
+			dst[rw*y+x] = ((tl*(1.0f-fxc))+(tr*(fxc)))*(1.0f-fyc) + ((bl*(1.0f-fxc))+(br*(fxc)))*(fyc);				
+		}
 }
+
 #ifdef GRAVFFT
 int grav_fft_status = 0;
 float *th_ptgravx, *th_ptgravy, *th_gravmapbig, *th_gravxbig, *th_gravybig;
@@ -310,6 +311,7 @@ void update_grav()
 
 #else
 // gravity without fast Fourier transforms
+
 void update_grav(void)
 {
 	int x, y, i, j, changed = 0;
@@ -354,31 +356,32 @@ void update_grav(void)
 #endif
 						th_gravx[y][x] += M_GRAV * val * (j - x) / pow(distance, 3);
 						th_gravy[y][x] += M_GRAV * val * (i - y) / pow(distance, 3);
-                        th_gravp[y][x] += M_GRAV * val / pow(distance, 2);
+						th_gravp[y][x] += M_GRAV * val / pow(distance, 2);
 					}
 				}
 			}
 		}
 	}
 	bilinear_interpolation(th_gravy, th_gravyf, XRES/CELL, YRES/CELL, XRES, YRES);
-    bilinear_interpolation(th_gravx, th_gravxf, XRES/CELL, YRES/CELL, XRES, YRES);
-    bilinear_interpolation(th_gravp, th_gravpf, XRES/CELL, YRES/CELL, XRES, YRES);
+	bilinear_interpolation(th_gravx, th_gravxf, XRES/CELL, YRES/CELL, XRES, YRES);
+	bilinear_interpolation(th_gravp, th_gravpf, XRES/CELL, YRES/CELL, XRES, YRES);
 fin:
 	memcpy(th_ogravmap, th_gravmap, sizeof(th_gravmap));
 	memset(th_gravmap, 0, sizeof(th_gravmap));
 }
 #endif
+
+
 void update_air(void)
 {
 	int x, y, i, j;
 	float dp, dx, dy, f, tx, ty;
 
 	for (y=0; y<YRES/CELL; y++)
-        for (x=0; x<XRES/CELL; x++)
-        {
-            bmap_blockair[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || (bmap[y][x]==WL_EWALL && !emap[y][x]));
-        }
-
+		for (x=0; x<XRES/CELL; x++)
+		{
+			bmap_blockair[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || (bmap[y][x]==WL_EWALL && !emap[y][x]));
+		}
 	if (airMode != 4) { //airMode 4 is no air/pressure update
 
 		for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame
@@ -510,12 +513,12 @@ void update_air(void)
 					dy += fvy[y][x];
 				}
 				// pressure/velocity caps
-				if (dp > MAXVELOCITY) dp = MAXVELOCITY;
-                if (dp < MINVELOCITY) dp = MINVELOCITY;
-                if (dx > MAXVELOCITY) dx = MAXVELOCITY;
-                if (dx < MINVELOCITY) dx = MINVELOCITY;
-                if (dy > MAXVELOCITY) dy = MAXVELOCITY;
-                if (dy < MINVELOCITY) dy = MINVELOCITY;
+				if (dp > 256.0f) dp = 256.0f;
+				if (dp < -256.0f) dp = -256.0f;
+				if (dx > 256.0f) dx = 256.0f;
+				if (dx < -256.0f) dx = -256.0f;
+				if (dy > 256.0f) dy = 256.0f;
+				if (dy < -256.0f) dy = -256.0f;
 
 
 				switch (airMode)

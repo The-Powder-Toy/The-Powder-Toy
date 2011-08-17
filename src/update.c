@@ -40,7 +40,7 @@
 
 #include <update.h>
 
-char *zip_name(void)
+char *exe_name(void)
 {
 #if defined WIN32
 	char *name= (char *)malloc(64);
@@ -65,7 +65,7 @@ char *zip_name(void)
 #else
 	char fn[64], *name=malloc(64);
 	size_t max=64, res;
-	sprintf(fn, "/proc/self/zip");
+	sprintf(fn, "/proc/self/exe");
 	memset(name, 0, max);
 	while ((res = readlink(fn, name, max)) >= max-1)
 	{
@@ -86,7 +86,7 @@ char *zip_name(void)
 
 int update_start(char *data, int len)
 {
-	char *self=zip_name(), *temp;
+	char *self=exe_name(), *temp;
 #ifdef WIN32
 	char *p;
 #endif
@@ -100,9 +100,9 @@ int update_start(char *data, int len)
 	temp = malloc(strlen(self)+12);
 	strcpy(temp, self);
 	p = temp + strlen(temp) - 4;
-	if (_stricmp(p, ".zip"))
+	if (_stricmp(p, ".exe"))
 		p += 4;
-	strcpy(p, "_update.zip");
+	strcpy(p, "_update.exe");
 
 	if (!MoveFile(self, temp))
 		goto fail;
@@ -113,14 +113,14 @@ int update_start(char *data, int len)
 	if (fwrite(data, 1, len, f) != len)
 	{
 		fclose(f);
-	//	DeleteFile(self);
+		DeleteFile(self);
 		goto fail;
 	}
 	fclose(f);
 
 	if ((int)ShellExecute(NULL, "open", self, NULL, NULL, SW_SHOWNORMAL) <= 32)
 	{
-		//DeleteFile(self);
+		DeleteFile(self);
 		goto fail;
 	}
 
@@ -165,15 +165,15 @@ fail:
 int update_finish(void)
 {
 #ifdef WIN32
-	char *temp, *self=zip_name(), *p;
+	char *temp, *self=exe_name(), *p;
 	int timeout = 60, err;
 
 	temp = malloc(strlen(self)+12);
 	strcpy(temp, self);
 	p = temp + strlen(temp) - 4;
-	if (_stricmp(p, ".zip"))
+	if (_stricmp(p, ".exe"))
 		p += 4;
-	strcpy(p, "_update.zip");
+	strcpy(p, "_update.exe");
 
 	while (!DeleteFile(temp))
 	{

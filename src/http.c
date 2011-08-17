@@ -65,7 +65,7 @@
 #endif
 
 static int http_up = 0;
-static long http_timeout = 60;
+static long http_timeout = 15;
 static int http_use_proxy = 0;
 static struct sockaddr_in http_proxy;
 

@@ -2,7 +2,6 @@
 
 int update_WARP(UPDATE_FUNC_ARGS) {
 	int trade, r, rx, ry;
-	int self = parts[i].type;
 	for ( trade = 0; trade<5; trade ++)
 	{
 		rx = rand()%3-1;
@@ -10,17 +9,17 @@ int update_WARP(UPDATE_FUNC_ARGS) {
 		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
-			if ((r>>PS)>=NPART || !r)
+			if ((r>>8)>=NPART || !r)
 				continue;
-			if (parts[r>>PS].type!=self&&parts[r>>PS].type!=PT_STKM&&parts[r>>PS].type!=PT_STKM2&&parts[r>>PS].type!=PT_DMND&&parts[r>>PS].type!=PT_CLNE&&parts[r>>PS].type!=PT_BCLN&&parts[r>>PS].type!=PT_PCLN&&(10>=rand()%200))
+			if ((r&0xFF)!=PT_WARP&&(r&0xFF)!=PT_STKM&&(r&0xFF)!=PT_STKM2&&(r&0xFF)!=PT_DMND&&(r&0xFF)!=PT_CLNE&&(r&0xFF)!=PT_BCLN&&(r&0xFF)!=PT_PCLN&&(10>=rand()%200))
 			{
-				parts[i].x = parts[r>>PS].x;
-				parts[i].y = parts[r>>PS].y;
-				parts[r>>PS].x = x;
-				parts[r>>PS].y = y;
+				parts[i].x = parts[r>>8].x;
+				parts[i].y = parts[r>>8].y;
+				parts[r>>8].x = x;
+				parts[r>>8].y = y;
 				parts[i].life += 4;
 				pmap[y][x] = r;
-				pmap[y+ry][x+rx] = (i<<PS)|parts[i].type;
+				pmap[y+ry][x+rx] = (i<<8)|parts[i].type;
 				trade = 5;
 			}
 		}
