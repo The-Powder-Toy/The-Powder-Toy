@@ -1848,7 +1848,7 @@ int main(int argc, char *argv[])
 		ClearScreen();
 #else
 
-		if(cmode==CM_FANCY)
+		if(ngrav_enable && cmode==CM_FANCY)
 		{
 			part_vbuf = part_vbuf_store;
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
@@ -1955,7 +1955,7 @@ int main(int argc, char *argv[])
 
 		render_signs(part_vbuf);
 
-		if(cmode==CM_FANCY)
+		if(ngrav_enable && cmode==CM_FANCY)
 			render_gravlensing(part_vbuf, vid_buf);
 
 		memset(vid_buf+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);//clear menu areas
