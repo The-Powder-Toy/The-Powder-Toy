@@ -56,6 +56,7 @@ void luacon_open(){
 		{"setfire", &luatpt_setfire},
 		{"setdebug", &luatpt_setdebug},
 		{"setfpscap",&luatpt_setfpscap},
+		{"getzoom",&luatpt_getzoom},
 		{NULL,NULL}
 	};
 
@@ -1061,5 +1062,10 @@ int luatpt_setfpscap(lua_State* l)
 int fpscap = luaL_optint(l, 1, 0);
 limitFPS = fpscap;
 return 0;
+}
+int luatpt_getzoom(lua_State* l)
+{
+    lua_pushinteger(l, zoom_en);
+    return 1;
 }
 #endif
