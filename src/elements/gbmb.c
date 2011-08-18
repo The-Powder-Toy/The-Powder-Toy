@@ -4,7 +4,7 @@ int update_GBMB(UPDATE_FUNC_ARGS) {
 	for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++){
 				r = pmap[y+ry][x+rx];
-				if(r)
+				if(r && (r>>8)<NPART)
 				if((r&0xFF)!=PT_BOMB&&
 				   (r&0xFF)!=PT_GBMB&&
 				   (r&0xFF)!=PT_CLNE&&
