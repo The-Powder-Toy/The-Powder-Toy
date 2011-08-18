@@ -3255,7 +3255,7 @@ void draw_parts(pixel *vid)
 				}
 				else if (t==PT_GBMB)
 				{
-				if (parts[i].tmp==0) {
+					if (parts[i].life<=0) {//not yet detonated
 						cr = PIXR(ptypes[t].pcolors);
 						cg = PIXG(ptypes[t].pcolors);
 						cb = PIXB(ptypes[t].pcolors);
@@ -3285,7 +3285,7 @@ void draw_parts(pixel *vid)
 							blendpixel(vid, nx, ny, cr, cg, cb, 255);
 						}
 					}
-					else if (parts[i].tmp==1) {
+					else {//exploding
 						cr = PIXR(ptypes[t].pcolors);
 						cg = PIXG(ptypes[t].pcolors);
 						cb = PIXB(ptypes[t].pcolors);
@@ -3305,10 +3305,6 @@ void draw_parts(pixel *vid)
 							blendpixel(vid, nx, ny, cr, cg, cb, 255);
 						}
 					}
-					else {
-						blendpixel(vid, nx, ny, 255, 255, 255, 255);
-					}
-
 				}
 				else if (ptypes[t].properties&PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
 				{

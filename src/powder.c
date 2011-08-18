@@ -336,6 +336,9 @@ int try_move(int i, int x, int y, int nx, int ny)
 	if ((bmap[y/CELL][x/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL]) && !(bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL]))
 		return 0;
 
+	if(parts[i].type==PT_GBMB&&parts[i].life>0)
+		return 0;
+
 	e = r >> 8; //e is now the particle number at r (pmap[ny][nx])
 	if (r && e<NPART)//the swap part, if we make it this far, swap
 	{
@@ -364,8 +367,6 @@ int try_move(int i, int x, int y, int nx, int ny)
 		parts[e].y += y-ny;
 		pmap[(int)(parts[e].y+0.5f)][(int)(parts[e].x+0.5f)] = (e<<8)|parts[e].type;
 	}
-	if(parts[i].type==PT_GBMB&&parts[i].tmp==1)
-		return 0;
 	return 1;
 }
 
