@@ -1697,8 +1697,19 @@ int main(int argc, char *argv[])
 			file_data = file_load(argv[i+1], &size);
 			if (file_data)
 			{
-				it=0;
-				parse_save(file_data, size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+				svf_last = file_data;
+				svf_lsize = size;
+				if(!parse_save(file_data, size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap))
+				{
+					it=0;
+					svf_filename[0] = 0;
+					svf_fileopen = 1;
+				} else {
+					svf_last = NULL;
+					svf_lsize = 0;
+					free(file_data);
+					file_data = NULL;
+				}
 			}
 			i++;
 		}
