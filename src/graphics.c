@@ -4441,35 +4441,29 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
 			j=d[p++];
 			if (j<PT_NUM && j>0)
 			{
-				if (j==PT_STKM)
+				if (j==PT_STKM || j==PT_STKM2)
 				{
-					//Stickman drawing
-					for (k=-2; k<=1; k++)
+					pixel lc, hc=PIXRGB(255, 224, 178);
+					if (j==PT_STKM) lc = PIXRGB(255, 255, 255);
+					else lc = PIXRGB(100, 100, 255);
+					//only need to check upper bound of y coord - lower bounds and x<w are checked in draw_line
+					draw_line(fb , x-2, y-2, x+2, y-2, PIXR(lc), PIXG(lc), PIXB(lc), w);
+					if (y+2<h)
 					{
-						fb[(y-2)*w+x+k] = PIXRGB(255, 224, 178);
-						fb[(y+2)*w+x+k+1] = PIXRGB(255, 224, 178);
-						fb[(y+k+1)*w+x-2] = PIXRGB(255, 224, 178);
-						fb[(y+k)*w+x+2] = PIXRGB(255, 224, 178);
+						draw_line(fb , x-2, y+2, x+2, y+2, PIXR(lc), PIXG(lc), PIXB(lc), w);
+						draw_line(fb , x-2, y-2, x-2, y+2, PIXR(lc), PIXG(lc), PIXB(lc), w);
+						draw_line(fb , x+2, y-2, x+2, y+2, PIXR(lc), PIXG(lc), PIXB(lc), w);
 					}
-					draw_line(fb , x, y+3, x-1, y+6, 255, 255, 255, w);
-					draw_line(fb , x-1, y+6, x-3, y+12, 255, 255, 255, w);
-					draw_line(fb , x, y+3, x+1, y+6, 255, 255, 255, w);
-					draw_line(fb , x+1, y+6, x+3, y+12, 255, 255, 255, w);
-				}
-				else if (j==PT_STKM2)
-				{
-					//Stickman drawing
-					for (k=-2; k<=1; k++)
+					if (y+6<h)
 					{
-						fb[(y-2)*w+x+k] = PIXRGB(255, 224, 178);
-						fb[(y+2)*w+x+k+1] = PIXRGB(255, 224, 178);
-						fb[(y+k+1)*w+x-2] = PIXRGB(255, 224, 178);
-						fb[(y+k)*w+x+2] = PIXRGB(255, 224, 178);
+						draw_line(fb , x, y+3, x-1, y+6, PIXR(hc), PIXG(hc), PIXB(hc), w);
+						draw_line(fb , x, y+3, x+1, y+6, PIXR(hc), PIXG(hc), PIXB(hc), w);
 					}
-					draw_line(fb , x, y+3, x-1, y+6, 255, 255, 255, w);
-					draw_line(fb , x-1, y+6, x-3, y+12, 255, 255, 255, w);
-					draw_line(fb , x, y+3, x+1, y+6, 255, 255, 255, w);
-					draw_line(fb , x+1, y+6, x+3, y+12, 255, 255, 255, w);
+					if (y+12<h)
+					{
+						draw_line(fb , x-1, y+6, x-3, y+12, PIXR(hc), PIXG(hc), PIXB(hc), w);
+						draw_line(fb , x+1, y+6, x+3, y+12, PIXR(hc), PIXG(hc), PIXB(hc), w);
+					}
 				}
 				else
 					fb[y*w+x] = ptypes[j].pcolors;
