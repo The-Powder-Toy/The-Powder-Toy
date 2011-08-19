@@ -322,6 +322,8 @@ int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
 int update_legacy_all(UPDATE_FUNC_ARGS);
 int run_stickman(float* playerp, UPDATE_FUNC_ARGS);
+void STKM_init_legs(float* playerp, int i);
+void STKM_interact(float* playerp, int i, int x, int y);
 
 
 struct particle

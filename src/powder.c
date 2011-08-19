@@ -930,27 +930,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			parts[i].life = 100;
 			parts[i].ctype = 0;
 			parts[i].temp = ptypes[t].heat;
-
-			player[3] = x-1;  //Setting legs positions
-			player[4] = y+6;
-			player[5] = x-1;
-			player[6] = y+6;
-
-			player[7] = x-3;
-			player[8] = y+12;
-			player[9] = x-3;
-			player[10] = y+12;
-
-			player[11] = x+1;
-			player[12] = y+6;
-			player[13] = x+1;
-			player[14] = y+6;
-
-			player[15] = x+3;
-			player[16] = y+12;
-			player[17] = x+3;
-			player[18] = y+12;
-
+			STKM_init_legs(player, i);
 			player[27] = 1;
 		}
 		else
@@ -972,27 +952,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			parts[i].life = 100;
 			parts[i].ctype = 0;
 			parts[i].temp = ptypes[t].heat;
-
-			player2[3] = x-1;  //Setting legs positions
-			player2[4] = y+6;
-			player2[5] = x-1;
-			player2[6] = y+6;
-
-			player2[7] = x-3;
-			player2[8] = y+12;
-			player2[9] = x-3;
-			player2[10] = y+12;
-
-			player2[11] = x+1;
-			player2[12] = y+6;
-			player2[13] = x+1;
-			player2[14] = y+6;
-
-			player2[15] = x+3;
-			player2[16] = y+12;
-			player2[17] = x+3;
-			player2[18] = y+12;
-
+			STKM_init_legs(player2, i);
 			player2[27] = 1;
 		}
 		else

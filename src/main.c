@@ -980,54 +980,13 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			else if (parts[i-1].type == PT_STKM)
 			{
 				//player[2] = PT_DUST;
-
-				player[3] = parts[i-1].x-1;  //Setti-1ng legs posi-1ti-1ons
-				player[4] = parts[i-1].y+6;
-				player[5] = parts[i-1].x-1;
-				player[6] = parts[i-1].y+6;
-
-				player[7] = parts[i-1].x-3;
-				player[8] = parts[i-1].y+12;
-				player[9] = parts[i-1].x-3;
-				player[10] = parts[i-1].y+12;
-
-				player[11] = parts[i-1].x+1;
-				player[12] = parts[i-1].y+6;
-				player[13] = parts[i-1].x+1;
-				player[14] = parts[i-1].y+6;
-
-				player[15] = parts[i-1].x+3;
-				player[16] = parts[i-1].y+12;
-				player[17] = parts[i-1].x+3;
-				player[18] = parts[i-1].y+12;
-
+				STKM_init_legs(player, i-1);
 				player[27] = 1;
-
 			}
 			else if (parts[i-1].type == PT_STKM2)
 			{
 				//player2[2] = PT_DUST;
-
-				player2[3] = parts[i-1].x-1;  //Setti-1ng legs posi-1ti-1ons
-				player2[4] = parts[i-1].y+6;
-				player2[5] = parts[i-1].x-1;
-				player2[6] = parts[i-1].y+6;
-
-				player2[7] = parts[i-1].x-3;
-				player2[8] = parts[i-1].y+12;
-				player2[9] = parts[i-1].x-3;
-				player2[10] = parts[i-1].y+12;
-
-				player2[11] = parts[i-1].x+1;
-				player2[12] = parts[i-1].y+6;
-				player2[13] = parts[i-1].x+1;
-				player2[14] = parts[i-1].y+6;
-
-				player2[15] = parts[i-1].x+3;
-				player2[16] = parts[i-1].y+12;
-				player2[17] = parts[i-1].x+3;
-				player2[18] = parts[i-1].y+12;
-
+				STKM_init_legs(player2, i-1);
 				player2[27] = 1;
 			}
 
