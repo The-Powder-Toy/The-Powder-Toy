@@ -1728,8 +1728,6 @@ int main(int argc, char *argv[])
 		pyready = 0;
 		pygood = 0;
 	}
-#else
-	printf("python console disabled at compile time.\n");
 #endif
 
 #ifdef MT
@@ -1805,8 +1803,9 @@ int main(int argc, char *argv[])
 			if (file_data)
 			{
 				it=0;
-				parse_save(file_data, size, 0, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+				parse_save(file_data, size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
 			}
+			i++;
 		}
 
 	}
@@ -1814,7 +1813,7 @@ int main(int argc, char *argv[])
 	save_presets(0);
 
 	make_kernel();
-	prepare_alpha(4, 1.0f);
+	prepare_alpha(CELL, 1.0f);
 
 	stamp_init();
 
@@ -1827,11 +1826,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-#ifdef BETA
 	http_ver_check = http_async_req_start(NULL, "http://" SERVER "/Update.api?Action=CheckVersion", NULL, 0, 0);
-#else
-	http_ver_check = http_async_req_start(NULL, "http://" SERVER "/Update.api?Action=CheckVersion", NULL, 0, 0);
-#endif
 	if (svf_login) {
 		http_session_check = http_async_req_start(NULL, "http://" SERVER "/Login.api?Action=CheckSession", NULL, 0, 0);
 		http_auth_headers(http_session_check, svf_user_id, NULL, svf_session_id);
