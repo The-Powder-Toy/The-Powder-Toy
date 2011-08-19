@@ -4706,30 +4706,30 @@ int sdl_open(void)
 	return 1;
 }
 
-int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy)
+int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy, int line_x, int line_y)
 {
 	char infobuf[256];
 	if(debug_flags & DEBUG_DRAWTOOL)
 	{
 		if(lm == 1) //Line tool
 		{
-			blend_line(vid, 0, cy, XRES, cy, 255, 255, 255, 120);
-			blend_line(vid, cx, 0, cx, YRES, 255, 255, 255, 120);
+			blend_line(vid, 0, line_y, XRES, line_y, 255, 255, 255, 120);
+			blend_line(vid, line_x, 0, line_x, YRES, 255, 255, 255, 120);
 	
 			blend_line(vid, 0, ly, XRES, ly, 255, 255, 255, 120);
 			blend_line(vid, lx, 0, lx, YRES, 255, 255, 255, 120);
 			
 			sprintf(infobuf, "%d x %d", lx, ly);
-			drawtext_outline(vid, lx+(lx>cx?3:-textwidth(infobuf)-3), ly+(ly<cy?-10:3), infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
+			drawtext_outline(vid, lx+(lx>line_x?3:-textwidth(infobuf)-3), ly+(ly<line_y?-10:3), infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
 			
-			sprintf(infobuf, "%d x %d", cx, cy);
-			drawtext_outline(vid, cx+(lx<cx?3:-textwidth(infobuf)-2), cy+(ly>cy?-10:3), infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
+			sprintf(infobuf, "%d x %d", line_x, line_y);
+			drawtext_outline(vid, line_x+(lx<line_x?3:-textwidth(infobuf)-2), line_y+(ly>line_y?-10:3), infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
 			
-			sprintf(infobuf, "%d", abs(cx-lx));
-			drawtext_outline(vid, cx+(lx<cx?-(cx-lx)/2:(lx-cx)/2)-textwidth(infobuf)/2, cy+(ly>cy?-10:3), infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
+			sprintf(infobuf, "%d", abs(line_x-lx));
+			drawtext_outline(vid, (line_x+lx)/2-textwidth(infobuf)/2, line_y+(ly>line_y?-10:3), infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
 			
-			sprintf(infobuf, "%d", abs(cy-ly));
-			drawtext_outline(vid, cx+(lx<cx?3:-textwidth(infobuf)-2), cy+(ly>cy?-(cy-ly)/2:(ly-cy)/2)-3, infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
+			sprintf(infobuf, "%d", abs(line_y-ly));
+			drawtext_outline(vid, line_x+(lx<line_x?3:-textwidth(infobuf)-2), (line_y+ly)/2-3, infobuf, 255, 255, 255, 200, 0, 0, 0, 120);
 		}
 	}
 	if(debug_flags & DEBUG_PARTS)

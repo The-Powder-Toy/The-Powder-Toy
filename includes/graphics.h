@@ -164,7 +164,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry);
 
 int sdl_open(void);
 
-int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy);
+int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy, int line_x, int line_y);
 
 #ifdef OpenGL
 void Enable2D ();

@@ -1870,7 +1870,7 @@ int main(int argc, char *argv[])
 		
 		if(debug_flags)
 		{
-			draw_debug_info(vid_buf, lm, lx, ly, x, y);
+			draw_debug_info(vid_buf, lm, lx, ly, x, y, line_x, line_y);
 		}
 
 		if (http_session_check)
