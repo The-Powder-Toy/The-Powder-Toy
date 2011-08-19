@@ -5470,7 +5470,7 @@ void catalogue_ui(pixel * vid_buf)
 	int listy = 0, listxc;
 	int listx = 0, listyc;
 	pixel * vid_buf2;
-	float scrollvel, offsetf = 0.0f;
+	float scrollvel = 0.0f, offsetf = 0.0f;
 	char savetext[128] = "";
 	char * last = mystrdup("");
 	savelist_e *saves, *cssave, *csave;
@@ -5687,6 +5687,8 @@ openfin:
 
 	if(saves)
 		free_saveslist(saves);
+	free(last);
+	free(vid_buf2);
 	return;
 }
 
