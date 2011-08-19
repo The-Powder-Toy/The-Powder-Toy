@@ -56,7 +56,7 @@
 #include <icon.h>
 #include <console.h>
 #ifdef PYCONSOLE
-#include "pyconsole.h"
+#include "pythonconsole.h"
 #endif
 #ifdef LUACONSOLE
 #include "luaconsole.h"
@@ -1632,10 +1632,6 @@ int main(int argc, char *argv[])
 	unsigned int hsvSave = PIXRGB(0,255,127);//this is hsv format
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
-#ifdef PYCONSOLE
-	PyObject *pname,*pmodule,*pfunc,*pvalue,*pargs,*pstep,*pkey;
-	PyObject *tpt_console_obj;
-#endif
 #ifdef PTW32_STATIC_LIB
     pthread_win32_process_attach_np();
     pthread_win32_thread_attach_np();
@@ -1667,67 +1663,7 @@ int main(int argc, char *argv[])
 	luacon_open();
 #endif
 #ifdef PYCONSOLE
-	//initialise python console
-	Py_Initialize();
-	PyRun_SimpleString("print 'python present.'");
-	Py_InitModule("tpt", EmbMethods);
-
-	//change the path to find all the correct modules
-	PyRun_SimpleString("import sys\nsys.path.append('./tptPython.zip')\nsys.path.append('.')");
-	//load the console module and whatnot
-#ifdef PYEXT
-	PyRun_SimpleString(tpt_console_py);
-	printf("using external python console file.\n");
-	pname=PyString_FromString("tpt_console");//create string object
-	pmodule = PyImport_Import(pname);//import module
-	Py_DECREF(pname);//throw away string
-#else
-	tpt_console_obj = PyMarshal_ReadObjectFromString(tpt_console_pyc+8, sizeof(tpt_console_pyc)-8);
-	pmodule=PyImport_ExecCodeModule("tpt_console", tpt_console_obj);
-#endif
-	if (pmodule!=NULL)
-	{
-		pfunc=PyObject_GetAttrString(pmodule,"handle");//get the handler function
-		if (pfunc && PyCallable_Check(pfunc))//check if it's really a function
-		{
-			printf("python console ready to go.\n");
-		}
-		else
-		{
-			PyErr_Print();
-			printf("unable to find handle function, mangled console.py?\n");
-			pyready = 0;
-			pygood = 0;
-		}
-
-		pstep=PyObject_GetAttrString(pmodule,"step");//get the handler function
-		if (pstep && PyCallable_Check(pstep))//check if it's really a function
-		{
-			printf("step function found.\n");
-		}
-		else
-		{
-			printf("unable to find step function. ignoring.\n");
-		}
-
-		pkey=PyObject_GetAttrString(pmodule,"keypress");//get the handler function
-		if (pstep && PyCallable_Check(pkey))//check if it's really a function
-		{
-			printf("key function found.\n");
-		}
-		else
-		{
-			printf("unable to find key function. ignoring.\n");
-		}
-	}
-	else
-	{
-		//sys.stderr
-		PyErr_Print();
-		printf("unable to find console module, missing file or mangled console.py?\n");
-		pyready = 0;
-		pygood = 0;
-	}
+	pycon_open();
 #endif
 
 #ifdef MT
@@ -2099,6 +2035,11 @@ int main(int argc, char *argv[])
 	if(sdl_key){
 		if(!luacon_keypress(sdl_key, sdl_mod))
 			sdl_key = 0;
+	}
+#endif
+#ifdef PYCONSOLE
+	if(sdl_key){
+		pycon_keypress(sdl_key, sdl_mod);
 	}
 #endif
 		if (sys_shortcuts==1)//all shortcuts can be disabled by python scripts
@@ -2528,19 +2469,6 @@ int main(int argc, char *argv[])
 					}
 			}
 		}
-#ifdef PYCONSOLE
-		if (pyready==1 && pygood==1)
-			if (pkey!=NULL && sdl_key!=NULL)
-			{
-				pargs=Py_BuildValue("(c)",sdl_key);
-				pvalue = PyObject_CallObject(pkey, pargs);
-				Py_DECREF(pargs);
-				pargs=NULL;
-				if (pvalue==NULL)
-					strcpy(console_error,"failed to execute key code.");
-				pvalue=NULL;
-			}
-#endif
 #ifdef INTERNAL
 		int counterthing;
 		if (sdl_key=='v'&&!(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))//frame capture
@@ -3535,7 +3463,7 @@ int main(int argc, char *argv[])
 				console = console_ui(vid_buf,console_error,console_more);
 				console = mystrdup(console);
 				strcpy(console_error,"");
-				if (process_command(vid_buf, console, console_error,pfunc)==-1)
+				if (process_command_py(vid_buf, console, console_error)==-1)
 				{
 					free(console);
 					break;
@@ -3593,19 +3521,7 @@ int main(int argc, char *argv[])
 
 		//execute python step hook
 #ifdef PYCONSOLE
-		if (pyready==1 && pygood==1)
-			if (pstep!=NULL)
-			{
-				pargs=Py_BuildValue("()");
-				pvalue = PyObject_CallObject(pstep, pargs);
-				Py_DECREF(pargs);
-				pargs=NULL;
-				if (pvalue==NULL)
-					strcpy(console_error,"failed to execute step code.");
-				//Py_DECREF(pvalue);
-				//puts("a");
-				pvalue=NULL;
-			}
+		pycon_step();
 #endif
 		sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
@@ -3634,12 +3550,7 @@ int main(int argc, char *argv[])
 	luacon_close();
 #endif
 #ifdef PYCONSOLE
-
-	PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.py'))\nexcept:\n    pass");
-	PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.pyo'))\nexcept:\n    pass");
-	PyRun_SimpleString("import os,tempfile,os.path\ntry:\n    os.remove(os.path.join(tempfile.gettempdir(),'tpt_console.pyc'))\nexcept:\n    pass");
-
-	Py_Finalize();//cleanup any python stuff.
+	pycon_close();
 #endif
 #ifdef PTW32_STATIC_LIB
     pthread_win32_thread_detach_np();
