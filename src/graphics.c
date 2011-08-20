@@ -3503,16 +3503,22 @@ void draw_parts(pixel *vid)
 				else if(t==PT_COAL || t==PT_BCOL){
 					cr = PIXR(ptypes[t].pcolors);
 					cg = PIXG(ptypes[t].pcolors);
-					cb = PIXB(ptypes[t].pcolors);
+					//cb = PIXB(ptypes[t].pcolors);
 					
-					cr += (parts[i].tmp2-273.15f)/3;
-					cg += (parts[i].tmp2-273.15f)/3;
-					cb += (parts[i].tmp2-273.15f)/3;
+					cr += (parts[i].tmp2-295.15f)/3;
+					//cg += (parts[i].tmp2-273.15f)/3;
+					//cb += (parts[i].tmp2-273.15f)/3;
+					if (cr>=170)
+						cr = 170;
+					if (cr<=cg)
+						cr = cg;
+						
+					cg = cb = cr;
 					
-					if((parts[i].temp-273.15f) > 300.0f-200.0f)
+					if((parts[i].temp-295.15f) > 300.0f-200.0f)
 					{
 						float frequency = 3.1415/(2*300.0f-(300.0f-200.0f));
-						int q = ((parts[i].temp-273.15f)>300.0f)?300.0f-(300.0f-200.0f):(parts[i].temp-273.15f)-(300.0f-200.0f);
+						int q = ((parts[i].temp-295.15f)>300.0f)?300.0f-(300.0f-200.0f):(parts[i].temp-295.15f)-(300.0f-200.0f);
 					
 						cr += sin(frequency*q) * 226;
 						cg += sin(frequency*q*4.55 +3.14) * 34;
