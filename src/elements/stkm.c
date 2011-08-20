@@ -240,7 +240,7 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 			{
 				int np = -1;
 				if (playerp[2] == SPC_AIR)
-					create_parts(rx + 3*((((int)playerp[1])&0x02) == 0x02) - 3*((((int)playerp[1])&0x01) == 0x01), ry, 4, 4, SPC_AIR);
+					create_parts(rx + 3*((((int)playerp[1])&0x02) == 0x02) - 3*((((int)playerp[1])&0x01) == 0x01), ry, 4, 4, SPC_AIR, 0);
 				else
 					np = create_part(-1, rx, ry, playerp[2]);
 				if ( (np < NPART) && np>=0 && playerp[2] != PT_PHOT && playerp[2] != SPC_AIR)

@@ -751,7 +751,7 @@ int luatpt_delete(lua_State* l)
 	}
 	arg2 = abs(arg2);
 	if(arg2 < YRES && arg1 < XRES){
-		delete_part(arg1, arg2);
+		delete_part(arg1, arg2, 0);
 		return 0;
 	}
 	return luaL_error(l,"Invalid coordinates or particle ID");

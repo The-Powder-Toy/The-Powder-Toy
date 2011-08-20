@@ -1068,9 +1068,9 @@ static void create_cherenkov_photon(int pp)//photons from NEUT going through GLA
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline void delete_part(int x, int y)
+_inline void delete_part(int x, int y, int flags)//calls kill_part with the particle located at x,y
 #else
-inline void delete_part(int x, int y)//calls kill_part with the particle located at x,y
+inline void delete_part(int x, int y, int flags)//calls kill_part with the particle located at x,y
 #endif
 {
 	unsigned i;
@@ -1085,7 +1085,7 @@ inline void delete_part(int x, int y)//calls kill_part with the particle located
 
 	if (!i || (i>>8)>=NPART)
 		return;
-	if ((parts[i>>8].type==SLALT)||SLALT==0)//specific deletiom
+	if (!(flags&BRUSH_SPECIFIC_DELETE) || parts[i>>8].type==SLALT || SLALT==0)//specific deletiom
 	{
 		kill_part(i>>8);
 	}
@@ -1249,7 +1249,7 @@ int nearest_part(int ci, int t)
 	return id;
 }
 
-void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type)
+void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type, int flags)
 {
 	int i;
 	float xint, yint;
@@ -1277,7 +1277,7 @@ void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int
 			xmid[i+1] += (rand()%variance)-voffset;
 			ymid[i+1] += (rand()%variance)-voffset;
 		}	
-		create_line(xmid[i], ymid[i], xmid[i+1], ymid[i+1], 0, 0, type);
+		create_line(xmid[i], ymid[i], xmid[i+1], ymid[i+1], 0, 0, type, flags);
 	}
 	free(xmid);
 	free(ymid);
@@ -2484,12 +2484,12 @@ void clear_area(int area_x, int area_y, int area_w, int area_h)
 		for (cx=0; cx<area_w; cx++)
 		{
 			bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
-			delete_part(cx+area_x, cy+area_y);
+			delete_part(cx+area_x, cy+area_y, 0);
 		}
 	}
 }
 
-void create_box(int x1, int y1, int x2, int y2, int c)
+void create_box(int x1, int y1, int x2, int y2, int c, int flags)
 {
 	int i, j;
 	if (x1>x2)
@@ -2506,10 +2506,10 @@ void create_box(int x1, int y1, int x2, int y2, int c)
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			create_parts(i, j, 0, 0, c);
+			create_parts(i, j, 0, 0, c, flags);
 }
 
-int flood_parts(int x, int y, int fullc, int cm, int bm)
+int flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 {
 	int c = fullc&0xFF;
 	int x1, x2, dy = (c<PT_NUM)?1:CELL;
@@ -2524,7 +2524,7 @@ int flood_parts(int x, int y, int fullc, int cm, int bm)
 			cm = pmap[y][x]&0xFF;
 			if (!cm)
 				return 0;
-			if (REPLACE_MODE && cm!=SLALT)
+			if ((flags&BRUSH_REPLACEMODE) && cm!=SLALT)
 				return 0;
 		}
 		else
@@ -2544,7 +2544,7 @@ int flood_parts(int x, int y, int fullc, int cm, int bm)
 			bm = 0;
 	}
 
-	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm )||( (sdl_mod & (KMOD_CAPS)) && cm!=SLALT && !(cm==PT_INST&&co==PT_SPRK)))
+	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm )||( (flags&BRUSH_SPECIFIC_DELETE) && cm!=SLALT))
 		return 1;
 
 	// go left as far as possible
@@ -2574,7 +2574,7 @@ int flood_parts(int x, int y, int fullc, int cm, int bm)
 			if (create_part(-1,x, y, fullc)==-1)
 				return 0;
 		}
-		else if (!create_parts(x, y, 0, 0, fullc))
+		else if (!create_parts(x, y, 0, 0, fullc, flags))
 			return 0;
 	}
 	// fill children
@@ -2583,7 +2583,7 @@ int flood_parts(int x, int y, int fullc, int cm, int bm)
 		if (y>=CELL+dy && x1==x2 &&
 		        ((pmap[y-1][x1-1]&0xFF)==PT_INST||(pmap[y-1][x1-1]&0xFF)==PT_SPRK) && ((pmap[y-1][x1]&0xFF)==PT_INST||(pmap[y-1][x1]&0xFF)==PT_SPRK) && ((pmap[y-1][x1+1]&0xFF)==PT_INST || (pmap[y-1][x1+1]&0xFF)==PT_SPRK) &&
 		        (pmap[y-2][x1-1]&0xFF)!=PT_INST && ((pmap[y-2][x1]&0xFF)==PT_INST ||(pmap[y-2][x1]&0xFF)==PT_SPRK) && (pmap[y-2][x1+1]&0xFF)!=PT_INST)
-			flood_parts(x1, y-2, fullc, cm, bm);
+			flood_parts(x1, y-2, fullc, cm, bm, flags);
 		else if (y>=CELL+dy)
 			for (x=x1; x<=x2; x++)
 				if ((pmap[y-1][x]&0xFF)!=PT_SPRK)
@@ -2591,14 +2591,14 @@ int flood_parts(int x, int y, int fullc, int cm, int bm)
 					if (x==x1 || x==x2 || y>=YRES-CELL-1 ||
 					        (pmap[y-1][x-1]&0xFF)==PT_INST || (pmap[y-1][x+1]&0xFF)==PT_INST ||
 					        (pmap[y+1][x-1]&0xFF)==PT_INST || ((pmap[y+1][x]&0xFF)!=PT_INST&&(pmap[y+1][x]&0xFF)!=PT_SPRK) || (pmap[y+1][x+1]&0xFF)==PT_INST)
-						flood_parts(x, y-dy, fullc, cm, bm);
+						flood_parts(x, y-dy, fullc, cm, bm, flags);
 
 				}
 
 		if (y<YRES-CELL-dy && x1==x2 &&
 		        ((pmap[y+1][x1-1]&0xFF)==PT_INST||(pmap[y+1][x1-1]&0xFF)==PT_SPRK) && ((pmap[y+1][x1]&0xFF)==PT_INST||(pmap[y+1][x1]&0xFF)==PT_SPRK) && ((pmap[y+1][x1+1]&0xFF)==PT_INST || (pmap[y+1][x1+1]&0xFF)==PT_SPRK) &&
 		        (pmap[y+2][x1-1]&0xFF)!=PT_INST && ((pmap[y+2][x1]&0xFF)==PT_INST ||(pmap[y+2][x1]&0xFF)==PT_SPRK) && (pmap[y+2][x1+1]&0xFF)!=PT_INST)
-			flood_parts(x1, y+2, fullc, cm, bm);
+			flood_parts(x1, y+2, fullc, cm, bm, flags);
 		else if (y<YRES-CELL-dy)
 			for (x=x1; x<=x2; x++)
 				if ((pmap[y+1][x]&0xFF)!=PT_SPRK)
@@ -2606,7 +2606,7 @@ int flood_parts(int x, int y, int fullc, int cm, int bm)
 					if (x==x1 || x==x2 || y<0 ||
 					        (pmap[y+1][x-1]&0xFF)==PT_INST || (pmap[y+1][x+1]&0xFF)==PT_INST ||
 					        (pmap[y-1][x-1]&0xFF)==PT_INST || ((pmap[y-1][x]&0xFF)!=PT_INST&&(pmap[y-1][x]&0xFF)!=PT_SPRK) || (pmap[y-1][x+1]&0xFF)==PT_INST)
-						flood_parts(x, y+dy, fullc, cm, bm);
+						flood_parts(x, y+dy, fullc, cm, bm, flags);
 
 				}
 	}
@@ -2615,12 +2615,12 @@ int flood_parts(int x, int y, int fullc, int cm, int bm)
 		if (y>=CELL+dy)
 			for (x=x1; x<=x2; x++)
 				if ((pmap[y-dy][x]&0xFF)==cm && bmap[(y-dy)/CELL][x/CELL]==bm)
-					if (!flood_parts(x, y-dy, fullc, cm, bm))
+					if (!flood_parts(x, y-dy, fullc, cm, bm, flags))
 						return 0;
 		if (y<YRES-CELL-dy)
 			for (x=x1; x<=x2; x++)
 				if ((pmap[y+dy][x]&0xFF)==cm && bmap[(y+dy)/CELL][x/CELL]==bm)
-					if (!flood_parts(x, y+dy, fullc, cm, bm))
+					if (!flood_parts(x, y+dy, fullc, cm, bm, flags))
 						return 0;
 	}
 	if (!(cm==PT_INST&&co==PT_SPRK))
@@ -2628,7 +2628,7 @@ int flood_parts(int x, int y, int fullc, int cm, int bm)
 }
 
 //this creates particles from a brush, don't use if you want to create one particle
-int create_parts(int x, int y, int rx, int ry, int c)
+int create_parts(int x, int y, int rx, int ry, int c, int flags)
 {
 	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0;//n;
 
@@ -2672,7 +2672,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
 				{
 					i = ox;
 					j = oy;
-					if (((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL))|| ((sdl_mod & (KMOD_CAPS)) && b!=WL_FANHELPER) ))
+					if ((flags&BRUSH_SPECIFIC_DELETE) && b!=WL_FANHELPER)
 					{
 						if (bmap[j][i]==SLALT-100)
 						{
@@ -2708,18 +2708,33 @@ int create_parts(int x, int y, int rx, int ry, int c)
 		return 1;
 	}
 
-	//if CTRL+ALT or CAPSLOCK is on, specific delete
-	if (((sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL))|| sdl_mod & (KMOD_CAPS) )&& !REPLACE_MODE)
+	//eraser
+	if (c == 0 && !(flags&BRUSH_REPLACEMODE))
 	{
 		if (rx==0&&ry==0)
 		{
-			delete_part(x, y);
+			delete_part(x, y, 0);
 		}
 		else
 			for (j=-ry; j<=ry; j++)
 				for (i=-rx; i<=rx; i++)
 					if (InCurrentBrush(i ,j ,rx ,ry))
-						delete_part(x+i, y+j);
+						delete_part(x+i, y+j, 0);
+		return 1;
+	}
+
+	//specific deletion
+	if ((flags&BRUSH_SPECIFIC_DELETE)&& !(flags&BRUSH_REPLACEMODE))
+	{
+		if (rx==0&&ry==0)
+		{
+			delete_part(x, y, flags);
+		}
+		else
+			for (j=-ry; j<=ry; j++)
+				for (i=-rx; i<=rx; i++)
+					if (InCurrentBrush(i ,j ,rx ,ry))
+						delete_part(x+i, y+j, flags);
 		return 1;
 	}
 
@@ -2745,24 +2760,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
 		return 1;
 	}
 
-	//eraser
-	if (c == 0 && !REPLACE_MODE)
-	{
-		stemp = SLALT;
-		SLALT = 0;//temporarily clear specific deletion element
-		if (rx==0&&ry==0)
-		{
-			delete_part(x, y);
-		}
-		else
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					if (InCurrentBrush(i ,j ,rx ,ry))
-						delete_part(x+i, y+j);
-		SLALT = stemp;
-		return 1;
-	}
-	if (REPLACE_MODE)
+	if (flags&BRUSH_REPLACEMODE)
 	{
 		if (rx==0&&ry==0)
 		{
@@ -2770,7 +2768,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
 			{
 				if ((pmap[y][x]))
 				{
-					delete_part(x, y);
+					delete_part(x, y, 0);
 					if (c!=0)
 						create_part(-2, x, y, c);
 				}
@@ -2787,7 +2785,7 @@ int create_parts(int x, int y, int rx, int ry, int c)
 							continue;
 						if ((pmap[y+j][x+i]))
 						{
-							delete_part(x+i, y+j);
+							delete_part(x+i, y+j, 0);
 							if (c!=0)
 								create_part(-2, x+i, y+j, c);
 						}
@@ -2827,7 +2825,18 @@ int InCurrentBrush(int i, int j, int rx, int ry)
 			break;
 	}
 }
-void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c)
+int get_brush_flags()
+{
+	int flags = 0;
+	if (REPLACE_MODE)
+		flags |= BRUSH_REPLACEMODE;
+	if (sdl_mod & (KMOD_CAPS))
+		flags |= BRUSH_SPECIFIC_DELETE;
+	if (sdl_mod & (KMOD_LALT) && sdl_mod & (KMOD_CTRL))
+		flags |= BRUSH_SPECIFIC_DELETE;
+	return flags;
+}
+void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags)
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
 	float e, de;
@@ -2861,9 +2870,9 @@ void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c)
 	for (x=x1; x<=x2; x++)
 	{
 		if (cp)
-			create_parts(y, x, rx, ry, c);
+			create_parts(y, x, rx, ry, c, flags);
 		else
-			create_parts(x, y, rx, ry, c);
+			create_parts(x, y, rx, ry, c, flags);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -2871,9 +2880,9 @@ void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c)
 			if (c==WL_EHOLE || c==WL_ALLOWGAS || c==WL_ALLOWALLELEC || c==WL_ALLOWSOLID || c==WL_ALLOWAIR || c==WL_WALL || c==WL_DESTROYALL || c==WL_ALLOWLIQUID || c==WL_FAN || c==WL_STREAM || c==WL_DETECT || c==WL_EWALL || c==WL_WALLELEC || !(rx+ry))
 			{
 				if (cp)
-					create_parts(y, x, rx, ry, c);
+					create_parts(y, x, rx, ry, c, flags);
 				else
-					create_parts(x, y, rx, ry, c);
+					create_parts(x, y, rx, ry, c, flags);
 			}
 			e -= 1.0f;
 		}

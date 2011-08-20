@@ -20,6 +20,8 @@
 #define CM_PRESS 1
 #define CM_VEL 0
 
+#define BRUSH_REPLACEMODE 0x1
+#define BRUSH_SPECIFIC_DELETE 0x2
 
 #define UI_WALLSTART 222
 #define UI_ACTUALSTART 122
@@ -990,9 +992,11 @@ void part_change_type(int i, int x, int y, int t);
 
 int InCurrentBrush(int i, int j, int rx, int ry);
 
+int get_brush_flags();
+
 int create_part(int p, int x, int y, int t);
 
-void delete_part(int x, int y);
+void delete_part(int x, int y, int flags);
 
 int is_wire(int x, int y);
 
@@ -1002,7 +1006,7 @@ void set_emap(int x, int y);
 
 int parts_avg(int ci, int ni, int t);
 
-void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type);
+void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type, int flags);
 
 int nearest_part(int ci, int t);
 
@@ -1014,13 +1018,13 @@ void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert);
 
 void clear_area(int area_x, int area_y, int area_w, int area_h);
 
-void create_box(int x1, int y1, int x2, int y2, int c);
+void create_box(int x1, int y1, int x2, int y2, int c, int flags);
 
-int flood_parts(int x, int y, int c, int cm, int bm);
+int flood_parts(int x, int y, int c, int cm, int bm, int flags);
 
-int create_parts(int x, int y, int rx, int ry, int c);
+int create_parts(int x, int y, int rx, int ry, int c, int flags);
 
-void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c);
+void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags);
 
 void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
 

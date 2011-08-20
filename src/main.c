@@ -3071,7 +3071,7 @@ int main(int argc, char *argv[])
 						{
 							nfvx = (line_x-lx)*0.005f;
 							nfvy = (line_y-ly)*0.005f;
-							flood_parts(lx, ly, WL_FANHELPER, -1, WL_FAN);
+							flood_parts(lx, ly, WL_FANHELPER, -1, WL_FAN, 0);
 							for (j=0; j<YRES/CELL; j++)
 								for (i=0; i<XRES/CELL; i++)
 									if (bmap[j][i] == WL_FANHELPER)
@@ -3113,7 +3113,7 @@ int main(int argc, char *argv[])
 						}
 						else
 						{
-							create_line(lx, ly, x, y, bsx, bsy, c);
+							create_line(lx, ly, x, y, bsx, bsy, c, get_brush_flags());
 						}
 						lx = x;
 						ly = y;
@@ -3143,9 +3143,9 @@ int main(int argc, char *argv[])
 						if (sdl_mod & (KMOD_CAPS))
 							c = 0;
 						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=SPC_WIND&&c!=SPC_PGRV&&c!=SPC_NGRV)
-							flood_parts(x, y, c, -1, -1);
+							flood_parts(x, y, c, -1, -1, get_brush_flags());
 						if (c==SPC_HEAT || c==SPC_COOL)
-							create_parts(x, y, bsx, bsy, c);
+							create_parts(x, y, bsx, bsy, c, get_brush_flags());
 						lx = x;
 						ly = y;
 						lb = 0;
@@ -3198,7 +3198,7 @@ int main(int argc, char *argv[])
 								cb_bmap[cby][cbx] = bmap[cby][cbx];
 								cb_emap[cby][cbx] = emap[cby][cbx];
 							}
-						create_parts(x, y, bsx, bsy, c);
+						create_parts(x, y, bsx, bsy, c, get_brush_flags());
 						lx = x;
 						ly = y;
 						lb = b;
@@ -3218,10 +3218,10 @@ int main(int argc, char *argv[])
 				if (lm == 1)//line
 				{
 					if (c!=WL_FAN+100 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=WL_FAN)
-						create_line(lx, ly, line_x, line_y, bsx, bsy, c);
+						create_line(lx, ly, line_x, line_y, bsx, bsy, c, get_brush_flags());
 				}
 				else//box
-					create_box(lx, ly, x, y, c);
+					create_box(lx, ly, x, y, c, get_brush_flags());
 				lm = 0;
 			}
 			lb = 0;

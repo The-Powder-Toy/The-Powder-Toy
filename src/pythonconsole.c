@@ -847,7 +847,7 @@ static PyObject* emb_delete(PyObject *self, PyObject *args)
 	int x,y;
 	if (!PyArg_ParseTuple(args, "ii:delete",&x,&y))
 		return NULL;
-	delete_part(x,y);
+	delete_part(x,y, 0);
 	return Py_BuildValue("i",1);
 }
 
