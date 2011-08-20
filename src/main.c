@@ -1576,7 +1576,7 @@ int main(int argc, char *argv[])
 	void *http_ver_check, *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
 	//char console_error[255] = "";
-	int result, i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len, new_message_len=0;
+	int result, i, j, bq, bc, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len, new_message_len=0;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -2003,8 +2003,12 @@ int main(int argc, char *argv[])
 		}
 #ifdef LUACONSOLE
 	if(sdl_key){
-		if(!luacon_keypress(sdl_key, sdl_mod))
+		if(!luacon_keyevent(sdl_key, sdl_mod, LUACON_KDOWN))
 			sdl_key = 0;
+	}
+	if(sdl_rkey){
+		if(!luacon_keyevent(sdl_rkey, sdl_mod, LUACON_KUP))
+			sdl_rkey = 0;
 	}
 #endif
 #ifdef PYCONSOLE
@@ -2515,11 +2519,21 @@ int main(int argc, char *argv[])
 		}
 
 		bq = b; // bq is previous mouse state
-		b = SDL_GetMouseState(&x, &y); // b is current mouse state
+		bc = b = SDL_GetMouseState(&x, &y); // b is current mouse state
 
 #ifdef LUACONSOLE
-		if(b){
-			if(!luacon_mouseclick(x/sdl_scale, y/sdl_scale, b, bq)){
+		if(bc && bq){
+			if(!luacon_mouseevent(x/sdl_scale, y/sdl_scale, bc, LUACON_MPRESS)){
+				b = 0;
+			}
+		}
+		else if(bc && !bq){
+			if(!luacon_mouseevent(x/sdl_scale, y/sdl_scale, bc, LUACON_MDOWN)){
+				b = 0;
+			}
+		}
+		else if(!bc && bq){
+			if(!luacon_mouseevent(x/sdl_scale, y/sdl_scale, bq, LUACON_MUP)){
 				b = 0;
 			}
 		}
