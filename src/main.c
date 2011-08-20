@@ -2561,6 +2561,16 @@ int main(int argc, char *argv[])
 				{
 					sprintf(nametext, "%s (%s)", ptypes[cr&0xFF].name, gmenu[parts[cr>>8].ctype].name);
 				}
+				else if ((cr&0xFF)==PT_LAVA && parts[cr>>8].ctype)
+				{
+					char lowername[6];
+					strcpy(lowername, ptypes[parts[cr>>8].ctype].name);
+					int ix;
+					for (ix = 0; lowername[ix]; ix++)
+						lowername[ix] = tolower(lowername[ix]);
+
+					sprintf(nametext, "Molten %s", lowername);
+				}
 				else if (DEBUG_MODE)
 				{
 					int tctype = parts[cr>>8].ctype;
