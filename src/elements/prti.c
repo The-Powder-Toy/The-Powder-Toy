@@ -1,26 +1,27 @@
 #include <element.h>
-/*these are the count vaules of where the particle gets stored, depending on where it came from
-   1 4 6
-   2 . 7
-   3 5 8
-   PRTO counts backwards, so that it will come out at the opposite place of where it came in
-   8 5 3
-   7 . 2
-   6 4 1
+/*these are the count values of where the particle gets stored, depending on where it came from
+   0 1 2
+   7 . 3
+   6 5 4
+   PRTO does (count+4)%8, so that it will come out at the opposite place to where it came in
    PRTO does +/-1 to the count, so it doesn't jam as easily
 */
+int portal_rx[8] = {-1, 0, 1, 1, 1, 0,-1,-1};
+int portal_ry[8] = {-1,-1,-1, 0, 1, 1, 1, 0};
+
 int update_PRTI(UPDATE_FUNC_ARGS) {
 	int r, nnx, rx, ry, fe = 0;
 	int count =0;
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 	if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
 	else if (parts[i].tmp<0) parts[i].tmp = 0;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (count=0; count<8; count++)
+	{
+		rx = portal_rx[count];
+		ry = portal_ry[count];
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				count ++;
 				if (!r)
 					fe = 1;
 				if ((r>>8)>=NPART)
@@ -38,9 +39,9 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 					detach(r>>8);
 
 				for ( nnx=0; nnx<80; nnx++)
-					if (!portalp[parts[i].tmp][count-1][nnx].type)
+					if (!portalp[parts[i].tmp][count][nnx].type)
 					{
-						portalp[parts[i].tmp][count-1][nnx] = parts[r>>8];
+						portalp[parts[i].tmp][count][nnx] = parts[r>>8];
 						if ((r&0xFF)==PT_SPRK)
 							part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
 						else
@@ -49,6 +50,7 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 						break;
 					}
 			}
+	}
 
 
 	if (fe) {

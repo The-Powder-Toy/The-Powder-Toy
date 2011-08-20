@@ -223,30 +223,19 @@ int try_move(int i, int x, int y, int nx, int ny)
 		if ((r&0xFF)==PT_PRTI && (parts[i].type==PT_PHOT || parts[i].type==PT_NEUT))
 		{
 			int nnx, count;
-			if (nx-x<0)
+			for (count=0; count<8; count++)
 			{
-				if (ny-y<0) count = 1;
-				else if (ny-y==0) count = 2;
-				else count = 3;
+				if (isign(x-nx)==isign(portal_rx[count]) && isign(y-ny)==isign(portal_ry[count]))
+					break;
 			}
-			else if (nx-x==0)
-			{
-				if (ny-y<0) count = 4;
-				else count = 5;
-			}
-			else
-			{
-				if (ny-y<0) count = 6;
-				else if (ny-y==0) count = 7;
-				else count = 8;
-			}
+			count = count%8;
 			parts[r>>8].tmp = (int)((parts[r>>8].temp-73.15f)/100+1);
 			if (parts[r>>8].tmp>=CHANNELS) parts[r>>8].tmp = CHANNELS-1;
 			else if (parts[r>>8].tmp<0) parts[r>>8].tmp = 0;
 			for ( nnx=0; nnx<80; nnx++)
-				if (!portalp[parts[r>>8].tmp][count-1][nnx].type)
+				if (!portalp[parts[r>>8].tmp][count][nnx].type)
 				{
-					portalp[parts[r>>8].tmp][count-1][nnx] = parts[i];
+					portalp[parts[r>>8].tmp][count][nnx] = parts[i];
 					parts[i].type=PT_NONE;
 					break;
 				}

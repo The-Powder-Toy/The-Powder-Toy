@@ -946,6 +946,8 @@ static wall_type wtypes[] =
 particle portalp[CHANNELS][8][80];
 const particle emptyparticle;
 int wireless[CHANNELS][2];
+extern int portal_rx[8];
+extern int portal_ry[8];
 
 extern int wire_placed;
 

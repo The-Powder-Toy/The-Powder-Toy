@@ -1,12 +1,9 @@
 #include <element.h>
-/*these are the count vaules of where the particle gets stored, depending on where it came from
-   1 4 6
-   2 . 7
-   3 5 8
-   PRTO counts backwards, so that it will come out at the opposite place of where it came in
-   8 5 3
-   7 . 2
-   6 4 1
+/*these are the count values of where the particle gets stored, depending on where it came from
+   0 1 2
+   7 . 3
+   6 5 4
+   PRTO does (count+4)%8, so that it will come out at the opposite place to where it came in
    PRTO does +/-1 to the count, so it doesn't jam as easily
 */
 int update_PRTO(UPDATE_FUNC_ARGS) {
@@ -15,12 +12,13 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 	if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
 	else if (parts[i].tmp<0) parts[i].tmp = 0;
-	for (rx=1; rx>-2; rx--)
-		for (ry=1; ry>-2; ry--)
+	for (count=0; count<8; count++)
+	{
+		rx = portal_rx[count];
+		ry = portal_ry[count];
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				count ++;
 				if (!r)
 					fe = 1;
 				if ((r>>8)>=NPART || r)
@@ -29,12 +27,8 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 				{
 					for ( nnx =0 ; nnx<80; nnx++)
 					{
-						int randomness = count + rand()%3-1;//add -1,0,or 1 to count
-						if (randomness<1)
-							randomness=1;
-						if (randomness>8)
-							randomness=8;
-						if (portalp[parts[i].tmp][randomness-1][nnx].type==PT_SPRK)// TODO: make it look better, spark creation
+						int randomness = (count + rand()%3-1 + 4)%8;//add -1,0,or 1 to count
+						if (portalp[parts[i].tmp][randomness][nnx].type==PT_SPRK)// TODO: make it look better, spark creation
 						{
 							create_part(-1,x+1,y,PT_SPRK);
 							create_part(-1,x+1,y+1,PT_SPRK);
@@ -44,26 +38,27 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 							create_part(-1,x-1,y+1,PT_SPRK);
 							create_part(-1,x-1,y,PT_SPRK);
 							create_part(-1,x-1,y-1,PT_SPRK);
-							portalp[parts[i].tmp][randomness-1][nnx] = emptyparticle;
+							portalp[parts[i].tmp][randomness][nnx] = emptyparticle;
 							break;
 						}
-						else if (portalp[parts[i].tmp][randomness-1][nnx].type)
+						else if (portalp[parts[i].tmp][randomness][nnx].type)
 						{
-							if (portalp[parts[i].tmp][randomness-1][nnx].type==PT_STKM)
+							if (portalp[parts[i].tmp][randomness][nnx].type==PT_STKM)
 								player[27] = 0;
-							if (portalp[parts[i].tmp][randomness-1][nnx].type==PT_STKM2)
+							if (portalp[parts[i].tmp][randomness][nnx].type==PT_STKM2)
 								player2[27] = 0;
-							np = create_part(-1,x+rx,y+ry,portalp[parts[i].tmp][randomness-1][nnx].type);
+							np = create_part(-1,x+rx,y+ry,portalp[parts[i].tmp][randomness][nnx].type);
 							if (np<0) continue;
-							parts[np] = portalp[parts[i].tmp][randomness-1][nnx];
+							parts[np] = portalp[parts[i].tmp][randomness][nnx];
 							parts[np].x = x+rx;
 							parts[np].y = y+ry;
-							portalp[parts[i].tmp][randomness-1][nnx] = emptyparticle;
+							portalp[parts[i].tmp][randomness][nnx] = emptyparticle;
 							break;
 						}
 					}
 				}
 			}
+	}
 	if (fe) {
 		int orbd[4] = {0, 0, 0, 0};	//Orbital distances
 		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
