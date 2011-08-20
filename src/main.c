@@ -2575,7 +2575,7 @@ int main(int argc, char *argv[])
 				{
 					sprintf(nametext, "%s (%s)", ptypes[cr&0xFF].name, gmenu[parts[cr>>8].ctype].name);
 				}
-				else if ((cr&0xFF)==PT_LAVA && parts[cr>>8].ctype)
+				else if ((cr&0xFF)==PT_LAVA && parts[cr>>8].ctype > 0 && parts[cr>>8].ctype < PT_NUM )
 				{
 					char lowername[6];
 					strcpy(lowername, ptypes[parts[cr>>8].ctype].name);
