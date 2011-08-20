@@ -415,23 +415,23 @@ void STKM_init_legs(float* playerp, int i)
 	x = (int)(parts[i].x+0.5f);
 	y = (int)(parts[i].y+0.5f);
 
-	player[3] = x-1;
-	player[4] = y+6;
-	player[5] = x-1;
-	player[6] = y+6;
+	playerp[3] = x-1;
+	playerp[4] = y+6;
+	playerp[5] = x-1;
+	playerp[6] = y+6;
 
-	player[7] = x-3;
-	player[8] = y+12;
-	player[9] = x-3;
-	player[10] = y+12;
+	playerp[7] = x-3;
+	playerp[8] = y+12;
+	playerp[9] = x-3;
+	playerp[10] = y+12;
 
-	player[11] = x+1;
-	player[12] = y+6;
-	player[13] = x+1;
-	player[14] = y+6;
+	playerp[11] = x+1;
+	playerp[12] = y+6;
+	playerp[13] = x+1;
+	playerp[14] = y+6;
 
-	player[15] = x+3;
-	player[16] = y+12;
-	player[17] = x+3;
-	player[18] = y+12;
+	playerp[15] = x+3;
+	playerp[16] = y+12;
+	playerp[17] = x+3;
+	playerp[18] = y+12;
 }

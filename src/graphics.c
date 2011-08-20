@@ -4453,22 +4453,22 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
 					if (j==PT_STKM) lc = PIXRGB(255, 255, 255);
 					else lc = PIXRGB(100, 100, 255);
 					//only need to check upper bound of y coord - lower bounds and x<w are checked in draw_line
-					draw_line(fb , x-2, y-2, x+2, y-2, PIXR(lc), PIXG(lc), PIXB(lc), w);
+					draw_line(fb , x-2, y-2, x+2, y-2, PIXR(hc), PIXG(hc), PIXB(hc), w);
 					if (y+2<h)
 					{
-						draw_line(fb , x-2, y+2, x+2, y+2, PIXR(lc), PIXG(lc), PIXB(lc), w);
-						draw_line(fb , x-2, y-2, x-2, y+2, PIXR(lc), PIXG(lc), PIXB(lc), w);
-						draw_line(fb , x+2, y-2, x+2, y+2, PIXR(lc), PIXG(lc), PIXB(lc), w);
+						draw_line(fb , x-2, y+2, x+2, y+2, PIXR(hc), PIXG(hc), PIXB(hc), w);
+						draw_line(fb , x-2, y-2, x-2, y+2, PIXR(hc), PIXG(hc), PIXB(hc), w);
+						draw_line(fb , x+2, y-2, x+2, y+2, PIXR(hc), PIXG(hc), PIXB(hc), w);
 					}
 					if (y+6<h)
 					{
-						draw_line(fb , x, y+3, x-1, y+6, PIXR(hc), PIXG(hc), PIXB(hc), w);
-						draw_line(fb , x, y+3, x+1, y+6, PIXR(hc), PIXG(hc), PIXB(hc), w);
+						draw_line(fb , x, y+3, x-1, y+6, PIXR(lc), PIXG(lc), PIXB(lc), w);
+						draw_line(fb , x, y+3, x+1, y+6, PIXR(lc), PIXG(lc), PIXB(lc), w);
 					}
 					if (y+12<h)
 					{
-						draw_line(fb , x-1, y+6, x-3, y+12, PIXR(hc), PIXG(hc), PIXB(hc), w);
-						draw_line(fb , x+1, y+6, x+3, y+12, PIXR(hc), PIXG(hc), PIXB(hc), w);
+						draw_line(fb , x-1, y+6, x-3, y+12, PIXR(lc), PIXG(lc), PIXB(lc), w);
+						draw_line(fb , x+1, y+6, x+3, y+12, PIXR(lc), PIXG(lc), PIXB(lc), w);
 					}
 				}
 				else
