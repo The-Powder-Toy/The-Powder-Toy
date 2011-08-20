@@ -213,7 +213,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 			if ((r & 0xFF) == PT_COAL || (r & 0xFF) == PT_BCOL)
 				parts[r>>8].temp = parts[i].temp;
 
-			if ((r & 0xFF) < PT_NUM && ptypes[r&0xFF].hconduct)
+			if ((r & 0xFF) < PT_NUM && ptypes[r&0xFF].hconduct && ((r&0xFF)!=PT_HSWC||parts[r>>8].life==10) && (r&0xFF)!=PT_FILT)
 				parts[i].temp = parts[r>>8].temp = restrict_flt((parts[r>>8].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
 		if (parts[i].type==PT_NEUT && ((r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN || (r&0xFF)==PT_BCLN || (r&0xFF)==PT_PBCN)) {
