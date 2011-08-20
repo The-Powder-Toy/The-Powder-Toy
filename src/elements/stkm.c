@@ -389,21 +389,23 @@ void STKM_interact(float* playerp, int i, int x, int y)
 
 		if ((r&0xFF)==PT_PLUT)  //If on plut
 			parts[i].life -= 1;
+			
+		if (ptypes[r&0xFF].properties&PROP_DEADLY)
+			parts[i].life -= 1;
 
 		if ((r&0xFF)==PT_PRTI && parts[i].type)
 		{
-			int nnx, count;
+			int nnx, count=1;//gives rx=0, ry=1 in update_PRTO
 			parts[r>>8].tmp = (int)((parts[r>>8].temp-73.15f)/100+1);
 			if (parts[r>>8].tmp>=CHANNELS) parts[r>>8].tmp = CHANNELS-1;
 			else if (parts[r>>8].tmp<0) parts[r>>8].tmp = 0;
-			for (count=1; count<=8; count++)
-				for (nnx=0; nnx<80; nnx++)
-					if (!portalp[parts[r>>8].tmp][count-1][nnx].type)
-					{
-						portalp[parts[r>>8].tmp][count-1][nnx] = parts[i];
-						kill_part(i);
-						playerp[27] = 1;//stop SPWN creating a new STKM while he is in portal
-					}
+			for (nnx=0; nnx<80; nnx++)
+				if (!portalp[parts[r>>8].tmp][count][nnx].type)
+				{
+					portalp[parts[r>>8].tmp][count][nnx] = parts[i];
+					kill_part(i);
+					playerp[27] = 1;//stop SPWN creating a new STKM while he is in portal
+				}
 		}
 	}
 }
