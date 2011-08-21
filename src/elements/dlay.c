@@ -19,6 +19,8 @@ int update_DLAY(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if ((r>>8)>=NPART || !r)
 						continue;
+					if (parts_avg(r>>8, i, PT_INSL) == PT_INSL)
+						continue;
 					if ((r&0xFF)==PT_SPRK && parts[i].life==0 && parts[r>>8].ctype==PT_PSCN)
 					{
 						parts[i].life = (int)(parts[i].temp-273.15);
