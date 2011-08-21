@@ -716,6 +716,13 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		if((pmap[y][x]&0xFF)==PT_WIRE){
 			parts[pmap[y][x]>>8].ctype=PT_DUST;
 		}
+		if ((pmap[y][x]&0xFF)==PT_DLAY) {
+			if (parts[pmap[y][x]>>8].life!=0 || (parts[pmap[y][x]>>8].tmp&0xFF00))
+				return -1;
+			parts[pmap[y][x]>>8].life = (int)(parts[pmap[y][x]>>8].temp-273.15);
+			parts[pmap[y][x]>>8].tmp = 0;
+			return pmap[y][x]>>8;
+		}
 		if ((pmap[y][x]>>8)>=NPART || !((pmap[y][x]&0xFF)==PT_INST||(ptypes[pmap[y][x]&0xFF].properties&PROP_CONDUCTS)))
 			return -1;
 		if (parts[pmap[y][x]>>8].life!=0)
