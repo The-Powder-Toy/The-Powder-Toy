@@ -76,7 +76,7 @@ void luacon_open(){
 }
 int luacon_keyevent(int key, int modifier, int event){
 	int i = 0, kpcontinue = 1;
-	char tempkey[] = {(key, 0};
+	char tempkey[] = {key, 0};
 	if(keypress_function_count){
 		for(i = 0; i < keypress_function_count && kpcontinue; i++){
 			lua_rawgeti(l, LUA_REGISTRYINDEX, keypress_functions[i]);
