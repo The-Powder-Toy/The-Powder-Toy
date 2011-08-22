@@ -20,7 +20,7 @@
 void luacon_open();
 int luacon_step(int mx, int my);
 int luacon_mouseevent(int mx, int my, int mb, int event);
-int luacon_keyevent(char key, int modifier, int event);
+int luacon_keyevent(int key, int modifier, int event);
 int luacon_eval(char *command);
 char *luacon_geterror();
 void luacon_close();

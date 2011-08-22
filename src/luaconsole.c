@@ -74,12 +74,13 @@ void luacon_open(){
 	lua_pushinteger(l, 0);
 	lua_setfield(l, tptProperties, "mousey");
 }
-int luacon_keyevent(char key, int modifier, int event){
+int luacon_keyevent(int key, int modifier, int event){
 	int i = 0, kpcontinue = 1;
+	char tempkey[] = {(key, 0};
 	if(keypress_function_count){
 		for(i = 0; i < keypress_function_count && kpcontinue; i++){
 			lua_rawgeti(l, LUA_REGISTRYINDEX, keypress_functions[i]);
-			lua_pushstring(l, &key);
+			lua_pushstring(l, tempkey);
 			lua_pushinteger(l, key);
 			lua_pushinteger(l, modifier);
 			lua_pushinteger(l, event);
