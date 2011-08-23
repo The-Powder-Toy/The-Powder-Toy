@@ -51,7 +51,7 @@ static menu_section msections[] = //doshow does not do anything currently.
 	{"\xC6", "Radioactive", 0, 1},
 	{"\xCC", "Special", 0, 1},
 	{"\xD2", "Life", 0, 1},
-	{"\xC8", "Tools", 0, 1},
+	{"\xD7", "Tools", 0, 1},
 	{"\xD2", "More Life", 0, 1},
 	{"\xC8", "", 0, 0},
 	{"\xC8", "Cracker", 0, 0},
