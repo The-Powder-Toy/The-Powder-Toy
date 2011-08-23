@@ -326,12 +326,14 @@ void *build_thumb(int *size, int bzip2)
 }
 
 //the saving function
-void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
+void *build_save(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
 {
 	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*15+MAXSIGNS*262), *c;
 	int i,j,x,y,p=0,*m=calloc(XRES*YRES, sizeof(int));
-	int bx0=x0/CELL, by0=y0/CELL, bw=(w+CELL-1)/CELL, bh=(h+CELL-1)/CELL;
+	int x0, y0, w, h, bx0=orig_x0/CELL, by0=orig_y0/CELL, bw, bh;
 	particle *parts = partsptr;
+	bw=(orig_w+orig_x0-bx0*CELL+CELL-1)/CELL;
+	bh=(orig_h+orig_y0-by0*CELL+CELL-1)/CELL;
 
 	// normalize coordinates
 	x0 = bx0*CELL;
@@ -368,7 +370,7 @@ void *build_save(int *size, int x0, int y0, int w, int h, unsigned char bmap[YRE
 		{
 			x = (int)(parts[i].x+0.5f);
 			y = (int)(parts[i].y+0.5f);
-			if (x>=x0 && x<x0+w && y>=y0 && y<y0+h) {
+			if (x>=orig_x0 && x<orig_x0+orig_w && y>=orig_y0 && y<orig_y0+orig_h) {
 				if (!m[(x-x0)+(y-y0)*w] ||
 				        parts[m[(x-x0)+(y-y0)*w]-1].type == PT_PHOT ||
 				        parts[m[(x-x0)+(y-y0)*w]-1].type == PT_NEUT)
@@ -2823,10 +2825,10 @@ int main(int argc, char *argv[])
 		}
 		else if (save_mode==1)//getting the area you are selecting
 		{
-			save_x = (mx/sdl_scale)/CELL;
-			save_y = (my/sdl_scale)/CELL;
-			if (save_x >= XRES/CELL) save_x = XRES/CELL-1;
-			if (save_y >= YRES/CELL) save_y = YRES/CELL-1;
+			save_x = mx/sdl_scale;
+			save_y = my/sdl_scale;
+			if (save_x >= XRES) save_x = XRES-1;
+			if (save_y >= YRES) save_y = YRES-1;
 			save_w = 1;
 			save_h = 1;
 			if (b==1)
@@ -2841,32 +2843,32 @@ int main(int argc, char *argv[])
 		}
 		else if (save_mode==2)
 		{
-			save_w = (mx/sdl_scale+CELL/2)/CELL - save_x;
-			save_h = (my/sdl_scale+CELL/2)/CELL - save_y;
-			if (save_w>XRES/CELL) save_w = XRES/CELL;
-			if (save_h>YRES/CELL) save_h = YRES/CELL;
+			save_w = mx/sdl_scale - save_x;
+			save_h = my/sdl_scale - save_y;
+			if (save_w+save_x>XRES) save_w = XRES-save_x;
+			if (save_h+save_y>YRES) save_h = YRES-save_y;
 			if (save_w<1) save_w = 1;
 			if (save_h<1) save_h = 1;
 			if (!b)
 			{
 				if (copy_mode==1)//CTRL-C, copy
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
+					clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, fvx, fvy, signs, parts);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
 				}
 				else if (copy_mode==2)//CTRL-X, cut
 				{
-					clipboard_data=build_save(&clipboard_length, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL, bmap, fvx, fvy, signs, parts);
+					clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, fvx, fvy, signs, parts);
 					clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
-					clear_area(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+					clear_area(save_x, save_y, save_w, save_h);
 				}
 				else//normal save
 				{
-					stamp_save(save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+					stamp_save(save_x, save_y, save_w, save_h);
 					save_mode = 0;
 				}
 			}
@@ -3235,7 +3237,7 @@ int main(int argc, char *argv[])
 
 		if (save_mode)//draw dotted lines for selection
 		{
-			xor_rect(vid_buf, save_x*CELL, save_y*CELL, save_w*CELL, save_h*CELL);
+			xor_rect(vid_buf, save_x, save_y, save_w, save_h);
 			da = 51;//draws mouseover text for the message
 			db = 269;//the save message
 		}
