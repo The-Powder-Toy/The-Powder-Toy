@@ -26,7 +26,7 @@
 #endif
 
 SDLMod sdl_mod;
-int sdl_key, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
+int sdl_key, sdl_rkey, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
 #if (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
 SDL_SysWMinfo sdl_wminfo;
 Atom XA_CLIPBOARD, XA_TARGETS;
@@ -1945,12 +1945,8 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 			}
 		}
 	}
-	else if (i==SC_SPECIAL)//special menu
+	else if (i==SC_TOOL)//tools menu
 	{
-		if (fwidth > XRES-BARSIZE) { //fancy scrolling
-			float overflow = fwidth-(XRES-BARSIZE), location = ((float)XRES-BARSIZE)/((float)(mx-(XRES-BARSIZE)));
-			xoff = (int)(overflow / location);
-		}
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
 			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM||n==SPC_WIND||n==SPC_PGRV||n==SPC_NGRV)
@@ -1984,6 +1980,13 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 					drawrect(vid_buf, x+30-xoff, y-1, 29, 17, 55, 55, 255, 255);
 				}
 			}
+		}
+	}
+	else if (i==SC_SPECIAL)//special menu
+	{
+		if (fwidth > XRES-BARSIZE) { //fancy scrolling
+			float overflow = fwidth-(XRES-BARSIZE), location = ((float)XRES-BARSIZE)/((float)(mx-(XRES-BARSIZE)));
+			xoff = (int)(overflow / location);
 		}
 		for (n = 0; n<PT_NUM; n++)
 		{
@@ -2100,7 +2103,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 	{
 		drawtext(vid_buf, XRES-textwidth((char *)msections[i].name)-BARSIZE, sy-10, (char *)msections[i].name, 255, 255, 255, 255);
 	}
-	else if (i==SC_WALL||(i==SC_SPECIAL&&h>=UI_WALLSTART))
+	else if (i==SC_WALL||i==SC_TOOL)
 	{
 		drawtext(vid_buf, XRES-textwidth((char *)wtypes[h-UI_WALLSTART].descs)-BARSIZE, sy-10, (char *)wtypes[h-UI_WALLSTART].descs, 255, 255, 255, 255);
 	}
@@ -2205,7 +2208,7 @@ int color_menu_ui(pixel *vid_buf, int i, int *cr, int *cg, int *cb, int b, int b
 int sdl_poll(void)
 {
 	SDL_Event event;
-	sdl_key=sdl_wheel=sdl_ascii=0;
+	sdl_key=sdl_rkey=sdl_wheel=sdl_ascii=0;
 	while (SDL_PollEvent(&event))
 	{
 		switch (event.type)
@@ -2265,6 +2268,7 @@ int sdl_poll(void)
 			break;
 
 		case SDL_KEYUP:
+			sdl_rkey=event.key.keysym.sym;
 			if (event.key.keysym.sym == SDLK_CAPSLOCK)
 				sdl_caps = 0;
 			if (event.key.keysym.sym == 'z')

@@ -35,7 +35,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 		nearp = nearest_part(i, PT_ETRD);
 		if (nearp!=-1&&parts_avg(i, nearp, PT_INSL)!=PT_INSL)
 		{
-			create_line(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), 0, 0, PT_PLSM);
+			create_line(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), 0, 0, PT_PLSM, 0);
 			part_change_type(i,x,y,ct);
 			ct = parts[i].ctype = PT_NONE;
 			parts[i].life = 20;
@@ -152,7 +152,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 					else if (rt==PT_INST) {
 						if (parts[i].life>=3&&parts[r>>8].life==0)
 						{
-							flood_parts(x+rx,y+ry,PT_SPRK,PT_INST,-1);//spark the wire
+							flood_parts(x+rx,y+ry,PT_SPRK,PT_INST,-1, 0);//spark the wire
 						}
 					}
 					else if (parts[r>>8].life==0 && (parts[i].life<3 || ((r>>8)<i && parts[i].life<4))) {

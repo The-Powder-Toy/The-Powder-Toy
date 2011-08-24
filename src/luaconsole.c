@@ -44,6 +44,10 @@ void luacon_open(){
 		{"unregister_mouseclick", &luatpt_unregister_mouseclick},
 		{"register_keypress", &luatpt_register_keypress},
 		{"unregister_keypress", &luatpt_unregister_keypress},
+		{"register_mouseevent", &luatpt_register_mouseclick},
+		{"unregister_mouseevent", &luatpt_unregister_mouseclick},
+		{"register_keyevent", &luatpt_register_keypress},
+		{"unregister_keyevent", &luatpt_unregister_keypress},
 		{"input", &luatpt_input},
 		{"message_box", &luatpt_message_box},
 		{"get_numOfParts", &luatpt_get_numOfParts},
@@ -76,15 +80,17 @@ void luacon_open(){
 	lua_pushinteger(l, 0);
 	lua_setfield(l, tptProperties, "mousey");
 }
-int luacon_keypress(char key, int modifier){
+int luacon_keyevent(int key, int modifier, int event){
 	int i = 0, kpcontinue = 1;
+	char tempkey[] = {key, 0};
 	if(keypress_function_count){
 		for(i = 0; i < keypress_function_count && kpcontinue; i++){
 			lua_rawgeti(l, LUA_REGISTRYINDEX, keypress_functions[i]);
-			lua_pushstring(l, &key);
+			lua_pushstring(l, tempkey);
 			lua_pushinteger(l, key);
 			lua_pushinteger(l, modifier);
-			lua_pcall(l, 3, 1, 0);
+			lua_pushinteger(l, event);
+			lua_pcall(l, 4, 1, 0);
 			if(lua_isboolean(l, -1)){
 				kpcontinue = lua_toboolean(l, -1);
 			}
@@ -93,15 +99,15 @@ int luacon_keypress(char key, int modifier){
 	}
 	return kpcontinue;
 }
-int luacon_mouseclick(int mx, int my, int mb, int mbq){
+int luacon_mouseevent(int mx, int my, int mb, int event){
 	int i = 0, mpcontinue = 1;
 	if(mouseclick_function_count){
 		for(i = 0; i < mouseclick_function_count && mpcontinue; i++){
 			lua_rawgeti(l, LUA_REGISTRYINDEX, mouseclick_functions[i]);
-			lua_pushinteger(l, mbq);
-			lua_pushinteger(l, mb);
 			lua_pushinteger(l, mx);
 			lua_pushinteger(l, my);
+			lua_pushinteger(l, mb);
+			lua_pushinteger(l, event);
 			lua_pcall(l, 4, 1, 0);
 			if(lua_isboolean(l, -1)){
 				mpcontinue = lua_toboolean(l, -1);
@@ -113,12 +119,12 @@ int luacon_mouseclick(int mx, int my, int mb, int mbq){
 }
 int luacon_step(int mx, int my){
 	int tempret = 0, tempb, i, callret;
+	lua_pushinteger(l, my);
+	lua_pushinteger(l, mx);
+	lua_setfield(l, tptProperties, "mousex");
+	lua_setfield(l, tptProperties, "mousey");
 	if(step_functions[0]){
 		//Set mouse globals
-		lua_pushinteger(l, my);
-		lua_pushinteger(l, mx);
-		lua_setfield(l, tptProperties, "mousex");
-		lua_setfield(l, tptProperties, "mousey");
 		for(i = 0; i<6; i++){
 			if(step_functions[i]){
 				lua_rawgeti(l, LUA_REGISTRYINDEX, step_functions[i]);
@@ -752,7 +758,7 @@ int luatpt_delete(lua_State* l)
 	}
 	arg2 = abs(arg2);
 	if(arg2 < YRES && arg1 < XRES){
-		delete_part(arg1, arg2);
+		delete_part(arg1, arg2, 0);
 		return 0;
 	}
 	return luaL_error(l,"Invalid coordinates or particle ID");

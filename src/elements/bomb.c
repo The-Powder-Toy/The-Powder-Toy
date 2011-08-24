@@ -44,7 +44,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 							for (nxi=-rad; nxi<=rad; nxi++)
 								if ((pow(nxi,2))/(pow(rad,2))+(pow(nxj,2))/(pow(rad,2))<=1)
 									if ((pmap[y+nxj][x+nxi]&0xFF)!=PT_DMND && (pmap[y+nxj][x+nxi]&0xFF)!=PT_CLNE && (pmap[y+nxj][x+nxi]&0xFF)!=PT_PCLN && (pmap[y+nxj][x+nxi]&0xFF)!=PT_BCLN) {
-										delete_part(x+nxi, y+nxj);//it SHOULD kill anything but the exceptions above, doesn't seem to always work
+										delete_part(x+nxi, y+nxj, 0);//it SHOULD kill anything but the exceptions above, doesn't seem to always work
 										pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
 										nb = create_part(-1, x+nxi, y+nxj, PT_BOMB);
 										if (nb!=-1) {

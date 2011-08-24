@@ -1576,7 +1576,7 @@ int main(int argc, char *argv[])
 	void *http_ver_check, *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
 	//char console_error[255] = "";
-	int result, i, j, bq, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len, new_message_len=0;
+	int result, i, j, bq, bc, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len, new_message_len=0;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -2003,8 +2003,12 @@ int main(int argc, char *argv[])
 		}
 #ifdef LUACONSOLE
 	if(sdl_key){
-		if(!luacon_keypress(sdl_key, sdl_mod))
+		if(!luacon_keyevent(sdl_key, sdl_mod, LUACON_KDOWN))
 			sdl_key = 0;
+	}
+	if(sdl_rkey){
+		if(!luacon_keyevent(sdl_rkey, sdl_mod, LUACON_KUP))
+			sdl_rkey = 0;
 	}
 #endif
 #ifdef PYCONSOLE
@@ -2515,11 +2519,21 @@ int main(int argc, char *argv[])
 		}
 
 		bq = b; // bq is previous mouse state
-		b = SDL_GetMouseState(&x, &y); // b is current mouse state
+		bc = b = SDL_GetMouseState(&x, &y); // b is current mouse state
 
 #ifdef LUACONSOLE
-		if(b){
-			if(!luacon_mouseclick(x/sdl_scale, y/sdl_scale, b, bq)){
+		if(bc && bq){
+			if(!luacon_mouseevent(x/sdl_scale, y/sdl_scale, bc, LUACON_MPRESS)){
+				b = 0;
+			}
+		}
+		else if(bc && !bq){
+			if(!luacon_mouseevent(x/sdl_scale, y/sdl_scale, bc, LUACON_MDOWN)){
+				b = 0;
+			}
+		}
+		else if(!bc && bq){
+			if(!luacon_mouseevent(x/sdl_scale, y/sdl_scale, bq, LUACON_MUP)){
 				b = 0;
 			}
 		}
@@ -2560,6 +2574,16 @@ int main(int argc, char *argv[])
 				if ((cr&0xFF)==PT_LIFE && parts[cr>>8].ctype>=0 && parts[cr>>8].ctype<NGOLALT)
 				{
 					sprintf(nametext, "%s (%s)", ptypes[cr&0xFF].name, gmenu[parts[cr>>8].ctype].name);
+				}
+				else if ((cr&0xFF)==PT_LAVA && parts[cr>>8].ctype > 0 && parts[cr>>8].ctype < PT_NUM )
+				{
+					char lowername[6];
+					strcpy(lowername, ptypes[parts[cr>>8].ctype].name);
+					int ix;
+					for (ix = 0; lowername[ix]; ix++)
+						lowername[ix] = tolower(lowername[ix]);
+
+					sprintf(nametext, "Molten %s", lowername);
 				}
 				else if (DEBUG_MODE)
 				{
@@ -3047,7 +3071,7 @@ int main(int argc, char *argv[])
 						{
 							nfvx = (line_x-lx)*0.005f;
 							nfvy = (line_y-ly)*0.005f;
-							flood_parts(lx, ly, WL_FANHELPER, -1, WL_FAN);
+							flood_parts(lx, ly, WL_FANHELPER, -1, WL_FAN, 0);
 							for (j=0; j<YRES/CELL; j++)
 								for (i=0; i<XRES/CELL; i++)
 									if (bmap[j][i] == WL_FANHELPER)
@@ -3089,7 +3113,7 @@ int main(int argc, char *argv[])
 						}
 						else
 						{
-							create_line(lx, ly, x, y, bsx, bsy, c);
+							create_line(lx, ly, x, y, bsx, bsy, c, get_brush_flags());
 						}
 						lx = x;
 						ly = y;
@@ -3119,9 +3143,9 @@ int main(int argc, char *argv[])
 						if (sdl_mod & (KMOD_CAPS))
 							c = 0;
 						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=SPC_WIND&&c!=SPC_PGRV&&c!=SPC_NGRV)
-							flood_parts(x, y, c, -1, -1);
+							flood_parts(x, y, c, -1, -1, get_brush_flags());
 						if (c==SPC_HEAT || c==SPC_COOL)
-							create_parts(x, y, bsx, bsy, c);
+							create_parts(x, y, bsx, bsy, c, get_brush_flags());
 						lx = x;
 						ly = y;
 						lb = 0;
@@ -3174,7 +3198,7 @@ int main(int argc, char *argv[])
 								cb_bmap[cby][cbx] = bmap[cby][cbx];
 								cb_emap[cby][cbx] = emap[cby][cbx];
 							}
-						create_parts(x, y, bsx, bsy, c);
+						create_parts(x, y, bsx, bsy, c, get_brush_flags());
 						lx = x;
 						ly = y;
 						lb = b;
@@ -3194,10 +3218,10 @@ int main(int argc, char *argv[])
 				if (lm == 1)//line
 				{
 					if (c!=WL_FAN+100 || lx<0 || ly<0 || lx>=XRES || ly>=YRES || bmap[ly/CELL][lx/CELL]!=WL_FAN)
-						create_line(lx, ly, line_x, line_y, bsx, bsy, c);
+						create_line(lx, ly, line_x, line_y, bsx, bsy, c, get_brush_flags());
 				}
 				else//box
-					create_box(lx, ly, x, y, c);
+					create_box(lx, ly, x, y, c, get_brush_flags());
 				lm = 0;
 			}
 			lb = 0;
