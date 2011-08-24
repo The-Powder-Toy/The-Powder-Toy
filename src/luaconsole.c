@@ -1077,6 +1077,7 @@ return 0;
 int luatpt_getscriptid(lua_State* l)
 {
 
+	
 	int sock, port, numrec;
     struct sockaddr_in serv_addr;
     struct hostent *server;
@@ -1088,6 +1089,8 @@ int luatpt_getscriptid(lua_State* l)
 			luaL_error(l, "Invalid ID format.");
 			return 0;
 		}
+	if(!confirm_ui(vid_buf,"Do you want to install script?",id,"Install"))
+	return 0;	
 
 	port = 10457;
 	sock = socket(AF_INET, SOCK_STREAM, 0);

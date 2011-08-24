@@ -854,6 +854,7 @@ void error_ui(pixel *vid_buf, int err, char *txt)
 	}
 }
 
+
 char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shadow)
 {
 	int xsize = 244;
