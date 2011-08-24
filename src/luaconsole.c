@@ -1092,7 +1092,7 @@ int luatpt_getscriptid(lua_State* l)
 	port = 10457;
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 
-	server = gethostbyname(SERVER);
+	server = gethostbyname("chaos.powdertoy.co.uk");
 	//server = gethostbyname("localhost");
     if (server == NULL) {
         luaL_error(l, "Error fetching host IP.");
