@@ -718,7 +718,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			gol[x][y]=0;
 			if (j)
 			{
-				if (pmap[y][x] && (pmap[y][x]>>8)<NPART)
+				if (pmap[y][x])
 				{
 					k = pmap[y][x]>>8;
 					memset(parts+k, 0, sizeof(particle));
@@ -2571,7 +2571,7 @@ int main(int argc, char *argv[])
 			} else {
 				cr = pmap[y/sdl_scale][x/sdl_scale];
 			}
-			if (!((cr>>8)>=NPART || !cr))
+			if (cr)
 			{
 				if ((cr&0xFF)==PT_LIFE && parts[cr>>8].ctype>=0 && parts[cr>>8].ctype<NGOLALT)
 				{
@@ -3160,9 +3160,9 @@ int main(int argc, char *argv[])
 						{
 							int cr;
 							cr = pmap[y][x];
-							if ((cr>>8)>=NPART || !cr)
+							if (!cr)
 								cr = photons[y][x];
-							if (!((cr>>8)>=NPART || !cr))
+							if (cr)
 							{
 								c = sl = cr&0xFF;
 								if (c==PT_LIFE)

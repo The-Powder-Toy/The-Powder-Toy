@@ -504,7 +504,7 @@ int luatpt_set_property(lua_State* l)
 		for (nx = x; nx<x+w; nx++)
 			for (ny = y; ny<y+h; ny++){
 				r = pmap[ny][nx];
-				if (!r || (r>>8) >= NPART || (partsel && partsel != parts[r>>8].type))
+				if (!r || (partsel && partsel != parts[r>>8].type))
 				{
 					r = photons[ny][nx];
 					if (!r || (partsel && partsel != parts[r>>8].type))
@@ -523,9 +523,9 @@ int luatpt_set_property(lua_State* l)
 			if (i>=XRES || y>=YRES)
 				return luaL_error(l, "Coordinates out of range (%d,%d)", i, y);
 			r = pmap[y][i];
-			if (!r || (r>>8)>=NPART || (partsel && partsel != parts[r>>8].type))
+			if (!r || (partsel && partsel != parts[r>>8].type))
 				r = photons[y][i];
-			if (!r || (r>>8)>=NPART || (partsel && partsel != parts[r>>8].type))
+			if (!r || (partsel && partsel != parts[r>>8].type))
 				return 0;
 			i = r>>8;
 		}
@@ -553,9 +553,9 @@ int luatpt_get_property(lua_State* l)
 	y = luaL_optint(l, 3, -1);
 	if(y!=-1 && y < YRES && y >= 0 && i < XRES && i >= 0){
 		r = pmap[y][i];
-		if (!r || (r>>8)>=NPART)
+		if (!r)
 			r = photons[y][i];
-		if (!r || (r>>8)>=NPART)
+		if (!r)
 		{
 			if (strcmp(prop,"type")==0){
 				lua_pushinteger(l, 0);

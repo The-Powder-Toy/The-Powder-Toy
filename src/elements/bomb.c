@@ -8,7 +8,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART || !r)
+					if (!r)
 						continue;
 					if ((r&0xFF)!=PT_BOMB) {
 						kill_part(i);
@@ -21,7 +21,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART || !r)
+					if (!r)
 						continue;
 					if ((r&0xFF)!=PT_BOMB && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_BCLN) {
 						int rad = 8;

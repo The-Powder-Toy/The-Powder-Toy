@@ -7,7 +7,7 @@ int update_PLNT(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if (!r)
 					continue;
 				if ((r&0xFF)==PT_WATR && 1>(rand()%250))
 				{
@@ -31,7 +31,7 @@ int update_PLNT(UPDATE_FUNC_ARGS) {
 					int nny = rand()%3 -1;
 					if (x+rx+nnx>=0 && y+ry+nny>0 && x+rx+nnx<XRES && y+ry+nny<YRES && (nnx || nny))
 					{
-						if ((pmap[y+ry+nny][x+rx+nnx]>>8)>=NPART||pmap[y+ry+nny][x+rx+nnx])
+						if (pmap[y+ry+nny][x+rx+nnx])
 							continue;
 						np = create_part(-1,x+rx+nnx,y+ry+nny,PT_VINE);
 						if (np<0) continue;
@@ -46,8 +46,6 @@ int update_PLNT(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART)
-						continue;
 					if (!r)
 						create_part(-1,x+rx,y+ry,PT_O2);
 				}

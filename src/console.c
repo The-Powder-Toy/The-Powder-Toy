@@ -56,7 +56,7 @@ int console_parse_partref(char *txt, int *which, char *err)
 	if (strchr(txt,',') && console_parse_coords(txt, &nx, &ny, err))
 	{
 		i = pmap[ny][nx];
-		if (!i || (i>>8)>=NPART)
+		if (!i)
 			i = -1;
 		else
 			i = i>>8;

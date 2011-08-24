@@ -3885,7 +3885,7 @@ void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int c
 	if (rx==0 && ry==0)
 	{
 		rp = pmap[y][x];
-		if ((rp>>8)>=NPART || !rp)
+		if (!rp)
 			return;
 		if (click == 4)
 			parts[rp>>8].dcolour = 0;
@@ -3898,7 +3898,7 @@ void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int c
 			if(y+j>=0 && x+i>=0 && x+i<XRES && y+j<YRES)
 				if (InCurrentBrush(i, j, rx, ry)){
 					rp = pmap[y+j][x+i];
-					if ((rp>>8)>=NPART || !rp)
+					if (!rp)
 						continue;
 					if (click == 4)
 						parts[rp>>8].dcolour = 0;
@@ -4028,7 +4028,7 @@ void render_signs(pixel *vid_buf)
 			}
 			if (strcmp(signs[i].text, "{t}")==0)
 			{
-				if ((pmap[signs[i].y][signs[i].x]>>8)>0 && (pmap[signs[i].y][signs[i].x]>>8)<NPART)
+				if (pmap[signs[i].y][signs[i].x])
 					sprintf(buff, "Temp: %4.2f", parts[pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...tempirature
 				else
 					sprintf(buff, "Temp: 0.00");  //...tempirature

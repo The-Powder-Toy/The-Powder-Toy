@@ -19,7 +19,7 @@ int update_QRTZ(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART || !r)
+					if (!r)
 						continue;
 					else if ((r&0xFF)==PT_SLTW && (1>rand()%2500))
 					{
@@ -37,7 +37,7 @@ int update_QRTZ(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)<NPART && !r && parts[i].ctype!=0)
+				if (!r && parts[i].ctype!=0)
 				{
 					np = create_part(-1,x+rx,y+ry,PT_QRTZ);
 					if (np>-1)
@@ -69,7 +69,7 @@ int update_QRTZ(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if (!r)
 					continue;
 				if ((r&0xFF)==t && (parts[i].ctype>parts[r>>8].ctype) && parts[r>>8].ctype>=0 )//diffusion
 				{

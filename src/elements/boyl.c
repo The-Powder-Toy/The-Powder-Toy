@@ -26,7 +26,7 @@ int update_BOYL(UPDATE_FUNC_ARGS) {
 			        x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if (!r)
 					continue;
 				if ((r&0xFF)==PT_WATR && 1>rand()%30)
 				{

@@ -5,8 +5,6 @@ int update_VINE(UPDATE_FUNC_ARGS) {
 	if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 	{
 		r = pmap[y+ry][x+rx];
-		if ((r>>8)>=NPART)
-			return 0;
 		if (1>rand()%15)
 			part_change_type(i,x,y,PT_PLNT);
 		else if (!r)

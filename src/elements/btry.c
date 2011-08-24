@@ -7,7 +7,7 @@ int update_BTRY(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if (!r)
 					continue;
 				rt = parts[r>>8].type;
 				if (parts_avg(i,r>>8,PT_INSL) != PT_INSL)

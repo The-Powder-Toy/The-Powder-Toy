@@ -9,7 +9,7 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART || !r)
+					if (!r)
 						continue;
 					if ((r&0xFF)==PT_SPRK) {
 						int destroy = (parts[r>>8].ctype==PT_PSCN)?1:0;
@@ -19,7 +19,6 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 								break;
 							}
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
-							if (!((r>>8)>=NPART)) {
 								if (!r) {
 									int nr = create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_BRAY);
 									if (nr!=-1) {
@@ -49,7 +48,7 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 										if (nyy!=0 || nxx!=0) {
 											create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 										}
-										//if (!(nostop && (ptypes[r&0xFF].properties&PROP_CONDUCTS))) {//don't need to check r&0xFF<PT_NUM here because it should have been excluded by (r>>8)>=NPART //Not sure why you changed checking "ctype" to "type"
+										//if (!(nostop && (ptypes[r&0xFF].properties&PROP_CONDUCTS))) {
 										if (!(nostop && parts[r>>8].ctype >= 0 && parts[r>>8].ctype < PT_NUM && (ptypes[parts[r>>8].ctype].properties&PROP_CONDUCTS))) {
 											docontinue = 0;
 										} else {
@@ -67,7 +66,6 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 										docontinue = 0;
 									}
 								}
-							}
 						}
 					}
 					//parts[i].life = 4;

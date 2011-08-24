@@ -188,10 +188,10 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if (!r || (r>>8)>=NPART)
+				if (!r)
 					r = photons[y+ry][x+rx];
 
-				if ((!r || (r>>8)>=NPART) && !bmap[(y+ry)/CELL][(x+rx)/CELL])
+				if (!r && !bmap[(y+ry)/CELL][(x+rx)/CELL])
 					continue;
 				
 				if (ptypes[r&0xFF].falldown!=0 || (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT)
@@ -230,8 +230,6 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 	{
 		ry -= 2*(rand()%2)+1;
 		r = pmap[ry][rx];
-		if (!((r>>8)>=NPART))
-		{
 			if (ptypes[r&0xFF].state == ST_SOLID)
 			{
 				create_part(-1, rx, ry, PT_SPRK);
@@ -267,7 +265,6 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 				}
 
 			}
-		}
 	}
 
 	//Simulation of joints
@@ -371,9 +368,9 @@ void STKM_interact(float* playerp, int i, int x, int y)
 	if (x<0 || y<0 || x>=XRES || y>=YRES || !parts[i].type)
 		return;
 	r = pmap[y][x];
-	if (r && (r>>8)<NPART)
+	if (r)
 	{
-		if ((r&0xFF)==PT_SPRK && r && (r>>8)<NPART) //If on charge
+		if ((r&0xFF)==PT_SPRK) //If on charge
 		{
 			parts[i].life -= (int)(rand()*20/RAND_MAX)+32;
 		}

@@ -25,7 +25,7 @@ void pushParticle(int i, int count, int original)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if (!r)
 					continue;
 				else if ((r&0xFF)==PT_PIPE && parts[r>>8].ctype!=notctype && (parts[r>>8].tmp&0xFF)==0)
 				{
@@ -47,7 +47,7 @@ void pushParticle(int i, int count, int original)
 	{
 		int coords = 7 - (parts[i].tmp>>10);
 		r = pmap[y+ pos_1_ry[coords]][x+ pos_1_rx[coords]];
-		if ((r>>8)>=NPART || !r)
+		if (!r)
 		{
 		}
 		else if ((r&0xFF)==PT_PIPE && parts[r>>8].ctype!=notctype && (parts[r>>8].tmp&0xFF)==0)
@@ -85,7 +85,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r>>8)>=NPART || !r)
+						if (!r)
 							continue;
 						if ((r&0xFF)==PT_PIPE&&parts[r>>8].ctype==1)
 						{
@@ -130,8 +130,6 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART)
-						return 0;
 					if (surround_space && !r && (parts[i].tmp&0xFF)!=0)  //creating at end
 					{
 						np = create_part(-1,x+rx,y+ry,parts[i].tmp&0xFF);

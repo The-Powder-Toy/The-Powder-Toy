@@ -9,7 +9,7 @@ int update_H2(UPDATE_FUNC_ARGS)
 			{
 				r = pmap[y+ry][x+rx];
 				rt = (r&0xFF);
-				if ((r>>8)>=NPART || !r)
+				if (!r)
 					continue;
 				if (pv[y/CELL][x/CELL] > 8.0f && rt == PT_DESL) // This will not work. DESL turns to fire above 5.0 pressure
 				{

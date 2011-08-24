@@ -9,7 +9,7 @@ int update_SWCH(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if (!r)
 					continue;
 				if (parts_avg(i,r>>8,PT_INSL)!=PT_INSL) {
 					rt = r&0xFF;

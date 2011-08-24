@@ -64,7 +64,7 @@ int update_SING(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if (!r)
 					continue;
 				if ((r&0xFF)!=PT_DMND&&33>=rand()/(RAND_MAX/100)+1)
 				{
