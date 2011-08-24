@@ -2,6 +2,11 @@
 #include <powder.h>
 #include <console.h>
 #include <luaconsole.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h> 
+#include <string.h>
+#include <sys/types.h>
 
 lua_State *l;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
@@ -56,6 +61,7 @@ void luacon_open(){
 		{"setfire", &luatpt_setfire},
 		{"setdebug", &luatpt_setdebug},
 		{"setfpscap",&luatpt_setfpscap},
+		{"getscriptid",&luatpt_getscriptid},
 		{NULL,NULL}
 	};
 
@@ -1060,6 +1066,79 @@ int luatpt_setfpscap(lua_State* l)
 {
 int fpscap = luaL_optint(l, 1, 0);
 limitFPS = fpscap;
+return 0;
+}
+int luatpt_getscriptid(lua_State* l)
+{
+
+	int sock, port, numrec;
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
+	char * id;
+	char * filedatabuffer[1024];
+	id = mystrdup(luaL_optstring(l, 1, "1"));
+	for (int i = 0; i < strlen(id);i++)
+		if(id[i]>57||id[i]<48){
+			luaL_error(l, "Invalid ID format.");
+			return 0;
+		}
+
+	port = 10457;
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+
+	server = gethostbyname(SERVER);
+	//server = gethostbyname("localhost");
+    if (server == NULL) {
+        luaL_error(l, "Error fetching host IP.");
+			return 0;        
+    }
+
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+
+    serv_addr.sin_family = AF_INET;
+    bcopy((char *)server->h_addr, 
+         (char *)&serv_addr.sin_addr.s_addr,
+         server->h_length);
+    serv_addr.sin_port = htons(port);
+ 
+    if (connect(sock,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
+           luaL_error(l, "Error connecting to host.");
+			return 0; 
+	}
+	
+
+
+	char newid[80];
+	char file[80];
+    strcpy(file,id);
+    strcat(file,".lua");
+    FILE *filetowriteto;
+    filetowriteto=fopen(file, "w");	
+	strcpy(newid,id);
+	strcat(newid,"\n");
+	write(sock,newid,strlen(newid));
+	while(1){
+		bzero(filedatabuffer,1024);
+		numrec = read(sock,filedatabuffer,1024);
+		if(numrec<0){
+			luaL_error(l, "Transfer Error");
+			return 0; 
+		}
+		fputs(filedatabuffer,filetowriteto);
+		if(numrec<=1)
+		{
+		break;
+		}
+	if(numrec<1024)
+	break;
+	
+	}
+fclose(filetowriteto);
+char tempstr[120];
+strcpy(tempstr,"dofile(\"");
+strcat(tempstr,file);
+strcat(tempstr,"\")");
+luacon_eval(tempstr);
 return 0;
 }
 #endif
