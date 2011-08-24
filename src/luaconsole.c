@@ -1078,11 +1078,9 @@ int luatpt_getscriptid(lua_State* l)
 {
 
 	
-	int sock, port, numrec;
-    struct sockaddr_in serv_addr;
-    struct hostent *server;
+
 	char * id;
-	char * filedatabuffer[1024];
+
 	id = mystrdup(luaL_optstring(l, 1, "1"));
 	for (int i = 0; i < strlen(id);i++)
 		if(id[i]>57||id[i]<48){
@@ -1090,64 +1088,38 @@ int luatpt_getscriptid(lua_State* l)
 			return 0;
 		}
 	if(!confirm_ui(vid_buf,"Do you want to install script?",id,"Install"))
-	return 0;	
+	return 0;
 
-	port = 10457;
-	sock = socket(AF_INET, SOCK_STREAM, 0);
-
-	server = gethostbyname("chaos.powdertoy.co.uk");
-	//server = gethostbyname("localhost");
-    if (server == NULL) {
-        luaL_error(l, "Error fetching host IP.");
-			return 0;        
-    }
-
-    bzero((char *) &serv_addr, sizeof(serv_addr));
-
-    serv_addr.sin_family = AF_INET;
-    bcopy((char *)server->h_addr, 
-         (char *)&serv_addr.sin_addr.s_addr,
-         server->h_length);
-    serv_addr.sin_port = htons(port);
- 
-    if (connect(sock,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
-           luaL_error(l, "Error connecting to host.");
-			return 0; 
-	}
-	
-
-
-	char newid[80];
 	char file[80];
+	char addr[300];
+	strcpy(addr,"http://chaos.powdertoy.co.uk/ScriptRepo.php?id=");
+	//strcpy(addr,"http://localhost:80/ScriptRepo.php?id=");
+	strcat(addr,id);
+	
     strcpy(file,id);
     strcat(file,".lua");
     FILE *filetowriteto;
     filetowriteto=fopen(file, "w");	
-	strcpy(newid,id);
-	strcat(newid,"\n");
-	write(sock,newid,strlen(newid));
-	while(1){
-		bzero(filedatabuffer,1024);
-		numrec = read(sock,filedatabuffer,1024);
-		if(numrec<0){
-			luaL_error(l, "Transfer Error");
-			return 0; 
-		}
-		fputs(filedatabuffer,filetowriteto);
-		if(numrec<=1)
-		{
-		break;
-		}
-	if(numrec<1024)
-	break;
-	
+    int ret,len;
+	char* luadata = http_auth_get(addr, svf_user_id, NULL, svf_session_id, &ret, &len);	
+	if(ret != 200){
+	printf("%d",ret);
+	luaL_error(l, "Error connecting to server.");
+			return 0;
 	}
-fclose(filetowriteto);
-char tempstr[120];
-strcpy(tempstr,"dofile(\"");
-strcat(tempstr,file);
-strcat(tempstr,"\")");
-luacon_eval(tempstr);
-return 0;
+	
+	if(len <=0||!luadata){
+	luaL_error(l, "Error retreiving file.");
+			return 0;
+	}
+	fputs(luadata,filetowriteto);
+	
+	fclose(filetowriteto);
+	char tempstr[120];
+	strcpy(tempstr,"dofile(\"");
+	strcat(tempstr,file);
+	strcat(tempstr,"\")");
+	luacon_eval(tempstr);
+	return 0;
 }
 #endif
