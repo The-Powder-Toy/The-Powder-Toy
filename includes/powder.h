@@ -136,6 +136,7 @@
 #define PT_MORT 77
 #define PT_LIFE 78
 #define PT_DLAY 79
+#define PT_CO2	80
 
 #define PT_SPNG 90
 #define PT_RIME 91
@@ -319,6 +320,7 @@ int update_CLST(UPDATE_FUNC_ARGS);
 int update_DLAY(UPDATE_FUNC_ARGS);
 int update_WIRE(UPDATE_FUNC_ARGS);
 int update_GBMB(UPDATE_FUNC_ARGS);
+int update_CO2(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -478,7 +480,7 @@ static const part_type ptypes[PT_NUM] =
 	{"MORT",	PIXPACK(0xE0E0E0),	0.0f,	0.00f * CFDS,	1.00f,	1.00f,	-0.99f,	0.0f,	0.01f,	0.002f	* CFDS,	0,	0,		0,	0,	0,	1,	1,	-1,		SC_CRACKER2,	R_TEMP+4.0f	+273.15f,	60,		"Steam Train.", ST_NONE, TYPE_PART, &update_MORT},
 	{"LIFE",	PIXPACK(0x0CAC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	1,	100,	SC_LIFE,		9000.0f,				40,		"Game Of Life! B3/S23", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	{"DLAY",	PIXPACK(0x753590),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	1,	100,	SC_POWERED,		4.0f+273.15f,			0,		"Conducts with temperature-dependent delay. (use HEAT/COOL).", ST_SOLID, TYPE_SOLID, &update_DLAY},
-	/*FREE*/{"ASIM",	PIXPACK(0x0000FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	0,	100,	SC_LIFE,		9000.0f,				40,		"Assimilation! B345/S4567", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+	{"CO2",		PIXPACK(0x666666),	2.0f,   0.00f * CFDS,   0.99f,	0.30f,	-0.1f,	0.1f,	0.5f,	0.000f	* CFDS,	1,	0,  	0,	0,	0,	1,	1,	1,		SC_GAS,			R_TEMP+273.15f,			88,		"Carbon Dioxide", ST_GAS, TYPE_GAS, &update_CO2},
 	/*FREE*/{"2x2",		PIXPACK(0xFFFF00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	0,	100,	SC_LIFE,		9000.0f,				40,		"2x2! B36/S125", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	/*FREE*/{"DANI",	PIXPACK(0x00FFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	0,	100,	SC_LIFE,		9000.0f,				40,		"Day and Night! B3678/S34678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	/*FREE*/{"AMOE",	PIXPACK(0xFF00FF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	0,	100,	SC_LIFE,		9000.0f,				40,		"Amoeba! B357/S1358", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
@@ -651,7 +653,7 @@ static part_transition ptransitions[PT_NUM] =
 	/* MORT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* LIFE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* DLAY */ {IPL,    NT,         IPH,    NT,         ITL,    NT,         ITH,	NT},
-	/*FREE*//* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* CO2  */ {IPL,    NT,         IPH,    NT,         ITL,    NT,         ITH,	NT},
 	/*FREE*//* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/*FREE*//* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/*FREE*//* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
