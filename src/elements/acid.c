@@ -1,7 +1,7 @@
 #include <element.h>
 
 int update_ACID(UPDATE_FUNC_ARGS) {
-	int r,rx,ry;
+	int r, rx, ry, trade, np;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -38,5 +38,30 @@ int update_ACID(UPDATE_FUNC_ARGS) {
 					}
 				}
 			}
+	for ( trade = 0; trade<2; trade ++)
+	{
+		rx = rand()%5-2;
+		ry = rand()%5-2;
+		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+		{
+			r = pmap[y+ry][x+rx];
+			if ((r>>8)>=NPART || !r)
+				continue;
+			if ((r&0xFF)==PT_ACID&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0)//diffusion
+			{
+				int temp = parts[i].life - parts[r>>8].life;
+				if (temp ==1)
+				{
+					parts[r>>8].life ++;
+					parts[i].life --;
+				}
+				else if (temp>0)
+				{
+					parts[r>>8].life += temp/2;
+					parts[i].life -= temp/2;
+				}
+			}
+		}
+	}
 	return 0;
 }
