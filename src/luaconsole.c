@@ -1,12 +1,8 @@
+#include <defines.h>
 #ifdef LUACONSOLE
 #include <powder.h>
 #include <console.h>
 #include <luaconsole.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h> 
-#include <string.h>
-#include <sys/types.h>
 
 lua_State *l;
 int step_functions[6] = {0, 0, 0, 0, 0, 0};
@@ -65,7 +61,7 @@ void luacon_open(){
 		{"setfire", &luatpt_setfire},
 		{"setdebug", &luatpt_setdebug},
 		{"setfpscap",&luatpt_setfpscap},
-		{"getscriptid",&luatpt_getscriptid},
+		{"getscript",&luatpt_getscript},
 		{NULL,NULL}
 	};
 
@@ -1074,52 +1070,81 @@ int fpscap = luaL_optint(l, 1, 0);
 limitFPS = fpscap;
 return 0;
 }
-int luatpt_getscriptid(lua_State* l)
+int luatpt_getscript(lua_State* l)
 {
+	char *fileid = NULL, *filedata = NULL, *fileuri = NULL, *fileauthor = NULL, *filename = NULL, *lastError = NULL;
+	int len, ret;
+	FILE * outputfile;
 
+	fileauthor = mystrdup(luaL_optstring(l, 1, ""));
+	fileid = mystrdup(luaL_optstring(l, 2, ""));
+	if(!fileauthor || !fileid || strlen(fileauthor)<1 || strlen(fileid)<1)
+		goto fin;
+	if(!confirm_ui(vid_buf, "Do you want to install script?", fileid, "Install"))
+		goto fin;
+
+	fileuri = malloc(strlen(SCRIPTSERVER)+strlen(fileauthor)+strlen(fileid)+44);
+	sprintf(fileuri, "http://" SCRIPTSERVER "/GetScript.api?Author=%s&Filename=%s", fileauthor, fileid);
 	
-
-	char * id;
-
-	id = mystrdup(luaL_optstring(l, 1, "1"));
-	for (int i = 0; i < strlen(id);i++)
-		if(id[i]>57||id[i]<48){
-			luaL_error(l, "Invalid ID format.");
-			return 0;
+	filedata = http_auth_get(fileuri, svf_user_id, NULL, svf_session_id, &ret, &len);
+	
+	if(len <= 0 || !filedata)
+	{
+		lastError = "Server did not return data.";
+		goto fin;
+	}
+	if(ret != 200)
+	{
+		lastError = http_ret_text(ret);
+		goto fin;
+	}
+	
+	filename = malloc(strlen(fileauthor)+strlen(fileid)+strlen(PATH_SEP)+strlen(LOCAL_LUA_DIR)+6);
+	sprintf(filename, LOCAL_LUA_DIR PATH_SEP "%s_%s.lua", fileauthor, fileid);
+	
+#ifdef WIN32
+	_mkdir(LOCAL_LUA_DIR);
+#else
+	mkdir(LOCAL_LUA_DIR, 0755);
+#endif
+	
+	outputfile = fopen(filename, "r");
+	if(outputfile)
+	{
+		fclose(outputfile);
+		outputfile = NULL;
+		if(confirm_ui(vid_buf, "File already exists, overwrite?", filename, "Overwrite"))
+		{
+			outputfile = fopen(filename, "w");
 		}
-	if(!confirm_ui(vid_buf,"Do you want to install script?",id,"Install"))
-	return 0;
-
-	char file[80];
-	char addr[300];
-	strcpy(addr,"http://chaos.powdertoy.co.uk/ScriptRepo.php?id=");
-	//strcpy(addr,"http://localhost:80/ScriptRepo.php?id=");
-	strcat(addr,id);
-	
-    strcpy(file,id);
-    strcat(file,".lua");
-    FILE *filetowriteto;
-    filetowriteto=fopen(file, "w");	
-    int ret,len;
-	char* luadata = http_auth_get(addr, svf_user_id, NULL, svf_session_id, &ret, &len);	
-	if(ret != 200){
-	printf("%d",ret);
-	luaL_error(l, "Error connecting to server.");
-			return 0;
+		else
+		{
+			goto fin;
+		}
+	}
+	else
+	{
+		outputfile = fopen(filename, "w");
 	}
 	
-	if(len <=0||!luadata){
-	luaL_error(l, "Error retreiving file.");
-			return 0;
+	if(!outputfile)
+	{
+		lastError = "Unable to write to file";
+		goto fin;
 	}
-	fputs(luadata,filetowriteto);
 	
-	fclose(filetowriteto);
-	char tempstr[120];
-	strcpy(tempstr,"dofile(\"");
-	strcat(tempstr,file);
-	strcat(tempstr,"\")");
-	luacon_eval(tempstr);
+	fputs(filedata, outputfile);
+	fclose(outputfile);
+	outputfile = NULL;
+	
+fin:
+	if(fileid) free(fileid);
+	if(filedata) free(filedata);
+	if(fileuri) free(fileuri);
+	if(fileauthor) free(fileauthor);
+	if(filename) free(filename);
+		
+	if(lastError) return luaL_error(l, lastError);
 	return 0;
 }
 #endif

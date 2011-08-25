@@ -16,8 +16,11 @@
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 
 #define SERVER "powdertoy.co.uk"
+#define SCRIPTSERVER "powdertoy.co.uk"
 
 #define LOCAL_SAVE_DIR "Saves"
+
+#define LOCAL_LUA_DIR "Lua"
 
 #define THUMB_CACHE_SIZE 256
 
