@@ -1072,12 +1072,13 @@ return 0;
 }
 int luatpt_getscript(lua_State* l)
 {
-	char *fileid = NULL, *filedata = NULL, *fileuri = NULL, *fileauthor = NULL, *filename = NULL, *lastError = NULL;
-	int len, ret;
+	char *fileid = NULL, *filedata = NULL, *fileuri = NULL, *fileauthor = NULL, *filename = NULL, *lastError = NULL, *luacommand = NULL;
+	int len, ret,run_script;
 	FILE * outputfile;
 
 	fileauthor = mystrdup(luaL_optstring(l, 1, ""));
 	fileid = mystrdup(luaL_optstring(l, 2, ""));
+	run_script = luaL_optint(l, 3, 0);
 	if(!fileauthor || !fileid || strlen(fileauthor)<1 || strlen(fileid)<1)
 		goto fin;
 	if(!confirm_ui(vid_buf, "Do you want to install script?", fileid, "Install"))
@@ -1133,16 +1134,25 @@ int luatpt_getscript(lua_State* l)
 		goto fin;
 	}
 	
+	
 	fputs(filedata, outputfile);
 	fclose(outputfile);
 	outputfile = NULL;
-	
+	if(run_script)
+	{
+    luacommand = malloc(strlen(filename)+20);
+    sprintf(luacommand,"dofile(\"%s\")",filename);
+    luacon_eval(luacommand);
+    }
+    
 fin:
 	if(fileid) free(fileid);
 	if(filedata) free(filedata);
 	if(fileuri) free(fileuri);
 	if(fileauthor) free(fileauthor);
 	if(filename) free(filename);
+	if(luacommand) free(luacommand);
+	luacommand = NULL;
 		
 	if(lastError) return luaL_error(l, lastError);
 	return 0;
