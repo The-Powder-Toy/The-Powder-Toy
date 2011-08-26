@@ -2138,6 +2138,17 @@ void draw_parts(pixel *vid)
 					cb = cb>255?255:cb;
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
 				}
+				else if (t==PT_CBNW)
+				{
+					int z = parts[i].tmp2 - 20;//speckles!
+					cr = z * 1 + PIXR(ptypes[t].pcolors);
+					cg = z * 2 + PIXG(ptypes[t].pcolors);
+					cb = z * 8 + PIXB(ptypes[t].pcolors);
+					cr = cr>255?255:cr;
+					cg = cg>255?255:cg;
+					cb = cb>255?255:cb;
+					blendpixel(vid, nx, ny, cr, cg, cb, 255);
+				}
 				else if (t==PT_SPNG)
 				{
 					cr = PIXR(ptypes[t].pcolors) - parts[i].life*15;
