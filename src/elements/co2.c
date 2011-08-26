@@ -9,6 +9,13 @@ int update_CO2(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
+				if ((r&0xFF)==PT_FIRE){
+					kill_part(r>>8);
+						if(1>(rand()%150)){
+							kill_part(i);
+							return 1;
+						}
+				}
 				/*if ((r&0xFF)==PT_CNCT && 1>(rand()%500))	Concrete+Water to paste, not very popular
 				{
 					part_change_type(i,x,y,PT_PSTE);

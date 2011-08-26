@@ -20,7 +20,7 @@ int update_PLNT(UPDATE_FUNC_ARGS) {
 					part_change_type(i,x,y,PT_FIRE);
 					parts[i].life = 4;
 				}
-				else if ((r&0xFF)==PT_SMKE && (1>rand()%250))
+				else if (((r&0xFF)==PT_SMKE || (r&0xFF)==PT_CO2) && (1>rand()%250))
 				{
 					kill_part(r>>8);
 					parts[i].life = rand()%60 + 60;
