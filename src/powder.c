@@ -2648,11 +2648,12 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	}
 	if (dw==1)
 	{
+		ry = ry/CELL;
 		rx = rx/CELL;
 		x = x/CELL;
 		y = y/CELL;
 		x -= rx/2;
-		y -= rx/2;
+		y -= ry/2;
 		for (ox=x; ox<=x+rx; ox++)
 		{
 			for (oy=y; oy<=y+rx; oy++)
@@ -2679,7 +2680,7 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 					if (b==WL_STREAM)
 					{
 						i = x + rx/2;
-						j = y + rx/2;
+						j = y + ry/2;
 						for (v=-1; v<2; v++)
 							for (u=-1; u<2; u++)
 								if (i+u>=0 && i+u<XRES/CELL &&
