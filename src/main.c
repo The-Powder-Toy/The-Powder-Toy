@@ -2131,7 +2131,7 @@ int main(int argc, char *argv[])
 				CURRENT_BRUSH =(CURRENT_BRUSH + 1)%BRUSH_NUM ;
 			}
 			if (sdl_key==SDLK_LEFTBRACKET) {
-				if (sdl_zoom_trig==1)
+				if (sdl_zoom_trig)
 				{
 					ZSIZE -= 1;
 					if (ZSIZE>60)
@@ -2171,7 +2171,7 @@ int main(int argc, char *argv[])
 				}
 			}
 			if (sdl_key==SDLK_RIGHTBRACKET) {
-				if (sdl_zoom_trig==1)
+				if (sdl_zoom_trig)
 				{
 					ZSIZE += 1;
 					if (ZSIZE>60)
@@ -2477,7 +2477,7 @@ int main(int argc, char *argv[])
 
 		if (sdl_wheel)
 		{
-			if (sdl_zoom_trig==1)//zoom window change
+			if (sdl_zoom_trig)//zoom window change
 			{
 				ZSIZE += sdl_wheel;
 				if (ZSIZE>60)
@@ -2889,7 +2889,10 @@ int main(int argc, char *argv[])
 			zoom_wy = 0;
 			zoom_en = 1;
 			if (!b && bq)
+			{
 				zoom_en = 2;
+				sdl_zoom_trig = 0;
+			}
 		}
 		else if (b)//there is a click
 		{

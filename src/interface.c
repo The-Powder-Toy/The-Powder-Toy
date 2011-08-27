@@ -2221,7 +2221,10 @@ int sdl_poll(void)
 				sdl_caps = 1;
 			if (event.key.keysym.sym=='z')
 			{
-				sdl_zoom_trig = 1;
+				if (event.key.keysym.mod&KMOD_ALT)//toggle
+					sdl_zoom_trig = (!sdl_zoom_trig)*2;
+				else
+					sdl_zoom_trig = 1;
 			}
 			if ( event.key.keysym.sym == SDLK_PLUS)
 			{
@@ -2272,7 +2275,7 @@ int sdl_poll(void)
 			sdl_rkey=event.key.keysym.sym;
 			if (event.key.keysym.sym == SDLK_CAPSLOCK)
 				sdl_caps = 0;
-			if (event.key.keysym.sym == 'z')
+			if (event.key.keysym.sym == 'z' && sdl_zoom_trig==1)//if ==2 then it was toggled with alt+z, don't turn off on keyup
 				sdl_zoom_trig = 0;
 			if (event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_LEFT)
 			{
@@ -5092,7 +5095,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 
 		if (sdl_wheel)
 		{
-			if (sdl_zoom_trig==1)//zoom window change
+			if (sdl_zoom_trig)//zoom window change
 			{
 				ZSIZE += sdl_wheel;
 				if (ZSIZE>60)
@@ -5135,7 +5138,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			}
 		}
 		if (sdl_key==SDLK_LEFTBRACKET) {
-			if (sdl_zoom_trig==1)
+			if (sdl_zoom_trig)
 			{
 				ZSIZE -= 1;
 				if (ZSIZE>60)
@@ -5175,7 +5178,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			}
 		}
 		if (sdl_key==SDLK_RIGHTBRACKET) {
-			if (sdl_zoom_trig==1)
+			if (sdl_zoom_trig)
 			{
 				ZSIZE += 1;
 				if (ZSIZE>60)
