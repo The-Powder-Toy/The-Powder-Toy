@@ -1604,8 +1604,9 @@ void update_particles_i(pixel *vid, int start, int inc)
 					pv[y/CELL+1][x/CELL] += ptypes[t].hotair*(3.5f-pv[y/CELL+1][x/CELL]);
 				if (x+CELL<XRES)
 				{
-					pv[y/CELL][x/CELL+1] += ptypes[t].hotair*(3.5f-pv[y/CELL][x/CELL+1]);
-					if (y+CELL<YRES)
+					if (pv[y/CELL][x/CELL+1]<3.5f)
+						pv[y/CELL][x/CELL+1] += ptypes[t].hotair*(3.5f-pv[y/CELL][x/CELL+1]);
+					if (y+CELL<YRES && pv[y/CELL+1][x/CELL+1]<3.5f)
 						pv[y/CELL+1][x/CELL+1] += ptypes[t].hotair*(3.5f-pv[y/CELL+1][x/CELL+1]);
 				}
 			}
