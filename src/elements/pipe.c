@@ -130,7 +130,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
 				{
 					r = pmap[y+ry][x+rx];
-					if (surround_space && !r && (parts[i].tmp&0xFF)!=0)  //creating at end
+					if (surround_space && !r && (parts[i].tmp&0xFF)!=0 && eval_move(parts[i].tmp&0xFF, x+rx, y+ry, NULL))  //creating at end
 					{
 						np = create_part(-1,x+rx,y+ry,parts[i].tmp&0xFF);
 						if (np!=-1)
@@ -139,8 +139,8 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 							parts[np].life = parts[i].flags;
 							parts[np].tmp = parts[i].pavg[0];
 							parts[np].ctype = parts[i].pavg[1];
+							parts[i].tmp &= ~0xFF;
 						}
-						parts[i].tmp &= ~0xFF;
 					}
 					//try eating particle at entrance
 					else if ((parts[i].tmp&0xFF) == 0 && (ptypes[r&0xFF].falldown!= 0 || ptypes[r&0xFF].state == ST_GAS))

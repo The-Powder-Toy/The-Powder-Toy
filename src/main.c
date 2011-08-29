@@ -2428,6 +2428,7 @@ int main(int argc, char *argv[])
 
 				for (cbi=0; cbi<NPART; cbi++)
 					parts[cbi] = cb_parts[cbi];
+				parts_lastActiveIndex = NPART-1;
 
 				for (cby = 0; cby<YRES; cby++)
 					for (cbx = 0; cbx<XRES; cbx++)
@@ -2592,8 +2593,7 @@ int main(int argc, char *argv[])
 					int tctype = parts[cr>>8].ctype;
 					if ((cr&0xFF)==PT_PIPE)
 					{
-						if (parts[cr>>8].tmp<PT_NUM) tctype = parts[cr>>8].tmp;
-						else tctype = 0;
+						tctype = parts[cr>>8].tmp&0xFF;
 					}
 					if (tctype>=PT_NUM || tctype<0 || (cr&0xFF)==PT_PHOT)
 						tctype = 0;
