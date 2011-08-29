@@ -152,6 +152,16 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						parts[i].pavg[1] = parts[r>>8].ctype;
 						kill_part(r>>8);
 					}
+					else if ((parts[i].tmp&0xFF) == 0 && (r&0xFF)==PT_STOR && parts[r>>8].tmp && (ptypes[parts[r>>8].tmp].falldown!= 0 || ptypes[parts[r>>8].tmp].state == ST_GAS))
+					{
+						parts[i].tmp =  parts[r>>8].tmp;
+						parts[i].temp = parts[r>>8].temp;
+						parts[i].flags = parts[r>>8].flags;
+						parts[i].pavg[0] = parts[r>>8].pavg[0];
+						parts[i].pavg[1] = parts[r>>8].pavg[1];
+						parts[r>>8].tmp = 0;
+						parts[r>>8].life = 0;
+					}
 				}
 			}
 		}

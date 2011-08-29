@@ -752,6 +752,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		if (pmap[y][x])
 		{
 			if ((
+				(pmap[y][x]&0xFF)==PT_STOR||
 				(pmap[y][x]&0xFF)==PT_CLNE||
 				(pmap[y][x]&0xFF)==PT_BCLN||
 				((pmap[y][x]&0xFF)==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN)||
@@ -759,11 +760,12 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			)&&(
 				t!=PT_CLNE&&t!=PT_PCLN&&
 				t!=PT_BCLN&&t!=PT_STKM&&
-				t!=PT_STKM2&&t!=PT_PBCN)
+				t!=PT_STKM2&&t!=PT_PBCN&&
+				t!=PT_STOR)
 			)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t==PT_LIFE && v<NGOLALT) parts[pmap[y][x]>>8].tmp = v;
+				if (t==PT_LIFE && v<NGOLALT && (pmap[y][x]&0xFF)!=PT_STOR) parts[pmap[y][x]>>8].tmp = v;
 			}
 			return -1;
 		}
