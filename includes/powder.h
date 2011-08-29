@@ -210,7 +210,8 @@
 #define PT_CLST 155
 #define PT_WIRE 156
 #define PT_GBMB 157
-#define PT_NUM  158
+#define PT_FIGH 158
+#define PT_NUM  159
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -327,6 +328,7 @@ int update_CLST(UPDATE_FUNC_ARGS);
 int update_DLAY(UPDATE_FUNC_ARGS);
 int update_WIRE(UPDATE_FUNC_ARGS);
 int update_GBMB(UPDATE_FUNC_ARGS);
+int update_FIGH(UPDATE_FUNC_ARGS);
 int update_CO2(UPDATE_FUNC_ARGS);
 int update_CBNW(UPDATE_FUNC_ARGS);
 int update_STOR(UPDATE_FUNC_ARGS);
@@ -574,6 +576,7 @@ static const part_type ptypes[PT_NUM] =
 	{"CLST",	PIXPACK(0xE4A4A4),	0.7f,	0.02f * CFDS,	0.94f,	0.95f,	0.0f,	0.2f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	1,	55,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Clay dust. Produces paste when mixed with water.", ST_SOLID, TYPE_PART, &update_CLST},	
 	{"WIRE",    PIXPACK(0xFFCC00),  0.0f,   0.00f * CFDS,   0.00f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  0,  1,  1,  100,    SC_ELEC,        R_TEMP+0.0f +273.15f,   250,    "WireWorld wires.",ST_SOLID,TYPE_SOLID,&update_WIRE},
 	{"GBMB",	PIXPACK(0x1144BB),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	20,	1,	1,	30,		SC_EXPLOSIVE,	R_TEMP-2.0f	+273.15f,	29,		"Sticks to first object it touches then produces strong gravity push.", ST_NONE, TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_GBMB},
+	{"FIGH",	PIXPACK(0x000000),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	1,	50,		SC_SPECIAL,		R_TEMP+14.6f+273.15f,	0,		"Fighter. Tries to kill stickmans.", ST_NONE, 0, &update_FIGH},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd M	Use	Weight	Section			H						Ins		Description
 };
 
@@ -747,6 +750,7 @@ static part_transition ptransitions[PT_NUM] =
 	/* CLST */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			1256.0f,	PT_LAVA},
 	/* WIRE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* GBMB */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* FIGH */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			620.0f,	PT_FIRE},
 };
 #undef IPL
 #undef IPH
@@ -976,6 +980,9 @@ extern int gravwl_timeout;
 
 extern float player[29];
 extern float player2[29];
+
+extern float fighters[256][28];
+extern unsigned char fighcount;
 
 extern int gravityMode;
 extern int airMode;

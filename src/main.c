@@ -1113,6 +1113,8 @@ void clear_sim(void)
 	memset(wireless, 0, sizeof(wireless));
 	memset(gol2, 0, sizeof(gol2));
 	memset(portalp, 0, sizeof(portalp));
+	memset(fighters, 0, sizeof(fighters));
+	fighcount = 0;
 	ISSPAWN1 = ISSPAWN2 = 0;
 	player[27] = 0;
 	player2[27] = 0;
@@ -3115,7 +3117,7 @@ int main(int argc, char *argv[])
 				c = (b&1) ? sl : sr; //c is element to be spawned
 				su = c;
 
-				if (c!=WL_SIGN+100)
+				if (c!=WL_SIGN+100 && c!=PT_FIGH)
 				{
 					if (!bq)
 						for (signi=0; signi<MAXSIGNS; signi++)
@@ -3143,6 +3145,12 @@ int main(int argc, char *argv[])
 				{
 					if (!bq)
 						add_sign_ui(vid_buf, x, y);
+				}
+
+				if (c==PT_FIGH)
+				{
+					if (!bq)
+						create_part(-1, x, y, PT_FIGH);
 				}
 				//for the click functions, lx and ly, are the positions of where the FIRST click happened.  x,y are current mouse position.
 				else if (lb)//lb means you are holding mouse down
