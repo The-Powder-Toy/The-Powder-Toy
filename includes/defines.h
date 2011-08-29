@@ -8,7 +8,7 @@
 #endif
  
 //VersionInfoStart
-#define SAVE_VERSION 57
+#define SAVE_VERSION 58
 #define MINOR_VERSION 0
 #define BETA
 //VersionInfoEnd
