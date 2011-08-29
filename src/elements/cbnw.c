@@ -32,7 +32,7 @@ int update_CBNW(UPDATE_FUNC_ARGS) {
 				if ((r&0xFF)==PT_SALT && parts[i].tmp == 0 && 1>(rand()%250))
 				{
 					//Start explode
-					parts[i].tmp = (rand()%100)+50;
+					parts[i].tmp = rand()%50;//(rand()%100)+50;
 				}
 				if ((r&0xFF)==PT_CBNW)
 				{

@@ -16,11 +16,11 @@ int update_CO2(UPDATE_FUNC_ARGS) {
 							return 1;
 						}
 				}
-				/*if ((r&0xFF)==PT_CNCT && 1>(rand()%500))	Concrete+Water to paste, not very popular
+				if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && 1>(rand()%250))
 				{
-					part_change_type(i,x,y,PT_PSTE);
+					part_change_type(i,x,y,PT_CBNW);
 					kill_part(r>>8);
-				}*/
+				}
 			}
 	return 0;
 }
