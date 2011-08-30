@@ -1718,14 +1718,18 @@ int main(int argc, char *argv[])
 
 	}
 
-	save_presets(0);
-
 	make_kernel();
 	prepare_alpha(CELL, 1.0f);
 
 	stamp_init();
 
-	if (!sdl_open()) exit(1);
+	if (!sdl_open())
+	{
+		sdl_scale = 1;
+		kiosk_enable = 0;
+		if (!sdl_open()) exit(1);
+	}
+	save_presets(0);
 	http_init(http_proxy_string[0] ? http_proxy_string : NULL);
 
 	if (cpu_check())

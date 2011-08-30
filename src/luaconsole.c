@@ -62,6 +62,7 @@ void luacon_open(){
 		{"setdebug", &luatpt_setdebug},
 		{"setfpscap",&luatpt_setfpscap},
 		{"getscript",&luatpt_getscript},
+		{"setwindowsize",&luatpt_setwindowsize},
 		{NULL,NULL}
 	};
 
@@ -1157,4 +1158,15 @@ fin:
 	if(lastError) return luaL_error(l, lastError);
 	return 0;
 }
+
+int luatpt_setwindowsize(lua_State* l)
+{
+	int result, scale = luaL_optint(l,1,1), kiosk = luaL_optint(l,2,0);
+	if (scale!=2) scale = 1;
+	if (kiosk!=1) kiosk = 0;
+	result = set_scale(scale, kiosk);
+	lua_pushnumber(l, result);
+	return 1;
+}
+
 #endif
