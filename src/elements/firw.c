@@ -1,7 +1,7 @@
 #include <element.h>
 
 int update_FIRW(UPDATE_FUNC_ARGS) {
-	int r, rx, ry, rt;
+	int r, rx, ry, rt, np;
 	if (parts[i].tmp==0) {
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
@@ -40,18 +40,16 @@ int update_FIRW(UPDATE_FUNC_ARGS) {
 			for (ry=-2; ry<3; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
-					r = pmap[y+ry][x+rx];
 					tmul = rand()%7;
-					create_part(-1, x+rx, y+ry, PT_FIRW);
-					r = pmap[y+ry][x+rx];
-					if (!r)
-						continue;
-					if ((r&0xFF)==PT_FIRW) {
-						parts[r>>8].vx = (rand()%3-1)*tmul;
-						parts[r>>8].vy = (rand()%3-1)*tmul;
-						parts[r>>8].tmp = col;
-						parts[r>>8].life = rand()%100+100;
-						parts[r>>8].temp = 6000.0f;
+					np = create_part(-1, x+rx, y+ry, PT_FIRW);
+					if (np>-1)
+					{
+						parts[np].vx = (rand()%3-1)*tmul;
+						parts[np].vy = (rand()%3-1)*tmul;
+						parts[np].tmp = col;
+						parts[np].life = rand()%100+100;
+						parts[np].temp = 6000.0f;
+						parts[np].dcolour = parts[i].dcolour;
 					}
 				}
 		pv[y/CELL][x/CELL] += 20;

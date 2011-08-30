@@ -2264,12 +2264,22 @@ void draw_parts(pixel *vid)
 				{
 					x = nx;
 					y = ny;
+					cr = parts[i].flags;
+					cg = parts[i].tmp;
+					cb = parts[i].ctype;
+					if (decorations_enable && parts[i].dcolour)
+					{
+						int a = (parts[i].dcolour>>24)&0xFF;
+						cr = (a*((parts[i].dcolour>>16)&0xFF) + (255-a)*cr) >> 8;
+						cg = (a*((parts[i].dcolour>>8)&0xFF) + (255-a)*cg) >> 8;
+						cb = (a*((parts[i].dcolour)&0xFF) + (255-a)*cb) >> 8;
+					}
 					if (cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY)
 					{
-						vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(parts[i].tmp,parts[i].ctype,parts[i].flags);//yes i know this pixel is different color than the glow... i don't know why
-						cg = parts[i].tmp/4;
-						cb = parts[i].ctype/4;
-						cr = parts[i].flags/4;
+						vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(cg,cb,cr);//yes i know this pixel is different color than the glow... i don't know why
+						cg = cg/4;
+						cb = cb/4;
+						cr = cr/4;
 						x = nx/CELL;
 						y = ny/CELL;
 						cg += fire_g[y][x];
@@ -2283,7 +2293,7 @@ void draw_parts(pixel *vid)
 						fire_r[y][x] = cr;
 					}
 					else
-						blendpixel(vid,x,y,parts[i].tmp,parts[i].ctype,parts[i].flags,255);
+						blendpixel(vid,x,y,cg,cb,cr,255);
 				}
 				else if (t==PT_GRAV)
 				{
@@ -3174,6 +3184,13 @@ void draw_parts(pixel *vid)
 					uint8 R = firw_data[caddress];
 					uint8 G = firw_data[caddress+1];
 					uint8 B = firw_data[caddress+2];
+					if (decorations_enable && parts[i].dcolour)
+					{
+						int a = (parts[i].dcolour>>24)&0xFF;
+						R = (a*((parts[i].dcolour>>16)&0xFF) + (255-a)*R) >> 8;
+						G = (a*((parts[i].dcolour>>8)&0xFF) + (255-a)*G) >> 8;
+						B = (a*((parts[i].dcolour)&0xFF) + (255-a)*B) >> 8;
+					}
 					if (cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY)
 					{
 						cr = R/2;

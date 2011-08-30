@@ -10,6 +10,7 @@ int update_FWRK(UPDATE_FUNC_ARGS) {
 			parts[np].vy = rand()%8-22;
 			parts[np].vx = rand()%20-rand()%20;
 			parts[np].life=rand()%15+25;
+			parts[np].dcolour = parts[i].dcolour;
 			kill_part(i);
 			return 1;
 		}
@@ -40,6 +41,7 @@ int update_FWRK(UPDATE_FUNC_ARGS) {
 								parts[np].flags=w;
 								parts[np].ctype=e;
 								parts[np].temp= rand()%20+6000;
+								parts[np].dcolour = parts[i].dcolour;
 							}
 						}
 					}
