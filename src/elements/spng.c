@@ -24,13 +24,10 @@ int update_SPNG(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALLELEC||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_EWALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_DESTROYALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALL||
-					        bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWAIR||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWSOLID||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWGAS))
-						continue;
 					if ((!r)&&parts[i].life>=1)//if nothing then create water
 					{
-						create_part(-1,x+rx,y+ry,PT_WATR);
-						parts[i].life--;
+						np = create_part(-1,x+rx,y+ry,PT_WATR);
+						if (np>-1) parts[i].life--;
 					}
 				}
 	for ( trade = 0; trade<9; trade ++)
@@ -90,8 +87,6 @@ int update_SPNG(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALLELEC||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWLIQUID||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_DESTROYALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWSOLID))
-						continue;
 					if ((!r)&&parts[i].life>=1)//if nothing then create steam
 					{
 						np = create_part(-1,x+rx,y+ry,PT_WTRV);
@@ -99,9 +94,9 @@ int update_SPNG(UPDATE_FUNC_ARGS) {
 						{
 							parts[np].temp = parts[i].temp;
 							tmp--;
+							parts[i].life--;
+							parts[i].temp -= 20.0f;
 						}
-						parts[i].life--;
-						parts[i].temp -= 20.0f;
 					}
 				}
 	if (tmp>0)

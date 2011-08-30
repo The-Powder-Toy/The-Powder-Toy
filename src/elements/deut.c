@@ -32,9 +32,6 @@ int update_DEUT(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (parts[i].life<=maxlife)
 						continue;
-					if ((bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALLELEC||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_EWALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_DESTROYALL||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_WALL||
-					        bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWAIR||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWSOLID||bmap[(y+ry)/CELL][(x+rx)/CELL]==WL_ALLOWGAS))
-						continue;
 					if ((!r)&&parts[i].life>=1)//if nothing then create deut
 					{
 						np = create_part(-1,x+rx,y+ry,PT_DEUT);
