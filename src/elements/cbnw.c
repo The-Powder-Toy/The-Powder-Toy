@@ -14,7 +14,7 @@ int update_CBNW(UPDATE_FUNC_ARGS) {
 	if(oldt==1)
 	{
 		//Explode
-		if(!(rand()%2))
+		if(rand()%4)
 		{
 			part_change_type(i,x,y,PT_WATR);
 		} else {
@@ -27,12 +27,22 @@ int update_CBNW(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if (!r)
 					continue;
-				if ((r&0xFF)==PT_SALT && parts[i].tmp == 0 && 1>(rand()%250))
+				if (ptypes[r&0xFF].properties&TYPE_PART && parts[i].tmp == 0 && 1>(rand()%250))
 				{
 					//Start explode
-					parts[i].tmp = rand()%50;//(rand()%100)+50;
+					parts[i].tmp = rand()%25;//(rand()%100)+50;
+				}
+				else if(ptypes[r&0xFF].properties&TYPE_SOLID && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_GLAS && parts[i].tmp == 0 && (2-pv[y/CELL][x/CELL])>(rand()%20000))
+				{
+					if(rand()%2)
+					{
+						part_change_type(i,x,y,PT_WATR);
+					} else {
+						pv[y/CELL][x/CELL] += 0.5f;
+						part_change_type(i,x,y,PT_CO2);
+					}
 				}
 				if ((r&0xFF)==PT_CBNW)
 				{
@@ -61,11 +71,6 @@ int update_CBNW(UPDATE_FUNC_ARGS) {
 							return 1;
 						}
 				}
-				/*if ((r&0xFF)==PT_CNCT && 1>(rand()%500))	Concrete+Water to paste, not very popular
-				{
-					part_change_type(i,x,y,PT_PSTE);
-					kill_part(r>>8);
-				}*/
 			}
 	return 0;
 }
