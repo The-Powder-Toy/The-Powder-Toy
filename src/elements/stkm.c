@@ -383,6 +383,8 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 	//If legs touch something
 	STKM_interact(playerp, i, (int)(playerp[7]+0.5), (int)(playerp[8]+0.5));
 	STKM_interact(playerp, i, (int)(playerp[15]+0.5), (int)(playerp[16]+0.5));
+	STKM_interact(playerp, i, (int)(playerp[7]+0.5), (int)playerp[8]);
+	STKM_interact(playerp, i, (int)(playerp[15]+0.5), (int)playerp[16]);
 	if (!parts[i].type)
 		return 1;
 
