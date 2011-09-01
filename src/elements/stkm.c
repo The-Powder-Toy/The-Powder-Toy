@@ -402,6 +402,7 @@ void STKM_interact(float* playerp, int i, int x, int y)
 					portalp[parts[r>>8].tmp][count][nnx] = parts[i];
 					kill_part(i);
 					playerp[27] = 1;//stop SPWN creating a new STKM while he is in portal
+					break;
 				}
 		}
 	}
