@@ -1707,6 +1707,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					if (aheat_enable)
 					{
 						c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
+						c_heat = restrict_flt(c_heat, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
 						parts[i].temp += c_heat;
 						hv[y/CELL][x/CELL] -= c_heat;
 					}
