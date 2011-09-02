@@ -132,3 +132,30 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 			}
 	return 0;
 }
+
+int update_RDUM(UPDATE_FUNC_ARGS) {
+	nt r, rx, ry, np;
+	for (rx=-2; rx<3; rx++)
+		for (ry=-2; ry<3; ry++)
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			{
+				r = pmap[y+ry][x+rx];
+				if (!r||parts[i].temp < 273.15f)
+					continue;
+				if ((r&0xFF)==PT_RDUM && 1>(rand()%250))
+				{
+					parts[i].life--;
+				}
+				else if ((r&0xFF)==PT_NEUT && 1>(rand()%250))
+				{
+					parts[i].life -= 8;
+				}
+			}
+        if (parts[i].temp < 273.15)
+                parts[i].life++;
+	if (parts[i].life==0)
+	{
+		create_n_parts(parts[i].tmp*50, x+rx, y+ry, parts[i].vx, parts[i].vy, parts[i].temp, PT_NEUT);
+	}
+	return 0;
+}
