@@ -3322,9 +3322,9 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	ui_edit ed;
 	ui_copytext ctb;
 
-	viewcountbuffer[0] = 0;
 	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
+	viewcountbuffer[0] = 0;
 
 	fillrect(vid_buf, 50, 50, XRES+BARSIZE-100, YRES+MENUSIZE-100, 0, 0, 0, 255);
 	drawrect(vid_buf, 50, 50, XRES+BARSIZE-100, YRES+MENUSIZE-100, 255, 255, 255, 255);

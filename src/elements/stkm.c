@@ -17,6 +17,8 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
 	float pp, d;
 	float dt = 0.9;///(FPSB*FPSB);  //Delta time in square
+	float gvx, gvy;
+	float gx, gy, dl, dr;
 
 	if ((parts[i].ctype>0 && parts[i].ctype<PT_NUM && ptypes[parts[i].ctype].falldown>0) || parts[i].ctype==SPC_AIR || parts[i].ctype == PT_NEUT || parts[i].ctype == PT_PHOT)
 		playerp[2] = parts[i].ctype;
@@ -42,7 +44,6 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 	}
 
 	//Follow gravity
-	float gvx, gvy;
 	gvx = gvy = 0.0f;
 	switch (gravityMode)
 	{
@@ -109,8 +110,6 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 
 	playerp[25] = 0;
 	playerp[26] = 0;
-
-	float gx, gy, dl, dr;
 
 	gx = (playerp[7] + playerp[15])/2 - gvy;
 	gy = (playerp[8] + playerp[16])/2 + gvx;

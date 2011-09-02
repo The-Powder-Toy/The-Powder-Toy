@@ -1564,7 +1564,6 @@ int main(int argc, char *argv[])
 #else
 int main(int argc, char *argv[])
 {
-	limitFPS = 60;
 	pixel *part_vbuf; //Extra video buffer
 	pixel *part_vbuf_store;
 #ifdef BETA
@@ -1597,6 +1596,7 @@ int main(int argc, char *argv[])
     pthread_win32_process_attach_np();
     pthread_win32_thread_attach_np();
 #endif
+	limitFPS = 60;
 	vid_buf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	part_vbuf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE); //Extra video buffer
 	part_vbuf_store = part_vbuf;
@@ -2585,8 +2585,8 @@ int main(int argc, char *argv[])
 				else if ((cr&0xFF)==PT_LAVA && parts[cr>>8].ctype > 0 && parts[cr>>8].ctype < PT_NUM )
 				{
 					char lowername[6];
-					strcpy(lowername, ptypes[parts[cr>>8].ctype].name);
 					int ix;
+					strcpy(lowername, ptypes[parts[cr>>8].ctype].name);
 					for (ix = 0; lowername[ix]; ix++)
 						lowername[ix] = tolower(lowername[ix]);
 
