@@ -140,7 +140,7 @@ int update_RDUM(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if (!r)
+				if (!r||parts[i].temp < 273.15f)
 					continue;
 				if ((r&0xFF)==PT_RDUM && 1>(rand()%250))
 				{
@@ -151,6 +151,8 @@ int update_RDUM(UPDATE_FUNC_ARGS) {
 					parts[i].life -= 8;
 				}
 			}
+        if (parts[i].temp < 273.15)
+                parts[i].life++;
 	if (parts[i].life==0)
 	{
 		create_n_parts(parts[i].tmp*50, x+rx, y+ry, parts[i].vx, parts[i].vy, parts[i].temp, PT_NEUT);
