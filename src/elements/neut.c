@@ -153,7 +153,7 @@ int update_RDUM(UPDATE_FUNC_ARGS) {
 			}
 	if (parts[i].life==0)
 	{
-		create_n_parts(rand()%480+480, x+rx, y+ry, parts[i].vx, parts[i].vy, parts[i].temp, PT_NEUT);
+		create_n_parts(parts[i].tmp*50, x+rx, y+ry, parts[i].vx, parts[i].vy, parts[i].temp, PT_NEUT);
 	}
 	return 0;
 }
