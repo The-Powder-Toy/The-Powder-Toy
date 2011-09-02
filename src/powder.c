@@ -815,6 +815,11 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		parts[i].tmp = 0;
 		parts[i].tmp2 = 0;
 	}
+	if (t==PT_RDUM)
+	{
+		parts[i].tmp = rand()%8+1;
+		parts[i].life = rand()%1500+501;
+	}
 	if (t==PT_SOAP)
 	{
 		parts[i].tmp = -1;
