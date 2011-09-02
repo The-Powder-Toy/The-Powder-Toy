@@ -151,8 +151,10 @@ int update_RDUM(UPDATE_FUNC_ARGS) {
 					parts[i].life -= 8;
 				}
 			}
-        if (parts[i].temp < 273.15)
+        if (parts[i].temp < 273.15){
                 parts[i].life++;
+                pv[y/CELL][x/CELL] -= parts[i].tmp * CFDS;
+        }
 	if (parts[i].life==0)
 	{
 		create_n_parts(parts[i].tmp*50, x+rx, y+ry, parts[i].vx, parts[i].vy, parts[i].temp, PT_NEUT);
