@@ -140,6 +140,7 @@
 #define PT_DRIC	81
 #define PT_CBNW 82
 #define PT_STOR 83
+#define PT_PVOD 84
 
 #define PT_SPNG 90
 #define PT_RIME 91
@@ -327,6 +328,7 @@ int update_CO2(UPDATE_FUNC_ARGS);
 int update_CBNW(UPDATE_FUNC_ARGS);
 int update_STOR(UPDATE_FUNC_ARGS);
 int update_BIZR(UPDATE_FUNC_ARGS);
+int update_PVOD(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -490,7 +492,7 @@ static const part_type ptypes[PT_NUM] =
 	{"DRIC",	PIXPACK(0xE0E0E0),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	-0.0005f* CFDS,	0,	0,		0,	0,	20,	1,	1,	100,	SC_SOLIDS,		172.65f,				2,		"Dry Ice.", ST_SOLID, TYPE_SOLID, NULL},
 	{"BUBW",	PIXPACK(0x2030D0),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	1,	30,		SC_LIQUID,		R_TEMP-2.0f	+273.15f,	29,		"Carbonated water. Conducts electricity. Freezes. Extinguishes fires.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE, &update_CBNW},
 	{"STOR",	PIXPACK(0x50DFDF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,	100,	SC_POWERED,		R_TEMP+0.0f	+273.15f,	251,	"Solid. Stores a single particle, releases when charged with PSCN, also passes to PIPE", ST_NONE, TYPE_SOLID, &update_STOR},
-	/*FREE*/{"MOVE",	PIXPACK(0xFFFFFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	0,	100,	SC_LIFE,		9000.0f,				40,		"'Move' particles! Does not move things.. it is a life type B368/S245", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
+	{"PVOD",	PIXPACK(0x792020),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,	100,	SC_POWERED,		R_TEMP+0.0f	+273.15f,	251,	"Solid. When activated, destroys entering particles", ST_NONE, TYPE_SOLID, &update_PVOD},
 	/*FREE*/{"PGOL",	PIXPACK(0xE05010),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	0,	100,	SC_LIFE,		9000.0f,				40,		"Pseudo Life! B357/S238", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	/*FREE*/{"DMOE",	PIXPACK(0x500000),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	0,	100,	SC_LIFE,		9000.0f,				40,		"Diamoeba! B35678/S5678", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
 	/*FREE*/{"34",		PIXPACK(0x500050),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	0,	0,	100,	SC_LIFE,		9000.0f,				40,		"34! B34/S34)", ST_NONE, TYPE_SOLID|PROP_LIFE, NULL},
@@ -663,7 +665,7 @@ static part_transition ptransitions[PT_NUM] =
 	/* DRIC */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			195.65f,PT_CO2},
 	/* CBNW */ {IPL,	NT,			IPH,	NT,			273.15f,PT_ICEI,	373.0f,	PT_WTRV},
 	/* STOR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/*FREE*//* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* STOR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/*FREE*//* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/*FREE*//* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/*FREE*//* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},

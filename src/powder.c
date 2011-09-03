@@ -119,6 +119,8 @@ void init_can_move()
 		can_move[t][PT_INVIS] = 3;
 		//stop CNCT being displaced by other particles
 		can_move[t][PT_CNCT] = 0;
+		//Powered void behaviour varies on powered state
+		can_move[t][PT_PVOD] = 3;
 	}
 	for (t=0;t<PT_NUM;t++)
 	{
@@ -289,6 +291,21 @@ int try_move(int i, int x, int y, int nx, int ny)
 			player2[27] = 0;
 		}
 		parts[i].type=PT_NONE;
+		return 0;
+	}
+	if ((r&0xFF)==PT_PVOD) //this is where void eats particles
+	{
+		if(parts[r>>8].life == 10){
+			if (parts[i].type == PT_STKM)
+			{
+				player[27] = 0;
+			}
+			if (parts[i].type == PT_STKM2)
+			{	
+				player2[27] = 0;
+			}
+			parts[i].type=PT_NONE;
+		}
 		return 0;
 	}
 	if ((r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) //this is where blackhole eats particles

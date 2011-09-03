@@ -1854,7 +1854,7 @@ void draw_parts(pixel *vid)
 					draw_line(vid , nx, ny+3, player2[11], player2[12], 100, 100, 255, s);
 					draw_line(vid , player2[11], player2[12], player2[15], player2[16], 100, 100, 255, s);
 				}
-				if (cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP && t!=PT_GPMP && t!=PT_PBCN && t!=PT_FILT && t!=PT_HSWC && t!=PT_PCLN && t!=PT_DEUT && t!=PT_WIFI && t!=PT_LIFE)//nothing display but show needed color changes
+				if (cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP && t!=PT_GPMP && t!=PT_PBCN && t!=PT_FILT && t!=PT_HSWC && t!=PT_PCLN && t!=PT_DEUT && t!=PT_WIFI && t!=PT_LIFE && t!=PT_PVOD)//nothing display but show needed color changes
 				{
 					if (t==PT_PHOT)
 					{
@@ -1914,7 +1914,7 @@ void draw_parts(pixel *vid)
 				         t!=PT_LCRY && t!=PT_SWCH && t!=PT_PCLN &&
 				         t!=PT_PUMP && t!=PT_HSWC && t!=PT_FILT &&
 				         t!=PT_GPMP && t!=PT_PBCN && t!=PT_LIFE &&
-						 t!=PT_O2 && t!=PT_H2)
+						 t!=PT_O2 && t!=PT_H2 && t!=PT_PVOD)
 				{
 					if (ptypes[parts[i].type].properties&TYPE_LIQUID) //special effects for liquids in fancy mode
 					{
@@ -3065,6 +3065,22 @@ void draw_parts(pixel *vid)
 						blendpixel(vid, nx-1, ny-1, GR, 10, 10, 112);
 						blendpixel(vid, nx+1, ny+1, GR, 10, 10, 112);
 						blendpixel(vid, nx-1, ny+1, GR, 10, 10, 112);
+					}
+				}
+				else if (t==PT_PVOD)
+				{
+					uint8 GR = 0x3B+((parts[i].life>10?10:parts[i].life)*16);
+					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(GR, 30, 30);
+					if (cmode == CM_BLOB) {
+						blendpixel(vid, nx+1, ny, GR, 30, 30, 223);
+						blendpixel(vid, nx-1, ny, GR, 30, 30, 223);
+						blendpixel(vid, nx, ny+1, GR, 30, 30, 223);
+						blendpixel(vid, nx, ny-1, GR, 30, 30, 223);
+
+						blendpixel(vid, nx+1, ny-1, GR, 30, 30, 112);
+						blendpixel(vid, nx-1, ny-1, GR, 30, 30, 112);
+						blendpixel(vid, nx+1, ny+1, GR, 30, 30, 112);
+						blendpixel(vid, nx-1, ny+1, GR, 30, 30, 112);
 					}
 				}
 				else if (t==PT_PUMP)
