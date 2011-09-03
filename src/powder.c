@@ -772,6 +772,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 				(pmap[y][x]&0xFF)==PT_STOR||
 				(pmap[y][x]&0xFF)==PT_CLNE||
 				(pmap[y][x]&0xFF)==PT_BCLN||
+				(pmap[y][x]&0xFF)==PT_CONV||
 				((pmap[y][x]&0xFF)==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN)||
 				((pmap[y][x]&0xFF)==PT_PBCN&&t!=PT_PSCN&&t!=PT_NSCN)
 			)&&(
