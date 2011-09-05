@@ -612,6 +612,10 @@ int luatpt_get_property(lua_State* l)
 			lua_pushnumber(l, parts[i].y);
 			return 1;
 		}
+		if (strcmp(prop,"id")==0){
+			lua_pushnumber(l, i);
+			return 1;
+		}
 	}
 	else if (strcmp(prop,"type")==0){
 		lua_pushinteger(l, 0);
