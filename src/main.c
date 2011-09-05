@@ -2847,8 +2847,8 @@ int main(int argc, char *argv[])
 		}
 		else if (save_mode==2)
 		{
-			save_w = mx/sdl_scale - save_x;
-			save_h = my/sdl_scale - save_y;
+			save_w = mx/sdl_scale + 1 - save_x;
+			save_h = my/sdl_scale + 1 - save_y;
 			if (save_w+save_x>XRES) save_w = XRES-save_x;
 			if (save_h+save_y>YRES) save_h = YRES-save_y;
 			if (save_w<1) save_w = 1;
