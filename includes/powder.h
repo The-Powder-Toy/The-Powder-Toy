@@ -25,7 +25,7 @@
 
 #define UI_WALLSTART 222
 #define UI_ACTUALSTART 122
-#define UI_WALLCOUNT 23
+#define UI_WALLCOUNT 24
 
 #define WL_WALLELEC	122
 #define WL_EWALL	123
@@ -42,7 +42,6 @@
 #define WL_ALLOWSOLID	133
 #define WL_ALLOWALLELEC	134
 #define WL_EHOLE	135
-#define WL_GRAV		142
 
 #define SPC_AIR 236
 #define SPC_HEAT 237
@@ -53,7 +52,8 @@
 #define SPC_NGRV 244
 
 #define WL_ALLOWGAS	140
-
+#define WL_GRAV		142
+#define WL_ALLOWENERGY 145
 
 
 #define PT_NONE 0
@@ -953,6 +953,7 @@ static wall_type wtypes[] =
 	{PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, "Gravity wall"},
 	{PIXPACK(0x0000BB), PIXPACK(0x000000), -1, "Postive gravity tool."},
 	{PIXPACK(0x000099), PIXPACK(0x000000), -1, "Negative gravity tool."},
+	{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), 4, "Energy wall, allows only energy type particles to pass"},
 	
 };
 

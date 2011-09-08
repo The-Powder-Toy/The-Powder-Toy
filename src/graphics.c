@@ -3083,6 +3083,14 @@ void draw_parts(pixel *vid)
 						blendpixel(vid, nx-1, ny+1, GR, 30, 30, 112);
 					}
 				}
+				else if (t==PT_STOR)
+				{
+					if(parts[i].tmp){
+						vid[ny*(XRES+BARSIZE)+nx] = PIXPACK(0x50DFDF);
+					} else {
+						vid[ny*(XRES+BARSIZE)+nx] = PIXPACK(0x20AFAF);
+					}
+				}
 				else if (t==PT_PUMP)
 				{
 					uint8 GR = 0x3B+((parts[i].life>10?10:parts[i].life)*19);
