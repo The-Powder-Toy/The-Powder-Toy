@@ -771,7 +771,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		if (pmap[y][x])
 		{
 			if ((
-				(pmap[y][x]&0xFF)==PT_STOR||
+				((pmap[y][x]&0xFF)==PT_STOR&&!(ptypes[t].properties&TYPE_SOLID))||
 				(pmap[y][x]&0xFF)==PT_CLNE||
 				(pmap[y][x]&0xFF)==PT_BCLN||
 				(pmap[y][x]&0xFF)==PT_CONV||
