@@ -5337,10 +5337,12 @@ int save_filename_ui(pixel *vid_buf)
 	int x0=(XRES+BARSIZE-xsize)/2,y0=(YRES+MENUSIZE-ysize)/2,b=1,bq,mx,my;
 	int idtxtwidth, nd=0, imgw, imgh, save_size;
 	void *save_data;
+	char *savefname = NULL;
+	char *filename = NULL;
 	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	pixel *save_tmp;
 	pixel *save_data_image;
-	pixel *save = calloc((XRES/3)*(YRES/3), PIXELSIZE);
+	pixel *save = NULL;//calloc((XRES/3)*(YRES/3), PIXELSIZE);
 	ui_edit ed;
 
 	save_data = build_save(&save_size, 0, 0, XRES, YRES, bmap, fvx, fvy, signs, parts);
@@ -5412,8 +5414,8 @@ int save_filename_ui(pixel *vid_buf)
 			if(b && !bq)
 			{
 				FILE *f = NULL;
-				char *savefname = malloc(strlen(ed.str)+5);
-				char *filename = malloc(strlen(LOCAL_SAVE_DIR)+strlen(PATH_SEP)+strlen(ed.str)+5);
+				savefname = malloc(strlen(ed.str)+5);
+				filename = malloc(strlen(LOCAL_SAVE_DIR)+strlen(PATH_SEP)+strlen(ed.str)+5);
 				sprintf(filename, "%s%s%s.cps", LOCAL_SAVE_DIR, PATH_SEP, ed.str);
 				sprintf(savefname, "%s.cps", ed.str);
 			
@@ -5446,6 +5448,7 @@ int save_filename_ui(pixel *vid_buf)
 					}
 				}
 				fclose(f);
+				
 			}
 		}
 
@@ -5468,6 +5471,8 @@ savefin:
 	free(save_data);
 	free(old_vid);
 	free(save);
+	if(filename) free(filename);
+	if(savefname) free(savefname);
 	return 0;
 }
 

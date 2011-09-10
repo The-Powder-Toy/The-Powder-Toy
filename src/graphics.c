@@ -111,6 +111,7 @@ pixel *ptif_unpack(void *datain, int size, int *w, int *h){
 		free(green_chan);
 		free(blue_chan);
 		free(undata);
+		free(result);
 		return NULL;
 	}
 	if(i != (width*height)*3){
@@ -119,6 +120,7 @@ pixel *ptif_unpack(void *datain, int size, int *w, int *h){
 		free(green_chan);
 		free(blue_chan);
 		free(undata);
+		free(result);
 		return NULL;
 	}
 	memcpy(red_chan, undata, width*height);

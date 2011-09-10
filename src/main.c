@@ -637,7 +637,8 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	m = calloc(XRES*YRES, sizeof(int));
 
 	// make a catalog of free parts
-	memset(pmap, 0, sizeof(pmap));
+	//memset(pmap, 0, sizeof(pmap)); "Using sizeof for array given as function argument returns the size of pointer."
+	memset(pmap, 0, sizeof(unsigned)*(XRES*YRES));
 	for (i=0; i<NPART; i++)
 		if (parts[i].type)
 		{
@@ -3404,7 +3405,7 @@ int main(int argc, char *argv[])
 			if (sdl_mod&(KMOD_CAPS))
 				strappend(uitext, " [CAP LOCKS]");
 			if (GRID_MODE)
-				sprintf(uitext, "%s [GRID: %d]", uitext, GRID_MODE);
+				sprintf(uitext, "%s [GRID: %d]", uitext, GRID_MODE); //TODO: Undefined behavior: variable is used as parameter and destination in sprintf().
 #ifdef INTERNAL
 			if (vs)
 				strappend(uitext, " [FRAME CAPTURE]");
