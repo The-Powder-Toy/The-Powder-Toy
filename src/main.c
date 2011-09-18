@@ -2526,7 +2526,7 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		bq = b; // bq is previous mouse state
+		bq = bc; // bq is previous mouse state
 		bc = b = SDL_GetMouseState(&x, &y); // b is current mouse state
 
 #ifdef LUACONSOLE
