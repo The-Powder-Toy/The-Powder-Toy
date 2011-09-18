@@ -464,6 +464,9 @@ int luatpt_set_property(lua_State* l)
 	} else if (strcmp(prop,"y")==0){
 		offset = offsetof(particle, y);
 		format = 2;
+	} else if (strcmp(prop,"dcolour")==0){
+		offset = offsetof(particle, dcolour);
+		format = 1;
 	} else {
 		return luaL_error(l, "Invalid property '%s'", prop);
 	}
@@ -610,6 +613,10 @@ int luatpt_get_property(lua_State* l)
 		}
 		if (strcmp(prop,"y")==0){
 			lua_pushnumber(l, parts[i].y);
+			return 1;
+		}
+		if (strcmp(prop,"dcolour")==0){
+			lua_pushinteger(l, parts[i].dcolour);
 			return 1;
 		}
 		if (strcmp(prop,"id")==0){
