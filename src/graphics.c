@@ -860,6 +860,8 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 		case SPC_WIND:
 		case SPC_PGRV:
 		case SPC_NGRV:
+		case SPC_HEAL:
+		case SPC_HARM:
 			for (j=1; j<15; j++)
 				for (i=1; i<27; i++)
 					vid_buf[(XRES+BARSIZE)*(y+j)+(x+i)] = pc;
@@ -886,6 +888,10 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc)
 				drawtext(vid_buf, x+14-textwidth("PGRV")/2, y+4, "PGRV", c, c, c, 255);
 			else if (b==SPC_NGRV)
 				drawtext(vid_buf, x+14-textwidth("NGRV")/2, y+4, "NGRV", c, c, c, 255);
+			else if (b==SPC_HEAL)
+				drawtext(vid_buf, x+14-textwidth("HEAL")/2, y+4, "HEAL", c, c, c, 255);
+			else if (b==SPC_HARM)
+				drawtext(vid_buf, x+14-textwidth("HARM")/2, y+4, "HARM", c, c, c, 255);
 			break;
 		default:
 			for (j=1; j<15; j++)
@@ -4632,7 +4638,7 @@ corrupt:
 void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 {
 	int i,j,c;
-	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV)
+	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV||t==SPC_HEAL||t==SPC_HARM)
 	{
 		if (rx<=0)
 			xor_pixel(x, y, vid);
