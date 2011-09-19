@@ -656,7 +656,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	int t = tv & 0xFF;
 	int v = (tv >> 8) & 0xFF;
 	
-	if (x<0 || y<0 || x>=XRES || y>=YRES || ((t<0 || t>=PT_NUM)&&t!=SPC_HEAT&&t!=SPC_COOL&&t!=SPC_AIR&&t!=SPC_VACUUM&&t!=SPC_PGRV&&t!=SPC_NGRV))
+	if (x<0 || y<0 || x>=XRES || y>=YRES || ((t<0 || t>=PT_NUM)&&t!=SPC_HEAT&&t!=SPC_COOL&&t!=SPC_AIR&&t!=SPC_VACUUM&&t!=SPC_PGRV&&t!=SPC_NGRV&&t!=SPC_HEAL&&t!=SPC_HARM))
 		return -1;
 	if (t>=0 && t<PT_NUM && !ptypes[t].enabled)
 		return -1;
@@ -727,6 +727,16 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	{
 	gravmap[y/CELL][x/CELL] = -5;
 	return -1;
+	}
+	if (t==SPC_HEAL)
+	{
+		parts[pmap[y][x]>>8].life += 1;
+		return -1;
+	}
+	if (t==SPC_HARM)
+	{
+		parts[pmap[y][x]>>8].life -= 1;
+		return -1;
 	}
 
 
@@ -2652,7 +2662,7 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	{
 		if (wall==r)
 		{
-			if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV)
+			if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV || c == SPC_HEAL || c == SPC_HARM)
 				break;
 			if (wall == WL_ERASE)
 				b = 0;
@@ -2753,7 +2763,7 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	}
 
 	//why do these need a special if
-	if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV)
+	if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV || c == SPC_HEAL || c == SPC_HARM)
 	{
 		if (rx==0&&ry==0)
 		{
