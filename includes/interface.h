@@ -60,9 +60,10 @@ static menu_section msections[] = //doshow does not do anything currently.
 
 static menu_section colorsections[] = //doshow does not do anything currently.
 {
-	{"\xD1", "Colors", 7, 1},
-	{"\xC5", "Tools", 0, 1},
+	{"\xC4", "Colors", 7, 1},
+	{"\xD7", "Tools", 0, 1},
 };
+#define DECO_SECTIONS 2
 
 static menu_wall colorlist[] =
 {
@@ -73,6 +74,17 @@ static menu_wall colorlist[] =
 	{PIXPACK(0xFF00FF), "Pink"},
 	{PIXPACK(0x00FFFF), "Cyan"},
 	{PIXPACK(0xFFFFFF), "White"},
+};
+
+#define DECO_DRAW 0
+#define DECO_LIGHTEN 1
+#define DECO_DARKEN 2
+
+static menu_wall toollist[] =
+{
+	{PIXPACK(0xFF0000), "Draw"},
+	{PIXPACK(0xDDDDDD), "Lighten"},
+	{PIXPACK(0x111111), "Darken"},
 };
 
 struct ui_edit

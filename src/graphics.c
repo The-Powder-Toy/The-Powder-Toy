@@ -959,6 +959,20 @@ void draw_menu(pixel *vid_buf, int i, int hover)
 	}
 }
 
+void draw_color_menu(pixel *vid_buf, int i, int hover)
+{
+	drawrect(vid_buf, (XRES+BARSIZE)-16, (i*16)+YRES+MENUSIZE-16-(DECO_SECTIONS*16), 14, 14, 255, 255, 255, 255);
+	if (hover==i)
+	{
+		fillrect(vid_buf, (XRES+BARSIZE)-16, (i*16)+YRES+MENUSIZE-16-(DECO_SECTIONS*16), 14, 14, 255, 255, 255, 255);
+		drawtext(vid_buf, (XRES+BARSIZE)-13, (i*16)+YRES+MENUSIZE-14-(DECO_SECTIONS*16), colorsections[i].icon, 0, 0, 0, 255);
+	}
+	else
+	{
+		drawtext(vid_buf, (XRES+BARSIZE)-13, (i*16)+YRES+MENUSIZE-14-(DECO_SECTIONS*16), colorsections[i].icon, 255, 255, 255, 255);
+	}
+}
+
 //draws a pixel, identical to blendpixel(), except blendpixel has OpenGL support
 #if defined(WIN32) && !defined(__GNUC__)
 _inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
@@ -3922,34 +3936,54 @@ void draw_walls(pixel *vid)
 			}
 }
 
-void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int click)
+void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int click, int tool)
 {
 	int i,j,rp;
 	if (rx==0 && ry==0)
 	{
-		rp = pmap[y][x];
-		if (!rp)
-			return;
-		if (click == 4)
-			parts[rp>>8].dcolour = 0;
-		else
-			parts[rp>>8].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
+		create_decoration(x,y,r,g,b,click,tool);
 		return;
 	}
 	for (j=-ry; j<=ry; j++)
 		for (i=-rx; i<=rx; i++)
 			if(y+j>=0 && x+i>=0 && x+i<XRES && y+j<YRES)
 				if (InCurrentBrush(i, j, rx, ry)){
-					rp = pmap[y+j][x+i];
-					if (!rp)
-						continue;
-					if (click == 4)
-						parts[rp>>8].dcolour = 0;
-					else
-						parts[rp>>8].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
+					create_decoration(x+i,y+j,r,g,b,click,tool);
 				}
 }
-void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b, int click)
+void create_decoration(int x, int y, int r, int g, int b, int click, int tool)
+{
+	int rp, tr,tg,tb;
+	rp = pmap[y][x];
+	if (!rp)
+		return;
+	if (tool == DECO_DRAW)
+	{
+		if (click == 4)
+			parts[rp>>8].dcolour = 0;
+		else
+			parts[rp>>8].dcolour = ((255<<24)|(r<<16)|(g<<8)|b);
+	}
+	else if (tool == DECO_LIGHTEN)
+	{//maybe get a better lighten/darken?
+		if (parts[rp>>8].dcolour == 0)
+			return;
+		tr = PIXR(parts[rp>>8].dcolour)&0xFF;
+		tg = PIXG(parts[rp>>8].dcolour);
+		tb = PIXB(parts[rp>>8].dcolour);
+		parts[rp>>8].dcolour = ((255<<24)|(clamp_flt(tr+(255-tr)*0.02+1, 0,255)<<16)|(clamp_flt(tg+(255-tg)*0.02+1, 0,255)<<8)|clamp_flt(tb+(255-tb)*0.02+1, 0,255));
+	}
+	else if (tool == DECO_DARKEN)
+	{
+		if (parts[rp>>8].dcolour == 0)
+			return;
+		tr = PIXR(parts[rp>>8].dcolour)&0xFF;
+		tg = PIXG(parts[rp>>8].dcolour);
+		tb = PIXB(parts[rp>>8].dcolour);
+		parts[rp>>8].dcolour = ((255<<24)|(clamp_flt(tr-(tr)*0.02, 0,255)<<16)|(clamp_flt(tg-(tg)*0.02, 0,255)<<8)|clamp_flt(tb-(tb)*0.02, 0,255));
+	}
+}
+void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b, int click, int tool)
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
 	float e, de;
@@ -3983,9 +4017,9 @@ void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int
 	for (x=x1; x<=x2; x++)
 	{
 		if (cp)
-			create_decorations(y, x, rx, ry, r, g, b, click);
+			create_decorations(y, x, rx, ry, r, g, b, click, tool);
 		else
-			create_decorations(x, y, rx, ry, r, g, b, click);
+			create_decorations(x, y, rx, ry, r, g, b, click, tool);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -3993,15 +4027,15 @@ void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int
 			if (!(rx+ry))
 			{
 				if (cp)
-					create_decorations(y, x, rx, ry, r, g, b, click);
+					create_decorations(y, x, rx, ry, r, g, b, click, tool);
 				else
-					create_decorations(x, y, rx, ry, r, g, b, click);
+					create_decorations(x, y, rx, ry, r, g, b, click, tool);
 			}
 			e -= 1.0f;
 		}
 	}
 }
-void box_decorations(int x1, int y1, int x2, int y2, int r, int g, int b, int click)
+void box_decorations(int x1, int y1, int x2, int y2, int r, int g, int b, int click, int tool)
 {
 	int i, j;
 	if (x1>x2)
@@ -4018,7 +4052,7 @@ void box_decorations(int x1, int y1, int x2, int y2, int r, int g, int b, int cl
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			create_decorations(i, j, 0, 0, r, g, b, click);
+			create_decorations(i, j, 0, 0, r, g, b, click, tool);
 }
 
 //draws the photon colors in the HUD

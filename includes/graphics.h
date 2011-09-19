@@ -134,11 +134,15 @@ void draw_parts(pixel *vid);
 
 void draw_walls(pixel *vid);
 
-void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int click);
+void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int click, int tool);
 
-void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b, int click);
+void create_decoration(int x, int y, int r, int g, int b, int click, int tool);
 
-void box_decorations(int x1, int y1, int x2, int y2, int r, int g, int b, int click);
+void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b, int click, int tool);
+
+void box_decorations(int x1, int y1, int x2, int y2, int r, int g, int b, int click, int tool);
+
+void draw_color_menu(pixel *vid_buf, int i, int hover);
 
 void draw_wavelengths(pixel *vid, int x, int y, int h, int wl);
 
