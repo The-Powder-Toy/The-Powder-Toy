@@ -22,6 +22,8 @@
 
 #define LOCAL_LUA_DIR "Lua"
 
+#define APPDATA_SUBDIR "\\HardWIRED"
+
 #define THUMB_CACHE_SIZE 256
 
 #ifndef M_PI
