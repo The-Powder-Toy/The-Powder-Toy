@@ -1716,6 +1716,20 @@ int main(int argc, char *argv[])
 			}
 			i++;
 		}
+		else if (!strncmp(argv[i], "ddir", 4) && i+1<argc)
+		{
+			/*char * temppath;
+			FILE *f;
+			temppath = malloc(strlen(argv[i+1])+19);
+			sprintf(temppath, "%s%s%s", argv[i+1], PATH_SEP, "powdertoydir.test")
+			f = fopen(temppath, "wb");
+			if(f){*/
+				chdir(argv[i+1]);
+			/*	fclose(f);
+				remove(temppath);
+			}
+			free(temppath);*/
+		}
 
 	}
 
