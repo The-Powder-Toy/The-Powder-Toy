@@ -4776,8 +4776,9 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 	int grid_offset_x;
 	int window_offset_x;
 	int onleft_button_offset_x;
-	int h = PIXR(savedColor), s = PIXG(savedColor), v = PIXB(savedColor); 
-	int th = h, ts = s, tv=v;
+	int currH = 0, currS = 255, currV = 127;
+	int currR = PIXR(savedColor), currG = PIXG(savedColor), currB = PIXB(savedColor);
+	int th = currH, ts = currS, tv = currV;
 	pixel *old_buf=calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
 	ui_edit box_R;
 	ui_edit box_G;
@@ -4829,12 +4830,10 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*(YRES+MENUSIZE)*PIXELSIZE);
 		draw_parts(vid_buf);
-		//ui_edit_process(mx, my, b, &box_R);
-		//ui_edit_process(mx, my, b, &box_G);
-		//ui_edit_process(mx, my, b, &box_B);
-		//HSV_to_RGB(h,s,v,&cr,&cg,&cb);
-		//if(cr != atoi(box_R.str))
-			//RGB_to_HSV(atoi(box_R.str),cg,cb,&h,&s,&v);
+		ui_edit_process(mx, my, b, &box_R);
+		ui_edit_process(mx, my, b, &box_G);
+		ui_edit_process(mx, my, b, &box_B);
+
 		if(on_left==1)
 		{
 			grid_offset_x = grid_offset_x_left;
@@ -4877,6 +4876,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			ui_edit_draw(vid_buf, &box_G);
 			ui_edit_draw(vid_buf, &box_B);
 
+			//draw color square
 			for(ss=0; ss<=255; ss++)
 				for(hh=0;hh<=359;hh++)
 				{
@@ -4886,36 +4886,74 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 					HSV_to_RGB(hh,255-ss,255-ss,&cr,&cg,&cb);
 					vid_buf[(ss+grid_offset_y)*(XRES+BARSIZE)+(clamp_flt(hh, 0, 359)+grid_offset_x)] = PIXRGB(cr, cg, cb);
 				}
+			//draw brightness bar
 			for(vv=0; vv<=255; vv++)
 				for( i=0; i<10; i++)
 				{
 					cr = 0;
 					cg = 0;
 					cb = 0;
-					HSV_to_RGB(h,s,vv,&cr,&cg,&cb);
+					HSV_to_RGB(currH,currS,vv,&cr,&cg,&cb);
 					vid_buf[(vv+grid_offset_y)*(XRES+BARSIZE)+(i+grid_offset_x+255+4)] = PIXRGB(cr, cg, cb);
 				}
-			addpixel(vid_buf,grid_offset_x + clamp_flt(h, 0, 359),grid_offset_y-1,255,255,255,255);
-			addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-s),255,255,255,255);
+			addpixel(vid_buf,grid_offset_x + clamp_flt(currH, 0, 359),grid_offset_y-1,255,255,255,255);
+			addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-currS),255,255,255,255);
 
 			addpixel(vid_buf,grid_offset_x + clamp_flt(th, 0, 359),grid_offset_y-1,100,100,100,255);
 			addpixel(vid_buf,grid_offset_x -1,grid_offset_y+(255-ts),100,100,100,255);
 
 			addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y+tv,100,100,100,255);
-			addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y +v,255,255,255,255);
+			addpixel(vid_buf,grid_offset_x + 255 +3,grid_offset_y +currV,255,255,255,255);
 
-			HSV_to_RGB(h,s,v,&cr,&cg,&cb);
-			fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, cr, cg, cb, 255);
+			fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, currR, currG, currB, 255);
 		}
-		if( color_menu_ui(vid_buf, 1, &cr, &cg, &cb, b, bq, mx, my) )
-			RGB_to_HSV(cr,cg,cb,&h,&s,&v);
+		if( color_menu_ui(vid_buf, 1, &currR, &currG, &currB, b, bq, mx, my) )
+			RGB_to_HSV(currR,currG,currB,&currH,&currS,&currV);
 
-		HSV_to_RGB(h,s,v,&cr,&cg,&cb);
+		if(!box_R.focus)//prevent text update if it is being edited
+			sprintf(box_R.str,"%d",currR);
+		else
+		{
+			if(sdl_key == SDLK_RETURN)
+			{
+				cr = atoi(box_R.str);
+				if (cr > 255) cr = 255;
+				if (cr < 0) cr = 0;
+				currR = cr;
+				RGB_to_HSV(currR,currG,currB,&currH,&currS,&currV);
+				box_R.focus = 0;
+			}
+		}
+		if(!box_G.focus)
+			sprintf(box_G.str,"%d",currG);
+		else
+		{
+			if(sdl_key == SDLK_RETURN)
+			{
+				cg = atoi(box_G.str);
+				if (cg > 255) cg = 255;
+				if (cg < 0) cg = 0;
+				currG = cg;
+				RGB_to_HSV(currR,currG,currB,&currH,&currS,&currV);
+				box_G.focus = 0;
+			}
+		}
+		if(!box_B.focus)
+			sprintf(box_B.str,"%d",currB);
+		else
+		{
+			if(sdl_key == SDLK_RETURN)
+			{
+				cb = atoi(box_B.str);
+				if (cb > 255) cb = 255;
+				if (cb < 0) cb = 0;
+				currB = cb;
+				RGB_to_HSV(currR,currG,currB,&currH,&currS,&currV);
+				box_B.focus = 0;
+			}
+		}
 
-		sprintf(box_R.str,"%d",cr);
-		sprintf(box_G.str,"%d",cg);
-		sprintf(box_B.str,"%d",cb);
-		fillrect(vid_buf, 250, YRES+4, 40, 15, cr, cg, cb, 255);
+		fillrect(vid_buf, 250, YRES+4, 40, 15, currR, currG, currB, 255);
 
 		drawrect(vid_buf, 295, YRES+5, 25, 12, 255, 255, 255, 255);
 		if(hidden)
@@ -4925,20 +4963,26 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 
 		if(!lb && !hidden && mx >= window_offset_x && my >= window_offset_y && mx <= window_offset_x+255+4+10+5 && my <= window_offset_y+255+20)//in the main window
 		{
+			//inside brightness bar
 			if(mx >= grid_offset_x +255+4 && my >= grid_offset_y && mx <= grid_offset_x+255+4+10 && my <= grid_offset_y+255)
 			{
 				tv =  my - grid_offset_y;
 				if(b)
 				{
-					v =my - grid_offset_y;
+					currV =my - grid_offset_y;
+					HSV_to_RGB(currH,currS,tv,&currR,&currG,&currB);
 				}
-				HSV_to_RGB(h,s,tv,&cr,&cg,&cb);
+				HSV_to_RGB(currH,currS,tv,&cr,&cg,&cb);
 				//clearrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6,12,12);
 				fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, cr, cg, cb, 255);
-				sprintf(box_R.str,"%d",cr);
-				sprintf(box_G.str,"%d",cg);
-				sprintf(box_B.str,"%d",cb);
+				if(!box_R.focus)
+					sprintf(box_R.str,"%d",cr);
+				if(!box_G.focus)
+					sprintf(box_G.str,"%d",cg);
+				if(!box_B.focus)
+					sprintf(box_B.str,"%d",cb);
 			}
+			//inside color grid
 			if(mx >= grid_offset_x && my >= grid_offset_y && mx <= grid_offset_x+255 && my <= grid_offset_y+255)
 			{
 				th = mx - grid_offset_x;
@@ -4946,22 +4990,28 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 				ts = 255 - (my - grid_offset_y);
 				if(b)
 				{
-					h = th;
-					s = ts;
+					currH = th;
+					currS = ts;
+					HSV_to_RGB(th,ts,currV,&currR,&currG,&currB);
 				}
-				HSV_to_RGB(th,ts,v,&cr,&cg,&cb);
+				HSV_to_RGB(th,ts,currV,&cr,&cg,&cb);
 				//clearrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6,12,12);
 				fillrect(vid_buf, window_offset_x + onleft_button_offset_x +1, window_offset_y +255+6, 12, 12, cr, cg, cb, 255);
 				//sprintf(box_R.def,"%d",cr);
-				sprintf(box_R.str,"%d",cr);
-				sprintf(box_G.str,"%d",cg);
-				sprintf(box_B.str,"%d",cb);
+				if(!box_R.focus)
+					sprintf(box_R.str,"%d",cr);
+				if(!box_G.focus)
+					sprintf(box_G.str,"%d",cg);
+				if(!box_B.focus)
+					sprintf(box_B.str,"%d",cb);
 			}
+			//switch side button
 			if(b && !bq && mx >= window_offset_x + onleft_button_offset_x +1 && my >= window_offset_y +255+6 && mx <= window_offset_x + onleft_button_offset_x +13 && my <= window_offset_y +255+5 +13)
 			{
 				on_left = !on_left;
 				lb = 3;//prevent immediate drawing after clicking
 			}
+			//clear button
 			if(b && !bq && mx >= window_offset_x + 230 && my >= window_offset_y +255+6 && mx <= window_offset_x + 230 +26 && my <= window_offset_y +255+5 +13)
 				if (confirm_ui(vid_buf, "Reset Decoration Layer", "Do you really want to erase everything?", "Erase") )
 				{
@@ -4970,9 +5020,9 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 						parts[i].dcolour = 0;
 				}
 		}
-		else if (mx > XRES || my > YRES)
+		else if (mx > XRES || my > YRES)//mouse outside normal drawing area
 		{
-			//click outside normal drawing area
+			//hide/show button
 			if (!zoom_en && b && !bq && mx >= 295 && mx <= 295+25 && my >= YRES+5 && my<= YRES+5+12)
 				hidden = !hidden;
 		}
@@ -4995,19 +5045,13 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 		}
 		else if (b)//there is a click, outside color window
 		{
-			if (!(b&1))
-			{
-				cr = 0;
-				cg = 0;
-				cb = 0;
-			}
 			if (lb)//mouse is held down
 			{
-				if (lm == 1)//line tool
+				if (lm == 1)//line tool preview
 				{
 					xor_line(lx, ly, mx, my, vid_buf);
 				}
-				else if (lm == 2)//box tool
+				else if (lm == 2)//box tool preview
 				{
 					xor_line(lx, ly, lx, my, vid_buf);
 					xor_line(lx, my, mx, my, vid_buf);
@@ -5016,7 +5060,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 				}
 				else if(lb!=3)//while mouse is held down, it draws lines between previous and current positions
 				{
-					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb, b);
+					line_decorations(lx, ly, mx, my, *bsx, *bsy, currR, currG, currB, b);
 					lx = mx;
 					ly = my;
 				}
@@ -5048,7 +5092,11 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 						cg = PIXG(tempcolor);
 						cb = PIXB(tempcolor);
 						if (cr || cg || cb)
-							RGB_to_HSV(cr,cg,cb,&h,&s,&v);
+						{
+							currR = cr;
+							currG = cg;
+							currB = cb;
+						}
 					}
 					lx = mx;
 					ly = my;
@@ -5057,7 +5105,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 				}
 				else //normal click, draw deco
 				{
-					create_decorations(mx,my,*bsx,*bsy,cr,cg,cb,b);
+					create_decorations(mx,my,*bsx,*bsy,currR,currG,currB,b);
 					lx = mx;
 					ly = my;
 					lb = b;
@@ -5067,18 +5115,12 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 		}
 		else
 		{
-			if (!(lb&1))
-			{
-				cr = 0;
-				cg = 0;
-				cb = 0;
-			}
 			if (lb && lm) //lm is box/line tool
 			{
 				if (lm == 1)//line
-					line_decorations(lx, ly, mx, my, *bsx, *bsy, cr, cg, cb, lb);
+					line_decorations(lx, ly, mx, my, *bsx, *bsy, currR, currG, currB, lb);
 				else//box
-					box_decorations(lx, ly, mx, my, cr, cg, cb, lb);
+					box_decorations(lx, ly, mx, my, currR, currG, currB, lb);
 				lm = 0;
 			}
 			lb = 0;
@@ -5234,11 +5276,11 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 		if(sdl_key=='b' || sdl_key==SDLK_ESCAPE)
 		{
 			free(old_buf);
-			return PIXRGB(h,s,v);
+			return PIXRGB(currR,currG,currB);
 		}
 	}
 	free(old_buf);
-	return PIXRGB(h,s,v);
+	return PIXRGB(currR,currG,currB);
 }
 struct savelist_e {
 	char *filename;
