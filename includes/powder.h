@@ -50,8 +50,8 @@
 #define SPC_WIND 241
 #define SPC_PGRV 243
 #define SPC_NGRV 244
-#define SPC_PGRV 246
-#define SPC_NGRV 247
+#define SPC_HEAL 246
+#define SPC_HARM 247
 
 
 #define WL_ALLOWGAS	140
