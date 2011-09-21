@@ -2,8 +2,10 @@
 
 int update_SOAP(UPDATE_FUNC_ARGS) 
 {
-	int r, rx, ry;
-
+	int r, rx, ry, nr, ng, nb, na;
+	float tr, tg, tb, ta;
+	float blend;
+	
 	//0x01 - bubble on/off
 	//0x02 - first mate yes/no
 	//0x04 - "back" mate yes/no
@@ -203,6 +205,30 @@ int update_SOAP(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
+	
+	for (rx=-2; rx<3; rx++)
+		for (ry=-2; ry<3; ry++)
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			{
+				r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+				if ((r&0xFF)!=PT_SOAP)
+				{
+					blend = 0.85f;
+					tr = (parts[r>>8].dcolour>>16)&0xFF;
+					tg = (parts[r>>8].dcolour>>8)&0xFF;
+					tb = (parts[r>>8].dcolour)&0xFF;
+					ta = (parts[r>>8].dcolour>>24)&0xFF;
+					
+					nr = (tr*blend);
+					ng = (tg*blend);
+					nb = (tb*blend);
+					na = (ta*blend);
+					
+					parts[r>>8].dcolour = nr<<16 | ng<<8 | nb | na<<24;
+				}
+			}
 
 	return 0;
 }
