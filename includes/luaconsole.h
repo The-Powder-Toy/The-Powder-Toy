@@ -34,6 +34,7 @@ int luatpt_drawtext(lua_State* l);
 int luatpt_create(lua_State* l);
 int luatpt_setpause(lua_State* l);
 int luatpt_togglepause(lua_State* l);
+int luatpt_togglewater(lua_State* l);
 int luatpt_setconsole(lua_State* l);
 int luatpt_log(lua_State* l);
 int luatpt_set_pressure(lua_State* l);

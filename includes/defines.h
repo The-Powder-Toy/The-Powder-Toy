@@ -162,6 +162,7 @@ extern int decorations_enable;
 extern int hud_enable;
 extern int debug_flags;
 int limitFPS;
+int water_equal_test;
 
 extern int active_menu;
 

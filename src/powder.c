@@ -2175,6 +2175,11 @@ killed:
 			}
 			else
 			{
+				if (water_equal_test && ptypes[t].falldown == 2 && 1>= rand()%400)//checking stagnant is cool, but then it doesn't update when you change it later.
+				{
+					if (!flood_water(x,y,i,y, parts[i].tmp2))
+						goto movedone;
+				}
 				// liquids and powders
 				if (!do_move(i, x, y, fin_xf, fin_yf))
 				{
@@ -2638,6 +2643,62 @@ int flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 	}
 	if (!(cm==PT_INST&&co==PT_SPRK))
 		return 1;
+}
+
+int flood_water(int x, int y, int i, int originaly, int check)
+{
+	int x1 = 0,x2 = 0;
+	// go left as far as possible
+	x1 = x2 = x;
+	if (!pmap[y][x])
+		return 1;
+
+	while (x1>=CELL)
+	{
+		if ((ptypes[(pmap[y][x1-1]&0xFF)].falldown)!=2)
+		{
+			break;
+		}
+		x1--;
+	}
+	while (x2<XRES-CELL)
+	{
+		if ((ptypes[(pmap[y][x2+1]&0xFF)].falldown)!=2)
+		{
+			break;
+		}
+		x2++;
+	}
+
+	// fill span
+	for (x=x1; x<=x2; x++)
+	{
+		parts[pmap[y][x]>>8].tmp2 = !check;//flag it as checked, maybe shouldn't use .tmp2
+		//check above, maybe around other sides too?
+		if ( ((y-1) > originaly) && !pmap[y-1][x])
+		{
+			int oldx = (int)(parts[i].x + 0.5f);
+			int oldy = (int)(parts[i].y + 0.5f);
+			pmap[y-1][x] = pmap[oldy][oldx];
+			pmap[oldy][oldx] = 0;
+			parts[i].x = x;
+			parts[i].y = y-1;
+			return 0;
+		}
+	}
+	// fill children
+	
+	if (y>=CELL+1)
+		for (x=x1; x<=x2; x++)
+			if ((ptypes[(pmap[y-1][x]&0xFF)].falldown)==2 && parts[pmap[y-1][x]>>8].tmp2 == check)
+				if (!flood_water(x, y-1, i, originaly, check))
+					return 0;
+	if (y<YRES-CELL-1)
+		for (x=x1; x<=x2; x++)
+			if ((ptypes[(pmap[y+1][x]&0xFF)].falldown)==2 && parts[pmap[y+1][x]>>8].tmp2 == check)
+				if (!flood_water(x, y+1, i, originaly, check))
+					return 0;
+	return 1;
 }
 
 //this creates particles from a brush, don't use if you want to create one particle

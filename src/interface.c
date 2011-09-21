@@ -5818,7 +5818,7 @@ openfin:
 void simulation_ui(pixel * vid_buf)
 {
 	int xsize = 300;
-	int ysize = 164;
+	int ysize = 192;
 	int x0=(XRES-xsize)/2,y0=(YRES-MENUSIZE-ysize)/2,b=1,bq,mx,my;
 	int new_scale, new_kiosk;
 	ui_checkbox cb;
@@ -5826,6 +5826,7 @@ void simulation_ui(pixel * vid_buf)
 	ui_checkbox cb3;
 	ui_checkbox cb4;
 	ui_checkbox cb5;
+	ui_checkbox cb6;
 
 	cb.x = x0+xsize-16;		//Heat simulation
 	cb.y = y0+23;
@@ -5838,12 +5839,12 @@ void simulation_ui(pixel * vid_buf)
 	cb2.checked = ngrav_enable;
 	
 	cb3.x = x0+xsize-16;	//Large window
-	cb3.y = y0+113;
+	cb3.y = y0+143;
 	cb3.focus = 0;
 	cb3.checked = (sdl_scale==2)?1:0;
 	
 	cb4.x = x0+xsize-16;	//Fullscreen
-	cb4.y = y0+129;
+	cb4.y = y0+157;
 	cb4.focus = 0;
 	cb4.checked = (kiosk_enable==1)?1:0;
 	
@@ -5851,6 +5852,11 @@ void simulation_ui(pixel * vid_buf)
 	cb5.y = y0+51;
 	cb5.focus = 0;
 	cb5.checked = aheat_enable;
+
+	cb6.x = x0+xsize-16;	//Ambient heat
+	cb6.y = y0+107;
+	cb6.focus = 0;
+	cb6.checked = water_equal_test;
 
 	while (!sdl_poll())
 	{
@@ -5881,14 +5887,18 @@ void simulation_ui(pixel * vid_buf)
 		drawtext(vid_buf, x0+8, y0+82, "Newtonian gravity", 255, 255, 255, 255);
 		drawtext(vid_buf, x0+12+textwidth("Newtonian gravity"), y0+82, "Introduced in version 48.", 255, 255, 255, 180);
 		drawtext(vid_buf, x0+12, y0+96, "May also cause slow performance on older computers", 255, 255, 255, 120);
+
+		drawtext(vid_buf, x0+8, y0+110, "Water Equalization Test", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("Water Equalization Test"), y0+110, "Introduced in version 61.", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+12, y0+124, "May lag with lots of water.", 255, 255, 255, 120);
 		
-		draw_line(vid_buf, x0, y0+110, x0+xsize, y0+110, 150, 150, 150, XRES+BARSIZE);
+		draw_line(vid_buf, x0, y0+138, x0+xsize, y0+138, 150, 150, 150, XRES+BARSIZE);
 		
-		drawtext(vid_buf, x0+8, y0+116, "Large window", 255, 255, 255, 255);
-		drawtext(vid_buf, x0+12+textwidth("Large window"), y0+116, "Double window size for small screens", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+8, y0+144, "Large window", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("Large window"), y0+144, "Double window size for small screens", 255, 255, 255, 180);
 		
-		drawtext(vid_buf, x0+8, y0+132, "Fullscreen", 255, 255, 255, 255);
-		drawtext(vid_buf, x0+12+textwidth("Fullscreen"), y0+132, "Fill the entire screen", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+8, y0+158, "Fullscreen", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("Fullscreen"), y0+158, "Fill the entire screen", 255, 255, 255, 180);
 
 		//TODO: Options for Air and Normal gravity
 		//Maybe save/load defaults too.
@@ -5901,12 +5911,14 @@ void simulation_ui(pixel * vid_buf)
 		ui_checkbox_draw(vid_buf, &cb3);
 		ui_checkbox_draw(vid_buf, &cb4);
 		ui_checkbox_draw(vid_buf, &cb5);
+		ui_checkbox_draw(vid_buf, &cb6);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 		ui_checkbox_process(mx, my, b, bq, &cb);
 		ui_checkbox_process(mx, my, b, bq, &cb2);
 		ui_checkbox_process(mx, my, b, bq, &cb3);
 		ui_checkbox_process(mx, my, b, bq, &cb4);
 		ui_checkbox_process(mx, my, b, bq, &cb5);
+		ui_checkbox_process(mx, my, b, bq, &cb6);
 
 		if (b && !bq && mx>=x0 && mx<x0+xsize && my>=y0+ysize-16 && my<=y0+ysize)
 			break;
@@ -5917,6 +5929,7 @@ void simulation_ui(pixel * vid_buf)
 			break;
 	}
 
+	water_equal_test = cb6.checked;
 	legacy_enable = !cb.checked;
 	aheat_enable = cb5.checked;
 	new_scale = (cb3.checked)?2:1;
