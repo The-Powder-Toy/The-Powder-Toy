@@ -63,6 +63,7 @@ void luacon_open(){
 		{"setfpscap",&luatpt_setfpscap},
 		{"getscript",&luatpt_getscript},
 		{"setwindowsize",&luatpt_setwindowsize},
+		{"watertest",&luatpt_togglewater},
 		{NULL,NULL}
 	};
 
@@ -265,6 +266,12 @@ int luatpt_setpause(lua_State* l)
 int luatpt_togglepause(lua_State* l)
 {
 	sys_pause=!sys_pause;
+	return 0;
+}
+
+int luatpt_togglewater(lua_State* l)
+{
+	water_equal_test=!water_equal_test;
 	return 0;
 }
 
