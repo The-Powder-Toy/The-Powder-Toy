@@ -3,9 +3,9 @@
 int update_CBNW(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, oldt;
 	oldt = parts[i].tmp;
-    if (pv[y/CELL][x/CELL]<=1)
+    if (pv[y/CELL][x/CELL]<=5)
     {
-        if(20>(rand()%20000))
+        if(20>(rand()%80000))
     	{
             part_change_type(i,x,y,PT_CO2);
            	parts[i].ctype = 5;
@@ -25,10 +25,9 @@ int update_CBNW(UPDATE_FUNC_ARGS) {
 		//Explode
 		if(rand()%4)
 		{
-			part_change_type(i,x,y,PT_WATR);
-		} else {
-			pv[y/CELL][x/CELL] += 0.5f;
-			part_change_type(i,x,y,PT_CO2);
+            part_change_type(i,x,y,PT_CO2);
+           	parts[i].ctype = 5;
+        	pv[y/CELL][x/CELL] += 0.2f;
 		}
 	}
 	for (rx=-2; rx<3; rx++)
@@ -47,10 +46,9 @@ int update_CBNW(UPDATE_FUNC_ARGS) {
 				{
 					if(rand()%2)
 					{
-						part_change_type(i,x,y,PT_WATR);
-					} else {
-						pv[y/CELL][x/CELL] += 0.5f;
-						part_change_type(i,x,y,PT_CO2);
+                        part_change_type(i,x,y,PT_CO2);
+                       	parts[i].ctype = 5;
+                    	pv[y/CELL][x/CELL] += 0.2f;
 					}
 				}
 				if ((r&0xFF)==PT_CBNW)
