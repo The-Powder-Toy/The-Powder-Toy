@@ -1217,7 +1217,7 @@ void set_emap(int x, int y)
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline int parts_avg(int ci, int ni,int t)//t is the particle you are looking for, returns the particle between two particles
+int parts_avg(int ci, int ni,int t)//t is the particle you are looking for, returns the particle between two particles
 #else
 inline int parts_avg(int ci, int ni,int t)
 #endif
@@ -2675,7 +2675,7 @@ int flood_water(int x, int y, int i, int originaly, int check)
 	{
 		parts[pmap[y][x]>>8].tmp2 = !check;//flag it as checked, maybe shouldn't use .tmp2
 		//check above, maybe around other sides too?
-		if ( ((y-1) > originaly) && !pmap[y-1][x])
+		if ( ((y-1) > originaly) && eval_move(parts[i].type, x, y-1, NULL))
 		{
 			int oldx = (int)(parts[i].x + 0.5f);
 			int oldy = (int)(parts[i].y + 0.5f);
@@ -3080,7 +3080,7 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[])
+void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[])
 #else
 inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[])
 #endif
@@ -3097,7 +3097,7 @@ inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblo
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
-_inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[])
+void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[])
 #else
 inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[])
 #endif
