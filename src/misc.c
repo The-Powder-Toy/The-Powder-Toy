@@ -12,8 +12,8 @@
 #include <icondoc.h>
 #include <update.h>
 #if defined WIN32
-#include <Shlobj.h>
-#include <Shlwapi.h>
+#include <shlobj.h>
+#include <shlwapi.h>
 #include <windows.h>
 #else
 #include <unistd.h>
