@@ -3,7 +3,7 @@
 int update_CBNW(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, oldt;
 	oldt = parts[i].tmp;
-    if (pv[y/CELL][x/CELL]<=5)
+    if (pv[y/CELL][x/CELL]<=3)
     {
         if(20>(rand()%80000))
     	{
