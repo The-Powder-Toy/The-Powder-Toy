@@ -2249,7 +2249,7 @@ killed:
 									ny = (int)(parts[i].y+0.5f);
 									break;
 								}
-								if ((pmap[fin_y][j]&0xFF)!=t || (bmap[fin_y/CELL][j/CELL] && bmap[fin_y/CELL][j/CELL]!=WL_STREAM))
+								if ((pmap[clear_y][j]&0xFF)!=t || (bmap[clear_y/CELL][j/CELL] && bmap[clear_y/CELL][j/CELL]!=WL_STREAM))
 									break;
 							}
 							if (parts[i].vy>0)
