@@ -2675,7 +2675,7 @@ int flood_water(int x, int y, int i, int originaly, int check)
 	{
 		parts[pmap[y][x]>>8].tmp2 = !check;//flag it as checked, maybe shouldn't use .tmp2
 		//check above, maybe around other sides too?
-		if ( ((y-1) > originaly) && eval_move(parts[i].type, x, y-1, NULL))
+		if ( ((y-1) > originaly) && !pmap[y-1][x] && eval_move(parts[i].type, x, y-1, NULL))
 		{
 			int oldx = (int)(parts[i].x + 0.5f);
 			int oldy = (int)(parts[i].y + 0.5f);
