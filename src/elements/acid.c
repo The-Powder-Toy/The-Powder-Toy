@@ -9,7 +9,7 @@ int update_ACID(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)!=PT_ACID)
+				if ((r&0xFF)!=PT_ACID && (r&0xFF)!=PT_CAUS)
 				{
 					if ((r&0xFF)==PT_PLEX || (r&0xFF)==PT_NITR || (r&0xFF)==PT_GUNP || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD)
 					{
@@ -17,6 +17,15 @@ int update_ACID(UPDATE_FUNC_ARGS) {
 						part_change_type(r>>8,x+rx,y+ry,PT_FIRE);
 						parts[i].life = 4;
 						parts[r>>8].life = 4;
+					}
+					else if ((r&0xFF)==PT_WTRV)
+					{
+						if(!(rand()%250))
+						{
+							part_change_type(i, x, y, PT_CAUS);
+							parts[i].life = (rand()%50)+25;
+							kill_part(r>>8);
+						}
 					}
 					else if (((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && ptypes[r&0xFF].hardness>(rand()%1000))&&parts[i].life>=50)
 					{

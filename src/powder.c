@@ -849,7 +849,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		parts[i].tmp2 = -1;
 	}
 	//now set various properties that we want at spawn.
-	if (t==PT_ACID)
+	if (t==PT_ACID || t==PT_CAUS)
 	{
 		parts[i].life = 75;
 	}
