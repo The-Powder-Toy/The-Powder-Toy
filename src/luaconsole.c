@@ -77,6 +77,10 @@ void luacon_open(){
 	lua_setfield(l, tptProperties, "mousex");
 	lua_pushinteger(l, 0);
 	lua_setfield(l, tptProperties, "mousey");
+	lua_pushinteger(l, 0);
+	lua_setfield(l, tptProperties, "selectedl");
+	lua_pushinteger(l, 0);
+	lua_setfield(l, tptProperties, "selectedr");
 }
 int luacon_keyevent(int key, int modifier, int event){
 	int i = 0, kpcontinue = 1;
@@ -115,12 +119,16 @@ int luacon_mouseevent(int mx, int my, int mb, int event){
 	}
 	return mpcontinue;
 }
-int luacon_step(int mx, int my){
+int luacon_step(int mx, int my, int selectl, int selectr){
 	int tempret = 0, tempb, i, callret;
+	lua_pushinteger(l, selectr);
+	lua_pushinteger(l, selectl);
 	lua_pushinteger(l, my);
 	lua_pushinteger(l, mx);
 	lua_setfield(l, tptProperties, "mousex");
 	lua_setfield(l, tptProperties, "mousey");
+	lua_setfield(l, tptProperties, "selectedl");
+	lua_setfield(l, tptProperties, "selectedr");
 	if(step_functions[0]){
 		//Set mouse globals
 		for(i = 0; i<6; i++){

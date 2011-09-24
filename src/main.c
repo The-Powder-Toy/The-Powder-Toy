@@ -2559,7 +2559,7 @@ int main(int argc, char *argv[])
 				b = 0;
 			}
 		}
-		luacon_step(x/sdl_scale, y/sdl_scale);
+		luacon_step(x/sdl_scale, y/sdl_scale,sl,sr);
 #endif
 
 		for (i=0; i<SC_TOTAL; i++)//draw all the menu sections
