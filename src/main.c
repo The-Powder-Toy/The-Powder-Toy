@@ -164,9 +164,7 @@ typedef struct
 	pixel *vid;
 } upstruc;
 
-#ifdef BETA
 static const char *old_ver_msg_beta = "A new beta is available - click here!";
-#endif
 static const char *old_ver_msg = "A new version is available - click here!";
 char new_message_msg[255];
 float mheat = 0.0f;
@@ -1368,7 +1366,7 @@ int thumb_cache_find(char *id, void **thumb, int *size)
 
 char http_proxy_string[256] = "";
 
-unsigned char last_major=0, last_minor=0, update_flag=0;
+unsigned char last_major=0, last_minor=0, last_build=0, update_flag=0;
 
 char *tag = "(c) 2008-9 Stanislaw Skowronek";
 int itc = 0;
@@ -1567,9 +1565,6 @@ int main(int argc, char *argv[])
 {
 	pixel *part_vbuf; //Extra video buffer
 	pixel *part_vbuf_store;
-#ifdef BETA
-	int is_beta = 0;
-#endif
 	char uitext[512] = "";
 	char heattext[256] = "";
 	char coordtext[128] = "";
@@ -1578,7 +1573,7 @@ int main(int argc, char *argv[])
 	void *http_ver_check, *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
 	//char console_error[255] = "";
-	int result, i, j, bq, bc, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, old_ver_len, new_message_len=0;
+	int result, i, j, bq, bc, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, buildnum, is_beta = 0, old_ver_len, new_message_len=0;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -1632,18 +1627,6 @@ int main(int argc, char *argv[])
 	numCores = core_count();
 #endif
 //TODO: Move out version stuff
-#ifdef BETA
-	if (is_beta)
-	{
-		old_ver_len = textwidth((char*)old_ver_msg_beta);
-	}
-	else
-	{
-		old_ver_len = textwidth((char*)old_ver_msg);
-	}
-#else
-	old_ver_len = textwidth((char*)old_ver_msg);
-#endif
 	menu_count();
 	parts = calloc(sizeof(particle), NPART);
 	cb_parts = calloc(sizeof(particle), NPART);
@@ -1653,6 +1636,16 @@ int main(int argc, char *argv[])
 
 	//fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
 
+	for (i=1; i<argc; i++)
+	{
+		if (!strncmp(argv[i], "ddir", 4) && i+1<argc)
+		{
+			chdir(argv[i+1]);
+			i++;
+		}
+
+	}
+	
 	load_presets();
 
 	for (i=1; i<argc; i++)
@@ -1723,12 +1716,13 @@ int main(int argc, char *argv[])
 			temppath = malloc(strlen(argv[i+1])+19);
 			sprintf(temppath, "%s%s%s", argv[i+1], PATH_SEP, "powdertoydir.test")
 			f = fopen(temppath, "wb");
-			if(f){*/
+			if(f){
 				chdir(argv[i+1]);
-			/*	fclose(f);
+				fclose(f);
 				remove(temppath);
 			}
 			free(temppath);*/
+			i++;
 		}
 
 	}
@@ -1903,15 +1897,17 @@ int main(int argc, char *argv[])
 				ver_data = http_async_req_stop(http_ver_check, &http_ret, NULL);
 				if (http_ret==200 && ver_data)
 				{
-#ifdef BETA
-					if (sscanf(ver_data, "%d.%d.%d", &major, &minor, &is_beta)==3)
-						if (major>SAVE_VERSION || (major==SAVE_VERSION && minor>MINOR_VERSION) || (major==SAVE_VERSION && is_beta == 0))
+					if (sscanf(ver_data, "%d.%d.%d.%d", &major, &minor, &is_beta, &buildnum)==4)
+						if (buildnum>BUILD_NUM)
 							old_version = 1;
-#else
-					if (sscanf(ver_data, "%d.%d", &major, &minor)==2)
-						if (major>SAVE_VERSION || (major==SAVE_VERSION && minor>MINOR_VERSION))
-							old_version = 1;
-#endif
+						if (is_beta)
+						{
+							old_ver_len = textwidth((char*)old_ver_msg_beta);
+						}
+						else
+						{
+							old_ver_len = textwidth((char*)old_ver_msg);
+						}
 					free(ver_data);
 				}
 				http_ver_check = NULL;
@@ -1928,6 +1924,7 @@ int main(int argc, char *argv[])
 					if (!strncmp(check_data, "EXPIRED", 7))
 					{
 						//Session expired
+						printf("EXPIRED");
 						strcpy(svf_user, "");
 						strcpy(svf_pass, "");
 						strcpy(svf_user_id, "");
@@ -1941,6 +1938,7 @@ int main(int argc, char *argv[])
 					else if (!strncmp(check_data, "BANNED", 6))
 					{
 						//User banned
+						printf("BANNED");
 						strcpy(svf_user, "");
 						strcpy(svf_pass, "");
 						strcpy(svf_user_id, "");
@@ -2659,7 +2657,7 @@ int main(int argc, char *argv[])
 		if (update_flag)
 		{
 			info_box(vid_buf, "Finalizing update...");
-			if (last_major>SAVE_VERSION || (last_major==SAVE_VERSION && last_minor>=MINOR_VERSION))
+			if (last_major>SAVE_VERSION || (last_major==SAVE_VERSION && last_minor>=MINOR_VERSION) || last_build>BUILD_NUM)
 			{
 				update_cleanup();
 				error_ui(vid_buf, 0, "Update failed - try downloading a new version.");
@@ -2677,18 +2675,25 @@ int main(int argc, char *argv[])
 		if (b && !bq && x>=(XRES-19-old_ver_len)*sdl_scale &&
 		        x<=(XRES-14)*sdl_scale && y>=(YRES-22)*sdl_scale && y<=(YRES-9)*sdl_scale && old_version)
 		{
-			tmp = malloc(64);
+			tmp = malloc(128);
 #ifdef BETA
 			if (is_beta)
 			{
-				sprintf(tmp, "Your version: %d (Beta %d), new version: %d (Beta %d).", SAVE_VERSION, MINOR_VERSION, major, minor);
+				sprintf(tmp, "Your version: %d.%d Beta (%d)\nNew version: %d.%d Beta (%d)", SAVE_VERSION, MINOR_VERSION, BUILD_NUM, major, minor, buildnum);
 			}
 			else
 			{
-				sprintf(tmp, "Your version: %d (Beta %d), new version: %d.%d.", SAVE_VERSION, MINOR_VERSION, major, minor);
+				sprintf(tmp, "Your version: %d.%d Beta (%d)\nNew version: %d.%d (%d)", SAVE_VERSION, MINOR_VERSION, BUILD_NUM, major, minor, buildnum);
 			}
 #else
-			sprintf(tmp, "Your version: %d.%d, new version: %d.%d.", SAVE_VERSION, MINOR_VERSION, major, minor);
+			if (is_beta)
+			{
+				sprintf(tmp, "Your version: %d.%d (%d)\nNew version: %d.%d Beta (%d)", SAVE_VERSION, MINOR_VERSION, BUILD_NUM, major, minor, buildnum);
+			}
+			else
+			{
+				sprintf(tmp, "Your version: %d.%d (%d)\nNew version: %d.%d (%d)", SAVE_VERSION, MINOR_VERSION, BUILD_NUM, major, minor, buildnum);
+			}
 #endif
 			if (confirm_ui(vid_buf, "Do you want to update The Powder Toy?", tmp, "Update"))
 			{
@@ -3350,7 +3355,7 @@ int main(int argc, char *argv[])
 		if (itc)//message in the middle of the screen, such as view mode changes
 		{
 			itc--;
-			drawtext(vid_buf, (XRES-textwidth(itc_msg))/2, ((YRES/2)-10), itc_msg, 255, 255, 255, itc>51?255:itc*5);
+			drawtext_outline(vid_buf, (XRES-textwidth(itc_msg))/2, ((YRES/2)-10), itc_msg, 255, 255, 255, itc>51?255:itc*5, 0, 0, 0, itc>51?255:itc*5);
 		}
 		if (it)//intro message
 		{
@@ -3361,7 +3366,6 @@ int main(int argc, char *argv[])
 		if (old_version)
 		{
 			clearrect(vid_buf, XRES-21-old_ver_len, YRES-24, old_ver_len+9, 17);
-#ifdef BETA
 			if (is_beta)
 			{
 				drawtext(vid_buf, XRES-16-old_ver_len, YRES-19, old_ver_msg_beta, 255, 216, 32, 255);
@@ -3370,9 +3374,6 @@ int main(int argc, char *argv[])
 			{
 				drawtext(vid_buf, XRES-16-old_ver_len, YRES-19, old_ver_msg, 255, 216, 32, 255);
 			}
-#else
-			drawtext(vid_buf, XRES-16-old_ver_len, YRES-19, old_ver_msg, 255, 216, 32, 255);
-#endif
 			drawrect(vid_buf, XRES-19-old_ver_len, YRES-22, old_ver_len+5, 13, 255, 216, 32, 255);
 		}
 		
@@ -3408,10 +3409,10 @@ int main(int argc, char *argv[])
 		if (hud_enable)
 		{
 #ifdef BETA
-			sprintf(uitext, "Version %d Beta %d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+			sprintf(uitext, "Version %d.%d Beta (%d) FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, BUILD_NUM, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 #else
 			if (DEBUG_MODE)
-				sprintf(uitext, "Version %d.%d FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+				sprintf(uitext, "Version %d.%d (%d) FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, BUILD_NUM, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
 			else
 				sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
 #endif

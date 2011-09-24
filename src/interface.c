@@ -1049,11 +1049,17 @@ void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt)
 			break;
 	}
 }
-
 int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 {
-	int x0=(XRES-240)/2,y0=(YRES-MENUSIZE)/2,b=1,bq,mx,my;
+	int x0=(XRES-240)/2,y0=YRES/2,b=1,bq,mx,my,textheight;
 	int ret = 0;
+
+	textheight = textwrapheight(msg, 240);
+	y0 -= (52+textheight)/2;
+	if (y0<2)
+		y0 = 2;
+	if (y0+50+textheight>YRES)
+		textheight = YRES-50-y0;
 
 	while (!sdl_poll())
 	{
@@ -1069,22 +1075,24 @@ int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 		mx /= sdl_scale;
 		my /= sdl_scale;
 
-		clearrect(vid_buf, x0-2, y0-2, 244, 64);
-		drawrect(vid_buf, x0, y0, 240, 60, 192, 192, 192, 255);
+		clearrect(vid_buf, x0-2, y0-2, 244, 52+textheight);
+		drawrect(vid_buf, x0, y0, 240, 48+textheight, 192, 192, 192, 255);
 		drawtext(vid_buf, x0+8, y0+8, top, 255, 216, 32, 255);
-		drawtext(vid_buf, x0+8, y0+26, msg, 255, 255, 255, 255);
-		drawtext(vid_buf, x0+5, y0+49, "Cancel", 255, 255, 255, 255);
-		drawtext(vid_buf, x0+165, y0+49, btn, 255, 216, 32, 255);
-		drawrect(vid_buf, x0, y0+44, 160, 16, 192, 192, 192, 255);
-		drawrect(vid_buf, x0+160, y0+44, 80, 16, 192, 192, 192, 255);
+		drawtextwrap(vid_buf, x0+8, y0+26, 224, msg, 255, 255, 255, 255);
+		drawtext(vid_buf, x0+5, y0+textheight+37, "Cancel", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+165, y0+textheight+37, btn, 255, 216, 32, 255);
+		drawrect(vid_buf, x0, y0+textheight+32, 160, 16, 192, 192, 192, 255);
+		drawrect(vid_buf, x0+160, y0+textheight+32, 80, 16, 192, 192, 192, 255);
+		
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 
-		if (b && !bq && mx>=x0+160 && mx<x0+240 && my>=y0+44 && my<=y0+60)
+		if (b && !bq && mx>=x0+160 && mx<x0+240 && my>=y0+textheight+32 && my<=y0+textheight+48)
 		{
 			ret = 1;
 			break;
 		}
-		if (b && !bq && mx>=x0 && mx<x0+160 && my>=y0+44 && my<=y0+60)
+		
+		if (b && !bq && mx>=x0 && mx<x0+160 && my>=y0+textheight+32 && my<=y0+textheight+48)
 			break;
 
 		if (sdl_key==SDLK_RETURN)
@@ -1096,13 +1104,15 @@ int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 			break;
 	}
 
+	free(msg);
+
 	while (!sdl_poll())
 	{
 		b = SDL_GetMouseState(&mx, &my);
 		if (!b)
 			break;
 	}
-
+	
 	return ret;
 }
 
