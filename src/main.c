@@ -2657,7 +2657,7 @@ int main(int argc, char *argv[])
 		if (update_flag)
 		{
 			info_box(vid_buf, "Finalizing update...");
-			if (last_major>SAVE_VERSION || (last_major==SAVE_VERSION && last_minor>=MINOR_VERSION) || last_build>BUILD_NUM)
+			if (last_build>BUILD_NUM)
 			{
 				update_cleanup();
 				error_ui(vid_buf, 0, "Update failed - try downloading a new version.");

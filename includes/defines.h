@@ -224,7 +224,7 @@ extern int legacy_enable; //Used to disable new features such as heat, will be s
 extern int framerender;
 extern pixel *vid_buf;
 
-extern unsigned char last_major, last_minor, update_flag;
+extern unsigned char last_major, last_minor, update_flag, last_build;
 
 extern char http_proxy_string[256];
 
