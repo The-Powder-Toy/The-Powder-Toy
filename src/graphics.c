@@ -3968,19 +3968,19 @@ void create_decoration(int x, int y, int r, int g, int b, int click, int tool)
 	{//maybe get a better lighten/darken?
 		if (parts[rp>>8].dcolour == 0)
 			return;
-		tr = PIXR(parts[rp>>8].dcolour)&0xFF;
-		tg = PIXG(parts[rp>>8].dcolour);
-		tb = PIXB(parts[rp>>8].dcolour);
-		parts[rp>>8].dcolour = ((255<<24)|(clamp_flt(tr+(255-tr)*0.02+1, 0,255)<<16)|(clamp_flt(tg+(255-tg)*0.02+1, 0,255)<<8)|clamp_flt(tb+(255-tb)*0.02+1, 0,255));
+		tr = (parts[rp>>8].dcolour>>16)&0xFF;
+		tg = (parts[rp>>8].dcolour>>8)&0xFF;
+		tb = (parts[rp>>8].dcolour)&0xFF;
+		parts[rp>>8].dcolour = ((parts[rp>>8].dcolour&0xFF000000)|(clamp_flt(tr+(255-tr)*0.02+1, 0,255)<<16)|(clamp_flt(tg+(255-tg)*0.02+1, 0,255)<<8)|clamp_flt(tb+(255-tb)*0.02+1, 0,255));
 	}
 	else if (tool == DECO_DARKEN)
 	{
 		if (parts[rp>>8].dcolour == 0)
 			return;
-		tr = PIXR(parts[rp>>8].dcolour)&0xFF;
-		tg = PIXG(parts[rp>>8].dcolour);
-		tb = PIXB(parts[rp>>8].dcolour);
-		parts[rp>>8].dcolour = ((255<<24)|(clamp_flt(tr-(tr)*0.02, 0,255)<<16)|(clamp_flt(tg-(tg)*0.02, 0,255)<<8)|clamp_flt(tb-(tb)*0.02, 0,255));
+		tr = (parts[rp>>8].dcolour>>16)&0xFF;
+		tg = (parts[rp>>8].dcolour>>8)&0xFF;
+		tb = (parts[rp>>8].dcolour)&0xFF;
+		parts[rp>>8].dcolour = ((parts[rp>>8].dcolour&0xFF000000)|(clamp_flt(tr-(tr)*0.02, 0,255)<<16)|(clamp_flt(tg-(tg)*0.02, 0,255)<<8)|clamp_flt(tb-(tb)*0.02, 0,255));
 	}
 }
 void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b, int click, int tool)
