@@ -137,7 +137,7 @@ void save_presets(int do_update)
 	tmp = svf_mod;
 	fwrite(&tmp, 1, 1, f);
 	save_string(f, http_proxy_string);
-	tmp = MAJOR_VERSION;
+	tmp = SAVE_VERSION;
 	fwrite(&tmp, 1, 1, f);
 	tmp = MINOR_VERSION;
 	fwrite(&tmp, 1, 1, f);
