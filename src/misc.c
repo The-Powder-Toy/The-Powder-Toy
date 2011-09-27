@@ -504,25 +504,9 @@ int register_extension()
 	if((strlen(AppDataPath)+strlen(APPDATA_SUBDIR "\\Powder Toy"))<MAX_PATH)
 	{
 		strappend(AppDataPath, APPDATA_SUBDIR);
-#ifdef WIN32
-		if(_mkdir(AppDataPath))
-#else
-		if(mkdir(AppDataPath, 0755))
-#endif
-		{
-			returnval = 0;
-			goto finalise;
-		}
+		_mkdir(AppDataPath);
 		strappend(AppDataPath, "\\Powder Toy");
-#ifdef WIN32
-		if(_mkdir(AppDataPath))
-#else
-		if(mkdir(AppDataPath, 0755))
-#endif
-		{
-			returnval = 0;
-			goto finalise;
-		}
+		_mkdir(AppDataPath);
 	} else {
 		returnval = 0;
 		goto finalise;
