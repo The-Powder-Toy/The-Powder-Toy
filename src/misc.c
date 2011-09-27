@@ -21,6 +21,7 @@
 #ifdef MACOSX
 #include <ApplicationServices/ApplicationServices.h>
 #endif
+#include "cJSON.h"
 
 char *clipboard_text = NULL;
 
@@ -119,7 +120,54 @@ void clean_text(char *text, int vwidth)
 
 void save_presets(int do_update)
 {
-	FILE *f=fopen("powder.def", "wb");
+	char * outputdata;
+	cJSON *root, *userobj, *versionobj;
+	root = cJSON_CreateObject();	
+	
+	cJSON_AddStringToObject(root, "Powder Toy Preferences", "Don't modify this file unless you know what you're doing. P.S: editing the admin/mod fields in your user info doesn't give you magical powers");
+	
+	//User Info
+	cJSON_AddItemToObject(root, "user", userobj=cJSON_CreateObject());
+	cJSON_AddStringToObject(userobj, "name", svf_user);
+	cJSON_AddStringToObject(userobj, "id", svf_user_id);
+	cJSON_AddStringToObject(userobj, "session_id", svf_session_id);
+	if(svf_admin){
+		cJSON_AddTrueToObject(userobj, "admin");
+		cJSON_AddFalseToObject(userobj, "mod");
+	} else if(svf_mod){
+		cJSON_AddFalseToObject(userobj, "admin");
+		cJSON_AddTrueToObject(userobj, "mod");
+	} else {
+		cJSON_AddFalseToObject(userobj, "admin");
+		cJSON_AddFalseToObject(userobj, "mod");
+	}
+	
+	//Version Info
+	cJSON_AddItemToObject(root, "version", versionobj=cJSON_CreateObject());
+	cJSON_AddNumberToObject(versionobj, "major", SAVE_VERSION);
+	cJSON_AddNumberToObject(versionobj, "minor", MINOR_VERSION);
+	cJSON_AddNumberToObject(versionobj, "build", BUILD_NUM);
+	if(do_update){
+		cJSON_AddTrueToObject(versionobj, "update");
+	} else {
+		cJSON_AddFalseToObject(versionobj, "update");
+	}
+	
+	//General settings
+	cJSON_AddStringToObject(root, "proxy", http_proxy_string);
+	cJSON_AddNumberToObject(root, "cmode", cmode);
+	cJSON_AddNumberToObject(root, "scale", sdl_scale);
+	
+	outputdata = cJSON_Print(root);
+	cJSON_Delete(root);
+	
+	FILE *f = fopen("powder.pref", "wb");
+	if(!f)
+		return;
+	fwrite(outputdata, 1, strlen(outputdata), f);
+	fclose(f);
+	//Old format, don't bother with this
+	/*FILE *f=fopen("powder.def", "wb");
 	unsigned char sig[4] = {0x50, 0x44, 0x65, 0x68};
 	unsigned char tmp = sdl_scale;
 	if (!f)
@@ -145,7 +193,7 @@ void save_presets(int do_update)
 	fwrite(&tmp, 1, 1, f);
 	tmp = do_update;
 	fwrite(&tmp, 1, 1, f);
-	fclose(f);
+	fclose(f);*/
 }
 
 int sregexp(const char *str, char *pattern)
@@ -161,77 +209,133 @@ int sregexp(const char *str, char *pattern)
 
 void load_presets(void)
 {
-	FILE *f=fopen("powder.def", "rb");
-	unsigned char sig[4], tmp;
-	if (!f)
-		return;
-	fread(sig, 1, 4, f);
-	if (sig[0]!=0x50 || sig[1]!=0x44 || sig[2]!=0x65)
+	int prefdatasize = 0;
+	char * prefdata = file_load("powder.pref", &prefdatasize);
+	if(prefdata)
 	{
-		if (sig[0]==0x4D && sig[1]==0x6F && sig[2]==0x46 && sig[3]==0x6F)
-		{
-			if (fseek(f, -3, SEEK_END))
-			{
-				remove("powder.def");
-				return;
+		cJSON *root, *userobj, *versionobj, *tmpobj;
+		root = cJSON_Parse(prefdata);
+		
+		//Read user data
+		userobj = cJSON_GetObjectItem(root, "user");
+		if(userobj){
+			if((tmpobj = cJSON_GetObjectItem(userobj, "name")) && tmpobj->type == cJSON_String) strncpy(svf_user, tmpobj->valuestring, 63); else svf_user[0] = 0;
+			if((tmpobj = cJSON_GetObjectItem(userobj, "id")) && tmpobj->type == cJSON_String) strncpy(svf_user_id, tmpobj->valuestring, 63); else svf_user_id[0] = 0;
+			if((tmpobj = cJSON_GetObjectItem(userobj, "session_id")) && tmpobj->type == cJSON_String) strncpy(svf_session_id, tmpobj->valuestring, 63); else svf_session_id[0] = 0;
+			if((tmpobj = cJSON_GetObjectItem(userobj, "admin")) && tmpobj->type == cJSON_True) {
+				svf_admin = 1;
+				svf_mod = 0;
+			} else if((tmpobj = cJSON_GetObjectItem(userobj, "mod")) && tmpobj->type == cJSON_True) {
+				svf_mod = 1;
+				svf_admin = 0;
+			} else {
+				svf_admin = 0;
+				svf_mod = 0;
 			}
-			if (fread(sig, 1, 3, f) != 3)
-			{
-				remove("powder.def");
-				goto fail;
-			}
-			//last_major = sig[0];
-			//last_minor = sig[1];
-			last_build = 0;
-			update_flag = sig[2];
+		} else {
+			svf_user[0] = 0;
+			svf_user_id[0] = 0;
+			svf_session_id[0] = 0;
+			svf_admin = 0;
+			svf_mod = 0;
 		}
-		fclose(f);
-		remove("powder.def");
-		return;
-	}
-	if (sig[3]==0x66) {
-		if (load_string(f, svf_user, 63))
+		
+		//Read version data
+		versionobj = cJSON_GetObjectItem(root, "version");
+		if(versionobj){
+			if(tmpobj = cJSON_GetObjectItem(versionobj, "major")) last_major = tmpobj->valueint;
+			if(tmpobj = cJSON_GetObjectItem(versionobj, "minor")) last_minor = tmpobj->valueint;
+			if(tmpobj = cJSON_GetObjectItem(versionobj, "build")) last_build = tmpobj->valueint;
+			if((tmpobj = cJSON_GetObjectItem(versionobj, "update")) && tmpobj->type == cJSON_True)
+				update_flag = 1;
+			else
+				update_flag = 0;
+		} else {
+			last_major = 0;
+			last_minor = 0;
+			last_build = 0;
+			update_flag = 0;
+		}
+		
+		//Read general settings
+		if((tmpobj = cJSON_GetObjectItem(root, "proxy")) && tmpobj->type == cJSON_String) strncpy(http_proxy_string, tmpobj->valuestring, 255); else http_proxy_string[0] = 0;
+		if(tmpobj = cJSON_GetObjectItem(root, "cmode")) cmode = tmpobj->valueint;
+		if(tmpobj = cJSON_GetObjectItem(root, "scale")) sdl_scale = tmpobj->valueint;
+		
+		cJSON_Delete(root);
+	} else { //Fallback and read from old def file
+		FILE *f=fopen("powder.def", "rb");
+		unsigned char sig[4], tmp;
+		if (!f)
+			return;
+		fread(sig, 1, 4, f);
+		if (sig[0]!=0x50 || sig[1]!=0x44 || sig[2]!=0x65)
+		{
+			if (sig[0]==0x4D && sig[1]==0x6F && sig[2]==0x46 && sig[3]==0x6F)
+			{
+				if (fseek(f, -3, SEEK_END))
+				{
+					remove("powder.def");
+					return;
+				}
+				if (fread(sig, 1, 3, f) != 3)
+				{
+					remove("powder.def");
+					goto fail;
+				}
+				//last_major = sig[0];
+				//last_minor = sig[1];
+				last_build = 0;
+				update_flag = sig[2];
+			}
+			fclose(f);
+			remove("powder.def");
+			return;
+		}
+		if (sig[3]==0x66) {
+			if (load_string(f, svf_user, 63))
+				goto fail;
+			if (load_string(f, svf_pass, 63))
+				goto fail;
+		} else {
+			if (load_string(f, svf_user, 63))
+				goto fail;
+			if (load_string(f, svf_user_id, 63))
+				goto fail;
+			if (load_string(f, svf_session_id, 63))
+				goto fail;
+		}
+		svf_login = !!svf_session_id[0];
+		if (fread(&tmp, 1, 1, f) != 1)
 			goto fail;
-		if (load_string(f, svf_pass, 63))
+		sdl_scale = (tmp == 2) ? 2 : 1;
+		if (fread(&tmp, 1, 1, f) != 1)
 			goto fail;
-	} else {
-		if (load_string(f, svf_user, 63))
+		cmode = tmp%CM_COUNT;
+		if (fread(&tmp, 1, 1, f) != 1)
 			goto fail;
-		if (load_string(f, svf_user_id, 63))
+		svf_admin = tmp;
+		if (fread(&tmp, 1, 1, f) != 1)
 			goto fail;
-		if (load_string(f, svf_session_id, 63))
+		svf_mod = tmp;
+		if (load_string(f, http_proxy_string, 255))
 			goto fail;
-	}
-	svf_login = !!svf_session_id[0];
-	if (fread(&tmp, 1, 1, f) != 1)
-		goto fail;
-	sdl_scale = (tmp == 2) ? 2 : 1;
-	if (fread(&tmp, 1, 1, f) != 1)
-		goto fail;
-	cmode = tmp%CM_COUNT;
-	if (fread(&tmp, 1, 1, f) != 1)
-		goto fail;
-	svf_admin = tmp;
-	if (fread(&tmp, 1, 1, f) != 1)
-		goto fail;
-	svf_mod = tmp;
-	if (load_string(f, http_proxy_string, 255))
-		goto fail;
 
-	if (sig[3]!=0x68) { //Pre v64 format
-		if (fread(sig, 1, 3, f) != 3)
-			goto fail;
-		last_build = 0;
-	} else {
-		if (fread(sig, 1, 4, f) != 4)
-			goto fail;
-		last_build = sig[3];
+		if (sig[3]!=0x68) { //Pre v64 format
+			if (fread(sig, 1, 3, f) != 3)
+				goto fail;
+			last_build = 0;
+		} else {
+			if (fread(sig, 1, 4, f) != 4)
+				goto fail;
+			last_build = sig[3];
+		}
+		last_major = sig[0];
+		last_minor = sig[1];
+		update_flag = sig[2];
+	fail:
+		fclose(f);
 	}
-	last_major = sig[0];
-	last_minor = sig[1];
-	update_flag = sig[2];
-fail:
-	fclose(f);
 }
 
 void save_string(FILE *f, char *str)
