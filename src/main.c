@@ -1643,6 +1643,29 @@ int main(int argc, char *argv[])
 			chdir(argv[i+1]);
 			i++;
 		}
+		else if (!strncmp(argv[i], "open", 4) && i+1<argc)
+		{
+			int size;
+			void *file_data;
+			file_data = file_load(argv[i+1], &size);
+			if (file_data)
+			{
+				svf_last = file_data;
+				svf_lsize = size;
+				if(!parse_save(file_data, size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap))
+				{
+					it=0;
+					svf_filename[0] = 0;
+					svf_fileopen = 1;
+				} else {
+					svf_last = NULL;
+					svf_lsize = 0;
+					free(file_data);
+					file_data = NULL;
+				}
+			}
+			i++;
+		}
 
 	}
 	
@@ -1688,40 +1711,10 @@ int main(int argc, char *argv[])
 		}
 		else if (!strncmp(argv[i], "open", 4) && i+1<argc)
 		{
-			int size;
-			void *file_data;
-			file_data = file_load(argv[i+1], &size);
-			if (file_data)
-			{
-				svf_last = file_data;
-				svf_lsize = size;
-				if(!parse_save(file_data, size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap))
-				{
-					it=0;
-					svf_filename[0] = 0;
-					svf_fileopen = 1;
-				} else {
-					svf_last = NULL;
-					svf_lsize = 0;
-					free(file_data);
-					file_data = NULL;
-				}
-			}
 			i++;
 		}
 		else if (!strncmp(argv[i], "ddir", 4) && i+1<argc)
 		{
-			/*char * temppath;
-			FILE *f;
-			temppath = malloc(strlen(argv[i+1])+19);
-			sprintf(temppath, "%s%s%s", argv[i+1], PATH_SEP, "powdertoydir.test")
-			f = fopen(temppath, "wb");
-			if(f){
-				chdir(argv[i+1]);
-				fclose(f);
-				remove(temppath);
-			}
-			free(temppath);*/
 			i++;
 		}
 
