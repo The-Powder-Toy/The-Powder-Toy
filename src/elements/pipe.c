@@ -45,7 +45,7 @@ void pushParticle(int i, int count, int original)
 	}
 	else //predefined 1 pixel thick pipe movement
 	{
-		int coords = 7 - (parts[i].tmp>>10);
+		int coords = 7 - ((parts[i].tmp>>10)&7);
 		r = pmap[y+ pos_1_ry[coords]][x+ pos_1_rx[coords]];
 		if (!r)
 		{
