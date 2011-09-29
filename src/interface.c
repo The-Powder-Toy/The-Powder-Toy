@@ -1104,8 +1104,6 @@ int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 			break;
 	}
 
-	free(msg);
-
 	while (!sdl_poll())
 	{
 		b = SDL_GetMouseState(&mx, &my);
@@ -5568,6 +5566,8 @@ int save_filename_ui(pixel *vid_buf)
 					}
 				}
 				fclose(f);
+
+				free(filename);
 				
 			}
 		}
