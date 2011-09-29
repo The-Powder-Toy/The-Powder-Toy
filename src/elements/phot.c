@@ -39,6 +39,19 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 					pv[y/CELL][x/CELL] -= 15.0f * CFDS;
 				}
 			}
+	r = pmap[y][x];
+	if((r&0xFF) == PT_QRTZ && r)
+	{
+		int t1, t2, t3;
+		parts[i].vx += ((float)(rand()%1000-500))/1000.0f;
+		parts[i].vy += ((float)(rand()%1000-500))/1000.0f;
+		t1 = (parts[i].ctype & 0x0000FF)+(rand()%5)-2;
+		t2 = ((parts[i].ctype & 0x00FF00)>>8)+(rand()%5)-2;
+		t3 = ((parts[i].ctype & 0xFF0000)>>16)+(rand()%5)-2;
+		parts[i].ctype = (parts[i].ctype & 0xFF000000) | (t3<<16) | (t2<<8) | t1;
+		
+		
+	}
 	//r = pmap[y][x];
 	//rt = r&0xFF;
 	/*if (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN || rt==PT_PBCN) {
