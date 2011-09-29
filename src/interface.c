@@ -5566,9 +5566,6 @@ int save_filename_ui(pixel *vid_buf)
 					}
 				}
 				fclose(f);
-
-				free(filename);
-				
 			}
 		}
 
