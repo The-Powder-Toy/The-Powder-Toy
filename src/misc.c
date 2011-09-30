@@ -127,19 +127,21 @@ void save_presets(int do_update)
 	cJSON_AddStringToObject(root, "Powder Toy Preferences", "Don't modify this file unless you know what you're doing. P.S: editing the admin/mod fields in your user info doesn't give you magical powers");
 	
 	//User Info
-	cJSON_AddItemToObject(root, "user", userobj=cJSON_CreateObject());
-	cJSON_AddStringToObject(userobj, "name", svf_user);
-	cJSON_AddStringToObject(userobj, "id", svf_user_id);
-	cJSON_AddStringToObject(userobj, "session_id", svf_session_id);
-	if(svf_admin){
-		cJSON_AddTrueToObject(userobj, "admin");
-		cJSON_AddFalseToObject(userobj, "mod");
-	} else if(svf_mod){
-		cJSON_AddFalseToObject(userobj, "admin");
-		cJSON_AddTrueToObject(userobj, "mod");
-	} else {
-		cJSON_AddFalseToObject(userobj, "admin");
-		cJSON_AddFalseToObject(userobj, "mod");
+	if(svf_login){
+		cJSON_AddItemToObject(root, "user", userobj=cJSON_CreateObject());
+		cJSON_AddStringToObject(userobj, "name", svf_user);
+		cJSON_AddStringToObject(userobj, "id", svf_user_id);
+		cJSON_AddStringToObject(userobj, "session_id", svf_session_id);
+		if(svf_admin){
+			cJSON_AddTrueToObject(userobj, "admin");
+			cJSON_AddFalseToObject(userobj, "mod");
+		} else if(svf_mod){
+			cJSON_AddFalseToObject(userobj, "admin");
+			cJSON_AddTrueToObject(userobj, "mod");
+		} else {
+			cJSON_AddFalseToObject(userobj, "admin");
+			cJSON_AddFalseToObject(userobj, "mod");
+		}
 	}
 	
 	//Version Info
@@ -218,7 +220,8 @@ void load_presets(void)
 		
 		//Read user data
 		userobj = cJSON_GetObjectItem(root, "user");
-		if(userobj){
+		if(userobj){	
+			svf_login = 1;
 			if((tmpobj = cJSON_GetObjectItem(userobj, "name")) && tmpobj->type == cJSON_String) strncpy(svf_user, tmpobj->valuestring, 63); else svf_user[0] = 0;
 			if((tmpobj = cJSON_GetObjectItem(userobj, "id")) && tmpobj->type == cJSON_String) strncpy(svf_user_id, tmpobj->valuestring, 63); else svf_user_id[0] = 0;
 			if((tmpobj = cJSON_GetObjectItem(userobj, "session_id")) && tmpobj->type == cJSON_String) strncpy(svf_session_id, tmpobj->valuestring, 63); else svf_session_id[0] = 0;
@@ -233,6 +236,7 @@ void load_presets(void)
 				svf_mod = 0;
 			}
 		} else {
+			svf_login = 0;
 			svf_user[0] = 0;
 			svf_user_id[0] = 0;
 			svf_session_id[0] = 0;
