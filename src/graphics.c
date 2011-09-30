@@ -1881,7 +1881,7 @@ void draw_parts(pixel *vid)
 							cr += (parts[i].ctype >> (x+18)) & 1;
 							cb += (parts[i].ctype >>  x)     & 1;
 						}
-						for (x=0; x<14; x++)
+						for (x=0; x<12; x++)
 							cg += (parts[i].ctype >> (x+9))  & 1;
 						x = 624/(cr+cg+cb+1);
 						cr *= x;
@@ -2463,7 +2463,7 @@ void draw_parts(pixel *vid)
 						cr += (parts[i].ctype >> (x+18)) & 1;
 						cb += (parts[i].ctype >>  x)     & 1;
 					}
-					for (x=0; x<14; x++)
+					for (x=0; x<12; x++)
 						cg += (parts[i].ctype >> (x+9))  & 1;
 					x = 624/(cr+cg+cb+1);
 					cr *= x;
@@ -2634,7 +2634,7 @@ void draw_parts(pixel *vid)
 						cr += (parts[i].ctype >> (x+18)) & 1;
 						cb += (parts[i].ctype >>  x)     & 1;
 					}
-					for (x=0; x<14; x++)
+					for (x=0; x<12; x++)
 						cg += (parts[i].ctype >> (x+9))  & 1;
 					x = 624/(cr+cg+cb+1);
 					cr *= x;
@@ -2657,7 +2657,7 @@ void draw_parts(pixel *vid)
 							cr += (parts[i].ctype >> (x+18)) & 1;
 							cb += (parts[i].ctype >>  x)     & 1;
 						}
-						for (x=0; x<14; x++)
+						for (x=0; x<12; x++)
 							cg += (parts[i].ctype >> (x+9))  & 1;
 						x = 624/(cr+cg+cb+1);
 						cr *= x;
@@ -2682,7 +2682,7 @@ void draw_parts(pixel *vid)
 							cr += (parts[i].ctype >> (x+18)) & 1;
 							cb += (parts[i].ctype >>  x)     & 1;
 						}
-						for (x=0; x<14; x++)
+						for (x=0; x<12; x++)
 							cg += (parts[i].ctype >> (x+9))  & 1;
 						x = 624/(cr+cg+cb+1);
 						cr *= x;
@@ -2712,7 +2712,7 @@ void draw_parts(pixel *vid)
 							cr += (parts[i].ctype >> (x+18)) & 1;
 							cb += (parts[i].ctype >>  x)     & 1;
 						}
-						for (x=0; x<14; x++)
+						for (x=0; x<12; x++)
 							cg += (parts[i].ctype >> (x+9))  & 1;
 						x = 624/(cr+cg+cb+1);
 						cr *= x;
@@ -2743,7 +2743,7 @@ void draw_parts(pixel *vid)
 							cr += (parts[i].ctype >> (x+18)) & 1;
 							cb += (parts[i].ctype >>  x)     & 1;
 						}
-						for (x=0; x<14; x++)
+						for (x=0; x<12; x++)
 							cg += (parts[i].ctype >> (x+9))  & 1;
 						x = 624/(cr+cg+cb+1);
 						cr *= x;
@@ -3681,7 +3681,7 @@ void draw_parts(pixel *vid)
 						cr += (parts[i].ctype >> (x+18)) & 1;
 						cb += (parts[i].ctype >>  x)     & 1;
 					}
-					for (x=0; x<14; x++)
+					for (x=0; x<12; x++)
 						cg += (parts[i].ctype >> (x+9))  & 1;
 					x = 624/(cr+cg+cb+1);
 					cr *= x;
@@ -4075,7 +4075,7 @@ void draw_wavelengths(pixel *vid, int x, int y, int h, int wl)
 				cr += (tmp >> (j+18)) & 1;
 				cb += (tmp >>  j)     & 1;
 			}
-			for (j=0; j<14; j++)
+			for (j=0; j<13; j++)
 				cg += (tmp >> (j+9))  & 1;
 			tmp = 624/(cr+cg+cb+1);
 			cr *= tmp;
