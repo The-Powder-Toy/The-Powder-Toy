@@ -923,6 +923,150 @@ char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shad
 	return mystrdup(ed.str);
 }
 
+void prop_edit_ui(pixel *vid_buf, int x, int y)
+{
+	float valuef;
+	char valuec;
+	int valuei;
+	int format;
+	size_t propoffset;
+	int xsize = 244;
+	int ysize = 87;
+	int edity, editx, edit2y, edit2x;
+	int x0=(XRES-xsize)/2,y0=(YRES-MENUSIZE-ysize)/2,b=1,bq,mx,my;
+	ui_edit ed;
+	ui_edit ed2;
+
+	edity = y0+30;
+	editx = x0+12;
+	
+	edit2y = y0+50;
+	edit2x = x0+12;
+
+	ed.x = editx;
+	ed.y = edity;
+	ed.w = xsize - 20;
+	ed.nx = 1;
+	ed.def = "property";
+	ed.focus = 0;
+	ed.hide = 0;
+	ed.cursor = 0;
+	ed.multiline = 0;
+	ed.str[0] = 0;
+	
+	ed2.x = edit2x;
+	ed2.y = edit2y;
+	ed2.w = xsize - 20;
+	ed2.nx = 1;
+	ed2.def = "value";
+	ed2.focus = 0;
+	ed2.hide = 0;
+	ed2.cursor = 0;
+	ed2.multiline = 0;
+	ed2.str[0] = 0;
+	strncpy(ed2.str, "0", 254);
+	strncpy(ed.str, "ctype", 254);
+
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+
+	while (!sdl_poll())
+	{
+		bq = b;
+		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
+
+		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
+		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
+		drawtext(vid_buf, x0+8, y0+8, "Change particle property", 160, 160, 255, 255);
+		//drawtext(vid_buf, x0+8, y0+26, prompt, 255, 255, 255, 255);
+		
+		drawrect(vid_buf, ed.x-4, ed.y-5, ed.w+4, 16, 192, 192, 192, 255);
+		drawrect(vid_buf, ed2.x-4, ed2.y-5, ed.w+4, 16, 192, 192, 192, 255);
+
+		ui_edit_draw(vid_buf, &ed);
+		ui_edit_process(mx, my, b, &ed);
+		ui_edit_draw(vid_buf, &ed2);
+		ui_edit_process(mx, my, b, &ed2);
+
+		drawtext(vid_buf, x0+5, y0+ysize-11, "OK", 255, 255, 255, 255);
+		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
+
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+
+		if (b && !bq && mx>=x0 && mx<x0+xsize && my>=y0+ysize-16 && my<=y0+ysize)
+			break;
+
+		if (sdl_key==SDLK_RETURN)
+			break;
+		if (sdl_key==SDLK_ESCAPE)
+			break;
+	}
+
+	sscanf(ed2.str, "%f", &valuef);
+	
+	if (strcmp(ed.str,"type")==0){
+		propoffset = offsetof(particle, type);
+		format = 1;
+	} else if (strcmp(ed.str,"life")==0){
+		propoffset = offsetof(particle, life);
+		format = 0;
+	} else if (strcmp(ed.str,"ctype")==0){
+		propoffset = offsetof(particle, ctype);
+		format = 1;
+	} else if (strcmp(ed.str,"temp")==0){
+		propoffset = offsetof(particle, temp);
+		format = 2;
+	} else if (strcmp(ed.str,"tmp")==0){
+		propoffset = offsetof(particle, tmp);
+		format = 0;
+	} else if (strcmp(ed.str,"tmp2")==0){
+		propoffset = offsetof(particle, tmp2);
+		format = 0;
+	} else if (strcmp(ed.str,"vy")==0){
+		propoffset = offsetof(particle, vy);
+		format = 2;
+	} else if (strcmp(ed.str,"vx")==0){
+		propoffset = offsetof(particle, vx);
+		format = 2;
+	} else if (strcmp(ed.str,"x")==0){
+		propoffset = offsetof(particle, x);
+		format = 2;
+	} else if (strcmp(ed.str,"y")==0){
+		propoffset = offsetof(particle, y);
+		format = 2;
+	} else if (strcmp(ed.str,"dcolour")==0){
+		propoffset = offsetof(particle, dcolour);
+		format = 0;
+	} else {
+		error_ui(vid_buf, 0, "Invalid property");
+	}
+	
+	if(format==0){
+		valuei = (int)valuef;
+		flood_prop(x, y, propoffset, &valuei, format);
+	}
+	if(format==1){
+		valuec = (char)valuef;
+		flood_prop(x, y, propoffset, &valuec, format);
+	}
+	if(format==2){
+		flood_prop(x, y, propoffset, &valuef, format);
+	}
+	
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+}
+
 void info_ui(pixel *vid_buf, char *top, char *txt)
 {
 	int x0=(XRES-240)/2,y0=(YRES-MENUSIZE)/2,b=1,bq,mx,my;
@@ -1920,7 +2064,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 	{
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
-			if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM&&n!=SPC_WIND&&n!=SPC_PGRV&&n!=SPC_NGRV)
+			if (n!=SPC_AIR&&n!=SPC_HEAT&&n!=SPC_COOL&&n!=SPC_VACUUM&&n!=SPC_WIND&&n!=SPC_PGRV&&n!=SPC_NGRV&&n!=SPC_PROP)
 			{
 				/*if (x-18<=2)
 				{
@@ -1957,7 +2101,7 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq
 	{
 		for (n = UI_WALLSTART; n<UI_WALLSTART+UI_WALLCOUNT; n++)
 		{
-			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM||n==SPC_WIND||n==SPC_PGRV||n==SPC_NGRV)
+			if (n==SPC_AIR||n==SPC_HEAT||n==SPC_COOL||n==SPC_VACUUM||n==SPC_WIND||n==SPC_PGRV||n==SPC_NGRV||n==SPC_PROP)
 			{
 				/*if (x-18<=0)
 				{

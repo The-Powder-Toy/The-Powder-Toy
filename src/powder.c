@@ -261,7 +261,13 @@ int try_move(int i, int x, int y, int nx, int ny)
 			int temp_bin = (int)((parts[r>>8].temp-273.0f)*0.025f);
 			if (temp_bin < 0) temp_bin = 0;
 			if (temp_bin > 25) temp_bin = 25;
-			parts[i].ctype = 0x1F << temp_bin;
+			if(!parts[r>>8].tmp){
+				parts[i].ctype = 0x1F << temp_bin; //Assign Colour
+			} else if(parts[r>>8].tmp==1){
+				parts[i].ctype &= 0x1F << temp_bin; //Filter Colour
+			} else if(parts[r>>8].tmp==2){
+				parts[i].ctype |= 0x1F << temp_bin; //Add Colour
+			}
 		}
 		if (parts[i].type == PT_NEUT && (r&0xFF)==PT_GLAS) {
 			if (rand() < RAND_MAX/10)
@@ -660,6 +666,9 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		return -1;
 	if (t>=0 && t<PT_NUM && !ptypes[t].enabled)
 		return -1;
+	if(t==SPC_PROP) {
+		return -1;	//Prop tool works on a mouse click basic, make sure it doesn't do anything here
+	}
 
 	if (t==SPC_HEAT||t==SPC_COOL)
 	{
@@ -2510,6 +2519,8 @@ void clear_area(int area_x, int area_y, int area_w, int area_h)
 void create_box(int x1, int y1, int x2, int y2, int c, int flags)
 {
 	int i, j;
+	if (c==SPC_PROP)
+		return 0;
 	if (x1>x2)
 	{
 		i = x2;
@@ -2527,11 +2538,67 @@ void create_box(int x1, int y1, int x2, int y2, int c, int flags)
 			create_parts(i, j, 0, 0, c, flags);
 }
 
+int flood_prop_2(int x, int y, size_t propoffset, void * propvalue, int proptype, int parttype, char * bitmap)
+{
+	int x1, x2, i, dy = 1;
+	x1 = x2 = x;
+	while (x1>=CELL)
+	{
+		if ((pmap[y][x1-1]&0xFF)!=parttype || bitmap[(y*XRES)+x1-1])
+		{
+			break;
+		}
+		x1--;
+	}
+	while (x2<XRES-CELL)
+	{
+		if ((pmap[y][x2+1]&0xFF)!=parttype || bitmap[(y*XRES)+x2+1])
+		{
+			break;
+		}
+		x2++;
+	}
+	for (x=x1; x<=x2; x++)
+	{
+		i = pmap[y][x]>>8;
+		if(proptype==2){
+			*((float*)(((void*)&parts[i])+propoffset)) = *((float*)propvalue);
+		} else if(proptype==0) {
+			*((int*)(((void*)&parts[i])+propoffset)) = *((int*)propvalue);
+		} else if(proptype==1) {
+			*((char*)(((void*)&parts[i])+propoffset)) = *((char*)propvalue);
+		}
+		bitmap[(y*XRES)+x] = 1;
+	}
+	if (y>=CELL+dy)
+		for (x=x1; x<=x2; x++)
+			if ((pmap[y-dy][x]&0xFF)==parttype && !bitmap[((y-dy)*XRES)+x])
+				if (!flood_prop_2(x, y-dy, propoffset, propvalue, proptype, parttype, bitmap))
+					return 0;
+	if (y<YRES-CELL-dy)
+		for (x=x1; x<=x2; x++)
+			if ((pmap[y+dy][x]&0xFF)==parttype && !bitmap[((y+dy)*XRES)+x])
+				if (!flood_prop_2(x, y+dy, propoffset, propvalue, proptype, parttype, bitmap))
+					return 0;
+	return 1;
+}
+
+int flood_prop(int x, int y, size_t propoffset, void * propvalue, int proptype)
+{
+	int r = 0;
+	char * bitmap = malloc(XRES*YRES); //Bitmap for checking
+	memset(bitmap, 0, XRES*YRES);
+	r = pmap[y][x];
+	flood_prop_2(x, y, propoffset, propvalue, proptype, r&0xFF, bitmap);
+}
+
 int flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 {
 	int c = fullc&0xFF;
 	int x1, x2, dy = (c<PT_NUM)?1:CELL;
 	int co = c;
+	if (c==SPC_PROP)
+		return 0;
 	if (cm==PT_INST&&co==PT_SPRK)
 		if ((pmap[y][x]&0xFF)==PT_SPRK)
 			return 0;
@@ -2707,8 +2774,13 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0;//n;
 
 	int wall = c - 100;
-	if (c==SPC_WIND)
+	if (c==SPC_WIND){
 		return 0;
+	}
+	if(c==SPC_PROP){
+		prop_edit_ui(vid_buf, x, y);
+		return 0;
+	}
 	for (r=UI_ACTUALSTART; r<=UI_ACTUALSTART+UI_WALLCOUNT; r++)
 	{
 		if (wall==r)
@@ -2915,6 +2987,8 @@ void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flag
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
 	float e, de;
+	if (c==SPC_PROP)
+		return;
 	if (cp)
 	{
 		y = x1;

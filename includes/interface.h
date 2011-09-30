@@ -205,6 +205,8 @@ extern int drawgrav_enable;
 
 void menu_count(void);
 
+void prop_edit_ui(pixel *vid_buf, int x, int y);
+
 void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
 
 void add_sign_ui(pixel *vid_buf, int mx, int my);

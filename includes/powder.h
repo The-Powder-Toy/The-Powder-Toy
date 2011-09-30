@@ -25,7 +25,7 @@
 
 #define UI_WALLSTART 222
 #define UI_ACTUALSTART 122
-#define UI_WALLCOUNT 24
+#define UI_WALLCOUNT 25
 
 #define WL_WALLELEC	122
 #define WL_EWALL	123
@@ -50,6 +50,7 @@
 #define SPC_WIND 241
 #define SPC_PGRV 243
 #define SPC_NGRV 244
+#define SPC_PROP 246
 
 #define WL_ALLOWGAS	140
 #define WL_GRAV		142
@@ -956,7 +957,7 @@ static wall_type wtypes[] =
 	{PIXPACK(0x0000BB), PIXPACK(0x000000), -1, "Postive gravity tool."},
 	{PIXPACK(0x000099), PIXPACK(0x000000), -1, "Negative gravity tool."},
 	{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), 4, "Energy wall, allows only energy type particles to pass"},
-	
+	{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), -1, "Property edit tool"},
 };
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
@@ -1002,6 +1003,8 @@ static void create_cherenkov_photon(int pp);
 static void create_gain_photon(int pp);
 
 void kill_part(int i);
+
+int flood_prop(int x, int y, size_t propoffset, void * propvalue, int proptype);
 
 void detach(int i);
 
