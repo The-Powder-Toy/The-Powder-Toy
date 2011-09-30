@@ -1311,8 +1311,10 @@ void login_ui(pixel *vid_buf)
 		drawrect(vid_buf, x0+8, y0+40, 176, 16, 192, 192, 192, 255);
 		ui_edit_draw(vid_buf, &ed1);
 		ui_edit_draw(vid_buf, &ed2);
-		drawtext(vid_buf, x0+5, y0+69, "Sign in", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+5, y0+69, "Sign out", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+187-textwidth("Sign in"), y0+69, "Sign in", 255, 255, 55, 255);
 		drawrect(vid_buf, x0, y0+64, 192, 16, 192, 192, 192, 255);
+		drawrect(vid_buf, x0, y0+64, 96, 16, 192, 192, 192, 255);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 
 		ui_edit_process(mx, my, b, &ed1);
@@ -1322,7 +1324,9 @@ void login_ui(pixel *vid_buf)
 			break;
 		if (b && !bq && mx>=x0+9 && mx<x0+23 && my>=y0+42 && my<y0+46)
 			break;
-		if (b && !bq && mx>=x0 && mx<x0+192 && my>=y0+64 && my<=y0+80)
+		if (b && !bq && mx>=x0 && mx<x0+96 && my>=y0+64 && my<=y0+80)
+			goto fail;
+		if (b && !bq && mx>=x0+97 && mx<x0+192 && my>=y0+64 && my<=y0+80)
 			break;
 
 		if (sdl_key==SDLK_RETURN || sdl_key==SDLK_TAB)
@@ -1420,6 +1424,7 @@ fail:
 	svf_admin = 0;
 	svf_mod = 0;
 	svf_messages = 0;
+	save_presets(0);
 }
 
 int stamp_ui(pixel *vid_buf)
