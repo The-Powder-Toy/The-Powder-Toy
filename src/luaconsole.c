@@ -688,9 +688,9 @@ int luatpt_drawrect(lua_State* l)
 
 	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
 		return luaL_error(l, "Screen coordinates out of range (%d,%d)", x, y);
-	if(x+w > XRES)
+	if(x+w > XRES+BARSIZE)
 		w = XRES-x;
-	if(y+h > YRES)
+	if(y+h > YRES+MENUSIZE)
 		h = YRES-y;
 	if (r<0) r = 0;
 	if (r>255) r = 255;
