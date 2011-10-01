@@ -40,17 +40,13 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 				}
 			}
 	r = pmap[y][x];
-	if((r&0xFF) == PT_QRTZ && r)
+	if((r&0xFF) == PT_QRTZ && r)// && parts[i].ctype==0x3FFFFFFF)
 	{
-		int t1, t2, t3;
-		parts[i].vx += ((float)(rand()%1000-500))/1000.0f;
-		parts[i].vy += ((float)(rand()%1000-500))/1000.0f;
-		t1 = (parts[i].ctype & 0x0000FF)+(rand()%5)-2;
-		t2 = ((parts[i].ctype & 0x00FF00)>>8)+(rand()%5)-2;
-		t3 = ((parts[i].ctype & 0xFF0000)>>16)+(rand()%5)-2;
-		parts[i].ctype = (parts[i].ctype & 0xFF000000) | (t3<<16) | (t2<<8) | t1;
-		
-		
+		float a = (rand()%360)*3.14159f/180.0f;
+		parts[i].vx = 3.0f*cosf(a);
+		parts[i].vy = 3.0f*sinf(a);
+		parts[i].ctype = 0x1F<<(rand()%26);
+		parts[i].life++; //Delay death
 	}
 	//r = pmap[y][x];
 	//rt = r&0xFF;
