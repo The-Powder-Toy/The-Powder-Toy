@@ -45,7 +45,8 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 		float a = (rand()%360)*3.14159f/180.0f;
 		parts[i].vx = 3.0f*cosf(a);
 		parts[i].vy = 3.0f*sinf(a);
-		parts[i].ctype = 0x1F<<(rand()%26);
+		if(parts[i].ctype == 0x3FFFFFFF)
+			parts[i].ctype = 0x1F<<(rand()%26);
 		parts[i].life++; //Delay death
 	}
 	//r = pmap[y][x];
