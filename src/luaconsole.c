@@ -64,6 +64,7 @@ void luacon_open(){
 		{"getscript",&luatpt_getscript},
 		{"setwindowsize",&luatpt_setwindowsize},
 		{"watertest",&luatpt_togglewater},
+		{"lock_placement",&luatpt_lockplace},
 		{NULL,NULL}
 	};
 
@@ -1194,5 +1195,11 @@ int luatpt_setwindowsize(lua_State* l)
 	lua_pushnumber(l, result);
 	return 1;
 }
-
+int luatpt_lockplace(lua_State* l)
+{
+	int lock;	
+	lock = luaL_optint(l, 1, 0);	
+	lockplace = (lock==1?0:1);
+	return 0;	
+}
 #endif
