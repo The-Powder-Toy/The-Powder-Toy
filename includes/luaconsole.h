@@ -76,4 +76,5 @@ int luatpt_setdebug(lua_State* l);
 int luatpt_setfpscap(lua_State* l);
 int luatpt_getscript(lua_State* l);
 int luatpt_setwindowsize(lua_State* l);
+int luatpt_lockplace(lua_State* l);
 #endif
