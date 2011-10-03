@@ -1379,7 +1379,7 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 #endif
 {
 #ifdef OpenGL
-	if (x<0 || y<0 || x>=XRES || r>=YRES)
+	if (x<0 || y<0 || x>=XRES+BARSIZE || r>=YRES+MENUSIZE)
 		return;
 	if (a!=255)
 	{
@@ -1390,7 +1390,7 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 	vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
 #else
 	pixel t;
-	if (x<0 || y<0 || x>=XRES || y>=YRES)
+	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
 		return;
 	if (a!=255)
 	{

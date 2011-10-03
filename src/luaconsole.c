@@ -30,6 +30,7 @@ void luacon_open(){
 		{"drawpixel", &luatpt_drawpixel},
 		{"drawrect", &luatpt_drawrect},
 		{"fillrect", &luatpt_fillrect},
+		{"drawline", &luatpt_drawline},
 		{"textwidth", &luatpt_textwidth},
 		{"get_name", &luatpt_get_name},
 		{"set_shortcuts", &luatpt_set_shortcuts},
@@ -737,6 +738,35 @@ int luatpt_fillrect(lua_State* l)
 	if (vid_buf!=NULL)
 	{
 		fillrect(vid_buf, x, y, w, h, r, g, b, a);
+		return 0;
+	}
+	return luaL_error(l, "Screen buffer does not exist");
+}
+
+int luatpt_drawline(lua_State* l)
+{
+	int x1,y1,x2,y2,r,g,b,a;
+	x1 = luaL_optint(l, 1, 0);
+	y1 = luaL_optint(l, 2, 0);
+	x2 = luaL_optint(l, 3, 10);
+	y2 = luaL_optint(l, 4, 10);
+	r = luaL_optint(l, 5, 255);
+	g = luaL_optint(l, 6, 255);
+	b = luaL_optint(l, 7, 255);
+	a = luaL_optint(l, 8, 255);
+
+	//Don't need to check coordinates, as they are checked in blendpixel
+	if (r<0) r = 0;
+	if (r>255) r = 255;
+	if (g<0) g = 0;
+	if (g>255) g = 255;
+	if (b<0) b = 0;
+	if (b>255) b = 255;
+	if (a<0) a = 0;
+	if (a>255) a = 255;
+	if (vid_buf!=NULL)
+	{
+		blend_line(vid_buf, x1, y1, x2, y2, r, g, b, a);
 		return 0;
 	}
 	return luaL_error(l, "Screen buffer does not exist");
