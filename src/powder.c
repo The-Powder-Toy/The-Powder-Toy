@@ -133,8 +133,8 @@ void init_can_move()
 	can_move[PT_PHOT][PT_LCRY] = 3;//varies according to LCRY life
 	can_move[PT_NEUT][PT_INVIS] = 2;
 	//whol eats anar
-	can_move[PT_ANAR][PT_WHOL] = 2;
-	can_move[PT_ANAR][PT_NWHL] = 2;
+	can_move[PT_ANAR][PT_WHOL] = 1;
+	can_move[PT_ANAR][PT_NWHL] = 1;
 }
 
 /*
@@ -166,6 +166,11 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 		if ((r&0xFF)==PT_INVIS)
 		{
 			if (pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f) result = 2;
+			else result = 0;
+		}
+		if ((r&0xFF)==PT_PVOD)
+		{
+			if (parts[r>>8].life == 10) result = 1;
 			else result = 0;
 		}
 	}
@@ -288,7 +293,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 	}
 	//else e=1 , we are trying to swap the particles, return 0 no swap/move, 1 is still overlap/move, because the swap takes place later
 
-	if ((r&0xFF)==PT_VOID) //this is where void eats particles
+	if ((r&0xFF)==PT_VOID || (r&0xFF)==PT_PVOD) //this is where void eats particles
 	{
 		if (parts[i].type == PT_STKM)
 		{
@@ -299,21 +304,6 @@ int try_move(int i, int x, int y, int nx, int ny)
 			player2[27] = 0;
 		}
 		parts[i].type=PT_NONE;
-		return 0;
-	}
-	if ((r&0xFF)==PT_PVOD) //this is where void eats particles
-	{
-		if(parts[r>>8].life == 10){
-			if (parts[i].type == PT_STKM)
-			{
-				player[27] = 0;
-			}
-			if (parts[i].type == PT_STKM2)
-			{	
-				player2[27] = 0;
-			}
-			parts[i].type=PT_NONE;
-		}
 		return 0;
 	}
 	if ((r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) //this is where blackhole eats particles
