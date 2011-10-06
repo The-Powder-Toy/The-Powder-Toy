@@ -594,22 +594,25 @@ int register_extension()
 	char *currentfilename = exe_name();
 	char *iconname = NULL;
 	char *opencommand = NULL;
-	char AppDataPath[MAX_PATH];
+	//char AppDataPath[MAX_PATH];
+	char *AppDataPath = NULL;
 	iconname = malloc(strlen(currentfilename)+6);
 	sprintf(iconname, "%s,-102", currentfilename);
 	
 	//Create Roaming application data folder
-	if(!SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA|CSIDL_FLAG_CREATE, NULL, 0, AppDataPath))) 
+	/*if(!SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA|CSIDL_FLAG_CREATE, NULL, 0, AppDataPath))) 
 	{
 		returnval = 0;
 		goto finalise;
-	}
+	}*/
+	
+	AppDataPath = _getcwd(NULL, 0);
 
 	//Move Game executable into application data folder
 	//TODO: Implement
 	
 	opencommand = malloc(strlen(currentfilename)+53+strlen(AppDataPath));
-	if((strlen(AppDataPath)+strlen(APPDATA_SUBDIR "\\Powder Toy"))<MAX_PATH)
+	/*if((strlen(AppDataPath)+strlen(APPDATA_SUBDIR "\\Powder Toy"))<MAX_PATH)
 	{
 		strappend(AppDataPath, APPDATA_SUBDIR);
 		_mkdir(AppDataPath);
@@ -618,7 +621,7 @@ int register_extension()
 	} else {
 		returnval = 0;
 		goto finalise;
-	}
+	}*/
 	sprintf(opencommand, "\"%s\" open \"%%1\" ddir \"%s\"", currentfilename, AppDataPath);
 
 	//Create extension entry
