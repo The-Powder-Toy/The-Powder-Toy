@@ -25,6 +25,11 @@ unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
+int sandcolour_r = 0;
+int sandcolour_g = 0;
+int sandcolour_b = 0;
+int sandcolour_frame = 0;
+
 unsigned char fire_r[YRES/CELL][XRES/CELL];
 unsigned char fire_g[YRES/CELL][XRES/CELL];
 unsigned char fire_b[YRES/CELL][XRES/CELL];

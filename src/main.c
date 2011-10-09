@@ -179,6 +179,7 @@ int decorations_enable = 1;
 int hud_enable = 1;
 int active_menu = 0;
 int framerender = 0;
+int pretty_powder = 0;
 int amd = 1;
 int FPSB = 0;
 int MSIGN =-1;
@@ -1801,6 +1802,13 @@ int main(int argc, char *argv[])
 			bsy = 1180;
 		if (bsy<0)
 			bsy = 0;
+			
+		//Pretty powders, colour cycle
+		//sandcolour_r = 0;
+		//sandcolour_g = 0;
+		sandcolour_b = sandcolour_r = sandcolour_g = (int)(20.0f*sin((float)sandcolour_frame*(M_PI/180.0f)));
+		sandcolour_frame++;
+		sandcolour_frame%=360;
 		
 		if(ngrav_enable && drawgrav_enable)
 			draw_grav(vid_buf);
@@ -2362,6 +2370,8 @@ int main(int argc, char *argv[])
 				aheat_enable = !aheat_enable;
 			if (sdl_key=='h')
 				hud_enable = !hud_enable;
+			if (sdl_key=='n')
+				pretty_powder = !pretty_powder;
 			if (sdl_key=='p')
 				dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
 			if (sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))

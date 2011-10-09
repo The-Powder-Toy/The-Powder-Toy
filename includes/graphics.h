@@ -40,6 +40,11 @@ extern unsigned cmode;
 extern SDL_Surface *sdl_scrn;
 extern int sdl_scale;
 
+extern int sandcolour_r;
+extern int sandcolour_g;
+extern int sandcolour_b;
+extern int sandcolour_frame;
+
 extern unsigned char fire_r[YRES/CELL][XRES/CELL];
 extern unsigned char fire_g[YRES/CELL][XRES/CELL];
 extern unsigned char fire_b[YRES/CELL][XRES/CELL];

@@ -987,6 +987,20 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		photons[y][x] = t|(i<<8);
 	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT)
 		pmap[y][x] = t|(i<<8);
+		
+	//Fancy dust effects for powder types
+	if((ptypes[t].properties & TYPE_PART) && pretty_powder)
+	{
+		int colr, colg, colb, randa;
+		randa = (rand()%30)-15;
+		colr = (PIXR(ptypes[t].pcolors)+sandcolour_r+(rand()%20)-10+randa);
+		colg = (PIXG(ptypes[t].pcolors)+sandcolour_g+(rand()%20)-10+randa);
+		colb = (PIXB(ptypes[t].pcolors)+sandcolour_b+(rand()%20)-10+randa);
+		colr = colr>255 ? 255 : (colr<0 ? 0 : colr);
+		colg = colg>255 ? 255 : (colg<0 ? 0 : colg);
+		colb = colb>255 ? 255 : (colb<0 ? 0 : colb);
+		parts[i].dcolour = 0xFF000000 | (colr<<16) | (colg<<8) | colb;
+	}
 
 	return i;
 }

@@ -162,6 +162,7 @@ extern int aheat_enable;
 extern int decorations_enable;
 extern int hud_enable;
 extern int debug_flags;
+extern int pretty_powder;
 int limitFPS;
 int water_equal_test;
 
