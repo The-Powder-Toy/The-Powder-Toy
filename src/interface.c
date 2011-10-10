@@ -2649,6 +2649,10 @@ char *download_ui(pixel *vid_buf, char *uri, int *len)
 	int x0=(XRES-240)/2,y0=(YRES-MENUSIZE)/2;
 	int done, total, i, ret, zlen, ulen;
 	char str[16], *tmp, *res;
+	
+	if (svf_login) {
+		http_auth_headers(http, svf_user_id, NULL, svf_session_id);
+	}
 
 	while (!http_async_req_status(http))
 	{
