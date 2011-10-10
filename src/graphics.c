@@ -16,6 +16,7 @@
 #include <air.h>
 #include <powder.h>
 #include <graphics.h>
+#include <powdergraphics.h>
 #define INCLUDE_FONTDATA
 #include <font.h>
 #include <misc.h>
@@ -1724,7 +1725,67 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 	}
 }
 
-//the main function for drawing the particles
+//New function for drawing particles
+void render_parts(pixel *vid)
+{
+	//TODO: Replace cmode with a set of flags
+	int colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, i, t, nx, ny;
+	for(i = 0; i<=parts_lastActiveIndex; i++) {
+		if (parts[i].type) {
+			t = parts[i].type;
+
+			nx = (int)(parts[i].x+0.5f);
+			ny = (int)(parts[i].y+0.5f);
+
+			if(photons[ny][nx]&0xFF && !(ptypes[t].properties & TYPE_ENERGY))
+				continue;
+				
+			//Defaults
+			pixel_mode = 0 | PMODE_FLAT;
+			colr = PIXR(ptypes[t].pcolors);
+			colg = PIXG(ptypes[t].pcolors);
+			colb = PIXB(ptypes[t].pcolors);
+			firea = 0;
+				
+			if (ptypes[t].graphics_func)
+			{
+				if ((*(ptypes[t].graphics_func))(i, nx, ny, &pixel_mode, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
+				{
+					//Data can be cached!
+				}
+			}
+			
+			if(firea && (pixel_mode & FIRE_BLEND) && cmode==CM_FIRE)
+			{
+				fire_r[ny/CELL][nx/CELL] = (firea*firer + (255-firea)*fire_r[ny/CELL][nx/CELL]) >> 8;
+				fire_g[ny/CELL][nx/CELL] = (firea*fireg + (255-firea)*fire_g[ny/CELL][nx/CELL]) >> 8;
+				fire_b[ny/CELL][nx/CELL] = (firea*fireb + (255-firea)*fire_b[ny/CELL][nx/CELL]) >> 8;
+			}
+			if(firea && (pixel_mode & FIRE_ADD) && cmode==CM_FIRE)
+			{
+				firer = ((firea*firer) >> 8) + fire_r[ny/CELL][nx/CELL];
+				fireg = ((firea*fireg) >> 8) + fire_g[ny/CELL][nx/CELL];
+				fireb = ((firea*fireb) >> 8) + fire_b[ny/CELL][nx/CELL];
+				
+				if(firer>255)
+					firer = 255;
+				if(fireg>255)
+					fireg = 255;
+				if(fireb>255)
+					fireb = 255;
+					
+				fire_r[ny/CELL][nx/CELL] = firer;
+				fire_g[ny/CELL][nx/CELL] = fireg;
+				fire_b[ny/CELL][nx/CELL] = fireb;
+			}
+			//Put part on video
+			if(pixel_mode & PMODE_FLAT)
+				vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
+		}
+	}
+}
+
+//the old function for drawing the particles
 void draw_parts(pixel *vid)
 {
 	int i, x, y, t, nx, ny, r, s;
@@ -1808,6 +1869,9 @@ void draw_parts(pixel *vid)
 			if(photons[ny][nx]&0xFF && !(ptypes[t].properties & TYPE_ENERGY))
 				continue;
 
+			
+			
+				
 			if (t==PT_SOAP)
 			{
 				if ((parts[i].ctype&7) == 7)

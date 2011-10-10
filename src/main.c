@@ -1508,7 +1508,7 @@ int main(int argc, char *argv[])
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 			draw_walls(vid_buf);
 			update_particles(vid_buf);
-			draw_parts(vid_buf);
+			render_parts(vid_buf);
 			render_fire(vid_buf);
 		}
 		
@@ -1814,7 +1814,7 @@ int main(int argc, char *argv[])
 			draw_grav(vid_buf);
 		draw_walls(part_vbuf);
 		update_particles(part_vbuf); //update everything
-		draw_parts(part_vbuf); //draw particles
+		render_parts(part_vbuf); //draw particles
 		if(sl == WL_GRAV+100 || sr == WL_GRAV+100)
 			draw_grav_zones(part_vbuf);
 		

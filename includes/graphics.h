@@ -135,6 +135,8 @@ void xor_rect(pixel *vid, int x, int y, int w, int h);
 
 void blend_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, int a);
 
+void render_parts(pixel *vid);
+
 void draw_parts(pixel *vid);
 
 void draw_walls(pixel *vid);

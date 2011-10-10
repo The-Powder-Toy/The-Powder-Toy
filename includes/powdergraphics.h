@@ -1,0 +1,10 @@
+#ifndef PGRAPHICS_H
+#define PGRAPHICS_H
+
+#define PMODE_NONE	0x00000000
+#define PMODE_FLAT	0x00000001
+
+#define FIRE_ADD	0x00000100
+#define FIRE_BLEND	0x00000200
+
+#endif
