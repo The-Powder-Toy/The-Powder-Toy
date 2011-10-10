@@ -140,6 +140,7 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp2==-1)
 	{
 	    kill_part(i);
+		update_PYRO(UPDATE_FUNC_SUBCALL_ARGS);
         return 0;
 	}
 	if (parts[i].tmp2<=0 || parts[i].life<=1)

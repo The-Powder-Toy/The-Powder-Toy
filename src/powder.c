@@ -9,6 +9,8 @@ int gravwl_timeout = 0;
 
 int wire_placed = 0;
 
+int lighting_recreate = 0;
+
 float player[28]; //[0] is a command cell, [3]-[18] are legs positions, [19]-[26] are accelerations, [27] shows if player was spawned
 float player2[28];
 
@@ -842,6 +844,12 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		parts[i].tmp = 0;
 		parts[i].tmp2 = 0;
 	}
+	if (t==PT_LIGH)
+	{
+	    parts[i].tmp=270;
+	    if (p=-2)
+            parts[i].tmp2=4;
+	}
 	if (t==PT_SOAP)
 	{
 		parts[i].tmp = -1;
@@ -1329,10 +1337,33 @@ void update_particles_i(pixel *vid, int start, int inc)
 	int starti = (start*-1);
 	int surround[8];
 	int surround_hconduct[8];
+	int lighting_ok=1;
 	float pGravX, pGravY, pGravD;
 
+	if (sys_pause&&lighting_recreate>0)
+    {
+        for (i=0; i<=parts_lastActiveIndex; i++)
+        {
+            if (parts[i].type==PT_LIGH && parts[i].tmp2>0)
+            {
+                lighting_ok=0;
+                break;
+            }
+        }
+    }
+	
+	if (lighting_ok)
+        lighting_recreate--;
+
+    if (lighting_recreate<0)
+        lighting_recreate=1;
+
+    if (lighting_recreate>21)
+        lighting_recreate=21;
+	
 	if (sys_pause&&!framerender)//do nothing if paused
 		return;
+		
 	if (ISGRAV==1)//crappy grav color handling, i will change this someday
 	{
 		ISGRAV = 0;
@@ -2807,6 +2838,24 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	{
 		gravwl_timeout = 60;
 	}
+	
+	if (c==PT_LIGH)
+	{
+	    if (lighting_recreate>0 && rx+ry>0)
+            return 0;
+        int p=create_part(-2, x, y, c);
+        if (p!=-1)
+        {
+            parts[p].life=rx+ry;
+            if (parts[p].life>55)
+                parts[p].life=55;
+            parts[p].temp=parts[p].life*150; // temperatute of the lighting shows the power of the lighting
+            lighting_recreate+=parts[p].life/2+1;
+            return 1;
+        }
+        else return 0;
+	}
+	
 	if (dw==1)
 	{
 		ry = ry/CELL;
