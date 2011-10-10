@@ -68,7 +68,9 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
                         int p=create_part(-1, x+rx*2, y+ry*2, PT_LIGH);
                         if (p!=-1)
                         {
-                            parts[p].life=rand()%(2+parts[i].tmp/15)+4+parts[i].tmp/7;
+							if(!parts[i].tmp) //Prevent Arithmetic errors with zero values
+								continue;
+							parts[p].life=rand()%(2+parts[i].tmp/15)+4+parts[i].tmp/7;
                             if (parts[i].life>60)
                                 parts[i].life=60;
                             parts[p].temp=parts[p].life*parts[i].tmp/2.5;
