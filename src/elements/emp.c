@@ -1,0 +1,102 @@
+#include <element.h>
+
+int update_EMP(UPDATE_FUNC_ARGS) {
+	int r,rx,ry,ok=0,t;
+	if (parts[i].life)
+        return 0;
+	for (rx=-2; rx<3; rx++)
+		for (ry=-2; ry<3; ry++)
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			{
+				r = pmap[y+ry][x+rx];
+				if ((r>>8)>=NPART || !r)
+					continue;
+                if ((r&0xFF)==PT_SPRK)
+                {
+                    ok=1;
+                    break;
+                }
+			}
+    if (!ok)
+        return 0;
+    parts[i].life=220;
+    emp_decor+=7;
+    if (emp_decor>100)
+        emp_decor=100;
+	for (r=0; r<=parts_lastActiveIndex; r++)
+	{
+	    t=parts[r].type;
+	    rx=parts[r].x;
+	    ry=parts[r].y;
+	    if (t==PT_SPRK || (t==PT_SWCH && parts[r].life!=0 && parts[r].life!=10) || (t==PT_WIRE && parts[r].ctype>0))
+        {
+            int is_elec=0;
+            if ((parts[r].ctype==PT_PSCN || parts[r].ctype==PT_NSCN || parts[r].ctype==PT_PTCT ||
+             parts[r].ctype==PT_NTCT || parts[r].ctype==PT_INST || parts[r].ctype==PT_SWCH) || t==PT_WIRE || t==PT_SWCH)
+            {
+                is_elec=1;
+                if (rand()%100==0)
+                    parts[r].temp+=3000;
+                if (rand()%80==0)
+                    part_change_type(r, rx, ry, PT_BREC);
+                else if (rand()%120==0)
+                    part_change_type(r, rx, ry, PT_NTCT);
+            }
+            int n,nx,ny;
+            for (nx=-2; nx<3; nx++)
+                for (ny=-2; ny<3; ny++)
+                    if (rx+nx>=0 && ry+ny>0 && rx+nx<XRES && ry+ny<YRES && (rx || ry))
+                    {
+                        n = pmap[ry+ny][rx+nx];
+                        if ((n>>8)>=NPART || !n)
+                            continue;
+                        /*if ((n&0xFF)==PT_BTRY && rand()%60==0)
+                        {
+                            part_change_type(n>>8, rx+nx, ry+ny, PT_PLSM);
+                            parts[n>>8].life=rand()%100+70;
+                            parts[n>>8].temp+=3000;
+                        }*/
+                        if (is_elec && ((n&0xFF)==PT_METL || (n&0xFF)==PT_BMTL) && rand()%280==0)
+                        {
+                            parts[n>>8].temp+=3000;
+                        }
+                        if (is_elec && (n&0xFF)==PT_BMTL && rand()%160==0)
+                        {
+                            part_change_type(n>>8, rx+nx, ry+ny, PT_BMTL);
+                            parts[n>>8].temp+=1000;
+                        }
+                        if (is_elec && (n&0xFF)==PT_METL && rand()%300==0)
+                        {
+                            part_change_type(n>>8, rx+nx, ry+ny, PT_BMTL);
+                        }
+                        if ((t==PT_PSCN || t==PT_NSCN) && (n&0xFF)==PT_SWCH && rand()%100==0)
+                        {
+                            part_change_type(n>>8, rx+nx, ry+ny, PT_BREC);
+                        }
+                        if ((t==PT_PSCN || t==PT_NSCN) && (n&0xFF)==PT_SWCH && rand()%100==0)
+                        {
+                            parts[n>>8].temp+=2000;
+                        }
+                        if (is_elec && (n&0xFF)==PT_WIFI && rand()%8==0)
+                        {
+                            parts[n>>8].temp=rand()%10000;
+                        }
+                        if (is_elec && (n&0xFF)==PT_WIFI && rand()%16==0)
+                        {
+                            create_part(n>>8, rx+nx, ry+ny, PT_BREC);
+                            parts[n>>8].temp+=1000;
+                        }
+                        if ((n&0xFF)==PT_ARAY && rand()%60==0)
+                        {
+                            create_part(n>>8, rx+nx, ry+ny, PT_BREC);
+                            parts[n>>8].temp+=1000;
+                        }
+                        if (t==PT_DLAY && rand()%70==0)
+                        {
+                            parts[n>>8].temp+=2000;
+                        }
+                    }
+        }
+	}
+	return 0;
+}

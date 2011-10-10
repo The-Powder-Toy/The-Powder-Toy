@@ -36,6 +36,8 @@
 #endif
 #endif
 
+extern int emp_decor;
+
 extern unsigned cmode;
 extern SDL_Surface *sdl_scrn;
 extern int sdl_scale;
@@ -52,6 +54,8 @@ extern unsigned char fire_b[YRES/CELL][XRES/CELL];
 extern unsigned int fire_alpha[CELL*3][CELL*3];
 extern pixel *fire_bg;
 extern pixel *pers_bg;
+
+void draw_other(pixel *vid);
 
 void draw_rgba_image(pixel *vid, unsigned char *data, int x, int y, float a);
 

@@ -1815,6 +1815,7 @@ int main(int argc, char *argv[])
 		draw_walls(part_vbuf);
 		update_particles(part_vbuf); //update everything
 		draw_parts(part_vbuf); //draw particles
+		draw_other(part_vbuf);
 		if(sl == WL_GRAV+100 || sr == WL_GRAV+100)
 			draw_grav_zones(part_vbuf);
 		
