@@ -847,7 +847,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	if (t==PT_LIGH)
 	{
 	    parts[i].tmp=270;
-	    if (p=-2)
+	    if (p==-2)
             parts[i].tmp2=4;
 	}
 	if (t==PT_SOAP)
