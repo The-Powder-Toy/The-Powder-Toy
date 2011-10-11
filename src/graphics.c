@@ -1729,7 +1729,8 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 void render_parts(pixel *vid)
 {
 	//TODO: Replace cmode with a set of flags
-	int colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, i, t, nx, ny;
+	int deca, decr, decg, decb, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, i, t, nx, ny, x, y, caddress;
+	float gradv, flicker;
 	for(i = 0; i<=parts_lastActiveIndex; i++) {
 		if (parts[i].type) {
 			t = parts[i].type;
@@ -1746,6 +1747,11 @@ void render_parts(pixel *vid)
 			colg = PIXG(ptypes[t].pcolors);
 			colb = PIXB(ptypes[t].pcolors);
 			firea = 0;
+			
+			deca = (parts[i].dcolour>>24)&0xFF;
+			decr = (parts[i].dcolour>>16)&0xFF;
+			decg = (parts[i].dcolour>>8)&0xFF;
+			decb = (parts[i].dcolour)&0xFF;
 				
 			if (ptypes[t].graphics_func)
 			{
@@ -1754,33 +1760,245 @@ void render_parts(pixel *vid)
 					//Data can be cached!
 				}
 			}
+			else
+			{
+				//Property based defaults
+				if(ptypes[t].properties & PROP_RADIOACTIVE) pixel_mode |= PMODE_GLOW;
+				if(ptypes[t].properties & PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
+				{
+					gradv = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
+					caddress = (parts[i].temp>ptransitions[t].thv)?ptransitions[t].thv-(ptransitions[t].thv-800.0f):parts[i].temp-(ptransitions[t].thv-800.0f);
+					colr += sin(gradv*caddress) * 226;;
+					colg += sin(gradv*caddress*4.55 +3.14) * 34;
+					colb += sin(gradv*caddress*2.22 +3.14) * 64;
+				}
+				if(ptypes[t].properties & TYPE_LIQUID)
+				{
+					pixel_mode |= PMODE_BLUR;
+				}
+				if(ptypes[t].properties & TYPE_GAS)
+				{
+					pixel_mode &= ~PMODE;
+					pixel_mode |= FIRE_BLEND;
+					firer = colr/2;
+					fireg = colg/2;
+					fireb = colb/2;
+					firea = 125;
+				}
+			}
 			
-			if(firea && (pixel_mode & FIRE_BLEND) && cmode==CM_FIRE)
+			if(cmode == CM_NOTHING)
 			{
-				fire_r[ny/CELL][nx/CELL] = (firea*firer + (255-firea)*fire_r[ny/CELL][nx/CELL]) >> 8;
-				fire_g[ny/CELL][nx/CELL] = (firea*fireg + (255-firea)*fire_g[ny/CELL][nx/CELL]) >> 8;
-				fire_b[ny/CELL][nx/CELL] = (firea*fireb + (255-firea)*fire_b[ny/CELL][nx/CELL]) >> 8;
-			}
-			if(firea && (pixel_mode & FIRE_ADD) && cmode==CM_FIRE)
-			{
-				firer = ((firea*firer) >> 8) + fire_r[ny/CELL][nx/CELL];
-				fireg = ((firea*fireg) >> 8) + fire_g[ny/CELL][nx/CELL];
-				fireb = ((firea*fireb) >> 8) + fire_b[ny/CELL][nx/CELL];
-				
-				if(firer>255)
-					firer = 255;
-				if(fireg>255)
-					fireg = 255;
-				if(fireb>255)
-					fireb = 255;
-					
-				fire_r[ny/CELL][nx/CELL] = firer;
-				fire_g[ny/CELL][nx/CELL] = fireg;
-				fire_b[ny/CELL][nx/CELL] = fireb;
-			}
-			//Put part on video
-			if(pixel_mode & PMODE_FLAT)
 				vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
+			}
+			else
+			{
+				//Alter colour based on display mode
+				switch(cmode)
+				{
+				case CM_HEAT:
+					caddress = restrict_flt((int)( restrict_flt((float)(parts[i].temp+(-MIN_TEMP)), 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
+					firea = 255;
+					firer = colr = (unsigned char)color_data[caddress];
+					fireg = colg = (unsigned char)color_data[caddress+1];
+					fireb = colb = (unsigned char)color_data[caddress+2];
+				case CM_PERS:
+				case CM_CRACK:
+				case CM_VEL:
+				case CM_PRESS:
+				case CM_LIFE:
+				case CM_GRAD:
+					if(pixel_mode & FIRE_ADD) pixel_mode = (pixel_mode & ~FIRE_ADD) | PMODE_GLOW;
+					if(pixel_mode & FIRE_BLEND) pixel_mode = (pixel_mode & ~FIRE_BLEND) | PMODE_BLUR;
+				case CM_FIRE:
+					if(pixel_mode & PMODE_BLOB) pixel_mode = (pixel_mode & ~PMODE_BLOB) | PMODE_FLAT;
+					if(pixel_mode & PMODE_BLUR) pixel_mode = (pixel_mode & ~PMODE_BLUR) | PMODE_FLAT;
+					break;
+				case CM_BLOB:
+					if(pixel_mode & PMODE_FLAT) pixel_mode = (pixel_mode & ~PMODE_FLAT) | PMODE_BLOB;
+					break;
+				case CM_FANCY:
+					break;
+				default:
+					break;
+				}
+				
+				//Apply decoration colour
+				colr = (deca*decr + (255-deca)*colr) >> 8;
+				colg = (deca*decg + (255-deca)*colg) >> 8;
+				colb = (deca*decb + (255-deca)*colb) >> 8;
+				
+				//All colours are now set, check ranges
+				if(colr>255) colr = 255;
+				else if(colr<0) colr = 0;
+				if(colg>255) colg = 255;
+				else if(colg<0) colg = 0;
+				if(colb>255) colb = 255;
+				else if(colb<0) colb = 0;
+				
+				//Pixel rendering
+				if(pixel_mode & PMODE_FLAT)
+				{
+					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
+				}
+				if(pixel_mode & PMODE_BLOB)
+				{
+					blendpixel(vid, nx+1, ny, colr, colg, colb, 223);
+					blendpixel(vid, nx-1, ny, colr, colg, colb, 223);
+					blendpixel(vid, nx, ny+1, colr, colg, colb, 223);
+					blendpixel(vid, nx, ny-1, colr, colg, colb, 223);
+
+					blendpixel(vid, nx+1, ny-1, colr, colg, colb, 112);
+					blendpixel(vid, nx-1, ny-1, colr, colg, colb, 112);
+					blendpixel(vid, nx+1, ny+1, colr, colg, colb, 112);
+					blendpixel(vid, nx-1, ny+1, colr, colg, colb, 112);
+				}
+				if(pixel_mode & PMODE_GLOW)
+				{
+					addpixel(vid, nx, ny, colr, colg, colb, 192);
+					addpixel(vid, nx+1, ny, colr, colg, colb, 96);
+					addpixel(vid, nx-1, ny, colr, colg, colb, 96);
+					addpixel(vid, nx, ny+1, colr, colg, colb, 96);
+					addpixel(vid, nx, ny-1, colr, colg, colb, 96);
+					for (x = 2; x < 7; x++) {
+						for (y = 2; y < 7; y++) {
+							addpixel(vid, nx+x, ny-y, colr, colg, colb, 5);
+							addpixel(vid, nx-x, ny+y, colr, colg, colb, 5);
+							addpixel(vid, nx+x, ny+y, colr, colg, colb, 5);
+							addpixel(vid, nx-x, ny-y, colr, colg, colb, 5);
+						}
+					}
+				}
+				if(pixel_mode & PMODE_BLUR)
+				{
+					for (x=-3; x<4; x++)
+					{
+						for (y=-3; y<4; y++)
+						{
+							if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
+								blendpixel(vid, x+nx, y+ny, colr, colg, colb, 30);
+							if (abs(x)+abs(y) <=3 && abs(x)+abs(y))
+								blendpixel(vid, x+nx, y+ny, colr, colg, colb, 20);
+							if (abs(x)+abs(y) == 2)
+								blendpixel(vid, x+nx, y+ny, colr, colg, colb, 10);
+						}
+					}
+				}
+				if(pixel_mode & PMODE_SPARK)
+				{
+					flicker = rand()%20;
+					gradv = 4*parts[i].life + flicker;
+					for (x = 0; gradv>0.5; x++) {
+						addpixel(vid, nx+x, ny, colr, colg, colb, gradv);
+						addpixel(vid, nx-x, ny, colr, colg, colb, gradv);
+
+						addpixel(vid, nx, ny+x, colr, colg, colb, gradv);
+						addpixel(vid, nx, ny-x, colr, colg, colb, gradv);
+						gradv = gradv/1.5f;
+					}
+				}
+				if(pixel_mode & PMODE_FLARE)
+				{
+					flicker = rand()%20;
+					gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
+					blendpixel(vid, nx, ny, colr, colg, colb, (gradv*4)>255?255:(gradv*4) );
+					blendpixel(vid, nx+1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(vid, nx-1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(vid, nx, ny+1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(vid, nx, ny-1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					if (gradv>255) gradv=255;
+					blendpixel(vid, nx+1, ny-1, colr, colg, colb, gradv);
+					blendpixel(vid, nx-1, ny-1, colr, colg, colb, gradv);
+					blendpixel(vid, nx+1, ny+1, colr, colg, colb, gradv);
+					blendpixel(vid, nx-1, ny+1, colr, colg, colb, gradv);
+					for (x = 1; gradv>0.5; x++) {
+						addpixel(vid, nx+x, ny, colr, colg, colb, gradv);
+						addpixel(vid, nx-x, ny, colr, colg, colb, gradv);
+						addpixel(vid, nx, ny+x, colr, colg, colb, gradv);
+						addpixel(vid, nx, ny-x, colr, colg, colb, gradv);
+						gradv = gradv/1.2f;
+					}
+				}
+				if(pixel_mode & PMODE_LFLARE)
+				{
+					flicker = rand()%20;
+					gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
+					blendpixel(vid, nx, ny, colr, colg, colb, (gradv*4)>255?255:(gradv*4) );
+					blendpixel(vid, nx+1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(vid, nx-1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(vid, nx, ny+1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(vid, nx, ny-1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					if (gradv>255) gradv=255;
+					blendpixel(vid, nx+1, ny-1, colr, colg, colb, gradv);
+					blendpixel(vid, nx-1, ny-1, colr, colg, colb, gradv);
+					blendpixel(vid, nx+1, ny+1, colr, colg, colb, gradv);
+					blendpixel(vid, nx-1, ny+1, colr, colg, colb, gradv);
+					for (x = 1; gradv>0.5; x++) {
+						addpixel(vid, nx+x, ny, colr, colg, colb, gradv);
+						addpixel(vid, nx-x, ny, colr, colg, colb, gradv);
+						addpixel(vid, nx, ny+x, colr, colg, colb, gradv);
+						addpixel(vid, nx, ny-x, colr, colg, colb, gradv);
+						gradv = gradv/1.01f;
+					}
+				}
+				//Fire effects
+				if(firea && (pixel_mode & FIRE_BLEND))
+				{
+					if(cmode==CM_FIRE || cmode==CM_BLOB || cmode==CM_FANCY)
+					{
+						fire_r[ny/CELL][nx/CELL] = (firea*firer + (255-firea)*fire_r[ny/CELL][nx/CELL]) >> 8;
+						fire_g[ny/CELL][nx/CELL] = (firea*fireg + (255-firea)*fire_g[ny/CELL][nx/CELL]) >> 8;
+						fire_b[ny/CELL][nx/CELL] = (firea*fireb + (255-firea)*fire_b[ny/CELL][nx/CELL]) >> 8;
+					} else {
+						//This smoke rendering style is horrendously slow, optimise, optimise, optimise!
+						for (x=-3; x<4; x++)
+						{
+							for (y=-3; y<4; y++)
+							{
+								if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
+									blendpixel(vid, x+nx, y+ny, firer, fireg, fireb, (30*(firea))>>8);
+								if (abs(x)+abs(y) <=3 && abs(x)+abs(y))
+									blendpixel(vid, x+nx, y+ny, firer, fireg, fireb, (20*(firea))>>8);
+								if (abs(x)+abs(y) == 2)
+									blendpixel(vid, x+nx, y+ny, firer, fireg, fireb, (10*(firea))>>8);
+							}
+						}
+					}
+				}
+				if(firea && (pixel_mode & FIRE_ADD))
+				{
+					if(cmode==CM_FIRE || cmode==CM_BLOB || cmode==CM_FANCY)
+					{
+						firer = ((firea*firer) >> 8) + fire_r[ny/CELL][nx/CELL];
+						fireg = ((firea*fireg) >> 8) + fire_g[ny/CELL][nx/CELL];
+						fireb = ((firea*fireb) >> 8) + fire_b[ny/CELL][nx/CELL];
+					
+						if(firer>255)
+							firer = 255;
+						if(fireg>255)
+							fireg = 255;
+						if(fireb>255)
+							fireb = 255;
+						
+						fire_r[ny/CELL][nx/CELL] = firer;
+						fire_g[ny/CELL][nx/CELL] = fireg;
+						fire_b[ny/CELL][nx/CELL] = fireb;
+					} else {
+						for (x=-3; x<4; x++)
+						{
+							for (y=-3; y<4; y++)
+							{
+								if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
+									addpixel(vid, x+nx, y+ny, firer, fireg, fireb, (175*(firea))>>8);
+								if (abs(x)+abs(y) <=3 && abs(x)+abs(y))
+									addpixel(vid, x+nx, y+ny, firer, fireg, fireb, (100*(firea))>>8);
+								if (abs(x)+abs(y) == 2)
+									addpixel(vid, x+nx, y+ny, firer, fireg, fireb, (55*(firea))>>8);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }
