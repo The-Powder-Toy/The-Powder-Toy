@@ -9,9 +9,9 @@
  
 //VersionInfoStart
 #define SAVE_VERSION 65
-#define MINOR_VERSION 0
+#define MINOR_VERSION 1
 #define BETA
-#define BUILD_NUM 91
+#define BUILD_NUM 92
 //VersionInfoEnd
 
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
