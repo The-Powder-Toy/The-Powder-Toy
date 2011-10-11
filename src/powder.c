@@ -846,9 +846,9 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	}
 	if (t==PT_LIGH)
 	{
-	    parts[i].tmp=270;
+	    parts[i].tmp = 270;
 	    if (p==-2)
-            parts[i].tmp2=4;
+            parts[i].tmp2 = 4;
 	}
 	if (t==PT_SOAP)
 	{
@@ -2806,7 +2806,7 @@ int flood_water(int x, int y, int i, int originaly, int check)
 //this creates particles from a brush, don't use if you want to create one particle
 int create_parts(int x, int y, int rx, int ry, int c, int flags)
 {
-	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0;//n;
+	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;//n;
 
 	int wall = c - 100;
 	if (c==SPC_WIND){
@@ -2838,7 +2838,6 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	{
 		gravwl_timeout = 60;
 	}
-	
 	if (c==PT_LIGH)
 	{
 	    if (lighting_recreate>0 && rx+ry>0)
@@ -2994,6 +2993,31 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 
 	}
 	//else, no special modes, draw element like normal.
+	if(c==PT_TESC)
+	{
+		if (rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
+		{
+			if (create_part(-2, x, y, c)==-1)
+				f = 1;
+		}
+		else
+			for (j=-ry; j<=ry; j++)
+				for (i=-rx; i<=rx; i++)
+					if (InCurrentBrush(i ,j ,rx ,ry))
+					{
+						p = create_part(-2, x+i, y+j, c);
+						if (p==-1)
+						{
+							f = 1;
+						} else {
+							parts[p].tmp=rx*4+ry*4+7;
+							if (parts[p].tmp>300)
+								parts[p].tmp=300;
+						}
+					}
+		return !f;
+	}
+	
 	if (rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
 	{
 		if (create_part(-2, x, y, c)==-1)

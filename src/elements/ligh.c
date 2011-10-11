@@ -1,5 +1,7 @@
 #include <element.h>
 
+#define LIGHTING_POWER 0.65
+
 int contact_part(int i, int tp)
 {
     int x=parts[i].x, y=parts[i].y;
@@ -75,13 +77,22 @@ void create_line_par(int x1, int y1, int x2, int y2, int c, int temp, int life, 
 
 int update_LIGH(UPDATE_FUNC_ARGS)
 {
-    /*tmp2:
-    -1 - part will be removed
-    0 -
-    1 -
-    2 -
+    /*
+     *
+     * tmp2:
+     * -1 - part will be removed
+     * 0 - "branches" of the lightning
+     * 1 - bending
+     * 2 - branching
+     * 3 - transfer spark or make destruction
+     * 4 - first pixel
+     *
+     * life - "thickness" of lighting (but anyway one pixel)
+     *
+     * tmp - angle of lighting
+     *
     */
-	int r,rx,ry, multipler, powderful=parts[i].temp*(1+parts[i].life/40)/2;
+	int r,rx,ry, multipler, powderful=parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER;
 	hv[y/CELL][x/CELL]+=powderful/40;
 	if (hv[y/CELL][x/CELL]>MAX_TEMP)
         hv[y/CELL][x/CELL]=MAX_TEMP;
@@ -92,7 +103,7 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
-                if ((r&0xFF)!=PT_LIGH)
+                if ((r&0xFF)!=PT_LIGH && (r&0xFF)!=PT_TESC)
 				{
 				    if (parts[i].tmp2==3)
 				    {
@@ -140,7 +151,6 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp2==-1)
 	{
 	    kill_part(i);
-		update_PYRO(UPDATE_FUNC_SUBCALL_ARGS);
         return 0;
 	}
 	if (parts[i].tmp2<=0 || parts[i].life<=1)
@@ -157,7 +167,7 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 	}
 	if (parts[i].tmp2<=-2)
 	{
-	    killpart(i);
+	    kill_part(i);
 	    return 0;
 	}
 
@@ -200,7 +210,19 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 	}
 
 	//if (parts[i].tmp2==1/* || near!=-1*/)
-    angle=parts[i].tmp-30+rand()%60;
+	switch (gravityMode)
+	{
+	default:
+	case 0:
+		angle = parts[i].tmp-30+rand()%60;
+		break;
+	case 1:
+		angle = rand()%360;
+		break;
+	case 2:
+		angle = atan2(x-XCNTR, y-YCNTR)*(180.0f/M_PI)+90;
+	}
+    //angle=0;//parts[i].tmp-30+rand()%60;
     if (angle<0)
         angle+=360;
     if (angle>=360)
@@ -227,7 +249,9 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 	if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 	{
 	    r = pmap[y+ry][x+rx];
-        if (!((r>>8)>=NPART || !r))
+	    /*if ((r&0xFF)!=PT_LIGH && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_UDMT && (r&0xFF)!=PT_TESC)
+                part_change_type(r>>8, x+rx, y+ry, PT_LIGH);*/
+        if ((r&0xFF)==PT_LIGH && !((r>>8)>=NPART || !r))
         {
             parts[r>>8].tmp2=1+(rand()%200>parts[i].tmp2*parts[i].tmp2/10+60);
             parts[r>>8].life=(int)(1.0*parts[i].life/1.5-rand()%2);
@@ -246,7 +270,9 @@ int update_LIGH(UPDATE_FUNC_ARGS)
         if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
         {
             r = pmap[y+ry][x+rx];
-            if (!((r>>8)>=NPART || !r))
+            /*if ((r&0xFF)!=PT_LIGH && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_UDMT && (r&0xFF)!=PT_TESC)
+                part_change_type(r>>8, x+rx, y+ry, PT_LIGH);*/
+            if ((r&0xFF)==PT_LIGH && !((r>>8)>=NPART || !r))
             {
                 parts[r>>8].tmp2=1+(rand()%200>parts[i].tmp2*parts[i].tmp2/10+40);
                 parts[r>>8].life=(int)(1.0*parts[i].life/1.5-rand()%2);
