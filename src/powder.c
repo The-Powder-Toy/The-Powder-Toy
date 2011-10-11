@@ -98,6 +98,7 @@ void init_can_move()
 				can_move[t][rt] = 2;
 		}
 	}
+	can_move[PT_DEST][PT_DMND] = 0;
 	can_move[PT_BIZR][PT_FILT] = 2;
 	can_move[PT_BIZRG][PT_FILT] = 2;
 	for (t=0;t<PT_NUM;t++)
@@ -1276,7 +1277,7 @@ int nearest_part(int ci, int t, int max_d)
 	int cy = (int)parts[ci].y;
 	for (i=0; i<=parts_lastActiveIndex; i++)
 	{
-		if ((parts[i].type==t||t==-1)&&!parts[i].life&&i!=ci)
+		if ((parts[i].type==t||(t==-1&&parts[i].type))&&!parts[i].life&&i!=ci)
 		{
 			ndistance = abs(cx-parts[i].x)+abs(cy-parts[i].y);// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
 			if (ndistance<distance)
