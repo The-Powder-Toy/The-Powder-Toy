@@ -1860,8 +1860,15 @@ void render_parts(pixel *vid)
 					addpixel(vid, nx-1, ny, colr, colg, colb, 96);
 					addpixel(vid, nx, ny+1, colr, colg, colb, 96);
 					addpixel(vid, nx, ny-1, colr, colg, colb, 96);
-					for (x = 2; x < 7; x++) {
-						for (y = 2; y < 7; y++) {
+					
+					for (x = 1; x < 6; x++) {
+						addpixel(vid, nx, ny-x, colr, colg, colb, 5);
+						addpixel(vid, nx, ny+x, colr, colg, colb, 5);
+						addpixel(vid, nx-x, ny, colr, colg, colb, 5);
+						addpixel(vid, nx+x, ny, colr, colg, colb, 5);
+						for (y = 1; y < 6; y++) {
+							if(x + y > 7)
+								continue;
 							addpixel(vid, nx+x, ny-y, colr, colg, colb, 5);
 							addpixel(vid, nx-x, ny+y, colr, colg, colb, 5);
 							addpixel(vid, nx+x, ny+y, colr, colg, colb, 5);
