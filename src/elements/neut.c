@@ -132,3 +132,14 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 			}
 	return 0;
 }
+
+int graphics_NEUT(GRAPHICS_FUNC_ARGS)
+{
+	*firea = 15;
+	*firer = 10;
+	*fireg = 80;
+	*fireb = 120;
+
+	*pixel_mode |= FIRE_ADD;
+	return 1;
+}

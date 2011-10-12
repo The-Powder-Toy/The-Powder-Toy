@@ -58,3 +58,27 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 
 	return 0;
 }
+
+int graphics_PHOT(GRAPHICS_FUNC_ARGS)
+{
+	int x = 0;
+	*colr = *colg = *colb = 0;
+	for (x=0; x<12; x++) {
+		*colr += (parts[i].ctype >> (x+18)) & 1;
+		*colb += (parts[i].ctype >>  x)     & 1;
+	}
+	for (x=0; x<12; x++)
+		*colg += (parts[i].ctype >> (x+9))  & 1;
+	x = 624/(*colr+*colg+*colb+1);
+	*colr *= x;
+	*colg *= x;
+	*colb *= x;
+
+	*firea = 15;
+	*firer = *colr;
+	*fireg = *colg;
+	*fireb = *colb;
+
+	*pixel_mode |= FIRE_ADD;
+	return 0;
+}

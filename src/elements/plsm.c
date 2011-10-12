@@ -1,0 +1,19 @@
+#include <element.h>
+
+int graphics_PLSM(GRAPHICS_FUNC_ARGS)
+{
+	int caddress = restrict_flt(restrict_flt((float)parts[i].life, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+	*colr = (unsigned char)plasma_data[caddress];
+	*colg = (unsigned char)plasma_data[caddress+1];
+	*colb = (unsigned char)plasma_data[caddress+2];
+	
+	*firea = 255;
+	*firer = *colr/8;
+	*fireg = *colg/8;
+	*fireb = *colb/8;
+	
+	*pixel_mode = PMODE_NONE; //Clear default, don't draw pixel
+	*pixel_mode |= FIRE_ADD;
+	//Returning 0 means dynamic, do not cache
+	return 0;
+}
