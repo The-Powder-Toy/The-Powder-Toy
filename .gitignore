@@ -1,6 +1,7 @@
 *.*.swp
 .directory
 powder.def
+powder.pref
 gmon.out
 *.*.orig
 build/stamps/*
@@ -10,3 +11,8 @@ utils/*
 *.log
 build/*
 src/python/stdlib/*
+*.exe
+*.dll
+*.srv
+*.bat
+*.o
