@@ -35,7 +35,7 @@ int update_EMP(UPDATE_FUNC_ARGS) {
 			        parts[r].ctype==PT_NTCT || parts[r].ctype==PT_INST || parts[r].ctype==PT_SWCH) || t==PT_WIRE || t==PT_SWCH)
 			{
 				is_elec=1;
-				if (rand()%100==0)
+				if (ptypes[parts[r].type].hconduct && rand()%100==0)
 					parts[r].temp = restrict_flt(parts[r].temp+3000.0f, MIN_TEMP, MAX_TEMP);
 				if (rand()%80==0)
 					part_change_type(r, rx, ry, PT_BREC);

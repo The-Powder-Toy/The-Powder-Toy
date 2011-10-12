@@ -114,12 +114,12 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 							parts[r>>8].life = 4;
 
 							pv[y/CELL][x/CELL] += powderful/1200;
-							parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/20, MIN_TEMP, MAX_TEMP);
+							if (ptypes[r&0xFF].hconduct) parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/20, MIN_TEMP, MAX_TEMP);
 						}
 						else if ((r&0xFF)!=PT_CLNE&&(r&0xFF)!=PT_THDR&&(r&0xFF)!=PT_SPRK&&(r&0xFF)!=PT_DMND&&(r&0xFF)!=PT_FIRE&&(r&0xFF)!=PT_NEUT&&(r&0xFF)!=PT_PHOT)
 						{
 							pv[y/CELL][x/CELL] += powderful/110;
-							parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/1.5, MIN_TEMP, MAX_TEMP);
+							if (ptypes[r&0xFF].hconduct) parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/1.5, MIN_TEMP, MAX_TEMP);
 						}
 						if ((r&0xFF)==PT_DEUT || (r&0xFF)==PT_PLUT)
 						{
@@ -134,10 +134,13 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 							}
 						}
 					}
-					if ((r&0xFF)!=PT_CLNE&&(r&0xFF)!=PT_THDR&&(r&0xFF)!=PT_SPRK&&(r&0xFF)!=PT_DMND&&(r&0xFF)!=PT_FIRE&&(r&0xFF)!=PT_NEUT&&(r&0xFF)!=PT_PHOT)
-						parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/16, MIN_TEMP, MAX_TEMP);
-					else
-						parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/70, MIN_TEMP, MAX_TEMP);
+					if (ptypes[r&0xFF].hconduct)
+					{
+						if ((r&0xFF)!=PT_CLNE&&(r&0xFF)!=PT_THDR&&(r&0xFF)!=PT_SPRK&&(r&0xFF)!=PT_DMND&&(r&0xFF)!=PT_FIRE&&(r&0xFF)!=PT_NEUT&&(r&0xFF)!=PT_PHOT)
+							parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/16, MIN_TEMP, MAX_TEMP);
+						else
+							parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/70, MIN_TEMP, MAX_TEMP);
+					}
 				}
 			}
 	if (parts[i].tmp2==3)
