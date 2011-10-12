@@ -1449,6 +1449,7 @@ void start_grav_async()
 {
 	if(!ngrav_enable){
 		gravthread_done = 0;
+		grav_ready = 0;
 		pthread_mutex_init (&gravmutex, NULL);
 		pthread_cond_init(&gravcv, NULL);
 		pthread_create(&gravthread, NULL, update_grav_async, NULL); //Start asynchronous gravity simulation
