@@ -20,9 +20,9 @@ int update_EMP(UPDATE_FUNC_ARGS) {
 	if (!ok)
 		return 0;
 	parts[i].life=220;
-	emp_decor+=7;
-	if (emp_decor>100)
-		emp_decor=100;
+	emp_decor+=3;
+	if (emp_decor>40)
+		emp_decor=40;
 	for (r=0; r<=parts_lastActiveIndex; r++)
 	{
 		t=parts[r].type;

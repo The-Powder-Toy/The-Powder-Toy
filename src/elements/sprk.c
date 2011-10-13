@@ -61,7 +61,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r>>8)>=NPART || r)
+					if (r)
 						continue;
 					if (rand()%(parts[i].tmp*parts[i].tmp/20+6)==0)
 					{
@@ -70,7 +70,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 						{
 							if(parts[i].tmp<=4) //Prevent Arithmetic errors with zero values
 								continue;
-							parts[p].life=rand()%(2+parts[i].tmp/15)+4+parts[i].tmp/7;
+							parts[p].life=rand()%(2+parts[i].tmp/15)+parts[i].tmp/7;
 							if (parts[i].life>60)
 								parts[i].life=60;
 							parts[p].temp=parts[p].life*parts[i].tmp/2.5;

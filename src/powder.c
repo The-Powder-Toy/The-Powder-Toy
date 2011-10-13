@@ -845,11 +845,21 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		parts[i].tmp = 0;
 		parts[i].tmp2 = 0;
 	}
-	if (t==PT_LIGH)
+	if (t==PT_LIGH && p==-2)
 	{
-	    parts[i].tmp = 270;
-	    if (p==-2)
-            parts[i].tmp2 = 4;
+	    switch (gravityMode)
+        {
+        default:
+        case 0:
+            parts[i].tmp= 270+rand()%40-20;
+            break;
+        case 1:
+            parts[i].tmp = rand()%360;
+            break;
+        case 2:
+            parts[i].tmp = atan2(x-XCNTR, y-YCNTR)*(180.0f/M_PI)+90;
+        }
+        parts[i].tmp2 = 4;
 	}
 	if (t==PT_SOAP)
 	{
@@ -2804,6 +2814,19 @@ int flood_water(int x, int y, int i, int originaly, int check)
 	return 1;
 }
 
+//wrapper around create_part to create TESC with correct tmp value
+int create_part_add_props(int p, int x, int y, int tv, int rx, int ry)
+{
+	p=create_part(p, x, y, tv);
+	if (tv==PT_TESC)
+	{
+		parts[p].tmp=rx*4+ry*4+7;
+		if (parts[p].tmp>300)
+			parts[p].tmp=300;
+	}
+	return p;
+}
+
 //this creates particles from a brush, don't use if you want to create one particle
 int create_parts(int x, int y, int rx, int ry, int c, int flags)
 {
@@ -2843,13 +2866,13 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	{
 	    if (lighting_recreate>0 && rx+ry>0)
             return 0;
-        int p=create_part(-2, x, y, c);
+        p=create_part(-2, x, y, c);
         if (p!=-1)
         {
             parts[p].life=rx+ry;
             if (parts[p].life>55)
                 parts[p].life=55;
-            parts[p].temp=parts[p].life*150; // temperatute of the lighting shows the power of the lighting
+            parts[p].temp=parts[p].life*150; // temperature of the lighting shows the power of the lighting
             lighting_recreate+=parts[p].life/2+1;
             return 1;
         }
@@ -2970,7 +2993,7 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 				{
 					delete_part(x, y, 0);
 					if (c!=0)
-						create_part(-2, x, y, c);
+						create_part_add_props(-2, x, y, c, rx, ry);
 				}
 			}
 		}
@@ -2987,48 +3010,23 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 						{
 							delete_part(x+i, y+j, 0);
 							if (c!=0)
-								create_part(-2, x+i, y+j, c);
+								create_part_add_props(-2, x+i, y+j, c, rx, ry);
 						}
 					}
 		return 1;
 
 	}
 	//else, no special modes, draw element like normal.
-	if(c==PT_TESC)
-	{
-		if (rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
-		{
-			if (create_part(-2, x, y, c)==-1)
-				f = 1;
-		}
-		else
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					if (InCurrentBrush(i ,j ,rx ,ry))
-					{
-						p = create_part(-2, x+i, y+j, c);
-						if (p==-1)
-						{
-							f = 1;
-						} else {
-							parts[p].tmp=rx*4+ry*4+7;
-							if (parts[p].tmp>300)
-								parts[p].tmp=300;
-						}
-					}
-		return !f;
-	}
-	
 	if (rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
 	{
-		if (create_part(-2, x, y, c)==-1)
+		if (create_part_add_props(-2, x, y, c, rx, ry)==-1)
 			f = 1;
 	}
 	else
 		for (j=-ry; j<=ry; j++)
 			for (i=-rx; i<=rx; i++)
 				if (InCurrentBrush(i ,j ,rx ,ry))
-					if (create_part(-2, x+i, y+j, c)==-1)
+					if (create_part_add_props(-2, x+i, y+j, c, rx, ry)==-1)
 						f = 1;
 	return !f;
 }

@@ -1728,22 +1728,24 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 
 void draw_other(pixel *vid) // EMP effect
 {
-    int i, j;
-    if (emp_decor>0 && !sys_pause) emp_decor-=emp_decor/50+1;
-	if (emp_decor>100) emp_decor=100;
+	int i, j;
+	if (emp_decor>0 && !sys_pause) emp_decor-=emp_decor/25+2;
+	if (emp_decor>40) emp_decor=40;
 	if (cmode==CM_NOTHING) // no in nothing mode
-        return;
-    if (emp_decor)
-        for (j=0; j<YRES; j++)
-            for (i=0; i<XRES; i++)
-            {
-                int r=emp_decor*2.5, g=100+emp_decor*1.5, b=255;
-                float a=1.0*emp_decor/110;
-                if (r>255) r=255;
-                if (g>255) g=255;
-                if (b>255) g=255;
-                drawpixel(vid, i, j, r, g, b, a*255);
-            }
+		return;
+	if (emp_decor)
+	{
+		int r=emp_decor*2.5, g=100+emp_decor*1.5, b=255;
+		int a=(1.0*emp_decor/110)*255;
+		if (r>255) r=255;
+		if (g>255) g=255;
+		if (b>255) g=255;
+		for (j=0; j<YRES; j++)
+			for (i=0; i<XRES; i++)
+			{
+				drawpixel(vid, i, j, r, g, b, a);
+			}
+	}
 }
 
 //the main function for drawing the particles
@@ -3356,8 +3358,16 @@ void draw_parts(pixel *vid)
 					uint8 R = 235;
 					uint8 G = 245;
 					uint8 B = 255;
-					float a=0.8*parts[i].life/40;
-					if (a>0.8) a=0.8;
+					float a;
+					if (parts[i].tmp2!=3)
+					{
+						a=0.8*parts[i].life/40;
+						if (a>0.8) a=0.8;
+					}
+					else
+					{
+						a=1.0;
+					}
 					blendpixel(vid, nx, ny, R, G, B, 255);
 					if (cmode == CM_FIRE||cmode==CM_BLOB || cmode==CM_FANCY)
 					{
@@ -3397,6 +3407,25 @@ void draw_parts(pixel *vid)
                             fire_r[y+ry][x+rx] = cr;
                         }
 						}
+					}
+					else if (cmode!=CM_NOTHING)
+					{
+					    blendpixel(vid, x, y, R, G, B, 255);
+
+					    blendpixel(vid, x, y-1, R, G, B, 150);
+					    blendpixel(vid, x-1, y, R, G, B, 150);
+					    blendpixel(vid, x+1, y, R, G, B, 150);
+					    blendpixel(vid, x, y+1, R, G, B, 150);
+
+					    blendpixel(vid, x-1, y-1, R, G, B, 100);
+					    blendpixel(vid, x+1, y-1, R, G, B, 100);
+					    blendpixel(vid, x+1, y+1, R, G, B, 100);
+					    blendpixel(vid, x-1, y+1, R, G, B, 100);
+
+					    blendpixel(vid, x, y-2, R, G, B, 50);
+					    blendpixel(vid, x-2, y, R, G, B, 50);
+					    blendpixel(vid, x+2, y, R, G, B, 50);
+					    blendpixel(vid, x, y+2, R, G, B, 50);
 					}
 				}
 				else if (t==PT_DEST)
