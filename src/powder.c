@@ -1847,7 +1847,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if (ptransitions[t].tht!=PT_NUM)
 							t = ptransitions[t].tht;
 						else if (t==PT_ICEI) {
-							if (parts[i].ctype&&parts[i].ctype!=PT_ICEI) {
+							if (parts[i].ctype>0&&parts[i].ctype<PT_NUM&&parts[i].ctype!=PT_ICEI) {
 								if (ptransitions[parts[i].ctype].tlt==PT_ICEI&&pt<=ptransitions[parts[i].ctype].tlv) s = 0;
 								else {
 									t = parts[i].ctype;
