@@ -1495,6 +1495,7 @@ int main(int argc, char *argv[])
 	
 	prepare_alpha(4, 1.0f);
 	player[2] = player2[2] = PT_DUST;
+	player[28] = player2[28] = 0;
 
 	sprintf(ppmfilename, "%s.ppm", argv[2]);
 	sprintf(ptifilename, "%s.pti", argv[2]);

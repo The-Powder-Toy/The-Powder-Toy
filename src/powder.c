@@ -11,8 +11,10 @@ int wire_placed = 0;
 
 int lighting_recreate = 0;
 
-float player[28]; //[0] is a command cell, [3]-[18] are legs positions, [19]-[26] are accelerations, [27] shows if player was spawned
-float player2[28];
+//[0] is a command cell, [3]-[18] are legs positions, [19]-[26] are accelerations, [27] shows if player was spawned
+//[28] is frames since last particle spawn - used when spawning LIGH
+float player[29];
+float player2[29];
 
 particle *parts;
 particle *cb_parts;

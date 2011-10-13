@@ -162,7 +162,7 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 					}
 					if (ptypes[r&0xFF].hconduct)
 						parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/10, MIN_TEMP, MAX_TEMP);
-					if ((r&0xFF)==PT_STKM || (r&0xFF)==PT_STKM2)
+					if (((r&0xFF)==PT_STKM && player[2]!=PT_LIGH) || ((r&0xFF)==PT_STKM2 && player2[2]!=PT_LIGH))
 					{
 						parts[r>>8].life-=powderful/100;
 					}

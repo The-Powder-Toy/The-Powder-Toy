@@ -974,8 +974,8 @@ extern int wire_placed;
 
 extern int gravwl_timeout;
 
-extern float player[28];
-extern float player2[28];
+extern float player[29];
+extern float player2[29];
 
 extern int gravityMode;
 extern int airMode;

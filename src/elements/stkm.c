@@ -20,8 +20,9 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 	float gvx, gvy;
 	float gx, gy, dl, dr;
 
-	if ((parts[i].ctype>0 && parts[i].ctype<PT_NUM && ptypes[parts[i].ctype].falldown>0) || parts[i].ctype==SPC_AIR || parts[i].ctype == PT_NEUT || parts[i].ctype == PT_PHOT)
+	if ((parts[i].ctype>0 && parts[i].ctype<PT_NUM && ptypes[parts[i].ctype].falldown>0) || parts[i].ctype==SPC_AIR || parts[i].ctype == PT_NEUT || parts[i].ctype == PT_PHOT || parts[i].ctype == PT_LIGH)
 		playerp[2] = parts[i].ctype;
+	playerp[28]++;
 
 	//Tempirature handling
 	if (parts[i].temp<243)
@@ -197,6 +198,8 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 				{
 					playerp[2] = r&0xFF;  //Current element
 				}
+				if ((r&0xFF)==PT_TESC || (r&0xFF)==PT_LIGH)
+					playerp[2] = PT_LIGH;
 				if ((r&0xFF) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
 				{
 					if (parts[i].life<=95)
@@ -229,24 +232,23 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 	{
 		ry -= 2*(rand()%2)+1;
 		r = pmap[ry][rx];
-			if (ptypes[r&0xFF].state == ST_SOLID)
-			{
-				create_part(-1, rx, ry, PT_SPRK);
-			}
+		if (ptypes[r&0xFF].state == ST_SOLID)
+		{
+			create_part(-1, rx, ry, PT_SPRK);
+			playerp[28] = 0;
+		}
+		else
+		{
+			int np = -1;
+			if (playerp[2] == SPC_AIR)
+				create_parts(rx + 3*((((int)playerp[1])&0x02) == 0x02) - 3*((((int)playerp[1])&0x01) == 0x01), ry, 4, 4, SPC_AIR, 0);
+			else if (playerp[2]==PT_LIGH && playerp[28]<30)//limit lightning creation rate
+				np = -1;
 			else
+				np = create_part(-1, rx, ry, playerp[2]);
+			if ( (np < NPART) && np>=0)
 			{
-				int np = -1;
-				if (playerp[2] == SPC_AIR)
-					create_parts(rx + 3*((((int)playerp[1])&0x02) == 0x02) - 3*((((int)playerp[1])&0x01) == 0x01), ry, 4, 4, SPC_AIR, 0);
-				else
-					np = create_part(-1, rx, ry, playerp[2]);
-				if ( (np < NPART) && np>=0 && playerp[2] != PT_PHOT && playerp[2] != SPC_AIR)
-				{
-					parts[np].vx -= -gvy*(5*((((int)playerp[1])&0x02) == 0x02) - 5*(((int)(playerp[1])&0x01) == 0x01));
-					parts[np].vy -= gvx*(5*((((int)playerp[1])&0x02) == 0x02) - 5*(((int)(playerp[1])&0x01) == 0x01));
-					parts[i].vx -= (ptypes[(int)playerp[2]].weight*parts[np].vx)/1000;
-				}
-				if ((np < NPART) && np>=0 && playerp[2] == PT_PHOT)
+				if (playerp[2] == PT_PHOT)
 				{
 					int random = abs(rand()%3-1)*3;
 					if (random==0)
@@ -262,8 +264,35 @@ int run_stickman(float* playerp, UPDATE_FUNC_ARGS) {
 							parts[np].vx = random;
 					}
 				}
-
+				else if (playerp[2] == PT_LIGH)
+				{
+					float angle;
+					int power = 100;
+					if (gvx!=0 || gvy!=0)
+						angle = atan2(gvx, gvy)*180.0f/M_PI;
+					else
+						angle = rand()%360;
+					if (((int)playerp[1])&0x01)
+						angle += 180;
+					if (angle>360)
+						angle-=360;
+					if (angle<0)
+						angle+=360;
+					parts[np].tmp = angle;
+					parts[np].life=rand()%(2+power/15)+power/7;
+					parts[np].temp=parts[np].life*power/2.5;
+					parts[np].tmp2=1;
+				}
+				else if (playerp[2] != SPC_AIR)
+				{
+					parts[np].vx -= -gvy*(5*((((int)playerp[1])&0x02) == 0x02) - 5*(((int)(playerp[1])&0x01) == 0x01));
+					parts[np].vy -= gvx*(5*((((int)playerp[1])&0x02) == 0x02) - 5*(((int)(playerp[1])&0x01) == 0x01));
+					parts[i].vx -= (ptypes[(int)playerp[2]].weight*parts[np].vx)/1000;
+				}
+				playerp[28] = 0;
 			}
+
+		}
 	}
 
 	//Simulation of joints
@@ -369,12 +398,12 @@ void STKM_interact(float* playerp, int i, int x, int y)
 	r = pmap[y][x];
 	if (r)
 	{
-		if ((r&0xFF)==PT_SPRK) //If on charge
+		if ((r&0xFF)==PT_SPRK && playerp[2]!=PT_LIGH) //If on charge
 		{
 			parts[i].life -= (int)(rand()*20/RAND_MAX)+32;
 		}
 
-		if (ptypes[r&0xFF].hconduct && (parts[r>>8].temp>=323 || parts[r>>8].temp<=243))
+		if (ptypes[r&0xFF].hconduct && ((playerp[2]!=PT_LIGH && parts[r>>8].temp>=323) || parts[r>>8].temp<=243))
 		{
 			parts[i].life -= 2;
 			playerp[22] -= 1;
