@@ -26,6 +26,12 @@
 #define PIXR(x) (((x)>>8)&0xFF)
 #define PIXG(x) (((x)>>16)&0xFF)
 #define PIXB(x) (((x)>>24))
+#elif defined(PIX32RGBA)
+#define PIXPACK(x) ((((x)>>16)&0x0000FF)|((x)&0x00FF00)|(((x)<<16)&0xFF0000))
+#define PIXRGB(r,g,b) (((b)<<16)|((g)<<8)|((r)))// (((b)<<16)|((g)<<8)|(r))
+#define PIXR(x) ((x)&0xFF)
+#define PIXG(x) (((x)>>8)&0xFF)
+#define PIXB(x) ((x)>>16)
 #else
 #define PIXPACK(x) (x)
 #define PIXRGB(r,g,b) (((r)<<16)|((g)<<8)|(b))
