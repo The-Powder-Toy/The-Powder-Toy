@@ -1826,9 +1826,9 @@ int main(int argc, char *argv[])
 			if(result) //Did the gravity thread finish?
 			{
 				memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
-				memcpy(gravy, th_gravy, sizeof(gravy));	//Hmm, Gravy
-				memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
-				memcpy(gravp, th_gravp, sizeof(gravp));
+				//memcpy(gravy, th_gravy, sizeof(gravy));	//Hmm, Gravy
+				//memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
+				//memcpy(gravp, th_gravp, sizeof(gravp));
 
 				if (!sys_pause||framerender){ //Only update if not paused
 					//Switch the full size gravmaps, we don't really need the two above any more
@@ -2646,7 +2646,7 @@ int main(int argc, char *argv[])
 				sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 				if (DEBUG_MODE)
 				{
-					sprintf(coordtext, "X:%d Y:%d. GX: %.2f GY: %.2f", x/sdl_scale, y/sdl_scale, gravx[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], gravy[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
+					sprintf(coordtext, "X:%d Y:%d. GX: %.2f GY: %.2f", x/sdl_scale, y/sdl_scale, gravxf[((y/sdl_scale)*XRES)+(x/sdl_scale)], gravyf[((y/sdl_scale)*XRES)+(x/sdl_scale)]);
 				}
 			}
 		}

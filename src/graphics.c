@@ -1527,15 +1527,15 @@ void draw_grav(pixel *vid)
 	{
 		for (x=0; x<XRES/CELL; x++)
 		{
-			if(fabsf(gravx[y][x]) <= 0.001f && fabsf(gravy[y][x]) <= 0.001f)
+			if(fabsf(gravpf[(y*XRES)+x]) <= 0.001f && fabsf(gravyf[((y*CELL)*XRES)+(x*CELL)]) <= 0.001f)
 				continue;
 			nx = x*CELL;
 			ny = y*CELL;
-			dist = fabsf(gravx[y][x])+fabsf(gravy[y][x]);
+			dist = fabsf(gravyf[(y*XRES)+x])+fabsf(gravxf[(y*XRES)+x]);
 			for(i = 0; i < 4; i++)
 			{
-				nx -= gravx[y][x]*0.5f;
-				ny -= gravy[y][x]*0.5f;
+				nx -= gravxf[((y*CELL)*XRES)+(x*CELL)]*0.5f;
+				ny -= gravyf[((y*CELL)*XRES)+(x*CELL)]*0.5f;
 				addpixel(vid, (int)(nx+0.5f), (int)(ny+0.5f), 255, 255, 255, (int)(dist*20.0f));
 			}
 		}

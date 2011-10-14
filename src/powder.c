@@ -1729,13 +1729,13 @@ void update_particles_i(pixel *vid, int start, int inc)
 			if (t==PT_ANAR)
 			{
 				// perhaps we should have a ptypes variable for this
-				pGravX -= gravx[y/CELL][x/CELL];
-				pGravY -= gravy[y/CELL][x/CELL];
+				pGravX -= gravxf[(y*XRES)+x];
+				pGravY -= gravyf[(y*XRES)+x];
 			}
 			else if(t!=PT_STKM && t!=PT_STKM2 && !(ptypes[t].properties & TYPE_SOLID))
 			{
-				pGravX += gravx[y/CELL][x/CELL];
-				pGravY += gravy[y/CELL][x/CELL];
+				pGravX += gravxf[(y*XRES)+x];
+				pGravY += gravyf[(y*XRES)+x];
 			}
 			//velocity updates for the particle
 			parts[i].vx *= ptypes[t].loss;
@@ -1990,7 +1990,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 
 			s = 1;
-			gravtot = fabsf(gravy[y/CELL][x/CELL])+fabsf(gravx[y/CELL][x/CELL]);
+			gravtot = fabs(gravyf[(y*XRES)+x])+fabs(gravxf[(y*XRES)+x]);
 			if (pv[y/CELL][x/CELL]>ptransitions[t].phv&&ptransitions[t].pht>-1) {
 				// particle type change due to high pressure
 				if (ptransitions[t].pht!=PT_NUM)
@@ -2354,8 +2354,8 @@ killed:
 										pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
 										pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
 								}
-								pGravX += gravx[ny/CELL][nx/CELL];
-								pGravY += gravy[ny/CELL][nx/CELL];
+								pGravX += gravxf[(ny*XRES)+nx];
+								pGravY += gravyf[(ny*XRES)+nx];
 								if (fabsf(pGravY)>fabsf(pGravX))
 									mv = fabsf(pGravY);
 								else
@@ -2413,8 +2413,8 @@ killed:
 											pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
 											pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
 									}
-									pGravX += gravx[ny/CELL][nx/CELL];
-									pGravY += gravy[ny/CELL][nx/CELL];
+									pGravX += gravxf[(ny*XRES)+nx];
+									pGravY += gravyf[(ny*XRES)+nx];
 									if (fabsf(pGravY)>fabsf(pGravX))
 										mv = fabsf(pGravY);
 									else
