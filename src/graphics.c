@@ -37,7 +37,6 @@ unsigned char fire_g[YRES/CELL][XRES/CELL];
 unsigned char fire_b[YRES/CELL][XRES/CELL];
 
 unsigned int fire_alpha[CELL*3][CELL*3];
-pixel *fire_bg;
 pixel *pers_bg;
 
 void *ptif_pack(pixel *src, int w, int h, int *result_size){

@@ -2604,7 +2604,6 @@ void set_cmode(int cm) // sets to given view mode
 	}
 	else if (cmode==CM_PERS)
 	{
-		memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
 		memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		strcpy(itc_msg, "Persistent Display");
 	}

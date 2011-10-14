@@ -1112,7 +1112,6 @@ void clear_sim(void)
 	player[27] = 0;
 	player2[27] = 0;
 	memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-	memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
 	memset(fire_b, 0, sizeof(fire_b));
@@ -1491,7 +1490,6 @@ int main(int argc, char *argv[])
 	pfree = 0;
 
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
-	fire_bg = calloc(XRES*YRES, PIXELSIZE);
 	
 	prepare_alpha(4, 1.0f);
 	player[2] = player2[2] = PT_DUST;
@@ -1633,7 +1631,6 @@ int main(int argc, char *argv[])
 	menu_count();
 	parts = calloc(sizeof(particle), NPART);
 	cb_parts = calloc(sizeof(particle), NPART);
-	fire_bg=calloc(XRES*YRES, PIXELSIZE);
 	init_can_move();
 	clear_sim();
 
@@ -3019,7 +3016,6 @@ int main(int argc, char *argv[])
 						if (x>=1 && x<=17)
 						{
 							search_ui(vid_buf);
-							memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
 							memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 							memset(fire_r, 0, sizeof(fire_r));
 							memset(fire_g, 0, sizeof(fire_g));
