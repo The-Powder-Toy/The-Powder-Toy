@@ -1730,6 +1730,7 @@ void draw_other(pixel *vid) // EMP effect
 	int i, j;
 	if (emp_decor>0 && !sys_pause) emp_decor-=emp_decor/25+2;
 	if (emp_decor>40) emp_decor=40;
+	if (emp_decor<0) emp_decor = 0;
 	if (cmode==CM_NOTHING) // no in nothing mode
 		return;
 	if (emp_decor>0)
