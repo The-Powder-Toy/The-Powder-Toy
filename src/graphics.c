@@ -1740,6 +1740,7 @@ void draw_other(pixel *vid) // EMP effect
 		if (r>255) r=255;
 		if (g>255) g=255;
 		if (b>255) g=255;
+		if (a>255) a=255;
 		for (j=0; j<YRES; j++)
 			for (i=0; i<XRES; i++)
 			{
