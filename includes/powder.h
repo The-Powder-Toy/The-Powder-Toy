@@ -981,7 +981,7 @@ extern int gravwl_timeout;
 extern float player[29];
 extern float player2[29];
 
-extern float fighters[256][28];
+extern float fighters[256][29];
 extern unsigned char fighcount;
 
 extern int gravityMode;

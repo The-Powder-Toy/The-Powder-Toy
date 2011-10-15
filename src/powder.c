@@ -2890,7 +2890,7 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	int wall = c - 100;
 	if (c==SPC_WIND || c==PT_FIGH)
 		return 0;
-	}
+
 	if(c==SPC_PROP){
 		prop_edit_ui(vid_buf, x, y);
 		return 0;
