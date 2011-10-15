@@ -3625,14 +3625,14 @@ int main(int argc, char *argv[])
 		//Setting an element for the stick man
 		if (player[27]==0)
 		{
-			if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT)
+			if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT || sr == PT_LIGH)
 				player[2] = sr;
 			else
 				player[2] = PT_DUST;
 		}
 		if (player2[27]==0)
 		{
-			if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT)
+			if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT || sr == PT_LIGH)
 				player2[2] = sr;
 			else
 				player2[2] = PT_DUST;

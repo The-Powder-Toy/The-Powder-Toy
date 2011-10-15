@@ -45,16 +45,8 @@ int update_FIGH(UPDATE_FUNC_ARGS)
 		case 1:
 			if ((pow(tarx-x, 2) + pow(tary-y, 2))<600)
 			{
-				if (figh[2] == PT_FIRE)
+				if (figh[2] == PT_FIRE || figh[2] == PT_LIGH)
 					figh[0] = (int)figh[0] | 0x08;
-			}
-
-			if ((pow(tarx-x, 2) + pow(tary-y, 2))<300)
-			{
-				if (figh[2] == PT_FIRE)
-					figh[0] = 0x08;
-				else
-					figh[0] = 0;
 			}
 			else
 				if (tarx<x)
@@ -74,6 +66,8 @@ int update_FIGH(UPDATE_FUNC_ARGS)
 			figh[0] = 0;
 			break;
 	}
+
+	figh[1] = figh[0];
 
 	run_stickman(figh, UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;

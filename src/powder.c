@@ -16,7 +16,7 @@ int lighting_recreate = 0;
 float player[29];
 float player2[29];
 
-float fighters[256][28]; //255 is the maximum number of fighters
+float fighters[256][29]; //255 is the maximum number of fighters
 unsigned char fighcount = 0; //Contains the number of fighters
 
 particle *parts;
