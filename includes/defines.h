@@ -138,6 +138,8 @@ typedef unsigned int pixel;
 #define DEBUG_PARTS		0x0001
 #define DEBUG_PARTCOUNT	0x0002
 #define DEBUG_DRAWTOOL	0x0004
+#define DEBUG_PERFORMANCE_CALC 0x0008
+#define DEBUG_PERFORMANCE_FRAME 0x0010
 
 typedef unsigned char uint8;
 
@@ -161,10 +163,17 @@ extern int kiosk_enable;
 extern int aheat_enable;
 extern int decorations_enable;
 extern int hud_enable;
-extern int debug_flags;
 extern int pretty_powder;
 int limitFPS;
 int water_equal_test;
+
+extern int debug_flags;
+#define DEBUG_PERF_FRAMECOUNT 256
+extern int debug_perf_istart;
+extern int debug_perf_iend;
+extern long debug_perf_frametime[DEBUG_PERF_FRAMECOUNT];
+extern long debug_perf_partitime[DEBUG_PERF_FRAMECOUNT];
+extern long debug_perf_time;
 
 extern int active_menu;
 

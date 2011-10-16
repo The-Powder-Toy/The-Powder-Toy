@@ -187,8 +187,13 @@ int frameidx = 0;
 //int CGOL = 0;
 //int GSPEED = 1;//causes my .exe to crash..
 int sound_enable = 0;
-int debug_flags = 0;
 
+int debug_flags = 0;
+int debug_perf_istart = 1;
+int debug_perf_iend = 0;
+long debug_perf_frametime[DEBUG_PERF_FRAMECOUNT];
+long debug_perf_partitime[DEBUG_PERF_FRAMECOUNT];
+long debug_perf_time = 0;
 
 sign signs[MAXSIGNS];
 
@@ -1813,8 +1818,52 @@ int main(int argc, char *argv[])
 		if(ngrav_enable && drawgrav_enable)
 			draw_grav(vid_buf);
 		draw_walls(part_vbuf);
+		
+		if(debug_flags & (DEBUG_PERFORMANCE_CALC|DEBUG_PERFORMANCE_FRAME))
+		{
+			#ifdef WIN32
+			#elif defined(MACOSX)
+			#else
+				struct timespec ts;
+				clock_gettime(CLOCK_REALTIME, &ts);
+				debug_perf_time = ts.tv_nsec;
+			#endif
+		}
+		
 		update_particles(part_vbuf); //update everything
+			
+		if(debug_flags & (DEBUG_PERFORMANCE_CALC|DEBUG_PERFORMANCE_FRAME))
+		{
+			#ifdef WIN32
+			#elif defined(MACOSX)
+			#else
+				struct timespec ts;
+				clock_gettime(CLOCK_REALTIME, &ts);
+				
+				debug_perf_partitime[debug_perf_iend]  = ts.tv_nsec - debug_perf_time;
+				
+				debug_perf_time = ts.tv_nsec;
+			#endif
+		}
+		
 		render_parts(part_vbuf); //draw particles
+		
+		if(debug_flags & (DEBUG_PERFORMANCE_CALC|DEBUG_PERFORMANCE_FRAME))
+		{
+			#ifdef WIN32
+			#elif defined(MACOSX)
+			#else
+				struct timespec ts;
+				clock_gettime(CLOCK_REALTIME, &ts);
+				
+				debug_perf_frametime[debug_perf_iend]  = ts.tv_nsec - debug_perf_time;
+			#endif
+			debug_perf_iend++;
+			debug_perf_iend %= DEBUG_PERF_FRAMECOUNT;
+			debug_perf_istart++;
+			debug_perf_istart %= DEBUG_PERF_FRAMECOUNT;
+		}
+		
 		if(sl == WL_GRAV+100 || sr == WL_GRAV+100)
 			draw_grav_zones(part_vbuf);
 		
