@@ -26,6 +26,8 @@ unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
+GLuint vidBuf;
+
 int sandcolour_r = 0;
 int sandcolour_g = 0;
 int sandcolour_b = 0;
@@ -285,27 +287,34 @@ pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
 }
 
 #ifdef OGLR
+void clearScreen(float alpha)
+{
+    glClearColor(0.0f, 0.0f, 0.0f, alpha);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
 void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale)
 {
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0 ,XRES*scale, 0, YRES*scale, -1, 1);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 
+    //glDrawPixels(w,h,GL_BGRA,GL_UNSIGNED_BYTE,src); //Why does this still think it's ABGR?
+    glEnable( GL_TEXTURE_2D );
+    glBindTexture(GL_TEXTURE_2D, vidBuf);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES+BARSIZE, YRES+MENUSIZE, GL_BGRA, GL_UNSIGNED_BYTE, src);
 
-	glRasterPos2i(0, YRES*scale);
-	glPixelZoom(scale, -scale);
+    glBegin(GL_QUADS);
+    glTexCoord2d(1, 0);
+    glVertex3f(XRES+BARSIZE, YRES+MENUSIZE, 1.0);
+    glTexCoord2d(0, 0);
+    glVertex3f(0, YRES+MENUSIZE, 1.0);
+    glTexCoord2d(0, 1);
+    glVertex3f(0, 0, 1.0);
+    glTexCoord2d(1, 1);
+    glVertex3f(XRES+BARSIZE, 0, 1.0);
+    glEnd();
 
-	glDrawPixels(w,h,GL_RGBA,GL_UNSIGNED_BYTE,src);
-
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-
-
-	SDL_GL_SwapBuffers ();
+    glDisable( GL_TEXTURE_2D );
+    glFlush();
+    SDL_GL_SwapBuffers ();
 }
 #endif
 
@@ -406,7 +415,7 @@ void sdl_blit_2(int x, int y, int w, int h, pixel *src, int pitch)
 void sdl_blit(int x, int y, int w, int h, pixel *src, int pitch)
 {
 #if defined(OGLR)
-	ogl_blit(x, y, w, h, src, pitch, sdl_scale);
+        ogl_blit(x, y, w, h, src, pitch, sdl_scale);
 #else
 	if (sdl_scale == 2)
 		sdl_blit_2(x, y, w, h, src, pitch);
@@ -1390,10 +1399,17 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 }
 
 //New function for drawing particles
+#ifdef OGLR
+GLuint va[(YRES*XRES)*2];
+GLfloat ca[(YRES*XRES)*3];
+#endif
 void render_parts(pixel *vid)
 {
 	//TODO: Replace cmode with a set of flags
-	int deca, decr, decg, decb, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, i, t, nx, ny, x, y, caddress;
+        int deca, decr, decg, decb, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, i, t, nx, ny, x, y, caddress;
+#ifdef OGLR
+        int cv = 0, cc = 0, pc = 0;
+#endif
 	float gradv, flicker;
 	for(i = 0; i<=parts_lastActiveIndex; i++) {
 		if (parts[i].type) {
@@ -1453,7 +1469,16 @@ void render_parts(pixel *vid)
 			
 			if(cmode == CM_NOTHING)
 			{
-				vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
+#ifdef OGLR
+                                va[cv++] = nx;
+                                va[cv++] = ny;
+                                ca[cc++] = ((float)colr)/255.0f;
+                                ca[cc++] = ((float)colg)/255.0f;
+                                ca[cc++] = ((float)colb)/255.0f;
+                                pc++;
+#else
+                                vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
+#endif
 			}
 			else
 			{
@@ -1671,7 +1696,23 @@ void render_parts(pixel *vid)
 				}
 			}
 		}
-	}
+        }
+#ifdef OGLR
+        glScalef(1,-1,1);
+        glTranslatef(0, -(YRES+MENUSIZE), 0);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        glColorPointer(3, GL_FLOAT, 0, &ca[0]);
+        glVertexPointer(2, GL_INT, 0, &va[0]);
+
+        glDrawArrays(GL_POINTS, 0, pc);
+
+        glDisableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glTranslatef(0, YRES+MENUSIZE, 0);
+        glScalef(1,-1,1);
+#endif
 }
 
 void draw_walls(pixel *vid)
@@ -2681,6 +2722,31 @@ int sdl_open(void)
 #if defined(OGLR)
 	sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_OPENGL);
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+
+        glOrtho(0 ,(XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        glRasterPos2i(0, (YRES+MENUSIZE)*sdl_scale);
+        glPixelZoom(sdl_scale, -sdl_scale);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glEnable(GL_TEXTURE_2D);
+        glGenTextures(1, &vidBuf);
+        glBindTexture(GL_TEXTURE_2D, vidBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES+BARSIZE, YRES+MENUSIZE, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
 #else
 #ifdef PIX16
 	if (kiosk_enable)

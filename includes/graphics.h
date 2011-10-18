@@ -26,12 +26,12 @@
 #define PIXR(x) (((x)>>8)&0xFF)
 #define PIXG(x) (((x)>>16)&0xFF)
 #define PIXB(x) (((x)>>24))
-#elif defined(PIX32RGBA)
-#define PIXPACK(x) ((((x)>>16)&0x0000FF)|((x)&0x00FF00)|(((x)<<16)&0xFF0000))
-#define PIXRGB(r,g,b) (((b)<<16)|((g)<<8)|((r)))// (((b)<<16)|((g)<<8)|(r))
-#define PIXR(x) ((x)&0xFF)
+#elif defined(PIX32OGL)
+#define PIXPACK(x) (0xFF000000|((x)&0xFFFFFF))
+#define PIXRGB(r,g,b) (0xFF000000|((r)<<16)|((g)<<8)|((b)))// (((b)<<16)|((g)<<8)|(r))
+#define PIXR(x) (((x)>>16)&0xFF)
 #define PIXG(x) (((x)>>8)&0xFF)
-#define PIXB(x) ((x)>>16)
+#define PIXB(x) ((x)&0xFF)
 #else
 #define PIXPACK(x) (x)
 #define PIXRGB(r,g,b) (((r)<<16)|((g)<<8)|(b))
@@ -183,10 +183,9 @@ int sdl_open(void);
 
 int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy, int line_x, int line_y);
 
-#ifdef OpenGL
-void Enable2D ();
-void RenderScene ();
-void ClearScreen();
+#ifdef OGLR
+void clearScreen(float alpha);
+void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale);
 #endif
 
 #endif

@@ -1765,9 +1765,6 @@ int main(int argc, char *argv[])
 			if(aheat_enable)
 				update_airh();
 		}
-#ifdef OpenGL
-		ClearScreen();
-#else
 
 		if(ngrav_enable && cmode==CM_FANCY)
 		{
@@ -1791,12 +1788,14 @@ int main(int argc, char *argv[])
 		{
 			memcpy(part_vbuf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
 			memset(part_vbuf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
-}
+                }
 		else //clear screen every frame
 		{
-			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-		}
+#ifdef OGLR
+                    clearScreen(1.0f);
 #endif
+                    memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+		}
 
 		//Can't be too sure (Limit the cursor size)
 		if (bsx>1180)
