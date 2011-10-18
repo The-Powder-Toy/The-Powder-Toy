@@ -1826,8 +1826,9 @@ void update_particles_i(pixel *vid, int start, int inc)
 						pt = (c_heat+parts[i].temp*96.645/ptypes[t].hconduct*fabs(ptypes[t].weight))/(c_Cm+96.645/ptypes[t].hconduct*fabs(ptypes[t].weight));
 					
 #else
-					pt = parts[i].temp = (c_heat+parts[i].temp)/(h_count+1);
+					pt = (c_heat+parts[i].temp)/(h_count+1);
 #endif
+					pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
 					for (j=0; j<8; j++)
 					{
 						parts[surround_hconduct[j]].temp = pt;
