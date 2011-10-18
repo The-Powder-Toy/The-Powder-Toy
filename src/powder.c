@@ -277,6 +277,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 				parts[i].ctype &= 0x1F << temp_bin; //Filter Colour
 			} else if(parts[r>>8].tmp==2){
 				parts[i].ctype |= 0x1F << temp_bin; //Add Colour
+			} else if(parts[r>>8].tmp==3){
+				parts[i].ctype &= ~(0x1F << temp_bin); //Subtract Colour
 			}
 		}
 		if (parts[i].type == PT_NEUT && (r&0xFF)==PT_GLAS) {
