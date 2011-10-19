@@ -1,6 +1,4 @@
-The Powder Toy - April 2011
-
-
+The Powder Toy - October 2011
 
 Get latest version here:  http://powdertoy.co.uk/Download.html
 
@@ -20,7 +18,8 @@ Bryan Hoyle
 Nathan Cousins
 jacksonmj
 Lieuwe Mosch
-    
+Anthony Boot
+Matthew Miller
 
 Instructions:
 
@@ -55,7 +54,8 @@ I 		Invert Pressure and Velocity map
 T 		Vine mode
 W 		Toggle gravity modes (+ Ctrl when STK2 is out)
 R 		Reset LIFE generation (when in Debug mode)
-~ 		Python Console
+N		"Sand effect" for drawing powders
+~ 		Console
 = 		Reset pressure and velocity map
 [ 		Decrase brush size
 ] 		Increase brush size 
@@ -74,9 +74,6 @@ Ctrl + Left Alt	Select subject for Specific Element erase
 Ctrl + = 		Reset Electricity 
 
 
-
-
-
 Command Line:
 
 ---------------------------------------------------------------------------
@@ -84,14 +81,24 @@ Command Line:
 scale:1 - Normal window resolution
 scale:2 - Doubled window resolution
 kiosk -   Fullscreen mode
-proxy:server:port (ie, proxy:wwwcache.lancs.ac.uk:8080)
-open:file - Opens the file as a stamp or game save
-
+proxy:<server>:<port> (ie, proxy:wwwcache.lancs.ac.uk:8080)
+open <file> - Opens the file as a stamp or game save
+ddir <directory> - Directory used for saving stamps and preferences
 
 History:
 
 ---------------------------------------------------------------------------
 
+*  Version 65.4
+      o "Sand" effect for drawing powders, activate with "N"
+      o Elements from Maksprog's mod
+              o LIGH - Lightning
+              o DEST - Variation of BOMB
+              o TESC - Tesla coil, creates lightning
+              o EMP - Destroys electronic components
+      o Fix bug with infinite temperature
+      o Fix beta enrolling
+      o Add a new mode to filter, subtract (tmp of 3)
 *  Version 47.3
       o Enhanced visual effects for Portals
       o Glow now has more stimuli (Green: Pressure, Blue: Movement, Red: Heat)
