@@ -114,7 +114,7 @@ int graphics_DUST(GRAPHICS_FUNC_ARGS)
 			*colg = (a*((parts[i].dcolour>>8)&0xFF) + (255-a)**colg) >> 8;
 			*colb = (a*((parts[i].dcolour)&0xFF) + (255-a)**colb) >> 8;
 		}
-		*firea = 64;
+		*firea = 255;
 		*firer = *colr;
 		*fireg = *colg;
 		*fireb = *colb;
@@ -165,7 +165,7 @@ int graphics_WIFI(GRAPHICS_FUNC_ARGS)
 }
 int graphics_PRTI(GRAPHICS_FUNC_ARGS)
 {
-	*firea = 1;
+	*firea = 8;
 	*firer = 255;
 	*fireg = 0;
 	*fireb = 0;
@@ -176,7 +176,7 @@ int graphics_PRTI(GRAPHICS_FUNC_ARGS)
 }
 int graphics_PRTO(GRAPHICS_FUNC_ARGS)
 {
-	*firea = 1;
+	*firea = 8;
 	*firer = 0;
 	*fireg = 0;
 	*fireb = 255;
@@ -204,9 +204,9 @@ int graphics_BIZR(GRAPHICS_FUNC_ARGS) //BIZR, BIZRG, BIZRS
 	if(fabs(parts[i].vx)+fabs(parts[i].vy)>0)
 	{
 		*firea = 255;
-		*fireg = *colg/40 * fabs(parts[i].vx)+fabs(parts[i].vy);
-		*fireb = *colb/40 * fabs(parts[i].vx)+fabs(parts[i].vy);
-		*firer = *colr/40 * fabs(parts[i].vx)+fabs(parts[i].vy);
+		*fireg = *colg/5 * fabs(parts[i].vx)+fabs(parts[i].vy);
+		*fireb = *colb/5 * fabs(parts[i].vx)+fabs(parts[i].vy);
+		*firer = *colr/5 * fabs(parts[i].vx)+fabs(parts[i].vy);
 		*pixel_mode |= FIRE_ADD;
 	}
 	return 0;
@@ -374,7 +374,7 @@ int graphics_SWCH(GRAPHICS_FUNC_ARGS)
 }
 int graphics_THDR(GRAPHICS_FUNC_ARGS)
 {
-	*firea = 20;
+	*firea = 160;
 	*fireg = 192;
 	*fireb = 255;
 	*firer = 144;
@@ -480,9 +480,9 @@ int graphics_HFLM(GRAPHICS_FUNC_ARGS)
 	*colb = (unsigned char)hflm_data[caddress+2];
 	
 	*firea = 255;
-	*firer = *colr/8;
-	*fireg = *colg/8;
-	*fireb = *colb/8;
+	*firer = *colr;
+	*fireg = *colg;
+	*fireb = *colb;
 	
 	*pixel_mode = PMODE_NONE; //Clear default, don't draw pixel
 	*pixel_mode |= FIRE_ADD;
@@ -505,9 +505,9 @@ int graphics_FIRW(GRAPHICS_FUNC_ARGS)
 	}
 	
 	*firea = 255;
-	*firer = *colr/8;
-	*fireg = *colg/8;
-	*fireb = *colb/8;
+	*firer = *colr;
+	*fireg = *colg;
+	*fireb = *colb;
 	
 	*pixel_mode = PMODE_NONE; //Clear default, don't draw pixel
 	*pixel_mode |= FIRE_ADD;

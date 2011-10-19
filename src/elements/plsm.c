@@ -8,9 +8,9 @@ int graphics_PLSM(GRAPHICS_FUNC_ARGS)
 	*colb = (unsigned char)plasma_data[caddress+2];
 	
 	*firea = 255;
-	*firer = *colr/8;
-	*fireg = *colg/8;
-	*fireb = *colb/8;
+	*firer = *colr;
+	*fireg = *colg;
+	*fireb = *colb;
 	
 	*pixel_mode = PMODE_NONE; //Clear default, don't draw pixel
 	*pixel_mode |= FIRE_ADD;

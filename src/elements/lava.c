@@ -8,7 +8,7 @@ int graphics_LAVA(GRAPHICS_FUNC_ARGS)
 	if (*colr>255) *colr = 255;
 	if (*colg>192) *colg = 192;
 	if (*colb>128) *colb = 128;
-	*firea = 5;
+	*firea = 40;
 	*firer = *colr;
 	*fireg = *colg;
 	*fireb = *colb;

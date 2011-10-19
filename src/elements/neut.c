@@ -135,7 +135,7 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 
 int graphics_NEUT(GRAPHICS_FUNC_ARGS)
 {
-	*firea = 15;
+	*firea = 120;
 	*firer = 10;
 	*fireg = 80;
 	*fireb = 120;

@@ -1727,7 +1727,6 @@ int main(int argc, char *argv[])
 	}
 
 	make_kernel();
-	prepare_alpha(CELL, 1.0f);
 
 	stamp_init();
 
@@ -1739,6 +1738,8 @@ int main(int argc, char *argv[])
 	}
 	save_presets(0);
 	http_init(http_proxy_string[0] ? http_proxy_string : NULL);
+
+	prepare_alpha(CELL, 1.0f);
 
 	if (cpu_check())
 	{

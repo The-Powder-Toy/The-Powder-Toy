@@ -26,7 +26,7 @@ unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
-GLuint vidBuf;
+GLuint vidBuf, fireAlpha, glowAlpha, fireProg;
 
 int sandcolour_r = 0;
 int sandcolour_g = 0;
@@ -299,9 +299,9 @@ void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale)
     //glDrawPixels(w,h,GL_BGRA,GL_UNSIGNED_BYTE,src); //Why does this still think it's ABGR?
     glEnable( GL_TEXTURE_2D );
     glBindTexture(GL_TEXTURE_2D, vidBuf);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES+BARSIZE, YRES+MENUSIZE, GL_BGRA, GL_UNSIGNED_BYTE, src);
-
-    glBegin(GL_QUADS);
+	glBegin(GL_QUADS);
     glTexCoord2d(1, 0);
     glVertex3f(XRES+BARSIZE, YRES+MENUSIZE, 1.0);
     glTexCoord2d(0, 0);
@@ -1400,15 +1400,30 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 
 //New function for drawing particles
 #ifdef OGLR
-GLuint va[(YRES*XRES)*2];
-GLfloat ca[(YRES*XRES)*3];
+GLuint fireV[(YRES*XRES)*2];
+GLfloat fireC[(YRES*XRES)*4];
+GLuint smokeV[(YRES*XRES)*2];
+GLfloat smokeC[(YRES*XRES)*4];
+GLuint blobV[(YRES*XRES)*2];
+GLfloat blobC[(YRES*XRES)*4];
+GLuint blurV[(YRES*XRES)*2];
+GLfloat blurC[(YRES*XRES)*4];
+GLuint glowV[(YRES*XRES)*2];
+GLfloat glowC[(YRES*XRES)*4];
+GLuint flatV[(YRES*XRES)*2];
+GLfloat flatC[(YRES*XRES)*4];
 #endif
 void render_parts(pixel *vid)
 {
 	//TODO: Replace cmode with a set of flags
         int deca, decr, decg, decb, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, i, t, nx, ny, x, y, caddress;
 #ifdef OGLR
-        int cv = 0, cc = 0, pc = 0;
+		int cfireV = 0, cfireC = 0, cfire = 0;
+		int csmokeV = 0, csmokeC = 0, csmoke = 0;
+		int cblobV = 0, cblobC = 0, cblob = 0;
+		int cblurV = 0, cblurC = 0, cblur = 0;
+		int cglowV = 0, cglowC = 0, cglow = 0;
+		int cflatV = 0, cflatC = 0, cflat = 0;
 #endif
 	float gradv, flicker;
 	for(i = 0; i<=parts_lastActiveIndex; i++) {
@@ -1470,14 +1485,15 @@ void render_parts(pixel *vid)
 			if(cmode == CM_NOTHING)
 			{
 #ifdef OGLR
-                                va[cv++] = nx;
-                                va[cv++] = ny;
-                                ca[cc++] = ((float)colr)/255.0f;
-                                ca[cc++] = ((float)colg)/255.0f;
-                                ca[cc++] = ((float)colb)/255.0f;
-                                pc++;
+		        flatV[cflatV++] = nx;
+		        flatV[cflatV++] = ny;
+		        flatC[cflatC++] = ((float)colr)/255.0f;
+		        flatC[cflatC++] = ((float)colg)/255.0f;
+		        flatC[cflatC++] = ((float)colb)/255.0f;
+		        flatC[cflatC++] = 1.0f;
+		        cflat++;
 #else
-                                vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
+		        vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
 #endif
 			}
 			else
@@ -1528,10 +1544,29 @@ void render_parts(pixel *vid)
 				//Pixel rendering
 				if(pixel_mode & PMODE_FLAT)
 				{
+#ifdef OGLR
+                    flatV[cflatV++] = nx;
+                    flatV[cflatV++] = ny;
+                    flatC[cflatC++] = ((float)colr)/255.0f;
+                    flatC[cflatC++] = ((float)colg)/255.0f;
+                    flatC[cflatC++] = ((float)colb)/255.0f;
+                    flatC[cflatC++] = 1.0f;
+                    cflat++;
+#else
 					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
+#endif
 				}
 				if(pixel_mode & PMODE_BLOB)
 				{
+#ifdef OGLR
+                    blobV[cblobV++] = nx;
+                    blobV[cblobV++] = ny;
+                    blobC[cblobC++] = ((float)colr)/255.0f;
+                    blobC[cblobC++] = ((float)colg)/255.0f;
+                    blobC[cblobC++] = ((float)colb)/255.0f;
+                    blobC[cblobC++] = 1.0f;
+                    cblob++;
+#else
 					blendpixel(vid, nx+1, ny, colr, colg, colb, 223);
 					blendpixel(vid, nx-1, ny, colr, colg, colb, 223);
 					blendpixel(vid, nx, ny+1, colr, colg, colb, 223);
@@ -1541,9 +1576,19 @@ void render_parts(pixel *vid)
 					blendpixel(vid, nx-1, ny-1, colr, colg, colb, 112);
 					blendpixel(vid, nx+1, ny+1, colr, colg, colb, 112);
 					blendpixel(vid, nx-1, ny+1, colr, colg, colb, 112);
+#endif
 				}
 				if(pixel_mode & PMODE_GLOW)
 				{
+#ifdef OGLR
+                    glowV[cglowV++] = nx;
+                    glowV[cglowV++] = ny;
+                    glowC[cglowC++] = ((float)colr)/255.0f;
+                    glowC[cglowC++] = ((float)colg)/255.0f;
+                    glowC[cglowC++] = ((float)colb)/255.0f;
+                    glowC[cglowC++] = 1.0f;
+                    cglow++;
+#else
 					addpixel(vid, nx, ny, colr, colg, colb, 192);
 					addpixel(vid, nx+1, ny, colr, colg, colb, 96);
 					addpixel(vid, nx-1, ny, colr, colg, colb, 96);
@@ -1564,9 +1609,19 @@ void render_parts(pixel *vid)
 							addpixel(vid, nx-x, ny-y, colr, colg, colb, 5);
 						}
 					}
+#endif
 				}
 				if(pixel_mode & PMODE_BLUR)
 				{
+#ifdef OGLR
+                    blurV[cblurV++] = nx;
+                    blurV[cblurV++] = ny;
+                    blurC[cblurC++] = ((float)colr)/255.0f;
+                    blurC[cblurC++] = ((float)colg)/255.0f;
+                    blurC[cblurC++] = ((float)colb)/255.0f;
+                    blurC[cblurC++] = 1.0f;
+                    cblur++;
+#else
 					for (x=-3; x<4; x++)
 					{
 						for (y=-3; y<4; y++)
@@ -1579,6 +1634,7 @@ void render_parts(pixel *vid)
 								blendpixel(vid, x+nx, y+ny, colr, colg, colb, 10);
 						}
 					}
+#endif
 				}
 				if(pixel_mode & PMODE_SPARK)
 				{
@@ -1640,6 +1696,16 @@ void render_parts(pixel *vid)
 				//Fire effects
 				if(firea && (pixel_mode & FIRE_BLEND))
 				{
+#ifdef OGLR
+                    smokeV[csmokeV++] = nx;
+                    smokeV[csmokeV++] = ny;
+                    smokeC[csmokeC++] = ((float)firer)/255.0f;
+                    smokeC[csmokeC++] = ((float)fireg)/255.0f;
+                    smokeC[csmokeC++] = ((float)fireb)/255.0f;
+                    smokeC[csmokeC++] = ((float)firea)/255.0f;
+                    csmoke++;
+#else
+					firea /= 8;
 					if(cmode==CM_FIRE || cmode==CM_BLOB || cmode==CM_FANCY)
 					{
 						fire_r[ny/CELL][nx/CELL] = (firea*firer + (255-firea)*fire_r[ny/CELL][nx/CELL]) >> 8;
@@ -1660,9 +1726,20 @@ void render_parts(pixel *vid)
 							}
 						}
 					}
+#endif
 				}
 				if(firea && (pixel_mode & FIRE_ADD))
 				{
+#ifdef OGLR
+                    fireV[cfireV++] = nx;
+                    fireV[cfireV++] = ny;
+                    fireC[cfireC++] = ((float)firer)/255.0f;
+                    fireC[cfireC++] = ((float)fireg)/255.0f;
+                    fireC[cfireC++] = ((float)fireb)/255.0f;
+                    fireC[cfireC++] = ((float)firea)/255.0f;
+                    cfire++;
+#else
+					firea /= 8;
 					if(cmode==CM_FIRE || cmode==CM_BLOB || cmode==CM_FANCY)
 					{
 						firer = ((firea*firer) >> 8) + fire_r[ny/CELL][nx/CELL];
@@ -1693,25 +1770,140 @@ void render_parts(pixel *vid)
 							}
 						}
 					}
+#endif
 				}
 			}
 		}
         }
-#ifdef OGLR
-        glScalef(1,-1,1);
+#ifdef OGLR		
+		//Set coord offset 
+		glScalef(1,-1,1);
         glTranslatef(0, -(YRES+MENUSIZE), 0);
+        
+        //Go into array mode
         glEnableClientState(GL_COLOR_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
 
-        glColorPointer(3, GL_FLOAT, 0, &ca[0]);
-        glVertexPointer(2, GL_INT, 0, &va[0]);
+		if(cflat)
+		{
+			// -- BEGIN FLAT -- //
+			//Set point size (size of fire texture)
+			glPointSize(1.0f);
 
-        glDrawArrays(GL_POINTS, 0, pc);
+		    glColorPointer(4, GL_FLOAT, 0, &flatC[0]);
+		    glVertexPointer(2, GL_INT, 0, &flatV[0]);
+
+		    glDrawArrays(GL_POINTS, 0, cflat);
+		    
+		    //Clear some stuff we set
+		    // -- END FLAT -- //
+        }
+        
+        if(cglow)
+        {
+        	// -- BEGIN GLOW -- //
+			//Start and prepare fire program
+			glEnable(GL_TEXTURE_2D);
+			glUseProgram(fireProg);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, glowAlpha);
+			glUniform1i(glGetUniformLocation(fireProg, "fireAlpha"), 0);
+		
+			//Make sure we can use texture coords on points
+			glEnable(GL_POINT_SPRITE);
+			glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+			glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+		
+			//Set point size (size of fire texture)
+			glPointSize(11.0f);
+			
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+			glColorPointer(4, GL_FLOAT, 0, &glowC[0]);
+			glVertexPointer(2, GL_INT, 0, &glowV[0]);
+
+			glDrawArrays(GL_POINTS, 0, cglow);
+			
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		    
+		    //Clear some stuff we set
+		    glDisable(GL_POINT_SPRITE);
+			glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
+			glUseProgram(0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glDisable(GL_TEXTURE_2D);
+		    // -- END GLOW -- //
+        }
+        
+        if(cblob)
+		{
+		    // -- BEGIN BLOB -- //
+			glEnable( GL_POINT_SMOOTH ); //Blobs!
+			glPointSize(2.5f);
+
+		    glColorPointer(4, GL_FLOAT, 0, &blobC[0]);
+		    glVertexPointer(2, GL_INT, 0, &blobV[0]);
+
+		    glDrawArrays(GL_POINTS, 0, cblob);
+		    
+		    //Clear some stuff we set
+		    glDisable( GL_POINT_SMOOTH );
+		    // -- END BLOB -- //
+		}
+		
+		if(cfire || csmoke)
+		{
+			// -- BEGIN FIRE -- //
+			//Start and prepare fire program
+			glEnable(GL_TEXTURE_2D);
+			glUseProgram(fireProg);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, fireAlpha);
+			glUniform1i(glGetUniformLocation(fireProg, "fireAlpha"), 0);
+		
+			//Make sure we can use texture coords on points
+			glEnable(GL_POINT_SPRITE);
+			glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+			glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+		
+			//Set point size (size of fire texture)
+			glPointSize(CELL*3);
+			
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+			if(cfire)
+			{
+				glColorPointer(4, GL_FLOAT, 0, &fireC[0]);
+				glVertexPointer(2, GL_INT, 0, &fireV[0]);
+
+				glDrawArrays(GL_POINTS, 0, cfire);
+			}
+			
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			
+			if(csmoke)
+			{
+				glColorPointer(4, GL_FLOAT, 0, &smokeC[0]);
+				glVertexPointer(2, GL_INT, 0, &smokeV[0]);
+
+				glDrawArrays(GL_POINTS, 0, csmoke);
+			}
+		    
+		    //Clear some stuff we set
+		    glDisable(GL_POINT_SPRITE);
+			glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
+			glUseProgram(0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glDisable(GL_TEXTURE_2D);
+		    // -- END FIRE -- //
+        }
 
         glDisableClientState(GL_COLOR_ARRAY);
-        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);     
+        
+        //Reset coords/offset
         glTranslatef(0, YRES+MENUSIZE, 0);
-        glScalef(1,-1,1);
+        glScalef(1,-1,1);       
 #endif
 }
 
@@ -2208,9 +2400,11 @@ void render_fire(pixel *vid)
 void prepare_alpha(int size, float intensity)
 {
 	//TODO: implement size
-	int x,y,i,j;
+	int x,y,i,j,c;
 	float multiplier = 255.0f*intensity;
 	float temp[CELL*3][CELL*3];
+	float fire_alphaf[CELL*3][CELL*3];
+	float glow_alphaf[11][11];
 	memset(temp, 0, sizeof(temp));
 	for (x=0; x<CELL; x++)
 		for (y=0; y<CELL; y++)
@@ -2220,6 +2414,48 @@ void prepare_alpha(int size, float intensity)
 	for (x=0; x<CELL*3; x++)
 		for (y=0; y<CELL*3; y++)
 			fire_alpha[y][x] = (int)(multiplier*temp[y][x]/(CELL*CELL));
+			
+#ifdef OGLR
+	for (x=0; x<CELL*3; x++)
+		for (y=0; y<CELL*3; y++)
+		{
+			fire_alphaf[y][x] = intensity*temp[y][x]/((float)(CELL*CELL));
+		}
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, fireAlpha);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, CELL*3, CELL*3, GL_ALPHA, GL_FLOAT, fire_alphaf);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+	
+	memset(glow_alphaf, 0, sizeof(glow_alphaf));
+	
+	c = 5;
+	
+	glow_alphaf[c][c-1] = 0.4f;
+	glow_alphaf[c][c+1] = 0.4f;
+	glow_alphaf[c-1][c] = 0.4f;
+	glow_alphaf[c+1][c] = 0.4f;
+	for (x = 1; x < 6; x++) {
+		glow_alphaf[c][c-x] += 0.02f;
+		glow_alphaf[c][c+x] += 0.02f;
+		glow_alphaf[c-x][c] += 0.02f;
+		glow_alphaf[c+x][c] += 0.02f;
+		for (y = 1; y < 6; y++) {
+			if(x + y > 7)
+				continue;
+			glow_alphaf[c+x][c-y] += 0.02f;
+			glow_alphaf[c-x][c+y] += 0.02f;
+			glow_alphaf[c+x][c+y] += 0.02f;
+			glow_alphaf[c-x][c-y] += 0.02f;
+		}
+	}
+	
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, glowAlpha);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 11, 11, GL_ALPHA, GL_FLOAT, glow_alphaf);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+#endif
 }
 
 pixel *render_packed_rgb(void *image, int width, int height, int cmp_size)
@@ -2747,6 +2983,30 @@ int sdl_open(void)
 
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);
+        
+		glEnable(GL_TEXTURE_2D);
+		glGenTextures(1, &fireAlpha);
+		glBindTexture(GL_TEXTURE_2D, fireAlpha);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, CELL*3, CELL*3, 0, GL_ALPHA, GL_FLOAT, NULL);
+
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
+		
+		glEnable(GL_TEXTURE_2D);
+		glGenTextures(1, &glowAlpha);
+		glBindTexture(GL_TEXTURE_2D, glowAlpha);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 11, 11, 0, GL_ALPHA, GL_FLOAT, NULL);
+
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
+        
+        loadShaders();
 #else
 #ifdef PIX16
 	if (kiosk_enable)
@@ -2779,6 +3039,26 @@ int sdl_open(void)
 	sdl_wminfo.info.x11.unlock_func();
 #endif
 	return 1;
+}
+
+void loadShaders()
+{
+	GLuint vsize, fsize, vertexShader, fragmentShader;
+	const char *vertex = file_load("test.vert", &vsize), * fragment = file_load("test.frag", &fsize);
+
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	glShaderSource( vertexShader, 1, &vertex, &vsize);
+	glShaderSource( fragmentShader, 1, &fragment, &fsize);
+
+	glCompileShader( vertexShader );
+	glCompileShader( fragmentShader );
+
+	fireProg = glCreateProgram();
+	glAttachShader( fireProg, vertexShader );
+	glAttachShader( fireProg, fragmentShader );
+	glLinkProgram( fireProg );
 }
 
 int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy, int line_x, int line_y)
