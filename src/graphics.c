@@ -15,6 +15,7 @@
 #include <defines.h>
 #include <air.h>
 #include <powder.h>
+#define INCLUDE_SHADERS
 #include <graphics.h>
 #include <powdergraphics.h>
 #define INCLUDE_FONTDATA
@@ -26,7 +27,7 @@ unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
-GLuint vidBuf, airBuf, fireAlpha, glowAlpha, fireProg;
+GLuint vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg;
 
 int sandcolour_r = 0;
 int sandcolour_g = 0;
@@ -1824,7 +1825,7 @@ void render_parts(pixel *vid)
 		    // -- END FLAT -- //
         }
         
-        if(cglow)
+        if(cglow || cblur)
         {
         	// -- BEGIN GLOW -- //
 			//Start and prepare fire program
@@ -1846,12 +1847,27 @@ void render_parts(pixel *vid)
 			
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-			glColorPointer(4, GL_FLOAT, 0, &glowC[0]);
-			glVertexPointer(2, GL_INT, 0, &glowV[0]);
-
-			glDrawArrays(GL_POINTS, 0, cglow);
+			if(cglow)
+			{
+				glColorPointer(4, GL_FLOAT, 0, &glowC[0]);
+				glVertexPointer(2, GL_INT, 0, &glowV[0]);
+	
+				glDrawArrays(GL_POINTS, 0, cglow);
+			}
+			
+			glPointSize(7.0f);
 			
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			
+			if(cblur)
+			{
+				glBindTexture(GL_TEXTURE_2D, blurAlpha);
+			
+				glColorPointer(4, GL_FLOAT, 0, &blurC[0]);
+				glVertexPointer(2, GL_INT, 0, &blurV[0]);
+
+				glDrawArrays(GL_POINTS, 0, cblur);
+			}
 		    
 		    //Clear some stuff we set
 		    glDisable(GL_POINT_SPRITE);
@@ -2432,6 +2448,7 @@ void prepare_alpha(int size, float intensity)
 	float temp[CELL*3][CELL*3];
 	float fire_alphaf[CELL*3][CELL*3];
 	float glow_alphaf[11][11];
+	float blur_alphaf[7][7];
 	memset(temp, 0, sizeof(temp));
 	for (x=0; x<CELL; x++)
 		for (y=0; y<CELL; y++)
@@ -2480,6 +2497,27 @@ void prepare_alpha(int size, float intensity)
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, glowAlpha);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 11, 11, GL_ALPHA, GL_FLOAT, glow_alphaf);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+	
+	c = 3;
+	
+	for (x=-3; x<4; x++)
+	{
+		for (y=-3; y<4; y++)
+		{
+			if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
+				blur_alphaf[c+x][c-y] = 0.11f;
+			if (abs(x)+abs(y) <=3 && abs(x)+abs(y))
+				blur_alphaf[c+x][c-y] = 0.08f;
+			if (abs(x)+abs(y) == 2)
+				blur_alphaf[c+x][c-y] = 0.04f;
+		}
+	}
+	
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, blurAlpha);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 7, 7, GL_ALPHA, GL_FLOAT, blur_alphaf);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 #endif
@@ -3044,6 +3082,17 @@ int sdl_open(void)
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable(GL_TEXTURE_2D);
+		
+		glEnable(GL_TEXTURE_2D);
+		glGenTextures(1, &blurAlpha);
+		glBindTexture(GL_TEXTURE_2D, blurAlpha);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 7, 7, 0, GL_ALPHA, GL_FLOAT, NULL);
+
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
         
         loadShaders();
 #else
@@ -3083,7 +3132,7 @@ int sdl_open(void)
 void loadShaders()
 {
 	GLuint vsize, fsize, vertexShader, fragmentShader;
-	const char *vertex = file_load("test.vert", &vsize), * fragment = file_load("test.frag", &fsize);
+	//const char *vertex = file_load("test.vert", &vsize), * fragment = file_load("test.frag", &fsize);
 
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);

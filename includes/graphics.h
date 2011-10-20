@@ -191,3 +191,16 @@ void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale);
 #endif
 
 #endif
+
+#ifdef INCLUDE_SHADERS
+const char * fragment = "uniform sampler2D fireAlpha;\
+void main () {\
+    vec4 texColor = texture2D(fireAlpha, gl_PointCoord);\
+    gl_FragColor = vec4(gl_Color.rgb, texColor.a*gl_Color.a);\
+}";
+const char * vertex = "void main(void)\
+{\
+   gl_Position = ftransform();;\
+   gl_FrontColor = gl_Color;\
+}";
+#endif

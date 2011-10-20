@@ -73,11 +73,10 @@ int graphics_DEUT(GRAPHICS_FUNC_ARGS)
 {
 	if(parts[i].life>=700)
 	{
-		*firea = 20;
-		*firer = *fireg = *fireb = 255;
-	
-		*pixel_mode |= FIRE_ADD;
-		*pixel_mode &= ~PMODE;
+		*colr += parts[i].life*1;
+		*colg += parts[i].life*2;
+		*colb += parts[i].life*3;
+		*pixel_mode |= PMODE_GLOW;
 	}
 	else
 	{
