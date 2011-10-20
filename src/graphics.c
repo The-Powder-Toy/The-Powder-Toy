@@ -1539,7 +1539,7 @@ void render_parts(pixel *vid)
 				case CM_PRESS:
 				case CM_LIFE:
 				case CM_GRAD:
-					if(pixel_mode & FIRE_ADD) pixel_mode = (pixel_mode & ~FIRE_ADD) | PMODE_GLOW;
+					if(pixel_mode & FIRE_ADD) pixel_mode = (pixel_mode & ~FIRE_ADD) | PMODE_GLOW | PMODE_FLAT;
 					if(pixel_mode & FIRE_BLEND) pixel_mode = (pixel_mode & ~FIRE_BLEND) | PMODE_BLUR;
 				case CM_FIRE:
 					if(pixel_mode & PMODE_BLOB) pixel_mode = (pixel_mode & ~PMODE_BLOB) | PMODE_FLAT;
