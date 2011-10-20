@@ -1784,7 +1784,7 @@ int main(int argc, char *argv[])
 #ifdef OGLR
 		if (cmode==CM_PERS)//save background for persistent, then clear
 		{
-			clearScreen(1.0f);
+			clearScreen(0.01f);
 			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
         }
 		else //clear screen every frame

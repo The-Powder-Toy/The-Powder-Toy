@@ -27,7 +27,7 @@ unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
-GLuint vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg;
+GLuint vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg, partsFboTex, partsFbo;
 
 int sandcolour_r = 0;
 int sandcolour_g = 0;
@@ -291,6 +291,10 @@ pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
 void clearScreen(float alpha)
 {
     glClearColor(0.0f, 0.0f, 0.0f, alpha);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -1804,7 +1808,11 @@ void render_parts(pixel *vid)
 #ifdef OGLR		
 		//Set coord offset 
 		glScalef(1,-1,1);
-        glTranslatef(0, -(YRES+MENUSIZE), 0);
+        glTranslatef(0, -YRES/*-(YRES+MENUSIZE)*/, 0);
+        
+        //Render to the particle FBO
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+		//glDrawBuffers(1, fboBuff);
         
         //Go into array mode
         glEnableClientState(GL_COLOR_ARRAY);
@@ -1900,7 +1908,7 @@ void render_parts(pixel *vid)
 			//Start and prepare fire program
 			glEnable(GL_TEXTURE_2D);
 			glUseProgram(fireProg);
-			glActiveTexture(GL_TEXTURE0);
+			//glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, fireAlpha);
 			glUniform1i(glGetUniformLocation(fireProg, "fireAlpha"), 0);
 		
@@ -1943,6 +1951,29 @@ void render_parts(pixel *vid)
 
         glDisableClientState(GL_COLOR_ARRAY);
         glDisableClientState(GL_VERTEX_ARRAY);     
+        
+        //Reset FBO
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glTranslatef(0, -MENUSIZE, 0);
+        
+        //TODO: Do shit on the fbo like gravity lensing or turning stickmen into turds here  
+        
+        //Drawing the FBO onto the screen sounds like a cool idea now
+		glEnable( GL_TEXTURE_2D );
+		glBindTexture(GL_TEXTURE_2D, partsFboTex);
+		//glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_BGRA, GL_UNSIGNED_BYTE, air_buf);
+		glBegin(GL_QUADS);
+		glTexCoord2d(1, 0);
+		glVertex3f(XRES*sdl_scale, (YRES)*sdl_scale, 1.0);
+		glTexCoord2d(0, 0);
+		glVertex3f(0, (YRES)*sdl_scale, 1.0);
+		glTexCoord2d(0, 1);
+		glVertex3f(0, 0, 1.0);
+		glTexCoord2d(1, 1);
+		glVertex3f(XRES*sdl_scale, 0, 1.0);
+		glEnd();
+		glDisable( GL_TEXTURE_2D );
         
         //Reset coords/offset
         glTranslatef(0, YRES+MENUSIZE, 0);
@@ -3038,7 +3069,25 @@ int sdl_open(void)
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+		//FBO Texture
+		glEnable(GL_TEXTURE_2D);
+		glGenTextures(1, &partsFboTex);
+		glBindTexture(GL_TEXTURE_2D, partsFboTex);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, XRES, YRES, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		 
+		//FBO
+		glGenFramebuffers(1, &partsFbo);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+		glEnable(GL_BLEND);
+		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, partsFboTex, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // Reset framebuffer binding
+		glDisable(GL_TEXTURE_2D);
 
+		//Texture for main UI
         glEnable(GL_TEXTURE_2D);
         glGenTextures(1, &vidBuf);
         glBindTexture(GL_TEXTURE_2D, vidBuf);
@@ -3050,6 +3099,7 @@ int sdl_open(void)
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);
         
+        //Texture for air to be drawn
         glEnable(GL_TEXTURE_2D);
         glGenTextures(1, &airBuf);
         glBindTexture(GL_TEXTURE_2D, airBuf);
@@ -3061,6 +3111,7 @@ int sdl_open(void)
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);
         
+        //Fire alpha texture
 		glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &fireAlpha);
 		glBindTexture(GL_TEXTURE_2D, fireAlpha);
@@ -3072,6 +3123,7 @@ int sdl_open(void)
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable(GL_TEXTURE_2D);
 		
+		//Glow alpha texture
 		glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &glowAlpha);
 		glBindTexture(GL_TEXTURE_2D, glowAlpha);
@@ -3083,6 +3135,8 @@ int sdl_open(void)
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable(GL_TEXTURE_2D);
 		
+		
+		//Blur Alpha texture
 		glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &blurAlpha);
 		glBindTexture(GL_TEXTURE_2D, blurAlpha);
