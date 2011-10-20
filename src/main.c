@@ -1781,6 +1781,22 @@ int main(int argc, char *argv[])
 				gravity_mask();
 			gravwl_timeout--;
 		}
+#ifdef OGLR
+		if (cmode==CM_PERS)//save background for persistent, then clear
+		{
+			clearScreen(1.0f);
+			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+        }
+		else //clear screen every frame
+		{
+            clearScreen(1.0f);
+			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+			if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK || (cmode==CM_HEAT && aheat_enable))//air only gets drawn in these modes
+			{
+				draw_air(part_vbuf);
+			}
+		}
+#else
 		if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK || (cmode==CM_HEAT && aheat_enable))//air only gets drawn in these modes
 		{
 			draw_air(part_vbuf);
@@ -1789,14 +1805,12 @@ int main(int argc, char *argv[])
 		{
 			memcpy(part_vbuf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
 			memset(part_vbuf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
-                }
+        }
 		else //clear screen every frame
 		{
-#ifdef OGLR
-                    clearScreen(1.0f);
-#endif
-                    memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		}
+#endif
 
 		//Can't be too sure (Limit the cursor size)
 		if (bsx>1180)
@@ -1922,8 +1936,11 @@ int main(int argc, char *argv[])
 			}
 			fire_fc = (fire_fc+1) % 3;
 		}
+		
+#ifndef OGLR
 		if (cmode==CM_FIRE||cmode==CM_BLOB||cmode==CM_FANCY)
 			render_fire(part_vbuf);
+#endif
 
 		render_signs(part_vbuf);
 

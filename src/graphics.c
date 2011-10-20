@@ -26,7 +26,7 @@ unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
-GLuint vidBuf, fireAlpha, glowAlpha, fireProg;
+GLuint vidBuf, airBuf, fireAlpha, glowAlpha, fireProg;
 
 int sandcolour_r = 0;
 int sandcolour_g = 0;
@@ -303,13 +303,13 @@ void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale)
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES+BARSIZE, YRES+MENUSIZE, GL_BGRA, GL_UNSIGNED_BYTE, src);
 	glBegin(GL_QUADS);
     glTexCoord2d(1, 0);
-    glVertex3f(XRES+BARSIZE, YRES+MENUSIZE, 1.0);
+    glVertex3f((XRES+BARSIZE)*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
     glTexCoord2d(0, 0);
-    glVertex3f(0, YRES+MENUSIZE, 1.0);
+    glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
     glTexCoord2d(0, 1);
     glVertex3f(0, 0, 1.0);
     glTexCoord2d(1, 1);
-    glVertex3f(XRES+BARSIZE, 0, 1.0);
+    glVertex3f((XRES+BARSIZE)*sdl_scale, 0, 1.0);
     glEnd();
 
     glDisable( GL_TEXTURE_2D );
@@ -718,8 +718,9 @@ inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 		r = (a*r + (255-a)*PIXR(t)) >> 8;
 		g = (a*g + (255-a)*PIXG(t)) >> 8;
 		b = (a*b + (255-a)*PIXB(t)) >> 8;
+		a = a > PIXA(t) ? a : PIXA(t);
 	}
-	vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
+	vid[y*(XRES+BARSIZE)+x] = PIXRGBA(r,g,b,a);
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
@@ -902,9 +903,13 @@ void fillrect(pixel *vid, int x, int y, int w, int h, int r, int g, int b, int a
 
 void clearrect(pixel *vid, int x, int y, int w, int h)
 {
+#ifdef OGLR
+	fillrect(vid, x, y, w, h, 0, 0, 0, 255);
+#else
 	int i;
 	for (i=1; i<h; i++)
 		memset(vid+(x+1+(XRES+BARSIZE)*(y+i)), 0, PIXELSIZE*(w-1));
+#endif
 }
 //draws a line of dots, where h is the height. (why is this even here)
 void drawdots(pixel *vid, int x, int y, int h, int r, int g, int b, int a)
@@ -1078,8 +1083,9 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 		r = (a*r + (255-a)*PIXR(t)) >> 8;
 		g = (a*g + (255-a)*PIXG(t)) >> 8;
 		b = (a*b + (255-a)*PIXB(t)) >> 8;
+		a = a > PIXA(t) ? a : PIXA(t);
 	}
-	vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
+	vid[y*(XRES+BARSIZE)+x] = PIXRGBA(r,g,b,a);
 }
 
 void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag)
@@ -1098,15 +1104,13 @@ void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag)
 		drawtext(vid_buf, x+3, y+2, t, 255, 255, 255, 255);
 	}
 }
-
+pixel air_buf[YRES/CELL][XRES/CELL];
 void draw_air(pixel *vid)
 {
 	int x, y, i, j;
 	pixel c;
-
 	if (cmode == CM_PERS)//this should never happen anyway
 		return;
-
 	for (y=0; y<YRES/CELL; y++)
 		for (x=0; x<XRES/CELL; x++)
 		{
@@ -1164,10 +1168,31 @@ void draw_air(pixel *vid)
 					c  = PIXRGB(r, g, b);
 				}
 			}
+#ifdef OGLR
+			air_buf[y][x] = c;
+#else
 			for (j=0; j<CELL; j++)//draws the colors
 				for (i=0; i<CELL; i++)
 					vid[(x*CELL+i) + (y*CELL+j)*(XRES+BARSIZE)] = c;
+#endif
 		}
+#ifdef OGLR
+    glEnable( GL_TEXTURE_2D );
+    glBindTexture(GL_TEXTURE_2D, airBuf);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_BGRA, GL_UNSIGNED_BYTE, air_buf);
+	glBegin(GL_QUADS);
+    glTexCoord2d(1, 0);
+    glVertex3f(XRES*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
+    glTexCoord2d(0, 0);
+    glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
+    glTexCoord2d(0, 1);
+    glVertex3f(0, MENUSIZE*sdl_scale, 1.0);
+    glTexCoord2d(1, 1);
+    glVertex3f(XRES*sdl_scale, MENUSIZE*sdl_scale, 1.0);
+    glEnd();
+    glDisable( GL_TEXTURE_2D );
+#endif
 }
 
 void draw_grav_zones(pixel * vid)
@@ -1808,6 +1833,8 @@ void render_parts(pixel *vid)
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, glowAlpha);
 			glUniform1i(glGetUniformLocation(fireProg, "fireAlpha"), 0);
+			
+			glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
 		
 			//Make sure we can use texture coords on points
 			glEnable(GL_POINT_SPRITE);
@@ -2962,13 +2989,14 @@ int sdl_open(void)
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 
-        glOrtho(0 ,(XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
+        glOrtho(0, (XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
-        glRasterPos2i(0, (YRES+MENUSIZE)*sdl_scale);
+        glRasterPos2i(0, (YRES+MENUSIZE));
         glPixelZoom(sdl_scale, -sdl_scale);
+		//glPixelZoom(1, -1);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2977,6 +3005,17 @@ int sdl_open(void)
         glGenTextures(1, &vidBuf);
         glBindTexture(GL_TEXTURE_2D, vidBuf);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES+BARSIZE, YRES+MENUSIZE, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
+        
+        glEnable(GL_TEXTURE_2D);
+        glGenTextures(1, &airBuf);
+        glBindTexture(GL_TEXTURE_2D, airBuf);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
 
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
