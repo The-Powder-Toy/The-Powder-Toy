@@ -2416,6 +2416,51 @@ int color_menu_ui(pixel *vid_buf, int i, int *cr, int *cg, int *cb, int b, int b
 	return 0;
 }
 
+int quickoptions_tooltip_fade = 0;
+char * quickoptions_tooltip;
+int quickoptions_tooltip_y = 0;
+void quickoptions_menu(pixel *vid_buf, int b, int bq, int x, int y)
+{
+	int i = 0;
+	if(quickoptions_tooltip_fade && quickoptions_tooltip)
+	{
+		drawtext_outline(vid_buf, (XRES - 5) - textwidth(quickoptions_tooltip), quickoptions_tooltip_y, quickoptions_tooltip, 255, 255, 255, quickoptions_tooltip_fade*20, 0, 0, 0, quickoptions_tooltip_fade*15);
+		quickoptions_tooltip_fade--;
+	}
+	while(quickmenu[i].icon!=NULL)
+	{
+		if(quickmenu[i].type == QM_TOGGLE)
+		{
+			drawrect(vid_buf, (XRES+BARSIZE)-16, (i*16)+1, 14, 14, 255, 255, 255, 255);
+			if(*(quickmenu[i].variable))
+			{
+				fillrect(vid_buf, (XRES+BARSIZE)-16, (i*16)+1, 14, 14, 255, 255, 255, 255);
+				drawtext(vid_buf, (XRES+BARSIZE)-11, (i*16)+5, quickmenu[i].icon, 0, 0, 0, 255);
+			}
+			else
+			{
+				fillrect(vid_buf, (XRES+BARSIZE)-16, (i*16)+1, 14, 14, 0, 0, 0, 255);
+				drawtext(vid_buf, (XRES+BARSIZE)-11, (i*16)+5, quickmenu[i].icon, 255, 255, 255, 255);
+			}
+			if(x >= (XRES+BARSIZE)-16 && x <= (XRES+BARSIZE)-2 && y >= (i*16)+1 && y <= (i*16)+15)
+			{
+				quickoptions_tooltip_fade+=2;
+				quickoptions_tooltip = quickmenu[i].name;
+				quickoptions_tooltip_y = (i*16)+5;
+				if(b && !bq)
+				{
+					*(quickmenu[i].variable) = !(*(quickmenu[i].variable));
+				}
+			}
+		}
+		i++;
+	}
+	if(quickoptions_tooltip_fade > 12)
+		quickoptions_tooltip_fade = 12;
+	if(quickoptions_tooltip_fade < 0)
+		quickoptions_tooltip_fade = 0;
+}
+
 int sdl_poll(void)
 {
 	SDL_Event event;

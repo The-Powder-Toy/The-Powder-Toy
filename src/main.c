@@ -2613,6 +2613,8 @@ int main(int argc, char *argv[])
 		luacon_step(x/sdl_scale, y/sdl_scale,sl,sr);
 #endif
 
+		quickoptions_menu(vid_buf, b, bq, x, y);
+
 		for (i=0; i<SC_TOTAL; i++)//draw all the menu sections
 		{
 			draw_menu(vid_buf, i, active_menu);
