@@ -1519,22 +1519,23 @@ void draw_grav_zones(pixel * vid)
 
 void draw_grav(pixel *vid)
 {
-	int x, y, i;
+	int x, y, i, ca;
 	float nx, ny, dist;
 
 	for (y=0; y<YRES/CELL; y++)
 	{
 		for (x=0; x<XRES/CELL; x++)
 		{
-			if(fabsf(gravpf[(y*XRES)+x]) <= 0.001f && fabsf(gravyf[((y*CELL)*XRES)+(x*CELL)]) <= 0.001f)
+			ca = ((y*CELL)*XRES)+(x*CELL);
+			if(fabsf(gravpf[ca]) <= 0.001f && fabsf(gravyf[ca]) <= 0.001f)
 				continue;
 			nx = x*CELL;
 			ny = y*CELL;
-			dist = fabsf(gravyf[(y*XRES)+x])+fabsf(gravxf[(y*XRES)+x]);
+			dist = fabsf(gravyf[ca])+fabsf(gravxf[ca]);
 			for(i = 0; i < 4; i++)
 			{
-				nx -= gravxf[((y*CELL)*XRES)+(x*CELL)]*0.5f;
-				ny -= gravyf[((y*CELL)*XRES)+(x*CELL)]*0.5f;
+				nx -= gravxf[ca]*0.5f;
+				ny -= gravyf[ca]*0.5f;
 				addpixel(vid, (int)(nx+0.5f), (int)(ny+0.5f), 255, 255, 255, (int)(dist*20.0f));
 			}
 		}
