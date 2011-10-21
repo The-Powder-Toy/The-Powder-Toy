@@ -1812,7 +1812,6 @@ void render_parts(pixel *vid)
         
         //Render to the particle FBO
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
-		//glDrawBuffers(1, fboBuff);
         
         //Go into array mode
         glEnableClientState(GL_COLOR_ARRAY);
@@ -1961,8 +1960,7 @@ void render_parts(pixel *vid)
         //Drawing the FBO onto the screen sounds like a cool idea now
 		glEnable( GL_TEXTURE_2D );
 		glBindTexture(GL_TEXTURE_2D, partsFboTex);
-		//glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_BGRA, GL_UNSIGNED_BYTE, air_buf);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glBegin(GL_QUADS);
 		glTexCoord2d(1, 0);
 		glVertex3f(XRES*sdl_scale, (YRES)*sdl_scale, 1.0);
