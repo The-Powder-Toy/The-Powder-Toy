@@ -2837,6 +2837,8 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 {
 	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;//n;
 
+	if (lockplace==1)
+		return 1;
 	int wall = c - 100;
 	if (c==SPC_WIND){
 		return 0;
