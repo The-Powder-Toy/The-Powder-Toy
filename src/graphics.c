@@ -27,7 +27,7 @@ unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
-GLuint vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg, partsFboTex, partsFbo;
+GLuint vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg, partsFboTex, partsFbo, lensProg, partsTFX, partsTFY;
 
 int sandcolour_r = 0;
 int sandcolour_g = 0;
@@ -1955,11 +1955,26 @@ void render_parts(pixel *vid)
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         glTranslatef(0, -MENUSIZE, 0);
         
-        //TODO: Do shit on the fbo like gravity lensing or turning stickmen into turds here  
+        //TODO: Do shit on the fbo like gravity lensing or turning stickmen into turds here
         
         //Drawing the FBO onto the screen sounds like a cool idea now
 		glEnable( GL_TEXTURE_2D );
+		glUseProgram(lensProg);
+		glActiveTexture(GL_TEXTURE0);			
 		glBindTexture(GL_TEXTURE_2D, partsFboTex);
+		glUniform1i(glGetUniformLocation(lensProg, "pTex"), 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, partsTFX);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_RED, GL_FLOAT, gravxf);
+		glUniform1i(glGetUniformLocation(lensProg, "tfX"), 1);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, partsTFY);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_GREEN, GL_FLOAT, gravyf);
+		glUniform1i(glGetUniformLocation(lensProg, "tfY"), 2);
+		glActiveTexture(GL_TEXTURE0);
+		//glUniform1f(glGetUniformLocation(lensProg, "xres"), (float)XRES);
+		//glUniform1f(glGetUniformLocation(lensProg, "yres"), (float)YRES);
+		
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glBegin(GL_QUADS);
 		glTexCoord2d(1, 0);
@@ -1971,6 +1986,8 @@ void render_parts(pixel *vid)
 		glTexCoord2d(1, 1);
 		glVertex3f(XRES*sdl_scale, 0, 1.0);
 		glEnd();
+		
+		glUseProgram(0);
 		glDisable( GL_TEXTURE_2D );
         
         //Reset coords/offset
@@ -3109,6 +3126,26 @@ int sdl_open(void)
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);
         
+        //Texture for velocity maps for gravity
+        glEnable(GL_TEXTURE_2D);
+        glGenTextures(1, &partsTFX);
+        glBindTexture(GL_TEXTURE_2D, partsTFX);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES, YRES, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glGenTextures(1, &partsTFY);
+        glBindTexture(GL_TEXTURE_2D, partsTFY);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES, YRES, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
+        
         //Fire alpha texture
 		glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &fireAlpha);
@@ -3185,12 +3222,14 @@ void loadShaders()
 {
 	GLuint vsize, fsize, vertexShader, fragmentShader;
 	//const char *vertex = file_load("test.vert", &vsize), * fragment = file_load("test.frag", &fsize);
+	const char *lensVertex = file_load("ltest.vert", &vsize), * lensFragment = file_load("ltest.frag", &fsize);
 
+	//Particle texture
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	glShaderSource( vertexShader, 1, &vertex, &vsize);
-	glShaderSource( fragmentShader, 1, &fragment, &fsize);
+	glShaderSource( vertexShader, 1, &vertex, NULL);//&vsize);
+	glShaderSource( fragmentShader, 1, &fragment, NULL);//&fsize);
 
 	glCompileShader( vertexShader );
 	glCompileShader( fragmentShader );
@@ -3199,6 +3238,21 @@ void loadShaders()
 	glAttachShader( fireProg, vertexShader );
 	glAttachShader( fireProg, fragmentShader );
 	glLinkProgram( fireProg );
+	
+	//Lensing
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	glShaderSource( vertexShader, 1, &lensVertex, &vsize);
+	glShaderSource( fragmentShader, 1, &lensFragment, &fsize);
+
+	glCompileShader( vertexShader );
+	glCompileShader( fragmentShader );
+
+	lensProg = glCreateProgram();
+	glAttachShader( lensProg, vertexShader );
+	glAttachShader( lensProg, fragmentShader );
+	glLinkProgram( lensProg );
 }
 
 int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy, int line_x, int line_y)
