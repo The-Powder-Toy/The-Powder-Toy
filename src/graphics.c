@@ -27,7 +27,7 @@ unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
-GLuint vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg, partsFboTex, partsFbo, lensProg, partsTFX, partsTFY;
+GLuint zoomTex, vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg, partsFboTex, partsFbo, lensProg, partsTFX, partsTFY;
 
 int sandcolour_r = 0;
 int sandcolour_g = 0;
@@ -2674,6 +2674,34 @@ void dim_copy_pers(pixel *dst, pixel *src) //for persistent view, reduces rgb sl
 
 void render_zoom(pixel *img) //draws the zoom box
 {
+#ifdef OGLR
+	glEnable( GL_TEXTURE_2D );
+	glReadBuffer(GL_AUX0);
+	glBindTexture(GL_TEXTURE_2D, partsFboTex);
+	glCopyTexSubImage2D(GL_TEXTURE_2D,
+ 	0,
+ 	20,
+ 	20,
+ 	30,
+ 	30,
+ 	50,
+ 	50);
+
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBegin(GL_QUADS);
+	glTexCoord2d(1, 1);
+	glVertex3f(zoom_wx+ZSIZE*ZFACTOR, YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR), 1.0);
+	glTexCoord2d(0, 1);
+	glVertex3f(zoom_wx, YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR), 1.0);
+	glTexCoord2d(0, 0);
+	glVertex3f(zoom_wx, YRES+MENUSIZE-zoom_wy, 1.0);
+	glTexCoord2d(1, 0);
+	glVertex3f(zoom_wx+ZSIZE*ZFACTOR, YRES+MENUSIZE-zoom_wy, 1.0);
+	glEnd();
+
+	glDisable( GL_TEXTURE_2D );
+#else
 	int x, y, i, j;
 	pixel pix;
 	drawrect(img, zoom_wx-2, zoom_wy-2, ZSIZE*ZFACTOR+2, ZSIZE*ZFACTOR+2, 192, 192, 192, 255);
@@ -2700,6 +2728,7 @@ void render_zoom(pixel *img) //draws the zoom box
 			xor_pixel(zoom_x+ZSIZE, zoom_y+j, img);
 		}
 	}
+#endif
 }
 
 //gets the thumbnail preview for stamps
@@ -3119,6 +3148,18 @@ int sdl_open(void)
         glGenTextures(1, &airBuf);
         glBindTexture(GL_TEXTURE_2D, airBuf);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
+        
+        //Zoom texture
+        glEnable(GL_TEXTURE_2D);
+        glGenTextures(1, &zoomTex);
+        glBindTexture(GL_TEXTURE_2D, zoomTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
 
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
