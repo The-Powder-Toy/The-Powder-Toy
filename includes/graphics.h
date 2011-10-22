@@ -193,14 +193,54 @@ void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale);
 #endif
 
 #ifdef INCLUDE_SHADERS
-const char * fragment = "uniform sampler2D fireAlpha;\
+const char * fireFragment = "uniform sampler2D fireAlpha;\
 void main () {\
     vec4 texColor = texture2D(fireAlpha, gl_PointCoord);\
     gl_FragColor = vec4(gl_Color.rgb, texColor.a*gl_Color.a);\
 }";
-const char * vertex = "void main(void)\
+const char * fireVertex = "void main(void)\
 {\
    gl_Position = ftransform();;\
    gl_FrontColor = gl_Color;\
 }";
+const char * lensFragment = "uniform sampler2D pTex;\
+uniform sampler2D tfX;\
+uniform sampler2D tfY;\
+uniform float xres = 612.0;\
+uniform float yres = 384.0;\
+void main () {\
+	vec4 transformX = texture2D(tfX, vec2(gl_TexCoord[0].s, -gl_TexCoord[0].t));\
+	vec4 transformY = -texture2D(tfY, vec2(gl_TexCoord[0].s, -gl_TexCoord[0].t));\
+	transformX.r /= xres;\
+	transformY.g /= yres;\
+    vec4 texColor = vec4(\
+    	texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.75, transformY.g*0.75)).r,\
+    	texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.875, transformY.g*0.875)).g,\
+    	texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r, transformY.g)).b,\
+    	1.0\
+    );\
+    gl_FragColor = texColor;\
+}";
+const char * lensVertex = "void main(void)\
+{\
+	gl_TexCoord[0]  = gl_MultiTexCoord0;\
+	gl_Position = ftransform();;\
+	gl_FrontColor = gl_Color;\
+}";
+const char * airFragment = "uniform sampler2D airX;\
+uniform sampler2D airY;\
+uniform sampler2D airP;\
+void main () {\
+	vec4 texX = texture2D(airX, gl_TexCoord[0].st);\
+	vec4 texY = texture2D(airY, gl_TexCoord[0].st);\
+	vec4 texP = texture2D(airP, gl_TexCoord[0].st);\
+    gl_FragColor = vec4(abs(texX.r)/2.0, texP.b/2.0, abs(texY.g)/2.0, 1.0);\
+}";
+const char * airVertex = "void main(void)\
+{\
+	gl_TexCoord[0]  = gl_MultiTexCoord0;\
+	gl_Position = ftransform();;\
+	gl_FrontColor = gl_Color;\
+}";
+
 #endif

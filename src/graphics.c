@@ -3333,17 +3333,14 @@ int sdl_open(void)
 #ifdef OGLR
 void loadShaders()
 {
-	GLuint avsize, afsize, vsize, fsize, vertexShader, fragmentShader;
-	//const char *vertex = file_load("test.vert", &vsize), * fragment = file_load("test.frag", &fsize);
-	const char *lensVertex = file_load("ltest.vert", &vsize), * lensFragment = file_load("ltest.frag", &fsize);
-	const char *airVertex = file_load("atest.vert", &avsize), * airFragment = file_load("atest.frag", &afsize);
+	GLuint vertexShader, fragmentShader;
 
 	//Particle texture
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	glShaderSource( vertexShader, 1, &vertex, NULL);//&vsize);
-	glShaderSource( fragmentShader, 1, &fragment, NULL);//&fsize);
+	glShaderSource( vertexShader, 1, &fireVertex, NULL);
+	glShaderSource( fragmentShader, 1, &fireFragment, NULL);
 
 	glCompileShader( vertexShader );
 	glCompileShader( fragmentShader );
@@ -3357,8 +3354,8 @@ void loadShaders()
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	glShaderSource( vertexShader, 1, &lensVertex, &vsize);
-	glShaderSource( fragmentShader, 1, &lensFragment, &fsize);
+	glShaderSource( vertexShader, 1, &lensVertex, NULL);
+	glShaderSource( fragmentShader, 1, &lensFragment, NULL);
 
 	glCompileShader( vertexShader );
 	glCompileShader( fragmentShader );
@@ -3372,8 +3369,8 @@ void loadShaders()
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	glShaderSource( vertexShader, 1, &airVertex, &avsize);
-	glShaderSource( fragmentShader, 1, &airFragment, &afsize);
+	glShaderSource( vertexShader, 1, &airVertex, NULL);
+	glShaderSource( fragmentShader, 1, &airFragment, NULL);
 
 	glCompileShader( vertexShader );
 	glCompileShader( fragmentShader );
