@@ -2675,32 +2675,59 @@ void dim_copy_pers(pixel *dst, pixel *src) //for persistent view, reduces rgb sl
 void render_zoom(pixel *img) //draws the zoom box
 {
 #ifdef OGLR
-	glEnable( GL_TEXTURE_2D );
-	glReadBuffer(GL_AUX0);
-	glBindTexture(GL_TEXTURE_2D, partsFboTex);
-	glCopyTexSubImage2D(GL_TEXTURE_2D,
- 	0,
- 	20,
- 	20,
- 	30,
- 	30,
- 	50,
- 	50);
+	float zcx1, zcx0, zcy1, zcy0, yfactor, xfactor; //X-Factor is shit, btw
+	xfactor = 1.0f/(float)XRES;
+	yfactor = 1.0f/(float)YRES;
+	
+	zcx0 = (zoom_x)*xfactor;
+	zcx1 = (zoom_x+ZSIZE)*xfactor;
+	zcy0 = (YRES-zoom_y+1)*yfactor;
+	zcy1 = (YRES-(zoom_y+ZSIZE)+1)*yfactor;
+	 
+	glEnable(GL_LINE_SMOOTH);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBegin(GL_LINE_STRIP);
+	glVertex3i(zoom_wx-1, YRES+MENUSIZE-zoom_wy, 0);
+	glVertex3i(zoom_wx-1, YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR), 0);
+	glVertex3i(zoom_wx+ZSIZE*ZFACTOR, YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR), 0);
+	glVertex3i(zoom_wx+ZSIZE*ZFACTOR, YRES+MENUSIZE-zoom_wy, 0);
+	glVertex3i(zoom_wx-1, YRES+MENUSIZE-zoom_wy, 0);
+	glEnd();
+	glDisable(GL_LINE_SMOOTH);
 
+	glEnable( GL_TEXTURE_2D );
+	//glReadBuffer(GL_AUX0);
+	glBindTexture(GL_TEXTURE_2D, partsFboTex);
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-	glTexCoord2d(1, 1);
+	glTexCoord2d(zcx1, zcy1);
 	glVertex3f(zoom_wx+ZSIZE*ZFACTOR, YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR), 1.0);
-	glTexCoord2d(0, 1);
+	glTexCoord2d(zcx0, zcy1);
 	glVertex3f(zoom_wx, YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR), 1.0);
-	glTexCoord2d(0, 0);
+	glTexCoord2d(zcx0, zcy0);
 	glVertex3f(zoom_wx, YRES+MENUSIZE-zoom_wy, 1.0);
-	glTexCoord2d(1, 0);
+	glTexCoord2d(zcx1, zcy0);
 	glVertex3f(zoom_wx+ZSIZE*ZFACTOR, YRES+MENUSIZE-zoom_wy, 1.0);
 	glEnd();
-
 	glDisable( GL_TEXTURE_2D );
+	
+	
+	if(zoom_en)
+	{	
+		//glEnable(GL_COLOR_LOGIC_OP);
+		glEnable(GL_LINE_SMOOTH);
+		//glLogicOp(GL_XOR);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_STRIP);
+		glVertex3i(zoom_x-1, YRES+MENUSIZE-(zoom_y-1), 0);
+		glVertex3i(zoom_x-1, YRES+MENUSIZE-(zoom_y+ZSIZE), 0);
+		glVertex3i(zoom_x+ZSIZE, YRES+MENUSIZE-(zoom_y+ZSIZE), 0);
+		glVertex3i(zoom_x+ZSIZE, YRES+MENUSIZE-(zoom_y-1), 0);
+		glVertex3i(zoom_x-1, YRES+MENUSIZE-(zoom_y-1), 0);
+		glEnd();
+		//glDisable(GL_COLOR_LOGIC_OP);
+    }
 #else
 	int x, y, i, j;
 	pixel pix;
