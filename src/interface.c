@@ -2422,6 +2422,8 @@ int quickoptions_tooltip_y = 0;
 void quickoptions_menu(pixel *vid_buf, int b, int bq, int x, int y)
 {
 	int i = 0;
+	x /= sdl_scale;
+	y /= sdl_scale;
 	if(quickoptions_tooltip_fade && quickoptions_tooltip)
 	{
 		drawtext_outline(vid_buf, (XRES - 5) - textwidth(quickoptions_tooltip), quickoptions_tooltip_y, quickoptions_tooltip, 255, 255, 255, quickoptions_tooltip_fade*20, 0, 0, 0, quickoptions_tooltip_fade*15);

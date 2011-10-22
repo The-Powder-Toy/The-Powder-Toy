@@ -166,6 +166,7 @@ extern int pretty_powder;
 extern int drawgrav_enable;
 int limitFPS;
 int water_equal_test;
+extern int quickoptions_tooltip_fade;
 
 extern int debug_flags;
 #define DEBUG_PERF_FRAMECOUNT 256

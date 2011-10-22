@@ -1585,7 +1585,7 @@ int main(int argc, char *argv[])
 #endif
 	int wavelength_gfx = 0;
 	int x, y, line_x, line_y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
-	int da = 0, dae = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2;
+	int da = 0, dae = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2, quickoptions_tooltip_fade_invert;
 	float nfvx, nfvy;
 	int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
 	void *load_data=NULL;
@@ -3479,29 +3479,29 @@ int main(int argc, char *argv[])
 			if (vs)
 				strappend(uitext, " [FRAME CAPTURE]");
 #endif
-
+			quickoptions_tooltip_fade_invert = 255 - (quickoptions_tooltip_fade*20);
 			if (sdl_zoom_trig||zoom_en)
 			{
 				if (zoom_x<XRES/2)
 				{
-					fillrect(vid_buf, XRES-20-textwidth(heattext), 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
-					drawtext(vid_buf, XRES-16-textwidth(heattext), 270, heattext, 255, 255, 255, 200);
+					fillrect(vid_buf, XRES-20-textwidth(heattext), 266, textwidth(heattext)+8, 15, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+					drawtext(vid_buf, XRES-16-textwidth(heattext), 270, heattext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 					if (DEBUG_MODE)
 					{
-						fillrect(vid_buf, XRES-20-textwidth(coordtext), 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
-						drawtext(vid_buf, XRES-16-textwidth(coordtext), 282, coordtext, 255, 255, 255, 200);
+						fillrect(vid_buf, XRES-20-textwidth(coordtext), 280, textwidth(coordtext)+8, 13, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+						drawtext(vid_buf, XRES-16-textwidth(coordtext), 282, coordtext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 					}
 					if (wavelength_gfx)
 						draw_wavelengths(vid_buf,XRES-20-textwidth(heattext),265,2,wavelength_gfx);
 				}
 				else
 				{
-					fillrect(vid_buf, 12, 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
-					drawtext(vid_buf, 16, 270, heattext, 255, 255, 255, 200);
+					fillrect(vid_buf, 12, 266, textwidth(heattext)+8, 15, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+					drawtext(vid_buf, 16, 270, heattext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 					if (DEBUG_MODE)
 					{
-						fillrect(vid_buf, 12, 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
-						drawtext(vid_buf, 16, 282, coordtext, 255, 255, 255, 200);
+						fillrect(vid_buf, 12, 280, textwidth(coordtext)+8, 13, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+						drawtext(vid_buf, 16, 282, coordtext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 					}
 					if (wavelength_gfx)
 						draw_wavelengths(vid_buf,12,265,2,wavelength_gfx);
@@ -3509,12 +3509,12 @@ int main(int argc, char *argv[])
 			}
 			else
 			{
-				fillrect(vid_buf, XRES-20-textwidth(heattext), 12, textwidth(heattext)+8, 15, 0, 0, 0, 140);
-				drawtext(vid_buf, XRES-16-textwidth(heattext), 16, heattext, 255, 255, 255, 200);
+				fillrect(vid_buf, XRES-20-textwidth(heattext), 12, textwidth(heattext)+8, 15, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+				drawtext(vid_buf, XRES-16-textwidth(heattext), 16, heattext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 				if (DEBUG_MODE)
 				{
-					fillrect(vid_buf, XRES-20-textwidth(coordtext), 26, textwidth(coordtext)+8, 11, 0, 0, 0, 140);
-					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, 200);
+					fillrect(vid_buf, XRES-20-textwidth(coordtext), 26, textwidth(coordtext)+8, 11, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 				}
 				if (wavelength_gfx)
 					draw_wavelengths(vid_buf,XRES-20-textwidth(heattext),11,2,wavelength_gfx);
