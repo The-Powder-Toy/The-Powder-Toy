@@ -27,7 +27,7 @@ unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
-GLuint zoomTex, vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg, partsFboTex, partsFbo, lensProg, partsTFX, partsTFY;
+GLuint airProg, zoomTex, vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg, partsFboTex, partsFbo, lensProg, partsTFX, partsTFY, airPV, airVY, airVX;
 
 int sandcolour_r = 0;
 int sandcolour_g = 0;
@@ -1109,9 +1109,9 @@ void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag)
 		drawtext(vid_buf, x+3, y+2, t, 255, 255, 255, 255);
 	}
 }
-pixel air_buf[YRES/CELL][XRES/CELL];
 void draw_air(pixel *vid)
 {
+#ifndef OGLR
 	int x, y, i, j;
 	pixel c;
 	if (cmode == CM_PERS)//this should never happen anyway
@@ -1173,29 +1173,45 @@ void draw_air(pixel *vid)
 					c  = PIXRGB(r, g, b);
 				}
 			}
-#ifdef OGLR
-			air_buf[y][x] = c;
-#else
 			for (j=0; j<CELL; j++)//draws the colors
 				for (i=0; i<CELL; i++)
 					vid[(x*CELL+i) + (y*CELL+j)*(XRES+BARSIZE)] = c;
-#endif
 		}
-#ifdef OGLR
+#else
     glEnable( GL_TEXTURE_2D );
-    glBindTexture(GL_TEXTURE_2D, airBuf);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+    
+    glUseProgram(airProg);
+    
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, airVX);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_RED, GL_FLOAT, vx);
+    glUniform1i(glGetUniformLocation(airProg, "airX"), 0);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, airVY);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_GREEN, GL_FLOAT, vy);
+    glUniform1i(glGetUniformLocation(airProg, "airY"), 1);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, airPV);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_BLUE, GL_FLOAT, pv);
+    glUniform1i(glGetUniformLocation(airProg, "airP"), 2);
+    glActiveTexture(GL_TEXTURE0);
+    
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_BGRA, GL_UNSIGNED_BYTE, air_buf);
 	glBegin(GL_QUADS);
     glTexCoord2d(1, 0);
-    glVertex3f(XRES*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
+    glVertex3f(XRES*sdl_scale, YRES*sdl_scale, 1.0);
     glTexCoord2d(0, 0);
-    glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
+    glVertex3f(0, YRES*sdl_scale, 1.0);
     glTexCoord2d(0, 1);
-    glVertex3f(0, MENUSIZE*sdl_scale, 1.0);
+    glVertex3f(0, 0, 1.0);
     glTexCoord2d(1, 1);
-    glVertex3f(XRES*sdl_scale, MENUSIZE*sdl_scale, 1.0);
+    glVertex3f(XRES*sdl_scale, 0, 1.0);
     glEnd();
+    
+    glUseProgram(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glDisable( GL_TEXTURE_2D );
 #endif
 }
@@ -3214,6 +3230,35 @@ int sdl_open(void)
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);
         
+        //Texture for velocity maps for air
+        //TODO: Combine all air maps into 3D array or structs
+        glEnable(GL_TEXTURE_2D);
+        glGenTextures(1, &airVX);
+        glBindTexture(GL_TEXTURE_2D, airVX);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glGenTextures(1, &airVY);
+        glBindTexture(GL_TEXTURE_2D, airVY);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glGenTextures(1, &airPV);
+        glBindTexture(GL_TEXTURE_2D, airPV);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
+        
         //Fire alpha texture
 		glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &fireAlpha);
@@ -3285,12 +3330,13 @@ int sdl_open(void)
 #endif
 	return 1;
 }
-
+#ifdef OGLR
 void loadShaders()
 {
-	GLuint vsize, fsize, vertexShader, fragmentShader;
+	GLuint avsize, afsize, vsize, fsize, vertexShader, fragmentShader;
 	//const char *vertex = file_load("test.vert", &vsize), * fragment = file_load("test.frag", &fsize);
 	const char *lensVertex = file_load("ltest.vert", &vsize), * lensFragment = file_load("ltest.frag", &fsize);
+	const char *airVertex = file_load("atest.vert", &avsize), * airFragment = file_load("atest.frag", &afsize);
 
 	//Particle texture
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -3321,8 +3367,23 @@ void loadShaders()
 	glAttachShader( lensProg, vertexShader );
 	glAttachShader( lensProg, fragmentShader );
 	glLinkProgram( lensProg );
-}
+	
+	//Air
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
+	glShaderSource( vertexShader, 1, &airVertex, &avsize);
+	glShaderSource( fragmentShader, 1, &airFragment, &afsize);
+
+	glCompileShader( vertexShader );
+	glCompileShader( fragmentShader );
+
+	airProg = glCreateProgram();
+	glAttachShader( airProg, vertexShader );
+	glAttachShader( airProg, fragmentShader );
+	glLinkProgram( airProg );
+}
+#endif
 int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy, int line_x, int line_y)
 {
 	char infobuf[256];
