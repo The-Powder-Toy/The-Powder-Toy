@@ -44,10 +44,10 @@ int contact_part(int i, int tp)
 
 void create_line_par(int x1, int y1, int x2, int y2, int c, int temp, int life, int tmp, int tmp2)
 {
-	if (c==WL_EHOLE || c==WL_ALLOWGAS || c==WL_ALLOWALLELEC || c==WL_ALLOWSOLID || c==WL_ALLOWAIR || c==WL_WALL || c==WL_DESTROYALL || c==WL_ALLOWLIQUID || c==WL_FAN || c==WL_STREAM || c==WL_DETECT || c==WL_EWALL || c==WL_WALLELEC)
-		return; // this function only for particles, no walls
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
 	float e, de;
+	if (c==WL_EHOLE || c==WL_ALLOWGAS || c==WL_ALLOWALLELEC || c==WL_ALLOWSOLID || c==WL_ALLOWAIR || c==WL_WALL || c==WL_DESTROYALL || c==WL_ALLOWLIQUID || c==WL_FAN || c==WL_STREAM || c==WL_DETECT || c==WL_EWALL || c==WL_WALLELEC)
+		return; // this function only for particles, no walls
 	if (cp)
 	{
 		y = x1;
@@ -115,7 +115,10 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 	 * tmp - angle of lighting
 	 *
 	*/
-	int r,rx,ry, multipler, powderful=parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER;
+	int r,rx,ry, multipler, powderful;
+	float angle, angle2=-1;
+	int near;
+	powderful = powderful=parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER;
 	update_PYRO(UPDATE_FUNC_SUBCALL_ARGS);
 	if (aheat_enable)
 	{
@@ -192,9 +195,9 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 		return 1;
 	}
 
-	float angle, angle2=-1;
+	angle2=-1;
 
-	int near = LIGH_nearest_part(i, parts[i].life*2.5);
+	near = LIGH_nearest_part(i, parts[i].life*2.5);
 	if (near!=-1)
 	{
 		int t=parts[near].type;
