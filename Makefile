@@ -9,7 +9,7 @@ PYCOMMAND := $(PY_BIN) getheader.py
 
 CFLAGS := -w -std=c99 -D_POSIX_C_SOURCE=200112L -DLUACONSOLE -DGRAVFFT -Iincludes/ -D_GNU_SOURCE
 OFLAGS := -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations
-LFLAGS := -lpthread -lSDL -lfftw3f -lm -lbz2 -lX11 -llua5.1 #-lpython$(PY_VERSION) -L$(PY_LIBPATH) -I$(PY_INCPATH) $(PY_LDFLAGS)
+LFLAGS := -lpthread -lSDL -lfftw3f -lm -lbz2 -lX11 -llua5.1 -lrt #-lpython$(PY_VERSION) -L$(PY_LIBPATH) -I$(PY_INCPATH) $(PY_LDFLAGS)
 LFLAGS_X := -lm -lbz2 -lSDLmain -I/Library/Frameworks/Python.framework/Versions/$(PY_VERSION)/include/python$(PY_VERSION)
 MFLAGS_SSE3 := -march=native -DX86 -DX86_SSE3 -msse3
 MFLAGS_SSE2 := -march=native -DX86 -DX86_SSE2 -msse2
