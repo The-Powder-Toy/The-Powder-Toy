@@ -2613,11 +2613,11 @@ int flood_prop_2(int x, int y, size_t propoffset, void * propvalue, int proptype
 	{
 		i = pmap[y][x]>>8;
 		if(proptype==2){
-			*((float*)(((void*)&parts[i])+propoffset)) = *((float*)propvalue);
+			*((float*)(((char*)&parts[i])+propoffset)) = *((float*)propvalue);
 		} else if(proptype==0) {
-			*((int*)(((void*)&parts[i])+propoffset)) = *((int*)propvalue);
+			*((int*)(((char*)&parts[i])+propoffset)) = *((int*)propvalue);
 		} else if(proptype==1) {
-			*((char*)(((void*)&parts[i])+propoffset)) = *((char*)propvalue);
+			*((char*)(((char*)&parts[i])+propoffset)) = *((char*)propvalue);
 		}
 		bitmap[(y*XRES)+x] = 1;
 	}

@@ -1,7 +1,7 @@
 #include <element.h>
 
 int update_DEST(UPDATE_FUNC_ARGS) {
-	int r,rx,ry;
+	int r,rx,ry,topv;
 	rx=rand()%5-2;
 	ry=rand()%5-2;
 
@@ -45,7 +45,7 @@ int update_DEST(UPDATE_FUNC_ARGS) {
 	{
 		if (ptypes[r&0xFF].hconduct) parts[r>>8].temp = restrict_flt(parts[r>>8].temp+10000.0f, MIN_TEMP, MAX_TEMP);
 	}
-	int topv=pv[y/CELL][x/CELL]/9+parts[r>>8].temp/900;
+	topv=pv[y/CELL][x/CELL]/9+parts[r>>8].temp/900;
 	if (topv>40.0f)
 		topv=40.0f;
 	pv[y/CELL][x/CELL]+=40.0f+topv;

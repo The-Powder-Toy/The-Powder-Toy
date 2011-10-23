@@ -1757,7 +1757,7 @@ void draw_parts(pixel *vid)
 	int orbd[4] = {0, 0, 0, 0};
 	int orbl[4] = {0, 0, 0, 0};
 	int cr, cg, cb;
-	float fr, fg, fb;
+	float fr, fg, fb, div_n;
 	float pt = R_TEMP;
 	if (GRID_MODE)//draws the grid
 	{
@@ -3455,7 +3455,7 @@ void draw_parts(pixel *vid)
 
                             addpixel(vid, nx, ny+newx, cr, cg, cb, gradv);
                             addpixel(vid, nx, ny-newx, cr, cg, cb, gradv);
-                            float div_n=1.2f-0.006*parts[i].life;
+                            div_n=1.2f-0.006*parts[i].life;
                             if (div_n<1.01f)
                                 div_n=1.01f;
                             gradv = gradv/div_n;

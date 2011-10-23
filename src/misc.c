@@ -122,7 +122,9 @@ void save_presets(int do_update)
 {
 	char * outputdata;
 	cJSON *root, *userobj, *versionobj;
-	root = cJSON_CreateObject();	
+	FILE* f;
+
+	root = cJSON_CreateObject();
 	
 	cJSON_AddStringToObject(root, "Powder Toy Preferences", "Don't modify this file unless you know what you're doing. P.S: editing the admin/mod fields in your user info doesn't give you magical powers");
 	
@@ -163,7 +165,7 @@ void save_presets(int do_update)
 	outputdata = cJSON_Print(root);
 	cJSON_Delete(root);
 	
-	FILE *f = fopen("powder.pref", "wb");
+	f = fopen("powder.pref", "wb");
 	if(!f)
 		return;
 	fwrite(outputdata, 1, strlen(outputdata), f);
