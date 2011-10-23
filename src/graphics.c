@@ -1444,6 +1444,11 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 	}
 }
 
+void prepare_graphicscache()
+{
+	graphicscache = malloc(sizeof(gcache_item)*PT_NUM);
+	memset(graphicscache, 0, sizeof(gcache_item)*PT_NUM);
+}
 //New function for drawing particles
 #ifdef OGLR
 GLuint fireV[(YRES*XRES)*2];
@@ -1463,6 +1468,7 @@ void render_parts(pixel *vid)
 {
 	//TODO: Replace cmode with a set of flags
         int deca, decr, decg, decb, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, i, t, nx, ny, x, y, caddress;
+		float gradv, flicker, fnx, fny;
 #ifdef OGLR
 		int cfireV = 0, cfireC = 0, cfire = 0;
 		int csmokeV = 0, csmokeC = 0, csmoke = 0;
@@ -1470,14 +1476,22 @@ void render_parts(pixel *vid)
 		int cblurV = 0, cblurC = 0, cblur = 0;
 		int cglowV = 0, cglowC = 0, cglow = 0;
 		int cflatV = 0, cflatC = 0, cflat = 0;
+		
+		//Set coord offset 
+		glScalef(1,-1,1);
+        glTranslatef(0, -YRES/*-(YRES+MENUSIZE)*/, 0);
+        
+        //Render to the particle FBO
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 #endif
-	float gradv, flicker;
 	for(i = 0; i<=parts_lastActiveIndex; i++) {
 		if (parts[i].type) {
 			t = parts[i].type;
 
 			nx = (int)(parts[i].x+0.5f);
 			ny = (int)(parts[i].y+0.5f);
+			fnx = parts[i].x;
+			fny = parts[i].y;
 
 			if(photons[ny][nx]&0xFF && !(ptypes[t].properties & TYPE_ENERGY))
 				continue;
@@ -1494,40 +1508,58 @@ void render_parts(pixel *vid)
 			decg = (parts[i].dcolour>>8)&0xFF;
 			decb = (parts[i].dcolour)&0xFF;
 				
-			if (ptypes[t].graphics_func)
+			if (graphicscache[t].isready)
 			{
-				if ((*(ptypes[t].graphics_func))(i, nx, ny, &pixel_mode, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
-				{
-					//Data can be cached!
-				}
+				pixel_mode = graphicscache[t].pixel_mode;
+				colr = graphicscache[t].colr;
+				colg = graphicscache[t].colg;
+				colb = graphicscache[t].colb;
+				firea = graphicscache[t].firea;
+				firer = graphicscache[t].firer;
+				fireg = graphicscache[t].fireg;
+				fireb = graphicscache[t].fireb;
 			}
 			else
 			{
-				//Property based defaults
-				if(ptypes[t].properties & PROP_RADIOACTIVE) pixel_mode |= PMODE_GLOW;
-				if(ptypes[t].properties & PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
+				if (ptypes[t].graphics_func)
 				{
-					gradv = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
-					caddress = (parts[i].temp>ptransitions[t].thv)?ptransitions[t].thv-(ptransitions[t].thv-800.0f):parts[i].temp-(ptransitions[t].thv-800.0f);
-					colr += sin(gradv*caddress) * 226;;
-					colg += sin(gradv*caddress*4.55 +3.14) * 34;
-					colb += sin(gradv*caddress*2.22 +3.14) * 64;
+					if ((*(ptypes[t].graphics_func))(&(parts[i]), nx, ny, &pixel_mode, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
+					{
+						graphicscache[t].isready = 1;
+						graphicscache[t].pixel_mode = pixel_mode;
+						graphicscache[t].colr = colr;
+						graphicscache[t].colg = colg;
+						graphicscache[t].colb = colb;
+						graphicscache[t].firea = firea;
+						graphicscache[t].firer = firer;
+						graphicscache[t].fireg = fireg;
+						graphicscache[t].fireb = fireb;
+					}
 				}
-				if(ptypes[t].properties & TYPE_LIQUID)
+				else
 				{
-					pixel_mode |= PMODE_BLUR;
-				}
-				if(ptypes[t].properties & TYPE_GAS)
-				{
-					pixel_mode &= ~PMODE;
-					pixel_mode |= FIRE_BLEND;
-					firer = colr/2;
-					fireg = colg/2;
-					fireb = colb/2;
-					firea = 125;
+					if(graphics_DEFAULT(&(parts[i]), nx, ny, &pixel_mode, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb))
+					{
+						graphicscache[t].isready = 1;
+						graphicscache[t].pixel_mode = pixel_mode;
+						graphicscache[t].colr = colr;
+						graphicscache[t].colg = colg;
+						graphicscache[t].colb = colb;
+						graphicscache[t].firea = firea;
+						graphicscache[t].firer = firer;
+						graphicscache[t].fireg = fireg;
+						graphicscache[t].fireb = fireb;
+					}
 				}
 			}
-			
+			if(ptypes[t].properties & PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
+			{
+				gradv = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
+				caddress = (parts[i].temp>ptransitions[t].thv)?ptransitions[t].thv-(ptransitions[t].thv-800.0f):parts[i].temp-(ptransitions[t].thv-800.0f);
+				colr += sin(gradv*caddress) * 226;;
+				colg += sin(gradv*caddress*4.55 +3.14) * 34;
+				colb += sin(gradv*caddress*2.22 +3.14) * 64;
+			}
 			if(cmode == CM_NOTHING)
 			{
 #ifdef OGLR
@@ -1588,6 +1620,95 @@ void render_parts(pixel *vid)
 				else if(colb<0) colb = 0;
 				
 				//Pixel rendering
+				if(pixel_mode & PSPEC_STICKMAN)
+				{
+					//Special case for stickman
+#ifdef OGLR
+					float *cplayer;
+					if(t==PT_STKM)
+						cplayer = player;
+					else
+						cplayer = player2;
+					glColor4f(((float)colr)/255.0f, ((float)colg)/255.0f, ((float)colb)/255.0f, 1.0f);
+					glEnable(GL_LINE_SMOOTH);
+					glBegin(GL_LINE_STRIP);
+					glVertex2f(fnx-2, fny-2);
+					glVertex2f(fnx+2, fny-2);
+					glVertex2f(fnx+2, fny+2);
+					glVertex2f(fnx-2, fny+2);
+					glVertex2f(fnx-2, fny-2);
+					glEnd();
+					if(t==PT_STKM)
+						glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+					else
+						glColor4f(0.6f, 0.6f, 1.0f, 1.0f);
+					glBegin(GL_LINES);
+					glVertex2f(nx, ny+3);
+					glVertex2f(cplayer[3], cplayer[4]);
+					
+					glVertex2f(cplayer[3], cplayer[4]);
+					glVertex2f(cplayer[7], cplayer[8]);
+					
+					glVertex2f(nx, ny+3);
+					glVertex2f(cplayer[11], cplayer[12]);
+					
+					glVertex2f(cplayer[11], cplayer[12]);
+					glVertex2f(cplayer[15], cplayer[16]);
+					glEnd();
+					glDisable(GL_LINE_SMOOTH);
+#else
+					if (t==PT_STKM)
+					{
+						char buff[20];  //Buffer for HP
+						pixel pc;
+
+						if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
+						{
+							sprintf(buff, "%3d", parts[i].life);  //Show HP
+							drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
+						}
+
+						if ((int)player[2]<PT_NUM) pc = ptypes[(int)player[2]].pcolors;
+						else pc = PIXPACK(0xFFFFFF);
+						s = XRES+BARSIZE;
+						//head
+						draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx-2, ny-2, nx+2, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						//legs
+						draw_line(vid , nx, ny+3, player[3], player[4], 255, 255, 255, s);
+						draw_line(vid , player[3], player[4], player[7], player[8], 255, 255, 255, s);
+						draw_line(vid , nx, ny+3, player[11], player[12], 255, 255, 255, s);
+						draw_line(vid , player[11], player[12], player[15], player[16], 255, 255, 255, s);
+					}
+					else if (t==PT_STKM2)
+					{
+						char buff[20];  //Buffer for HP
+						pixel pc;
+
+						if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
+						{
+							sprintf(buff, "%3d", parts[i].life);  //Show HP
+							drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
+						}
+
+						if ((int)player2[2]<PT_NUM) pc = ptypes[(int)player2[2]].pcolors;
+						else pc = PIXPACK(0xFFFFFF);
+						s = XRES+BARSIZE;
+						//head
+						draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx-2, ny-2, nx+2, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						//legs
+						draw_line(vid , nx, ny+3, player2[3], player2[4], 100, 100, 255, s);
+						draw_line(vid , player2[3], player2[4], player2[7], player2[8], 100, 100, 255, s);
+						draw_line(vid , nx, ny+3, player2[11], player2[12], 100, 100, 255, s);
+						draw_line(vid , player2[11], player2[12], player2[15], player2[16], 100, 100, 255, s);
+					}
+#endif
+				}
 				if(pixel_mode & PMODE_FLAT)
 				{
 #ifdef OGLR
@@ -1822,12 +1943,6 @@ void render_parts(pixel *vid)
 		}
         }
 #ifdef OGLR		
-		//Set coord offset 
-		glScalef(1,-1,1);
-        glTranslatef(0, -YRES/*-(YRES+MENUSIZE)*/, 0);
-        
-        //Render to the particle FBO
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
         
         //Go into array mode
         glEnableClientState(GL_COLOR_ARRAY);
@@ -2732,8 +2847,8 @@ void render_zoom(pixel *img) //draws the zoom box
 	if(zoom_en)
 	{	
 		//glEnable(GL_COLOR_LOGIC_OP);
-		glEnable(GL_LINE_SMOOTH);
-		//glLogicOp(GL_XOR);
+		//glEnable(GL_LINE_SMOOTH);
+		glLogicOp(GL_XOR);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glBegin(GL_LINE_STRIP);
 		glVertex3i(zoom_x-1, YRES+MENUSIZE-(zoom_y-1), 0);

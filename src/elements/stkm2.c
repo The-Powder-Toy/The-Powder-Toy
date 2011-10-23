@@ -12,3 +12,18 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 	return 0;
 }
 
+int graphics_STKM2(GRAPHICS_FUNC_ARGS)
+{	
+	*pixel_mode = PSPEC_STICKMAN;
+	if ((int)player2[2]<PT_NUM)
+	{
+		*colr = PIXR(ptypes[(int)player2[2]].pcolors);
+		*colg = PIXG(ptypes[(int)player2[2]].pcolors);
+		*colb = PIXB(ptypes[(int)player2[2]].pcolors);
+	}
+	else
+	{
+		*colr = *colg = *colb = 255;
+	}
+	return 1;
+}

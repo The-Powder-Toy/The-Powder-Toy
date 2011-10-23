@@ -1740,6 +1740,7 @@ int main(int argc, char *argv[])
 	http_init(http_proxy_string[0] ? http_proxy_string : NULL);
 
 	prepare_alpha(CELL, 1.0f);
+	prepare_graphicscache();
 
 	if (cpu_check())
 	{

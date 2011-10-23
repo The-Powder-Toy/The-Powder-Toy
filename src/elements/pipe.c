@@ -235,3 +235,85 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 	}
 	return 0;
 }
+
+int graphics_PIPE(GRAPHICS_FUNC_ARGS)
+{
+	if (cpart->ctype==2)
+	{
+		*colr = 50;
+		*colg = 1;
+		*colb = 1;
+	}
+	else if (cpart->ctype==3)
+	{
+		*colr = 1;
+		*colg = 50;
+		*colb = 1;
+	}
+	else if (cpart->ctype==4)
+	{
+		*colr = 1;
+		*colg = 1;
+		*colb = 50;
+	}
+	else if (cpart->temp<272.15&&cpart->ctype!=1)
+	{
+		if (cpart->temp>173.25&&cpart->temp<273.15)
+		{
+			*colr = 50;
+			*colg = 1;
+			*colb = 1;
+		}
+		if (cpart->temp>73.25&&cpart->temp<=173.15)
+		{
+			*colr = 1;
+			*colg = 50;
+			*colb = 1;
+		}
+		if (cpart->temp>=0&&cpart->temp<=73.15)
+		{
+			*colr = 1;
+			*colg = 1;
+			*colb = 50;
+		}
+	}
+	if ((cpart->tmp&0xFF)>0 && (cpart->tmp&0xFF)<PT_NUM)
+	{
+		//Create a temp. particle and do a subcall.
+		particle tpart;
+		int t;
+		memset(&tpart, 0, sizeof(particle));
+		tpart.type = cpart->tmp&0xFF;
+		tpart.temp = cpart->temp;
+		tpart.life = cpart->flags;
+		tpart.tmp = cpart->pavg[0];
+		tpart.ctype = cpart->pavg[1];
+		t = tpart.type;
+		if (graphicscache[t].isready)
+		{
+			*pixel_mode = graphicscache[t].pixel_mode;
+			*colr = graphicscache[t].colr;
+			*colg = graphicscache[t].colg;
+			*colb = graphicscache[t].colb;
+			*firea = graphicscache[t].firea;
+			*firer = graphicscache[t].firer;
+			*fireg = graphicscache[t].fireg;
+			*fireb = graphicscache[t].fireb;
+		}
+		else
+		{
+			if (ptypes[t].graphics_func)
+			{
+				(*(ptypes[t].graphics_func))(&tpart, nx, ny, pixel_mode, colr, colg, colb, firea, firer, fireg, fireb);
+			}
+			else
+			{
+				graphics_DEFAULT(&tpart, nx, ny, pixel_mode, colr, colg, colb, firea, firer, fireg, fireb);
+			}
+		}
+		//*colr = PIXR(ptypes[cpart->tmp&0xFF].pcolors);
+		//*colg = PIXG(ptypes[cpart->tmp&0xFF].pcolors);
+		//*colb = PIXB(ptypes[cpart->tmp&0xFF].pcolors);
+	}
+	return 0;
+}

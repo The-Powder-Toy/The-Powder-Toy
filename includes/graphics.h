@@ -61,6 +61,21 @@ extern unsigned int fire_alpha[CELL*3][CELL*3];
 extern pixel *fire_bg;
 extern pixel *pers_bg;
 
+struct gcache_item
+{
+	int isready;
+	int pixel_mode;
+	int colr, colg, colb;
+	int firea, firer, fireg, fireb;
+};
+typedef struct gcache_item gcache_item;
+
+gcache_item *graphicscache;
+
+int graphics_DEFAULT(GRAPHICS_FUNC_ARGS);
+
+void prepare_graphicscache();
+
 void draw_rgba_image(pixel *vid, unsigned char *data, int x, int y, float a);
 
 void *ptif_pack(pixel *src, int w, int h, int *result_size);
