@@ -27,7 +27,9 @@ unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
+#ifdef OGLR
 GLuint airProg, zoomTex, vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg, partsFboTex, partsFbo, lensProg, partsTFX, partsTFY, airPV, airVY, airVX;
+#endif
 
 int sandcolour_r = 0;
 int sandcolour_g = 0;
@@ -714,6 +716,7 @@ _inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 #endif
 {
+#ifdef PIXALPHA
 	pixel t;
 	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
 		return;
@@ -726,6 +729,19 @@ inline void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 		a = a > PIXA(t) ? a : PIXA(t);
 	}
 	vid[y*(XRES+BARSIZE)+x] = PIXRGBA(r,g,b,a);
+#else
+	pixel t;
+	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
+		return;
+	if (a!=255)
+	{
+		t = vid[y*(XRES+BARSIZE)+x];
+		r = (a*r + (255-a)*PIXR(t)) >> 8;
+		g = (a*g + (255-a)*PIXG(t)) >> 8;
+		b = (a*b + (255-a)*PIXB(t)) >> 8;
+	}
+	vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
+#endif
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
@@ -1079,6 +1095,7 @@ _inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 #endif
 {
+#ifdef PIXALPHA
 	pixel t;
 	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
 		return;
@@ -1091,6 +1108,19 @@ inline void blendpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 		a = a > PIXA(t) ? a : PIXA(t);
 	}
 	vid[y*(XRES+BARSIZE)+x] = PIXRGBA(r,g,b,a);
+#else
+	pixel t;
+	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
+		return;
+	if (a!=255)
+	{
+		t = vid[y*(XRES+BARSIZE)+x];
+		r = (a*r + (255-a)*PIXR(t)) >> 8;
+		g = (a*g + (255-a)*PIXG(t)) >> 8;
+		b = (a*b + (255-a)*PIXB(t)) >> 8;
+	}
+	vid[y*(XRES+BARSIZE)+x] = PIXRGB(r,g,b);
+#endif
 }
 
 void draw_icon(pixel *vid_buf, int x, int y, char ch, int flag)
@@ -1662,6 +1692,7 @@ void render_parts(pixel *vid)
 					if (t==PT_STKM)
 					{
 						char buff[20];  //Buffer for HP
+						int s;
 						pixel pc;
 
 						if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
@@ -1687,6 +1718,7 @@ void render_parts(pixel *vid)
 					else if (t==PT_STKM2)
 					{
 						char buff[20];  //Buffer for HP
+						int s;
 						pixel pc;
 
 						if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
