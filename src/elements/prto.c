@@ -44,9 +44,9 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 						else if (portalp[parts[i].tmp][randomness][nnx].type)
 						{
 							if (portalp[parts[i].tmp][randomness][nnx].type==PT_STKM)
-								player[27] = 0;
+								player.spwn = 0;
 							if (portalp[parts[i].tmp][randomness][nnx].type==PT_STKM2)
-								player2[27] = 0;
+								player2.spwn = 0;
 							np = create_part(-1,x+rx,y+ry,portalp[parts[i].tmp][randomness][nnx].type);
 							if (np<0) continue;
 							parts[np] = portalp[parts[i].tmp][randomness][nnx];

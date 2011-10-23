@@ -1933,8 +1933,8 @@ for (i = 0; i<=parts_lastActiveIndex; i++) {
 					drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
 				}
 
-				if ((int)player[2]<PT_NUM) pc = ptypes[(int)player[2]].pcolors;
-				else pc = PIXPACK(0xFFFFFF);
+				if ((int)player.elem<PT_NUM) pc = ptypes[(int)player.elem].pcolors;
+				else pc = PIXPACK(0x8080FF);
 				s = XRES+BARSIZE;
 				//head
 				draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
@@ -1942,10 +1942,10 @@ for (i = 0; i<=parts_lastActiveIndex; i++) {
 				draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
 				draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
 				//legs
-				draw_line(vid , nx, ny+3, player[3], player[4], 255, 255, 255, s);
-				draw_line(vid , player[3], player[4], player[7], player[8], 255, 255, 255, s);
-				draw_line(vid , nx, ny+3, player[11], player[12], 255, 255, 255, s);
-				draw_line(vid , player[11], player[12], player[15], player[16], 255, 255, 255, s);
+				draw_line(vid , nx, ny+3, player.legs[0], player.legs[1], 255, 255, 255, s);
+				draw_line(vid , player.legs[0], player.legs[1], player.legs[4], player.legs[5], 255, 255, 255, s);
+				draw_line(vid , nx, ny+3, player.legs[8], player.legs[9], 255, 255, 255, s);
+				draw_line(vid , player.legs[8], player.legs[9], player.legs[12], player.legs[13], 255, 255, 255, s);
 			}
 			else if (t==PT_STKM2)
 			{
@@ -1958,8 +1958,8 @@ for (i = 0; i<=parts_lastActiveIndex; i++) {
 					drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
 				}
 
-				if ((int)player2[2]<PT_NUM) pc = ptypes[(int)player2[2]].pcolors;
-				else pc = PIXPACK(0xFFFFFF);
+				if ((int)player2.elem<PT_NUM) pc = ptypes[(int)player2.elem].pcolors;
+				else pc = PIXPACK(0x8080FF);
 				s = XRES+BARSIZE;
 				//head
 				draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
@@ -1967,24 +1967,24 @@ for (i = 0; i<=parts_lastActiveIndex; i++) {
 				draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
 				draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
 				//legs
-				draw_line(vid , nx, ny+3, player2[3], player2[4], 100, 100, 255, s);
-				draw_line(vid , player2[3], player2[4], player2[7], player2[8], 100, 100, 255, s);
-				draw_line(vid , nx, ny+3, player2[11], player2[12], 100, 100, 255, s);
-				draw_line(vid , player2[11], player2[12], player2[15], player2[16], 100, 100, 255, s);
+				draw_line(vid , nx, ny+3, player2.legs[0], player2.legs[1], 100, 100, 255, s);
+				draw_line(vid , player2.legs[0], player2.legs[1], player2.legs[4], player2.legs[5], 100, 100, 255, s);
+				draw_line(vid , nx, ny+3, player2.legs[8], player2.legs[9], 100, 100, 255, s);
+				draw_line(vid , player2.legs[8], player2.legs[9], player2.legs[12], player2.legs[13], 100, 100, 255, s);
 			}
 			else if (t==PT_FIGH) //Fighter should be visible in heat mode
 			{
 				char buff[10];  //Buffer for HP
 				pixel pc;
-				float *figh = fighters[(unsigned char)parts[i].tmp];
+				playerst *figh = &fighters[(unsigned char)parts[i].tmp];
 
 				if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
 				{
 					sprintf(buff, "%3d", parts[i].life);  //Show HP
 					drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
 				}
-				if ((int)figh[2]<PT_NUM) pc = ptypes[(int)figh[2]].pcolors;
-				else pc = PIXPACK(0xFFFFFF);
+				if ((int)figh->elem<PT_NUM) pc = ptypes[(int)figh->elem].pcolors;
+				else pc = PIXPACK(0x8080FF);
 				s = XRES+BARSIZE;
 				//head
 				draw_line(vid , nx, ny+2, nx+2, ny, PIXR(pc), PIXG(pc), PIXB(pc), s);
@@ -1992,10 +1992,10 @@ for (i = 0; i<=parts_lastActiveIndex; i++) {
 				draw_line(vid , nx, ny-2, nx-2, ny, PIXR(pc), PIXG(pc), PIXB(pc), s);
 				draw_line(vid , nx-2, ny, nx, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
 				//legs
-				draw_line(vid , nx, ny+3, figh[3], figh[4], 255, 255, 255, s);
-				draw_line(vid , figh[3], figh[4], figh[7], figh[8], 255, 255, 255, s);
-				draw_line(vid , nx, ny+3, figh[11], figh[12], 255, 255, 255, s);
-				draw_line(vid , figh[11], figh[12], figh[15], figh[16], 255, 255, 255, s);
+				draw_line(vid , nx, ny+3, figh->legs[0], figh->legs[1], 255, 255, 255, s);
+				draw_line(vid , figh->legs[0], figh->legs[1], figh->legs[4], figh->legs[5], 255, 255, 255, s);
+				draw_line(vid , nx, ny+3, figh->legs[8], figh->legs[9], 255, 255, 255, s);
+				draw_line(vid , figh->legs[8], figh->legs[9], figh->legs[12], figh->legs[13], 255, 255, 255, s);
 			}
 			if (cmode==CM_NOTHING && t!=PT_PIPE && t!=PT_SWCH && t!=PT_LCRY && t!=PT_PUMP && t!=PT_GPMP && t!=PT_PBCN && t!=PT_FILT && t!=PT_HSWC && t!=PT_PCLN && t!=PT_DEUT && t!=PT_WIFI && t!=PT_LIFE)//nothing display but show needed color changes
 				{
@@ -3887,10 +3887,10 @@ for (i = 0; i<=parts_lastActiveIndex; i++) {
 						vid[(ny+r+1)*s+nx-2] =  PIXRGB (R, G, B);
 						vid[(ny+r)*s+nx+2] =  PIXRGB (R, G, B);
 					}
-					draw_line(vid , nx, ny+3, player[3], player[4], R, G, B, s);
-					draw_line(vid , player[3], player[4], player[7], player[8], R, G, B, s);
-					draw_line(vid , nx, ny+3, player[11], player[12], R, G, B, s);
-					draw_line(vid , player[11], player[12], player[15], player[16], R, G, B, s);
+					draw_line(vid , nx, ny+3, player.legs[0], player.legs[1], R, G, B, s);
+					draw_line(vid , player.legs[0], player.legs[1], player.legs[4], player.legs[5], R, G, B, s);
+					draw_line(vid , nx, ny+3, player.legs[8], player.legs[9], R, G, B, s);
+					draw_line(vid , player.legs[8], player.legs[9], player.legs[12], player.legs[13], R, G, B, s);
 				}
 				else if (t==PT_STKM2) //Stick man should be visible in heat mode
 				{
@@ -3910,15 +3910,15 @@ for (i = 0; i<=parts_lastActiveIndex; i++) {
 						vid[(ny+r+1)*s+nx-2] =  PIXRGB (R, G, B);
 						vid[(ny+r)*s+nx+2] =  PIXRGB (R, G, B);
 					}
-					draw_line(vid , nx, ny+3, player2[3], player2[4], R, G, B, s);
-					draw_line(vid , player2[3], player2[4], player2[7], player2[8], R, G, B, s);
-					draw_line(vid , nx, ny+3, player2[11], player2[12], R, G, B, s);
-					draw_line(vid , player2[11], player2[12], player2[15], player2[16], R, G, B, s);
+					draw_line(vid , nx, ny+3, player2.legs[0], player2.legs[1], R, G, B, s);
+					draw_line(vid , player2.legs[0], player2.legs[1], player2.legs[4], player2.legs[5], R, G, B, s);
+					draw_line(vid , nx, ny+3, player2.legs[8], player2.legs[9], R, G, B, s);
+					draw_line(vid , player2.legs[8], player2.legs[9], player2.legs[12], player2.legs[13], R, G, B, s);
 				}
 				else if (t==PT_FIGH) //Fighter should be visible in heat mode
 				{
 					char buff[10];  //Buffer for HP
-					float *figh = fighters[(unsigned char)parts[i].tmp];
+					playerst *figh = &fighters[(unsigned char)parts[i].tmp];
 
 					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
 					{
@@ -3933,10 +3933,10 @@ for (i = 0; i<=parts_lastActiveIndex; i++) {
 					draw_line(vid , nx, ny-2, nx-2, ny, R, G, B, s);
 					draw_line(vid , nx-2, ny, nx, ny+2, R, G, B, s);
 					//legs
-					draw_line(vid , nx, ny+3, figh[3], figh[4], R, G, B, s);
-					draw_line(vid , figh[3], figh[4], figh[7], figh[8], R, G, B, s);
-					draw_line(vid , nx, ny+3, figh[11], figh[12], R, G, B, s);
-					draw_line(vid , figh[11], figh[12], figh[15], figh[16], R, G, B, s);
+					draw_line(vid , nx, ny+3, figh->legs[0], figh->legs[1], R, G, B, s);
+					draw_line(vid , figh->legs[0], figh->legs[1], figh->legs[4], figh->legs[5], R, G, B, s);
+					draw_line(vid , nx, ny+3, figh->legs[8], figh->legs[9], R, G, B, s);
+					draw_line(vid , figh->legs[8], figh->legs[9], figh->legs[12], figh->legs[13], R, G, B, s);
 				}
 				else
 				{

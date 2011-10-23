@@ -980,21 +980,19 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		// no more particle properties to load, so we can change type here without messing up loading
 		if (i && i<=NPART)
 		{
-			if ((player[27] == 1 && ty==PT_STKM) || (player2[27] == 1 && ty==PT_STKM2))
+			if ((player.spwn == 1 && ty==PT_STKM) || (player2.spwn == 1 && ty==PT_STKM2))
 			{
 				parts[i-1].type = PT_NONE;
 			}
 			else if (parts[i-1].type == PT_STKM)
 			{
-				//player[2] = PT_DUST;
-				STKM_init_legs(player, i-1);
-				player[27] = 1;
+				STKM_init_legs(&player, i-1);
+				player.spwn = 1;
 			}
 			else if (parts[i-1].type == PT_STKM2)
 			{
-				//player2[2] = PT_DUST;
-				STKM_init_legs(player2, i-1);
-				player2[27] = 1;
+				STKM_init_legs(&player2, i-1);
+				player2.spwn = 1;
 			}
 
 			if (ver<48 && (ty==OLD_PT_WIND || (ty==PT_BRAY&&parts[i-1].life==0)))
@@ -1116,8 +1114,8 @@ void clear_sim(void)
 	memset(fighters, 0, sizeof(fighters));
 	fighcount = 0;
 	ISSPAWN1 = ISSPAWN2 = 0;
-	player[27] = 0;
-	player2[27] = 0;
+	player.spwn = 0;
+	player2.spwn = 0;
 	memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
@@ -1499,8 +1497,8 @@ int main(int argc, char *argv[])
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
 	
 	prepare_alpha(4, 1.0f);
-	player[2] = player2[2] = PT_DUST;
-	player[28] = player2[28] = 0;
+	player.elem = player2.elem = PT_DUST;
+	player.frames = player2.frames = 0;
 
 	sprintf(ppmfilename, "%s.ppm", argv[2]);
 	sprintf(ptifilename, "%s.pti", argv[2]);
@@ -2146,7 +2144,7 @@ int main(int argc, char *argv[])
 						free(load_data);
 				}
 			}
-			if (sdl_key=='s' && ((sdl_mod & (KMOD_CTRL)) || !player2[27]))
+			if (sdl_key=='s' && ((sdl_mod & (KMOD_CTRL)) || !player2.spwn))
 			{
 				if (it > 50)
 					it = 50;
@@ -2280,7 +2278,7 @@ int main(int argc, char *argv[])
 						bsy = 0;
 				}
 			}
-			if (sdl_key=='d' && ((sdl_mod & (KMOD_CTRL)) || !player2[27]))
+			if (sdl_key=='d' && ((sdl_mod & (KMOD_CTRL)) || !player2.spwn))
 				DEBUG_MODE = !DEBUG_MODE;
 			if (sdl_key=='i')
 			{
@@ -2364,7 +2362,7 @@ int main(int argc, char *argv[])
 				}
 			}
 
-			if (sdl_key=='w' && (!player2[27] || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
+			if (sdl_key=='w' && (!player2.spwn || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
 			{
 				++gravityMode; // cycle gravity mode
 				itc = 51;
@@ -3623,19 +3621,19 @@ int main(int argc, char *argv[])
 		sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
 		//Setting an element for the stick man
-		if (player[27]==0)
+		if (player.spwn==0)
 		{
 			if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT || sr == PT_LIGH)
-				player[2] = sr;
+				player.elem = sr;
 			else
-				player[2] = PT_DUST;
+				player.elem = PT_DUST;
 		}
-		if (player2[27]==0)
+		if (player2.spwn==0)
 		{
 			if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT || sr == PT_LIGH)
-				player2[2] = sr;
+				player2.elem = sr;
 			else
-				player2[2] = PT_DUST;
+				player2.elem = PT_DUST;
 		}
 	}
 	SDL_CloseAudio();

@@ -250,6 +250,18 @@
 // to call another update function with same arguments:
 #define UPDATE_FUNC_SUBCALL_ARGS i, x, y, surround_space, nt
 
+struct playerst
+{
+	char comm;           //command cell
+	char pcomm;          //previous command
+	int elem;            //element power
+	float legs[16];      //legs' positions
+	float accs[8];       //accelerations
+	char spwn;           //if stick man was spawned
+	unsigned int frames; //frames since last particle spawn - used when spawning LIGH
+};
+typedef struct playerst playerst;
+
 int update_ACID(UPDATE_FUNC_ARGS);
 int update_ANAR(UPDATE_FUNC_ARGS);
 int update_AMTR(UPDATE_FUNC_ARGS);
@@ -343,9 +355,9 @@ int update_LIGH(UPDATE_FUNC_ARGS);
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
 int update_legacy_all(UPDATE_FUNC_ARGS);
-int run_stickman(float* playerp, UPDATE_FUNC_ARGS);
-void STKM_init_legs(float* playerp, int i);
-void STKM_interact(float* playerp, int i, int x, int y);
+int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS);
+void STKM_init_legs(playerst* playerp, int i);
+void STKM_interact(playerst* playerp, int i, int x, int y);
 
 
 struct particle
@@ -978,10 +990,10 @@ extern int wire_placed;
 
 extern int gravwl_timeout;
 
-extern float player[29];
-extern float player2[29];
+extern playerst player;
+extern playerst player2;
 
-extern float fighters[256][29];
+extern playerst fighters[256];
 extern unsigned char fighcount;
 
 extern int gravityMode;

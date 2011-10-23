@@ -11,12 +11,10 @@ int wire_placed = 0;
 
 int lighting_recreate = 0;
 
-//[0] is a command cell, [3]-[18] are legs positions, [19]-[26] are accelerations, [27] shows if player was spawned
-//[28] is frames since last particle spawn - used when spawning LIGH
-float player[29];
-float player2[29];
+playerst player;
+playerst player2;
 
-float fighters[256][29]; //255 is the maximum number of fighters
+playerst fighters[256]; //255 is the maximum number of fighters
 unsigned char fighcount = 0; //Contains the number of fighters
 
 particle *parts;
@@ -309,15 +307,15 @@ int try_move(int i, int x, int y, int nx, int ny)
 	{
 		if (parts[i].type == PT_STKM)
 		{
-			player[27] = 0;
+			player.spwn = 0;
 		}
 		if (parts[i].type == PT_STKM2)
 		{
-			player2[27] = 0;
+			player2.spwn = 0;
 		}
 		if (parts[i].type == PT_FIGH)
 		{
-			fighters[(unsigned char)parts[i].tmp][27] = 0;
+			fighters[(unsigned char)parts[i].tmp].spwn = 0;
 			fighcount--;
 		}
 		parts[i].type=PT_NONE;
@@ -327,15 +325,15 @@ int try_move(int i, int x, int y, int nx, int ny)
 	{
 		if (parts[i].type == PT_STKM)
 		{
-			player[27] = 0;
+			player.spwn = 0;
 		}
 		if (parts[i].type == PT_STKM2)
 		{
-			player2[27] = 0;
+			player2.spwn = 0;
 		}
 		if (parts[i].type == PT_FIGH)
 		{
-			fighters[(unsigned char)parts[i].tmp][27] = 0;
+			fighters[(unsigned char)parts[i].tmp].spwn = 0;
 			fighcount--;
 		}
 		parts[i].type=PT_NONE;
@@ -601,15 +599,15 @@ void kill_part(int i)//kills particle number i
 	y = (int)(parts[i].y+0.5f);
 	if (parts[i].type == PT_STKM)
 	{
-		player[27] = 0;
+		player.spwn = 0;
 	}
 	if (parts[i].type == PT_STKM2)
 	{
-		player2[27] = 0;
+		player2.spwn = 0;
 	}
 	if (parts[i].type == PT_FIGH)
 	{
-		fighters[(unsigned char)parts[i].tmp][27] = 0;
+		fighters[(unsigned char)parts[i].tmp].spwn = 0;
 		fighcount--;
 	}
 	if (parts[i].type == PT_SPAWN)
@@ -648,14 +646,14 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
 		t = PT_NONE;
 
 	if (parts[i].type == PT_STKM)
-		player[27] = 0;
+		player.spwn = 0;
 
 	if (parts[i].type == PT_STKM2)
-		player2[27] = 0;
+		player2.spwn = 0;
 
 	if (parts[i].type == PT_FIGH)
 	{
-		fighters[(unsigned char)parts[i].tmp][27] = 0;
+		fighters[(unsigned char)parts[i].tmp].spwn = 0;
 		fighcount--;
 	}
 
@@ -987,7 +985,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	}
 	if (t==PT_STKM)
 	{
-		if (player[27]==0)
+		if (player.spwn==0)
 		{
 			parts[i].x = (float)x;
 			parts[i].y = (float)y;
@@ -997,8 +995,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			parts[i].life = 100;
 			parts[i].ctype = 0;
 			parts[i].temp = ptypes[t].heat;
-			STKM_init_legs(player, i);
-			player[27] = 1;
+			STKM_init_legs(&player, i);
+			player.spwn = 1;
 		}
 		else
 		{
@@ -1009,7 +1007,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	}
 	if (t==PT_STKM2)
 	{
-		if (player2[27]==0)
+		if (player2.spwn==0)
 		{
 			parts[i].x = (float)x;
 			parts[i].y = (float)y;
@@ -1019,8 +1017,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			parts[i].life = 100;
 			parts[i].ctype = 0;
 			parts[i].temp = ptypes[t].heat;
-			STKM_init_legs(player2, i);
-			player2[27] = 1;
+			STKM_init_legs(&player2, i);
+			player2.spwn = 1;
 		}
 		else
 		{
@@ -1032,8 +1030,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	if (t==PT_FIGH)
 	{
 		unsigned char cunt = 0;
-		while (cunt < 100 && cunt < (fighcount+1) && fighters[cunt][27]==1) cunt++;
-		if (cunt < 100 && fighters[cunt][27]==0)
+		while (cunt < 100 && cunt < (fighcount+1) && fighters[cunt].spwn==1) cunt++;
+		if (cunt < 100 && fighters[cunt].spwn==0)
 		{
 			parts[i].x = (float)x;
 			parts[i].y = (float)y;
@@ -1044,9 +1042,9 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			parts[i].ctype = 0;
 			parts[i].tmp = cunt;
 			parts[i].temp = ptypes[t].heat;
-			STKM_init_legs(fighters[cunt], i);
-			fighters[cunt][27] = 1;
-			fighters[cunt][2] = PT_DUST;
+			STKM_init_legs(&fighters[cunt], i);
+			fighters[cunt].spwn = 1;
+			fighters[cunt].elem = PT_DUST;
 			fighcount++;
 
 			return i;
