@@ -1463,6 +1463,8 @@ GLuint glowV[(YRES*XRES)*2];
 GLfloat glowC[(YRES*XRES)*4];
 GLuint flatV[(YRES*XRES)*2];
 GLfloat flatC[(YRES*XRES)*4];
+GLfloat lineV[(((YRES*XRES)*2)*6)];
+GLfloat lineC[(((YRES*XRES)*2)*6)];
 #endif
 void render_parts(pixel *vid)
 {
@@ -1476,7 +1478,7 @@ void render_parts(pixel *vid)
 		int cblurV = 0, cblurC = 0, cblur = 0;
 		int cglowV = 0, cglowC = 0, cglow = 0;
 		int cflatV = 0, cflatC = 0, cflat = 0;
-		
+		int clineV = 0, clineC = 0, cline = 0;
 		//Set coord offset 
 		glScalef(1,-1,1);
         glTranslatef(0, -YRES/*-(YRES+MENUSIZE)*/, 0);
@@ -1806,6 +1808,56 @@ void render_parts(pixel *vid)
 				if(pixel_mode & PMODE_SPARK)
 				{
 					flicker = rand()%20;
+#ifdef OGLR
+					//Oh god, this is awful
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx-5;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 1.0f - ((float)flicker)/30;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx+5;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny-5;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 1.0f - ((float)flicker)/30;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny+5;
+				    cline++;
+#else
 					gradv = 4*parts[i].life + flicker;
 					for (x = 0; gradv>0.5; x++) {
 						addpixel(vid, nx+x, ny, colr, colg, colb, gradv);
@@ -1815,10 +1867,61 @@ void render_parts(pixel *vid)
 						addpixel(vid, nx, ny-x, colr, colg, colb, gradv);
 						gradv = gradv/1.5f;
 					}
+#endif
 				}
 				if(pixel_mode & PMODE_FLARE)
 				{
 					flicker = rand()%20;
+#ifdef OGLR
+					//Oh god, this is awful
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx-10;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 1.0f - ((float)flicker)/40;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx+10;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny-10;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 1.0f - ((float)flicker)/30;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny+10;
+				    cline++;
+#else
 					gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
 					blendpixel(vid, nx, ny, colr, colg, colb, (gradv*4)>255?255:(gradv*4) );
 					blendpixel(vid, nx+1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
@@ -1837,10 +1940,61 @@ void render_parts(pixel *vid)
 						addpixel(vid, nx, ny-x, colr, colg, colb, gradv);
 						gradv = gradv/1.2f;
 					}
+#endif
 				}
 				if(pixel_mode & PMODE_LFLARE)
 				{
 					flicker = rand()%20;
+#ifdef OGLR
+					//Oh god, this is awful
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx-70;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 1.0f - ((float)flicker)/30;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx+70;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny-70;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 1.0f - ((float)flicker)/50;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny;
+				    cline++;
+				    
+				    lineC[clineC++] = ((float)colr)/255.0f;
+				    lineC[clineC++] = ((float)colg)/255.0f;
+				    lineC[clineC++] = ((float)colb)/255.0f;
+				    lineC[clineC++] = 0.0f;
+				    lineV[clineV++] = fnx;
+				    lineV[clineV++] = fny+70;
+				    cline++;
+#else
 					gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
 					blendpixel(vid, nx, ny, colr, colg, colb, (gradv*4)>255?255:(gradv*4) );
 					blendpixel(vid, nx+1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
@@ -1859,6 +2013,7 @@ void render_parts(pixel *vid)
 						addpixel(vid, nx, ny-x, colr, colg, colb, gradv);
 						gradv = gradv/1.01f;
 					}
+#endif
 				}
 				//Fire effects
 				if(firea && (pixel_mode & FIRE_BLEND))
@@ -1947,8 +2102,9 @@ void render_parts(pixel *vid)
         //Go into array mode
         glEnableClientState(GL_COLOR_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
-
-		if(cflat)
+        
+      
+ 		if(cflat)
 		{
 			// -- BEGIN FLAT -- //
 			//Set point size (size of fire texture)
@@ -2031,6 +2187,22 @@ void render_parts(pixel *vid)
 		    glDisable( GL_POINT_SMOOTH );
 		    // -- END BLOB -- //
 		}
+		
+        if(cline)
+		{
+			// -- BEGIN LINES -- //
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			glEnable( GL_LINE_SMOOTH );
+		    glColorPointer(4, GL_FLOAT, 0, &lineC[0]);
+		    glVertexPointer(2, GL_FLOAT, 0, &lineV[0]);
+
+		    glDrawArrays(GL_LINE_STRIP, 0, cline);
+		    
+		    //Clear some stuff we set
+		    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		    glDisable(GL_LINE_SMOOTH);
+		    // -- END LINES -- //
+        }
 		
 		if(cfire || csmoke)
 		{
