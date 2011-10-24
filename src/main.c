@@ -3525,8 +3525,7 @@ int main(int argc, char *argv[])
 					draw_wavelengths(vid_buf,XRES-20-textwidth(heattext),11,2,wavelength_gfx);
 			}
 			wavelength_gfx = 0;
-			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, it_invert * 3);
-			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, it_invert * 4);
+			drawtext_outline(vid_buf, 16, 16, uitext, 32, 216, 255, it_invert * 4, 0, 0, 0, it_invert * 4);
 
 		}
 
