@@ -43,7 +43,7 @@ powder-sse3: $(SOURCES)
 	mv $@ build
 powder-sse2: $(SOURCES)
 	$(PYCOMMAND)
-	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE2) $(SOURCES) $(LFLAGS) -DLIN32
+	$(COMPILER) -m32 -o$@ $(CFLAGS) $(OFLAGS) $(MFLAGS_SSE2) $(SOURCES) $(LFLAGS) -DLIN32 -DOGLR -DPIX32OGL -DPIXALPHA -lGL
 	strip $@
 	mv $@ build
 powder-sse: $(SOURCES)
