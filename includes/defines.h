@@ -15,6 +15,9 @@
 
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
 
+#define MTOS_EXPAND(str) #str
+#define MTOS(str) MTOS_EXPAND(str)
+
 #define SERVER "powdertoy.co.uk"
 #define SCRIPTSERVER "powdertoy.co.uk"
 

@@ -131,7 +131,7 @@ void play_sound(char *file)
 }
 
 static const char *it_msg =
-    "\brThe Powder Toy - http://powdertoy.co.uk, irc.freenode.net #powder\n"
+    "\blThe Powder Toy - Version " MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " - http://powdertoy.co.uk, irc.freenode.net #powder\n"
     "\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
     "\n"
     "\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
@@ -1585,7 +1585,7 @@ int main(int argc, char *argv[])
 #endif
 	int wavelength_gfx = 0;
 	int x, y, line_x, line_y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
-	int da = 0, dae = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2, quickoptions_tooltip_fade_invert;
+	int da = 0, dae = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2, quickoptions_tooltip_fade_invert, it_invert = 0;
 	float nfvx, nfvy;
 	int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
 	void *load_data=NULL;
@@ -3480,6 +3480,11 @@ int main(int argc, char *argv[])
 				strappend(uitext, " [FRAME CAPTURE]");
 #endif
 			quickoptions_tooltip_fade_invert = 255 - (quickoptions_tooltip_fade*20);
+			it_invert = 50 - it;
+			if(it_invert < 0)
+				it_invert = 0;
+			if(it_invert > 50)
+				it_invert = 50;
 			if (sdl_zoom_trig||zoom_en)
 			{
 				if (zoom_x<XRES/2)
@@ -3520,8 +3525,8 @@ int main(int argc, char *argv[])
 					draw_wavelengths(vid_buf,XRES-20-textwidth(heattext),11,2,wavelength_gfx);
 			}
 			wavelength_gfx = 0;
-			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
-			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
+			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, it_invert * 3);
+			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, it_invert * 4);
 
 		}
 

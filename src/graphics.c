@@ -1057,6 +1057,10 @@ int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a
 				r = 255;
 				g = b = 0;
 				break;
+			case 'l':
+				r = 255;
+				g = b = 75;
+				break;
 			case 'b':
 				r = g = 0;
 				b = 255;
@@ -1135,9 +1139,18 @@ int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, i
 					r = 255;
 					g = b = 0;
 					break;
+				case 'l':
+					r = 255;
+					g = b = 75;
+					break;
 				case 'b':
 					r = g = 0;
 					b = 255;
+					break;
+				case 't':
+					b = 255;
+					g = 170;
+					r = 32;
 					break;
 				}
 				s++;
