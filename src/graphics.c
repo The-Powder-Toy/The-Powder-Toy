@@ -3102,12 +3102,13 @@ void render_zoom(pixel *img) //draws the zoom box
 	glTexCoord2d(zcx1, zcy0);
 	glVertex3f(zoom_wx+ZSIZE*ZFACTOR, YRES+MENUSIZE-zoom_wy, 1.0);
 	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable( GL_TEXTURE_2D );
 	
 	
 	if(zoom_en)
 	{	
-		//glEnable(GL_COLOR_LOGIC_OP);
+		glEnable(GL_COLOR_LOGIC_OP);
 		//glEnable(GL_LINE_SMOOTH);
 		glLogicOp(GL_XOR);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -3118,7 +3119,7 @@ void render_zoom(pixel *img) //draws the zoom box
 		glVertex3i(zoom_x+ZSIZE, YRES+MENUSIZE-(zoom_y-1), 0);
 		glVertex3i(zoom_x-1, YRES+MENUSIZE-(zoom_y-1), 0);
 		glEnd();
-		//glDisable(GL_COLOR_LOGIC_OP);
+		glDisable(GL_COLOR_LOGIC_OP);
     }
 #else
 	int x, y, i, j;
@@ -3432,6 +3433,41 @@ corrupt:
 //draws the cursor
 void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 {
+#ifdef OGLR
+	int i;
+	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV)
+	{
+		glEnable(GL_COLOR_LOGIC_OP);
+		glLogicOp(GL_XOR);
+		glBegin(GL_LINE_LOOP);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		if (CURRENT_BRUSH==SQUARE_BRUSH)
+		{
+			glVertex2f(x-rx+1, (YRES+MENUSIZE-y)-ry+1);
+			glVertex2f(x+rx+1, (YRES+MENUSIZE-y)-ry+1);
+			glVertex2f(x+rx+1, (YRES+MENUSIZE-y)+ry+1);
+			glVertex2f(x-rx+1, (YRES+MENUSIZE-y)+ry+1);
+			glVertex2f(x-rx+1, (YRES+MENUSIZE-y)-ry+1);
+		}
+		else if (CURRENT_BRUSH==CIRCLE_BRUSH)
+		{
+			for (i = 0; i < 360; i++)
+			{
+			  float degInRad = i*(M_PI/180.0f);
+			  glVertex2f((cos(degInRad)*rx)+x, (sin(degInRad)*ry)+YRES+MENUSIZE-y);
+			}
+		}
+		else if (CURRENT_BRUSH==TRI_BRUSH)
+		{
+			glVertex2f(x+1, (YRES+MENUSIZE-y)+ry+1);
+			glVertex2f(x+rx+1, (YRES+MENUSIZE-y)-ry+1);
+			glVertex2f(x-rx+1, (YRES+MENUSIZE-y)-ry+1);
+			glVertex2f(x+1, (YRES+MENUSIZE-y)+ry+1);
+		}
+		glEnd();
+		glDisable(GL_COLOR_LOGIC_OP);
+	}
+#else
 	int i,j,c;
 	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV)
 	{
@@ -3504,6 +3540,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 			xor_pixel(x+CELL+c-1, y+i, vid);
 		}
 	}
+#endif
 }
 
 int sdl_open(void)
