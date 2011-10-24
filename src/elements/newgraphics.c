@@ -1,4 +1,6 @@
 #include <element.h>
+#include "hmap.h"
+
 int graphics_QRTZ(GRAPHICS_FUNC_ARGS) //QRTZ and PQRT
 {
 	int t = cpart->type, z = cpart->tmp - 5;//speckles!

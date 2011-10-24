@@ -21,7 +21,7 @@
 #define INCLUDE_FONTDATA
 #include <font.h>
 #include <misc.h>
-
+#include "hmap.h"
 
 unsigned cmode = CM_FIRE;
 SDL_Surface *sdl_scrn;
@@ -43,6 +43,63 @@ unsigned char fire_b[YRES/CELL][XRES/CELL];
 unsigned int fire_alpha[CELL*3][CELL*3];
 pixel *fire_bg;
 pixel *pers_bg;
+
+char * flm_data;
+int flm_data_points = 4;
+pixel flm_data_colours[] = {PIXPACK(0xAF9F0F), PIXPACK(0xDFBF0F), PIXPACK(0x60300F), PIXPACK(0x000000)};
+float flm_data_pos[] = {1.0f, 0.9f, 0.5f, 0.0f};
+
+char * plasma_data;
+int plasma_data_points = 5;
+pixel plasma_data_colours[] = {PIXPACK(0xAFFFFF), PIXPACK(0xAFFFFF), PIXPACK(0x301060), PIXPACK(0x301040), PIXPACK(0x000000)};
+float plasma_data_pos[] = {1.0f, 0.9f, 0.5f, 0.25, 0.0f};
+
+char * generate_gradient(pixel * colours, float * points, int pointcount, int size)
+{
+	int cp, i, j;
+	pixel ptemp;
+	char * newdata = malloc(size * 3);
+	float poss, pose, temp;
+	memset(newdata, 0, size*3);
+	//Sort the Colours and Points
+	for (i = (pointcount - 1); i > 0; i--)
+	{
+		for (j = 1; j <= i; j++)
+		{
+			if (points[j-1] > points[j])
+			{
+				temp = points[j-1];
+				points[j-1] = points[j];
+				points[j] = temp;
+				
+				ptemp = colours[j-1];
+				colours[j-1] = colours[j];
+				colours[j] = ptemp;
+			}
+		}
+	}
+	i = 0;
+	j = 1;
+	poss = points[i];
+	pose = points[j];
+	for (cp = 0; cp < size; cp++)
+	{
+		float cpos = (float)cp / (float)size, ccpos, cccpos;
+		if(cpos > pose && j+1 < pointcount)
+		{
+			poss = points[++i];
+			pose = points[++j];
+		}
+		ccpos = cpos - poss;
+		cccpos = ccpos / (pose - poss);
+		if(cccpos > 1.0f)
+			cccpos = 1.0f;
+		newdata[(cp*3)] = PIXR(colours[i])*(1.0f-cccpos) + PIXR(colours[j])*(cccpos);
+		newdata[(cp*3)+1] = PIXG(colours[i])*(1.0f-cccpos) + PIXG(colours[j])*(cccpos);
+		newdata[(cp*3)+2] = PIXB(colours[i])*(1.0f-cccpos) + PIXB(colours[j])*(cccpos);
+	}
+	return newdata;
+}
 
 void *ptif_pack(pixel *src, int w, int h, int *result_size){
 	int i = 0, datalen = (w*h)*3, cx = 0, cy = 0;
@@ -3481,8 +3538,8 @@ int sdl_open(void)
 		glGenTextures(1, &partsFboTex);
 		glBindTexture(GL_TEXTURE_2D, partsFboTex);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, XRES, YRES, 0, GL_RGBA, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 		 
 		//FBO
 		glGenFramebuffers(1, &partsFbo);

@@ -2,7 +2,6 @@
 #define GRAPHICS_H
 #include <SDL/SDL.h>
 #include "defines.h"
-#include "hmap.h"
 
 #ifdef PIX16
 #define PIXELSIZE 2
@@ -61,6 +60,16 @@ extern unsigned int fire_alpha[CELL*3][CELL*3];
 extern pixel *fire_bg;
 extern pixel *pers_bg;
 
+extern char * flm_data;
+extern int flm_data_points;;
+extern pixel flm_data_colours[];
+extern float flm_data_pos[];
+
+extern char * plasma_data;
+extern int plasma_data_points;;
+extern pixel plasma_data_colours[];
+extern float plasma_data_pos[];
+
 struct gcache_item
 {
 	int isready;
@@ -75,6 +84,8 @@ gcache_item *graphicscache;
 int graphics_DEFAULT(GRAPHICS_FUNC_ARGS);
 
 void prepare_graphicscache();
+
+char * generate_gradient(pixel * colours, float * points, int pointcount, int size);
 
 void draw_rgba_image(pixel *vid, unsigned char *data, int x, int y, float a);
 
@@ -208,6 +219,8 @@ void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale);
 #endif
 
 #ifdef INCLUDE_SHADERS
+#ifndef SHADERS_H
+#define SHADERS_H
 const char * fireFragment = "uniform sampler2D fireAlpha;\
 void main () {\
     vec4 texColor = texture2D(fireAlpha, gl_PointCoord);\
@@ -257,5 +270,5 @@ const char * airVertex = "void main(void)\
 	gl_Position = ftransform();;\
 	gl_FrontColor = gl_Color;\
 }";
-
+#endif
 #endif

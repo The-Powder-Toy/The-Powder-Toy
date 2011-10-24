@@ -1741,6 +1741,8 @@ int main(int argc, char *argv[])
 
 	prepare_alpha(CELL, 1.0f);
 	prepare_graphicscache();
+	flm_data = generate_gradient(flm_data_colours, flm_data_pos, flm_data_points, 200);
+	plasma_data = generate_gradient(plasma_data_colours, plasma_data_pos, plasma_data_points, 200);
 
 	if (cpu_check())
 	{
