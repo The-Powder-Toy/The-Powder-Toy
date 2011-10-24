@@ -1904,7 +1904,10 @@ int main(int argc, char *argv[])
 				}
 			}
 			else
+			{
 				free(tmp);
+				old_version = 0;
+			}
 		}
 		if (y>=sdl_scale*(YRES+(MENUSIZE-20))) //mouse checks for buttons at the bottom, to draw mouseover texts
 		{
