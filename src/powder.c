@@ -9,8 +9,12 @@ int gravwl_timeout = 0;
 
 int wire_placed = 0;
 
-float player[28]; //[0] is a command cell, [3]-[18] are legs positions, [19]-[26] are accelerations, [27] shows if player was spawned
-float player2[28];
+int lighting_recreate = 0;
+
+//[0] is a command cell, [3]-[18] are legs positions, [19]-[26] are accelerations, [27] shows if player was spawned
+//[28] is frames since last particle spawn - used when spawning LIGH
+float player[29];
+float player2[29];
 
 particle *parts;
 particle *cb_parts;
@@ -96,6 +100,7 @@ void init_can_move()
 				can_move[t][rt] = 2;
 		}
 	}
+	can_move[PT_DEST][PT_DMND] = 0;
 	can_move[PT_BIZR][PT_FILT] = 2;
 	can_move[PT_BIZRG][PT_FILT] = 2;
 	for (t=0;t<PT_NUM;t++)
@@ -272,6 +277,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 				parts[i].ctype &= 0x1F << temp_bin; //Filter Colour
 			} else if(parts[r>>8].tmp==2){
 				parts[i].ctype |= 0x1F << temp_bin; //Add Colour
+			} else if(parts[r>>8].tmp==3){
+				parts[i].ctype &= ~(0x1F << temp_bin); //Subtract Colour
 			}
 		}
 		if (parts[i].type == PT_NEUT && (r&0xFF)==PT_GLAS) {
@@ -842,6 +849,22 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		parts[i].tmp = 0;
 		parts[i].tmp2 = 0;
 	}
+	if (t==PT_LIGH && p==-2)
+	{
+	    switch (gravityMode)
+        {
+        default:
+        case 0:
+            parts[i].tmp= 270+rand()%40-20;
+            break;
+        case 1:
+            parts[i].tmp = rand()%360;
+            break;
+        case 2:
+            parts[i].tmp = atan2(x-XCNTR, y-YCNTR)*(180.0f/M_PI)+90;
+        }
+        parts[i].tmp2 = 4;
+	}
 	if (t==PT_SOAP)
 	{
 		parts[i].tmp = -1;
@@ -1258,9 +1281,9 @@ inline int parts_avg(int ci, int ni,int t)
 }
 
 
-int nearest_part(int ci, int t)
+int nearest_part(int ci, int t, int max_d)
 {
-	int distance = MAX_DISTANCE;
+	int distance = (max_d!=-1)?max_d:MAX_DISTANCE;
 	int ndistance = 0;
 	int id = -1;
 	int i = 0;
@@ -1268,7 +1291,7 @@ int nearest_part(int ci, int t)
 	int cy = (int)parts[ci].y;
 	for (i=0; i<=parts_lastActiveIndex; i++)
 	{
-		if (parts[i].type==t&&!parts[i].life&&i!=ci)
+		if ((parts[i].type==t||(t==-1&&parts[i].type))&&!parts[i].life&&i!=ci)
 		{
 			ndistance = abs(cx-parts[i].x)+abs(cy-parts[i].y);// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
 			if (ndistance<distance)
@@ -1329,10 +1352,33 @@ void update_particles_i(pixel *vid, int start, int inc)
 	int starti = (start*-1);
 	int surround[8];
 	int surround_hconduct[8];
+	int lighting_ok=1;
 	float pGravX, pGravY, pGravD;
 
+	if (sys_pause&&lighting_recreate>0)
+    {
+        for (i=0; i<=parts_lastActiveIndex; i++)
+        {
+            if (parts[i].type==PT_LIGH && parts[i].tmp2>0)
+            {
+                lighting_ok=0;
+                break;
+            }
+        }
+    }
+	
+	if (lighting_ok)
+        lighting_recreate--;
+
+    if (lighting_recreate<0)
+        lighting_recreate=1;
+
+    if (lighting_recreate>21)
+        lighting_recreate=21;
+	
 	if (sys_pause&&!framerender)//do nothing if paused
 		return;
+		
 	if (ISGRAV==1)//crappy grav color handling, i will change this someday
 	{
 		ISGRAV = 0;
@@ -1687,13 +1733,13 @@ void update_particles_i(pixel *vid, int start, int inc)
 			if (t==PT_ANAR)
 			{
 				// perhaps we should have a ptypes variable for this
-				pGravX -= gravx[y/CELL][x/CELL];
-				pGravY -= gravy[y/CELL][x/CELL];
+				pGravX -= gravxf[(y*XRES)+x];
+				pGravY -= gravyf[(y*XRES)+x];
 			}
 			else if(t!=PT_STKM && t!=PT_STKM2 && !(ptypes[t].properties & TYPE_SOLID))
 			{
-				pGravX += gravx[y/CELL][x/CELL];
-				pGravY += gravy[y/CELL][x/CELL];
+				pGravX += gravxf[(y*XRES)+x];
+				pGravY += gravyf[(y*XRES)+x];
 			}
 			//velocity updates for the particle
 			parts[i].vx *= ptypes[t].loss;
@@ -1782,8 +1828,9 @@ void update_particles_i(pixel *vid, int start, int inc)
 						pt = (c_heat+parts[i].temp*96.645/ptypes[t].hconduct*fabs(ptypes[t].weight))/(c_Cm+96.645/ptypes[t].hconduct*fabs(ptypes[t].weight));
 					
 #else
-					pt = parts[i].temp = (c_heat+parts[i].temp)/(h_count+1);
+					pt = (c_heat+parts[i].temp)/(h_count+1);
 #endif
+					pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
 					for (j=0; j<8; j++)
 					{
 						parts[surround_hconduct[j]].temp = pt;
@@ -1803,7 +1850,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if (ptransitions[t].tht!=PT_NUM)
 							t = ptransitions[t].tht;
 						else if (t==PT_ICEI) {
-							if (parts[i].ctype&&parts[i].ctype!=PT_ICEI) {
+							if (parts[i].ctype>0&&parts[i].ctype<PT_NUM&&parts[i].ctype!=PT_ICEI) {
 								if (ptransitions[parts[i].ctype].tlt==PT_ICEI&&pt<=ptransitions[parts[i].ctype].tlv) s = 0;
 								else {
 									t = parts[i].ctype;
@@ -1948,7 +1995,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 
 			s = 1;
-			gravtot = fabsf(gravy[y/CELL][x/CELL])+fabsf(gravx[y/CELL][x/CELL]);
+			gravtot = fabs(gravyf[(y*XRES)+x])+fabs(gravxf[(y*XRES)+x]);
 			if (pv[y/CELL][x/CELL]>ptransitions[t].phv&&ptransitions[t].pht>-1) {
 				// particle type change due to high pressure
 				if (ptransitions[t].pht!=PT_NUM)
@@ -2312,8 +2359,8 @@ killed:
 										pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
 										pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
 								}
-								pGravX += gravx[ny/CELL][nx/CELL];
-								pGravY += gravy[ny/CELL][nx/CELL];
+								pGravX += gravxf[(ny*XRES)+nx];
+								pGravY += gravyf[(ny*XRES)+nx];
 								if (fabsf(pGravY)>fabsf(pGravX))
 									mv = fabsf(pGravY);
 								else
@@ -2371,8 +2418,8 @@ killed:
 											pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
 											pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
 									}
-									pGravX += gravx[ny/CELL][nx/CELL];
-									pGravY += gravy[ny/CELL][nx/CELL];
+									pGravX += gravxf[(ny*XRES)+nx];
+									pGravY += gravyf[(ny*XRES)+nx];
 									if (fabsf(pGravY)>fabsf(pGravX))
 										mv = fabsf(pGravY);
 									else
@@ -2566,11 +2613,11 @@ int flood_prop_2(int x, int y, size_t propoffset, void * propvalue, int proptype
 	{
 		i = pmap[y][x]>>8;
 		if(proptype==2){
-			*((float*)(((void*)&parts[i])+propoffset)) = *((float*)propvalue);
+			*((float*)(((char*)&parts[i])+propoffset)) = *((float*)propvalue);
 		} else if(proptype==0) {
-			*((int*)(((void*)&parts[i])+propoffset)) = *((int*)propvalue);
+			*((int*)(((char*)&parts[i])+propoffset)) = *((int*)propvalue);
 		} else if(proptype==1) {
-			*((char*)(((void*)&parts[i])+propoffset)) = *((char*)propvalue);
+			*((char*)(((char*)&parts[i])+propoffset)) = *((char*)propvalue);
 		}
 		bitmap[(y*XRES)+x] = 1;
 	}
@@ -2772,10 +2819,23 @@ int flood_water(int x, int y, int i, int originaly, int check)
 	return 1;
 }
 
+//wrapper around create_part to create TESC with correct tmp value
+int create_part_add_props(int p, int x, int y, int tv, int rx, int ry)
+{
+	p=create_part(p, x, y, tv);
+	if (tv==PT_TESC)
+	{
+		parts[p].tmp=rx*4+ry*4+7;
+		if (parts[p].tmp>300)
+			parts[p].tmp=300;
+	}
+	return p;
+}
+
 //this creates particles from a brush, don't use if you want to create one particle
 int create_parts(int x, int y, int rx, int ry, int c, int flags)
 {
-	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0;//n;
+	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;//n;
 
 	int wall = c - 100;
 	if (c==SPC_WIND){
@@ -2807,6 +2867,23 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	{
 		gravwl_timeout = 60;
 	}
+	if (c==PT_LIGH)
+	{
+	    if (lighting_recreate>0 && rx+ry>0)
+            return 0;
+        p=create_part(-2, x, y, c);
+        if (p!=-1)
+        {
+            parts[p].life=rx+ry;
+            if (parts[p].life>55)
+                parts[p].life=55;
+            parts[p].temp=parts[p].life*150; // temperature of the lighting shows the power of the lighting
+            lighting_recreate+=parts[p].life/2+1;
+            return 1;
+        }
+        else return 0;
+	}
+	
 	if (dw==1)
 	{
 		ry = ry/CELL;
@@ -2921,7 +2998,7 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 				{
 					delete_part(x, y, 0);
 					if (c!=0)
-						create_part(-2, x, y, c);
+						create_part_add_props(-2, x, y, c, rx, ry);
 				}
 			}
 		}
@@ -2938,7 +3015,7 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 						{
 							delete_part(x+i, y+j, 0);
 							if (c!=0)
-								create_part(-2, x+i, y+j, c);
+								create_part_add_props(-2, x+i, y+j, c, rx, ry);
 						}
 					}
 		return 1;
@@ -2947,14 +3024,14 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	//else, no special modes, draw element like normal.
 	if (rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
 	{
-		if (create_part(-2, x, y, c)==-1)
+		if (create_part_add_props(-2, x, y, c, rx, ry)==-1)
 			f = 1;
 	}
 	else
 		for (j=-ry; j<=ry; j++)
 			for (i=-rx; i<=rx; i++)
 				if (InCurrentBrush(i ,j ,rx ,ry))
-					if (create_part(-2, x+i, y+j, c)==-1)
+					if (create_part_add_props(-2, x+i, y+j, c, rx, ry)==-1)
 						f = 1;
 	return !f;
 }
@@ -3030,7 +3107,8 @@ void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flag
 		if (e >= 0.5f)
 		{
 			y += sy;
-			if (c==WL_EHOLE+100 || c==WL_ALLOWGAS+100 || c==WL_ALLOWENERGY+100 || c==WL_ALLOWALLELEC+100 || c==WL_ALLOWSOLID+100 || c==WL_ALLOWAIR+100 || c==WL_WALL+100 || c==WL_DESTROYALL+100 || c==WL_ALLOWLIQUID+100 || c==WL_FAN+100 || c==WL_STREAM+100 || c==WL_DETECT+100 || c==WL_EWALL+100 || c==WL_WALLELEC+100 || !(rx+ry))
+			if ((c==WL_EHOLE+100 || c==WL_ALLOWGAS+100 || c==WL_ALLOWENERGY+100 || c==WL_ALLOWALLELEC+100 || c==WL_ALLOWSOLID+100 || c==WL_ALLOWAIR+100 || c==WL_WALL+100 || c==WL_DESTROYALL+100 || c==WL_ALLOWLIQUID+100 || c==WL_FAN+100 || c==WL_STREAM+100 || c==WL_DETECT+100 || c==WL_EWALL+100 || c==WL_WALLELEC+100 || !(rx+ry))
+			   && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
 				if (cp)
 					create_parts(y, x, rx, ry, c, flags);

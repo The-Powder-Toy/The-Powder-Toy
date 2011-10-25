@@ -32,7 +32,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 	}
 	else if (ct==PT_ETRD&&parts[i].life==1)
 	{
-		nearp = nearest_part(i, PT_ETRD);
+		nearp = nearest_part(i, PT_ETRD, -1);
 		if (nearp!=-1&&parts_avg(i, nearp, PT_INSL)!=PT_INSL)
 		{
 			create_line(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), 0, 0, PT_PLSM, 0);
@@ -51,6 +51,42 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 		parts[i].ctype = PT_NBLE;
 		parts[i].temp = 3500;
 		pv[y/CELL][x/CELL] += 1;
+	}
+	else if (ct==PT_TESC) // tesla coil code
+	{
+		if (parts[i].tmp>300)
+			parts[i].tmp=300;
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				{
+					r = pmap[y+ry][x+rx];
+					if (r)
+						continue;
+					if (rand()%(parts[i].tmp*parts[i].tmp/20+6)==0)
+					{
+						int p=create_part(-1, x+rx*2, y+ry*2, PT_LIGH);
+						if (p!=-1)
+						{
+							if(parts[i].tmp<=4) //Prevent Arithmetic errors with zero values
+								continue;
+							parts[p].life=rand()%(2+parts[i].tmp/15)+parts[i].tmp/7;
+							if (parts[i].life>60)
+								parts[i].life=60;
+							parts[p].temp=parts[p].life*parts[i].tmp/2.5;
+							parts[p].tmp2=1;
+							parts[p].tmp=acos(1.0*rx/sqrt(rx*rx+ry*ry))/M_PI*360;
+							parts[i].temp-=parts[i].tmp*2+parts[i].temp/5; // slight self-cooling
+							if (fabs(pv[y/CELL][x/CELL])!=0.0f)
+							{
+								if (fabs(pv[y/CELL][x/CELL])<=0.5f)
+									pv[y/CELL][x/CELL]=0;
+								else
+									pv[y/CELL][x/CELL]-=(pv[y/CELL][x/CELL]>0)?0.5:-0.5;
+							}
+						}
+					}
+				}
 	}
 	else if (ct==PT_IRON) {
 		for (rx=-1; rx<2; rx++)

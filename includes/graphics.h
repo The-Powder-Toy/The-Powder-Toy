@@ -43,6 +43,8 @@
 #endif
 #endif
 
+extern int emp_decor;
+
 extern unsigned cmode;
 extern SDL_Surface *sdl_scrn;
 extern int sdl_scale;
@@ -57,16 +59,15 @@ extern unsigned char fire_g[YRES/CELL][XRES/CELL];
 extern unsigned char fire_b[YRES/CELL][XRES/CELL];
 
 extern unsigned int fire_alpha[CELL*3][CELL*3];
-extern pixel *fire_bg;
 extern pixel *pers_bg;
 
 extern char * flm_data;
-extern int flm_data_points;;
+extern int flm_data_points;
 extern pixel flm_data_colours[];
 extern float flm_data_pos[];
 
 extern char * plasma_data;
-extern int plasma_data_points;;
+extern int plasma_data_points;
 extern pixel plasma_data_colours[];
 extern float plasma_data_pos[];
 
@@ -86,6 +87,8 @@ int graphics_DEFAULT(GRAPHICS_FUNC_ARGS);
 void prepare_graphicscache();
 
 char * generate_gradient(pixel * colours, float * points, int pointcount, int size);
+
+void draw_other(pixel *vid);
 
 void draw_rgba_image(pixel *vid, unsigned char *data, int x, int y, float a);
 

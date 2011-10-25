@@ -131,7 +131,7 @@ void play_sound(char *file)
 }
 
 static const char *it_msg =
-    "\brThe Powder Toy - http://powdertoy.co.uk, irc.freenode.net #powder\n"
+    "\blThe Powder Toy - Version " MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " - http://powdertoy.co.uk, irc.freenode.net #powder\n"
     "\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
     "\n"
     "\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
@@ -153,7 +153,7 @@ static const char *it_msg =
     "\n"
     "Contributors: \bgStanislaw K Skowronek (\brhttp://powder.unaligned.org\bg, \bbirc.unaligned.org #wtf\bg),\n"
     "\bgSimon Robertshaw, Skresanov Savely, cracker64, Catelite, Bryan Hoyle, Nathan Cousins, jacksonmj,\n"
-	"\bgLieuwe Mosch, Anthony Boot, Matthew Miller\n"
+	"\bgLieuwe Mosch, Anthony Boot, Matthew Miller, MaksProg\n"
     "\n"
     "\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html"
     ;
@@ -1117,7 +1117,6 @@ void clear_sim(void)
 	player[27] = 0;
 	player2[27] = 0;
 	memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-	memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
 	memset(fire_b, 0, sizeof(fire_b));
@@ -1454,6 +1453,7 @@ void start_grav_async()
 {
 	if(!ngrav_enable){
 		gravthread_done = 0;
+		grav_ready = 0;
 		pthread_mutex_init (&gravmutex, NULL);
 		pthread_cond_init(&gravcv, NULL);
 		pthread_create(&gravthread, NULL, update_grav_async, NULL); //Start asynchronous gravity simulation
@@ -1495,10 +1495,10 @@ int main(int argc, char *argv[])
 	pfree = 0;
 
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
-	fire_bg = calloc(XRES*YRES, PIXELSIZE);
 	
 	prepare_alpha(4, 1.0f);
 	player[2] = player2[2] = PT_DUST;
+	player[28] = player2[28] = 0;
 
 	sprintf(ppmfilename, "%s.ppm", argv[2]);
 	sprintf(ptifilename, "%s.pti", argv[2]);
@@ -1579,13 +1579,13 @@ int main(int argc, char *argv[])
 	void *http_ver_check, *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
 	//char console_error[255] = "";
-	int result, i, j, bq, bc, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, buildnum, is_beta = 0, old_ver_len, new_message_len=0;
+	int result, i, j, bq, bc = 0, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, buildnum, is_beta = 0, old_ver_len, new_message_len=0;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
 	int wavelength_gfx = 0;
 	int x, y, line_x, line_y, b = 0, sl=1, sr=0, su=0, c, lb = 0, lx = 0, ly = 0, lm = 0;//, tx, ty;
-	int da = 0, dae = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2;
+	int da = 0, dae = 0, db = 0, it = 2047, mx, my, bsx = 2, bsy = 2, quickoptions_tooltip_fade_invert, it_invert = 0;
 	float nfvx, nfvy;
 	int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
 	void *load_data=NULL;
@@ -1636,7 +1636,6 @@ int main(int argc, char *argv[])
 	menu_count();
 	parts = calloc(sizeof(particle), NPART);
 	cb_parts = calloc(sizeof(particle), NPART);
-	fire_bg=calloc(XRES*YRES, PIXELSIZE);
 	init_can_move();
 	clear_sim();
 
@@ -1864,6 +1863,7 @@ int main(int argc, char *argv[])
 		}
 		
 		render_parts(part_vbuf); //draw particles
+		draw_other(part_vbuf);
 		
 		if(debug_flags & (DEBUG_PERFORMANCE_CALC|DEBUG_PERFORMANCE_FRAME))
 		{
@@ -1890,9 +1890,9 @@ int main(int argc, char *argv[])
 			if(result) //Did the gravity thread finish?
 			{
 				memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
-				memcpy(gravy, th_gravy, sizeof(gravy));	//Hmm, Gravy
-				memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
-				memcpy(gravp, th_gravp, sizeof(gravp));
+				//memcpy(gravy, th_gravy, sizeof(gravy));	//Hmm, Gravy
+				//memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
+				//memcpy(gravp, th_gravp, sizeof(gravp));
 
 				if (!sys_pause||framerender){ //Only update if not paused
 					//Switch the full size gravmaps, we don't really need the two above any more
@@ -2435,10 +2435,22 @@ int main(int argc, char *argv[])
 			if (sdl_key==SDLK_SPACE)
 				sys_pause = !sys_pause;
 			if (sdl_key=='u')
-
 				aheat_enable = !aheat_enable;
-			if (sdl_key=='h')
+			if (sdl_key=='h' && !(sdl_mod & KMOD_LCTRL))
+			{
 				hud_enable = !hud_enable;
+			}
+			if (sdl_key==SDLK_F1 || (sdl_key=='h' && (sdl_mod & KMOD_LCTRL)))
+			{
+				if(!it)
+				{
+					it = 8047;
+				}
+				else
+				{
+					it = 0;
+				}
+			}
 			if (sdl_key=='n')
 				pretty_powder = !pretty_powder;
 			if (sdl_key=='p')
@@ -2633,6 +2645,8 @@ int main(int argc, char *argv[])
 		luacon_step(x/sdl_scale, y/sdl_scale,sl,sr);
 #endif
 
+		quickoptions_menu(vid_buf, b, bq, x, y);
+
 		for (i=0; i<SC_TOTAL; i++)//draw all the menu sections
 		{
 			draw_menu(vid_buf, i, active_menu);
@@ -2695,13 +2709,13 @@ int main(int argc, char *argv[])
 				}
 				if (DEBUG_MODE)
 				{
-					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d, Tmp:%d", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life, parts[cr>>8].tmp);
 					sprintf(coordtext, "#%d, X:%d Y:%d", cr>>8, x/sdl_scale, y/sdl_scale);
 				}
 				else
 				{
 #ifdef BETA
-					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life);
+					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d, Tmp:%d", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life, parts[cr>>8].tmp);
 #else
 					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", nametext, pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], parts[cr>>8].temp-273.15f);
 #endif
@@ -2713,7 +2727,7 @@ int main(int argc, char *argv[])
 				sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 				if (DEBUG_MODE)
 				{
-					sprintf(coordtext, "X:%d Y:%d. GX: %.2f GY: %.2f", x/sdl_scale, y/sdl_scale, gravx[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL], gravy[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
+					sprintf(coordtext, "X:%d Y:%d. GX: %.2f GY: %.2f", x/sdl_scale, y/sdl_scale, gravxf[((y/sdl_scale)*XRES)+(x/sdl_scale)], gravyf[((y/sdl_scale)*XRES)+(x/sdl_scale)]);
 				}
 			}
 		}
@@ -3085,7 +3099,6 @@ int main(int argc, char *argv[])
 						if (x>=1 && x<=17)
 						{
 							search_ui(vid_buf);
-							memset(fire_bg, 0, XRES*YRES*PIXELSIZE);
 							memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 							memset(fire_r, 0, sizeof(fire_r));
 							memset(fire_g, 0, sizeof(fire_g));
@@ -3498,29 +3511,34 @@ int main(int argc, char *argv[])
 			if (vs)
 				strappend(uitext, " [FRAME CAPTURE]");
 #endif
-
+			quickoptions_tooltip_fade_invert = 255 - (quickoptions_tooltip_fade*20);
+			it_invert = 50 - it;
+			if(it_invert < 0)
+				it_invert = 0;
+			if(it_invert > 50)
+				it_invert = 50;
 			if (sdl_zoom_trig||zoom_en)
 			{
 				if (zoom_x<XRES/2)
 				{
-					fillrect(vid_buf, XRES-20-textwidth(heattext), 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
-					drawtext(vid_buf, XRES-16-textwidth(heattext), 270, heattext, 255, 255, 255, 200);
+					fillrect(vid_buf, XRES-20-textwidth(heattext), 266, textwidth(heattext)+8, 15, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+					drawtext(vid_buf, XRES-16-textwidth(heattext), 270, heattext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 					if (DEBUG_MODE)
 					{
-						fillrect(vid_buf, XRES-20-textwidth(coordtext), 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
-						drawtext(vid_buf, XRES-16-textwidth(coordtext), 282, coordtext, 255, 255, 255, 200);
+						fillrect(vid_buf, XRES-20-textwidth(coordtext), 280, textwidth(coordtext)+8, 13, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+						drawtext(vid_buf, XRES-16-textwidth(coordtext), 282, coordtext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 					}
 					if (wavelength_gfx)
 						draw_wavelengths(vid_buf,XRES-20-textwidth(heattext),265,2,wavelength_gfx);
 				}
 				else
 				{
-					fillrect(vid_buf, 12, 266, textwidth(heattext)+8, 15, 0, 0, 0, 140);
-					drawtext(vid_buf, 16, 270, heattext, 255, 255, 255, 200);
+					fillrect(vid_buf, 12, 266, textwidth(heattext)+8, 15, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+					drawtext(vid_buf, 16, 270, heattext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 					if (DEBUG_MODE)
 					{
-						fillrect(vid_buf, 12, 280, textwidth(coordtext)+8, 13, 0, 0, 0, 140);
-						drawtext(vid_buf, 16, 282, coordtext, 255, 255, 255, 200);
+						fillrect(vid_buf, 12, 280, textwidth(coordtext)+8, 13, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+						drawtext(vid_buf, 16, 282, coordtext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 					}
 					if (wavelength_gfx)
 						draw_wavelengths(vid_buf,12,265,2,wavelength_gfx);
@@ -3528,19 +3546,18 @@ int main(int argc, char *argv[])
 			}
 			else
 			{
-				fillrect(vid_buf, XRES-20-textwidth(heattext), 12, textwidth(heattext)+8, 15, 0, 0, 0, 140);
-				drawtext(vid_buf, XRES-16-textwidth(heattext), 16, heattext, 255, 255, 255, 200);
+				fillrect(vid_buf, XRES-20-textwidth(heattext), 12, textwidth(heattext)+8, 15, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+				drawtext(vid_buf, XRES-16-textwidth(heattext), 16, heattext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 				if (DEBUG_MODE)
 				{
-					fillrect(vid_buf, XRES-20-textwidth(coordtext), 26, textwidth(coordtext)+8, 11, 0, 0, 0, 140);
-					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, 200);
+					fillrect(vid_buf, XRES-20-textwidth(coordtext), 26, textwidth(coordtext)+8, 11, 0, 0, 0, quickoptions_tooltip_fade_invert*0.5);
+					drawtext(vid_buf, XRES-16-textwidth(coordtext), 27, coordtext, 255, 255, 255, quickoptions_tooltip_fade_invert*0.75);
 				}
 				if (wavelength_gfx)
 					draw_wavelengths(vid_buf,XRES-20-textwidth(heattext),11,2,wavelength_gfx);
 			}
 			wavelength_gfx = 0;
-			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, 140);
-			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, 200);
+			drawtext_outline(vid_buf, 16, 16, uitext, 32, 216, 255, it_invert * 4, 0, 0, 0, it_invert * 4);
 
 		}
 

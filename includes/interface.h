@@ -15,6 +15,17 @@ struct menu_section
 };
 typedef struct menu_section menu_section;
 
+#define QM_TOGGLE	1
+
+struct quick_option
+{
+	char *icon;
+	const char *name;
+	int type;
+	int *variable;
+};
+typedef struct quick_option quick_option;
+
 struct menu_wall
 {
 	pixel colour;
@@ -56,6 +67,13 @@ static menu_section msections[] = //doshow does not do anything currently.
 	{"\xC8", "", 0, 0},
 	{"\xC8", "Cracker", 0, 0},
 	{"\xC8", "Cracker!", 0, 0},
+};
+
+static quick_option quickmenu[] = //doshow does not do anything currently.
+{
+	{"P", "Sand effect", QM_TOGGLE, &pretty_powder},
+	{"G", "Draw gravity grid", QM_TOGGLE, &drawgrav_enable},
+	{NULL}
 };
 
 static menu_section colorsections[] = //doshow does not do anything currently.
@@ -201,9 +219,9 @@ extern int zoom_en;
 extern int zoom_x, zoom_y;
 extern int zoom_wx, zoom_wy;
 
-extern int drawgrav_enable;
-
 void menu_count(void);
+
+void quickoptions_menu(pixel *vid_buf, int b, int bq, int x, int y);
 
 void prop_edit_ui(pixel *vid_buf, int x, int y);
 

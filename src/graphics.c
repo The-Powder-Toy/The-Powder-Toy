@@ -31,6 +31,7 @@ int sdl_scale = 1;
 GLuint airProg, zoomTex, vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg, partsFboTex, partsFbo, lensProg, partsTFX, partsTFY, airPV, airVY, airVX;
 #endif
 
+int emp_decor = 0;
 int sandcolour_r = 0;
 int sandcolour_g = 0;
 int sandcolour_b = 0;
@@ -41,7 +42,6 @@ unsigned char fire_g[YRES/CELL][XRES/CELL];
 unsigned char fire_b[YRES/CELL][XRES/CELL];
 
 unsigned int fire_alpha[CELL*3][CELL*3];
-pixel *fire_bg;
 pixel *pers_bg;
 
 char * flm_data;
@@ -854,6 +854,10 @@ int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a
 				r = 255;
 				g = b = 0;
 				break;
+			case 'l':
+				r = 255;
+				g = b = 75;
+				break;
 			case 'b':
 				r = g = 0;
 				b = 255;
@@ -929,9 +933,18 @@ int drawtextwrap(pixel *vid, int x, int y, int w, const char *s, int r, int g, i
 					r = 255;
 					g = b = 0;
 					break;
+				case 'l':
+					r = 255;
+					g = b = 75;
+					break;
 				case 'b':
 					r = g = 0;
 					b = 255;
+					break;
+				case 't':
+					b = 255;
+					g = 170;
+					r = 32;
 					break;
 				}
 				s++;
@@ -1325,22 +1338,23 @@ void draw_grav_zones(pixel * vid)
 
 void draw_grav(pixel *vid)
 {
-	int x, y, i;
+	int x, y, i, ca;
 	float nx, ny, dist;
 
 	for (y=0; y<YRES/CELL; y++)
 	{
 		for (x=0; x<XRES/CELL; x++)
 		{
-			if(fabsf(gravx[y][x]) <= 0.001f && fabsf(gravy[y][x]) <= 0.001f)
+			ca = ((y*CELL)*XRES)+(x*CELL);
+			if(fabsf(gravpf[ca]) <= 0.001f && fabsf(gravyf[ca]) <= 0.001f)
 				continue;
 			nx = x*CELL;
 			ny = y*CELL;
-			dist = fabsf(gravx[y][x])+fabsf(gravy[y][x]);
+			dist = fabsf(gravyf[ca])+fabsf(gravxf[ca]);
 			for(i = 0; i < 4; i++)
 			{
-				nx -= gravx[y][x]*0.5f;
-				ny -= gravy[y][x]*0.5f;
+				nx -= gravxf[ca]*0.5f;
+				ny -= gravyf[ca]*0.5f;
 				addpixel(vid, (int)(nx+0.5f), (int)(ny+0.5f), 255, 255, 255, (int)(dist*20.0f));
 			}
 		}
@@ -1528,6 +1542,30 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 	{
 		xor_pixel(x, y+i, vid);
 		xor_pixel(x+w-1, y+i, vid);
+	}
+}
+
+void draw_other(pixel *vid) // EMP effect
+{
+	int i, j;
+	if (emp_decor>0 && !sys_pause) emp_decor-=emp_decor/25+2;
+	if (emp_decor>40) emp_decor=40;
+	if (emp_decor<0) emp_decor = 0;
+	if (cmode==CM_NOTHING) // no in nothing mode
+		return;
+	if (emp_decor>0)
+	{
+		int r=emp_decor*2.5, g=100+emp_decor*1.5, b=255;
+		int a=(1.0*emp_decor/110)*255;
+		if (r>255) r=255;
+		if (g>255) g=255;
+		if (b>255) g=255;
+		if (a>255) a=255;
+		for (j=0; j<YRES; j++)
+			for (i=0; i<XRES; i++)
+			{
+				drawpixel(vid, i, j, r, g, b, a);
+			}
 	}
 }
 

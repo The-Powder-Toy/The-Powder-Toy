@@ -8,13 +8,15 @@
 #endif
  
 //VersionInfoStart
-#define SAVE_VERSION 64
-#define MINOR_VERSION 0
-//#define BETA
-#define BUILD_NUM 0
+#define SAVE_VERSION 65
+#define MINOR_VERSION 5
+#define BUILD_NUM 100
 //VersionInfoEnd
 
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
+
+#define MTOS_EXPAND(str) #str
+#define MTOS(str) MTOS_EXPAND(str)
 
 #define SERVER "powdertoy.co.uk"
 #define SCRIPTSERVER "powdertoy.co.uk"
@@ -164,8 +166,18 @@ extern int aheat_enable;
 extern int decorations_enable;
 extern int hud_enable;
 extern int pretty_powder;
+extern int drawgrav_enable;
 int limitFPS;
 int water_equal_test;
+extern int quickoptions_tooltip_fade;
+
+extern int debug_flags;
+#define DEBUG_PERF_FRAMECOUNT 256
+extern int debug_perf_istart;
+extern int debug_perf_iend;
+extern long debug_perf_frametime[DEBUG_PERF_FRAMECOUNT];
+extern long debug_perf_partitime[DEBUG_PERF_FRAMECOUNT];
+extern long debug_perf_time;
 
 extern int debug_flags;
 #define DEBUG_PERF_FRAMECOUNT 256
