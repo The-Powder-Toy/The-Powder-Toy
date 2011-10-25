@@ -1561,11 +1561,21 @@ void draw_other(pixel *vid) // EMP effect
 		if (g>255) g=255;
 		if (b>255) g=255;
 		if (a>255) a=255;
+#ifdef OGLR
+		glBegin(GL_QUADS);
+		glColor4i(r, g, b, a);
+		glVertex2f(0, 0);
+		glVertex2f(XRES, 0);
+		glVertex2f(XRES, YRES);
+		glVertex2f(0, YRES);
+		glEnd();
+#else
 		for (j=0; j<YRES; j++)
 			for (i=0; i<XRES; i++)
 			{
 				drawpixel(vid, i, j, r, g, b, a);
 			}
+#endif
 	}
 }
 
@@ -2230,6 +2240,7 @@ void render_parts(pixel *vid)
         glEnableClientState(GL_COLOR_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
         
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       
  		if(cflat)
 		{
@@ -2410,6 +2421,7 @@ void render_parts(pixel *vid)
 		else
 		{	
 			glBindTexture(GL_TEXTURE_2D, partsFboTex);
+			glBlendFunc(GL_ONE, GL_ONE);
 		}
 		
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -2425,7 +2437,10 @@ void render_parts(pixel *vid)
 		glEnd();
 		
 		if(cmode==CM_FANCY)
+		{
 			glUseProgram(0);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
 		glDisable( GL_TEXTURE_2D );
         
         //Reset coords/offset
