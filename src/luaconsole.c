@@ -196,7 +196,7 @@ int process_command_lua(pixel *vid_buf, char *console, char *console_error)
 //Being TPT interface methods:
 int luatpt_test(lua_State* l)
 {
-    int testint = 0;
+	int testint = 0;
 	testint = luaL_optint(l, 1, 0);
 	printf("Test successful, got %d\n", testint);
 	return 0;
@@ -215,7 +215,7 @@ int luatpt_error(lua_State* l)
 }
 int luatpt_drawtext(lua_State* l)
 {
-    char *string;
+	char *string;
 	int textx, texty, textred, textgreen, textblue, textalpha;
 	textx = luaL_optint(l, 1, 0);
 	texty = luaL_optint(l, 2, 0);
@@ -533,9 +533,9 @@ int luatpt_set_property(lua_State* l)
 				}
 				i = r>>8;
 				if(format==2){
-					*((float*)(((void*)&parts[i])+offset)) = f;
+					*((float*)(((char*)&parts[i])+offset)) = f;
 				} else {
-					*((int*)(((void*)&parts[i])+offset)) = t;
+					*((int*)(((char*)&parts[i])+offset)) = t;
 				}
 			}
 	} else {
@@ -557,9 +557,9 @@ int luatpt_set_property(lua_State* l)
 		if (partsel && partsel != parts[i].type)
 			return 0;
 		if(format==2){
-			*((float*)(((void*)&parts[i])+offset)) = f;
+			*((float*)(((char*)&parts[i])+offset)) = f;
 		} else {
-			*((int*)(((void*)&parts[i])+offset)) = t;
+			*((int*)(((char*)&parts[i])+offset)) = t;
 		}
 	}
 	return 0;
@@ -1015,84 +1015,84 @@ int luatpt_message_box(lua_State* l)
 }
 int luatpt_get_numOfParts(lua_State* l)
 {
-    lua_pushinteger(l, NUM_PARTS);
-    return 1;
+	lua_pushinteger(l, NUM_PARTS);
+	return 1;
 }
 int luatpt_start_getPartIndex(lua_State* l)
 {
-    getPartIndex_curIdx = -1;
-    return 1;
+	getPartIndex_curIdx = -1;
+	return 1;
 }
 int luatpt_next_getPartIndex(lua_State* l)
 {
-    while(1)
-    {
-        getPartIndex_curIdx++;
-        if(getPartIndex_curIdx >= NPART)
-        {
-            getPartIndex_curIdx = 0;
-            lua_pushboolean(l, 0);
-            return 1;
-        }
-        if(parts[getPartIndex_curIdx].type)
-            break;
+	while(1)
+	{
+		getPartIndex_curIdx++;
+		if(getPartIndex_curIdx >= NPART)
+		{
+			getPartIndex_curIdx = 0;
+			lua_pushboolean(l, 0);
+			return 1;
+		}
+		if(parts[getPartIndex_curIdx].type)
+			break;
 
-    }
+	}
 
-    lua_pushboolean(l, 1);
-    return 1;
+	lua_pushboolean(l, 1);
+	return 1;
 }
 int luatpt_getPartIndex(lua_State* l)
 {
-    if(getPartIndex_curIdx < 0)
-    {
-        lua_pushinteger(l, 0);
-        return 1;
-    }
-    lua_pushinteger(l, getPartIndex_curIdx);
-    return 1;
+	if(getPartIndex_curIdx < 0)
+	{
+		lua_pushinteger(l, 0);
+		return 1;
+	}
+	lua_pushinteger(l, getPartIndex_curIdx);
+	return 1;
 }
 int luatpt_hud(lua_State* l)
 {
-    int hudstate;
-    hudstate = luaL_optint(l, 1, 0);
-    hud_enable = (hudstate==0?0:1);
-    return 0;
+	int hudstate;
+	hudstate = luaL_optint(l, 1, 0);
+	hud_enable = (hudstate==0?0:1);
+	return 0;
 }
 int luatpt_gravity(lua_State* l)
 {
-    int gravstate;
-    gravstate = luaL_optint(l, 1, 0);
-    if(gravstate)
-        start_grav_async();
-    else
-        stop_grav_async();
-    ngrav_enable = (gravstate==0?0:1);
-    return 0;
+	int gravstate;
+	gravstate = luaL_optint(l, 1, 0);
+	if(gravstate)
+		start_grav_async();
+	else
+		stop_grav_async();
+	ngrav_enable = (gravstate==0?0:1);
+	return 0;
 }
 int luatpt_airheat(lua_State* l)
 {
-    int aheatstate;
-    aheatstate = luaL_optint(l, 1, 0);
-    aheat_enable = (aheatstate==0?0:1);
-    return 0;
+	int aheatstate;
+	aheatstate = luaL_optint(l, 1, 0);
+	aheat_enable = (aheatstate==0?0:1);
+	return 0;
 }
 int luatpt_active_menu(lua_State* l)
 {
-    int menuid;
-    menuid = luaL_optint(l, 1, -1);
-    if (menuid < SC_TOTAL && menuid >= 0)
-        active_menu = menuid;
-    else
-        return luaL_error(l, "Invalid menu");
-    return 0;
+	int menuid;
+	menuid = luaL_optint(l, 1, -1);
+	if (menuid < SC_TOTAL && menuid >= 0)
+		active_menu = menuid;
+	else
+		return luaL_error(l, "Invalid menu");
+	return 0;
 }
 int luatpt_decorations_enable(lua_State* l)
 {
-    int aheatstate;
-    aheatstate = luaL_optint(l, 1, 0);
-    decorations_enable = (aheatstate==0?0:1);
-    return 0;
+	int aheatstate;
+	aheatstate = luaL_optint(l, 1, 0);
+	decorations_enable = (aheatstate==0?0:1);
+	return 0;
 }
 
 int luatpt_heat(lua_State* l)
@@ -1104,10 +1104,10 @@ int luatpt_heat(lua_State* l)
 }
 int luatpt_cmode_set(lua_State* l)
 {
-    int aheatstate;
-    aheatstate = luaL_optint(l, 1, CM_FIRE);
-    cmode = aheatstate;
-    return 0;
+	int aheatstate;
+	aheatstate = luaL_optint(l, 1, CM_FIRE);
+	cmode = aheatstate;
+	return 0;
 }
 int luatpt_setfire(lua_State* l)
 {
@@ -1198,11 +1198,11 @@ int luatpt_getscript(lua_State* l)
 	outputfile = NULL;
 	if(run_script)
 	{
-    luacommand = malloc(strlen(filename)+20);
-    sprintf(luacommand,"dofile(\"%s\")",filename);
-    luacon_eval(luacommand);
-    }
-    
+	luacommand = malloc(strlen(filename)+20);
+	sprintf(luacommand,"dofile(\"%s\")",filename);
+	luacon_eval(luacommand);
+	}
+	
 fin:
 	if(fileid) free(fileid);
 	if(filedata) free(filedata);
