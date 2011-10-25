@@ -855,9 +855,7 @@ static part_transition ptransitions[PT_NUM] =
 #define NGT_LOTE 19
 #define NGT_FRG2 20
 #define NGT_STAR 21
-#define NGT_FROG 22int update_DEST(UPDATE_FUNC_ARGS);
-int update_EMP(UPDATE_FUNC_ARGS);
-int update_LIGH(UPDATE_FUNC_ARGS);
+#define NGT_FROG 22
 #define NGT_BRAN 23
 
 struct gol_menu
