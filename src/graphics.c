@@ -349,10 +349,25 @@ pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
 #ifdef OGLR
 void clearScreen(float alpha)
 {
-    glClearColor(0.0f, 0.0f, 0.0f, alpha);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	if(alpha > 0.999f)
+	{
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    }
+    else
+    {
+		glColor4f(0.0f, 0.0f, 0.0f, alpha);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+		glBegin(GL_QUADS);
+		glVertex2f(0, 0);
+		glVertex2f(XRES, 0);
+		glVertex2f(XRES, YRES);
+		glVertex2f(0, YRES);
+		glEnd();
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    }
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
