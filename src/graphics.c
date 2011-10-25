@@ -1621,10 +1621,13 @@ void render_parts(pixel *vid)
 		int cglowV = 0, cglowC = 0, cglow = 0;
 		int cflatV = 0, cflatC = 0, cflat = 0;
 		int clineV = 0, clineC = 0, cline = 0;
+		GLuint origBlendSrc, origBlendDst;
 		//Set coord offset 
 		glScalef(1,-1,1);
         glTranslatef(0, -YRES/*-(YRES+MENUSIZE)*/, 0);
         
+        glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
+        glGetIntegerv(GL_BLEND_DST, &origBlendDst);
         //Render to the particle FBO
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 #endif
@@ -2264,6 +2267,22 @@ void render_parts(pixel *vid)
 		    // -- END FLAT -- //
         }
         
+        if(cblob)
+		{
+		    // -- BEGIN BLOB -- //
+			glEnable( GL_POINT_SMOOTH ); //Blobs!
+			glPointSize(2.5f);
+
+		    glColorPointer(4, GL_FLOAT, 0, &blobC[0]);
+		    glVertexPointer(2, GL_INT, 0, &blobV[0]);
+
+		    glDrawArrays(GL_POINTS, 0, cblob);
+		    
+		    //Clear some stuff we set
+		    glDisable( GL_POINT_SMOOTH );
+		    // -- END BLOB -- //
+		}
+        
         if(cglow || cblur)
         {
         	// -- BEGIN GLOW -- //
@@ -2317,22 +2336,6 @@ void render_parts(pixel *vid)
 		    // -- END GLOW -- //
         }
         
-        if(cblob)
-		{
-		    // -- BEGIN BLOB -- //
-			glEnable( GL_POINT_SMOOTH ); //Blobs!
-			glPointSize(2.5f);
-
-		    glColorPointer(4, GL_FLOAT, 0, &blobC[0]);
-		    glVertexPointer(2, GL_INT, 0, &blobV[0]);
-
-		    glDrawArrays(GL_POINTS, 0, cblob);
-		    
-		    //Clear some stuff we set
-		    glDisable( GL_POINT_SMOOTH );
-		    // -- END BLOB -- //
-		}
-		
         if(cline)
 		{
 			// -- BEGIN LINES -- //
@@ -2452,7 +2455,8 @@ void render_parts(pixel *vid)
         
         //Reset coords/offset
         glTranslatef(0, YRES+MENUSIZE, 0);
-        glScalef(1,-1,1);       
+        glScalef(1,-1,1);
+        glBlendFunc(origBlendSrc, origBlendDst);
 #endif
 }
 
