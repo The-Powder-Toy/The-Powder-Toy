@@ -307,7 +307,7 @@ int graphics_COAL(GRAPHICS_FUNC_ARGS);
 int graphics_STKM(GRAPHICS_FUNC_ARGS);
 int graphics_STKM2(GRAPHICS_FUNC_ARGS);
 int graphics_DEST(GRAPHICS_FUNC_ARGS);
-int graphics_EMP(GRAPHICS_FUNC_ARGS;
+int graphics_EMP(GRAPHICS_FUNC_ARGS);
 int graphics_LIGH(GRAPHICS_FUNC_ARGS);
 
 #define UPDATE_FUNC_ARGS int i, int x, int y, int surround_space, int nt

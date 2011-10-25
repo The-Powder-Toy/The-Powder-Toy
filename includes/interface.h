@@ -69,7 +69,7 @@ static menu_section msections[] = //doshow does not do anything currently.
 	{"\xC8", "Cracker!", 0, 0},
 };
 
-static quick_option quickmenu[] = //doshow does not do anything currently.
+static quick_option quickmenu[] =
 {
 	{"P", "Sand effect", QM_TOGGLE, &pretty_powder},
 	{"G", "Draw gravity grid", QM_TOGGLE, &drawgrav_enable},
