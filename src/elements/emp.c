@@ -110,16 +110,19 @@ int update_EMP(UPDATE_FUNC_ARGS) {
 }
 int graphics_EMP(GRAPHICS_FUNC_ARGS)
 {
-	*colr = cpart->life*1.5;
-	*colg = cpart->life*1.5;
-	*colb = 200-cpart->life;
-	if (*colr>255)
-		*colr = 255;
-	if (*colg>255)
-		*colg = 255;
-	if (*colb>255)
-		*colb = 255;
-	if (*colb<=0)
-		*colb = 0;
+	if(cpart->life)
+	{
+		*colr = cpart->life*1.5;
+		*colg = cpart->life*1.5;
+		*colb = 200-(cpart->life);
+		if (*colr>255)
+			*colr = 255;
+		if (*colg>255)
+			*colg = 255;
+		if (*colb>255)
+			*colb = 255;
+		if (*colb<=0)
+			*colb = 0;
+	}
 	return 0;
 }
