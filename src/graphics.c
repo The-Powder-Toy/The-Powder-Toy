@@ -2351,21 +2351,28 @@ void render_parts(pixel *vid)
         
         //Drawing the FBO onto the screen sounds like a cool idea now
 		glEnable( GL_TEXTURE_2D );
-		glUseProgram(lensProg);
-		glActiveTexture(GL_TEXTURE0);			
-		glBindTexture(GL_TEXTURE_2D, partsFboTex);
-		glUniform1i(glGetUniformLocation(lensProg, "pTex"), 0);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, partsTFX);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_RED, GL_FLOAT, gravxf);
-		glUniform1i(glGetUniformLocation(lensProg, "tfX"), 1);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, partsTFY);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_GREEN, GL_FLOAT, gravyf);
-		glUniform1i(glGetUniformLocation(lensProg, "tfY"), 2);
-		glActiveTexture(GL_TEXTURE0);
-		//glUniform1f(glGetUniformLocation(lensProg, "xres"), (float)XRES);
-		//glUniform1f(glGetUniformLocation(lensProg, "yres"), (float)YRES);
+		if(cmode==CM_FANCY)
+		{
+			glUseProgram(lensProg);
+			glActiveTexture(GL_TEXTURE0);			
+			glBindTexture(GL_TEXTURE_2D, partsFboTex);
+			glUniform1i(glGetUniformLocation(lensProg, "pTex"), 0);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, partsTFX);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_RED, GL_FLOAT, gravxf);
+			glUniform1i(glGetUniformLocation(lensProg, "tfX"), 1);
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, partsTFY);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_GREEN, GL_FLOAT, gravyf);
+			glUniform1i(glGetUniformLocation(lensProg, "tfY"), 2);
+			glActiveTexture(GL_TEXTURE0);
+			//glUniform1f(glGetUniformLocation(lensProg, "xres"), (float)XRES);
+			//glUniform1f(glGetUniformLocation(lensProg, "yres"), (float)YRES);
+		}
+		else
+		{	
+			glBindTexture(GL_TEXTURE_2D, partsFboTex);
+		}
 		
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glBegin(GL_QUADS);
@@ -2379,7 +2386,8 @@ void render_parts(pixel *vid)
 		glVertex3f(XRES*sdl_scale, 0, 1.0);
 		glEnd();
 		
-		glUseProgram(0);
+		if(cmode==CM_FANCY)
+			glUseProgram(0);
 		glDisable( GL_TEXTURE_2D );
         
         //Reset coords/offset

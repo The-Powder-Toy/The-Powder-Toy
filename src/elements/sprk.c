@@ -178,11 +178,13 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 
 int graphics_SPRK(GRAPHICS_FUNC_ARGS)
 {
-	*firea = 10;
-	*firer = *colr*0.5;
-	*fireg = *colg;
-	*fireb = *colb*2;
-	*pixel_mode |= FIRE_ADD;
-	*pixel_mode |= PMODE_BLUR;
+	//*firea = 80;
+	//*firer = *colr*0.5;
+	//*fireg = *colg;
+	//*fireb = *colb*2;
+	*colr *= 0.5;
+	*colb *= 2;
+	//*pixel_mode |= FIRE_ADD;
+	*pixel_mode |= PMODE_GLOW;
 	return 1;
 }
