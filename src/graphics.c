@@ -1555,21 +1555,28 @@ void draw_other(pixel *vid) // EMP effect
 		return;
 	if (emp_decor>0)
 	{
+#ifdef OGLR
+		float femp_decor = ((float)emp_decor)/255.0f;
+		/*int r=emp_decor*2.5, g=100+emp_decor*1.5, b=255;
+		int a=(1.0*emp_decor/110)*255;
+		if (r>255) r=255;
+		if (g>255) g=255;
+		if (b>255) g=255;
+		if (a>255) a=255;*/
+		glBegin(GL_QUADS);
+		glColor4f(femp_decor*2.5f, 0.4f+femp_decor*1.5f, 1.0f+femp_decor*1.5f, femp_decor/0.44f);
+		glVertex2f(0, MENUSIZE);
+		glVertex2f(XRES, MENUSIZE);
+		glVertex2f(XRES, YRES+MENUSIZE);
+		glVertex2f(0, YRES+MENUSIZE);
+		glEnd();
+#else
 		int r=emp_decor*2.5, g=100+emp_decor*1.5, b=255;
 		int a=(1.0*emp_decor/110)*255;
 		if (r>255) r=255;
 		if (g>255) g=255;
 		if (b>255) g=255;
 		if (a>255) a=255;
-#ifdef OGLR
-		glBegin(GL_QUADS);
-		glColor4i(r, g, b, a);
-		glVertex2f(0, 0);
-		glVertex2f(XRES, 0);
-		glVertex2f(XRES, YRES);
-		glVertex2f(0, YRES);
-		glEnd();
-#else
 		for (j=0; j<YRES; j++)
 			for (i=0; i<XRES; i++)
 			{
