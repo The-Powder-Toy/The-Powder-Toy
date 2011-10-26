@@ -189,7 +189,9 @@
     <ClInclude Include="includes\cJSON.h" />
     <ClInclude Include="includes\console.h" />
     <ClInclude Include="includes\defines.h" />
-    <ClInclude Include="includes\element.h" />
+    <ClInclude Include="includes\element.h">
+      <DeploymentContent>false</DeploymentContent>
+    </ClInclude>
     <ClInclude Include="includes\fftw3.h" />
     <ClInclude Include="includes\font.h" />
     <ClInclude Include="includes\graphics.h" />

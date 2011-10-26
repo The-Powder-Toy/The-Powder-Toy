@@ -1,4 +1,5 @@
 #include <element.h>
+
 int active = 0;
 int update_FF50(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
@@ -35,7 +36,7 @@ int update_FF50(UPDATE_FUNC_ARGS) {
 				active = 2;
 		   }
 		   if (parts[r>>8].type == PT_FIRE && active == 1) {
-			    parts[i].life = 1000;
+			    parts[i].life = 10000;
 			    parts[i].type = PT_FIRE;
 				active = 2;
 		   }
