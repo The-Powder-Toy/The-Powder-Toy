@@ -1029,9 +1029,9 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	}
 	if (t==PT_FIGH)
 	{
-		unsigned char cunt = 0;
-		while (cunt < 100 && cunt < (fighcount+1) && fighters[cunt].spwn==1) cunt++;
-		if (cunt < 100 && fighters[cunt].spwn==0)
+		unsigned char fcount = 0;
+		while (fcount < 100 && fcount < (fighcount+1) && fighters[fcount].spwn==1) fcount++;
+		if (fcount < 100 && fighters[fcount].spwn==0)
 		{
 			parts[i].x = (float)x;
 			parts[i].y = (float)y;
@@ -1040,11 +1040,11 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			parts[i].vy = 0;
 			parts[i].life = 100;
 			parts[i].ctype = 0;
-			parts[i].tmp = cunt;
+			parts[i].tmp = fcount;
 			parts[i].temp = ptypes[t].heat;
-			STKM_init_legs(&fighters[cunt], i);
-			fighters[cunt].spwn = 1;
-			fighters[cunt].elem = PT_DUST;
+			STKM_init_legs(&fighters[fcount], i);
+			fighters[fcount].spwn = 1;
+			fighters[fcount].elem = PT_DUST;
 			fighcount++;
 
 			return i;

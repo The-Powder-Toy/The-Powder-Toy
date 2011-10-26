@@ -985,11 +985,26 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 			{
 				STKM_init_legs(&player, i-1);
 				player.spwn = 1;
+				player.elem = PT_DUST;
 			}
 			else if (parts[i-1].type == PT_STKM2)
 			{
 				STKM_init_legs(&player2, i-1);
 				player2.spwn = 1;
+				player2.elem = PT_DUST;
+			}
+			else if (parts[i-1].type == PT_FIGH)
+			{
+				unsigned char fcount = 0;
+				while (fcount < 100 && fcount < (fighcount+1) && fighters[fcount].spwn==1) fcount++;
+				if (fcount < 100 && fighters[fcount].spwn==0)
+				{
+					parts[i-1].tmp = fcount;
+					fighters[fcount].spwn = 1;
+					fighters[fcount].elem = PT_DUST;
+					fighcount++;
+					STKM_init_legs(&(fighters[fcount]), i-1);
+				}
 			}
 
 			if (ver<48 && (ty==OLD_PT_WIND || (ty==PT_BRAY&&parts[i-1].life==0)))
