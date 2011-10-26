@@ -1785,12 +1785,16 @@ void render_parts(pixel *vid)
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
 					//Special case for stickman
-#ifdef OGLR
-					float *cplayer;
+					playerst *cplayer;
 					if(t==PT_STKM)
-						cplayer = player;
+						cplayer = &player;
+					else if(t==PT_STKM2)
+						cplayer = &player2;
+					else if(t==PT_FIGH)
+						cplayer = &fighters[(unsigned char)parts[i].tmp];
 					else
-						cplayer = player2;
+						continue;
+#ifdef OGLR
 					glColor4f(((float)colr)/255.0f, ((float)colg)/255.0f, ((float)colb)/255.0f, 1.0f);
 					glEnable(GL_LINE_SMOOTH);
 					glBegin(GL_LINE_STRIP);
@@ -1806,71 +1810,42 @@ void render_parts(pixel *vid)
 						glColor4f(0.6f, 0.6f, 1.0f, 1.0f);
 					glBegin(GL_LINES);
 					glVertex2f(nx, ny+3);
-					glVertex2f(cplayer[3], cplayer[4]);
+					glVertex2f(cplayer->legs[0], cplayer->legs[1]);
 					
-					glVertex2f(cplayer[3], cplayer[4]);
-					glVertex2f(cplayer[7], cplayer[8]);
+					glVertex2f(cplayer->legs[0], cplayer->legs[1]);
+					glVertex2f(cplayer->legs[4], cplayer->legs[5]);
 					
 					glVertex2f(nx, ny+3);
-					glVertex2f(cplayer[11], cplayer[12]);
+					glVertex2f(cplayer->legs[8], cplayer->legs[9]);
 					
-					glVertex2f(cplayer[11], cplayer[12]);
-					glVertex2f(cplayer[15], cplayer[16]);
+					glVertex2f(cplayer->legs[8], cplayer->legs[9]);
+					glVertex2f(cplayer->legs[12], cplayer->legs[13]);
 					glEnd();
 					glDisable(GL_LINE_SMOOTH);
 #else
-					if (t==PT_STKM)
+					char buff[20];  //Buffer for HP
+					int s;
+					pixel pc;
+
+					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
 					{
-						char buff[20];  //Buffer for HP
-						int s;
-						pixel pc;
-
-						if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
-						{
-							sprintf(buff, "%3d", parts[i].life);  //Show HP
-							drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
-						}
-
-						if ((int)player[2]<PT_NUM) pc = ptypes[(int)player[2]].pcolors;
-						else pc = PIXPACK(0xFFFFFF);
-						s = XRES+BARSIZE;
-						//head
-						draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx-2, ny-2, nx+2, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						//legs
-						draw_line(vid , nx, ny+3, player[3], player[4], 255, 255, 255, s);
-						draw_line(vid , player[3], player[4], player[7], player[8], 255, 255, 255, s);
-						draw_line(vid , nx, ny+3, player[11], player[12], 255, 255, 255, s);
-						draw_line(vid , player[11], player[12], player[15], player[16], 255, 255, 255, s);
+						sprintf(buff, "%3d", parts[i].life);  //Show HP
+						drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
 					}
-					else if (t==PT_STKM2)
-					{
-						char buff[20];  //Buffer for HP
-						int s;
-						pixel pc;
 
-						if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
-						{
-							sprintf(buff, "%3d", parts[i].life);  //Show HP
-							drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
-						}
-
-						if ((int)player2[2]<PT_NUM) pc = ptypes[(int)player2[2]].pcolors;
-						else pc = PIXPACK(0xFFFFFF);
-						s = XRES+BARSIZE;
-						//head
-						draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx-2, ny-2, nx+2, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						//legs
-						draw_line(vid , nx, ny+3, player2[3], player2[4], 100, 100, 255, s);
-						draw_line(vid , player2[3], player2[4], player2[7], player2[8], 100, 100, 255, s);
-						draw_line(vid , nx, ny+3, player2[11], player2[12], 100, 100, 255, s);
-						draw_line(vid , player2[11], player2[12], player2[15], player2[16], 100, 100, 255, s);
-					}
+					if (cplayer->elem<PT_NUM) pc = ptypes[cplayer->elem].pcolors;
+					else pc = PIXPACK(0xFFFFFF);
+					s = XRES+BARSIZE;
+					//head
+					draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					draw_line(vid , nx-2, ny-2, nx+2, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					//legs
+					draw_line(vid , nx, ny+3, cplayer->legs[0], cplayer->legs[1], 255, 255, 255, s);
+					draw_line(vid , cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], 255, 255, 255, s);
+					draw_line(vid , nx, ny+3, cplayer->legs[8], cplayer->legs[9], 255, 255, 255, s);
+					draw_line(vid , cplayer->legs[8], cplayer->legs[9], cplayer->legs[12], cplayer->legs[13], 255, 255, 255, s);
 #endif
 				}
 				if(pixel_mode & PMODE_FLAT)
@@ -2258,7 +2233,7 @@ void render_parts(pixel *vid)
 				}
 			}
 		}
-        }
+	}
 #ifdef OGLR		
         
         //Go into array mode
@@ -3390,10 +3365,10 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
 			j=d[p++];
 			if (j<PT_NUM && j>0)
 			{
-				if (j==PT_STKM || j==PT_STKM2)
+				if (j==PT_STKM || j==PT_STKM2 || j==PT_FIGH)
 				{
 					pixel lc, hc=PIXRGB(255, 224, 178);
-					if (j==PT_STKM) lc = PIXRGB(255, 255, 255);
+					if (j==PT_STKM || j==PT_FIGH) lc = PIXRGB(255, 255, 255);
 					else lc = PIXRGB(100, 100, 255);
 					//only need to check upper bound of y coord - lower bounds and x<w are checked in draw_line
 					draw_line(fb , x-2, y-2, x+2, y-2, PIXR(hc), PIXG(hc), PIXB(hc), w);

@@ -2495,36 +2495,36 @@ int sdl_poll(void)
 			//1 8 2
 			if (event.key.keysym.sym == SDLK_RIGHT)
 			{
-				player[0] = (int)(player[0])|0x02;  //Go right command
+				player.comm = (int)(player.comm)|0x02;  //Go right command
 			}
 			if (event.key.keysym.sym == SDLK_LEFT)
 			{
-				player[0] = (int)(player[0])|0x01;  //Go left command
+				player.comm = (int)(player.comm)|0x01;  //Go left command
 			}
-			if (event.key.keysym.sym == SDLK_DOWN && ((int)(player[0])&0x08)!=0x08)
+			if (event.key.keysym.sym == SDLK_DOWN && ((int)(player.comm)&0x08)!=0x08)
 			{
-				player[0] = (int)(player[0])|0x08;  //Go left command
+				player.comm = (int)(player.comm)|0x08;  //Go left command
 			}
-			if (event.key.keysym.sym == SDLK_UP && ((int)(player[0])&0x04)!=0x04)
+			if (event.key.keysym.sym == SDLK_UP && ((int)(player.comm)&0x04)!=0x04)
 			{
-				player[0] = (int)(player[0])|0x04;  //Jump command
+				player.comm = (int)(player.comm)|0x04;  //Jump command
 			}
 
 			if (event.key.keysym.sym == SDLK_d)
 			{
-				player2[0] = (int)(player2[0])|0x02;  //Go right command
+				player2.comm = (int)(player2.comm)|0x02;  //Go right command
 			}
 			if (event.key.keysym.sym == SDLK_a)
 			{
-				player2[0] = (int)(player2[0])|0x01;  //Go left command
+				player2.comm = (int)(player2.comm)|0x01;  //Go left command
 			}
-			if (event.key.keysym.sym == SDLK_s && ((int)(player2[0])&0x08)!=0x08)
+			if (event.key.keysym.sym == SDLK_s && ((int)(player2.comm)&0x08)!=0x08)
 			{
-				player2[0] = (int)(player2[0])|0x08;  //Go left command
+				player2.comm = (int)(player2.comm)|0x08;  //Go left command
 			}
-			if (event.key.keysym.sym == SDLK_w && ((int)(player2[0])&0x04)!=0x04)
+			if (event.key.keysym.sym == SDLK_w && ((int)(player2.comm)&0x04)!=0x04)
 			{
-				player2[0] = (int)(player2[0])|0x04;  //Jump command
+				player2.comm = (int)(player2.comm)|0x04;  //Jump command
 			}
 			break;
 
@@ -2536,30 +2536,30 @@ int sdl_poll(void)
 				sdl_zoom_trig = 0;
 			if (event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_LEFT)
 			{
-				player[1] = player[0];  //Saving last movement
-				player[0] = (int)(player[0])&12;  //Stop command
+				player.pcomm = player.comm;  //Saving last movement
+				player.comm = (int)(player.comm)&12;  //Stop command
 			}
 			if (event.key.keysym.sym == SDLK_UP)
 			{
-				player[0] = (int)(player[0])&11;
+				player.comm = (int)(player.comm)&11;
 			}
 			if (event.key.keysym.sym == SDLK_DOWN)
 			{
-				player[0] = (int)(player[0])&7;
+				player.comm = (int)(player.comm)&7;
 			}
 
 			if (event.key.keysym.sym == SDLK_d || event.key.keysym.sym == SDLK_a)
 			{
-				player2[1] = player2[0];  //Saving last movement
-				player2[0] = (int)(player2[0])&12;  //Stop command
+				player2.pcomm = player2.comm;  //Saving last movement
+				player2.comm = (int)(player2.comm)&12;  //Stop command
 			}
 			if (event.key.keysym.sym == SDLK_w)
 			{
-				player2[0] = (int)(player2[0])&11;
+				player2.comm = (int)(player2.comm)&11;
 			}
 			if (event.key.keysym.sym == SDLK_s)
 			{
-				player2[0] = (int)(player2[0])&7;
+				player2.comm = (int)(player2.comm)&7;
 			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
