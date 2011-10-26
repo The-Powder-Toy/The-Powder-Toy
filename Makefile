@@ -19,15 +19,6 @@ CC := gcc
 CC_WIN := i686-w64-mingw32-gcc
 WIN_RES := i686-w64-mingw32-windres
 
-#PY_BIN := python
-#PY_VERSION := $(shell $(PY_BIN) -c "import sys;print sys.version[:3]")
-#PY_LIBPATH := $(shell $(PY_BIN) -c "import os.path,sys;print os.path.join(sys.exec_prefix,\"lib\",\"python%s\"%sys.version[:3],\"config\")")
-#PY_INCPATH := $(shell $(PY_BIN) -c "import os.path,sys;print os.path.join(sys.exec_prefix,\"include\",\"python%s\"%sys.version[:3])")
-#PY_LDFLAGS := $(shell $(PY_BIN) -c "import distutils.sysconfig;print distutils.sysconfig.get_config_var('LINKFORSHARED')")
-#PYCOMMAND := $(PY_BIN) getheader.py
-#LFLAGS += -lpython$(PY_VERSION) -L$(PY_LIBPATH) -I$(PY_INCPATH) $(PY_LDFLAGS)
-#LFLAGS_X += -I/Library/Frameworks/Python.framework/Versions/$(PY_VERSION)/include/python$(PY_VERSION)
-
 powder: build/powder
 powder-debug: build/powder-debug
 powder-sse3: build/powder-sse3
