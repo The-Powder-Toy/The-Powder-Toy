@@ -45,9 +45,12 @@ typedef struct menu_wall menu_wall;
 #define SC_SPECIAL 9
 #define SC_LIFE 10
 #define SC_TOOL 11
-#define SC_CRACKER 13
-#define SC_CRACKER2 14
-#define SC_TOTAL 12
+#define SC_TOTAL 13
+#define SC_CRACKER 14
+#define SC_CRACKER2 15
+#define SC_MOD 12
+
+
 
 static menu_section msections[] = //doshow does not do anything currently.
 {
@@ -63,10 +66,11 @@ static menu_section msections[] = //doshow does not do anything currently.
 	{"\xCC", "Special", 0, 1},
 	{"\xD2", "Life", 0, 1},
 	{"\xD7", "Tools", 0, 1},
-	{"\xD2", "More Life", 0, 1},
+	{"\xD2", "Merbo's Mod!", 0, 1},
 	{"\xC8", "", 0, 0},
 	{"\xC8", "Cracker", 0, 0},
 	{"\xC8", "Cracker!", 0, 0},
+	{"\xC8", "Merbo's Mod!", 0, 1},
 };
 
 static quick_option quickmenu[] = //doshow does not do anything currently.

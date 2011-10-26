@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\</OutDir>
+    <IncludePath>C:\Users\Merbo\Documents\Visual Studio 2010\Projects\TPTMod\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Merbo\Documents\Visual Studio 2010\Projects\TPTMod\Libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\</OutDir>
+    <IncludePath>$(ProjectDir)Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;LUACONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <FloatingPointModel>Fast</FloatingPointModel>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>shell32.lib;ws2_32.lib;wsock32.lib;SDL.lib;SDLmain.lib;libbz2.lib;regex.lib;pthreadVC2.lib;lua5.1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;LUACONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FloatingPointModel>Fast</FloatingPointModel>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>shell32.lib;ws2_32.lib;wsock32.lib;SDL.lib;SDLmain.lib;libbz2.lib;regex.lib;pthreadVC2.lib;lua5.1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="font\editor.c" />
+    <ClCompile Include="font\packer.c" />
+    <ClCompile Include="font\unpacker.c" />
+    <ClCompile Include="src\air.c" />
+    <ClCompile Include="src\cJSON.c" />
+    <ClCompile Include="src\console.c" />
+    <ClCompile Include="src\elements\acid.c" />
+    <ClCompile Include="src\elements\amtr.c" />
+    <ClCompile Include="src\elements\anar.c" />
+    <ClCompile Include="src\elements\aray.c" />
+    <ClCompile Include="src\elements\bcln.c" />
+    <ClCompile Include="src\elements\bcol.c" />
+    <ClCompile Include="src\elements\bizr.c" />
+    <ClCompile Include="src\elements\bmtl.c" />
+    <ClCompile Include="src\elements\bomb.c" />
+    <ClCompile Include="src\elements\boyl.c" />
+    <ClCompile Include="src\elements\btry.c" />
+    <ClCompile Include="src\elements\c5.c" />
+    <ClCompile Include="src\elements\caus.c" />
+    <ClCompile Include="src\elements\cbnw.c" />
+    <ClCompile Include="src\elements\cctv.c" />
+    <ClCompile Include="src\elements\clne.c" />
+    <ClCompile Include="src\elements\clst.c" />
+    <ClCompile Include="src\elements\co2.c" />
+    <ClCompile Include="src\elements\coal.c" />
+    <ClCompile Include="src\elements\conv.c" />
+    <ClCompile Include="src\elements\dest.c" />
+    <ClCompile Include="src\elements\deut.c" />
+    <ClCompile Include="src\elements\dlay.c" />
+    <ClCompile Include="src\elements\dstw.c" />
+    <ClCompile Include="src\elements\elementmisc.c" />
+    <ClCompile Include="src\elements\emp.c" />
+    <ClCompile Include="src\elements\ff50.c" />
+    <ClCompile Include="src\elements\firw.c" />
+    <ClCompile Include="src\elements\fog.c" />
+    <ClCompile Include="src\elements\frzw.c" />
+    <ClCompile Include="src\elements\frzz.c" />
+    <ClCompile Include="src\elements\fsep.c" />
+    <ClCompile Include="src\elements\fuse.c" />
+    <ClCompile Include="src\elements\fwrk.c" />
+    <ClCompile Include="src\elements\gbmb.c" />
+    <ClCompile Include="src\elements\glas.c" />
+    <ClCompile Include="src\elements\glow.c" />
+    <ClCompile Include="src\elements\goo.c" />
+    <ClCompile Include="src\elements\gpmp.c" />
+    <ClCompile Include="src\elements\h2.c" />
+    <ClCompile Include="src\elements\hswc.c" />
+    <ClCompile Include="src\elements\ice.c" />
+    <ClCompile Include="src\elements\iron.c" />
+    <ClCompile Include="src\elements\isz.c" />
+    <ClCompile Include="src\elements\lcry.c" />
+    <ClCompile Include="src\elements\legacy.c" />
+    <ClCompile Include="src\elements\ligh.c" />
+    <ClCompile Include="src\elements\merc.c" />
+    <ClCompile Include="src\elements\mort.c" />
+    <ClCompile Include="src\elements\nbhl.c" />
+    <ClCompile Include="src\elements\neut.c" />
+    <ClCompile Include="src\elements\none.c" />
+    <ClCompile Include="src\elements\nptct.c" />
+    <ClCompile Include="src\elements\nwhl.c" />
+    <ClCompile Include="src\elements\O2.c" />
+    <ClCompile Include="src\elements\pbcn.c" />
+    <ClCompile Include="src\elements\pcln.c" />
+    <ClCompile Include="src\elements\phot.c" />
+    <ClCompile Include="src\elements\pipe.c" />
+    <ClCompile Include="src\elements\plnt.c" />
+    <ClCompile Include="src\elements\plut.c" />
+    <ClCompile Include="src\elements\prti.c" />
+    <ClCompile Include="src\elements\prto.c" />
+    <ClCompile Include="src\elements\pump.c" />
+    <ClCompile Include="src\elements\pvod.c" />
+    <ClCompile Include="src\elements\pyro.c" />
+    <ClCompile Include="src\elements\qrtz.c" />
+    <ClCompile Include="src\elements\rime.c" />
+    <ClCompile Include="src\elements\shld.c" />
+    <ClCompile Include="src\elements\sing.c" />
+    <ClCompile Include="src\elements\sltw.c" />
+    <ClCompile Include="src\elements\soap.c" />
+    <ClCompile Include="src\elements\spng.c" />
+    <ClCompile Include="src\elements\sprk.c" />
+    <ClCompile Include="src\elements\stkm.c" />
+    <ClCompile Include="src\elements\stkm2.c" />
+    <ClCompile Include="src\elements\stor.c" />
+    <ClCompile Include="src\elements\swch.c" />
+    <ClCompile Include="src\elements\thdr.c" />
+    <ClCompile Include="src\elements\thrm.c" />
+    <ClCompile Include="src\elements\uran.c" />
+    <ClCompile Include="src\elements\vine.c" />
+    <ClCompile Include="src\elements\warp.c" />
+    <ClCompile Include="src\elements\watr.c" />
+    <ClCompile Include="src\elements\wifi.c" />
+    <ClCompile Include="src\elements\wire.c" />
+    <ClCompile Include="src\elements\wtrv.c" />
+    <ClCompile Include="src\elements\yest.c" />
+    <ClCompile Include="src\graphics.c" />
+    <ClCompile Include="src\http.c" />
+    <ClCompile Include="src\interface.c" />
+    <ClCompile Include="src\luaconsole.c" />
+    <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\md5.c" />
+    <ClCompile Include="src\misc.c" />
+    <ClCompile Include="src\powder.c" />
+    <ClCompile Include="src\pythonconsole.c" />
+    <ClCompile Include="src\update.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="includes\air.h" />
+    <ClInclude Include="includes\bzlib.h" />
+    <ClInclude Include="includes\cJSON.h" />
+    <ClInclude Include="includes\console.h" />
+    <ClInclude Include="includes\defines.h" />
+    <ClInclude Include="includes\element.h" />
+    <ClInclude Include="includes\fftw3.h" />
+    <ClInclude Include="includes\font.h" />
+    <ClInclude Include="includes\graphics.h" />
+    <ClInclude Include="includes\hmap.h" />
+    <ClInclude Include="includes\http.h" />
+    <ClInclude Include="includes\icon.h" />
+    <ClInclude Include="includes\icondoc.h" />
+    <ClInclude Include="includes\images.h" />
+    <ClInclude Include="includes\interface.h" />
+    <ClInclude Include="includes\lua5.1\lauxlib.h" />
+    <ClInclude Include="includes\lua5.1\lua.h" />
+    <ClInclude Include="includes\lua5.1\lua.hpp" />
+    <ClInclude Include="includes\lua5.1\luaconf.h" />
+    <ClInclude Include="includes\lua5.1\lualib.h" />
+    <ClInclude Include="includes\luaconsole.h" />
+    <ClInclude Include="includes\md5.h" />
+    <ClInclude Include="includes\misc.h" />
+    <ClInclude Include="includes\powder.h" />
+    <ClInclude Include="includes\pthread.h" />
+    <ClInclude Include="includes\pythonconsole.h" />
+    <ClInclude Include="includes\regex.h" />
+    <ClInclude Include="includes\sched.h" />
+    <ClInclude Include="includes\sdl\begin_code.h" />
+    <ClInclude Include="includes\sdl\close_code.h" />
+    <ClInclude Include="includes\sdl\SDL.h" />
+    <ClInclude Include="includes\sdl\SDL_active.h" />
+    <ClInclude Include="includes\sdl\SDL_audio.h" />
+    <ClInclude Include="includes\sdl\SDL_byteorder.h" />
+    <ClInclude Include="includes\sdl\SDL_cdrom.h" />
+    <ClInclude Include="includes\sdl\SDL_config.h" />
+    <ClInclude Include="includes\sdl\SDL_config_amiga.h" />
+    <ClInclude Include="includes\sdl\SDL_config_dreamcast.h" />
+    <ClInclude Include="includes\sdl\SDL_config_macos.h" />
+    <ClInclude Include="includes\sdl\SDL_config_macosx.h" />
+    <ClInclude Include="includes\sdl\SDL_config_minimal.h" />
+    <ClInclude Include="includes\sdl\SDL_config_nds.h" />
+    <ClInclude Include="includes\sdl\SDL_config_os2.h" />
+    <ClInclude Include="includes\sdl\SDL_config_symbian.h" />
+    <ClInclude Include="includes\sdl\SDL_config_win32.h" />
+    <ClInclude Include="includes\sdl\SDL_copying.h" />
+    <ClInclude Include="includes\sdl\SDL_cpuinfo.h" />
+    <ClInclude Include="includes\sdl\SDL_endian.h" />
+    <ClInclude Include="includes\sdl\SDL_error.h" />
+    <ClInclude Include="includes\sdl\SDL_events.h" />
+    <ClInclude Include="includes\sdl\SDL_getenv.h" />
+    <ClInclude Include="includes\sdl\SDL_joystick.h" />
+    <ClInclude Include="includes\sdl\SDL_keyboard.h" />
+    <ClInclude Include="includes\sdl\SDL_keysym.h" />
+    <ClInclude Include="includes\sdl\SDL_loadso.h" />
+    <ClInclude Include="includes\sdl\SDL_main.h" />
+    <ClInclude Include="includes\sdl\SDL_mouse.h" />
+    <ClInclude Include="includes\sdl\SDL_mutex.h" />
+    <ClInclude Include="includes\sdl\SDL_name.h" />
+    <ClInclude Include="includes\sdl\SDL_opengl.h" />
+    <ClInclude Include="includes\sdl\SDL_platform.h" />
+    <ClInclude Include="includes\sdl\SDL_quit.h" />
+    <ClInclude Include="includes\sdl\SDL_rwops.h" />
+    <ClInclude Include="includes\sdl\SDL_stdinc.h" />
+    <ClInclude Include="includes\sdl\SDL_syswm.h" />
+    <ClInclude Include="includes\sdl\SDL_thread.h" />
+    <ClInclude Include="includes\sdl\SDL_timer.h" />
+    <ClInclude Include="includes\sdl\SDL_types.h" />
+    <ClInclude Include="includes\sdl\SDL_version.h" />
+    <ClInclude Include="includes\sdl\SDL_video.h" />
+    <ClInclude Include="includes\update.h" />
+    <ClInclude Include="includes\version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="font\font.bin" />
+    <None Include="src\python\stdlib\test\sgml_input.html" />
+    <None Include="src\python\stdlib\test\test_difflib_expect.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\resources\powder-res.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
