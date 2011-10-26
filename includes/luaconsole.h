@@ -11,6 +11,8 @@
 #endif
 #include <defines.h>
 
+#define LOCAL_LUA_DIR "Lua"
+
 #define LUACON_MDOWN 1
 #define LUACON_MUP 2
 #define LUACON_MPRESS 3

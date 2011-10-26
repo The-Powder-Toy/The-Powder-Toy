@@ -55,9 +55,6 @@
 #include <air.h>
 #include <icon.h>
 #include <console.h>
-#ifdef PYCONSOLE
-#include "pythonconsole.h"
-#endif
 #ifdef LUACONSOLE
 #include "luaconsole.h"
 #endif
@@ -1625,10 +1622,6 @@ int main(int argc, char *argv[])
 #ifdef LUACONSOLE
 	luacon_open();
 #endif
-#ifdef PYCONSOLE
-	pycon_open();
-#endif
-
 #ifdef MT
 	numCores = core_count();
 #endif
@@ -2099,11 +2092,6 @@ int main(int argc, char *argv[])
 	if(sdl_rkey){
 		if(!luacon_keyevent(sdl_rkey, sdl_mod, LUACON_KUP))
 			sdl_rkey = 0;
-	}
-#endif
-#ifdef PYCONSOLE
-	if(sdl_key){
-		pycon_keypress(sdl_key, sdl_mod);
 	}
 #endif
 		if (sys_shortcuts==1)//all shortcuts can be disabled by python scripts
@@ -3563,41 +3551,7 @@ int main(int argc, char *argv[])
 
 		if (console_mode)
 		{
-#ifdef PYCONSOLE
-			if (pyready==1 && pygood==1)
-			{
-				char *console;
-				//char error[255] = "error!";
-				sys_pause = 1;
-				console = console_ui(vid_buf,console_error,console_more);
-				console = mystrdup(console);
-				strcpy(console_error,"");
-				if (process_command_py(vid_buf, console, console_error)==-1)
-				{
-					free(console);
-					break;
-				}
-				free(console);
-				if (!console_mode)
-					hud_enable = 1;
-			}
-			else
-			{
-				char *console;
-				sys_pause = 1;
-				console = console_ui(vid_buf,console_error,console_more);
-				console = mystrdup(console);
-				strcpy(console_error,"");
-				if (process_command_old(vid_buf, console, console_error)==-1)
-				{
-					free(console);
-					break;
-				}
-				free(console);
-				if (!console_mode)
-					hud_enable = 1;
-			}
-#elif defined LUACONSOLE
+#ifdef LUACONSOLE
 			char *console;
 			sys_pause = 1;
 			console = console_ui(vid_buf, console_error, console_more);
@@ -3629,9 +3583,6 @@ int main(int argc, char *argv[])
 		}
 
 		//execute python step hook
-#ifdef PYCONSOLE
-		pycon_step();
-#endif
 		sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
 		//Setting an element for the stick man
@@ -3657,9 +3608,6 @@ int main(int argc, char *argv[])
 #endif
 #ifdef LUACONSOLE
 	luacon_close();
-#endif
-#ifdef PYCONSOLE
-	pycon_close();
 #endif
 #ifdef PTW32_STATIC_LIB
     pthread_win32_thread_detach_np();

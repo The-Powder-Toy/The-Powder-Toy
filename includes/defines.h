@@ -23,8 +23,6 @@
 
 #define LOCAL_SAVE_DIR "Saves"
 
-#define LOCAL_LUA_DIR "Lua"
-
 #define APPDATA_SUBDIR "\\HardWIRED"
 
 #define THUMB_CACHE_SIZE 256
@@ -98,13 +96,6 @@ extern unsigned char ZSIZE;
 #define SQUARE_BRUSH 1
 #define TRI_BRUSH 2
 #define BRUSH_NUM 3
-
-
-//#define GRAVFFT
-//#define LUACONSOLE
-//#define PYCONSOLE
-//#define PYEXT
-//no longer needed
 
 #ifdef PIX16
 typedef unsigned short pixel;
