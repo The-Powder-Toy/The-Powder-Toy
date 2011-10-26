@@ -31,17 +31,17 @@ int update_FF50(UPDATE_FUNC_ARGS) {
 			    //active = 1;
 			   parts[i].life--;
 		   }
-		   /*else if(parts[r>>8].type == PT_FF50) {
+		   else if(parts[r>>8].type == PT_FF50 && parts[r>>8].life < parts[i].life) {
 				parts[i].life = parts[r>>8].life;
-		   }*/
+		   }
 		   if (parts[i].life == 1) {
-			    parts[i].life = 10000;
+			    parts[i].life = 100000;
 				parts[i].tmp = 50;
 				parts[i].type = PT_FIRE;
 				//active = 2;
 		   }
-		   if (parts[r>>8].type == PT_FIRE && parts[r>>8].tmp == 50) {
-			    parts[i].life = 10000;
+		   if (parts[r>>8].type == PT_FIRE && parts[i].life <= 30) {
+			    parts[i].life = 100000;
 			    parts[i].type = PT_FIRE;
 				//active = 2;
 		   }
