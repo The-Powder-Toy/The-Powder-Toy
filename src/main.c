@@ -2415,22 +2415,10 @@ int main(int argc, char *argv[])
 			if (sdl_key==SDLK_SPACE)
 				sys_pause = !sys_pause;
 			if (sdl_key=='u')
+
 				aheat_enable = !aheat_enable;
-			if (sdl_key=='h' && !(sdl_mod & KMOD_LCTRL))
-			{
+			if (sdl_key=='h')
 				hud_enable = !hud_enable;
-			}
-			if (sdl_key==SDLK_F1 || (sdl_key=='h' && (sdl_mod & KMOD_LCTRL)))
-			{
-				if(!it)
-				{
-					it = 8047;
-				}
-				else
-				{
-					it = 0;
-				}
-			}
 			if (sdl_key=='n')
 				pretty_powder = !pretty_powder;
 			if (sdl_key=='p')
