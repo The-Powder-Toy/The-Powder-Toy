@@ -268,6 +268,7 @@ int update_COAL(UPDATE_FUNC_ARGS);
 int update_DEUT(UPDATE_FUNC_ARGS);
 int update_DSTW(UPDATE_FUNC_ARGS);
 int update_FOG(UPDATE_FUNC_ARGS);
+int update_FF50(UPDATE_FUNC_ARGS);
 int update_FRZW(UPDATE_FUNC_ARGS);
 int update_FRZZ(UPDATE_FUNC_ARGS);
 int update_FSEP(UPDATE_FUNC_ARGS);
@@ -578,6 +579,7 @@ static const part_type ptypes[PT_NUM] =
 	{"WIRE",    PIXPACK(0xFFCC00),  0.0f,   0.00f * CFDS,   0.00f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  0,  1,  1,  100,    SC_ELEC,        R_TEMP+0.0f +273.15f,   250,    "WireWorld wires.",ST_SOLID,TYPE_SOLID,&update_WIRE},
 	{"GBMB",	PIXPACK(0x1144BB),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	20,	1,	1,	30,		SC_EXPLOSIVE,	R_TEMP-2.0f	+273.15f,	29,		"Sticks to first object it touches then produces strong gravity push.", ST_NONE, TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_GBMB},
 	{"CCTV",	PIXPACK(0xED1313),	0.5f,	0.02f * CFDS,	1.00f,	1.00f,	0.0f,	0.1f,	0.00f,	0.000f  * CFDS, 1,	500,	1,	1,	0,	1,	1,	50,		SC_MOD,			R_TEMP+0.0f +273.15f,	250,	"cctvdude99. Spreads heat real fast, moves fast, burns fast, explodes fast, melts fast.", ST_SOLID, TYPE_PART|PROP_NEUTPASS, &update_CCTV},		
+	{"FF50",	PIXPACK(0x2200FF),	0.0f,	0.00f * CFDS,	0.90f,	1.00f,	0.0f,	0.0f,	0.00f,	0.000f  * CFDS, 0,	0,		0,	0,	0,	1,	1,	100,	SC_MOD,			R_TEMP+0.0f +273.15f,	29,		"FinalFlash50. Explodes after prolonged contact with CCTV.", ST_NONE, TYPE_SOLID, &update_FF50},		
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd M	Use	Weight	Section			H						Ins		Description
 };
 
@@ -752,6 +754,7 @@ static part_transition ptransitions[PT_NUM] =
 	/* WIRE */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* GBMB */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* CCTV */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			5000.0f,	PT_FIRE},
+	/* FF50 */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 };
 #undef IPL
 #undef IPH

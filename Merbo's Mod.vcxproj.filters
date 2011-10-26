@@ -321,7 +321,10 @@
     <ClCompile Include="src\elements\yest.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cctv.c">
+    <ClCompile Include="src\elements\cctv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\elements\ff50.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

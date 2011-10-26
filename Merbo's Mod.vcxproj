@@ -34,6 +34,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\</OutDir>
+    <IncludePath>C:\Users\Merbo\Documents\Visual Studio 2010\Projects\TPTMod\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Merbo\Documents\Visual Studio 2010\Projects\TPTMod\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -43,16 +46,18 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;LUACONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>shell32.lib;ws2_32.lib;wsock32.lib;SDL.lib;SDLmain.lib;libbz2.lib;regex.lib;pthreadVC2.lib;lua5.1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -73,7 +78,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cctv.c" />
     <ClCompile Include="font\editor.c" />
     <ClCompile Include="font\packer.c" />
     <ClCompile Include="font\unpacker.c" />
@@ -94,6 +98,7 @@
     <ClCompile Include="src\elements\c5.c" />
     <ClCompile Include="src\elements\caus.c" />
     <ClCompile Include="src\elements\cbnw.c" />
+    <ClCompile Include="src\elements\cctv.c" />
     <ClCompile Include="src\elements\clne.c" />
     <ClCompile Include="src\elements\clst.c" />
     <ClCompile Include="src\elements\co2.c" />
@@ -105,6 +110,7 @@
     <ClCompile Include="src\elements\dstw.c" />
     <ClCompile Include="src\elements\elementmisc.c" />
     <ClCompile Include="src\elements\emp.c" />
+    <ClCompile Include="src\elements\ff50.c" />
     <ClCompile Include="src\elements\firw.c" />
     <ClCompile Include="src\elements\fog.c" />
     <ClCompile Include="src\elements\frzw.c" />

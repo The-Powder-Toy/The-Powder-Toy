@@ -2425,15 +2425,15 @@ void draw_parts(pixel *vid)
 				}
 				else if (t==PT_FF50)
 				{
-					if (parts[i].tmp == 0) {
+					if (parts[i].life == 256) {
 						cr = 34;
 						cg = 0;
 						cb = 255;
 					}
-					else if (parts[i].tmp == 1) {
-						int q = parts[i].temp;
+					else if (parts[i].life < 256) {
+						int q = parts[i].life;
 						cr = 255;
-						cg = 255 - q;
+						cg = q;
 						cb = 0;
 					}
 					blendpixel(vid, nx, ny, cr, cg, cb, 255);
