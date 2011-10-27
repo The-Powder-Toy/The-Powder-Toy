@@ -36,13 +36,14 @@ int update_FF50(UPDATE_FUNC_ARGS) {
 		   }
 		   if (parts[i].life == 1) {
 			    parts[i].life = 100000;
-				parts[i].tmp = 50;
-				parts[i].type = PT_FIRE;
+				parts[i].temp = 9000 + 273.15f;
+				parts[i].type = PT_PLSM;
 				//active = 2;
 		   }
-		   if (parts[r>>8].type == PT_FIRE && parts[i].life <= 30) {
+		   if (parts[r>>8].type == PT_PLSM && parts[i].life <= 30) {
+			    parts[i].temp = 9000 + 273.15f;
 			    parts[i].life = 100000;
-			    parts[i].type = PT_FIRE;
+			    parts[i].type = PT_PLSM;
 				//active = 2;
 		   }
 
