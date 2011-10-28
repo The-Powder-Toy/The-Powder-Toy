@@ -74,7 +74,7 @@ int graphics_PHOT(GRAPHICS_FUNC_ARGS)
 	*colg *= x;
 	*colb *= x;
 
-	*firea = 15;
+	*firea = 100;
 	*firer = *colr;
 	*fireg = *colg;
 	*fireb = *colb;

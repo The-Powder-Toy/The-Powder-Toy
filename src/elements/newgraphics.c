@@ -401,6 +401,7 @@ int graphics_PVOD(GRAPHICS_FUNC_ARGS)
 int graphics_STOR(GRAPHICS_FUNC_ARGS)
 {
 	if(cpart->tmp){
+		*pixel_mode |= PMODE_GLOW;
 		*colr = 0x50;
 		*colg = 0xDF;
 		*colb = 0xDF;

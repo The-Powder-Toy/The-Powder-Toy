@@ -46,7 +46,7 @@ pixel *pers_bg;
 
 char * flm_data;
 int flm_data_points = 4;
-pixel flm_data_colours[] = {PIXPACK(0xAF9F0F), PIXPACK(0xDFBF0F), PIXPACK(0x60300F), PIXPACK(0x000000)};
+pixel flm_data_colours[] = {PIXPACK(0xAF9F0F), PIXPACK(0xDFBF6F), PIXPACK(0x60300F), PIXPACK(0x000000)};
 float flm_data_pos[] = {1.0f, 0.9f, 0.5f, 0.0f};
 
 char * plasma_data;
