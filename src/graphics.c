@@ -1896,7 +1896,7 @@ void render_parts(pixel *vid)
                     flatC[cflatC++] = ((float)cola)/255.0f;
                     cflat++;
 #else
-					addpixel(vid, nx, ny, colr, colg, colb, cola);
+					blendpixel(vid, nx, ny, colr, colg, colb, cola);
 #endif
 				}
 				if(pixel_mode & PMODE_ADD)

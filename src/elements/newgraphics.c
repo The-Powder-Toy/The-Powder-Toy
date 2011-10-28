@@ -222,6 +222,8 @@ int graphics_INVS(GRAPHICS_FUNC_ARGS)
 		*colr = 15;
 		*colg = 0;
 		*colb = 150;
+		*pixel_mode &= PMODE;
+		*pixel_mode |= PMODE_BLEND;
 	} 
 	return 0;
 }
@@ -310,8 +312,8 @@ int graphics_BRAY(GRAPHICS_FUNC_ARGS)
 		trans = cpart->life*100;
 		if (trans>255) trans = 255;
 		*colr = 255;
-		*colr = 150;
-		*colr = 50;
+		*colg = 150;
+		*colb = 50;
 	}
 	*cola = trans;
 	*pixel_mode &= ~PMODE;
