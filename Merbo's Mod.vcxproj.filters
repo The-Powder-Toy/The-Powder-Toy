@@ -330,6 +330,9 @@
     <ClCompile Include="src\elements\me45.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\elements\simn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\air.h">

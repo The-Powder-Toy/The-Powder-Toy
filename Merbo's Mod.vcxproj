@@ -154,6 +154,7 @@
     <ClCompile Include="src\elements\qrtz.c" />
     <ClCompile Include="src\elements\rime.c" />
     <ClCompile Include="src\elements\shld.c" />
+    <ClCompile Include="src\elements\simn.c" />
     <ClCompile Include="src\elements\sing.c" />
     <ClCompile Include="src\elements\sltw.c" />
     <ClCompile Include="src\elements\soap.c" />
