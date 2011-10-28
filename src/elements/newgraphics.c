@@ -116,10 +116,11 @@ int graphics_DUST(GRAPHICS_FUNC_ARGS)
 			*colg = (a*((cpart->dcolour>>8)&0xFF) + (255-a)**colg) >> 8;
 			*colb = (a*((cpart->dcolour)&0xFF) + (255-a)**colb) >> 8;
 		}
-		*firea = 255;
+		*pixel_mode |= PMODE_GLOW;
+		/**firea = 255;
 		*firer = *colr;
 		*fireg = *colg;
-		*fireb = *colb;
+		*fireb = *colb;*/
 	}
 	return 0;
 }
@@ -444,27 +445,36 @@ int graphics_HFLM(GRAPHICS_FUNC_ARGS)
 }
 int graphics_FIRW(GRAPHICS_FUNC_ARGS)
 {
-	int caddress = restrict_flt(restrict_flt((float)((int)(cpart->life/2)), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
-	*colr = (unsigned char)firw_data[caddress];
-	*colg = (unsigned char)firw_data[caddress+1];
-	*colb = (unsigned char)firw_data[caddress+2];
-	
-	if (decorations_enable && cpart->dcolour)
+	if(cpart->tmp>=3)
 	{
-		int a = (cpart->dcolour>>24)&0xFF;
-		*colr = (a*((cpart->dcolour>>16)&0xFF) + (255-a)**colr) >> 8;
-		*colg = (a*((cpart->dcolour>>8)&0xFF) + (255-a)**colg) >> 8;
-		*colb = (a*((cpart->dcolour)&0xFF) + (255-a)**colb) >> 8;
+		int caddress = restrict_flt(restrict_flt((float)(cpart->tmp-4), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+		*colr = (unsigned char)firw_data[caddress];
+		*colg = (unsigned char)firw_data[caddress+1];
+		*colb = (unsigned char)firw_data[caddress+2];
+		
+		if (decorations_enable && cpart->dcolour)
+		{
+			int a = (cpart->dcolour>>24)&0xFF;
+			*colr = (a*((cpart->dcolour>>16)&0xFF) + (255-a)**colr) >> 8;
+			*colg = (a*((cpart->dcolour>>8)&0xFF) + (255-a)**colg) >> 8;
+			*colb = (a*((cpart->dcolour)&0xFF) + (255-a)**colb) >> 8;
+		}
+		
+		*firea = cpart->life*4;
+		if(*firea > 240)
+			*firea = 240;
+		*firer = *colr;
+		*fireg = *colg;
+		*fireb = *colb;
+		
+		*pixel_mode = PMODE_NONE; //Clear default, don't draw pixel
+		*pixel_mode |= FIRE_ADD;
+		//Returning 0 means dynamic, do not cache
 	}
-	
-	*firea = 255;
-	*firer = *colr;
-	*fireg = *colg;
-	*fireb = *colb;
-	
-	*pixel_mode = PMODE_NONE; //Clear default, don't draw pixel
-	*pixel_mode |= FIRE_ADD;
-	//Returning 0 means dynamic, do not cache
+	else if(cpart->tmp > 0)
+	{
+		*pixel_mode |= PMODE_GLOW;
+	}
 	return 0;
 }
 int graphics_BOMB(GRAPHICS_FUNC_ARGS)

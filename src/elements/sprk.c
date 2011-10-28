@@ -218,8 +218,9 @@ int graphics_SPRK(GRAPHICS_FUNC_ARGS)
 	//*firer = *colr*0.5;
 	//*fireg = *colg;
 	//*fireb = *colb*2;
-	*colr *= 0.5;
-	*colb *= 2;
+	*colr = 170;
+	*colg = 200;
+	*colb = 220;
 	//*pixel_mode |= FIRE_ADD;
 	*pixel_mode |= PMODE_GLOW;
 	return 1;

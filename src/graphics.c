@@ -1769,9 +1769,12 @@ void render_parts(pixel *vid)
 				}
 				
 				//Apply decoration colour
-				colr = (deca*decr + (255-deca)*colr) >> 8;
-				colg = (deca*decg + (255-deca)*colg) >> 8;
-				colb = (deca*decb + (255-deca)*colb) >> 8;
+				if(cmode != CM_NOTHING && decorations_enable)
+				{
+					colr = (deca*decr + (255-deca)*colr) >> 8;
+					colg = (deca*decg + (255-deca)*colg) >> 8;
+					colb = (deca*decb + (255-deca)*colb) >> 8;
+				}
 				
 				//All colours are now set, check ranges
 				if(colr>255) colr = 255;
@@ -1873,6 +1876,8 @@ void render_parts(pixel *vid)
                     blobC[cblobC++] = 1.0f;
                     cblob++;
 #else
+					vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
+
 					blendpixel(vid, nx+1, ny, colr, colg, colb, 223);
 					blendpixel(vid, nx-1, ny, colr, colg, colb, 223);
 					blendpixel(vid, nx, ny+1, colr, colg, colb, 223);
