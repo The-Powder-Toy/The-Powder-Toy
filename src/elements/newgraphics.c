@@ -218,6 +218,7 @@ int graphics_INVS(GRAPHICS_FUNC_ARGS)
 {
 	if(pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f)
 	{
+		*cola = 100;
 		*colr = 15;
 		*colg = 0;
 		*colb = 150;
@@ -253,9 +254,12 @@ int graphics_FILT(GRAPHICS_FUNC_ARGS)
 	for (x=0; x<12; x++)
 		*colg += (cpart->ctype >> (x+9))  & 1;
 	x = 624/(*colr+*colg+*colb+1);
+	*cola = 127;
 	*colr *= x;
 	*colg *= x;
 	*colb *= x;
+	*pixel_mode &= ~PMODE;
+	*pixel_mode |= PMODE_BLEND;
 	return 0;
 }
 int graphics_BRAY(GRAPHICS_FUNC_ARGS)
@@ -309,7 +313,7 @@ int graphics_BRAY(GRAPHICS_FUNC_ARGS)
 		*colr = 150;
 		*colr = 50;
 	}
-	//*cola = trans;
+	*cola = trans;
 	*pixel_mode &= ~PMODE;
 	*pixel_mode |= PMODE_BLEND;
 	return 0;

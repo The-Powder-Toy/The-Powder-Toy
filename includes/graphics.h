@@ -75,7 +75,7 @@ struct gcache_item
 {
 	int isready;
 	int pixel_mode;
-	int colr, colg, colb;
+	int cola, colr, colg, colb;
 	int firea, firer, fireg, fireb;
 };
 typedef struct gcache_item gcache_item;
