@@ -6,7 +6,7 @@ int graphics_SMKE(GRAPHICS_FUNC_ARGS)
 	*colg = 55;
 	*colb = 55;
 	
-	*firea = 55;
+	*firea = 75;
 	*firer = 55;
 	*fireg = 55;
 	*fireb = 55;
