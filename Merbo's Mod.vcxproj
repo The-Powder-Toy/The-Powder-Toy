@@ -125,6 +125,7 @@
     <ClCompile Include="src\elements\gpmp.c" />
     <ClCompile Include="src\elements\h2.c" />
     <ClCompile Include="src\elements\hswc.c" />
+    <ClCompile Include="src\elements\icdr.c" />
     <ClCompile Include="src\elements\ice.c" />
     <ClCompile Include="src\elements\iron.c" />
     <ClCompile Include="src\elements\isz.c" />
