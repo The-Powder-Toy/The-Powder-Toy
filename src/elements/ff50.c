@@ -53,7 +53,8 @@ int update_FF50(UPDATE_FUNC_ARGS) {
 				*/
 				//active = 2;
 		   }
-		   if (parts[r>>8].type == PT_DEUT || parts[r>>8].type == PT_NEUT && parts[i].life <= 30) {
+		   if (parts[i].life <= 30)
+			   if (parts[r>>8].type == PT_DEUT || parts[r>>8].type == PT_NEUT) {
 			   int ra = rand()%2 + 1; 
 			   if (ra == 1) {
 					parts[i].life = 10000;

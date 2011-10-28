@@ -9,3 +9,4 @@ build/stamps/*
 utils/*
 *.log
 src/python/stdlib/*
+/*.opensdf
