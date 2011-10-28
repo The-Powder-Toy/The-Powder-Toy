@@ -213,7 +213,8 @@
 #define PT_CCTV 158
 #define PT_FF50 159
 #define PT_NOOB 160
-#define PT_NUM  161
+#define PT_ME45 161
+#define PT_NUM  162
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -342,6 +343,7 @@ int update_CAUS(UPDATE_FUNC_ARGS);
 int update_DEST(UPDATE_FUNC_ARGS);
 int update_EMP(UPDATE_FUNC_ARGS);
 int update_LIGH(UPDATE_FUNC_ARGS);
+int update_ME45(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -582,6 +584,7 @@ static const part_type ptypes[PT_NUM] =
 	{"CCTV",	PIXPACK(0xED1313),	0.5f,	0.02f * CFDS,	1.00f,	1.00f,	0.0f,	0.1f,	0.00f,	0.000f  * CFDS, 1,	500,	1,	1,	0,	1,	1,	50,		SC_MOD,			R_TEMP+0.0f +273.15f,	250,	"cctvdude99. Spreads heat real fast, moves fast, burns fast, explodes fast, melts fast.", ST_SOLID, TYPE_PART|PROP_NEUTPASS, &update_CCTV},		
 	{"FF50",	PIXPACK(0x2200FF),	0.0f,	0.00f * CFDS,	0.90f,	1.00f,	0.0f,	0.0f,	0.00f,	0.000f  * CFDS, 0,	0,		0,	0,	0,	1,	1,	100,	SC_MOD,			R_TEMP+0.0f +273.15f,	29,		"FinalFlash50. Explodes after prolonged contact with CCTV.", ST_NONE, TYPE_SOLID, &update_FF50},	
 	{"NOOB",	PIXPACK(0xFF00D0),	0.8f,	0.05f * CFDS,	0.85f,	0.30f,	-0.2f,	0.2f,	0.30f,	0.010f  * CFDS,	2,	10,		0,	0,	500,1,	1,	1,		SC_MOD,			R_TEMP+0.0f +273.15f,	68,		"Noob. Odd gas that acts like a liquid, and reacts to being contained.", ST_GAS, TYPE_GAS, NULL},
+	{"ME45",	PIXPACK(0x00FFFF),	0.0f,	0.00f * CFDS,	1.00f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,	0,		0,	0,	0,	1,	1,	100,	SC_MOD,			R_TEMP+0.0f +273.15f,	63,		"Me4502. Generates random-ass particles when simulation is active.", ST_NONE, TYPE_SOLID, &update_ME45},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd M	Use	Weight	Section			H						Ins		Description
 };
 
@@ -758,6 +761,7 @@ static part_transition ptransitions[PT_NUM] =
 	/* CCTV */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			5000.0f,	PT_FIRE},
 	/* FF50 */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* NOOB */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* ME45 */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 };
 #undef IPL
 #undef IPH

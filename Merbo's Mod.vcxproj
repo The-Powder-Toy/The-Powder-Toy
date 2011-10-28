@@ -131,6 +131,7 @@
     <ClCompile Include="src\elements\lcry.c" />
     <ClCompile Include="src\elements\legacy.c" />
     <ClCompile Include="src\elements\ligh.c" />
+    <ClCompile Include="src\elements\me45.c" />
     <ClCompile Include="src\elements\merc.c" />
     <ClCompile Include="src\elements\mort.c" />
     <ClCompile Include="src\elements\nbhl.c" />
