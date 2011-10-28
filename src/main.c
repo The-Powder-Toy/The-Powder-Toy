@@ -1471,6 +1471,9 @@ void start_grav_async()
 		pthread_create(&gravthread, NULL, update_grav_async, NULL); //Start asynchronous gravity simulation
 		ngrav_enable = 1;
 	}
+	memset(gravyf, 0, sizeof(gravyf));
+	memset(gravxf, 0, sizeof(gravxf));
+	memset(gravpf, 0, sizeof(gravpf));
 }
 
 void stop_grav_async()
@@ -1486,6 +1489,9 @@ void stop_grav_async()
 		memset(gravx, 0, sizeof(gravx)); //Clear the grav velocities
 		ngrav_enable = 0;
 	}
+	memset(gravyf, 0, sizeof(gravyf));
+	memset(gravxf, 0, sizeof(gravxf));
+	memset(gravpf, 0, sizeof(gravpf));
 }
 
 #ifdef RENDERER
