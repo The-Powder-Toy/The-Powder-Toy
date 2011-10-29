@@ -8,6 +8,7 @@ int update_ICDR(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if (parts[r>>8].type == PT_SIMN) {
 					parts[r>>8].type = PT_CCTV;
+					parts[i].type = PT_CCTV;
 				}
 			}
 	return 0;
