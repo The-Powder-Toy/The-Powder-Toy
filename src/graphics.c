@@ -358,7 +358,8 @@ void clearScreen(float alpha)
     }
     else
     {
-		glColor4f(0.0f, 0.0f, 0.0f, alpha);
+		glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+		glColor4f(1.0f, 1.0f, 1.0f, alpha);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 		glBegin(GL_QUADS);
 		glVertex2f(0, 0);
@@ -367,6 +368,7 @@ void clearScreen(float alpha)
 		glVertex2f(0, YRES);
 		glEnd();
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBlendEquation(GL_FUNC_ADD);
     }
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
