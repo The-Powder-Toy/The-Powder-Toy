@@ -356,17 +356,17 @@ int graphics_GLOW(GRAPHICS_FUNC_ARGS)
 int graphics_LCRY(GRAPHICS_FUNC_ARGS)
 {
 	int lifemod = ((cpart->life>10?10:cpart->life)*10);
+	*colr += lifemod; 
+	*colg += lifemod; 
+	*colb += lifemod; 
 	if(cpart->dcolour && cpart->dcolour&0xFF000000)
 	{
-		*colr += (lifemod * (255-(cpart->dcolour>>16)&0xFF))>>8; 
-		*colg += (lifemod * (255-(cpart->dcolour>>8)&0xFF))>>8; 
-		*colb += (lifemod * (255-(cpart->dcolour)&0xFF))>>8;  
-	}
-	else
-	{
-		*colr += lifemod; 
-		*colg += lifemod; 
-		*colb += lifemod; 
+		lifemod *= 2.5f;
+		if(lifemod < 40)
+			lifemod = 40;
+		*colr = (lifemod*((cpart->dcolour>>16)&0xFF) + (255-lifemod)**colr) >> 8;
+		*colg = (lifemod*((cpart->dcolour>>8)&0xFF) + (255-lifemod)**colg) >> 8;
+		*colb = (lifemod*((cpart->dcolour)&0xFF) + (255-lifemod)**colb) >> 8;
 	}
 	*pixel_mode |= NO_DECO;
 	return 0;

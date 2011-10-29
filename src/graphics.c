@@ -1673,125 +1673,14 @@ void render_parts(pixel *vid)
 			decg = (parts[i].dcolour>>8)&0xFF;
 			decb = (parts[i].dcolour)&0xFF;
 				
-			if (graphicscache[t].isready)
-			{
-				pixel_mode = graphicscache[t].pixel_mode;
-				cola = graphicscache[t].cola;
-				colr = graphicscache[t].colr;
-				colg = graphicscache[t].colg;
-				colb = graphicscache[t].colb;
-				firea = graphicscache[t].firea;
-				firer = graphicscache[t].firer;
-				fireg = graphicscache[t].fireg;
-				fireb = graphicscache[t].fireb;
-			}
-			else
-			{
-				if (ptypes[t].graphics_func)
-				{
-					if ((*(ptypes[t].graphics_func))(&(parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
-					{
-						graphicscache[t].isready = 1;
-						graphicscache[t].pixel_mode = pixel_mode;
-						graphicscache[t].cola = cola;
-						graphicscache[t].colr = colr;
-						graphicscache[t].colg = colg;
-						graphicscache[t].colb = colb;
-						graphicscache[t].firea = firea;
-						graphicscache[t].firer = firer;
-						graphicscache[t].fireg = fireg;
-						graphicscache[t].fireb = fireb;
-					}
-				}
-				else
-				{
-					if(graphics_DEFAULT(&(parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb))
-					{
-						graphicscache[t].isready = 1;
-						graphicscache[t].pixel_mode = pixel_mode;
-						graphicscache[t].cola = cola;
-						graphicscache[t].colr = colr;
-						graphicscache[t].colg = colg;
-						graphicscache[t].colb = colb;
-						graphicscache[t].firea = firea;
-						graphicscache[t].firer = firer;
-						graphicscache[t].fireg = fireg;
-						graphicscache[t].fireb = fireb;
-					}
-				}
-			}
-			if(ptypes[t].properties & PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
-			{
-				gradv = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
-				caddress = (parts[i].temp>ptransitions[t].thv)?ptransitions[t].thv-(ptransitions[t].thv-800.0f):parts[i].temp-(ptransitions[t].thv-800.0f);
-				colr += sin(gradv*caddress) * 226;;
-				colg += sin(gradv*caddress*4.55 +3.14) * 34;
-				colb += sin(gradv*caddress*2.22 +3.14) * 64;
-			}
-			//Alter colour based on display mode
-			switch(cmode)
-			{
-			case CM_HEAT:
-				caddress = restrict_flt((int)( restrict_flt((float)(parts[i].temp+(-MIN_TEMP)), 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
-				firea = 255;
-				firer = colr = (unsigned char)color_data[caddress];
-				fireg = colg = (unsigned char)color_data[caddress+1];
-				fireb = colb = (unsigned char)color_data[caddress+2];
-				cola = 255;
-				if(pixel_mode & (FIRE_ADD | FIRE_BLEND | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIRE_ADD|FIRE_BLEND|PMODE_GLOW)) | PMODE_BLUR | PMODE_FLAT;
-				break;
-			case CM_LIFE:
-				gradv = 0.4f;
-				if (!(parts[i].life<5))
-					q = sqrt(parts[i].life);
-				else
-					q = parts[i].life;
-				colr = colg = colb = sin(gradv*q) * 100 + 128;
-				cola = 255;
-				if(pixel_mode & (FIRE_ADD | FIRE_BLEND)) pixel_mode = (pixel_mode & ~FIRE_ADD) | PMODE_BLUR | PMODE_FLAT;
-				break;
-			case CM_PERS:
-			case CM_CRACK:
-			case CM_VEL:
-			case CM_PRESS:
-			case CM_GRAD:
-				if(pixel_mode & FIRE_ADD) pixel_mode = (pixel_mode & ~FIRE_ADD) | PMODE_GLOW | PMODE_FLAT;
-				if(pixel_mode & FIRE_BLEND) pixel_mode = (pixel_mode & ~FIRE_BLEND) | PMODE_BLUR;
-			case CM_FIRE:
-				if(pixel_mode & PMODE_BLOB) pixel_mode = (pixel_mode & ~PMODE_BLOB) | PMODE_FLAT;
-				if(pixel_mode & PMODE_BLUR) pixel_mode = (pixel_mode & ~PMODE_BLUR) | PMODE_FLAT;
-				break;
-			case CM_BLOB:
-				if(pixel_mode & PMODE_FLAT) pixel_mode = (pixel_mode & ~PMODE_FLAT) | PMODE_BLOB;
-				break;
-			case CM_FANCY:
-				break;
-			default:
-				break;
-			}
-			
-			//Apply decoration colour
-			if(cmode != CM_NOTHING && cmode != CM_HEAT && decorations_enable)
-			{
-				colr = (deca*decr + (255-deca)*colr) >> 8;
-				colg = (deca*decg + (255-deca)*colg) >> 8;
-				colb = (deca*decb + (255-deca)*colb) >> 8;
-			}
-			
-#ifndef OGLR
-			//All colours are now set, check ranges
-			if(colr>255) colr = 255;
-			else if(colr<0) colr = 0;
-			if(colg>255) colg = 255;
-			else if(colg<0) colg = 0;
-			if(colb>255) colb = 255;
-			else if(colb<0) colb = 0;
-			if(cola>255) cola = 255;
-			else if(cola<0) cola = 0;
-#endif
-				
 			if(cmode == CM_NOTHING)
 			{
+				if(decorations_enable)
+				{
+					colr = (deca*decr + (255-deca)*colr) >> 8;
+					colg = (deca*decg + (255-deca)*colg) >> 8;
+					colb = (deca*decb + (255-deca)*colb) >> 8;
+				}
 #ifdef OGLR
 		        flatV[cflatV++] = nx;
 		        flatV[cflatV++] = ny;
@@ -1805,7 +1694,124 @@ void render_parts(pixel *vid)
 #endif
 			}
 			else
-			{
+			{	
+				if (graphicscache[t].isready)
+				{
+					pixel_mode = graphicscache[t].pixel_mode;
+					cola = graphicscache[t].cola;
+					colr = graphicscache[t].colr;
+					colg = graphicscache[t].colg;
+					colb = graphicscache[t].colb;
+					firea = graphicscache[t].firea;
+					firer = graphicscache[t].firer;
+					fireg = graphicscache[t].fireg;
+					fireb = graphicscache[t].fireb;
+				}
+				else
+				{
+					if (ptypes[t].graphics_func)
+					{
+						if ((*(ptypes[t].graphics_func))(&(parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
+						{
+							graphicscache[t].isready = 1;
+							graphicscache[t].pixel_mode = pixel_mode;
+							graphicscache[t].cola = cola;
+							graphicscache[t].colr = colr;
+							graphicscache[t].colg = colg;
+							graphicscache[t].colb = colb;
+							graphicscache[t].firea = firea;
+							graphicscache[t].firer = firer;
+							graphicscache[t].fireg = fireg;
+							graphicscache[t].fireb = fireb;
+						}
+					}
+					else
+					{
+						if(graphics_DEFAULT(&(parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb))
+						{
+							graphicscache[t].isready = 1;
+							graphicscache[t].pixel_mode = pixel_mode;
+							graphicscache[t].cola = cola;
+							graphicscache[t].colr = colr;
+							graphicscache[t].colg = colg;
+							graphicscache[t].colb = colb;
+							graphicscache[t].firea = firea;
+							graphicscache[t].firer = firer;
+							graphicscache[t].fireg = fireg;
+							graphicscache[t].fireb = fireb;
+						}
+					}
+				}
+				if(ptypes[t].properties & PROP_HOT_GLOW && parts[i].temp>(ptransitions[t].thv-800.0f))
+				{
+					gradv = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
+					caddress = (parts[i].temp>ptransitions[t].thv)?ptransitions[t].thv-(ptransitions[t].thv-800.0f):parts[i].temp-(ptransitions[t].thv-800.0f);
+					colr += sin(gradv*caddress) * 226;;
+					colg += sin(gradv*caddress*4.55 +3.14) * 34;
+					colb += sin(gradv*caddress*2.22 +3.14) * 64;
+				}
+				//Alter colour based on display mode
+				switch(cmode)
+				{
+				case CM_HEAT:
+					caddress = restrict_flt((int)( restrict_flt((float)(parts[i].temp+(-MIN_TEMP)), 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
+					firea = 255;
+					firer = colr = (unsigned char)color_data[caddress];
+					fireg = colg = (unsigned char)color_data[caddress+1];
+					fireb = colb = (unsigned char)color_data[caddress+2];
+					cola = 255;
+					if(pixel_mode & (FIRE_ADD | FIRE_BLEND | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIRE_ADD|FIRE_BLEND|PMODE_GLOW)) | PMODE_BLUR | PMODE_FLAT;
+					break;
+				case CM_LIFE:
+					gradv = 0.4f;
+					if (!(parts[i].life<5))
+						q = sqrt(parts[i].life);
+					else
+						q = parts[i].life;
+					colr = colg = colb = sin(gradv*q) * 100 + 128;
+					cola = 255;
+					if(pixel_mode & (FIRE_ADD | FIRE_BLEND)) pixel_mode = (pixel_mode & ~FIRE_ADD) | PMODE_BLUR | PMODE_FLAT;
+					break;
+				case CM_PERS:
+				case CM_CRACK:
+				case CM_VEL:
+				case CM_PRESS:
+				case CM_GRAD:
+					if(pixel_mode & FIRE_ADD) pixel_mode = (pixel_mode & ~FIRE_ADD) | PMODE_GLOW | PMODE_FLAT;
+					if(pixel_mode & FIRE_BLEND) pixel_mode = (pixel_mode & ~FIRE_BLEND) | PMODE_BLUR;
+				case CM_FIRE:
+					if(pixel_mode & PMODE_BLOB) pixel_mode = (pixel_mode & ~PMODE_BLOB) | PMODE_FLAT;
+					if(pixel_mode & PMODE_BLUR) pixel_mode = (pixel_mode & ~PMODE_BLUR) | PMODE_FLAT;
+					break;
+				case CM_BLOB:
+					if(pixel_mode & PMODE_FLAT) pixel_mode = (pixel_mode & ~PMODE_FLAT) | PMODE_BLOB;
+					break;
+				case CM_FANCY:
+					break;
+				default:
+					break;
+				}
+				
+				//Apply decoration colour
+				if(!(pixel_mode & NO_DECO) && cmode != CM_HEAT && decorations_enable)
+				{
+					colr = (deca*decr + (255-deca)*colr) >> 8;
+					colg = (deca*decg + (255-deca)*colg) >> 8;
+					colb = (deca*decb + (255-deca)*colb) >> 8;
+				}
+				
+	#ifndef OGLR
+				//All colours are now set, check ranges
+				if(colr>255) colr = 255;
+				else if(colr<0) colr = 0;
+				if(colg>255) colg = 255;
+				else if(colg<0) colg = 0;
+				if(colb>255) colb = 255;
+				else if(colb<0) colb = 0;
+				if(cola>255) cola = 255;
+				else if(cola<0) cola = 0;
+	#endif
+					
 				//Pixel rendering
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
