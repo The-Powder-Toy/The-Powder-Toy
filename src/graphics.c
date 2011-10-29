@@ -1738,7 +1738,7 @@ void render_parts(pixel *vid)
 				fireg = colg = (unsigned char)color_data[caddress+1];
 				fireb = colb = (unsigned char)color_data[caddress+2];
 				cola = 255;
-				if(pixel_mode & (FIRE_ADD | FIRE_BLEND)) pixel_mode = (pixel_mode & ~FIRE_ADD) | PMODE_BLUR | PMODE_FLAT;
+				if(pixel_mode & (FIRE_ADD | FIRE_BLEND | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIRE_ADD|FIRE_BLEND|PMODE_GLOW)) | PMODE_BLUR | PMODE_FLAT;
 				break;
 			case CM_LIFE:
 				gradv = 0.4f;
