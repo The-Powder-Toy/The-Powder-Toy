@@ -1821,16 +1821,23 @@ void render_parts(pixel *vid)
 					glColor4f(((float)colr)/255.0f, ((float)colg)/255.0f, ((float)colb)/255.0f, 1.0f);
 					glEnable(GL_LINE_SMOOTH);
 					glBegin(GL_LINE_STRIP);
-					glVertex2f(fnx-2, fny-2);
-					glVertex2f(fnx+2, fny-2);
-					glVertex2f(fnx+2, fny+2);
-					glVertex2f(fnx-2, fny+2);
-					glVertex2f(fnx-2, fny-2);
-					glEnd();
-					if(t==PT_STKM)
-						glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+					if(t==PT_FIGH)
+					{
+						glVertex2f(fnx, fny+2);
+						glVertex2f(fnx+2, fny);
+						glVertex2f(fnx, fny-2);
+						glVertex2f(fnx-2, fny);
+						glVertex2f(fnx, fny+2);
+					}
 					else
-						glColor4f(0.6f, 0.6f, 1.0f, 1.0f);
+					{
+						glVertex2f(fnx-2, fny-2);
+						glVertex2f(fnx+2, fny-2);
+						glVertex2f(fnx+2, fny+2);
+						glVertex2f(fnx-2, fny+2);
+						glVertex2f(fnx-2, fny-2);
+					}
+					glEnd();
 					glBegin(GL_LINES);
 					glVertex2f(nx, ny+3);
 					glVertex2f(cplayer->legs[0], cplayer->legs[1]);
@@ -1860,10 +1867,20 @@ void render_parts(pixel *vid)
 					else pc = PIXPACK(0xFFFFFF);
 					s = XRES+BARSIZE;
 					//head
-					draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-					draw_line(vid , nx-2, ny-2, nx+2, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-					draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-					draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					if(t==PT_FIGH)
+					{
+						draw_line(vid , nx, ny+2, nx+2, ny, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx+2, ny, nx, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx, ny-2, nx-2, ny, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx-2, ny, nx, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					}
+					else
+					{
+						draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx-2, ny-2, nx+2, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+					}
 					//legs
 					draw_line(vid , nx, ny+3, cplayer->legs[0], cplayer->legs[1], 255, 255, 255, s);
 					draw_line(vid , cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], 255, 255, 255, s);
