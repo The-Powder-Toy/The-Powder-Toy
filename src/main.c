@@ -1034,6 +1034,23 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					}
 				}
 			}
+			if(ver>=67 && (ty==PT_LCRY)){
+				//New LCRY uses TMP not life
+				if(parts[i-1].life>=10)
+				{
+					parts[i-1].life = 10;
+					parts[i-1].tmp = 3;
+				}
+				else if(parts[i-1].life<=0)
+				{
+					parts[i-1].life = 0;
+					parts[i-1].tmp = 0;
+				}
+				else if(parts[i-1].life < 10 && parts[i-1].life > 0)
+				{
+					parts[i-1].tmp = 1;
+				}
+			}
 			if (!ptypes[parts[i-1].type].enabled)
 				parts[i-1].type = PT_NONE;
 		}

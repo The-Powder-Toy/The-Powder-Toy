@@ -138,6 +138,7 @@ void init_can_move()
 			|| t==PT_QRTZ || t==PT_PQRT)
 			can_move[PT_PHOT][t] = 2;
 	}
+	can_move[PT_ELEC][PT_LCRY] = 2;
 	can_move[PT_PHOT][PT_LCRY] = 3;//varies according to LCRY life
 	can_move[PT_NEUT][PT_INVIS] = 2;
 	//whol eats anar
@@ -169,7 +170,7 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 	result = can_move[pt][r&0xFF];
 	if (result==3)
 	{
-		if (pt==PT_PHOT && (r&0xFF)==PT_LCRY)
+		if ((pt==PT_PHOT || pt==PT_ELEC) && (r&0xFF)==PT_LCRY)
 			result = (parts[r>>8].life > 5)? 2 : 0;
 		if ((r&0xFF)==PT_INVIS)
 		{
@@ -234,11 +235,11 @@ int try_move(int i, int x, int y, int nx, int ny)
 			if ((r & 0xFF) < PT_NUM && ptypes[r&0xFF].hconduct && ((r&0xFF)!=PT_HSWC||parts[r>>8].life==10) && (r&0xFF)!=PT_FILT)
 				parts[i].temp = parts[r>>8].temp = restrict_flt((parts[r>>8].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
-		if (parts[i].type==PT_NEUT && ((r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN || (r&0xFF)==PT_BCLN || (r&0xFF)==PT_PBCN)) {
+		if ((parts[i].type==PT_NEUT || parts[i].type==PT_ELEC) && ((r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN || (r&0xFF)==PT_BCLN || (r&0xFF)==PT_PBCN)) {
 			if (!parts[r>>8].ctype)
-				parts[r>>8].ctype = PT_NEUT;
+				parts[r>>8].ctype = parts[i].type;
 		}
-		if ((r&0xFF)==PT_PRTI && (parts[i].type==PT_PHOT || parts[i].type==PT_NEUT))
+		if ((r&0xFF)==PT_PRTI && (parts[i].type==PT_PHOT || parts[i].type==PT_NEUT || parts[i].type==PT_ELEC))
 		{
 			int nnx, count;
 			for (count=0; count<8; count++)
@@ -413,7 +414,7 @@ int do_move(int i, int x, int y, float nxf, float nyf)
 				kill_part(i);
 				return -1;
 			}
-			if (t==PT_PHOT||t==PT_NEUT)
+			if (t==PT_PHOT||t==PT_NEUT||t==PT_ELEC)
 				photons[ny][nx] = t|(i<<8);
 			else if (t)
 				pmap[ny][nx] = t|(i<<8);
@@ -658,7 +659,7 @@ inline void part_change_type(int i, int x, int y, int t)//changes the type of pa
 	}
 
 	parts[i].type = t;
-	if (t==PT_PHOT || t==PT_NEUT)
+	if (t==PT_PHOT || t==PT_NEUT || t==PT_ELEC)
 	{
 		photons[y][x] = t|(i<<8);
 		if ((pmap[y][x]>>8)==i)
@@ -819,7 +820,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			}
 			return -1;
 		}
-		if (photons[y][x] && (t==PT_PHOT||t==PT_NEUT))
+		if (photons[y][x] && (t==PT_PHOT||t==PT_NEUT||t==PT_ELEC))
 			return -1;
 		if (pfree == -1)
 			return -1;
@@ -983,6 +984,13 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		parts[i].vx = 3.0f*cosf(a);
 		parts[i].vy = 3.0f*sinf(a);
 	}
+	if (t==PT_ELEC)
+	{
+		float a = (rand()%360)*3.14159f/180.0f;
+		parts[i].life = 680;
+		parts[i].vx = 2.0f*cosf(a);
+		parts[i].vy = 2.0f*sinf(a);
+	}
 	if (t==PT_STKM)
 	{
 		if (player.spwn==0)
@@ -1054,7 +1062,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	if (t==PT_BIZR||t==PT_BIZRG)
 		parts[i].ctype = 0x47FFFF;
 	//and finally set the pmap/photon maps to the newly created particle
-	if (t==PT_PHOT||t==PT_NEUT)
+	if (t==PT_PHOT||t==PT_NEUT||t==PT_ELEC)
 		photons[y][x] = t|(i<<8);
 	if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_FIGH && t!=PT_PHOT && t!=PT_NEUT)
 		pmap[y][x] = t|(i<<8);
@@ -2160,7 +2168,7 @@ killed:
 			stagnant = parts[i].flags & FLAG_STAGNANT;
 			parts[i].flags &= ~FLAG_STAGNANT;
 
-			if ((t==PT_PHOT||t==PT_NEUT)) {
+			if ((t==PT_PHOT||t==PT_NEUT||t==PT_ELEC)) {
 				if (t == PT_PHOT) {
 					rt = pmap[fin_y][fin_x] & 0xFF;
 					lt = pmap[y][x] & 0xFF;
@@ -2249,7 +2257,7 @@ killed:
 							kill_part(i);
 						continue;
 					}
-					if (!parts[i].ctype&&t!=PT_NEUT) {
+					if (!parts[i].ctype&&t!=PT_NEUT&&t!=PT_ELEC) {
 						kill_part(i);
 						continue;
 					}
