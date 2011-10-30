@@ -216,7 +216,8 @@
 #define PT_ME45 161
 #define PT_SIMN 162
 #define PT_ICDR 163
-#define PT_NUM  164
+#define PT_PLJO 164
+#define PT_NUM  165
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -591,6 +592,7 @@ static const part_type ptypes[PT_NUM] =
 	{"ME45",	PIXPACK(0x00FFFF),	0.0f,	0.00f * CFDS,	1.00f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f  * CFDS,	0,	0,		0,	0,	0,	1,	1,	100,	SC_MOD,			R_TEMP+0.0f +273.15f,	63,		"Me4502. Generates random-ass particles when simulation is active.", ST_NONE, TYPE_SOLID, &update_ME45},
 	{"SIMN",	PIXPACK(0x6495ED),	0.3f,	0.05F * CFDS,	0.87f,	0.89f,	0.0f,	0.2f,	0.05f,	0.000f  * CFDS, 2,	0,		0,	0,	1,	1,	1,	40,		SC_MOD,			R_TEMP+0.0f +273.15f,	0,		"Simon/Ximon. Turns NOOB to DUST and is very slowly damaged by acid. Does not conduct heat.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE, &update_SIMN},
 	{"ICDR",	PIXPACK(0x00FF04),	0.2f,	0.05f * CFDS,	0.90f,	0.90f,	0.0f,	0.3f,	0.00f,	0.000f  * CFDS,	2,	0,		0,	0,	3,	1,	1,	41,		SC_MOD,			R_TEMP+0.0f +273.15f,	73,		"Icedream2k9. Turns SIMN into CCTV.", ST_LIQUID, TYPE_LIQUID|PROP_NEUTPENETRATE, &update_ICDR},
+	{"PLJO",	PIXPACK(0x2B37E0),	0.1f,	0.03f * CFDS,	1.00f,	0.67f,	-0.1f,	0.0f,	0.75f,	0.001f  * CFDS,	0,	1000,	1,	0,	0,	1,	1,	1,		SC_MOD,			R_TEMP+0.0f +273.15f,	66,		"Pilojo. Unstable gas that combines with FF50 to make ME45.", ST_GAS, TYPE_GAS, NULL},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd M	Use	Weight	Section			H						Ins		Description
 };
 
@@ -770,6 +772,7 @@ static part_transition ptransitions[PT_NUM] =
 	/* ME45 */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* SIMN */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* ICDR */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* PLJO */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 };
 #undef IPL
 #undef IPH

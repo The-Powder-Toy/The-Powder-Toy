@@ -74,6 +74,10 @@ int update_FF50(UPDATE_FUNC_ARGS) {
 				//active = 2;
 		   }
 
+			if (parts[r>>8].type == PT_PLJO) {
+				parts[i].type = PT_ME45;
+				parts[r>>8].type = PT_ME45;
+			}
 
 	   }
 	   return 0;
