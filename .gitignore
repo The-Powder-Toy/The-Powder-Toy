@@ -10,3 +10,5 @@ utils/*
 *.log
 src/python/stdlib/*
 /*.opensdf
+*.obj
+build/*.ppm
