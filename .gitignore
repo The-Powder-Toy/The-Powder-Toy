@@ -12,3 +12,4 @@ src/python/stdlib/*
 *.obj
 build/*.ppm
 build/powder.pref
+/*.suo
