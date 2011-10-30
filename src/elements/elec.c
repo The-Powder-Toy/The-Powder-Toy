@@ -41,6 +41,25 @@ int update_ELEC(UPDATE_FUNC_ARGS) {
 				{
 					parts[r>>8].life = 5+rand()%5;
 				}
+				if ((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW || (r&0xFF)==PT_CBNW)
+				{
+					if(rand()%2)
+					{
+						create_part(r>>8, x+rx, y+ry, PT_H2);
+						part_change_type(i, x, y, PT_O2);
+						parts[i].life = 0;
+						parts[i].ctype = 0;
+						return 1;
+					}
+					else
+					{
+						create_part(r>>8, x+rx, y+ry, PT_O2);
+						part_change_type(i, x, y, PT_H2);
+						parts[i].life = 0;
+						parts[i].ctype = 0;
+						return 1;
+					}
+				}
 				if ((r&0xFF)==PT_NEUT)
 				{
 					part_change_type(r>>8, x+rx, y+ry, PT_H2);
