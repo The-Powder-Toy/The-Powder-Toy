@@ -1,6 +1,5 @@
 *.*.swp
 .directory
-powder.def
 gmon.out
 *.*.orig
 build/stamps/*
@@ -12,3 +11,4 @@ src/python/stdlib/*
 /*.opensdf
 *.obj
 build/*.ppm
+build/powder.pref
