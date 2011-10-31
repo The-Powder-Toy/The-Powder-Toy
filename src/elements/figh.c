@@ -45,7 +45,9 @@ int update_FIGH(UPDATE_FUNC_ARGS)
 		case 1:
 			if ((pow(tarx-x, 2) + pow(tary-y, 2))<600)
 			{
-				if (figh->elem == PT_FIRE || figh->elem == PT_LIGH)
+				if (figh->elem == PT_LIGH || figh->elem == PT_NEUT 
+						|| ptypes[figh->elem].properties&(PROP_DEADLY|PROP_RADIOACTIVE) 
+						|| ptypes[figh->elem].heat>=323 || ptypes[figh->elem].heat<=243)
 					figh->comm = (int)figh->comm | 0x08;
 			}
 			else
