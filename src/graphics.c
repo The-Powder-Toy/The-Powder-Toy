@@ -1800,6 +1800,13 @@ void render_parts(pixel *vid)
 					colb = (deca*decb + (255-deca)*colb) >> 8;
 				}
 				
+				if(pixel_mode & DECO_FIRE && decorations_enable)
+				{
+					firer = (deca*decr + (255-deca)*firer) >> 8;
+					fireg = (deca*decg + (255-deca)*fireg) >> 8;
+					fireb = (deca*decb + (255-deca)*fireb) >> 8;
+				}
+				
 	#ifndef OGLR
 				//All colours are now set, check ranges
 				if(colr>255) colr = 255;
@@ -2242,27 +2249,10 @@ void render_parts(pixel *vid)
                     smokeC[csmokeC++] = ((float)firea)/255.0f;
                     csmoke++;
 #else
-					firea /= 8;
-					if(cmode==CM_FIRE || cmode==CM_BLOB || cmode==CM_FANCY)
-					{
-						fire_r[ny/CELL][nx/CELL] = (firea*firer + (255-firea)*fire_r[ny/CELL][nx/CELL]) >> 8;
-						fire_g[ny/CELL][nx/CELL] = (firea*fireg + (255-firea)*fire_g[ny/CELL][nx/CELL]) >> 8;
-						fire_b[ny/CELL][nx/CELL] = (firea*fireb + (255-firea)*fire_b[ny/CELL][nx/CELL]) >> 8;
-					} else {
-						//This smoke rendering style is horrendously slow, optimise, optimise, optimise!
-						for (x=-3; x<4; x++)
-						{
-							for (y=-3; y<4; y++)
-							{
-								if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
-									blendpixel(vid, x+nx, y+ny, firer, fireg, fireb, (30*(firea))>>8);
-								if (abs(x)+abs(y) <=3 && abs(x)+abs(y))
-									blendpixel(vid, x+nx, y+ny, firer, fireg, fireb, (20*(firea))>>8);
-								if (abs(x)+abs(y) == 2)
-									blendpixel(vid, x+nx, y+ny, firer, fireg, fireb, (10*(firea))>>8);
-							}
-						}
-					}
+					firea /= 2;
+					fire_r[ny/CELL][nx/CELL] = (firea*firer + (255-firea)*fire_r[ny/CELL][nx/CELL]) >> 8;
+					fire_g[ny/CELL][nx/CELL] = (firea*fireg + (255-firea)*fire_g[ny/CELL][nx/CELL]) >> 8;
+					fire_b[ny/CELL][nx/CELL] = (firea*fireb + (255-firea)*fire_b[ny/CELL][nx/CELL]) >> 8;
 #endif
 				}
 				if(firea && (pixel_mode & FIRE_ADD))
@@ -2277,36 +2267,20 @@ void render_parts(pixel *vid)
                     cfire++;
 #else
 					firea /= 8;
-					if(cmode==CM_FIRE || cmode==CM_BLOB || cmode==CM_FANCY)
-					{
-						firer = ((firea*firer) >> 8) + fire_r[ny/CELL][nx/CELL];
-						fireg = ((firea*fireg) >> 8) + fire_g[ny/CELL][nx/CELL];
-						fireb = ((firea*fireb) >> 8) + fire_b[ny/CELL][nx/CELL];
+					firer = ((firea*firer) >> 8) + fire_r[ny/CELL][nx/CELL];
+					fireg = ((firea*fireg) >> 8) + fire_g[ny/CELL][nx/CELL];
+					fireb = ((firea*fireb) >> 8) + fire_b[ny/CELL][nx/CELL];
+				
+					if(firer>255)
+						firer = 255;
+					if(fireg>255)
+						fireg = 255;
+					if(fireb>255)
+						fireb = 255;
 					
-						if(firer>255)
-							firer = 255;
-						if(fireg>255)
-							fireg = 255;
-						if(fireb>255)
-							fireb = 255;
-						
-						fire_r[ny/CELL][nx/CELL] = firer;
-						fire_g[ny/CELL][nx/CELL] = fireg;
-						fire_b[ny/CELL][nx/CELL] = fireb;
-					} else {
-						for (x=-3; x<4; x++)
-						{
-							for (y=-3; y<4; y++)
-							{
-								if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
-									addpixel(vid, x+nx, y+ny, firer, fireg, fireb, (175*(firea))>>8);
-								if (abs(x)+abs(y) <=3 && abs(x)+abs(y))
-									addpixel(vid, x+nx, y+ny, firer, fireg, fireb, (100*(firea))>>8);
-								if (abs(x)+abs(y) == 2)
-									addpixel(vid, x+nx, y+ny, firer, fireg, fireb, (55*(firea))>>8);
-							}
-						}
-					}
+					fire_r[ny/CELL][nx/CELL] = firer;
+					fire_g[ny/CELL][nx/CELL] = fireg;
+					fire_b[ny/CELL][nx/CELL] = fireb;
 #endif
 				}
 			}

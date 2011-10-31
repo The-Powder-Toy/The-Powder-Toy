@@ -17,6 +17,7 @@ int graphics_DEFAULT(GRAPHICS_FUNC_ARGS)
 		*fireg = *colg/2;
 		*fireb = *colb/2;
 		*firea = 125;
+		*pixel_mode |= DECO_FIRE;
 	}
 	return 1;
 }
