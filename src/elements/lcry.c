@@ -10,9 +10,12 @@ int update_LCRY(UPDATE_FUNC_ARGS)
 			if(parts[i].life<=0)
 				parts[i].tmp = 0;
 			else
-				parts[i].life--;
+			{
+				parts[i].life-=2;
+				if(parts[i].life < 0)
+					parts[i].life = 0;
+			}	
 		}
-			
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -33,9 +36,12 @@ int update_LCRY(UPDATE_FUNC_ARGS)
 			if(parts[i].life>=10)
 				parts[i].tmp = 3;
 			else
-				parts[i].life++;
+			{
+				parts[i].life+=2;
+				if(parts[i].life > 10)
+					parts[i].life = 10;
+			}
 		}
-			
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))

@@ -1034,7 +1034,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					}
 				}
 			}
-			if(ver>=67 && (ty==PT_LCRY)){
+			if(ver<67 && (ty==PT_LCRY)){
 				//New LCRY uses TMP not life
 				if(parts[i-1].life>=10)
 				{
