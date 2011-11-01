@@ -6,6 +6,10 @@
 #ifdef MACOSX
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
+#elif defined(WIN32)
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -3706,6 +3710,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 int sdl_opened = 0;
 int sdl_open(void)
 {
+	int status;
 	if (SDL_Init(SDL_INIT_VIDEO)<0)
 	{
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
@@ -3728,6 +3733,14 @@ int sdl_open(void)
 	}
 	else
 	{
+#ifdef WIN32
+		status = glewInit();
+		if(status != GLEW_OK)
+		{
+			fprintf(stderr, "Initializing Glew: %d\n", status);
+			return 0;
+		}
+#endif
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
