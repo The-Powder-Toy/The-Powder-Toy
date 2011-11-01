@@ -1879,7 +1879,7 @@ void render_parts(pixel *vid)
 					}
 
 					if (cplayer->elem<PT_NUM) pc = ptypes[cplayer->elem].pcolors;
-					else pc = PIXPACK(0xFFFFFF);
+					else pc = PIXPACK(0x8080FF);
 					s = XRES+BARSIZE;
 					//head
 					if(t==PT_FIGH)
