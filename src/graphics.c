@@ -1622,6 +1622,8 @@ GLuint glowV[(YRES*XRES)*2];
 GLfloat glowC[(YRES*XRES)*4];
 GLuint flatV[(YRES*XRES)*2];
 GLfloat flatC[(YRES*XRES)*4];
+GLuint addV[(YRES*XRES)*2];
+GLfloat addC[(YRES*XRES)*4];
 GLfloat lineV[(((YRES*XRES)*2)*6)];
 GLfloat lineC[(((YRES*XRES)*2)*6)];
 #endif
@@ -1637,6 +1639,7 @@ void render_parts(pixel *vid)
 		int cblurV = 0, cblurC = 0, cblur = 0;
 		int cglowV = 0, cglowC = 0, cglow = 0;
 		int cflatV = 0, cflatC = 0, cflat = 0;
+		int caddV = 0, caddC = 0, cadd = 0;
 		int clineV = 0, clineC = 0, cline = 0;
 		GLuint origBlendSrc, origBlendDst;
 		//Set coord offset 
@@ -1777,7 +1780,7 @@ void render_parts(pixel *vid)
 				case CM_VEL:
 				case CM_PRESS:
 				case CM_GRAD:
-					if(pixel_mode & FIRE_ADD) pixel_mode = (pixel_mode & ~FIRE_ADD) | PMODE_GLOW | PMODE_FLAT;
+					if(pixel_mode & FIRE_ADD) pixel_mode = (pixel_mode & ~(FIRE_ADD|PMODE_FLAT)) | PMODE_GLOW | PMODE_ADD;
 					if(pixel_mode & FIRE_BLEND) pixel_mode = (pixel_mode & ~FIRE_BLEND) | PMODE_BLUR;
 				case CM_FIRE:
 					if(pixel_mode & PMODE_BLOB) pixel_mode = (pixel_mode & ~PMODE_BLOB) | PMODE_FLAT;
@@ -1934,13 +1937,13 @@ void render_parts(pixel *vid)
 				if(pixel_mode & PMODE_ADD)
 				{
 #ifdef OGLR
-                    flatV[cflatV++] = nx;
-                    flatV[cflatV++] = ny;
-                    flatC[cflatC++] = ((float)colr)/255.0f;
-                    flatC[cflatC++] = ((float)colg)/255.0f;
-                    flatC[cflatC++] = ((float)colb)/255.0f;
-                    flatC[cflatC++] = ((float)cola)/255.0f;
-                    cflat++;
+                    addV[caddV++] = nx;
+                    addV[caddV++] = ny;
+                    addC[caddC++] = ((float)colr)/255.0f;
+                    addC[caddC++] = ((float)colg)/255.0f;
+                    addC[caddC++] = ((float)colb)/255.0f;
+                    addC[caddC++] = ((float)cola)/255.0f;
+                    cadd++;
 #else
 					addpixel(vid, nx, ny, colr, colg, colb, cola);
 #endif
@@ -2376,6 +2379,22 @@ void render_parts(pixel *vid)
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glDisable(GL_TEXTURE_2D);
 		    // -- END GLOW -- //
+        }
+        
+ 		if(cadd)
+		{
+			// -- BEGIN ADD -- //
+			//Set point size (size of fire texture)
+			glPointSize(1.0f);
+
+		    glColorPointer(4, GL_FLOAT, 0, &addC[0]);
+		    glVertexPointer(2, GL_INT, 0, &addV[0]);
+
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		    glDrawArrays(GL_POINTS, 0, cadd);
+		    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		    //Clear some stuff we set
+		    // -- END ADD -- //
         }
         
         if(cline)
@@ -3181,6 +3200,7 @@ void dim_copy_pers(pixel *dst, pixel *src) //for persistent view, reduces rgb sl
 void render_zoom(pixel *img) //draws the zoom box
 {
 #ifdef OGLR
+	int origBlendSrc, origBlendDst;
 	float zcx1, zcx0, zcy1, zcy0, yfactor, xfactor; //X-Factor is shit, btw
 	xfactor = 1.0f/(float)XRES;
 	yfactor = 1.0f/(float)YRES;
@@ -3200,6 +3220,10 @@ void render_zoom(pixel *img) //draws the zoom box
 	glVertex3i(zoom_wx-1, YRES+MENUSIZE-zoom_wy, 0);
 	glEnd();
 	glDisable(GL_LINE_SMOOTH);
+	
+	glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
+	glGetIntegerv(GL_BLEND_DST, &origBlendDst);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable( GL_TEXTURE_2D );
 	//glReadBuffer(GL_AUX0);
@@ -3219,6 +3243,7 @@ void render_zoom(pixel *img) //draws the zoom box
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable( GL_TEXTURE_2D );
 	
+	glBlendFunc(origBlendSrc, origBlendDst);
 	
 	if(zoom_en)
 	{	

@@ -1800,6 +1800,9 @@ int main(int argc, char *argv[])
 				update_airh();
 		}
 
+#ifdef OGLR
+		part_vbuf = vid_buf;
+#else
 		if(ngrav_enable && cmode==CM_FANCY)
 		{
 			part_vbuf = part_vbuf_store;
@@ -1807,6 +1810,7 @@ int main(int argc, char *argv[])
 		} else {
 			part_vbuf = vid_buf;
 		}
+#endif
 
 		if(gravwl_timeout)
 		{
@@ -1978,8 +1982,10 @@ int main(int argc, char *argv[])
 
 		render_signs(part_vbuf);
 
+#ifndef OGLR
 		if(ngrav_enable && cmode==CM_FANCY)
 			render_gravlensing(part_vbuf, vid_buf);
+#endif
 
 		memset(vid_buf+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);//clear menu areas
 		clearrect(vid_buf, XRES-1, 0, BARSIZE+1, YRES);
