@@ -426,14 +426,18 @@ void STKM_interact(playerst* playerp, int i, int x, int y)
 			parts[i].life -= 2;
 			playerp->accs[3] -= 1;
 		}
-
-		if ((r&0xFF)==PT_ACID)  //If on acid
-			parts[i].life -= 5;
-
-		if ((r&0xFF)==PT_PLUT)  //If on plut
-			parts[i].life -= 1;
 			
 		if (ptypes[r&0xFF].properties&PROP_DEADLY)
+			switch (r&0xFF)
+			{
+				case PT_ACID:
+					parts[i].life -= 5;
+					break;
+				default:
+					parts[i].life -= 1;
+			}
+
+		if (ptypes[r&0xFF].properties&PROP_RADIOACTIVE)
 			parts[i].life -= 1;
 
 		if ((r&0xFF)==PT_PRTI && parts[i].type)

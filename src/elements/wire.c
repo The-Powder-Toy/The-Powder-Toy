@@ -38,3 +38,30 @@ int update_WIRE(UPDATE_FUNC_ARGS) {
         parts[i].ctype=1;
 	return 0;
 }
+
+int graphics_WIRE(GRAPHICS_FUNC_ARGS)
+{
+	if (cpart->ctype==0)
+	{
+		*colr = 255;
+		*colg = 204;
+		*colb = 0;
+		return 0;
+	}
+	if (cpart->ctype==1)
+	{
+		*colr = 50;
+		*colg = 100;
+		*colb = 255;
+		//*pixel_mode |= PMODE_GLOW;
+		return 0;
+	}
+	if (cpart->ctype==2)
+	{
+		*colr = 255;
+		*colg = 100;
+		*colb = 50;
+		//*pixel_mode |= PMODE_GLOW;
+		return 0;
+	}
+}
