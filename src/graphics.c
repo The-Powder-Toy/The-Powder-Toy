@@ -1642,9 +1642,6 @@ void render_parts(pixel *vid)
 		int caddV = 0, caddC = 0, cadd = 0;
 		int clineV = 0, clineC = 0, cline = 0;
 		GLuint origBlendSrc, origBlendDst;
-		//Set coord offset 
-		glScalef(1,-1,1);
-        glTranslatef(0, -YRES/*-(YRES+MENUSIZE)*/, 0);
         
         glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
         glGetIntegerv(GL_BLEND_DST, &origBlendDst);
@@ -2465,9 +2462,6 @@ void render_parts(pixel *vid)
         
         //Reset FBO
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glTranslatef(0, -MENUSIZE, 0);
-        
-        //TODO: Do shit on the fbo like gravity lensing or turning stickmen into turds here
         
         //Drawing the FBO onto the screen sounds like a cool idea now
 		glEnable( GL_TEXTURE_2D );
@@ -2498,13 +2492,13 @@ void render_parts(pixel *vid)
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glBegin(GL_QUADS);
 		glTexCoord2d(1, 0);
-		glVertex3f(XRES*sdl_scale, (YRES)*sdl_scale, 1.0);
+		glVertex3f(XRES*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
 		glTexCoord2d(0, 0);
-		glVertex3f(0, (YRES)*sdl_scale, 1.0);
+		glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
 		glTexCoord2d(0, 1);
-		glVertex3f(0, 0, 1.0);
+		glVertex3f(0, MENUSIZE*sdl_scale, 1.0);
 		glTexCoord2d(1, 1);
-		glVertex3f(XRES*sdl_scale, 0, 1.0);
+		glVertex3f(XRES*sdl_scale, MENUSIZE*sdl_scale, 1.0);
 		glEnd();
 		
 		if(cmode==CM_FANCY)
@@ -2514,9 +2508,6 @@ void render_parts(pixel *vid)
 		}
 		glDisable( GL_TEXTURE_2D );
         
-        //Reset coords/offset
-        glTranslatef(0, YRES+MENUSIZE, 0);
-        glScalef(1,-1,1);
         glBlendFunc(origBlendSrc, origBlendDst);
 #endif
 }
@@ -3207,17 +3198,18 @@ void render_zoom(pixel *img) //draws the zoom box
 	
 	zcx0 = (zoom_x)*xfactor;
 	zcx1 = (zoom_x+ZSIZE)*xfactor;
-	zcy0 = (YRES-zoom_y+1)*yfactor;
-	zcy1 = (YRES-(zoom_y+ZSIZE)+1)*yfactor;
+	zcy0 = (zoom_y)*yfactor;
+	zcy1 = ((zoom_y+ZSIZE))*yfactor;
 	 
+	 glLineWidth(sdl_scale);
 	glEnable(GL_LINE_SMOOTH);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_LINE_STRIP);
-	glVertex3i(zoom_wx-1, YRES+MENUSIZE-zoom_wy, 0);
-	glVertex3i(zoom_wx-1, YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR), 0);
-	glVertex3i(zoom_wx+ZSIZE*ZFACTOR, YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR), 0);
-	glVertex3i(zoom_wx+ZSIZE*ZFACTOR, YRES+MENUSIZE-zoom_wy, 0);
-	glVertex3i(zoom_wx-1, YRES+MENUSIZE-zoom_wy, 0);
+	glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
+	glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 0);
+	glVertex3i((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 0);
+	glVertex3i((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
+	glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
 	glEnd();
 	glDisable(GL_LINE_SMOOTH);
 	
@@ -3232,13 +3224,13 @@ void render_zoom(pixel *img) //draws the zoom box
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
 	glTexCoord2d(zcx1, zcy1);
-	glVertex3f(zoom_wx+ZSIZE*ZFACTOR, YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR), 1.0);
+	glVertex3f((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 1.0);
 	glTexCoord2d(zcx0, zcy1);
-	glVertex3f(zoom_wx, YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR), 1.0);
+	glVertex3f(zoom_wx*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 1.0);
 	glTexCoord2d(zcx0, zcy0);
-	glVertex3f(zoom_wx, YRES+MENUSIZE-zoom_wy, 1.0);
+	glVertex3f(zoom_wx*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 1.0);
 	glTexCoord2d(zcx1, zcy0);
-	glVertex3f(zoom_wx+ZSIZE*ZFACTOR, YRES+MENUSIZE-zoom_wy, 1.0);
+	glVertex3f((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 1.0);
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable( GL_TEXTURE_2D );
@@ -3252,14 +3244,15 @@ void render_zoom(pixel *img) //draws the zoom box
 		glLogicOp(GL_XOR);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glBegin(GL_LINE_STRIP);
-		glVertex3i(zoom_x-1, YRES+MENUSIZE-(zoom_y-1), 0);
-		glVertex3i(zoom_x-1, YRES+MENUSIZE-(zoom_y+ZSIZE), 0);
-		glVertex3i(zoom_x+ZSIZE, YRES+MENUSIZE-(zoom_y+ZSIZE), 0);
-		glVertex3i(zoom_x+ZSIZE, YRES+MENUSIZE-(zoom_y-1), 0);
-		glVertex3i(zoom_x-1, YRES+MENUSIZE-(zoom_y-1), 0);
+		glVertex3i((zoom_x-1)*sdl_scale, (YRES+MENUSIZE-(zoom_y-1))*sdl_scale, 0);
+		glVertex3i((zoom_x-1)*sdl_scale, (YRES+MENUSIZE-(zoom_y+ZSIZE))*sdl_scale, 0);
+		glVertex3i((zoom_x+ZSIZE)*sdl_scale, (YRES+MENUSIZE-(zoom_y+ZSIZE))*sdl_scale, 0);
+		glVertex3i((zoom_x+ZSIZE)*sdl_scale, (YRES+MENUSIZE-(zoom_y-1))*sdl_scale, 0);
+		glVertex3i((zoom_x-1)*sdl_scale, (YRES+MENUSIZE-(zoom_y-1))*sdl_scale, 0);
 		glEnd();
 		glDisable(GL_COLOR_LOGIC_OP);
     }
+    glLineWidth(1);
 #else
 	int x, y, i, j;
 	pixel pix;
@@ -3580,28 +3573,32 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 		glLogicOp(GL_XOR);
 		glBegin(GL_LINE_LOOP);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		y *= sdl_scale;
+		x *= sdl_scale;
+		ry *= sdl_scale;
+		rx *= sdl_scale;
 		if (CURRENT_BRUSH==SQUARE_BRUSH)
 		{
-			glVertex2f(x-rx+1, (YRES+MENUSIZE-y)-ry+1);
-			glVertex2f(x+rx+1, (YRES+MENUSIZE-y)-ry+1);
-			glVertex2f(x+rx+1, (YRES+MENUSIZE-y)+ry+1);
-			glVertex2f(x-rx+1, (YRES+MENUSIZE-y)+ry+1);
-			glVertex2f(x-rx+1, (YRES+MENUSIZE-y)-ry+1);
+			glVertex2f(x-rx+1, ((YRES+MENUSIZE)*sdl_scale-y)-ry+1);
+			glVertex2f(x+rx+1, ((YRES+MENUSIZE)*sdl_scale-y)-ry+1);
+			glVertex2f(x+rx+1, ((YRES+MENUSIZE)*sdl_scale-y)+ry+1);
+			glVertex2f(x-rx+1, ((YRES+MENUSIZE)*sdl_scale-y)+ry+1);
+			glVertex2f(x-rx+1, ((YRES+MENUSIZE)*sdl_scale-y)-ry+1);
 		}
 		else if (CURRENT_BRUSH==CIRCLE_BRUSH)
 		{
 			for (i = 0; i < 360; i++)
 			{
 			  float degInRad = i*(M_PI/180.0f);
-			  glVertex2f((cos(degInRad)*rx)+x, (sin(degInRad)*ry)+YRES+MENUSIZE-y);
+			  glVertex2f((cos(degInRad)*rx)+x, (sin(degInRad)*ry)+(YRES+MENUSIZE)*sdl_scale-y);
 			}
 		}
 		else if (CURRENT_BRUSH==TRI_BRUSH)
 		{
-			glVertex2f(x+1, (YRES+MENUSIZE-y)+ry+1);
-			glVertex2f(x+rx+1, (YRES+MENUSIZE-y)-ry+1);
-			glVertex2f(x-rx+1, (YRES+MENUSIZE-y)-ry+1);
-			glVertex2f(x+1, (YRES+MENUSIZE-y)+ry+1);
+			glVertex2f(x+1, ((YRES+MENUSIZE)*sdl_scale-y)+ry+1);
+			glVertex2f(x+rx+1, ((YRES+MENUSIZE)*sdl_scale-y)-ry+1);
+			glVertex2f(x-rx+1, ((YRES+MENUSIZE)*sdl_scale-y)-ry+1);
+			glVertex2f(x+1, ((YRES+MENUSIZE)*sdl_scale-y)+ry+1);
 		}
 		glEnd();
 		glDisable(GL_COLOR_LOGIC_OP);
@@ -3682,6 +3679,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 #endif
 }
 
+int sdl_opened = 0;
 int sdl_open(void)
 {
 	if (SDL_Init(SDL_INIT_VIDEO)<0)
@@ -3694,21 +3692,32 @@ int sdl_open(void)
 	sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_OPENGL);
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
+	if(sdl_opened)
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
 
-        glOrtho(0, (XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
+		glOrtho(0, (XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
 
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+	}
+	else
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
 
-        glRasterPos2i(0, (YRES+MENUSIZE));
-        glPixelZoom(sdl_scale, -sdl_scale);
-		//glPixelZoom(1, -1);
+		glOrtho(0, (XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		glRasterPos2i(0, (YRES+MENUSIZE));
+		glPixelZoom(1, -1);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		//FBO Texture
 		glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &partsFboTex);
@@ -3727,91 +3736,91 @@ int sdl_open(void)
 		glDisable(GL_TEXTURE_2D);
 
 		//Texture for main UI
-        glEnable(GL_TEXTURE_2D);
-        glGenTextures(1, &vidBuf);
-        glBindTexture(GL_TEXTURE_2D, vidBuf);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES+BARSIZE, YRES+MENUSIZE, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+		glEnable(GL_TEXTURE_2D);
+		glGenTextures(1, &vidBuf);
+		glBindTexture(GL_TEXTURE_2D, vidBuf);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES+BARSIZE, YRES+MENUSIZE, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
 
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_2D);
-        
-        //Texture for air to be drawn
-        glEnable(GL_TEXTURE_2D);
-        glGenTextures(1, &airBuf);
-        glBindTexture(GL_TEXTURE_2D, airBuf);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		//Texture for air to be drawn
+		glEnable(GL_TEXTURE_2D);
+		glGenTextures(1, &airBuf);
+		glBindTexture(GL_TEXTURE_2D, airBuf);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_2D);
-        
-        //Zoom texture
-        glEnable(GL_TEXTURE_2D);
-        glGenTextures(1, &zoomTex);
-        glBindTexture(GL_TEXTURE_2D, zoomTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_2D);
-        
-        //Texture for velocity maps for gravity
-        glEnable(GL_TEXTURE_2D);
-        glGenTextures(1, &partsTFX);
-        glBindTexture(GL_TEXTURE_2D, partsTFX);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES, YRES, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+		//Zoom texture
+		glEnable(GL_TEXTURE_2D);
+		glGenTextures(1, &zoomTex);
+		glBindTexture(GL_TEXTURE_2D, zoomTex);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
 
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glGenTextures(1, &partsTFY);
-        glBindTexture(GL_TEXTURE_2D, partsTFY);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES, YRES, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		//Texture for velocity maps for gravity
+		glEnable(GL_TEXTURE_2D);
+		glGenTextures(1, &partsTFX);
+		glBindTexture(GL_TEXTURE_2D, partsTFX);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES, YRES, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_2D);
-        
-        //Texture for velocity maps for air
-        //TODO: Combine all air maps into 3D array or structs
-        glEnable(GL_TEXTURE_2D);
-        glGenTextures(1, &airVX);
-        glBindTexture(GL_TEXTURE_2D, airVX);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glGenTextures(1, &partsTFY);
+		glBindTexture(GL_TEXTURE_2D, partsTFY);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES, YRES, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glGenTextures(1, &airVY);
-        glBindTexture(GL_TEXTURE_2D, airVY);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glGenTextures(1, &airPV);
-        glBindTexture(GL_TEXTURE_2D, airPV);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+		//Texture for velocity maps for air
+		//TODO: Combine all air maps into 3D array or structs
+		glEnable(GL_TEXTURE_2D);
+		glGenTextures(1, &airVX);
+		glBindTexture(GL_TEXTURE_2D, airVX);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
 
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_2D);
-        
-        //Fire alpha texture
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glGenTextures(1, &airVY);
+		glBindTexture(GL_TEXTURE_2D, airVY);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glGenTextures(1, &airPV);
+		glBindTexture(GL_TEXTURE_2D, airPV);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
+
+		//Fire alpha texture
 		glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &fireAlpha);
 		glBindTexture(GL_TEXTURE_2D, fireAlpha);
@@ -3822,7 +3831,7 @@ int sdl_open(void)
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable(GL_TEXTURE_2D);
-		
+
 		//Glow alpha texture
 		glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &glowAlpha);
@@ -3834,8 +3843,8 @@ int sdl_open(void)
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable(GL_TEXTURE_2D);
-		
-		
+
+
 		//Blur Alpha texture
 		glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &blurAlpha);
@@ -3847,8 +3856,9 @@ int sdl_open(void)
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable(GL_TEXTURE_2D);
-        
-        loadShaders();
+
+		loadShaders();
+	}
 #else
 #ifdef PIX16
 	if (kiosk_enable)
@@ -3880,6 +3890,7 @@ int sdl_open(void)
 	XA_TARGETS = XInternAtom(sdl_wminfo.info.x11.display, "TARGETS", 1);
 	sdl_wminfo.info.x11.unlock_func();
 #endif
+	sdl_opened = 1;
 	return 1;
 }
 #ifdef OGLR
