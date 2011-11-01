@@ -1870,6 +1870,7 @@ void render_parts(pixel *vid)
 #else
 					char buff[20];  //Buffer for HP
 					int s;
+					int legr, legg, legb;
 					pixel pc;
 
 					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
@@ -1881,6 +1882,29 @@ void render_parts(pixel *vid)
 					if (cplayer->elem<PT_NUM) pc = ptypes[cplayer->elem].pcolors;
 					else pc = PIXPACK(0x8080FF);
 					s = XRES+BARSIZE;
+
+					if (t==PT_STKM2)
+					{
+						legr = 100;
+						legg = 100;
+						legb = 255;
+					}
+					else
+					{
+						legr = 255;
+						legg = 255;
+						legb = 255;
+					}
+
+					if (cmode == CM_HEAT)
+					{
+						pc = PIXRGB(colr, colg, colb);
+
+						legr = colr;
+						legg = colg;
+						legb = colb;
+					}
+
 					//head
 					if(t==PT_FIGH)
 					{
@@ -1897,10 +1921,10 @@ void render_parts(pixel *vid)
 						draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
 					}
 					//legs
-					draw_line(vid , nx, ny+3, cplayer->legs[0], cplayer->legs[1], 255, 255, 255, s);
-					draw_line(vid , cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], 255, 255, 255, s);
-					draw_line(vid , nx, ny+3, cplayer->legs[8], cplayer->legs[9], 255, 255, 255, s);
-					draw_line(vid , cplayer->legs[8], cplayer->legs[9], cplayer->legs[12], cplayer->legs[13], 255, 255, 255, s);
+					draw_line(vid , nx, ny+3, cplayer->legs[0], cplayer->legs[1], legr, legg, legb, s);
+					draw_line(vid , cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], legr, legg, legb, s);
+					draw_line(vid , nx, ny+3, cplayer->legs[8], cplayer->legs[9], legr, legg, legb, s);
+					draw_line(vid , cplayer->legs[8], cplayer->legs[9], cplayer->legs[12], cplayer->legs[13], legr, legg, legb, s);
 #endif
 				}
 				if(pixel_mode & PMODE_FLAT)
