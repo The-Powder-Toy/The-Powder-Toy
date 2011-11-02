@@ -33,7 +33,8 @@ SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
 #ifdef OGLR
-GLuint airProg, zoomTex, vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, fireProg, partsFboTex, partsFbo, lensProg, partsTFX, partsTFY, airPV, airVY, airVX;
+GLuint zoomTex, vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, partsFboTex, partsFbo, partsTFX, partsTFY, airPV, airVY, airVX;
+GLuint fireProg, airProg_Pressure, airProg_Velocity, airProg_Cracker, lensProg;
 #endif
 
 int emp_decor = 0;
@@ -1300,11 +1301,29 @@ void draw_air(pixel *vid)
 					vid[(x*CELL+i) + (y*CELL+j)*(XRES+BARSIZE)] = c;
 		}
 #else
+	GLuint airProg;
+	if(cmode == CM_CRACK)
+	{
+		airProg = airProg_Cracker;
+	}
+	else if(cmode == CM_VEL)
+	{
+		airProg = airProg_Velocity;
+	}
+	else if(cmode == CM_PRESS)
+	{
+		airProg = airProg_Pressure;
+	}
+	else
+	{
+		return;
+	}
+
     glEnable( GL_TEXTURE_2D );
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
     
-    glUseProgram(airProg);
-    
+	glUseProgram(airProg);
+	
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, airVX);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_RED, GL_FLOAT, vx);
@@ -1321,13 +1340,13 @@ void draw_air(pixel *vid)
     
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-    glTexCoord2d(1, 0);
-    glVertex3f(XRES*sdl_scale, YRES*sdl_scale, 1.0);
-    glTexCoord2d(0, 0);
-    glVertex3f(0, YRES*sdl_scale, 1.0);
-    glTexCoord2d(0, 1);
-    glVertex3f(0, 0, 1.0);
     glTexCoord2d(1, 1);
+    glVertex3f(XRES*sdl_scale, YRES*sdl_scale, 1.0);
+    glTexCoord2d(0, 1);
+    glVertex3f(0, YRES*sdl_scale, 1.0);
+    glTexCoord2d(0, 0);
+    glVertex3f(0, 0, 1.0);
+    glTexCoord2d(1, 0);
     glVertex3f(XRES*sdl_scale, 0, 1.0);
     glEnd();
     
@@ -3966,20 +3985,50 @@ void loadShaders()
 	glAttachShader( lensProg, fragmentShader );
 	glLinkProgram( lensProg );
 	
-	//Air
+	//Air Velocity
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	glShaderSource( vertexShader, 1, &airVertex, NULL);
-	glShaderSource( fragmentShader, 1, &airFragment, NULL);
+	glShaderSource( vertexShader, 1, &airVVertex, NULL);
+	glShaderSource( fragmentShader, 1, &airVFragment, NULL);
 
 	glCompileShader( vertexShader );
 	glCompileShader( fragmentShader );
 
-	airProg = glCreateProgram();
-	glAttachShader( airProg, vertexShader );
-	glAttachShader( airProg, fragmentShader );
-	glLinkProgram( airProg );
+	airProg_Velocity = glCreateProgram();
+	glAttachShader( airProg_Velocity, vertexShader );
+	glAttachShader( airProg_Velocity, fragmentShader );
+	glLinkProgram( airProg_Velocity );
+	
+	//Air Pressure
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	glShaderSource( vertexShader, 1, &airPVertex, NULL);
+	glShaderSource( fragmentShader, 1, &airPFragment, NULL);
+
+	glCompileShader( vertexShader );
+	glCompileShader( fragmentShader );
+
+	airProg_Pressure = glCreateProgram();
+	glAttachShader( airProg_Pressure, vertexShader );
+	glAttachShader( airProg_Pressure, fragmentShader );
+	glLinkProgram( airProg_Pressure );
+	
+	//Air cracker
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	glShaderSource( vertexShader, 1, &airCVertex, NULL);
+	glShaderSource( fragmentShader, 1, &airCFragment, NULL);
+
+	glCompileShader( vertexShader );
+	glCompileShader( fragmentShader );
+
+	airProg_Cracker = glCreateProgram();
+	glAttachShader( airProg_Cracker, vertexShader );
+	glAttachShader( airProg_Cracker, fragmentShader );
+	glLinkProgram( airProg_Cracker );
 }
 #endif
 int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy, int line_x, int line_y)
