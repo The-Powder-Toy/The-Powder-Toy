@@ -3951,6 +3951,32 @@ int sdl_open(void)
 	return 1;
 }
 #ifdef OGLR
+void checkShader(GLuint shader, char * shname)
+{
+	GLuint status;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+	if (status == GL_FALSE)
+	{
+		char errorBuf[ GL_INFO_LOG_LENGTH];
+		int errLen;
+		glGetShaderInfoLog(shader, GL_INFO_LOG_LENGTH, &errLen, errorBuf);
+		fprintf(stderr, "Failed to compile %s shader:\n%s\n", shname, errorBuf);
+		exit(1);
+	}
+}
+void checkProgram(GLuint program, char * progname)
+{
+	GLuint status;
+	glGetProgramiv(program, GL_LINK_STATUS, &status);
+	if (status == GL_FALSE)
+	{
+		char errorBuf[ GL_INFO_LOG_LENGTH];
+		int errLen;
+		glGetShaderInfoLog(program, GL_INFO_LOG_LENGTH, &errLen, errorBuf);
+		fprintf(stderr, "Failed to link %s program:\n%s\n", progname, errorBuf);
+		exit(1);
+	}
+}
 void loadShaders()
 {
 	GLuint vertexShader, fragmentShader;
@@ -3963,12 +3989,15 @@ void loadShaders()
 	glShaderSource( fragmentShader, 1, &fireFragment, NULL);
 
 	glCompileShader( vertexShader );
+	checkShader(vertexShader, "FV");
 	glCompileShader( fragmentShader );
+	checkShader(fragmentShader, "FF");
 
 	fireProg = glCreateProgram();
 	glAttachShader( fireProg, vertexShader );
 	glAttachShader( fireProg, fragmentShader );
 	glLinkProgram( fireProg );
+	checkProgram(fireProg, "F");
 	
 	//Lensing
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -3978,12 +4007,15 @@ void loadShaders()
 	glShaderSource( fragmentShader, 1, &lensFragment, NULL);
 
 	glCompileShader( vertexShader );
+	checkShader(vertexShader, "LV");
 	glCompileShader( fragmentShader );
+	checkShader(fragmentShader, "LF");
 
 	lensProg = glCreateProgram();
 	glAttachShader( lensProg, vertexShader );
 	glAttachShader( lensProg, fragmentShader );
 	glLinkProgram( lensProg );
+	checkProgram(lensProg, "L");
 	
 	//Air Velocity
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -3993,12 +4025,15 @@ void loadShaders()
 	glShaderSource( fragmentShader, 1, &airVFragment, NULL);
 
 	glCompileShader( vertexShader );
+	checkShader(vertexShader, "AVX");
 	glCompileShader( fragmentShader );
+	checkShader(fragmentShader, "AVF");
 
 	airProg_Velocity = glCreateProgram();
 	glAttachShader( airProg_Velocity, vertexShader );
 	glAttachShader( airProg_Velocity, fragmentShader );
 	glLinkProgram( airProg_Velocity );
+	checkProgram(airProg_Velocity, "AV");
 	
 	//Air Pressure
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -4008,12 +4043,15 @@ void loadShaders()
 	glShaderSource( fragmentShader, 1, &airPFragment, NULL);
 
 	glCompileShader( vertexShader );
+	checkShader(vertexShader, "APV");
 	glCompileShader( fragmentShader );
+	checkShader(fragmentShader, "APF");
 
 	airProg_Pressure = glCreateProgram();
 	glAttachShader( airProg_Pressure, vertexShader );
 	glAttachShader( airProg_Pressure, fragmentShader );
 	glLinkProgram( airProg_Pressure );
+	checkProgram(airProg_Pressure, "AP");
 	
 	//Air cracker
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -4023,12 +4061,15 @@ void loadShaders()
 	glShaderSource( fragmentShader, 1, &airCFragment, NULL);
 
 	glCompileShader( vertexShader );
+	checkShader(vertexShader, "ACV");
 	glCompileShader( fragmentShader );
+	checkShader(fragmentShader, "ACF");
 
 	airProg_Cracker = glCreateProgram();
 	glAttachShader( airProg_Cracker, vertexShader );
 	glAttachShader( airProg_Cracker, fragmentShader );
 	glLinkProgram( airProg_Cracker );
+	checkProgram(airProg_Cracker, "AC");
 }
 #endif
 int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy, int line_x, int line_y)
