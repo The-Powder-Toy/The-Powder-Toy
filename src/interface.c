@@ -3407,12 +3407,16 @@ int search_ui(pixel *vid_buf)
 				thumb_cache_add(img_id[i], thumb, thlen);
 				for (pos=0; pos<GRID_X*GRID_Y; pos++) {
 					if (search_dates[pos]) {
-						char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+1);
+						char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+2);
+						if (id_d_temp == 0)
+						{
+							break;
+						}
 						strcpy(id_d_temp, search_ids[pos]);
 						strappend(id_d_temp, "_");
 						strappend(id_d_temp, search_dates[pos]);
 						//img_id[i] = mystrdup(id_d_temp);
-						if (id_d_temp && !strcmp(id_d_temp, img_id[i])) {
+						if (!strcmp(id_d_temp, img_id[i])) {
 							break;
 						}
 					} else {
