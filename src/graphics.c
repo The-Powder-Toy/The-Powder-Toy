@@ -1846,7 +1846,10 @@ void render_parts(pixel *vid)
 				//Pixel rendering
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
-					//Special case for stickman
+					char buff[20];  //Buffer for HP
+					int s;
+					int legr, legg, legb;
+					pixel pc;
 					playerst *cplayer;
 					if(t==PT_STKM)
 						cplayer = &player;
@@ -1892,10 +1895,6 @@ void render_parts(pixel *vid)
 					glEnd();
 					glDisable(GL_LINE_SMOOTH);
 #else
-					char buff[20];  //Buffer for HP
-					int s;
-					int legr, legg, legb;
-					pixel pc;
 
 					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
 					{
