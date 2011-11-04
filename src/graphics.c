@@ -2515,6 +2515,7 @@ void render_parts(pixel *vid)
 		glEnable( GL_TEXTURE_2D );
 		if(cmode==CM_FANCY)
 		{
+			float xres = XRES, yres = YRES;
 			glUseProgram(lensProg);
 			glActiveTexture(GL_TEXTURE0);			
 			glBindTexture(GL_TEXTURE_2D, partsFboTex);
@@ -2528,8 +2529,8 @@ void render_parts(pixel *vid)
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_GREEN, GL_FLOAT, gravyf);
 			glUniform1i(glGetUniformLocation(lensProg, "tfY"), 2);
 			glActiveTexture(GL_TEXTURE0);
-			//glUniform1f(glGetUniformLocation(lensProg, "xres"), (float)XRES);
-			//glUniform1f(glGetUniformLocation(lensProg, "yres"), (float)YRES);
+			glUniform1fv(glGetUniformLocation(lensProg, "xres"), 1, &xres);
+			glUniform1fv(glGetUniformLocation(lensProg, "yres"), 1, &yres);
 		}
 		else
 		{	
