@@ -2511,54 +2511,60 @@ void render_parts(pixel *vid)
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         
         //Drawing the FBO onto the screen sounds like a cool idea now
-		glEnable( GL_TEXTURE_2D );
-		if(cmode==CM_FANCY)
-		{
-			float xres = XRES, yres = YRES;
-			glUseProgram(lensProg);
-			glActiveTexture(GL_TEXTURE0);			
-			glBindTexture(GL_TEXTURE_2D, partsFboTex);
-			glUniform1i(glGetUniformLocation(lensProg, "pTex"), 0);
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, partsTFX);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_RED, GL_FLOAT, gravxf);
-			glUniform1i(glGetUniformLocation(lensProg, "tfX"), 1);
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, partsTFY);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_GREEN, GL_FLOAT, gravyf);
-			glUniform1i(glGetUniformLocation(lensProg, "tfY"), 2);
-			glActiveTexture(GL_TEXTURE0);
-			glUniform1fv(glGetUniformLocation(lensProg, "xres"), 1, &xres);
-			glUniform1fv(glGetUniformLocation(lensProg, "yres"), 1, &yres);
-		}
-		else
-		{	
-			glBindTexture(GL_TEXTURE_2D, partsFboTex);
-			glBlendFunc(GL_ONE, GL_ONE);
-		}
-		
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBegin(GL_QUADS);
-		glTexCoord2d(1, 0);
-		glVertex3f(XRES*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
-		glTexCoord2d(0, 0);
-		glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
-		glTexCoord2d(0, 1);
-		glVertex3f(0, MENUSIZE*sdl_scale, 1.0);
-		glTexCoord2d(1, 1);
-		glVertex3f(XRES*sdl_scale, MENUSIZE*sdl_scale, 1.0);
-		glEnd();
-		
-		if(cmode==CM_FANCY)
-		{
-			glUseProgram(0);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		}
-		glDisable( GL_TEXTURE_2D );
         
         glBlendFunc(origBlendSrc, origBlendDst);
 #endif
 }
+
+#ifdef OGLR
+void draw_parts_fbo()
+{
+	glEnable( GL_TEXTURE_2D );
+	if(cmode==CM_FANCY)
+	{
+		float xres = XRES, yres = YRES;
+		glUseProgram(lensProg);
+		glActiveTexture(GL_TEXTURE0);			
+		glBindTexture(GL_TEXTURE_2D, partsFboTex);
+		glUniform1i(glGetUniformLocation(lensProg, "pTex"), 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, partsTFX);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_RED, GL_FLOAT, gravxf);
+		glUniform1i(glGetUniformLocation(lensProg, "tfX"), 1);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, partsTFY);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_GREEN, GL_FLOAT, gravyf);
+		glUniform1i(glGetUniformLocation(lensProg, "tfY"), 2);
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1fv(glGetUniformLocation(lensProg, "xres"), 1, &xres);
+		glUniform1fv(glGetUniformLocation(lensProg, "yres"), 1, &yres);
+	}
+	else
+	{	
+		glBindTexture(GL_TEXTURE_2D, partsFboTex);
+		glBlendFunc(GL_ONE, GL_ONE);
+	}
+	
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBegin(GL_QUADS);
+	glTexCoord2d(1, 0);
+	glVertex3f(XRES*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
+	glTexCoord2d(0, 0);
+	glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
+	glTexCoord2d(0, 1);
+	glVertex3f(0, MENUSIZE*sdl_scale, 1.0);
+	glTexCoord2d(1, 1);
+	glVertex3f(XRES*sdl_scale, MENUSIZE*sdl_scale, 1.0);
+	glEnd();
+	
+	if(cmode==CM_FANCY)
+	{
+		glUseProgram(0);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	glDisable( GL_TEXTURE_2D );
+}
+#endif
 
 void draw_walls(pixel *vid)
 {
@@ -3251,7 +3257,7 @@ void render_zoom(pixel *img) //draws the zoom box
 
 	glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
 	glGetIntegerv(GL_BLEND_DST, &origBlendDst);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_ONE, GL_ZERO);
 
 	glEnable( GL_TEXTURE_2D );
 	//glReadBuffer(GL_AUX0);
@@ -3270,8 +3276,8 @@ void render_zoom(pixel *img) //draws the zoom box
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable( GL_TEXTURE_2D );
-
-	glBlendFunc(origBlendSrc, origBlendDst);
+	
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	glLineWidth(sdl_scale);
 	glEnable(GL_LINE_SMOOTH);
@@ -3314,6 +3320,7 @@ void render_zoom(pixel *img) //draws the zoom box
 		glDisable(GL_COLOR_LOGIC_OP);
 	}
 	glLineWidth(1);
+	glBlendFunc(origBlendSrc, origBlendDst);
 #else
 	int x, y, i, j;
 	pixel pix;
@@ -3630,6 +3637,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 	int i;
 	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV)
 	{
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 		glEnable(GL_COLOR_LOGIC_OP);
 		glLogicOp(GL_XOR);
 		glBegin(GL_LINE_LOOP);
@@ -3640,29 +3648,30 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 		rx *= sdl_scale;
 		if (CURRENT_BRUSH==SQUARE_BRUSH)
 		{
-			glVertex2f(x-rx+1, ((YRES+MENUSIZE)*sdl_scale-y)-ry+1);
-			glVertex2f(x+rx+1, ((YRES+MENUSIZE)*sdl_scale-y)-ry+1);
-			glVertex2f(x+rx+1, ((YRES+MENUSIZE)*sdl_scale-y)+ry+1);
-			glVertex2f(x-rx+1, ((YRES+MENUSIZE)*sdl_scale-y)+ry+1);
-			glVertex2f(x-rx+1, ((YRES+MENUSIZE)*sdl_scale-y)-ry+1);
+			glVertex2f(x-rx+1, (/*(YRES+MENUSIZE)*sdl_scale-*/y)-ry+1);
+			glVertex2f(x+rx+1, (/*(YRES+MENUSIZE)*sdl_scale-*/y)-ry+1);
+			glVertex2f(x+rx+1, (/*(YRES+MENUSIZE)*sdl_scale-*/y)+ry+1);
+			glVertex2f(x-rx+1, (/*(YRES+MENUSIZE)*sdl_scale-*/y)+ry+1);
+			glVertex2f(x-rx+1, (/*(YRES+MENUSIZE)*sdl_scale-*/y)-ry+1);
 		}
 		else if (CURRENT_BRUSH==CIRCLE_BRUSH)
 		{
 			for (i = 0; i < 360; i++)
 			{
 			  float degInRad = i*(M_PI/180.0f);
-			  glVertex2f((cos(degInRad)*rx)+x, (sin(degInRad)*ry)+(YRES+MENUSIZE)*sdl_scale-y);
+			  glVertex2f((cos(degInRad)*rx)+x, (sin(degInRad)*ry)+/*(YRES+MENUSIZE)*sdl_scale-*/y);
 			}
 		}
 		else if (CURRENT_BRUSH==TRI_BRUSH)
 		{
-			glVertex2f(x+1, ((YRES+MENUSIZE)*sdl_scale-y)+ry+1);
-			glVertex2f(x+rx+1, ((YRES+MENUSIZE)*sdl_scale-y)-ry+1);
-			glVertex2f(x-rx+1, ((YRES+MENUSIZE)*sdl_scale-y)-ry+1);
-			glVertex2f(x+1, ((YRES+MENUSIZE)*sdl_scale-y)+ry+1);
+			glVertex2f(x+1, (/*(YRES+MENUSIZE)*sdl_scale-*/y)+ry+1);
+			glVertex2f(x+rx+1, (/*(YRES+MENUSIZE)*sdl_scale-*/y)-ry+1);
+			glVertex2f(x-rx+1, (/*(YRES+MENUSIZE)*sdl_scale-*/y)-ry+1);
+			glVertex2f(x+1, (/*(YRES+MENUSIZE)*sdl_scale-*/y)+ry+1);
 		}
 		glEnd();
 		glDisable(GL_COLOR_LOGIC_OP);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	}
 #else
 	int i,j,c;

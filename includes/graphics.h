@@ -174,6 +174,10 @@ void blend_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b,
 
 void render_parts(pixel *vid);
 
+#ifdef OGLR
+void draw_parts_fbo();
+#endif
+
 void draw_parts(pixel *vid);
 
 void draw_walls(pixel *vid);

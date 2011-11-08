@@ -3399,7 +3399,9 @@ int main(int argc, char *argv[])
 			mousex = mx/sdl_scale;
 			mousey = my/sdl_scale;
 		}
-
+#ifdef OGLR
+		draw_parts_fbo();
+#endif		
 		if (zoom_en)
 			render_zoom(vid_buf);
 
