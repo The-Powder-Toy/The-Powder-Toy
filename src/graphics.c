@@ -3240,27 +3240,15 @@ void render_zoom(pixel *img) //draws the zoom box
 {
 #ifdef OGLR
 	int origBlendSrc, origBlendDst;
-	float zcx1, zcx0, zcy1, zcy0, yfactor, xfactor; //X-Factor is shit, btw
+	float zcx1, zcx0, zcy1, zcy0, yfactor, xfactor, i; //X-Factor is shit, btw
 	xfactor = 1.0f/(float)XRES;
 	yfactor = 1.0f/(float)YRES;
-	
+
 	zcx0 = (zoom_x)*xfactor;
 	zcx1 = (zoom_x+ZSIZE)*xfactor;
 	zcy0 = (zoom_y)*yfactor;
 	zcy1 = ((zoom_y+ZSIZE))*yfactor;
-	 
-	 glLineWidth(sdl_scale);
-	glEnable(GL_LINE_SMOOTH);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBegin(GL_LINE_STRIP);
-	glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
-	glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 0);
-	glVertex3i((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 0);
-	glVertex3i((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
-	glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
-	glEnd();
-	glDisable(GL_LINE_SMOOTH);
-	
+
 	glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
 	glGetIntegerv(GL_BLEND_DST, &origBlendDst);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -3282,9 +3270,34 @@ void render_zoom(pixel *img) //draws the zoom box
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable( GL_TEXTURE_2D );
-	
+
 	glBlendFunc(origBlendSrc, origBlendDst);
 	
+	glLineWidth(sdl_scale);
+	glEnable(GL_LINE_SMOOTH);
+	glBegin(GL_LINES);
+	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+	for(i = 0; i < ZSIZE; i++)
+	{
+		glVertex2f((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR)+i*ZFACTOR)*sdl_scale);
+		glVertex2f(zoom_wx*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR)+i*ZFACTOR)*sdl_scale);
+		glVertex2f((zoom_wx+i*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale);
+		glVertex2f((zoom_wx+i*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale);
+	}
+	glEnd();
+	
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBegin(GL_LINE_STRIP);
+	glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
+	glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 0);
+	glVertex3i((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 0);
+	glVertex3i((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
+	glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
+	glEnd();
+	glDisable(GL_LINE_SMOOTH);
+	
+	glDisable(GL_LINE_SMOOTH);
+
 	if(zoom_en)
 	{	
 		glEnable(GL_COLOR_LOGIC_OP);
@@ -3299,8 +3312,8 @@ void render_zoom(pixel *img) //draws the zoom box
 		glVertex3i((zoom_x-1)*sdl_scale, (YRES+MENUSIZE-(zoom_y-1))*sdl_scale, 0);
 		glEnd();
 		glDisable(GL_COLOR_LOGIC_OP);
-    }
-    glLineWidth(1);
+	}
+	glLineWidth(1);
 #else
 	int x, y, i, j;
 	pixel pix;
