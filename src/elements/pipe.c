@@ -191,14 +191,16 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 			// make a border
 			for (rx=-2; rx<3; rx++)
 				for (ry=-2; ry<3; ry++)
+				{
 					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
 						if (!r)
 							create_part(-1,x+rx,y+ry,PT_BRCK);//BRCK border, people didn't like DMND
 					}
-					if (parts[i].life==1)
-						parts[i].ctype = 1;
+				}
+			if (parts[i].life<=1)
+				parts[i].ctype = 1;
 		}
 	}
 	else if (parts[i].ctype==1)//wait for empty space before starting to generate automatic pipe pattern
