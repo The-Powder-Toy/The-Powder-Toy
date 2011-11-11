@@ -86,8 +86,6 @@ extern unsigned char ZSIZE;
 #define CATALOGUE_S 6
 #define CATALOGUE_Z 3
 
-#define STAMP_X 4
-#define STAMP_Y 4
 #define STAMP_MAX 240
 
 #define NGOL 25

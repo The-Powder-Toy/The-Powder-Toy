@@ -1429,9 +1429,10 @@ fail:
 
 int stamp_ui(pixel *vid_buf)
 {
-	int b=1,bq,mx,my,d=-1,i,j,k,x,gx,gy,y,w,h,r=-1,stamp_page=0,per_page=STAMP_X*STAMP_Y,page_count;
+	int b=1,bq,mx,my,d=-1,i,j,k,x,gx,gy,y,w,h,r=-1,stamp_page=0,per_page=GRID_X*GRID_Y,page_count;
 	char page_info[64];
-	page_count = ceil((float)stamp_count/(float)per_page);
+	// stamp_count-1 to avoid an extra page when there are per_page stamps on each page
+	page_count = (stamp_count-1)/per_page+1;
 
 	while (!sdl_poll())
 	{
@@ -1447,7 +1448,7 @@ int stamp_ui(pixel *vid_buf)
 		mx /= sdl_scale;
 		my /= sdl_scale;
 
-		clearrect(vid_buf, -1, -1, XRES+1, YRES+MENUSIZE+1);
+		clearrect(vid_buf, -1, -1, XRES+BARSIZE+1, YRES+MENUSIZE+1);
 		k = stamp_page*per_page;//0;
 		r = -1;
 		d = -1;
