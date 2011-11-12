@@ -3546,7 +3546,11 @@ int main(int argc, char *argv[])
 			if (sdl_mod&(KMOD_CAPS))
 				strappend(uitext, " [CAP LOCKS]");
 			if (GRID_MODE)
-				sprintf(uitext, "%s [GRID: %d]", uitext, GRID_MODE); //TODO: Undefined behavior: variable is used as parameter and destination in sprintf().
+			{
+				char gridtext[15];
+				sprintf(gridtext, " [GRID: %d]", GRID_MODE);
+				strappend(uitext, gridtext);
+			}
 #ifdef INTERNAL
 			if (vs)
 				strappend(uitext, " [FRAME CAPTURE]");
