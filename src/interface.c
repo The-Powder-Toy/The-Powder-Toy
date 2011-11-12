@@ -3649,7 +3649,21 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	}
 
 	//Try to load the thumbnail from the cache
-	if(!thumb_cache_find(save_id, &thumb_data, &thumb_data_size)){
+	if(save_date)
+	{
+		char * id_d_temp = malloc(strlen(save_id)+strlen(save_date)+2);
+		strcpy(id_d_temp, save_id);
+		strappend(id_d_temp, "_");
+		strappend(id_d_temp, save_date);
+		
+		status = thumb_cache_find(id_d_temp, &thumb_data, &thumb_data_size);
+		free(id_d_temp);
+	}
+	else
+	{
+		status = thumb_cache_find(save_id, &thumb_data, &thumb_data_size);
+	}
+	if(!status){
 		thumb_data = NULL;	
 	} else {
 		//We found a thumbnail in the cache, we'll draw this one while we wait for the full image to load.
