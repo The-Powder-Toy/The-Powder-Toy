@@ -3544,12 +3544,12 @@ int main(int argc, char *argv[])
 		if (hud_enable)
 		{
 #ifdef BETA
-			sprintf(uitext, "Version %d.%d Beta (%d) FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, BUILD_NUM, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+			sprintf(uitext, "Beta Build %d FPS:%d Parts:%d Gravity:%d Air:%d", BUILD_NUM, FPSB, NUM_PARTS, gravityMode, airMode);
 #else
 			if (DEBUG_MODE)
-				sprintf(uitext, "Version %d.%d (%d) FPS:%d Parts:%d Generation:%d Gravity:%d Air:%d", SAVE_VERSION, MINOR_VERSION, BUILD_NUM, FPSB, NUM_PARTS, GENERATION, gravityMode, airMode);
+				sprintf(uitext, "Build %d FPS:%d Parts:%d Gravity:%d Air:%d", BUILD_NUM, FPSB, NUM_PARTS, gravityMode, airMode);
 			else
-				sprintf(uitext, "Version %d.%d FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
+				sprintf(uitext, "FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
 #endif
 			if (REPLACE_MODE)
 				strappend(uitext, " [REPLACE MODE]");
@@ -3611,7 +3611,8 @@ int main(int argc, char *argv[])
 					draw_wavelengths(vid_buf,XRES-20-textwidth(heattext),11,2,wavelength_gfx);
 			}
 			wavelength_gfx = 0;
-			drawtext_outline(vid_buf, 16, 16, uitext, 32, 216, 255, it_invert * 4, 0, 0, 0, it_invert * 4);
+			fillrect(vid_buf, 12, 12, textwidth(uitext)+8, 15, 0, 0, 0, it_invert*2.5);
+			drawtext(vid_buf, 16, 16, uitext, 32, 216, 255, it_invert * 4);
 
 		}
 
