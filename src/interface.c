@@ -461,6 +461,87 @@ void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
 	}
 }
 
+void ui_list_process(pixel * vid_buf, int mx, int my, int mb, ui_list *ed)
+{
+	int i, ystart, selected = 0;
+	if(mx > ed->x && mx < ed->x+ed->w && my > ed->y && my < ed->y+ed->h)
+	{
+		ed->focus = 1;
+		if(mb)
+		{
+			ystart = ed->y-(ed->count*8);
+			if(ystart < 5)
+				ystart = 5;
+			while (!sdl_poll())
+			{
+				mb = SDL_GetMouseState(&mx, &my);
+				if (!mb)
+					break;
+			}
+
+			while (!sdl_poll() && !selected)
+			{
+				mb = SDL_GetMouseState(&mx, &my);
+				mx /= sdl_scale;
+				my /= sdl_scale;
+				for(i = 0; i < ed->count; i++)
+				{
+					if(mx > ed->x && mx < ed->x+ed->w && my > (ystart + i*16) && my < (ystart + i * 16) + 16)
+					{
+						if(mb){
+							ed->selected = i;
+							selected = 1;
+						}
+						fillrect(vid_buf, ed->x, ystart + i * 16, ed->w, 16, 255, 255, 255, 25);
+						drawtext(vid_buf, ed->x + 4, ystart + i * 16 + 5, ed->items[i], 255, 255, 255, 255);
+					}
+					else
+					{
+						drawtext(vid_buf, ed->x + 4, ystart + i * 16 + 5, ed->items[i], 192, 192, 192, 255);
+					}
+					draw_line(vid_buf, ed->x, ystart + i * 16, ed->x+ed->w, ystart + i * 16, 128, 128, 128, XRES+BARSIZE);
+				}
+				drawrect(vid_buf, ed->x, ystart, ed->w, ed->count*16, 255, 255, 255, 255);
+				sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+				clearrect(vid_buf, ed->x-2, ystart-2, ed->w+4, (ed->count*16)+4);
+			}
+			while (!sdl_poll())
+			{
+				mb = SDL_GetMouseState(&mx, &my);
+				if (!mb)
+					break;
+			}
+			
+			if(ed->selected!=-1)
+				strcpy(ed->str, ed->items[ed->selected]);
+		}
+	}
+	else
+	{
+		ed->focus = 0;
+	}
+}
+
+void ui_list_draw(pixel *vid_buf, ui_list *ed)
+{
+	if (ed->focus)
+	{
+		drawrect(vid_buf, ed->x, ed->y, ed->w, ed->h, 255, 255, 255, 255);
+	}
+	else
+	{
+		drawrect(vid_buf, ed->x, ed->y, ed->w, ed->h, 192, 192, 192, 255);
+	}
+	if(ed->selected!=-1)
+	{
+		drawtext(vid_buf, ed->x+4, ed->y+5, ed->str, 255, 255, 255, 255);
+	}
+	else
+	{
+		drawtext(vid_buf, ed->x+4, ed->y+5, ed->def, 192, 192, 192, 255);
+	}
+}
+
 void ui_checkbox_draw(pixel *vid_buf, ui_checkbox *ed)
 {
 	int w = 12;
@@ -930,35 +1011,35 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 	int valuei;
 	int format;
 	size_t propoffset;
+	char *listitems[] = {"type", "life", "ctype", "temp", "tmp", "tmp2", "vy", "vx", "x", "y", "dcolour"};
+	int listitemscount = 11;
 	int xsize = 244;
 	int ysize = 87;
 	int edity, editx, edit2y, edit2x;
 	int x0=(XRES-xsize)/2,y0=(YRES-MENUSIZE-ysize)/2,b=1,bq,mx,my;
-	ui_edit ed;
+	ui_list ed;
 	ui_edit ed2;
 
-	edity = y0+30;
-	editx = x0+12;
+	edity = y0+25;
+	editx = x0+8;
 	
 	edit2y = y0+50;
 	edit2x = x0+12;
 
 	ed.x = editx;
 	ed.y = edity;
-	ed.w = xsize - 20;
-	ed.nx = 1;
-	ed.def = "property";
-	ed.focus = 0;
-	ed.hide = 0;
-	ed.cursor = 0;
-	ed.multiline = 0;
-	ed.str[0] = 0;
+	ed.w = xsize - 16;
+	ed.h = 16;
+	ed.def = "[property]";
+	ed.selected = -1;
+	ed.items = listitems;
+	ed.count = listitemscount;
 	
 	ed2.x = edit2x;
 	ed2.y = edit2y;
 	ed2.w = xsize - 20;
 	ed2.nx = 1;
-	ed2.def = "value";
+	ed2.def = "[value]";
 	ed2.focus = 0;
 	ed2.hide = 0;
 	ed2.cursor = 0;
@@ -986,11 +1067,11 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 		drawtext(vid_buf, x0+8, y0+8, "Change particle property", 160, 160, 255, 255);
 		//drawtext(vid_buf, x0+8, y0+26, prompt, 255, 255, 255, 255);
 		
-		drawrect(vid_buf, ed.x-4, ed.y-5, ed.w+4, 16, 192, 192, 192, 255);
-		drawrect(vid_buf, ed2.x-4, ed2.y-5, ed.w+4, 16, 192, 192, 192, 255);
+		//drawrect(vid_buf, ed.x-4, ed.y-5, ed.w+4, 16, 192, 192, 192, 255);
+		drawrect(vid_buf, ed2.x-4, ed2.y-5, ed2.w+4, 16, 192, 192, 192, 255);
 
-		ui_edit_draw(vid_buf, &ed);
-		ui_edit_process(mx, my, b, &ed);
+		ui_list_draw(vid_buf, &ed);
+		ui_list_process(vid_buf, mx, my, b, &ed);
 		ui_edit_draw(vid_buf, &ed2);
 		ui_edit_process(mx, my, b, &ed2);
 
@@ -1009,42 +1090,45 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 	}
 
 	sscanf(ed2.str, "%f", &valuef);
-	
-	if (strcmp(ed.str,"type")==0){
-		propoffset = offsetof(particle, type);
-		format = 1;
-	} else if (strcmp(ed.str,"life")==0){
-		propoffset = offsetof(particle, life);
-		format = 0;
-	} else if (strcmp(ed.str,"ctype")==0){
-		propoffset = offsetof(particle, ctype);
-		format = 1;
-	} else if (strcmp(ed.str,"temp")==0){
-		propoffset = offsetof(particle, temp);
-		format = 2;
-	} else if (strcmp(ed.str,"tmp")==0){
-		propoffset = offsetof(particle, tmp);
-		format = 0;
-	} else if (strcmp(ed.str,"tmp2")==0){
-		propoffset = offsetof(particle, tmp2);
-		format = 0;
-	} else if (strcmp(ed.str,"vy")==0){
-		propoffset = offsetof(particle, vy);
-		format = 2;
-	} else if (strcmp(ed.str,"vx")==0){
-		propoffset = offsetof(particle, vx);
-		format = 2;
-	} else if (strcmp(ed.str,"x")==0){
-		propoffset = offsetof(particle, x);
-		format = 2;
-	} else if (strcmp(ed.str,"y")==0){
-		propoffset = offsetof(particle, y);
-		format = 2;
-	} else if (strcmp(ed.str,"dcolour")==0){
-		propoffset = offsetof(particle, dcolour);
-		format = 0;
+	if(ed.selected!=-1)
+	{
+		if (strcmp(ed.str,"type")==0){
+			propoffset = offsetof(particle, type);
+			format = 1;
+		} else if (strcmp(ed.str,"life")==0){
+			propoffset = offsetof(particle, life);
+			format = 0;
+		} else if (strcmp(ed.str,"ctype")==0){
+			propoffset = offsetof(particle, ctype);
+			format = 1;
+		} else if (strcmp(ed.str,"temp")==0){
+			propoffset = offsetof(particle, temp);
+			format = 2;
+		} else if (strcmp(ed.str,"tmp")==0){
+			propoffset = offsetof(particle, tmp);
+			format = 0;
+		} else if (strcmp(ed.str,"tmp2")==0){
+			propoffset = offsetof(particle, tmp2);
+			format = 0;
+		} else if (strcmp(ed.str,"vy")==0){
+			propoffset = offsetof(particle, vy);
+			format = 2;
+		} else if (strcmp(ed.str,"vx")==0){
+			propoffset = offsetof(particle, vx);
+			format = 2;
+		} else if (strcmp(ed.str,"x")==0){
+			propoffset = offsetof(particle, x);
+			format = 2;
+		} else if (strcmp(ed.str,"y")==0){
+			propoffset = offsetof(particle, y);
+			format = 2;
+		} else if (strcmp(ed.str,"dcolour")==0){
+			propoffset = offsetof(particle, dcolour);
+			format = 0;
+		}
 	} else {
 		error_ui(vid_buf, 0, "Invalid property");
+		goto exit;
 	}
 	
 	if(format==0){
@@ -1058,7 +1142,7 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 	if(format==2){
 		flood_prop(x, y, propoffset, &valuef, format);
 	}
-	
+exit:
 	while (!sdl_poll())
 	{
 		b = SDL_GetMouseState(&mx, &my);
