@@ -3405,6 +3405,7 @@ int search_ui(pixel *vid_buf)
 					thumb = calloc(1,4);
 					thlen = 4;
 				}
+				printf("Added %s to cache\n", img_id[i]);
 				thumb_cache_add(img_id[i], thumb, thlen);
 				for (pos=0; pos<GRID_X*GRID_Y; pos++) {
 					if (search_dates[pos]) {
@@ -3420,6 +3421,7 @@ int search_ui(pixel *vid_buf)
 						if (!strcmp(id_d_temp, img_id[i])) {
 							break;
 						}
+						free(id_d_temp);
 					} else {
 						if (search_ids[pos] && !strcmp(search_ids[pos], img_id[i])) {
 							break;
@@ -3441,9 +3443,25 @@ int search_ui(pixel *vid_buf)
 				for (pos=0; pos<GRID_X*GRID_Y; pos++)
 					if (search_ids[pos] && !search_thumbs[pos])
 					{
-						for (gi=0; gi<IMGCONNS; gi++)
-							if (img_id[gi] && !strcmp(search_ids[pos], img_id[gi]))
-								break;
+						if (search_dates[pos])
+						{
+							char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+2);
+							strcpy(id_d_temp, search_ids[pos]);
+							strappend(id_d_temp, "_");
+							strappend(id_d_temp, search_dates[pos]);
+							
+							for (gi=0; gi<IMGCONNS; gi++)
+								if (img_id[gi] && !strcmp(id_d_temp, img_id[gi]))
+									break;
+									
+							free(id_d_temp);
+						}
+						else
+						{
+							for (gi=0; gi<IMGCONNS; gi++)
+								if (img_id[gi] && !strcmp(search_ids[pos], img_id[gi]))
+									break;
+						}
 						if (gi<IMGCONNS)
 							continue;
 						break;
@@ -3451,7 +3469,7 @@ int search_ui(pixel *vid_buf)
 				if (pos<GRID_X*GRID_Y)
 				{
 					if (search_dates[pos]) {
-						char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+1);
+						char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+2);
 						uri = malloc(strlen(search_ids[pos])*3+strlen(search_dates[pos])*3+strlen(SERVER)+71);
 						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbsmall&ID=");
 						strcaturl(uri, search_ids[pos]);
@@ -3462,13 +3480,14 @@ int search_ui(pixel *vid_buf)
 						strappend(id_d_temp, "_");
 						strappend(id_d_temp, search_dates[pos]);
 						img_id[i] = mystrdup(id_d_temp);
+						free(id_d_temp);
 					} else {
 						uri = malloc(strlen(search_ids[pos])*3+strlen(SERVER)+64);
 						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbsmall&ID=");
 						strcaturl(uri, search_ids[pos]);
 						img_id[i] = mystrdup(search_ids[pos]);
 					}
-
+					printf("Not found: %s, downloading\n", img_id[i]);
 					img_http[i] = http_async_req_start(img_http[i], uri, NULL, 0, 1);
 					free(uri);
 				}
@@ -4335,6 +4354,7 @@ int search_results(char *str, int votes)
 		}
 		else if (!strncmp(str, "HISTORY ", 8))
 		{
+			char * id_d_temp = NULL;
 			if (i>=GRID_X*GRID_Y)
 				break;
 			if (votes)
@@ -4401,7 +4421,15 @@ int search_results(char *str, int votes)
 
 			if (s)
 				search_votes[i] = atoi(s);
-			thumb_cache_find(str+8, search_thumbs+i, search_thsizes+i);
+				
+			//Build thumb cache ID and find
+			id_d_temp = malloc(strlen(search_ids[i])+strlen(search_dates[i])+2);
+			strcpy(id_d_temp, search_ids[i]);
+			strappend(id_d_temp, "_");
+			strappend(id_d_temp, search_dates[i]);
+			thumb_cache_find(id_d_temp, search_thumbs+i, search_thsizes+i);
+			free(id_d_temp);
+			
 			i++;
 		}
 		else if (!strncmp(str, "MOTD ", 5))
