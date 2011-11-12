@@ -1654,23 +1654,35 @@ GLfloat lineC[(((YRES*XRES)*2)*6)];
 void render_parts(pixel *vid)
 {
 	//TODO: Replace cmode with a set of flags
-        int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
-		float gradv, flicker, fnx, fny;
+	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
+	float gradv, flicker, fnx, fny;
 #ifdef OGLR
-		int cfireV = 0, cfireC = 0, cfire = 0;
-		int csmokeV = 0, csmokeC = 0, csmoke = 0;
-		int cblobV = 0, cblobC = 0, cblob = 0;
-		int cblurV = 0, cblurC = 0, cblur = 0;
-		int cglowV = 0, cglowC = 0, cglow = 0;
-		int cflatV = 0, cflatC = 0, cflat = 0;
-		int caddV = 0, caddC = 0, cadd = 0;
-		int clineV = 0, clineC = 0, cline = 0;
-		GLuint origBlendSrc, origBlendDst;
-        
-        glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
-        glGetIntegerv(GL_BLEND_DST, &origBlendDst);
-        //Render to the particle FBO
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+	int cfireV = 0, cfireC = 0, cfire = 0;
+	int csmokeV = 0, csmokeC = 0, csmoke = 0;
+	int cblobV = 0, cblobC = 0, cblob = 0;
+	int cblurV = 0, cblurC = 0, cblur = 0;
+	int cglowV = 0, cglowC = 0, cglow = 0;
+	int cflatV = 0, cflatC = 0, cflat = 0;
+	int caddV = 0, caddC = 0, cadd = 0;
+	int clineV = 0, clineC = 0, cline = 0;
+	GLuint origBlendSrc, origBlendDst;
+	
+	glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
+	glGetIntegerv(GL_BLEND_DST, &origBlendDst);
+	//Render to the particle FBO
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+#else
+	if (GRID_MODE)//draws the grid
+	{
+		for (ny=0; ny<YRES; ny++)
+			for (nx=0; nx<XRES; nx++)
+			{
+				if (ny%(4*GRID_MODE)==0)
+					blendpixel(vid, nx, ny, 100, 100, 100, 80);
+				if (nx%(4*GRID_MODE)==0)
+					blendpixel(vid, nx, ny, 100, 100, 100, 80);
+			}
+	}
 #endif
 	for(i = 0; i<=parts_lastActiveIndex; i++) {
 		if (parts[i].type) {
