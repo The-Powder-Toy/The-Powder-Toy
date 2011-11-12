@@ -28,7 +28,13 @@
 #include <misc.h>
 #include "hmap.h"
 
-unsigned cmode = CM_FIRE;
+//unsigned cmode = CM_FIRE;
+unsigned int *render_modes;
+unsigned int render_mode;
+unsigned int colour_mode;
+unsigned int *display_modes;
+unsigned int display_mode;
+
 SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
@@ -59,6 +65,32 @@ char * plasma_data;
 int plasma_data_points = 5;
 pixel plasma_data_colours[] = {PIXPACK(0xAFFFFF), PIXPACK(0xAFFFFF), PIXPACK(0x301060), PIXPACK(0x301040), PIXPACK(0x000000)};
 float plasma_data_pos[] = {1.0f, 0.9f, 0.5f, 0.25, 0.0f};
+
+void init_display_modes()
+{
+	int i;
+	display_modes = calloc(sizeof(unsigned int), 1);
+	render_modes = calloc(sizeof(unsigned int), 2);
+	
+	display_modes[0] = 0;
+	render_modes[0] = RENDER_FIRE;
+	render_modes[1] = 0;
+	
+	display_mode = 0;
+	i = 0;
+	while(display_modes[i])
+	{
+		display_mode |= display_modes[i];
+		i++;
+	}
+	render_mode = 0;
+	i = 0;
+	while(render_modes[i])
+	{
+		render_mode |= render_modes[i];
+		i++;
+	}
+}
 
 char * generate_gradient(pixel * colours, float * points, int pointcount, int size)
 {
@@ -848,6 +880,32 @@ inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 	return x + w;
 }
 
+#if defined(WIN32) && !defined(__GNUC__)
+_inline int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
+#else
+inline int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
+#endif
+{
+	int i, j, w, bn = 0, ba = 0;
+	char *rp = font_data + font_ptrs[c];
+	w = *(rp++);
+	for (j=0; j<FONT_H; j++)
+		for (i=0; i<w; i++)
+		{
+			if (!bn)
+			{
+				ba = *(rp++);
+				bn = 8;
+			}
+			{
+			addpixel(vid, x+i, y+j, r, g, b, ((ba&3)*a)/3);
+			}
+			ba >>= 2;
+			bn -= 2;
+		}
+	return x + w;
+}
+
 int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a)
 {
 	int sx = x;
@@ -1237,25 +1295,23 @@ void draw_air(pixel *vid)
 #ifndef OGLR
 	int x, y, i, j;
 	pixel c;
-	if (cmode == CM_PERS)//this should never happen anyway
-		return;
 	for (y=0; y<YRES/CELL; y++)
 		for (x=0; x<XRES/CELL; x++)
 		{
-			if (cmode == CM_PRESS)
+			if (display_mode & DISPLAY_AIRP)
 			{
 				if (pv[y][x] > 0.0f)
 					c  = PIXRGB(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);//positive pressure is red!
 				else
 					c  = PIXRGB(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));//negative pressure is blue!
 			}
-			else if (cmode == CM_VEL)
+			else if (display_mode & DISPLAY_AIRV)
 			{
 				c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 					clamp_flt(pv[y][x], 0.0f, 8.0f),//pressure adds green
 					clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
 			}
-			else if (cmode == CM_HEAT && aheat_enable)
+			else if (display_mode & DISPLAY_AIRH)
 			{
 				float ttemp = hv[y][x]+(-MIN_TEMP);
 				int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
@@ -1264,7 +1320,7 @@ void draw_air(pixel *vid)
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
 				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
 			}
-			else if (cmode == CM_CRACK)
+			else if (display_mode & DISPLAY_AIRC)
 			{
 				int r;
 				int g;
@@ -1302,15 +1358,15 @@ void draw_air(pixel *vid)
 		}
 #else
 	GLuint airProg;
-	if(cmode == CM_CRACK)
+	if(display_mode & DISPLAY_AIRC)
 	{
 		airProg = airProg_Cracker;
 	}
-	else if(cmode == CM_VEL)
+	else if(display_mode & DISPLAY_AIRV)
 	{
 		airProg = airProg_Velocity;
 	}
-	else if(cmode == CM_PRESS)
+	else if(display_mode & DISPLAY_AIRP)
 	{
 		airProg = airProg_Pressure;
 	}
@@ -1447,7 +1503,7 @@ void draw_line(pixel *vid, int x1, int y1, int x2, int y2, int r, int g, int b, 
 void addpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 {
 	pixel t;
-	if (x<0 || y<0 || x>=XRES || y>=YRES)
+	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
 		return;
 	t = vid[y*(XRES+BARSIZE)+x];
 	r = (a*r + 255*PIXR(t)) >> 8;
@@ -1592,7 +1648,7 @@ void draw_other(pixel *vid) // EMP effect
 	if (emp_decor>0 && !sys_pause) emp_decor-=emp_decor/25+2;
 	if (emp_decor>40) emp_decor=40;
 	if (emp_decor<0) emp_decor = 0;
-	if (cmode==CM_NOTHING) // no in nothing mode
+	if (!(display_mode & display_mode == DISPLAY_EFFE)) // no in nothing mode
 		return;
 	if (emp_decor>0)
 	{
@@ -1653,7 +1709,6 @@ GLfloat lineC[(((YRES*XRES)*2)*6)];
 #endif
 void render_parts(pixel *vid)
 {
-	//TODO: Replace cmode with a set of flags
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
 	float gradv, flicker, fnx, fny;
 #ifdef OGLR
@@ -1709,7 +1764,7 @@ void render_parts(pixel *vid)
 			decg = (parts[i].dcolour>>8)&0xFF;
 			decb = (parts[i].dcolour)&0xFF;
 				
-			if(cmode == CM_NOTHING)
+			/*if(display_mode == RENDER_NONE)
 			{
 				if(decorations_enable)
 				{
@@ -1729,7 +1784,7 @@ void render_parts(pixel *vid)
 		        vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
 #endif
 			}
-			else
+			else*/
 			{	
 				if (graphicscache[t].isready)
 				{
@@ -1786,18 +1841,39 @@ void render_parts(pixel *vid)
 					colg += sin(gradv*caddress*4.55 +3.14) * 34;
 					colb += sin(gradv*caddress*2.22 +3.14) * 64;
 				}
+				
+				if(pixel_mode & FIRE_ADD && !(render_mode & FIRE_ADD))
+					pixel_mode |= PMODE_GLOW;
+				if(pixel_mode & FIRE_BLEND && !(render_mode & FIRE_BLEND))
+					pixel_mode |= PMODE_BLUR;
+					
+				pixel_mode &= render_mode;
+				
 				//Alter colour based on display mode
-				switch(cmode)
+				if(display_mode & COLOUR_HEAT)
 				{
-				case CM_HEAT:
 					caddress = restrict_flt((int)( restrict_flt((float)(parts[i].temp+(-MIN_TEMP)), 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
 					firea = 255;
 					firer = colr = (unsigned char)color_data[caddress];
 					fireg = colg = (unsigned char)color_data[caddress+1];
 					fireb = colb = (unsigned char)color_data[caddress+2];
 					cola = 255;
-					if(pixel_mode & (FIRE_ADD | FIRE_BLEND | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIRE_ADD|FIRE_BLEND|PMODE_GLOW)) | PMODE_BLUR | PMODE_FLAT;
-					break;
+					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
+				}
+				else if(display_mode & COLOUR_LIFE)
+				{
+					gradv = 0.4f;
+					if (!(parts[i].life<5))
+						q = sqrt(parts[i].life);
+					else
+						q = parts[i].life;
+					colr = colg = colb = sin(gradv*q) * 100 + 128;
+					cola = 255;
+					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
+				}
+					
+				/*switch(cmode)
+				{
 				case CM_LIFE:
 					gradv = 0.4f;
 					if (!(parts[i].life<5))
@@ -1826,21 +1902,24 @@ void render_parts(pixel *vid)
 					break;
 				default:
 					break;
-				}
+				}*/
 				
 				//Apply decoration colour
-				if(!(pixel_mode & NO_DECO) && cmode != CM_HEAT && decorations_enable)
+				if(!(display_mode & COLOUR_HEAT|COLOUR_LIFE))
 				{
-					colr = (deca*decr + (255-deca)*colr) >> 8;
-					colg = (deca*decg + (255-deca)*colg) >> 8;
-					colb = (deca*decb + (255-deca)*colb) >> 8;
-				}
-				
-				if(pixel_mode & DECO_FIRE && decorations_enable)
-				{
-					firer = (deca*decr + (255-deca)*firer) >> 8;
-					fireg = (deca*decg + (255-deca)*fireg) >> 8;
-					fireb = (deca*decb + (255-deca)*fireb) >> 8;
+					if(!(pixel_mode & NO_DECO) && decorations_enable)
+					{
+						colr = (deca*decr + (255-deca)*colr) >> 8;
+						colg = (deca*decg + (255-deca)*colg) >> 8;
+						colb = (deca*decb + (255-deca)*colb) >> 8;
+					}
+					
+					if(pixel_mode & DECO_FIRE && decorations_enable)
+					{
+						firer = (deca*decr + (255-deca)*firer) >> 8;
+						fireg = (deca*decg + (255-deca)*fireg) >> 8;
+						fireb = (deca*decb + (255-deca)*fireb) >> 8;
+					}
 				}
 				
 	#ifndef OGLR
@@ -1861,7 +1940,6 @@ void render_parts(pixel *vid)
 					char buff[20];  //Buffer for HP
 					int s;
 					int legr, legg, legb;
-					pixel pc;
 					playerst *cplayer;
 					if(t==PT_STKM)
 						cplayer = &player;
@@ -1914,8 +1992,18 @@ void render_parts(pixel *vid)
 						drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
 					}
 
-					if (cplayer->elem<PT_NUM) pc = ptypes[cplayer->elem].pcolors;
-					else pc = PIXPACK(0x8080FF);
+					if (cplayer->elem<PT_NUM)
+					{
+						colr = PIXR(ptypes[cplayer->elem].pcolors);
+						colg = PIXG(ptypes[cplayer->elem].pcolors);
+						colb = PIXB(ptypes[cplayer->elem].pcolors);
+					}
+					else
+					{
+						colr = 0x80;
+						colg = 0x80;
+						colb = 0xFF;
+					}
 					s = XRES+BARSIZE;
 
 					if (t==PT_STKM2)
@@ -1931,10 +2019,8 @@ void render_parts(pixel *vid)
 						legb = 255;
 					}
 
-					if (cmode == CM_HEAT)
+					if (colour_mode)
 					{
-						pc = PIXRGB(colr, colg, colb);
-
 						legr = colr;
 						legg = colg;
 						legb = colb;
@@ -1943,17 +2029,17 @@ void render_parts(pixel *vid)
 					//head
 					if(t==PT_FIGH)
 					{
-						draw_line(vid , nx, ny+2, nx+2, ny, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx+2, ny, nx, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx, ny-2, nx-2, ny, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx-2, ny, nx, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx, ny+2, nx+2, ny, colr, colg, colb, s);
+						draw_line(vid , nx+2, ny, nx, ny-2, colr, colg, colb, s);
+						draw_line(vid , nx, ny-2, nx-2, ny, colr, colg, colb, s);
+						draw_line(vid , nx-2, ny, nx, ny+2, colr, colg, colb, s);
 					}
 					else
 					{
-						draw_line(vid , nx-2, ny+2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx-2, ny-2, nx+2, ny-2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx-2, ny-2, nx-2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
-						draw_line(vid , nx+2, ny-2, nx+2, ny+2, PIXR(pc), PIXG(pc), PIXB(pc), s);
+						draw_line(vid , nx-2, ny+2, nx+2, ny+2, colr, colg, colb, s);
+						draw_line(vid , nx-2, ny-2, nx+2, ny-2, colr, colg, colb, s);
+						draw_line(vid , nx-2, ny-2, nx-2, ny+2, colr, colg, colb, s);
+						draw_line(vid , nx+2, ny-2, nx+2, ny+2, colr, colg, colb, s);
 					}
 					//legs
 					draw_line(vid , nx, ny+3, cplayer->legs[0], cplayer->legs[1], legr, legg, legb, s);
@@ -2532,7 +2618,7 @@ void render_parts(pixel *vid)
 void draw_parts_fbo()
 {
 	glEnable( GL_TEXTURE_2D );
-	if(cmode==CM_FANCY)
+	if(display_mode & DISPLAY_WARP)
 	{
 		float xres = XRES, yres = YRES;
 		glUseProgram(lensProg);
@@ -2569,7 +2655,7 @@ void draw_parts_fbo()
 	glVertex3f(XRES*sdl_scale, MENUSIZE*sdl_scale, 1.0);
 	glEnd();
 	
-	if(cmode==CM_FANCY)
+	if(display_mode & DISPLAY_WARP)
 	{
 		glUseProgram(0);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2670,86 +2756,6 @@ void draw_walls(pixel *vid)
 						for (j=0; j<CELL; j+=2)
 							for (i=0; i<CELL; i+=2)
 								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x242424);
-					}
-				}
-				
-				if (cmode==CM_BLOB)
-				{
-					// when in blob view, draw some blobs...
-					if (wtypes[wt].drawstyle==1)
-					{
-						for (j=0; j<CELL; j+=2)
-							for (i=(j>>1)&1; i<CELL; i+=2)
-								drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
-					}
-					else if (wtypes[wt].drawstyle==2)
-					{
-						for (j=0; j<CELL; j+=2)
-							for (i=0; i<CELL; i+=2)
-								drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
-					}
-					else if (wtypes[wt].drawstyle==3)
-					{
-						for (j=0; j<CELL; j++)
-							for (i=0; i<CELL; i++)
-								drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
-					}
-					else if (wtypes[wt].drawstyle==4)
-					{
-						for (j=0; j<CELL; j++)
-							for (i=0; i<CELL; i++)
-								if(i == j)
-									drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
-								else if  (i == j+1 || (i == 0 && j == CELL-1))
-									drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(gc), PIXG(gc), PIXB(gc));
-								else 
-									drawblob(vid, (x*CELL+i), (y*CELL+j), 0x20, 0x20, 0x20);
-					}
-					if (bmap[y][x]==WL_EWALL)
-					{
-						if (emap[y][x])
-						{
-							for (j=0; j<CELL; j++)
-								for (i=0; i<CELL; i++)
-									if (i&j&1)
-										drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
-						}
-						else
-						{
-							for (j=0; j<CELL; j++)
-								for (i=0; i<CELL; i++)
-									if (!(i&j&1))
-										drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
-						}
-					}
-					else if (bmap[y][x]==WL_WALLELEC)
-					{
-						for (j=0; j<CELL; j++)
-							for (i=0; i<CELL; i++)
-							{
-								if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
-									drawblob(vid, (x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
-								else
-									drawblob(vid, (x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
-							}
-					}
-					else if (bmap[y][x]==WL_EHOLE)
-					{
-						if (emap[y][x])
-						{
-							for (j=0; j<CELL; j++)
-								for (i=0; i<CELL; i++)
-									drawblob(vid, (x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
-							for (j=0; j<CELL; j+=2)
-								for (i=0; i<CELL; i+=2)
-									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x000000);
-						}
-						else
-						{
-							for (j=0; j<CELL; j+=2)
-								for (i=0; i<CELL; i+=2)
-									drawblob(vid, (x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
-						}
 					}
 				}
 

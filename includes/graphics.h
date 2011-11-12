@@ -45,7 +45,12 @@
 
 extern int emp_decor;
 
-extern unsigned cmode;
+extern unsigned int *render_modes;
+extern unsigned int render_mode;
+extern unsigned int colour_mode;
+extern unsigned int *display_modes;
+extern unsigned int display_mode;
+
 extern SDL_Surface *sdl_scrn;
 extern int sdl_scale;
 
@@ -119,6 +124,8 @@ int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc);
 void draw_menu(pixel *vid_buf, int i, int hover);
 
 void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a);
+
+int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
 
 int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a);
 

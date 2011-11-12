@@ -328,6 +328,8 @@ int report_ui(pixel *vid_buf, char *save_id);
 
 char *console_ui(pixel *vid_buf, char error[255],char console_more);
 
+void render_ui(pixel *vid_buf);
+
 void simulation_ui(pixel *vid_buf);
 
 unsigned int decorations_ui(pixel *vid_buf, int *bsx, int *bsy, unsigned int savedColor);

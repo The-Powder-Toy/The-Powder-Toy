@@ -1104,10 +1104,7 @@ int luatpt_heat(lua_State* l)
 }
 int luatpt_cmode_set(lua_State* l)
 {
-    int aheatstate;
-    aheatstate = luaL_optint(l, 1, CM_FIRE);
-    cmode = aheatstate;
-    return 0;
+    return luaL_error(l, "Not implemented");
 }
 int luatpt_setfire(lua_State* l)
 {

@@ -804,58 +804,15 @@ void draw_svf_ui(pixel *vid_buf, int alternate)// all the buttons at the bottom
 	}
 
 	//The simulation options button, used to be the heat sim button
-	/*if (!legacy_enable)
-	{
-		fillrect(vid_buf, XRES-160+BARSIZE, YRES+(MENUSIZE-17), 16, 16, 255, 255, 255, 255);
-		drawtext(vid_buf, XRES-154+BARSIZE, YRES+(MENUSIZE-13), "\xBE", 255, 0, 0, 255);
-		drawtext(vid_buf, XRES-154+BARSIZE, YRES+(MENUSIZE-13), "\xBD", 0, 0, 0, 255);
-	}
-	else*/
 	{
 		drawtext(vid_buf, XRES-156+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xCF", 255, 255, 255, 255);
 		drawrect(vid_buf, XRES-159+BARSIZE/*494*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
 	}
 
 	//the view mode button
-	switch (cmode)
-	{
-	case CM_VEL:
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x98", 128, 160, 255, 255);
-		break;
-	case CM_PRESS:
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x99", 255, 212, 32, 255);
-		break;
-	case CM_PERS:
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x9A", 212, 212, 212, 255);
-		break;
-	case CM_FIRE:
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x9B", 255, 0, 0, 255);
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x9C", 255, 255, 64, 255);
-		break;
-	case CM_BLOB:
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBF", 55, 255, 55, 255);
-		break;
-	case CM_HEAT:
-		drawtext(vid_buf, XRES-27+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBE", 255, 0, 0, 255);
-		drawtext(vid_buf, XRES-27+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xBD", 255, 255, 255, 255);
-		break;
-	case CM_FANCY:
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xC4", 100, 150, 255, 255);
-		break;
-	case CM_NOTHING:
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 100, 150, 255, 255);
-		break;
-	case CM_CRACK:
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xD4", 255, 55, 55, 255);
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xD5", 55, 255, 55, 255);
-		break;
-	case CM_GRAD:
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\xD3", 255, 50, 255, 255);
-		break;
-	case CM_LIFE:
-		drawtext(vid_buf, XRES-29+BARSIZE/*481*/, YRES+(MENUSIZE-13), "\x00", 255, 50, 255, 255);
-		break;
-	}
+	addchar(vid_buf, XRES-29+BARSIZE, YRES+(MENUSIZE-13), 0xD8, 255, 0, 0, 255);
+	addchar(vid_buf, XRES-29+BARSIZE, YRES+(MENUSIZE-13), 0xD9, 0, 255, 0, 255);
+	addchar(vid_buf, XRES-29+BARSIZE, YRES+(MENUSIZE-13), 0xDA, 0, 0, 255, 255);
 	drawrect(vid_buf, XRES-32+BARSIZE/*478*/, YRES+(MENUSIZE-16), 14, 14, 255, 255, 255, 255);
 
 	// special icons for admin/mods
@@ -2703,74 +2660,6 @@ int sdl_poll(void)
 	}
 	sdl_mod = SDL_GetModState();
 	return 0;
-}
-
-void set_cmode(int cm) // sets to given view mode
-{
-	cmode = cm;
-	itc = 51;
-	if (cmode==CM_BLOB)
-	{
-		memset(fire_r, 0, sizeof(fire_r));
-		memset(fire_g, 0, sizeof(fire_g));
-		memset(fire_b, 0, sizeof(fire_b));
-		strcpy(itc_msg, "Blob Display");
-	}
-	else if (cmode==CM_HEAT)
-	{
-		strcpy(itc_msg, "Heat Display");
-	}
-	else if (cmode==CM_FANCY)
-	{
-		memset(fire_r, 0, sizeof(fire_r));
-		memset(fire_g, 0, sizeof(fire_g));
-		memset(fire_b, 0, sizeof(fire_b));
-		strcpy(itc_msg, "Fancy Display");
-	}
-	else if (cmode==CM_FIRE)
-	{
-		memset(fire_r, 0, sizeof(fire_r));
-		memset(fire_g, 0, sizeof(fire_g));
-		memset(fire_b, 0, sizeof(fire_b));
-		strcpy(itc_msg, "Fire Display");
-	}
-	else if (cmode==CM_PERS)
-	{
-		memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-		strcpy(itc_msg, "Persistent Display");
-	}
-	else if (cmode==CM_PRESS)
-	{
-		strcpy(itc_msg, "Pressure Display");
-	}
-	else if (cmode==CM_NOTHING)
-	{
-		strcpy(itc_msg, "Nothing Display");
-	}
-	else if (cmode==CM_CRACK)
-	{
-		strcpy(itc_msg, "Alternate Velocity Display");
-	}
-	else if (cmode==CM_GRAD)
-	{
-		strcpy(itc_msg, "Heat Gradient Display");
-	}
-	else if (cmode==CM_LIFE)
-	{
-		if (DEBUG_MODE) //can only get to Life view in debug mode
-		{
-			strcpy(itc_msg, "Life Display");
-		}
-		else
-		{
-			set_cmode(CM_CRACK);
-		}
-	}
-	else //if no special text given, it will display this.
-	{
-		strcpy(itc_msg, "Velocity Display");
-	}
-	save_presets(0);
 }
 
 char *download_ui(pixel *vid_buf, char *uri, int *len)
@@ -6152,6 +6041,10 @@ openfin:
 	if(saves)
 		free_saveslist(saves);
 	return;
+}
+
+void render_ui(pixel * vid_buf)
+{
 }
 
 void simulation_ui(pixel * vid_buf)

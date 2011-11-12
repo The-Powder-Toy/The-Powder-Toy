@@ -47,6 +47,7 @@
 #include <font.h>
 #include <powder.h>
 #include <graphics.h>
+#include <powdergraphics.h>
 #include <version.h>
 #include <http.h>
 #include <md5.h>
@@ -1521,7 +1522,9 @@ int main(int argc, char *argv[])
 	char ppmfilename[256], ptifilename[256], ptismallfilename[256];
 	FILE *f;
 	
-	cmode = CM_FIRE;
+	colour_mode = COLOUR_DEFAULT;
+	init_display_modes();
+
 	sys_pause = 1;
 	parts = calloc(sizeof(particle), NPART);
 	for (i=0; i<NPART-1; i++)
@@ -1669,6 +1672,9 @@ int main(int argc, char *argv[])
 	cb_parts = calloc(sizeof(particle), NPART);
 	init_can_move();
 	clear_sim();
+	
+	colour_mode = COLOUR_DEFAULT;
+	init_display_modes();
 
 	//fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
 
@@ -1803,7 +1809,7 @@ int main(int argc, char *argv[])
 #ifdef OGLR
 		part_vbuf = vid_buf;
 #else
-		if(ngrav_enable && cmode==CM_FANCY)
+		if(ngrav_enable && display_mode & DISPLAY_WARP)
 		{
 			part_vbuf = part_vbuf_store;
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
@@ -1819,7 +1825,7 @@ int main(int argc, char *argv[])
 			gravwl_timeout--;
 		}
 #ifdef OGLR
-		if (cmode==CM_PERS)//save background for persistent, then clear
+		if (display_mode & DISPLAY_PERS)//save background for persistent, then clear
 		{
 			clearScreen(0.01f);
 			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
@@ -1828,17 +1834,17 @@ int main(int argc, char *argv[])
 		{
             clearScreen(1.0f);
 			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-			if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK || (cmode==CM_HEAT && aheat_enable))//air only gets drawn in these modes
+			if (display_mode & DISPLAY_AIR)//air only gets drawn in these modes
 			{
 				draw_air(part_vbuf);
 			}
 		}
 #else
-		if (cmode==CM_VEL || cmode==CM_PRESS || cmode==CM_CRACK || (cmode==CM_HEAT && aheat_enable))//air only gets drawn in these modes
+		if (display_mode & DISPLAY_AIR)//air only gets drawn in these modes
 		{
 			draw_air(part_vbuf);
 		}
-		else if (cmode==CM_PERS)//save background for persistent, then clear
+		else if (display_mode & DISPLAY_PERS)//save background for persistent, then clear
 		{
 			memcpy(part_vbuf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
 			memset(part_vbuf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
@@ -1962,7 +1968,7 @@ int main(int argc, char *argv[])
 			sys_pause = 1;
 		}
 
-		if (cmode==CM_PERS)
+		if (display_mode & DISPLAY_PERS)
 		{
 			if (!fire_fc)//fire_fc has nothing to do with fire... it is a counter for diminishing persistent view every 3 frames
 			{
@@ -1976,14 +1982,14 @@ int main(int argc, char *argv[])
 		}
 		
 #ifndef OGLR
-		if (cmode==CM_FIRE||cmode==CM_BLOB||cmode==CM_FANCY)
+		if (render_mode & FIREMODE)
 			render_fire(part_vbuf);
 #endif
 
 		render_signs(part_vbuf);
 
 #ifndef OGLR
-		if(ngrav_enable && cmode==CM_FANCY)
+		if(ngrav_enable && display_mode & DISPLAY_WARP)
 			render_gravlensing(part_vbuf, vid_buf);
 #endif
 
@@ -2202,7 +2208,8 @@ int main(int argc, char *argv[])
 					it = 50;
 				save_mode = 1;
 			}
-			if (sdl_key=='1')
+			//TODO: Superseded by new display mode switching, need some keyboard shortcuts
+			/*if (sdl_key=='1')
 			{
 				set_cmode(CM_VEL);
 			}
@@ -2245,7 +2252,7 @@ int main(int argc, char *argv[])
 			if (sdl_key=='1'&& (sdl_mod & (KMOD_SHIFT)) && DEBUG_MODE)
 			{
 				set_cmode(CM_LIFE);
-			}
+			}*/
 			if (sdl_key==SDLK_TAB)
 			{
 				CURRENT_BRUSH =(CURRENT_BRUSH + 1)%BRUSH_NUM ;
@@ -2550,12 +2557,13 @@ int main(int argc, char *argv[])
 				save_mode = 1;
 				copy_mode = 1;
 			}
-			else if (sdl_key=='c')
+			//TODO: Superseded by new display mode switching, need some keyboard shortcuts
+			/*else if (sdl_key=='c')
 			{
 				set_cmode((cmode+1) % CM_COUNT);
 				if (it > 50)
 					it = 50;
-			}
+			}*/
 			if (sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
 			{
 				int cbx, cby, cbi;
@@ -3154,7 +3162,8 @@ int main(int argc, char *argv[])
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
 					{
-						if (b & SDL_BUTTON_LMASK) {
+						render_ui(vid_buf);
+						/*if (b & SDL_BUTTON_LMASK) {
 							set_cmode((cmode+1) % CM_COUNT);
 						}
 						if (b & SDL_BUTTON_RMASK) {
@@ -3163,7 +3172,7 @@ int main(int argc, char *argv[])
 							} else {
 								set_cmode((cmode+(CM_COUNT-1)) % CM_COUNT);
 							}
-						}
+						}*/
 					}
 					if (x>=(XRES+BARSIZE-(510-494)) && x<=(XRES+BARSIZE-(510-509)) && !bq)
 						sys_pause = !sys_pause;
@@ -3668,6 +3677,8 @@ int main(int argc, char *argv[])
 				player2.elem = PT_DUST;
 		}
 	}
+	save_presets(0);
+	
 	SDL_CloseAudio();
 	http_done();
 #ifdef GRAVFFT
