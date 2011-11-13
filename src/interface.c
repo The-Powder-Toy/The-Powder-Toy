@@ -24,6 +24,7 @@
 #ifdef PYCONSOLE
 #include <pythonconsole.h>
 #endif
+#include <powdergraphics.h>
 
 SDLMod sdl_mod;
 int sdl_key, sdl_rkey, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
@@ -6043,8 +6044,109 @@ openfin:
 	return;
 }
 
-void render_ui(pixel * vid_buf)
+void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 {
+	int i, j, count;
+	int xsize;
+	int ysize;
+	int yoffset;
+	int xoffset;
+	int b, bq, mx, my;
+	ui_checkbox *cb;
+	int optioncount = 5;
+	int options[] = {RENDER_EFFE, RENDER_GLOW, RENDER_FIRE, RENDER_BLUR, RENDER_BASC};
+	int optionicons[] = {0xCC, 0xC3, 0x9B, 0xC4, 0xD1};
+
+	yoffset = 16;
+	xoffset = 0;
+	
+	xsize = 35;
+	ysize = optioncount * yoffset + 6;
+	
+	ycoord -= ysize;
+	xcoord -= xsize;
+	
+	cb = calloc(optioncount, sizeof(ui_checkbox));
+	for(i = 0; i < optioncount; i++)
+	{
+		cb[i].x = xcoord + (i * xoffset) + 5;
+		cb[i].y = ycoord + (i * yoffset) + 5;
+		cb[i].focus = 0;
+		cb[i].checked = 0;
+		j = 0;
+		while(render_modes[j])
+		{
+			if(render_modes[j] == options[i])
+			{
+				cb[i].checked = 1;
+				break;
+			}
+			j++;
+		}
+	}
+	
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
+	
+	while (!sdl_poll())
+	{
+		bq = b;
+		b = SDL_GetMouseState(&mx, &my);
+		mx /= sdl_scale;
+		my /= sdl_scale;
+		
+		clearrect(vid_buf, xcoord-2, ycoord-2, xsize+4, ysize+4);
+		drawrect(vid_buf, xcoord, ycoord, xsize, ysize, 192, 192, 192, 255);
+		
+		for(i = 0; i < optioncount; i++)
+		{
+			drawchar(vid_buf, cb[i].x + 16, cb[i].y+2, optionicons[i], 255, 255, 255, 255);
+			ui_checkbox_draw(vid_buf, &(cb[i]));
+			ui_checkbox_process(mx, my, b, bq, &(cb[i]));
+		}
+		
+		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+		
+		if (sdl_key==SDLK_RETURN)
+			break;
+		if (sdl_key==SDLK_ESCAPE)
+			break;
+		if (b && !bq && (mx < xcoord || mx > xcoord+xsize || my < ycoord || my > ycoord+ysize))
+			break;
+	}
+	
+	count = 1;
+	for(i = 0; i < optioncount; i++)
+	{
+		if(cb[i].checked)
+			count++;
+	}
+	free(render_modes);
+	render_mode = 0;
+	render_modes = calloc(count, sizeof(unsigned int));
+	count = 0;
+	for(i = 0; i < optioncount; i++)
+	{
+		if(cb[i].checked)
+		{
+			render_modes[count] = options[i];
+			render_mode |= options[i];
+			count++;
+		}
+	}
+	
+	free(cb);
+	
+	while (!sdl_poll())
+	{
+		b = SDL_GetMouseState(&mx, &my);
+		if (!b)
+			break;
+	}
 }
 
 void simulation_ui(pixel * vid_buf)

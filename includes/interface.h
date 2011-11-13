@@ -328,7 +328,7 @@ int report_ui(pixel *vid_buf, char *save_id);
 
 char *console_ui(pixel *vid_buf, char error[255],char console_more);
 
-void render_ui(pixel *vid_buf);
+void render_ui(pixel *vid_buf, int xcoord, int ycoord, int orientation);
 
 void simulation_ui(pixel *vid_buf);
 

@@ -69,8 +69,8 @@ float plasma_data_pos[] = {1.0f, 0.9f, 0.5f, 0.25, 0.0f};
 void init_display_modes()
 {
 	int i;
-	display_modes = calloc(sizeof(unsigned int), 1);
-	render_modes = calloc(sizeof(unsigned int), 2);
+	display_modes = calloc(1, sizeof(unsigned int));
+	render_modes = calloc(2, sizeof(unsigned int));
 	
 	display_modes[0] = 0;
 	render_modes[0] = RENDER_FIRE;
@@ -1846,6 +1846,10 @@ void render_parts(pixel *vid)
 					pixel_mode |= PMODE_GLOW;
 				if(pixel_mode & FIRE_BLEND && !(render_mode & FIRE_BLEND))
 					pixel_mode |= PMODE_BLUR;
+				if(pixel_mode & PMODE_BLUR && !(render_mode & PMODE_BLUR))
+					pixel_mode |= PMODE_FLAT;
+				if(pixel_mode & PMODE_GLOW && !(render_mode & PMODE_GLOW))
+					pixel_mode |= PMODE_FLAT;
 					
 				pixel_mode &= render_mode;
 				

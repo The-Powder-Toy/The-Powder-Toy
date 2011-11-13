@@ -3162,17 +3162,7 @@ int main(int argc, char *argv[])
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
 					{
-						render_ui(vid_buf);
-						/*if (b & SDL_BUTTON_LMASK) {
-							set_cmode((cmode+1) % CM_COUNT);
-						}
-						if (b & SDL_BUTTON_RMASK) {
-							if ((cmode+(CM_COUNT-1)) % CM_COUNT == CM_LIFE) {
-								set_cmode(CM_GRAD);
-							} else {
-								set_cmode((cmode+(CM_COUNT-1)) % CM_COUNT);
-							}
-						}*/
+						render_ui(vid_buf, XRES+BARSIZE-(510-491), YRES+(MENUSIZE-19), 3);
 					}
 					if (x>=(XRES+BARSIZE-(510-494)) && x<=(XRES+BARSIZE-(510-509)) && !bq)
 						sys_pause = !sys_pause;
