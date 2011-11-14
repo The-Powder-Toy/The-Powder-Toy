@@ -1877,7 +1877,7 @@ void render_parts(pixel *vid)
 				}
 								
 				//Apply decoration colour
-				if(!(colour_mode & COLOUR_HEAT|COLOUR_LIFE))
+				if(!colour_mode)
 				{
 					if(!(pixel_mode & NO_DECO) && decorations_enable)
 					{
