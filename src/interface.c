@@ -6046,6 +6046,7 @@ openfin:
 
 void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 {
+	pixel * o_vid_buf;
 	int i, j, count;
 	int xsize;
 	int ysize;
@@ -6059,14 +6060,17 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	int render_optioncount = 5;
 	int render_options[] = {RENDER_EFFE, RENDER_GLOW, RENDER_FIRE, RENDER_BLUR, RENDER_BASC};
 	int render_optionicons[] = {0xCC, 0xC3, 0x9B, 0xC4, 0xD1};
+	char * render_desc[] = {"Effects", "Glow", "Fire", "Blur", "Basic"};
 	
 	int display_optioncount = 7;
 	int display_options[] = {DISPLAY_AIRC, DISPLAY_AIRP, DISPLAY_AIRV, DISPLAY_AIRH, DISPLAY_WARP, DISPLAY_PERS, DISPLAY_EFFE};
 	int display_optionicons[] = {0xCC, 0xC3, 0x9B, 0xC4, 0xD1, 0xD1, 0xD1};
+	char * display_desc[] = {"Air: Cracker", "Air: Pressure", "Air: Velocity", "Air: Heat", "Warp effect", "Persistent", "Effects"};
 	
 	int colour_optioncount = 2;
 	int colour_options[] = {COLOUR_LIFE, COLOUR_HEAT};
 	int colour_optionicons[] = {0xCC, 0xC3};
+	char * colour_desc[] = {"Life", "Heat"};
 
 	yoffset = 16;
 	xoffset = 0;
@@ -6131,6 +6135,9 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		}
 	}
 	
+	o_vid_buf = calloc((YRES+MENUSIZE) * (XRES+BARSIZE), PIXELSIZE);
+	memcpy(o_vid_buf, vid_buf, ((YRES+MENUSIZE) * (XRES+BARSIZE)) * PIXELSIZE);
+	
 	while (!sdl_poll())
 	{
 		b = SDL_GetMouseState(&mx, &my);
@@ -6145,6 +6152,8 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		mx /= sdl_scale;
 		my /= sdl_scale;
 		
+		memcpy(vid_buf, o_vid_buf, ((YRES+MENUSIZE) * (XRES+BARSIZE)) * PIXELSIZE);
+		
 		clearrect(vid_buf, xcoord-2, ycoord-2, xsize+4, ysize+4);
 		drawrect(vid_buf, xcoord, ycoord, xsize, ysize, 192, 192, 192, 255);
 		
@@ -6153,6 +6162,8 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 			drawchar(vid_buf, render_cb[i].x + 16, render_cb[i].y+2, render_optionicons[i], 255, 255, 255, 255);
 			ui_checkbox_draw(vid_buf, &(render_cb[i]));
 			ui_checkbox_process(mx, my, b, bq, &(render_cb[i]));
+			if(render_cb[i].focus)
+				drawtext(vid_buf, xcoord - textwidth(render_desc[i]) - 10, render_cb[i].y+2, render_desc[i], 255, 255, 255, 255);
 		}
 		
 		for(i = 0; i < display_optioncount; i++)
@@ -6170,6 +6181,8 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 					}
 				}
 			}
+			if(display_cb[i].focus)
+				drawtext(vid_buf, xcoord - textwidth(display_desc[i]) - 10, display_cb[i].y+2, display_desc[i], 255, 255, 255, 255);
 		}
 		
 		for(i = 0; i < colour_optioncount; i++)
@@ -6187,6 +6200,8 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 					}
 				}
 			}
+			if(colour_cb[i].focus)
+				drawtext(vid_buf, xcoord - textwidth(colour_desc[i]) - 10, colour_cb[i].y+2, colour_desc[i], 255, 255, 255, 255);
 		}
 		
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
@@ -6260,6 +6275,8 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		if (!b)
 			break;
 	}
+	
+	free(o_vid_buf);
 }
 
 void simulation_ui(pixel * vid_buf)
