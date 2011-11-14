@@ -121,7 +121,8 @@ void clean_text(char *text, int vwidth)
 void save_presets(int do_update)
 {
 	char * outputdata;
-	cJSON *root, *userobj, *versionobj;
+	int count, i;
+	cJSON *root, *userobj, *versionobj, *graphicsobj;
 	FILE* f;
 
 	root = cJSON_CreateObject();
@@ -157,9 +158,16 @@ void save_presets(int do_update)
 		cJSON_AddFalseToObject(versionobj, "update");
 	}
 	
+	//Display settings
+	cJSON_AddItemToObject(root, "graphics", graphicsobj=cJSON_CreateObject());
+	cJSON_AddNumberToObject(graphicsobj, "colour", colour_mode);
+	count = 0; i = 0; while(display_modes[i++]){ count++; }
+	cJSON_AddItemToObject(graphicsobj, "display", cJSON_CreateIntArray(display_modes, count));
+	count = 0; i = 0; while(render_modes[i++]){ count++; }
+	cJSON_AddItemToObject(graphicsobj, "render", cJSON_CreateIntArray(render_modes, count));
+	
 	//General settings
 	cJSON_AddStringToObject(root, "proxy", http_proxy_string);
-	cJSON_AddNumberToObject(root, "colour_mode", colour_mode);
 	cJSON_AddNumberToObject(root, "scale", sdl_scale);
 	
 	outputdata = cJSON_Print(root);
@@ -170,7 +178,8 @@ void save_presets(int do_update)
 		return;
 	fwrite(outputdata, 1, strlen(outputdata), f);
 	fclose(f);
-	//Old format, don't bother with this
+	free(outputdata);
+	//Old format, here for reference only
 	/*FILE *f=fopen("powder.def", "wb");
 	unsigned char sig[4] = {0x50, 0x44, 0x65, 0x68};
 	unsigned char tmp = sdl_scale;
@@ -213,11 +222,11 @@ int sregexp(const char *str, char *pattern)
 
 void load_presets(void)
 {
-	int prefdatasize = 0;
+	int prefdatasize = 0, i, count;
 	char * prefdata = file_load("powder.pref", &prefdatasize);
 	if(prefdata)
 	{
-		cJSON *root, *userobj, *versionobj, *tmpobj;
+		cJSON *root, *userobj, *versionobj, *tmpobj, *graphicsobj, *tmparray;
 		root = cJSON_Parse(prefdata);
 		
 		//Read user data
@@ -263,13 +272,44 @@ void load_presets(void)
 			update_flag = 0;
 		}
 		
+		//Read display settings
+		graphicsobj = cJSON_GetObjectItem(root, "graphics");
+		if(graphicsobj)
+		{
+			if(tmpobj = cJSON_GetObjectItem(graphicsobj, "colour")) colour_mode = tmpobj->valueint;
+			if(tmpobj = cJSON_GetObjectItem(graphicsobj, "display"))
+			{
+				count = cJSON_GetArraySize(tmpobj);
+				free(display_modes);
+				display_mode = 0;
+				display_modes = calloc(count+1, sizeof(unsigned int));
+				for(i = 0; i < count; i++)
+				{
+					display_mode |= cJSON_GetArrayItem(tmpobj, i)->valueint;
+					display_modes[i] = cJSON_GetArrayItem(tmpobj, i)->valueint;
+				}
+			}
+			if(tmpobj = cJSON_GetObjectItem(graphicsobj, "render"))
+			{
+				count = cJSON_GetArraySize(tmpobj);
+				free(render_modes);
+				render_mode = 0;
+				render_modes = calloc(count+1, sizeof(unsigned int));
+				for(i = 0; i < count; i++)
+				{
+					render_mode |= cJSON_GetArrayItem(tmpobj, i)->valueint;
+					render_modes[i] = cJSON_GetArrayItem(tmpobj, i)->valueint;
+				}
+			}
+		}
+		
 		//Read general settings
 		if((tmpobj = cJSON_GetObjectItem(root, "proxy")) && tmpobj->type == cJSON_String) strncpy(http_proxy_string, tmpobj->valuestring, 255); else http_proxy_string[0] = 0;
 		//TODO: Translate old cmode value into new *_mode values
-		if(tmpobj = cJSON_GetObjectItem(root, "colour_mode")) colour_mode = tmpobj->valueint;
 		if(tmpobj = cJSON_GetObjectItem(root, "scale")) sdl_scale = tmpobj->valueint;
 		
 		cJSON_Delete(root);
+		free(prefdata);
 	} else { //Fallback and read from old def file
 		FILE *f=fopen("powder.def", "rb");
 		unsigned char sig[4], tmp;
