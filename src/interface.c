@@ -2663,6 +2663,117 @@ int sdl_poll(void)
 	return 0;
 }
 
+void set_cmode(int cm) // sets to given view mode
+{
+	int cmode = cm;
+	colour_mode = COLOUR_DEFAULT;
+	free(render_modes);
+	render_modes = calloc(1, sizeof(unsigned int));
+	render_mode = RENDER_BASC;
+	render_modes[0] = RENDER_BASC;
+	free(display_modes);
+	display_mode = 0;
+	display_modes = calloc(0, sizeof(unsigned int));
+	itc = 51;
+	if (cmode==CM_VEL)
+	{
+		display_modes = calloc(1, sizeof(unsigned int));
+		display_mode |= DISPLAY_AIRV;
+		display_modes[0] = DISPLAY_AIRV;
+		strcpy(itc_msg, "Velocity Display");
+	}
+	else if (cmode==CM_PRESS)
+	{
+		display_modes = calloc(1, sizeof(unsigned int));
+		display_mode |= DISPLAY_AIRP;
+		display_modes[0] = DISPLAY_AIRP;
+		strcpy(itc_msg, "Pressure Display");
+	}
+	else if (cmode==CM_PERS)
+	{
+		display_modes = calloc(1, sizeof(unsigned int));
+		display_mode |= DISPLAY_PERS;
+		display_modes[0] = DISPLAY_PERS;
+		memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+		strcpy(itc_msg, "Persistent Display");
+	}
+	else if (cmode==CM_FIRE)
+	{
+		free(render_modes);
+		render_modes = calloc(2, sizeof(unsigned int));
+		render_mode |= RENDER_FIRE;
+		render_mode |= RENDER_GLOW;
+		render_modes[0] = RENDER_FIRE;
+		render_modes[1] = RENDER_GLOW;
+		memset(fire_r, 0, sizeof(fire_r));
+		memset(fire_g, 0, sizeof(fire_g));
+		memset(fire_b, 0, sizeof(fire_b));
+		strcpy(itc_msg, "Fire Display");
+	}
+	else if (cmode==CM_BLOB)
+	{
+		memset(fire_r, 0, sizeof(fire_r));
+		memset(fire_g, 0, sizeof(fire_g));
+		memset(fire_b, 0, sizeof(fire_b));
+		strcpy(itc_msg, "Not Implemented");//strcpy(itc_msg, "Blob Display");
+	}
+	else if (cmode==CM_HEAT)
+	{
+		colour_mode = COLOUR_HEAT;
+		strcpy(itc_msg, "Heat Display");
+	}
+	else if (cmode==CM_FANCY)
+	{
+		free(render_modes);
+		render_modes = calloc(2, sizeof(unsigned int));
+		render_mode |= RENDER_FIRE;
+		render_mode |= RENDER_GLOW;
+		render_modes[0] = RENDER_FIRE;
+		render_modes[1] = RENDER_GLOW;
+		display_modes = calloc(1, sizeof(unsigned int));
+		display_mode |= DISPLAY_WARP;
+		display_modes[0] = DISPLAY_WARP;
+		memset(fire_r, 0, sizeof(fire_r));
+		memset(fire_g, 0, sizeof(fire_g));
+		memset(fire_b, 0, sizeof(fire_b));
+		strcpy(itc_msg, "Fancy Display");
+	}
+	else if (cmode==CM_NOTHING)
+	{
+		render_mode = RENDER_NONE;
+		render_modes[0] = RENDER_NONE;
+		strcpy(itc_msg, "Nothing Display");
+	}
+	else if (cmode==CM_GRAD)
+	{
+		strcpy(itc_msg, "Not Implemented");//strcpy(itc_msg, "Heat Gradient Display");
+	}
+	else if (cmode==CM_LIFE)
+	{
+		if (DEBUG_MODE) //can only get to Life view in debug mode
+		{
+			colour_mode = COLOUR_LIFE;
+			strcpy(itc_msg, "Life Display");
+		}
+		else
+		{
+			set_cmode(CM_CRACK);
+		}
+	}
+	else if (cmode==CM_CRACK)
+	{
+		display_modes = calloc(1, sizeof(unsigned int));
+		display_mode |= DISPLAY_AIRC;
+		display_modes[0] = DISPLAY_AIRC;
+		strcpy(itc_msg, "Alternate Velocity Display");
+	}
+	else //if no special text given, it will display this.
+	{
+		strcpy(itc_msg, "Error: Incorrect Display Number");
+	}
+	save_presets(0);
+}
+
 char *download_ui(pixel *vid_buf, char *uri, int *len)
 {
 	int dstate = 0;
