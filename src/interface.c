@@ -6051,34 +6051,80 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	int ysize;
 	int yoffset;
 	int xoffset;
+	int xcoffset;
 	int b, bq, mx, my;
-	ui_checkbox *cb;
-	int optioncount = 5;
-	int options[] = {RENDER_EFFE, RENDER_GLOW, RENDER_FIRE, RENDER_BLUR, RENDER_BASC};
-	int optionicons[] = {0xCC, 0xC3, 0x9B, 0xC4, 0xD1};
+	ui_checkbox *render_cb;
+	ui_checkbox *display_cb;
+	ui_checkbox *colour_cb;
+	int render_optioncount = 5;
+	int render_options[] = {RENDER_EFFE, RENDER_GLOW, RENDER_FIRE, RENDER_BLUR, RENDER_BASC};
+	int render_optionicons[] = {0xCC, 0xC3, 0x9B, 0xC4, 0xD1};
+	
+	int display_optioncount = 7;
+	int display_options[] = {DISPLAY_AIRC, DISPLAY_AIRP, DISPLAY_AIRV, DISPLAY_AIRH, DISPLAY_WARP, DISPLAY_PERS, DISPLAY_EFFE};
+	int display_optionicons[] = {0xCC, 0xC3, 0x9B, 0xC4, 0xD1, 0xD1, 0xD1};
+	
+	int colour_optioncount = 2;
+	int colour_options[] = {COLOUR_LIFE, COLOUR_HEAT};
+	int colour_optionicons[] = {0xCC, 0xC3};
 
 	yoffset = 16;
 	xoffset = 0;
 	
-	xsize = 35;
-	ysize = optioncount * yoffset + 6;
+	xcoffset = 35;
+	
+	xsize = xcoffset*3;
+	ysize = display_optioncount * yoffset + 6;
 	
 	ycoord -= ysize;
 	xcoord -= xsize;
 	
-	cb = calloc(optioncount, sizeof(ui_checkbox));
-	for(i = 0; i < optioncount; i++)
+	colour_cb = calloc(colour_optioncount, sizeof(ui_checkbox));
+	for(i = 0; i < colour_optioncount; i++)
 	{
-		cb[i].x = xcoord + (i * xoffset) + 5;
-		cb[i].y = ycoord + (i * yoffset) + 5;
-		cb[i].focus = 0;
-		cb[i].checked = 0;
+		colour_cb[i].x = (xcoffset * 0) + xcoord + (i * xoffset) + 5;
+		colour_cb[i].y = ycoord + (i * yoffset) + 5;
+		colour_cb[i].focus = 0;
+		colour_cb[i].checked = 0;
+		j = 0;
+		if(colour_mode == colour_options[i])
+		{
+			colour_cb[i].checked = 1;
+		}
+	}
+	
+	render_cb = calloc(render_optioncount, sizeof(ui_checkbox));
+	for(i = 0; i < render_optioncount; i++)
+	{
+		render_cb[i].x = (xcoffset * 1) + xcoord + (i * xoffset) + 5;
+		render_cb[i].y = ycoord + (i * yoffset) + 5;
+		render_cb[i].focus = 0;
+		render_cb[i].checked = 0;
 		j = 0;
 		while(render_modes[j])
 		{
-			if(render_modes[j] == options[i])
+			if(render_modes[j] == render_options[i])
 			{
-				cb[i].checked = 1;
+				render_cb[i].checked = 1;
+				break;
+			}
+			j++;
+		}
+	}
+	
+	display_cb = calloc(display_optioncount, sizeof(ui_checkbox));
+	for(i = 0; i < display_optioncount; i++)
+	{
+		display_cb[i].x = (xcoffset * 2) + xcoord + (i * xoffset) + 5;
+		display_cb[i].y = ycoord + (i * yoffset) + 5;
+		display_cb[i].focus = 0;
+		display_cb[i].checked = 0;
+		j = 0;
+		while(display_modes[j])
+		{
+			if(display_modes[j] == display_options[i])
+			{
+				display_cb[i].checked = 1;
 				break;
 			}
 			j++;
@@ -6102,11 +6148,45 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		clearrect(vid_buf, xcoord-2, ycoord-2, xsize+4, ysize+4);
 		drawrect(vid_buf, xcoord, ycoord, xsize, ysize, 192, 192, 192, 255);
 		
-		for(i = 0; i < optioncount; i++)
+		for(i = 0; i < render_optioncount; i++)
 		{
-			drawchar(vid_buf, cb[i].x + 16, cb[i].y+2, optionicons[i], 255, 255, 255, 255);
-			ui_checkbox_draw(vid_buf, &(cb[i]));
-			ui_checkbox_process(mx, my, b, bq, &(cb[i]));
+			drawchar(vid_buf, render_cb[i].x + 16, render_cb[i].y+2, render_optionicons[i], 255, 255, 255, 255);
+			ui_checkbox_draw(vid_buf, &(render_cb[i]));
+			ui_checkbox_process(mx, my, b, bq, &(render_cb[i]));
+		}
+		
+		for(i = 0; i < display_optioncount; i++)
+		{
+			drawchar(vid_buf, display_cb[i].x + 16, display_cb[i].y+2, display_optionicons[i], 255, 255, 255, 255);
+			ui_checkbox_draw(vid_buf, &(display_cb[i]));
+			ui_checkbox_process(mx, my, b, bq, &(display_cb[i]));
+			if(display_cb[i].checked && (display_options[i] & DISPLAY_AIR))	//One air type only
+			{
+				for(j = 0; j < display_optioncount; j++)
+				{
+					if((display_options[j] & DISPLAY_AIR) && j!=i)
+					{
+						display_cb[j].checked = 0;
+					}
+				}
+			}
+		}
+		
+		for(i = 0; i < colour_optioncount; i++)
+		{
+			drawchar(vid_buf, colour_cb[i].x + 16, colour_cb[i].y+2, colour_optionicons[i], 255, 255, 255, 255);
+			ui_checkbox_draw(vid_buf, &(colour_cb[i]));
+			ui_checkbox_process(mx, my, b, bq, &(colour_cb[i]));
+			if(colour_cb[i].checked)	//One colour only
+			{
+				for(j = 0; j < colour_optioncount; j++)
+				{
+					if(j!=i)
+					{
+						colour_cb[j].checked = 0;
+					}
+				}
+			}
 		}
 		
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
@@ -6119,27 +6199,60 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 			break;
 	}
 	
-	count = 1;
-	for(i = 0; i < optioncount; i++)
+	//Compile colour options
+	colour_mode = 0;
+	for(i = 0; i < colour_optioncount; i++)
 	{
-		if(cb[i].checked)
+		if(colour_cb[i].checked)
+		{
+			colour_mode |= colour_options[i];
+		}
+	}
+	free(colour_cb);
+	
+	//Compile render options
+	count = 1;
+	for(i = 0; i < render_optioncount; i++)
+	{
+		if(render_cb[i].checked)
 			count++;
 	}
 	free(render_modes);
 	render_mode = 0;
 	render_modes = calloc(count, sizeof(unsigned int));
 	count = 0;
-	for(i = 0; i < optioncount; i++)
+	for(i = 0; i < render_optioncount; i++)
 	{
-		if(cb[i].checked)
+		if(render_cb[i].checked)
 		{
-			render_modes[count] = options[i];
-			render_mode |= options[i];
+			render_modes[count] = render_options[i];
+			render_mode |= render_options[i];
 			count++;
 		}
 	}
+	free(render_cb);
 	
-	free(cb);
+	//Compile render options
+	count = 1;
+	for(i = 0; i < display_optioncount; i++)
+	{
+		if(display_cb[i].checked)
+			count++;
+	}
+	free(display_modes);
+	display_mode = 0;
+	display_modes = calloc(count, sizeof(unsigned int));
+	count = 0;
+	for(i = 0; i < display_optioncount; i++)
+	{
+		if(display_cb[i].checked)
+		{
+			display_modes[count] = display_options[i];
+			display_mode |= display_options[i];
+			count++;
+		}
+	}
+	free(display_cb);
 	
 	while (!sdl_poll())
 	{

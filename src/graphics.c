@@ -1854,7 +1854,7 @@ void render_parts(pixel *vid)
 				pixel_mode &= render_mode;
 				
 				//Alter colour based on display mode
-				if(display_mode & COLOUR_HEAT)
+				if(colour_mode & COLOUR_HEAT)
 				{
 					caddress = restrict_flt((int)( restrict_flt((float)(parts[i].temp+(-MIN_TEMP)), 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
 					firea = 255;
@@ -1864,7 +1864,7 @@ void render_parts(pixel *vid)
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
 				}
-				else if(display_mode & COLOUR_LIFE)
+				else if(colour_mode & COLOUR_LIFE)
 				{
 					gradv = 0.4f;
 					if (!(parts[i].life<5))
@@ -1875,41 +1875,9 @@ void render_parts(pixel *vid)
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
 				}
-					
-				/*switch(cmode)
-				{
-				case CM_LIFE:
-					gradv = 0.4f;
-					if (!(parts[i].life<5))
-						q = sqrt(parts[i].life);
-					else
-						q = parts[i].life;
-					colr = colg = colb = sin(gradv*q) * 100 + 128;
-					cola = 255;
-					if(pixel_mode & (FIRE_ADD | FIRE_BLEND)) pixel_mode = (pixel_mode & ~FIRE_ADD) | PMODE_BLUR | PMODE_FLAT;
-					break;
-				case CM_PERS:
-				case CM_CRACK:
-				case CM_VEL:
-				case CM_PRESS:
-				case CM_GRAD:
-					if(pixel_mode & FIRE_ADD) pixel_mode = (pixel_mode & ~(FIRE_ADD|PMODE_FLAT)) | PMODE_GLOW | PMODE_ADD;
-					if(pixel_mode & FIRE_BLEND) pixel_mode = (pixel_mode & ~FIRE_BLEND) | PMODE_BLUR;
-				case CM_FIRE:
-					if(pixel_mode & PMODE_BLOB) pixel_mode = (pixel_mode & ~PMODE_BLOB) | PMODE_FLAT;
-					if(pixel_mode & PMODE_BLUR) pixel_mode = (pixel_mode & ~PMODE_BLUR) | PMODE_FLAT;
-					break;
-				case CM_BLOB:
-					if(pixel_mode & PMODE_FLAT) pixel_mode = (pixel_mode & ~PMODE_FLAT) | PMODE_BLOB;
-					break;
-				case CM_FANCY:
-					break;
-				default:
-					break;
-				}*/
-				
+								
 				//Apply decoration colour
-				if(!(display_mode & COLOUR_HEAT|COLOUR_LIFE))
+				if(!(colour_mode & COLOUR_HEAT|COLOUR_LIFE))
 				{
 					if(!(pixel_mode & NO_DECO) && decorations_enable)
 					{
