@@ -2667,33 +2667,43 @@ void set_cmode(int cm) // sets to given view mode
 {
 	int cmode = cm;
 	colour_mode = COLOUR_DEFAULT;
+	
 	free(render_modes);
 	render_modes = calloc(1, sizeof(unsigned int));
 	render_mode = RENDER_BASC;
 	render_modes[0] = RENDER_BASC;
+	
 	free(display_modes);
 	display_mode = 0;
-	display_modes = calloc(0, sizeof(unsigned int));
+	display_modes = calloc(1, sizeof(unsigned int));
+	display_modes[0] = 0;
+	
 	itc = 51;
 	if (cmode==CM_VEL)
 	{
-		display_modes = calloc(1, sizeof(unsigned int));
+		free(display_modes);
+		display_modes = calloc(2, sizeof(unsigned int));
 		display_mode |= DISPLAY_AIRV;
 		display_modes[0] = DISPLAY_AIRV;
+		display_modes[1] = 0;
 		strcpy(itc_msg, "Velocity Display");
 	}
 	else if (cmode==CM_PRESS)
 	{
-		display_modes = calloc(1, sizeof(unsigned int));
+		free(display_modes);
+		display_modes = calloc(2, sizeof(unsigned int));
 		display_mode |= DISPLAY_AIRP;
 		display_modes[0] = DISPLAY_AIRP;
+		display_modes[1] = 0;
 		strcpy(itc_msg, "Pressure Display");
 	}
 	else if (cmode==CM_PERS)
 	{
-		display_modes = calloc(1, sizeof(unsigned int));
+		free(display_modes);
+		display_modes = calloc(2, sizeof(unsigned int));
 		display_mode |= DISPLAY_PERS;
 		display_modes[0] = DISPLAY_PERS;
+		display_modes[1] = 0;
 		memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		strcpy(itc_msg, "Persistent Display");
 	}
@@ -2702,9 +2712,8 @@ void set_cmode(int cm) // sets to given view mode
 		free(render_modes);
 		render_modes = calloc(2, sizeof(unsigned int));
 		render_mode |= RENDER_FIRE;
-		render_mode |= RENDER_GLOW;
 		render_modes[0] = RENDER_FIRE;
-		render_modes[1] = RENDER_GLOW;
+		render_modes[1] = 0;
 		memset(fire_r, 0, sizeof(fire_r));
 		memset(fire_g, 0, sizeof(fire_g));
 		memset(fire_b, 0, sizeof(fire_b));
@@ -2712,10 +2721,17 @@ void set_cmode(int cm) // sets to given view mode
 	}
 	else if (cmode==CM_BLOB)
 	{
+		free(render_modes);
+		render_modes = calloc(3, sizeof(unsigned int));
+		render_mode |= RENDER_FIRE;
+		render_mode |= RENDER_BLOB;
+		render_modes[0] = RENDER_FIRE;
+		render_modes[1] = RENDER_BLOB;
+		render_modes[2] = 0;
 		memset(fire_r, 0, sizeof(fire_r));
 		memset(fire_g, 0, sizeof(fire_g));
 		memset(fire_b, 0, sizeof(fire_b));
-		strcpy(itc_msg, "Not Implemented");//strcpy(itc_msg, "Blob Display");
+		strcpy(itc_msg, "Blob Display");
 	}
 	else if (cmode==CM_HEAT)
 	{
@@ -2725,14 +2741,19 @@ void set_cmode(int cm) // sets to given view mode
 	else if (cmode==CM_FANCY)
 	{
 		free(render_modes);
-		render_modes = calloc(2, sizeof(unsigned int));
+		render_modes = calloc(4, sizeof(unsigned int));
 		render_mode |= RENDER_FIRE;
 		render_mode |= RENDER_GLOW;
+		render_mode |= RENDER_BLUR;
 		render_modes[0] = RENDER_FIRE;
 		render_modes[1] = RENDER_GLOW;
-		display_modes = calloc(1, sizeof(unsigned int));
+		render_modes[2] = RENDER_BLUR;
+		render_modes[3] = 0;
+		free(display_modes);
+		display_modes = calloc(2, sizeof(unsigned int));
 		display_mode |= DISPLAY_WARP;
 		display_modes[0] = DISPLAY_WARP;
+		display_modes[1] = 0;
 		memset(fire_r, 0, sizeof(fire_r));
 		memset(fire_g, 0, sizeof(fire_g));
 		memset(fire_b, 0, sizeof(fire_b));
@@ -2740,31 +2761,25 @@ void set_cmode(int cm) // sets to given view mode
 	}
 	else if (cmode==CM_NOTHING)
 	{
-		render_mode = RENDER_NONE;
-		render_modes[0] = RENDER_NONE;
 		strcpy(itc_msg, "Nothing Display");
 	}
 	else if (cmode==CM_GRAD)
 	{
-		strcpy(itc_msg, "Not Implemented");//strcpy(itc_msg, "Heat Gradient Display");
+		colour_mode = COLOUR_GRAD;
+		strcpy(itc_msg, "Heat Gradient Display");
 	}
 	else if (cmode==CM_LIFE)
 	{
-		if (DEBUG_MODE) //can only get to Life view in debug mode
-		{
-			colour_mode = COLOUR_LIFE;
-			strcpy(itc_msg, "Life Display");
-		}
-		else
-		{
-			set_cmode(CM_CRACK);
-		}
+		colour_mode = COLOUR_LIFE;
+		strcpy(itc_msg, "Life Gradient Display");
 	}
 	else if (cmode==CM_CRACK)
 	{
-		display_modes = calloc(1, sizeof(unsigned int));
+		free(display_modes);
+		display_modes = calloc(2, sizeof(unsigned int));
 		display_mode |= DISPLAY_AIRC;
 		display_modes[0] = DISPLAY_AIRC;
+		display_modes[1] = 0;
 		strcpy(itc_msg, "Alternate Velocity Display");
 	}
 	else //if no special text given, it will display this.
@@ -6222,10 +6237,10 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	int display_optionicons[] = {10, 1, 0, 5, -1, 2, -1};
 	char * display_desc[] = {"Air: Cracker", "Air: Pressure", "Air: Velocity", "Air: Heat", "Warp effect", "Persistent", "Effects"};
 	
-	int colour_optioncount = 2;
-	int colour_options[] = {COLOUR_LIFE, COLOUR_HEAT};
-	int colour_optionicons[] = {-1, 5};
-	char * colour_desc[] = {"Life", "Heat"};
+	int colour_optioncount = 3;
+	int colour_options[] = {COLOUR_LIFE, COLOUR_HEAT, COLOUR_GRAD};
+	int colour_optionicons[] = {-1, 5, 8};
+	char * colour_desc[] = {"Life", "Heat", "Heat Gradient"};
 
 	yoffset = 16;
 	xoffset = 0;

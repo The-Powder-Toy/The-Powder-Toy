@@ -1877,6 +1877,16 @@ void render_parts(pixel *vid)
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
 				}
+				if (colour_mode & COLOUR_GRAD)
+				{
+					float frequency = 0.05;
+					int q = parts[i].temp-40;
+					colr = sin(frequency*q) * 16 + PIXR(ptypes[t].pcolors);
+					colg = sin(frequency*q) * 16 + PIXG(ptypes[t].pcolors);
+					colb = sin(frequency*q) * 16 + PIXB(ptypes[t].pcolors);
+					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
+					pixel_mode |= PMODE_BLEND;
+				}
 								
 				//Apply decoration colour
 				if(!colour_mode)
