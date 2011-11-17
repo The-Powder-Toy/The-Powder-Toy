@@ -6168,10 +6168,10 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	ui_checkbox *render_cb;
 	ui_checkbox *display_cb;
 	ui_checkbox *colour_cb;
-	int render_optioncount = 5;
-	int render_options[] = {RENDER_EFFE, RENDER_GLOW, RENDER_FIRE, RENDER_BLUR, RENDER_BASC};
-	int render_optionicons[] = {0xCC, 0xC3, 0x9B, 0xC4, 0xD1};
-	char * render_desc[] = {"Effects", "Glow", "Fire", "Blur", "Basic"};
+	int render_optioncount = 7;
+	int render_options[] = {RENDER_EFFE, RENDER_GLOW, RENDER_FIRE, RENDER_BLUR, RENDER_BASC, RENDER_BLOB, RENDER_NONE};
+	int render_optionicons[] = {0xCC, 0xC3, 0x9B, 0xC4, 0xD1, 0xD1, 0xD1};
+	char * render_desc[] = {"Effects", "Glow", "Fire", "Blur", "Basic", "Blob", "None"};
 	
 	int display_optioncount = 7;
 	int display_options[] = {DISPLAY_AIRC, DISPLAY_AIRP, DISPLAY_AIRV, DISPLAY_AIRH, DISPLAY_WARP, DISPLAY_PERS, DISPLAY_EFFE};
