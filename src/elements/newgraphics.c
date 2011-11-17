@@ -359,7 +359,7 @@ int graphics_LCRY(GRAPHICS_FUNC_ARGS)
 	*colr += lifemod; 
 	*colg += lifemod; 
 	*colb += lifemod; 
-	if(cpart->dcolour && cpart->dcolour&0xFF000000)
+	if(decorations_enable && cpart->dcolour && cpart->dcolour&0xFF000000)
 	{
 		lifemod *= 2.5f;
 		if(lifemod < 40)
