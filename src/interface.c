@@ -6155,6 +6155,49 @@ openfin:
 	return;
 }
 
+void drawIcon(pixel * vid_buf, int x, int y, int cmode)
+{
+	switch (cmode)
+	{
+	case CM_VEL:
+		drawtext(vid_buf, x, y, "\x98", 128, 160, 255, 255);
+		break;
+	case CM_PRESS:
+		drawtext(vid_buf, x, y, "\x99", 255, 212, 32, 255);
+		break;
+	case CM_PERS:
+		drawtext(vid_buf, x, y, "\x9A", 212, 212, 212, 255);
+		break;
+	case CM_FIRE:
+		drawtext(vid_buf, x+1, y, "\x9B", 255, 0, 0, 255);
+		drawtext(vid_buf, x+1, y, "\x9C", 255, 255, 64, 255);
+		break;
+	case CM_BLOB:
+		drawtext(vid_buf, x, y, "\xBF", 55, 255, 55, 255);
+		break;
+	case CM_HEAT:
+		drawtext(vid_buf, x+2, y, "\xBE", 255, 0, 0, 255);
+		drawtext(vid_buf, x+2, y, "\xBD", 255, 255, 255, 255);
+		break;
+	case CM_FANCY:
+		drawtext(vid_buf, x, y, "\xC4", 100, 150, 255, 255);
+		break;
+	case CM_NOTHING:
+		drawtext(vid_buf, x, y, "\xD1", 100, 150, 255, 255);//drawtext(vid_buf, x, y, "\x00", 100, 150, 255, 255);
+		break;
+	case CM_GRAD:
+		drawtext(vid_buf, x, y, "\xD3", 255, 50, 255, 255);
+		break;
+	case CM_LIFE:
+		drawtext(vid_buf, x, y, "\xD1", 255, 50, 255, 255);//drawtext(vid_buf, x, y, "\x00", 255, 50, 255, 255);
+		break;
+	case CM_CRACK:
+		drawtext(vid_buf, x, y, "\xD4", 255, 55, 55, 255);
+		drawtext(vid_buf, x, y, "\xD5", 55, 255, 55, 255);
+		break;
+	}
+}
+
 void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 {
 	pixel * o_vid_buf;
@@ -6168,19 +6211,20 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	ui_checkbox *render_cb;
 	ui_checkbox *display_cb;
 	ui_checkbox *colour_cb;
-	int render_optioncount = 7;
-	int render_options[] = {RENDER_EFFE, RENDER_GLOW, RENDER_FIRE, RENDER_BLUR, RENDER_BASC, RENDER_BLOB, RENDER_NONE};
-	int render_optionicons[] = {0xCC, 0xC3, 0x9B, 0xC4, 0xD1, 0xD1, 0xD1};
-	char * render_desc[] = {"Effects", "Glow", "Fire", "Blur", "Basic", "Blob", "None"};
+
+	int render_optioncount = 6;
+	int render_options[] = {RENDER_EFFE, RENDER_GLOW, RENDER_FIRE, RENDER_BLUR, RENDER_BLOB, RENDER_BASC};
+	int render_optionicons[] = {-1, -1, 3, 6, 4, -1};
+	char * render_desc[] = {"Effects", "Glow", "Fire", "Blur", "Blob", "Basic"};
 	
 	int display_optioncount = 7;
 	int display_options[] = {DISPLAY_AIRC, DISPLAY_AIRP, DISPLAY_AIRV, DISPLAY_AIRH, DISPLAY_WARP, DISPLAY_PERS, DISPLAY_EFFE};
-	int display_optionicons[] = {0xCC, 0xC3, 0x9B, 0xC4, 0xD1, 0xD1, 0xD1};
+	int display_optionicons[] = {10, 1, 0, 5, -1, 2, -1};
 	char * display_desc[] = {"Air: Cracker", "Air: Pressure", "Air: Velocity", "Air: Heat", "Warp effect", "Persistent", "Effects"};
 	
 	int colour_optioncount = 2;
 	int colour_options[] = {COLOUR_LIFE, COLOUR_HEAT};
-	int colour_optionicons[] = {0xCC, 0xC3};
+	int colour_optionicons[] = {-1, 5};
 	char * colour_desc[] = {"Life", "Heat"};
 
 	yoffset = 16;
@@ -6270,7 +6314,7 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		
 		for(i = 0; i < render_optioncount; i++)
 		{
-			drawchar(vid_buf, render_cb[i].x + 16, render_cb[i].y+2, render_optionicons[i], 255, 255, 255, 255);
+			drawIcon(vid_buf, render_cb[i].x + 16, render_cb[i].y+2, render_optionicons[i]);
 			ui_checkbox_draw(vid_buf, &(render_cb[i]));
 			ui_checkbox_process(mx, my, b, bq, &(render_cb[i]));
 			if(render_cb[i].focus)
@@ -6279,7 +6323,7 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		
 		for(i = 0; i < display_optioncount; i++)
 		{
-			drawchar(vid_buf, display_cb[i].x + 16, display_cb[i].y+2, display_optionicons[i], 255, 255, 255, 255);
+			drawIcon(vid_buf, display_cb[i].x + 16, display_cb[i].y+2, display_optionicons[i]);
 			ui_checkbox_draw(vid_buf, &(display_cb[i]));
 			ui_checkbox_process(mx, my, b, bq, &(display_cb[i]));
 			if(display_cb[i].checked && (display_options[i] & DISPLAY_AIR))	//One air type only
@@ -6298,7 +6342,7 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		
 		for(i = 0; i < colour_optioncount; i++)
 		{
-			drawchar(vid_buf, colour_cb[i].x + 16, colour_cb[i].y+2, colour_optionicons[i], 255, 255, 255, 255);
+			drawIcon(vid_buf, colour_cb[i].x + 16, colour_cb[i].y+2, colour_optionicons[i]);
 			ui_checkbox_draw(vid_buf, &(colour_cb[i]));
 			ui_checkbox_process(mx, my, b, bq, &(colour_cb[i]));
 			if(colour_cb[i].checked)	//One colour only
