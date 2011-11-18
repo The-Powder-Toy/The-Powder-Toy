@@ -412,6 +412,12 @@ void clearScreen(float alpha)
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
+void clearScreenNP(float alpha)
+{
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
 void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale)
 {
 

@@ -5167,6 +5167,10 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 		ui_edit_draw(vid_buf, &ed);
 		ui_edit_process(mx, my, b, &ed);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
+#ifdef OGLR
+		clearScreenNP(1.0f);
+		draw_parts_fbo();
+#endif
 		if (sdl_key==SDLK_RETURN)
 		{
 			currentcommand = malloc(sizeof(command_history));
@@ -6437,7 +6441,10 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		}
 		
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
-		
+#ifdef OGLR
+		clearScreenNP(1.0f);
+		draw_parts_fbo();
+#endif
 		if (sdl_key==SDLK_RETURN)
 			break;
 		if (sdl_key==SDLK_ESCAPE)

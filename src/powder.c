@@ -4,6 +4,9 @@
 #include <powder.h>
 #include <air.h>
 #include <misc.h>
+#ifdef LUACONSOLE
+#include <luaconsole.h>
+#endif
 
 int gravwl_timeout = 0;
 
@@ -2094,11 +2097,22 @@ void update_particles_i(pixel *vid, int start, int inc)
 			}
 
 			//call the particle update function, if there is one
+#ifdef LUACONSOLE
+			if (ptypes[t].update_func && lua_el_mode[t] != 2)
+#else
 			if (ptypes[t].update_func)
+#endif
 			{
 				if ((*(ptypes[t].update_func))(i,x,y,surround_space,nt))
 					continue;
 			}
+#ifdef LUACONSOLE
+			if(lua_el_mode[t])
+			{
+				if(luacon_part_update(t,i,x,y,surround_space,nt))
+					continue;
+			}
+#endif
 			if (legacy_enable)//if heat sim is off
 				update_legacy_all(i,x,y,surround_space,nt);
 
