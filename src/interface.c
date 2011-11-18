@@ -584,6 +584,59 @@ void ui_checkbox_process(int mx, int my, int mb, int mbq, ui_checkbox *ed)
 	}
 }
 
+void ui_radio_draw(pixel *vid_buf, ui_checkbox *ed)
+{
+	if (ed->checked)
+	{
+		int count;
+		for(count=0; count<=2; count++)
+		{
+			blendpixel(vid_buf, ed->x+3+count, ed->y+4, 255, 255, 255, 255);
+			blendpixel(vid_buf, ed->x+4, ed->y+3+count, 255, 255, 255, 255);
+		}
+	}
+	if (ed->focus)
+	{
+		int nx, ny;
+		for(nx=-3; nx<=3; nx++)
+			for(ny=-3; ny<=3; ny++)
+				if((nx*nx+ny*ny)<14 && (nx*nx+ny*ny)>7)
+					blendpixel(vid_buf, ed->x+4+nx, ed->y+4+ny, 255, 255, 255, 255);
+	}
+	else
+	{
+		int nx, ny;
+		for(nx=-3; nx<=3; nx++)
+			for(ny=-3; ny<=3; ny++)
+				if((nx*nx+ny*ny)<14 && (nx*nx+ny*ny)>7)
+					blendpixel(vid_buf, ed->x+4+nx, ed->y+4+ny, 128, 128, 128, 255);
+	}
+}
+
+void ui_radio_process(int mx, int my, int mb, int mbq, ui_checkbox *ed)
+{
+	int w = 7;
+
+	if (mb && !mbq)
+	{
+		if (mx>=ed->x && mx<=ed->x+w && my>=ed->y && my<=ed->y+w)
+		{
+			ed->checked = (ed->checked)?0:1;
+		}
+	}
+	else
+	{
+		if (mx>=ed->x && mx<=ed->x+w && my>=ed->y && my<=ed->y+w)
+		{
+			ed->focus = 1;
+		}
+		else
+		{
+			ed->focus = 0;
+		}
+	}
+}
+
 void ui_copytext_draw(pixel *vid_buf, ui_copytext *ed)
 {
 	int g = 180, i = 0;
@@ -6256,8 +6309,8 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	colour_cb = calloc(colour_optioncount, sizeof(ui_checkbox));
 	for(i = 0; i < colour_optioncount; i++)
 	{
-		colour_cb[i].x = (xcoffset * 0) + xcoord + (i * xoffset) + 5;
-		colour_cb[i].y = ycoord + (i * yoffset) + 5;
+		colour_cb[i].x = (xcoffset * 0) + xcoord + (i * xoffset) + 9;
+		colour_cb[i].y = ycoord + (i * yoffset) + 8;
 		colour_cb[i].focus = 0;
 		colour_cb[i].checked = 0;
 		j = 0;
@@ -6290,7 +6343,18 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	for(i = 0; i < display_optioncount; i++)
 	{
 		display_cb[i].x = (xcoffset * 2) + xcoord + (i * xoffset) + 5;
-		display_cb[i].y = ycoord + (i * yoffset) + 5;
+
+		if(display_options[i] & DISPLAY_AIR)
+		{
+			display_cb[i].x = (xcoffset * 2) + xcoord + (i * xoffset) + 9;
+			display_cb[i].y = ycoord + (i * yoffset) + 8;
+		}
+		else
+		{
+			display_cb[i].x = (xcoffset * 2) + xcoord + (i * xoffset) + 5;
+			display_cb[i].y = ycoord + (i * yoffset) + 5;
+		}
+		
 		display_cb[i].focus = 0;
 		display_cb[i].checked = 0;
 		j = 0;
@@ -6338,9 +6402,21 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		
 		for(i = 0; i < display_optioncount; i++)
 		{
-			drawIcon(vid_buf, display_cb[i].x + 16, display_cb[i].y+2, display_optionicons[i]);
-			ui_checkbox_draw(vid_buf, &(display_cb[i]));
-			ui_checkbox_process(mx, my, b, bq, &(display_cb[i]));
+			if(display_options[i] & DISPLAY_AIR)
+				drawIcon(vid_buf, display_cb[i].x + 12, display_cb[i].y-1, display_optionicons[i]);
+			else
+				drawIcon(vid_buf, display_cb[i].x + 16, display_cb[i].y+2, display_optionicons[i]);
+
+			if(display_options[i] & DISPLAY_AIR)
+			{
+				ui_radio_draw(vid_buf, &(display_cb[i]));
+				ui_radio_process(mx, my, b, bq, &(display_cb[i]));
+			}
+			else
+			{
+				ui_checkbox_draw(vid_buf, &(display_cb[i]));
+				ui_checkbox_process(mx, my, b, bq, &(display_cb[i]));
+			}
 			if(display_cb[i].checked && (display_options[i] & DISPLAY_AIR))	//One air type only
 			{
 				for(j = 0; j < display_optioncount; j++)
@@ -6357,9 +6433,9 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		
 		for(i = 0; i < colour_optioncount; i++)
 		{
-			drawIcon(vid_buf, colour_cb[i].x + 16, colour_cb[i].y+2, colour_optionicons[i]);
-			ui_checkbox_draw(vid_buf, &(colour_cb[i]));
-			ui_checkbox_process(mx, my, b, bq, &(colour_cb[i]));
+			drawIcon(vid_buf, colour_cb[i].x + 12, colour_cb[i].y-1, colour_optionicons[i]);
+			ui_radio_draw(vid_buf, &(colour_cb[i]));
+			ui_radio_process(mx, my, b, bq, &(colour_cb[i]));
 			if(colour_cb[i].checked)	//One colour only
 			{
 				for(j = 0; j < colour_optioncount; j++)
