@@ -1710,6 +1710,7 @@ GLfloat lineC[(((YRES*XRES)*2)*6)];
 void render_parts(pixel *vid)
 {
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
+	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
 	float gradv, flicker, fnx, fny;
 #ifdef OGLR
 	int cfireV = 0, cfireC = 0, cfire = 0;
@@ -1877,15 +1878,14 @@ void render_parts(pixel *vid)
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
 				}
-				if (colour_mode & COLOUR_GRAD)
+				else if (colour_mode & COLOUR_GRAD)
 				{
 					float frequency = 0.05;
 					int q = parts[i].temp-40;
-					colr = sin(frequency*q) * 16 + PIXR(ptypes[t].pcolors);
-					colg = sin(frequency*q) * 16 + PIXG(ptypes[t].pcolors);
-					colb = sin(frequency*q) * 16 + PIXB(ptypes[t].pcolors);
+					colr = sin(frequency*q) * 16 + colr;
+					colg = sin(frequency*q) * 16 + colg;
+					colb = sin(frequency*q) * 16 + colb;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
-					pixel_mode |= PMODE_BLEND;
 				}
 								
 				//Apply decoration colour
@@ -2365,6 +2365,42 @@ void render_parts(pixel *vid)
 						gradv = gradv/1.01f;
 					}
 #endif
+				}
+				if (pixel_mode & EFFECT_GRAVIN)
+				{
+					int nxo = 0;
+					int nyo = 0;
+					int r;
+					int fire_rv = 0;
+					float drad = 0.0f;
+					float ddist = 0.0f;
+					orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
+					for (r = 0; r < 4; r++) {
+						ddist = ((float)orbd[r])/16.0f;
+						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
+						nxo = ddist*cos(drad);
+						nyo = ddist*sin(drad);
+						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES)
+							addpixel(vid, nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
+					}
+				}
+				if (pixel_mode & EFFECT_GRAVOUT)
+				{
+					int nxo = 0;
+					int nyo = 0;
+					int r;
+					int fire_bv = 0;
+					float drad = 0.0f;
+					float ddist = 0.0f;
+					orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
+					for (r = 0; r < 4; r++) {
+						ddist = ((float)orbd[r])/16.0f;
+						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
+						nxo = ddist*cos(drad);
+						nyo = ddist*sin(drad);
+						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES)
+							addpixel(vid, nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
+					}
 				}
 				//Fire effects
 				if(firea && (pixel_mode & FIRE_BLEND))
