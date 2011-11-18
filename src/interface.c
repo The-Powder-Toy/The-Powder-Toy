@@ -6375,6 +6375,7 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		my /= sdl_scale;
 		
 		memcpy(vid_buf, o_vid_buf, ((YRES+MENUSIZE) * (XRES+BARSIZE)) * PIXELSIZE);
+		render_parts(vid_buf);
 		
 		clearrect(vid_buf, xcoord-2, ycoord-2, xsize+4, ysize+4);
 		drawrect(vid_buf, xcoord, ycoord, xsize, ysize, 192, 192, 192, 255);
