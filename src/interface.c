@@ -591,7 +591,7 @@ void ui_radio_draw(pixel *vid_buf, ui_checkbox *ed)
 		int nx, ny;
 		for(nx=-6; nx<=6; nx++)
 			for(ny=-6; ny<=6; ny++)
-				if((nx*nx+ny*ny)<16/* && (nx*nx+ny*ny)>28*/)
+				if((nx*nx+ny*ny)<10)
 					blendpixel(vid_buf, ed->x+6+nx, ed->y+6+ny, 128, 128, 128, 255);
 	}
 	if (ed->focus)
