@@ -35,5 +35,10 @@ int update_BIZR(UPDATE_FUNC_ARGS) {
 					}
 				}
 	}
+	if(((r = photons[y][x])&0xFF)==PT_PHOT || ((r = pmap[y][x])&0xFF)==PT_PHOT)
+	{
+		part_change_type(r>>8, x, y, PT_ELEC);
+		parts[r>>8].ctype = 0;
+	}
 	return 0;
 }

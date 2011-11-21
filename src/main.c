@@ -1035,21 +1035,30 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 					}
 				}
 			}
-			if(ver<67 && (ty==PT_LCRY)){
-				//New LCRY uses TMP not life
-				if(parts[i-1].life>=10)
+			if(ty==PT_LCRY){
+				if(ver<67)
 				{
-					parts[i-1].life = 10;
-					parts[i-1].tmp = 3;
+					//New LCRY uses TMP not life
+					if(parts[i-1].life>=10)
+					{
+						parts[i-1].life = 10;
+						parts[i-1].tmp2 = 10;
+						parts[i-1].tmp = 3;
+					}
+					else if(parts[i-1].life<=0)
+					{
+						parts[i-1].life = 0;
+						parts[i-1].tmp2 = 0;
+						parts[i-1].tmp = 0;
+					}
+					else if(parts[i-1].life < 10 && parts[i-1].life > 0)
+					{
+						parts[i-1].tmp = 1;
+					}
 				}
-				else if(parts[i-1].life<=0)
+				else
 				{
-					parts[i-1].life = 0;
-					parts[i-1].tmp = 0;
-				}
-				else if(parts[i-1].life < 10 && parts[i-1].life > 0)
-				{
-					parts[i-1].tmp = 1;
+					parts[i-1].tmp2 = parts[i-1].life;
 				}
 			}
 			if (!ptypes[parts[i-1].type].enabled)

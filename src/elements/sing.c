@@ -40,10 +40,17 @@ int update_SING(UPDATE_FUNC_ARGS) {
 		spawncount = spawncount*spawncount*M_PI;
 		for (j=0;j<spawncount;j++)
 		{
-			if (rand()%2) {
-				nb = create_part(-3, x, y, PT_PHOT);
-			} else {
-				nb = create_part(-3, x, y, PT_NEUT);
+			switch(rand()%3)
+			{
+				case 0:
+					nb = create_part(-3, x, y, PT_PHOT);
+					break;
+				case 1:
+					nb = create_part(-3, x, y, PT_NEUT);
+					break;
+				case 2:
+					nb = create_part(-3, x, y, PT_ELEC);
+					break;
 			}
 			if (nb!=-1) {
 				parts[nb].life = (rand()%300);

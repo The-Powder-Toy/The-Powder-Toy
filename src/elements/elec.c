@@ -5,6 +5,10 @@ int update_ELEC(UPDATE_FUNC_ARGS) {
 	float rr, rrr;
 	parts[i].pavg[0] = x;
 	parts[i].pavg[1] = y;
+	if(pmap[y][x]==PT_GLOW)
+	{
+		part_change_type(i, x, y, PT_PHOT);
+	}
 	for (rx=-2; rx<=2; rx++)
 		for (ry=-2; ry<=2; ry++)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES) {
@@ -39,7 +43,7 @@ int update_ELEC(UPDATE_FUNC_ARGS) {
 				}
 				if ((r&0xFF)==PT_LCRY)
 				{
-					parts[r>>8].life = 5+rand()%5;
+					parts[r>>8].tmp2 = 5+rand()%5;
 				}
 				if ((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW || (r&0xFF)==PT_CBNW)
 				{
@@ -65,6 +69,15 @@ int update_ELEC(UPDATE_FUNC_ARGS) {
 					part_change_type(r>>8, x+rx, y+ry, PT_H2);
 					parts[r>>8].life = 0;
 					parts[r>>8].ctype = 0;
+				}
+				if ((r&0xFF)==PT_DEUT)
+				{
+					if(parts[r>>8].life < 6000)
+						parts[r>>8].life += 1;
+					parts[r>>8].temp = 0;
+					parts[i].temp = 0;
+					kill_part(i);
+					return 1;
 				}
 				if (ptypes[r&0xFF].properties & PROP_CONDUCTS)
 				{

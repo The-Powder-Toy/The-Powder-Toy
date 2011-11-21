@@ -355,7 +355,7 @@ int graphics_GLOW(GRAPHICS_FUNC_ARGS)
 }
 int graphics_LCRY(GRAPHICS_FUNC_ARGS)
 {
-	int lifemod = ((cpart->life>10?10:cpart->life)*10);
+	int lifemod = ((cpart->tmp2>10?10:cpart->tmp2)*10);
 	*colr += lifemod; 
 	*colg += lifemod; 
 	*colb += lifemod; 

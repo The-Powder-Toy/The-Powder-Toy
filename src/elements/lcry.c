@@ -14,6 +14,7 @@ int update_LCRY(UPDATE_FUNC_ARGS)
 				parts[i].life-=2;
 				if(parts[i].life < 0)
 					parts[i].life = 0;
+				parts[i].tmp2 = parts[i].life;
 			}	
 		}
 		for (rx=-1; rx<2; rx++)
@@ -40,6 +41,7 @@ int update_LCRY(UPDATE_FUNC_ARGS)
 				parts[i].life+=2;
 				if(parts[i].life > 10)
 					parts[i].life = 10;
+				parts[i].tmp2 = parts[i].life;
 			}
 		}
 		for (rx=-1; rx<2; rx++)
@@ -55,6 +57,5 @@ int update_LCRY(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	parts[i].tmp = parts[i].tmp;
 	return 0;
 }
