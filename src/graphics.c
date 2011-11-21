@@ -1939,9 +1939,30 @@ void render_parts(pixel *vid)
 						cplayer = &fighters[(unsigned char)parts[i].tmp];
 					else
 						continue;
+
+					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
+					{
+						sprintf(buff, "%3d", parts[i].life);  //Show HP
+						drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
+					}
+
+					if (colour_mode!=COLOUR_HEAT)
+					{
+						if (cplayer->elem<PT_NUM)
+						{
+							colr = PIXR(ptypes[cplayer->elem].pcolors);
+							colg = PIXG(ptypes[cplayer->elem].pcolors);
+							colb = PIXB(ptypes[cplayer->elem].pcolors);
+						}
+						else
+						{
+							colr = 0x80;
+							colg = 0x80;
+							colb = 0xFF;
+						}
+					}
 #ifdef OGLR
 					glColor4f(((float)colr)/255.0f, ((float)colg)/255.0f, ((float)colb)/255.0f, 1.0f);
-					glEnable(GL_LINE_SMOOTH);
 					glBegin(GL_LINE_STRIP);
 					if(t==PT_FIGH)
 					{
@@ -1961,6 +1982,15 @@ void render_parts(pixel *vid)
 					}
 					glEnd();
 					glBegin(GL_LINES);
+
+					if (colour_mode!=COLOUR_HEAT)
+					{
+						if (t==PT_STKM2)
+							glColor4f(100.0f/255.0f, 100.0f/255.0f, 1.0f, 1.0f);
+						else
+							glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+					}
+
 					glVertex2f(nx, ny+3);
 					glVertex2f(cplayer->legs[0], cplayer->legs[1]);
 					
@@ -1973,27 +2003,7 @@ void render_parts(pixel *vid)
 					glVertex2f(cplayer->legs[8], cplayer->legs[9]);
 					glVertex2f(cplayer->legs[12], cplayer->legs[13]);
 					glEnd();
-					glDisable(GL_LINE_SMOOTH);
 #else
-
-					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
-					{
-						sprintf(buff, "%3d", parts[i].life);  //Show HP
-						drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
-					}
-
-					if (cplayer->elem<PT_NUM)
-					{
-						colr = PIXR(ptypes[cplayer->elem].pcolors);
-						colg = PIXG(ptypes[cplayer->elem].pcolors);
-						colb = PIXB(ptypes[cplayer->elem].pcolors);
-					}
-					else
-					{
-						colr = 0x80;
-						colg = 0x80;
-						colb = 0xFF;
-					}
 					s = XRES+BARSIZE;
 
 					if (t==PT_STKM2)
@@ -2009,7 +2019,7 @@ void render_parts(pixel *vid)
 						legb = 255;
 					}
 
-					if (colour_mode)
+					if (colour_mode==COLOUR_HEAT)
 					{
 						legr = colr;
 						legg = colg;
