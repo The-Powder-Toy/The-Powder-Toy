@@ -3111,32 +3111,23 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 			delete_part(x, y, flags);
 		}
 		else
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					if (InCurrentBrush(i ,j ,rx ,ry))
-						delete_part(x+i, y+j, flags);
-		return 1;
-	}
-
-	//why do these need a special if
-	if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV)
-	{
-		if (rx==0&&ry==0)
 		{
-			create_part(-2, x, y, c);
+			int tempy = y, i, j, jmax;
+			if (CURRENT_BRUSH == TRI_BRUSH)
+				tempy = y + ry;
+			for (i = x - rx; i <= x; i++) {
+				while (InCurrentBrush(i-x,tempy-y,rx,ry))
+					tempy = tempy - 1;
+				tempy = tempy + 1;
+				jmax = 2*y - tempy;
+				if (CURRENT_BRUSH == TRI_BRUSH)
+					jmax = y + ry;
+				for (j = tempy; j <= jmax; j++) {
+					delete_part(i, j, flags);
+					delete_part(2*x-i, j, flags);
+				}
+			}
 		}
-		else
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					if (InCurrentBrush(i ,j ,rx ,ry))
-					{
-						if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
-							continue;
-						if (!REPLACE_MODE)
-							create_part(-2, x+i, y+j, c);
-						else if ((pmap[y+j][x+i]&0xFF)==SLALT&&SLALT!=0)
-							create_part(-2, x+i, y+j, c);
-					}
 		return 1;
 	}
 
