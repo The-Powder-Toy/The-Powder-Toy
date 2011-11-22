@@ -3083,10 +3083,23 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 			delete_part(x, y, 0);
 		}
 		else
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					if (InCurrentBrush(i ,j ,rx ,ry))
-						delete_part(x+i, y+j, 0);
+		{
+			int tempy = y, i, j, jmax;
+			if (CURRENT_BRUSH == TRI_BRUSH)
+				tempy = y + ry;
+			for (i = x - rx; i <= x; i++) {
+				while (InCurrentBrush(i-x,tempy-y,rx,ry))
+					tempy = tempy - 1;
+				tempy = tempy + 1;
+				jmax = 2*y - tempy;
+				if (CURRENT_BRUSH == TRI_BRUSH)
+					jmax = y + ry;
+				for (j = tempy; j <= jmax; j++) {
+					delete_part(i, j, 0);
+					delete_part(2*x-i, j, 0);
+				}
+			}
+		}
 		return 1;
 	}
 
