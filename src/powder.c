@@ -3168,13 +3168,17 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	}
 	else
 	{
-		int tempy = y, i, j;
+		int tempy = y, i, j, jmax;
+		if (CURRENT_BRUSH == TRI_BRUSH)
+			tempy = y + ry;
         for (i = x - rx; i <= x; i++) {
-			while (InCurrentBrush(i-x,tempy-y,rx,ry)) {
+			while (InCurrentBrush(i-x,tempy-y,rx,ry))
 				tempy = tempy - 1;
-			}
             tempy = tempy + 1;
-            for (j = tempy; j <= 2 * y - tempy; j++) {
+			jmax = 2*y - tempy;
+			if (CURRENT_BRUSH == TRI_BRUSH)
+				jmax = y + ry;
+            for (j = tempy; j <= jmax; j++) {
 				if (create_part_add_props(-2, i, j, c, rx, ry)==-1)
 					f = 1;
 				if (create_part_add_props(-2, 2*x-i, j, c, rx, ry)==-1)
