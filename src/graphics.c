@@ -3631,46 +3631,39 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV)
 	{
 		if (rx<=0)
-			xor_pixel(x, y, vid);
+			for (j = y - ry; j <= y + ry; j++)
+				xor_pixel(x, j, vid);
 		else if (ry<=0)
-			xor_pixel(x, y, vid);
-		if (rx+ry<=0)
-			xor_pixel(x, y, vid);
-		else if (CURRENT_BRUSH==SQUARE_BRUSH)
+			for (i = x - rx; i <= x + rx; i++)
+				xor_pixel(i, y, vid);
+		else
 		{
-			for (j=0; j<=ry; j++)
-				for (i=0; i<=rx; i++)
-					if (i*j<=ry*rx && ((i+1)>rx || (j+1)>ry))
-					{
-						xor_pixel(x+i, y+j, vid);
-						xor_pixel(x-i, y-j, vid);
-						if (i&&j)xor_pixel(x+i, y-j, vid);
-						if (i&&j)xor_pixel(x-i, y+j, vid);
-					}
-		}
-		else if (CURRENT_BRUSH==CIRCLE_BRUSH)
-		{
-			for (j=0; j<=ry; j++)
-				for (i=0; i<=rx; i++)
-					if (pow(i,2)*pow(ry,2)+pow(j,2)*pow(rx,2)<=pow(rx,2)*pow(ry,2) &&
-					  (pow(i+1,2)*pow(ry,2)+pow(j,2)*pow(rx,2)>pow(rx,2)*pow(ry,2) ||
-					   pow(i,2)*pow(ry,2)+pow(j+1,2)*pow(rx,2)>pow(rx,2)*pow(ry,2)))
-					{
-						xor_pixel(x+i, y+j, vid);
-						if (j) xor_pixel(x+i, y-j, vid);
-						if (i) xor_pixel(x-i, y+j, vid);
-						if (i&&j) xor_pixel(x-i, y-j, vid);
-					}
-		}
-		else if (CURRENT_BRUSH==TRI_BRUSH)
- 		{
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=0; i++)
-					if ((j <= ry ) && ( j >= (((-2.0*ry)/(rx))*i)-ry ) && (j+1>ry || ( j-1 < (((-2.0*ry)/(rx))*i)-ry )) )
-						{
-							xor_pixel(x+i, y+j, vid);
-							if (i) xor_pixel(x-i, y+j, vid);
-						}
+			int tempy = y, i, j, jmax, oldy;
+			if (CURRENT_BRUSH == TRI_BRUSH)
+				tempy = y + ry;
+			for (i = x - rx; i <= x; i++) {
+				oldy = tempy;
+				while (InCurrentBrush(i-x,tempy-y,rx,ry))
+					tempy = tempy - 1;
+				tempy = tempy + 1;
+				jmax = 2*y - tempy;
+				if (oldy != tempy && CURRENT_BRUSH != SQUARE_BRUSH)
+					oldy--;
+				if (CURRENT_BRUSH == TRI_BRUSH)
+					oldy = tempy;
+				for (j = tempy; j <= oldy; j++) {
+					int i2 = 2*x-i, j2 = 2*y-j;
+					if (CURRENT_BRUSH == TRI_BRUSH)
+						j2 = y+ry;
+					xor_pixel(i, j, vid);
+					if (i2 != i)
+						xor_pixel(i2, j, vid);
+					if (j2 != j)
+						xor_pixel(i, j2, vid);
+					if (i2 != i && j2 != j)
+						xor_pixel(i2, j2, vid);
+				}
+			}
 		}
 	}
 	else //wall cursor
