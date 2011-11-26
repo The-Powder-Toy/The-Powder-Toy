@@ -2250,6 +2250,17 @@ killed:
 						continue;
 					}
 					r = pmap[fin_y][fin_x];
+					
+					if ((r & 0xFF) == PT_PIPE && !(parts[r>>8].tmp&0xFF))
+					{
+						parts[r>>8].tmp =  (parts[r>>8].tmp&~0xFF) | parts[i].type;
+						parts[r>>8].temp = parts[i].temp;
+						parts[r>>8].flags = parts[i].life;
+						parts[r>>8].pavg[0] = parts[i].tmp;
+						parts[r>>8].pavg[1] = parts[i].ctype;
+						kill_part(i);
+						continue;
+					}
 
 					// this should be replaced with a particle type attribute ("photwl" or something)
 					if ((r & 0xFF) == PT_PSCN) parts[i].ctype  = 0x00000000;

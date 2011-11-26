@@ -130,6 +130,8 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
 				{
 					r = pmap[y+ry][x+rx];
+					if(!r)
+						r = photons[y+ry][x+rx];
 					if (surround_space && !r && (parts[i].tmp&0xFF)!=0)  //creating at end
 					{
 						np = create_part(-1,x+rx,y+ry,parts[i].tmp&0xFF);
@@ -240,45 +242,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 
 int graphics_PIPE(GRAPHICS_FUNC_ARGS)
 {
-	if (cpart->ctype==2)
-	{
-		*colr = 50;
-		*colg = 1;
-		*colb = 1;
-	}
-	else if (cpart->ctype==3)
-	{
-		*colr = 1;
-		*colg = 50;
-		*colb = 1;
-	}
-	else if (cpart->ctype==4)
-	{
-		*colr = 1;
-		*colg = 1;
-		*colb = 50;
-	}
-	else if (cpart->temp<272.15&&cpart->ctype!=1)
-	{
-		if (cpart->temp>173.25&&cpart->temp<273.15)
-		{
-			*colr = 50;
-			*colg = 1;
-			*colb = 1;
-		}
-		if (cpart->temp>73.25&&cpart->temp<=173.15)
-		{
-			*colr = 1;
-			*colg = 50;
-			*colb = 1;
-		}
-		if (cpart->temp>=0&&cpart->temp<=73.15)
-		{
-			*colr = 1;
-			*colg = 1;
-			*colb = 50;
-		}
-	}
+
 	if ((cpart->tmp&0xFF)>0 && (cpart->tmp&0xFF)<PT_NUM)
 	{
 		//Create a temp. particle and do a subcall.
@@ -316,6 +280,48 @@ int graphics_PIPE(GRAPHICS_FUNC_ARGS)
 		//*colr = PIXR(ptypes[cpart->tmp&0xFF].pcolors);
 		//*colg = PIXG(ptypes[cpart->tmp&0xFF].pcolors);
 		//*colb = PIXB(ptypes[cpart->tmp&0xFF].pcolors);
+	}
+	else
+	{
+		if (cpart->ctype==2)
+		{
+			*colr = 50;
+			*colg = 1;
+			*colb = 1;
+		}
+		else if (cpart->ctype==3)
+		{
+			*colr = 1;
+			*colg = 50;
+			*colb = 1;
+		}
+		else if (cpart->ctype==4)
+		{
+			*colr = 1;
+			*colg = 1;
+			*colb = 50;
+		}
+		else if (cpart->temp<272.15&&cpart->ctype!=1)
+		{
+			if (cpart->temp>173.25&&cpart->temp<273.15)
+			{
+				*colr = 50;
+				*colg = 1;
+				*colb = 1;
+			}
+			if (cpart->temp>73.25&&cpart->temp<=173.15)
+			{
+				*colr = 1;
+				*colg = 50;
+				*colb = 1;
+			}
+			if (cpart->temp>=0&&cpart->temp<=73.15)
+			{
+				*colr = 1;
+				*colg = 1;
+				*colb = 50;
+			}
+		}
 	}
 	return 0;
 }

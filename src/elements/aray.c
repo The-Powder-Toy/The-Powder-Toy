@@ -27,6 +27,7 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 											parts[nr].life = 2;
 										} else
 											parts[nr].ctype = colored;
+										parts[nr].temp = parts[i].temp;
 									}
 								} else if (!destroy) {
 									if ((r&0xFF)==PT_BRAY&&parts[r>>8].tmp==0) {//if it hits another BRAY that isn't red
