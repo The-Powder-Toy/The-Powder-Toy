@@ -268,6 +268,9 @@ int graphics_PIPE(GRAPHICS_FUNC_ARGS)
 		}
 		else
 		{
+			*colr = PIXR(ptypes[t].pcolors);
+			*colg = PIXR(ptypes[t].pcolors);
+			*colb = PIXR(ptypes[t].pcolors);
 			if (ptypes[t].graphics_func)
 			{
 				(*(ptypes[t].graphics_func))(&tpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
