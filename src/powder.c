@@ -2972,7 +2972,7 @@ int create_part_add_props(int p, int x, int y, int tv, int rx, int ry)
 }
 
 //this creates particles from a brush, don't use if you want to create one particle
-int create_parts(int x, int y, int rx, int ry, int c, int flags)
+int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill)
 {
 	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;//n;
 
@@ -2984,6 +2984,8 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 		prop_edit_ui(vid_buf, x, y);
 		return 0;
 	}
+	if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV)
+		fill = 1;
 	for (r=UI_ACTUALSTART; r<=UI_ACTUALSTART+UI_WALLCOUNT; r++)
 	{
 		if (wall==r)
@@ -3084,19 +3086,39 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 		}
 		else
 		{
-			int tempy = y, i, j, jmax;
+			int tempy = y, i, j, jmax, oldy;
 			if (CURRENT_BRUSH == TRI_BRUSH)
 				tempy = y + ry;
 			for (i = x - rx; i <= x; i++) {
+				oldy = tempy;
 				while (InCurrentBrush(i-x,tempy-y,rx,ry))
 					tempy = tempy - 1;
 				tempy = tempy + 1;
 				jmax = 2*y - tempy;
 				if (CURRENT_BRUSH == TRI_BRUSH)
 					jmax = y + ry;
-				for (j = tempy; j <= jmax; j++) {
-					delete_part(i, j, 0);
-					delete_part(2*x-i, j, 0);
+				if (fill)
+				{
+					for (j = tempy; j <= jmax; j++) {
+						delete_part(i, j, 0);
+						delete_part(2*x-i, j, 0);
+					}
+				}
+				else
+				{
+					if ((oldy != tempy && CURRENT_BRUSH != SQUARE_BRUSH) || i == x-rx)
+						oldy--;
+					if (CURRENT_BRUSH == TRI_BRUSH)
+						oldy = tempy;
+					for (j = tempy; j <= oldy+1; j++) {
+						int i2 = 2*x-i, j2 = 2*y-j;
+						if (CURRENT_BRUSH == TRI_BRUSH)
+							j2 = y+ry;
+						delete_part(i, j, flags);
+						delete_part(i2, j, flags);
+						delete_part(i, j2, flags);
+						delete_part(i2, j2, flags);
+					}
 				}
 			}
 		}
@@ -3112,19 +3134,39 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 		}
 		else
 		{
-			int tempy = y, i, j, jmax;
+			int tempy = y, i, j, jmax, oldy;
 			if (CURRENT_BRUSH == TRI_BRUSH)
 				tempy = y + ry;
 			for (i = x - rx; i <= x; i++) {
+				oldy = tempy;
 				while (InCurrentBrush(i-x,tempy-y,rx,ry))
 					tempy = tempy - 1;
 				tempy = tempy + 1;
 				jmax = 2*y - tempy;
 				if (CURRENT_BRUSH == TRI_BRUSH)
 					jmax = y + ry;
-				for (j = tempy; j <= jmax; j++) {
-					delete_part(i, j, flags);
-					delete_part(2*x-i, j, flags);
+				if (fill)
+				{
+					for (j = tempy; j <= jmax; j++) {
+						delete_part(i, j, flags);
+						delete_part(2*x-i, j, flags);
+					}
+				}
+				else
+				{
+					if ((oldy != tempy && CURRENT_BRUSH != SQUARE_BRUSH) || i == x-rx)
+						oldy--;
+					if (CURRENT_BRUSH == TRI_BRUSH)
+						oldy = tempy;
+					for (j = tempy; j <= oldy+1; j++) {
+						int i2 = 2*x-i, j2 = 2*y-j;
+						if (CURRENT_BRUSH == TRI_BRUSH)
+							j2 = y+ry;
+						delete_part(i, j, flags);
+						delete_part(i2, j, flags);
+						delete_part(i, j2, flags);
+						delete_part(i2, j2, flags);
+					}
 				}
 			}
 		}
@@ -3172,22 +3214,46 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	}
 	else
 	{
-		int tempy = y, i, j, jmax;
+		int tempy = y, i, j, jmax, oldy;
 		if (CURRENT_BRUSH == TRI_BRUSH)
 			tempy = y + ry;
         for (i = x - rx; i <= x; i++) {
+			oldy = tempy;
 			while (InCurrentBrush(i-x,tempy-y,rx,ry))
 				tempy = tempy - 1;
             tempy = tempy + 1;
 			jmax = 2*y - tempy;
 			if (CURRENT_BRUSH == TRI_BRUSH)
 				jmax = y + ry;
-            for (j = tempy; j <= jmax; j++) {
-				if (create_part_add_props(-2, i, j, c, rx, ry)==-1)
-					f = 1;
-				if (create_part_add_props(-2, 2*x-i, j, c, rx, ry)==-1)
-					f = 1;
+			if (fill)
+			{
+				for (j = tempy; j <= jmax; j++) {
+					if (create_part_add_props(-2, i, j, c, rx, ry)==-1)
+						f = 1;
+					if (create_part_add_props(-2, 2*x-i, j, c, rx, ry)==-1)
+						f = 1;
+				}
             }
+			else
+			{
+				if ((oldy != tempy && CURRENT_BRUSH != SQUARE_BRUSH) || i == x-rx)
+					oldy--;
+				if (CURRENT_BRUSH == TRI_BRUSH)
+					oldy = tempy;
+				for (j = tempy; j <= oldy+1; j++) {
+					int i2 = 2*x-i, j2 = 2*y-j;
+					if (CURRENT_BRUSH == TRI_BRUSH)
+						j2 = y+ry;
+					if (create_part_add_props(-2, i, j, c, rx, ry)==-1)
+						f = 1;
+					if (create_part_add_props(-2, i2, j, c, rx, ry)==-1)
+						f = 1;
+					if (create_part_add_props(-2, i, j2, c, rx, ry)==-1)
+						f = 1;
+					if (create_part_add_props(-2, i2, j2, c, rx, ry)==-1)
+						f = 1;
+				}
+			}
         }
 	}
 	return !f;
@@ -3224,7 +3290,7 @@ int get_brush_flags()
 }
 void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
+	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy, fill = 1;
 	float e, de;
 	if (c==SPC_PROP)
 		return;
@@ -3258,9 +3324,10 @@ void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flag
 	for (x=x1; x<=x2; x++)
 	{
 		if (cp)
-			create_parts(y, x, rx, ry, c, flags);
+			create_parts(y, x, rx, ry, c, flags, fill);
 		else
-			create_parts(x, y, rx, ry, c, flags);
+			create_parts(x, y, rx, ry, c, flags, fill);
+		fill = 0;
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -3269,9 +3336,9 @@ void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flag
 			   && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
 				if (cp)
-					create_parts(y, x, rx, ry, c, flags);
+					create_parts(y, x, rx, ry, c, flags, fill);
 				else
-					create_parts(x, y, rx, ry, c, flags);
+					create_parts(x, y, rx, ry, c, flags, fill);
 			}
 			e -= 1.0f;
 		}
