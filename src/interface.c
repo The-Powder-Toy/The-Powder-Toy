@@ -2733,6 +2733,11 @@ void set_cmode(int cm) // sets to given view mode
 	itc = 51;
 	if (cmode==CM_VEL)
 	{
+		free(render_modes);
+		render_modes = calloc(2, sizeof(unsigned int));
+		render_mode |= RENDER_EFFE;
+		render_modes[0] = RENDER_EFFE;
+		render_modes[1] = 0;
 		free(display_modes);
 		display_modes = calloc(2, sizeof(unsigned int));
 		display_mode |= DISPLAY_AIRV;
@@ -2742,6 +2747,11 @@ void set_cmode(int cm) // sets to given view mode
 	}
 	else if (cmode==CM_PRESS)
 	{
+		free(render_modes);
+		render_modes = calloc(2, sizeof(unsigned int));
+		render_mode |= RENDER_EFFE;
+		render_modes[0] = RENDER_EFFE;
+		render_modes[1] = 0;
 		free(display_modes);
 		display_modes = calloc(2, sizeof(unsigned int));
 		display_mode |= DISPLAY_AIRP;
@@ -2751,6 +2761,11 @@ void set_cmode(int cm) // sets to given view mode
 	}
 	else if (cmode==CM_PERS)
 	{
+		free(render_modes);
+		render_modes = calloc(2, sizeof(unsigned int));
+		render_mode |= RENDER_EFFE;
+		render_modes[0] = RENDER_EFFE;
+		render_modes[1] = 0;
 		free(display_modes);
 		display_modes = calloc(2, sizeof(unsigned int));
 		display_mode |= DISPLAY_PERS;
@@ -2762,10 +2777,12 @@ void set_cmode(int cm) // sets to given view mode
 	else if (cmode==CM_FIRE)
 	{
 		free(render_modes);
-		render_modes = calloc(2, sizeof(unsigned int));
+		render_modes = calloc(3, sizeof(unsigned int));
 		render_mode |= RENDER_FIRE;
+		render_mode |= RENDER_EFFE;
 		render_modes[0] = RENDER_FIRE;
-		render_modes[1] = 0;
+		render_modes[1] = RENDER_EFFE;
+		render_modes[2] = 0;
 		memset(fire_r, 0, sizeof(fire_r));
 		memset(fire_g, 0, sizeof(fire_g));
 		memset(fire_b, 0, sizeof(fire_b));
@@ -2774,12 +2791,13 @@ void set_cmode(int cm) // sets to given view mode
 	else if (cmode==CM_BLOB)
 	{
 		free(render_modes);
-		render_modes = calloc(3, sizeof(unsigned int));
+		render_modes = calloc(4, sizeof(unsigned int));
 		render_mode |= RENDER_FIRE;
 		render_mode |= RENDER_BLOB;
 		render_modes[0] = RENDER_FIRE;
 		render_modes[1] = RENDER_BLOB;
-		render_modes[2] = 0;
+		render_modes[2] = RENDER_EFFE;
+		render_modes[3] = 0;
 		memset(fire_r, 0, sizeof(fire_r));
 		memset(fire_g, 0, sizeof(fire_g));
 		memset(fire_b, 0, sizeof(fire_b));
@@ -2827,6 +2845,11 @@ void set_cmode(int cm) // sets to given view mode
 	}
 	else if (cmode==CM_CRACK)
 	{
+		free(render_modes);
+		render_modes = calloc(2, sizeof(unsigned int));
+		render_mode |= RENDER_EFFE;
+		render_modes[0] = RENDER_EFFE;
+		render_modes[1] = 0;
 		free(display_modes);
 		display_modes = calloc(2, sizeof(unsigned int));
 		display_mode |= DISPLAY_AIRC;
@@ -6254,13 +6277,15 @@ void drawIcon(pixel * vid_buf, int x, int y, int cmode)
 		drawtext(vid_buf, x, y, "\xC4", 100, 150, 255, 255);
 		break;
 	case CM_NOTHING:
-		drawtext(vid_buf, x, y, "\xD1", 100, 150, 255, 255);//drawtext(vid_buf, x, y, "\x00", 100, 150, 255, 255);
+		//drawtext(vid_buf, x, y, "\xD1", 100, 150, 255, 255);
+		drawtext(vid_buf, x, y, "\x00", 100, 150, 255, 255);
 		break;
 	case CM_GRAD:
 		drawtext(vid_buf, x, y, "\xD3", 255, 50, 255, 255);
 		break;
 	case CM_LIFE:
-		drawtext(vid_buf, x, y, "\xD1", 255, 50, 255, 255);//drawtext(vid_buf, x, y, "\x00", 255, 50, 255, 255);
+		//drawtext(vid_buf, x, y, "\xD1", 255, 50, 255, 255);
+		drawtext(vid_buf, x, y, "\x00", 255, 50, 255, 255);
 		break;
 	case CM_CRACK:
 		drawtext(vid_buf, x, y, "\xD4", 255, 55, 55, 255);
@@ -6292,10 +6317,10 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	int display_options[] = {DISPLAY_AIRC, DISPLAY_AIRP, DISPLAY_AIRV, DISPLAY_AIRH, DISPLAY_WARP, DISPLAY_PERS, DISPLAY_EFFE};
 	int display_optionicons[] = {10, 1, 0, 5, -1, 2, -1};
 	char * display_desc[] = {"Air: Cracker", "Air: Pressure", "Air: Velocity", "Air: Heat", "Warp effect", "Persistent", "Effects"};
-	
+
 	int colour_optioncount = 3;
 	int colour_options[] = {COLOUR_LIFE, COLOUR_HEAT, COLOUR_GRAD};
-	int colour_optionicons[] = {-1, 5, 8};
+	int colour_optionicons[] = {9, 5, 8};
 	char * colour_desc[] = {"Life", "Heat", "Heat Gradient"};
 
 	yoffset = 16;
