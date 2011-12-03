@@ -3,14 +3,14 @@
 int update_BOMB(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, nb;
 	if (parts[i].tmp==1) {
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)!=PT_BOMB) {
+					if (ptypes[r&0xFF].properties & (TYPE_SOLID | TYPE_PART | TYPE_LIQUID) && (r&0xFF)!=PT_BOMB) {
 						kill_part(i);
 						return 1;
 					}
@@ -59,6 +59,26 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 						return 1;
 					}
 				}
+	}
+	return 0;
+}
+int graphics_BOMB(GRAPHICS_FUNC_ARGS)
+{
+	if (cpart->tmp==0) {
+		//Normal bomb
+		*pixel_mode |= PMODE_FLARE;
+	}
+	else if(cpart->tmp==2)
+	{
+		//Flash
+		*pixel_mode = PMODE_FLAT | FIRE_ADD;
+		*colr = *colg = *colb = *firer = *fireg = *fireb = *firea = 255;
+	}
+	else
+	{
+		//Flying spark
+		*pixel_mode = PMODE_SPARK | PMODE_ADD;
+		*cola = 4*cpart->life;
 	}
 	return 0;
 }

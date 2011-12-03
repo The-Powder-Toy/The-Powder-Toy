@@ -19,7 +19,7 @@ int update_ELEC(UPDATE_FUNC_ARGS) {
 					continue;
 				if ((r&0xFF)==PT_GLAS)
 				{
-					fire_r[y/CELL][x/CELL] += rand()%200;	//D: Doesn't work with OpenGL, also should be here
+					fire_r[y/CELL][x/CELL] += rand()%200;	//D: Doesn't work with OpenGL, also shouldn't be here
 					fire_g[y/CELL][x/CELL] += rand()%200;
 					fire_b[y/CELL][x/CELL] += rand()%200;
 					for (rrx=-2; rrx<=2; rrx++)

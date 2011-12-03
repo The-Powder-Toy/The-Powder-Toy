@@ -483,17 +483,6 @@ int graphics_FIRW(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
-int graphics_BOMB(GRAPHICS_FUNC_ARGS)
-{
-	if (cpart->tmp==0) {
-		*pixel_mode |= PMODE_FLARE;
-	}
-	else
-	{
-		*pixel_mode |= PMODE_SPARK;
-	}
-	return 0;
-}
 int graphics_GBMB(GRAPHICS_FUNC_ARGS)
 {
 	if (cpart->life <= 0) {
