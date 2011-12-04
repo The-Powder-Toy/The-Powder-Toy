@@ -2730,6 +2730,7 @@ int flood_prop(int x, int y, size_t propoffset, void * propvalue, int proptype)
 	memset(bitmap, 0, XRES*YRES);
 	r = pmap[y][x];
 	flood_prop_2(x, y, propoffset, propvalue, proptype, r&0xFF, bitmap);
+	free(bitmap);
 }
 
 int flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
