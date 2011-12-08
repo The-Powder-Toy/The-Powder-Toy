@@ -102,35 +102,18 @@ void luacon_open(){
 	
 	lua_newtable(l);
 	tptElements = lua_gettop(l);
-	/*lua_pushinteger(l, PT_NONE);
+	lua_pushinteger(l, PT_NONE);
 	lua_setfield(l, tptElements, "none");
 	lua_pushinteger(l, PT_PLEX);
 	lua_setfield(l, tptElements, "c4");
 	lua_pushinteger(l, PT_C5);
-	lua_setfield(l, tptElements, "c5");*/
+	lua_setfield(l, tptElements, "c5");
 	for(i = 1; i < PT_NUM; i++)
 	{
-		int currentElementMeta, currentElement;
 		for(j = 0; j < strlen(ptypes[i].name); j++)
 			tmpname[j] = tolower(ptypes[i].name[j]);
 		tmpname[strlen(ptypes[i].name)] = 0;
-		/*lua_pushinteger(l, i);*/
-		
-		lua_newtable(l);
-		currentElement = lua_gettop(l);
 		lua_pushinteger(l, i);
-		lua_setfield(l, currentElement, "id");
-		
-		lua_newtable(l);
-		currentElementMeta = lua_gettop(l);
-		lua_pushinteger(l, i);
-		lua_setfield(l, currentElement, "value");
-		lua_pushcfunction(l, luacon_elementwrite);
-		lua_setfield(l, currentElementMeta, "__newindex");
-		lua_pushcfunction(l, luacon_elementread);
-		lua_setfield(l, currentElementMeta, "__index");
-		lua_setmetatable(l, currentElement);
-		
 		lua_setfield(l, tptElements, tmpname);
 	}
 	lua_setfield(l, tptProperties, "el");
@@ -142,190 +125,6 @@ void luacon_open(){
 	{
 		lua_el_mode[i] = 0;
 	}
-}
-int luacon_element_getproperty(char * key, int * format)
-{
-	int offset;
-	if (strcmp(key, "color")==0){
-		offset = offsetof(part_type, pcolors);
-		*format = 0;
-	}
-	else if (strcmp(key, "advection")==0){
-		offset = offsetof(part_type, advection);
-		*format = 1;
-	}
-	else if (strcmp(key, "airdrag")==0){
-		offset = offsetof(part_type, airdrag);
-		*format = 1;
-	}
-	else if (strcmp(key, "airloss")==0){
-		offset = offsetof(part_type, airloss);
-		*format = 1;
-	}
-	else if (strcmp(key, "loss")==0){
-		offset = offsetof(part_type, loss);
-		*format = 1;
-	}
-	else if (strcmp(key, "collision")==0){
-		offset = offsetof(part_type, collision);
-		*format = 1;
-	}
-	else if (strcmp(key, "gravity")==0){
-		offset = offsetof(part_type, gravity);
-		*format = 1;
-	}
-	else if (strcmp(key, "diffusion")==0){
-		offset = offsetof(part_type, diffusion);
-		*format = 1;
-	}
-	else if (strcmp(key, "hotair")==0){
-		offset = offsetof(part_type, hotair);
-		*format = 1;
-	}
-	else if (strcmp(key, "falldown")==0){
-		offset = offsetof(part_type, falldown);
-		*format = 0;
-	}
-	else if (strcmp(key, "flammable")==0){
-		offset = offsetof(part_type, flammable);
-		*format = 0;
-	}
-	else if (strcmp(key, "explosive")==0){
-		offset = offsetof(part_type, explosive);
-		*format = 0;
-	}
-	else if (strcmp(key, "metlable")==0){
-		offset = offsetof(part_type, meltable);
-		*format = 0;
-	}
-	else if (strcmp(key, "hardness")==0){
-		offset = offsetof(part_type, hardness);
-		*format = 0;
-	}
-	else if (strcmp(key, "menu")==0){
-		offset = offsetof(part_type, menu);
-		*format = 0;
-	}
-	else if (strcmp(key, "enabled")==0){
-		offset = offsetof(part_type, enabled);
-		*format = 0;
-	}
-	else if (strcmp(key, "weight")==0){
-		offset = offsetof(part_type, weight);
-		*format = 0;
-	}
-	else if (strcmp(key, "menusection")==0){
-		offset = offsetof(part_type, menusection);
-		*format = 0;
-	}
-	else if (strcmp(key, "heat")==0){
-		offset = offsetof(part_type, heat);
-		*format = 1;
-	}
-	else if (strcmp(key, "hconduct")==0){
-		offset = offsetof(part_type, hconduct);
-		*format = 3;
-	}
-	else if (strcmp(key, "state")==0){
-		offset = offsetof(part_type, state);
-		*format = 3;
-	}
-	else if (strcmp(key, "properties")==0){
-		offset = offsetof(part_type, properties);
-		*format = 0;
-	}
-	else if (strcmp(key, "description")==0){
-		offset = offsetof(part_type, descs);
-		*format = 2;
-	}
-	else {
-		return -1;
-	}
-	return offset;
-}
-int luacon_elementread(lua_State* l){
-	int format, offset;
-	char * tempstring;
-	int tempinteger;
-	float tempfloat;
-	int i;
-	char * key = mystrdup(luaL_optstring(l, 2, ""));
-	offset = luacon_element_getproperty(key, &format);
-	
-	//Get Raw Index value for element
-	lua_pushstring(l, "value");
-	lua_rawget(l, 1);
-	
-	i = lua_tointeger (l, lua_gettop(l));
-	
-	lua_pop(l, 1);
-	
-	if(i < 0 || i >= PT_NUM || offset==-1)
-	{
-		return luaL_error(l, "Invalid property");
-	}
-	switch(format)
-	{
-	case 0:
-		tempinteger = *((int*)(((void*)&ptypes[i])+offset));
-		lua_pushnumber(l, tempinteger);
-		break;
-	case 1:
-		tempfloat = *((float*)(((void*)&ptypes[i])+offset));
-		lua_pushnumber(l, tempfloat);
-		break;
-	case 2:
-		tempstring = *((char**)(((void*)&ptypes[i])+offset));
-		lua_pushstring(l, tempstring);
-		break;
-	case 3:
-		tempinteger = *((unsigned char*)(((void*)&ptypes[i])+offset));
-		lua_pushnumber(l, tempinteger);
-		break;
-	}
-	free(key);
-	return 1;
-}
-int luacon_elementwrite(lua_State* l){
-	int format, offset;
-	char * tempstring;
-	int tempinteger;
-	float tempfloat;
-	int i;
-	char * key = mystrdup(luaL_optstring(l, 2, ""));
-	offset = luacon_element_getproperty(key, &format);
-	
-	//Get Raw Index value for element
-	lua_pushstring(l, "value");
-	lua_rawget(l, 1);
-	
-	i = lua_tointeger (l, lua_gettop(l));
-	
-	lua_pop(l, 1);
-	
-	if(i < 0 || i >= PT_NUM || offset==-1)
-	{
-		return luaL_error(l, "Invalid property");
-	}
-	switch(format)
-	{
-	case 0:
-		*((int*)(((void*)&ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
-		break;
-	case 1:
-		*((float*)(((void*)&ptypes[i])+offset)) = luaL_optnumber(l, 3, 0);
-		break;
-	case 2:
-		tempstring = mystrdup(luaL_optstring(l, 3, ""));
-		*((char**)(((void*)&ptypes[i])+offset)) = tempstring;
-		//Need some way of cleaning up previous values
-		break;
-	case 3:
-		*((unsigned char*)(((void*)&ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
-		break;
-	}
-	free(key);
-	return 0;
 }
 int luacon_keyevent(int key, int modifier, int event){
 	int i = 0, kpcontinue = 1;

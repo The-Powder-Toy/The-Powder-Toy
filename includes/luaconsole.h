@@ -29,8 +29,6 @@ int luacon_eval(char *command);
 int luacon_part_update(int t, int i, int x, int y, int surround_space, int nt);
 char *luacon_geterror();
 void luacon_close();
-int luacon_elementread(lua_State* l);
-int luacon_elementwrite(lua_State* l);
 int process_command_lua(pixel *vid_buf, char *console, char *console_error);
 
 int getPartIndex_curIdx;
