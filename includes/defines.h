@@ -14,7 +14,7 @@
 #define BUILD_NUM 116
 //VersionInfoEnd
 
-#define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter.
+#define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter
 
 #define MTOS_EXPAND(str) #str
 #define MTOS(str) MTOS_EXPAND(str)
