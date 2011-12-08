@@ -13,6 +13,7 @@ int *mouseclick_functions = NULL;
 int tptProperties; //Table for some TPT properties
 int tptPropertiesVersion;
 int tptElements; //Table for TPT element names
+int tptParts, tptPartsMeta;
 void luacon_open(){
 	int i = 0, j;
 	char tmpname[12];
@@ -101,6 +102,17 @@ void luacon_open(){
 	lua_setfield(l, tptProperties, "version");
 	
 	lua_newtable(l);
+	tptParts = lua_gettop(l);
+	lua_newtable(l);
+	tptPartsMeta = lua_gettop(l);
+	lua_pushcfunction(l, luacon_partswrite);
+	lua_setfield(l, tptPartsMeta, "__newindex");
+	lua_pushcfunction(l, luacon_partsread);
+	lua_setfield(l, tptPartsMeta, "__index");
+	lua_setmetatable(l, tptParts);
+	lua_setfield(l, tptProperties, "parts");
+	
+	lua_newtable(l);
 	tptElements = lua_gettop(l);
 	/*lua_pushinteger(l, PT_NONE);
 	lua_setfield(l, tptElements, "none");
@@ -142,6 +154,143 @@ void luacon_open(){
 	{
 		lua_el_mode[i] = 0;
 	}
+}
+int luacon_partread(lua_State* l){
+	int format, offset;
+	char * tempstring;
+	int tempinteger;
+	float tempfloat;
+	int i;
+	char * key = mystrdup(luaL_optstring(l, 2, ""));
+	offset = luacon_particle_getproperty(key, &format);
+	
+	//Get Raw Index value for particle
+	lua_pushstring(l, "id");
+	lua_rawget(l, 1);
+	
+	i = lua_tointeger (l, lua_gettop(l));
+	
+	lua_pop(l, 1);
+	
+	if(i < 0 || i >= PT_NUM || offset==-1)
+	{
+		return luaL_error(l, "Invalid property");
+	}
+	switch(format)
+	{
+	case 0:
+		tempinteger = *((int*)(((void*)&parts[i])+offset));
+		lua_pushnumber(l, tempinteger);
+		break;
+	case 1:
+		tempfloat = *((float*)(((void*)&parts[i])+offset));
+		lua_pushnumber(l, tempfloat);
+		break;
+	}
+	free(key);
+	return 1;
+}
+int luacon_partwrite(lua_State* l){
+	int format, offset;
+	char * tempstring;
+	int tempinteger;
+	float tempfloat;
+	int i;
+	char * key = mystrdup(luaL_optstring(l, 2, ""));
+	offset = luacon_particle_getproperty(key, &format);
+	
+	//Get Raw Index value for particle
+	lua_pushstring(l, "id");
+	lua_rawget(l, 1);
+	
+	i = lua_tointeger (l, lua_gettop(l));
+	
+	lua_pop(l, 1);
+	
+	if(i < 0 || i >= PT_NUM || offset==-1)
+	{
+		return luaL_error(l, "Invalid property");
+	}
+	switch(format)
+	{
+	case 0:
+		*((int*)(((void*)&parts[i])+offset)) = luaL_optinteger(l, 3, 0);
+		break;
+	case 1:
+		*((float*)(((void*)&parts[i])+offset)) = luaL_optnumber(l, 3, 0);
+		break;
+	}
+	free(key);
+	return 1;
+}
+int luacon_partsread(lua_State* l){
+	int format, offset;
+	char * tempstring;
+	int tempinteger;
+	float tempfloat;
+	int i, currentPart, currentPartMeta;
+	
+	i = luaL_optinteger(l, 2, 0);
+	
+	if(i<0 || i>=NPART)
+		return luaL_error(l, "Out of range");
+	
+	lua_newtable(l);
+	currentPart = lua_gettop(l);
+	lua_newtable(l);
+	currentPartMeta = lua_gettop(l);
+	lua_pushinteger(l, i);
+	lua_setfield(l, currentPart, "id");
+	lua_pushcfunction(l, luacon_partwrite);
+	lua_setfield(l, currentPartMeta, "__newindex");
+	lua_pushcfunction(l, luacon_partread);
+	lua_setfield(l, currentPartMeta, "__index");
+	lua_setmetatable(l, currentPart);
+	return 1;
+}
+int luacon_partswrite(lua_State* l){
+	return luaL_error(l, "Not writable");
+}
+int luacon_particle_getproperty(char * key, int * format)
+{
+	int offset;
+	if (strcmp(key, "type")==0){
+		offset = offsetof(particle, type);
+		*format = 0;
+	} else if (strcmp(key, "life")==0){
+		offset = offsetof(particle, life);
+		*format = 0;
+	} else if (strcmp(key, "ctype")==0){
+		offset = offsetof(particle, ctype);
+		*format = 0;
+	} else if (strcmp(key, "temp")==0){
+		offset = offsetof(particle, temp);
+		*format = 1;
+	} else if (strcmp(key, "tmp")==0){
+		offset = offsetof(particle, tmp);
+		*format = 0;
+	} else if (strcmp(key, "tmp2")==0){
+		offset = offsetof(particle, tmp2);
+		*format = 0;
+	} else if (strcmp(key, "vy")==0){
+		offset = offsetof(particle, vy);
+		*format = 1;
+	} else if (strcmp(key, "vx")==0){
+		offset = offsetof(particle, vx);
+		*format = 1;
+	} else if (strcmp(key, "x")==0){
+		offset = offsetof(particle, x);
+		*format = 1;
+	} else if (strcmp(key, "y")==0){
+		offset = offsetof(particle, y);
+		*format = 1;
+	} else if (strcmp(key, "dcolour")==0){
+		offset = offsetof(particle, dcolour);
+		*format = 0;
+	} else {
+		offset = -1;
+	}
+	return offset;
 }
 int luacon_element_getproperty(char * key, int * format)
 {
