@@ -157,7 +157,6 @@ tpt.partsdata = nil");
 	tptElements = lua_gettop(l);
 	for(i = 1; i < PT_NUM; i++)
 	{
-		int currentElement, currentElementMeta;
 		for(j = 0; j < strlen(ptypes[i].name); j++)
 			tmpname[j] = tolower(ptypes[i].name[j]);
 		tmpname[strlen(ptypes[i].name)] = 0;
