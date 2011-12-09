@@ -101,7 +101,7 @@ void luacon_open(){
 	lua_setfield(l, tptPropertiesVersion, "build"); 
 	lua_setfield(l, tptProperties, "version");
 	
-	lua_newtable(l);
+	/*lua_newtable(l);
 	tptParts = lua_gettop(l);
 	lua_newtable(l);
 	tptPartsMeta = lua_gettop(l);
@@ -110,6 +110,26 @@ void luacon_open(){
 	lua_pushcfunction(l, luacon_partsread);
 	lua_setfield(l, tptPartsMeta, "__index");
 	lua_setmetatable(l, tptParts);
+	lua_setfield(l, tptProperties, "parts");*/
+	lua_newtable(l);
+	tptParts = lua_gettop(l);
+	for(i = 0; i < NPART; i++)
+	{
+		int currentPart, currentPartMeta;
+		lua_newtable(l);
+		currentPart = lua_gettop(l);
+		lua_newtable(l);
+		currentPartMeta = lua_gettop(l);
+		lua_pushinteger(l, i);
+		lua_setfield(l, currentPart, "id");
+		lua_pushcfunction(l, luacon_partwrite);
+		lua_setfield(l, currentPartMeta, "__newindex");
+		lua_pushcfunction(l, luacon_partread);
+		lua_setfield(l, currentPartMeta, "__index");
+		lua_setmetatable(l, currentPart);
+		
+		lua_rawseti (l, tptParts, i);
+	}
 	lua_setfield(l, tptProperties, "parts");
 	
 	lua_newtable(l);
