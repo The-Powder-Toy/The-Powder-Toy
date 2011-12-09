@@ -172,9 +172,12 @@ int luacon_partread(lua_State* l){
 	
 	lua_pop(l, 1);
 	
-	if(i < 0 || i >= PT_NUM || offset==-1)
+	if(i < 0 || i >= NPART || offset==-1)
 	{
-		return luaL_error(l, "Invalid property");
+		if(i < 0 || i >= NPART)
+			return luaL_error(l, "Out of range");
+		else
+			return luaL_error(l, "Invalid property");
 	}
 	switch(format)
 	{
@@ -207,9 +210,12 @@ int luacon_partwrite(lua_State* l){
 	
 	lua_pop(l, 1);
 	
-	if(i < 0 || i >= PT_NUM || offset==-1)
+	if(i < 0 || i >= NPART || offset==-1)
 	{
-		return luaL_error(l, "Invalid property");
+		if(i < 0 || i >= NPART)
+			return luaL_error(l, "Out of range");
+		else
+			return luaL_error(l, "Invalid property");
 	}
 	switch(format)
 	{
@@ -626,7 +632,9 @@ int luatpt_element_func(lua_State *l)
 	{
 		int element = luaL_optint(l, 2, 0);
 		int replace = luaL_optint(l, 3, 0);
-		int function = luaL_ref(l, LUA_REGISTRYINDEX);
+		int function;
+		lua_pushvalue(l, 1);
+		function = luaL_ref(l, LUA_REGISTRYINDEX);
 		if(element > 0 && element < PT_NUM)
 		{
 			lua_el_func[element] = function;
