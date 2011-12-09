@@ -13,7 +13,7 @@ int *mouseclick_functions = NULL;
 int tptProperties; //Table for some TPT properties
 int tptPropertiesVersion;
 int tptElements; //Table for TPT element names
-int tptParts, tptPartsMeta;
+int tptParts, tptPartsMeta, tptElementTransitions;
 void luacon_open(){
 	int i = 0, j;
 	char tmpname[12];
@@ -134,19 +134,12 @@ void luacon_open(){
 	
 	lua_newtable(l);
 	tptElements = lua_gettop(l);
-	/*lua_pushinteger(l, PT_NONE);
-	lua_setfield(l, tptElements, "none");
-	lua_pushinteger(l, PT_PLEX);
-	lua_setfield(l, tptElements, "c4");
-	lua_pushinteger(l, PT_C5);
-	lua_setfield(l, tptElements, "c5");*/
 	for(i = 1; i < PT_NUM; i++)
 	{
 		int currentElementMeta, currentElement;
 		for(j = 0; j < strlen(ptypes[i].name); j++)
 			tmpname[j] = tolower(ptypes[i].name[j]);
 		tmpname[strlen(ptypes[i].name)] = 0;
-		/*lua_pushinteger(l, i);*/
 		
 		lua_newtable(l);
 		currentElement = lua_gettop(l);
@@ -166,7 +159,31 @@ void luacon_open(){
 		lua_setfield(l, tptElements, tmpname);
 	}
 	lua_setfield(l, tptProperties, "el");
-	//lua_setglobal(l, "pel");
+	
+	lua_newtable(l);
+	tptElementTransitions = lua_gettop(l);
+	for(i = 1; i < PT_NUM; i++)
+	{
+		int currentElementMeta, currentElement;
+		for(j = 0; j < strlen(ptypes[i].name); j++)
+			tmpname[j] = tolower(ptypes[i].name[j]);
+		tmpname[strlen(ptypes[i].name)] = 0;
+		
+		lua_newtable(l);
+		currentElement = lua_gettop(l);		
+		lua_newtable(l);
+		currentElementMeta = lua_gettop(l);
+		lua_pushinteger(l, i);
+		lua_setfield(l, currentElement, "value");
+		lua_pushcfunction(l, luacon_transitionwrite);
+		lua_setfield(l, currentElementMeta, "__newindex");
+		lua_pushcfunction(l, luacon_transitionread);
+		lua_setfield(l, currentElementMeta, "__index");
+		lua_setmetatable(l, currentElement);
+		
+		lua_setfield(l, tptElementTransitions, tmpname);
+	}
+	lua_setfield(l, tptProperties, "eltransition");
 	
 	lua_el_func = calloc(PT_NUM, sizeof(int));
 	lua_el_mode = calloc(PT_NUM, sizeof(int));
@@ -317,6 +334,104 @@ int luacon_particle_getproperty(char * key, int * format)
 		offset = -1;
 	}
 	return offset;
+}
+int luacon_transition_getproperty(char * key, int * format)
+{
+	int offset;
+	if (strcmp(key, "presHighValue")==0){
+		offset = offsetof(part_transition, phv);
+		*format = 1;
+	} else if (strcmp(key, "presHighType")==0){
+		offset = offsetof(part_transition, pht);
+		*format = 0;
+	} else if (strcmp(key, "presLowValue")==0){
+		offset = offsetof(part_transition, plv);
+		*format = 1;
+	} else if (strcmp(key, "presLowType")==0){
+		offset = offsetof(part_transition, plt);
+		*format = 0;
+	} else if (strcmp(key, "tempHighValue")==0){
+		offset = offsetof(part_transition, thv);
+		*format = 1;
+	} else if (strcmp(key, "tempHighType")==0){
+		offset = offsetof(part_transition, tht);
+		*format = 0;
+	} else if (strcmp(key, "tempLowValue")==0){
+		offset = offsetof(part_transition, tlv);
+		*format = 1;
+	} else if (strcmp(key, "tempLowType")==0){
+		offset = offsetof(part_transition, tlt);
+		*format = 0;
+	} else {
+		offset = -1;
+	}
+	return offset;
+}
+int luacon_transitionread(lua_State* l){
+	int format, offset;
+	int tempinteger;
+	float tempfloat;
+	int i;
+	char * key = mystrdup(luaL_optstring(l, 2, ""));
+	offset = luacon_transition_getproperty(key, &format);
+	
+	//Get Raw Index value for element
+	lua_pushstring(l, "value");
+	lua_rawget(l, 1);
+	
+	i = lua_tointeger(l, lua_gettop(l));
+	
+	lua_pop(l, 1);
+	
+	if(i < 0 || i >= PT_NUM || offset==-1)
+	{
+		return luaL_error(l, "Invalid property");
+	}
+	switch(format)
+	{
+	case 0:
+		tempinteger = *((int*)(((void*)&ptransitions[i])+offset));
+		lua_pushnumber(l, tempinteger);
+		break;
+	case 1:
+		tempfloat = *((float*)(((void*)&ptransitions[i])+offset));
+		lua_pushnumber(l, tempfloat);
+		break;
+	}
+	free(key);
+	return 1;
+}
+int luacon_transitionwrite(lua_State* l){
+	int format, offset;
+	int tempinteger;
+	float tempfloat;
+	int i;
+	char * key = mystrdup(luaL_optstring(l, 2, ""));
+	offset = luacon_transition_getproperty(key, &format);
+	
+	//Get Raw Index value for element
+	lua_pushstring(l, "value");
+	lua_rawget(l, 1);
+	
+	i = lua_tointeger (l, lua_gettop(l));
+	
+	lua_pop(l, 1);
+	
+	if(i < 0 || i >= PT_NUM || offset==-1)
+	{
+		return luaL_error(l, "Invalid property");
+	}
+	switch(format)
+	{
+	case 0:
+		*((int*)(((void*)&ptransitions[i])+offset)) = luaL_optinteger(l, 3, 0);
+		break;
+	case 1:
+		*((float*)(((void*)&ptransitions[i])+offset)) = luaL_optnumber(l, 3, 0);
+		break;
+	}
+	free(key);
+	return 0;
 }
 int luacon_element_getproperty(char * key, int * format)
 {
