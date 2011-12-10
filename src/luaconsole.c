@@ -1,6 +1,7 @@
 #include <defines.h>
 #ifdef LUACONSOLE
 #include <powder.h>
+#include "gravity.h"
 #include <console.h>
 #include <luaconsole.h>
 

@@ -19,6 +19,7 @@
 
 #include <defines.h>
 #include <air.h>
+#include "gravity.h"
 #include <powder.h>
 #define INCLUDE_SHADERS
 #include <graphics.h>

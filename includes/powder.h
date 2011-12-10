@@ -1051,15 +1051,12 @@ extern int portal_ry[8];
 
 extern int wire_placed;
 
-extern int gravwl_timeout;
-
 extern playerst player;
 extern playerst player2;
 
 extern playerst fighters[256];
 extern unsigned char fighcount;
 
-extern int gravityMode;
 extern int airMode;
 
 extern particle *parts;
@@ -1136,7 +1133,5 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 
 void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
-
-void gravity_mask();
 
 #endif

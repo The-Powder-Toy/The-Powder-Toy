@@ -15,6 +15,7 @@
 #include <interface.h>
 #include <misc.h>
 #include <console.h>
+#include "gravity.h"
 #include <images.h>
 #if defined(WIN32) && !defined(__GNUC__)
 #include <io.h>
