@@ -1070,7 +1070,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		}
 		return -1;
 	}
-	if (t==PT_BIZR||t==PT_BIZRG)
+	if (t==PT_BIZR||t==PT_BIZRG||t==PT_BIZRS)
 		parts[i].ctype = 0x47FFFF;
 	//and finally set the pmap/photon maps to the newly created particle
 	if (t==PT_PHOT||t==PT_NEUT||t==PT_ELEC)
