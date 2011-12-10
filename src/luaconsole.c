@@ -330,6 +330,9 @@ int luacon_particle_getproperty(char * key, int * format)
 	} else if (strcmp(key, "dcolour")==0){
 		offset = offsetof(particle, dcolour);
 		*format = 0;
+	} else if (strcmp(key, "dcolor")==0){
+		offset = offsetof(particle, dcolour);
+		*format = 0;
 	} else {
 		offset = -1;
 	}
@@ -437,6 +440,10 @@ int luacon_element_getproperty(char * key, int * format)
 {
 	int offset;
 	if (strcmp(key, "color")==0){
+		offset = offsetof(part_type, pcolors);
+		*format = 0;
+	}
+	if (strcmp(key, "colour")==0){
 		offset = offsetof(part_type, pcolors);
 		*format = 0;
 	}
@@ -1036,6 +1043,7 @@ int luatpt_set_property(lua_State* l)
 		h = abs(luaL_optint(l, 6, -1));
 	else
 		h = -1;
+	//TODO: Use particle_getproperty
 	if (strcmp(prop,"type")==0){
 		offset = offsetof(particle, type);
 		format = 3;
@@ -1177,6 +1185,7 @@ int luatpt_get_property(lua_State* l)
 		return luaL_error(l, "Invalid particle ID '%d'", i);
 	if (parts[i].type)
 	{
+		//TODO: Use particle_getproperty
 		if (strcmp(prop,"type")==0){
 			lua_pushinteger(l, parts[i].type);
 			return 1;
