@@ -724,35 +724,32 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 				if (pmap[y][x])
 				{
 					k = pmap[y][x]>>8;
-					memset(parts+k, 0, sizeof(particle));
-					parts[k].type = j;
-					if (j == PT_PHOT)
-						parts[k].ctype = 0x3fffffff;
-					if (j == PT_SOAP)
-						parts[k].ctype = 0;
-					parts[k].x = (float)x;
-					parts[k].y = (float)y;
-					m[(x-x0)+(y-y0)*w] = k+1;
 				}
-				else if (i < nf)
+				else if (i<nf)
 				{
-					memset(parts+fp[i], 0, sizeof(particle));
-					parts[fp[i]].type = j;
-					if (j == PT_COAL)
-						parts[fp[i]].tmp = 50;
-					if (j == PT_FUSE)
-						parts[fp[i]].tmp = 50;
-					if (j == PT_PHOT)
-						parts[fp[i]].ctype = 0x3fffffff;
-					if (j == PT_SOAP)
-						parts[fp[i]].ctype = 0;
-					parts[fp[i]].x = (float)x;
-					parts[fp[i]].y = (float)y;
-					m[(x-x0)+(y-y0)*w] = fp[i]+1;
+					k = fp[i];
 					i++;
 				}
 				else
+				{
 					m[(x-x0)+(y-y0)*w] = NPART+1;
+					continue;
+				}
+				memset(parts+k, 0, sizeof(particle));
+				parts[k].type = j;
+				if (j == PT_COAL)
+					parts[k].tmp = 50;
+				if (j == PT_FUSE)
+					parts[k].tmp = 50;
+				if (j == PT_PHOT)
+					parts[k].ctype = 0x3fffffff;
+				if (j == PT_SOAP)
+					parts[k].ctype = 0;
+				if (j==PT_BIZR || j==PT_BIZRG || j==PT_BIZRS)
+					parts[k].ctype = 0x47FFFF;
+				parts[k].x = (float)x;
+				parts[k].y = (float)y;
+				m[(x-x0)+(y-y0)*w] = k+1;
 			}
 		}
 
