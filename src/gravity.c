@@ -13,7 +13,7 @@ float gravmap[YRES/CELL][XRES/CELL];  //Maps to be used by the main thread
 float *gravpf;
 float *gravyf;
 float *gravxf;
-unsigned gravmask[YRES/CELL][XRES/CELL];
+unsigned *gravmaskf;
 
 float th_ogravmap[YRES/CELL][XRES/CELL]; // Maps to be processed by the gravity thread
 float th_gravmap[YRES/CELL][XRES/CELL];
@@ -69,6 +69,7 @@ void gravity_init()
 	gravyf = calloc(XRES*YRES, sizeof(float));
 	gravxf = calloc(XRES*YRES, sizeof(float));
 	gravpf = calloc(XRES*YRES, sizeof(float));
+	gravmaskf = malloc(XRES*YRES*sizeof(unsigned));
 }
 
 void gravity_cleanup()
@@ -110,9 +111,8 @@ void gravity_update_async()
 		}
 		pthread_mutex_unlock(&gravmutex);
 		//Apply the gravity mask
-		//TODO: doesn't work at the moment, gravx and gravy aren't used any more
-		//membwand(gravy, gravmask, sizeof(gravy), sizeof(gravmask));
-		//membwand(gravx, gravmask, sizeof(gravx), sizeof(gravmask));
+		membwand(gravyf, gravmaskf, XRES*YRES*sizeof(float), XRES*YRES*sizeof(unsigned));
+		membwand(gravxf, gravmaskf, XRES*YRES*sizeof(float), XRES*YRES*sizeof(unsigned));
 	}
 }
 
@@ -434,7 +434,8 @@ void mask_free(mask_el *c_mask_el){
 void gravity_mask()
 {
 	char checkmap[YRES/CELL][XRES/CELL];
-	int x = 0, y = 0;
+	int x = 0, y = 0, i, j;
+	unsigned maskvalue;
 	mask_el *t_mask_el = NULL;
 	mask_el *c_mask_el = NULL;
 	memset(checkmap, 0, sizeof(checkmap));
@@ -466,7 +467,7 @@ void gravity_mask()
 		}
 	}
 	c_mask_el = t_mask_el;
-	memset(gravmask, 0, sizeof(gravmask));
+	memset(gravmaskf, 0, XRES*YRES*sizeof(unsigned));
 	while(c_mask_el!=NULL)
 	{
 		char *cshape = c_mask_el->shape;
@@ -476,9 +477,16 @@ void gravity_mask()
 			{
 				if(cshape[y*(XRES/CELL)+x]){
 					if(c_mask_el->shapeout)
-						gravmask[y][x] = 0xFFFFFFFF;
+						maskvalue = 0xFFFFFFFF;
 					else
-						gravmask[y][x] = 0x00000000;
+						maskvalue = 0x00000000;
+					for (j=0; j<CELL; j++)
+					{
+						for (i=0; i<CELL; i++)
+						{
+							gravmaskf[(y*CELL+j)*XRES+x*CELL+i] = maskvalue;
+						}
+					}
 				}
 			}
 		}

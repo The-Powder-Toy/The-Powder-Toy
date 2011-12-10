@@ -1150,7 +1150,7 @@ void clear_sim(void)
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
 	memset(fire_b, 0, sizeof(fire_b));
-	memset(gravmask, 0xFF, sizeof(gravmask));
+	memset(gravmaskf, 0xFF, XRES*YRES*sizeof(unsigned));
 	memset(gravyf, 0, XRES*YRES*sizeof(float));
 	memset(gravxf, 0, XRES*YRES*sizeof(float));
 	memset(gravpf, 0, XRES*YRES*sizeof(float));
