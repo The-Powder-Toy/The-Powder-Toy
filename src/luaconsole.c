@@ -200,6 +200,7 @@ int luacon_partread(lua_State* l){
 	int i;
 	char * key = mystrdup(luaL_optstring(l, 2, ""));
 	offset = luacon_particle_getproperty(key, &format);
+	free(key);
 	
 	//Get Raw Index value for particle
 	lua_pushstring(l, "id");
@@ -227,7 +228,6 @@ int luacon_partread(lua_State* l){
 		lua_pushnumber(l, tempfloat);
 		break;
 	}
-	free(key);
 	return 1;
 }
 int luacon_partwrite(lua_State* l){
@@ -238,6 +238,7 @@ int luacon_partwrite(lua_State* l){
 	int i;
 	char * key = mystrdup(luaL_optstring(l, 2, ""));
 	offset = luacon_particle_getproperty(key, &format);
+	free(key);
 	
 	//Get Raw Index value for particle
 	lua_pushstring(l, "id");
@@ -263,7 +264,6 @@ int luacon_partwrite(lua_State* l){
 		*((float*)(((void*)&parts[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	}
-	free(key);
 	return 1;
 }
 int luacon_partsread(lua_State* l){
@@ -377,6 +377,7 @@ int luacon_transitionread(lua_State* l){
 	int i;
 	char * key = mystrdup(luaL_optstring(l, 2, ""));
 	offset = luacon_transition_getproperty(key, &format);
+	free(key);
 	
 	//Get Raw Index value for element
 	lua_pushstring(l, "value");
@@ -401,7 +402,6 @@ int luacon_transitionread(lua_State* l){
 		lua_pushnumber(l, tempfloat);
 		break;
 	}
-	free(key);
 	return 1;
 }
 int luacon_transitionwrite(lua_State* l){
@@ -411,6 +411,7 @@ int luacon_transitionwrite(lua_State* l){
 	int i;
 	char * key = mystrdup(luaL_optstring(l, 2, ""));
 	offset = luacon_transition_getproperty(key, &format);
+	free(key);
 	
 	//Get Raw Index value for element
 	lua_pushstring(l, "value");
@@ -433,17 +434,20 @@ int luacon_transitionwrite(lua_State* l){
 		*((float*)(((void*)&ptransitions[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	}
-	free(key);
 	return 0;
 }
 int luacon_element_getproperty(char * key, int * format)
 {
 	int offset;
-	if (strcmp(key, "color")==0){
+	if (strcmp(key, "name")==0){
+		offset = offsetof(part_type, name);
+		*format = 2;
+	}
+	else if (strcmp(key, "color")==0){
 		offset = offsetof(part_type, pcolors);
 		*format = 0;
 	}
-	if (strcmp(key, "colour")==0){
+	else if (strcmp(key, "colour")==0){
 		offset = offsetof(part_type, pcolors);
 		*format = 0;
 	}
@@ -548,6 +552,7 @@ int luacon_elementread(lua_State* l){
 	int i;
 	char * key = mystrdup(luaL_optstring(l, 2, ""));
 	offset = luacon_element_getproperty(key, &format);
+	free(key);
 	
 	//Get Raw Index value for element
 	lua_pushstring(l, "value");
@@ -580,7 +585,6 @@ int luacon_elementread(lua_State* l){
 		lua_pushnumber(l, tempinteger);
 		break;
 	}
-	free(key);
 	return 1;
 }
 int luacon_elementwrite(lua_State* l){
@@ -602,6 +606,7 @@ int luacon_elementwrite(lua_State* l){
 	
 	if(i < 0 || i >= PT_NUM || offset==-1)
 	{
+		free(key);
 		return luaL_error(l, "Invalid property");
 	}
 	switch(format)
@@ -614,6 +619,25 @@ int luacon_elementwrite(lua_State* l){
 		break;
 	case 2:
 		tempstring = mystrdup(luaL_optstring(l, 3, ""));
+		if(strcmp(key, "name")==0)
+		{
+			int j = 0;
+			//Convert to upper case
+			for(j = 0; j < strlen(tempstring); j++)
+				tempstring[j] = toupper(tempstring[j]);
+			if(strlen(tempstring)>4)
+			{
+				free(tempstring);
+				free(key);
+				return luaL_error(l, "Name too long");
+			}
+			if(console_parse_type(tempstring, NULL, NULL))
+			{
+				free(tempstring);
+				free(key);
+				return luaL_error(l, "Name in use");
+			}
+		}
 		*((char**)(((void*)&ptypes[i])+offset)) = tempstring;
 		//Need some way of cleaning up previous values
 		break;

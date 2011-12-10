@@ -20,14 +20,14 @@ int console_parse_type(char *txt, int *element, char *err)
 	else if (strcasecmp(txt,"NONE")==0) i = PT_NONE;
 	if (i>=0 && i<PT_NUM && ptypes[i].enabled)
 	{
-		*element = i;
+		if (element) *element = i;
 		if (err) strcpy(err,"");
 		return 1;
 	}
 	for (i=1; i<PT_NUM; i++) {
 		if (strcasecmp(txt,ptypes[i].name)==0 && ptypes[i].enabled)
 		{
-			*element = i;
+			if (element) *element = i;
 			if (err) strcpy(err,"");
 			return 1;
 		}
