@@ -491,7 +491,7 @@ int luacon_element_getproperty(char * key, int * format)
 		offset = offsetof(part_type, explosive);
 		*format = 0;
 	}
-	else if (strcmp(key, "metlable")==0){
+	else if (strcmp(key, "meltable")==0){
 		offset = offsetof(part_type, meltable);
 		*format = 0;
 	}
