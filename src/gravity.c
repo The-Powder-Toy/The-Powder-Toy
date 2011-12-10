@@ -10,9 +10,6 @@
 
 
 float gravmap[YRES/CELL][XRES/CELL];  //Maps to be used by the main thread
-float gravx[YRES/CELL][XRES/CELL];
-float gravy[YRES/CELL][XRES/CELL];
-float gravp[YRES/CELL][XRES/CELL];
 float *gravpf;
 float *gravyf;
 float *gravxf;
@@ -91,9 +88,6 @@ void gravity_update_async()
 		if(result) //Did the gravity thread finish?
 		{
 			memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
-			//memcpy(gravy, th_gravy, sizeof(gravy));	//Hmm, Gravy
-			//memcpy(gravx, th_gravx, sizeof(gravx)); //Move the processed velocity maps to be used
-			//memcpy(gravp, th_gravp, sizeof(gravp));
 
 			if (!sys_pause||framerender){ //Only update if not paused
 				//Switch the full size gravmaps, we don't really need the two above any more
@@ -116,8 +110,9 @@ void gravity_update_async()
 		}
 		pthread_mutex_unlock(&gravmutex);
 		//Apply the gravity mask
-		membwand(gravy, gravmask, sizeof(gravy), sizeof(gravmask));
-		membwand(gravx, gravmask, sizeof(gravx), sizeof(gravmask));
+		//TODO: doesn't work at the moment, gravx and gravy aren't used any more
+		//membwand(gravy, gravmask, sizeof(gravy), sizeof(gravmask));
+		//membwand(gravx, gravmask, sizeof(gravx), sizeof(gravmask));
 	}
 }
 
@@ -129,6 +124,9 @@ void* update_grav_async(void* unused)
 	memset(th_gravmap, 0, sizeof(th_gravmap));
 	memset(th_gravy, 0, sizeof(th_gravy));
 	memset(th_gravx, 0, sizeof(th_gravx));
+	memset(th_gravyf, 0, XRES*YRES*sizeof(float));
+	memset(th_gravxf, 0, XRES*YRES*sizeof(float));
+	memset(th_gravpf, 0, XRES*YRES*sizeof(float));
 #ifdef GRAVFFT
 	grav_fft_init();
 #endif
@@ -165,9 +163,9 @@ void start_grav_async()
 		pthread_create(&gravthread, NULL, update_grav_async, NULL); //Start asynchronous gravity simulation
 		ngrav_enable = 1;
 	}
-	memset(gravyf, 0, sizeof(gravyf));
-	memset(gravxf, 0, sizeof(gravxf));
-	memset(gravpf, 0, sizeof(gravpf));
+	memset(gravyf, 0, XRES*YRES*sizeof(float));
+	memset(gravxf, 0, XRES*YRES*sizeof(float));
+	memset(gravpf, 0, XRES*YRES*sizeof(float));
 }
 
 void stop_grav_async()
@@ -179,13 +177,12 @@ void stop_grav_async()
 		pthread_mutex_unlock(&gravmutex);
 		pthread_join(gravthread, NULL);
 		pthread_mutex_destroy(&gravmutex); //Destroy the mutex
-		memset(gravy, 0, sizeof(gravy)); //Clear the grav velocities
-		memset(gravx, 0, sizeof(gravx)); //Clear the grav velocities
 		ngrav_enable = 0;
 	}
-	memset(gravyf, 0, sizeof(gravyf));
-	memset(gravxf, 0, sizeof(gravxf));
-	memset(gravpf, 0, sizeof(gravpf));
+	//Clear the grav velocities
+	memset(gravyf, 0, XRES*YRES*sizeof(float));
+	memset(gravxf, 0, XRES*YRES*sizeof(float));
+	memset(gravpf, 0, XRES*YRES*sizeof(float));
 }
 
 #ifdef GRAVFFT

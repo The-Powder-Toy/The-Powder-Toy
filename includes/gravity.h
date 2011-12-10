@@ -8,9 +8,6 @@ extern int gravwl_timeout;
 extern int gravityMode;
 
 extern float gravmap[YRES/CELL][XRES/CELL]; //Maps to be used by the main thread
-extern float gravx[YRES/CELL][XRES/CELL];
-extern float gravy[YRES/CELL][XRES/CELL];
-extern float gravp[YRES/CELL][XRES/CELL];
 extern float *gravpf;
 extern float *gravxf;
 extern float *gravyf;

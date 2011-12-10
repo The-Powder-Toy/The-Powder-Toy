@@ -1151,14 +1151,14 @@ void clear_sim(void)
 	memset(fire_g, 0, sizeof(fire_g));
 	memset(fire_b, 0, sizeof(fire_b));
 	memset(gravmask, 0xFF, sizeof(gravmask));
-	memset(gravy, 0, sizeof(gravy));
-	memset(gravx, 0, sizeof(gravx));
+	memset(gravyf, 0, XRES*YRES*sizeof(float));
+	memset(gravxf, 0, XRES*YRES*sizeof(float));
+	memset(gravpf, 0, XRES*YRES*sizeof(float));
 	for(x = 0; x < XRES/CELL; x++){
 		for(y = 0; y < YRES/CELL; y++){
 			hv[y][x] = 273.15f+22.0f; //Set to room temperature
 		}
 	}
-	gravity_mask();
 }
 
 // stamps library
