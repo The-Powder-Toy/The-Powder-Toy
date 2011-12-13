@@ -545,7 +545,6 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	int nf=0, new_format = 0, ttv = 0;
 	particle *parts = partsptr;
 	int *fp = malloc(NPART*sizeof(int));
-	parts_lastActiveIndex = NPART-1;
 
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
@@ -630,6 +629,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		}
 		clear_sim();
 	}
+	parts_lastActiveIndex = NPART-1;
 	m = calloc(XRES*YRES, sizeof(int));
 
 	// make a catalog of free parts
@@ -1124,13 +1124,16 @@ corrupt:
 
 void clear_sim(void)
 {
-	int x, y;
+	int i, x, y;
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
 	memset(signs, 0, sizeof(signs));
 	memset(parts, 0, sizeof(particle)*NPART);
-	pfree = -1;
-	parts_lastActiveIndex = NPART-1;
+	for (i=0; i<NPART-1; i++)
+		parts[i].life = i+1;
+	parts[NPART-1].life = -1;
+	pfree = 0;
+	parts_lastActiveIndex = 0;
 	memset(pmap, 0, sizeof(pmap));
 	memset(pv, 0, sizeof(pv));
 	memset(vx, 0, sizeof(vx));
