@@ -147,6 +147,8 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 					//try eating particle at entrance
 					else if ((parts[i].tmp&0xFF) == 0 && (ptypes[r&0xFF].falldown!= 0 || ptypes[r&0xFF].state == ST_GAS))
 					{
+						if ((r&0xFF)==PT_SOAP)
+							detach(r>>8);
 						parts[i].tmp =  (parts[i].tmp&~0xFF) | parts[r>>8].type;
 						parts[i].temp = parts[r>>8].temp;
 						parts[i].flags = parts[r>>8].life;
