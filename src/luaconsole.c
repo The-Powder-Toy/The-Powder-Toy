@@ -101,16 +101,22 @@ void luacon_open(){
 	lua_setfield(l, tptPropertiesVersion, "build"); 
 	lua_setfield(l, tptProperties, "version");
 	
-	/*lua_newtable(l);
-	tptParts = lua_gettop(l);
-	lua_newtable(l);
-	tptPartsMeta = lua_gettop(l);
-	lua_pushcfunction(l, luacon_partswrite);
-	lua_setfield(l, tptPartsMeta, "__newindex");
-	lua_pushcfunction(l, luacon_partsread);
-	lua_setfield(l, tptPartsMeta, "__index");
-	lua_setmetatable(l, tptParts);
-	lua_setfield(l, tptProperties, "parts");*/
+#ifdef FFI
+	//LuaJIT's ffi gives us direct access to parts data, no need for nested metatables. HOWEVER, this is in no way safe, it's entirely possible for someone to try to read parts[-10]
+	lua_pushlightuserdata(l, parts);
+	lua_setfield(l, tptProperties, "partsdata");
+	
+	luaL_dostring (l, "ffi = require(\"ffi\")\n\
+ffi.cdef[[\n\
+typedef struct { int type; int life, ctype; float x, y, vx, vy; float temp; float pavg[2]; int flags; int tmp; int tmp2; unsigned int dcolour; } particle;\n\
+]]\n\
+tpt.parts = ffi.cast(\"particle *\", tpt.partsdata)\n\
+ffi = nil\n\
+tpt.partsdata = nil");
+	//Since ffi is REALLY REALLY dangrous, we'll remove it from the environment completely (TODO)
+	
+#else
+	//This uses a lot of memory (60MB+), but very good performance
 	lua_newtable(l);
 	tptParts = lua_gettop(l);
 	for(i = 0; i < NPART; i++)
@@ -131,6 +137,19 @@ void luacon_open(){
 		lua_rawseti (l, tptParts, i);
 	}
 	lua_setfield(l, tptProperties, "parts");
+	
+	//Poor performance (nested metatabled created on get/set) but good little memory usage
+	/*lua_newtable(l);
+	tptParts = lua_gettop(l);
+	lua_newtable(l);
+	tptPartsMeta = lua_gettop(l);
+	lua_pushcfunction(l, luacon_partswrite);
+	lua_setfield(l, tptPartsMeta, "__newindex");
+	lua_pushcfunction(l, luacon_partsread);
+	lua_setfield(l, tptPartsMeta, "__index");
+	lua_setmetatable(l, tptParts);
+	lua_setfield(l, tptProperties, "parts");*/
+#endif
 	
 	lua_newtable(l);
 	tptElements = lua_gettop(l);
@@ -192,6 +211,7 @@ void luacon_open(){
 		lua_el_mode[i] = 0;
 	}
 }
+#ifndef FFI
 int luacon_partread(lua_State* l){
 	int format, offset;
 	char * tempstring;
@@ -294,6 +314,7 @@ int luacon_partsread(lua_State* l){
 int luacon_partswrite(lua_State* l){
 	return luaL_error(l, "Not writable");
 }
+#endif
 int luacon_particle_getproperty(char * key, int * format)
 {
 	int offset;

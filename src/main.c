@@ -1666,9 +1666,6 @@ int main(int argc, char *argv[])
 	fmt.callback = mixaudio;
 	fmt.userdata = NULL;
 
-#ifdef LUACONSOLE
-	luacon_open();
-#endif
 #ifdef MT
 	numCores = core_count();
 #endif
@@ -1678,6 +1675,10 @@ int main(int argc, char *argv[])
 	cb_parts = calloc(sizeof(particle), NPART);
 	init_can_move();
 	clear_sim();
+	
+#ifdef LUACONSOLE
+	luacon_open();
+#endif
 	
 	colour_mode = COLOUR_DEFAULT;
 	init_display_modes();
