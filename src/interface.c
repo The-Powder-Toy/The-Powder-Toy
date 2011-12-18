@@ -6312,7 +6312,7 @@ void drawIcon(pixel * vid_buf, int x, int y, int cmode)
 void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 {
 	pixel * o_vid_buf;
-	int i, j, count;
+	int i, j, count, changed, temp;
 	int xsize;
 	int ysize;
 	int yoffset;
@@ -6424,17 +6424,46 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		clearrect(vid_buf, xcoord-2, ycoord-2, xsize+4, ysize+4);
 		drawrect(vid_buf, xcoord, ycoord, xsize, ysize, 192, 192, 192, 255);
 		
+		changed = 0;
 		for(i = 0; i < render_optioncount; i++)
 		{
+			temp = render_cb[i].checked;
 			drawIcon(vid_buf, render_cb[i].x + 16, render_cb[i].y+2, render_optionicons[i]);
 			ui_checkbox_draw(vid_buf, &(render_cb[i]));
 			ui_checkbox_process(mx, my, b, bq, &(render_cb[i]));
 			if(render_cb[i].focus)
 				drawtext(vid_buf, xcoord - textwidth(render_desc[i]) - 10, render_cb[i].y+2, render_desc[i], 255, 255, 255, 255);
+			if(temp != render_cb[i].checked)
+				changed = 1;
+		}
+		if(changed)
+		{
+			//Compile render options
+			count = 1;
+			for(i = 0; i < render_optioncount; i++)
+			{
+				if(render_cb[i].checked)
+					count++;
+			}
+			free(render_modes);
+			render_mode = 0;
+			render_modes = calloc(count, sizeof(unsigned int));
+			count = 0;
+			for(i = 0; i < render_optioncount; i++)
+			{
+				if(render_cb[i].checked)
+				{
+					render_modes[count] = render_options[i];
+					render_mode |= render_options[i];
+					count++;
+				}
+			}
 		}
 		
+		changed = 0;
 		for(i = 0; i < display_optioncount; i++)
 		{
+			temp = display_cb[i].checked;
 			drawIcon(vid_buf, display_cb[i].x + 16, display_cb[i].y+2, display_optionicons[i]);
 
 			if(display_options[i] & DISPLAY_AIR)
@@ -6459,10 +6488,37 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 			}
 			if(display_cb[i].focus)
 				drawtext(vid_buf, xcoord - textwidth(display_desc[i]) - 10, display_cb[i].y+2, display_desc[i], 255, 255, 255, 255);
+			if(temp != display_cb[i].checked)
+				changed = 1;
+		}
+		if(changed)
+		{
+			//Compile display options
+			count = 1;
+			for(i = 0; i < display_optioncount; i++)
+			{
+				if(display_cb[i].checked)
+					count++;
+			}
+			free(display_modes);
+			display_mode = 0;
+			display_modes = calloc(count, sizeof(unsigned int));
+			count = 0;
+			for(i = 0; i < display_optioncount; i++)
+			{
+				if(display_cb[i].checked)
+				{
+					display_modes[count] = display_options[i];
+					display_mode |= display_options[i];
+					count++;
+				}
+			}
 		}
 		
+		changed = 0;
 		for(i = 0; i < colour_optioncount; i++)
 		{
+			temp = colour_cb[i].checked;
 			drawIcon(vid_buf, colour_cb[i].x + 16, colour_cb[i].y+2, colour_optionicons[i]);
 			ui_radio_draw(vid_buf, &(colour_cb[i]));
 			ui_radio_process(mx, my, b, bq, &(colour_cb[i]));
@@ -6478,6 +6534,20 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 			}
 			if(colour_cb[i].focus)
 				drawtext(vid_buf, xcoord - textwidth(colour_desc[i]) - 10, colour_cb[i].y+2, colour_desc[i], 255, 255, 255, 255);
+			if(temp != colour_cb[i].checked)
+				changed = 1;
+		}
+		if(changed)
+		{
+			//Compile colour options
+			colour_mode = 0;
+			for(i = 0; i < colour_optioncount; i++)
+			{
+				if(colour_cb[i].checked)
+				{
+					colour_mode |= colour_options[i];
+				}
+			}
 		}
 		
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
@@ -6493,59 +6563,10 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 			break;
 	}
 	
-	//Compile colour options
-	colour_mode = 0;
-	for(i = 0; i < colour_optioncount; i++)
-	{
-		if(colour_cb[i].checked)
-		{
-			colour_mode |= colour_options[i];
-		}
-	}
 	free(colour_cb);
 	
-	//Compile render options
-	count = 1;
-	for(i = 0; i < render_optioncount; i++)
-	{
-		if(render_cb[i].checked)
-			count++;
-	}
-	free(render_modes);
-	render_mode = 0;
-	render_modes = calloc(count, sizeof(unsigned int));
-	count = 0;
-	for(i = 0; i < render_optioncount; i++)
-	{
-		if(render_cb[i].checked)
-		{
-			render_modes[count] = render_options[i];
-			render_mode |= render_options[i];
-			count++;
-		}
-	}
 	free(render_cb);
 	
-	//Compile render options
-	count = 1;
-	for(i = 0; i < display_optioncount; i++)
-	{
-		if(display_cb[i].checked)
-			count++;
-	}
-	free(display_modes);
-	display_mode = 0;
-	display_modes = calloc(count, sizeof(unsigned int));
-	count = 0;
-	for(i = 0; i < display_optioncount; i++)
-	{
-		if(display_cb[i].checked)
-		{
-			display_modes[count] = display_options[i];
-			display_mode |= display_options[i];
-			count++;
-		}
-	}
 	free(display_cb);
 	
 	while (!sdl_poll())
