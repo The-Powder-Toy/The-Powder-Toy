@@ -18,6 +18,7 @@ int tptParts, tptPartsMeta, tptElementTransitions;
 void luacon_open(){
 	int i = 0, j;
 	char tmpname[12];
+	int currentElementMeta, currentElement;
 	const static struct luaL_reg tptluaapi [] = {
 		{"test", &luatpt_test},
 		{"drawtext", &luatpt_drawtext},
@@ -181,7 +182,6 @@ tpt.partsdata = nil");
 	tptElementTransitions = lua_gettop(l);
 	for(i = 1; i < PT_NUM; i++)
 	{
-		int currentElementMeta, currentElement;
 		for(j = 0; j < strlen(ptypes[i].name); j++)
 			tmpname[j] = tolower(ptypes[i].name[j]);
 		tmpname[strlen(ptypes[i].name)] = 0;
