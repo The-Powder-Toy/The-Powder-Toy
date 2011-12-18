@@ -14,6 +14,7 @@ int *mouseclick_functions = NULL;
 int tptProperties; //Table for some TPT properties
 int tptPropertiesVersion;
 int tptElements; //Table for TPT element names
+int tptParts, tptPartsMeta, tptElementTransitions;
 void luacon_open(){
 	int i = 0, j;
 	char tmpname[12];
@@ -101,24 +102,105 @@ void luacon_open(){
 	lua_setfield(l, tptPropertiesVersion, "build"); 
 	lua_setfield(l, tptProperties, "version");
 	
+#ifdef FFI
+	//LuaJIT's ffi gives us direct access to parts data, no need for nested metatables. HOWEVER, this is in no way safe, it's entirely possible for someone to try to read parts[-10]
+	lua_pushlightuserdata(l, parts);
+	lua_setfield(l, tptProperties, "partsdata");
+	
+	luaL_dostring (l, "ffi = require(\"ffi\")\n\
+ffi.cdef[[\n\
+typedef struct { int type; int life, ctype; float x, y, vx, vy; float temp; float pavg[2]; int flags; int tmp; int tmp2; unsigned int dcolour; } particle;\n\
+]]\n\
+tpt.parts = ffi.cast(\"particle *\", tpt.partsdata)\n\
+ffi = nil\n\
+tpt.partsdata = nil");
+	//Since ffi is REALLY REALLY dangrous, we'll remove it from the environment completely (TODO)
+	
+#else
+	//This uses a lot of memory (60MB+), but very good performance
+	lua_newtable(l);
+	tptParts = lua_gettop(l);
+	for(i = 0; i < NPART; i++)
+	{
+		int currentPart, currentPartMeta;
+		lua_newtable(l);
+		currentPart = lua_gettop(l);
+		lua_newtable(l);
+		currentPartMeta = lua_gettop(l);
+		lua_pushinteger(l, i);
+		lua_setfield(l, currentPart, "id");
+		lua_pushcfunction(l, luacon_partwrite);
+		lua_setfield(l, currentPartMeta, "__newindex");
+		lua_pushcfunction(l, luacon_partread);
+		lua_setfield(l, currentPartMeta, "__index");
+		lua_setmetatable(l, currentPart);
+		
+		lua_rawseti (l, tptParts, i);
+	}
+	lua_setfield(l, tptProperties, "parts");
+	
+	//Poor performance (nested metatabled created on get/set) but good little memory usage
+	/*lua_newtable(l);
+	tptParts = lua_gettop(l);
+	lua_newtable(l);
+	tptPartsMeta = lua_gettop(l);
+	lua_pushcfunction(l, luacon_partswrite);
+	lua_setfield(l, tptPartsMeta, "__newindex");
+	lua_pushcfunction(l, luacon_partsread);
+	lua_setfield(l, tptPartsMeta, "__index");
+	lua_setmetatable(l, tptParts);
+	lua_setfield(l, tptProperties, "parts");*/
+#endif
+	
 	lua_newtable(l);
 	tptElements = lua_gettop(l);
-	lua_pushinteger(l, PT_NONE);
-	lua_setfield(l, tptElements, "none");
-	lua_pushinteger(l, PT_PLEX);
-	lua_setfield(l, tptElements, "c4");
-	lua_pushinteger(l, PT_C5);
-	lua_setfield(l, tptElements, "c5");
 	for(i = 1; i < PT_NUM; i++)
 	{
 		for(j = 0; j < strlen(ptypes[i].name); j++)
 			tmpname[j] = tolower(ptypes[i].name[j]);
 		tmpname[strlen(ptypes[i].name)] = 0;
+		
+		lua_newtable(l);
+		currentElement = lua_gettop(l);
 		lua_pushinteger(l, i);
+		lua_setfield(l, currentElement, "id");
+		
+		lua_newtable(l);
+		currentElementMeta = lua_gettop(l);
+		lua_pushcfunction(l, luacon_elementwrite);
+		lua_setfield(l, currentElementMeta, "__newindex");
+		lua_pushcfunction(l, luacon_elementread);
+		lua_setfield(l, currentElementMeta, "__index");
+		lua_setmetatable(l, currentElement);
+		
 		lua_setfield(l, tptElements, tmpname);
 	}
 	lua_setfield(l, tptProperties, "el");
-	//lua_setglobal(l, "pel");
+	
+	lua_newtable(l);
+	tptElementTransitions = lua_gettop(l);
+	for(i = 1; i < PT_NUM; i++)
+	{
+		int currentElementMeta, currentElement;
+		for(j = 0; j < strlen(ptypes[i].name); j++)
+			tmpname[j] = tolower(ptypes[i].name[j]);
+		tmpname[strlen(ptypes[i].name)] = 0;
+		
+		lua_newtable(l);
+		currentElement = lua_gettop(l);		
+		lua_newtable(l);
+		currentElementMeta = lua_gettop(l);
+		lua_pushinteger(l, i);
+		lua_setfield(l, currentElement, "value");
+		lua_pushcfunction(l, luacon_transitionwrite);
+		lua_setfield(l, currentElementMeta, "__newindex");
+		lua_pushcfunction(l, luacon_transitionread);
+		lua_setfield(l, currentElementMeta, "__index");
+		lua_setmetatable(l, currentElement);
+		
+		lua_setfield(l, tptElementTransitions, tmpname);
+	}
+	lua_setfield(l, tptProperties, "eltransition");
 	
 	lua_el_func = calloc(PT_NUM, sizeof(int));
 	lua_el_mode = calloc(PT_NUM, sizeof(int));
@@ -126,6 +208,464 @@ void luacon_open(){
 	{
 		lua_el_mode[i] = 0;
 	}
+}
+#ifndef FFI
+int luacon_partread(lua_State* l){
+	int format, offset;
+	char * tempstring;
+	int tempinteger;
+	float tempfloat;
+	int i;
+	char * key = mystrdup(luaL_optstring(l, 2, ""));
+	offset = luacon_particle_getproperty(key, &format);
+	free(key);
+	
+	//Get Raw Index value for particle
+	lua_pushstring(l, "id");
+	lua_rawget(l, 1);
+	
+	i = lua_tointeger (l, lua_gettop(l));
+	
+	lua_pop(l, 1);
+	
+	if(i < 0 || i >= NPART || offset==-1)
+	{
+		if(i < 0 || i >= NPART)
+			return luaL_error(l, "Out of range");
+		else
+			return luaL_error(l, "Invalid property");
+	}
+	switch(format)
+	{
+	case 0:
+		tempinteger = *((int*)(((void*)&parts[i])+offset));
+		lua_pushnumber(l, tempinteger);
+		break;
+	case 1:
+		tempfloat = *((float*)(((void*)&parts[i])+offset));
+		lua_pushnumber(l, tempfloat);
+		break;
+	}
+	return 1;
+}
+int luacon_partwrite(lua_State* l){
+	int format, offset;
+	char * tempstring;
+	int tempinteger;
+	float tempfloat;
+	int i;
+	char * key = mystrdup(luaL_optstring(l, 2, ""));
+	offset = luacon_particle_getproperty(key, &format);
+	free(key);
+	
+	//Get Raw Index value for particle
+	lua_pushstring(l, "id");
+	lua_rawget(l, 1);
+	
+	i = lua_tointeger (l, lua_gettop(l));
+	
+	lua_pop(l, 1);
+	
+	if(i < 0 || i >= NPART || offset==-1)
+	{
+		if(i < 0 || i >= NPART)
+			return luaL_error(l, "Out of range");
+		else
+			return luaL_error(l, "Invalid property");
+	}
+	switch(format)
+	{
+	case 0:
+		*((int*)(((void*)&parts[i])+offset)) = luaL_optinteger(l, 3, 0);
+		break;
+	case 1:
+		*((float*)(((void*)&parts[i])+offset)) = luaL_optnumber(l, 3, 0);
+		break;
+	}
+	return 1;
+}
+int luacon_partsread(lua_State* l){
+	int format, offset;
+	char * tempstring;
+	int tempinteger;
+	float tempfloat;
+	int i, currentPart, currentPartMeta;
+	
+	i = luaL_optinteger(l, 2, 0);
+	
+	if(i<0 || i>=NPART)
+		return luaL_error(l, "Out of range");
+	
+	lua_newtable(l);
+	currentPart = lua_gettop(l);
+	lua_newtable(l);
+	currentPartMeta = lua_gettop(l);
+	lua_pushinteger(l, i);
+	lua_setfield(l, currentPart, "id");
+	lua_pushcfunction(l, luacon_partwrite);
+	lua_setfield(l, currentPartMeta, "__newindex");
+	lua_pushcfunction(l, luacon_partread);
+	lua_setfield(l, currentPartMeta, "__index");
+	lua_setmetatable(l, currentPart);
+	return 1;
+}
+int luacon_partswrite(lua_State* l){
+	return luaL_error(l, "Not writable");
+}
+#endif
+int luacon_particle_getproperty(char * key, int * format)
+{
+	int offset;
+	if (strcmp(key, "type")==0){
+		offset = offsetof(particle, type);
+		*format = 0;
+	} else if (strcmp(key, "life")==0){
+		offset = offsetof(particle, life);
+		*format = 0;
+	} else if (strcmp(key, "ctype")==0){
+		offset = offsetof(particle, ctype);
+		*format = 0;
+	} else if (strcmp(key, "temp")==0){
+		offset = offsetof(particle, temp);
+		*format = 1;
+	} else if (strcmp(key, "tmp")==0){
+		offset = offsetof(particle, tmp);
+		*format = 0;
+	} else if (strcmp(key, "tmp2")==0){
+		offset = offsetof(particle, tmp2);
+		*format = 0;
+	} else if (strcmp(key, "vy")==0){
+		offset = offsetof(particle, vy);
+		*format = 1;
+	} else if (strcmp(key, "vx")==0){
+		offset = offsetof(particle, vx);
+		*format = 1;
+	} else if (strcmp(key, "x")==0){
+		offset = offsetof(particle, x);
+		*format = 1;
+	} else if (strcmp(key, "y")==0){
+		offset = offsetof(particle, y);
+		*format = 1;
+	} else if (strcmp(key, "dcolour")==0){
+		offset = offsetof(particle, dcolour);
+		*format = 0;
+	} else if (strcmp(key, "dcolor")==0){
+		offset = offsetof(particle, dcolour);
+		*format = 0;
+	} else {
+		offset = -1;
+	}
+	return offset;
+}
+int luacon_transition_getproperty(char * key, int * format)
+{
+	int offset;
+	if (strcmp(key, "presHighValue")==0){
+		offset = offsetof(part_transition, phv);
+		*format = 1;
+	} else if (strcmp(key, "presHighType")==0){
+		offset = offsetof(part_transition, pht);
+		*format = 0;
+	} else if (strcmp(key, "presLowValue")==0){
+		offset = offsetof(part_transition, plv);
+		*format = 1;
+	} else if (strcmp(key, "presLowType")==0){
+		offset = offsetof(part_transition, plt);
+		*format = 0;
+	} else if (strcmp(key, "tempHighValue")==0){
+		offset = offsetof(part_transition, thv);
+		*format = 1;
+	} else if (strcmp(key, "tempHighType")==0){
+		offset = offsetof(part_transition, tht);
+		*format = 0;
+	} else if (strcmp(key, "tempLowValue")==0){
+		offset = offsetof(part_transition, tlv);
+		*format = 1;
+	} else if (strcmp(key, "tempLowType")==0){
+		offset = offsetof(part_transition, tlt);
+		*format = 0;
+	} else {
+		offset = -1;
+	}
+	return offset;
+}
+int luacon_transitionread(lua_State* l){
+	int format, offset;
+	int tempinteger;
+	float tempfloat;
+	int i;
+	char * key = mystrdup(luaL_optstring(l, 2, ""));
+	offset = luacon_transition_getproperty(key, &format);
+	free(key);
+	
+	//Get Raw Index value for element
+	lua_pushstring(l, "value");
+	lua_rawget(l, 1);
+	
+	i = lua_tointeger(l, lua_gettop(l));
+	
+	lua_pop(l, 1);
+	
+	if(i < 0 || i >= PT_NUM || offset==-1)
+	{
+		return luaL_error(l, "Invalid property");
+	}
+	switch(format)
+	{
+	case 0:
+		tempinteger = *((int*)(((void*)&ptransitions[i])+offset));
+		lua_pushnumber(l, tempinteger);
+		break;
+	case 1:
+		tempfloat = *((float*)(((void*)&ptransitions[i])+offset));
+		lua_pushnumber(l, tempfloat);
+		break;
+	}
+	return 1;
+}
+int luacon_transitionwrite(lua_State* l){
+	int format, offset;
+	int tempinteger;
+	float tempfloat;
+	int i;
+	char * key = mystrdup(luaL_optstring(l, 2, ""));
+	offset = luacon_transition_getproperty(key, &format);
+	free(key);
+	
+	//Get Raw Index value for element
+	lua_pushstring(l, "value");
+	lua_rawget(l, 1);
+	
+	i = lua_tointeger (l, lua_gettop(l));
+	
+	lua_pop(l, 1);
+	
+	if(i < 0 || i >= PT_NUM || offset==-1)
+	{
+		return luaL_error(l, "Invalid property");
+	}
+	switch(format)
+	{
+	case 0:
+		*((int*)(((void*)&ptransitions[i])+offset)) = luaL_optinteger(l, 3, 0);
+		break;
+	case 1:
+		*((float*)(((void*)&ptransitions[i])+offset)) = luaL_optnumber(l, 3, 0);
+		break;
+	}
+	return 0;
+}
+int luacon_element_getproperty(char * key, int * format)
+{
+	int offset;
+	if (strcmp(key, "name")==0){
+		offset = offsetof(part_type, name);
+		*format = 2;
+	}
+	else if (strcmp(key, "color")==0){
+		offset = offsetof(part_type, pcolors);
+		*format = 0;
+	}
+	else if (strcmp(key, "colour")==0){
+		offset = offsetof(part_type, pcolors);
+		*format = 0;
+	}
+	else if (strcmp(key, "advection")==0){
+		offset = offsetof(part_type, advection);
+		*format = 1;
+	}
+	else if (strcmp(key, "airdrag")==0){
+		offset = offsetof(part_type, airdrag);
+		*format = 1;
+	}
+	else if (strcmp(key, "airloss")==0){
+		offset = offsetof(part_type, airloss);
+		*format = 1;
+	}
+	else if (strcmp(key, "loss")==0){
+		offset = offsetof(part_type, loss);
+		*format = 1;
+	}
+	else if (strcmp(key, "collision")==0){
+		offset = offsetof(part_type, collision);
+		*format = 1;
+	}
+	else if (strcmp(key, "gravity")==0){
+		offset = offsetof(part_type, gravity);
+		*format = 1;
+	}
+	else if (strcmp(key, "diffusion")==0){
+		offset = offsetof(part_type, diffusion);
+		*format = 1;
+	}
+	else if (strcmp(key, "hotair")==0){
+		offset = offsetof(part_type, hotair);
+		*format = 1;
+	}
+	else if (strcmp(key, "falldown")==0){
+		offset = offsetof(part_type, falldown);
+		*format = 0;
+	}
+	else if (strcmp(key, "flammable")==0){
+		offset = offsetof(part_type, flammable);
+		*format = 0;
+	}
+	else if (strcmp(key, "explosive")==0){
+		offset = offsetof(part_type, explosive);
+		*format = 0;
+	}
+	else if (strcmp(key, "meltable")==0){
+		offset = offsetof(part_type, meltable);
+		*format = 0;
+	}
+	else if (strcmp(key, "hardness")==0){
+		offset = offsetof(part_type, hardness);
+		*format = 0;
+	}
+	else if (strcmp(key, "menu")==0){
+		offset = offsetof(part_type, menu);
+		*format = 0;
+	}
+	else if (strcmp(key, "enabled")==0){
+		offset = offsetof(part_type, enabled);
+		*format = 0;
+	}
+	else if (strcmp(key, "weight")==0){
+		offset = offsetof(part_type, weight);
+		*format = 0;
+	}
+	else if (strcmp(key, "menusection")==0){
+		offset = offsetof(part_type, menusection);
+		*format = 0;
+	}
+	else if (strcmp(key, "heat")==0){
+		offset = offsetof(part_type, heat);
+		*format = 1;
+	}
+	else if (strcmp(key, "hconduct")==0){
+		offset = offsetof(part_type, hconduct);
+		*format = 3;
+	}
+	else if (strcmp(key, "state")==0){
+		offset = offsetof(part_type, state);
+		*format = 3;
+	}
+	else if (strcmp(key, "properties")==0){
+		offset = offsetof(part_type, properties);
+		*format = 0;
+	}
+	else if (strcmp(key, "description")==0){
+		offset = offsetof(part_type, descs);
+		*format = 2;
+	}
+	else {
+		return -1;
+	}
+	return offset;
+}
+int luacon_elementread(lua_State* l){
+	int format, offset;
+	char * tempstring;
+	int tempinteger;
+	float tempfloat;
+	int i;
+	char * key = mystrdup(luaL_optstring(l, 2, ""));
+	offset = luacon_element_getproperty(key, &format);
+	free(key);
+	
+	//Get Raw Index value for element
+	lua_pushstring(l, "id");
+	lua_rawget(l, 1);
+	
+	i = lua_tointeger (l, lua_gettop(l));
+	
+	lua_pop(l, 1);
+	
+	if(i < 0 || i >= PT_NUM || offset==-1)
+	{
+		return luaL_error(l, "Invalid property");
+	}
+	switch(format)
+	{
+	case 0:
+		tempinteger = *((int*)(((void*)&ptypes[i])+offset));
+		lua_pushnumber(l, tempinteger);
+		break;
+	case 1:
+		tempfloat = *((float*)(((void*)&ptypes[i])+offset));
+		lua_pushnumber(l, tempfloat);
+		break;
+	case 2:
+		tempstring = *((char**)(((void*)&ptypes[i])+offset));
+		lua_pushstring(l, tempstring);
+		break;
+	case 3:
+		tempinteger = *((unsigned char*)(((void*)&ptypes[i])+offset));
+		lua_pushnumber(l, tempinteger);
+		break;
+	}
+	return 1;
+}
+int luacon_elementwrite(lua_State* l){
+	int format, offset;
+	char * tempstring;
+	int tempinteger;
+	float tempfloat;
+	int i;
+	char * key = mystrdup(luaL_optstring(l, 2, ""));
+	offset = luacon_element_getproperty(key, &format);
+	
+	//Get Raw Index value for element
+	lua_pushstring(l, "id");
+	lua_rawget(l, 1);
+	
+	i = lua_tointeger (l, lua_gettop(l));
+	
+	lua_pop(l, 1);
+	
+	if(i < 0 || i >= PT_NUM || offset==-1)
+	{
+		free(key);
+		return luaL_error(l, "Invalid property");
+	}
+	switch(format)
+	{
+	case 0:
+		*((int*)(((void*)&ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
+		break;
+	case 1:
+		*((float*)(((void*)&ptypes[i])+offset)) = luaL_optnumber(l, 3, 0);
+		break;
+	case 2:
+		tempstring = mystrdup(luaL_optstring(l, 3, ""));
+		if(strcmp(key, "name")==0)
+		{
+			int j = 0;
+			//Convert to upper case
+			for(j = 0; j < strlen(tempstring); j++)
+				tempstring[j] = toupper(tempstring[j]);
+			if(strlen(tempstring)>4)
+			{
+				free(tempstring);
+				free(key);
+				return luaL_error(l, "Name too long");
+			}
+			if(console_parse_type(tempstring, NULL, NULL))
+			{
+				free(tempstring);
+				free(key);
+				return luaL_error(l, "Name in use");
+			}
+		}
+		*((char**)(((void*)&ptypes[i])+offset)) = tempstring;
+		//Need some way of cleaning up previous values
+		break;
+	case 3:
+		*((unsigned char*)(((void*)&ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
+		break;
+	}
+	free(key);
+	return 0;
 }
 int luacon_keyevent(int key, int modifier, int event){
 	int i = 0, kpcontinue = 1;
@@ -277,7 +817,9 @@ int luatpt_element_func(lua_State *l)
 	{
 		int element = luaL_optint(l, 2, 0);
 		int replace = luaL_optint(l, 3, 0);
-		int function = luaL_ref(l, LUA_REGISTRYINDEX);
+		int function;
+		lua_pushvalue(l, 1);
+		function = luaL_ref(l, LUA_REGISTRYINDEX);
 		if(element > 0 && element < PT_NUM)
 		{
 			lua_el_func[element] = function;
@@ -545,6 +1087,7 @@ int luatpt_set_property(lua_State* l)
 		h = abs(luaL_optint(l, 6, -1));
 	else
 		h = -1;
+	//TODO: Use particle_getproperty
 	if (strcmp(prop,"type")==0){
 		offset = offsetof(particle, type);
 		format = 3;
@@ -686,6 +1229,7 @@ int luatpt_get_property(lua_State* l)
 		return luaL_error(l, "Invalid particle ID '%d'", i);
 	if (parts[i].type)
 	{
+		//TODO: Use particle_getproperty
 		if (strcmp(prop,"type")==0){
 			lua_pushinteger(l, parts[i].type);
 			return 1;

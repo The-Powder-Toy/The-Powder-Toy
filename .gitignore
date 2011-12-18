@@ -16,3 +16,4 @@ src/python/stdlib/*
 *.srv
 *.bat
 *.o
+*.me

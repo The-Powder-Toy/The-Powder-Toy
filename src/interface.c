@@ -6261,41 +6261,48 @@ void drawIcon(pixel * vid_buf, int x, int y, int cmode)
 {
 	switch (cmode)
 	{
-	case CM_VEL:
+	case 0x98:
 		drawtext(vid_buf, x, y, "\x98", 128, 160, 255, 255);
 		break;
-	case CM_PRESS:
+	case 0x99:
 		drawtext(vid_buf, x, y, "\x99", 255, 212, 32, 255);
 		break;
-	case CM_PERS:
+	case 0x9A:
 		drawtext(vid_buf, x, y, "\x9A", 212, 212, 212, 255);
 		break;
-	case CM_FIRE:
+	case 0x9B:
 		drawtext(vid_buf, x+1, y, "\x9B", 255, 0, 0, 255);
 		drawtext(vid_buf, x+1, y, "\x9C", 255, 255, 64, 255);
 		break;
-	case CM_BLOB:
+	case 0xBF:
 		drawtext(vid_buf, x, y, "\xBF", 55, 255, 55, 255);
 		break;
-	case CM_HEAT:
+	case 0xBE:
 		drawtext(vid_buf, x+2, y, "\xBE", 255, 0, 0, 255);
 		drawtext(vid_buf, x+2, y, "\xBD", 255, 255, 255, 255);
 		break;
-	case CM_FANCY:
+	case 0xC4:
 		drawtext(vid_buf, x, y, "\xC4", 100, 150, 255, 255);
 		break;
-	case CM_NOTHING:
-		//drawtext(vid_buf, x, y, "\xD1", 100, 150, 255, 255);
-		drawtext(vid_buf, x, y, "\x00", 100, 150, 255, 255);
-		break;
-	case CM_GRAD:
+	case 0xD3:
 		drawtext(vid_buf, x, y, "\xD3", 255, 50, 255, 255);
 		break;
-	case CM_LIFE:
-		//drawtext(vid_buf, x, y, "\xD1", 255, 50, 255, 255);
-		drawtext(vid_buf, x, y, "\x00", 255, 50, 255, 255);
+	case 0xE0:
+		drawtext(vid_buf, x, y, "\xE0", 255, 255, 255, 255);
 		break;
-	case CM_CRACK:
+	case 0xE1:
+		drawtext(vid_buf, x, y, "\xE1", 255, 255, 160, 255);
+		break;
+	case 0xDF:
+		drawtext(vid_buf, x, y, "\xDF", 200, 255, 255, 255);
+		break;
+	case 0xDE:
+		drawtext(vid_buf, x, y, "\xDE", 255, 255, 255, 255);
+		break;
+	case 0xDB:
+		drawtext(vid_buf, x, y, "\xDB", 255, 255, 200, 255);
+		break;
+	case 0xD4:
 		drawtext(vid_buf, x, y, "\xD4", 255, 55, 55, 255);
 		drawtext(vid_buf, x, y, "\xD5", 55, 255, 55, 255);
 		break;
@@ -6318,17 +6325,17 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 
 	int render_optioncount = 6;
 	int render_options[] = {RENDER_EFFE, RENDER_GLOW, RENDER_FIRE, RENDER_BLUR, RENDER_BLOB, RENDER_BASC};
-	int render_optionicons[] = {-1, -1, 3, 6, 4, -1};
+	int render_optionicons[] = {0xE1, 0xDF, 0x9B, 0xC4, 0xBF, 0xDB};
 	char * render_desc[] = {"Effects", "Glow", "Fire", "Blur", "Blob", "Basic"};
 	
 	int display_optioncount = 7;
 	int display_options[] = {DISPLAY_AIRC, DISPLAY_AIRP, DISPLAY_AIRV, DISPLAY_AIRH, DISPLAY_WARP, DISPLAY_PERS, DISPLAY_EFFE};
-	int display_optionicons[] = {10, 1, 0, 5, -1, 2, -1};
+	int display_optionicons[] = {0xD4, 0x99, 0x98, 0xBE, 0xDE, 0x9A, -1};
 	char * display_desc[] = {"Air: Cracker", "Air: Pressure", "Air: Velocity", "Air: Heat", "Warp effect", "Persistent", "Effects"};
 
 	int colour_optioncount = 3;
 	int colour_options[] = {COLOUR_LIFE, COLOUR_HEAT, COLOUR_GRAD};
-	int colour_optionicons[] = {9, 5, 8};
+	int colour_optionicons[] = {0xE0, 0xBE, 0xD3};
 	char * colour_desc[] = {"Life", "Heat", "Heat Gradient"};
 
 	yoffset = 16;

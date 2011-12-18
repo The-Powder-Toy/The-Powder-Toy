@@ -438,7 +438,7 @@ void STKM_interact(playerst* playerp, int i, int x, int y);
 
 struct part_type
 {
-	const char *name;
+	char *name;
 	pixel pcolors;
 	float advection;
 	float airdrag;

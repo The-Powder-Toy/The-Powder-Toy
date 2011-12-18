@@ -29,6 +29,17 @@ int luacon_eval(char *command);
 int luacon_part_update(int t, int i, int x, int y, int surround_space, int nt);
 char *luacon_geterror();
 void luacon_close();
+int luacon_partsread(lua_State* l);
+int luacon_partswrite(lua_State* l);
+int luacon_partread(lua_State* l);
+int luacon_partwrite(lua_State* l);
+int luacon_elementread(lua_State* l);
+int luacon_elementwrite(lua_State* l);
+int luacon_transitionread(lua_State* l);
+int luacon_transitionwrite(lua_State* l);
+int luacon_particle_getproperty(char * key, int * format);
+int luacon_transition_getproperty(char * key, int * format);
+int luacon_element_getproperty(char * key, int * format);
 int process_command_lua(pixel *vid_buf, char *console, char *console_error);
 
 int getPartIndex_curIdx;
