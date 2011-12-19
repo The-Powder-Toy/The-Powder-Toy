@@ -1153,10 +1153,10 @@ void clear_sim(void)
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
 	memset(fire_b, 0, sizeof(fire_b));
-	memset(gravmaskf, 0xFF, XRES*YRES*sizeof(unsigned));
-	memset(gravyf, 0, XRES*YRES*sizeof(float));
-	memset(gravxf, 0, XRES*YRES*sizeof(float));
-	memset(gravpf, 0, XRES*YRES*sizeof(float));
+	memset(gravmask, 0xFFFFFFFF, (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
+	memset(gravy, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(gravx, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(gravp, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 	for(x = 0; x < XRES/CELL; x++){
 		for(y = 0; y < YRES/CELL; y++){
 			hv[y][x] = 273.15f+22.0f; //Set to room temperature
@@ -2673,7 +2673,7 @@ int main(int argc, char *argv[])
 				sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 				if (DEBUG_MODE)
 				{
-					sprintf(coordtext, "X:%d Y:%d. GX: %.2f GY: %.2f", x/sdl_scale, y/sdl_scale, gravxf[((y/sdl_scale)*XRES)+(x/sdl_scale)], gravyf[((y/sdl_scale)*XRES)+(x/sdl_scale)]);
+					sprintf(coordtext, "X:%d Y:%d. GX: %.2f GY: %.2f", x/sdl_scale, y/sdl_scale, gravx[(((y/sdl_scale)/CELL)*(XRES/CELL))+((x/sdl_scale)/CELL)], gravy[(((y/sdl_scale)/CELL)*(XRES/CELL))+((x/sdl_scale)/CELL)]);
 				}
 			}
 		}

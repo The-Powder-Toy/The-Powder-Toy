@@ -19,8 +19,8 @@ int update_GBMB(UPDATE_FUNC_ARGS) {
 			}
 	}
 	if(parts[i].life>20)
-		gravmap[y/CELL][x/CELL] = 20;
+		gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 20;
 	if(parts[i].life<20 && parts[i].life>=1)
-		gravmap[y/CELL][x/CELL] = -80;
+		gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = -80;
 	return 0;
 }

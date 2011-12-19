@@ -1427,7 +1427,7 @@ void draw_grav_zones(pixel * vid)
 	{
 		for (x=0; x<XRES/CELL; x++)
 		{
-			if(gravmaskf[y*CELL*XRES+x*CELL])
+			if(gravmask[y*(XRES/CELL)+x])
 			{
 				for (j=0; j<CELL; j++)//draws the colors
 					for (i=0; i<CELL; i++)
@@ -1449,16 +1449,16 @@ void draw_grav(pixel *vid)
 	{
 		for (x=0; x<XRES/CELL; x++)
 		{
-			ca = ((y*CELL)*XRES)+(x*CELL);
-			if(fabsf(gravpf[ca]) <= 0.001f && fabsf(gravyf[ca]) <= 0.001f)
+			ca = y*(XRES/CELL)+x;
+			if(fabsf(gravx[ca]) <= 0.001f && fabsf(gravy[ca]) <= 0.001f)
 				continue;
 			nx = x*CELL;
 			ny = y*CELL;
-			dist = fabsf(gravyf[ca])+fabsf(gravxf[ca]);
+			dist = fabsf(gravy[ca])+fabsf(gravx[ca]);
 			for(i = 0; i < 4; i++)
 			{
-				nx -= gravxf[ca]*0.5f;
-				ny -= gravyf[ca]*0.5f;
+				nx -= gravx[ca]*0.5f;
+				ny -= gravy[ca]*0.5f;
 				addpixel(vid, (int)(nx+0.5f), (int)(ny+0.5f), 255, 255, 255, (int)(dist*20.0f));
 			}
 		}
@@ -2664,11 +2664,11 @@ void draw_parts_fbo()
 		glUniform1i(glGetUniformLocation(lensProg, "pTex"), 0);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, partsTFX);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_RED, GL_FLOAT, gravxf);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_RED, GL_FLOAT, gravx);
 		glUniform1i(glGetUniformLocation(lensProg, "tfX"), 1);
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, partsTFY);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES, YRES, GL_GREEN, GL_FLOAT, gravyf);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_GREEN, GL_FLOAT, gravy);
 		glUniform1i(glGetUniformLocation(lensProg, "tfY"), 2);
 		glActiveTexture(GL_TEXTURE0);
 		glUniform1fv(glGetUniformLocation(lensProg, "xres"), 1, &xres);
@@ -3111,19 +3111,20 @@ void render_signs(pixel *vid_buf)
 
 void render_gravlensing(pixel *src, pixel * dst)
 {
-	int nx, ny, rx, ry, gx, gy, bx, by;
+	int nx, ny, rx, ry, gx, gy, bx, by, co;
 	int r, g, b;
 	pixel t;
 	for(nx = 0; nx < XRES; nx++)
 	{
 		for(ny = 0; ny < YRES; ny++)
 		{
-			rx = (int)(nx-gravxf[(ny*XRES)+nx]*0.75f+0.5f);
-			ry = (int)(ny-gravyf[(ny*XRES)+nx]*0.75f+0.5f);
-			gx = (int)(nx-gravxf[(ny*XRES)+nx]*0.875f+0.5f);
-			gy = (int)(ny-gravyf[(ny*XRES)+nx]*0.875f+0.5f);
-			bx = (int)(nx-gravxf[(ny*XRES)+nx]+0.5f);
-			by = (int)(ny-gravyf[(ny*XRES)+nx]+0.5f);
+			co = (ny/CELL)*(XRES/CELL)+(nx/CELL);
+			rx = (int)(nx-gravx[co]*0.75f+0.5f);
+			ry = (int)(ny-gravy[co]*0.75f+0.5f);
+			gx = (int)(nx-gravx[co]*0.875f+0.5f);
+			gy = (int)(ny-gravy[co]*0.875f+0.5f);
+			bx = (int)(nx-gravx[co]+0.5f);
+			by = (int)(ny-gravy[co]+0.5f);
 			if(rx > 0 && rx < XRES && ry > 0 && ry < YRES && gx > 0 && gx < XRES && gy > 0 && gy < YRES && bx > 0 && bx < XRES && by > 0 && by < YRES)
 			{
 				t = dst[ny*(XRES+BARSIZE)+nx];

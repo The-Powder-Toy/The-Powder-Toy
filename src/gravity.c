@@ -9,24 +9,22 @@
 #endif 
 
 
-float gravmap[YRES/CELL][XRES/CELL];  //Maps to be used by the main thread
-float *gravpf;
-float *gravyf;
-float *gravxf;
-unsigned *gravmaskf;
+float *gravmap;//Maps to be used by the main thread
+float *gravp;
+float *gravy;
+float *gravx;
+unsigned *gravmask;
 
-float th_ogravmap[YRES/CELL][XRES/CELL]; // Maps to be processed by the gravity thread
-float th_gravmap[YRES/CELL][XRES/CELL];
-float th_gravx[YRES/CELL][XRES/CELL];
-float th_gravy[YRES/CELL][XRES/CELL];
-float th_gravp[YRES/CELL][XRES/CELL];
-float *th_gravpf;
-float *th_gravyf;
-float *th_gravxf;
+float *th_ogravmap;// Maps to be processed by the gravity thread
+float *th_gravmap;
+float *th_gravx;
+float *th_gravy;
+float *th_gravp;
 
 int gravwl_timeout = 0;
 int gravityMode = 0; // starts enabled in "vertical" mode...
-int ngrav_enable = 0; //Newtonian gravity, will be set by save
+int ngrav_enable = 0; //Newtonian gravity
+int th_gravchanged = 0;
 
 pthread_t gravthread;
 pthread_mutex_t gravmutex;
@@ -63,13 +61,16 @@ void bilinear_interpolation(float *src, float *dst, int sw, int sh, int rw, int 
 void gravity_init()
 {
 	//Allocate full size Gravmaps
-	th_gravyf = calloc(XRES*YRES, sizeof(float));
-	th_gravxf = calloc(XRES*YRES, sizeof(float));
-	th_gravpf = calloc(XRES*YRES, sizeof(float));
-	gravyf = calloc(XRES*YRES, sizeof(float));
-	gravxf = calloc(XRES*YRES, sizeof(float));
-	gravpf = calloc(XRES*YRES, sizeof(float));
-	gravmaskf = malloc(XRES*YRES*sizeof(unsigned));
+	th_ogravmap = calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
+	th_gravmap = calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
+	th_gravy = calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
+	th_gravx = calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
+	th_gravp = calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
+	gravmap = calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
+	gravy = calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
+	gravx = calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
+	gravp = calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
+	gravmask = calloc((XRES/CELL)*(YRES/CELL), sizeof(unsigned));
 }
 
 void gravity_cleanup()
@@ -88,22 +89,28 @@ void gravity_update_async()
 		result = grav_ready;
 		if(result) //Did the gravity thread finish?
 		{
-			memcpy(th_gravmap, gravmap, sizeof(gravmap)); //Move our current gravmap to be processed other thread
-
 			if (!sys_pause||framerender){ //Only update if not paused
 				//Switch the full size gravmaps, we don't really need the two above any more
 				float *tmpf;
-				tmpf = gravyf;
-				gravyf = th_gravyf;
-				th_gravyf = tmpf;
-
-				tmpf = gravxf;
-				gravxf = th_gravxf;
-				th_gravxf = tmpf;
-
-				tmpf = gravpf;
-				gravpf = th_gravpf;
-				th_gravpf = tmpf;
+				
+				if(th_gravchanged)
+				{
+					tmpf = gravy;
+					gravy = th_gravy;
+					th_gravy = tmpf;
+	
+					tmpf = gravx;
+					gravx = th_gravx;
+					th_gravx = tmpf;
+	
+					tmpf = gravp;
+					gravp = th_gravp;
+					th_gravp = tmpf;
+				}
+				
+				tmpf = gravmap;
+				gravmap = th_gravmap;
+				th_gravmap = tmpf;
 
 				grav_ready = 0; //Tell the other thread that we're ready for it to continue
 				pthread_cond_signal(&gravcv);
@@ -111,8 +118,8 @@ void gravity_update_async()
 		}
 		pthread_mutex_unlock(&gravmutex);
 		//Apply the gravity mask
-		membwand(gravyf, gravmaskf, XRES*YRES*sizeof(float), XRES*YRES*sizeof(unsigned));
-		membwand(gravxf, gravmaskf, XRES*YRES*sizeof(float), XRES*YRES*sizeof(unsigned));
+		membwand(gravy, gravmask, (XRES/CELL)*(YRES/CELL)*sizeof(float), (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
+		membwand(gravx, gravmask, (XRES/CELL)*(YRES/CELL)*sizeof(float), (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
 	}
 }
 
@@ -120,13 +127,14 @@ void* update_grav_async(void* unused)
 {
 	int done = 0;
 	int thread_done = 0;
-	memset(th_ogravmap, 0, sizeof(th_ogravmap));
-	memset(th_gravmap, 0, sizeof(th_gravmap));
-	memset(th_gravy, 0, sizeof(th_gravy));
-	memset(th_gravx, 0, sizeof(th_gravx));
-	memset(th_gravyf, 0, XRES*YRES*sizeof(float));
-	memset(th_gravxf, 0, XRES*YRES*sizeof(float));
-	memset(th_gravpf, 0, XRES*YRES*sizeof(float));
+	memset(th_ogravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(th_gravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(th_gravy, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(th_gravx, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(th_gravp, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	//memset(th_gravy, 0, XRES*YRES*sizeof(float));
+	//memset(th_gravx, 0, XRES*YRES*sizeof(float));
+	//memset(th_gravp, 0, XRES*YRES*sizeof(float));
 #ifdef GRAVFFT
 	grav_fft_init();
 #endif
@@ -163,9 +171,9 @@ void start_grav_async()
 		pthread_create(&gravthread, NULL, update_grav_async, NULL); //Start asynchronous gravity simulation
 		ngrav_enable = 1;
 	}
-	memset(gravyf, 0, XRES*YRES*sizeof(float));
-	memset(gravxf, 0, XRES*YRES*sizeof(float));
-	memset(gravpf, 0, XRES*YRES*sizeof(float));
+	memset(gravy, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(gravx, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(gravp, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 }
 
 void stop_grav_async()
@@ -180,9 +188,9 @@ void stop_grav_async()
 		ngrav_enable = 0;
 	}
 	//Clear the grav velocities
-	memset(gravyf, 0, XRES*YRES*sizeof(float));
-	memset(gravxf, 0, XRES*YRES*sizeof(float));
-	memset(gravpf, 0, XRES*YRES*sizeof(float));
+	memset(gravy, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(gravx, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(gravp, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 }
 
 #ifdef GRAVFFT
@@ -269,13 +277,16 @@ void grav_fft_cleanup()
 void update_grav()
 {
 	int x, y, changed = 0;
+	int xblock2 = XRES/CELL*2, yblock2 = YRES/CELL*2;
+	int i, fft_tsize = (xblock2/2+1)*yblock2;
+	float mr, mc, pr, pc, gr, gc;
 	for (y=0; y<YRES/CELL; y++)
 	{
 		if(changed)
 			break;
 		for (x=0; x<XRES/CELL; x++)
 		{
-			if(th_ogravmap[y][x]!=th_gravmap[y][x]){
+			if(th_ogravmap[y*(XRES/CELL)+x]!=th_gravmap[y*(XRES/CELL)+x]){
 				changed = 1;
 				break;
 			}
@@ -283,9 +294,7 @@ void update_grav()
 	}
 	if(changed)
 	{
-		int xblock2 = XRES/CELL*2, yblock2 = YRES/CELL*2;
-		int i, fft_tsize = (xblock2/2+1)*yblock2;
-		float mr, mc, pr, pc, gr, gc;
+		th_gravchanged = 1;
 		if (!grav_fft_status) grav_fft_init();
 
 		//copy gravmap into padded gravmap array
@@ -293,7 +302,7 @@ void update_grav()
 		{
 			for (x=0; x<XRES/CELL; x++)
 			{
-				th_gravmapbig[(y+YRES/CELL)*xblock2+XRES/CELL+x] = th_gravmap[y][x];
+				th_gravmapbig[(y+YRES/CELL)*xblock2+XRES/CELL+x] = th_gravmap[y*(XRES/CELL)+x];
 			}
 		}
 		//transform gravmap
@@ -323,16 +332,18 @@ void update_grav()
 		{
 			for (x=0; x<XRES/CELL; x++)
 			{
-				th_gravx[y][x] = th_gravxbig[y*xblock2+x];
-				th_gravy[y][x] = th_gravybig[y*xblock2+x];
-				th_gravp[y][x] = sqrtf(pow(th_gravxbig[y*xblock2+x],2)+pow(th_gravybig[y*xblock2+x],2));
+				th_gravx[y*(XRES/CELL)+x] = th_gravxbig[y*xblock2+x];
+				th_gravy[y*(XRES/CELL)+x] = th_gravybig[y*xblock2+x];
+				th_gravp[y*(XRES/CELL)+x] = sqrtf(pow(th_gravxbig[y*xblock2+x],2)+pow(th_gravybig[y*xblock2+x],2));
 			}
 		}
 	}
-	memcpy(th_ogravmap, th_gravmap, sizeof(th_gravmap));
-	bilinear_interpolation(th_gravy, th_gravyf, XRES/CELL, YRES/CELL, XRES, YRES);
-	bilinear_interpolation(th_gravx, th_gravxf, XRES/CELL, YRES/CELL, XRES, YRES);
-	bilinear_interpolation(th_gravp, th_gravpf, XRES/CELL, YRES/CELL, XRES, YRES);
+	else
+	{
+		th_gravchanged = 0;
+	}
+	memcpy(th_ogravmap, th_gravmap, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(th_gravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 }
 
 #else
@@ -342,6 +353,7 @@ void update_grav(void)
 {
 	int x, y, i, j, changed = 0;
 	float val, distance;
+	th_gravchanged = 0;
 #ifndef GRAV_DIFF
 	//Find any changed cells
 	for (i=0; i<YRES/CELL; i++)
@@ -350,7 +362,7 @@ void update_grav(void)
 			break;
 		for (j=0; j<XRES/CELL; j++)
 		{
-			if(th_ogravmap[i][j]!=th_gravmap[i][j]){
+			if(th_ogravmap[i*(XRES/CELL)+j]!=th_gravmap[i*(XRES/CELL)+j]){
 				changed = 1;
 				break;
 			}
@@ -358,16 +370,17 @@ void update_grav(void)
 	}
 	if(!changed)
 		goto fin;
-	memset(th_gravy, 0, sizeof(th_gravy));
-	memset(th_gravx, 0, sizeof(th_gravx));
+	memset(th_gravy, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(th_gravx, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 #endif
+	th_gravchanged = 1;
 	for (i = 0; i < YRES / CELL; i++) {
 		for (j = 0; j < XRES / CELL; j++) {
 #ifdef GRAV_DIFF
-			if (th_ogravmap[i][j] != th_gravmap[i][j])
+			if (th_ogravmap[i*(XRES/CELL)+j] != th_gravmap[i*(XRES/CELL)+j])
 			{
 #else
-			if (th_gravmap[i][j] > 0.0001f || th_gravmap[i][j]<-0.0001f) //Only calculate with populated or changed cells.
+			if (th_gravmap[i*(XRES/CELL)+j] > 0.0001f || th_gravmap[i*(XRES/CELL)+j]<-0.0001f) //Only calculate with populated or changed cells.
 			{
 #endif
 				for (y = 0; y < YRES / CELL; y++) {
@@ -376,24 +389,21 @@ void update_grav(void)
 							continue;
 						distance = sqrt(pow(j - x, 2) + pow(i - y, 2));
 #ifdef GRAV_DIFF
-						val = th_gravmap[i][j] - th_ogravmap[i][j];
+						val = th_gravmap[i*(XRES/CELL)+j] - th_ogravmap[i*(XRES/CELL)+j];
 #else
-						val = th_gravmap[i][j];
+						val = th_gravmap[i*(XRES/CELL)+j];
 #endif
-						th_gravx[y][x] += M_GRAV * val * (j - x) / pow(distance, 3);
-						th_gravy[y][x] += M_GRAV * val * (i - y) / pow(distance, 3);
-						th_gravp[y][x] += M_GRAV * val / pow(distance, 2);
+						th_gravx[y*(XRES/CELL)+x] += M_GRAV * val * (j - x) / pow(distance, 3);
+						th_gravy[y*(XRES/CELL)+x] += M_GRAV * val * (i - y) / pow(distance, 3);
+						th_gravp[y*(XRES/CELL)+x] += M_GRAV * val / pow(distance, 2);
 					}
 				}
 			}
 		}
 	}
-	bilinear_interpolation(th_gravy, th_gravyf, XRES/CELL, YRES/CELL, XRES, YRES);
-	bilinear_interpolation(th_gravx, th_gravxf, XRES/CELL, YRES/CELL, XRES, YRES);
-	bilinear_interpolation(th_gravp, th_gravpf, XRES/CELL, YRES/CELL, XRES, YRES);
 fin:
-	memcpy(th_ogravmap, th_gravmap, sizeof(th_gravmap));
-	memset(th_gravmap, 0, sizeof(th_gravmap));
+	memcpy(th_ogravmap, th_gravmap, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(th_gravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 }
 #endif
 
@@ -467,7 +477,7 @@ void gravity_mask()
 		}
 	}
 	c_mask_el = t_mask_el;
-	memset(gravmaskf, 0, XRES*YRES*sizeof(unsigned));
+	memset(gravmask, 0, (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
 	while(c_mask_el!=NULL)
 	{
 		char *cshape = c_mask_el->shape;
@@ -480,13 +490,7 @@ void gravity_mask()
 						maskvalue = 0xFFFFFFFF;
 					else
 						maskvalue = 0x00000000;
-					for (j=0; j<CELL; j++)
-					{
-						for (i=0; i<CELL; i++)
-						{
-							gravmaskf[(y*CELL+j)*XRES+x*CELL+i] = maskvalue;
-						}
-					}
+					gravmask[y*(XRES/CELL)+x] = maskvalue;
 				}
 			}
 		}

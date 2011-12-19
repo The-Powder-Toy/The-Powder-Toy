@@ -80,8 +80,8 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 			}
 	}
 
-	gvx += gravxf[XRES*(int)parts[i].y + (int)parts[i].x];
-	gvy += gravyf[XRES*(int)parts[i].y + (int)parts[i].x];
+	gvx += gravx[((int)parts[i].y/CELL)*(XRES/CELL)+((int)parts[i].x/CELL)];
+	gvy += gravy[((int)parts[i].y/CELL)*(XRES/CELL)+((int)parts[i].x/CELL)];
 
 	parts[i].vx -= gvx*dt;  //Head up!
 	parts[i].vy -= gvy*dt;

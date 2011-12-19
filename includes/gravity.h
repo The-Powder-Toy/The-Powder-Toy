@@ -7,20 +7,17 @@ extern int ngrav_enable; //Newtonian gravity
 extern int gravwl_timeout;
 extern int gravityMode;
 
-extern float gravmap[YRES/CELL][XRES/CELL]; //Maps to be used by the main thread
-extern float *gravpf;
-extern float *gravxf;
-extern float *gravyf;
-extern unsigned *gravmaskf;
+float *gravmap;//Maps to be used by the main thread
+float *gravp;
+float *gravy;
+float *gravx;
+unsigned *gravmask;
 
-extern float th_ogravmap[YRES/CELL][XRES/CELL]; // Maps to be processed by the gravity thread
-extern float th_gravmap[YRES/CELL][XRES/CELL];
-extern float th_gravx[YRES/CELL][XRES/CELL];
-extern float th_gravy[YRES/CELL][XRES/CELL];
-extern float *th_gravpf;
-extern float *th_gravxf;
-extern float *th_gravyf;
-extern float th_gravp[YRES/CELL][XRES/CELL]; 
+float *th_ogravmap;// Maps to be processed by the gravity thread
+float *th_gravmap;
+float *th_gravx;
+float *th_gravy;
+float *th_gravp;
 
 void gravity_init();
 void gravity_cleanup();

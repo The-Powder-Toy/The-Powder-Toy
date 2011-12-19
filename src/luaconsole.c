@@ -969,7 +969,7 @@ int luatpt_set_gravity(lua_State* l)
 	for (nx = x1; nx<x1+width; nx++)
 		for (ny = y1; ny<y1+height; ny++)
 		{
-			gravmap[ny][nx] = value;
+			gravmap[ny*(XRES/CELL)+nx] = value;
 		}
 	return 0;
 }
@@ -980,22 +980,22 @@ int luatpt_reset_gravity_field(lua_State* l)
 	int x1, y1, width, height;
 	x1 = abs(luaL_optint(l, 1, 0));
 	y1 = abs(luaL_optint(l, 2, 0));
-	width = abs(luaL_optint(l, 3, XRES));
-	height = abs(luaL_optint(l, 4, YRES));
-	if(x1 > XRES-1)
-		x1 = XRES-1;
-	if(y1 > YRES-1)
-		y1 = YRES-1;
-	if(x1+width > XRES-1)
-		width = XRES-x1;
-	if(y1+height > YRES-1)
-		height = YRES-y1;
+	width = abs(luaL_optint(l, 3, XRES/CELL));
+	height = abs(luaL_optint(l, 4, YRES/CELL));
+	if(x1 > (XRES/CELL)-1)
+		x1 = (XRES/CELL)-1;
+	if(y1 > (YRES/CELL)-1)
+		y1 = (YRES/CELL)-1;
+	if(x1+width > (XRES/CELL)-1)
+		width = (XRES/CELL)-x1;
+	if(y1+height > (YRES/CELL)-1)
+		height = (YRES/CELL)-y1;
 	for (nx = x1; nx<x1+width; nx++)
 		for (ny = y1; ny<y1+height; ny++)
 		{
-			gravxf[ny*XRES+nx] = 0;
-			gravyf[ny*XRES+nx] = 0;
-			gravpf[ny*XRES+nx] = 0;
+			gravx[ny*(XRES/CELL)+nx] = 0;
+			gravy[ny*(XRES/CELL)+nx] = 0;
+			gravp[ny*(XRES/CELL)+nx] = 0;
 		}
 	return 0;
 }

@@ -11,9 +11,9 @@ int update_GPMP(UPDATE_FUNC_ARGS) {
 		if (parts[i].temp<= -256.0+273.15)
 			parts[i].temp = -256.0+273.15;
 
-		gravmap[y/CELL][x/CELL] = 0.2f*(parts[i].temp-273.15);
+		gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 0.2f*(parts[i].temp-273.15);
 		if (y+CELL<YRES && pv[y/CELL+1][x/CELL]<(parts[i].temp-273.15))
-			gravmap[y/CELL+1][x/CELL] += 0.1f*((parts[i].temp-273.15)-gravmap[y/CELL+1][x/CELL]);
+			gravmap[(y/CELL+1)*(XRES/CELL)+(x/CELL)] += 0.1f*((parts[i].temp-273.15)-gravmap[(y/CELL+1)*(XRES/CELL)+(x/CELL)]);
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
