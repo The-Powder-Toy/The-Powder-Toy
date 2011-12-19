@@ -15,6 +15,11 @@ int update_CLST(UPDATE_FUNC_ARGS) {
 					part_change_type(i,x,y,PT_PSTS);					
 					kill_part(r>>8);
 				}
+				if ((r&0xFF)==PT_NITR)
+				{
+					create_part(i, x, y, PT_BANG);
+					create_part(r>>8, x+rx, y+ry, PT_BANG);
+				}
 				if ((r&0xFF)==PT_CLST)
 				{
 					if(parts[i].temp <195)
