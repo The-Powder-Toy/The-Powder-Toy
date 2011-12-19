@@ -24,6 +24,7 @@ powder-debug: build/powder-debug
 powder-sse3: build/powder-sse3
 powder-sse2: build/powder-sse2
 powder-sse: build/powder-sse
+powder-sse3-opengl: build/powder-sse3-opengl
 powder-64-sse3: build/powder-64-sse3
 powder-64-sse2: build/powder-64-sse2
 powder-debug-64: build/powder-debug-64
@@ -35,20 +36,21 @@ powder-sse.exe: build/powder-sse.exe
 # general compiler flags
 build/powder: CFLAGS += -DINTERNAL -DLIN64 $(OFLAGS)
 build/powder-debug: CFLAGS += -m32 -DLIN32 $(FLAGS_DBUG)
-build/powder-sse3 build/powder-sse2 build/powder-sse: CFLAGS += -m32 -DLIN32 $(OFLAGS)
+build/powder-sse3 build/powder-sse2 build/powder-sse build/powder-sse3-opengl: CFLAGS += -m32 -DLIN32 $(OFLAGS)
 build/powder-64-sse3 build/powder-64-sse2 build/powder-64-sse3-opengl: CFLAGS += -m64 -DLIN64 $(OFLAGS)
 build/powder-debug-64: CFLAGS += -m64 -DLIN64 $(FLAGS_DBUG)
 build/powder-sse3.exe build/powder-sse2.exe build/powder-sse.exe: CFLAGS += -mwindows -DWIN32 $(OFLAGS)
+build/powder-64-sse3-opengl build/powder-sse3-opengl: CFLAGS += -DOGLR -DPIX32OGL -DPIXALPHA
 
 # SSE flags:
-build/powder build/powder-sse3 build/powder-64-sse3 build/powder-64-sse3-opengl build/powder-debug build/powder-debug-64 build/powder-sse3.exe: CFLAGS += -march=native -DX86 -DX86_SSE3 -msse3
+build/powder build/powder-sse3 build/powder-sse3-opengl build/powder-64-sse3 build/powder-64-sse3-opengl build/powder-debug build/powder-debug-64 build/powder-sse3.exe: CFLAGS += -march=native -DX86 -DX86_SSE3 -msse3
 build/powder-sse2 build/powder-64-sse2 build/powder-sse2.exe: CFLAGS += -march=native -DX86 -DX86_SSE2 -msse2
 build/powder-sse build/powder-sse.exe: CFLAGS += -march=native -DX86 -DX86_SSE
 
 # libs:
-build/powder build/powder-debug build/powder-sse3 build/powder-sse2 build/powder-sse build/powder-64-sse3 build/powder-64-sse2 build/powder-64-sse3-opengl: LIBS += $(LFLAGS)
-build/powder-64-sse3-opengl: LIBS += -lGL -lGLU -DOpenGL
+build/powder build/powder-debug build/powder-sse3 build/powder-sse2 build/powder-sse build/powder-sse3-opengl build/powder-debug-64 build/powder-64-sse3 build/powder-64-sse2 build/powder-64-sse3-opengl: LIBS += $(LFLAGS)
 build/powder-sse3.exe build/powder-sse2.exe build/powder-sse.exe: LIBS += $(LFLAGS_WIN)
+build/powder-64-sse3-opengl build/powder-sse3-opengl: LIBS += -lGL
 
 # extra windows stuff
 build/powder-sse3.exe build/powder-sse2.exe build/powder-sse.exe: EXTRA_OBJS += build/obj/powder-res.o
@@ -83,6 +85,13 @@ build/powder-sse: $(patsubst build/obj/%.o,build/obj/%.powder-sse.o,$(OBJS))
 build/obj/%.powder-sse.o: src/%.c $(HEADERS)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
+build/powder-sse3-opengl: $(patsubst build/obj/%.o,build/obj/%.powder-sse3-opengl.o,$(OBJS))
+	$(CC) $(CFLAGS) $(LDFLAGS) $(EXTRA_OBJS) $(patsubst build/obj/%.o,build/obj/%.powder-sse3-opengl.o,$(OBJS)) $(LIBS) -o $@
+	strip $@
+build/obj/%.powder-sse3-opengl.o: src/%.c $(HEADERS)
+	$(CC) -c $(CFLAGS) -o $@ $<
+
+
 build/powder-64-sse3: $(patsubst build/obj/%.o,build/obj/%.powder-64-sse3.o,$(OBJS))
 	$(CC) $(CFLAGS) $(LDFLAGS) $(EXTRA_OBJS) $(patsubst build/obj/%.o,build/obj/%.powder-64-sse3.o,$(OBJS)) $(LIBS) -o $@
 	strip $@
@@ -97,7 +106,6 @@ build/obj/%.powder-64-sse2.o: src/%.c $(HEADERS)
 
 build/powder-debug-64: $(patsubst build/obj/%.o,build/obj/%.powder-debug-64.o,$(OBJS))
 	$(CC) $(CFLAGS) $(LDFLAGS) $(EXTRA_OBJS) $(patsubst build/obj/%.o,build/obj/%.powder-debug-64.o,$(OBJS)) $(LIBS) -o $@
-	strip $@
 build/obj/%.powder-debug-64.o: src/%.c $(HEADERS)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
