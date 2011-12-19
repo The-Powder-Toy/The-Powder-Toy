@@ -1,4 +1,5 @@
 #include <math.h>
+#include <sys/types.h>
 #include <pthread.h>
 #include "defines.h"
 #include "gravity.h"
