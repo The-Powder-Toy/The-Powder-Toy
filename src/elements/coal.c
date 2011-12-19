@@ -35,7 +35,7 @@ int update_COAL(UPDATE_FUNC_ARGS) {
 					if (parts[r>>8].ctype == PT_IRON) {
 						parts[r>>8].ctype = PT_METL;
 						kill_part(i);
-                                                return 1;
+						return 1;
 					}
 				}
 			}

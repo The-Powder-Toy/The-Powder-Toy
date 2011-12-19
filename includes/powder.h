@@ -193,13 +193,13 @@
 #define PT_SING 131
 #define PT_QRTZ 132
 #define PT_PQRT 133
-
 #define PT_EMP 134
 #define PT_BREC 135
 #define PT_ELEC 136
 #define PT_ACEL 137
 #define PT_DCEL 138
-
+#define PT_BANG	139
+#define PT_IGNT 140
 #define PT_BOYL 141
 
 #define OLD_PT_WIND 147
@@ -229,23 +229,24 @@
 /*
    TODO: We should start to implement these.
 */
-#define TYPE_PART			0x0001 //1 Powders
-#define TYPE_LIQUID			0x0002 //2 Liquids
-#define TYPE_SOLID			0x0004 //4 Solids
-#define TYPE_GAS			0x0008 //8 Gasses (Includes plasma)
-#define TYPE_ENERGY			0x0010 //16 Energy (Thunder, Light, Neutrons etc.)
-#define PROP_CONDUCTS		0x0020 //32 Conducts electricity
-#define PROP_BLACK			0x0040 //64 Absorbs Photons (not currently implemented or used, a photwl attribute might be better)
-#define PROP_NEUTPENETRATE	0x0080 //128 Penetrated by neutrons
-#define PROP_NEUTABSORB		0x0100 //256 Absorbs neutrons, reflect is default (not currently implemented or used)
-#define PROP_NEUTPASS		0x0200 //512 Neutrons pass through, such as with glass
-#define PROP_DEADLY			0x0400 //1024 Is deadly for stickman (not currently implemented or used)
-#define PROP_HOT_GLOW		0x0800 //2048 Hot Metal Glow
-#define PROP_LIFE			0x1000 //4096 Is a GoL type
-#define PROP_RADIOACTIVE	0x2000 //8192 Radioactive
-#define PROP_LIFE_DEC		0x4000 //2^14 Life decreases by one every frame if > zero
-#define PROP_LIFE_KILL		0x8000 //2^15 Kill when life value is <= zero
+#define TYPE_PART			0x00001 //1 Powders
+#define TYPE_LIQUID			0x00002 //2 Liquids
+#define TYPE_SOLID			0x00004 //4 Solids
+#define TYPE_GAS			0x00008 //8 Gasses (Includes plasma)
+#define TYPE_ENERGY			0x00010 //16 Energy (Thunder, Light, Neutrons etc.)
+#define PROP_CONDUCTS		0x00020 //32 Conducts electricity
+#define PROP_BLACK			0x00040 //64 Absorbs Photons (not currently implemented or used, a photwl attribute might be better)
+#define PROP_NEUTPENETRATE	0x00080 //128 Penetrated by neutrons
+#define PROP_NEUTABSORB		0x00100 //256 Absorbs neutrons, reflect is default (not currently implemented or used)
+#define PROP_NEUTPASS		0x00200 //512 Neutrons pass through, such as with glass
+#define PROP_DEADLY			0x00400 //1024 Is deadly for stickman (not currently implemented or used)
+#define PROP_HOT_GLOW		0x00800 //2048 Hot Metal Glow
+#define PROP_LIFE			0x01000 //4096 Is a GoL type
+#define PROP_RADIOACTIVE	0x02000 //8192 Radioactive
+#define PROP_LIFE_DEC		0x04000 //2^14 Life decreases by one every frame if > zero
+#define PROP_LIFE_KILL		0x08000 //2^15 Kill when life value is <= zero
 #define PROP_LIFE_KILL_DEC	0x10000 //2^16 Kill when life value is decremented to <= zero
+#define PROP_SPARKSETTLE	0x20000	//2^17 Allow Sparks/Embers to settle
 
 #define FLAG_STAGNANT	1
 
@@ -428,6 +429,7 @@ int update_ELEC(UPDATE_FUNC_ARGS);
 int update_ACEL(UPDATE_FUNC_ARGS);
 int update_DCEL(UPDATE_FUNC_ARGS);
 int update_BANG(UPDATE_FUNC_ARGS);
+int update_IGNT(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);

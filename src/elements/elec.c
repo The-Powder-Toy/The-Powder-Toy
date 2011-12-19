@@ -22,9 +22,9 @@ int update_ELEC(UPDATE_FUNC_ARGS) {
 					fire_r[y/CELL][x/CELL] += rand()%200;	//D: Doesn't work with OpenGL, also shouldn't be here
 					fire_g[y/CELL][x/CELL] += rand()%200;
 					fire_b[y/CELL][x/CELL] += rand()%200;
-					for (rrx=-2; rrx<=2; rrx++)
+					for (rrx=-1; rrx<=1; rrx++)
 					{
-						for (rry=-2; rry<=2; rry++)
+						for (rry=-1; rry<=1; rry++)
 						{
 							if (x+rx+rrx>=0 && y+ry+rry>=0 && x+rx+rrx<XRES && y+ry+rry<YRES) {
 								nb = create_part(-1, x+rx+rrx, y+ry+rry, PT_BOMB);

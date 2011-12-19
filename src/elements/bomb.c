@@ -2,6 +2,7 @@
 
 int update_BOMB(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, nb;
+	//Spark is used so much now that it should be a seperate element.
 	if (parts[i].tmp==1) {
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
@@ -10,7 +11,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (ptypes[r&0xFF].properties & (TYPE_SOLID | TYPE_PART | TYPE_LIQUID) && (r&0xFF)!=PT_BOMB) {
+					if (ptypes[r&0xFF].properties & (TYPE_SOLID | TYPE_PART | TYPE_LIQUID) && !(ptypes[r&0xFF].properties & PROP_SPARKSETTLE)) {
 						kill_part(i);
 						return 1;
 					}
