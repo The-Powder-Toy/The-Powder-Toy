@@ -96,6 +96,11 @@ void gravity_update_async()
 				
 				if(th_gravchanged)
 				{
+				#if !defined(GRAVFFT) && defined(GRAV_DIFF)
+					memcpy(gravy, th_gravy, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+					memcpy(gravx, th_gravx, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+					memcpy(gravp, th_gravp, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+				#else
 					tmpf = gravy;
 					gravy = th_gravy;
 					th_gravy = tmpf;
@@ -107,6 +112,7 @@ void gravity_update_async()
 					tmpf = gravp;
 					gravp = th_gravp;
 					th_gravp = tmpf;
+				#endif
 				}
 				
 				tmpf = gravmap;
@@ -121,6 +127,7 @@ void gravity_update_async()
 		//Apply the gravity mask
 		membwand(gravy, gravmask, (XRES/CELL)*(YRES/CELL)*sizeof(float), (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
 		membwand(gravx, gravmask, (XRES/CELL)*(YRES/CELL)*sizeof(float), (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
+		memset(gravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 	}
 }
 
@@ -344,7 +351,6 @@ void update_grav()
 		th_gravchanged = 0;
 	}
 	memcpy(th_ogravmap, th_gravmap, (XRES/CELL)*(YRES/CELL)*sizeof(float));
-	memset(th_gravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 }
 
 #else
@@ -404,7 +410,6 @@ void update_grav(void)
 	}
 fin:
 	memcpy(th_ogravmap, th_gravmap, (XRES/CELL)*(YRES/CELL)*sizeof(float));
-	memset(th_gravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 }
 #endif
 
