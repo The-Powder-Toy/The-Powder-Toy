@@ -31,6 +31,7 @@ int update_IGNT(UPDATE_FUNC_ARGS) {
 				parts[nb].life = 30;
 				parts[nb].vx = rand()%20-10;
 				parts[nb].vy = rand()%20-10;
+				parts[nb].temp = 400.0f+parts[i].temp-273.15;
 			}
 		}
 		else
