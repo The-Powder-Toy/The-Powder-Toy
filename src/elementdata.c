@@ -323,7 +323,7 @@ part_transition ptransitions[PT_NUM] =
 	/* ELEC */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* ACEL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* DCEL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
-	/* TNT  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			673.0f,	PT_FIRE},
+	/* TNT  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* IGNP */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			673.0f,	PT_FIRE},
 	/* BOYL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/*FREE*//* GOL  */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
