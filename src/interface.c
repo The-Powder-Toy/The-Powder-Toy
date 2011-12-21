@@ -1018,7 +1018,7 @@ char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shad
 void prop_edit_ui(pixel *vid_buf, int x, int y)
 {
 	float valuef;
-	char valuec;
+	unsigned char valuec;
 	int valuei;
 	int format;
 	size_t propoffset;
@@ -1100,7 +1100,6 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 			break;
 	}
 
-	sscanf(ed2.str, "%f", &valuef);
 	if(ed.selected!=-1)
 	{
 		if (strcmp(ed.str,"type")==0){
@@ -1135,7 +1134,7 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 			format = 2;
 		} else if (strcmp(ed.str,"dcolour")==0){
 			propoffset = offsetof(particle, dcolour);
-			format = 0;
+			format = 3;
 		}
 	} else {
 		error_ui(vid_buf, 0, "Invalid property");
@@ -1143,15 +1142,63 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 	}
 	
 	if(format==0){
-		valuei = (int)valuef;
+		sscanf(ed2.str, "%d", &valuei);
 		flood_prop(x, y, propoffset, &valuei, format);
 	}
 	if(format==1){
-		valuec = (char)valuef;
+		int isint = 1, i;
+		//Check if it's an element name
+		for(i = 0; i < strlen(ed2.str); i++)
+		{
+			if(!(ed2.str[i] >= '0' && ed2.str[i] <= '9'))
+			{
+				isint = 0;
+				break;
+			}
+		}
+		if(isint)
+		{
+			sscanf(ed2.str, "%u", &valuei);
+		}
+		else
+		{
+			if(!console_parse_type(ed2.str, &valuei, NULL))
+			{
+				error_ui(vid_buf, 0, "Invalid element name");
+				goto exit;
+			}
+		}
+		valuec = (unsigned char)valuei;
 		flood_prop(x, y, propoffset, &valuec, format);
 	}
 	if(format==2){
+		sscanf(ed2.str, "%f", &valuef);
 		flood_prop(x, y, propoffset, &valuef, format);
+	}
+	if(format==3){
+		int j;
+		unsigned int valueui;
+		if(ed2.str[0] == '#') // #FFFFFFFF
+		{
+			//Convert to lower case
+			for(j = 0; j < strlen(ed2.str); j++)
+				ed2.str[j] = tolower(ed2.str[j]);
+			sscanf(ed2.str, "#%x", &valueui);
+			printf("%s, %u\n", ed2.str, valueui);
+		}
+		else if(ed2.str[0] == '0' && ed2.str[1] == 'x') // 0xFFFFFFFF
+		{
+			//Convert to lower case
+			for(j = 0; j < strlen(ed2.str); j++)
+				ed2.str[j] = tolower(ed2.str[j]);
+			sscanf(ed2.str, "0x%x", &valueui);
+			printf("%s, %u\n", ed2.str, valueui);
+		}
+		else
+		{
+			sscanf(ed2.str, "%d", &valueui);
+		}
+		flood_prop(x, y, propoffset, &valueui, 0);
 	}
 exit:
 	while (!sdl_poll())
