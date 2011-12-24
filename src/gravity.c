@@ -10,17 +10,17 @@
 #endif 
 
 
-float *gravmap;//Maps to be used by the main thread
-float *gravp;
-float *gravy;
-float *gravx;
-unsigned *gravmask;
+float *gravmap = NULL;//Maps to be used by the main thread
+float *gravp = NULL;
+float *gravy = NULL;
+float *gravx = NULL;
+unsigned *gravmask = NULL;
 
-float *th_ogravmap;// Maps to be processed by the gravity thread
-float *th_gravmap;
-float *th_gravx;
-float *th_gravy;
-float *th_gravp;
+float *th_ogravmap = NULL;// Maps to be processed by the gravity thread
+float *th_gravmap = NULL;
+float *th_gravx = NULL;
+float *th_gravy = NULL;
+float *th_gravp = NULL;
 
 int gravwl_timeout = 0;
 int gravityMode = 0; // starts enabled in "vertical" mode...
@@ -454,6 +454,8 @@ void gravity_mask()
 	unsigned maskvalue;
 	mask_el *t_mask_el = NULL;
 	mask_el *c_mask_el = NULL;
+	if(!gravmask)
+		return;
 	memset(checkmap, 0, sizeof(checkmap));
 	for(x = 0; x < XRES/CELL; x++)
 	{
