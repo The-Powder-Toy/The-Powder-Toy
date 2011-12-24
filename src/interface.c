@@ -92,11 +92,18 @@ int drawgrav_enable = 0;
 void menu_count(void)//puts the number of elements in each section into .itemcount
 {
 	int i=0;
+	for (i=0;i<SC_TOTAL;i++)
+	{
+		msections[i].itemcount = 0;
+	}
 	msections[SC_LIFE].itemcount = NGOLALT;
 	msections[SC_WALL].itemcount = UI_WALLCOUNT-4;
 	for (i=0; i<PT_NUM; i++)
 	{
-		msections[ptypes[i].menusection].itemcount+=ptypes[i].menu;
+		if (ptypes[i].menusection<SC_TOTAL)
+		{
+			msections[ptypes[i].menusection].itemcount+=ptypes[i].menu;
+		}
 	}
 
 }
