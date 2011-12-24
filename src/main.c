@@ -3452,7 +3452,7 @@ int main(int argc, char *argv[])
 			if (DEBUG_MODE)
 				sprintf(uitext, "Build %d FPS:%d Parts:%d Gravity:%d Air:%d", BUILD_NUM, FPSB, NUM_PARTS, gravityMode, airMode);
 			else
-				sprintf(uitext, "FPS:%d", SAVE_VERSION, MINOR_VERSION, FPSB);
+				sprintf(uitext, "FPS:%d", FPSB);
 #endif
 			if (REPLACE_MODE)
 				strappend(uitext, " [REPLACE MODE]");
