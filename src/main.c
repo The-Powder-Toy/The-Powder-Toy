@@ -3109,8 +3109,7 @@ int main(int argc, char *argv[])
 					if (!bq)
 						add_sign_ui(vid_buf, x, y);
 				}
-
-				if (c==PT_FIGH)
+				else if (c==PT_FIGH)
 				{
 					if (!bq)
 						create_part(-1, x, y, PT_FIGH);
