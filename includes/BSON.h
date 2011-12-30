@@ -29,7 +29,7 @@
 #include "defines.h"
 
 #if defined(LIN64) || defined(USE_STDINT)
-#include <sys\types.h>
+#include <sys/types.h>
 #include <stdint.h>
 #else
 typedef long long int int64_t;
