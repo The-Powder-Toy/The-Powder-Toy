@@ -26,6 +26,7 @@
 #include <pythonconsole.h>
 #endif
 #include <powdergraphics.h>
+#include "save.h"
 
 SDLMod sdl_mod;
 int sdl_key, sdl_rkey, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
@@ -4265,7 +4266,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		if (queue_open) {
 			if (info_ready && data_ready) {
 				// Do Open!
-				status = parse_save(data, data_size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+				status = parse_save(data, data_size, 1, 0, 0, bmap, vx, vy, pv, fvx, fvy, signs, parts, pmap);
 				if (!status) {
 					if(svf_last)
 						free(svf_last);
@@ -4827,7 +4828,7 @@ void execute_save(pixel *vid_buf)
 	plens[0] = strlen(svf_name);
 	uploadparts[1] = svf_description;
 	plens[1] = strlen(svf_description);
-	uploadparts[2] = build_save(plens+2, 0, 0, XRES, YRES, bmap, fvx, fvy, signs, parts);
+	uploadparts[2] = build_save(plens+2, 0, 0, XRES, YRES, bmap, vx, vy, pv, fvx, fvy, signs, parts);
 	uploadparts[3] = build_thumb(plens+3, 1);
 	uploadparts[4] = (svf_publish==1)?"Public":"Private";
 	plens[4] = strlen((svf_publish==1)?"Public":"Private");
@@ -5945,9 +5946,12 @@ int save_filename_ui(pixel *vid_buf)
 	pixel *save = NULL;//calloc((XRES/3)*(YRES/3), PIXELSIZE);
 	ui_edit ed;
 
-	save_data = build_save(&save_size, 0, 0, XRES, YRES, bmap, fvx, fvy, signs, parts);
+	save_data = build_save(&save_size, 0, 0, XRES, YRES, bmap, vx, vy, pv, fvx, fvy, signs, parts);
 	save_data_image = prerender_save(save_data, save_size, &imgw, &imgh);
-	save = resample_img(save_data_image, imgw, imgh, XRES/3, YRES/3);	
+	if(save_data_image!=NULL)
+	{
+		save = resample_img(save_data_image, imgw, imgh, XRES/3, YRES/3);
+	}
 
 	ed.x = x0+11;
 	ed.y = y0+25;
@@ -5993,7 +5997,10 @@ int save_filename_ui(pixel *vid_buf)
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
 		drawtext(vid_buf, x0+8, y0+8, "Filename:", 255, 255, 255, 255);
 		drawrect(vid_buf, x0+8, y0+20, xsize-16, 16, 255, 255, 255, 180);
-		draw_image(vid_buf, save, x0+8, y0+40, XRES/3, YRES/3, 255);
+		if(save!=NULL)
+		{
+			draw_image(vid_buf, save, x0+8, y0+40, XRES/3, YRES/3, 255);
+		}
 		drawrect(vid_buf, x0+8, y0+40, XRES/3, YRES/3, 192, 192, 192, 255);
 		
 		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
@@ -6204,7 +6211,7 @@ void catalogue_ui(pixel * vid_buf)
 						void *data;
 						data = file_load(csave->filename, &size);
 						if(data){
-							status = parse_save(data, size, 1, 0, 0, bmap, fvx, fvy, signs, parts, pmap);
+							status = parse_save(data, size, 1, 0, 0, bmap, vx, vy, pv, fvx, fvy, signs, parts, pmap);
 							if(!status)
 							{
 								//svf_filename[0] = 0;
