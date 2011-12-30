@@ -214,7 +214,8 @@
 #define PT_WIRE 156
 #define PT_GBMB 157
 #define PT_FIGH 158
-#define PT_NUM  159
+#define PT_COOK 159
+#define PT_NUM  160
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -268,6 +269,7 @@ struct particle
 };
 typedef struct particle particle;
 
+int graphics_COOK(GRAPHICS_FUNC_ARGS);
 int graphics_FIRE(GRAPHICS_FUNC_ARGS);
 int graphics_SMKE(GRAPHICS_FUNC_ARGS);
 int graphics_PLSM(GRAPHICS_FUNC_ARGS);
@@ -346,6 +348,7 @@ int update_BMTL(UPDATE_FUNC_ARGS);
 int update_BOMB(UPDATE_FUNC_ARGS);
 int update_BOYL(UPDATE_FUNC_ARGS);
 int update_BTRY(UPDATE_FUNC_ARGS);
+int update_COOK(UPDATE_FUNC_ARGS);
 int update_C5(UPDATE_FUNC_ARGS);
 int update_CLNE(UPDATE_FUNC_ARGS);
 int update_COAL(UPDATE_FUNC_ARGS);

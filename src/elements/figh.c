@@ -49,7 +49,7 @@ int update_FIGH(UPDATE_FUNC_ARGS)
 						|| ptypes[figh->elem].properties&(PROP_DEADLY|PROP_RADIOACTIVE) 
 						|| ptypes[figh->elem].heat>=323 || ptypes[figh->elem].heat<=243)
 					figh->comm = (int)figh->comm | 0x08;
-			}
+			}		
 			else
 				if (tarx<x )
 				{
