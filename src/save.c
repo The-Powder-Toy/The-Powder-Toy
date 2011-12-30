@@ -5,6 +5,20 @@
 #include "gravity.h"
 #include "BSON.h"
 
+//Pop
+pixel *prerender_save(void *save, int size, int *width, int *height)
+{
+	unsigned char * saveData = save;
+	if(saveData[0] == 'O' && saveData[1] == 'P' && saveData[2] == 'S')
+	{
+		return prerender_save_OPS(save, size, width, height);
+	}
+	else if((saveData[0]==0x66 && saveData[1]==0x75 && saveData[2]==0x43) || (saveData[0]==0x50 && saveData[1]==0x53 && saveData[2]==0x76))
+	{
+		return prerender_save_PSv(save, size, width, height);
+	}
+}
+
 void *build_save(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h, unsigned char bmap[YRES/CELL][XRES/CELL], float vx[YRES/CELL][XRES/CELL], float vy[YRES/CELL][XRES/CELL], float pv[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
 {
 #ifdef SAVE_OPS
@@ -25,6 +39,43 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	{
 		return parse_save_PSv(save, size, replace, x0, y0, bmap, fvx, fvy, signs, partsptr, pmap);
 	}
+}
+
+pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
+{
+	unsigned char * inputData = save;
+	int blockH, blockW, fullW, fullH;
+	//Block sizes
+	blockW = inputData[6];
+	blockH = inputData[7];
+	
+	//Full size, normalised
+	fullW = blockW*CELL;
+	fullH = blockH*CELL;
+	
+	//From newer version
+	if(inputData[4] > SAVE_VERSION)
+	{
+		return NULL;
+	}
+		
+	//Incompatible cell size
+	if(inputData[5] > CELL)
+	{
+		return NULL;
+	}
+		
+	//Too large/off screen
+	if(blockW > XRES/CELL || blockH > YRES/CELL)
+	{
+		return NULL;
+	}
+	*height = fullH;
+	*width = fullW;
+	
+	//Todo: Read and draw particles
+	
+	return malloc((fullH * fullW) * sizeof(pixel));
 }
 
 void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h, unsigned char bmap[YRES/CELL][XRES/CELL], float vx[YRES/CELL][XRES/CELL], float vy[YRES/CELL][XRES/CELL], float pv[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* o_partsptr)
@@ -50,17 +101,21 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	//Copy fan and wall data
 	wallData = malloc(blockW*blockH);
 	wallDataLen = blockW*blockH;
-	fanData = malloc(blockW*blockH);
+	fanData = malloc((blockW*blockH)*2);
 	fanDataLen = 0;
 	for(x = blockX; x < blockX+blockW; x++)
 	{
 		for(y = blockY; y < blockY+blockH; y++)
 		{
-			wallData[y*blockW+x] = bmap[y][x];
+			wallData[(y-blockY)*blockW+(x-blockX)] = bmap[y][x];
 			if(bmap[y][x] && !wallDataFound)
 				wallDataFound = 1;
 			if(bmap[y][x]==WL_FAN || bmap[y][x]==4)
 			{
+				i = (int)(fvx[y][x]*64.0f+127.5f);
+				if (i<0) i=0;
+				if (i>255) i=255;
+				fanData[fanDataLen++] = i;
 				i = (int)(fvy[y][x]*64.0f+127.5f);
 				if (i<0) i=0;
 				if (i>255) i=255;
@@ -91,9 +146,9 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	{
 		if(parts[i].type)
 		{
-			x = (int)(parts[i].x+0.5f);
-			y = (int)(parts[i].y+0.5f);
-			if(x >= fullX && x <= fullX+fullW && y >= fullY && y <= fullY+fullH)
+			x = (int)(parts[i].x+0.5f)-fullX;
+			y = (int)(parts[i].y+0.5f)-fullY;
+			if(x >= 0 && x <= fullW && y >= 0 && y <= fullH)
 			{
 				unsigned char fieldDesc = 0;
 				int fieldDescLoc = 0, tempTemp, vTemp;
@@ -104,7 +159,6 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 				//X and Y coord (required), 2 bytes each
 				partsData[partsDataLen++] = x;
 				partsData[partsDataLen++] = x >> 8;
-				printf("Saved: %d, %d", (char)x, (char)(x>>8));
 				partsData[partsDataLen++] = y;
 				partsData[partsDataLen++] = y >> 8;
 				
@@ -182,16 +236,19 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 			}
 		}
 	}
+	if(!partsDataLen)
+	{
+		free(partsData);
+		partsData = NULL;
+	}
 	
 	bson b;
 	bson_init(&b);
-	/* These fields are in the "outer" header, don't bother saving here
-	bson_append_int(&b, "majorVersion", SAVE_VERSION);
-	bson_append_int(&b, "xRes", fullW);
-	bson_append_int(&b, "yRes", fullH);
-	bson_append_int(&b, "cellSize", CELL);*/
-	//Save stuff like gravity, heat, blah states
-	bson_append_int(&b, "partsDataBytes", partsDataLen);	//For debugging, remove eventually
+	bson_append_bool(&b, "legacyEnable", legacy_enable);
+	bson_append_bool(&b, "gravityEnable", ngrav_enable);
+	bson_append_bool(&b, "paused", sys_pause);
+	bson_append_int(&b, "gravityMode", gravityMode);
+	bson_append_int(&b, "airMode", airMode);
 	if(partsData)
 		bson_append_binary(&b, "parts", BSON_BIN_USER, partsData, partsDataLen);
 	if(wallData)
@@ -247,8 +304,42 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 	particle *partsptr = o_partsptr;
 	unsigned char * inputData = save, *bsonData = NULL, *partsData = NULL, *fanData = NULL, *wallData = NULL;
 	int inputDataLen = size, bsonDataLen = 0, partsDataLen, fanDataLen, wallDataLen;
-	int i, freeIndicesCount, x, y, returnCode = 0;
+	int i, freeIndicesCount, x, y, returnCode = 0, j;
 	int *freeIndices = NULL;
+	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
+	
+	//Block sizes
+	blockX = x0/CELL;
+	blockY = y0/CELL;
+	blockW = inputData[6];
+	blockH = inputData[7];
+	
+	//Full size, normalised
+	fullX = blockX*CELL;
+	fullY = blockY*CELL;
+	fullW = blockW*CELL;
+	fullH = blockH*CELL;
+	
+	//From newer version
+	if(inputData[4] > SAVE_VERSION)
+	{
+		fprintf(stderr, "Save from newer version");
+		return 2;
+	}
+		
+	//Incompatible cell size
+	if(inputData[5] > CELL)
+	{
+		fprintf(stderr, "Cell size mismatch");
+		return 1;
+	}
+		
+	//Too large/off screen
+	if(blockX+blockW > XRES/CELL || blockY+blockH > YRES/CELL)
+	{
+		fprintf(stderr, "Save too large");
+		return 1;
+	}
 	
 	bsonDataLen = ((unsigned)inputData[8]);
 	bsonDataLen |= ((unsigned)inputData[9]) << 8;
@@ -263,7 +354,10 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 	}
 	
 	if (BZ2_bzBuffToBuffDecompress(bsonData, &bsonDataLen, inputData+12, inputDataLen-12, 0, 0))
+	{
+		fprintf(stderr, "Unable to decompress");
 		return 1;
+	}
 	
 	bson b;
 	bson_iterator iter;
@@ -281,6 +375,127 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 			else
 			{
 				fprintf(stderr, "Invalid datatype of particle data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "wallMap")==0)
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (wallDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				wallData = bson_iterator_bin_data(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of wall data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "fanMap")==0)
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (fanDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				fanData = bson_iterator_bin_data(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of fan data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "legacyEnable")==0 && replace)
+		{
+			if(bson_iterator_type(&iter)==BSON_BOOL)
+			{
+				legacy_enable = ((int)bson_iterator_bool(&iter))?1:0;
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "gravityEnable")==0 && replace)
+		{
+			if(bson_iterator_type(&iter)==BSON_BOOL)
+			{
+				int tempGrav = ngrav_enable;
+				tempGrav = ((int)bson_iterator_bool(&iter))?1:0;
+#ifndef RENDERER
+				//Change the gravity state
+				if(ngrav_enable != tempGrav)
+				{
+					if(tempGrav)
+						start_grav_async();
+					else
+						stop_grav_async();
+				}
+#endif
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "paused")==0 && !sys_pause)
+		{
+			if(bson_iterator_type(&iter)==BSON_BOOL)
+			{
+				sys_pause = ((int)bson_iterator_bool(&iter))?1:0;
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "gravityMode")==0 && replace)
+		{
+			if(bson_iterator_type(&iter)==BSON_INT)
+			{
+				gravityMode = bson_iterator_int(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "airMode")==0 && replace)
+		{
+			if(bson_iterator_type(&iter)==BSON_INT)
+			{
+				airMode = bson_iterator_int(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+	}
+	
+	if(replace)
+	{
+		//Remove everything
+		clear_sim();
+	}
+	
+	//Read wall and fan data
+	if(wallData)
+	{
+		j = 0;
+		if(blockW * blockH > wallDataLen)
+		{
+			fprintf(stderr, "Not enough wall data");
+			goto fail;
+		}
+		for(x = 0; x < blockW; x++)
+		{
+			for(y = 0; y < blockH; y++)
+			{
+				bmap[blockY+y][blockX+x] = wallData[y*blockW+x];
+				if((bmap[blockY+y][blockX+x]==WL_FAN || bmap[blockY+y][blockX+x]==4) && fanData)
+				{
+					if(j+1 >= fanDataLen)
+					{
+						fprintf(stderr, "Not enough fan data");
+					}
+					fvx[blockY+y][blockX+x] = (fanData[j++]-127.0f)/64.0f;
+					fvy[blockY+y][blockX+x] = (fanData[j++]-127.0f)/64.0f;
+				}
 			}
 		}
 	}
@@ -311,6 +526,8 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 		{
 			x = partsData[i+1] | (((unsigned)partsData[i+2])<<8);
 			y = partsData[i+3] | (((unsigned)partsData[i+4])<<8);
+			x += fullX;
+			y += fullY;
 			fieldDescriptor = partsData[i+7];
 			if(x >= XRES || x < 0 || y >= YRES || y < 0)
 			{
@@ -416,7 +633,198 @@ fin:
 	return returnCode;
 }
 
-//the old saving function
+//Old saving
+pixel *prerender_save_PSv(void *save, int size, int *width, int *height)
+{
+	unsigned char *d,*c=save;
+	int i,j,k,x,y,rx,ry,p=0;
+	int bw,bh,w,h,new_format = 0;
+	pixel *fb;
+
+	if (size<16)
+		return NULL;
+	if (!(c[2]==0x43 && c[1]==0x75 && c[0]==0x66) && !(c[2]==0x76 && c[1]==0x53 && c[0]==0x50))
+		return NULL;
+	if (c[2]==0x43 && c[1]==0x75 && c[0]==0x66) {
+		new_format = 1;
+	}
+	if (c[4]>SAVE_VERSION)
+		return NULL;
+
+	bw = c[6];
+	bh = c[7];
+	w = bw*CELL;
+	h = bh*CELL;
+
+	if (c[5]!=CELL)
+		return NULL;
+
+	i = (unsigned)c[8];
+	i |= ((unsigned)c[9])<<8;
+	i |= ((unsigned)c[10])<<16;
+	i |= ((unsigned)c[11])<<24;
+	d = malloc(i);
+	if (!d)
+		return NULL;
+	fb = calloc(w*h, PIXELSIZE);
+	if (!fb)
+	{
+		free(d);
+		return NULL;
+	}
+
+	if (BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), size-12, 0, 0))
+		goto corrupt;
+	size = i;
+
+	if (size < bw*bh)
+		goto corrupt;
+
+	k = 0;
+	for (y=0; y<bh; y++)
+		for (x=0; x<bw; x++)
+		{
+			rx = x*CELL;
+			ry = y*CELL;
+			switch (d[p])
+			{
+			case 1:
+				for (j=0; j<CELL; j++)
+					for (i=0; i<CELL; i++)
+						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+				break;
+			case 2:
+				for (j=0; j<CELL; j+=2)
+					for (i=(j>>1)&1; i<CELL; i+=2)
+						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+				break;
+			case 3:
+				for (j=0; j<CELL; j++)
+					for (i=0; i<CELL; i++)
+						if (!(j%2) && !(i%2))
+							fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
+				break;
+			case 4:
+				for (j=0; j<CELL; j+=2)
+					for (i=(j>>1)&1; i<CELL; i+=2)
+						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
+				k++;
+				break;
+			case 6:
+				for (j=0; j<CELL; j+=2)
+					for (i=(j>>1)&1; i<CELL; i+=2)
+						fb[(ry+j)*w+(rx+i)] = PIXPACK(0xFF8080);
+				break;
+			case 7:
+				for (j=0; j<CELL; j++)
+					for (i=0; i<CELL; i++)
+						if (!(i&j&1))
+							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+				break;
+			case 8:
+				for (j=0; j<CELL; j++)
+					for (i=0; i<CELL; i++)
+						if (!(j%2) && !(i%2))
+							fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
+						else
+							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+				break;
+			case WL_WALL:
+				for (j=0; j<CELL; j++)
+					for (i=0; i<CELL; i++)
+						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+				break;
+			case WL_DESTROYALL:
+				for (j=0; j<CELL; j+=2)
+					for (i=(j>>1)&1; i<CELL; i+=2)
+						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+				break;
+			case WL_ALLOWLIQUID:
+				for (j=0; j<CELL; j++)
+					for (i=0; i<CELL; i++)
+						if (!(j%2) && !(i%2))
+							fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
+				break;
+			case WL_FAN:
+				for (j=0; j<CELL; j+=2)
+					for (i=(j>>1)&1; i<CELL; i+=2)
+						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
+				k++;
+				break;
+			case WL_DETECT:
+				for (j=0; j<CELL; j+=2)
+					for (i=(j>>1)&1; i<CELL; i+=2)
+						fb[(ry+j)*w+(rx+i)] = PIXPACK(0xFF8080);
+				break;
+			case WL_EWALL:
+				for (j=0; j<CELL; j++)
+					for (i=0; i<CELL; i++)
+						if (!(i&j&1))
+							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+				break;
+			case WL_WALLELEC:
+				for (j=0; j<CELL; j++)
+					for (i=0; i<CELL; i++)
+						if (!(j%2) && !(i%2))
+							fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
+						else
+							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
+				break;
+			}
+			p++;
+		}
+	p += 2*k;
+	if (p>=size)
+		goto corrupt;
+
+	for (y=0; y<h; y++)
+		for (x=0; x<w; x++)
+		{
+			if (p >= size)
+				goto corrupt;
+			j=d[p++];
+			if (j<PT_NUM && j>0)
+			{
+				if (j==PT_STKM || j==PT_STKM2 || j==PT_FIGH)
+				{
+					pixel lc, hc=PIXRGB(255, 224, 178);
+					if (j==PT_STKM || j==PT_FIGH) lc = PIXRGB(255, 255, 255);
+					else lc = PIXRGB(100, 100, 255);
+					//only need to check upper bound of y coord - lower bounds and x<w are checked in draw_line
+					draw_line(fb , x-2, y-2, x+2, y-2, PIXR(hc), PIXG(hc), PIXB(hc), w);
+					if (y+2<h)
+					{
+						draw_line(fb , x-2, y+2, x+2, y+2, PIXR(hc), PIXG(hc), PIXB(hc), w);
+						draw_line(fb , x-2, y-2, x-2, y+2, PIXR(hc), PIXG(hc), PIXB(hc), w);
+						draw_line(fb , x+2, y-2, x+2, y+2, PIXR(hc), PIXG(hc), PIXB(hc), w);
+					}
+					if (y+6<h)
+					{
+						draw_line(fb , x, y+3, x-1, y+6, PIXR(lc), PIXG(lc), PIXB(lc), w);
+						draw_line(fb , x, y+3, x+1, y+6, PIXR(lc), PIXG(lc), PIXB(lc), w);
+					}
+					if (y+12<h)
+					{
+						draw_line(fb , x-1, y+6, x-3, y+12, PIXR(lc), PIXG(lc), PIXB(lc), w);
+						draw_line(fb , x+1, y+6, x+3, y+12, PIXR(lc), PIXG(lc), PIXB(lc), w);
+					}
+				}
+				else
+					fb[y*w+x] = ptypes[j].pcolors;
+			}
+		}
+
+	free(d);
+	*width = w;
+	*height = h;
+	return fb;
+
+corrupt:
+	free(d);
+	free(fb);
+	return NULL;
+}
+
 void *build_save_PSv(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h, unsigned char bmap[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
 {
 	unsigned char *d=calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*15+MAXSIGNS*262), *c;
