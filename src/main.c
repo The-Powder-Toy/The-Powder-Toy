@@ -1014,7 +1014,7 @@ int main(int argc, char *argv[])
 		
 		gravity_update_async(); //Check for updated velocity maps from gravity thread
 		if (!sys_pause||framerender) //Only update if not paused
-			memset(gravmap, 0, sizeof(gravmap)); //Clear the old gravmap
+			memset(gravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float)); //Clear the old gravmap
 
 		if (framerender) {
 			framerender = 0;
@@ -2258,8 +2258,7 @@ int main(int argc, char *argv[])
 					if (!bq)
 						add_sign_ui(vid_buf, x, y);
 				}
-
-				if (c==PT_FIGH)
+				else if (c==PT_FIGH)
 				{
 					if (!bq)
 						create_part(-1, x, y, PT_FIGH);

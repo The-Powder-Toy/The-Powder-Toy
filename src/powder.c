@@ -2940,7 +2940,7 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags)
 	{
 		if (wall==r)
 		{
-			if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV)
+			if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV || wall == WL_SIGN)
 				break;
 			if (wall == WL_ERASE)
 				b = 0;
