@@ -21,7 +21,7 @@
 #include <time.h>
 #include <limits.h>
 
-#include "bson.h"
+#include "BSON.h"
 
 const int initialBufferSize = 128;
 
