@@ -536,4 +536,12 @@ int graphics_COAL(GRAPHICS_FUNC_ARGS) //Both COAL and Broken Coal
 	}
 	return 0;
 }
-
+int graphics_COOK(GRAPHICS_FUNC_ARGS)
+{
+	int z = cpart->tmp - 5;//speckles!
+	int y = cpart->life/3; // Burning!!
+	*colr += z * 16 - y;
+	*colg += z * 16 - y;
+	*colb += z * 16 - y;
+	return 0;
+}

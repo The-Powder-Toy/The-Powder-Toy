@@ -224,6 +224,14 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 						parts[i].life = 100;
 					kill_part(r>>8);
 				}
+				if ((r&0xFF) == PT_COOK && parts[i].life<100) //Plant gives him 5 HP
+				{
+					if (parts[i].life<=95)
+						parts[i].life += 5;
+					else
+						parts[i].life = 100;
+					kill_part(r>>8);
+				}
 
 				if ((r&0xFF) == PT_NEUT)
 				{
