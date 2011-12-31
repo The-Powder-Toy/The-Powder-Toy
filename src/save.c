@@ -81,20 +81,24 @@ pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h, unsigned char bmap[YRES/CELL][XRES/CELL], float vx[YRES/CELL][XRES/CELL], float vy[YRES/CELL][XRES/CELL], float pv[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* o_partsptr)
 {
 	particle *partsptr = o_partsptr;
-	unsigned char *partsData = NULL, *fanData = NULL, *wallData = NULL, *finalData = NULL, *outputData = NULL;
-	int partsDataLen, fanDataLen, wallDataLen, finalDataLen, outputDataLen;
+	unsigned char *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *finalData = NULL, *outputData = NULL;
+	unsigned *partsPosLink = NULL, *partsPosFirstMap = NULL, *partsPosCount = NULL, *partsPosLastMap = NULL;
+	int partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, finalDataLen, outputDataLen;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int x, y, i, wallDataFound = 0;
+	int posCount;
 	
 	//Get coords in blocks
 	blockX = orig_x0/CELL;
 	blockY = orig_y0/CELL;
-	blockW = orig_w/CELL;
-	blockH = orig_h/CELL;
-	
+
 	//Snap full coords to block size
 	fullX = blockX*CELL;
 	fullY = blockY*CELL;
+
+	//Original size + offset of original corner from snapped corner, rounded up by adding CELL-1
+	blockW = (orig_w+orig_x0-fullX+CELL-1)/CELL;
+	blockH = (orig_h+orig_y0-fullY+CELL-1)/CELL;
 	fullW = blockW*CELL;
 	fullH = blockH*CELL;
 	
@@ -134,6 +138,57 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 		wallData = NULL;
 	}
 	
+	//Index positions of all particles, using linked lists
+	//partsPosFirstMap is pmap for the first particle in each position
+	//partsPosLastMap is pmap for the last particle in each position
+	//partsPosCount is the number of particles in each position
+	//partsPosLink contains, for each particle, (i<<8)|1 of the next particle in the same position
+	partsPosFirstMap = calloc(fullW*fullH, sizeof(unsigned));
+	partsPosLastMap = calloc(fullW*fullH, sizeof(unsigned));
+	partsPosCount = calloc(fullW*fullH, sizeof(unsigned));
+	partsPosLink = calloc(NPART, sizeof(unsigned));
+	for(i = 0; i < NPART; i++)
+	{
+		if(partsptr[i].type)
+		{
+			x = (int)(partsptr[i].x+0.5f);
+			y = (int)(partsptr[i].y+0.5f);
+			if (x>=orig_x0 && x<orig_x0+orig_w && y>=orig_y0 && y<orig_y0+orig_h)
+			{
+				//Coordinates relative to top left corner of saved area
+				x -= fullX;
+				y -= fullY;
+				if (!partsPosFirstMap[y*fullW + x])
+				{
+					//First entry in list
+					partsPosFirstMap[y*fullW + x] = (i<<8)|1;
+					partsPosLastMap[y*fullW + x] = (i<<8)|1;
+				}
+				else
+				{
+					//Add to end of list
+					partsPosLink[partsPosLastMap[y*fullW + x]>>8] = (i<<8)|1;//link to current end of list
+					partsPosLastMap[y*fullW + x] = (i<<8)|1;//set as new end of list
+				}
+				partsPosCount[y*fullW + x]++;
+			}
+		}
+	}
+
+	//Store number of particles in each position
+	partsPosData = malloc(fullW*fullH*3);
+	partsPosDataLen = 0;
+	for (y=0;y<fullH;y++)
+	{
+		for (x=0;x<fullW;x++)
+		{
+			posCount = partsPosCount[y*fullW + x];
+			partsPosData[partsPosDataLen++] = (posCount&0x00FF0000)>>16;
+			partsPosData[partsPosDataLen++] = (posCount&0x0000FF00)>>8;
+			partsPosData[partsPosDataLen++] = (posCount&0x000000FF);
+		}
+	}
+
 	//Copy parts data
 	/* Field descriptor format:
 	|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|
@@ -142,25 +197,24 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	*/
 	partsData = malloc(NPART * (sizeof(particle)+1));
 	partsDataLen = 0;
-	for(i = 0; i < NPART; i++)
+	for (y=0;y<fullH;y++)
 	{
-		if(parts[i].type)
+		for (x=0;x<fullW;x++)
 		{
-			x = (int)(parts[i].x+0.5f)-fullX;
-			y = (int)(parts[i].y+0.5f)-fullY;
-			if(x >= 0 && x <= fullW && y >= 0 && y <= fullH)
+			//Find the first particle in this position
+			i = partsPosFirstMap[y*fullW + x];
+
+			//Loop while there is a pmap entry
+			while (i)
 			{
 				unsigned char fieldDesc = 0;
 				int fieldDescLoc = 0, tempTemp, vTemp;
 				
+				//Turn pmap entry into a partsptr index
+				i = i>>8;
+
 				//Type (required)
 				partsData[partsDataLen++] = partsptr[i].type;
-				
-				//X and Y coord (required), 2 bytes each
-				partsData[partsDataLen++] = x;
-				partsData[partsDataLen++] = x >> 8;
-				partsData[partsDataLen++] = y;
-				partsData[partsDataLen++] = y >> 8;
 				
 				//Temperature (required), 2 bytes
 				tempTemp = partsptr[i].temp;
@@ -233,6 +287,9 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 				
 				//Write the field descriptor;
 				partsData[fieldDescLoc] = fieldDesc;
+
+				//Get the pmap entry for the next particle in the same position
+				i = partsPosLink[i];
 			}
 		}
 	}
@@ -251,6 +308,8 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	bson_append_int(&b, "airMode", airMode);
 	if(partsData)
 		bson_append_binary(&b, "parts", BSON_BIN_USER, partsData, partsDataLen);
+	if(partsPosData)
+		bson_append_binary(&b, "partsPos", BSON_BIN_USER, partsPosData, partsPosDataLen);
 	if(wallData)
 		bson_append_binary(&b, "wallMap", BSON_BIN_USER, wallData, wallDataLen);
 	if(fanData)
@@ -285,6 +344,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 		goto fin;
 	}
 	
+	printf("compressed data: %d\n", outputDataLen);
 	*size = outputDataLen + 12;
 	
 fin:
@@ -302,8 +362,8 @@ fin:
 int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float vx[YRES/CELL][XRES/CELL], float vy[YRES/CELL][XRES/CELL], float pv[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* o_partsptr, unsigned pmap[YRES][XRES])
 {
 	particle *partsptr = o_partsptr;
-	unsigned char * inputData = save, *bsonData = NULL, *partsData = NULL, *fanData = NULL, *wallData = NULL;
-	int inputDataLen = size, bsonDataLen = 0, partsDataLen, fanDataLen, wallDataLen;
+	unsigned char * inputData = save, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL;
+	int inputDataLen = size, bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen;
 	int i, freeIndicesCount, x, y, returnCode = 0, j;
 	int *freeIndices = NULL;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
@@ -346,12 +406,15 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 	bsonDataLen |= ((unsigned)inputData[10]) << 16;
 	bsonDataLen |= ((unsigned)inputData[11]) << 24;
 	
-	bsonData = malloc(bsonDataLen);
+	bsonData = malloc(bsonDataLen+1);
 	if(!bsonData)
 	{
 		fprintf(stderr, "Internal error while parsing save: could not allocate buffer\n");
 		return 3;
 	}
+	//Make sure bsonData is null terminated, since all string functions need null terminated strings
+	//(bson_iterator_key returns a pointer into bsonData, which is then used with strcmp)
+	bsonData[bsonDataLen] = 0;
 	
 	if (BZ2_bzBuffToBuffDecompress(bsonData, &bsonDataLen, inputData+12, inputDataLen-12, 0, 0))
 	{
@@ -375,6 +438,17 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 			else
 			{
 				fprintf(stderr, "Invalid datatype of particle data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+		if(strcmp(bson_iterator_key(&iter), "partsPos")==0)
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (partsPosDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				partsPosData = bson_iterator_bin_data(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of particle position data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
 			}
 		}
 		else if(strcmp(bson_iterator_key(&iter), "wallMap")==0)
@@ -501,10 +575,17 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 	}
 	
 	//Read particle data
-	if(partsData)
+	if(partsData && partsPosData)
 	{
 		int newIndex = 0, fieldDescriptor, tempTemp;
+		int posCount, posTotal, partsPosDataIndex = 0;
+		int saved_x, saved_y;
 		puts("Have particle data");
+		if(fullW * fullH * 3 > partsPosDataLen)
+		{
+			fprintf(stderr, "Not enough particle position data");
+			goto fail;
+		}
 		parts_lastActiveIndex = NPART-1;
 		freeIndicesCount = 0;
 		freeIndices = calloc(sizeof(int), NPART);
@@ -521,104 +602,116 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 				freeIndices[freeIndicesCount++] = i;
 		}
 		i = 0;
-		//i+7 because we have 8 bytes of required fields (type (1), x (2), y (2), temp (2), descriptor (1))
-		while(i+7 < partsDataLen)
+		for (saved_y=0; saved_y<fullH; saved_y++)
 		{
-			x = partsData[i+1] | (((unsigned)partsData[i+2])<<8);
-			y = partsData[i+3] | (((unsigned)partsData[i+4])<<8);
-			x += fullX;
-			y += fullY;
-			fieldDescriptor = partsData[i+7];
-			if(x >= XRES || x < 0 || y >= YRES || y < 0)
+			for (saved_x=0; saved_x<fullW; saved_x++)
 			{
-				fprintf(stderr, "Out of range [%d]: %d %d, [%d, %d], [%d, %d]\n", i, x, y, (unsigned)partsData[i+1], (unsigned)partsData[i+2], (unsigned)partsData[i+3], (unsigned)partsData[i+4]);
-				goto fail;
-			}
-			if(partsData[i] > NPART)
-				partsData[i+1] = PT_DMND;	//Replace all invalid powders with diamond
-			if(pmap[y][x])
-			{
-				//Replace existing particle or allocated block
-				newIndex = pmap[y][x]>>8;
-			}
-			else if(freeIndicesCount)
-			{
-				//Create new particle
-				newIndex = freeIndices[--freeIndicesCount];
-			}
-			else
-			{
-				//Nowhere to put new particle, tpt is sad :(
-				break;
-			}
-			if(newIndex < 0 || newIndex >= NPART)
-				goto fail;
-				
-			//Clear the particle, ready for our new properties
-			memset(&(partsptr[newIndex]), 0, sizeof(particle));
-			
-			//Required fields
-			partsptr[newIndex].type = partsData[i];
-			partsptr[newIndex].x = x;
-			partsptr[newIndex].y = y;
-			partsptr[newIndex].temp = (partsData[i+5] | (partsData[i+6]<<8));
-			i+=8;
-			
-			//Read life
-			if(fieldDescriptor & 0x01)
-			{
-				if(i >= partsDataLen) goto fail;
-				partsptr[newIndex].life = partsData[i++];
-				//Read 2nd byte
-				if(fieldDescriptor & 0x02)
+				//Read total number of particles at this position
+				posTotal = 0;
+				posTotal |= partsPosData[partsPosDataIndex++]<<16;
+				posTotal |= partsPosData[partsPosDataIndex++]<<8;
+				posTotal |= partsPosData[partsPosDataIndex++];
+				//Put the next posTotal particles at this position
+				for (posCount=0; posCount<posTotal; posCount++)
 				{
-					if(i >= partsDataLen) goto fail;
-					partsptr[newIndex].life |= partsData[i++];
+					//i+3 because we have 4 bytes of required fields (type (1), temp (2), descriptor (1))
+					if (i+3 >= partsDataLen)
+						goto fail;
+					x = saved_x + fullX;
+					y = saved_y + fullY;
+					fieldDescriptor = partsData[i+3];
+					if(x >= XRES || x < 0 || y >= YRES || y < 0)
+					{
+						fprintf(stderr, "Out of range [%d]: %d %d, [%d, %d], [%d, %d]\n", i, x, y, (unsigned)partsData[i+1], (unsigned)partsData[i+2], (unsigned)partsData[i+3], (unsigned)partsData[i+4]);
+						goto fail;
+					}
+					if(partsData[i] > PT_NUM)
+						partsData[i] = PT_DMND;	//Replace all invalid powders with diamond
+					if(pmap[y][x])
+					{
+						//Replace existing particle or allocated block
+						newIndex = pmap[y][x]>>8;
+					}
+					else if(freeIndicesCount)
+					{
+						//Create new particle
+						newIndex = freeIndices[--freeIndicesCount];
+					}
+					else
+					{
+						//Nowhere to put new particle, tpt is sad :(
+						break;
+					}
+					if(newIndex < 0 || newIndex >= NPART)
+						goto fail;
+						
+					//Clear the particle, ready for our new properties
+					memset(&(partsptr[newIndex]), 0, sizeof(particle));
+					
+					//Required fields
+					partsptr[newIndex].type = partsData[i];
+					partsptr[newIndex].x = x;
+					partsptr[newIndex].y = y;
+					partsptr[newIndex].temp = (partsData[i+1] | (partsData[i+2]<<8));
+					i+=4;
+					
+					//Read life
+					if(fieldDescriptor & 0x01)
+					{
+						if(i >= partsDataLen) goto fail;
+						partsptr[newIndex].life = partsData[i++];
+						//Read 2nd byte
+						if(fieldDescriptor & 0x02)
+						{
+							if(i >= partsDataLen) goto fail;
+							partsptr[newIndex].life |= partsData[i++];
+						}
+					}
+					
+					//Read tmp
+					if(fieldDescriptor & 0x04)
+					{
+						if(i >= partsDataLen) goto fail;
+						partsptr[newIndex].tmp = partsData[i++];
+						//Read 2nd byte
+						if(fieldDescriptor & 0x08)
+						{
+							if(i >= partsDataLen) goto fail;
+							partsptr[newIndex].tmp |= partsData[i++];
+						}
+					}
+					
+					//Read ctype
+					if(fieldDescriptor & 0x10)
+					{
+						if(i >= partsDataLen) goto fail;
+						partsptr[newIndex].ctype = partsData[i++];
+					}
+					
+					//Read dcolour
+					if(fieldDescriptor & 0x20)
+					{
+						if(i+3 >= partsDataLen) goto fail;
+						partsptr[newIndex].dcolour = partsData[i++];
+						partsptr[newIndex].dcolour = partsData[i++];
+						partsptr[newIndex].dcolour = partsData[i++];
+						partsptr[newIndex].dcolour = partsData[i++];
+					}
+					
+					//Read vx
+					if(fieldDescriptor & 0x40)
+					{
+						if(i >= partsDataLen) goto fail;
+						partsptr[newIndex].vx = (partsData[i++]-127.0f)/16.0f;
+					}
+					
+					//Read vy
+					if(fieldDescriptor & 0x80)
+					{
+						if(i >= partsDataLen) goto fail;
+						partsptr[newIndex].vy = (partsData[i++]-127.0f)/16.0f;
+					}
 				}
-			}
-			
-			//Read tmp
-			if(fieldDescriptor & 0x04)
-			{
-				if(i >= partsDataLen) goto fail;
-				partsptr[newIndex].tmp = partsData[i++];
-				//Read 2nd byte
-				if(fieldDescriptor & 0x08)
-				{
-					if(i >= partsDataLen) goto fail;
-					partsptr[newIndex].tmp |= partsData[i++];
-				}
-			}
-			
-			//Read ctype
-			if(fieldDescriptor & 0x10)
-			{
-				if(i >= partsDataLen) goto fail;
-				partsptr[newIndex].ctype = partsData[i++];
-			}
-			
-			//Read dcolour
-			if(fieldDescriptor & 0x20)
-			{
-				if(i+3 >= partsDataLen) goto fail;
-				partsptr[newIndex].dcolour = partsData[i++];
-				partsptr[newIndex].dcolour = partsData[i++];
-				partsptr[newIndex].dcolour = partsData[i++];
-				partsptr[newIndex].dcolour = partsData[i++];
-			}
-			
-			//Read vx
-			if(fieldDescriptor & 0x40)
-			{
-				if(i >= partsDataLen) goto fail;
-				partsptr[newIndex].vx = (partsData[i++]-127.0f)/16.0f;
-			}
-			
-			//Read vy
-			if(fieldDescriptor & 0x80)
-			{
-				if(i >= partsDataLen) goto fail;
-				partsptr[newIndex].vy = (partsData[i++]-127.0f)/16.0f;
 			}
 		}
 	}
