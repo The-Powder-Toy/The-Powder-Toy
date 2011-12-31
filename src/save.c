@@ -86,7 +86,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	int partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, finalDataLen, outputDataLen;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int x, y, i, wallDataFound = 0;
-	int posCount;
+	int posCount, signsCount;
 	
 	//Get coords in blocks
 	blockX = orig_x0/CELL;
@@ -191,8 +191,8 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 
 	//Copy parts data
 	/* Field descriptor format:
-	|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|
-	|		vy		|		vx		|	dcololour	|	ctype		|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|
+	|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|
+																													|		vy		|		vx		|	dcololour	|	ctype		|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
 	life[2] means a second byte (for a 16 bit field) if life[1] is present
 	*/
 	partsData = malloc(NPART * (sizeof(particle)+1));
@@ -207,7 +207,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 			//Loop while there is a pmap entry
 			while (i)
 			{
-				unsigned char fieldDesc = 0;
+				unsigned short fieldDesc = 0;
 				int fieldDescLoc = 0, tempTemp, vTemp;
 				
 				//Turn pmap entry into a partsptr index
@@ -216,22 +216,33 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 				//Type (required)
 				partsData[partsDataLen++] = partsptr[i].type;
 				
-				//Temperature (required), 2 bytes
-				tempTemp = partsptr[i].temp;
-				partsData[partsDataLen++] = tempTemp;
-				partsData[partsDataLen++] = tempTemp >> 8;
-				
 				//Location of the field descriptor
 				fieldDescLoc = partsDataLen++;
+				partsDataLen++;
+				
+				//Extra Temperature (2nd byte optional, 1st required), 1 to 2 bytes
+				//Store temperature as an offset of 21C(294.15K) or go into a 16byte int and store the whole thing
+				if(fabs(partsptr[i].temp-294.15f)<127)
+				{
+					tempTemp = (partsptr[i].temp-294.15f);
+					partsData[partsDataLen++] = tempTemp;
+				}
+				else
+				{
+					fieldDesc |= 1;
+					tempTemp = partsptr[i].temp;
+					partsData[partsDataLen++] = tempTemp;
+					partsData[partsDataLen++] = tempTemp >> 8;
+				}
 				
 				//Life (optional), 1 to 2 bytes
 				if(partsptr[i].life)
 				{
-					fieldDesc |= 1;
+					fieldDesc |= 1 << 1;
 					partsData[partsDataLen++] = partsptr[i].life;
 					if(partsptr[i].life > 255)
 					{
-						fieldDesc |= 1 << 1;
+						fieldDesc |= 1 << 2;
 						partsData[partsDataLen++] = partsptr[i].life >> 8;
 					}
 				}
@@ -239,11 +250,11 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 				//Tmp (optional), 1 to 2 bytes
 				if(partsptr[i].tmp)
 				{
-					fieldDesc |= 1 << 2;
+					fieldDesc |= 1 << 3;
 					partsData[partsDataLen++] = partsptr[i].tmp;
 					if(partsptr[i].tmp > 255)
 					{
-						fieldDesc |= 1 << 3;
+						fieldDesc |= 1 << 4;
 						partsData[partsDataLen++] = partsptr[i].tmp >> 8;
 					}
 				}
@@ -251,14 +262,14 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 				//Ctype (optional), 1 byte
 				if(partsptr[i].ctype)
 				{
-					fieldDesc |= 1 << 4;
+					fieldDesc |= 1 << 5;
 					partsData[partsDataLen++] = partsptr[i].ctype;
 				}
 				
 				//Dcolour (optional), 4 bytes
 				if(partsptr[i].dcolour && (partsptr[i].dcolour & 0xFF000000))
 				{
-					fieldDesc |= 1 << 5;
+					fieldDesc |= 1 << 6;
 					partsData[partsDataLen++] = (partsptr[i].dcolour&0xFF000000)>>24;
 					partsData[partsDataLen++] = (partsptr[i].dcolour&0x00FF0000)>>16;
 					partsData[partsDataLen++] = (partsptr[i].dcolour&0x0000FF00)>>8;
@@ -268,7 +279,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 				//VX (optional), 1 byte
 				if(fabs(partsptr[i].vx) > 0.001f)
 				{
-					fieldDesc |= 1 << 6;
+					fieldDesc |= 1 << 7;
 					vTemp = (int)(partsptr[i].vx*16.0f+127.5f);
 					if (vTemp<0) vTemp=0;
 					if (vTemp>255) vTemp=255;
@@ -278,7 +289,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 				//VY (optional), 1 byte
 				if(fabs(partsptr[i].vy) > 0.001f)
 				{
-					fieldDesc |= 1 << 7;
+					fieldDesc |= 1 << 8;
 					vTemp = (int)(partsptr[i].vy*16.0f+127.5f);
 					if (vTemp<0) vTemp=0;
 					if (vTemp>255) vTemp=255;
@@ -287,6 +298,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 				
 				//Write the field descriptor;
 				partsData[fieldDescLoc] = fieldDesc;
+				partsData[fieldDescLoc+1] = fieldDesc>>8;
 
 				//Get the pmap entry for the next particle in the same position
 				i = partsPosLink[i];
@@ -314,6 +326,31 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 		bson_append_binary(&b, "wallMap", BSON_BIN_USER, wallData, wallDataLen);
 	if(fanData)
 		bson_append_binary(&b, "fanMap", BSON_BIN_USER, fanData, fanDataLen);
+	signsCount = 0;
+	for(i = 0; i < MAXSIGNS; i++)
+	{
+		if(signs[i].text[0] && signs[i].x>=fullX && signs[i].x<=fullX+fullW && signs[i].y>=fullY && signs[i].y<=fullY+fullH)
+		{
+			signsCount++;
+		}
+	}
+	if(signsCount)
+	{
+		bson_append_start_array(&b, "signs");
+		for(i = 0; i < MAXSIGNS; i++)
+		{
+			if(signs[i].text[0] && signs[i].x>=fullX && signs[i].x<=fullX+fullW && signs[i].y>=fullY && signs[i].y<=fullY+fullH)
+			{
+				bson_append_start_object(&b, "sign");
+				bson_append_string(&b, "text", signs[i].text);
+				bson_append_int(&b, "justification", signs[i].ju);
+				bson_append_int(&b, "x", signs[i].x-fullX);
+				bson_append_int(&b, "y", signs[i].y-fullY);
+				bson_append_finish_object(&b);
+			}
+		}
+	}
+	bson_append_finish_array(&b);
 	bson_finish(&b);
 	bson_print(&b);
 	
@@ -422,14 +459,77 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 		return 1;
 	}
 	
+	if(replace)
+	{
+		//Remove everything
+		clear_sim();
+	}
+	
 	bson b;
 	bson_iterator iter;
 	bson_init_data(&b, bsonData);
 	bson_iterator_init(&iter, &b);
-	while(bson_iterator_more(&iter))
+	while(bson_iterator_next(&iter))
 	{
-		bson_iterator_next(&iter);
-		if(strcmp(bson_iterator_key(&iter), "parts")==0)
+		if(strcmp(bson_iterator_key(&iter), "signs")==0)
+		{
+			if(bson_iterator_type(&iter)==BSON_ARRAY)
+			{
+				bson_iterator subiter;
+				bson_iterator_subiterator(&iter, &subiter);
+				while(bson_iterator_next(&subiter))
+				{
+					if(strcmp(bson_iterator_key(&subiter), "sign")==0)
+					{
+						if(bson_iterator_type(&subiter)==BSON_OBJECT)
+						{
+							bson_iterator signiter;
+							bson_iterator_subiterator(&subiter, &signiter);
+							//Find a free sign ID
+							for (i = 0; i < MAXSIGNS; i++)
+								if (!signs[i].text[0])
+									break;
+							//Stop reading signs if we have no free spaces
+							if(i >= MAXSIGNS)
+								break;
+							while(bson_iterator_next(&signiter))
+							{
+								if(strcmp(bson_iterator_key(&signiter), "text")==0 && bson_iterator_type(&signiter)==BSON_STRING)
+								{
+									strcpy(signs[i].text, bson_iterator_string(&signiter));
+									clean_text(signs[i].text, 158-14);
+								}
+								else if(strcmp(bson_iterator_key(&signiter), "justification")==0 && bson_iterator_type(&signiter)==BSON_INT)
+								{
+									signs[i].ju = bson_iterator_int(&signiter);
+								}
+								else if(strcmp(bson_iterator_key(&signiter), "x")==0 && bson_iterator_type(&signiter)==BSON_INT)
+								{
+									signs[i].x = bson_iterator_int(&signiter)+fullX;
+								}
+								else if(strcmp(bson_iterator_key(&signiter), "y")==0 && bson_iterator_type(&signiter)==BSON_INT)
+								{
+									signs[i].y = bson_iterator_int(&signiter)+fullY;
+								}
+								else
+								{
+									fprintf(stderr, "Unknown sign property %s\n", bson_iterator_key(&signiter));
+								}
+							}
+						}
+						else
+						{
+							fprintf(stderr, "Wrong type for \n", bson_iterator_key(&subiter));
+						}
+					}
+				}
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "parts")==0)
 		{
 			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (partsDataLen = bson_iterator_bin_len(&iter)) > 0)
 			{
@@ -541,12 +641,6 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 		}
 	}
 	
-	if(replace)
-	{
-		//Remove everything
-		clear_sim();
-	}
-	
 	//Read wall and fan data
 	if(wallData)
 	{
@@ -580,7 +674,6 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 		int newIndex = 0, fieldDescriptor, tempTemp;
 		int posCount, posTotal, partsPosDataIndex = 0;
 		int saved_x, saved_y;
-		puts("Have particle data");
 		if(fullW * fullH * 3 > partsPosDataLen)
 		{
 			fprintf(stderr, "Not enough particle position data");
@@ -614,12 +707,13 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 				//Put the next posTotal particles at this position
 				for (posCount=0; posCount<posTotal; posCount++)
 				{
-					//i+3 because we have 4 bytes of required fields (type (1), temp (2), descriptor (1))
+					//i+3 because we have 4 bytes of required fields (type (1), descriptor (2), temp (1))
 					if (i+3 >= partsDataLen)
 						goto fail;
 					x = saved_x + fullX;
 					y = saved_y + fullY;
-					fieldDescriptor = partsData[i+3];
+					fieldDescriptor = partsData[i+1];
+					fieldDescriptor |= partsData[i+2] << 8;
 					if(x >= XRES || x < 0 || y >= YRES || y < 0)
 					{
 						fprintf(stderr, "Out of range [%d]: %d %d, [%d, %d], [%d, %d]\n", i, x, y, (unsigned)partsData[i+1], (unsigned)partsData[i+2], (unsigned)partsData[i+3], (unsigned)partsData[i+4]);
@@ -652,16 +746,30 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 					partsptr[newIndex].type = partsData[i];
 					partsptr[newIndex].x = x;
 					partsptr[newIndex].y = y;
-					partsptr[newIndex].temp = (partsData[i+1] | (partsData[i+2]<<8));
-					i+=4;
+					i+=3;
+					
+					//Read temp
+					if(fieldDescriptor & 0x01)
+					{
+						//Full 16bit int
+						tempTemp = partsData[i++];
+						tempTemp |= (((unsigned)partsData[i++]) << 8);
+						partsptr[newIndex].temp = tempTemp;
+					}
+					else
+					{
+						//1 Byte room temp offset
+						tempTemp = (char)partsData[i++];
+						partsptr[newIndex].temp = tempTemp+294.15f;
+					}
 					
 					//Read life
-					if(fieldDescriptor & 0x01)
+					if(fieldDescriptor & 0x02)
 					{
 						if(i >= partsDataLen) goto fail;
 						partsptr[newIndex].life = partsData[i++];
 						//Read 2nd byte
-						if(fieldDescriptor & 0x02)
+						if(fieldDescriptor & 0x04)
 						{
 							if(i >= partsDataLen) goto fail;
 							partsptr[newIndex].life |= partsData[i++];
@@ -669,12 +777,12 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 					}
 					
 					//Read tmp
-					if(fieldDescriptor & 0x04)
+					if(fieldDescriptor & 0x08)
 					{
 						if(i >= partsDataLen) goto fail;
 						partsptr[newIndex].tmp = partsData[i++];
 						//Read 2nd byte
-						if(fieldDescriptor & 0x08)
+						if(fieldDescriptor & 0x10)
 						{
 							if(i >= partsDataLen) goto fail;
 							partsptr[newIndex].tmp |= partsData[i++];
@@ -682,31 +790,31 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 					}
 					
 					//Read ctype
-					if(fieldDescriptor & 0x10)
+					if(fieldDescriptor & 0x20)
 					{
 						if(i >= partsDataLen) goto fail;
 						partsptr[newIndex].ctype = partsData[i++];
 					}
 					
 					//Read dcolour
-					if(fieldDescriptor & 0x20)
+					if(fieldDescriptor & 0x40)
 					{
 						if(i+3 >= partsDataLen) goto fail;
 						partsptr[newIndex].dcolour = partsData[i++];
-						partsptr[newIndex].dcolour = partsData[i++];
-						partsptr[newIndex].dcolour = partsData[i++];
-						partsptr[newIndex].dcolour = partsData[i++];
+						partsptr[newIndex].dcolour |= partsData[i++]<<8;
+						partsptr[newIndex].dcolour |= partsData[i++]<<16;
+						partsptr[newIndex].dcolour |= partsData[i++]<<24;
 					}
 					
 					//Read vx
-					if(fieldDescriptor & 0x40)
+					if(fieldDescriptor & 0x80)
 					{
 						if(i >= partsDataLen) goto fail;
 						partsptr[newIndex].vx = (partsData[i++]-127.0f)/16.0f;
 					}
 					
 					//Read vy
-					if(fieldDescriptor & 0x80)
+					if(fieldDescriptor & 0x100)
 					{
 						if(i >= partsDataLen) goto fail;
 						partsptr[newIndex].vy = (partsData[i++]-127.0f)/16.0f;
