@@ -43,39 +43,250 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 
 pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 {
-	unsigned char * inputData = save;
-	int blockH, blockW, fullW, fullH;
+	unsigned char * inputData = save, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *wallData = NULL;
+	int inputDataLen = size, bsonDataLen = 0, partsDataLen, partsPosDataLen, wallDataLen;
+	int i, x, y, j;
+	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
+	pixel * vidBuf = NULL;
+	
 	//Block sizes
+	blockX = 0;
+	blockY = 0;
 	blockW = inputData[6];
 	blockH = inputData[7];
 	
 	//Full size, normalised
+	fullX = 0;
+	fullY = 0;
 	fullW = blockW*CELL;
 	fullH = blockH*CELL;
+	
+	//
+	*width = fullW;
+	*height = fullH;
 	
 	//From newer version
 	if(inputData[4] > SAVE_VERSION)
 	{
-		return NULL;
+		fprintf(stderr, "Save from newer version\n");
+		goto fail;
 	}
 		
 	//Incompatible cell size
 	if(inputData[5] > CELL)
 	{
-		return NULL;
+		fprintf(stderr, "Cell size mismatch\n");
+		goto fail;
 	}
 		
 	//Too large/off screen
-	if(blockW > XRES/CELL || blockH > YRES/CELL)
+	if(blockX+blockW > XRES/CELL || blockY+blockH > YRES/CELL)
 	{
-		return NULL;
+		fprintf(stderr, "Save too large\n");
+		goto fail;
 	}
-	*height = fullH;
-	*width = fullW;
 	
-	//Todo: Read and draw particles
+	bsonDataLen = ((unsigned)inputData[8]);
+	bsonDataLen |= ((unsigned)inputData[9]) << 8;
+	bsonDataLen |= ((unsigned)inputData[10]) << 16;
+	bsonDataLen |= ((unsigned)inputData[11]) << 24;
 	
-	return malloc((fullH * fullW) * sizeof(pixel));
+	bsonData = malloc(bsonDataLen+1);
+	if(!bsonData)
+	{
+		fprintf(stderr, "Internal error while parsing save: could not allocate buffer\n");
+		goto fail;
+	}
+	//Make sure bsonData is null terminated, since all string functions need null terminated strings
+	//(bson_iterator_key returns a pointer into bsonData, which is then used with strcmp)
+	bsonData[bsonDataLen] = 0;
+	
+	if (BZ2_bzBuffToBuffDecompress(bsonData, &bsonDataLen, inputData+12, inputDataLen-12, 0, 0))
+	{
+		fprintf(stderr, "Unable to decompress\n");
+		goto fail;
+	}
+	
+	bson b;
+	bson_iterator iter;
+	bson_init_data(&b, bsonData);
+	bson_iterator_init(&iter, &b);
+	while(bson_iterator_next(&iter))
+	{
+		if(strcmp(bson_iterator_key(&iter), "parts")==0)
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (partsDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				partsData = bson_iterator_bin_data(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of particle data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+		if(strcmp(bson_iterator_key(&iter), "partsPos")==0)
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (partsPosDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				partsPosData = bson_iterator_bin_data(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of particle position data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "wallMap")==0)
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (wallDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				wallData = bson_iterator_bin_data(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of wall data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+	}
+	
+	vidBuf = calloc(fullW*fullH, PIXELSIZE);
+	
+	//Read wall and fan data
+	if(wallData)
+	{
+		if(blockW * blockH > wallDataLen)
+		{
+			fprintf(stderr, "Not enough wall data\n");
+			goto fail;
+		}
+		for(x = 0; x < blockW; x++)
+		{
+			for(y = 0; y < blockH; y++)
+			{
+				if(wallData[y*blockW+x])
+				{
+					for(i = 0; i < CELL; i++)
+					{
+						for(j = 0; j < CELL; j++)
+						{
+							vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = PIXPACK(0xCCCCCC);
+						}
+					}
+				};
+			}
+		}
+	}
+	
+	//Read particle data
+	if(partsData && partsPosData)
+	{
+		int fieldDescriptor;
+		int posCount, posTotal, partsPosDataIndex = 0;
+		int saved_x, saved_y;
+		if(fullW * fullH * 3 > partsPosDataLen)
+		{
+			fprintf(stderr, "Not enough particle position data\n");
+			goto fail;
+		}
+		i = 0;
+		for (saved_y=0; saved_y<fullH; saved_y++)
+		{
+			for (saved_x=0; saved_x<fullW; saved_x++)
+			{
+				//Read total number of particles at this position
+				posTotal = 0;
+				posTotal |= partsPosData[partsPosDataIndex++]<<16;
+				posTotal |= partsPosData[partsPosDataIndex++]<<8;
+				posTotal |= partsPosData[partsPosDataIndex++];
+				//Put the next posTotal particles at this position
+				for (posCount=0; posCount<posTotal; posCount++)
+				{
+					//i+3 because we have 4 bytes of required fields (type (1), descriptor (2), temp (1))
+					if (i+3 >= partsDataLen)
+						goto fail;
+					x = saved_x + fullX;
+					y = saved_y + fullY;
+					fieldDescriptor = partsData[i+1];
+					fieldDescriptor |= partsData[i+2] << 8;
+					if(x >= XRES || x < 0 || y >= YRES || y < 0)
+					{
+						fprintf(stderr, "Out of range [%d]: %d %d, [%d, %d], [%d, %d]\n", i, x, y, (unsigned)partsData[i+1], (unsigned)partsData[i+2], (unsigned)partsData[i+3], (unsigned)partsData[i+4]);
+						goto fail;
+					}
+					if(partsData[i] >= PT_NUM)
+						partsData[i] = PT_DMND;	//Replace all invalid powders with diamond
+					
+					//Draw type
+					vidBuf[(fullY+y)*fullW+(fullX+x)] = ptypes[partsData[i]].pcolors;
+					i+=3; //Skip Type an Descriptor
+					
+					//Skip temp
+					if(fieldDescriptor & 0x01)
+					{
+						i+=2;
+					}
+					else
+					{
+						i++;
+					}
+					
+					//Skip life
+					if(fieldDescriptor & 0x02)
+					{
+						if(i++ >= partsDataLen) goto fail;
+						if(fieldDescriptor & 0x04)
+						{
+							if(i++ >= partsDataLen) goto fail;
+						}
+					}
+					
+					//Skip tmp
+					if(fieldDescriptor & 0x08)
+					{
+						if(i++ >= partsDataLen) goto fail;
+						if(fieldDescriptor & 0x10)
+						{
+							if(i++ >= partsDataLen) goto fail;
+						}
+					}
+					
+					//Skip ctype
+					if(fieldDescriptor & 0x20)
+					{
+						if(i++ >= partsDataLen) goto fail;
+					}
+					
+					//Skip dcolour
+					if(fieldDescriptor & 0x40)
+					{
+						if(i+3 >= partsDataLen) goto fail;
+						i+=4;
+					}
+					
+					//Read vx
+					if(fieldDescriptor & 0x80)
+					{
+						if(i++ >= partsDataLen) goto fail;
+					}
+					
+					//Read vy
+					if(fieldDescriptor & 0x100)
+					{
+						if(i++ >= partsDataLen) goto fail;
+					}
+				}
+			}
+		}
+	}
+	goto fin;
+fail:
+	if(vidBuf)
+	{
+		free(vidBuf);
+		vidBuf = NULL;
+	}
+fin:
+	bson_destroy(&b);
+	return vidBuf;
 }
 
 void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h, unsigned char bmap[YRES/CELL][XRES/CELL], float vx[YRES/CELL][XRES/CELL], float vy[YRES/CELL][XRES/CELL], float pv[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* o_partsptr)
@@ -420,21 +631,21 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 	//From newer version
 	if(inputData[4] > SAVE_VERSION)
 	{
-		fprintf(stderr, "Save from newer version");
+		fprintf(stderr, "Save from newer version\n");
 		return 2;
 	}
 		
 	//Incompatible cell size
 	if(inputData[5] > CELL)
 	{
-		fprintf(stderr, "Cell size mismatch");
+		fprintf(stderr, "Cell size mismatch\n");
 		return 1;
 	}
 		
 	//Too large/off screen
 	if(blockX+blockW > XRES/CELL || blockY+blockH > YRES/CELL)
 	{
-		fprintf(stderr, "Save too large");
+		fprintf(stderr, "Save too large\n");
 		return 1;
 	}
 	
@@ -455,7 +666,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 	
 	if (BZ2_bzBuffToBuffDecompress(bsonData, &bsonDataLen, inputData+12, inputDataLen-12, 0, 0))
 	{
-		fprintf(stderr, "Unable to decompress");
+		fprintf(stderr, "Unable to decompress\n");
 		return 1;
 	}
 	
@@ -647,7 +858,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 		j = 0;
 		if(blockW * blockH > wallDataLen)
 		{
-			fprintf(stderr, "Not enough wall data");
+			fprintf(stderr, "Not enough wall data\n");
 			goto fail;
 		}
 		for(x = 0; x < blockW; x++)
@@ -659,7 +870,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 				{
 					if(j+1 >= fanDataLen)
 					{
-						fprintf(stderr, "Not enough fan data");
+						fprintf(stderr, "Not enough fan data\n");
 					}
 					fvx[blockY+y][blockX+x] = (fanData[j++]-127.0f)/64.0f;
 					fvy[blockY+y][blockX+x] = (fanData[j++]-127.0f)/64.0f;
@@ -676,7 +887,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 		int saved_x, saved_y;
 		if(fullW * fullH * 3 > partsPosDataLen)
 		{
-			fprintf(stderr, "Not enough particle position data");
+			fprintf(stderr, "Not enough particle position data\n");
 			goto fail;
 		}
 		parts_lastActiveIndex = NPART-1;
@@ -719,7 +930,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 						fprintf(stderr, "Out of range [%d]: %d %d, [%d, %d], [%d, %d]\n", i, x, y, (unsigned)partsData[i+1], (unsigned)partsData[i+2], (unsigned)partsData[i+3], (unsigned)partsData[i+4]);
 						goto fail;
 					}
-					if(partsData[i] > PT_NUM)
+					if(partsData[i] >= PT_NUM)
 						partsData[i] = PT_DMND;	//Replace all invalid powders with diamond
 					if(pmap[y][x])
 					{
