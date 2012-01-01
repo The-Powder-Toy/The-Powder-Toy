@@ -524,6 +524,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	
 	bson b;
 	bson_init(&b);
+	bson_append_bool(&b, "waterEEnabled", water_equal_test);
 	bson_append_bool(&b, "legacyEnable", legacy_enable);
 	bson_append_bool(&b, "gravityEnable", ngrav_enable);
 	bson_append_bool(&b, "paused", sys_pause);
@@ -811,6 +812,17 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 						stop_grav_async();
 				}
 #endif
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "waterEEnabled")==0 && replace)
+		{
+			if(bson_iterator_type(&iter)==BSON_BOOL)
+			{
+				water_equal_test = ((int)bson_iterator_bool(&iter))?1:0;
 			}
 			else
 			{
