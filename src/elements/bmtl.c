@@ -1,8 +1,9 @@
 #include <element.h>
 
 int update_BMTL(UPDATE_FUNC_ARGS) {
-	int r, rx, ry, rt;
-	if (parts[i].tmp>1) {
+	int r, rx, ry, rt, tempFactor;
+	if (parts[i].tmp>1)
+	{
 		parts[i].tmp--;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
@@ -18,7 +19,9 @@ int update_BMTL(UPDATE_FUNC_ARGS) {
 						parts[r>>8].tmp=(parts[i].tmp<=7)?parts[i].tmp=1:parts[i].tmp-(rand()%5);//rand()/(RAND_MAX/300)+100;
 					}
 				}
-	} else if (parts[i].tmp==1 && 1>rand()%1000) {
+	}
+	else if (parts[i].tmp==1 && 1>rand()%1000)
+	{
 		parts[i].tmp = 0;
 		part_change_type(i,x,y,PT_BRMT);
 	}
