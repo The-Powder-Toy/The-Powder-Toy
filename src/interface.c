@@ -474,6 +474,10 @@ void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
 void ui_list_process(pixel * vid_buf, int mx, int my, int mb, ui_list *ed)
 {
 	int i, ystart, selected = 0;
+	if(ed->selected > ed->count || ed->selected < -1)
+	{
+		ed->selected = -1;
+	}
 	if(mx > ed->x && mx < ed->x+ed->w && my > ed->y && my < ed->y+ed->h)
 	{
 		ed->focus = 1;
@@ -511,6 +515,8 @@ void ui_list_process(pixel * vid_buf, int mx, int my, int mb, ui_list *ed)
 					}
 					draw_line(vid_buf, ed->x, ystart + i * 16, ed->x+ed->w, ystart + i * 16, 128, 128, 128, XRES+BARSIZE);
 				}
+				if(!selected && mb)
+					break;
 				drawrect(vid_buf, ed->x, ystart, ed->w, ed->count*16, 255, 255, 255, 255);
 				sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 				clearrect(vid_buf, ed->x-2, ystart-2, ed->w+4, (ed->count*16)+4);
@@ -534,6 +540,10 @@ void ui_list_process(pixel * vid_buf, int mx, int my, int mb, ui_list *ed)
 
 void ui_list_draw(pixel *vid_buf, ui_list *ed)
 {
+	if(ed->selected > ed->count || ed->selected < -1)
+	{
+		ed->selected = -1;
+	}
 	if (ed->focus)
 	{
 		drawrect(vid_buf, ed->x, ed->y, ed->w, ed->h, 255, 255, 255, 255);
@@ -544,7 +554,7 @@ void ui_list_draw(pixel *vid_buf, ui_list *ed)
 	}
 	if(ed->selected!=-1)
 	{
-		drawtext(vid_buf, ed->x+4, ed->y+5, ed->str, 255, 255, 255, 255);
+		drawtext(vid_buf, ed->x+4, ed->y+5, ed->items[ed->selected], 255, 255, 255, 255);
 	}
 	else
 	{
@@ -6643,7 +6653,7 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 void simulation_ui(pixel * vid_buf)
 {
 	int xsize = 300;
-	int ysize = 192;
+	int ysize = 246;
 	int x0=(XRES-xsize)/2,y0=(YRES-MENUSIZE-ysize)/2,b=1,bq,mx,my;
 	int new_scale, new_kiosk;
 	ui_checkbox cb;
@@ -6652,6 +6662,12 @@ void simulation_ui(pixel * vid_buf)
 	ui_checkbox cb4;
 	ui_checkbox cb5;
 	ui_checkbox cb6;
+	char * airModeList[] = {"On", "Pressure Off", "Velocity Off", "Off", "No Update"};
+	int airModeListCount = 5;
+	char * gravityModeList[] = {"Vertical", "Off", "Radial"};
+	int gravityModeListCount = 3;
+	ui_list list;
+	ui_list list2;
 
 	cb.x = x0+xsize-16;		//Heat simulation
 	cb.y = y0+23;
@@ -6664,12 +6680,12 @@ void simulation_ui(pixel * vid_buf)
 	cb2.checked = ngrav_enable;
 	
 	cb3.x = x0+xsize-16;	//Large window
-	cb3.y = y0+143;
+	cb3.y = y0+199;
 	cb3.focus = 0;
 	cb3.checked = (sdl_scale==2)?1:0;
 	
 	cb4.x = x0+xsize-16;	//Fullscreen
-	cb4.y = y0+157;
+	cb4.y = y0+213;
 	cb4.focus = 0;
 	cb4.checked = (kiosk_enable==1)?1:0;
 	
@@ -6678,10 +6694,28 @@ void simulation_ui(pixel * vid_buf)
 	cb5.focus = 0;
 	cb5.checked = aheat_enable;
 
-	cb6.x = x0+xsize-16;	//Ambient heat
+	cb6.x = x0+xsize-16;	//Water equalisation
 	cb6.y = y0+107;
 	cb6.focus = 0;
 	cb6.checked = water_equal_test;
+	
+	list.x = x0+xsize-76;	//Air Mode
+	list.y = y0+135;
+	list.w = 72;
+	list.h = 16;
+	list.def = "[air mode]";
+	list.selected = airMode;
+	list.items = airModeList;
+	list.count = airModeListCount;
+	
+	list2.x = x0+xsize-76;	//Gravity Mode
+	list2.y = y0+163;
+	list2.w = 72;
+	list2.h = 16;
+	list2.def = "[gravity mode]";
+	list2.selected = gravityMode;
+	list2.items = gravityModeList;
+	list2.count = gravityModeListCount;
 
 	while (!sdl_poll())
 	{
@@ -6717,13 +6751,19 @@ void simulation_ui(pixel * vid_buf)
 		drawtext(vid_buf, x0+12+textwidth("Water Equalization Test"), y0+110, "Introduced in version 61.", 255, 255, 255, 180);
 		drawtext(vid_buf, x0+12, y0+124, "May lag with lots of water.", 255, 255, 255, 120);
 		
-		draw_line(vid_buf, x0, y0+138, x0+xsize, y0+138, 150, 150, 150, XRES+BARSIZE);
+		drawtext(vid_buf, x0+8, y0+138, "Air Simulation Mode", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12, y0+152, "airMode", 255, 255, 255, 120);
 		
-		drawtext(vid_buf, x0+8, y0+144, "Large window", 255, 255, 255, 255);
-		drawtext(vid_buf, x0+12+textwidth("Large window"), y0+144, "Double window size for small screens", 255, 255, 255, 180);
+		drawtext(vid_buf, x0+8, y0+166, "Gravity Simulation Mode", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12, y0+180, "gravityMode", 255, 255, 255, 120);
 		
-		drawtext(vid_buf, x0+8, y0+158, "Fullscreen", 255, 255, 255, 255);
-		drawtext(vid_buf, x0+12+textwidth("Fullscreen"), y0+158, "Fill the entire screen", 255, 255, 255, 180);
+		draw_line(vid_buf, x0, y0+194, x0+xsize, y0+194, 150, 150, 150, XRES+BARSIZE);
+		
+		drawtext(vid_buf, x0+8, y0+200, "Large window", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("Large window"), y0+200, "Double window size for small screens", 255, 255, 255, 180);
+		
+		drawtext(vid_buf, x0+8, y0+214, "Fullscreen", 255, 255, 255, 255);
+		drawtext(vid_buf, x0+12+textwidth("Fullscreen"), y0+214, "Fill the entire screen", 255, 255, 255, 180);
 
 		//TODO: Options for Air and Normal gravity
 		//Maybe save/load defaults too.
@@ -6737,6 +6777,8 @@ void simulation_ui(pixel * vid_buf)
 		ui_checkbox_draw(vid_buf, &cb4);
 		ui_checkbox_draw(vid_buf, &cb5);
 		ui_checkbox_draw(vid_buf, &cb6);
+		ui_list_draw(vid_buf, &list);
+		ui_list_draw(vid_buf, &list2);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 		ui_checkbox_process(mx, my, b, bq, &cb);
 		ui_checkbox_process(mx, my, b, bq, &cb2);
@@ -6744,6 +6786,8 @@ void simulation_ui(pixel * vid_buf)
 		ui_checkbox_process(mx, my, b, bq, &cb4);
 		ui_checkbox_process(mx, my, b, bq, &cb5);
 		ui_checkbox_process(mx, my, b, bq, &cb6);
+		ui_list_process(vid_buf, mx, my, b, &list);
+		ui_list_process(vid_buf, mx, my, b, &list2);
 
 		if (b && !bq && mx>=x0 && mx<x0+xsize && my>=y0+ysize-16 && my<=y0+ysize)
 			break;
@@ -6759,6 +6803,10 @@ void simulation_ui(pixel * vid_buf)
 	aheat_enable = cb5.checked;
 	new_scale = (cb3.checked)?2:1;
 	new_kiosk = (cb4.checked)?1:0;
+	if(list.selected>=0 && list.selected<=4)
+		airMode = list.selected;
+	if(list2.selected>=0 && list2.selected<=2)
+		gravityMode = list2.selected;
 	if(new_scale!=sdl_scale || new_kiosk!=kiosk_enable)
 	{
 		if (!set_scale(new_scale, new_kiosk))
