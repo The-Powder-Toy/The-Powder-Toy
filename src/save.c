@@ -1028,7 +1028,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 						if(fieldDescriptor & 0x04)
 						{
 							if(i >= partsDataLen) goto fail;
-							partsptr[newIndex].life |= partsData[i++];
+							partsptr[newIndex].life |= (((unsigned)partsData[i++]) << 8);
 						}
 					}
 					
@@ -1041,7 +1041,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 						if(fieldDescriptor & 0x10)
 						{
 							if(i >= partsDataLen) goto fail;
-							partsptr[newIndex].tmp |= partsData[i++];
+							partsptr[newIndex].tmp |= (((unsigned)partsData[i++]) << 8);
 						}
 					}
 					
@@ -1056,10 +1056,10 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 					if(fieldDescriptor & 0x40)
 					{
 						if(i+3 >= partsDataLen) goto fail;
-						partsptr[newIndex].dcolour = partsData[i++];
-						partsptr[newIndex].dcolour |= partsData[i++]<<8;
-						partsptr[newIndex].dcolour |= partsData[i++]<<16;
-						partsptr[newIndex].dcolour |= partsData[i++]<<24;
+						partsptr[newIndex].dcolour = (((unsigned)partsData[i++]) << 24);
+						partsptr[newIndex].dcolour |= (((unsigned)partsData[i++]) << 16);
+						partsptr[newIndex].dcolour |= (((unsigned)partsData[i++]) << 8);
+						partsptr[newIndex].dcolour |= ((unsigned)partsData[i++]);
 					}
 					
 					//Read vx
