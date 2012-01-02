@@ -88,6 +88,8 @@ extern unsigned char ZSIZE;
 
 #define STAMP_MAX 240
 
+#define SAVE_OPS
+
 #define NGOL 25
 #define NGOLALT 24 //NGOL should be 24, but use this var until I find out why
 
@@ -159,6 +161,7 @@ extern int sound_enable;
 extern int kiosk_enable;
 extern int aheat_enable;
 extern int decorations_enable;
+extern int active_menu;
 extern int hud_enable;
 extern int pretty_powder;
 extern int drawgrav_enable;
