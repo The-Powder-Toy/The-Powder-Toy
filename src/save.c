@@ -9,6 +9,10 @@
 pixel *prerender_save(void *save, int size, int *width, int *height)
 {
 	unsigned char * saveData = save;
+	if (size<16)
+	{
+		return NULL;
+	}
 	if(saveData[0] == 'O' && saveData[1] == 'P' && saveData[2] == 'S')
 	{
 		return prerender_save_OPS(save, size, width, height);
@@ -31,6 +35,10 @@ void *build_save(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h, un
 int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char bmap[YRES/CELL][XRES/CELL], float vx[YRES/CELL][XRES/CELL], float vy[YRES/CELL][XRES/CELL], float pv[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr, unsigned pmap[YRES][XRES])
 {
 	unsigned char * saveData = save;
+	if (size<16)
+	{
+		return 1;
+	}
 	if(saveData[0] == 'O' && saveData[1] == 'P' && saveData[2] == 'S')
 	{
 		return parse_save_OPS(save, size, replace, x0, y0, bmap, vx, vy, pv, fvx, fvy, signs, partsptr, pmap);
@@ -930,6 +938,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 		int newIndex = 0, fieldDescriptor, tempTemp;
 		int posCount, posTotal, partsPosDataIndex = 0;
 		int saved_x, saved_y;
+		int freeIndicesIndex = 0;
 		if(fullW * fullH * 3 > partsPosDataLen)
 		{
 			fprintf(stderr, "Not enough particle position data\n");
@@ -982,10 +991,10 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 						//Replace existing particle or allocated block
 						newIndex = pmap[y][x]>>8;
 					}
-					else if(freeIndicesCount)
+					else if(freeIndicesIndex<freeIndicesCount)
 					{
 						//Create new particle
-						newIndex = freeIndices[--freeIndicesCount];
+						newIndex = freeIndices[freeIndicesIndex++];
 					}
 					else
 					{
@@ -1611,6 +1620,14 @@ int parse_save_PSv(void *save, int size, int replace, int x0, int y0, unsigned c
 		{
 			if (d[p])
 			{
+				//In old saves, ignore walls created by sign tool bug
+				//Not ignoring other invalid walls or invalid walls in new saves, so that any other bugs causing them are easier to notice, find and fix
+				if (ver<71 && d[p]==WL_SIGN)
+				{
+					p++;
+					continue;
+				}
+
 				bmap[y][x] = d[p];
 				if (bmap[y][x]==1)
 					bmap[y][x]=WL_WALL;
