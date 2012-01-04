@@ -261,6 +261,11 @@ pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 					if(fieldDescriptor & 0x20)
 					{
 						if(i++ >= partsDataLen) goto fail;
+						if(fieldDescriptor & 0x200)
+						{
+							if(i+2 >= partsDataLen) goto fail;
+							i+=3;
+						}
 					}
 					
 					//Skip dcolour
@@ -478,11 +483,18 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 					}
 				}
 				
-				//Ctype (optional), 1 byte
+				//Ctype (optional), 1 or 4 bytes
 				if(partsptr[i].ctype)
 				{
 					fieldDesc |= 1 << 5;
 					partsData[partsDataLen++] = partsptr[i].ctype;
+					if(partsptr[i].ctype > 255)
+					{
+						fieldDesc |= 1 << 9;
+						partsData[partsDataLen++] = (partsptr[i].ctype&0xFF000000)>>24;
+						partsData[partsDataLen++] = (partsptr[i].ctype&0x00FF0000)>>16;
+						partsData[partsDataLen++] = (partsptr[i].ctype&0x0000FF00)>>8;
+					}
 				}
 				
 				//Dcolour (optional), 4 bytes
@@ -1059,6 +1071,14 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 					{
 						if(i >= partsDataLen) goto fail;
 						partsptr[newIndex].ctype = partsData[i++];
+						//Read additional bytes
+						if(fieldDescriptor & 0x200)
+						{
+							if(i+2 >= partsDataLen) goto fail;
+							partsptr[newIndex].ctype |= (((unsigned)partsData[i++]) << 24);
+							partsptr[newIndex].ctype |= (((unsigned)partsData[i++]) << 16);
+							partsptr[newIndex].ctype |= (((unsigned)partsData[i++]) << 8);
+						}
 					}
 					
 					//Read dcolour
