@@ -121,6 +121,11 @@ build/powder-sse3.exe: $(patsubst build/obj/%.o,build/obj/%.powder-sse3.exe.o,$(
 	chmod 0644 $@
 build/obj/%.powder-sse3.exe.o: src/%.c $(HEADERS)
 	$(CC) -c $(CFLAGS) -o $@ $<
+# Extra compiler flag to fix stack alignment
+# When Windows creates the gravity calculation thread, it has 4 byte stack alignment
+# But we need 16 byte alignment so that SSE instructions in FFTW work without crashing
+build/obj/gravity.powder-sse3.exe.o: src/gravity.c $(HEADERS)
+	$(CC) -c $(CFLAGS) -mincoming-stack-boundary=2 -o $@ $<
 
 build/powder-sse2.exe: $(patsubst build/obj/%.o,build/obj/%.powder-sse2.exe.o,$(OBJS))
 	$(CC) $(CFLAGS) $(LDFLAGS) $(EXTRA_OBJS) $(patsubst build/obj/%.o,build/obj/%.powder-sse2.exe.o,$(OBJS)) $(LIBS) -o $@
@@ -128,6 +133,8 @@ build/powder-sse2.exe: $(patsubst build/obj/%.o,build/obj/%.powder-sse2.exe.o,$(
 	chmod 0644 $@
 build/obj/%.powder-sse2.exe.o: src/%.c $(HEADERS)
 	$(CC) -c $(CFLAGS) -o $@ $<
+build/obj/gravity.powder-sse2.exe.o: src/gravity.c $(HEADERS)
+	$(CC) -c $(CFLAGS) -mincoming-stack-boundary=2 -o $@ $<
 
 build/powder-sse.exe: $(patsubst build/obj/%.o,build/obj/%.powder-sse.exe.o,$(OBJS))
 	$(CC) $(CFLAGS) $(LDFLAGS) $(EXTRA_OBJS) $(patsubst build/obj/%.o,build/obj/%.powder-sse.exe.o,$(OBJS)) $(LIBS) -o $@
@@ -135,6 +142,8 @@ build/powder-sse.exe: $(patsubst build/obj/%.o,build/obj/%.powder-sse.exe.o,$(OB
 	chmod 0644 $@
 build/obj/%.powder-sse.exe.o: src/%.c $(HEADERS)
 	$(CC) -c $(CFLAGS) -o $@ $<
+build/obj/gravity.powder-sse.exe.o: src/gravity.c $(HEADERS)
+	$(CC) -c $(CFLAGS) -mincoming-stack-boundary=2 -o $@ $<
 
 
 
