@@ -10,6 +10,9 @@
 #include "interface/Window.h"
 #include "interface/Button.h"
 #include "interface/Sandbox.h"
+#include "interface/Panel.h"
+#include "interface/ControlFactory.h"
+#include "GameSession.h"
 
 SDL_Surface * SDLOpen()
 {
@@ -45,11 +48,13 @@ int main(int argc, char * argv[])
 	//Simulation * sim = new Simulation();
 	//ren = new Renderer(g, sim);
 
+	GameSession * gameSession = new GameSession();
 	ui::Window * window = new ui::Window();
 	ui::Sandbox * sandbox = new ui::Sandbox();
 	ui::Button * button = new ui::Button(100, 100, 100, 100, "poP");
 	window->Add(sandbox);
 	window->Add(button);
+	window->Add(ControlFactory::MainMenu(gameSession, 0, 0, 200, 200));
 
 	SDL_Event event;
 	while(!SDLPoll(&event))

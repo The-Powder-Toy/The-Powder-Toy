@@ -133,3 +133,7 @@ C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/PowderToy.cpp
 C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/Renderer.cpp
 C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/Simulation.cpp
 C:/Users/Simon/Projects/FacialTurd-PowderToypp/Changelog.txt
+src/interface/ControlFactory.cpp
+includes/interface/ControlFactory.h
+src/GameSession.cpp
+includes/GameSession.h
