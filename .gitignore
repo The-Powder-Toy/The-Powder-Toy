@@ -1,0 +1,6 @@
+*.o
+*.exe
+*.user
+*.dll
+*.a
+*.la

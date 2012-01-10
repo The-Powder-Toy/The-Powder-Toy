@@ -25,6 +25,9 @@ CPPC := g++
 CPPC_WIN := i686-w64-mingw32-gcc
 WIN_RES := i686-w64-mingw32-windres
 
+all: build/powder.exe
+powder.exe: build/powder.exe
+
 build/powder.exe: $(EL_PREREQ) $(CORE_PREREQ) $(UI_PREREQ)
 	$(CPPC) $(CFLAGS) $(LDFLAGS) $(EXTRA_OBJS) $(EL_PREREQ) $(CORE_PREREQ) $(UI_PREREQ) $(LFLAGS) -o $@ -ggdb
 build/obj/ui/%.powder.exe.o: src/interface/%.cpp $(HEADERS)
