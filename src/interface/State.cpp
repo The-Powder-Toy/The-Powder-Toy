@@ -13,13 +13,14 @@
 
 namespace ui {
 
-State::State(int w, int h) :
-    mouseX(0),
-    mouseY(0),
-    mouseXP(0),
-    mouseYP(0),
-    width(w),
-    height(h)
+State::State(int w, int h):
+	mouseX(0),
+	mouseY(0),
+	mouseXP(0),
+	mouseYP(0),
+	width(w),
+	height(h),
+	Components()
 {
 }
 

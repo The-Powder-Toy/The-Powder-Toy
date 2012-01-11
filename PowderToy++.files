@@ -137,3 +137,5 @@ src/interface/ControlFactory.cpp
 includes/interface/ControlFactory.h
 src/GameSession.cpp
 includes/GameSession.h
+src/Console.cpp
+includes/Console.h

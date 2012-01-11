@@ -54,12 +54,12 @@ int main(int argc, char * argv[])
 	ui::Button * button = new ui::Button(100, 100, 100, 100, "poP");
 	window->Add(sandbox);
 	window->Add(button);
-	window->Add(ControlFactory::MainMenu(gameSession, 0, 0, 200, 200));
+	//window->Add(ControlFactory::MainMenu(gameSession, 0, 0, 200, 200));
 
 	SDL_Event event;
 	while(!SDLPoll(&event))
 	{
-		mouseButton = SDL_GetMouseState(&mouseX, &mouseY);
+		//mouseButton = SDL_GetMouseState(&mouseX, &mouseY);
 		switch(event.type)
 		{
 		case SDL_KEYDOWN:

@@ -16,11 +16,14 @@ namespace ui {
 
 class Sandbox: public ui::Component {
 private:
+	int lastCoordX, lastCoordY;
+	int activeElement;
 	bool isMouseDown;
 	Renderer * ren;
 	Simulation * sim;
 public:
 	Sandbox();
+	virtual Simulation * GetSimulation();
 	virtual void OnMouseMovedInside(int localx, int localy, int dx, int dy);
 	virtual void OnMouseDown(int localx, int localy, unsigned int button);
 	virtual void OnMouseUp(int localx, int localy, unsigned int button);

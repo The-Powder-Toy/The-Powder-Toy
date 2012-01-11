@@ -489,9 +489,14 @@ void Renderer::render_parts()
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
 	float gradv, flicker, fnx, fny;
-	Particle * parts = sim->parts;
-	part_transition *ptransitions = sim->ptransitions;
-	part_type *ptypes = sim->ptypes;
+	Particle * parts;
+	part_transition *ptransitions;
+	part_type *ptypes;
+	if(!sim)
+		return;
+	parts = sim->parts;
+	ptransitions = sim->ptransitions;
+	ptypes = sim->ptypes;
 #ifdef OGLR
 	int cfireV = 0, cfireC = 0, cfire = 0;
 	int csmokeV = 0, csmokeC = 0, csmoke = 0;
@@ -1670,7 +1675,9 @@ void Renderer::init_display_modes()
 	}
 }
 
-Renderer::Renderer(Graphics * g, Simulation * sim)
+Renderer::Renderer(Graphics * g, Simulation * sim):
+	sim(NULL),
+	g(NULL)
 {
 	this->g = g;
 	this->sim = sim;

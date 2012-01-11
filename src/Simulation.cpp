@@ -3119,6 +3119,8 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 	pthread_t *InterThreads;
 #endif
 
+	air->update_air();
+
 	memset(pmap, 0, sizeof(pmap));
 	memset(photons, 0, sizeof(photons));
 	NUM_PARTS = 0;
