@@ -22,6 +22,7 @@ pixel *prerender_save(void *save, int size, int *width, int *height)
 	{
 		return prerender_save_PSv(save, size, width, height);
 	}
+	return NULL;
 }
 
 void *build_save(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h, unsigned char bmap[YRES/CELL][XRES/CELL], float vx[YRES/CELL][XRES/CELL], float vy[YRES/CELL][XRES/CELL], float pv[YRES/CELL][XRES/CELL], float fvx[YRES/CELL][XRES/CELL], float fvy[YRES/CELL][XRES/CELL], sign signs[MAXSIGNS], void* partsptr)
@@ -48,6 +49,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	{
 		return parse_save_PSv(save, size, replace, x0, y0, bmap, fvx, fvy, signs, partsptr, pmap);
 	}
+	return 1;
 }
 
 pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
@@ -756,7 +758,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 						}
 						else
 						{
-							fprintf(stderr, "Wrong type for \n", bson_iterator_key(&subiter));
+							fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&subiter));
 						}
 					}
 				}
@@ -2169,4 +2171,140 @@ void *build_thumb(int *size, int bzip2)
 
 	*size = j;
 	return d;
+}
+
+void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate)
+{
+	void *ndata;
+	unsigned char (*bmapo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
+	unsigned char (*bmapn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
+	particle *partst = calloc(sizeof(particle), NPART);
+	sign *signst = calloc(MAXSIGNS, sizeof(sign));
+	unsigned (*pmapt)[XRES] = calloc(YRES*XRES, sizeof(unsigned));
+	float (*fvxo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*fvyo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*fvxn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*fvyn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*vxo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*vyo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*vxn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*vyn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*pvo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*pvn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	int i, x, y, nx, ny, w, h, nw, nh;
+	vector2d pos, tmp, ctl, cbr;
+	vector2d cornerso[4];
+	unsigned char *odatac = odata;
+	if (parse_save(odata, *size, 0, 0, 0, bmapo, vxo, vyo, pvo, fvxo, fvyo, signst, partst, pmapt))
+	{
+		free(bmapo);
+		free(bmapn);
+		free(partst);
+		free(signst);
+		free(pmapt);
+		free(fvxo);
+		free(fvyo);
+		free(fvxn);
+		free(fvyn);
+		free(vxo);
+		free(vyo);
+		free(vxn);
+		free(vyn);
+		free(pvo);
+		free(pvn);
+		return odata;
+	}
+	w = odatac[6]*CELL;
+	h = odatac[7]*CELL;
+	// undo any translation caused by rotation
+	cornerso[0] = v2d_new(0,0);
+	cornerso[1] = v2d_new(w-1,0);
+	cornerso[2] = v2d_new(0,h-1);
+	cornerso[3] = v2d_new(w-1,h-1);
+	for (i=0; i<4; i++)
+	{
+		tmp = m2d_multiply_v2d(transform,cornerso[i]);
+		if (i==0) ctl = cbr = tmp; // top left, bottom right corner
+		if (tmp.x<ctl.x) ctl.x = tmp.x;
+		if (tmp.y<ctl.y) ctl.y = tmp.y;
+		if (tmp.x>cbr.x) cbr.x = tmp.x;
+		if (tmp.y>cbr.y) cbr.y = tmp.y;
+	}
+	// casting as int doesn't quite do what we want with negative numbers, so use floor()
+	tmp = v2d_new(floor(ctl.x+0.5f),floor(ctl.y+0.5f));
+	translate = v2d_sub(translate,tmp);
+	nw = floor(cbr.x+0.5f)-floor(ctl.x+0.5f)+1;
+	nh = floor(cbr.y+0.5f)-floor(ctl.y+0.5f)+1;
+	if (nw>XRES) nw = XRES;
+	if (nh>YRES) nh = YRES;
+	// rotate and translate signs, parts, walls
+	for (i=0; i<MAXSIGNS; i++)
+	{
+		if (!signst[i].text[0]) continue;
+		pos = v2d_new(signst[i].x, signst[i].y);
+		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
+		nx = floor(pos.x+0.5f);
+		ny = floor(pos.y+0.5f);
+		if (nx<0 || nx>=nw || ny<0 || ny>=nh)
+		{
+			signst[i].text[0] = 0;
+			continue;
+		}
+		signst[i].x = nx;
+		signst[i].y = ny;
+	}
+	for (i=0; i<NPART; i++)
+	{
+		if (!partst[i].type) continue;
+		pos = v2d_new(partst[i].x, partst[i].y);
+		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
+		nx = floor(pos.x+0.5f);
+		ny = floor(pos.y+0.5f);
+		if (nx<0 || nx>=nw || ny<0 || ny>=nh)
+		{
+			partst[i].type = PT_NONE;
+			continue;
+		}
+		partst[i].x = nx;
+		partst[i].y = ny;
+	}
+	for (y=0; y<YRES/CELL; y++)
+		for (x=0; x<XRES/CELL; x++)
+		{
+			pos = v2d_new(x*CELL+CELL*0.4f, y*CELL+CELL*0.4f);
+			pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
+			nx = pos.x/CELL;
+			ny = pos.y/CELL;
+			if (nx<0 || nx>=nw || ny<0 || ny>=nh)
+				continue;
+			if (bmapo[y][x])
+			{
+				bmapn[ny][nx] = bmapo[y][x];
+				if (bmapo[y][x]==WL_FAN)
+				{
+					fvxn[ny][nx] = fvxo[y][x];
+					fvyn[ny][nx] = fvyo[y][x];
+				}
+			}
+			vxn[ny][nx] = vxo[y][x];
+			vyn[ny][nx] = vyo[y][x];
+			pvn[ny][nx] = pvo[y][x];
+		}
+	ndata = build_save(size,0,0,nw,nh,bmapn,vxn,vyn,pvn,fvxn,fvyn,signst,partst);
+	free(bmapo);
+	free(bmapn);
+	free(partst);
+	free(signst);
+	free(pmapt);
+	free(fvxo);
+	free(fvyo);
+	free(fvxn);
+	free(fvyn);
+	free(vxo);
+	free(vyo);
+	free(vxn);
+	free(vyn);
+	free(pvo);
+	free(pvn);
+	return ndata;
 }

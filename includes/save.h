@@ -1,6 +1,8 @@
 #ifndef SAVE_H
 #define SAVE_H
 
+void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
+
 void *build_thumb(int *size, int bzip2);
 
 pixel *prerender_save(void *save, int size, int *width, int *height);
