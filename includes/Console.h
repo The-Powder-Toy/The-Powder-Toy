@@ -12,29 +12,33 @@ class ConsoleCommand
 private:
 	std::string * command;
 	int returnStatus;
-	std::string * error;
+	std::string * returnString;
 public:
 	void SetCommand(std::string * command);
 	void SetError(std::string * error);
 	std::string * GetCommand();
 	std::string * GetError();
 	ConsoleCommand();
-	ConsoleCommand(std::string * command, int returnStatus, std::string * error = new std::string(""));
+	ConsoleCommand(std::string * command, int returnStatus, std::string * returnString = new std::string(""));
 };
 
 class Console
 {
 private:
+	bool sound_enable;
+	bool file_script;
 	std::vector<ConsoleCommand> * previousCommands;
 	std::string * lastError;
 	ui::Sandbox * sandbox;
 	Simulation * sim;
 public:
 	virtual void Tick(float * dt);
-	int ParseType(std::string * type);
+	int ParseType(char * txt);
+	int ParsePartref(char * txt);
+	int ParseCoords(char * coords, int *x, int *y);
 	virtual void ConsoleShown();
 	virtual void ConsoleHidden();
-	virtual int ProcessCommand(std::string * command);
+	virtual int ProcessCommand(char * console);
 	virtual std::string * GetLastError();
 	virtual std::vector<ConsoleCommand> * GetPreviousCommands();
 	Console(ui::Sandbox * sandbox);

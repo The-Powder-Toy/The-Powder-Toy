@@ -6,9 +6,11 @@
  */
 
 #include <iostream>
+#include <queue>
 
 #include "Config.h"
 
+#include "interface/Point.h"
 #include "interface/Sandbox.h"
 #include "interface/Component.h"
 #include "Renderer.h"
@@ -17,7 +19,8 @@
 namespace ui {
 
 Sandbox::Sandbox():
-	Component(0, 0, XRES, YRES),
+	Component(Point(0, 0), Point(XRES, YRES)),
+	pointQueue(std::queue<Point*>()),
 	ren(NULL),
 	isMouseDown(false),
 	activeElement(1)
@@ -30,35 +33,33 @@ Simulation * Sandbox::GetSimulation()
 	return sim;
 }
 
-void Sandbox::OnMouseMovedInside(int localx, int localy, int dx, int dy)
+void Sandbox::OnMouseMoved(int localx, int localy, int dx, int dy)
 {
 	if(isMouseDown)
 	{
-		sim->create_line(lastCoordX, lastCoordY, localx, localy, 2, 2, activeElement, 0);
-		lastCoordX = localx;
-		lastCoordY = localy;
+		pointQueue.push(new Point(localx-dx, localy-dy));
+		pointQueue.push(new Point(localx, localy));
 	}
 }
 
-void Sandbox::OnMouseDown(int localx, int localy, unsigned int button)
+void Sandbox::OnMouseClick(int localx, int localy, unsigned int button)
 {
-	sim->create_line(localx, localy, localx, localy, 2, 2, activeElement, 0);
-	lastCoordX = localx;
-	lastCoordY = localy;
 	isMouseDown = true;
+	pointQueue.push(new Point(localx, localy));
 }
 
-void Sandbox::OnMouseUp(int localx, int localy, unsigned int button)
+void Sandbox::OnMouseUnclick(int localx, int localy, unsigned int button)
 {
-	sim->create_line(lastCoordX, lastCoordY, localx, localy, 2, 2, activeElement, 0);
-	lastCoordX = localx;
-	lastCoordY = localy;
-	isMouseDown = false;
+	if(isMouseDown)
+	{
+		isMouseDown = false;
+		pointQueue.push(new Point(localx, localy));
+	}
 }
 
-void Sandbox::Draw(void* userdata)
+void Sandbox::Draw(const Point& screenPos)
 {
-	Graphics * g = reinterpret_cast<Graphics*>(userdata);
+	Graphics * g = ui::Engine::Ref().g;
 	if(!ren)
 		ren = new Renderer(g, sim);
 	ren->render_parts();
@@ -66,7 +67,32 @@ void Sandbox::Draw(void* userdata)
 
 void Sandbox::Tick(float delta)
 {
+	if(!pointQueue.empty())
+	{
+		Point * sPoint = NULL;
+		while(!pointQueue.empty())
+		{
+			Point * fPoint = pointQueue.front();
+			pointQueue.pop();
+			if(sPoint)
+			{
+				sim->create_line(fPoint->X, fPoint->Y, sPoint->X, sPoint->Y, 2, 2, activeElement, 0);
+				delete sPoint;
+				sPoint = fPoint;
+			}
+			else
+			{
+				sim->create_parts(fPoint->X, fPoint->Y, 2, 2, activeElement, 0);
+			}
+			if(sPoint)
+				delete sPoint;
+			sPoint = fPoint;
+		}
+		if(sPoint)
+			delete sPoint;
+	}
 	sim->update_particles();
+	sim->sys_pause = 1;
 }
 
 Sandbox::~Sandbox() {

@@ -17,12 +17,7 @@ namespace ui
     class Button : public Component
     {
     public:
-		Button(State* parent_state, std::string buttonText);
-
-		Button(Point position, Point size, std::string buttonText);
-
-		Button(std::string buttonText);
-		virtual ~Button();
+        Button(int x, int y, int width, int height, const std::string& buttonText);
 
         bool Toggleable;
 
@@ -30,12 +25,12 @@ namespace ui
 
         virtual void OnMouseClick(int x, int y, unsigned int button);
         virtual void OnMouseUnclick(int x, int y, unsigned int button);
-		//virtual void OnMouseUp(int x, int y, unsigned int button);
+        virtual void OnMouseUp(int x, int y, unsigned int button);
 
-		virtual void OnMouseEnter(int x, int y);
-		virtual void OnMouseLeave(int x, int y);
+        virtual void OnMouseEnter(int x, int y, int dx, int dy);
+        virtual void OnMouseLeave(int x, int y, int dx, int dy);
 
-		virtual void Draw(const Point& screenPos);
+        virtual void Draw(void* userdata);
 
         inline bool GetState() { return state; }
         virtual void DoAction(); //action of button what ever it may be

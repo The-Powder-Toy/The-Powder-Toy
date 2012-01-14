@@ -1,53 +1,204 @@
-/*
- * Component.h
- *
- *  Created on: Jan 8, 2012
- *      Author: Simon
- */
+#pragma once
 
-#ifndef COMPONENT_H_
-#define COMPONENT_H_
+#include "Point.h"
+#include "State.h"
+#include "Platform.h"
 
 namespace ui
 {
-    class State;
-
-	class Component
+	class State;
+	class Panel;
+	
+	/* class Component
+	 * 
+	 * An interactive UI component that can be added to a state or an XComponent*.
+	 * *See sys::XComponent
+	 */
+	class Component  
 	{
 	public:
-		Component(int x, int y, int width, int height);
+		Component(State* parent_state);
+		Component(Point position, Point size);
+		Component();
 		virtual ~Component();
+		
+		void* UserData;
+		inline State* const GetParentState() const { return parentstate_; }
+		bool IsFocused() const;
 
-		inline void LocalizePoint(int& x, int& y) { x -= X; y -= Y; } //convert a global point (point on the state) to a point based on component's position
-		inline void GlobalizePoint(int& x, int& y) { x += X; y += Y; } //convert a local point based on component's position to a global point on the state
-
-		bool Focused;
+		Point Position;
+		Point Size;
+		bool Locked;
 		bool Visible;
-		bool Enabled;
-		int Width;
-		int Height;
-		int X;
-		int Y;
 
+		/* See the parent of this component.
+		 * If new_parent is NULL, this component will have no parent. (THIS DOES NOT delete THE COMPONENT. See XComponent::RemoveChild)
+		 */
+		void SetParentState(State* state);
+		void SetParent(Panel* new_parent);
+
+		//Get the parent component.
+		inline Panel* const GetParent() const { return _parent; }
+		
+		//UI functions:
+		/*
+			void Tick(float dt);
+			void Draw(const Point& screenPos);
+			
+			void OnMouseHover(int localx, int localy);
+			void OnMouseMoved(int localx, int localy, int dx, int dy);
+			void OnMouseMovedInside(int localx, int localy, int dx, int dy);
+			void OnMouseEnter(int localx, int localy);
+			void OnMouseLeave(int localx, int localy);
+			void OnMouseDown(int x, int y, unsigned int button);
+			void OnMouseUp(int x, int y, unsigned int button);
+			void OnMouseClick(int localx, int localy, unsigned int button);
+			void OnMouseUnclick(int localx, int localy, unsigned int button);
+			void OnMouseWheel(int localx, int localy, int d);
+			void OnMouseWheelInside(int localx, int localy, int d);
+			void OnKeyPress(int key, bool shift, bool ctrl, bool alt);
+			void OnKeyRelease(int key, bool shift, bool ctrl, bool alt);
+		*/
+
+		///
+		// Called: Every tick.
+		// Params:
+		//	dt: The change in time.
+		///
 		virtual void Tick(float dt);
-		virtual void Draw(void* userdata);
-
-		virtual void OnMouseEnter(int localx, int localy, int dx, int dy);
-		virtual void OnMouseLeave(int localx, int localy, int dx, int dy);
-		virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
-		virtual void OnMouseMovedInside(int localx, int localy, int dx, int dy);
+		
+		///
+		// Called: When ready to draw.
+		// Params:
+		// 	None
+		///
+		virtual void Draw(const Point& screenPos);
+		
+		
+		
+		
+		///
+		// Called: When the mouse is currently hovering over the item. (Called every tick)
+		// Params:
+		//	localx: Local mouse X position.
+		//	localy: Local mouse Y position.
+		///
 		virtual void OnMouseHover(int localx, int localy);
-		virtual void OnMouseDown(int localx, int localy, unsigned int button);
-		virtual void OnMouseUp(int localx, int localy, unsigned int button);
-		virtual void OnMouseClick(int localx, int localy, unsigned int button);
-		virtual void OnMouseUnclick(int localx, int localy, unsigned int button);
+		
+		///
+		// Called: When the mouse moves.
+		// Params:
+		//	localx: Local mouse X position.
+		//	localy: Local mouse Y position.
+		// 	dx: Mouse X delta.
+		// 	dy: Mouse Y delta.
+		///
+		virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
+		
+		///
+		// Called: When the mouse moves.
+		// Params:
+		//	localx: Local mouse X position.
+		//	localy: Local mouse Y position.
+		// 	dx: Mouse X delta.
+		// 	dy: Mouse Y delta.
+		///
+		virtual void OnMouseMovedInside(int localx, int localy, int dx, int dy);
+		
+		///
+		// Called: When the mouse moves on top of the item.
+		// Params:
+		//	localx: Local mouse X position.
+		//	localy: Local mouse Y position.
+		// 	dx: Mouse X delta.
+		// 	dy: Mouse Y delta.
+		///
+		virtual void OnMouseEnter(int localx, int localy);
+		
+		///
+		// Called: When the mouse leaves the item.
+		// Params:
+		//	localx: Local mouse X position.
+		//	localy: Local mouse Y position.
+		///
+		virtual void OnMouseLeave(int localx, int localy);
+		
+		///
+		// Called: When a mouse button is pressed.
+		// Params:
+		// 	x: X position of the mouse.
+		// 	y: Y position of the mouse.
+		// 	button: The button that is being held down.
+		///
+		virtual void OnMouseDown(int x, int y, unsigned button);
+		
+		///
+		// Called: When a mouse button is released.
+		// Params:
+		// 	x: X position of the mouse.
+		// 	y: Y position of the mouse.
+		// 	button: The button that is being released.
+		///
+		virtual void OnMouseUp(int x, int y, unsigned button);
+		
+		///
+		// Called: When a mouse button is pressed on top of the item.
+		// Params:
+		// 	x: X position of the mouse.
+		// 	y: Y position of the mouse.
+		// 	button: The button that is being held down.
+		///
+		virtual void OnMouseClick(int localx, int localy, unsigned button);
+		
+		///
+		// Called: When a mouse button is released on top of the item.
+		// Params:
+		// 	x: X position of the mouse.
+		// 	y: Y position of the mouse.
+		// 	button: The button that is being released.
+		///
+		virtual void OnMouseUnclick(int localx, int localy, unsigned button);
+		
+		///
+		// Called: When the mouse wheel moves/changes.
+		// Params:
+		//	localx: Local mouse X position.
+		//	localy: Local mouse Y position.
+		// 	d: The mouse wheel movement value.
+		///
 		virtual void OnMouseWheel(int localx, int localy, int d);
+		
+		///
+		// Called: When the mouse wheel moves/changes on top of the item.
+		// Params:
+		//	localx: Local mouse X position.
+		//	localy: Local mouse Y position.
+		// 	d: The mouse wheel movement value.
+		///
 		virtual void OnMouseWheelInside(int localx, int localy, int d);
-		virtual void OnMouseWheelFocused(int localx, int localy, int d);
+		
+		///
+		// Called: When a key is pressed.
+		// Params:
+		// 	key: The value of the key that is being pressed.
+		// 	shift: Shift key is down.
+		// 	ctrl: Control key is down.
+		// 	alt: Alternate key is down.
+		///
 		virtual void OnKeyPress(int key, bool shift, bool ctrl, bool alt);
+		
+		///
+		// Called: When a key is released.
+		// Params:
+		// 	key: The value of the key that is being released.
+		// 	shift: Shift key is released.
+		// 	ctrl: Control key is released.
+		// 	alt: Alternate key is released.
+		///
 		virtual void OnKeyRelease(int key, bool shift, bool ctrl, bool alt);
 
-		State* Parent;
+	private:
+		State* parentstate_;
+		Panel* _parent;
 	};
 }
-#endif /* COMPONENT_H_ */

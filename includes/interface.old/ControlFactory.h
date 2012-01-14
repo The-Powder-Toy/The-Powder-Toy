@@ -2,7 +2,7 @@
 #define CONTROLFACTORY_H
 
 #include "Panel.h"
-#include "Engine.h"
+#include "Window.h"
 #include "GameSession.h"
 
 class ControlFactory

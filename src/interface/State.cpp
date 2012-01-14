@@ -1,233 +1,291 @@
-/*
- * State.cpp
- *
- *  Created on: Jan 8, 2012
- *      Author: Simon
- */
-
 #include <vector>
-#include <iostream>
-#include <cstring>
-
+#include "interface/Component.h"
+#include "interface/Engine.h"
 #include "interface/State.h"
+//#include "Platform.h"
 
-namespace ui {
+using namespace ui;
 
-State::State(int w, int h):
-	mouseX(0),
-	mouseY(0),
-	mouseXP(0),
-	mouseYP(0),
-	width(w),
-	height(h),
-	Components()
+State::State()
+: UserData(NULL)
+, focusedComponent_(NULL)
 {
 }
 
 State::~State()
 {
-    //Components.~vector(); // just in case // devnote : Nope.jpg Nate :3 -frankbro
+	for(unsigned i = 0, sz = Components.size(); i < sz; ++i)
+		if( Components[i] )
+			delete Components[i];
 }
 
-void State::Add(Component* child)
+void State::AddComponent(Component* c)
 {
-    Components.push_back(child);
-    child->Parent = this;
+	// TODO: do a check if component was already added?
+	if(c->GetParentState()==NULL)
+	{
+		c->SetParentState(this);
+		Components.push_back(c);
+	}
+	else
+	{
+		//Component already has a state, don't sad it
+	}
 }
 
-void State::Remove(Component* child)
+unsigned State::GetComponentCount()
 {
-    for(int i = 0; i < Components.size(); i++)
-        if(Components[i] == child)
-        {
-            Components.erase(Components.begin() + i);
-            break;
-        }
+	return Components.size();
 }
 
-void State::Draw(void* userdata)
+Component* State::GetComponent(unsigned idx)
 {
-    //draw
-    for(int i = 0; i < Components.size(); i++)
-    {
-        if(Components[i]->Visible)
-        {
-            if(AllowExclusiveDrawing)
-            {
-                Components[i]->Draw(userdata);
-            }
-            else if(
-                Components[i]->X + Components[i]->Width >= 0 &&
-                Components[i]->Y + Components[i]->Height >= 0 &&
-                Components[i]->X < width &&
-                Components[i]->Y < height )
-            {
-                Components[i]->Draw(userdata);
-            }
-        }
-    }
+	return Components[idx];
 }
 
-void State::Tick(float dt)
+void State::RemoveComponent(Component* c)
 {
-	//on mouse hover
-	for(int i = 0; i < Components.size(); i++)
-		if( mouseX >= Components[i]->X &&
-			mouseY >= Components[i]->Y &&
-			mouseX < Components[i]->X + Components[i]->Width &&
-			mouseY < Components[i]->Y + Components[i]->Height )
-        {
-		    if(Components[i]->Enabled)
-		    {
-                Components[i]->OnMouseHover(mouseX, mouseY);
-		    }
-			break;
+	// remove component WITHOUT freeing it.
+	for(unsigned i = 0; i < Components.size(); ++i)
+	{
+		// find the appropriate component index
+		if(Components[i] == c)
+		{
+			Components.erase(Components.begin() + i);
+			
+			// we're done
+			return;
+		}
+	}
+}
+
+void State::RemoveComponent(unsigned idx)
+{
+	// free component and remove it.
+	delete Components[idx];
+	Components.erase(Components.begin() + idx);
+}
+
+bool State::IsFocused(const Component* c) const
+{
+	return c == focusedComponent_;
+}
+
+void State::FocusComponent(Component* c)
+{
+	this->focusedComponent_ = c;
+}
+
+void State::DoExit()
+{
+
+	OnExit();
+}
+
+void State::DoInitialized()
+{
+
+	OnInitialized();
+}
+
+void State::DoDraw()
+{
+	//draw
+	for(int i = 0, sz = Components.size(); i < sz; ++i)
+		if(Components[i]->Visible)
+		{
+			if(AllowExclusiveDrawing)
+			{
+				Point scrpos(Components[i]->Position.X, Components[i]->Position.Y);
+				Components[i]->Draw(scrpos);
+			}
+			else
+			{
+				if( Components[i]->Position.X + Components[i]->Size.X >= 0 &&
+					Components[i]->Position.Y + Components[i]->Size.Y >= 0 &&
+					Components[i]->Position.X < ui::Engine::Ref().GetWidth() &&
+					Components[i]->Position.Y < ui::Engine::Ref().GetHeight() )
+				{
+					Point scrpos(Components[i]->Position.X, Components[i]->Position.Y);
+					Components[i]->Draw( Point(scrpos) );
+				}
+			}
 		}
 
-	//tick
-	for(int i = 0; i < Components.size(); i++)
-		Components[i]->Tick(dt);
+	OnDraw();
 }
 
-void State::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
+void State::DoTick(float dt)
+{
+	//on mouse hover
+	for(int i = Components.size() - 1; i >= 0; --i)
+	{
+		if(!Components[i]->Locked &&
+			ui::Engine::Ref().GetMouseX() >= Components[i]->Position.X &&
+			ui::Engine::Ref().GetMouseY() >= Components[i]->Position.Y &&
+			ui::Engine::Ref().GetMouseX() < Components[i]->Position.X + Components[i]->Size.X &&
+			ui::Engine::Ref().GetMouseY() < Components[i]->Position.Y + Components[i]->Size.Y )
+		{
+			Components[i]->OnMouseHover(ui::Engine::Ref().GetMouseX() - Components[i]->Position.X, ui::Engine::Ref().GetMouseY() - Components[i]->Position.Y);
+			break;
+		}
+	}
+			
+	//tick
+	for(int i = 0, sz = Components.size(); i < sz; ++i)
+	{
+		Components[i]->Tick(dt);
+	}
+
+	OnTick(dt);
+}
+
+void State::DoKeyPress(int key, bool shift, bool ctrl, bool alt)
 {
 	//on key press
 	if(focusedComponent_ != NULL)
-		if(focusedComponent_->Enabled)
+	{
+		if(!focusedComponent_->Locked)
 			focusedComponent_->OnKeyPress(key, shift, ctrl, alt);
+	}
+
+	OnKeyPress(key, shift, ctrl, alt);
 }
 
-void State::OnKeyRelease(int key, bool shift, bool ctrl, bool alt)
+void State::DoKeyRelease(int key, bool shift, bool ctrl, bool alt)
 {
 	//on key unpress
 	if(focusedComponent_ != NULL)
-		if(focusedComponent_->Enabled)
+	{
+		if(!focusedComponent_->Locked)
 			focusedComponent_->OnKeyRelease(key, shift, ctrl, alt);
+	}
+
+	OnKeyRelease(key, shift, ctrl, alt);
 }
 
-void State::OnMouseDown(int x, int y, unsigned int button)
+void State::DoMouseDown(int x, int y, unsigned button)
 {
 	//on mouse click
-	for(int i = Components.size() - 1; i > -1 ; i--)
-		if(Components[i]->Enabled)
-			if(x >= Components[i]->X && y >= Components[i]->Y && x < Components[i]->X + Components[i]->Width && y < Components[i]->Y + Components[i]->Height)
+	bool clickState = false;
+	for(int i = Components.size() - 1; i > -1 ; --i)
+	{
+		if(!Components[i]->Locked)
+		{
+			if(x >= Components[i]->Position.X && y >= Components[i]->Position.Y && x < Components[i]->Position.X + Components[i]->Size.X && y < Components[i]->Position.Y + Components[i]->Size.Y)
 			{
-				Components[i]->OnMouseClick(x - Components[i]->X, y - Components[i]->Y, button);
-				this->focusedComponent_ = Components[i]; //set this component as the focused component
+				FocusComponent(Components[i]);
+				Components[i]->OnMouseClick(x - Components[i]->Position.X, y - Components[i]->Position.Y, button);
+				clickState = true;
 				break;
 			}
+		}
+	}
+
+	if(!clickState)
+		FocusComponent(NULL);
 
 	//on mouse down
-	for(int i = Components.size() - 1; i > -1 ; i--)
-		if(Components[i]->Enabled)
-			Components[i]->OnMouseDown(x - Components[i]->X, y - Components[i]->Y, button);
+	for(int i = Components.size() - 1; i > -1 ; --i)
+	{
+		if(!Components[i]->Locked)
+			Components[i]->OnMouseDown(x, y, button);
+	}
+
+	OnMouseDown(x, y, button);
 }
 
-void State::OnMouseMove(int x, int y)
+void State::DoMouseMove(int x, int y, int dx, int dy)
 {
-    //update mouse coords
-    mouseX = x;
-    mouseY = y;
-
 	//on mouse move (if true, and inside)
-	for(int i = Components.size() - 1; i > -1 ; i--)
-		if(Components[i]->Enabled)
+	for(int i = Components.size() - 1; i > -1 ; --i)
+	{
+		if(!Components[i]->Locked)
 		{
-			int localX  = x - Components[i]->X;
-			int localY  = y - Components[i]->Y;
-			int localXP = mouseXP - Components[i]->X;
-			int localYP = mouseYP - Components[i]->Y;
-			int dx      = x - mouseXP;
-			int dy      = x - mouseYP;
-
-			Components[i]->OnMouseMoved(localX, localY, dx, dy);
-
-            //is the mouse inside
-			if(localX >= 0 &&
-			   localY >= 0 &&
-			   localX < Components[i]->Width &&
-			   localY < Components[i]->Height )
-            {
-                //was the mouse outside last tick?
-                if(localXP < 0 ||
-                   localXP >= Components[i]->Width ||
-                   localYP < 0 ||
-                   localYP >= Components[i]->Height )
-                {
-                    Components[i]->OnMouseEnter(localX, localY, dx, dy);
-                }
-
-				Components[i]->OnMouseMovedInside(localX, localY, dx, dy);
-
-				break; //found the top-most component under mouse, break that shit
-            }
-            //not inside, let's see if it used to be inside last tick
-            else if (localXP >= 0 &&
-			   localYP >= 0 &&
-			   localXP < Components[i]->Width &&
-			   localYP < Components[i]->Height )
-           {
-               Components[i]->OnMouseLeave(localX, localY, x - mouseXP, y - mouseYP);
-           }
+			Point local	(x - Components[i]->Position.X, y - Components[i]->Position.Y)
+			, a (local.X - dx, local.Y - dy);
+			
+			Components[i]->OnMouseMoved(local.X, local.Y, dx, dy);
+			
+			if(local.X >= 0 &&
+			   local.Y >= 0 &&
+			   local.X < Components[i]->Size.X &&
+			   local.Y < Components[i]->Size.Y )
+			{
+				Components[i]->OnMouseMovedInside(local.X, local.Y, dx, dy);
+				
+				// entering?
+				if(!(
+					a.X >= 0 &&
+					a.Y >= 0 &&
+					a.X < Components[i]->Size.X &&
+					a.Y < Components[i]->Size.Y ))
+				{
+					Components[i]->OnMouseEnter(local.X, local.Y);
+				}
+			}
+			else
+			{
+				// leaving?
+				if(	a.X >= 0 &&
+					a.Y >= 0 &&
+					a.X < Components[i]->Size.X &&
+					a.Y < Components[i]->Size.Y )
+				{
+					Components[i]->OnMouseLeave(local.X, local.Y);
+				}
+				
+			}
 		}
-		else //is locked
-		{
-		    int localX = x - Components[i]->X;
-			int localY = y - Components[i]->Y;
+	}
 
-		    //is the mouse inside
-			if(localX >= 0 &&
-			   localY >= 0 &&
-			   localX < Components[i]->Width &&
-			   localY < Components[i]->Height )
-            {
-                break; //it's the top-most component under the mouse, we don't want to go under it.
-            }
-		}
-    // end of for loop here
-
-    //set the previous mouse coords
-    mouseXP = x;
-    mouseYP = y;
+	OnMouseMove(x, y, dx, dy);
 }
 
-void State::OnMouseUp(int x, int y, unsigned int button)
+void State::DoMouseUp(int x, int y, unsigned button)
 {
 	//on mouse unclick
-	for(int i = Components.size() - 1; i > -1 ; i--)
-		if(Components[i]->Enabled)
-			if(x >= Components[i]->X && y >= Components[i]->Y && x < Components[i]->X + Components[i]->Width && y < Components[i]->Y + Components[i]->Height)
+	for(int i = Components.size() - 1; i >= 0 ; --i)
+	{
+		if(!Components[i]->Locked)
+		{
+			if(x >= Components[i]->Position.X && y >= Components[i]->Position.Y && x < Components[i]->Position.X + Components[i]->Size.X && y < Components[i]->Position.Y + Components[i]->Size.Y)
 			{
-				Components[i]->OnMouseUnclick(x - Components[i]->X, y - Components[i]->Y, button);
+				Components[i]->OnMouseUnclick(x - Components[i]->Position.X, y - Components[i]->Position.Y, button);
 				break;
 			}
+		}
+	}
 
 	//on mouse up
-	for(int i = Components.size() - 1; i > -1 ; i--)
-		if(Components[i]->Enabled)
-			Components[i]->OnMouseUp(x - Components[i]->X, y - Components[i]->Y, button);
+	for(int i = Components.size() - 1; i >= 0 ; --i)
+	{
+		if(!Components[i]->Locked)
+			Components[i]->OnMouseUp(x, y, button);
+	}
+
+	OnMouseUp(x, y, button);
 }
 
-void State::OnMouseWheel(int x, int y, int d)
+void State::DoMouseWheel(int x, int y, int d)
 {
-    //focused mouse wheel
-    if(focusedComponent_ != NULL)
-        focusedComponent_->OnMouseWheelFocused(x - focusedComponent_->X, y - focusedComponent_->Y, d);
-
-	//mouse wheel inside
-	for(int i = Components.size() - 1; i > -1 ; i--)
-		if(x >= Components[i]->X && y >= Components[i]->Y && x < Components[i]->X + Components[i]->Width && y < Components[i]->Y + Components[i]->Height)
+	//on mouse wheel focused
+	for(int i = Components.size() - 1; i >= 0 ; --i)
+	{
+		if(x >= Components[i]->Position.X && y >= Components[i]->Position.Y && x < Components[i]->Position.X + Components[i]->Size.X && y < Components[i]->Position.Y + Components[i]->Size.Y)
 		{
-			if(Components[i]->Enabled)
-				Components[i]->OnMouseWheelInside(x - Components[i]->X, y - Components[i]->Y, d);
-			break; //found top-most component under mouse
+			if(!Components[i]->Locked)
+				Components[i]->OnMouseWheelInside(x - Components[i]->Position.X, y - Components[i]->Position.Y, d);
+			break;
 		}
-
+	}
+	
 	//on mouse wheel
-	for(int i = Components.size() - 1; i > -1 ; i--)
-		if(Components[i]->Enabled)
-			Components[i]->OnMouseWheel(x - Components[i]->X, y - Components[i]->Y, d);
+	for(int i = Components.size() - 1; i >= 0 ; --i)
+	{
+		if(!Components[i]->Locked)
+			Components[i]->OnMouseWheel(x - Components[i]->Position.X, y - Components[i]->Position.Y, d);
+	}
+
+	OnMouseWheel(x, y, d);
 }
-
-
-} /* namespace ui */

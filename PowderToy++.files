@@ -124,7 +124,6 @@ C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/interface/Component.cpp
 C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/interface/Panel.cpp
 C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/interface/Sandbox.cpp
 C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/interface/State.cpp
-C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/interface/Window.cpp
 C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/Air.cpp
 C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/Graphics.cpp
 C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/Gravity.cpp
@@ -139,3 +138,16 @@ src/GameSession.cpp
 includes/GameSession.h
 src/Console.cpp
 includes/Console.h
+includes/interface/Engine.h
+includes/interface/Platform.h
+src/interface/State.cpp
+src/interface/Sandbox.cpp
+src/interface/Panel.cpp
+src/interface/Engine.cpp
+src/interface/ControlFactory.cpp
+src/interface/Component.cpp
+src/interface/Button.cpp
+includes/interface/Point.h
+includes/Singleton.h
+src/interface/Label.cpp
+includes/interface/Label.h

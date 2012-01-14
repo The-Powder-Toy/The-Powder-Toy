@@ -1,32 +1,52 @@
 
 #include <time.h>
 #include <SDL/SDL.h>
+#include <iostream>
+#include <sstream>
+#include <string>
 #include "Config.h"
 #include "Simulation.h"
 #include "Renderer.h"
 #include "Graphics.h"
 #include "Air.h"
 
-#include "interface/Window.h"
+#include "interface/Engine.h"
 #include "interface/Button.h"
 #include "interface/Sandbox.h"
 #include "interface/Panel.h"
 #include "interface/ControlFactory.h"
+#include "interface/Point.h"
+#include "interface/Label.h"
 #include "GameSession.h"
+
+using namespace std;
 
 SDL_Surface * SDLOpen()
 {
+#if defined(WIN32) && defined(WINCONSOLE)
+	FILE * console = fopen("CON", "w" );
+#endif
 	if (SDL_Init(SDL_INIT_VIDEO)<0)
 	{
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
 		return 0;
 	}
+#if defined(WIN32) && defined(WINCONSOLE)
+	//On Windows, SDL redirects stdout to stdout.txt, which can be annoying when debugging, here we redirect back to the console
+	if (console)
+	{
+		freopen("CON", "w", stdout);
+		freopen("con", "w", stderr);
+		fclose(console);
+	}
+#endif
 	atexit(SDL_Quit);
 	return SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_SWSURFACE);
 }
 
 int SDLPoll(SDL_Event * event)
 {
+	event->type = 0;
 	while (SDL_PollEvent(event))
 	{
 		switch (event->type)
@@ -40,20 +60,24 @@ int SDLPoll(SDL_Event * event)
 
 int main(int argc, char * argv[])
 {
-	int mouseX, mouseY, mouseButton, lastMouseButton;
+	int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
+	float fps, fpsLimit, delta;
 
 	//Renderer * ren;
-	Graphics * g = new Graphics();
-	g->AttachSDLSurface(SDLOpen());
 	//Simulation * sim = new Simulation();
 	//ren = new Renderer(g, sim);
 
 	GameSession * gameSession = new GameSession();
-	ui::Window * window = new ui::Window();
+	ui::Engine * engine = &ui::Engine::Ref();//new ui::Engine();
+	ui::State * engineState = new ui::State();
 	ui::Sandbox * sandbox = new ui::Sandbox();
-	ui::Button * button = new ui::Button(100, 100, 100, 100, "poP");
-	window->Add(sandbox);
-	window->Add(button);
+	ui::Button * button = new ui::Button(ui::Point(100, 100), ui::Point(100, 100), std::string("poP"));
+	ui::Label * fpsLabel = new ui::Label(ui::Point(2, 2), ui::Point(200, 14), std::string("FPS: 0"));
+	engine->Begin(XRES, YRES, SDLOpen());
+	engine->SetState(engineState);
+	engineState->AddComponent(fpsLabel);
+	engineState->AddComponent(sandbox);
+	engineState->AddComponent(button);
 	//window->Add(ControlFactory::MainMenu(gameSession, 0, 0, 200, 200));
 
 	SDL_Event event;
@@ -67,34 +91,32 @@ int main(int argc, char * argv[])
 		case SDL_KEYUP:
 			break;
 		case SDL_MOUSEMOTION:
-			window->OnMouseMove(event.motion.x, event.motion.y);
+			engine->onMouseMove(event.motion.x, event.motion.y);
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-			window->OnMouseDown(event.motion.x, event.motion.y, event.button.button);
+			engine->onMouseClick(event.motion.x, event.motion.y, event.button.button);
 			break;
 		case SDL_MOUSEBUTTONUP:
-			window->OnMouseUp(event.motion.x, event.motion.y, event.button.button);
+			engine->onMouseUnclick(event.motion.x, event.motion.y, event.button.button);
 			break;
 		}
-		window->Tick(1.0f);
-		window->Draw(g);
-		/*sim->update_particles();
-		sim->air->update_air();
-		mouseButton = SDL_GetMouseState(&mouseX, &mouseY);
-		if(mouseButton)
-		{
-			sim->create_parts(mouseX, mouseY, 4, 4, (rand()%4)+1, 0);
-		}
-		if(mouseButton==4 && !lastMouseButton)
-		{
-			sim->sys_pause = !sim->sys_pause;
-		}
-		//ren->render_parts();
-		//ren->render_fire();
+		fpsLabel->LabelText = "";
+		stringstream fpsText;
+		fpsText << "FPS: " << fps;
+		fpsLabel->LabelText = fpsText.str();
 
+		engine->Tick(delta);
+		engine->Draw();
 
-		ren->g->clearrect(0, 0, XRES+BARSIZE, YRES+MENUSIZE);*/
-		g->Blit();
-		g->Clear();
+		currentFrame++;
+		currentTime = SDL_GetTicks();
+		elapsedTime = currentTime - lastTime;
+		if(elapsedTime>=1000)
+		{
+			fps = (((float)currentFrame)/((float)elapsedTime))*1000.0f;
+			currentFrame = 0;
+			lastTime = currentTime;
+			delta = 60.0f/fps;
+		}
 	}
 }

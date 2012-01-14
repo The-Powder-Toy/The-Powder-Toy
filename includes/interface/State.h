@@ -1,61 +1,77 @@
-/*
- * State.h
- *
- *  Created on: Jan 8, 2012
- *      Author: Simon
- */
-
-#ifndef STATE_H_
-#define STATE_H_
+#pragma once
 
 #include <vector>
 
-#include "interface/Component.h"
+#include "Engine.h"
+#include "Component.h"
+#include "Platform.h"
 
-namespace ui {
-
-class State
+namespace ui
 {
-public:
-	State(int w, int h);
-	virtual ~State();
+	class Engine;
+	class Component;
+	
+	/* class State
+	 * 
+	 * A UI state. Contains all components.
+	 */
+	class State
+	{
+	public:
+		State();
+		virtual ~State();
 
-	bool AllowExclusiveDrawing; //false will not call draw on objects outside of bounds
+		bool AllowExclusiveDrawing; //false will not call draw on objects outside of bounds
 
-	virtual void Tick(float dt);
-	virtual void Draw(void* userdata);
+		// Add Component to state
+		void AddComponent(Component* c);
+		
+		// Get the number of components this state has.
+		unsigned GetComponentCount();
+		
+		// Get component by index. (See GetComponentCount())
+		Component* GetComponent(unsigned idx);
+		
+		// Remove a component from state. NOTE: This DOES NOT free component from memory.
+		void RemoveComponent(Component* c);
+		
+		// Remove a component from state. NOTE: This WILL free component from memory.
+		void RemoveComponent(unsigned idx);
+		
+		void DoInitialized();
+		void DoExit();
+		void DoTick(float dt);
+		void DoDraw();
 
-	virtual void OnMouseMove(int x, int y);
-	virtual void OnMouseDown(int x, int y, unsigned int button);
-	virtual void OnMouseUp(int x, int y, unsigned int button);
-	virtual void OnMouseWheel(int x, int y, int d);
-	virtual void OnKeyPress(int key, bool shift, bool ctrl, bool alt);
-	virtual void OnKeyRelease(int key, bool shift, bool ctrl, bool alt);
+		void DoMouseMove(int x, int y, int dx, int dy);
+		void DoMouseDown(int x, int y, unsigned button);
+		void DoMouseUp(int x, int y, unsigned button);
+		void DoMouseWheel(int x, int y, int d);
+		void DoKeyPress(int key, bool shift, bool ctrl, bool alt);
+		void DoKeyRelease(int key, bool shift, bool ctrl, bool alt);
 
-	virtual void Add(Component *child);
-	virtual void Remove(Component *child);
+		bool IsFocused(const Component* c) const;
+		void FocusComponent(Component* c);
 
-	inline bool IsFocused(Component* c) { return (c == focusedComponent_); }
-	inline int GetMouseX() { return mouseX; }
-	inline int GetMouseY() { return mouseY; }
-	inline int GetWidth() { return width; }
-	inline int GetHeight() { return height; }
+		void* UserData;
 
-protected:
-	std::vector<Component*> Components;
+	protected:
+		virtual void OnInitialized() {}
+		virtual void OnExit() {}
+		virtual void OnTick(float dt) {}
+		virtual void OnDraw() {}
 
-	int width;
-	int height;
+		virtual void OnMouseMove(int x, int y, int dx, int dy) {}
+		virtual void OnMouseDown(int x, int y, unsigned button) {}
+		virtual void OnMouseUp(int x, int y, unsigned button) {}
+		virtual void OnMouseWheel(int x, int y, int d) {}
+		virtual void OnKeyPress(int key, bool shift, bool ctrl, bool alt) {}
+		virtual void OnKeyRelease(int key, bool shift, bool ctrl, bool alt) {}
 
-	int mouseX;
-	int mouseY;
-	int mouseXP;
-	int mouseYP;
+	private:
+		std::vector<Component*> Components;
+		Component* focusedComponent_;
 
-private:
-	Component* focusedComponent_;
+	};
 
-};
-
-} /* namespace ui */
-#endif /* STATE_H_ */
+}
