@@ -134,7 +134,6 @@ C:/Users/Simon/Projects/FacialTurd-PowderToypp/src/Simulation.cpp
 C:/Users/Simon/Projects/FacialTurd-PowderToypp/Changelog.txt
 src/interface/ControlFactory.cpp
 includes/interface/ControlFactory.h
-src/GameSession.cpp
 includes/GameSession.h
 src/Console.cpp
 includes/Console.h
@@ -151,3 +150,5 @@ includes/interface/Point.h
 includes/Singleton.h
 src/interface/Label.cpp
 includes/interface/Label.h
+includes/Global.h
+src/Global.cpp

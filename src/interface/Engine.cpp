@@ -1,3 +1,7 @@
+#include <iostream>
+
+#include "Config.h"
+#include "Global.h"
 #include "interface/Platform.h"
 #include "interface/Engine.h"
 #include "interface/State.h"
@@ -5,15 +9,14 @@
 
 using namespace ui;
 
-Engine::Engine()
-:
-  g(NULL),
-state_(NULL),
-statequeued_(NULL),
-mousex_(0),
-mousey_(0),
-mousexp_(0),
-mouseyp_(0)
+Engine::Engine():
+	state_(NULL),
+	statequeued_(NULL),
+	mousex_(0),
+	mousey_(0),
+	mousexp_(0),
+	mouseyp_(0),
+	FpsLimit(60.0f)
 {
 }
 
@@ -23,10 +26,8 @@ Engine::~Engine()
 		delete state_;
 }
 
-void Engine::Begin(int width, int height, SDL_Surface * surface)
+void Engine::Begin(int width, int height)
 {
-	g = new Graphics();
-	g->AttachSDLSurface(surface);
 	//engine is now ready
 	running_ = true;
 
@@ -82,8 +83,8 @@ void Engine::Draw()
 {
 	if(state_)
 		state_->DoDraw();
-	g->Blit();
-	g->Clear();
+	Global::Ref().g->Blit();
+	Global::Ref().g->Clear();
 }
 
 void Engine::onKeyPress(int key, bool shift, bool ctrl, bool alt)
@@ -115,7 +116,9 @@ void Engine::onMouseMove(int x, int y)
 	mousex_ = x;
 	mousey_ = y;
 	if(state_)
+	{
 		state_->DoMouseMove(x, y, mousex_ - mousexp_, mousey_ - mouseyp_);
+	}
 	mousexp_ = x;
 	mouseyp_ = y;
 }

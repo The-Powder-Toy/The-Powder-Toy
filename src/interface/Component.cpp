@@ -76,7 +76,8 @@ void Component::SetParent(Panel* new_parent)
 	else
 	{
 		// remove from parent state (if in parent state) and place in new parent
-		GetParentState()->RemoveComponent(this);
+		if(GetParentState())
+			GetParentState()->RemoveComponent(this);
 		new_parent->children.push_back(this);
 	}
 	this->_parent = new_parent;

@@ -9,6 +9,7 @@
 
 #include "interface/Button.h"
 #include "Graphics.h"
+#include "Global.h"
 
 namespace ui {
 
@@ -16,7 +17,8 @@ Button::Button(State* parent_state, std::string buttonText):
 	Component(parent_state),
 	ButtonText(buttonText),
 	isMouseInside(false),
-	isButtonDown(false)
+	isButtonDown(false),
+	isTogglable(false)
 {
 
 }
@@ -25,7 +27,8 @@ Button::Button(Point position, Point size, std::string buttonText):
 	Component(position, size),
 	ButtonText(buttonText),
 	isMouseInside(false),
-	isButtonDown(false)
+	isButtonDown(false),
+	isTogglable(false)
 {
 
 }
@@ -34,17 +37,42 @@ Button::Button(std::string buttonText):
 	Component(),
 	ButtonText(buttonText),
 	isMouseInside(false),
-	isButtonDown(false)
+	isButtonDown(false),
+	isTogglable(false)
 {
 
 }
 
+void Button::SetTogglable(bool togglable)
+{
+	toggle = false;
+	isTogglable = togglable;
+}
+
+bool Button::GetTogglable()
+{
+	return isTogglable;
+}
+
+inline bool Button::GetToggleState()
+{
+	return toggle;
+}
+
+inline void Button::SetToggleState(bool state)
+{
+	toggle = state;
+}
+
+
+
 void Button::Draw(const Point& screenPos)
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = Global::Ref().g;
+	Point Position = screenPos;
 	// = reinterpret_cast<Graphics*>(userdata);
 	//TODO: Cache text location, that way we don't have the text alignment code here
-	if(isButtonDown)
+	if(isButtonDown || (isTogglable && toggle))
 	{
 		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 		g->drawtext(Position.X+(Size.X-Graphics::textwidth((char *)ButtonText.c_str()))/2, Position.Y+(Size.Y-10)/2, ButtonText, 0, 0, 0, 255);
@@ -111,20 +139,21 @@ void Button::OnMouseUnclick(int x, int y, unsigned int button)
 
 void Button::OnMouseClick(int x, int y, unsigned int button)
 {
-	std::cout << "Click!" << std::endl;
     if(button != 1) return; //left click only!
+	if(isTogglable)
+	{
+		toggle = !toggle;
+	}
     isButtonDown = true;
 }
 
 void Button::OnMouseEnter(int x, int y)
 {
-	std::cout << "Enter!"<<std::endl;
     isMouseInside = true;
 }
 
 void Button::OnMouseLeave(int x, int y)
 {
-	std::cout << "Leave!"<<std::endl;
     isMouseInside = false;
 }
 

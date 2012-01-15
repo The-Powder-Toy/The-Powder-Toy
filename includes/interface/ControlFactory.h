@@ -3,12 +3,11 @@
 
 #include "Panel.h"
 #include "Engine.h"
-#include "GameSession.h"
 
 class ControlFactory
 {
 public:
-	static ui::Panel * MainMenu(GameSession * session, int x, int y, int width, int height);
+	static ui::Panel * MainMenu(int x, int y, int width, int height);
 
 };
 

@@ -9,6 +9,7 @@
 #include <queue>
 
 #include "Config.h"
+#include "Global.h"
 
 #include "interface/Point.h"
 #include "interface/Sandbox.h"
@@ -48,7 +49,7 @@ void Sandbox::OnMouseClick(int localx, int localy, unsigned int button)
 	pointQueue.push(new Point(localx, localy));
 }
 
-void Sandbox::OnMouseUnclick(int localx, int localy, unsigned int button)
+void Sandbox::OnMouseUp(int localx, int localy, unsigned int button)
 {
 	if(isMouseDown)
 	{
@@ -59,7 +60,7 @@ void Sandbox::OnMouseUnclick(int localx, int localy, unsigned int button)
 
 void Sandbox::Draw(const Point& screenPos)
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = Global::Ref().g;
 	if(!ren)
 		ren = new Renderer(g, sim);
 	ren->render_parts();
@@ -76,16 +77,13 @@ void Sandbox::Tick(float delta)
 			pointQueue.pop();
 			if(sPoint)
 			{
-				sim->create_line(fPoint->X, fPoint->Y, sPoint->X, sPoint->Y, 2, 2, activeElement, 0);
+				sim->create_line(fPoint->X, fPoint->Y, sPoint->X, sPoint->Y, 1, 1, activeElement, 0);
 				delete sPoint;
-				sPoint = fPoint;
 			}
 			else
 			{
-				sim->create_parts(fPoint->X, fPoint->Y, 2, 2, activeElement, 0);
+				sim->create_parts(fPoint->X, fPoint->Y, 1, 1, activeElement, 0);
 			}
-			if(sPoint)
-				delete sPoint;
 			sPoint = fPoint;
 		}
 		if(sPoint)

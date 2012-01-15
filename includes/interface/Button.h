@@ -39,9 +39,13 @@ namespace ui
 
         inline bool GetState() { return state; }
         virtual void DoAction(); //action of button what ever it may be
+		void SetTogglable(bool isTogglable);
+		bool GetTogglable();
+		inline bool GetToggleState();
+		inline void SetToggleState(bool state);
 
     protected:
-        bool isButtonDown, state, isMouseInside;
+		bool isButtonDown, state, isMouseInside, isTogglable, toggle;
     };
 }
 #endif /* BUTTON_H_ */

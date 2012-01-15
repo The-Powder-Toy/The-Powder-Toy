@@ -29,7 +29,7 @@ public:
 	virtual Simulation * GetSimulation();
 	virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
 	virtual void OnMouseClick(int localx, int localy, unsigned int button);
-	virtual void OnMouseUnclick(int localx, int localy, unsigned int button);
+	virtual void OnMouseUp(int localx, int localy, unsigned int button);
 	virtual void Draw(const Point& screenPos);
 	virtual void Tick(float delta);
 	virtual ~Sandbox();

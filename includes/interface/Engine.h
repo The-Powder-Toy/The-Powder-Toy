@@ -30,7 +30,7 @@ namespace ui
 		void onResize(int newWidth, int newHeight);
 		void onClose();
 
-		void Begin(int width, int height, SDL_Surface * surface);
+		void Begin(int width, int height);
 		inline bool Running() { return running_; }
 		void Exit();
 
@@ -46,7 +46,7 @@ namespace ui
 		
 		void SetState(State* state);
 		inline State* GetState() { return state_; }
-		Graphics * g;
+		float FpsLimit;
 	private:
 		State* statequeued_;
 		State* state_;
