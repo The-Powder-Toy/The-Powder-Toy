@@ -94,6 +94,8 @@ void init_can_move()
 			if (ptypes[t].weight <= ptypes[rt].weight) can_move[t][rt] = 0;
 			if (t==PT_NEUT && ptypes[rt].properties&PROP_NEUTPASS)
 				can_move[t][rt] = 2;
+			if (t==PT_NEUT && ptypes[rt].properties&PROP_NEUTABSORB)
+				can_move[t][rt] = 1;
 			if (t==PT_NEUT && ptypes[rt].properties&PROP_NEUTPENETRATE)
 				can_move[t][rt] = 1;
 			if (ptypes[t].properties&PROP_NEUTPENETRATE && rt==PT_NEUT)
@@ -313,6 +315,11 @@ int try_move(int i, int x, int y, int nx, int ny)
 	}
 	//else e=1 , we are trying to swap the particles, return 0 no swap/move, 1 is still overlap/move, because the swap takes place later
 
+	if (parts[i].type==PT_NEUT && (ptypes[r&0xFF].properties&PROP_NEUTABSORB))
+	{
+		parts[i].type=PT_NONE;
+		return 0;
+	}
 	if ((r&0xFF)==PT_VOID || (r&0xFF)==PT_PVOD) //this is where void eats particles
 	{
 		if (parts[i].type == PT_STKM)

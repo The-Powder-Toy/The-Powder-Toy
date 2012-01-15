@@ -237,9 +237,9 @@
 #define PROP_CONDUCTS		0x00020 //32 Conducts electricity
 #define PROP_BLACK			0x00040 //64 Absorbs Photons (not currently implemented or used, a photwl attribute might be better)
 #define PROP_NEUTPENETRATE	0x00080 //128 Penetrated by neutrons
-#define PROP_NEUTABSORB		0x00100 //256 Absorbs neutrons, reflect is default (not currently implemented or used)
+#define PROP_NEUTABSORB		0x00100 //256 Absorbs neutrons, reflect is default
 #define PROP_NEUTPASS		0x00200 //512 Neutrons pass through, such as with glass
-#define PROP_DEADLY			0x00400 //1024 Is deadly for stickman (not currently implemented or used)
+#define PROP_DEADLY			0x00400 //1024 Is deadly for stickman
 #define PROP_HOT_GLOW		0x00800 //2048 Hot Metal Glow
 #define PROP_LIFE			0x01000 //4096 Is a GoL type
 #define PROP_RADIOACTIVE	0x02000 //8192 Radioactive
