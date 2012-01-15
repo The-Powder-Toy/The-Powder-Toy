@@ -16,7 +16,7 @@ UI_OBJS := $(patsubst src/interface/%.cpp,build/obj/ui/%.o,$(UI_SOURCES))
 UI_PREREQ := $(patsubst build/obj/ui/%.o,build/obj/ui/%.powder.exe.o,$(UI_OBJS))
 
 CFLAGS := -Iincludes/ -Idata/ -DWIN32 -DWINCONSOLE
-OFLAGS := #-O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -fkeep-inline-functions
+OFLAGS := -fkeep-inline-functions #-O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations
 LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 # -mwindows
 
 CFLAGS += $(OFLAGS)
