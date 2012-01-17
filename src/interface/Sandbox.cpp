@@ -16,6 +16,7 @@
 #include "interface/Component.h"
 #include "Renderer.h"
 #include "Simulation.h"
+#include "Engine.h"
 
 namespace ui {
 
@@ -60,7 +61,7 @@ void Sandbox::OnMouseUp(int localx, int localy, unsigned int button)
 
 void Sandbox::Draw(const Point& screenPos)
 {
-	Graphics * g = Global::Ref().g;
+	Graphics * g = Engine::Ref().g;
 	if(!ren)
 		ren = new Renderer(g, sim);
 	ren->render_parts();

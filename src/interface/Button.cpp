@@ -10,15 +10,17 @@
 #include "interface/Button.h"
 #include "Graphics.h"
 #include "Global.h"
+#include "Engine.h"
 
 namespace ui {
 
-Button::Button(State* parent_state, std::string buttonText):
+Button::Button(Window* parent_state, std::string buttonText):
 	Component(parent_state),
 	ButtonText(buttonText),
 	isMouseInside(false),
 	isButtonDown(false),
-	isTogglable(false)
+	isTogglable(false),
+	actionCallback(NULL)
 {
 
 }
@@ -28,7 +30,8 @@ Button::Button(Point position, Point size, std::string buttonText):
 	ButtonText(buttonText),
 	isMouseInside(false),
 	isButtonDown(false),
-	isTogglable(false)
+	isTogglable(false),
+	actionCallback(NULL)
 {
 
 }
@@ -38,7 +41,8 @@ Button::Button(std::string buttonText):
 	ButtonText(buttonText),
 	isMouseInside(false),
 	isButtonDown(false),
-	isTogglable(false)
+	isTogglable(false),
+	actionCallback(NULL)
 {
 
 }
@@ -68,13 +72,13 @@ inline void Button::SetToggleState(bool state)
 
 void Button::Draw(const Point& screenPos)
 {
-	Graphics * g = Global::Ref().g;
+	Graphics * g = ui::Engine::Ref().g;
 	Point Position = screenPos;
 	// = reinterpret_cast<Graphics*>(userdata);
 	//TODO: Cache text location, that way we don't have the text alignment code here
 	if(isButtonDown || (isTogglable && toggle))
 	{
-		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
+		g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, 255, 255, 255, 255);
 		g->drawtext(Position.X+(Size.X-Graphics::textwidth((char *)ButtonText.c_str()))/2, Position.Y+(Size.Y-10)/2, ButtonText, 0, 0, 0, 255);
 	}
 	else
@@ -116,7 +120,6 @@ void Button::Draw(const Point& screenPos)
 
 void Button::OnMouseUnclick(int x, int y, unsigned int button)
 {
-	std::cout << "Unclick!" << std::endl;
     if(button != 1)
     {
         return; //left click only!
@@ -160,6 +163,15 @@ void Button::OnMouseLeave(int x, int y)
 void Button::DoAction()
 {
     std::cout << "Do action!"<<std::endl;
+	//if(actionCallback)
+	//	(*(actionCallback))();
+	if(actionCallback)
+		actionCallback->ActionCallback(this);
+}
+
+void Button::SetActionCallback(ButtonAction * action)
+{
+	actionCallback = action;
 }
 
 Button::~Button()

@@ -10,7 +10,7 @@ namespace ui
 	class Label : public Component
 	{
 	public:
-		Label(State* parent_state, std::string labelText);
+		Label(Window* parent_state, std::string labelText);
 
 		Label(Point position, Point size, std::string labelText);
 

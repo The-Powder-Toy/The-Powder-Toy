@@ -2,12 +2,12 @@
 #include "interface/Component.h"
 #include "interface/Engine.h"
 #include "interface/Point.h"
-#include "interface/State.h"
+#include "interface/Window.h"
 #include "interface/Panel.h"
 
 using namespace ui;
 
-Component::Component(State* parent_state):
+Component::Component(Window* parent_state):
 	parentstate_(parent_state),
 	_parent(NULL),
 	Position(Point(0,0)),
@@ -45,9 +45,9 @@ bool Component::IsFocused() const
 	return parentstate_->IsFocused(this);
 }
 
-void Component::SetParentState(State* state)
+void Component::SetParentWindow(Window* window)
 {
-	parentstate_ = state;
+	parentstate_ = window;
 }
 
 void Component::SetParent(Panel* new_parent)
@@ -65,7 +65,7 @@ void Component::SetParent(Panel* new_parent)
 					_parent->RemoveChild(i, false);
 					
 					// add ourself to the parent state
-					GetParentState()->AddComponent(this);
+					GetParentWindow()->AddComponent(this);
 					
 					//done in this loop.
 					break;
@@ -76,8 +76,8 @@ void Component::SetParent(Panel* new_parent)
 	else
 	{
 		// remove from parent state (if in parent state) and place in new parent
-		if(GetParentState())
-			GetParentState()->RemoveComponent(this);
+		if(GetParentWindow())
+			GetParentWindow()->RemoveComponent(this);
 		new_parent->children.push_back(this);
 	}
 	this->_parent = new_parent;

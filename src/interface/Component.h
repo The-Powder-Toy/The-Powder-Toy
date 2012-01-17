@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Point.h"
-#include "State.h"
+#include "Window.h"
 #include "Platform.h"
 
 namespace ui
 {
-	class State;
+	class Window;
 	class Panel;
 	
 	/* class Component
@@ -17,13 +17,13 @@ namespace ui
 	class Component  
 	{
 	public:
-		Component(State* parent_state);
+		Component(Window* parent_state);
 		Component(Point position, Point size);
 		Component();
 		virtual ~Component();
 		
 		void* UserData;
-		inline State* const GetParentState() const { return parentstate_; }
+		inline Window* const GetParentWindow() const { return parentstate_; }
 		bool IsFocused() const;
 
 		Point Position;
@@ -34,7 +34,7 @@ namespace ui
 		/* See the parent of this component.
 		 * If new_parent is NULL, this component will have no parent. (THIS DOES NOT delete THE COMPONENT. See XComponent::RemoveChild)
 		 */
-		void SetParentState(State* state);
+		void SetParentWindow(Window* window);
 		void SetParent(Panel* new_parent);
 
 		//Get the parent component.
@@ -198,7 +198,7 @@ namespace ui
 		virtual void OnKeyRelease(int key, bool shift, bool ctrl, bool alt);
 
 	private:
-		State* parentstate_;
+		Window* parentstate_;
 		Panel* _parent;
 	};
 }

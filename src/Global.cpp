@@ -1,5 +1,6 @@
-#include "Global.h"
+/*#include "Global.h"
 
 Global::Global(){
 
 }
+*/

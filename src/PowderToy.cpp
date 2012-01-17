@@ -19,6 +19,9 @@
 #include "interface/Point.h"
 #include "interface/Label.h"
 
+#include "game/GameController.h"
+#include "game/GameView.h"
+
 using namespace std;
 
 SDL_Surface * SDLOpen()
@@ -66,20 +69,24 @@ int main(int argc, char * argv[])
 	//Simulation * sim = new Simulation();
 	//ren = new Renderer(g, sim);
 
-	Global::Ref().g = new Graphics();
-	Global::Ref().g->AttachSDLSurface(SDLOpen());
+	ui::Engine::Ref().g = new Graphics();
+	ui::Engine::Ref().g->AttachSDLSurface(SDLOpen());
 
 	ui::Engine * engine = &ui::Engine::Ref();//new ui::Engine();
-	ui::State * engineState = new ui::State();
-	ui::Sandbox * sandbox = new ui::Sandbox();
-	ui::Button * button = new ui::Button(ui::Point(100, 100), ui::Point(100, 100), std::string("poP"));
+	//ui::State * engineState = new ui::State();
 	ui::Label * fpsLabel = new ui::Label(ui::Point(2, 2), ui::Point(200, 14), std::string("FPS: 0"));
+	//engineState->AddComponent(fpsLabel);
 	engine->Begin(XRES, YRES);
-	engine->SetState(engineState);
+//	engine->SetState(engineState);
+
+	GameController * gameController = new GameController();
+	engine->ShowWindow(gameController->GetView());
+	/*ui::Sandbox * sandbox = new ui::Sandbox();
+	ui::Button * button = new ui::Button(ui::Point(100, 100), ui::Point(100, 100), std::string("poP"));
 	engineState->AddComponent(fpsLabel);
 	engineState->AddComponent(sandbox);
 	engineState->AddComponent(button);
-	engineState->AddComponent(ControlFactory::MainMenu(0, YRES+MENUSIZE-17, XRES+BARSIZE, 16));
+	engineState->AddComponent(ControlFactory::MainMenu(0, YRES+MENUSIZE-17, XRES+BARSIZE, 16));*/
 
 	SDL_Event event;
 	while(engine->Running())

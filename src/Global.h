@@ -4,11 +4,11 @@
 #include "Singleton.h"
 #include "Graphics.h"
 
-class Global : public Singleton<Global>
+/*class Global : public Singleton<Global>
 {
 public:
 	Graphics * g;
 	Global();
-};
+};*/
 
 #endif // GAMESESSION_H

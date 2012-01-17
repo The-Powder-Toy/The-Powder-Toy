@@ -1,14 +1,15 @@
 #pragma once
 
+#include <stack>
 #include <SDL/SDL.h>
 #include "Singleton.h"
 #include "Platform.h"
-#include "State.h"
 #include "Graphics.h"
+#include "Window.h"
 
 namespace ui
 {
-	class State;
+	class Window;
 
 	/* class Engine
 	 * 
@@ -20,6 +21,9 @@ namespace ui
 	public:
 		Engine();
 		~Engine();
+
+		void ShowWindow(Window * window);
+		void CloseWindow();
 
 		void onMouseMove(int x, int y);
 		void onMouseClick(int x, int y, unsigned button);
@@ -44,12 +48,15 @@ namespace ui
 
 		inline void SetSize(int width, int height);
 		
-		void SetState(State* state);
-		inline State* GetState() { return state_; }
+		//void SetState(Window* state);
+		//inline State* GetState() { return state_; }
+		inline Window* GetWindow() { return state_; }
 		float FpsLimit;
+		Graphics * g;
 	private:
-		State* statequeued_;
-		State* state_;
+		std::stack<Window*> windows;
+		//Window* statequeued_;
+		Window* state_;
 
 		bool running_;
 		

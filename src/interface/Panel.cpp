@@ -5,12 +5,12 @@
 #include "interface/Panel.h"
 
 #include "interface/Point.h"
-#include "interface/State.h"
+#include "interface/Window.h"
 #include "interface/Component.h"
 
 using namespace ui;
 
-Panel::Panel(State* parent_state):
+Panel::Panel(Window* parent_state):
 	Component(parent_state)
 {
 
@@ -84,7 +84,7 @@ void Panel::Draw(const Point& screenPos)
 		// the component must be visible
 		if(children[i]->Visible)
 		{
-			if(GetParentState()->AllowExclusiveDrawing)
+			if(GetParentWindow()->AllowExclusiveDrawing)
 			{
 				//who cares if the component is off the screen? draw anyway.
 				Point scrpos = screenPos + children[i]->Position;
@@ -143,7 +143,7 @@ void Panel::OnMouseClick(int localx, int localy, unsigned button)
 				localy < children[i]->Position.Y + children[i]->Size.Y )
 			{
 				childclicked = true;
-				GetParentState()->FocusComponent(children[i]);
+				GetParentWindow()->FocusComponent(children[i]);
 				children[i]->OnMouseClick(localx - children[i]->Position.X, localy - children[i]->Position.Y, button);
 				break;
 			}
@@ -154,7 +154,7 @@ void Panel::OnMouseClick(int localx, int localy, unsigned button)
 	if(!childclicked)
 	{
 		XOnMouseClick(localx, localy, button);
-		GetParentState()->FocusComponent(this);
+		GetParentWindow()->FocusComponent(this);
 	}
 }
 

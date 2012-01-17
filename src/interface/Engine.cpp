@@ -1,22 +1,25 @@
 #include <iostream>
 
 #include "Config.h"
+#include <stack>
+
 #include "Global.h"
+#include "interface/Window.h"
 #include "interface/Platform.h"
 #include "interface/Engine.h"
-#include "interface/State.h"
 #include "Graphics.h"
 
 using namespace ui;
+using namespace std;
 
 Engine::Engine():
 	state_(NULL),
-	statequeued_(NULL),
 	mousex_(0),
 	mousey_(0),
 	mousexp_(0),
 	mouseyp_(0),
-	FpsLimit(60.0f)
+	FpsLimit(60.0f),
+	windows(stack<Window*>())
 {
 }
 
@@ -40,7 +43,30 @@ void Engine::Exit()
 	running_ = false;
 }
 
-void Engine::SetState(State * state)
+void Engine::ShowWindow(Window * window)
+{
+	if(state_)
+	{
+		windows.push(window);
+	}
+	state_ = window;
+	windows.push(window);
+}
+
+void Engine::CloseWindow()
+{
+	if(!windows.empty())
+	{
+		state_ = windows.top();
+		windows.pop();
+	}
+	else
+	{
+		state_ = NULL;
+	}
+}
+
+/*void Engine::SetState(State * state)
 {
 	if(state_) //queue if currently in a state
 		statequeued_ = state;
@@ -50,7 +76,7 @@ void Engine::SetState(State * state)
 		if(state_)
 			state_->DoInitialized();
 	}
-}
+}*/
 
 void Engine::SetSize(int width, int height)
 {
@@ -63,7 +89,7 @@ void Engine::Tick(float dt)
 	if(state_ != NULL)
 		state_->DoTick(dt);
 
-	if(statequeued_ != NULL)
+	/*if(statequeued_ != NULL)
 	{
 		if(state_ != NULL)
 		{
@@ -76,15 +102,15 @@ void Engine::Tick(float dt)
 
 		if(state_ != NULL)
 			state_->DoInitialized();
-	}
+	}*/
 }
 
 void Engine::Draw()
 {
 	if(state_)
 		state_->DoDraw();
-	Global::Ref().g->Blit();
-	Global::Ref().g->Clear();
+	g->Blit();
+	g->Clear();
 }
 
 void Engine::onKeyPress(int key, bool shift, bool ctrl, bool alt)

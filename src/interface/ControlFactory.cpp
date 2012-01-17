@@ -50,10 +50,5 @@ ui::Panel * ControlFactory::MainMenu(int x, int y, int width, int height)
 	mainMenu->AddChild(tempButton); //Render options
 	currentX += 18;
 
-	tempButton = new ui::Button(ui::Point(currentX, 1), ui::Point(16, height-2), "\x90");  //Pause
-	tempButton->SetTogglable(true);
-	mainMenu->AddChild(tempButton);
-	currentX += 18;
-
 	return mainMenu;
 }

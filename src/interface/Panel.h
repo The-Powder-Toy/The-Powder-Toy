@@ -3,7 +3,7 @@
 //#include "Platform.h"
 
 #include "interface/Point.h"
-#include "interface/State.h"
+#include "interface/Window.h"
 #include "interface/Component.h"
 
 namespace ui
@@ -21,7 +21,7 @@ class Component;
 	public:
 		friend class Component;
 
-		Panel(State* parent_state);
+		Panel(Window* parent_state);
 		Panel(Point position, Point size);
 		Panel();
 		virtual ~Panel();
