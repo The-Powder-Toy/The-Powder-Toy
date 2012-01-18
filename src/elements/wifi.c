@@ -12,6 +12,8 @@ int update_WIFI(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
+				// wireless[][0] - whether channel is active on this frame
+				// wireless[][1] - whether channel should be active on next frame
 				if (wireless[parts[i].tmp][0])
 				{
 					if (((r&0xFF)==PT_NSCN||(r&0xFF)==PT_PSCN||(r&0xFF)==PT_INWR)&&parts[r>>8].life==0 && wireless[parts[i].tmp][0])
@@ -25,9 +27,8 @@ int update_WIFI(UPDATE_FUNC_ARGS) {
 				{
 					if ((r&0xFF)==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3)
 					{
-						wireless[parts[i].tmp][0] = 1;
 						wireless[parts[i].tmp][1] = 1;
-						ISWIRE = 1;
+						ISWIRE = 2;
 					}
 				}
 			}

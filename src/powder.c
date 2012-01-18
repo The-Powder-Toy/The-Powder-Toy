@@ -1697,15 +1697,14 @@ void update_particles_i(pixel *vid, int start, int inc)
 			GENERATION ++;
 		//memset(gol2, 0, sizeof(gol2));
 	}
-	if (ISWIRE==1)//wifi channel reseting
+	if (ISWIRE>0)//wifi channel reseting
 	{
 		for ( q = 0; q<(int)(MAX_TEMP-73.15f)/100+2; q++)
-			if (!wireless[q][1])
-			{
-				wireless[q][0] = 0;
-			}
-			else
-				wireless[q][1] = 0;
+		{
+			wireless[q][0] = wireless[q][1];
+			wireless[q][1] = 0;
+		}
+		ISWIRE--;
 	}
 	for (i=0; i<=parts_lastActiveIndex; i++)
 		if (parts[i].type)
