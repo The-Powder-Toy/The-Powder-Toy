@@ -355,6 +355,12 @@ void stamp_update(void)
 		{
 			fwrite(stamps[i].name, 1, 10, f);
 		}
+		else
+		{
+			char name[30] = {0};
+			sprintf(name,"stamps%s%s.stm",PATH_SEP,stamps[i].name);
+			remove(name);
+		}
 	}
 	fclose(f);
 }
