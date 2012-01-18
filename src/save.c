@@ -226,7 +226,7 @@ pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 						goto fail;
 					}
 					if(partsData[i] >= PT_NUM)
-						partsData[i] = PT_DMND;	//Replace all invalid powders with diamond
+						partsData[i] = PT_DMND;	//Replace all invalid elements with diamond
 					
 					//Draw type
 					vidBuf[(fullY+y)*fullW+(fullX+x)] = ptypes[partsData[i]].pcolors;
@@ -273,21 +273,30 @@ pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 						}
 					}
 					
-					//Skip dcolour
+					//Read dcolour
 					if(fieldDescriptor & 0x40)
 					{
 						if(i+3 >= partsDataLen) goto fail;
-						i+=4;
+						i++; //vidBuf[(fullY+y)*fullW+(fullX+x)] = (unsigned)partsData[i++]<<24;
+						vidBuf[(fullY+y)*fullW+(fullX+x)] = (unsigned)partsData[i++]<<16;
+						vidBuf[(fullY+y)*fullW+(fullX+x)] |= (unsigned)partsData[i++]<<8;
+						vidBuf[(fullY+y)*fullW+(fullX+x)] |= (unsigned)partsData[i++];
 					}
 					
-					//Read vx
+					//Skip vx
 					if(fieldDescriptor & 0x80)
 					{
 						if(i++ >= partsDataLen) goto fail;
 					}
 					
-					//Read vy
+					//Skip vy
 					if(fieldDescriptor & 0x100)
+					{
+						if(i++ >= partsDataLen) goto fail;
+					}
+
+					//Skip tmp2
+					if(fieldDescriptor & 0x400)
 					{
 						if(i++ >= partsDataLen) goto fail;
 					}
@@ -424,7 +433,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	//Copy parts data
 	/* Field descriptor format:
 	|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|
-																													|		vy		|		vx		|	dcololour	|	ctype		|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
+																					|		tmp2	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
 	life[2] means a second byte (for a 16 bit field) if life[1] is present
 	*/
 	partsData = malloc(NPART * (sizeof(particle)+1));
@@ -533,6 +542,13 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 					if (vTemp<0) vTemp=0;
 					if (vTemp>255) vTemp=255;
 					partsData[partsDataLen++] = vTemp;
+				}
+
+				//Tmp2 (optional), 1 byte
+				if(partsptr[i].tmp2)
+				{
+					fieldDesc |= 1 << 10;
+					partsData[partsDataLen++] = partsptr[i].tmp2;
 				}
 				
 				//Write the field descriptor;
@@ -1004,7 +1020,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 						goto fail;
 					}
 					if(partsData[i] >= PT_NUM)
-						partsData[i] = PT_DMND;	//Replace all invalid powders with diamond
+						partsData[i] = PT_DMND;	//Replace all invalid elements with diamond
 					if(pmap[y][x])
 					{
 						//Replace existing particle or allocated block
@@ -1110,6 +1126,13 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 					{
 						if(i >= partsDataLen) goto fail;
 						partsptr[newIndex].vy = (partsData[i++]-127.0f)/16.0f;
+					}
+
+					//Read tmp2
+					if(fieldDescriptor & 0x400)
+					{
+						if(i >= partsDataLen) goto fail;
+						partsptr[newIndex].tmp2 = partsData[i++];
 					}
 				}
 			}
