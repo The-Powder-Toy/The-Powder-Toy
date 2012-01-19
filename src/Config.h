@@ -34,6 +34,7 @@
 
 #define APPDATA_SUBDIR "\\HardWIRED"
 
+//Number of unique thumbnails to have in cache at one time
 #define THUMB_CACHE_SIZE 256
 
 #ifndef M_PI
@@ -43,8 +44,11 @@
 #define M_GRAV 6.67300e-1
 #endif
 
-#define IMGCONNS 3
+//Number of asynchronous connections used to retrieve thumnails
+#define IMGCONNS 5
+//Not sure
 #define TIMEOUT 100
+//HTTP request timeout in seconds
 #define HTTP_TIMEOUT 10
 
 #ifdef RENDERER

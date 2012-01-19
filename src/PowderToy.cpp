@@ -10,7 +10,6 @@
 
 #include "interface/Engine.h"
 #include "interface/Button.h"
-#include "interface/Sandbox.h"
 #include "interface/Panel.h"
 #include "interface/ControlFactory.h"
 #include "interface/Point.h"

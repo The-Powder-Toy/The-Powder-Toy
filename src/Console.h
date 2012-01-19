@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "interface/Sandbox.h"
 #include "simulation/Simulation.h"
 
 class ConsoleCommand
@@ -29,7 +28,6 @@ private:
 	bool file_script;
 	std::vector<ConsoleCommand> * previousCommands;
 	std::string * lastError;
-	ui::Sandbox * sandbox;
 	Simulation * sim;
 public:
 	virtual void Tick(float * dt);
@@ -41,7 +39,7 @@ public:
 	virtual int ProcessCommand(char * console);
 	virtual std::string * GetLastError();
 	virtual std::vector<ConsoleCommand> * GetPreviousCommands();
-	Console(ui::Sandbox * sandbox);
+	Console();
 	virtual ~Console();
 };
 

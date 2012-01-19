@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include <queue>
+#include "Config.h"
 #include "HTTP.h"
 #include "search/Thumbnail.h"
 #include "Singleton.h"
@@ -10,10 +11,11 @@ class Client: public Singleton<Client>
 {
 private:
 	int thumbnailCacheNextID;
-	Thumbnail * thumbnailCache[120];
-	void * activeThumbRequests[5];
-	int activeThumbRequestTimes[5];
-	std::string activeThumbRequestIDs[5];
+	Thumbnail * thumbnailCache[THUMB_CACHE_SIZE];
+	void * activeThumbRequests[IMGCONNS];
+	int activeThumbRequestTimes[IMGCONNS];
+	int activeThumbRequestCompleteTimes[IMGCONNS];
+	std::string activeThumbRequestIDs[IMGCONNS];
 public:
 	Client();
 	~Client();

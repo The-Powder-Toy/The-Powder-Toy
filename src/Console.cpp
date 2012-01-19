@@ -48,10 +48,9 @@ std::vector<ConsoleCommand> * Console::GetPreviousCommands()
 
 }
 
-Console::Console(ui::Sandbox * sandbox)
+Console::Console()
 {
-	this->sandbox = sandbox;
-	sim = sandbox->GetSimulation();
+	//sim = sandbox->GetSimulation();
 }
 
 Console::~Console()
