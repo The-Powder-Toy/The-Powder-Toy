@@ -6276,13 +6276,13 @@ void catalogue_ui(pixel * vid_buf)
 							csave->image = resample_img(tmpimage, imgwidth, imgheight, XRES/CATALOGUE_S, YRES/CATALOGUE_S);
 							free(tmpimage);
 						} else {
-							//Blank image, this should default to something else
-							csave->image = malloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S)*PIXELSIZE);
+							//Blank image, TODO: this should default to something else
+							csave->image = calloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S), PIXELSIZE);
 						}
 						free(data);
 					} else {
-						//Blank image, this should default to something else
-						csave->image = malloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S)*PIXELSIZE);
+						//Blank image, TODO: this should default to something else
+						csave->image = calloc((XRES/CATALOGUE_S)*(YRES/CATALOGUE_S), PIXELSIZE);
 					}
 					imageoncycle = 1;
 				}

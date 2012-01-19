@@ -58,6 +58,7 @@ pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 	int inputDataLen = size, bsonDataLen = 0, partsDataLen, partsPosDataLen, wallDataLen;
 	int i, x, y, j;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
+	int bsonInitialised = 0;
 	pixel * vidBuf = NULL;
 	bson b;
 	bson_iterator iter;
@@ -121,6 +122,7 @@ pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 	}
 	
 	bson_init_data(&b, bsonData);
+	bsonInitialised = 1;
 	bson_iterator_init(&iter, &b);
 	while(bson_iterator_next(&iter))
 	{
@@ -301,7 +303,9 @@ fail:
 		vidBuf = NULL;
 	}
 fin:
-	bson_destroy(&b);
+	//Don't call bson_destroy if bson_init wasn't called, or an uninitialised pointer (b.data) will be freed and the game will crash
+	if (bsonInitialised)
+		bson_destroy(&b);
 	return vidBuf;
 }
 
