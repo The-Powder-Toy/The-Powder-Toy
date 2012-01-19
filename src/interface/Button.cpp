@@ -11,6 +11,7 @@
 #include "Graphics.h"
 #include "Global.h"
 #include "Engine.h"
+#include "Misc.h"
 
 namespace ui {
 
@@ -20,9 +21,12 @@ Button::Button(Window* parent_state, std::string buttonText):
 	isMouseInside(false),
 	isButtonDown(false),
 	isTogglable(false),
-	actionCallback(NULL)
+	actionCallback(NULL),
+	textPosition(ui::Point(0, 0)),
+	textVAlign(AlignMiddle),
+	textHAlign(AlignCentre)
 {
-
+	TextPosition();
 }
 
 Button::Button(Point position, Point size, std::string buttonText):
@@ -31,9 +35,12 @@ Button::Button(Point position, Point size, std::string buttonText):
 	isMouseInside(false),
 	isButtonDown(false),
 	isTogglable(false),
-	actionCallback(NULL)
+	actionCallback(NULL),
+	textPosition(ui::Point(0, 0)),
+	textVAlign(AlignMiddle),
+	textHAlign(AlignCentre)
 {
-
+	TextPosition();
 }
 
 Button::Button(std::string buttonText):
@@ -42,9 +49,48 @@ Button::Button(std::string buttonText):
 	isMouseInside(false),
 	isButtonDown(false),
 	isTogglable(false),
-	actionCallback(NULL)
+	actionCallback(NULL),
+	textPosition(ui::Point(0, 0)),
+	textVAlign(AlignMiddle),
+	textHAlign(AlignCentre)
 {
+	TextPosition();
+}
 
+void Button::TextPosition()
+{
+	//Position.X+(Size.X-Graphics::textwidth((char *)ButtonText.c_str()))/2, Position.Y+(Size.Y-10)/2
+	switch(textVAlign)
+	{
+	case AlignTop:
+		textPosition.Y = 3;
+		break;
+	case AlignMiddle:
+		textPosition.Y = (Size.Y-10)/2;
+		break;
+	case AlignBottom:
+		textPosition.Y = Size.Y-11;
+		break;
+	}
+
+	switch(textHAlign)
+	{
+	case AlignLeft:
+		textPosition.X = 3;
+		break;
+	case AlignCentre:
+		textPosition.X = (Size.X-Graphics::textwidth((char *)ButtonText.c_str()))/2;
+		break;
+	case AlignRight:
+		textPosition.X = (Size.X-Graphics::textwidth((char *)ButtonText.c_str()))-2;
+		break;
+	}
+}
+
+void Button::SetText(std::string buttonText)
+{
+	ButtonText = buttonText;
+	TextPosition();
 }
 
 void Button::SetTogglable(bool togglable)
@@ -68,25 +114,21 @@ inline void Button::SetToggleState(bool state)
 	toggle = state;
 }
 
-
-
 void Button::Draw(const Point& screenPos)
 {
 	Graphics * g = ui::Engine::Ref().g;
 	Point Position = screenPos;
-	// = reinterpret_cast<Graphics*>(userdata);
-	//TODO: Cache text location, that way we don't have the text alignment code here
 	if(isButtonDown || (isTogglable && toggle))
 	{
 		g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, 255, 255, 255, 255);
-		g->drawtext(Position.X+(Size.X-Graphics::textwidth((char *)ButtonText.c_str()))/2, Position.Y+(Size.Y-10)/2, ButtonText, 0, 0, 0, 255);
+		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 0, 0, 0, 255);
 	}
 	else
 	{
 		if(isMouseInside)
 			g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 20, 20, 20, 255);
 		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
-		g->drawtext(Position.X+(Size.X-Graphics::textwidth((char *)ButtonText.c_str()))/2, Position.Y+(Size.Y-10)/2, ButtonText, 255, 255, 255, 255);
+		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 255, 255, 255, 255);
 	}
     /*sf::RenderWindow* rw = reinterpret_cast<sf::RenderWindow*>(userdata); //it better be a RenderWindow or so help your god
 

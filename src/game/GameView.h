@@ -21,20 +21,13 @@ private:
 	Renderer * ren;
 	//UI Elements
 	ui::Button * pauseButton;
+	ui::Button * searchButton;
 public:
     GameView();
 	void AttachController(GameController * _c){ c = _c; }
 	void NotifyRendererChanged(GameModel * sender);
 	void NotifySimulationChanged(GameModel * sender);
 	void NotifyPausedChanged(GameModel * sender);
-	/*virtual void DoMouseMove(int x, int y, int dx, int dy);
-	virtual void DoMouseDown(int x, int y, unsigned button);
-	virtual void DoMouseUp(int x, int y, unsigned button);
-	//virtual void DoMouseWheel(int x, int y, int d);
-	//virtual void DoKeyPress(int key, bool shift, bool ctrl, bool alt);
-	//virtual void DoKeyRelease(int key, bool shift, bool ctrl, bool alt);
-	virtual void DoTick(float dt);
-	virtual void DoDraw();*/
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);

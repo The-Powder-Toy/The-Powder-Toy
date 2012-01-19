@@ -6,10 +6,7 @@
 #include <string>
 #include "Config.h"
 #include "Global.h"
-#include "Simulation.h"
-#include "Renderer.h"
 #include "Graphics.h"
-#include "Air.h"
 
 #include "interface/Engine.h"
 #include "interface/Button.h"
@@ -21,6 +18,8 @@
 
 #include "game/GameController.h"
 #include "game/GameView.h"
+
+#include "client/HTTP.h"
 
 using namespace std;
 

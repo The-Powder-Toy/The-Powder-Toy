@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "interface/Sandbox.h"
-#include "Simulation.h"
+#include "simulation/Simulation.h"
 
 class ConsoleCommand
 {

@@ -1,4 +1,4 @@
-#include "element.h"
+#include "simulation/Element.h"
 #include "hmap.h"
 
 int graphics_QRTZ(GRAPHICS_FUNC_ARGS) //QRTZ and PQRT

@@ -1,4 +1,4 @@
-#include "element.h"
+#include "simulation/Element.h"
 
 int update_ELEC(UPDATE_FUNC_ARGS) {
 	int r, rt, rx, ry, nb, rrx, rry;

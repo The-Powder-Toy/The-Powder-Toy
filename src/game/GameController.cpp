@@ -4,6 +4,7 @@
 #include "Config.h"
 #include "GameController.h"
 #include "GameModel.h"
+#include "search/SearchController.h"
 #include "interface/Point.h"
 
 using namespace std;
@@ -59,4 +60,10 @@ void GameController::Tick()
 void GameController::SetPaused(bool pauseState)
 {
 	gameModel->SetPaused(pauseState);
+}
+
+void GameController::OpenSearch()
+{
+	SearchController * search = new SearchController();
+	ui::Engine::Ref().ShowWindow(search->GetView());
 }

@@ -10,8 +10,6 @@ class Save
 private:
 	int id;
 	int votesUp, votesDown;
-	string userName;
-	string name;
 public:
 	Save(int _id, int _votesUp, int _votesDown, string _userName, string _name):
 		id(_id),
@@ -21,6 +19,9 @@ public:
 		name(_name)
 	{
 	}
+
+	string userName;
+	string name;
 
 	void SetName(string name){ this->name = name; }
 	string GetName(){ return name; }

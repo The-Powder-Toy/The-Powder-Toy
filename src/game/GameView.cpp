@@ -24,6 +24,21 @@ GameView::GameView():
 	pauseButton->SetTogglable(true);
 	pauseButton->SetActionCallback(new PauseAction(this));
 	AddComponent(pauseButton);
+
+	class SearchAction : public ui::ButtonAction
+	{
+		GameView * v;
+	public:
+		SearchAction(GameView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->c->OpenSearch();
+		}
+	};
+	searchButton = new ui::Button(ui::Point(1, Size.Y-18), ui::Point(16, 16), "\x81");  //Open
+	searchButton->SetTogglable(false);
+	searchButton->SetActionCallback(new SearchAction(this));
+	AddComponent(searchButton);
 }
 
 void GameView::NotifyRendererChanged(GameModel * sender)

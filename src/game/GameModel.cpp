@@ -1,7 +1,7 @@
 #include "interface/Engine.h"
 #include "GameModel.h"
 #include "GameView.h"
-#include "Simulation.h"
+#include "simulation/Simulation.h"
 #include "Renderer.h"
 
 GameModel::GameModel():

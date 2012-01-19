@@ -5,7 +5,7 @@
 #include "GameView.h"
 #include "GameModel.h"
 #include "interface/Point.h"
-#include "Simulation.h"
+#include "simulation/Simulation.h"
 
 using namespace std;
 
@@ -23,6 +23,7 @@ public:
 	void DrawPoints(queue<ui::Point*> & pointQueue);
 	void Tick();
 	void SetPaused(bool pauseState);
+	void OpenSearch();
 };
 
 #endif // GAMECONTROLLER_H

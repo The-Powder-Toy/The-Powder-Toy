@@ -3,6 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+enum HorizontalAlignment
+{
+	AlignLeft, AlignCentre, AlignRight
+};
+
+enum VerticalAlignment
+{
+	AlignTop, AlignMiddle, AlignBottom
+};
+
 #if defined(WIN32) && !defined(__GNUC__)
 #define x86_cpuid(func,af,bf,cf,df) \
 	do {\

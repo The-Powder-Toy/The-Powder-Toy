@@ -9,7 +9,7 @@
 #define BUTTON_H_
 
 #include <string>
-
+#include "Misc.h"
 #include "Component.h"
 
 namespace ui
@@ -51,10 +51,18 @@ public:
 	inline bool GetToggleState();
 	inline void SetToggleState(bool state);
 	void SetActionCallback(ButtonAction * action);
-
+	void TextPosition();
+	void SetText(std::string buttonText);
+	HorizontalAlignment GetHAlignment() { return textHAlign; }
+	VerticalAlignment GetVAlignment() { return textVAlign; }
+	void SetAlignment(HorizontalAlignment hAlign, VerticalAlignment vAlign) { textHAlign = hAlign; textVAlign = vAlign; TextPosition(); }
 protected:
 	bool isButtonDown, state, isMouseInside, isTogglable, toggle;
 	ButtonAction * actionCallback;
+	ui::Point textPosition;
+	HorizontalAlignment textHAlign;
+	VerticalAlignment textVAlign;
+
 };
 }
 #endif /* BUTTON_H_ */

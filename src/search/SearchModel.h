@@ -7,6 +7,7 @@
 
 using namespace std;
 
+class SearchView;
 class SearchModel
 {
 private:
@@ -15,7 +16,7 @@ private:
 	void notifySaveListChanged();
 public:
     SearchModel();
-	void AddObserver(SearchView * observer){ observers.push_back(observer); }
+	void AddObserver(SearchView * observer);
 	void UpdateSaveList();
 	vector<Save> GetSaveList();
 };

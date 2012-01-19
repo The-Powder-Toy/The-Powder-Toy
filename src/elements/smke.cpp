@@ -1,4 +1,4 @@
-#include "element.h"
+#include "simulation/Element.h"
 
 int graphics_SMKE(GRAPHICS_FUNC_ARGS)
 {

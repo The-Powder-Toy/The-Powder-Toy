@@ -2,7 +2,7 @@
 #define RENDERER_H
 
 #include "Config.h"
-#include "Simulation.h"
+#include "simulation/Simulation.h"
 #include "Graphics.h"
 
 class Simulation;

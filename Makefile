@@ -5,8 +5,8 @@ OBJS += $(patsubst src/%.cpp,build/obj/powder.exe/%.o,$(SOURCES))
 
 FOLDERS := $(sort $(dir $(OBJS)))
 
-CFLAGS := -Wno-deprecated -Wno-deprecated-declarations -Isrc/ -Idata/ -DWIN32 -DWINCONSOLE
-OFLAGS := -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -msse2 -fkeep-inline-functions
+CFLAGS := -w -Isrc/ -Idata/ -DWIN32 -DWINCONSOLE
+OFLAGS := -fkeep-inline-functions #-O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -msse2
 LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 # -mwindows
 
 CFLAGS += $(OFLAGS)

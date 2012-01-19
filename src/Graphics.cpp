@@ -19,13 +19,13 @@
 #endif
 
 #include "Config.h"
-#include "air.h"
-#include "gravity.h"
+//#include "simulation/Air.h"
+//#include "simulation/Gravity.h"
 //#include "powder.h"
-#define INCLUDE_PSTRUCT
-#include "Simulation.h"
-#include "Graphics.h"
-#include "ElementGraphics.h"
+//#define INCLUDE_PSTRUCT
+//#include "Simulation.h"
+//#include "Graphics.h"
+//#include "ElementGraphics.h"
 #define INCLUDE_FONTDATA
 #include "font.h"
 #include "misc.h"
@@ -1501,15 +1501,24 @@ void Graphics::draw_image(pixel *img, int x, int y, int w, int h, int a)
 {
 	int i, j, r, g, b;
 	if (!img) return;
-	for (j=0; j<h; j++)
-		for (i=0; i<w; i++)
-		{
-			r = PIXR(*img);
-			g = PIXG(*img);
-			b = PIXB(*img);
-			drawpixel(x+i, y+j, r, g, b, a);
-			img++;
-		}
+	if(y + h > YRES+MENUSIZE) h = (YRES+MENUSIZE)-y; //Adjust height to prevent drawing off the bottom
+	if(a >= 255)
+		for (j=0; j<h; j++)
+			for (i=0; i<w; i++)
+			{
+				vid[(y+j)*(XRES+BARSIZE)+(x+i)] = *img;
+				img++;
+			}
+	else
+		for (j=0; j<h; j++)
+			for (i=0; i<w; i++)
+			{
+				r = PIXR(*img);
+				g = PIXG(*img);
+				b = PIXB(*img);
+				drawpixel(x+i, y+j, r, g, b, a);
+				img++;
+			}
 }
 
 void Graphics::dim_copy(pixel *dst, pixel *src) //old persistent, unused

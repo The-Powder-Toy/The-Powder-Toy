@@ -2,7 +2,7 @@
 #define GAMEMODEL_H
 
 #include <vector>
-#include "Simulation.h"
+#include "simulation/Simulation.h"
 #include "Renderer.h"
 #include "GameView.h"
 

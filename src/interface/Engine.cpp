@@ -47,10 +47,9 @@ void Engine::ShowWindow(Window * window)
 {
 	if(state_)
 	{
-		windows.push(window);
+		windows.push(state_);
 	}
 	state_ = window;
-	windows.push(window);
 }
 
 void Engine::CloseWindow()
