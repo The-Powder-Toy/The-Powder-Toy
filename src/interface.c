@@ -1615,7 +1615,7 @@ int stamp_ui(pixel *vid_buf)
 		for (j=0; j<GRID_Y; j++)
 			for (i=0; i<GRID_X; i++)
 			{
-				if (stamps[k].name[0] && stamps[k].thumb)
+				if (stamps[k].name[0])
 				{
 					gx = ((XRES/GRID_X)*i) + (XRES/GRID_X-XRES/GRID_S)/2;
 					gy = ((((YRES-MENUSIZE+20)+15)/GRID_Y)*j) + ((YRES-MENUSIZE+20)/GRID_Y-(YRES-MENUSIZE+20)/GRID_S+10)/2 + 18;
@@ -1626,8 +1626,15 @@ int stamp_ui(pixel *vid_buf)
 					h = stamps[k].thumb_h;
 					x -= w/2;
 					y -= h/2;
-					draw_image(vid_buf, stamps[k].thumb, gx+(((XRES/GRID_S)/2)-(w/2)), gy+(((YRES/GRID_S)/2)-(h/2)), w, h, 255);
-					xor_rect(vid_buf, gx+(((XRES/GRID_S)/2)-(w/2)), gy+(((YRES/GRID_S)/2)-(h/2)), w, h);
+					if (stamps[k].thumb)
+					{
+						draw_image(vid_buf, stamps[k].thumb, gx+(((XRES/GRID_S)/2)-(w/2)), gy+(((YRES/GRID_S)/2)-(h/2)), w, h, 255);
+						xor_rect(vid_buf, gx+(((XRES/GRID_S)/2)-(w/2)), gy+(((YRES/GRID_S)/2)-(h/2)), w, h);
+					}
+					else
+					{
+						drawtext(vid_buf, gx+8, gy+((YRES/GRID_S)/2)-4, "Error loading stamp", 255, 255, 255, 255);
+					}
 					if (mx>=gx+XRES/GRID_S-4 && mx<(gx+XRES/GRID_S)+6 && my>=gy-6 && my<gy+4)
 					{
 						d = k;
@@ -1636,7 +1643,7 @@ int stamp_ui(pixel *vid_buf)
 					}
 					else
 					{
-						if (mx>=gx && mx<gx+(XRES/GRID_S) && my>=gy && my<gy+(YRES/GRID_S))
+						if (mx>=gx && mx<gx+(XRES/GRID_S) && my>=gy && my<gy+(YRES/GRID_S) && stamps[k].thumb)
 						{
 							r = k;
 							drawrect(vid_buf, gx-2, gy-2, XRES/GRID_S+3, YRES/GRID_S+3, 128, 128, 210, 255);
