@@ -402,6 +402,8 @@ void stamp_save(int x, int y, int w, int h)
 	int n;
 	char fn[64], sn[16];
 	void *s=build_save(&n, x, y, w, h, bmap, vx, vy, pv, fvx, fvy, signs, parts);
+	if (!s)
+		return;
 
 #ifdef WIN32
 	_mkdir("stamps");
