@@ -2,11 +2,20 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 #include <time.h>
+
 #include "Config.h"
 #include "Client.h"
-#include "interface/Point.h"
 #include "Graphics.h"
+
+#include "interface/Point.h"
+
+#include "search/Save.h"
+
+#include "cajun/reader.h"
+#include "cajun/writer.h"
+#include "cajun/elements.h"
 
 Client::Client()
 {
@@ -27,6 +36,69 @@ Client::Client()
 Client::~Client()
 {
 	http_done();
+}
+
+std::vector<Save> Client::SearchSaves(int start, int count, string query, string sort)
+{
+	lastError = "";
+	std::vector<Save> saveArray;
+	std::stringstream urlStream;
+	char * data;
+	int dataStatus, dataLength;
+	urlStream << "http://" << SERVER << "/Browse.json?Start=" << start << "&Count=" << cout;
+	if(query.length() || sort.length())
+	{
+		urlStream << "&Search_Query=";
+		if(query.length())
+			urlStream << query;
+		if(sort.length())
+		{
+			if(query.length())
+				urlStream << " ";
+			urlStream << "sort:" << sort;
+		}
+
+	}
+	data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+	if(dataStatus == 200 && data)
+	{
+		try
+		{
+			std::istringstream dataStream(data); // missing comma!
+			json::Object objDocument;
+			json::Reader::Read(objDocument, dataStream);
+
+			json::Array savesArray = objDocument["Saves"];
+			for(int j = 0; j < savesArray.Size(); j++)
+			{
+				json::Number tempID = savesArray[j]["ID"];
+				json::Number tempScoreUp = savesArray[j]["ScoreUp"];
+				json::Number tempScoreDown = savesArray[j]["ScoreDown"];
+				json::String tempUsername = savesArray[j]["Username"];
+				json::String tempName = savesArray[j]["Name"];
+				saveArray.push_back(
+							Save(
+								tempID.Value(),
+								tempScoreUp.Value(),
+								tempScoreDown.Value(),
+								tempUsername.Value(),
+								tempName.Value()
+								)
+							);
+			}
+		}
+		catch (json::Exception &e)
+		{
+			lastError = "Could not read response";
+		}
+	}
+	else
+	{
+		lastError = http_ret_text(dataStatus);
+	}
+	if(data)
+		free(data);
+	return saveArray;
 }
 
 void Client::ClearThumbnailRequests()

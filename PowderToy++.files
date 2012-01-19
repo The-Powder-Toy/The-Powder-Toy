@@ -326,3 +326,10 @@ src/simulation/Air.h
 src/simulation/Simulation.cpp
 src/simulation/Gravity.cpp
 src/simulation/Air.cpp
+src/cajun/writer.h
+src/cajun/visitor.h
+src/cajun/reader.h
+src/cajun/elements.h
+src/cajun/writer.inl
+src/cajun/reader.inl
+src/cajun/elements.inl

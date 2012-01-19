@@ -5,6 +5,7 @@
 #include "SearchController.h"
 #include "interface/SaveButton.h"
 #include "interface/Button.h"
+#include "interface/Label.h"
 
 using namespace std;
 
@@ -18,6 +19,7 @@ private:
 	vector<ui::SaveButton*> saveButtons;
 	ui::Button * nextButton;
 	ui::Button * previousButton;
+	ui::Label * errorLabel;
 public:
 	void NotifySaveListChanged(SearchModel * sender);
     SearchView();

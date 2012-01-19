@@ -2,6 +2,7 @@
 #define SEARCHMODEL_H
 
 #include <vector>
+#include <string>
 #include "Save.h"
 #include "SearchView.h"
 
@@ -11,6 +12,7 @@ class SearchView;
 class SearchModel
 {
 private:
+	string lastError;
 	vector<SearchView*> observers;
 	vector<Save> saveList;
 	void notifySaveListChanged();
@@ -19,6 +21,7 @@ public:
 	void AddObserver(SearchView * observer);
 	void UpdateSaveList();
 	vector<Save> GetSaveList();
+	string GetLastError() { return lastError; }
 };
 
 #endif // SEARCHMODEL_H
