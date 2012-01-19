@@ -2275,7 +2275,7 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 			pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
 			nx = pos.x/CELL;
 			ny = pos.y/CELL;
-			if (nx<0 || nx>=nw || ny<0 || ny>=nh)
+			if (nx<0 || nx>=nw/CELL || ny<0 || ny>=nh/CELL)
 				continue;
 			if (bmapo[y][x])
 			{
