@@ -7,7 +7,8 @@ using namespace ui;
 Window::Window(Point _position, Point _size):
 	Position(_position),
 	Size(_size),
-	focusedComponent_(NULL)
+	focusedComponent_(NULL),
+	AllowExclusiveDrawing(true)
 {
 }
 

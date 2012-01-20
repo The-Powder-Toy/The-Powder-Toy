@@ -5,7 +5,9 @@
 #include "Renderer.h"
 
 GameModel::GameModel():
-	activeElement(1)
+	activeElement(1),
+	sim(NULL),
+	ren(NULL)
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
