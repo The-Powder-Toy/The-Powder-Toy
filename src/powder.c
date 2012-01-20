@@ -2298,7 +2298,7 @@ killed:
 							kill_part(i);
 						continue;
 					}
-					if (!parts[i].ctype&&t!=PT_NEUT&&t!=PT_ELEC) {
+					if (!(parts[i].ctype&0x3FFFFFFF)&&t!=PT_NEUT&&t!=PT_ELEC) {
 						kill_part(i);
 						continue;
 					}

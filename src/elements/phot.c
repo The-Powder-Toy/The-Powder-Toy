@@ -5,7 +5,7 @@ int update_PHOT(UPDATE_FUNC_ARGS) {
 	float rr, rrr;
 	parts[i].pavg[0] = x;
 	parts[i].pavg[1] = y;
-	if (!parts[i].ctype) {
+	if (!(parts[i].ctype&0x3FFFFFFF)) {
 		kill_part(i);
 		return 1;
 	}
