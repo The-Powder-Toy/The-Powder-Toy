@@ -58,6 +58,7 @@ void SaveButton::Tick(float dt)
 		if(tempThumb)
 		{
 			thumbnail = tempThumb; //Store a local copy of the thumbnail
+			cout << (void *)(tempThumb) << " " << (void *)(&thumbnail) << endl;
 			if(thumbnail->Data)
 			{
 				if(thumbnail->Size.Y > (Size.Y-25))

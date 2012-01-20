@@ -130,34 +130,6 @@ void Button::Draw(const Point& screenPos)
 		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 255, 255, 255, 255);
 	}
-    /*sf::RenderWindow* rw = reinterpret_cast<sf::RenderWindow*>(userdata); //it better be a RenderWindow or so help your god
-
-	//Draw component here
-	sf::Text textGraphic(ButtonText);
-	textGraphic.SetCharacterSize(11);
-	if(isButtonDown)
-		textGraphic.SetColor(sf::Color::Black);
-	else
-		textGraphic.SetColor(sf::Color::White);
-	sf::FloatRect tempRect = textGraphic.GetRect();
-    textGraphic.SetPosition(ceil(X + Width/2 - tempRect.Width/2), ceil(Y + Height/2 - tempRect.Height/2));
-
-	if(isMouseInside)
-	{
-	    if(isButtonDown)
-            rw->Draw(sf::Shape::Rectangle(X+2, Y+2, Width-4, Width-4, sf::Color::White, 2.f, sf::Color::Black));
-        else
-            rw->Draw(sf::Shape::Rectangle(X+2, Y+2, Width-4, Width-4, sf::Color::Black, 2.f, sf::Color::White));
-	}
-	else
-	{
-	    if(isButtonDown)
-            rw->Draw(sf::Shape::Rectangle(X+2, Y+2, Width-4, Width-4, sf::Color::White, 2.f, sf::Color::Black));
-        else
-            rw->Draw(sf::Shape::Rectangle(X+1, Y+1, Width-2, Width-2, sf::Color::Black, 1.f, sf::Color::White));
-	}
-
-	rw->Draw(textGraphic);*/
 }
 
 void Button::OnMouseUnclick(int x, int y, unsigned int button)
@@ -218,6 +190,8 @@ void Button::SetActionCallback(ButtonAction * action)
 
 Button::~Button()
 {
+	if(actionCallback)
+		delete actionCallback;
 }
 
 } /* namespace ui */

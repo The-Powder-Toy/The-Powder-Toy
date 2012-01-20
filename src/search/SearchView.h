@@ -6,6 +6,7 @@
 #include "interface/SaveButton.h"
 #include "interface/Button.h"
 #include "interface/Label.h"
+#include "interface/Textbox.h"
 
 using namespace std;
 
@@ -20,6 +21,8 @@ private:
 	ui::Button * nextButton;
 	ui::Button * previousButton;
 	ui::Label * errorLabel;
+	ui::Textbox * searchField;
+	void doSearch();
 public:
 	void NotifySaveListChanged(SearchModel * sender);
     SearchView();

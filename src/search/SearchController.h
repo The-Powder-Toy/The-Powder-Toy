@@ -14,6 +14,7 @@ private:
 public:
 	SearchController();
 	SearchView * GetView() { return searchView; }
+	void DoSearch(std::string query);
 };
 
 #endif // SEARCHCONTROLLER_H

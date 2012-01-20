@@ -7,12 +7,12 @@ SearchModel::SearchModel()
 {
 }
 
-void SearchModel::UpdateSaveList()
+void SearchModel::UpdateSaveList(std::string query)
 {
 	lastError = "";
 	saveList.clear();
 	notifySaveListChanged();
-	saveList = Client::Ref().SearchSaves(0, 12, "", "");
+	saveList = Client::Ref().SearchSaves(0, 12, query, "");
 	if(!saveList.size())
 	{
 		lastError = Client::Ref().GetLastError();

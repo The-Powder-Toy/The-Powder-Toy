@@ -333,3 +333,6 @@ src/cajun/elements.h
 src/cajun/writer.inl
 src/cajun/reader.inl
 src/cajun/elements.inl
+src/interface/Textbox.h
+src/interface/Textbox.cpp
+src/interface/Keys.h

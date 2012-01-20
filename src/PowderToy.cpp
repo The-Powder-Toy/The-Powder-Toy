@@ -63,28 +63,14 @@ int main(int argc, char * argv[])
 	int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
 	float fps = 0, fpsLimit = 30, delta = 1.0f;
 
-	//Renderer * ren;
-	//Simulation * sim = new Simulation();
-	//ren = new Renderer(g, sim);
-
 	ui::Engine::Ref().g = new Graphics();
 	ui::Engine::Ref().g->AttachSDLSurface(SDLOpen());
 
-	ui::Engine * engine = &ui::Engine::Ref();//new ui::Engine();
-	//ui::State * engineState = new ui::State();
-	ui::Label * fpsLabel = new ui::Label(ui::Point(2, 2), ui::Point(200, 14), std::string("FPS: 0"));
-	//engineState->AddComponent(fpsLabel);
+	ui::Engine * engine = &ui::Engine::Ref();
 	engine->Begin(XRES, YRES);
-//	engine->SetState(engineState);
 
 	GameController * gameController = new GameController();
 	engine->ShowWindow(gameController->GetView());
-	/*ui::Sandbox * sandbox = new ui::Sandbox();
-	ui::Button * button = new ui::Button(ui::Point(100, 100), ui::Point(100, 100), std::string("poP"));
-	engineState->AddComponent(fpsLabel);
-	engineState->AddComponent(sandbox);
-	engineState->AddComponent(button);
-	engineState->AddComponent(ControlFactory::MainMenu(0, YRES+MENUSIZE-17, XRES+BARSIZE, 16));*/
 
 	SDL_Event event;
 	while(engine->Running())
@@ -98,6 +84,7 @@ int main(int argc, char * argv[])
 				engine->Exit();
 				break;
 			case SDL_KEYDOWN:
+				engine->onKeyPress(event.key.keysym.sym, false, false, false);
 				break;
 			case SDL_KEYUP:
 				break;
@@ -113,11 +100,6 @@ int main(int argc, char * argv[])
 			}
 			event.type = 0; //Clear last event
 		}
-		//mouseButton = SDL_GetMouseState(&mouseX, &mouseY);
-		fpsLabel->LabelText = "";
-		stringstream fpsText;
-		fpsText << "FPS: " << fps;
-		fpsLabel->LabelText = fpsText.str();
 
 		engine->Tick(delta);
 		engine->Draw();

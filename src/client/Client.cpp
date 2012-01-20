@@ -217,7 +217,6 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 				activeThumbRequests[i] = http_async_req_start(NULL, (char *)urlStream.str().c_str(), NULL, 0, 1);
 				activeThumbRequestTimes[i] = currentTime;
 				activeThumbRequestCompleteTimes[i] = 0;
-				std::cout << "ThumbCache: Requesting " << urlStream.str() << " : " << idString << std::endl;
 				activeThumbRequestIDs[i] = idString;
 				return NULL;
 			}

@@ -1,6 +1,7 @@
 #include "SearchView.h"
 #include "interface/SaveButton.h"
 #include "interface/Label.h"
+#include "interface/Textbox.h"
 #include "Misc.h"
 
 SearchView::SearchView():
@@ -11,10 +12,34 @@ SearchView::SearchView():
 	nextButton = new ui::Button(ui::Point(XRES+BARSIZE-52, YRES+MENUSIZE-18), ui::Point(50, 16), "Next \x95");
 	previousButton = new ui::Button(ui::Point(1, YRES+MENUSIZE-18), ui::Point(50, 16), "\x96 Prev");
 
+	class SearchAction : public ui::TextboxAction
+	{
+		SearchView * v;
+	public:
+		SearchAction(SearchView * _v) { v = _v; }
+		void TextChangedCallback(ui::Textbox * sender)
+		{
+			v->doSearch();
+		}
+	};
+	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point((XRES+BARSIZE)-((50*2)+16+10+50+10), 16), "");
+	searchField->SetAlignment(AlignLeft, AlignBottom);
+	searchField->SetActionCallback(new SearchAction(this));
+
 	nextButton->SetAlignment(AlignRight, AlignBottom);
 	previousButton->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(nextButton);
 	AddComponent(previousButton);
+	AddComponent(searchField);
+
+	ui::Label * searchPrompt = new ui::Label(ui::Point(10, 10), ui::Point(50, 16), "Search:");
+	searchPrompt->SetAlignment(AlignLeft, AlignBottom);
+	AddComponent(searchPrompt);
+}
+
+void SearchView::doSearch()
+{
+	c->DoSearch(searchField->GetText());
 }
 
 SearchView::~SearchView()
@@ -36,9 +61,9 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			AddComponent(errorLabel);
 		}
 		if(sender->GetLastError().length())
-			errorLabel->LabelText = sender->GetLastError();
+			errorLabel->SetText(sender->GetLastError());
 		else
-			errorLabel->LabelText = "No saves found";
+			errorLabel->SetText("No saves found");
 	}
 	else
 	{

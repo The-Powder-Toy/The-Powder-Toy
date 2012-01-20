@@ -19,7 +19,7 @@ private:
 public:
     SearchModel();
 	void AddObserver(SearchView * observer);
-	void UpdateSaveList();
+	void UpdateSaveList(std::string query);
 	vector<Save> GetSaveList();
 	string GetLastError() { return lastError; }
 };
