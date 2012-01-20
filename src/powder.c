@@ -1706,8 +1706,6 @@ void update_particles_i(pixel *vid, int start, int inc)
 	for (i=0; i<=parts_lastActiveIndex; i++)
 		if (parts[i].type)
 		{
-			lx = parts[i].x;
-			ly = parts[i].y;
 			t = parts[i].type;
 			if (t<0 || t>=PT_NUM)
 			{
@@ -2121,12 +2119,21 @@ void update_particles_i(pixel *vid, int start, int inc)
 			{
 				if ((*(ptypes[t].update_func))(i,x,y,surround_space,nt))
 					continue;
+				else if (t==PT_WARP)
+				{
+					// Warp does some movement in its update func, update variables to avoid incorrect data in pmap
+					x = (int)(parts[i].x+0.5f);
+					y = (int)(parts[i].y+0.5f);
+				}
 			}
 #ifdef LUACONSOLE
 			if(lua_el_mode[t])
 			{
 				if(luacon_part_update(t,i,x,y,surround_space,nt))
 					continue;
+				// Need to update variables, in case they've been changed by Lua
+				x = (int)(parts[i].x+0.5f);
+				y = (int)(parts[i].y+0.5f);
 			}
 #endif
 			if (legacy_enable)//if heat sim is off
