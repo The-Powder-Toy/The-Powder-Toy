@@ -18,8 +18,9 @@ int update_WATR(UPDATE_FUNC_ARGS) {
 				{
 					part_change_type(i,x,y,PT_FIRE);
 					parts[i].life = 4;
+					parts[i].ctype = PT_WATR;
 				}
-				if ((r&0xFF)==PT_FIRE){
+				if ((r&0xFF)==PT_FIRE && parts[r>>8].ctype!=PT_WATR){
 					kill_part(r>>8);
 						if(1>(rand()%150)){
 							kill_part(i);

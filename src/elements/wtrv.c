@@ -13,6 +13,7 @@ int update_WTRV(UPDATE_FUNC_ARGS) {
 				{
 					part_change_type(i,x,y,PT_FIRE);
 					parts[i].life = 4;
+					parts[i].ctype = PT_WATR;
 				}
 			}
 	if(parts[i].temp>1273&&parts[i].ctype==PT_FIRE)
