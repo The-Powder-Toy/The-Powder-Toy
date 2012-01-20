@@ -28,7 +28,7 @@
 //#include "ElementGraphics.h"
 #define INCLUDE_FONTDATA
 #include "font.h"
-#include "misc.h"
+#include "Misc.h"
 #include "hmap.h"
 
 //unsigned cmode = CM_FIRE;
