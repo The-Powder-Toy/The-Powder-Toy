@@ -4,13 +4,9 @@
 #include <regex.h>
 #include <sys/types.h>
 #include <math.h>
-#include "misc.h"
 #include "Config.h"
-//#include "interface.h"
-//#include "graphics.h"
-//#include "powder.h"
-//#include <icondoc.h>
-//#include <update.h>
+#include "Misc.h"
+#include "icondoc.h"
 #if defined WIN32
 #include <shlobj.h>
 #include <shlwapi.h>
@@ -47,7 +43,7 @@ char *exe_name(void)
 	}
 	res = 1;
 #else
-	char fn[64], *name=malloc(64);
+	char fn[64], *name=(char *)malloc(64);
 	size_t max=64, res;
 	sprintf(fn, "/proc/self/exe");
 	memset(name, 0, max);
@@ -544,7 +540,7 @@ int register_extension()
 "Comment=Physics sandbox game\n"
 "MimeType=application/vnd.powdertoy.save;\n"
 "NoDisplay=true\n";
-	char *desktopfiledata = malloc(strlen(desktopfiledata_tmp)+strlen(currentfilename)+100);
+	char *desktopfiledata = (char *)malloc(strlen(desktopfiledata_tmp)+strlen(currentfilename)+100);
 	strcpy(desktopfiledata, desktopfiledata_tmp);
 	strappend(desktopfiledata, "Exec=");
 	strappend(desktopfiledata, currentfilename);

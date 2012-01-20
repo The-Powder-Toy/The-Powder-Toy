@@ -1,13 +1,11 @@
 #include <cstdlib>
 #include <math.h>
-#define _cplusplus
 #include "Config.h"
 #include "Simulation.h"
 #include "Elements.h"
 #include "ElementFunctions.h"
 #include "Air.h"
 #include "Gravity.h"
-//#include "powder.h"
 
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 {

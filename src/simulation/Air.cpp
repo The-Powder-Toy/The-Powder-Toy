@@ -3,7 +3,7 @@
 #include "Air.h"
 //#include <powder.h>
 //#include <defines.h>
-#include "gravity.h"
+#include "Gravity.h"
 
 /*float kernel[9];
 

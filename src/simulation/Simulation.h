@@ -12,7 +12,7 @@
 #include "Renderer.h"
 #include "Graphics.h"
 #include "Elements.h"
-#include "misc.h"
+#include "Misc.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
 
