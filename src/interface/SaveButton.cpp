@@ -46,6 +46,8 @@ SaveButton::~SaveButton()
 {
 	if(thumbnail)
 		delete thumbnail;
+	if(actionCallback)
+		delete actionCallback;
 }
 
 void SaveButton::Tick(float dt)
