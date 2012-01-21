@@ -162,13 +162,14 @@ void Textbox::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
 				cursor++;
 				changed = true;
 			}
+			break;
 		}
 		if(changed && actionCallback)
 		{
 			actionCallback->TextChangedCallback(this);
 		}
 	}
-	catch(std::out_of_range e)
+	catch(std::out_of_range &e)
 	{
 		cursor = 0;
 		text = "";

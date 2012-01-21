@@ -16,6 +16,10 @@ public:
 	~SearchController();
 	SearchView * GetView() { return searchView; }
 	void DoSearch(std::string query);
+	void NextPage();
+	void PrevPage();
+	void ChangeSort();
+	void ShowOwn(bool show);
 };
 
 #endif // SEARCHCONTROLLER_H

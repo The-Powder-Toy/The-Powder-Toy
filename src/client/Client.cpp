@@ -39,9 +39,10 @@ Client::~Client()
 	http_done();
 }
 
-std::vector<Save*> * Client::SearchSaves(int start, int count, string query, string sort)
+std::vector<Save*> * Client::SearchSaves(int start, int count, string query, string sort, int & resultCount)
 {
 	lastError = "";
+	resultCount = 0;
 	std::vector<Save*> * saveArray = new std::vector<Save*>();
 	std::stringstream urlStream;
 	char * data;
@@ -52,7 +53,7 @@ std::vector<Save*> * Client::SearchSaves(int start, int count, string query, str
 		urlStream << "&Search_Query=";
 		if(query.length())
 			urlStream << query;
-		if(sort.length())
+		if(sort == "date")
 		{
 			if(query.length())
 				urlStream << " ";
@@ -69,6 +70,8 @@ std::vector<Save*> * Client::SearchSaves(int start, int count, string query, str
 			json::Object objDocument;
 			json::Reader::Read(objDocument, dataStream);
 
+			json::Number tempCount = objDocument["Count"];
+			resultCount = tempCount.Value();
 			json::Array savesArray = objDocument["Saves"];
 			for(int j = 0; j < savesArray.Size(); j++)
 			{
@@ -132,7 +135,7 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 			{
 				activeThumbRequestCompleteTimes[i] = time(NULL);
 			}
-			else if(activeThumbRequestCompleteTimes[i] < (currentTime-20)) //Otherwise, if it completed more than 10 seconds ago, destroy it.
+			else if(activeThumbRequestCompleteTimes[i] < (currentTime-2)) //Otherwise, if it completed more than 2 seconds ago, destroy it.
 			{
 				http_async_req_close(activeThumbRequests[i]);
 				activeThumbRequests[i] = NULL;
@@ -165,6 +168,7 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 				char * data;
 				int status, data_size, imgw, imgh;
 				data = http_async_req_stop(activeThumbRequests[i], &status, &data_size);
+				free(activeThumbRequests[i]);
 				activeThumbRequests[i] = NULL;
 				if (status == 200 && data)
 				{
@@ -202,10 +206,6 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 					thumbnailCache[thumbnailCacheNextID] = new Thumbnail(saveID, saveDate, (pixel *)malloc((128*128) * PIXELSIZE), ui::Point(128, 128));
 					return thumbnailCache[thumbnailCacheNextID++];
 				}
-			}
-			else if(activeThumbRequestTimes[i] < currentTime-HTTP_TIMEOUT)
-			{
-				//
 			}
 		}
 	}

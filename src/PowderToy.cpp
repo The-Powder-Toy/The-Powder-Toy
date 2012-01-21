@@ -92,10 +92,22 @@ int main(int argc, char * argv[])
 				engine->onMouseMove(event.motion.x, event.motion.y);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
-				engine->onMouseClick(event.motion.x, event.motion.y, event.button.button);
+				if(event.button.button == SDL_BUTTON_WHEELUP)
+				{
+					engine->onMouseWheel(event.motion.x, event.motion.y, 1);
+				}
+				else if (event.button.button == SDL_BUTTON_WHEELDOWN)
+				{
+					engine->onMouseWheel(event.motion.x, event.motion.y, -1);
+				}
+				else
+				{
+					engine->onMouseClick(event.motion.x, event.motion.y, event.button.button);
+				}
 				break;
 			case SDL_MOUSEBUTTONUP:
-				engine->onMouseUnclick(event.motion.x, event.motion.y, event.button.button);
+				if(event.button.button != SDL_BUTTON_WHEELUP && event.button.button != SDL_BUTTON_WHEELDOWN)
+					engine->onMouseUnclick(event.motion.x, event.motion.y, event.button.button);
 				break;
 			}
 			event.type = 0; //Clear last event

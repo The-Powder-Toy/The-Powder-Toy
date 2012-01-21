@@ -9,7 +9,8 @@
 
 using namespace std;
 
-GameController::GameController()
+GameController::GameController():
+		search(NULL)
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
@@ -22,6 +23,11 @@ GameController::GameController()
 
 GameController::~GameController()
 {
+	if(search)
+	{
+		ui::Engine::Ref().CloseWindow();
+		delete search;
+	}
 	delete gameView;
 	delete gameModel;
 }
@@ -70,6 +76,6 @@ void GameController::SetPaused(bool pauseState)
 
 void GameController::OpenSearch()
 {
-	SearchController * search = new SearchController();
+	search = new SearchController();
 	ui::Engine::Ref().ShowWindow(search->GetView());
 }

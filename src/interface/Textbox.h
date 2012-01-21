@@ -13,6 +13,7 @@ class TextboxAction
 {
 public:
 	virtual void TextChangedCallback(ui::Textbox * sender) {}
+	virtual ~TextboxAction() {}
 };
 class Textbox : public Component
 {

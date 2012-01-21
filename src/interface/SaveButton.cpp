@@ -61,8 +61,7 @@ void SaveButton::Tick(float dt)
 		tempThumb = Client::Ref().GetThumbnail(save->GetID(), 0);
 		if(tempThumb)
 		{
-			thumbnail = tempThumb; //Store a local copy of the thumbnail
-			cout << (void *)(tempThumb) << " " << (void *)(&thumbnail) << endl;
+			thumbnail = new Thumbnail(*tempThumb); //Store a local copy of the thumbnail
 			if(thumbnail->Data)
 			{
 				if(thumbnail->Size.Y > (Size.Y-25))

@@ -6,6 +6,7 @@
 #include "GameModel.h"
 #include "interface/Point.h"
 #include "simulation/Simulation.h"
+#include "search/SearchController.h"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ private:
 	//Simulation * sim;
 	GameView * gameView;
 	GameModel * gameModel;
+	SearchController * search;
 public:
 	GameController();
 	~GameController();

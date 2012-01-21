@@ -1,6 +1,7 @@
 #ifndef THUMBNAIL_H
 #define THUMBNAIL_H
 
+#include <iostream>
 #include "Graphics.h"
 #include "interface/Point.h"
 

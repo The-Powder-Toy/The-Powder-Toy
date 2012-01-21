@@ -15,6 +15,7 @@ class SaveButtonAction
 {
 public:
 	virtual void ActionCallback(ui::SaveButton * sender) {}
+	virtual ~SaveButtonAction() {}
 };
 
 class SaveButton : public Component

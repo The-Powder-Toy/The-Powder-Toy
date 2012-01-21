@@ -19,6 +19,7 @@ class ButtonAction
 {
 public:
 	virtual void ActionCallback(ui::Button * sender) {}
+	virtual ~ButtonAction() {}
 };
 
 class Button : public Component

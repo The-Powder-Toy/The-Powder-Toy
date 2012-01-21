@@ -3,26 +3,30 @@
 
 #include "client/Client.h"
 
-SearchModel::SearchModel()
+SearchModel::SearchModel():
+	currentSort("votes"),
+	showOwn(false)
 {
 }
 
-void SearchModel::UpdateSaveList(std::string query)
+void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 {
+	lastQuery = query;
 	lastError = "";
 	saveList.clear();
+	currentPage = 1;
+	resultCount = 0;
 	notifySaveListChanged();
-	vector<Save*> * tempSaveList = Client::Ref().SearchSaves(0, 12, query, "");
+	notifyPageChanged();
+	vector<Save*> * tempSaveList = Client::Ref().SearchSaves((pageNumber-1)*12, 12, query, currentSort, resultCount);
 	saveList = *tempSaveList;
 	delete tempSaveList;
 	if(!saveList.size())
 	{
 		lastError = Client::Ref().GetLastError();
 	}
-	/*for(int i = 0; i < 16; i++)
-	{
-		saveList.push_back(Save(2198, 2333, 315, "dima-gord", "Destroyable city 5 (wth metro)"));
-	}*/
+	currentPage = pageNumber;
+	notifyPageChanged();
 	notifySaveListChanged();
 }
 
@@ -35,6 +39,9 @@ void SearchModel::AddObserver(SearchView * observer)
 {
 	observers.push_back(observer);
 	observer->NotifySaveListChanged(this);
+	observer->NotifyPageChanged(this);
+	observer->NotifySortChanged(this);
+	observer->NotifyShowOwnChanged(this);
 }
 
 void SearchModel::notifySaveListChanged()
@@ -43,5 +50,32 @@ void SearchModel::notifySaveListChanged()
 	{
 		SearchView* cObserver = observers[i];
 		cObserver->NotifySaveListChanged(this);
+	}
+}
+
+void SearchModel::notifyPageChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		SearchView* cObserver = observers[i];
+		cObserver->NotifyPageChanged(this);
+	}
+}
+
+void SearchModel::notifySortChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		SearchView* cObserver = observers[i];
+		cObserver->NotifySortChanged(this);
+	}
+}
+
+void SearchModel::notifyShowOwnChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		SearchView* cObserver = observers[i];
+		cObserver->NotifyShowOwnChanged(this);
 	}
 }
