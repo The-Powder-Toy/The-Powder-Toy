@@ -39,6 +39,7 @@ public:
 	virtual void Draw(const Point& screenPos);
 	virtual void Tick(float dt);
 
+	Save * GetSave() { return save; }
 	inline bool GetState() { return state; }
 	virtual void DoAction();
 	void SetActionCallback(SaveButtonAction * action);

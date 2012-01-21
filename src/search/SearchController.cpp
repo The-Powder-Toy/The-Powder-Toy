@@ -3,8 +3,10 @@
 #include "SearchModel.h"
 #include "SearchView.h"
 #include "interface/Panel.h"
+#include "preview/PreviewController.h"
 
-SearchController::SearchController()
+SearchController::SearchController():
+	activePreview(NULL)
 {
 	searchModel = new SearchModel();
 	searchView = new SearchView();
@@ -19,6 +21,11 @@ SearchController::SearchController()
 
 SearchController::~SearchController()
 {
+	if(activePreview)
+	{
+		ui::Engine::Ref().CloseWindow();
+		delete activePreview;
+	}
 	delete searchModel;
 	delete searchView;
 }
@@ -54,5 +61,11 @@ void SearchController::ChangeSort()
 
 void SearchController::ShowOwn(bool show)
 {
+	//TODO: Implement
+}
 
+void SearchController::OpenSave(int saveID)
+{
+	activePreview = new PreviewController(saveID);
+	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }

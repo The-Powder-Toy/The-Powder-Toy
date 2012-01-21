@@ -4,6 +4,7 @@
 #include "interface/Panel.h"
 #include "SearchModel.h"
 #include "SearchView.h"
+#include "preview/PreviewController.h"
 class SearchView;
 class SearchModel;
 class SearchController
@@ -11,6 +12,7 @@ class SearchController
 private:
 	SearchModel * searchModel;
 	SearchView * searchView;
+	PreviewController * activePreview;
 public:
 	SearchController();
 	~SearchController();
@@ -20,6 +22,7 @@ public:
 	void PrevPage();
 	void ChangeSort();
 	void ShowOwn(bool show);
+	void OpenSave(int saveID);
 };
 
 #endif // SEARCHCONTROLLER_H

@@ -51,6 +51,14 @@ void Engine::Exit()
 
 void Engine::ShowWindow(Window * window)
 {
+	if(window->Position.X==-1)
+	{
+		window->Position.X = (width_-window->Size.X)/2;
+	}
+	if(window->Position.Y==-1)
+	{
+		window->Position.Y = (height_-window->Size.Y)/2;
+	}
 	if(state_)
 	{
 		windows.push(state_);

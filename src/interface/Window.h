@@ -23,6 +23,9 @@ enum ChromeStyle
 	class Window
 	{
 	public:
+		Point Position;
+		Point Size;
+
 		Window(Point _position, Point _size);
 		virtual ~Window();
 
@@ -74,9 +77,6 @@ enum ChromeStyle
 		virtual void OnKeyRelease(int key, bool shift, bool ctrl, bool alt) {}
 		std::vector<Component*> Components;
 		Component* focusedComponent_;
-
-		Point Position;
-		Point Size;
 		ChromeStyle chrome;
 
 	};
