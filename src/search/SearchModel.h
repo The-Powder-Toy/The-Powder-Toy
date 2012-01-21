@@ -34,9 +34,9 @@ public:
 	int GetPageCount() { return max(1, (int)(ceil(resultCount/16))); }
 	int GetPageNum() { return currentPage; }
 	std::string GetLastQuery() { return lastQuery; }
-	void SetSort(string sort) { currentSort = sort; UpdateSaveList(currentPage, lastQuery); notifySortChanged(); }
+	void SetSort(string sort) { currentSort = sort; UpdateSaveList(1, lastQuery); notifySortChanged(); }
 	string GetSort() { return currentSort; }
-	void SetShowOwn(bool show) { showOwn = show; UpdateSaveList(currentPage, lastQuery); notifyShowOwnChanged(); }
+	void SetShowOwn(bool show) { showOwn = show; UpdateSaveList(1, lastQuery); notifyShowOwnChanged(); }
 	bool GetShowOwn() { return showOwn; }
 };
 
