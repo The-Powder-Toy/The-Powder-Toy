@@ -82,8 +82,10 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		for(i = 0; i < saveButtons.size(); i++)
 		{
 			RemoveComponent(saveButtons[i]);
+			
 			delete saveButtons[i];
 		}
+		saveButtons.clear();
 		for(i = 0; i < saves.size(); i++)
 		{
 			if(saveX == savesX)
