@@ -12,7 +12,9 @@ void SearchModel::UpdateSaveList(std::string query)
 	lastError = "";
 	saveList.clear();
 	notifySaveListChanged();
-	saveList = Client::Ref().SearchSaves(0, 12, query, "");
+	vector<Save*> * tempSaveList = Client::Ref().SearchSaves(0, 12, query, "");
+	saveList = *tempSaveList;
+	delete tempSaveList;
 	if(!saveList.size())
 	{
 		lastError = Client::Ref().GetLastError();
@@ -24,7 +26,7 @@ void SearchModel::UpdateSaveList(std::string query)
 	notifySaveListChanged();
 }
 
-vector<Save> SearchModel::GetSaveList()
+vector<Save*> SearchModel::GetSaveList()
 {
 	return saveList;
 }

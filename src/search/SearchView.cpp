@@ -52,7 +52,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 4, savesY = 3, buttonPadding = 2;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
-	vector<Save> saves = sender->GetSaveList();
+	vector<Save*> saves = sender->GetSaveList();
 	if(!saves.size())
 	{
 		if(!errorLabel)

@@ -9,7 +9,7 @@
 
 namespace ui {
 
-SaveButton::SaveButton(Window* parent_state, Save save):
+SaveButton::SaveButton(Window* parent_state, Save * save):
 	Component(parent_state),
 	save(save),
 	thumbnail(NULL),
@@ -20,7 +20,7 @@ SaveButton::SaveButton(Window* parent_state, Save save):
 
 }
 
-SaveButton::SaveButton(Point position, Point size, Save save):
+SaveButton::SaveButton(Point position, Point size, Save * save):
 	Component(position, size),
 	save(save),
 	thumbnail(NULL),
@@ -31,7 +31,7 @@ SaveButton::SaveButton(Point position, Point size, Save save):
 
 }
 
-SaveButton::SaveButton(Save save):
+SaveButton::SaveButton(Save * save):
 	Component(),
 	save(save),
 	thumbnail(NULL),
@@ -48,6 +48,8 @@ SaveButton::~SaveButton()
 		delete thumbnail;
 	if(actionCallback)
 		delete actionCallback;
+	if(save)
+		delete save;
 }
 
 void SaveButton::Tick(float dt)
@@ -56,7 +58,7 @@ void SaveButton::Tick(float dt)
 	float scaleFactorY = 1.0f, scaleFactorX = 1.0f;
 	if(!thumbnail)
 	{
-		tempThumb = Client::Ref().GetThumbnail(save.GetID(), 0);
+		tempThumb = Client::Ref().GetThumbnail(save->GetID(), 0);
 		if(tempThumb)
 		{
 			thumbnail = tempThumb; //Store a local copy of the thumbnail
@@ -104,13 +106,13 @@ void SaveButton::Draw(const Point& screenPos)
 	if(isMouseInside)
 	{
 		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
-		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save.name.c_str()))/2, screenPos.Y+Size.Y - 21, save.name, 255, 255, 255, 255);
-		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save.userName.c_str()))/2, screenPos.Y+Size.Y - 10, save.userName, 200, 230, 255, 255);
+		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->name.c_str()))/2, screenPos.Y+Size.Y - 21, save->name, 255, 255, 255, 255);
+		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 200, 230, 255, 255);
 	}
 	else
 	{
-		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save.name.c_str()))/2, screenPos.Y+Size.Y - 21, save.name, 180, 180, 180, 255);
-		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save.userName.c_str()))/2, screenPos.Y+Size.Y - 10, save.userName, 100, 130, 160, 255);
+		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->name.c_str()))/2, screenPos.Y+Size.Y - 21, save->name, 180, 180, 180, 255);
+		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 100, 130, 160, 255);
 	}
 }
 

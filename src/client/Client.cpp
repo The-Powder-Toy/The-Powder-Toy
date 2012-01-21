@@ -38,10 +38,10 @@ Client::~Client()
 	http_done();
 }
 
-std::vector<Save> Client::SearchSaves(int start, int count, string query, string sort)
+std::vector<Save*> * Client::SearchSaves(int start, int count, string query, string sort)
 {
 	lastError = "";
-	std::vector<Save> saveArray;
+	std::vector<Save*> * saveArray = new std::vector<Save*>();
 	std::stringstream urlStream;
 	char * data;
 	int dataStatus, dataLength;
@@ -76,8 +76,8 @@ std::vector<Save> Client::SearchSaves(int start, int count, string query, string
 				json::Number tempScoreDown = savesArray[j]["ScoreDown"];
 				json::String tempUsername = savesArray[j]["Username"];
 				json::String tempName = savesArray[j]["Name"];
-				saveArray.push_back(
-							Save(
+				saveArray->push_back(
+							new Save(
 								tempID.Value(),
 								tempScoreUp.Value(),
 								tempScoreDown.Value(),

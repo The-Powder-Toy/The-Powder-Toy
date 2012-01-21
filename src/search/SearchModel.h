@@ -14,13 +14,13 @@ class SearchModel
 private:
 	string lastError;
 	vector<SearchView*> observers;
-	vector<Save> saveList;
+	vector<Save*> saveList;
 	void notifySaveListChanged();
 public:
     SearchModel();
 	void AddObserver(SearchView * observer);
 	void UpdateSaveList(std::string query);
-	vector<Save> GetSaveList();
+	vector<Save*> GetSaveList();
 	string GetLastError() { return lastError; }
 };
 

@@ -19,14 +19,14 @@ public:
 
 class SaveButton : public Component
 {
-	Save save;
+	Save * save;
 	Thumbnail * thumbnail;
 public:
-	SaveButton(Window* parent_state, Save save);
+	SaveButton(Window* parent_state, Save * save);
 
-	SaveButton(Point position, Point size, Save save);
+	SaveButton(Point position, Point size, Save * save);
 
-	SaveButton(Save save);
+	SaveButton(Save * save);
 	virtual ~SaveButton();
 
 	virtual void OnMouseClick(int x, int y, unsigned int button);
