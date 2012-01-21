@@ -54,6 +54,8 @@ namespace ui
 		float FpsLimit;
 		Graphics * g;
 	private:
+		pixel * lastBuffer;
+		std::stack<pixel*> prevBuffers;
 		std::stack<Window*> windows;
 		//Window* statequeued_;
 		Window* state_;

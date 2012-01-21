@@ -67,7 +67,7 @@ int main(int argc, char * argv[])
 	ui::Engine::Ref().g->AttachSDLSurface(SDLOpen());
 
 	ui::Engine * engine = &ui::Engine::Ref();
-	engine->Begin(XRES, YRES);
+	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
 
 	GameController * gameController = new GameController();
 	engine->ShowWindow(gameController->GetView());
