@@ -48,6 +48,9 @@ void Gravity::gravity_init()
 	gravx = (float *)calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
 	gravp = (float *)calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
 	gravmask = (unsigned int *)calloc((XRES/CELL)*(YRES/CELL), sizeof(unsigned));
+#ifdef GRAVFFT
+	grav_fft_init();
+#endif
 }
 
 void Gravity::gravity_cleanup()
@@ -55,6 +58,17 @@ void Gravity::gravity_cleanup()
 #ifdef GRAVFFT
 	grav_fft_cleanup();
 #endif
+	//Free gravity info
+	free(th_ogravmap);
+	free(th_gravmap);
+	free(th_gravy);
+	free(th_gravx);
+	free(th_gravp);
+	free(gravmap);
+	free(gravy);
+	free(gravx);
+	free(gravp);
+	free(gravmask);
 }
 
 void Gravity::gravity_update_async()
@@ -124,9 +138,6 @@ void Gravity::update_grav_async()
 	//memset(th_gravy, 0, XRES*YRES*sizeof(float));
 	//memset(th_gravx, 0, XRES*YRES*sizeof(float));
 	//memset(th_gravp, 0, XRES*YRES*sizeof(float));
-#ifdef GRAVFFT
-	grav_fft_init();
-#endif
 	while(!thread_done){
 		if(!done){
 			update_grav();
@@ -485,4 +496,9 @@ void Gravity::gravity_mask()
 Gravity::Gravity()
 {
 	gravity_init();
+}
+
+Gravity::~Gravity()
+{
+	gravity_cleanup();
 }

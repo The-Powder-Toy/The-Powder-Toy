@@ -14,11 +14,12 @@ class GameView;
 class GameController
 {
 private:
-	Simulation * sim;
+	//Simulation * sim;
 	GameView * gameView;
 	GameModel * gameModel;
 public:
-    GameController();
+	GameController();
+	~GameController();
 	GameView * GetView();
 	void DrawPoints(queue<ui::Point*> & pointQueue);
 	void Tick();

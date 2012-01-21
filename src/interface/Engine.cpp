@@ -27,6 +27,12 @@ Engine::~Engine()
 {
 	if(state_ != NULL)
 		delete state_;
+	//Dispose of any Windows.
+	while(!windows.empty())
+	{
+		delete windows.top();
+		windows.pop();
+	}
 }
 
 void Engine::Begin(int width, int height)

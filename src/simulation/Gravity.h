@@ -86,6 +86,7 @@ public:
 	#endif
 
 	Gravity();
+	~Gravity();
 };
 
 /*extern int ngrav_enable; //Newtonian gravity

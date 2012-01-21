@@ -13,6 +13,12 @@ GameModel::GameModel():
 	ren = new Renderer(ui::Engine::Ref().g, sim);
 }
 
+GameModel::~GameModel()
+{
+	delete sim;
+	delete ren;
+}
+
 void GameModel::AddObserver(GameView * observer){
 	observers.push_back(observer);
 

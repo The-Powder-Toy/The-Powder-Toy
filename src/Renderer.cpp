@@ -1697,3 +1697,12 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	flm_data = Graphics::generate_gradient(flm_data_colours, flm_data_pos, flm_data_points, 200);
 	plasma_data = Graphics::generate_gradient(plasma_data_colours, plasma_data_pos, plasma_data_points, 200);
 }
+
+Renderer::~Renderer()
+{
+	free(graphicscache);
+	free(flm_data);
+	free(plasma_data);
+	free(render_modes);
+	free(display_modes);
+}

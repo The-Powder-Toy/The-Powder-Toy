@@ -55,6 +55,7 @@ public:
 	void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
 	void prepare_graphicscache();
 	Renderer(Graphics * g, Simulation * sim);
+	~Renderer();
 };
 
 #endif

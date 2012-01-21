@@ -3197,7 +3197,15 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 */
 }
 
-Simulation::Simulation()
+Simulation::~Simulation()
+{
+	free(signs);
+	delete grav;
+	delete air;
+}
+
+Simulation::Simulation():
+	sys_pause(0)
 {
 	//Create and attach gravity simulation
 	grav = new Gravity();

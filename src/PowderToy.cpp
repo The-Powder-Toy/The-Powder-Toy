@@ -124,4 +124,7 @@ int main(int argc, char * argv[])
 			delta = 60.0f/fps;
 		}
 	}
+	ui::Engine::Ref().CloseWindow();
+	delete gameController;
+	delete ui::Engine::Ref().g;
 }

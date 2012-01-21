@@ -17,6 +17,12 @@ SearchController::SearchController()
 	//windowPanel.AddChild();
 }
 
+SearchController::~SearchController()
+{
+	delete searchModel;
+	delete searchView;
+}
+
 void SearchController::DoSearch(std::string query)
 {
 	searchModel->UpdateSaveList(query);

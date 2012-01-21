@@ -167,6 +167,7 @@ public:
 	void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale);
 	#endif
 	Graphics();
+	~Graphics();
 };
 
 #endif

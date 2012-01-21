@@ -13,6 +13,7 @@ private:
 	SearchView * searchView;
 public:
 	SearchController();
+	~SearchController();
 	SearchView * GetView() { return searchView; }
 	void DoSearch(std::string query);
 };

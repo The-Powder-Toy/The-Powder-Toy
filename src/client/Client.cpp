@@ -35,6 +35,7 @@ Client::Client()
 
 Client::~Client()
 {
+	ClearThumbnailRequests();
 	http_done();
 }
 

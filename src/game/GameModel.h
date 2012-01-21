@@ -23,7 +23,8 @@ private:
 	void notifySimulationChanged();
 	void notifyPausedChanged();
 public:
-    GameModel();
+	GameModel();
+	~GameModel();
 	void AddObserver(GameView * observer);
 	int GetActiveElement();
 	void SetActiveElement(int element);

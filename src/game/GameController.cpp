@@ -17,7 +17,13 @@ GameController::GameController()
 	gameView->AttachController(this);
 	gameModel->AddObserver(gameView);
 
-	sim = new Simulation();
+	//sim = new Simulation();
+}
+
+GameController::~GameController()
+{
+	delete gameView;
+	delete gameModel;
 }
 
 GameView * GameController::GetView()

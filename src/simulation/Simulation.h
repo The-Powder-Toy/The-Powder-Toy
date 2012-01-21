@@ -235,6 +235,7 @@ public:
 	void clear_sim();
 	void UpdateParticles();
 	Simulation();
+	~Simulation();
 };
 //#endif
 

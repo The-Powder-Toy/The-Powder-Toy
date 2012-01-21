@@ -2366,3 +2366,7 @@ Graphics::Graphics()
 {
 	vid = (pixel *)malloc(PIXELSIZE * ((XRES+BARSIZE) * (YRES+MENUSIZE)));
 }
+Graphics::~Graphics()
+{
+	free(vid);
+}
