@@ -53,6 +53,7 @@ public:
 	inline bool GetToggleState();
 	inline void SetToggleState(bool state);
 	void SetActionCallback(ButtonAction * action);
+	ButtonAction * GetActionCallback() { return actionCallback; }
 	void TextPosition();
 	void SetText(std::string buttonText);
 	HorizontalAlignment GetHAlignment() { return textHAlign; }

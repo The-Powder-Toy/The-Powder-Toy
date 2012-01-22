@@ -50,8 +50,19 @@ void GameController::AdjustBrushSize(int direction)
 void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
 {
 	Simulation * sim = gameModel->GetSimulation();
-	int activeElement = gameModel->GetActiveElement();
+	Tool * activeTool = gameModel->GetActiveTool();
 	Brush * cBrush = gameModel->GetBrush();
+	if(!activeTool || !cBrush)
+	{
+		if(!pointQueue.empty())
+		{
+			while(!pointQueue.empty())
+			{
+				delete pointQueue.front();
+				pointQueue.pop();
+			}
+		}
+	}
 	if(!pointQueue.empty())
 	{
 		ui::Point * sPoint = NULL;
@@ -61,12 +72,12 @@ void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
 			pointQueue.pop();
 			if(sPoint)
 			{
-				sim->create_line(fPoint->X, fPoint->Y, sPoint->X, sPoint->Y, 1, 1, activeElement, 0, cBrush);
+				activeTool->DrawLine(sim, cBrush, *fPoint, *sPoint);
 				delete sPoint;
 			}
 			else
 			{
-				sim->create_parts(fPoint->X, fPoint->Y, 1, 1, activeElement, 0, cBrush);
+				activeTool->Draw(sim, cBrush, *fPoint);
 			}
 			sPoint = fPoint;
 		}
@@ -83,6 +94,11 @@ void GameController::Tick()
 void GameController::SetPaused(bool pauseState)
 {
 	gameModel->SetPaused(pauseState);
+}
+
+void GameController::SetActiveMenu(Menu * menu)
+{
+	gameModel->SetActiveMenu(menu);
 }
 
 void GameController::OpenSearch()

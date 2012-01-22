@@ -7,7 +7,7 @@
 #include "Brush.h"
 
 GameModel::GameModel():
-	activeElement(1),
+	activeTool(NULL),
 	sim(NULL),
 	ren(NULL),
 	currentSave(NULL),
@@ -15,10 +15,35 @@ GameModel::GameModel():
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
+
+	menuList.clear();
+	for(int i = 0; i < 12; i++)
+	{
+		menuList.push_back(new Menu('q', "Simon"));
+	}
+	//Build menus from Simulation elements
+	for(int i = 0; i < PT_NUM; i++)
+	{
+		if(sim->ptypes[i].menusection < 12)
+		{
+			Tool * tempTool = new ElementTool(i, sim->ptypes[i].name, 0, 0, 0);
+			menuList[sim->ptypes[i].menusection]->AddTool(tempTool);
+		}
+	}
+
+	activeTool = new ElementTool(1, "TURD", 0, 0, 0);
 }
 
 GameModel::~GameModel()
 {
+	for(int i = 0; i < menuList.size(); i++)
+	{
+		for(int j = 0; i < menuList[i]->GetToolList().size(); i++)
+		{
+			delete menuList[i]->GetToolList()[j];
+		}
+		delete menuList[i];
+	}
 	delete sim;
 	delete ren;
 }
@@ -36,22 +61,53 @@ void GameModel::AddObserver(GameView * observer){
 	observer->NotifyPausedChanged(this);
 	observer->NotifySaveChanged(this);
 	observer->NotifyBrushChanged(this);
+	observer->NotifyMenuListChanged(this);
+	observer->NotifyToolListChanged(this);
 }
 
-int GameModel::GetActiveElement()
+void GameModel::SetActiveMenu(Menu * menu)
 {
-	return activeElement;
+	for(int i = 0; i < menuList.size(); i++)
+	{
+		if(menuList[i]==menu)
+		{
+			activeMenu = menu;
+			toolList = menu->GetToolList();
+			notifyToolListChanged();
+		}
+	}
 }
 
-void GameModel::SetActiveElement(int element)
+vector<Tool*> GameModel::GetToolList()
 {
-	activeElement = element;
+	return toolList;
+}
+
+Menu * GameModel::GetActiveMenu()
+{
+	return activeMenu;
+}
+
+Tool * GameModel::GetActiveTool()
+{
+	return activeTool;
+}
+
+void GameModel::SetActiveTool(Tool * tool)
+{
+	activeTool = tool;
+}
+
+vector<Menu*> GameModel::GetMenuList()
+{
+	return menuList;
 }
 
 Save * GameModel::GetSave()
 {
 	return currentSave;
 }
+
 void GameModel::SetSave(Save * newSave)
 {
 	currentSave = newSave;
@@ -121,5 +177,21 @@ void GameModel::notifyBrushChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyBrushChanged(this);
+	}
+}
+
+void GameModel::notifyMenuListChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyMenuListChanged(this);
+	}
+}
+
+void GameModel::notifyToolListChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyToolListChanged(this);
 	}
 }

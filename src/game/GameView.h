@@ -1,6 +1,7 @@
 #ifndef GAMEVIEW_H
 #define GAMEVIEW_H
 
+#include <vector>
 #include <queue>
 #include "GameController.h"
 #include "GameModel.h"
@@ -22,6 +23,8 @@ private:
 	Renderer * ren;
 	Brush * activeBrush;
 	//UI Elements
+	vector<ui::Button*> menuButtons;
+	vector<ui::Button*> toolButtons;
 	ui::Button * searchButton;
     ui::Button * reloadButton;
     ui::Button * saveSimulationButton;
@@ -41,6 +44,8 @@ public:
 	void NotifyPausedChanged(GameModel * sender);
 	void NotifySaveChanged(GameModel * sender);
 	void NotifyBrushChanged(GameModel * sender);
+	void NotifyMenuListChanged(GameModel * sender);
+	void NotifyToolListChanged(GameModel * sender);
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);
@@ -49,6 +54,7 @@ public:
 	//virtual void OnKeyRelease(int key, bool shift, bool ctrl, bool alt) {}
 	virtual void OnTick(float dt);
 	virtual void OnDraw();
+	class MenuAction;
 };
 
 #endif // GAMEVIEW_H

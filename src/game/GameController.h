@@ -7,6 +7,7 @@
 #include "interface/Point.h"
 #include "simulation/Simulation.h"
 #include "search/SearchController.h"
+#include "Menu.h"
 
 using namespace std;
 
@@ -27,6 +28,7 @@ public:
 	void DrawPoints(queue<ui::Point*> & pointQueue);
 	void Tick();
 	void SetPaused(bool pauseState);
+	void SetActiveMenu(Menu * menu);
 	void OpenSearch();
 	void OpenLogin();
 	void OpenTags();

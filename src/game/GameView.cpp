@@ -175,6 +175,62 @@ GameView::GameView():
 	AddComponent(pauseButton);
 }
 
+class GameView::MenuAction: public ui::ButtonAction
+{
+	GameView * v;
+public:
+	Menu * menu;
+	MenuAction(GameView * _v, Menu * menu_) { v = _v; menu = menu_; }
+	void ActionCallback(ui::Button * sender)
+	{
+		v->c->SetActiveMenu(menu);
+	}
+};
+
+void GameView::NotifyMenuListChanged(GameModel * sender)
+{
+	int currentY = YRES+MENUSIZE-36;
+	for(int i = 0; i < menuButtons.size(); i++)
+	{
+		RemoveComponent(menuButtons[i]);
+		delete menuButtons[i];
+	}
+	menuButtons.clear();
+	for(int i = 0; i < toolButtons.size(); i++)
+	{
+		RemoveComponent(toolButtons[i]);
+		delete toolButtons[i];
+	}
+	toolButtons.clear();
+	vector<Menu*> menuList = sender->GetMenuList();
+	for(int i = 0; i < menuList.size(); i++)
+	{
+		std::string tempString = "";
+		tempString += menuList[i]->GetIcon();
+		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-18, currentY), ui::Point(16, 16), tempString);
+		tempButton->SetTogglable(true);
+		tempButton->SetActionCallback(new MenuAction(this, menuList[i]));
+		currentY-=18;
+		AddComponent(tempButton);
+		menuButtons.push_back(tempButton);
+	}
+}
+
+void GameView::NotifyToolListChanged(GameModel * sender)
+{
+	for(int i = 0; i < menuButtons.size(); i++)
+	{
+		if(((MenuAction*)menuButtons[i]->GetActionCallback())->menu==sender->GetActiveMenu())
+		{
+			menuButtons[i]->SetToggleState(true);
+		}
+		else
+		{
+			menuButtons[i]->SetToggleState(false);
+		}
+	}
+}
+
 void GameView::NotifyRendererChanged(GameModel * sender)
 {
 	ren = sender->GetRenderer();
