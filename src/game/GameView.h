@@ -20,15 +20,17 @@ private:
 	GameController * c;
 	Renderer * ren;
 	//UI Elements
-	ui::Button * pauseButton;
 	ui::Button * searchButton;
     ui::Button * reloadButton;
     ui::Button * saveSimulationButton;
     ui::Button * downVoteButton;
     ui::Button * upVoteButton;
     ui::Button * tagSimulationButton;
-
+    ui::Button * clearSimButton;
+    ui::Button * loginButton;
+    ui::Button * simulationOptionButton;
     ui::Button * displayModeButton;
+	ui::Button * pauseButton;
 public:
     GameView();
 	void AttachController(GameController * _c){ c = _c; }

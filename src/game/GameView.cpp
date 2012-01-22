@@ -9,22 +9,8 @@ GameView::GameView():
 	isMouseDown(false),
 	ren(NULL)
 {
+	int currentX = 1;
 	//Set up UI
-	class PauseAction : public ui::ButtonAction
-	{
-		GameView * v;
-	public:
-		PauseAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
-		{
-			v->c->SetPaused(sender->GetToggleState());
-		}
-	};
-	pauseButton = new ui::Button(ui::Point(Size.X-18, Size.Y-18), ui::Point(16, 16), "\x90");  //Pause
-	pauseButton->SetTogglable(true);
-	pauseButton->SetActionCallback(new PauseAction(this));
-	AddComponent(pauseButton);
-
 	class SearchAction : public ui::ButtonAction
 	{
 		GameView * v;
@@ -35,7 +21,8 @@ GameView::GameView():
 			v->c->OpenSearch();
 		}
 	};
-	searchButton = new ui::Button(ui::Point(1, Size.Y-18), ui::Point(16, 16), "\x81");  //Open
+	searchButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\x81");  //Open
+	currentX+=18;
 	searchButton->SetTogglable(false);
 	searchButton->SetActionCallback(new SearchAction(this));
 	AddComponent(searchButton);
@@ -50,8 +37,8 @@ GameView::GameView():
             v->c->OpenSearch(); // TODO call proper function
         }
     };
-    reloadButton = new ui::Button(ui::Point(16, Size.Y-18), ui::Point(16, 16), "\x91"); // TODO Position?
-    reloadButton->SetTogglable(false);
+    reloadButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\x91"); // TODO Position?
+    currentX+=18;
     reloadButton->SetActionCallback(new ReloadAction(this));
     AddComponent(reloadButton);
 
@@ -65,8 +52,8 @@ GameView::GameView():
             v->c->OpenSearch(); // TODO call proper function
         }
     };
-    saveSimulationButton = new ui::Button(ui::Point(32, Size.Y-18), ui::Point(152, 16), "\x82"); // TODO All arguments
-    saveSimulationButton->SetTogglable(false);
+    saveSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(Size.X/5, 16), "\x82"); // TODO All arguments
+    currentX+=(Size.X/5)+2;
     saveSimulationButton->SetActionCallback(new SaveSimulationAction(this));
     AddComponent(saveSimulationButton);
 
@@ -80,8 +67,8 @@ GameView::GameView():
             v->c->OpenSearch(); // TODO call proper function
         }
     };
-    upVoteButton = new ui::Button(ui::Point(184, Size.Y-18), ui::Point(16, 16), "\xCB"); // TODO All arguments
-    upVoteButton->SetTogglable(false);
+    upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\xCB"); // TODO All arguments
+    currentX+=16;
     upVoteButton->SetActionCallback(new UpVoteAction(this));
     AddComponent(upVoteButton);
 
@@ -95,8 +82,8 @@ GameView::GameView():
             v->c->OpenSearch(); // TODO call proper function
         }
     };
-    downVoteButton = new ui::Button(ui::Point(200, Size.Y-18), ui::Point(16, 16), "\xCA"); // TODO All arguments
-    downVoteButton->SetTogglable(false);
+    downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\xCA"); // TODO All arguments
+    currentX+=18;
     downVoteButton->SetActionCallback(new DownVoteAction(this));
     AddComponent(downVoteButton);
 
@@ -110,14 +97,52 @@ GameView::GameView():
             v->c->OpenSearch(); // TODO call proper function
         }
     };
-    tagSimulationButton = new ui::Button(ui::Point(216, Size.Y-18), ui::Point(152, 16), "\x83"); // TODO All arguments
-    tagSimulationButton->SetTogglable(false);
+    tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(Size.X-(currentX+176), 16), "\x83"); // TODO All arguments
+    currentX+=Size.X-(currentX+176);
     tagSimulationButton->SetActionCallback(new TagSimulationAction(this));
     AddComponent(tagSimulationButton);
 
-    //simul option
-    //erase all
-    // login
+    class ClearSimAction : public ui::ButtonAction
+    {
+        GameView * v;
+    public:
+        ClearSimAction(GameView * _v) { v = _v; }
+        void ActionCallback(ui::Button * sender)
+        {
+            v->c->SetPaused(sender->GetToggleState()); // TODO call proper function
+        }
+    };
+    clearSimButton = new ui::Button(ui::Point(Size.X-174, Size.Y-18), ui::Point(16, 16), "C");  // TODO All arguments
+    clearSimButton->SetActionCallback(new ClearSimAction(this));
+    AddComponent(clearSimButton);
+
+    class LoginAction : public ui::ButtonAction
+    {
+        GameView * v;
+    public:
+        LoginAction(GameView * _v) { v = _v; }
+        void ActionCallback(ui::Button * sender)
+        {
+            v->c->SetPaused(sender->GetToggleState()); // TODO call proper function
+        }
+    };
+    loginButton = new ui::Button(ui::Point(Size.X-156, Size.Y-18), ui::Point(100, 16), "\xDA Login");  // TODO All arguments
+    loginButton->SetActionCallback(new LoginAction(this));
+    AddComponent(loginButton);
+
+    class SimulationOptionAction : public ui::ButtonAction
+    {
+        GameView * v;
+    public:
+        SimulationOptionAction(GameView * _v) { v = _v; }
+        void ActionCallback(ui::Button * sender)
+        {
+            v->c->SetPaused(sender->GetToggleState()); // TODO call proper function
+        }
+    };
+    simulationOptionButton = new ui::Button(ui::Point(Size.X-54, Size.Y-18), ui::Point(16, 16), "\xDA");  // TODO All arguments
+    simulationOptionButton->SetActionCallback(new SimulationOptionAction(this));
+    AddComponent(simulationOptionButton);
 
     class DisplayModeAction : public ui::ButtonAction
     {
@@ -129,10 +154,24 @@ GameView::GameView():
             v->c->SetPaused(sender->GetToggleState()); // TODO call proper function
         }
     };
-    displayModeButton = new ui::Button(ui::Point(Size.X-34, Size.Y-18), ui::Point(16, 16), "\xDA");  // TODO All arguments
-    displayModeButton->SetTogglable(true);
+    displayModeButton = new ui::Button(ui::Point(Size.X-36, Size.Y-18), ui::Point(16, 16), "\xDA");  // TODO All arguments
     displayModeButton->SetActionCallback(new DisplayModeAction(this));
     AddComponent(displayModeButton);
+
+	class PauseAction : public ui::ButtonAction
+	{
+		GameView * v;
+	public:
+		PauseAction(GameView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->c->SetPaused(sender->GetToggleState());
+		}
+	};
+	pauseButton = new ui::Button(ui::Point(Size.X-18, Size.Y-18), ui::Point(16, 16), "\x90");  //Pause
+	pauseButton->SetTogglable(true);
+	pauseButton->SetActionCallback(new PauseAction(this));
+	AddComponent(pauseButton);
 }
 
 void GameView::NotifyRendererChanged(GameModel * sender)
