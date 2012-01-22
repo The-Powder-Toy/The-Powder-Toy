@@ -19,7 +19,9 @@ Engine::Engine():
 	mousexp_(0),
 	mouseyp_(0),
 	FpsLimit(60.0f),
-	windows(stack<Window*>())
+	windows(stack<Window*>()),
+	lastBuffer(NULL),
+	prevBuffers(stack<pixel*>())
 {
 }
 
@@ -51,17 +53,44 @@ void Engine::Exit()
 
 void Engine::ShowWindow(Window * window)
 {
+	if(window->Position.X==-1)
+	{
+		window->Position.X = (width_-window->Size.X)/2;
+	}
+	if(window->Position.Y==-1)
+	{
+		window->Position.Y = (height_-window->Size.Y)/2;
+	}
 	if(state_)
 	{
+		if(lastBuffer)
+		{
+			prevBuffers.push(lastBuffer);
+		}
+		lastBuffer = (pixel*)malloc((width_ * height_) * PIXELSIZE);
+		g->fillrect(0, 0, width_, height_, 0, 0, 0, 100);
+		memcpy(lastBuffer, g->vid, (width_ * height_) * PIXELSIZE);
+
 		windows.push(state_);
 	}
 	state_ = window;
+
 }
 
 void Engine::CloseWindow()
 {
 	if(!windows.empty())
 	{
+		if(!prevBuffers.empty())
+		{
+			lastBuffer = prevBuffers.top();
+			prevBuffers.pop();
+		}
+		else
+		{
+			free(lastBuffer);
+			lastBuffer = NULL;
+		}
 		state_ = windows.top();
 		windows.pop();
 	}
@@ -112,10 +141,17 @@ void Engine::Tick(float dt)
 
 void Engine::Draw()
 {
+	if(lastBuffer && !(state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
+	{
+		memcpy(g->vid, lastBuffer, (width_ * height_) * PIXELSIZE);
+	}
+	else
+	{
+		g->Clear();
+	}
 	if(state_)
 		state_->DoDraw();
 	g->Blit();
-	g->Clear();
 }
 
 void Engine::onKeyPress(int key, bool shift, bool ctrl, bool alt)

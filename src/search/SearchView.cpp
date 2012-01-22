@@ -178,6 +178,16 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		buttonAreaHeight = Size.Y - buttonYOffset - 18;
 		buttonWidth = (buttonAreaWidth/savesX) - buttonPadding*2;
 		buttonHeight = (buttonAreaHeight/savesY) - buttonPadding*2;
+		class SaveOpenAction: public ui::SaveButtonAction
+		{
+			SearchView * v;
+		public:
+			SaveOpenAction(SearchView * _v) { v = _v; }
+			virtual void ActionCallback(ui::SaveButton * sender)
+			{
+				v->c->OpenSave(sender->GetSave()->GetID());
+			}
+		};
 		for(i = 0; i < saves.size(); i++)
 		{
 			if(saveX == savesX)
@@ -195,6 +205,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 							),
 						ui::Point(buttonWidth, buttonHeight),
 						saves[i]);
+			saveButton->SetActionCallback(new SaveOpenAction(this));
 			saveButtons.push_back(saveButton);
 			AddComponent(saveButton);
 			saveX++;
