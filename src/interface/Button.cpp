@@ -25,7 +25,8 @@ Button::Button(Window* parent_state, std::string buttonText):
 	actionCallback(NULL),
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
-	textHAlign(AlignCentre)
+	textHAlign(AlignCentre),
+	Enabled(true)
 {
 	TextPosition();
 }
@@ -40,7 +41,8 @@ Button::Button(Point position, Point size, std::string buttonText):
 	actionCallback(NULL),
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
-	textHAlign(AlignCentre)
+	textHAlign(AlignCentre),
+	Enabled(true)
 {
 	TextPosition();
 }
@@ -55,7 +57,8 @@ Button::Button(std::string buttonText):
 	actionCallback(NULL),
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
-	textHAlign(AlignCentre)
+	textHAlign(AlignCentre),
+	Enabled(true)
 {
 	TextPosition();
 }
@@ -121,17 +124,25 @@ void Button::Draw(const Point& screenPos)
 {
 	Graphics * g = ui::Engine::Ref().g;
 	Point Position = screenPos;
-	if(isButtonDown || (isTogglable && toggle))
+	if(Enabled)
 	{
-		g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, 255, 255, 255, 255);
-		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 0, 0, 0, 255);
+		if(isButtonDown || (isTogglable && toggle))
+		{
+			g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, 255, 255, 255, 255);
+			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 0, 0, 0, 255);
+		}
+		else
+		{
+			if(isMouseInside)
+				g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 20, 20, 20, 255);
+			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
+			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 255, 255, 255, 255);
+		}
 	}
 	else
 	{
-		if(isMouseInside)
-			g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 20, 20, 20, 255);
-		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
-		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 255, 255, 255, 255);
+		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 180, 180, 180, 255);
+		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 180, 180, 180, 255);
 	}
 }
 
@@ -179,9 +190,8 @@ void Button::OnMouseLeave(int x, int y)
 
 void Button::DoAction()
 {
-    std::cout << "Do action!"<<std::endl;
-	//if(actionCallback)
-	//	(*(actionCallback))();
+	if(!Enabled)
+		return;
 	if(actionCallback)
 		actionCallback->ActionCallback(this);
 }

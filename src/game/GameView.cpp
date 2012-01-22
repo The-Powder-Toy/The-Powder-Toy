@@ -7,7 +7,8 @@ GameView::GameView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE)),
 	pointQueue(queue<ui::Point*>()),
 	isMouseDown(false),
-	ren(NULL)
+	ren(NULL),
+	activeBrush(NULL)
 {
 	int currentX = 1;
 	//Set up UI
@@ -34,10 +35,10 @@ GameView::GameView():
         ReloadAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-            v->c->OpenSearch(); // TODO call proper function
+            v->c->ReloadSim();
         }
     };
-    reloadButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\x91"); // TODO Position?
+    reloadButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\x91");
     currentX+=18;
     reloadButton->SetActionCallback(new ReloadAction(this));
     AddComponent(reloadButton);
@@ -49,10 +50,10 @@ GameView::GameView():
         SaveSimulationAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-            v->c->OpenSearch(); // TODO call proper function
+            v->c->OpenSaveWindow();
         }
     };
-    saveSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(Size.X/5, 16), "\x82"); // TODO All arguments
+    saveSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(Size.X/5, 16), "\x82");
     currentX+=(Size.X/5)+2;
     saveSimulationButton->SetActionCallback(new SaveSimulationAction(this));
     AddComponent(saveSimulationButton);
@@ -64,10 +65,10 @@ GameView::GameView():
         UpVoteAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-            v->c->OpenSearch(); // TODO call proper function
+        	v->c->Vote(1);
         }
     };
-    upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\xCB"); // TODO All arguments
+    upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\xCB");
     currentX+=16;
     upVoteButton->SetActionCallback(new UpVoteAction(this));
     AddComponent(upVoteButton);
@@ -79,10 +80,10 @@ GameView::GameView():
         DownVoteAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-            v->c->OpenSearch(); // TODO call proper function
+        	v->c->Vote(-1);
         }
     };
-    downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\xCA"); // TODO All arguments
+    downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\xCA");
     currentX+=18;
     downVoteButton->SetActionCallback(new DownVoteAction(this));
     AddComponent(downVoteButton);
@@ -94,10 +95,10 @@ GameView::GameView():
         TagSimulationAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-            v->c->OpenSearch(); // TODO call proper function
+            v->c->OpenTags();
         }
     };
-    tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(Size.X-(currentX+176), 16), "\x83"); // TODO All arguments
+    tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(Size.X-(currentX+176), 16), "\x83");
     currentX+=Size.X-(currentX+176);
     tagSimulationButton->SetActionCallback(new TagSimulationAction(this));
     AddComponent(tagSimulationButton);
@@ -109,10 +110,10 @@ GameView::GameView():
         ClearSimAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-            v->c->SetPaused(sender->GetToggleState()); // TODO call proper function
+            v->c->ClearSim();
         }
     };
-    clearSimButton = new ui::Button(ui::Point(Size.X-174, Size.Y-18), ui::Point(16, 16), "C");  // TODO All arguments
+    clearSimButton = new ui::Button(ui::Point(Size.X-174, Size.Y-18), ui::Point(16, 16), "C");
     clearSimButton->SetActionCallback(new ClearSimAction(this));
     AddComponent(clearSimButton);
 
@@ -123,10 +124,10 @@ GameView::GameView():
         LoginAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-            v->c->SetPaused(sender->GetToggleState()); // TODO call proper function
+            v->c->OpenLogin();
         }
     };
-    loginButton = new ui::Button(ui::Point(Size.X-156, Size.Y-18), ui::Point(100, 16), "\xDA Login");  // TODO All arguments
+    loginButton = new ui::Button(ui::Point(Size.X-156, Size.Y-18), ui::Point(100, 16), "\xDA Login");
     loginButton->SetActionCallback(new LoginAction(this));
     AddComponent(loginButton);
 
@@ -137,10 +138,10 @@ GameView::GameView():
         SimulationOptionAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-            v->c->SetPaused(sender->GetToggleState()); // TODO call proper function
+            v->c->OpenDisplayOptions();
         }
     };
-    simulationOptionButton = new ui::Button(ui::Point(Size.X-54, Size.Y-18), ui::Point(16, 16), "\xDA");  // TODO All arguments
+    simulationOptionButton = new ui::Button(ui::Point(Size.X-54, Size.Y-18), ui::Point(16, 16), "\xDA");
     simulationOptionButton->SetActionCallback(new SimulationOptionAction(this));
     AddComponent(simulationOptionButton);
 
@@ -151,10 +152,10 @@ GameView::GameView():
         DisplayModeAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-            v->c->SetPaused(sender->GetToggleState()); // TODO call proper function
+            v->c->OpenRenderOptions();
         }
     };
-    displayModeButton = new ui::Button(ui::Point(Size.X-36, Size.Y-18), ui::Point(16, 16), "\xDA");  // TODO All arguments
+    displayModeButton = new ui::Button(ui::Point(Size.X-36, Size.Y-18), ui::Point(16, 16), "\xDA");
     displayModeButton->SetActionCallback(new DisplayModeAction(this));
     AddComponent(displayModeButton);
 
@@ -189,6 +190,38 @@ void GameView::NotifyPausedChanged(GameModel * sender)
 	pauseButton->SetToggleState(sender->GetPaused());
 }
 
+void GameView::NotifySaveChanged(GameModel * sender)
+{
+	if(sender->GetSave())
+	{
+		reloadButton->Enabled = true;
+		if(sender->GetSave()->GetID())	//Online saves have an ID, local saves have an ID of 0 and a filename
+		{
+			upVoteButton->Enabled = true;
+			downVoteButton->Enabled = true;
+			tagSimulationButton->Enabled = true;
+		}
+		else
+		{
+			upVoteButton->Enabled = false;
+			downVoteButton->Enabled = false;
+			tagSimulationButton->Enabled = false;
+		}
+	}
+	else
+	{
+		reloadButton->Enabled = false;
+		upVoteButton->Enabled = false;
+		downVoteButton->Enabled = false;
+		tagSimulationButton->Enabled = false;
+	}
+}
+
+void GameView::NotifyBrushChanged(GameModel * sender)
+{
+	activeBrush = sender->GetBrush();
+}
+
 void GameView::OnMouseMove(int x, int y, int dx, int dy)
 {
 	if(isMouseDown)
@@ -213,6 +246,17 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 	}
 }
 
+void GameView::OnMouseWheel(int x, int y, int d)
+{
+	if(!d)
+		return;
+	c->AdjustBrushSize(d);
+	if(isMouseDown)
+	{
+		pointQueue.push(new ui::Point(x, y));
+	}
+}
+
 void GameView::OnTick(float dt)
 {
 	if(!pointQueue.empty())
@@ -227,5 +271,9 @@ void GameView::OnDraw()
 	if(ren)
 	{
 		ren->render_parts();
+	}
+	if(activeBrush)
+	{
+		activeBrush->Render(ui::Engine::Ref().g, ui::Point(ui::Engine::Ref().GetMouseX(),ui::Engine::Ref().GetMouseY()));
 	}
 }

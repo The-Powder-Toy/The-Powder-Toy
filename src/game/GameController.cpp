@@ -37,10 +37,21 @@ GameView * GameController::GetView()
 	return gameView;
 }
 
+void GameController::AdjustBrushSize(int direction)
+{
+	ui::Point newSize = gameModel->GetBrush()->GetRadius() + ui::Point(direction, direction);
+	if(newSize.X<0)
+			newSize.X = 0;
+	if(newSize.Y<0)
+			newSize.Y = 0;
+	gameModel->GetBrush()->SetRadius(newSize);
+}
+
 void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
 {
 	Simulation * sim = gameModel->GetSimulation();
 	int activeElement = gameModel->GetActiveElement();
+	Brush * cBrush = gameModel->GetBrush();
 	if(!pointQueue.empty())
 	{
 		ui::Point * sPoint = NULL;
@@ -50,12 +61,12 @@ void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
 			pointQueue.pop();
 			if(sPoint)
 			{
-				sim->create_line(fPoint->X, fPoint->Y, sPoint->X, sPoint->Y, 1, 1, activeElement, 0);
+				sim->create_line(fPoint->X, fPoint->Y, sPoint->X, sPoint->Y, 1, 1, activeElement, 0, cBrush);
 				delete sPoint;
 			}
 			else
 			{
-				sim->create_parts(fPoint->X, fPoint->Y, 1, 1, activeElement, 0);
+				sim->create_parts(fPoint->X, fPoint->Y, 1, 1, activeElement, 0, cBrush);
 			}
 			sPoint = fPoint;
 		}
@@ -79,3 +90,46 @@ void GameController::OpenSearch()
 	search = new SearchController();
 	ui::Engine::Ref().ShowWindow(search->GetView());
 }
+
+void GameController::OpenLogin()
+{
+	//TODO: Implement
+}
+
+void GameController::OpenTags()
+{
+	//TODO: Implement
+}
+
+void GameController::OpenDisplayOptions()
+{
+	//TODO: Implement
+}
+
+void GameController::OpenRenderOptions()
+{
+	//TODO: Implement
+}
+
+void GameController::OpenSaveWindow()
+{
+	//TODO: Implement
+}
+
+void GameController::Vote(int direction)
+{
+	//TODO: Implement
+}
+
+
+void GameController::ClearSim()
+{
+	gameModel->ClearSimulation();
+}
+
+void GameController::ReloadSim()
+{
+	//TODO: Implement
+}
+
+

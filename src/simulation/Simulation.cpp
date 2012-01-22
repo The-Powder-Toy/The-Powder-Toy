@@ -290,9 +290,15 @@ int Simulation::create_part_add_props(int p, int x, int y, int tv, int rx, int r
 }
 
 //this creates particles from a brush, don't use if you want to create one particle
-int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags)
+int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush)
 {
 	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;//n;
+
+	if(cBrush)
+	{
+		rx = cBrush->GetRadius().X;
+		ry = cBrush->GetRadius().Y;
+	}
 
 	int wall = c - 100;
 	if (c==SPC_WIND || c==PT_FIGH)
@@ -357,16 +363,6 @@ int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags)
 				{
 					i = ox;
 					j = oy;
-					/*if ((flags&BRUSH_SPECIFIC_DELETE) && b!=WL_FANHELPER)
-					{
-						if (bmap[j][i]==SLALT-100)
-						{
-							b = 0;
-							if (SLALT==WL_GRAV) gravwl_timeout = 60;
-						}
-						else
-							continue;
-					}*/
 					if (b==WL_FAN)
 					{
 						fvx[j][i] = 0.0f;
@@ -394,132 +390,86 @@ int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags)
 	}
 
 	//eraser
-	if (c == 0/* && !(flags&BRUSH_REPLACEMODE)*/)
+	if (c == 0)
 	{
 		if (rx==0&&ry==0)
 		{
 			delete_part(x, y, 0);
 		}
-		else
+		else if(cBrush)
+		{
+			bool *bitmap = cBrush->GetBitmap();
 			for (j=-ry; j<=ry; j++)
 				for (i=-rx; i<=rx; i++)
-					//if (InCurrentBrush(i ,j ,rx ,ry))
+					if(bitmap[(j+ry)*(rx*2)+(i+rx)])
 						delete_part(x+i, y+j, 0);
+		}
+		else
+		{
+			for (j=-ry; j<=ry; j++)
+				for (i=-rx; i<=rx; i++)
+					delete_part(x+i, y+j, 0);
+		}
 		return 1;
 	}
 
-	//specific deletion
-	/*if ((flags&BRUSH_SPECIFIC_DELETE)&& !(flags&BRUSH_REPLACEMODE))
-	{
-		if (rx==0&&ry==0)
-		{
-			delete_part(x, y, flags);
-		}
-		else
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					if (InCurrentBrush(i ,j ,rx ,ry))
-						delete_part(x+i, y+j, flags);
-		return 1;
-	}*/
-
-	//why do these need a special if
 	if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV)
 	{
 		if (rx==0&&ry==0)
 		{
 			create_part(-2, x, y, c);
 		}
-		else
+		else if(cBrush)
+		{
+			bool *bitmap = cBrush->GetBitmap();
 			for (j=-ry; j<=ry; j++)
 				for (i=-rx; i<=rx; i++)
-					//if (InCurrentBrush(i ,j ,rx ,ry))
+					if(bitmap[(j+ry)*(rx*2)+(i+rx)])
 					{
 						if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
 							continue;
-						//if (!REPLACE_MODE)
-							create_part(-2, x+i, y+j, c);
-						/*else if ((pmap[y+j][x+i]&0xFF)==SLALT&&SLALT!=0)
-							create_part(-2, x+i, y+j, c);*/
+						create_part(-2, x+i, y+j, c);
 					}
+		}
+		else
+		{
+			for (j=-ry; j<=ry; j++)
+				for (i=-rx; i<=rx; i++)
+				{
+					if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
+						continue;
+					create_part(-2, x+i, y+j, c);
+				}
+		}
 		return 1;
 	}
 
-	/*if (flags&BRUSH_REPLACEMODE)
-	{
-		if (rx==0&&ry==0)
-		{
-			if ((pmap[y][x]&0xFF)==SLALT || SLALT==0)
-			{
-				if ((pmap[y][x]))
-				{
-					delete_part(x, y, 0);
-					if (c!=0)
-						create_part_add_props(-2, x, y, c, rx, ry);
-				}
-			}
-		}
-		else
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					if (InCurrentBrush(i ,j ,rx ,ry))
-					{
-						if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
-							continue;
-						if ((pmap[y+j][x+i]&0xFF)!=SLALT&&SLALT!=0)
-							continue;
-						if ((pmap[y+j][x+i]))
-						{
-							delete_part(x+i, y+j, 0);
-							if (c!=0)
-								create_part_add_props(-2, x+i, y+j, c, rx, ry);
-						}
-					}
-		return 1;
-
-	}*/
 	//else, no special modes, draw element like normal.
 	if (rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
 	{
 		if (create_part_add_props(-2, x, y, c, rx, ry)==-1)
 			f = 1;
 	}
-	else
+	else if(cBrush)
+	{
+		bool *bitmap = cBrush->GetBitmap();
 		for (j=-ry; j<=ry; j++)
 			for (i=-rx; i<=rx; i++)
-				//if (InCurrentBrush(i ,j ,rx ,ry))
+				if(bitmap[(j+ry)*(rx*2)+(i+rx)])
 					if (create_part_add_props(-2, x+i, y+j, c, rx, ry)==-1)
 						f = 1;
+	}
+	else
+	{
+		for (j=-ry; j<=ry; j++)
+			for (i=-rx; i<=rx; i++)
+				if (create_part_add_props(-2, x+i, y+j, c, rx, ry)==-1)
+					f = 1;
+	}
 	return !f;
 }
-/*int Simulation::InCurrentBrush(int i, int j, int rx, int ry)
-{
-	switch(CURRENT_BRUSH)
-	{
-		case CIRCLE_BRUSH:
-			return (pow(i,2)*pow(ry,2)+pow(j,2)*pow(rx,2)<=pow(rx,2)*pow(ry,2));
-			break;
-		case SQUARE_BRUSH:
-			return (i*j<=ry*rx);
-			break;
-		case TRI_BRUSH:
-			return (j <= ry ) && ( j >= (((-2.0*ry)/rx)*i) -ry) && ( j >= (((-2.0*ry)/(-rx))*i)-ry ) ;
-			break;
-	}
-	return 0;
-}
-int Simulation::get_brush_flags()
-{
-	int flags = 0;
-	if (REPLACE_MODE)
-		flags |= BRUSH_REPLACEMODE;
-	if (sdl_mod & KMOD_CAPS)
-		flags |= BRUSH_SPECIFIC_DELETE;
-	if ((sdl_mod & KMOD_LALT) && (sdl_mod & (KMOD_CTRL)))
-		flags |= BRUSH_SPECIFIC_DELETE;
-	return flags;
-}*/
-void Simulation::create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags)
+
+void Simulation::create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags, Brush * cBrush)
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
 	float e, de;
@@ -555,9 +505,9 @@ void Simulation::create_line(int x1, int y1, int x2, int y2, int rx, int ry, int
 	for (x=x1; x<=x2; x++)
 	{
 		if (cp)
-			create_parts(y, x, rx, ry, c, flags);
+			create_parts(y, x, rx, ry, c, flags, cBrush);
 		else
-			create_parts(x, y, rx, ry, c, flags);
+			create_parts(x, y, rx, ry, c, flags, cBrush);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -566,9 +516,9 @@ void Simulation::create_line(int x1, int y1, int x2, int y2, int rx, int ry, int
 			   && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
 				if (cp)
-					create_parts(y, x, rx, ry, c, flags);
+					create_parts(y, x, rx, ry, c, flags, cBrush);
 				else
-					create_parts(x, y, rx, ry, c, flags);
+					create_parts(x, y, rx, ry, c, flags, cBrush);
 			}
 			e -= 1.0f;
 		}

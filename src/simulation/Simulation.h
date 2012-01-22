@@ -13,6 +13,7 @@
 #include "Graphics.h"
 #include "Elements.h"
 #include "Misc.h"
+#include "game/Brush.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
 
@@ -224,8 +225,8 @@ public:
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
 	void create_box(int x1, int y1, int x2, int y2, int c, int flags);
 	int flood_parts(int x, int y, int c, int cm, int bm, int flags);
-	int create_parts(int x, int y, int rx, int ry, int c, int flags);
-	void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags);
+	int create_parts(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush = NULL);
+	void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags, Brush * cBrush = NULL);
 	void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
 	void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 	void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);

@@ -33,6 +33,7 @@ public:
 	virtual ~Button();
 
 	bool Toggleable;
+	bool Enabled;
 
 	std::string ButtonText;
 

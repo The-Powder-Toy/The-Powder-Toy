@@ -23,10 +23,19 @@ public:
 	GameController();
 	~GameController();
 	GameView * GetView();
+	void AdjustBrushSize(int direction);
 	void DrawPoints(queue<ui::Point*> & pointQueue);
 	void Tick();
 	void SetPaused(bool pauseState);
 	void OpenSearch();
+	void OpenLogin();
+	void OpenTags();
+	void OpenDisplayOptions();
+	void OpenRenderOptions();
+	void OpenSaveWindow();
+	void ClearSim();
+	void ReloadSim();
+	void Vote(int direction);
 };
 
 #endif // GAMECONTROLLER_H
