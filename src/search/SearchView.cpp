@@ -107,12 +107,12 @@ SearchView::~SearchView()
 
 void SearchView::NotifySortChanged(SearchModel * sender)
 {
-	sortButton->SetText("Sort: "+sender->GetSort());
+    sortButton->SetText("Sort: "+sender->GetSort());
 }
 
 void SearchView::NotifyShowOwnChanged(SearchModel * sender)
 {
-	sortButton->SetToggleState(sender->GetShowOwn());
+    sortButton->SetToggleState(sender->GetShowOwn());
 }
 
 void SearchView::NotifyPageChanged(SearchModel * sender)

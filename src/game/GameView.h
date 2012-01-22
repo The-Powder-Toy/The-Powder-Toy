@@ -22,6 +22,13 @@ private:
 	//UI Elements
 	ui::Button * pauseButton;
 	ui::Button * searchButton;
+    ui::Button * reloadButton;
+    ui::Button * saveSimulationButton;
+    ui::Button * downVoteButton;
+    ui::Button * upVoteButton;
+    ui::Button * tagSimulationButton;
+
+    ui::Button * displayModeButton;
 public:
     GameView();
 	void AttachController(GameController * _c){ c = _c; }
