@@ -11,7 +11,8 @@
 using namespace std;
 
 GameController::GameController():
-		search(NULL)
+		search(NULL),
+		renderOptions(NULL)
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
@@ -28,6 +29,11 @@ GameController::~GameController()
 	{
 		ui::Engine::Ref().CloseWindow();
 		delete search;
+	}
+	if(renderOptions)
+	{
+		ui::Engine::Ref().CloseWindow();
+		delete renderOptions;
 	}
 	delete gameView;
 	delete gameModel;
@@ -135,8 +141,8 @@ void GameController::OpenDisplayOptions()
 
 void GameController::OpenRenderOptions()
 {
-	RenderController * renderController = new RenderController(gameModel->GetRenderer());
-	ui::Engine::Ref().ShowWindow(renderController->GetView());
+	renderOptions = new RenderController(gameModel->GetRenderer());
+	ui::Engine::Ref().ShowWindow(renderOptions->GetView());
 }
 
 void GameController::OpenSaveWindow()
