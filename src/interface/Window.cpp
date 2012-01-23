@@ -90,13 +90,14 @@ void Window::DoInitialized()
 
 void Window::DoDraw()
 {
+	OnDraw();
 	//draw
 	for(int i = 0, sz = Components.size(); i < sz; ++i)
 		if(Components[i]->Visible)
 		{
 			if(AllowExclusiveDrawing)
 			{
-				Point scrpos(Components[i]->Position.X, Components[i]->Position.Y);
+				Point scrpos(Components[i]->Position.X + Position.X, Components[i]->Position.Y + Position.Y);
 				Components[i]->Draw(scrpos);
 			}
 			else
@@ -112,7 +113,6 @@ void Window::DoDraw()
 			}
 		}
 
-	OnDraw();
 }
 
 void Window::DoTick(float dt)
@@ -164,9 +164,11 @@ void Window::DoKeyRelease(int key, bool shift, bool ctrl, bool alt)
 	OnKeyRelease(key, shift, ctrl, alt);
 }
 
-void Window::DoMouseDown(int x, int y, unsigned button)
+void Window::DoMouseDown(int x_, int y_, unsigned button)
 {
 	//on mouse click
+	int x = x_ - Position.X;
+	int y = y_ - Position.Y;
 	bool clickState = false;
 	for(int i = Components.size() - 1; i > -1 ; --i)
 	{
@@ -192,12 +194,14 @@ void Window::DoMouseDown(int x, int y, unsigned button)
 			Components[i]->OnMouseDown(x, y, button);
 	}
 
-	OnMouseDown(x, y, button);
+	OnMouseDown(x_, y_, button);
 }
 
-void Window::DoMouseMove(int x, int y, int dx, int dy)
+void Window::DoMouseMove(int x_, int y_, int dx, int dy)
 {
 	//on mouse move (if true, and inside)
+	int x = x_ - Position.X;
+	int y = y_ - Position.Y;
 	for(int i = Components.size() - 1; i > -1 ; --i)
 	{
 		if(!Components[i]->Locked)
@@ -239,11 +243,13 @@ void Window::DoMouseMove(int x, int y, int dx, int dy)
 		}
 	}
 
-	OnMouseMove(x, y, dx, dy);
+	OnMouseMove(x_, y_, dx, dy);
 }
 
-void Window::DoMouseUp(int x, int y, unsigned button)
+void Window::DoMouseUp(int x_, int y_, unsigned button)
 {
+	int x = x_ - Position.X;
+	int y = y_ - Position.Y;
 	//on mouse unclick
 	for(int i = Components.size() - 1; i >= 0 ; --i)
 	{
@@ -264,11 +270,13 @@ void Window::DoMouseUp(int x, int y, unsigned button)
 			Components[i]->OnMouseUp(x, y, button);
 	}
 
-	OnMouseUp(x, y, button);
+	OnMouseUp(x_, y_, button);
 }
 
-void Window::DoMouseWheel(int x, int y, int d)
+void Window::DoMouseWheel(int x_, int y_, int d)
 {
+	int x = x_ - Position.X;
+	int y = y_ - Position.Y;
 	//on mouse wheel focused
 	for(int i = Components.size() - 1; i >= 0 ; --i)
 	{
@@ -287,6 +295,6 @@ void Window::DoMouseWheel(int x, int y, int d)
 			Components[i]->OnMouseWheel(x - Components[i]->Position.X, y - Components[i]->Position.Y, d);
 	}
 
-	OnMouseWheel(x, y, d);
+	OnMouseWheel(x_, y_, d);
 }
 

@@ -2,6 +2,7 @@
 #include "GameView.h"
 #include "interface/Window.h"
 #include "interface/Button.h"
+#include "interface/Colour.h"
 
 GameView::GameView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE)),
@@ -246,6 +247,7 @@ void GameView::NotifyActiveToolChanged(GameModel * sender)
 void GameView::NotifyToolListChanged(GameModel * sender)
 {
 	int currentX = XRES+BARSIZE-56;
+	int totalColour;
 	for(int i = 0; i < menuButtons.size(); i++)
 	{
 		if(((MenuAction*)menuButtons[i]->GetActionCallback())->menu==sender->GetActiveMenu())
@@ -270,7 +272,22 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		currentX -= 36;
 		tempButton->SetTogglable(true);
 		tempButton->SetActionCallback(new ToolAction(this, toolList[i]));
-		tempButton->SetBackgroundColour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue);
+
+		totalColour = toolList[i]->colRed + 3*toolList[i]->colGreen + 2*toolList[i]->colBlue;
+
+		tempButton->SetBackgroundColour(ui::Colour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue));
+		if (totalColour<544)
+		{
+			tempButton->SetTextColour(ui::Colour(255, 255, 255));
+		}
+		else
+		{
+			tempButton->SetTextColour(ui::Colour(0, 0, 0));
+		}
+		tempButton->SetBorderColour(ui::Colour(0, 0, 0));
+		tempButton->SetActiveBackgroundColour(ui::Colour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue));
+		tempButton->SetActiveBorderColour(ui::Colour(0, 0, 255));
+
 		tempButton->SetAlignment(AlignCentre, AlignBottom);
 		AddComponent(tempButton);
 		toolButtons.push_back(tempButton);
@@ -366,6 +383,7 @@ void GameView::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
 	{
 	case ' ':
 		c->SetPaused();
+		break;
 	}
 }
 

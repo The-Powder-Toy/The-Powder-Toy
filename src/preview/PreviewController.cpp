@@ -16,7 +16,7 @@ PreviewController::PreviewController(int saveID) {
 	previewModel->AddObserver(previewView);
 	previewView->AttachController(this);
 
-	previewModel->UpdateSave(saveID);
+	previewModel->UpdateSave(saveID, 0);
 }
 
 PreviewController::~PreviewController() {

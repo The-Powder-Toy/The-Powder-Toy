@@ -39,6 +39,97 @@ Client::~Client()
 	http_done();
 }
 
+Save * Client::GetSave(int saveID, int saveDate)
+{
+	lastError = "";
+	std::stringstream urlStream;
+	urlStream << "http://" << SERVER  << "/Browse/View.json?ID=" << saveID;
+	if(saveDate)
+	{
+		urlStream << "&Date=" << saveDate;
+	}
+	char * data;
+	int dataStatus, dataLength;
+	//Save(int _id, int _votesUp, int _votesDown, string _userName, string _name, string description_, string date_, bool published_):
+	data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+	if(dataStatus == 200 && data)
+	{
+		try
+		{
+			std::istringstream dataStream(data);
+			json::Object objDocument;
+			json::Reader::Read(objDocument, dataStream);
+
+			json::Number tempID = objDocument["ID"];
+			json::Number tempScoreUp = objDocument["ScoreUp"];
+			json::Number tempScoreDown = objDocument["ScoreDown"];
+			json::String tempUsername = objDocument["Username"];
+			json::String tempName = objDocument["Name"];
+			json::String tempDescription = objDocument["Description"];
+			json::String tempDate = objDocument["Date"];
+			json::Boolean tempPublished = objDocument["Published"];
+			return new Save(
+					tempID.Value(),
+					tempScoreUp.Value(),
+					tempScoreDown.Value(),
+					tempUsername.Value(),
+					tempName.Value(),
+					tempDescription.Value(),
+					tempDate.Value(),
+					tempPublished.Value()
+					);
+		}
+		catch (json::Exception &e)
+		{
+			lastError = "Could not read response";
+			return NULL;
+		}
+	}
+	else
+	{
+		lastError = http_ret_text(dataStatus);
+	}
+	return NULL;
+}
+
+Thumbnail * Client::GetPreview(int saveID, int saveDate)
+{
+	std::stringstream urlStream;
+	urlStream << "http://" << SERVER  << "/Get.api?Op=thumblarge&ID=" << saveID;
+	if(saveDate)
+	{
+		urlStream << "&Date=" << saveDate;
+	}
+	pixel * thumbData;
+	char * data;
+	int status, data_size, imgw, imgh;
+	data = http_simple_get((char *)urlStream.str().c_str(), &status, &data_size);
+	if (status == 200 && data)
+	{
+		thumbData = Graphics::ptif_unpack(data, data_size, &imgw, &imgh);
+		if(data)
+		{
+			free(data);
+		}
+		if(thumbData)
+		{
+			return new Thumbnail(saveID, saveDate, thumbData, ui::Point(imgw, imgh));
+		}
+		else
+		{
+			return new Thumbnail(saveID, saveDate, (pixel *)malloc((128*128) * PIXELSIZE), ui::Point(128, 128));
+		}
+	}
+	else
+	{
+		if(data)
+		{
+			free(data);
+		}
+		return new Thumbnail(saveID, saveDate, (pixel *)malloc((128*128) * PIXELSIZE), ui::Point(128, 128));
+	}
+}
+
 std::vector<Save*> * Client::SearchSaves(int start, int count, string query, string sort, int & resultCount)
 {
 	lastError = "";
@@ -66,7 +157,7 @@ std::vector<Save*> * Client::SearchSaves(int start, int count, string query, str
 	{
 		try
 		{
-			std::istringstream dataStream(data); // missing comma!
+			std::istringstream dataStream(data);
 			json::Object objDocument;
 			json::Reader::Read(objDocument, dataStream);
 

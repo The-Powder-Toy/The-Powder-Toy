@@ -25,7 +25,9 @@ public:
 	~Client();
 	void ClearThumbnailRequests();
 	std::vector<Save*> * SearchSaves(int start, int count, string query, string sort, int & resultCount);
+	Thumbnail * GetPreview(int saveID, int saveDate);
 	Thumbnail * GetThumbnail(int saveID, int saveDate);
+	Save * GetSave(int saveID, int saveDate);
 	std::string GetLastError() { return lastError; }
 };
 

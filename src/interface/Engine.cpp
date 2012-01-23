@@ -21,7 +21,8 @@ Engine::Engine():
 	FpsLimit(60.0f),
 	windows(stack<Window*>()),
 	lastBuffer(NULL),
-	prevBuffers(stack<pixel*>())
+	prevBuffers(stack<pixel*>()),
+	windowTargetPosition(0, 0)
 {
 }
 
@@ -53,6 +54,7 @@ void Engine::Exit()
 
 void Engine::ShowWindow(Window * window)
 {
+	windowOpenState = 0.0f;
 	if(window->Position.X==-1)
 	{
 		window->Position.X = (width_-window->Size.X)/2;
@@ -61,6 +63,11 @@ void Engine::ShowWindow(Window * window)
 	{
 		window->Position.Y = (height_-window->Size.Y)/2;
 	}
+	/*if(window->Position.Y > 0)
+	{
+		windowTargetPosition = window->Position;
+		window->Position = Point(windowTargetPosition.X, height_);
+	}*/
 	if(state_)
 	{
 		if(lastBuffer)
@@ -68,7 +75,6 @@ void Engine::ShowWindow(Window * window)
 			prevBuffers.push(lastBuffer);
 		}
 		lastBuffer = (pixel*)malloc((width_ * height_) * PIXELSIZE);
-		g->fillrect(0, 0, width_, height_, 0, 0, 0, 100);
 		memcpy(lastBuffer, g->vid, (width_ * height_) * PIXELSIZE);
 
 		windows.push(state_);
@@ -122,6 +128,24 @@ void Engine::Tick(float dt)
 {
 	if(state_ != NULL)
 		state_->DoTick(dt);
+
+
+	if(windowOpenState<1.0f)
+	{
+		if(lastBuffer)
+		{
+			pixel * vid = g->vid;
+			g->vid = lastBuffer;
+			g->fillrect(0, 0, width_, height_, 0, 0, 0, 5);
+			g->vid = vid;
+
+		}
+		/*if(windowTargetPosition.Y < state_->Position.Y)
+		{
+			state_->Position.Y += windowTargetPosition.Y/20;
+		}*/
+		windowOpenState += 0.05f*dt;
+	}
 
 	/*if(statequeued_ != NULL)
 	{

@@ -59,6 +59,8 @@ namespace ui
 		std::stack<Window*> windows;
 		//Window* statequeued_;
 		Window* state_;
+		Point windowTargetPosition;
+		float windowOpenState;
 
 		bool running_;
 		

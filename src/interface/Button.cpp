@@ -26,11 +26,10 @@ Button::Button(Window* parent_state, std::string buttonText):
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
 	textHAlign(AlignCentre),
-	Enabled(true),
-	colr(0),
-	colg(0),
-	colb(0)
+	Enabled(true)
 {
+	activeText = background = Colour(0, 0, 0);
+	text = activeBackground = border = activeBorder = Colour(255, 255, 255);
 	TextPosition();
 }
 
@@ -45,11 +44,10 @@ Button::Button(Point position, Point size, std::string buttonText):
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
 	textHAlign(AlignCentre),
-	Enabled(true),
-	colr(0),
-	colg(0),
-	colb(0)
+	Enabled(true)
 {
+	activeText = background = Colour(0, 0, 0);
+	text = activeBackground = border = activeBorder = Colour(255, 255, 255);
 	TextPosition();
 }
 
@@ -64,11 +62,10 @@ Button::Button(std::string buttonText):
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
 	textHAlign(AlignCentre),
-	Enabled(true),
-	colr(0),
-	colg(0),
-	colb(0)
+	Enabled(true)
 {
+	activeText = background = Colour(0, 0, 0);
+	text = activeBackground = border = activeBorder = Colour(255, 255, 255);
 	TextPosition();
 }
 
@@ -137,17 +134,15 @@ void Button::Draw(const Point& screenPos)
 	{
 		if(isButtonDown || (isTogglable && toggle))
 		{
-			g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, 255, 255, 255, 255);
-			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 0, 0, 0, 255);
+			g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, activeBackground.Red, activeBackground.Green, activeBackground.Blue, 255);
+			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, activeBorder.Red, activeBorder.Green, activeBorder.Blue, 255);
+			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, activeText.Red, activeText.Green, activeText.Blue, 255);
 		}
 		else
 		{
-			if(isMouseInside)
-				g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 20, 20, 20, 255);
-			else
-				g->fillrect(Position.X, Position.Y, Size.X, Size.Y, colr, colg, colb, 255);
-			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
-			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 255, 255, 255, 255);
+			g->fillrect(Position.X, Position.Y, Size.X, Size.Y, background.Red, background.Green, background.Blue, 255);
+			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, border.Red, border.Green, border.Blue, 255);
+			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, text.Red, text.Green, text.Blue, 255);
 		}
 	}
 	else

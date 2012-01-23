@@ -11,6 +11,7 @@
 #include <string>
 #include "Misc.h"
 #include "Component.h"
+#include "Colour.h"
 
 namespace ui
 {
@@ -56,12 +57,22 @@ public:
 	ButtonAction * GetActionCallback() { return actionCallback; }
 	void TextPosition();
 	void SetText(std::string buttonText);
+
 	HorizontalAlignment GetHAlignment() { return textHAlign; }
 	VerticalAlignment GetVAlignment() { return textVAlign; }
 	void SetAlignment(HorizontalAlignment hAlign, VerticalAlignment vAlign) { textHAlign = hAlign; textVAlign = vAlign; TextPosition(); }
-	void SetBackgroundColour(int colr, int colg, int colb) { this->colr = colr; this->colg = colg; this->colb = colb; }
+
+	void SetBackgroundColour(Colour background) { this->background = background; }
+	void SetActiveBackgroundColour(Colour background) { this->activeBackground = background; }
+	void SetBorderColour(Colour border) { this->border = border; }
+	void SetActiveBorderColour(Colour border) { this->activeBorder = border; }
+	void SetTextColour(Colour text) { this->text = text; }
+	void SetActiveTextColour(Colour text) { this->activeText = text; }
 protected:
-	int colr, colg, colb;
+	Colour background, activeBackground;
+	Colour border, activeBorder;
+	Colour text, activeText;
+
 	bool isButtonDown, state, isMouseInside, isTogglable, toggle;
 	ButtonAction * actionCallback;
 	ui::Point textPosition;

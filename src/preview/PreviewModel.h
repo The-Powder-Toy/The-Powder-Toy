@@ -11,6 +11,7 @@
 #include <vector>
 #include "PreviewView.h"
 #include "search/Save.h"
+#include "search/Thumbnail.h"
 
 using namespace std;
 
@@ -18,10 +19,15 @@ class PreviewView;
 class PreviewModel {
 	vector<PreviewView*> observers;
 	Save * save;
+	Thumbnail * savePreview;
+	void notifyPreviewChanged();
+	void notifySaveChanged();
 public:
 	PreviewModel();
+	Thumbnail * GetPreview();
+	Save * GetSave();
 	void AddObserver(PreviewView * observer);
-	void UpdateSave(int saveID);
+	void UpdateSave(int saveID, int saveDate);
 	virtual ~PreviewModel();
 };
 
