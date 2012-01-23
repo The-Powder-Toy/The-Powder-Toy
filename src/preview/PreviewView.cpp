@@ -18,7 +18,8 @@ PreviewView::PreviewView():
 	openButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(100, 16), "Open");
 	AddComponent(openButton);
 
-	saveNameLabel = new ui::Label(ui::Point(0, 0), ui::Point(50, 50), "");
+	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+5), ui::Point(100, 16), "");
+	saveNameLabel->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(saveNameLabel);
 }
 
