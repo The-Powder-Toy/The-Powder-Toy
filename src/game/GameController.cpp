@@ -5,6 +5,7 @@
 #include "GameController.h"
 #include "GameModel.h"
 #include "search/SearchController.h"
+#include "render/RenderController.h"
 #include "interface/Point.h"
 
 using namespace std;
@@ -134,7 +135,8 @@ void GameController::OpenDisplayOptions()
 
 void GameController::OpenRenderOptions()
 {
-	//TODO: Implement
+	RenderController * renderController = new RenderController(gameModel->GetRenderer());
+	ui::Engine::Ref().ShowWindow(renderController->GetView());
 }
 
 void GameController::OpenSaveWindow()
