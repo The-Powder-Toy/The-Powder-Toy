@@ -59,7 +59,9 @@ public:
 	HorizontalAlignment GetHAlignment() { return textHAlign; }
 	VerticalAlignment GetVAlignment() { return textVAlign; }
 	void SetAlignment(HorizontalAlignment hAlign, VerticalAlignment vAlign) { textHAlign = hAlign; textVAlign = vAlign; TextPosition(); }
+	void SetBackgroundColour(int colr, int colg, int colb) { this->colr = colr; this->colg = colg; this->colb = colb; }
 protected:
+	int colr, colg, colb;
 	bool isButtonDown, state, isMouseInside, isTogglable, toggle;
 	ButtonAction * actionCallback;
 	ui::Point textPosition;

@@ -187,6 +187,18 @@ public:
 	}
 };
 
+class GameView::ToolAction: public ui::ButtonAction
+{
+	GameView * v;
+public:
+	Tool * tool;
+	ToolAction(GameView * _v, Tool * tool_) { v = _v; tool = tool_; }
+	void ActionCallback(ui::Button * sender)
+	{
+		v->c->SetActiveTool(tool);
+	}
+};
+
 void GameView::NotifyMenuListChanged(GameModel * sender)
 {
 	int currentY = YRES+MENUSIZE-36;
@@ -216,8 +228,24 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 	}
 }
 
+void GameView::NotifyActiveToolChanged(GameModel * sender)
+{
+	for(int i = 0; i < toolButtons.size(); i++)
+	{
+		if(((ToolAction*)toolButtons[i]->GetActionCallback())->tool==sender->GetActiveTool())
+		{
+			toolButtons[i]->SetToggleState(true);
+		}
+		else
+		{
+			toolButtons[i]->SetToggleState(false);
+		}
+	}
+}
+
 void GameView::NotifyToolListChanged(GameModel * sender)
 {
+	int currentX = XRES+BARSIZE-56;
 	for(int i = 0; i < menuButtons.size(); i++)
 	{
 		if(((MenuAction*)menuButtons[i]->GetActionCallback())->menu==sender->GetActiveMenu())
@@ -229,6 +257,25 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 			menuButtons[i]->SetToggleState(false);
 		}
 	}
+	for(int i = 0; i < toolButtons.size(); i++)
+	{
+		RemoveComponent(toolButtons[i]);
+		delete toolButtons[i];
+	}
+	toolButtons.clear();
+	vector<Tool*> toolList = sender->GetToolList();
+	for(int i = 0; i < toolList.size(); i++)
+	{
+		ui::Button * tempButton = new ui::Button(ui::Point(currentX, YRES), ui::Point(32, 16), toolList[i]->GetName());
+		currentX -= 36;
+		tempButton->SetTogglable(true);
+		tempButton->SetActionCallback(new ToolAction(this, toolList[i]));
+		tempButton->SetBackgroundColour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue);
+		tempButton->SetAlignment(AlignCentre, AlignBottom);
+		AddComponent(tempButton);
+		toolButtons.push_back(tempButton);
+	}
+
 }
 
 void GameView::NotifyRendererChanged(GameModel * sender)
@@ -313,6 +360,15 @@ void GameView::OnMouseWheel(int x, int y, int d)
 	}
 }
 
+void GameView::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
+{
+	switch(key)
+	{
+	case ' ':
+		c->SetPaused();
+	}
+}
+
 void GameView::OnTick(float dt)
 {
 	if(!pointQueue.empty())
@@ -327,6 +383,8 @@ void GameView::OnDraw()
 	if(ren)
 	{
 		ren->render_parts();
+		ren->render_fire();
+		ren->render_signs();
 	}
 	if(activeBrush)
 	{

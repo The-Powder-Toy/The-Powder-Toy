@@ -15,10 +15,10 @@ using namespace std;
 class Tool
 {
 protected:
-	int toolID, colRed, colBlue, colGreen;
+	int toolID;
 	string toolName;
 public:
-	Tool(int id, string name, int r, int b, int g):
+	Tool(int id, string name, int r, int g, int b):
 		toolID(id),
 		toolName(name),
 		colRed(r),
@@ -26,16 +26,18 @@ public:
 		colBlue(b)
 	{
 	}
+	string GetName() { return toolName; }
 	virtual ~Tool() {}
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) {}
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {}
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {}
+	int colRed, colBlue, colGreen;
 };
 
 class ElementTool: public Tool
 {
 public:
-	ElementTool(int id, string name, int r, int b, int g):
+	ElementTool(int id, string name, int r, int g, int b):
 		Tool(id, name, r, g, b)
 	{
 	}

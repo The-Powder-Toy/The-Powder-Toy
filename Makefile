@@ -6,7 +6,7 @@ OBJS := $(patsubst src/%.cpp,build/obj/%.o,$(SOURCES))
 FOLDERS := 
 
 CFLAGS := -w -Isrc/ -Idata/
-OFLAGS := -fkeep-inline-functions #-O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -msse2
+OFLAGS := -fkeep-inline-functions -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -msse2
 
 CPPC := g++
 CPPC_WIN := i686-w64-mingw32-gcc

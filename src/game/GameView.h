@@ -46,15 +46,18 @@ public:
 	void NotifyBrushChanged(GameModel * sender);
 	void NotifyMenuListChanged(GameModel * sender);
 	void NotifyToolListChanged(GameModel * sender);
+	void NotifyActiveToolChanged(GameModel * sender);
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);
 	virtual void OnMouseWheel(int x, int y, int d);
+	virtual void OnKeyPress(int key, bool shift, bool ctrl, bool alt);
 	//virtual void OnKeyPress(int key, bool shift, bool ctrl, bool alt) {}
 	//virtual void OnKeyRelease(int key, bool shift, bool ctrl, bool alt) {}
 	virtual void OnTick(float dt);
 	virtual void OnDraw();
 	class MenuAction;
+	class ToolAction;
 };
 
 #endif // GAMEVIEW_H

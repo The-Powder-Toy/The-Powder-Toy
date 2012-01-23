@@ -26,7 +26,10 @@ Button::Button(Window* parent_state, std::string buttonText):
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
 	textHAlign(AlignCentre),
-	Enabled(true)
+	Enabled(true),
+	colr(0),
+	colg(0),
+	colb(0)
 {
 	TextPosition();
 }
@@ -42,7 +45,10 @@ Button::Button(Point position, Point size, std::string buttonText):
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
 	textHAlign(AlignCentre),
-	Enabled(true)
+	Enabled(true),
+	colr(0),
+	colg(0),
+	colb(0)
 {
 	TextPosition();
 }
@@ -58,7 +64,10 @@ Button::Button(std::string buttonText):
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
 	textHAlign(AlignCentre),
-	Enabled(true)
+	Enabled(true),
+	colr(0),
+	colg(0),
+	colb(0)
 {
 	TextPosition();
 }
@@ -135,6 +144,8 @@ void Button::Draw(const Point& screenPos)
 		{
 			if(isMouseInside)
 				g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 20, 20, 20, 255);
+			else
+				g->fillrect(Position.X, Position.Y, Size.X, Size.Y, colr, colg, colb, 255);
 			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 255, 255, 255, 255);
 		}

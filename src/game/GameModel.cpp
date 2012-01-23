@@ -26,7 +26,7 @@ GameModel::GameModel():
 	{
 		if(sim->ptypes[i].menusection < 12)
 		{
-			Tool * tempTool = new ElementTool(i, sim->ptypes[i].name, 0, 0, 0);
+			Tool * tempTool = new ElementTool(i, sim->ptypes[i].name, PIXR(sim->ptypes[i].pcolors), PIXG(sim->ptypes[i].pcolors), PIXB(sim->ptypes[i].pcolors));
 			menuList[sim->ptypes[i].menusection]->AddTool(tempTool);
 		}
 	}
@@ -96,6 +96,7 @@ Tool * GameModel::GetActiveTool()
 void GameModel::SetActiveTool(Tool * tool)
 {
 	activeTool = tool;
+	notifyActiveToolChanged();
 }
 
 vector<Menu*> GameModel::GetMenuList()
@@ -193,5 +194,13 @@ void GameModel::notifyToolListChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyToolListChanged(this);
+	}
+}
+
+void GameModel::notifyActiveToolChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyActiveToolChanged(this);
 	}
 }

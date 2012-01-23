@@ -36,6 +36,7 @@ private:
 	void notifyBrushChanged();
 	void notifyMenuListChanged();
 	void notifyToolListChanged();
+	void notifyActiveToolChanged();
 public:
 	GameModel();
 	~GameModel();

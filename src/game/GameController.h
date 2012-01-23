@@ -28,7 +28,9 @@ public:
 	void DrawPoints(queue<ui::Point*> & pointQueue);
 	void Tick();
 	void SetPaused(bool pauseState);
+	void SetPaused();
 	void SetActiveMenu(Menu * menu);
+	void SetActiveTool(Tool * tool);
 	void OpenSearch();
 	void OpenLogin();
 	void OpenTags();

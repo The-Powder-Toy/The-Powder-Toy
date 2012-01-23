@@ -88,7 +88,7 @@ void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
 
 void GameController::Tick()
 {
-	//gameModel->GetSimulation()->update_particles();
+	gameModel->GetSimulation()->update_particles();
 }
 
 void GameController::SetPaused(bool pauseState)
@@ -96,9 +96,19 @@ void GameController::SetPaused(bool pauseState)
 	gameModel->SetPaused(pauseState);
 }
 
+void GameController::SetPaused()
+{
+	gameModel->SetPaused(!gameModel->GetPaused());
+}
+
 void GameController::SetActiveMenu(Menu * menu)
 {
 	gameModel->SetActiveMenu(menu);
+}
+
+void GameController::SetActiveTool(Tool * tool)
+{
+	gameModel->SetActiveTool(tool);
 }
 
 void GameController::OpenSearch()
