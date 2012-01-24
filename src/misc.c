@@ -224,10 +224,10 @@ void load_presets(void)
 {
 	int prefdatasize = 0, i, count;
 	char * prefdata = file_load("powder.pref", &prefdatasize);
-	if(prefdata)
+	cJSON *root;
+	if(prefdata && (root = cJSON_Parse(prefdata)))
 	{
-		cJSON *root, *userobj, *versionobj, *tmpobj, *graphicsobj, *tmparray;
-		root = cJSON_Parse(prefdata);
+		cJSON *userobj, *versionobj, *tmpobj, *graphicsobj, *tmparray;
 		
 		//Read user data
 		userobj = cJSON_GetObjectItem(root, "user");
