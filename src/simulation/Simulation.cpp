@@ -3186,6 +3186,10 @@ Simulation::Simulation():
 	menu_section * msectionsT = LoadMenus(menuCount);
 	memcpy(msections, msectionsT, menuCount * sizeof(menu_section));
 
+	int wallCount;
+	wall_type * wtypesT = LoadWalls(wallCount);
+	memcpy(wtypes, wtypesT, wallCount * sizeof(wall_type));
+
 	int elementCount;
 	part_type * ptypesT = LoadElements(elementCount);
 	memcpy(ptypes, ptypesT, elementCount * sizeof(part_type));

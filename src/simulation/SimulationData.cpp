@@ -8,6 +8,42 @@
 #include "ElementFunctions.h"
 #include "ElementGraphics.h"
 
+wall_type * LoadWalls(int & wallCount)
+{
+	wall_type wtypes[] =
+	{
+		{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 0, "Wall. Indestructible. Blocks everything. Conductive."},
+		{PIXPACK(0x808080), PIXPACK(0x808080), 0, "E-Wall. Becomes transparent when electricity is connected."},
+		{PIXPACK(0xFF8080), PIXPACK(0xFF2008), 1, "Detector. Generates electricity when a particle is inside."},
+		{PIXPACK(0x808080), PIXPACK(0x000000), 0, "Streamline. Set start point of a streamline."},
+		{PIXPACK(0x808080), PIXPACK(0x000000), 0, "Sign. Click on a sign to edit it or anywhere else to place a new one."},
+		{PIXPACK(0x8080FF), PIXPACK(0x000000), 1, "Fan. Accelerates air. Use line tool to set direction and strength."},
+		{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 2, "Wall. Blocks most particles but lets liquids through. Conductive."},
+		{PIXPACK(0x808080), PIXPACK(0x000000), 1, "Wall. Absorbs particles but lets air currents through."},
+		{PIXPACK(0x808080), PIXPACK(0x000000), 0, "Erases walls."},
+		{PIXPACK(0x808080), PIXPACK(0x000000), 3, "Wall. Indestructible. Blocks everything."},
+		{PIXPACK(0x3C3C3C), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks particles, allows air"},
+		{PIXPACK(0x575757), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and gasses, allows solids"},
+		{PIXPACK(0xFFFF22), PIXPACK(0x101010), 2, "Conductor, allows particles, conducts electricity"},
+		{PIXPACK(0x242424), PIXPACK(0x101010), 0, "E-Hole, absorbs particles, release them when powered"},
+		{PIXPACK(0xFFFFFF), PIXPACK(0x000000), -1, "Air, creates airflow and pressure"},
+		{PIXPACK(0xFFBB00), PIXPACK(0x000000), -1, "Heats the targetted element."},
+		{PIXPACK(0x00BBFF), PIXPACK(0x000000), -1, "Cools the targetted element."},
+		{PIXPACK(0x303030), PIXPACK(0x000000), -1, "Vacuum, reduces air pressure."},
+		{PIXPACK(0x579777), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and solids, allows gasses"},
+		{PIXPACK(0x000000), PIXPACK(0x000000), -1, "Drag tool"},
+		{PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, "Gravity wall"},
+		{PIXPACK(0x0000BB), PIXPACK(0x000000), -1, "Postive gravity tool."},
+		{PIXPACK(0x000099), PIXPACK(0x000000), -1, "Negative gravity tool."},
+		{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), 4, "Energy wall, allows only energy type particles to pass"},
+		{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), -1, "Property edit tool"},
+	};
+	wallCount = SC_TOTAL;
+	wall_type * wtypesT = (wall_type*)malloc(SC_TOTAL*sizeof(wall_type));
+	memcpy(wtypesT, wtypes, SC_TOTAL*sizeof(wall_type));
+	return wtypesT;
+}
+
 menu_section * LoadMenus(int & menuCount)
 {
 	menu_section msections[] = //doshow does not do anything currently.

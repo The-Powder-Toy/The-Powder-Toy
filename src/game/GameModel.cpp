@@ -30,6 +30,13 @@ GameModel::GameModel():
 			menuList[sim->ptypes[i].menusection]->AddTool(tempTool);
 		}
 	}
+	//Build other menus from wall data
+	for(int i = 0; i < UI_WALLCOUNT; i++)
+	{
+		Tool * tempTool = new ElementTool(i+UI_WALLSTART, "", PIXR(sim->wtypes[i].colour), PIXG(sim->wtypes[i].colour), PIXB(sim->wtypes[i].colour));
+		menuList[SC_WALL]->AddTool(tempTool);
+		//sim->wtypes[i]
+	}
 
 	activeTool = new ElementTool(1, "TURD", 0, 0, 0);
 }
