@@ -36,6 +36,7 @@ private:
     ui::Button * simulationOptionButton;
     ui::Button * displayModeButton;
 	ui::Button * pauseButton;
+	ui::Point currentMouse;
 public:
     GameView();
 	void AttachController(GameController * _c){ c = _c; }

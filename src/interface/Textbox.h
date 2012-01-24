@@ -23,6 +23,7 @@ class Textbox : public Component
 	VerticalAlignment textVAlign;
 	int cursor, cursorPosition;
 	TextboxAction *actionCallback;
+	bool masked;
 public:
 	Textbox(Window* parent_state, std::string textboxText);
 	Textbox(Point position, Point size, std::string textboxText);
@@ -37,6 +38,9 @@ public:
 	void SetAlignment(HorizontalAlignment hAlign, VerticalAlignment vAlign) { textHAlign = hAlign; textVAlign = vAlign; TextPosition(); }
 	void SetActionCallback(TextboxAction * action) { actionCallback = action; }
 	virtual void OnKeyPress(int key, bool shift, bool ctrl, bool alt);
+
+	void SetHidden(bool hidden) { masked = hidden; }
+	bool GetHidden() { return masked; }
 
 	virtual void Draw(const Point& screenPos);
 };

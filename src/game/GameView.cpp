@@ -9,7 +9,8 @@ GameView::GameView():
 	pointQueue(queue<ui::Point*>()),
 	isMouseDown(false),
 	ren(NULL),
-	activeBrush(NULL)
+	activeBrush(NULL),
+	currentMouse(0, 0)
 {
 	int currentX = 1;
 	//Set up UI
@@ -344,6 +345,7 @@ void GameView::NotifyBrushChanged(GameModel * sender)
 
 void GameView::OnMouseMove(int x, int y, int dx, int dy)
 {
+	currentMouse = ui::Point(x, y);
 	if(isMouseDown)
 	{
 		pointQueue.push(new ui::Point(x-dx, y-dy));
@@ -353,8 +355,11 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
 {
-	isMouseDown = true;
-	pointQueue.push(new ui::Point(x, y));
+	if(currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
+	{
+		isMouseDown = true;
+		pointQueue.push(new ui::Point(x, y));
+	}
 }
 
 void GameView::OnMouseUp(int x, int y, unsigned button)
@@ -389,6 +394,10 @@ void GameView::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
 
 void GameView::OnTick(float dt)
 {
+	if(isMouseDown)
+	{
+		pointQueue.push(new ui::Point(currentMouse));
+	}
 	if(!pointQueue.empty())
 	{
 		c->DrawPoints(pointQueue);
@@ -404,8 +413,8 @@ void GameView::OnDraw()
 		ren->render_fire();
 		ren->render_signs();
 	}
-	if(activeBrush)
+	if(activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
 	{
-		activeBrush->Render(ui::Engine::Ref().g, ui::Point(ui::Engine::Ref().GetMouseX(),ui::Engine::Ref().GetMouseY()));
+		activeBrush->Render(ui::Engine::Ref().g, currentMouse);
 	}
 }

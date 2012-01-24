@@ -8,6 +8,7 @@
 #include "simulation/Simulation.h"
 #include "search/SearchController.h"
 #include "render/RenderController.h"
+#include "login/LoginController.h"
 #include "Menu.h"
 
 using namespace std;
@@ -22,6 +23,7 @@ private:
 	GameModel * gameModel;
 	SearchController * search;
 	RenderController * renderOptions;
+	LoginController * loginWindow;
 public:
 	GameController();
 	~GameController();

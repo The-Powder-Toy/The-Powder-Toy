@@ -14,7 +14,8 @@ Textbox::Textbox(Window* parent_state, std::string textboxText):
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
 	textHAlign(AlignCentre),
-	actionCallback(NULL)
+	actionCallback(NULL),
+	masked(false)
 {
 	TextPosition();
 	cursor = text.length();
@@ -26,7 +27,8 @@ Textbox::Textbox(Point position, Point size, std::string textboxText):
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
 	textHAlign(AlignCentre),
-	actionCallback(NULL)
+	actionCallback(NULL),
+	masked(false)
 {
 	TextPosition();
 	cursor = text.length();
@@ -38,7 +40,8 @@ Textbox::Textbox(std::string textboxText):
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
 	textHAlign(AlignCentre),
-	actionCallback(NULL)
+	actionCallback(NULL),
+	masked(false)
 {
 	TextPosition();
 	cursor = text.length();
@@ -189,5 +192,15 @@ void Textbox::Draw(const Point& screenPos)
 	{
 		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 160, 160, 160, 255);
 	}
-	g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, text, 255, 255, 255, 255);
+	if(masked)
+	{
+		char tempText[text.length()];
+		memset(tempText, 'a', text.length());
+		tempText[text.length()] = 0;
+		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, tempText, 255, 255, 255, 255);
+	}
+	else
+	{
+		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, text, 255, 255, 255, 255);
+	}
 }

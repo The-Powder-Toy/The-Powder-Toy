@@ -61,7 +61,7 @@ SDL_Surface * SDLOpen()
 int main(int argc, char * argv[])
 {
 	int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
-	float fps = 0, fpsLimit = 30, delta = 1.0f;
+	float fps = 0, delta = 1.0f;
 
 	ui::Engine::Ref().g = new Graphics();
 	ui::Engine::Ref().g->AttachSDLSurface(SDLOpen());
@@ -119,7 +119,7 @@ int main(int argc, char * argv[])
 		currentFrame++;
 		currentTime = SDL_GetTicks();
 		elapsedTime = currentTime - lastTime;
-		if((currentFrame>2 || elapsedTime > 1000*2/ui::Engine::Ref().FpsLimit) && elapsedTime && currentFrame*1000/elapsedTime > ui::Engine::Ref().FpsLimit)
+		if(ui::Engine::Ref().FpsLimit > 2.0f && (currentFrame>2 || elapsedTime > 1000*2/ui::Engine::Ref().FpsLimit) && elapsedTime && currentFrame*1000/elapsedTime > ui::Engine::Ref().FpsLimit)
 		{
 			while (currentFrame*1000/elapsedTime > ui::Engine::Ref().FpsLimit)
 			{

@@ -10,6 +10,11 @@
 #include "search/Save.h"
 #include "Singleton.h"
 
+enum LoginStatus
+{
+	LoginPasswordInvalid, LoginUsernameInvalid, LoginOkay, LoginBanned, LoginError
+};
+
 class Client: public Singleton<Client>
 {
 private:
@@ -23,6 +28,7 @@ private:
 public:
 	Client();
 	~Client();
+	LoginStatus Login(string username, string password);
 	void ClearThumbnailRequests();
 	std::vector<Save*> * SearchSaves(int start, int count, string query, string sort, int & resultCount);
 	Thumbnail * GetPreview(int saveID, int saveDate);

@@ -18,7 +18,7 @@ Engine::Engine():
 	mousey_(0),
 	mousexp_(0),
 	mouseyp_(0),
-	FpsLimit(60.0f),
+	FpsLimit(0.0f),
 	windows(stack<Window*>()),
 	lastBuffer(NULL),
 	prevBuffers(stack<pixel*>()),

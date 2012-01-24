@@ -6,6 +6,7 @@
 #include "GameModel.h"
 #include "search/SearchController.h"
 #include "render/RenderController.h"
+#include "login/LoginController.h"
 #include "interface/Point.h"
 
 using namespace std;
@@ -126,7 +127,8 @@ void GameController::OpenSearch()
 
 void GameController::OpenLogin()
 {
-	//TODO: Implement
+	loginWindow = new LoginController();
+	ui::Engine::Ref().ShowWindow(loginWindow->GetView());
 }
 
 void GameController::OpenTags()

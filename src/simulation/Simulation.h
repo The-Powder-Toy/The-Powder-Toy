@@ -14,6 +14,8 @@
 #include "Elements.h"
 #include "Misc.h"
 #include "game/Brush.h"
+#include "SimulationData.h"
+//#include "ElementFunctions.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
 
@@ -35,13 +37,6 @@ struct Particle
 	unsigned int dcolour;
 };
 typedef struct Particle Particle;
-
-struct sign
-{
-	int x,y,ju;
-	char text[256];
-};
-typedef struct sign sign;
 
 struct part_type
 {
@@ -87,17 +82,6 @@ struct part_transition
 };
 typedef struct part_transition part_transition;
 
-struct playerst
-{
-	char comm;           //command cell
-	char pcomm;          //previous command
-	int elem;            //element power
-	float legs[16];      //legs' positions
-	float accs[8];       //accelerations
-	char spwn;           //if stick man was spawned
-	unsigned int frames; //frames since last particle spawn - used when spawning LIGH
-};
-typedef struct playerst playerst;
 
 struct wall_type
 {
@@ -117,6 +101,34 @@ struct gol_menu
 };
 typedef struct gol_menu gol_menu;
 
+struct menu_section
+{
+	char *icon;
+	const char *name;
+	int itemcount;
+	int doshow;
+};
+typedef struct menu_section menu_section;
+
+struct sign
+{
+	int x,y,ju;
+	char text[256];
+};
+typedef struct sign sign;
+
+struct playerst
+{
+	char comm;           //command cell
+	char pcomm;          //previous command
+	int elem;            //element power
+	float legs[16];      //legs' positions
+	float accs[8];       //accelerations
+	char spwn;           //if stick man was spawned
+	unsigned int frames; //frames since last particle spawn - used when spawning LIGH
+};
+typedef struct playerst playerst;
+
 //#ifdef _cplusplus
 class Simulation
 {
@@ -125,12 +137,15 @@ public:
 
 	Gravity * grav;
 	Air * air;
+
 	part_type ptypes[PT_NUM];
 	part_transition ptransitions[PT_NUM];
 	wall_type wtypes[UI_WALLCOUNT];
 	gol_menu gmenu[NGOL];
 	int goltype[NGOL];
 	int grule[NGOL+1][10];
+	menu_section msections[SC_TOTAL];
+
 	playerst player;
 	playerst player2;
 	playerst fighters[256]; //255 is the maximum number of fighters

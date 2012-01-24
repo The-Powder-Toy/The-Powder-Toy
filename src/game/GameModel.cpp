@@ -19,12 +19,12 @@ GameModel::GameModel():
 	menuList.clear();
 	for(int i = 0; i < 12; i++)
 	{
-		menuList.push_back(new Menu('q', "Simon"));
+		menuList.push_back(new Menu((const char)sim->msections[i].icon[0], sim->msections[i].name));
 	}
 	//Build menus from Simulation elements
 	for(int i = 0; i < PT_NUM; i++)
 	{
-		if(sim->ptypes[i].menusection < 12)
+		if(sim->ptypes[i].menusection < 12 && sim->ptypes[i].enabled && sim->ptypes[i].menu)
 		{
 			Tool * tempTool = new ElementTool(i, sim->ptypes[i].name, PIXR(sim->ptypes[i].pcolors), PIXG(sim->ptypes[i].pcolors), PIXB(sim->ptypes[i].pcolors));
 			menuList[sim->ptypes[i].menusection]->AddTool(tempTool);

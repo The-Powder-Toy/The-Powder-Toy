@@ -20,7 +20,7 @@
 Client::Client()
 {
 	int i = 0;
-	http_init(NULL);
+	http_init("wwwcache.lancs.ac.uk:8080");
 	for(i = 0; i < THUMB_CACHE_SIZE; i++)
 	{
 		thumbnailCache[i] = NULL;
@@ -37,6 +37,41 @@ Client::~Client()
 {
 	ClearThumbnailRequests();
 	http_done();
+}
+
+LoginStatus Client::Login(string username, string password)
+{
+	std::stringstream urlStream;
+	char * data;
+	int dataStatus, dataLength;
+	data = http_auth_get("http://" SERVER "/Login.json", (char*)username.c_str(), (char*)password.c_str(), NULL, &dataStatus, &dataLength);
+	std::cout << data << std::endl;
+	if(dataStatus == 200 && data)
+	{
+		std::istringstream dataStream(data);
+		json::Object objDocument;
+		json::Reader::Read(objDocument, dataStream);
+		json::Number tempStatus = objDocument["Status"];
+
+		free(data);
+		if(tempStatus.Value() == 1)
+		{
+			return LoginOkay;
+		}
+		else if(tempStatus.Value() == 0)
+		{
+			return LoginPasswordInvalid;
+		}
+		else
+		{
+			return LoginError;
+		}
+	}
+	if(data)
+	{
+		free(data);
+	}
+	return LoginError;
 }
 
 Save * Client::GetSave(int saveID, int saveDate)
