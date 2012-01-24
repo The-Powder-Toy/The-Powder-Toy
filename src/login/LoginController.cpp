@@ -22,7 +22,18 @@ void LoginController::Login(string username, string password)
 	loginModel->Login(username, password);
 }
 
+void LoginController::Exit()
+{
+	if(ui::Engine::Ref().GetWindow() == loginView)
+	{
+		ui::Engine::Ref().CloseWindow();
+		loginView = NULL;
+	}
+}
+
 LoginController::~LoginController() {
-	// TODO Auto-generated destructor stub
+	if(loginView)
+		delete loginView;
+	delete loginModel;
 }
 

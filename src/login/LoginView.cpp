@@ -18,6 +18,17 @@ public:
 	}
 };
 
+class LoginView::CancelAction : public ui::ButtonAction
+{
+	LoginView * v;
+public:
+	CancelAction(LoginView * _v) { v = _v; }
+	void ActionCallback(ui::Button * sender)
+	{
+		v->c->Exit();
+	}
+};
+
 LoginView::LoginView():
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 100)),
 	loginButton(new ui::Button(ui::Point(200-50, 100-16), ui::Point(50, 16), "Login")),
@@ -32,6 +43,7 @@ LoginView::LoginView():
 	loginButton->SetActionCallback(new LoginAction(this));
 	AddComponent(cancelButton);
 	cancelButton->SetAlignment(AlignCentre, AlignBottom);
+	cancelButton->SetActionCallback(new CancelAction(this));
 	AddComponent(titleLabel);
 	titleLabel->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(usernameField);

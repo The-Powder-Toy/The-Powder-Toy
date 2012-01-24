@@ -22,6 +22,7 @@ class LoginController {
 public:
 	LoginController();
 	void Login(string username, string password);
+	void Exit();
 	LoginView * GetView() { return loginView; }
 
 	virtual ~LoginController();

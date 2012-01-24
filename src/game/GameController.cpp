@@ -28,13 +28,21 @@ GameController::~GameController()
 {
 	if(search)
 	{
-		ui::Engine::Ref().CloseWindow();
+		if(ui::Engine::Ref().GetWindow() == search->GetView())
+			ui::Engine::Ref().CloseWindow();
 		delete search;
 	}
 	if(renderOptions)
 	{
-		ui::Engine::Ref().CloseWindow();
+		if(ui::Engine::Ref().GetWindow() == renderOptions->GetView())
+			ui::Engine::Ref().CloseWindow();
 		delete renderOptions;
+	}
+	if(loginWindow)
+	{
+		if(ui::Engine::Ref().GetWindow() == loginWindow->GetView())
+			ui::Engine::Ref().CloseWindow();
+		delete loginWindow;
 	}
 	delete gameView;
 	delete gameModel;

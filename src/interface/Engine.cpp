@@ -144,7 +144,7 @@ void Engine::Tick(float dt)
 		{
 			state_->Position.Y += windowTargetPosition.Y/20;
 		}*/
-		windowOpenState += 0.05f*dt;
+		windowOpenState += 0.05f;//*dt;
 	}
 
 	/*if(statequeued_ != NULL)

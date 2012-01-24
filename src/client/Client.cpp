@@ -20,7 +20,7 @@
 Client::Client()
 {
 	int i = 0;
-	http_init("wwwcache.lancs.ac.uk:8080");
+	http_init(NULL);
 	for(i = 0; i < THUMB_CACHE_SIZE; i++)
 	{
 		thumbnailCache[i] = NULL;

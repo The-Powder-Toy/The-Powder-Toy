@@ -27,6 +27,7 @@ class LoginView: public ui::Window {
 	ui::Textbox * passwordField;
 public:
 	class LoginAction;
+	class CancelAction;
 	LoginView();
 	void AttachController(LoginController * c_) { c = c_; }
 	void NotifyStatusChanged(LoginModel * sender);

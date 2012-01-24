@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include <stdexcept>
 #include "Config.h"
 #include "Global.h"
@@ -157,6 +158,7 @@ void Textbox::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
 				if(cursor == text.length())
 				{
 					text += key;
+					//std::cout << key << std::endl;
 				}
 				else
 				{

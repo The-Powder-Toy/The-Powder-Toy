@@ -32,6 +32,7 @@ SDL_Surface * SDLOpen()
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
 		return 0;
 	}
+	SDL_EnableUNICODE(1);
 #if defined(WIN32) && defined(WINCONSOLE)
 	//On Windows, SDL redirects stdout to stdout.txt, which can be annoying when debugging, here we redirect back to the console
 	if (console)
@@ -84,7 +85,7 @@ int main(int argc, char * argv[])
 				engine->Exit();
 				break;
 			case SDL_KEYDOWN:
-				engine->onKeyPress(event.key.keysym.sym, false, false, false);
+				engine->onKeyPress(event.key.keysym.unicode, false, false, false);
 				break;
 			case SDL_KEYUP:
 				break;
@@ -133,7 +134,14 @@ int main(int argc, char * argv[])
 			fps = (((float)currentFrame)/((float)elapsedTime))*1000.0f;
 			currentFrame = 0;
 			lastTime = currentTime;
-			delta = 60.0f/fps;
+			if(ui::Engine::Ref().FpsLimit > 2.0f)
+			{
+				delta = ui::Engine::Ref().FpsLimit/fps;
+			}
+			else
+			{
+				delta = 1.0f;
+			}
 		}
 	}
 	ui::Engine::Ref().CloseWindow();
