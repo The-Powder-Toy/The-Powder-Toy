@@ -888,7 +888,7 @@ inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 }
 
 #if defined(WIN32) && !defined(__GNUC__)
-int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
+_inline int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 #else
 inline int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 #endif
