@@ -798,7 +798,11 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		return -1;
 	if (p==-1)//creating from anything but brush
 	{
-		if ((pmap[y][x] || bmap[y/CELL][x/CELL]) && eval_move(t, x, y, NULL)!=2)
+		// If there is a particle, only allow creation if the new particle can occupy the same space as the existing particle
+		// If there isn't a particle but there is a wall, check whether the new particle is allowed to be in it
+		//   (not "!=2" for wall check because eval_move returns 1 for moving into empty space)
+		// If there's no particle and no wall, assume creation is allowed
+		if (pmap[y][x] ? (eval_move(t, x, y, NULL)!=2) : (bmap[y/CELL][x/CELL] && eval_move(t, x, y, NULL)==0))
 		{
 			if ((pmap[y][x]&0xFF)!=PT_SPAWN&&(pmap[y][x]&0xFF)!=PT_SPAWN2)
 			{
