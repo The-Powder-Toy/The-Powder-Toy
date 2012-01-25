@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "GameView.h"
 #include "Brush.h"
+#include "client/User.h"
 
 #include "Tool.h"
 #include "Menu.h"
@@ -29,6 +30,7 @@ private:
 	Simulation * sim;
 	Renderer * ren;
 	Tool * activeTool;
+	User currentUser;
 	void notifyRendererChanged();
 	void notifySimulationChanged();
 	void notifyPausedChanged();
@@ -37,6 +39,7 @@ private:
 	void notifyMenuListChanged();
 	void notifyToolListChanged();
 	void notifyActiveToolChanged();
+	void notifyUserChanged();
 public:
 	GameModel();
 	~GameModel();
@@ -53,7 +56,8 @@ public:
 	vector<Tool*> GetToolList();
 	void SetActiveMenu(Menu * menu);
 	Menu * GetActiveMenu();
-
+	User GetUser();
+	void SetUser(User user);
 	Simulation * GetSimulation();
 	Renderer * GetRenderer();
 };

@@ -11,7 +11,8 @@ GameModel::GameModel():
 	sim(NULL),
 	ren(NULL),
 	currentSave(NULL),
-	currentBrush(new Brush(ui::Point(4, 4)))
+	currentBrush(new Brush(ui::Point(4, 4))),
+	currentUser(0, "")
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
@@ -132,6 +133,17 @@ Renderer * GameModel::GetRenderer()
 	return ren;
 }
 
+User GameModel::GetUser()
+{
+	return currentUser;
+}
+
+void GameModel::SetUser(User user)
+{
+	currentUser = user;
+	notifyUserChanged();
+}
+
 void GameModel::SetPaused(bool pauseState)
 {
 	sim->sys_pause = pauseState?1:0;
@@ -209,5 +221,13 @@ void GameModel::notifyActiveToolChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyActiveToolChanged(this);
+	}
+}
+
+void GameModel::notifyUserChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyUserChanged(this);
 	}
 }

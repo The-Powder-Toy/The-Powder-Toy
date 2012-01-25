@@ -208,7 +208,7 @@ void md5_transform(unsigned buf[4], const unsigned char inraw[64])
 	buf[3] += d;
 }
 
-static char hex[] = "0123456789abcdef";
+static char hexChars[] = "0123456789abcdef";
 void md5_ascii(char *result, unsigned char const *buf, unsigned len)
 {
 	struct md5_context md5;
@@ -224,8 +224,8 @@ void md5_ascii(char *result, unsigned char const *buf, unsigned len)
 
 	for (i=0; i<16; i++)
 	{
-		result[i*2] = hex[(hash[i]>>4)&0xF];
-		result[i*2+1] = hex[hash[i]&0x0F];
+		result[i*2] = hexChars[(hash[i]>>4)&0xF];
+		result[i*2+1] = hexChars[hash[i]&0x0F];
 	}
 	result[32] = 0;
 }

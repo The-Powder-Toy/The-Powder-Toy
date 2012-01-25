@@ -7,7 +7,9 @@
 
 #include "LoginModel.h"
 
-LoginModel::LoginModel() {
+LoginModel::LoginModel():
+	currentUser(0, "")
+{
 	// TODO Auto-generated constructor stub
 
 }
@@ -17,7 +19,7 @@ void LoginModel::Login(string username, string password)
 	statusText = "Logging in...";
 	loginStatus = false;
 	notifyStatusChanged();
-	LoginStatus status = Client::Ref().Login(username, password);
+	LoginStatus status = Client::Ref().Login(username, password, currentUser);
 	switch(status)
 	{
 	case LoginOkay:
@@ -39,6 +41,11 @@ void LoginModel::AddObserver(LoginView * observer)
 string LoginModel::GetStatusText()
 {
 	return statusText;
+}
+
+User LoginModel::GetUser()
+{
+	return currentUser;
 }
 
 bool LoginModel::GetStatus()

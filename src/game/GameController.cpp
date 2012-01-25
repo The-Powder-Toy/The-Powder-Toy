@@ -11,9 +11,23 @@
 
 using namespace std;
 
+class GameController::LoginCallback: public ControllerCallback
+{
+	GameController * cc;
+public:
+	LoginCallback(GameController * cc_) { cc = cc_; }
+	virtual void ControllerExit()
+	{
+		cc->gameModel->SetUser(cc->loginWindow->GetUser());
+		delete cc->loginWindow;
+		cc->loginWindow = NULL;
+	}
+};
+
 GameController::GameController():
 		search(NULL),
-		renderOptions(NULL)
+		renderOptions(NULL),
+		loginWindow(NULL)
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
@@ -135,7 +149,7 @@ void GameController::OpenSearch()
 
 void GameController::OpenLogin()
 {
-	loginWindow = new LoginController();
+	loginWindow = new LoginController(new LoginCallback(this));
 	ui::Engine::Ref().ShowWindow(loginWindow->GetView());
 }
 

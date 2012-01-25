@@ -6,8 +6,9 @@
  */
 
 #include "LoginController.h"
+#include "client/User.h"
 
-LoginController::LoginController() {
+LoginController::LoginController(ControllerCallback * callback) {
 	// TODO Auto-generated constructor stub
 	loginView = new LoginView();
 	loginModel = new LoginModel();
@@ -15,11 +16,18 @@ LoginController::LoginController() {
 	loginView->AttachController(this);
 	loginModel->AddObserver(loginView);
 
+	this->callback = callback;
+
 }
 
 void LoginController::Login(string username, string password)
 {
 	loginModel->Login(username, password);
+}
+
+User LoginController::GetUser()
+{
+	return loginModel->GetUser();
 }
 
 void LoginController::Exit()
@@ -29,6 +37,8 @@ void LoginController::Exit()
 		ui::Engine::Ref().CloseWindow();
 		loginView = NULL;
 	}
+	if(callback)
+		callback->ControllerExit();
 }
 
 LoginController::~LoginController() {

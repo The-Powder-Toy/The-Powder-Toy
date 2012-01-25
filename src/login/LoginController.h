@@ -11,6 +11,8 @@
 #include <string>
 #include "LoginView.h"
 #include "LoginModel.h"
+#include "Controller.h"
+#include "client/User.h"
 
 using namespace std;
 
@@ -19,12 +21,13 @@ class LoginModel;
 class LoginController {
 	LoginView * loginView;
 	LoginModel * loginModel;
+	ControllerCallback * callback;
 public:
-	LoginController();
+	LoginController(ControllerCallback * callback = NULL);
 	void Login(string username, string password);
 	void Exit();
 	LoginView * GetView() { return loginView; }
-
+	User GetUser();
 	virtual ~LoginController();
 };
 

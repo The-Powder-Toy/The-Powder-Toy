@@ -48,6 +48,7 @@ public:
 	void NotifyMenuListChanged(GameModel * sender);
 	void NotifyToolListChanged(GameModel * sender);
 	void NotifyActiveToolChanged(GameModel * sender);
+	void NotifyUserChanged(GameModel * sender);
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);

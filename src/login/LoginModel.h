@@ -21,12 +21,14 @@ class LoginModel {
 	string statusText;
 	bool loginStatus;
 	void notifyStatusChanged();
+	User currentUser;
 public:
 	LoginModel();
 	void Login(string username, string password);
 	void AddObserver(LoginView * observer);
 	string GetStatusText();
 	bool GetStatus();
+	User GetUser();
 	virtual ~LoginModel();
 };
 

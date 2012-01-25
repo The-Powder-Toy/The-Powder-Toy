@@ -305,6 +305,18 @@ void GameView::NotifySimulationChanged(GameModel * sender)
 {
 
 }
+void GameView::NotifyUserChanged(GameModel * sender)
+{
+	if(!sender->GetUser().ID)
+	{
+		loginButton->SetText("Login");
+	}
+	else
+	{
+		loginButton->SetText(sender->GetUser().Username);
+	}
+}
+
 
 void GameView::NotifyPausedChanged(GameModel * sender)
 {

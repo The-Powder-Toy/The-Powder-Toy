@@ -9,6 +9,7 @@
 #include "search/Thumbnail.h"
 #include "search/Save.h"
 #include "Singleton.h"
+#include "User.h"
 
 enum LoginStatus
 {
@@ -28,7 +29,7 @@ private:
 public:
 	Client();
 	~Client();
-	LoginStatus Login(string username, string password);
+	LoginStatus Login(string username, string password, User & user);
 	void ClearThumbnailRequests();
 	std::vector<Save*> * SearchSaves(int start, int count, string query, string sort, int & resultCount);
 	Thumbnail * GetPreview(int saveID, int saveDate);
