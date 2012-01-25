@@ -58,6 +58,10 @@ LoginView::LoginView():
 void LoginView::NotifyStatusChanged(LoginModel * sender)
 {
 	infoLabel->SetText(sender->GetStatusText());
+	if(sender->GetStatus())
+	{
+		c->Exit();
+	}
 }
 
 void LoginView::OnDraw()
