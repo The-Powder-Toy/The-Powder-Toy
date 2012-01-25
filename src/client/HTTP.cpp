@@ -679,7 +679,6 @@ char *http_simple_get(char *uri, int *ret, int *len)
 	}
 	return http_async_req_stop(ctx, ret, len);
 }
-static char hex[] = "0123456789abcdef";
 void http_auth_headers(void *ctx, char *user, char *pass, char *session_id)
 {
 	char *tmp;
@@ -702,8 +701,8 @@ void http_auth_headers(void *ctx, char *user, char *pass, char *session_id)
 			tmp = (char *)malloc(33);
 			for (i=0; i<16; i++)
 			{
-				tmp[i*2] = hex[hash[i]>>4];
-				tmp[i*2+1] = hex[hash[i]&15];
+				tmp[i*2] = hexChars[hash[i]>>4];
+				tmp[i*2+1] = hexChars[hash[i]&15];
 			}
 			tmp[32] = 0;
 			http_async_add_header(ctx, "X-Auth-Hash", tmp);
@@ -1032,8 +1031,8 @@ retry:
 			tmp = (char *)malloc(33);
 			for (i=0; i<16; i++)
 			{
-				tmp[i*2] = hex[hash[i]>>4];
-				tmp[i*2+1] = hex[hash[i]&15];
+				tmp[i*2] = hexChars[hash[i]>>4];
+				tmp[i*2+1] = hexChars[hash[i]&15];
 			}
 			tmp[32] = 0;
 			http_async_add_header(ctx, "X-Auth-Hash", tmp);

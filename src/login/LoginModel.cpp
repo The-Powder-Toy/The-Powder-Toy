@@ -24,17 +24,8 @@ void LoginModel::Login(string username, string password)
 		statusText = "Logged in";
 		loginStatus = true;
 		break;
-	case LoginPasswordInvalid:
-		statusText = "Username or Password incorrect";
-		break;
-	case LoginUsernameInvalid:
-		statusText = "Username incorrect";
-		break;
-	case LoginBanned:
-		statusText = "Banned: " + Client::Ref().GetLastError();
-		break;
-	default:
-		statusText = "Error";
+	case LoginError:
+		statusText = "Error: " + Client::Ref().GetLastError();
 		break;
 	}
 	notifyStatusChanged();

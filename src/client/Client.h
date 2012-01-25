@@ -12,7 +12,7 @@
 
 enum LoginStatus
 {
-	LoginPasswordInvalid, LoginUsernameInvalid, LoginOkay, LoginBanned, LoginError
+	LoginOkay, LoginError
 };
 
 class Client: public Singleton<Client>

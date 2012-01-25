@@ -20,6 +20,8 @@
 #ifndef HTTP_H
 #define HTTP_H
 
+static char hexChars[] = "0123456789abcdef";
+
 void http_init(char *proxy);
 void http_done(void);
 

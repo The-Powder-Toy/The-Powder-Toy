@@ -7,6 +7,7 @@
 
 #include "Config.h"
 #include "Client.h"
+#include "MD5.h"
 #include "Graphics.h"
 
 #include "interface/Point.h"
@@ -41,29 +42,60 @@ Client::~Client()
 
 LoginStatus Client::Login(string username, string password)
 {
+	lastError = "";
 	std::stringstream urlStream;
+	std::stringstream hashStream;
+	unsigned char cHashData[16];
+
+	//Build hash of username + password
+	struct md5_context md5;
+	md5_init(&md5);
+	md5_update(&md5, (unsigned char *)username.c_str(), username.length());
+	md5_update(&md5, (unsigned char *)"-", 1);
+	md5_update(&md5, (unsigned char *)password.c_str(), password.length());
+	md5_final(cHashData, &md5);
+	//Make sure hash is Hex
+	//char * cHashHex = (char *)malloc(33);
+	for(int i = 0; i < 16; i++)
+	{
+		hashStream << hexChars[cHashData[i]>>4] << hexChars[cHashData[i]&15];
+		//cHashHex[i*2] = hex[cHashData[i]>>4];
+		//cHashHex[i*2+1] = hex[cHashData[i]&15];
+	}
+	//cHashHex[32] = 0;
+
 	char * data;
 	int dataStatus, dataLength;
-	data = http_auth_get("http://" SERVER "/Login.json", (char*)username.c_str(), (char*)password.c_str(), NULL, &dataStatus, &dataLength);
+	char * postNames[] = { "Username", "Hash", NULL };
+	char * postDatas[] = { (char*)username.c_str(), (char*)hashStream.str().c_str() };
+	int postLengths[] = { username.length(), hashStream.str().length() };
+	data = http_multipart_post("http://" SERVER "/Login.json", postNames, postDatas, postLengths, NULL, NULL, NULL, &dataStatus, &dataLength);
+	//data = http_auth_get("http://" SERVER "/Login.json", (char*)username.c_str(), (char*)password.c_str(), NULL, &dataStatus, &dataLength);
 	std::cout << data << std::endl;
 	if(dataStatus == 200 && data)
 	{
-		std::istringstream dataStream(data);
-		json::Object objDocument;
-		json::Reader::Read(objDocument, dataStream);
-		json::Number tempStatus = objDocument["Status"];
+		try
+		{
+			std::istringstream dataStream(data);
+			json::Object objDocument;
+			json::Reader::Read(objDocument, dataStream);
+			json::Number tempStatus = objDocument["Status"];
 
-		free(data);
-		if(tempStatus.Value() == 1)
-		{
-			return LoginOkay;
+			free(data);
+			if(tempStatus.Value() == 1)
+			{
+				return LoginOkay;
+			}
+			else
+			{
+				json::String tempError = objDocument["Error"];
+				lastError = tempError.Value();
+				return LoginError;
+			}
 		}
-		else if(tempStatus.Value() == 0)
+		catch (json::Exception &e)
 		{
-			return LoginPasswordInvalid;
-		}
-		else
-		{
+			lastError = "Server responded with crap";
 			return LoginError;
 		}
 	}
