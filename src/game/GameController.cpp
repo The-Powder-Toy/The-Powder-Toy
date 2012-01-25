@@ -118,7 +118,7 @@ void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
 
 void GameController::Tick()
 {
-	gameModel->GetSimulation()->update_particles();
+	//gameModel->GetSimulation()->update_particles();
 }
 
 void GameController::SetPaused(bool pauseState)

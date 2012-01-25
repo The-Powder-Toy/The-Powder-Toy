@@ -3185,18 +3185,23 @@ Simulation::Simulation():
 	int menuCount;
 	menu_section * msectionsT = LoadMenus(menuCount);
 	memcpy(msections, msectionsT, menuCount * sizeof(menu_section));
+	free(msectionsT);
 
 	int wallCount;
 	wall_type * wtypesT = LoadWalls(wallCount);
 	memcpy(wtypes, wtypesT, wallCount * sizeof(wall_type));
+	free(wtypesT);
 
 	int elementCount;
 	part_type * ptypesT = LoadElements(elementCount);
 	memcpy(ptypes, ptypesT, elementCount * sizeof(part_type));
+	free(ptypesT);
 
 	int transitionCount;
 	part_transition * ptransitionsT = LoadTransitions(transitionCount);
 	memcpy(ptransitions, ptransitionsT, sizeof(part_transition) * transitionCount);
+	free(ptransitionsT);
+
 	init_can_move();
 	clear_sim();
 }

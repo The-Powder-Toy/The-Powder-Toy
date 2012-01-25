@@ -35,7 +35,6 @@ void LoginController::Exit()
 	if(ui::Engine::Ref().GetWindow() == loginView)
 	{
 		ui::Engine::Ref().CloseWindow();
-		loginView = NULL;
 	}
 	if(callback)
 		callback->ControllerExit();

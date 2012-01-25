@@ -54,6 +54,8 @@ GameModel::~GameModel()
 	}
 	delete sim;
 	delete ren;
+	if(activeTool)
+		delete activeTool;
 }
 
 Brush * GameModel::GetBrush()

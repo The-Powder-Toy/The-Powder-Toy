@@ -1682,6 +1682,9 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	this->g = g;
 	this->sim = sim;
 
+	memset(fire_r, 0, sizeof(fire_r));
+	memset(fire_g, 0, sizeof(fire_g));
+	memset(fire_b, 0, sizeof(fire_b));
 	prepare_alpha(CELL, 1.0f);
 	init_display_modes();
 	prepare_graphicscache();
