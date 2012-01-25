@@ -414,7 +414,7 @@ void GameView::OnTick(float dt)
 	{
 		c->DrawPoints(pointQueue);
 	}
-	c->Tick();
+	c->Update();
 }
 
 void GameView::OnDraw()

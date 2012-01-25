@@ -31,7 +31,7 @@ public:
 	GameView * GetView();
 	void AdjustBrushSize(int direction);
 	void DrawPoints(queue<ui::Point*> & pointQueue);
-	void Tick();
+	void Update();
 	void SetPaused(bool pauseState);
 	void SetPaused();
 	void SetActiveMenu(Menu * menu);

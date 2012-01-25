@@ -23,6 +23,7 @@ class LoginController {
 	LoginModel * loginModel;
 	ControllerCallback * callback;
 public:
+	bool HasExited;
 	LoginController(ControllerCallback * callback = NULL);
 	void Login(string username, string password);
 	void Exit();

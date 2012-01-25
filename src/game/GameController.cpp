@@ -19,8 +19,6 @@ public:
 	virtual void ControllerExit()
 	{
 		cc->gameModel->SetUser(cc->loginWindow->GetUser());
-		delete cc->loginWindow;
-		cc->loginWindow = NULL;
 	}
 };
 
@@ -116,9 +114,14 @@ void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
 	}
 }
 
-void GameController::Tick()
+void GameController::Update()
 {
 	//gameModel->GetSimulation()->update_particles();
+	if(loginWindow && loginWindow->HasExited)
+	{
+		delete loginWindow;
+		loginWindow = NULL;
+	}
 }
 
 void GameController::SetPaused(bool pauseState)

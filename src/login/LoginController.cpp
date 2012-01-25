@@ -8,7 +8,9 @@
 #include "LoginController.h"
 #include "client/User.h"
 
-LoginController::LoginController(ControllerCallback * callback) {
+LoginController::LoginController(ControllerCallback * callback):
+	HasExited(false)
+{
 	// TODO Auto-generated constructor stub
 	loginView = new LoginView();
 	loginModel = new LoginModel();
@@ -38,6 +40,7 @@ void LoginController::Exit()
 	}
 	if(callback)
 		callback->ControllerExit();
+	HasExited = true;
 }
 
 LoginController::~LoginController() {
