@@ -17,8 +17,11 @@ int update_SWCH(UPDATE_FUNC_ARGS) {
 					{
 						if (parts[i].life>=10&&parts[r>>8].life<10&&parts[r>>8].life>0)
 							parts[i].life = 9;
-						else if (parts[i].life==0&&parts[r>>8].life==10)
-							parts[i].life = 10;
+						else if (parts[i].life==0&&parts[r>>8].life>=10)
+						{
+							//Set to other particle's life instead of 10, otherwise spark loops form when SWCH is sparked while turning on
+							parts[i].life = parts[r>>8].life;
+						}
 					}
 					else if (rt==PT_SPRK&&parts[i].life==10&&parts[r>>8].ctype!=PT_PSCN&&parts[r>>8].ctype!=PT_NSCN) {
 						part_change_type(i,x,y,PT_SPRK);
