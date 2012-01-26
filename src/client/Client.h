@@ -29,6 +29,7 @@ private:
 public:
 	Client();
 	~Client();
+	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	LoginStatus Login(string username, string password, User & user);
 	void ClearThumbnailRequests();
 	std::vector<Save*> * SearchSaves(int start, int count, string query, string sort, int & resultCount);

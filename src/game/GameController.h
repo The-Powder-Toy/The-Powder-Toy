@@ -26,6 +26,8 @@ private:
 	LoginController * loginWindow;
 public:
 	class LoginCallback;
+	class SearchCallback;
+	class RenderCallback;
 	GameController();
 	~GameController();
 	GameView * GetView();

@@ -17,6 +17,7 @@ using namespace std;
 
 class PreviewView;
 class PreviewModel {
+	bool doOpen;
 	vector<PreviewView*> observers;
 	Save * save;
 	Thumbnail * savePreview;
@@ -28,6 +29,8 @@ public:
 	Save * GetSave();
 	void AddObserver(PreviewView * observer);
 	void UpdateSave(int saveID, int saveDate);
+	bool GetDoOpen();
+	void SetDoOpen(bool doOpen);
 	virtual ~PreviewModel();
 };
 

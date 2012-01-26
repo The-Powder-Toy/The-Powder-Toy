@@ -5,8 +5,24 @@
 #include "interface/Panel.h"
 #include "preview/PreviewController.h"
 
-SearchController::SearchController():
-	activePreview(NULL)
+class SearchController::OpenCallback: public ControllerCallback
+{
+	SearchController * cc;
+public:
+	OpenCallback(SearchController * cc_) { cc = cc_; }
+	virtual void ControllerExit()
+	{
+		if(cc->activePreview->GetDoOpen())
+		{
+			cc->searchModel->SetLoadedSave(new Save(*(cc->activePreview->GetSave())));
+			cc->Exit();
+		}
+	}
+};
+
+SearchController::SearchController(ControllerCallback * callback):
+	activePreview(NULL),
+	HasExited(false)
 {
 	searchModel = new SearchModel();
 	searchView = new SearchView();
@@ -15,19 +31,42 @@ SearchController::SearchController():
 
 	searchModel->UpdateSaveList(1, "");
 
+	this->callback = callback;
+
 	//Set up interface
 	//windowPanel.AddChild();
 }
 
-SearchController::~SearchController()
+Save * SearchController::GetLoadedSave()
 {
-	if(activePreview)
+	return searchModel->GetLoadedSave();
+}
+
+void SearchController::Update()
+{
+	if(activePreview && activePreview->HasExited)
+	{
+		delete activePreview;
+		activePreview = NULL;
+	}
+}
+
+void SearchController::Exit()
+{
+	if(ui::Engine::Ref().GetWindow() == searchView)
 	{
 		ui::Engine::Ref().CloseWindow();
-		delete activePreview;
 	}
+	if(callback)
+		callback->ControllerExit();
+	HasExited = true;
+}
+
+SearchController::~SearchController()
+{
 	delete searchModel;
-	delete searchView;
+	if(searchView)
+		delete searchView;
 }
 
 void SearchController::DoSearch(std::string query)
@@ -66,6 +105,6 @@ void SearchController::ShowOwn(bool show)
 
 void SearchController::OpenSave(int saveID)
 {
-	activePreview = new PreviewController(saveID);
+	activePreview = new PreviewController(saveID, new OpenCallback(this));
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }

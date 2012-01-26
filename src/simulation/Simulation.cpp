@@ -6,6 +6,17 @@
 #include "ElementFunctions.h"
 #include "Air.h"
 #include "Gravity.h"
+#include "SaveLoader.h"
+
+int Simulation::Load(unsigned char * data, int dataLength)
+{
+	return SaveLoader::LoadSave(data, dataLength, this);
+}
+
+unsigned char * Simulation::Save(int & dataLength)
+{
+	return SaveLoader::BuildSave(dataLength, this);
+}
 
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 {

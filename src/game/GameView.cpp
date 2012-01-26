@@ -327,6 +327,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 {
 	if(sender->GetSave())
 	{
+		saveSimulationButton->SetText(sender->GetSave()->name);
 		reloadButton->Enabled = true;
 		if(sender->GetSave()->GetID())	//Online saves have an ID, local saves have an ID of 0 and a filename
 		{

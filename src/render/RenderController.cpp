@@ -7,7 +7,9 @@
 
 #include "RenderController.h"
 
-RenderController::RenderController(Renderer * ren) {
+RenderController::RenderController(Renderer * ren, ControllerCallback * callback):
+	HasExited(false)
+{
 	renderView = new RenderView();
 	renderModel = new RenderModel();
 
@@ -15,6 +17,18 @@ RenderController::RenderController(Renderer * ren) {
 	renderModel->AddObserver(renderView);
 
 	renderModel->SetRenderer(ren);
+	this->callback = callback;
+}
+
+void RenderController::Exit()
+{
+	if(ui::Engine::Ref().GetWindow() == renderView)
+	{
+		ui::Engine::Ref().CloseWindow();
+	}
+	if(callback)
+		callback->ControllerExit();
+	HasExited = true;
 }
 
 RenderController::~RenderController() {

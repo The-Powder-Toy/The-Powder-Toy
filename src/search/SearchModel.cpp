@@ -5,7 +5,8 @@
 
 SearchModel::SearchModel():
 	currentSort("votes"),
-	showOwn(false)
+	showOwn(false),
+	loadedSave(NULL)
 {
 }
 
@@ -28,6 +29,15 @@ void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 	currentPage = pageNumber;
 	notifyPageChanged();
 	notifySaveListChanged();
+}
+
+void SearchModel::SetLoadedSave(Save * save)
+{
+	loadedSave = save;
+}
+
+Save * SearchModel::GetLoadedSave(){
+	return loadedSave;
 }
 
 vector<Save*> SearchModel::GetSaveList()
@@ -78,4 +88,10 @@ void SearchModel::notifyShowOwnChanged()
 		SearchView* cObserver = observers[i];
 		cObserver->NotifyShowOwnChanged(this);
 	}
+}
+
+SearchModel::~SearchModel()
+{
+	if(loadedSave)
+		delete loadedSave;
 }

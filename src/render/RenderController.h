@@ -11,14 +11,18 @@
 #include "RenderView.h"
 #include "RenderModel.h"
 #include "Renderer.h"
+#include "Controller.h"
 
 class RenderView;
 class RenderModel;
 class RenderController {
 	RenderView * renderView;
 	RenderModel * renderModel;
+	ControllerCallback * callback;
 public:
-	RenderController(Renderer * ren);
+	bool HasExited;
+	RenderController(Renderer * ren, ControllerCallback * callback = NULL);
+	void Exit();
 	RenderView * GetView() { return renderView; }
 	virtual ~RenderController();
 };

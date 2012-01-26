@@ -204,7 +204,9 @@ public:
 	int sandcolour_r;
 	int sandcolour_g;
 	int sandcolour_b; //TODO: Make a single variable
-	//Stuff
+	//TODO: Inlines for performance
+	int Load(unsigned char * data, int dataLength);
+	unsigned char * Save(int & dataLength);
 	int is_blocking(int t, int x, int y);
 	int is_boundary(int pt, int x, int y);
 	int find_next_boundary(int pt, int *x, int *y, int dm, int *em);

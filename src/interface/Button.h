@@ -39,7 +39,7 @@ public:
 	std::string ButtonText;
 
 	virtual void OnMouseClick(int x, int y, unsigned int button);
-	virtual void OnMouseUnclick(int x, int y, unsigned int button);
+	virtual void OnMouseUp(int x, int y, unsigned int button);
 	//virtual void OnMouseUp(int x, int y, unsigned int button);
 
 	virtual void OnMouseEnter(int x, int y);

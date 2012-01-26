@@ -2,6 +2,9 @@
 #define SAVE_H
 
 #include <string>
+#include <stdlib.h>
+#include <iostream>
+#include <string.h>
 
 using namespace std;
 
@@ -9,57 +12,43 @@ class Save
 {
 private:
 	int id;
+	int date;
 	int votesUp, votesDown;
 	unsigned char * data;
+	int dataLength;
 public:
-	Save(int _id, int _votesUp, int _votesDown, string _userName, string _name):
-		id(_id),
-		votesUp(_votesUp),
-		votesDown(_votesDown),
-		userName(_userName),
-		name(_name),
-		Description("No description provided"),
-		Date("0/0/0"),
-		Published(true)
-	{
-	}
+	Save(Save & save);
 
-	Save(int _id, int _votesUp, int _votesDown, string _userName, string _name, string description_, string date_, bool published_):
-		id(_id),
-		votesUp(_votesUp),
-		votesDown(_votesDown),
-		userName(_userName),
-		name(_name),
-		Description(description_),
-		Date(date_),
-		Published(published_)
-	{
-	}
+	Save(int _id, int _date, int _votesUp, int _votesDown, string _userName, string _name);
+
+	Save(int _id, int date_, int _votesUp, int _votesDown, string _userName, string _name, string description_, bool published_);
 
 	string userName;
 	string name;
 
 	string Description;
-	string Date;
 
 	bool Published;
 
-	void SetName(string name){ this->name = name; }
-	string GetName(){ return name; }
+	void SetName(string name);
+	string GetName();
 
-	void SetUserName(string userName){ this->userName = userName; }
-	string GetUserName(){ return userName; }
+	void SetUserName(string userName);
+	string GetUserName();
 
-	void SetID(int id){ this->id = id; }
-	int GetID(){ return id; }
+	void SetID(int id);
+	int GetID();
 
-	void SetVotesUp(int votesUp){ this->votesUp = votesUp; }
-	int GetVotesUp(){ return votesUp; }
+	void SetVotesUp(int votesUp);
+	int GetVotesUp();
 
-	void SetVotesDown(int votesDown){ this->votesDown = votesDown; }
-	int GetVotesDown(){ return votesDown; }
+	void SetVotesDown(int votesDown);
+	int GetVotesDown();
 
-	unsigned char * GetData() { return data; }
+	unsigned char * GetData();
+	void SetData(unsigned char * data_);
+
+	int GetDataLength();
 };
 
 #endif // SAVE_H

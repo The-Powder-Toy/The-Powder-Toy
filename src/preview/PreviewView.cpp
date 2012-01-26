@@ -14,8 +14,19 @@ PreviewView::PreviewView():
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+200, (YRES/2)+150)),
 	savePreview(NULL)
 {
-	// TODO Auto-generated constructor stub
+	class OpenAction: public ui::ButtonAction
+	{
+		PreviewView * v;
+	public:
+		OpenAction(PreviewView * v_){ v = v_; }
+		virtual void ActionCallback(ui::Button * sender)
+		{
+			v->c->DoOpen();
+			v->c->Exit();
+		}
+	};
 	openButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(100, 16), "Open");
+	openButton->SetActionCallback(new OpenAction(this));
 	AddComponent(openButton);
 
 	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+5), ui::Point(100, 16), "");

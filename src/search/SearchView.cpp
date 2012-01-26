@@ -212,3 +212,8 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		}
 	}
 }
+
+void SearchView::OnTick(float dt)
+{
+	c->Update();
+}

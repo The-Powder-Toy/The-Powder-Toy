@@ -10,7 +10,8 @@
 
 PreviewModel::PreviewModel():
 	save(NULL),
-	savePreview(NULL)
+	savePreview(NULL),
+	doOpen(false)
 {
 	// TODO Auto-generated constructor stub
 
@@ -22,6 +23,16 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	notifySaveChanged();
 	savePreview = Client::Ref().GetPreview(saveID, saveDate);
 	notifyPreviewChanged();
+}
+
+void PreviewModel::SetDoOpen(bool doOpen)
+{
+	this->doOpen = doOpen;
+}
+
+bool PreviewModel::GetDoOpen()
+{
+	return doOpen;
 }
 
 Thumbnail * PreviewModel::GetPreview()
@@ -57,6 +68,9 @@ void PreviewModel::AddObserver(PreviewView * observer) {
 }
 
 PreviewModel::~PreviewModel() {
-	// TODO Auto-generated destructor stub
+	if(save)
+		delete save;
+	if(savePreview)
+		delete savePreview;
 }
 

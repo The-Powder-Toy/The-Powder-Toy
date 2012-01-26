@@ -13,6 +13,7 @@ class SearchView;
 class SearchModel
 {
 private:
+	Save * loadedSave;
 	string currentSort;
 	string lastQuery;
 	string lastError;
@@ -27,6 +28,7 @@ private:
 	void notifyShowOwnChanged();
 public:
     SearchModel();
+    virtual ~SearchModel();
 	void AddObserver(SearchView * observer);
 	void UpdateSaveList(int pageNumber, std::string query);
 	vector<Save*> GetSaveList();
@@ -38,6 +40,8 @@ public:
 	string GetSort() { return currentSort; }
 	void SetShowOwn(bool show) { showOwn = show; UpdateSaveList(1, lastQuery); notifyShowOwnChanged(); }
 	bool GetShowOwn() { return showOwn; }
+	void SetLoadedSave(Save * save);
+	Save * GetLoadedSave();
 };
 
 #endif // SEARCHMODEL_H

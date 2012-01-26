@@ -40,6 +40,12 @@ Client::~Client()
 	http_done();
 }
 
+unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
+{
+	dataLength = 0;
+	return NULL;
+}
+
 LoginStatus Client::Login(string username, string password, User & user)
 {
 	lastError = "";
@@ -140,16 +146,16 @@ Save * Client::GetSave(int saveID, int saveDate)
 			json::String tempUsername = objDocument["Username"];
 			json::String tempName = objDocument["Name"];
 			json::String tempDescription = objDocument["Description"];
-			json::String tempDate = objDocument["Date"];
+			json::Number tempDate = objDocument["Date"];
 			json::Boolean tempPublished = objDocument["Published"];
 			return new Save(
 					tempID.Value(),
+					tempDate.Value(),
 					tempScoreUp.Value(),
 					tempScoreDown.Value(),
 					tempUsername.Value(),
 					tempName.Value(),
 					tempDescription.Value(),
-					tempDate.Value(),
 					tempPublished.Value()
 					);
 		}
@@ -241,6 +247,7 @@ std::vector<Save*> * Client::SearchSaves(int start, int count, string query, str
 			for(int j = 0; j < savesArray.Size(); j++)
 			{
 				json::Number tempID = savesArray[j]["ID"];
+				json::Number tempDate = savesArray[j]["Date"];
 				json::Number tempScoreUp = savesArray[j]["ScoreUp"];
 				json::Number tempScoreDown = savesArray[j]["ScoreDown"];
 				json::String tempUsername = savesArray[j]["Username"];
@@ -248,6 +255,7 @@ std::vector<Save*> * Client::SearchSaves(int start, int count, string query, str
 				saveArray->push_back(
 							new Save(
 								tempID.Value(),
+								tempDate.Value(),
 								tempScoreUp.Value(),
 								tempScoreDown.Value(),
 								tempUsername.Value(),

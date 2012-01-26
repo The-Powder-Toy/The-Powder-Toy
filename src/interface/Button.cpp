@@ -152,7 +152,7 @@ void Button::Draw(const Point& screenPos)
 	}
 }
 
-void Button::OnMouseUnclick(int x, int y, unsigned int button)
+void Button::OnMouseUp(int x, int y, unsigned int button)
 {
     if(button != 1)
     {

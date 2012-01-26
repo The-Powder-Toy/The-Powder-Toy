@@ -34,6 +34,7 @@ public:
     SearchView();
 	virtual ~SearchView();
 	void AttachController(SearchController * _c) { c = _c; }
+	virtual void OnTick(float dt);
 };
 
 #endif // SEARCHVIEW_H

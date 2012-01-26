@@ -4,6 +4,7 @@
 #include "Config.h"
 #include "GameController.h"
 #include "GameModel.h"
+#include "search/Save.h"
 #include "search/SearchController.h"
 #include "render/RenderController.h"
 #include "login/LoginController.h"
@@ -19,6 +20,37 @@ public:
 	virtual void ControllerExit()
 	{
 		cc->gameModel->SetUser(cc->loginWindow->GetUser());
+	}
+};
+
+
+class GameController::SearchCallback: public ControllerCallback
+{
+	GameController * cc;
+public:
+	SearchCallback(GameController * cc_) { cc = cc_; }
+	virtual void ControllerExit()
+	{
+		if(cc->search->GetLoadedSave())
+		{
+			if(cc->gameModel->GetSave())
+			{
+				delete cc->gameModel->GetSave();
+			}
+			cc->gameModel->SetSave(new Save(*(cc->search->GetLoadedSave())));
+		}
+	}
+};
+
+
+class GameController::RenderCallback: public ControllerCallback
+{
+	GameController * cc;
+public:
+	RenderCallback(GameController * cc_) { cc = cc_; }
+	virtual void ControllerExit()
+	{
+		//cc->gameModel->SetUser(cc->loginWindow->GetUser());
 	}
 };
 
@@ -117,6 +149,18 @@ void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
 void GameController::Update()
 {
 	//gameModel->GetSimulation()->update_particles();
+	if(renderOptions && renderOptions->HasExited)
+	{
+		delete renderOptions;
+		renderOptions = NULL;
+	}
+
+	if(search && search->HasExited)
+	{
+		delete search;
+		search = NULL;
+	}
+
 	if(loginWindow && loginWindow->HasExited)
 	{
 		delete loginWindow;
@@ -146,7 +190,7 @@ void GameController::SetActiveTool(Tool * tool)
 
 void GameController::OpenSearch()
 {
-	search = new SearchController();
+	search = new SearchController(new SearchCallback(this));
 	ui::Engine::Ref().ShowWindow(search->GetView());
 }
 
@@ -168,7 +212,7 @@ void GameController::OpenDisplayOptions()
 
 void GameController::OpenRenderOptions()
 {
-	renderOptions = new RenderController(gameModel->GetRenderer());
+	renderOptions = new RenderController(gameModel->GetRenderer(), new RenderCallback(this));
 	ui::Engine::Ref().ShowWindow(renderOptions->GetView());
 }
 

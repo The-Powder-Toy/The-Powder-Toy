@@ -10,14 +10,22 @@
 
 #include "preview/PreviewModel.h"
 #include "preview/PreviewView.h"
+#include "Controller.h"
+#include "search/Save.h"
 
 class PreviewModel;
 class PreviewView;
 class PreviewController {
 	PreviewModel * previewModel;
 	PreviewView * previewView;
+	ControllerCallback * callback;
 public:
-	PreviewController(int saveID);
+	bool HasExited;
+	PreviewController(int saveID, ControllerCallback * callback);
+	void Exit();
+	void DoOpen();
+	bool GetDoOpen();
+	Save * GetSave();
 	PreviewView * GetView() { return previewView; }
 	virtual ~PreviewController();
 };

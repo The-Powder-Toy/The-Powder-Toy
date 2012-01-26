@@ -122,6 +122,7 @@ Save * GameModel::GetSave()
 void GameModel::SetSave(Save * newSave)
 {
 	currentSave = newSave;
+	sim->Load(currentSave->GetData(), currentSave->GetDataLength());
 	notifySaveChanged();
 }
 
