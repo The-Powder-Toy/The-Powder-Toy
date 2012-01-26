@@ -872,11 +872,11 @@ void Simulation::clear_sim(void)
 	parts_lastActiveIndex = 0;
 	memset(pmap, 0, sizeof(pmap));
 	if(pv)
-		memset(pv, 0, sizeof(pv));
+		memset(pv, 0, (XRES/CELL) * (YRES/CELL)*sizeof(float));
 	if(vx)
-		memset(vx, 0, sizeof(vx));
+		memset(vx, 0, (XRES/CELL) * (YRES/CELL)*sizeof(float));
 	if(vy)
-		memset(vy, 0, sizeof(vy));
+		memset(vy, 0, (XRES/CELL) * (YRES/CELL)*sizeof(float));
 	if(fvx)
 		memset(fvx, 0, sizeof(fvx));
 	if(fvy)
