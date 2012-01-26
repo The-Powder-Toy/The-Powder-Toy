@@ -3725,11 +3725,12 @@ int search_ui(pixel *vid_buf)
 				{
 					if (search_dates[pos]) {
 						char *id_d_temp = malloc(strlen(search_ids[pos])+strlen(search_dates[pos])+2);
-						uri = malloc(strlen(search_ids[pos])*3+strlen(search_dates[pos])*3+strlen(SERVER)+71);
-						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbsmall&ID=");
+						uri = malloc(strlen(search_ids[pos])*3+strlen(search_dates[pos])*3+strlen(STATICSERVER)+71);
+						strcpy(uri, "http://" STATICSERVER "/");
 						strcaturl(uri, search_ids[pos]);
-						strappend(uri, "&Date=");
+						strappend(uri, "_");
 						strcaturl(uri, search_dates[pos]);
+						strappend(uri, "_small.pti");
 
 						strcpy(id_d_temp, search_ids[pos]);
 						strappend(id_d_temp, "_");
@@ -3738,8 +3739,9 @@ int search_ui(pixel *vid_buf)
 						free(id_d_temp);
 					} else {
 						uri = malloc(strlen(search_ids[pos])*3+strlen(SERVER)+64);
-						strcpy(uri, "http://" SERVER "/Get.api?Op=thumbsmall&ID=");
+						strcpy(uri, "http://" STATICSERVER "/");
 						strcaturl(uri, search_ids[pos]);
+						strappend(uri, "_small.pti");
 						img_id[i] = mystrdup(search_ids[pos]);
 					}
 					printf("Not found: %s, downloading\n", img_id[i]);
@@ -3935,36 +3937,42 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	//Begin Async loading of data
 	if (save_date) {
 		// We're loading an historical save
-		uri = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
-		strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
+		uri = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(STATICSERVER)+71);
+		strcpy(uri, "http://" STATICSERVER "/");
 		strcaturl(uri, save_id);
-		strappend(uri, "&Date=");
+		strappend(uri, "_");
 		strcaturl(uri, save_date);
+		strappend(uri, ".cps");
 
-		uri_2 = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
-		strcpy(uri_2, "http://" SERVER "/Info.api?ID=");
+		uri_2 = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(STATICSERVER)+71);
+		strcpy(uri_2, "http://" STATICSERVER "/");
 		strcaturl(uri_2, save_id);
-		strappend(uri_2, "&Date=");
+		strappend(uri_2, "_");
 		strcaturl(uri_2, save_date);
+		strappend(uri_2, ".info");
 
-		uri_3 = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(SERVER)+71);
-		strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
+		uri_3 = malloc(strlen(save_id)*3+strlen(save_date)*3+strlen(STATICSERVER)+71);
+		strcpy(uri_3, "http://" STATICSERVER "/");
 		strcaturl(uri_3, save_id);
-		strappend(uri_3, "&Date=");
+		strappend(uri_3, "_");
 		strcaturl(uri_3, save_date);
+		strappend(uri_3, "_large.pti");
 	} else {
 		//We're loading a normal save
-		uri = malloc(strlen(save_id)*3+strlen(SERVER)+64);
-		strcpy(uri, "http://" SERVER "/Get.api?Op=save&ID=");
+		uri = malloc(strlen(save_id)*3+strlen(STATICSERVER)+64);
+		strcpy(uri, "http://" STATICSERVER "/");
 		strcaturl(uri, save_id);
+		strappend(uri, ".cps");
 
-		uri_2 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
-		strcpy(uri_2, "http://" SERVER "/Info.api?ID=");
+		uri_2 = malloc(strlen(save_id)*3+strlen(STATICSERVER)+64);
+		strcpy(uri_2, "http://" STATICSERVER "/");
 		strcaturl(uri_2, save_id);
+		strappend(uri_2, ".info");
 
-		uri_3 = malloc(strlen(save_id)*3+strlen(SERVER)+64);
-		strcpy(uri_3, "http://" SERVER "/Get.api?Op=thumblarge&ID=");
+		uri_3 = malloc(strlen(save_id)*3+strlen(STATICSERVER)+64);
+		strcpy(uri_3, "http://" STATICSERVER "/");
 		strcaturl(uri_3, save_id);
+		strappend(uri_3, "_large.pti");
 	}
 	http = http_async_req_start(http, uri, NULL, 0, 1);
 	http_2 = http_async_req_start(http_2, uri_2, NULL, 0, 1);

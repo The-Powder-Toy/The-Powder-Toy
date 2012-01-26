@@ -21,6 +21,7 @@
 
 #define SERVER "powdertoy.co.uk"
 #define SCRIPTSERVER "powdertoy.co.uk"
+#define STATICSERVER "static.powdertoy.co.uk"
 
 #define LOCAL_SAVE_DIR "Saves"
 
