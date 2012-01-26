@@ -14,6 +14,7 @@
 #include "Elements.h"
 #include "Misc.h"
 #include "game/Brush.h"
+#include "Gravity.h"
 #include "SimulationData.h"
 //#include "ElementFunctions.h"
 
@@ -204,36 +205,36 @@ public:
 	int sandcolour_r;
 	int sandcolour_g;
 	int sandcolour_b; //TODO: Make a single variable
-	//TODO: Inlines for performance
+
 	int Load(unsigned char * data, int dataLength);
 	unsigned char * Save(int & dataLength);
-	int is_blocking(int t, int x, int y);
-	int is_boundary(int pt, int x, int y);
-	int find_next_boundary(int pt, int *x, int *y, int dm, int *em);
-	int pn_junction_sprk(int x, int y, int pt);
-	void photoelectric_effect(int nx, int ny);
-	unsigned direction_to_map(float dx, float dy, int t);
-	int do_move(int i, int x, int y, float nxf, float nyf);
-	int try_move(int i, int x, int y, int nx, int ny);
-	int eval_move(int pt, int nx, int ny, unsigned *rr);
+	inline int is_blocking(int t, int x, int y);
+	inline int is_boundary(int pt, int x, int y);
+	inline int find_next_boundary(int pt, int *x, int *y, int dm, int *em);
+	inline int pn_junction_sprk(int x, int y, int pt);
+	inline void photoelectric_effect(int nx, int ny);
+	inline unsigned direction_to_map(float dx, float dy, int t);
+	inline int do_move(int i, int x, int y, float nxf, float nyf);
+	inline int try_move(int i, int x, int y, int nx, int ny);
+	inline int eval_move(int pt, int nx, int ny, unsigned *rr);
 	void init_can_move();
 	void create_cherenkov_photon(int pp);
 	void create_gain_photon(int pp);
-	void kill_part(int i);
+	inline void kill_part(int i);
 	int flood_prop(int x, int y, size_t propoffset, void * propvalue, int proptype);
 	int flood_prop_2(int x, int y, size_t propoffset, void * propvalue, int proptype, int parttype, char * bitmap);
 	int flood_water(int x, int y, int i, int originaly, int check);
-	void detach(int i);
-	void part_change_type(int i, int x, int y, int t);
-	int create_part_add_props(int p, int x, int y, int tv, int rx, int ry);
+	inline void detach(int i);
+	inline void part_change_type(int i, int x, int y, int t);
+	inline int create_part_add_props(int p, int x, int y, int tv, int rx, int ry);
 	//int InCurrentBrush(int i, int j, int rx, int ry);
 	//int get_brush_flags();
-	int create_part(int p, int x, int y, int t);
-	void delete_part(int x, int y, int flags);
-	int is_wire(int x, int y);
-	int is_wire_off(int x, int y);
-	void set_emap(int x, int y);
-	int parts_avg(int ci, int ni, int t);
+	inline int create_part(int p, int x, int y, int t);
+	inline void delete_part(int x, int y, int flags);
+	inline int is_wire(int x, int y);
+	inline int is_wire_off(int x, int y);
+	inline void set_emap(int x, int y);
+	inline int parts_avg(int ci, int ni, int t);
 	void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type, int flags);
 	int nearest_part(int ci, int t, int max_d);
 	void update_particles_i(int start, int inc);
@@ -245,11 +246,11 @@ public:
 	int create_parts(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush = NULL);
 	void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags, Brush * cBrush = NULL);
 	void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
-	void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
-	void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
-	int get_wavelength_bin(int *wm);
-	int get_normal(int pt, int x, int y, float dx, float dy, float *nx, float *ny);
-	int get_normal_interp(int pt, float x0, float y0, float dx, float dy, float *nx, float *ny);
+	inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
+	inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
+	inline int get_wavelength_bin(int *wm);
+	inline int get_normal(int pt, int x, int y, float dx, float dy, float *nx, float *ny);
+	inline int get_normal_interp(int pt, float x0, float y0, float dx, float dy, float *nx, float *ny);
 	void clear_sim();
 	void UpdateParticles();
 	Simulation();

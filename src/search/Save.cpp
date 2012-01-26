@@ -34,6 +34,14 @@ Save::Save(int _id, int date_, int _votesUp, int _votesDown, string _userName,
 				published_), data(NULL) {
 }
 
+Save::~Save()
+{
+	if(data)
+	{
+		free(data);
+	}
+}
+
 void Save::SetName(string name) {
 	this->name = name;
 }

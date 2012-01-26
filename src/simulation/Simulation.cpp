@@ -10,7 +10,7 @@
 
 int Simulation::Load(unsigned char * data, int dataLength)
 {
-	return SaveLoader::LoadSave(data, dataLength, this);
+	return SaveLoader::LoadSave(data, dataLength, this, true, 0, 0);
 }
 
 unsigned char * Simulation::Save(int & dataLength)

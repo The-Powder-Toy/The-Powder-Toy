@@ -42,7 +42,28 @@ Client::~Client()
 
 unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
 {
+	lastError = "";
+	int dataStatus;
+	unsigned char * data;
 	dataLength = 0;
+	std::stringstream urlStream;
+	if(saveDate)
+	{
+		urlStream << "http://" << STATICSERVER << "/" << saveID << "_" << saveDate << ".cps";
+	}
+	else
+	{
+		urlStream << "http://" << STATICSERVER << "/" << saveID << ".cps";
+	}
+	data = (unsigned char *)http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+	if(data && dataStatus == 200)
+	{
+		return data;
+	}
+	else if(data)
+	{
+		free(data);
+	}
 	return NULL;
 }
 
@@ -175,11 +196,12 @@ Save * Client::GetSave(int saveID, int saveDate)
 Thumbnail * Client::GetPreview(int saveID, int saveDate)
 {
 	std::stringstream urlStream;
-	urlStream << "http://" << SERVER  << "/Get.api?Op=thumblarge&ID=" << saveID;
+	urlStream << "http://" << STATICSERVER  << "/" << saveID;
 	if(saveDate)
 	{
-		urlStream << "&Date=" << saveDate;
+		urlStream << "_" << saveDate;
 	}
+	urlStream << "_large.pti";
 	pixel * thumbData;
 	char * data;
 	int status, data_size, imgw, imgh;
@@ -322,11 +344,12 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 		if(thumbnailCache[i] && thumbnailCache[i]->ID == saveID && thumbnailCache[i]->Datestamp == saveDate)
 			return thumbnailCache[i];
 	}
-	urlStream << "http://" << SERVER  << "/Get.api?Op=thumbsmall&ID=" << saveID;
+	urlStream << "http://" << STATICSERVER  << "/" << saveID;
 	if(saveDate)
 	{
-		urlStream << "&Date=" << saveDate;
+		urlStream << "_" << saveDate;
 	}
+	urlStream << "_small.pti";
 	idStream << saveID << ":" << saveDate;
 	std::string idString = idStream.str();
 	bool found = false;

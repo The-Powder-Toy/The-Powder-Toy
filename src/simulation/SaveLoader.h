@@ -12,11 +12,11 @@
 
 class SaveLoader {
 public:
-	static int LoadSave(unsigned char * data, int dataLength, Simulation * sim);
+	static int LoadSave(unsigned char * data, int dataLength, Simulation * sim, bool replace, int x, int y);
 	static unsigned char * BuildSave(int & dataLength, Simulation * sim);
 	static int OPSLoadSave(unsigned char * data, int dataLength, Simulation * sim);
 	static unsigned char * OPSBuildSave(int & dataLength, Simulation * sim);
-	static int PSVLoadSave(unsigned char * data, int dataLength, Simulation * sim);
+	static int PSVLoadSave(unsigned char * data, int dataLength, Simulation * sim, bool replace, int x, int y);
 	static unsigned char * PSVBuildSave(int & dataLength, Simulation * sim);
 };
 

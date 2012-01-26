@@ -148,7 +148,7 @@ void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
 
 void GameController::Update()
 {
-	//gameModel->GetSimulation()->update_particles();
+	gameModel->GetSimulation()->update_particles();
 	if(renderOptions && renderOptions->HasExited)
 	{
 		delete renderOptions;
@@ -234,7 +234,8 @@ void GameController::ClearSim()
 
 void GameController::ReloadSim()
 {
-	//TODO: Implement
+	if(gameModel->GetSave() && gameModel->GetSave()->GetData())
+		gameModel->GetSimulation()->Load(gameModel->GetSave()->GetData(), gameModel->GetSave()->GetDataLength());
 }
 
 

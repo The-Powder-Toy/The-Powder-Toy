@@ -23,6 +23,8 @@ public:
 
 	Save(int _id, int date_, int _votesUp, int _votesDown, string _userName, string _name, string description_, bool published_);
 
+	~Save();
+
 	string userName;
 	string name;
 
