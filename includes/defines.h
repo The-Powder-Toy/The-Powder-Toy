@@ -88,7 +88,7 @@ extern unsigned char ZSIZE;
 
 #define STAMP_MAX 240
 
-#define SAVE_OPS
+//#define SAVE_OPS
 
 #define NGOL 25
 #define NGOLALT 24 //NGOL should be 24, but use this var until I find out why
