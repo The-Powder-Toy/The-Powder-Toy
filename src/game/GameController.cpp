@@ -226,6 +226,10 @@ void GameController::Vote(int direction)
 	//TODO: Implement
 }
 
+void GameController::ChangeBrush()
+{
+	gameModel->SetBrush(gameModel->GetBrushID()+1);
+}
 
 void GameController::ClearSim()
 {

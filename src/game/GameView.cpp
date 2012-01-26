@@ -3,6 +3,7 @@
 #include "interface/Window.h"
 #include "interface/Button.h"
 #include "interface/Colour.h"
+#include "interface/Keys.h"
 
 GameView::GameView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE)),
@@ -399,8 +400,11 @@ void GameView::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
 {
 	switch(key)
 	{
-	case ' ':
+	case ' ': //Space
 		c->SetPaused();
+		break;
+	case KEY_TAB: //Tab
+		c->ChangeBrush();
 		break;
 	}
 }

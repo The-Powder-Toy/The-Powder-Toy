@@ -12,6 +12,7 @@
 
 class Brush
 {
+protected:
 	bool * bitmap;
 	ui::Point size;
 public:

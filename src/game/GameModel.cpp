@@ -5,13 +5,14 @@
 #include "Renderer.h"
 #include "interface/Point.h"
 #include "Brush.h"
+#include "EllipseBrush.h"
 
 GameModel::GameModel():
 	activeTool(NULL),
 	sim(NULL),
 	ren(NULL),
 	currentSave(NULL),
-	currentBrush(new Brush(ui::Point(4, 4))),
+	currentBrush(0),
 	currentUser(0, "")
 {
 	sim = new Simulation();
@@ -39,6 +40,9 @@ GameModel::GameModel():
 		//sim->wtypes[i]
 	}
 
+	brushList.push_back(new Brush(ui::Point(4, 4)));
+	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
+
 	activeTool = new ElementTool(1, "TURD", 0, 0, 0);
 }
 
@@ -52,6 +56,10 @@ GameModel::~GameModel()
 		}
 		delete menuList[i];
 	}
+	for(int i = 0; i < brushList.size(); i++)
+	{
+		delete brushList[i];
+	}
 	delete sim;
 	delete ren;
 	if(activeTool)
@@ -60,7 +68,18 @@ GameModel::~GameModel()
 
 Brush * GameModel::GetBrush()
 {
+	return brushList[currentBrush];
+}
+
+int GameModel::GetBrushID()
+{
 	return currentBrush;
+}
+
+void GameModel::SetBrush(int i)
+{
+	currentBrush = i%brushList.size();
+	notifyBrushChanged();
 }
 
 void GameModel::AddObserver(GameView * observer){

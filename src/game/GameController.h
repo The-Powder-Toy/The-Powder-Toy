@@ -47,6 +47,7 @@ public:
 	void ClearSim();
 	void ReloadSim();
 	void Vote(int direction);
+	void ChangeBrush();
 };
 
 #endif // GAMECONTROLLER_H

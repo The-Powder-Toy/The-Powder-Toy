@@ -25,7 +25,8 @@ private:
 	vector<Tool*> toolList;
 	vector<Menu*> menuList;
 	Menu * activeMenu;
-	Brush * currentBrush;
+	int currentBrush;
+	vector<Brush *> brushList;
 	Save * currentSave;
 	Simulation * sim;
 	Renderer * ren;
@@ -43,6 +44,7 @@ private:
 public:
 	GameModel();
 	~GameModel();
+
 	Save * GetSave();
 	Brush * GetBrush();
 	void SetSave(Save * newSave);
@@ -58,6 +60,8 @@ public:
 	Menu * GetActiveMenu();
 	User GetUser();
 	void SetUser(User user);
+	void SetBrush(int i);
+	int GetBrushID();
 	Simulation * GetSimulation();
 	Renderer * GetRenderer();
 };
