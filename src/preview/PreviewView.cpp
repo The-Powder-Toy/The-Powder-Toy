@@ -25,7 +25,9 @@ PreviewView::PreviewView():
 			v->c->Exit();
 		}
 	};
-	openButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(100, 16), "Open");
+	openButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(75, 16), "Open");
+	openButton->SetAlignment(AlignLeft, AlignMiddle);
+	openButton->SetIcon(IconOpen);
 	openButton->SetActionCallback(new OpenAction(this));
 	AddComponent(openButton);
 
@@ -33,7 +35,7 @@ PreviewView::PreviewView():
 	saveNameLabel->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(saveNameLabel);
 
-	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+5+16), ui::Point(100, 16), "");
+	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+5+14), ui::Point(100, 16), "");
 	authorDateLabel->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(authorDateLabel);
 }
@@ -52,6 +54,7 @@ void PreviewView::OnDraw()
 		g->draw_image(savePreview->Data, (Position.X+1)+(((XRES/2)-savePreview->Size.X)/2), (Position.Y+1)+(((YRES/2)-savePreview->Size.Y)/2), savePreview->Size.X, savePreview->Size.Y, 255);
 	}
 	g->drawrect(Position.X, Position.Y, XRES/2, YRES/2, 255, 255, 255, 100);
+	g->draw_line(Position.X+XRES/2, Position.Y, Position.X+XRES/2, Position.Y+Size.Y, 255, 255, 255, XRES+BARSIZE);
 }
 
 void PreviewView::OnMouseDown(int x, int y, unsigned button)
@@ -66,10 +69,12 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 	if(save)
 	{
 		saveNameLabel->SetText(save->name);
+		authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw ");
 	}
 	else
 	{
 		saveNameLabel->SetText("");
+		authorDateLabel->SetText("");
 	}
 }
 
@@ -89,7 +94,5 @@ void PreviewView::NotifyPreviewChanged(PreviewModel * sender)
 }
 
 PreviewView::~PreviewView() {
-	delete openButton;
-	delete saveNameLabel;
 }
 

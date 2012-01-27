@@ -12,10 +12,9 @@ public:
 	OpenCallback(SearchController * cc_) { cc = cc_; }
 	virtual void ControllerExit()
 	{
-		if(cc->activePreview->GetDoOpen())
+		if(cc->activePreview->GetDoOpen() && cc->activePreview->GetSave())
 		{
 			cc->searchModel->SetLoadedSave(new Save(*(cc->activePreview->GetSave())));
-			cc->Exit();
 		}
 	}
 };
@@ -48,6 +47,10 @@ void SearchController::Update()
 	{
 		delete activePreview;
 		activePreview = NULL;
+		if(searchModel->GetLoadedSave())
+		{
+			Exit();
+		}
 	}
 }
 

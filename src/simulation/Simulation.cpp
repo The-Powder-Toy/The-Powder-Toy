@@ -861,7 +861,7 @@ void Simulation::clear_sim(void)
 {
 	int i, x, y;
 	if(signs)
-		memset(signs, 0, sizeof(signs));
+		memset(signs, 0, sizeof(sign)*MAXSIGNS);
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
 	memset(parts, 0, sizeof(Particle)*NPART);
