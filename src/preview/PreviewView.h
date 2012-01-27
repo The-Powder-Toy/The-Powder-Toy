@@ -21,6 +21,7 @@ class PreviewView: public ui::Window {
 	Thumbnail * savePreview;
 	ui::Button * openButton;
 	ui::Label * saveNameLabel;
+	ui::Label * authorDateLabel;
 public:
 	void AttachController(PreviewController * controller) { c = controller;}
 	PreviewView();

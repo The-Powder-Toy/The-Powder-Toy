@@ -39,7 +39,7 @@ build/powder-release: $(SOURCES)
 	strip $@
 
 build/powder.exe: buildpaths-powder.exe $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS))
-	$(CPP_WINC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS)) $(LFLAGS) -o $@ -ggdb
+	$(CPPC_WIN) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS)) $(LFLAGS) -o $@ -ggdb
 build/obj/powder.exe/%.o: src/%.cpp $(HEADERS)
 	$(CPPC_WIN) -c $(CFLAGS) $(OFLAGS) -o $@ $< -ggdb
 buildpaths-powder.exe:

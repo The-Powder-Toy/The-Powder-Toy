@@ -64,4 +64,5 @@ int graphics_WIRE(GRAPHICS_FUNC_ARGS)
 		//*pixel_mode |= PMODE_GLOW;
 		return 0;
 	}
+	return 0;
 }

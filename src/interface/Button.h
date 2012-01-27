@@ -26,13 +26,10 @@ public:
 class Button : public Component
 {
 public:
-	Button(Window* parent_state, std::string buttonText);
-
-	Button(Point position, Point size, std::string buttonText);
-
-	Button(std::string buttonText);
+	Button(Point position = Point(0, 0), Point size = Point(0, 0), std::string buttonText = "");
 	virtual ~Button();
 
+	Icon icon;
 	bool Toggleable;
 	bool Enabled;
 
@@ -68,6 +65,8 @@ public:
 	void SetActiveBorderColour(Colour border) { this->activeBorder = border; }
 	void SetTextColour(Colour text) { this->text = text; }
 	void SetActiveTextColour(Colour text) { this->activeText = text; }
+
+	void SetIcon(Icon icon);
 protected:
 	Colour background, activeBackground;
 	Colour border, activeBorder;

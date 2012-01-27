@@ -7,7 +7,9 @@
 
 #include "RenderModel.h"
 
-RenderModel::RenderModel() {
+RenderModel::RenderModel():
+	renderer(NULL)
+{
 	// TODO Auto-generated constructor stub
 
 }

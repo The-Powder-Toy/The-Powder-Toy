@@ -25,7 +25,8 @@ GameView::GameView():
 			v->c->OpenSearch();
 		}
 	};
-	searchButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\x81");  //Open
+	searchButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16));  //Open
+	searchButton->SetIcon(IconOpen);
 	currentX+=18;
 	searchButton->SetTogglable(false);
 	searchButton->SetActionCallback(new SearchAction(this));
@@ -41,7 +42,8 @@ GameView::GameView():
             v->c->ReloadSim();
         }
     };
-    reloadButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\x91");
+    reloadButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16));
+    reloadButton->SetIcon(IconReload);
     currentX+=18;
     reloadButton->SetActionCallback(new ReloadAction(this));
     AddComponent(reloadButton);
@@ -56,7 +58,8 @@ GameView::GameView():
             v->c->OpenSaveWindow();
         }
     };
-    saveSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(Size.X/5, 16), "\x82");
+    saveSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(Size.X/5, 16));
+    saveSimulationButton->SetIcon(IconSave);
     currentX+=(Size.X/5)+2;
     saveSimulationButton->SetActionCallback(new SaveSimulationAction(this));
     AddComponent(saveSimulationButton);
@@ -71,7 +74,8 @@ GameView::GameView():
         	v->c->Vote(1);
         }
     };
-    upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\xCB");
+    upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16));
+    upVoteButton->SetIcon(IconVoteUp);
     currentX+=16;
     upVoteButton->SetActionCallback(new UpVoteAction(this));
     AddComponent(upVoteButton);
@@ -86,7 +90,8 @@ GameView::GameView():
         	v->c->Vote(-1);
         }
     };
-    downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16), "\xCA");
+    downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(16, 16));
+    downVoteButton->SetIcon(IconVoteDown);
     currentX+=18;
     downVoteButton->SetActionCallback(new DownVoteAction(this));
     AddComponent(downVoteButton);
@@ -101,7 +106,8 @@ GameView::GameView():
             v->c->OpenTags();
         }
     };
-    tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(Size.X-(currentX+176), 16), "\x83");
+    tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-18), ui::Point(Size.X-(currentX+176), 16));
+    tagSimulationButton->SetIcon(IconTag);
     currentX+=Size.X-(currentX+176);
     tagSimulationButton->SetActionCallback(new TagSimulationAction(this));
     AddComponent(tagSimulationButton);
@@ -116,7 +122,8 @@ GameView::GameView():
             v->c->ClearSim();
         }
     };
-    clearSimButton = new ui::Button(ui::Point(Size.X-174, Size.Y-18), ui::Point(16, 16), "C");
+    clearSimButton = new ui::Button(ui::Point(Size.X-174, Size.Y-18), ui::Point(16, 16));
+    clearSimButton->SetIcon(IconNew);
     clearSimButton->SetActionCallback(new ClearSimAction(this));
     AddComponent(clearSimButton);
 
@@ -130,7 +137,8 @@ GameView::GameView():
             v->c->OpenLogin();
         }
     };
-    loginButton = new ui::Button(ui::Point(Size.X-156, Size.Y-18), ui::Point(100, 16), "\xDA Login");
+    loginButton = new ui::Button(ui::Point(Size.X-156, Size.Y-18), ui::Point(100, 16), "Login");
+    loginButton->SetIcon(IconLogin);
     loginButton->SetActionCallback(new LoginAction(this));
     AddComponent(loginButton);
 
@@ -144,7 +152,8 @@ GameView::GameView():
             v->c->OpenDisplayOptions();
         }
     };
-    simulationOptionButton = new ui::Button(ui::Point(Size.X-54, Size.Y-18), ui::Point(16, 16), "\xDA");
+    simulationOptionButton = new ui::Button(ui::Point(Size.X-54, Size.Y-18), ui::Point(16, 16));
+    simulationOptionButton->SetIcon(IconSimulationSettings);
     simulationOptionButton->SetActionCallback(new SimulationOptionAction(this));
     AddComponent(simulationOptionButton);
 
@@ -158,7 +167,8 @@ GameView::GameView():
             v->c->OpenRenderOptions();
         }
     };
-    displayModeButton = new ui::Button(ui::Point(Size.X-36, Size.Y-18), ui::Point(16, 16), "\xDA");
+    displayModeButton = new ui::Button(ui::Point(Size.X-36, Size.Y-18), ui::Point(16, 16));
+    displayModeButton->SetIcon(IconRenderSettings);
     displayModeButton->SetActionCallback(new DisplayModeAction(this));
     AddComponent(displayModeButton);
 
@@ -172,7 +182,8 @@ GameView::GameView():
 			v->c->SetPaused(sender->GetToggleState());
 		}
 	};
-	pauseButton = new ui::Button(ui::Point(Size.X-18, Size.Y-18), ui::Point(16, 16), "\x90");  //Pause
+	pauseButton = new ui::Button(ui::Point(Size.X-18, Size.Y-18), ui::Point(16, 16));  //Pause
+	pauseButton->SetIcon(IconPause);
 	pauseButton->SetTogglable(true);
 	pauseButton->SetActionCallback(new PauseAction(this));
 	AddComponent(pauseButton);
@@ -204,7 +215,7 @@ public:
 
 void GameView::NotifyMenuListChanged(GameModel * sender)
 {
-	int currentY = YRES+MENUSIZE-36;
+	int currentY = YRES+MENUSIZE-18-(sender->GetMenuList().size()*18);
 	for(int i = 0; i < menuButtons.size(); i++)
 	{
 		RemoveComponent(menuButtons[i]);
@@ -225,7 +236,7 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-18, currentY), ui::Point(16, 16), tempString);
 		tempButton->SetTogglable(true);
 		tempButton->SetActionCallback(new MenuAction(this, menuList[i]));
-		currentY-=18;
+		currentY+=18;
 		AddComponent(tempButton);
 		menuButtons.push_back(tempButton);
 	}

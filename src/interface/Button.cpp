@@ -15,24 +15,6 @@
 
 namespace ui {
 
-Button::Button(Window* parent_state, std::string buttonText):
-	Component(parent_state),
-	ButtonText(buttonText),
-	isMouseInside(false),
-	isButtonDown(false),
-	isTogglable(false),
-	toggle(false),
-	actionCallback(NULL),
-	textPosition(ui::Point(0, 0)),
-	textVAlign(AlignMiddle),
-	textHAlign(AlignCentre),
-	Enabled(true)
-{
-	activeText = background = Colour(0, 0, 0);
-	text = activeBackground = border = activeBorder = Colour(255, 255, 255);
-	TextPosition();
-}
-
 Button::Button(Point position, Point size, std::string buttonText):
 	Component(position, size),
 	ButtonText(buttonText),
@@ -44,25 +26,8 @@ Button::Button(Point position, Point size, std::string buttonText):
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
 	textHAlign(AlignCentre),
-	Enabled(true)
-{
-	activeText = background = Colour(0, 0, 0);
-	text = activeBackground = border = activeBorder = Colour(255, 255, 255);
-	TextPosition();
-}
-
-Button::Button(std::string buttonText):
-	Component(),
-	ButtonText(buttonText),
-	isMouseInside(false),
-	isButtonDown(false),
-	isTogglable(false),
-	toggle(false),
-	actionCallback(NULL),
-	textPosition(ui::Point(0, 0)),
-	textVAlign(AlignMiddle),
-	textHAlign(AlignCentre),
-	Enabled(true)
+	Enabled(true),
+	icon(NoIcon)
 {
 	activeText = background = Colour(0, 0, 0);
 	text = activeBackground = border = activeBorder = Colour(255, 255, 255);
@@ -71,7 +36,6 @@ Button::Button(std::string buttonText):
 
 void Button::TextPosition()
 {
-	//Position.X+(Size.X-Graphics::textwidth((char *)ButtonText.c_str()))/2, Position.Y+(Size.Y-10)/2
 	switch(textVAlign)
 	{
 	case AlignTop:
@@ -85,18 +49,42 @@ void Button::TextPosition()
 		break;
 	}
 
-	switch(textHAlign)
+	if(icon)
 	{
-	case AlignLeft:
-		textPosition.X = 3;
-		break;
-	case AlignCentre:
-		textPosition.X = (Size.X-Graphics::textwidth((char *)ButtonText.c_str()))/2;
-		break;
-	case AlignRight:
-		textPosition.X = (Size.X-Graphics::textwidth((char *)ButtonText.c_str()))-2;
-		break;
+		switch(textHAlign)
+		{
+		case AlignLeft:
+			textPosition.X = 3+17;
+			break;
+		case AlignCentre:
+			textPosition.X = (((Size.X-14)-Graphics::textwidth((char *)ButtonText.c_str()))/2)+17;
+			break;
+		case AlignRight:
+			textPosition.X = (((Size.X-14)-Graphics::textwidth((char *)ButtonText.c_str()))-2)+17;
+			break;
+		}
 	}
+	else
+	{
+		switch(textHAlign)
+		{
+		case AlignLeft:
+			textPosition.X = 3;
+			break;
+		case AlignCentre:
+			textPosition.X = (Size.X-Graphics::textwidth((char *)ButtonText.c_str()))/2;
+			break;
+		case AlignRight:
+			textPosition.X = (Size.X-Graphics::textwidth((char *)ButtonText.c_str()))-2;
+			break;
+		}
+	}
+}
+
+void Button::SetIcon(Icon icon)
+{
+	this->icon = icon;
+	TextPosition();
 }
 
 void Button::SetText(std::string buttonText)
@@ -150,13 +138,15 @@ void Button::Draw(const Point& screenPos)
 		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 180, 180, 180, 255);
 		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 180, 180, 180, 255);
 	}
+	if(icon)
+		g->draw_icon(Position.X+3, Position.Y+textPosition.Y, icon);
 }
 
 void Button::OnMouseUp(int x, int y, unsigned int button)
 {
     if(button != 1)
     {
-        return; //left click only!
+        return;
     }
 
     if(isButtonDown)
@@ -167,16 +157,9 @@ void Button::OnMouseUp(int x, int y, unsigned int button)
     isButtonDown = false;
 }
 
-//void Button::OnMouseUp(int x, int y, unsigned int button) //mouse unclick is called before this
-//{
- //   if(button != 1) return; //left click only!
-
-//    isButtonDown = false;
-//}
-
 void Button::OnMouseClick(int x, int y, unsigned int button)
 {
-    if(button != 1) return; //left click only!
+    if(button != 1) return;
 	if(isTogglable)
 	{
 		toggle = !toggle;

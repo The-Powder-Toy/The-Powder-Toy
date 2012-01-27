@@ -357,7 +357,7 @@ int graphics_GLOW(GRAPHICS_FUNC_ARGS)
 }
 int graphics_LCRY(GRAPHICS_FUNC_ARGS)
 {
-	if(ren->decorations_enable && cpart->dcolour && cpart->dcolour&0xFF000000)
+	if(ren->decorations_enable && cpart->dcolour && (cpart->dcolour&0xFF000000))
 	{
 		*colr = (cpart->dcolour>>16)&0xFF;
 		*colg = (cpart->dcolour>>8)&0xFF;

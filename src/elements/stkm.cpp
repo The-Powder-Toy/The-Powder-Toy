@@ -78,6 +78,7 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 				gvx = ((float)(parts[i].x - XCNTR) / gravd);
 				gvy = ((float)(parts[i].y - YCNTR) / gravd);
 			}
+			break;
 	}
 
 	gvx += sim->gravx[((int)parts[i].y/CELL)*(XRES/CELL)+((int)parts[i].x/CELL)];

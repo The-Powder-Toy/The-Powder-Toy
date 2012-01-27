@@ -52,38 +52,28 @@ typedef unsigned short pixel;
 typedef unsigned int pixel;
 #endif
 
-/*extern int emp_decor;
-
-extern unsigned int *render_modes;
-extern unsigned int render_mode;
-extern unsigned int colour_mode;
-extern unsigned int *display_modes;
-extern unsigned int display_mode;
-
-extern SDL_Surface *sdl_scrn;
-extern int sdl_scale;
-
-extern int sandcolour_r;
-extern int sandcolour_g;
-extern int sandcolour_b;
-extern int sandcolour_frame;
-
-extern unsigned char fire_r[YRES/CELL][XRES/CELL];
-extern unsigned char fire_g[YRES/CELL][XRES/CELL];
-extern unsigned char fire_b[YRES/CELL][XRES/CELL];
-
-extern unsigned int fire_alpha[CELL*3][CELL*3];
-extern pixel *pers_bg;
-
-extern char * flm_data;
-extern int flm_data_points;
-extern pixel flm_data_colours[];
-extern float flm_data_pos[];
-
-extern char * plasma_data;
-extern int plasma_data_points;
-extern pixel plasma_data_colours[];
-extern float plasma_data_pos[];*/
+//Icon names, see Graphics::draw_icon
+enum Icon
+{
+	NoIcon = 0,
+	IconOpen,
+	IconReload,
+	IconSave,
+	IconVoteUp,
+	IconVoteDown,
+	IconTag,
+	IconNew,
+	IconLogin,
+	IconRenderSettings,
+	IconSimulationSettings,
+	IconPause,
+	IconVoteSort,
+	IconDateSort,
+	IconFavourite,
+	IconFolder,
+	IconSearch,
+	IconDelete
+};
 
 class Graphics
 {
@@ -126,7 +116,7 @@ public:
 	static int textposxy(char *s, int width, int w, int h);
 	static int textwrapheight(char *s, int width);
 	inline void blendpixel(int x, int y, int r, int g, int b, int a);
-	void draw_icon(int x, int y, char ch, int flag);
+	void draw_icon(int x, int y, Icon icon);
 	//void draw_air();
 	//void draw_grav_zones(pixel *vid);
 	//void draw_grav(pixel *vid);

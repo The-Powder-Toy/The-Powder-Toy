@@ -11,7 +11,7 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (sim->ptypes[r&0xFF].properties & (TYPE_SOLID | TYPE_PART | TYPE_LIQUID) && !(sim->ptypes[r&0xFF].properties & PROP_SPARKSETTLE)) {
+					if ((sim->ptypes[r&0xFF].properties & (TYPE_SOLID | TYPE_PART | TYPE_LIQUID)) && !(sim->ptypes[r&0xFF].properties & PROP_SPARKSETTLE)) {
 						sim->kill_part(i);
 						return 1;
 					}

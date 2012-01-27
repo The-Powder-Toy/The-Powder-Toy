@@ -1141,20 +1141,54 @@ TPT_INLINE void Graphics::blendpixel(int x, int y, int r, int g, int b, int a)
 #endif
 }
 
-void Graphics::draw_icon(int x, int y, char ch, int flag)
+void Graphics::draw_icon(int x, int y, Icon icon)
 {
-	char t[2];
-	t[0] = ch;
-	t[1] = 0;
-	if (flag)
+	switch(icon)
 	{
-		fillrect(x-1, y-1, 17, 17, 255, 255, 255, 255);
-		drawtext(x+3, y+2, t, 0, 0, 0, 255);
-	}
-	else
-	{
-		drawrect(x, y, 15, 15, 255, 255, 255, 255);
-		drawtext(x+3, y+2, t, 255, 255, 255, 255);
+	case IconOpen:
+		drawchar(x, y, 0x81, 255, 255, 255, 255);
+		break;
+	case IconReload:
+		drawchar(x, y, 0x91, 255, 255, 255, 255);
+		break;
+	case IconSave:
+		drawchar(x, y, 0x82, 255, 255, 255, 255);
+		break;
+	case IconVoteUp:
+		drawchar(x, y, 0xCB, 0, 187, 18, 255);
+		break;
+	case IconVoteDown:
+		drawchar(x, y, 0xCA, 187, 40, 0, 255);
+		break;
+	case IconTag:
+		drawchar(x, y, 0x83, 255, 255, 255, 255);
+		break;
+	case IconNew:
+		drawchar(x, y, 0x92, 255, 255, 255, 255);
+		break;
+	case IconLogin:
+		drawchar(x, y, 0x84, 255, 255, 255, 255);
+		break;
+	case IconSimulationSettings:
+		drawchar(x, y, 0xCF, 255, 255, 255, 255);
+		break;
+	case IconRenderSettings:
+		addchar(x, y, 0xD8, 255, 0, 0, 255);
+		addchar(x, y, 0xD9, 0, 255, 0, 255);
+		addchar(x, y, 0xDA, 0, 0, 255, 255);
+		break;
+	case IconPause:
+		drawchar(x, y, 0x90, 255, 255, 255, 255);
+		break;
+	case IconVoteSort:
+	case IconDateSort:
+	case IconFavourite:
+	case IconFolder:
+	case IconSearch:
+	case IconDelete:
+	default:
+		drawchar(x, y, 't', 255, 255, 255, 255);
+		break;
 	}
 }
 
