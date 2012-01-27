@@ -14,15 +14,26 @@ WIN_RES := i686-w64-mingw32-windres
 
 all: build/powder
 
+powder-release.exe: build/powder-release.exe
 powder.exe: build/powder.exe
+powder-release: build/powder-release
 powder: build/powder
 
+build/powder-release.exe: CFLAGS +=  -DWIN32
+build/powder-release.exe: LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 -mwindows
 build/powder.exe: CFLAGS +=  -DWIN32 -DWINCONSOLE
 build/powder.exe: LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 #-mwindows
+build/powder-release: CFLAGS +=  -DLIN32
+build/powder-release: LFLAGS := -lSDL -lm -lbz2
 build/powder: CFLAGS +=  -DLIN32
 build/powder: LFLAGS := -lSDL -lm -lbz2
 
-
+build/powder-release.exe: $(SOURCES)
+	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(SOURCES) $(LFLAGS) -o $@
+	strip $@
+build/powder-release: $(SOURCES)
+	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(SOURCES) $(LFLAGS) -o $@
+	strip $@
 
 build/powder.exe: buildpaths-powder.exe $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS))
 	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS)) $(LFLAGS) -o $@ -ggdb
