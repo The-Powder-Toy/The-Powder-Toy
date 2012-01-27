@@ -1657,6 +1657,7 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 
 	//Set defauly display modes
 	SetColourMode(COLOUR_DEFAULT);
+	AddRenderMode(RENDER_BASC);
 	AddRenderMode(RENDER_FIRE);
 
 	//Prepare the graphics cache

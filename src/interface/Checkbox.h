@@ -34,7 +34,8 @@ public:
 	virtual void OnMouseUp(int x, int y, unsigned int button);
 	void SetActionCallback(CheckboxAction * action);
 	CheckboxAction * GetActionCallback() { return actionCallback; }
-	bool IsChecked() { return checked; }
+	bool GetChecked() { return checked; }
+	void SetChecked(bool checked_) { checked = checked_; }
 	virtual ~Checkbox();
 };
 }

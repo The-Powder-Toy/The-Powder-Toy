@@ -30,6 +30,21 @@ void RenderController::UnsetRenderMode(unsigned int renderMode)
 	renderModel->UnsetRenderMode(renderMode);
 }
 
+void RenderController::SetDisplayMode(unsigned int renderMode)
+{
+	renderModel->SetDisplayMode(renderMode);
+}
+
+void RenderController::UnsetDisplayMode(unsigned int renderMode)
+{
+	renderModel->UnsetDisplayMode(renderMode);
+}
+
+void RenderController::SetColourMode(unsigned int renderMode)
+{
+	renderModel->SetColourMode(renderMode);
+}
+
 void RenderController::Exit()
 {
 	if(ui::Engine::Ref().GetWindow() == renderView)

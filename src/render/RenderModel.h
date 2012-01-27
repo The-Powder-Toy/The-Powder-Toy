@@ -19,6 +19,9 @@ class RenderModel {
 	vector<RenderView*> observers;
 	Renderer * renderer;
 	void notifyRendererChanged();
+	void notifyRenderChanged();
+	void notifyDisplayChanged();
+	void notifyColourChanged();
 public:
 	RenderModel();
 	Renderer * GetRenderer();
@@ -26,6 +29,12 @@ public:
 	void SetRenderer(Renderer * ren);
 	void SetRenderMode(unsigned int renderMode);
 	void UnsetRenderMode(unsigned int renderMode);
+	unsigned int GetRenderMode();
+	void SetDisplayMode(unsigned int displayMode);
+	void UnsetDisplayMode(unsigned int displayMode);
+	unsigned int GetDisplayMode();
+	void SetColourMode(unsigned int colourMode);
+	unsigned int GetColourMode();
 	virtual ~RenderModel();
 };
 

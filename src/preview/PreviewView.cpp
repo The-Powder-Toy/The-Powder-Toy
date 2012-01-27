@@ -50,6 +50,12 @@ void PreviewView::OnDraw()
 	g->drawrect(Position.X, Position.Y, XRES/2, YRES/2, 255, 255, 255, 100);
 }
 
+void PreviewView::OnMouseDown(int x, int y, unsigned button)
+{
+	if(!(x > Position.X && y > Position.Y && y < Position.Y+Size.Y && x < Position.X+Size.X)) //Clicked outside window
+		c->Exit();
+}
+
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
 	Save * save = sender->GetSave();

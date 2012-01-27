@@ -27,6 +27,9 @@ public:
 	virtual ~RenderController();
 	void SetRenderMode(unsigned int renderMode);
 	void UnsetRenderMode(unsigned int renderMode);
+	void SetDisplayMode(unsigned int renderMode);
+	void UnsetDisplayMode(unsigned int renderMode);
+	void SetColourMode(unsigned int renderMode);
 };
 
 #endif /* RENDERCONTROLLER_H_ */
