@@ -9,8 +9,8 @@ CFLAGS := -w -Isrc/ -Idata/
 OFLAGS := -fkeep-inline-functions -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -msse2
 
 CPPC := g++
-CPPC_WIN := i686-w64-mingw32-gcc
-WIN_RES := i686-w64-mingw32-windres
+CPPC_WIN := g++
+WIN_RES := windres
 
 all: build/powder
 
@@ -28,17 +28,20 @@ build/powder-release: LFLAGS := -lSDL -lm -lbz2
 build/powder: CFLAGS +=  -DLIN32
 build/powder: LFLAGS := -lSDL -lm -lbz2
 
-build/powder-release.exe: $(SOURCES)
-	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(SOURCES) $(LFLAGS) -o $@
+build/powder-release.exe: $(SOURCES) build/powder-res.o
+	$(CPPC_WIN) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(SOURCES) $(LFLAGS) build/powder-res.o -o $@
 	strip $@
+build/powder-res.o: resources/powder-res.rc resources/powder.ico resources/document.ico 
+	cd resources && $(WIN_RES) powder-res.rc powder-res.o
+	mv resources/powder-res.o build/powder-res.o
 build/powder-release: $(SOURCES)
 	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(SOURCES) $(LFLAGS) -o $@
 	strip $@
 
 build/powder.exe: buildpaths-powder.exe $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS))
-	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS)) $(LFLAGS) -o $@ -ggdb
+	$(CPP_WINC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS)) $(LFLAGS) -o $@ -ggdb
 build/obj/powder.exe/%.o: src/%.cpp $(HEADERS)
-	$(CPPC) -c $(CFLAGS) $(OFLAGS) -o $@ $< -ggdb
+	$(CPPC_WIN) -c $(CFLAGS) $(OFLAGS) -o $@ $< -ggdb
 buildpaths-powder.exe:
 	$(shell mkdir build/obj/powder.exe/)
 	$(shell mkdir $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS)))))
