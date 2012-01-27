@@ -25,6 +25,8 @@ public:
 	void Exit();
 	RenderView * GetView() { return renderView; }
 	virtual ~RenderController();
+	void SetRenderMode(unsigned int renderMode);
+	void UnsetRenderMode(unsigned int renderMode);
 };
 
 #endif /* RENDERCONTROLLER_H_ */

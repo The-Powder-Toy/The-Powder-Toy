@@ -6,6 +6,7 @@
  */
 
 #include <math.h>
+#include <iostream>
 #include "Config.h"
 #include "Renderer.h"
 #include "Graphics.h"
@@ -1683,6 +1684,13 @@ void Renderer::CompileRenderMode()
 
 void Renderer::AddRenderMode(unsigned int mode)
 {
+	for(int i = 0; i < render_modes.size(); i++)
+	{
+		if(render_modes[i] == mode)
+		{
+			return;
+		}
+	}
 	render_modes.push_back(mode);
 	CompileRenderMode();
 }
@@ -1694,7 +1702,7 @@ void Renderer::RemoveRenderMode(unsigned int mode)
 		if(render_modes[i] == mode)
 		{
 			render_modes.erase(render_modes.begin() + i);
-			return;
+			i = 0;
 		}
 	}
 	CompileRenderMode();
@@ -1709,6 +1717,13 @@ void Renderer::CompileDisplayMode()
 
 void Renderer::AddDisplayMode(unsigned int mode)
 {
+	for(int i = 0; i < display_modes.size(); i++)
+	{
+		if(display_modes[i] == mode)
+		{
+			return;
+		}
+	}
 	display_modes.push_back(mode);
 	CompileDisplayMode();
 }
@@ -1720,7 +1735,7 @@ void Renderer::RemoveDisplayMode(unsigned int mode)
 		if(display_modes[i] == mode)
 		{
 			display_modes.erase(display_modes.begin() + i);
-			return;
+			i = 0;
 		}
 	}
 	CompileDisplayMode();

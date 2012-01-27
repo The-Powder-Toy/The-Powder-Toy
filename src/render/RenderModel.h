@@ -24,6 +24,8 @@ public:
 	Renderer * GetRenderer();
 	void AddObserver(RenderView * observer);
 	void SetRenderer(Renderer * ren);
+	void SetRenderMode(unsigned int renderMode);
+	void UnsetRenderMode(unsigned int renderMode);
 	virtual ~RenderModel();
 };
 

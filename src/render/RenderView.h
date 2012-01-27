@@ -23,6 +23,7 @@ class RenderView: public ui::Window {
 	Renderer * ren;
 	std::vector<ui::Checkbox*> renderModes;
 public:
+	class RenderModeAction;
 	RenderView();
 	void NotifyRendererChanged(RenderModel * sender);
 	void AttachController(RenderController * c_) { c = c_; }

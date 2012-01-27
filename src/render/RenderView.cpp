@@ -5,16 +5,38 @@
  *      Author: Simon
  */
 
-#include "RenderView.h"
+#include "simulation/ElementGraphics.h"
 #include "Graphics.h"
+#include "Renderer.h"
+#include "RenderView.h"
+
+class RenderView::RenderModeAction: public ui::CheckboxAction
+{
+	RenderView * v;
+	unsigned int renderMode;
+public:
+	RenderModeAction(RenderView * v_, unsigned int renderMode_)
+	{
+		v = v_;
+		renderMode = renderMode_;
+	}
+	virtual void ActionCallback(ui::Checkbox * sender)
+	{
+		if(sender->IsChecked())
+			v->c->SetRenderMode(renderMode);
+		else
+			v->c->UnsetRenderMode(renderMode);
+	}
+};
 
 RenderView::RenderView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES, YRES+MENUSIZE)),
 	ren(NULL)
 {
 	ui::Checkbox * tCheckbox;
-	tCheckbox = new ui::Checkbox(ui::Point(0, YRES+5), ui::Point(100, 16), "Thing");
+	tCheckbox = new ui::Checkbox(ui::Point(0, YRES+5), ui::Point(100, 16), "Blob");
 	renderModes.push_back(tCheckbox);
+	tCheckbox->SetActionCallback(new RenderModeAction(this, RENDER_BLOB));
 	AddComponent(tCheckbox);
 
 }

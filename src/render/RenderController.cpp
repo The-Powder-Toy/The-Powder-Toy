@@ -20,6 +20,16 @@ RenderController::RenderController(Renderer * ren, ControllerCallback * callback
 	this->callback = callback;
 }
 
+void RenderController::SetRenderMode(unsigned int renderMode)
+{
+	renderModel->SetRenderMode(renderMode);
+}
+
+void RenderController::UnsetRenderMode(unsigned int renderMode)
+{
+	renderModel->UnsetRenderMode(renderMode);
+}
+
 void RenderController::Exit()
 {
 	if(ui::Engine::Ref().GetWindow() == renderView)

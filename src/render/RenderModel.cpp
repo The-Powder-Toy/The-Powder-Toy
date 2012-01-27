@@ -18,6 +18,16 @@ void RenderModel::AddObserver(RenderView * observer)
 	observer->NotifyRendererChanged(this);
 }
 
+void RenderModel::SetRenderMode(unsigned int renderMode)
+{
+	renderer->AddRenderMode(renderMode);
+}
+
+void RenderModel::UnsetRenderMode(unsigned int renderMode)
+{
+	renderer->RemoveRenderMode(renderMode);
+}
+
 void RenderModel::SetRenderer(Renderer * ren)
 {
 	renderer = ren;
