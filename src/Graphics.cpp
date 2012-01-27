@@ -70,7 +70,7 @@ int plasma_data_points = 5;
 pixel plasma_data_colours[] = {PIXPACK(0xAFFFFF), PIXPACK(0xAFFFFF), PIXPACK(0x301060), PIXPACK(0x301040), PIXPACK(0x000000)};
 float plasma_data_pos[] = {1.0f, 0.9f, 0.5f, 0.25, 0.0f};*/
 
-char * Graphics::generate_gradient(pixel * colours, float * points, int pointcount, int size)
+char * Graphics::GenerateGradient(pixel * colours, float * points, int pointcount, int size)
 {
 	int cp, i, j;
 	pixel ptemp;

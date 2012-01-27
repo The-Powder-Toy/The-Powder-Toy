@@ -428,8 +428,8 @@ void GameView::OnDraw()
 	{
 		ren->render_parts();
 		ren->render_fire();
-		ren->render_signs();
-		ren->draw_walls();
+		ren->DrawSigns();
+		ren->DrawWalls();
 	}
 	if(activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
 	{

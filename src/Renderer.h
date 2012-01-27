@@ -1,6 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include <vector>
 #include "Config.h"
 #include "simulation/Simulation.h"
 #include "Graphics.h"
@@ -21,11 +22,10 @@ typedef struct gcache_item gcache_item;
 class Renderer
 {
 public:
-	//TODO: Vectors!
-	unsigned int *render_modes;
+	std::vector<unsigned int> render_modes;
 	unsigned int render_mode;
 	unsigned int colour_mode;
-	unsigned int *display_modes;
+	std::vector<unsigned int> display_modes;
 	unsigned int display_mode;
 	//
 	unsigned char fire_r[YRES/CELL][XRES/CELL];
@@ -40,9 +40,10 @@ public:
 	Simulation * sim;
 	Graphics * g;
 	gcache_item *graphicscache;
-	//
-	void draw_walls();
-	void render_signs();
+
+	//Renderers
+	void DrawWalls();
+	void DrawSigns();
 	void render_gravlensing();
 	void render_fire();
 	void prepare_alpha(int size, float intensity);
@@ -51,9 +52,19 @@ public:
 	void draw_air();
 	void draw_grav();
 	void draw_other();
-	void init_display_modes();
+
+	//...
 	void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
-	void prepare_graphicscache();
+
+	//Display mode modifiers
+	void CompileDisplayMode();
+	void CompileRenderMode();
+	void AddRenderMode(unsigned int mode);
+	void RemoveRenderMode(unsigned int mode);
+	void AddDisplayMode(unsigned int mode);
+	void RemoveDisplayMode(unsigned int mode);
+	void SetColourMode(unsigned int mode);
+
 	Renderer(Graphics * g, Simulation * sim);
 	~Renderer();
 };

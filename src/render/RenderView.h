@@ -8,16 +8,20 @@
 #ifndef RENDERVIEW_H_
 #define RENDERVIEW_H_
 
+
+#include <vector>
 #include "interface/Window.h"
 #include "RenderController.h"
 #include "RenderModel.h"
 #include "Renderer.h"
+#include "interface/Checkbox.h"
 
 class RenderController;
 class RenderModel;
 class RenderView: public ui::Window {
 	RenderController * c;
 	Renderer * ren;
+	std::vector<ui::Checkbox*> renderModes;
 public:
 	RenderView();
 	void NotifyRendererChanged(RenderModel * sender);

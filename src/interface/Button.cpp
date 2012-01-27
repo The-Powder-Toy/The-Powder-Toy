@@ -204,6 +204,8 @@ void Button::DoAction()
 
 void Button::SetActionCallback(ButtonAction * action)
 {
+	if(actionCallback)
+		delete actionCallback;
 	actionCallback = action;
 }
 

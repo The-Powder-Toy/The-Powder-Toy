@@ -12,7 +12,10 @@ RenderView::RenderView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES, YRES+MENUSIZE)),
 	ren(NULL)
 {
-	// TODO Auto-generated constructor stub
+	ui::Checkbox * tCheckbox;
+	tCheckbox = new ui::Checkbox(ui::Point(0, YRES+5), ui::Point(100, 16), "Thing");
+	renderModes.push_back(tCheckbox);
+	AddComponent(tCheckbox);
 
 }
 

@@ -18,7 +18,7 @@ extern "C"
 #include "hmap.h"
 }
 
-void Renderer::draw_walls()
+void Renderer::DrawWalls()
 {
 	int x, y, i, j, cr, cg, cb;
 	unsigned char wt;
@@ -250,7 +250,7 @@ void Renderer::get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 	*y0 = (signs[i].y > 18) ? signs[i].y - 18 : signs[i].y + 4;
 }
 
-void Renderer::render_signs()
+void Renderer::DrawSigns()
 {
 	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq;
 	sign *signs = sim->signs;
@@ -1429,12 +1429,6 @@ void Renderer::render_parts()
 #endif
 }
 
-void Renderer::prepare_graphicscache()
-{
-	graphicscache = (gcache_item *)malloc(sizeof(gcache_item)*PT_NUM);
-	memset(graphicscache, 0, sizeof(gcache_item)*PT_NUM);
-}
-
 void Renderer::draw_other() // EMP effect
 {
 	int i, j;
@@ -1648,33 +1642,6 @@ void Renderer::draw_grav_zones()
 	}
 }
 
-void Renderer::init_display_modes()
-{
-	int i;
-	colour_mode = COLOUR_DEFAULT;
-	display_modes = (unsigned int*)calloc(1, sizeof(unsigned int));
-	render_modes = (unsigned int*)calloc(2, sizeof(unsigned int));
-
-	display_modes[0] = 0;
-	render_modes[0] = RENDER_FIRE;
-	render_modes[1] = 0;
-
-	display_mode = 0;
-	i = 0;
-	while(display_modes[i])
-	{
-		display_mode |= display_modes[i];
-		i++;
-	}
-	render_mode = 0;
-	i = 0;
-	while(render_modes[i])
-	{
-		render_mode |= render_modes[i];
-		i++;
-	}
-}
-
 Renderer::Renderer(Graphics * g, Simulation * sim):
 	sim(NULL),
 	g(NULL)
@@ -1686,19 +1653,82 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	memset(fire_g, 0, sizeof(fire_g));
 	memset(fire_b, 0, sizeof(fire_b));
 	prepare_alpha(CELL, 1.0f);
-	init_display_modes();
-	prepare_graphicscache();
 
-	int flm_data_points = 4;
-	pixel flm_data_colours[] = {PIXPACK(0xAF9F0F), PIXPACK(0xDFBF6F), PIXPACK(0x60300F), PIXPACK(0x000000)};
-	float flm_data_pos[] = {1.0f, 0.9f, 0.5f, 0.0f};
+	//Set defauly display modes
+	SetColourMode(COLOUR_DEFAULT);
+	AddRenderMode(RENDER_FIRE);
 
-	int plasma_data_points = 5;
-	pixel plasma_data_colours[] = {PIXPACK(0xAFFFFF), PIXPACK(0xAFFFFF), PIXPACK(0x301060), PIXPACK(0x301040), PIXPACK(0x000000)};
-	float plasma_data_pos[] = {1.0f, 0.9f, 0.5f, 0.25, 0.0f};
+	//Prepare the graphics cache
+	graphicscache = (gcache_item *)malloc(sizeof(gcache_item)*PT_NUM);
+	memset(graphicscache, 0, sizeof(gcache_item)*PT_NUM);
 
-	flm_data = Graphics::generate_gradient(flm_data_colours, flm_data_pos, flm_data_points, 200);
-	plasma_data = Graphics::generate_gradient(plasma_data_colours, plasma_data_pos, plasma_data_points, 200);
+	int fireColoursCount = 4;
+	pixel fireColours[] = {PIXPACK(0xAF9F0F), PIXPACK(0xDFBF6F), PIXPACK(0x60300F), PIXPACK(0x000000)};
+	float fireColoursPoints[] = {1.0f, 0.9f, 0.5f, 0.0f};
+
+	int plasmaColoursCount = 5;
+	pixel plasmaColours[] = {PIXPACK(0xAFFFFF), PIXPACK(0xAFFFFF), PIXPACK(0x301060), PIXPACK(0x301040), PIXPACK(0x000000)};
+	float plasmaColoursPoints[] = {1.0f, 0.9f, 0.5f, 0.25, 0.0f};
+
+	flm_data = Graphics::GenerateGradient(fireColours, fireColoursPoints, fireColoursCount, 200);
+	plasma_data = Graphics::GenerateGradient(plasmaColours, plasmaColoursPoints, plasmaColoursCount, 200);
+}
+
+void Renderer::CompileRenderMode()
+{
+	render_mode = 0;
+	for(int i = 0; i < render_modes.size(); i++)
+		render_mode |= render_modes[i];
+}
+
+void Renderer::AddRenderMode(unsigned int mode)
+{
+	render_modes.push_back(mode);
+	CompileRenderMode();
+}
+
+void Renderer::RemoveRenderMode(unsigned int mode)
+{
+	for(int i = 0; i < render_modes.size(); i++)
+	{
+		if(render_modes[i] == mode)
+		{
+			render_modes.erase(render_modes.begin() + i);
+			return;
+		}
+	}
+	CompileRenderMode();
+}
+
+void Renderer::CompileDisplayMode()
+{
+	display_mode = 0;
+	for(int i = 0; i < display_modes.size(); i++)
+		display_mode |= display_modes[i];
+}
+
+void Renderer::AddDisplayMode(unsigned int mode)
+{
+	display_modes.push_back(mode);
+	CompileDisplayMode();
+}
+
+void Renderer::RemoveDisplayMode(unsigned int mode)
+{
+	for(int i = 0; i < display_modes.size(); i++)
+	{
+		if(display_modes[i] == mode)
+		{
+			display_modes.erase(display_modes.begin() + i);
+			return;
+		}
+	}
+	CompileDisplayMode();
+}
+
+void Renderer::SetColourMode(unsigned int mode)
+{
+	colour_mode = mode;
 }
 
 Renderer::~Renderer()
@@ -1706,6 +1736,4 @@ Renderer::~Renderer()
 	free(graphicscache);
 	free(flm_data);
 	free(plasma_data);
-	free(render_modes);
-	free(display_modes);
 }
