@@ -148,7 +148,6 @@ void SaveButton::OnMouseLeave(int x, int y)
 
 void SaveButton::DoAction()
 {
-	std::cout << "Do action!" << std::endl;
 	if(actionCallback)
 		actionCallback->ActionCallback(this);
 }

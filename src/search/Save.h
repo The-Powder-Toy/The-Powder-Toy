@@ -21,7 +21,7 @@ public:
 
 	Save(int _id, int _date, int _votesUp, int _votesDown, string _userName, string _name);
 
-	Save(int _id, int date_, int _votesUp, int _votesDown, string _userName, string _name, string description_, bool published_);
+	Save(int _id, int date_, int _votesUp, int _votesDown, int _vote, string _userName, string _name, string description_, bool published_);
 
 	~Save();
 
@@ -29,6 +29,8 @@ public:
 	string name;
 
 	string Description;
+
+	int vote;
 
 	bool Published;
 
@@ -40,6 +42,9 @@ public:
 
 	void SetID(int id);
 	int GetID();
+
+	void SetVote(int vote);
+	int GetVote();
 
 	void SetVotesUp(int votesUp);
 	int GetVotesUp();

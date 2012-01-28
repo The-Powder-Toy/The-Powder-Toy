@@ -47,6 +47,7 @@ public:
 	GameModel();
 	~GameModel();
 
+	void SetVote(int direction);
 	Save * GetSave();
 	Brush * GetBrush();
 	void SetSave(Save * newSave);

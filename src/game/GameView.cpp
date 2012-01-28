@@ -327,6 +327,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 	{
 		loginButton->SetText(sender->GetUser().Username);
 	}
+	NotifySaveChanged(sender);
 }
 
 
@@ -339,26 +340,26 @@ void GameView::NotifySaveChanged(GameModel * sender)
 {
 	if(sender->GetSave())
 	{
-		saveSimulationButton->SetText(sender->GetSave()->name);
 		reloadButton->Enabled = true;
-		if(sender->GetSave()->GetID())	//Online saves have an ID, local saves have an ID of 0 and a filename
-		{
-			upVoteButton->Enabled = true;
-			downVoteButton->Enabled = true;
-			tagSimulationButton->Enabled = true;
-		}
+		upVoteButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==0);
+		if(sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==1)
+			upVoteButton->SetBackgroundColour(ui::Colour(0, 200, 40));
 		else
-		{
-			upVoteButton->Enabled = false;
-			downVoteButton->Enabled = false;
-			tagSimulationButton->Enabled = false;
-		}
+			upVoteButton->SetBackgroundColour(ui::Colour(0, 0, 0));
+		downVoteButton->Enabled = upVoteButton->Enabled;
+		if(sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==-1)
+			downVoteButton->SetBackgroundColour(ui::Colour(200, 40, 40));
+		else
+			downVoteButton->SetBackgroundColour(ui::Colour(0, 0, 0));
+		tagSimulationButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID);
 	}
 	else
 	{
 		reloadButton->Enabled = false;
 		upVoteButton->Enabled = false;
+		upVoteButton->SetBackgroundColour(ui::Colour(0, 0, 0));
 		downVoteButton->Enabled = false;
+		upVoteButton->SetBackgroundColour(ui::Colour(0, 0, 0));
 		tagSimulationButton->Enabled = false;
 	}
 }

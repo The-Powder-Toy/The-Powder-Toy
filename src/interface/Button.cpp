@@ -135,6 +135,7 @@ void Button::Draw(const Point& screenPos)
 	}
 	else
 	{
+		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, background.Red, background.Green, background.Blue, 180);
 		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 180, 180, 180, 255);
 		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, ButtonText, 180, 180, 180, 255);
 	}

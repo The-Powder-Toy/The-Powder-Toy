@@ -6,14 +6,15 @@
 #include "interface/Point.h"
 #include "Brush.h"
 #include "EllipseBrush.h"
+#include "client/Client.h"
 
 GameModel::GameModel():
 	activeTool(NULL),
 	sim(NULL),
 	ren(NULL),
-	currentSave(NULL),
 	currentBrush(0),
-	currentUser(0, "")
+	currentUser(0, ""),
+	currentSave(NULL)
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
@@ -64,6 +65,19 @@ GameModel::~GameModel()
 	delete ren;
 	if(activeTool)
 		delete activeTool;
+}
+
+void GameModel::SetVote(int direction)
+{
+	if(currentSave)
+	{
+		RequestStatus status = Client::Ref().ExecVote(currentSave->GetID(), direction);
+		if(status == RequestOkay)
+		{
+			currentSave->vote = direction;
+			notifySaveChanged();
+		}
+	}
 }
 
 Brush * GameModel::GetBrush()
@@ -140,8 +154,13 @@ Save * GameModel::GetSave()
 
 void GameModel::SetSave(Save * newSave)
 {
+	if(currentSave)
+		delete currentSave;
 	currentSave = newSave;
-	sim->Load(currentSave->GetData(), currentSave->GetDataLength());
+	if(currentSave)
+	{
+		sim->Load(currentSave->GetData(), currentSave->GetDataLength());
+	}
 	notifySaveChanged();
 }
 
@@ -218,6 +237,7 @@ int GameModel::GetZoomFactor()
 void GameModel::SetUser(User user)
 {
 	currentUser = user;
+	Client::Ref().SetAuthUser(user);
 	notifyUserChanged();
 }
 

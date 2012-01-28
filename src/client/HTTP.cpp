@@ -731,6 +731,7 @@ char *http_auth_get(char *uri, char *user, char *pass, char *session_id, int *re
 			*len = 0;
 		return NULL;
 	}
+	http_auth_headers(ctx, user, pass, session_id);
 	return http_async_req_stop(ctx, ret, len);
 }
 

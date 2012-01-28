@@ -60,8 +60,10 @@ public:
 	}
 	virtual void ActionCallback(ui::Checkbox * sender)
 	{
-		//if(sender->GetChecked())
+		if(sender->GetChecked())
 			v->c->SetColourMode(colourMode);
+		else
+			v->c->SetColourMode(0);
 	}
 };
 

@@ -18,7 +18,8 @@
 #include "cajun/writer.h"
 #include "cajun/elements.h"
 
-Client::Client()
+Client::Client():
+	authUser(0, "")
 {
 	int i = 0;
 	http_init(NULL);
@@ -38,6 +39,68 @@ Client::~Client()
 {
 	ClearThumbnailRequests();
 	http_done();
+}
+
+void Client::SetAuthUser(User user)
+{
+	authUser = user;
+}
+
+User Client::GetAuthUser()
+{
+	return authUser;
+}
+
+RequestStatus Client::ExecVote(int saveID, int direction)
+{
+	lastError = "";
+	int dataStatus;
+	char * data;
+	int dataLength = 0;
+	std::stringstream idStream;
+	idStream << saveID;
+	std::string directionS;
+	if(direction==1)
+	{
+		directionS = "Up";
+	}
+	else
+	{
+		directionS = "Down";
+	}
+	std::stringstream userIDStream;
+	userIDStream << authUser.ID;
+	if(authUser.ID)
+	{
+		char * postNames[] = { "ID", "Action", NULL };
+		char * postDatas[] = { (char*)(idStream.str().c_str()), (char*)(directionS.c_str()) };
+		int postLengths[] = { idStream.str().length(), directionS.length() };
+		//std::cout << postNames[0] << " " << postDatas[0] << " " << postLengths[0] << std::endl;
+		data = http_multipart_post("http://" SERVER "/Vote.api", postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+	}
+	else
+	{
+		lastError = "Not authenticated";
+		return RequestFailure;
+	}
+	std::cout << data << std::endl;
+	if(data && dataStatus == 200)
+	{
+		if(strncmp((const char *)data, "OK", 2)!=0)
+		{
+			free(data);
+			lastError = std::string((const char *)data);
+			return RequestFailure;
+		}
+		free(data);
+		return RequestOkay;
+	}
+	else if(data)
+	{
+		free(data);
+	}
+	lastError = http_ret_text(dataStatus);
+	return RequestFailure;
 }
 
 unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
@@ -94,7 +157,6 @@ LoginStatus Client::Login(string username, string password, User & user)
 	int postLengths[] = { username.length(), 32 };
 	data = http_multipart_post("http://" SERVER "/Login.json", postNames, postDatas, postLengths, NULL, NULL, NULL, &dataStatus, &dataLength);
 	//data = http_auth_get("http://" SERVER "/Login.json", (char*)username.c_str(), (char*)password.c_str(), NULL, &dataStatus, &dataLength);
-	std::cout << data << std::endl;
 	if(dataStatus == 200 && data)
 	{
 		try
@@ -152,7 +214,16 @@ Save * Client::GetSave(int saveID, int saveDate)
 	char * data;
 	int dataStatus, dataLength;
 	//Save(int _id, int _votesUp, int _votesDown, string _userName, string _name, string description_, string date_, bool published_):
-	data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+	if(authUser.ID)
+	{
+		std::stringstream userIDStream;
+		userIDStream << authUser.ID;
+		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+	}
+	else
+	{
+		data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+	}
 	if(dataStatus == 200 && data)
 	{
 		try
@@ -164,6 +235,7 @@ Save * Client::GetSave(int saveID, int saveDate)
 			json::Number tempID = objDocument["ID"];
 			json::Number tempScoreUp = objDocument["ScoreUp"];
 			json::Number tempScoreDown = objDocument["ScoreDown"];
+			json::Number tempMyScore = objDocument["ScoreMine"];
 			json::String tempUsername = objDocument["Username"];
 			json::String tempName = objDocument["Name"];
 			json::String tempDescription = objDocument["Description"];
@@ -174,6 +246,7 @@ Save * Client::GetSave(int saveID, int saveDate)
 					tempDate.Value(),
 					tempScoreUp.Value(),
 					tempScoreDown.Value(),
+					tempMyScore.Value(),
 					tempUsername.Value(),
 					tempName.Value(),
 					tempDescription.Value(),
@@ -240,7 +313,7 @@ std::vector<Save*> * Client::SearchSaves(int start, int count, string query, str
 	std::stringstream urlStream;
 	char * data;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse.json?Start=" << start << "&Count=" << cout;
+	urlStream << "http://" << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
 	if(query.length() || sort.length())
 	{
 		urlStream << "&Search_Query=";

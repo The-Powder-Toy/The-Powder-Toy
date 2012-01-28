@@ -19,7 +19,7 @@ void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 	resultCount = 0;
 	notifySaveListChanged();
 	notifyPageChanged();
-	vector<Save*> * tempSaveList = Client::Ref().SearchSaves((pageNumber-1)*12, 12, query, currentSort, resultCount);
+	vector<Save*> * tempSaveList = Client::Ref().SearchSaves((pageNumber-1)*20, 20, query, currentSort, resultCount);
 	saveList = *tempSaveList;
 	delete tempSaveList;
 	if(!saveList.size())

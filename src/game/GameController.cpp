@@ -33,10 +33,6 @@ public:
 	{
 		if(cc->search->GetLoadedSave())
 		{
-			if(cc->gameModel->GetSave())
-			{
-				delete cc->gameModel->GetSave();
-			}
 			cc->gameModel->SetSave(new Save(*(cc->search->GetLoadedSave())));
 		}
 	}
@@ -279,7 +275,8 @@ void GameController::OpenSaveWindow()
 
 void GameController::Vote(int direction)
 {
-	//TODO: Implement
+	if(gameModel->GetSave() && gameModel->GetUser().ID && gameModel->GetSave()->GetID() && gameModel->GetSave()->GetVote()==0)
+		gameModel->SetVote(direction);
 }
 
 void GameController::ChangeBrush()
@@ -289,6 +286,7 @@ void GameController::ChangeBrush()
 
 void GameController::ClearSim()
 {
+	gameModel->SetSave(NULL);
 	gameModel->ClearSimulation();
 }
 

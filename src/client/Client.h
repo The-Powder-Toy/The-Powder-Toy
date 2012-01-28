@@ -11,15 +11,22 @@
 #include "Singleton.h"
 #include "User.h"
 
-enum LoginStatus
-{
+enum LoginStatus {
 	LoginOkay, LoginError
 };
 
-class Client: public Singleton<Client>
-{
+enum RequestStatus {
+	RequestOkay, RequestFailure
+};
+
+class Client: public Singleton<Client> {
 private:
 	std::string lastError;
+
+	//Auth session
+	User authUser;
+
+	//Thumbnail retreival
 	int thumbnailCacheNextID;
 	Thumbnail * thumbnailCache[THUMB_CACHE_SIZE];
 	void * activeThumbRequests[IMGCONNS];
@@ -29,6 +36,9 @@ private:
 public:
 	Client();
 	~Client();
+
+	RequestStatus ExecVote(int saveID, int direction);
+
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	LoginStatus Login(string username, string password, User & user);
 	void ClearThumbnailRequests();
@@ -36,7 +46,11 @@ public:
 	Thumbnail * GetPreview(int saveID, int saveDate);
 	Thumbnail * GetThumbnail(int saveID, int saveDate);
 	Save * GetSave(int saveID, int saveDate);
-	std::string GetLastError() { return lastError; }
+	void SetAuthUser(User user);
+	User GetAuthUser();
+	std::string GetLastError() {
+		return lastError;
+	}
 };
 
 #endif // CLIENT_H
