@@ -88,6 +88,7 @@ int main(int argc, char * argv[])
 				engine->onKeyPress(event.key.keysym.unicode, false, false, false);
 				break;
 			case SDL_KEYUP:
+				engine->onKeyRelease(event.key.keysym.unicode, false, false, false);
 				break;
 			case SDL_MOUSEMOTION:
 				engine->onMouseMove(event.motion.x, event.motion.y);

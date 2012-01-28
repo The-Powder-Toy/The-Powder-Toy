@@ -19,6 +19,118 @@ extern "C"
 #include "hmap.h"
 }
 
+void Renderer::RenderZoom()
+{
+	if(!zoomEnabled)
+		return;
+	#ifdef OGLR
+		int origBlendSrc, origBlendDst;
+		float zcx1, zcx0, zcy1, zcy0, yfactor, xfactor, i; //X-Factor is shit, btw
+		xfactor = 1.0f/(float)XRES;
+		yfactor = 1.0f/(float)YRES;
+
+		zcx0 = (zoom_x)*xfactor;
+		zcx1 = (zoom_x+ZSIZE)*xfactor;
+		zcy0 = (zoom_y)*yfactor;
+		zcy1 = ((zoom_y+ZSIZE))*yfactor;
+
+		glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
+		glGetIntegerv(GL_BLEND_DST, &origBlendDst);
+		glBlendFunc(GL_ONE, GL_ZERO);
+
+		glEnable( GL_TEXTURE_2D );
+		//glReadBuffer(GL_AUX0);
+		glBindTexture(GL_TEXTURE_2D, partsFboTex);
+
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glBegin(GL_QUADS);
+		glTexCoord2d(zcx1, zcy1);
+		glVertex3f((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 1.0);
+		glTexCoord2d(zcx0, zcy1);
+		glVertex3f(zoom_wx*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 1.0);
+		glTexCoord2d(zcx0, zcy0);
+		glVertex3f(zoom_wx*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 1.0);
+		glTexCoord2d(zcx1, zcy0);
+		glVertex3f((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 1.0);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable( GL_TEXTURE_2D );
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glLineWidth(sdl_scale);
+		glEnable(GL_LINE_SMOOTH);
+		glBegin(GL_LINES);
+		glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+		for(i = 0; i < ZSIZE; i++)
+		{
+			glVertex2f((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR)+i*ZFACTOR)*sdl_scale);
+			glVertex2f(zoom_wx*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR)+i*ZFACTOR)*sdl_scale);
+			glVertex2f((zoom_wx+i*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale);
+			glVertex2f((zoom_wx+i*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale);
+		}
+		glEnd();
+
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_STRIP);
+		glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
+		glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 0);
+		glVertex3i((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 0);
+		glVertex3i((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
+		glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
+		glEnd();
+		glDisable(GL_LINE_SMOOTH);
+
+		glDisable(GL_LINE_SMOOTH);
+
+		if(zoom_en)
+		{
+			glEnable(GL_COLOR_LOGIC_OP);
+			//glEnable(GL_LINE_SMOOTH);
+			glLogicOp(GL_XOR);
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			glBegin(GL_LINE_STRIP);
+			glVertex3i((zoom_x-1)*sdl_scale, (YRES+MENUSIZE-(zoom_y-1))*sdl_scale, 0);
+			glVertex3i((zoom_x-1)*sdl_scale, (YRES+MENUSIZE-(zoom_y+ZSIZE))*sdl_scale, 0);
+			glVertex3i((zoom_x+ZSIZE)*sdl_scale, (YRES+MENUSIZE-(zoom_y+ZSIZE))*sdl_scale, 0);
+			glVertex3i((zoom_x+ZSIZE)*sdl_scale, (YRES+MENUSIZE-(zoom_y-1))*sdl_scale, 0);
+			glVertex3i((zoom_x-1)*sdl_scale, (YRES+MENUSIZE-(zoom_y-1))*sdl_scale, 0);
+			glEnd();
+			glDisable(GL_COLOR_LOGIC_OP);
+		}
+		glLineWidth(1);
+		glBlendFunc(origBlendSrc, origBlendDst);
+	#else
+		int x, y, i, j;
+		pixel pix;
+		pixel * img = g->vid;
+		g->drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+2, zoomScopeSize*ZFACTOR+2, 192, 192, 192, 255);
+		g->drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR, zoomScopeSize*ZFACTOR, 0, 0, 0, 255);
+		g->clearrect(zoomWindowPosition.X, zoomWindowPosition.Y, zoomScopeSize*ZFACTOR, zoomScopeSize*ZFACTOR);
+		for (j=0; j<zoomScopeSize; j++)
+			for (i=0; i<zoomScopeSize; i++)
+			{
+				pix = img[(j+zoomScopePosition.Y)*(XRES+BARSIZE)+(i+zoomScopePosition.X)];
+				for (y=0; y<ZFACTOR-1; y++)
+					for (x=0; x<ZFACTOR-1; x++)
+						img[(j*ZFACTOR+y+zoomWindowPosition.Y)*(XRES+BARSIZE)+(i*ZFACTOR+x+zoomWindowPosition.X)] = pix;
+			}
+		if (zoomEnabled)
+		{
+			for (j=-1; j<=zoomScopeSize; j++)
+			{
+				g->xor_pixel(zoomScopePosition.X+j, zoomScopePosition.Y-1);
+				g->xor_pixel(zoomScopePosition.X+j, zoomScopePosition.Y+zoomScopeSize);
+			}
+			for (j=0; j<zoomScopeSize; j++)
+			{
+				g->xor_pixel(zoomScopePosition.X-1, zoomScopePosition.Y+j);
+				g->xor_pixel(zoomScopePosition.X+zoomScopeSize, zoomScopePosition.Y+j);
+			}
+		}
+	#endif
+}
+
 void Renderer::DrawWalls()
 {
 	int x, y, i, j, cr, cg, cb;
@@ -1645,7 +1757,11 @@ void Renderer::draw_grav_zones()
 
 Renderer::Renderer(Graphics * g, Simulation * sim):
 	sim(NULL),
-	g(NULL)
+	g(NULL),
+	zoomWindowPosition(0, 0),
+	zoomScopePosition(0, 0),
+	zoomScopeSize(10),
+	ZFACTOR(8)
 {
 	this->g = g;
 	this->sim = sim;

@@ -380,7 +380,7 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
 {
-	if(currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
+	if(currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES && !(zoomEnabled && !zoomCursorFixed))
 	{
 		isMouseDown = true;
 		pointQueue.push(new ui::Point(x, y));
@@ -389,10 +389,15 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 
 void GameView::OnMouseUp(int x, int y, unsigned button)
 {
-	if(isMouseDown)
+	if(zoomEnabled && !zoomCursorFixed)
+		zoomCursorFixed = true;
+	else
 	{
-		isMouseDown = false;
-		pointQueue.push(new ui::Point(x, y));
+		if(isMouseDown)
+		{
+			isMouseDown = false;
+			pointQueue.push(new ui::Point(x, y));
+		}
 	}
 }
 
@@ -400,10 +405,17 @@ void GameView::OnMouseWheel(int x, int y, int d)
 {
 	if(!d)
 		return;
-	c->AdjustBrushSize(d);
-	if(isMouseDown)
+	if(zoomEnabled && !zoomCursorFixed)
 	{
-		pointQueue.push(new ui::Point(x, y));
+		c->AdjustZoomSize(d);
+	}
+	else
+	{
+		c->AdjustBrushSize(d);
+		if(isMouseDown)
+		{
+			pointQueue.push(new ui::Point(x, y));
+		}
 	}
 }
 
@@ -417,11 +429,29 @@ void GameView::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
 	case KEY_TAB: //Tab
 		c->ChangeBrush();
 		break;
+	case 'z':
+		isMouseDown = false;
+		zoomCursorFixed = false;
+		c->SetZoomEnabled(true);
+		break;
 	}
+}
+
+void GameView::OnKeyRelease(int key, bool shift, bool ctrl, bool alt)
+{
+	//switch(key)
+	//{
+	//case 'z':
+		if(!zoomCursorFixed)
+			c->SetZoomEnabled(false);
+	//	break;
+	//}
 }
 
 void GameView::OnTick(float dt)
 {
+	if(zoomEnabled && !zoomCursorFixed)
+		c->SetZoomPosition(currentMouse);
 	if(isMouseDown)
 	{
 		pointQueue.push(new ui::Point(currentMouse));
@@ -433,17 +463,23 @@ void GameView::OnTick(float dt)
 	c->Update();
 }
 
+void GameView::NotifyZoomChanged(GameModel * sender)
+{
+	zoomEnabled = sender->GetZoomEnabled();
+}
+
 void GameView::OnDraw()
 {
 	if(ren)
 	{
 		ren->render_parts();
 		ren->render_fire();
-		ren->DrawSigns();
 		ren->DrawWalls();
-	}
-	if(activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
-	{
-		activeBrush->Render(ui::Engine::Ref().g, currentMouse);
+		if(activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
+		{
+			activeBrush->Render(ui::Engine::Ref().g, c->PointTranslate(currentMouse));
+		}
+		ren->RenderZoom();
+		ren->DrawSigns();
 	}
 }

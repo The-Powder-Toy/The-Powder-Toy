@@ -5,6 +5,7 @@
 #include "Config.h"
 #include "simulation/Simulation.h"
 #include "Graphics.h"
+#include "interface/Point.h"
 
 class Simulation;
 
@@ -41,7 +42,15 @@ public:
 	Graphics * g;
 	gcache_item *graphicscache;
 
+	//Zoom window
+	ui::Point zoomWindowPosition;
+	ui::Point zoomScopePosition;
+	int zoomScopeSize;
+	bool zoomEnabled;
+	int ZFACTOR;
+
 	//Renderers
+	void RenderZoom();
 	void DrawWalls();
 	void DrawSigns();
 	void render_gravlensing();

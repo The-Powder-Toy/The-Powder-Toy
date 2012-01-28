@@ -160,6 +160,61 @@ User GameModel::GetUser()
 	return currentUser;
 }
 
+void GameModel::SetZoomEnabled(bool enabled)
+{
+	ren->zoomEnabled = enabled;
+	notifyZoomChanged();
+}
+
+bool GameModel::GetZoomEnabled()
+{
+	return ren->zoomEnabled;
+}
+
+void GameModel::SetZoomPosition(ui::Point position)
+{
+	ren->zoomScopePosition = position;
+	notifyZoomChanged();
+}
+
+ui::Point GameModel::GetZoomPosition()
+{
+	return ren->zoomScopePosition;
+}
+
+void GameModel::SetZoomWindowPosition(ui::Point position)
+{
+	ren->zoomWindowPosition = position;
+	notifyZoomChanged();
+}
+
+ui::Point GameModel::GetZoomWindowPosition()
+{
+	return ren->zoomWindowPosition;
+}
+
+void GameModel::SetZoomSize(int size)
+{
+	ren->zoomScopeSize = size;
+	notifyZoomChanged();
+}
+
+int GameModel::GetZoomSize()
+{
+	return ren->zoomScopeSize;
+}
+
+void GameModel::SetZoomFactor(int factor)
+{
+	ren->ZFACTOR = factor;
+	notifyZoomChanged();
+}
+
+int GameModel::GetZoomFactor()
+{
+	return ren->ZFACTOR;
+}
+
 void GameModel::SetUser(User user)
 {
 	currentUser = user;
@@ -251,5 +306,13 @@ void GameModel::notifyUserChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyUserChanged(this);
+	}
+}
+
+void GameModel::notifyZoomChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyZoomChanged(this);
 	}
 }

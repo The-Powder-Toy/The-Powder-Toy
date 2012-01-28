@@ -107,6 +107,36 @@ void GameController::AdjustBrushSize(int direction)
 	gameModel->GetBrush()->SetRadius(newSize);
 }
 
+void GameController::AdjustZoomSize(int direction)
+{
+	int newSize = gameModel->GetZoomSize()+direction;
+	if(newSize<5)
+			newSize = 5;
+	if(newSize>64)
+			newSize = 64;
+	gameModel->SetZoomSize(newSize);
+
+	int newZoomFactor = 256/newSize;
+	if(newZoomFactor<3)
+		newZoomFactor = 3;
+	gameModel->SetZoomFactor(newZoomFactor);
+}
+
+ui::Point GameController::PointTranslate(ui::Point point)
+{
+	bool zoomEnabled = gameModel->GetZoomEnabled();
+	if(!zoomEnabled)
+		return point;
+	//If we try to draw inside the zoom window, normalise the coordinates
+	int zoomFactor = gameModel->GetZoomFactor();
+	ui::Point zoomWindowPosition = gameModel->GetZoomWindowPosition();
+	ui::Point zoomWindowSize = ui::Point(gameModel->GetZoomSize()*zoomFactor, gameModel->GetZoomSize()*zoomFactor);
+
+	if(point.X > zoomWindowPosition.X && point.X > zoomWindowPosition.Y && point.X < zoomWindowPosition.X+zoomWindowSize.X && point.Y < zoomWindowPosition.Y+zoomWindowSize.Y)
+		return ((point-zoomWindowPosition)/gameModel->GetZoomFactor())+gameModel->GetZoomPosition();
+	return point;
+}
+
 void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
 {
 	Simulation * sim = gameModel->GetSimulation();
@@ -123,26 +153,27 @@ void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
 			}
 		}
 	}
+
 	if(!pointQueue.empty())
 	{
-		ui::Point * sPoint = NULL;
+		ui::Point sPoint(0, 0);
+		bool first = true;
 		while(!pointQueue.empty())
 		{
-			ui::Point * fPoint = pointQueue.front();
+			ui::Point fPoint = PointTranslate(*pointQueue.front());
+			delete pointQueue.front();
 			pointQueue.pop();
-			if(sPoint)
+			if(!first)
 			{
-				activeTool->DrawLine(sim, cBrush, *fPoint, *sPoint);
-				delete sPoint;
+				activeTool->DrawLine(sim, cBrush, fPoint, sPoint);
 			}
 			else
 			{
-				activeTool->Draw(sim, cBrush, *fPoint);
+				first = false;
+				activeTool->Draw(sim, cBrush, fPoint);
 			}
 			sPoint = fPoint;
 		}
-		if(sPoint)
-			delete sPoint;
 	}
 }
 
@@ -166,6 +197,25 @@ void GameController::Update()
 		delete loginWindow;
 		loginWindow = NULL;
 	}
+}
+
+void GameController::SetZoomEnabled(bool zoomEnabled)
+{
+	gameModel->SetZoomEnabled(zoomEnabled);
+}
+
+void GameController::SetZoomPosition(ui::Point position)
+{
+	ui::Point zoomPosition = position-(gameModel->GetZoomSize()/2);
+	if(zoomPosition.X < 0)
+			zoomPosition.X = 0;
+	if(zoomPosition.Y < 0)
+			zoomPosition.Y = 0;
+	if(zoomPosition.X >= XRES-gameModel->GetZoomSize())
+			zoomPosition.X = XRES-gameModel->GetZoomSize();
+	if(zoomPosition.Y >= YRES-gameModel->GetZoomSize())
+			zoomPosition.Y = YRES-gameModel->GetZoomSize();
+	gameModel->SetZoomPosition(zoomPosition);
 }
 
 void GameController::SetPaused(bool pauseState)

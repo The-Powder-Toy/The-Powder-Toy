@@ -31,7 +31,10 @@ public:
 	GameController();
 	~GameController();
 	GameView * GetView();
+	void SetZoomEnabled(bool zoomEnable);
+	void SetZoomPosition(ui::Point position);
 	void AdjustBrushSize(int direction);
+	void AdjustZoomSize(int direction);
 	void DrawPoints(queue<ui::Point*> & pointQueue);
 	void Update();
 	void SetPaused(bool pauseState);
@@ -48,6 +51,7 @@ public:
 	void ReloadSim();
 	void Vote(int direction);
 	void ChangeBrush();
+	ui::Point PointTranslate(ui::Point point);
 };
 
 #endif // GAMECONTROLLER_H

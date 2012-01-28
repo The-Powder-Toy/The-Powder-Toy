@@ -18,6 +18,8 @@ class GameView: public ui::Window
 {
 private:
 	bool isMouseDown;
+	bool zoomEnabled;
+	bool zoomCursorFixed;
 	queue<ui::Point*> pointQueue;
 	GameController * c;
 	Renderer * ren;
@@ -49,11 +51,13 @@ public:
 	void NotifyToolListChanged(GameModel * sender);
 	void NotifyActiveToolChanged(GameModel * sender);
 	void NotifyUserChanged(GameModel * sender);
+	void NotifyZoomChanged(GameModel * sender);
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);
 	virtual void OnMouseWheel(int x, int y, int d);
 	virtual void OnKeyPress(int key, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyRelease(int key, bool shift, bool ctrl, bool alt);
 	//virtual void OnKeyPress(int key, bool shift, bool ctrl, bool alt) {}
 	//virtual void OnKeyRelease(int key, bool shift, bool ctrl, bool alt) {}
 	virtual void OnTick(float dt);

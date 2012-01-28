@@ -32,9 +32,19 @@ struct Point
 		return Point(X + v.X, Y + v.Y);
 	}
 
+	inline Point operator + (const int v) const
+	{
+		return Point(X + v, Y + v);
+	}
+
 	inline Point operator - (const Point& v) const
 	{
 		return Point(X - v.X, Y - v.Y);
+	}
+
+	inline Point operator - (const int v) const
+	{
+		return Point(X - v, Y - v);
 	}
 
 	inline Point operator * (const Point& v) const

@@ -32,6 +32,7 @@ private:
 	Renderer * ren;
 	Tool * activeTool;
 	User currentUser;
+	//bool zoomEnabled;
 	void notifyRendererChanged();
 	void notifySimulationChanged();
 	void notifyPausedChanged();
@@ -41,6 +42,7 @@ private:
 	void notifyToolListChanged();
 	void notifyActiveToolChanged();
 	void notifyUserChanged();
+	void notifyZoomChanged();
 public:
 	GameModel();
 	~GameModel();
@@ -64,6 +66,16 @@ public:
 	int GetBrushID();
 	Simulation * GetSimulation();
 	Renderer * GetRenderer();
+	void SetZoomEnabled(bool enabled);
+	bool GetZoomEnabled();
+	void SetZoomSize(int size);
+	int GetZoomSize();
+	void SetZoomFactor(int factor);
+	int GetZoomFactor();
+	void SetZoomPosition(ui::Point position);
+	ui::Point GetZoomPosition();
+	void SetZoomWindowPosition(ui::Point position);
+	ui::Point GetZoomWindowPosition();
 };
 
 #endif // GAMEMODEL_H
