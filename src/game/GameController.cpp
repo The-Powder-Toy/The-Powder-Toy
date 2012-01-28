@@ -215,7 +215,13 @@ void GameController::SetZoomPosition(ui::Point position)
 			zoomPosition.X = XRES-gameModel->GetZoomSize();
 	if(zoomPosition.Y >= YRES-gameModel->GetZoomSize())
 			zoomPosition.Y = YRES-gameModel->GetZoomSize();
+
+	ui::Point zoomWindowPosition = ui::Point(0, 0);
+	if(position.X < XRES/2)
+		zoomWindowPosition.X = XRES-(gameModel->GetZoomSize()*gameModel->GetZoomFactor());
+
 	gameModel->SetZoomPosition(zoomPosition);
+	gameModel->SetZoomWindowPosition(zoomWindowPosition);
 }
 
 void GameController::SetPaused(bool pauseState)
