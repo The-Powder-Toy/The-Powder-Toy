@@ -1,12 +1,18 @@
 
 #include <time.h>
 #include <SDL/SDL.h>
+#ifdef WIN32
+#include <SDL/SDL_syswm.h>
+#endif
 #include <iostream>
 #include <sstream>
 #include <string>
 #include "Config.h"
 #include "Global.h"
 #include "Graphics.h"
+#if defined(LIN32) || defined(LIN64)
+#include "icon.h"
+#endif
 
 #include "interface/Engine.h"
 #include "interface/Button.h"
@@ -24,6 +30,10 @@
 
 using namespace std;
 
+#ifdef WIN32
+extern "C" IMAGE_DOS_HEADER __ImageBase;
+#endif
+
 SDL_Surface * SDLOpen()
 {
 #if defined(WIN32) && defined(WINCONSOLE)
@@ -39,11 +49,30 @@ SDL_Surface * SDLOpen()
 	//On Windows, SDL redirects stdout to stdout.txt, which can be annoying when debugging, here we redirect back to the console
 	if (console)
 	{
+
 		freopen("CON", "w", stdout);
 		freopen("con", "w", stderr);
 		fclose(console);
 	}
 #endif
+#ifdef WIN32
+	SDL_SysWMinfo SysInfo;
+	SDL_VERSION(&SysInfo.version);
+	if(SDL_GetWMInfo(&SysInfo) <= 0) {
+	    printf("%s : %d\n", SDL_GetError(), SysInfo.window);
+	    exit(-1);
+	}
+	HWND WindowHandle = SysInfo.window;
+	HICON hIconSmall = (HICON)LoadImage(reinterpret_cast<HMODULE>(&__ImageBase), MAKEINTRESOURCE(101), IMAGE_ICON, 16, 16, LR_SHARED);
+	HICON hIconBig = (HICON)LoadImage(reinterpret_cast<HMODULE>(&__ImageBase), MAKEINTRESOURCE(101), IMAGE_ICON, 32, 32, LR_SHARED);
+	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
+	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
+#elif defined(LIN32) || defined(LIN32)
+	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon, 16, 16, 32, 64, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+	SDL_WM_SetIcon(icon, NULL);
+#endif
+
+	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
 	atexit(SDL_Quit);
 	return SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_SWSURFACE);
 }
