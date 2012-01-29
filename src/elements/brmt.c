@@ -4,7 +4,6 @@ int update_BRMT(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, rt, tempFactor;
 	if (parts[i].temp > (250.0f+273.15f))
 	{
-		printf("%f\n", (250.0f+273.15f)-parts[i].temp);
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
