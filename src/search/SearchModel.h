@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <pthread.h>
 #include <math.h>
 #include "Save.h"
 #include "SearchView.h"
@@ -26,6 +27,14 @@ private:
 	void notifyPageChanged();
 	void notifySortChanged();
 	void notifyShowOwnChanged();
+
+	//Variables and methods for backgroun save request
+	bool saveListLoaded;
+	bool updateSaveListWorking;
+	volatile bool updateSaveListFinished;
+	pthread_t updateSaveListThread;
+	static void * updateSaveListTHelper(void * obj);
+	void * updateSaveListT();
 public:
     SearchModel();
     virtual ~SearchModel();
@@ -42,6 +51,8 @@ public:
 	bool GetShowOwn() { return showOwn; }
 	void SetLoadedSave(Save * save);
 	Save * GetLoadedSave();
+	bool GetSavesLoaded() { return saveListLoaded; }
+	void Update();
 };
 
 #endif // SEARCHMODEL_H

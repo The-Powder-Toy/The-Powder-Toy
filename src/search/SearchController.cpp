@@ -43,6 +43,7 @@ Save * SearchController::GetLoadedSave()
 
 void SearchController::Update()
 {
+	searchModel->Update();
 	if(activePreview && activePreview->HasExited)
 	{
 		delete activePreview;

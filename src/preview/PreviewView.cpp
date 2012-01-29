@@ -57,6 +57,11 @@ void PreviewView::OnDraw()
 	g->draw_line(Position.X+XRES/2, Position.Y, Position.X+XRES/2, Position.Y+Size.Y, 255, 255, 255, XRES+BARSIZE);
 }
 
+void PreviewView::OnTick(float dt)
+{
+	c->Update();
+}
+
 void PreviewView::OnMouseDown(int x, int y, unsigned button)
 {
 	if(!(x > Position.X && y > Position.Y && y < Position.Y+Size.Y && x < Position.X+Size.X)) //Clicked outside window

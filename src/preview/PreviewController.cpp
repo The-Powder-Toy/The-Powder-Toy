@@ -13,7 +13,6 @@
 PreviewController::PreviewController(int saveID, ControllerCallback * callback):
 	HasExited(false)
 {
-	// TODO Auto-generated constructor stub
 	previewModel = new PreviewModel();
 	previewView = new PreviewView();
 	previewModel->AddObserver(previewView);
@@ -22,6 +21,11 @@ PreviewController::PreviewController(int saveID, ControllerCallback * callback):
 	previewModel->UpdateSave(saveID, 0);
 
 	this->callback = callback;
+}
+
+void PreviewController::Update()
+{
+	previewModel->Update();
 }
 
 Save * PreviewController::GetSave()

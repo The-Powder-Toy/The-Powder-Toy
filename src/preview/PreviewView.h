@@ -28,6 +28,7 @@ public:
 	void NotifyPreviewChanged(PreviewModel * sender);
 	void NotifySaveChanged(PreviewModel * sender);
 	virtual void OnDraw();
+	virtual void OnTick(float dt);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual ~PreviewView();
 };

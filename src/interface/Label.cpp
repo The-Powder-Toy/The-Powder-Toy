@@ -6,7 +6,7 @@
 
 using namespace ui;
 
-Label::Label(Window* parent_state, std::string labelText):
+/*Label::Label(Window* parent_state, std::string labelText):
 	Component(parent_state),
 	text(labelText),
 	textPosition(ui::Point(0, 0)),
@@ -14,19 +14,20 @@ Label::Label(Window* parent_state, std::string labelText):
 	textHAlign(AlignCentre)
 {
 	TextPosition();
-}
+}*/
 
 Label::Label(Point position, Point size, std::string labelText):
 	Component(position, size),
 	text(labelText),
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
-	textHAlign(AlignCentre)
+	textHAlign(AlignCentre),
+	textColour(255, 255, 255)
 {
 	TextPosition();
 }
 
-Label::Label(std::string labelText):
+/*Label::Label(std::string labelText):
 	Component(),
 	text(labelText),
 	textPosition(ui::Point(0, 0)),
@@ -34,7 +35,7 @@ Label::Label(std::string labelText):
 	textHAlign(AlignCentre)
 {
 	TextPosition();
-}
+}*/
 
 Label::~Label()
 {
@@ -80,6 +81,6 @@ void Label::SetText(std::string text)
 void Label::Draw(const Point& screenPos)
 {
 	Graphics * g = Engine::Ref().g;
-	g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, text, 255, 255, 255, 255);
+	g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, text, textColour.Red, textColour.Green, textColour.Blue, 255);
 }
 

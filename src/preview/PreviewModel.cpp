@@ -11,18 +11,63 @@
 PreviewModel::PreviewModel():
 	save(NULL),
 	savePreview(NULL),
-	doOpen(false)
+	doOpen(false),
+	updateSavePreviewWorking(false),
+	updateSavePreviewFinished(false),
+	updateSaveInfoWorking(false),
+	updateSaveInfoFinished(false)
 {
 	// TODO Auto-generated constructor stub
 
 }
 
+void * PreviewModel::updateSaveInfoTHelper(void * obj)
+{
+	return ((PreviewModel*)obj)->updateSaveInfoT();
+}
+
+void * PreviewModel::updateSavePreviewTHelper(void * obj)
+{
+	return ((PreviewModel*)obj)->updateSavePreviewT();
+}
+
+void * PreviewModel::updateSaveInfoT()
+{
+	Save * tempSave = Client::Ref().GetSave(tSaveID, tSaveDate);
+	updateSaveInfoFinished = true;
+	return tempSave;
+}
+
+void * PreviewModel::updateSavePreviewT()
+{
+	Thumbnail * tempThumb = Client::Ref().GetPreview(tSaveID, tSaveDate);
+	updateSavePreviewFinished = true;
+	return tempThumb;
+}
+
 void PreviewModel::UpdateSave(int saveID, int saveDate)
 {
-	save = Client::Ref().GetSave(saveID, saveDate);
-	notifySaveChanged();
-	savePreview = Client::Ref().GetPreview(saveID, saveDate);
+	this->tSaveID = saveID;
+	this->tSaveDate = saveDate;
+
+	save = NULL;
+	savePreview = NULL;
 	notifyPreviewChanged();
+	notifySaveChanged();
+
+	if(!updateSavePreviewWorking)
+	{
+		updateSavePreviewWorking = true;
+		updateSavePreviewFinished = false;
+		pthread_create(&updateSavePreviewThread, 0, &PreviewModel::updateSavePreviewTHelper, this);
+	}
+
+	if(!updateSaveInfoWorking)
+	{
+		updateSaveInfoWorking = true;
+		updateSaveInfoFinished = false;
+		pthread_create(&updateSaveInfoThread, 0, &PreviewModel::updateSaveInfoTHelper, this);
+	}
 }
 
 void PreviewModel::SetDoOpen(bool doOpen)
@@ -65,6 +110,27 @@ void PreviewModel::AddObserver(PreviewView * observer) {
 	observers.push_back(observer);
 	observer->NotifyPreviewChanged(this);
 	observer->NotifySaveChanged(this);
+}
+
+void PreviewModel::Update()
+{
+	if(updateSavePreviewWorking)
+	{
+		if(updateSavePreviewFinished)
+		{
+			pthread_join(updateSavePreviewThread, (void**)(&savePreview));
+			notifyPreviewChanged();
+		}
+	}
+
+	if(updateSaveInfoWorking)
+	{
+		if(updateSaveInfoFinished)
+		{
+			pthread_join(updateSaveInfoThread, (void**)(&save));
+			notifySaveChanged();
+		}
+	}
 }
 
 PreviewModel::~PreviewModel() {

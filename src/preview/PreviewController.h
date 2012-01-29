@@ -27,6 +27,7 @@ public:
 	bool GetDoOpen();
 	Save * GetSave();
 	PreviewView * GetView() { return previewView; }
+	void Update();
 	virtual ~PreviewController();
 };
 

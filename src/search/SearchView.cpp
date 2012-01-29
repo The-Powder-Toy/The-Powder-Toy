@@ -152,6 +152,16 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		delete saveButtons[i];
 	}
 	saveButtons.clear();
+	if(!sender->GetSavesLoaded())
+	{
+		nextButton->Enabled = false;
+		previousButton->Enabled = false;
+	}
+	else
+	{
+		nextButton->Enabled = true;
+		previousButton->Enabled = true;
+	}
 	if(!saves.size())
 	{
 		if(!errorLabel)
@@ -159,10 +169,17 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			errorLabel = new ui::Label(ui::Point(((XRES+BARSIZE)/2)-100, ((YRES+MENUSIZE)/2)-6), ui::Point(200, 12), "Error");
 			AddComponent(errorLabel);
 		}
-		if(sender->GetLastError().length())
-			errorLabel->SetText("\bo" + sender->GetLastError());
+		if(!sender->GetSavesLoaded())
+		{
+			errorLabel->SetText("Loading...");
+		}
 		else
-			errorLabel->SetText("\boNo saves found");
+		{
+			if(sender->GetLastError().length())
+				errorLabel->SetText("\bo" + sender->GetLastError());
+			else
+				errorLabel->SetText("\boNo saves found");
+		}
 	}
 	else
 	{

@@ -18,6 +18,8 @@
 #include "game/GameController.h"
 #include "game/GameView.h"
 
+#include "dialogues/ErrorMessage.h"
+
 #include "client/HTTP.h"
 
 using namespace std;
@@ -72,6 +74,8 @@ int main(int argc, char * argv[])
 
 	GameController * gameController = new GameController();
 	engine->ShowWindow(gameController->GetView());
+
+	new ErrorMessage("Error", "This is a test error message");
 
 	SDL_Event event;
 	while(engine->Running())
