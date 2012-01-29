@@ -75,7 +75,7 @@ int main(int argc, char * argv[])
 	GameController * gameController = new GameController();
 	engine->ShowWindow(gameController->GetView());
 
-	new ErrorMessage("Error", "This is a test error message");
+	//new ErrorMessage("Error", "This is a test error message");
 
 	SDL_Event event;
 	while(engine->Running())

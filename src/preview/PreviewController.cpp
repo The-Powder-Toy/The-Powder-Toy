@@ -55,7 +55,10 @@ void PreviewController::Exit()
 }
 
 PreviewController::~PreviewController() {
-	delete previewView;
+	if(ui::Engine::Ref().GetWindow() == previewView)
+	{
+		ui::Engine::Ref().CloseWindow();
+	}
 	delete previewModel;
 }
 

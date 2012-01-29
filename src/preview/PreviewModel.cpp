@@ -118,6 +118,7 @@ void PreviewModel::Update()
 	{
 		if(updateSavePreviewFinished)
 		{
+			updateSavePreviewWorking = false;
 			pthread_join(updateSavePreviewThread, (void**)(&savePreview));
 			notifyPreviewChanged();
 		}
@@ -127,6 +128,7 @@ void PreviewModel::Update()
 	{
 		if(updateSaveInfoFinished)
 		{
+			updateSaveInfoWorking = false;
 			pthread_join(updateSaveInfoThread, (void**)(&save));
 			notifySaveChanged();
 		}

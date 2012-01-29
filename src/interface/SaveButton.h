@@ -7,6 +7,7 @@
 #include "search/Save.h"
 #include "Graphics.h"
 #include "search/Thumbnail.h"
+#include "interface/Colour.h"
 
 namespace ui
 {
@@ -23,11 +24,7 @@ class SaveButton : public Component
 	Save * save;
 	Thumbnail * thumbnail;
 public:
-	SaveButton(Window* parent_state, Save * save);
-
 	SaveButton(Point position, Point size, Save * save);
-
-	SaveButton(Save * save);
 	virtual ~SaveButton();
 
 	virtual void OnMouseClick(int x, int y, unsigned int button);
@@ -45,6 +42,8 @@ public:
 	void SetActionCallback(SaveButtonAction * action);
 protected:
 	bool isButtonDown, state, isMouseInside;
+	float voteRatio;
+	Colour voteColour;
 	SaveButtonAction * actionCallback;
 };
 }

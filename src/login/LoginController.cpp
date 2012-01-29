@@ -44,8 +44,10 @@ void LoginController::Exit()
 }
 
 LoginController::~LoginController() {
-	if(loginView)
-		delete loginView;
+	if(ui::Engine::Ref().GetWindow() == loginView)
+	{
+		ui::Engine::Ref().CloseWindow();
+	}
 	delete loginModel;
 }
 

@@ -68,9 +68,13 @@ void SearchController::Exit()
 
 SearchController::~SearchController()
 {
+	if(activePreview)
+		delete activePreview;
+	if(ui::Engine::Ref().GetWindow() == searchView)
+	{
+		ui::Engine::Ref().CloseWindow();
+	}
 	delete searchModel;
-	if(searchView)
-		delete searchView;
 }
 
 void SearchController::DoSearch(std::string query)

@@ -31,11 +31,11 @@ PreviewView::PreviewView():
 	openButton->SetActionCallback(new OpenAction(this));
 	AddComponent(openButton);
 
-	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+5), ui::Point(100, 16), "");
+	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+15), ui::Point(100, 16), "");
 	saveNameLabel->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(saveNameLabel);
 
-	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+5+14), ui::Point(100, 16), "");
+	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+15+14), ui::Point(100, 16), "");
 	authorDateLabel->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(authorDateLabel);
 }
@@ -55,6 +55,20 @@ void PreviewView::OnDraw()
 	}
 	g->drawrect(Position.X, Position.Y, XRES/2, YRES/2, 255, 255, 255, 100);
 	g->draw_line(Position.X+XRES/2, Position.Y, Position.X+XRES/2, Position.Y+Size.Y, 255, 255, 255, XRES+BARSIZE);
+
+
+	g->draw_line(Position.X+1, Position.Y+10+YRES/2, Position.X-2+XRES/2, Position.Y+10+YRES/2, 100, 100, 100, XRES+BARSIZE);
+	float factor;
+	if(!votesUp && !votesDown)
+		return;
+	else
+		factor = (float)(((float)(XRES/2))/((float)(votesUp+votesDown)));
+	g->fillrect(Position.X, Position.Y+YRES/2, XRES/2, 10, 200, 50, 50, 255);
+	g->fillrect(Position.X, Position.Y+YRES/2, (int)(((float)votesUp)*factor), 10, 50, 200, 50, 255);
+	g->fillrect(Position.X, Position.Y+(YRES/2), 14, 10, 0, 0, 0, 100);
+	g->fillrect(Position.X+(XRES/2)-14, Position.Y+(YRES/2), 14, 10, 0, 0, 0, 100);
+	g->draw_icon(Position.X+2, Position.Y+(YRES/2)+2, IconVoteUp);
+	g->draw_icon(Position.X+(XRES/2)-12, Position.Y+(YRES/2), IconVoteDown);
 }
 
 void PreviewView::OnTick(float dt)
@@ -73,11 +87,15 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 	Save * save = sender->GetSave();
 	if(save)
 	{
+		votesUp = save->votesUp;
+		votesDown = save->votesDown;
 		saveNameLabel->SetText(save->name);
 		authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw ");
 	}
 	else
 	{
+		votesUp = 0;
+		votesDown = 0;
 		saveNameLabel->SetText("");
 		authorDateLabel->SetText("");
 	}

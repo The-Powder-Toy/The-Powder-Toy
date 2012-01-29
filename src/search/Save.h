@@ -11,12 +11,13 @@ using namespace std;
 class Save
 {
 private:
+public:
 	int id;
 	int date;
 	int votesUp, votesDown;
 	unsigned char * data;
 	int dataLength;
-public:
+
 	Save(Save & save);
 
 	Save(int _id, int _date, int _votesUp, int _votesDown, string _userName, string _name);

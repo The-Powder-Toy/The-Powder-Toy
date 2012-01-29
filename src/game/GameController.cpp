@@ -68,23 +68,20 @@ GameController::~GameController()
 {
 	if(search)
 	{
-		if(ui::Engine::Ref().GetWindow() == search->GetView())
-			ui::Engine::Ref().CloseWindow();
 		delete search;
 	}
 	if(renderOptions)
 	{
-		if(ui::Engine::Ref().GetWindow() == renderOptions->GetView())
-			ui::Engine::Ref().CloseWindow();
 		delete renderOptions;
 	}
 	if(loginWindow)
 	{
-		if(ui::Engine::Ref().GetWindow() == loginWindow->GetView())
-			ui::Engine::Ref().CloseWindow();
 		delete loginWindow;
 	}
-	delete gameView;
+	if(ui::Engine::Ref().GetWindow() == gameView)
+	{
+		ui::Engine::Ref().CloseWindow();
+	}
 	delete gameModel;
 }
 

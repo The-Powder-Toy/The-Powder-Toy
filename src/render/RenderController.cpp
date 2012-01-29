@@ -57,7 +57,10 @@ void RenderController::Exit()
 }
 
 RenderController::~RenderController() {
-	delete renderView;
+	if(ui::Engine::Ref().GetWindow() == renderView)
+	{
+		ui::Engine::Ref().CloseWindow();
+	}
 	delete renderModel;
 }
 
