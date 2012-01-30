@@ -340,6 +340,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 {
 	if(sender->GetSave())
 	{
+		saveSimulationButton->SetText(sender->GetSave()->GetName());
 		reloadButton->Enabled = true;
 		upVoteButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==0);
 		if(sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==1)
@@ -355,6 +356,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 	}
 	else
 	{
+		saveSimulationButton->SetText("");
 		reloadButton->Enabled = false;
 		upVoteButton->Enabled = false;
 		upVoteButton->SetBackgroundColour(ui::Colour(0, 0, 0));
@@ -420,7 +422,7 @@ void GameView::OnMouseWheel(int x, int y, int d)
 	}
 }
 
-void GameView::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
+void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	switch(key)
 	{
@@ -438,7 +440,7 @@ void GameView::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
 	}
 }
 
-void GameView::OnKeyRelease(int key, bool shift, bool ctrl, bool alt)
+void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	//switch(key)
 	//{

@@ -17,6 +17,10 @@ private:
 	SearchView * searchView;
 	PreviewController * activePreview;
 	ControllerCallback * callback;
+
+	double nextQueryTime;
+	std::string nextQuery;
+	bool nextQueryDone;
 public:
 	class OpenCallback;
 	bool HasExited;

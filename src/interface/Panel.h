@@ -59,8 +59,8 @@ class Component;
 		void OnMouseUnclick(int localx, int localy, unsigned button);
 		void OnMouseWheel(int localx, int localy, int d);
 		void OnMouseWheelInside(int localx, int localy, int d);
-		void OnKeyPress(int key, bool shift, bool ctrl, bool alt);
-		void OnKeyRelease(int key, bool shift, bool ctrl, bool alt);
+		void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+		void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 		
 	protected:
 		// child components
@@ -82,8 +82,8 @@ class Component;
 			void XOnMouseUnclick(int localx, int localy, unsigned int button);
 			void XOnMouseWheel(int localx, int localy, int d);
 			void XOnMouseWheelInside(int localx, int localy, int d);
-			void XOnKeyPress(int key, bool shift, bool ctrl, bool alt);
-			void XOnKeyRelease(int key, bool shift, bool ctrl, bool alt);
+			void XOnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+			void XOnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 		*/
 		
 		// Overridable. Called by XComponent::Tick()
@@ -127,10 +127,10 @@ class Component;
 		virtual void XOnMouseWheelInside(int localx, int localy, int d);
 		
 		// Overridable. Called by XComponent::OnKeyPress()
-		virtual void XOnKeyPress(int key, bool shift, bool ctrl, bool alt);
+		virtual void XOnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 		
 		// Overridable. Called by XComponent::OnKeyRelease()
-		virtual void XOnKeyRelease(int key, bool shift, bool ctrl, bool alt);
+		virtual void XOnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	};
 
 }

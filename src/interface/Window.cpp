@@ -140,28 +140,28 @@ void Window::DoTick(float dt)
 	OnTick(dt);
 }
 
-void Window::DoKeyPress(int key, bool shift, bool ctrl, bool alt)
+void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	//on key press
 	if(focusedComponent_ != NULL)
 	{
 		if(!focusedComponent_->Locked)
-			focusedComponent_->OnKeyPress(key, shift, ctrl, alt);
+			focusedComponent_->OnKeyPress(key, character, shift, ctrl, alt);
 	}
 
-	OnKeyPress(key, shift, ctrl, alt);
+	OnKeyPress(key, character, shift, ctrl, alt);
 }
 
-void Window::DoKeyRelease(int key, bool shift, bool ctrl, bool alt)
+void Window::DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	//on key unpress
 	if(focusedComponent_ != NULL)
 	{
 		if(!focusedComponent_->Locked)
-			focusedComponent_->OnKeyRelease(key, shift, ctrl, alt);
+			focusedComponent_->OnKeyRelease(key, character, shift, ctrl, alt);
 	}
 
-	OnKeyRelease(key, shift, ctrl, alt);
+	OnKeyRelease(key, character, shift, ctrl, alt);
 }
 
 void Window::DoMouseDown(int x_, int y_, unsigned button)

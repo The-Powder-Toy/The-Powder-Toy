@@ -56,8 +56,8 @@ namespace ui
 			void OnMouseUnclick(int localx, int localy, unsigned int button);
 			void OnMouseWheel(int localx, int localy, int d);
 			void OnMouseWheelInside(int localx, int localy, int d);
-			void OnKeyPress(int key, bool shift, bool ctrl, bool alt);
-			void OnKeyRelease(int key, bool shift, bool ctrl, bool alt);
+			void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+			void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 		*/
 
 		///
@@ -185,7 +185,7 @@ namespace ui
 		// 	ctrl: Control key is down.
 		// 	alt: Alternate key is down.
 		///
-		virtual void OnKeyPress(int key, bool shift, bool ctrl, bool alt);
+		virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 		
 		///
 		// Called: When a key is released.
@@ -195,7 +195,7 @@ namespace ui
 		// 	ctrl: Control key is released.
 		// 	alt: Alternate key is released.
 		///
-		virtual void OnKeyRelease(int key, bool shift, bool ctrl, bool alt);
+		virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 
 	private:
 		Window* parentstate_;

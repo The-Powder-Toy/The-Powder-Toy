@@ -9,34 +9,8 @@
 
 using namespace ui;
 
-Textbox::Textbox(Window* parent_state, std::string textboxText):
-	Component(parent_state),
-	text(textboxText),
-	textPosition(ui::Point(0, 0)),
-	textVAlign(AlignMiddle),
-	textHAlign(AlignCentre),
-	actionCallback(NULL),
-	masked(false)
-{
-	TextPosition();
-	cursor = text.length();
-}
-
 Textbox::Textbox(Point position, Point size, std::string textboxText):
 	Component(position, size),
-	text(textboxText),
-	textPosition(ui::Point(0, 0)),
-	textVAlign(AlignMiddle),
-	textHAlign(AlignCentre),
-	actionCallback(NULL),
-	masked(false)
-{
-	TextPosition();
-	cursor = text.length();
-}
-
-Textbox::Textbox(std::string textboxText):
-	Component(),
 	text(textboxText),
 	textPosition(ui::Point(0, 0)),
 	textVAlign(AlignMiddle),
@@ -105,7 +79,7 @@ std::string Textbox::GetText()
 	return text;
 }
 
-void Textbox::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
+void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	bool changed = false;
 	try
@@ -152,22 +126,20 @@ void Textbox::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
 				changed = true;
 			}
 			break;
-		default:
-			if(key >= ' ' && key < 127)
+		}
+		if(character >= ' ' && character < 127)
+		{
+			if(cursor == text.length())
 			{
-				if(cursor == text.length())
-				{
-					text += key;
-					//std::cout << key << std::endl;
-				}
-				else
-				{
-					text.insert(cursor, 1, (char)key);
-				}
-				cursor++;
-				changed = true;
+				text += character;
+				//std::cout << key << std::endl;
 			}
-			break;
+			else
+			{
+				text.insert(cursor, 1, (char)character);
+			}
+			cursor++;
+			changed = true;
 		}
 		if(changed && actionCallback)
 		{

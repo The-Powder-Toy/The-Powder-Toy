@@ -17,6 +17,7 @@ public:
 };
 class Textbox : public Component
 {
+protected:
 	std::string text;
 	ui::Point textPosition;
 	HorizontalAlignment textHAlign;
@@ -25,19 +26,17 @@ class Textbox : public Component
 	TextboxAction *actionCallback;
 	bool masked;
 public:
-	Textbox(Window* parent_state, std::string textboxText);
 	Textbox(Point position, Point size, std::string textboxText);
-	Textbox(std::string textboxText);
 	virtual ~Textbox();
 
-	void TextPosition();
-	void SetText(std::string text);
+	virtual void TextPosition();
+	virtual void SetText(std::string text);
 	std::string GetText();
 	HorizontalAlignment GetHAlignment() { return textHAlign; }
 	VerticalAlignment GetVAlignment() { return textVAlign; }
 	void SetAlignment(HorizontalAlignment hAlign, VerticalAlignment vAlign) { textHAlign = hAlign; textVAlign = vAlign; TextPosition(); }
 	void SetActionCallback(TextboxAction * action) { actionCallback = action; }
-	virtual void OnKeyPress(int key, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 
 	void SetHidden(bool hidden) { masked = hidden; }
 	bool GetHidden() { return masked; }

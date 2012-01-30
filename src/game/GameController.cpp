@@ -9,6 +9,7 @@
 #include "render/RenderController.h"
 #include "login/LoginController.h"
 #include "interface/Point.h"
+#include "dialogues/ErrorMessage.h"
 
 using namespace std;
 
@@ -50,10 +51,26 @@ public:
 	}
 };
 
+class GameController::SSaveCallback: public ControllerCallback
+{
+	GameController * cc;
+public:
+	SSaveCallback(GameController * cc_) { cc = cc_; }
+	virtual void ControllerExit()
+	{
+		if(cc->ssave->GetSaveUploaded())
+		{
+			cc->gameModel->SetSave(new Save(*(cc->ssave->GetSave())));
+		}
+		//cc->gameModel->SetUser(cc->loginWindow->GetUser());
+	}
+};
+
 GameController::GameController():
 		search(NULL),
 		renderOptions(NULL),
-		loginWindow(NULL)
+		loginWindow(NULL),
+		ssave(NULL)
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
@@ -267,7 +284,28 @@ void GameController::OpenRenderOptions()
 
 void GameController::OpenSaveWindow()
 {
-	//TODO: Implement
+	if(gameModel->GetUser().ID)
+	{
+		if(gameModel->GetSave())
+		{
+			Save tempSave(*gameModel->GetSave());
+			int tempSaveLength;
+			tempSave.SetData(gameModel->GetSimulation()->Save(tempSaveLength));
+			ssave = new SSaveController(new SSaveCallback(this), tempSave);
+		}
+		else
+		{
+			Save tempSave(0, 0, 0, 0, gameModel->GetUser().Username, "");
+			int tempSaveLength;
+			tempSave.SetData(gameModel->GetSimulation()->Save(tempSaveLength));
+			ssave = new SSaveController(new SSaveCallback(this), tempSave);
+		}
+		ui::Engine::Ref().ShowWindow(ssave->GetView());
+	}
+	else
+	{
+		new ErrorMessage("Error", "You need to login to upload saves.");
+	}
 }
 
 void GameController::Vote(int direction)

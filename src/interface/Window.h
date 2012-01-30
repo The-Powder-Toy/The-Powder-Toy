@@ -55,8 +55,8 @@ enum ChromeStyle
 		virtual void DoMouseDown(int x, int y, unsigned button);
 		virtual void DoMouseUp(int x, int y, unsigned button);
 		virtual void DoMouseWheel(int x, int y, int d);
-		virtual void DoKeyPress(int key, bool shift, bool ctrl, bool alt);
-		virtual void DoKeyRelease(int key, bool shift, bool ctrl, bool alt);
+		virtual void DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+		virtual void DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 
 		bool IsFocused(const Component* c) const;
 		void FocusComponent(Component* c);
@@ -73,8 +73,8 @@ enum ChromeStyle
 		virtual void OnMouseDown(int x, int y, unsigned button) {}
 		virtual void OnMouseUp(int x, int y, unsigned button) {}
 		virtual void OnMouseWheel(int x, int y, int d) {}
-		virtual void OnKeyPress(int key, bool shift, bool ctrl, bool alt) {}
-		virtual void OnKeyRelease(int key, bool shift, bool ctrl, bool alt) {}
+		virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) {}
+		virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) {}
 		std::vector<Component*> Components;
 		Component* focusedComponent_;
 		ChromeStyle chrome;

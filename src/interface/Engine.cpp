@@ -178,16 +178,16 @@ void Engine::Draw()
 	g->Blit();
 }
 
-void Engine::onKeyPress(int key, bool shift, bool ctrl, bool alt)
+void Engine::onKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	if(state_)
-		state_->DoKeyPress(key, shift, ctrl, alt);
+		state_->DoKeyPress(key, character, shift, ctrl, alt);
 }
 
-void Engine::onKeyRelease(int key, bool shift, bool ctrl, bool alt)
+void Engine::onKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	if(state_)
-		state_->DoKeyRelease(key, shift, ctrl, alt);
+		state_->DoKeyRelease(key, character, shift, ctrl, alt);
 }
 
 void Engine::onMouseClick(int x, int y, unsigned button)

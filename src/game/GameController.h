@@ -9,6 +9,7 @@
 #include "search/SearchController.h"
 #include "render/RenderController.h"
 #include "login/LoginController.h"
+#include "ssave/SSaveController.h"
 #include "Menu.h"
 
 using namespace std;
@@ -24,10 +25,12 @@ private:
 	SearchController * search;
 	RenderController * renderOptions;
 	LoginController * loginWindow;
+	SSaveController * ssave;
 public:
 	class LoginCallback;
 	class SearchCallback;
 	class RenderCallback;
+	class SSaveCallback;
 	GameController();
 	~GameController();
 	GameView * GetView();

@@ -38,6 +38,7 @@ public:
 	~Client();
 
 	RequestStatus ExecVote(int saveID, int direction);
+	RequestStatus UploadSave(Save * save);
 
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	LoginStatus Login(string username, string password, User & user);

@@ -29,8 +29,8 @@ namespace ui
 		void onMouseClick(int x, int y, unsigned button);
 		void onMouseUnclick(int x, int y, unsigned button);
 		void onMouseWheel(int x, int y, int delta);
-		void onKeyPress(int key, bool shift, bool ctrl, bool alt);
-		void onKeyRelease(int key, bool shift, bool ctrl, bool alt);
+		void onKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+		void onKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 		void onResize(int newWidth, int newHeight);
 		void onClose();
 

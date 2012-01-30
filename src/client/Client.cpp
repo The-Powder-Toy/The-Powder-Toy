@@ -51,6 +51,60 @@ User Client::GetAuthUser()
 	return authUser;
 }
 
+RequestStatus Client::UploadSave(Save * save)
+{
+	lastError = "";
+	int dataStatus;
+	char * data;
+	int dataLength = 0;
+	std::stringstream userIDStream;
+	userIDStream << authUser.ID;
+	if(authUser.ID)
+	{
+		char * postNames[] = { "Name", "Description", "Data:save.bin", "Publish", NULL };
+		char * postDatas[] = { (char *)(save->name.c_str()), (char *)(save->Description.c_str()), (char *)(save->GetData()), (char *)(save->Published?"Public":"Private") };
+		int postLengths[] = { save->name.length(), save->Description.length(), save->GetDataLength(), save->Published?6:7 };
+		//std::cout << postNames[0] << " " << postDatas[0] << " " << postLengths[0] << std::endl;
+		data = http_multipart_post("http://" SERVER "/Save.api", postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+	}
+	else
+	{
+		lastError = "Not authenticated";
+		return RequestFailure;
+	}
+	if(data && dataStatus == 200)
+	{
+		if(strncmp((const char *)data, "OK", 2)!=0)
+		{
+			free(data);
+			lastError = std::string((const char *)data);
+			return RequestFailure;
+		}
+		else
+		{
+			int tempID;
+			std::stringstream saveIDStream((char *)(data+3));
+			saveIDStream >> tempID;
+			if(!tempID)
+			{
+				lastError = "Server did not return Save ID";
+				return RequestFailure;
+			}
+			else
+			{
+				save->id = tempID;
+			}
+		}
+		free(data);
+		return RequestOkay;
+	}
+	else if(data)
+	{
+		free(data);
+	}
+	return RequestFailure;
+}
+
 RequestStatus Client::ExecVote(int saveID, int direction)
 {
 	lastError = "";
@@ -83,7 +137,6 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 		lastError = "Not authenticated";
 		return RequestFailure;
 	}
-	std::cout << data << std::endl;
 	if(data && dataStatus == 200)
 	{
 		if(strncmp((const char *)data, "OK", 2)!=0)

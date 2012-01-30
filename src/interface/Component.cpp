@@ -94,11 +94,11 @@ void Component::Tick(float dt)
 {
 }
 
-void Component::OnKeyPress(int key, bool shift, bool ctrl, bool alt)
+void Component::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 }
 
-void Component::OnKeyRelease(int key, bool shift, bool ctrl, bool alt)
+void Component::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 }
 

@@ -21,7 +21,9 @@ public:
 
 SearchController::SearchController(ControllerCallback * callback):
 	activePreview(NULL),
-	HasExited(false)
+	HasExited(false),
+	nextQueryTime(0.0f),
+	nextQueryDone(true)
 {
 	searchModel = new SearchModel();
 	searchView = new SearchView();
@@ -43,6 +45,11 @@ Save * SearchController::GetLoadedSave()
 
 void SearchController::Update()
 {
+	if(!nextQueryDone && nextQueryTime < clock())
+	{
+		nextQueryDone = true;
+		searchModel->UpdateSaveList(1, nextQuery);
+	}
 	searchModel->Update();
 	if(activePreview && activePreview->HasExited)
 	{
@@ -79,7 +86,10 @@ SearchController::~SearchController()
 
 void SearchController::DoSearch(std::string query)
 {
-	searchModel->UpdateSaveList(1, query);
+	nextQuery = query;
+	nextQueryTime = clock()+(0.6 * CLOCKS_PER_SEC);
+	nextQueryDone = false;
+	//searchModel->UpdateSaveList(1, query);
 }
 
 void SearchController::PrevPage()
