@@ -1761,7 +1761,8 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	zoomWindowPosition(0, 0),
 	zoomScopePosition(0, 0),
 	zoomScopeSize(10),
-	ZFACTOR(8)
+	ZFACTOR(8),
+	zoomEnabled(false)
 {
 	this->g = g;
 	this->sim = sim;

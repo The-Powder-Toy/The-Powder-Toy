@@ -11,7 +11,14 @@ GameView::GameView():
 	isMouseDown(false),
 	ren(NULL),
 	activeBrush(NULL),
-	currentMouse(0, 0)
+	currentMouse(0, 0),
+	toolIndex(0),
+	zoomEnabled(false),
+	zoomCursorFixed(false),
+	drawPoint1(0, 0),
+	drawPoint2(0, 0),
+	drawMode(DrawPoints),
+	drawModeReset(false)
 {
 	int currentX = 1;
 	//Set up UI
@@ -207,9 +214,11 @@ class GameView::ToolAction: public ui::ButtonAction
 public:
 	Tool * tool;
 	ToolAction(GameView * _v, Tool * tool_) { v = _v; tool = tool_; }
-	void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender_)
 	{
-		v->c->SetActiveTool(tool);
+		ToolButton *sender = (ToolButton*)sender_;
+		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 2)
+			v->c->SetActiveTool(sender->GetSelectionState(), tool);
 	}
 };
 
@@ -242,17 +251,26 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 	}
 }
 
-void GameView::NotifyActiveToolChanged(GameModel * sender)
+void GameView::NotifyActiveToolsChanged(GameModel * sender)
 {
 	for(int i = 0; i < toolButtons.size(); i++)
 	{
-		if(((ToolAction*)toolButtons[i]->GetActionCallback())->tool==sender->GetActiveTool())
+		Tool * tool = ((ToolAction*)toolButtons[i]->GetActionCallback())->tool;
+		if(sender->GetActiveTool(0) == tool)
 		{
-			toolButtons[i]->SetToggleState(true);
+			toolButtons[i]->SetSelectionState(0);	//Primary
+		}
+		else if(sender->GetActiveTool(1) == tool)
+		{
+			toolButtons[i]->SetSelectionState(1);	//Secondary
+		}
+		else if(sender->GetActiveTool(2) == tool)
+		{
+			toolButtons[i]->SetSelectionState(2);	//Tertiary
 		}
 		else
 		{
-			toolButtons[i]->SetToggleState(false);
+			toolButtons[i]->SetSelectionState(-1);
 		}
 	}
 }
@@ -281,25 +299,24 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	vector<Tool*> toolList = sender->GetToolList();
 	for(int i = 0; i < toolList.size(); i++)
 	{
-		ui::Button * tempButton = new ui::Button(ui::Point(currentX, YRES), ui::Point(32, 16), toolList[i]->GetName());
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES), ui::Point(32, 16), toolList[i]->GetName());
 		currentX -= 36;
-		tempButton->SetTogglable(true);
 		tempButton->SetActionCallback(new ToolAction(this, toolList[i]));
 
-		totalColour = toolList[i]->colRed + 3*toolList[i]->colGreen + 2*toolList[i]->colBlue;
-
 		tempButton->SetBackgroundColour(ui::Colour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue));
-		if (totalColour<544)
+
+		if(sender->GetActiveTool(0) == toolList[i])
 		{
-			tempButton->SetTextColour(ui::Colour(255, 255, 255));
+			tempButton->SetSelectionState(0);	//Primary
 		}
-		else
+		else if(sender->GetActiveTool(1) == toolList[i])
 		{
-			tempButton->SetTextColour(ui::Colour(0, 0, 0));
+			tempButton->SetSelectionState(1);	//Secondary
 		}
-		tempButton->SetBorderColour(ui::Colour(0, 0, 0));
-		tempButton->SetActiveBackgroundColour(ui::Colour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue));
-		tempButton->SetActiveBorderColour(ui::Colour(0, 0, 255));
+		else if(sender->GetActiveTool(2) == toolList[i])
+		{
+			tempButton->SetSelectionState(2);	//Tertiary
+		}
 
 		tempButton->SetAlignment(AlignCentre, AlignBottom);
 		AddComponent(tempButton);
@@ -374,7 +391,7 @@ void GameView::NotifyBrushChanged(GameModel * sender)
 void GameView::OnMouseMove(int x, int y, int dx, int dy)
 {
 	currentMouse = ui::Point(x, y);
-	if(isMouseDown)
+	if(isMouseDown && drawMode == DrawPoints)
 	{
 		pointQueue.push(new ui::Point(x-dx, y-dy));
 		pointQueue.push(new ui::Point(x, y));
@@ -385,8 +402,21 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 {
 	if(currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES && !(zoomEnabled && !zoomCursorFixed))
 	{
+		if(button == BUTTON_LEFT)
+			toolIndex = 0;
+		if(button == BUTTON_RIGHT)
+			toolIndex = 1;
+		if(button == BUTTON_MIDDLE)
+			toolIndex = 2;
 		isMouseDown = true;
-		pointQueue.push(new ui::Point(x, y));
+		if(drawMode == DrawRect || drawMode == DrawLine)
+		{
+			drawPoint1 = ui::Point(x, y);
+		}
+		if(drawMode == DrawPoints)
+		{
+			pointQueue.push(new ui::Point(x, y));
+		}
 	}
 }
 
@@ -399,7 +429,27 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 		if(isMouseDown)
 		{
 			isMouseDown = false;
-			pointQueue.push(new ui::Point(x, y));
+			if(drawMode == DrawRect || drawMode == DrawLine)
+			{
+				drawPoint2 = ui::Point(x, y);
+				if(drawMode == DrawRect)
+				{
+					c->DrawRect(toolIndex, drawPoint1, drawPoint2);
+				}
+				if(drawMode == DrawLine)
+				{
+					c->DrawLine(toolIndex, drawPoint1, drawPoint2);
+				}
+			}
+			if(drawMode == DrawPoints)
+			{
+				pointQueue.push(new ui::Point(x, y));
+			}
+			if(drawModeReset)
+			{
+				drawModeReset = false;
+				drawMode = DrawPoints;
+			}
 		}
 	}
 }
@@ -426,6 +476,26 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 {
 	switch(key)
 	{
+	case KEY_CTRL:
+		if(drawModeReset)
+			drawModeReset = false;
+		else
+			drawPoint1 = currentMouse;
+		if(shift)
+			drawMode = DrawFill;
+		else
+			drawMode = DrawRect;
+		break;
+	case KEY_SHIFT:
+		if(drawModeReset)
+			drawModeReset = false;
+		else
+			drawPoint1 = currentMouse;
+		if(ctrl)
+			drawMode = DrawFill;
+		else
+			drawMode = DrawLine;
+		break;
 	case ' ': //Space
 		c->SetPaused();
 		break;
@@ -442,26 +512,37 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	//switch(key)
-	//{
-	//case 'z':
+	if(!isMouseDown)
+		drawMode = DrawPoints;
+	else
+		drawModeReset = true;
+	switch(character)
+	{
+	case 'z':
 		if(!zoomCursorFixed)
 			c->SetZoomEnabled(false);
-	//	break;
-	//}
+		break;
+	}
 }
 
 void GameView::OnTick(float dt)
 {
 	if(zoomEnabled && !zoomCursorFixed)
 		c->SetZoomPosition(currentMouse);
-	if(isMouseDown)
+	if(drawMode == DrawPoints)
 	{
-		pointQueue.push(new ui::Point(currentMouse));
+		if(isMouseDown)
+		{
+			pointQueue.push(new ui::Point(currentMouse));
+		}
+		if(!pointQueue.empty())
+		{
+			c->DrawPoints(toolIndex, pointQueue);
+		}
 	}
-	if(!pointQueue.empty())
+	if(drawMode == DrawFill)
 	{
-		c->DrawPoints(pointQueue);
+		c->DrawFill(toolIndex, currentMouse);
 	}
 	c->Update();
 }
@@ -480,7 +561,18 @@ void GameView::OnDraw()
 		ren->DrawWalls();
 		if(activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
 		{
-			activeBrush->Render(ui::Engine::Ref().g, c->PointTranslate(currentMouse));
+			if(drawMode==DrawRect && isMouseDown)
+			{
+				activeBrush->RenderRect(ui::Engine::Ref().g, c->PointTranslate(drawPoint1), c->PointTranslate(currentMouse));
+			}
+			else if(drawMode==DrawLine && isMouseDown)
+			{
+				activeBrush->RenderLine(ui::Engine::Ref().g, c->PointTranslate(drawPoint1), c->PointTranslate(currentMouse));
+			}
+			else
+			{
+				activeBrush->RenderPoint(ui::Engine::Ref().g, c->PointTranslate(currentMouse));
+			}
 		}
 		ren->RenderZoom();
 		ren->DrawSigns();

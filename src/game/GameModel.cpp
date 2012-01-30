@@ -9,7 +9,7 @@
 #include "client/Client.h"
 
 GameModel::GameModel():
-	activeTool(NULL),
+	activeTools({NULL, NULL, NULL}),
 	sim(NULL),
 	ren(NULL),
 	currentBrush(0),
@@ -44,7 +44,9 @@ GameModel::GameModel():
 	brushList.push_back(new Brush(ui::Point(4, 4)));
 	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
 
-	activeTool = new ElementTool(1, "TURD", 0, 0, 0);
+	activeTools[0] = new ElementTool(1, "TURD", 0, 0, 0);
+	activeTools[1] = new ElementTool(0, "TURD", 0, 0, 0);
+	//activeTool[1] = new ElementTool(0, "TURD", 0, 0, 0);
 }
 
 GameModel::~GameModel()
@@ -63,8 +65,8 @@ GameModel::~GameModel()
 	}
 	delete sim;
 	delete ren;
-	if(activeTool)
-		delete activeTool;
+	if(activeTools)
+		delete activeTools;
 }
 
 void GameModel::SetVote(int direction)
@@ -131,15 +133,15 @@ Menu * GameModel::GetActiveMenu()
 	return activeMenu;
 }
 
-Tool * GameModel::GetActiveTool()
+Tool * GameModel::GetActiveTool(int selection)
 {
-	return activeTool;
+	return activeTools[selection];
 }
 
-void GameModel::SetActiveTool(Tool * tool)
+void GameModel::SetActiveTool(int selection, Tool * tool)
 {
-	activeTool = tool;
-	notifyActiveToolChanged();
+	activeTools[selection] = tool;
+	notifyActiveToolsChanged();
 }
 
 vector<Menu*> GameModel::GetMenuList()
@@ -162,6 +164,7 @@ void GameModel::SetSave(Save * newSave)
 		sim->Load(currentSave->GetData(), currentSave->GetDataLength());
 	}
 	notifySaveChanged();
+	notifyPausedChanged();
 }
 
 Simulation * GameModel::GetSimulation()
@@ -313,11 +316,11 @@ void GameModel::notifyToolListChanged()
 	}
 }
 
-void GameModel::notifyActiveToolChanged()
+void GameModel::notifyActiveToolsChanged()
 {
 	for(int i = 0; i < observers.size(); i++)
 	{
-		observers[i]->NotifyActiveToolChanged(this);
+		observers[i]->NotifyActiveToolsChanged(this);
 	}
 }
 

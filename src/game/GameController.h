@@ -38,12 +38,15 @@ public:
 	void SetZoomPosition(ui::Point position);
 	void AdjustBrushSize(int direction);
 	void AdjustZoomSize(int direction);
-	void DrawPoints(queue<ui::Point*> & pointQueue);
+	void DrawPoints(int toolSelection, queue<ui::Point*> & pointQueue);
+	void DrawRect(int toolSelection, ui::Point point1, ui::Point point2);
+	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);
+	void DrawFill(int toolSelection, ui::Point point);
 	void Update();
 	void SetPaused(bool pauseState);
 	void SetPaused();
 	void SetActiveMenu(Menu * menu);
-	void SetActiveTool(Tool * tool);
+	void SetActiveTool(int toolSelection, Tool * tool);
 	void OpenSearch();
 	void OpenLogin();
 	void OpenTags();

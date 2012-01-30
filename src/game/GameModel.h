@@ -18,6 +18,15 @@ class GameView;
 class Simulation;
 class Renderer;
 
+class ToolSelection
+{
+public:
+	enum
+	{
+		ToolPrimary, ToolSecondary, ToolTertiary
+	};
+};
+
 class GameModel
 {
 private:
@@ -30,7 +39,7 @@ private:
 	Save * currentSave;
 	Simulation * sim;
 	Renderer * ren;
-	Tool * activeTool;
+	Tool * activeTools[3];
 	User currentUser;
 	//bool zoomEnabled;
 	void notifyRendererChanged();
@@ -40,7 +49,7 @@ private:
 	void notifyBrushChanged();
 	void notifyMenuListChanged();
 	void notifyToolListChanged();
-	void notifyActiveToolChanged();
+	void notifyActiveToolsChanged();
 	void notifyUserChanged();
 	void notifyZoomChanged();
 public:
@@ -52,8 +61,8 @@ public:
 	Brush * GetBrush();
 	void SetSave(Save * newSave);
 	void AddObserver(GameView * observer);
-	Tool * GetActiveTool();
-	void SetActiveTool(Tool * tool);
+	Tool * GetActiveTool(int selection);
+	void SetActiveTool(int selection, Tool * tool);
 	bool GetPaused();
 	void SetPaused(bool pauseState);
 	void ClearSimulation();

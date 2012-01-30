@@ -48,7 +48,9 @@ public:
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
 		sim->create_line(position1.X, position1.Y, position2.X, position2.Y, 1, 1, toolID, 0, brush);
 	}
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {}
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
+		sim->create_box(position1.X, position1.Y, position2.X, position2.Y, toolID, 0);
+	}
 };
 
 #endif /* TOOL_H_ */

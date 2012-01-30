@@ -8,25 +8,33 @@
 #include "interface/Window.h"
 #include "interface/Point.h"
 #include "interface/Button.h"
+#include "ToolButton.h"
 #include "Brush.h"
 
 using namespace std;
+
+enum DrawMode
+{
+	DrawPoints, DrawLine, DrawRect, DrawFill
+};
 
 class GameController;
 class GameModel;
 class GameView: public ui::Window
 {
 private:
+	DrawMode drawMode;
 	bool isMouseDown;
 	bool zoomEnabled;
 	bool zoomCursorFixed;
+	int toolIndex;
 	queue<ui::Point*> pointQueue;
 	GameController * c;
 	Renderer * ren;
 	Brush * activeBrush;
 	//UI Elements
 	vector<ui::Button*> menuButtons;
-	vector<ui::Button*> toolButtons;
+	vector<ToolButton*> toolButtons;
 	ui::Button * searchButton;
     ui::Button * reloadButton;
     ui::Button * saveSimulationButton;
@@ -39,6 +47,10 @@ private:
     ui::Button * displayModeButton;
 	ui::Button * pauseButton;
 	ui::Point currentMouse;
+
+	bool drawModeReset;
+	ui::Point drawPoint1;
+	ui::Point drawPoint2;
 public:
     GameView();
 	void AttachController(GameController * _c){ c = _c; }
@@ -49,7 +61,7 @@ public:
 	void NotifyBrushChanged(GameModel * sender);
 	void NotifyMenuListChanged(GameModel * sender);
 	void NotifyToolListChanged(GameModel * sender);
-	void NotifyActiveToolChanged(GameModel * sender);
+	void NotifyActiveToolsChanged(GameModel * sender);
 	void NotifyUserChanged(GameModel * sender);
 	void NotifyZoomChanged(GameModel * sender);
 	virtual void OnMouseMove(int x, int y, int dx, int dy);

@@ -147,10 +147,35 @@ ui::Point GameController::PointTranslate(ui::Point point)
 	return point;
 }
 
-void GameController::DrawPoints(queue<ui::Point*> & pointQueue)
+void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point point2)
 {
 	Simulation * sim = gameModel->GetSimulation();
-	Tool * activeTool = gameModel->GetActiveTool();
+	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
+	Brush * cBrush = gameModel->GetBrush();
+	if(!activeTool || !cBrush)
+		return;
+	activeTool->DrawRect(sim, cBrush, point1, point2);
+}
+
+void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point point2)
+{
+	Simulation * sim = gameModel->GetSimulation();
+	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
+	Brush * cBrush = gameModel->GetBrush();
+	if(!activeTool || !cBrush)
+		return;
+	activeTool->DrawLine(sim, cBrush, point1, point2);
+}
+
+void GameController::DrawFill(int toolSelection, ui::Point point)
+{
+
+}
+
+void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueue)
+{
+	Simulation * sim = gameModel->GetSimulation();
+	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 	{
@@ -249,9 +274,9 @@ void GameController::SetActiveMenu(Menu * menu)
 	gameModel->SetActiveMenu(menu);
 }
 
-void GameController::SetActiveTool(Tool * tool)
+void GameController::SetActiveTool(int toolSelection, Tool * tool)
 {
-	gameModel->SetActiveTool(tool);
+	gameModel->SetActiveTool(toolSelection, tool);
 }
 
 void GameController::OpenSearch()

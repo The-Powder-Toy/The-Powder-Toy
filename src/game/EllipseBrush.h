@@ -19,7 +19,7 @@ public:
 
 	};
 	//Draw the brush outline onto the screen
-	virtual void Render(Graphics * g, ui::Point position)
+	virtual void RenderPoint(Graphics * g, ui::Point position)
 	{
 		if(!bitmap)
 			GenerateBitmap();

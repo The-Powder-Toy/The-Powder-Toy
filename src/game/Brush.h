@@ -35,8 +35,29 @@ public:
 		if(bitmap)
 			delete bitmap;
 	}
+	virtual void RenderRect(Graphics * g, ui::Point position1, ui::Point position2)
+	{
+		int width, height, t;
+		width = position2.X-position1.X;
+		height = position2.Y-position1.Y;
+		if(height<0)
+		{
+			position1.Y += height;
+			height *= -1;
+		}
+		if(width<0)
+		{
+			position1.X += width;
+			width *= -1;
+		}
+		g->fillrect(position1.X-1, position1.Y-1, width+2, height+2, 255, 0, 255, 70);
+	}
+	virtual void RenderLine(Graphics * g, ui::Point position1, ui::Point position2)
+	{
+		g->blend_line(position1.X, position1.Y, position2.X, position2.Y, 255, 0, 255, 70);
+	}
 	//Draw the brush outline onto the screen
-	virtual void Render(Graphics * g, ui::Point position)
+	virtual void RenderPoint(Graphics * g, ui::Point position)
 	{
 		g->fillrect(position.X-size.X-1, position.Y-size.Y-1, (size.X*2)+2, (size.Y*2)+2, 255, 0, 255, 70);
 	}
