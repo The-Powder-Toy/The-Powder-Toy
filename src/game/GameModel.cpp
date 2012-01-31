@@ -47,6 +47,11 @@ GameModel::GameModel():
 	activeTools[0] = new ElementTool(1, "TURD", 0, 0, 0);
 	activeTools[1] = new ElementTool(0, "TURD", 0, 0, 0);
 	//activeTool[1] = new ElementTool(0, "TURD", 0, 0, 0);
+	std::cout << Client::Ref().GetAuthUser().Username << std::endl;
+	if(Client::Ref().GetAuthUser().ID)
+	{
+		currentUser = Client::Ref().GetAuthUser();
+	}
 }
 
 GameModel::~GameModel()
@@ -108,6 +113,8 @@ void GameModel::AddObserver(GameView * observer){
 	observer->NotifyBrushChanged(this);
 	observer->NotifyMenuListChanged(this);
 	observer->NotifyToolListChanged(this);
+	observer->NotifyUserChanged(this);
+	observer->NotifyZoomChanged(this);
 }
 
 void GameModel::SetActiveMenu(Menu * menu)

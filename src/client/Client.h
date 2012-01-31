@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <vector>
+#include <fstream>
 
 #include "Config.h"
 #include "HTTP.h"
@@ -10,6 +11,10 @@
 #include "search/Save.h"
 #include "Singleton.h"
 #include "User.h"
+
+#include "cajun/reader.h"
+#include "cajun/writer.h"
+#include "cajun/elements.h"
 
 enum LoginStatus {
 	LoginOkay, LoginError
@@ -34,6 +39,9 @@ private:
 	int activeThumbRequestCompleteTimes[IMGCONNS];
 	std::string activeThumbRequestIDs[IMGCONNS];
 public:
+	//Config file handle
+	json::Object configDocument;
+
 	Client();
 	~Client();
 

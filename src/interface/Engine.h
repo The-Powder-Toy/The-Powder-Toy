@@ -38,8 +38,10 @@ namespace ui
 		inline bool Running() { return running_; }
 		void Exit();
 
-		void Tick(float dt);
+		void Tick();
 		void Draw();
+
+		void SetFps(float fps);
 
 		inline int GetMouseX() { return mousex_; }
 		inline int GetMouseY() { return mousey_; }
@@ -54,6 +56,8 @@ namespace ui
 		float FpsLimit;
 		Graphics * g;
 	private:
+		float dt;
+		float fps;
 		pixel * lastBuffer;
 		std::stack<pixel*> prevBuffers;
 		std::stack<Window*> windows;

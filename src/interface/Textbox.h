@@ -19,6 +19,7 @@ class Textbox : public Component
 {
 protected:
 	std::string text;
+	std::string displayText;
 	ui::Point textPosition;
 	HorizontalAlignment textHAlign;
 	VerticalAlignment textVAlign;

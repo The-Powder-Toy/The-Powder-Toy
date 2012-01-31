@@ -14,15 +14,11 @@
 
 #include "search/Save.h"
 
-#include "cajun/reader.h"
-#include "cajun/writer.h"
-#include "cajun/elements.h"
-
 Client::Client():
 	authUser(0, "")
 {
 	int i = 0;
-	http_init(NULL);
+	std::string proxyString("");
 	for(i = 0; i < THUMB_CACHE_SIZE; i++)
 	{
 		thumbnailCache[i] = NULL;
@@ -33,13 +29,80 @@ Client::Client():
 		activeThumbRequestTimes[i] = 0;
 		activeThumbRequestCompleteTimes[i] = 0;
 	}
+
+	//Read config
+	std::ifstream configFile;
+	configFile.open("powder.pref", ios::binary);
+	if(configFile)
+	{
+		int fsize = configFile.tellg();
+		configFile.seekg(0, std::ios::end);
+		fsize = configFile.tellg() - fsize;
+		configFile.seekg(0, ios::beg);
+		if(fsize)
+		{
+			json::Reader::Read(configDocument, configFile);
+			try
+			{
+				authUser.ID = ((json::Number)(configDocument["User"]["ID"])).Value();
+				authUser.SessionID = ((json::String)(configDocument["User"]["SessionID"])).Value();
+				authUser.SessionKey = ((json::String)(configDocument["User"]["SessionKey"])).Value();
+				authUser.Username = ((json::String)(configDocument["User"]["Username"])).Value();
+			}
+			catch (json::Exception &e)
+			{
+				authUser = User(0, "");
+				std::cerr << "Error: Client [Read User data from pref] " << e.what() << std::endl;
+			}
+			try
+			{
+				proxyString = ((json::String)(configDocument["Proxy"])).Value();
+			}
+			catch (json::Exception &e)
+			{
+				proxyString = "";
+				std::cerr << "Error: Client [Read Proxy from pref] " << e.what() << std::endl;
+			}
+		}
+		configFile.close();
+	}
+
+	if(proxyString.length())
+	{
+		http_init((char *)proxyString.c_str());
+	}
+	else
+	{
+		http_init(NULL);
+	}
 }
 
 Client::~Client()
 {
 	ClearThumbnailRequests();
 	http_done();
+
+	//Save config
+	std::ofstream configFile;
+	configFile.open("powder.pref", ios::trunc);
+	if(configFile)
+	{
+		if(authUser.ID)
+		{
+			configDocument["User"]["ID"] = json::Number(authUser.ID);
+			configDocument["User"]["SessionID"] = json::String(authUser.SessionID);
+			configDocument["User"]["SessionKey"] = json::String(authUser.SessionKey);
+			configDocument["User"]["Username"] = json::String(authUser.Username);
+		}
+		else
+		{
+			configDocument["User"] = json::Null();
+		}
+		json::Writer::Write(configDocument, configFile);
+		configFile.close();
+	}
 }
+
 
 void Client::SetAuthUser(User user)
 {

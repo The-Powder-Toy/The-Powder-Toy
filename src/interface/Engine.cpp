@@ -124,7 +124,7 @@ void Engine::SetSize(int width, int height)
 	height_ = height;
 }
 
-void Engine::Tick(float dt)
+void Engine::Tick()
 {
 	if(state_ != NULL)
 		state_->DoTick(dt);
@@ -175,7 +175,20 @@ void Engine::Draw()
 	}
 	if(state_)
 		state_->DoDraw();
+
+	char fpsText[512];
+	sprintf(fpsText, "FPS: %.2f, Delta: %.3f", fps, dt);
+	ui::Engine::Ref().g->drawtext(10, 10, fpsText, 255, 255, 255, 255);
 	g->Blit();
+}
+
+void Engine::SetFps(float fps)
+{
+	this->fps = fps;
+	if(FpsLimit > 2.0f)
+		this->dt = FpsLimit/fps;
+	else
+		this->dt = 1.0f;
 }
 
 void Engine::onKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)

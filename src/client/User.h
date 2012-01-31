@@ -10,6 +10,11 @@
 
 #include <string>
 
+enum Elevation
+{
+	ElevationAdmin, ElevationModerator, ElevationNone
+};
+
 class User
 {
 public:
@@ -17,9 +22,13 @@ public:
 	std::string Username;
 	std::string SessionID;
 	std::string SessionKey;
+	Elevation UserElevation;
 	User(int id, std::string username):
 		ID(id),
-		Username(username)
+		Username(username),
+		SessionID(""),
+		SessionKey(""),
+		UserElevation(ElevationNone)
 	{
 
 	}

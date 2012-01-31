@@ -18,6 +18,7 @@ Textbox::Textbox(Point position, Point size, std::string textboxText):
 	actionCallback(NULL),
 	masked(false)
 {
+	SetText(textboxText);
 	TextPosition();
 	cursor = text.length();
 }
@@ -30,7 +31,7 @@ Textbox::~Textbox()
 
 void Textbox::TextPosition()
 {
-	std::string tempText = text;
+	std::string tempText = displayText;
 	if(tempText.length() && cursor)
 	{
 		tempText.erase(cursor, tempText.length()-cursor);
@@ -60,16 +61,27 @@ void Textbox::TextPosition()
 		textPosition.X = 3;
 		break;
 	case AlignCentre:
-		textPosition.X = (Size.X-Graphics::textwidth((char *)text.c_str()))/2;
+		textPosition.X = (Size.X-Graphics::textwidth((char *)displayText.c_str()))/2;
 		break;
 	case AlignRight:
-		textPosition.X = (Size.X-Graphics::textwidth((char *)text.c_str()))-2;
+		textPosition.X = (Size.X-Graphics::textwidth((char *)displayText.c_str()))-2;
 		break;
 	}
 }
 
 void Textbox::SetText(std::string text)
 {
+	if(masked)
+	{
+		char tempText[text.length()];
+		memset(tempText, 0x8d, text.length());
+		tempText[text.length()] = 0;
+		displayText = tempText;
+	}
+	else
+	{
+		displayText = text;
+	}
 	this->text = text;
 	TextPosition();
 }
@@ -151,6 +163,7 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 		cursor = 0;
 		text = "";
 	}
+	SetText(text);
 	TextPosition();
 }
 
@@ -166,15 +179,5 @@ void Textbox::Draw(const Point& screenPos)
 	{
 		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 160, 160, 160, 255);
 	}
-	if(masked)
-	{
-		char tempText[text.length()];
-		memset(tempText, 'a', text.length());
-		tempText[text.length()] = 0;
-		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, tempText, 255, 255, 255, 255);
-	}
-	else
-	{
-		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, text, 255, 255, 255, 255);
-	}
+	g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, displayText, 255, 255, 255, 255);
 }

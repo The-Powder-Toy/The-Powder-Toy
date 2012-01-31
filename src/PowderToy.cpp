@@ -73,6 +73,7 @@ SDL_Surface * SDLOpen()
 #endif
 
 	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
+	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	atexit(SDL_Quit);
 	return SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_SWSURFACE);
 }
@@ -148,7 +149,7 @@ int main(int argc, char * argv[])
 			event.type = 0; //Clear last event
 		}
 
-		engine->Tick(delta);
+		engine->Tick();
 		engine->Draw();
 
 		currentFrame++;
@@ -177,6 +178,7 @@ int main(int argc, char * argv[])
 				delta = 1.0f;
 			}
 		}
+		engine->SetFps(fps);
 	}
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;

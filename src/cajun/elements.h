@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <deque>
 #include <list>
+//#include <iterator>
 #include <string>
 #include <stdexcept>
 
@@ -292,8 +293,45 @@ public:
    bool operator == (const Null& trivial) const;
 };
 
+////////////////////////
+// TrivialType_T members
+
+template <typename DataTypeT>
+TrivialType_T<DataTypeT>::TrivialType_T(const DataTypeT& t) :
+   m_tValue(t) {}
+
+template <typename DataTypeT>
+TrivialType_T<DataTypeT>::operator DataTypeT&()
+{
+   return Value();
+}
+
+template <typename DataTypeT>
+TrivialType_T<DataTypeT>::operator const DataTypeT&() const
+{
+   return Value();
+}
+
+template <typename DataTypeT>
+DataTypeT& TrivialType_T<DataTypeT>::Value()
+{
+   return m_tValue;
+}
+
+template <typename DataTypeT>
+const DataTypeT& TrivialType_T<DataTypeT>::Value() const
+{
+   return m_tValue;
+}
+
+template <typename DataTypeT>
+bool TrivialType_T<DataTypeT>::operator == (const TrivialType_T<DataTypeT>& trivial) const
+{
+   return m_tValue == trivial.m_tValue;
+}
+
 
 } // End namespace
 
 
-#include "elements.inl"
+//#include "elements.inl"

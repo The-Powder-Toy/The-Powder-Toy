@@ -1826,6 +1826,12 @@ void Renderer::RemoveRenderMode(unsigned int mode)
 	CompileRenderMode();
 }
 
+void Renderer::SetRenderMode(std::vector<unsigned int> render)
+{
+	render_modes = render;
+	CompileRenderMode();
+}
+
 void Renderer::CompileDisplayMode()
 {
 	display_mode = 0;
@@ -1856,6 +1862,12 @@ void Renderer::RemoveDisplayMode(unsigned int mode)
 			i = 0;
 		}
 	}
+	CompileDisplayMode();
+}
+
+void Renderer::SetDisplayMode(std::vector<unsigned int> display)
+{
+	display_modes = display;
 	CompileDisplayMode();
 }
 

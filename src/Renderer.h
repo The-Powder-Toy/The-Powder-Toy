@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Config.h"
+#include "client/Client.h"
 #include "simulation/Simulation.h"
 #include "Graphics.h"
 #include "interface/Point.h"
@@ -69,9 +70,11 @@ public:
 	void CompileDisplayMode();
 	void CompileRenderMode();
 	void AddRenderMode(unsigned int mode);
+	void SetRenderMode(std::vector<unsigned int> render);
 	void RemoveRenderMode(unsigned int mode);
 	void AddDisplayMode(unsigned int mode);
 	void RemoveDisplayMode(unsigned int mode);
+	void SetDisplayMode(std::vector<unsigned int> display);
 	void SetColourMode(unsigned int mode);
 
 	Renderer(Graphics * g, Simulation * sim);

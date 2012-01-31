@@ -31,9 +31,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "elements.h"
 #include <iostream>
 #include <vector>
+#include "elements.h"
 
 namespace json
 {
@@ -145,4 +145,4 @@ private:
 } // End namespace
 
 
-#include "reader.inl"
+//#include "reader.inl"
