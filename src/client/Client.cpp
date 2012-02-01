@@ -9,6 +9,7 @@
 #include "Client.h"
 #include "MD5.h"
 #include "Graphics.h"
+#include "Misc.h"
 
 #include "interface/Point.h"
 
@@ -434,12 +435,12 @@ std::vector<Save*> * Client::SearchSaves(int start, int count, string query, str
 	{
 		urlStream << "&Search_Query=";
 		if(query.length())
-			urlStream << query;
+			urlStream << URLEscape(query);
 		if(sort == "date")
 		{
 			if(query.length())
-				urlStream << " ";
-			urlStream << "sort:" << sort;
+				urlStream << URLEscape(" ");
+			urlStream << URLEscape("sort:") << URLEscape(sort);
 		}
 
 	}

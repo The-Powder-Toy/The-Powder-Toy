@@ -33,6 +33,10 @@ GameModel::GameModel():
 			menuList[sim->ptypes[i].menusection]->AddTool(tempTool);
 		}
 	}
+
+	//Build menu for GOL types
+	//for(int i = 0; i < GOL_)
+
 	//Build other menus from wall data
 	for(int i = 0; i < UI_WALLCOUNT; i++)
 	{

@@ -22,6 +22,24 @@
 #define BUILD_NUM 133
 //VersionInfoEnd
 
+#ifdef BETA
+#define IDENT_RELTYPE "B"
+#else
+#define IDENT_RELTYPE "S"
+#endif
+
+#ifdef WIN32
+#define IDENT_PLATFORM "WIN32"
+#elif defined(MACOSX)
+#define IDENT_PLATFORM "MACOSX"
+#elif defined(LIN32)
+#define IDENT_PLATFORM "LIN32"
+#elif defined(LIN64)
+#define IDENT_PLATFORM "LIN64"
+#else
+#define IDENT_PLATFORM "UNKNOWN"
+#endif
+
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter
 
 #define MTOS_EXPAND(str) #str

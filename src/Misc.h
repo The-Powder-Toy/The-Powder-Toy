@@ -69,6 +69,8 @@ int load_string(FILE *f, char *str, int max);
 
 void strcaturl(char *dst, char *src);
 
+std::string URLEscape(std::string source);
+
 void strappend(char *dst, char *src);
 
 void *file_load(char *fn, int *size);

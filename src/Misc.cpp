@@ -205,6 +205,35 @@ void strcaturl(char *dst, char *src)
 	*d = 0;
 }
 
+std::string URLEscape(std::string source)
+{
+	char * src = (char *)source.c_str();
+	char * dst = (char *)calloc((source.length()*3)+2, 1);
+	char *d;
+	unsigned char *s;
+
+	for (d=dst; *d; d++) ;
+
+	for (s=(unsigned char *)src; *s; s++)
+	{
+		if ((*s>='0' && *s<='9') ||
+		        (*s>='a' && *s<='z') ||
+		        (*s>='A' && *s<='Z'))
+			*(d++) = *s;
+		else
+		{
+			*(d++) = '%';
+			*(d++) = hex[*s>>4];
+			*(d++) = hex[*s&15];
+		}
+	}
+	*d = 0;
+
+	std::string finalString(dst);
+	free(dst);
+	return finalString;
+}
+
 void strappend(char *dst, char *src)
 {
 	char *d;
