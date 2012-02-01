@@ -993,6 +993,11 @@ int Graphics::textnwidth(char *s, int n)
 	{
 		if (!n)
 			break;
+		if(((char)*s)=='\b')
+		{
+			s++;
+			continue;
+		}
 		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
 		n--;
 	}
@@ -1035,6 +1040,11 @@ int Graphics::textwidthx(char *s, int w)
 	int x=0,n=0,cw;
 	for (; *s; s++)
 	{
+		if((char)*s == '\b')
+		{
+			s++;
+			continue;
+		}
 		cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
 		if (x+(cw/2) >= w)
 			break;

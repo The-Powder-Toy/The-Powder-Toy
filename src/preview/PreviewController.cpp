@@ -5,6 +5,7 @@
  *      Author: Simon
  */
 
+#include <sstream>
 #include "PreviewController.h"
 #include "PreviewView.h"
 #include "PreviewModel.h"
@@ -41,6 +42,16 @@ bool PreviewController::GetDoOpen()
 void PreviewController::DoOpen()
 {
 	previewModel->SetDoOpen(true);
+}
+
+void PreviewController::OpenInBrowser()
+{
+	if(previewModel->GetSave())
+	{
+		std::stringstream uriStream;
+		uriStream << "http://" << SERVER << "/Browse/View.html?ID=" << previewModel->GetSave()->id;
+		OpenURI(uriStream.str());
+	}
 }
 
 void PreviewController::Exit()

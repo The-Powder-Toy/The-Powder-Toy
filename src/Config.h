@@ -57,6 +57,8 @@
 #define BARSIZE 0
 #else
 #define MENUSIZE 40
+//#define MENUSIZE 20
+//#define BARSIZE 50
 #define BARSIZE 17
 #endif
 #define XRES	612

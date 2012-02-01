@@ -29,6 +29,7 @@ public:
 	class LoginAction;
 	class CancelAction;
 	LoginView();
+	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	void AttachController(LoginController * c_) { c = c_; }
 	void NotifyStatusChanged(LoginModel * sender);
 	virtual void OnDraw();

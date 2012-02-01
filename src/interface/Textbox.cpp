@@ -16,7 +16,8 @@ Textbox::Textbox(Point position, Point size, std::string textboxText):
 	textVAlign(AlignMiddle),
 	textHAlign(AlignCentre),
 	actionCallback(NULL),
-	masked(false)
+	masked(false),
+	border(true)
 {
 	SetText(textboxText);
 	TextPosition();
@@ -31,11 +32,9 @@ Textbox::~Textbox()
 
 void Textbox::TextPosition()
 {
-	std::string tempText = displayText;
-	if(tempText.length() && cursor)
+	if(cursor)
 	{
-		tempText.erase(cursor, tempText.length()-cursor);
-		cursorPosition = Graphics::textwidth((char *)tempText.c_str());
+		cursorPosition = Graphics::textnwidth((char *)displayText.c_str(), cursor);
 	}
 	else
 	{
@@ -71,6 +70,7 @@ void Textbox::TextPosition()
 
 void Textbox::SetText(std::string text)
 {
+	cursor = text.length();
 	if(masked)
 	{
 		char tempText[text.length()];
@@ -83,6 +83,13 @@ void Textbox::SetText(std::string text)
 		displayText = text;
 	}
 	this->text = text;
+	TextPosition();
+}
+
+
+void Textbox::SetDisplayText(std::string text)
+{
+	displayText = text;
 	TextPosition();
 }
 
@@ -153,17 +160,18 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 			cursor++;
 			changed = true;
 		}
-		if(changed && actionCallback)
-		{
-			actionCallback->TextChangedCallback(this);
-		}
 	}
 	catch(std::out_of_range &e)
 	{
 		cursor = 0;
 		text = "";
 	}
-	SetText(text);
+	if(changed)
+	{
+		SetText(text);
+		if(actionCallback)
+			actionCallback->TextChangedCallback(this);
+	}
 	TextPosition();
 }
 
@@ -172,12 +180,12 @@ void Textbox::Draw(const Point& screenPos)
 	Graphics * g = Engine::Ref().g;
 	if(IsFocused())
 	{
-		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
+		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
 		g->draw_line(screenPos.X+textPosition.X+cursorPosition, screenPos.Y+3, screenPos.X+textPosition.X+cursorPosition, screenPos.Y+12, 255, 255, 255, XRES+BARSIZE);
 	}
 	else
 	{
-		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 160, 160, 160, 255);
+		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 160, 160, 160, 255);
 	}
 	g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, displayText, 255, 255, 255, 255);
 }

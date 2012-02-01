@@ -55,6 +55,24 @@ LoginView::LoginView():
 	AddComponent(infoLabel);
 }
 
+void LoginView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	switch(key)
+	{
+	case KEY_TAB:
+		if(IsFocused(usernameField))
+			FocusComponent(passwordField);
+		else
+			FocusComponent(usernameField);
+		break;
+	case KEY_ENTER:
+	case KEY_RETURN:
+		if(IsFocused(passwordField))
+			loginButton->DoAction();
+		break;
+	}
+}
+
 void LoginView::NotifyStatusChanged(LoginModel * sender)
 {
 	infoLabel->SetText(sender->GetStatusText());

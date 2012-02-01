@@ -20,6 +20,7 @@ class PreviewView: public ui::Window {
 	PreviewController * c;
 	Thumbnail * savePreview;
 	ui::Button * openButton;
+	ui::Button * browserOpenButton;
 	ui::Label * saveNameLabel;
 	ui::Label * authorDateLabel;
 	int votesUp;

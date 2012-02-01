@@ -277,6 +277,7 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 
 void GameView::NotifyToolListChanged(GameModel * sender)
 {
+	//int currentY = YRES+MENUSIZE-36;
 	int currentX = XRES+BARSIZE-56;
 	int totalColour;
 	for(int i = 0; i < menuButtons.size(); i++)
@@ -299,8 +300,10 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	vector<Tool*> toolList = sender->GetToolList();
 	for(int i = 0; i < toolList.size(); i++)
 	{
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES), ui::Point(32, 16), toolList[i]->GetName());
-		currentX -= 36;
+		//ToolButton * tempButton = new ToolButton(ui::Point(XRES+1, currentY), ui::Point(28, 15), toolList[i]->GetName());
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(28, 15), toolList[i]->GetName());
+		//currentY -= 17;
+		currentX -= 32;
 		tempButton->SetActionCallback(new ToolAction(this, toolList[i]));
 
 		tempButton->SetBackgroundColour(ui::Colour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue));
@@ -506,6 +509,9 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		isMouseDown = false;
 		zoomCursorFixed = false;
 		c->SetZoomEnabled(true);
+		break;
+	case '`':
+		c->ShowConsole();
 		break;
 	}
 }

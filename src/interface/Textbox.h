@@ -17,6 +17,7 @@ public:
 };
 class Textbox : public Component
 {
+	friend class TextboxAction;
 protected:
 	std::string text;
 	std::string displayText;
@@ -26,12 +27,14 @@ protected:
 	int cursor, cursorPosition;
 	TextboxAction *actionCallback;
 	bool masked;
+	bool border;
 public:
 	Textbox(Point position, Point size, std::string textboxText);
 	virtual ~Textbox();
 
 	virtual void TextPosition();
 	virtual void SetText(std::string text);
+	virtual void SetDisplayText(std::string text);
 	std::string GetText();
 	HorizontalAlignment GetHAlignment() { return textHAlign; }
 	VerticalAlignment GetVAlignment() { return textVAlign; }
@@ -41,6 +44,8 @@ public:
 
 	void SetHidden(bool hidden) { masked = hidden; }
 	bool GetHidden() { return masked; }
+
+	void SetBorder(bool border) {this->border = border;}
 
 	virtual void Draw(const Point& screenPos);
 };

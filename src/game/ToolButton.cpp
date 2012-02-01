@@ -43,11 +43,11 @@ void ToolButton::Draw(const ui::Point& screenPos)
 
 	if (totalColour<544)
 	{
-		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, ButtonText.c_str(), 255, 255, 255, 255);
+		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, buttonDisplayText.c_str(), 255, 255, 255, 255);
 	}
 	else
 	{
-		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, ButtonText.c_str(), 0, 0, 0, 255);
+		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, buttonDisplayText.c_str(), 0, 0, 0, 255);
 	}
 	if(currentSelection!=-1)
 	{

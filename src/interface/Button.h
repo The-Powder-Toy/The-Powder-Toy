@@ -33,8 +33,6 @@ public:
 	bool Toggleable;
 	bool Enabled;
 
-	std::string ButtonText;
-
 	virtual void OnMouseClick(int x, int y, unsigned int button);
 	virtual void OnMouseUp(int x, int y, unsigned int button);
 	//virtual void OnMouseUp(int x, int y, unsigned int button);
@@ -71,6 +69,9 @@ protected:
 	Colour background, activeBackground;
 	Colour border, activeBorder;
 	Colour text, activeText;
+
+	std::string buttonDisplayText;
+	std::string ButtonText;
 
 	bool isButtonDown, state, isMouseInside, isTogglable, toggle;
 	ButtonAction * actionCallback;

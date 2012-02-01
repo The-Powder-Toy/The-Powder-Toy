@@ -95,6 +95,10 @@ GameController::~GameController()
 	{
 		delete loginWindow;
 	}
+	if(console)
+	{
+		delete console;
+	}
 	if(ui::Engine::Ref().GetWindow() == gameView)
 	{
 		ui::Engine::Ref().CloseWindow();
@@ -299,6 +303,12 @@ void GameController::OpenTags()
 void GameController::OpenDisplayOptions()
 {
 	//TODO: Implement
+}
+
+void GameController::ShowConsole()
+{
+	console = new ConsoleController(NULL);
+	ui::Engine::Ref().ShowWindow(console->GetView());
 }
 
 void GameController::OpenRenderOptions()

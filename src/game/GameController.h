@@ -10,6 +10,7 @@
 #include "render/RenderController.h"
 #include "login/LoginController.h"
 #include "ssave/SSaveController.h"
+#include "console/ConsoleController.h"
 #include "Menu.h"
 
 using namespace std;
@@ -26,6 +27,7 @@ private:
 	RenderController * renderOptions;
 	LoginController * loginWindow;
 	SSaveController * ssave;
+	ConsoleController * console;
 public:
 	class LoginCallback;
 	class SearchCallback;
@@ -57,6 +59,7 @@ public:
 	void ReloadSim();
 	void Vote(int direction);
 	void ChangeBrush();
+	void ShowConsole();
 	ui::Point PointTranslate(ui::Point point);
 };
 

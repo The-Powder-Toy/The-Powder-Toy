@@ -621,6 +621,29 @@ void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255(0-360 for
 	*b += m;
 }
 
+void OpenURI(std::string uri) {
+#ifdef WIN32
+	ShellExecute(0, "OPEN", uri.c_str(), NULL, NULL, 0);
+#elif MACOSX
+	char *cmd = malloc(7+uri.length());
+	strcpy(cmd, "open ");
+	strappend(cmd, uri.c_str());
+	system(cmd);
+#elif LIN32
+	char *cmd = malloc(11+uri.length());
+	strcpy(cmd, "xdg-open ");
+	strappend(cmd, uri.c_str());
+	system(cmd);
+#elif LIN64
+	char *cmd = malloc(11+uri.length());
+	strcpy(cmd, "xdg-open ");
+	strappend(cmd, uri.c_str());
+	system(cmd);
+#else
+	printf("Cannot open browser\n");
+#endif
+}
+
 void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB values to 0-255(0-360 for H) HSV
 {
 	float rr, gg, bb, a,x,c,d;

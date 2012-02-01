@@ -41,12 +41,19 @@ GameModel::GameModel():
 		//sim->wtypes[i]
 	}
 
+	//Set default brush palette
 	brushList.push_back(new Brush(ui::Point(4, 4)));
 	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
 
-	activeTools[0] = new ElementTool(1, "TURD", 0, 0, 0);
-	activeTools[1] = new ElementTool(0, "TURD", 0, 0, 0);
-	//activeTool[1] = new ElementTool(0, "TURD", 0, 0, 0);
+	//Set default tools
+	activeTools[0] = menuList[SC_POWDERS]->GetToolList()[0];
+	activeTools[1] = menuList[SC_SPECIAL]->GetToolList()[0];
+
+	//Set default menu
+	activeMenu = menuList[SC_POWDERS];
+	toolList = menuList[SC_POWDERS]->GetToolList();
+
+	//Load last user
 	std::cout << Client::Ref().GetAuthUser().Username << std::endl;
 	if(Client::Ref().GetAuthUser().ID)
 	{

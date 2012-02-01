@@ -25,11 +25,27 @@ PreviewView::PreviewView():
 			v->c->Exit();
 		}
 	};
-	openButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(75, 16), "Open");
+	openButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(50, 16), "Open");
 	openButton->SetAlignment(AlignLeft, AlignMiddle);
 	openButton->SetIcon(IconOpen);
 	openButton->SetActionCallback(new OpenAction(this));
 	AddComponent(openButton);
+
+	class BrowserOpenAction: public ui::ButtonAction
+	{
+		PreviewView * v;
+	public:
+		BrowserOpenAction(PreviewView * v_){ v = v_; }
+		virtual void ActionCallback(ui::Button * sender)
+		{
+			v->c->OpenInBrowser();
+		}
+	};
+	browserOpenButton = new ui::Button(ui::Point((XRES/2)-90, Size.Y-16), ui::Point(90, 16), "Open in browser");
+	browserOpenButton->SetAlignment(AlignLeft, AlignMiddle);
+	browserOpenButton->SetIcon(IconOpen);
+	browserOpenButton->SetActionCallback(new BrowserOpenAction(this));
+	AddComponent(browserOpenButton);
 
 	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+15), ui::Point(100, 16), "");
 	saveNameLabel->SetAlignment(AlignLeft, AlignBottom);

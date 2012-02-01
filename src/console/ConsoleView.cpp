@@ -1,0 +1,90 @@
+/*
+ * ConsoleView.cpp
+ *
+ *  Created on: Jan 31, 2012
+ *      Author: Simon
+ */
+
+#include "ConsoleView.h"
+#include "interface/Keys.h"
+
+ConsoleView::ConsoleView():
+	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, 150)),
+	commandField(NULL)
+{
+	class CommandHighlighter: public ui::TextboxAction
+	{
+		ConsoleView * v;
+	public:
+		CommandHighlighter(ConsoleView * v_) { v = v_; }
+		void TextChangedCallback(ui::Textbox * sender)
+		{
+			sender->SetDisplayText(v->c->FormatCommand(sender->GetText()));
+		}
+	};
+	commandField = new ui::Textbox(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "");
+	commandField->SetAlignment(AlignLeft, AlignBottom);
+	commandField->SetActionCallback(new CommandHighlighter(this));
+	AddComponent(commandField);
+	FocusComponent(commandField);
+	commandField->SetBorder(false);
+}
+
+void ConsoleView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	switch(key)
+	{
+	case KEY_RETURN:
+	case KEY_ENTER:
+		c->EvaluateCommand(commandField->GetText());
+		commandField->SetText("");
+		break;
+	case KEY_DOWN:
+		c->NextCommand();
+		break;
+	case KEY_UP:
+		c->PreviousCommand();
+		break;
+	}
+}
+
+void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
+{
+	for(int i = 0; i < commandList.size(); i++)
+	{
+		RemoveComponent(commandList[i]);
+		delete commandList[i];
+	}
+	commandList.clear();
+	std::deque<ConsoleCommand> commands = sender->GetPreviousCommands();
+	int currentY = Size.Y - 32;
+	if(commands.size())
+		for(int i = commands.size()-1; i >= 0; i--)
+		{
+			if(currentY <= 0)
+				break;
+			ui::Label * tempLabel = new ui::Label(ui::Point(0, currentY), ui::Point(Size.X, 16), commands[i].Command);
+			tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+			commandList.push_back(tempLabel);
+			AddComponent(tempLabel);
+			currentY-=16;
+		}
+}
+
+void ConsoleView::NotifyCurrentCommandChanged(ConsoleModel * sender)
+{
+	commandField->SetText(sender->GetCurrentCommand().Command);
+}
+
+
+void ConsoleView::OnDraw()
+{
+	Graphics * g = ui::Engine::Ref().g;
+	g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 0, 0, 0, 110);
+	g->blend_line(Position.X, Position.Y+Size.Y-16, Position.X+Size.X, Position.Y+Size.Y-16, 255, 255, 255, 160);
+	g->blend_line(Position.X, Position.Y+Size.Y, Position.X+Size.X, Position.Y+Size.Y, 255, 255, 255, 200);
+}
+
+ConsoleView::~ConsoleView() {
+}
+

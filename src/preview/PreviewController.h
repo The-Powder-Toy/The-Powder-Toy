@@ -24,6 +24,7 @@ public:
 	PreviewController(int saveID, ControllerCallback * callback);
 	void Exit();
 	void DoOpen();
+	void OpenInBrowser();
 	bool GetDoOpen();
 	Save * GetSave();
 	PreviewView * GetView() { return previewView; }
