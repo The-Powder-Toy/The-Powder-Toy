@@ -549,7 +549,7 @@ void GameView::OnTick(float dt)
 			c->DrawPoints(toolIndex, pointQueue);
 		}
 	}
-	if(drawMode == DrawFill)
+	if(drawMode == DrawFill && isMouseDown)
 	{
 		c->DrawFill(toolIndex, currentMouse);
 	}

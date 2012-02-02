@@ -173,7 +173,12 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 
 void GameController::DrawFill(int toolSelection, ui::Point point)
 {
-
+	Simulation * sim = gameModel->GetSimulation();
+	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
+	Brush * cBrush = gameModel->GetBrush();
+	if(!activeTool || !cBrush)
+		return;
+	activeTool->DrawFill(sim, cBrush, point);
 }
 
 void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueue)

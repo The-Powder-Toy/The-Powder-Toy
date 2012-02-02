@@ -31,6 +31,7 @@ public:
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) {}
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {}
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {}
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) {};
 	int colRed, colBlue, colGreen;
 };
 
@@ -51,6 +52,9 @@ public:
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
 		sim->create_box(position1.X, position1.Y, position2.X, position2.Y, toolID, 0);
 	}
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
+		sim->flood_parts(position.X, position.Y, toolID, -1, -1, 0);
+	}
 };
 
 class GolTool: public Tool
@@ -69,6 +73,9 @@ public:
 	}
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
 		sim->create_box(position1.X, position1.Y, position2.X, position2.Y, PT_LIFE|(toolID<<8), 0);
+	}
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
+		sim->flood_parts(position.X, position.Y, PT_LIFE|(toolID<<8), -1, -1, 0);
 	}
 };
 
