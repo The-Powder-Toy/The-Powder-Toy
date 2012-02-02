@@ -277,6 +277,11 @@ bool GameModel::GetPaused()
 	return sim->sys_pause?true:false;
 }
 
+void GameModel::FrameStep(int frames)
+{
+	sim->framerender += frames;
+}
+
 void GameModel::ClearSimulation()
 {
 	sim->clear_sim();

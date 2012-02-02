@@ -70,6 +70,7 @@ public:
 	vector<Tool*> GetToolList();
 	void SetActiveMenu(Menu * menu);
 	Menu * GetActiveMenu();
+	void FrameStep(int frames);
 	User GetUser();
 	void SetUser(User user);
 	void SetBrush(int i);

@@ -60,6 +60,7 @@ public:
 	void Vote(int direction);
 	void ChangeBrush();
 	void ShowConsole();
+	void FrameStep();
 	ui::Point PointTranslate(ui::Point point);
 };
 

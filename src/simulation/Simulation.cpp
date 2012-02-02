@@ -2076,7 +2076,7 @@ void Simulation::update_particles_i(int start, int inc)
 	int lighting_ok=1;
 	float pGravX, pGravY, pGravD;
 
-	if (sys_pause&&lighting_recreate>0)
+	if (lighting_recreate>0)
     {
         for (i=0; i<=parts_lastActiveIndex; i++)
         {
@@ -2097,8 +2097,8 @@ void Simulation::update_particles_i(int start, int inc)
     if (lighting_recreate>21)
         lighting_recreate=21;
 
-	if (sys_pause&&!framerender)//do nothing if paused
-		return;
+	//if (sys_pause&&!framerender)//do nothing if paused
+	//	return;
 
 	//wire!
 	if(elementCount[PT_WIRE] > 0)
@@ -3078,7 +3078,8 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 	pthread_t *InterThreads;
 #endif
 
-	air->update_air();
+	if(!sys_pause||framerender)
+		air->update_air();
 
 	memset(pmap, 0, sizeof(pmap));
 	memset(photons, 0, sizeof(photons));
@@ -3130,8 +3131,11 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 		}
 	}
 
-	update_particles_i(0, 1);
+	if(!sys_pause||framerender)
+		update_particles_i(0, 1);
 
+	if(framerender)
+		framerender--;
 	// this should probably be elsewhere
 	/*for (y=0; y<YRES/CELL; y++)
 		for (x=0; x<XRES/CELL; x++)

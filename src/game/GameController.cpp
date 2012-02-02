@@ -343,6 +343,12 @@ void GameController::OpenSaveWindow()
 	}
 }
 
+void GameController::FrameStep()
+{
+	gameModel->FrameStep(1);
+	gameModel->SetPaused(true);
+}
+
 void GameController::Vote(int direction)
 {
 	if(gameModel->GetSave() && gameModel->GetUser().ID && gameModel->GetSave()->GetID() && gameModel->GetSave()->GetVote()==0)
