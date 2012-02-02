@@ -35,7 +35,11 @@ GameModel::GameModel():
 	}
 
 	//Build menu for GOL types
-	//for(int i = 0; i < GOL_)
+	for(int i = 0; i < NGOL; i++)
+	{
+		Tool * tempTool = new GolTool(i, sim->gmenu[i].name, PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour));
+		menuList[SC_LIFE]->AddTool(tempTool);
+	}
 
 	//Build other menus from wall data
 	for(int i = 0; i < UI_WALLCOUNT; i++)

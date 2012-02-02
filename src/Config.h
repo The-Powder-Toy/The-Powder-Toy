@@ -123,7 +123,7 @@ extern unsigned char ZSIZE;
 
 #define SAVE_OPS
 
-#define NGOL 25
+#define NGOL 24
 #define NGOLALT 24 //NGOL should be 24, but use this var until I find out why
 
 #define CIRCLE_BRUSH 0

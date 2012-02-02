@@ -3213,6 +3213,16 @@ Simulation::Simulation():
 	memcpy(ptransitions, ptransitionsT, sizeof(part_transition) * transitionCount);
 	free(ptransitionsT);
 
+	int golRulesCount;
+	int * golRulesT = LoadGOLRules(golRulesCount);
+	memcpy(grule, golRulesT, sizeof(int) * (golRulesCount*10));
+	free(golRulesT);
+
+	int golMenuCount;
+	gol_menu * golMenuT = LoadGOLMenu(golMenuCount);
+	memcpy(gmenu, golMenuT, sizeof(gol_menu) * golMenuCount);
+	free(golMenuT);
+
 	init_can_move();
 	clear_sim();
 }

@@ -95,7 +95,7 @@ int graphics_LIFE(GRAPHICS_FUNC_ARGS)
 		else
 			pc = PIXRGB(255, 255, 0);
 	} else {
-		//pc = gmenu[cpart->ctype].colour;
+		pc = PIXRGB(255, 255, 0);//sim->gmenu[cpart->ctype].colour;
 	}
 	*colr = PIXR(pc);
 	*colg = PIXG(pc);

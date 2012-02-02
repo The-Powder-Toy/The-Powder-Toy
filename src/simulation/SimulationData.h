@@ -75,6 +75,10 @@ struct menu_section;
 
 struct wall_type;
 
+gol_menu * LoadGOLMenu(int & golMenuCount);
+
+int * LoadGOLRules(int & golRuleCount);
+
 wall_type * LoadWalls(int & wallCount);
 
 menu_section * LoadMenus(int & menuCount);
