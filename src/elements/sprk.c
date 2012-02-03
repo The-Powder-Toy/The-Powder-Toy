@@ -119,7 +119,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 
 
 				pavg = parts_avg(r>>8, i,PT_INSL);
-				if ((rt==PT_SWCH||(rt==PT_SPRK&&parts[r>>8].ctype==PT_SWCH)) && pavg!=PT_INSL) // make sparked SWCH turn off correctly
+				if ((rt==PT_SWCH||(rt==PT_SPRK&&parts[r>>8].ctype==PT_SWCH)) && pavg!=PT_INSL && parts[i].life<4) // make sparked SWCH turn off correctly
 				{
 					if (rt==PT_SWCH&&ct==PT_PSCN&&parts[r>>8].life<10) {
 						parts[r>>8].life = 10;
@@ -130,12 +130,12 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 						parts[r>>8].life = 9;
 					}
 				}
-				else if ((ct==PT_PSCN||ct==PT_NSCN) && (rt==PT_PUMP||rt==PT_GPMP||rt==PT_HSWC||rt==PT_PBCN)) // PROP_PTOGGLE, Maybe? We seem to use 2 different methods for handling actived elements, this one seems better. Yes, use this one for new elements, PCLN is different for compatibility with existing saves
+				else if ((ct==PT_PSCN||ct==PT_NSCN) && (rt==PT_PUMP||rt==PT_GPMP||rt==PT_HSWC||rt==PT_PBCN) && parts[i].life<4) // PROP_PTOGGLE, Maybe? We seem to use 2 different methods for handling actived elements, this one seems better. Yes, use this one for new elements, PCLN is different for compatibility with existing saves
 				{
 					if (ct==PT_PSCN) parts[r>>8].life = 10;
 					else if (ct==PT_NSCN && parts[r>>8].life>=10) parts[r>>8].life = 9;
 				}
-				else if ((ct==PT_PSCN||ct==PT_NSCN) && (rt==PT_LCRY&&abs(rx)<2&&abs(ry)<2))
+				else if ((ct==PT_PSCN||ct==PT_NSCN) && (rt==PT_LCRY&&abs(rx)<2&&abs(ry)<2) && parts[i].life<4)
 				{
 					if (ct==PT_PSCN && parts[r>>8].tmp == 0) parts[r>>8].tmp = 2;
 					else if (ct==PT_NSCN && parts[r>>8].tmp == 3) parts[r>>8].tmp = 1;
@@ -150,7 +150,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 					conduct_sprk = 0;
 
 
-				if (ct==PT_METL && (rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR||(rt==PT_SPRK&&(parts[r>>8].ctype==PT_NTCT||parts[r>>8].ctype==PT_PTCT))) && pavg!=PT_INSL)
+				if (ct==PT_METL && (rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR||(rt==PT_SPRK&&(parts[r>>8].ctype==PT_NTCT||parts[r>>8].ctype==PT_PTCT))) && pavg!=PT_INSL && parts[i].life<4)
 				{
 					parts[r>>8].temp = 473.0f;
 					if (rt==PT_NTCT||rt==PT_PTCT)
@@ -182,7 +182,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 
 				if (conduct_sprk) {
 					if (rt==PT_WATR||rt==PT_SLTW) {
-						if (parts[r>>8].life==0 && (parts[i].life<2 || ((r>>8)<i && parts[i].life<3)))
+						if (parts[r>>8].life==0 && parts[i].life<3)
 						{
 							part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 							if (rt==PT_WATR) parts[r>>8].life = 6;
@@ -191,12 +191,12 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 						}
 					}
 					else if (rt==PT_INST) {
-						if (parts[i].life>=3&&parts[r>>8].life==0)
+						if (parts[r>>8].life==0 && parts[i].life<4)
 						{
 							flood_parts(x+rx,y+ry,PT_SPRK,PT_INST,-1, 0);//spark the wire
 						}
 					}
-					else if (parts[r>>8].life==0 && (parts[i].life<3 || ((r>>8)<i && parts[i].life<4))) {
+					else if (parts[r>>8].life==0 && parts[i].life<4) {
 						parts[r>>8].life = 4;
 						parts[r>>8].ctype = rt;
 						part_change_type(r>>8,x+rx,y+ry,PT_SPRK);

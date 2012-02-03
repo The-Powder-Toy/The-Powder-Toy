@@ -20,7 +20,7 @@ int update_STOR(UPDATE_FUNC_ARGS) {
 					parts[i].pavg[1] = parts[r>>8].ctype;
 					kill_part(r>>8);
 				}
-				if(parts[i].tmp && (r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_PSCN)
+				if(parts[i].tmp && (r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_PSCN && parts[r>>8].life<4)
 				{
 					for(ry1 = 1; ry1 >= -1; ry1--){
 						for(rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1-rx1+1){ // Oscilate the X starting at 0, 1, -1, 3, -5, etc (Though stop at -1)
