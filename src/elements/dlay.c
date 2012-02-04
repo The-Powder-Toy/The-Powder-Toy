@@ -7,17 +7,17 @@ int update_DLAY(UPDATE_FUNC_ARGS) {
 		parts[i].life--;
 	//if (parts[i].life==1)
 	//{
-		if (parts[i].temp>=256.0+273.15)
-			parts[i].temp=256.0+273.15;
-		if (parts[i].temp<= -256.0+273.15)
-			parts[i].temp = -256.0+273.15;
+		if (parts[i].temp>=MAX_TEMP+273.15f)
+			parts[i].temp = MAX_TEMP+273.15f;
+		if (parts[i].temp<= 1.0f+273.15f)
+			parts[i].temp = 1.0f+273.15f;
 
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if (!r)
+					if (!r || parts_avg(r>>8, i,PT_INSL)==PT_INSL)
 						continue;
 					if ((r&0xFF)==PT_SPRK && parts[i].life==0 && parts[r>>8].life>0 && parts[r>>8].life<4 && parts[r>>8].ctype==PT_PSCN)
 					{
