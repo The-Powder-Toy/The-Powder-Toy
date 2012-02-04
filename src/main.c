@@ -2227,7 +2227,7 @@ int main(int argc, char *argv[])
 					lb = 0;
 				}
 			}
-			else if (y<YRES)// mouse is in playing field
+			else if (y<YRES && x<XRES)// mouse is in playing field
 			{
 				int signi;
 
