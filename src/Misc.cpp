@@ -659,9 +659,9 @@ void OpenURI(std::string uri) {
 	strappend(cmd, uri.c_str());
 	system(cmd);
 #elif LIN32
-	char *cmd = malloc(11+uri.length());
+	char *cmd = (char*)malloc(11+uri.length());
 	strcpy(cmd, "xdg-open ");
-	strappend(cmd, uri.c_str());
+	strappend(cmd, (char*)uri.c_str());
 	system(cmd);
 #elif LIN64
 	char *cmd = malloc(11+uri.length());
