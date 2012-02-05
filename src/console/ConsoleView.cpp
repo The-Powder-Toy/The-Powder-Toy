@@ -34,6 +34,9 @@ void ConsoleView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 {
 	switch(key)
 	{
+	case '`':
+		c->CloseConsole();
+		break;
 	case KEY_RETURN:
 	case KEY_ENTER:
 		c->EvaluateCommand(commandField->GetText());
@@ -63,7 +66,11 @@ void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
 		{
 			if(currentY <= 0)
 				break;
-			ui::Label * tempLabel = new ui::Label(ui::Point(0, currentY), ui::Point(Size.X, 16), commands[i].Command);
+			ui::Label * tempLabel = new ui::Label(ui::Point(Size.X/2, currentY), ui::Point(Size.X/2, 16), commands[i].ReturnValue);
+			tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+			commandList.push_back(tempLabel);
+			AddComponent(tempLabel);
+			tempLabel = new ui::Label(ui::Point(0, currentY), ui::Point(Size.X/2, 16), commands[i].Command);
 			tempLabel->SetAlignment(AlignLeft, AlignMiddle);
 			commandList.push_back(tempLabel);
 			AddComponent(tempLabel);

@@ -8,7 +8,7 @@
 #include <stack>
 #include "ConsoleController.h"
 
-ConsoleController::ConsoleController(ControllerCallback * callback):
+ConsoleController::ConsoleController(ControllerCallback * callback, CommandInterface * commandInterface):
 	HasDone(false)
 {
 	consoleModel = new ConsoleModel();
@@ -17,55 +17,28 @@ ConsoleController::ConsoleController(ControllerCallback * callback):
 	consoleModel->AddObserver(consoleView);
 
 	this->callback = callback;
+	this->commandInterface = commandInterface;
 }
 
 void ConsoleController::EvaluateCommand(std::string command)
 {
+	int returnCode = commandInterface->Command(command);
 	if(command.length())
-		consoleModel->AddLastCommand(ConsoleCommand(command, -1, "Syntax error"));
+		consoleModel->AddLastCommand(ConsoleCommand(command, returnCode, commandInterface->GetLastError()));
 	else
 		if(ui::Engine::Ref().GetWindow() == consoleView)
 			ui::Engine::Ref().CloseWindow();
 }
 
+void ConsoleController::CloseConsole()
+{
+	if(ui::Engine::Ref().GetWindow() == consoleView)
+		ui::Engine::Ref().CloseWindow();
+}
+
 std::string ConsoleController::FormatCommand(std::string command)
 {
-	char * rawText = (char*)command.c_str();
-	char * outputData = (char *)calloc(command.length()*6, 1);
-	int rawTextLoc = 0;
-	int outputDataLoc = 0;
-	std::stack<char> pstack;
-	while(rawText[rawTextLoc])
-	{
-		switch(rawText[rawTextLoc])
-		{
-		case '\\':
-			outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			if(rawText[rawTextLoc])
-				outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			break;
-		case '"':
-			if(pstack.size() && pstack.top() == '"')
-			{
-				pstack.pop();
-				outputData[outputDataLoc++] = rawText[rawTextLoc++];
-				outputData[outputDataLoc++] = '\b';
-				outputData[outputDataLoc++] = 'w';
-			}
-			else
-			{
-				pstack.push('"');
-				outputData[outputDataLoc++] = '\b';
-				outputData[outputDataLoc++] = 'o';
-				outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			}
-			break;
-		default:
-			outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			break;
-		}
-	}
-	return outputData;
+	return commandInterface->FormatCommand(command);
 }
 
 void ConsoleController::NextCommand()

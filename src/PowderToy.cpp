@@ -51,8 +51,8 @@ SDL_Surface * SDLOpen()
 	{
 
 		freopen("CON", "w", stdout);
-		freopen("con", "w", stderr);
-		fclose(console);
+		freopen("CON", "w", stderr);
+		//fclose(console);
 	}
 #endif
 #ifdef WIN32

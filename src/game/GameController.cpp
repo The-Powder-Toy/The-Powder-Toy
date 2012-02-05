@@ -70,13 +70,17 @@ GameController::GameController():
 		search(NULL),
 		renderOptions(NULL),
 		loginWindow(NULL),
-		ssave(NULL)
+		ssave(NULL),
+		console(NULL)
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
 
 	gameView->AttachController(this);
 	gameModel->AddObserver(gameView);
+
+	commandInterface = new TPTScriptInterface();
+	commandInterface->AttachGameModel(gameModel);
 
 	//sim = new Simulation();
 }
@@ -312,7 +316,8 @@ void GameController::OpenDisplayOptions()
 
 void GameController::ShowConsole()
 {
-	console = new ConsoleController(NULL);
+	if(!console)
+		console = new ConsoleController(NULL, commandInterface);
 	ui::Engine::Ref().ShowWindow(console->GetView());
 }
 

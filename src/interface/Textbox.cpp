@@ -71,18 +71,8 @@ void Textbox::TextPosition()
 void Textbox::SetText(std::string text)
 {
 	cursor = text.length();
-	if(masked)
-	{
-		char tempText[text.length()];
-		memset(tempText, 0x8d, text.length());
-		tempText[text.length()] = 0;
-		displayText = tempText;
-	}
-	else
-	{
-		displayText = text;
-	}
 	this->text = text;
+	this->displayText = text;
 	TextPosition();
 }
 
@@ -168,7 +158,17 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 	}
 	if(changed)
 	{
-		SetText(text);
+		if(masked)
+		{
+			char tempText[text.length()];
+			memset(tempText, 0x8d, text.length());
+			tempText[text.length()] = 0;
+			displayText = tempText;
+		}
+		else
+		{
+			displayText = text;
+		}
 		if(actionCallback)
 			actionCallback->TextChangedCallback(this);
 	}
