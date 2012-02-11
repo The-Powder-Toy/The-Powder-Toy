@@ -89,9 +89,9 @@ void SaveButton::Draw(const Point& screenPos)
 	{
 		thumbBoxSize = ui::Point(thumbnail->Size.X, thumbnail->Size.Y);
 		if(save->id)
-			g->draw_image(thumbnail->Data, screenPos.X-3+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-25-thumbBoxSize.Y)/2, thumbnail->Size.X, thumbnail->Size.Y, 255);
+			g->draw_image(thumbnail->Data, screenPos.X-3+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbnail->Size.X, thumbnail->Size.Y, 255);
 		else
-			g->draw_image(thumbnail->Data, screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-25-thumbBoxSize.Y)/2, thumbnail->Size.X, thumbnail->Size.Y, 255);
+			g->draw_image(thumbnail->Data, screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbnail->Size.X, thumbnail->Size.Y, 255);
 	}
 	else
 	{

@@ -92,8 +92,11 @@ unsigned char * Save::GetData() {
 	}
 	return data;
 }
-void Save::SetData(unsigned char * data_) {
+void Save::SetData(unsigned char * data_, int dataLength) {
+	if(data)
+		free(data);
 	data = data_;
+	this->dataLength = dataLength;
 }
 
 int Save::GetDataLength() {

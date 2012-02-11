@@ -28,9 +28,12 @@ int SaveLoader::LoadSave(unsigned char * data, int dataLength, Simulation * sim,
 	return 1;
 }
 
-unsigned char * SaveLoader::BuildSave(int & dataLength, Simulation * sim)
+unsigned char * SaveLoader::BuildSave(int & dataLength, Simulation * sim, int orig_x0, int orig_y0, int orig_w, int orig_h)
 {
-	return OPSBuildSave(dataLength, sim);
+	unsigned char * temp = OPSBuildSave(dataLength, sim, orig_x0, orig_y0, orig_w, orig_h);
+	if(!temp)
+		temp = PSVBuildSave(dataLength, sim, orig_x0, orig_y0, orig_w, orig_h);
+	return temp;
 }
 
 int SaveLoader::OPSLoadSave(unsigned char * data, int dataLength, Simulation * sim)
@@ -38,7 +41,7 @@ int SaveLoader::OPSLoadSave(unsigned char * data, int dataLength, Simulation * s
 	return 0;
 }
 
-unsigned char * SaveLoader::OPSBuildSave(int & dataLength, Simulation * sim)
+unsigned char * SaveLoader::OPSBuildSave(int & dataLength, Simulation * sim, int orig_x0, int orig_y0, int orig_w, int orig_h)
 {
 	return 0;
 }
@@ -637,7 +640,217 @@ corrupt:
 	return 1;
 }
 
-unsigned char * PSVBuildSave(int & dataLength, Simulation * sim)
+unsigned char * SaveLoader::PSVBuildSave(int & dataLength, Simulation * sim, int orig_x0, int orig_y0, int orig_w, int orig_h)
 {
-	return 0;
+	unsigned char *d = (unsigned char*)calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*15+MAXSIGNS*262), *c;
+	int i,j,x,y,p=0,*m=(int*)calloc(XRES*YRES, sizeof(int));
+	int x0, y0, w, h, bx0=orig_x0/CELL, by0=orig_y0/CELL, bw, bh;
+	Particle *parts = sim->parts;
+	bw=(orig_w+orig_x0-bx0*CELL+CELL-1)/CELL;
+	bh=(orig_h+orig_y0-by0*CELL+CELL-1)/CELL;
+
+	// normalize coordinates
+	x0 = bx0*CELL;
+	y0 = by0*CELL;
+	w  = bw *CELL;
+	h  = bh *CELL;
+
+	// save the required air state
+	for (y=by0; y<by0+bh; y++)
+		for (x=bx0; x<bx0+bw; x++)
+			d[p++] = sim->bmap[y][x];
+	for (y=by0; y<by0+bh; y++)
+		for (x=bx0; x<bx0+bw; x++)
+			if (sim->bmap[y][x]==WL_FAN||sim->bmap[y][x]==4)
+			{
+				i = (int)(sim->fvx[y][x]*64.0f+127.5f);
+				if (i<0) i=0;
+				if (i>255) i=255;
+				d[p++] = i;
+			}
+	for (y=by0; y<by0+bh; y++)
+		for (x=bx0; x<bx0+bw; x++)
+			if (sim->bmap[y][x]==WL_FAN||sim->bmap[y][x]==4)
+			{
+				i = (int)(sim->fvy[y][x]*64.0f+127.5f);
+				if (i<0) i=0;
+				if (i>255) i=255;
+				d[p++] = i;
+			}
+
+	// save the particle map
+	for (i=0; i<NPART; i++)
+		if (parts[i].type)
+		{
+			x = (int)(parts[i].x+0.5f);
+			y = (int)(parts[i].y+0.5f);
+			if (x>=orig_x0 && x<orig_x0+orig_w && y>=orig_y0 && y<orig_y0+orig_h) {
+				if (!m[(x-x0)+(y-y0)*w] ||
+				        parts[m[(x-x0)+(y-y0)*w]-1].type == PT_PHOT ||
+				        parts[m[(x-x0)+(y-y0)*w]-1].type == PT_NEUT)
+					m[(x-x0)+(y-y0)*w] = i+1;
+			}
+		}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i)
+			d[p++] = parts[i-1].type;
+		else
+			d[p++] = 0;
+	}
+
+	// save particle properties
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i)
+		{
+			i--;
+			x = (int)(parts[i].vx*16.0f+127.5f);
+			y = (int)(parts[i].vy*16.0f+127.5f);
+			if (x<0) x=0;
+			if (x>255) x=255;
+			if (y<0) y=0;
+			if (y>255) y=255;
+			d[p++] = x;
+			d[p++] = y;
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Everybody loves a 16bit int
+			//d[p++] = (parts[i-1].life+3)/4;
+			int ttlife = (int)parts[i-1].life;
+			d[p++] = ((ttlife&0xFF00)>>8);
+			d[p++] = (ttlife&0x00FF);
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Now saving tmp!
+			//d[p++] = (parts[i-1].life+3)/4;
+			int tttmp = (int)parts[i-1].tmp;
+			d[p++] = ((tttmp&0xFF00)>>8);
+			d[p++] = (tttmp&0x00FF);
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i && (parts[i-1].type==PT_PBCN)) {
+			//Save tmp2
+			d[p++] = parts[i-1].tmp2;
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Save colour (ALPHA)
+			d[p++] = (parts[i-1].dcolour&0xFF000000)>>24;
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Save colour (RED)
+			d[p++] = (parts[i-1].dcolour&0x00FF0000)>>16;
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Save colour (GREEN)
+			d[p++] = (parts[i-1].dcolour&0x0000FF00)>>8;
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i) {
+			//Save colour (BLUE)
+			d[p++] = (parts[i-1].dcolour&0x000000FF);
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i)
+		{
+			//New Temperature saving uses a 16bit unsigned int for temperatures, giving a precision of 1 degree versus 36 for the old format
+			int tttemp = (int)parts[i-1].temp;
+			d[p++] = ((tttemp&0xFF00)>>8);
+			d[p++] = (tttemp&0x00FF);
+		}
+	}
+	for (j=0; j<w*h; j++)
+	{
+		i = m[j];
+		if (i && (parts[i-1].type==PT_CLNE || parts[i-1].type==PT_PCLN || parts[i-1].type==PT_BCLN || parts[i-1].type==PT_SPRK || parts[i-1].type==PT_LAVA || parts[i-1].type==PT_PIPE || parts[i-1].type==PT_LIFE || parts[i-1].type==PT_PBCN || parts[i-1].type==PT_WIRE || parts[i-1].type==PT_STOR || parts[i-1].type==PT_CONV))
+			d[p++] = parts[i-1].ctype;
+	}
+
+	j = 0;
+	for (i=0; i<MAXSIGNS; i++)
+		if (sim->signs[i].text[0] &&
+				sim->signs[i].x>=x0 && sim->signs[i].x<x0+w &&
+				sim->signs[i].y>=y0 && sim->signs[i].y<y0+h)
+			j++;
+	d[p++] = j;
+	for (i=0; i<MAXSIGNS; i++)
+		if (sim->signs[i].text[0] &&
+				sim->signs[i].x>=x0 && sim->signs[i].x<x0+w &&
+				sim->signs[i].y>=y0 && sim->signs[i].y<y0+h)
+		{
+			d[p++] = (sim->signs[i].x-x0);
+			d[p++] = (sim->signs[i].x-x0)>>8;
+			d[p++] = (sim->signs[i].y-y0);
+			d[p++] = (sim->signs[i].y-y0)>>8;
+			d[p++] = sim->signs[i].ju;
+			x = strlen(sim->signs[i].text);
+			d[p++] = x;
+			memcpy(d+p, sim->signs[i].text, x);
+			p+=x;
+		}
+
+	i = (p*101+99)/100 + 612;
+	c = (unsigned char*)malloc(i);
+
+	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
+	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
+
+	c[0] = 0x50;	//0x66;
+	c[1] = 0x53;	//0x75;
+	c[2] = 0x76;	//0x43;
+	c[3] = sim->legacy_enable|((sim->sys_pause<<1)&0x02)|((sim->gravityMode<<2)&0x0C)|((sim->airMode<<4)&0x70)|((sim->ngrav_enable<<7)&0x80);
+	c[4] = SAVE_VERSION;
+	c[5] = CELL;
+	c[6] = bw;
+	c[7] = bh;
+	c[8] = p;
+	c[9] = p >> 8;
+	c[10] = p >> 16;
+	c[11] = p >> 24;
+
+	i -= 12;
+
+	if (BZ2_bzBuffToBuffCompress((char *)(c+12), (unsigned *)&i, (char *)d, p, 9, 0, 0) != BZ_OK)
+	{
+		free(d);
+		free(c);
+		free(m);
+		return NULL;
+	}
+	free(d);
+	free(m);
+
+	dataLength = i+12;
+	return c;
 }

@@ -15,7 +15,7 @@ int Simulation::Load(unsigned char * data, int dataLength)
 
 unsigned char * Simulation::Save(int & dataLength)
 {
-	return SaveLoader::BuildSave(dataLength, this);
+	return SaveLoader::BuildSave(dataLength, this, 0, 0, XRES, YRES);
 }
 
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)

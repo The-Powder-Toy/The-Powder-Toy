@@ -54,7 +54,7 @@ public:
 	int GetVotesDown();
 
 	unsigned char * GetData();
-	void SetData(unsigned char * data_);
+	void SetData(unsigned char * data_, int dataLength);
 
 	int GetDataLength();
 };

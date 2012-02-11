@@ -235,6 +235,7 @@ unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
 	{
 		urlStream << "http://" << STATICSERVER << "/" << saveID << ".cps";
 	}
+	std::cout << urlStream.str() << std::endl;
 	data = (unsigned char *)http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
 	if(data && dataStatus == 200)
 	{
