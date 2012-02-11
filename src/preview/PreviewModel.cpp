@@ -11,11 +11,14 @@
 PreviewModel::PreviewModel():
 	save(NULL),
 	savePreview(NULL),
+	saveComments(NULL),
 	doOpen(false),
 	updateSavePreviewWorking(false),
 	updateSavePreviewFinished(false),
 	updateSaveInfoWorking(false),
-	updateSaveInfoFinished(false)
+	updateSaveInfoFinished(false),
+	updateSaveCommentsWorking(false),
+	updateSaveCommentsFinished(false)
 {
 	// TODO Auto-generated constructor stub
 
@@ -29,6 +32,11 @@ void * PreviewModel::updateSaveInfoTHelper(void * obj)
 void * PreviewModel::updateSavePreviewTHelper(void * obj)
 {
 	return ((PreviewModel*)obj)->updateSavePreviewT();
+}
+
+void * PreviewModel::updateSaveCommentsTHelper(void * obj)
+{
+	return ((PreviewModel*)obj)->updateSaveCommentsT();
 }
 
 void * PreviewModel::updateSaveInfoT()
@@ -45,15 +53,38 @@ void * PreviewModel::updateSavePreviewT()
 	return tempThumb;
 }
 
+void * PreviewModel::updateSaveCommentsT()
+{
+	std::vector<Comment*> * tempComments = Client::Ref().GetComments(tSaveID, 0, 10);
+	updateSaveCommentsFinished = true;
+	return tempComments;
+}
+
 void PreviewModel::UpdateSave(int saveID, int saveDate)
 {
 	this->tSaveID = saveID;
 	this->tSaveDate = saveDate;
 
-	save = NULL;
-	savePreview = NULL;
+	if(save)
+	{
+		delete save;
+		save = NULL;
+	}
+	if(savePreview)
+	{
+		delete savePreview;
+		savePreview = NULL;
+	}
+	if(saveComments)
+	{
+		for(int i = 0; i < saveComments->size(); i++)
+			delete saveComments->at(i);
+		delete saveComments;
+		saveComments = NULL;
+	}
 	notifyPreviewChanged();
 	notifySaveChanged();
+	notifySaveCommentsChanged();
 
 	if(!updateSavePreviewWorking)
 	{
@@ -67,6 +98,13 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 		updateSaveInfoWorking = true;
 		updateSaveInfoFinished = false;
 		pthread_create(&updateSaveInfoThread, 0, &PreviewModel::updateSaveInfoTHelper, this);
+	}
+
+	if(!updateSaveCommentsWorking)
+	{
+		updateSaveCommentsWorking = true;
+		updateSaveCommentsFinished = false;
+		pthread_create(&updateSaveCommentsThread, 0, &PreviewModel::updateSaveCommentsTHelper, this);
 	}
 }
 
@@ -90,6 +128,11 @@ Save * PreviewModel::GetSave()
 	return save;
 }
 
+std::vector<Comment*> * PreviewModel::GetComments()
+{
+	return saveComments;
+}
+
 void PreviewModel::notifyPreviewChanged()
 {
 	for(int i = 0; i < observers.size(); i++)
@@ -106,6 +149,14 @@ void PreviewModel::notifySaveChanged()
 	}
 }
 
+void PreviewModel::notifySaveCommentsChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyCommentsChanged(this);
+	}
+}
+
 void PreviewModel::AddObserver(PreviewView * observer) {
 	observers.push_back(observer);
 	observer->NotifyPreviewChanged(this);
@@ -118,6 +169,11 @@ void PreviewModel::Update()
 	{
 		if(updateSavePreviewFinished)
 		{
+			if(savePreview)
+			{
+				delete savePreview;
+				savePreview = NULL;
+			}
 			updateSavePreviewWorking = false;
 			pthread_join(updateSavePreviewThread, (void**)(&savePreview));
 			notifyPreviewChanged();
@@ -128,9 +184,31 @@ void PreviewModel::Update()
 	{
 		if(updateSaveInfoFinished)
 		{
+			if(save)
+			{
+				delete save;
+				save = NULL;
+			}
 			updateSaveInfoWorking = false;
 			pthread_join(updateSaveInfoThread, (void**)(&save));
 			notifySaveChanged();
+		}
+	}
+
+	if(updateSaveCommentsWorking)
+	{
+		if(updateSaveCommentsFinished)
+		{
+			if(saveComments)
+			{
+				for(int i = 0; i < saveComments->size(); i++)
+					delete saveComments->at(i);
+				delete saveComments;
+				saveComments = NULL;
+			}
+			updateSaveCommentsWorking = false;
+			pthread_join(updateSaveCommentsThread, (void**)(&saveComments));
+			notifySaveCommentsChanged();
 		}
 	}
 }

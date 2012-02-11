@@ -7,12 +7,15 @@
 
 #ifndef PREVIEWVIEW_H_
 #define PREVIEWVIEW_H_
+
+#include <vector>
 #include "interface/Window.h"
 #include "preview/PreviewController.h"
 #include "preview/PreviewModel.h"
 #include "interface/Button.h"
 #include "search/Thumbnail.h"
 #include "interface/Label.h"
+#include "interface/Textblock.h"
 
 class PreviewModel;
 class PreviewController;
@@ -23,6 +26,8 @@ class PreviewView: public ui::Window {
 	ui::Button * browserOpenButton;
 	ui::Label * saveNameLabel;
 	ui::Label * authorDateLabel;
+	ui::Textblock * saveDescriptionTextblock;
+	std::vector<ui::Component*> commentComponents;
 	int votesUp;
 	int votesDown;
 public:
@@ -30,6 +35,7 @@ public:
 	PreviewView();
 	void NotifyPreviewChanged(PreviewModel * sender);
 	void NotifySaveChanged(PreviewModel * sender);
+	void NotifyCommentsChanged(PreviewModel * sender);
 	virtual void OnDraw();
 	virtual void OnTick(float dt);
 	virtual void OnMouseDown(int x, int y, unsigned button);

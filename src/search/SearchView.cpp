@@ -91,6 +91,9 @@ SearchView::SearchView():
 	AddComponent(searchField);
 	AddComponent(infoLabel);
 
+	loadingSpinner = new ui::Spinner(ui::Point(((XRES+BARSIZE)/2)-12, ((YRES+MENUSIZE)/2)+12), ui::Point(24, 24));
+	AddComponent(loadingSpinner);
+
 	ui::Label * searchPrompt = new ui::Label(ui::Point(10, 10), ui::Point(50, 16), "Search:");
 	searchPrompt->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(searchPrompt);
@@ -172,6 +175,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		if(!sender->GetSavesLoaded())
 		{
 			errorLabel->SetText("Loading...");
+			loadingSpinner->Visible = true;
 		}
 		else
 		{
@@ -183,6 +187,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	}
 	else
 	{
+		loadingSpinner->Visible = false;
 		if(errorLabel)
 		{
 			RemoveComponent(errorLabel);

@@ -5,6 +5,7 @@
  *      Author: Simon
  */
 
+#include <vector>
 #include "PreviewView.h"
 #include "interface/Point.h"
 #include "interface/Window.h"
@@ -51,6 +52,11 @@ PreviewView::PreviewView():
 	saveNameLabel->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(saveNameLabel);
 
+	saveDescriptionTextblock = new ui::Textblock(ui::Point(5, (YRES/2)+15+14+17), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+15+14+17)-21), "");
+	saveDescriptionTextblock->SetAlignment(AlignLeft, AlignTop);
+	saveDescriptionTextblock->SetTextColour(ui::Colour(180, 180, 180));
+	AddComponent(saveDescriptionTextblock);
+
 	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+15+14), ui::Point(100, 16), "");
 	authorDateLabel->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(authorDateLabel);
@@ -78,13 +84,13 @@ void PreviewView::OnDraw()
 	if(!votesUp && !votesDown)
 		return;
 	else
-		factor = (float)(((float)(XRES/2))/((float)(votesUp+votesDown)));
-	g->fillrect(Position.X, Position.Y+YRES/2, XRES/2, 10, 200, 50, 50, 255);
-	g->fillrect(Position.X, Position.Y+YRES/2, (int)(((float)votesUp)*factor), 10, 50, 200, 50, 255);
-	g->fillrect(Position.X, Position.Y+(YRES/2), 14, 10, 0, 0, 0, 100);
-	g->fillrect(Position.X+(XRES/2)-14, Position.Y+(YRES/2), 14, 10, 0, 0, 0, 100);
-	g->draw_icon(Position.X+2, Position.Y+(YRES/2)+2, IconVoteUp);
-	g->draw_icon(Position.X+(XRES/2)-12, Position.Y+(YRES/2), IconVoteDown);
+		factor = (float)(((float)(XRES/2)-2)/((float)(votesUp+votesDown)));
+	g->fillrect(1+Position.X, 1+Position.Y+YRES/2, (XRES/2)-2, 8, 200, 50, 50, 255);
+	g->fillrect(1+Position.X, 1+Position.Y+YRES/2, (int)(((float)votesUp)*factor), 8, 50, 200, 50, 255);
+	g->fillrect(1+Position.X, 1+Position.Y+(YRES/2), 14, 8, 0, 0, 0, 100);
+	g->fillrect(Position.X+(XRES/2)-15, 1+Position.Y+(YRES/2), 14, 8, 0, 0, 0, 100);
+	g->draw_icon(1+Position.X+2, Position.Y+(YRES/2)+2, IconVoteUp);
+	g->draw_icon(Position.X+(XRES/2)-12, Position.Y+(YRES/2)-1, IconVoteDown);
 }
 
 void PreviewView::OnTick(float dt)
@@ -107,6 +113,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		votesDown = save->votesDown;
 		saveNameLabel->SetText(save->name);
 		authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw ");
+		saveDescriptionTextblock->SetText(save->Description);
 	}
 	else
 	{
@@ -114,6 +121,49 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		votesDown = 0;
 		saveNameLabel->SetText("");
 		authorDateLabel->SetText("");
+		saveDescriptionTextblock->SetText("");
+	}
+}
+
+void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
+{
+	for(int i = 0; i < commentComponents.size(); i++)
+	{
+		RemoveComponent(commentComponents[i]);
+		delete commentComponents[i];
+	}
+	commentComponents.clear();
+
+	int currentY = 0;
+	ui::Label * tempUsername;
+	ui::Textblock * tempComment;
+	std::vector<Comment*> * tempComments = sender->GetComments();
+	if(tempComments)
+	{
+		for(int i = 0; i < tempComments->size(); i++)
+		{
+			tempUsername = new ui::Label(ui::Point((XRES/2) + 5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), 16), tempComments->at(i)->authorName);
+			tempUsername->SetAlignment(AlignLeft, AlignBottom);
+			currentY += 16;
+			tempComment = new ui::Textblock(ui::Point((XRES/2) + 5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), -1), tempComments->at(i)->comment);
+			tempComment->SetAlignment(AlignLeft, AlignTop);
+			tempComment->SetTextColour(ui::Colour(180, 180, 180));
+			currentY += tempComment->Size.Y+4;
+
+			if(currentY > Size.Y)
+			{
+				delete tempUsername;
+				delete tempComment;
+				break;
+			}
+			else
+			{
+				commentComponents.push_back(tempComment);
+				AddComponent(tempComment);
+				commentComponents.push_back(tempUsername);
+				AddComponent(tempUsername);
+			}
+		}
 	}
 }
 

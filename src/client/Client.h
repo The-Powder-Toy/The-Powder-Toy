@@ -7,6 +7,7 @@
 
 #include "Config.h"
 #include "HTTP.h"
+#include "preview/Comment.h"
 #include "search/Thumbnail.h"
 #include "search/Save.h"
 #include "Singleton.h"
@@ -52,6 +53,7 @@ public:
 	LoginStatus Login(string username, string password, User & user);
 	void ClearThumbnailRequests();
 	std::vector<Save*> * SearchSaves(int start, int count, string query, string sort, int & resultCount);
+	std::vector<Comment*> * GetComments(int saveID, int start, int count);
 	Thumbnail * GetPreview(int saveID, int saveDate);
 	Thumbnail * GetThumbnail(int saveID, int saveDate);
 	Save * GetSave(int saveID, int saveDate);

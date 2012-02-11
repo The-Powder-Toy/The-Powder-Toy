@@ -103,8 +103,8 @@ void SaveButton::Draw(const Point& screenPos)
 		g->drawrect(screenPos.X-3+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 180, 180, 180, 255);
 		g->drawrect(screenPos.X-3+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 6, thumbBoxSize.Y, 180, 180, 180, 255);
 
-		int voteBar = max(10.0f, ((float)(thumbBoxSize.Y))*voteRatio);
-		g->fillrect(screenPos.X-3+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(thumbBoxSize.Y-voteBar)+(Size.Y-21-thumbBoxSize.Y)/2, 6, voteBar, voteColour.Red, voteColour.Green, voteColour.Blue, 255);
+		int voteBar = max(10.0f, ((float)(thumbBoxSize.Y-2))*voteRatio);
+		g->fillrect(1+screenPos.X-3+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, 1+(screenPos.Y-2)+(thumbBoxSize.Y-voteBar)+(Size.Y-21-thumbBoxSize.Y)/2, 4, voteBar, voteColour.Red, voteColour.Green, voteColour.Blue, 255);
 	}
 	else
 	{

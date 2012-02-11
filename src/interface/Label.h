@@ -11,6 +11,7 @@ namespace ui
 {
 	class Label : public Component
 	{
+	protected:
 		std::string text;
 		ui::Point textPosition;
 		HorizontalAlignment textHAlign;
@@ -23,8 +24,8 @@ namespace ui
 		//Label(std::string labelText);
 		virtual ~Label();
 
-		void TextPosition();
-		void SetText(std::string text);
+		virtual void TextPosition();
+		virtual void SetText(std::string text);
 		HorizontalAlignment GetHAlignment() { return textHAlign; }
 		VerticalAlignment GetVAlignment() { return textVAlign; }
 		void SetAlignment(HorizontalAlignment hAlign, VerticalAlignment vAlign) { textHAlign = hAlign; textVAlign = vAlign; TextPosition(); }
