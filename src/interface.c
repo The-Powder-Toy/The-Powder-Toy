@@ -6080,6 +6080,13 @@ int save_filename_ui(pixel *vid_buf)
 						{
 							strncpy(svf_filename, savefname, 255);
 							svf_fileopen = 1;
+							
+							//Allow reloading
+							if(svf_last)
+								free(svf_last);
+							svf_last = malloc(save_size);
+							memcpy(svf_last, save_data, save_size);
+							svf_lsize = save_size;
 						}
 						break;
 					} else {
