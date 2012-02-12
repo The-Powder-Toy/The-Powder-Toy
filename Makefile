@@ -43,16 +43,16 @@ build/powder.exe: buildpaths-powder.exe $(patsubst build/obj/%.o,build/obj/powde
 build/obj/powder.exe/%.o: src/%.cpp $(HEADERS)
 	$(CPPC_WIN) -c $(CFLAGS) $(OFLAGS) -o $@ $< -ggdb
 buildpaths-powder.exe:
-	$(shell mkdir build/obj/powder.exe/)
-	$(shell mkdir $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS)))))
+	$(shell mkdir -p build/obj/powder.exe/)
+	$(shell mkdir -p $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS)))))
 
 build/powder: buildpaths-powder $(patsubst build/obj/%.o,build/obj/powder/%.o,$(OBJS))
 	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder/%.o,$(OBJS)) $(LFLAGS) -o $@ -ggdb
 build/obj/powder/%.o: src/%.cpp $(HEADERS)
 	$(CPPC) -c $(CFLAGS) $(OFLAGS) -o $@ $< -ggdb
 buildpaths-powder:
-	$(shell mkdir build/obj/powder/)
-	$(shell mkdir $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder/%.o,$(OBJS)))))
+	$(shell mkdir -p build/obj/powder/)
+	$(shell mkdir -p $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder/%.o,$(OBJS)))))
 	
 clean:
 	rm -r build/obj/*
