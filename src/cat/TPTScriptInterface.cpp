@@ -137,7 +137,7 @@ std::string TPTScriptInterface::FormatCommand(std::string command)
 		currentWord = ++currentCommand;
 	}
 	words.push_back(std::string(currentWord));
-
+	free(rawCommand);
 	while(!words.empty())
 	{
 		ValueType cType = testType(words.front());
@@ -160,41 +160,6 @@ std::string TPTScriptInterface::FormatCommand(std::string command)
 		outputData += words.front() + " ";
 		words.pop_front();
 	}
-	/*char * rawText = (char*)command.c_str();
-	char * outputData = (char *)calloc(command.length()*6, 1);
-	int rawTextLoc = 0;
-	int outputDataLoc = 0;
-	std::stack<char> pstack;
-	while(rawText[rawTextLoc])
-	{
-		switch(rawText[rawTextLoc])
-		{
-		case '\\':
-			outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			if(rawText[rawTextLoc])
-				outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			break;
-		case '"':
-			if(pstack.size() && pstack.top() == '"')
-			{
-				pstack.pop();
-				outputData[outputDataLoc++] = rawText[rawTextLoc++];
-				outputData[outputDataLoc++] = '\b';
-				outputData[outputDataLoc++] = 'w';
-			}
-			else
-			{
-				pstack.push('"');
-				outputData[outputDataLoc++] = '\b';
-				outputData[outputDataLoc++] = 'o';
-				outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			}
-			break;
-		default:
-			outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			break;
-		}
-	}*/
 	return outputData;
 }
 

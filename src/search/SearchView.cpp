@@ -27,7 +27,7 @@ SearchView::SearchView():
 			v->doSearch();
 		}
 	};
-	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point((XRES+BARSIZE)-((50*2)+16+10+50+10), 16), "");
+	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point((XRES+BARSIZE)-((60*2)+16+10+50+10), 16), "");
 	searchField->SetAlignment(AlignLeft, AlignBottom);
 	searchField->SetActionCallback(new SearchAction(this));
 
@@ -41,9 +41,9 @@ SearchView::SearchView():
 			v->c->ChangeSort();
 		}
 	};
-	sortButton = new ui::Button(ui::Point(XRES+BARSIZE-50-50-16-10, 10), ui::Point(50, 16), "Sort");
+	sortButton = new ui::Button(ui::Point(XRES+BARSIZE-60-60-16-10+5, 10), ui::Point(60, 16), "Sort");
 	sortButton->SetActionCallback(new SortAction(this));
-	sortButton->SetAlignment(AlignLeft, AlignBottom);
+	sortButton->SetAlignment(AlignCentre, AlignBottom);
 	AddComponent(sortButton);
 
 	class MyOwnAction : public ui::ButtonAction
@@ -56,10 +56,12 @@ SearchView::SearchView():
 			v->c->ShowOwn(sender->GetToggleState());
 		}
 	};
-	ownButton = new ui::Button(ui::Point(XRES+BARSIZE-50-16-10, 10), ui::Point(50, 16), "My Own");
+	ownButton = new ui::Button(ui::Point(XRES+BARSIZE-60-16-10+10, 10), ui::Point(60, 16), "My Own");
 	ownButton->SetTogglable(true);
 	ownButton->SetActionCallback(new MyOwnAction(this));
-	ownButton->SetAlignment(AlignLeft, AlignBottom);
+	if(!Client::Ref().GetAuthUser().ID)
+		ownButton->Enabled = false;
+	ownButton->SetAlignment(AlignCentre, AlignBottom);
 	AddComponent(ownButton);
 
 	class NextPageAction : public ui::ButtonAction
@@ -110,12 +112,12 @@ SearchView::~SearchView()
 
 void SearchView::NotifySortChanged(SearchModel * sender)
 {
-    sortButton->SetText("Sort: "+sender->GetSort());
+    sortButton->SetText("Show "+sender->GetSort());
 }
 
 void SearchView::NotifyShowOwnChanged(SearchModel * sender)
 {
-    sortButton->SetToggleState(sender->GetShowOwn());
+    ownButton->SetToggleState(sender->GetShowOwn());
 }
 
 void SearchView::NotifyPageChanged(SearchModel * sender)

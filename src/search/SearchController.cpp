@@ -4,6 +4,7 @@
 #include "SearchView.h"
 #include "interface/Panel.h"
 #include "preview/PreviewController.h"
+#include "client/Client.h"
 
 class SearchController::OpenCallback: public ControllerCallback
 {
@@ -106,19 +107,22 @@ void SearchController::NextPage()
 
 void SearchController::ChangeSort()
 {
-	if(searchModel->GetSort() == "date")
+	if(searchModel->GetSort() == "new")
 	{
-		searchModel->SetSort("votes");
+		searchModel->SetSort("best");
 	}
 	else
 	{
-		searchModel->SetSort("date");
+		searchModel->SetSort("new");
 	}
 }
 
 void SearchController::ShowOwn(bool show)
 {
-	//TODO: Implement
+	if(Client::Ref().GetAuthUser().ID)
+		searchModel->SetShowOwn(show);
+	else
+		searchModel->SetShowOwn(false);
 }
 
 void SearchController::OpenSave(int saveID)

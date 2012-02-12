@@ -4,12 +4,14 @@
 #include "client/Client.h"
 
 SearchModel::SearchModel():
-	currentSort("votes"),
+	currentSort("best"),
 	showOwn(false),
 	loadedSave(NULL),
 	updateSaveListWorking(false),
 	updateSaveListFinished(false),
-	saveListLoaded(false)
+	saveListLoaded(false),
+	currentPage(1),
+	resultCount(0)
 {
 }
 
@@ -20,7 +22,7 @@ void * SearchModel::updateSaveListTHelper(void * obj)
 
 void * SearchModel::updateSaveListT()
 {
-	vector<Save*> * tempSaveList = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort, resultCount);
+	vector<Save*> * tempSaveList = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", showOwn, resultCount);
 	updateSaveListFinished = true;
 	return tempSaveList;
 }

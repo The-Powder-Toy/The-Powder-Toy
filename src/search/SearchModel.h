@@ -47,7 +47,7 @@ public:
 	std::string GetLastQuery() { return lastQuery; }
 	void SetSort(string sort) { currentSort = sort; UpdateSaveList(1, lastQuery); notifySortChanged(); }
 	string GetSort() { return currentSort; }
-	void SetShowOwn(bool show) { showOwn = show; UpdateSaveList(1, lastQuery); notifyShowOwnChanged(); }
+	void SetShowOwn(bool show) { if(show!=showOwn) { showOwn = show; UpdateSaveList(1, lastQuery); } notifyShowOwnChanged();  }
 	bool GetShowOwn() { return showOwn; }
 	void SetLoadedSave(Save * save);
 	Save * GetLoadedSave();

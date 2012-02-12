@@ -201,6 +201,7 @@ tpt.partsdata = nil");
 	{
 		lua_el_mode[i] = 0;
 	}
+
 }
 
 void LuaScriptInterface::Tick()
@@ -216,7 +217,65 @@ int LuaScriptInterface::Command(std::string command)
 
 std::string LuaScriptInterface::FormatCommand(std::string command)
 {
-	return command;
+	//char ** keywords = {"and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or", "repeat", "return", "then", "true", "until", "while", NULL};
+	//char ** functions = {"_VERSION", "assert", "collectgarbage", "dofile", "error", "gcinfo", "loadfile", "loadstring", "print", "tonumber", "tostring", "type", "unpack", "_ALERT", "_ERRORMESSAGE", "_INPUT", "_PROMPT", "_OUTPUT", "_STDERR", "_STDIN", "_STDOUT", "call", "dostring", "foreach", "foreachi", "getn", "globals", "newtype", "rawget", "rawset", "require", "sort", "tinsert", "tremove", "_G", "getfenv", "getmetatable", "ipairs", "loadlib", "next", "pairs", "pcall", "rawegal", "rawget", "rawset", "require", "setfenv", "setmetatable", "xpcall", "string", "table", "math", "coroutine", "io", "os", "debug"};
+	char * rawText = (char*)command.c_str();
+	char * outputData = (char *)calloc(command.length()*6, 1);
+	char lastWord[command.length()];
+	int lastWordChar = 0;
+	lastWord[0] = 0;
+	int rawTextLoc = 0;
+	int outputDataLoc = 0;
+	std::stack<char> pstack;
+	while(rawText[rawTextLoc])
+	{
+		switch(rawText[rawTextLoc])
+		{
+		case '\\':
+			outputData[outputDataLoc++] = rawText[rawTextLoc++];
+			if(rawText[rawTextLoc])
+				outputData[outputDataLoc++] = rawText[rawTextLoc++];
+			break;
+		case '"':
+			if(pstack.size() && pstack.top() == '"')
+			{
+				pstack.pop();
+				outputData[outputDataLoc++] = rawText[rawTextLoc++];
+				outputData[outputDataLoc++] = '\b';
+				outputData[outputDataLoc++] = 'w';
+			}
+			else
+			{
+				pstack.push('"');
+				outputData[outputDataLoc++] = '\b';
+				outputData[outputDataLoc++] = 'o';
+				outputData[outputDataLoc++] = rawText[rawTextLoc++];
+			}
+			break;
+		case '(':
+			pstack.push('(');
+			outputData[outputDataLoc++] = '\b';
+			outputData[outputDataLoc++] = 't';
+			strcpy(outputData+(outputDataLoc++), lastWord);
+			outputData[outputDataLoc++] = '\b';
+			outputData[outputDataLoc++] = 'w';
+			lastWord[0] = 0;
+			lastWordChar = 0;
+			break;
+		default:
+			if(pstack.top()!='"')
+			{
+				lastWord[lastWordChar++] = rawText[rawTextLoc++];
+				lastWord[lastWordChar] = 0;
+			}
+			else
+			{
+				outputData[outputDataLoc++] = rawText[rawTextLoc++];
+			}
+			break;
+		}
+	}
+	return outputData;
 }
 
 LuaScriptInterface::~LuaScriptInterface() {

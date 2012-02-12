@@ -469,7 +469,7 @@ std::vector<Comment*> * Client::GetComments(int saveID, int start, int count)
 	return commentArray;
 }
 
-std::vector<Save*> * Client::SearchSaves(int start, int count, string query, string sort, int & resultCount)
+std::vector<Save*> * Client::SearchSaves(int start, int count, string query, string sort, bool showOwn, int & resultCount)
 {
 	lastError = "";
 	resultCount = 0;
@@ -488,6 +488,12 @@ std::vector<Save*> * Client::SearchSaves(int start, int count, string query, str
 			if(query.length())
 				urlStream << URLEscape(" ");
 			urlStream << URLEscape("sort:") << URLEscape(sort);
+		}
+		if(showOwn && authUser.ID)
+		{
+			if(query.length())
+				urlStream << URLEscape(" ");
+			urlStream << URLEscape("user:") << URLEscape(authUser.Username);
 		}
 
 	}
