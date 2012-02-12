@@ -11,13 +11,14 @@
 #include "CommandInterface.h"
 #include "game/GameModel.h"
 
-CommandInterface::CommandInterface() {
-}
-
-void CommandInterface::AttachGameModel(GameModel * m)
-{
+CommandInterface::CommandInterface(GameModel * m) {
 	this->m = m;
 }
+
+/*void CommandInterface::AttachGameModel(GameModel * m)
+{
+	this->m = m;
+}*/
 
 int CommandInterface::Command(std::string command)
 {

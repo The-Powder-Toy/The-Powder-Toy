@@ -17,7 +17,7 @@ protected:
 	AnyType tptS_set(std::deque<std::string> * words);
 	ValueType testType(std::string word);
 public:
-	TPTScriptInterface();
+	TPTScriptInterface(GameModel * m);
 	virtual void Tick() {}
 	virtual int Command(std::string command);
 	virtual std::string FormatCommand(std::string command);

@@ -14,14 +14,14 @@
 class GameModel;
 class CommandInterface {
 protected:
-	enum FormatType { FormatInt, FormatString, FormatChar, FormatFloat };
 	std::string lastError;
 	GameModel * m;
 public:
-	CommandInterface();
+	enum FormatType { FormatInt, FormatString, FormatChar, FormatFloat };
+	CommandInterface(GameModel * m);
 	int GetPropertyOffset(std::string key_, FormatType & format);
 	int GetParticleType(std::string type);
-	void AttachGameModel(GameModel * m);
+	//void AttachGameModel(GameModel * m);
 	virtual void Tick() {}
 	virtual int Command(std::string command);
 	virtual std::string FormatCommand(std::string command);

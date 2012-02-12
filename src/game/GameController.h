@@ -11,7 +11,8 @@
 #include "login/LoginController.h"
 #include "ssave/SSaveController.h"
 #include "console/ConsoleController.h"
-#include "cat/TPTScriptInterface.h"
+//#include "cat/TPTScriptInterface.h"
+#include "cat/LuaScriptInterface.h"
 #include "Menu.h"
 
 using namespace std;

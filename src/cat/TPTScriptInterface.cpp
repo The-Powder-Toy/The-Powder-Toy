@@ -14,7 +14,8 @@
 #include "TPTScriptInterface.h"
 #include "game/GameModel.h"
 
-TPTScriptInterface::TPTScriptInterface() {
+TPTScriptInterface::TPTScriptInterface(GameModel * m): CommandInterface(m)
+{
 }
 
 int TPTScriptInterface::Command(std::string command)
