@@ -221,9 +221,9 @@ int graphics_SPRK(GRAPHICS_FUNC_ARGS)
 {
 	*firea = 80;
 	
-	*firer = *colr = 170;
-	*fireg = *colg = 200;
-	*fireb = *colb = 220;
+	*firer = 170;
+	*fireg = 200;
+	*fireb = 220;
 	//*pixel_mode |= FIRE_ADD;
 	*pixel_mode |= FIRE_ADD;
 	return 1;
