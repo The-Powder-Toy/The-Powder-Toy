@@ -19,6 +19,44 @@ GameModel::GameModel():
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
 
+	//Load config into renderer
+	try
+	{
+		json::Number tempNumber = Client::Ref().configDocument["Renderer"]["ColourMode"];
+		if(tempNumber.Value())
+			ren->SetColourMode(tempNumber.Value());
+
+		json::Array tempArray = Client::Ref().configDocument["Renderer"]["DisplayModes"];
+		if(tempArray.Size())
+		{
+			std::vector<unsigned int> displayModes;
+			json::Array::const_iterator itDisplayModes(tempArray.Begin()), itDisplayModesEnd(tempArray.End());
+			for (; itDisplayModes != itDisplayModesEnd; ++itDisplayModes)
+			{
+				json::Number tempNumberI = *itDisplayModes;
+				displayModes.push_back(tempNumberI.Value());
+			}
+			ren->SetDisplayMode(displayModes);
+		}
+
+		tempArray = Client::Ref().configDocument["Renderer"]["RenderModes"];
+		if(tempArray.Size())
+		{
+			std::vector<unsigned int> renderModes;
+			json::Array::const_iterator itRenderModes(tempArray.Begin()), itRenderModesEnd(tempArray.End());
+			for (; itRenderModes != itRenderModesEnd; ++itRenderModes)
+			{
+				json::Number tempNumberI = *itRenderModes;
+				renderModes.push_back(tempNumberI.Value());
+			}
+			ren->SetRenderMode(renderModes);
+		}
+	}
+	catch(json::Exception & e)
+	{
+
+	}
+
 	menuList.clear();
 	for(int i = 0; i < 12; i++)
 	{
@@ -71,6 +109,30 @@ GameModel::GameModel():
 
 GameModel::~GameModel()
 {
+	//Save to config:
+	try
+	{
+		Client::Ref().configDocument["Renderer"]["ColourMode"] = json::Number(ren->GetColourMode());
+
+		((json::Array)Client::Ref().configDocument["Renderer"]["DisplayModes"]).Clear();
+		std::vector<unsigned int> displayModes = ren->GetDisplayMode();
+		for (int i = 0; i < displayModes.size(); i++)
+		{
+			Client::Ref().configDocument["Renderer"]["DisplayModes"][i] = json::Number(displayModes[i]);
+		}
+
+		((json::Array)Client::Ref().configDocument["Renderer"]["RenderModes"]).Clear();
+		std::vector<unsigned int> renderModes = ren->GetRenderMode();
+		for (int i = 0; i < renderModes.size(); i++)
+		{
+			Client::Ref().configDocument["Renderer"]["RenderModes"][i] = json::Number(renderModes[i]);
+		}
+	}
+	catch(json::Exception & e)
+	{
+
+	}
+
 	for(int i = 0; i < menuList.size(); i++)
 	{
 		for(int j = 0; i < menuList[i]->GetToolList().size(); i++)
@@ -277,6 +339,17 @@ bool GameModel::GetPaused()
 	return sim->sys_pause?true:false;
 }
 
+void GameModel::SetDecoration(bool decorationState)
+{
+	ren->decorations_enable = decorationState?1:0;
+	notifyDecorationChanged();
+}
+
+bool GameModel::GetDecoration()
+{
+	return ren->decorations_enable?true:false;
+}
+
 void GameModel::FrameStep(int frames)
 {
 	sim->framerender += frames;
@@ -316,6 +389,14 @@ void GameModel::notifyPausedChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyPausedChanged(this);
+	}
+}
+
+void GameModel::notifyDecorationChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		//observers[i]->NotifyPausedChanged(this);
 	}
 }
 

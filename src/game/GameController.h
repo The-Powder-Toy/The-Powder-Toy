@@ -52,6 +52,8 @@ public:
 	void Update();
 	void SetPaused(bool pauseState);
 	void SetPaused();
+	void SetDecoration(bool decorationState);
+	void SetDecoration();
 	void SetActiveMenu(Menu * menu);
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void OpenSearch();

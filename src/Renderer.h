@@ -71,11 +71,14 @@ public:
 	void CompileRenderMode();
 	void AddRenderMode(unsigned int mode);
 	void SetRenderMode(std::vector<unsigned int> render);
+	std::vector<unsigned int> GetRenderMode();
 	void RemoveRenderMode(unsigned int mode);
 	void AddDisplayMode(unsigned int mode);
 	void RemoveDisplayMode(unsigned int mode);
 	void SetDisplayMode(std::vector<unsigned int> display);
+	std::vector<unsigned int> GetDisplayMode();
 	void SetColourMode(unsigned int mode);
+	unsigned int GetColourMode();
 
 	Renderer(Graphics * g, Simulation * sim);
 	~Renderer();

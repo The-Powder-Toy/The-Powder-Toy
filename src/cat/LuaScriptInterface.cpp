@@ -839,6 +839,7 @@ int luatpt_error(lua_State* l)
 	free(error);
 	return luaL_error(l, "Screen buffer does not exist");*/
 	//TODO IMPLEMENT
+	return 0;
 }
 int luatpt_drawtext(lua_State* l)
 {
@@ -931,6 +932,7 @@ int luatpt_log(lua_State* l)
 	return 0;*/
 	//luacon_ci->lastError = luaL_optstring(l, 1, "");
 	//TODO IMPLEMENT - Have some sort of error log that is visible outside the console.
+	return 0;
 }
 
 int luatpt_set_pressure(lua_State* l)
@@ -1640,6 +1642,7 @@ int luatpt_input(lua_State* l)
 	free(shadow);
 	return luaL_error(l, "Screen buffer does not exist");*/
 	//TODO IMPLEMENT
+	return 0;
 }
 int luatpt_message_box(lua_State* l)
 {
@@ -1657,6 +1660,7 @@ int luatpt_message_box(lua_State* l)
 	free(text);
 	return luaL_error(l, "Screen buffer does not exist");;*/
 	//TODO IMPLEMENT
+	return 0;
 }
 int luatpt_get_numOfParts(lua_State* l)
 {
@@ -1704,6 +1708,7 @@ int luatpt_hud(lua_State* l)
     hud_enable = (hudstate==0?0:1);
     return 0;*/
 	//TODO IMPLEMENT
+	return 0;
 }
 int luatpt_gravity(lua_State* l)
 {
@@ -1737,11 +1742,10 @@ int luatpt_active_menu(lua_State* l)
 }
 int luatpt_decorations_enable(lua_State* l)
 {
-    /*int aheatstate;
-    aheatstate = luaL_optint(l, 1, 0);
-    decorations_enable = (aheatstate==0?0:1);
-    return 0;*/
-	//TODO IMPLEMENT
+	int decostate;
+	decostate = luaL_optint(l, 1, 0);
+	luacon_model->SetDecoration(decostate==0?false:true);
+	return 0;
 }
 
 int luatpt_heat(lua_State* l)
@@ -1753,13 +1757,13 @@ int luatpt_heat(lua_State* l)
 }
 int luatpt_cmode_set(lua_State* l)
 {
+	//TODO IMPLEMENT
     return luaL_error(l, "Not implemented");
 }
 int luatpt_setfire(lua_State* l)
 {
 	int firesize = luaL_optint(l, 2, 4);
 	float fireintensity = (float)luaL_optnumber(l, 1, 1.0f);
-	//prepare_alpha(firesize, fireintensity);
 	luacon_model->GetRenderer()->prepare_alpha(firesize, fireintensity);
 	return 0;
 }
@@ -1769,6 +1773,7 @@ int luatpt_setdebug(lua_State* l)
 	debug_flags = debug;
 	return 0;*/
 	//TODO IMPLEMENT
+	return luaL_error(l, "Not implemented");
 }
 int luatpt_setfpscap(lua_State* l)
 {
@@ -1778,7 +1783,6 @@ int luatpt_setfpscap(lua_State* l)
 }
 int luatpt_getscript(lua_State* l)
 {
-	//TODO: IMPLEMENT
 	/*char *fileid = NULL, *filedata = NULL, *fileuri = NULL, *fileauthor = NULL, *filename = NULL, *lastError = NULL, *luacommand = NULL;
 	int len, ret,run_script;
 	FILE * outputfile;
@@ -1863,6 +1867,8 @@ fin:
 
 	if(lastError) return luaL_error(l, lastError);
 	return 0;*/
+	//TODO IMPLEMENT
+	return luaL_error(l, "Not implemented");
 }
 
 int luatpt_setwindowsize(lua_State* l)
@@ -1874,6 +1880,7 @@ int luatpt_setwindowsize(lua_State* l)
 	lua_pushnumber(l, result);
 	return 1;*/
 	//TODO Implement
+	return luaL_error(l, "Not implemented");
 }
 
 int luatpt_screenshot(lua_State* l)
@@ -1892,6 +1899,6 @@ int luatpt_screenshot(lua_State* l)
 		}
 		return 0;
 	}*/
-	return luaL_error(l, "Screen buffer does not exist");
+	return luaL_error(l, "Not implemented");
 }
 

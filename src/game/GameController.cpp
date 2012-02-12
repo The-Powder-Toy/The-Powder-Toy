@@ -282,6 +282,16 @@ void GameController::SetPaused()
 	gameModel->SetPaused(!gameModel->GetPaused());
 }
 
+void GameController::SetDecoration(bool decorationState)
+{
+	gameModel->SetDecoration(decorationState);
+}
+
+void GameController::SetDecoration()
+{
+	gameModel->SetDecoration(!gameModel->GetDecoration());
+}
+
 void GameController::SetActiveMenu(Menu * menu)
 {
 	gameModel->SetActiveMenu(menu);

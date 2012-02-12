@@ -1762,7 +1762,8 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	zoomScopePosition(0, 0),
 	zoomScopeSize(10),
 	ZFACTOR(8),
-	zoomEnabled(false)
+	zoomEnabled(false),
+	decorations_enable(1)
 {
 	this->g = g;
 	this->sim = sim;
@@ -1832,6 +1833,11 @@ void Renderer::SetRenderMode(std::vector<unsigned int> render)
 	CompileRenderMode();
 }
 
+std::vector<unsigned int> Renderer::GetRenderMode()
+{
+	return render_modes;
+}
+
 void Renderer::CompileDisplayMode()
 {
 	display_mode = 0;
@@ -1871,9 +1877,19 @@ void Renderer::SetDisplayMode(std::vector<unsigned int> display)
 	CompileDisplayMode();
 }
 
+std::vector<unsigned int> Renderer::GetDisplayMode()
+{
+	return display_modes;
+}
+
 void Renderer::SetColourMode(unsigned int mode)
 {
 	colour_mode = mode;
+}
+
+unsigned int Renderer::GetColourMode()
+{
+	return colour_mode;
 }
 
 Renderer::~Renderer()

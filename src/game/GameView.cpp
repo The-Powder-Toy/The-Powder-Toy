@@ -516,6 +516,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'f':
 		c->FrameStep();
 		break;
+	case 'b':
+		if(ctrl)
+			c->SetDecoration();
+		break;
 	}
 }
 

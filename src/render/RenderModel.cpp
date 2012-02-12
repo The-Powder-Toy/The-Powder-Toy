@@ -10,40 +10,7 @@
 RenderModel::RenderModel():
 	renderer(NULL)
 {
-	try
-	{
-		json::Number tempNumber = Client::Ref().configDocument["Renderer"]["ColourMode"];
-		if(tempNumber.Value())
-			renderer->SetColourMode(tempNumber.Value());
 
-		json::Array tempArray = Client::Ref().configDocument["Renderer"]["DisplayModes"];
-		if(tempArray.Size())
-		{
-			std::vector<unsigned int> displayModes;
-			json::Array::const_iterator itDisplayModes(tempArray.Begin()), itDisplayModesEnd(tempArray.End());
-			for (; itDisplayModes != itDisplayModesEnd; ++itDisplayModes)
-			{
-				json::Number tempNumberI = *itDisplayModes;
-				displayModes.push_back(tempNumberI.Value());
-			}
-		}
-
-		tempArray = Client::Ref().configDocument["Renderer"]["RenderModes"];
-		if(tempArray.Size())
-		{
-			std::vector<unsigned int> renderModes;
-			json::Array::const_iterator itRenderModes(tempArray.Begin()), itRenderModesEnd(tempArray.End());
-			for (; itRenderModes != itRenderModesEnd; ++itRenderModes)
-			{
-				json::Number tempNumberI = *itRenderModes;
-				renderModes.push_back(tempNumberI.Value());
-			}
-		}
-	}
-	catch(json::Exception & e)
-	{
-
-	}
 }
 
 void RenderModel::AddObserver(RenderView * observer)

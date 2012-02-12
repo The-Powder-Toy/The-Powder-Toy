@@ -45,6 +45,7 @@ private:
 	void notifyRendererChanged();
 	void notifySimulationChanged();
 	void notifyPausedChanged();
+	void notifyDecorationChanged();
 	void notifySaveChanged();
 	void notifyBrushChanged();
 	void notifyMenuListChanged();
@@ -65,6 +66,8 @@ public:
 	void SetActiveTool(int selection, Tool * tool);
 	bool GetPaused();
 	void SetPaused(bool pauseState);
+	bool GetDecoration();
+	void SetDecoration(bool decorationState);
 	void ClearSimulation();
 	vector<Menu*> GetMenuList();
 	vector<Tool*> GetToolList();

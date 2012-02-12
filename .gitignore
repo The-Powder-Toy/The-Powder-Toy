@@ -6,3 +6,5 @@
 *.la
 *~
 *.pref
+stdout.txt
+stderr.txt
