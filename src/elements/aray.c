@@ -84,7 +84,7 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 									parts[r>>8].life = 1;
 									docontinue = 1;
 									//this if prevents red BRAY from stopping on certain materials
-								} else if ((r&0xFF)==PT_STOR || (r&0xFF)==PT_INWR || (r&0xFF)==PT_ARAY || (r&0xFF)==PT_WIFI || (r&0xFF)==PT_FILT || ((r&0xFF)==PT_SWCH && parts[r>>8].life>=10)) {
+								} else if ((r&0xFF)==PT_STOR || (r&0xFF)==PT_INWR || ((r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_INWR) || (r&0xFF)==PT_ARAY || (r&0xFF)==PT_WIFI || (r&0xFF)==PT_FILT || ((r&0xFF)==PT_SWCH && parts[r>>8].life>=10)) {
 									if((r&0xFF)==PT_STOR)
 									{
 										parts[r>>8].tmp = 0;
