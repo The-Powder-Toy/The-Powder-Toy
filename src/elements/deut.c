@@ -2,9 +2,13 @@
 
 int update_DEUT(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, trade, np;
+	float gravtot = fabs(gravy[(y/CELL)*(XRES/CELL)+(x/CELL)])+fabs(gravx[(y/CELL)*(XRES/CELL)+(x/CELL)]);
 	int maxlife = ((10000/(parts[i].temp + 1))-1);
 	if ((10000%((int)parts[i].temp+1))>rand()%((int)parts[i].temp+1))
 		maxlife ++;
+	// Compress when Newtonian gravity is applied
+	// multiplier=1 when gravtot=0, multiplier -> 5 as gravtot -> inf
+	maxlife = maxlife*(5.0f - 8.0f/(gravtot+2.0f));
 	if (parts[i].life < maxlife)
 	{
 		for (rx=-1; rx<2; rx++)
