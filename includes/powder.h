@@ -249,6 +249,7 @@
 #define PROP_SPARKSETTLE	0x20000	//2^17 Allow Sparks/Embers to settle
 
 #define FLAG_STAGNANT	1
+#define FLAG_SKIPMOVE	0x2 // skip movement for one frame, only implemented for PHOT
 
 #define GRAPHICS_FUNC_ARGS particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
 #define GRAPHICS_FUNC_SUBCALL_ARGS cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb

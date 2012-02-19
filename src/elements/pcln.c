@@ -59,6 +59,11 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 						{
 							parts[r].vx = rx*3;
 							parts[r].vy = ry*3;
+							if (r>i)
+							{
+								// Make sure movement doesn't happen until next frame, to avoid gaps in the beams of photons produced
+								parts[r].flags |= FLAG_SKIPMOVE;
+							}
 						}
 					}
 				}
