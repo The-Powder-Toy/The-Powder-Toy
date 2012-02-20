@@ -34,6 +34,10 @@ void luacon_open(){
 		{"reset_spark", &luatpt_reset_spark},
 		{"set_property", &luatpt_set_property},
 		{"get_property", &luatpt_get_property},
+		{"set_wallmap", &luatpt_set_wallmap},
+		{"get_wallmap", &luatpt_get_wallmap},
+		{"set_elecmap", &luatpt_set_elecmap},
+		{"get_elecmap", &luatpt_get_elecmap},
 		{"drawpixel", &luatpt_drawpixel},
 		{"drawrect", &luatpt_drawrect},
 		{"fillrect", &luatpt_fillrect},
@@ -1059,6 +1063,120 @@ int luatpt_reset_spark(lua_State* l)
 		}
 	}
 	return 0;
+}
+
+int luatpt_set_wallmap(lua_State* l)
+{
+	int nx, ny, acount;
+	int x1, y1, width, height;
+	float value;
+	acount = lua_gettop(l);
+	
+	x1 = abs(luaL_optint(l, 1, 0));
+	y1 = abs(luaL_optint(l, 2, 0));
+	width = abs(luaL_optint(l, 3, XRES/CELL));
+	height = abs(luaL_optint(l, 4, YRES/CELL));
+	value = (float)luaL_optint(l, acount, 0);
+	
+	if(acount==5)	//Draw rect
+	{
+		if(x1 > (XRES/CELL))
+			x1 = (XRES/CELL);
+		if(y1 > (YRES/CELL))
+			y1 = (YRES/CELL);
+		if(x1+width > (XRES/CELL))
+			width = (XRES/CELL)-x1;
+		if(y1+height > (YRES/CELL))
+			height = (YRES/CELL)-y1;
+		for (nx = x1; nx<x1+width; nx++)
+			for (ny = y1; ny<y1+height; ny++)
+			{
+				bmap[ny][nx] = value;
+			}
+	}
+	else	//Set point
+	{
+		if(x1 > (XRES/CELL))
+			x1 = (XRES/CELL);
+		if(y1 > (YRES/CELL))
+			y1 = (YRES/CELL);
+		bmap[y1][x1] = value;
+	}
+	return 0;
+}
+
+int luatpt_get_wallmap(lua_State* l)
+{
+	int nx, ny, acount;
+	int x1, y1, width, height;
+	float value;
+	acount = lua_gettop(l);
+	
+	x1 = abs(luaL_optint(l, 1, 0));
+	y1 = abs(luaL_optint(l, 2, 0));
+
+	if(x1 > (XRES/CELL) || y1 > (YRES/CELL))
+		return luaL_error(l, "Out of range");
+
+	lua_pushinteger(l, bmap[y1][x1]);
+	return 1;
+}
+
+int luatpt_set_elecmap(lua_State* l)
+{
+	int nx, ny, acount;
+	int x1, y1, width, height;
+	float value;
+	acount = lua_gettop(l);
+	
+	x1 = abs(luaL_optint(l, 1, 0));
+	y1 = abs(luaL_optint(l, 2, 0));
+	width = abs(luaL_optint(l, 3, XRES/CELL));
+	height = abs(luaL_optint(l, 4, YRES/CELL));
+	value = (float)luaL_optint(l, acount, 0);
+	
+	if(acount==5)	//Draw rect
+	{
+		if(x1 > (XRES/CELL))
+			x1 = (XRES/CELL);
+		if(y1 > (YRES/CELL))
+			y1 = (YRES/CELL);
+		if(x1+width > (XRES/CELL))
+			width = (XRES/CELL)-x1;
+		if(y1+height > (YRES/CELL))
+			height = (YRES/CELL)-y1;
+		for (nx = x1; nx<x1+width; nx++)
+			for (ny = y1; ny<y1+height; ny++)
+			{
+				emap[ny][nx] = value;
+			}
+	}
+	else	//Set point
+	{
+		if(x1 > (XRES/CELL))
+			x1 = (XRES/CELL);
+		if(y1 > (YRES/CELL))
+			y1 = (YRES/CELL);
+		emap[y1][x1] = value;
+	}
+	return 0;
+}
+
+int luatpt_get_elecmap(lua_State* l)
+{
+	int nx, ny, acount;
+	int x1, y1, width, height;
+	float value;
+	acount = lua_gettop(l);
+	
+	x1 = abs(luaL_optint(l, 1, 0));
+	y1 = abs(luaL_optint(l, 2, 0));
+
+	if(x1 > (XRES/CELL) || y1 > (YRES/CELL))
+		return luaL_error(l, "Out of range");
+
+	lua_pushinteger(l, emap[y1][x1]);
+	return 1;
 }
 
 int luatpt_set_property(lua_State* l)
