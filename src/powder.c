@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <defines.h>
+#include <squares.h>
 #include <powder.h>
 #include <air.h>
 #include <misc.h>
@@ -1831,8 +1832,14 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 			if (ptypes[t].diffusion)//the random diffusion that gasses have
 			{
+#ifdef REALISTIC
+				//The magic number controlls diffusion speed
+				parts[i].vx += 0.05*squares[(unsigned int)round(parts[i].temp)]*ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
+				parts[i].vy += 0.05*squares[(unsigned int)round(parts[i].temp)]*ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
+#else
 				parts[i].vx += ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
 				parts[i].vy += ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
+#endif
 			}
 
 			j = surround_space = nt = 0;//if nt is 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
@@ -1863,8 +1870,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 
 				//heat transfer code
 				h_count = 0;
-#ifdef REALHEAT
-				if (t&&(t!=PT_HSWC||parts[i].life==10))
+#ifdef REALISTIC
+				if (t&&(t!=PT_HSWC||parts[i].life==10)&&ptypes[t].hconduct)
 				{
 					float c_Cm = 0.0f;
 #else
@@ -1892,7 +1899,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 						        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
 						{
 							surround_hconduct[j] = r>>8;
-#ifdef REALHEAT
+#ifdef REALISTIC 
 							c_heat += parts[r>>8].temp*96.645/ptypes[rt].hconduct*fabs(ptypes[rt].weight);
 							c_Cm += 96.645/ptypes[rt].hconduct*fabs(ptypes[rt].weight);
 #else
@@ -1901,7 +1908,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							h_count++;
 						}
 					}
-#ifdef REALHEAT
+#ifdef REALISTIC
 					if (t == PT_PHOT)
 						pt = (c_heat+parts[i].temp*96.645)/(c_Cm+96.645);
 					else
