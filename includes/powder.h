@@ -214,7 +214,9 @@
 #define PT_WIRE 156
 #define PT_GBMB 157
 #define PT_FIGH 158
-#define PT_NUM  159
+#define PT_FRAY 159
+#define PT_REPL 160
+#define PT_NUM  161
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -432,6 +434,8 @@ int update_ACEL(UPDATE_FUNC_ARGS);
 int update_DCEL(UPDATE_FUNC_ARGS);
 int update_BANG(UPDATE_FUNC_ARGS);
 int update_IGNT(UPDATE_FUNC_ARGS);
+int update_FRAY(UPDATE_FUNC_ARGS);
+int update_REPL(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
