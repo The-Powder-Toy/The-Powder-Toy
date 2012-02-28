@@ -105,4 +105,6 @@ int luatpt_setfpscap(lua_State* l);
 int luatpt_getscript(lua_State* l);
 int luatpt_setwindowsize(lua_State* l);
 int luatpt_screenshot(lua_State* l);
+int luatpt_set_map(lua_State *l);
+int luatpt_get_map(lua_State *l);
 #endif
