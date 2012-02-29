@@ -2299,6 +2299,7 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 	float (*pvn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
 	int i, x, y, nx, ny, w, h, nw, nh;
 	vector2d pos, tmp, ctl, cbr;
+	vector2d vel;
 	vector2d cornerso[4];
 	unsigned char *odatac = odata;
 	if (parse_save(odata, *size, 0, 0, 0, bmapo, vxo, vyo, pvo, fvxo, fvyo, signst, partst, pmapt))
@@ -2373,6 +2374,10 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 		}
 		partst[i].x = nx;
 		partst[i].y = ny;
+		vel = v2d_new(partst[i].vx, partst[i].vy);
+		vel = m2d_multiply_v2d(transform, vel);
+		partst[i].vx = vel.x;
+		partst[i].vy = vel.y;
 	}
 	for (y=0; y<YRES/CELL; y++)
 		for (x=0; x<XRES/CELL; x++)
@@ -2388,12 +2393,16 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 				bmapn[ny][nx] = bmapo[y][x];
 				if (bmapo[y][x]==WL_FAN)
 				{
-					fvxn[ny][nx] = fvxo[y][x];
-					fvyn[ny][nx] = fvyo[y][x];
+					vel = v2d_new(fvxo[y][x], fvyo[y][x]);
+					vel = m2d_multiply_v2d(transform, vel);
+					fvxn[ny][nx] = vel.x;
+					fvyn[ny][nx] = vel.y;
 				}
 			}
-			vxn[ny][nx] = vxo[y][x];
-			vyn[ny][nx] = vyo[y][x];
+			vel = v2d_new(vxo[y][x], vyo[y][x]);
+			vel = m2d_multiply_v2d(transform, vel);
+			vxn[ny][nx] = vel.x;
+			vyn[ny][nx] = vel.y;
 			pvn[ny][nx] = pvo[y][x];
 		}
 	ndata = build_save(size,0,0,nw,nh,bmapn,vxn,vyn,pvn,fvxn,fvyn,signst,partst);
