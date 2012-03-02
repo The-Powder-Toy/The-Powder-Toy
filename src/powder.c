@@ -1885,6 +1885,10 @@ void update_particles_i(pixel *vid, int start, int inc)
 						c_heat = restrict_flt(c_heat, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
 						parts[i].temp += c_heat;
 						hv[y/CELL][x/CELL] -= c_heat;
+#ifdef REALISTIC
+						//Volume increase from heat (temporary)
+						pv[y/CELL][x/CELL] -= c_heat*0.004;
+#endif
 					}
 					c_heat = 0.0f;
 					for (j=0; j<8; j++)
