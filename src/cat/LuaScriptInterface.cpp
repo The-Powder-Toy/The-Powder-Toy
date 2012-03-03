@@ -80,6 +80,7 @@ LuaScriptInterface::LuaScriptInterface(GameModel * m):
 	luacon_model = m;
 	luacon_sim = m->GetSimulation();
 	luacon_g = ui::Engine::Ref().g;
+	luacon_ci = this;
 
 	l = lua_open();
 	luaL_openlibs(l);
@@ -211,71 +212,19 @@ void LuaScriptInterface::Tick()
 
 int LuaScriptInterface::Command(std::string command)
 {
-	luaL_dostring(l, command.c_str());
-	return 0;
+	int ret;
+	lastError = "";
+	if((ret = luaL_dostring(l, command.c_str())))
+	{
+		lastError = luacon_geterror();
+		Log(LogError, lastError);
+	}
+	return ret;
 }
 
 std::string LuaScriptInterface::FormatCommand(std::string command)
 {
-	//char ** keywords = {"and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or", "repeat", "return", "then", "true", "until", "while", NULL};
-	//char ** functions = {"_VERSION", "assert", "collectgarbage", "dofile", "error", "gcinfo", "loadfile", "loadstring", "print", "tonumber", "tostring", "type", "unpack", "_ALERT", "_ERRORMESSAGE", "_INPUT", "_PROMPT", "_OUTPUT", "_STDERR", "_STDIN", "_STDOUT", "call", "dostring", "foreach", "foreachi", "getn", "globals", "newtype", "rawget", "rawset", "require", "sort", "tinsert", "tremove", "_G", "getfenv", "getmetatable", "ipairs", "loadlib", "next", "pairs", "pcall", "rawegal", "rawget", "rawset", "require", "setfenv", "setmetatable", "xpcall", "string", "table", "math", "coroutine", "io", "os", "debug"};
-	char * rawText = (char*)command.c_str();
-	char * outputData = (char *)calloc(command.length()*6, 1);
-	char lastWord[command.length()];
-	int lastWordChar = 0;
-	lastWord[0] = 0;
-	int rawTextLoc = 0;
-	int outputDataLoc = 0;
-	std::stack<char> pstack;
-	while(rawText[rawTextLoc])
-	{
-		switch(rawText[rawTextLoc])
-		{
-		case '\\':
-			outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			if(rawText[rawTextLoc])
-				outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			break;
-		case '"':
-			if(pstack.size() && pstack.top() == '"')
-			{
-				pstack.pop();
-				outputData[outputDataLoc++] = rawText[rawTextLoc++];
-				outputData[outputDataLoc++] = '\b';
-				outputData[outputDataLoc++] = 'w';
-			}
-			else
-			{
-				pstack.push('"');
-				outputData[outputDataLoc++] = '\b';
-				outputData[outputDataLoc++] = 'o';
-				outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			}
-			break;
-		case '(':
-			pstack.push('(');
-			outputData[outputDataLoc++] = '\b';
-			outputData[outputDataLoc++] = 't';
-			strcpy(outputData+(outputDataLoc++), lastWord);
-			outputData[outputDataLoc++] = '\b';
-			outputData[outputDataLoc++] = 'w';
-			lastWord[0] = 0;
-			lastWordChar = 0;
-			break;
-		default:
-			if(pstack.top()!='"')
-			{
-				lastWord[lastWordChar++] = rawText[rawTextLoc++];
-				lastWord[lastWordChar] = 0;
-			}
-			else
-			{
-				outputData[outputDataLoc++] = rawText[rawTextLoc++];
-			}
-			break;
-		}
-	}
-	return outputData;
+	return command;
 }
 
 LuaScriptInterface::~LuaScriptInterface() {
@@ -985,12 +934,7 @@ int luatpt_setconsole(lua_State* l)
 
 int luatpt_log(lua_State* l)
 {
-	/*char *buffer;
-	buffer = luaL_optstring(l, 1, "");
-	strncpy(console_error, buffer, 254);
-	return 0;*/
-	//luacon_ci->lastError = luaL_optstring(l, 1, "");
-	//TODO IMPLEMENT - Have some sort of error log that is visible outside the console.
+	luacon_ci->Log(CommandInterface::LogNotice, luaL_optstring(l, 1, ""));
 	return 0;
 }
 

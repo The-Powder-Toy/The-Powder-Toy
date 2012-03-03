@@ -17,10 +17,12 @@ protected:
 	std::string lastError;
 	GameModel * m;
 public:
+	enum LogType { LogError, LogWarning, LogNotice };
 	enum FormatType { FormatInt, FormatString, FormatChar, FormatFloat };
 	CommandInterface(GameModel * m);
 	int GetPropertyOffset(std::string key_, FormatType & format);
 	int GetParticleType(std::string type);
+	void Log(LogType type, std::string message);
 	//void AttachGameModel(GameModel * m);
 	virtual void Tick() {}
 	virtual int Command(std::string command);

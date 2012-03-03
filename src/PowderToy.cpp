@@ -73,7 +73,7 @@ SDL_Surface * SDLOpen()
 #endif
 
 	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	atexit(SDL_Quit);
 	return SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_SWSURFACE);
 }
