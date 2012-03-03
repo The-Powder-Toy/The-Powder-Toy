@@ -17,9 +17,10 @@
 #define SC_SPECIAL 9
 #define SC_LIFE 10
 #define SC_TOOL 11
+#define SC_DECO 12
 #define SC_CRACKER 13
 #define SC_CRACKER2 14
-#define SC_TOTAL 12
+#define SC_TOTAL 13
 
 #define UI_WALLSTART 222
 #define UI_ACTUALSTART 122
@@ -53,6 +54,12 @@
 #define WL_ALLOWGAS	140
 #define WL_GRAV		142
 #define WL_ALLOWENERGY 145
+
+#define DECO_DRAW	0
+#define DECO_ADD	1
+#define DECO_SUBTRACT	2
+#define DECO_MULTIPLY	3
+#define DECO_DIVIDE	4
 
 #ifndef SIMULATIONDATA_H_
 #define SIMULATIONDATA_H_

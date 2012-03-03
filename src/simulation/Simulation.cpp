@@ -300,6 +300,172 @@ int Simulation::create_part_add_props(int p, int x, int y, int tv, int rx, int r
 	return p;
 }
 
+void Simulation::ApplyDecoration(int x, int y, int colR, int colG, int colB, int colA, int mode)
+{
+	int rp, tr, tg, tb, ta;
+	rp = pmap[y][x];
+	if (!rp)
+		return;
+
+	if (mode == DECO_DRAW)
+	{
+		parts[rp>>8].dcolour = ((colA<<24)|(colR<<16)|(colG<<8)|colB);
+	}
+	else
+	{
+		if (parts[rp>>8].dcolour == 0)
+			return;
+
+		ta = (parts[rp>>8].dcolour>>24)&0xFF;
+		tr = (parts[rp>>8].dcolour>>16)&0xFF;
+		tg = (parts[rp>>8].dcolour>>8)&0xFF;
+		tb = (parts[rp>>8].dcolour)&0xFF;
+
+		if (mode == DECO_ADD)
+		{
+			ta += colA;
+			tr += colR;
+			tg += colG;
+			tb += colB;
+		}
+		else if (mode == DECO_SUBTRACT)
+		{
+			ta -= colA;
+			tr -= colR;
+			tg -= colG;
+			tb -= colB;
+		}
+		else if (mode == DECO_MULTIPLY)
+		{
+			ta *= (int)((float)(1.0f+((float)colA)/255.0f));
+			tr *= (int)((float)(1.0f+((float)colR)/255.0f));
+			tg *= (int)((float)(1.0f+((float)colG)/255.0f));
+			tb *= (int)((float)(1.0f+((float)colB)/255.0f));
+		}
+		else if (mode == DECO_DIVIDE)
+		{
+			ta /= (int)((float)(1.0f+((float)colA)/255.0f));
+			tr /= (int)((float)(1.0f+((float)colR)/255.0f));
+			tg /= (int)((float)(1.0f+((float)colG)/255.0f));
+			tb /= (int)((float)(1.0f+((float)colB)/255.0f));
+		}
+		if(ta > 255)
+			ta = 255;
+		else if(ta < 0)
+			ta = 0;
+		if(tr > 255)
+			tr = 255;
+		else if(tr < 0)
+			tr = 0;
+		if(tg > 255)
+			tg = 255;
+		else if(tg < 0)
+			tg = 0;
+		if(tb > 255)
+			tb = 255;
+		else if(tb < 0)
+			tb = 0;
+		parts[rp>>8].dcolour = ((ta<<24)|(tr<<16)|(tg<<8)|tb);
+	}
+}
+
+void Simulation::ApplyDecorationPoint(int x, int y, int rx, int ry, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
+{
+	int i, j;
+
+	if(cBrush)
+	{
+		rx = cBrush->GetRadius().X;
+		ry = cBrush->GetRadius().Y;
+	}
+
+	if (rx == 0 && ry == 0)
+	{
+		ApplyDecoration(x, y, colR, colG, colB, colA, mode);
+		return;
+	}
+
+	bool *bitmap = cBrush->GetBitmap();
+	for (j=-ry; j<=ry; j++)
+		for (i=-rx; i<=rx; i++)
+			if(bitmap[(j+ry)*(rx*2)+(i+rx)])
+				ApplyDecoration(x+i, y+j, colR, colG, colB, colA, mode);
+}
+
+void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode)
+{
+	int i, j;
+
+	if (x1>x2)
+	{
+		i = x2;
+		x2 = x1;
+		x1 = i;
+	}
+	if (y1>y2)
+	{
+		j = y2;
+		y2 = y1;
+		y1 = j;
+	}
+	for (j=y1; j<=y2; j++)
+		for (i=x1; i<=x2; i++)
+			ApplyDecorationPoint(i, j, 0, 0, colR, colG, colB, colA, mode);
+}
+
+void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int rx, int ry, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
+{
+	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
+	float e, de;
+	if (cp)
+	{
+		y = x1;
+		x1 = y1;
+		y1 = y;
+		y = x2;
+		x2 = y2;
+		y2 = y;
+	}
+	if (x1 > x2)
+	{
+		y = x1;
+		x1 = x2;
+		x2 = y;
+		y = y1;
+		y1 = y2;
+		y2 = y;
+	}
+	dx = x2 - x1;
+	dy = abs(y2 - y1);
+	e = 0.0f;
+	if (dx)
+		de = dy/(float)dx;
+	else
+		de = 0.0f;
+	y = y1;
+	sy = (y1<y2) ? 1 : -1;
+	for (x=x1; x<=x2; x++)
+	{
+		if (cp)
+			ApplyDecorationPoint(y, x, rx, ry, colR, colG, colB, colA, mode, cBrush);
+		else
+			ApplyDecorationPoint(x, y, rx, ry, colR, colG, colB, colA, mode, cBrush);
+		e += de;
+		if (e >= 0.5f)
+		{
+			y += sy;
+			if (!(rx+ry))
+			{
+				if (cp)
+					ApplyDecorationPoint(y, x, rx, ry, colR, colG, colB, colA, mode, cBrush);
+				else
+					ApplyDecorationPoint(x, y, rx, ry, colR, colG, colB, colA, mode, cBrush);
+			}
+			e -= 1.0f;
+		}
+	}
+}
+
 //this creates particles from a brush, don't use if you want to create one particle
 int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush)
 {

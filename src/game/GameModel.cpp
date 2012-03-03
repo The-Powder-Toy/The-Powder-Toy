@@ -7,6 +7,7 @@
 #include "Brush.h"
 #include "EllipseBrush.h"
 #include "client/Client.h"
+#include "game/DecorationTool.h"
 
 GameModel::GameModel():
 	activeTools({NULL, NULL, NULL}),
@@ -58,7 +59,7 @@ GameModel::GameModel():
 	}
 
 	menuList.clear();
-	for(int i = 0; i < 12; i++)
+	for(int i = 0; i < SC_TOTAL; i++)
 	{
 		menuList.push_back(new Menu((const char)sim->msections[i].icon[0], sim->msections[i].name));
 	}
@@ -86,6 +87,13 @@ GameModel::GameModel():
 		menuList[SC_WALL]->AddTool(tempTool);
 		//sim->wtypes[i]
 	}
+
+	//Add decoration tools to menu
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendAdd, "ADD", 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendRemove, "SUB", 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendMultiply, "MUL", 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendDivide, "DIV", 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSet, "SET", 0, 0, 0));
 
 	//Set default brush palette
 	brushList.push_back(new Brush(ui::Point(4, 4)));
