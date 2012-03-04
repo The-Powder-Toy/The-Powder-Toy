@@ -292,9 +292,26 @@ void GameController::SetDecoration()
 	gameModel->SetDecoration(!gameModel->GetDecoration());
 }
 
+void GameController::SetColour(ui::Colour colour)
+{
+	gameModel->SetColourSelectorColour(colour);
+}
+
 void GameController::SetActiveMenu(Menu * menu)
 {
 	gameModel->SetActiveMenu(menu);
+	vector<Menu*> menuList = gameModel->GetMenuList();
+	bool set = false;
+	for(int i = 0; i < menuList.size(); i++)
+	{
+		if(menuList[i]==menu && i == SC_DECO)
+		{
+			gameModel->SetColourSelectorVisibility(true);
+			set = true;
+		}
+	}
+	if(!set)
+		gameModel->SetColourSelectorVisibility(false);
 }
 
 void GameController::SetActiveTool(int toolSelection, Tool * tool)

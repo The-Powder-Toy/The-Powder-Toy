@@ -56,6 +56,7 @@ public:
 	void SetDecoration();
 	void SetActiveMenu(Menu * menu);
 	void SetActiveTool(int toolSelection, Tool * tool);
+	void SetColour(ui::Colour colour);
 	void OpenSearch();
 	void OpenLogin();
 	void OpenTags();

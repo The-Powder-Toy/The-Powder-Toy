@@ -4,6 +4,7 @@
 #include <vector>
 #include "search/Save.h"
 #include "simulation/Simulation.h"
+#include "interface/Colour.h"
 #include "Renderer.h"
 #include "GameView.h"
 #include "Brush.h"
@@ -41,6 +42,8 @@ private:
 	Renderer * ren;
 	Tool * activeTools[3];
 	User currentUser;
+	bool colourSelector;
+	ui::Colour colour;
 	//bool zoomEnabled;
 	void notifyRendererChanged();
 	void notifySimulationChanged();
@@ -53,9 +56,17 @@ private:
 	void notifyActiveToolsChanged();
 	void notifyUserChanged();
 	void notifyZoomChanged();
+	void notifyColourSelectorColourChanged();
+	void notifyColourSelectorVisibilityChanged();
 public:
 	GameModel();
 	~GameModel();
+
+	void SetColourSelectorVisibility(bool visibility);
+	bool GetColourSelectorVisibility();
+
+	void SetColourSelectorColour(ui::Colour colour);
+	ui::Colour GetColourSelectorColour();
 
 	void SetVote(int direction);
 	Save * GetSave();

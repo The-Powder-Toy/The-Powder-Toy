@@ -8,6 +8,7 @@
 #include "interface/Window.h"
 #include "interface/Point.h"
 #include "interface/Button.h"
+#include "interface/Slider.h"
 #include "ToolButton.h"
 #include "Brush.h"
 
@@ -48,9 +49,14 @@ private:
 	ui::Button * pauseButton;
 	ui::Point currentMouse;
 
+	ui::Slider * colourRSlider;
+	ui::Slider * colourGSlider;
+	ui::Slider * colourBSlider;
+
 	bool drawModeReset;
 	ui::Point drawPoint1;
 	ui::Point drawPoint2;
+	void changeColour();
 public:
     GameView();
 	void AttachController(GameController * _c){ c = _c; }
@@ -64,6 +70,8 @@ public:
 	void NotifyActiveToolsChanged(GameModel * sender);
 	void NotifyUserChanged(GameModel * sender);
 	void NotifyZoomChanged(GameModel * sender);
+	void NotifyColourSelectorVisibilityChanged(GameModel * sender);
+	void NotifyColourSelectorColourChanged(GameModel * sender);
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);

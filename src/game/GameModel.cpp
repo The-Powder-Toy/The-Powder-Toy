@@ -15,7 +15,8 @@ GameModel::GameModel():
 	ren(NULL),
 	currentBrush(0),
 	currentUser(0, ""),
-	currentSave(NULL)
+	currentSave(NULL),
+	colourSelector(false)
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
@@ -200,6 +201,8 @@ void GameModel::AddObserver(GameView * observer){
 	observer->NotifyToolListChanged(this);
 	observer->NotifyUserChanged(this);
 	observer->NotifyZoomChanged(this);
+	observer->NotifyColourSelectorVisibilityChanged(this);
+	observer->NotifyColourSelectorColourChanged(this);
 }
 
 void GameModel::SetActiveMenu(Menu * menu)
@@ -329,6 +332,34 @@ int GameModel::GetZoomFactor()
 	return ren->ZFACTOR;
 }
 
+void GameModel::SetColourSelectorVisibility(bool visibility)
+{
+	if(colourSelector != visibility)
+	{
+		colourSelector = visibility;
+		notifyColourSelectorVisibilityChanged();
+	}
+}
+
+bool GameModel::GetColourSelectorVisibility()
+{
+	return colourSelector;
+}
+
+void GameModel::SetColourSelectorColour(ui::Colour colour_)
+{
+	//if(this->colour!=colour)
+	{
+		colour = colour_;
+		notifyColourSelectorColourChanged();
+	}
+}
+
+ui::Colour GameModel::GetColourSelectorColour()
+{
+	return colour;
+}
+
 void GameModel::SetUser(User user)
 {
 	currentUser = user;
@@ -366,6 +397,22 @@ void GameModel::FrameStep(int frames)
 void GameModel::ClearSimulation()
 {
 	sim->clear_sim();
+}
+
+void GameModel::notifyColourSelectorColourChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyColourSelectorColourChanged(this);
+	}
+}
+
+void GameModel::notifyColourSelectorVisibilityChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyColourSelectorVisibilityChanged(this);
+	}
 }
 
 void GameModel::notifyRendererChanged()

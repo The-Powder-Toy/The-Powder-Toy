@@ -4,6 +4,7 @@
 #include "interface/Button.h"
 #include "interface/Colour.h"
 #include "interface/Keys.h"
+#include "interface/Slider.h"
 
 GameView::GameView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE)),
@@ -194,6 +195,24 @@ GameView::GameView():
 	pauseButton->SetTogglable(true);
 	pauseButton->SetActionCallback(new PauseAction(this));
 	AddComponent(pauseButton);
+
+	class ColourChange : public ui::SliderAction
+	{
+		GameView * v;
+	public:
+		ColourChange(GameView * _v) { v = _v; }
+		void ValueChangedCallback(ui::Slider * sender)
+		{
+			v->changeColour();
+		}
+	};
+	ColourChange * colC = new ColourChange(this);
+	colourRSlider = new ui::Slider(ui::Point(5, Size.Y-40), ui::Point(100, 16), 255);
+	colourRSlider->SetActionCallback(colC);
+	colourGSlider = new ui::Slider(ui::Point(115, Size.Y-40), ui::Point(100, 16), 255);
+	colourGSlider->SetActionCallback(colC);
+	colourBSlider = new ui::Slider(ui::Point(225, Size.Y-40), ui::Point(100, 16), 255);
+	colourBSlider->SetActionCallback(colC);
 }
 
 class GameView::MenuAction: public ui::ButtonAction
@@ -326,6 +345,39 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		toolButtons.push_back(tempButton);
 	}
 
+}
+
+void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
+{
+	RemoveComponent(colourRSlider);
+	colourRSlider->SetParentWindow(NULL);
+	RemoveComponent(colourGSlider);
+	colourGSlider->SetParentWindow(NULL);
+	RemoveComponent(colourBSlider);
+	colourBSlider->SetParentWindow(NULL);
+	if(sender->GetColourSelectorVisibility())
+	{
+		AddComponent(colourRSlider);
+		AddComponent(colourGSlider);
+		AddComponent(colourBSlider);
+	}
+
+}
+
+void GameView::NotifyColourSelectorColourChanged(GameModel * sender)
+{
+	colourRSlider->SetValue(sender->GetColourSelectorColour().Red);
+	colourGSlider->SetValue(sender->GetColourSelectorColour().Green);
+	colourBSlider->SetValue(sender->GetColourSelectorColour().Blue);
+
+	vector<Tool*> tools = sender->GetMenuList()[SC_DECO]->GetToolList();
+	for(int i = 0; i < tools.size(); i++)
+	{
+		tools[i]->colRed = sender->GetColourSelectorColour().Red;
+		tools[i]->colGreen = sender->GetColourSelectorColour().Green;
+		tools[i]->colBlue = sender->GetColourSelectorColour().Blue;
+	}
+	NotifyToolListChanged(sender);
 }
 
 void GameView::NotifyRendererChanged(GameModel * sender)
@@ -563,6 +615,11 @@ void GameView::OnTick(float dt)
 void GameView::NotifyZoomChanged(GameModel * sender)
 {
 	zoomEnabled = sender->GetZoomEnabled();
+}
+
+void GameView::changeColour()
+{
+	c->SetColour(ui::Colour(colourRSlider->GetValue(), colourGSlider->GetValue(), colourBSlider->GetValue()));
 }
 
 void GameView::OnDraw()
