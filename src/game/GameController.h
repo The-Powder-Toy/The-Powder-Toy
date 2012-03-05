@@ -10,6 +10,7 @@
 #include "render/RenderController.h"
 #include "login/LoginController.h"
 #include "ssave/SSaveController.h"
+#include "tags/TagsController.h"
 #include "console/ConsoleController.h"
 //#include "cat/TPTScriptInterface.h"
 #include "cat/LuaScriptInterface.h"
@@ -32,6 +33,7 @@ private:
 	LoginController * loginWindow;
 	SSaveController * ssave;
 	ConsoleController * console;
+	TagsController * tagsWindow;
 	CommandInterface * commandInterface;
 public:
 	class LoginCallback;

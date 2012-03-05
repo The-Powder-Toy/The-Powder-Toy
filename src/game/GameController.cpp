@@ -71,7 +71,8 @@ GameController::GameController():
 		renderOptions(NULL),
 		loginWindow(NULL),
 		ssave(NULL),
-		console(NULL)
+		console(NULL),
+		tagsWindow(NULL)
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
@@ -98,6 +99,10 @@ GameController::~GameController()
 	if(loginWindow)
 	{
 		delete loginWindow;
+	}
+	if(tagsWindow)
+	{
+		delete tagsWindow;
 	}
 	if(console)
 	{
@@ -333,7 +338,8 @@ void GameController::OpenLogin()
 
 void GameController::OpenTags()
 {
-	//TODO: Implement
+	tagsWindow = new TagsController(NULL);
+	ui::Engine::Ref().ShowWindow(tagsWindow->GetView());
 }
 
 void GameController::OpenDisplayOptions()
