@@ -213,6 +213,8 @@ GameView::GameView():
 	colourGSlider->SetActionCallback(colC);
 	colourBSlider = new ui::Slider(ui::Point(185, Size.Y-39), ui::Point(80, 14), 255);
 	colourBSlider->SetActionCallback(colC);
+	colourASlider = new ui::Slider(ui::Point(275, Size.Y-39), ui::Point(50, 14), 255);
+	colourASlider->SetActionCallback(colC);
 }
 
 class GameView::MenuAction: public ui::ButtonAction
@@ -355,11 +357,14 @@ void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
 	colourGSlider->SetParentWindow(NULL);
 	RemoveComponent(colourBSlider);
 	colourBSlider->SetParentWindow(NULL);
+	RemoveComponent(colourASlider);
+	colourASlider->SetParentWindow(NULL);
 	if(sender->GetColourSelectorVisibility())
 	{
 		AddComponent(colourRSlider);
 		AddComponent(colourGSlider);
 		AddComponent(colourBSlider);
+		AddComponent(colourASlider);
 	}
 
 }
@@ -372,15 +377,8 @@ void GameView::NotifyColourSelectorColourChanged(GameModel * sender)
 	colourGSlider->SetColour(ui::Colour(sender->GetColourSelectorColour().Red, 0, sender->GetColourSelectorColour().Blue), ui::Colour(sender->GetColourSelectorColour().Red, 255, sender->GetColourSelectorColour().Blue));
 	colourBSlider->SetValue(sender->GetColourSelectorColour().Blue);
 	colourBSlider->SetColour(ui::Colour(sender->GetColourSelectorColour().Red, sender->GetColourSelectorColour().Green, 0), ui::Colour(sender->GetColourSelectorColour().Red, sender->GetColourSelectorColour().Green, 255));
-
-	vector<Tool*> tools = sender->GetMenuList()[SC_DECO]->GetToolList();
-	for(int i = 0; i < tools.size(); i++)
-	{
-		tools[i]->colRed = sender->GetColourSelectorColour().Red;
-		tools[i]->colGreen = sender->GetColourSelectorColour().Green;
-		tools[i]->colBlue = sender->GetColourSelectorColour().Blue;
-	}
-	NotifyToolListChanged(sender);
+	colourASlider->SetValue(sender->GetColourSelectorColour().Alpha);
+	colourASlider->SetColour(ui::Colour(0, 0, 0), ui::Colour(255, 255, 255));
 }
 
 void GameView::NotifyRendererChanged(GameModel * sender)
@@ -622,7 +620,7 @@ void GameView::NotifyZoomChanged(GameModel * sender)
 
 void GameView::changeColour()
 {
-	c->SetColour(ui::Colour(colourRSlider->GetValue(), colourGSlider->GetValue(), colourBSlider->GetValue()));
+	c->SetColour(ui::Colour(colourRSlider->GetValue(), colourGSlider->GetValue(), colourBSlider->GetValue(), colourASlider->GetValue()));
 }
 
 void GameView::OnDraw()

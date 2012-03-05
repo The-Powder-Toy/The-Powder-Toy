@@ -11,20 +11,29 @@ public:
 
 	ToolType decoMode;
 
+	unsigned char Red;
+	unsigned char Green;
+	unsigned char Blue;
+	unsigned char Alpha;
+
 	DecorationTool(ToolType decoMode_, string name, int r, int g, int b):
 		Tool(0, name, r, g, b),
-		decoMode(decoMode_)
+		decoMode(decoMode_),
+		Red(0),
+		Green(0),
+		Blue(0),
+		Alpha(0)
 	{
 	}
 	virtual ~DecorationTool() {}
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position){
-		sim->ApplyDecorationPoint(position.X, position.Y, 1, 1, colRed, colGreen, colBlue, 255, decoMode, brush);
+		sim->ApplyDecorationPoint(position.X, position.Y, 1, 1, Red, Green, Blue, Alpha, decoMode, brush);
 	}
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
-		sim->ApplyDecorationLine(position1.X, position1.Y, position2.X, position2.Y, 1, 1, colRed, colGreen, colBlue, 255, decoMode, brush);
+		sim->ApplyDecorationLine(position1.X, position1.Y, position2.X, position2.Y, 1, 1, Red, Green, Blue, Alpha, decoMode, brush);
 	}
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
-		sim->ApplyDecorationBox(position1.X, position1.Y, position2.X, position2.Y, colRed, colGreen, colBlue, 255, decoMode);
+		sim->ApplyDecorationBox(position1.X, position1.Y, position2.X, position2.Y, Red, Green, Blue, Alpha, decoMode);
 	}
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 

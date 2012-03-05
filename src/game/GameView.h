@@ -52,6 +52,7 @@ private:
 	ui::Slider * colourRSlider;
 	ui::Slider * colourGSlider;
 	ui::Slider * colourBSlider;
+	ui::Slider * colourASlider;
 
 	bool drawModeReset;
 	ui::Point drawPoint1;

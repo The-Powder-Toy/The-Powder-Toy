@@ -325,36 +325,29 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 	}
 	else if (mode == DECO_ADD)
 	{
-		tr += colR*0.05f;
-		tg += colG*0.05f;
-		tb += colB*0.05f;
+		ta += (colA*0.1f)*colA;
+		tr += (colR*0.1f)*colA;
+		tg += (colG*0.1f)*colA;
+		tb += (colB*0.1f)*colA;
 	}
 	else if (mode == DECO_SUBTRACT)
 	{
-		tr -= colR*0.05f;
-		tg -= colG*0.05f;
-		tb -= colB*0.05f;
+		ta -= (colA*0.1f)*colA;
+		tr -= (colR*0.1f)*colA;
+		tg -= (colG*0.1f)*colA;
+		tb -= (colB*0.1f)*colA;
 	}
 	else if (mode == DECO_MULTIPLY)
 	{
-		tr *= colR*0.05f;
-		tg *= colG*0.05f;
-		tb *= colB*0.05f;
+		tr *= 1.0f+(colR*0.1f)*colA;
+		tg *= 1.0f+(colG*0.1f)*colA;
+		tb *= 1.0f+(colB*0.1f)*colA;
 	}
 	else if (mode == DECO_DIVIDE)
 	{
-		if(colR>0)
-			tr /= colR*0.05f;
-		else
-			tr = 0.0f;
-		if(colG>0)
-			tg /= colG*0.05f;
-		else
-			tg = 0.0f;
-		if(colB>0)
-			tb /= colB*0.05f;
-		else
-			tb = 0.0f;
+		tr /= 1.0f+(colR*0.1f)*colA;
+		tg /= 1.0f+(colG*0.1f)*colA;
+		tb /= 1.0f+(colB*0.1f)*colA;
 	}
 
 	colA_ = ta*255.0f;

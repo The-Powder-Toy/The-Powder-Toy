@@ -348,10 +348,16 @@ bool GameModel::GetColourSelectorVisibility()
 
 void GameModel::SetColourSelectorColour(ui::Colour colour_)
 {
-	//if(this->colour!=colour)
+	colour = colour_;
+	notifyColourSelectorColourChanged();
+
+	vector<Tool*> tools = GetMenuList()[SC_DECO]->GetToolList();
+	for(int i = 0; i < tools.size(); i++)
 	{
-		colour = colour_;
-		notifyColourSelectorColourChanged();
+		((DecorationTool*)tools[i])->Red = colour.Red;
+		((DecorationTool*)tools[i])->Green = colour.Green;
+		((DecorationTool*)tools[i])->Blue = colour.Blue;
+		((DecorationTool*)tools[i])->Alpha = colour.Alpha;
 	}
 }
 
