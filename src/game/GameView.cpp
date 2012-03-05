@@ -207,11 +207,11 @@ GameView::GameView():
 		}
 	};
 	ColourChange * colC = new ColourChange(this);
-	colourRSlider = new ui::Slider(ui::Point(5, Size.Y-40), ui::Point(100, 16), 255);
+	colourRSlider = new ui::Slider(ui::Point(5, Size.Y-39), ui::Point(80, 14), 255);
 	colourRSlider->SetActionCallback(colC);
-	colourGSlider = new ui::Slider(ui::Point(115, Size.Y-40), ui::Point(100, 16), 255);
+	colourGSlider = new ui::Slider(ui::Point(95, Size.Y-39), ui::Point(80, 14), 255);
 	colourGSlider->SetActionCallback(colC);
-	colourBSlider = new ui::Slider(ui::Point(225, Size.Y-40), ui::Point(100, 16), 255);
+	colourBSlider = new ui::Slider(ui::Point(185, Size.Y-39), ui::Point(80, 14), 255);
 	colourBSlider->SetActionCallback(colC);
 }
 
@@ -367,8 +367,11 @@ void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
 void GameView::NotifyColourSelectorColourChanged(GameModel * sender)
 {
 	colourRSlider->SetValue(sender->GetColourSelectorColour().Red);
+	colourRSlider->SetColour(ui::Colour(0, sender->GetColourSelectorColour().Green, sender->GetColourSelectorColour().Blue), ui::Colour(255, sender->GetColourSelectorColour().Green, sender->GetColourSelectorColour().Blue));
 	colourGSlider->SetValue(sender->GetColourSelectorColour().Green);
+	colourGSlider->SetColour(ui::Colour(sender->GetColourSelectorColour().Red, 0, sender->GetColourSelectorColour().Blue), ui::Colour(sender->GetColourSelectorColour().Red, 255, sender->GetColourSelectorColour().Blue));
 	colourBSlider->SetValue(sender->GetColourSelectorColour().Blue);
+	colourBSlider->SetColour(ui::Colour(sender->GetColourSelectorColour().Red, sender->GetColourSelectorColour().Green, 0), ui::Colour(sender->GetColourSelectorColour().Red, sender->GetColourSelectorColour().Green, 255));
 
 	vector<Tool*> tools = sender->GetMenuList()[SC_DECO]->GetToolList();
 	for(int i = 0; i < tools.size(); i++)

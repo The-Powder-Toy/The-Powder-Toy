@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include "Slider.h"
+#include "Colour.h"
 
 namespace ui {
 
@@ -14,7 +15,8 @@ Slider::Slider(Point position, Point size, int steps):
 		Component(position, size),
 		sliderSteps(steps),
 		sliderPosition(0),
-		isMouseDown(false)
+		isMouseDown(false),
+		bgGradient(NULL)
 {
 	// TODO Auto-generated constructor stub
 
@@ -73,6 +75,15 @@ int Slider::GetValue()
 	return sliderPosition;
 }
 
+void Slider::SetColour(Colour col1, Colour col2)
+{
+	if(bgGradient)
+		free(bgGradient);
+	bgGradient = (unsigned char*)Graphics::GenerateGradient(
+			(pixel[2]){PIXRGB(col1.Red, col1.Green, col1.Blue), PIXRGB(col2.Red, col2.Green, col2.Blue)},
+			(float[2]){0.0f, 1.0f}, 2, Size.X-6);
+}
+
 void Slider::SetValue(int value)
 {
 	if(value < 0)
@@ -85,8 +96,16 @@ void Slider::SetValue(int value)
 void Slider::Draw(const Point& screenPos)
 {
 	Graphics * g = Engine::Ref().g;
-	g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
-	g->fillrect(screenPos.X+3, screenPos.Y+3, Size.X-6, Size.Y-6, 255, 255, 255, 255);
+	//g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
+
+	if(bgGradient)
+	{
+		for (int j = 3; j < Size.Y-6; j++)
+				for (int i = 3; i < Size.X-6; i++)
+					g->drawpixel(screenPos.X+i+2, screenPos.Y+j+2, bgGradient[(i-3)*3], bgGradient[(i-3)*3+1], bgGradient[(i-3)*3+2], 255);
+	}
+
+	g->drawrect(screenPos.X+3, screenPos.Y+3, Size.X-6, Size.Y-6, 255, 255, 255, 255);
 
 	float fPosition = sliderPosition;
 	float fSize = Size.X-6;

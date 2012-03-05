@@ -9,6 +9,7 @@
 #define SLIDER_H_
 
 #include "Component.h"
+#include "Colour.h"
 
 namespace ui {
 class Slider;
@@ -23,6 +24,7 @@ class Slider: public ui::Component {
 	int sliderSteps;
 	int sliderPosition;
 	bool isMouseDown;
+	unsigned char * bgGradient;
 	SliderAction * actionCallback;
 	void updatePosition(int position);
 public:
@@ -31,6 +33,7 @@ public:
 	virtual void OnMouseClick(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);
 	virtual void Draw(const Point& screenPos);
+	void SetColour(Colour col1, Colour col2);
 	void SetActionCallback(SliderAction * action) { actionCallback = action; }
 	int GetValue();
 	void SetValue(int value);

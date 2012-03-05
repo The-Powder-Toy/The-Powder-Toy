@@ -300,73 +300,85 @@ int Simulation::create_part_add_props(int p, int x, int y, int tv, int rx, int r
 	return p;
 }
 
-void Simulation::ApplyDecoration(int x, int y, int colR, int colG, int colB, int colA, int mode)
+void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, int colA_, int mode)
 {
-	int rp, tr, tg, tb, ta;
+	int rp;
+	float tr, tg, tb, ta, colR = colR_, colG = colG_, colB = colB_, colA = colA_;
 	rp = pmap[y][x];
 	if (!rp)
 		return;
 
+	ta = (parts[rp>>8].dcolour>>24)&0xFF;
+	tr = (parts[rp>>8].dcolour>>16)&0xFF;
+	tg = (parts[rp>>8].dcolour>>8)&0xFF;
+	tb = (parts[rp>>8].dcolour)&0xFF;
+
+	ta /= 255.0f; tr /= 255.0f; tg /= 255.0f; tb /= 255.0f;
+	colR /= 255.0f; colG /= 255.0f; colB /= 255.0f; colA /= 255.0f;
+
 	if (mode == DECO_DRAW)
 	{
-		parts[rp>>8].dcolour = ((colA<<24)|(colR<<16)|(colG<<8)|colB);
+		ta = colA;
+		tr = colR;
+		tg = colG;
+		tb = colB;
 	}
-	else
+	else if (mode == DECO_ADD)
 	{
-		if (parts[rp>>8].dcolour == 0)
-			return;
-
-		ta = (parts[rp>>8].dcolour>>24)&0xFF;
-		tr = (parts[rp>>8].dcolour>>16)&0xFF;
-		tg = (parts[rp>>8].dcolour>>8)&0xFF;
-		tb = (parts[rp>>8].dcolour)&0xFF;
-
-		if (mode == DECO_ADD)
-		{
-			ta += colA;
-			tr += colR;
-			tg += colG;
-			tb += colB;
-		}
-		else if (mode == DECO_SUBTRACT)
-		{
-			ta -= colA;
-			tr -= colR;
-			tg -= colG;
-			tb -= colB;
-		}
-		else if (mode == DECO_MULTIPLY)
-		{
-			ta *= (int)((float)(1.0f+((float)colA)/255.0f));
-			tr *= (int)((float)(1.0f+((float)colR)/255.0f));
-			tg *= (int)((float)(1.0f+((float)colG)/255.0f));
-			tb *= (int)((float)(1.0f+((float)colB)/255.0f));
-		}
-		else if (mode == DECO_DIVIDE)
-		{
-			ta /= (int)((float)(1.0f+((float)colA)/255.0f));
-			tr /= (int)((float)(1.0f+((float)colR)/255.0f));
-			tg /= (int)((float)(1.0f+((float)colG)/255.0f));
-			tb /= (int)((float)(1.0f+((float)colB)/255.0f));
-		}
-		if(ta > 255)
-			ta = 255;
-		else if(ta < 0)
-			ta = 0;
-		if(tr > 255)
-			tr = 255;
-		else if(tr < 0)
-			tr = 0;
-		if(tg > 255)
-			tg = 255;
-		else if(tg < 0)
-			tg = 0;
-		if(tb > 255)
-			tb = 255;
-		else if(tb < 0)
-			tb = 0;
-		parts[rp>>8].dcolour = ((ta<<24)|(tr<<16)|(tg<<8)|tb);
+		tr += colR*0.05f;
+		tg += colG*0.05f;
+		tb += colB*0.05f;
 	}
+	else if (mode == DECO_SUBTRACT)
+	{
+		tr -= colR*0.05f;
+		tg -= colG*0.05f;
+		tb -= colB*0.05f;
+	}
+	else if (mode == DECO_MULTIPLY)
+	{
+		tr *= colR*0.05f;
+		tg *= colG*0.05f;
+		tb *= colB*0.05f;
+	}
+	else if (mode == DECO_DIVIDE)
+	{
+		if(colR>0)
+			tr /= colR*0.05f;
+		else
+			tr = 0.0f;
+		if(colG>0)
+			tg /= colG*0.05f;
+		else
+			tg = 0.0f;
+		if(colB>0)
+			tb /= colB*0.05f;
+		else
+			tb = 0.0f;
+	}
+
+	colA_ = ta*255.0f;
+	colR_ = tr*255.0f;
+	colG_ = tg*255.0f;
+	colB_ = tb*255.0f;
+
+	if(colA_ > 255)
+		colA_ = 255;
+	else if(colA_ < 0)
+		colA_ = 0;
+	if(colR_ > 255)
+		colR_ = 255;
+	else if(colR_ < 0)
+		colR_ = 0;
+	if(colG_ > 255)
+		colG_ = 255;
+	else if(colG_ < 0)
+		colG_ = 0;
+	if(colB_ > 255)
+		colB_ = 255;
+	else if(colB_ < 0)
+		colB_ = 0;
+	parts[rp>>8].dcolour = ((colA_<<24)|(colR_<<16)|(colG_<<8)|colB_);
 }
 
 void Simulation::ApplyDecorationPoint(int x, int y, int rx, int ry, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
