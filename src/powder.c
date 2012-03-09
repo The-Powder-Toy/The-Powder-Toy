@@ -1881,16 +1881,25 @@ void update_particles_i(pixel *vid, int start, int inc)
 #endif
 					if (aheat_enable)
 					{
+#ifdef REALISTIC
+						c_heat = parts[i].temp*96.645/ptypes[t].hconduct*fabs(ptypes[t].weight)
+							+ hv[y/CELL][x/CELL]*100*(pv[y/CELL][x/CELL]+273.15f)/256;
+						c_Cm = 96.645/ptypes[t].hconduct*fabs(ptypes[t].weight) 
+							+ 100*(pv[y/CELL][x/CELL]+273.15f)/256;
+						pt = c_heat/c_Cm;
+						pt = restrict_flt(pt, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
+						parts[i].temp = pt;
+						//Pressure increase from heat (temporary)
+						pv[y/CELL][x/CELL] += (pt-hv[y/CELL][x/CELL])*0.004;
+						hv[y/CELL][x/CELL] = pt;
+#else
 						c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
 						c_heat = restrict_flt(c_heat, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
 						parts[i].temp += c_heat;
 						hv[y/CELL][x/CELL] -= c_heat;
-#ifdef REALISTIC
-						//Volume increase from heat (temporary)
-						pv[y/CELL][x/CELL] -= c_heat*0.004;
 #endif
 					}
-					c_heat = 0.0f;
+					c_heat = 0.0f; c_Cm = 0.0f;
 					for (j=0; j<8; j++)
 					{
 						surround_hconduct[j] = i;
