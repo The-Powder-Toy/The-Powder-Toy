@@ -31,6 +31,9 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 						continue;
 				}
 
+				if ((r&0xFF)==PT_STKM || (r&0xFF)==PT_STKM2 || (r&0xFF)==PT_FIGH)
+					continue;// Handling these is a bit more complicated, and is done in STKM_interact()
+
 				if ((r&0xFF) == PT_SOAP)
 					detach(r>>8);
 

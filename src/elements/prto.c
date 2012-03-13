@@ -47,8 +47,31 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 								player.spwn = 0;
 							if (portalp[parts[i].tmp][randomness][nnx].type==PT_STKM2)
 								player2.spwn = 0;
+							if (portalp[parts[i].tmp][randomness][nnx].type==PT_FIGH)
+							{
+								fighcount--;
+								fighters[(unsigned char)portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 0;
+							}
 							np = create_part(-1,x+rx,y+ry,portalp[parts[i].tmp][randomness][nnx].type);
-							if (np<0) continue;
+							if (np<0)
+							{
+								if (portalp[parts[i].tmp][randomness][nnx].type==PT_STKM)
+									player.spwn = 1;
+								if (portalp[parts[i].tmp][randomness][nnx].type==PT_STKM2)
+									player2.spwn = 1;
+								if (portalp[parts[i].tmp][randomness][nnx].type==PT_FIGH)
+								{
+									fighcount++;
+									fighters[(unsigned char)portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 1;
+								}
+								continue;
+							}
+							if (parts[np].type==PT_FIGH)
+							{
+								// Release the fighters[] element allocated by create_part, the one reserved when the fighter went into the portal will be used
+								fighters[(unsigned char)parts[np].tmp].spwn = 0;
+								fighters[(unsigned char)portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 1;
+							}
 							parts[np] = portalp[parts[i].tmp][randomness][nnx];
 							parts[np].x = x+rx;
 							parts[np].y = y+ry;
