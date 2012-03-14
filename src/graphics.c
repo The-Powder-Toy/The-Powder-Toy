@@ -3633,9 +3633,6 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 		if (rx<=0)
 			for (j = y - ry; j <= y + ry; j++)
 				xor_pixel(x, j, vid);
-		else if (ry<=0)
-			for (i = x - rx; i <= x + rx; i++)
-				xor_pixel(i, y, vid);
 		else
 		{
 			int tempy = y, i, j, jmax, oldy;

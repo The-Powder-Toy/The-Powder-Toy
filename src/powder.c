@@ -3086,10 +3086,11 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill)
 	else																	// normal draw
 		fn = 3;
 
-	if (rx==0&&ry==0)
+	if (rx<=0) //workaround for rx == 0 crashing. todo: find a better fix later.
 	{
-		if (create_parts2(fn,i,j,c,rx,ry,flags))
-			f = 1;
+		for (j = y - ry; j <= y + ry; j++)
+			if (create_parts2(fn,x,j,c,rx,ry,flags))
+				f = 1;
 	}
 	else
 	{
