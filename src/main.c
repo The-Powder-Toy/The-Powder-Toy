@@ -2371,7 +2371,7 @@ int main(int argc, char *argv[])
 						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=SPC_WIND&&c!=SPC_PGRV&&c!=SPC_NGRV)
 							flood_parts(x, y, c, -1, -1, get_brush_flags());
 						if (c==SPC_HEAT || c==SPC_COOL)
-							create_parts(x, y, bsx, bsy, c, get_brush_flags());
+							create_parts(x, y, bsx, bsy, c, get_brush_flags(), 1);
 						lx = x;
 						ly = y;
 						lb = 0;
@@ -2424,7 +2424,7 @@ int main(int argc, char *argv[])
 								cb_bmap[cby][cbx] = bmap[cby][cbx];
 								cb_emap[cby][cbx] = emap[cby][cbx];
 							}
-						create_parts(x, y, bsx, bsy, c, get_brush_flags());
+						create_parts(x, y, bsx, bsy, c, get_brush_flags(), 1);
 						lx = x;
 						ly = y;
 						lb = b;

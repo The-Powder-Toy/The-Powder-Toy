@@ -887,11 +887,7 @@ inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 	return x + w;
 }
 
-#if defined(WIN32) && !defined(__GNUC__)
-_inline int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
-#else
-inline int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
-#endif
+int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];
@@ -1934,6 +1930,11 @@ void render_parts(pixel *vid)
 	#endif
 					
 				//Pixel rendering
+				if (t==PT_SOAP)
+				{
+					if ((parts[i].ctype&7) == 7)
+						draw_line(vid, nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), 245, 245, 220, XRES+BARSIZE);
+				}
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
 					char buff[20];  //Buffer for HP

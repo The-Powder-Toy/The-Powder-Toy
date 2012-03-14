@@ -2724,7 +2724,7 @@ void create_box(int x1, int y1, int x2, int y2, int c, int flags)
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			create_parts(i, j, 0, 0, c, flags);
+			create_parts(i, j, 0, 0, c, flags, 1);
 }
 
 int flood_prop_2(int x, int y, size_t propoffset, void * propvalue, int proptype, int parttype, char * bitmap)
@@ -2849,7 +2849,7 @@ int flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 			if (create_part(-1,x, y, fullc)==-1)
 				return 0;
 		}
-		else if (!create_parts(x, y, 0, 0, fullc, flags))
+		else if (!create_parts(x, y, 0, 0, fullc, flags, 1))
 			return 0;
 	}
 	// fill children
