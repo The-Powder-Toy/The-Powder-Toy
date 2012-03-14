@@ -43,25 +43,25 @@ int update_H2(UPDATE_FUNC_ARGS)
 		if (rand()%5 < 1)
 		{
 			int j;
+			float temp = parts[i].temp;
 			part_change_type(i,x,y,PT_PLSM);
 			parts[i].life = rand()%150+50;
-			create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT);
-			create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC);
+			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT);
+			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC);
 			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT);
-			if (j) parts[j].ctype = 0xFFFF00;
+			if (j != -1) { parts[j].ctype = 0xFFFF00; parts[j].temp = temp; }
 
 			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NBLE);
-			if (j) parts[j].tmp = 1;
+			if (j != -1) { parts[j].tmp = 1; parts[j].temp = temp; }
 
 			if (rand()%2)
 			{
 				j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NBLE);
-				if (j) parts[j].tmp = 1;
+				if (j != -1) { parts[j].tmp = 1; parts[j].temp = temp; }
 			}
 
-			if (parts[i].temp < 4273.15)
-				parts[i].temp = 4273.15;
-			pv[y/CELL][x/CELL] += 50;
+			parts[i].temp += 6000;
+			pv[y/CELL][x/CELL] += 30;
 		}
 	}
 	return 0;

@@ -371,6 +371,7 @@ int update_ICEI(UPDATE_FUNC_ARGS);
 int update_ISZ(UPDATE_FUNC_ARGS);
 int update_LCRY(UPDATE_FUNC_ARGS);
 int update_MORT(UPDATE_FUNC_ARGS);
+int update_NBLE(UPDATE_FUNC_ARGS);
 int update_NEUT(UPDATE_FUNC_ARGS);
 int update_NPTCT(UPDATE_FUNC_ARGS);
 int update_PCLN(UPDATE_FUNC_ARGS);
