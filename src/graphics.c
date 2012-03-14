@@ -3614,7 +3614,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 {
 #ifdef OGLR
 	int i;
-	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV)
+	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV||t==SPC_PROP)
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 		glEnable(GL_COLOR_LOGIC_OP);
@@ -3654,7 +3654,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 	}
 #else
 	int i,j,c;
-	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV)
+	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV||t==SPC_PROP)
 	{
 		if (rx<=0)
 			for (j = y - ry; j <= y + ry; j++)

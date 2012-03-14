@@ -1761,7 +1761,7 @@ int main(int argc, char *argv[])
 				active_menu = i;
 			}
 		}
-		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &dae, b, bq, x, y); //draw the elements in the current menu
+		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &su, &dae, b, bq, x, y); //draw the elements in the current menu
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
 		        && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
 		        && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))
