@@ -46,8 +46,8 @@ int update_H2(UPDATE_FUNC_ARGS)
 			float temp = parts[i].temp;
 			part_change_type(i,x,y,PT_PLSM);
 			parts[i].life = rand()%150+50;
-			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT);
-			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC);
+			create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT);
+			create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC);
 			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT);
 			if (j != -1) { parts[j].ctype = 0xFFFF00; parts[j].temp = temp; }
 
