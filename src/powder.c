@@ -318,43 +318,17 @@ int try_move(int i, int x, int y, int nx, int ny)
 
 	if (parts[i].type==PT_NEUT && (ptypes[r&0xFF].properties&PROP_NEUTABSORB))
 	{
-		parts[i].type=PT_NONE;
+		kill_part(i);
 		return 0;
 	}
 	if ((r&0xFF)==PT_VOID || (r&0xFF)==PT_PVOD) //this is where void eats particles
 	{
-		if (parts[i].type == PT_STKM)
-		{
-			player.spwn = 0;
-		}
-		if (parts[i].type == PT_STKM2)
-		{
-			player2.spwn = 0;
-		}
-		if (parts[i].type == PT_FIGH)
-		{
-			fighters[(unsigned char)parts[i].tmp].spwn = 0;
-			fighcount--;
-		}
-		parts[i].type=PT_NONE;
+		kill_part(i);
 		return 0;
 	}
 	if ((r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) //this is where blackhole eats particles
 	{
-		if (parts[i].type == PT_STKM)
-		{
-			player.spwn = 0;
-		}
-		if (parts[i].type == PT_STKM2)
-		{
-			player2.spwn = 0;
-		}
-		if (parts[i].type == PT_FIGH)
-		{
-			fighters[(unsigned char)parts[i].tmp].spwn = 0;
-			fighcount--;
-		}
-		parts[i].type=PT_NONE;
+		kill_part(i);
 		if (!legacy_enable)
 		{
 			parts[r>>8].temp = restrict_flt(parts[r>>8].temp+parts[i].temp/2, MIN_TEMP, MAX_TEMP);//3.0f;
@@ -364,7 +338,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 	}
 	if (((r&0xFF)==PT_WHOL||(r&0xFF)==PT_NWHL) && parts[i].type==PT_ANAR) //whitehole eats anar
 	{
-		parts[i].type=PT_NONE;
+		kill_part(i);
 		if (!legacy_enable)
 		{
 			parts[r>>8].temp = restrict_flt(parts[r>>8].temp- (MAX_TEMP-parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
@@ -415,8 +389,10 @@ int try_move(int i, int x, int y, int nx, int ny)
 // try to move particle, and if successful update pmap and parts[i].x,y
 int do_move(int i, int x, int y, float nxf, float nyf)
 {
-	int nx = (int)(nxf+0.5f), ny = (int)(nyf+0.5f);
-	int result = try_move(i, x, y, nx, ny);
+	int nx = (int)(nxf+0.5f), ny = (int)(nyf+0.5f), result;
+	if (parts[i].type == PT_NONE)
+		return 0;
+	result = try_move(i, x, y, nx, ny);
 	if (result)
 	{
 		int t = parts[i].type;
@@ -612,6 +588,9 @@ void detach(int i)
 void kill_part(int i)//kills particle number i
 {
 	int x, y;
+
+	if (parts[i].type == PT_NONE) //This shouldn't happen anymore, but it's here just in case
+		return;
 
 	x = (int)(parts[i].x+0.5f);
 	y = (int)(parts[i].y+0.5f);
@@ -2284,13 +2263,15 @@ killed:
 				if (stagnant)//FLAG_STAGNANT set, was reflected on previous frame
 				{
 					// cast coords as int then back to float for compatibility with existing saves
-					if (!do_move(i, x, y, (float)fin_x, (float)fin_y)) {
+					if (!do_move(i, x, y, (float)fin_x, (float)fin_y) && parts[i].type) {
 						kill_part(i);
 						continue;
 					}
 				}
 				else if (!do_move(i, x, y, fin_xf, fin_yf))
 				{
+					if (parts[i].type == PT_NONE)
+						continue;
 					// reflection
 					parts[i].flags |= FLAG_STAGNANT;
 					if (t==PT_NEUT && 100>(rand()%1000))
@@ -2350,6 +2331,8 @@ killed:
 				// gasses and solids (but not powders)
 				if (!do_move(i, x, y, fin_xf, fin_yf))
 				{
+					if (parts[i].type == PT_NONE)
+						continue;
 					// can't move there, so bounce off
 					// TODO
 					if (fin_x>x+ISTP) fin_x=x+ISTP;
@@ -2381,6 +2364,8 @@ killed:
 				// liquids and powders
 				if (!do_move(i, x, y, fin_xf, fin_yf))
 				{
+					if (parts[i].type == PT_NONE)
+						continue;
 					if (fin_x!=x && do_move(i, x, y, fin_xf, clear_yf))
 					{
 						parts[i].vx *= ptypes[t].collision;
