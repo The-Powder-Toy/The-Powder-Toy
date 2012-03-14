@@ -2917,7 +2917,7 @@ void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int c
 }
 void create_decoration(int x, int y, int r, int g, int b, int click, int tool)
 {
-	int rp, tr,tg,tb;
+	int rp, tr = 0, tg = 0, tb = 0;
 	rp = pmap[y][x];
 	if (!rp)
 		return;
@@ -2945,6 +2945,27 @@ void create_decoration(int x, int y, int r, int g, int b, int click, int tool)
 		tg = (parts[rp>>8].dcolour>>8)&0xFF;
 		tb = (parts[rp>>8].dcolour)&0xFF;
 		parts[rp>>8].dcolour = ((parts[rp>>8].dcolour&0xFF000000)|(clamp_flt(tr-(tr)*0.02, 0,255)<<16)|(clamp_flt(tg-(tg)*0.02, 0,255)<<8)|clamp_flt(tb-(tb)*0.02, 0,255));
+	}
+	else if (tool == DECO_SMUDGE)
+	{
+		int rx, ry, num = 0;
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+			{
+				if ((pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
+				{
+					num++;
+					tr += (parts[pmap[y+ry][x+rx]>>8].dcolour>>16)&0xFF;
+					tg += (parts[pmap[y+ry][x+rx]>>8].dcolour>>8)&0xFF;
+					tb += (parts[pmap[y+ry][x+rx]>>8].dcolour)&0xFF;
+				}
+			}
+		if (num == 0)
+			return;
+		tr = (int)((float)tr/num+.5);
+		tg = (int)((float)tg/num+.5);
+		tb = (int)((float)tb/num+.5);
+		parts[rp>>8].dcolour = ((255<<24)|(tr<<16)|(tg<<8)|tb);
 	}
 }
 void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b, int click, int tool)

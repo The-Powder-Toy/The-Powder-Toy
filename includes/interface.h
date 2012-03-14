@@ -101,12 +101,14 @@ static menu_wall colorlist[] =
 #define DECO_DRAW 0
 #define DECO_LIGHTEN 1
 #define DECO_DARKEN 2
+#define DECO_SMUDGE 3
 
 static menu_wall toollist[] =
 {
 	{PIXPACK(0xFF0000), "Draw"},
 	{PIXPACK(0xDDDDDD), "Lighten"},
 	{PIXPACK(0x111111), "Darken"},
+	{PIXPACK(0x00FF00), "Smudge"},
 };
 
 struct ui_edit
