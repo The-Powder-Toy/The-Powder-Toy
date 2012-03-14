@@ -2974,7 +2974,7 @@ int create_part_add_props(int p, int x, int y, int tv, int rx, int ry)
 //this creates particles from a brush, don't use if you want to create one particle
 int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill)
 {
-	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;//n;
+	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p, fn;
 
 	int wall = c - 100;
 	if (c==SPC_WIND || c==PT_FIGH)
@@ -3077,139 +3077,18 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill)
 		return 1;
 	}
 
-	//eraser
-	if (c == 0 && !(flags&BRUSH_REPLACEMODE))
-	{
-		if (rx==0&&ry==0)
-		{
-			delete_part(x, y, 0);
-		}
-		else
-		{
-			int tempy = y, i, j, jmax, oldy;
-			if (CURRENT_BRUSH == TRI_BRUSH)
-				tempy = y + ry;
-			for (i = x - rx; i <= x; i++) {
-				oldy = tempy;
-				while (InCurrentBrush(i-x,tempy-y,rx,ry))
-					tempy = tempy - 1;
-				tempy = tempy + 1;
-				jmax = 2*y - tempy;
-				if (CURRENT_BRUSH == TRI_BRUSH)
-					jmax = y + ry;
-				if (fill)
-				{
-					for (j = tempy; j <= jmax; j++) {
-						delete_part(i, j, 0);
-						delete_part(2*x-i, j, 0);
-					}
-				}
-				else
-				{
-					if ((oldy != tempy && CURRENT_BRUSH != SQUARE_BRUSH) || i == x-rx)
-						oldy--;
-					if (CURRENT_BRUSH == TRI_BRUSH)
-						oldy = tempy;
-					for (j = tempy; j <= oldy+1; j++) {
-						int i2 = 2*x-i, j2 = 2*y-j;
-						if (CURRENT_BRUSH == TRI_BRUSH)
-							j2 = y+ry;
-						delete_part(i, j, flags);
-						delete_part(i2, j, flags);
-						delete_part(i, j2, flags);
-						delete_part(i2, j2, flags);
-					}
-				}
-			}
-		}
-		return 1;
-	}
+	if (c == 0 && !(flags&BRUSH_REPLACEMODE))								// delete
+		fn = 0;
+	else if ((flags&BRUSH_SPECIFIC_DELETE) && !(flags&BRUSH_REPLACEMODE))	// specific delete
+		fn = 1;
+	else if (flags&BRUSH_REPLACEMODE)										// replace
+		fn = 2;
+	else																	// normal draw
+		fn = 3;
 
-	//specific deletion
-	if ((flags&BRUSH_SPECIFIC_DELETE)&& !(flags&BRUSH_REPLACEMODE))
+	if (rx==0&&ry==0)
 	{
-		if (rx==0&&ry==0)
-		{
-			delete_part(x, y, flags);
-		}
-		else
-		{
-			int tempy = y, i, j, jmax, oldy;
-			if (CURRENT_BRUSH == TRI_BRUSH)
-				tempy = y + ry;
-			for (i = x - rx; i <= x; i++) {
-				oldy = tempy;
-				while (InCurrentBrush(i-x,tempy-y,rx,ry))
-					tempy = tempy - 1;
-				tempy = tempy + 1;
-				jmax = 2*y - tempy;
-				if (CURRENT_BRUSH == TRI_BRUSH)
-					jmax = y + ry;
-				if (fill)
-				{
-					for (j = tempy; j <= jmax; j++) {
-						delete_part(i, j, flags);
-						delete_part(2*x-i, j, flags);
-					}
-				}
-				else
-				{
-					if ((oldy != tempy && CURRENT_BRUSH != SQUARE_BRUSH) || i == x-rx)
-						oldy--;
-					if (CURRENT_BRUSH == TRI_BRUSH)
-						oldy = tempy;
-					for (j = tempy; j <= oldy+1; j++) {
-						int i2 = 2*x-i, j2 = 2*y-j;
-						if (CURRENT_BRUSH == TRI_BRUSH)
-							j2 = y+ry;
-						delete_part(i, j, flags);
-						delete_part(i2, j, flags);
-						delete_part(i, j2, flags);
-						delete_part(i2, j2, flags);
-					}
-				}
-			}
-		}
-		return 1;
-	}
-
-	if (flags&BRUSH_REPLACEMODE)
-	{
-		if (rx==0&&ry==0)
-		{
-			if ((pmap[y][x]&0xFF)==SLALT || SLALT==0)
-			{
-				if ((pmap[y][x]))
-				{
-					delete_part(x, y, 0);
-					if (c!=0)
-						create_part_add_props(-2, x, y, c, rx, ry);
-				}
-			}
-		}
-		else
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					if (InCurrentBrush(i ,j ,rx ,ry))
-					{
-						if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
-							continue;
-						if ((pmap[y+j][x+i]&0xFF)!=SLALT&&SLALT!=0)
-							continue;
-						if ((pmap[y+j][x+i]))
-						{
-							delete_part(x+i, y+j, 0);
-							if (c!=0)
-								create_part_add_props(-2, x+i, y+j, c, rx, ry);
-						}
-					}
-		return 1;
-
-	}
-	//else, no special modes, draw element like normal.
-	if (rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
-	{
-		if (create_part_add_props(-2, x, y, c, rx, ry)==-1)
+		if (create_parts2(fn,i,j,c,rx,ry,flags))
 			f = 1;
 	}
 	else
@@ -3217,23 +3096,23 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill)
 		int tempy = y, i, j, jmax, oldy;
 		if (CURRENT_BRUSH == TRI_BRUSH)
 			tempy = y + ry;
-        for (i = x - rx; i <= x; i++) {
+		for (i = x - rx; i <= x; i++) {
 			oldy = tempy;
 			while (InCurrentBrush(i-x,tempy-y,rx,ry))
 				tempy = tempy - 1;
-            tempy = tempy + 1;
+			tempy = tempy + 1;
 			jmax = 2*y - tempy;
 			if (CURRENT_BRUSH == TRI_BRUSH)
 				jmax = y + ry;
 			if (fill)
 			{
 				for (j = tempy; j <= jmax; j++) {
-					if (create_part_add_props(-2, i, j, c, rx, ry)==-1)
+					if (create_parts2(fn,i,j,c,rx,ry,flags))
 						f = 1;
-					if (create_part_add_props(-2, 2*x-i, j, c, rx, ry)==-1)
+					if (create_parts2(fn,2*x-i,j,c,rx,ry,flags))
 						f = 1;
 				}
-            }
+			}
 			else
 			{
 				if ((oldy != tempy && CURRENT_BRUSH != SQUARE_BRUSH) || i == x-rx)
@@ -3244,19 +3123,60 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill)
 					int i2 = 2*x-i, j2 = 2*y-j;
 					if (CURRENT_BRUSH == TRI_BRUSH)
 						j2 = y+ry;
-					if (create_part_add_props(-2, i, j, c, rx, ry)==-1)
+					if (create_parts2(fn,i,j,c,rx,ry,flags))
 						f = 1;
-					if (create_part_add_props(-2, i2, j, c, rx, ry)==-1)
+					if (create_parts2(fn,i2,j,c,rx,ry,flags))
 						f = 1;
-					if (create_part_add_props(-2, i, j2, c, rx, ry)==-1)
+					if (create_parts2(fn,i,j2,c,rx,ry,flags))
 						f = 1;
-					if (create_part_add_props(-2, i2, j2, c, rx, ry)==-1)
+					if (create_parts2(fn,i2,j2,c,rx,ry,flags))
 						f = 1;
 				}
 			}
-        }
+		}
 	}
 	return !f;
+}
+
+int create_parts2(int f, int x, int y, int c, int rx, int ry, int flags)
+{
+	if (f == 0)      //delete
+		delete_part(x, y, 0);
+	else if (f == 1) //specific delete
+		delete_part(x, y, flags);
+	else if (f == 2) //replace mode
+	{
+		if (x<0 || y<0 || x>=XRES || y>=YRES)
+			return 0;
+		if ((pmap[y][x]&0xFF)!=SLALT&&SLALT!=0)
+			return 0;
+		if ((pmap[y][x]))
+		{
+			delete_part(x, y, 0);
+			if (c!=0)
+				create_part_add_props(-2, x, y, c, rx, ry);
+		}
+	}
+	else if (f == 3) //normal draw
+		if (create_part_add_props(-2, x, y, c, rx, ry)==-1)
+			return 1;
+	return 0;
+}
+
+void create_moving_solid(int x, int y, int rx, int ry)
+{
+	int j, i;
+	creatingsolid = 0;
+	if (rx < 3 || ry < 3 || numballs >= 255)
+		return;
+	create_part(-2, x, y, PT_MOVS);
+	if (!creatingsolid)
+		return;
+	for (j=-ry; j<=ry; j++)
+			for (i=-rx; i<=rx; i++)
+				if (InCurrentBrush(i ,j ,rx ,ry) && !InCurrentBrush(i ,j ,rx-1 ,ry-1))
+					create_part(-2, x+i, y+j, PT_MOVS);
+	creatingsolid = 0;
 }
 
 int InCurrentBrush(int i, int j, int rx, int ry)
