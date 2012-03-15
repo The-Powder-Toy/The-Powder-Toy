@@ -2428,6 +2428,25 @@ void render_parts(pixel *vid)
 							addpixel(vid, nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
 					}
 				}
+				if ((pixel_mode & EFFECT_LINES) && DEBUG_MODE)
+				{
+					if (mousex==(nx) && mousey==(ny))//draw lines connecting wifi/portal channels
+					{
+						int z;
+						int type = parts[i].type;
+						if (type == PT_PRTI)
+							type = PT_PRTO;
+						else if (type == PT_PRTO)
+							type = PT_PRTI;
+						for (z = 0; z<NPART; z++) {
+							if (parts[z].type)
+							{
+								if (parts[z].type==type&&parts[z].tmp==parts[i].tmp)
+									xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);
+							}
+						}
+					}
+				}
 				//Fire effects
 				if(firea && (pixel_mode & FIRE_BLEND))
 				{

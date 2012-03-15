@@ -164,6 +164,7 @@ int graphics_WIFI(GRAPHICS_FUNC_ARGS)
 	*colr = sin(frequency*q + 0) * 127 + 128;
 	*colg = sin(frequency*q + 2) * 127 + 128;
 	*colb = sin(frequency*q + 4) * 127 + 128;
+	*pixel_mode |= EFFECT_LINES;
 	return 0;
 }
 int graphics_PRTI(GRAPHICS_FUNC_ARGS)
@@ -173,6 +174,7 @@ int graphics_PRTI(GRAPHICS_FUNC_ARGS)
 	*fireg = 0;
 	*fireb = 0;
 	*pixel_mode |= EFFECT_GRAVIN;
+	*pixel_mode |= EFFECT_LINES;
 	*pixel_mode &= ~PMODE;
 	*pixel_mode |= PMODE_ADD;
 	return 1;
@@ -184,6 +186,7 @@ int graphics_PRTO(GRAPHICS_FUNC_ARGS)
 	*fireg = 0;
 	*fireb = 255;
 	*pixel_mode |= EFFECT_GRAVOUT;
+	*pixel_mode |= EFFECT_LINES;
 	*pixel_mode &= ~PMODE;
 	*pixel_mode |= PMODE_ADD;
 	return 1;
