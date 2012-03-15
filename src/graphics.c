@@ -2988,12 +2988,12 @@ void create_decoration(int x, int y, int r, int g, int b, int click, int tool)
 			}
 		if (num == 0)
 			return;
-		ta = min(255,(int)((float)ta/num+.5));
-		tr = min(255,(int)((float)tr/num+.5));
-		tg = min(255,(int)((float)tg/num+.5));
-		tb = min(255,(int)((float)tb/num+.5));
+		ta = fminf(255,(int)((float)ta/num+.5));
+		tr = fminf(255,(int)((float)tr/num+.5));
+		tg = fminf(255,(int)((float)tg/num+.5));
+		tb = fminf(255,(int)((float)tb/num+.5));
 		if (!parts[rp>>8].dcolour)
-			ta = max(0,ta-3);
+			ta = fmaxf(0,ta-3);
 		parts[rp>>8].dcolour = ((ta<<24)|(tr<<16)|(tg<<8)|tb);
 	}
 }
