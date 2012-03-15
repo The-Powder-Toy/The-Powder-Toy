@@ -3149,22 +3149,6 @@ int create_parts2(int f, int x, int y, int c, int rx, int ry, int flags)
 	return 0;
 }
 
-void create_moving_solid(int x, int y, int rx, int ry)
-{
-	int j, i;
-	creatingsolid = 0;
-	if (rx < 3 || ry < 3 || numballs >= 255)
-		return;
-	create_part(-2, x, y, PT_MOVS);
-	if (!creatingsolid)
-		return;
-	for (j=-ry; j<=ry; j++)
-			for (i=-rx; i<=rx; i++)
-				if (InCurrentBrush(i ,j ,rx ,ry) && !InCurrentBrush(i ,j ,rx-1 ,ry-1))
-					create_part(-2, x+i, y+j, PT_MOVS);
-	creatingsolid = 0;
-}
-
 int InCurrentBrush(int i, int j, int rx, int ry)
 {
 	switch(CURRENT_BRUSH)
