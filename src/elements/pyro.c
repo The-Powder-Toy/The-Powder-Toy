@@ -46,6 +46,7 @@ int update_PYRO(UPDATE_FUNC_ARGS) {
 					(t!=PT_SPRK || (rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL)) &&
 					(t!=PT_PHOT || rt!=PT_INSL) &&
 				    (rt!=PT_SPNG || parts[r>>8].life==0) &&
+					(rt!=PT_H2 || (parts[r>>8].temp < 2273.15 && pv[y/CELL][x/CELL] < 50.0f)) &&
 					ptypes[rt].flammable && (ptypes[rt].flammable + (int)(pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
 				{
 					part_change_type(r>>8,x+rx,y+ry,PT_FIRE);

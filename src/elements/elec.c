@@ -79,7 +79,7 @@ int update_ELEC(UPDATE_FUNC_ARGS) {
 					kill_part(i);
 					return 1;
 				}
-				if (ptypes[r&0xFF].properties & PROP_CONDUCTS)
+				if (ptypes[r&0xFF].properties & PROP_CONDUCTS && ((r&0xFF)!=PT_H2||parts[i].tmp!=1))
 				{
 					create_part(-1, x+rx, y+ry, PT_SPRK);
 					kill_part(i);

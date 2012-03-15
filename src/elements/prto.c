@@ -85,8 +85,8 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 	if (fe) {
 		int orbd[4] = {0, 0, 0, 0};	//Orbital distances
 		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
-		if (!parts[i].life) parts[i].life = rand();
-		if (!parts[i].ctype) parts[i].life = rand();
+		if (!parts[i].life) parts[i].life = rand()*rand()*rand();
+		if (!parts[i].ctype) parts[i].ctype = rand()*rand()*rand();
 		orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 		for (r = 0; r < 4; r++) {
 			if (orbd[r]<254) {
@@ -94,9 +94,10 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 				if (orbd[r]>254) {
 					orbd[r] = 0;
 					orbl[r] = rand()%255;
+				} else {
+					orbl[r] += 1;
+					orbl[r] = orbl[r]%255;
 				}
-				//orbl[r] += 1;
-				//orbl[r] = orbl[r]%255;
 			} else {
 				orbd[r] = 0;
 				orbl[r] = rand()%255;
