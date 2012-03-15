@@ -887,11 +887,7 @@ inline int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 	return x + w;
 }
 
-#if defined(WIN32) && !defined(__GNUC__)
-_inline int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
-#else
-inline int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
-#endif
+int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];
@@ -1318,14 +1314,19 @@ void draw_air(pixel *vid)
 					clamp_flt(pv[y][x], 0.0f, 8.0f),//pressure adds green
 					clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
 			}
-			else if (display_mode & DISPLAY_AIRH)
+			else if ((display_mode & DISPLAY_AIRH))
 			{
-				float ttemp = hv[y][x]+(-MIN_TEMP);
-				int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
-				c = PIXRGB((int)((unsigned char)color_data[caddress]*0.7f), (int)((unsigned char)color_data[caddress+1]*0.7f), (int)((unsigned char)color_data[caddress+2]*0.7f));
-				//c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
-				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
-				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
+				if (aheat_enable)
+				{
+					float ttemp = hv[y][x]+(-MIN_TEMP);
+					int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
+					c = PIXRGB((int)((unsigned char)color_data[caddress]*0.7f), (int)((unsigned char)color_data[caddress+1]*0.7f), (int)((unsigned char)color_data[caddress+2]*0.7f));
+					//c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
+					//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
+					//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
+				}
+				else
+					c = PIXRGB(0,0,0);
 			}
 			else if (display_mode & DISPLAY_AIRC)
 			{
@@ -1934,6 +1935,11 @@ void render_parts(pixel *vid)
 	#endif
 					
 				//Pixel rendering
+				if (t==PT_SOAP)
+				{
+					if ((parts[i].ctype&7) == 7)
+						draw_line(vid, nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), 245, 245, 220, XRES+BARSIZE);
+				}
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
 					char buff[20];  //Buffer for HP
@@ -2403,9 +2409,9 @@ void render_parts(pixel *vid)
 					for (r = 0; r < 4; r++) {
 						ddist = ((float)orbd[r])/16.0f;
 						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
-						nxo = ddist*cos(drad);
-						nyo = ddist*sin(drad);
-						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES)
+						nxo = (int)(ddist*cos(drad));
+						nyo = (int)(ddist*sin(drad));
+						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && (pmap[ny+nyo][nx+nxo]&0xFF) != PT_PRTI)
 							addpixel(vid, nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
 					}
 				}
@@ -2421,10 +2427,29 @@ void render_parts(pixel *vid)
 					for (r = 0; r < 4; r++) {
 						ddist = ((float)orbd[r])/16.0f;
 						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
-						nxo = ddist*cos(drad);
-						nyo = ddist*sin(drad);
-						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES)
+						nxo = (int)(ddist*cos(drad));
+						nyo = (int)(ddist*sin(drad));
+						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && (pmap[ny+nyo][nx+nxo]&0xFF) != PT_PRTO)
 							addpixel(vid, nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
+					}
+				}
+				if ((pixel_mode & EFFECT_LINES) && DEBUG_MODE)
+				{
+					if (mousex==(nx) && mousey==(ny))//draw lines connecting wifi/portal channels
+					{
+						int z;
+						int type = parts[i].type;
+						if (type == PT_PRTI)
+							type = PT_PRTO;
+						else if (type == PT_PRTO)
+							type = PT_PRTI;
+						for (z = 0; z<NPART; z++) {
+							if (parts[z].type)
+							{
+								if (parts[z].type==type&&parts[z].tmp==parts[i].tmp)
+									xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f),vid);
+							}
+						}
 					}
 				}
 				//Fire effects
@@ -2917,7 +2942,7 @@ void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int c
 }
 void create_decoration(int x, int y, int r, int g, int b, int click, int tool)
 {
-	int rp, tr,tg,tb;
+	int rp, tr = 0, tg = 0, tb = 0;
 	rp = pmap[y][x];
 	if (!rp)
 		return;
@@ -2945,6 +2970,31 @@ void create_decoration(int x, int y, int r, int g, int b, int click, int tool)
 		tg = (parts[rp>>8].dcolour>>8)&0xFF;
 		tb = (parts[rp>>8].dcolour)&0xFF;
 		parts[rp>>8].dcolour = ((parts[rp>>8].dcolour&0xFF000000)|(clamp_flt(tr-(tr)*0.02, 0,255)<<16)|(clamp_flt(tg-(tg)*0.02, 0,255)<<8)|clamp_flt(tb-(tb)*0.02, 0,255));
+	}
+	else if (tool == DECO_SMUDGE)
+	{
+		int rx, ry, num = 0, ta = 0;
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+			{
+				if ((pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
+				{
+					num++;
+					ta += (parts[pmap[y+ry][x+rx]>>8].dcolour>>24)&0xFF;
+					tr += (parts[pmap[y+ry][x+rx]>>8].dcolour>>16)&0xFF;
+					tg += (parts[pmap[y+ry][x+rx]>>8].dcolour>>8)&0xFF;
+					tb += (parts[pmap[y+ry][x+rx]>>8].dcolour)&0xFF;
+				}
+			}
+		if (num == 0)
+			return;
+		ta = min(255,(int)((float)ta/num+.5));
+		tr = min(255,(int)((float)tr/num+.5));
+		tg = min(255,(int)((float)tg/num+.5));
+		tb = min(255,(int)((float)tb/num+.5));
+		if (!parts[rp>>8].dcolour)
+			ta = max(0,ta-3);
+		parts[rp>>8].dcolour = ((ta<<24)|(tr<<16)|(tg<<8)|tb);
 	}
 }
 void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b, int click, int tool)
@@ -3588,7 +3638,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 {
 #ifdef OGLR
 	int i;
-	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV)
+	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV||t==SPC_PROP)
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 		glEnable(GL_COLOR_LOGIC_OP);
@@ -3628,49 +3678,39 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 	}
 #else
 	int i,j,c;
-	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV)
+	if (t<PT_NUM||(t&0xFF)==PT_LIFE||t==SPC_AIR||t==SPC_HEAT||t==SPC_COOL||t==SPC_VACUUM||t==SPC_WIND||t==SPC_PGRV||t==SPC_NGRV||t==SPC_PROP)
 	{
 		if (rx<=0)
-			xor_pixel(x, y, vid);
-		else if (ry<=0)
-			xor_pixel(x, y, vid);
-		if (rx+ry<=0)
-			xor_pixel(x, y, vid);
-		else if (CURRENT_BRUSH==SQUARE_BRUSH)
+			for (j = y - ry; j <= y + ry; j++)
+				xor_pixel(x, j, vid);
+		else
 		{
-			for (j=0; j<=ry; j++)
-				for (i=0; i<=rx; i++)
-					if (i*j<=ry*rx && ((i+1)>rx || (j+1)>ry))
-					{
-						xor_pixel(x+i, y+j, vid);
-						xor_pixel(x-i, y-j, vid);
-						if (i&&j)xor_pixel(x+i, y-j, vid);
-						if (i&&j)xor_pixel(x-i, y+j, vid);
-					}
-		}
-		else if (CURRENT_BRUSH==CIRCLE_BRUSH)
-		{
-			for (j=0; j<=ry; j++)
-				for (i=0; i<=rx; i++)
-					if (pow(i,2)*pow(ry,2)+pow(j,2)*pow(rx,2)<=pow(rx,2)*pow(ry,2) &&
-					  (pow(i+1,2)*pow(ry,2)+pow(j,2)*pow(rx,2)>pow(rx,2)*pow(ry,2) ||
-					   pow(i,2)*pow(ry,2)+pow(j+1,2)*pow(rx,2)>pow(rx,2)*pow(ry,2)))
-					{
-						xor_pixel(x+i, y+j, vid);
-						if (j) xor_pixel(x+i, y-j, vid);
-						if (i) xor_pixel(x-i, y+j, vid);
-						if (i&&j) xor_pixel(x-i, y-j, vid);
-					}
-		}
-		else if (CURRENT_BRUSH==TRI_BRUSH)
- 		{
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=0; i++)
-					if ((j <= ry ) && ( j >= (((-2.0*ry)/(rx))*i)-ry ) && (j+1>ry || ( j-1 < (((-2.0*ry)/(rx))*i)-ry )) )
-						{
-							xor_pixel(x+i, y+j, vid);
-							if (i) xor_pixel(x-i, y+j, vid);
-						}
+			int tempy = y, i, j, jmax, oldy;
+			if (CURRENT_BRUSH == TRI_BRUSH)
+				tempy = y + ry;
+			for (i = x - rx; i <= x; i++) {
+				oldy = tempy;
+				while (InCurrentBrush(i-x,tempy-y,rx,ry))
+					tempy = tempy - 1;
+				tempy = tempy + 1;
+				jmax = 2*y - tempy;
+				if (oldy != tempy && CURRENT_BRUSH != SQUARE_BRUSH)
+					oldy--;
+				if (CURRENT_BRUSH == TRI_BRUSH)
+					oldy = tempy;
+				for (j = tempy; j <= oldy; j++) {
+					int i2 = 2*x-i, j2 = 2*y-j;
+					if (CURRENT_BRUSH == TRI_BRUSH)
+						j2 = y+ry;
+					xor_pixel(i, j, vid);
+					if (i2 != i)
+						xor_pixel(i2, j, vid);
+					if (j2 != j)
+						xor_pixel(i, j2, vid);
+					if (i2 != i && j2 != j)
+						xor_pixel(i2, j2, vid);
+				}
+			}
 		}
 	}
 	else //wall cursor

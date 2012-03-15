@@ -34,9 +34,9 @@ Controls:
 ---------------------------------------------------------------------------
 
 Caps Lock 	Specific Element Erase
-Insert 		Replace mode
-TAB 		Circle/Square Brush
-Space 		Pause
+Insert 	Replace mode
+TAB 		Switch between circle/square/triangle brush
+Space 	Pause
 Q 		Quit
 Esc 		Quit
 Z 		Zoom
@@ -49,29 +49,40 @@ P 		Save screenshot to .ppm
 F 		Pause and go to next frame
 G 		Grid
 H 		Show/Hide HUD
+Ctrl + H	Show intro text
+F1		Show intro text
 D 		Debug mode (+ Shift when STK2 is out)
 I 		Invert Pressure and Velocity map
 T 		Vine mode
 W 		Toggle gravity modes (+ Ctrl when STK2 is out)
-R 		Reset LIFE generation (when in Debug mode)
+Y		Toggle air modes
+R 		Reset LIFE generation
 N		"Sand effect" for drawing powders
+B		Decoration editor
+Ctrl + B	Toggle decorations on/off
+U		Toggle ambient heat on/off
+M		switch left and right selected elements
+N		Toggle pretty powders
+Ctrl + I	Install powder toy for loading saves/stamps by double clicking
 ~ 		Console
 = 		Reset pressure and velocity map
-[ 		Decrase brush size
-] 		Increase brush size 
+[ 		Decrease brush size
+] 		Increase brush size
+Alt + [	Decrease brush size by 1
+Alt + ]	Increase brush size by 1
 
-Ctrl + C/V/X 		Copy/Paste/Cut
-Ctrl + Z 		Undo
-Ctrl + Cursor drag 	Rectangle
-Shift + Cursor drag 	Line
+Ctrl + C/V/X 			Copy/Paste/Cut
+Ctrl + Z 				Undo
+Ctrl + Cursor drag 		Rectangle
+Shift + Cursor drag 		Line
 MMB / Alt + LMB click 	Sample element
-Mouse scroll 		Change brush size
-Ctrl + Mouse scroll 	Change vertical brush size
-Shift + Mouse scroll 	Change horizontal brush size
-Shift + Ctrl + R 	Horizontal mirror for selected area
-Ctrl + R 		Rotate selected area counterclockwise
-Ctrl + Left Alt	Select subject for Specific Element erase
-Ctrl + = 		Reset Electricity 
+Mouse scroll 			Change brush size
+Ctrl + Mouse scroll 		Change vertical brush size
+Shift + Mouse scroll 		Change horizontal brush size
+Shift + Ctrl + R 		Horizontal mirror for selected area
+Ctrl + R 				Rotate selected area counterclockwise
+Ctrl + Left Alt			Select element for Specific Element erase
+Ctrl + = 				Reset Electricity
 
 
 Command Line:
@@ -84,13 +95,92 @@ kiosk -   Fullscreen mode
 proxy:<server>:<port> (ie, proxy:wwwcache.lancs.ac.uk:8080)
 open <file> - Opens the file as a stamp or game save
 ddir <directory> - Directory used for saving stamps and preferences
+nohud - disables the hud
+sound - enable sound to be played from console
+scripts - enable scripts to be run from old console
 
 History:
 
 ---------------------------------------------------------------------------
 
-*  Version 65.4
-      o "Sand" effect for drawing powders, activate with "N"
+*  Version 73.0
+      o New elements: FRAY - Similar to ARAY but applies force, RPEL - Attract and repel particles
+      o DEUT can be compressed by gravitational fields
+      o Fix for "bumpy" streams of photons coming from PCLN
+      o Lua methods for writing and reading the bmap and emap
+* Version 72.0
+      o More consistent spark speed (possibly affects existing circuits)
+      o BRAY fire speed (Only shoots once per spark)
+      o DLAY blocked by INSL
+      o WIFI will always take one frame to transmit SPRK
+      o Ambient heat blocked by walls.
+*  Version 71.3
+      o OPS format fixes
+      o Figh drawn correctly in stamps
+* Version 71.2
+      o Enable use of caching server to improve performance or thumbnail retrieval
+* Version 71.1
+      o Fixes to OPS format
+      o Fix issue where LRBD/RBDM isn't ignited by WATR
+      o Fix crash on rotating a stamp with walls as wide as the window
+      o Fix Invisible photons
+      o Fix bug where WARP+SING destroys DMND
+      o Fix issue where Lua can't create photons in glass
+* Version 71.0
+      o Update can_move, recount menu items, and clear graphics cache when tpt.el is changed
+      o Fix creation of invalid sign walls
+      o Added OPS format, disabled and not used
+* Version 70.1
+      o Support element names and hex constants in PROP tool
+      o Fix TNT bug
+      o Fix crash in clear_sim if gravity is not initialized
+* Version 70.0
+      o New element: ignition cord
+      o Stickmen and fighter fixes
+      o Fixed WIRE graphics
+      o New elements: ACEL and DCEL, accelerate nearby photons
+*  Version 69.1
+      o New Lua API features, ability to edit particle properties from tpt.el... array, particles are exposed as an array now
+*  Version 69.0
+      o New element: TNT
+      o Bug fix for LCRY and ELEC
+      o Restore old LCRY/DECO rendering
+      o Fix display modes on number hotkeys not saving correctly
+*  Version 68.7
+      o Additions to Lua API:
+              o tpt.el: Table of element types, tpt.el.none = 0, tpt.el.dust = 1, etc.
+              o tpt.version: Table of version info, tpt.el.major, minor, build
+              o int tpt.element(string name): returns numeric ID of given element name, tpt.element("WATR") = tpt.el.watr
+              o tpt.element_func(function func, int element, [boolean replace]) : Sets the update function for a specific element
+              o tpt.element_func has the following args: (int index, int x, int y, int surround, int nt)
+* Version 68.6
+      o Add back number key hotkeys to change display modes
+      o Add back blob and heat gradient display
+      o Correct icons in render_ui
+      o Add back portal effects
+* Version 68.5
+      o fix decorations
+* Version 68.4
+      o Stamp browser fixes
+      o Remove some stuff from HUD to make it fit
+      o Fix grid mode
+      o Replace cmode with flexible render options
+* Version 68.3
+      o Pixel grid and cursor in zoom
+* Version 68.1
+      o CAUS killes stickmen they can also have gas powers now
+      o Fix air inversion
+* Version 68.0
+      o Decorations appear on gases
+      o Stickmen and fighter fixes
+      o Fixed WIRE graphics
+      o New elements: ACEL and DCEL, accelerate nearby photons
+* Version 67.0
+      o New element: ELEC
+      o Changed now LCRY works
+*  Version 66.1
+      o Massive overhaul of graphics code, appearance of many elements changed
+*  Version 65.5
       o Elements from Maksprog's mod
               o LIGH - Lightning
               o DEST - Variation of BOMB
@@ -99,6 +189,70 @@ History:
       o Fix bug with infinite temperature
       o Fix beta enrolling
       o Add a new mode to filter, subtract (tmp of 3)
+      o Quick options menu in top right, can toggle various options quickly
+      o Lots and lots of fixes
+*  Version 64.3
+      o Decoration editor tool menu, with lighten and darken tools
+      o Can type in decoration editor color boxes for specific RGB values, hit enter after typing a number to confirm
+      o SOAP removes decoration, opposite of BIZR
+      o Water equalization, turn on in options menu, or with tpt.watertest()
+      o BUBW changes to be more realistic, can explode
+      o New element CAUS, an acid like gas, created from ACID+WTRV
+      o Can see selected elements from Lua, tpt.selectedl or tpt.selectedr
+      o Saved settings are in JSON format, replaces powder.def
+      o Can opt in to receive beta updates
+      o QRTZ scatters photons.
+      o New Tool, PROP, edit properties easily without console.
+      o FILT has modes with .tmp (0,1,2). 0 is convert (old method). 1 will filter (only close color can pass). 2 is add color
+      o 'Sign out' button in the login menu, instead of submitting blank data
+      o Fancy colored powders, hit 'n' to toggle
+*  Version 61.2
+      o Fixed a Lua mouse event bug
+      o Can set decoration layer "dcolour" property
+      o Fixed some possible cases where particles disappear randomly
+*  Version 61.1
+      o Fix some memory leaks
+      o STOR will absorb anything when no ctype set, and it's ctype can't be a solid element
+*  Version 61.0
+      o Added energy only wall (Photons, Neutrons, etc.) as replacement for gas only wall fix
+      o STOR will change appearance when it holds a particle
+*  Version 60.1
+      o Tools menu for AIR, HEAT, COOL, etc.
+      o tpt.getscript() to download from official script repository (not used)
+      o tpt.setwindowsize(scale,fullscreen) to change scale (1 or 2) and fullscreen (0 or 1)
+      o Selection for stamp/copy now by pixel
+      o Water puts out fire better
+      o New elements: CO2, BUBW, DRIC, STOR, PVOD, CONV
+      o Zoom toggle: alt+z
+      o BIZR acts as a dye
+      o Many other various fixes and improvements
+*  Version 57.5
+      o Fix Lua keyevent function
+*  Version 57.4
+      o Fix STKM2 spaz
+      o Fix bug where electrode (ETRD) would delete particles in replace mode
+*  Version 57.3
+      o Fix coal being invisible when first drawn
+*  Version 57.2
+      o Allow scrolling in the special menu
+*  Version 57.1
+      o Stops the client launching DDos attack on server when checking for updates
+*  Version 57
+      o Gravity tools (NGRV and PGRV)
+      o Allow reloading of directly opened files
+      o Graphical changes to coal
+*  Version 56
+      o New element: GBMB (gravity bomb), requires newtonian gravity
+*  Version 55
+      o New element: WIRE
+      o Extra line tool info if you type tpt.setdebug(4) into the console
+*  Version 53.3
+      o New Lua API functions to get keyboard/mouse presses
+*  Version 53.1
+      o Fix old GOL + clone saves and other life visual imprivements
+      o Fancy lensing for mewtonian gravity in fancy (7) display
+      o New element: DLAY
+      o New Lua API functions from me4502
 *  Version 47.3
       o Enhanced visual effects for Portals
       o Glow now has more stimuli (Green: Pressure, Blue: Movement, Red: Heat)

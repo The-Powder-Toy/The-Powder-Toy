@@ -77,6 +77,8 @@ static quick_option quickmenu[] =
 	{"P", "Sand effect", QM_TOGGLE, &pretty_powder},
 	{"G", "Draw gravity grid", QM_TOGGLE, &drawgrav_enable},
 	{"D", "Show decorations", QM_TOGGLE, &decorations_enable},
+	{"N", "Newtonian gravity", QM_TOGGLE, &ngrav_enable},
+	{"A", "Ambient heat", QM_TOGGLE, &aheat_enable},
 	{NULL}
 };
 
@@ -101,12 +103,14 @@ static menu_wall colorlist[] =
 #define DECO_DRAW 0
 #define DECO_LIGHTEN 1
 #define DECO_DARKEN 2
+#define DECO_SMUDGE 3
 
 static menu_wall toollist[] =
 {
 	{PIXPACK(0xFF0000), "Draw"},
 	{PIXPACK(0xDDDDDD), "Lighten"},
 	{PIXPACK(0x111111), "Darken"},
+	{PIXPACK(0x00FF00), "Smudge"},
 };
 
 struct ui_edit
@@ -289,7 +293,7 @@ int save_filename_ui(pixel *vid_buf);
 
 void menu_ui(pixel *vid_buf, int i, int *sl, int *sr);
 
-void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *dae, int b, int bq, int mx, int my);
+void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *su, int *dae, int b, int bq, int mx, int my);
 
 int color_menu_ui(pixel *vid_buf, int i, int *cr, int *cg, int *cb, int b, int bq, int mx, int my, int * tool);
 

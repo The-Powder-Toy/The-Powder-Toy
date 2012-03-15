@@ -44,7 +44,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 			parts[nearp].ctype = PT_ETRD;
 		}
 	}
-	else if (ct==PT_NBLE&&parts[i].life<=1)
+	else if (ct==PT_NBLE&&parts[i].life<=1&&parts[i].tmp!=1)
 	{
 		parts[i].life = rand()%150+50;
 		part_change_type(i,x,y,PT_PLSM);
@@ -179,6 +179,8 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 					conduct_sprk = 0;
 				if (rt==PT_INST&&ct!=PT_PSCN)
 					conduct_sprk = 0;
+				if (rt == PT_NBLE && parts[r>>8].tmp == 1)
+					conduct_sprk = 0;
 
 				if (conduct_sprk) {
 					if (rt==PT_WATR||rt==PT_SLTW) {
@@ -221,9 +223,9 @@ int graphics_SPRK(GRAPHICS_FUNC_ARGS)
 {
 	*firea = 80;
 	
-	*firer = *colr = 170;
-	*fireg = *colg = 200;
-	*fireb = *colb = 220;
+	*firer = 170;
+	*fireg = 200;
+	*fireb = 220;
 	//*pixel_mode |= FIRE_ADD;
 	*pixel_mode |= FIRE_ADD;
 	return 1;
