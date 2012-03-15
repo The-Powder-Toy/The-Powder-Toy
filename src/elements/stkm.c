@@ -257,7 +257,7 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 		{
 			int np = -1;
 			if (playerp->elem == SPC_AIR)
-				create_parts(rx + 3*((((int)playerp->pcomm)&0x02) == 0x02) - 3*((((int)playerp->pcomm)&0x01) == 0x01), ry, 4, 4, SPC_AIR, 0);
+				create_parts(rx + 3*((((int)playerp->pcomm)&0x02) == 0x02) - 3*((((int)playerp->pcomm)&0x01) == 0x01), ry, 4, 4, SPC_AIR, 0, 1);
 			else if (playerp->elem==PT_LIGH && playerp->frames<30)//limit lightning creation rate
 				np = -1;
 			else
@@ -451,7 +451,10 @@ void STKM_interact(playerst* playerp, int i, int x, int y)
 				{
 					portalp[parts[r>>8].tmp][count][nnx] = parts[i];
 					kill_part(i);
-					playerp->spwn = 1;//stop SPWN creating a new STKM while he is in portal
+					//stop new STKM/fighters being created to replace the ones in the portal:
+					playerp->spwn = 1;
+					if (portalp[parts[r>>8].tmp][count][nnx].type==PT_FIGH)
+						fighcount++;
 					break;
 				}
 		}

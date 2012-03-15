@@ -31,6 +31,9 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 						continue;
 				}
 
+				if ((r&0xFF)==PT_STKM || (r&0xFF)==PT_STKM2 || (r&0xFF)==PT_FIGH)
+					continue;// Handling these is a bit more complicated, and is done in STKM_interact()
+
 				if ((r&0xFF) == PT_SOAP)
 					detach(r>>8);
 
@@ -52,8 +55,8 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 	if (fe) {
 		int orbd[4] = {0, 0, 0, 0};	//Orbital distances
 		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
-		if (!parts[i].life) parts[i].life = rand();
-		if (!parts[i].ctype) parts[i].ctype = rand();
+		if (!parts[i].life) parts[i].life = rand()*rand()*rand();
+		if (!parts[i].ctype) parts[i].ctype = rand()*rand()*rand();
 		orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 		for (r = 0; r < 4; r++) {
 			if (orbd[r]>1) {

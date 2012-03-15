@@ -355,6 +355,12 @@ void stamp_update(void)
 		{
 			fwrite(stamps[i].name, 1, 10, f);
 		}
+		else
+		{
+			char name[30] = {0};
+			sprintf(name,"stamps%s%s.stm",PATH_SEP,stamps[i].name);
+			remove(name);
+		}
 	}
 	fclose(f);
 }
@@ -1755,7 +1761,7 @@ int main(int argc, char *argv[])
 				active_menu = i;
 			}
 		}
-		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &dae, b, bq, x, y); //draw the elements in the current menu
+		menu_ui_v3(vid_buf, active_menu, &sl, &sr, &su, &dae, b, bq, x, y); //draw the elements in the current menu
 		if (zoom_en && x>=sdl_scale*zoom_wx && y>=sdl_scale*zoom_wy //change mouse position while it is in a zoom window
 		        && x<sdl_scale*(zoom_wx+ZFACTOR*ZSIZE)
 		        && y<sdl_scale*(zoom_wy+ZFACTOR*ZSIZE))
@@ -1833,7 +1839,10 @@ int main(int argc, char *argv[])
 				sprintf(heattext, "Empty, Pressure: %3.2f", pv[(y/sdl_scale)/CELL][(x/sdl_scale)/CELL]);
 				if (DEBUG_MODE)
 				{
-					sprintf(coordtext, "X:%d Y:%d. GX: %.2f GY: %.2f", x/sdl_scale, y/sdl_scale, gravx[(((y/sdl_scale)/CELL)*(XRES/CELL))+((x/sdl_scale)/CELL)], gravy[(((y/sdl_scale)/CELL)*(XRES/CELL))+((x/sdl_scale)/CELL)]);
+					if (ngrav_enable)
+						sprintf(coordtext, "X:%d Y:%d. GX: %.2f GY: %.2f", x/sdl_scale, y/sdl_scale, gravx[(((y/sdl_scale)/CELL)*(XRES/CELL))+((x/sdl_scale)/CELL)], gravy[(((y/sdl_scale)/CELL)*(XRES/CELL))+((x/sdl_scale)/CELL)]);
+					else
+						sprintf(coordtext, "X:%d Y:%d", x/sdl_scale, y/sdl_scale);
 				}
 			}
 		}
@@ -2221,7 +2230,7 @@ int main(int argc, char *argv[])
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
 					{
-						render_ui(vid_buf, XRES+BARSIZE-(510-491), YRES+(MENUSIZE-19), 3);
+						render_ui(vid_buf, XRES+BARSIZE-(510-491), YRES-2, 3);
 					}
 					if (x>=(XRES+BARSIZE-(510-494)) && x<=(XRES+BARSIZE-(510-509)) && !bq)
 						sys_pause = !sys_pause;
@@ -2365,7 +2374,7 @@ int main(int argc, char *argv[])
 						if (c!=WL_STREAM+100&&c!=SPC_AIR&&c!=SPC_HEAT&&c!=SPC_COOL&&c!=SPC_VACUUM&&!REPLACE_MODE&&c!=SPC_WIND&&c!=SPC_PGRV&&c!=SPC_NGRV)
 							flood_parts(x, y, c, -1, -1, get_brush_flags());
 						if (c==SPC_HEAT || c==SPC_COOL)
-							create_parts(x, y, bsx, bsy, c, get_brush_flags());
+							create_parts(x, y, bsx, bsy, c, get_brush_flags(), 1);
 						lx = x;
 						ly = y;
 						lb = 0;
@@ -2418,7 +2427,7 @@ int main(int argc, char *argv[])
 								cb_bmap[cby][cbx] = bmap[cby][cbx];
 								cb_emap[cby][cbx] = emap[cby][cbx];
 							}
-						create_parts(x, y, bsx, bsy, c, get_brush_flags());
+						create_parts(x, y, bsx, bsy, c, get_brush_flags(), 1);
 						lx = x;
 						ly = y;
 						lb = b;

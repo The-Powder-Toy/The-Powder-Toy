@@ -371,6 +371,7 @@ int update_ICEI(UPDATE_FUNC_ARGS);
 int update_ISZ(UPDATE_FUNC_ARGS);
 int update_LCRY(UPDATE_FUNC_ARGS);
 int update_MORT(UPDATE_FUNC_ARGS);
+int update_NBLE(UPDATE_FUNC_ARGS);
 int update_NEUT(UPDATE_FUNC_ARGS);
 int update_NPTCT(UPDATE_FUNC_ARGS);
 int update_PCLN(UPDATE_FUNC_ARGS);
@@ -792,7 +793,7 @@ void create_box(int x1, int y1, int x2, int y2, int c, int flags);
 
 int flood_parts(int x, int y, int c, int cm, int bm, int flags);
 
-int create_parts(int x, int y, int rx, int ry, int c, int flags);
+int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill);
 
 void create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags);
 

@@ -52,11 +52,42 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	return 1;
 }
 
+int change_wall(int wt)
+{
+	if (wt == 1)
+		return WL_WALL;
+	else if (wt == 2)
+		return WL_DESTROYALL;
+	else if (wt == 3)
+		return WL_ALLOWLIQUID;
+	else if (wt == 4)
+		return WL_FAN;
+	else if (wt == 5)
+		return WL_STREAM;
+	else if (wt == 6)
+		return WL_DETECT;
+	else if (wt == 7)
+		return WL_EWALL;
+	else if (wt == 8)
+		return WL_WALLELEC;
+	else if (wt == 9)
+		return WL_ALLOWAIR;
+	else if (wt == 10)
+		return WL_ALLOWSOLID;
+	else if (wt == 11)
+		return WL_ALLOWALLELEC;
+	else if (wt == 12)
+		return WL_EHOLE;
+	else if (wt == 13)
+		return WL_ALLOWGAS;
+	return wt;
+}
+
 pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 {
 	unsigned char * inputData = save, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *wallData = NULL;
 	int inputDataLen = size, bsonDataLen = 0, partsDataLen, partsPosDataLen, wallDataLen;
-	int i, x, y, j;
+	int i, x, y, j, wt, pc, gc;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int bsonInitialised = 0;
 	pixel * vidBuf = NULL;
@@ -177,14 +208,65 @@ pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 			{
 				if(wallData[y*blockW+x])
 				{
-					for(i = 0; i < CELL; i++)
+					wt = wallData[y*blockW+x];
+					pc = wtypes[wt-UI_ACTUALSTART].colour;
+					gc = wtypes[wt-UI_ACTUALSTART].eglow;
+					if (wtypes[wt-UI_ACTUALSTART].drawstyle==1)
 					{
-						for(j = 0; j < CELL; j++)
-						{
-							vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = PIXPACK(0xCCCCCC);
-						}
+						for (i=0; i<CELL; i+=2)
+							for (j=(i>>1)&1; j<CELL; j+=2)
+								vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = pc;
 					}
-				};
+					else if (wtypes[wt-UI_ACTUALSTART].drawstyle==2)
+					{
+						for (i=0; i<CELL; i+=2)
+							for (j=0; j<CELL; j+=2)
+								vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = pc;
+					}
+					else if (wtypes[wt-UI_ACTUALSTART].drawstyle==3)
+					{
+						for (i=0; i<CELL; i++)
+							for (j=0; j<CELL; j++)
+								vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = pc;
+					}
+					else if (wtypes[wt-UI_ACTUALSTART].drawstyle==4)
+					{
+						for (i=0; i<CELL; i++)
+							for (j=0; j<CELL; j++)
+								if(i == j)
+									vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = pc;
+								else if  (j == i+1 || (j == 0 && i == CELL-1))
+									vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = gc;
+								else 
+									vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = PIXPACK(0x202020);
+					}
+
+					// special rendering for some walls
+					if (wt==WL_EWALL)
+					{
+						for (i=0; i<CELL; i++)
+							for (j=0; j<CELL; j++)
+								if (!(i&j&1))
+									vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = pc;
+					}
+					else if (wt==WL_WALLELEC)
+					{
+						for (i=0; i<CELL; i++)
+							for (j=0; j<CELL; j++)
+							{
+								if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
+									vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = pc;
+								else
+									vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = PIXPACK(0x808080);
+							}
+					}
+					else if (wt==WL_EHOLE)
+					{
+						for (i=0; i<CELL; i+=2)
+							for (j=0; j<CELL; j+=2)
+								vidBuf[(fullY+i+(y*CELL))*fullW+(fullX+j+(x*CELL))] = PIXPACK(0x242424);
+					}
+				}
 			}
 		}
 	}
@@ -392,7 +474,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 			wallData[(y-blockY)*blockW+(x-blockX)] = bmap[y][x];
 			if(bmap[y][x] && !wallDataFound)
 				wallDataFound = 1;
-			if(bmap[y][x]==WL_FAN || bmap[y][x]==4)
+			if(bmap[y][x]==WL_FAN)
 			{
 				i = (int)(fvx[y][x]*64.0f+127.5f);
 				if (i<0) i=0;
@@ -990,8 +1072,9 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 		{
 			for(y = 0; y < blockH; y++)
 			{
-				bmap[blockY+y][blockX+x] = wallData[y*blockW+x];
-				if((bmap[blockY+y][blockX+x]==WL_FAN || bmap[blockY+y][blockX+x]==4) && fanData)
+				if (wallData[y*blockW+x])
+					bmap[blockY+y][blockX+x] = wallData[y*blockW+x];
+				if (wallData[y*blockW+x] == WL_FAN && fanData)
 				{
 					if(j+1 >= fanDataLen)
 					{
@@ -1222,7 +1305,7 @@ fin:
 pixel *prerender_save_PSv(void *save, int size, int *width, int *height)
 {
 	unsigned char *d,*c=save;
-	int i,j,k,x,y,rx,ry,p=0;
+	int i,j,k,x,y,rx,ry,p=0, wt, pc, gc;
 	int bw,bh,w,h,new_format = 0;
 	pixel *fb;
 
@@ -1269,93 +1352,68 @@ pixel *prerender_save_PSv(void *save, int size, int *width, int *height)
 	for (y=0; y<bh; y++)
 		for (x=0; x<bw; x++)
 		{
+			int wt = change_wall(d[p]);
 			rx = x*CELL;
 			ry = y*CELL;
-			switch (d[p])
+			pc = wtypes[wt-UI_ACTUALSTART].colour;
+			gc = wtypes[wt-UI_ACTUALSTART].eglow;
+			if (wtypes[wt-UI_ACTUALSTART].drawstyle==1)
 			{
-			case 1:
-				for (j=0; j<CELL; j++)
-					for (i=0; i<CELL; i++)
-						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
-				break;
-			case 2:
-				for (j=0; j<CELL; j+=2)
-					for (i=(j>>1)&1; i<CELL; i+=2)
-						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
-				break;
-			case 3:
-				for (j=0; j<CELL; j++)
-					for (i=0; i<CELL; i++)
-						if (!(j%2) && !(i%2))
-							fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
-				break;
-			case 4:
-				for (j=0; j<CELL; j+=2)
-					for (i=(j>>1)&1; i<CELL; i+=2)
-						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
-				k++;
-				break;
-			case 6:
-				for (j=0; j<CELL; j+=2)
-					for (i=(j>>1)&1; i<CELL; i+=2)
-						fb[(ry+j)*w+(rx+i)] = PIXPACK(0xFF8080);
-				break;
-			case 7:
-				for (j=0; j<CELL; j++)
-					for (i=0; i<CELL; i++)
-						if (!(i&j&1))
-							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
-				break;
-			case 8:
-				for (j=0; j<CELL; j++)
-					for (i=0; i<CELL; i++)
-						if (!(j%2) && !(i%2))
-							fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
-						else
-							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
-				break;
-			case WL_WALL:
-				for (j=0; j<CELL; j++)
-					for (i=0; i<CELL; i++)
-						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
-				break;
-			case WL_DESTROYALL:
-				for (j=0; j<CELL; j+=2)
-					for (i=(j>>1)&1; i<CELL; i+=2)
-						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
-				break;
-			case WL_ALLOWLIQUID:
-				for (j=0; j<CELL; j++)
-					for (i=0; i<CELL; i++)
-						if (!(j%2) && !(i%2))
-							fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
-				break;
-			case WL_FAN:
-				for (j=0; j<CELL; j+=2)
-					for (i=(j>>1)&1; i<CELL; i+=2)
-						fb[(ry+j)*w+(rx+i)] = PIXPACK(0x8080FF);
-				k++;
-				break;
-			case WL_DETECT:
-				for (j=0; j<CELL; j+=2)
-					for (i=(j>>1)&1; i<CELL; i+=2)
-						fb[(ry+j)*w+(rx+i)] = PIXPACK(0xFF8080);
-				break;
-			case WL_EWALL:
-				for (j=0; j<CELL; j++)
-					for (i=0; i<CELL; i++)
-						if (!(i&j&1))
-							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
-				break;
-			case WL_WALLELEC:
-				for (j=0; j<CELL; j++)
-					for (i=0; i<CELL; i++)
-						if (!(j%2) && !(i%2))
-							fb[(ry+j)*w+(rx+i)] = PIXPACK(0xC0C0C0);
-						else
-							fb[(ry+j)*w+(rx+i)] = PIXPACK(0x808080);
-				break;
+				for (i=0; i<CELL; i+=2)
+					for (j=(i>>1)&1; j<CELL; j+=2)
+						fb[(i+ry)*w+(j+rx)] = pc;
 			}
+			else if (wtypes[wt-UI_ACTUALSTART].drawstyle==2)
+			{
+				for (i=0; i<CELL; i+=2)
+					for (j=0; j<CELL; j+=2)
+						fb[(i+ry)*w+(j+rx)] = pc;
+			}
+			else if (wtypes[wt-UI_ACTUALSTART].drawstyle==3)
+			{
+				for (i=0; i<CELL; i++)
+					for (j=0; j<CELL; j++)
+						fb[(i+ry)*w+(j+rx)] = pc;
+			}
+			else if (wtypes[wt-UI_ACTUALSTART].drawstyle==4)
+			{
+				for (i=0; i<CELL; i++)
+					for (j=0; j<CELL; j++)
+						if(i == j)
+							fb[(i+ry)*w+(j+rx)] = pc;
+						else if  (j == i+1 || (j == 0 && i == CELL-1))
+							fb[(i+ry)*w+(j+rx)] = gc;
+						else 
+							fb[(i+ry)*w+(j+rx)] = PIXPACK(0x202020);
+			}
+
+			// special rendering for some walls
+			if (wt==WL_EWALL)
+			{
+				for (i=0; i<CELL; i++)
+					for (j=0; j<CELL; j++)
+						if (!(i&j&1))
+							fb[(i+ry)*w+(j+rx)] = pc;
+			}
+			else if (wt==WL_WALLELEC)
+			{
+				for (i=0; i<CELL; i++)
+					for (j=0; j<CELL; j++)
+					{
+						if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
+							fb[(i+ry)*w+(j+rx)] = pc;
+						else
+							fb[(i+ry)*w+(j+rx)] = PIXPACK(0x808080);
+					}
+			}
+			else if (wt==WL_EHOLE)
+			{
+				for (i=0; i<CELL; i+=2)
+					for (j=0; j<CELL; j+=2)
+						fb[(i+ry)*w+(j+rx)] = PIXPACK(0x242424);
+			}
+			else if (wt==WL_FAN)
+				k++;
 			p++;
 		}
 	p += 2*k;
@@ -1757,33 +1815,7 @@ int parse_save_PSv(void *save, int size, int replace, int x0, int y0, unsigned c
 					continue;
 				}
 
-				bmap[y][x] = d[p];
-				if (bmap[y][x]==1)
-					bmap[y][x]=WL_WALL;
-				if (bmap[y][x]==2)
-					bmap[y][x]=WL_DESTROYALL;
-				if (bmap[y][x]==3)
-					bmap[y][x]=WL_ALLOWLIQUID;
-				if (bmap[y][x]==4)
-					bmap[y][x]=WL_FAN;
-				if (bmap[y][x]==5)
-					bmap[y][x]=WL_STREAM;
-				if (bmap[y][x]==6)
-					bmap[y][x]=WL_DETECT;
-				if (bmap[y][x]==7)
-					bmap[y][x]=WL_EWALL;
-				if (bmap[y][x]==8)
-					bmap[y][x]=WL_WALLELEC;
-				if (bmap[y][x]==9)
-					bmap[y][x]=WL_ALLOWAIR;
-				if (bmap[y][x]==10)
-					bmap[y][x]=WL_ALLOWSOLID;
-				if (bmap[y][x]==11)
-					bmap[y][x]=WL_ALLOWALLELEC;
-				if (bmap[y][x]==12)
-					bmap[y][x]=WL_EHOLE;
-				if (bmap[y][x]==13)
-					bmap[y][x]=WL_ALLOWGAS;
+				bmap[y][x] = change_wall(d[p]);
 			}
 
 			p++;
@@ -2299,6 +2331,7 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 	float (*pvn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
 	int i, x, y, nx, ny, w, h, nw, nh;
 	vector2d pos, tmp, ctl, cbr;
+	vector2d vel;
 	vector2d cornerso[4];
 	unsigned char *odatac = odata;
 	if (parse_save(odata, *size, 0, 0, 0, bmapo, vxo, vyo, pvo, fvxo, fvyo, signst, partst, pmapt))
@@ -2373,6 +2406,10 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 		}
 		partst[i].x = nx;
 		partst[i].y = ny;
+		vel = v2d_new(partst[i].vx, partst[i].vy);
+		vel = m2d_multiply_v2d(transform, vel);
+		partst[i].vx = vel.x;
+		partst[i].vy = vel.y;
 	}
 	for (y=0; y<YRES/CELL; y++)
 		for (x=0; x<XRES/CELL; x++)
@@ -2388,12 +2425,16 @@ void *transform_save(void *odata, int *size, matrix2d transform, vector2d transl
 				bmapn[ny][nx] = bmapo[y][x];
 				if (bmapo[y][x]==WL_FAN)
 				{
-					fvxn[ny][nx] = fvxo[y][x];
-					fvyn[ny][nx] = fvyo[y][x];
+					vel = v2d_new(fvxo[y][x], fvyo[y][x]);
+					vel = m2d_multiply_v2d(transform, vel);
+					fvxn[ny][nx] = vel.x;
+					fvyn[ny][nx] = vel.y;
 				}
 			}
-			vxn[ny][nx] = vxo[y][x];
-			vyn[ny][nx] = vyo[y][x];
+			vel = v2d_new(vxo[y][x], vyo[y][x]);
+			vel = m2d_multiply_v2d(transform, vel);
+			vxn[ny][nx] = vel.x;
+			vyn[ny][nx] = vel.y;
 			pvn[ny][nx] = pvo[y][x];
 		}
 	ndata = build_save(size,0,0,nw,nh,bmapn,vxn,vyn,pvn,fvxn,fvyn,signst,partst);
