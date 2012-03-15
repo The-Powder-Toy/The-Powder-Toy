@@ -2621,7 +2621,15 @@ void quickoptions_menu(pixel *vid_buf, int b, int bq, int x, int y)
 				quickoptions_tooltip_y = (i*16)+5;
 				if(b && !bq)
 				{
-					*(quickmenu[i].variable) = !(*(quickmenu[i].variable));
+					if (!strcmp(quickmenu[i].name,"Newtonian gravity"))
+					{
+						if(!ngrav_enable)
+							start_grav_async();
+						else
+							stop_grav_async();
+					}
+					else
+						*(quickmenu[i].variable) = !(*(quickmenu[i].variable));
 				}
 			}
 		}
@@ -2886,6 +2894,11 @@ void set_cmode(int cm) // sets to given view mode
 	{
 		colour_mode = COLOUR_HEAT;
 		strcpy(itc_msg, "Heat Display");
+		free(display_modes);
+		display_modes = calloc(2, sizeof(unsigned int));
+		display_mode |= DISPLAY_AIRH;
+		display_modes[0] = DISPLAY_AIRH;
+		display_modes[1] = 0;
 	}
 	else if (cmode==CM_FANCY)
 	{

@@ -77,6 +77,8 @@ static quick_option quickmenu[] =
 	{"P", "Sand effect", QM_TOGGLE, &pretty_powder},
 	{"G", "Draw gravity grid", QM_TOGGLE, &drawgrav_enable},
 	{"D", "Show decorations", QM_TOGGLE, &decorations_enable},
+	{"N", "Newtonian gravity", QM_TOGGLE, &ngrav_enable},
+	{"A", "Ambient heat", QM_TOGGLE, &aheat_enable},
 	{NULL}
 };
 
