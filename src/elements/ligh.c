@@ -287,9 +287,10 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 }
 int graphics_LIGH(GRAPHICS_FUNC_ARGS)
 {
-	*colr = 235;
-	*colg = 245;
-	*colb = 255;
-	*pixel_mode |= PMODE_GLOW;
+	*firea = 120;
+	*firer = *colr = 235;
+	*fireg = *colg = 245;
+	*fireb = *colb = 255;
+	*pixel_mode |= PMODE_GLOW | FIRE_ADD;
 	return 1;
 }
