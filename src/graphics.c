@@ -1,6 +1,9 @@
 #include <math.h>
 #include <SDL/SDL.h>
 #include <bzlib.h>
+#ifdef WIN32
+#include <SDL/SDL_syswm.h>
+#endif
 
 #if defined(OGLR)
 #ifdef MACOSX
@@ -28,6 +31,11 @@
 #include <font.h>
 #include <misc.h>
 #include "hmap.h"
+
+
+#ifdef WIN32
+IMAGE_DOS_HEADER __ImageBase;
+#endif
 
 //unsigned cmode = CM_FIRE;
 unsigned int *render_modes;
@@ -3745,12 +3753,37 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 int sdl_opened = 0;
 int sdl_open(void)
 {
+#ifdef WIN32
+	SDL_SysWMinfo SysInfo;
+	HWND WindowHandle;
+	HICON hIconSmall;
+	HICON hIconBig;
+	SDL_Surface *icon;
+#endif
 	int status;
 	if (SDL_Init(SDL_INIT_VIDEO)<0)
 	{
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
 		return 0;
 	}
+	
+#ifdef WIN32
+	SDL_VERSION(&SysInfo.version);
+	if(SDL_GetWMInfo(&SysInfo) <= 0) {
+	    printf("%s : %d\n", SDL_GetError(), SysInfo.window);
+	    exit(-1);
+	}
+	WindowHandle = SysInfo.window;
+	hIconSmall = (HICON)LoadImage(&__ImageBase, MAKEINTRESOURCE(101), IMAGE_ICON, 16, 16, LR_SHARED);
+	hIconBig = (HICON)LoadImage(&__ImageBase, MAKEINTRESOURCE(101), IMAGE_ICON, 32, 32, LR_SHARED);
+	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
+	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
+#elif defined(LIN32) || defined(LIN32)
+	icon = SDL_CreateRGBSurfaceFrom(app_icon, 16, 16, 32, 64, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+	SDL_WM_SetIcon(icon, NULL);
+#endif
+	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
+	
 	atexit(SDL_Quit);
 #if defined(OGLR)
 	sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_OPENGL);
@@ -3949,8 +3982,6 @@ int sdl_open(void)
 		fprintf(stderr, "Creating window: %s\n", SDL_GetError());
 		return 0;
 	}
-	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
-	sdl_seticon();
 	SDL_EnableUNICODE(1);
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 #if (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
