@@ -7,6 +7,7 @@
 
 #include "TagsModel.h"
 #include "TagsView.h"
+#include "client/Client.h"
 
 TagsModel::TagsModel():
 	save(NULL)
@@ -26,6 +27,44 @@ Save * TagsModel::GetSave()
 	return save;
 }
 
+void TagsModel::RemoveTag(string tag)
+{
+	if(save)
+	{
+		std::vector<string> * tags = Client::Ref().RemoveTag(save->GetID(), tag);
+		if(tags)
+		{
+			save->SetTags(vector<string>(*tags));
+			notifyTagsChanged();
+			delete tags;
+		}
+		else
+		{
+			lastError = Client::Ref().GetLastError();
+			notifyError();
+		}
+	}
+}
+
+void TagsModel::AddTag(string tag)
+{
+	if(save)
+	{
+		std::vector<string> * tags = Client::Ref().AddTag(save->GetID(), tag);
+		if(tags)
+		{
+			save->SetTags(vector<string>(*tags));
+			notifyTagsChanged();
+			delete tags;
+		}
+		else
+		{
+			lastError = Client::Ref().GetLastError();
+			notifyError();
+		}
+	}
+}
+
 void TagsModel::AddObserver(TagsView * observer)
 {
 	observers.push_back(observer);
@@ -37,6 +76,14 @@ void TagsModel::notifyTagsChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyTagsChanged(this);
+	}
+}
+
+void TagsModel::notifyError()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyError(this);
 	}
 }
 

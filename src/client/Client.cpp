@@ -676,3 +676,101 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 	//http_async_req_start(http, urlStream.str().c_str(), NULL, 0, 1);
 	return NULL;
 }
+
+std::vector<string> * Client::RemoveTag(int saveID, string tag)
+{
+	lastError = "";
+	std::vector<string> * tags = NULL;
+	std::stringstream urlStream;
+	char * data = NULL;
+	int dataStatus, dataLength;
+	urlStream << "http://" << SERVER << "/Browse/EditTag.json?Op=delete&ID=" << saveID << "&Tag=" << tag;
+	if(authUser.ID)
+	{
+		std::stringstream userIDStream;
+		userIDStream << authUser.ID;
+		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+	}
+	else
+	{
+		lastError = "Not authenticated";
+		return NULL;
+	}
+	if(dataStatus == 200 && data)
+	{
+		try
+		{
+			std::istringstream dataStream(data);
+			json::Array tagsArray;
+			json::Reader::Read(tagsArray, dataStream);
+
+			tags = new std::vector<string>();
+
+			for(int j = 0; j < tagsArray.Size(); j++)
+			{
+				json::String tempTag = tagsArray[j];
+				tags->push_back(tempTag.Value());
+			}
+		}
+		catch (json::Exception &e)
+		{
+			lastError = "Could not read response";
+		}
+	}
+	else
+	{
+		lastError = http_ret_text(dataStatus);
+	}
+	if(data)
+		free(data);
+	return tags;
+}
+
+std::vector<string> * Client::AddTag(int saveID, string tag)
+{
+	lastError = "";
+	std::vector<string> * tags = NULL;
+	std::stringstream urlStream;
+	char * data = NULL;
+	int dataStatus, dataLength;
+	urlStream << "http://" << SERVER << "/Browse/EditTag.json?Op=add&ID=" << saveID << "&Tag=" << tag;
+	if(authUser.ID)
+	{
+		std::stringstream userIDStream;
+		userIDStream << authUser.ID;
+		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+	}
+	else
+	{
+		lastError = "Not authenticated";
+		return NULL;
+	}
+	if(dataStatus == 200 && data)
+	{
+		try
+		{
+			std::istringstream dataStream(data);
+			json::Array tagsArray;
+			json::Reader::Read(tagsArray, dataStream);
+
+			tags = new std::vector<string>();
+
+			for(int j = 0; j < tagsArray.Size(); j++)
+			{
+				json::String tempTag = tagsArray[j];
+				tags->push_back(tempTag.Value());
+			}
+		}
+		catch (json::Exception &e)
+		{
+			lastError = "Could not read response";
+		}
+	}
+	else
+	{
+		lastError = http_ret_text(dataStatus);
+	}
+	if(data)
+		free(data);
+	return tags;
+}

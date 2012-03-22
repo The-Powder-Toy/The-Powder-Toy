@@ -29,6 +29,17 @@ Save * TagsController::GetSave()
 	return tagsModel->GetSave();
 }
 
+void TagsController::RemoveTag(string tag)
+{
+	tagsModel->RemoveTag(tag);
+}
+
+
+void TagsController::AddTag(string tag)
+{
+	tagsModel->AddTag(tag);
+}
+
 void TagsController::Exit()
 {
 	if(ui::Engine::Ref().GetWindow() == tagsView)

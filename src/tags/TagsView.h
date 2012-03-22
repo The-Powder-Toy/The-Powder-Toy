@@ -18,13 +18,16 @@ class TagsController;
 class TagsModel;
 class TagsView: public ui::Window {
 	TagsController * c;
-	ui::Button * submitButton;
+	ui::Button * closeButton;
+	ui::Label * title;
 	ui::Textbox * tagInput;
-	std::vector<ui::Label*> tags;
+	std::vector<ui::Component*> tags;
 public:
 	TagsView();
 	virtual void OnDraw();
+	void NotifyError(TagsModel * sender);
 	void AttachController(TagsController * c_) { c = c_; };
+	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	void NotifyTagsChanged(TagsModel * sender);
 	virtual ~TagsView();
 };

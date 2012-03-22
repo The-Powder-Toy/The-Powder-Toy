@@ -14,13 +14,18 @@
 class TagsView;
 class TagsModel {
 	Save * save;
+	string lastError;
 	std::vector<TagsView*> observers;
 	void notifyTagsChanged();
+	void notifyError();
 public:
 	TagsModel();
 	void AddObserver(TagsView * observer);
 	void SetSave(Save * save);
+	void RemoveTag(string tag);
+	void AddTag(string tag);
 	Save * GetSave();
+	string GetLastError(){ return lastError; }
 	virtual ~TagsModel();
 };
 

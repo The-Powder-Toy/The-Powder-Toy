@@ -59,6 +59,8 @@ public:
 	Save * GetSave(int saveID, int saveDate);
 	void SetAuthUser(User user);
 	User GetAuthUser();
+	std::vector<string> * RemoveTag(int saveID, string tag);
+	std::vector<string> * AddTag(int saveID, string tag);
 	std::string GetLastError() {
 		return lastError;
 	}
