@@ -359,6 +359,16 @@ Save * Client::GetSave(int saveID, int saveDate)
 			json::String tempDescription = objDocument["Description"];
 			json::Number tempDate = objDocument["Date"];
 			json::Boolean tempPublished = objDocument["Published"];
+
+			json::Array tagsArray = objDocument["Tags"];
+			vector<string> tempTags;
+
+			for(int j = 0; j < tagsArray.Size(); j++)
+			{
+				json::String tempTag = tagsArray[j];
+				tempTags.push_back(tempTag.Value());
+			}
+
 			return new Save(
 					tempID.Value(),
 					tempDate.Value(),
@@ -368,7 +378,8 @@ Save * Client::GetSave(int saveID, int saveDate)
 					tempUsername.Value(),
 					tempName.Value(),
 					tempDescription.Value(),
-					tempPublished.Value()
+					tempPublished.Value(),
+					tempTags
 					);
 		}
 		catch (json::Exception &e)

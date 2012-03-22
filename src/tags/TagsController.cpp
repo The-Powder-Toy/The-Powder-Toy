@@ -11,7 +11,7 @@
 #include "TagsModel.h"
 #include "TagsView.h"
 
-TagsController::TagsController(ControllerCallback * callback):
+TagsController::TagsController(ControllerCallback * callback, Save * save):
 	HasDone(false)
 {
 	tagsModel = new TagsModel();
@@ -19,7 +19,14 @@ TagsController::TagsController(ControllerCallback * callback):
 	tagsView->AttachController(this);
 	tagsModel->AddObserver(tagsView);
 
+	tagsModel->SetSave(save);
+
 	this->callback = callback;
+}
+
+Save * TagsController::GetSave()
+{
+	return tagsModel->GetSave();
 }
 
 void TagsController::Exit()

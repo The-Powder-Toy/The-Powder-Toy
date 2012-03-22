@@ -11,7 +11,7 @@
 Save::Save(Save & save) :
 		userName(save.userName), name(save.name), Description(save.Description), date(
 				save.date), Published(save.Published), id(save.id), votesUp(
-				save.votesUp), votesDown(save.votesDown), data(NULL), vote(save.vote) {
+				save.votesUp), votesDown(save.votesDown), data(NULL), vote(save.vote), tags(save.tags) {
 	if (save.data) {
 		std::cout << data << " " << save.data << std::endl;
 		data = (unsigned char *) malloc(save.dataLength);
@@ -24,14 +24,14 @@ Save::Save(int _id, int _date, int _votesUp, int _votesDown, string _userName,
 		string _name) :
 		id(_id), votesUp(_votesUp), votesDown(_votesDown), userName(_userName), name(
 				_name), Description("No description provided"), date(_date), Published(
-				true), data(NULL), vote(0) {
+				true), data(NULL), vote(0), tags() {
 }
 
 Save::Save(int _id, int date_, int _votesUp, int _votesDown, int _vote, string _userName,
-		string _name, string description_, bool published_) :
+		string _name, string description_, bool published_, vector<string> tags_) :
 		id(_id), votesUp(_votesUp), votesDown(_votesDown), userName(_userName), name(
 				_name), Description(description_), date(date_), Published(
-				published_), data(NULL), vote(_vote) {
+				published_), data(NULL), vote(_vote), tags(tags_) {
 }
 
 Save::~Save()
@@ -84,6 +84,15 @@ void Save::SetVotesDown(int votesDown) {
 }
 int Save::GetVotesDown() {
 	return votesDown;
+}
+
+void Save::SetTags(vector<string> tags)
+{
+	this->tags = tags;
+}
+vector<string> Save::GetTags()
+{
+	return tags;
 }
 
 unsigned char * Save::GetData() {

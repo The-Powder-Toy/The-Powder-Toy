@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "Config.h"
 #include "GameView.h"
 #include "interface/Window.h"
@@ -426,6 +428,18 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		else
 			downVoteButton->SetBackgroundColour(ui::Colour(0, 0, 0));
 		tagSimulationButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID);
+		if(sender->GetSave()->GetID())
+		{
+			std::stringstream tagsStream;
+			std::vector<string> tags = sender->GetSave()->GetTags();
+			for(int i = 0; i < tags.size(); i++)
+			{
+				tagsStream << sender->GetSave()->GetTags()[i];
+				if(i < tags.size()-1)
+					tagsStream << " ";
+			}
+			tagSimulationButton->SetText(tagsStream.str());
+		}
 	}
 	else
 	{
@@ -436,6 +450,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		downVoteButton->Enabled = false;
 		upVoteButton->SetBackgroundColour(ui::Colour(0, 0, 0));
 		tagSimulationButton->Enabled = false;
+		tagSimulationButton->SetText("");
 	}
 }
 

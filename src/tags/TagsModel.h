@@ -9,13 +9,18 @@
 #define TAGSMODEL_H_
 
 #include <vector>
+#include "search/Save.h"
 
 class TagsView;
 class TagsModel {
+	Save * save;
 	std::vector<TagsView*> observers;
+	void notifyTagsChanged();
 public:
 	TagsModel();
 	void AddObserver(TagsView * observer);
+	void SetSave(Save * save);
+	Save * GetSave();
 	virtual ~TagsModel();
 };
 

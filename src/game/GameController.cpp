@@ -66,6 +66,17 @@ public:
 	}
 };
 
+class GameController::TagsCallback: public ControllerCallback
+{
+	GameController * cc;
+public:
+	TagsCallback(GameController * cc_) { cc = cc_; }
+	virtual void ControllerExit()
+	{
+		cc->gameModel->SetSave(new Save(*(cc->tagsWindow->GetSave())));
+	}
+};
+
 GameController::GameController():
 		search(NULL),
 		renderOptions(NULL),
@@ -338,8 +349,22 @@ void GameController::OpenLogin()
 
 void GameController::OpenTags()
 {
-	tagsWindow = new TagsController(NULL);
-	ui::Engine::Ref().ShowWindow(tagsWindow->GetView());
+	if(gameModel->GetUser().ID)
+	{
+		if(gameModel->GetSave() && gameModel->GetSave()->GetID())
+		{
+			tagsWindow = new TagsController(new TagsCallback(this), gameModel->GetSave());
+			ui::Engine::Ref().ShowWindow(tagsWindow->GetView());
+		}
+		else
+		{
+			new ErrorMessage("Error", "No save open");
+		}
+	}
+	else
+	{
+		new ErrorMessage("Error", "You need to login to edit tags.");
+	}
 }
 
 void GameController::OpenDisplayOptions()

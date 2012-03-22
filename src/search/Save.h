@@ -1,6 +1,7 @@
 #ifndef SAVE_H
 #define SAVE_H
 
+#include <vector>
 #include <string>
 #include <stdlib.h>
 #include <iostream>
@@ -22,7 +23,7 @@ public:
 
 	Save(int _id, int _date, int _votesUp, int _votesDown, string _userName, string _name);
 
-	Save(int _id, int date_, int _votesUp, int _votesDown, int _vote, string _userName, string _name, string description_, bool published_);
+	Save(int _id, int date_, int _votesUp, int _votesDown, int _vote, string _userName, string _name, string description_, bool published_, vector<string> tags);
 
 	~Save();
 
@@ -30,6 +31,8 @@ public:
 	string name;
 
 	string Description;
+
+	vector<string> tags;
 
 	int vote;
 
@@ -52,6 +55,9 @@ public:
 
 	void SetVotesDown(int votesDown);
 	int GetVotesDown();
+
+	void SetTags(vector<string> tags);
+	vector<string> GetTags();
 
 	unsigned char * GetData();
 	void SetData(unsigned char * data_, int dataLength);

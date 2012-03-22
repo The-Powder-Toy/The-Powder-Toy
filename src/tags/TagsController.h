@@ -10,6 +10,7 @@
 
 #include "Controller.h"
 #include "TagsView.h"
+#include "search/Save.h"
 
 class TagsView;
 class TagsModel;
@@ -19,8 +20,9 @@ class TagsController {
 	TagsModel * tagsModel;
 public:
 	bool HasDone;
-	TagsController(ControllerCallback * callback);
+	TagsController(ControllerCallback * callback, Save * save);
 	TagsView * GetView() {return tagsView;}
+	Save * GetSave();
 	void Exit();
 	virtual ~TagsController();
 };

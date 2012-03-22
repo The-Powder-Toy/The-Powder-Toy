@@ -40,6 +40,7 @@ public:
 	class SearchCallback;
 	class RenderCallback;
 	class SSaveCallback;
+	class TagsCallback;
 	GameController();
 	~GameController();
 	GameView * GetView();
