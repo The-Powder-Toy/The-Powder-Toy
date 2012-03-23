@@ -3062,7 +3062,9 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill)
 		return 1;
 	}
 
-	if (c == 0 && !(flags&BRUSH_REPLACEMODE))								// delete
+	if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV)
+		fn = 3;
+	else if (c == 0 && !(flags&BRUSH_REPLACEMODE))								// delete
 		fn = 0;
 	else if ((flags&BRUSH_SPECIFIC_DELETE) && !(flags&BRUSH_REPLACEMODE))	// specific delete
 		fn = 1;
