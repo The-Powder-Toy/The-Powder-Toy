@@ -32,6 +32,10 @@
 #include <misc.h>
 #include "hmap.h"
 
+#if defined(LIN32) || defined(LIN64)
+#include "icon.h"
+#endif
+
 
 #ifdef WIN32
 IMAGE_DOS_HEADER __ImageBase;
