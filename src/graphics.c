@@ -3758,6 +3758,7 @@ int sdl_open(void)
 	HWND WindowHandle;
 	HICON hIconSmall;
 	HICON hIconBig;
+#elif defined(LIN32) || defined(LIN64)
 	SDL_Surface *icon;
 #endif
 	int status;
@@ -3778,7 +3779,7 @@ int sdl_open(void)
 	hIconBig = (HICON)LoadImage(&__ImageBase, MAKEINTRESOURCE(101), IMAGE_ICON, 32, 32, LR_SHARED);
 	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
 	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
-#elif defined(LIN32) || defined(LIN32)
+#elif defined(LIN32) || defined(LIN64)
 	icon = SDL_CreateRGBSurfaceFrom(app_icon, 16, 16, 32, 64, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 	SDL_WM_SetIcon(icon, NULL);
 #endif
