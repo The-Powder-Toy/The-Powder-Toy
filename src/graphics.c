@@ -3704,15 +3704,14 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 				xor_pixel(x, j, vid);
 		else
 		{
-			int tempy = y, i, j, jmax, oldy;
+			int tempy = y, i, j, oldy;
 			if (CURRENT_BRUSH == TRI_BRUSH)
-				tempy = y + ry;
+				tempy = y + ry - 1;
 			for (i = x - rx; i <= x; i++) {
 				oldy = tempy;
 				while (InCurrentBrush(i-x,tempy-y,rx,ry))
 					tempy = tempy - 1;
 				tempy = tempy + 1;
-				jmax = 2*y - tempy;
 				if (oldy != tempy && CURRENT_BRUSH != SQUARE_BRUSH)
 					oldy--;
 				if (CURRENT_BRUSH == TRI_BRUSH)
