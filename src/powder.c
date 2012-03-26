@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <math.h>
 #include <defines.h>
-#include <squares.h>
 #include <powder.h>
 #include <air.h>
 #include <misc.h>
@@ -1813,8 +1812,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 			{
 #ifdef REALISTIC
 				//The magic number controlls diffusion speed
-				parts[i].vx += 0.05*squares[(unsigned int)round(parts[i].temp)]*ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
-				parts[i].vy += 0.05*squares[(unsigned int)round(parts[i].temp)]*ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
+				parts[i].vx += 0.05f*sqrtf(parts[i].temp)*ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
+				parts[i].vy += 0.05f*sqrtf(parts[i].temp)*ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
 #else
 				parts[i].vx += ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
 				parts[i].vy += ptypes[t].diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
