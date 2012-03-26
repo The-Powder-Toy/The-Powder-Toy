@@ -89,6 +89,13 @@ void init_display_modes()
 	render_modes[0] = RENDER_FIRE;
 	render_modes[1] = 0;
 	
+	update_display_modes();
+}
+
+// Combine all elements of the display_modes and render_modes arrays into single variables using bitwise or
+void update_display_modes()
+{
+	int i;
 	display_mode = 0;
 	i = 0;
 	while(display_modes[i])

@@ -223,6 +223,9 @@ int sdl_open(void);
 
 int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy, int line_x, int line_y);
 
+void init_display_modes();
+void update_display_modes();
+
 #ifdef OGLR
 void clearScreen(float alpha);
 void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale);

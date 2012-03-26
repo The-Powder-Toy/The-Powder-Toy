@@ -2805,12 +2805,10 @@ void set_cmode(int cm) // sets to given view mode
 	
 	free(render_modes);
 	render_modes = calloc(2, sizeof(unsigned int));
-	render_mode = RENDER_BASC;
 	render_modes[0] = RENDER_BASC;
 	render_modes[1] = 0;
 	
 	free(display_modes);
-	display_mode = 0;
 	display_modes = calloc(1, sizeof(unsigned int));
 	display_modes[0] = 0;
 	
@@ -2819,13 +2817,11 @@ void set_cmode(int cm) // sets to given view mode
 	{
 		free(render_modes);
 		render_modes = calloc(3, sizeof(unsigned int));
-		render_mode |= RENDER_EFFE | RENDER_BASC;
 		render_modes[0] = RENDER_EFFE;
 		render_modes[1] = RENDER_BASC;
 		render_modes[2] = 0;
 		free(display_modes);
 		display_modes = calloc(2, sizeof(unsigned int));
-		display_mode |= DISPLAY_AIRV;
 		display_modes[0] = DISPLAY_AIRV;
 		display_modes[1] = 0;
 		strcpy(itc_msg, "Velocity Display");
@@ -2834,13 +2830,11 @@ void set_cmode(int cm) // sets to given view mode
 	{
 		free(render_modes);
 		render_modes = calloc(3, sizeof(unsigned int));
-		render_mode |= RENDER_EFFE | RENDER_BASC;
 		render_modes[0] = RENDER_EFFE;
 		render_modes[1] = RENDER_BASC;
 		render_modes[2] = 0;
 		free(display_modes);
 		display_modes = calloc(2, sizeof(unsigned int));
-		display_mode |= DISPLAY_AIRP;
 		display_modes[0] = DISPLAY_AIRP;
 		display_modes[1] = 0;
 		strcpy(itc_msg, "Pressure Display");
@@ -2849,13 +2843,11 @@ void set_cmode(int cm) // sets to given view mode
 	{
 		free(render_modes);
 		render_modes = calloc(3, sizeof(unsigned int));
-		render_mode |= RENDER_EFFE | RENDER_BASC;
 		render_modes[0] = RENDER_EFFE;
 		render_modes[1] = RENDER_BASC;
 		render_modes[2] = 0;
 		free(display_modes);
 		display_modes = calloc(2, sizeof(unsigned int));
-		display_mode |= DISPLAY_PERS;
 		display_modes[0] = DISPLAY_PERS;
 		display_modes[1] = 0;
 		memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
@@ -2865,8 +2857,6 @@ void set_cmode(int cm) // sets to given view mode
 	{
 		free(render_modes);
 		render_modes = calloc(3, sizeof(unsigned int));
-		render_mode |= RENDER_FIRE;
-		render_mode |= RENDER_EFFE;
 		render_modes[0] = RENDER_FIRE;
 		render_modes[1] = RENDER_EFFE;
 		render_modes[2] = 0;
@@ -2879,8 +2869,6 @@ void set_cmode(int cm) // sets to given view mode
 	{
 		free(render_modes);
 		render_modes = calloc(4, sizeof(unsigned int));
-		render_mode |= RENDER_FIRE;
-		render_mode |= RENDER_BLOB;
 		render_modes[0] = RENDER_FIRE;
 		render_modes[1] = RENDER_BLOB;
 		render_modes[2] = RENDER_EFFE;
@@ -2896,7 +2884,6 @@ void set_cmode(int cm) // sets to given view mode
 		strcpy(itc_msg, "Heat Display");
 		free(display_modes);
 		display_modes = calloc(2, sizeof(unsigned int));
-		display_mode |= DISPLAY_AIRH;
 		display_modes[0] = DISPLAY_AIRH;
 		display_modes[1] = 0;
 	}
@@ -2904,10 +2891,6 @@ void set_cmode(int cm) // sets to given view mode
 	{
 		free(render_modes);
 		render_modes = calloc(5, sizeof(unsigned int));
-		render_mode |= RENDER_FIRE;
-		render_mode |= RENDER_GLOW;
-		render_mode |= RENDER_BLUR;
-		render_mode |= RENDER_EFFE;
 		render_modes[0] = RENDER_FIRE;
 		render_modes[1] = RENDER_GLOW;
 		render_modes[2] = RENDER_BLUR;
@@ -2915,7 +2898,6 @@ void set_cmode(int cm) // sets to given view mode
 		render_modes[4] = 0;
 		free(display_modes);
 		display_modes = calloc(2, sizeof(unsigned int));
-		display_mode |= DISPLAY_WARP;
 		display_modes[0] = DISPLAY_WARP;
 		display_modes[1] = 0;
 		memset(fire_r, 0, sizeof(fire_r));
@@ -2941,13 +2923,11 @@ void set_cmode(int cm) // sets to given view mode
 	{
 		free(render_modes);
 		render_modes = calloc(3, sizeof(unsigned int));
-		render_mode |= RENDER_EFFE | RENDER_BASC;
 		render_modes[0] = RENDER_EFFE;
 		render_modes[1] = RENDER_BASC;
 		render_modes[2] = 0;
 		free(display_modes);
 		display_modes = calloc(2, sizeof(unsigned int));
-		display_mode |= DISPLAY_AIRC;
 		display_modes[0] = DISPLAY_AIRC;
 		display_modes[1] = 0;
 		strcpy(itc_msg, "Alternate Velocity Display");
@@ -2956,6 +2936,8 @@ void set_cmode(int cm) // sets to given view mode
 	{
 		strcpy(itc_msg, "Error: Incorrect Display Number");
 	}
+
+	update_display_modes();// Update render_mode and display_mode from the relevant arrays
 	save_presets(0);
 }
 
