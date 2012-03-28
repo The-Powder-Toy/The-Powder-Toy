@@ -19,6 +19,11 @@ enum DrawMode
 	DrawPoints, DrawLine, DrawRect, DrawFill
 };
 
+enum SelectMode
+{
+	SelectNone, SelectStamp, SelectCopy
+};
+
 class GameController;
 class GameModel;
 class GameView: public ui::Window
@@ -57,6 +62,11 @@ private:
 	bool drawModeReset;
 	ui::Point drawPoint1;
 	ui::Point drawPoint2;
+
+	SelectMode selectMode;
+	ui::Point selectPoint1;
+	ui::Point selectPoint2;
+
 	void changeColour();
 public:
     GameView();
@@ -73,6 +83,7 @@ public:
 	void NotifyZoomChanged(GameModel * sender);
 	void NotifyColourSelectorVisibilityChanged(GameModel * sender);
 	void NotifyColourSelectorColourChanged(GameModel * sender);
+	void NotifyClipboardChanged(GameModel * sender);
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);

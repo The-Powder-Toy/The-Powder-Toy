@@ -241,6 +241,25 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueu
 	}
 }
 
+void GameController::StampRegion(ui::Point point1, ui::Point point2)
+{
+	int saveSize;
+	unsigned char * saveData;
+	saveData = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, saveSize);
+	if(saveData && saveSize)
+		gameModel->AddStamp(saveData, saveSize);
+}
+
+void GameController::CopyRegion(ui::Point point1, ui::Point point2)
+{
+	int saveSize;
+	unsigned char * saveData;
+	saveData = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, saveSize);
+
+	if(saveData && saveSize)
+		gameModel->SetClipboard(saveData, saveSize);
+}
+
 void GameController::Update()
 {
 	gameModel->GetSimulation()->update_particles();

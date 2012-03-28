@@ -16,7 +16,8 @@ GameModel::GameModel():
 	currentBrush(0),
 	currentUser(0, ""),
 	currentSave(NULL),
-	colourSelector(false)
+	colourSelector(false),
+	clipboardData(NULL)
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
@@ -405,6 +406,27 @@ void GameModel::ClearSimulation()
 	sim->clear_sim();
 }
 
+void GameModel::AddStamp(unsigned char * saveData, int saveSize)
+{
+	//Do nothing
+
+	//die alone
+}
+
+void GameModel::SetClipboard(unsigned char * saveData, int saveSize)
+{
+	if(clipboardData)
+		free(clipboardData);
+	clipboardData = saveData;
+	clipboardSize = saveSize;
+}
+
+unsigned char * GameModel::GetClipboard(int & saveSize)
+{
+	saveSize = clipboardSize;
+	return clipboardData;
+}
+
 void GameModel::notifyColourSelectorColourChanged()
 {
 	for(int i = 0; i < observers.size(); i++)
@@ -506,5 +528,13 @@ void GameModel::notifyZoomChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyZoomChanged(this);
+	}
+}
+
+void GameModel::notifyClipboardChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyClipboardChanged(this);
 	}
 }

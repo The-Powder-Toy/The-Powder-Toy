@@ -31,6 +31,8 @@ public:
 class GameModel
 {
 private:
+	int clipboardSize;
+	unsigned char * clipboardData;
 	vector<GameView*> observers;
 	vector<Tool*> toolList;
 	vector<Menu*> menuList;
@@ -56,6 +58,7 @@ private:
 	void notifyActiveToolsChanged();
 	void notifyUserChanged();
 	void notifyZoomChanged();
+	void notifyClipboardChanged();
 	void notifyColourSelectorColourChanged();
 	void notifyColourSelectorVisibilityChanged();
 public:
@@ -101,6 +104,9 @@ public:
 	ui::Point GetZoomPosition();
 	void SetZoomWindowPosition(ui::Point position);
 	ui::Point GetZoomWindowPosition();
+	void AddStamp(unsigned char * saveData, int saveSize);
+	void SetClipboard(unsigned char * saveData, int saveSize);
+	unsigned char * GetClipboard(int & saveSize);
 };
 
 #endif // GAMEMODEL_H

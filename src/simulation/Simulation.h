@@ -208,6 +208,7 @@ public:
 
 	int Load(unsigned char * data, int dataLength);
 	unsigned char * Save(int & dataLength);
+	unsigned char * Save(int x1, int y1, int x2, int y2, int & dataLength);
 	inline int is_blocking(int t, int x, int y);
 	inline int is_boundary(int pt, int x, int y);
 	inline int find_next_boundary(int pt, int *x, int *y, int dm, int *em);
