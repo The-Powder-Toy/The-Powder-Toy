@@ -2,6 +2,7 @@
 
 #include "Config.h"
 #include "GameView.h"
+#include "Graphics.h"
 #include "interface/Window.h"
 #include "interface/Button.h"
 #include "interface/Colour.h"
@@ -482,7 +483,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 {
 	if(selectMode!=SelectNone)
 	{
-		if(button!=3)
+		if(button==BUTTON_LEFT)
 		{
 			selectPoint1 = ui::Point(x, y);
 			selectPoint2 = selectPoint1;
@@ -517,7 +518,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 		int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
 		int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
 		int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
-		if(button !=3 && x2-x1>0 && y2-y1>0)
+		if(button==BUTTON_LEFT && x2-x1>0 && y2-y1>0)
 		{
 			if(selectMode==SelectCopy)
 				c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
