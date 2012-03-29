@@ -10,7 +10,7 @@
 #include "login/LoginController.h"
 #include "interface/Point.h"
 #include "dialogues/ErrorMessage.h"
-#include "SaveLoadException.h"
+#include "GameModelException.h"
 
 using namespace std;
 
@@ -39,7 +39,7 @@ public:
 			{
 				cc->gameModel->SetSave(new Save(*(cc->search->GetLoadedSave())));
 			}
-			catch(SaveLoadException & ex)
+			catch(GameModelException & ex)
 			{
 				new ErrorMessage("Cannot open save", ex.what());
 			}

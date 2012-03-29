@@ -11,6 +11,7 @@
 #include "dialogues/ErrorMessage.h"
 #include "TagsController.h"
 #include "TagsModel.h"
+#include "TagsModelException.h"
 
 TagsView::TagsView():
 	ui::Window(ui::Point(-1, -1), ui::Point(195, 250))
@@ -46,11 +47,6 @@ void TagsView::OnDraw()
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 }
 
-void TagsView::NotifyError(TagsModel * sender)
-{
-	new ErrorMessage("Error", sender->GetLastError());
-}
-
 void TagsView::NotifyTagsChanged(TagsModel * sender)
 {
 	for(int i = 0; i < tags.size(); i++)
@@ -69,7 +65,14 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 		DeleteTagAction(TagsView * _v, string tag) { v = _v; this->tag = tag; }
 		void ActionCallback(ui::Button * sender)
 		{
-			v->c->RemoveTag(tag);
+			try
+			{
+				v->c->RemoveTag(tag);
+			}
+			catch(TagsModelException & ex)
+			{
+				new ErrorMessage("Could not remove tag", ex.what());
+			}
 		}
 	};
 
@@ -108,7 +111,15 @@ void TagsView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case KEY_RETURN:
 		if(IsFocused(tagInput))
 		{
-			c->AddTag(tagInput->GetText());
+
+			try
+			{
+				c->AddTag(tagInput->GetText());
+			}
+			catch(TagsModelException & ex)
+			{
+				new ErrorMessage("Could not add tag", ex.what());
+			}
 			tagInput->SetText("");
 		}
 		break;

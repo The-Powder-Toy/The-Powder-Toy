@@ -8,7 +8,7 @@
 #include "EllipseBrush.h"
 #include "client/Client.h"
 #include "game/DecorationTool.h"
-#include "SaveLoadException.h"
+#include "GameModelException.h"
 
 GameModel::GameModel():
 	activeTools({NULL, NULL, NULL}),
@@ -262,7 +262,7 @@ void GameModel::SetSave(Save * newSave)
 		if(returnVal){
 			delete currentSave;
 			currentSave = NULL;
-			throw SaveLoadException(returnVal==2?"Save from newer version":"Save data corrupt");
+			throw GameModelException(returnVal==2?"Save from newer version":"Save data corrupt");
 		}
 	}
 	notifySaveChanged();

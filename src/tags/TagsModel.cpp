@@ -8,6 +8,7 @@
 #include "TagsModel.h"
 #include "TagsView.h"
 #include "client/Client.h"
+#include "TagsModelException.h"
 
 TagsModel::TagsModel():
 	save(NULL)
@@ -40,8 +41,7 @@ void TagsModel::RemoveTag(string tag)
 		}
 		else
 		{
-			lastError = Client::Ref().GetLastError();
-			notifyError();
+			throw TagsModelException(Client::Ref().GetLastError());
 		}
 	}
 }
@@ -59,8 +59,7 @@ void TagsModel::AddTag(string tag)
 		}
 		else
 		{
-			lastError = Client::Ref().GetLastError();
-			notifyError();
+			throw TagsModelException(Client::Ref().GetLastError());
 		}
 	}
 }
@@ -76,14 +75,6 @@ void TagsModel::notifyTagsChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyTagsChanged(this);
-	}
-}
-
-void TagsModel::notifyError()
-{
-	for(int i = 0; i < observers.size(); i++)
-	{
-		observers[i]->NotifyError(this);
 	}
 }
 
