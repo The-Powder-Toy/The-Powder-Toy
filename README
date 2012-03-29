@@ -109,11 +109,6 @@ History:
       o Ambient heat and Newtonian Gravity in Quick Options menu.
       o Smudge tool
       o Speed improvements for particle drawing
-      o More consistent spark speed (possibly affects existing circuits)
-      o BRAY fire speed (Only shoots once per spark)
-      o DLAY blocked by INSL
-      o WIFI will always take one frame to transmit SPRK
-      o Ambient heat blocked by walls.
 * Version 73.0
       o New elements: FRAY - Similar to ARAY but applies force, RPEL - Attract and repel particles
       o DEUT can be compressed by gravitational fields
