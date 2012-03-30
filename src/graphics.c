@@ -3706,9 +3706,11 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 		{
 			int tempy = y, i, j, oldy;
 			if (CURRENT_BRUSH == TRI_BRUSH)
-				tempy = y + ry - 1;
+				tempy = y + ry;
 			for (i = x - rx; i <= x; i++) {
 				oldy = tempy;
+				if (!InCurrentBrush(i-x,tempy-y,rx,ry))
+					continue;
 				while (InCurrentBrush(i-x,tempy-y,rx,ry))
 					tempy = tempy - 1;
 				tempy = tempy + 1;

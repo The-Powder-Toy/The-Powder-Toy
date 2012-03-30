@@ -3081,10 +3081,15 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill)
 	else
 	{
 		int tempy = y, i, j, jmax, oldy;
+		// tempy is the smallest y value that is still inside the brush
+		// jmax is the largest y value that is still inside the brush
 		if (CURRENT_BRUSH == TRI_BRUSH)
 			tempy = y + ry;
 		for (i = x - rx; i <= x; i++) {
 			oldy = tempy;
+			// Fix a problem with the triangle brush which occurs if the bottom corner (the first point tested) isn't recognised as being inside the brush
+			if (!InCurrentBrush(i-x,tempy-y,rx,ry))
+				continue;
 			while (InCurrentBrush(i-x,tempy-y,rx,ry))
 				tempy = tempy - 1;
 			tempy = tempy + 1;
@@ -3112,11 +3117,11 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill)
 						j2 = y+ry;
 					if (create_parts2(fn,i,j,c,rx,ry,flags))
 						f = 1;
-					if (create_parts2(fn,i2,j,c,rx,ry,flags))
+					if (i2 != i && create_parts2(fn,i2,j,c,rx,ry,flags))
 						f = 1;
-					if (create_parts2(fn,i,j2,c,rx,ry,flags))
+					if (j2 != j && create_parts2(fn,i,j2,c,rx,ry,flags))
 						f = 1;
-					if (create_parts2(fn,i2,j2,c,rx,ry,flags))
+					if (i2 != i && j2 != j && create_parts2(fn,i2,j2,c,rx,ry,flags))
 						f = 1;
 				}
 			}
@@ -3161,7 +3166,8 @@ int InCurrentBrush(int i, int j, int rx, int ry)
 			return (abs(i) <= rx && abs(j) <= ry);
 			break;
 		case TRI_BRUSH:
-			return (j <= ry ) && ( j >= (((-2.0*ry)/rx)*i) -ry) && ( j >= (((-2.0*ry)/(-rx))*i)-ry ) ;
+			// -1e-9 because due to rounding errors, the corner at i=rx is not considered to be inside the brush at some brush sizes
+			return (j <= ry ) && ( j >= (((-2.0*ry)/rx)*i)-ry-1e-9) && ( j >= (((-2.0*ry)/(-rx))*i)-ry-1e-9) ;
 			break;
 		default:
 			return 0;
