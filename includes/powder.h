@@ -491,6 +491,7 @@ typedef struct part_transition part_transition;
 
 // TODO: falldown, properties, state - should at least one of these be removed?
 extern part_type ptypes[PT_NUM];
+extern unsigned int platent[PT_NUM];
 
 // temporarily define abbreviations for impossible p/t values
 #define IPL -257.0f
