@@ -13,6 +13,11 @@ int Simulation::Load(unsigned char * data, int dataLength)
 	return SaveLoader::LoadSave(data, dataLength, this, true, 0, 0);
 }
 
+int Simulation::Load(int x, int y, unsigned char * data, int dataLength)
+{
+	return SaveLoader::LoadSave(data, dataLength, this, false, x, y);
+}
+
 unsigned char * Simulation::Save(int & dataLength)
 {
 	return SaveLoader::BuildSave(dataLength, this, 0, 0, XRES, YRES);

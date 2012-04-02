@@ -8,6 +8,7 @@
 #include "interface/Colour.h"
 #include "interface/Keys.h"
 #include "interface/Slider.h"
+#include "search/Thumbnail.h"
 
 GameView::GameView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE)),
@@ -25,7 +26,9 @@ GameView::GameView():
 	drawModeReset(false),
 	selectMode(SelectNone),
 	selectPoint1(0, 0),
-	selectPoint2(0, 0)
+	selectPoint2(0, 0),
+	stampThumb(NULL),
+	clipboardThumb(NULL)
 {
 	int currentX = 1;
 	//Set up UI
@@ -467,6 +470,8 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 {
 	if(selectMode!=SelectNone)
 	{
+		if(selectMode==PlaceStamp || selectMode==PlaceClipboard)
+			selectPoint1 = ui::Point(x, y);
 		if(selectPoint1.X!=-1)
 			selectPoint2 = ui::Point(x, y);
 		return;
@@ -514,16 +519,46 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 {
 	if(selectMode!=SelectNone)
 	{
-		int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
-		int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
-		int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
-		int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
-		if(button==BUTTON_LEFT && x2-x1>0 && y2-y1>0)
+		if(button==BUTTON_LEFT)
 		{
-			if(selectMode==SelectCopy)
-				c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-			else if(selectMode==SelectStamp)
-				c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+			if(selectMode==PlaceStamp || selectMode==PlaceClipboard)
+			{
+				Thumbnail * tempThumb = selectMode==PlaceStamp?stampThumb:clipboardThumb;
+				if(tempThumb)
+				{
+					int thumbX = selectPoint2.X - (tempThumb->Size.X/2);
+					int thumbY = selectPoint2.Y - (tempThumb->Size.Y/2);
+
+					if(thumbX<0)
+						thumbX = 0;
+					if(thumbX+(tempThumb->Size.X)>=XRES)
+						thumbX = XRES-tempThumb->Size.X;
+
+					if(thumbY<0)
+						thumbY = 0;
+					if(thumbY+(tempThumb->Size.Y)>=YRES)
+						thumbY = YRES-tempThumb->Size.Y;
+
+					if(selectMode==PlaceStamp)
+						c->PlaceStamp(ui::Point(thumbX, thumbY));
+					if(selectMode==PlaceClipboard)
+						c->PlaceClipboard(ui::Point(thumbX, thumbY));
+				}
+			}
+			else
+			{
+				int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
+				int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
+				int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
+				int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
+				if(x2-x1>0 && y2-y1>0)
+				{
+					if(selectMode==SelectCopy)
+						c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+					else if(selectMode==SelectStamp)
+						c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+				}
+			}
 		}
 		selectMode = SelectNone;
 		return;
@@ -643,6 +678,20 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			selectPoint1 = ui::Point(-1, -1);
 		}
 		break;
+	case 'v':
+		if(ctrl && clipboardThumb)
+		{
+			selectMode = PlaceClipboard;
+			selectPoint2 = ui::Point(-1, -1);
+			selectPoint1 = selectPoint2;
+		}
+		break;
+	case 'l':
+		selectMode = PlaceStamp;
+		selectPoint2 = ui::Point(-1, -1);
+		selectPoint1 = selectPoint2;
+		c->OpenStamps();
+		break;
 	}
 }
 
@@ -694,7 +743,27 @@ void GameView::NotifyZoomChanged(GameModel * sender)
 
 void GameView::NotifyClipboardChanged(GameModel * sender)
 {
-	//Could use this to have a mini preview of the clipboard, meh
+	if(clipboardThumb)
+		delete clipboardThumb;
+	if(sender->GetClipboard())
+	{
+		clipboardThumb = new Thumbnail(0, 0, (pixel*)malloc((256*256)*PIXELSIZE), ui::Point(256, 256));
+	}
+	else
+		clipboardThumb = NULL;
+}
+
+
+void GameView::NotifyStampChanged(GameModel * sender)
+{
+	if(stampThumb)
+		delete stampThumb;
+	if(sender->GetStamp())
+	{
+		stampThumb = new Thumbnail(0, 0, (pixel*)malloc((256*256)*PIXELSIZE), ui::Point(256, 256));
+	}
+	else
+		stampThumb = NULL;
 }
 
 void GameView::changeColour()
@@ -730,29 +799,53 @@ void GameView::OnDraw()
 
 		if(selectMode!=SelectNone)
 		{
-			if(selectPoint1.X==-1)
+			if(selectMode==PlaceStamp || selectMode==PlaceClipboard)
 			{
-				g->fillrect(0, 0, XRES, YRES, 0, 0, 0, 100);
+				Thumbnail * tempThumb = selectMode==PlaceStamp?stampThumb:clipboardThumb;
+				if(tempThumb && selectPoint2.X!=-1)
+				{
+					int thumbX = selectPoint2.X - (tempThumb->Size.X/2);
+					int thumbY = selectPoint2.Y - (tempThumb->Size.Y/2);
+
+					if(thumbX<0)
+						thumbX = 0;
+					if(thumbX+(tempThumb->Size.X)>=XRES)
+						thumbX = XRES-tempThumb->Size.X;
+
+					if(thumbY<0)
+						thumbY = 0;
+					if(thumbY+(tempThumb->Size.Y)>=YRES)
+						thumbY = YRES-tempThumb->Size.Y;
+
+					g->draw_image(tempThumb->Data, thumbX, thumbY, tempThumb->Size.X, tempThumb->Size.Y, 128);
+				}
 			}
 			else
 			{
-				int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
-				int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
-				int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
-				int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
+				if(selectPoint1.X==-1)
+				{
+					g->fillrect(0, 0, XRES, YRES, 0, 0, 0, 100);
+				}
+				else
+				{
+					int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
+					int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
+					int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
+					int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
 
-				if(x2>XRES-1)
-					x2 = XRES-1;
-				if(y2>YRES-1)
-					y2 = YRES-1;
+					if(x2>XRES-1)
+						x2 = XRES-1;
+					if(y2>YRES-1)
+						y2 = YRES-1;
 
-				g->fillrect(0, 0, XRES, y1, 0, 0, 0, 100);
-				g->fillrect(0, y2, XRES, YRES-y2, 0, 0, 0, 100);
+					g->fillrect(0, 0, XRES, y1, 0, 0, 0, 100);
+					g->fillrect(0, y2, XRES, YRES-y2, 0, 0, 0, 100);
 
-				g->fillrect(0, y1-1, x1, (y2-y1)+2, 0, 0, 0, 100);
-				g->fillrect(x2, y1-1, XRES-x2, (y2-y1)+2, 0, 0, 0, 100);
+					g->fillrect(0, y1-1, x1, (y2-y1)+2, 0, 0, 0, 100);
+					g->fillrect(x2, y1-1, XRES-x2, (y2-y1)+2, 0, 0, 0, 100);
 
-				g->xor_rect(x1, y1, (x2-x1)+1, (y2-y1)+1);
+					g->xor_rect(x1, y1, (x2-x1)+1, (y2-y1)+1);
+				}
 			}
 		}
 	}

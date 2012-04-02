@@ -51,28 +51,31 @@ void SaveButton::Tick(float dt)
 	float scaleFactorY = 1.0f, scaleFactorX = 1.0f;
 	if(!thumbnail)
 	{
-		tempThumb = Client::Ref().GetThumbnail(save->GetID(), 0);
-		if(tempThumb)
+		if(save->GetID())
 		{
-			thumbnail = new Thumbnail(*tempThumb); //Store a local copy of the thumbnail
-			if(thumbnail->Data)
+			tempThumb = Client::Ref().GetThumbnail(save->GetID(), 0);
+			if(tempThumb)
 			{
-				if(thumbnail->Size.Y > (Size.Y-25))
+				thumbnail = new Thumbnail(*tempThumb); //Store a local copy of the thumbnail
+				if(thumbnail->Data)
 				{
-					scaleFactorY = ((float)(Size.Y-25))/((float)thumbnail->Size.Y);
-				}
-				if(thumbnail->Size.X > Size.X-3)
-				{
-					scaleFactorX = ((float)Size.X-3)/((float)thumbnail->Size.X);
-				}
-				if(scaleFactorY < 1.0f || scaleFactorX < 1.0f)
-				{
-					float scaleFactor = scaleFactorY < scaleFactorX ? scaleFactorY : scaleFactorX;
-					pixel * thumbData = thumbnail->Data;
-					thumbnail->Data = Graphics::resample_img(thumbData, thumbnail->Size.X, thumbnail->Size.Y, thumbnail->Size.X * scaleFactor, thumbnail->Size.Y * scaleFactor);
-					thumbnail->Size.X *= scaleFactor;
-					thumbnail->Size.Y *= scaleFactor;
-					free(thumbData);
+					if(thumbnail->Size.Y > (Size.Y-25))
+					{
+						scaleFactorY = ((float)(Size.Y-25))/((float)thumbnail->Size.Y);
+					}
+					if(thumbnail->Size.X > Size.X-3)
+					{
+						scaleFactorX = ((float)Size.X-3)/((float)thumbnail->Size.X);
+					}
+					if(scaleFactorY < 1.0f || scaleFactorX < 1.0f)
+					{
+						float scaleFactor = scaleFactorY < scaleFactorX ? scaleFactorY : scaleFactorX;
+						pixel * thumbData = thumbnail->Data;
+						thumbnail->Data = Graphics::resample_img(thumbData, thumbnail->Size.X, thumbnail->Size.Y, thumbnail->Size.X * scaleFactor, thumbnail->Size.Y * scaleFactor);
+						thumbnail->Size.X *= scaleFactor;
+						thumbnail->Size.Y *= scaleFactor;
+						free(thumbData);
+					}
 				}
 			}
 		}

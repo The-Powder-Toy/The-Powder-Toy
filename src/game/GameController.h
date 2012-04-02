@@ -12,6 +12,7 @@
 #include "ssave/SSaveController.h"
 #include "tags/TagsController.h"
 #include "console/ConsoleController.h"
+#include "stamps/StampsController.h"
 //#include "cat/TPTScriptInterface.h"
 #include "cat/LuaScriptInterface.h"
 #include "Menu.h"
@@ -34,6 +35,7 @@ private:
 	SSaveController * ssave;
 	ConsoleController * console;
 	TagsController * tagsWindow;
+	StampsController * stamps;
 	CommandInterface * commandInterface;
 public:
 	class LoginCallback;
@@ -41,6 +43,7 @@ public:
 	class RenderCallback;
 	class SSaveCallback;
 	class TagsCallback;
+	class StampsCallback;
 	GameController();
 	~GameController();
 	GameView * GetView();
@@ -68,6 +71,9 @@ public:
 	void OpenDisplayOptions();
 	void OpenRenderOptions();
 	void OpenSaveWindow();
+	void OpenStamps();
+	void PlaceStamp(ui::Point position);
+	void PlaceClipboard(ui::Point position);
 	void ClearSim();
 	void ReloadSim();
 	void Vote(int direction);

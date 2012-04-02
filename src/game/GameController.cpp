@@ -86,6 +86,20 @@ public:
 	}
 };
 
+class GameController::StampsCallback: public ControllerCallback
+{
+	GameController * cc;
+public:
+	StampsCallback(GameController * cc_) { cc = cc_; }
+	virtual void ControllerExit()
+	{
+		if(cc->stamps->GetStamp())
+		{
+			cc->gameModel->SetStamp(cc->stamps->GetStamp());
+		}
+	}
+};
+
 GameController::GameController():
 		search(NULL),
 		renderOptions(NULL),
@@ -138,6 +152,24 @@ GameController::~GameController()
 GameView * GameController::GetView()
 {
 	return gameView;
+}
+
+void GameController::PlaceStamp(ui::Point position)
+{
+	if(gameModel->GetStamp())
+	{
+		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetStamp()->data, gameModel->GetStamp()->dataLength);
+		gameModel->SetPaused(gameModel->GetPaused());
+	}
+}
+
+void GameController::PlaceClipboard(ui::Point position)
+{
+	if(gameModel->GetClipboard())
+	{
+		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetClipboard()->data, gameModel->GetClipboard()->dataLength);
+		gameModel->SetPaused(gameModel->GetPaused());
+	}
 }
 
 void GameController::AdjustBrushSize(int direction)
@@ -393,6 +425,12 @@ void GameController::OpenTags()
 	{
 		new ErrorMessage("Error", "You need to login to edit tags.");
 	}
+}
+
+void GameController::OpenStamps()
+{
+	stamps = new StampsController(new StampsCallback(this));
+	ui::Engine::Ref().ShowWindow(stamps->GetView());
 }
 
 void GameController::OpenDisplayOptions()

@@ -51,6 +51,8 @@
 
 #define LOCAL_SAVE_DIR "Saves"
 
+#define STAMPS_DIR "stamps"
+
 #define APPDATA_SUBDIR "\\HardWIRED"
 
 //Number of unique thumbnails to have in cache at one time

@@ -18,7 +18,8 @@ GameModel::GameModel():
 	currentUser(0, ""),
 	currentSave(NULL),
 	colourSelector(false),
-	clipboardData(NULL)
+	clipboard(NULL),
+	stamp(NULL)
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
@@ -158,6 +159,10 @@ GameModel::~GameModel()
 	}
 	delete sim;
 	delete ren;
+	if(clipboard)
+		delete clipboard;
+	if(stamp)
+		delete stamp;
 	if(activeTools)
 		delete activeTools;
 }
@@ -414,23 +419,42 @@ void GameModel::ClearSimulation()
 
 void GameModel::AddStamp(unsigned char * saveData, int saveSize)
 {
-	//Do nothing
-
-	//die alone
+	Save * tempSave = new Save(0, 0, 0, 0, "", "");
+	tempSave->SetData(saveData, saveSize);
+	Client::Ref().AddStamp(tempSave);
+	delete tempSave;
 }
 
 void GameModel::SetClipboard(unsigned char * saveData, int saveSize)
 {
-	if(clipboardData)
-		free(clipboardData);
-	clipboardData = saveData;
-	clipboardSize = saveSize;
+	if(clipboard)
+		delete clipboard;
+	clipboard = new Save(0, 0, 0, 0, "", "");
+	clipboard->SetData(saveData, saveSize);
+	notifyClipboardChanged();
 }
 
-unsigned char * GameModel::GetClipboard(int & saveSize)
+Save * GameModel::GetClipboard()
 {
-	saveSize = clipboardSize;
-	return clipboardData;
+	return clipboard;
+}
+
+Save * GameModel::GetStamp()
+{
+	return stamp;
+}
+
+void GameModel::SetStamp(Save * newStamp)
+{
+	if(stamp)
+		delete stamp;
+	if(newStamp)
+	{
+		stamp = new Save(*newStamp);
+	}
+	else
+		stamp = NULL;
+	notifyStampChanged();
 }
 
 void GameModel::notifyColourSelectorColourChanged()
@@ -534,6 +558,14 @@ void GameModel::notifyZoomChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyZoomChanged(this);
+	}
+}
+
+void GameModel::notifyStampChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyStampChanged(this);
 	}
 }
 

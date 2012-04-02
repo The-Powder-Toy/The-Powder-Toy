@@ -3,7 +3,15 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iomanip>
 #include <time.h>
+
+#ifdef WIN32
+#include <direct.h>
+#else
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 
 #include "Config.h"
 #include "Client.h"
@@ -76,6 +84,21 @@ Client::Client():
 	{
 		http_init(NULL);
 	}
+
+	//Read stamps library
+	std::ifstream stampsLib;
+	stampsLib.open(STAMPS_DIR PATH_SEP "stamps.def", ios::binary);
+	while(true)
+	{
+		char data[11];
+		memset(data, 0, 11);
+		if(stampsLib.readsome(data, 10)!=10)
+			break;
+		if(!data[0])
+			break;
+		stampIDs.push_back(data);
+	}
+	stampsLib.close();
 }
 
 Client::~Client()
@@ -167,6 +190,95 @@ RequestStatus Client::UploadSave(Save * save)
 		free(data);
 	}
 	return RequestFailure;
+}
+
+Save * Client::GetStamp(string stampID)
+{
+	std::ifstream stampFile;
+	stampFile.open(string(STAMPS_DIR PATH_SEP + stampID + ".stm").c_str(), ios::binary);
+	if(stampFile.is_open())
+	{
+		stampFile.seekg(0, ios::end);
+		size_t fileSize = stampFile.tellg();
+		stampFile.seekg(0);
+
+		unsigned char * tempData = (unsigned char *)malloc(fileSize);
+		stampFile.read((char *)tempData, fileSize);
+		stampFile.close();
+
+
+		Save * tempSave = new Save(0, 0, 0, 0, "", "");
+		tempSave->SetData(tempData, fileSize);
+		return tempSave;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+void Client::DeleteStamp(string stampID)
+{
+	return;
+}
+
+string Client::AddStamp(Save * saveData)
+{
+	unsigned t=(unsigned)time(NULL);
+	if (lastStampTime!=t)
+	{
+		lastStampTime=t;
+		lastStampName=0;
+	}
+	else
+		lastStampName++;
+	std::stringstream saveID;
+	//sprintf(saveID, "%08x%02x", lastStampTime, lastStampName);
+	saveID
+	<< std::setw(8) << std::setfill('0') << std::hex << lastStampTime
+	<< std::setw(2) << std::setfill('0') << std::hex << lastStampName;
+
+#ifdef WIN32
+	_mkdir(STAMPS_DIR);
+#else
+	mkdir(STAMPS_DIR, 0755);
+#endif
+
+	std::ofstream stampStream;
+	stampStream.open(string(STAMPS_DIR PATH_SEP + saveID.str()+".stm").c_str(), ios::binary);
+	stampStream.write((const char *)saveData->data, saveData->dataLength);
+	stampStream.close();
+
+	stampIDs.push_back(saveID.str());
+
+	updateStamps();
+
+	return saveID.str();
+}
+
+void Client::updateStamps()
+{
+
+#ifdef WIN32
+	_mkdir(STAMPS_DIR);
+#else
+	mkdir(STAMPS_DIR, 0755);
+#endif
+
+	std::ofstream stampsStream;
+	stampsStream.open(string(STAMPS_DIR PATH_SEP "stamps.def").c_str(), ios::binary);
+	for(int i = 0; i < stampIDs.size(); i++)
+	{
+		stampsStream.write(stampIDs[i].c_str(), 10);
+	}
+	stampsStream.write("\0", 1);
+	stampsStream.close();
+	return;
+}
+
+vector<string> Client::GetStamps()
+{
+	return stampIDs;
 }
 
 RequestStatus Client::ExecVote(int saveID, int direction)
