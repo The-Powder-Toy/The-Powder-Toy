@@ -102,7 +102,10 @@ scripts - enable scripts to be run from old console
 History:
 
 ---------------------------------------------------------------------------
-* Version 74
+* Version 74.1
+      o Icon for Force Elements
+	  o Allow DEST to be used with clone elements.
+* Version 74.0
       o Fixes for Triangle brush and minor electron bug
       o Debug lines for WiFi, Portal and Soap
       o Fusion for H2 at high temperature+high pressure
