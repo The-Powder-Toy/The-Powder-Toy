@@ -717,6 +717,10 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 
 void GameView::OnTick(float dt)
 {
+	if(selectMode==PlaceStamp && !stampThumb)
+			selectMode = SelectNone;
+	if(selectMode==PlaceClipboard&& !clipboardThumb)
+			selectMode = SelectNone;
 	if(zoomEnabled && !zoomCursorFixed)
 		c->SetZoomPosition(currentMouse);
 	if(drawMode == DrawPoints)

@@ -97,6 +97,8 @@ public:
 		{
 			cc->gameModel->SetStamp(cc->stamps->GetStamp());
 		}
+		else
+			cc->gameModel->SetStamp(NULL);
 	}
 };
 

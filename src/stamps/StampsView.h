@@ -29,6 +29,8 @@ public:
 	void AttachController(StampsController * c_) { c = c_; };
 	void NotifyPageChanged(StampsModel * sender);
 	void NotifyStampsListChanged(StampsModel * sender);
+	virtual void OnMouseWheel(int x, int y, int d);
+	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual ~StampsView();
 };
 

@@ -37,6 +37,9 @@ public:
 	virtual ~SearchView();
 	void AttachController(SearchController * _c) { c = _c; }
 	virtual void OnTick(float dt);
+	virtual void OnMouseWheel(int x, int y, int d);
+	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+
 };
 
 #endif // SEARCHVIEW_H

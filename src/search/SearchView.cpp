@@ -241,3 +241,19 @@ void SearchView::OnTick(float dt)
 {
 	c->Update();
 }
+
+void SearchView::OnMouseWheel(int x, int y, int d)
+{
+	if(!d)
+		return;
+	if(d<0)
+		c->NextPage();
+	else
+		c->PrevPage();
+}
+void SearchView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	if(key==KEY_ESCAPE)
+		c->Exit();
+}
+
