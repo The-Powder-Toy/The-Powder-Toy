@@ -6,6 +6,7 @@
 #include "Global.h"
 #include "Engine.h"
 #include "client/Client.h"
+#include "simulation/SaveRenderer.h"
 
 namespace ui {
 
@@ -61,7 +62,7 @@ void SaveButton::Tick(float dt)
 		}
 		else
 		{
-			thumbnail = new Thumbnail(save);
+			thumbnail = SaveRenderer::Ref().Render(save->GetData(), save->GetDataLength());
 		}
 		if(thumbnail && thumbnail->Data)
 		{

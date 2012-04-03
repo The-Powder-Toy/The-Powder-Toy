@@ -9,6 +9,7 @@
 #include "interface/Keys.h"
 #include "interface/Slider.h"
 #include "search/Thumbnail.h"
+#include "simulation/SaveRenderer.h"
 
 GameView::GameView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE)),
@@ -747,7 +748,7 @@ void GameView::NotifyClipboardChanged(GameModel * sender)
 		delete clipboardThumb;
 	if(sender->GetClipboard())
 	{
-		clipboardThumb = new Thumbnail(sender->GetClipboard());//new Thumbnail(0, 0, (pixel*)malloc((256*256)*PIXELSIZE), ui::Point(256, 256));
+		clipboardThumb = SaveRenderer::Ref().Render(sender->GetClipboard()->GetData(), sender->GetClipboard()->GetDataLength());
 	}
 	else
 		clipboardThumb = NULL;
@@ -760,7 +761,7 @@ void GameView::NotifyStampChanged(GameModel * sender)
 		delete stampThumb;
 	if(sender->GetStamp())
 	{
-		stampThumb = new Thumbnail(sender->GetStamp());//new Thumbnail(0, 0, (pixel*)malloc((256*256)*PIXELSIZE), ui::Point(256, 256));
+		stampThumb = SaveRenderer::Ref().Render(sender->GetStamp()->GetData(), sender->GetStamp()->GetDataLength());
 	}
 	else
 		stampThumb = NULL;

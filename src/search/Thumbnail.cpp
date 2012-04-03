@@ -6,9 +6,6 @@
  */
 
 #include "Thumbnail.h"
-#include "simulation/Simulation.h"
-#include "simulation/SaveLoader.h"
-#include "Renderer.h"
 
 Thumbnail::Thumbnail(const Thumbnail & thumb):
 	ID(thumb.ID),
@@ -34,42 +31,15 @@ Thumbnail::Thumbnail(int _id, int _datestamp, pixel * _data, ui::Point _size):
 	Data(_data),
 	Size(_size)
 {
-}
-
-Thumbnail::Thumbnail(Save * save):
-	ID(0),
-	Datestamp(0),
-	Data(NULL),
-	Size(XRES+BARSIZE, YRES+MENUSIZE)
-{
-	Graphics * g = new Graphics();
-	Simulation * sim = new Simulation();
-	Renderer * ren = new Renderer(g, sim);
-	sim->Load(save->GetData(), save->GetDataLength());
-	ren->render_parts();
-
-	int width, height;
-
-	pixel * dst;
-	pixel * src = g->vid;
-
-	if(SaveLoader::Info(save->GetData(), save->GetDataLength(), width, height))
-		goto fail;
-
-	dst = Data = (pixel *)malloc(PIXELSIZE * ((width*CELL)*(height*CELL)));
-
-	for(int i = 0; i < height*CELL; i++)
+	if(_data)
 	{
-		memcpy(dst, src, (width*CELL)*PIXELSIZE);
-		dst+=(width*CELL);///PIXELSIZE;
-		src+=XRES+BARSIZE;
+		Data = (pixel *)malloc((_size.X*_size.Y) * PIXELSIZE);
+		memcpy(Data, _data, (_size.X*_size.Y) * PIXELSIZE);
 	}
-
-	Size = ui::Point(width*CELL, height*CELL);
-fail:
-	delete ren;
-	delete sim;
-	delete g;
+	else
+	{
+		Data = NULL;
+	}
 }
 
 Thumbnail::~Thumbnail()

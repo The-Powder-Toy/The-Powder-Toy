@@ -530,10 +530,13 @@ Thumbnail * Client::GetPreview(int saveID, int saveDate)
 		if(thumbData)
 		{
 			return new Thumbnail(saveID, saveDate, thumbData, ui::Point(imgw, imgh));
+			free(thumbData);
 		}
 		else
 		{
-			return new Thumbnail(saveID, saveDate, (pixel *)malloc((128*128) * PIXELSIZE), ui::Point(128, 128));
+			thumbData = (pixel *)malloc((128*128) * PIXELSIZE);
+			return new Thumbnail(saveID, saveDate, thumbData, ui::Point(128, 128));
+			free(thumbData);
 		}
 	}
 	else
@@ -747,10 +750,13 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 					if(thumbData)
 					{
 						thumbnailCache[thumbnailCacheNextID] = new Thumbnail(saveID, saveDate, thumbData, ui::Point(imgw, imgh));
+						free(thumbData);
 					}
 					else
 					{
-						thumbnailCache[thumbnailCacheNextID] = new Thumbnail(saveID, saveDate, (pixel *)malloc((128*128) * PIXELSIZE), ui::Point(128, 128));
+						thumbData = (pixel *)malloc((128*128) * PIXELSIZE);
+						thumbnailCache[thumbnailCacheNextID] = new Thumbnail(saveID, saveDate, thumbData, ui::Point(128, 128));
+						free(thumbData);
 					}
 					return thumbnailCache[thumbnailCacheNextID++];
 				}
@@ -765,7 +771,9 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 					{
 						delete thumbnailCache[thumbnailCacheNextID];
 					}
-					thumbnailCache[thumbnailCacheNextID] = new Thumbnail(saveID, saveDate, (pixel *)malloc((128*128) * PIXELSIZE), ui::Point(128, 128));
+					thumbData = (pixel *)malloc((128*128) * PIXELSIZE);
+					thumbnailCache[thumbnailCacheNextID] = new Thumbnail(saveID, saveDate, thumbData, ui::Point(128, 128));
+					free(thumbData);
 					return thumbnailCache[thumbnailCacheNextID++];
 				}
 			}
