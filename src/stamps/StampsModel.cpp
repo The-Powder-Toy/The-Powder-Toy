@@ -11,7 +11,8 @@
 #include "StampsModelException.h"
 
 StampsModel::StampsModel():
-	stamp(NULL)
+	stamp(NULL),
+	currentPage(1)
 {
 	// TODO Auto-generated constructor stub
 	stampIDs = Client::Ref().GetStamps();
@@ -27,6 +28,7 @@ void StampsModel::AddObserver(StampsView * observer)
 {
 	observers.push_back(observer);
 	observer->NotifyStampsListChanged(this);
+	observer->NotifyPageChanged(this);
 }
 
 void StampsModel::notifyStampsListChanged()
@@ -61,6 +63,8 @@ void StampsModel::UpdateStampsList(int pageNumber)
 {
 	std::vector<Save*> tempStampsList = stampsList;
 	stampsList.clear();
+	currentPage = pageNumber;
+	notifyPageChanged();
 	/*notifyStampsListChanged();
 	for(int i = 0; i < tempStampsList.size(); i++)
 	{

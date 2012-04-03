@@ -747,7 +747,7 @@ void GameView::NotifyClipboardChanged(GameModel * sender)
 		delete clipboardThumb;
 	if(sender->GetClipboard())
 	{
-		clipboardThumb = new Thumbnail(0, 0, (pixel*)malloc((256*256)*PIXELSIZE), ui::Point(256, 256));
+		clipboardThumb = new Thumbnail(sender->GetClipboard());//new Thumbnail(0, 0, (pixel*)malloc((256*256)*PIXELSIZE), ui::Point(256, 256));
 	}
 	else
 		clipboardThumb = NULL;
@@ -760,7 +760,7 @@ void GameView::NotifyStampChanged(GameModel * sender)
 		delete stampThumb;
 	if(sender->GetStamp())
 	{
-		stampThumb = new Thumbnail(0, 0, (pixel*)malloc((256*256)*PIXELSIZE), ui::Point(256, 256));
+		stampThumb = new Thumbnail(sender->GetStamp());//new Thumbnail(0, 0, (pixel*)malloc((256*256)*PIXELSIZE), ui::Point(256, 256));
 	}
 	else
 		stampThumb = NULL;

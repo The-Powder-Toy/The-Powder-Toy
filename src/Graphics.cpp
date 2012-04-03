@@ -2388,25 +2388,29 @@ void Graphics::AttachSDLSurface(SDL_Surface * surface)
 
 void Graphics::Blit()
 {
-	pixel * dst;
-	pixel * src = vid;
-	int j, x = 0, y = 0, w = XRES+BARSIZE, h = YRES+MENUSIZE, pitch = XRES+BARSIZE;
-	if (SDL_MUSTLOCK(sdl_scrn))
-		if (SDL_LockSurface(sdl_scrn)<0)
-			return;
-	dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
-	for (j=0; j<h; j++)
+	if(sdl_scrn)
 	{
-		memcpy(dst, src, w*PIXELSIZE);
-		dst+=sdl_scrn->pitch/PIXELSIZE;
-		src+=pitch;
+		pixel * dst;
+		pixel * src = vid;
+		int j, x = 0, y = 0, w = XRES+BARSIZE, h = YRES+MENUSIZE, pitch = XRES+BARSIZE;
+		if (SDL_MUSTLOCK(sdl_scrn))
+			if (SDL_LockSurface(sdl_scrn)<0)
+				return;
+		dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
+		for (j=0; j<h; j++)
+		{
+			memcpy(dst, src, w*PIXELSIZE);
+			dst+=sdl_scrn->pitch/PIXELSIZE;
+			src+=pitch;
+		}
+		if (SDL_MUSTLOCK(sdl_scrn))
+			SDL_UnlockSurface(sdl_scrn);
+		SDL_UpdateRect(sdl_scrn,0,0,0,0);
 	}
-	if (SDL_MUSTLOCK(sdl_scrn))
-		SDL_UnlockSurface(sdl_scrn);
-	SDL_UpdateRect(sdl_scrn,0,0,0,0);
 }
 
-Graphics::Graphics()
+Graphics::Graphics():
+		sdl_scrn(NULL)
 {
 	vid = (pixel *)malloc(PIXELSIZE * ((XRES+BARSIZE) * (YRES+MENUSIZE)));
 }

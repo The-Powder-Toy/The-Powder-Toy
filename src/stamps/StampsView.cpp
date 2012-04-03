@@ -87,13 +87,12 @@ void StampsView::NotifyStampsListChanged(StampsModel * sender)
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
 	vector<Save*> saves = sender->GetStampsList();
-	Client::Ref().ClearThumbnailRequests();
 	for(i = 0; i < stampButtons.size(); i++)
 	{
 		RemoveComponent(stampButtons[i]);
 		delete stampButtons[i];
 	}
-
+	stampButtons.clear();
 	buttonXOffset = 0;
 	buttonYOffset = 50;
 	buttonAreaWidth = Size.X;

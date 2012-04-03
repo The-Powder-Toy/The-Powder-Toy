@@ -10,7 +10,7 @@
 
 //!TODO: enum for LoadSave return
 
-int SaveLoader::LoadSave(unsigned char * data, int dataLength, Simulation * sim, bool replace, int x, int y)
+int SaveLoader::Info(unsigned char * data, int dataLength, int & width, int & height)
 {
 	unsigned char * saveData = data;
 	if (dataLength<16)
@@ -19,34 +19,65 @@ int SaveLoader::LoadSave(unsigned char * data, int dataLength, Simulation * sim,
 	}
 	if(saveData[0] == 'O' && saveData[1] == 'P' && saveData[2] == 'S')
 	{
-		return OPSLoadSave(data, dataLength, sim);
+		return OPSInfo(data, dataLength, width, height);
 	}
 	else if((saveData[0]==0x66 && saveData[1]==0x75 && saveData[2]==0x43) || (saveData[0]==0x50 && saveData[1]==0x53 && saveData[2]==0x76))
 	{
-		return PSVLoadSave(data, dataLength, sim, replace, x, y);
+		return PSVInfo(data, dataLength, width, height);
 	}
 	return 1;
 }
 
-unsigned char * SaveLoader::BuildSave(int & dataLength, Simulation * sim, int orig_x0, int orig_y0, int orig_w, int orig_h)
+int SaveLoader::Load(unsigned char * data, int dataLength, Simulation * sim, bool replace, int x, int y)
 {
-	unsigned char * temp = OPSBuildSave(dataLength, sim, orig_x0, orig_y0, orig_w, orig_h);
+	unsigned char * saveData = data;
+	if (dataLength<16)
+	{
+		return 1;
+	}
+	if(saveData[0] == 'O' && saveData[1] == 'P' && saveData[2] == 'S')
+	{
+		return OPSLoad(data, dataLength, sim);
+	}
+	else if((saveData[0]==0x66 && saveData[1]==0x75 && saveData[2]==0x43) || (saveData[0]==0x50 && saveData[1]==0x53 && saveData[2]==0x76))
+	{
+		return PSVLoad(data, dataLength, sim, replace, x, y);
+	}
+	return 1;
+}
+
+unsigned char * SaveLoader::Build(int & dataLength, Simulation * sim, int orig_x0, int orig_y0, int orig_w, int orig_h)
+{
+	unsigned char * temp = OPSBuild(dataLength, sim, orig_x0, orig_y0, orig_w, orig_h);
 	if(!temp)
-		temp = PSVBuildSave(dataLength, sim, orig_x0, orig_y0, orig_w, orig_h);
+		temp = PSVBuild(dataLength, sim, orig_x0, orig_y0, orig_w, orig_h);
 	return temp;
 }
 
-int SaveLoader::OPSLoadSave(unsigned char * data, int dataLength, Simulation * sim)
+int SaveLoader::OPSInfo(unsigned char * data, int dataLength, int & width, int & height)
+{
+	return 2;
+}
+
+
+int SaveLoader::OPSLoad(unsigned char * data, int dataLength, Simulation * sim)
+{
+	return 2;
+}
+
+unsigned char * SaveLoader::OPSBuild(int & dataLength, Simulation * sim, int orig_x0, int orig_y0, int orig_w, int orig_h)
 {
 	return 0;
 }
 
-unsigned char * SaveLoader::OPSBuildSave(int & dataLength, Simulation * sim, int orig_x0, int orig_y0, int orig_w, int orig_h)
+int SaveLoader::PSVInfo(unsigned char * data, int dataLength, int & width, int & height)
 {
+	width = data[6];
+	height = data[7];
 	return 0;
 }
 
-int SaveLoader::PSVLoadSave(unsigned char * data, int dataLength, Simulation * sim, bool replace, int x0, int y0)
+int SaveLoader::PSVLoad(unsigned char * data, int dataLength, Simulation * sim, bool replace, int x0, int y0)
 {
 	unsigned char * d = NULL, * c = data;
 	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0, tempGrav = 0;
@@ -640,7 +671,7 @@ corrupt:
 	return 1;
 }
 
-unsigned char * SaveLoader::PSVBuildSave(int & dataLength, Simulation * sim, int orig_x0, int orig_y0, int orig_w, int orig_h)
+unsigned char * SaveLoader::PSVBuild(int & dataLength, Simulation * sim, int orig_x0, int orig_y0, int orig_w, int orig_h)
 {
 	unsigned char *d = (unsigned char*)calloc(1,3*(XRES/CELL)*(YRES/CELL)+(XRES*YRES)*15+MAXSIGNS*262), *c;
 	int i,j,x,y,p=0,*m=(int*)calloc(XRES*YRES, sizeof(int));

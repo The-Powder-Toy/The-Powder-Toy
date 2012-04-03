@@ -10,22 +10,22 @@
 
 int Simulation::Load(unsigned char * data, int dataLength)
 {
-	return SaveLoader::LoadSave(data, dataLength, this, true, 0, 0);
+	return SaveLoader::Load(data, dataLength, this, true, 0, 0);
 }
 
 int Simulation::Load(int x, int y, unsigned char * data, int dataLength)
 {
-	return SaveLoader::LoadSave(data, dataLength, this, false, x, y);
+	return SaveLoader::Load(data, dataLength, this, false, x, y);
 }
 
 unsigned char * Simulation::Save(int & dataLength)
 {
-	return SaveLoader::BuildSave(dataLength, this, 0, 0, XRES, YRES);
+	return SaveLoader::Build(dataLength, this, 0, 0, XRES, YRES);
 }
 
 unsigned char * Simulation::Save(int x1, int y1, int x2, int y2, int & dataLength)
 {
-	return SaveLoader::BuildSave(dataLength, this, x1, y1, x2-x1, y2-y1);
+	return SaveLoader::Build(dataLength, this, x1, y1, x2-x1, y2-y1);
 }
 
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
