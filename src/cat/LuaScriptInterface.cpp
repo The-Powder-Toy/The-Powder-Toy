@@ -13,7 +13,8 @@
 #include "LuaScriptHelper.h"
 
 LuaScriptInterface::LuaScriptInterface(GameModel * m):
-	CommandInterface(m)
+	CommandInterface(m),
+	currentCommand(false)
 {
 	int i = 0, j;
 	char tmpname[12];
@@ -76,6 +77,9 @@ LuaScriptInterface::LuaScriptInterface(GameModel * m):
 		{"element_func",&luatpt_element_func},
 		{NULL,NULL}
 	};
+
+	luacon_currentCommand = &currentCommand;
+	luacon_lastError = &lastError;
 
 	luacon_model = m;
 	luacon_sim = m->GetSimulation();
@@ -246,7 +250,7 @@ bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, boo
 	return luacon_keyevent(key, /*TODO: sdl_mod*/0, LUACON_KUP);
 }
 
-void LuaScriptInterface::OnTick(float dt)
+void LuaScriptInterface::OnTick()
 {
 	if(luacon_mousedown)
 		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS);
@@ -257,11 +261,13 @@ int LuaScriptInterface::Command(std::string command)
 {
 	int ret;
 	lastError = "";
+	currentCommand = true;
 	if((ret = luaL_dostring(l, command.c_str())))
 	{
 		lastError = luacon_geterror();
-		Log(LogError, lastError);
+		//Log(LogError, lastError);
 	}
+	currentCommand = false;
 	return ret;
 }
 
@@ -977,7 +983,10 @@ int luatpt_setconsole(lua_State* l)
 
 int luatpt_log(lua_State* l)
 {
-	luacon_ci->Log(CommandInterface::LogNotice, luaL_optstring(l, 1, ""));
+	if((*luacon_currentCommand) && !(*luacon_lastError).length())
+		(*luacon_lastError) = luaL_optstring(l, 1, "");
+	else
+		luacon_ci->Log(CommandInterface::LogNotice, luaL_optstring(l, 1, ""));
 	return 0;
 }
 

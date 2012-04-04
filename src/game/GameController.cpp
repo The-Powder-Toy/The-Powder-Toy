@@ -174,9 +174,13 @@ void GameController::PlaceClipboard(ui::Point position)
 	}
 }
 
-void GameController::AdjustBrushSize(int direction)
+void GameController::AdjustBrushSize(int direction, bool logarithmic)
 {
-	ui::Point newSize = gameModel->GetBrush()->GetRadius() + ui::Point(direction, direction);
+	ui::Point newSize(0, 0);
+	if(logarithmic)
+		newSize = gameModel->GetBrush()->GetRadius() + ui::Point(direction * ((gameModel->GetBrush()->GetRadius().X/10)>0?gameModel->GetBrush()->GetRadius().X/10:1), direction * ((gameModel->GetBrush()->GetRadius().Y/10)>0?gameModel->GetBrush()->GetRadius().Y/10:1));
+	else
+		newSize = gameModel->GetBrush()->GetRadius() + ui::Point(direction, direction);
 	if(newSize.X<0)
 			newSize.X = 0;
 	if(newSize.Y<0)
@@ -184,9 +188,13 @@ void GameController::AdjustBrushSize(int direction)
 	gameModel->GetBrush()->SetRadius(newSize);
 }
 
-void GameController::AdjustZoomSize(int direction)
+void GameController::AdjustZoomSize(int direction, bool logarithmic)
 {
-	int newSize = gameModel->GetZoomSize()+direction;
+	int newSize;
+	if(logarithmic)
+		newSize = gameModel->GetZoomSize()+direction;
+	else
+		newSize = gameModel->GetZoomSize()+(((gameModel->GetZoomSize()/10)>0?(gameModel->GetZoomSize()/10):1)*direction);
 	if(newSize<5)
 			newSize = 5;
 	if(newSize>64)
@@ -333,9 +341,13 @@ bool GameController::KeyRelease(int key, Uint16 character, bool shift, bool ctrl
 	return commandInterface->OnKeyRelease(key, character, shift, ctrl, alt);
 }
 
+void GameController::Tick()
+{
+	commandInterface->OnTick();
+}
+
 void GameController::Update()
 {
-	commandInterface->OnTick(1.0f);
 	gameModel->GetSimulation()->update_particles();
 	if(renderOptions && renderOptions->HasExited)
 	{

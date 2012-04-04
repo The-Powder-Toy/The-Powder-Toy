@@ -54,11 +54,12 @@ public:
 	bool MouseWheel(int x, int y, int d);
 	bool KeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	bool KeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	void Tick();
 
 	void SetZoomEnabled(bool zoomEnable);
 	void SetZoomPosition(ui::Point position);
-	void AdjustBrushSize(int direction);
-	void AdjustZoomSize(int direction);
+	void AdjustBrushSize(int direction, bool logarithmic = false);
+	void AdjustZoomSize(int direction, bool logarithmic = false);
 	void DrawPoints(int toolSelection, queue<ui::Point*> & pointQueue);
 	void DrawRect(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);

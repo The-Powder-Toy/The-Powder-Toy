@@ -101,6 +101,7 @@ public:
 	virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 
 	//Top-level handers, for Lua interface
+	virtual void DoDraw();
 	virtual void DoMouseMove(int x, int y, int dx, int dy);
 	virtual void DoMouseDown(int x, int y, unsigned button);
 	virtual void DoMouseUp(int x, int y, unsigned button);

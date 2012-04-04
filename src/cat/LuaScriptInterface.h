@@ -36,6 +36,7 @@ extern "C"
 class LuaScriptInterface: public CommandInterface {
 	int luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_mousebutton;
 	bool luacon_mousedown;
+	bool currentCommand;
 public:
 	lua_State *l;
 	LuaScriptInterface(GameModel * m);
@@ -45,7 +46,7 @@ public:
 	virtual bool OnMouseWheel(int x, int y, int d);
 	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual void OnTick(float dt);
+	virtual void OnTick();
 	virtual int Command(std::string command);
 	virtual std::string FormatCommand(std::string command);
 	virtual ~LuaScriptInterface();

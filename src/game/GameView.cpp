@@ -693,6 +693,12 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		selectPoint1 = selectPoint2;
 		c->OpenStamps();
 		break;
+	case ']':
+		c->AdjustBrushSize(1, true);
+		break;
+	case '[':
+		c->AdjustBrushSize(-1, true);
+		break;
 	}
 }
 
@@ -739,6 +745,8 @@ void GameView::OnTick(float dt)
 		c->DrawFill(toolIndex, currentMouse);
 	}
 	c->Update();
+	if(lastLogEntry > -0.1f)
+		lastLogEntry -= 0.16*dt;
 }
 
 void GameView::DoMouseMove(int x, int y, int dx, int dy)
@@ -777,6 +785,13 @@ void GameView::DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 		Window::DoKeyRelease(key, character, shift, ctrl, alt);
 }
 
+void GameView::DoDraw()
+{
+	Window::DoDraw();
+	c->Tick();
+}
+
+
 void GameView::NotifyZoomChanged(GameModel * sender)
 {
 	zoomEnabled = sender->GetZoomEnabled();
@@ -786,7 +801,7 @@ void GameView::NotifyLogChanged(GameModel * sender, string entry)
 {
 	logEntries.push_front(entry);
 	lastLogEntry = 100.0f;
-	if(logEntries.size()>10)
+	if(logEntries.size()>20)
 		logEntries.pop_back();
 }
 
@@ -900,15 +915,18 @@ void GameView::OnDraw()
 
 		int startX = 20;
 		int startY = YRES-20;
-		if(lastLogEntry>0.1 && logEntries.size())
+		int startAlpha;
+		if(lastLogEntry>0.1f && logEntries.size())
 		{
+			startAlpha = 2.55f*lastLogEntry;
 			deque<string>::iterator iter;
-			for(iter = logEntries.begin(); iter != logEntries.end(); iter++)
+			for(iter = logEntries.begin(); iter != logEntries.end() && startAlpha>0; iter++)
 			{
 				string message = (*iter);
-				startY -= 14;
+				startY -= 13;
 				g->fillrect(startX-3, startY-3, Graphics::textwidth((char*)message.c_str())+6, 14, 0, 0, 0, 100);
-				g->drawtext(startX, startY, message.c_str(), 255, 255, 255, 255);
+				g->drawtext(startX, startY, message.c_str(), 255, 255, 255, startAlpha);
+				startAlpha-=14;
 			}
 		}
 	}

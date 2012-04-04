@@ -13,6 +13,9 @@ Simulation * luacon_sim;
 LuaScriptInterface * luacon_ci;
 Graphics * luacon_g;
 
+bool *luacon_currentCommand;
+string *luacon_lastError;
+
 int *lua_el_func, *lua_el_mode;
 
 int getPartIndex_curIdx;
