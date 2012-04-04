@@ -84,6 +84,12 @@ LuaScriptInterface::LuaScriptInterface(GameModel * m):
 
 	l = lua_open();
 	luaL_openlibs(l);
+
+	//Replace print function with our screen logging thingy
+	lua_pushcfunction(l, luatpt_log);
+	lua_setglobal(l, "print");
+
+	//Register all tpt functions
 	luaL_register(l, "tpt", tptluaapi);
 
 	tptProperties = lua_gettop(l);
@@ -205,9 +211,46 @@ tpt.partsdata = nil");
 
 }
 
-void LuaScriptInterface::Tick()
+bool LuaScriptInterface::OnMouseMove(int x, int y, int dx, int dy)
 {
+	luacon_mousex = x;
+	luacon_mousey = y;
+	return true;
+}
 
+bool LuaScriptInterface::OnMouseDown(int x, int y, unsigned button)
+{
+	luacon_mousedown = true;
+	luacon_mousebutton = button;
+	return luacon_mouseevent(x, y, button, LUACON_MDOWN);
+}
+
+bool LuaScriptInterface::OnMouseUp(int x, int y, unsigned button)
+{
+	luacon_mousedown = false;
+	return luacon_mouseevent(x, y, button, LUACON_MUP);
+}
+
+bool LuaScriptInterface::OnMouseWheel(int x, int y, int d)
+{
+	return true;
+}
+
+bool LuaScriptInterface::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	return luacon_keyevent(key, /*TODO: sdl_mod*/0, LUACON_KDOWN);
+}
+
+bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	return luacon_keyevent(key, /*TODO: sdl_mod*/0, LUACON_KUP);
+}
+
+void LuaScriptInterface::OnTick(float dt)
+{
+	if(luacon_mousedown)
+		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS);
+	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr);
 }
 
 int LuaScriptInterface::Command(std::string command)
@@ -753,7 +796,7 @@ int luacon_step(int mx, int my, int selectl, int selectr){
 				if (callret)
 				{
 					// failed, TODO: better error reporting
-					printf("%s\n",luacon_geterror());
+					luacon_ci->Log(CommandInterface::LogError, luacon_geterror());//("%s\n",luacon_geterror());
 				}
 			}
 		}

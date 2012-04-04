@@ -303,8 +303,39 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 		gameModel->SetClipboard(saveData, saveSize);
 }
 
+bool GameController::MouseMove(int x, int y, int dx, int dy)
+{
+	return commandInterface->OnMouseMove(x, y, dx, dy);
+}
+
+bool GameController::MouseDown(int x, int y, unsigned button)
+{
+	return commandInterface->OnMouseDown(x, y, button);
+}
+
+bool GameController::MouseUp(int x, int y, unsigned button)
+{
+	return commandInterface->OnMouseUp(x, y, button);
+}
+
+bool GameController::MouseWheel(int x, int y, int d)
+{
+	return commandInterface->OnMouseWheel(x, y, d);
+}
+
+bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	return commandInterface->OnKeyPress(key, character, shift, ctrl, alt);
+}
+
+bool GameController::KeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	return commandInterface->OnKeyRelease(key, character, shift, ctrl, alt);
+}
+
 void GameController::Update()
 {
+	commandInterface->OnTick(1.0f);
 	gameModel->GetSimulation()->update_particles();
 	if(renderOptions && renderOptions->HasExited)
 	{

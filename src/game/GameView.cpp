@@ -741,9 +741,53 @@ void GameView::OnTick(float dt)
 	c->Update();
 }
 
+void GameView::DoMouseMove(int x, int y, int dx, int dy)
+{
+	if(c->MouseMove(x, y, dx, dy))
+		Window::DoMouseMove(x, y, dx, dy);
+}
+
+void GameView::DoMouseDown(int x, int y, unsigned button)
+{
+	if(c->MouseDown(x, y, button))
+		Window::DoMouseDown(x, y, button);
+}
+
+void GameView::DoMouseUp(int x, int y, unsigned button)
+{
+	if(c->MouseUp(x, y, button))
+		Window::DoMouseUp(x, y, button);
+}
+
+void GameView::DoMouseWheel(int x, int y, int d)
+{
+	if(c->MouseWheel(x, y, d))
+		Window::DoMouseWheel(x, y, d);
+}
+
+void GameView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	if(c->KeyPress(key, character, shift, ctrl, alt))
+		Window::DoKeyPress(key, character, shift, ctrl, alt);
+}
+
+void GameView::DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	if(c->KeyRelease(key, character, shift, ctrl, alt))
+		Window::DoKeyRelease(key, character, shift, ctrl, alt);
+}
+
 void GameView::NotifyZoomChanged(GameModel * sender)
 {
 	zoomEnabled = sender->GetZoomEnabled();
+}
+
+void GameView::NotifyLogChanged(GameModel * sender, string entry)
+{
+	logEntries.push_front(entry);
+	lastLogEntry = 100.0f;
+	if(logEntries.size()>10)
+		logEntries.pop_back();
 }
 
 void GameView::NotifyClipboardChanged(GameModel * sender)
@@ -851,6 +895,20 @@ void GameView::OnDraw()
 
 					g->xor_rect(x1, y1, (x2-x1)+1, (y2-y1)+1);
 				}
+			}
+		}
+
+		int startX = 20;
+		int startY = YRES-20;
+		if(lastLogEntry>0.1 && logEntries.size())
+		{
+			deque<string>::iterator iter;
+			for(iter = logEntries.begin(); iter != logEntries.end(); iter++)
+			{
+				string message = (*iter);
+				startY -= 14;
+				g->fillrect(startX-3, startY-3, Graphics::textwidth((char*)message.c_str())+6, 14, 0, 0, 0, 100);
+				g->drawtext(startX, startY, message.c_str(), 255, 255, 255, 255);
 			}
 		}
 	}

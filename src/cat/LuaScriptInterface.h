@@ -34,10 +34,18 @@ extern "C"
 #define LUACON_EL_MODIFIED_MENUS 0x4
 
 class LuaScriptInterface: public CommandInterface {
+	int luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_mousebutton;
+	bool luacon_mousedown;
 public:
 	lua_State *l;
 	LuaScriptInterface(GameModel * m);
-	virtual void Tick();
+	virtual bool OnMouseMove(int x, int y, int dx, int dy);
+	virtual bool OnMouseDown(int x, int y, unsigned button);
+	virtual bool OnMouseUp(int x, int y, unsigned button);
+	virtual bool OnMouseWheel(int x, int y, int d);
+	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void OnTick(float dt);
 	virtual int Command(std::string command);
 	virtual std::string FormatCommand(std::string command);
 	virtual ~LuaScriptInterface();

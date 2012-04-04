@@ -457,6 +457,19 @@ void GameModel::SetStamp(Save * newStamp)
 	notifyStampChanged();
 }
 
+void GameModel::Log(string message)
+{
+	consoleLog.push_front(message);
+	if(consoleLog.size()>100)
+		consoleLog.pop_back();
+	notifyLogChanged(message);
+}
+
+deque<string> GameModel::GetLog()
+{
+	return consoleLog;
+}
+
 void GameModel::notifyColourSelectorColourChanged()
 {
 	for(int i = 0; i < observers.size(); i++)
@@ -574,5 +587,13 @@ void GameModel::notifyClipboardChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyClipboardChanged(this);
+	}
+}
+
+void GameModel::notifyLogChanged(string entry)
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyLogChanged(this, entry);
 	}
 }

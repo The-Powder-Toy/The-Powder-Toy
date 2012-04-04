@@ -33,7 +33,7 @@ std::string CommandInterface::FormatCommand(std::string command)
 
 void CommandInterface::Log(LogType type, std::string message)
 {
-	//Todo Put this info somewhere, an on-screen log output would be nice.
+	m->Log(message);
 }
 
 int CommandInterface::GetPropertyOffset(std::string key_, FormatType & format)
