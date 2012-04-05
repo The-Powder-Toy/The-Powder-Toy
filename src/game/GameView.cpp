@@ -840,6 +840,7 @@ void GameView::OnDraw()
 	if(ren)
 	{
 		Graphics * g = ui::Engine::Ref().g;
+		ren->draw_air();
 		ren->render_parts();
 		ren->render_fire();
 		ren->DrawWalls();

@@ -232,15 +232,16 @@ void RenderView::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
 	g->clearrect(0, 0, XRES, YRES+MENUSIZE);
+	if(ren)
+	{
+		ren->draw_air();
+		ren->render_parts();
+		ren->render_fire();
+	}
 	g->draw_line(0, YRES, XRES-1, YRES, 255, 255, 255, XRES+BARSIZE);
 	g->draw_line(180, YRES, 180, YRES+MENUSIZE, 200, 200, 200, XRES+BARSIZE);
 	g->draw_line(480, YRES, 480, YRES+MENUSIZE, 200, 200, 200, XRES+BARSIZE);
 	g->draw_line(XRES-1, 0, XRES-1, YRES+MENUSIZE, 255, 255, 255, XRES+BARSIZE);
-	if(ren)
-	{
-		ren->render_parts();
-		ren->render_fire();
-	}
 }
 
 RenderView::~RenderView() {

@@ -7,6 +7,7 @@
 
 #include <math.h>
 #include <iostream>
+#include <vector>
 #include "Config.h"
 #include "Renderer.h"
 #include "Graphics.h"
@@ -1611,6 +1612,8 @@ void Renderer::draw_grav()
 void Renderer::draw_air()
 {
 #ifndef OGLR
+	if(!(display_mode & DISPLAY_AIR))
+		return;
 	int x, y, i, j;
 	float (*pv)[XRES/CELL] = sim->air->pv;
 	float (*hv)[XRES/CELL] = sim->air->hv;

@@ -126,14 +126,14 @@ GameModel::~GameModel()
 	{
 		Client::Ref().configDocument["Renderer"]["ColourMode"] = json::Number(ren->GetColourMode());
 
-		((json::Array)Client::Ref().configDocument["Renderer"]["DisplayModes"]).Clear();
+		Client::Ref().configDocument["Renderer"]["DisplayModes"] = json::Array();
 		std::vector<unsigned int> displayModes = ren->GetDisplayMode();
 		for (int i = 0; i < displayModes.size(); i++)
 		{
 			Client::Ref().configDocument["Renderer"]["DisplayModes"][i] = json::Number(displayModes[i]);
 		}
 
-		((json::Array)Client::Ref().configDocument["Renderer"]["RenderModes"]).Clear();
+		Client::Ref().configDocument["Renderer"]["RenderModes"] = json::Array();
 		std::vector<unsigned int> renderModes = ren->GetRenderMode();
 		for (int i = 0; i < renderModes.size(); i++)
 		{

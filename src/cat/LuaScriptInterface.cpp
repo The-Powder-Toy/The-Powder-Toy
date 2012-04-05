@@ -242,12 +242,26 @@ bool LuaScriptInterface::OnMouseWheel(int x, int y, int d)
 
 bool LuaScriptInterface::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	return luacon_keyevent(key, /*TODO: sdl_mod*/0, LUACON_KDOWN);
+	int modifiers;
+	if(shift)
+		modifiers |= 0x001;
+	if(ctrl)
+		modifiers |= 0x040;
+	if(alt)
+		modifiers |= 0x100;
+	return luacon_keyevent(key, modifiers, LUACON_KDOWN);
 }
 
 bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	return luacon_keyevent(key, /*TODO: sdl_mod*/0, LUACON_KUP);
+	int modifiers;
+	if(shift)
+		modifiers |= 0x001;
+	if(ctrl)
+		modifiers |= 0x040;
+	if(alt)
+		modifiers |= 0x100;
+	return luacon_keyevent(key, modifiers, LUACON_KUP);
 }
 
 void LuaScriptInterface::OnTick()
