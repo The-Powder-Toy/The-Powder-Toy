@@ -61,7 +61,7 @@ int update_H2(UPDATE_FUNC_ARGS)
 			part_change_type(i,x,y,PT_PLSM);
 			parts[i].life = rand()%150+50;
 			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT); if (j != -1) parts[j].temp = temp;
-			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC); if (j != -1) parts[j].temp = temp;
+			if (!(rand()%10)) { j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC); if (j != -1) parts[j].temp = temp; }
 			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT);
 			if (j != -1) { parts[j].ctype = 0xFFFF00; parts[j].temp = temp; }
 

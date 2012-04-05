@@ -18,7 +18,7 @@
 int update_O2(UPDATE_FUNC_ARGS)
 {
 	int r,rx,ry;
-	if (parts[i].temp < 9773.15)
+	if (parts[i].temp < 9273.15)
 	{
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
