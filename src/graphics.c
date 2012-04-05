@@ -1877,7 +1877,7 @@ void render_parts(pixel *vid)
 				if(pixel_mode & PMODE_BLUR && !(render_mode & PMODE_BLUR))
 					pixel_mode |= PMODE_FLAT;
 				if(pixel_mode & PMODE_GLOW && !(render_mode & PMODE_GLOW))
-					pixel_mode |= PMODE_FLAT;
+					pixel_mode |= PMODE_BLEND;
 				if (render_mode & PMODE_BLOB)
 					pixel_mode |= PMODE_BLOB;
 					
@@ -2150,6 +2150,7 @@ void render_parts(pixel *vid)
 				}
 				if(pixel_mode & PMODE_GLOW)
 				{
+					int cola1 = (5*cola)/255;
 #ifdef OGLR
                     glowV[cglowV++] = nx;
                     glowV[cglowV++] = ny;
@@ -2159,24 +2160,24 @@ void render_parts(pixel *vid)
                     glowC[cglowC++] = 1.0f;
                     cglow++;
 #else
-					addpixel(vid, nx, ny, colr, colg, colb, 192);
-					addpixel(vid, nx+1, ny, colr, colg, colb, 96);
-					addpixel(vid, nx-1, ny, colr, colg, colb, 96);
-					addpixel(vid, nx, ny+1, colr, colg, colb, 96);
-					addpixel(vid, nx, ny-1, colr, colg, colb, 96);
+					addpixel(vid, nx, ny, colr, colg, colb, (192*cola)/255);
+					addpixel(vid, nx+1, ny, colr, colg, colb, (96*cola)/255);
+					addpixel(vid, nx-1, ny, colr, colg, colb, (96*cola)/255);
+					addpixel(vid, nx, ny+1, colr, colg, colb, (96*cola)/255);
+					addpixel(vid, nx, ny-1, colr, colg, colb, (96*cola)/255);
 					
 					for (x = 1; x < 6; x++) {
-						addpixel(vid, nx, ny-x, colr, colg, colb, 5);
-						addpixel(vid, nx, ny+x, colr, colg, colb, 5);
-						addpixel(vid, nx-x, ny, colr, colg, colb, 5);
-						addpixel(vid, nx+x, ny, colr, colg, colb, 5);
+						addpixel(vid, nx, ny-x, colr, colg, colb, cola1);
+						addpixel(vid, nx, ny+x, colr, colg, colb, cola1);
+						addpixel(vid, nx-x, ny, colr, colg, colb, cola1);
+						addpixel(vid, nx+x, ny, colr, colg, colb, cola1);
 						for (y = 1; y < 6; y++) {
 							if(x + y > 7)
 								continue;
-							addpixel(vid, nx+x, ny-y, colr, colg, colb, 5);
-							addpixel(vid, nx-x, ny+y, colr, colg, colb, 5);
-							addpixel(vid, nx+x, ny+y, colr, colg, colb, 5);
-							addpixel(vid, nx-x, ny-y, colr, colg, colb, 5);
+							addpixel(vid, nx+x, ny-y, colr, colg, colb, cola1);
+							addpixel(vid, nx-x, ny+y, colr, colg, colb, cola1);
+							addpixel(vid, nx+x, ny+y, colr, colg, colb, cola1);
+							addpixel(vid, nx-x, ny-y, colr, colg, colb, cola1);
 						}
 					}
 #endif
