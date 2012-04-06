@@ -67,6 +67,7 @@ public:
 	Thumbnail * GetPreview(int saveID, int saveDate);
 	Thumbnail * GetThumbnail(int saveID, int saveDate);
 	Save * GetSave(int saveID, int saveDate);
+	RequestStatus DeleteSave(int saveID);
 	void SetAuthUser(User user);
 	User GetAuthUser();
 	std::vector<string> * RemoveTag(int saveID, string tag); //TODO RequestStatus

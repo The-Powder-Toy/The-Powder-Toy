@@ -27,9 +27,15 @@ private:
 	ui::Button * sortButton;
 	ui::Button * ownButton;
 	ui::Spinner * loadingSpinner;
+
+	ui::Button * removeSelected;
+	ui::Button * unpublishSelected;
+	ui::Button * favouriteSelected;
+	ui::Button * clearSelection;
 	void doSearch();
 public:
 	void NotifySaveListChanged(SearchModel * sender);
+	void NotifySelectedChanged(SearchModel * sender);
 	void NotifyPageChanged(SearchModel * sender);
 	void NotifySortChanged(SearchModel * sender);
 	void NotifyShowOwnChanged(SearchModel * sender);

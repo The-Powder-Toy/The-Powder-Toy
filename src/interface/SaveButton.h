@@ -16,6 +16,7 @@ class SaveButtonAction
 {
 public:
 	virtual void ActionCallback(ui::SaveButton * sender) {}
+	virtual void SelectedCallback(ui::SaveButton * sender) {}
 	virtual ~SaveButtonAction() {}
 };
 
@@ -36,12 +37,18 @@ public:
 	virtual void Draw(const Point& screenPos);
 	virtual void Tick(float dt);
 
+	void SetSelected(bool selected_) { selected = selected_; }
+	bool GetSelected() { return selected; }
+	void SetSelectable(bool selectable_) { selectable = selectable_; }
+	bool GetSelectable() { return selectable; }
+
 	Save * GetSave() { return save; }
 	inline bool GetState() { return state; }
 	virtual void DoAction();
+	virtual void DoSelection();
 	void SetActionCallback(SaveButtonAction * action);
 protected:
-	bool isButtonDown, state, isMouseInside;
+	bool isButtonDown, state, isMouseInside, selected, selectable;
 	float voteRatio;
 	Colour voteColour;
 	SaveButtonAction * actionCallback;

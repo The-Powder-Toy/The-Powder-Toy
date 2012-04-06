@@ -37,6 +37,8 @@ void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 	currentPage = pageNumber;
 	notifySaveListChanged();
 	notifyPageChanged();
+	selected.clear();
+	notifySelectedChanged();
 
 	//Threading
 	if(!updateSaveListWorking)
@@ -94,6 +96,36 @@ void SearchModel::AddObserver(SearchView * observer)
 	observer->NotifyShowOwnChanged(this);
 }
 
+void SearchModel::SelectSave(int saveID)
+{
+	for(int i = 0; i < selected.size(); i++)
+	{
+		if(selected[i]==saveID)
+		{
+			return;
+		}
+	}
+	selected.push_back(saveID);
+	notifySelectedChanged();
+}
+
+void SearchModel::DeselectSave(int saveID)
+{
+	bool changed = false;
+restart:
+	for(int i = 0; i < selected.size(); i++)
+	{
+		if(selected[i]==saveID)
+		{
+			selected.erase(selected.begin()+i);
+			changed = true;
+			goto restart; //Just ensure all cases are removed.
+		}
+	}
+	if(changed)
+		notifySelectedChanged();
+}
+
 void SearchModel::notifySaveListChanged()
 {
 	for(int i = 0; i < observers.size(); i++)
@@ -127,6 +159,15 @@ void SearchModel::notifyShowOwnChanged()
 	{
 		SearchView* cObserver = observers[i];
 		cObserver->NotifyShowOwnChanged(this);
+	}
+}
+
+void SearchModel::notifySelectedChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		SearchView* cObserver = observers[i];
+		cObserver->NotifySelectedChanged(this);
 	}
 }
 

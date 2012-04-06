@@ -21,6 +21,8 @@ private:
 	double nextQueryTime;
 	std::string nextQuery;
 	bool nextQueryDone;
+	void removeSelectedC();
+	void unpublishSelectedC();
 public:
 	class OpenCallback;
 	bool HasExited;
@@ -33,8 +35,13 @@ public:
 	void PrevPage();
 	void ChangeSort();
 	void ShowOwn(bool show);
+	void Selected(int saveID, bool selected);
 	void OpenSave(int saveID);
 	void Update();
+	void ClearSelection();
+	void RemoveSelected();
+	void UnpublishSelected();
+	void FavouriteSelected();
 	Save * GetLoadedSave();
 };
 

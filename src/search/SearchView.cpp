@@ -99,6 +99,70 @@ SearchView::SearchView():
 	ui::Label * searchPrompt = new ui::Label(ui::Point(10, 10), ui::Point(50, 16), "Search:");
 	searchPrompt->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(searchPrompt);
+
+	class RemoveSelectedAction : public ui::ButtonAction
+	{
+		SearchView * v;
+	public:
+		RemoveSelectedAction(SearchView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->c->RemoveSelected();
+		}
+	};
+
+	class UnpublishSelectedAction : public ui::ButtonAction
+	{
+		SearchView * v;
+	public:
+		UnpublishSelectedAction(SearchView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->c->UnpublishSelected();
+		}
+	};
+
+	class FavouriteSelectedAction : public ui::ButtonAction
+	{
+		SearchView * v;
+	public:
+		FavouriteSelectedAction(SearchView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->c->FavouriteSelected();
+		}
+	};
+
+	class ClearSelectionAction : public ui::ButtonAction
+	{
+		SearchView * v;
+	public:
+		ClearSelectionAction(SearchView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->c->ClearSelection();
+		}
+	};
+
+	removeSelected = new ui::Button(ui::Point((((XRES+BARSIZE)-415)/2), YRES+MENUSIZE-18), ui::Point(100, 16), "Delete");
+	removeSelected->Visible = false;
+	removeSelected->SetActionCallback(new RemoveSelectedAction(this));
+	AddComponent(removeSelected);
+
+	unpublishSelected = new ui::Button(ui::Point((((XRES+BARSIZE)-415)/2)+105, YRES+MENUSIZE-18), ui::Point(100, 16), "Unpublish");
+	unpublishSelected->Visible = false;
+	unpublishSelected->SetActionCallback(new UnpublishSelectedAction(this));
+	AddComponent(unpublishSelected);
+
+	favouriteSelected = new ui::Button(ui::Point((((XRES+BARSIZE)-415)/2)+210, YRES+MENUSIZE-18), ui::Point(100, 16), "Favourite");
+	favouriteSelected->Visible = false;
+	favouriteSelected->SetActionCallback(new FavouriteSelectedAction(this));
+	AddComponent(favouriteSelected);
+
+	clearSelection = new ui::Button(ui::Point((((XRES+BARSIZE)-415)/2)+315, YRES+MENUSIZE-18), ui::Point(100, 16), "Clear selection");
+	clearSelection->Visible = false;
+	clearSelection->SetActionCallback(new ClearSelectionAction(this));
+	AddComponent(clearSelection);
 }
 
 void SearchView::doSearch()
@@ -211,6 +275,10 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			{
 				v->c->OpenSave(sender->GetSave()->GetID());
 			}
+			virtual void SelectedCallback(ui::SaveButton * sender)
+			{
+				v->c->Selected(sender->GetSave()->GetID(), sender->GetSelected());
+			}
 		};
 		for(i = 0; i < saves.size(); i++)
 		{
@@ -230,10 +298,41 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 						ui::Point(buttonWidth, buttonHeight),
 						saves[i]);
 			saveButton->SetActionCallback(new SaveOpenAction(this));
+			if(Client::Ref().GetAuthUser().ID)
+				saveButton->SetSelectable(true);
 			saveButtons.push_back(saveButton);
 			AddComponent(saveButton);
 			saveX++;
 		}
+	}
+}
+
+void SearchView::NotifySelectedChanged(SearchModel * sender)
+{
+	vector<int> selected = sender->GetSelected();
+	for(int j = 0; j < saveButtons.size(); j++)
+	{
+		saveButtons[j]->SetSelected(false);
+		for(int i = 0; i < selected.size(); i++)
+		{
+			if(saveButtons[j]->GetSave()->GetID()==selected[i])
+				saveButtons[j]->SetSelected(true);
+		}
+	}
+
+	if(selected.size())
+	{
+		removeSelected->Visible = true;
+		unpublishSelected->Visible = true;
+		favouriteSelected->Visible = true;
+		clearSelection->Visible = true;
+	}
+	else
+	{
+		removeSelected->Visible = false;
+		unpublishSelected->Visible = false;
+		favouriteSelected->Visible = false;
+		clearSelection->Visible = false;
 	}
 }
 

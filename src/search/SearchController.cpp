@@ -1,10 +1,15 @@
 #include <string>
+#include <sstream>
+#include <unistd.h>
 #include "SearchController.h"
 #include "SearchModel.h"
 #include "SearchView.h"
 #include "interface/Panel.h"
+#include "dialogues/ConfirmPrompt.h"
 #include "preview/PreviewController.h"
 #include "client/Client.h"
+#include "tasks/Task.h"
+#include "tasks/TaskWindow.h"
 
 class SearchController::OpenCallback: public ControllerCallback
 {
@@ -125,8 +130,91 @@ void SearchController::ShowOwn(bool show)
 		searchModel->SetShowOwn(false);
 }
 
+void SearchController::Selected(int saveID, bool selected)
+{
+	if(!Client::Ref().GetAuthUser().ID)
+		return;
+
+	if(selected)
+		searchModel->SelectSave(saveID);
+	else
+		searchModel->DeselectSave(saveID);
+}
+
 void SearchController::OpenSave(int saveID)
 {
 	activePreview = new PreviewController(saveID, new OpenCallback(this));
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
+}
+
+void SearchController::ClearSelection()
+{
+	searchModel->ClearSelected();
+}
+
+void SearchController::RemoveSelected()
+{
+	class RemoveSelectedConfirmation: public ConfirmDialogueCallback {
+	public:
+		SearchController * c;
+		RemoveSelectedConfirmation(SearchController * c_) {	c = c_;	}
+		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+			if (result == ConfirmPrompt::ResultOkay)
+				c->removeSelectedC();
+		}
+		virtual ~RemoveSelectedConfirmation() { }
+	};
+
+	std::stringstream desc;
+	desc << "Are you sure you want to delete " << searchModel->GetSelected().size() << " save";
+	if(searchModel->GetSelected().size()>1)
+		desc << "s";
+	new ConfirmPrompt("Delete saves", desc.str(), new RemoveSelectedConfirmation(this));
+}
+
+void SearchController::removeSelectedC()
+{
+	class RemoveSavesTask : public Task
+	{
+		std::vector<int> saves;
+	public:
+		RemoveSavesTask(std::vector<int> saves_) { saves = saves_; }
+		virtual void doWork()
+		{
+			for(int i = 0; i < saves.size(); i++)
+			{
+				std::stringstream saveID;
+				saveID << "Deleting save [" << saves[i] << "] ...";
+ 				notifyStatus(saveID.str());
+ 				if(Client::Ref().DeleteSave(saves[i])!=RequestOkay)
+				{
+ 					std::stringstream saveIDF;
+ 					saveIDF << "\boFailed to delete [" << saves[i] << "] ...";
+					notifyStatus(saveIDF.str());
+					usleep(500*1000);
+				}
+				usleep(100*1000);
+				notifyProgress((float(i+1)/float(saves.size())*100));
+			}
+		}
+	};
+
+	std::vector<int> selected = searchModel->GetSelected();
+	new TaskWindow("Removing saves", new RemoveSavesTask(selected));
+	ClearSelection();
+}
+
+void SearchController::UnpublishSelected()
+{
+
+}
+
+void SearchController::unpublishSelectedC()
+{
+	ClearSelection();
+}
+
+void SearchController::FavouriteSelected()
+{
+	ClearSelection();
 }

@@ -18,12 +18,14 @@ private:
 	string currentSort;
 	string lastQuery;
 	string lastError;
+	vector<int> selected;
 	vector<SearchView*> observers;
 	vector<Save*> saveList;
 	int currentPage;
 	int resultCount;
 	bool showOwn;
 	void notifySaveListChanged();
+	void notifySelectedChanged();
 	void notifyPageChanged();
 	void notifySortChanged();
 	void notifyShowOwnChanged();
@@ -38,6 +40,7 @@ private:
 public:
     SearchModel();
     virtual ~SearchModel();
+
 	void AddObserver(SearchView * observer);
 	void UpdateSaveList(int pageNumber, std::string query);
 	vector<Save*> GetSaveList();
@@ -52,6 +55,10 @@ public:
 	void SetLoadedSave(Save * save);
 	Save * GetLoadedSave();
 	bool GetSavesLoaded() { return saveListLoaded; }
+	vector<int> GetSelected() { return selected; }
+	void ClearSelected() { selected.clear(); notifySelectedChanged(); }
+	void SelectSave(int saveID);
+	void DeselectSave(int saveID);
 	void Update();
 };
 
