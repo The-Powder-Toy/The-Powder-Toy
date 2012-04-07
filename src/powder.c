@@ -1930,6 +1930,11 @@ void update_particles_i(pixel *vid, int start, int inc)
 					         || t==PT_WTRV)
 						ctempl -= 2.0f*pv[y/CELL][x/CELL];
 					s = 1;
+
+					//A fix for ice with ctype = 0
+					if (t==PT_ICEI && parts[i].ctype==0)
+						parts[i].ctype = PT_WATR;
+
 					if (ctemph>ptransitions[t].thv&&ptransitions[t].tht>-1) {
 						// particle type change due to high temperature
 #ifdef REALISTIC
