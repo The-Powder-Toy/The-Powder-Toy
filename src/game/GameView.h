@@ -71,12 +71,21 @@ private:
 	ui::Point selectPoint1;
 	ui::Point selectPoint2;
 
+	ui::Point mousePosition;
+
 	Thumbnail * clipboardThumb;
 	Thumbnail * stampThumb;
+
+	Particle sample;
 
 	void changeColour();
 public:
     GameView();
+
+    //Breaks MVC, but any other way is going to be more of a mess.
+    ui::Point GetMousePosition();
+    void SetSample(Particle sample);
+
 	void AttachController(GameController * _c){ c = _c; }
 	void NotifyRendererChanged(GameModel * sender);
 	void NotifySimulationChanged(GameModel * sender);

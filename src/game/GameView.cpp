@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iomanip>
 
 #include "Config.h"
 #include "GameView.h"
@@ -29,7 +30,8 @@ GameView::GameView():
 	selectPoint1(0, 0),
 	selectPoint2(0, 0),
 	stampThumb(NULL),
-	clipboardThumb(NULL)
+	clipboardThumb(NULL),
+	mousePosition(0, 0)
 {
 	int currentX = 1;
 	//Set up UI
@@ -282,6 +284,16 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 	}
 }
 
+void GameView::SetSample(Particle sample)
+{
+	this->sample = sample;
+}
+
+ui::Point GameView::GetMousePosition()
+{
+	return mousePosition;
+}
+
 void GameView::NotifyActiveToolsChanged(GameModel * sender)
 {
 	for(int i = 0; i < toolButtons.size(); i++)
@@ -469,6 +481,7 @@ void GameView::NotifyBrushChanged(GameModel * sender)
 
 void GameView::OnMouseMove(int x, int y, int dx, int dy)
 {
+	mousePosition = c->PointTranslate(ui::Point(x, y));
 	if(selectMode!=SelectNone)
 	{
 		if(selectMode==PlaceStamp || selectMode==PlaceClipboard)
@@ -837,9 +850,9 @@ void GameView::changeColour()
 
 void GameView::OnDraw()
 {
+	Graphics * g = ui::Engine::Ref().g;
 	if(ren)
 	{
-		Graphics * g = ui::Engine::Ref().g;
 		ren->draw_air();
 		ren->render_parts();
 		ren->render_fire();
@@ -925,10 +938,19 @@ void GameView::OnDraw()
 			{
 				string message = (*iter);
 				startY -= 13;
-				g->fillrect(startX-3, startY-3, Graphics::textwidth((char*)message.c_str())+6, 14, 0, 0, 0, 100);
+				g->fillrect(startX-3, startY-3, Graphics::textwidth((char*)message.c_str())+6                                                                                                                                        , 14, 0, 0, 0, 100);
 				g->drawtext(startX, startY, message.c_str(), 255, 255, 255, startAlpha);
 				startAlpha-=14;
 			}
 		}
 	}
+
+	std::stringstream sampleInfo;
+	sampleInfo.precision(2);
+	if(sample.type)
+		sampleInfo << c->ElementResolve(sample.type) << ", Temp: " << std::fixed << sample.temp -273.15f;
+	else
+		sampleInfo << "Empty";
+
+	g->drawtext(XRES+BARSIZE-(10+Graphics::textwidth((char*)sampleInfo.str().c_str())), 5, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255);
 }

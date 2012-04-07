@@ -348,6 +348,12 @@ void GameController::Tick()
 
 void GameController::Update()
 {
+	ui::Point pos = gameView->GetMousePosition();
+	if(pos.X >= 0 && pos.Y >= 0 && pos.X < XRES && pos.Y < YRES)
+	{
+		gameView->SetSample(gameModel->GetSimulation()->Get(pos.X, pos.Y));
+	}
+
 	gameModel->GetSimulation()->update_particles();
 	if(renderOptions && renderOptions->HasExited)
 	{
@@ -558,4 +564,8 @@ void GameController::ReloadSim()
 		gameModel->GetSimulation()->Load(gameModel->GetSave()->GetData(), gameModel->GetSave()->GetDataLength());
 }
 
+std::string GameController::ElementResolve(int type)
+{
+	return std::string(gameModel->GetSimulation()->ptypes[type].name);
+}
 

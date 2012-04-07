@@ -120,6 +120,15 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, void * propvalue, in
 	return 0;
 }
 
+Particle Simulation::Get(int x, int y)
+{
+	if(pmap[y][x])
+		return parts[pmap[y][x]>>8];
+	if(photons[y][x])
+		return parts[photons[y][x]>>8];
+	return Particle();
+}
+
 int Simulation::flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 {
 	int c = fullc&0xFF;
