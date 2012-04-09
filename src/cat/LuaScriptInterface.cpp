@@ -1160,43 +1160,6 @@ int luatpt_set_property(lua_State* l)
 	offset = luacon_ci->GetPropertyOffset(prop, format);
 	if(offset == -1)
 		return luaL_error(l, "Invalid property '%s'", prop);
-	//TODO: Use particle_getproperty
-	/*if (strcmp(prop,"type")==0){
-		offset = offsetof(particle, type);
-		format = 3;
-	} else if (strcmp(prop,"life")==0){
-		offset = offsetof(particle, life);
-		format = 1;
-	} else if (strcmp(prop,"ctype")==0){
-		offset = offsetof(particle, ctype);
-		format = 4;
-	} else if (strcmp(prop,"temp")==0){
-		offset = offsetof(particle, temp);
-		format = 2;
-	} else if (strcmp(prop,"tmp")==0){
-		offset = offsetof(particle, tmp);
-		format = 1;
-	} else if (strcmp(prop,"tmp2")==0){
-		offset = offsetof(particle, tmp2);
-		format = 1;
-	} else if (strcmp(prop,"vy")==0){
-		offset = offsetof(particle, vy);
-		format = 2;
-	} else if (strcmp(prop,"vx")==0){
-		offset = offsetof(particle, vx);
-		format = 2;
-	} else if (strcmp(prop,"x")==0){
-		offset = offsetof(particle, x);
-		format = 2;
-	} else if (strcmp(prop,"y")==0){
-		offset = offsetof(particle, y);
-		format = 2;
-	} else if (strcmp(prop,"dcolour")==0){
-		offset = offsetof(particle, dcolour);
-		format = 1;
-	} else {
-		return luaL_error(l, "Invalid property '%s'", prop);
-	}*/
 	if(acount>2){
 		if(!lua_isnumber(l, acount) && lua_isstring(l, acount)){
 			name = (char*)luaL_optstring(l, acount, "none");
