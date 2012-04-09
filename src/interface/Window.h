@@ -58,6 +58,9 @@ enum ChromeStyle
 		virtual void DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 		virtual void DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 
+		//Sets halt and destroy, this causes the Windows to stop sending events and remove itself.
+		void SelfDestruct();
+
 		bool IsFocused(const Component* c) const;
 		void FocusComponent(Component* c);
 
@@ -78,6 +81,11 @@ enum ChromeStyle
 		std::vector<Component*> Components;
 		Component* focusedComponent_;
 		ChromeStyle chrome;
+
+		//These controls allow a component to call the destruction of the Window inside an event (called by the Window)
+		void finalise();
+		bool halt;
+		bool destruct;
 
 	};
 

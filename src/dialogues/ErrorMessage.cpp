@@ -29,7 +29,7 @@ ErrorMessage::ErrorMessage(std::string title, std::string message):
 		void ActionCallback(ui::Button * sender)
 		{
 			ui::Engine::Ref().CloseWindow();
-			//delete message; TODO: Fix component disposal
+			message->SelfDestruct(); //TODO: Fix component disposal
 		}
 	};
 

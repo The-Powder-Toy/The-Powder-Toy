@@ -32,7 +32,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 		{
 			ui::Engine::Ref().CloseWindow();
 			prompt->callback->ConfirmCallback(result);
-			//delete prompt; TODO: Fix component disposal
+			prompt->SelfDestruct(); //TODO: Fix component disposal
 		}
 	};
 
