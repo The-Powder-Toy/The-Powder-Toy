@@ -952,5 +952,8 @@ void GameView::OnDraw()
 	else
 		sampleInfo << "Empty";
 
-	g->drawtext(XRES+BARSIZE-(10+Graphics::textwidth((char*)sampleInfo.str().c_str())), 5, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255);
+	if(sample.ctype && sample.ctype>0 && sample.ctype<PT_NUM)
+		sampleInfo << ", Ctype: " << c->ElementResolve(sample.ctype);
+
+	g->drawtext(XRES+BARSIZE-(10+Graphics::textwidth((char*)sampleInfo.str().c_str())), 10, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255);
 }

@@ -3412,6 +3412,11 @@ Simulation::Simulation():
 	memcpy(grule, golRulesT, sizeof(int) * (golRulesCount*10));
 	free(golRulesT);
 
+	int golTypesCount;
+	int * golTypesT = LoadGOLTypes(golTypesCount);
+	memcpy(goltype, golTypesT, sizeof(int) * (golTypesCount));
+	free(golTypesT);
+
 	int golMenuCount;
 	gol_menu * golMenuT = LoadGOLMenu(golMenuCount);
 	memcpy(gmenu, golMenuT, sizeof(gol_menu) * golMenuCount);

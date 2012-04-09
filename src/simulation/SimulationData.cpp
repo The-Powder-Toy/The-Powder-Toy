@@ -80,6 +80,41 @@ int * LoadGOLRules(int & golRuleCount)
 	return golRulesT;
 }
 
+int * LoadGOLTypes(int & golTypeCount)
+{
+	int golTypes[NGOL] =
+	{
+		GT_GOL,
+		GT_HLIF,
+		GT_ASIM,
+		GT_2x2,
+		GT_DANI,
+		GT_AMOE,
+		GT_MOVE,
+		GT_PGOL,
+		GT_DMOE,
+		GT_34,
+		GT_LLIF,
+		GT_STAN,
+		GT_SEED,
+		GT_MAZE,
+		GT_COAG,
+		GT_WALL,
+		GT_GNAR,
+		GT_REPL,
+		GT_MYST,
+		GT_LOTE,
+		GT_FRG2,
+		GT_STAR,
+		GT_FROG,
+		GT_BRAN,
+	};
+	golTypeCount = NGOL;
+	int * golTypesT = (int*)malloc((golTypeCount)*sizeof(int));
+	memcpy(golTypesT, golTypes, (golTypeCount)*sizeof(int));
+	return golTypesT;
+}
+
 wall_type * LoadWalls(int & wallCount)
 {
 	wall_type wtypes[] =
