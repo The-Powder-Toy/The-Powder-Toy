@@ -18,21 +18,6 @@ public:
 	{
 
 	};
-	//Draw the brush outline onto the screen
-	virtual void RenderPoint(Graphics * g, ui::Point position)
-	{
-		if(!bitmap)
-			GenerateBitmap();
-		//g->fillrect(position.X-size.X-1, position.Y-size.Y-1, (size.X*2)+2, (size.Y*2)+2, 255, 0, 255, 70);
-		for(int x = 0; x <= size.X*2; x++)
-		{
-			for(int y = 0; y <= size.Y*2; y++)
-			{
-				if(bitmap[y*(size.X*2)+x])
-					g->blendpixel(position.X-size.X+x, position.Y-size.Y+y, 255, 0, 255, 70);
-			}
-		}
-	}
 	virtual void GenerateBitmap()
 	{
 		if(bitmap)
