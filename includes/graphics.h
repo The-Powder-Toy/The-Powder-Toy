@@ -87,8 +87,6 @@ typedef struct gcache_item gcache_item;
 
 gcache_item *graphicscache;
 
-int graphics_DEFAULT(GRAPHICS_FUNC_ARGS);
-
 void prepare_graphicscache();
 
 char * generate_gradient(pixel * colours, float * points, int pointcount, int size);

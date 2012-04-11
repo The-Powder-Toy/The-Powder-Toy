@@ -274,6 +274,7 @@ struct particle
 };
 typedef struct particle particle;
 
+int graphics_DEFAULT(GRAPHICS_FUNC_ARGS);
 int graphics_FIRE(GRAPHICS_FUNC_ARGS);
 int graphics_SMKE(GRAPHICS_FUNC_ARGS);
 int graphics_PLSM(GRAPHICS_FUNC_ARGS);
