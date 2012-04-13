@@ -4184,7 +4184,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		bc = (svf_login && info_ready)?255:150;
 		drawrect(vid_buf, 150, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
 		drawtext(vid_buf, 168, YRES+MENUSIZE-63, "Report", 255, 255, 255, bc);
-		drawtext(vid_buf, 158, YRES+MENUSIZE-63, "!", 255, 255, 255, bc);
+		drawtext(vid_buf, 155, YRES+MENUSIZE-64, "\xE3", 255, 255, 255, bc);
 		//Delete Button
 		bc = authoritah?255:150;
 		drawrect(vid_buf, 200, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, bc);
