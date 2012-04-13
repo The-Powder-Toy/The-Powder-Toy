@@ -42,7 +42,7 @@ TextPrompt::TextPrompt(std::string title, std::string message, bool multiline, T
 	cancelButton->SetActionCallback(new CloseAction(this, ResultCancel));
 	AddComponent(cancelButton);
 
-	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-50, Size.Y-16), ui::Point(50, 16), "Continue");
+	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-50, Size.Y-16), ui::Point(50, 16), "Okay");
 	okayButton->SetAlignment(AlignLeft, AlignBottom);
 	okayButton->SetTextColour(ui::Colour(220, 220, 50));
 	okayButton->SetActionCallback(new CloseAction(this, ResultOkay));
