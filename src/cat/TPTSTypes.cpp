@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <stdint.h>
 #include "TPTSTypes.h"
 
 AnyType::AnyType(ValueType type_, void * value_):
@@ -39,7 +40,7 @@ AnyType::operator NumberType()
 	if(type != TypeNumber)
 		throw InvalidConversionException(type, TypeNumber);
 	else
-		return NumberType((int)value);
+		return NumberType((intptr_t)value);
 }
 
 AnyType::operator StringType()
@@ -88,7 +89,7 @@ NumberType::NumberType(int number):	AnyType(TypeNumber, (void*)number) { }
 
 int NumberType::Value()
 {
-	return (int)value;
+	return (intptr_t)value;
 }
 
 //String type
