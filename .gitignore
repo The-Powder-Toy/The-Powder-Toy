@@ -8,3 +8,4 @@
 *.pref
 stdout.txt
 stderr.txt
+build/*
