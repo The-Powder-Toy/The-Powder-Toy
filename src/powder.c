@@ -592,11 +592,20 @@ void kill_part(int i)//kills particle number i
 {
 	int x, y;
 
+	// Remove from pmap even if type==0, otherwise infinite recursion occurs when flood fill deleting
+	// a particle which sets type to 0 without calling kill_part (such as LIFE)
+	x = (int)(parts[i].x+0.5f);
+	y = (int)(parts[i].y+0.5f);
+	if (x>=0 && y>=0 && x<XRES && y<YRES) {
+		if ((pmap[y][x]>>8)==i)
+			pmap[y][x] = 0;
+		else if ((photons[y][x]>>8)==i)
+			photons[y][x] = 0;
+	}
+
 	if (parts[i].type == PT_NONE) //This shouldn't happen anymore, but it's here just in case
 		return;
 
-	x = (int)(parts[i].x+0.5f);
-	y = (int)(parts[i].y+0.5f);
 	if (parts[i].type == PT_STKM)
 	{
 		player.spwn = 0;
@@ -621,12 +630,6 @@ void kill_part(int i)//kills particle number i
 	if (parts[i].type == PT_SOAP)
 	{
 		detach(i);
-	}
-	if (x>=0 && y>=0 && x<XRES && y<YRES) {
-		if ((pmap[y][x]>>8)==i)
-			pmap[y][x] = 0;
-		else if ((photons[y][x]>>8)==i)
-			photons[y][x] = 0;
 	}
 
 	parts[i].type = PT_NONE;
