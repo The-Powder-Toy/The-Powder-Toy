@@ -19,6 +19,7 @@ class SearchView: public ui::Window
 private:
 	SearchController * c;
 	vector<ui::SaveButton*> saveButtons;
+	ui::Button * favButton;
 	ui::Button * nextButton;
 	ui::Button * previousButton;
 	ui::Label * errorLabel;
@@ -39,6 +40,7 @@ public:
 	void NotifyPageChanged(SearchModel * sender);
 	void NotifySortChanged(SearchModel * sender);
 	void NotifyShowOwnChanged(SearchModel * sender);
+	void NotifyShowFavouriteChanged(SearchModel * sender);
     SearchView();
 	virtual ~SearchView();
 	void AttachController(SearchController * _c) { c = _c; }

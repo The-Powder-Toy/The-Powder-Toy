@@ -35,6 +35,7 @@ public:
 	void PrevPage();
 	void ChangeSort();
 	void ShowOwn(bool show);
+	void ShowFavourite(bool show);
 	void Selected(int saveID, bool selected);
 	void OpenSave(int saveID);
 	void Update();

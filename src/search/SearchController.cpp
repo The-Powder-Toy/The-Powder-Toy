@@ -121,14 +121,31 @@ void SearchController::ChangeSort()
 	{
 		searchModel->SetSort("new");
 	}
+	searchModel->UpdateSaveList(1, searchModel->GetLastQuery());
 }
 
 void SearchController::ShowOwn(bool show)
 {
 	if(Client::Ref().GetAuthUser().ID)
+	{
+		searchModel->SetShowFavourite(false);
 		searchModel->SetShowOwn(show);
+	}
 	else
 		searchModel->SetShowOwn(false);
+	searchModel->UpdateSaveList(1, searchModel->GetLastQuery());
+}
+
+void SearchController::ShowFavourite(bool show)
+{
+	if(Client::Ref().GetAuthUser().ID)
+	{
+		searchModel->SetShowOwn(false);
+		searchModel->SetShowFavourite(show);
+	}
+	else
+		searchModel->SetShowFavourite(false);
+	searchModel->UpdateSaveList(1, searchModel->GetLastQuery());
 }
 
 void SearchController::Selected(int saveID, bool selected)

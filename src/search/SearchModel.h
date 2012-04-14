@@ -24,11 +24,13 @@ private:
 	int currentPage;
 	int resultCount;
 	bool showOwn;
+	bool showFavourite;
 	void notifySaveListChanged();
 	void notifySelectedChanged();
 	void notifyPageChanged();
 	void notifySortChanged();
 	void notifyShowOwnChanged();
+	void notifyShowFavouriteChanged();
 
 	//Variables and methods for backgroun save request
 	bool saveListLoaded;
@@ -48,10 +50,12 @@ public:
 	int GetPageCount() { return max(1, (int)(ceil(resultCount/16))); }
 	int GetPageNum() { return currentPage; }
 	std::string GetLastQuery() { return lastQuery; }
-	void SetSort(string sort) { currentSort = sort; UpdateSaveList(1, lastQuery); notifySortChanged(); }
+	void SetSort(string sort) { currentSort = sort; notifySortChanged(); }
 	string GetSort() { return currentSort; }
-	void SetShowOwn(bool show) { if(show!=showOwn) { showOwn = show; UpdateSaveList(1, lastQuery); } notifyShowOwnChanged();  }
+	void SetShowOwn(bool show) { if(show!=showOwn) { showOwn = show; } notifyShowOwnChanged();  }
 	bool GetShowOwn() { return showOwn; }
+	void SetShowFavourite(bool show) { if(show!=showFavourite) { showFavourite = show; } notifyShowFavouriteChanged();  }
+	bool GetShowFavourite() { return showFavourite; }
 	void SetLoadedSave(Save * save);
 	Save * GetLoadedSave();
 	bool GetSavesLoaded() { return saveListLoaded; }

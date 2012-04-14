@@ -6,6 +6,7 @@
 SearchModel::SearchModel():
 	currentSort("best"),
 	showOwn(false),
+	showFavourite(false),
 	loadedSave(NULL),
 	updateSaveListWorking(false),
 	updateSaveListFinished(false),
@@ -22,7 +23,12 @@ void * SearchModel::updateSaveListTHelper(void * obj)
 
 void * SearchModel::updateSaveListT()
 {
-	vector<Save*> * tempSaveList = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", showOwn, resultCount);
+	std::string category = "";
+	if(showFavourite)
+		category = "Favourites";
+	if(showOwn && Client::Ref().GetAuthUser().ID)
+		category = "by:"+Client::Ref().GetAuthUser().Username;
+	vector<Save*> * tempSaveList = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category, resultCount);
 	updateSaveListFinished = true;
 	return tempSaveList;
 }
@@ -154,6 +160,15 @@ void SearchModel::notifySortChanged()
 }
 
 void SearchModel::notifyShowOwnChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		SearchView* cObserver = observers[i];
+		cObserver->NotifyShowOwnChanged(this);
+	}
+}
+
+void SearchModel::notifyShowFavouriteChanged()
 {
 	for(int i = 0; i < observers.size(); i++)
 	{

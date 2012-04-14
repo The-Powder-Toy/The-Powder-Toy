@@ -62,7 +62,7 @@ public:
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	LoginStatus Login(string username, string password, User & user);
 	void ClearThumbnailRequests();
-	std::vector<Save*> * SearchSaves(int start, int count, string query, string sort, bool showOwn, int & resultCount);
+	std::vector<Save*> * SearchSaves(int start, int count, string query, string sort, string category, int & resultCount);
 	std::vector<Comment*> * GetComments(int saveID, int start, int count);
 	Thumbnail * GetPreview(int saveID, int saveDate);
 	Thumbnail * GetThumbnail(int saveID, int saveDate);

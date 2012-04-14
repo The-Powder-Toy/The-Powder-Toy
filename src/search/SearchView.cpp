@@ -27,7 +27,7 @@ SearchView::SearchView():
 			v->doSearch();
 		}
 	};
-	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point((XRES+BARSIZE)-((60*2)+16+10+50+10), 16), "");
+	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point((XRES+BARSIZE)-226, 16), "");
 	searchField->SetAlignment(AlignLeft, AlignBottom);
 	searchField->SetActionCallback(new SearchAction(this));
 
@@ -41,7 +41,7 @@ SearchView::SearchView():
 			v->c->ChangeSort();
 		}
 	};
-	sortButton = new ui::Button(ui::Point(XRES+BARSIZE-60-60-16-10+5, 10), ui::Point(60, 16), "Sort");
+	sortButton = new ui::Button(ui::Point(XRES+BARSIZE-140, 10), ui::Point(60, 16), "Sort");
 	sortButton->SetActionCallback(new SortAction(this));
 	sortButton->SetAlignment(AlignCentre, AlignBottom);
 	AddComponent(sortButton);
@@ -56,13 +56,32 @@ SearchView::SearchView():
 			v->c->ShowOwn(sender->GetToggleState());
 		}
 	};
-	ownButton = new ui::Button(ui::Point(XRES+BARSIZE-60-16-10+10, 10), ui::Point(60, 16), "My Own");
+	ownButton = new ui::Button(ui::Point(XRES+BARSIZE-70, 10), ui::Point(60, 16), "My Own");
 	ownButton->SetTogglable(true);
 	ownButton->SetActionCallback(new MyOwnAction(this));
 	if(!Client::Ref().GetAuthUser().ID)
 		ownButton->Enabled = false;
 	ownButton->SetAlignment(AlignCentre, AlignBottom);
 	AddComponent(ownButton);
+
+	class FavAction : public ui::ButtonAction
+	{
+		SearchView * v;
+	public:
+		FavAction(SearchView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->c->ShowFavourite(sender->GetToggleState());
+		}
+	};
+	favButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X, 0), ui::Point(16, 16), "");
+	favButton->SetIcon(IconFavourite);
+	favButton->SetTogglable(true);
+	favButton->SetActionCallback(new FavAction(this));
+	if(!Client::Ref().GetAuthUser().ID)
+		favButton->Enabled = false;
+	favButton->SetAlignment(AlignCentre, AlignBottom);
+	AddComponent(favButton);
 
 	class NextPageAction : public ui::ButtonAction
 	{
@@ -202,6 +221,31 @@ void SearchView::NotifyShowOwnChanged(SearchModel * sender)
 {
     ownButton->SetToggleState(sender->GetShowOwn());
     if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == ElevationModerator)
+    {
+    	unpublishSelected->Enabled = true;
+    	removeSelected->Enabled = true;
+    }
+    else if(sender->GetShowFavourite())
+    {
+    	unpublishSelected->Enabled = false;
+    	removeSelected->Enabled = true;
+    }
+    else
+    {
+    	unpublishSelected->Enabled = false;
+    	removeSelected->Enabled = false;
+    }
+}
+
+void SearchView::NotifyShowFavouriteChanged(SearchModel * sender)
+{
+    favButton->SetToggleState(sender->GetShowFavourite());
+    if(sender->GetShowFavourite())
+    {
+    	unpublishSelected->Enabled = false;
+    	removeSelected->Enabled = true;
+    }
+    else if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == ElevationModerator)
     {
     	unpublishSelected->Enabled = true;
     	removeSelected->Enabled = true;

@@ -840,7 +840,7 @@ std::vector<Comment*> * Client::GetComments(int saveID, int start, int count)
 	return commentArray;
 }
 
-std::vector<Save*> * Client::SearchSaves(int start, int count, string query, string sort, bool showOwn, int & resultCount)
+std::vector<Save*> * Client::SearchSaves(int start, int count, string query, string sort, std::string category, int & resultCount)
 {
 	lastError = "";
 	resultCount = 0;
@@ -860,15 +860,21 @@ std::vector<Save*> * Client::SearchSaves(int start, int count, string query, str
 				urlStream << URLEscape(" ");
 			urlStream << URLEscape("sort:") << URLEscape(sort);
 		}
-		if(showOwn && authUser.ID)
-		{
-			if(query.length())
-				urlStream << URLEscape(" ");
-			urlStream << URLEscape("user:") << URLEscape(authUser.Username);
-		}
-
 	}
-	data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+	if(category.length())
+	{
+		urlStream << "&Category=" << URLEscape(category);
+	}
+	if(authUser.ID)
+	{
+		std::stringstream userIDStream;
+		userIDStream << authUser.ID;
+		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+	}
+	else
+	{
+		data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+	}
 	if(dataStatus == 200 && data)
 	{
 		try
