@@ -2,7 +2,6 @@
 #include <iostream>
 #include <stdexcept>
 #include "Config.h"
-#include "Global.h"
 #include "interface/Point.h"
 #include "interface/Textbox.h"
 #include "interface/Keys.h"

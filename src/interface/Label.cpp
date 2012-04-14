@@ -1,6 +1,5 @@
 #include <string>
 #include "Config.h"
-#include "Global.h"
 #include "Point.h"
 #include "Label.h"
 

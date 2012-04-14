@@ -9,7 +9,6 @@
 
 #include "interface/Button.h"
 #include "Graphics.h"
-#include "Global.h"
 #include "Engine.h"
 #include "Misc.h"
 

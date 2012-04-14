@@ -3,7 +3,6 @@
 #include "Config.h"
 #include <stack>
 
-#include "Global.h"
 #include "interface/Window.h"
 #include "interface/Platform.h"
 #include "interface/Engine.h"

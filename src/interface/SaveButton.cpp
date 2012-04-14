@@ -3,7 +3,6 @@
 #include "SaveButton.h"
 #include "search/Save.h"
 #include "Graphics.h"
-#include "Global.h"
 #include "Engine.h"
 #include "client/Client.h"
 #include "simulation/SaveRenderer.h"
