@@ -163,6 +163,25 @@ SearchView::SearchView():
 	clearSelection->Visible = false;
 	clearSelection->SetActionCallback(new ClearSelectionAction(this));
 	AddComponent(clearSelection);
+
+	if(Client::Ref().GetAuthUser().ID)
+	{
+		favouriteSelected->Enabled = true;
+		if((Client::Ref().GetAuthUser().UserElevation == ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == ElevationModerator))
+		{
+			unpublishSelected->Enabled = true;
+			removeSelected->Enabled = true;
+		}
+		else
+		{
+			unpublishSelected->Enabled = false;
+			removeSelected->Enabled = false;
+		}
+	}
+	else
+	{
+		favouriteSelected->Enabled = true;
+	}
 }
 
 void SearchView::doSearch()
@@ -182,6 +201,16 @@ void SearchView::NotifySortChanged(SearchModel * sender)
 void SearchView::NotifyShowOwnChanged(SearchModel * sender)
 {
     ownButton->SetToggleState(sender->GetShowOwn());
+    if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == ElevationModerator)
+    {
+    	unpublishSelected->Enabled = true;
+    	removeSelected->Enabled = true;
+    }
+    else
+    {
+    	unpublishSelected->Enabled = false;
+    	removeSelected->Enabled = false;
+    }
 }
 
 void SearchView::NotifyPageChanged(SearchModel * sender)
@@ -233,6 +262,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	}
 	if(!saves.size())
 	{
+		loadingSpinner->Visible = false;
 		if(!errorLabel)
 		{
 			errorLabel = new ui::Label(ui::Point(((XRES+BARSIZE)/2)-100, ((YRES+MENUSIZE)/2)-6), ui::Point(200, 12), "Error");

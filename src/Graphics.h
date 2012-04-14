@@ -72,7 +72,8 @@ enum Icon
 	IconFavourite,
 	IconFolder,
 	IconSearch,
-	IconDelete
+	IconDelete,
+	IconReport
 };
 
 class Graphics

@@ -57,6 +57,14 @@ Client::Client():
 				authUser.SessionID = ((json::String)(configDocument["User"]["SessionID"])).Value();
 				authUser.SessionKey = ((json::String)(configDocument["User"]["SessionKey"])).Value();
 				authUser.Username = ((json::String)(configDocument["User"]["Username"])).Value();
+
+				std::string userElevation = ((json::String)(configDocument["User"]["Elevation"])).Value();
+				if(userElevation == "Admin")
+					authUser.UserElevation = ElevationAdmin;
+				else if(userElevation == "Mod")
+					authUser.UserElevation = ElevationModerator;
+				else
+					authUser.UserElevation= ElevationNone;
 			}
 			catch (json::Exception &e)
 			{
@@ -117,6 +125,12 @@ Client::~Client()
 			configDocument["User"]["SessionID"] = json::String(authUser.SessionID);
 			configDocument["User"]["SessionKey"] = json::String(authUser.SessionKey);
 			configDocument["User"]["Username"] = json::String(authUser.Username);
+			if(authUser.UserElevation == ElevationAdmin)
+				configDocument["User"]["Elevation"] = json::String("Admin");
+			else if(authUser.UserElevation == ElevationModerator)
+				configDocument["User"]["Elevation"] = json::String("Mod");
+			else
+				configDocument["User"]["Elevation"] = json::String("None");
 		}
 		else
 		{
@@ -402,10 +416,18 @@ LoginStatus Client::Login(string username, string password, User & user)
 				json::Number userIDTemp = objDocument["UserID"];
 				json::String sessionIDTemp = objDocument["SessionID"];
 				json::String sessionKeyTemp = objDocument["SessionKey"];
+				json::String userElevationTemp = objDocument["Elevation"];
 				user.Username = username;
 				user.ID = userIDTemp.Value();
 				user.SessionID = sessionIDTemp.Value();
 				user.SessionKey = sessionKeyTemp.Value();
+				std::string userElevation = userElevationTemp.Value();
+				if(userElevation == "Admin")
+					user.UserElevation = ElevationAdmin;
+				else if(userElevation == "Mod")
+					user.UserElevation = ElevationModerator;
+				else
+					user.UserElevation= ElevationNone;
 				return LoginOkay;
 			}
 			else
@@ -439,7 +461,175 @@ RequestStatus Client::DeleteSave(int saveID)
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/Delete.json?ID=" << saveID;
+	urlStream << "http://" << SERVER << "/Browse/Delete.json?ID=" << saveID << "&Mode=Delete&Key=" << authUser.SessionKey;
+	if(authUser.ID)
+	{
+		std::stringstream userIDStream;
+		userIDStream << authUser.ID;
+		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+	}
+	else
+	{
+		lastError = "Not authenticated";
+		return RequestFailure;
+	}
+	if(dataStatus == 200 && data)
+	{
+		try
+		{
+			std::istringstream dataStream(data);
+			json::Object objDocument;
+			json::Reader::Read(objDocument, dataStream);
+
+			int status = ((json::Number)objDocument["Status"]).Value();
+
+			if(status!=1)
+				goto failure;
+		}
+		catch (json::Exception &e)
+		{
+			lastError = "Could not read response";
+			goto failure;
+		}
+	}
+	else
+	{
+		lastError = http_ret_text(dataStatus);
+		goto failure;
+	}
+	if(data)
+		free(data);
+	return RequestOkay;
+failure:
+	if(data)
+		free(data);
+	return RequestFailure;
+}
+
+RequestStatus Client::FavouriteSave(int saveID, bool favourite)
+{
+	lastError = "";
+	std::vector<string> * tags = NULL;
+	std::stringstream urlStream;
+	char * data = NULL;
+	int dataStatus, dataLength;
+	urlStream << "http://" << SERVER << "/Browse/Favourite.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
+	if(!favourite)
+		urlStream << "&Mode=Remove";
+	if(authUser.ID)
+	{
+		std::stringstream userIDStream;
+		userIDStream << authUser.ID;
+		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+	}
+	else
+	{
+		lastError = "Not authenticated";
+		return RequestFailure;
+	}
+	if(dataStatus == 200 && data)
+	{
+		try
+		{
+			std::istringstream dataStream(data);
+			json::Object objDocument;
+			json::Reader::Read(objDocument, dataStream);
+
+			int status = ((json::Number)objDocument["Status"]).Value();
+
+			if(status!=1)
+			{
+				lastError = ((json::String)objDocument["Error"]).Value();
+				goto failure;
+			}
+		}
+		catch (json::Exception &e)
+		{
+			lastError = "Could not read response";
+			goto failure;
+		}
+	}
+	else
+	{
+		lastError = http_ret_text(dataStatus);
+		goto failure;
+	}
+	if(data)
+		free(data);
+	return RequestOkay;
+failure:
+	if(data)
+		free(data);
+	return RequestFailure;
+}
+
+RequestStatus Client::ReportSave(int saveID, std::string message)
+{
+	lastError = "";
+	std::vector<string> * tags = NULL;
+	std::stringstream urlStream;
+	char * data = NULL;
+	int dataStatus, dataLength;
+	urlStream << "http://" << SERVER << "/Browse/Report.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
+	if(authUser.ID)
+	{
+		std::stringstream userIDStream;
+		userIDStream << authUser.ID;
+
+		char * postNames[] = { "Reason", NULL };
+		char * postDatas[] = { (char*)(message.c_str()) };
+		int postLengths[] = { message.length() };
+		data = http_multipart_post((char *)urlStream.str().c_str(), postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+	}
+	else
+	{
+		lastError = "Not authenticated";
+		return RequestFailure;
+	}
+	if(dataStatus == 200 && data)
+	{
+		try
+		{
+			std::istringstream dataStream(data);
+			json::Object objDocument;
+			json::Reader::Read(objDocument, dataStream);
+
+			int status = ((json::Number)objDocument["Status"]).Value();
+
+			if(status!=1)
+			{
+				lastError = ((json::String)objDocument["Error"]).Value();
+				goto failure;
+			}
+		}
+		catch (json::Exception &e)
+		{
+			lastError = "Could not read response";
+			goto failure;
+		}
+	}
+	else
+	{
+		lastError = http_ret_text(dataStatus);
+		goto failure;
+	}
+	if(data)
+		free(data);
+	return RequestOkay;
+failure:
+	if(data)
+		free(data);
+	return RequestFailure;
+}
+
+RequestStatus Client::UnpublishSave(int saveID)
+{
+	lastError = "";
+	std::vector<string> * tags = NULL;
+	std::stringstream urlStream;
+	char * data = NULL;
+	int dataStatus, dataLength;
+	urlStream << "http://" << SERVER << "/Browse/Delete.json?ID=" << saveID << "&Mode=Unpublish&Key=" << authUser.SessionKey;
 	if(authUser.ID)
 	{
 		std::stringstream userIDStream;
@@ -523,6 +713,7 @@ Save * Client::GetSave(int saveID, int saveDate)
 			json::String tempDescription = objDocument["Description"];
 			json::Number tempDate = objDocument["Date"];
 			json::Boolean tempPublished = objDocument["Published"];
+			json::Boolean tempFavourite = objDocument["Favourite"];
 
 			json::Array tagsArray = objDocument["Tags"];
 			vector<string> tempTags;
@@ -533,7 +724,7 @@ Save * Client::GetSave(int saveID, int saveDate)
 				tempTags.push_back(tempTag.Value());
 			}
 
-			return new Save(
+			Save * tempSave = new Save(
 					tempID.Value(),
 					tempDate.Value(),
 					tempScoreUp.Value(),
@@ -545,6 +736,8 @@ Save * Client::GetSave(int saveID, int saveDate)
 					tempPublished.Value(),
 					tempTags
 					);
+			tempSave->Favourite = tempFavourite.Value();
+			return tempSave;
 		}
 		catch (json::Exception &e)
 		{
@@ -597,8 +790,8 @@ Thumbnail * Client::GetPreview(int saveID, int saveDate)
 		{
 			free(data);
 		}
-		return new Thumbnail(saveID, saveDate, (pixel *)malloc((128*128) * PIXELSIZE), ui::Point(128, 128));
 	}
+	return new Thumbnail(saveID, saveDate, (pixel *)malloc((128*128) * PIXELSIZE), ui::Point(128, 128));
 }
 
 std::vector<Comment*> * Client::GetComments(int saveID, int start, int count)
@@ -856,7 +1049,7 @@ std::vector<string> * Client::RemoveTag(int saveID, string tag)
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/EditTag.json?Op=delete&ID=" << saveID << "&Tag=" << tag;
+	urlStream << "http://" << SERVER << "/Browse/EditTag.json?Op=delete&ID=" << saveID << "&Tag=" << tag << "&Key=" << authUser.SessionKey;;
 	if(authUser.ID)
 	{
 		std::stringstream userIDStream;
@@ -905,7 +1098,7 @@ std::vector<string> * Client::AddTag(int saveID, string tag)
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/EditTag.json?Op=add&ID=" << saveID << "&Tag=" << tag;
+	urlStream << "http://" << SERVER << "/Browse/EditTag.json?Op=add&ID=" << saveID << "&Tag=" << tag << "&Key=" << authUser.SessionKey;
 	if(authUser.ID)
 	{
 		std::stringstream userIDStream;

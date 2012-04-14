@@ -7,6 +7,7 @@
 
 #include <vector>
 #include "PreviewView.h"
+#include "dialogues/TextPrompt.h"
 #include "interface/Point.h"
 #include "interface/Window.h"
 #include "search/Thumbnail.h"
@@ -32,6 +33,50 @@ PreviewView::PreviewView():
 	openButton->SetActionCallback(new OpenAction(this));
 	AddComponent(openButton);
 
+	class FavAction: public ui::ButtonAction
+	{
+		PreviewView * v;
+	public:
+		FavAction(PreviewView * v_){ v = v_; }
+		virtual void ActionCallback(ui::Button * sender)
+		{
+			v->c->FavouriteSave();
+		}
+	};
+
+	favButton = new ui::Button(ui::Point(50, Size.Y-16), ui::Point(50, 16), "Fav.");
+	favButton->SetAlignment(AlignLeft, AlignMiddle);
+	favButton->SetIcon(IconFavourite);
+	favButton->SetActionCallback(new FavAction(this));
+	AddComponent(favButton);
+
+	class ReportPromptCallback: public TextDialogueCallback {
+	public:
+		PreviewView * v;
+		ReportPromptCallback(PreviewView * v_) { v = v_;	}
+		virtual void TextCallback(TextPrompt::DialogueResult result, std::string resultText) {
+			if (result == TextPrompt::ResultOkay)
+				v->c->Report(resultText);
+		}
+		virtual ~ReportPromptCallback() { }
+	};
+
+	class ReportAction: public ui::ButtonAction
+	{
+		PreviewView * v;
+	public:
+		ReportAction(PreviewView * v_){ v = v_; }
+		virtual void ActionCallback(ui::Button * sender)
+		{
+			new TextPrompt("Report Save", "Reason for reporting", true, new ReportPromptCallback(v));
+		}
+	};
+	reportButton = new ui::Button(ui::Point(100, Size.Y-16), ui::Point(50, 16), "Report");
+	reportButton->SetAlignment(AlignLeft, AlignMiddle);
+	reportButton->SetIcon(IconReport);
+	reportButton->SetActionCallback(new ReportAction(this));
+	AddComponent(reportButton);
+
 	class BrowserOpenAction: public ui::ButtonAction
 	{
 		PreviewView * v;
@@ -42,7 +87,8 @@ PreviewView::PreviewView():
 			v->c->OpenInBrowser();
 		}
 	};
-	browserOpenButton = new ui::Button(ui::Point((XRES/2)-90, Size.Y-16), ui::Point(90, 16), "Open in browser");
+
+	browserOpenButton = new ui::Button(ui::Point((XRES/2)-110, Size.Y-16), ui::Point(110, 16), "Open in browser");
 	browserOpenButton->SetAlignment(AlignLeft, AlignMiddle);
 	browserOpenButton->SetIcon(IconOpen);
 	browserOpenButton->SetActionCallback(new BrowserOpenAction(this));
@@ -114,6 +160,10 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		saveNameLabel->SetText(save->name);
 		authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw ");
 		saveDescriptionTextblock->SetText(save->Description);
+		if(save->Favourite)
+			favButton->Enabled = false;
+		else
+			favButton->Enabled = true;
 	}
 	else
 	{
@@ -122,6 +172,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		saveNameLabel->SetText("");
 		authorDateLabel->SetText("");
 		saveDescriptionTextblock->SetText("");
+		favButton->Enabled = false;
 	}
 }
 

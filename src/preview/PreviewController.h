@@ -16,6 +16,7 @@
 class PreviewModel;
 class PreviewView;
 class PreviewController {
+	int saveId;
 	PreviewModel * previewModel;
 	PreviewView * previewView;
 	ControllerCallback * callback;
@@ -25,10 +26,12 @@ public:
 	void Exit();
 	void DoOpen();
 	void OpenInBrowser();
+	void Report(std::string message);
 	bool GetDoOpen();
 	Save * GetSave();
 	PreviewView * GetView() { return previewView; }
 	void Update();
+	void FavouriteSave();
 	virtual ~PreviewController();
 };
 

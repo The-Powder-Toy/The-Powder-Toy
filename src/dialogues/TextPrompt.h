@@ -16,7 +16,6 @@ class TextPrompt: public ui::Window {
 protected:
 	ui::Textbox * textField;
 public:
-	//class CloseAction;
 	friend class CloseAction;
 	enum DialogueResult { ResultCancel, ResultOkay };
 	TextPrompt(std::string title, std::string message, bool multiline, TextDialogueCallback * callback_);

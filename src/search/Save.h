@@ -18,6 +18,7 @@ public:
 	int votesUp, votesDown;
 	unsigned char * data;
 	int dataLength;
+	bool Favourite;
 
 	Save(Save & save);
 

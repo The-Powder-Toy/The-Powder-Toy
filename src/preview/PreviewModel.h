@@ -56,6 +56,7 @@ public:
 	std::vector<Comment*> * GetComments();
 	void AddObserver(PreviewView * observer);
 	void UpdateSave(int saveID, int saveDate);
+	void SetFavourite(bool favourite);
 	bool GetDoOpen();
 	void SetDoOpen(bool doOpen);
 	void Update();

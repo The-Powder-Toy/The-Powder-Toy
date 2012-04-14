@@ -7,6 +7,7 @@
 
 #include "PreviewModel.h"
 #include "client/Client.h"
+#include "PreviewModelException.h"
 
 PreviewModel::PreviewModel():
 	save(NULL),
@@ -58,6 +59,16 @@ void * PreviewModel::updateSaveCommentsT()
 	std::vector<Comment*> * tempComments = Client::Ref().GetComments(tSaveID, 0, 10);
 	updateSaveCommentsFinished = true;
 	return tempComments;
+}
+
+void PreviewModel::SetFavourite(bool favourite)
+{
+	//if(save)
+	{
+		Client::Ref().FavouriteSave(save->id, favourite);
+		save->Favourite = favourite;
+		notifySaveChanged();
+	}
 }
 
 void PreviewModel::UpdateSave(int saveID, int saveDate)
@@ -192,6 +203,8 @@ void PreviewModel::Update()
 			updateSaveInfoWorking = false;
 			pthread_join(updateSaveInfoThread, (void**)(&save));
 			notifySaveChanged();
+			if(!save)
+				throw PreviewModelException("Unable to load save");
 		}
 	}
 

@@ -68,6 +68,9 @@ public:
 	Thumbnail * GetThumbnail(int saveID, int saveDate);
 	Save * GetSave(int saveID, int saveDate);
 	RequestStatus DeleteSave(int saveID);
+	RequestStatus ReportSave(int saveID, std::string message);
+	RequestStatus UnpublishSave(int saveID);
+	RequestStatus FavouriteSave(int saveID, bool favourite);
 	void SetAuthUser(User user);
 	User GetAuthUser();
 	std::vector<string> * RemoveTag(int saveID, string tag); //TODO RequestStatus

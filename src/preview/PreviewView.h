@@ -24,6 +24,8 @@ class PreviewView: public ui::Window {
 	Thumbnail * savePreview;
 	ui::Button * openButton;
 	ui::Button * browserOpenButton;
+	ui::Button * favButton;
+	ui::Button * reportButton;
 	ui::Label * saveNameLabel;
 	ui::Label * authorDateLabel;
 	ui::Textblock * saveDescriptionTextblock;

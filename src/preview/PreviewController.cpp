@@ -6,13 +6,17 @@
  */
 
 #include <sstream>
+#include "client/Client.h"
 #include "PreviewController.h"
 #include "PreviewView.h"
 #include "PreviewModel.h"
+#include "PreviewModelException.h"
+#include "dialogues/ErrorMessage.h"
 #include "Controller.h"
 
 PreviewController::PreviewController(int saveID, ControllerCallback * callback):
-	HasExited(false)
+	HasExited(false),
+	saveId(saveID)
 {
 	previewModel = new PreviewModel();
 	previewView = new PreviewView();
@@ -26,7 +30,14 @@ PreviewController::PreviewController(int saveID, ControllerCallback * callback):
 
 void PreviewController::Update()
 {
-	previewModel->Update();
+	try
+	{
+		previewModel->Update();
+	}
+	catch (PreviewModelException & e)
+	{
+		new ErrorMessage("Error", e.what());
+	}
 }
 
 Save * PreviewController::GetSave()
@@ -42,6 +53,22 @@ bool PreviewController::GetDoOpen()
 void PreviewController::DoOpen()
 {
 	previewModel->SetDoOpen(true);
+}
+
+void PreviewController::Report(std::string message)
+{
+	if(Client::Ref().ReportSave(saveId, message) == RequestOkay)
+	{
+		Exit();
+		new ErrorMessage("Information", "Report submitted"); //TODO: InfoMessage
+	}
+	else
+		new ErrorMessage("Error", "Unable file report");
+}
+
+void PreviewController::FavouriteSave()
+{
+	previewModel->SetFavourite(true);
 }
 
 void PreviewController::OpenInBrowser()

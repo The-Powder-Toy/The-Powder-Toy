@@ -6,6 +6,7 @@
 #include "SearchView.h"
 #include "interface/Panel.h"
 #include "dialogues/ConfirmPrompt.h"
+#include "dialogues/ErrorMessage.h"
 #include "preview/PreviewController.h"
 #include "client/Client.h"
 #include "tasks/Task.h"
@@ -206,15 +207,58 @@ void SearchController::removeSelectedC()
 
 void SearchController::UnpublishSelected()
 {
+	class UnpublishSelectedConfirmation: public ConfirmDialogueCallback {
+	public:
+		SearchController * c;
+		UnpublishSelectedConfirmation(SearchController * c_) {	c = c_;	}
+		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+			if (result == ConfirmPrompt::ResultOkay)
+				c->unpublishSelectedC();
+		}
+		virtual ~UnpublishSelectedConfirmation() { }
+	};
 
+	std::stringstream desc;
+	desc << "Are you sure you want to hide " << searchModel->GetSelected().size() << " save";
+	if(searchModel->GetSelected().size()>1)
+		desc << "s";
+	new ConfirmPrompt("Unpublish saves", desc.str(), new UnpublishSelectedConfirmation(this));
 }
 
 void SearchController::unpublishSelectedC()
 {
+	class UnpublishSavesTask : public Task
+	{
+		std::vector<int> saves;
+	public:
+		UnpublishSavesTask(std::vector<int> saves_) { saves = saves_; }
+		virtual void doWork()
+		{
+			for(int i = 0; i < saves.size(); i++)
+			{
+				std::stringstream saveID;
+				saveID << "Hiding save [" << saves[i] << "] ...";
+ 				notifyStatus(saveID.str());
+ 				if(Client::Ref().UnpublishSave(saves[i])!=RequestOkay)
+				{
+ 					std::stringstream saveIDF;
+ 					saveIDF << "\boFailed to hide [" << saves[i] << "] ...";
+					notifyStatus(saveIDF.str());
+					usleep(500*1000);
+				}
+				usleep(100*1000);
+				notifyProgress((float(i+1)/float(saves.size())*100));
+			}
+		}
+	};
+
+	std::vector<int> selected = searchModel->GetSelected();
+	new TaskWindow("Unpublishing saves", new UnpublishSavesTask(selected));
 	ClearSelection();
 }
 
 void SearchController::FavouriteSelected()
 {
+	new ErrorMessage("Not impletemented", "Not ermplermerterd");
 	ClearSelection();
 }
