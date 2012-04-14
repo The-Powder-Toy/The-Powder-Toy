@@ -8,7 +8,6 @@
 #include <sstream>
 #include <string>
 #include "Config.h"
-#include "Global.h"
 #include "Graphics.h"
 #if defined(LIN32) || defined(LIN64)
 #include "icon.h"
