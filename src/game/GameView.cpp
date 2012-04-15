@@ -169,7 +169,7 @@ GameView::GameView():
         SimulationOptionAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-            v->c->OpenDisplayOptions();
+            v->c->OpenOptions();
         }
     };
     simulationOptionButton = new ui::Button(ui::Point(Size.X-54, Size.Y-18), ui::Point(16, 16));

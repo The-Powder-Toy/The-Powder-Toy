@@ -15,6 +15,7 @@
 #include "stamps/StampsController.h"
 //#include "cat/TPTScriptInterface.h"
 #include "cat/LuaScriptInterface.h"
+#include "options/OptionsController.h"
 #include "Menu.h"
 
 using namespace std;
@@ -36,6 +37,7 @@ private:
 	ConsoleController * console;
 	TagsController * tagsWindow;
 	StampsController * stamps;
+	OptionsController * options;
 	CommandInterface * commandInterface;
 public:
 	class LoginCallback;
@@ -44,6 +46,7 @@ public:
 	class SSaveCallback;
 	class TagsCallback;
 	class StampsCallback;
+	class OptionsCallback;
 	GameController();
 	~GameController();
 	GameView * GetView();
@@ -77,7 +80,7 @@ public:
 	void OpenSearch();
 	void OpenLogin();
 	void OpenTags();
-	void OpenDisplayOptions();
+	void OpenOptions();
 	void OpenRenderOptions();
 	void OpenSaveWindow();
 	void OpenStamps();

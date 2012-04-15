@@ -8,9 +8,26 @@
 #ifndef OPTIONSCONTROLLER_H_
 #define OPTIONSCONTROLLER_H_
 
+#include "Controller.h"
+#include "simulation/Simulation.h"
+#include "OptionsView.h"
+#include "OptionsModel.h"
+
+class OptionsModel;
+class OptionsView;
 class OptionsController {
+	OptionsView * view;
+	OptionsModel * model;
+	ControllerCallback * callback;
 public:
-	OptionsController();
+	bool HasExited;
+	OptionsController(Simulation * sim, ControllerCallback * callback_);
+	void SetHeatSimulation(bool state);
+	void SetAmbientHeatSimulation(bool state);
+	void SetNewtonianGravity(bool state);
+	void SetWaterEqualisation(bool state);
+	void Exit();
+	OptionsView * GetView();
 	virtual ~OptionsController();
 };
 

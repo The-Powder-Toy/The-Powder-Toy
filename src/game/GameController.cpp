@@ -59,6 +59,17 @@ public:
 	}
 };
 
+class GameController::OptionsCallback: public ControllerCallback
+{
+	GameController * cc;
+public:
+	OptionsCallback(GameController * cc_) { cc = cc_; }
+	virtual void ControllerExit()
+	{
+		//cc->gameModel->SetUser(cc->loginWindow->GetUser());
+	}
+};
+
 class GameController::SSaveCallback: public ControllerCallback
 {
 	GameController * cc;
@@ -108,7 +119,8 @@ GameController::GameController():
 		loginWindow(NULL),
 		ssave(NULL),
 		console(NULL),
-		tagsWindow(NULL)
+		tagsWindow(NULL),
+		options(NULL)
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
@@ -484,9 +496,11 @@ void GameController::OpenStamps()
 	ui::Engine::Ref().ShowWindow(stamps->GetView());
 }
 
-void GameController::OpenDisplayOptions()
+void GameController::OpenOptions()
 {
-	//TODO: Implement
+	options = new OptionsController(gameModel->GetSimulation(), new OptionsCallback(this));
+	ui::Engine::Ref().ShowWindow(options->GetView());
+
 }
 
 void GameController::ShowConsole()

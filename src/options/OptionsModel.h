@@ -7,10 +7,27 @@
 
 #ifndef OPTIONSMODEL_H_
 #define OPTIONSMODEL_H_
+#include <vector>
+#include "OptionsView.h"
+#include "simulation/Simulation.h"
 
+class Simulation;
+class OptionsView;
 class OptionsModel {
+	Simulation * sim;
+	std::vector<OptionsView*> observers;
+	void notifySettingsChanged();
 public:
-	OptionsModel();
+	OptionsModel(Simulation * sim_);
+	void AddObserver(OptionsView* view);
+	bool GetHeatSimulation();
+	void SetHeatSimulation(bool state);
+	bool GetAmbientHeatSimulation();
+	void SetAmbientHeatSimulation(bool state);
+	bool GetNewtonianGravity();
+	void SetNewtonianGravity(bool state);
+	bool GetWaterEqualisation();
+	void SetWaterEqualisation(bool state);
 	virtual ~OptionsModel();
 };
 
