@@ -168,6 +168,14 @@ int graphics_WIFI(GRAPHICS_FUNC_ARGS)
 	*pixel_mode |= EFFECT_LINES;
 	return 0;
 }
+int graphics_GEL(GRAPHICS_FUNC_ARGS)
+{
+	int q = cpart->tmp;
+	*colr = q*(32-255)/120+255;
+	*colg = q*(48-186)/120+186;
+	*colb = q*208/120;
+	return 0;
+}
 int graphics_PRTI(GRAPHICS_FUNC_ARGS)
 {
 	*firea = 8;

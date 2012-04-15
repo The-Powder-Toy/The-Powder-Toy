@@ -91,7 +91,7 @@ void init_can_move()
 		for (rt=1;rt<PT_NUM;rt++)
 		{
 			// weight check, also prevents particles of same type displacing each other
-			if (ptypes[t].weight <= ptypes[rt].weight) can_move[t][rt] = 0;
+			if (ptypes[t].weight <= ptypes[rt].weight || rt==PT_GEL) can_move[t][rt] = 0;
 			if (t==PT_NEUT && ptypes[rt].properties&PROP_NEUTPASS)
 				can_move[t][rt] = 2;
 			if (t==PT_NEUT && ptypes[rt].properties&PROP_NEUTABSORB)
@@ -1840,9 +1840,13 @@ void update_particles_i(pixel *vid, int start, int inc)
 					}
 				}
 
+			float gel_scale = 1.0f;
+			if (t==PT_GEL)
+				gel_scale = parts[i].tmp*2.55f;
+
 			if (!legacy_enable)
 			{
-				if (y-2 >= 0 && y-2 < YRES && (ptypes[t].properties&TYPE_LIQUID)) {//some heat convection for liquids
+				if (y-2 >= 0 && y-2 < YRES && (ptypes[t].properties&TYPE_LIQUID) && gel_scale>(rand()%250)) {//some heat convection for liquids
 					r = pmap[y-2][x];
 					if (!(!r || parts[i].type != (r&0xFF))) {
 						if (parts[i].temp>parts[r>>8].temp) {
@@ -1856,20 +1860,20 @@ void update_particles_i(pixel *vid, int start, int inc)
 				//heat transfer code
 				h_count = 0;
 #ifdef REALISTIC
-				if (t&&(t!=PT_HSWC||parts[i].life==10)&&ptypes[t].hconduct)
+				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(ptypes[t].hconduct*gel_scale))
 				{
 					float c_Cm = 0.0f;
 #else
-				if (t&&(t!=PT_HSWC||parts[i].life==10)&&ptypes[t].hconduct>(rand()%250))
+				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(ptypes[t].hconduct*gel_scale)>(rand()%250))
 				{
 					float c_Cm = 0.0f;
 #endif
 					if (aheat_enable)
 					{
 #ifdef REALISTIC
-						c_heat = parts[i].temp*96.645/ptypes[t].hconduct*fabs(ptypes[t].weight)
+						c_heat = parts[i].temp*96.645/ptypes[t].hconduct*gel_scale*fabs(ptypes[t].weight)
 							+ hv[y/CELL][x/CELL]*100*(pv[y/CELL][x/CELL]+273.15f)/256;
-						c_Cm = 96.645/ptypes[t].hconduct*fabs(ptypes[t].weight) 
+						c_Cm = 96.645/ptypes[t].hconduct*gel_scale*fabs(ptypes[t].weight) 
 							+ 100*(pv[y/CELL][x/CELL]+273.15f)/256;
 						pt = c_heat/c_Cm;
 						pt = restrict_flt(pt, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
@@ -1892,14 +1896,19 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if (!r)
 							continue;
 						rt = r&0xFF;
+
 						if (rt&&ptypes[rt].hconduct&&(rt!=PT_HSWC||parts[r>>8].life==10)
 						        &&(t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
 						        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
 						{
 							surround_hconduct[j] = r>>8;
 #ifdef REALISTIC 
-							c_heat += parts[r>>8].temp*96.645/ptypes[rt].hconduct*fabs(ptypes[rt].weight);
-							c_Cm += 96.645/ptypes[rt].hconduct*fabs(ptypes[rt].weight);
+							if (rt==PT_GEL)
+								gel_scale = parts[r>>8].tmp*2.55f;
+							else gel_scale = 1.0f;
+
+							c_heat += parts[r>>8].temp*96.645/ptypes[rt].hconduct*gel_scale*fabs(ptypes[rt].weight);
+							c_Cm += 96.645/ptypes[rt].hconduct*gel_scale*fabs(ptypes[rt].weight);
 #else
 							c_heat += parts[r>>8].temp;
 #endif
@@ -1907,13 +1916,17 @@ void update_particles_i(pixel *vid, int start, int inc)
 						}
 					}
 #ifdef REALISTIC
+					if (t==PT_GEL)
+						gel_scale = parts[i].tmp*2.55f;
+					else gel_scale = 1.0f;
+
 					if (t == PT_PHOT)
 						pt = (c_heat+parts[i].temp*96.645)/(c_Cm+96.645);
 					else
-						pt = (c_heat+parts[i].temp*96.645/ptypes[t].hconduct*fabs(ptypes[t].weight))/(c_Cm+96.645/ptypes[t].hconduct*fabs(ptypes[t].weight));
+						pt = (c_heat+parts[i].temp*96.645/ptypes[t].hconduct*gel_scale*fabs(ptypes[t].weight))/(c_Cm+96.645/ptypes[t].hconduct*gel_scale*fabs(ptypes[t].weight));
 
-					c_heat += parts[i].temp*96.645/ptypes[t].hconduct*fabs(ptypes[t].weight);
-					c_Cm += 96.645/ptypes[t].hconduct*fabs(ptypes[t].weight);
+					c_heat += parts[i].temp*96.645/ptypes[t].hconduct*gel_scale*fabs(ptypes[t].weight);
+					c_Cm += 96.645/ptypes[t].hconduct*gel_scale*fabs(ptypes[t].weight);
 					parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
 #else
 					pt = (c_heat+parts[i].temp)/(h_count+1);
