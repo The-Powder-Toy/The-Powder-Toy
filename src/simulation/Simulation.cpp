@@ -3372,7 +3372,9 @@ Simulation::~Simulation()
 }
 
 Simulation::Simulation():
-	sys_pause(0)
+	sys_pause(0),
+	portal_rx({-1, 0, 1, 1, 1, 0,-1,-1}),
+	portal_ry({-1,-1,-1, 0, 1, 1, 1, 0})
 {
 	//Create and attach gravity simulation
 	grav = new Gravity();
@@ -3397,6 +3399,7 @@ Simulation::Simulation():
 	pv = air->pv;
 	hv = air->hv;
 
+	//Clear signs
 	signs = (sign*)calloc(MAXSIGNS, sizeof(sign));
 
 	int menuCount;

@@ -6,8 +6,6 @@
    PRTO does (count+4)%8, so that it will come out at the opposite place to where it came in
    PRTO does +/-1 to the count, so it doesn't jam as easily
 */
-int portal_rx[8] = {-1, 0, 1, 1, 1, 0,-1,-1};
-int portal_ry[8] = {-1,-1,-1, 0, 1, 1, 1, 0};
 
 int update_PRTI(UPDATE_FUNC_ARGS) {
 	int r, nnx, rx, ry, fe = 0;
@@ -17,8 +15,8 @@ int update_PRTI(UPDATE_FUNC_ARGS) {
 	else if (parts[i].tmp<0) parts[i].tmp = 0;
 	for (count=0; count<8; count++)
 	{
-		rx = portal_rx[count];
-		ry = portal_ry[count];
+		rx = sim->portal_rx[count];
+		ry = sim->portal_ry[count];
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
