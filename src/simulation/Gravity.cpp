@@ -37,6 +37,7 @@ void Gravity::bilinear_interpolation(float *src, float *dst, int sw, int sh, int
 
 void Gravity::gravity_init()
 {
+	ngrav_enable = 0;
 	//Allocate full size Gravmaps
 	th_ogravmap = (float *)calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
 	th_gravmap = (float *)calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
@@ -210,16 +211,16 @@ void Gravity::grav_fft_init()
 	if (grav_fft_status) return;
 
 	//use fftw malloc function to ensure arrays are aligned, to get better performance
-	th_ptgravx = fftwf_malloc(xblock2*yblock2*sizeof(float));
-	th_ptgravy = fftwf_malloc(xblock2*yblock2*sizeof(float));
-	th_ptgravxt = fftwf_malloc(fft_tsize*sizeof(fftwf_complex));
-	th_ptgravyt = fftwf_malloc(fft_tsize*sizeof(fftwf_complex));
-	th_gravmapbig = fftwf_malloc(xblock2*yblock2*sizeof(float));
-	th_gravmapbigt = fftwf_malloc(fft_tsize*sizeof(fftwf_complex));
-	th_gravxbig = fftwf_malloc(xblock2*yblock2*sizeof(float));
-	th_gravybig = fftwf_malloc(xblock2*yblock2*sizeof(float));
-	th_gravxbigt = fftwf_malloc(fft_tsize*sizeof(fftwf_complex));
-	th_gravybigt = fftwf_malloc(fft_tsize*sizeof(fftwf_complex));
+	th_ptgravx = (float*)fftwf_malloc(xblock2*yblock2*sizeof(float));
+	th_ptgravy = (float*)fftwf_malloc(xblock2*yblock2*sizeof(float));
+	th_ptgravxt = (fftwf_complex*)fftwf_malloc(fft_tsize*sizeof(fftwf_complex));
+	th_ptgravyt = (fftwf_complex*)fftwf_malloc(fft_tsize*sizeof(fftwf_complex));
+	th_gravmapbig = (float*)fftwf_malloc(xblock2*yblock2*sizeof(float));
+	th_gravmapbigt = (fftwf_complex*)fftwf_malloc(fft_tsize*sizeof(fftwf_complex));
+	th_gravxbig = (float*)fftwf_malloc(xblock2*yblock2*sizeof(float));
+	th_gravybig = (float*)fftwf_malloc(xblock2*yblock2*sizeof(float));
+	th_gravxbigt = (fftwf_complex*)fftwf_malloc(fft_tsize*sizeof(fftwf_complex));
+	th_gravybigt = (fftwf_complex*)fftwf_malloc(fft_tsize*sizeof(fftwf_complex));
 
 	//select best algorithm, could use FFTW_PATIENT or FFTW_EXHAUSTIVE but that increases the time taken to plan, and I don't see much increase in execution speed
 	plan_ptgravx = fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_ptgravx, th_ptgravxt, FFTW_MEASURE);

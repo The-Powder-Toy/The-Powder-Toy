@@ -8,6 +8,9 @@
 #include "Gravity.h"
 #include "SaveLoader.h"
 
+#undef LUACONSOLE
+//#include "cat/LuaScriptHelper.h"
+
 int Simulation::Load(unsigned char * data, int dataLength)
 {
 	return SaveLoader::Load(data, dataLength, this, true, 0, 0);
@@ -3269,7 +3272,16 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 #endif
 
 	if(!sys_pause||framerender)
+	{
 		air->update_air();
+		grav->gravity_update_async();
+
+		//Get updated buffer pointers for gravity
+		gravx = grav->gravx;
+		gravy = grav->gravy;
+		gravp = grav->gravp;
+		gravmap = grav->gravmap;
+	}
 
 	memset(pmap, 0, sizeof(pmap));
 	memset(photons, 0, sizeof(photons));
@@ -3424,4 +3436,6 @@ Simulation::Simulation():
 
 	init_can_move();
 	clear_sim();
+
+	grav->gravity_mask();
 }

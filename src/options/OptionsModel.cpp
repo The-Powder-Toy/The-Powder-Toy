@@ -41,12 +41,15 @@ void OptionsModel::SetAmbientHeatSimulation(bool state)
 
 bool OptionsModel::GetNewtonianGravity()
 {
-	return false;
-	//sim->
+	return sim->grav->ngrav_enable?true:false;
 }
 
 void OptionsModel::SetNewtonianGravity(bool state)
 {
+	if(state)
+		sim->grav->start_grav_async();
+	else
+		sim->grav->stop_grav_async();
 	notifySettingsChanged();
 }
 

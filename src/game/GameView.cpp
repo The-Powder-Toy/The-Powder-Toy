@@ -856,6 +856,7 @@ void GameView::OnDraw()
 		ren->draw_air();
 		ren->render_parts();
 		ren->render_fire();
+		ren->draw_grav();
 		ren->DrawWalls();
 		if(activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
 		{
