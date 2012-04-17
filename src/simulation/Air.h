@@ -23,6 +23,7 @@ public:
 	float hv[YRES/CELL][XRES/CELL];
 	float ohv[YRES/CELL][XRES/CELL]; // Ambient Heat
 	unsigned char bmap_blockair[YRES/CELL][XRES/CELL];
+	unsigned char bmap_blockairh[YRES/CELL][XRES/CELL];
 	float kernel[9];
 	void make_kernel(void);
 	void update_airh(void);

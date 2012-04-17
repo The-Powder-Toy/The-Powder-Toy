@@ -39,7 +39,12 @@ void Air::make_kernel(void) //used for velocity
 void Air::update_airh(void)
 {
 	int x, y, i, j;
-	float dh, dx, dy, f, tx, ty;
+	float odh, dh, dx, dy, f, tx, ty;
+	for (y=0; y<YRES/CELL; y++)
+		for (x=0; x<XRES/CELL; x++)
+		{
+			bmap_blockairh[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_GRAV || (bmap[y][x]==WL_EWALL && !emap[y][x]));
+		}
 	for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 	{
 		hv[i][0] = 295.15f;
@@ -69,10 +74,7 @@ void Air::update_airh(void)
 				{
 					if (y+j>0 && y+j<YRES/CELL-2 &&
 					        x+i>0 && x+i<XRES/CELL-2 &&
-					        bmap[y+j][x+i]!=WL_WALL &&
-					        bmap[y+j][x+i]!=WL_WALLELEC &&
-					        bmap[y+j][x+i]!=WL_GRAV && 
-					        (bmap[y+j][x+i]!=WL_EWALL || emap[y+j][x+i]))
+					        !bmap_blockairh[y+j][x+i])
 						{
 						f = kernel[i+1+(j+1)*3];
 						dh += hv[y+j][x+i]*f;
@@ -96,11 +98,12 @@ void Air::update_airh(void)
 			ty -= j;
 			if (i>=2 && i<XRES/CELL-3 && j>=2 && j<YRES/CELL-3)
 			{
+				odh = dh;
 				dh *= 1.0f - AIR_VADV;
-				dh += AIR_VADV*(1.0f-tx)*(1.0f-ty)*hv[j][i];
-				dh += AIR_VADV*tx*(1.0f-ty)*hv[j][i+1];
-				dh += AIR_VADV*(1.0f-tx)*ty*hv[j+1][i];
-				dh += AIR_VADV*tx*ty*hv[j+1][i+1];
+				dh += AIR_VADV*(1.0f-tx)*(1.0f-ty)*(bmap_blockairh[j][i] ? odh : hv[j][i]);
+				dh += AIR_VADV*tx*(1.0f-ty)*(bmap_blockairh[j][i+1] ? odh : hv[j][i+1]);
+				dh += AIR_VADV*(1.0f-tx)*ty*(bmap_blockairh[j+1][i] ? odh : hv[j+1][i]);
+				dh += AIR_VADV*tx*ty*(bmap_blockairh[j+1][i+1] ? odh : hv[j+1][i+1]);
 			}
 			//if(!gravityMode) TODO: GET REAL VALUE
 			{ //Vertical gravity only for the time being
