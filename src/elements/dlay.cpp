@@ -19,7 +19,7 @@ int update_DLAY(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)==PT_SPRK && parts[i].life==0 && parts[r>>8].life<4 && parts[r>>8].ctype==PT_PSCN)
+					if ((r&0xFF)==PT_SPRK && parts[i].life==0 && parts[r>>8].life>0 && parts[r>>8].life<4 && parts[r>>8].ctype==PT_PSCN)
 					{
 						parts[i].life = (int)(parts[i].temp-273.15);
 					}
