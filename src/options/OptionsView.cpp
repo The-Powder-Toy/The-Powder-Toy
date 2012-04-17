@@ -77,6 +77,9 @@ OptionsView::OptionsView():
 	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
 	AddComponent(tempLabel);
 
+	airMode = new ui::DropDown(ui::Point(Size.X-55, 143), ui::Point(50, 16));//, "Water equalisation \bgIntroduced in version 61");
+	//airMode->SetActionCallback(new WaterEqualisationAction(this));
+	AddComponent(airMode);
 	tempLabel = new ui::Label(ui::Point(3, 143), ui::Point(Size.X-24, 16), "Air Simulation Mode");
 	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
 	AddComponent(tempLabel);

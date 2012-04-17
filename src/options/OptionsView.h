@@ -11,6 +11,7 @@
 #include "interface/Window.h"
 #include "OptionsController.h"
 #include "interface/Checkbox.h"
+#include "interface/DropDown.h"
 #include "OptionsModel.h"
 
 class OptionsModel;
@@ -21,6 +22,8 @@ class OptionsView: public ui::Window {
 	ui::Checkbox * ambientHeatSimulation;
 	ui::Checkbox * newtonianGravity;
 	ui::Checkbox * waterEqualisation;
+	ui::DropDown * airMode;
+	ui::DropDown * gravityMode;
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);
