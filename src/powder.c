@@ -931,12 +931,9 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	}
 	if (t==PT_TRON)
 	{
-		int rr,rg,rb;
 		int randhue = rand()%360;
 		int randomdir = rand()%4;
-		HSV_to_RGB(randhue,255,255,&rr,&rg,&rb);
-		parts[i].dcolour = 255<<24 | rr<<16 | rg<<8 | rb;
-		parts[i].tmp = 1|(randomdir<<2);//set as a head and a direction
+		parts[i].tmp = 1|(randomdir<<5)|(randhue<<7);//set as a head and a direction
 		parts[i].tmp2 = 4;//tail
 		parts[i].life = 5;
 	}

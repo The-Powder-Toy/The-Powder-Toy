@@ -325,6 +325,7 @@ int graphics_WIRE(GRAPHICS_FUNC_ARGS);
 int graphics_ACEL(GRAPHICS_FUNC_ARGS);
 int graphics_DCEL(GRAPHICS_FUNC_ARGS);
 int graphics_GEL(GRAPHICS_FUNC_ARGS);
+int graphics_TRON(GRAPHICS_FUNC_ARGS);
 
 #define UPDATE_FUNC_ARGS int i, int x, int y, int surround_space, int nt
 // to call another update function with same arguments:
