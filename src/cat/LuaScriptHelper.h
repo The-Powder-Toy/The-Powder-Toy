@@ -81,6 +81,14 @@ int luatpt_set_property(lua_State* l);
 
 int luatpt_get_property(lua_State* l);
 
+int luatpt_set_wallmap(lua_State* l);
+
+int luatpt_get_wallmap(lua_State* l);
+
+int luatpt_set_elecmap(lua_State* l);
+
+int luatpt_get_elecmap(lua_State* l);
+
 int luatpt_drawpixel(lua_State* l);
 
 int luatpt_drawrect(lua_State* l);
