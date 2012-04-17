@@ -1845,7 +1845,7 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 		return -1;
 	if (p==-1)//creating from anything but brush
 	{
-		if (pmap[y][x] || (bmap[y/CELL][x/CELL] && !eval_move(t, x, y, NULL)))
+		if (pmap[y][x] || (bmap[y/CELL][x/CELL] && eval_move(t, x, y, NULL)!=2))
 		{
 			if ((pmap[y][x]&0xFF)!=PT_SPAWN&&(pmap[y][x]&0xFF)!=PT_SPAWN2)
 			{
