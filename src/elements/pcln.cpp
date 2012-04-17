@@ -11,7 +11,7 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_SPRK)
+				if ((r&0xFF)==PT_SPRK && parts[r>>8].life<4)
 				{
 					if (parts[r>>8].ctype==PT_PSCN)
 						parts[i].life = 10;
