@@ -495,8 +495,8 @@ void Renderer::render_fire()
 			g = fire_g[j][i];
 			b = fire_b[j][i];
 			if (r || g || b)
-				for (y=-CELL+1; y<2*CELL; y++)
-					for (x=-CELL+1; x<2*CELL; x++)
+				for (y=-CELL; y<2*CELL; y++)
+					for (x=-CELL; x<2*CELL; x++)
 						this->g->addpixel(i*CELL+x, j*CELL+y, r, g, b, fire_alpha[y+CELL][x+CELL]);
 			r *= 8;
 			g *= 8;
