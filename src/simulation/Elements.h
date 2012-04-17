@@ -275,7 +275,9 @@
 #define PT_WIRE 156
 #define PT_GBMB 157
 #define PT_FIGH 158
-#define PT_NUM  159
+#define PT_FRAY 159
+#define PT_REPL 160
+#define PT_NUM  161
 
 
 //#endif /* ELEMENTS_H_ */
