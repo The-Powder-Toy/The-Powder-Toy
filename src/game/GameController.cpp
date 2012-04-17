@@ -241,7 +241,7 @@ void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point poi
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
-	activeTool->DrawRect(sim, cBrush, point1, point2);
+	activeTool->DrawRect(sim, cBrush, PointTranslate(point1), PointTranslate(point2));
 }
 
 void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point point2)
@@ -251,7 +251,7 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
-	activeTool->DrawLine(sim, cBrush, point1, point2);
+	activeTool->DrawLine(sim, cBrush, PointTranslate(point1), PointTranslate(point2));
 }
 
 void GameController::DrawFill(int toolSelection, ui::Point point)
@@ -261,7 +261,7 @@ void GameController::DrawFill(int toolSelection, ui::Point point)
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
-	activeTool->DrawFill(sim, cBrush, point);
+	activeTool->DrawFill(sim, cBrush, PointTranslate(point));
 }
 
 void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueue)
