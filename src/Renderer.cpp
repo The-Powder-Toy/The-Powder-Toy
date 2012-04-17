@@ -379,15 +379,18 @@ void Renderer::DrawSigns()
 			//Displaying special information
 			if (strcmp(signs[i].text, "{p}")==0)
 			{
-				sprintf(buff, "Pressure: %3.2f", sim->pv[signs[i].y/CELL][signs[i].x/CELL]);  //...pressure
+				float pressure = 0.0f;
+				if (signs[i].x>=0 && signs[i].x<XRES && signs[i].y>=0 && signs[i].y<YRES)
+					pressure = sim->pv[signs[i].y/CELL][signs[i].x/CELL];
+				sprintf(buff, "Pressure: %3.2f", pressure);  //...pressure
 				g->drawtext(x+3, y+3, buff, 255, 255, 255, 255);
 			}
 			if (strcmp(signs[i].text, "{t}")==0)
 			{
-				if (sim->pmap[signs[i].y][signs[i].x])
-					sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...tempirature
+				if (signs[i].x>=0 && signs[i].x<XRES && signs[i].y>=0 && signs[i].y<YRES && sim->pmap[signs[i].y][signs[i].x])
+					sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...temperature
 				else
-					sprintf(buff, "Temp: 0.00");  //...tempirature
+					sprintf(buff, "Temp: 0.00");  //...temperature
 				g->drawtext(x+3, y+3, buff, 255, 255, 255, 255);
 			}
 
