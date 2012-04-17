@@ -2922,6 +2922,12 @@ killed:
 
 			if ((t==PT_PHOT||t==PT_NEUT||t==PT_ELEC)) {
 				if (t == PT_PHOT) {
+					if (parts[i].flags&FLAG_SKIPMOVE)
+					{
+						parts[i].flags &= ~FLAG_SKIPMOVE;
+						continue;
+					}
+
 					rt = pmap[fin_y][fin_x] & 0xFF;
 					lt = pmap[y][x] & 0xFF;
 

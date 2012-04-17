@@ -46,6 +46,7 @@
 #define PROP_SPARKSETTLE	0x20000	//2^17 Allow Sparks/Embers to settle
 
 #define FLAG_STAGNANT	1
+#define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
 
 #define ST_NONE 0
 #define ST_SOLID 1
