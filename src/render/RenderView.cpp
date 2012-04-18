@@ -157,6 +157,11 @@ RenderView::RenderView():
 	colourModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new ColourModeAction(this, COLOUR_GRAD));
 	AddComponent(tCheckbox);
+
+	tCheckbox = new ui::Checkbox(ui::Point(536, YRES+4), ui::Point(50, 16), "Basic");
+	colourModes.push_back(tCheckbox);
+	tCheckbox->SetActionCallback(new ColourModeAction(this, COLOUR_BASC));
+	AddComponent(tCheckbox);
 }
 
 void RenderView::OnMouseDown(int x, int y, unsigned button)

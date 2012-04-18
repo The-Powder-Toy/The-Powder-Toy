@@ -701,7 +701,7 @@ void Renderer::render_parts()
 					fireg = graphicscache[t].fireg;
 					fireb = graphicscache[t].fireb;
 				}
-				else
+				else if(!(colour_mode & COLOUR_BASC))
 				{
 					if (ptypes[t].graphics_func)
 					{
@@ -788,6 +788,13 @@ void Renderer::render_parts()
 					colg = sin(frequency*q) * 16 + colg;
 					colb = sin(frequency*q) * 16 + colb;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
+				}
+				else if(colour_mode & COLOUR_BASC)
+				{
+					colr = PIXR(ptypes[t].pcolors);
+					colg = PIXG(ptypes[t].pcolors);
+					colb = PIXB(ptypes[t].pcolors);
+					pixel_mode = PMODE_FLAT;
 				}
 
 				//Apply decoration colour
