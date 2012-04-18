@@ -2123,6 +2123,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 						}
 					}
 				}
+				else parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
 			}
 
 			if (t==PT_LIFE)
