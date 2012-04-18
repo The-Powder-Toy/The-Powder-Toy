@@ -29,6 +29,12 @@ int update_GEL(UPDATE_FUNC_ARGS) {
 					parts[i].tmp--;
 				}
 
+				if ((r&0xFF)==PT_SPNG && (parts[r>>8].life+1)<parts[i].tmp)
+				{
+					parts[r>>8].life++;
+					parts[i].tmp--;
+				}
+
 				float dx, dy;
 				dx = parts[i].x - parts[r>>8].x;
 				dy = parts[i].y - parts[r>>8].y;

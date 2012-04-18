@@ -3272,6 +3272,10 @@ killed:
 								rt = 30;//slight less water lag, although it changes how it moves a lot
 							else
 								rt = 10;
+
+							if (t==PT_GEL)
+								rt = parts[i].tmp*0.20f+5.0f;
+
 							for (j=clear_x+r; j>=0 && j>=clear_x-rt && j<clear_x+rt && j<XRES; j+=r)
 							{
 								if (((pmap[fin_y][j]&0xFF)!=t || bmap[fin_y/CELL][j/CELL])
