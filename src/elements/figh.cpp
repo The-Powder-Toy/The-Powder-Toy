@@ -4,41 +4,41 @@ int update_FIGH(UPDATE_FUNC_ARGS)
 {
 	playerst* figh = &sim->fighters[(unsigned char)parts[i].tmp];
 
-	float tarx, tary;
+	unsigned int tarx, tary;
 
 	parts[i].tmp2 = 0; //0 - stay in place, 1 - seek a stick man
 
 	//Set target cords
-	if (sim->player.spwn)
+	if (sim->player.spwn && sim->player2.spwn)
 	{
-		if (sim->player2.spwn)
 			if ((pow(sim->player.legs[2]-x, 2) + pow(sim->player.legs[3]-y, 2))<=
 					(pow(sim->player2.legs[2]-x, 2) + pow(sim->player2.legs[3]-y, 2)))
 			{
-				tarx = sim->player.legs[2];
-				tary = sim->player.legs[3];
+				tarx = (unsigned int)sim->player.legs[2];
+				tary = (unsigned int)sim->player.legs[3];
 			}
 			else
 			{
-				tarx = sim->player2.legs[2];
-				tary = sim->player2.legs[3];
+				tarx = (unsigned int)sim->player2.legs[2];
+				tary = (unsigned int)sim->player2.legs[3];
 			}
-		else
-		{
-			tarx = sim->player.legs[2];
-			tary = sim->player.legs[3];
-		}
-
-		parts[i].tmp2 = 1;
+			parts[i].tmp2 = 1;
 	}
 	else
-		if (sim->player2.spwn)
+	{
+		if (sim->player.spwn)
 		{
-			tarx = sim->player2.legs[2];
-			tary = sim->player2.legs[3];
-
+			tarx = (unsigned int)sim->player.legs[2];
+			tary = (unsigned int)sim->player.legs[3];
 			parts[i].tmp2 = 1;
 		}
+		if (sim->player2.spwn)
+		{
+			tarx = (unsigned int)sim->player2.legs[2];
+			tary = (unsigned int)sim->player2.legs[3];
+			parts[i].tmp2 = 1;
+		}
+	}
 
 	switch (parts[i].tmp2)
 	{
@@ -46,14 +46,15 @@ int update_FIGH(UPDATE_FUNC_ARGS)
 			if ((pow(tarx-x, 2) + pow(tary-y, 2))<600)
 			{
 				if (figh->elem == PT_LIGH || figh->elem == PT_NEUT 
-						|| (sim->ptypes[figh->elem].properties&(PROP_DEADLY|PROP_RADIOACTIVE))
+						|| sim->ptypes[figh->elem].properties&(PROP_DEADLY|PROP_RADIOACTIVE)
 						|| sim->ptypes[figh->elem].heat>=323 || sim->ptypes[figh->elem].heat<=243)
 					figh->comm = (int)figh->comm | 0x08;
 			}
 			else
-				if (tarx<x )
+				if (tarx<x)
 				{
-					if(!sim->eval_move(PT_DUST, figh->legs[4]-10, figh->legs[5]+6, NULL))
+					if(!(sim->eval_move(PT_DUST, figh->legs[4]-10, figh->legs[5]+6, NULL)
+					  && sim->eval_move(PT_DUST, figh->legs[4]-10, figh->legs[5]+3, NULL)))
 						figh->comm = 0x01;
 					else
 						figh->comm = 0x02;
@@ -65,7 +66,8 @@ int update_FIGH(UPDATE_FUNC_ARGS)
 				}
 				else
 				{ 
-					if (!sim->eval_move(PT_DUST, figh->legs[12]+10, figh->legs[13]+6, NULL))
+					if (!(sim->eval_move(PT_DUST, figh->legs[12]+10, figh->legs[13]+6, NULL)
+					   && sim->eval_move(PT_DUST, figh->legs[12]+10, figh->legs[13]+3, NULL)))
 						figh->comm = 0x02;
 					else
 						figh->comm = 0x01;
