@@ -453,7 +453,10 @@ void STKM_interact(Simulation * sim, playerst* playerp, int i, int x, int y)
 				{
 					sim->portalp[sim->parts[r>>8].tmp][count][nnx] = sim->parts[i];
 					sim->kill_part(i);
-					playerp->spwn = 1;//stop SPWN creating a new STKM while he is in portal
+					//stop new STKM/fighters being created to replace the ones in the portal:
+					playerp->spwn = 1;
+					if (sim->portalp[sim->parts[r>>8].tmp][count][nnx].type==PT_FIGH)
+						sim->fighcount++;
 					break;
 				}
 		}

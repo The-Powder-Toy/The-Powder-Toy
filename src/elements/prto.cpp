@@ -47,8 +47,31 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 								sim->player.spwn = 0;
 							if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_STKM2)
 								sim->player2.spwn = 0;
+							if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_FIGH)
+							{
+								sim->fighcount--;
+								sim->fighters[(unsigned char)sim->portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 0;
+							}
 							np = sim->create_part(-1, x+rx, y+ry, sim->portalp[parts[i].tmp][randomness][nnx].type);
-							if (np<0) continue;
+							if (np<0)
+							{
+								if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_STKM)
+									sim->player.spwn = 1;
+								if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_STKM2)
+									sim->player2.spwn = 1;
+								if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_FIGH)
+								{
+									sim->fighcount++;
+									sim->fighters[(unsigned char)sim->portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 1;
+								}
+								continue;
+							}
+							if (parts[np].type==PT_FIGH)
+							{
+								// Release the fighters[] element allocated by create_part, the one reserved when the fighter went into the portal will be used
+								sim->fighters[(unsigned char)parts[np].tmp].spwn = 0;
+								sim->fighters[(unsigned char)sim->portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 1;
+							}
 							parts[np] = sim->portalp[parts[i].tmp][randomness][nnx];
 							parts[np].x = x+rx;
 							parts[np].y = y+ry;
