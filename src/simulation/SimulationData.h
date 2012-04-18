@@ -148,6 +148,8 @@ menu_section * LoadMenus(int & menuCount);
 
 part_type * LoadElements(int & elementCount);
 
+unsigned int * LoadLatent(int & elementCount);
+
 part_transition * LoadTransitions(int & transitionCount);
 
 #endif /* SIMULATIONDATA_H_ */

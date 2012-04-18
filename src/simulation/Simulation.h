@@ -140,6 +140,7 @@ public:
 	Air * air;
 
 	part_type ptypes[PT_NUM];
+	unsigned int platent[PT_NUM];
 	part_transition ptransitions[PT_NUM];
 	wall_type wtypes[UI_WALLCOUNT];
 	gol_menu gmenu[NGOL];
