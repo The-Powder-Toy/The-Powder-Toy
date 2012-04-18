@@ -320,7 +320,7 @@ int graphics_BRAY(GRAPHICS_FUNC_ARGS)
 	}
 	*cola = trans;
 	*pixel_mode &= ~PMODE;
-	*pixel_mode |= PMODE_BLEND;
+	*pixel_mode |= PMODE_BLEND | PMODE_GLOW;
 	return 0;
 }
 int graphics_SWCH(GRAPHICS_FUNC_ARGS)

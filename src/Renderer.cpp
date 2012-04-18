@@ -752,7 +752,7 @@ void Renderer::render_parts()
 				if((pixel_mode & PMODE_BLUR) && !(render_mode & PMODE_BLUR))
 					pixel_mode |= PMODE_FLAT;
 				if((pixel_mode & PMODE_GLOW) && !(render_mode & PMODE_GLOW))
-					pixel_mode |= PMODE_FLAT;
+					pixel_mode |= PMODE_BLEND;
 				if (render_mode & PMODE_BLOB)
 					pixel_mode |= PMODE_BLOB;
 
@@ -1020,6 +1020,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_GLOW)
 				{
+					int cola1 = (5*cola)/255;
 #ifdef OGLR
                     glowV[cglowV++] = nx;
                     glowV[cglowV++] = ny;
@@ -1029,24 +1030,24 @@ void Renderer::render_parts()
                     glowC[cglowC++] = 1.0f;
                     cglow++;
 #else
-                    g->addpixel(nx, ny, colr, colg, colb, 192);
-                    g->addpixel(nx+1, ny, colr, colg, colb, 96);
-                    g->addpixel(nx-1, ny, colr, colg, colb, 96);
-                    g->addpixel(nx, ny+1, colr, colg, colb, 96);
-                    g->addpixel(nx, ny-1, colr, colg, colb, 96);
+                    g->addpixel(nx, ny, colr, colg, colb, (192*cola)/255);
+                    g->addpixel(nx+1, ny, colr, colg, colb, (96*cola)/255);
+                    g->addpixel(nx-1, ny, colr, colg, colb, (96*cola)/255);
+                    g->addpixel(nx, ny+1, colr, colg, colb, (96*cola)/255);
+                    g->addpixel(nx, ny-1, colr, colg, colb, (96*cola)/255);
 
 					for (x = 1; x < 6; x++) {
-						g->addpixel(nx, ny-x, colr, colg, colb, 5);
-						g->addpixel(nx, ny+x, colr, colg, colb, 5);
-						g->addpixel(nx-x, ny, colr, colg, colb, 5);
-						g->addpixel(nx+x, ny, colr, colg, colb, 5);
+						g->addpixel(nx, ny-x, colr, colg, colb, cola1);
+						g->addpixel(nx, ny+x, colr, colg, colb, cola1);
+						g->addpixel(nx-x, ny, colr, colg, colb, cola1);
+						g->addpixel(nx+x, ny, colr, colg, colb, cola1);
 						for (y = 1; y < 6; y++) {
 							if(x + y > 7)
 								continue;
-							g->addpixel(nx+x, ny-y, colr, colg, colb, 5);
-							g->addpixel(nx-x, ny+y, colr, colg, colb, 5);
-							g->addpixel(nx+x, ny+y, colr, colg, colb, 5);
-							g->addpixel(nx-x, ny-y, colr, colg, colb, 5);
+							g->addpixel(nx+x, ny-y, colr, colg, colb, cola1);
+							g->addpixel(nx-x, ny+y, colr, colg, colb, cola1);
+							g->addpixel(nx+x, ny+y, colr, colg, colb, cola1);
+							g->addpixel(nx-x, ny-y, colr, colg, colb, cola1);
 						}
 					}
 #endif
