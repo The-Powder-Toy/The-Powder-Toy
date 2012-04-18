@@ -109,6 +109,7 @@ int update_FRAY(UPDATE_FUNC_ARGS);
 int update_REPL(UPDATE_FUNC_ARGS);
 int update_NBLE(UPDATE_FUNC_ARGS);
 int update_GEL(UPDATE_FUNC_ARGS);
+int update_TRON(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
 int update_legacy_all(UPDATE_FUNC_ARGS);
 int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS);
@@ -168,6 +169,7 @@ int graphics_WIRE(GRAPHICS_FUNC_ARGS);
 int graphics_ACEL(GRAPHICS_FUNC_ARGS);
 int graphics_DCEL(GRAPHICS_FUNC_ARGS);
 int graphics_GEL(GRAPHICS_FUNC_ARGS);
+int graphics_TRON(GRAPHICS_FUNC_ARGS);
 int graphics_DEFAULT(GRAPHICS_FUNC_ARGS);
 
 #endif /* ELEMENTFUNCTIONS_H_ */

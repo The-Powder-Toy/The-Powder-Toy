@@ -263,6 +263,7 @@
 #define PT_IGNT 140
 #define PT_BOYL 141
 #define PT_GEL 142
+#define PT_TRON 143
 
 #define OLD_PT_WIND 147
 #define PT_H2   148
