@@ -2689,7 +2689,7 @@ void Simulation::update_particles_i(int start, int inc)
 					s = 1;
 
 					//A fix for ice with ctype = 0
-					if (t==PT_ICEI && parts[i].ctype==0)
+					if (t==PT_ICEI && (parts[i].ctype==0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI))
 						parts[i].ctype = PT_WATR;
 
 					if (ctemph>ptransitions[t].thv&&ptransitions[t].tht>-1) {
