@@ -184,7 +184,7 @@ int graphics_TRON(GRAPHICS_FUNC_ARGS) {
 		*fireb = *colb;
 		*firea = 255;
 	}
-	if(cpart->life < cpart->tmp2)
+	if(cpart->life < cpart->tmp2 && !(cpart->tmp & TRON_HEAD))
 	{
 		*pixel_mode |= PMODE_BLEND;
 		*pixel_mode &= ~PMODE_FLAT;
