@@ -107,6 +107,7 @@ int update_IGNT(UPDATE_FUNC_ARGS);
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_FRAY(UPDATE_FUNC_ARGS);
 int update_REPL(UPDATE_FUNC_ARGS);
+int update_NBLE(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
 int update_legacy_all(UPDATE_FUNC_ARGS);
 int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS);
