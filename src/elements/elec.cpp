@@ -79,7 +79,7 @@ int update_ELEC(UPDATE_FUNC_ARGS) {
 					sim->kill_part(i);
 					return 1;
 				}
-				if (sim->ptypes[r&0xFF].properties & PROP_CONDUCTS)
+				if ((sim->ptypes[r&0xFF].properties & PROP_CONDUCTS) && ((r&0xFF)!=PT_H2||parts[i].tmp!=1))
 				{
 					sim->create_part(-1, x+rx, y+ry, PT_SPRK);
 					sim->kill_part(i);
