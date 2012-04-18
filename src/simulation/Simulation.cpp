@@ -371,6 +371,28 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 		tg /= 1.0f+(colG*0.1f)*colA;
 		tb /= 1.0f+(colB*0.1f)*colA;
 	}
+	else if (mode == DECO_SMUDGE)
+	{
+		int rx, ry, num = 0;
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+			{
+				if ((pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
+				{
+					num++;
+					ta += float((parts[pmap[y+ry][x+rx]>>8].dcolour>>24)&0xFF)/255.0f;
+					tr += float((parts[pmap[y+ry][x+rx]>>8].dcolour>>16)&0xFF)/255.0f;
+					tg += float((parts[pmap[y+ry][x+rx]>>8].dcolour>>8)&0xFF)/255.0f;
+					tb += float((parts[pmap[y+ry][x+rx]>>8].dcolour)&0xFF)/255.0f;
+				}
+			}
+		if (num == 0)
+			return;
+		ta = ta/float(num)+0.5f;
+		tr = tr/float(num)+0.5f;
+		tg = tg/float(num)+0.5f;
+		tb = tb/float(num)+0.5f;
+	}
 
 	colA_ = ta*255.0f;
 	colR_ = tr*255.0f;

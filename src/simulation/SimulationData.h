@@ -61,6 +61,7 @@
 #define DECO_SUBTRACT	2
 #define DECO_MULTIPLY	3
 #define DECO_DIVIDE	4
+#define DECO_SMUDGE 5
 
 //Old IDs for GOL types
 #define GT_GOL 78

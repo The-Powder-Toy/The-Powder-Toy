@@ -7,7 +7,7 @@
 class DecorationTool: public Tool
 {
 public:
-	enum ToolType { BlendAdd = DECO_ADD, BlendRemove = DECO_SUBTRACT, BlendMultiply = DECO_MULTIPLY, BlendDivide = DECO_DIVIDE, BlendSet = DECO_DRAW };
+	enum ToolType { BlendAdd = DECO_ADD, BlendRemove = DECO_SUBTRACT, BlendMultiply = DECO_MULTIPLY, BlendDivide = DECO_DIVIDE, BlendSet = DECO_DRAW, BlendSmudge = DECO_SMUDGE };
 
 	ToolType decoMode;
 
