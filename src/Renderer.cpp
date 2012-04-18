@@ -780,15 +780,6 @@ void Renderer::render_parts()
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
 				}
-				else if (colour_mode & COLOUR_GRAD)
-				{
-					float frequency = 0.05;
-					int q = sim->parts[i].temp-40;
-					colr = sin(frequency*q) * 16 + colr;
-					colg = sin(frequency*q) * 16 + colg;
-					colb = sin(frequency*q) * 16 + colb;
-					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
-				}
 				else if(colour_mode & COLOUR_BASC)
 				{
 					colr = PIXR(ptypes[t].pcolors);
@@ -798,7 +789,7 @@ void Renderer::render_parts()
 				}
 
 				//Apply decoration colour
-				if(!colour_mode)
+				if(!(colour_mode & ~COLOUR_GRAD))
 				{
 					if(!(pixel_mode & NO_DECO) && decorations_enable)
 					{
@@ -813,6 +804,16 @@ void Renderer::render_parts()
 						fireg = (deca*decg + (255-deca)*fireg) >> 8;
 						fireb = (deca*decb + (255-deca)*fireb) >> 8;
 					}
+				}
+
+				if (colour_mode & COLOUR_GRAD)
+				{
+					float frequency = 0.05;
+					int q = sim->parts[i].temp-40;
+					colr = sin(frequency*q) * 16 + colr;
+					colg = sin(frequency*q) * 16 + colg;
+					colb = sin(frequency*q) * 16 + colb;
+					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
 				}
 
 	#ifndef OGLR
