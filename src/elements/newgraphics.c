@@ -107,7 +107,7 @@ int graphics_DUST(GRAPHICS_FUNC_ARGS)
 	if(cpart->life >= 1)
 	{
 		*firea = 120;
-		*firer = *colr = cpart->flags;
+		*firer = *colr = cpart->tmp2;
 		*fireg = *colg = cpart->tmp;
 		*fireb = *colb = cpart->ctype;
 		if (decorations_enable && cpart->dcolour)

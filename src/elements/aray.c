@@ -63,7 +63,7 @@ int update_ARAY(UPDATE_FUNC_ARGS) {
 												if (np!=-1)
 												{
 													parts[np].temp = parts[r>>8].temp;
-													parts[np].life = parts[r>>8].flags;
+													parts[np].life = parts[r>>8].tmp2;
 													parts[np].tmp = parts[r>>8].pavg[0];
 													parts[np].ctype = parts[r>>8].pavg[1];
 													parts[r>>8].tmp = 0;
