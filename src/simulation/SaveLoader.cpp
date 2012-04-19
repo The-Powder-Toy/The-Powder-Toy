@@ -6,6 +6,7 @@
  */
 
 #include <bzlib.h>
+#include <math.h>
 #include "SaveLoader.h"
 
 //!TODO: enum for LoadSave return
@@ -546,6 +547,11 @@ int SaveLoader::PSVLoad(unsigned char * data, int dataLength, Simulation * sim, 
 					sim->fighcount++;
 					//STKM_init_legs(&(fighters[fcount]), i-1);
 				}
+			}
+			else if (parts[i-1].type == PT_SPNG)
+			{
+				if (fabs(parts[i-1].vx)>0.0f || fabs(parts[i-1].vy)>0.0f)
+					parts[i-1].flags |= FLAG_MOVABLE;
 			}
 
 			if (ver<48 && (ty==OLD_PT_WIND || (ty==PT_BRAY&&parts[i-1].life==0)))

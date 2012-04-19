@@ -47,6 +47,7 @@
 
 #define FLAG_STAGNANT	1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
+#define FLAG_MOVABLE  0x4 // if can move
 
 #define ST_NONE 0
 #define ST_SOLID 1
