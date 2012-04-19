@@ -23,7 +23,7 @@ int update_FIRW(UPDATE_FUNC_ARGS) {
 			parts[i].tmp=2;
 		} else {
 			float newVel = parts[i].life/25;
-			parts[i].flags = parts[i].flags&0xFFFFFFFE;
+			parts[i].flags &= ~FLAG_STAGNANT;
 			/* TODO:
 			if ((pmap[(int)(ly-newVel)][(int)lx]&0xFF)==PT_NONE && ly-newVel>0) {
 				parts[i].vy = -newVel;
