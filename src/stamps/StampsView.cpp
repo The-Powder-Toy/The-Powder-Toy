@@ -9,7 +9,6 @@
 #include "client/Client.h"
 #include "StampsView.h"
 
-#include "interface/SaveButton.h"
 #include "dialogues/ErrorMessage.h"
 #include "StampsController.h"
 #include "StampsModel.h"
@@ -50,6 +49,22 @@ StampsView::StampsView():
 	};
 	previousButton->SetActionCallback(new PrevPageAction(this));
 	previousButton->SetAlignment(AlignLeft, AlignBottom);
+
+	class RemoveSelectedAction : public ui::ButtonAction
+	{
+		StampsView * v;
+	public:
+		RemoveSelectedAction(StampsView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->c->RemoveSelected();
+		}
+	};
+
+	removeSelected = new ui::Button(ui::Point((((XRES+BARSIZE)-100)/2), YRES+MENUSIZE-18), ui::Point(100, 16), "Delete");
+	removeSelected->Visible = false;
+	removeSelected->SetActionCallback(new RemoveSelectedAction(this));
+	AddComponent(removeSelected);
 }
 
 void StampsView::OnTick(float dt)
@@ -108,6 +123,10 @@ void StampsView::NotifyStampsListChanged(StampsModel * sender)
 		{
 			v->c->OpenStamp(sender->GetSave());
 		}
+		virtual void SelectedCallback(ui::SaveButton * sender)
+		{
+			v->c->Selected(sender->GetSave()->GetName(), sender->GetSelected());
+		}
 	};
 	for(i = 0; i < saves.size(); i++)
 	{
@@ -126,11 +145,33 @@ void StampsView::NotifyStampsListChanged(StampsModel * sender)
 						),
 					ui::Point(buttonWidth, buttonHeight),
 					saves[i]);
+		saveButton->SetSelectable(true);
 		saveButton->SetActionCallback(new SaveOpenAction(this));
 		stampButtons.push_back(saveButton);
 		AddComponent(saveButton);
 		saveX++;
 	}
+}
+
+void StampsView::NotifySelectedChanged(StampsModel * sender)
+{
+	vector<std::string> selected = sender->GetSelected();
+	for(int j = 0; j < stampButtons.size(); j++)
+	{
+		stampButtons[j]->SetSelected(false);
+		for(int i = 0; i < selected.size(); i++)
+		{
+			if(stampButtons[j]->GetSave()->GetName()==selected[i])
+				stampButtons[j]->SetSelected(true);
+		}
+	}
+
+	if(selected.size())
+	{
+		removeSelected->Visible = true;
+	}
+	else
+		removeSelected->Visible = false;
 }
 
 void StampsView::OnMouseWheel(int x, int y, int d)

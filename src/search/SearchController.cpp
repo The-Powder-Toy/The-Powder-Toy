@@ -220,6 +220,7 @@ void SearchController::removeSelectedC()
 	std::vector<int> selected = searchModel->GetSelected();
 	new TaskWindow("Removing saves", new RemoveSavesTask(selected));
 	ClearSelection();
+	searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
 }
 
 void SearchController::UnpublishSelected()
@@ -272,10 +273,37 @@ void SearchController::unpublishSelectedC()
 	std::vector<int> selected = searchModel->GetSelected();
 	new TaskWindow("Unpublishing saves", new UnpublishSavesTask(selected));
 	ClearSelection();
+	searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
 }
 
 void SearchController::FavouriteSelected()
 {
-	new ErrorMessage("Not impletemented", "Not ermplermerterd");
+	class FavouriteSavesTask : public Task
+	{
+		std::vector<int> saves;
+	public:
+		FavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
+		virtual void doWork()
+		{
+			for(int i = 0; i < saves.size(); i++)
+			{
+				std::stringstream saveID;
+				saveID << "Favouring save [" << saves[i] << "] ...";
+				notifyStatus(saveID.str());
+				if(Client::Ref().FavouriteSave(saves[i], true)!=RequestOkay)
+				{
+					std::stringstream saveIDF;
+					saveIDF << "\boFailed to favourite [" << saves[i] << "] ...";
+					notifyStatus(saveIDF.str());
+					usleep(500*1000);
+				}
+				usleep(100*1000);
+				notifyProgress((float(i+1)/float(saves.size())*100));
+			}
+		}
+	};
+
+	std::vector<int> selected = searchModel->GetSelected();
+	new TaskWindow("Favouring saves", new FavouriteSavesTask(selected));
 	ClearSelection();
 }

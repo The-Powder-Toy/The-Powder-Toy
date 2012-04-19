@@ -5,6 +5,7 @@
 #include <vector>
 #include <iomanip>
 #include <time.h>
+#include <stdio.h>
 
 #ifdef WIN32
 #include <direct.h>
@@ -221,7 +222,7 @@ Save * Client::GetStamp(string stampID)
 		stampFile.close();
 
 
-		Save * tempSave = new Save(0, 0, 0, 0, "", "");
+		Save * tempSave = new Save(0, 0, 0, 0, "", stampID);
 		tempSave->SetData(tempData, fileSize);
 		return tempSave;
 	}
@@ -233,7 +234,15 @@ Save * Client::GetStamp(string stampID)
 
 void Client::DeleteStamp(string stampID)
 {
-	return;
+	for(int i = 0; i < stampIDs.size(); i++)
+	{
+		if(stampIDs[i] == stampID)
+		{
+			remove(string(STAMPS_DIR PATH_SEP + stampID + ".stm").c_str());
+			stampIDs.erase(stampIDs.begin()+i);
+			return;
+		}
+	}
 }
 
 string Client::AddStamp(Save * saveData)

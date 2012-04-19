@@ -65,6 +65,7 @@ void StampsModel::UpdateStampsList(int pageNumber)
 	stampsList.clear();
 	currentPage = pageNumber;
 	notifyPageChanged();
+	notifyStampsListChanged();
 	/*notifyStampsListChanged();
 	for(int i = 0; i < tempStampsList.size(); i++)
 	{
@@ -76,9 +77,51 @@ void StampsModel::UpdateStampsList(int pageNumber)
 	for(int i = stampsEnd-20; i<stampIDs.size() && i<stampsEnd; i++)
 	{
 		Save * tempSave = Client::Ref().GetStamp(stampIDs[i]);
-		stampsList.push_back(tempSave);
+		if(tempSave)
+		{
+			stampsList.push_back(tempSave);
+		}
 	}
 	notifyStampsListChanged();
+}
+
+void StampsModel::SelectStamp(std::string stampID)
+{
+	for(int i = 0; i < selected.size(); i++)
+	{
+		if(selected[i]==stampID)
+		{
+			return;
+		}
+	}
+	selected.push_back(stampID);
+	notifySelectedChanged();
+}
+
+void StampsModel::DeselectStamp(std::string stampID)
+{
+	bool changed = false;
+restart:
+	for(int i = 0; i < selected.size(); i++)
+	{
+		if(selected[i]==stampID)
+		{
+			selected.erase(selected.begin()+i);
+			changed = true;
+			goto restart; //Just ensure all cases are removed.
+		}
+	}
+	if(changed)
+		notifySelectedChanged();
+}
+
+void StampsModel::notifySelectedChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		StampsView* cObserver = observers[i];
+		cObserver->NotifySelectedChanged(this);
+	}
 }
 
 StampsModel::~StampsModel() {

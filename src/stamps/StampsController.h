@@ -23,6 +23,10 @@ public:
 	StampsController(ControllerCallback * callback);
 	StampsView * GetView() {return stampsView;}
 	Save * GetStamp();
+	void RemoveSelected();
+	void removeSelectedC();
+	void ClearSelection();
+	void Selected(std::string stampID, bool selected);
 	void OpenStamp(Save * stamp);
 	void SetStamp();
 	void NextPage();
