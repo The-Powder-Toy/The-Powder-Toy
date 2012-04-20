@@ -47,7 +47,7 @@ Client::Client():
 	{
 		int fsize = configFile.tellg();
 		configFile.seekg(0, std::ios::end);
-		fsize = configFile.tellg() - fsize;
+		fsize = configFile.tellg() - (std::streampos)fsize;
 		configFile.seekg(0, ios::beg);
 		if(fsize)
 		{
