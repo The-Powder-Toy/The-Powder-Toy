@@ -166,6 +166,7 @@ void Engine::Draw()
 {
 	if(lastBuffer && !(state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
 	{
+		g->Clear();
 		memcpy(g->vid, lastBuffer, (width_ * height_) * PIXELSIZE);
 	}
 	else

@@ -8,6 +8,8 @@
 #include <math.h>
 #include <iostream>
 #include <vector>
+#include <stdio.h>
+#include <stdlib.h>
 #include "Config.h"
 #include "Renderer.h"
 #include "Graphics.h"
@@ -18,6 +20,212 @@
 extern "C"
 {
 #include "hmap.h"
+#ifdef OGLR
+#include "Shaders.h"
+#endif
+}
+
+
+void Renderer::clearScreen(float alpha)
+{
+#ifdef OGLR
+	if(alpha > 0.999f)
+	{
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    }
+    else
+    {
+		glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+		glColor4f(1.0f, 1.0f, 1.0f, alpha);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+		glBegin(GL_QUADS);
+		glVertex2f(0, 0);
+		glVertex2f(XRES, 0);
+		glVertex2f(XRES, YRES);
+		glVertex2f(0, YRES);
+		glEnd();
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBlendEquation(GL_FUNC_ADD);
+    }
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+#endif
+}
+#ifdef OGLR
+void Renderer::checkShader(GLuint shader, char * shname)
+{
+	GLint status;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+	if (status == GL_FALSE)
+	{
+		char errorBuf[ GL_INFO_LOG_LENGTH];
+		int errLen;
+		glGetShaderInfoLog(shader, GL_INFO_LOG_LENGTH, &errLen, errorBuf);
+		fprintf(stderr, "Failed to compile %s shader:\n%s\n", shname, errorBuf);
+		exit(1);
+	}
+}
+void Renderer::checkProgram(GLuint program, char * progname)
+{
+	GLint status;
+	glGetProgramiv(program, GL_LINK_STATUS, &status);
+	if (status == GL_FALSE)
+	{
+		char errorBuf[ GL_INFO_LOG_LENGTH];
+		int errLen;
+		glGetShaderInfoLog(program, GL_INFO_LOG_LENGTH, &errLen, errorBuf);
+		fprintf(stderr, "Failed to link %s program:\n%s\n", progname, errorBuf);
+		exit(1);
+	}
+}
+void Renderer::loadShaders()
+{
+	GLuint vertexShader, fragmentShader;
+
+	//Particle texture
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	glShaderSource( vertexShader, 1, &fireVertex, NULL);
+	glShaderSource( fragmentShader, 1, &fireFragment, NULL);
+
+	glCompileShader( vertexShader );
+	checkShader(vertexShader, "FV");
+	glCompileShader( fragmentShader );
+	checkShader(fragmentShader, "FF");
+
+	fireProg = glCreateProgram();
+	glAttachShader( fireProg, vertexShader );
+	glAttachShader( fireProg, fragmentShader );
+	glLinkProgram( fireProg );
+	checkProgram(fireProg, "F");
+
+	//Lensing
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	glShaderSource( vertexShader, 1, &lensVertex, NULL);
+	glShaderSource( fragmentShader, 1, &lensFragment, NULL);
+
+	glCompileShader( vertexShader );
+	checkShader(vertexShader, "LV");
+	glCompileShader( fragmentShader );
+	checkShader(fragmentShader, "LF");
+
+	lensProg = glCreateProgram();
+	glAttachShader( lensProg, vertexShader );
+	glAttachShader( lensProg, fragmentShader );
+	glLinkProgram( lensProg );
+	checkProgram(lensProg, "L");
+
+	//Air Velocity
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	glShaderSource( vertexShader, 1, &airVVertex, NULL);
+	glShaderSource( fragmentShader, 1, &airVFragment, NULL);
+
+	glCompileShader( vertexShader );
+	checkShader(vertexShader, "AVX");
+	glCompileShader( fragmentShader );
+	checkShader(fragmentShader, "AVF");
+
+	airProg_Velocity = glCreateProgram();
+	glAttachShader( airProg_Velocity, vertexShader );
+	glAttachShader( airProg_Velocity, fragmentShader );
+	glLinkProgram( airProg_Velocity );
+	checkProgram(airProg_Velocity, "AV");
+
+	//Air Pressure
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	glShaderSource( vertexShader, 1, &airPVertex, NULL);
+	glShaderSource( fragmentShader, 1, &airPFragment, NULL);
+
+	glCompileShader( vertexShader );
+	checkShader(vertexShader, "APV");
+	glCompileShader( fragmentShader );
+	checkShader(fragmentShader, "APF");
+
+	airProg_Pressure = glCreateProgram();
+	glAttachShader( airProg_Pressure, vertexShader );
+	glAttachShader( airProg_Pressure, fragmentShader );
+	glLinkProgram( airProg_Pressure );
+	checkProgram(airProg_Pressure, "AP");
+
+	//Air cracker
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	glShaderSource( vertexShader, 1, &airCVertex, NULL);
+	glShaderSource( fragmentShader, 1, &airCFragment, NULL);
+
+	glCompileShader( vertexShader );
+	checkShader(vertexShader, "ACV");
+	glCompileShader( fragmentShader );
+	checkShader(fragmentShader, "ACF");
+
+	airProg_Cracker = glCreateProgram();
+	glAttachShader( airProg_Cracker, vertexShader );
+	glAttachShader( airProg_Cracker, fragmentShader );
+	glLinkProgram( airProg_Cracker );
+	checkProgram(airProg_Cracker, "AC");
+}
+#endif
+
+void Renderer::FinaliseParts()
+{
+#ifdef OGLR
+	glEnable( GL_TEXTURE_2D );
+	if(display_mode & DISPLAY_WARP)
+	{
+		float xres = XRES, yres = YRES;
+		glUseProgram(lensProg);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, partsFboTex);
+		glUniform1i(glGetUniformLocation(lensProg, "pTex"), 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, partsTFX);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_RED, GL_FLOAT, sim->gravx);
+		glUniform1i(glGetUniformLocation(lensProg, "tfX"), 1);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, partsTFY);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_GREEN, GL_FLOAT, sim->gravy);
+		glUniform1i(glGetUniformLocation(lensProg, "tfY"), 2);
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1fv(glGetUniformLocation(lensProg, "xres"), 1, &xres);
+		glUniform1fv(glGetUniformLocation(lensProg, "yres"), 1, &yres);
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, partsFboTex);
+		glBlendFunc(GL_ONE, GL_ONE);
+	}
+
+	int sdl_scale = 1;
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBegin(GL_QUADS);
+	glTexCoord2d(1, 0);
+	glVertex3f(XRES*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
+	glTexCoord2d(0, 0);
+	glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
+	glTexCoord2d(0, 1);
+	glVertex3f(0, MENUSIZE*sdl_scale, 1.0);
+	glTexCoord2d(1, 1);
+	glVertex3f(XRES*sdl_scale, MENUSIZE*sdl_scale, 1.0);
+	glEnd();
+
+	if(display_mode & DISPLAY_WARP)
+	{
+		glUseProgram(0);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	glDisable( GL_TEXTURE_2D );
+#endif
 }
 
 void Renderer::RenderZoom()
@@ -25,15 +233,16 @@ void Renderer::RenderZoom()
 	if(!zoomEnabled)
 		return;
 	#ifdef OGLR
+		int sdl_scale = 1;
 		int origBlendSrc, origBlendDst;
 		float zcx1, zcx0, zcy1, zcy0, yfactor, xfactor, i; //X-Factor is shit, btw
 		xfactor = 1.0f/(float)XRES;
 		yfactor = 1.0f/(float)YRES;
 
-		zcx0 = (zoom_x)*xfactor;
-		zcx1 = (zoom_x+ZSIZE)*xfactor;
-		zcy0 = (zoom_y)*yfactor;
-		zcy1 = ((zoom_y+ZSIZE))*yfactor;
+		zcx0 = (zoomScopePosition.X)*xfactor;
+		zcx1 = (zoomScopePosition.X+zoomScopeSize)*xfactor;
+		zcy0 = (zoomScopePosition.Y)*yfactor;
+		zcy1 = ((zoomScopePosition.Y+zoomScopeSize))*yfactor;
 
 		glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
 		glGetIntegerv(GL_BLEND_DST, &origBlendDst);
@@ -46,13 +255,13 @@ void Renderer::RenderZoom()
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glBegin(GL_QUADS);
 		glTexCoord2d(zcx1, zcy1);
-		glVertex3f((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 1.0);
+		glVertex3f((zoomWindowPosition.X+zoomScopeSize*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR))*sdl_scale, 1.0);
 		glTexCoord2d(zcx0, zcy1);
-		glVertex3f(zoom_wx*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 1.0);
+		glVertex3f(zoomWindowPosition.X*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR))*sdl_scale, 1.0);
 		glTexCoord2d(zcx0, zcy0);
-		glVertex3f(zoom_wx*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 1.0);
+		glVertex3f(zoomWindowPosition.X*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale, 1.0);
 		glTexCoord2d(zcx1, zcy0);
-		glVertex3f((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 1.0);
+		glVertex3f((zoomWindowPosition.X+zoomScopeSize*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale, 1.0);
 		glEnd();
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable( GL_TEXTURE_2D );
@@ -63,39 +272,39 @@ void Renderer::RenderZoom()
 		glEnable(GL_LINE_SMOOTH);
 		glBegin(GL_LINES);
 		glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-		for(i = 0; i < ZSIZE; i++)
+		for(i = 0; i < zoomScopeSize; i++)
 		{
-			glVertex2f((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR)+i*ZFACTOR)*sdl_scale);
-			glVertex2f(zoom_wx*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR)+i*ZFACTOR)*sdl_scale);
-			glVertex2f((zoom_wx+i*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale);
-			glVertex2f((zoom_wx+i*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale);
+			glVertex2f((zoomWindowPosition.X+zoomScopeSize*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR)+i*ZFACTOR)*sdl_scale);
+			glVertex2f(zoomWindowPosition.X*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR)+i*ZFACTOR)*sdl_scale);
+			glVertex2f((zoomWindowPosition.X+i*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR))*sdl_scale);
+			glVertex2f((zoomWindowPosition.X+i*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale);
 		}
 		glEnd();
 
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glBegin(GL_LINE_STRIP);
-		glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
-		glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 0);
-		glVertex3i((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoom_wy+ZSIZE*ZFACTOR))*sdl_scale, 0);
-		glVertex3i((zoom_wx+ZSIZE*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
-		glVertex3i((zoom_wx-1)*sdl_scale, (YRES+MENUSIZE-zoom_wy)*sdl_scale, 0);
+		glVertex3i((zoomWindowPosition.X-1)*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale, 0);
+		glVertex3i((zoomWindowPosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR))*sdl_scale, 0);
+		glVertex3i((zoomWindowPosition.X+zoomScopeSize*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR))*sdl_scale, 0);
+		glVertex3i((zoomWindowPosition.X+zoomScopeSize*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale, 0);
+		glVertex3i((zoomWindowPosition.X-1)*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale, 0);
 		glEnd();
 		glDisable(GL_LINE_SMOOTH);
 
 		glDisable(GL_LINE_SMOOTH);
 
-		if(zoom_en)
+		if(zoomEnabled)
 		{
 			glEnable(GL_COLOR_LOGIC_OP);
 			//glEnable(GL_LINE_SMOOTH);
 			glLogicOp(GL_XOR);
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 			glBegin(GL_LINE_STRIP);
-			glVertex3i((zoom_x-1)*sdl_scale, (YRES+MENUSIZE-(zoom_y-1))*sdl_scale, 0);
-			glVertex3i((zoom_x-1)*sdl_scale, (YRES+MENUSIZE-(zoom_y+ZSIZE))*sdl_scale, 0);
-			glVertex3i((zoom_x+ZSIZE)*sdl_scale, (YRES+MENUSIZE-(zoom_y+ZSIZE))*sdl_scale, 0);
-			glVertex3i((zoom_x+ZSIZE)*sdl_scale, (YRES+MENUSIZE-(zoom_y-1))*sdl_scale, 0);
-			glVertex3i((zoom_x-1)*sdl_scale, (YRES+MENUSIZE-(zoom_y-1))*sdl_scale, 0);
+			glVertex3i((zoomScopePosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y-1))*sdl_scale, 0);
+			glVertex3i((zoomScopePosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y+zoomScopeSize))*sdl_scale, 0);
+			glVertex3i((zoomScopePosition.X+zoomScopeSize)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y+zoomScopeSize))*sdl_scale, 0);
+			glVertex3i((zoomScopePosition.X+zoomScopeSize)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y-1))*sdl_scale, 0);
+			glVertex3i((zoomScopePosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y-1))*sdl_scale, 0);
 			glEnd();
 			glDisable(GL_COLOR_LOGIC_OP);
 		}
@@ -518,15 +727,16 @@ void Renderer::render_fire()
 		}
 }
 
+float temp[CELL*3][CELL*3];
+float fire_alphaf[CELL*3][CELL*3];
+float glow_alphaf[11][11];
+float blur_alphaf[7][7];
 void Renderer::prepare_alpha(int size, float intensity)
 {
 	//TODO: implement size
 	int x,y,i,j,c;
 	float multiplier = 255.0f*intensity;
-	float temp[CELL*3][CELL*3];
-	float fire_alphaf[CELL*3][CELL*3];
-	float glow_alphaf[11][11];
-	float blur_alphaf[7][7];
+
 	memset(temp, 0, sizeof(temp));
 	for (x=0; x<CELL; x++)
 		for (y=0; y<CELL; y++)
@@ -538,6 +748,7 @@ void Renderer::prepare_alpha(int size, float intensity)
 			fire_alpha[y][x] = (int)(multiplier*temp[y][x]/(CELL*CELL));
 
 #ifdef OGLR
+	memset(fire_alphaf, 0, sizeof(fire_alphaf));
 	for (x=0; x<CELL*3; x++)
 		for (y=0; y<CELL*3; y++)
 		{
@@ -623,7 +834,7 @@ void Renderer::render_parts()
 	int cflatV = 0, cflatC = 0, cflat = 0;
 	int caddV = 0, caddC = 0, cadd = 0;
 	int clineV = 0, clineC = 0, cline = 0;
-	GLuint origBlendSrc, origBlendDst;
+	GLint origBlendSrc, origBlendDst;
 
 	glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
 	glGetIntegerv(GL_BLEND_DST, &origBlendDst);
@@ -1694,6 +1905,7 @@ void Renderer::draw_air()
 					g->vid[(x*CELL+i) + (y*CELL+j)*(XRES+BARSIZE)] = c;
 		}
 #else
+	int sdl_scale = 1;
 	GLuint airProg;
 	if(display_mode & DISPLAY_AIRC)
 	{
@@ -1719,15 +1931,15 @@ void Renderer::draw_air()
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, airVX);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_RED, GL_FLOAT, vx);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_RED, GL_FLOAT, sim->air->vx);
     glUniform1i(glGetUniformLocation(airProg, "airX"), 0);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, airVY);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_GREEN, GL_FLOAT, vy);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_GREEN, GL_FLOAT, sim->air->vy);
     glUniform1i(glGetUniformLocation(airProg, "airY"), 1);
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, airPV);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_BLUE, GL_FLOAT, pv);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_BLUE, GL_FLOAT, sim->air->pv);
     glUniform1i(glGetUniformLocation(airProg, "airP"), 2);
     glActiveTexture(GL_TEXTURE0);
 
@@ -1786,7 +1998,6 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
 	memset(fire_b, 0, sizeof(fire_b));
-	prepare_alpha(CELL, 1.0f);
 
 	//Set defauly display modes
 	SetColourMode(COLOUR_DEFAULT);
@@ -1807,6 +2018,138 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 
 	flm_data = Graphics::GenerateGradient(fireColours, fireColoursPoints, fireColoursCount, 200);
 	plasma_data = Graphics::GenerateGradient(plasmaColours, plasmaColoursPoints, plasmaColoursCount, 200);
+
+#ifdef OGLR
+	//FBO Texture
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &partsFboTex);
+	glBindTexture(GL_TEXTURE_2D, partsFboTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, XRES, YRES, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+	//FBO
+	glGenFramebuffers(1, &partsFbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+	glEnable(GL_BLEND);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, partsFboTex, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // Reset framebuffer binding
+	glDisable(GL_TEXTURE_2D);
+
+	//Texture for air to be drawn
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &airBuf);
+	glBindTexture(GL_TEXTURE_2D, airBuf);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+
+	//Zoom texture
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &zoomTex);
+	glBindTexture(GL_TEXTURE_2D, zoomTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+
+	//Texture for velocity maps for gravity
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &partsTFX);
+	glBindTexture(GL_TEXTURE_2D, partsTFX);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES, YRES, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glGenTextures(1, &partsTFY);
+	glBindTexture(GL_TEXTURE_2D, partsTFY);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES, YRES, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+
+	//Texture for velocity maps for air
+	//TODO: Combine all air maps into 3D array or structs
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &airVX);
+	glBindTexture(GL_TEXTURE_2D, airVX);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glGenTextures(1, &airVY);
+	glBindTexture(GL_TEXTURE_2D, airVY);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glGenTextures(1, &airPV);
+	glBindTexture(GL_TEXTURE_2D, airPV);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, XRES/CELL, YRES/CELL, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+
+	//Fire alpha texture
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &fireAlpha);
+	glBindTexture(GL_TEXTURE_2D, fireAlpha);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, CELL*3, CELL*3, 0, GL_ALPHA, GL_FLOAT, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+
+	//Glow alpha texture
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &glowAlpha);
+	glBindTexture(GL_TEXTURE_2D, glowAlpha);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 11, 11, 0, GL_ALPHA, GL_FLOAT, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+
+
+	//Blur Alpha texture
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &blurAlpha);
+	glBindTexture(GL_TEXTURE_2D, blurAlpha);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 7, 7, 0, GL_ALPHA, GL_FLOAT, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+
+	loadShaders();
+#endif
+	prepare_alpha(CELL, 1.0f);
 }
 
 void Renderer::CompileRenderMode()
@@ -1913,3 +2256,4 @@ Renderer::~Renderer()
 	free(flm_data);
 	free(plasma_data);
 }
+

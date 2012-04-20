@@ -2,22 +2,6 @@
 #include <SDL/SDL.h>
 #include <bzlib.h>
 #include <string>
-
-#if defined(OGLR)
-#ifdef MACOSX
-#include <GL/glew.h>
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#elif defined(WIN32)
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-#endif
-
 #include "Config.h"
 //#include "simulation/Air.h"
 //#include "simulation/Gravity.h"
@@ -41,10 +25,10 @@ unsigned int display_mode;
 //SDL_Surface *sdl_scrn;
 int sdl_scale = 1;
 
-#ifdef OGLR
+/*#ifdef OGLR
 GLuint zoomTex, vidBuf, airBuf, fireAlpha, glowAlpha, blurAlpha, partsFboTex, partsFbo, partsTFX, partsTFY, airPV, airVY, airVX;
 GLuint fireProg, airProg_Pressure, airProg_Velocity, airProg_Cracker, lensProg;
-#endif
+#endif*/
 
 /*
 int emp_decor = 0;
@@ -363,61 +347,10 @@ pixel *Graphics::rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f
 }
 
 #ifdef OGLR
-void clearScreen(float alpha)
-{
-	if(alpha > 0.999f)
-	{
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    }
-    else
-    {
-		glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-		glColor4f(1.0f, 1.0f, 1.0f, alpha);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
-		glBegin(GL_QUADS);
-		glVertex2f(0, 0);
-		glVertex2f(XRES, 0);
-		glVertex2f(XRES, YRES);
-		glVertex2f(0, YRES);
-		glEnd();
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		glBlendEquation(GL_FUNC_ADD);
-    }
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-}
-
 void clearScreenNP(float alpha)
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-}
-
-void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale)
-{
-
-    //glDrawPixels(w,h,GL_BGRA,GL_UNSIGNED_BYTE,src); //Why does this still think it's ABGR?
-    glEnable( GL_TEXTURE_2D );
-    glBindTexture(GL_TEXTURE_2D, vidBuf);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES+BARSIZE, YRES+MENUSIZE, GL_BGRA, GL_UNSIGNED_BYTE, src);
-	glBegin(GL_QUADS);
-    glTexCoord2d(1, 0);
-    glVertex3f((XRES+BARSIZE)*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
-    glTexCoord2d(0, 0);
-    glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
-    glTexCoord2d(0, 1);
-    glVertex3f(0, 0, 1.0);
-    glTexCoord2d(1, 1);
-    glVertex3f((XRES+BARSIZE)*sdl_scale, 0, 1.0);
-    glEnd();
-
-    glDisable( GL_TEXTURE_2D );
-    glFlush();
-    SDL_GL_SwapBuffers ();
 }
 #endif
 
@@ -1392,7 +1325,7 @@ void Graphics::xor_rect(int x, int y, int w, int h)
 }
 
 
-//New function for drawing particles
+/*//New function for drawing particles
 #ifdef OGLR
 GLuint fireV[(YRES*XRES)*2];
 GLfloat fireC[(YRES*XRES)*4];
@@ -1410,57 +1343,7 @@ GLuint addV[(YRES*XRES)*2];
 GLfloat addC[(YRES*XRES)*4];
 GLfloat lineV[(((YRES*XRES)*2)*6)];
 GLfloat lineC[(((YRES*XRES)*2)*6)];
-#endif
-
-#ifdef OGLR
-void draw_parts_fbo()
-{
-	glEnable( GL_TEXTURE_2D );
-	if(display_mode & DISPLAY_WARP)
-	{
-		float xres = XRES, yres = YRES;
-		glUseProgram(lensProg);
-		glActiveTexture(GL_TEXTURE0);			
-		glBindTexture(GL_TEXTURE_2D, partsFboTex);
-		glUniform1i(glGetUniformLocation(lensProg, "pTex"), 0);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, partsTFX);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_RED, GL_FLOAT, gravx);
-		glUniform1i(glGetUniformLocation(lensProg, "tfX"), 1);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, partsTFY);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_GREEN, GL_FLOAT, gravy);
-		glUniform1i(glGetUniformLocation(lensProg, "tfY"), 2);
-		glActiveTexture(GL_TEXTURE0);
-		glUniform1fv(glGetUniformLocation(lensProg, "xres"), 1, &xres);
-		glUniform1fv(glGetUniformLocation(lensProg, "yres"), 1, &yres);
-	}
-	else
-	{	
-		glBindTexture(GL_TEXTURE_2D, partsFboTex);
-		glBlendFunc(GL_ONE, GL_ONE);
-	}
-	
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBegin(GL_QUADS);
-	glTexCoord2d(1, 0);
-	glVertex3f(XRES*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
-	glTexCoord2d(0, 0);
-	glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
-	glTexCoord2d(0, 1);
-	glVertex3f(0, MENUSIZE*sdl_scale, 1.0);
-	glTexCoord2d(1, 1);
-	glVertex3f(XRES*sdl_scale, MENUSIZE*sdl_scale, 1.0);
-	glEnd();
-	
-	if(display_mode & DISPLAY_WARP)
-	{
-		glUseProgram(0);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-	glDisable( GL_TEXTURE_2D );
-}
-#endif
+#endif*/
 
 
 //draws the photon colors in the HUD
@@ -2384,15 +2267,48 @@ int draw_debug_info(pixel* vid, Simulation * sim, int lm, int lx, int ly, int cx
 void Graphics::Clear()
 {
 	memset(vid, 0, PIXELSIZE * ((XRES+BARSIZE) * (YRES+MENUSIZE)));
+#ifdef OGLR
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+#endif
 }
 
 void Graphics::AttachSDLSurface(SDL_Surface * surface)
 {
 	sdl_scrn = surface;
+#ifdef OGLR
+	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	glOrtho(0, (XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glRasterPos2i(0, (YRES+MENUSIZE));
+	glPixelZoom(1, -1);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//Texture for main UI
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &vidBuf);
+	glBindTexture(GL_TEXTURE_2D, vidBuf);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES+BARSIZE, YRES+MENUSIZE, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+#endif
 }
 
 void Graphics::Blit()
 {
+#ifndef OGLR
 	if(sdl_scrn)
 	{
 		pixel * dst;
@@ -2412,14 +2328,48 @@ void Graphics::Blit()
 			SDL_UnlockSurface(sdl_scrn);
 		SDL_UpdateRect(sdl_scrn,0,0,0,0);
 	}
+#else
+    //glDrawPixels(w,h,GL_BGRA,GL_UNSIGNED_BYTE,src); //Why does this still think it's ABGR?
+    glEnable( GL_TEXTURE_2D );
+    glBindTexture(GL_TEXTURE_2D, vidBuf);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES+BARSIZE, YRES+MENUSIZE, GL_BGRA, GL_UNSIGNED_BYTE, vid);
+	glBegin(GL_QUADS);
+    glTexCoord2d(1, 0);
+    glVertex3f((XRES+BARSIZE)*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
+    glTexCoord2d(0, 0);
+    glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
+    glTexCoord2d(0, 1);
+    glVertex3f(0, 0, 1.0);
+    glTexCoord2d(1, 1);
+    glVertex3f((XRES+BARSIZE)*sdl_scale, 0, 1.0);
+    glEnd();
+
+    glDisable( GL_TEXTURE_2D );
+    glFlush();
+    SDL_GL_SwapBuffers ();
+#endif
 }
 
 Graphics::Graphics():
 		sdl_scrn(NULL)
 {
 	vid = (pixel *)malloc(PIXELSIZE * ((XRES+BARSIZE) * (YRES+MENUSIZE)));
+
+#ifdef OGLR
+#ifdef WIN32
+		status = glewInit();
+		if(status != GLEW_OK)
+		{
+			fprintf(stderr, "Initializing Glew: %d\n", status);
+			return 0;
+		}
+#endif
+#endif
 }
+
 Graphics::~Graphics()
 {
 	free(vid);
 }
+

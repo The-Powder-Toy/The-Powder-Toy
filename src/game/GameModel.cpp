@@ -164,8 +164,8 @@ GameModel::~GameModel()
 		delete clipboard;
 	if(stamp)
 		delete stamp;
-	if(activeTools)
-		delete activeTools;
+	//if(activeTools)
+	//	delete[] activeTools;
 }
 
 void GameModel::SetVote(int direction)

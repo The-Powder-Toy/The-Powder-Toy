@@ -3574,6 +3574,7 @@ Simulation::Simulation():
 	portal_rx({-1, 0, 1, 1, 1, 0,-1,-1}),
 	portal_ry({-1,-1,-1, 0, 1, 1, 1, 0})
 {
+
 	//Create and attach gravity simulation
 	grav = new Gravity();
 	//Give air sim references to our data

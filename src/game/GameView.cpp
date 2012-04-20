@@ -853,11 +853,13 @@ void GameView::OnDraw()
 	Graphics * g = ui::Engine::Ref().g;
 	if(ren)
 	{
+		ren->clearScreen(1.0f);
 		ren->draw_air();
 		ren->render_parts();
 		ren->render_fire();
-		ren->draw_grav();
+		//ren->draw_grav();
 		ren->DrawWalls();
+		ren->FinaliseParts();
 		if(activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
 		{
 			if(drawMode==DrawRect && isMouseDown)

@@ -3,6 +3,21 @@
 
 #include <SDL/SDL.h>
 #include <string>
+#if defined(OGLR)
+#ifdef MACOSX
+#include <GL/glew.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#elif defined(WIN32)
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#else
+//#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
+#endif
 #include "Config.h"
 //#include "powder.h"
 
@@ -159,6 +174,9 @@ public:
 	#endif
 	Graphics();
 	~Graphics();
+#ifdef OGLR
+	GLuint vidBuf;
+#endif
 };
 
 #endif

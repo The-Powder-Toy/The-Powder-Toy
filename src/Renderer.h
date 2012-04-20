@@ -2,6 +2,22 @@
 #define RENDERER_H
 
 #include <vector>
+#if defined(OGLR)
+#ifdef MACOSX
+#include <GL/glew.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#elif defined(WIN32)
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#else
+//#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
+#endif
+
 #include "Config.h"
 #include "client/Client.h"
 #include "simulation/Simulation.h"
@@ -62,6 +78,16 @@ public:
 	void draw_air();
 	void draw_grav();
 	void draw_other();
+	void FinaliseParts();
+	void clearScreen(float alpha);
+
+	//class SolidsRenderer;
+
+#ifdef OGLR
+	void checkShader(GLuint shader, char * shname);
+	void checkProgram(GLuint program, char * progname);
+	void loadShaders();
+#endif
 
 	//...
 	void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
@@ -82,6 +108,28 @@ public:
 
 	Renderer(Graphics * g, Simulation * sim);
 	~Renderer();
+
+private:
+#ifdef OGLR
+	GLuint zoomTex, airBuf, fireAlpha, glowAlpha, blurAlpha, partsFboTex, partsFbo, partsTFX, partsTFY, airPV, airVY, airVX;
+	GLuint fireProg, airProg_Pressure, airProg_Velocity, airProg_Cracker, lensProg;
+	GLuint fireV[(YRES*XRES)*2];
+	GLfloat fireC[(YRES*XRES)*4];
+	GLuint smokeV[(YRES*XRES)*2];
+	GLfloat smokeC[(YRES*XRES)*4];
+	GLuint blobV[(YRES*XRES)*2];
+	GLfloat blobC[(YRES*XRES)*4];
+	GLuint blurV[(YRES*XRES)*2];
+	GLfloat blurC[(YRES*XRES)*4];
+	GLuint glowV[(YRES*XRES)*2];
+	GLfloat glowC[(YRES*XRES)*4];
+	GLuint flatV[(YRES*XRES)*2];
+	GLfloat flatC[(YRES*XRES)*4];
+	GLuint addV[(YRES*XRES)*2];
+	GLfloat addC[(YRES*XRES)*4];
+	GLfloat lineV[(((YRES*XRES)*2)*6)];
+	GLfloat lineC[(((YRES*XRES)*2)*6)];
+#endif
 };
 
 #endif
