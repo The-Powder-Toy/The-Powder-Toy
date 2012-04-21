@@ -210,20 +210,25 @@ void Renderer::FinaliseParts()
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
 	glTexCoord2d(1, 0);
-	glVertex3f(XRES*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
+	//glVertex3f(XRES*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
+	glVertex3f(XRES*sdl_scale, YRES*sdl_scale, 1.0);
 	glTexCoord2d(0, 0);
-	glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
+	//glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
+	glVertex3f(0, YRES*sdl_scale, 1.0);
 	glTexCoord2d(0, 1);
-	glVertex3f(0, MENUSIZE*sdl_scale, 1.0);
+	//glVertex3f(0, MENUSIZE*sdl_scale, 1.0);
+	glVertex3f(0, 0, 1.0);
 	glTexCoord2d(1, 1);
-	glVertex3f(XRES*sdl_scale, MENUSIZE*sdl_scale, 1.0);
+	//glVertex3f(XRES*sdl_scale, MENUSIZE*sdl_scale, 1.0);
+	glVertex3f(XRES*sdl_scale, 0, 1.0);
 	glEnd();
 
 	if(display_mode & DISPLAY_WARP)
 	{
 		glUseProgram(0);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	}
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable( GL_TEXTURE_2D );
 #endif
 }
@@ -238,11 +243,12 @@ void Renderer::RenderZoom()
 		float zcx1, zcx0, zcy1, zcy0, yfactor, xfactor, i; //X-Factor is shit, btw
 		xfactor = 1.0f/(float)XRES;
 		yfactor = 1.0f/(float)YRES;
+		yfactor*=-1.0f;
 
-		zcx0 = (zoomScopePosition.X)*xfactor;
-		zcx1 = (zoomScopePosition.X+zoomScopeSize)*xfactor;
-		zcy0 = (zoomScopePosition.Y)*yfactor;
-		zcy1 = ((zoomScopePosition.Y+zoomScopeSize))*yfactor;
+		zcx1 = (zoomScopePosition.X)*xfactor;
+		zcx0 = (zoomScopePosition.X+zoomScopeSize)*xfactor;
+		zcy1 = (zoomScopePosition.Y)*yfactor;
+		zcy0 = ((zoomScopePosition.Y+zoomScopeSize))*yfactor;
 
 		glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
 		glGetIntegerv(GL_BLEND_DST, &origBlendDst);
@@ -252,46 +258,49 @@ void Renderer::RenderZoom()
 		//glReadBuffer(GL_AUX0);
 		glBindTexture(GL_TEXTURE_2D, partsFboTex);
 
+		//Draw zoomed texture
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		glBegin(GL_QUADS);
 		glTexCoord2d(zcx1, zcy1);
-		glVertex3f((zoomWindowPosition.X+zoomScopeSize*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR))*sdl_scale, 1.0);
+		glVertex2i(zoomWindowPosition.X, zoomWindowPosition.Y);
 		glTexCoord2d(zcx0, zcy1);
-		glVertex3f(zoomWindowPosition.X*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR))*sdl_scale, 1.0);
+		glVertex2i(zoomWindowPosition.X+(zoomScopeSize*ZFACTOR), zoomWindowPosition.Y);
 		glTexCoord2d(zcx0, zcy0);
-		glVertex3f(zoomWindowPosition.X*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale, 1.0);
+		glVertex2i(zoomWindowPosition.X+(zoomScopeSize*ZFACTOR), zoomWindowPosition.Y+(zoomScopeSize*ZFACTOR));
 		glTexCoord2d(zcx1, zcy0);
-		glVertex3f((zoomWindowPosition.X+zoomScopeSize*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale, 1.0);
+		glVertex2i(zoomWindowPosition.X, zoomWindowPosition.Y+(zoomScopeSize*ZFACTOR));
 		glEnd();
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable( GL_TEXTURE_2D );
 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		//Lines to make the pixels stand out
 		glLineWidth(sdl_scale);
-		glEnable(GL_LINE_SMOOTH);
+		//glEnable(GL_LINE_SMOOTH);
 		glBegin(GL_LINES);
 		glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 		for(i = 0; i < zoomScopeSize; i++)
 		{
-			glVertex2f((zoomWindowPosition.X+zoomScopeSize*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR)+i*ZFACTOR)*sdl_scale);
-			glVertex2f(zoomWindowPosition.X*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR)+i*ZFACTOR)*sdl_scale);
-			glVertex2f((zoomWindowPosition.X+i*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR))*sdl_scale);
-			glVertex2f((zoomWindowPosition.X+i*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale);
+			//Across
+			glVertex2i(zoomWindowPosition.X, zoomWindowPosition.Y+(i*ZFACTOR));
+			glVertex2i(zoomWindowPosition.X+(zoomScopeSize*ZFACTOR), zoomWindowPosition.Y+(i*ZFACTOR));
+
+			//Down
+			glVertex2i(zoomWindowPosition.X+(i*ZFACTOR), zoomWindowPosition.Y);
+			glVertex2i(zoomWindowPosition.X+(i*ZFACTOR), zoomWindowPosition.Y+(zoomScopeSize*ZFACTOR));
 		}
 		glEnd();
 
+		//Draw zoom window border
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBegin(GL_LINE_STRIP);
-		glVertex3i((zoomWindowPosition.X-1)*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale, 0);
-		glVertex3i((zoomWindowPosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR))*sdl_scale, 0);
-		glVertex3i((zoomWindowPosition.X+zoomScopeSize*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-(zoomWindowPosition.Y+zoomScopeSize*ZFACTOR))*sdl_scale, 0);
-		glVertex3i((zoomWindowPosition.X+zoomScopeSize*ZFACTOR)*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale, 0);
-		glVertex3i((zoomWindowPosition.X-1)*sdl_scale, (YRES+MENUSIZE-zoomWindowPosition.Y)*sdl_scale, 0);
+		glBegin(GL_LINE_LOOP);
+		glVertex2i(zoomWindowPosition.X, zoomWindowPosition.Y);
+		glVertex2i(zoomWindowPosition.X+(zoomScopeSize*ZFACTOR), zoomWindowPosition.Y);
+		glVertex2i(zoomWindowPosition.X+(zoomScopeSize*ZFACTOR), zoomWindowPosition.Y+(zoomScopeSize*ZFACTOR));
+		glVertex2i(zoomWindowPosition.X, zoomWindowPosition.Y+(zoomScopeSize*ZFACTOR));
 		glEnd();
-		glDisable(GL_LINE_SMOOTH);
-
-		glDisable(GL_LINE_SMOOTH);
+		//glDisable(GL_LINE_SMOOTH);
 
 		if(zoomEnabled)
 		{
@@ -299,12 +308,16 @@ void Renderer::RenderZoom()
 			//glEnable(GL_LINE_SMOOTH);
 			glLogicOp(GL_XOR);
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			glBegin(GL_LINE_STRIP);
-			glVertex3i((zoomScopePosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y-1))*sdl_scale, 0);
+			glBegin(GL_LINE_LOOP);
+			glVertex2i(zoomScopePosition.X, zoomScopePosition.Y);
+			glVertex2i(zoomScopePosition.X+zoomScopeSize, zoomScopePosition.Y);
+			glVertex2i(zoomScopePosition.X+zoomScopeSize, zoomScopePosition.Y+zoomScopeSize);
+			glVertex2i(zoomScopePosition.X, zoomScopePosition.Y+zoomScopeSize);
+			/*glVertex3i((zoomScopePosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y-1))*sdl_scale, 0);
 			glVertex3i((zoomScopePosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y+zoomScopeSize))*sdl_scale, 0);
 			glVertex3i((zoomScopePosition.X+zoomScopeSize)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y+zoomScopeSize))*sdl_scale, 0);
 			glVertex3i((zoomScopePosition.X+zoomScopeSize)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y-1))*sdl_scale, 0);
-			glVertex3i((zoomScopePosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y-1))*sdl_scale, 0);
+			glVertex3i((zoomScopePosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y-1))*sdl_scale, 0);*/
 			glEnd();
 			glDisable(GL_COLOR_LOGIC_OP);
 		}
@@ -343,6 +356,7 @@ void Renderer::RenderZoom()
 
 void Renderer::DrawWalls()
 {
+#ifndef OGLR
 	int x, y, i, j, cr, cg, cb;
 	unsigned char wt;
 	pixel pc;
@@ -447,30 +461,30 @@ void Renderer::DrawWalls()
 					{
 						for (j=0; j<CELL; j+=2)
 							for (i=(j>>1)&1; i<CELL; i+=2)
-								g->drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
 					}
 					else if (wtypes[wt].drawstyle==2)
 					{
 						for (j=0; j<CELL; j+=2)
 							for (i=0; i<CELL; i+=2)
-								g->drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
 					}
 					else if (wtypes[wt].drawstyle==3)
 					{
 						for (j=0; j<CELL; j++)
 							for (i=0; i<CELL; i++)
-								g->drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
 					}
 					else if (wtypes[wt].drawstyle==4)
 					{
 						for (j=0; j<CELL; j++)
 							for (i=0; i<CELL; i++)
 								if(i == j)
-									g->drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+									drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
 								else if  (i == j+1 || (i == 0 && j == CELL-1))
-									g->drawblob((x*CELL+i), (y*CELL+j), PIXR(gc), PIXG(gc), PIXB(gc));
+									drawblob((x*CELL+i), (y*CELL+j), PIXR(gc), PIXG(gc), PIXB(gc));
 								else
-									g->drawblob((x*CELL+i), (y*CELL+j), 0x20, 0x20, 0x20);
+									drawblob((x*CELL+i), (y*CELL+j), 0x20, 0x20, 0x20);
 					}
 					if (bmap[y][x]==WL_EWALL)
 					{
@@ -479,14 +493,14 @@ void Renderer::DrawWalls()
 							for (j=0; j<CELL; j++)
 								for (i=0; i<CELL; i++)
 									if (i&j&1)
-										g->drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+										drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
 						}
 						else
 						{
 							for (j=0; j<CELL; j++)
 								for (i=0; i<CELL; i++)
 									if (!(i&j&1))
-										g->drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+										drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
 						}
 					}
 					else if (bmap[y][x]==WL_WALLELEC)
@@ -495,9 +509,9 @@ void Renderer::DrawWalls()
 							for (i=0; i<CELL; i++)
 							{
 								if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
-									g->drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+									drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
 								else
-									g->drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+									drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
 							}
 					}
 					else if (bmap[y][x]==WL_EHOLE)
@@ -506,7 +520,7 @@ void Renderer::DrawWalls()
 						{
 							for (j=0; j<CELL; j++)
 								for (i=0; i<CELL; i++)
-									g->drawblob((x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+									drawblob((x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
 							for (j=0; j<CELL; j+=2)
 								for (i=0; i<CELL; i+=2)
 									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x000000);
@@ -515,7 +529,7 @@ void Renderer::DrawWalls()
 						{
 							for (j=0; j<CELL; j+=2)
 								for (i=0; i<CELL; i+=2)
-									g->drawblob((x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+									drawblob((x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
 						}
 					}
 				}
@@ -535,6 +549,7 @@ void Renderer::DrawWalls()
 
 				}
 			}
+#endif
 }
 
 void Renderer::get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
@@ -577,6 +592,10 @@ void Renderer::DrawSigns()
 {
 	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq;
 	sign *signs = sim->signs;
+#ifdef OGLR
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+	glTranslated(0, MENUSIZE, 0);
+#endif
 	for (i=0; i<MAXSIGNS; i++)
 		if (signs[i].text[0])
 		{
@@ -626,12 +645,20 @@ void Renderer::DrawSigns()
 			y = signs[i].y;
 			dx = 1 - signs[i].ju;
 			dy = (signs[i].y > 18) ? -1 : 1;
+#ifdef OGLR
+			glBegin(GL_LINES);
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			glVertex2i(x, y);
+			glVertex2i(x+(dx*4), y+(dy*4));
+			glEnd();
+#else
 			for (j=0; j<4; j++)
 			{
-				g->drawpixel(x, y, 192, 192, 192, 255);
+				g->blendpixel(x, y, 192, 192, 192, 255);
 				x+=dx;
 				y+=dy;
 			}
+#endif
 			/*if (MSIGN==i)
 			{
 				bq = b;
@@ -642,10 +669,15 @@ void Renderer::DrawSigns()
 				signs[i].y = my;
 			}*/
 		}
+#ifdef OGLR
+	glTranslated(0, -MENUSIZE, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+#endif
 }
 
 void Renderer::render_gravlensing()
 {
+#ifndef OGLR
 	int nx, ny, rx, ry, gx, gy, bx, by, co;
 	int r, g, b;
 	pixel t;
@@ -675,27 +707,15 @@ void Renderer::render_gravlensing()
 				if (b>255)
 					b = 255;
 				dst[ny*(XRES+BARSIZE)+nx] = PIXRGB(r,g,b);
-				//	addpixel(dst, nx, ny, PIXR(src[ry*(XRES+BARSIZE)+rx]), PIXG(src[gy*(XRES+BARSIZE)+gx]), PIXB(src[by*(XRES+BARSIZE)+bx]), 255);
 			}
-
-			/*rx = nx+(gravxf[(ny*XRES)+nx]*0.5f);
-			ry = ny+(gravyf[(ny*XRES)+nx]*0.5f);
-			gx = nx+(gravxf[(ny*XRES)+nx]*0.75f);
-			gy = ny+(gravyf[(ny*XRES)+nx]*0.75f);
-			bx = nx+(gravxf[(ny*XRES)+nx]);
-			by = ny+(gravyf[(ny*XRES)+nx]);
-			if(rx > 0 && rx < XRES && ry > 0 && ry < YRES && gravp[ny/CELL][nx/CELL]*0.5f > -8.0f)
-				addpixel(dst, rx, ry, PIXR(src[ry*(XRES+BARSIZE)+rx]), 0, 0, 255);
-			if(gx > 0 && gx < XRES && gy > 0 && gy < YRES && gravp[ny/CELL][nx/CELL]*0.75f > -8.0f)
-				addpixel(dst, gx, gy, 0, PIXG(src[ry*(XRES+BARSIZE)+rx]), 0, 255);
-			if(bx > 0 && bx < XRES && by > 0 && by < YRES && gravp[ny/CELL][nx/CELL] > -8.0f)
-				addpixel(dst, bx, by, 0, 0, PIXB(src[ry*(XRES+BARSIZE)+rx]), 255);*/
 		}
 	}
+#endif
 }
 
 void Renderer::render_fire()
 {
+#ifndef OGLR
 	int i,j,x,y,r,g,b,nx,ny;
 	for (j=0; j<YRES/CELL; j++)
 		for (i=0; i<XRES/CELL; i++)
@@ -725,6 +745,7 @@ void Renderer::render_fire()
 			fire_g[j][i] = g>4 ? g-4 : 0;
 			fire_b[j][i] = b>4 ? b-4 : 0;
 		}
+#endif
 }
 
 float temp[CELL*3][CELL*3];
@@ -840,6 +861,7 @@ void Renderer::render_parts()
 	glGetIntegerv(GL_BLEND_DST, &origBlendDst);
 	//Render to the particle FBO
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+	glTranslated(0, MENUSIZE, 0);
 #else
 	/*if (GRID_MODE)//draws the grid
 	{
@@ -878,27 +900,6 @@ void Renderer::render_parts()
 			decg = (sim->parts[i].dcolour>>8)&0xFF;
 			decb = (sim->parts[i].dcolour)&0xFF;
 
-			/*if(display_mode == RENDER_NONE)
-			{
-				if(decorations_enable)
-				{
-					colr = (deca*decr + (255-deca)*colr) >> 8;
-					colg = (deca*decg + (255-deca)*colg) >> 8;
-					colb = (deca*decb + (255-deca)*colb) >> 8;
-				}
-#ifdef OGLR
-		        flatV[cflatV++] = nx;
-		        flatV[cflatV++] = ny;
-		        flatC[cflatC++] = ((float)colr)/255.0f;
-		        flatC[cflatC++] = ((float)colg)/255.0f;
-		        flatC[cflatC++] = ((float)colb)/255.0f;
-		        flatC[cflatC++] = 1.0f;
-		        cflat++;
-#else
-		        vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
-#endif
-			}
-			else*/
 			{
 				if (graphicscache[t].isready)
 				{
@@ -1758,9 +1759,8 @@ void Renderer::render_parts()
         glDisableClientState(GL_VERTEX_ARRAY);
 
         //Reset FBO
+        glTranslated(0, -MENUSIZE, 0);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-        //Drawing the FBO onto the screen sounds like a cool idea now
 
         glBlendFunc(origBlendSrc, origBlendDst);
 #endif
@@ -1777,6 +1777,8 @@ void Renderer::draw_other() // EMP effect
 	if (emp_decor>0)
 	{
 #ifdef OGLR
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+		glTranslated(0, MENUSIZE, 0);
 		float femp_decor = ((float)emp_decor)/255.0f;
 		/*int r=emp_decor*2.5, g=100+emp_decor*1.5, b=255;
 		int a=(1.0*emp_decor/110)*255;
@@ -1791,6 +1793,8 @@ void Renderer::draw_other() // EMP effect
 		glVertex2f(XRES, YRES+MENUSIZE);
 		glVertex2f(0, YRES+MENUSIZE);
 		glEnd();
+		glTranslated(0, -MENUSIZE, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 #else
 		int r=emp_decor*2.5, g=100+emp_decor*1.5, b=255;
 		int a=(1.0*emp_decor/110)*255;
@@ -1801,7 +1805,7 @@ void Renderer::draw_other() // EMP effect
 		for (j=0; j<YRES; j++)
 			for (i=0; i<XRES; i++)
 			{
-				this->g->drawpixel(i, j, r, g, b, a);
+				this->g->blendpixel(i, j, r, g, b, a);
 			}
 #endif
 	}
@@ -1926,6 +1930,7 @@ void Renderer::draw_air()
 
     glEnable( GL_TEXTURE_2D );
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+    glTranslated(0, MENUSIZE, 0);
 
 	glUseProgram(airProg);
 
@@ -1957,6 +1962,7 @@ void Renderer::draw_air()
 
     glUseProgram(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+    glTranslated(0, -MENUSIZE, 0);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glDisable( GL_TEXTURE_2D );
 #endif
@@ -1974,12 +1980,25 @@ void Renderer::draw_grav_zones()
 				for (j=0; j<CELL; j++)//draws the colors
 					for (i=0; i<CELL; i++)
 						if(i == j)
-							g->drawpixel(x*CELL+i, y*CELL+j, 255, 200, 0, 120);
+							g->blendpixel(x*CELL+i, y*CELL+j, 255, 200, 0, 120);
 						else
-							g->drawpixel(x*CELL+i, y*CELL+j, 32, 32, 32, 120);
+							g->blendpixel(x*CELL+i, y*CELL+j, 32, 32, 32, 120);
 			}
 		}
 	}
+}
+
+void Renderer::drawblob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
+{
+	g->blendpixel(x+1, y, cr, cg, cb, 112);
+	g->blendpixel(x-1, y, cr, cg, cb, 112);
+	g->blendpixel(x, y+1, cr, cg, cb, 112);
+	g->blendpixel(x, y-1, cr, cg, cb, 112);
+
+	g->blendpixel(x+1, y-1, cr, cg, cb, 64);
+	g->blendpixel(x-1, y-1, cr, cg, cb, 64);
+	g->blendpixel(x+1, y+1, cr, cg, cb, 64);
+	g->blendpixel(x-1, y+1, cr, cg, cb, 64);
 }
 
 Renderer::Renderer(Graphics * g, Simulation * sim):

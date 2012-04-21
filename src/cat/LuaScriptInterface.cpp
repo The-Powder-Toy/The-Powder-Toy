@@ -1444,7 +1444,7 @@ int luatpt_get_property(lua_State* l)
 
 int luatpt_drawpixel(lua_State* l)
 {
-	int x, y, r, g, b, a;
+	/*int x, y, r, g, b, a;
 	x = luaL_optint(l, 1, 0);
 	y = luaL_optint(l, 2, 0);
 	r = luaL_optint(l, 3, 255);
@@ -1466,8 +1466,8 @@ int luatpt_drawpixel(lua_State* l)
 	{
 		luacon_g->drawpixel(x, y, r, g, b, a);
 		return 0;
-	}
-	return luaL_error(l, "Screen buffer does not exist");
+	}*/
+	return luaL_error(l, "Deprecated");
 }
 
 int luatpt_drawrect(lua_State* l)
@@ -1496,11 +1496,7 @@ int luatpt_drawrect(lua_State* l)
 	if (b>255) b = 255;
 	if (a<0) a = 0;
 	if (a>255) a = 255;
-	if (luacon_g->vid!=NULL)
-	{
-		luacon_g->drawrect(x, y, w, h, r, g, b, a);
-		return 0;
-	}
+	luacon_g->drawrect(x, y, w, h, r, g, b, a);
 	return luaL_error(l, "Screen buffer does not exist");
 }
 
@@ -1530,11 +1526,7 @@ int luatpt_fillrect(lua_State* l)
 	if (b>255) b = 255;
 	if (a<0) a = 0;
 	if (a>255) a = 255;
-	if (luacon_g->vid!=NULL)
-	{
-		luacon_g->fillrect(x, y, w, h, r, g, b, a);
-		return 0;
-	}
+	luacon_g->fillrect(x, y, w, h, r, g, b, a);
 	return luaL_error(l, "Screen buffer does not exist");
 }
 
@@ -1559,11 +1551,7 @@ int luatpt_drawline(lua_State* l)
 	if (b>255) b = 255;
 	if (a<0) a = 0;
 	if (a>255) a = 255;
-	if (luacon_g->vid!=NULL)
-	{
-		luacon_g->blend_line(x1, y1, x2, y2, r, g, b, a);
-		return 0;
-	}
+	luacon_g->draw_line(x1, y1, x2, y2, r, g, b, a);
 	return luaL_error(l, "Screen buffer does not exist");
 }
 

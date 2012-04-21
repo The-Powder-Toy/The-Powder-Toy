@@ -89,6 +89,7 @@ public:
 	void loadShaders();
 #endif
 
+	void drawblob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb);
 	//...
 	void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
 

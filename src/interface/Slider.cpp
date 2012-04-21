@@ -16,7 +16,9 @@ Slider::Slider(Point position, Point size, int steps):
 		sliderSteps(steps),
 		sliderPosition(0),
 		isMouseDown(false),
-		bgGradient(NULL)
+		bgGradient(NULL),
+		col1(0, 0, 0, 0),
+		col2(0, 0, 0, 0)
 {
 	// TODO Auto-generated constructor stub
 
@@ -79,6 +81,8 @@ void Slider::SetColour(Colour col1, Colour col2)
 {
 	if(bgGradient)
 		free(bgGradient);
+	this->col1 = col1;
+	this->col2 = col2;
 	bgGradient = (unsigned char*)Graphics::GenerateGradient(
 			(pixel[2]){PIXRGB(col1.Red, col1.Green, col1.Blue), PIXRGB(col2.Red, col2.Green, col2.Blue)},
 			(float[2]){0.0f, 1.0f}, 2, Size.X-6);
@@ -100,9 +104,13 @@ void Slider::Draw(const Point& screenPos)
 
 	if(bgGradient)
 	{
+#ifndef OGLR
 		for (int j = 3; j < Size.Y-6; j++)
 				for (int i = 3; i < Size.X-6; i++)
-					g->drawpixel(screenPos.X+i+2, screenPos.Y+j+2, bgGradient[(i-3)*3], bgGradient[(i-3)*3+1], bgGradient[(i-3)*3+2], 255);
+					g->blendpixel(screenPos.X+i+2, screenPos.Y+j+2, bgGradient[(i-3)*3], bgGradient[(i-3)*3+1], bgGradient[(i-3)*3+2], 255);
+#else
+		g->gradientrect(screenPos.X+3, screenPos.Y+3, Size.X-6, Size.Y-6, col1.Red, col1.Green, col1.Blue, col1.Alpha, col2.Red, col2.Green, col2.Blue, col2.Alpha);
+#endif
 	}
 
 	g->drawrect(screenPos.X+3, screenPos.Y+3, Size.X-6, Size.Y-6, 255, 255, 255, 255);

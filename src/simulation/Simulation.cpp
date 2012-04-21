@@ -434,7 +434,7 @@ void Simulation::ApplyDecorationPoint(int x, int y, int rx, int ry, int colR, in
 		return;
 	}
 
-	bool *bitmap = cBrush->GetBitmap();
+	unsigned char *bitmap = cBrush->GetBitmap();
 	for (j=-ry; j<=ry; j++)
 		for (i=-rx; i<=rx; i++)
 			if(bitmap[(j+ry)*(rx*2)+(i+rx)])
@@ -624,10 +624,10 @@ int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags, Bru
 		}
 		else if(cBrush)
 		{
-			bool *bitmap = cBrush->GetBitmap();
+			unsigned char *bitmap = cBrush->GetBitmap();
 			for (j=-ry; j<=ry; j++)
 				for (i=-rx; i<=rx; i++)
-					if(bitmap[(j+ry)*(rx*2)+(i+rx)])
+					if(bitmap[(j+ry)*((rx*2)+1)+(i+rx+1)])
 						delete_part(x+i, y+j, 0);
 		}
 		else
@@ -647,10 +647,10 @@ int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags, Bru
 		}
 		else if(cBrush)
 		{
-			bool *bitmap = cBrush->GetBitmap();
+			unsigned char *bitmap = cBrush->GetBitmap();
 			for (j=-ry; j<=ry; j++)
 				for (i=-rx; i<=rx; i++)
-					if(bitmap[(j+ry)*(rx*2)+(i+rx)])
+					if(bitmap[(j+ry)*((rx*2)+1)+(i+rx+1)])
 					{
 						if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
 							continue;
@@ -678,10 +678,10 @@ int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags, Bru
 	}
 	else if(cBrush)
 	{
-		bool *bitmap = cBrush->GetBitmap();
+		unsigned char *bitmap = cBrush->GetBitmap();
 		for (j=-ry; j<=ry; j++)
 			for (i=-rx; i<=rx; i++)
-				if(bitmap[(j+ry)*(rx*2)+(i+rx)])
+				if(bitmap[(j+ry)*((rx*2)+1)+(i+rx+1)])
 					if (create_part_add_props(-2, x+i, y+j, c, rx, ry)==-1)
 						f = 1;
 	}

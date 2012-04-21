@@ -580,6 +580,9 @@ void GameController::ReloadSim()
 
 std::string GameController::ElementResolve(int type)
 {
-	return std::string(gameModel->GetSimulation()->ptypes[type].name);
+	if(gameModel && gameModel->GetSimulation() && gameModel->GetSimulation()->ptypes && type >= 0 && type < PT_NUM)
+		return std::string(gameModel->GetSimulation()->ptypes[type].name);
+	else
+		return "";
 }
 

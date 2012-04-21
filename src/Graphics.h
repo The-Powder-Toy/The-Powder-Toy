@@ -91,92 +91,84 @@ enum Icon
 	IconReport
 };
 
+//"Graphics lite" - slightly lower performance due to variable size,
+class VideoBuffer
+{
+public:
+	pixel * Buffer;
+	int Width, Height;
+
+	VideoBuffer(int width, int height): Width(width), Height(height), Buffer((pixel*)calloc(width*height, PIXELSIZE)) { };
+	void BlendPixel(int x, int y, int r, int g, int b, int a);
+	void AddPixel(int x, int y, int r, int g, int b, int a);
+	void SetPixel(int x, int y, int r, int g, int b, int a);
+	int BlendCharacter(int x, int y, int c, int r, int g, int b, int a);
+	int AddCharacter(int x, int y, int c, int r, int g, int b, int a);
+	int SetCharacter(int x, int y, int c, int r, int g, int b, int a);
+	~VideoBuffer() { free(Buffer); };
+};
+
 class Graphics
 {
 public:
-	SDL_Surface * sdl_scrn;
 	pixel *vid;
-	pixel *render_packed_rgb(void *image, int width, int height, int cmp_size);
+	int sdl_scale;
+#ifdef OGLR
+	//OpenGL specific instance variables
+	GLuint vidBuf, textTexture;
+#else
+	SDL_Surface * sdl_scrn;
+#endif
+
+	//Common graphics methods in Graphics.cpp
 	static char * GenerateGradient(pixel * colours, float * points, int pointcount, int size);
-	//void draw_other();
-	void draw_rgba_image(unsigned char *data, int x, int y, float a);
+
+	//PTIF methods
 	static void *ptif_pack(pixel *src, int w, int h, int *result_size);
 	static pixel *ptif_unpack(void *datain, int size, int *w, int *h);
 	static pixel *resample_img_nn(pixel *src, int sw, int sh, int rw, int rh);
 	static pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh);
 	static pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f);
-	//void render_gravlensing(pixel *src, pixel * dst);
-	//void sdl_blit_1(int x, int y, int w, int h, pixel *src, int pitch);
-	//void sdl_blit_2(int x, int y, int w, int h, pixel *src, int pitch);
-	//void sdl_blit(int x, int y, int w, int h, pixel *src, int pitch);
-	inline void drawblob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb);
-	void draw_tool(int b, int sl, int sr, unsigned pc, unsigned iswall);
-	//int draw_tool_xy(pixel *vid_buf, int x, int y, int b, unsigned pc);
-	//void draw_menu(pixel *vid_buf, int i, int hover);
-	void drawpixel(int x, int y, int r, int g, int b, int a);
-	inline int addchar(int x, int y, int c, int r, int g, int b, int a);
-	inline int drawchar(int x, int y, int c, int r, int g, int b, int a);
-	int drawtext(int x, int y, std::string &s, int r, int g, int b, int a);
-	int drawtext(int x, int y, const char *s, int r, int g, int b, int a);
-	int drawtext_outline(int x, int y, const char *s, int r, int g, int b, int a, int olr, int olg, int olb, int ola);
-	int drawtextwrap(int x, int y, int w, const char *s, int r, int g, int b, int a);
-	void drawrect(int x, int y, int w, int h, int r, int g, int b, int a);
-	void fillrect(int x, int y, int w, int h, int r, int g, int b, int a);
-	void clearrect(int x, int y, int w, int h);
-	void drawdots(int x, int y, int h, int r, int g, int b, int a);
-	static int textwidth(char *s);
-	int drawtextmax(int x, int y, int w, char *s, int r, int g, int b, int a);
+	static pixel *render_packed_rgb(void *image, int width, int height, int cmp_size);
+
+	//Font/text metrics
 	static int textnwidth(char *s, int n);
 	static void textnpos(char *s, int n, int w, int *cx, int *cy);
 	static int textwidthx(char *s, int w);
 	static int textposxy(char *s, int width, int w, int h);
 	static int textwrapheight(char *s, int width);
-	inline void blendpixel(int x, int y, int r, int g, int b, int a);
+	static int textwidth(const char *s);
+	static void textsize(const char * s, int & width, int & height);
+
+	void blendpixel(int x, int y, int r, int g, int b, int a);
+	void addpixel(int x, int y, int r, int g, int b, int a);
+
 	void draw_icon(int x, int y, Icon icon);
-	//void draw_air();
-	//void draw_grav_zones(pixel *vid);
-	//void draw_grav(pixel *vid);
-	void draw_line(int x1, int y1, int x2, int y2, int r, int g, int b, int a);
-	inline void addpixel(int x, int y, int r, int g, int b, int a);
-	void xor_pixel(int x, int y);
-	void xor_line(int x1, int y1, int x2, int y2);
-	void xor_rect(int x, int y, int w, int h);
-	inline void blend_line(int x1, int y1, int x2, int y2, int r, int g, int b, int a);
-	//void render_parts(pixel *vid);
-//	#ifdef OGLR
-//	void draw_parts_fbo();
-//	#endif
-//	void draw_parts();
-//	void draw_walls(pixel *vid);
-//	void create_decorations(int x, int y, int rx, int ry, int r, int g, int b, int click, int tool);
-//	void create_decoration(int x, int y, int r, int g, int b, int click, int tool);
-//	void line_decorations(int x1, int y1, int x2, int y2, int rx, int ry, int r, int g, int b, int click, int tool);
-//	void box_decorations(int x1, int y1, int x2, int y2, int r, int g, int b, int click, int tool);
-//	void draw_color_menu(pixel *vid_buf, int i, int hover);
-	inline void draw_wavelengths(int x, int y, int h, int wl);
-	//void render_signs();
-//	void render_fire(pixel *dst);
-//	void prepare_alpha(int size, float intensity);
-	inline void draw_image(pixel *img, int x, int y, int w, int h, int a);
-	static void dim_copy(pixel *dst, pixel *src);
-	static void dim_copy_pers(pixel *dst, pixel *src);
-	//void render_zoom(pixel *img);
-	//int render_thumb(void *thumb, int size, int bzip2, pixel *vid_buf, int px, int py, int scl);
-	//void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry);
-	//int sdl_open(void);
-	//int draw_debug_info(pixel* vid, int lm, int lx, int ly, int cx, int cy, int line_x, int line_y);
+
 	void Clear();
-	void Blit();
 	void AttachSDLSurface(SDL_Surface * surface);
-	#ifdef OGLR
-	void clearScreen(float alpha);
-	void ogl_blit(int x, int y, int w, int h, pixel *src, int pitch, int scale);
-	#endif
+	void Blit();
+	//
+	int drawtext(int x, int y, const char *s, int r, int g, int b, int a);
+	int drawtext(int x, int y, std::string s, int r, int g, int b, int a);
+	int drawchar(int x, int y, int c, int r, int g, int b, int a);
+	int addchar(int x, int y, int c, int r, int g, int b, int a);
+
+	void xor_pixel(int x, int y);
+	void xor_line(int x, int y, int x2, int y2);
+	void xor_rect(int x, int y, int width, int height);
+	void xor_bitmap(unsigned char * bitmap, int x, int y, int w, int h);
+
+	void draw_line(int x, int y, int x2, int y2, int r, int g, int b, int a);
+	void drawrect(int x, int y, int width, int height, int r, int g, int b, int a);
+	void fillrect(int x, int y, int width, int height, int r, int g, int b, int a);
+	void clearrect(int x, int y, int width, int height);
+	void gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2);
+
+	void draw_image(pixel *img, int x, int y, int w, int h, int a);
+
 	Graphics();
 	~Graphics();
-#ifdef OGLR
-	GLuint vidBuf;
-#endif
 };
 
 #endif

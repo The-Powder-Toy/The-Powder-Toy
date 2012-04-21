@@ -74,7 +74,10 @@ void Engine::ShowWindow(Window * window)
 			prevBuffers.push(lastBuffer);
 		}
 		lastBuffer = (pixel*)malloc((width_ * height_) * PIXELSIZE);
+
+#ifndef OGLR
 		memcpy(lastBuffer, g->vid, (width_ * height_) * PIXELSIZE);
+#endif
 
 		windows.push(state_);
 	}
@@ -167,7 +170,9 @@ void Engine::Draw()
 	if(lastBuffer && !(state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
 	{
 		g->Clear();
+#ifndef OGLR
 		memcpy(g->vid, lastBuffer, (width_ * height_) * PIXELSIZE);
+#endif
 	}
 	else
 	{

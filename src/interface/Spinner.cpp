@@ -27,7 +27,7 @@ void Spinner::Draw(const Point& screenPos)
 	int baseY = screenPos.Y+(Size.Y/2);
 	for(float t = 0.0f; t < 1.0f; t+=0.05f)
 	{
-		g->drawblob(baseX+(sin(cValue+t)*(Size.X/2)), baseY+(cos(cValue+t)*(Size.X/2)), t*255, t*255, t*255);
+		//g->drawblob(baseX+(sin(cValue+t)*(Size.X/2)), baseY+(cos(cValue+t)*(Size.X/2)), t*255, t*255, t*255);
 	}
 }
 Spinner::~Spinner()

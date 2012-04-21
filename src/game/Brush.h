@@ -8,14 +8,16 @@
 #ifndef BRUSH_H_
 #define BRUSH_H_
 
+#include <iostream>
 #include "interface/Point.h"
 
 class Brush
 {
 protected:
-	bool * outline;
-	bool * bitmap;
+	unsigned char * outline;
+	unsigned char * bitmap;
 	ui::Point size;
+	ui::Point radius;
 	void updateOutline()
 	{
 		if(!bitmap)
@@ -24,35 +26,35 @@ protected:
 			return;
 		if(outline)
 			free(outline);
-		int width = size.X*2;
-		int height = size.Y*2;
-		outline = (bool *)malloc(sizeof(bool)*((width+1)*(height+1)));
-		for(int x = 0; x <= width; x++)
+		outline = (unsigned char *)calloc(size.X*size.Y, sizeof(unsigned char));
+		for(int x = 0; x < size.X; x++)
 		{
-			for(int y = 0; y <= height; y++)
+			for(int y = 0; y < size.Y; y++)
 			{
-				if(bitmap[y*width+x] && (!y || !x || y == height || x == width || !bitmap[y*width+(x+1)] || !bitmap[y*width+(x-1)] || !bitmap[(y-1)*width+x] || !bitmap[(y+1)*width+x]))
-					outline[y*width+x] = true;
+				if(bitmap[y*size.X+x] && (!y || !x || y == size.X-1 || x == size.Y-1 || !bitmap[y*size.X+(x+1)] || !bitmap[y*size.X+(x-1)] || !bitmap[(y-1)*size.X+x] || !bitmap[(y+1)*size.X+x]))
+					outline[y*size.X+x] = 255;
 				else
-					outline[y*width+x] = false;
+					outline[y*size.X+x] = 0;
 			}
 		}
 	}
 public:
 	Brush(ui::Point size_):
 		bitmap(NULL),
-		size(size_),
-		outline(NULL)
+		outline(NULL),
+		radius(0, 0),
+		size(0, 0)
 	{
-
+		SetRadius(size_);
 	};
 	ui::Point GetRadius()
 	{
-		return size;
+		return radius;
 	}
-	void SetRadius(ui::Point size)
+	void SetRadius(ui::Point radius)
 	{
-		this->size = size;
+		this->radius = radius;
+		this->size = radius+radius+ui::Point(1, 1);
 		GenerateBitmap();
 		updateOutline();
 	}
@@ -93,37 +95,30 @@ public:
 			updateOutline();
 		if(!outline)
 			return;
-		for(int x = 0; x <= size.X*2; x++)
-		{
-			for(int y = 0; y <= size.Y*2; y++)
-			{
-				if(outline[y*(size.X*2)+x])
-					g->xor_pixel(position.X-size.X+x, position.Y-size.Y+y);
-			}
-		}
+		g->xor_bitmap(outline, position.X-radius.X, position.Y-radius.Y-1, size.X, size.Y);
 	}
 	virtual void GenerateBitmap()
 	{
 		if(bitmap)
 			free(bitmap);
-		bitmap = (bool *)malloc(sizeof(bool)*(((size.X*2)+1)*((size.Y*2)+1)));
-		for(int x = 0; x <= size.X*2; x++)
+		bitmap = (unsigned char *)calloc((size.X*size.Y), sizeof(unsigned char));
+		for(int x = 0; x < size.X; x++)
 		{
-			for(int y = 0; y <= size.Y*2; y++)
+			for(int y = 0; y < size.Y; y++)
 			{
-				bitmap[y*(size.X*2)+x] = true;
+				bitmap[(y*size.X)+x] = 255;
 			}
 		}
 	}
 	//Get a bitmap for drawing particles
-	bool * GetBitmap()
+	unsigned char * GetBitmap()
 	{
 		if(!bitmap)
 			GenerateBitmap();
 		return bitmap;
 	}
 
-	bool * GetOutline()
+	unsigned char * GetOutline()
 	{
 		if(!outline)
 			updateOutline();

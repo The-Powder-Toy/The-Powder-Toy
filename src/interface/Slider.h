@@ -26,6 +26,7 @@ class Slider: public ui::Component {
 	bool isMouseDown;
 	unsigned char * bgGradient;
 	SliderAction * actionCallback;
+	Colour col1, col2;
 	void updatePosition(int position);
 public:
 	Slider(Point position, Point size, int steps);
