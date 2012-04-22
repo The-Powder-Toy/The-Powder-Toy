@@ -247,8 +247,8 @@ void Renderer::RenderZoom()
 
 		zcx1 = (zoomScopePosition.X)*xfactor;
 		zcx0 = (zoomScopePosition.X+zoomScopeSize)*xfactor;
-		zcy1 = (zoomScopePosition.Y)*yfactor;
-		zcy0 = ((zoomScopePosition.Y+zoomScopeSize))*yfactor;
+		zcy1 = (zoomScopePosition.Y-1)*yfactor;
+		zcy0 = ((zoomScopePosition.Y-1+zoomScopeSize))*yfactor;
 
 		glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
 		glGetIntegerv(GL_BLEND_DST, &origBlendDst);
