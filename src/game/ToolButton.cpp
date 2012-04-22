@@ -12,6 +12,7 @@ ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_):
 	ui::Button(position, size, text_)
 {
 	SetSelectionState(-1);
+	activeBorder = ui::Colour(255, 0, 0);
 }
 
 void ToolButton::OnMouseClick(int x, int y, unsigned int button)
@@ -37,9 +38,18 @@ void ToolButton::OnMouseUp(int x, int y, unsigned int button)
 void ToolButton::Draw(const ui::Point& screenPos)
 {
 	Graphics * g = ui::Engine::Ref().g;
-	int totalColour = background.Red + 3*background.Green + 2*background.Blue;
+	int totalColour = background.Red + (3*background.Green) + (2*background.Blue);
 
-	g->fillrect(screenPos.X, screenPos.Y, Size.X, Size.Y, background.Red, background.Green, background.Blue, 255);
+	g->fillrect(screenPos.X+2, screenPos.Y+2, Size.X-4, Size.Y-4, background.Red, background.Green, background.Blue, background.Alpha);
+
+	if(isMouseInside && currentSelection == -1)
+	{
+		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, activeBorder.Red, activeBorder.Green, activeBorder.Blue, activeBorder.Alpha);
+	}
+	else
+	{
+		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, border.Red, border.Green, border.Blue, border.Alpha);
+	}
 
 	if (totalColour<544)
 	{
@@ -49,12 +59,6 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	{
 		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, buttonDisplayText.c_str(), 0, 0, 0, 255);
 	}
-	if(currentSelection!=-1)
-	{
-		//g->fillrect(screenPos.X+1, screenPos.Y+1, Size.X-2, Size.Y-2, 255, 255, 255, 170);
-		g->fillrect(screenPos.X+2, screenPos.Y+2, Size.Y-4, Size.Y-4, 0, 0, 0, 170);
-		g->drawtext(screenPos.X+5, screenPos.Y+4, selectionText, 255, 255, 255, 255);
-	}
 }
 
 void ToolButton::SetSelectionState(int state)
@@ -63,16 +67,16 @@ void ToolButton::SetSelectionState(int state)
 	switch(state)
 	{
 	case 0:
-		selectionText = "L";
+		border = ui::Colour(255, 0, 0);
 		break;
 	case 1:
-		selectionText = "R";
+		border = ui::Colour(0, 0, 255);
 		break;
 	case 2:
-		selectionText = "M";
+		border = ui::Colour(0, 255, 0);
 		break;
 	default:
-		selectionText = "";
+		border = ui::Colour(0, 0, 0);
 		break;
 	}
 }

@@ -35,6 +35,7 @@ extern "C" IMAGE_DOS_HEADER __ImageBase;
 
 SDL_Surface * SDLOpen()
 {
+	SDL_Surface * surface;
 #if defined(WIN32) && defined(WINCONSOLE)
 	FILE * console = fopen("CON", "w" );
 #endif
@@ -75,10 +76,21 @@ SDL_Surface * SDLOpen()
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	atexit(SDL_Quit);
 #ifndef OGLR
-	return SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_SWSURFACE);
+	surface = SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_SWSURFACE);
 #else
-	return SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_OPENGL);
+	surface = SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_OPENGL);
 #endif
+
+#if defined(WIN32) && defined(OGLR)
+	int status = glewInit();
+	if(status != GLEW_OK)
+	{
+		fprintf(stderr, "Initializing Glew: %d\n", status);
+		exit(-1);
+	}
+#endif
+
+return surface;
 }
 
 /*int SDLPoll(SDL_Event * event)

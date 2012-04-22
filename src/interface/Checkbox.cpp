@@ -60,12 +60,12 @@ void Checkbox::Draw(const Point& screenPos)
 	Graphics * g = Engine::Ref().g;
 	if(checked)
 	{
-		g->fillrect(screenPos.X+4, screenPos.Y+4, 8, 8, 255, 255, 255, 255);
+		g->fillrect(screenPos.X+5, screenPos.Y+5, 6, 6, 255, 255, 255, 255);
 	}
 	if(isMouseOver)
 	{
 		g->drawrect(screenPos.X+2, screenPos.Y+2, 12, 12, 255, 255, 255, 255);
-		g->fillrect(screenPos.X+4, screenPos.Y+4, 8, 8, 255, 255, 255, 170);
+		g->fillrect(screenPos.X+5, screenPos.Y+5, 6, 6, 255, 255, 255, 170);
 		g->drawtext(screenPos.X+18, screenPos.Y+4, text, 255, 255, 255, 255);
 	}
 	else

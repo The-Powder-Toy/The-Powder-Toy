@@ -27,7 +27,7 @@ PreviewView::PreviewView():
 			v->c->Exit();
 		}
 	};
-	openButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(50, 16), "Open");
+	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), "Open");
 	openButton->SetAlignment(AlignLeft, AlignMiddle);
 	openButton->SetIcon(IconOpen);
 	openButton->SetActionCallback(new OpenAction(this));
@@ -44,7 +44,7 @@ PreviewView::PreviewView():
 		}
 	};
 
-	favButton = new ui::Button(ui::Point(50, Size.Y-16), ui::Point(50, 16), "Fav.");
+	favButton = new ui::Button(ui::Point(51, Size.Y-19), ui::Point(51, 19), "Fav.");
 	favButton->SetAlignment(AlignLeft, AlignMiddle);
 	favButton->SetIcon(IconFavourite);
 	favButton->SetActionCallback(new FavAction(this));
@@ -71,7 +71,7 @@ PreviewView::PreviewView():
 			new TextPrompt("Report Save", "Reason for reporting", true, new ReportPromptCallback(v));
 		}
 	};
-	reportButton = new ui::Button(ui::Point(100, Size.Y-16), ui::Point(50, 16), "Report");
+	reportButton = new ui::Button(ui::Point(102, Size.Y-19), ui::Point(51, 19), "Report");
 	reportButton->SetAlignment(AlignLeft, AlignMiddle);
 	reportButton->SetIcon(IconReport);
 	reportButton->SetActionCallback(new ReportAction(this));
@@ -88,7 +88,7 @@ PreviewView::PreviewView():
 		}
 	};
 
-	browserOpenButton = new ui::Button(ui::Point((XRES/2)-110, Size.Y-16), ui::Point(110, 16), "Open in browser");
+	browserOpenButton = new ui::Button(ui::Point((XRES/2)-108, Size.Y-19), ui::Point(108, 19), "Open in browser");
 	browserOpenButton->SetAlignment(AlignLeft, AlignMiddle);
 	browserOpenButton->SetIcon(IconOpen);
 	browserOpenButton->SetActionCallback(new BrowserOpenAction(this));

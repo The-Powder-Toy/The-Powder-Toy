@@ -323,22 +323,24 @@ void Graphics::draw_line(int x, int y, int x2, int y2, int r, int g, int b, int 
 void Graphics::drawrect(int x, int y, int width, int height, int r, int g, int b, int a)
 {
 	x++;
+	height--;
+	width--;
 	glColor4ub(r, g, b, a);
 	glBegin(GL_LINE_STRIP);
-	glVertex2i(x, y);
-	glVertex2i(x+width, y);
-	glVertex2i(x+width, y+height);
-	glVertex2i(x, y+height+1); //+1 is a hack to prevent squares from missing their corners, will make smoothed lines look like SHIT
-	glVertex2i(x, y);
+	glVertex2f(x, y);
+	glVertex2f(x+width, y);
+	glVertex2f(x+width, y+height);
+	glVertex2f(x, y+height+1); //+1 is a hack to prevent squares from missing their corners, will make smoothed lines look like SHIT
+	glVertex2f(x, y);
 	glEnd();
 }
 
 void Graphics::fillrect(int x, int y, int width, int height, int r, int g, int b, int a)
 {
-	x++;
+	/*x++;
 	y++;
 	width-=1;
-	height-=1;
+	height-=1;*/
 
 	glColor4ub(r, g, b, a);
 	glBegin(GL_QUADS);

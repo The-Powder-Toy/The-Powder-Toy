@@ -45,6 +45,8 @@ void Button::TextPosition()
 			buttonDisplayText += "...";
 		}
 	}
+
+	// Values 3 and 10 are for vertical padding of 3 pixels, middle uses 7 as that's the height of a capital
 	switch(textVAlign)
 	{
 	case AlignTop:
@@ -54,7 +56,7 @@ void Button::TextPosition()
 		textPosition.Y = (Size.Y-10)/2;
 		break;
 	case AlignBottom:
-		textPosition.Y = Size.Y-12;
+		textPosition.Y = Size.Y-10;
 		break;
 	}
 
@@ -131,20 +133,20 @@ void Button::Draw(const Point& screenPos)
 	{
 		if(isButtonDown || (isTogglable && toggle))
 		{
-			g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, activeBackground.Red, activeBackground.Green, activeBackground.Blue, 255);
+			g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, activeBackground.Red, activeBackground.Green, activeBackground.Blue, 255);
 			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, activeBorder.Red, activeBorder.Green, activeBorder.Blue, 255);
 			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y+1, buttonDisplayText, activeText.Red, activeText.Green, activeText.Blue, 255);
 		}
 		else
 		{
-			g->fillrect(Position.X, Position.Y, Size.X, Size.Y, background.Red, background.Green, background.Blue, 255);
+			g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, background.Red, background.Green, background.Blue, 255);
 			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, border.Red, border.Green, border.Blue, 255);
 			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y+1, buttonDisplayText, text.Red, text.Green, text.Blue, 255);
 		}
 	}
 	else
 	{
-		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, background.Red, background.Green, background.Blue, 180);
+		g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, background.Red, background.Green, background.Blue, 180);
 		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 180, 180, 180, 255);
 		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y+1, buttonDisplayText, 180, 180, 180, 255);
 	}

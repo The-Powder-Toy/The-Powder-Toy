@@ -321,6 +321,8 @@ void Graphics::draw_line(int x1, int y1, int x2, int y2, int r, int g, int b, in
 void Graphics::drawrect(int x, int y, int w, int h, int r, int g, int b, int a)
 {
 	int i;
+	w--;
+	h--;
 	for (i=0; i<=w; i++)
 	{
 		blendpixel(x+i, y, r, g, b, a);
@@ -336,8 +338,8 @@ void Graphics::drawrect(int x, int y, int w, int h, int r, int g, int b, int a)
 void Graphics::fillrect(int x, int y, int w, int h, int r, int g, int b, int a)
 {
 	int i,j;
-	for (j=1; j<h; j++)
-		for (i=1; i<w; i++)
+	for (j=0; j<h; j++)
+		for (i=0; i<w; i++)
 			blendpixel(x+i, y+j, r, g, b, a);
 }
 

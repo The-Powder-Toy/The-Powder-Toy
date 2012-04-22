@@ -24,6 +24,7 @@ class SaveButton : public Component
 {
 	Save * save;
 	Thumbnail * thumbnail;
+	std::string name;
 public:
 	SaveButton(Point position, Point size, Save * save);
 	virtual ~SaveButton();
