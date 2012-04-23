@@ -19,11 +19,11 @@ powder.exe: build/powder.exe
 powder-release: build/powder-release
 powder: build/powder
 
-build/powder-release.exe: CFLAGS += -DWIN32 -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -pipe -msse -msse2 -msse3 -mmmx
+build/powder-release.exe: CFLAGS += -DWIN32 -O3 -ftree-vectorize -msse2 -funsafe-math-optimizations -ffast-math -fomit-frame-pointer -funsafe-loop-optimizations -Wunsafe-loop-optimizations
 build/powder-release.exe: LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 -llua -lfftw3f-3 -mwindows
 build/powder.exe: CFLAGS += -DWIN32
 build/powder.exe: LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 -llua -lfftw3f-3 #-mwindows
-build/powder-release: CFLAGS +=  -DLIN32 -O3 -ffast-math -ftree-vectorize -funsafe-math-optimizations -pipe -msse -msse2 -msse3 -mmmx
+build/powder-release: CFLAGS +=  -DLIN32 -O3 -ftree-vectorize -msse2 -funsafe-math-optimizations -ffast-math -fomit-frame-pointer -funsafe-loop-optimizations -Wunsafe-loop-optimizations
 build/powder-release: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f
 build/powder: CFLAGS +=  -DLIN32
 build/powder: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f
