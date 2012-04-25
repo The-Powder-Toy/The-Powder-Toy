@@ -2808,7 +2808,7 @@ void create_box(int x1, int y1, int x2, int y2, int c, int flags)
 {
 	int i, j;
 	if (c==SPC_PROP)
-		return 0;
+		return;
 	if (x1>x2)
 	{
 		i = x2;
