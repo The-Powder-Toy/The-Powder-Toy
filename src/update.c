@@ -21,7 +21,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifndef MACOSX
+#if !defined(MACOSX) && !defined(BSD)
+#include <sys/param.h>
 #include <malloc.h>
 #endif
 #include <string.h>
@@ -35,7 +36,6 @@
 #ifdef MACOSX
 #include <mach-o/dyld.h>
 #include <errno.h>
-#include <sys/param.h>
 #endif
 
 #include <update.h>

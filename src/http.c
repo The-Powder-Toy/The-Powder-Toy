@@ -23,7 +23,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef MACOSX
+#if !defined(MACOSX) && !defined(BSD)
+#include <sys/param.h>
 #include <malloc.h>
 #endif
 #include <time.h>
@@ -40,6 +41,7 @@
 #include <signal.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <netinet/in.h>
 #endif
 
 #include <defines.h>
@@ -447,7 +449,7 @@ int http_async_req_status(void *ctx)
 		else if (PERRNO==WSAEISCONN)
 			cx->state = HTS_IDLE;
 #endif
-#ifdef MACOSX
+#if defined(MACOSX) || defined(BSD)
 		else if (PERRNO==EISCONN)
 			cx->state = HTS_IDLE;
 #endif
