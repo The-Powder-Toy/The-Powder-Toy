@@ -18,6 +18,7 @@ powder-release.exe: build/powder-release.exe
 powder.exe: build/powder.exe
 powder-release: build/powder-release
 powder: build/powder
+powder-x: build/powder-x
 
 build/powder-release.exe: CFLAGS += -DWIN32 -O3 -ftree-vectorize -msse2 -funsafe-math-optimizations -ffast-math -fomit-frame-pointer -funsafe-loop-optimizations -Wunsafe-loop-optimizations
 build/powder-release.exe: LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 -llua -lfftw3f-3 -mwindows
@@ -27,6 +28,8 @@ build/powder-release: CFLAGS +=  -DLIN32 -O3 -ftree-vectorize -msse2 -funsafe-ma
 build/powder-release: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f
 build/powder: CFLAGS +=  -DLIN32
 build/powder: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f
+build/powder-x: CFLAGS += -DPIX32BGRA -DMACOSX -I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/Lua.framework/Headers
+build/powder-x: LFLAGS := -lm -lbz2 -lfftw3f -framework SDL -framework Lua -framework Cocoa
 
 CFLAGS += -DGRAVFFT -DLUACONSOLE
 
@@ -55,6 +58,14 @@ build/obj/powder/%.o: src/%.cpp $(HEADERS)
 buildpaths-powder:
 	$(shell mkdir -p build/obj/powder/)
 	$(shell mkdir -p $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder/%.o,$(OBJS)))))
+
+build/powder-x: buildpaths-powder-x $(patsubst build/obj/%.o,build/obj/powder-x/%.o,$(OBJS))
+	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder-x/%.o,$(OBJS)) SDLmain.m $(LFLAGS) -o $@ -ggdb
+build/obj/powder-x/%.o: src/%.cpp $(HEADERS)
+	$(CPPC) -c $(CFLAGS) $(OFLAGS) -o $@ $< -ggdb
+buildpaths-powder-x:
+	$(shell mkdir -p build/obj/powder-x/)
+	$(shell mkdir -p $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder-x/%.o,$(OBJS)))))
 	
 clean:
 	rm -r build/obj/*

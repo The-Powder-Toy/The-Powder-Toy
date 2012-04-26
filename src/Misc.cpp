@@ -15,6 +15,7 @@
 #include <unistd.h>
 #endif
 #ifdef MACOSX
+#include <mach-o/dyld.h>
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
@@ -28,11 +29,11 @@ char *exe_name(void)
 	while ((res = GetModuleFileName(NULL, name, max)) >= max)
 	{
 #elif defined MACOSX
-	char *fn=malloc(64),*name=malloc(PATH_MAX);
+	char *fn=(char*)malloc(64),*name=(char*)malloc(PATH_MAX);
 	uint32_t max=64, res;
 	if (_NSGetExecutablePath(fn, &max) != 0)
 	{
-		fn = realloc(fn, max);
+		fn = (char*)realloc(fn, max);
 		_NSGetExecutablePath(fn, &max);
 	}
 	if (realpath(fn, name) == NULL)
@@ -368,7 +369,7 @@ void clipboard_push_text(char * text)
 	if (PasteboardClear(newclipboard)!=noErr) return;
 	PasteboardSynchronize(newclipboard);
 
-	CFDataRef data = CFDataCreate(kCFAllocatorDefault, text, strlen(text));
+	CFDataRef data = CFDataCreate(kCFAllocatorDefault, (const UInt8*)text, strlen(text));
 	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);
 #elif defined WIN32
 	if (OpenClipboard(NULL))
@@ -654,9 +655,9 @@ void OpenURI(std::string uri) {
 #ifdef WIN32
 	ShellExecute(0, "OPEN", uri.c_str(), NULL, NULL, 0);
 #elif MACOSX
-	char *cmd = malloc(7+uri.length());
+	char *cmd = (char*)malloc(7+uri.length());
 	strcpy(cmd, "open ");
-	strappend(cmd, uri.c_str());
+	strappend(cmd, (char*)uri.c_str());
 	system(cmd);
 #elif LIN32
 	char *cmd = (char*)malloc(11+uri.length());

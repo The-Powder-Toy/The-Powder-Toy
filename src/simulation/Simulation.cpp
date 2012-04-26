@@ -1,5 +1,5 @@
 //#include <cstdlib>
-#include <math.h>
+#include <cmath>
 #include "Config.h"
 #include "Simulation.h"
 #include "Elements.h"
@@ -3570,10 +3570,14 @@ Simulation::~Simulation()
 }
 
 Simulation::Simulation():
-	sys_pause(0),
-	portal_rx({-1, 0, 1, 1, 1, 0,-1,-1}),
-	portal_ry({-1,-1,-1, 0, 1, 1, 1, 0})
+	sys_pause(0)
 {
+    
+    int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
+    int tportal_ry[] = {-1,-1,-1, 0, 1, 1, 1, 0};
+    
+    memcpy(portal_rx, tportal_rx, sizeof(tportal_rx));   
+    memcpy(portal_ry, tportal_ry, sizeof(tportal_ry));
 
 	//Create and attach gravity simulation
 	grav = new Gravity();

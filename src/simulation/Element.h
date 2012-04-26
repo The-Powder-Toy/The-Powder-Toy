@@ -2,7 +2,7 @@
 #define ELEMENT_H
 // This header should be included by all files in src/elements/
 
-#include <math.h>
+#include <cmath>
 #include "Simulation.h"
 #include "Renderer.h"
 #include "ElementFunctions.h"

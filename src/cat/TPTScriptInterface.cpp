@@ -198,10 +198,10 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		switch(propertyFormat)
 		{
 		case FormatInt:
-			*((int*)(((void*)&sim->parts[partIndex])+propertyOffset)) = ((NumberType)value).Value();
+			*((int*)(((unsigned char*)&sim->parts[partIndex])+propertyOffset)) = ((NumberType)value).Value();
 			break;
 		case FormatFloat:
-			*((float*)(((void*)&sim->parts[partIndex])+propertyOffset)) = ((NumberType)value).Value();
+			*((float*)(((unsigned char*)&sim->parts[partIndex])+propertyOffset)) = ((NumberType)value).Value();
 			break;
 		}
 		returnValue = 1;
@@ -217,7 +217,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 					if(sim->parts[j].type)
 					{
 						returnValue++;
-						*((int*)(((void*)&sim->parts[j])+propertyOffset)) = tempNumber;
+						*((int*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = tempNumber;
 					}
 			}
 			break;
@@ -228,7 +228,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 					if(sim->parts[j].type)
 					{
 						returnValue++;
-						*((float*)(((void*)&sim->parts[j])+propertyOffset)) = tempNumber;
+						*((float*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = tempNumber;
 					}
 			}
 			break;
@@ -253,7 +253,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 					if(sim->parts[j].type == type)
 					{
 						returnValue++;
-						*((int*)(((void*)&sim->parts[j])+propertyOffset)) = tempNumber;
+						*((int*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = tempNumber;
 					}
 			}
 			break;
@@ -264,7 +264,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 					if(sim->parts[j].type == type)
 					{
 						returnValue++;
-						*((float*)(((void*)&sim->parts[j])+propertyOffset)) = tempNumber;
+						*((float*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = tempNumber;
 					}
 			}
 			break;

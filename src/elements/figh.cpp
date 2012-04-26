@@ -11,8 +11,8 @@ int update_FIGH(UPDATE_FUNC_ARGS)
 	//Set target cords
 	if (sim->player.spwn && sim->player2.spwn)
 	{
-			if ((pow(sim->player.legs[2]-x, 2) + pow(sim->player.legs[3]-y, 2))<=
-					(pow(sim->player2.legs[2]-x, 2) + pow(sim->player2.legs[3]-y, 2)))
+			if ((pow((float)sim->player.legs[2]-x, 2) + pow((float)sim->player.legs[3]-y, 2))<=
+					(pow((float)sim->player2.legs[2]-x, 2) + pow((float)sim->player2.legs[3]-y, 2)))
 			{
 				tarx = (unsigned int)sim->player.legs[2];
 				tary = (unsigned int)sim->player.legs[3];
@@ -43,7 +43,7 @@ int update_FIGH(UPDATE_FUNC_ARGS)
 	switch (parts[i].tmp2)
 	{
 		case 1:
-			if ((pow(tarx-x, 2) + pow(tary-y, 2))<600)
+			if ((pow(float(tarx-x), 2) + pow(float(tary-y), 2))<600)
 			{
 				if (figh->elem == PT_LIGH || figh->elem == PT_NEUT 
 						|| sim->ptypes[figh->elem].properties&(PROP_DEADLY|PROP_RADIOACTIVE)

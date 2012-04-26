@@ -326,11 +326,11 @@ int luacon_partread(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		tempinteger = *((int*)(((void*)&luacon_sim->parts[i])+offset));
+		tempinteger = *((int*)(((unsigned char*)&luacon_sim->parts[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
 	case 1:
-		tempfloat = *((float*)(((void*)&luacon_sim->parts[i])+offset));
+		tempfloat = *((float*)(((unsigned char*)&luacon_sim->parts[i])+offset));
 		lua_pushnumber(l, tempfloat);
 		break;
 	}
@@ -358,10 +358,10 @@ int luacon_partwrite(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		*((int*)(((void*)&luacon_sim->parts[i])+offset)) = luaL_optinteger(l, 3, 0);
+		*((int*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
 	case 1:
-		*((float*)(((void*)&luacon_sim->parts[i])+offset)) = luaL_optnumber(l, 3, 0);
+		*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	}
 	return 1;
@@ -488,11 +488,11 @@ int luacon_transitionread(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		tempinteger = *((int*)(((void*)&luacon_sim->ptransitions[i])+offset));
+		tempinteger = *((int*)(((unsigned char*)&luacon_sim->ptransitions[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
 	case 1:
-		tempfloat = *((float*)(((void*)&luacon_sim->ptransitions[i])+offset));
+		tempfloat = *((float*)(((unsigned char*)&luacon_sim->ptransitions[i])+offset));
 		lua_pushnumber(l, tempfloat);
 		break;
 	}
@@ -522,10 +522,10 @@ int luacon_transitionwrite(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		*((int*)(((void*)&luacon_sim->ptransitions[i])+offset)) = luaL_optinteger(l, 3, 0);
+		*((int*)(((unsigned char*)&luacon_sim->ptransitions[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
 	case 1:
-		*((float*)(((void*)&luacon_sim->ptransitions[i])+offset)) = luaL_optnumber(l, 3, 0);
+		*((float*)(((unsigned char*)&luacon_sim->ptransitions[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	}
 	return 0;
@@ -675,19 +675,19 @@ int luacon_elementread(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		tempinteger = *((int*)(((void*)&luacon_sim->ptypes[i])+offset));
+		tempinteger = *((int*)(((unsigned char*)&luacon_sim->ptypes[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
 	case 1:
-		tempfloat = *((float*)(((void*)&luacon_sim->ptypes[i])+offset));
+		tempfloat = *((float*)(((unsigned char*)&luacon_sim->ptypes[i])+offset));
 		lua_pushnumber(l, tempfloat);
 		break;
 	case 2:
-		tempstring = *((char**)(((void*)&luacon_sim->ptypes[i])+offset));
+		tempstring = *((char**)(((unsigned char*)&luacon_sim->ptypes[i])+offset));
 		lua_pushstring(l, tempstring);
 		break;
 	case 3:
-		tempinteger = *((unsigned char*)(((void*)&luacon_sim->ptypes[i])+offset));
+		tempinteger = *((unsigned char*)(((unsigned char*)&luacon_sim->ptypes[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
 	}
@@ -719,10 +719,10 @@ int luacon_elementwrite(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		*((int*)(((void*)&luacon_sim->ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
+		*((int*)(((unsigned char*)&luacon_sim->ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
 	case 1:
-		*((float*)(((void*)&luacon_sim->ptypes[i])+offset)) = luaL_optnumber(l, 3, 0);
+		*((float*)(((unsigned char*)&luacon_sim->ptypes[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	case 2:
 		tempstring = mystrdup((char*)luaL_optstring(l, 3, ""));
@@ -745,11 +745,11 @@ int luacon_elementwrite(lua_State* l){
 				return luaL_error(l, "Name in use");
 			}
 		}
-		*((char**)(((void*)&luacon_sim->ptypes[i])+offset)) = tempstring;
+		*((char**)(((unsigned char*)&luacon_sim->ptypes[i])+offset)) = tempstring;
 		//Need some way of cleaning up previous values
 		break;
 	case 3:
-		*((unsigned char*)(((void*)&luacon_sim->ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
+		*((unsigned char*)(((unsigned char*)&luacon_sim->ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
 	}
 	if (modified_stuff)
@@ -1212,9 +1212,9 @@ int luatpt_set_property(lua_State* l)
 				}
 				i = r>>8;
 				if(format == CommandInterface::FormatFloat){
-					*((float*)(((void*)&luacon_sim->parts[i])+offset)) = f;
+					*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = f;
 				} else {
-					*((int*)(((void*)&luacon_sim->parts[i])+offset)) = t;
+					*((int*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = t;
 				}
 			}
 	} else {
@@ -1236,9 +1236,9 @@ int luatpt_set_property(lua_State* l)
 		if (partsel && partsel != luacon_sim->parts[i].type)
 			return 0;
 		if(format == CommandInterface::FormatFloat){
-			*((float*)(((void*)&luacon_sim->parts[i])+offset)) = f;
+			*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = f;
 		} else {
-			*((int*)(((void*)&luacon_sim->parts[i])+offset)) = t;
+			*((int*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = t;
 		}
 	}
 	return 0;

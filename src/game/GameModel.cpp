@@ -11,7 +11,6 @@
 #include "GameModelException.h"
 
 GameModel::GameModel():
-	activeTools({NULL, NULL, NULL}),
 	sim(NULL),
 	ren(NULL),
 	currentBrush(0),
@@ -24,6 +23,8 @@ GameModel::GameModel():
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
 
+    memset(activeTools, 0, sizeof(activeTools));
+    
 	//Load config into renderer
 	try
 	{
