@@ -53,7 +53,7 @@ int update_GEL(UPDATE_FUNC_ARGS) {
 					parts[i].vx += dx; 
 					parts[i].vy += dy; 
 
-					if ((ptypes[r&0xFF].state!=ST_SOLID && ptypes[r&0xFF].state!=ST_NONE) || (r&0xFF)==PT_GOO)
+					if (ptypes[r&0xFF].properties&TYPE_PART || (r&0xFF)==PT_GOO)
 					{
 						parts[r>>8].vx -= dx;
 						parts[r>>8].vy -= dy;
