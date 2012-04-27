@@ -1580,7 +1580,7 @@ void *build_save_PSv(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	for (j=0; j<w*h; j++)
 	{
 		i = m[j];
-		if (i && (parts[i-1].type==PT_PBCN)) {
+		if (i && (parts[i-1].type==PT_PBCN || parts[i-1].type==PT_TRON)) {
 			//Save tmp2
 			d[p++] = parts[i-1].tmp2;
 		}
@@ -1963,7 +1963,7 @@ int parse_save_PSv(void *save, int size, int replace, int x0, int y0, unsigned c
 		{
 			i = m[j];
 			ty = d[pty+j];
-			if (i && ty==PT_PBCN)
+			if (i && (ty==PT_PBCN || (ty==PT_TRON && ver>=77)))
 			{
 				if (p >= size)
 					goto corrupt;
