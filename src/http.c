@@ -23,8 +23,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if !defined(MACOSX) && !defined(BSD)
+#ifndef WIN32
 #include <sys/param.h>
+#endif
+#if !defined(MACOSX) && !defined(BSD)
 #include <malloc.h>
 #endif
 #include <time.h>
