@@ -9,3 +9,5 @@
 stdout.txt
 stderr.txt
 build/*
+PowderToypp.xcodeproj/*
+.DS_Store
