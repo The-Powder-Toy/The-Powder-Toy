@@ -1141,7 +1141,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 					}
 					if(partsData[i] >= PT_NUM)
 						partsData[i] = PT_DMND;	//Replace all invalid elements with diamond
-					if(pmap[y][x])
+					if(pmap[y][x] && posCount==0) // Check posCount to make sure an existing particle is not replaced twice if two particles are saved in that position
 					{
 						//Replace existing particle or allocated block
 						newIndex = pmap[y][x]>>8;
@@ -1283,6 +1283,10 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 							fighcount++;
 							STKM_init_legs(&(fighters[fcount]), newIndex);
 						}
+					}
+					else if (partsptr[newIndex].type == PT_SOAP)
+					{
+						partsptr[newIndex].ctype = 0;
 					}
 					if (!ptypes[partsptr[newIndex].type].enabled)
 						partsptr[newIndex].type = PT_NONE;
