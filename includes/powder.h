@@ -329,6 +329,8 @@ int graphics_DCEL(GRAPHICS_FUNC_ARGS);
 int graphics_GEL(GRAPHICS_FUNC_ARGS);
 int graphics_TRON(GRAPHICS_FUNC_ARGS);
 
+void TRON_init_graphics();
+
 #define UPDATE_FUNC_ARGS int i, int x, int y, int surround_space, int nt
 // to call another update function with same arguments:
 #define UPDATE_FUNC_SUBCALL_ARGS i, x, y, surround_space, nt

@@ -657,6 +657,7 @@ int main(int argc, char *argv[])
 	
 	colour_mode = COLOUR_DEFAULT;
 	init_display_modes();
+	TRON_init_graphics();
 
 	sys_pause = 1;
 	parts = calloc(sizeof(particle), NPART);
@@ -806,6 +807,7 @@ int main(int argc, char *argv[])
 	
 	colour_mode = COLOUR_DEFAULT;
 	init_display_modes();
+	TRON_init_graphics();
 
 	//fbi_img = render_packed_rgb(fbi, FBI_W, FBI_H, FBI_CMP);
 
