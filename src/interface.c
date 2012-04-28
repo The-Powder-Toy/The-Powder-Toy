@@ -150,15 +150,17 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
 	int x0=(XRES-192)/2,y0=(YRES-80)/2,b=1,bq;
 	ui_edit ed;
 
+	// if currently moving a sign, stop doing so
+	if (MSIGN!=-1)
+	{
+		MSIGN = -1;
+		return;
+	}
+
 	// check if it is an existing sign
 	for (i=0; i<MAXSIGNS; i++)
 		if (signs[i].text[0])
 		{
-			if (i == MSIGN)
-			{
-				MSIGN = -1;
-				return;
-			}
 			get_sign_pos(i, &x, &y, &w, &h);
 			if (mx>=x && mx<=x+w && my>=y && my<=y+h)
 				break;
