@@ -5338,6 +5338,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int savedColor)
 {//TODO: have the text boxes be editable and update the color.
 	int i,ss,hh,vv,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0,hidden=0;
+	int line_x=0, line_y=0;
 	int window_offset_x_left = 2;
 	int window_offset_x_right = XRES - 279;
 	int window_offset_y = 2;
@@ -5637,7 +5638,19 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			{
 				if (lm == 1)//line tool preview
 				{
-					xor_line(lx, ly, mx, my, vid_buf);
+					if (sdl_mod & KMOD_ALT)
+					{
+						float snap_angle = floor(atan2(my-ly, mx-lx)/(M_PI*0.25)+0.5)*M_PI*0.25;
+						float line_mag = sqrtf(pow(mx-lx,2)+pow(my-ly,2));
+						line_x = (int)(line_mag*cos(snap_angle)+lx+0.5f);
+						line_y = (int)(line_mag*sin(snap_angle)+ly+0.5f);
+					}
+					else
+					{
+						line_x = mx;
+						line_y = my;
+					}
+					xor_line(lx, ly, line_x, line_y, vid_buf);
 				}
 				else if (lm == 2)//box tool preview
 				{
@@ -5706,7 +5719,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			if (lb && lm) //lm is box/line tool
 			{
 				if (lm == 1)//line
-					line_decorations(lx, ly, mx, my, *bsx, *bsy, currR, currG, currB, lb, tool);
+					line_decorations(lx, ly, line_x, line_y, *bsx, *bsy, currR, currG, currB, lb, tool);
 				else//box
 					box_decorations(lx, ly, mx, my, currR, currG, currB, lb, tool);
 				lm = 0;
