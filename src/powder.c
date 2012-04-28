@@ -2794,12 +2794,20 @@ void clear_area(int area_x, int area_y, int area_w, int area_h)
 {
 	int cx = 0;
 	int cy = 0;
+	int i;
 	for (cy=0; cy<area_h; cy++)
 	{
 		for (cx=0; cx<area_w; cx++)
 		{
 			bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
 			delete_part(cx+area_x, cy+area_y, 0);
+		}
+	}
+	for (i=0; i<MAXSIGNS; i++)
+	{
+		if (signs[i].x>=area_x && signs[i].x<area_x+area_w && signs[i].y>=area_y && signs[i].y<area_y+area_h)
+		{
+			signs[i].text[0] = 0;
 		}
 	}
 }

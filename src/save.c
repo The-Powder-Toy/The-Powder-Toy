@@ -707,7 +707,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	signsCount = 0;
 	for(i = 0; i < MAXSIGNS; i++)
 	{
-		if(signs[i].text[0] && signs[i].x>=fullX && signs[i].x<=fullX+fullW && signs[i].y>=fullY && signs[i].y<=fullY+fullH)
+		if(signs[i].text[0] && signs[i].x>=orig_x0 && signs[i].x<=orig_x0+orig_w && signs[i].y>=orig_y0 && signs[i].y<=orig_y0+orig_h)
 		{
 			signsCount++;
 		}
@@ -717,7 +717,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 		bson_append_start_array(&b, "signs");
 		for(i = 0; i < MAXSIGNS; i++)
 		{
-			if(signs[i].text[0] && signs[i].x>=fullX && signs[i].x<=fullX+fullW && signs[i].y>=fullY && signs[i].y<=fullY+fullH)
+			if(signs[i].text[0] && signs[i].x>=orig_x0 && signs[i].x<=orig_x0+orig_w && signs[i].y>=orig_y0 && signs[i].y<=orig_y0+orig_h)
 			{
 				bson_append_start_object(&b, "sign");
 				bson_append_string(&b, "text", signs[i].text);
@@ -1642,14 +1642,14 @@ void *build_save_PSv(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	j = 0;
 	for (i=0; i<MAXSIGNS; i++)
 		if (signs[i].text[0] &&
-		        signs[i].x>=x0 && signs[i].x<x0+w &&
-		        signs[i].y>=y0 && signs[i].y<y0+h)
+		        signs[i].x>=orig_x0 && signs[i].x<orig_x0+orig_w &&
+		        signs[i].y>=orig_y0 && signs[i].y<orig_y0+orig_h)
 			j++;
 	d[p++] = j;
 	for (i=0; i<MAXSIGNS; i++)
 		if (signs[i].text[0] &&
-		        signs[i].x>=x0 && signs[i].x<x0+w &&
-		        signs[i].y>=y0 && signs[i].y<y0+h)
+		        signs[i].x>=orig_x0 && signs[i].x<orig_x0+orig_w &&
+		        signs[i].y>=orig_y0 && signs[i].y<orig_y0+orig_h)
 		{
 			d[p++] = (signs[i].x-x0);
 			d[p++] = (signs[i].x-x0)>>8;
