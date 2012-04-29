@@ -15,21 +15,21 @@ int update_SING(UPDATE_FUNC_ARGS) {
 		if (y+CELL<YRES)
 			pv[y/CELL+1][x/CELL+1] += 0.1f*(singularity-pv[y/CELL+1][x/CELL+1]);
 	}
-	if (y+CELL>0 && pv[y/CELL-1][x/CELL]<singularity)
+	if (y-CELL>=0 && pv[y/CELL-1][x/CELL]<singularity)
 		pv[y/CELL-1][x/CELL] += 0.1f*(singularity-pv[y/CELL-1][x/CELL]);
-	if (x+CELL>0)
+	if (x-CELL>=0)
 	{
 		pv[y/CELL][x/CELL-1] += 0.1f*(singularity-pv[y/CELL][x/CELL-1]);
-		if (y+CELL>0)
+		if (y-CELL>=0)
 			pv[y/CELL-1][x/CELL-1] += 0.1f*(singularity-pv[y/CELL-1][x/CELL-1]);
 	}
 	if (parts[i].life<1) {
 		//Pop!
-		for (rx=-2; rx<3; rx++) {
+		for (rx=-1; rx<2; rx++) {
 			crx = (x/CELL)+rx;
-			for (ry=-2; ry<3; ry++) {
+			for (ry=-1; ry<2; ry++) {
 				cry = (y/CELL)+ry;
-				if (cry > 0 && crx > 0 && crx < (XRES/CELL) && cry < (YRES/CELL)) {
+				if (cry >= 0 && crx >= 0 && crx < (XRES/CELL) && cry < (YRES/CELL)) {
 					pv[cry][crx] += (float)parts[i].tmp;
 				}
 			}
