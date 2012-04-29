@@ -340,5 +340,10 @@ void render_ui(pixel *vid_buf, int xcoord, int ycoord, int orientation);
 void simulation_ui(pixel *vid_buf);
 
 unsigned int decorations_ui(pixel *vid_buf, int *bsx, int *bsy, unsigned int savedColor);
+
+Uint8 mouse_get_state(int *x, int *y);
+
+void mouse_coords_window_to_sim(int *sim_x, int *sim_y, int window_x, int window_y);
+
 #endif
 
