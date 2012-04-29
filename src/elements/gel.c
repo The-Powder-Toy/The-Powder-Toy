@@ -14,7 +14,7 @@ int update_GEL(UPDATE_FUNC_ARGS) {
 				if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW || (r&0xFF)==PT_CBNW)
 				    && parts[i].tmp<100)
 				{
-					parts[i].tmp = (100+parts[i].tmp)/2;
+					parts[i].tmp++;
 					kill_part(r>>8);
 				}
 
