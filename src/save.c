@@ -932,7 +932,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 							{
 								if(strcmp(bson_iterator_key(&signiter), "text")==0 && bson_iterator_type(&signiter)==BSON_STRING)
 								{
-									strcpy(signs[i].text, bson_iterator_string(&signiter));
+									strncpy(signs[i].text, bson_iterator_string(&signiter), 255);
 									clean_text(signs[i].text, 158-14);
 								}
 								else if(strcmp(bson_iterator_key(&signiter), "justification")==0 && bson_iterator_type(&signiter)==BSON_INT)
