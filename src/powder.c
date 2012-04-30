@@ -1879,7 +1879,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 				{
 					float c_Cm = 0.0f;
 #endif
-					if (aheat_enable)
+					if (aheat_enable && !(ptypes[t].properties&PROP_NOAMBHEAT))
 					{
 #ifdef REALISTIC
 						c_heat = parts[i].temp*96.645/ptypes[t].hconduct*gel_scale*fabs(ptypes[t].weight)
