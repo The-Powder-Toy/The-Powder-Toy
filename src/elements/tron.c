@@ -24,6 +24,7 @@
 #define TRON_DEATH 16 //Crashed, now dying
 int tron_rx[4] = {-1, 0, 1, 0};
 int tron_ry[4] = { 0,-1, 0, 1};
+unsigned int tron_colours[32];
 int new_tronhead(int x, int y, int i, int direction)
 {
 	int np = create_part(-1, x , y ,PT_TRON);
@@ -90,14 +91,6 @@ int trymovetron(int x, int y, int dir, int i, int len)
 }
 int update_TRON(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, np;
-	if(!parts[i].ctype)
-	{
-		int r, g, b;
-		int hue = (parts[i].tmp&0xF800)>>7;
-		HSV_to_RGB(hue,255,255,&r,&g,&b);
-		parts[i].ctype = r<<16 | g<<8 | b;
-		//Use photon-like wavelength?
-	}
 	if (parts[i].tmp&TRON_WAIT)
 	{
 		parts[i].tmp &= ~TRON_WAIT;
@@ -162,20 +155,12 @@ int update_TRON(UPDATE_FUNC_ARGS) {
 }
 
 int graphics_TRON(GRAPHICS_FUNC_ARGS) {
+	unsigned int col = tron_colours[(cpart->tmp&0xF800)>>11];
 	if(cpart->tmp & TRON_HEAD)
 		*pixel_mode |= PMODE_GLOW;
-	if(cpart->ctype)
-	{
-		*colr = (cpart->ctype & 0xFF0000)>>16;
-		*colg = (cpart->ctype & 0x00FF00)>>8;
-		*colb = (cpart->ctype & 0x0000FF);
-	}
-	else
-	{
-		*colr = 255;
-		*colg = 255;
-		*colb = 255;
-	}
+	*colr = (col & 0xFF0000)>>16;
+	*colg = (col & 0x00FF00)>>8;
+	*colb = (col & 0x0000FF);
 	if(cpart->tmp & TRON_DEATH)
 	{
 		*pixel_mode |= FIRE_ADD | PMODE_FLARE;
@@ -191,4 +176,15 @@ int graphics_TRON(GRAPHICS_FUNC_ARGS) {
 		*cola = (int)((((float)cpart->life)/((float)cpart->tmp2))*255.0f);
 	}
 	return 0;
+}
+
+void TRON_init_graphics()
+{
+	int i;
+	int r, g, b;
+	for (i=0; i<32; i++)
+	{
+		HSV_to_RGB(i<<4,255,255,&r,&g,&b);
+		tron_colours[i] = r<<16 | g<<8 | b;
+	}
 }

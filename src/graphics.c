@@ -3181,9 +3181,8 @@ void render_signs(pixel *vid_buf)
 			if (MSIGN==i)
 			{
 				bq = b;
-				b = SDL_GetMouseState(&mx, &my);
-				mx /= sdl_scale;
-				my /= sdl_scale;
+				mouse_get_state(&mx, &my);
+				mouse_coords_window_to_sim(&mx, &my, mx, my);
 				signs[i].x = mx;
 				signs[i].y = my;
 			}

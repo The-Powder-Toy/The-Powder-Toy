@@ -150,15 +150,17 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
 	int x0=(XRES-192)/2,y0=(YRES-80)/2,b=1,bq;
 	ui_edit ed;
 
+	// if currently moving a sign, stop doing so
+	if (MSIGN!=-1)
+	{
+		MSIGN = -1;
+		return;
+	}
+
 	// check if it is an existing sign
 	for (i=0; i<MAXSIGNS; i++)
 		if (signs[i].text[0])
 		{
-			if (i == MSIGN)
-			{
-				MSIGN = -1;
-				return;
-			}
 			get_sign_pos(i, &x, &y, &w, &h);
 			if (mx>=x && mx<=x+w && my>=y && my<=y+h)
 				break;
@@ -182,7 +184,7 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -203,9 +205,7 @@ void add_sign_ui(pixel *vid_buf, int mx, int my)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		drawrect(vid_buf, x0, y0, 192, 80, 192, 192, 192, 255);
 		clearrect(vid_buf, x0, y0, 192, 80);
@@ -488,16 +488,14 @@ void ui_list_process(pixel * vid_buf, int mx, int my, int mb, ui_list *ed)
 				ystart = 5;
 			while (!sdl_poll())
 			{
-				mb = SDL_GetMouseState(&mx, &my);
+				mb = mouse_get_state(&mx, &my);
 				if (!mb)
 					break;
 			}
 
 			while (!sdl_poll() && !selected)
 			{
-				mb = SDL_GetMouseState(&mx, &my);
-				mx /= sdl_scale;
-				my /= sdl_scale;
+				mb = mouse_get_state(&mx, &my);
 				for(i = 0; i < ed->count; i++)
 				{
 					if(mx > ed->x && mx < ed->x+ed->w && my > (ystart + i*16) && my < (ystart + i * 16) + 16)
@@ -523,7 +521,7 @@ void ui_list_process(pixel * vid_buf, int mx, int my, int mb, ui_list *ed)
 			}
 			while (!sdl_poll())
 			{
-				mb = SDL_GetMouseState(&mx, &my);
+				mb = mouse_get_state(&mx, &my);
 				if (!mb)
 					break;
 			}
@@ -921,7 +919,7 @@ void error_ui(pixel *vid_buf, int err, char *txt)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -929,9 +927,7 @@ void error_ui(pixel *vid_buf, int err, char *txt)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		clearrect(vid_buf, x0-2, y0-2, 244, 52+textheight);
 		drawrect(vid_buf, x0, y0, 240, 48+textheight, 192, 192, 192, 255);
@@ -957,7 +953,7 @@ void error_ui(pixel *vid_buf, int err, char *txt)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -988,7 +984,7 @@ char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shad
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -996,9 +992,7 @@ char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shad
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
@@ -1026,7 +1020,7 @@ char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shad
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1079,7 +1073,7 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1087,9 +1081,7 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
@@ -1221,7 +1213,7 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 exit:
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1233,7 +1225,7 @@ void info_ui(pixel *vid_buf, char *top, char *txt)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1241,9 +1233,7 @@ void info_ui(pixel *vid_buf, char *top, char *txt)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		clearrect(vid_buf, x0-2, y0-2, 244, 64);
 		drawrect(vid_buf, x0, y0, 240, 60, 192, 192, 192, 255);
@@ -1264,7 +1254,7 @@ void info_ui(pixel *vid_buf, char *top, char *txt)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1312,7 +1302,7 @@ void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1320,9 +1310,7 @@ void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
@@ -1348,7 +1336,7 @@ void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1367,7 +1355,7 @@ int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1375,9 +1363,7 @@ int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		clearrect(vid_buf, x0-2, y0-2, 244, 52+textheight);
 		drawrect(vid_buf, x0, y0, 240, 48+textheight, 192, 192, 192, 255);
@@ -1410,7 +1396,7 @@ int confirm_ui(pixel *vid_buf, char *top, char *msg, char *btn)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1426,7 +1412,7 @@ void login_ui(pixel *vid_buf)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1456,9 +1442,7 @@ void login_ui(pixel *vid_buf)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		drawrect(vid_buf, x0, y0, 192, 80, 192, 192, 192, 255);
 		clearrect(vid_buf, x0, y0, 192, 80);
@@ -1596,7 +1580,7 @@ int stamp_ui(pixel *vid_buf)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1604,9 +1588,7 @@ int stamp_ui(pixel *vid_buf)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		clearrect(vid_buf, -1, -1, XRES+BARSIZE+1, YRES+MENUSIZE+1);
 		k = stamp_page*per_page;//0;
@@ -1721,7 +1703,7 @@ int stamp_ui(pixel *vid_buf)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1752,9 +1734,7 @@ void tag_list_ui(pixel *vid_buf)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		op = tag = NULL;
 
@@ -1866,7 +1846,7 @@ void tag_list_ui(pixel *vid_buf)
 	}
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1890,7 +1870,7 @@ int save_name_ui(pixel *vid_buf)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -1940,9 +1920,7 @@ int save_name_ui(pixel *vid_buf)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		drawrect(vid_buf, x0, y0, 420, 90+YRES/4, 192, 192, 192, 255);
 		clearrect(vid_buf, x0, y0, 420, 90+YRES/4);
@@ -2033,16 +2011,14 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 		rows = ceil((float)msections[i].itemcount/16.0f);
 		height = (ceil((float)msections[i].itemcount/16.0f)*18);
 		width = restrict_flt(msections[i].itemcount*31, 0, 16*31);
@@ -2211,7 +2187,7 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -2223,8 +2199,6 @@ void menu_ui_v3(pixel *vid_buf, int i, int *sl, int *sr, int *su, int *dae, int 
 {
 	int h,x,y,n=0,height,width,sy,rows=0,xoff=0,fwidth;
 	SEC = SEC2;
-	mx /= sdl_scale;
-	my /= sdl_scale;
 	rows = ceil((float)msections[i].itemcount/16.0f);
 	height = (ceil((float)msections[i].itemcount/16.0f)*18);
 	width = restrict_flt(msections[i].itemcount*31, 0, 16*31);
@@ -2592,8 +2566,6 @@ int quickoptions_tooltip_y = 0;
 void quickoptions_menu(pixel *vid_buf, int b, int bq, int x, int y)
 {
 	int i = 0;
-	x /= sdl_scale;
-	y /= sdl_scale;
 	if(quickoptions_tooltip_fade && quickoptions_tooltip)
 	{
 		drawtext_outline(vid_buf, (XRES - 5) - textwidth(quickoptions_tooltip), quickoptions_tooltip_y, quickoptions_tooltip, 255, 255, 255, quickoptions_tooltip_fade*20, 0, 0, 0, quickoptions_tooltip_fade*15);
@@ -3086,7 +3058,7 @@ int search_ui(pixel *vid_buf)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -3114,9 +3086,7 @@ int search_ui(pixel *vid_buf)
 		bq = b;
 		mxq = mx;
 		myq = my;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		if (mx!=mxq || my!=myq || sdl_wheel || b)
 			mmt = 0;
@@ -3798,7 +3768,7 @@ int report_ui(pixel* vid_buf, char *save_id)
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -3809,9 +3779,7 @@ int report_ui(pixel* vid_buf, char *save_id)
 		drawrect(vid_buf, 205, 155, (XRES+BARSIZE-400)-10, (YRES+MENUSIZE-300)-28, 255, 255, 255, 170);
 
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 
 		drawrect(vid_buf, 200, (YRES+MENUSIZE-150)-18, 50, 18, 255, 255, 255, 255);
@@ -3897,7 +3865,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -3991,9 +3959,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		if (active && http_async_req_status(http))
 		{
@@ -4365,7 +4331,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	//Prevent those mouse clicks being passed down.
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -5198,9 +5164,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	}
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 		ed.focus = 1;
 
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
@@ -5338,6 +5302,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int savedColor)
 {//TODO: have the text boxes be editable and update the color.
 	int i,ss,hh,vv,cr=127,cg=0,cb=0,b = 0,mx,my,bq = 0,j, lb=0,lx=0,ly=0,lm=0,hidden=0;
+	int line_x=0, line_y=0;
 	int window_offset_x_left = 2;
 	int window_offset_x_right = XRES - 279;
 	int window_offset_y = 2;
@@ -5400,9 +5365,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*(YRES+MENUSIZE)*PIXELSIZE);
 		render_parts(vid_buf);
@@ -5428,14 +5391,8 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			box_G.x = XRES - 254 + 40;
 			box_B.x = XRES - 254 + 75;
 		}
-		if (zoom_en && mx>=zoom_wx && my>=zoom_wy //change mouse position while it is in a zoom window
-		        && mx<(zoom_wx+ZFACTOR*ZSIZE)
-		        && my<(zoom_wy+ZFACTOR*ZSIZE))
-		{
-			mx = (((mx-zoom_wx)/ZFACTOR)+zoom_x);
-			my = (((my-zoom_wy)/ZFACTOR)+zoom_y);
-		}
-
+		mouse_coords_window_to_sim(&mx, &my, mx, my);//change mouse position while it is in a zoom window
+		
 		drawrect(vid_buf, -1, -1, XRES+1, YRES+1, 220, 220, 220, 255);
 		drawrect(vid_buf, -1, -1, XRES+2, YRES+2, 70, 70, 70, 255);
 		drawtext(vid_buf, 2, 388, "Welcome to the decoration editor v.3 (by cracker64) \n\nClicking the current color on the window will move it to the other side. Right click is eraser. ", 255, 255, 255, 255);
@@ -5637,7 +5594,19 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			{
 				if (lm == 1)//line tool preview
 				{
-					xor_line(lx, ly, mx, my, vid_buf);
+					if (sdl_mod & KMOD_ALT)
+					{
+						float snap_angle = floor(atan2(my-ly, mx-lx)/(M_PI*0.25)+0.5)*M_PI*0.25;
+						float line_mag = sqrtf(pow(mx-lx,2)+pow(my-ly,2));
+						line_x = (int)(line_mag*cos(snap_angle)+lx+0.5f);
+						line_y = (int)(line_mag*sin(snap_angle)+ly+0.5f);
+					}
+					else
+					{
+						line_x = mx;
+						line_y = my;
+					}
+					xor_line(lx, ly, line_x, line_y, vid_buf);
 				}
 				else if (lm == 2)//box tool preview
 				{
@@ -5706,7 +5675,7 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 			if (lb && lm) //lm is box/line tool
 			{
 				if (lm == 1)//line
-					line_decorations(lx, ly, mx, my, *bsx, *bsy, currR, currG, currB, lb, tool);
+					line_decorations(lx, ly, line_x, line_y, *bsx, *bsy, currR, currG, currB, lb, tool);
 				else//box
 					box_decorations(lx, ly, mx, my, currR, currG, currB, lb, tool);
 				lm = 0;
@@ -6005,7 +5974,7 @@ int save_filename_ui(pixel *vid_buf)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -6018,9 +5987,7 @@ int save_filename_ui(pixel *vid_buf)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
@@ -6105,7 +6072,7 @@ int save_filename_ui(pixel *vid_buf)
 savefin:
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -6150,7 +6117,7 @@ void catalogue_ui(pixel * vid_buf)
 	cssave = csave = saves;
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -6158,9 +6125,7 @@ void catalogue_ui(pixel * vid_buf)
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 		sprintf(savetext, "Found %d save%s", rescount, rescount==1?"":"s");
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		clearrect(vid_buf2, x0-2, y0-2, xsize+4, ysize+4);
@@ -6337,7 +6302,7 @@ void catalogue_ui(pixel * vid_buf)
 openfin:	
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -6496,7 +6461,7 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -6504,9 +6469,7 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 		
 		memcpy(vid_buf, o_vid_buf, ((YRES+MENUSIZE) * (XRES+BARSIZE)) * PIXELSIZE);
 		render_parts(vid_buf);
@@ -6661,7 +6624,7 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -6738,7 +6701,7 @@ void simulation_ui(pixel * vid_buf)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
 	}
@@ -6746,9 +6709,7 @@ void simulation_ui(pixel * vid_buf)
 	while (!sdl_poll())
 	{
 		bq = b;
-		b = SDL_GetMouseState(&mx, &my);
-		mx /= sdl_scale;
-		my /= sdl_scale;
+		b = mouse_get_state(&mx, &my);
 
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
@@ -6841,8 +6802,36 @@ void simulation_ui(pixel * vid_buf)
 
 	while (!sdl_poll())
 	{
-		b = SDL_GetMouseState(&mx, &my);
+		b = mouse_get_state(&mx, &my);
 		if (!b)
 			break;
+	}
+}
+
+Uint8 mouse_get_state(int *x, int *y)
+{
+	//Wrapper around SDL_GetMouseState to divide by sdl_scale
+	Uint8 sdl_b;
+	int sdl_x, sdl_y;
+	sdl_b = SDL_GetMouseState(&sdl_x, &sdl_y);
+	*x = sdl_x/sdl_scale;
+	*y = sdl_y/sdl_scale;
+	return sdl_b;
+}
+
+void mouse_coords_window_to_sim(int *sim_x, int *sim_y, int window_x, int window_y)
+{
+	//Change mouse coords to take zoom window into account
+	if (zoom_en && window_x>=zoom_wx && window_y>=zoom_wy
+		&& window_x<(zoom_wx+ZFACTOR*ZSIZE)
+		&& window_y<(zoom_wy+ZFACTOR*ZSIZE))
+	{
+		*sim_x = (((window_x-zoom_wx)/ZFACTOR)+zoom_x);
+		*sim_y = (((window_y-zoom_wy)/ZFACTOR)+zoom_y);
+	}
+	else
+	{
+		*sim_x = window_x;
+		*sim_y = window_y;
 	}
 }
