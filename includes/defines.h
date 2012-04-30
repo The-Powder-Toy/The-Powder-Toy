@@ -88,7 +88,7 @@ extern unsigned char ZSIZE;
 
 #define STAMP_MAX 240
 
-//#define SAVE_OPS
+#define SAVE_OPS
 //#define REALISTIC
 
 #define NGOL 25
