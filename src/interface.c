@@ -3639,7 +3639,7 @@ int search_ui(pixel *vid_buf)
 						strappend(id_d_temp, "_");
 						strappend(id_d_temp, search_dates[pos]);
 						//img_id[i] = mystrdup(id_d_temp);
-						if (!strcmp(id_d_temp, img_id[i])) {
+						if (!strcmp(id_d_temp, img_id[i]) && !search_thumbs[pos]) {
 							break;
 						}
 						free(id_d_temp);
