@@ -3627,7 +3627,6 @@ int search_ui(pixel *vid_buf)
 					thumb = calloc(1,4);
 					thlen = 4;
 				}
-				printf("Added %s to cache\n", img_id[i]);
 				thumb_cache_add(img_id[i], thumb, thlen);
 				for (pos=0; pos<GRID_X*GRID_Y; pos++) {
 					if (search_dates[pos]) {
@@ -3711,7 +3710,6 @@ int search_ui(pixel *vid_buf)
 						strappend(uri, "_small.pti");
 						img_id[i] = mystrdup(search_ids[pos]);
 					}
-					printf("Not found: %s, downloading\n", img_id[i]);
 					img_http[i] = http_async_req_start(img_http[i], uri, NULL, 0, 1);
 					free(uri);
 				}
