@@ -48,7 +48,6 @@
 #include "gravity.h"
 #include <graphics.h>
 #include <powdergraphics.h>
-#include <version.h>
 #include <http.h>
 #include <md5.h>
 #include <update.h>
