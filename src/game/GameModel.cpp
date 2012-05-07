@@ -106,8 +106,8 @@ GameModel::GameModel():
 	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
 
 	//Set default tools
-	//activeTools[0] = menuList[SC_POWDERS]->GetToolList()[0];
-	//activeTools[1] = menuList[SC_SPECIAL]->GetToolList()[0];
+	activeTools[0] = menuList[SC_POWDERS]->GetToolList()[0];
+	activeTools[1] = menuList[SC_SPECIAL]->GetToolList()[0];
 
 	//Set default menu
 	activeMenu = menuList[SC_POWDERS];
