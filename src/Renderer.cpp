@@ -5,7 +5,7 @@
  *      Author: Simon
  */
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <vector>
 #include <stdio.h>
@@ -14,7 +14,6 @@
 #include "Renderer.h"
 #include "Graphics.h"
 #include "simulation/Elements.h"
-#include "simulation/ElementFunctions.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/Air.h"
 extern "C"
@@ -840,12 +839,11 @@ void Renderer::render_parts()
 	float gradv, flicker, fnx, fny;
 	Particle * parts;
 	part_transition *ptransitions;
-	part_type *ptypes;
+	Element *elements;
 	if(!sim)
 		return;
 	parts = sim->parts;
-	ptransitions = sim->ptransitions;
-	ptypes = sim->ptypes;
+	elements = sim->elements;
 #ifdef OGLR
 	int cfireV = 0, cfireC = 0, cfire = 0;
 	int csmokeV = 0, csmokeC = 0, csmoke = 0;
@@ -884,15 +882,15 @@ void Renderer::render_parts()
 			fnx = sim->parts[i].x;
 			fny = sim->parts[i].y;
 
-			if((sim->photons[ny][nx]&0xFF) && !(ptypes[t].properties & TYPE_ENERGY))
+			if((sim->photons[ny][nx]&0xFF) && !(elements[t].Properties & TYPE_ENERGY))
 				continue;
 
 			//Defaults
 			pixel_mode = 0 | PMODE_FLAT;
 			cola = 255;
-			colr = PIXR(ptypes[t].pcolors);
-			colg = PIXG(ptypes[t].pcolors);
-			colb = PIXB(ptypes[t].pcolors);
+			colr = PIXR(elements[t].Colour);
+			colg = PIXG(elements[t].Colour);
+			colb = PIXB(elements[t].Colour);
 			firea = 0;
 
 			deca = (sim->parts[i].dcolour>>24)&0xFF;
@@ -915,9 +913,9 @@ void Renderer::render_parts()
 				}
 				else if(!(colour_mode & COLOUR_BASC))
 				{
-					if (ptypes[t].graphics_func)
+					if (elements[t].Graphics)
 					{
-						if ((*(ptypes[t].graphics_func))(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
+						if ((*(elements[t].Graphics))(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
 						{
 							graphicscache[t].isready = 1;
 							graphicscache[t].pixel_mode = pixel_mode;
@@ -933,25 +931,22 @@ void Renderer::render_parts()
 					}
 					else
 					{
-						if(graphics_DEFAULT(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb))
-						{
-							graphicscache[t].isready = 1;
-							graphicscache[t].pixel_mode = pixel_mode;
-							graphicscache[t].cola = cola;
-							graphicscache[t].colr = colr;
-							graphicscache[t].colg = colg;
-							graphicscache[t].colb = colb;
-							graphicscache[t].firea = firea;
-							graphicscache[t].firer = firer;
-							graphicscache[t].fireg = fireg;
-							graphicscache[t].fireb = fireb;
-						}
+						graphicscache[t].isready = 1;
+						graphicscache[t].pixel_mode = pixel_mode;
+						graphicscache[t].cola = cola;
+						graphicscache[t].colr = colr;
+						graphicscache[t].colg = colg;
+						graphicscache[t].colb = colb;
+						graphicscache[t].firea = firea;
+						graphicscache[t].firer = firer;
+						graphicscache[t].fireg = fireg;
+						graphicscache[t].fireb = fireb;
 					}
 				}
-				if((ptypes[t].properties & PROP_HOT_GLOW) && sim->parts[i].temp>(ptransitions[t].thv-800.0f))
+				if((elements[t].Properties & PROP_HOT_GLOW) && sim->parts[i].temp>(elements[t].HighTemperature-800.0f))
 				{
-					gradv = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
-					caddress = (sim->parts[i].temp>ptransitions[t].thv)?ptransitions[t].thv-(ptransitions[t].thv-800.0f):sim->parts[i].temp-(ptransitions[t].thv-800.0f);
+					gradv = 3.1415/(2*elements[t].HighTemperature-(elements[t].HighTemperature-800.0f));
+					caddress = (sim->parts[i].temp>elements[t].HighTemperature)?elements[t].HighTemperature-(elements[t].HighTemperature-800.0f):sim->parts[i].temp-(elements[t].HighTemperature-800.0f);
 					colr += sin(gradv*caddress) * 226;;
 					colg += sin(gradv*caddress*4.55 +3.14) * 34;
 					colb += sin(gradv*caddress*2.22 +3.14) * 64;
@@ -994,9 +989,9 @@ void Renderer::render_parts()
 				}
 				else if(colour_mode & COLOUR_BASC)
 				{
-					colr = PIXR(ptypes[t].pcolors);
-					colg = PIXG(ptypes[t].pcolors);
-					colb = PIXB(ptypes[t].pcolors);
+					colr = PIXR(elements[t].Colour);
+					colg = PIXG(elements[t].Colour);
+					colb = PIXB(elements[t].Colour);
 					pixel_mode = PMODE_FLAT;
 				}
 
@@ -1066,9 +1061,9 @@ void Renderer::render_parts()
 					{
 						if (cplayer->elem<PT_NUM)
 						{
-							colr = PIXR(ptypes[cplayer->elem].pcolors);
-							colg = PIXG(ptypes[cplayer->elem].pcolors);
-							colb = PIXB(ptypes[cplayer->elem].pcolors);
+							colr = PIXR(elements[cplayer->elem].Colour);
+							colg = PIXG(elements[cplayer->elem].Colour);
+							colb = PIXB(elements[cplayer->elem].Colour);
 						}
 						else
 						{

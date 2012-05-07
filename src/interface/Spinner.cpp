@@ -6,7 +6,7 @@
  */
 
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include "Spinner.h"
 

@@ -6,7 +6,7 @@
  */
 
 #include <bzlib.h>
-#include <math.h>
+#include <cmath>
 #include "SaveLoader.h"
 
 //!TODO: enum for LoadSave return
@@ -497,7 +497,7 @@ int SaveLoader::PSVLoad(unsigned char * data, int dataLength, Simulation * sim, 
 			}
 			else
 			{
-				parts[i-1].temp = sim->ptypes[parts[i-1].type].heat;
+				parts[i-1].temp = sim->elements[parts[i-1].type].Temperature;
 			}
 		}
 	}
@@ -607,7 +607,7 @@ int SaveLoader::PSVLoad(unsigned char * data, int dataLength, Simulation * sim, 
 					parts[i-1].tmp2 = parts[i-1].life;
 				}
 			}
-			if (!sim->ptypes[parts[i-1].type].enabled)
+			if (!sim->elements[parts[i-1].type].Enabled)
 				parts[i-1].type = PT_NONE;
 		}
 	}

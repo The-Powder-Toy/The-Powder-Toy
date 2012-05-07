@@ -5,6 +5,8 @@
  *      Author: Simon
  */
 
+#include <vector>
+
 #define SC_WALL 0
 #define SC_ELEC 1
 #define SC_POWERED 2
@@ -118,6 +120,7 @@
 #ifndef SIMULATIONDATA_H_
 #define SIMULATIONDATA_H_
 
+//#include "elements/NULLElement.h"
 #include "Simulation.h"
 
 /*class Simulation;
@@ -135,6 +138,9 @@ struct gol_menu;
 struct menu_section;
 
 struct wall_type;
+
+class Element;
+std::vector<Element*> GetDefaultElements();
 
 gol_menu * LoadGOLMenu(int & golMenuCount);
 

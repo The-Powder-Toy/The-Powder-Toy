@@ -3,7 +3,7 @@
 #include <string.h>
 #include <regex.h>
 #include <sys/types.h>
-#include <math.h>
+#include <cmath>
 #include "Config.h"
 #include "Misc.h"
 #include "icondoc.h"

@@ -88,14 +88,14 @@ int CommandInterface::GetParticleType(std::string type)
 	char * txt = (char*)type.c_str();
 
 	//Scope
-	part_type *ptypes = m->GetSimulation()->ptypes;
+	Element * elements = m->GetSimulation()->elements;
 
 	// alternative names for some elements
 	if (strcasecmp(txt,"C4")==0) i = PT_PLEX;
 	else if (strcasecmp(txt,"C5")==0) i = PT_C5;
 	else if (strcasecmp(txt,"NONE")==0) i = PT_NONE;
 	for (i=1; i<PT_NUM; i++) {
-		if (strcasecmp(txt, ptypes[i].name)==0 && ptypes[i].enabled)
+		if (strcasecmp(txt, elements[i].Name)==0 && elements[i].Enabled)
 		{
 			return i;
 		}

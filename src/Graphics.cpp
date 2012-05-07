@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 #include <SDL/SDL.h>
 #include <bzlib.h>
 #include <string>

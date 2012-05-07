@@ -71,10 +71,10 @@ GameModel::GameModel():
 	//Build menus from Simulation elements
 	for(int i = 0; i < PT_NUM; i++)
 	{
-		if(sim->ptypes[i].menusection < 12 && sim->ptypes[i].enabled && sim->ptypes[i].menu)
+		if(sim->elements[i].MenuSection < 12 && sim->elements[i].Enabled && sim->elements[i].MenuVisible)
 		{
-			Tool * tempTool = new ElementTool(i, sim->ptypes[i].name, PIXR(sim->ptypes[i].pcolors), PIXG(sim->ptypes[i].pcolors), PIXB(sim->ptypes[i].pcolors));
-			menuList[sim->ptypes[i].menusection]->AddTool(tempTool);
+			Tool * tempTool = new ElementTool(i, sim->elements[i].Name, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour));
+			menuList[sim->elements[i].MenuSection]->AddTool(tempTool);
 		}
 	}
 
@@ -106,8 +106,8 @@ GameModel::GameModel():
 	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
 
 	//Set default tools
-	activeTools[0] = menuList[SC_POWDERS]->GetToolList()[0];
-	activeTools[1] = menuList[SC_SPECIAL]->GetToolList()[0];
+	//activeTools[0] = menuList[SC_POWDERS]->GetToolList()[0];
+	//activeTools[1] = menuList[SC_SPECIAL]->GetToolList()[0];
 
 	//Set default menu
 	activeMenu = menuList[SC_POWDERS];

@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 #include "Config.h"
 #include "Air.h"
 //#include <powder.h>

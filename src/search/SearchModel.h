@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <pthread.h>
-#include <math.h>
+#include <cmath>
 #include "Save.h"
 #include "SearchView.h"
 

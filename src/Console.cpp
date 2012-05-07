@@ -1,6 +1,6 @@
 
 #include <string>
-#include <math.h>
+#include <cmath>
 #include "Console.h"
 
 int Console::ParsePartref(char * txt)

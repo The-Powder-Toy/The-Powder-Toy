@@ -165,9 +165,9 @@ tpt.partsdata = nil");
 	tptElements = lua_gettop(l);
 	for(i = 1; i < PT_NUM; i++)
 	{
-		for(j = 0; j < strlen(luacon_sim->ptypes[i].name); j++)
-			tmpname[j] = tolower(luacon_sim->ptypes[i].name[j]);
-		tmpname[strlen(luacon_sim->ptypes[i].name)] = 0;
+		for(j = 0; j < strlen(luacon_sim->elements[i].Name); j++)
+			tmpname[j] = tolower(luacon_sim->elements[i].Name[j]);
+		tmpname[strlen(luacon_sim->elements[i].Name)] = 0;
 
 		lua_newtable(l);
 		currentElement = lua_gettop(l);
@@ -190,9 +190,9 @@ tpt.partsdata = nil");
 	tptElementTransitions = lua_gettop(l);
 	for(i = 1; i < PT_NUM; i++)
 	{
-		for(j = 0; j < strlen(luacon_sim->ptypes[i].name); j++)
-			tmpname[j] = tolower(luacon_sim->ptypes[i].name[j]);
-		tmpname[strlen(luacon_sim->ptypes[i].name)] = 0;
+		for(j = 0; j < strlen(luacon_sim->elements[i].Name); j++)
+			tmpname[j] = tolower(luacon_sim->elements[i].Name[j]);
+		tmpname[strlen(luacon_sim->elements[i].Name)] = 0;
 
 		lua_newtable(l);
 		currentElement = lua_gettop(l);
@@ -488,11 +488,11 @@ int luacon_transitionread(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		tempinteger = *((int*)(((unsigned char*)&luacon_sim->ptransitions[i])+offset));
+		tempinteger = *((int*)(((unsigned char*)&luacon_sim->elements[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
 	case 1:
-		tempfloat = *((float*)(((unsigned char*)&luacon_sim->ptransitions[i])+offset));
+		tempfloat = *((float*)(((unsigned char*)&luacon_sim->elements[i])+offset));
 		lua_pushnumber(l, tempfloat);
 		break;
 	}
@@ -522,10 +522,10 @@ int luacon_transitionwrite(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		*((int*)(((unsigned char*)&luacon_sim->ptransitions[i])+offset)) = luaL_optinteger(l, 3, 0);
+		*((int*)(((unsigned char*)&luacon_sim->elements[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
 	case 1:
-		*((float*)(((unsigned char*)&luacon_sim->ptransitions[i])+offset)) = luaL_optnumber(l, 3, 0);
+		*((float*)(((unsigned char*)&luacon_sim->elements[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	}
 	return 0;
@@ -675,19 +675,19 @@ int luacon_elementread(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		tempinteger = *((int*)(((unsigned char*)&luacon_sim->ptypes[i])+offset));
+		tempinteger = *((int*)(((unsigned char*)&luacon_sim->elements[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
 	case 1:
-		tempfloat = *((float*)(((unsigned char*)&luacon_sim->ptypes[i])+offset));
+		tempfloat = *((float*)(((unsigned char*)&luacon_sim->elements[i])+offset));
 		lua_pushnumber(l, tempfloat);
 		break;
 	case 2:
-		tempstring = *((char**)(((unsigned char*)&luacon_sim->ptypes[i])+offset));
+		tempstring = *((char**)(((unsigned char*)&luacon_sim->elements[i])+offset));
 		lua_pushstring(l, tempstring);
 		break;
 	case 3:
-		tempinteger = *((unsigned char*)(((unsigned char*)&luacon_sim->ptypes[i])+offset));
+		tempinteger = *((unsigned char*)(((unsigned char*)&luacon_sim->elements[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
 	}
@@ -719,10 +719,10 @@ int luacon_elementwrite(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		*((int*)(((unsigned char*)&luacon_sim->ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
+		*((int*)(((unsigned char*)&luacon_sim->elements[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
 	case 1:
-		*((float*)(((unsigned char*)&luacon_sim->ptypes[i])+offset)) = luaL_optnumber(l, 3, 0);
+		*((float*)(((unsigned char*)&luacon_sim->elements[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	case 2:
 		tempstring = mystrdup((char*)luaL_optstring(l, 3, ""));
@@ -745,11 +745,11 @@ int luacon_elementwrite(lua_State* l){
 				return luaL_error(l, "Name in use");
 			}
 		}
-		*((char**)(((unsigned char*)&luacon_sim->ptypes[i])+offset)) = tempstring;
+		*((char**)(((unsigned char*)&luacon_sim->elements[i])+offset)) = tempstring;
 		//Need some way of cleaning up previous values
 		break;
 	case 3:
-		*((unsigned char*)(((unsigned char*)&luacon_sim->ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
+		*((unsigned char*)(((unsigned char*)&luacon_sim->elements[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
 	}
 	if (modified_stuff)
@@ -953,7 +953,7 @@ int luatpt_create(lua_State* l)
 	if(x < XRES && y < YRES){
 		if(lua_isnumber(l, 3)){
 			t = luaL_optint(l, 3, 0);
-			if (t<0 || t >= PT_NUM || !luacon_sim->ptypes[t].enabled)
+			if (t<0 || t >= PT_NUM || !luacon_sim->elements[t].Enabled)
 				return luaL_error(l, "Unrecognised element number '%d'", t);
 		} else {
 			name = (char*)luaL_optstring(l, 3, "dust");

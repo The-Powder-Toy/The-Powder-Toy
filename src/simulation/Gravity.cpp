@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 #include <sys/types.h>
 #include <pthread.h>
 #include "Config.h"
@@ -237,9 +237,9 @@ void Gravity::grav_fft_init()
 		for (x=0; x<xblock2; x++)
 		{
 			if (x==XRES/CELL && y==YRES/CELL) continue;
-			distance = sqrtf(pow(x-(XRES/CELL), 2) + pow(y-(YRES/CELL), 2));
-			th_ptgravx[y*xblock2+x] = scaleFactor*(x-(XRES/CELL)) / pow(distance, 3);
-			th_ptgravy[y*xblock2+x] = scaleFactor*(y-(YRES/CELL)) / pow(distance, 3);
+			distance = sqrtf(pow(x-(XRES/CELL), 2.0f) + pow(y-(YRES/CELL), 2.0f));
+			th_ptgravx[y*xblock2+x] = scaleFactor*(x-(XRES/CELL)) / pow(distance, 3.0f);
+			th_ptgravy[y*xblock2+x] = scaleFactor*(y-(YRES/CELL)) / pow(distance, 3.0f);
 		}
 	}
 	th_ptgravx[yblock2*xblock2/2+xblock2/2] = 0.0f;

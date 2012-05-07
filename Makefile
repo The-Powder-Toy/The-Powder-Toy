@@ -1,11 +1,15 @@
-HEADERS := $(wildcard src/*.h) $(wildcard src/*/*.h)
+HEADERS := $(wildcard src/*.h) $(wildcard src/*/*.h) $(wildcard generated/*.h)
 
-SOURCES := $(wildcard src/*.cpp) $(wildcard src/*/*.cpp)
+SOURCES := $(wildcard src/*.cpp) $(wildcard src/*/*.cpp) $(wildcard src/*/*/*.cpp) $(wildcard generated/*.cpp)
 OBJS := $(patsubst src/%.cpp,build/obj/%.o,$(SOURCES))
+
+NEWLINE := $(`echo "d\nd"`)
+ELEMENTFILES := $(patsubst src/simulation/%,\#include "%"$(NEWLINE),$(wildcard src/simulation/elements/*.cpp))
+#ELEMENTFILES := \#include "elements/watr.cpp"
 
 FOLDERS := 
 
-CFLAGS := -w -Isrc/ -Idata/
+CFLAGS := -w -Isrc/ -Idata/ -Igenerated/
 OFLAGS := -fkeep-inline-functions 
 
 CPPC := g++
@@ -59,7 +63,7 @@ buildpaths-powder:
 	$(shell mkdir -p build/obj/powder/)
 	$(shell mkdir -p $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder/%.o,$(OBJS)))))
 
-build/powder-x: buildpaths-powder-x $(patsubst build/obj/%.o,build/obj/powder-x/%.o,$(OBJS))
+build/powder-x: buildpaths-powder-x generate $(patsubst build/obj/%.o,build/obj/powder-x/%.o,$(OBJS))
 	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder-x/%.o,$(OBJS)) SDLmain.m $(LFLAGS) -o $@ -ggdb
 build/obj/powder-x/%.o: src/%.cpp $(HEADERS)
 	$(CPPC) -c $(CFLAGS) $(OFLAGS) -o $@ $< -ggdb
@@ -67,6 +71,9 @@ buildpaths-powder-x:
 	$(shell mkdir -p build/obj/powder-x/)
 	$(shell mkdir -p $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder-x/%.o,$(OBJS)))))
 	
+generate:
+	python generator.py
+
 clean:
 	rm -r build/obj/*
 	rm build/*.exe

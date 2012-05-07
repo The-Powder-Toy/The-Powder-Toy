@@ -8,6 +8,7 @@
 #ifndef ELIPSEBRUSH_H_
 #define ELIPSEBRUSH_H_
 
+#include <cmath>
 #include "Brush.h"
 
 class EllipseBrush: public Brush
@@ -29,7 +30,7 @@ public:
 		{
 			for(int y = 0; y <= radius.Y*2; y++)
 			{
-				if((pow(x-radius.X,2)*pow(ry,2)+pow(y-radius.Y,2)*pow(rx,2)<=pow(rx,2)*pow(ry,2)))
+				if((pow(x-radius.X,2.0f)*pow(ry,2.0f)+pow(y-radius.Y,2.0f)*pow(rx,2.0f)<=pow(rx,2.0f)*pow(ry,2.0f)))
 				{
 					bitmap[y*(size.X)+x] = 255;
 				}
