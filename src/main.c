@@ -763,7 +763,7 @@ int main(int argc, char *argv[])
 	float nfvx, nfvy;
 	int load_mode=0, load_w=0, load_h=0, load_x=0, load_y=0, load_size=0;
 	void *load_data=NULL;
-	pixel *load_img=NULL;//, *fbi_img=NULL;
+	pixel *load_img=NULL;
 	int save_mode=0, save_x=0, save_y=0, save_w=0, save_h=0, copy_mode=0;
 	unsigned int rgbSave = PIXRGB(127,0,0);
 	SDL_AudioSpec fmt;
