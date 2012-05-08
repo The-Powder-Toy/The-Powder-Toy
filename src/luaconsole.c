@@ -96,6 +96,8 @@ void luacon_open(){
 		{"screenshot",&luatpt_screenshot},
 		{"element",&luatpt_getelement},
 		{"element_func",&luatpt_element_func},
+		{"set_map",&luatpt_set_map},
+		{"get_map",&luatpt_get_map},
 		{NULL,NULL}
 	};
 
@@ -2010,6 +2012,91 @@ int luatpt_screenshot(lua_State* l)
 		return 0;
 	}
 	return luaL_error(l, "Screen buffer does not exist");
+}
+
+// Usage: tpt.set_map(string map_name,number value,number x,number y)
+// Eg tpt.set_map('pv',255,10,10)
+int luatpt_set_map(lua_State* l)
+{
+    char *map = luaL_optstring(l,1,"pv");
+    int value = luaL_optint(l,2,0);
+    int x = luaL_optint(l,3,0);
+    int y = luaL_optint(l,4,0);
+    if((x>=0)&&(y>=0)&&(x<XRES/CELL)&&(y<YRES/CELL))
+    {
+        if(strcasecmp(map,"pv")==0)
+            pv[y][x]=value;
+        else
+        if(strcasecmp(map,"vx")==0)
+            vx[y][x]=value;
+        else
+        if(strcasecmp(map,"vy")==0)
+            vy[y][x]=value;
+        else
+        if(strcasecmp(map,"fvx")==0)
+            fvx[y][x]=value;
+        else
+        if(strcasecmp(map,"fvy")==0)
+            fvy[y][x]=value;
+        else
+        if(strcasecmp(map,"bmap")==0)
+            bmap[y][x]=value;
+        else
+        if(strcasecmp(map,"emap")==0)
+            emap[y][x]=value;
+        else
+        if(strcasecmp(map,"hv")==0)
+            hv[y][x]=value;
+        else
+        if(strcasecmp(map,"gravmap")==0)
+            gravmap[y*(XRES/CELL)+x]=value;
+        else
+            return luaL_error(l, "Wrong map identifier \"%s\"", map);
+        return 0;
+    }
+    return luaL_error(l, "Screen coordinates out of range (%d,%d)", x, y);
+}
+ 
+// Usage: tpt.get_map(string map_name,number x,number y)
+// Eg tpt.log(tpt.set_map('bmap',10,10))
+int luatpt_get_map(lua_State* l)
+{
+    char *map = luaL_optstring(l,1,"pv");
+    int x = luaL_optint(l,3,0);
+    int y = luaL_optint(l,4,0);
+    if((x>=0)&&(y>=0)&&(x<XRES/CELL)&&(y<YRES/CELL))
+    {
+        if(strcasecmp(map,"pv")==0)
+            lua_pushinteger(l,pv[y][x]);
+        else
+        if(strcasecmp(map,"vx")==0)
+            lua_pushinteger(l,vx[y][x]);
+        else
+        if(strcasecmp(map,"vy")==0)
+            lua_pushinteger(l,vy[y][x]);
+        else
+        if(strcasecmp(map,"fvx")==0)
+            lua_pushinteger(l,fvx[y][x]);
+        else
+        if(strcasecmp(map,"fvy")==0)
+            lua_pushinteger(l,fvy[y][x]);
+        else
+        if(strcasecmp(map,"bmap")==0)
+            lua_pushinteger(l,bmap[y][x]);
+        else
+        if(strcasecmp(map,"emap")==0)
+            lua_pushinteger(l,emap[y][x]);
+        else
+        if(strcasecmp(map,"hv")==0)
+            lua_pushinteger(l,hv[y][x]);
+        else
+        if(strcasecmp(map,"gravmap")==0)
+            lua_pushinteger(l,gravmap[y*(XRES/CELL)+x]);
+        else
+            return luaL_error(l, "Wrong map identifier \"%s\"", map);
+        return 1;
+    }
+    return luaL_error(l, "Screen coordinates out of range (%d,%d)", x, y);
 }
 
 #endif
