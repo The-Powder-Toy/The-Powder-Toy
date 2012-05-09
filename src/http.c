@@ -6,7 +6,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -15,8 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -230,26 +229,26 @@ void *http_async_req_start(void *ctx, char *uri, char *data, int dlen, int keep)
 		cx = ctx;
 		cx->fd = PERROR;
 	}
-    
+
 	if (!cx->hbuf)
 	{
 		cx->hbuf = malloc(256);
 		cx->hlen = 256;
 	}
-    
+
 	if (!http_up)
 	{
 		cx->ret = 604;
 		cx->state = HTS_DONE;
 		return ctx;
 	}
-    
+
 	if (cx->state!=HTS_STRT && cx->state!=HTS_IDLE)
 	{
 		fprintf(stderr, "HTTP: unclean request restart state.\n");
 		exit(1);
 	}
-    
+
 	cx->keep = keep;
 	cx->ret = 600;
 	if (splituri(uri, &cx->host, &cx->path))
@@ -281,18 +280,18 @@ void *http_async_req_start(void *ctx, char *uri, char *data, int dlen, int keep)
 	}
 	else
 		cx->txdl = 0;
-    
+
 	cx->contlen = 0;
 	cx->chunked = 0;
 	cx->chunkhdr = 0;
 	cx->rxtogo = 0;
 	cx->cclose = 0;
-    
+
 	cx->tptr = 0;
 	cx->tlen = 0;
-    
+
 	cx->last = time(NULL);
-    
+
 	return ctx;
 }
 
@@ -359,7 +358,7 @@ static void process_byte(struct http_ctx *cx, char ch)
 	if (cx->rxtogo)
 	{
 		cx->rxtogo--;
-        
+
 		if (!cx->rbuf)
 		{
 			cx->rbuf = malloc(256);
@@ -371,7 +370,7 @@ static void process_byte(struct http_ctx *cx, char ch)
 			cx->rbuf = realloc(cx->rbuf, cx->rlen);
 		}
 		cx->rbuf[cx->rptr++] = ch;
-        
+
 		if (!cx->rxtogo && !cx->chunked)
 			cx->state = HTS_DONE;
 	}
@@ -404,173 +403,173 @@ int http_async_req_status(void *ctx)
 #ifdef WIN32
 	unsigned long tmp2;
 #endif
-    
+
 	switch (cx->state)
 	{
-        case HTS_STRT:
-            dns = getserv(cx->host);
-            srv = getport(cx->host);
-            if (resolve(dns, srv, &cx->addr))
-            {
-                free(dns);
-                free(srv);
-                cx->state = HTS_DONE;
-                cx->ret = 602;
-                return 1;
-            }
-            free(dns);
-            free(srv);
-            cx->state = HTS_RSLV;
-            return 0;
-        case HTS_RSLV:
-            cx->state = HTS_CONN;
-            cx->last = now;
-            return 0;
-        case HTS_CONN:
-            if (cx->fd == PERROR)
-            {
-                cx->fd = socket(AF_INET, SOCK_STREAM, 0);
-                if (cx->fd == PERROR)
-                    goto fail;
-                cx->fdhost = mystrdup(cx->host);
+	case HTS_STRT:
+		dns = getserv(cx->host);
+		srv = getport(cx->host);
+		if (resolve(dns, srv, &cx->addr))
+		{
+			free(dns);
+			free(srv);
+			cx->state = HTS_DONE;
+			cx->ret = 602;
+			return 1;
+		}
+		free(dns);
+		free(srv);
+		cx->state = HTS_RSLV;
+		return 0;
+	case HTS_RSLV:
+		cx->state = HTS_CONN;
+		cx->last = now;
+		return 0;
+	case HTS_CONN:
+		if (cx->fd == PERROR)
+		{
+			cx->fd = socket(AF_INET, SOCK_STREAM, 0);
+			if (cx->fd == PERROR)
+				goto fail;
+			cx->fdhost = mystrdup(cx->host);
 #ifdef WIN32
-                tmp2 = 1;
-                if (ioctlsocket(cx->fd, FIONBIO, &tmp2) == SOCKET_ERROR)
-                    goto fail;
+			tmp2 = 1;
+			if (ioctlsocket(cx->fd, FIONBIO, &tmp2) == SOCKET_ERROR)
+				goto fail;
 #else
-                tmp = fcntl(cx->fd, F_GETFL);
-                if (tmp < 0)
-                    goto fail;
-                if (fcntl(cx->fd, F_SETFL, tmp|O_NONBLOCK) < 0)
-                    goto fail;
+			tmp = fcntl(cx->fd, F_GETFL);
+			if (tmp < 0)
+				goto fail;
+			if (fcntl(cx->fd, F_SETFL, tmp|O_NONBLOCK) < 0)
+				goto fail;
 #endif
-            }
-            if (!connect(cx->fd, (struct sockaddr *)&cx->addr, sizeof(cx->addr)))
-                cx->state = HTS_IDLE;
+		}
+		if (!connect(cx->fd, (struct sockaddr *)&cx->addr, sizeof(cx->addr)))
+			cx->state = HTS_IDLE;
 #ifdef WIN32
-            else if (PERRNO==WSAEISCONN)
-                cx->state = HTS_IDLE;
+		else if (PERRNO==WSAEISCONN)
+			cx->state = HTS_IDLE;
 #endif
 #if defined(MACOSX) || defined(BSD)
-            else if (PERRNO==EISCONN)
-                cx->state = HTS_IDLE;
+		else if (PERRNO==EISCONN)
+			cx->state = HTS_IDLE;
 #endif
-            else if (PERRNO!=PEINPROGRESS && PERRNO!=PEALREADY
+		else if (PERRNO!=PEINPROGRESS && PERRNO!=PEALREADY
 #ifdef WIN32
-                     && PERRNO!=PEAGAIN && PERRNO!=WSAEINVAL
+		         && PERRNO!=PEAGAIN && PERRNO!=WSAEINVAL
 #endif
-                     )
-                goto fail;
-            if (now-cx->last>http_timeout)
-                goto timeout;
-            return 0;
-        case HTS_IDLE:
-            if (cx->txdl)
-            {
-                // generate POST
-                cx->tbuf = malloc(strlen(cx->host) + strlen(cx->path) + 127 + cx->txdl + cx->thlen);
-                cx->tptr = 0;
-                cx->tlen = 0;
-                cx->tlen += sprintf(cx->tbuf+cx->tlen, "POST %s HTTP/1.1\r\n", cx->path);
-                cx->tlen += sprintf(cx->tbuf+cx->tlen, "Host: %s\r\n", cx->host);
-                if (!cx->keep)
-                    cx->tlen += sprintf(cx->tbuf+cx->tlen, "Connection: close\r\n");
-                if (cx->thdr)
-                {
-                    memcpy(cx->tbuf+cx->tlen, cx->thdr, cx->thlen);
-                    cx->tlen += cx->thlen;
-                    free(cx->thdr);
-                    cx->thdr = NULL;
-                    cx->thlen = 0;
-                }
-                cx->tlen += sprintf(cx->tbuf+cx->tlen, "Content-Length: %d\r\n", cx->txdl);
+		        )
+			goto fail;
+		if (now-cx->last>http_timeout)
+			goto timeout;
+		return 0;
+	case HTS_IDLE:
+		if (cx->txdl)
+		{
+			// generate POST
+			cx->tbuf = malloc(strlen(cx->host) + strlen(cx->path) + 126 + cx->txdl + cx->thlen);
+			cx->tptr = 0;
+			cx->tlen = 0;
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "POST %s HTTP/1.1\r\n", cx->path);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "Host: %s\r\n", cx->host);
+			if (!cx->keep)
+				cx->tlen += sprintf(cx->tbuf+cx->tlen, "Connection: close\r\n");
+			if (cx->thdr)
+			{
+				memcpy(cx->tbuf+cx->tlen, cx->thdr, cx->thlen);
+				cx->tlen += cx->thlen;
+				free(cx->thdr);
+				cx->thdr = NULL;
+				cx->thlen = 0;
+			}
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "Content-Length: %d\r\n", cx->txdl);
 #ifdef BETA
-                cx->tlen += sprintf(cx->tbuf+cx->tlen, "X-Powder-Version: %s%dB%d\r\n", IDENT_VERSION, SAVE_VERSION, MINOR_VERSION);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "X-Powder-Version: %s%dB%d\r\n", IDENT_VERSION, SAVE_VERSION, MINOR_VERSION);
 #else
-                cx->tlen += sprintf(cx->tbuf+cx->tlen, "X-Powder-Version: %s%dS%d\r\n", IDENT_VERSION, SAVE_VERSION, MINOR_VERSION);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "X-Powder-Version: %s%dS%d\r\n", IDENT_VERSION, SAVE_VERSION, MINOR_VERSION);
 #endif
-                cx->tlen += sprintf(cx->tbuf+cx->tlen, "\r\n");
-                memcpy(cx->tbuf+cx->tlen, cx->txd, cx->txdl);
-                cx->tlen += cx->txdl;
-                free(cx->txd);
-                cx->txd = NULL;
-                cx->txdl = 0;
-            }
-            else
-            {
-                // generate GET
-                cx->tbuf = malloc(strlen(cx->host) + strlen(cx->path) + 95 + cx->thlen);
-                cx->tptr = 0;
-                cx->tlen = 0;
-                cx->tlen += sprintf(cx->tbuf+cx->tlen, "GET %s HTTP/1.1\r\n", cx->path);
-                cx->tlen += sprintf(cx->tbuf+cx->tlen, "Host: %s\r\n", cx->host);
-                if (cx->thdr)
-                {
-                    memcpy(cx->tbuf+cx->tlen, cx->thdr, cx->thlen);
-                    cx->tlen += cx->thlen;
-                    free(cx->thdr);
-                    cx->thdr = NULL;
-                    cx->thlen = 0;
-                }
-                if (!cx->keep)
-                    cx->tlen += sprintf(cx->tbuf+cx->tlen, "Connection: close\r\n");
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "\r\n");
+			memcpy(cx->tbuf+cx->tlen, cx->txd, cx->txdl);
+			cx->tlen += cx->txdl;
+			free(cx->txd);
+			cx->txd = NULL;
+			cx->txdl = 0;
+		}
+		else
+		{
+			// generate GET
+			cx->tbuf = malloc(strlen(cx->host) + strlen(cx->path) +93 + cx->thlen);
+			cx->tptr = 0;
+			cx->tlen = 0;
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "GET %s HTTP/1.1\r\n", cx->path);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "Host: %s\r\n", cx->host);
+			if (cx->thdr)
+			{
+				memcpy(cx->tbuf+cx->tlen, cx->thdr, cx->thlen);
+				cx->tlen += cx->thlen;
+				free(cx->thdr);
+				cx->thdr = NULL;
+				cx->thlen = 0;
+			}
+			if (!cx->keep)
+				cx->tlen += sprintf(cx->tbuf+cx->tlen, "Connection: close\r\n");
 #ifdef BETA
-                cx->tlen += sprintf(cx->tbuf+cx->tlen, "X-Powder-Version: %s%dB%d\r\n", IDENT_VERSION, SAVE_VERSION, MINOR_VERSION);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "X-Powder-Version: %s%dB%d\r\n", IDENT_VERSION, SAVE_VERSION, MINOR_VERSION);
 #else
-                cx->tlen += sprintf(cx->tbuf+cx->tlen, "X-Powder-Version: %s%dS%d\r\n", IDENT_VERSION, SAVE_VERSION, MINOR_VERSION);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "X-Powder-Version: %s%dS%d\r\n", IDENT_VERSION, SAVE_VERSION, MINOR_VERSION);
 #endif
-                cx->tlen += sprintf(cx->tbuf+cx->tlen, "\r\n");
-            }
-            cx->state = HTS_XMIT;
-            cx->last = now;
-            return 0;
-        case HTS_XMIT:
-            tmp = send(cx->fd, cx->tbuf+cx->tptr, cx->tlen-cx->tptr, 0);
-            if (tmp==PERROR && PERRNO!=PEAGAIN && PERRNO!=PEINTR)
-                goto fail;
-            if (tmp!=PERROR)
-            {
-                cx->tptr += tmp;
-                if (cx->tptr == cx->tlen)
-                {
-                    cx->tptr = 0;
-                    cx->tlen = 0;
-                    if (cx->tbuf)
-                        free(cx->tbuf);
-                    cx->state = HTS_RECV;
-                }
-                cx->last = now;
-            }
-            if (now-cx->last>http_timeout)
-                goto timeout;
-            return 0;
-        case HTS_RECV:
-            tmp = recv(cx->fd, buf, CHUNK, 0);
-            if (tmp==PERROR && PERRNO!=PEAGAIN && PERRNO!=PEINTR)
-                goto fail;
-            if (tmp!=PERROR)
-            {
-                for (i=0; i<tmp; i++)
-                {
-                    process_byte(cx, buf[i]);
-                    if (cx->state == HTS_DONE)
-                        return 1;
-                }
-                cx->last = now;
-            }
-            if (now-cx->last>http_timeout)
-                goto timeout;
-            return 0;
-        case HTS_DONE:
-            return 1;
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "\r\n");
+		}
+		cx->state = HTS_XMIT;
+		cx->last = now;
+		return 0;
+	case HTS_XMIT:
+		tmp = send(cx->fd, cx->tbuf+cx->tptr, cx->tlen-cx->tptr, 0);
+		if (tmp==PERROR && PERRNO!=PEAGAIN && PERRNO!=PEINTR)
+			goto fail;
+		if (tmp!=PERROR)
+		{
+			cx->tptr += tmp;
+			if (cx->tptr == cx->tlen)
+			{
+				cx->tptr = 0;
+				cx->tlen = 0;
+				if (cx->tbuf)
+					free(cx->tbuf);
+				cx->state = HTS_RECV;
+			}
+			cx->last = now;
+		}
+		if (now-cx->last>http_timeout)
+			goto timeout;
+		return 0;
+	case HTS_RECV:
+		tmp = recv(cx->fd, buf, CHUNK, 0);
+		if (tmp==PERROR && PERRNO!=PEAGAIN && PERRNO!=PEINTR)
+			goto fail;
+		if (tmp!=PERROR)
+		{
+			for (i=0; i<tmp; i++)
+			{
+				process_byte(cx, buf[i]);
+				if (cx->state == HTS_DONE)
+					return 1;
+			}
+			cx->last = now;
+		}
+		if (now-cx->last>http_timeout)
+			goto timeout;
+		return 0;
+	case HTS_DONE:
+		return 1;
 	}
 	return 0;
-    
+
 fail:
 	cx->ret = 600;
 	cx->state = HTS_DONE;
 	return 1;
-    
+
 timeout:
 	cx->ret = 605;
 	cx->state = HTS_DONE;
@@ -581,10 +580,10 @@ char *http_async_req_stop(void *ctx, int *ret, int *len)
 {
 	struct http_ctx *cx = ctx;
 	char *rxd;
-    
+
 	if (cx->state != HTS_DONE)
 		while (!http_async_req_status(ctx)) ;
-    
+
 	if (cx->host)
 	{
 		free(cx->host);
@@ -612,7 +611,7 @@ char *http_async_req_stop(void *ctx, int *ret, int *len)
 		cx->thdr = NULL;
 		cx->thlen = 0;
 	}
-    
+
 	if (ret)
 		*ret = cx->ret;
 	if (len)
@@ -624,7 +623,7 @@ char *http_async_req_stop(void *ctx, int *ret, int *len)
 	cx->rlen = 0;
 	cx->rptr = 0;
 	cx->contlen = 0;
-    
+
 	if (!cx->keep)
 		http_async_req_close(ctx);
 	else if (cx->cclose)
@@ -640,7 +639,7 @@ char *http_async_req_stop(void *ctx, int *ret, int *len)
 	}
 	else
 		cx->state = HTS_IDLE;
-    
+
 	return rxd;
 }
 
@@ -691,7 +690,7 @@ void http_auth_headers(void *ctx, char *user, char *pass, char *session_id)
 	unsigned char hash[16];
 	unsigned int m;
 	struct md5_context md5;
-    
+
 	if (user)
 	{
 		if (pass)
@@ -700,7 +699,7 @@ void http_auth_headers(void *ctx, char *user, char *pass, char *session_id)
 			md5_update(&md5, (unsigned char *)user, strlen(user));
 			md5_update(&md5, (unsigned char *)"-", 1);
 			m = 0;
-            
+
 			md5_update(&md5, (unsigned char *)pass, strlen(pass));
 			md5_final(hash, &md5);
 			tmp = malloc(33);
@@ -727,7 +726,7 @@ void http_auth_headers(void *ctx, char *user, char *pass, char *session_id)
 char *http_auth_get(char *uri, char *user, char *pass, char *session_id, int *ret, int *len)
 {
 	void *ctx = http_async_req_start(NULL, uri, NULL, 0, 0);
-    
+
 	if (!ctx)
 	{
 		if (ret)
@@ -757,137 +756,137 @@ char *http_ret_text(int ret)
 {
 	switch (ret)
 	{
-        case 100:
-            return "Continue";
-        case 101:
-            return "Switching Protocols";
-        case 102:
-            return "Processing";
-            
-        case 200:
-            return "OK";
-        case 201:
-            return "Created";
-        case 202:
-            return "Accepted";
-        case 203:
-            return "Non-Authoritative Information";
-        case 204:
-            return "No Content";
-        case 205:
-            return "Reset Content";
-        case 206:
-            return "Partial Content";
-        case 207:
-            return "Multi-Status";
-            
-        case 300:
-            return "Multiple Choices";
-        case 301:
-            return "Moved Permanently";
-        case 302:
-            return "Found";
-        case 303:
-            return "See Other";
-        case 304:
-            return "Not Modified";
-        case 305:
-            return "Use Proxy";
-        case 306:
-            return "Switch Proxy";
-        case 307:
-            return "Temporary Redirect";
-            
-        case 400:
-            return "Bad Request";
-        case 401:
-            return "Unauthorized";
-        case 402:
-            return "Payment Required";
-        case 403:
-            return "Forbidden";
-        case 404:
-            return "Not Found";
-        case 405:
-            return "Method Not Allowed";
-        case 406:
-            return "Not Acceptable";
-        case 407:
-            return "Proxy Authentication Required";
-        case 408:
-            return "Request Timeout";
-        case 409:
-            return "Conflict";
-        case 410:
-            return "Gone";
-        case 411:
-            return "Length Required";
-        case 412:
-            return "Precondition Failed";
-        case 413:
-            return "Request Entity Too Large";
-        case 414:
-            return "Request URI Too Long";
-        case 415:
-            return "Unsupported Media Type";
-        case 416:
-            return "Requested Range Not Satisfiable";
-        case 417:
-            return "Expectation Failed";
-        case 418:
-            return "I'm a teapot";
-        case 422:
-            return "Unprocessable Entity";
-        case 423:
-            return "Locked";
-        case 424:
-            return "Failed Dependency";
-        case 425:
-            return "Unordered Collection";
-        case 426:
-            return "Upgrade Required";
-        case 444:
-            return "No Response";
-        case 450:
-            return "Blocked by Windows Parental Controls";
-        case 499:
-            return "Client Closed Request";
-            
-        case 500:
-            return "Internal Server Error";
-        case 501:
-            return "Not Implemented";
-        case 502:
-            return "Bad Gateway";
-        case 503:
-            return "Service Unavailable";
-        case 504:
-            return "Gateway Timeout";
-        case 505:
-            return "HTTP Version Not Supported";
-        case 506:
-            return "Variant Also Negotiates";
-        case 507:
-            return "Insufficient Storage";
-        case 509:
-            return "Bandwidth Limit Exceeded";
-        case 510:
-            return "Not Extended";
-            
-        case 600:
-            return "Internal Client Error";
-        case 601:
-            return "Unsupported Protocol";
-        case 602:
-            return "Server Not Found";
-        case 603:
-            return "Malformed Response";
-        case 604:
-            return "Network Not Available";
-        case 605:
-            return "Request Timed Out";
-        default:
-            return "Unknown Status Code";
+	case 100:
+		return "Continue";
+	case 101:
+		return "Switching Protocols";
+	case 102:
+		return "Processing";
+
+	case 200:
+		return "OK";
+	case 201:
+		return "Created";
+	case 202:
+		return "Accepted";
+	case 203:
+		return "Non-Authoritative Information";
+	case 204:
+		return "No Content";
+	case 205:
+		return "Reset Content";
+	case 206:
+		return "Partial Content";
+	case 207:
+		return "Multi-Status";
+
+	case 300:
+		return "Multiple Choices";
+	case 301:
+		return "Moved Permanently";
+	case 302:
+		return "Found";
+	case 303:
+		return "See Other";
+	case 304:
+		return "Not Modified";
+	case 305:
+		return "Use Proxy";
+	case 306:
+		return "Switch Proxy";
+	case 307:
+		return "Temporary Redirect";
+
+	case 400:
+		return "Bad Request";
+	case 401:
+		return "Unauthorized";
+	case 402:
+		return "Payment Required";
+	case 403:
+		return "Forbidden";
+	case 404:
+		return "Not Found";
+	case 405:
+		return "Method Not Allowed";
+	case 406:
+		return "Not Acceptable";
+	case 407:
+		return "Proxy Authentication Required";
+	case 408:
+		return "Request Timeout";
+	case 409:
+		return "Conflict";
+	case 410:
+		return "Gone";
+	case 411:
+		return "Length Required";
+	case 412:
+		return "Precondition Failed";
+	case 413:
+		return "Request Entity Too Large";
+	case 414:
+		return "Request URI Too Long";
+	case 415:
+		return "Unsupported Media Type";
+	case 416:
+		return "Requested Range Not Satisfiable";
+	case 417:
+		return "Expectation Failed";
+	case 418:
+		return "I'm a teapot";
+	case 422:
+		return "Unprocessable Entity";
+	case 423:
+		return "Locked";
+	case 424:
+		return "Failed Dependency";
+	case 425:
+		return "Unordered Collection";
+	case 426:
+		return "Upgrade Required";
+	case 444:
+		return "No Response";
+	case 450:
+		return "Blocked by Windows Parental Controls";
+	case 499:
+		return "Client Closed Request";
+
+	case 500:
+		return "Internal Server Error";
+	case 501:
+		return "Not Implemented";
+	case 502:
+		return "Bad Gateway";
+	case 503:
+		return "Service Unavailable";
+	case 504:
+		return "Gateway Timeout";
+	case 505:
+		return "HTTP Version Not Supported";
+	case 506:
+		return "Variant Also Negotiates";
+	case 507:
+		return "Insufficient Storage";
+	case 509:
+		return "Bandwidth Limit Exceeded";
+	case 510:
+		return "Not Extended";
+
+	case 600:
+		return "Internal Client Error";
+	case 601:
+		return "Unsupported Protocol";
+	case 602:
+		return "Server Not Found";
+	case 603:
+		return "Malformed Response";
+	case 604:
+		return "Network Not Available";
+	case 605:
+		return "Request Timed Out";
+	default:
+		return "Unknown Status Code";
 	}
 }
 char *http_multipart_post(char *uri, char **names, char **parts, int *plens, char *user, char *pass, char *session_id, int *ret, int *len)
@@ -902,7 +901,7 @@ char *http_multipart_post(char *uri, char **names, char **parts, int *plens, cha
 	struct md5_context md5;
 	//struct md5_context md52;
 	int own_plen = 0;
-    
+
 	if (names)
 	{
 		if (!plens)
@@ -913,8 +912,8 @@ char *http_multipart_post(char *uri, char **names, char **parts, int *plens, cha
 			for (i=0; names[i]; i++)
 				plens[i] = strlen(parts[i]);
 		}
-        
-    retry:
+
+retry:
 		if (blen >= 31)
 			goto fail;
 		memset(map, 0, 62*sizeof(int));
@@ -950,7 +949,7 @@ char *http_multipart_post(char *uri, char **names, char **parts, int *plens, cha
 		if (map[j])
 			goto retry;
 		boundary[blen] = 0;
-        
+
 		for (i=0; names[i]; i++)
 			dlen += blen+strlen(names[i])+plens[i]+128;
 		dlen += blen+8;
@@ -978,11 +977,11 @@ char *http_multipart_post(char *uri, char **names, char **parts, int *plens, cha
 		}
 		dlen += sprintf(data+dlen, "--%s--\r\n", boundary);
 	}
-    
+
 	ctx = http_async_req_start(NULL, uri, data, dlen, 0);
 	if (!ctx)
 		goto fail;
-    
+
 	if (user)
 	{
 		//http_async_add_header(ctx, "X-Auth-User", user);
@@ -1004,7 +1003,7 @@ char *http_multipart_post(char *uri, char **names, char **parts, int *plens, cha
 					else
 						m += strlen(names[i])+1;
 				}
-                
+
 				tmp = malloc(m);
 				m = 0;
 				for (i=0; names[i]; i++)
@@ -1030,7 +1029,7 @@ char *http_multipart_post(char *uri, char **names, char **parts, int *plens, cha
 				http_async_add_header(ctx, "X-Auth-Objects", tmp);
 				free(tmp);
 			}
-            
+
 			md5_update(&md5, (unsigned char *)pass, strlen(pass));
 			md5_final(hash, &md5);
 			tmp = malloc(33);
@@ -1053,7 +1052,7 @@ char *http_multipart_post(char *uri, char **names, char **parts, int *plens, cha
 			http_async_add_header(ctx, "X-Auth-User", user);
 		}
 	}
-    
+
 	if (data)
 	{
 		tmp = malloc(32+strlen((char *)boundary));
@@ -1062,11 +1061,11 @@ char *http_multipart_post(char *uri, char **names, char **parts, int *plens, cha
 		free(tmp);
 		free(data);
 	}
-    
+
 	if (own_plen)
 		free(plens);
 	return http_async_req_stop(ctx, ret, len);
-    
+
 fail:
 	if (data)
 		free(data);
