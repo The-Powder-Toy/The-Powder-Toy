@@ -1860,7 +1860,19 @@ void render_parts(pixel *vid)
 #ifdef LUACONSOLE
 					if (lua_gr_func[t])
 					{
-						colr = luacon_graphics_update(t,i);
+						if (luacon_graphics_update(t,i, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb))
+						{
+							graphicscache[t].isready = 1;
+							graphicscache[t].pixel_mode = pixel_mode;
+							graphicscache[t].cola = cola;
+							graphicscache[t].colr = colr;
+							graphicscache[t].colg = colg;
+							graphicscache[t].colb = colb;
+							graphicscache[t].firea = firea;
+							graphicscache[t].firer = firer;
+							graphicscache[t].fireg = fireg;
+							graphicscache[t].fireb = fireb;
+						}
 					}
 					else if (ptypes[t].graphics_func)
 					{

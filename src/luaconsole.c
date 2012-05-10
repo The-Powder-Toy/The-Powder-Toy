@@ -788,19 +788,28 @@ int luacon_part_update(int t, int i, int x, int y, int surround_space, int nt)
 	}
 	return retval;
 }
-int luacon_graphics_update(int t, int i)
+int luacon_graphics_update(int t, int i, int *pixel_mode, int *cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb)
 {
-	int retval = 0;
-	if(lua_gr_func[t]){
-		lua_rawgeti(l, LUA_REGISTRYINDEX, lua_gr_func[t]);
-		lua_pushinteger(l, i);
-		lua_pcall(l, 1, 1, 0);
-		if(lua_isnumber(l, -1)){
-			retval = (int)lua_tonumber(l, -1);
-		}
-		lua_pop(l, 1);
-	}
-	return retval;
+	int cache = 0;
+	lua_rawgeti(l, LUA_REGISTRYINDEX, lua_gr_func[t]);
+	lua_pushinteger(l, i);
+	lua_pushinteger(l, *colr);
+	lua_pushinteger(l, *colg);
+	lua_pushinteger(l, *colb);
+	lua_pcall(l, 4, 10, 0);
+
+	cache = luaL_optint(l, 2, 0);
+	*pixel_mode = luaL_optint(l, 3, *pixel_mode);
+	*cola = luaL_optint(l, 4, *cola);
+	*colr = luaL_optint(l, 5, *colr);
+	*colg = luaL_optint(l, 6, *colg);
+	*colb = luaL_optint(l, 7, *colb);
+	*firea = luaL_optint(l, 8, *firea);
+	*firer = luaL_optint(l, 9, *firer);
+	*fireg = luaL_optint(l, 10, *fireg);
+	*fireb = luaL_optint(l, 11, *fireb);
+	lua_pop(l, 10);
+	return cache;
 }
 char *luacon_geterror(){
 	char *error = lua_tostring(l, -1);
