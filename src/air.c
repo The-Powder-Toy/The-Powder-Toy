@@ -57,11 +57,7 @@ void update_airh(void)
 {
 	int x, y, i, j;
 	float odh, dh, dx, dy, f, tx, ty;
-	for (y=0; y<YRES/CELL; y++)
-		for (x=0; x<XRES/CELL; x++)
-		{
-			bmap_blockairh[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_GRAV || (bmap[y][x]==WL_EWALL && !emap[y][x]));
-		}
+	
 	for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 	{
 		hv[i][0] = 295.15f;
@@ -138,12 +134,7 @@ void update_air(void)
 {
 	int x, y, i, j;
 	float dp, dx, dy, f, tx, ty;
-
-	for (y=0; y<YRES/CELL; y++)
-		for (x=0; x<XRES/CELL; x++)
-		{
-			bmap_blockair[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || (bmap[y][x]==WL_EWALL && !emap[y][x]));
-		}
+	
 	if (airMode != 4) { //airMode 4 is no air/pressure update
 
 		for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame

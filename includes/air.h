@@ -21,6 +21,8 @@
 extern float vx[YRES/CELL][XRES/CELL], ovx[YRES/CELL][XRES/CELL];
 extern float vy[YRES/CELL][XRES/CELL], ovy[YRES/CELL][XRES/CELL];
 extern float pv[YRES/CELL][XRES/CELL], opv[YRES/CELL][XRES/CELL];
+extern unsigned char bmap_blockair[YRES/CELL][XRES/CELL];
+extern unsigned char bmap_blockairh[YRES/CELL][XRES/CELL];
 
 extern float cb_vx[YRES/CELL][XRES/CELL];
 extern float cb_vy[YRES/CELL][XRES/CELL];
