@@ -6763,7 +6763,7 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 			break;
 	}
 	
-	free(part_vbuf);
+	free(part_vbuf_store);
 	
 	free(o_vid_buf);
 }
