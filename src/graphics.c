@@ -4094,6 +4094,12 @@ int sdl_open(void)
 		loadShaders();
 	}
 #else
+	SDL_VideoInfo* info = SDL_GetVideoInfo(); 
+	if (info->current_w<((XRES+BARSIZE)*sdl_scale) || info->current_h<((YRES+MENUSIZE)*sdl_scale))
+	{
+		sdl_scale = 1;
+		fprintf(stderr, "Can't change scale factor, because screen resolution is too small");
+	}
 #ifdef PIX16
 	if (kiosk_enable)
 		sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,16,SDL_FULLSCREEN|SDL_SWSURFACE);
