@@ -156,7 +156,10 @@ struct menu_section;
 
 struct wall_type;
 
+class SimTool;
+
 class Element;
+
 std::vector<Element*> GetDefaultElements();
 
 gol_menu * LoadGOLMenu(int & golMenuCount);

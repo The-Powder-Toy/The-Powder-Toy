@@ -92,6 +92,13 @@ GameModel::GameModel():
 		menuList[SC_WALL]->AddTool(tempTool);
 		//sim->wtypes[i]
 	}
+	
+	//Build menu for simtools
+	for(int i = 0; i < sim->tools.size(); i++)
+	{
+		Tool * tempTool = new Tool(i, sim->tools[i]->Name, PIXR(sim->tools[i]->Colour), PIXG(sim->tools[i]->Colour), PIXB(sim->tools[i]->Colour));
+		menuList[SC_TOOL]->AddTool(tempTool);
+	}
 
 	//Add decoration tools to menu
 	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendAdd, "ADD", 0, 0, 0));

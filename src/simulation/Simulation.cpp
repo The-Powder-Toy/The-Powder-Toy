@@ -608,6 +608,113 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int rx, int
 	}
 }
 
+int Simulation::Tool(int x, int y, int tool, float strength)
+{
+	if(tools[tool])
+	{
+		Particle * cpart = NULL;
+		int r;
+		if(r = pmap[y][x])
+			cpart = &(parts[r>>8]);
+		else if(r = photons[y][x])
+			cpart = &(parts[r>>8]);
+		return tools[tool]->Perform(this, cpart, x, y, strength);
+	}
+	return 0;
+}
+
+int Simulation::ToolBrush(int x, int y, int tool, Brush * cBrush)
+{
+	int rx, ry, j, i;
+	if(!cBrush)
+		return 0;
+	rx = cBrush->GetRadius().X;
+	ry = cBrush->GetRadius().Y;
+	unsigned char *bitmap = cBrush->GetBitmap();
+	for (j=-ry; j<=ry; j++)
+		for (i=-rx; i<=rx; i++)
+			if(bitmap[(j+ry)*((rx*2)+1)+(i+rx+1)])
+			{
+				if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
+					continue;
+				Tool(x+i, y+j, tool, 1.0f);
+			}
+}
+
+void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBrush)
+{
+	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy, rx, ry;
+	float e, de;
+	rx = cBrush->GetRadius().X;
+	ry = cBrush->GetRadius().Y;
+	if (cp)
+	{
+		y = x1;
+		x1 = y1;
+		y1 = y;
+		y = x2;
+		x2 = y2;
+		y2 = y;
+	}
+	if (x1 > x2)
+	{
+		y = x1;
+		x1 = x2;
+		x2 = y;
+		y = y1;
+		y1 = y2;
+		y2 = y;
+	}
+	dx = x2 - x1;
+	dy = abs(y2 - y1);
+	e = 0.0f;
+	if (dx)
+		de = dy/(float)dx;
+	else
+		de = 0.0f;
+	y = y1;
+	sy = (y1<y2) ? 1 : -1;
+	for (x=x1; x<=x2; x++)
+	{
+		if (cp)
+			ToolBrush(y, x, tool, cBrush);
+		else
+			ToolBrush(x, y, tool, cBrush);
+		e += de;
+		if (e >= 0.5f)
+		{
+			y += sy;
+			if ((!(rx+ry)) && ((y1<y2) ? (y<=y2) : (y>=y2)))
+			{
+				if (cp)
+					ToolBrush(y, x, tool, cBrush);
+				else
+					ToolBrush(x, y, tool, cBrush);
+			}
+			e -= 1.0f;
+		}
+	}
+}
+void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrush)
+{
+	int i, j;
+	if (x1>x2)
+	{
+		i = x2;
+		x2 = x1;
+		x1 = i;
+	}
+	if (y1>y2)
+	{
+		j = y2;
+		y2 = y1;
+		y1 = j;
+	}
+	for (j=y1; j<=y2; j++)
+		for (i=x1; i<=x2; i++)
+			ToolBrush(i, j, tool, cBrush);
+}
+
 //this creates particles from a brush, don't use if you want to create one particle
 int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush)
 {
@@ -3762,6 +3869,8 @@ Simulation::Simulation():
 	{
 		elements[i] = elementList[i];
 	}
+	
+	tools = GetTools();
 
 	int golRulesCount;
 	int * golRulesT = LoadGOLRules(golRulesCount);

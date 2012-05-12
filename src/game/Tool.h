@@ -28,9 +28,15 @@ public:
 	}
 	string GetName() { return toolName; }
 	virtual ~Tool() {}
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) {}
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {}
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {}
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) {
+		sim->ToolBrush(position.X, position.Y, toolID, brush);
+	}
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
+		sim->ToolLine(position1.X, position1.Y, position2.X, position2.Y, toolID, brush);
+	}
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
+		sim->ToolBox(position1.X, position1.Y, position2.X, position2.Y, toolID, brush);
+	}
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) {};
 	int colRed, colBlue, colGreen;
 };

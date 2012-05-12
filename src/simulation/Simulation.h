@@ -12,11 +12,11 @@
 #include "Renderer.h"
 #include "Graphics.h"
 #include "Elements.h"
+#include "Tools.h"
 #include "Misc.h"
 #include "game/Brush.h"
 #include "Gravity.h"
 #include "SimulationData.h"
-//#include "ElementFunctions.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
 
@@ -140,6 +140,7 @@ public:
 	Air * air;
 
 	Element * elements;
+	vector<SimTool*> tools;
 	unsigned int * platent;
 	wall_type wtypes[UI_WALLCOUNT];
 	gol_menu gmenu[NGOL];
@@ -244,6 +245,11 @@ public:
 	void update_particles();
 	void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert);
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
+
+	int Tool(int x, int y, int tool, float strength);
+	int ToolBrush(int x, int y, int tool, Brush * cBrush);
+	void ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBrush);
+	void ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrush);
 	
 	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags);
 	int FloodParts(int x, int y, int c, int cm, int bm, int flags);
