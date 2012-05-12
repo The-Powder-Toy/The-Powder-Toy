@@ -3881,6 +3881,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 int sdl_opened = 0;
 int sdl_open(void)
 {
+	char screen_err = 0;
 #ifdef WIN32
 	SDL_SysWMinfo SysInfo;
 	HWND WindowHandle;
@@ -4098,6 +4099,7 @@ int sdl_open(void)
 	if (info->current_w<((XRES+BARSIZE)*sdl_scale) || info->current_h<((YRES+MENUSIZE)*sdl_scale))
 	{
 		sdl_scale = 1;
+		screen_err = 1;
 		fprintf(stderr, "Can't change scale factor, because screen resolution is too small");
 	}
 #ifdef PIX16
@@ -4128,6 +4130,9 @@ int sdl_open(void)
 	XA_TARGETS = XInternAtom(sdl_wminfo.info.x11.display, "TARGETS", 1);
 	sdl_wminfo.info.x11.unlock_func();
 #endif
+
+	if (screen_err)
+		error_ui(vid_buf, 0, "Can't change scale factor, because screen resolution is too small");
 	sdl_opened = 1;
 	return 1;
 }
