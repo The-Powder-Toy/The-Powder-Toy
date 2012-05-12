@@ -1345,6 +1345,9 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 						if(i >= partsDataLen) goto fail;
 						partsptr[newIndex].tmp2 = partsData[i++];
 					}
+					
+					partsptr[newIndex].lastX = partsptr[newIndex].x - partsptr[newIndex].vx;
+					partsptr[newIndex].lastY = partsptr[newIndex].y - partsptr[newIndex].vy;
 
 					if ((player.spwn == 1 && partsptr[newIndex].type==PT_STKM) || (player2.spwn == 1 && partsptr[newIndex].type==PT_STKM2))
 					{
@@ -2023,6 +2026,8 @@ int parse_save_PSv(void *save, int size, int replace, int x0, int y0, unsigned c
 			{
 				parts[i].vx = (d[p++]-127.0f)/16.0f;
 				parts[i].vy = (d[p++]-127.0f)/16.0f;
+				parts[i].lastX = parts[i].x - parts[i].vx;
+				parts[i].lastY = parts[i].y - parts[i].vy;
 			}
 			else
 				p += 2;

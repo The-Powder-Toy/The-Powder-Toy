@@ -2255,7 +2255,7 @@ int main(int argc, char *argv[])
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
 					{
-						render_ui(vid_buf, XRES+BARSIZE-(510-491), YRES-2, 3);
+						render_ui(vid_buf, XRES+BARSIZE-(510-491)+1, YRES+22, 3);
 					}
 					if (x>=(XRES+BARSIZE-(510-494)) && x<=(XRES+BARSIZE-(510-509)) && !bq)
 						sys_pause = !sys_pause;

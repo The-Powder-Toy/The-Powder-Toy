@@ -888,6 +888,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	{
 		parts[i].x = (float)x;
 		parts[i].y = (float)y;
+		parts[i].lastX = (float)x;
+		parts[i].lastY = (float)y;
 		parts[i].type = t;
 		parts[i].vx = 0;
 		parts[i].vy = 0;
@@ -1031,6 +1033,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		{
 			parts[i].x = (float)x;
 			parts[i].y = (float)y;
+			parts[i].lastX = (float)x;
+			parts[i].lastY = (float)y;
 			parts[i].type = PT_STKM;
 			parts[i].vx = 0;
 			parts[i].vy = 0;
@@ -1053,6 +1057,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		{
 			parts[i].x = (float)x;
 			parts[i].y = (float)y;
+			parts[i].lastX = (float)x;
+			parts[i].lastY = (float)y;
 			parts[i].type = PT_STKM2;
 			parts[i].vx = 0;
 			parts[i].vy = 0;
@@ -1077,6 +1083,8 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		{
 			parts[i].x = (float)x;
 			parts[i].y = (float)y;
+			parts[i].lastX = (float)x;
+			parts[i].lastY = (float)y;
 			parts[i].type = PT_FIGH;
 			parts[i].vx = 0;
 			parts[i].vy = 0;
@@ -1721,6 +1729,8 @@ void update_particles_i(pixel *vid, int start, int inc)
 		if (parts[i].type)
 		{
 			t = parts[i].type;
+			parts[i].lastX = parts[i].x;
+			parts[i].lastY = parts[i].y;
 			if (t<0 || t>=PT_NUM)
 			{
 				kill_part(i);

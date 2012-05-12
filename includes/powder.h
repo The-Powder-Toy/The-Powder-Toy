@@ -283,6 +283,7 @@ struct particle
 	int type;
 	int life, ctype;
 	float x, y, vx, vy;
+	float lastX, lastY;
 	float temp;
 	float pavg[2];
 	int flags;

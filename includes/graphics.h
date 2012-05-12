@@ -269,16 +269,29 @@ uniform sampler2D tfY;\
 uniform float xres;\
 uniform float yres;\
 void main () {\
-	vec4 transformX = texture2D(tfX, vec2(gl_TexCoord[0].s, -gl_TexCoord[0].t));\
-	vec4 transformY = -texture2D(tfY, vec2(gl_TexCoord[0].s, -gl_TexCoord[0].t));\
-	transformX.r /= xres;\
-	transformY.g /= yres;\
-    vec4 texColor = vec4(\
-    	texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.75, transformY.g*0.75)).r,\
-    	texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.875, transformY.g*0.875)).g,\
-    	texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r, transformY.g)).b,\
+	vec4 transformX = texture2D(tfX, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t));\
+	vec4 transformY = texture2D(tfY, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t));\
+	transformX.r /= xres/4.0;\
+	transformY.g /= yres/4.0;\
+    vec4 texColor1 = vec4(\
+    	texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.90, transformY.g*0.90)).r,\
+    	texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.80, transformY.g*0.80)).g,\
+    	texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.70, transformY.g*0.70)).b,\
     	1.0\
     );\
+	vec4 texColor2 = vec4(\
+		texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.95, transformY.g*0.95)).r,\
+		texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.85, transformY.g*0.85)).g,\
+		texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.75, transformY.g*0.75)).b,\
+		1.0\
+	);\
+	vec4 texColor3 = vec4(\
+		texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.85, transformY.g*0.85)).r,\
+		texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.75, transformY.g*0.75)).g,\
+		texture2D(pTex, gl_TexCoord[0].st-vec2(transformX.r*0.65, transformY.g*0.65)).b,\
+		1.0\
+	);\
+	vec4 texColor = texColor1*0.6 + texColor2*0.2 + texColor3*0.2;\
     gl_FragColor = texColor;\
 }";
 const char * lensVertex = "#version 120\n\

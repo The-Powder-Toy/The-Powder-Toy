@@ -40,6 +40,8 @@ int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)//
 
 		parts[i].x = (float)x;
 		parts[i].y = (float)y;
+		parts[i].lastX = (float)x;
+		parts[i].lastY = (float)y;
 		parts[i].type = t;
 		parts[i].life = rand()%480+480;
 		parts[i].vx = r*cosf(a);
@@ -160,6 +162,7 @@ int graphics_NEUT(GRAPHICS_FUNC_ARGS)
 	*fireg = 80;
 	*fireb = 120;
 
-	*pixel_mode |= FIRE_ADD;
+	*pixel_mode &= ~PMODE_FLAT;
+	*pixel_mode |= FIRE_ADD | PMODE_ADD;
 	return 1;
 }
