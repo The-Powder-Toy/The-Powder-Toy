@@ -474,15 +474,17 @@ void Renderer::DrawWalls()
 
 void Renderer::get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 {
-	sign *signs = sim->signs;
+	std::vector<sign> signs = sim->signs;
 	//Changing width if sign have special content
-	if (strcmp(signs[i].text, "{p}")==0)
+	if (signs[i].text == "{p}")
+	{
 		*w = Graphics::textwidth("Pressure: -000.00");
-
-	if (strcmp(signs[i].text, "{t}")==0)
+	}
+	else if (signs[i].text == "{t}")
+	{
 		*w = Graphics::textwidth("Temp: 0000.00");
-
-	if (sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
+	}
+	else if (sregexp(signs[i].text.c_str(), "^{c:[0-9]*|.*}$")==0)
 	{
 		int sldr, startm;
 		char buff[256];
@@ -498,10 +500,10 @@ void Renderer::get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 		}
 		*w = Graphics::textwidth(buff) + 5;
 	}
-
-	//Ususal width
-	if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
-		*w = Graphics::textwidth(signs[i].text) + 5;
+	else
+	{
+		*w = Graphics::textwidth(signs[i].text.c_str()) + 5;
+	}
 	*h = 14;
 	*x0 = (signs[i].ju == 2) ? signs[i].x - *w :
 	      (signs[i].ju == 1) ? signs[i].x - *w/2 : signs[i].x;
@@ -511,13 +513,13 @@ void Renderer::get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
 void Renderer::DrawSigns()
 {
 	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq;
-	sign *signs = sim->signs;
+	std::vector<sign> signs = sim->signs;
 #ifdef OGLR
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 	glTranslated(0, MENUSIZE, 0);
 #endif
-	for (i=0; i<MAXSIGNS; i++)
-		if (signs[i].text[0])
+	for (i=0; i < signs.size(); i++)
+		if (signs[i].text.length())
 		{
 			char buff[256];  //Buffer
 			get_sign_pos(i, &x, &y, &w, &h);
@@ -525,7 +527,7 @@ void Renderer::DrawSigns()
 			g->drawrect(x, y, w, h, 192, 192, 192, 255);
 
 			//Displaying special information
-			if (strcmp(signs[i].text, "{p}")==0)
+			if (signs[i].text == "{p}")
 			{
 				float pressure = 0.0f;
 				if (signs[i].x>=0 && signs[i].x<XRES && signs[i].y>=0 && signs[i].y<YRES)
@@ -533,7 +535,7 @@ void Renderer::DrawSigns()
 				sprintf(buff, "Pressure: %3.2f", pressure);  //...pressure
 				g->drawtext(x+3, y+3, buff, 255, 255, 255, 255);
 			}
-			if (strcmp(signs[i].text, "{t}")==0)
+			else if (signs[i].text == "{t}")
 			{
 				if (signs[i].x>=0 && signs[i].x<XRES && signs[i].y>=0 && signs[i].y<YRES && sim->pmap[signs[i].y][signs[i].x])
 					sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...temperature
@@ -541,8 +543,7 @@ void Renderer::DrawSigns()
 					sprintf(buff, "Temp: 0.00");  //...temperature
 				g->drawtext(x+3, y+3, buff, 255, 255, 255, 255);
 			}
-
-			if (sregexp(signs[i].text, "^{c:[0-9]*|.*}$")==0)
+			else if (sregexp(signs[i].text.c_str(), "^{c:[0-9]*|.*}$")==0)
 			{
 				int sldr, startm;
 				memset(buff, 0, sizeof(buff));
@@ -556,11 +557,11 @@ void Renderer::DrawSigns()
 				}
 				g->drawtext(x+3, y+3, buff, 0, 191, 255, 255);
 			}
-
-			//Usual text
-			if (strcmp(signs[i].text, "{p}") && strcmp(signs[i].text, "{t}") && sregexp(signs[i].text, "^{c:[0-9]*|.*}$"))
+			else 
+			{
 				g->drawtext(x+3, y+3, signs[i].text, 255, 255, 255, 255);
-
+			}
+				
 			x = signs[i].x;
 			y = signs[i].y;
 			dx = 1 - signs[i].ju;

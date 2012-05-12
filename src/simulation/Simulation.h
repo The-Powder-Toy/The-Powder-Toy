@@ -113,8 +113,17 @@ typedef struct menu_section menu_section;
 
 struct sign
 {
-	int x,y,ju;
-	char text[256];
+public:
+	enum Justification { Left = 0, Centre = 1, Right = 2 };
+	sign(std::string text_, int x_, int y_, Justification justification_):
+		text(text_),
+		x(x_),
+		y(y_),
+		ju(justification_)
+	{}
+	int x, y;
+	Justification ju;
+	std::string text;
 };
 typedef struct sign sign;
 
@@ -139,6 +148,7 @@ public:
 	Gravity * grav;
 	Air * air;
 
+	vector<sign> signs;
 	Element * elements;
 	vector<SimTool*> tools;
 	unsigned int * platent;
@@ -165,7 +175,6 @@ public:
 	int NUM_PARTS;
 	int elementCount[PT_NUM];
 	int ISWIRE;
-	sign * signs;
 	//Gol sim
 	int CGOL;
 	int ISGOL;

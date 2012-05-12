@@ -93,6 +93,10 @@ GameModel::GameModel():
 		//sim->wtypes[i]
 	}
 	
+	//Add special sign and prop tools
+	menuList[SC_TOOL]->AddTool(new SignTool());
+	menuList[SC_TOOL]->AddTool(new PropertyTool());
+	
 	//Build menu for simtools
 	for(int i = 0; i < sim->tools.size(); i++)
 	{
@@ -109,8 +113,8 @@ GameModel::GameModel():
 	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSet, "SET", 0, 0, 0));
 
 	//Set default brush palette
-	brushList.push_back(new Brush(ui::Point(4, 4)));
 	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
+	brushList.push_back(new Brush(ui::Point(4, 4)));
 
 	//Set default tools
 	activeTools[0] = menuList[SC_POWDERS]->GetToolList()[0];

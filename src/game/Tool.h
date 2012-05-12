@@ -19,11 +19,11 @@ protected:
 	string toolName;
 public:
 	Tool(int id, string name, int r, int g, int b):
-		toolID(id),
-		toolName(name),
-		colRed(r),
-		colGreen(g),
-		colBlue(b)
+	toolID(id),
+	toolName(name),
+	colRed(r),
+	colGreen(g),
+	colBlue(b)
 	{
 	}
 	string GetName() { return toolName; }
@@ -39,6 +39,38 @@ public:
 	}
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) {};
 	int colRed, colBlue, colGreen;
+};
+
+class SignTool: public Tool
+{
+public:
+	SignTool():
+	Tool(0, "SIGN", 0, 0, 0),
+	opened(false)
+	{
+	}
+	virtual ~SignTool() {}
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+	void SetClosed() { opened = false; }
+protected:
+	bool opened;
+};
+
+class PropertyTool: public Tool
+{
+public:
+	PropertyTool():
+	Tool(0, "PROP", 0, 0, 0)
+	{
+	}
+	virtual ~PropertyTool() {}
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) {};
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
 };
 
 class ElementTool: public Tool

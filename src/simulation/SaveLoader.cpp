@@ -86,6 +86,10 @@ int SaveLoader::PSVLoad(unsigned char * data, int dataLength, Simulation * sim, 
 	int nf=0, new_format = 0, ttv = 0;
 	Particle *parts = sim->parts;
 	int *fp = (int *)malloc(NPART*sizeof(int));
+	
+	std::vector<sign> tempSigns;
+	char tempSignText[255];
+	sign tempSign("", 0, 0, sign::Left);
 
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
@@ -665,30 +669,31 @@ int SaveLoader::PSVLoad(unsigned char * data, int dataLength, Simulation * sim, 
 	{
 		if (p+6 > dataLength)
 			goto corrupt;
-		for (k=0; k<MAXSIGNS; k++)
-			if (!sim->signs[k].text[0])
-				break;
 		x = d[p++];
 		x |= ((unsigned)d[p++])<<8;
-		if (k<MAXSIGNS)
-			sim->signs[k].x = x+x0;
+		tempSign.x = x+x0;
 		x = d[p++];
 		x |= ((unsigned)d[p++])<<8;
-		if (k<MAXSIGNS)
-			sim->signs[k].y = x+y0;
+		tempSign.y = x+y0;
 		x = d[p++];
-		if (k<MAXSIGNS)
-			sim->signs[k].ju = x;
+		tempSign.ju = (sign::Justification)x;
 		x = d[p++];
 		if (p+x > dataLength)
-			goto corrupt;
-		if (k<MAXSIGNS)
-		{
-			memcpy(sim->signs[k].text, d+p, x);
-			sim->signs[k].text[x] = 0;
-			//clean_text(signs[k].text, 158-14 /* Current max sign length */); //TODO: Text cleanup for signs
-		}
+		goto corrupt;
+		if(x>254)
+			x = 254;
+		memcpy(tempSignText, d+p, x);
+		tempSignText[x] = 0;
+		tempSign.text = tempSignText;
+		tempSigns.push_back(tempSign);
 		p += x;
+	}
+	
+	for (i = 0; i < tempSigns.size(); i++)
+	{
+		if(i == MAXSIGNS)
+			break;
+		sim->signs.push_back(tempSigns[i]);
 	}
 
 version1:
@@ -868,14 +873,14 @@ unsigned char * SaveLoader::PSVBuild(int & dataLength, Simulation * sim, int ori
 	}
 
 	j = 0;
-	for (i=0; i<MAXSIGNS; i++)
-		if (sim->signs[i].text[0] &&
+	for (i=0; i<sim->signs.size(); i++)
+		if (sim->signs[i].text.length() &&
 				sim->signs[i].x>=x0 && sim->signs[i].x<x0+w &&
 				sim->signs[i].y>=y0 && sim->signs[i].y<y0+h)
 			j++;
 	d[p++] = j;
-	for (i=0; i<MAXSIGNS; i++)
-		if (sim->signs[i].text[0] &&
+	for (i=0; i<sim->signs.size(); i++)
+		if (sim->signs[i].text.length() &&
 				sim->signs[i].x>=x0 && sim->signs[i].x<x0+w &&
 				sim->signs[i].y>=y0 && sim->signs[i].y<y0+h)
 		{
@@ -884,9 +889,9 @@ unsigned char * SaveLoader::PSVBuild(int & dataLength, Simulation * sim, int ori
 			d[p++] = (sim->signs[i].y-y0);
 			d[p++] = (sim->signs[i].y-y0)>>8;
 			d[p++] = sim->signs[i].ju;
-			x = strlen(sim->signs[i].text);
+			x = sim->signs[i].text.length();
 			d[p++] = x;
-			memcpy(d+p, sim->signs[i].text, x);
+			memcpy(d+p, sim->signs[i].text.c_str(), x);
 			p+=x;
 		}
 

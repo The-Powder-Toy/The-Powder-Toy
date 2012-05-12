@@ -1347,8 +1347,7 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 void Simulation::clear_sim(void)
 {
 	int i, x, y;
-	if(signs)
-		memset(signs, 0, sizeof(sign)*MAXSIGNS);
+	signs.clear();
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
 	memset(parts, 0, sizeof(Particle)*NPART);
@@ -3806,7 +3805,6 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 
 Simulation::~Simulation()
 {
-	free(signs);
 	delete grav;
 	delete air;
 }
@@ -3843,9 +3841,6 @@ Simulation::Simulation():
 	vy = air->vy;
 	pv = air->pv;
 	hv = air->hv;
-
-	//Clear signs
-	signs = (sign*)calloc(MAXSIGNS, sizeof(sign));
 
 	int menuCount;
 	menu_section * msectionsT = LoadMenus(menuCount);

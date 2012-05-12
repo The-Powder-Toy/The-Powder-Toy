@@ -18,7 +18,8 @@ public:
 	void ActionCallback(ui::Button * sender)
 	{
 		ui::Engine::Ref().CloseWindow();
-		prompt->callback->TextCallback(result, prompt->textField->GetText());
+		if(prompt->callback)
+			prompt->callback->TextCallback(result, prompt->textField->GetText());
 		prompt->SelfDestruct(); //TODO: Fix component disposal
 	}
 };
