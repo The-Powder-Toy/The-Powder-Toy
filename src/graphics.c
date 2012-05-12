@@ -1802,7 +1802,7 @@ void render_parts(pixel *vid)
 			flx = parts[i].lastX;
 			fly = parts[i].lastY;
 
-			if(photons[ny][nx]&0xFF && !(ptypes[t].properties & TYPE_ENERGY))
+			if(photons[ny][nx]&0xFF && !(ptypes[t].properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
 				continue;
 				
 			//Defaults
