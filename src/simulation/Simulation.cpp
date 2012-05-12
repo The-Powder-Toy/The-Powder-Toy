@@ -46,7 +46,7 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 	}
 }
 
-void Simulation::create_box(int x1, int y1, int x2, int y2, int c, int flags)
+void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
 {
 	int i, j;
 	if (c==SPC_PROP)
@@ -65,7 +65,27 @@ void Simulation::create_box(int x1, int y1, int x2, int y2, int c, int flags)
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			create_parts(i, j, 0, 0, c, flags);
+			CreateParts(i, j, 0, 0, c, flags);
+}
+
+void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int c, int flags)
+{
+	int i, j;
+	if (x1>x2)
+	{
+		i = x2;
+		x2 = x1;
+		x1 = i;
+	}
+	if (y1>y2)
+	{
+		j = y2;
+		y2 = y1;
+		y1 = j;
+	}
+	for (j=y1; j<=y2; j++)
+		for (i=x1; i<=x2; i++)
+			CreateWalls(i, j, 0, 0, c, flags);
 }
 
 int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, int proptype, int parttype, char * bitmap)
@@ -133,10 +153,10 @@ Particle Simulation::Get(int x, int y)
 	return Particle();
 }
 
-int Simulation::flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
+int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
 {
 	int c = fullc&0xFF;
-	int x1, x2, dy = (c<PT_NUM)?1:CELL;
+	int x1, x2, dy = 1;
 	int co = c;
 	if (c==SPC_PROP)
 		return 0;
@@ -169,10 +189,10 @@ int Simulation::flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 		else
 			bm = 0;
 	}
-
+	
 	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm )/*||( (flags&BRUSH_SPECIFIC_DELETE) && cm!=SLALT)*/)
 		return 1;
-
+	
 	// go left as far as possible
 	x1 = x2 = x;
 	while (x1>=CELL)
@@ -191,7 +211,7 @@ int Simulation::flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 		}
 		x2++;
 	}
-
+	
 	// fill span
 	for (x=x1; x<=x2; x++)
 	{
@@ -200,40 +220,40 @@ int Simulation::flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 			if (create_part(-1,x, y, fullc)==-1)
 				return 0;
 		}
-		else if (!create_parts(x, y, 0, 0, fullc, flags))
+		else if (!CreateParts(x, y, 0, 0, fullc, flags))
 			return 0;
 	}
 	// fill children
 	if (cm==PT_INST&&co==PT_SPRK)//wire crossing for INST
 	{
 		if (y>=CELL+dy && x1==x2 &&
-		        ((pmap[y-1][x1-1]&0xFF)==PT_INST||(pmap[y-1][x1-1]&0xFF)==PT_SPRK) && ((pmap[y-1][x1]&0xFF)==PT_INST||(pmap[y-1][x1]&0xFF)==PT_SPRK) && ((pmap[y-1][x1+1]&0xFF)==PT_INST || (pmap[y-1][x1+1]&0xFF)==PT_SPRK) &&
-		        (pmap[y-2][x1-1]&0xFF)!=PT_INST && ((pmap[y-2][x1]&0xFF)==PT_INST ||(pmap[y-2][x1]&0xFF)==PT_SPRK) && (pmap[y-2][x1+1]&0xFF)!=PT_INST)
-			flood_parts(x1, y-2, fullc, cm, bm, flags);
+			((pmap[y-1][x1-1]&0xFF)==PT_INST||(pmap[y-1][x1-1]&0xFF)==PT_SPRK) && ((pmap[y-1][x1]&0xFF)==PT_INST||(pmap[y-1][x1]&0xFF)==PT_SPRK) && ((pmap[y-1][x1+1]&0xFF)==PT_INST || (pmap[y-1][x1+1]&0xFF)==PT_SPRK) &&
+			(pmap[y-2][x1-1]&0xFF)!=PT_INST && ((pmap[y-2][x1]&0xFF)==PT_INST ||(pmap[y-2][x1]&0xFF)==PT_SPRK) && (pmap[y-2][x1+1]&0xFF)!=PT_INST)
+			FloodParts(x1, y-2, fullc, cm, bm, flags);
 		else if (y>=CELL+dy)
 			for (x=x1; x<=x2; x++)
 				if ((pmap[y-1][x]&0xFF)!=PT_SPRK)
 				{
 					if (x==x1 || x==x2 || y>=YRES-CELL-1 ||
-					        (pmap[y-1][x-1]&0xFF)==PT_INST || (pmap[y-1][x+1]&0xFF)==PT_INST ||
-					        (pmap[y+1][x-1]&0xFF)==PT_INST || ((pmap[y+1][x]&0xFF)!=PT_INST&&(pmap[y+1][x]&0xFF)!=PT_SPRK) || (pmap[y+1][x+1]&0xFF)==PT_INST)
-						flood_parts(x, y-dy, fullc, cm, bm, flags);
-
+						(pmap[y-1][x-1]&0xFF)==PT_INST || (pmap[y-1][x+1]&0xFF)==PT_INST ||
+						(pmap[y+1][x-1]&0xFF)==PT_INST || ((pmap[y+1][x]&0xFF)!=PT_INST&&(pmap[y+1][x]&0xFF)!=PT_SPRK) || (pmap[y+1][x+1]&0xFF)==PT_INST)
+						FloodParts(x, y-dy, fullc, cm, bm, flags);
+					
 				}
-
+		
 		if (y<YRES-CELL-dy && x1==x2 &&
-		        ((pmap[y+1][x1-1]&0xFF)==PT_INST||(pmap[y+1][x1-1]&0xFF)==PT_SPRK) && ((pmap[y+1][x1]&0xFF)==PT_INST||(pmap[y+1][x1]&0xFF)==PT_SPRK) && ((pmap[y+1][x1+1]&0xFF)==PT_INST || (pmap[y+1][x1+1]&0xFF)==PT_SPRK) &&
-		        (pmap[y+2][x1-1]&0xFF)!=PT_INST && ((pmap[y+2][x1]&0xFF)==PT_INST ||(pmap[y+2][x1]&0xFF)==PT_SPRK) && (pmap[y+2][x1+1]&0xFF)!=PT_INST)
-			flood_parts(x1, y+2, fullc, cm, bm, flags);
+			((pmap[y+1][x1-1]&0xFF)==PT_INST||(pmap[y+1][x1-1]&0xFF)==PT_SPRK) && ((pmap[y+1][x1]&0xFF)==PT_INST||(pmap[y+1][x1]&0xFF)==PT_SPRK) && ((pmap[y+1][x1+1]&0xFF)==PT_INST || (pmap[y+1][x1+1]&0xFF)==PT_SPRK) &&
+			(pmap[y+2][x1-1]&0xFF)!=PT_INST && ((pmap[y+2][x1]&0xFF)==PT_INST ||(pmap[y+2][x1]&0xFF)==PT_SPRK) && (pmap[y+2][x1+1]&0xFF)!=PT_INST)
+			FloodParts(x1, y+2, fullc, cm, bm, flags);
 		else if (y<YRES-CELL-dy)
 			for (x=x1; x<=x2; x++)
 				if ((pmap[y+1][x]&0xFF)!=PT_SPRK)
 				{
 					if (x==x1 || x==x2 || y<0 ||
-					        (pmap[y+1][x-1]&0xFF)==PT_INST || (pmap[y+1][x+1]&0xFF)==PT_INST ||
-					        (pmap[y-1][x-1]&0xFF)==PT_INST || ((pmap[y-1][x]&0xFF)!=PT_INST&&(pmap[y-1][x]&0xFF)!=PT_SPRK) || (pmap[y-1][x+1]&0xFF)==PT_INST)
-						flood_parts(x, y+dy, fullc, cm, bm, flags);
-
+						(pmap[y+1][x-1]&0xFF)==PT_INST || (pmap[y+1][x+1]&0xFF)==PT_INST ||
+						(pmap[y-1][x-1]&0xFF)==PT_INST || ((pmap[y-1][x]&0xFF)!=PT_INST&&(pmap[y-1][x]&0xFF)!=PT_SPRK) || (pmap[y-1][x+1]&0xFF)==PT_INST)
+						FloodParts(x, y+dy, fullc, cm, bm, flags);
+					
 				}
 	}
 	else
@@ -241,12 +261,12 @@ int Simulation::flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 		if (y>=CELL+dy)
 			for (x=x1; x<=x2; x++)
 				if ((pmap[y-dy][x]&0xFF)==cm && bmap[(y-dy)/CELL][x/CELL]==bm)
-					if (!flood_parts(x, y-dy, fullc, cm, bm, flags))
+					if (!FloodParts(x, y-dy, fullc, cm, bm, flags))
 						return 0;
 		if (y<YRES-CELL-dy)
 			for (x=x1; x<=x2; x++)
 				if ((pmap[y+dy][x]&0xFF)==cm && bmap[(y+dy)/CELL][x/CELL]==bm)
-					if (!flood_parts(x, y+dy, fullc, cm, bm, flags))
+					if (!FloodParts(x, y+dy, fullc, cm, bm, flags))
 						return 0;
 	}
 	if (!(cm==PT_INST&&co==PT_SPRK))
@@ -254,6 +274,78 @@ int Simulation::flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 	return 0;
 }
 
+int Simulation::FloodWalls(int x, int y, int c, int cm, int bm, int flags)
+{
+	int x1, x2, dy = CELL;
+	int co = c;
+	if (cm==-1)
+	{
+		if (c==0)
+		{
+			cm = pmap[y][x]&0xFF;
+			if (!cm)
+				return 0;
+			//if ((flags&BRUSH_REPLACEMODE) && cm!=SLALT)
+			//	return 0;
+		}
+		else
+			cm = 0;
+	}
+	if (bm==-1)
+	{
+		if (c==WL_ERASE)
+		{
+			bm = bmap[y/CELL][x/CELL];
+			if (!bm)
+				return 0;
+			if (bm==WL_WALL)
+				cm = 0xFF;
+		}
+		else
+			bm = 0;
+	}
+	
+	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm )/*||( (flags&BRUSH_SPECIFIC_DELETE) && cm!=SLALT)*/)
+		return 1;
+	
+	// go left as far as possible
+	x1 = x2 = x;
+	while (x1>=CELL)
+	{
+		if ((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm)
+		{
+			break;
+		}
+		x1--;
+	}
+	while (x2<XRES-CELL)
+	{
+		if ((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm)
+		{
+			break;
+		}
+		x2++;
+	}
+	
+	// fill span
+	for (x=x1; x<=x2; x++)
+	{
+		if (!CreateWalls(x, y, 0, 0, c, flags))
+			return 0;
+	}
+	// fill children
+	if (y>=CELL+dy)
+		for (x=x1; x<=x2; x++)
+			if ((pmap[y-dy][x]&0xFF)==cm && bmap[(y-dy)/CELL][x/CELL]==bm)
+				if (!FloodWalls(x, y-dy, c, cm, bm, flags))
+					return 0;
+	if (y<YRES-CELL-dy)
+		for (x=x1; x<=x2; x++)
+			if ((pmap[y+dy][x]&0xFF)==cm && bmap[(y+dy)/CELL][x/CELL]==bm)
+				if (!FloodWalls(x, y+dy, c, cm, bm, flags))
+					return 0;
+	return 0;
+}
 int Simulation::flood_water(int x, int y, int i, int originaly, int check)
 {
 	int x1 = 0,x2 = 0;
@@ -517,46 +609,20 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int rx, int
 }
 
 //this creates particles from a brush, don't use if you want to create one particle
-int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush)
+int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush)
 {
 	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;//n;
-
+	
 	if(cBrush)
 	{
 		rx = cBrush->GetRadius().X;
 		ry = cBrush->GetRadius().Y;
 	}
-
+	
 	int wall = c - 100;
 	if (c==SPC_WIND || c==PT_FIGH)
 		return 0;
-
-	//if(c==SPC_PROP){
-	//	prop_edit_ui(vid_buf, x, y);
-	//	return 0;
-	//}
-	for (r=UI_ACTUALSTART; r<=UI_ACTUALSTART+UI_WALLCOUNT; r++)
-	{
-		if (wall==r)
-		{
-			if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV || wall == WL_SIGN)
-				break;
-			if (wall == WL_ERASE)
-				b = 0;
-			else
-				b = wall;
-			dw = 1;
-		}
-	}
-	if (c == WL_FANHELPER)
-	{
-		b = WL_FANHELPER;
-		dw = 1;
-	}
-	if (wall == WL_GRAV)
-	{
-		gravwl_timeout = 60;
-	}
+	
 	if (c==PT_LIGH)
 	{
 	    if (lighting_recreate>0 && rx+ry>0)
@@ -573,49 +639,7 @@ int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags, Bru
         }
         else return 0;
 	}
-
-	if (dw==1)
-	{
-		ry = ry/CELL;
-		rx = rx/CELL;
-		x = x/CELL;
-		y = y/CELL;
-		x -= rx/2;
-		y -= ry/2;
-		for (ox=x; ox<=x+rx; ox++)
-		{
-			for (oy=y; oy<=y+rx; oy++)
-			{
-				if (ox>=0&&ox<XRES/CELL&&oy>=0&&oy<YRES/CELL)
-				{
-					i = ox;
-					j = oy;
-					if (b==WL_FAN)
-					{
-						fvx[j][i] = 0.0f;
-						fvy[j][i] = 0.0f;
-					}
-					if (b==WL_STREAM)
-					{
-						i = x + rx/2;
-						j = y + ry/2;
-						for (v=-1; v<2; v++)
-							for (u=-1; u<2; u++)
-								if (i+u>=0 && i+u<XRES/CELL &&
-								        j+v>=0 && j+v<YRES/CELL &&
-								        bmap[j+v][i+u] == WL_STREAM)
-									return 1;
-						bmap[j][i] = WL_STREAM;
-						continue;
-					}
-					if (b==0 && bmap[j][i]==WL_GRAV) gravwl_timeout = 60;
-					bmap[j][i] = b;
-				}
-			}
-		}
-		return 1;
-	}
-
+	
 	//eraser
 	if (c == 0)
 	{
@@ -639,7 +663,7 @@ int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags, Bru
 		}
 		return 1;
 	}
-
+	
 	if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV)
 	{
 		if (rx==0&&ry==0)
@@ -670,7 +694,7 @@ int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags, Bru
 		}
 		return 1;
 	}
-
+	
 	//else, no special modes, draw element like normal.
 	if (rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
 	{
@@ -696,7 +720,64 @@ int Simulation::create_parts(int x, int y, int rx, int ry, int c, int flags, Bru
 	return !f;
 }
 
-void Simulation::create_line(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags, Brush * cBrush)
+int Simulation::CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush)
+{
+	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;//n;
+	
+	if(cBrush)
+	{
+		rx = cBrush->GetRadius().X;
+		ry = cBrush->GetRadius().Y;
+	}
+	
+	int wall = c;
+	
+	if (wall == WL_ERASE)
+		b = 0;
+	else
+		b = wall;
+	
+	ry = ry/CELL;
+	rx = rx/CELL;
+	x = x/CELL;
+	y = y/CELL;
+	x -= rx/2;
+	y -= ry/2;
+	for (ox=x; ox<=x+rx; ox++)
+	{
+		for (oy=y; oy<=y+rx; oy++)
+		{
+			if (ox>=0&&ox<XRES/CELL&&oy>=0&&oy<YRES/CELL)
+			{
+				i = ox;
+				j = oy;
+				if (b==WL_FAN)
+				{
+					fvx[j][i] = 0.0f;
+					fvy[j][i] = 0.0f;
+				}
+				if (b==WL_STREAM)
+				{
+					i = x + rx/2;
+					j = y + ry/2;
+					for (v=-1; v<2; v++)
+						for (u=-1; u<2; u++)
+							if (i+u>=0 && i+u<XRES/CELL &&
+								j+v>=0 && j+v<YRES/CELL &&
+								bmap[j+v][i+u] == WL_STREAM)
+								return 1;
+					bmap[j][i] = WL_STREAM;
+					continue;
+				}
+				if (b==0 && bmap[j][i]==WL_GRAV) gravwl_timeout = 60;
+				bmap[j][i] = b;
+			}
+		}
+	}
+	return 1;
+}
+
+void Simulation::CreateLine(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags, Brush * cBrush)
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
 	float e, de;
@@ -732,20 +813,73 @@ void Simulation::create_line(int x1, int y1, int x2, int y2, int rx, int ry, int
 	for (x=x1; x<=x2; x++)
 	{
 		if (cp)
-			create_parts(y, x, rx, ry, c, flags, cBrush);
+			CreateParts(y, x, rx, ry, c, flags, cBrush);
 		else
-			create_parts(x, y, rx, ry, c, flags, cBrush);
+			CreateParts(x, y, rx, ry, c, flags, cBrush);
 		e += de;
 		if (e >= 0.5f)
 		{
 			y += sy;
 			if ((c==WL_EHOLE+100 || c==WL_ALLOWGAS+100 || c==WL_ALLOWENERGY+100 || c==WL_ALLOWALLELEC+100 || c==WL_ALLOWSOLID+100 || c==WL_ALLOWAIR+100 || c==WL_WALL+100 || c==WL_DESTROYALL+100 || c==WL_ALLOWLIQUID+100 || c==WL_FAN+100 || c==WL_STREAM+100 || c==WL_DETECT+100 || c==WL_EWALL+100 || c==WL_WALLELEC+100 || !(rx+ry))
-			   && ((y1<y2) ? (y<=y2) : (y>=y2)))
+				&& ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
 				if (cp)
-					create_parts(y, x, rx, ry, c, flags, cBrush);
+					CreateParts(y, x, rx, ry, c, flags, cBrush);
 				else
-					create_parts(x, y, rx, ry, c, flags, cBrush);
+					CreateParts(x, y, rx, ry, c, flags, cBrush);
+			}
+			e -= 1.0f;
+		}
+	}
+}
+
+void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags, Brush * cBrush)
+{
+	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
+	float e, de;
+	if (cp)
+	{
+		y = x1;
+		x1 = y1;
+		y1 = y;
+		y = x2;
+		x2 = y2;
+		y2 = y;
+	}
+	if (x1 > x2)
+	{
+		y = x1;
+		x1 = x2;
+		x2 = y;
+		y = y1;
+		y1 = y2;
+		y2 = y;
+	}
+	dx = x2 - x1;
+	dy = abs(y2 - y1);
+	e = 0.0f;
+	if (dx)
+		de = dy/(float)dx;
+	else
+		de = 0.0f;
+	y = y1;
+	sy = (y1<y2) ? 1 : -1;
+	for (x=x1; x<=x2; x++)
+	{
+		if (cp)
+			CreateWalls(y, x, rx, ry, c, flags, cBrush);
+		else
+			CreateWalls(x, y, rx, ry, c, flags, cBrush);
+		e += de;
+		if (e >= 0.5f)
+		{
+			y += sy;
+			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
+			{
+				if (cp)
+					CreateWalls(y, x, rx, ry, c, flags, cBrush);
+				else
+					CreateWalls(x, y, rx, ry, c, flags, cBrush);
 			}
 			e -= 1.0f;
 		}
@@ -1097,7 +1231,7 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 			xmid[i+1] += (rand()%variance)-voffset;
 			ymid[i+1] += (rand()%variance)-voffset;
 		}
-		create_line(xmid[i], ymid[i], xmid[i+1], ymid[i+1], 0, 0, type, flags);
+		CreateLine(xmid[i], ymid[i], xmid[i+1], ymid[i+1], 0, 0, type, flags);
 	}
 	free(xmid);
 	free(ymid);

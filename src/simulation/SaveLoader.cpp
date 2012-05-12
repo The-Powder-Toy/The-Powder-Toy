@@ -194,7 +194,7 @@ int SaveLoader::PSVLoad(unsigned char * data, int dataLength, Simulation * sim, 
 			{
 				//In old saves, ignore walls created by sign tool bug
 				//Not ignoring other invalid walls or invalid walls in new saves, so that any other bugs causing them are easier to notice, find and fix
-				if (ver<71 && d[p]==WL_SIGN)
+				if (ver<71 && d[p]==O_WL_SIGN)
 				{
 					p++;
 					continue;
@@ -227,6 +227,39 @@ int SaveLoader::PSVLoad(unsigned char * data, int dataLength, Simulation * sim, 
 					sim->bmap[y][x]=WL_EHOLE;
 				if (sim->bmap[y][x]==13)
 					sim->bmap[y][x]=WL_ALLOWGAS;
+				
+				if (sim->bmap[y][x]==O_WL_WALLELEC)
+					sim->bmap[y][x]=WL_WALLELEC;
+				if (sim->bmap[y][x]==O_WL_EWALL)
+					sim->bmap[y][x]=WL_EWALL;
+				if (sim->bmap[y][x]==O_WL_DETECT)
+					sim->bmap[y][x]=WL_DETECT;
+				if (sim->bmap[y][x]==O_WL_STREAM)
+					sim->bmap[y][x]=WL_STREAM;
+				if (sim->bmap[y][x]==O_WL_FAN||sim->bmap[y][x]==O_WL_FANHELPER)
+					sim->bmap[y][x]=WL_FAN;
+				if (sim->bmap[y][x]==O_WL_ALLOWLIQUID)
+					sim->bmap[y][x]=WL_ALLOWLIQUID;
+				if (sim->bmap[y][x]==O_WL_DESTROYALL)
+					sim->bmap[y][x]=WL_DESTROYALL;
+				if (sim->bmap[y][x]==O_WL_ERASE)
+					sim->bmap[y][x]=WL_ERASE;
+				if (sim->bmap[y][x]==O_WL_WALL)
+					sim->bmap[y][x]=WL_WALL;
+				if (sim->bmap[y][x]==O_WL_ALLOWAIR)
+					sim->bmap[y][x]=WL_ALLOWAIR;
+				if (sim->bmap[y][x]==O_WL_ALLOWSOLID)
+					sim->bmap[y][x]=WL_ALLOWSOLID;
+				if (sim->bmap[y][x]==O_WL_ALLOWALLELEC)
+					sim->bmap[y][x]=WL_ALLOWALLELEC;
+				if (sim->bmap[y][x]==O_WL_EHOLE)
+					sim->bmap[y][x]=WL_EHOLE;
+				if (sim->bmap[y][x]==O_WL_ALLOWGAS)
+					sim->bmap[y][x]=WL_ALLOWGAS;
+				if (sim->bmap[y][x]==O_WL_GRAV)
+					sim->bmap[y][x]=WL_GRAV;
+				if (sim->bmap[y][x]==O_WL_ALLOWENERGY)
+					sim->bmap[y][x]=WL_ALLOWENERGY;
 			}
 
 			p++;

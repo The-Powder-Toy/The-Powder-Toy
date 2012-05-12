@@ -83,7 +83,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 		nearp = sim->nearest_part(i, PT_ETRD, -1);
 		if (nearp!=-1 && sim->parts_avg(i, nearp, PT_INSL)!=PT_INSL)
 		{
-			sim->create_line(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), 0, 0, PT_PLSM, 0);
+			sim->CreateLine(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), 0, 0, PT_PLSM, 0);
 			sim->part_change_type(i,x,y,ct);
 			ct = parts[i].ctype = PT_NONE;
 			parts[i].life = 20;
@@ -243,7 +243,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					else if (rt==PT_INST) {
 						if (parts[r>>8].life==0 && parts[i].life<4)
 						{
-							sim->flood_parts(x+rx,y+ry,PT_SPRK,PT_INST,-1, 0);//spark the wire
+							sim->FloodParts(x+rx,y+ry,PT_SPRK,PT_INST,-1, 0);//spark the wire
 						}
 					}
 					else if (parts[r>>8].life==0 && parts[i].life<4) {

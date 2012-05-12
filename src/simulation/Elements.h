@@ -51,26 +51,6 @@
 #define GRAPHICS_FUNC_ARGS Renderer * ren, Particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
 #define GRAPHICS_FUNC_SUBCALL_ARGS ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb
 
-#define UI_WALLSTART 222
-#define UI_ACTUALSTART 122
-#define UI_WALLCOUNT 25
-
-#define WL_WALLELEC	122
-#define WL_EWALL	123
-#define WL_DETECT	124
-#define WL_STREAM	125
-#define WL_SIGN	126
-#define WL_FAN	127
-#define WL_FANHELPER 255
-#define WL_ALLOWLIQUID	128
-#define WL_DESTROYALL	129
-#define WL_ERASE	130
-#define WL_WALL	131
-#define WL_ALLOWAIR	132
-#define WL_ALLOWSOLID	133
-#define WL_ALLOWALLELEC	134
-#define WL_EHOLE	135
-
 #define SPC_AIR 236
 #define SPC_HEAT 237
 #define SPC_COOL 238
@@ -80,9 +60,6 @@
 #define SPC_NGRV 244
 #define SPC_PROP 246
 
-#define WL_ALLOWGAS	140
-#define WL_GRAV		142
-#define WL_ALLOWENERGY 145
 
 #define NGT_GOL 0
 #define NGT_HLIF 1

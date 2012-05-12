@@ -102,8 +102,8 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 											parts[nb].temp = MAX_TEMP;
 										}
 									}
-						//create_parts(x, y, 9, 9, PT_BOMB);
-						//create_parts(x, y, 8, 8, PT_NONE);
+						//CreateParts(x, y, 9, 9, PT_BOMB);
+						//CreateParts(x, y, 8, 8, PT_NONE);
 						sim->kill_part(i);
 						return 1;
 					}

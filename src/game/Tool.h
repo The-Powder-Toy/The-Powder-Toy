@@ -39,21 +39,43 @@ class ElementTool: public Tool
 {
 public:
 	ElementTool(int id, string name, int r, int g, int b):
-		Tool(id, name, r, g, b)
+	Tool(id, name, r, g, b)
 	{
 	}
 	virtual ~ElementTool() {}
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position){
-		sim->create_parts(position.X, position.Y, 1, 1, toolID, 0, brush);
+		sim->CreateParts(position.X, position.Y, 1, 1, toolID, 0, brush);
 	}
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
-		sim->create_line(position1.X, position1.Y, position2.X, position2.Y, 1, 1, toolID, 0, brush);
+		sim->CreateLine(position1.X, position1.Y, position2.X, position2.Y, 1, 1, toolID, 0, brush);
 	}
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
-		sim->create_box(position1.X, position1.Y, position2.X, position2.Y, toolID, 0);
+		sim->CreateBox(position1.X, position1.Y, position2.X, position2.Y, toolID, 0);
 	}
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
-		sim->flood_parts(position.X, position.Y, toolID, -1, -1, 0);
+		sim->FloodParts(position.X, position.Y, toolID, -1, -1, 0);
+	}
+};
+
+class WallTool: public Tool
+{
+public:
+	WallTool(int id, string name, int r, int g, int b):
+	Tool(id, name, r, g, b)
+	{
+	}
+	virtual ~WallTool() {}
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position){
+		sim->CreateWalls(position.X, position.Y, 1, 1, toolID, 0, brush);
+	}
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
+		sim->CreateWallLine(position1.X, position1.Y, position2.X, position2.Y, 1, 1, toolID, 0, brush);
+	}
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
+		sim->CreateWallBox(position1.X, position1.Y, position2.X, position2.Y, toolID, 0);
+	}
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
+		sim->FloodWalls(position.X, position.Y, toolID, -1, -1, 0);
 	}
 };
 
@@ -66,16 +88,16 @@ public:
 	}
 	virtual ~GolTool() {}
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position){
-		sim->create_parts(position.X, position.Y, 1, 1, PT_LIFE|(toolID<<8), 0, brush);
+		sim->CreateParts(position.X, position.Y, 1, 1, PT_LIFE|(toolID<<8), 0, brush);
 	}
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
-		sim->create_line(position1.X, position1.Y, position2.X, position2.Y, 1, 1, PT_LIFE|(toolID<<8), 0, brush);
+		sim->CreateLine(position1.X, position1.Y, position2.X, position2.Y, 1, 1, PT_LIFE|(toolID<<8), 0, brush);
 	}
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
-		sim->create_box(position1.X, position1.Y, position2.X, position2.Y, PT_LIFE|(toolID<<8), 0);
+		sim->CreateBox(position1.X, position1.Y, position2.X, position2.Y, PT_LIFE|(toolID<<8), 0);
 	}
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
-		sim->flood_parts(position.X, position.Y, PT_LIFE|(toolID<<8), -1, -1, 0);
+		sim->FloodParts(position.X, position.Y, PT_LIFE|(toolID<<8), -1, -1, 0);
 	}
 };
 

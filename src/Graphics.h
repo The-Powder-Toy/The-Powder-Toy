@@ -5,8 +5,7 @@
 #include <string>
 #if defined(OGLR)
 #ifdef MACOSX
-#include <GL/glew.h>
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 #include <OpenGL/glu.h>
 #elif defined(WIN32)
 #include <GL/glew.h>
