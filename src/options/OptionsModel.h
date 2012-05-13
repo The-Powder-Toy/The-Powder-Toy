@@ -28,6 +28,10 @@ public:
 	void SetNewtonianGravity(bool state);
 	bool GetWaterEqualisation();
 	void SetWaterEqualisation(bool state);
+	int GetAirMode();
+	void SetAirMode(int airMode);
+	int GetGravityMode();
+	void SetGravityMode(int gravityMode);
 	virtual ~OptionsModel();
 };
 

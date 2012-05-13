@@ -26,6 +26,7 @@ Window::~Window()
 			if(Components[i]==focusedComponent_)
 				focusedComponent_ = NULL;
 		}
+	Components.clear();
 }
 
 void Window::AddComponent(Component* c)

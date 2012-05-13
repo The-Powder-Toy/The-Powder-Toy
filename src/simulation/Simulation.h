@@ -202,7 +202,7 @@ public:
 	int photons[YRES][XRES];
 	//
 	int gravityMode;
-	int airMode;
+	//int airMode;
 	int ngrav_enable;
 	int legacy_enable;
 	int aheat_enable;

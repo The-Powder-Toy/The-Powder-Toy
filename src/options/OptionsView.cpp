@@ -8,6 +8,7 @@
 #include "OptionsView.h"
 #include "interface/Button.h"
 #include "interface/Label.h"
+#include "interface/DropDown.h"
 
 OptionsView::OptionsView():
 	ui::Window(ui::Point(-1, -1), ui::Point(300, 300)){
@@ -77,14 +78,42 @@ OptionsView::OptionsView():
 	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
 	AddComponent(tempLabel);
 
-	airMode = new ui::DropDown(ui::Point(Size.X-55, 143), ui::Point(50, 16));//, "Water equalisation \bgIntroduced in version 61");
-	//airMode->SetActionCallback(new WaterEqualisationAction(this));
+	class AirModeChanged: public ui::DropDownAction
+	{
+		OptionsView * v;
+	public:
+		AirModeChanged(OptionsView * v): v(v) { }
+		virtual void OptionChanged(ui::DropDown * sender, std::pair<std::string, int> option) { v->c->SetAirMode(option.second); }
+	};
+	airMode = new ui::DropDown(ui::Point(Size.X-85, 143), ui::Point(80, 16));
 	AddComponent(airMode);
-	tempLabel = new ui::Label(ui::Point(3, 143), ui::Point(Size.X-24, 16), "Air Simulation Mode");
+	airMode->AddOption(std::pair<std::string, int>("On", 0));
+	airMode->AddOption(std::pair<std::string, int>("Pressure off", 1));
+	airMode->AddOption(std::pair<std::string, int>("Velocity off", 2));
+	airMode->AddOption(std::pair<std::string, int>("Off", 3));
+	airMode->AddOption(std::pair<std::string, int>("No Update", 4));
+	airMode->SetActionCallback(new AirModeChanged(this));
+		
+	tempLabel = new ui::Label(ui::Point(3, 143), ui::Point(Size.X-90, 16), "Air Simulation Mode");
 	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
 	AddComponent(tempLabel);
+		
+	class GravityModeChanged: public ui::DropDownAction
+	{
+		OptionsView * v;
+	public:
+		GravityModeChanged(OptionsView * v): v(v) { }
+		virtual void OptionChanged(ui::DropDown * sender, std::pair<std::string, int> option) { v->c->SetGravityMode(option.second); }
+	};	
+		
+	gravityMode = new ui::DropDown(ui::Point(Size.X-85, 163), ui::Point(80, 16));
+	AddComponent(gravityMode);
+	gravityMode->AddOption(std::pair<std::string, int>("Vertical", 0));
+	gravityMode->AddOption(std::pair<std::string, int>("Off", 1));
+	gravityMode->AddOption(std::pair<std::string, int>("Radial", 2));
+	gravityMode->SetActionCallback(new GravityModeChanged(this));
 
-	tempLabel = new ui::Label(ui::Point(3, 163), ui::Point(Size.X-24, 16), "Gravity Simulation Mode");
+	tempLabel = new ui::Label(ui::Point(3, 163), ui::Point(Size.X-90, 16), "Gravity Simulation Mode");
 	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
 	AddComponent(tempLabel);
 
@@ -111,6 +140,8 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	ambientHeatSimulation->SetChecked(sender->GetAmbientHeatSimulation());
 	newtonianGravity->SetChecked(sender->GetNewtonianGravity());
 	waterEqualisation->SetChecked(sender->GetWaterEqualisation());
+	airMode->SetOption(sender->GetAirMode());
+	gravityMode->SetOption(sender->GetGravityMode());
 }
 
 void OptionsView::AttachController(OptionsController * c_)

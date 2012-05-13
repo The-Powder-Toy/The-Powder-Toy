@@ -7,6 +7,7 @@
 
 #include <bzlib.h>
 #include <cmath>
+#include "Air.h"
 #include "SaveLoader.h"
 
 //!TODO: enum for LoadSave return
@@ -118,7 +119,7 @@ int SaveLoader::PSVLoad(unsigned char * data, int dataLength, Simulation * sim, 
 			}
 			if (ver>=46 && replace) {
 				sim->gravityMode = ((c[3]>>2)&0x03);// | ((c[3]>>2)&0x01);
-				sim->airMode = ((c[3]>>4)&0x07);// | ((c[3]>>4)&0x02) | ((c[3]>>4)&0x01);
+				sim->air->airMode = ((c[3]>>4)&0x07);// | ((c[3]>>4)&0x02) | ((c[3]>>4)&0x01);
 			}
 			if (ver>=49 && replace) {
 				tempGrav = ((c[3]>>7)&0x01);
@@ -170,7 +171,7 @@ int SaveLoader::PSVLoad(unsigned char * data, int dataLength, Simulation * sim, 
 	{
 		if (ver<46) {
 			sim->gravityMode = 0;
-			sim->airMode = 0;
+			sim->air->airMode = 0;
 		}
 		sim->clear_sim();
 	}
@@ -904,7 +905,7 @@ unsigned char * SaveLoader::PSVBuild(int & dataLength, Simulation * sim, int ori
 	c[0] = 0x50;	//0x66;
 	c[1] = 0x53;	//0x75;
 	c[2] = 0x76;	//0x43;
-	c[3] = sim->legacy_enable|((sim->sys_pause<<1)&0x02)|((sim->gravityMode<<2)&0x0C)|((sim->airMode<<4)&0x70)|((sim->ngrav_enable<<7)&0x80);
+	c[3] = sim->legacy_enable|((sim->sys_pause<<1)&0x02)|((sim->gravityMode<<2)&0x0C)|((sim->air->airMode<<4)&0x70)|((sim->ngrav_enable<<7)&0x80);
 	c[4] = SAVE_VERSION;
 	c[5] = CELL;
 	c[6] = bw;

@@ -26,6 +26,8 @@ public:
 	void SetAmbientHeatSimulation(bool state);
 	void SetNewtonianGravity(bool state);
 	void SetWaterEqualisation(bool state);
+	void SetGravityMode(int gravityMode);
+	void SetAirMode(int airMode);
 	void Exit();
 	OptionsView * GetView();
 	virtual ~OptionsController();

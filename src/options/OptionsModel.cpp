@@ -5,6 +5,7 @@
  *      Author: Simon
  */
 
+#include "Air.h"
 #include "OptionsModel.h"
 
 OptionsModel::OptionsModel(Simulation * sim_) {
@@ -61,6 +62,26 @@ bool OptionsModel::GetWaterEqualisation()
 void OptionsModel::SetWaterEqualisation(bool state)
 {
 	sim->water_equal_test = state?1:0;
+	notifySettingsChanged();
+}
+
+int OptionsModel::GetAirMode()
+{
+	return sim->air->airMode;
+}
+void OptionsModel::SetAirMode(int airMode)
+{
+	sim->air->airMode = airMode;
+	notifySettingsChanged();
+}
+
+int OptionsModel::GetGravityMode()
+{
+	return sim->gravityMode;
+}
+void OptionsModel::SetGravityMode(int gravityMode)
+{
+	sim->gravityMode = gravityMode;
 	notifySettingsChanged();
 }
 
