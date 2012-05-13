@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stack>
-#include <SDL/SDL.h>
+#include "SDL.h"
 #include "Singleton.h"
 #include "Platform.h"
 #include "Graphics.h"

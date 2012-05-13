@@ -1,8 +1,8 @@
 
 #include <time.h>
-#include <SDL/SDL.h>
+#include "SDL.h"
 #ifdef WIN32
-#include <SDL/SDL_syswm.h>
+#include "SDL_syswm.h"
 #endif
 #include <iostream>
 #include <sstream>

@@ -388,15 +388,15 @@ void Gravity::update_grav(void)
 					for (x = 0; x < XRES / CELL; x++) {
 						if (x == j && y == i)//Ensure it doesn't calculate with itself
 							continue;
-						distance = sqrt(pow(j - x, 2) + pow(i - y, 2));
+						distance = sqrt(pow(j - x, 2.0f) + pow(i - y, 2.0f));
 #ifdef GRAV_DIFF
 						val = th_gravmap[i*(XRES/CELL)+j] - th_ogravmap[i*(XRES/CELL)+j];
 #else
 						val = th_gravmap[i*(XRES/CELL)+j];
 #endif
-						th_gravx[y*(XRES/CELL)+x] += M_GRAV * val * (j - x) / pow(distance, 3);
-						th_gravy[y*(XRES/CELL)+x] += M_GRAV * val * (i - y) / pow(distance, 3);
-						th_gravp[y*(XRES/CELL)+x] += M_GRAV * val / pow(distance, 2);
+						th_gravx[y*(XRES/CELL)+x] += M_GRAV * val * (j - x) / pow(distance, 3.0f);
+						th_gravy[y*(XRES/CELL)+x] += M_GRAV * val * (i - y) / pow(distance, 3.0f);
+						th_gravp[y*(XRES/CELL)+x] += M_GRAV * val / pow(distance, 2.0f);
 					}
 				}
 			}

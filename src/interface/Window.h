@@ -86,6 +86,9 @@ enum ChromeStyle
 		void finalise();
 		bool halt;
 		bool destruct;
+#ifdef DEBUG
+		bool debugMode;
+#endif
 
 	};
 

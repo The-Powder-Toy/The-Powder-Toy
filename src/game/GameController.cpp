@@ -304,6 +304,16 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueu
 	}
 }
 
+void GameController::ToolClick(int toolSelection, ui::Point point)
+{
+	Simulation * sim = gameModel->GetSimulation();
+	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
+	Brush * cBrush = gameModel->GetBrush();
+	if(!activeTool || !cBrush)
+		return;
+	activeTool->Click(sim, cBrush, PointTranslate(point));
+}
+
 void GameController::StampRegion(ui::Point point1, ui::Point point2)
 {
 	int saveSize;

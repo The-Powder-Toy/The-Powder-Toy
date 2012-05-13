@@ -28,6 +28,7 @@ public:
 	}
 	string GetName() { return toolName; }
 	virtual ~Tool() {}
+	virtual void Click(Simulation * sim, Brush * brush, ui::Point position) { }
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) {
 		sim->ToolBrush(position.X, position.Y, toolID, brush);
 	}
@@ -45,18 +46,15 @@ class SignTool: public Tool
 {
 public:
 	SignTool():
-	Tool(0, "SIGN", 0, 0, 0),
-	opened(false)
+	Tool(0, "SIGN", 0, 0, 0)
 	{
 	}
 	virtual ~SignTool() {}
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
+	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
-	void SetClosed() { opened = false; }
-protected:
-	bool opened;
 };
 
 class PropertyTool: public Tool

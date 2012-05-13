@@ -26,17 +26,16 @@ public:
 	OkayAction(SignWindow * prompt_) { prompt = prompt_; }
 	void ActionCallback(ui::Button * sender)
 	{
-		ui::Engine::Ref().CloseWindow();
-		prompt->SelfDestruct();
-		
+		ui::Engine::Ref().CloseWindow();		
 		if(prompt->signID==-1 && prompt->textField->GetText().length())
 		{
 			prompt->sim->signs.push_back(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, sign::Left));
 		}
-		else
+		else if(prompt->textField->GetText().length())
 		{
 			prompt->sim->signs[prompt->signID] = sign(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, sign::Left));
 		}
+		prompt->SelfDestruct();
 	}
 };
 
@@ -71,11 +70,7 @@ void SignWindow::OnDraw()
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
 }
 
-void SignTool::Draw(Simulation * sim, Brush * brush, ui::Point position)
+void SignTool::Click(Simulation * sim, Brush * brush, ui::Point position)
 {
-	if(!opened)	//Ensure the dialogue can only be shown one at a time.
-	{
-		opened = true;
-		new SignWindow(this, sim, -1, position);
-	}
+	new SignWindow(this, sim, -1, position);
 }
