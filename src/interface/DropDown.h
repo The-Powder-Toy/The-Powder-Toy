@@ -33,6 +33,7 @@ class DropDown: public ui::Component {
 	std::vector<std::pair<std::string, int> > options;
 public:
 	DropDown(Point position, Point size);
+	std::pair<std::string, int> GetOption();
 	void SetOption(int option);
 	void SetOption(std::string option);
 	void AddOption(std::pair<std::string, int> option);

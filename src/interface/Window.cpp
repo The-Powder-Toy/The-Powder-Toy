@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Window.h"
 #include "Component.h"
 #include "interface/Point.h"
@@ -209,7 +210,7 @@ void Window::DoTick(float dt)
 void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 #ifdef DEBUG
-	if(character = 'd' && ctrl && shift)
+	if(key == KEY_TAB && ctrl)
 		debugMode = !debugMode;
 	if(debugMode)
 	{

@@ -5,7 +5,7 @@
  *      Author: Simon
  */
 
-#include "Air.h"
+#include "simulation/Air.h"
 #include "OptionsModel.h"
 
 OptionsModel::OptionsModel(Simulation * sim_) {

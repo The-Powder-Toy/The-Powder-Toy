@@ -5,10 +5,12 @@
 #include "interface/Button.h"
 #include "interface/Label.h"
 #include "interface/Textbox.h"
+#include "interface/DropDown.h"
 
 class SignWindow: public ui::Window
 {
 public:
+	ui::DropDown * justification;
 	ui::Textbox * textField;
 	SignTool * tool;
 	Simulation * sim;
@@ -29,11 +31,11 @@ public:
 		ui::Engine::Ref().CloseWindow();		
 		if(prompt->signID==-1 && prompt->textField->GetText().length())
 		{
-			prompt->sim->signs.push_back(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, sign::Left));
+			prompt->sim->signs.push_back(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
 		}
 		else if(prompt->textField->GetText().length())
 		{
-			prompt->sim->signs[prompt->signID] = sign(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, sign::Left));
+			prompt->sim->signs[prompt->signID] = sign(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
 		}
 		prompt->SelfDestruct();
 	}
@@ -55,6 +57,13 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	okayButton->SetBorderColour(ui::Colour(200, 200, 200));
 	okayButton->SetActionCallback(new OkayAction(this));
 	AddComponent(okayButton);
+	
+	justification = new ui::DropDown(ui::Point(4, 18), ui::Point(50, 16));
+	AddComponent(justification);
+	justification->AddOption(std::pair<std::string, int>("Left", (int)sign::Left));
+	justification->AddOption(std::pair<std::string, int>("Centre", (int)sign::Centre));
+	justification->AddOption(std::pair<std::string, int>("Right", (int)sign::Right));
+	justification->SetOption(0);
 	
 	textField = new ui::Textbox(ui::Point(4, 32), ui::Point(Size.X-8, 16), "");
 	textField->SetAlignment(AlignLeft, AlignBottom);

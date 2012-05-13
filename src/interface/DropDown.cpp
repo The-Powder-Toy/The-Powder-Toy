@@ -79,7 +79,8 @@ public:
 DropDown::DropDown(Point position, Point size):
 	Component(position, size),
 	isMouseInside(false),
-	optionIndex(-1)
+	optionIndex(-1),
+	callback(NULL)
 {
 	background = activeBackground = Colour(0, 0, 0);
 	activeText = text = activeBackground = border = activeBorder = Colour(255, 255, 255);
@@ -113,6 +114,15 @@ void DropDown::Draw(const Point& screenPos)
 	}
 
 }
+	
+	std::pair<std::string, int> DropDown::GetOption()
+	{
+		if(optionIndex!=-1)
+		{
+			return options[optionIndex];
+		}
+		return std::pair<std::string, int>("", -1);
+	}
 	
 	void DropDown::SetOption(std::string option)
 	{
