@@ -202,6 +202,8 @@ static const char *old_ver_msg = "A new version is available - click here!";
 char new_message_msg[255];
 float mheat = 0.0f;
 
+int saveURIOpen = 0;
+
 int do_open = 0;
 int sys_pause = 0;
 int sys_shortcuts = 1;
@@ -777,6 +779,7 @@ int main(int argc, char *argv[])
 	part_vbuf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE); //Extra video buffer
 	part_vbuf_store = part_vbuf;
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
+	int saveOpenError = 0;
 
 	gravity_init();
 	GSPEED = 1;
@@ -831,6 +834,7 @@ int main(int argc, char *argv[])
 					svf_filename[0] = 0;
 					svf_fileopen = 1;
 				} else {
+					saveOpenError = 1;
 					svf_last = NULL;
 					svf_lsize = 0;
 					free(file_data);
@@ -839,7 +843,6 @@ int main(int argc, char *argv[])
 			}
 			i++;
 		}
-
 	}
 	
 	load_presets();
@@ -915,6 +918,11 @@ int main(int argc, char *argv[])
 	{
 		error_ui(vid_buf, 0, "Unsupported CPU. Try another version.");
 		return 1;
+	}
+	
+	if(saveOpenError)
+	{
+		error_ui(vid_buf, 0, "Unable to open save file.");
 	}
 
 	http_ver_check = http_async_req_start(NULL, "http://" SERVER "/Update.api?Action=CheckVersion", NULL, 0, 0);
@@ -1128,6 +1136,7 @@ int main(int argc, char *argv[])
 		{
 			if (!do_s_check && http_async_req_status(http_session_check))
 			{
+				char saveURIOpenString[512];
 				check_data = http_async_req_stop(http_session_check, &http_s_ret, NULL);
 				if (http_ret==200 && check_data)
 				{
@@ -1212,7 +1221,15 @@ int main(int argc, char *argv[])
 					svf_messages = 0;
 				}
 				http_session_check = NULL;
+				if(saveURIOpen)
+				{
+					sprintf(saveURIOpenString, "%d", saveURIOpen);
+					open_ui(vid_buf, saveURIOpenString, NULL);
+					saveURIOpen = 0;
+				}
 			} else {
+				if(saveURIOpen)
+					info_box_overlay(vid_buf, "Waiting for login...");
 				clearrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14);
 				drawrect(vid_buf, XRES-125+BARSIZE/*385*/, YRES+(MENUSIZE-16), 91, 14, 255, 255, 255, 255);
 				drawtext(vid_buf, XRES-122+BARSIZE/*388*/, YRES+(MENUSIZE-13), "\x84", 255, 255, 255, 255);
@@ -1230,6 +1247,16 @@ int main(int argc, char *argv[])
 					drawtext(vid_buf, XRES-104+BARSIZE/*406*/, YRES+(MENUSIZE-12), "[checking]", 255, 255, 255, 255);
 			}
 			do_s_check = (do_s_check+1) & 15;
+		}
+		else
+		{
+			char saveURIOpenString[512];
+			if(saveURIOpen)
+			{
+				sprintf(saveURIOpenString, "%d", saveURIOpen);
+				open_ui(vid_buf, saveURIOpenString, NULL);
+				saveURIOpen = 0;
+			}
 		}
 #ifdef LUACONSOLE
 	if(sdl_key){

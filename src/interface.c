@@ -1298,7 +1298,7 @@ void info_box(pixel *vid_buf, char *msg)
 {
 	int w = textwidth(msg)+16;
 	int x0=(XRES-w)/2,y0=(YRES-24)/2;
-
+	
 	clearrect(vid_buf, x0-2, y0-2, w+4, 28);
 	drawrect(vid_buf, x0, y0, w, 24, 192, 192, 192, 255);
 	drawtext(vid_buf, x0+8, y0+8, msg, 192, 192, 240, 255);
@@ -1308,6 +1308,16 @@ void info_box(pixel *vid_buf, char *msg)
 #endif
 	sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 #endif
+}
+
+void info_box_overlay(pixel *vid_buf, char *msg)
+{
+	int w = textwidth(msg)+16;
+	int x0=(XRES-w)/2,y0=(YRES-24)/2;
+	
+	clearrect(vid_buf, x0-2, y0-2, w+4, 28);
+	drawrect(vid_buf, x0, y0, w, 24, 192, 192, 192, 255);
+	drawtext(vid_buf, x0+8, y0+8, msg, 192, 192, 240, 255);
 }
 
 void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt)

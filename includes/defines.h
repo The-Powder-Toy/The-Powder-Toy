@@ -161,6 +161,8 @@ typedef unsigned int pixel;
 
 typedef unsigned char uint8;
 
+extern int saveURIOpen;
+
 extern int amd;
 
 extern int FPSB;
