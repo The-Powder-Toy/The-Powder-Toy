@@ -27,13 +27,17 @@ class DropDown: public ui::Component {
 	Colour background, activeBackground;
 	Colour border, activeBorder;
 	Colour text, activeText;
+	Point textPosition;
 	bool isMouseInside;
 	int optionIndex;
 	DropDownAction * callback;
 	std::vector<std::pair<std::string, int> > options;
+	HorizontalAlignment textHAlign;
+	VerticalAlignment textVAlign;
 public:
 	DropDown(Point position, Point size);
 	std::pair<std::string, int> GetOption();
+	void TextPosition();
 	void SetOption(int option);
 	void SetOption(std::string option);
 	void AddOption(std::pair<std::string, int> option);

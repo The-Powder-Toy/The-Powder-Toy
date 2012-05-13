@@ -80,6 +80,9 @@ DropDown::DropDown(Point position, Point size):
 	Component(position, size),
 	isMouseInside(false),
 	optionIndex(-1),
+	textPosition(ui::Point(0, 0)),
+	textVAlign(AlignMiddle),
+	textHAlign(AlignLeft),
 	callback(NULL)
 {
 	background = activeBackground = Colour(0, 0, 0);
@@ -101,19 +104,51 @@ void DropDown::Draw(const Point& screenPos)
 		g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, activeBackground.Red, activeBackground.Green, activeBackground.Blue, 255);
 		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, activeBorder.Red, activeBorder.Green, activeBorder.Blue, 255);
 		if(optionIndex!=-1)
-			g->drawtext(Position.X, Position.Y+1, options[optionIndex].first, activeText.Red, activeText.Green, activeText.Blue, 255);
-		//g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y+1, displayText, activeText.Red, activeText.Green, activeText.Blue, 255);
+			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, options[optionIndex].first, activeText.Red, activeText.Green, activeText.Blue, 255);
 	}
 	else
 	{
 		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, background.Red, background.Green, background.Blue, 255);
 		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, border.Red, border.Green, border.Blue, 255);
 		if(optionIndex!=-1)
-			g->drawtext(Position.X, Position.Y+1, options[optionIndex].first, text.Red, text.Green, text.Blue, 255);
-		//g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y+1, displayText, text.Red, text.Green, text.Blue, 255);
+			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, options[optionIndex].first, text.Red, text.Green, text.Blue, 255);
 	}
 
 }
+	
+	void DropDown::TextPosition()
+	{
+		std::string displayText;
+		if(optionIndex!=-1)
+			displayText = options[optionIndex].first;
+		
+		// Values 3 and 10 are for vertical padding of 3 pixels, middle uses 7 as that's the height of a capital
+		switch(textVAlign)
+		{
+			case AlignTop:
+				textPosition.Y = 3;
+				break;
+			case AlignMiddle:
+				textPosition.Y = (Size.Y-10)/2;
+				break;
+			case AlignBottom:
+				textPosition.Y = Size.Y-10;
+				break;
+		}
+		
+		switch(textHAlign)
+		{
+			case AlignLeft:
+				textPosition.X = 3;
+				break;
+			case AlignCentre:
+				textPosition.X = (Size.X-Graphics::textwidth((char *)displayText.c_str()))/2;
+				break;
+			case AlignRight:
+				textPosition.X = (Size.X-Graphics::textwidth((char *)displayText.c_str()))-2;
+				break;
+		}
+	}
 	
 	std::pair<std::string, int> DropDown::GetOption()
 	{
@@ -131,6 +166,7 @@ void DropDown::Draw(const Point& screenPos)
 			if(options[i].first == option)
 			{
 				optionIndex = i;
+				TextPosition();
 				return;
 			}
 		}
@@ -142,6 +178,7 @@ void DropDown::Draw(const Point& screenPos)
 			if(options[i].second == option)
 			{
 				optionIndex = i;
+				TextPosition();
 				return;
 			}
 		}
@@ -162,6 +199,8 @@ void DropDown::Draw(const Point& screenPos)
 		{
 			if(options[i].first == option)
 			{
+				if(i == optionIndex)
+					optionIndex = -1;
 				options.erase(options.begin()+i);
 				goto start;
 			}
