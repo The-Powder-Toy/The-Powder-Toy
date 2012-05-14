@@ -1,4 +1,5 @@
 #include <iostream>
+#include "Style.h"
 #include "simulation/Simulation.h"
 #include "Tool.h"
 #include "interface/Window.h"
@@ -42,13 +43,14 @@ public:
 };
 
 SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_):
-	ui::Window(ui::Point(-1, -1), ui::Point(200, 75)),
+	ui::Window(ui::Point(-1, -1), ui::Point(200, 87)),
 	tool(tool_),
 	signID(signID_),
 	sim(sim_),
 	signPosition(position_)
 {
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 2), ui::Point(Size.X-8, 14), "New sign");
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "New sign");
+	messageLabel->SetTextColour(style::Colour::InformationTitle);
 	messageLabel->SetAlignment(AlignLeft, AlignTop);
 	AddComponent(messageLabel);
 	
@@ -58,14 +60,14 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	okayButton->SetActionCallback(new OkayAction(this));
 	AddComponent(okayButton);
 	
-	justification = new ui::DropDown(ui::Point(8, 38), ui::Point(50, 16));
+	justification = new ui::DropDown(ui::Point(8, 46), ui::Point(50, 16));
 	AddComponent(justification);
 	justification->AddOption(std::pair<std::string, int>("Left", (int)sign::Left));
 	justification->AddOption(std::pair<std::string, int>("Centre", (int)sign::Centre));
 	justification->AddOption(std::pair<std::string, int>("Right", (int)sign::Right));
 	justification->SetOption(0);
 	
-	textField = new ui::Textbox(ui::Point(8, 17), ui::Point(Size.X-16, 16), "");
+	textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "");
 	textField->SetAlignment(AlignLeft, AlignBottom);
 	AddComponent(textField);
 	
