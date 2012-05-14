@@ -32,6 +32,7 @@ struct StructProperty
 	std::string Name;
 	PropertyType Type;
 	intptr_t Offset;
+	
 	StructProperty(std::string name, PropertyType type, intptr_t offset):
 		Name(name),
 		Type(type),
@@ -54,7 +55,7 @@ struct Particle
 	unsigned int dcolour;
 	/** Returns a list of properties, their type and offset within the structure that can be changed
 	by higher-level processes refering to them by name such as Lua or the property tool **/
-	std::vector<StructProperty> GetProperties()
+	static std::vector<StructProperty> GetProperties()
 	{
 		std::vector<StructProperty> properties;
 		properties.push_back(StructProperty("type", StructProperty::ParticleType, offsetof(Particle, type)));
@@ -269,8 +270,8 @@ public:
 	void create_cherenkov_photon(int pp);
 	void create_gain_photon(int pp);
 	inline void kill_part(int i);
-	int flood_prop(int x, int y, size_t propoffset, void * propvalue, int proptype);
-	int flood_prop_2(int x, int y, size_t propoffset, void * propvalue, int proptype, int parttype, char * bitmap);
+	int flood_prop(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype);
+	int flood_prop_2(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap);
 	int flood_water(int x, int y, int i, int originaly, int check);
 	inline void detach(int i);
 	inline void part_change_type(int i, int x, int y, int t);

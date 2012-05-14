@@ -88,7 +88,7 @@ void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int c, int flags)
 			CreateWalls(i, j, 0, 0, c, flags);
 }
 
-int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, int proptype, int parttype, char * bitmap)
+int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap)
 {
 	int x1, x2, i, dy = 1;
 	x1 = x2 = x;
@@ -111,12 +111,22 @@ int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, 
 	for (x=x1; x<=x2; x++)
 	{
 		i = pmap[y][x]>>8;
-		if(proptype==2){
-			*((float*)(((char*)&parts[i])+propoffset)) = *((float*)propvalue);
-		} else if(proptype==0) {
-			*((int*)(((char*)&parts[i])+propoffset)) = *((int*)propvalue);
-		} else if(proptype==1) {
-			*((char*)(((char*)&parts[i])+propoffset)) = *((char*)propvalue);
+		switch (proptype) {
+			case StructProperty::Float:
+				*((float*)(((char*)&parts[i])+propoffset)) = *((float*)propvalue);
+				break;
+				
+			case StructProperty::ParticleType:
+			case StructProperty::Integer:
+				*((int*)(((char*)&parts[i])+propoffset)) = *((int*)propvalue);
+				break;
+				
+			case StructProperty::UInteger:
+				*((unsigned int*)(((char*)&parts[i])+propoffset)) = *((unsigned int*)propvalue);
+				break;
+				
+			default:
+				break;
 		}
 		bitmap[(y*XRES)+x] = 1;
 	}
@@ -133,7 +143,7 @@ int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, 
 	return 1;
 }
 
-int Simulation::flood_prop(int x, int y, size_t propoffset, void * propvalue, int proptype)
+int Simulation::flood_prop(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype)
 {
 	int r = 0;
 	char * bitmap = (char *)malloc(XRES*YRES); //Bitmap for checking

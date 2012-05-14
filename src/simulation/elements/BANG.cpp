@@ -76,7 +76,7 @@ int Element_BANG::update(UPDATE_FUNC_ARGS)
 	else if(parts[i].tmp==1)
 	{
 		int tempvalue = 2;
-		sim->flood_prop(x, y, offsetof(Particle, tmp), &tempvalue, 0);
+		sim->flood_prop(x, y, offsetof(Particle, tmp), &tempvalue, StructProperty::Integer);
 	}
 	else if(parts[i].tmp==2)
 	{

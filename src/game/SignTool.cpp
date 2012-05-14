@@ -20,26 +20,25 @@ public:
 	SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_);
 	virtual void OnDraw();
 	virtual ~SignWindow() {}
-};
-
-class OkayAction: public ui::ButtonAction
-{
-public:
-	SignWindow * prompt;
-	OkayAction(SignWindow * prompt_) { prompt = prompt_; }
-	void ActionCallback(ui::Button * sender)
+	class OkayAction: public ui::ButtonAction
 	{
-		ui::Engine::Ref().CloseWindow();		
-		if(prompt->signID==-1 && prompt->textField->GetText().length())
+	public:
+		SignWindow * prompt;
+		OkayAction(SignWindow * prompt_) { prompt = prompt_; }
+		void ActionCallback(ui::Button * sender)
 		{
-			prompt->sim->signs.push_back(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
+			ui::Engine::Ref().CloseWindow();		
+			if(prompt->signID==-1 && prompt->textField->GetText().length())
+			{
+				prompt->sim->signs.push_back(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
+			}
+			else if(prompt->textField->GetText().length())
+			{
+				prompt->sim->signs[prompt->signID] = sign(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
+			}
+			prompt->SelfDestruct();
 		}
-		else if(prompt->textField->GetText().length())
-		{
-			prompt->sim->signs[prompt->signID] = sign(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
-		}
-		prompt->SelfDestruct();
-	}
+	};
 };
 
 SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_):
