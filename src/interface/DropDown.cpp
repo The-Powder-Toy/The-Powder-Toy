@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include "Style.h"
 #include "Button.h"
 #include "DropDown.h"
 
@@ -35,29 +36,31 @@ public:
 		}
 	};
 	DropDownWindow(DropDown * dropDown):
-		Window(ui::Point(dropDown->Position.X+dropDown->GetParentWindow()->Position.X-5, dropDown->Position.Y+dropDown->GetParentWindow()->Position.Y-3), ui::Point(dropDown->Size.X+10, dropDown->options.size()*13)),
+		Window(ui::Point(dropDown->Position.X+dropDown->GetParentWindow()->Position.X-5, dropDown->Position.Y+dropDown->GetParentWindow()->Position.Y-3), ui::Point(dropDown->Size.X+10, 1+dropDown->options.size()*15)),
 		dropDown(dropDown),
-		background(background),
+		background(dropDown->background),
 		activeBackground(dropDown->activeBackground),
 		border(dropDown->border),
 		activeBorder(dropDown->activeBorder),
 		text(dropDown->text),
 		activeText(dropDown->activeText)
 	{
-		int currentY = 0;
+		int currentY = 1;
 		for(int i = 0; i < dropDown->options.size(); i++)
 		{
-			Button * tempButton = new Button(Point(0, currentY), Point(Size.X, 14), dropDown->options[i].first);
+			Button * tempButton = new Button(Point(1, currentY), Point(Size.X-2, 14), dropDown->options[i].first);
+			tempButton->SetTextColour(dropDown->text);
+			tempButton->SetBorderColour(dropDown->background);
 			tempButton->SetActionCallback(new ItemSelectedAction(this, dropDown->options[i].first));
 			AddComponent(tempButton);
-			currentY += 13;
+			currentY += 15;
 		}
 	}
 	virtual void OnDraw()
 	{
 		Graphics * g = ui::Engine::Ref().g;
-		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, background.Red, background.Green, background.Blue, 255);
-		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, border.Red, border.Green, border.Blue, 255);
+		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 100, 100, 100, 255);
+		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, border.Red, border.Green, border.Blue, border.Alpha);
 	}
 	void setOption(std::string option)
 	{
@@ -85,8 +88,12 @@ DropDown::DropDown(Point position, Point size):
 	textHAlign(AlignLeft),
 	callback(NULL)
 {
-	background = activeBackground = Colour(0, 0, 0);
-	activeText = text = activeBackground = border = activeBorder = Colour(255, 255, 255);
+	activeText = text = Colour(255, 255, 255);
+	
+	border = style::Colour::InactiveBorder;
+	activeBorder = style::Colour::ActiveBorder;
+	background = style::Colour::InactiveBackground;
+	activeBackground = style::Colour::ActiveBackground;
 }
 
 void DropDown::OnMouseClick(int x, int y, unsigned int button)

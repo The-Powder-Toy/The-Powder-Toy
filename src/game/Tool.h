@@ -65,6 +65,7 @@ public:
 	{
 	}
 	virtual ~PropertyTool() {}
+	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) {};
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }

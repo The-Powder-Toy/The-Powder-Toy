@@ -6,7 +6,6 @@
  */
 
 #include <iostream>
-
 #include "interface/Button.h"
 #include "Graphics.h"
 #include "Engine.h"
@@ -30,6 +29,7 @@ Button::Button(Point position, Point size, std::string buttonText):
 {
 	activeText = background = Colour(0, 0, 0);
 	text = activeBackground = border = activeBorder = Colour(255, 255, 255);
+
 	TextPosition();
 }
 
