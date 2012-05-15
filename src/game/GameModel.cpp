@@ -125,7 +125,6 @@ GameModel::GameModel():
 	toolList = menuList[SC_POWDERS]->GetToolList();
 
 	//Load last user
-	std::cout << Client::Ref().GetAuthUser().Username << std::endl;
 	if(Client::Ref().GetAuthUser().ID)
 	{
 		currentUser = Client::Ref().GetAuthUser();

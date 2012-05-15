@@ -16,7 +16,7 @@ OptionsView::OptionsView():
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Simulation Options");
 	tempLabel->SetTextColour(style::Colour::InformationTitle);
-	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
 	class HeatSimulationAction: public ui::CheckboxAction
@@ -31,7 +31,7 @@ OptionsView::OptionsView():
 	heatSimulation->SetActionCallback(new HeatSimulationAction(this));
 	AddComponent(heatSimulation);
 	tempLabel = new ui::Label(ui::Point(24, heatSimulation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgCan cause odd behaviour with very old saves");
-	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
 	class AmbientHeatSimulationAction: public ui::CheckboxAction
@@ -46,7 +46,7 @@ OptionsView::OptionsView():
 	ambientHeatSimulation->SetActionCallback(new AmbientHeatSimulationAction(this));
 	AddComponent(ambientHeatSimulation);
 	tempLabel = new ui::Label(ui::Point(24, ambientHeatSimulation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgCan cause odd behaviour with old saves");
-	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
 	class NewtonianGravityAction: public ui::CheckboxAction
@@ -61,7 +61,7 @@ OptionsView::OptionsView():
 	newtonianGravity->SetActionCallback(new NewtonianGravityAction(this));
 	AddComponent(newtonianGravity);
 	tempLabel = new ui::Label(ui::Point(24, newtonianGravity->Position.Y+14), ui::Point(Size.X-28, 16), "\bgMay cause poor performance on older computers");
-	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
 	class WaterEqualisationAction: public ui::CheckboxAction
@@ -76,7 +76,7 @@ OptionsView::OptionsView():
 	waterEqualisation->SetActionCallback(new WaterEqualisationAction(this));
 	AddComponent(waterEqualisation);
 	tempLabel = new ui::Label(ui::Point(24, waterEqualisation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgMay cause poor performance with a lot of water");
-	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
 	class AirModeChanged: public ui::DropDownAction
@@ -96,7 +96,7 @@ OptionsView::OptionsView():
 	airMode->SetActionCallback(new AirModeChanged(this));
 		
 	tempLabel = new ui::Label(ui::Point(8, 146), ui::Point(Size.X-96, 16), "Air Simulation Mode");
-	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 		
 	class GravityModeChanged: public ui::DropDownAction
@@ -115,7 +115,7 @@ OptionsView::OptionsView():
 	gravityMode->SetActionCallback(new GravityModeChanged(this));
 
 	tempLabel = new ui::Label(ui::Point(8, 166), ui::Point(Size.X-96, 16), "Gravity Simulation Mode");
-	tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
 

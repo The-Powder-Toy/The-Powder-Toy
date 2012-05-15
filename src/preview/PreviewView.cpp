@@ -28,7 +28,7 @@ PreviewView::PreviewView():
 		}
 	};
 	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), "Open");
-	openButton->SetAlignment(AlignLeft, AlignMiddle);
+	openButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	openButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	openButton->SetIcon(IconOpen);
 	openButton->SetActionCallback(new OpenAction(this));
 	AddComponent(openButton);
@@ -45,7 +45,7 @@ PreviewView::PreviewView():
 	};
 
 	favButton = new ui::Button(ui::Point(51, Size.Y-19), ui::Point(51, 19), "Fav.");
-	favButton->SetAlignment(AlignLeft, AlignMiddle);
+	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetIcon(IconFavourite);
 	favButton->SetActionCallback(new FavAction(this));
 	AddComponent(favButton);
@@ -72,7 +72,7 @@ PreviewView::PreviewView():
 		}
 	};
 	reportButton = new ui::Button(ui::Point(102, Size.Y-19), ui::Point(51, 19), "Report");
-	reportButton->SetAlignment(AlignLeft, AlignMiddle);
+	reportButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	reportButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	reportButton->SetIcon(IconReport);
 	reportButton->SetActionCallback(new ReportAction(this));
 	AddComponent(reportButton);
@@ -89,22 +89,22 @@ PreviewView::PreviewView():
 	};
 
 	browserOpenButton = new ui::Button(ui::Point((XRES/2)-108, Size.Y-19), ui::Point(108, 19), "Open in browser");
-	browserOpenButton->SetAlignment(AlignLeft, AlignMiddle);
+	browserOpenButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	browserOpenButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	browserOpenButton->SetIcon(IconOpen);
 	browserOpenButton->SetActionCallback(new BrowserOpenAction(this));
 	AddComponent(browserOpenButton);
 
 	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+15), ui::Point(100, 16), "");
-	saveNameLabel->SetAlignment(AlignLeft, AlignBottom);
+	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(saveNameLabel);
 
 	saveDescriptionTextblock = new ui::Textblock(ui::Point(5, (YRES/2)+15+14+17), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+15+14+17)-21), "");
-	saveDescriptionTextblock->SetAlignment(AlignLeft, AlignTop);
+	saveDescriptionTextblock->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	saveDescriptionTextblock->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	saveDescriptionTextblock->SetTextColour(ui::Colour(180, 180, 180));
 	AddComponent(saveDescriptionTextblock);
 
 	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+15+14), ui::Point(100, 16), "");
-	authorDateLabel->SetAlignment(AlignLeft, AlignBottom);
+	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(authorDateLabel);
 }
 
@@ -194,10 +194,10 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		for(int i = 0; i < tempComments->size(); i++)
 		{
 			tempUsername = new ui::Label(ui::Point((XRES/2) + 5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), 16), tempComments->at(i)->authorName);
-			tempUsername->SetAlignment(AlignLeft, AlignBottom);
+			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 			currentY += 16;
 			tempComment = new ui::Textblock(ui::Point((XRES/2) + 5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), -1), tempComments->at(i)->comment);
-			tempComment->SetAlignment(AlignLeft, AlignTop);
+			tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 			tempComment->SetTextColour(ui::Colour(180, 180, 180));
 			currentY += tempComment->Size.Y+4;
 

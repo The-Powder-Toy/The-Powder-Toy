@@ -6,6 +6,7 @@
  */
 
 #include "LoginView.h"
+#include "Style.h"
 
 class LoginView::LoginAction : public ui::ButtonAction
 {
@@ -30,28 +31,35 @@ public:
 };
 
 LoginView::LoginView():
-	ui::Window(ui::Point(-1, -1), ui::Point(200, 100)),
-	loginButton(new ui::Button(ui::Point(200-50, 100-16), ui::Point(50, 16), "Login")),
-	cancelButton(new ui::Button(ui::Point(0, 100-16), ui::Point(50, 16), "Cancel")),
-	titleLabel(new ui::Label(ui::Point(4, 2), ui::Point(200-16, 16), "Server login")),
-	usernameField(new ui::Textbox(ui::Point(8, 20), ui::Point(200-16, 16), "")),
-	passwordField(new ui::Textbox(ui::Point(8, 40), ui::Point(200-16, 16), "")),
-	infoLabel(new ui::Label(ui::Point(8, 60), ui::Point(200-16, 16), ""))
+	ui::Window(ui::Point(-1, -1), ui::Point(200, 87)),
+	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), "Sign in")),
+	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), "Cancel")),
+	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), "Server login")),
+	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username)),
+	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "")),
+	infoLabel(new ui::Label(ui::Point(8, 67), ui::Point(200-16, 16), "")),
+	targetSize(0, 0)
 {
+	targetSize = Size;
 	AddComponent(loginButton);
-	loginButton->SetAlignment(AlignCentre, AlignBottom);
+	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
+	loginButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	loginButton->Appearance.TextInactive = style::Colour::ConfirmButton;
 	loginButton->SetActionCallback(new LoginAction(this));
 	AddComponent(cancelButton);
-	cancelButton->SetAlignment(AlignCentre, AlignBottom);
+	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->SetActionCallback(new CancelAction(this));
 	AddComponent(titleLabel);
-	titleLabel->SetAlignment(AlignLeft, AlignBottom);
+	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	
 	AddComponent(usernameField);
-	usernameField->SetAlignment(AlignLeft, AlignBottom);
+	usernameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	usernameField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(passwordField);
-	passwordField->SetAlignment(AlignLeft, AlignBottom);
+	passwordField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	passwordField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	passwordField->SetHidden(true);
-	infoLabel->SetAlignment(AlignCentre, AlignBottom);
+	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	infoLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	infoLabel->Visible = false;
 	AddComponent(infoLabel);
 }
 
@@ -75,10 +83,40 @@ void LoginView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, boo
 
 void LoginView::NotifyStatusChanged(LoginModel * sender)
 {
+	if(!infoLabel->GetText().length() && sender->GetStatusText().length())
+	{
+		targetSize = Size+ui::Point(0, 18);
+		infoLabel->Visible = true;
+	}
 	infoLabel->SetText(sender->GetStatusText());
 	if(sender->GetStatus())
 	{
 		c->Exit();
+	}
+}
+
+void LoginView::OnTick(float dt)
+{
+	//if(targetSize != Size)
+	{
+		ui::Point difference = targetSize-Size;
+		if(difference.X!=0)
+		{
+			int xdiff = difference.X/100;
+			if(xdiff == 0)
+				xdiff = 1*isign(difference.X);
+			Size.X += xdiff;
+		}
+		if(difference.Y!=0)
+		{
+			int ydiff = difference.Y/100;
+			if(ydiff == 0)
+				ydiff = 1*isign(difference.Y);
+			Size.Y += ydiff;
+		}
+		
+		loginButton->Position.Y = Size.Y-17;
+		cancelButton->Position.Y = Size.Y-17;
 	}
 }
 

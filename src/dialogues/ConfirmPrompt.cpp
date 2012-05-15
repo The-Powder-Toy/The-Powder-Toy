@@ -15,11 +15,13 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(2, 1), ui::Point(Size.X-4, 16), title);
 	titleLabel->SetTextColour(ui::Colour(220, 220, 50));
-	titleLabel->SetAlignment(AlignLeft, AlignBottom);
+	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(titleLabel);
 
 	ui::Label * messageLabel = new ui::Label(ui::Point(4, 18), ui::Point(Size.X-8, 60), message);
-	messageLabel->SetAlignment(AlignLeft, AlignTop);
+	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 
 	class CloseAction: public ui::ButtonAction
@@ -38,14 +40,16 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 
 
 	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-50, 16), "Cancel");
-	cancelButton->SetAlignment(AlignLeft, AlignBottom);
-	cancelButton->SetBorderColour(ui::Colour(200, 200, 200));
+	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	cancelButton->SetActionCallback(new CloseAction(this, ResultCancel));
 	AddComponent(cancelButton);
 
 	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-50, Size.Y-16), ui::Point(50, 16), "Continue");
-	okayButton->SetAlignment(AlignLeft, AlignBottom);
-	okayButton->SetTextColour(ui::Colour(220, 220, 50));
+	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	okayButton->Appearance.TextInactive = ui::Colour(220, 220, 50);
 	okayButton->SetActionCallback(new CloseAction(this, ResultOkay));
 	AddComponent(okayButton);
 

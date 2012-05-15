@@ -12,7 +12,7 @@ ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_):
 	ui::Button(position, size, text_)
 {
 	SetSelectionState(-1);
-	activeBorder = ui::Colour(255, 0, 0);
+	Appearance.BorderActive = ui::Colour(255, 0, 0);
 }
 
 void ToolButton::OnMouseClick(int x, int y, unsigned int button)
@@ -38,17 +38,17 @@ void ToolButton::OnMouseUp(int x, int y, unsigned int button)
 void ToolButton::Draw(const ui::Point& screenPos)
 {
 	Graphics * g = ui::Engine::Ref().g;
-	int totalColour = background.Red + (3*background.Green) + (2*background.Blue);
+	int totalColour = Appearance.BackgroundInactive.Red + (3*Appearance.BackgroundInactive.Green) + (2*Appearance.BackgroundInactive.Blue);
 
-	g->fillrect(screenPos.X+2, screenPos.Y+2, Size.X-4, Size.Y-4, background.Red, background.Green, background.Blue, background.Alpha);
+	g->fillrect(screenPos.X+2, screenPos.Y+2, Size.X-4, Size.Y-4, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, Appearance.BackgroundInactive.Alpha);
 
 	if(isMouseInside && currentSelection == -1)
 	{
-		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, activeBorder.Red, activeBorder.Green, activeBorder.Blue, activeBorder.Alpha);
+		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderActive.Red, Appearance.BorderActive.Green, Appearance.BorderActive.Blue, Appearance.BorderActive.Alpha);
 	}
 	else
 	{
-		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, border.Red, border.Green, border.Blue, border.Alpha);
+		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderInactive.Red, Appearance.BorderInactive.Green, Appearance.BorderInactive.Blue, Appearance.BorderInactive.Alpha);
 	}
 
 	if (totalColour<544)
@@ -67,16 +67,16 @@ void ToolButton::SetSelectionState(int state)
 	switch(state)
 	{
 	case 0:
-		border = ui::Colour(255, 0, 0);
+		Appearance.BorderInactive = ui::Colour(255, 0, 0);
 		break;
 	case 1:
-		border = ui::Colour(0, 0, 255);
+		Appearance.BorderInactive = ui::Colour(0, 0, 255);
 		break;
 	case 2:
-		border = ui::Colour(0, 255, 0);
+		Appearance.BorderInactive = ui::Colour(0, 255, 0);
 		break;
 	default:
-		border = ui::Colour(0, 0, 0);
+		Appearance.BorderInactive = ui::Colour(0, 0, 0);
 		break;
 	}
 }

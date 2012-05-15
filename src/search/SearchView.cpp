@@ -28,7 +28,7 @@ SearchView::SearchView():
 		}
 	};
 	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point((XRES+BARSIZE)-226, 16), "");
-	searchField->SetAlignment(AlignLeft, AlignBottom);
+	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	searchField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	searchField->SetActionCallback(new SearchAction(this));
 
 	class SortAction : public ui::ButtonAction
@@ -43,7 +43,7 @@ SearchView::SearchView():
 	};
 	sortButton = new ui::Button(ui::Point(XRES+BARSIZE-140, 10), ui::Point(60, 16), "Sort");
 	sortButton->SetActionCallback(new SortAction(this));
-	sortButton->SetAlignment(AlignCentre, AlignBottom);
+	sortButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	sortButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(sortButton);
 
 	class MyOwnAction : public ui::ButtonAction
@@ -61,7 +61,7 @@ SearchView::SearchView():
 	ownButton->SetActionCallback(new MyOwnAction(this));
 	if(!Client::Ref().GetAuthUser().ID)
 		ownButton->Enabled = false;
-	ownButton->SetAlignment(AlignCentre, AlignBottom);
+	ownButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	ownButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(ownButton);
 
 	class FavAction : public ui::ButtonAction
@@ -80,7 +80,7 @@ SearchView::SearchView():
 	favButton->SetActionCallback(new FavAction(this));
 	if(!Client::Ref().GetAuthUser().ID)
 		favButton->Enabled = false;
-	favButton->SetAlignment(AlignCentre, AlignBottom);
+	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	favButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(favButton);
 
 	class NextPageAction : public ui::ButtonAction
@@ -94,7 +94,7 @@ SearchView::SearchView():
 		}
 	};
 	nextButton->SetActionCallback(new NextPageAction(this));
-	nextButton->SetAlignment(AlignRight, AlignBottom);
+	nextButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;	nextButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	class PrevPageAction : public ui::ButtonAction
 	{
 		SearchView * v;
@@ -106,7 +106,7 @@ SearchView::SearchView():
 		}
 	};
 	previousButton->SetActionCallback(new PrevPageAction(this));
-	previousButton->SetAlignment(AlignLeft, AlignBottom);
+	previousButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	previousButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(nextButton);
 	AddComponent(previousButton);
 	AddComponent(searchField);
@@ -116,7 +116,7 @@ SearchView::SearchView():
 	AddComponent(loadingSpinner);
 
 	ui::Label * searchPrompt = new ui::Label(ui::Point(10, 10), ui::Point(50, 16), "Search:");
-	searchPrompt->SetAlignment(AlignLeft, AlignBottom);
+	searchPrompt->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	searchPrompt->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(searchPrompt);
 
 	class RemoveSelectedAction : public ui::ButtonAction

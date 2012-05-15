@@ -1,4 +1,5 @@
 //#include "Platform.h"
+#include <iostream>
 #include "interface/Component.h"
 #include "interface/Engine.h"
 #include "interface/Point.h"
@@ -13,18 +14,24 @@ Component::Component(Window* parent_state):
 	Position(Point(0,0)),
 	Size(Point(0,0)),
 	Locked(false),
-	Visible(true)
+	Visible(true),
+	textPosition(0, 0),
+	iconPosition(0, 0),
+	drawn(false)
 {
 
 }
 
 Component::Component(Point position, Point size):
-	parentstate_(NULL),
+	parentstate_(0),
 	_parent(NULL),
 	Position(position),
 	Size(size),
 	Locked(false),
-	Visible(true)
+	Visible(true),
+	textPosition(0, 0),
+	iconPosition(0, 0),
+	drawn(false)
 {
 
 }
@@ -35,9 +42,66 @@ Component::Component():
 	Position(Point(0,0)),
 	Size(Point(0,0)),
 	Locked(false),
-	Visible(true)
+	Visible(true),
+	textPosition(0, 0),
+	iconPosition(0, 0),
+	drawn(false)
 {
 
+}
+
+void Component::Refresh()
+{
+	drawn = false;
+}
+
+void Component::TextPosition(std::string displayText)
+{
+
+	textPosition = ui::Point(0, 0);
+	
+	int textWidth, textHeight = 10;
+	Graphics::textsize((char*)displayText.c_str(), textWidth, textHeight);
+	textHeight-=3;
+	textWidth-=1;
+	if(Appearance.icon)
+	{
+		textWidth += 15;
+	}
+	
+	int textAreaWidth = Size.X-(Appearance.Margin.Right+Appearance.Margin.Left);
+	int textAreaHeight = Size.Y-(Appearance.Margin.Top+Appearance.Margin.Bottom);
+	
+	switch(Appearance.VerticalAlign)
+	{
+		case ui::Appearance::AlignTop:
+			textPosition.Y = Appearance.Margin.Top;
+			break;
+		case ui::Appearance::AlignMiddle:
+			textPosition.Y = Appearance.Margin.Top+((textAreaHeight-textHeight)/2);
+			break;
+		case ui::Appearance::AlignBottom:
+			textPosition.Y = Size.Y-(textHeight+Appearance.Margin.Bottom);
+			break;
+	}
+	
+	switch(Appearance.HorizontalAlign)
+	{
+		case ui::Appearance::AlignLeft:
+			textPosition.X = Appearance.Margin.Left;
+			break;
+		case ui::Appearance::AlignCentre:
+			textPosition.X = Appearance.Margin.Left+((textAreaWidth-textWidth)/2);
+			break;
+		case ui::Appearance::AlignRight:
+			textPosition.X = Size.X-(textWidth+Appearance.Margin.Right);
+			break;
+	}
+	if(Appearance.icon)
+	{
+		iconPosition = textPosition-ui::Point(0, 1);
+		textPosition.X += 15;
+	}
 }
 
 bool Component::IsFocused() const
@@ -88,6 +152,7 @@ void Component::SetParent(Panel* new_parent)
 
 void Component::Draw(const Point& screenPos)
 {
+	drawn = true;
 }
 
 void Component::Tick(float dt)

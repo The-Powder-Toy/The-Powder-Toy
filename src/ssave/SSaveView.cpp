@@ -17,11 +17,11 @@ SSaveView::SSaveView():
 	descriptionField(NULL)
 {
 	titleLabel = new ui::Label(ui::Point(2, 1), ui::Point(Size.X-4, 16), "Save to Server");
-	titleLabel->SetAlignment(AlignLeft, AlignBottom);
+	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(titleLabel);
 
 	nameField = new ui::Textbox(ui::Point(4, 18), ui::Point(Size.X-8, 16), "");
-	nameField->SetAlignment(AlignLeft, AlignBottom);
+	nameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	nameField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(nameField);
 
 	descriptionField = new ui::Textarea(ui::Point(4, 54), ui::Point(Size.X-8, Size.Y-26-54), "");

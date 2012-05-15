@@ -21,15 +21,8 @@ Button::Button(Point position, Point size, std::string buttonText):
 	isTogglable(false),
 	toggle(false),
 	actionCallback(NULL),
-	textPosition(ui::Point(0, 0)),
-	textVAlign(AlignMiddle),
-	textHAlign(AlignLeft),
-	Enabled(true),
-	icon(NoIcon)
+	Enabled(true)
 {
-	activeText = background = Colour(0, 0, 0);
-	text = activeBackground = border = activeBorder = Colour(255, 255, 255);
-
 	TextPosition();
 }
 
@@ -38,63 +31,20 @@ void Button::TextPosition()
 	buttonDisplayText = ButtonText;
 	if(buttonDisplayText.length())
 	{
-		if(Graphics::textwidth((char *)buttonDisplayText.c_str()) > Size.X - (icon? 22 : 0))
+		if(Graphics::textwidth((char *)buttonDisplayText.c_str()) > Size.X - (Appearance.icon? 22 : 0))
 		{
-			int position = Graphics::textwidthx((char *)buttonDisplayText.c_str(), Size.X - (icon? 38 : 22));
+			int position = Graphics::textwidthx((char *)buttonDisplayText.c_str(), Size.X - (Appearance.icon? 38 : 22));
 			buttonDisplayText = buttonDisplayText.erase(position, buttonDisplayText.length()-position);
 			buttonDisplayText += "...";
 		}
 	}
 
-	// Values 3 and 10 are for vertical padding of 3 pixels, middle uses 7 as that's the height of a capital
-	switch(textVAlign)
-	{
-	case AlignTop:
-		textPosition.Y = 3;
-		break;
-	case AlignMiddle:
-		textPosition.Y = (Size.Y-10)/2;
-		break;
-	case AlignBottom:
-		textPosition.Y = Size.Y-10;
-		break;
-	}
-
-	if(icon)
-	{
-		switch(textHAlign)
-		{
-		case AlignLeft:
-			textPosition.X = 3+17;
-			break;
-		case AlignCentre:
-			textPosition.X = (((Size.X-14)-Graphics::textwidth((char *)buttonDisplayText.c_str()))/2)+17;
-			break;
-		case AlignRight:
-			textPosition.X = (((Size.X-14)-Graphics::textwidth((char *)buttonDisplayText.c_str()))-2)+17;
-			break;
-		}
-	}
-	else
-	{
-		switch(textHAlign)
-		{
-		case AlignLeft:
-			textPosition.X = 3;
-			break;
-		case AlignCentre:
-			textPosition.X = (Size.X-Graphics::textwidth((char *)buttonDisplayText.c_str()))/2;
-			break;
-		case AlignRight:
-			textPosition.X = (Size.X-Graphics::textwidth((char *)buttonDisplayText.c_str()))-2;
-			break;
-		}
-	}
+	Component::TextPosition(buttonDisplayText);
 }
 
 void Button::SetIcon(Icon icon)
 {
-	this->icon = icon;
+	Appearance.icon = icon;
 	TextPosition();
 }
 
@@ -127,31 +77,36 @@ inline void Button::SetToggleState(bool state)
 
 void Button::Draw(const Point& screenPos)
 {
+	if(!drawn)
+	{
+		TextPosition();
+		drawn = true;
+	}
 	Graphics * g = ui::Engine::Ref().g;
 	Point Position = screenPos;
 	if(Enabled)
 	{
 		if(isButtonDown || (isTogglable && toggle))
 		{
-			g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, activeBackground.Red, activeBackground.Green, activeBackground.Blue, 255);
-			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, activeBorder.Red, activeBorder.Green, activeBorder.Blue, 255);
-			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y+1, buttonDisplayText, activeText.Red, activeText.Green, activeText.Blue, 255);
+			g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, Appearance.BackgroundActive.Red, Appearance.BackgroundActive.Green, Appearance.BackgroundActive.Blue, 255);
+			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BorderActive.Red, Appearance.BorderActive.Green, Appearance.BorderActive.Blue, 255);
+			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y+1, buttonDisplayText, Appearance.TextActive.Red, Appearance.TextActive.Green, Appearance.TextActive.Blue, 255);
 		}
 		else
 		{
-			g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, background.Red, background.Green, background.Blue, 255);
-			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, border.Red, border.Green, border.Blue, 255);
-			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y+1, buttonDisplayText, text.Red, text.Green, text.Blue, 255);
+			g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, 255);
+			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BorderInactive.Red, Appearance.BorderInactive.Green, Appearance.BorderInactive.Blue, 255);
+			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y+1, buttonDisplayText, Appearance.TextInactive.Red, Appearance.TextInactive.Green, Appearance.TextInactive.Blue, 255);
 		}
 	}
 	else
 	{
-		g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, background.Red, background.Green, background.Blue, 180);
+		g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, 180);
 		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 180, 180, 180, 255);
-		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y+1, buttonDisplayText, 180, 180, 180, 255);
+		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, buttonDisplayText, 180, 180, 180, 255);
 	}
-	if(icon)
-		g->draw_icon(Position.X+3, Position.Y+textPosition.Y, icon);
+	if(Appearance.icon)
+		g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon);
 }
 
 void Button::OnMouseUp(int x, int y, unsigned int button)

@@ -19,6 +19,7 @@ class LoginController;
 class LoginMode;
 class LoginView: public ui::Window {
 	LoginController * c;
+	ui::Point targetSize;
 	ui::Button * loginButton;
 	ui::Button * cancelButton;
 	ui::Label * titleLabel;
@@ -33,6 +34,7 @@ public:
 	void AttachController(LoginController * c_) { c = c_; }
 	void NotifyStatusChanged(LoginModel * sender);
 	virtual void OnDraw();
+	virtual void OnTick(float dt);
 	virtual ~LoginView();
 };
 

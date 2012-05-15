@@ -35,7 +35,7 @@ StampsView::StampsView():
 		}
 	};
 	nextButton->SetActionCallback(new NextPageAction(this));
-	nextButton->SetAlignment(AlignRight, AlignBottom);
+	nextButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;	nextButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 
 	class PrevPageAction : public ui::ButtonAction
 	{
@@ -48,7 +48,7 @@ StampsView::StampsView():
 		}
 	};
 	previousButton->SetActionCallback(new PrevPageAction(this));
-	previousButton->SetAlignment(AlignLeft, AlignBottom);
+	previousButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	previousButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 
 	class RemoveSelectedAction : public ui::ButtonAction
 	{

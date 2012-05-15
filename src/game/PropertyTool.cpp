@@ -49,12 +49,12 @@ position(position_)
 	
 	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Edit property");
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
-	messageLabel->SetAlignment(AlignLeft, AlignTop);
+	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 	
 	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 17), "OK");
-	okayButton->SetAlignment(AlignLeft, AlignBottom);
-	okayButton->SetBorderColour(ui::Colour(200, 200, 200));
+	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	okayButton->SetActionCallback(new OkayAction(this));
 	AddComponent(okayButton);
 	
@@ -67,7 +67,7 @@ position(position_)
 	property->SetOption(0);
 	
 	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "");
-	textField->SetAlignment(AlignLeft, AlignBottom);
+	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	textField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(textField);
 	
 	ui::Engine::Ref().ShowWindow(this);

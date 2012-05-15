@@ -1,0 +1,53 @@
+//
+//  Appearance.h
+//  The Powder Toy
+//
+//  Created by Simon Robertshaw on 15/05/2012.
+//
+
+#ifndef The_Powder_Toy_Appearance_h
+#define The_Powder_Toy_Appearance_h
+
+#include "Border.h"
+#include "Colour.h"
+#include "Graphics.h"
+
+namespace ui
+{
+	class Appearance
+	{
+	public:
+		enum HorizontalAlignment
+		{
+			AlignLeft, AlignCentre, AlignRight
+		};
+		
+		enum VerticalAlignment
+		{
+			AlignTop, AlignMiddle, AlignBottom
+		};
+		
+		VerticalAlignment VerticalAlign;
+		HorizontalAlignment HorizontalAlign;
+		
+		ui::Colour BackgroundHover;
+		ui::Colour BackgroundInactive;
+		ui::Colour BackgroundActive;
+		
+		ui::Colour TextHover;
+		ui::Colour TextInactive;
+		ui::Colour TextActive;
+		
+		ui::Colour BorderHover;
+		ui::Colour BorderInactive;
+		ui::Colour BorderActive;
+		
+		ui::Border Margin;
+		
+		Icon icon;
+		
+		Appearance();
+	};
+}
+
+#endif

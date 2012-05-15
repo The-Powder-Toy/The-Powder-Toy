@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Appearance.h"
 #include "Point.h"
 #include "Window.h"
 #include "Platform.h"
@@ -15,7 +16,14 @@ namespace ui
 	 * *See sys::XComponent
 	 */
 	class Component  
-	{
+	{	
+	private:
+		Window* parentstate_;
+		Panel* _parent;
+	protected:
+		bool drawn;
+		ui::Point textPosition;
+		ui::Point iconPosition;
 	public:
 		Component(Window* parent_state);
 		Component(Point position, Point size);
@@ -31,6 +39,13 @@ namespace ui
 		bool Locked;
 		bool Visible;
 
+		ui::Appearance Appearance;
+		//virtual void SetAppearance(ui::Appearance);
+		//ui::Appearance GetAppearance();
+		virtual void TextPosition(std::string);
+		
+		void Refresh();
+		
 		/* See the parent of this component.
 		 * If new_parent is NULL, this component will have no parent. (THIS DOES NOT delete THE COMPONENT. See XComponent::RemoveChild)
 		 */
@@ -196,9 +211,5 @@ namespace ui
 		// 	alt: Alternate key is released.
 		///
 		virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-
-	private:
-		Window* parentstate_;
-		Panel* _parent;
 	};
 }

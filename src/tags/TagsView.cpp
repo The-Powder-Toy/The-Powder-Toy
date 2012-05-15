@@ -28,7 +28,7 @@ TagsView::TagsView():
 		}
 	};
 	closeButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(195, 16), "Close");
-	closeButton->SetAlignment(AlignLeft, AlignTop);
+	closeButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	closeButton->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	closeButton->SetActionCallback(new CloseAction(this));
 	AddComponent(closeButton);
 
@@ -36,7 +36,7 @@ TagsView::TagsView():
 	AddComponent(tagInput);
 
 	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 16), "Manage tags:");
-	title->SetAlignment(AlignLeft, AlignTop);
+	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	title->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(title);
 }
 
@@ -81,14 +81,14 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 		for(int i = 0; i < sender->GetSave()->GetTags().size(); i++)
 		{
 			ui::Label * tempLabel = new ui::Label(ui::Point(35, 35+(16*i)), ui::Point(120, 16), sender->GetSave()->GetTags()[i]);
-			tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 			tags.push_back(tempLabel);
 			AddComponent(tempLabel);
 
 			if(sender->GetSave()->GetUserName()==Client::Ref().GetAuthUser().Username)
 			{
 				ui::Button * tempButton = new ui::Button(ui::Point(15, 35+(16*i)), ui::Point(14, 14), "x");
-				tempButton->SetAlignment(AlignCentre, AlignMiddle);
+				tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;				tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 				tempButton->SetActionCallback(new DeleteTagAction(this, sender->GetSave()->GetTags()[i]));
 				tags.push_back(tempButton);
 				AddComponent(tempButton);

@@ -23,7 +23,8 @@ ConsoleView::ConsoleView():
 		}
 	};
 	commandField = new ui::Textbox(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "");
-	commandField->SetAlignment(AlignLeft, AlignBottom);
+	commandField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	commandField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	commandField->SetActionCallback(new CommandHighlighter(this));
 	AddComponent(commandField);
 	FocusComponent(commandField);
@@ -67,11 +68,13 @@ void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
 			if(currentY <= 0)
 				break;
 			ui::Label * tempLabel = new ui::Label(ui::Point(Size.X/2, currentY), ui::Point(Size.X/2, 16), commands[i].ReturnValue);
-			tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			commandList.push_back(tempLabel);
 			AddComponent(tempLabel);
 			tempLabel = new ui::Label(ui::Point(0, currentY), ui::Point(Size.X/2, 16), commands[i].Command);
-			tempLabel->SetAlignment(AlignLeft, AlignMiddle);
+			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			commandList.push_back(tempLabel);
 			AddComponent(tempLabel);
 			currentY-=16;

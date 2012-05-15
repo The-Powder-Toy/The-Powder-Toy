@@ -570,11 +570,11 @@ void Graphics::textsize(const char * s, int & width, int & height)
 	if(!strlen(s))
 	{
 		width = 0;
-		height = 0;
+		height = FONT_H;
 		return;
 	}
 
-	int cHeight = FONT_H+2, cWidth = 0, lWidth = 0;
+	int cHeight = FONT_H, cWidth = 0, lWidth = 0;
 	for (; *s; s++)
 	{
 		if (*s == '\n')

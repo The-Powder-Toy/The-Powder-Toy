@@ -18,6 +18,8 @@ namespace style
 		static ui::Colour WarningTitle;
 		static ui::Colour ErrorTitle;
 		
+		static ui::Colour ConfirmButton;
+		
 		static ui::Colour ActiveBorder;
 		static ui::Colour InactiveBorder;
 		

@@ -15,9 +15,7 @@ namespace ui {
 class ItemSelectedAction;
 class DropDownWindow: public ui::Window {
 	friend class ItemSelectedAction;
-	Colour background, activeBackground;
-	Colour border, activeBorder;
-	Colour text, activeText;
+	Appearance appearance;
 	DropDown * dropDown;
 	std::vector<Button> buttons;
 	bool isMouseInside;
@@ -38,19 +36,13 @@ public:
 	DropDownWindow(DropDown * dropDown):
 		Window(ui::Point(dropDown->Position.X+dropDown->GetParentWindow()->Position.X-5, dropDown->Position.Y+dropDown->GetParentWindow()->Position.Y-3), ui::Point(dropDown->Size.X+10, 1+dropDown->options.size()*15)),
 		dropDown(dropDown),
-		background(dropDown->background),
-		activeBackground(dropDown->activeBackground),
-		border(dropDown->border),
-		activeBorder(dropDown->activeBorder),
-		text(dropDown->text),
-		activeText(dropDown->activeText)
+		appearance(dropDown->Appearance)
 	{
 		int currentY = 1;
 		for(int i = 0; i < dropDown->options.size(); i++)
 		{
 			Button * tempButton = new Button(Point(1, currentY), Point(Size.X-2, 14), dropDown->options[i].first);
-			tempButton->SetTextColour(dropDown->text);
-			tempButton->SetBorderColour(dropDown->background);
+			tempButton->Appearance = appearance;
 			tempButton->SetActionCallback(new ItemSelectedAction(this, dropDown->options[i].first));
 			AddComponent(tempButton);
 			currentY += 15;
@@ -60,7 +52,7 @@ public:
 	{
 		Graphics * g = ui::Engine::Ref().g;
 		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 100, 100, 100, 255);
-		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, border.Red, border.Green, border.Blue, border.Alpha);
+		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, appearance.BackgroundInactive.Red, appearance.BackgroundInactive.Green, appearance.BackgroundInactive.Blue, appearance.BackgroundInactive.Alpha);
 	}
 	void setOption(std::string option)
 	{
@@ -83,17 +75,8 @@ DropDown::DropDown(Point position, Point size):
 	Component(position, size),
 	isMouseInside(false),
 	optionIndex(-1),
-	textPosition(ui::Point(0, 0)),
-	textVAlign(AlignMiddle),
-	textHAlign(AlignLeft),
 	callback(NULL)
 {
-	activeText = text = Colour(255, 255, 255);
-	
-	border = style::Colour::InactiveBorder;
-	activeBorder = style::Colour::ActiveBorder;
-	background = style::Colour::InactiveBackground;
-	activeBackground = style::Colour::ActiveBackground;
 }
 
 void DropDown::OnMouseClick(int x, int y, unsigned int button)
@@ -104,58 +87,30 @@ void DropDown::OnMouseClick(int x, int y, unsigned int button)
 
 void DropDown::Draw(const Point& screenPos)
 {
+	if(!drawn)
+	{
+		if(optionIndex!=-1)
+			TextPosition(options[optionIndex].first);
+		drawn = true;
+	}
 	Graphics * g = ui::Engine::Ref().g;
 	Point Position = screenPos;
 	if(isMouseInside)
 	{
-		g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, activeBackground.Red, activeBackground.Green, activeBackground.Blue, 255);
-		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, activeBorder.Red, activeBorder.Green, activeBorder.Blue, 255);
+		g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, Appearance.BackgroundActive.Red, Appearance.BackgroundActive.Green, Appearance.BackgroundActive.Blue, 255);
+		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BorderActive.Red, Appearance.BorderActive.Green, Appearance.BorderActive.Blue, 255);
 		if(optionIndex!=-1)
-			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, options[optionIndex].first, activeText.Red, activeText.Green, activeText.Blue, 255);
+			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, options[optionIndex].first, Appearance.TextActive.Red, Appearance.TextActive.Green, Appearance.TextActive.Blue, 255);
 	}
 	else
 	{
-		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, background.Red, background.Green, background.Blue, 255);
-		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, border.Red, border.Green, border.Blue, 255);
+		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, 255);
+		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BorderInactive.Red, Appearance.BorderInactive.Green, Appearance.BorderInactive.Blue, 255);
 		if(optionIndex!=-1)
-			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, options[optionIndex].first, text.Red, text.Green, text.Blue, 255);
+			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, options[optionIndex].first, Appearance.TextInactive.Red, Appearance.TextInactive.Green, Appearance.TextInactive.Blue, 255);
 	}
 
 }
-	
-	void DropDown::TextPosition()
-	{
-		std::string displayText;
-		if(optionIndex!=-1)
-			displayText = options[optionIndex].first;
-		
-		// Values 3 and 10 are for vertical padding of 3 pixels, middle uses 7 as that's the height of a capital
-		switch(textVAlign)
-		{
-			case AlignTop:
-				textPosition.Y = 3;
-				break;
-			case AlignMiddle:
-				textPosition.Y = (Size.Y-10)/2;
-				break;
-			case AlignBottom:
-				textPosition.Y = Size.Y-10;
-				break;
-		}
-		
-		switch(textHAlign)
-		{
-			case AlignLeft:
-				textPosition.X = 3;
-				break;
-			case AlignCentre:
-				textPosition.X = (Size.X-Graphics::textwidth((char *)displayText.c_str()))/2;
-				break;
-			case AlignRight:
-				textPosition.X = (Size.X-Graphics::textwidth((char *)displayText.c_str()))-2;
-				break;
-		}
-	}
 	
 	std::pair<std::string, int> DropDown::GetOption()
 	{
@@ -173,7 +128,7 @@ void DropDown::Draw(const Point& screenPos)
 			if(options[i].first == option)
 			{
 				optionIndex = i;
-				TextPosition();
+				TextPosition(options[optionIndex].first);
 				return;
 			}
 		}
@@ -185,7 +140,7 @@ void DropDown::Draw(const Point& screenPos)
 			if(options[i].second == option)
 			{
 				optionIndex = i;
-				TextPosition();
+				TextPosition(options[optionIndex].first);
 				return;
 			}
 		}

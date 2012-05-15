@@ -13,10 +13,6 @@ namespace ui
 	{
 	protected:
 		std::string text;
-		ui::Point textPosition;
-		HorizontalAlignment textHAlign;
-		VerticalAlignment textVAlign;
-
 		Colour textColour;
 	public:
 		//Label(Window* parent_state, std::string labelText);
@@ -24,11 +20,8 @@ namespace ui
 		//Label(std::string labelText);
 		virtual ~Label();
 
-		virtual void TextPosition();
 		virtual void SetText(std::string text);
-		HorizontalAlignment GetHAlignment() { return textHAlign; }
-		VerticalAlignment GetVAlignment() { return textVAlign; }
-		void SetAlignment(HorizontalAlignment hAlign, VerticalAlignment vAlign) { textHAlign = hAlign; textVAlign = vAlign; TextPosition(); }
+		virtual std::string GetText();
 
 		void SetTextColour(Colour textColour) { this->textColour = textColour; }
 

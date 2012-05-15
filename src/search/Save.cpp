@@ -13,7 +13,6 @@ Save::Save(Save & save) :
 				save.date), Published(save.Published), id(save.id), votesUp(
 				save.votesUp), votesDown(save.votesDown), data(NULL), vote(save.vote), tags(save.tags) {
 	if (save.data) {
-		std::cout << data << " " << save.data << std::endl;
 		data = (unsigned char *) malloc(save.dataLength);
 		memcpy(data, save.data, save.dataLength);
 		dataLength = save.dataLength;

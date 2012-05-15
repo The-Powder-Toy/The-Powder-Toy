@@ -79,6 +79,7 @@ GameView::GameView():
         }
     };
     saveSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(150, 15));
+	saveSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
     saveSimulationButton->SetIcon(IconSave);
     currentX+=151;
     saveSimulationButton->SetActionCallback(new SaveSimulationAction(this));
@@ -127,6 +128,7 @@ GameView::GameView():
         }
     };
     tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(250, 15));
+	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
     tagSimulationButton->SetIcon(IconTag);
     currentX+=251;
     tagSimulationButton->SetActionCallback(new TagSimulationAction(this));
@@ -158,6 +160,7 @@ GameView::GameView():
         }
     };
     loginButton = new ui::Button(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "Login");
+	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
     loginButton->SetIcon(IconLogin);
     loginButton->SetActionCallback(new LoginAction(this));
     AddComponent(loginButton);
@@ -276,6 +279,7 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 		std::string tempString = "";
 		tempString += menuList[i]->GetIcon();
 		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, currentY), ui::Point(15, 15), tempString);
+		tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 		tempButton->SetTogglable(true);
 		tempButton->SetActionCallback(new MenuAction(this, menuList[i]));
 		currentY+=16;
@@ -349,7 +353,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		currentX -= 31;
 		tempButton->SetActionCallback(new ToolAction(this, toolList[i]));
 
-		tempButton->SetBackgroundColour(ui::Colour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue));
+		tempButton->Appearance.BackgroundInactive = ui::Colour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue);
 
 		if(sender->GetActiveTool(0) == toolList[i])
 		{
@@ -364,7 +368,8 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 			tempButton->SetSelectionState(2);	//Tertiary
 		}
 
-		tempButton->SetAlignment(AlignCentre, AlignMiddle);
+		tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+		tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 		AddComponent(tempButton);
 		toolButtons.push_back(tempButton);
 	}
@@ -439,14 +444,14 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		reloadButton->Enabled = true;
 		upVoteButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==0);
 		if(sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==1)
-			upVoteButton->SetBackgroundColour(ui::Colour(0, 200, 40));
+			upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 200, 40));
 		else
-			upVoteButton->SetBackgroundColour(ui::Colour(0, 0, 0));
+			upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
 		downVoteButton->Enabled = upVoteButton->Enabled;
 		if(sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==-1)
-			downVoteButton->SetBackgroundColour(ui::Colour(200, 40, 40));
+			downVoteButton->Appearance.BackgroundInactive = (ui::Colour(200, 40, 40));
 		else
-			downVoteButton->SetBackgroundColour(ui::Colour(0, 0, 0));
+			downVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
 		tagSimulationButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID);
 		if(sender->GetSave()->GetID())
 		{
@@ -466,9 +471,9 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		saveSimulationButton->SetText("");
 		reloadButton->Enabled = false;
 		upVoteButton->Enabled = false;
-		upVoteButton->SetBackgroundColour(ui::Colour(0, 0, 0));
+		upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
 		downVoteButton->Enabled = false;
-		upVoteButton->SetBackgroundColour(ui::Colour(0, 0, 0));
+		upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
 		tagSimulationButton->Enabled = false;
 		tagSimulationButton->SetText("");
 	}
