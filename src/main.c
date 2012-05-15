@@ -2670,7 +2670,7 @@ int main(int argc, char *argv[])
 			if (REPLACE_MODE)
 				strappend(uitext, " [REPLACE MODE]");
 			if (sdl_mod&(KMOD_CAPS))
-				strappend(uitext, " [CAP LOCKS]");
+				strappend(uitext, " [CAPS LOCK]");
 			if (GRID_MODE)
 			{
 				char gridtext[15];

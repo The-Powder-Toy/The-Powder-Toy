@@ -1853,7 +1853,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 			parts[i].vy += ptypes[t].advection*vy[y/CELL][x/CELL] + pGravY;
 
 
-			if (ptypes[t].diffusion)//the random diffusion that gasses have
+			if (ptypes[t].diffusion)//the random diffusion that gases have
 			{
 #ifdef REALISTIC
 				//The magic number controlls diffusion speed
@@ -2465,7 +2465,7 @@ killed:
 			}
 			else if (ptypes[t].falldown==0)
 			{
-				// gasses and solids (but not powders)
+				// gases and solids (but not powders)
 				if (!do_move(i, x, y, fin_xf, fin_yf))
 				{
 					if (parts[i].type == PT_NONE)

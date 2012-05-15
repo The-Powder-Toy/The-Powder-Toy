@@ -253,7 +253,7 @@
 #define TYPE_PART			0x00001 //1 Powders
 #define TYPE_LIQUID			0x00002 //2 Liquids
 #define TYPE_SOLID			0x00004 //4 Solids
-#define TYPE_GAS			0x00008 //8 Gasses (Includes plasma)
+#define TYPE_GAS			0x00008 //8 Gases (Includes plasma)
 #define TYPE_ENERGY			0x00010 //16 Energy (Thunder, Light, Neutrons etc.)
 #define PROP_CONDUCTS		0x00020 //32 Conducts electricity
 #define PROP_BLACK			0x00040 //64 Absorbs Photons (not currently implemented or used, a photwl attribute might be better)
@@ -726,17 +726,17 @@ static wall_type wtypes[] =
 	{PIXPACK(0x808080), PIXPACK(0x000000), 0, "Erases walls."},
 	{PIXPACK(0x808080), PIXPACK(0x000000), 3, "Wall. Indestructible. Blocks everything."},
 	{PIXPACK(0x3C3C3C), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks particles, allows air"},
-	{PIXPACK(0x575757), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and gasses, allows powders"},
+	{PIXPACK(0x575757), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and gases, allows powders"},
 	{PIXPACK(0xFFFF22), PIXPACK(0x101010), 2, "Conductor, allows particles, conducts electricity"},
 	{PIXPACK(0x242424), PIXPACK(0x101010), 0, "E-Hole, absorbs particles, release them when powered"},
 	{PIXPACK(0xFFFFFF), PIXPACK(0x000000), -1, "Air, creates airflow and pressure"},
-	{PIXPACK(0xFFBB00), PIXPACK(0x000000), -1, "Heats the targetted element."},
-	{PIXPACK(0x00BBFF), PIXPACK(0x000000), -1, "Cools the targetted element."},
+	{PIXPACK(0xFFBB00), PIXPACK(0x000000), -1, "Heats the targeted element."},
+	{PIXPACK(0x00BBFF), PIXPACK(0x000000), -1, "Cools the targeted element."},
 	{PIXPACK(0x303030), PIXPACK(0x000000), -1, "Vacuum, reduces air pressure."},
-	{PIXPACK(0x579777), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and solids, allows gasses"},
+	{PIXPACK(0x579777), PIXPACK(0x000000), 1, "Wall. Indestructible. Blocks liquids and solids, allows gases"},
 	{PIXPACK(0x000000), PIXPACK(0x000000), -1, "Drag tool"},
 	{PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, "Gravity wall"},
-	{PIXPACK(0x0000BB), PIXPACK(0x000000), -1, "Postive gravity tool."},
+	{PIXPACK(0x0000BB), PIXPACK(0x000000), -1, "Positive gravity tool."},
 	{PIXPACK(0x000099), PIXPACK(0x000000), -1, "Negative gravity tool."},
 	{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), 4, "Energy wall, allows only energy type particles to pass"},
 	{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), -1, "Property edit tool"},
