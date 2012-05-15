@@ -47,14 +47,26 @@ public:
 	{
 		SetRadius(size_);
 	};
+	
+	//Radius of the brush 0x0 - infxinf (Radius of 0x0 would be 1x1, radius of 1x1 would be 3x3)
 	ui::Point GetRadius()
 	{
 		return radius;
+	}
+	
+	//Size of the brush bitmap mask, 1x1 - infxinf
+	ui::Point GetSize()
+	{
+		return size;
 	}
 	void SetRadius(ui::Point radius)
 	{
 		this->radius = radius;
 		this->size = radius+radius+ui::Point(1, 1);
+		
+		std::cout << "Radius: " << radius.X << " " << radius.Y << std::endl;
+		std::cout << "Size: " << size.X << " " << size.Y << std::endl;
+		
 		GenerateBitmap();
 		updateOutline();
 	}
@@ -95,7 +107,7 @@ public:
 			updateOutline();
 		if(!outline)
 			return;
-		g->xor_bitmap(outline, position.X-radius.X, position.Y-radius.Y-1, size.X, size.Y);
+		g->xor_bitmap(outline, position.X-radius.X, position.Y-radius.Y, size.X, size.Y);
 	}
 	virtual void GenerateBitmap()
 	{

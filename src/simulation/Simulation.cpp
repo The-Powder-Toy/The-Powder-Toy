@@ -725,36 +725,72 @@ void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrus
 			ToolBrush(i, j, tool, cBrush);
 }
 
-//this creates particles from a brush, don't use if you want to create one particle
-int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush)
+int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush)
 {
-	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;//n;
-	
 	if(cBrush)
 	{
-		rx = cBrush->GetRadius().X;
-		ry = cBrush->GetRadius().Y;
+		int radiusX, radiusY, sizeX, sizeY;
+		
+		radiusX = cBrush->GetRadius().X;
+		radiusY = cBrush->GetRadius().Y;
+		
+		sizeX = cBrush->GetSize().X;
+		sizeY = cBrush->GetSize().Y;
+		
+		unsigned char *bitmap = cBrush->GetBitmap();
+		
+		if(c == PT_NONE)
+		{
+			for(int y = 0; y < sizeY; y++)
+			{
+				for(int x = 0; x < sizeX; x++)
+				{
+					if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
+					{
+						delete_part(positionX+(x-radiusX), positionY+(y-radiusY), 0);
+					}
+				}
+			}
+		}
+		else
+		{
+			for(int y = 0; y < sizeY; y++)
+			{
+				for(int x = 0; x < sizeX; x++)
+				{
+					if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
+					{
+						create_part(-2, positionX+(x-radiusX), positionY+(y-radiusY), c);
+					}
+				}
+			}
+		}
 	}
-	
+	return 0;
+}
+
+int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
+{
+	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;
 	int wall = c - 100;
 	if (c==SPC_WIND || c==PT_FIGH)
 		return 0;
 	
 	if (c==PT_LIGH)
 	{
-	    if (lighting_recreate>0 && rx+ry>0)
-            return 0;
-        p=create_part(-2, x, y, c);
-        if (p!=-1)
-        {
-            parts[p].life=rx+ry;
-            if (parts[p].life>55)
-                parts[p].life=55;
-            parts[p].temp=parts[p].life*150; // temperature of the lighting shows the power of the lighting
-            lighting_recreate+=parts[p].life/2+1;
-            return 1;
-        }
-        else return 0;
+		if (lighting_recreate>0 && rx+ry>0)
+			return 0;
+		p=create_part(-2, x, y, c);
+		if (p!=-1)
+		{
+			parts[p].life=rx+ry;
+			if (parts[p].life>55)
+				parts[p].life=55;
+			parts[p].temp=parts[p].life*150; // temperature of the lighting shows the power of the lighting
+			lighting_recreate+=parts[p].life/2+1;
+			return 1;
+		}
+		else return 0;
 	}
 	
 	//eraser
@@ -763,14 +799,6 @@ int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags, Brus
 		if (rx==0&&ry==0)
 		{
 			delete_part(x, y, 0);
-		}
-		else if(cBrush)
-		{
-			unsigned char *bitmap = cBrush->GetBitmap();
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					if(bitmap[(j+ry)*((rx*2)+1)+(i+rx+1)])
-						delete_part(x+i, y+j, 0);
 		}
 		else
 		{
@@ -786,18 +814,6 @@ int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags, Brus
 		if (rx==0&&ry==0)
 		{
 			create_part(-2, x, y, c);
-		}
-		else if(cBrush)
-		{
-			unsigned char *bitmap = cBrush->GetBitmap();
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					if(bitmap[(j+ry)*((rx*2)+1)+(i+rx+1)])
-					{
-						if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
-							continue;
-						create_part(-2, x+i, y+j, c);
-					}
 		}
 		else
 		{
@@ -817,15 +833,6 @@ int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags, Brus
 	{
 		if (create_part_add_props(-2, x, y, c, rx, ry)==-1)
 			f = 1;
-	}
-	else if(cBrush)
-	{
-		unsigned char *bitmap = cBrush->GetBitmap();
-		for (j=-ry; j<=ry; j++)
-			for (i=-rx; i<=rx; i++)
-				if(bitmap[(j+ry)*((rx*2)+1)+(i+rx+1)])
-					if (create_part_add_props(-2, x+i, y+j, c, rx, ry)==-1)
-						f = 1;
 	}
 	else
 	{
@@ -894,7 +901,65 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brus
 	return 1;
 }
 
-void Simulation::CreateLine(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags, Brush * cBrush)
+void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush)
+{
+	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy, rx, ry;
+	rx = cBrush->GetRadius().X;
+	ry = cBrush->GetRadius().Y;
+	float e, de;
+	if (c==SPC_PROP)
+		return;
+	if (cp)
+	{
+		y = x1;
+		x1 = y1;
+		y1 = y;
+		y = x2;
+		x2 = y2;
+		y2 = y;
+	}
+	if (x1 > x2)
+	{
+		y = x1;
+		x1 = x2;
+		x2 = y;
+		y = y1;
+		y1 = y2;
+		y2 = y;
+	}
+	dx = x2 - x1;
+	dy = abs(y2 - y1);
+	e = 0.0f;
+	if (dx)
+		de = dy/(float)dx;
+	else
+		de = 0.0f;
+	y = y1;
+	sy = (y1<y2) ? 1 : -1;
+	for (x=x1; x<=x2; x++)
+	{
+		if (cp)
+			CreateParts(y, x, c, cBrush);
+		else
+			CreateParts(x, y, c, cBrush);
+		e += de;
+		if (e >= 0.5f)
+		{
+			y += sy;
+			if ((c==WL_EHOLE+100 || c==WL_ALLOWGAS+100 || c==WL_ALLOWENERGY+100 || c==WL_ALLOWALLELEC+100 || c==WL_ALLOWSOLID+100 || c==WL_ALLOWAIR+100 || c==WL_WALL+100 || c==WL_DESTROYALL+100 || c==WL_ALLOWLIQUID+100 || c==WL_FAN+100 || c==WL_STREAM+100 || c==WL_DETECT+100 || c==WL_EWALL+100 || c==WL_WALLELEC+100 || !(rx+ry))
+				&& ((y1<y2) ? (y<=y2) : (y>=y2)))
+			{
+				if (cp)
+					CreateParts(y, x, c, cBrush);
+				else
+					CreateParts(x, y, c, cBrush);
+			}
+			e -= 1.0f;
+		}
+	}
+}
+
+void Simulation::CreateLine(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags)
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
 	float e, de;
@@ -930,9 +995,9 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int rx, int ry, int 
 	for (x=x1; x<=x2; x++)
 	{
 		if (cp)
-			CreateParts(y, x, rx, ry, c, flags, cBrush);
+			CreateParts(y, x, rx, ry, c, flags);
 		else
-			CreateParts(x, y, rx, ry, c, flags, cBrush);
+			CreateParts(x, y, rx, ry, c, flags);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -941,9 +1006,9 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int rx, int ry, int 
 				&& ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
 				if (cp)
-					CreateParts(y, x, rx, ry, c, flags, cBrush);
+					CreateParts(y, x, rx, ry, c, flags);
 				else
-					CreateParts(x, y, rx, ry, c, flags, cBrush);
+					CreateParts(x, y, rx, ry, c, flags);
 			}
 			e -= 1.0f;
 		}
