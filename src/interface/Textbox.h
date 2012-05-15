@@ -21,7 +21,6 @@ class Textbox : public Component
 protected:
 	std::string text;
 	std::string displayText;
-	ui::Point textPosition;
 	int cursor, cursorPosition;
 	TextboxAction *actionCallback;
 	bool masked;
@@ -40,6 +39,8 @@ public:
 	bool GetHidden() { return masked; }
 
 	void SetBorder(bool border) {this->border = border;}
+	
+	void TextPosition();
 
 	virtual void Draw(const Point& screenPos);
 };

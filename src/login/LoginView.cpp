@@ -41,6 +41,11 @@ LoginView::LoginView():
 	targetSize(0, 0)
 {
 	targetSize = Size;
+	
+	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	infoLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	infoLabel->Visible = false;
+	AddComponent(infoLabel);
+	
 	AddComponent(loginButton);
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	loginButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -54,13 +59,12 @@ LoginView::LoginView():
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	
 	AddComponent(usernameField);
-	usernameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	usernameField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	usernameField->Appearance.icon = IconUsername;
+	usernameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	usernameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(passwordField);
-	passwordField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	passwordField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	passwordField->Appearance.icon = IconPassword;
+	passwordField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	passwordField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	passwordField->SetHidden(true);
-	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	infoLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
-	infoLabel->Visible = false;
-	AddComponent(infoLabel);
 }
 
 void LoginView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
@@ -102,14 +106,14 @@ void LoginView::OnTick(float dt)
 		ui::Point difference = targetSize-Size;
 		if(difference.X!=0)
 		{
-			int xdiff = difference.X/100;
+			int xdiff = difference.X/5;
 			if(xdiff == 0)
 				xdiff = 1*isign(difference.X);
 			Size.X += xdiff;
 		}
 		if(difference.Y!=0)
 		{
-			int ydiff = difference.Y/100;
+			int ydiff = difference.Y/5;
 			if(ydiff == 0)
 				ydiff = 1*isign(difference.Y);
 			Size.Y += ydiff;

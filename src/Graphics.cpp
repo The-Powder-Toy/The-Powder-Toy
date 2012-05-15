@@ -639,8 +639,13 @@ void Graphics::draw_icon(int x, int y, Icon icon)
 	case IconReport:
 		drawchar(x, y, 0xE3, 255, 255, 0, 255);
 		break;
-	case IconFavourite:
-		drawchar(x, y, 0xCC, 192, 160, 64, 255);
+	case IconUsername:
+		drawchar(x, y, 0x8B, 32, 64, 128, 255);
+		drawchar(x, y, 0x8A, 255, 255, 255, 255);
+		break;
+	case IconPassword:
+		drawchar(x, y, 0x8C, 160, 144, 32, 255);
+		drawchar(x, y, 0x84, 255, 255, 255, 255);
 		break;
 	case IconVoteSort:
 	case IconDateSort:

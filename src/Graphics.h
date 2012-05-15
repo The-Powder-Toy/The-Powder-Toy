@@ -87,7 +87,9 @@ enum Icon
 	IconFolder,
 	IconSearch,
 	IconDelete,
-	IconReport
+	IconReport,
+	IconUsername,
+	IconPassword
 };
 
 //"Graphics lite" - slightly lower performance due to variable size,

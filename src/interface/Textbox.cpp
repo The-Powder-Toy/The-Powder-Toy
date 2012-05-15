@@ -11,7 +11,6 @@ using namespace ui;
 Textbox::Textbox(Point position, Point size, std::string textboxText):
 	Component(position, size),
 	text(textboxText),
-	textPosition(ui::Point(0, 0)),
 	actionCallback(NULL),
 	masked(false),
 	border(true)
@@ -26,19 +25,32 @@ Textbox::~Textbox()
 		delete actionCallback;
 }
 
+void Textbox::TextPosition()
+{
+	if(cursor)
+	{
+		cursorPosition = Graphics::textnwidth((char *)displayText.c_str(), cursor);
+	}
+	else
+	{
+		cursorPosition = 0;
+	}
+	Component::TextPosition(displayText);
+}
+
 void Textbox::SetText(std::string text)
 {
 	cursor = text.length();
 	this->text = text;
 	this->displayText = text;
-	TextPosition(displayText);
+	TextPosition();
 }
 
 
 void Textbox::SetDisplayText(std::string text)
 {
 	displayText = text;
-	TextPosition(displayText);
+	TextPosition();
 }
 
 std::string Textbox::GetText()
@@ -129,14 +141,14 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 		if(actionCallback)
 			actionCallback->TextChangedCallback(this);
 	}
-	TextPosition(displayText);
+	TextPosition();
 }
 
 void Textbox::Draw(const Point& screenPos)
 {
 	if(!drawn)
 	{
-		TextPosition(displayText);
+		TextPosition();
 		drawn = true;
 	}
 	Graphics * g = Engine::Ref().g;
@@ -150,4 +162,6 @@ void Textbox::Draw(const Point& screenPos)
 		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 160, 160, 160, 255);
 	}
 	g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, displayText, 255, 255, 255, 255);
+	if(Appearance.icon)
+		g->draw_icon(screenPos.X+iconPosition.X, screenPos.Y+iconPosition.Y, Appearance.icon);
 }
