@@ -3878,6 +3878,7 @@ void render_cursor(pixel *vid, int x, int y, int t, int rx, int ry)
 #endif
 }
 
+SDL_VideoInfo info;
 int sdl_opened = 0;
 int sdl_open(void)
 {
@@ -3915,6 +3916,16 @@ int sdl_open(void)
 	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
 	
 	atexit(SDL_Quit);
+
+	if(!sdl_opened)
+		info = *SDL_GetVideoInfo(); 
+
+	if (info.current_w<((XRES+BARSIZE)*sdl_scale) || info.current_h<((YRES+MENUSIZE)*sdl_scale))
+	{
+		sdl_scale = 1;
+		screen_err = 1;
+		fprintf(stderr, "Can't change scale factor, because screen resolution is too small");
+	}
 #if defined(OGLR)
 	sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,32,SDL_OPENGL);
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
@@ -4095,13 +4106,6 @@ int sdl_open(void)
 		loadShaders();
 	}
 #else
-	SDL_VideoInfo* info = SDL_GetVideoInfo(); 
-	if (info->current_w<((XRES+BARSIZE)*sdl_scale) || info->current_h<((YRES+MENUSIZE)*sdl_scale))
-	{
-		sdl_scale = 1;
-		screen_err = 1;
-		fprintf(stderr, "Can't change scale factor, because screen resolution is too small");
-	}
 #ifdef PIX16
 	if (kiosk_enable)
 		sdl_scrn=SDL_SetVideoMode(XRES*sdl_scale + BARSIZE*sdl_scale,YRES*sdl_scale + MENUSIZE*sdl_scale,16,SDL_FULLSCREEN|SDL_SWSURFACE);
