@@ -865,6 +865,8 @@ void GameView::OnDraw()
 		ren->render_fire();
 		ren->draw_grav();
 		ren->DrawWalls();
+		ren->DrawSigns();
+		ren->FinaliseParts();
 		if(activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
 		{
 			if(drawMode==DrawRect && isMouseDown)
@@ -880,8 +882,6 @@ void GameView::OnDraw()
 				activeBrush->RenderPoint(g, c->PointTranslate(currentMouse));
 			}
 		}
-		ren->DrawSigns();
-		ren->FinaliseParts();
 		ren->RenderZoom();
 
 		if(selectMode!=SelectNone)
