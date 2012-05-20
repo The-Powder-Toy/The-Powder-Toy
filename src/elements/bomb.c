@@ -44,18 +44,6 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 						int nxi;
 						int nxj;
 						pmap[y][x] = 0;
-						for (nxj=-(rad+1); nxj<=(rad+1); nxj++)
-							for (nxi=-(rad+1); nxi<=(rad+1); nxi++)
-								if ((pow(nxi,2))/(pow((rad+1),2))+(pow(nxj,2))/(pow((rad+1),2))<=1) {
-									nb = create_part(-1, x+nxi, y+nxj, PT_BOMB);
-									if (nb!=-1) {
-										parts[nb].tmp = 1;
-										parts[nb].life = 50;
-										parts[nb].temp = MAX_TEMP;
-										parts[nb].vx = rand()%20-10;
-										parts[nb].vy = rand()%20-10;
-									}
-								}
 						for (nxj=-rad; nxj<=rad; nxj++)
 							for (nxi=-rad; nxi<=rad; nxi++)
 								if ((pow(nxi,2))/(pow(rad,2))+(pow(nxj,2))/(pow(rad,2))<=1)
@@ -69,6 +57,18 @@ int update_BOMB(UPDATE_FUNC_ARGS) {
 											parts[nb].temp = MAX_TEMP;
 										}
 									}
+						for (nxj=-(rad+1); nxj<=(rad+1); nxj++)
+							for (nxi=-(rad+1); nxi<=(rad+1); nxi++)
+								if ((pow(nxi,2))/(pow((rad+1),2))+(pow(nxj,2))/(pow((rad+1),2))<=1) {
+									nb = create_part(-1, x+nxi, y+nxj, PT_BOMB);
+									if (nb!=-1) {
+										parts[nb].tmp = 1;
+										parts[nb].life = 50;
+										parts[nb].temp = MAX_TEMP;
+										parts[nb].vx = rand()%20-10;
+										parts[nb].vy = rand()%20-10;
+									}
+								}
 						//create_parts(x, y, 9, 9, PT_BOMB);
 						//create_parts(x, y, 8, 8, PT_NONE);
 						kill_part(i);
