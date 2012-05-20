@@ -1171,6 +1171,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 				}
 			}
 		}
+		gravity_mask();
 	}
 	
 	//Read particle data
