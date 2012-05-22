@@ -1802,8 +1802,11 @@ void render_parts(pixel *vid)
 			ny = (int)(parts[i].y+0.5f);
 			fnx = parts[i].x;
 			fny = parts[i].y;
+#ifdef OGLR
 			flx = parts[i].lastX;
 			fly = parts[i].lastY;
+#endif
+
 
 			if(photons[ny][nx]&0xFF && !(ptypes[t].properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
 				continue;

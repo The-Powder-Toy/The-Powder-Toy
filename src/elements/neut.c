@@ -40,8 +40,10 @@ int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)//
 
 		parts[i].x = (float)x;
 		parts[i].y = (float)y;
+#ifdef OGLR
 		parts[i].lastX = (float)x;
 		parts[i].lastY = (float)y;
+#endif
 		parts[i].type = t;
 		parts[i].life = rand()%480+480;
 		parts[i].vx = r*cosf(a);

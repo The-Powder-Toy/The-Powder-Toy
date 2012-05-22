@@ -283,7 +283,9 @@ struct particle
 	int type;
 	int life, ctype;
 	float x, y, vx, vy;
+#ifdef OGLR
 	float lastX, lastY;
+#endif
 	float temp;
 	float pavg[2];
 	int flags;
