@@ -9,5 +9,8 @@
 stdout.txt
 stderr.txt
 build/*
+stamps/*
+Saves/*
+Makefile.me
 PowderToypp.xcodeproj/*
 .DS_Store
