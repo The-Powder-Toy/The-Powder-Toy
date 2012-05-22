@@ -12,6 +12,7 @@ build/*
 stamps/*
 Saves/*
 generated/*
+generate
 Makefile.me
 PowderToypp.xcodeproj/*
 .DS_Store

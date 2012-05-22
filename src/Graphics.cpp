@@ -599,6 +599,7 @@ void Graphics::textsize(const char * s, int & width, int & height)
 
 void Graphics::draw_icon(int x, int y, Icon icon)
 {
+	y--;
 	switch(icon)
 	{
 	case IconOpen:

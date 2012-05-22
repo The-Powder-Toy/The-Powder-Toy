@@ -44,7 +44,7 @@ PreviewView::PreviewView():
 		}
 	};
 
-	favButton = new ui::Button(ui::Point(51, Size.Y-19), ui::Point(51, 19), "Fav.");
+	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav.");
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetIcon(IconFavourite);
 	favButton->SetActionCallback(new FavAction(this));
@@ -71,7 +71,7 @@ PreviewView::PreviewView():
 			new TextPrompt("Report Save", "Reason for reporting", true, new ReportPromptCallback(v));
 		}
 	};
-	reportButton = new ui::Button(ui::Point(102, Size.Y-19), ui::Point(51, 19), "Report");
+	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), "Report");
 	reportButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	reportButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	reportButton->SetIcon(IconReport);
 	reportButton->SetActionCallback(new ReportAction(this));
@@ -88,7 +88,7 @@ PreviewView::PreviewView():
 		}
 	};
 
-	browserOpenButton = new ui::Button(ui::Point((XRES/2)-108, Size.Y-19), ui::Point(108, 19), "Open in browser");
+	browserOpenButton = new ui::Button(ui::Point((XRES/2)-107, Size.Y-19), ui::Point(108, 19), "Open in browser");
 	browserOpenButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	browserOpenButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	browserOpenButton->SetIcon(IconOpen);
 	browserOpenButton->SetActionCallback(new BrowserOpenAction(this));
@@ -121,22 +121,32 @@ void PreviewView::OnDraw()
 	{
 		g->draw_image(savePreview->Data, (Position.X+1)+(((XRES/2)-savePreview->Size.X)/2), (Position.Y+1)+(((YRES/2)-savePreview->Size.Y)/2), savePreview->Size.X, savePreview->Size.Y, 255);
 	}
-	g->drawrect(Position.X, Position.Y, XRES/2, YRES/2, 255, 255, 255, 100);
-	g->draw_line(Position.X+XRES/2, Position.Y, Position.X+XRES/2, Position.Y+Size.Y, 255, 255, 255, XRES+BARSIZE);
+	g->drawrect(Position.X, Position.Y, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 100);
+	g->draw_line(Position.X+XRES/2, Position.Y+1, Position.X+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
 
 
-	g->draw_line(Position.X+1, Position.Y+10+YRES/2, Position.X-2+XRES/2, Position.Y+10+YRES/2, 100, 100, 100, XRES+BARSIZE);
+	g->draw_line(Position.X+1, Position.Y+12+YRES/2, Position.X-1+XRES/2, Position.Y+12+YRES/2, 100, 100, 100,255);
 	float factor;
 	if(!votesUp && !votesDown)
 		return;
 	else
 		factor = (float)(((float)(XRES/2)-2)/((float)(votesUp+votesDown)));
-	g->fillrect(1+Position.X, 1+Position.Y+YRES/2, (XRES/2)-2, 8, 200, 50, 50, 255);
-	g->fillrect(1+Position.X, 1+Position.Y+YRES/2, (int)(((float)votesUp)*factor), 8, 50, 200, 50, 255);
-	g->fillrect(1+Position.X, 1+Position.Y+(YRES/2), 14, 8, 0, 0, 0, 100);
-	g->fillrect(Position.X+(XRES/2)-15, 1+Position.Y+(YRES/2), 14, 8, 0, 0, 0, 100);
-	g->draw_icon(1+Position.X+2, Position.Y+(YRES/2)+2, IconVoteUp);
-	g->draw_icon(Position.X+(XRES/2)-12, Position.Y+(YRES/2)-1, IconVoteDown);
+	g->fillrect(1+Position.X, 2+Position.Y+YRES/2, (XRES/2)-2, 9, 200, 50, 50, 255);
+	g->fillrect(1+Position.X, 2+Position.Y+YRES/2, (int)(((float)votesUp)*factor), 9, 50, 200, 50, 255);
+	g->fillrect(1+Position.X, 2+Position.Y+(YRES/2), 14, 9, 0, 0, 0, 100);
+	g->fillrect(Position.X+(XRES/2)-15, 2+Position.Y+(YRES/2), 14, 9, 0, 0, 0, 100);
+	g->draw_icon(1+Position.X+2, Position.Y+(YRES/2)+4, IconVoteUp);
+	g->draw_icon(Position.X+(XRES/2)-12, Position.Y+(YRES/2)+1, IconVoteDown);
+
+	for(int i = 0; i < commentTextComponents.size(); i++)
+	{
+		g->draw_line(
+				Position.X+XRES/2,
+				Position.Y+commentTextComponents[i]->Position.Y+commentTextComponents[i]->Size.Y+4,
+				Position.X+Size.X-1,
+				Position.Y+commentTextComponents[i]->Position.Y+commentTextComponents[i]->Size.Y+4,
+				100, 100, 100, 255);
+	}
 }
 
 void PreviewView::OnTick(float dt)
@@ -184,6 +194,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		delete commentComponents[i];
 	}
 	commentComponents.clear();
+	commentTextComponents.clear();
 
 	int currentY = 0;
 	ui::Label * tempUsername;
@@ -213,6 +224,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 				AddComponent(tempComment);
 				commentComponents.push_back(tempUsername);
 				AddComponent(tempUsername);
+				commentTextComponents.push_back(tempComment);
 			}
 		}
 	}

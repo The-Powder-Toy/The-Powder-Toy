@@ -30,6 +30,7 @@ class PreviewView: public ui::Window {
 	ui::Label * authorDateLabel;
 	ui::Textblock * saveDescriptionTextblock;
 	std::vector<ui::Component*> commentComponents;
+	std::vector<ui::Component*> commentTextComponents;
 	int votesUp;
 	int votesDown;
 public:
