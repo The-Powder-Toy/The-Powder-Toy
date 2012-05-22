@@ -17,7 +17,7 @@ public:
 	static unsigned char * Build(int & dataLength, Simulation * sim, int orig_x0, int orig_y0, int orig_w, int orig_h);
 private:
 	static int OPSInfo(unsigned char * data, int dataLength, int & width, int & height);
-	static int OPSLoad(unsigned char * data, int dataLength, Simulation * sim);
+	static int OPSLoad(unsigned char * data, int dataLength, Simulation * sim, bool replace, int x, int y);
 	static unsigned char * OPSBuild(int & dataLength, Simulation * sim, int orig_x0, int orig_y0, int orig_w, int orig_h);
 	static int PSVInfo(unsigned char * data, int dataLength, int & width, int & height);
 	static int PSVLoad(unsigned char * data, int dataLength, Simulation * sim, bool replace, int x, int y);
