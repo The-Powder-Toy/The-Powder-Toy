@@ -636,6 +636,9 @@ void Graphics::draw_icon(int x, int y, Icon icon)
 	case IconPause:
 		drawchar(x, y, 0x90, 255, 255, 255, 255);
 		break;
+	case IconFavourite:
+		drawchar(x, y, 0xCC, 192, 160, 64, 255);
+		break;
 	case IconReport:
 		drawchar(x, y, 0xE3, 255, 255, 0, 255);
 		break;
