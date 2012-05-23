@@ -13,6 +13,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define INBOND(x, y) ((x)>=0 && (y)>=0 && (x)<XRES && (y)<YRES)
+
 #include <element.h>
 
 int update_SPAWN(UPDATE_FUNC_ARGS) {
@@ -351,27 +353,27 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	playerp->legs[8] += (playerp->legs[8]-parts[i].x)*d;
 	playerp->legs[9] += (playerp->legs[9]-parts[i].y)*d;
 
-	if (!eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
+	if (INBOND(playerp->legs[4], playerp->legs[5]) && !eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
 	{
 		playerp->legs[4] = playerp->legs[6];
 		playerp->legs[5] = playerp->legs[7];
 	}
 
-	if (!eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
+	if (INBOND(playerp->legs[12], playerp->legs[13]) && !eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
 	{
 		playerp->legs[12] = playerp->legs[14];
 		playerp->legs[13] = playerp->legs[15];
 	}
 
 	//This makes stick man "pop" from obstacles
-	if (!eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
+	if (INBOND(playerp->legs[4], playerp->legs[5]) && !eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
 	{
 		float t;
 		t = playerp->legs[4]; playerp->legs[4] = playerp->legs[6]; playerp->legs[6] = t;
 		t = playerp->legs[5]; playerp->legs[5] = playerp->legs[7]; playerp->legs[7] = t;
 	}
 
-	if (!eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
+	if (INBOND(playerp->legs[12], playerp->legs[13]) && !eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
 	{
 		float t;
 		t = playerp->legs[12]; playerp->legs[12] = playerp->legs[14]; playerp->legs[14] = t;
