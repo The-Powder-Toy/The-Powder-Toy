@@ -2730,8 +2730,7 @@ movedone:
 int parts_lastActiveIndex = NPART-1;
 void update_particles(pixel *vid)//doesn't update the particles themselves, but some other things
 {
-	int i, j, x, y, t, nx, ny, r, cr,cg,cb, l = -1;
-	float lx, ly;
+	int i, x, y, t;
 	int lastPartUsed = 0;
 	int lastPartUnused = -1;
 #ifdef MT
@@ -2792,31 +2791,6 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 	}
 
 	update_particles_i(vid, 0, 1);
-
-	// this should probably be elsewhere
-	for (y=0; y<YRES/CELL; y++)
-		for (x=0; x<XRES/CELL; x++)
-			if (bmap[y][x]==WL_STREAM)
-			{
-				lx = x*CELL + CELL*0.5f;
-				ly = y*CELL + CELL*0.5f;
-				for (t=0; t<1024; t++)
-				{
-					nx = (int)(lx+0.5f);
-					ny = (int)(ly+0.5f);
-					if (nx<0 || nx>=XRES || ny<0 || ny>=YRES)
-						break;
-					addpixel(vid, nx, ny, 255, 255, 255, 64);
-					i = nx/CELL;
-					j = ny/CELL;
-					lx += vx[j][i]*0.125f;
-					ly += vy[j][i]*0.125f;
-					if (bmap[j][i]==WL_STREAM && i!=x && j!=y)
-						break;
-				}
-				drawtext(vid, x*CELL, y*CELL-2, "\x8D", 255, 255, 255, 128);
-			}
-
 }
 
 void clear_area(int area_x, int area_y, int area_w, int area_h)

@@ -755,7 +755,7 @@ int main(int argc, char *argv[])
 	void *http_ver_check, *http_session_check = NULL;
 	char *ver_data=NULL, *check_data=NULL, *tmp;
 	//char console_error[255] = "";
-	int result, i, j, bq, bc = 0, fire_fc=0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, buildnum, is_beta = 0, old_ver_len, new_message_len=0;
+	int result, i, j, bq, bc = 0, do_check=0, do_s_check=0, old_version=0, http_ret=0,http_s_ret=0, major, minor, buildnum, is_beta = 0, old_ver_len, new_message_len=0;
 #ifdef INTERNAL
 	int vs = 0;
 #endif
@@ -1002,54 +1002,12 @@ int main(int argc, char *argv[])
 				update_airh();
 		}
 
-#ifdef OGLR
-		part_vbuf = vid_buf;
-#else
-		if(ngrav_enable && display_mode & DISPLAY_WARP)
-		{
-			part_vbuf = part_vbuf_store;
-			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-		} else {
-			part_vbuf = vid_buf;
-		}
-#endif
-
 		if(gravwl_timeout)
 		{
 			if(gravwl_timeout==1)
 				gravity_mask();
 			gravwl_timeout--;
 		}
-#ifdef OGLR
-		if (display_mode & DISPLAY_PERS)//save background for persistent, then clear
-		{
-			clearScreen(0.01f);
-			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-        }
-		else //clear screen every frame
-		{
-            clearScreen(1.0f);
-			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-			if (display_mode & DISPLAY_AIR)//air only gets drawn in these modes
-			{
-				draw_air(part_vbuf);
-			}
-		}
-#else
-		if (display_mode & DISPLAY_AIR)//air only gets drawn in these modes
-		{
-			draw_air(part_vbuf);
-		}
-		else if (display_mode & DISPLAY_PERS)//save background for persistent, then clear
-		{
-			memcpy(part_vbuf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
-			memset(part_vbuf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
-        }
-		else //clear screen every frame
-		{
-			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-		}
-#endif
 
 		//Can't be too sure (Limit the cursor size)
 		if (bsx>1180)
@@ -1067,10 +1025,19 @@ int main(int argc, char *argv[])
 		sandcolour_b = sandcolour_r = sandcolour_g = (int)(20.0f*sin((float)sandcolour_frame*(M_PI/180.0f)));
 		sandcolour_frame++;
 		sandcolour_frame%=360;
-		
-		if(ngrav_enable && drawgrav_enable)
-			draw_grav(vid_buf);
-		draw_walls(part_vbuf);
+
+#ifdef OGLR
+		part_vbuf = vid_buf;
+#else
+		if(ngrav_enable && (display_mode & DISPLAY_WARP))
+		{
+			part_vbuf = part_vbuf_store;
+			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+		} else {
+			part_vbuf = vid_buf;
+		}
+#endif
+		render_before(part_vbuf);
 		
 		if(debug_flags & (DEBUG_PERFORMANCE_CALC|DEBUG_PERFORMANCE_FRAME))
 		{
@@ -1099,8 +1066,9 @@ int main(int argc, char *argv[])
 			#endif
 		}
 		
-		render_parts(part_vbuf); //draw particles
-		draw_other(part_vbuf);
+		render_after(part_vbuf, vid_buf);
+		if(su == WL_GRAV+100)
+			draw_grav_zones(part_vbuf);
 		
 		if(debug_flags & (DEBUG_PERFORMANCE_CALC|DEBUG_PERFORMANCE_FRAME))
 		{
@@ -1118,9 +1086,6 @@ int main(int argc, char *argv[])
 			debug_perf_istart %= DEBUG_PERF_FRAMECOUNT;
 		}
 		
-		if(sl == WL_GRAV+100 || sr == WL_GRAV+100)
-			draw_grav_zones(part_vbuf);
-		
 		gravity_update_async(); //Check for updated velocity maps from gravity thread
 		if (!sys_pause||framerender) //Only update if not paused
 			memset(gravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float)); //Clear the old gravmap
@@ -1129,31 +1094,6 @@ int main(int argc, char *argv[])
 			framerender = 0;
 			sys_pause = 1;
 		}
-
-		if (display_mode & DISPLAY_PERS)
-		{
-			if (!fire_fc)//fire_fc has nothing to do with fire... it is a counter for diminishing persistent view every 3 frames
-			{
-				dim_copy_pers(pers_bg, vid_buf);
-			}
-			else
-			{
-				memcpy(pers_bg, vid_buf, (XRES+BARSIZE)*YRES*PIXELSIZE);
-			}
-			fire_fc = (fire_fc+1) % 3;
-		}
-		
-#ifndef OGLR
-		if (render_mode & FIREMODE)
-			render_fire(part_vbuf);
-#endif
-
-		render_signs(part_vbuf);
-
-#ifndef OGLR
-		if(ngrav_enable && display_mode & DISPLAY_WARP)
-			render_gravlensing(part_vbuf, vid_buf);
-#endif
 
 		memset(vid_buf+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);//clear menu areas
 		clearrect(vid_buf, XRES-1, 0, BARSIZE+1, YRES);
@@ -2822,7 +2762,6 @@ int main(int argc, char *argv[])
 #endif
 		}
 
-		//execute python step hook
 		sdl_blit(0, 0, XRES+BARSIZE, YRES+MENUSIZE, vid_buf, XRES+BARSIZE);
 
 		//Setting an element for the stick man
