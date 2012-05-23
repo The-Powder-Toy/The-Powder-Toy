@@ -16,6 +16,9 @@
 #include <element.h>
 
 int update_NBHL(UPDATE_FUNC_ARGS) {
-	gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] += 0.1f;
+	if (parts[i].tmp)
+		gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] += restrict_flt(0.001f*parts[i].tmp, 0.1f, 51.2f);
+	else
+		gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] += 0.1f;
 	return 0;
 }

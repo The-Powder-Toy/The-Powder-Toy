@@ -51,6 +51,7 @@ unsigned char cb_emap[YRES/CELL][XRES/CELL];
 int pfree;
 
 unsigned pmap[YRES][XRES];
+int pmap_count[YRES][XRES];
 unsigned cb_pmap[YRES][XRES];
 unsigned photons[YRES][XRES];
 
@@ -1491,6 +1492,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 	int lighting_ok=1;
 	unsigned int elem_properties;
 	float pGravX, pGravY, pGravD;
+	int excessive_stacking_found = 0;
 
 	if (sys_pause&&lighting_recreate>0)
     {
@@ -1516,6 +1518,66 @@ void update_particles_i(pixel *vid, int start, int inc)
 	if (sys_pause&&!framerender)//do nothing if paused
 		return;
 		
+	//if ((rand()%NPART)<NUM_PARTS*2) // run more often when more particles are on screen (since this is often due to excessive stacking)
+	if (1)
+	{
+		excessive_stacking_found = 0;
+		for (y=0; y<YRES; y++)
+		{
+			for (x=0; x<XRES; x++)
+			{
+				// Use a threshold, since some particle stacking can be normal (e.g. BIZR + FILT)
+				// Setting pmap_count[y][x] >= NPART means BHOL will form in that spot
+				if (pmap_count[y][x]>5)
+				{
+					if (bmap[y/CELL][x/CELL]==WL_EHOLE)
+					{
+						// Allow more stacking in E-hole, allow up to 1500 particles
+						if (pmap_count[y][x]>1500)
+						{
+							pmap_count[y][x] = pmap_count[y][x] + NPART;
+							excessive_stacking_found = 1;
+						}
+					}
+					else
+					{
+						pmap_count[y][x] = pmap_count[y][x] + NPART;
+						excessive_stacking_found = 1;
+					}
+				}
+			}
+		}
+		if (excessive_stacking_found)
+		{
+			for (i=0; i<=parts_lastActiveIndex; i++)
+			{
+				if (parts[i].type)
+				{
+					t = parts[i].type;
+					x = (int)(parts[i].x+0.5f);
+					y = (int)(parts[i].y+0.5f);
+					if (x>=0 && y>=0 && x<XRES && y<YRES && !(ptypes[t].properties&TYPE_ENERGY))
+					{
+						if (pmap_count[y][x]>=NPART)
+						{
+							if (pmap_count[y][x]>NPART)
+							{
+								create_part(i, x, y, PT_NBHL);
+								parts[i].temp = MAX_TEMP;
+								parts[i].tmp = pmap_count[y][x]-NPART;
+								pmap_count[y][x] = NPART;
+							}
+							else
+							{
+								kill_part(i);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	if (ISGRAV==1)//crappy grav color handling, i will change this someday
 	{
 		ISGRAV = 0;
@@ -2779,6 +2841,7 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 #endif
 
 	memset(pmap, 0, sizeof(pmap));
+	memset(pmap_count, 0, sizeof(pmap_count));
 	memset(photons, 0, sizeof(photons));
 	NUM_PARTS = 0;
 	for (i=0; i<=parts_lastActiveIndex; i++)//the particle loop that resets the pmap/photon maps every frame, to update them.
@@ -2793,7 +2856,10 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 				if (ptypes[t].properties & TYPE_ENERGY)
 					photons[y][x] = t|(i<<8);
 				else
+				{
 					pmap[y][x] = t|(i<<8);
+					pmap_count[y][x]++;
+				}
 			}
 			lastPartUsed = i;
 			NUM_PARTS ++;
