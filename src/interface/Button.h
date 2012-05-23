@@ -20,6 +20,7 @@ class ButtonAction
 {
 public:
 	virtual void ActionCallback(ui::Button * sender) {}
+	virtual void MouseEnterCallback(ui::Button * sender) {}
 	virtual ~ButtonAction() {}
 };
 
