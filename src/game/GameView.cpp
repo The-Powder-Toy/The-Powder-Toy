@@ -242,6 +242,10 @@ public:
 	{
 		v->c->SetActiveMenu(menu);
 	}
+	void ActionCallback(ui::Button * sender)
+	{
+		MouseEnterCallback(sender);
+	}
 };
 
 class GameView::ToolAction: public ui::ButtonAction

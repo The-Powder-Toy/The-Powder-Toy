@@ -136,11 +136,13 @@ void Button::OnMouseClick(int x, int y, unsigned int button)
 
 void Button::OnMouseEnter(int x, int y)
 {
+    isMouseInside = true;
 	if(!Enabled)
 		return;
 	if(actionCallback)
 		actionCallback->MouseEnterCallback(this);
 }
+
 
 void Button::OnMouseLeave(int x, int y)
 {
