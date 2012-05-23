@@ -814,12 +814,12 @@ int main(int argc, char *argv[])
 
 	for (i=1; i<argc; i++)
 	{
-		if (!strncmp(argv[i], "ddir", 4) && i+1<argc)
+		if (!strncmp(argv[i], "ddir", 5) && i+1<argc)
 		{
 			chdir(argv[i+1]);
 			i++;
 		}
-		else if (!strncmp(argv[i], "open", 4) && i+1<argc)
+		else if (!strncmp(argv[i], "open", 5) && i+1<argc)
 		{
 			int size;
 			void *file_data;
@@ -842,6 +842,13 @@ int main(int argc, char *argv[])
 				}
 			}
 			i++;
+		}
+		else if (!strncmp(argv[i], "ptsave", 7) && i+1<argc)
+		{
+			//Prevent reading of any arguments after ptsave for security
+			i++;
+			argc = i+2;
+			break;
 		}
 	}
 	
@@ -881,19 +888,69 @@ int main(int argc, char *argv[])
 				SDL_PauseAudio(0);
 			}
 		}
-		else if (!strncmp(argv[i], "scripts", 5))
+		else if (!strncmp(argv[i], "scripts", 8))
 		{
 			file_script = 1;
 		}
-		else if (!strncmp(argv[i], "open", 4) && i+1<argc)
+		else if (!strncmp(argv[i], "open", 5) && i+1<argc)
 		{
 			i++;
 		}
-		else if (!strncmp(argv[i], "ddir", 4) && i+1<argc)
+		else if (!strncmp(argv[i], "ddir", 5) && i+1<argc)
 		{
 			i++;
 		}
-
+		else if (!strncmp(argv[i], "ptsave", 7) && i+1<argc)
+		{
+			puts("Got ptsave");
+			int ci = 0, ns = 0, okay = 0;
+			char * tempString = argv[i+1];
+			int tempStringLength = strlen(argv[i+1])-7;
+			int tempSaveID = 0;
+			char tempNumberString[32];
+			i++;
+			tempNumberString[31] = 0;
+			tempNumberString[0] = 0;
+			if(!strncmp(tempString, "ptsave:", 7) && tempStringLength)
+			{
+				puts("ptsave:// protocol");
+				tempString+=7;
+				while(tempString[ci] && ns<30 && ci<tempStringLength)
+				{
+					if(tempString[ci]>=48 && tempString[ci]<=57)
+					{
+						tempNumberString[ns++] = tempString[ci];
+						tempNumberString[ns] = 0;
+					}
+					else if(tempString[ci]=='#')
+					{
+						okay = 1;
+						break;
+					}
+					else
+					{
+						puts("ptsave: invalid save ID");
+						break;
+					}
+					ci++;
+				}
+				if(!tempString[ci])
+				{
+					break;
+					okay = 1;
+				}
+				if(okay)
+				{
+					tempSaveID = atoi(tempNumberString);
+				}
+			}
+			if(tempSaveID > 0)
+			{
+				puts("Got ptsave:id");
+				saveURIOpen = tempSaveID;
+			}
+			break;
+		}
 	}
 
 	make_kernel();
