@@ -238,7 +238,7 @@ class GameView::MenuAction: public ui::ButtonAction
 public:
 	Menu * menu;
 	MenuAction(GameView * _v, Menu * menu_) { v = _v; menu = menu_; }
-	void ActionCallback(ui::Button * sender)
+	void MouseEnterCallback(ui::Button * sender)
 	{
 		v->c->SetActiveMenu(menu);
 	}
