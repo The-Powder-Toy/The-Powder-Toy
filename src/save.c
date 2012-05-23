@@ -2267,7 +2267,7 @@ int parse_save_PSv(void *save, int size, int replace, int x0, int y0, unsigned c
 					STKM_init_legs(&(fighters[fcount]), i-1);
 				}
 			}
-			else if (parts[i-1].type == PT_SPNG)
+			else if (ver<79 && parts[i-1].type == PT_SPNG)
 			{
 				if (fabs(parts[i-1].vx)>0.0f || fabs(parts[i-1].vy)>0.0f)
 					parts[i-1].flags |= FLAG_MOVABLE;
