@@ -770,6 +770,7 @@ int main(int argc, char *argv[])
 	unsigned int rgbSave = PIXRGB(127,0,0);
 	SDL_AudioSpec fmt;
 	int username_flash = 0, username_flash_t = 1;
+	int saveOpenError = 0;
 #ifdef PTW32_STATIC_LIB
     pthread_win32_process_attach_np();
     pthread_win32_thread_attach_np();
@@ -779,7 +780,6 @@ int main(int argc, char *argv[])
 	part_vbuf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE); //Extra video buffer
 	part_vbuf_store = part_vbuf;
 	pers_bg = calloc((XRES+BARSIZE)*YRES, PIXELSIZE);
-	int saveOpenError = 0;
 
 	gravity_init();
 	GSPEED = 1;
@@ -902,12 +902,12 @@ int main(int argc, char *argv[])
 		}
 		else if (!strncmp(argv[i], "ptsave", 7) && i+1<argc)
 		{
-			puts("Got ptsave");
 			int ci = 0, ns = 0, okay = 0;
 			char * tempString = argv[i+1];
 			int tempStringLength = strlen(argv[i+1])-7;
 			int tempSaveID = 0;
 			char tempNumberString[32];
+			puts("Got ptsave");
 			i++;
 			tempNumberString[31] = 0;
 			tempNumberString[0] = 0;

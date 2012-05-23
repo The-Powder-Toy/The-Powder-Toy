@@ -1440,7 +1440,7 @@ void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int
 void update_particles_i(pixel *vid, int start, int inc)
 {
 	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, goldelete, z, neighbors, createdsomething;
-	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp, ctemph, ctempl, gravtot;
+	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp, ctemph, ctempl, gravtot, gel_scale;
 	int fin_x, fin_y, clear_x, clear_y, stagnant;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
 	float nn, ct1, ct2, swappage;
@@ -1878,7 +1878,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					}
 				}
 
-			float gel_scale = 1.0f;
+			gel_scale = 1.0f;
 			if (t==PT_GEL)
 				gel_scale = parts[i].tmp*2.55f;
 
