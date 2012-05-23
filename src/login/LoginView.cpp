@@ -56,7 +56,7 @@ LoginView::LoginView():
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->SetActionCallback(new CancelAction(this));
 	AddComponent(titleLabel);
-	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	
 	AddComponent(usernameField);
 	usernameField->Appearance.icon = IconUsername;
