@@ -2877,10 +2877,10 @@ void render_before(pixel *part_vbuf)
 		{
 			clearScreen(0.01f);
 			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-        }
+		}
 		else //clear screen every frame
 		{
-            clearScreen(1.0f);
+			clearScreen(1.0f);
 			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 			if (display_mode & DISPLAY_AIR)//air only gets drawn in these modes
 			{
@@ -2896,7 +2896,7 @@ void render_before(pixel *part_vbuf)
 		{
 			memcpy(part_vbuf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
 			memset(part_vbuf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
-        }
+		}
 		else //clear screen every frame
 		{
 			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
