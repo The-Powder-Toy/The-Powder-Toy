@@ -17,6 +17,7 @@ namespace ui
 		BackgroundHover(30, 30, 30),
 		BackgroundInactive(0, 0, 0),
 		BackgroundActive(255, 255, 255),
+		BackgroundDisabled(100, 100, 100),
 		
 		TextHover(255, 255, 255),
 		TextInactive(255, 255, 255),

@@ -102,7 +102,7 @@ void Button::Draw(const Point& screenPos)
 	else
 	{
 		g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, 180);
-		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 180, 180, 180, 255);
+		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BackgroundDisabled.Red, Appearance.BackgroundDisabled.Green, Appearance.BackgroundDisabled.Blue, Appearance.BackgroundDisabled.Alpha);
 		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, buttonDisplayText, 180, 180, 180, 255);
 	}
 	if(Appearance.icon)

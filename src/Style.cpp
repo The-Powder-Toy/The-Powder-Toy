@@ -17,7 +17,7 @@ namespace style {
 	ui::Colour Colour::ConfirmButton = ui::Colour(255, 255, 50);
 	
 	ui::Colour Colour::ActiveBorder = ui::Colour(255, 255, 255);
-	ui::Colour Colour::InactiveBorder = ui::Colour(180, 180, 180);
+	ui::Colour Colour::InactiveBorder = ui::Colour(100, 100, 100);
 	
 	ui::Colour Colour::ActiveBackground = ui::Colour(50, 50, 50);
 	ui::Colour Colour::InactiveBackground = ui::Colour(0, 0, 0);

@@ -33,6 +33,7 @@ namespace ui
 		ui::Colour BackgroundHover;
 		ui::Colour BackgroundInactive;
 		ui::Colour BackgroundActive;
+		ui::Colour BackgroundDisabled;
 		
 		ui::Colour TextHover;
 		ui::Colour TextInactive;

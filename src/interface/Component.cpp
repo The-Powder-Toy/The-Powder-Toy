@@ -66,7 +66,7 @@ void Component::TextPosition(std::string displayText)
 	textWidth-=1;
 	if(Appearance.icon)
 	{
-		textWidth += 15;
+		textWidth += 13;
 	}
 	
 	int textAreaWidth = Size.X-(Appearance.Margin.Right+Appearance.Margin.Left);
@@ -99,7 +99,7 @@ void Component::TextPosition(std::string displayText)
 	}
 	if(Appearance.icon)
 	{
-		iconPosition = textPosition-ui::Point(0, 1);
+		iconPosition = textPosition;//-ui::Point(0, 1);
 		textPosition.X += 15;
 	}
 }
