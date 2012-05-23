@@ -47,7 +47,8 @@ int new_tronhead(int x, int y, int i, int direction)
 		return -1;
 	if (parts[i].life >= 100) // increase tail length
 	{
-		parts[i].tmp2++;
+		if (!(parts[i].tmp&TRON_NOGROW))
+			parts[i].tmp2++;
 		parts[i].life = 5;
 	}
 	//give new head our properties
