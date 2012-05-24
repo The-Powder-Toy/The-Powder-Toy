@@ -1089,8 +1089,13 @@ int luatpt_reset_spark(lua_State* l)
 	{
 		if (parts[i].type==PT_SPRK)
 		{
-			parts[i].type = parts[i].ctype;
-			parts[i].life = 4;
+			if (parts[i].ctype >= 0 && parts[i].ctype < PT_NUM)
+			{
+				parts[i].type = parts[i].ctype;
+				parts[i].life = 0;
+			}
+			else
+				kill_part(i);
 		}
 	}
 	return 0;
@@ -1284,7 +1289,7 @@ int luatpt_set_property(lua_State* l)
 		} else {
 			t = luaL_optint(l, 2, 0);
 		}
-		if (format == 3 && (t<0 || t>=PT_NUM))
+		if (format == 3 && (t<0 || t>=PT_NUM || !ptypes[t].enabled))
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 	} else {
 		name = luaL_optstring(l, 2, "dust");

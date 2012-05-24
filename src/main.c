@@ -1526,8 +1526,13 @@ int main(int argc, char *argv[])
 					for (i=0; i<NPART; i++)
 						if (parts[i].type==PT_SPRK)
 						{
-							parts[i].type = parts[i].ctype;
-							parts[i].life = 0;
+							if (parts[i].ctype >= 0 && parts[i].ctype < PT_NUM)
+							{
+								parts[i].type = parts[i].ctype;
+								parts[i].life = 0;
+							}
+							else
+								kill_part(i);
 						}
 				}
 				else
