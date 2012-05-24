@@ -32,7 +32,6 @@ int tptProperties; //Table for some TPT properties
 int tptPropertiesVersion;
 int tptElements; //Table for TPT element names
 int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, tptPart, cIndex;
-int loop_time = 0;
 void luacon_open(){
 	int i = 0, j;
 	char tmpname[12];
@@ -220,7 +219,7 @@ tpt.partsdata = nil");
 	{
 		lua_el_mode[i] = 0;
 	}
-	lua_sethook(l, &lua_hook, LUA_MASKCOUNT, 200);
+	lua_sethook(l, &lua_hook, LUA_MASKCOUNT, 4000000);
 }
 #ifndef FFI
 int luacon_partread(lua_State* l){

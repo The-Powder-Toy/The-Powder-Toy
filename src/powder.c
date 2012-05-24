@@ -717,23 +717,25 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		{
 			if (t==SPC_HEAT&&parts[pmap[y][x]>>8].temp<MAX_TEMP)
 			{
-				if ((pmap[y][x]&0xFF)==PT_PUMP || (pmap[y][x]&0xFF)==PT_GPMP) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 0.1f, MIN_TEMP, MAX_TEMP);
-				} else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL))) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 50.0f, MIN_TEMP, MAX_TEMP);
-				} else {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 4.0f, MIN_TEMP, MAX_TEMP);
-				}
+				float heatchange;
+				int r = pmap[y][x], fast = ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)));
+				if ((r&0xFF)==PT_PUMP || (r&0xFF)==PT_GPMP)
+					heatchange = fast?1.0f:.1f;
+				else
+					heatchange = fast?50.0f:4.0f;
+				
+				parts[r>>8].temp = restrict_flt(parts[r>>8].temp + heatchange, MIN_TEMP, MAX_TEMP);
 			}
 			if (t==SPC_COOL&&parts[pmap[y][x]>>8].temp>MIN_TEMP)
 			{
-				if ((pmap[y][x]&0xFF)==PT_PUMP || (pmap[y][x]&0xFF)==PT_GPMP) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 0.1f, MIN_TEMP, MAX_TEMP);
-				} else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL))) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 50.0f, MIN_TEMP, MAX_TEMP);
-				} else {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 4.0f, MIN_TEMP, MAX_TEMP);
-				}
+				float heatchange;
+				int r = pmap[y][x], fast = ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)));
+				if ((r&0xFF)==PT_PUMP || (r&0xFF)==PT_GPMP)
+					heatchange = fast?1.0f:.1f;
+				else
+					heatchange = fast?50.0f:4.0f;
+				
+				parts[r>>8].temp = restrict_flt(parts[r>>8].temp - heatchange, MIN_TEMP, MAX_TEMP);
 			}
 			return pmap[y][x]>>8;
 		}
@@ -963,7 +965,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		parts[i].tmp = 10;
 	if (t==PT_BRAY)
 		parts[i].life = 30;
-	if (t==PT_PUMP)
+	if (t==PT_PUMP || t==PT_GPMP)
 		parts[i].life= 10;
 	if (t==PT_SING)
 		parts[i].life = rand()%50+60;

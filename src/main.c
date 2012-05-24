@@ -221,6 +221,7 @@ int frameidx = 0;
 //int CGOL = 0;
 //int GSPEED = 1;//causes my .exe to crash..
 int sound_enable = 0;
+int loop_time = 0;
 
 int debug_flags = 0;
 int debug_perf_istart = 1;
@@ -2743,8 +2744,6 @@ int main(int argc, char *argv[])
 				break;
 			}
 			free(console);
-			if (!console_mode)
-				hud_enable = 1;
 #else
 			char *console;
 			sys_pause = 1;
@@ -2757,8 +2756,6 @@ int main(int argc, char *argv[])
 				break;
 			}
 			free(console);
-			if (!console_mode)
-				hud_enable = 1;
 #endif
 		}
 
