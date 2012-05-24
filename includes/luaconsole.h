@@ -62,6 +62,7 @@ int luacon_particle_getproperty(char * key, int * format);
 int luacon_transition_getproperty(char * key, int * format);
 int luacon_element_getproperty(char * key, int * format, unsigned int * modified_stuff);
 int process_command_lua(pixel *vid_buf, char *console, char *console_error);
+void lua_hook(lua_State *L, lua_Debug *ar);
 
 int getPartIndex_curIdx;
 

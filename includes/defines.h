@@ -189,6 +189,7 @@ extern int ngrav_enable;
 int limitFPS;
 int water_equal_test;
 extern int quickoptions_tooltip_fade;
+extern int loop_time;
 
 extern int debug_flags;
 #define DEBUG_PERF_FRAMECOUNT 256

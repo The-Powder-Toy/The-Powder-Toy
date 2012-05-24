@@ -32,6 +32,7 @@ int tptProperties; //Table for some TPT properties
 int tptPropertiesVersion;
 int tptElements; //Table for TPT element names
 int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, tptPart, cIndex;
+int loop_time = 0;
 void luacon_open(){
 	int i = 0, j;
 	char tmpname[12];
@@ -219,6 +220,7 @@ tpt.partsdata = nil");
 	{
 		lua_el_mode[i] = 0;
 	}
+	lua_sethook(l, &lua_hook, LUA_MASKCOUNT, 200);
 }
 #ifndef FFI
 int luacon_partread(lua_State* l){
@@ -733,25 +735,38 @@ int luacon_step(int mx, int my, int selectl, int selectr){
 	lua_setfield(l, tptProperties, "mousey");
 	lua_setfield(l, tptProperties, "selectedl");
 	lua_setfield(l, tptProperties, "selectedr");
-	if(step_functions[0]){
-		//Set mouse globals
-		for(i = 0; i<6; i++){
-			if(step_functions[i]){
-				lua_rawgeti(l, LUA_REGISTRYINDEX, step_functions[i]);
-				callret = lua_pcall(l, 0, 0, 0);
-				if (callret)
+	for(i = 0; i<6; i++){
+		if(step_functions[i]){
+			loop_time = SDL_GetTicks();
+			lua_rawgeti(l, LUA_REGISTRYINDEX, step_functions[i]);
+			callret = lua_pcall(l, 0, 0, 0);
+			if (callret)
+			{
+				// failed, TODO: better error reporting
+				printf("%s\n",luacon_geterror());
+				if (!strcmp(luacon_geterror(),"Error: Infinite loop"))
 				{
-					// failed, TODO: better error reporting
-					printf("%s\n",luacon_geterror());
+					lua_pushcfunction(l,&luatpt_unregister_step);
+					lua_rawgeti(l, LUA_REGISTRYINDEX, step_functions[i]);
+					lua_pcall(l, 1, 0, 0);
 				}
 			}
 		}
-		return tempret;
 	}
 	return 0;
 }
 int luacon_eval(char *command){
+	loop_time = SDL_GetTicks();
 	return luaL_dostring (l, command);
+}
+void lua_hook(lua_State *L, lua_Debug *ar)
+{
+	if(ar->event == LUA_HOOKCOUNT && SDL_GetTicks()-loop_time > 3000)
+	{
+		if (confirm_ui(vid_buf,"Infinite Loop","The Lua code might have an infinite loop. Press OK to stop it","OK"))
+			luaL_error(l,"Error: Infinite loop");
+		loop_time = SDL_GetTicks();
+	}
 }
 int luacon_part_update(int t, int i, int x, int y, int surround_space, int nt)
 {
