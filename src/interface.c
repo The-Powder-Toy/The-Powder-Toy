@@ -4091,7 +4091,7 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	void *data = NULL, *info_data, *thumb_data_full;
 	save_info *info = calloc(sizeof(save_info), 1);
 	void *http = NULL, *http_2 = NULL, *http_3 = NULL;
-	int lasttime = TIMEOUT;
+	int lasttime = TIMEOUT, saveTotal, saveDone, infoTotal, infoDone, downloadDone, downloadTotal;
 	int status, status_2, info_ready = 0, data_ready = 0, thumb_data_ready = 0;
 	time_t http_last_use = HTTP_TIMEOUT,  http_last_use_2 = HTTP_TIMEOUT,  http_last_use_3 = HTTP_TIMEOUT;
 	pixel *save_pic;// = malloc((XRES/2)*(YRES/2));
@@ -4232,11 +4232,17 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 		bq = b;
 		b = mouse_get_state(&mx, &my);
 
+		if (active)
+		{
+			http_async_get_length(http, &saveTotal, &saveDone);
+		}
 		if (active && http_async_req_status(http))
 		{
 			int imgh, imgw, nimgh, nimgw;
 			http_last_use = time(NULL);
 			data = http_async_req_stop(http, &status, &data_size);
+			saveDone = data_size;
+			saveTotal = data_size;
 			if (status == 200)
 			{
 				pixel *full_save;
@@ -4258,10 +4264,15 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 			free(http);
 			http = NULL;
 		}
+		if (active_2)
+		{
+			http_async_get_length(http_2, &infoTotal, &infoDone);
+		}
 		if (active_2 && http_async_req_status(http_2))
 		{
 			http_last_use_2 = time(NULL);
-			info_data = http_async_req_stop(http_2, &status_2, NULL);
+			info_data = http_async_req_stop(http_2, &status_2, &infoTotal);
+			infoDone = infoTotal;
 			if (status_2 == 200 || !info_data)
 			{
 				info_ready = info_parse(info_data, info);
@@ -4392,6 +4403,19 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 
 			drawrect(vid_buf, XRES+BARSIZE-100, YRES+MENUSIZE-68, 50, 18, 255, 255, 255, 255);
 			drawtext(vid_buf, XRES+BARSIZE-90, YRES+MENUSIZE-63, "Submit", 255, 255, 255, 255);
+		}
+		
+		//Download completion
+		downloadTotal = saveTotal+infoTotal;
+		downloadDone = saveDone+infoDone;
+		if(downloadTotal>downloadDone)
+		{
+			clearrect(vid_buf, 51, (YRES/2)+37, (XRES)/2, 14);
+			fillrect(vid_buf, 51, (YRES/2)+38, (((float)XRES-2)/2.0f)*((float)downloadDone/(float)downloadTotal), 12, 255, 200, 0, 255);
+			if(((float)downloadDone/(float)downloadTotal)>0.5f)
+				drawtext(vid_buf, 51+(((XRES/2)-textwidth("Downloading"))/2), (YRES/2)+40, "Downloading", 0, 0, 0, 255);
+			else
+				drawtext(vid_buf, 51+(((XRES/2)-textwidth("Downloading"))/2), (YRES/2)+40, "Downloading", 255, 255, 255, 255);
 		}
 
 		//Save ID text and copybox
