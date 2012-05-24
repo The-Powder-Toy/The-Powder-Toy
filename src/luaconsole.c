@@ -96,6 +96,7 @@ void luacon_open(){
 		{"screenshot",&luatpt_screenshot},
 		{"element",&luatpt_getelement},
 		{"element_func",&luatpt_element_func},
+		{"graphics_func",&luatpt_graphics_func},
 		{NULL,NULL}
 	};
 
@@ -213,11 +214,13 @@ tpt.partsdata = nil");
 	}
 	lua_setfield(l, tptProperties, "eltransition");
 	
-	lua_el_func = calloc(PT_NUM, sizeof(int));
-	lua_el_mode = calloc(PT_NUM, sizeof(int));
+	lua_el_func = (int*)calloc(PT_NUM, sizeof(int));
+	lua_el_mode = (int*)calloc(PT_NUM, sizeof(int));
+	lua_gr_func = (int*)calloc(PT_NUM, sizeof(int));
 	for(i = 0; i < PT_NUM; i++)
 	{
 		lua_el_mode[i] = 0;
+		lua_gr_func[i] = 0;
 	}
 	lua_sethook(l, &lua_hook, LUA_MASKCOUNT, 4000000);
 }
@@ -785,6 +788,20 @@ int luacon_part_update(int t, int i, int x, int y, int surround_space, int nt)
 	}
 	return retval;
 }
+int luacon_graphics_update(int t, int i)
+{
+	int retval = 0;
+	if(lua_gr_func[t]){
+		lua_rawgeti(l, LUA_REGISTRYINDEX, lua_gr_func[t]);
+		lua_pushinteger(l, i);
+		lua_pcall(l, 1, 1, 0);
+		if(lua_isnumber(l, -1)){
+			retval = (int)lua_tonumber(l, -1);
+		}
+		lua_pop(l, 1);
+	}
+	return retval;
+}
 char *luacon_geterror(){
 	char *error = lua_tostring(l, -1);
 	if(error==NULL || !error[0]){
@@ -867,6 +884,29 @@ int luatpt_element_func(lua_State *l)
 			return luaL_error(l, "Invalid element");
 		}
 	}
+	return 0;
+}
+int luatpt_graphics_func(lua_State *l)
+{
+	if(lua_isfunction(l, 1))
+	{
+		int element = luaL_optint(l, 2, 0);
+		int function;
+		lua_pushvalue(l, 1);
+		function = luaL_ref(l, LUA_REGISTRYINDEX);
+		if(element > 0 && element < PT_NUM)
+		{
+			lua_gr_func[element] = function;
+			graphicscache[element].isready = 0;
+			return 0;
+		}
+		else
+		{
+			return luaL_error(l, "Invalid element");
+		}
+	}
+	else
+		return luaL_error(l, "Not a function");
 	return 0;
 }
 int luatpt_error(lua_State* l)

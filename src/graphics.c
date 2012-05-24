@@ -47,6 +47,9 @@
 #include <font.h>
 #include <misc.h>
 #include "hmap.h"
+#ifdef LUACONSOLE
+#include <luaconsole.h>
+#endif
 
 #if defined(LIN32) || defined(LIN64)
 #include "icon.h"
@@ -1854,8 +1857,17 @@ void render_parts(pixel *vid)
 				}
 				else if(!(colour_mode & COLOUR_BASC))	//Don't get special effects for BASIC colour mode
 				{
+#ifdef LUACONSOLE
+					if (lua_gr_func[t])
+					{
+						colr = luacon_graphics_update(t,i);
+					}
+					else if (ptypes[t].graphics_func)
+					{
+#else
 					if (ptypes[t].graphics_func)
 					{
+#endif
 						if ((*(ptypes[t].graphics_func))(&(parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
 						{
 							graphicscache[t].isready = 1;

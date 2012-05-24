@@ -40,7 +40,7 @@
 #define LUACON_EL_MODIFIED_GRAPHICS 0x2
 #define LUACON_EL_MODIFIED_MENUS 0x4
 
-int *lua_el_func, *lua_el_mode;
+int *lua_el_func, *lua_el_mode, *lua_gr_func;
 
 void luacon_open();
 int luacon_step(int mx, int my, int selectl, int selectr);
@@ -48,6 +48,7 @@ int luacon_mouseevent(int mx, int my, int mb, int event);
 int luacon_keyevent(int key, int modifier, int event);
 int luacon_eval(char *command);
 int luacon_part_update(int t, int i, int x, int y, int surround_space, int nt);
+int luacon_graphics_update(int t, int i);
 char *luacon_geterror();
 void luacon_close();
 int luacon_partsread(lua_State* l);
@@ -70,6 +71,7 @@ int getPartIndex_curIdx;
 int luatpt_test(lua_State* l);
 int luatpt_getelement(lua_State *l);
 int luatpt_element_func(lua_State *l);
+int luatpt_graphics_func(lua_State *l);
 int luatpt_drawtext(lua_State* l);
 int luatpt_create(lua_State* l);
 int luatpt_setpause(lua_State* l);
