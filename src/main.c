@@ -937,7 +937,6 @@ int main(int argc, char *argv[])
 				}
 				if(!tempString[ci])
 				{
-					break;
 					okay = 1;
 				}
 				if(okay)
