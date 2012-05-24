@@ -249,11 +249,11 @@ int luacon_partread(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		tempinteger = *((int*)(((void*)&parts[i])+offset));
+		tempinteger = *((int*)(((char*)&parts[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
 	case 1:
-		tempfloat = *((float*)(((void*)&parts[i])+offset));
+		tempfloat = *((float*)(((char*)&parts[i])+offset));
 		lua_pushnumber(l, tempfloat);
 		break;
 	}
@@ -281,10 +281,10 @@ int luacon_partwrite(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		*((int*)(((void*)&parts[i])+offset)) = luaL_optinteger(l, 3, 0);
+		*((int*)(((char*)&parts[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
 	case 1:
-		*((float*)(((void*)&parts[i])+offset)) = luaL_optnumber(l, 3, 0);
+		*((float*)(((char*)&parts[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	}
 	return 1;
@@ -411,11 +411,11 @@ int luacon_transitionread(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		tempinteger = *((int*)(((void*)&ptransitions[i])+offset));
+		tempinteger = *((int*)(((char*)&ptransitions[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
 	case 1:
-		tempfloat = *((float*)(((void*)&ptransitions[i])+offset));
+		tempfloat = *((float*)(((char*)&ptransitions[i])+offset));
 		lua_pushnumber(l, tempfloat);
 		break;
 	}
@@ -445,10 +445,10 @@ int luacon_transitionwrite(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		*((int*)(((void*)&ptransitions[i])+offset)) = luaL_optinteger(l, 3, 0);
+		*((int*)(((char*)&ptransitions[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
 	case 1:
-		*((float*)(((void*)&ptransitions[i])+offset)) = luaL_optnumber(l, 3, 0);
+		*((float*)(((char*)&ptransitions[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	}
 	return 0;
@@ -598,19 +598,19 @@ int luacon_elementread(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		tempinteger = *((int*)(((void*)&ptypes[i])+offset));
+		tempinteger = *((int*)(((char*)&ptypes[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
 	case 1:
-		tempfloat = *((float*)(((void*)&ptypes[i])+offset));
+		tempfloat = *((float*)(((char*)&ptypes[i])+offset));
 		lua_pushnumber(l, tempfloat);
 		break;
 	case 2:
-		tempstring = *((char**)(((void*)&ptypes[i])+offset));
+		tempstring = *((char**)(((char*)&ptypes[i])+offset));
 		lua_pushstring(l, tempstring);
 		break;
 	case 3:
-		tempinteger = *((unsigned char*)(((void*)&ptypes[i])+offset));
+		tempinteger = *((unsigned char*)(((char*)&ptypes[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
 	}
@@ -642,10 +642,10 @@ int luacon_elementwrite(lua_State* l){
 	switch(format)
 	{
 	case 0:
-		*((int*)(((void*)&ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
+		*((int*)(((char*)&ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
 	case 1:
-		*((float*)(((void*)&ptypes[i])+offset)) = luaL_optnumber(l, 3, 0);
+		*((float*)(((char*)&ptypes[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	case 2:
 		tempstring = mystrdup(luaL_optstring(l, 3, ""));
@@ -668,11 +668,11 @@ int luacon_elementwrite(lua_State* l){
 				return luaL_error(l, "Name in use");
 			}
 		}
-		*((char**)(((void*)&ptypes[i])+offset)) = tempstring;
+		*((char**)(((char*)&ptypes[i])+offset)) = tempstring;
 		//Need some way of cleaning up previous values
 		break;
 	case 3:
-		*((unsigned char*)(((void*)&ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
+		*((unsigned char*)(((char*)&ptypes[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
 	}
 	if (modified_stuff)
