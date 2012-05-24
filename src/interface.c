@@ -5725,6 +5725,9 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 						cb = PIXB(tempcolor);
 						if (cr || cg || cb)
 						{
+							if (cr) cr++;
+							if (cg) cg++;
+							if (cb) cb++;
 							currR = cr;
 							currG = cg;
 							currB = cb;

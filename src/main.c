@@ -1490,9 +1490,8 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					rgbSave = decorations_ui(vid_buf,&bsx,&bsy,rgbSave);//decoration_mode = !decoration_mode;
 					decorations_enable = 1;
-					sys_pause=1;
+					rgbSave = decorations_ui(vid_buf,&bsx,&bsy,rgbSave);//decoration_mode = !decoration_mode;
 				}
 			}
 			if (sdl_key=='g')
