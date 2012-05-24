@@ -102,7 +102,38 @@ scripts - enable scripts to be run from old console
 History:
 
 ---------------------------------------------------------------------------
-* Version 74.1
+
+* Version 78.0 Beta Build 162
+      o Fixes for OPS save format
+      o Fixes when moving signs
+      o Line snapping in deco editor
+      o Make SING explosion area smaller
+      o Save soap bubbles
+      o GEL can only absorb 100 water particles
+      o FILT not heated by photons with ambient heat on
+      o Enable OPS save format
+* Version 77.0 Build 159
+      o tmp2 support for old console
+      o save tmp2 for TRON
+* Version 76.0 Build 158
+      o GEL won't try to move solids anymore
+* Version 76.0 Build 157
+      o Fixes for GEL and TRON
+      o Fix sponge bug
+* Version 76.0 Beta Build 156
+      o New element: TRON
+* Version 75.0 Beta Build 155
+      o New element: GEL
+* Version 74.2 Build 154
+      o Walls don't trigger automatic pipe pattern generation
+      o BCOL uses COAL's graphics function
+      o Report icon
+      o Fix unmeltable ice
+* Version 74.1 Build 152
+      o Fix ice with ctype of 0
+* Version 74.1 Build 151
+      o BRAY glows in fancy display mode
+* Version 74.1 Build 150
       o Icon for Force Elements
 	  o Allow DEST to be used with clone elements.
 * Version 74.0
@@ -168,7 +199,7 @@ History:
       o Correct icons in render_ui
       o Add back portal effects
 * Version 68.5
-      o fix decorations
+      o Fix decorations
 * Version 68.4
       o Stamp browser fixes
       o Remove some stuff from HUD to make it fit
