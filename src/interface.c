@@ -2883,6 +2883,7 @@ int sdl_poll(void)
 {
 	SDL_Event event;
 	sdl_key=sdl_rkey=sdl_wheel=sdl_ascii=0;
+	loop_time = SDL_GetTicks();
 	while (SDL_PollEvent(&event))
 	{
 		switch (event.type)
@@ -5641,7 +5642,8 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 		b = mouse_get_state(&mx, &my);
 
 		memcpy(vid_buf,old_buf,(XRES+BARSIZE)*(YRES+MENUSIZE)*PIXELSIZE);
-		render_parts(vid_buf);
+		render_before(vid_buf);
+		render_after(vid_buf, NULL);
 		ui_edit_process(mx, my, b, &box_R);
 		ui_edit_process(mx, my, b, &box_G);
 		ui_edit_process(mx, my, b, &box_B);
@@ -5923,6 +5925,9 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 						cb = PIXB(tempcolor);
 						if (cr || cg || cb)
 						{
+							if (cr) cr++;
+							if (cg) cg++;
+							if (cb) cb++;
 							currR = cr;
 							currG = cg;
 							currB = cb;
@@ -6666,10 +6671,10 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	int render_optionicons[] = {0xE1, 0xDF, 0x9B, 0xC4, 0xBF, 0xDB};
 	char * render_desc[] = {"Effects", "Glow", "Fire", "Blur", "Blob", "Basic"};
 	
-	int display_optioncount = 7;
-	int display_options[] = {DISPLAY_AIRC, DISPLAY_AIRP, DISPLAY_AIRV, DISPLAY_AIRH, DISPLAY_WARP, DISPLAY_PERS, DISPLAY_EFFE};
-	int display_optionicons[] = {0xD4, 0x99, 0x98, 0xBE, 0xDE, 0x9A, -1};
-	char * display_desc[] = {"Air: Cracker", "Air: Pressure", "Air: Velocity", "Air: Heat", "Warp effect", "Persistent", "Effects"};
+	int display_optioncount = 6;
+	int display_options[] = {DISPLAY_AIRC, DISPLAY_AIRP, DISPLAY_AIRV, DISPLAY_AIRH, DISPLAY_WARP, DISPLAY_PERS};
+	int display_optionicons[] = {0xD4, 0x99, 0x98, 0xBE, 0xDE, 0x9A};
+	char * display_desc[] = {"Air: Cracker", "Air: Pressure", "Air: Velocity", "Air: Heat", "Warp effect", "Persistent"};
 
 	int colour_optioncount = 4;
 	int colour_options[] = {COLOUR_BASC, COLOUR_LIFE, COLOUR_HEAT, COLOUR_GRAD};
@@ -6758,63 +6763,24 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 		b = mouse_get_state(&mx, &my);
 		
 		memcpy(vid_buf, o_vid_buf, ((YRES+MENUSIZE) * (XRES+BARSIZE)) * PIXELSIZE);
-		
-		if(ngrav_enable && display_mode & DISPLAY_WARP)
+#ifdef OGLR
+		part_vbuf = vid_buf;
+#else
+		if(ngrav_enable && (display_mode & DISPLAY_WARP))
 		{
 			part_vbuf = part_vbuf_store;
 			memset(vid_buf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 		} else {
 			part_vbuf = vid_buf;
 		}
-		
-#ifdef OGLR
-		if (display_mode & DISPLAY_PERS)//save background for persistent, then clear
-		{
-			clearScreen(0.01f);
-			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-        }
-		else //clear screen every frame
-		{
-            clearScreen(1.0f);
-			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-			if (display_mode & DISPLAY_AIR)//air only gets drawn in these modes
-			{
-				draw_air(part_vbuf);
-			}
-		}
-#else
-		if (display_mode & DISPLAY_AIR)//air only gets drawn in these modes
-		{
-			draw_air(part_vbuf);
-		}
-		else if (display_mode & DISPLAY_PERS)//save background for persistent, then clear
-		{
-			memcpy(part_vbuf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
-			memset(part_vbuf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
-        }
-		else //clear screen every frame
-		{
-			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
-		}
 #endif
-		
-		if(ngrav_enable && drawgrav_enable)
-			draw_grav(vid_buf);
-		
-		draw_walls(part_vbuf);
-		
-		render_parts(part_vbuf);
-		draw_other(part_vbuf);
-#ifndef OGLR
-		if (render_mode & FIREMODE)
-			render_fire(part_vbuf);
-#endif
-		render_signs(part_vbuf);
-		
-#ifndef OGLR
-		if(ngrav_enable && display_mode & DISPLAY_WARP)
-			render_gravlensing(part_vbuf, vid_buf);
-#endif
+		render_before(part_vbuf);
+		render_after(part_vbuf, vid_buf);
+		quickoptions_menu(vid_buf, b, bq, mx, my);
+		for (i=0; i<SC_TOTAL; i++)//draw all the menu sections
+		{
+			draw_menu(vid_buf, i, active_menu);
+		}
 		draw_svf_ui(vid_buf, sdl_mod & (KMOD_LCTRL|KMOD_RCTRL));
 		
 		clearrect(vid_buf, xcoord-2, ycoord-2, xsize+4, ysize+4);

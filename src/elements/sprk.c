@@ -59,7 +59,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 			parts[nearp].ctype = PT_ETRD;
 		}
 	}
-	else if (ct==PT_NBLE&&parts[i].life<=1&&parts[i].tmp!=1)
+	else if (ct==PT_NBLE&&parts[i].life<=1&&parts[i].temp<5273.15)
 	{
 		parts[i].life = rand()%150+50;
 		part_change_type(i,x,y,PT_PLSM);
@@ -194,7 +194,7 @@ int update_SPRK(UPDATE_FUNC_ARGS) {
 					conduct_sprk = 0;
 				if (rt==PT_INST&&ct!=PT_PSCN)
 					conduct_sprk = 0;
-				if (rt == PT_NBLE && parts[r>>8].tmp == 1)
+				if (rt == PT_NBLE && parts[r>>8].temp > 5273.15)
 					conduct_sprk = 0;
 
 				if (conduct_sprk) {
