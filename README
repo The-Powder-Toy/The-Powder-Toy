@@ -102,7 +102,60 @@ scripts - enable scripts to be run from old console
 History:
 
 ---------------------------------------------------------------------------
-* Version 74.1
+
+* Version 79.2 Beta Build 167
+      o Fix minor spelling errors
+      o Fix crash when using flood-fill or a lot of INST
+      o Fix an issue that made it impossible to change the Windows size from the options screen
+* Version 79.1 Beta Build 166
+      o Prevent changing of Window size if the screen is too small.
+      o Fix bug that caused pressure to leak from TTAN when pausing/framestepping
+      o Fix crash when opening display options
+* Version 79.0 Beta Build 165
+      o Fix Titanium only conducting once
+	  o Better colour options preview.
+* Version 79.0 Beta Build 164
+      o Fix a problem with GPMP that caused gravity to depend on air pressure
+      o Fix TNT sometimes not exploding if multiple TNT particles are in the same place
+      o Fix PUMP not generating negative pressure if it is next to a wall
+      o New element: titanium (in the solids menu), which completely blocks air and absorbs some neutrons
+* Version 78.1 Build 163
+      o Fix bug that created "weaponised explosive GEL"
+      o Changes to License (GPLv2 to GPLv3)
+      o Fix bug that caused thumbnail caching to not work
+      o Remove unused debug output of thumbnail cache
+      o Plasma can now travel through portals and PIPE
+      o Fix file opening on Mac OS X
+* Version 78.0 Beta Build 162
+      o Fixes when moving signs
+      o Line snapping in the decoration editor
+      o Changes to SING to prevent it from exploding through walls
+      o Save soap bubbles
+      o Changes to GEL, will no longer absorb water when saturated
+      o FILT not heated by photons with ambient heat on
+      o New save format: OPS, allows saving of almost all data within the simulation
+* Version 77.0 Build 159
+      o tmp2 support for old console
+      o save tmp2 for TRON
+* Version 76.0 Build 158
+      o GEL won't try to move solids anymore
+* Version 76.0 Build 157
+      o Fixes for GEL and TRON
+      o Fix sponge bug
+* Version 76.0 Beta Build 156
+      o New element: TRON
+* Version 75.0 Beta Build 155
+      o New element: GEL
+* Version 74.2 Build 154
+      o Walls don't trigger automatic pipe pattern generation
+      o BCOL uses COAL's graphics function
+      o Report icon
+      o Fix unmeltable ice
+* Version 74.1 Build 152
+      o Fix ice with ctype of 0
+* Version 74.1 Build 151
+      o BRAY glows in fancy display mode
+* Version 74.1 Build 150
       o Icon for Force Elements
 	  o Allow DEST to be used with clone elements.
 * Version 74.0
@@ -146,8 +199,6 @@ History:
 * Version 70.0
       o New element: ignition cord
       o Stickmen and fighter fixes
-      o Fixed WIRE graphics
-      o New elements: ACEL and DCEL, accelerate nearby photons
 *  Version 69.1
       o New Lua API features, ability to edit particle properties from tpt.el... array, particles are exposed as an array now
 *  Version 69.0
@@ -168,7 +219,7 @@ History:
       o Correct icons in render_ui
       o Add back portal effects
 * Version 68.5
-      o fix decorations
+      o Fix decorations
 * Version 68.4
       o Stamp browser fixes
       o Remove some stuff from HUD to make it fit

@@ -189,14 +189,7 @@ extern int ngrav_enable;
 int limitFPS;
 int water_equal_test;
 extern int quickoptions_tooltip_fade;
-
-extern int debug_flags;
-#define DEBUG_PERF_FRAMECOUNT 256
-extern int debug_perf_istart;
-extern int debug_perf_iend;
-extern long debug_perf_frametime[DEBUG_PERF_FRAMECOUNT];
-extern long debug_perf_partitime[DEBUG_PERF_FRAMECOUNT];
-extern long debug_perf_time;
+extern int loop_time;
 
 extern int debug_flags;
 #define DEBUG_PERF_FRAMECOUNT 256

@@ -47,6 +47,9 @@
 #include <font.h>
 #include <misc.h>
 #include "hmap.h"
+#ifdef LUACONSOLE
+#include <luaconsole.h>
+#endif
 
 #if defined(LIN32) || defined(LIN64)
 #include "icon.h"
@@ -1693,7 +1696,7 @@ void draw_other(pixel *vid) // EMP effect
 	if (emp_decor>0 && !sys_pause) emp_decor-=emp_decor/25+2;
 	if (emp_decor>40) emp_decor=40;
 	if (emp_decor<0) emp_decor = 0;
-	if (!(display_mode & DISPLAY_EFFE)) // no in nothing mode
+	if (!(render_mode & EFFECT)) // not in nothing mode
 		return;
 	if (emp_decor>0)
 	{
@@ -1854,8 +1857,29 @@ void render_parts(pixel *vid)
 				}
 				else if(!(colour_mode & COLOUR_BASC))	//Don't get special effects for BASIC colour mode
 				{
+#ifdef LUACONSOLE
+					if (lua_gr_func[t])
+					{
+						if (luacon_graphics_update(t,i, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb))
+						{
+							graphicscache[t].isready = 1;
+							graphicscache[t].pixel_mode = pixel_mode;
+							graphicscache[t].cola = cola;
+							graphicscache[t].colr = colr;
+							graphicscache[t].colg = colg;
+							graphicscache[t].colb = colb;
+							graphicscache[t].firea = firea;
+							graphicscache[t].firer = firer;
+							graphicscache[t].fireg = fireg;
+							graphicscache[t].fireb = fireb;
+						}
+					}
+					else if (ptypes[t].graphics_func)
+					{
+#else
 					if (ptypes[t].graphics_func)
 					{
+#endif
 						if ((*(ptypes[t].graphics_func))(&(parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
 						{
 							graphicscache[t].isready = 1;
@@ -2869,10 +2893,82 @@ void draw_parts_fbo()
 }
 #endif
 
+// draw the graphics that appear before update_particles is called
+void render_before(pixel *part_vbuf)
+{
+#ifdef OGLR
+		if (display_mode & DISPLAY_PERS)//save background for persistent, then clear
+		{
+			clearScreen(0.01f);
+			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+		}
+		else //clear screen every frame
+		{
+			clearScreen(1.0f);
+			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+			if (display_mode & DISPLAY_AIR)//air only gets drawn in these modes
+			{
+				draw_air(part_vbuf);
+			}
+		}
+#else
+		if (display_mode & DISPLAY_AIR)//air only gets drawn in these modes
+		{
+			draw_air(part_vbuf);
+		}
+		else if (display_mode & DISPLAY_PERS)//save background for persistent, then clear
+		{
+			memcpy(part_vbuf, pers_bg, (XRES+BARSIZE)*YRES*PIXELSIZE);
+			memset(part_vbuf+((XRES+BARSIZE)*YRES), 0, ((XRES+BARSIZE)*YRES*PIXELSIZE)-((XRES+BARSIZE)*YRES*PIXELSIZE));
+		}
+		else //clear screen every frame
+		{
+			memset(part_vbuf, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+		}
+#endif
+		if(ngrav_enable && drawgrav_enable)
+			draw_grav(part_vbuf);
+		draw_walls(part_vbuf);
+}
+
+int persist_counter = 0;
+// draw the graphics that appear after update_particles is called
+void render_after(pixel *part_vbuf, pixel *vid_buf)
+{
+	render_parts(part_vbuf); //draw particles
+	draw_other(part_vbuf);
+	//if(su == WL_GRAV+100)
+	//	draw_grav_zones(part_vbuf);
+	if (vid_buf && (display_mode & DISPLAY_PERS))
+	{
+		if (!persist_counter)
+		{
+			dim_copy_pers(pers_bg, vid_buf);
+		}
+		else
+		{
+			memcpy(pers_bg, vid_buf, (XRES+BARSIZE)*YRES*PIXELSIZE);
+		}
+		persist_counter = (persist_counter+1) % 3;
+	}
+#ifndef OGLR
+	if (render_mode & FIREMODE)
+		render_fire(part_vbuf);
+#endif
+
+	render_signs(part_vbuf);
+
+#ifndef OGLR
+	if(vid_buf && ngrav_enable && (display_mode & DISPLAY_WARP))
+		render_gravlensing(part_vbuf, vid_buf);
+#endif
+}
+
 void draw_walls(pixel *vid)
 {
-	int x, y, i, j, cr, cg, cb;
+	int x, y, i, j, cr, cg, cb, nx, ny, t;
 	unsigned char wt;
+	float lx, ly;
 	pixel pc;
 	pixel gc;
 	for (y=0; y<YRES/CELL; y++)
@@ -3057,6 +3153,30 @@ void draw_walls(pixel *vid)
 					fire_b[y][x] = cb;
 					
 				}
+			}
+
+	// draw streamlines
+	for (y=0; y<YRES/CELL; y++)
+		for (x=0; x<XRES/CELL; x++)
+			if (bmap[y][x]==WL_STREAM)
+			{
+				lx = x*CELL + CELL*0.5f;
+				ly = y*CELL + CELL*0.5f;
+				for (t=0; t<1024; t++)
+				{
+					nx = (int)(lx+0.5f);
+					ny = (int)(ly+0.5f);
+					if (nx<0 || nx>=XRES || ny<0 || ny>=YRES)
+						break;
+					addpixel(vid, nx, ny, 255, 255, 255, 64);
+					i = nx/CELL;
+					j = ny/CELL;
+					lx += vx[j][i]*0.125f;
+					ly += vy[j][i]*0.125f;
+					if (bmap[j][i]==WL_STREAM && i!=x && j!=y)
+						break;
+				}
+				drawtext(vid, x*CELL, y*CELL-2, "\x8D", 255, 255, 255, 128);
 			}
 }
 
