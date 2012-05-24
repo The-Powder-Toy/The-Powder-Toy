@@ -1389,6 +1389,10 @@ int main(int argc, char *argv[])
 					it = 50;
 				save_mode = 1;
 			}
+			if(sdl_key=='e')
+			{
+				element_search_ui(vid_buf, &sl, &sr);
+			}
 			//TODO: Superseded by new display mode switching, need some keyboard shortcuts
 			if (sdl_key=='1')
 			{

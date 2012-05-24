@@ -287,6 +287,8 @@ void draw_svf_ui(pixel *vid_buf, int alternate);
 
 void error_ui(pixel *vid_buf, int err, char *txt);
 
+void element_search_ui(pixel *vid_buf, int * sl, int * sr);
+
 void info_ui(pixel *vid_buf, char *top, char *txt);
 
 void copytext_ui(pixel *vid_buf, char *top, char *txt, char *copytxt);
