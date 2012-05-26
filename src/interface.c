@@ -1055,7 +1055,7 @@ void element_search_ui(pixel *vid_buf, int * slp, int * srp)
 		{
 			c = 0;
 			while (ptypes[i].name[c]) { tempCompare[c] = tolower(ptypes[i].name[c]); c++; } tempCompare[c] = 0;
-			if(strstr(tempCompare, tempString)!=0)
+			if(strstr(tempCompare, tempString)!=0 && ptypes[i].enabled)
 			{
 				if(firstResult==-1)
 					firstResult = i;
@@ -1100,7 +1100,7 @@ void element_search_ui(pixel *vid_buf, int * slp, int * srp)
 			{
 				c = 0;
 				while (ptypes[i].descs[c]) { tempCompare[c] = tolower(ptypes[i].descs[c]); c++; } tempCompare[c] = 0;
-				if(strstr(tempCompare, tempString)!=0)
+				if(strstr(tempCompare, tempString)!=0 && ptypes[i].enabled)
 				{
 					tempInts[found].first = strstr(tempCompare, tempString);
 					tempInts[found++].second = i;
