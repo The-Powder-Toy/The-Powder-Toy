@@ -1573,7 +1573,7 @@ int main(int argc, char *argv[])
 				}
 			}
 
-			if (sdl_key=='w' && (!player2.spwn || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
+			if (sdl_key=='w' && (!player2.spwn || (sdl_mod & (KMOD_CTRL)))) //Gravity, by Moach
 			{
 				++gravityMode; // cycle gravity mode
 				itc = 51;
