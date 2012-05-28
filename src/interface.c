@@ -6447,6 +6447,7 @@ void catalogue_ui(pixel * vid_buf)
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 	while (!sdl_poll())
 	{
+		bq = b;
 		b = mouse_get_state(&mx, &my);
 		sprintf(savetext, "Found %d save%s", rescount, rescount==1?"":"s");
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
@@ -6592,6 +6593,27 @@ void catalogue_ui(pixel * vid_buf)
 					drawtext(vid_buf2, listxc+((XRES/CATALOGUE_S)/2-textwidth(csave->name)/2), listyc+YRES/CATALOGUE_S+3, csave->name, 255, 255, 255, 255);
 				else
 					drawtext(vid_buf2, listxc+((XRES/CATALOGUE_S)/2-textwidth(csave->name)/2), listyc+YRES/CATALOGUE_S+3, csave->name, 240, 240, 255, 180);
+				if (mx>=listxc+XRES/GRID_S-4 && mx<=listxc+XRES/GRID_S+6 && my>=listyc-6 && my<=listyc+4)
+				{
+					if (b && !bq && confirm_ui(vid_buf, "Do you want to delete?", csave->name, "Delete"))
+					{
+						remove(csave->filename);
+						currentstart = 0;
+						if(saves!=NULL) free_saveslist(saves);
+						saves = get_local_saves(LOCAL_SAVE_DIR PATH_SEP, last, &rescount);
+						cssave = saves;
+						scrollvel = 0.0f;
+						offsetf = 0.0f;
+						thidden = 0;
+						if (rescount == 0)
+							rmdir(LOCAL_SAVE_DIR PATH_SEP);
+						break;
+					}
+					drawtext(vid_buf2, listxc+XRES/GRID_S-4, listyc-6, "\x86", 255, 48, 32, 255);
+				}
+				else
+					drawtext(vid_buf2, listxc+XRES/GRID_S-4, listyc-6, "\x86", 160, 48, 32, 255);
+				drawtext(vid_buf2, listxc+XRES/GRID_S-4, listyc-6, "\x85", 255, 255, 255, 255);
 				csave = csave->next;
 				if(++listx==CATALOGUE_X){
 					listx = 0;
@@ -6608,7 +6630,7 @@ void catalogue_ui(pixel * vid_buf)
 		{
 			pixel *srctemp = vid_buf2, *desttemp = vid_buf;
 			int j = 0;
-			for (j = y0+48; j < y0+ysize; j++)
+			for (j = y0+42; j < y0+ysize; j++)
 			{
 				memcpy(desttemp+j*(XRES+BARSIZE)+x0+1, srctemp+j*(XRES+BARSIZE)+x0+1, (xsize-1)*PIXELSIZE);
 				//desttemp+=(XRES+BARSIZE);//*PIXELSIZE;
