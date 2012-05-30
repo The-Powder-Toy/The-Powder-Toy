@@ -6,7 +6,45 @@
 Graphics::Graphics():
 sdl_scale(1)
 {
-
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	
+	//glOrtho(0, (XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
+	glOrtho(0, (XRES+BARSIZE)*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 0, -1, 1);
+	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
+	
+	//glRasterPos2i(0, (YRES+MENUSIZE));
+	glRasterPos2i(0, 0);
+	glPixelZoom(1, 1);
+	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
+	//Texture for main UI
+	glEnable(GL_TEXTURE_2D);
+	
+	glGenTextures(1, &vidBuf);
+	glBindTexture(GL_TEXTURE_2D, vidBuf);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES+BARSIZE, YRES+MENUSIZE, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+	
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	
+	glBindTexture(GL_TEXTURE_2D, 0);
+	
+	glGenTextures(1, &textTexture);
+	glBindTexture(GL_TEXTURE_2D, textTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	
+	glBindTexture(GL_TEXTURE_2D, 0);
+	
+	glDisable(GL_TEXTURE_2D);
 }
 
 Graphics::~Graphics()
@@ -19,72 +57,9 @@ void Graphics::Clear()
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Graphics::AttachSDLSurface(SDL_Surface * surface)
+void Graphics::Finalise()
 {
-	//sdl_scrn = surface;
-	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	//glOrtho(0, (XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
-	glOrtho(0, (XRES+BARSIZE)*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 0, -1, 1);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-
-	//glRasterPos2i(0, (YRES+MENUSIZE));
-	glRasterPos2i(0, 0);
-	glPixelZoom(1, 1);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	//Texture for main UI
-	glEnable(GL_TEXTURE_2D);
-
-	glGenTextures(1, &vidBuf);
-	glBindTexture(GL_TEXTURE_2D, vidBuf);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES+BARSIZE, YRES+MENUSIZE, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glGenTextures(1, &textTexture);
-	glBindTexture(GL_TEXTURE_2D, textTexture);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glDisable(GL_TEXTURE_2D);
-}
-
-void Graphics::Blit()
-{
-    //glDrawPixels(w,h,GL_BGRA,GL_UNSIGNED_BYTE,src); //Why does this still think it's ABGR?
-    /*glEnable( GL_TEXTURE_2D );
-    glBindTexture(GL_TEXTURE_2D, vidBuf);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES+BARSIZE, YRES+MENUSIZE, GL_BGRA, GL_UNSIGNED_BYTE, vid);
-	glBegin(GL_QUADS);
-    glTexCoord2d(1, 0);
-    glVertex3f((XRES+BARSIZE)*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
-    glTexCoord2d(0, 0);
-    glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
-    glTexCoord2d(0, 1);
-    glVertex3f(0, 0, 1.0);
-    glTexCoord2d(1, 1);
-    glVertex3f((XRES+BARSIZE)*sdl_scale, 0, 1.0);
-    glEnd();
-
-    glDisable( GL_TEXTURE_2D );*/
     glFlush();
-    SDL_GL_SwapBuffers ();
 }
 
 int Graphics::drawtext(int x, int y, const char *s, int r, int g, int b, int a)

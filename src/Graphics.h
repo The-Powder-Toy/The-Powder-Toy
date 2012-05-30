@@ -117,9 +117,7 @@ public:
 #ifdef OGLR
 	//OpenGL specific instance variables
 	GLuint vidBuf, textTexture;
-#else
-	SDL_Surface * sdl_scrn;
-#endif
+ #endif
 
 	//Common graphics methods in Graphics.cpp
 	static char * GenerateGradient(pixel * colours, float * points, int pointcount, int size);
@@ -147,8 +145,7 @@ public:
 	void draw_icon(int x, int y, Icon icon);
 
 	void Clear();
-	void AttachSDLSurface(SDL_Surface * surface);
-	void Blit();
+	void Finalise();
 	//
 	int drawtext(int x, int y, const char *s, int r, int g, int b, int a);
 	int drawtext(int x, int y, std::string s, int r, int g, int b, int a);

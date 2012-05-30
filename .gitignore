@@ -14,5 +14,7 @@ Saves/*
 generated/*
 generate
 Makefile.me
-PowderToypp.xcodeproj/*
+*.xcodeproj
 .DS_Store
+*.plist
+*.lproj

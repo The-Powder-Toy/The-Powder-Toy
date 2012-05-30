@@ -33,6 +33,38 @@ using namespace std;
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 #endif
 
+SDL_Surface * sdl_scrn;
+
+#ifdef OGLR
+void blit()
+{
+	SDL_GL_SwapBuffers();
+}
+#else
+void blit(pixel * vid)
+{
+	if(sdl_scrn)
+	{
+		pixel * dst;
+		pixel * src = vid;
+		int j, x = 0, y = 0, w = XRES+BARSIZE, h = YRES+MENUSIZE, pitch = XRES+BARSIZE;
+		if (SDL_MUSTLOCK(sdl_scrn))
+			if (SDL_LockSurface(sdl_scrn)<0)
+				return;
+		dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
+		for (j=0; j<h; j++)
+		{
+			memcpy(dst, src, w*PIXELSIZE);
+			dst+=sdl_scrn->pitch/PIXELSIZE;
+			src+=pitch;
+		}
+		if (SDL_MUSTLOCK(sdl_scrn))
+			SDL_UnlockSurface(sdl_scrn);
+		SDL_UpdateRect(sdl_scrn,0,0,0,0);
+	}
+#endif
+}
+
 SDL_Surface * SDLOpen()
 {
 	SDL_Surface * surface;
@@ -93,26 +125,18 @@ SDL_Surface * SDLOpen()
 return surface;
 }
 
-/*int SDLPoll(SDL_Event * event)
-{
-	while (SDL_PollEvent(event))
-	{
-		switch (event->type)
-		{
-			case SDL_QUIT:
-				return 1;
-		}
-	}
-	return 0;
-}*/
-
 int main(int argc, char * argv[])
 {
 	int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
 	float fps = 0, delta = 1.0f;
 
+	sdl_scrn = SDLOpen();
+#ifdef OGLR
+	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
+#endif
+	
 	ui::Engine::Ref().g = new Graphics();
-	ui::Engine::Ref().g->AttachSDLSurface(SDLOpen());
+	//ui::Engine::Ref().g->AttachSDLSurface(SDLOpen());
 
 	ui::Engine * engine = &ui::Engine::Ref();
 	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
@@ -166,6 +190,12 @@ int main(int argc, char * argv[])
 
 		engine->Tick();
 		engine->Draw();
+		
+#ifdef OGLR
+		blit();
+#else
+		blit(engine->g->vid);
+#endif
 
 		currentFrame++;
 		currentTime = SDL_GetTicks();

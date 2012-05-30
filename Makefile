@@ -1,13 +1,8 @@
 HEADERS := $(wildcard src/*.h) $(wildcard src/*/*.h) $(wildcard generated/*.h)
 
 SOURCES := $(wildcard src/*.cpp) $(wildcard src/*/*.cpp) $(wildcard src/*/*/*.cpp) $(wildcard generated/*.cpp)
+GENERATEDSOURCES := $(wildcard src/*/*/*.h) $(wildcard src/*/*/*.cpp)
 OBJS := $(patsubst src/%.cpp,build/obj/%.o,$(SOURCES))
-
-NEWLINE := $(`echo "d\nd"`)
-ELEMENTFILES := $(patsubst src/simulation/%,\#include "%"$(NEWLINE),$(wildcard src/simulation/elements/*.cpp))
-#ELEMENTFILES := \#include "elements/watr.cpp"
-
-FOLDERS := 
 
 CFLAGS := -w -Isrc/ -Idata/ -Igenerated/
 OFLAGS := -fkeep-inline-functions 
@@ -73,7 +68,8 @@ buildpaths-powder-x:
 	$(shell mkdir -p build/obj/powder-x/)
 	$(shell mkdir -p $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder-x/%.o,$(OBJS)))))
 	
-generate:
+generate: $(GENERATEDSOURCES)
+	touch generate
 	python generator.py
 
 clean:
