@@ -21,3 +21,11 @@ src/python/stdlib/*
 *.lproj
 *.xcodeproj
 *.plist
+*.vcxproj
+*.user
+*.filter
+*.sln
+*.suo
+*.manifest
+*.manifest.res
+*.pdb
