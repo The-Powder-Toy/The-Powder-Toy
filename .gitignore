@@ -17,3 +17,7 @@ src/python/stdlib/*
 *.bat
 *.o
 *.me
+.DS_Store
+*.lproj
+*.xcodeproj
+*.plist
