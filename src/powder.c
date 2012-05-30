@@ -2000,7 +2000,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					s = 1;
 
 					//A fix for ice with ctype = 0
-					if (t==PT_ICEI && (parts[i].ctype==0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI))
+					if ((t==PT_ICEI || t==PT_SNOW) && (parts[i].ctype==0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
 						parts[i].ctype = PT_WATR;
 
 					if (ctemph>ptransitions[t].thv&&ptransitions[t].tht>-1) {
@@ -2024,9 +2024,9 @@ void update_particles_i(pixel *vid, int start, int inc)
 						if (ptransitions[t].tht!=PT_NUM)
 							t = ptransitions[t].tht;
 #endif
-						else if (t==PT_ICEI) {
-							if (parts[i].ctype<PT_NUM&&parts[i].ctype!=PT_ICEI) {
-								if (ptransitions[parts[i].ctype].tlt==PT_ICEI&&pt<=ptransitions[parts[i].ctype].tlv) s = 0;
+						else if (t==PT_ICEI || t==PT_SNOW) {
+							if (parts[i].ctype<PT_NUM&&parts[i].ctype!=t) {
+								if (ptransitions[parts[i].ctype].tlt==t&&pt<=ptransitions[parts[i].ctype].tlv) s = 0;
 								else {
 #ifdef REALISTIC
 									//One ice table value for all it's kinds
@@ -2131,7 +2131,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 					}
 #endif
 					if (s) { // particle type change occurred
-						if (t==PT_ICEI||t==PT_LAVA)
+						if (t==PT_ICEI||t==PT_LAVA||t==PT_SNOW)
 							parts[i].ctype = parts[i].type;
 						if (!(t==PT_ICEI&&parts[i].ctype==PT_FRZW)) parts[i].life = 0;
 						if (ptypes[t].state==ST_GAS&&ptypes[parts[i].type].state!=ST_GAS)
