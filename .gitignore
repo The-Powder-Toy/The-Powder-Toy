@@ -18,3 +18,11 @@ Makefile.me
 .DS_Store
 *.plist
 *.lproj
+*.vcxproj
+*.user
+*.filter
+*.sln
+*.suo
+*.manifest
+*.manifest.res
+*.pdb
