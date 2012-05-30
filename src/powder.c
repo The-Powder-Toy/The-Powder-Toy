@@ -384,7 +384,7 @@ int try_move(int i, int x, int y, int nx, int ny)
 		if (parts[i].type==PT_NEUT) {
 			// target material is NEUTPENETRATE, meaning it gets moved around when neutron passes
 			unsigned s = pmap[y][x];
-			if (!(ptypes[s&0xFF].properties&PROP_NEUTPENETRATE))
+			if (s && !(ptypes[s&0xFF].properties&PROP_NEUTPENETRATE))
 				return 1; // if the element currently underneath neutron isn't NEUTPENETRATE, don't move anything except the neutron
 			// if nothing is currently underneath neutron, only move target particle
 			if (s)
