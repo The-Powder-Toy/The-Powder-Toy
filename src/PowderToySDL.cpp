@@ -1,3 +1,4 @@
+#ifdef USE_SDL
 
 #include <time.h>
 #include "SDL.h"
@@ -62,8 +63,8 @@ void blit(pixel * vid)
 			SDL_UnlockSurface(sdl_scrn);
 		SDL_UpdateRect(sdl_scrn,0,0,0,0);
 	}
-#endif
 }
+#endif
 
 SDL_Surface * SDLOpen()
 {
@@ -228,4 +229,7 @@ int main(int argc, char * argv[])
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
 	delete ui::Engine::Ref().g;
+	return 0;
 }
+
+#endif

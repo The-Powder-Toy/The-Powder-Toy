@@ -3,18 +3,7 @@
 
 #include <vector>
 #if defined(OGLR)
-#ifdef MACOSX
-#include <OpenGL/gl3.h>
-#include <OpenGL/glu.h>
-#elif defined(WIN32)
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#else
-//#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
+#include "OpenGLHeaders.h"
 #endif
 
 #include "Config.h"
