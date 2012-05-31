@@ -78,6 +78,10 @@ void *file_load(char *fn, int *size);
 
 void clipboard_push_text(char * text);
 
+void draw_bframe();
+
+void erase_bframe();
+
 char * clipboard_pull_text();
 
 extern char *clipboard_text;

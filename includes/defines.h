@@ -186,6 +186,7 @@ extern int hud_enable;
 extern int pretty_powder;
 extern int drawgrav_enable;
 extern int ngrav_enable;
+extern char bframe;
 int limitFPS;
 int water_equal_test;
 extern int quickoptions_tooltip_fade;

@@ -135,6 +135,36 @@ void clean_text(char *text, int vwidth)
 	}
 }
 
+void draw_bframe()
+{
+	int i;
+	for(i=0; i<(XRES/CELL); i++)
+	{
+		bmap[0][i]=WL_WALL;
+		bmap[YRES/CELL-1][i]=WL_WALL;
+	}
+	for(i=1; i<((YRES/CELL)-1); i++)
+	{
+		bmap[i][0]=WL_WALL;
+		bmap[i][XRES/CELL-1]=WL_WALL;
+	}
+}
+
+void erase_bframe()
+{
+	int i;
+	for(i=0; i<(XRES/CELL); i++)
+	{
+		bmap[0][i]=0;
+		bmap[YRES/CELL-1][i]=0;
+	}
+	for(i=1; i<((YRES/CELL)-1); i++)
+	{
+		bmap[i][0]=0;
+		bmap[i][XRES/CELL-1]=0;
+	}
+}
+
 void save_presets(int do_update)
 {
 	char * outputdata;
@@ -186,6 +216,7 @@ void save_presets(int do_update)
 	//General settings
 	cJSON_AddStringToObject(root, "proxy", http_proxy_string);
 	cJSON_AddNumberToObject(root, "scale", sdl_scale);
+	cJSON_AddNumberToObject(root, "bframe", bframe);
 	
 	outputdata = cJSON_Print(root);
 	cJSON_Delete(root);
@@ -324,6 +355,7 @@ void load_presets(void)
 		if((tmpobj = cJSON_GetObjectItem(root, "proxy")) && tmpobj->type == cJSON_String) strncpy(http_proxy_string, tmpobj->valuestring, 255); else http_proxy_string[0] = 0;
 		//TODO: Translate old cmode value into new *_mode values
 		if(tmpobj = cJSON_GetObjectItem(root, "scale")) sdl_scale = tmpobj->valueint;
+		if(tmpobj = cJSON_GetObjectItem(root, "bframe")) bframe = tmpobj->valueint;
 		
 		cJSON_Delete(root);
 		free(prefdata);
