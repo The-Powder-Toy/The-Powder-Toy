@@ -1,6 +1,6 @@
 #pragma once
 
-
+typedef unsigned short Uint16;
 /* ***** Platform-ness ***** */
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32_LEAN_AND_MEAN)

@@ -803,10 +803,10 @@ Thumbnail * Client::GetPreview(int saveID, int saveDate)
 	return new Thumbnail(saveID, saveDate, (pixel *)malloc((128*128) * PIXELSIZE), ui::Point(128, 128));
 }
 
-std::vector<Comment*> * Client::GetComments(int saveID, int start, int count)
+std::vector<SaveComment*> * Client::GetComments(int saveID, int start, int count)
 {
 	lastError = "";
-	std::vector<Comment*> * commentArray = new std::vector<Comment*>();
+	std::vector<SaveComment*> * commentArray = new std::vector<SaveComment*>();
 
 	std::stringstream urlStream;
 	char * data;
@@ -827,7 +827,7 @@ std::vector<Comment*> * Client::GetComments(int saveID, int start, int count)
 				json::String tempUsername = commentsArray[j]["Username"];
 				json::String tempComment = commentsArray[j]["Text"];
 				commentArray->push_back(
-							new Comment(
+							new SaveComment(
 								tempUserID.Value(),
 								tempUsername.Value(),
 								tempComment.Value()

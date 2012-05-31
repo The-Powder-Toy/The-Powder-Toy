@@ -56,7 +56,7 @@ void * PreviewModel::updateSavePreviewT()
 
 void * PreviewModel::updateSaveCommentsT()
 {
-	std::vector<Comment*> * tempComments = Client::Ref().GetComments(tSaveID, 0, 10);
+	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(tSaveID, 0, 10);
 	updateSaveCommentsFinished = true;
 	return tempComments;
 }
@@ -139,7 +139,7 @@ Save * PreviewModel::GetSave()
 	return save;
 }
 
-std::vector<Comment*> * PreviewModel::GetComments()
+std::vector<SaveComment*> * PreviewModel::GetComments()
 {
 	return saveComments;
 }

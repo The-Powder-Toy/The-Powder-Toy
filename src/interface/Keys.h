@@ -1,3 +1,5 @@
+
+#if defined(USES_SDL)
 #define KEY_UP SDLK_UP
 #define KEY_DOWN SDLK_DOWN
 #define KEY_RIGHT SDLK_RIGHT
@@ -22,3 +24,32 @@
 #define BUTTON_LEFT SDL_BUTTON_LEFT
 #define BUTTON_MIDDLE SDL_BUTTON_MIDDLE
 #define BUTTON_RIGHT SDL_BUTTON_RIGHT
+
+#else
+
+#define KEY_UP 1
+#define KEY_DOWN 2
+#define KEY_RIGHT 3
+#define KEY_LEFT 4
+#define KEY_HOME 5
+#define KEY_END 6
+#define KEY_BACKSPACE 7
+#define	KEY_DELETE 8
+#define KEY_TAB 9
+#define KEY_RETURN 10
+#define KEY_ENTER 11
+#define KEY_ESCAPE 12
+
+#define KEY_CTRL 13
+#define KEY_ALT 14
+#define KEY_SHIFT 15
+
+#define KEY_MOD_CONTROL 16
+#define KEY_MOD_ALT 17
+#define KEY_MOD_SHIFT 18
+
+#define BUTTON_LEFT 19
+#define BUTTON_MIDDLE 20
+#define BUTTON_RIGHT 21
+
+#endif

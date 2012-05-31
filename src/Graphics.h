@@ -1,7 +1,6 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-#include "SDL.h"
 #include <string>
 #if defined(OGLR)
 #include "OpenGLHeaders.h"

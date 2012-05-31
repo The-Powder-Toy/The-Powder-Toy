@@ -199,7 +199,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	int currentY = 0;
 	ui::Label * tempUsername;
 	ui::Textblock * tempComment;
-	std::vector<Comment*> * tempComments = sender->GetComments();
+	std::vector<SaveComment*> * tempComments = sender->GetComments();
 	if(tempComments)
 	{
 		for(int i = 0; i < tempComments->size(); i++)

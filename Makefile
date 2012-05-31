@@ -18,6 +18,7 @@ powder.exe: build/powder.exe
 powder-release: build/powder-release
 powder: build/powder
 powder-x: build/powder-x
+powder-x.jnilib: build/powder-x.jnilib
 
 build/powder-release.exe: CFLAGS += -DWIN32 -O3 -ftree-vectorize -msse2 -funsafe-math-optimizations -ffast-math -fomit-frame-pointer -funsafe-loop-optimizations -Wunsafe-loop-optimizations
 build/powder-release.exe: LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 -llua -lfftw3f-3 -mwindows
@@ -31,6 +32,8 @@ build/powder: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f
 #build/powder-x: LFLAGS := -lm -lbz2 -lfftw3f -framework SDL -framework Lua -framework Cocoa -framework OpenGL
 build/powder-x: CFLAGS += -DMACOSX -I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/Lua.framework/Headers -DPIX32BGRA
 build/powder-x: LFLAGS := -lm -lbz2 -lfftw3f -framework SDL -framework Lua -framework Cocoa
+build/powder-x.jnilib: CFLAGS += -DMACOSX -DUSE_JNI -I/Library/Frameworks/Lua.framework/Headers -I/System/Library/Frameworks/JavaVM.framework/Headers -DOGLR -DPIX32OGL -DPIXALPHA
+build/powder-x.jnilib: LFLAGS := -lm -lbz2 -lfftw3f -framework Lua -framework JavaVM -framework Cocoa -framework OpenGL
 
 CFLAGS += -DGRAVFFT -DLUACONSOLE
 
@@ -67,6 +70,14 @@ build/obj/powder-x/%.o: src/%.cpp $(HEADERS)
 buildpaths-powder-x:
 	$(shell mkdir -p build/obj/powder-x/)
 	$(shell mkdir -p $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder-x/%.o,$(OBJS)))))
+
+build/powder-x.jnilib: buildpaths-powder-x.jnilib generate $(patsubst build/obj/%.o,build/obj/powder-x.jnilib/%.o,$(OBJS))
+	$(CPPC) -dynamiclib $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder-x.jnilib/%.o,$(OBJS)) src/powdertoyjava/OpenGLCanvasMacOS.mm $(LFLAGS) -o $@ -ggdb
+build/obj/powder-x.jnilib/%.o: src/%.cpp $(HEADERS)
+	$(CPPC) -c $(CFLAGS) $(OFLAGS) -o $@ $< -ggdb
+buildpaths-powder-x.jnilib:
+	$(shell mkdir -p build/obj/powder-x.jnilib/)
+	$(shell mkdir -p $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder-x.jnilib/%.o,$(OBJS)))))
 	
 generate: $(GENERATEDSOURCES)
 	touch generate

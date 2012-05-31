@@ -9,7 +9,7 @@
 #define KITTY_H_
 
 #include <string>
-#include "SDL.h"
+#include "interface/Engine.h"
 //#include "game/GameModel.h"
 
 class GameModel;

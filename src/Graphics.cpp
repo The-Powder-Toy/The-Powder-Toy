@@ -1,5 +1,4 @@
 #include <cmath>
-#include "SDL.h"
 #include <bzlib.h>
 #include <string>
 #include "Config.h"

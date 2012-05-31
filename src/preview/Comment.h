@@ -8,13 +8,13 @@
 #ifndef COMMENT_H_
 #define COMMENT_H_
 
-class Comment
+class SaveComment
 {
 public:
 	int authorID;
 	std::string authorName;
 	std::string comment;
-	Comment(int userID, std::string username, std::string commentText):
+	SaveComment(int userID, std::string username, std::string commentText):
 		authorID(userID), authorName(username), comment(commentText)
 	{
 	}

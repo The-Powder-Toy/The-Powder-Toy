@@ -63,7 +63,7 @@ public:
 	LoginStatus Login(string username, string password, User & user);
 	void ClearThumbnailRequests();
 	std::vector<Save*> * SearchSaves(int start, int count, string query, string sort, string category, int & resultCount);
-	std::vector<Comment*> * GetComments(int saveID, int start, int count);
+	std::vector<SaveComment*> * GetComments(int saveID, int start, int count);
 	Thumbnail * GetPreview(int saveID, int saveDate);
 	Thumbnail * GetThumbnail(int saveID, int saveDate);
 	Save * GetSave(int saveID, int saveDate);

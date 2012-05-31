@@ -23,7 +23,7 @@ class PreviewModel {
 	vector<PreviewView*> observers;
 	Save * save;
 	Thumbnail * savePreview;
-	std::vector<Comment*> * saveComments;
+	std::vector<SaveComment*> * saveComments;
 	void notifyPreviewChanged();
 	void notifySaveChanged();
 	void notifySaveCommentsChanged();
@@ -53,7 +53,7 @@ public:
 	PreviewModel();
 	Thumbnail * GetPreview();
 	Save * GetSave();
-	std::vector<Comment*> * GetComments();
+	std::vector<SaveComment*> * GetComments();
 	void AddObserver(PreviewView * observer);
 	void UpdateSave(int saveID, int saveDate);
 	void SetFavourite(bool favourite);
