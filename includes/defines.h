@@ -162,6 +162,8 @@ typedef unsigned int pixel;
 typedef unsigned char uint8;
 
 extern int saveURIOpen;
+extern char * saveDataOpen;
+extern int saveDataOpenSize;
 
 extern int amd;
 

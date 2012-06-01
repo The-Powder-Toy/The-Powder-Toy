@@ -820,7 +820,7 @@ void draw_svf_ui(pixel *vid_buf, int alternate)// all the buttons at the bottom
 	}
 
 	// the reload button
-	c = (svf_open || svf_fileopen) ? 255 : 128;
+	c = (svf_last) ? 255 : 128;
 	drawtext(vid_buf, 23, YRES+(MENUSIZE-14), "\x91", c, c, c, 255);
 	drawrect(vid_buf, 19, YRES+(MENUSIZE-16), 16, 14, c, c, c, 255);
 

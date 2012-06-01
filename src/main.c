@@ -203,6 +203,8 @@ char new_message_msg[255];
 float mheat = 0.0f;
 
 int saveURIOpen = 0;
+char * saveDataOpen = NULL;
+int saveDataOpenSize = 0;
 
 int do_open = 0;
 int sys_pause = 0;
@@ -830,6 +832,11 @@ int main(int argc, char *argv[])
 			argc = i+2;
 			break;
 		}
+		else if (!strncmp(argv[i], "open", 5) && i+1<argc)
+		{
+			saveDataOpen = file_load(argv[i+1], &saveDataOpenSize);
+			i++;
+		}
 	}
 	
 	load_presets();
@@ -875,26 +882,6 @@ int main(int argc, char *argv[])
 		}
 		else if (!strncmp(argv[i], "open", 5) && i+1<argc)
 		{
-			int size;
-			void *file_data;
-			file_data = file_load(argv[i+1], &size);
-			if (file_data)
-			{
-				svf_last = file_data;
-				svf_lsize = size;
-				if(!parse_save(file_data, size, 1, 0, 0, bmap, fvx, fvy, vx, vy, pv, signs, parts, pmap))
-				{
-					it=0;
-					svf_filename[0] = 0;
-					svf_fileopen = 1;
-				} else {
-					saveOpenError = 1;
-					svf_last = NULL;
-					svf_lsize = 0;
-					free(file_data);
-					file_data = NULL;
-				}
-			}
 			i++;
 		}
 		else if (!strncmp(argv[i], "ddir", 5) && i+1<argc)
@@ -979,6 +966,7 @@ int main(int argc, char *argv[])
 	
 	if(saveOpenError)
 	{
+		saveOpenError = 0;
 		error_ui(vid_buf, 0, "Unable to open save file.");
 	}
 
@@ -1128,6 +1116,37 @@ int main(int argc, char *argv[])
 				http_ver_check = NULL;
 			}
 			do_check = (do_check+1) & 15;
+		}
+		if (saveDataOpen)
+		{
+			//Clear all settings and simulation data
+			clear_sim();
+			it=0;
+			legacy_enable = 0;
+			svf_filename[0] = 0;
+			svf_fileopen = 0;
+			svf_myvote = 0;
+			svf_open = 0;
+			svf_publish = 0;
+			svf_own = 0;
+			svf_id[0] = 0;
+			svf_name[0] = 0;
+			svf_tags[0] = 0;
+			svf_description[0] = 0;
+			gravityMode = 0;
+			airMode = 0;
+			
+			svf_last = saveDataOpen;
+			svf_lsize = saveDataOpenSize;
+			if(parse_save(saveDataOpen, saveDataOpenSize, 1, 0, 0, bmap, fvx, fvy, vx, vy, pv, signs, parts, pmap))
+			{
+				saveOpenError = 1;
+				svf_last = NULL;
+				svf_lsize = 0;
+				free(saveDataOpen);
+			}
+			saveDataOpenSize = 0;
+			saveDataOpen = NULL;
 		}
 		if (http_session_check)
 		{
@@ -2280,7 +2299,7 @@ int main(int argc, char *argv[])
 							memset(fire_b, 0, sizeof(fire_b));
 						}
 					}
-					if (x>=19 && x<=35 && svf_last && (svf_open || svf_fileopen) && !bq) {
+					if (x>=19 && x<=35 && svf_last && !bq) {
 						//int tpval = sys_pause;
 						parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, vx, vy, pv, fvx, fvy, signs, parts, pmap);
 						//sys_pause = tpval;

@@ -233,6 +233,7 @@ static void CustomApplicationMain (int argc, char **argv)
 
 #endif
 
+void *file_load(char *fn, int *size);
 
 /*
  * Catch document open requests...this lets us notice files when the app
@@ -251,15 +252,15 @@ static void CustomApplicationMain (int argc, char **argv)
  */
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
-    const char *temparg;
+    /*const char *temparg;
     size_t arglen;
     char *arg;
     char **newargv;
 
-    if (!gFinderLaunch)  /* MacOS is passing command line args. */
+    if (!gFinderLaunch)
         return FALSE;
 
-    if (gCalledAppMainline)  /* app has started, ignore this document. */
+    if (gCalledAppMainline)
         return FALSE;
 
     temparg = [filename UTF8String];
@@ -280,7 +281,24 @@ static void CustomApplicationMain (int argc, char **argv)
     gArgv[gArgc++] = "open";
     gArgv[gArgc++] = arg;
     gArgv[gArgc] = NULL;
-    return TRUE;
+    return TRUE;*/
+	const char * tempArg;
+	char * arg;
+	size_t argLen;
+	tempArg = [filename UTF8String];
+	argLen = SDL_strlen(tempArg)+1;
+	arg = (char *) SDL_malloc(argLen);
+	if (arg == NULL)
+        return FALSE;
+	SDL_strlcpy(arg, tempArg, argLen);
+	
+	saveDataOpen = file_load(arg, &saveDataOpenSize);
+	if(saveDataOpen)
+		return TRUE;
+	
+	saveDataOpen = NULL;
+	saveDataOpenSize = 0;
+	return FALSE;
 }
 
 - (void)handleGetURLEvent:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
