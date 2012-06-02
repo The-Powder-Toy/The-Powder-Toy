@@ -1,8 +1,8 @@
 #include <iostream>
+#include <stack>
+#include <cstdio>
 
 #include "Config.h"
-#include <stack>
-
 #include "interface/Window.h"
 #include "interface/Platform.h"
 #include "interface/Engine.h"

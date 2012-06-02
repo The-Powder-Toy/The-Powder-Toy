@@ -8,6 +8,7 @@
 #ifndef SIMULATION_H_
 #define SIMULATION_H_
 #include <cstring>
+#include <cstddef>
 #include "Config.h"
 #include "Renderer.h"
 #include "Graphics.h"

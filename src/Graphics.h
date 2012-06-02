@@ -2,6 +2,8 @@
 #define GRAPHICS_H
 
 #include <string>
+#include <cstdlib>
+#include <cstring>
 #if defined(OGLR)
 #include "OpenGLHeaders.h"
 #endif
