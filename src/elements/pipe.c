@@ -292,11 +292,11 @@ int graphics_PIPE(GRAPHICS_FUNC_ARGS)
 			*colb = PIXR(ptypes[t].pcolors);
 			if (ptypes[t].graphics_func)
 			{
-				(*(ptypes[t].graphics_func))(&tpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
+				(*(ptypes[t].graphics_func))(&tpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb, vid);
 			}
 			else
 			{
-				graphics_DEFAULT(&tpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
+				graphics_DEFAULT(&tpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb, vid);
 			}
 		}
 		//*colr = PIXR(ptypes[cpart->tmp&0xFF].pcolors);

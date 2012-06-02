@@ -32,7 +32,6 @@ int update_STKM(UPDATE_FUNC_ARGS)
 
 int graphics_STKM(GRAPHICS_FUNC_ARGS)
 {	
-	*pixel_mode = PSPEC_STICKMAN;
 	if ((int)player.elem<PT_NUM)
 	{
 		*colr = PIXR(ptypes[player.elem].pcolors);
@@ -43,7 +42,8 @@ int graphics_STKM(GRAPHICS_FUNC_ARGS)
 	{
 		*colr = *colg = *colb = 255;
 	}
-	return 1;
+	graphics_stickmen(GRAPHICS_FUNC_SUBCALL_ARGS);
+	return 0;
 }
 
 int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
@@ -57,7 +57,7 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 		playerp->elem = parts[i].ctype;
 	playerp->frames++;
 
-	//Tempirature handling
+	//Temperature handling
 	if (parts[i].temp<243)
 		parts[i].life -= 1;
 	if ((parts[i].temp<309.6f) && (parts[i].temp>=243))

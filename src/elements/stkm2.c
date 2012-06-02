@@ -29,7 +29,6 @@ int update_STKM2(UPDATE_FUNC_ARGS) {
 
 int graphics_STKM2(GRAPHICS_FUNC_ARGS)
 {	
-	*pixel_mode = PSPEC_STICKMAN;
 	if ((int)player2.elem<PT_NUM)
 	{
 		*colr = PIXR(ptypes[player2.elem].pcolors);
@@ -40,5 +39,6 @@ int graphics_STKM2(GRAPHICS_FUNC_ARGS)
 	{
 		*colr = *colg = *colb = 255;
 	}
-	return 1;
+	graphics_stickmen(GRAPHICS_FUNC_SUBCALL_ARGS);
+	return 0;
 }

@@ -107,7 +107,6 @@ int update_FIGH(UPDATE_FUNC_ARGS)
 int graphics_FIGH(GRAPHICS_FUNC_ARGS)
 {	
 	playerst * cplayer = &fighters[(unsigned char)cpart->tmp];
-	*pixel_mode = PSPEC_STICKMAN;
 	if (cplayer->elem<PT_NUM)
 	{
 		*colr = PIXR(ptypes[cplayer->elem].pcolors);
@@ -118,5 +117,6 @@ int graphics_FIGH(GRAPHICS_FUNC_ARGS)
 	{
 		*colr = *colg = *colb = 255;
 	}
-	return 1;
+	graphics_stickmen(GRAPHICS_FUNC_SUBCALL_ARGS);
+	return 0;
 }

@@ -274,8 +274,8 @@
 #define FLAG_SKIPMOVE	0x2 // skip movement for one frame, only implemented for PHOT
 #define FLAG_MOVABLE	0x4 // if can move
 
-#define GRAPHICS_FUNC_ARGS particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
-#define GRAPHICS_FUNC_SUBCALL_ARGS cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb
+#define GRAPHICS_FUNC_ARGS particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb, pixel *vid
+#define GRAPHICS_FUNC_SUBCALL_ARGS cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb, vid
 
 
 struct particle
@@ -349,6 +349,8 @@ int graphics_ACEL(GRAPHICS_FUNC_ARGS);
 int graphics_DCEL(GRAPHICS_FUNC_ARGS);
 int graphics_GEL(GRAPHICS_FUNC_ARGS);
 int graphics_TRON(GRAPHICS_FUNC_ARGS);
+int graphics_SOAP(GRAPHICS_FUNC_ARGS);
+int graphics_stickmen(GRAPHICS_FUNC_ARGS);
 
 void TRON_init_graphics();
 
