@@ -1,3 +1,4 @@
+#ifdef USE_JNI
 #include "OpenGLCanvasMacOS.h"
 
 static jfieldID ctxID = NULL;
@@ -165,3 +166,4 @@ JNIEXPORT void JNICALL Java_OpenGLCanvas_releaseOpenGL(JNIEnv *env, jobject canv
 	
 	freeContext(env, canvas, ci);
 }
+#endif

@@ -1,3 +1,4 @@
+#ifdef USE_JNI
 #import <jawt_md.h>
 
 #import <Cocoa/Cocoa.h>
@@ -30,4 +31,5 @@ extern "C" {
 	JNIEXPORT void JNICALL Java_OpenGLCanvas_releaseOpenGL(JNIEnv *env, jobject canvas);
 #ifdef __cplusplus
 }
+#endif
 #endif
