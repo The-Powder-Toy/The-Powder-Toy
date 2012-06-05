@@ -23,7 +23,7 @@ public:
 	//int ** particleMap;
 	int particlesCount;
 	Particle * particles;
-	char ** blockMap;
+	unsigned char ** blockMap;
 	float ** fanVelX;
 	float ** fanVelY;
 	
@@ -63,7 +63,7 @@ public:
 private:
 	float * fanVelXPtr;
 	float * fanVelYPtr;
-	char * blockMapPtr;
+	unsigned char * blockMapPtr;
 
 	ParseResult readOPS(char * data, int dataLength);
 	ParseResult readPSv(char * data, int dataLength);

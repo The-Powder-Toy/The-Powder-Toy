@@ -47,8 +47,8 @@ void GameSave::setSize(int newWidth, int newHeight)
 	this->height = (newHeight/CELL)*CELL;
 	
 	particles = new Particle[NPART];
-	blockMap = new char*[height/CELL];
-	blockMapPtr = new char[(height/CELL)*(width/CELL)];
+	blockMap = new unsigned char*[height/CELL];
+	blockMapPtr = new unsigned char[(height/CELL)*(width/CELL)];
 	fill(blockMapPtr, blockMapPtr+((height/CELL)*(width/CELL)), 0);
 	for(int y = 0; y < height/CELL; y++)
 		blockMap[y] = &blockMapPtr[y*(width/CELL)];
@@ -658,7 +658,6 @@ GameSave::ParseResult GameSave::readPSv(char * data, int dataLength)
 					p++;
 					continue;
 				}
-				
 				blockMap[y][x] = d[p];
 				if (blockMap[y][x]==1)
 					blockMap[y][x]=WL_WALL;
