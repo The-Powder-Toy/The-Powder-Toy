@@ -1022,6 +1022,9 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		case PT_MORT:
 			parts[i].vx = 2;
 			break;
+		case PT_EXOT:
+			parts[i].life = 250;
+			break;
 		case PT_STKM:
 			if (player.spwn==0)
 			{
