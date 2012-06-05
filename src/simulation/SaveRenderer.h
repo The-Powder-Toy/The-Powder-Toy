@@ -10,6 +10,7 @@
 
 #include "Singleton.h"
 #include "search/Thumbnail.h"
+#include "client/GameSave.h"
 
 class Graphics;
 class Simulation;
@@ -20,7 +21,8 @@ class SaveRenderer: public Singleton<SaveRenderer> {
 	Renderer * ren;
 public:
 	SaveRenderer();
-	Thumbnail * Render(unsigned char * data, int dataLength);
+	Thumbnail * Render(GameSave * save);
+	Thumbnail * Render(unsigned char * saveData, int saveDataSize);
 	virtual ~SaveRenderer();
 };
 

@@ -275,7 +275,8 @@ void GameModel::SetSave(Save * newSave)
 	currentSave = newSave;
 	if(currentSave)
 	{
-		int returnVal = sim->Load(currentSave->GetData(), currentSave->GetDataLength());
+		GameSave * newSave = new GameSave((char*)currentSave->GetData(), currentSave->GetDataLength());
+		int returnVal = sim->Load(newSave);
 		if(returnVal){
 			delete currentSave;
 			currentSave = NULL;
@@ -429,44 +430,47 @@ void GameModel::ClearSimulation()
 	sim->clear_sim();
 }
 
-void GameModel::AddStamp(unsigned char * saveData, int saveSize)
+void GameModel::SetStamp(Save * save)
 {
-	Save * tempSave = new Save(0, 0, 0, 0, "", "");
-	tempSave->SetData(saveData, saveSize);
-	Client::Ref().AddStamp(tempSave);
-	delete tempSave;
+	if(stamp)
+		delete stamp;
+	stamp = new GameSave((char*)save->GetData(), save->GetDataLength());
+	notifyStampChanged();
 }
 
-void GameModel::SetClipboard(unsigned char * saveData, int saveSize)
+void GameModel::AddStamp(GameSave * save)
 {
-	if(clipboard)
-		delete clipboard;
-	clipboard = new Save(0, 0, 0, 0, "", "");
-	clipboard->SetData(saveData, saveSize);
+	if(stamp)
+		delete stamp;
+	stamp = save;
+	
+	char * saveData;
+	int saveSize;
+	saveData = save->Serialise(saveSize);
+	Save * tempSave = new Save(0, 0, 0, 0, "", "");
+	tempSave->SetData((unsigned char*)saveData, saveSize);
+	Client::Ref().AddStamp(tempSave);
+	delete tempSave;
+	
 	notifyClipboardChanged();
 }
 
-Save * GameModel::GetClipboard()
+void GameModel::SetClipboard(GameSave * save)
+{
+	if(clipboard)
+		delete clipboard;
+	clipboard = save;
+	notifyClipboardChanged();
+}
+
+GameSave * GameModel::GetClipboard()
 {
 	return clipboard;
 }
 
-Save * GameModel::GetStamp()
+GameSave * GameModel::GetStamp()
 {
 	return stamp;
-}
-
-void GameModel::SetStamp(Save * newStamp)
-{
-	if(stamp)
-		delete stamp;
-	if(newStamp)
-	{
-		stamp = new Save(*newStamp);
-	}
-	else
-		stamp = NULL;
-	notifyStampChanged();
 }
 
 void GameModel::Log(string message)

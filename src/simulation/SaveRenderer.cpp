@@ -18,39 +18,46 @@ SaveRenderer::SaveRenderer(){
 	ren = new Renderer(g, sim);
 }
 
-Thumbnail * SaveRenderer::Render(unsigned char * data, int dataLength)
+Thumbnail * SaveRenderer::Render(GameSave * save)
 {
 	Thumbnail * tempThumb = NULL;
 	int width, height;
+	width, height = save->width, save->height;
+	
 	pixel * pData = NULL;
 	pixel * dst;
 	pixel * src = g->vid;
-
+	
 	g->Clear();
 	sim->clear_sim();
-	if(sim->Load(data, dataLength))
+	if(sim->Load(save))
 		goto finish;
-
-	if(SaveLoader::Info(data, dataLength, width, height))
-		goto finish;
-
+	
 	ren->render_parts();
-
+	
 	dst = pData = (pixel *)malloc(PIXELSIZE * ((width*CELL)*(height*CELL)));
-
+	
 	for(int i = 0; i < height*CELL; i++)
 	{
 		memcpy(dst, src, (width*CELL)*PIXELSIZE);
 		dst+=(width*CELL);///PIXELSIZE;
 		src+=XRES+BARSIZE;
 	}
-
+	
 	tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
-
+	
 finish:
 	if(pData)
 		free(pData);
 	return tempThumb;
+}
+
+Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize)
+{
+	GameSave * tempSave = new GameSave((char*)saveData, dataSize);
+	Thumbnail * thumb = Render(tempSave);
+	delete tempSave;
+	return thumb;
 }
 
 SaveRenderer::~SaveRenderer() {

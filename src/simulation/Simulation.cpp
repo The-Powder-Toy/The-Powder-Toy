@@ -12,7 +12,64 @@
 #undef LUACONSOLE
 //#include "cat/LuaScriptHelper.h"
 
-int Simulation::Load(unsigned char * data, int dataLength)
+int Simulation::Load(GameSave * save)
+{
+	return Load(0, 0, save);
+}
+
+int Simulation::Load(int x, int y, GameSave * save)
+{
+	for(int i = 0; i < NPART && i < save->particlesCount; i++)
+	{
+		parts[i] = save->particles[i];
+	}
+	parts_lastActiveIndex = NPART-1;
+	for(int i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
+	{
+		signs.push_back(save->signs[i]);
+	}
+	for(int x = 0; x < save->width/CELL; x++)
+	{
+		for(int y = 0; y < save->height/CELL; y++)
+		{
+			bmap[y][x] = save->blockMap[y][x];
+			fvx[y][x] = save->fanVelX[y][x];
+			fvy[y][x] = save->fanVelY[y][x];
+		}
+	}
+	return 0;
+}
+
+GameSave * Simulation::Save()
+{
+	Save(0, 0, XRES, YRES);
+}
+
+GameSave * Simulation::Save(int x1, int y1, int x2, int y2)
+{
+	GameSave * newSave = new GameSave(abs(x2-x1), abs(y2-y1));
+	
+	for(int i = 0; i < NPART; i++)
+	{
+		int x, y;
+		x = int(parts[i].x + 0.5f);
+		y = int(parts[i].y + 0.5f);
+		if(parts[i].type && x >= x1 && y >= y1 && x < x2 && y < y2)
+		{
+			*newSave << parts[i];
+		}
+	}
+	
+	for(int i = 0; i < MAXSIGNS && i < signs.size(); i++)
+	{
+		if(signs[i].text.length() && signs[i].x >= x1 && signs[i].y >= y1 && signs[i].x < x2 && signs[i].y < y2)
+		{
+			*newSave << signs[i];
+		}
+	}
+}
+
+/*int Simulation::Load(unsigned char * data, int dataLength)
 {
 	return SaveLoader::Load(data, dataLength, this, true, 0, 0);
 }
@@ -30,7 +87,7 @@ unsigned char * Simulation::Save(int & dataLength)
 unsigned char * Simulation::Save(int x1, int y1, int x2, int y2, int & dataLength)
 {
 	return SaveLoader::Build(dataLength, this, x1, y1, x2-x1, y2-y1);
-}
+}*/
 
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 {

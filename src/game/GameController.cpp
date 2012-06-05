@@ -172,7 +172,7 @@ void GameController::PlaceStamp(ui::Point position)
 {
 	if(gameModel->GetStamp())
 	{
-		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetStamp()->data, gameModel->GetStamp()->dataLength);
+		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetStamp());
 		gameModel->SetPaused(gameModel->GetPaused());
 	}
 }
@@ -181,7 +181,7 @@ void GameController::PlaceClipboard(ui::Point position)
 {
 	if(gameModel->GetClipboard())
 	{
-		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetClipboard()->data, gameModel->GetClipboard()->dataLength);
+		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetClipboard());
 		gameModel->SetPaused(gameModel->GetPaused());
 	}
 }
@@ -316,21 +316,18 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 
 void GameController::StampRegion(ui::Point point1, ui::Point point2)
 {
-	int saveSize;
-	unsigned char * saveData;
-	saveData = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, saveSize);
-	if(saveData && saveSize)
-		gameModel->AddStamp(saveData, saveSize);
+	GameSave * newSave;
+	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y);
+	if(newSave)
+		gameModel->AddStamp(newSave);
 }
 
 void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 {
-	int saveSize;
-	unsigned char * saveData;
-	saveData = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, saveSize);
-
-	if(saveData && saveSize)
-		gameModel->SetClipboard(saveData, saveSize);
+	GameSave * newSave;
+	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y);
+	if(newSave)
+		gameModel->SetClipboard(newSave);
 }
 
 bool GameController::MouseMove(int x, int y, int dx, int dy)
@@ -530,24 +527,25 @@ void GameController::OpenSaveWindow()
 {
 	if(gameModel->GetUser().ID)
 	{
-		int tempSaveLength;
-		unsigned char * tempData = gameModel->GetSimulation()->Save(tempSaveLength);
-		if(!tempData)
+		GameSave * tempSave = gameModel->GetSimulation()->Save();
+		if(!tempSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");
 		}
 		else
 		{
+			int dataSize;
+			unsigned char * tempData = (unsigned char*)tempSave->Serialise(dataSize);
 			if(gameModel->GetSave())
 			{
 				Save tempSave(*gameModel->GetSave());
-				tempSave.SetData(tempData, tempSaveLength);
+				tempSave.SetData(tempData, dataSize);
 				ssave = new SSaveController(new SSaveCallback(this), tempSave);
 			}
 			else
-			{
+			{				
 				Save tempSave(0, 0, 0, 0, gameModel->GetUser().Username, "");
-				tempSave.SetData(tempData, tempSaveLength);
+				tempSave.SetData(tempData, dataSize);
 				ssave = new SSaveController(new SSaveCallback(this), tempSave);
 			}
 			ui::Engine::Ref().ShowWindow(ssave->GetView());
@@ -585,7 +583,10 @@ void GameController::ClearSim()
 void GameController::ReloadSim()
 {
 	if(gameModel->GetSave() && gameModel->GetSave()->GetData())
-		gameModel->GetSimulation()->Load(gameModel->GetSave()->GetData(), gameModel->GetSave()->GetDataLength());
+	{
+		GameSave * newSave = new GameSave((char*)gameModel->GetSave()->GetData(), gameModel->GetSave()->GetDataLength());
+		gameModel->GetSimulation()->Load(newSave);
+	}
 }
 
 std::string GameController::ElementResolve(int type)

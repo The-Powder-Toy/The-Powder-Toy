@@ -34,8 +34,8 @@ class GameModel
 private:
 	//int clipboardSize;
 	//unsigned char * clipboardData;
-	Save * stamp;
-	Save * clipboard;
+	GameSave * stamp;
+	GameSave * clipboard;
 	deque<string> consoleLog;
 	vector<GameView*> observers;
 	vector<Tool*> toolList;
@@ -111,12 +111,12 @@ public:
 	void SetZoomWindowPosition(ui::Point position);
 	ui::Point GetZoomWindowPosition();
 	void SetStamp(Save * newStamp);
-	void AddStamp(unsigned char * saveData, int saveSize);
-	void SetClipboard(unsigned char * saveData, int saveSize);
+	void AddStamp(GameSave * save);
+	void SetClipboard(GameSave * save);
 	void Log(string message);
 	deque<string> GetLog();
-	Save * GetClipboard();
-	Save * GetStamp();
+	GameSave * GetClipboard();
+	GameSave * GetStamp();
 };
 
 #endif // GAMEMODEL_H

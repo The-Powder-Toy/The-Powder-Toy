@@ -160,8 +160,6 @@ class SimTool;
 
 class Element;
 
-std::vector<Element*> GetDefaultElements();
-
 gol_menu * LoadGOLMenu(int & golMenuCount);
 
 int * LoadGOLTypes(int & golTypeCount);
@@ -172,10 +170,6 @@ wall_type * LoadWalls(int & wallCount);
 
 menu_section * LoadMenus(int & menuCount);
 
-part_type * LoadElements(int & elementCount);
-
 unsigned int * LoadLatent(int & elementCount);
-
-part_transition * LoadTransitions(int & transitionCount);
 
 #endif /* SIMULATIONDATA_H_ */

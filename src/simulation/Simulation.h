@@ -12,12 +12,20 @@
 #include "Config.h"
 #include "Renderer.h"
 #include "Graphics.h"
-#include "Elements.h"
+//#include "Elements.h"
 #include "Tools.h"
 #include "Misc.h"
 #include "game/Brush.h"
 #include "Gravity.h"
 #include "SimulationData.h"
+#include "Sign.h"
+#include "Particle.h"
+#include "StorageClasses.h"
+#include "Player.h"
+#include "WallType.h"
+#include "GOLMenu.h"
+#include "MenuSection.h"
+#include "client/GameSave.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
 
@@ -25,156 +33,7 @@ class Simulation;
 class Renderer;
 class Gravity;
 class Air;
-
-//Describes fields in structures such as Particle or Element
-struct StructProperty
-{
-	enum PropertyType { ParticleType, Colour, Integer, UInteger, Float, String };
-	std::string Name;
-	PropertyType Type;
-	intptr_t Offset;
-	
-	StructProperty(std::string name, PropertyType type, intptr_t offset):
-		Name(name),
-		Type(type),
-		Offset(offset)
-	{
-		
-	}
-};
-
-struct Particle
-{
-	int type;
-	int life, ctype;
-	float x, y, vx, vy;
-	float temp;
-	float pavg[2];
-	int flags;
-	int tmp;
-	int tmp2;
-	unsigned int dcolour;
-	/** Returns a list of properties, their type and offset within the structure that can be changed
-	by higher-level processes refering to them by name such as Lua or the property tool **/
-	static std::vector<StructProperty> GetProperties()
-	{
-		std::vector<StructProperty> properties;
-		properties.push_back(StructProperty("type", StructProperty::ParticleType, offsetof(Particle, type)));
-		properties.push_back(StructProperty("life", StructProperty::ParticleType, offsetof(Particle, life)));
-		properties.push_back(StructProperty("ctype", StructProperty::ParticleType, offsetof(Particle, ctype)));
-		properties.push_back(StructProperty("x", StructProperty::Float, offsetof(Particle, x)));
-		properties.push_back(StructProperty("y", StructProperty::Float, offsetof(Particle, y)));
-		properties.push_back(StructProperty("vx", StructProperty::Float, offsetof(Particle, vx)));
-		properties.push_back(StructProperty("vy", StructProperty::Float, offsetof(Particle, vy)));
-		properties.push_back(StructProperty("temp", StructProperty::Float, offsetof(Particle, temp)));
-		properties.push_back(StructProperty("flags", StructProperty::UInteger, offsetof(Particle, flags)));
-		properties.push_back(StructProperty("tmp", StructProperty::Integer, offsetof(Particle, tmp)));
-		properties.push_back(StructProperty("tmp2", StructProperty::Integer, offsetof(Particle, tmp2)));
-		properties.push_back(StructProperty("dcolour", StructProperty::UInteger, offsetof(Particle, dcolour)));
-		return properties;
-	}
-};
-typedef struct Particle Particle;
-
-struct part_type
-{
-	char *name;
-	pixel pcolors;
-	float advection;
-	float airdrag;
-	float airloss;
-	float loss;
-	float collision;
-	float gravity;
-	float diffusion;
-	float hotair;
-	int falldown;
-	int flammable;
-	int explosive;
-	int meltable;
-	int hardness;
-	int menu;
-	int enabled;
-	int weight;
-	int menusection;
-	float heat;
-	unsigned char hconduct;
-	char *descs;
-	char state;
-	unsigned int properties;
-	int (*update_func) (UPDATE_FUNC_ARGS);
-	int (*graphics_func) (GRAPHICS_FUNC_ARGS);
-};
-typedef struct part_type part_type;
-
-struct part_transition
-{
-	float plv; // transition occurs if pv is lower than this
-	int plt;
-	float phv; // transition occurs if pv is higher than this
-	int pht;
-	float tlv; // transition occurs if t is lower than this
-	int tlt;
-	float thv; // transition occurs if t is higher than this
-	int tht;
-};
-typedef struct part_transition part_transition;
-
-
-struct wall_type
-{
-	pixel colour;
-	pixel eglow; // if emap set, add this to fire glow
-	int drawstyle;
-	const char *descs;
-};
-typedef struct wall_type wall_type;
-
-struct gol_menu
-{
-	const char *name;
-	pixel colour;
-	int goltype;
-	const char *description;
-};
-typedef struct gol_menu gol_menu;
-
-struct menu_section
-{
-	char *icon;
-	const char *name;
-	int itemcount;
-	int doshow;
-};
-typedef struct menu_section menu_section;
-
-struct sign
-{
-public:
-	enum Justification { Left = 0, Centre = 1, Right = 2 };
-	sign(std::string text_, int x_, int y_, Justification justification_):
-		text(text_),
-		x(x_),
-		y(y_),
-		ju(justification_)
-	{}
-	int x, y;
-	Justification ju;
-	std::string text;
-};
-typedef struct sign sign;
-
-struct playerst
-{
-	char comm;           //command cell
-	char pcomm;          //previous command
-	int elem;            //element power
-	float legs[16];      //legs' positions
-	float accs[8];       //accelerations
-	char spwn;           //if stick man was spawned
-	unsigned int frames; //frames since last particle spawn - used when spawning LIGH
-};
-typedef struct playerst playerst;
+class GameSave;
 
 //#ifdef _cplusplus
 class Simulation
@@ -253,10 +112,10 @@ public:
 	int sandcolour_g;
 	int sandcolour_b; //TODO: Make a single variable
 
-	int Load(unsigned char * data, int dataLength);
-	int Load(int x, int y, unsigned char * data, int dataLength);
-	unsigned char * Save(int & dataLength);
-	unsigned char * Save(int x1, int y1, int x2, int y2, int & dataLength);
+	int Load(GameSave * save);
+	int Load(int x, int y, GameSave * save);
+	GameSave * Save();
+	GameSave * Save(int x1, int y1, int x2, int y2);
 	Particle Get(int x, int y);
 	inline int is_blocking(int t, int x, int y);
 	inline int is_boundary(int pt, int x, int y);

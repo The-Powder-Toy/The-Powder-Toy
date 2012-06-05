@@ -834,7 +834,7 @@ void GameView::NotifyClipboardChanged(GameModel * sender)
 		delete clipboardThumb;
 	if(sender->GetClipboard())
 	{
-		clipboardThumb = SaveRenderer::Ref().Render(sender->GetClipboard()->GetData(), sender->GetClipboard()->GetDataLength());
+		clipboardThumb = SaveRenderer::Ref().Render(sender->GetClipboard());
 	}
 	else
 		clipboardThumb = NULL;
@@ -847,7 +847,7 @@ void GameView::NotifyStampChanged(GameModel * sender)
 		delete stampThumb;
 	if(sender->GetStamp())
 	{
-		stampThumb = SaveRenderer::Ref().Render(sender->GetStamp()->GetData(), sender->GetStamp()->GetDataLength());
+		stampThumb = SaveRenderer::Ref().Render(sender->GetStamp());
 	}
 	else
 		stampThumb = NULL;

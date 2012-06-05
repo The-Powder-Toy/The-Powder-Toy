@@ -436,28 +436,28 @@ int luacon_transition_getproperty(char * key, int * format)
 {
 	int offset;
 	if (strcmp(key, "presHighValue")==0){
-		offset = offsetof(part_transition, phv);
+		offset = offsetof(Element, HighPressure);
 		*format = 1;
 	} else if (strcmp(key, "presHighType")==0){
-		offset = offsetof(part_transition, pht);
+		offset = offsetof(Element, HighPressureTransition);
 		*format = 0;
 	} else if (strcmp(key, "presLowValue")==0){
-		offset = offsetof(part_transition, plv);
+		offset = offsetof(Element, LowPressure);
 		*format = 1;
 	} else if (strcmp(key, "presLowType")==0){
-		offset = offsetof(part_transition, plt);
+		offset = offsetof(Element, LowPressureTransition);
 		*format = 0;
 	} else if (strcmp(key, "tempHighValue")==0){
-		offset = offsetof(part_transition, thv);
+		offset = offsetof(Element, HighTemperature);
 		*format = 1;
 	} else if (strcmp(key, "tempHighType")==0){
-		offset = offsetof(part_transition, tht);
+		offset = offsetof(Element, HighTemperatureTransition);
 		*format = 0;
 	} else if (strcmp(key, "tempLowValue")==0){
-		offset = offsetof(part_transition, tlv);
+		offset = offsetof(Element, LowTemperature);
 		*format = 1;
 	} else if (strcmp(key, "tempLowType")==0){
-		offset = offsetof(part_transition, tlt);
+		offset = offsetof(Element, LowTemperatureTransition);
 		*format = 0;
 	} else {
 		offset = -1;
@@ -534,115 +534,115 @@ int luacon_element_getproperty(char * key, int * format, unsigned int * modified
 {
 	int offset;
 	if (strcmp(key, "name")==0){
-		offset = offsetof(part_type, name);
+		offset = offsetof(Element, Name);
 		*format = 2;
 	}
 	else if (strcmp(key, "color")==0){
-		offset = offsetof(part_type, pcolors);
+		offset = offsetof(Element, Colour);
 		*format = 0;
 		if (modified_stuff)
 			*modified_stuff |= LUACON_EL_MODIFIED_GRAPHICS;
 	}
 	else if (strcmp(key, "colour")==0){
-		offset = offsetof(part_type, pcolors);
+		offset = offsetof(Element, Colour);
 		*format = 0;
 		if (modified_stuff)
 			*modified_stuff |= LUACON_EL_MODIFIED_GRAPHICS;
 	}
 	else if (strcmp(key, "advection")==0){
-		offset = offsetof(part_type, advection);
+		offset = offsetof(Element, Advection);
 		*format = 1;
 	}
 	else if (strcmp(key, "airdrag")==0){
-		offset = offsetof(part_type, airdrag);
+		offset = offsetof(Element, AirDrag);
 		*format = 1;
 	}
 	else if (strcmp(key, "airloss")==0){
-		offset = offsetof(part_type, airloss);
+		offset = offsetof(Element, AirLoss);
 		*format = 1;
 	}
 	else if (strcmp(key, "loss")==0){
-		offset = offsetof(part_type, loss);
+		offset = offsetof(Element, Loss);
 		*format = 1;
 	}
 	else if (strcmp(key, "collision")==0){
-		offset = offsetof(part_type, collision);
+		offset = offsetof(Element, Collision);
 		*format = 1;
 	}
 	else if (strcmp(key, "gravity")==0){
-		offset = offsetof(part_type, gravity);
+		offset = offsetof(Element, Gravity);
 		*format = 1;
 	}
 	else if (strcmp(key, "diffusion")==0){
-		offset = offsetof(part_type, diffusion);
+		offset = offsetof(Element, Diffusion);
 		*format = 1;
 	}
 	else if (strcmp(key, "hotair")==0){
-		offset = offsetof(part_type, hotair);
+		offset = offsetof(Element, HotAir);
 		*format = 1;
 	}
 	else if (strcmp(key, "falldown")==0){
-		offset = offsetof(part_type, falldown);
+		offset = offsetof(Element, Falldown);
 		*format = 0;
 	}
 	else if (strcmp(key, "flammable")==0){
-		offset = offsetof(part_type, flammable);
+		offset = offsetof(Element, Flammable);
 		*format = 0;
 	}
 	else if (strcmp(key, "explosive")==0){
-		offset = offsetof(part_type, explosive);
+		offset = offsetof(Element, Explosive);
 		*format = 0;
 	}
 	else if (strcmp(key, "meltable")==0){
-		offset = offsetof(part_type, meltable);
+		offset = offsetof(Element, Meltable);
 		*format = 0;
 	}
 	else if (strcmp(key, "hardness")==0){
-		offset = offsetof(part_type, hardness);
+		offset = offsetof(Element, Hardness);
 		*format = 0;
 	}
 	else if (strcmp(key, "menu")==0){
-		offset = offsetof(part_type, menu);
+		offset = offsetof(Element, MenuVisible);
 		*format = 0;
 		if (modified_stuff)
 			*modified_stuff |= LUACON_EL_MODIFIED_MENUS;
 	}
 	else if (strcmp(key, "enabled")==0){
-		offset = offsetof(part_type, enabled);
+		offset = offsetof(Element, Enabled);
 		*format = 0;
 	}
 	else if (strcmp(key, "weight")==0){
-		offset = offsetof(part_type, weight);
+		offset = offsetof(Element, Weight);
 		*format = 0;
 		if (modified_stuff)
 			*modified_stuff |= LUACON_EL_MODIFIED_CANMOVE;
 	}
 	else if (strcmp(key, "menusection")==0){
-		offset = offsetof(part_type, menusection);
+		offset = offsetof(Element, MenuSection);
 		*format = 0;
 		if (modified_stuff)
 			*modified_stuff |= LUACON_EL_MODIFIED_MENUS;
 	}
 	else if (strcmp(key, "heat")==0){
-		offset = offsetof(part_type, heat);
+		offset = offsetof(Element, Temperature);
 		*format = 1;
 	}
 	else if (strcmp(key, "hconduct")==0){
-		offset = offsetof(part_type, hconduct);
+		offset = offsetof(Element, HeatConduct);
 		*format = 3;
 	}
 	else if (strcmp(key, "state")==0){
-		offset = offsetof(part_type, state);
+		offset = offsetof(Element, State);
 		*format = 3;
 	}
 	else if (strcmp(key, "properties")==0){
-		offset = offsetof(part_type, properties);
+		offset = offsetof(Element, Properties);
 		*format = 0;
 		if (modified_stuff)
 			*modified_stuff |= LUACON_EL_MODIFIED_GRAPHICS | LUACON_EL_MODIFIED_CANMOVE;
 	}
 	else if (strcmp(key, "description")==0){
-		offset = offsetof(part_type, descs);
+		offset = offsetof(Element, Description);
 		*format = 2;
 	}
 	else {
