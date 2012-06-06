@@ -59,7 +59,14 @@ Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize)
 	try {
 		tempSave = new GameSave((char*)saveData, dataSize);
 	} catch (exception & e) {
-		return NULL;
+		
+		//Todo: make this look a little less shit
+		VideoBuffer buffer(64, 64);
+		buffer.SetCharacter(32, 32, 'x', 255, 255, 255, 255);
+		
+		Thumbnail * thumb = new Thumbnail(0, 0, buffer.Buffer, ui::Point(64, 64));
+		
+		return thumb;
 	}
 	Thumbnail * thumb = Render(tempSave);
 	delete tempSave;
