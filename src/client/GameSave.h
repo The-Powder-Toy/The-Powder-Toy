@@ -12,10 +12,22 @@
 #include "Misc.h"
 #include "simulation/StorageClasses.h"
 
+struct ParseException: public exception {
+	enum ParseResult { OK = 0, Corrupt, WrongVersion, InvalidDimensions, InternalError, MissingElement };
+	string message;
+	ParseResult result;
+public:
+	ParseException(ParseResult result, string message_): message(message_), result(result) {}
+	const char * what() const throw()
+	{
+		return message.c_str();
+	}
+	~ParseException() throw() {};
+};
+
 class GameSave
 {
 public:
-	enum ParseResult { OK = 0, Corrupt, WrongVersion, InvalidDimensions, InternalError, MissingElement };
 	
 	int width, height;
 
@@ -38,6 +50,7 @@ public:
 	//Signs
 	std::vector<sign> signs;
 	
+	GameSave();
 	GameSave(GameSave & save);
 	GameSave(int width, int height);
 	GameSave(char * data, int dataSize);
@@ -65,8 +78,8 @@ private:
 	float * fanVelYPtr;
 	unsigned char * blockMapPtr;
 
-	ParseResult readOPS(char * data, int dataLength);
-	ParseResult readPSv(char * data, int dataLength);
+	void readOPS(char * data, int dataLength);
+	void readPSv(char * data, int dataLength);
 	char * serialiseOPS(int & dataSize);
 	//serialisePSv();
 };

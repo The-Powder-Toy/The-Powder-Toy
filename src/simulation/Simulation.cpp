@@ -22,19 +22,27 @@ int Simulation::Load(int x, int y, GameSave * save)
 	for(int i = 0; i < NPART && i < save->particlesCount; i++)
 	{
 		parts[i] = save->particles[i];
+		parts[i].x += (float)x;
+		parts[i].y += (float)y;
 	}
 	parts_lastActiveIndex = NPART-1;
 	for(int i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
 	{
-		signs.push_back(save->signs[i]);
+		sign tempSign = save->signs[i];
+		tempSign.x += x;
+		tempSign.y += y;
+		signs.push_back(tempSign);
 	}
-	for(int x = 0; x < save->width/CELL; x++)
+	for(int blockX = 0; blockX < save->width/CELL; blockX++)
 	{
-		for(int y = 0; y < save->height/CELL; y++)
+		for(int blockY = 0; blockY < save->height/CELL; blockY++)
 		{
-			bmap[y][x] = save->blockMap[y][x];
-			fvx[y][x] = save->fanVelX[y][x];
-			fvy[y][x] = save->fanVelY[y][x];
+			if(save->blockMap[blockY][blockX])
+			{
+				bmap[blockY+(y/CELL)][blockX+(x/CELL)] = save->blockMap[blockY][blockX];
+				fvx[blockY+(y/CELL)][blockX+(x/CELL)] = save->fanVelX[blockY][blockX];
+				fvy[blockY+(y/CELL)][blockX+(x/CELL)] = save->fanVelY[blockY][blockX];
+			}
 		}
 	}
 	return 0;
@@ -42,7 +50,7 @@ int Simulation::Load(int x, int y, GameSave * save)
 
 GameSave * Simulation::Save()
 {
-	Save(0, 0, XRES, YRES);
+	return Save(0, 0, XRES, YRES);
 }
 
 GameSave * Simulation::Save(int x1, int y1, int x2, int y2)
@@ -56,7 +64,10 @@ GameSave * Simulation::Save(int x1, int y1, int x2, int y2)
 		y = int(parts[i].y + 0.5f);
 		if(parts[i].type && x >= x1 && y >= y1 && x < x2 && y < y2)
 		{
-			*newSave << parts[i];
+			Particle tempPart = parts[i];
+			tempPart.x -= x1;
+			tempPart.y -= y1;
+			*newSave << tempPart;
 		}
 	}
 	
@@ -64,9 +75,14 @@ GameSave * Simulation::Save(int x1, int y1, int x2, int y2)
 	{
 		if(signs[i].text.length() && signs[i].x >= x1 && signs[i].y >= y1 && signs[i].x < x2 && signs[i].y < y2)
 		{
-			*newSave << signs[i];
+			sign tempSign = signs[i];
+			tempSign.x -= x1;
+			tempSign.y -= y1;
+			*newSave << tempSign;
 		}
 	}
+	
+	return newSave;
 }
 
 /*int Simulation::Load(unsigned char * data, int dataLength)

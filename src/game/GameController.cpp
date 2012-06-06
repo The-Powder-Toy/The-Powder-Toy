@@ -320,6 +320,8 @@ void GameController::StampRegion(ui::Point point1, ui::Point point2)
 	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y);
 	if(newSave)
 		gameModel->AddStamp(newSave);
+	else
+		new ErrorMessage("Could not create stamp", "Error generating save file");
 }
 
 void GameController::CopyRegion(ui::Point point1, ui::Point point2)

@@ -434,7 +434,11 @@ void GameModel::SetStamp(Save * save)
 {
 	if(stamp)
 		delete stamp;
-	stamp = new GameSave((char*)save->GetData(), save->GetDataLength());
+	try {
+		stamp = new GameSave((char*)save->GetData(), save->GetDataLength());
+	} catch (ParseException& e) {
+		stamp = NULL;
+	}
 	notifyStampChanged();
 }
 

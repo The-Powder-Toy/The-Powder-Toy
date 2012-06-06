@@ -22,7 +22,8 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 {
 	Thumbnail * tempThumb = NULL;
 	int width, height;
-	width, height = save->width, save->height;
+	width = save->width/CELL;
+	height = save->height/CELL;
 	
 	pixel * pData = NULL;
 	pixel * dst;
@@ -54,7 +55,12 @@ finish:
 
 Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize)
 {
-	GameSave * tempSave = new GameSave((char*)saveData, dataSize);
+	GameSave * tempSave;
+	try {
+		tempSave = new GameSave((char*)saveData, dataSize);
+	} catch (exception & e) {
+		return NULL;
+	}
 	Thumbnail * thumb = Render(tempSave);
 	delete tempSave;
 	return thumb;

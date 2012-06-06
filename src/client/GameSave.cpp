@@ -13,7 +13,6 @@
 #include "GameSave.h"
 #include "SimulationData.h"
 
-
 GameSave::GameSave(GameSave & save) :
 waterEEnabled(save.waterEEnabled),
 legacyEnable(save.legacyEnable),
@@ -38,7 +37,14 @@ GameSave::GameSave(int width, int height)
 
 GameSave::GameSave(char * data, int dataSize)
 {
-	std::cout << readPSv(data, dataSize) << std::endl;
+	width, height = 0;
+	blockMap, blockMapPtr, fanVelX, fanVelXPtr, fanVelY, fanVelYPtr, particles = NULL;
+	try {
+		readPSv(data, dataSize);
+	} catch (ParseException& e) {
+		this->~GameSave();	//Free any allocated memory
+		throw;
+	}
 }
 
 void GameSave::setSize(int newWidth, int newHeight)
@@ -74,12 +80,11 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	
 }
 
-GameSave::ParseResult GameSave::readOPS(char * data, int dataLength)
+void GameSave::readOPS(char * data, int dataLength)
 {
 	unsigned char * inputData = (unsigned char *)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL;
 	unsigned int inputDataLen = dataLength, bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen;
 	int i, freeIndicesCount, x, y, j;
-	ParseResult returnCode = OK;
 	int *freeIndices = NULL;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	bson b;
@@ -99,24 +104,15 @@ GameSave::ParseResult GameSave::readOPS(char * data, int dataLength)
 	
 	//From newer version
 	if(inputData[4] > SAVE_VERSION)
-	{
-		fprintf(stderr, "Save from newer version\n");
-		return WrongVersion;
-	}
+		throw ParseException(ParseException::WrongVersion, "Save from newer version");
 	
 	//Incompatible cell size
 	if(inputData[5] > CELL)
-	{
-		fprintf(stderr, "Cell size mismatch\n");
-		return InvalidDimensions;
-	}
+		throw ParseException(ParseException::InvalidDimensions, "Incorrect CELL size");
 	
 	//Too large/off screen
 	if(blockX+blockW > XRES/CELL || blockY+blockH > YRES/CELL)
-	{
-		fprintf(stderr, "Save too large\n");
-		return InvalidDimensions;
-	}
+		throw ParseException(ParseException::InvalidDimensions, "Save too large");
 	
 	setSize(fullW, fullH);
 	
@@ -127,19 +123,14 @@ GameSave::ParseResult GameSave::readOPS(char * data, int dataLength)
 	
 	bsonData = (unsigned char*)malloc(bsonDataLen+1);
 	if(!bsonData)
-	{
-		fprintf(stderr, "Internal error while parsing save: could not allocate buffer\n");
-		return InternalError;
-	}
+		throw ParseException(ParseException::InternalError, "Unable to allocate memory");
+		
 	//Make sure bsonData is null terminated, since all string functions need null terminated strings
 	//(bson_iterator_key returns a pointer into bsonData, which is then used with strcmp)
 	bsonData[bsonDataLen] = 0;
 	
 	if (BZ2_bzBuffToBuffDecompress((char*)bsonData, &bsonDataLen, (char*)(inputData+12), inputDataLen-12, 0, 0))
-	{
-		fprintf(stderr, "Unable to decompress\n");
-		return Corrupt;
-	}
+		throw ParseException(ParseException::Corrupt, "Unable to decompress");
 	
 	bson_init_data(&b, (char*)bsonData);
 	bson_iterator_init(&iter, &b);
@@ -527,16 +518,17 @@ GameSave::ParseResult GameSave::readOPS(char * data, int dataLength)
 	goto fin;
 fail:
 	//Clean up everything
-	returnCode = Corrupt;
+	bson_destroy(&b);
+	if(freeIndices)
+		free(freeIndices);
+	throw ParseException(ParseException::Corrupt, "Save data currupt");
 fin:
 	bson_destroy(&b);
 	if(freeIndices)
 		free(freeIndices);
-	return returnCode;
-
 }
 
-GameSave::ParseResult GameSave::readPSv(char * data, int dataLength)
+void GameSave::readPSv(char * data, int dataLength)
 {
 	unsigned char * d = NULL, * c = (unsigned char *)data;
 	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0, tempGrav = 0;
@@ -568,14 +560,14 @@ GameSave::ParseResult GameSave::readPSv(char * data, int dataLength)
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
 	
 	if (dataLength<16)
-		return Corrupt;
+		throw ParseException(ParseException::Corrupt, "No save data");
 	if (!(c[2]==0x43 && c[1]==0x75 && c[0]==0x66) && !(c[2]==0x76 && c[1]==0x53 && c[0]==0x50))
-		return Corrupt;
+		throw ParseException(ParseException::Corrupt, "Unknown format");
 	if (c[2]==0x76 && c[1]==0x53 && c[0]==0x50) {
 		new_format = 1;
 	}
 	if (c[4]>SAVE_VERSION)
-		return WrongVersion;
+		throw ParseException(ParseException::WrongVersion, "Save from newer version");
 	ver = c[4];
 	
 	if (ver<34)
@@ -615,23 +607,23 @@ GameSave::ParseResult GameSave::readPSv(char * data, int dataLength)
 		by0 = 0;
 	
 	if (c[5]!=CELL || bx0+bw>XRES/CELL || by0+bh>YRES/CELL)
-		return InvalidDimensions;
+		throw ParseException(ParseException::InvalidDimensions, "Save too large");
 	i = (unsigned)c[8];
 	i |= ((unsigned)c[9])<<8;
 	i |= ((unsigned)c[10])<<16;
 	i |= ((unsigned)c[11])<<24;
 	d = (unsigned char *)malloc(i);
 	if (!d)
-		return Corrupt;
+		throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
 	
 	setSize(bw*CELL, bh*CELL);
 	
 	if (BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), dataLength-12, 0, 0))
-		return Corrupt;
+		throw ParseException(ParseException::Corrupt, "Cannot decompress");
 	dataLength = i;
 	
 	if (dataLength < bw*bh)
-		return Corrupt;
+		throw ParseException(ParseException::Corrupt, "Save data corrupt (missing data)");
 	
 	// normalize coordinates
 	x0 = bx0*CELL;
@@ -1098,15 +1090,14 @@ version1:
 	if (d) free(d);
 	if (fp) free(fp);
 	
-	return OK;
+	return;
 	
 corrupt:
 	if (m) free(m);
 	if (d) free(d);
 	if (fp) free(fp);
 	
-	return Corrupt;
-
+	throw ParseException(ParseException::Corrupt, "Save data corrupt");
 }
 
 char * GameSave::serialiseOPS(int & dataLength)
@@ -1447,12 +1438,6 @@ GameSave::~GameSave()
 {
 	if(width && height)
 	{
-		/*if(particleMap)
-		{
-			for(int y = 0; y < height; y++)
-				delete[] particleMap[y];
-			delete[] particleMap;
-		}*/
 		if(particles)
 		{
 			delete[] particles;
