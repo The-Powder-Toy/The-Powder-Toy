@@ -210,7 +210,7 @@
 #define PT_QRTZ 132
 #define PT_PQRT 133
 #define PT_EMP 134
-#define PT_BREC 135
+#define PT_BREL 135
 #define PT_ELEC 136
 #define PT_ACEL 137
 #define PT_DCEL 138

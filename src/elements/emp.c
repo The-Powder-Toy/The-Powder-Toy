@@ -53,7 +53,7 @@ int update_EMP(UPDATE_FUNC_ARGS) {
 				if (ptypes[parts[r].type].hconduct && rand()%100==0)
 					parts[r].temp = restrict_flt(parts[r].temp+3000.0f, MIN_TEMP, MAX_TEMP);
 				if (rand()%80==0)
-					part_change_type(r, rx, ry, PT_BREC);
+					part_change_type(r, rx, ry, PT_BREL);
 				else if (rand()%120==0)
 					part_change_type(r, rx, ry, PT_NTCT);
 			}
@@ -96,13 +96,13 @@ int update_EMP(UPDATE_FUNC_ARGS) {
 							}
 							if ((n&0xFF)==PT_WIFI && rand()%16==0)
 							{
-								create_part(n>>8, rx+nx, ry+ny, PT_BREC);
+								create_part(n>>8, rx+nx, ry+ny, PT_BREL);
 								parts[n>>8].temp = restrict_flt(parts[n>>8].temp+1000.0f, MIN_TEMP, MAX_TEMP);
 							}
 						}
 						if ((n&0xFF)==PT_SWCH && rand()%100==0)
 						{
-							part_change_type(n>>8, rx+nx, ry+ny, PT_BREC);
+							part_change_type(n>>8, rx+nx, ry+ny, PT_BREL);
 						}
 						if ((n&0xFF)==PT_SWCH && rand()%100==0)
 						{
@@ -110,7 +110,7 @@ int update_EMP(UPDATE_FUNC_ARGS) {
 						}
 						if ((n&0xFF)==PT_ARAY && rand()%60==0)
 						{
-							create_part(n>>8, rx+nx, ry+ny, PT_BREC);
+							create_part(n>>8, rx+nx, ry+ny, PT_BREL);
 							parts[n>>8].temp = restrict_flt(parts[n>>8].temp+1000.0f, MIN_TEMP, MAX_TEMP);
 						}
 						if (t==PT_DLAY && rand()%70==0)

@@ -30,7 +30,7 @@ int update_BRMT(UPDATE_FUNC_ARGS) {
 					tempFactor = 1000 - (((250.0f+273.15f)-parts[i].temp)*2);
 					if(tempFactor < 2)
 						tempFactor = 2;
-					if ((rt==PT_BREC) && 1 > (rand()%tempFactor))
+					if ((rt==PT_BREL) && 1 > (rand()%tempFactor))
 					{
 						if(rand()%2)
 						{
