@@ -21,8 +21,8 @@ int update_WARP(UPDATE_FUNC_ARGS) {
 	if (parts[i].tmp2>2000)
 	{
 		parts[i].temp = 10000;
-		pv[y/CELL][x/CELL] += (parts[i].tmp2/2000) * CFDS;
-		if (2>rand()%1000)
+		pv[y/CELL][x/CELL] += (parts[i].tmp2/5000) * CFDS;
+		if (2>rand()%100)
 			create_part(-3, x, y, PT_ELEC);
 	}
 	for ( trade = 0; trade<5; trade ++)

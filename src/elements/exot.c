@@ -16,7 +16,8 @@
 #include <element.h>
 
 int update_EXOT(UPDATE_FUNC_ARGS) {
-	int r, rt, rx, ry, nb, rrx, rry;
+	int r, rt, rx, ry, nb, rrx, rry, trade, tym, t;
+	t = parts[i].type;
 	for (rx=-2; rx<=2; rx++)
 		for (ry=-2; ry<=2; ry++)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES) {
@@ -28,7 +29,7 @@ int update_EXOT(UPDATE_FUNC_ARGS) {
 					if (parts[r>>8].tmp2>2000)
 						if (1>rand()%100)
 						{
-							parts[i].tmp2 += 50;
+							parts[i].tmp2 += 100;
 						}
 				}
 			}
@@ -38,19 +39,49 @@ int update_EXOT(UPDATE_FUNC_ARGS) {
 		parts[i].tmp = 250;
 	if (parts[i].tmp2<1)
 		parts[i].tmp2 = 1;
-	else if (parts[i].tmp2>2500)
+	else if (parts[i].tmp2>6000)
 	{
-		parts[i].tmp2 = 2500;
+		parts[i].tmp2 = 6000;
 		part_change_type(i, x, y, PT_WARP);
 		parts[i].temp = 10000;
 	}
 	else
-		pv[y/CELL][x/CELL] += (parts[i].tmp2/2000) * CFDS;
+		pv[y/CELL][x/CELL] += (parts[i].tmp2*CFDS)/40000;
 	if (pv[y/CELL][x/CELL]>200 && parts[i].temp>9000 && parts[i].tmp2>200)
 	{
 		part_change_type(i, x, y, PT_WARP);
-		parts[i].tmp2 = 2500;
+		parts[i].tmp2 = 6000;
 	}		
+	if (parts[i].tmp2>100)
+	{
+		for ( trade = 0; trade<9; trade ++)
+		{
+			rx = rand()%5-2;
+			ry = rand()%5-2;
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			{
+				r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+				if ((r&0xFF)==t && (parts[i].tmp2>parts[r>>8].tmp2) && parts[r>>8].tmp2>=0 )//diffusion
+				{
+					tym = parts[i].tmp2 - parts[r>>8].tmp2;
+					if (tym ==1)
+					{
+						parts[r>>8].tmp2 ++;
+						parts[i].tmp2 --;
+						break;
+					}
+					if (tym>0)
+					{
+						parts[r>>8].tmp2 += tym/2;
+						parts[i].tmp2 -= tym/2;
+						break;
+					}
+				}
+			}
+		}
+	}
 	return 0;
 }
 int graphics_EXOT(GRAPHICS_FUNC_ARGS)
