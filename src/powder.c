@@ -1025,6 +1025,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			break;
 		case PT_EXOT:
 			parts[i].life = 1000;
+			parts[i].tmp = 244;
 			break;
 		case PT_STKM:
 			if (player.spwn==0)
