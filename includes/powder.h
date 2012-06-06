@@ -352,6 +352,7 @@ int graphics_GEL(GRAPHICS_FUNC_ARGS);
 int graphics_TRON(GRAPHICS_FUNC_ARGS);
 int graphics_SOAP(GRAPHICS_FUNC_ARGS);
 int graphics_EXOT(GRAPHICS_FUNC_ARGS);
+int graphics_WARP(GRAPHICS_FUNC_ARGS);
 int graphics_stickmen(GRAPHICS_FUNC_ARGS);
 
 void TRON_init_graphics();
