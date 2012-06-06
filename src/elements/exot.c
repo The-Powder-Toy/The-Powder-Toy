@@ -46,7 +46,7 @@ int update_EXOT(UPDATE_FUNC_ARGS) {
 		parts[i].temp = 10000;
 	}
 	else
-		pv[y/CELL][x/CELL] += (parts[i].tmp2*CFDS)/40000;
+		pv[y/CELL][x/CELL] += (parts[i].tmp2*CFDS)/160000;
 	if (pv[y/CELL][x/CELL]>200 && parts[i].temp>9000 && parts[i].tmp2>200)
 	{
 		part_change_type(i, x, y, PT_WARP);
