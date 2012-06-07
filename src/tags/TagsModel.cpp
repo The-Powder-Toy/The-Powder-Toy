@@ -17,13 +17,13 @@ TagsModel::TagsModel():
 
 }
 
-void TagsModel::SetSave(Save * save)
+void TagsModel::SetSave(SaveInfo * save)
 {
 	this->save = save;
 	notifyTagsChanged();
 }
 
-Save * TagsModel::GetSave()
+SaveInfo * TagsModel::GetSave()
 {
 	return save;
 }

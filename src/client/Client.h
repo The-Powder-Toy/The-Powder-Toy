@@ -9,7 +9,8 @@
 #include "HTTP.h"
 #include "preview/Comment.h"
 #include "search/Thumbnail.h"
-#include "search/Save.h"
+#include "client/SaveInfo.h"
+#include "client/SaveFile.h"
 #include "Singleton.h"
 #include "User.h"
 
@@ -52,21 +53,21 @@ public:
 	~Client();
 
 	RequestStatus ExecVote(int saveID, int direction);
-	RequestStatus UploadSave(Save * save);
+	RequestStatus UploadSave(SaveInfo * save);
 
-	Save * GetStamp(string stampID);
+	SaveFile * GetStamp(string stampID);
 	void DeleteStamp(string stampID);
-	string AddStamp(Save * saveData);
+	string AddStamp(GameSave * saveData);
 	vector<string> GetStamps();
 
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	LoginStatus Login(string username, string password, User & user);
 	void ClearThumbnailRequests();
-	std::vector<Save*> * SearchSaves(int start, int count, string query, string sort, string category, int & resultCount);
+	std::vector<SaveInfo*> * SearchSaves(int start, int count, string query, string sort, string category, int & resultCount);
 	std::vector<SaveComment*> * GetComments(int saveID, int start, int count);
 	Thumbnail * GetPreview(int saveID, int saveDate);
 	Thumbnail * GetThumbnail(int saveID, int saveDate);
-	Save * GetSave(int saveID, int saveDate);
+	SaveInfo * GetSave(int saveID, int saveDate);
 	RequestStatus DeleteSave(int saveID);
 	RequestStatus ReportSave(int saveID, std::string message);
 	RequestStatus UnpublishSave(int saveID);

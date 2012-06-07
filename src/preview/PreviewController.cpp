@@ -40,7 +40,7 @@ void PreviewController::Update()
 	}
 }
 
-Save * PreviewController::GetSave()
+SaveInfo * PreviewController::GetSave()
 {
 	return previewModel->GetSave();
 }

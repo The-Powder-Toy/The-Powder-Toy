@@ -11,7 +11,7 @@
 #include "SSaveModel.h"
 #include "SSaveView.h"
 #include "Controller.h"
-#include "search/Save.h"
+#include "client/SaveInfo.h"
 
 class SSaveView;
 class SSaveModel;
@@ -21,8 +21,8 @@ class SSaveController {
 	ControllerCallback * callback;
 public:
 	bool HasExited;
-	SSaveController(ControllerCallback * callback, Save save);
-	Save * GetSave();
+	SSaveController(ControllerCallback * callback, SaveInfo save);
+	SaveInfo * GetSave();
 	bool GetSaveUploaded();
 	void Exit();
 	void Update();

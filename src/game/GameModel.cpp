@@ -263,20 +263,19 @@ vector<Menu*> GameModel::GetMenuList()
 	return menuList;
 }
 
-Save * GameModel::GetSave()
+SaveInfo * GameModel::GetSave()
 {
 	return currentSave;
 }
 
-void GameModel::SetSave(Save * newSave)
+void GameModel::SetSave(SaveInfo * newSave)
 {
 	if(currentSave)
 		delete currentSave;
 	currentSave = newSave;
 	if(currentSave)
 	{
-		GameSave * newSave = new GameSave((char*)currentSave->GetData(), currentSave->GetDataLength());
-		int returnVal = sim->Load(newSave);
+		int returnVal = sim->Load(currentSave->GetGameSave());
 		if(returnVal){
 			delete currentSave;
 			currentSave = NULL;
@@ -430,15 +429,11 @@ void GameModel::ClearSimulation()
 	sim->clear_sim();
 }
 
-void GameModel::SetStamp(Save * save)
+void GameModel::SetStamp(GameSave * save)
 {
 	if(stamp)
 		delete stamp;
-	try {
-		stamp = new GameSave((char*)save->GetData(), save->GetDataLength());
-	} catch (ParseException& e) {
-		stamp = NULL;
-	}
+	stamp = new GameSave(*save);
 	notifyStampChanged();
 }
 
@@ -446,16 +441,8 @@ void GameModel::AddStamp(GameSave * save)
 {
 	if(stamp)
 		delete stamp;
-	stamp = save;
-	
-	char * saveData;
-	int saveSize;
-	saveData = save->Serialise(saveSize);
-	Save * tempSave = new Save(0, 0, 0, 0, "", "");
-	tempSave->SetData((unsigned char*)saveData, saveSize);
-	Client::Ref().AddStamp(tempSave);
-	delete tempSave;
-	
+	stamp = new GameSave(*save);
+	Client::Ref().AddStamp(save);
 	notifyClipboardChanged();
 }
 

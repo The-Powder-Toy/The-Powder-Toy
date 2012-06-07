@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "SaveButton.h"
-#include "search/Save.h"
+#include "client/SaveInfo.h"
 #include "Graphics.h"
 #include "Engine.h"
 #include "client/Client.h"
@@ -9,8 +9,9 @@
 
 namespace ui {
 
-SaveButton::SaveButton(Point position, Point size, Save * save):
+SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	Component(position, size),
+	file(NULL),
 	save(save),
 	thumbnail(NULL),
 	isMouseInside(false),
@@ -50,6 +51,30 @@ SaveButton::SaveButton(Point position, Point size, Save * save):
 	}
 }
 
+SaveButton::SaveButton(Point position, Point size, SaveFile * file):
+	Component(position, size),
+	save(NULL),
+	file(file),
+	thumbnail(NULL),
+	isMouseInside(false),
+	isButtonDown(false),
+	actionCallback(NULL),
+	voteColour(255, 0, 0),
+	selectable(false),
+	selected(false)
+{
+	if(file)
+	{
+		name = file->GetName();
+		if(Graphics::textwidth((char *)name.c_str()) > Size.X)
+		{
+			int position = Graphics::textwidthx((char *)name.c_str(), Size.X - 22);
+			name = name.erase(position, name.length()-position);
+			name += "...";
+		}
+	}
+}
+
 SaveButton::~SaveButton()
 {
 	if(thumbnail)
@@ -58,25 +83,45 @@ SaveButton::~SaveButton()
 		delete actionCallback;
 	if(save)
 		delete save;
+	if(file)
+		delete file;
 }
 
 void SaveButton::Tick(float dt)
 {
 	Thumbnail * tempThumb;
 	float scaleFactorY = 1.0f, scaleFactorX = 1.0f;
-	if(!thumbnail && save)
+	if(!thumbnail)
 	{
-		if(save->GetID())
+		if(save)
 		{
-			tempThumb = Client::Ref().GetThumbnail(save->GetID(), 0);
-			if(tempThumb)
+			if(!save->GetGameSave() && save->GetID())
 			{
-				thumbnail = new Thumbnail(*tempThumb); //Store a local copy of the thumbnail
+				tempThumb = Client::Ref().GetThumbnail(save->GetID(), 0);
+				if(tempThumb)
+				{
+					thumbnail = new Thumbnail(*tempThumb); //Store a local copy of the thumbnail
+				}
+			}
+			else if(save->GetGameSave())
+			{
+				thumbnail = SaveRenderer::Ref().Render(save->GetGameSave());
+			}
+			else
+			{
+				thumbnail = NULL;
 			}
 		}
-		else
+		if(file)
 		{
-			thumbnail = SaveRenderer::Ref().Render(save->GetData(), save->GetDataLength());
+			if(file->GetGameSave())
+			{
+				thumbnail = SaveRenderer::Ref().Render(file->GetGameSave());
+			}
+			else
+			{
+				thumbnail = NULL;
+			}
 		}
 		if(thumbnail && thumbnail->Data)
 		{
@@ -115,7 +160,7 @@ void SaveButton::Draw(const Point& screenPos)
 	if(thumbnail)
 	{
 		thumbBoxSize = ui::Point(thumbnail->Size.X, thumbnail->Size.Y);
-		if(save->id)
+		if(save && save->id)
 			g->draw_image(thumbnail->Data, screenPos.X-3+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbnail->Size.X, thumbnail->Size.Y, 255);
 		else
 			g->draw_image(thumbnail->Data, screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbnail->Size.X, thumbnail->Size.Y, 255);
@@ -156,6 +201,22 @@ void SaveButton::Draw(const Point& screenPos)
 		{
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)name.c_str()))/2, screenPos.Y+Size.Y - 21, name, 180, 180, 180, 255);
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 100, 130, 160, 255);
+		}
+	}
+	if(file)
+	{
+		if(isMouseInside)
+			g->drawrect(screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 210, 230, 255, 255);
+		else
+			g->drawrect(screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 180, 180, 180, 255);
+
+		if(isMouseInside)
+		{
+			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)name.c_str()))/2, screenPos.Y+Size.Y - 21, name, 255, 255, 255, 255);
+		}
+		else
+		{
+			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)name.c_str()))/2, screenPos.Y+Size.Y - 21, name, 180, 180, 180, 255);
 		}
 	}
 

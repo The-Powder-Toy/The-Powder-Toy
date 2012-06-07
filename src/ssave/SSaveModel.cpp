@@ -51,13 +51,13 @@ void SSaveModel::UploadSave(std::string saveName, std::string saveDescription, b
 	notifySaveUploadChanged();
 }
 
-void SSaveModel::SetSave(Save * save)
+void SSaveModel::SetSave(SaveInfo * save)
 {
 	this->save = save;
 	notifySaveChanged();
 }
 
-Save * SSaveModel::GetSave()
+SaveInfo * SSaveModel::GetSave()
 {
 	return this->save;
 }

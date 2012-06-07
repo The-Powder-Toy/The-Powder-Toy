@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <deque>
-#include "search/Save.h"
+#include "client/SaveInfo.h"
 #include "simulation/Simulation.h"
 #include "interface/Colour.h"
 #include "Renderer.h"
@@ -43,7 +43,7 @@ private:
 	Menu * activeMenu;
 	int currentBrush;
 	vector<Brush *> brushList;
-	Save * currentSave;
+	SaveInfo * currentSave;
 	Simulation * sim;
 	Renderer * ren;
 	Tool * activeTools[3];
@@ -78,9 +78,9 @@ public:
 	ui::Colour GetColourSelectorColour();
 
 	void SetVote(int direction);
-	Save * GetSave();
+	SaveInfo * GetSave();
 	Brush * GetBrush();
-	void SetSave(Save * newSave);
+	void SetSave(SaveInfo * newSave);
 	void AddObserver(GameView * observer);
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int selection, Tool * tool);
@@ -110,7 +110,7 @@ public:
 	ui::Point GetZoomPosition();
 	void SetZoomWindowPosition(ui::Point position);
 	ui::Point GetZoomWindowPosition();
-	void SetStamp(Save * newStamp);
+	void SetStamp(GameSave * newStamp);
 	void AddStamp(GameSave * save);
 	void SetClipboard(GameSave * save);
 	void Log(string message);

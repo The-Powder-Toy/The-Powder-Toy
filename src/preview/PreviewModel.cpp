@@ -42,7 +42,7 @@ void * PreviewModel::updateSaveCommentsTHelper(void * obj)
 
 void * PreviewModel::updateSaveInfoT()
 {
-	Save * tempSave = Client::Ref().GetSave(tSaveID, tSaveDate);
+	SaveInfo * tempSave = Client::Ref().GetSave(tSaveID, tSaveDate);
 	updateSaveInfoFinished = true;
 	return tempSave;
 }
@@ -134,7 +134,7 @@ Thumbnail * PreviewModel::GetPreview()
 	return savePreview;
 }
 
-Save * PreviewModel::GetSave()
+SaveInfo * PreviewModel::GetSave()
 {
 	return save;
 }

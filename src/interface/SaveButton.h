@@ -4,7 +4,8 @@
 #include <string>
 
 #include "Component.h"
-#include "search/Save.h"
+#include "client/SaveFile.h"
+#include "client/SaveInfo.h"
 #include "Graphics.h"
 #include "search/Thumbnail.h"
 #include "interface/Colour.h"
@@ -22,11 +23,13 @@ public:
 
 class SaveButton : public Component
 {
-	Save * save;
+	SaveFile * file;
+	SaveInfo * save;
 	Thumbnail * thumbnail;
 	std::string name;
 public:
-	SaveButton(Point position, Point size, Save * save);
+	SaveButton(Point position, Point size, SaveInfo * save);
+	SaveButton(Point position, Point size, SaveFile * file);
 	virtual ~SaveButton();
 
 	virtual void OnMouseClick(int x, int y, unsigned int button);
@@ -43,7 +46,8 @@ public:
 	void SetSelectable(bool selectable_) { selectable = selectable_; }
 	bool GetSelectable() { return selectable; }
 
-	Save * GetSave() { return save; }
+	SaveInfo * GetSave() { return save; }
+	SaveFile * GetSaveFile() { return file; }
 	inline bool GetState() { return state; }
 	virtual void DoAction();
 	virtual void DoSelection();

@@ -9,6 +9,8 @@
 #ifndef The_Powder_Toy_StructProperty_h
 #define The_Powder_Toy_StructProperty_h
 
+#include <string>
+
 struct StructProperty
 {
 	enum PropertyType { ParticleType, Colour, Integer, UInteger, Float, String };

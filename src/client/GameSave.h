@@ -9,8 +9,13 @@
 #define The_Powder_Toy_GameSave_h
 
 #include <vector>
+#include <string>
+#include "Config.h"
 #include "Misc.h"
-#include "simulation/StorageClasses.h"
+#include "simulation/Sign.h"
+#include "simulation/Particle.h"
+
+using namespace std;
 
 struct ParseException: public exception {
 	enum ParseResult { OK = 0, Corrupt, WrongVersion, InvalidDimensions, InternalError, MissingElement };

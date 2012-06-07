@@ -11,14 +11,14 @@
 #include <vector>
 
 #include "SSaveView.h"
-#include "search/Save.h"
+#include "client/SaveInfo.h"
 
 using namespace std;
 
 class SSaveView;
 class SSaveModel {
 	vector<SSaveView*> observers;
-	Save * save;
+	SaveInfo * save;
 	void notifySaveChanged();
 	void notifySaveUploadChanged();
 	bool saveUploaded;
@@ -26,8 +26,8 @@ public:
 	SSaveModel();
 	void AddObserver(SSaveView * observer);
 	void Update();
-	Save * GetSave();
-	void SetSave(Save * save);
+	SaveInfo * GetSave();
+	void SetSave(SaveInfo * save);
 	void UploadSave(std::string saveName, std::string saveDescription, bool publish);
 	bool GetSaveUploaded();
 	virtual ~SSaveModel();

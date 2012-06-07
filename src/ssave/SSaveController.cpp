@@ -7,14 +7,14 @@
 
 #include "SSaveController.h"
 
-SSaveController::SSaveController(ControllerCallback * callback, Save save):
+SSaveController::SSaveController(ControllerCallback * callback, SaveInfo save):
 	HasExited(false)
 {
 	ssaveView = new SSaveView();
 	ssaveView->AttachController(this);
 	ssaveModel = new SSaveModel();
 	ssaveModel->AddObserver(ssaveView);
-	ssaveModel->SetSave(new Save(save));
+	ssaveModel->SetSave(new SaveInfo(save));
 
 	this->callback = callback;
 }
@@ -24,7 +24,7 @@ void SSaveController::UploadSave(std::string saveName, std::string saveDescripti
 	ssaveModel->UploadSave(saveName, saveDescription, publish);
 }
 
-Save * SSaveController::GetSave()
+SaveInfo * SSaveController::GetSave()
 {
 	return ssaveModel->GetSave();
 }

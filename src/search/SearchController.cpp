@@ -21,7 +21,7 @@ public:
 	{
 		if(cc->activePreview->GetDoOpen() && cc->activePreview->GetSave())
 		{
-			cc->searchModel->SetLoadedSave(new Save(*(cc->activePreview->GetSave())));
+			cc->searchModel->SetLoadedSave(new SaveInfo(*(cc->activePreview->GetSave())));
 		}
 	}
 };
@@ -45,7 +45,7 @@ SearchController::SearchController(ControllerCallback * callback):
 	//windowPanel.AddChild();
 }
 
-Save * SearchController::GetLoadedSave()
+SaveInfo * SearchController::GetLoadedSave()
 {
 	return searchModel->GetLoadedSave();
 }

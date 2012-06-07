@@ -11,7 +11,7 @@
 #include "Config.h"
 #include "bson/BSON.h"
 #include "GameSave.h"
-#include "SimulationData.h"
+#include "simulation/SimulationData.h"
 
 GameSave::GameSave(GameSave & save) :
 waterEEnabled(save.waterEEnabled),
@@ -23,7 +23,8 @@ airMode(save.airMode),
 signs(save.signs)
 {
 	setSize(save.width, save.height);
-	
+
+	particlesCount = save.particlesCount;
 	copy(save.particles, save.particles+NPART, particles);
 	copy(save.blockMapPtr, save.blockMapPtr+((height/CELL)*(width/CELL)), blockMapPtr);
 	copy(save.fanVelXPtr, save.fanVelXPtr+((height/CELL)*(width/CELL)), fanVelXPtr);
@@ -52,6 +53,7 @@ void GameSave::setSize(int newWidth, int newHeight)
 	this->width = (newWidth/CELL)*CELL;
 	this->height = (newHeight/CELL)*CELL;
 	
+	particlesCount = 0;
 	particles = new Particle[NPART];
 	blockMap = new unsigned char*[height/CELL];
 	blockMapPtr = new unsigned char[(height/CELL)*(width/CELL)];

@@ -162,7 +162,7 @@ void PreviewView::OnMouseDown(int x, int y, unsigned button)
 
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
-	Save * save = sender->GetSave();
+	SaveInfo * save = sender->GetSave();
 	if(save)
 	{
 		votesUp = save->votesUp;

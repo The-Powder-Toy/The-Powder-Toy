@@ -286,7 +286,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 2;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
-	vector<Save*> saves = sender->GetSaveList();
+	vector<SaveInfo*> saves = sender->GetSaveList();
 	Client::Ref().ClearThumbnailRequests();
 	for(i = 0; i < saveButtons.size(); i++)
 	{

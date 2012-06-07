@@ -9,20 +9,20 @@
 #define TAGSMODEL_H_
 
 #include <vector>
-#include "search/Save.h"
+#include "client/SaveInfo.h"
 
 class TagsView;
 class TagsModel {
-	Save * save;
+	SaveInfo * save;
 	std::vector<TagsView*> observers;
 	void notifyTagsChanged();
 public:
 	TagsModel();
 	void AddObserver(TagsView * observer);
-	void SetSave(Save * save);
+	void SetSave(SaveInfo * save);
 	void RemoveTag(string tag);
 	void AddTag(string tag);
-	Save * GetSave();
+	SaveInfo * GetSave();
 	virtual ~TagsModel();
 };
 

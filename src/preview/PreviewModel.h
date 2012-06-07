@@ -11,7 +11,7 @@
 #include <vector>
 #include <pthread.h>
 #include "PreviewView.h"
-#include "search/Save.h"
+#include "client/SaveInfo.h"
 #include "preview/Comment.h"
 #include "search/Thumbnail.h"
 
@@ -21,7 +21,7 @@ class PreviewView;
 class PreviewModel {
 	bool doOpen;
 	vector<PreviewView*> observers;
-	Save * save;
+	SaveInfo * save;
 	Thumbnail * savePreview;
 	std::vector<SaveComment*> * saveComments;
 	void notifyPreviewChanged();
@@ -52,7 +52,7 @@ class PreviewModel {
 public:
 	PreviewModel();
 	Thumbnail * GetPreview();
-	Save * GetSave();
+	SaveInfo * GetSave();
 	std::vector<SaveComment*> * GetComments();
 	void AddObserver(PreviewView * observer);
 	void UpdateSave(int saveID, int saveDate);

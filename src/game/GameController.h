@@ -12,7 +12,7 @@
 #include "ssave/SSaveController.h"
 #include "tags/TagsController.h"
 #include "console/ConsoleController.h"
-#include "stamps/StampsController.h"
+#include "localbrowser/LocalBrowserController.h"
 //#include "cat/TPTScriptInterface.h"
 #include "cat/LuaScriptInterface.h"
 #include "options/OptionsController.h"
@@ -36,7 +36,7 @@ private:
 	SSaveController * ssave;
 	ConsoleController * console;
 	TagsController * tagsWindow;
-	StampsController * stamps;
+	LocalBrowserController * localBrowser;
 	OptionsController * options;
 	CommandInterface * commandInterface;
 public:

@@ -11,7 +11,7 @@
 #include "preview/PreviewModel.h"
 #include "preview/PreviewView.h"
 #include "Controller.h"
-#include "search/Save.h"
+#include "client/SaveInfo.h"
 
 class PreviewModel;
 class PreviewView;
@@ -28,7 +28,7 @@ public:
 	void OpenInBrowser();
 	void Report(std::string message);
 	bool GetDoOpen();
-	Save * GetSave();
+	SaveInfo * GetSave();
 	PreviewView * GetView() { return previewView; }
 	void Update();
 	void FavouriteSave();

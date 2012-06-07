@@ -22,7 +22,7 @@
 
 #include "interface/Point.h"
 
-#include "search/Save.h"
+#include "client/SaveInfo.h"
 
 Client::Client():
 	authUser(0, "")
@@ -153,9 +153,11 @@ User Client::GetAuthUser()
 	return authUser;
 }
 
-RequestStatus Client::UploadSave(Save * save)
+RequestStatus Client::UploadSave(SaveInfo * save)
 {
 	lastError = "";
+	int gameDataLength;
+	char * gameData = NULL;
 	int dataStatus;
 	char * data;
 	int dataLength = 0;
@@ -163,9 +165,23 @@ RequestStatus Client::UploadSave(Save * save)
 	userIDStream << authUser.ID;
 	if(authUser.ID)
 	{
+		if(!save->GetGameSave())
+		{
+			lastError = "Empty game save";
+			return RequestFailure;
+		}
+
+		gameData = save->GetGameSave()->Serialise(gameDataLength);
+
+		if(!gameData)
+		{
+			lastError = "Cannot upload game save";
+			return RequestFailure;
+		}
+
 		char * postNames[] = { "Name", "Description", "Data:save.bin", "Publish", NULL };
-		char * postDatas[] = { (char *)(save->name.c_str()), (char *)(save->Description.c_str()), (char *)(save->GetData()), (char *)(save->Published?"Public":"Private") };
-		int postLengths[] = { save->name.length(), save->Description.length(), save->GetDataLength(), save->Published?6:7 };
+		char * postDatas[] = { (char *)(save->name.c_str()), (char *)(save->Description.c_str()), gameData, (char *)(save->Published?"Public":"Private") };
+		int postLengths[] = { save->name.length(), save->Description.length(), gameDataLength, save->Published?6:7 };
 		//std::cout << postNames[0] << " " << postDatas[0] << " " << postLengths[0] << std::endl;
 		data = http_multipart_post("http://" SERVER "/Save.api", postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
 	}
@@ -178,6 +194,7 @@ RequestStatus Client::UploadSave(Save * save)
 	{
 		if(strncmp((const char *)data, "OK", 2)!=0)
 		{
+			if(gameData) free(gameData);
 			free(data);
 			lastError = std::string((const char *)data);
 			return RequestFailure;
@@ -198,16 +215,18 @@ RequestStatus Client::UploadSave(Save * save)
 			}
 		}
 		free(data);
+		if(gameData) free(gameData);
 		return RequestOkay;
 	}
 	else if(data)
 	{
 		free(data);
 	}
+	if(gameData) free(gameData);
 	return RequestFailure;
 }
 
-Save * Client::GetStamp(string stampID)
+SaveFile * Client::GetStamp(string stampID)
 {
 	std::ifstream stampFile;
 	stampFile.open(string(STAMPS_DIR PATH_SEP + stampID + ".stm").c_str(), ios::binary);
@@ -221,10 +240,10 @@ Save * Client::GetStamp(string stampID)
 		stampFile.read((char *)tempData, fileSize);
 		stampFile.close();
 
-
-		Save * tempSave = new Save(0, 0, 0, 0, "", stampID);
-		tempSave->SetData(tempData, fileSize);
-		return tempSave;
+		SaveFile * file = new SaveFile(string(STAMPS_DIR PATH_SEP + stampID + ".stm").c_str());
+		GameSave * tempSave = new GameSave((char *)tempData, fileSize);
+		file->SetGameSave(tempSave);
+		return file;
 	}
 	else
 	{
@@ -245,7 +264,7 @@ void Client::DeleteStamp(string stampID)
 	}
 }
 
-string Client::AddStamp(Save * saveData)
+string Client::AddStamp(GameSave * saveData)
 {
 	unsigned t=(unsigned)time(NULL);
 	if (lastStampTime!=t)
@@ -267,9 +286,12 @@ string Client::AddStamp(Save * saveData)
 	mkdir(STAMPS_DIR, 0755);
 #endif
 
+	int gameDataLength;
+	char * gameData = saveData->Serialise(gameDataLength);
+
 	std::ofstream stampStream;
 	stampStream.open(string(STAMPS_DIR PATH_SEP + saveID.str()+".stm").c_str(), ios::binary);
-	stampStream.write((const char *)saveData->data, saveData->dataLength);
+	stampStream.write((const char *)gameData, gameDataLength);
 	stampStream.close();
 
 	stampIDs.push_back(saveID.str());
@@ -683,7 +705,7 @@ failure:
 	return RequestFailure;
 }
 
-Save * Client::GetSave(int saveID, int saveDate)
+SaveInfo * Client::GetSave(int saveID, int saveDate)
 {
 	lastError = "";
 	std::stringstream urlStream;
@@ -733,7 +755,7 @@ Save * Client::GetSave(int saveID, int saveDate)
 				tempTags.push_back(tempTag.Value());
 			}
 
-			Save * tempSave = new Save(
+			SaveInfo * tempSave = new SaveInfo(
 					tempID.Value(),
 					tempDate.Value(),
 					tempScoreUp.Value(),
@@ -849,11 +871,11 @@ std::vector<SaveComment*> * Client::GetComments(int saveID, int start, int count
 	return commentArray;
 }
 
-std::vector<Save*> * Client::SearchSaves(int start, int count, string query, string sort, std::string category, int & resultCount)
+std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, string query, string sort, std::string category, int & resultCount)
 {
 	lastError = "";
 	resultCount = 0;
-	std::vector<Save*> * saveArray = new std::vector<Save*>();
+	std::vector<SaveInfo*> * saveArray = new std::vector<SaveInfo*>();
 	std::stringstream urlStream;
 	char * data;
 	int dataStatus, dataLength;
@@ -904,7 +926,7 @@ std::vector<Save*> * Client::SearchSaves(int start, int count, string query, str
 				json::String tempUsername = savesArray[j]["Username"];
 				json::String tempName = savesArray[j]["Name"];
 				saveArray->push_back(
-							new Save(
+							new SaveInfo(
 								tempID.Value(),
 								tempDate.Value(),
 								tempScoreUp.Value(),

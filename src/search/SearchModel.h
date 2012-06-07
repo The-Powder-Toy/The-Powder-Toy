@@ -5,7 +5,7 @@
 #include <string>
 #include <pthread.h>
 #include <cmath>
-#include "Save.h"
+#include "client/SaveInfo.h"
 #include "SearchView.h"
 
 using namespace std;
@@ -14,13 +14,13 @@ class SearchView;
 class SearchModel
 {
 private:
-	Save * loadedSave;
+	SaveInfo * loadedSave;
 	string currentSort;
 	string lastQuery;
 	string lastError;
 	vector<int> selected;
 	vector<SearchView*> observers;
-	vector<Save*> saveList;
+	vector<SaveInfo*> saveList;
 	int currentPage;
 	int resultCount;
 	bool showOwn;
@@ -45,7 +45,7 @@ public:
 
 	void AddObserver(SearchView * observer);
 	void UpdateSaveList(int pageNumber, std::string query);
-	vector<Save*> GetSaveList();
+	vector<SaveInfo*> GetSaveList();
 	string GetLastError() { return lastError; }
 	int GetPageCount() { return max(1, (int)(ceil(resultCount/16))); }
 	int GetPageNum() { return currentPage; }
@@ -56,8 +56,8 @@ public:
 	bool GetShowOwn() { return showOwn; }
 	void SetShowFavourite(bool show) { if(show!=showFavourite) { showFavourite = show; } notifyShowFavouriteChanged();  }
 	bool GetShowFavourite() { return showFavourite; }
-	void SetLoadedSave(Save * save);
-	Save * GetLoadedSave();
+	void SetLoadedSave(SaveInfo * save);
+	SaveInfo * GetLoadedSave();
 	bool GetSavesLoaded() { return saveListLoaded; }
 	vector<int> GetSelected() { return selected; }
 	void ClearSelected() { selected.clear(); notifySelectedChanged(); }

@@ -4,7 +4,7 @@
 #include "Config.h"
 #include "GameController.h"
 #include "GameModel.h"
-#include "search/Save.h"
+#include "client/SaveInfo.h"
 #include "search/SearchController.h"
 #include "render/RenderController.h"
 #include "login/LoginController.h"
@@ -37,7 +37,7 @@ public:
 		{
 			try
 			{
-				cc->gameModel->SetSave(new Save(*(cc->search->GetLoadedSave())));
+				cc->gameModel->SetSave(new SaveInfo(*(cc->search->GetLoadedSave())));
 			}
 			catch(GameModelException & ex)
 			{
@@ -79,7 +79,7 @@ public:
 	{
 		if(cc->ssave->GetSaveUploaded())
 		{
-			cc->gameModel->SetSave(new Save(*(cc->ssave->GetSave())));
+			cc->gameModel->SetSave(new SaveInfo(*(cc->ssave->GetSave())));
 
 		}
 		//cc->gameModel->SetUser(cc->loginWindow->GetUser());
@@ -93,7 +93,7 @@ public:
 	TagsCallback(GameController * cc_) { cc = cc_; }
 	virtual void ControllerExit()
 	{
-		cc->gameModel->SetSave(new Save(*(cc->tagsWindow->GetSave())));
+		cc->gameModel->SetSave(new SaveInfo(*(cc->tagsWindow->GetSave())));
 	}
 };
 
@@ -104,9 +104,9 @@ public:
 	StampsCallback(GameController * cc_) { cc = cc_; }
 	virtual void ControllerExit()
 	{
-		if(cc->stamps->GetStamp())
+		if(cc->localBrowser->GetSave())
 		{
-			cc->gameModel->SetStamp(cc->stamps->GetStamp());
+			cc->gameModel->SetStamp(cc->localBrowser->GetSave()->GetGameSave());
 		}
 		else
 			cc->gameModel->SetStamp(NULL);
@@ -501,8 +501,8 @@ void GameController::OpenTags()
 
 void GameController::OpenStamps()
 {
-	stamps = new StampsController(new StampsCallback(this));
-	ui::Engine::Ref().ShowWindow(stamps->GetView());
+	localBrowser = new LocalBrowserController(new StampsCallback(this));
+	ui::Engine::Ref().ShowWindow(localBrowser->GetView());
 }
 
 void GameController::OpenOptions()
@@ -529,25 +529,23 @@ void GameController::OpenSaveWindow()
 {
 	if(gameModel->GetUser().ID)
 	{
-		GameSave * tempSave = gameModel->GetSimulation()->Save();
-		if(!tempSave)
+		GameSave * gameSave = gameModel->GetSimulation()->Save();
+		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");
 		}
 		else
 		{
-			int dataSize;
-			unsigned char * tempData = (unsigned char*)tempSave->Serialise(dataSize);
 			if(gameModel->GetSave())
 			{
-				Save tempSave(*gameModel->GetSave());
-				tempSave.SetData(tempData, dataSize);
+				SaveInfo tempSave(*gameModel->GetSave());
+				tempSave.SetGameSave(gameSave);
 				ssave = new SSaveController(new SSaveCallback(this), tempSave);
 			}
 			else
 			{				
-				Save tempSave(0, 0, 0, 0, gameModel->GetUser().Username, "");
-				tempSave.SetData(tempData, dataSize);
+				SaveInfo tempSave(0, 0, 0, 0, gameModel->GetUser().Username, "");
+				tempSave.SetGameSave(gameSave);
 				ssave = new SSaveController(new SSaveCallback(this), tempSave);
 			}
 			ui::Engine::Ref().ShowWindow(ssave->GetView());
@@ -584,10 +582,9 @@ void GameController::ClearSim()
 
 void GameController::ReloadSim()
 {
-	if(gameModel->GetSave() && gameModel->GetSave()->GetData())
+	if(gameModel->GetSave() && gameModel->GetSave()->GetGameSave())
 	{
-		GameSave * newSave = new GameSave((char*)gameModel->GetSave()->GetData(), gameModel->GetSave()->GetDataLength());
-		gameModel->GetSimulation()->Load(newSave);
+		gameModel->GetSimulation()->Load(gameModel->GetSave()->GetGameSave());
 	}
 }
 
