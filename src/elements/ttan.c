@@ -16,7 +16,28 @@
 #include <element.h>
 
 int update_TTAN(UPDATE_FUNC_ARGS) {
-	bmap_blockair[y/CELL][x/CELL] = 1;
-	bmap_blockairh[y/CELL][x/CELL] = 1;
+	int nx, ny, ttan = 0;
+	if(nt<8)
+	{
+		for (nx=-1; nx<2; nx++)
+			for (ny=-1; ny<2; ny++) {
+				if (!nx != !ny) {
+					if((pmap[y+ny][x+nx]&0xFF)==PT_TTAN)
+					{
+						ttan++;
+					}
+				}
+			}
+		if(ttan>=2)
+		{
+			bmap_blockair[y/CELL][x/CELL] = 1;
+			bmap_blockairh[y/CELL][x/CELL] = 1;
+		}
+	}
+	if(parts[i].tmp)
+	{
+		bmap_blockair[y/CELL][x/CELL] = 1;
+		bmap_blockairh[y/CELL][x/CELL] = 1;
+	}
 	return 0;
 }

@@ -1905,16 +1905,16 @@ void update_particles_i(pixel *vid, int start, int inc)
 #endif
 			}
 
-			j = surround_space = nt = 0;//if nt is 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
+			j = surround_space = nt = 0;//if nt is greater than 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
 			for (nx=-1; nx<2; nx++)
 				for (ny=-1; ny<2; ny++) {
 					if (nx||ny) {
 						surround[j] = r = pmap[y+ny][x+nx];
 						j++;
 						if (!(r&0xFF))
-							surround_space = 1;//there is empty space
+							surround_space++;//there is empty space
 						if ((r&0xFF)!=t)
-							nt = 1;//there is nothing or a different particle
+							nt++;//there is nothing or a different particle
 					}
 				}
 
