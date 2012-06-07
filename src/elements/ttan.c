@@ -17,7 +17,7 @@
 
 int update_TTAN(UPDATE_FUNC_ARGS) {
 	int nx, ny, ttan = 0;
-	if(nt<8)
+	if(nt<=6)
 	{
 		for (nx=-1; nx<2; nx++)
 			for (ny=-1; ny<2; ny++) {
