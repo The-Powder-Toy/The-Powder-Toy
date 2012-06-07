@@ -33,7 +33,7 @@ int update_EXOT(UPDATE_FUNC_ARGS) {
 						}
 				}
 				if (parts[i].tmp>245)
-					if (1>rand()%1000)
+					if (1>rand()%500)
 						if ((r&0xFF)!=PT_EXOT && (r&0xFF)!=PT_BREL && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_PHOT && (r&0xFF)!=PT_VOID && (r&0xFF)!=PT_NBHL && (r&0xFF)!=PT_WARP)
 							create_part(i, x, y, parts[r>>8].type);
 			}
@@ -86,18 +86,27 @@ int update_EXOT(UPDATE_FUNC_ARGS) {
 			}
 		}
 	}
+	if (parts[i].temp<273.15f)
+	{
+		parts[i].vx = 0;
+		parts[i].vy = 0;
+		pv[y/CELL][x/CELL] -= 0.01;
+		parts[i].tmp--;
+	}
 	return 0;
+
 }
 int graphics_EXOT(GRAPHICS_FUNC_ARGS)
 {
 	int q = cpart->temp;
 	int b = cpart->tmp;
+	int c = cpart->tmp2;	
 	if ((cpart->tmp2 - 1)>rand()%1000)
 	{	
-	float frequency = 0.90045;	
-	*colr = (sin(frequency*q + 0) * 127 + 255);
-	*colg = (sin(frequency*q + 2) * 127 + 255);
-	*colb = (sin(frequency*q + 4) * 127 + 255);
+	float frequency = 0.04045;	
+	*colr = (sin(frequency*c + 4) * 127 + 150);
+	*colg = (sin(frequency*c + 6) * 127 + 150);
+	*colb = (sin(frequency*c + 8) * 127 + 150);
 	*firea = 100;
 	*firer = 0;
 	*fireg = 0;
@@ -109,9 +118,9 @@ int graphics_EXOT(GRAPHICS_FUNC_ARGS)
 	else
 	{
 	float frequency = 0.00045;	
-	*colr = (sin(frequency*q + 0) * 127 + (b/1.7));
-	*colg = (sin(frequency*q + 2) * 127 + (b/1.7));
-	*colb = (sin(frequency*q + 4) * 127 + (b/1.7));
+	*colr = (sin(frequency*q + 4) * 127 + (b/1.7));
+	*colg = (sin(frequency*q + 6) * 127 + (b/1.7));
+	*colb = (sin(frequency*q + 8) * 127 + (b/1.7));
 	*cola = cpart->tmp / 6;	
 	*firea = *cola;
 	*firer = *colr;
