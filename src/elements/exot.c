@@ -35,7 +35,10 @@ int update_EXOT(UPDATE_FUNC_ARGS) {
 				if (parts[i].tmp>245)
 					if (1>rand()%500)
 						if ((r&0xFF)!=PT_EXOT && (r&0xFF)!=PT_BREL && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_PHOT && (r&0xFF)!=PT_VOID && (r&0xFF)!=PT_NBHL && (r&0xFF)!=PT_WARP)
+						{
 							create_part(i, x, y, parts[r>>8].type);
+							return 0;
+						}
 			}
 	parts[i].tmp--;	
 	parts[i].tmp2--;	
@@ -48,6 +51,7 @@ int update_EXOT(UPDATE_FUNC_ARGS) {
 		parts[i].tmp2 = 6000;
 		part_change_type(i, x, y, PT_WARP);
 		parts[i].temp = 10000;
+		return 0;
 	}
 	else
 		pv[y/CELL][x/CELL] += (parts[i].tmp2*CFDS)/160000;
@@ -55,6 +59,7 @@ int update_EXOT(UPDATE_FUNC_ARGS) {
 	{
 		part_change_type(i, x, y, PT_WARP);
 		parts[i].tmp2 = 6000;
+		return 0;
 	}		
 	if (parts[i].tmp2>100)
 	{
