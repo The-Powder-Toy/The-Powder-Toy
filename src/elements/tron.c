@@ -159,7 +159,7 @@ int update_TRON(UPDATE_FUNC_ARGS) {
 
 		//set own life and clear .tmp (it dies if it can't move anyway)
 		parts[i].life = parts[i].tmp2;
-		parts[i].tmp &= parts[i].tmp&0xF810;
+		parts[i].tmp &= parts[i].tmp&0xF818;
 	}
 	else // fade tail deco, or prevent tail from dieing
 	{
