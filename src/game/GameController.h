@@ -94,6 +94,7 @@ public:
 	void ShowConsole();
 	void FrameStep();
 	ui::Point PointTranslate(ui::Point point);
+	ui::Point NormaliseBlockCoord(ui::Point point);
 	std::string ElementResolve(int type);
 };
 

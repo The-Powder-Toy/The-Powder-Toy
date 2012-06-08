@@ -9,6 +9,7 @@
 #define PREVIEWMODEL_H_
 
 #include <vector>
+#include <iostream>
 #include <pthread.h>
 #include "PreviewView.h"
 #include "client/SaveInfo.h"
@@ -17,14 +18,19 @@
 
 using namespace std;
 
+struct SaveData
+{
+	unsigned char * data;
+	int length;
+};
+
 class PreviewView;
 class PreviewModel {
 	bool doOpen;
 	vector<PreviewView*> observers;
 	SaveInfo * save;
-	Thumbnail * savePreview;
+	vector<char> saveDataBuffer;
 	std::vector<SaveComment*> * saveComments;
-	void notifyPreviewChanged();
 	void notifySaveChanged();
 	void notifySaveCommentsChanged();
 
@@ -32,11 +38,11 @@ class PreviewModel {
 	int tSaveID;
 	int tSaveDate;
 
-	bool updateSavePreviewWorking;
-	volatile bool updateSavePreviewFinished;
-	pthread_t updateSavePreviewThread;
-	static void * updateSavePreviewTHelper(void * obj);
-	void * updateSavePreviewT();
+	bool updateSaveDataWorking;
+	volatile bool updateSaveDataFinished;
+	pthread_t updateSaveDataThread;
+	static void * updateSaveDataTHelper(void * obj);
+	void * updateSaveDataT();
 
 	bool updateSaveInfoWorking;
 	volatile bool updateSaveInfoFinished;
@@ -51,7 +57,6 @@ class PreviewModel {
 	void * updateSaveCommentsT();
 public:
 	PreviewModel();
-	Thumbnail * GetPreview();
 	SaveInfo * GetSave();
 	std::vector<SaveComment*> * GetComments();
 	void AddObserver(PreviewView * observer);

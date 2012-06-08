@@ -8,6 +8,7 @@
 #include <vector>
 #include "PreviewView.h"
 #include "dialogues/TextPrompt.h"
+#include "simulation/SaveRenderer.h"
 #include "interface/Point.h"
 #include "interface/Window.h"
 #include "search/Thumbnail.h"
@@ -163,6 +164,9 @@ void PreviewView::OnMouseDown(int x, int y, unsigned button)
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
 	SaveInfo * save = sender->GetSave();
+	if(savePreview)
+		delete savePreview;
+	savePreview = NULL;
 	if(save)
 	{
 		votesUp = save->votesUp;
@@ -174,6 +178,24 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 			favButton->Enabled = false;
 		else
 			favButton->Enabled = true;
+
+		if(save->GetGameSave())
+		{
+			savePreview = SaveRenderer::Ref().Render(save->GetGameSave());
+
+			if(savePreview && savePreview->Data && !(savePreview->Size.X == XRES/2 && savePreview->Size.Y == YRES/2))
+			{
+				int newSizeX, newSizeY;
+				pixel * oldData = savePreview->Data;
+				float factorX = ((float)XRES/2)/((float)savePreview->Size.X);
+				float factorY = ((float)YRES/2)/((float)savePreview->Size.Y);
+				float scaleFactor = factorY < factorX ? factorY : factorX;
+				savePreview->Data = Graphics::resample_img(oldData, savePreview->Size.X, savePreview->Size.Y, savePreview->Size.X*scaleFactor, savePreview->Size.Y*scaleFactor);
+				free(oldData);
+				savePreview->Size.X *= scaleFactor;
+				savePreview->Size.Y *= scaleFactor;
+			}
+		}
 	}
 	else
 	{
@@ -230,9 +252,9 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	}
 }
 
-void PreviewView::NotifyPreviewChanged(PreviewModel * sender)
+/*void PreviewView::NotifyPreviewChanged(PreviewModel * sender)
 {
-	savePreview = sender->GetPreview();
+	savePreview = sender->GetGameSave();
 	if(savePreview && savePreview->Data && !(savePreview->Size.X == XRES/2 && savePreview->Size.Y == YRES/2))
 	{
 		int newSizeX, newSizeY;
@@ -243,7 +265,7 @@ void PreviewView::NotifyPreviewChanged(PreviewModel * sender)
 		savePreview->Size.X *= scaleFactor;
 		savePreview->Size.Y *= scaleFactor;
 	}
-}
+}*/
 
 PreviewView::~PreviewView() {
 }

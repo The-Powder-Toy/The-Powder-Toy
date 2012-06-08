@@ -17,31 +17,48 @@ int Simulation::Load(GameSave * save)
 	return Load(0, 0, save);
 }
 
-int Simulation::Load(int x, int y, GameSave * save)
+int Simulation::Load(int fullX, int fullY, GameSave * save)
 {
-	for(int i = 0; i < NPART && i < save->particlesCount; i++)
+	int blockX, blockY;
+
+	if(!save) return 0;
+
+	//Align to blockMap
+	blockX = fullX/CELL;
+	blockY = fullY/CELL;
+	fullX = blockX*CELL;
+	fullY = blockY*CELL;
+
+	int i;
+	for(int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
-		parts[i] = save->particles[i];
-		parts[i].x += (float)x;
-		parts[i].y += (float)y;
+		if (pfree == -1)
+			break;
+		i = pfree;
+		pfree = parts[i].life;
+		if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
+
+		parts[i] = save->particles[n];
+		parts[i].x += (float)fullX;
+		parts[i].y += (float)fullY;
 	}
 	parts_lastActiveIndex = NPART-1;
 	for(int i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
 	{
 		sign tempSign = save->signs[i];
-		tempSign.x += x;
-		tempSign.y += y;
+		tempSign.x += fullX;
+		tempSign.y += fullY;
 		signs.push_back(tempSign);
 	}
-	for(int blockX = 0; blockX < save->width/CELL; blockX++)
+	for(int saveBlockX = 0; saveBlockX < save->blockWidth/CELL; saveBlockX++)
 	{
-		for(int blockY = 0; blockY < save->height/CELL; blockY++)
+		for(int saveBlockY = 0; saveBlockY < save->blockHeight/CELL; saveBlockY++)
 		{
-			if(save->blockMap[blockY][blockX])
+			if(save->blockMap[saveBlockY][saveBlockX])
 			{
-				bmap[blockY+(y/CELL)][blockX+(x/CELL)] = save->blockMap[blockY][blockX];
-				fvx[blockY+(y/CELL)][blockX+(x/CELL)] = save->fanVelX[blockY][blockX];
-				fvy[blockY+(y/CELL)][blockX+(x/CELL)] = save->fanVelY[blockY][blockX];
+				bmap[saveBlockY+blockY][saveBlockX+blockX] = save->blockMap[saveBlockY][saveBlockX];
+				fvx[saveBlockY+blockY][saveBlockX+blockX] = save->fanVelX[saveBlockY][saveBlockX];
+				fvy[saveBlockY+blockY][saveBlockX+blockX] = save->fanVelY[saveBlockY][saveBlockX];
 			}
 		}
 	}
@@ -53,35 +70,82 @@ GameSave * Simulation::Save()
 	return Save(0, 0, XRES, YRES);
 }
 
-GameSave * Simulation::Save(int x1, int y1, int x2, int y2)
+GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 {
-	GameSave * newSave = new GameSave(abs(x2-x1), abs(y2-y1));
+	int blockX, blockY, blockX2, blockY2, fullW, fullH, blockW, blockH;
+	//Normalise incoming coords
+	int swapTemp;
+	if(fullY>fullY2)
+	{
+		swapTemp = fullY;
+		fullY = fullY2;
+		fullY2 = swapTemp;
+	}
+	if(fullX>fullX2)
+	{
+		swapTemp = fullX;
+		fullX = fullX2;
+		fullX2 = swapTemp;
+	}
+
+	//Align coords to blockMap
+	blockX = fullX/CELL;
+	blockY = fullY/CELL;
+
+	blockX2 = fullX2/CELL;
+	blockY2 = fullY2/CELL;
+
+	fullX = blockX*CELL;
+	fullY = blockY*CELL;
+
+	fullX2 = blockX2*CELL;
+	fullY2 = blockY2*CELL;
+
+	blockW = blockX2-blockX;
+	blockH = blockY2-blockY;
+	fullW = fullX2-fullX;
+	fullH = fullY2-fullY;
+
+	GameSave * newSave = new GameSave(blockW, blockH);
 	
 	for(int i = 0; i < NPART; i++)
 	{
 		int x, y;
 		x = int(parts[i].x + 0.5f);
 		y = int(parts[i].y + 0.5f);
-		if(parts[i].type && x >= x1 && y >= y1 && x < x2 && y < y2)
+		if(parts[i].type && x >= fullX && y >= fullY && x < fullX2 && y < fullY2)
 		{
 			Particle tempPart = parts[i];
-			tempPart.x -= x1;
-			tempPart.y -= y1;
+			tempPart.x -= fullX;
+			tempPart.y -= fullY;
 			*newSave << tempPart;
 		}
 	}
 	
 	for(int i = 0; i < MAXSIGNS && i < signs.size(); i++)
 	{
-		if(signs[i].text.length() && signs[i].x >= x1 && signs[i].y >= y1 && signs[i].x < x2 && signs[i].y < y2)
+		if(signs[i].text.length() && signs[i].x >= fullX && signs[i].y >= fullY && signs[i].x < fullX2 && signs[i].y < fullY2)
 		{
 			sign tempSign = signs[i];
-			tempSign.x -= x1;
-			tempSign.y -= y1;
+			tempSign.x -= fullX;
+			tempSign.y -= fullY;
 			*newSave << tempSign;
 		}
 	}
 	
+	for(int saveBlockX = 0; saveBlockX < newSave->blockWidth; saveBlockX++)
+	{
+		for(int saveBlockY = 0; saveBlockY < newSave->blockHeight; saveBlockY++)
+		{
+			if(bmap[saveBlockY+blockY][saveBlockX+blockX])
+			{
+				newSave->blockMap[saveBlockY][saveBlockX] = bmap[saveBlockY+blockY][saveBlockX+blockX];
+				newSave->fanVelX[saveBlockY][saveBlockX] = fvx[saveBlockY+blockY][saveBlockX+blockX];
+				newSave->fanVelY[saveBlockY][saveBlockX] = fvy[saveBlockY+blockY][saveBlockX+blockX];
+			}
+		}
+	}
+
 	return newSave;
 }
 

@@ -36,7 +36,6 @@ class PreviewView: public ui::Window {
 public:
 	void AttachController(PreviewController * controller) { c = controller;}
 	PreviewView();
-	void NotifyPreviewChanged(PreviewModel * sender);
 	void NotifySaveChanged(PreviewModel * sender);
 	void NotifyCommentsChanged(PreviewModel * sender);
 	virtual void OnDraw();

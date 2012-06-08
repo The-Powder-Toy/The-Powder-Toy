@@ -11,11 +11,10 @@
 
 PreviewModel::PreviewModel():
 	save(NULL),
-	savePreview(NULL),
 	saveComments(NULL),
 	doOpen(false),
-	updateSavePreviewWorking(false),
-	updateSavePreviewFinished(false),
+	updateSaveDataWorking(false),
+	updateSaveDataFinished(false),
 	updateSaveInfoWorking(false),
 	updateSaveInfoFinished(false),
 	updateSaveCommentsWorking(false),
@@ -30,9 +29,9 @@ void * PreviewModel::updateSaveInfoTHelper(void * obj)
 	return ((PreviewModel*)obj)->updateSaveInfoT();
 }
 
-void * PreviewModel::updateSavePreviewTHelper(void * obj)
+void * PreviewModel::updateSaveDataTHelper(void * obj)
 {
-	return ((PreviewModel*)obj)->updateSavePreviewT();
+	return ((PreviewModel*)obj)->updateSaveDataT();
 }
 
 void * PreviewModel::updateSaveCommentsTHelper(void * obj)
@@ -47,11 +46,14 @@ void * PreviewModel::updateSaveInfoT()
 	return tempSave;
 }
 
-void * PreviewModel::updateSavePreviewT()
+void * PreviewModel::updateSaveDataT()
 {
-	Thumbnail * tempThumb = Client::Ref().GetPreview(tSaveID, tSaveDate);
-	updateSavePreviewFinished = true;
-	return tempThumb;
+	int tempDataSize;
+	unsigned char * tempData = Client::Ref().GetSaveData(tSaveID, tSaveDate, tempDataSize);
+	saveDataBuffer.clear();
+	saveDataBuffer.insert(saveDataBuffer.begin(), tempData, tempData+tempDataSize);
+	updateSaveDataFinished = true;
+	return NULL;
 }
 
 void * PreviewModel::updateSaveCommentsT()
@@ -81,11 +83,7 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 		delete save;
 		save = NULL;
 	}
-	if(savePreview)
-	{
-		delete savePreview;
-		savePreview = NULL;
-	}
+	saveDataBuffer.clear();
 	if(saveComments)
 	{
 		for(int i = 0; i < saveComments->size(); i++)
@@ -93,15 +91,14 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 		delete saveComments;
 		saveComments = NULL;
 	}
-	notifyPreviewChanged();
 	notifySaveChanged();
 	notifySaveCommentsChanged();
 
-	if(!updateSavePreviewWorking)
+	if(!updateSaveDataWorking)
 	{
-		updateSavePreviewWorking = true;
-		updateSavePreviewFinished = false;
-		pthread_create(&updateSavePreviewThread, 0, &PreviewModel::updateSavePreviewTHelper, this);
+		updateSaveDataWorking = true;
+		updateSaveDataFinished = false;
+		pthread_create(&updateSaveDataThread, 0, &PreviewModel::updateSaveDataTHelper, this);
 	}
 
 	if(!updateSaveInfoWorking)
@@ -129,11 +126,6 @@ bool PreviewModel::GetDoOpen()
 	return doOpen;
 }
 
-Thumbnail * PreviewModel::GetPreview()
-{
-	return savePreview;
-}
-
 SaveInfo * PreviewModel::GetSave()
 {
 	return save;
@@ -142,14 +134,6 @@ SaveInfo * PreviewModel::GetSave()
 std::vector<SaveComment*> * PreviewModel::GetComments()
 {
 	return saveComments;
-}
-
-void PreviewModel::notifyPreviewChanged()
-{
-	for(int i = 0; i < observers.size(); i++)
-	{
-		observers[i]->NotifyPreviewChanged(this);
-	}
 }
 
 void PreviewModel::notifySaveChanged()
@@ -170,24 +154,30 @@ void PreviewModel::notifySaveCommentsChanged()
 
 void PreviewModel::AddObserver(PreviewView * observer) {
 	observers.push_back(observer);
-	observer->NotifyPreviewChanged(this);
 	observer->NotifySaveChanged(this);
 }
 
 void PreviewModel::Update()
 {
-	if(updateSavePreviewWorking)
+	if(updateSaveDataWorking)
 	{
-		if(updateSavePreviewFinished)
+		if(updateSaveDataFinished)
 		{
-			if(savePreview)
+			updateSaveDataWorking = false;
+			pthread_join(updateSaveDataThread, NULL);
+
+			if(updateSaveInfoFinished && save)
 			{
-				delete savePreview;
-				savePreview = NULL;
+				try
+				{
+					save->SetGameSave(new GameSave(&saveDataBuffer[0], saveDataBuffer.size()));
+				}
+				catch(ParseException &e)
+				{
+					throw PreviewModelException("Save file corrupt or from newer version");
+				}
+				notifySaveChanged();
 			}
-			updateSavePreviewWorking = false;
-			pthread_join(updateSavePreviewThread, (void**)(&savePreview));
-			notifyPreviewChanged();
 		}
 	}
 
@@ -202,6 +192,17 @@ void PreviewModel::Update()
 			}
 			updateSaveInfoWorking = false;
 			pthread_join(updateSaveInfoThread, (void**)(&save));
+			if(updateSaveDataFinished && save)
+			{
+				try
+				{
+					save->SetGameSave(new GameSave(&saveDataBuffer[0], saveDataBuffer.size()));
+				}
+				catch(ParseException &e)
+				{
+					throw PreviewModelException("Save file corrupt or from newer version");
+				}
+			}
 			notifySaveChanged();
 			if(!save)
 				throw PreviewModelException("Unable to load save");
@@ -229,7 +230,5 @@ void PreviewModel::Update()
 PreviewModel::~PreviewModel() {
 	if(save)
 		delete save;
-	if(savePreview)
-		delete savePreview;
 }
 

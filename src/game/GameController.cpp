@@ -234,6 +234,11 @@ ui::Point GameController::PointTranslate(ui::Point point)
 	return point;
 }
 
+ui::Point GameController::NormaliseBlockCoord(ui::Point point)
+{
+	return (point/CELL)*CELL;
+}
+
 void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point point2)
 {
 	Simulation * sim = gameModel->GetSimulation();

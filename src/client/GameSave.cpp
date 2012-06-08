@@ -22,13 +22,13 @@ gravityMode(save.gravityMode),
 airMode(save.airMode),
 signs(save.signs)
 {
-	setSize(save.width, save.height);
+	setSize(save.blockWidth, save.blockHeight);
 
 	particlesCount = save.particlesCount;
 	copy(save.particles, save.particles+NPART, particles);
-	copy(save.blockMapPtr, save.blockMapPtr+((height/CELL)*(width/CELL)), blockMapPtr);
-	copy(save.fanVelXPtr, save.fanVelXPtr+((height/CELL)*(width/CELL)), fanVelXPtr);
-	copy(save.fanVelYPtr, save.fanVelYPtr+((height/CELL)*(width/CELL)), fanVelYPtr);
+	copy(save.blockMapPtr, save.blockMapPtr+(blockHeight*blockWidth), blockMapPtr);
+	copy(save.fanVelXPtr, save.fanVelXPtr+(blockHeight*blockWidth), fanVelXPtr);
+	copy(save.fanVelYPtr, save.fanVelYPtr+(blockHeight*blockWidth), fanVelYPtr);
 }
 
 GameSave::GameSave(int width, int height)
@@ -38,10 +38,29 @@ GameSave::GameSave(int width, int height)
 
 GameSave::GameSave(char * data, int dataSize)
 {
-	width, height = 0;
+	blockWidth, blockHeight = 0;
 	blockMap, blockMapPtr, fanVelX, fanVelXPtr, fanVelY, fanVelYPtr, particles = NULL;
 	try {
-		readPSv(data, dataSize);
+		if(dataSize > 0)
+		{
+			if(data[0] == 0x50 || data[0] == 0x66)
+			{
+				readPSv(data, dataSize);
+			}
+			else if(data[0] == 'O')
+			{
+				readOPS(data, dataSize);
+			}
+			else
+			{
+				std::cerr << "Got Magic number '" << data[0] << "'" << std::endl;
+				throw ParseException(ParseException::Corrupt, "Invalid save format");
+			}
+		}
+		else
+		{
+			throw ParseException(ParseException::Corrupt, "No data");
+		}
 	} catch (ParseException& e) {
 		this->~GameSave();	//Free any allocated memory
 		throw;
@@ -50,26 +69,29 @@ GameSave::GameSave(char * data, int dataSize)
 
 void GameSave::setSize(int newWidth, int newHeight)
 {
-	this->width = (newWidth/CELL)*CELL;
-	this->height = (newHeight/CELL)*CELL;
+
+	std::cout << "GameSave::setSize(" << newWidth << ", " << newHeight << ")";
+
+	this->blockWidth = newWidth;
+	this->blockHeight = newHeight;
 	
 	particlesCount = 0;
 	particles = new Particle[NPART];
-	blockMap = new unsigned char*[height/CELL];
-	blockMapPtr = new unsigned char[(height/CELL)*(width/CELL)];
-	fill(blockMapPtr, blockMapPtr+((height/CELL)*(width/CELL)), 0);
-	for(int y = 0; y < height/CELL; y++)
-		blockMap[y] = &blockMapPtr[y*(width/CELL)];
-	fanVelXPtr = new float[(height/CELL)*(width/CELL)];
-	fill(fanVelXPtr, fanVelXPtr+((height/CELL)*(width/CELL)), 0);
-	fanVelX = new float*[height/CELL];
-	for(int y = 0; y < height/CELL; y++)
-		fanVelX[y] = &fanVelXPtr[y*(width/CELL)];
-	fanVelYPtr = new float[(height/CELL)*(width/CELL)];
-	fill(fanVelYPtr, fanVelYPtr+((height/CELL)*(width/CELL)), 0);
-	fanVelY = new float*[height/CELL];
-	for(int y = 0; y < height/CELL; y++)
-		fanVelY[y] = &fanVelYPtr[y*(width/CELL)];
+	blockMap = new unsigned char*[blockHeight];
+	blockMapPtr = new unsigned char[blockHeight*blockWidth];
+	fill(blockMapPtr, blockMapPtr+(blockHeight*blockWidth), 0);
+	for(int y = 0; y < blockHeight; y++)
+		blockMap[y] = &blockMapPtr[y*blockWidth];
+	fanVelXPtr = new float[(blockHeight)*(blockWidth)];
+	fill(fanVelXPtr, fanVelXPtr+((blockHeight)*(blockWidth)), 0);
+	fanVelX = new float*[blockHeight];
+	for(int y = 0; y < blockHeight; y++)
+		fanVelX[y] = &fanVelXPtr[y*(blockWidth)];
+	fanVelYPtr = new float[(blockHeight)*(blockWidth)];
+	fill(fanVelYPtr, fanVelYPtr+((blockHeight)*(blockWidth)), 0);
+	fanVelY = new float*[blockHeight];
+	for(int y = 0; y < blockHeight; y++)
+		fanVelY[y] = &fanVelYPtr[y*blockWidth];
 }
 
 char * GameSave::Serialise(int & dataSize)
@@ -116,7 +138,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	if(blockX+blockW > XRES/CELL || blockY+blockH > YRES/CELL)
 		throw ParseException(ParseException::InvalidDimensions, "Save too large");
 	
-	setSize(fullW, fullH);
+	setSize(blockW, blockH);
 	
 	bsonDataLen = ((unsigned)inputData[8]);
 	bsonDataLen |= ((unsigned)inputData[9]) << 8;
@@ -373,7 +395,7 @@ void GameSave::readOPS(char * data, int dataLength)
 					y = saved_y + fullY;
 					fieldDescriptor = partsData[i+1];
 					fieldDescriptor |= partsData[i+2] << 8;
-					if(x >= XRES || x < 0 || y >= YRES || y < 0)
+					if(x >= fullW || x < 0 || y >= fullH || y < 0)
 					{
 						fprintf(stderr, "Out of range [%d]: %d %d, [%d, %d], [%d, %d]\n", i, x, y, (unsigned)partsData[i+1], (unsigned)partsData[i+2], (unsigned)partsData[i+3], (unsigned)partsData[i+4]);
 						goto fail;
@@ -618,7 +640,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	if (!d)
 		throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
 	
-	setSize(bw*CELL, bh*CELL);
+	setSize(bw, bh);
 	
 	if (BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), dataLength-12, 0, 0))
 		throw ParseException(ParseException::Corrupt, "Cannot decompress");
@@ -1122,8 +1144,8 @@ char * GameSave::serialiseOPS(int & dataLength)
 	fullY = blockY*CELL;
 	
 	//Original size + offset of original corner from snapped corner, rounded up by adding CELL-1
-	blockW = (width-fullX+CELL-1)/CELL;
-	blockH = (height-fullY+CELL-1)/CELL;
+	blockW = blockWidth;//(blockWidth-fullX+CELL-1)/CELL;
+	blockH = blockHeight;//(blockHeight-fullY+CELL-1)/CELL;
 	fullW = blockW*CELL;
 	fullH = blockH*CELL;
 	
@@ -1438,7 +1460,7 @@ fin:
 
 GameSave::~GameSave()
 {
-	if(width && height)
+	if(blockWidth && blockHeight)
 	{
 		if(particles)
 		{

@@ -898,17 +898,19 @@ void GameView::OnDraw()
 					int thumbX = selectPoint2.X - (tempThumb->Size.X/2);
 					int thumbY = selectPoint2.Y - (tempThumb->Size.Y/2);
 
-					if(thumbX<0)
-						thumbX = 0;
-					if(thumbX+(tempThumb->Size.X)>=XRES)
-						thumbX = XRES-tempThumb->Size.X;
+					ui::Point thumbPos = c->NormaliseBlockCoord(ui::Point(thumbX, thumbY));
 
-					if(thumbY<0)
-						thumbY = 0;
-					if(thumbY+(tempThumb->Size.Y)>=YRES)
-						thumbY = YRES-tempThumb->Size.Y;
+					if(thumbPos.X<0)
+						thumbPos.X = 0;
+					if(thumbPos.X+(tempThumb->Size.X)>=XRES)
+						thumbPos.X = XRES-tempThumb->Size.X;
 
-					g->draw_image(tempThumb->Data, thumbX, thumbY, tempThumb->Size.X, tempThumb->Size.Y, 128);
+					if(thumbPos.Y<0)
+						thumbPos.Y = 0;
+					if(thumbPos.Y+(tempThumb->Size.Y)>=YRES)
+						thumbPos.Y = YRES-tempThumb->Size.Y;
+
+					g->draw_image(tempThumb->Data, thumbPos.X, thumbPos.Y, tempThumb->Size.X, tempThumb->Size.Y, 128);
 				}
 			}
 			else

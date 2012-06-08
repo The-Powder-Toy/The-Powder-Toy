@@ -34,7 +34,7 @@ class GameSave
 {
 public:
 	
-	int width, height;
+	int blockWidth, blockHeight;
 
 	//Simulation data
 	//int ** particleMap;
