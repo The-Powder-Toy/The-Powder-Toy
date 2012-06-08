@@ -36,6 +36,7 @@ void PreviewController::Update()
 	}
 	catch (PreviewModelException & e)
 	{
+		Exit();
 		new ErrorMessage("Error", e.what());
 	}
 }
