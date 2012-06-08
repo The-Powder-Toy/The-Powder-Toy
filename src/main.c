@@ -1154,7 +1154,7 @@ int main(int argc, char *argv[])
 			{
 				char saveURIOpenString[512];
 				check_data = http_async_req_stop(http_session_check, &http_s_ret, NULL);
-				if (http_ret==200 && check_data)
+				if (http_s_ret==200 && check_data)
 				{
 					if (!strncmp(check_data, "EXPIRED", 7))
 					{
