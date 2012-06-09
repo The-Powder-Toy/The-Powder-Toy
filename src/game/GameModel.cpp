@@ -275,12 +275,8 @@ void GameModel::SetSave(SaveInfo * newSave)
 	currentSave = newSave;
 	if(currentSave)
 	{
-		int returnVal = sim->Load(currentSave->GetGameSave());
-		if(returnVal){
-			delete currentSave;
-			currentSave = NULL;
-			throw GameModelException(returnVal==2?"Save from newer version":"Save data corrupt");
-		}
+		sim->clear_sim();
+		sim->Load(currentSave->GetGameSave());
 	}
 	notifySaveChanged();
 	notifyPausedChanged();

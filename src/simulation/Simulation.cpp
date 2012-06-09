@@ -19,7 +19,7 @@ int Simulation::Load(GameSave * save)
 
 int Simulation::Load(int fullX, int fullY, GameSave * save)
 {
-	int blockX, blockY;
+	int blockX, blockY, x, y, r;
 
 	if(!save) return 0;
 
@@ -32,15 +32,27 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 	int i;
 	for(int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
-		if (pfree == -1)
-			break;
-		i = pfree;
-		pfree = parts[i].life;
-		if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
+		Particle tempPart = save->particles[n];
+		tempPart.x += (float)fullX;
+		tempPart.y += (float)fullY;
+		x = int(tempPart.x + 0.5f);
+		y = int(tempPart.y + 0.5f);
 
-		parts[i] = save->particles[n];
-		parts[i].x += (float)fullX;
-		parts[i].y += (float)fullY;
+		if(r = pmap[y][x])
+		{
+			//Replace existing
+			parts[r>>8] = tempPart;
+		}
+		else
+		{
+			//Allocate new particle
+			if (pfree == -1)
+				break;
+			i = pfree;
+			pfree = parts[i].life;
+			if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
+			parts[i] = tempPart;
+		}
 	}
 	parts_lastActiveIndex = NPART-1;
 	for(int i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
@@ -50,9 +62,9 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		tempSign.y += fullY;
 		signs.push_back(tempSign);
 	}
-	for(int saveBlockX = 0; saveBlockX < save->blockWidth/CELL; saveBlockX++)
+	for(int saveBlockX = 0; saveBlockX < save->blockWidth; saveBlockX++)
 	{
-		for(int saveBlockY = 0; saveBlockY < save->blockHeight/CELL; saveBlockY++)
+		for(int saveBlockY = 0; saveBlockY < save->blockHeight; saveBlockY++)
 		{
 			if(save->blockMap[saveBlockY][saveBlockX])
 			{

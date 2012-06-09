@@ -33,12 +33,14 @@ class PreviewView: public ui::Window {
 	std::vector<ui::Component*> commentTextComponents;
 	int votesUp;
 	int votesDown;
+	bool doOpen;
 public:
 	void AttachController(PreviewController * controller) { c = controller;}
 	PreviewView();
 	void NotifySaveChanged(PreviewModel * sender);
 	void NotifyCommentsChanged(PreviewModel * sender);
 	virtual void OnDraw();
+	virtual void DoDraw();
 	virtual void OnTick(float dt);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual ~PreviewView();

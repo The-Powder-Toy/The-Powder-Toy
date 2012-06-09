@@ -69,9 +69,6 @@ GameSave::GameSave(char * data, int dataSize)
 
 void GameSave::setSize(int newWidth, int newHeight)
 {
-
-	std::cout << "GameSave::setSize(" << newWidth << ", " << newHeight << ")";
-
 	this->blockWidth = newWidth;
 	this->blockHeight = newHeight;
 	

@@ -39,6 +39,10 @@ void PreviewController::Update()
 		Exit();
 		new ErrorMessage("Error", e.what());
 	}
+	if(previewModel->GetDoOpen() && previewModel->GetSave() && previewModel->GetSave()->GetGameSave())
+	{
+		Exit();
+	}
 }
 
 SaveInfo * PreviewController::GetSave()

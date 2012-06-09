@@ -11,11 +11,13 @@
 #include "simulation/SaveRenderer.h"
 #include "interface/Point.h"
 #include "interface/Window.h"
+#include "Style.h"
 #include "search/Thumbnail.h"
 
 PreviewView::PreviewView():
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+200, (YRES/2)+150)),
-	savePreview(NULL)
+	savePreview(NULL),
+	doOpen(false)
 {
 	class OpenAction: public ui::ButtonAction
 	{
@@ -25,7 +27,6 @@ PreviewView::PreviewView():
 		virtual void ActionCallback(ui::Button * sender)
 		{
 			v->c->DoOpen();
-			v->c->Exit();
 		}
 	};
 	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), "Open");
@@ -109,6 +110,18 @@ PreviewView::PreviewView():
 	AddComponent(authorDateLabel);
 }
 
+void PreviewView::DoDraw()
+{
+	Window::DoDraw();
+	Graphics * g = ui::Engine::Ref().g;
+	if(c->GetDoOpen())
+	{
+		g->fillrect(Position.X+(Size.X/2)-101, Position.Y+(Size.Y/2)-26, 202, 52, 0, 0, 0, 210);
+		g->drawrect(Position.X+(Size.X/2)-100, Position.Y+(Size.Y/2)-25, 200, 50, 255, 255, 255, 180);
+		g->drawtext(Position.X+(Size.X/2)-(Graphics::textwidth("Loading save...")/2), Position.Y+(Size.Y/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
+	}
+}
+
 void PreviewView::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
@@ -128,16 +141,16 @@ void PreviewView::OnDraw()
 
 	g->draw_line(Position.X+1, Position.Y+12+YRES/2, Position.X-1+XRES/2, Position.Y+12+YRES/2, 100, 100, 100,255);
 	float factor;
-	if(!votesUp && !votesDown)
-		return;
-	else
+	if(!(!votesUp && !votesDown))
+	{
 		factor = (float)(((float)(XRES/2)-2)/((float)(votesUp+votesDown)));
-	g->fillrect(1+Position.X, 2+Position.Y+YRES/2, (XRES/2)-2, 9, 200, 50, 50, 255);
-	g->fillrect(1+Position.X, 2+Position.Y+YRES/2, (int)(((float)votesUp)*factor), 9, 50, 200, 50, 255);
-	g->fillrect(1+Position.X, 2+Position.Y+(YRES/2), 14, 9, 0, 0, 0, 100);
-	g->fillrect(Position.X+(XRES/2)-15, 2+Position.Y+(YRES/2), 14, 9, 0, 0, 0, 100);
-	g->draw_icon(1+Position.X+2, Position.Y+(YRES/2)+4, IconVoteUp);
-	g->draw_icon(Position.X+(XRES/2)-12, Position.Y+(YRES/2)+1, IconVoteDown);
+		g->fillrect(1+Position.X, 2+Position.Y+YRES/2, (XRES/2)-2, 9, 200, 50, 50, 255);
+		g->fillrect(1+Position.X, 2+Position.Y+YRES/2, (int)(((float)votesUp)*factor), 9, 50, 200, 50, 255);
+		g->fillrect(1+Position.X, 2+Position.Y+(YRES/2), 14, 9, 0, 0, 0, 100);
+		g->fillrect(Position.X+(XRES/2)-15, 2+Position.Y+(YRES/2), 14, 9, 0, 0, 0, 100);
+		g->draw_icon(1+Position.X+2, Position.Y+(YRES/2)+4, IconVoteUp);
+		g->draw_icon(Position.X+(XRES/2)-12, Position.Y+(YRES/2)+1, IconVoteDown);
+	}
 
 	for(int i = 0; i < commentTextComponents.size(); i++)
 	{
