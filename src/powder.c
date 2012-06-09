@@ -1567,6 +1567,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 								create_part(i, x, y, PT_NBHL);
 								parts[i].temp = MAX_TEMP;
 								parts[i].tmp = pmap_count[y][x]-NPART;//strength of grav field
+								if (parts[i].tmp>51200) parts[i].tmp = 51200;
 								pmap_count[y][x] = NPART;
 							}
 							else
@@ -2859,7 +2860,10 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 					photons[y][x] = t|(i<<8);
 				else
 				{
-					pmap[y][x] = t|(i<<8);
+					// Particles are sometimes allowed to go inside INVS and FILT
+					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
+					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
+						pmap[y][x] = t|(i<<8);
 					pmap_count[y][x]++;
 				}
 			}
