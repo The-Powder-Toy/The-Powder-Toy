@@ -54,6 +54,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 	{
 		return 1;
 	}
+	force_stacking_check = 1;//check for excessive stacking of particles next time update_particles is run
 	if(saveData[0] == 'O' && saveData[1] == 'P' && saveData[2] == 'S')
 	{
 		return parse_save_OPS(save, size, replace, x0, y0, bmap, vx, vy, pv, fvx, fvy, signs, partsptr, pmap);

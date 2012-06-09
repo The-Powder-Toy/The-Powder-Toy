@@ -759,6 +759,7 @@ extern int portal_rx[8];
 extern int portal_ry[8];
 
 extern int wire_placed;
+extern int force_stacking_check;
 
 extern playerst player;
 extern playerst player2;

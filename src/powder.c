@@ -29,6 +29,7 @@
 int wire_placed = 0;
 
 int lighting_recreate = 0;
+int force_stacking_check = 0;//whether to force a check for excessively stacked particles
 
 playerst player;
 playerst player2;
@@ -1518,28 +1519,29 @@ void update_particles_i(pixel *vid, int start, int inc)
 	if (sys_pause&&!framerender)//do nothing if paused
 		return;
 		
-	//if ((rand()%NPART)<NUM_PARTS*2) // run more often when more particles are on screen (since this is often due to excessive stacking)
-	if (1)
+	if (force_stacking_check || (rand()%10)==0)
 	{
+		force_stacking_check = 0;
 		excessive_stacking_found = 0;
 		for (y=0; y<YRES; y++)
 		{
 			for (x=0; x<XRES; x++)
 			{
 				// Use a threshold, since some particle stacking can be normal (e.g. BIZR + FILT)
-				// Setting pmap_count[y][x] >= NPART means BHOL will form in that spot
+				// Setting pmap_count[y][x] > NPART means BHOL will form in that spot
 				if (pmap_count[y][x]>5)
 				{
 					if (bmap[y/CELL][x/CELL]==WL_EHOLE)
 					{
-						// Allow more stacking in E-hole, allow up to 1500 particles
+						// Allow more stacking in E-hole
 						if (pmap_count[y][x]>1500)
 						{
 							pmap_count[y][x] = pmap_count[y][x] + NPART;
 							excessive_stacking_found = 1;
 						}
 					}
-					else
+					// Random chance to turn into BHOL that increases with the amount of stacking, up to a threshold where it is certain to turn into BHOL
+					else if (pmap_count[y][x]>1500 || (rand()%1600)<=(pmap_count[y][x]+100))
 					{
 						pmap_count[y][x] = pmap_count[y][x] + NPART;
 						excessive_stacking_found = 1;
@@ -1564,7 +1566,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							{
 								create_part(i, x, y, PT_NBHL);
 								parts[i].temp = MAX_TEMP;
-								parts[i].tmp = pmap_count[y][x]-NPART;
+								parts[i].tmp = pmap_count[y][x]-NPART;//strength of grav field
 								pmap_count[y][x] = NPART;
 							}
 							else
