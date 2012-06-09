@@ -36,6 +36,7 @@ private:
 	//unsigned char * clipboardData;
 	GameSave * stamp;
 	GameSave * clipboard;
+	GameSave * placeSave;
 	deque<string> consoleLog;
 	vector<GameView*> observers;
 	vector<Tool*> toolList;
@@ -63,7 +64,7 @@ private:
 	void notifyUserChanged();
 	void notifyZoomChanged();
 	void notifyClipboardChanged();
-	void notifyStampChanged();
+	void notifyPlaceSaveChanged();
 	void notifyColourSelectorColourChanged();
 	void notifyColourSelectorVisibilityChanged();
 	void notifyLogChanged(string entry);
@@ -113,10 +114,12 @@ public:
 	void SetStamp(GameSave * newStamp);
 	void AddStamp(GameSave * save);
 	void SetClipboard(GameSave * save);
+	void SetPlaceSave(GameSave * save);
 	void Log(string message);
 	deque<string> GetLog();
 	GameSave * GetClipboard();
 	GameSave * GetStamp();
+	GameSave * GetPlaceSave();
 };
 
 #endif // GAMEMODEL_H

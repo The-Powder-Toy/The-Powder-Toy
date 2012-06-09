@@ -107,6 +107,7 @@ public:
 		if(cc->localBrowser->GetSave())
 		{
 			cc->gameModel->SetStamp(cc->localBrowser->GetSave()->GetGameSave());
+			cc->LoadStamp();
 		}
 		else
 			cc->gameModel->SetStamp(NULL);
@@ -168,20 +169,11 @@ GameView * GameController::GetView()
 	return gameView;
 }
 
-void GameController::PlaceStamp(ui::Point position)
+void GameController::PlaceSave(ui::Point position)
 {
-	if(gameModel->GetStamp())
+	if(gameModel->GetPlaceSave())
 	{
-		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetStamp());
-		gameModel->SetPaused(gameModel->GetPaused());
-	}
-}
-
-void GameController::PlaceClipboard(ui::Point position)
-{
-	if(gameModel->GetClipboard())
-	{
-		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetClipboard());
+		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetPlaceSave());
 		gameModel->SetPaused(gameModel->GetPaused());
 	}
 }
@@ -307,6 +299,31 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueu
 			sPoint = fPoint;
 		}
 	}
+}
+
+void GameController::LoadClipboard()
+{
+	gameModel->SetPlaceSave(gameModel->GetClipboard());
+}
+
+void GameController::LoadStamp()
+{
+	gameModel->SetPlaceSave(gameModel->GetStamp());
+}
+
+void GameController::TranslateSave(ui::Point point)
+{
+	matrix2d transform = m2d_identity;
+	vector2d translate = v2d_new(point.X, point.Y);
+	gameModel->GetPlaceSave()->Transform(transform, translate);
+	gameModel->SetPlaceSave(gameModel->GetPlaceSave());
+}
+
+void GameController::TransformSave(matrix2d transform)
+{
+	vector2d translate = v2d_zero;
+	gameModel->GetPlaceSave()->Transform(transform, translate);
+	gameModel->SetPlaceSave(gameModel->GetPlaceSave());
 }
 
 void GameController::ToolClick(int toolSelection, ui::Point point)

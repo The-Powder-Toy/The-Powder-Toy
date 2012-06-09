@@ -23,7 +23,7 @@ enum DrawMode
 
 enum SelectMode
 {
-	SelectNone, SelectStamp, SelectCopy, PlaceClipboard, PlaceStamp
+	SelectNone, SelectStamp, SelectCopy, PlaceSave
 };
 
 class GameController;
@@ -73,8 +73,7 @@ private:
 
 	ui::Point mousePosition;
 
-	Thumbnail * clipboardThumb;
-	Thumbnail * stampThumb;
+	Thumbnail * placeSaveThumb;
 
 	Particle sample;
 
@@ -99,8 +98,7 @@ public:
 	void NotifyZoomChanged(GameModel * sender);
 	void NotifyColourSelectorVisibilityChanged(GameModel * sender);
 	void NotifyColourSelectorColourChanged(GameModel * sender);
-	void NotifyClipboardChanged(GameModel * sender);
-	void NotifyStampChanged(GameModel * sender);
+	void NotifyPlaceSaveChanged(GameModel * sender);
 	void NotifyLogChanged(GameModel * sender, string entry);
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);

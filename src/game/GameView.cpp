@@ -29,8 +29,7 @@ GameView::GameView():
 	selectMode(SelectNone),
 	selectPoint1(0, 0),
 	selectPoint2(0, 0),
-	stampThumb(NULL),
-	clipboardThumb(NULL),
+	placeSaveThumb(NULL),
 	mousePosition(0, 0)
 {
 	int currentX = 1;
@@ -493,7 +492,7 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 	mousePosition = c->PointTranslate(ui::Point(x, y));
 	if(selectMode!=SelectNone)
 	{
-		if(selectMode==PlaceStamp || selectMode==PlaceClipboard)
+		if(selectMode==PlaceSave)
 			selectPoint1 = ui::Point(x, y);
 		if(selectPoint1.X!=-1)
 			selectPoint2 = ui::Point(x, y);
@@ -544,9 +543,9 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 	{
 		if(button==BUTTON_LEFT)
 		{
-			if(selectMode==PlaceStamp || selectMode==PlaceClipboard)
+			if(selectMode==PlaceSave)
 			{
-				Thumbnail * tempThumb = selectMode==PlaceStamp?stampThumb:clipboardThumb;
+				Thumbnail * tempThumb = placeSaveThumb;
 				if(tempThumb)
 				{
 					int thumbX = selectPoint2.X - (tempThumb->Size.X/2);
@@ -562,10 +561,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 					if(thumbY+(tempThumb->Size.Y)>=YRES)
 						thumbY = YRES-tempThumb->Size.Y;
 
-					if(selectMode==PlaceStamp)
-						c->PlaceStamp(ui::Point(thumbX, thumbY));
-					if(selectMode==PlaceClipboard)
-						c->PlaceClipboard(ui::Point(thumbX, thumbY));
+					c->PlaceSave(ui::Point(thumbX, thumbY));
 				}
 			}
 			else
@@ -646,6 +642,40 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 {
 	if(selectMode!=SelectNone)
 	{
+		if(selectMode==PlaceSave)
+		{
+			switch(key)
+			{
+			case KEY_RIGHT:
+			case 'd':
+				c->TranslateSave(ui::Point(1, 0));
+				break;
+			case KEY_LEFT:
+			case 'a':
+				c->TranslateSave(ui::Point(-1, 0));
+				break;
+			case KEY_UP:
+			case 'w':
+				c->TranslateSave(ui::Point(0, -1));
+				break;
+			case KEY_DOWN:
+			case 's':
+				c->TranslateSave(ui::Point(0, 1));
+				break;
+			case 'r':
+				if(shift)
+				{
+					//Flip
+					c->TransformSave(m2d_new(-1,0,0,1));
+				}
+				else
+				{
+					//Rotate 90deg
+					c->TransformSave(m2d_new(0,1,-1,0));
+				}
+				break;
+			}
+		}
 		return;
 	}
 	switch(key)
@@ -703,15 +733,14 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		}
 		break;
 	case 'v':
-		if(ctrl && clipboardThumb)
+		if(ctrl)
 		{
-			selectMode = PlaceClipboard;
+			c->LoadClipboard();
 			selectPoint2 = ui::Point(-1, -1);
 			selectPoint1 = selectPoint2;
 		}
 		break;
 	case 'l':
-		selectMode = PlaceStamp;
 		selectPoint2 = ui::Point(-1, -1);
 		selectPoint1 = selectPoint2;
 		c->OpenStamps();
@@ -746,9 +775,7 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 
 void GameView::OnTick(float dt)
 {
-	if(selectMode==PlaceStamp && !stampThumb)
-			selectMode = SelectNone;
-	if(selectMode==PlaceClipboard&& !clipboardThumb)
+	if(selectMode==PlaceSave && !placeSaveThumb)
 			selectMode = SelectNone;
 	if(zoomEnabled && !zoomCursorFixed)
 		c->SetZoomPosition(currentMouse);
@@ -828,29 +855,20 @@ void GameView::NotifyLogChanged(GameModel * sender, string entry)
 		logEntries.pop_back();
 }
 
-void GameView::NotifyClipboardChanged(GameModel * sender)
+void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 {
-	if(clipboardThumb)
-		delete clipboardThumb;
-	if(sender->GetClipboard())
+	if(placeSaveThumb)
+		delete placeSaveThumb;
+	if(sender->GetPlaceSave())
 	{
-		clipboardThumb = SaveRenderer::Ref().Render(sender->GetClipboard());
+		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetPlaceSave());
+		selectMode = PlaceSave;
 	}
 	else
-		clipboardThumb = NULL;
-}
-
-
-void GameView::NotifyStampChanged(GameModel * sender)
-{
-	if(stampThumb)
-		delete stampThumb;
-	if(sender->GetStamp())
 	{
-		stampThumb = SaveRenderer::Ref().Render(sender->GetStamp());
+		placeSaveThumb = NULL;
+		selectMode = SelectNone;
 	}
-	else
-		stampThumb = NULL;
 }
 
 void GameView::changeColour()
@@ -890,9 +908,9 @@ void GameView::OnDraw()
 
 		if(selectMode!=SelectNone)
 		{
-			if(selectMode==PlaceStamp || selectMode==PlaceClipboard)
+			if(selectMode==PlaceSave)
 			{
-				Thumbnail * tempThumb = selectMode==PlaceStamp?stampThumb:clipboardThumb;
+				Thumbnail * tempThumb = placeSaveThumb;
 				if(tempThumb && selectPoint2.X!=-1)
 				{
 					int thumbX = selectPoint2.X - (tempThumb->Size.X/2);

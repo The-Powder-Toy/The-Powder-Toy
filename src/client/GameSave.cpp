@@ -98,7 +98,108 @@ char * GameSave::Serialise(int & dataSize)
 
 void GameSave::Transform(matrix2d transform, vector2d translate)
 {
-	
+	void *ndata;
+	/*unsigned char (*blockMap)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
+	unsigned char (*blockMapNew)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
+	particle *partst = calloc(sizeof(particle), NPART);
+	sign *signst = calloc(MAXSIGNS, sizeof(sign));
+	unsigned (*pmapt)[XRES] = calloc(YRES*XRES, sizeof(unsigned));
+	float (*fanVelX)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*fanVelY)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*fanVelXNew)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*fanVelYNew)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*vxo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*vyo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*vxn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*vyn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*pvo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
+	float (*pvn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));*/
+	unsigned char (*blockMapNew)[blockWidth] = (unsigned char(*)[blockWidth])new unsigned char[blockHeight*blockWidth];
+	float (*fanVelXNew)[blockWidth] = (float(*)[blockWidth])new float[blockHeight*blockWidth];
+	float (*fanVelYNew)[blockWidth] = (float(*)[blockWidth])new float[blockHeight*blockWidth];
+	int i, x, y, nx, ny, w = blockWidth*CELL, h = blockHeight*CELL, nw, nh;
+	vector2d pos, tmp, ctl, cbr, vel;
+	vector2d cornerso[4];
+	// undo any translation caused by rotation
+	cornerso[0] = v2d_new(0,0);
+	cornerso[1] = v2d_new(w-1,0);
+	cornerso[2] = v2d_new(0,h-1);
+	cornerso[3] = v2d_new(w-1,h-1);
+	for (i=0; i<4; i++)
+	{
+		tmp = m2d_multiply_v2d(transform,cornerso[i]);
+		if (i==0) ctl = cbr = tmp; // top left, bottom right corner
+		if (tmp.x<ctl.x) ctl.x = tmp.x;
+		if (tmp.y<ctl.y) ctl.y = tmp.y;
+		if (tmp.x>cbr.x) cbr.x = tmp.x;
+		if (tmp.y>cbr.y) cbr.y = tmp.y;
+	}
+	// casting as int doesn't quite do what we want with negative numbers, so use floor()
+	tmp = v2d_new(floor(ctl.x+0.5f),floor(ctl.y+0.5f));
+	translate = v2d_sub(translate,tmp);
+	nw = floor(cbr.x+0.5f)-floor(ctl.x+0.5f)+1;
+	nh = floor(cbr.y+0.5f)-floor(ctl.y+0.5f)+1;
+	if (nw>XRES) nw = XRES;
+	if (nh>YRES) nh = YRES;
+	// rotate and translate signs, parts, walls
+	for (i=0; i < signs.size(); i++)
+	{
+		pos = v2d_new(signs[i].x, signs[i].y);
+		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
+		nx = floor(pos.x+0.5f);
+		ny = floor(pos.y+0.5f);
+		if (nx<0 || nx>=nw || ny<0 || ny>=nh)
+		{
+			signs[i].text[0] = 0;
+			continue;
+		}
+		signs[i].x = nx;
+		signs[i].y = ny;
+	}
+	for (i=0; i<NPART; i++)
+	{
+		if (!particles[i].type) continue;
+		pos = v2d_new(particles[i].x, particles[i].y);
+		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
+		nx = floor(pos.x+0.5f);
+		ny = floor(pos.y+0.5f);
+		if (nx<0 || nx>=nw || ny<0 || ny>=nh)
+		{
+			particles[i].type = PT_NONE;
+			continue;
+		}
+		particles[i].x = nx;
+		particles[i].y = ny;
+		vel = v2d_new(particles[i].vx, particles[i].vy);
+		vel = m2d_multiply_v2d(transform, vel);
+		particles[i].vx = vel.x;
+		particles[i].vy = vel.y;
+	}
+	for (y=0; y<YRES/CELL; y++)
+		for (x=0; x<XRES/CELL; x++)
+		{
+			pos = v2d_new(x*CELL+CELL*0.4f, y*CELL+CELL*0.4f);
+			pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
+			nx = pos.x/CELL;
+			ny = pos.y/CELL;
+			if (nx<0 || nx>=nw/CELL || ny<0 || ny>=nh/CELL)
+				continue;
+			if (blockMap[y][x])
+			{
+				blockMapNew[ny][nx] = blockMap[y][x];
+				if (blockMap[y][x]==WL_FAN)
+				{
+					vel = v2d_new(fanVelX[y][x], fanVelY[y][x]);
+					vel = m2d_multiply_v2d(transform, vel);
+					fanVelXNew[ny][nx] = vel.x;
+					fanVelYNew[ny][nx] = vel.y;
+				}
+			}
+		}
+	//ndata = build_save(size,0,0,nw,nh,blockMapNew,vxn,vyn,pvn,fanVelXNew,fanVelYNew,signst,partst);
+	blockMapPtr = (unsigned char*)blockMapNew;
+	fanVelXPtr = (float*)fanVelXNew;
+	fanVelYPtr = (float*)fanVelYNew;
 }
 
 void GameSave::readOPS(char * data, int dataLength)

@@ -85,17 +85,21 @@ public:
 	void OpenRenderOptions();
 	void OpenSaveWindow();
 	void OpenStamps();
-	void PlaceStamp(ui::Point position);
-	void PlaceClipboard(ui::Point position);
+	void PlaceSave(ui::Point position);
 	void ClearSim();
 	void ReloadSim();
 	void Vote(int direction);
 	void ChangeBrush();
 	void ShowConsole();
 	void FrameStep();
+	void TranslateSave(ui::Point point);
+	void TransformSave(matrix2d transform);
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
 	std::string ElementResolve(int type);
+
+	void LoadClipboard();
+	void LoadStamp();
 };
 
 #endif // GAMECONTROLLER_H

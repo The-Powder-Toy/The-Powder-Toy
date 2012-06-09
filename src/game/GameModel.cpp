@@ -18,7 +18,8 @@ GameModel::GameModel():
 	currentSave(NULL),
 	colourSelector(false),
 	clipboard(NULL),
-	stamp(NULL)
+	stamp(NULL),
+	placeSave(NULL)
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
@@ -430,7 +431,17 @@ void GameModel::SetStamp(GameSave * save)
 	if(stamp)
 		delete stamp;
 	stamp = new GameSave(*save);
-	notifyStampChanged();
+}
+
+void GameModel::SetPlaceSave(GameSave * save)
+{
+	if(save != placeSave)
+		delete placeSave;
+	if(save != placeSave)
+		placeSave = new GameSave(*save);
+	else if(!save)
+		placeSave = NULL;
+	notifyPlaceSaveChanged();
 }
 
 void GameModel::AddStamp(GameSave * save)
@@ -439,7 +450,6 @@ void GameModel::AddStamp(GameSave * save)
 		delete stamp;
 	stamp = new GameSave(*save);
 	Client::Ref().AddStamp(save);
-	notifyClipboardChanged();
 }
 
 void GameModel::SetClipboard(GameSave * save)
@@ -447,12 +457,16 @@ void GameModel::SetClipboard(GameSave * save)
 	if(clipboard)
 		delete clipboard;
 	clipboard = save;
-	notifyClipboardChanged();
 }
 
 GameSave * GameModel::GetClipboard()
 {
 	return clipboard;
+}
+
+GameSave * GameModel::GetPlaceSave()
+{
+	return placeSave;
 }
 
 GameSave * GameModel::GetStamp()
@@ -577,19 +591,11 @@ void GameModel::notifyZoomChanged()
 	}
 }
 
-void GameModel::notifyStampChanged()
+void GameModel::notifyPlaceSaveChanged()
 {
 	for(int i = 0; i < observers.size(); i++)
 	{
-		observers[i]->NotifyStampChanged(this);
-	}
-}
-
-void GameModel::notifyClipboardChanged()
-{
-	for(int i = 0; i < observers.size(); i++)
-	{
-		observers[i]->NotifyClipboardChanged(this);
+		observers[i]->NotifyPlaceSaveChanged(this);
 	}
 }
 
