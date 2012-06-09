@@ -98,22 +98,6 @@ char * GameSave::Serialise(int & dataSize)
 
 void GameSave::Transform(matrix2d transform, vector2d translate)
 {
-	void *ndata;
-	/*unsigned char (*blockMap)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
-	unsigned char (*blockMapNew)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
-	particle *partst = calloc(sizeof(particle), NPART);
-	sign *signst = calloc(MAXSIGNS, sizeof(sign));
-	unsigned (*pmapt)[XRES] = calloc(YRES*XRES, sizeof(unsigned));
-	float (*fanVelX)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*fanVelY)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*fanVelXNew)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*fanVelYNew)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*vxo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*vyo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*vxn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*vyn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*pvo)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*pvn)[XRES/CELL] = calloc((YRES/CELL)*(XRES/CELL), sizeof(float));*/
 	unsigned char (*blockMapNew)[blockWidth] = (unsigned char(*)[blockWidth])new unsigned char[blockHeight*blockWidth];
 	float (*fanVelXNew)[blockWidth] = (float(*)[blockWidth])new float[blockHeight*blockWidth];
 	float (*fanVelYNew)[blockWidth] = (float(*)[blockWidth])new float[blockHeight*blockWidth];
@@ -197,6 +181,9 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 			}
 		}
 	//ndata = build_save(size,0,0,nw,nh,blockMapNew,vxn,vyn,pvn,fanVelXNew,fanVelYNew,signst,partst);
+	delete blockMapPtr;
+	delete fanVelXPtr;
+	delete fanVelYPtr;
 	blockMapPtr = (unsigned char*)blockMapNew;
 	fanVelXPtr = (float*)fanVelXNew;
 	fanVelYPtr = (float*)fanVelYNew;
