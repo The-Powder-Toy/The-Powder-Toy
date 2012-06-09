@@ -31,7 +31,7 @@ int update_THDR(UPDATE_FUNC_ARGS) {
 					part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 					parts[r>>8].life = 4;
 				}
-				else if ((r&0xFF)!=PT_CLNE&&(r&0xFF)!=PT_THDR&&(r&0xFF)!=PT_SPRK&&(r&0xFF)!=PT_DMND&&(r&0xFF)!=PT_FIRE&&(r&0xFF)!=PT_NEUT&&(r&0xFF)!=PT_PHOT&&(r&0xFF))
+				else if ((r&0xFF)!=PT_CLNE&&(r&0xFF)!=PT_SPRK&&(r&0xFF)!=PT_DMND&&(r&0xFF)!=PT_FIRE&&!(ptypes[r&0xFF].properties&TYPE_ENERGY)&&(r&0xFF))
 				{
 					pv[y/CELL][x/CELL] += 100.0f;
 					if (legacy_enable&&1>(rand()%200))

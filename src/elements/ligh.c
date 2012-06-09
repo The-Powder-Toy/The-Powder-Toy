@@ -27,7 +27,7 @@ int LIGH_nearest_part(int ci, int max_d)
 	int cy = (int)parts[ci].y;
 	for (i=0; i<=parts_lastActiveIndex; i++)
 	{
-		if (parts[i].type && !parts[i].life && i!=ci && parts[i].type!=PT_LIGH && parts[i].type!=PT_THDR && parts[i].type!=PT_NEUT && parts[i].type!=PT_PHOT)
+		if (parts[i].type && i!=ci && parts[i].type!=PT_LIGH && !(ptypes[parts[i].type].properties&TYPE_ENERGY))
 		{
 			ndistance = abs(cx-parts[i].x)+abs(cy-parts[i].y);// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
 			if (ndistance<distance)
@@ -151,7 +151,7 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 					continue;
 				if ((r&0xFF)!=PT_LIGH && (r&0xFF)!=PT_TESC)
 				{
-					if ((r&0xFF)!=PT_CLNE&&(r&0xFF)!=PT_THDR&&(r&0xFF)!=PT_DMND&&(r&0xFF)!=PT_FIRE&&(r&0xFF)!=PT_NEUT&&(r&0xFF)!=PT_PHOT)
+					if ((r&0xFF)!=PT_CLNE&&(r&0xFF)!=PT_DMND&&(r&0xFF)!=PT_FIRE && !(ptypes[r&0xFF].properties&TYPE_ENERGY))
 					{
 						if ((ptypes[r&0xFF].properties&PROP_CONDUCTS) && parts[r>>8].life==0)
 						{

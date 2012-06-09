@@ -24,6 +24,8 @@ int update_FIRW(UPDATE_FUNC_ARGS) {
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
+						r = photons[y+ry][x+rx];
+					if (!r)
 						continue;
 					rt = parts[r>>8].type;
 					if (rt==PT_FIRE||rt==PT_PLSM||rt==PT_THDR)
