@@ -74,18 +74,20 @@ void GameSave::setSize(int newWidth, int newHeight)
 	
 	particlesCount = 0;
 	particles = new Particle[NPART];
-	blockMap = new unsigned char*[blockHeight];
+
 	blockMapPtr = new unsigned char[blockHeight*blockWidth];
 	fill(blockMapPtr, blockMapPtr+(blockHeight*blockWidth), 0);
-	for(int y = 0; y < blockHeight; y++)
-		blockMap[y] = &blockMapPtr[y*blockWidth];
 	fanVelXPtr = new float[(blockHeight)*(blockWidth)];
 	fill(fanVelXPtr, fanVelXPtr+((blockHeight)*(blockWidth)), 0);
+	fanVelYPtr = new float[(blockHeight)*(blockWidth)];
+	fill(fanVelYPtr, fanVelYPtr+((blockHeight)*(blockWidth)), 0);
+
+	blockMap = new unsigned char*[blockHeight];
+	for(int y = 0; y < blockHeight; y++)
+		blockMap[y] = &blockMapPtr[y*blockWidth];
 	fanVelX = new float*[blockHeight];
 	for(int y = 0; y < blockHeight; y++)
 		fanVelX[y] = &fanVelXPtr[y*(blockWidth)];
-	fanVelYPtr = new float[(blockHeight)*(blockWidth)];
-	fill(fanVelYPtr, fanVelYPtr+((blockHeight)*(blockWidth)), 0);
 	fanVelY = new float*[blockHeight];
 	for(int y = 0; y < blockHeight; y++)
 		fanVelY[y] = &fanVelYPtr[y*blockWidth];
@@ -98,17 +100,14 @@ char * GameSave::Serialise(int & dataSize)
 
 void GameSave::Transform(matrix2d transform, vector2d translate)
 {
-	unsigned char (*blockMapNew)[blockWidth] = (unsigned char(*)[blockWidth])new unsigned char[blockHeight*blockWidth];
-	float (*fanVelXNew)[blockWidth] = (float(*)[blockWidth])new float[blockHeight*blockWidth];
-	float (*fanVelYNew)[blockWidth] = (float(*)[blockWidth])new float[blockHeight*blockWidth];
-	int i, x, y, nx, ny, w = blockWidth*CELL, h = blockHeight*CELL, nw, nh;
+	int i, x, y, nx, ny, width = blockWidth*CELL, height = blockHeight*CELL, newWidth, newHeight, newBlockWidth, newBlockHeight;
 	vector2d pos, tmp, ctl, cbr, vel;
 	vector2d cornerso[4];
 	// undo any translation caused by rotation
 	cornerso[0] = v2d_new(0,0);
-	cornerso[1] = v2d_new(w-1,0);
-	cornerso[2] = v2d_new(0,h-1);
-	cornerso[3] = v2d_new(w-1,h-1);
+	cornerso[1] = v2d_new(width-1,0);
+	cornerso[2] = v2d_new(0,height-1);
+	cornerso[3] = v2d_new(width-1,height-1);
 	for (i=0; i<4; i++)
 	{
 		tmp = m2d_multiply_v2d(transform,cornerso[i]);
@@ -121,10 +120,38 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	// casting as int doesn't quite do what we want with negative numbers, so use floor()
 	tmp = v2d_new(floor(ctl.x+0.5f),floor(ctl.y+0.5f));
 	translate = v2d_sub(translate,tmp);
-	nw = floor(cbr.x+0.5f)-floor(ctl.x+0.5f)+1;
-	nh = floor(cbr.y+0.5f)-floor(ctl.y+0.5f)+1;
-	if (nw>XRES) nw = XRES;
-	if (nh>YRES) nh = YRES;
+	newWidth = floor(cbr.x+0.5f)-floor(ctl.x+0.5f)+1;
+	newHeight = floor(cbr.y+0.5f)-floor(ctl.y+0.5f)+1;
+	if (newWidth>XRES) newWidth = XRES;
+	if (newHeight>YRES) newHeight = YRES;
+	newBlockWidth = newWidth/CELL;
+	newBlockHeight = newHeight/CELL;
+
+	unsigned char ** blockMapNew;
+	float ** fanVelXNew;
+	float ** fanVelYNew;
+
+	float * fanVelXPtrNew;
+	float * fanVelYPtrNew;
+	unsigned char * blockMapPtrNew;
+
+	blockMapPtrNew = new unsigned char[newBlockHeight*newBlockWidth];
+	fill(blockMapPtrNew, blockMapPtrNew+(newBlockHeight*newBlockWidth), 0);
+	fanVelXPtrNew = new float[newBlockHeight*newBlockWidth];
+	fill(fanVelXPtrNew, fanVelXPtrNew+(newBlockHeight*newBlockWidth), 0);
+	fanVelYPtrNew = new float[(newBlockHeight)*(newBlockWidth)];
+	fill(fanVelYPtrNew, fanVelYPtrNew+(newBlockHeight*newBlockWidth), 0);
+
+	blockMapNew = new unsigned char*[newBlockHeight];
+	for(int y = 0; y < newBlockHeight; y++)
+		blockMapNew[y] = &blockMapPtrNew[y*newBlockWidth];
+	fanVelXNew = new float*[newBlockHeight];
+	for(int y = 0; y < newBlockHeight; y++)
+		fanVelXNew[y] = &fanVelXPtrNew[y*newBlockWidth];
+	fanVelYNew = new float*[newBlockHeight];
+	for(int y = 0; y < newBlockHeight; y++)
+		fanVelYNew[y] = &fanVelYPtrNew[y*newBlockWidth];
+
 	// rotate and translate signs, parts, walls
 	for (i=0; i < signs.size(); i++)
 	{
@@ -132,7 +159,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
 		nx = floor(pos.x+0.5f);
 		ny = floor(pos.y+0.5f);
-		if (nx<0 || nx>=nw || ny<0 || ny>=nh)
+		if (nx<0 || nx>=newWidth || ny<0 || ny>=newHeight)
 		{
 			signs[i].text[0] = 0;
 			continue;
@@ -147,7 +174,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
 		nx = floor(pos.x+0.5f);
 		ny = floor(pos.y+0.5f);
-		if (nx<0 || nx>=nw || ny<0 || ny>=nh)
+		if (nx<0 || nx>=newWidth || ny<0 || ny>=newHeight)
 		{
 			particles[i].type = PT_NONE;
 			continue;
@@ -159,14 +186,14 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 		particles[i].vx = vel.x;
 		particles[i].vy = vel.y;
 	}
-	for (y=0; y<YRES/CELL; y++)
-		for (x=0; x<XRES/CELL; x++)
+	for (y=0; y<blockWidth; y++)
+		for (x=0; x<blockHeight; x++)
 		{
 			pos = v2d_new(x*CELL+CELL*0.4f, y*CELL+CELL*0.4f);
 			pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
 			nx = pos.x/CELL;
 			ny = pos.y/CELL;
-			if (nx<0 || nx>=nw/CELL || ny<0 || ny>=nh/CELL)
+			if (nx<0 || nx>=newBlockWidth || ny<0 || ny>=newBlockHeight)
 				continue;
 			if (blockMap[y][x])
 			{
@@ -181,12 +208,24 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 			}
 		}
 	//ndata = build_save(size,0,0,nw,nh,blockMapNew,vxn,vyn,pvn,fanVelXNew,fanVelYNew,signst,partst);
+	blockWidth = newBlockWidth;
+	blockHeight = newBlockHeight;
+
+	delete blockMap;
+	delete fanVelX;
+	delete fanVelY;
+
 	delete blockMapPtr;
 	delete fanVelXPtr;
 	delete fanVelYPtr;
-	blockMapPtr = (unsigned char*)blockMapNew;
-	fanVelXPtr = (float*)fanVelXNew;
-	fanVelYPtr = (float*)fanVelYNew;
+
+	blockMap = blockMapNew;
+	fanVelX = fanVelXNew;
+	fanVelY = fanVelYNew;
+
+	blockMapPtr = (unsigned char*)blockMapPtrNew;
+	fanVelXPtr = (float*)fanVelXPtrNew;
+	fanVelYPtr = (float*)fanVelYPtrNew;
 }
 
 void GameSave::readOPS(char * data, int dataLength)
