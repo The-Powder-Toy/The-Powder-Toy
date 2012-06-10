@@ -328,11 +328,11 @@ int Client::GetStampsCount()
 
 vector<string> Client::GetStamps(int start, int count)
 {
-	//if(start+count > stampIDs.size()) {
-	//	if(start > stampIDs.size())
-	//		return vector<string>();
-	//	count = stampIDs.size()-start;
-	//}
+	if(start+count > stampIDs.size()) {
+		if(start > stampIDs.size())
+			return vector<string>();
+		count = stampIDs.size()-start;
+	}
 
 	vector<string> stampRange;
 	int index = 0;
