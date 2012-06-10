@@ -130,6 +130,15 @@ GameModel::GameModel():
 	{
 		currentUser = Client::Ref().GetAuthUser();
 	}
+
+	//Set stamp to first stamp in list
+	vector<string> stamps = Client::Ref().GetStamps(0, 1);
+	if(stamps.size()>0)
+	{
+		SaveFile * stampFile = Client::Ref().GetStamp(stamps[0]);
+		if(stampFile && stampFile->GetGameSave())
+			stamp = stampFile->GetGameSave();
+	}
 }
 
 GameModel::~GameModel()
@@ -430,7 +439,10 @@ void GameModel::SetStamp(GameSave * save)
 {
 	if(stamp)
 		delete stamp;
-	stamp = new GameSave(*save);
+	if(save)
+		stamp = new GameSave(*save);
+	else
+		stamp = NULL;
 }
 
 void GameModel::SetPlaceSave(GameSave * save)

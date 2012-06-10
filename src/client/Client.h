@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <vector>
+#include <list>
 #include <fstream>
 
 #include "Config.h"
@@ -30,7 +31,7 @@ class Client: public Singleton<Client> {
 private:
 	std::string lastError;
 
-	vector<string> stampIDs;
+	list<string> stampIDs;
 	int lastStampTime;
 	int lastStampName;
 
@@ -58,7 +59,9 @@ public:
 	SaveFile * GetStamp(string stampID);
 	void DeleteStamp(string stampID);
 	string AddStamp(GameSave * saveData);
-	vector<string> GetStamps();
+	vector<string> GetStamps(int start, int count);
+	int GetStampsCount();
+	SaveFile * GetFirstStamp();
 
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	LoginStatus Login(string username, string password, User & user);

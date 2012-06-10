@@ -15,7 +15,8 @@ LocalBrowserModel::LocalBrowserModel():
 	currentPage(1)
 {
 	// TODO Auto-generated constructor stub
-	stampIDs = Client::Ref().GetStamps();
+	//stampIDs = Client::Ref().GetStamps();
+	stampIDs = Client::Ref().GetStamps(0, 16);
 }
 
 
@@ -72,9 +73,9 @@ void LocalBrowserModel::UpdateSavesList(int pageNumber)
 		delete tempStampsList[i];
 	}*/
 
-	int stampsEnd = pageNumber*20;
+	stampIDs = Client::Ref().GetStamps((pageNumber-1)*20, 20);
 
-	for(int i = stampsEnd-20; i<stampIDs.size() && i<stampsEnd; i++)
+	for(int i = 0; i<stampIDs.size(); i++)
 	{
 		SaveFile * tempSave = Client::Ref().GetStamp(stampIDs[i]);
 		if(tempSave)

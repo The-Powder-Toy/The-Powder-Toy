@@ -253,12 +253,12 @@ SaveFile * Client::GetStamp(string stampID)
 
 void Client::DeleteStamp(string stampID)
 {
-	for(int i = 0; i < stampIDs.size(); i++)
+	for (std::list<string>::iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
 	{
-		if(stampIDs[i] == stampID)
+		if((*iterator) == stampID)
 		{
 			remove(string(STAMPS_DIR PATH_SEP + stampID + ".stm").c_str());
-			stampIDs.erase(stampIDs.begin()+i);
+			stampIDs.erase(iterator);
 			return;
 		}
 	}
@@ -294,7 +294,7 @@ string Client::AddStamp(GameSave * saveData)
 	stampStream.write((const char *)gameData, gameDataLength);
 	stampStream.close();
 
-	stampIDs.push_back(saveID.str());
+	stampIDs.push_front(saveID.str());
 
 	updateStamps();
 
@@ -312,18 +312,35 @@ void Client::updateStamps()
 
 	std::ofstream stampsStream;
 	stampsStream.open(string(STAMPS_DIR PATH_SEP "stamps.def").c_str(), ios::binary);
-	for(int i = 0; i < stampIDs.size(); i++)
+	for (std::list<string>::const_iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
 	{
-		stampsStream.write(stampIDs[i].c_str(), 10);
+		stampsStream.write((*iterator).c_str(), 10);
 	}
 	stampsStream.write("\0", 1);
 	stampsStream.close();
 	return;
 }
 
-vector<string> Client::GetStamps()
+int Client::GetStampsCount()
 {
-	return stampIDs;
+	return stampIDs.size();
+}
+
+vector<string> Client::GetStamps(int start, int count)
+{
+	//if(start+count > stampIDs.size()) {
+	//	if(start > stampIDs.size())
+	//		return vector<string>();
+	//	count = stampIDs.size()-start;
+	//}
+
+	vector<string> stampRange;
+	int index = 0;
+	for (std::list<string>::const_iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator, ++index) {
+		if(index>=start && index < start+count)
+			stampRange.push_back(*iterator);
+	}
+	return stampRange;
 }
 
 RequestStatus Client::ExecVote(int saveID, int direction)

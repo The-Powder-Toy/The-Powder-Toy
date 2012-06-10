@@ -109,8 +109,6 @@ public:
 			cc->gameModel->SetStamp(cc->localBrowser->GetSave()->GetGameSave());
 			cc->LoadStamp();
 		}
-		else
-			cc->gameModel->SetStamp(NULL);
 	}
 };
 

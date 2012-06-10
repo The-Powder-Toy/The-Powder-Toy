@@ -741,6 +741,11 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		}
 		break;
 	case 'l':
+		c->LoadStamp();
+		selectPoint2 = ui::Point(-1, -1);
+		selectPoint1 = selectPoint2;
+		break;
+	case 'k':
 		selectPoint2 = ui::Point(-1, -1);
 		selectPoint1 = selectPoint2;
 		c->OpenStamps();
