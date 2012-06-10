@@ -1808,7 +1808,7 @@ void render_parts(pixel *vid)
 #endif
 
 
-			if((photons[ny][nx]&0xFF) && !(ptypes[t].properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
+			if(photons[ny][nx]&0xFF && !(ptypes[t].properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
 				continue;
 				
 			//Defaults
