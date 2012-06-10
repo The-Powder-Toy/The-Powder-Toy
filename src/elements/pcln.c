@@ -58,7 +58,7 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 				        (r&0xFF)!=PT_PBCN && (r&0xFF)<PT_NUM)
 					{
 						parts[i].ctype = r&0xFF;
-						if ((r&0xFF)==PT_LIFE)
+						if ((r&0xFF)==PT_LIFE || (r&0xFF)==PT_LAVA)
 							parts[i].tmp = parts[r>>8].ctype;
 					}
 				}
@@ -90,8 +90,15 @@ int update_PCLN(UPDATE_FUNC_ARGS) {
 					create_part(-1, x+rx, y+ry, parts[i].ctype|(parts[i].tmp<<8));
 				}
 			}
-		} else {
-			create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+		}
+		else
+		{
+			int np = create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+			if (np>=0)
+			{
+				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && ptransitions[parts[i].tmp].tht==PT_LAVA)
+					parts[np].ctype = parts[i].tmp;
+			}
 		}
 	}
 	return 0;
