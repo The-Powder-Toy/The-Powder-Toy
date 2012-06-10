@@ -2864,7 +2864,10 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
 					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
 						pmap[y][x] = t|(i<<8);
-					pmap_count[y][x]++;
+					// Count number of particles at each location, for excess stacking check
+					// (does not include energy particles or THDR - currently no limit on stacking those)
+					if (t!=PT_THDR)
+						pmap_count[y][x]++;
 				}
 			}
 			lastPartUsed = i;
