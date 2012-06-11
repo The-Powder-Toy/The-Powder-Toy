@@ -6,7 +6,6 @@
 //#include "ElementFunctions.h"
 #include "Air.h"
 #include "Gravity.h"
-#include "SaveLoader.h"
 #include "elements/Element.h"
 
 #undef LUACONSOLE
@@ -3740,7 +3739,7 @@ killed:
 								goto movedone;
 							}
 						}
-						if (elements[t].Falldown>1 && !ngrav_enable && gravityMode==0 && parts[i].vy>fabsf(parts[i].vx))
+						if (elements[t].Falldown>1 && !grav->ngrav_enable && gravityMode==0 && parts[i].vy>fabsf(parts[i].vx))
 						{
 							s = 0;
 							// stagnant is true if FLAG_STAGNANT was set for this particle in previous frame

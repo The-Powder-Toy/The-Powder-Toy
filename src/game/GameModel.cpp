@@ -2,6 +2,7 @@
 #include "GameModel.h"
 #include "GameView.h"
 #include "simulation/Simulation.h"
+#include "simulation/Air.h"
 #include "Renderer.h"
 #include "interface/Point.h"
 #include "Brush.h"
@@ -283,13 +284,26 @@ void GameModel::SetSave(SaveInfo * newSave)
 	if(currentSave)
 		delete currentSave;
 	currentSave = newSave;
-	if(currentSave)
+	if(currentSave && currentSave->GetGameSave())
 	{
+		GameSave * saveData = currentSave->GetGameSave();
+		SetPaused(saveData->paused);
+		sim->gravityMode = saveData->gravityMode;
+		sim->air->airMode = saveData->airMode;
+		sim->legacy_enable = saveData->legacyEnable;
+		sim->water_equal_test = saveData->waterEEnabled;
+		if(saveData->gravityEnable && !sim->grav->ngrav_enable)
+		{
+			sim->grav->start_grav_async();
+		}
+		else if(!saveData->gravityEnable && sim->grav->ngrav_enable)
+		{
+			sim->grav->stop_grav_async();
+		}
 		sim->clear_sim();
-		sim->Load(currentSave->GetGameSave());
+		sim->Load(saveData);
 	}
 	notifySaveChanged();
-	notifyPausedChanged();
 }
 
 Simulation * GameModel::GetSimulation()

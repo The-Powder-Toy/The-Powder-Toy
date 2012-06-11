@@ -99,7 +99,6 @@ public:
 	//
 	int gravityMode;
 	//int airMode;
-	int ngrav_enable;
 	int legacy_enable;
 	int aheat_enable;
 	int VINE_MODE;

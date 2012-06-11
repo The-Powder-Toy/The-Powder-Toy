@@ -11,6 +11,7 @@
 #include "interface/Point.h"
 #include "dialogues/ErrorMessage.h"
 #include "GameModelException.h"
+#include "simulation/Air.h"
 
 using namespace std;
 
@@ -549,7 +550,14 @@ void GameController::OpenSaveWindow()
 {
 	if(gameModel->GetUser().ID)
 	{
-		GameSave * gameSave = gameModel->GetSimulation()->Save();
+		Simulation * sim = gameModel->GetSimulation();
+		GameSave * gameSave = sim->Save();
+		gameSave->paused = gameModel->GetPaused();
+		gameSave->gravityMode = sim->gravityMode;
+		gameSave->airMode = sim->air->airMode;
+		gameSave->legacyEnable = sim->legacy_enable;
+		gameSave->waterEEnabled = sim->water_equal_test;
+		gameSave->gravityEnable = sim->grav->ngrav_enable;
 		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");

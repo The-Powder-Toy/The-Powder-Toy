@@ -24,14 +24,14 @@ ConsoleView::ConsoleView():
 	};
 	commandField = new ui::Textbox(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "");
 	commandField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	commandField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	commandField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	commandField->SetActionCallback(new CommandHighlighter(this));
 	AddComponent(commandField);
 	FocusComponent(commandField);
 	commandField->SetBorder(false);
 }
 
-void ConsoleView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void ConsoleView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	switch(key)
 	{
@@ -48,6 +48,9 @@ void ConsoleView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 		break;
 	case KEY_UP:
 		c->PreviousCommand();
+		break;
+	default:
+		Window::DoKeyPress(key, character, shift, ctrl, alt);
 		break;
 	}
 }

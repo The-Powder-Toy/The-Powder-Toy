@@ -27,7 +27,7 @@ class ConsoleView: public ui::Window {
 public:
 	ConsoleView();
 	virtual void OnDraw();
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	void AttachController(ConsoleController * c_) { c = c_; }
 	void NotifyPreviousCommandsChanged(ConsoleModel * sender);
 	void NotifyCurrentCommandChanged(ConsoleModel * sender);
