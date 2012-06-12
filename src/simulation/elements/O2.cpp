@@ -76,7 +76,7 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 
 				}
 	}
-	else if (parts[i].temp > 9973.15 && sim->pv[y/CELL][x/CELL] > 250.0f && abs(sim->gravx[((y/CELL)*(XRES/CELL))+(x/CELL)]) + abs(sim->gravy[((y/CELL)*(XRES/CELL))+(x/CELL)]) > 50)
+	else if (parts[i].temp > 9973.15 && sim->pv[y/CELL][x/CELL] > 250.0f && abs(sim->gravx[((y/CELL)*(XRES/CELL))+(x/CELL)]) + abs(sim->gravy[((y/CELL)*(XRES/CELL))+(x/CELL)]) > 20)
 	{
 		if (rand()%5 < 1)
 		{
