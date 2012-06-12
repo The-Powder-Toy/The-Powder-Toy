@@ -40,7 +40,7 @@ Element_TTAN::Element_TTAN()
     HighPressureTransition = NT;
     LowTemperature = ITL;
     LowTemperatureTransition = NT;
-    HighTemperature = 1687.0f;
+    HighTemperature = 1941.0f;
     HighTemperatureTransition = PT_LAVA;
 
     Update = &Element_TTAN::update;
