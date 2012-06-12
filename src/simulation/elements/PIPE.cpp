@@ -129,7 +129,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 						}
 					}
 					//try eating particle at entrance
-					else if ((parts[i].tmp&0xFF) == 0 && (sim->elements[r&0xFF].Falldown!= 0 || sim->elements[r&0xFF].State == ST_GAS))
+					else if ((parts[i].tmp&0xFF) == 0 && (sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 					{
 						if ((r&0xFF)==PT_SOAP)
 							sim->detach(r>>8);
@@ -140,7 +140,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 						parts[i].pavg[1] = parts[r>>8].ctype;
 						sim->kill_part(r>>8);
 					}
-					else if ((parts[i].tmp&0xFF) == 0 && (r&0xFF)==PT_STOR && parts[r>>8].tmp && (sim->elements[parts[r>>8].tmp].Falldown!= 0 || sim->elements[parts[r>>8].tmp].State == ST_GAS))
+					else if ((parts[i].tmp&0xFF) == 0 && (r&0xFF)==PT_STOR && parts[r>>8].tmp && (sim->elements[parts[r>>8].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 					{
 						parts[i].tmp =  parts[r>>8].tmp;
 						parts[i].temp = parts[r>>8].temp;
