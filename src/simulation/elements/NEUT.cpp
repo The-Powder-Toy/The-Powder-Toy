@@ -129,6 +129,11 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 					parts[r>>8].ctype = PT_DUST;
 				else if ((r&0xFF)==PT_ACID && 5>(rand()%100))
 					sim->create_part(r>>8, x+rx, y+ry, PT_ISOZ);
+				else if ((r&0xFF)==PT_TTAN && 5>(rand()%100))
+				{
+					sim->kill_part(i);
+					return 1;
+				}
 				/*if(parts[r>>8].type>1 && parts[r>>8].type!=PT_NEUT && parts[r>>8].type-1!=PT_NEUT && parts[r>>8].type-1!=PT_STKM &&
 				  (elements[parts[r>>8].type-1].menusection==SC_LIQUID||
 				  elements[parts[r>>8].type-1].menusection==SC_EXPLOSIVE||
