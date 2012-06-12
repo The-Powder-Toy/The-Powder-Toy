@@ -131,7 +131,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 							continue;
 
 						if ((parts[r>>8].type == PT_SOAP) && (parts[r>>8].ctype&1) && !(parts[r>>8].ctype&4))
-							attach(parts, i, r>>8);
+							Element_SOAP::attach(parts, i, r>>8);
 					}
 		}
 		else
