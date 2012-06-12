@@ -127,7 +127,7 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 					sim->kill_part(i);
 					return 1;
 				}
-				if ((sim->elements[r&0xFF].Properties & PROP_CONDUCTS) && ((r&0xFF)!=PT_H2||parts[i].tmp!=1))
+				if ((sim->elements[r&0xFF].Properties & PROP_CONDUCTS) && ((r&0xFF)!=PT_H2||parts[i].temp<2273.15))
 				{
 					sim->create_part(-1, x+rx, y+ry, PT_SPRK);
 					sim->kill_part(i);
