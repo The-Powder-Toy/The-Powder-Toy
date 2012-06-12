@@ -32,7 +32,7 @@ Element_TTAN::Element_TTAN()
     Description = "Titanium, Higher melting temperature than other metals, blocks all air pressure";
 
     State = ST_SOLID;
-    Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW;
+    Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC;
 
     LowPressure = IPL;
     LowPressureTransition = NT;
