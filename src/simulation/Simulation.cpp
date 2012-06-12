@@ -107,6 +107,9 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			}
 		}
 	}
+
+	grav->gravity_mask();
+
 	return 0;
 }
 
