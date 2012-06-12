@@ -78,6 +78,7 @@ public:
 	void SetActiveMenu(Menu * menu);
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void SetColour(ui::Colour colour);
+	void SetToolStrength(float value);
 	void OpenSearch();
 	void OpenLogin();
 	void OpenTags();

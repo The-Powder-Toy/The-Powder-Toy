@@ -612,7 +612,7 @@ void GameController::ReloadSim()
 {
 	if(gameModel->GetSave() && gameModel->GetSave()->GetGameSave())
 	{
-		gameModel->GetSimulation()->Load(gameModel->GetSave()->GetGameSave());
+		gameModel->SetSave(gameModel->GetSave());
 	}
 }
 

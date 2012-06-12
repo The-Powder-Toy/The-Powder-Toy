@@ -281,13 +281,13 @@ SaveInfo * GameModel::GetSave()
 
 void GameModel::SetSave(SaveInfo * newSave)
 {
-	if(currentSave)
+	if(currentSave != newSave)
 		delete currentSave;
 	currentSave = newSave;
 	if(currentSave && currentSave->GetGameSave())
 	{
 		GameSave * saveData = currentSave->GetGameSave();
-		SetPaused(saveData->paused);
+		SetPaused(saveData->paused & GetPaused());
 		sim->gravityMode = saveData->gravityMode;
 		sim->air->airMode = saveData->airMode;
 		sim->legacy_enable = saveData->legacyEnable;
