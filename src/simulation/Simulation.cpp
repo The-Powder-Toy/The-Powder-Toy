@@ -3134,7 +3134,7 @@ void Simulation::update_particles_i(int start, int inc)
 				{
 					float c_Cm = 0.0f;
 #endif
-					if (aheat_enable)
+					if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
 					{
 #ifdef REALISTIC
 						c_heat = parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight) + hv[y/CELL][x/CELL]*100*(pv[y/CELL][x/CELL]+273.15f)/256;

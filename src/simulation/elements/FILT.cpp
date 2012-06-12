@@ -31,7 +31,7 @@ Element_FILT::Element_FILT()
     Description = "Filter for photons, changes the color.";
     
     State = ST_SOLID;
-    Properties = TYPE_SOLID;
+    Properties = TYPE_SOLID | PROP_NOAMBHEAT;
     
     LowPressure = IPL;
     LowPressureTransition = NT;

@@ -35,6 +35,7 @@
 #define PROP_LIFE_KILL		0x08000 //2^15 Kill when life value is <= zero
 #define PROP_LIFE_KILL_DEC	0x10000 //2^16 Kill when life value is decremented to <= zero
 #define PROP_SPARKSETTLE	0x20000	//2^17 Allow Sparks/Embers to settle
+#define PROP_NOAMBHEAT      0x40000 //2^18 Don't transfer or receive heat from ambient heat.
 
 #define FLAG_STAGNANT	1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
