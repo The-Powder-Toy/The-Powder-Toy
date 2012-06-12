@@ -172,7 +172,8 @@ int Element_TRON::new_tronhead(Simulation * sim, int x, int y, int i, int direct
 		return -1;
 	if (sim->parts[i].life >= 100) // increase tail length
 	{
-		sim->parts[i].tmp2++;
+		if (!(sim->parts[i].tmp&TRON_NOGROW))
+			sim->parts[i].tmp2++;
 		sim->parts[i].life = 5;
 	}
 	//give new head our properties
