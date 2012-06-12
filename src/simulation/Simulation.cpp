@@ -2698,8 +2698,6 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 				create_part(-1,x,y,PT_SPAWN2);
 				elementCount[PT_SPAWN2] = 1;
 				break;
-			case PT_FIGH:
-				break;
 			case PT_BIZR: case PT_BIZRG: case PT_BIZRS:
 				parts[i].ctype = 0x47FFFF;
 				break;
