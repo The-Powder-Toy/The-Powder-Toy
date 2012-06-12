@@ -992,7 +992,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		{
 			i = m[j];
 			ty = d[pty+j];
-			if (i && ty==PT_PBCN)
+			if (i && (ty==PT_PBCN || (ty==PT_TRON && ver>=77)))
 			{
 				if (p >= dataLength)
 					goto corrupt;
