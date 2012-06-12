@@ -1485,9 +1485,9 @@ int luatpt_drawrect(lua_State* l)
 	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
 		return luaL_error(l, "Screen coordinates out of range (%d,%d)", x, y);
 	if(x+w > XRES+BARSIZE)
-		w = XRES-x;
+		w = XRES+BARSIZE-x;
 	if(y+h > YRES+MENUSIZE)
-		h = YRES-y;
+		h = YRES+MENUSIZE-y;
 	if (r<0) r = 0;
 	if (r>255) r = 255;
 	if (g<0) g = 0;
@@ -1515,9 +1515,9 @@ int luatpt_fillrect(lua_State* l)
 	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
 		return luaL_error(l, "Screen coordinates out of range (%d,%d)", x, y);
 	if(x+w > XRES+BARSIZE)
-		w = XRES-x;
+		w = XRES+BARSIZE-x;
 	if(y+h > YRES+MENUSIZE)
-		h = YRES-y;
+		h = YRES+MENUSIZE-y;
 	if (r<0) r = 0;
 	if (r>255) r = 255;
 	if (g<0) g = 0;
@@ -1916,6 +1916,8 @@ int luatpt_setdebug(lua_State* l)
 int luatpt_setfpscap(lua_State* l)
 {
 	int fpscap = luaL_optint(l, 1, 0);
+	if (fpscap < 2)
+		return luaL_error(l, "fps cap too small");
 	ui::Engine::Ref().FpsLimit = fpscap;
 	return 0;
 }
