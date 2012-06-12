@@ -2608,7 +2608,7 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 		parts[i].tmp = 10;
 	if (t==PT_BRAY)
 		parts[i].life = 30;
-	if (t==PT_PUMP)
+	if (t==PT_PUMP || t==PT_GPMP)
 		parts[i].life= 10;
 	if (t==PT_SING)
 		parts[i].life = rand()%50+60;
