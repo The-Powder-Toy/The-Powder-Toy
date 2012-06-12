@@ -28,7 +28,7 @@
 #include <stdarg.h>
 #include "Config.h"
 
-#if defined(LIN64) || defined(USE_STDINT)
+#if defined(LIN64) || defined(LIN32) || defined(USE_STDINT)
 #include <sys/types.h>
 #include <stdint.h>
 #else
