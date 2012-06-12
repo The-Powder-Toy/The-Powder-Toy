@@ -37,10 +37,48 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		x = int(tempPart.x + 0.5f);
 		y = int(tempPart.y + 0.5f);
 
+		if ((player.spwn == 1 && tempPart.type==PT_STKM) || (player2.spwn == 1 && tempPart.type==PT_STKM2))
+		{
+			continue;
+		}
+		else if (tempPart.type == PT_SOAP)
+		{
+			tempPart.ctype = 0;
+		}
+		else if (tempPart.type == PT_STKM)
+		{
+			//STKM_init_legs(&player, newIndex);
+			player.spwn = 1;
+			player.elem = PT_DUST;
+		}
+		else if (tempPart.type == PT_STKM2)
+		{
+			//STKM_init_legs(&player2, newIndex);
+			player2.spwn = 1;
+			player2.elem = PT_DUST;
+		}
+		else if (tempPart.type == PT_FIGH)
+		{
+			//TODO: 100 should be replaced with a macro
+			unsigned char fcount = 0;
+			while (fcount < 100 && fcount < (fighcount+1) && fighters[fcount].spwn==1) fcount++;
+			if (fcount < 100 && fighters[fcount].spwn==0)
+			{
+				tempPart.tmp = fcount;
+				fighters[fcount].spwn = 1;
+				fighters[fcount].elem = PT_DUST;
+				fighcount++;
+				//STKM_init_legs(&(sim->fighters[sim->fcount]), newIndex);
+			}
+		}
+		if (!elements[tempPart.type].Enabled)
+			continue;
+
 		if(r = pmap[y][x])
 		{
 			//Replace existing
 			parts[r>>8] = tempPart;
+			pmap[y][x] = 0;
 		}
 		else
 		{

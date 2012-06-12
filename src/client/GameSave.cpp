@@ -625,39 +625,6 @@ void GameSave::readOPS(char * data, int dataLength)
 						if(i >= partsDataLen) goto fail;
 						particles[newIndex].tmp2 = partsData[i++];
 					}
-					
-					/*if ((sim->player.spwn == 1 && particles[newIndex].type==PT_STKM) || (sim->player2.spwn == 1 && particles[newIndex].type==PT_STKM2))
-					{
-						particles[newIndex].type = PT_NONE;
-					}
-					else if (particles[newIndex].type == PT_STKM)
-					{
-						//STKM_init_legs(&player, newIndex);
-						sim->player.spwn = 1;
-						sim->player.elem = PT_DUST;
-					}
-					else if (particles[newIndex].type == PT_STKM2)
-					{
-						//STKM_init_legs(&player2, newIndex);
-						sim->player2.spwn = 1;
-						sim->player2.elem = PT_DUST;
-					}
-					else if (particles[newIndex].type == PT_FIGH)
-					{
-						//TODO: 100 should be replaced with a macro
-						unsigned char fcount = 0;
-						while (fcount < 100 && fcount < (sim->fighcount+1) && sim->fighters[fcount].spwn==1) fcount++;
-						if (fcount < 100 && sim->fighters[fcount].spwn==0)
-						{
-							particles[newIndex].tmp = fcount;
-							sim->fighters[fcount].spwn = 1;
-							sim->fighters[fcount].elem = PT_DUST;
-							sim->fighcount++;
-							//STKM_init_legs(&(sim->fighters[sim->fcount]), newIndex);
-						}
-					}
-					if (!sim->elements[particles[newIndex].type].Enabled)
-						particles[newIndex].type = PT_NONE;*/
 					newIndex++;
 				}
 			}
