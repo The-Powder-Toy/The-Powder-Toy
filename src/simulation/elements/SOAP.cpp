@@ -64,13 +64,13 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 		{
 			if (parts[i].life<=0)
 			{
-				if ((parts[i].ctype&6) != 6 && parts[i].ctype>1)
+				if ((parts[i].ctype&6) != 6 && (parts[i].ctype&6))
 				{
 					int target;
 
 					target = i;
 
-					while((parts[target].ctype&6) != 6 && parts[target].ctype>1)
+					while((parts[target].ctype&6) != 6 && (parts[target].ctype&6))
 					{
 						if ((parts[target].ctype&2) == 2)
 						{
