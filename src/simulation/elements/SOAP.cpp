@@ -46,8 +46,8 @@ Element_SOAP::Element_SOAP()
     Graphics = NULL;
 }
 
-//#TPT-Directive ElementHeader Element_SOAP static int attach(Particle * parts, int i1, int i2)
-void attach(Particle * parts, int i1, int i2)
+//#TPT-Directive ElementHeader Element_SOAP static void attach(Particle * parts, int i1, int i2)
+void Element_SOAP::attach(Particle * parts, int i1, int i2)
 {
 	if (!(parts[i2].ctype&4))
 	{
