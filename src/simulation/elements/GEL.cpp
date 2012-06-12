@@ -100,7 +100,7 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 					dx *= per; dy *= per;
 					parts[i].vx += dx;
 					parts[i].vy += dy;
-					if ((sim->elements[r&0xFF].State!=ST_SOLID && sim->elements[r&0xFF].State!=ST_NONE) || (r&0xFF)==PT_GOO)
+					if ((sim->elements[r&0xFF].Properties&TYPE_PART) || (r&0xFF)==PT_GOO)
 					{
 						parts[r>>8].vx -= dx;
 						parts[r>>8].vy -= dy;
