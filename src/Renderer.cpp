@@ -955,6 +955,15 @@ void Renderer::render_parts()
 				else if(colb<0) colb = 0;
 				if(cola>255) cola = 255;
 				else if(cola<0) cola = 0;
+
+				if(firer>255) firer = 255;
+				else if(firer<0) firer = 0;
+				if(fireg>255) fireg = 255;
+				else if(fireg<0) fireg = 0;
+				if(fireb>255) fireb = 255;
+				else if(fireb<0) fireb = 0;
+				if(firea>255) firea = 255;
+				else if(firea<0) firea = 0;
 	#endif
 
 				//Pixel rendering
