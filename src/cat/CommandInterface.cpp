@@ -52,11 +52,11 @@ int CommandInterface::GetPropertyOffset(std::string key_, FormatType & format)
 	} else if (strcmp(key, "temp")==0){
 		offset = offsetof(Particle, temp);
 		format = FormatFloat;
-	} else if (strcmp(key, "tmp")==0){
-		offset = offsetof(Particle, tmp);
-		format = FormatInt;
 	} else if (strcmp(key, "tmp2")==0){
 		offset = offsetof(Particle, tmp2);
+		format = FormatInt;
+	} else if (strcmp(key, "tmp")==0){
+		offset = offsetof(Particle, tmp);
 		format = FormatInt;
 	} else if (strcmp(key, "vy")==0){
 		offset = offsetof(Particle, vy);
