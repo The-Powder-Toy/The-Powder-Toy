@@ -46,6 +46,27 @@ Element_SOAP::Element_SOAP()
     Graphics = NULL;
 }
 
+//#TPT-Directive ElementHeader Element_SOAP static int attach(Particle * parts, int i1, int i2)
+void attach(Particle * parts, int i1, int i2)
+{
+	if (!(parts[i2].ctype&4))
+	{
+		parts[i1].ctype |= 2;
+		parts[i1].tmp = i2;
+
+		parts[i2].ctype |= 4;
+		parts[i2].tmp2 = i1;
+	}
+	else if (!(parts[i2].ctype&2))
+	{
+		parts[i1].ctype |= 4;
+		parts[i1].tmp2= i2;
+
+		parts[i2].ctype |= 2;
+		parts[i2].tmp = i1;
+	}
+}
+
 //#TPT-Directive ElementHeader Element_SOAP static int update(UPDATE_FUNC_ARGS)
 int Element_SOAP::update(UPDATE_FUNC_ARGS)
  
@@ -58,7 +79,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 	//0x02 - first mate yes/no
 	//0x04 - "back" mate yes/no
 
-	if ((parts[i].ctype&1) == 1)
+	if (parts[i].ctype&1)
 	{
 		if (parts[i].temp>0)
 		{
@@ -72,13 +93,13 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 
 					while((parts[target].ctype&6) != 6 && (parts[target].ctype&6))
 					{
-						if ((parts[target].ctype&2) == 2)
+						if (parts[target].ctype&2)
 						{
 							target = parts[target].tmp;
 							sim->detach(target);
 						}
 
-						if ((parts[target].ctype&4) == 4)
+						if (parts[target].ctype&4)
 						{
 							target = parts[target].tmp2;
 							sim->detach(target);
@@ -99,7 +120,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 			parts[i].vx *= 0.5f;
 		}
 
-		if((parts[i].ctype&2) != 2)
+		if(parts[i].ctype&2)
 		{
 			for (rx=-2; rx<3; rx++)
 				for (ry=-2; ry<3; ry++)
@@ -109,29 +130,8 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 						if (!r)
 							continue;
 
-						if ((parts[r>>8].type == PT_SOAP) && ((parts[r>>8].ctype&1) == 1) 
-								&& ((parts[r>>8].ctype&4) != 4))
-						{
-							if ((parts[r>>8].ctype&2) == 2)
-							{
-								parts[i].tmp = r>>8;
-								parts[r>>8].tmp2 = i;
-
-								parts[i].ctype |= 2;
-								parts[r>>8].ctype |= 4;
-							}
-							else
-							{
-								if ((parts[i].ctype&2) != 2)
-								{
-									parts[i].tmp = r>>8;
-									parts[r>>8].tmp2 = i;
-
-									parts[i].ctype |= 2;
-									parts[r>>8].ctype |= 4;
-								}
-							}
-						}
+						if ((parts[r>>8].type == PT_SOAP) && (parts[r>>8].ctype&1) && !(parts[r>>8].ctype&4))
+							attach(parts, i, r>>8);
 					}
 		}
 		else
@@ -149,9 +149,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 							{
 								if (sim->bmap[(y+ry)/CELL][(x+rx)/CELL]
 										|| (r && sim->elements[r&0xFF].State != ST_GAS
-											&& (r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS) 
-										|| (parts[r>>8].ctype == 0 && (r&0xFF) == PT_SOAP 
-											&& (abs(parts[r>>8].vx)<2 || abs(parts[r>>8].vy)<2)))
+											&& (r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS))
 								{
 									sim->detach(i);
 									continue;
@@ -183,7 +181,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 						}
 		}
 
-		if((parts[i].ctype&2) == 2)
+		if(parts[i].ctype&2)
 		{
 			float d, dx, dy;
 
@@ -198,8 +196,8 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 			parts[i].vx += dx*d;
 			parts[i].vy += dy*d;
 
-			if (((parts[parts[i].tmp].ctype&2) == 2) && ((parts[parts[i].tmp].ctype&1) == 1) 
-					&& ((parts[parts[parts[i].tmp].tmp].ctype&2) == 2) && ((parts[parts[parts[i].tmp].tmp].ctype&1) == 1))
+			if ((parts[parts[i].tmp].ctype&2) && (parts[parts[i].tmp].ctype&1)
+					&& (parts[parts[parts[i].tmp].tmp].ctype&2) && (parts[parts[parts[i].tmp].tmp].ctype&1))
 			{
 				int ii;
 
