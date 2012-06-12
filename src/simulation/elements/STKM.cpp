@@ -74,6 +74,8 @@ int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
+#define INBOND(x, y) ((x)>=0 && (y)>=0 && (x)<XRES && (y)<YRES)
+
 //#TPT-Directive ElementHeader Element_STKM static int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS)
 int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
@@ -383,27 +385,27 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	playerp->legs[8] += (playerp->legs[8]-parts[i].x)*d;
 	playerp->legs[9] += (playerp->legs[9]-parts[i].y)*d;
 
-	if (!sim->eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
+	if (INBOND(playerp->legs[4], playerp->legs[5]) && !sim->eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
 	{
 		playerp->legs[4] = playerp->legs[6];
 		playerp->legs[5] = playerp->legs[7];
 	}
 
-	if (!sim->eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
+	if (INBOND(playerp->legs[12], playerp->legs[13]) && !sim->eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
 	{
 		playerp->legs[12] = playerp->legs[14];
 		playerp->legs[13] = playerp->legs[15];
 	}
 
 	//This makes stick man "pop" from obstacles
-	if (!sim->eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
+	if (INBOND(playerp->legs[4], playerp->legs[5]) && !sim->eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
 	{
 		float t;
 		t = playerp->legs[4]; playerp->legs[4] = playerp->legs[6]; playerp->legs[6] = t;
 		t = playerp->legs[5]; playerp->legs[5] = playerp->legs[7]; playerp->legs[7] = t;
 	}
 
-	if (!sim->eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
+	if (INBOND(playerp->legs[12], playerp->legs[13]) && !sim->eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
 	{
 		float t;
 		t = playerp->legs[12]; playerp->legs[12] = playerp->legs[14]; playerp->legs[14] = t;
