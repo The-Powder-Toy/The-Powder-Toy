@@ -50,6 +50,8 @@ Element_GEL::Element_GEL()
 int Element_GEL::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
+	if (parts[i].tmp>100) parts[i].tmp = 100;
+	if (parts[i].tmp<0) parts[i].tmp = 0;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
