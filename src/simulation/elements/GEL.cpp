@@ -68,6 +68,12 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 					sim->kill_part(r>>8);
 				}
 
+				if ((r&0xFF)==PT_SPNG && parts[i].tmp<100 && ((parts[r>>8].life+1)>parts[i].tmp))
+				{
+					parts[r>>8].life--;
+					parts[i].tmp++;
+				}
+
 				char gel = 0;
 				if ((r&0xFF)==PT_GEL)
 					gel = 1;
