@@ -41,10 +41,6 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		{
 			continue;
 		}
-		else if (tempPart.type == PT_SOAP)
-		{
-			tempPart.ctype = 0;
-		}
 		else if (tempPart.type == PT_STKM)
 		{
 			//STKM_init_legs(&player, newIndex);

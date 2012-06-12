@@ -230,8 +230,9 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 
 void GameSave::readOPS(char * data, int dataLength)
 {
-	unsigned char * inputData = (unsigned char *)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL;
-	unsigned int inputDataLen = dataLength, bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen;
+	unsigned char * inputData = (unsigned char*)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
+	unsigned int inputDataLen = dataLength, bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
+	unsigned partsCount = 0, *partsSimIndex = NULL;
 	int i, freeIndicesCount, x, y, j;
 	int *freeIndices = NULL;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
@@ -385,6 +386,17 @@ void GameSave::readOPS(char * data, int dataLength)
 				fprintf(stderr, "Invalid datatype of fan data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
 			}
 		}
+		else if(strcmp(bson_iterator_key(&iter), "soapLinks")==0)
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (soapLinkDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				soapLinkData = (unsigned char *)bson_iterator_bin_data(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of soap data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
 		else if(strcmp(bson_iterator_key(&iter), "legacyEnable")==0)
 		{
 			if(bson_iterator_type(&iter)==BSON_BOOL)
@@ -492,6 +504,10 @@ void GameSave::readOPS(char * data, int dataLength)
 			fprintf(stderr, "Not enough particle position data\n");
 			goto fail;
 		}
+
+		partsSimIndex = (unsigned int*)calloc(NPART, sizeof(unsigned));
+		partsCount = 0;
+
 		i = 0;
 		newIndex = 0;
 		for (saved_y=0; saved_y<fullH; saved_y++)
@@ -530,6 +546,9 @@ void GameSave::readOPS(char * data, int dataLength)
 					if(newIndex < 0 || newIndex >= NPART)
 						goto fail;
 					
+					//Store partsptr index+1 for this saved particle index (0 means not loaded)
+					partsSimIndex[partsCount++] = newIndex+1;
+
 					//Clear the particle, ready for our new properties
 					memset(&(particles[newIndex]), 0, sizeof(Particle));
 					
@@ -625,7 +644,43 @@ void GameSave::readOPS(char * data, int dataLength)
 						if(i >= partsDataLen) goto fail;
 						particles[newIndex].tmp2 = partsData[i++];
 					}
+
+					//Particle specific parsing:
+					switch(particles[newIndex].type)
+					{
+					case PT_SOAP:
+						//Clear soap links, links will be added back in if soapLinkData is present
+						particles[newIndex].ctype &= ~6;
+						break;
+					}
 					newIndex++;
+				}
+			}
+		}
+		if (soapLinkData)
+		{
+			int soapLinkDataPos = 0;
+			for (i=0; i<partsCount; i++)
+			{
+				if (partsSimIndex[i] && particles[partsSimIndex[i]-1].type == PT_SOAP)
+				{
+					// Get the index of the particle forward linked from this one, if present in the save data
+					int linkedIndex = 0;
+					if (soapLinkDataPos+3 > soapLinkDataLen) break;
+					linkedIndex |= soapLinkData[soapLinkDataPos++]<<16;
+					linkedIndex |= soapLinkData[soapLinkDataPos++]<<8;
+					linkedIndex |= soapLinkData[soapLinkDataPos++];
+					// All indexes in soapLinkData and partsSimIndex have 1 added to them (0 means not saved/loaded)
+					if (!linkedIndex || linkedIndex-1>=partsCount || !partsSimIndex[linkedIndex-1])
+						continue;
+					linkedIndex = partsSimIndex[linkedIndex-1]-1;
+					newIndex = partsSimIndex[i]-1;
+
+					//Attach the two particles
+					particles[newIndex].ctype |= 2;
+					particles[newIndex].tmp = linkedIndex;
+					particles[linkedIndex].ctype |= 4;
+					particles[linkedIndex].tmp2 = newIndex;
 				}
 			}
 		}
@@ -636,6 +691,8 @@ fail:
 	bson_destroy(&b);
 	if(freeIndices)
 		free(freeIndices);
+	if(partsSimIndex)
+		free(partsSimIndex);
 	throw ParseException(ParseException::Corrupt, "Save data currupt");
 fin:
 	bson_destroy(&b);
@@ -1218,14 +1275,18 @@ corrupt:
 char * GameSave::serialiseOPS(int & dataLength)
 {
 	//Particle *particles = sim->parts;
-	unsigned char *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *finalData = NULL, *outputData = NULL;
+	unsigned char *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *finalData = NULL, *outputData = NULL, *soapLinkData = NULL;
 	unsigned *partsPosLink = NULL, *partsPosFirstMap = NULL, *partsPosCount = NULL, *partsPosLastMap = NULL;
-	unsigned int partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, finalDataLen, outputDataLen;
+	unsigned partsCount = 0, *partsSaveIndex = NULL;
+	unsigned *elementCount = new unsigned[PT_NUM];
+	unsigned int partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, finalDataLen, outputDataLen, soapLinkDataLen;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int x, y, i, wallDataFound = 0;
 	int posCount, signsCount;
 	bson b;
 	
+	fill(elementCount, elementCount+PT_NUM, 0);
+
 	//Get coords in blocks
 	blockX = 0;//orig_x0/CELL;
 	blockY = 0;//orig_y0/CELL;
@@ -1332,6 +1393,8 @@ char * GameSave::serialiseOPS(int & dataLength)
 	 */
 	partsData = (unsigned char *)malloc(NPART * (sizeof(Particle)+1));
 	partsDataLen = 0;
+	partsSaveIndex = (unsigned int *)calloc(NPART, sizeof(unsigned));
+	partsCount = 0;
 	for (y=0;y<fullH;y++)
 	{
 		for (x=0;x<fullW;x++)
@@ -1348,8 +1411,12 @@ char * GameSave::serialiseOPS(int & dataLength)
 				//Turn pmap entry into a particles index
 				i = i>>8;
 				
+				//Store saved particle index+1 for this partsptr index (0 means not saved)
+				partsSaveIndex[i] = (partsCount++) + 1;
+
 				//Type (required)
 				partsData[partsDataLen++] = particles[i].type;
+				elementCount[particles[i].type]++;
 				
 				//Location of the field descriptor
 				fieldDescLoc = partsDataLen++;
@@ -1454,6 +1521,48 @@ char * GameSave::serialiseOPS(int & dataLength)
 			}
 		}
 	}
+
+	soapLinkData = (unsigned char*)malloc(3*elementCount[PT_SOAP]);
+	soapLinkDataLen = 0;
+	//Iterate through particles in the same order that they were saved
+	for (y=0;y<fullH;y++)
+	{
+		for (x=0;x<fullW;x++)
+		{
+			//Find the first particle in this position
+			i = partsPosFirstMap[y*fullW + x];
+
+			//Loop while there is a pmap entry
+			while (i)
+			{
+				//Turn pmap entry into a partsptr index
+				i = i>>8;
+
+				if (particles[i].type==PT_SOAP)
+				{
+					//Only save forward link for each particle, back links can be deduced from other forward links
+					//linkedIndex is index within saved particles + 1, 0 means not saved or no link
+
+					unsigned linkedIndex = 0;
+					if ((particles[i].ctype&2) && particles[i].tmp>=0 && particles[i].tmp<NPART)
+					{
+						linkedIndex = partsSaveIndex[particles[i].tmp];
+					}
+					soapLinkData[soapLinkDataLen++] = (linkedIndex&0xFF0000)>>16;
+					soapLinkData[soapLinkDataLen++] = (linkedIndex&0x00FF00)>>8;
+					soapLinkData[soapLinkDataLen++] = (linkedIndex&0x0000FF);
+				}
+
+				//Get the pmap entry for the next particle in the same position
+				i = partsPosLink[i];
+			}
+		}
+	}
+	if(!soapLinkDataLen)
+	{
+		free(soapLinkData);
+		soapLinkData = NULL;
+	}
 	if(!partsDataLen)
 	{
 		free(partsData);
@@ -1479,6 +1588,8 @@ char * GameSave::serialiseOPS(int & dataLength)
 		bson_append_binary(&b, "wallMap", BSON_BIN_USER, (const char *)wallData, wallDataLen);
 	if(fanData)
 		bson_append_binary(&b, "fanMap", BSON_BIN_USER, (const char *)fanData, fanDataLen);
+	if(soapLinkData)
+		bson_append_binary(&b, "soapLinks", BSON_BIN_USER, (const char *)soapLinkData, soapLinkDataLen);
 	signsCount = 0;
 	for(i = 0; i < signs.size(); i++)
 	{
@@ -1545,6 +1656,12 @@ fin:
 		free(wallData);
 	if(fanData)
 		free(fanData);
+	if (elementCount)
+		delete[] elementCount;
+	if (partsSaveIndex)
+		free(partsSaveIndex);
+	if (soapLinkData)
+		free(soapLinkData);
 	
 	return (char*)outputData;
 }
