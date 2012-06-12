@@ -1165,7 +1165,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		// no more particle properties to load, so we can change type here without messing up loading
 		if (i && i<=NPART)
 		{
-			if (particles[i-1].type == PT_SPNG)
+			if (ver<79 && particles[i-1].type == PT_SPNG)
 			{
 				if (fabs(particles[i-1].vx)>0.0f || fabs(particles[i-1].vy)>0.0f)
 					particles[i-1].flags |= FLAG_MOVABLE;
