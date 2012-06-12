@@ -3283,7 +3283,7 @@ void Simulation::update_particles_i(int start, int inc)
 					s = 1;
 
 					//A fix for ice with ctype = 0
-					if (t==PT_ICEI && (parts[i].ctype==0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI))
+					if ((t==PT_ICEI || t==PT_SNOW) && (parts[i].ctype==0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
 						parts[i].ctype = PT_WATR;
 
 					if (ctemph>elements[t].HighTemperature&&elements[t].HighTemperatureTransition>-1) {
@@ -3307,9 +3307,9 @@ void Simulation::update_particles_i(int start, int inc)
 						if (elements[t].HighTemperatureTransition!=PT_NUM)
 							t = elements[t].HighTemperatureTransition;
 #endif
-						else if (t==PT_ICEI) {
-							if (parts[i].ctype<PT_NUM&&parts[i].ctype!=PT_ICEI) {
-								if (elements[parts[i].ctype].LowTemperatureTransition==PT_ICEI&&pt<=elements[parts[i].ctype].LowTemperature) s = 0;
+						else if (t==PT_ICEI || t==PT_SNOW) {
+							if (parts[i].ctype<PT_NUM&&parts[i].ctype!=t) {
+								if (elements[parts[i].ctype].LowTemperatureTransition==t&&pt<=elements[parts[i].ctype].LowTemperature) s = 0;
 								else {
 #ifdef REALISTIC
 									//One ice table value for all it's kinds
@@ -3414,7 +3414,7 @@ void Simulation::update_particles_i(int start, int inc)
 					}
 #endif
 					if (s) { // particle type change occurred
-						if (t==PT_ICEI||t==PT_LAVA)
+						if (t==PT_ICEI||t==PT_LAVA||t==PT_SNOW)
 							parts[i].ctype = parts[i].type;
 						if (!(t==PT_ICEI&&parts[i].ctype==PT_FRZW)) parts[i].life = 0;
 						if (elements[t].State==ST_GAS&&elements[parts[i].type].State!=ST_GAS)
