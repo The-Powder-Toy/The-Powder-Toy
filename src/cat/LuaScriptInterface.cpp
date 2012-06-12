@@ -1128,8 +1128,13 @@ int luatpt_reset_spark(lua_State* l)
 	{
 		if (luacon_sim->parts[i].type==PT_SPRK)
 		{
-			luacon_sim->parts[i].type = luacon_sim->parts[i].ctype;
-			luacon_sim->parts[i].life = 4;
+			if (luacon_sim->parts[i].ctype >= 0 && luacon_sim->parts[i].ctype < PT_NUM)
+			{
+				luacon_sim->parts[i].type = luacon_sim->parts[i].ctype;
+				luacon_sim->parts[i].life = 0;
+			}
+			else
+				luacon_sim->kill_part(i);
 		}
 	}
 	return 0;
