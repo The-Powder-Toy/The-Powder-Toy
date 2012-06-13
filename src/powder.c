@@ -104,6 +104,7 @@ void init_can_move()
 	for (rt=1;rt<PT_NUM;rt++)
 	{
 		can_move[PT_PHOT][rt] = 2;
+		can_move[PT_PROT][rt] = 2;
 	}
 	for (t=1;t<PT_NUM;t++)
 	{
@@ -181,6 +182,11 @@ void init_can_move()
 	can_move[PT_ANAR][PT_WHOL] = 1;
 	can_move[PT_ANAR][PT_NWHL] = 1;
 	can_move[PT_THDR][PT_THDR] = 2;
+
+	can_move[PT_PROT][PT_INSL] = 0;
+	can_move[PT_PROT][PT_DMND] = 0;
+	can_move[PT_PROT][PT_PRTI] = 0;
+	can_move[PT_PROT][PT_PRTO] = 0;
 }
 
 /*
@@ -1120,7 +1126,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 				parts[i].vx = 3.0f*cosf(a);
 				parts[i].vy = 3.0f*sinf(a);
 			}
-			if (t==PT_ELEC)
+			if (t==PT_ELEC||t==PT_PROT)
 			{
 				float a = (rand()%360)*3.14159f/180.0f;
 				parts[i].life = 680;
