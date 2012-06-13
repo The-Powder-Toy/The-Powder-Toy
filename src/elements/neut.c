@@ -147,6 +147,8 @@ int update_NEUT(UPDATE_FUNC_ARGS) {
 					kill_part(i);
 					return 1;
 				}
+				else if ((r&0xFF)==PT_EXOT && 5>(rand()%100))
+					parts[r>>8].life = 1500;
 				/*if(parts[r>>8].type>1 && parts[r>>8].type!=PT_NEUT && parts[r>>8].type-1!=PT_NEUT && parts[r>>8].type-1!=PT_STKM &&
 				  (ptypes[parts[r>>8].type-1].menusection==SC_LIQUID||
 				  ptypes[parts[r>>8].type-1].menusection==SC_EXPLOSIVE||
