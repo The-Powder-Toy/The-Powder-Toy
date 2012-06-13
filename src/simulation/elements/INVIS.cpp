@@ -57,8 +57,7 @@ int Element_INVIS::graphics(GRAPHICS_FUNC_ARGS)
 		*colr = 15;
 		*colg = 0;
 		*colb = 150;
-		*pixel_mode &= PMODE;
-		*pixel_mode |= PMODE_BLEND;
+		*pixel_mode = PMODE_BLEND;
 	} 
 	return 0;
 }
