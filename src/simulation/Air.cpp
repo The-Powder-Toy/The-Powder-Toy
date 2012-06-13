@@ -107,9 +107,8 @@ void Air::update_airh(void)
 			}
 			//if(!gravityMode) TODO: GET REAL VALUE
 			{ //Vertical gravity only for the time being
-				float airdiff = dh-hv[y][x];
-				pv[y][x] += airdiff/5000.0f;
-				if(airdiff>0)	
+				float airdiff = hv[y-1][x]-hv[y][x];
+				if(airdiff>0 && !bmap_blockairh[y-1][x])
 					vy[y][x] -= airdiff/5000.0f;
 			}
 			ohv[y][x] = dh;
