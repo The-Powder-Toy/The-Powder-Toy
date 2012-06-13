@@ -71,6 +71,7 @@ public:
 	int NUM_PARTS;
 	int elementCount[PT_NUM];
 	int ISWIRE;
+	int force_stacking_check;
 	//Gol sim
 	int CGOL;
 	int ISGOL;
@@ -96,6 +97,7 @@ public:
 	Particle parts[NPART];
 	int pmap[YRES][XRES];
 	int photons[YRES][XRES];
+	int pmap_count[YRES][XRES];
 	//
 	int gravityMode;
 	//int airMode;
