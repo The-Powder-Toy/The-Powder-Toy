@@ -27,6 +27,7 @@ int update_VINE(UPDATE_FUNC_ARGS) {
 			np = create_part(-1,x+rx,y+ry,PT_VINE);
 			if (np<0) return 0;
 			parts[np].temp = parts[i].temp;
+			parts[i].tmp = 1;
 			part_change_type(i,x,y,PT_PLNT);
 		}
 	}
