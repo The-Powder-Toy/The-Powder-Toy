@@ -16,8 +16,8 @@
 #endif
 
 //VersionInfoStart
-#define SAVE_VERSION 76
-#define MINOR_VERSION 1
+#define SAVE_VERSION 80
+#define MINOR_VERSION 3
 #define BETA
 #define BUILD_NUM 155
 //VersionInfoEnd
