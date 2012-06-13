@@ -27,7 +27,7 @@ Element_STOR::Element_STOR()
     Weight = 100;
     
     Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 251;
+    HeatConduct = 0;
     Description = "Solid. Stores a single particle, releases when charged with PSCN, also passes to PIPE";
     
     State = ST_NONE;
