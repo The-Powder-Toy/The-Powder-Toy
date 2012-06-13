@@ -63,10 +63,7 @@ public:
 	{
 		this->radius = radius;
 		this->size = radius+radius+ui::Point(1, 1);
-		
-		std::cout << "Radius: " << radius.X << " " << radius.Y << std::endl;
-		std::cout << "Size: " << size.X << " " << size.Y << std::endl;
-		
+
 		GenerateBitmap();
 		updateOutline();
 	}
