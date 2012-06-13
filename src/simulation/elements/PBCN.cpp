@@ -82,7 +82,7 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 				        (r&0xFF)!=PT_PBCN && (r&0xFF)<PT_NUM)
 					{
 						parts[i].ctype = r&0xFF;
-						if ((r&0xFF)==PT_LIFE)
+						if ((r&0xFF)==PT_LIFE || (r&0xFF)==PT_LAVA)
 							parts[i].tmp = parts[r>>8].ctype;
 					}
 				}
@@ -135,8 +135,15 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 					sim->create_part(-1, x+rx, y+ry, parts[i].ctype|(parts[i].tmp<<8));
 				}
 			}
-		} else {
-			sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+		}
+		else
+		{
+			int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+			if (np>=0)
+			{
+				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
+					parts[np].ctype = parts[i].tmp;
+			}
 		}
 	}
 	return 0;
