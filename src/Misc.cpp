@@ -19,6 +19,12 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
+#if defined(USE_SDL) && (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+#include <SDL/SDL_syswm.h>
+SDL_SysWMinfo sdl_wminfo;
+Atom XA_CLIPBOARD, XA_TARGETS;
+#endif
+
 char *clipboard_text = NULL;
 
 char *exe_name(void)

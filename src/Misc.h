@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string>
 
+#if defined(USE_SDL) && (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+#include <SDL/SDL_syswm.h>
+#endif
+
 #if defined(WIN32) && !defined(__GNUC__)
 #define x86_cpuid(func,af,bf,cf,df) \
 	do {\
