@@ -33,6 +33,8 @@ int update_ICEI(UPDATE_FUNC_ARGS) { //currently used for snow as well
 					part_change_type(i,x,y,PT_SLTW);
 					part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
 				}
+				if (((r&0xFF)==PT_FRZZ) && (parts[i].ctype=PT_FRZW) && 1>(rand()%1000))
+					part_change_type(r>>8,x+rx,y+ry,PT_ICEI);
 			}
 	return 0;
 }
