@@ -50,8 +50,25 @@ Element_TTAN::Element_TTAN()
 //#TPT-Directive ElementHeader Element_TTAN static int update(UPDATE_FUNC_ARGS)
 int Element_TTAN::update(UPDATE_FUNC_ARGS)
  {
-	sim->air->bmap_blockair[y/CELL][x/CELL] = 1;
-	sim->air->bmap_blockairh[y/CELL][x/CELL] = 1;
+	int nx, ny, ttan = 0;
+	if(nt<=2)
+		ttan = 2;
+	else if(parts[i].tmp)
+		ttan = 2;
+	else if(nt<=6)
+		for (nx=-1; nx<2; nx++) {
+			for (ny=-1; ny<2; ny++) {
+				if ((!nx != !ny) && x+nx>=0 && y+ny>=0 && x+nx<XRES && y+ny<YRES) {
+					if((pmap[y+ny][x+nx]&0xFF)==PT_TTAN)
+						ttan++;
+				}
+			}
+		}
+
+	if(ttan>=2) {
+		sim->air->bmap_blockair[y/CELL][x/CELL] = 1;
+		sim->air->bmap_blockairh[y/CELL][x/CELL] = 1;
+	}
 	return 0;
 }
 
