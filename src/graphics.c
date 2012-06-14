@@ -1196,8 +1196,8 @@ void textnpos(char *s, int n, int w, int *cx, int *cy)
 			{
 				x = 0;
 				y += FONT_H+2;
-				if (*s==' ')
-					continue;
+				if (*(s+1)==' ')
+					x -= font_data[font_ptrs[(int)(' ')]];
 			}
 			n--;
 		}
@@ -1240,8 +1240,8 @@ int textposxy(char *s, int width, int w, int h)
 			if (x>=width) {
 				x = 0;
 				y += FONT_H+2;
-				if (*s==' ')
-					continue;
+				if (*(s+1)==' ')
+					x -= font_data[font_ptrs[(int)(' ')]];
 			}
 			n++;
 		}
