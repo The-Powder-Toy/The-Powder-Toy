@@ -32,13 +32,14 @@ int update_EXOT(UPDATE_FUNC_ARGS) {
 							parts[i].tmp2 += 100;
 						}
 				}
-				if (parts[i].tmp>245)
-					if (1>rand()%500)
-						if ((r&0xFF)!=PT_EXOT && (r&0xFF)!=PT_BREL && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_PHOT && (r&0xFF)!=PT_VOID && (r&0xFF)!=PT_NBHL && (r&0xFF)!=PT_WARP)
-						{
-							create_part(i, x, y, parts[r>>8].type);
-							return 0;
-						}
+				if ((r&0xFF)==PT_EXOT && parts[r>>8].life==1500 && 1>rand()%1000)
+					parts[i].life = 1500;
+				if ((parts[i].tmp>245) && (parts[i].life>1000))
+					if ((r&0xFF)!=PT_EXOT && (r&0xFF)!=PT_BREL && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_PHOT && (r&0xFF)!=PT_VOID && (r&0xFF)!=PT_NBHL && (r&0xFF)!=PT_WARP && (r&0xFF)!=PT_NEUT)
+					{
+						create_part(i, x, y, parts[r>>8].type);
+						return 0;
+					}
 			}
 	parts[i].tmp--;	
 	parts[i].tmp2--;	
@@ -48,17 +49,19 @@ int update_EXOT(UPDATE_FUNC_ARGS) {
 		parts[i].tmp2 = 1;
 	else if (parts[i].tmp2>6000)
 	{
-		parts[i].tmp2 = 6000;
-		part_change_type(i, x, y, PT_WARP);
-		parts[i].temp = 10000;
-		return 0;
+		parts[i].tmp2 = 10000;
+		if (parts[i].life<1001)
+		{
+			part_change_type(i, x, y, PT_WARP);
+			return 0;
+		}
 	}
-	else
+	else if (parts[i].life<1001)
 		pv[y/CELL][x/CELL] += (parts[i].tmp2*CFDS)/160000;
 	if (pv[y/CELL][x/CELL]>200 && parts[i].temp>9000 && parts[i].tmp2>200)
 	{
-		part_change_type(i, x, y, PT_WARP);
 		parts[i].tmp2 = 6000;
+		part_change_type(i, x, y, PT_WARP);
 		return 0;
 	}		
 	if (parts[i].tmp2>100)
@@ -106,33 +109,51 @@ int graphics_EXOT(GRAPHICS_FUNC_ARGS)
 	int q = cpart->temp;
 	int b = cpart->tmp;
 	int c = cpart->tmp2;	
-	if ((cpart->tmp2 - 1)>rand()%1000)
-	{	
-	float frequency = 0.04045;	
-	*colr = (sin(frequency*c + 4) * 127 + 150);
-	*colg = (sin(frequency*c + 6) * 127 + 150);
-	*colb = (sin(frequency*c + 8) * 127 + 150);
-	*firea = 100;
-	*firer = 0;
-	*fireg = 0;
-	*fireb = 0;
-	*pixel_mode |= PMODE_FLAT;
-//	*pixel_mode |= FIRE_ADD;
-	*pixel_mode |= PMODE_FLARE;
+	if (cpart->life < 1001)
+	{
+		if ((cpart->tmp2 - 1)>rand()%1000)
+		{	
+			float frequency = 0.04045;	
+			*colr = (sin(frequency*c + 4) * 127 + 150);
+			*colg = (sin(frequency*c + 6) * 127 + 150);
+			*colb = (sin(frequency*c + 8) * 127 + 150);
+			*firea = 100;
+			*firer = 0;
+			*fireg = 0;
+			*fireb = 0;
+			*pixel_mode |= PMODE_FLAT;
+			*pixel_mode |= PMODE_FLARE;
+		}
+		else
+		{
+			float frequency = 0.00045;	
+			*colr = (sin(frequency*q + 4) * 127 + (b/1.7));
+			*colg = (sin(frequency*q + 6) * 127 + (b/1.7));
+			*colb = (sin(frequency*q + 8) * 127 + (b/1.7));
+			*cola = cpart->tmp / 6;	
+			*firea = *cola;
+			*firer = *colr;
+			*fireg = *colg;
+			*fireb = *colb;
+			*pixel_mode |= FIRE_ADD;
+			*pixel_mode |= PMODE_BLUR;
+		}
 	}
 	else
 	{
-	float frequency = 0.00045;	
-	*colr = (sin(frequency*q + 4) * 127 + (b/1.7));
-	*colg = (sin(frequency*q + 6) * 127 + (b/1.7));
-	*colb = (sin(frequency*q + 8) * 127 + (b/1.7));
-	*cola = cpart->tmp / 6;	
-	*firea = *cola;
-	*firer = *colr;
-	*fireg = *colg;
-	*fireb = *colb;
-	*pixel_mode |= FIRE_ADD;
-	*pixel_mode |= PMODE_BLUR;
+		float frequency = 0.01300;	
+		*colr = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
+		*colg = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
+		*colb = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
+		*cola = cpart->tmp / 6;	
+		*firea = *cola;
+		*firer = *colr;
+		*fireg = *colg;
+		*fireb = *colb;
+		*pixel_mode |= FIRE_ADD;
+		*pixel_mode |= PMODE_BLUR;
+
+
 	}
 	return 0;
 }

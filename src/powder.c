@@ -167,6 +167,7 @@ void init_can_move()
 	}
 	can_move[PT_ELEC][PT_LCRY] = 2;
 	can_move[PT_ELEC][PT_EXOT] = 2;
+	can_move[PT_NEUT][PT_EXOT] = 2;
 	can_move[PT_PHOT][PT_LCRY] = 3;//varies according to LCRY life
 	
 	can_move[PT_PHOT][PT_BIZR] = 2;
