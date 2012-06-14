@@ -20,7 +20,7 @@ int update_CFLM(UPDATE_FUNC_ARGS) {
 	{
 		part_change_type(i, x, y, PT_LO2);
 		parts[i].life = 0;
-		parts[i].temp = 15;
+		parts[i].temp = 10;
 		parts[i].tmp = 0;
 	}
 	return 0;

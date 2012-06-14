@@ -104,7 +104,6 @@ void init_can_move()
 	for (rt=1;rt<PT_NUM;rt++)
 	{
 		can_move[PT_PHOT][rt] = 2;
-		can_move[PT_PROT][rt] = 2;
 	}
 	for (t=1;t<PT_NUM;t++)
 	{
@@ -164,6 +163,7 @@ void init_can_move()
 			|| t==PT_ISOZ || t==PT_ISZS || t==PT_FILT || t==PT_INVIS
 			|| t==PT_QRTZ || t==PT_PQRT)
 			can_move[PT_PHOT][t] = 2;
+		can_move[PT_PROT][t] = 2;
 	}
 	can_move[PT_ELEC][PT_LCRY] = 2;
 	can_move[PT_ELEC][PT_EXOT] = 2;
@@ -730,7 +730,11 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			if (t==SPC_HEAT&&parts[pmap[y][x]>>8].temp<MAX_TEMP)
 			{
 				float heatchange;
-				int r = pmap[y][x], fast = ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)));
+				int fast = ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)));
+				int r = pmap[y][x];
+				if (!r)
+					r = photons[y][x];
+
 				if ((r&0xFF)==PT_PUMP || (r&0xFF)==PT_GPMP)
 					heatchange = fast?1.0f:.1f;
 				else
@@ -741,7 +745,11 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			if (t==SPC_COOL&&parts[pmap[y][x]>>8].temp>MIN_TEMP)
 			{
 				float heatchange;
-				int r = pmap[y][x], fast = ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)));
+				int fast = ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)));
+				int r = pmap[y][x];
+				if (!r)
+					r = photons[y][x];
+
 				if ((r&0xFF)==PT_PUMP || (r&0xFF)==PT_GPMP)
 					heatchange = fast?1.0f:.1f;
 				else
@@ -1126,7 +1134,14 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 				parts[i].vx = 3.0f*cosf(a);
 				parts[i].vy = 3.0f*sinf(a);
 			}
-			if (t==PT_ELEC||t==PT_PROT)
+			if (t==PT_PROT)
+			{
+				float a = (rand()%360)*3.14159f/180.0f;
+				parts[i].life = 680;
+				parts[i].vx = 2.5f*cosf(a);
+				parts[i].vy = 2.5f*sinf(a);
+			}
+			if (t==PT_ELEC)
 			{
 				float a = (rand()%360)*3.14159f/180.0f;
 				parts[i].life = 680;
@@ -2569,7 +2584,7 @@ killed:
 							kill_part(i);
 						continue;
 					}
-					if (!(parts[i].ctype&0x3FFFFFFF)&&t!=PT_NEUT&&t!=PT_ELEC) {
+					if (!(parts[i].ctype&0x3FFFFFFF)&&t!=PT_NEUT&&t!=PT_ELEC&&t!=PT_PROT) {
 						kill_part(i);
 						continue;
 					}

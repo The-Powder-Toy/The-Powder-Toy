@@ -221,7 +221,7 @@
 #define PT_TRON 143
 #define PT_TTAN	144
 #define PT_EXOT	145
-#define PT_PROT 146
+#define PT_PROT   146
 #define OLD_PT_WIND 147
 #define PT_H2   148
 #define PT_SOAP 149
