@@ -22,10 +22,10 @@ int update_CO2(UPDATE_FUNC_ARGS) {
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-                if (20>(rand()%40000)&&parts[i].ctype==5)
+                if (parts[i].ctype==5 && 20>(rand()%40000))
 				{
-					parts[i].ctype = 0;
-                    create_part(-3, x, y, PT_WATR);
+					if (create_part(-1, x+rx, y+ry, PT_WATR)>=0)
+						parts[i].ctype = 0;
 				}
 				if ((r>>8)>=NPART || !r)
 					continue;
@@ -39,7 +39,10 @@ int update_CO2(UPDATE_FUNC_ARGS) {
 				if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && 1>(rand()%250))
 				{
 					part_change_type(i,x,y,PT_CBNW);
-					kill_part(r>>8);
+					if (parts[i].ctype==5) //conserve number of water particles - ctype=5 means this CO2 hasn't released the water particle from BUBW yet
+						create_part(r>>8, x+rx, y+ry, PT_CBNW);
+					else
+						kill_part(r>>8);
 				}
 			}
 	if (parts[i].temp > 9773.15 && pv[y/CELL][x/CELL] > 200.0f)
