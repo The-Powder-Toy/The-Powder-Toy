@@ -48,6 +48,7 @@ int graphics_STKM(GRAPHICS_FUNC_ARGS)
 
 int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
+	int t = parts[i].type;
 	float pp, d;
 	float dt = 0.9;///(FPSB*FPSB);  //Delta time in square
 	float gvx, gvy;
@@ -57,7 +58,7 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 		playerp->elem = parts[i].ctype;
 	playerp->frames++;
 
-	//Tempirature handling
+	//Temperature handling
 	if (parts[i].temp<243)
 		parts[i].life -= 1;
 	if ((parts[i].temp<309.6f) && (parts[i].temp>=243))
@@ -132,7 +133,7 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	playerp->legs[15] = playerp->legs[13];
 	playerp->legs[13] = pp;
 
-	//Setting accseleration to 0
+	//Setting acceleration to 0
 	playerp->accs[0] = 0;
 	playerp->accs[1] = 0;
 
@@ -155,7 +156,7 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	{
 		if (dl>dr)
 		{
-			if (!eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
+			if (!eval_move(t, playerp->legs[4], playerp->legs[5], NULL))
 			{
 				playerp->accs[2] = -3*gvy-3*gvx;
 				playerp->accs[3] = 3*gvx-3*gvy;
@@ -165,7 +166,7 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 		}
 		else
 		{
-			if (!eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
+			if (!eval_move(t, playerp->legs[12], playerp->legs[13], NULL))
 			{
 				playerp->accs[6] = -3*gvy-3*gvx;
 				playerp->accs[7] = 3*gvx-3*gvy;
@@ -180,7 +181,7 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	{
 		if (dl<dr)
 		{
-			if (!eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
+			if (!eval_move(t, playerp->legs[4], playerp->legs[5], NULL))
 			{
 				playerp->accs[2] = 3*gvy-3*gvx;
 				playerp->accs[3] = -3*gvx-3*gvy;
@@ -190,7 +191,7 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 		}
 		else
 		{
-			if (!eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
+			if (!eval_move(t, playerp->legs[12], playerp->legs[13], NULL))
 			{
 				playerp->accs[6] = 3*gvy-3*gvx;
 				playerp->accs[7] = -3*gvx-3*gvy;
@@ -202,7 +203,7 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 
 	//Jump
 	if (((int)(playerp->comm)&0x04) == 0x04 && 
-			(!eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL) || !eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL)))
+			(!eval_move(t, playerp->legs[4], playerp->legs[5], NULL) || !eval_move(t, playerp->legs[12], playerp->legs[13], NULL)))
 	{
 		parts[i].vy -= 4*gvy;
 		playerp->accs[3] -= gvy;
@@ -353,27 +354,27 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	playerp->legs[8] += (playerp->legs[8]-parts[i].x)*d;
 	playerp->legs[9] += (playerp->legs[9]-parts[i].y)*d;
 
-	if (INBOND(playerp->legs[4], playerp->legs[5]) && !eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
+	if (INBOND(playerp->legs[4], playerp->legs[5]) && !eval_move(t, playerp->legs[4], playerp->legs[5], NULL))
 	{
 		playerp->legs[4] = playerp->legs[6];
 		playerp->legs[5] = playerp->legs[7];
 	}
 
-	if (INBOND(playerp->legs[12], playerp->legs[13]) && !eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
+	if (INBOND(playerp->legs[12], playerp->legs[13]) && !eval_move(t, playerp->legs[12], playerp->legs[13], NULL))
 	{
 		playerp->legs[12] = playerp->legs[14];
 		playerp->legs[13] = playerp->legs[15];
 	}
 
 	//This makes stick man "pop" from obstacles
-	if (INBOND(playerp->legs[4], playerp->legs[5]) && !eval_move(PT_DUST, playerp->legs[4], playerp->legs[5], NULL))
+	if (INBOND(playerp->legs[4], playerp->legs[5]) && !eval_move(t, playerp->legs[4], playerp->legs[5], NULL))
 	{
 		float t;
 		t = playerp->legs[4]; playerp->legs[4] = playerp->legs[6]; playerp->legs[6] = t;
 		t = playerp->legs[5]; playerp->legs[5] = playerp->legs[7]; playerp->legs[7] = t;
 	}
 
-	if (INBOND(playerp->legs[12], playerp->legs[13]) && !eval_move(PT_DUST, playerp->legs[12], playerp->legs[13], NULL))
+	if (INBOND(playerp->legs[12], playerp->legs[13]) && !eval_move(t, playerp->legs[12], playerp->legs[13], NULL))
 	{
 		float t;
 		t = playerp->legs[12]; playerp->legs[12] = playerp->legs[14]; playerp->legs[14] = t;
