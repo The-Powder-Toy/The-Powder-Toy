@@ -28,8 +28,8 @@ void Textblock::SetText(std::string text)
 
 void Textblock::updateMultiline()
 {
-	char * rawText = (char*)malloc(text.length()+1);
-	memcpy(rawText, text.c_str(), text.length());
+	char * rawText = new char[text.length()+1];
+	std::copy(text.begin(), text.end(), rawText);
 	rawText[text.length()] = 0;
 
 	int lines = 1;
@@ -60,7 +60,8 @@ void Textblock::updateMultiline()
 	{
 		Size.Y = lines*12;
 	}
-	textLines = rawText;
+	textLines = std::string(rawText);
+	delete[] rawText;
 }
 
 void Textblock::Draw(const Point &screenPos)

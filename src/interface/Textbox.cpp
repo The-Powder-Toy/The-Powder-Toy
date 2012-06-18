@@ -129,10 +129,10 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 	{
 		if(masked)
 		{
-			char * tempText = new char[text.length()];
+			char * tempText = new char[text.length()+1];
 			std::fill(tempText, tempText+text.length(), 0x8d);
 			tempText[text.length()] = 0;
-			displayText = tempText;
+			displayText = std::string(tempText);
 			delete tempText;
 		}
 		else
