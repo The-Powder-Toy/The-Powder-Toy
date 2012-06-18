@@ -38,7 +38,7 @@ public:
 		{
 			try
 			{
-				cc->gameModel->SetSave(new SaveInfo(*(cc->search->GetLoadedSave())));
+				cc->gameModel->SetSave(cc->search->GetLoadedSave());
 			}
 			catch(GameModelException & ex)
 			{

@@ -182,6 +182,8 @@ GameModel::~GameModel()
 		delete clipboard;
 	if(stamp)
 		delete stamp;
+	if(currentSave)
+		delete currentSave;
 	//if(activeTools)
 	//	delete[] activeTools;
 }
@@ -279,7 +281,11 @@ void GameModel::SetSave(SaveInfo * newSave)
 {
 	if(currentSave != newSave)
 		delete currentSave;
-	currentSave = newSave;
+	if(newSave == NULL)
+		currentSave = NULL;
+	else if(currentSave != newSave)
+		currentSave = new SaveInfo(*newSave);
+
 	if(currentSave && currentSave->GetGameSave())
 	{
 		GameSave * saveData = currentSave->GetGameSave();
