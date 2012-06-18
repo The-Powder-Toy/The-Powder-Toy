@@ -280,11 +280,14 @@ SaveInfo * GameModel::GetSave()
 void GameModel::SetSave(SaveInfo * newSave)
 {
 	if(currentSave != newSave)
-		delete currentSave;
-	if(newSave == NULL)
-		currentSave = NULL;
-	else if(currentSave != newSave)
-		currentSave = new SaveInfo(*newSave);
+	{
+		if(currentSave)
+			delete currentSave;
+		if(newSave == NULL)
+			currentSave = NULL;
+		else
+			currentSave = new SaveInfo(*newSave);
+	}
 
 	if(currentSave && currentSave->GetGameSave())
 	{
@@ -453,12 +456,15 @@ void GameModel::ClearSimulation()
 
 void GameModel::SetStamp(GameSave * save)
 {
-	if(stamp)
-		delete stamp;
-	if(save)
-		stamp = new GameSave(*save);
-	else
-		stamp = NULL;
+	if(stamp != save)
+	{
+		if(stamp)
+			delete stamp;
+		if(save)
+			stamp = new GameSave(*save);
+		else
+			stamp = NULL;
+	}
 }
 
 void GameModel::SetPlaceSave(GameSave * save)
