@@ -4232,6 +4232,8 @@ Simulation::~Simulation()
 	delete[] platent;
 	delete grav;
 	delete air;
+	for(int i = 0; i < tools.size(); i++)
+		delete tools[i];
 }
 
 Simulation::Simulation():
