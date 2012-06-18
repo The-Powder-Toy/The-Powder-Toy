@@ -210,6 +210,13 @@ void SearchView::doSearch()
 
 SearchView::~SearchView()
 {
+	RemoveComponent(nextButton);
+	RemoveComponent(previousButton);
+	RemoveComponent(infoLabel);
+
+	delete nextButton;
+	delete previousButton;
+	delete infoLabel;
 }
 
 void SearchView::NotifySortChanged(SearchModel * sender)
