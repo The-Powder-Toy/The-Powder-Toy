@@ -170,10 +170,6 @@ GameModel::~GameModel()
 
 	for(int i = 0; i < menuList.size(); i++)
 	{
-		for(int j = 0; i < menuList[i]->GetToolList().size(); i++)
-		{
-			delete menuList[i]->GetToolList()[j];
-		}
 		delete menuList[i];
 	}
 	for(int i = 0; i < brushList.size(); i++)

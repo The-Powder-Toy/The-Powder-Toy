@@ -24,6 +24,15 @@ public:
 
 	}
 
+	virtual ~Menu()
+	{
+		for(int i = 0; i < tools.size(); i++)
+		{
+			delete tools[i];
+		}
+		tools.clear();
+	}
+
 	vector<Tool*> GetToolList()
 	{
 		return tools;
