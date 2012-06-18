@@ -62,13 +62,13 @@ int update_ELEC(UPDATE_FUNC_ARGS) {
 				}
 				if ((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW || (r&0xFF)==PT_CBNW)
 				{
-					if(rand()%2)
+					if(rand()<RAND_MAX/3)
 					{
-						create_part(r>>8, x+rx, y+ry, PT_H2);
+						create_part(r>>8, x+rx, y+ry, PT_O2);
 					}
 					else
 					{
-						create_part(r>>8, x+rx, y+ry, PT_O2);
+						create_part(r>>8, x+rx, y+ry, PT_H2);
 					}
 					kill_part(i);
 					return 1;
