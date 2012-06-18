@@ -705,6 +705,8 @@ fin:
 	bson_destroy(&b);
 	if(freeIndices)
 		free(freeIndices);
+	if(partsSimIndex)
+		free(partsSimIndex);
 }
 
 void GameSave::readPSv(char * data, int dataLength)
