@@ -64,5 +64,6 @@ RenderController::~RenderController() {
 	if(callback)
 		delete callback;
 	delete renderModel;
+	delete renderView;
 }
 

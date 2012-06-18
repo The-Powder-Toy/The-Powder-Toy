@@ -50,6 +50,11 @@ void TagsController::Exit()
 }
 
 TagsController::~TagsController() {
-	// TODO Auto-generated destructor stub
+	if(ui::Engine::Ref().GetWindow() == tagsView)
+		ui::Engine::Ref().CloseWindow();
+	delete tagsModel;
+	delete tagsView;
+	if(callback)
+		delete callback;
 }
 

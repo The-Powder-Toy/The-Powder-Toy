@@ -103,5 +103,8 @@ PreviewController::~PreviewController() {
 		ui::Engine::Ref().CloseWindow();
 	}
 	delete previewModel;
+	delete previewView;
+	if(callback)
+		delete callback;
 }
 

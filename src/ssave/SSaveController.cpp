@@ -51,5 +51,9 @@ void SSaveController::Exit()
 SSaveController::~SSaveController() {
 	if(ui::Engine::Ref().GetWindow() == ssaveView)
 		ui::Engine::Ref().CloseWindow();
+	delete ssaveModel;
+	delete ssaveView;
+	if(callback)
+		delete callback;
 }
 
