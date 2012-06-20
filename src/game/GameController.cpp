@@ -10,6 +10,7 @@
 #include "login/LoginController.h"
 #include "interface/Point.h"
 #include "dialogues/ErrorMessage.h"
+#include "dialogues/ConfirmPrompt.h"
 #include "GameModelException.h"
 #include "simulation/Air.h"
 #include "Notification.h"
@@ -121,7 +122,8 @@ GameController::GameController():
 		ssave(NULL),
 		console(NULL),
 		tagsWindow(NULL),
-		options(NULL)
+		options(NULL),
+		HasDone(false)
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
@@ -391,6 +393,13 @@ void GameController::Tick()
 	commandInterface->OnTick();
 }
 
+void GameController::Exit()
+{
+	if(ui::Engine::Ref().GetWindow() == gameView)
+		ui::Engine::Ref().CloseWindow();
+	HasDone = true;
+}
+
 void GameController::Update()
 {
 	ui::Point pos = gameView->GetMousePosition();
@@ -629,6 +638,19 @@ std::string GameController::ElementResolve(int type)
 
 void GameController::NotifyUpdateAvailable(Client * sender)
 {
+	class UpdateConfirmation: public ConfirmDialogueCallback {
+	public:
+		GameController * c;
+		UpdateConfirmation(GameController * c_) {	c = c_;	}
+		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+			if (result == ConfirmPrompt::ResultOkay)
+			{
+				c->RunUpdater();
+			}
+		}
+		virtual ~UpdateConfirmation() { }
+	};
+
 	class UpdateNotification : public Notification
 	{
 		GameController * c;
@@ -638,7 +660,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 
 		virtual void Action()
 		{
-			c->RemoveNotification(this);
+			new ConfirmPrompt("Run Updater", "Are you sure you want to run the updater, please save any changes before updating", new UpdateConfirmation(c));
 		}
 	};
 
@@ -648,5 +670,10 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 void GameController::RemoveNotification(Notification * notification)
 {
 	gameModel->RemoveNotification(notification);
+}
+
+void GameController::RunUpdater()
+{
+	Exit();
 }
 

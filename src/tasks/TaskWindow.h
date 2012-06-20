@@ -25,6 +25,7 @@ public:
 	virtual void NotifyStatus(Task * task);
 	virtual void NotifyDone(Task * task);
 	virtual void NotifyProgress(Task * task);
+	virtual void OnTick(float dt);
 	virtual void OnDraw();
 	virtual ~TaskWindow();
 };

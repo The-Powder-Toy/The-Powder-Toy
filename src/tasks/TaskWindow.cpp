@@ -48,6 +48,11 @@ void TaskWindow::NotifyProgress(Task * task)
 	progress = task->GetProgress();
 }
 
+void TaskWindow::OnTick(float dt)
+{
+	task->Poll();
+}
+
 void TaskWindow::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;

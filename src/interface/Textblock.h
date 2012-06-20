@@ -25,6 +25,7 @@ public:
 	Textblock(Point position, Point size, std::string textboxText);
 	virtual void TextPosition() {}
 	virtual void SetText(std::string text);
+	virtual std::string GetDisplayText() { return textLines; }
 	virtual void Draw(const Point& screenPos);
 	virtual ~Textblock();
 };
