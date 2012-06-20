@@ -17,6 +17,8 @@ void Task::SetTaskListener(TaskListener * listener)
 
 void Task::Start()
 {
+	pthread_mutex_init (&taskMutex, NULL);
+	pthread_cond_init(&taskCond, NULL);
 	pthread_create(&doWorkThread, 0, &Task::doWork_helper, this);
 }
 
@@ -33,6 +35,42 @@ std::string Task::GetStatus()
 bool Task::GetDone()
 {
 	return done;
+}
+
+void Task::Poll()
+{
+	int newProgress;
+	bool newDone;
+	std::string newStatus;
+	pthread_mutex_lock(&taskMutex);
+	newProgress = thProgress;
+	newDone = thDone;
+	newStatus = std::string(thStatus);
+	pthread_cond_signal(&taskCond);
+	pthread_mutex_unlock(&taskMutex);
+
+	if(newProgress!=progress) {
+		progress = newProgress;
+		if(listener)
+			listener->NotifyProgress(this);
+	}
+	if(newStatus!=status) {
+		status = newStatus;
+		if(listener)
+			listener->NotifyStatus(this);
+	}
+	if(newDone!=done)
+	{
+		done = newDone;
+		if(listener)
+			listener->NotifyDone(this);
+	}
+
+	if(done)
+	{
+		pthread_join(doWorkThread, NULL);
+		pthread_mutex_destroy(&taskMutex);
+	}
 }
 
 Task::~Task()
@@ -59,26 +97,24 @@ void * Task::doWork_helper(void * ref)
 
 void Task::notifyProgress(int progress)
 {
-	if(this->progress!=progress) {
-		this->progress = progress;
-		if(listener)
-			listener->NotifyProgress(this);
-	}
+	pthread_mutex_lock(&taskMutex);
+	pthread_cond_wait(&taskCond, &taskMutex);
+	thProgress = progress;
+	pthread_mutex_unlock(&taskMutex);
 }
 
 void Task::notifyStatus(std::string status)
 {
-	if(this->status!=status) {
-		this->status = status;
-		if(listener)
-			listener->NotifyStatus(this);
-	}
+	pthread_mutex_lock(&taskMutex);
+	pthread_cond_wait(&taskCond, &taskMutex);
+	thStatus = status;
+	pthread_mutex_unlock(&taskMutex);
 }
 
 void Task::notifyDone()
 {
-	if(listener)
-	{
-		done = true; listener->NotifyDone(this);
-	}
+	pthread_mutex_lock(&taskMutex);
+	pthread_cond_wait(&taskCond, &taskMutex);
+	thDone = true;
+	pthread_mutex_unlock(&taskMutex);
 }

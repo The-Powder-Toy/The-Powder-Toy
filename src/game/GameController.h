@@ -42,6 +42,7 @@ private:
 	OptionsController * options;
 	CommandInterface * commandInterface;
 public:
+	bool HasDone;
 	class LoginCallback;
 	class SearchCallback;
 	class RenderCallback;
@@ -60,6 +61,7 @@ public:
 	bool KeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	bool KeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	void Tick();
+	void Exit();
 
 	void SetZoomEnabled(bool zoomEnable);
 	void SetZoomPosition(ui::Point position);
@@ -107,6 +109,7 @@ public:
 	void RemoveNotification(Notification * notification);
 
 	virtual void NotifyUpdateAvailable(Client * sender);
+	void RunUpdater();
 };
 
 #endif // GAMECONTROLLER_H
