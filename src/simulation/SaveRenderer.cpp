@@ -52,7 +52,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 	return tempThumb;
 #else
 	VideoBuffer buffer(64, 64);
-	buffer.SetCharacter(32, 32, 'x', 255, 255, 255, 255);
+	buffer.BlendCharacter(32, 32, 'X', 255, 255, 255, 255);
 	Thumbnail * thumb = new Thumbnail(0, 0, buffer.Buffer, ui::Point(64, 64));
 	return thumb;
 #endif
