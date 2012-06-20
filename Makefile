@@ -18,6 +18,7 @@ powder.exe: build/powder.exe
 powder-release: build/powder-release
 powder-opengl-release: build/powder-opengl-release
 powder: build/powder
+powder-opengl: build/powder-opengl
 powder-x: build/powder-x
 powder-x.jnilib: build/powder-x.jnilib
 
@@ -31,6 +32,8 @@ build/powder-opengl-release: CFLAGS +=  -DLIN32 -O3 -ftree-vectorize -msse3 -fun
 build/powder-opengl-release: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f -lGL -lGLEW -DOGLR -DPIX32OGL -DPIXALPHA
 build/powder: CFLAGS +=  -DLIN32
 build/powder: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f 
+build/powder-opengl: CFLAGS +=  -DLIN32 -DOGLR -DPIX32OGL -DPIXALPHA
+build/powder-opengl: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f  -lGL -lGLEW
 #build/powder-x: CFLAGS += -DMACOSX -I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/Lua.framework/Headers -I/Library/Frameworks/OpenGL.framework/Headers -DOGLR -DPIX32OGL -DPIXALPHA
 #build/powder-x: LFLAGS := -lm -lbz2 -lfftw3f -framework SDL -framework Lua -framework Cocoa -framework OpenGL
 build/powder-x: CFLAGS += -DMACOSX -I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/Lua.framework/Headers -DPIX32BGRA
@@ -62,12 +65,16 @@ buildpaths-powder.exe:
 
 build/powder: buildpaths-powder generate $(patsubst build/obj/%.o,build/obj/powder/%.o,$(OBJS))
 	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder/%.o,$(OBJS)) $(LFLAGS) -o $@ -ggdb
+build/powder-opengl: buildpaths-powder generate $(patsubst build/obj/%.o,build/obj/powder-opengl/%.o,$(OBJS))
+	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder-opengl/%.o,$(OBJS)) $(LFLAGS) -o $@ -ggdb
 build/obj/powder/%.o: src/%.cpp $(HEADERS)
 	$(CPPC) -c $(CFLAGS) $(OFLAGS) -o $@ $< -ggdb
 buildpaths-powder:
 	$(shell mkdir -p build/obj/powder/)
 	$(shell mkdir -p $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder/%.o,$(OBJS)))))
-
+buildpaths-powder-opengl:
+	$(shell mkdir -p build/obj/powder-opengl/)
+	$(shell mkdir -p $(sort $(dir $(patsubst build/obj/%.o,build/obj/powder-opengl/%.o,$(OBJS)))))
 build/powder-x: buildpaths-powder-x generate $(patsubst build/obj/%.o,build/obj/powder-x/%.o,$(OBJS))
 	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder-x/%.o,$(OBJS)) SDLmain.m $(LFLAGS) -o $@ -ggdb
 build/obj/powder-x/%.o: src/%.cpp $(HEADERS)
