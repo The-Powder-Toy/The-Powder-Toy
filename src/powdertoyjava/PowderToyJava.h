@@ -1,5 +1,4 @@
-//#include </System/Library/Frameworks/JavaVM.framework/Headers/jni.h>
-#include </System/Library/Frameworks/JavaVM.framework/Headers/jni.h>
+#include <jni.h>
 
 #ifndef POWDERTOYJAVA
 #define POWDERTOYJAVA

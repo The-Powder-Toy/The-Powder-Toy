@@ -10,6 +10,7 @@
 #include "GameView.h"
 #include "Brush.h"
 #include "client/User.h"
+#include "Notification.h"
 
 #include "Tool.h"
 #include "Menu.h"
@@ -32,6 +33,7 @@ public:
 class GameModel
 {
 private:
+	vector<Notification*> notifications;
 	//int clipboardSize;
 	//unsigned char * clipboardData;
 	GameSave * stamp;
@@ -67,6 +69,7 @@ private:
 	void notifyPlaceSaveChanged();
 	void notifyColourSelectorColourChanged();
 	void notifyColourSelectorVisibilityChanged();
+	void notifyNotificationsChanged();
 	void notifyLogChanged(string entry);
 public:
 	GameModel();
@@ -120,6 +123,10 @@ public:
 	GameSave * GetClipboard();
 	GameSave * GetStamp();
 	GameSave * GetPlaceSave();
+
+	std::vector<Notification*> GetNotifications();
+	void AddNotification(Notification * notification);
+	void RemoveNotification(Notification * notification);
 };
 
 #endif // GAMEMODEL_H

@@ -17,7 +17,7 @@ public:
 	EllipseBrush(ui::Point size_):
 		Brush(size_)
 	{
-
+		SetRadius(size_);
 	};
 	virtual void GenerateBitmap()
 	{

@@ -12,6 +12,7 @@
 #include "dialogues/ErrorMessage.h"
 #include "GameModelException.h"
 #include "simulation/Air.h"
+#include "Notification.h"
 
 using namespace std;
 
@@ -132,6 +133,7 @@ GameController::GameController():
 	//commandInterface->AttachGameModel(gameModel);
 
 	//sim = new Simulation();
+	Client::Ref().AddListener(this);
 }
 
 GameController::~GameController()
@@ -622,5 +624,28 @@ std::string GameController::ElementResolve(int type)
 		return std::string(gameModel->GetSimulation()->elements[type].Name);
 	else
 		return "";
+}
+
+void GameController::NotifyUpdateAvailable(Client * sender)
+{
+	class UpdateNotification : public Notification
+	{
+		GameController * c;
+	public:
+		UpdateNotification(GameController * c, std::string message) : c(c), Notification(message) {}
+		virtual ~UpdateNotification() {}
+
+		virtual void Action()
+		{
+			c->RemoveNotification(this);
+		}
+	};
+
+	gameModel->AddNotification(new UpdateNotification(this, "An Update is available"));
+}
+
+void GameController::RemoveNotification(Notification * notification)
+{
+	gameModel->RemoveNotification(notification);
 }
 

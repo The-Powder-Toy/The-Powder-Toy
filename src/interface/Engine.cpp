@@ -21,7 +21,8 @@ Engine::Engine():
 	windows(stack<Window*>()),
 	lastBuffer(NULL),
 	prevBuffers(stack<pixel*>()),
-	windowTargetPosition(0, 0)
+	windowTargetPosition(0, 0),
+	FrameIndex(0)
 {
 }
 
@@ -185,6 +186,8 @@ void Engine::Draw()
 	sprintf(fpsText, "FPS: %.2f, Delta: %.3f", fps, dt);
 	ui::Engine::Ref().g->drawtext(10, 10, fpsText, 255, 255, 255, 255);
 	g->Finalise();
+	FrameIndex++;
+	FrameIndex %= 7200;
 }
 
 void Engine::SetFps(float fps)

@@ -129,6 +129,7 @@ return surface;
 int main(int argc, char * argv[])
 {
 	int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
+	unsigned int lastTick = 0;
 	float fps = 0, delta = 1.0f;
 
 	sdl_scrn = SDLOpen();
@@ -192,6 +193,13 @@ int main(int argc, char * argv[])
 		engine->Tick();
 		engine->Draw();
 		
+		if(SDL_GetTicks()-lastTick>1000)
+		{
+			//Run client tick every second
+			lastTick = SDL_GetTicks();
+			Client::Ref().Tick();
+		}
+
 #ifdef OGLR
 		blit();
 #else

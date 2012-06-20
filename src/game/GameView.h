@@ -43,6 +43,7 @@ private:
 	//UI Elements
 	vector<ui::Button*> menuButtons;
 	vector<ToolButton*> toolButtons;
+	vector<ui::Component*> notificationComponents;
 	deque<string> logEntries;
 	float lastLogEntry;
 	ui::Button * searchButton;
@@ -99,6 +100,7 @@ public:
 	void NotifyColourSelectorVisibilityChanged(GameModel * sender);
 	void NotifyColourSelectorColourChanged(GameModel * sender);
 	void NotifyPlaceSaveChanged(GameModel * sender);
+	void NotifyNotificationsChanged(GameModel * sender);
 	void NotifyLogChanged(GameModel * sender, string entry);
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);

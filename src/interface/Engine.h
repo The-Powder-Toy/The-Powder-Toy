@@ -54,6 +54,8 @@ namespace ui
 		inline Window* GetWindow() { return state_; }
 		float FpsLimit;
 		Graphics * g;
+
+		unsigned int FrameIndex;
 	private:
 		float dt;
 		float fps;

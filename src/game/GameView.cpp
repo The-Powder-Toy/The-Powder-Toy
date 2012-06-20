@@ -846,6 +846,58 @@ void GameView::DoDraw()
 	c->Tick();
 }
 
+void GameView::NotifyNotificationsChanged(GameModel * sender)
+{
+    class NotificationButtonAction : public ui::ButtonAction
+    {
+        GameView * v;
+        Notification * notification;
+    public:
+        NotificationButtonAction(GameView * v, Notification * notification) : v(v), notification(notification) { }
+        void ActionCallback(ui::Button * sender)
+        {
+        	notification->Action();
+            //v->c->RemoveNotification(notification);
+        }
+    };
+    class CloseNotificationButtonAction : public ui::ButtonAction
+    {
+        GameView * v;
+        Notification * notification;
+    public:
+        CloseNotificationButtonAction(GameView * v, Notification * notification) : v(v), notification(notification) { }
+        void ActionCallback(ui::Button * sender)
+        {
+            v->c->RemoveNotification(notification);
+        }
+    };
+
+	for(std::vector<ui::Component*>::iterator iter = notificationComponents.begin(); iter != notificationComponents.end(); ++iter) {
+		RemoveComponent(*iter);
+		delete *iter;
+	}
+	notificationComponents.clear();
+
+	std::vector<Notification*> notifications = sender->GetNotifications();
+
+	int currentY = YRES-17;
+	for(std::vector<Notification*>::iterator iter = notifications.begin(); iter != notifications.end(); ++iter)
+	{
+		int width = (Graphics::textwidth((*iter)->Message.c_str()))+8;
+		ui::Button * tempButton = new ui::Button(ui::Point(XRES-width-22, currentY), ui::Point(width, 15), (*iter)->Message);
+		tempButton->SetActionCallback(new NotificationButtonAction(this, *iter));
+		AddComponent(tempButton);
+		notificationComponents.push_back(tempButton);
+
+		tempButton = new ui::Button(ui::Point(XRES-20, currentY), ui::Point(15, 15));
+		tempButton->SetIcon(IconDelete);
+		tempButton->SetActionCallback(new CloseNotificationButtonAction(this, *iter));
+		AddComponent(tempButton);
+		notificationComponents.push_back(tempButton);
+
+		currentY -= 17;
+	}
+}
 
 void GameView::NotifyZoomChanged(GameModel * sender)
 {

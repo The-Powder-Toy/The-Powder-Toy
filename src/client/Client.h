@@ -27,8 +27,13 @@ enum RequestStatus {
 	RequestOkay, RequestFailure
 };
 
+class ClientListener;
 class Client: public Singleton<Client> {
 private:
+	void * versionCheckRequest;
+	bool updateAvailable;
+
+
 	std::string lastError;
 
 	list<string> stampIDs;
@@ -46,12 +51,18 @@ private:
 	int activeThumbRequestCompleteTimes[IMGCONNS];
 	std::string activeThumbRequestIDs[IMGCONNS];
 	void updateStamps();
+
+	void notifyUpdateAvailable();
 public:
+	vector<ClientListener*> listeners;
+
 	//Config file handle
 	json::Object configDocument;
 
 	Client();
 	~Client();
+
+	void AddListener(ClientListener * listener);
 
 	RequestStatus ExecVote(int saveID, int direction);
 	RequestStatus UploadSave(SaveInfo * save);
@@ -82,6 +93,7 @@ public:
 	std::string GetLastError() {
 		return lastError;
 	}
+	void Tick();
 };
 
 #endif // CLIENT_H

@@ -1,4 +1,4 @@
-#if defined(USE_JNI) && defined(MACOSX)
+#if defined(USE_JNI)
 
 #include <time.h>
 #include <iostream>
@@ -8,9 +8,6 @@
 #include "Config.h"
 #include "PowderToyJava.h"
 #include "Graphics.h"
-#if defined(LIN32) || defined(LIN64)
-#include "icon.h"
-#endif
 
 #include "game/GameController.h"
 
@@ -24,8 +21,6 @@ float fps = 0, delta = 1.0f;
 
 JNIEXPORT void JNICALL Java_PowderToy_initialise(JNIEnv * env, jobject canvas)
 {	
-	//InitWindowMac(env, canvas);
-	
 	ui::Engine::Ref().g = new Graphics();
 	
 	engine = &ui::Engine::Ref();

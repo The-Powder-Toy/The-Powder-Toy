@@ -24,8 +24,11 @@
 
 #include "client/SaveInfo.h"
 
+#include "ClientListener.h"
+
 Client::Client():
-	authUser(0, "")
+	authUser(0, ""),
+	updateAvailable(false)
 {
 	int i = 0;
 	std::string proxyString("");
@@ -108,6 +111,87 @@ Client::Client():
 		stampIDs.push_back(data);
 	}
 	stampsLib.close();
+
+	//Begin version check
+	versionCheckRequest = http_async_req_start(NULL, SERVER "/Version.json", NULL, 0, 1);
+}
+
+void Client::Tick()
+{
+	//Check status on version check request
+	if(versionCheckRequest && http_async_req_status(versionCheckRequest))
+	{
+		int status;
+		int dataLength;
+		char * data = http_async_req_stop(versionCheckRequest, &status, &dataLength);
+		versionCheckRequest = NULL;
+
+		notifyUpdateAvailable();
+		if(status != 200)
+		{
+			if(data)
+				free(data);
+		}
+		else
+		{
+			std::istringstream dataStream(data);
+
+			try
+			{
+				json::Object objDocument;
+				json::Reader::Read(objDocument, dataStream);
+
+				json::Object stableVersion = objDocument["Stable"];
+				json::Object betaVersion = objDocument["Beta"];
+
+				json::Number stableMajor = stableVersion["Major"];
+				json::Number stableMinor = stableVersion["Minor"];
+				json::Number stableBuild = stableVersion["Build"];
+
+				json::Number betaMajor = betaVersion["Major"];
+				json::Number betaMinor = betaVersion["Minor"];
+				json::Number betaBuild = betaVersion["Build"];
+
+#ifdef BETA
+				if(	(betaMajor.Value()>SAVE_VERSION || (betaMinor.Value()>MINOR_VERSION && betaMajor.Value()==SAVE_VERSION) || betaBuild.Value()>BUILD_NUM) ||
+					(stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM))
+				{
+					updateAvailable = true;
+				}
+#else
+				if(stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM)
+				{
+					updateAvailable = true;
+				}
+#endif
+
+				if(updateAvailable)
+				{
+					notifyUpdateAvailable();
+				}
+			}
+			catch (json::Exception &e)
+			{
+				//Do nothing
+			}
+
+			if(data)
+				free(data);
+		}
+	}
+}
+
+void Client::notifyUpdateAvailable()
+{
+	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	{
+		(*iterator)->NotifyUpdateAvailable(this);
+	}
+}
+
+void Client::AddListener(ClientListener * listener)
+{
+	listeners.push_back(listener);
 }
 
 Client::~Client()

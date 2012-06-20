@@ -16,15 +16,17 @@
 //#include "cat/TPTScriptInterface.h"
 #include "cat/LuaScriptInterface.h"
 #include "options/OptionsController.h"
+#include "client/ClientListener.h"
 #include "Menu.h"
 
 using namespace std;
 
+class Notification;
 class GameModel;
 class GameView;
 class CommandInterface;
 class ConsoleController;
-class GameController
+class GameController: public ClientListener
 {
 private:
 	//Simulation * sim;
@@ -101,6 +103,10 @@ public:
 
 	void LoadClipboard();
 	void LoadStamp();
+
+	void RemoveNotification(Notification * notification);
+
+	virtual void NotifyUpdateAvailable(Client * sender);
 };
 
 #endif // GAMECONTROLLER_H

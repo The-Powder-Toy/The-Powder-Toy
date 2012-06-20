@@ -513,6 +513,39 @@ deque<string> GameModel::GetLog()
 	return consoleLog;
 }
 
+std::vector<Notification*> GameModel::GetNotifications()
+{
+	return notifications;
+}
+
+void GameModel::AddNotification(Notification * notification)
+{
+	notifications.push_back(notification);
+	notifyNotificationsChanged();
+}
+
+void GameModel::RemoveNotification(Notification * notification)
+{
+	for(std::vector<Notification*>::iterator iter = notifications.begin(); iter != notifications.end(); ++iter)
+	{
+		if(*iter == notification)
+		{
+			notifications.erase(iter);
+			delete *iter;
+			break;
+		}
+	}
+	notifyNotificationsChanged();
+}
+
+void GameModel::notifyNotificationsChanged()
+{
+	for(std::vector<GameView*>::iterator iter = observers.begin(); iter != observers.end(); ++iter)
+	{
+		(*iter)->NotifyNotificationsChanged(this);
+	}
+}
+
 void GameModel::notifyColourSelectorColourChanged()
 {
 	for(int i = 0; i < observers.size(); i++)
