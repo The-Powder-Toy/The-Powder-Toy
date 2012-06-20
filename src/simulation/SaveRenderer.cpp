@@ -19,10 +19,7 @@ SaveRenderer::SaveRenderer(){
 
 Thumbnail * SaveRenderer::Render(GameSave * save)
 {
-#ifndef OGLR
-	Thumbnail * tempThumb = NULL;
 	int width, height;
-
 #ifdef OGLR
 	width = save->blockWidth*CELL;
 	height = save->blockHeight*CELL;
@@ -43,6 +40,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 	
 	g->Clear();
 	sim->clear_sim();
+	
 	if(!sim->Load(save))
 	{
 		ren->render_parts();
@@ -55,17 +53,11 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 			dst+=(width*CELL);///PIXELSIZE;
 			src+=XRES+BARSIZE;
 		}
-	
 		tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
 	}
 	if(pData)
 		free(pData);
 	return tempThumb;
-#else
-	VideoBuffer buffer(64, 64);
-	buffer.BlendCharacter(32, 32, 'X', 255, 255, 255, 255);
-	Thumbnail * thumb = new Thumbnail(0, 0, buffer.Buffer, ui::Point(64, 64));
-	return thumb;
 #endif
 }
 

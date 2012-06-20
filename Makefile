@@ -16,6 +16,7 @@ all: build/powder
 powder-release.exe: build/powder-release.exe
 powder.exe: build/powder.exe
 powder-release: build/powder-release
+powder-opengl-release: build/powder-opengl-release
 powder: build/powder
 powder-x: build/powder-x
 powder-x.jnilib: build/powder-x.jnilib
@@ -26,6 +27,8 @@ build/powder.exe: CFLAGS += -DWIN32
 build/powder.exe: LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 -llua -lfftw3f-3 #-mwindows
 build/powder-release: CFLAGS +=  -DLIN32 -O3 -ftree-vectorize -msse3 -funsafe-math-optimizations -ffast-math -fomit-frame-pointer -funsafe-loop-optimizations -Wunsafe-loop-optimizations
 build/powder-release: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f
+build/powder-opengl-release: CFLAGS +=  -DLIN32 -O3 -ftree-vectorize -msse3 -funsafe-math-optimizations -ffast-math -fomit-frame-pointer -funsafe-loop-optimizations -Wunsafe-loop-optimizations -DOGLR -DPIX32OGL -DPIXALPHA
+build/powder-opengl-release: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f -lGL -lGLEW -DOGLR -DPIX32OGL -DPIXALPHA
 build/powder: CFLAGS +=  -DLIN32
 build/powder: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f 
 #build/powder-x: CFLAGS += -DMACOSX -I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/Lua.framework/Headers -I/Library/Frameworks/OpenGL.framework/Headers -DOGLR -DPIX32OGL -DPIXALPHA
@@ -44,6 +47,9 @@ build/powder-res.o: resources/powder-res.rc resources/powder.ico resources/docum
 	cd resources && $(WIN_RES) powder-res.rc powder-res.o
 	mv resources/powder-res.o build/powder-res.o
 build/powder-release: $(SOURCES)
+	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(SOURCES) $(LFLAGS) -o $@
+	strip $@
+build/powder-opengl-release: $(SOURCES)
 	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(SOURCES) $(LFLAGS) -o $@
 	strip $@
 build/powder.exe: buildpaths-powder.exe generate $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS)) build/powder-res.o
