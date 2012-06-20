@@ -39,7 +39,6 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 		dst = pData;
 		for(int i = 0; i < height*CELL; i++)
 		{
-			printf("%d\n",i);
 			memcpy(dst, src, (width*CELL)*PIXELSIZE);
 			dst+=(width*CELL);///PIXELSIZE;
 			src+=XRES+BARSIZE;
