@@ -34,25 +34,31 @@ int update_ELEC(UPDATE_FUNC_ARGS) {
 					continue;
 				if ((r&0xFF)==PT_GLAS)
 				{
-					fire_r[y/CELL][x/CELL] += rand()%200;	//D: Doesn't work with OpenGL, also shouldn't be here
-					fire_g[y/CELL][x/CELL] += rand()%200;
-					fire_b[y/CELL][x/CELL] += rand()%200;
 					for (rrx=-1; rrx<=1; rrx++)
 					{
 						for (rry=-1; rry<=1; rry++)
 						{
 							if (x+rx+rrx>=0 && y+ry+rry>=0 && x+rx+rrx<XRES && y+ry+rry<YRES) {
-								nb = create_part(-1, x+rx+rrx, y+ry+rry, PT_BOMB);
+								nb = create_part(-1, x+rx+rrx, y+ry+rry, PT_EMBR);
 								if (nb!=-1) {
-									parts[nb].tmp = 1;
+									parts[nb].tmp = 0;
 									parts[nb].life = 50;
-									parts[nb].temp = 400.0f;
+									parts[nb].temp = parts[i].temp*0.8f;
 									parts[nb].vx = rand()%20-10;
 									parts[nb].vy = rand()%20-10;
 								}
 							}
 						}
 					}
+					fire_r[y/CELL][x/CELL] += rand()%200;   //D: Doesn't work with OpenGL, also shouldn't be here
+					fire_g[y/CELL][x/CELL] += rand()%200;
+					fire_b[y/CELL][x/CELL] += rand()%200;
+					/* possible alternative, but doesn't work well at the moment because FIRE_ADD divides firea by 8, so the glow isn't strong enough
+					create_part(i, x, y, PT_EMBR);
+					parts[i].tmp = 2;
+					parts[i].life = 2;
+					parts[i].ctype = ((rand()%200)<<16) | ((rand()%200)<<8) | (rand()%200);
+					*/
 					kill_part(i);
 					return 1;
 				}

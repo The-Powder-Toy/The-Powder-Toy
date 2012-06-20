@@ -22,6 +22,7 @@
 #include "save.h"
 #include "gravity.h"
 #include "BSON.h"
+#include "hmap.h"
 
 //Pop
 pixel *prerender_save(void *save, int size, int *width, int *height)
@@ -854,6 +855,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 	int i, freeIndicesCount, x, y, returnCode = 0, j;
 	int *freeIndices = NULL;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
+	int saved_version = inputData[4];
 	bson b;
 	bson_iterator iter;
 
@@ -870,7 +872,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 	fullH = blockH*CELL;
 	
 	//From newer version
-	if(inputData[4] > SAVE_VERSION)
+	if(saved_version > SAVE_VERSION)
 	{
 		fprintf(stderr, "Save from newer version\n");
 		return 2;
@@ -1386,6 +1388,31 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 					}
 					if (!ptypes[partsptr[newIndex].type].enabled)
 						partsptr[newIndex].type = PT_NONE;
+					
+					
+					if (saved_version<81)
+					{
+						if (partsptr[newIndex].type==PT_BOMB && partsptr[newIndex].tmp!=0)
+						{
+							partsptr[newIndex].type = PT_EMBR;
+							partsptr[newIndex].ctype = 0;
+							if (partsptr[newIndex].tmp==1)
+								partsptr[newIndex].tmp = 0;
+						}
+						if (partsptr[newIndex].type==PT_DUST && partsptr[newIndex].life>0)
+						{
+							partsptr[newIndex].type = PT_EMBR;
+							partsptr[newIndex].ctype = (partsptr[newIndex].tmp2<<16) | (partsptr[newIndex].tmp<<8) | partsptr[newIndex].ctype;
+							partsptr[newIndex].tmp = 1;
+						}
+						if (partsptr[newIndex].type==PT_FIRW && partsptr[newIndex].tmp>=2)
+						{
+							int caddress = restrict_flt(restrict_flt((float)(partsptr[newIndex].tmp-4), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+							partsptr[newIndex].type = PT_EMBR;
+							partsptr[newIndex].tmp = 1;
+							partsptr[newIndex].ctype = (((unsigned char)(firw_data[caddress]))<<16) | (((unsigned char)(firw_data[caddress+1]))<<8) | ((unsigned char)(firw_data[caddress+2]));
+						}
+					}
 				}
 			}
 		}
@@ -2116,6 +2143,30 @@ int parse_save_PSv(void *save, int size, int replace, int x0, int y0, unsigned c
 			}
 			if (!ptypes[parts[i-1].type].enabled)
 				parts[i-1].type = PT_NONE;
+			
+			if (ver<81)
+			{
+				if (parts[i-1].type==PT_BOMB && parts[i-1].tmp!=0)
+				{
+					parts[i-1].type = PT_EMBR;
+					parts[i-1].ctype = 0;
+					if (parts[i-1].tmp==1)
+						parts[i-1].tmp = 0;
+				}
+				if (parts[i-1].type==PT_DUST && parts[i-1].life>0)
+				{
+					parts[i-1].type = PT_EMBR;
+					parts[i-1].ctype = (parts[i-1].tmp2<<16) | (parts[i-1].tmp<<8) | parts[i-1].ctype;
+					parts[i-1].tmp = 1;
+				}
+				if (parts[i-1].type==PT_FIRW && parts[i-1].tmp>=2)
+				{
+					int caddress = restrict_flt(restrict_flt((float)(parts[i-1].tmp-4), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+					parts[i-1].type = PT_EMBR;
+					parts[i-1].tmp = 1;
+					parts[i-1].ctype = (((unsigned char)(firw_data[caddress]))<<16) | (((unsigned char)(firw_data[caddress+1]))<<8) | ((unsigned char)(firw_data[caddress+2]));
+				}
+			}
 		}
 	}
 

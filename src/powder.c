@@ -184,6 +184,7 @@ void init_can_move()
 	can_move[PT_ANAR][PT_WHOL] = 1;
 	can_move[PT_ANAR][PT_NWHL] = 1;
 	can_move[PT_THDR][PT_THDR] = 2;
+	can_move[PT_EMBR][PT_EMBR] = 2;
 }
 
 /*
@@ -253,9 +254,6 @@ int try_move(int i, int x, int y, int nx, int ny)
 		return 1;
 
 	e = eval_move(parts[i].type, nx, ny, &r);
-
-	if ((r&0xFF)==PT_BOMB && parts[i].type==PT_BOMB && parts[i].tmp == 1)
-		e = 2;
 
 	/* half-silvered mirror */
 	if (!e && parts[i].type==PT_PHOT &&
@@ -1032,6 +1030,9 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 		case PT_EXOT:
 			parts[i].life = 1000;
 			parts[i].tmp = 244;
+			break;
+		case PT_EMBR:
+			parts[i].life = 50;
 			break;
 		case PT_STKM:
 			if (player.spwn==0)
@@ -2870,7 +2871,7 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 						pmap[y][x] = t|(i<<8);
 					// Count number of particles at each location, for excess stacking check
 					// (does not include energy particles or THDR - currently no limit on stacking those)
-					if (t!=PT_THDR)
+					if (t!=PT_THDR && t!=PT_EMBR)
 						pmap_count[y][x]++;
 				}
 			}

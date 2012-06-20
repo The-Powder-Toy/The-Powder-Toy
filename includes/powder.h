@@ -223,6 +223,7 @@
 #define PT_EXOT	145
 
 #define OLD_PT_WIND 147
+#define PT_EMBR 147
 #define PT_H2   148
 #define PT_SOAP 149
 #define PT_NBHL 150
@@ -310,7 +311,6 @@ int graphics_CLST(GRAPHICS_FUNC_ARGS);
 int graphics_CBNW(GRAPHICS_FUNC_ARGS);
 int graphics_SPNG(GRAPHICS_FUNC_ARGS);
 int graphics_LIFE(GRAPHICS_FUNC_ARGS);
-int graphics_DUST(GRAPHICS_FUNC_ARGS);
 int graphics_GRAV(GRAPHICS_FUNC_ARGS);
 int graphics_WIFI(GRAPHICS_FUNC_ARGS);
 int graphics_PRTI(GRAPHICS_FUNC_ARGS);
@@ -354,6 +354,7 @@ int graphics_SOAP(GRAPHICS_FUNC_ARGS);
 int graphics_EXOT(GRAPHICS_FUNC_ARGS);
 int graphics_WARP(GRAPHICS_FUNC_ARGS);
 int graphics_stickmen(GRAPHICS_FUNC_ARGS);
+int graphics_EMBR(GRAPHICS_FUNC_ARGS);
 
 void TRON_init_graphics();
 
@@ -389,6 +390,7 @@ int update_CLNE(UPDATE_FUNC_ARGS);
 int update_COAL(UPDATE_FUNC_ARGS);
 int update_DEUT(UPDATE_FUNC_ARGS);
 int update_DSTW(UPDATE_FUNC_ARGS);
+int update_EMBR(UPDATE_FUNC_ARGS);
 int update_FOG(UPDATE_FUNC_ARGS);
 int update_FRZW(UPDATE_FUNC_ARGS);
 int update_FRZZ(UPDATE_FUNC_ARGS);
