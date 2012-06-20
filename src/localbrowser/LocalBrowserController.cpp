@@ -134,7 +134,7 @@ LocalBrowserController::~LocalBrowserController() {
 		ui::Engine::Ref().CloseWindow();
 	if(callback)
 		delete callback;
-	delete localBrowserModel;
-	delete localBrowserView;
+	delete browserModel;
+	delete browserView;
 }
 
