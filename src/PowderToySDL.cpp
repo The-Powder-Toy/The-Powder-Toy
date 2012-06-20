@@ -114,7 +114,7 @@ SDL_Surface * SDLOpen()
 	surface = SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_OPENGL);
 #endif
 
-#if defined(WIN32) && defined(OGLR)
+#if defined(OGLR)
 	int status = glewInit();
 	if(status != GLEW_OK)
 	{

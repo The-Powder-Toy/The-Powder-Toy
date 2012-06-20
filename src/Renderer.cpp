@@ -4,7 +4,6 @@
  *  Created on: Jan 7, 2012
  *      Author: Simon
  */
-
 #include <cmath>
 #include <iostream>
 #include <vector>

@@ -19,6 +19,7 @@ SaveRenderer::SaveRenderer(){
 
 Thumbnail * SaveRenderer::Render(GameSave * save)
 {
+#ifndef OGLR
 	Thumbnail * tempThumb = NULL;
 	int width, height;
 	width = save->blockWidth;
@@ -30,26 +31,31 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 	
 	g->Clear();
 	sim->clear_sim();
-	if(sim->Load(save))
-		goto finish;
-	
-	ren->render_parts();
-	
-	dst = pData = (pixel *)malloc(PIXELSIZE * ((width*CELL)*(height*CELL)));
-	
-	for(int i = 0; i < height*CELL; i++)
+	if(!sim->Load(save))
 	{
-		memcpy(dst, src, (width*CELL)*PIXELSIZE);
-		dst+=(width*CELL);///PIXELSIZE;
-		src+=XRES+BARSIZE;
+		ren->render_parts();
+	
+		pData = (pixel *)malloc(PIXELSIZE * ((width*CELL)*(height*CELL)));
+		dst = pData;
+		for(int i = 0; i < height*CELL; i++)
+		{
+			printf("%d\n",i);
+			memcpy(dst, src, (width*CELL)*PIXELSIZE);
+			dst+=(width*CELL);///PIXELSIZE;
+			src+=XRES+BARSIZE;
+		}
+	
+		tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
 	}
-	
-	tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
-	
-finish:
 	if(pData)
 		free(pData);
 	return tempThumb;
+#else
+	VideoBuffer buffer(64, 64);
+	buffer.SetCharacter(32, 32, 'x', 255, 255, 255, 255);
+	Thumbnail * thumb = new Thumbnail(0, 0, buffer.Buffer, ui::Point(64, 64));
+	return thumb;
+#endif
 }
 
 Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize)
