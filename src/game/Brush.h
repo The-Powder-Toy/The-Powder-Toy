@@ -25,8 +25,8 @@ protected:
 		if(!bitmap)
 			return;
 		if(outline)
-			free(outline);
-		outline = (unsigned char *)calloc(size.X*size.Y, sizeof(unsigned char));
+			delete[] outline;
+		outline = new unsigned char[size.X*size.Y];
 		for(int x = 0; x < size.X; x++)
 		{
 			for(int y = 0; y < size.Y; y++)
@@ -69,9 +69,9 @@ public:
 	}
 	virtual ~Brush() {
 		if(bitmap)
-			delete bitmap;
+			delete[] bitmap;
 		if(outline)
-			delete outline;
+			delete[] outline;
 	}
 	virtual void RenderRect(Graphics * g, ui::Point position1, ui::Point position2)
 	{
@@ -109,8 +109,8 @@ public:
 	virtual void GenerateBitmap()
 	{
 		if(bitmap)
-			free(bitmap);
-		bitmap = (unsigned char *)calloc((size.X*size.Y), sizeof(unsigned char));
+			delete[] bitmap;
+		bitmap = new unsigned char[size.X*size.Y];
 		for(int x = 0; x < size.X; x++)
 		{
 			for(int y = 0; y < size.Y; y++)

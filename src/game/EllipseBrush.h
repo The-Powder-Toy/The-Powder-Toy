@@ -22,8 +22,8 @@ public:
 	virtual void GenerateBitmap()
 	{
 		if(bitmap)
-			free(bitmap);
-		bitmap = (unsigned char*)calloc((size.X*size.Y), sizeof(unsigned char));
+			delete[] bitmap;
+		bitmap = new unsigned char[size.X*size.Y];
 		int rx = radius.X;
 		int ry = radius.Y;
 		for(int x = 0; x <= radius.X*2; x++)

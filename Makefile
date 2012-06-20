@@ -35,7 +35,7 @@ build/powder-x: LFLAGS := -lm -lbz2 -lfftw3f -framework SDL -framework Lua -fram
 build/powder-x.jnilib: CFLAGS += -DMACOSX -DUSE_JNI -I/Library/Frameworks/Lua.framework/Headers -I/System/Library/Frameworks/JavaVM.framework/Headers -DOGLR -DPIX32OGL -DPIXALPHA
 build/powder-x.jnilib: LFLAGS := -lm -lbz2 -lfftw3f -framework Lua -framework JavaVM -framework Cocoa -framework OpenGL
 
-CFLAGS += -DGRAVFFT -DLUACONSOLE
+CFLAGS += -DGRAVFFT -DLUACONSOLE -DUSE_SDL
 
 build/powder-release.exe: $(SOURCES) generate build/powder-res.o
 	$(CPPC_WIN) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(SOURCES) $(LFLAGS) build/powder-res.o -o $@

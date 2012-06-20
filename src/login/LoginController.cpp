@@ -49,5 +49,6 @@ LoginController::~LoginController() {
 		ui::Engine::Ref().CloseWindow();
 	}
 	delete loginModel;
+	delete loginView;
 }
 

@@ -170,10 +170,6 @@ GameModel::~GameModel()
 
 	for(int i = 0; i < menuList.size(); i++)
 	{
-		for(int j = 0; i < menuList[i]->GetToolList().size(); i++)
-		{
-			delete menuList[i]->GetToolList()[j];
-		}
 		delete menuList[i];
 	}
 	for(int i = 0; i < brushList.size(); i++)
@@ -186,6 +182,8 @@ GameModel::~GameModel()
 		delete clipboard;
 	if(stamp)
 		delete stamp;
+	if(currentSave)
+		delete currentSave;
 	//if(activeTools)
 	//	delete[] activeTools;
 }
@@ -282,8 +280,15 @@ SaveInfo * GameModel::GetSave()
 void GameModel::SetSave(SaveInfo * newSave)
 {
 	if(currentSave != newSave)
-		delete currentSave;
-	currentSave = newSave;
+	{
+		if(currentSave)
+			delete currentSave;
+		if(newSave == NULL)
+			currentSave = NULL;
+		else
+			currentSave = new SaveInfo(*newSave);
+	}
+
 	if(currentSave && currentSave->GetGameSave())
 	{
 		GameSave * saveData = currentSave->GetGameSave();
@@ -451,12 +456,15 @@ void GameModel::ClearSimulation()
 
 void GameModel::SetStamp(GameSave * save)
 {
-	if(stamp)
-		delete stamp;
-	if(save)
-		stamp = new GameSave(*save);
-	else
-		stamp = NULL;
+	if(stamp != save)
+	{
+		if(stamp)
+			delete stamp;
+		if(save)
+			stamp = new GameSave(*save);
+		else
+			stamp = NULL;
+	}
 }
 
 void GameModel::SetPlaceSave(GameSave * save)

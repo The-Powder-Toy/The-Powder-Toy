@@ -89,6 +89,7 @@ SearchController::~SearchController()
 		ui::Engine::Ref().CloseWindow();
 	}
 	delete searchModel;
+	delete searchView;
 }
 
 void SearchController::DoSearch(std::string query)

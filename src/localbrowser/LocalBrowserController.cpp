@@ -130,6 +130,11 @@ void LocalBrowserController::Exit()
 }
 
 LocalBrowserController::~LocalBrowserController() {
-	// TODO Auto-generated destructor stub
+	if(ui::Engine::Ref().GetWindow() == browserView)
+		ui::Engine::Ref().CloseWindow();
+	if(callback)
+		delete callback;
+	delete localBrowserModel;
+	delete localBrowserView;
 }
 

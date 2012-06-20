@@ -70,6 +70,11 @@ ConsoleView * ConsoleController::GetView()
 }
 
 ConsoleController::~ConsoleController() {
-	// TODO Auto-generated destructor stub
+	if(ui::Engine::Ref().GetWindow() == consoleView)
+		ui::Engine::Ref().CloseWindow();
+	if(callback)
+		delete callback;
+	delete consoleModel;
+	delete consoleView;
 }
 

@@ -22,6 +22,8 @@ gravityMode(save.gravityMode),
 airMode(save.airMode),
 signs(save.signs)
 {
+	blockMap, blockMapPtr, fanVelX, fanVelXPtr, fanVelY, fanVelYPtr, particles = NULL;
+
 	setSize(save.blockWidth, save.blockHeight);
 
 	particlesCount = save.particlesCount;
@@ -33,6 +35,7 @@ signs(save.signs)
 
 GameSave::GameSave(int width, int height)
 {
+	blockMap, blockMapPtr, fanVelX, fanVelXPtr, fanVelY, fanVelYPtr, particles = NULL;
 	setSize(width, height);
 }
 
@@ -702,6 +705,8 @@ fin:
 	bson_destroy(&b);
 	if(freeIndices)
 		free(freeIndices);
+	if(partsSimIndex)
+		free(partsSimIndex);
 }
 
 void GameSave::readPSv(char * data, int dataLength)
@@ -1672,26 +1677,18 @@ fin:
 
 GameSave::~GameSave()
 {
-	if(blockWidth && blockHeight)
-	{
-		if(particles)
-		{
-			delete[] particles;
-		}
-		if(blockMap)
-		{
-			delete[] blockMapPtr;
-			delete[] blockMap;
-		}
-		if(fanVelX)
-		{
-			delete[] fanVelXPtr;
-			delete[] fanVelX;
-		}
-		if(fanVelY)
-		{
-			delete[] fanVelYPtr;
-			delete[] fanVelY;
-		}
-	}
+	if(particles)
+		delete[] particles;
+	if(blockMap)
+		delete[] blockMap;
+	if(blockMapPtr)
+		delete[] blockMapPtr;
+	if(fanVelX)
+		delete[] fanVelX;
+	if(fanVelXPtr)
+		delete[] fanVelXPtr;
+	if(fanVelY)
+		delete[] fanVelY;
+	if(fanVelYPtr)
+		delete[] fanVelYPtr;
 }

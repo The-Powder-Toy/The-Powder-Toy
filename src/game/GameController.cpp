@@ -39,7 +39,7 @@ public:
 		{
 			try
 			{
-				cc->gameModel->SetSave(new SaveInfo(*(cc->search->GetLoadedSave())));
+				cc->gameModel->SetSave(cc->search->GetLoadedSave());
 			}
 			catch(GameModelException & ex)
 			{
@@ -163,6 +163,7 @@ GameController::~GameController()
 		ui::Engine::Ref().CloseWindow();
 	}
 	delete gameModel;
+	delete gameView;
 }
 
 GameView * GameController::GetView()

@@ -70,5 +70,8 @@ OptionsController::~OptionsController() {
 		ui::Engine::Ref().CloseWindow();
 	}
 	delete model;
+	delete view;
+	if(callback)
+		delete callback;
 }
 
