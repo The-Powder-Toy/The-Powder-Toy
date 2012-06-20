@@ -433,6 +433,10 @@ pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 					if(fieldDescriptor & 0x400)
 					{
 						if(i++ >= partsDataLen) goto fail;
+						if(fieldDescriptor & 0x800)
+						{
+							if(i++ >= partsDataLen) goto fail;
+						}
 					}
 				}
 			}
@@ -569,7 +573,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	//Copy parts data
 	/* Field descriptor format:
 	|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|
-																					|		tmp2	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
+																	|		tmp2[2]	|		tmp2[1]	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
 	life[2] means a second byte (for a 16 bit field) if life[1] is present
 	*/
 	partsData = malloc(NPART * (sizeof(particle)+1));
@@ -686,11 +690,16 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 					partsData[partsDataLen++] = vTemp;
 				}
 
-				//Tmp2 (optional), 1 byte
+				//Tmp2 (optional), 1 or 2 bytes
 				if(partsptr[i].tmp2)
 				{
 					fieldDesc |= 1 << 10;
 					partsData[partsDataLen++] = partsptr[i].tmp2;
+					if(partsptr[i].tmp2 > 255)
+					{
+						fieldDesc |= 1 << 11;
+						partsData[partsDataLen++] = partsptr[i].tmp2 >> 8;
+					}
 				}
 				
 				//Write the field descriptor;
@@ -1345,6 +1354,12 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 					{
 						if(i >= partsDataLen) goto fail;
 						partsptr[newIndex].tmp2 = partsData[i++];
+						//Read 2nd byte
+						if(fieldDescriptor & 0x800)
+						{
+							if(i >= partsDataLen) goto fail;
+							partsptr[newIndex].tmp2 |= (((unsigned)partsData[i++]) << 8);
+						}
 					}
 					
 #ifdef OGLR
