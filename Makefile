@@ -21,13 +21,13 @@ powder-x: build/powder-x
 powder-x.jnilib: build/powder-x.jnilib
 
 build/powder-release.exe: CFLAGS += -DWIN32 -O3 -ftree-vectorize -msse2 -funsafe-math-optimizations -ffast-math -fomit-frame-pointer -funsafe-loop-optimizations -Wunsafe-loop-optimizations
-build/powder-release.exe: LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 -llua5.1 -lfftw3f-3 -mwindows
+build/powder-release.exe: LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 -llua -lfftw3f-3 -mwindows
 build/powder.exe: CFLAGS += -DWIN32
 build/powder.exe: LFLAGS := -lmingw32 -lregex -lws2_32 -lSDLmain -lpthread -lSDL -lm -lbz2 -llua -lfftw3f-3 #-mwindows
-build/powder-release: CFLAGS +=  -DLIN32 -O3 -ftree-vectorize -msse3 -funsafe-math-optimizations -ffast-math -fomit-frame-pointer -funsafe-loop-optimizations -Wunsafe-loop-optimizations -I/usr/include/SDL -I/usr/include/lua50 -DOGLR -DPIX32OGL -DPIXALPHA
-build/powder-release: LFLAGS := -lSDL -lm -lbz2 -llua5.1 -lfftw3f -lGL -lGLEW -ggdb
-build/powder: CFLAGS +=  -DLIN32 -DOGLR -DPIX32OGL -DPIXALPHA -I/usr/include/SDL -I/usr/include/lua50
-build/powder: LFLAGS := -lSDL -lm -lbz2 -llua5.1 -lfftw3f -lGL -lGLEW -ggdb
+build/powder-release: CFLAGS +=  -DLIN32 -O3 -ftree-vectorize -msse3 -funsafe-math-optimizations -ffast-math -fomit-frame-pointer -funsafe-loop-optimizations -Wunsafe-loop-optimizations
+build/powder-release: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f
+build/powder: CFLAGS +=  -DLIN32
+build/powder: LFLAGS := -lSDL -lm -lbz2 -llua -lfftw3f 
 #build/powder-x: CFLAGS += -DMACOSX -I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/Lua.framework/Headers -I/Library/Frameworks/OpenGL.framework/Headers -DOGLR -DPIX32OGL -DPIXALPHA
 #build/powder-x: LFLAGS := -lm -lbz2 -lfftw3f -framework SDL -framework Lua -framework Cocoa -framework OpenGL
 build/powder-x: CFLAGS += -DMACOSX -I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/Lua.framework/Headers -DPIX32BGRA
@@ -45,7 +45,7 @@ build/powder-res.o: resources/powder-res.rc resources/powder.ico resources/docum
 	mv resources/powder-res.o build/powder-res.o
 build/powder-release: $(SOURCES)
 	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(SOURCES) $(LFLAGS) -o $@
-
+	strip $@
 build/powder.exe: buildpaths-powder.exe generate $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS)) build/powder-res.o
 	$(CPPC_WIN) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder.exe/%.o,$(OBJS)) build/powder-res.o $(LFLAGS) -o $@ -ggdb
 build/obj/powder.exe/%.o: src/%.cpp $(HEADERS)
