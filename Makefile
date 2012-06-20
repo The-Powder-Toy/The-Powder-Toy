@@ -65,9 +65,11 @@ buildpaths-powder.exe:
 
 build/powder: buildpaths-powder generate $(patsubst build/obj/%.o,build/obj/powder/%.o,$(OBJS))
 	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder/%.o,$(OBJS)) $(LFLAGS) -o $@ -ggdb
-build/powder-opengl: buildpaths-powder generate $(patsubst build/obj/%.o,build/obj/powder-opengl/%.o,$(OBJS))
+build/powder-opengl: buildpaths-powder-opengl generate $(patsubst build/obj/%.o,build/obj/powder-opengl/%.o,$(OBJS))
 	$(CPPC) $(CFLAGS) $(OFLAGS) $(LDFLAGS) $(patsubst build/obj/%.o,build/obj/powder-opengl/%.o,$(OBJS)) $(LFLAGS) -o $@ -ggdb
 build/obj/powder/%.o: src/%.cpp $(HEADERS)
+	$(CPPC) -c $(CFLAGS) $(OFLAGS) -o $@ $< -ggdb
+build/obj/powder-opengl/%.o: src/%.cpp $(HEADERS)
 	$(CPPC) -c $(CFLAGS) $(OFLAGS) -o $@ $< -ggdb
 buildpaths-powder:
 	$(shell mkdir -p build/obj/powder/)
