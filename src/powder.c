@@ -2870,8 +2870,8 @@ void update_particles(pixel *vid)//doesn't update the particles themselves, but 
 					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
 						pmap[y][x] = t|(i<<8);
 					// Count number of particles at each location, for excess stacking check
-					// (does not include energy particles or THDR - currently no limit on stacking those)
-					if (t!=PT_THDR && t!=PT_EMBR)
+					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
+					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH)
 						pmap_count[y][x]++;
 				}
 			}
