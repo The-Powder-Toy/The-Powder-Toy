@@ -19,9 +19,7 @@ SaveRenderer::SaveRenderer(){
 
 Thumbnail * SaveRenderer::Render(GameSave * save)
 {
-	Thumbnail * tempThumb = NULL;
 	int width, height;
-
 #ifdef OGLR
 	width = save->blockWidth*CELL;
 	height = save->blockHeight*CELL;
@@ -42,23 +40,21 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 	
 	g->Clear();
 	sim->clear_sim();
-	if(sim->Load(save))
-		goto finish;
 	
-	ren->render_parts();
-	
-	dst = pData = (pixel *)malloc(PIXELSIZE * ((width*CELL)*(height*CELL)));
-	
-	for(int i = 0; i < height*CELL; i++)
+	if(!sim->Load(save))
 	{
-		memcpy(dst, src, (width*CELL)*PIXELSIZE);
-		dst+=(width*CELL);///PIXELSIZE;
-		src+=XRES+BARSIZE;
+		ren->render_parts();
+	
+		pData = (pixel *)malloc(PIXELSIZE * ((width*CELL)*(height*CELL)));
+		dst = pData;
+		for(int i = 0; i < height*CELL; i++)
+		{
+			memcpy(dst, src, (width*CELL)*PIXELSIZE);
+			dst+=(width*CELL);///PIXELSIZE;
+			src+=XRES+BARSIZE;
+		}
+		tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
 	}
-	
-	tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
-	
-finish:
 	if(pData)
 		free(pData);
 	return tempThumb;

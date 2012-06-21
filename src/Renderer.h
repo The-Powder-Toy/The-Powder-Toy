@@ -2,7 +2,7 @@
 #define RENDERER_H
 
 #include <vector>
-#if defined(OGLR)
+#ifdef OGLR
 #include "OpenGLHeaders.h"
 #endif
 
