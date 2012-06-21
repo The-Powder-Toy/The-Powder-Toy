@@ -17,6 +17,7 @@ class UpdateActivity {
 public:
 	UpdateActivity();
 	virtual ~UpdateActivity();
+	virtual void NotifyDone(Task * sender);
 };
 
 #endif /* UPDATEACTIVITY_H_ */

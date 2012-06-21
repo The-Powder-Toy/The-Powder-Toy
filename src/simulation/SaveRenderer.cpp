@@ -20,6 +20,7 @@ SaveRenderer::SaveRenderer(){
 Thumbnail * SaveRenderer::Render(GameSave * save)
 {
 	int width, height;
+	Thumbnail * tempThumb;
 #ifdef OGLR
 	width = save->blockWidth*CELL;
 	height = save->blockHeight*CELL;
@@ -27,7 +28,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 	VideoBuffer buffer(width, height);
 	buffer.BlendCharacter((width/2)-3, (height/2)-5, 'x', 255, 255, 255, 255);
 
-	Thumbnail * tempThumb = new Thumbnail(0, 0, buffer.Buffer, ui::Point(width, height));
+	tempThumb = new Thumbnail(0, 0, buffer.Buffer, ui::Point(width, height));
 
 	return tempThumb;
 #else

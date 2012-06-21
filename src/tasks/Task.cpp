@@ -10,7 +10,7 @@
 #include "Task.h"
 #include "TaskListener.h"
 
-void Task::SetTaskListener(TaskListener * listener)
+void Task::AddTaskListener(TaskListener * listener)
 {
 	this->listener = listener;
 }
@@ -37,6 +37,11 @@ std::string Task::GetStatus()
 	return status;
 }
 
+std::string Task::GetError()
+{
+	return error;
+}
+
 bool Task::GetDone()
 {
 	return done;
@@ -44,38 +49,50 @@ bool Task::GetDone()
 
 void Task::Poll()
 {
-	int newProgress;
-	bool newDone = false;
-	std::string newStatus;
-	pthread_mutex_lock(&taskMutex);
-	newProgress = thProgress;
-	newDone = thDone;
-	newStatus = std::string(thStatus);
-	pthread_mutex_unlock(&taskMutex);
-
-	if(newProgress!=progress) {
-		progress = newProgress;
-		if(listener)
-			listener->NotifyProgress(this);
-	}
-	if(newStatus!=status) {
-		status = std::string(newStatus);
-		if(listener)
-			listener->NotifyStatus(this);
-	}
-
-	if(done)
+	if(!done)
 	{
-		pthread_join(doWorkThread, NULL);
-		pthread_mutex_destroy(&taskMutex);
-		after();
-	}
+		int newProgress;
+		bool newDone = false;
+		std::string newStatus;
+		std::string newError;
+		pthread_mutex_lock(&taskMutex);
+		newProgress = thProgress;
+		newDone = thDone;
+		newStatus = std::string(thStatus);
+		newError = std::string(thError);
+		pthread_mutex_unlock(&taskMutex);
 
-	if(newDone!=done)
-	{
-		done = newDone;
-		if(listener)
-			listener->NotifyDone(this);
+		if(newProgress!=progress) {
+			progress = newProgress;
+			if(listener)
+				listener->NotifyProgress(this);
+		}
+
+		if(newError!=error) {
+			error = std::string(newError);
+			if(listener)
+				listener->NotifyError(this);
+		}
+
+		if(newStatus!=status) {
+			status = std::string(newStatus);
+			if(listener)
+				listener->NotifyStatus(this);
+		}
+
+		if(done)
+		{
+			pthread_join(doWorkThread, NULL);
+			pthread_mutex_destroy(&taskMutex);
+			after();
+		}
+
+		if(newDone!=done)
+		{
+			done = newDone;
+			if(listener)
+				listener->NotifyDone(this);
+		}
 	}
 }
 
@@ -129,5 +146,12 @@ void Task::notifyDone()
 {
 	pthread_mutex_lock(&taskMutex);
 	thDone = true;
+	pthread_mutex_unlock(&taskMutex);
+}
+
+void Task::notifyError(std::string error)
+{
+	pthread_mutex_lock(&taskMutex);
+	thError = std::string(error);
 	pthread_mutex_unlock(&taskMutex);
 }

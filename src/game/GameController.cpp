@@ -13,6 +13,7 @@
 #include "dialogues/ConfirmPrompt.h"
 #include "GameModelException.h"
 #include "simulation/Air.h"
+#include "update/UpdateActivity.h"
 #include "Notification.h"
 
 using namespace std;
@@ -675,5 +676,6 @@ void GameController::RemoveNotification(Notification * notification)
 void GameController::RunUpdater()
 {
 	Exit();
+	new UpdateActivity();
 }
 

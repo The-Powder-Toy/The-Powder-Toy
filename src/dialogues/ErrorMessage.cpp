@@ -5,6 +5,7 @@
  *      Author: Simon
  */
 
+#include "Style.h"
 #include "ErrorMessage.h"
 #include "interface/Button.h"
 #include "interface/Label.h"
@@ -13,7 +14,7 @@ ErrorMessage::ErrorMessage(std::string title, std::string message):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 75))
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), title);
-	titleLabel->SetTextColour(ui::Colour(200, 100, 50));
+	titleLabel->SetTextColour(style::Colour::ErrorTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);

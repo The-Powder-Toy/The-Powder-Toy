@@ -6,6 +6,7 @@
  */
 
 #include "ConfirmPrompt.h"
+#include "Style.h"
 #include "interface/Textblock.h"
 #include "interface/Button.h"
 
@@ -15,7 +16,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 {
 	int width, height;
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), title);
-	titleLabel->SetTextColour(ui::Colour(220, 220, 50));
+	titleLabel->SetTextColour(style::Colour::WarningTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
@@ -55,7 +56,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), "Continue");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	okayButton->Appearance.TextInactive = ui::Colour(220, 220, 50);
+	okayButton->Appearance.TextInactive = style::Colour::WarningTitle;
 	okayButton->SetActionCallback(new CloseAction(this, ResultOkay));
 	AddComponent(okayButton);
 

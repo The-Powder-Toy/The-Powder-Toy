@@ -15,10 +15,11 @@
 class TaskListener;
 class Task {
 public:
-	void SetTaskListener(TaskListener * listener);
+	void AddTaskListener(TaskListener * listener);
 	void Start();
 	int GetProgress();
 	bool GetDone();
+	std::string GetError();
 	std::string GetStatus();
 	void Poll();
 	Task() {}
@@ -27,10 +28,12 @@ protected:
 	int progress;
 	bool done;
 	std::string status;
+	std::string error;
 
 	int thProgress;
 	bool thDone;
 	std::string thStatus;
+	std::string thError;
 
 	TaskListener * listener;
 	pthread_t doWorkThread;
@@ -43,9 +46,10 @@ protected:
 	virtual void doWork();
 	static void * doWork_helper(void * ref);
 
-	void notifyProgress(int progress);
-	void notifyStatus(std::string status);
-	void notifyDone();
+	virtual void notifyProgress(int progress);
+	virtual void notifyError(std::string error);
+	virtual void notifyStatus(std::string status);
+	virtual void notifyDone();
 };
 
 #endif /* TASK_H_ */

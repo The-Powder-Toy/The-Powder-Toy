@@ -11,8 +11,8 @@
 
 namespace style {
 	ui::Colour Colour::InformationTitle = ui::Colour(140, 140, 255);
-	ui::Colour Colour::WarningTitle = ui::Colour(255, 255, 50);
-	ui::Colour Colour::ErrorTitle = ui::Colour(255, 20, 20);
+	ui::Colour Colour::WarningTitle = ui::Colour(255, 216, 32);
+	ui::Colour Colour::ErrorTitle = ui::Colour(255, 64, 32);
 	
 	ui::Colour Colour::ConfirmButton = ui::Colour(255, 255, 50);
 	
