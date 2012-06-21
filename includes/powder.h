@@ -804,6 +804,8 @@ void detach(int i);
 
 void part_change_type(int i, int x, int y, int t);
 
+void get_gravity_field(int x, int y, float particleGrav, float newtonGrav, float *pGravX, float *pGravY);
+
 int InCurrentBrush(int i, int j, int rx, int ry);
 
 int get_brush_flags();

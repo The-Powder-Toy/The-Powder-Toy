@@ -56,6 +56,28 @@ int pmap_count[YRES][XRES];
 unsigned cb_pmap[YRES][XRES];
 unsigned photons[YRES][XRES];
 
+void get_gravity_field(int x, int y, float particleGrav, float newtonGrav, float *pGravX, float *pGravY)
+{
+	*pGravX = newtonGrav*gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
+	*pGravY = newtonGrav*gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+	switch (gravityMode)
+	{
+		default:
+		case 0: //normal, vertical gravity
+			*pGravY += particleGrav;
+			break;
+		case 1: //no gravity
+			break;
+		case 2: //radial gravity
+			if (x-XCNTR != 0 || y-YCNTR != 0)
+			{
+				float pGravMult = particleGrav/sqrtf((x-XCNTR)*(x-XCNTR) + (y-YCNTR)*(y-YCNTR));
+				*pGravX -= pGravMult * (float)(x - XCNTR);
+				*pGravY -= pGravMult * (float)(y - YCNTR);
+			}
+	}
+}
+
 static int pn_junction_sprk(int x, int y, int pt)
 {
 	unsigned r = pmap[y][x];
