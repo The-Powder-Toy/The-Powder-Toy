@@ -58,14 +58,13 @@ int update_H2(UPDATE_FUNC_ARGS)
 		{
 			int j;
 			float temp = parts[i].temp;
-			part_change_type(i,x,y,PT_PLSM);
-			parts[i].life = rand()%150+50;
+			create_part(i,x,y,PT_NBLE);
+
 			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT); if (j != -1) parts[j].temp = temp;
 			if (!(rand()%10)) { j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC); if (j != -1) parts[j].temp = temp; }
-			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT);
-			if (j != -1) { parts[j].ctype = 0xFFFF00; parts[j].temp = temp; }
+			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT); if (j != -1) { parts[j].ctype = 0xFFFF00; parts[j].temp = temp; }
 
-			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NBLE); if (j != -1) parts[j].temp = temp;
+			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM); if (j != -1) parts[j].temp = temp;
 
 			if (rand()%2)
 			{
@@ -73,7 +72,7 @@ int update_H2(UPDATE_FUNC_ARGS)
 				if (j != -1) { parts[j].tmp = 1; parts[j].temp = temp; }
 			}
 
-			parts[i].temp += 750+rand()%500;
+			parts[i].temp = temp+750+rand()%500;
 			pv[y/CELL][x/CELL] += 30;
 		}
 	}
