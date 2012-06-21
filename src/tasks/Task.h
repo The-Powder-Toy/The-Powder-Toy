@@ -37,6 +37,9 @@ protected:
 	pthread_mutex_t taskMutex;
 	pthread_cond_t taskCond;
 
+
+	virtual void before();
+	virtual void after();
 	virtual void doWork();
 	static void * doWork_helper(void * ref);
 

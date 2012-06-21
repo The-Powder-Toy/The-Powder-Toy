@@ -9,12 +9,13 @@
 #include "TaskWindow.h"
 #include "Task.h"
 
-TaskWindow::TaskWindow(std::string title_, Task * task_):
+TaskWindow::TaskWindow(std::string title_, Task * task_, bool closeOnDone):
 	task(task_),
 	title(title_),
 	ui::Window(ui::Point(-1, -1), ui::Point(300, 200)),
 	progress(0),
-	done(false)
+	done(false),
+	closeOnDone(closeOnDone)
 {
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(3, 3), ui::Point(Size.X-6, 16), title);
@@ -36,6 +37,12 @@ void TaskWindow::NotifyStatus(Task * task)
 
 void TaskWindow::NotifyDone(Task * task)
 {
+	if(closeOnDone)
+		Exit();
+}
+
+void TaskWindow::Exit()
+{
 	if(ui::Engine::Ref().GetWindow()==this)
 	{
 		ui::Engine::Ref().CloseWindow();
@@ -50,6 +57,9 @@ void TaskWindow::NotifyProgress(Task * task)
 
 void TaskWindow::OnTick(float dt)
 {
+	intermediatePos += 1.0f*dt;
+	if(intermediatePos>100.0f)
+		intermediatePos = 0.0f;
 	task->Poll();
 }
 
@@ -61,8 +71,24 @@ void TaskWindow::OnDraw()
 
 	g->drawrect(Position.X + 20, Position.Y + 36, Size.X-40, 24, 255, 255, 255, 255);
 
-	float size = float(Size.X-40)*(float(progress)/100.0f); // TIL...
-	g->fillrect(Position.X + 20, Position.Y + 36, size, 24, 255, 255, 255, 255);
+	if(progress!=-1)
+	{
+		float size = float(Size.X-40)*(float(progress)/100.0f); // TIL...
+		g->fillrect(Position.X + 20, Position.Y + 36, size, 24, 255, 255, 255, 255);
+	} else {
+		int size = 40, rsize = 0;
+		float position = float(Size.X-40)*(intermediatePos/100.0f);
+		if(position + size > Size.X-40)
+		{
+			size = (Size.X-40)-position;
+			rsize = 40-size;
+		}
+		g->fillrect(Position.X + 20 + position, Position.Y + 36, size, 24, 255, 255, 255, 255);
+		if(rsize)
+		{
+			g->fillrect(Position.X + 20, Position.Y + 36, rsize, 24, 255, 255, 255, 255);
+		}
+	}
 }
 
 TaskWindow::~TaskWindow() {

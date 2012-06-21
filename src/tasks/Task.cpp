@@ -17,8 +17,13 @@ void Task::SetTaskListener(TaskListener * listener)
 
 void Task::Start()
 {
+	thDone = false;
+	done = false;
+	progress = 0;
+	status = "";
+	taskMutex = PTHREAD_MUTEX_INITIALIZER;
+	before();
 	pthread_mutex_init (&taskMutex, NULL);
-	pthread_cond_init(&taskCond, NULL);
 	pthread_create(&doWorkThread, 0, &Task::doWork_helper, this);
 }
 
@@ -40,13 +45,12 @@ bool Task::GetDone()
 void Task::Poll()
 {
 	int newProgress;
-	bool newDone;
+	bool newDone = false;
 	std::string newStatus;
 	pthread_mutex_lock(&taskMutex);
 	newProgress = thProgress;
 	newDone = thDone;
 	newStatus = std::string(thStatus);
-	pthread_cond_signal(&taskCond);
 	pthread_mutex_unlock(&taskMutex);
 
 	if(newProgress!=progress) {
@@ -55,25 +59,32 @@ void Task::Poll()
 			listener->NotifyProgress(this);
 	}
 	if(newStatus!=status) {
-		status = newStatus;
+		status = std::string(newStatus);
 		if(listener)
 			listener->NotifyStatus(this);
-	}
-	if(newDone!=done)
-	{
-		done = newDone;
-		if(listener)
-			listener->NotifyDone(this);
 	}
 
 	if(done)
 	{
 		pthread_join(doWorkThread, NULL);
 		pthread_mutex_destroy(&taskMutex);
+		after();
+	}
+
+	if(newDone!=done)
+	{
+		done = newDone;
+		if(listener)
+			listener->NotifyDone(this);
 	}
 }
 
 Task::~Task()
+{
+
+}
+
+void Task::before()
 {
 
 }
@@ -88,6 +99,11 @@ void Task::doWork()
 	}
 }
 
+void Task::after()
+{
+
+}
+
 void * Task::doWork_helper(void * ref)
 {
 	((Task*)ref)->doWork();
@@ -98,7 +114,6 @@ void * Task::doWork_helper(void * ref)
 void Task::notifyProgress(int progress)
 {
 	pthread_mutex_lock(&taskMutex);
-	pthread_cond_wait(&taskCond, &taskMutex);
 	thProgress = progress;
 	pthread_mutex_unlock(&taskMutex);
 }
@@ -106,15 +121,13 @@ void Task::notifyProgress(int progress)
 void Task::notifyStatus(std::string status)
 {
 	pthread_mutex_lock(&taskMutex);
-	pthread_cond_wait(&taskCond, &taskMutex);
-	thStatus = status;
+	thStatus = std::string(status);
 	pthread_mutex_unlock(&taskMutex);
 }
 
 void Task::notifyDone()
 {
 	pthread_mutex_lock(&taskMutex);
-	pthread_cond_wait(&taskCond, &taskMutex);
 	thDone = true;
 	pthread_mutex_unlock(&taskMutex);
 }

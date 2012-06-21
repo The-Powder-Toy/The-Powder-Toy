@@ -18,15 +18,18 @@ class TaskWindow: public ui::Window, public TaskListener {
 	Task * task;
 	std::string title;
 	int progress;
+	float intermediatePos;
 	bool done;
+	bool closeOnDone;
 	ui::Label * statusLabel;
 public:
-	TaskWindow(std::string title_, Task * task_);
+	TaskWindow(std::string title_, Task * task_, bool closeOnDone = true);
 	virtual void NotifyStatus(Task * task);
 	virtual void NotifyDone(Task * task);
 	virtual void NotifyProgress(Task * task);
 	virtual void OnTick(float dt);
 	virtual void OnDraw();
+	virtual void Exit();
 	virtual ~TaskWindow();
 };
 
