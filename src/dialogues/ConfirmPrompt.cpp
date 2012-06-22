@@ -11,7 +11,7 @@
 #include "interface/Button.h"
 
 ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDialogueCallback * callback_):
-	ui::Window(ui::Point(-1, -1), ui::Point(200, 50)),
+	ui::Window(ui::Point(-1, -1), ui::Point(250, 50)),
 	callback(callback_)
 {
 	int width, height;

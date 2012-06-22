@@ -27,11 +27,25 @@ enum RequestStatus {
 	RequestOkay, RequestFailure
 };
 
+class UpdateInfo
+{
+public:
+	enum BuildType { Stable, Beta, Snapshot };
+	std::string File;
+	int Major;
+	int Minor;
+	int Build;
+	BuildType Type;
+	UpdateInfo() : Major(0), Minor(0), Build(0), File(""), Type(Stable) {}
+	UpdateInfo(int major, int minor, int build, std::string file, BuildType type) : Major(major), Minor(minor), Build(build), File(file), Type(type) {}
+};
+
 class ClientListener;
 class Client: public Singleton<Client> {
 private:
 	void * versionCheckRequest;
 	bool updateAvailable;
+	UpdateInfo updateInfo;
 
 
 	std::string lastError;
@@ -58,6 +72,8 @@ private:
 	json::Object configDocument;
 public:
 	vector<ClientListener*> listeners;
+
+	UpdateInfo GetUpdateInfo();
 
 	Client();
 	~Client();

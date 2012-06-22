@@ -67,7 +67,7 @@ void LocalBrowserController::removeSelectedC()
 		std::vector<std::string> saves;
 	public:
 		RemoveSavesTask(std::vector<std::string> saves_) { saves = saves_; }
-		virtual void doWork()
+		virtual bool doWork()
 		{
 			for(int i = 0; i < saves.size(); i++)
 			{
@@ -78,6 +78,7 @@ void LocalBrowserController::removeSelectedC()
 				usleep(100*1000);
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
+			return true;
 		}
 	};
 

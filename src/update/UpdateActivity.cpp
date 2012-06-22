@@ -7,12 +7,14 @@
 
 #include <bzlib.h>
 #include <sstream>
+#include "dialogues/ConfirmPrompt.h"
 #include "interface/Engine.h"
 #include "UpdateActivity.h"
 #include "tasks/Task.h"
 #include "client/HTTP.h"
 #include "client/Client.h"
 #include "Update.h"
+#include "Misc.h"
 
 
 class UpdateDownloadTask : public Task
@@ -22,11 +24,14 @@ public:
 private:
 	UpdateActivity * a;
 	std::string updateName;
-	virtual void notifyDone()
-	{
+	virtual void notifyDoneMain(){
 		a->NotifyDone(this);
 	}
-	virtual void doWork()
+	virtual void notifyErrorMain()
+	{
+		a->NotifyError(this);
+	}
+	virtual bool doWork()
 	{
 		std::stringstream errorStream;
 		void * request = http_async_req_start(NULL, (char*)updateName.c_str(), NULL, 0, 0);
@@ -48,13 +53,13 @@ private:
 				free(data);
 			errorStream << "Server responded with Status " << status;
 			notifyError("Could not download update");
-			return;
+			return false;
 		}
 		if (!data)
 		{
 			errorStream << "Server responded with nothing";
 			notifyError("Server did not return any data");
-			return;
+			return false;
 		}
 
 		notifyStatus("Unpacking update");
@@ -107,49 +112,56 @@ private:
 		}
 
 		Client::Ref().SetPref("version.update", true);
-		return;
+		return true;
 
 	corrupt:
 		notifyError("Downloaded update is corrupted\n" + errorStream.str());
 		free(data);
-		return;
+		return false;
 	}
 };
 
 UpdateActivity::UpdateActivity() {
-	char my_uri[] = "http://" SERVER "/Update.api?Action=Download&Architecture="
-	#if defined WIN32
-	                "Windows32"
-	#elif defined LIN32
-	                "Linux32"
-	#elif defined LIN64
-	                "Linux64"
-	#elif defined MACOSX
-	                "MacOSX"
-	#else
-	                "Unknown"
-	#endif
-	                "&InstructionSet="
-	#if defined X86_SSE3
-	                "SSE3"
-	#elif defined X86_SSE2
-	                "SSE2"
-	#elif defined X86_SSE
-	                "SSE"
-	#else
-	                "SSE"
-	#endif
-	                ;
-	updateDownloadTask = new UpdateDownloadTask(my_uri, this);
+	std::stringstream file;
+	file << "http://" << SERVER << Client::Ref().GetUpdateInfo().File;
+	updateDownloadTask = new UpdateDownloadTask(file.str(), this);
 	updateWindow = new TaskWindow("Downloading update...", updateDownloadTask, true);
 }
 
 void UpdateActivity::NotifyDone(Task * sender)
 {
+	if(sender->GetSuccess())
+	{
+		Exit();
+	}
+}
+
+void UpdateActivity::Exit()
+{
 	updateWindow->Exit();
 	ui::Engine::Ref().Exit();
 	delete this;
 }
+
+void UpdateActivity::NotifyError(Task * sender)
+{
+	class ErrorMessageCallback: public ConfirmDialogueCallback
+	{
+		UpdateActivity * a;
+	public:
+		ErrorMessageCallback(UpdateActivity * a_) {	a = a_;	}
+		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+			if (result == ConfirmPrompt::ResultOkay)
+			{
+				OpenURI("http://powdertoy.co.uk/Download.html");
+			}
+			a->Exit();
+		}
+		virtual ~ErrorMessageCallback() { }
+	};
+	new ConfirmPrompt("Autoupdate failed", "Please visit the website to download a newer version.\nError: " + sender->GetError(), new ErrorMessageCallback(this));
+}
+
 
 UpdateActivity::~UpdateActivity() {
 	// TODO Auto-generated destructor stub

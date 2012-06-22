@@ -19,13 +19,16 @@
 #define SAVE_VERSION 80
 #define MINOR_VERSION 3
 #define BETA
+#define SNAPSHOT
 #define BUILD_NUM 155
 //VersionInfoEnd
 
-#ifdef BETA
+#if defined(SNAPSHOT)
+#define IDENT_RELTYPE "S"
+#elif defined(BETA)
 #define IDENT_RELTYPE "B"
 #else
-#define IDENT_RELTYPE "S"
+#define IDENT_RELTYPE "R"
 #endif
 
 #ifdef WIN32
@@ -38,6 +41,16 @@
 #define IDENT_PLATFORM "LIN64"
 #else
 #define IDENT_PLATFORM "UNKNOWN"
+#endif
+
+#if defined(X86_SSE3)
+#define IDENT_BUILD "SSE3"
+#elif defined(X86_SSE2)
+#define IDENT_BUILD "SSE2"
+#elif defined(X86_SSE)
+#define IDENT_BUILD "SSE"
+#else
+#define IDENT_BUILD "NO"
 #endif
 
 #define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter

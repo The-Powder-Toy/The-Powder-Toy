@@ -19,6 +19,7 @@ public:
 	void Start();
 	int GetProgress();
 	bool GetDone();
+	bool GetSuccess();
 	std::string GetError();
 	std::string GetStatus();
 	void Poll();
@@ -27,11 +28,13 @@ public:
 protected:
 	int progress;
 	bool done;
+	bool success;
 	std::string status;
 	std::string error;
 
 	int thProgress;
 	bool thDone;
+	bool thSuccess;
 	std::string thStatus;
 	std::string thError;
 
@@ -43,13 +46,17 @@ protected:
 
 	virtual void before();
 	virtual void after();
-	virtual void doWork();
+	virtual bool doWork();
 	static void * doWork_helper(void * ref);
 
 	virtual void notifyProgress(int progress);
 	virtual void notifyError(std::string error);
 	virtual void notifyStatus(std::string status);
-	virtual void notifyDone();
+
+	virtual void notifyProgressMain();
+	virtual void notifyErrorMain();
+	virtual void notifyStatusMain();
+	virtual void notifyDoneMain();
 };
 
 #endif /* TASK_H_ */

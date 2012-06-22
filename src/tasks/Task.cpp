@@ -47,37 +47,43 @@ bool Task::GetDone()
 	return done;
 }
 
+bool Task::GetSuccess()
+{
+	return success;
+}
+
 void Task::Poll()
 {
 	if(!done)
 	{
 		int newProgress;
 		bool newDone = false;
+		bool newSuccess = false;
 		std::string newStatus;
 		std::string newError;
 		pthread_mutex_lock(&taskMutex);
 		newProgress = thProgress;
 		newDone = thDone;
+		newSuccess = thSuccess;
 		newStatus = std::string(thStatus);
 		newError = std::string(thError);
 		pthread_mutex_unlock(&taskMutex);
 
+		success = newSuccess;
+
 		if(newProgress!=progress) {
 			progress = newProgress;
-			if(listener)
-				listener->NotifyProgress(this);
+			notifyProgressMain();
 		}
 
 		if(newError!=error) {
 			error = std::string(newError);
-			if(listener)
-				listener->NotifyError(this);
+			notifyErrorMain();
 		}
 
 		if(newStatus!=status) {
 			status = std::string(newStatus);
-			if(listener)
-				listener->NotifyStatus(this);
+			notifyStatusMain();
 		}
 
 		if(done)
@@ -90,8 +96,7 @@ void Task::Poll()
 		if(newDone!=done)
 		{
 			done = newDone;
-			if(listener)
-				listener->NotifyDone(this);
+			notifyDoneMain();
 		}
 	}
 }
@@ -106,7 +111,7 @@ void Task::before()
 
 }
 
-void Task::doWork()
+bool Task::doWork()
 {
 	notifyStatus("Fake progress");
 	for(int i = 0; i < 100; i++)
@@ -114,6 +119,7 @@ void Task::doWork()
 		notifyProgress(i);
 		usleep((100)*1000);
 	}
+	return true;
 }
 
 void Task::after()
@@ -123,8 +129,11 @@ void Task::after()
 
 void * Task::doWork_helper(void * ref)
 {
-	((Task*)ref)->doWork();
-	((Task*)ref)->notifyDone();
+	bool newSuccess = ((Task*)ref)->doWork();
+	pthread_mutex_lock(&((Task*)ref)->taskMutex);
+	((Task*)ref)->thSuccess = newSuccess;
+	((Task*)ref)->thDone = true;
+	pthread_mutex_unlock(&((Task*)ref)->taskMutex);
 	return NULL;
 }
 
@@ -142,16 +151,33 @@ void Task::notifyStatus(std::string status)
 	pthread_mutex_unlock(&taskMutex);
 }
 
-void Task::notifyDone()
-{
-	pthread_mutex_lock(&taskMutex);
-	thDone = true;
-	pthread_mutex_unlock(&taskMutex);
-}
-
 void Task::notifyError(std::string error)
 {
 	pthread_mutex_lock(&taskMutex);
 	thError = std::string(error);
 	pthread_mutex_unlock(&taskMutex);
+}
+
+void Task::notifyProgressMain()
+{
+	if(listener)
+		listener->NotifyProgress(this);
+}
+
+void Task::notifyStatusMain()
+{
+	if(listener)
+		listener->NotifyStatus(this);
+}
+
+void Task::notifyDoneMain()
+{
+	if(listener)
+		listener->NotifyDone(this);
+}
+
+void Task::notifyErrorMain()
+{
+	if(listener)
+		listener->NotifyError(this);
 }

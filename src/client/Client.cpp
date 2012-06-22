@@ -114,7 +114,7 @@ Client::Client():
 	stampsLib.close();
 
 	//Begin version check
-	versionCheckRequest = http_async_req_start(NULL, SERVER "/Version.json", NULL, 0, 1);
+	versionCheckRequest = http_async_req_start(NULL, SERVER "/Download/Version.json", NULL, 0, 1);
 }
 
 void Client::Tick()
@@ -127,7 +127,6 @@ void Client::Tick()
 		char * data = http_async_req_stop(versionCheckRequest, &status, &dataLength);
 		versionCheckRequest = NULL;
 
-		notifyUpdateAvailable();
 		if(status != 200)
 		{
 			if(data)
@@ -144,25 +143,42 @@ void Client::Tick()
 
 				json::Object stableVersion = objDocument["Stable"];
 				json::Object betaVersion = objDocument["Beta"];
+				json::Object snapshotVersion = objDocument["Snapshot"];
 
 				json::Number stableMajor = stableVersion["Major"];
 				json::Number stableMinor = stableVersion["Minor"];
 				json::Number stableBuild = stableVersion["Build"];
+				json::String stableFile = stableVersion["File"];
 
 				json::Number betaMajor = betaVersion["Major"];
 				json::Number betaMinor = betaVersion["Minor"];
 				json::Number betaBuild = betaVersion["Build"];
+				json::String betaFile = betaVersion["File"];
 
-#ifdef BETA
-				if(	(betaMajor.Value()>SAVE_VERSION || (betaMinor.Value()>MINOR_VERSION && betaMajor.Value()==SAVE_VERSION) || betaBuild.Value()>BUILD_NUM) ||
-					(stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM))
-				{
-					updateAvailable = true;
-				}
-#else
+				json::Number snapshotMajor = snapshotVersion["Major"];
+				json::Number snapshotMinor = snapshotVersion["Minor"];
+				json::Number snapshotBuild = snapshotVersion["Build"];
+				json::String snapshotFile = snapshotVersion["File"];
+
 				if(stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM)
 				{
 					updateAvailable = true;
+					updateInfo = UpdateInfo(stableMajor.Value(), stableMinor.Value(), stableBuild.Value(), stableFile.Value(), UpdateInfo::Stable);
+				}
+
+#ifdef BETA
+				if(betaMajor.Value()>SAVE_VERSION || (betaMinor.Value()>MINOR_VERSION && betaMajor.Value()==SAVE_VERSION) || betaBuild.Value()>BUILD_NUM)
+				{
+					updateAvailable = true;
+					updateInfo = UpdateInfo(betaMajor.Value(), betaMinor.Value(), betaBuild.Value(), betaFile.Value(), UpdateInfo::Beta);
+				}
+#endif
+
+#ifdef SNAPSHOT
+				if(snapshotMajor.Value()>SAVE_VERSION || (snapshotMinor.Value()>MINOR_VERSION && snapshotMajor.Value()==SAVE_VERSION) || snapshotBuild.Value()>BUILD_NUM)
+				{
+					updateAvailable = true;
+					updateInfo = UpdateInfo(snapshotMajor.Value(), snapshotMinor.Value(), snapshotBuild.Value(), snapshotFile.Value(), UpdateInfo::Snapshot);
 				}
 #endif
 
@@ -180,6 +196,11 @@ void Client::Tick()
 				free(data);
 		}
 	}
+}
+
+UpdateInfo Client::GetUpdateInfo()
+{
+	return updateInfo;
 }
 
 void Client::notifyUpdateAvailable()
