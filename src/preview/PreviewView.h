@@ -29,6 +29,7 @@ class PreviewView: public ui::Window {
 	ui::Button * reportButton;
 	ui::Label * saveNameLabel;
 	ui::Label * authorDateLabel;
+	ui::Label * pageInfo;
 	ui::Textblock * saveDescriptionTextblock;
 	std::vector<SaveComment> comments;
 	std::vector<ui::Component*> commentComponents;
@@ -37,6 +38,8 @@ class PreviewView: public ui::Window {
 	int votesDown;
 	bool doOpen;
 
+	bool commentsEnd;
+	bool commentsBegin;
 	int maxOffset;
 	float commentsOffset;
 	float commentsVel;
@@ -47,6 +50,7 @@ public:
 	PreviewView();
 	void NotifySaveChanged(PreviewModel * sender);
 	void NotifyCommentsChanged(PreviewModel * sender);
+	void NotifyCommentsPageChanged(PreviewModel * sender);
 	virtual void OnDraw();
 	virtual void DoDraw();
 	virtual void OnTick(float dt);

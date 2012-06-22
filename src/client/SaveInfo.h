@@ -18,6 +18,7 @@ public:
 	int date;
 	int votesUp, votesDown;
 	bool Favourite;
+	int Comments;
 
 	GameSave * gameSave;
 

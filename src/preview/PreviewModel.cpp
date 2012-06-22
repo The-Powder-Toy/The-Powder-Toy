@@ -5,6 +5,7 @@
  *      Author: Simon
  */
 
+#include <cmath>
 #include "PreviewModel.h"
 #include "client/Client.h"
 #include "PreviewModelException.h"
@@ -18,7 +19,9 @@ PreviewModel::PreviewModel():
 	updateSaveInfoWorking(false),
 	updateSaveInfoFinished(false),
 	updateSaveCommentsWorking(false),
-	updateSaveCommentsFinished(false)
+	updateSaveCommentsFinished(false),
+	commentsTotal(0),
+	commentsPageNumber(1)
 {
 	// TODO Auto-generated constructor stub
 
@@ -58,7 +61,7 @@ void * PreviewModel::updateSaveDataT()
 
 void * PreviewModel::updateSaveCommentsT()
 {
-	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(tSaveID, 0, 10);
+	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(tSaveID, (commentsPageNumber-1)*10, 10);
 	updateSaveCommentsFinished = true;
 	return tempComments;
 }
@@ -110,6 +113,7 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 
 	if(!updateSaveCommentsWorking)
 	{
+		commentsLoaded = false;
 		updateSaveCommentsWorking = true;
 		updateSaveCommentsFinished = false;
 		pthread_create(&updateSaveCommentsThread, 0, &PreviewModel::updateSaveCommentsTHelper, this);
@@ -131,6 +135,46 @@ SaveInfo * PreviewModel::GetSave()
 	return save;
 }
 
+int PreviewModel::GetCommentsPageNum()
+{
+	return commentsPageNumber;
+}
+
+int PreviewModel::GetCommentsPageCount()
+{
+	return max(1, (int)(ceil(commentsTotal/10)));
+}
+
+bool PreviewModel::GetCommentsLoaded()
+{
+	return commentsLoaded;
+}
+
+void PreviewModel::UpdateComments(int pageNumber)
+{
+	commentsLoaded = false;
+	if(saveComments)
+	{
+		for(int i = 0; i < saveComments->size(); i++)
+			delete saveComments->at(i);
+		delete saveComments;
+		saveComments = NULL;
+	}
+
+	//resultCount = 0;
+	commentsPageNumber = pageNumber;
+	notifySaveCommentsChanged();
+	notifyCommentsPageChanged();
+
+	//Threading
+	if(!updateSaveCommentsWorking)
+	{
+		updateSaveCommentsFinished = false;
+		updateSaveCommentsWorking = true;
+		pthread_create(&updateSaveCommentsThread, 0, &PreviewModel::updateSaveCommentsTHelper, this);
+	}
+}
+
 std::vector<SaveComment*> * PreviewModel::GetComments()
 {
 	return saveComments;
@@ -141,6 +185,14 @@ void PreviewModel::notifySaveChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifySaveChanged(this);
+	}
+}
+
+void PreviewModel::notifyCommentsPageChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyCommentsPageChanged(this);
 	}
 }
 
@@ -155,6 +207,8 @@ void PreviewModel::notifySaveCommentsChanged()
 void PreviewModel::AddObserver(PreviewView * observer) {
 	observers.push_back(observer);
 	observer->NotifySaveChanged(this);
+	observer->NotifyCommentsChanged(this);
+	observer->NotifyCommentsPageChanged(this);
 }
 
 void PreviewModel::Update()
@@ -194,6 +248,7 @@ void PreviewModel::Update()
 			pthread_join(updateSaveInfoThread, (void**)(&save));
 			if(updateSaveDataFinished && save)
 			{
+				commentsTotal = save->Comments;
 				try
 				{
 					save->SetGameSave(new GameSave(&saveDataBuffer[0], saveDataBuffer.size()));
@@ -204,6 +259,7 @@ void PreviewModel::Update()
 				}
 			}
 			notifySaveChanged();
+			notifyCommentsPageChanged();
 			if(!save)
 				throw PreviewModelException("Unable to load save");
 		}
@@ -220,6 +276,7 @@ void PreviewModel::Update()
 				delete saveComments;
 				saveComments = NULL;
 			}
+			commentsLoaded = true;
 			updateSaveCommentsWorking = false;
 			pthread_join(updateSaveCommentsThread, (void**)(&saveComments));
 			notifySaveCommentsChanged();

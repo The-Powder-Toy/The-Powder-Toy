@@ -21,7 +21,9 @@ PreviewView::PreviewView():
 	doOpen(false),
 	commentsOffset(0),
 	commentsVel(0),
-	maxOffset(0)
+	maxOffset(0),
+	commentsBegin(true),
+	commentsEnd(false)
 {
 	class OpenAction: public ui::ButtonAction
 	{
@@ -112,6 +114,10 @@ PreviewView::PreviewView():
 	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+15+14), ui::Point(100, 16), "");
 	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(authorDateLabel);
+
+	pageInfo = new ui::Label(ui::Point((XRES/2) + 5, Size.Y-15), ui::Point(Size.X-((XRES/2) + 10), 15), "Page 1 of 1");
+	pageInfo->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(pageInfo);
 }
 
 void PreviewView::DoDraw()
@@ -185,12 +191,22 @@ void PreviewView::OnTick(float dt)
 		{
 			commentsOffset = 0;
 			commentsVel = 0;
+			commentsBegin = true;
+			commentsEnd = false;
 		}
-		if(commentsOffset>maxOffset)
+		else if(commentsOffset>maxOffset)
 		{
 			commentsOffset = maxOffset;
 			commentsVel = 0;
+			commentsEnd = true;
+			commentsBegin = false;
 		}
+		else
+		{
+			commentsEnd = false;
+			commentsBegin = false;
+		}
+
 		displayComments(commentsOffset);
 	}
 
@@ -303,6 +319,13 @@ void PreviewView::displayComments(int yOffset)
 	}
 }
 
+void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)
+{
+	std::stringstream pageInfoStream;
+	pageInfoStream << "Page " << sender->GetCommentsPageNum() << " of " << sender->GetCommentsPageCount();
+	pageInfo->SetText(pageInfoStream.str());
+}
+
 void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 {
 	if(sender->GetComments())
@@ -335,6 +358,8 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 
 
 	maxOffset = (maxY-Size.Y)+16;
+	commentsBegin = true;
+	commentsEnd = false;
 	commentsOffset = 0;
 	commentsVel = 0;
 	displayComments(commentsOffset);
@@ -342,13 +367,18 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 
 void PreviewView::OnMouseWheel(int x, int y, int d)
 {
-	commentsVel-=d;
-	/*if(!d)
+	if(!d)
 		return;
+	commentsVel-=d;
+
 	if(d<0)
-		c->NextPage();
-	else
-		c->PrevPage();*/
+	{
+		if(commentsEnd)
+			c->NextCommentPage();
+	} else {
+		if(commentsBegin)
+			c->PrevCommentPage();
+	}
 }
 
 /*void PreviewView::NotifyPreviewChanged(PreviewModel * sender)

@@ -32,6 +32,10 @@ public:
 	PreviewView * GetView() { return previewView; }
 	void Update();
 	void FavouriteSave();
+
+	void NextCommentPage();
+	void PrevCommentPage();
+
 	virtual ~PreviewController();
 };
 
