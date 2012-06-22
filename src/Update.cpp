@@ -108,7 +108,7 @@ int update_start(char *data, int len)
 
 	return 0;
 #else
-	temp = malloc(strlen(self)+8);
+	temp = (char*)malloc(strlen(self)+8);
 	strcpy(temp, self);
 	strcat(temp, "-update");
 
