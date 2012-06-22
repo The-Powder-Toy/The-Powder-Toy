@@ -30,7 +30,8 @@ GameView::GameView():
 	selectPoint1(0, 0),
 	selectPoint2(0, 0),
 	placeSaveThumb(NULL),
-	mousePosition(0, 0)
+	mousePosition(0, 0),
+	lastOffset(0)
 {
 	int currentX = 1;
 	//Set up UI
@@ -328,6 +329,7 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 void GameView::NotifyToolListChanged(GameModel * sender)
 {
 	//int currentY = YRES+MENUSIZE-36;
+	lastOffset = 0;
 	int currentX = XRES+BARSIZE-56;
 	int totalColour;
 	for(int i = 0; i < menuButtons.size(); i++)
@@ -485,6 +487,18 @@ void GameView::NotifySaveChanged(GameModel * sender)
 void GameView::NotifyBrushChanged(GameModel * sender)
 {
 	activeBrush = sender->GetBrush();
+}
+
+void GameView::setToolButtonOffset(int offset)
+{
+	int offset_ = offset;
+	offset = offset-lastOffset;
+	lastOffset = offset_;
+
+	for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
+	{
+		(*iter)->Position.X -= offset;
+	}
 }
 
 void GameView::OnMouseMove(int x, int y, int dx, int dy)
@@ -808,6 +822,32 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 {
 	if(c->MouseMove(x, y, dx, dy))
 		Window::DoMouseMove(x, y, dx, dy);
+
+	if(toolButtons.size())
+	{
+		int totalWidth = (toolButtons[0]->Size.X+1)*toolButtons.size();
+		if(totalWidth > XRES-10)
+		{
+			int mouseX = x;
+			if(mouseX > XRES)
+				mouseX = XRES;
+			float overflow = totalWidth-(XRES-10), mouseLocation = float(XRES)/float(mouseX-(XRES));
+			setToolButtonOffset(overflow/mouseLocation);
+
+			//Ensure that mouseLeave events are make their way to the buttons should they move from underneith the mouse pointer
+			if(toolButtons[0]->Position.Y < y && toolButtons[0]->Position.Y+toolButtons[0]->Size.Y > y)
+			{
+				for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
+				{
+					ToolButton * button = *iter;
+					if(button->Position.X < x && button->Position.X+button->Size.X > x)
+						button->OnMouseEnter(x, y);
+					else
+						button->OnMouseLeave(x, y);
+				}
+			}
+		}
+	}
 }
 
 void GameView::DoMouseDown(int x, int y, unsigned button)

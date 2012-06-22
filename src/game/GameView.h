@@ -78,6 +78,8 @@ private:
 
 	Particle sample;
 
+	int lastOffset;
+	void setToolButtonOffset(int offset);
 	void changeColour();
 public:
     GameView();
