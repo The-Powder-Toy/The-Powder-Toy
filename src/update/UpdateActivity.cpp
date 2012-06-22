@@ -11,6 +11,7 @@
 #include "UpdateActivity.h"
 #include "tasks/Task.h"
 #include "client/HTTP.h"
+#include "client/Client.h"
 #include "Update.h"
 
 
@@ -105,6 +106,7 @@ private:
 			notifyError("Update failed - try downloading a new version.");
 		}
 
+		Client::Ref().SetPref("version.update", true);
 		return;
 
 	corrupt:

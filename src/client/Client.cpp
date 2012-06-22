@@ -27,6 +27,8 @@
 
 #include "ClientListener.h"
 
+#include "Update.h"
+
 Client::Client():
 	authUser(0, ""),
 	updateAvailable(false)
@@ -76,19 +78,17 @@ Client::Client():
 				authUser = User(0, "");
 				std::cerr << "Error: Client [Read User data from pref] " << e.what() << std::endl;
 			}
-			try
-			{
-				proxyString = ((json::String)(configDocument["Proxy"])).Value();
-			}
-			catch (json::Exception &e)
-			{
-				proxyString = "";
-				std::cerr << "Error: Client [Read Proxy from pref] " << e.what() << std::endl;
-			}
 		}
 		configFile.close();
 	}
 
+	if(GetPrefBool("version.update", false)==true)
+	{
+		SetPref("version.update", false);
+		update_finish();
+	}
+
+	proxyString = GetPrefString("proxy", "");
 	if(proxyString.length())
 	{
 		http_init((char *)proxyString.c_str());
