@@ -851,6 +851,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 			json::Number tempDate = objDocument["Date"];
 			json::Boolean tempPublished = objDocument["Published"];
 			json::Boolean tempFavourite = objDocument["Favourite"];
+			json::Number tempComments = objDocument["Comments"];
 
 			json::Array tagsArray = objDocument["Tags"];
 			vector<string> tempTags;
@@ -873,6 +874,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 					tempPublished.Value(),
 					tempTags
 					);
+			tempSave->Comments = tempComments.Value();
 			tempSave->Favourite = tempFavourite.Value();
 			return tempSave;
 		}
@@ -939,7 +941,7 @@ std::vector<SaveComment*> * Client::GetComments(int saveID, int start, int count
 	std::stringstream urlStream;
 	char * data;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/View.json?ID=" << saveID << "&Mode=Comments&Start=" << start << "&Count=" << count;
+	urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << start << "&Count=" << count;
 	data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
 	if(dataStatus == 200 && data)
 	{

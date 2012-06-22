@@ -86,6 +86,18 @@ void PreviewController::OpenInBrowser()
 	}
 }
 
+void PreviewController::NextCommentPage()
+{
+	if(previewModel->GetCommentsPageNum() < previewModel->GetCommentsPageCount() && previewModel->GetCommentsLoaded())
+		previewModel->UpdateComments(previewModel->GetCommentsPageNum()+1);
+}
+
+void PreviewController::PrevCommentPage()
+{
+	if(previewModel->GetCommentsPageNum()>1 && previewModel->GetCommentsLoaded())
+		previewModel->UpdateComments(previewModel->GetCommentsPageNum()-1);
+}
+
 void PreviewController::Exit()
 {
 	if(ui::Engine::Ref().GetWindow() == previewView)

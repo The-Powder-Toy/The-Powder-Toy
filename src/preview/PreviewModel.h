@@ -33,10 +33,16 @@ class PreviewModel {
 	std::vector<SaveComment*> * saveComments;
 	void notifySaveChanged();
 	void notifySaveCommentsChanged();
+	void notifyCommentsPageChanged();
 
 	//Background retrieval
 	int tSaveID;
 	int tSaveDate;
+
+	//
+	bool commentsLoaded;
+	int commentsTotal;
+	int commentsPageNumber;
 
 	bool updateSaveDataWorking;
 	volatile bool updateSaveDataFinished;
@@ -59,6 +65,12 @@ public:
 	PreviewModel();
 	SaveInfo * GetSave();
 	std::vector<SaveComment*> * GetComments();
+
+	bool GetCommentsLoaded();
+	int GetCommentsPageNum();
+	int GetCommentsPageCount();
+	void UpdateComments(int pageNumber);
+
 	void AddObserver(PreviewView * observer);
 	void UpdateSave(int saveID, int saveDate);
 	void SetFavourite(bool favourite);

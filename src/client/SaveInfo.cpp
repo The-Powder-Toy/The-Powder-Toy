@@ -11,7 +11,7 @@
 SaveInfo::SaveInfo(SaveInfo & save) :
 		userName(save.userName), name(save.name), Description(save.Description), date(
 				save.date), Published(save.Published), id(save.id), votesUp(
-				save.votesUp), votesDown(save.votesDown), gameSave(NULL), vote(save.vote), tags(save.tags) {
+				save.votesUp), votesDown(save.votesDown), gameSave(NULL), vote(save.vote), tags(save.tags), Comments(save.Comments) {
 	if(save.gameSave)
 		gameSave = new GameSave(*save.gameSave);
 }
@@ -20,14 +20,14 @@ SaveInfo::SaveInfo(int _id, int _date, int _votesUp, int _votesDown, string _use
 		string _name) :
 		id(_id), votesUp(_votesUp), votesDown(_votesDown), userName(_userName), name(
 				_name), Description("No description provided"), date(_date), Published(
-				true), gameSave(NULL), vote(0), tags() {
+				true), gameSave(NULL), vote(0), tags(), Comments(0) {
 }
 
 SaveInfo::SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, string _userName,
 		string _name, string description_, bool published_, vector<string> tags_) :
 		id(_id), votesUp(_votesUp), votesDown(_votesDown), userName(_userName), name(
 				_name), Description(description_), date(date_), Published(
-				published_), gameSave(NULL), vote(_vote), tags(tags_) {
+				published_), gameSave(NULL), vote(_vote), tags(tags_), Comments(0) {
 }
 
 SaveInfo::~SaveInfo()
