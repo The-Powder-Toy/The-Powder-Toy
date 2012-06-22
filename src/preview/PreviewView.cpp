@@ -136,11 +136,6 @@ void PreviewView::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
 
-	if(commentsEnd)
-			g->fillrect(10, 0, 10, 10, 255, 0, 0, 255);
-	if(commentsBegin)
-			g->fillrect(0, 0, 10, 10, 0, 255, 0, 255);
-
 	//Window Background+Outline
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+4, Size.Y+4);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
