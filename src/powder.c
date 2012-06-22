@@ -157,7 +157,7 @@ void init_can_move()
 		//spark shouldn't move
 		can_move[PT_SPRK][t] = 0;
 		stkm_move = 0;
-		if (ptypes[t].properties&TYPE_LIQUID)
+		if (ptypes[t].properties & (TYPE_LIQUID | TYPE_GAS))
 			stkm_move = 2;
 		if (!t || t==PT_PRTO || t==PT_SPAWN || t==PT_SPAWN2)
 			stkm_move = 2;
