@@ -497,7 +497,13 @@ void GameView::setToolButtonOffset(int offset)
 
 	for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
 	{
-		(*iter)->Position.X -= offset;
+		ToolButton * button = *iter;
+		button->Position.X -= offset;
+		if(button->Position.X <= 0 || (button->Position.X+button->Size.X) > XRES-2) {
+			button->Visible = false;
+		} else {
+			button->Visible = true;
+		}
 	}
 }
 
@@ -826,12 +832,12 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 	if(toolButtons.size())
 	{
 		int totalWidth = (toolButtons[0]->Size.X+1)*toolButtons.size();
-		if(totalWidth > XRES-10)
+		if(totalWidth > XRES-15)
 		{
 			int mouseX = x;
 			if(mouseX > XRES)
 				mouseX = XRES;
-			float overflow = totalWidth-(XRES-10), mouseLocation = float(XRES)/float(mouseX-(XRES));
+			float overflow = totalWidth-(XRES-15), mouseLocation = float(XRES)/float(mouseX-(XRES));
 			setToolButtonOffset(overflow/mouseLocation);
 
 			//Ensure that mouseLeave events are make their way to the buttons should they move from underneith the mouse pointer
