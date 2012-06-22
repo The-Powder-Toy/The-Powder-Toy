@@ -9,6 +9,7 @@
 #define PREVIEWVIEW_H_
 
 #include <vector>
+#include "Comment.h"
 #include "interface/Window.h"
 #include "preview/PreviewController.h"
 #include "preview/PreviewModel.h"
@@ -29,11 +30,18 @@ class PreviewView: public ui::Window {
 	ui::Label * saveNameLabel;
 	ui::Label * authorDateLabel;
 	ui::Textblock * saveDescriptionTextblock;
+	std::vector<SaveComment> comments;
 	std::vector<ui::Component*> commentComponents;
 	std::vector<ui::Component*> commentTextComponents;
 	int votesUp;
 	int votesDown;
 	bool doOpen;
+
+	int maxOffset;
+	float commentsOffset;
+	float commentsVel;
+
+	void displayComments(int yOffset);
 public:
 	void AttachController(PreviewController * controller) { c = controller;}
 	PreviewView();
@@ -43,6 +51,7 @@ public:
 	virtual void DoDraw();
 	virtual void OnTick(float dt);
 	virtual void OnMouseDown(int x, int y, unsigned button);
+	virtual void OnMouseWheel(int x, int y, int d);
 	virtual ~PreviewView();
 };
 

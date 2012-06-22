@@ -8,6 +8,8 @@
 #ifndef COMMENT_H_
 #define COMMENT_H_
 
+#include <string>
+
 class SaveComment
 {
 public:
@@ -15,7 +17,15 @@ public:
 	std::string authorName;
 	std::string comment;
 	SaveComment(int userID, std::string username, std::string commentText):
-		authorID(userID), authorName(username), comment(commentText)
+			authorID(userID), authorName(username), comment(commentText)
+	{
+	}
+	SaveComment(const SaveComment & comment):
+			authorID(comment.authorID), authorName(comment.authorName), comment(comment.comment)
+	{
+	}
+	SaveComment(const SaveComment * comment):
+			authorID(comment->authorID), authorName(comment->authorName), comment(comment->comment)
 	{
 	}
 };

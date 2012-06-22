@@ -6,6 +6,7 @@
  */
 
 #include <vector>
+#include <cmath>
 #include "PreviewView.h"
 #include "dialogues/TextPrompt.h"
 #include "simulation/SaveRenderer.h"
@@ -17,7 +18,10 @@
 PreviewView::PreviewView():
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+200, (YRES/2)+150)),
 	savePreview(NULL),
-	doOpen(false)
+	doOpen(false),
+	commentsOffset(0),
+	commentsVel(0),
+	maxOffset(0)
 {
 	class OpenAction: public ui::ButtonAction
 	{
@@ -165,6 +169,31 @@ void PreviewView::OnDraw()
 
 void PreviewView::OnTick(float dt)
 {
+	if(commentsVel > 5.0f) commentsVel = 5.0f;
+	if(commentsVel < -5.0f) commentsVel = -5.0f;
+	if(commentsVel > -0.5f && commentsVel < 0.5)
+		commentsVel = 0;
+
+	int oldOffset = commentsOffset;
+	commentsOffset += commentsVel;
+
+	commentsVel*=0.99f;
+
+	if(oldOffset!=int(commentsOffset))
+	{
+		if(commentsOffset<0)
+		{
+			commentsOffset = 0;
+			commentsVel = 0;
+		}
+		if(commentsOffset>maxOffset)
+		{
+			commentsOffset = maxOffset;
+			commentsVel = 0;
+		}
+		displayComments(commentsOffset);
+	}
+
 	c->Update();
 }
 
@@ -221,7 +250,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 	}
 }
 
-void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
+void PreviewView::displayComments(int yOffset)
 {
 	for(int i = 0; i < commentComponents.size(); i++)
 	{
@@ -231,38 +260,95 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	commentComponents.clear();
 	commentTextComponents.clear();
 
-	int currentY = 0;
+	int currentY = -yOffset;
 	ui::Label * tempUsername;
 	ui::Textblock * tempComment;
-	std::vector<SaveComment*> * tempComments = sender->GetComments();
-	if(tempComments)
+	for(int i = 0; i < comments.size(); i++)
 	{
-		for(int i = 0; i < tempComments->size(); i++)
-		{
-			tempUsername = new ui::Label(ui::Point((XRES/2) + 5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), 16), tempComments->at(i)->authorName);
-			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
-			currentY += 16;
-			tempComment = new ui::Textblock(ui::Point((XRES/2) + 5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), -1), tempComments->at(i)->comment);
-			tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
-			tempComment->SetTextColour(ui::Colour(180, 180, 180));
-			currentY += tempComment->Size.Y+4;
+		int usernameY = currentY+5, commentY;
+		tempUsername = new ui::Label(ui::Point((XRES/2) + 5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), 16), comments[i].authorName);
+		tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+		currentY += 16;
 
+		if(currentY > Size.Y || usernameY < 0)
+		{
+			delete tempUsername;
 			if(currentY > Size.Y)
-			{
-				delete tempUsername;
-				delete tempComment;
 				break;
-			}
-			else
-			{
-				commentComponents.push_back(tempComment);
-				AddComponent(tempComment);
-				commentComponents.push_back(tempUsername);
-				AddComponent(tempUsername);
-				commentTextComponents.push_back(tempComment);
-			}
+		}
+		else
+		{
+			commentComponents.push_back(tempUsername);
+			AddComponent(tempUsername);
+		}
+
+		commentY = currentY+5;
+		tempComment = new ui::Textblock(ui::Point((XRES/2) + 5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), -1), comments[i].comment);
+		tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+		tempComment->SetTextColour(ui::Colour(180, 180, 180));
+		currentY += tempComment->Size.Y+4;
+
+		if(currentY > Size.Y || commentY < 0)
+		{
+			delete tempComment;
+			if(currentY > Size.Y)
+				break;
+		}
+		else
+		{
+			commentComponents.push_back(tempComment);
+			AddComponent(tempComment);
+			commentTextComponents.push_back(tempComment);
 		}
 	}
+}
+
+void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
+{
+	if(sender->GetComments())
+	{
+		comments = std::vector<SaveComment>(sender->GetComments()->begin(), sender->GetComments()->end());
+	}
+	else
+	{
+		comments.clear();
+	}
+
+	ui::Label * tempUsername;
+	ui::Textblock * tempComment;
+	int maxY = 0;
+	for(int i = 0; i < comments.size(); i++)
+	{
+		tempUsername = new ui::Label(ui::Point(0, 0), ui::Point(Size.X-((XRES/2) + 10), 16), comments[i].authorName);
+		tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+		maxY += 16;
+		tempComment = new ui::Textblock(ui::Point(0, 0), ui::Point(Size.X-((XRES/2) + 10), -1), comments[i].comment);
+		tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+		tempComment->SetTextColour(ui::Colour(180, 180, 180));
+		maxY += tempComment->Size.Y+4;
+
+		delete tempUsername;
+		delete tempComment;
+	}
+
+
+	maxOffset = (maxY-Size.Y)+16;
+	commentsOffset = 0;
+	commentsVel = 0;
+	displayComments(commentsOffset);
+}
+
+void PreviewView::OnMouseWheel(int x, int y, int d)
+{
+	commentsVel-=d;
+	/*if(!d)
+		return;
+	if(d<0)
+		c->NextPage();
+	else
+		c->PrevPage();*/
 }
 
 /*void PreviewView::NotifyPreviewChanged(PreviewModel * sender)
