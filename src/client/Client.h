@@ -51,13 +51,13 @@ private:
 	int activeThumbRequestCompleteTimes[IMGCONNS];
 	std::string activeThumbRequestIDs[IMGCONNS];
 	void updateStamps();
-
+	static vector<std::string> explodePropertyString(std::string property);
 	void notifyUpdateAvailable();
-public:
-	vector<ClientListener*> listeners;
 
 	//Config file handle
 	json::Object configDocument;
+public:
+	vector<ClientListener*> listeners;
 
 	Client();
 	~Client();
@@ -94,6 +94,25 @@ public:
 		return lastError;
 	}
 	void Tick();
+	void Shutdown();
+
+	std::string GetPrefString(std::string property, std::string defaultValue);
+	double GetPrefNumber(std::string property, double defaultValue);
+	vector<string> GetPrefStringArray(std::string property);
+	vector<double> GetPrefNumberArray(std::string property);
+	vector<bool> GetPrefBoolArray(std::string property);
+	bool GetPrefBool(std::string property, bool defaultValue);
+
+	void SetPref(std::string property, std::string value);
+	void SetPref(std::string property, double value);
+	void SetPref(std::string property, vector<string> value);
+	void SetPref(std::string property, vector<double> value);
+	void SetPref(std::string property, vector<bool> value);
+	void SetPref(std::string property, bool value);
+
+	json::UnknownElement GetPref(std::string property);
+	void setPrefR(std::deque<string> tokens, json::UnknownElement & element, json::UnknownElement & value);
+	void SetPref(std::string property, json::UnknownElement & value);
 };
 
 #endif // CLIENT_H

@@ -30,33 +30,19 @@ GameModel::GameModel():
 	//Load config into renderer
 	try
 	{
-		json::Number tempNumber = Client::Ref().configDocument["Renderer"]["ColourMode"];
-		if(tempNumber.Value())
-			ren->SetColourMode(tempNumber.Value());
+		ren->SetColourMode(Client::Ref().GetPrefNumber("Renderer.ColourMode", 0));
 
-		json::Array tempArray = Client::Ref().configDocument["Renderer"]["DisplayModes"];
-		if(tempArray.Size())
+		vector<double> tempArray = Client::Ref().GetPrefNumberArray("Renderer.DisplayModes");
+		if(tempArray.size())
 		{
-			std::vector<unsigned int> displayModes;
-			json::Array::const_iterator itDisplayModes(tempArray.Begin()), itDisplayModesEnd(tempArray.End());
-			for (; itDisplayModes != itDisplayModesEnd; ++itDisplayModes)
-			{
-				json::Number tempNumberI = *itDisplayModes;
-				displayModes.push_back(tempNumberI.Value());
-			}
+			std::vector<unsigned int> displayModes(tempArray.begin(), tempArray.end());
 			ren->SetDisplayMode(displayModes);
 		}
 
-		tempArray = Client::Ref().configDocument["Renderer"]["RenderModes"];
-		if(tempArray.Size())
+		tempArray = Client::Ref().GetPrefNumberArray("Renderer.RenderModes");
+		if(tempArray.size())
 		{
-			std::vector<unsigned int> renderModes;
-			json::Array::const_iterator itRenderModes(tempArray.Begin()), itRenderModesEnd(tempArray.End());
-			for (; itRenderModes != itRenderModesEnd; ++itRenderModes)
-			{
-				json::Number tempNumberI = *itRenderModes;
-				renderModes.push_back(tempNumberI.Value());
-			}
+			std::vector<unsigned int> renderModes(tempArray.begin(), tempArray.end());
 			ren->SetRenderMode(renderModes);
 		}
 	}
@@ -145,28 +131,13 @@ GameModel::GameModel():
 GameModel::~GameModel()
 {
 	//Save to config:
-	try
-	{
-		Client::Ref().configDocument["Renderer"]["ColourMode"] = json::Number(ren->GetColourMode());
+	Client::Ref().SetPref("Renderer.ColourMode", (double)ren->GetColourMode());
 
-		Client::Ref().configDocument["Renderer"]["DisplayModes"] = json::Array();
-		std::vector<unsigned int> displayModes = ren->GetDisplayMode();
-		for (int i = 0; i < displayModes.size(); i++)
-		{
-			Client::Ref().configDocument["Renderer"]["DisplayModes"][i] = json::Number(displayModes[i]);
-		}
+	std::vector<unsigned int> displayModes = ren->GetDisplayMode();
+	Client::Ref().SetPref("Renderer.DisplayModes", std::vector<double>(displayModes.begin(), displayModes.end()));
 
-		Client::Ref().configDocument["Renderer"]["RenderModes"] = json::Array();
-		std::vector<unsigned int> renderModes = ren->GetRenderMode();
-		for (int i = 0; i < renderModes.size(); i++)
-		{
-			Client::Ref().configDocument["Renderer"]["RenderModes"][i] = json::Number(renderModes[i]);
-		}
-	}
-	catch(json::Exception & e)
-	{
-
-	}
+	std::vector<unsigned int> renderModes = ren->GetRenderMode();
+	Client::Ref().SetPref("Renderer.RenderModes", std::vector<double>(renderModes.begin(), renderModes.end()));
 
 	for(int i = 0; i < menuList.size(); i++)
 	{

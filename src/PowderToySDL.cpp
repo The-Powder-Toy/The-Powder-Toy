@@ -20,6 +20,8 @@
 #include "interface/ControlFactory.h"
 #include "interface/Point.h"
 #include "interface/Label.h"
+#include "simulation/SaveRenderer.h"
+#include "client/Client.h"
 
 #include "game/GameController.h"
 #include "game/GameView.h"
@@ -237,6 +239,7 @@ int main(int argc, char * argv[])
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
 	delete ui::Engine::Ref().g;
+	Client::Ref().Shutdown();
 	return 0;
 }
 

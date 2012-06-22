@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <time.h>
 #include <stdio.h>
+#include <deque>
 
 #ifdef WIN32
 #include <direct.h>
@@ -194,7 +195,7 @@ void Client::AddListener(ClientListener * listener)
 	listeners.push_back(listener);
 }
 
-Client::~Client()
+void Client::Shutdown()
 {
 	ClearThumbnailRequests();
 	http_done();
@@ -224,6 +225,10 @@ Client::~Client()
 		json::Writer::Write(configDocument, configFile);
 		configFile.close();
 	}
+}
+
+Client::~Client()
+{
 }
 
 
@@ -1276,4 +1281,209 @@ std::vector<string> * Client::AddTag(int saveID, string tag)
 	if(data)
 		free(data);
 	return tags;
+}
+
+vector<std::string> Client::explodePropertyString(std::string property)
+{
+	vector<string> stringArray;
+	string current = "";
+	for (string::iterator iter = property.begin(); iter != property.end(); ++iter) {
+		if (*iter == '.') {
+			if (current.length() > 0) {
+				stringArray.push_back(current);
+				current = "";
+			}
+		} else {
+			current += *iter;
+		}
+	}
+	if(current.length() > 0)
+		stringArray.push_back(current);
+	return stringArray;
+}
+
+std::string Client::GetPrefString(std::string property, std::string defaultValue)
+{
+	try
+	{
+		json::String value = GetPref(property);
+		return value.Value();
+	}
+	catch (json::Exception & e)
+	{
+
+	}
+	return defaultValue;
+}
+
+double Client::GetPrefNumber(std::string property, double defaultValue)
+{
+	try
+	{
+		json::Number value = GetPref(property);
+		return value.Value();
+	}
+	catch (json::Exception & e)
+	{
+
+	}
+	return defaultValue;
+}
+
+vector<string> Client::GetPrefStringArray(std::string property)
+{
+	try
+	{
+		json::Array value = GetPref(property);
+		vector<string> strArray;
+		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
+		{
+			json::String cValue = *iter;
+			strArray.push_back(cValue.Value());
+		}
+		return strArray;
+	}
+	catch (json::Exception & e)
+	{
+
+	}
+	return vector<string>();
+}
+
+vector<double> Client::GetPrefNumberArray(std::string property)
+{
+	try
+	{
+		json::Array value = GetPref(property);
+		vector<double> strArray;
+		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
+		{
+			json::Number cValue = *iter;
+			strArray.push_back(cValue.Value());
+		}
+		return strArray;
+	}
+	catch (json::Exception & e)
+	{
+
+	}
+	return vector<double>();
+}
+
+vector<bool> Client::GetPrefBoolArray(std::string property)
+{
+	try
+	{
+		json::Array value = GetPref(property);
+		vector<bool> strArray;
+		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
+		{
+			json::Boolean cValue = *iter;
+			strArray.push_back(cValue.Value());
+		}
+		return strArray;
+	}
+	catch (json::Exception & e)
+	{
+
+	}
+	return vector<bool>();
+}
+
+bool Client::GetPrefBool(std::string property, bool defaultValue)
+{
+	try
+	{
+		json::Boolean value = GetPref(property);
+		return value.Value();
+	}
+	catch (json::Exception & e)
+	{
+
+	}
+	return defaultValue;
+}
+
+void Client::SetPref(std::string property, std::string value)
+{
+	json::UnknownElement stringValue = json::String(value);
+	SetPref(property, stringValue);
+}
+
+void Client::SetPref(std::string property, double value)
+{
+	json::UnknownElement numberValue = json::Number(value);
+	SetPref(property, numberValue);
+}
+
+void Client::SetPref(std::string property, vector<string> value)
+{
+	json::Array newArray;
+	for(vector<string>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	{
+		newArray.Insert(json::String(*iter));
+	}
+	json::UnknownElement newArrayValue = newArray;
+	SetPref(property, newArrayValue);
+}
+
+void Client::SetPref(std::string property, vector<double> value)
+{
+	json::Array newArray;
+	for(vector<double>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	{
+		newArray.Insert(json::Number(*iter));
+	}
+	json::UnknownElement newArrayValue = newArray;
+	SetPref(property, newArrayValue);
+}
+
+void Client::SetPref(std::string property, vector<bool> value)
+{
+	json::Array newArray;
+	for(vector<bool>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	{
+		newArray.Insert(json::Boolean(*iter));
+	}
+	json::UnknownElement newArrayValue = newArray;
+	SetPref(property, newArrayValue);
+}
+
+void Client::SetPref(std::string property, bool value)
+{
+	json::UnknownElement boolValue = json::Boolean(value);
+	SetPref(property, boolValue);
+}
+
+json::UnknownElement Client::GetPref(std::string property)
+{
+	vector<string> pTokens = Client::explodePropertyString(property);
+	const json::UnknownElement & configDocumentCopy = configDocument;
+	json::UnknownElement currentRef = configDocumentCopy;
+	for(vector<string>::iterator iter = pTokens.begin(); iter != pTokens.end(); ++iter)
+	{
+		currentRef = currentRef[*iter];
+	}
+	return currentRef;
+}
+
+void Client::setPrefR(std::deque<string> tokens, json::UnknownElement & element, json::UnknownElement & value)
+{
+	if(tokens.size())
+	{
+		std::string token = tokens.front();
+		tokens.pop_front();
+		setPrefR(tokens, element[token], value);
+	}
+	else
+		element = value;
+}
+
+void Client::SetPref(std::string property, json::UnknownElement & value)
+{
+	vector<string> pTokens = Client::explodePropertyString(property);
+	deque<string> dTokens(pTokens.begin(), pTokens.end());
+	string token = dTokens.front();
+	dTokens.pop_front();
+	setPrefR(dTokens, configDocument[token], value);
 }
