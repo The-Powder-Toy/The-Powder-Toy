@@ -33,6 +33,7 @@ GameView::GameView():
 	mousePosition(0, 0),
 	lastOffset(0)
 {
+	
 	int currentX = 1;
 	//Set up UI
 	class SearchAction : public ui::ButtonAction
@@ -45,6 +46,8 @@ GameView::GameView():
 			v->c->OpenSearch();
 		}
 	};
+	scrollBar = new ui::Button(ui::Point(XRES+50,YRES+50), ui::Point(50, 3), "");
+	AddComponent(scrollBar);
 	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15));  //Open
 	searchButton->SetIcon(IconOpen);
 	currentX+=18;
@@ -824,6 +827,7 @@ void GameView::OnTick(float dt)
 		lastLogEntry -= 0.16*dt;
 }
 
+
 void GameView::DoMouseMove(int x, int y, int dx, int dy)
 {
 	if(c->MouseMove(x, y, dx, dy))
@@ -832,14 +836,24 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 	if(toolButtons.size())
 	{
 		int totalWidth = (toolButtons[0]->Size.X+1)*toolButtons.size();
+		int scrollSize = (int)(((float)(XRES-15))/((float)totalWidth) * ((float)XRES-15));
+		if (scrollSize>XRES)
+			scrollSize = XRES;
+		scrollBar->Position.Y = toolButtons[0]->Position.Y + 19;
 		if(totalWidth > XRES-15)
 		{
 			int mouseX = x;
 			if(mouseX > XRES)
 				mouseX = XRES;
+			float frac = (float)mouseX/((float)XRES-15);
+			scrollBar->Position.X = (int)(frac*(float)(XRES-scrollSize));
+			scrollBar->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
+			scrollBar->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+			scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+					
 			float overflow = totalWidth-(XRES-15), mouseLocation = float(XRES)/float(mouseX-(XRES));
 			setToolButtonOffset(overflow/mouseLocation);
-
+			
 			//Ensure that mouseLeave events are make their way to the buttons should they move from underneith the mouse pointer
 			if(toolButtons[0]->Position.Y < y && toolButtons[0]->Position.Y+toolButtons[0]->Size.Y > y)
 			{
@@ -853,6 +867,11 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 				}
 			}
 		}
+		else
+		{
+		scrollBar->Position.X = 0;
+		}
+		scrollBar->Size.X=scrollSize;
 	}
 }
 

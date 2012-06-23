@@ -46,6 +46,7 @@ private:
 	vector<ui::Component*> notificationComponents;
 	deque<string> logEntries;
 	float lastLogEntry;
+	ui::Button * scrollBar;
 	ui::Button * searchButton;
     ui::Button * reloadButton;
     ui::Button * saveSimulationButton;
