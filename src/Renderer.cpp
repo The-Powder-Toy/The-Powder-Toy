@@ -23,6 +23,13 @@ extern "C"
 #endif
 }
 
+#ifndef OGLI
+#define VIDXRES VIDXRES
+#define VIDYRES YRES+MENUSIZE
+#else
+#define VIDXRES XRES
+#define VIDYRES YRES
+#endif
 
 void Renderer::clearScreen(float alpha)
 {
@@ -228,6 +235,8 @@ void Renderer::FinaliseParts()
 	}
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable( GL_TEXTURE_2D );
+#else
+	g->draw_image(vid, 0, 0, VIDXRES, VIDYRES, 255);
 #endif
 }
 
@@ -324,29 +333,29 @@ void Renderer::RenderZoom()
 	#else
 		int x, y, i, j;
 		pixel pix;
-		pixel * img = g->vid;
-		g->drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+2, zoomScopeSize*ZFACTOR+2, 192, 192, 192, 255);
-		g->drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR, zoomScopeSize*ZFACTOR, 0, 0, 0, 255);
-		g->clearrect(zoomWindowPosition.X, zoomWindowPosition.Y, zoomScopeSize*ZFACTOR, zoomScopeSize*ZFACTOR);
+		pixel * img = vid;
+		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+2, zoomScopeSize*ZFACTOR+2, 192, 192, 192, 255);
+		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR, zoomScopeSize*ZFACTOR, 0, 0, 0, 255);
+		clearrect(zoomWindowPosition.X, zoomWindowPosition.Y, zoomScopeSize*ZFACTOR, zoomScopeSize*ZFACTOR);
 		for (j=0; j<zoomScopeSize; j++)
 			for (i=0; i<zoomScopeSize; i++)
 			{
-				pix = img[(j+zoomScopePosition.Y)*(XRES+BARSIZE)+(i+zoomScopePosition.X)];
+				pix = img[(j+zoomScopePosition.Y)*(VIDXRES)+(i+zoomScopePosition.X)];
 				for (y=0; y<ZFACTOR-1; y++)
 					for (x=0; x<ZFACTOR-1; x++)
-						img[(j*ZFACTOR+y+zoomWindowPosition.Y)*(XRES+BARSIZE)+(i*ZFACTOR+x+zoomWindowPosition.X)] = pix;
+						img[(j*ZFACTOR+y+zoomWindowPosition.Y)*(VIDXRES)+(i*ZFACTOR+x+zoomWindowPosition.X)] = pix;
 			}
 		if (zoomEnabled)
 		{
 			for (j=-1; j<=zoomScopeSize; j++)
 			{
-				g->xor_pixel(zoomScopePosition.X+j, zoomScopePosition.Y-1);
-				g->xor_pixel(zoomScopePosition.X+j, zoomScopePosition.Y+zoomScopeSize);
+				xor_pixel(zoomScopePosition.X+j, zoomScopePosition.Y-1);
+				xor_pixel(zoomScopePosition.X+j, zoomScopePosition.Y+zoomScopeSize);
 			}
 			for (j=0; j<zoomScopeSize; j++)
 			{
-				g->xor_pixel(zoomScopePosition.X-1, zoomScopePosition.Y+j);
-				g->xor_pixel(zoomScopePosition.X+zoomScopeSize, zoomScopePosition.Y+j);
+				xor_pixel(zoomScopePosition.X-1, zoomScopePosition.Y+j);
+				xor_pixel(zoomScopePosition.X+zoomScopeSize, zoomScopePosition.Y+j);
 			}
 		}
 	#endif
@@ -362,8 +371,6 @@ void Renderer::DrawWalls()
 	unsigned char (*bmap)[XRES/CELL] = sim->bmap;
 	unsigned char (*emap)[XRES/CELL] = sim->emap;
 	wall_type *wtypes = sim->wtypes;
-	pixel * vid = g->vid;
-
 	for (y=0; y<YRES/CELL; y++)
 		for (x=0; x<XRES/CELL; x++)
 			if (bmap[y][x])
@@ -379,30 +386,30 @@ void Renderer::DrawWalls()
 				{
 					for (j=0; j<CELL; j+=2)
 						for (i=(j>>1)&1; i<CELL; i+=2)
-							vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+							vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
 				}
 				else if (wtypes[wt].drawstyle==2)
 				{
 					for (j=0; j<CELL; j+=2)
 						for (i=0; i<CELL; i+=2)
-							vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+							vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
 				}
 				else if (wtypes[wt].drawstyle==3)
 				{
 					for (j=0; j<CELL; j++)
 						for (i=0; i<CELL; i++)
-							vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+							vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
 				}
 				else if (wtypes[wt].drawstyle==4)
 				{
 					for (j=0; j<CELL; j++)
 						for (i=0; i<CELL; i++)
 							if(i == j)
-								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
 							else if  (i == j+1 || (i == 0 && j == CELL-1))
-								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = gc;
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = gc;
 							else
-								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x202020);
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x202020);
 				}
 
 				// special rendering for some walls
@@ -413,14 +420,14 @@ void Renderer::DrawWalls()
 						for (j=0; j<CELL; j++)
 							for (i=0; i<CELL; i++)
 								if (i&j&1)
-									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
 					}
 					else
 					{
 						for (j=0; j<CELL; j++)
 							for (i=0; i<CELL; i++)
 								if (!(i&j&1))
-									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
 					}
 				}
 				else if (wt==WL_WALLELEC)
@@ -429,9 +436,9 @@ void Renderer::DrawWalls()
 						for (i=0; i<CELL; i++)
 						{
 							if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
-								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = pc;
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
 							else
-								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x808080);
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x808080);
 						}
 				}
 				else if (wt==WL_EHOLE)
@@ -440,16 +447,16 @@ void Renderer::DrawWalls()
 					{
 						for (j=0; j<CELL; j++)
 							for (i=0; i<CELL; i++)
-								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x242424);
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x242424);
 						for (j=0; j<CELL; j+=2)
 							for (i=0; i<CELL; i+=2)
-								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x000000);
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x000000);
 					}
 					else
 					{
 						for (j=0; j<CELL; j+=2)
 							for (i=0; i<CELL; i+=2)
-								vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x242424);
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x242424);
 					}
 				}
 				if (wtypes[wt].eglow && emap[y][x])
@@ -522,8 +529,8 @@ void Renderer::DrawSigns()
 		{
 			char buff[256];  //Buffer
 			get_sign_pos(i, &x, &y, &w, &h);
-			g->clearrect(x, y, w, h);
-			g->drawrect(x, y, w, h, 192, 192, 192, 255);
+			clearrect(x, y, w, h);
+			drawrect(x, y, w, h, 192, 192, 192, 255);
 
 			//Displaying special information
 			if (signs[i].text == "{p}")
@@ -532,7 +539,7 @@ void Renderer::DrawSigns()
 				if (signs[i].x>=0 && signs[i].x<XRES && signs[i].y>=0 && signs[i].y<YRES)
 					pressure = sim->pv[signs[i].y/CELL][signs[i].x/CELL];
 				sprintf(buff, "Pressure: %3.2f", pressure);  //...pressure
-				g->drawtext(x+3, y+3, buff, 255, 255, 255, 255);
+				drawtext(x+3, y+3, buff, 255, 255, 255, 255);
 			}
 			else if (signs[i].text == "{t}")
 			{
@@ -540,7 +547,7 @@ void Renderer::DrawSigns()
 					sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...temperature
 				else
 					sprintf(buff, "Temp: 0.00");  //...temperature
-				g->drawtext(x+3, y+3, buff, 255, 255, 255, 255);
+				drawtext(x+3, y+3, buff, 255, 255, 255, 255);
 			}
 			else if (sregexp(signs[i].text.c_str(), "^{c:[0-9]*|.*}$")==0)
 			{
@@ -554,11 +561,11 @@ void Renderer::DrawSigns()
 					buff[sldr - startm] = signs[i].text[sldr];
 					sldr++;
 				}
-				g->drawtext(x+3, y+3, buff, 0, 191, 255, 255);
+				drawtext(x+3, y+3, buff, 0, 191, 255, 255);
 			}
 			else 
 			{
-				g->drawtext(x+3, y+3, signs[i].text, 255, 255, 255, 255);
+				drawtext(x+3, y+3, signs[i].text, 255, 255, 255, 255);
 			}
 				
 			x = signs[i].x;
@@ -574,7 +581,7 @@ void Renderer::DrawSigns()
 #else
 			for (j=0; j<4; j++)
 			{
-				g->blendpixel(x, y, 192, 192, 192, 255);
+				blendpixel(x, y, 192, 192, 192, 255);
 				x+=dx;
 				y+=dy;
 			}
@@ -601,8 +608,8 @@ void Renderer::render_gravlensing()
 	int nx, ny, rx, ry, gx, gy, bx, by, co;
 	int r, g, b;
 	pixel t;
-	pixel *src = this->g->vid;
-	pixel *dst = this->g->vid;
+	pixel *src = vid;
+	pixel *dst = vid;
 	for(nx = 0; nx < XRES; nx++)
 	{
 		for(ny = 0; ny < YRES; ny++)
@@ -616,17 +623,17 @@ void Renderer::render_gravlensing()
 			by = (int)(ny-sim->gravy[co]+0.5f);
 			if(rx > 0 && rx < XRES && ry > 0 && ry < YRES && gx > 0 && gx < XRES && gy > 0 && gy < YRES && bx > 0 && bx < XRES && by > 0 && by < YRES)
 			{
-				t = dst[ny*(XRES+BARSIZE)+nx];
-				r = PIXR(src[ry*(XRES+BARSIZE)+rx]) + PIXR(t);
-				g = PIXG(src[gy*(XRES+BARSIZE)+gx]) + PIXG(t);
-				b = PIXB(src[by*(XRES+BARSIZE)+bx]) + PIXB(t);
+				t = dst[ny*(VIDXRES)+nx];
+				r = PIXR(src[ry*(VIDXRES)+rx]) + PIXR(t);
+				g = PIXG(src[gy*(VIDXRES)+gx]) + PIXG(t);
+				b = PIXB(src[by*(VIDXRES)+bx]) + PIXB(t);
 				if (r>255)
 					r = 255;
 				if (g>255)
 					g = 255;
 				if (b>255)
 					b = 255;
-				dst[ny*(XRES+BARSIZE)+nx] = PIXRGB(r,g,b);
+				dst[ny*(VIDXRES)+nx] = PIXRGB(r,g,b);
 			}
 		}
 	}
@@ -646,7 +653,7 @@ void Renderer::render_fire()
 			if (r || g || b)
 				for (y=-CELL; y<2*CELL; y++)
 					for (x=-CELL; x<2*CELL; x++)
-						this->g->addpixel(i*CELL+x, j*CELL+y, r, g, b, fire_alpha[y+CELL][x+CELL]);
+						addpixel(i*CELL+x, j*CELL+y, r, g, b, fire_alpha[y+CELL][x+CELL]);
 			r *= 8;
 			g *= 8;
 			b *= 8;
@@ -804,6 +811,8 @@ void Renderer::render_parts()
 			fny = sim->parts[i].y;
 
 			if((sim->photons[ny][nx]&0xFF) && !(sim->elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
+				continue;
+			if(nx >= XRES || nx < 0 || ny >= YRES || ny < 0)
 				continue;
 
 			//Defaults
@@ -984,7 +993,7 @@ void Renderer::render_parts()
 /*					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
 					{
 						sprintf(buff, "%3d", sim->parts[i].life);  //Show HP
-						g->drawtext(mousex-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
+						drawtext(mousex-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
 					}*/
 
 					if (colour_mode!=COLOUR_HEAT)
@@ -1045,7 +1054,7 @@ void Renderer::render_parts()
 					glVertex2f(cplayer->legs[12], cplayer->legs[13]);
 					glEnd();
 #else
-					s = XRES+BARSIZE;
+					s = VIDXRES;
 
 					if (t==PT_STKM2)
 					{
@@ -1070,23 +1079,23 @@ void Renderer::render_parts()
 					//head
 					if(t==PT_FIGH)
 					{
-						g->draw_line(nx, ny+2, nx+2, ny, colr, colg, colb, s);
-						g->draw_line(nx+2, ny, nx, ny-2, colr, colg, colb, s);
-						g->draw_line(nx, ny-2, nx-2, ny, colr, colg, colb, s);
-						g->draw_line(nx-2, ny, nx, ny+2, colr, colg, colb, s);
+						draw_line(nx, ny+2, nx+2, ny, colr, colg, colb, s);
+						draw_line(nx+2, ny, nx, ny-2, colr, colg, colb, s);
+						draw_line(nx, ny-2, nx-2, ny, colr, colg, colb, s);
+						draw_line(nx-2, ny, nx, ny+2, colr, colg, colb, s);
 					}
 					else
 					{
-						g->draw_line(nx-2, ny+2, nx+2, ny+2, colr, colg, colb, s);
-						g->draw_line(nx-2, ny-2, nx+2, ny-2, colr, colg, colb, s);
-						g->draw_line(nx-2, ny-2, nx-2, ny+2, colr, colg, colb, s);
-						g->draw_line(nx+2, ny-2, nx+2, ny+2, colr, colg, colb, s);
+						draw_line(nx-2, ny+2, nx+2, ny+2, colr, colg, colb, s);
+						draw_line(nx-2, ny-2, nx+2, ny-2, colr, colg, colb, s);
+						draw_line(nx-2, ny-2, nx-2, ny+2, colr, colg, colb, s);
+						draw_line(nx+2, ny-2, nx+2, ny+2, colr, colg, colb, s);
 					}
 					//legs
-					g->draw_line(nx, ny+3, cplayer->legs[0], cplayer->legs[1], legr, legg, legb, s);
-					g->draw_line(cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], legr, legg, legb, s);
-					g->draw_line(nx, ny+3, cplayer->legs[8], cplayer->legs[9], legr, legg, legb, s);
-					g->draw_line(cplayer->legs[8], cplayer->legs[9], cplayer->legs[12], cplayer->legs[13], legr, legg, legb, s);
+					draw_line(nx, ny+3, cplayer->legs[0], cplayer->legs[1], legr, legg, legb, s);
+					draw_line(cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], legr, legg, legb, s);
+					draw_line(nx, ny+3, cplayer->legs[8], cplayer->legs[9], legr, legg, legb, s);
+					draw_line(cplayer->legs[8], cplayer->legs[9], cplayer->legs[12], cplayer->legs[13], legr, legg, legb, s);
 #endif
 				}
 				if(pixel_mode & PMODE_FLAT)
@@ -1100,7 +1109,7 @@ void Renderer::render_parts()
                     flatC[cflatC++] = 1.0f;
                     cflat++;
 #else
-                    g->vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
+                    vid[ny*(VIDXRES)+nx] = PIXRGB(colr,colg,colb);
 #endif
 				}
 				if(pixel_mode & PMODE_BLEND)
@@ -1114,7 +1123,7 @@ void Renderer::render_parts()
                     flatC[cflatC++] = ((float)cola)/255.0f;
                     cflat++;
 #else
-                    g->blendpixel(nx, ny, colr, colg, colb, cola);
+                    blendpixel(nx, ny, colr, colg, colb, cola);
 #endif
 				}
 				if(pixel_mode & PMODE_ADD)
@@ -1128,7 +1137,7 @@ void Renderer::render_parts()
                     addC[caddC++] = ((float)cola)/255.0f;
                     cadd++;
 #else
-                    g->addpixel(nx, ny, colr, colg, colb, cola);
+                    addpixel(nx, ny, colr, colg, colb, cola);
 #endif
 				}
 				if(pixel_mode & PMODE_BLOB)
@@ -1142,17 +1151,17 @@ void Renderer::render_parts()
                     blobC[cblobC++] = 1.0f;
                     cblob++;
 #else
-                    g->vid[ny*(XRES+BARSIZE)+nx] = PIXRGB(colr,colg,colb);
+                    vid[ny*(VIDXRES)+nx] = PIXRGB(colr,colg,colb);
 
-					g->blendpixel(nx+1, ny, colr, colg, colb, 223);
-					g->blendpixel(nx-1, ny, colr, colg, colb, 223);
-					g->blendpixel(nx, ny+1, colr, colg, colb, 223);
-					g->blendpixel(nx, ny-1, colr, colg, colb, 223);
+					blendpixel(nx+1, ny, colr, colg, colb, 223);
+					blendpixel(nx-1, ny, colr, colg, colb, 223);
+					blendpixel(nx, ny+1, colr, colg, colb, 223);
+					blendpixel(nx, ny-1, colr, colg, colb, 223);
 
-					g->blendpixel(nx+1, ny-1, colr, colg, colb, 112);
-					g->blendpixel(nx-1, ny-1, colr, colg, colb, 112);
-					g->blendpixel(nx+1, ny+1, colr, colg, colb, 112);
-					g->blendpixel(nx-1, ny+1, colr, colg, colb, 112);
+					blendpixel(nx+1, ny-1, colr, colg, colb, 112);
+					blendpixel(nx-1, ny-1, colr, colg, colb, 112);
+					blendpixel(nx+1, ny+1, colr, colg, colb, 112);
+					blendpixel(nx-1, ny+1, colr, colg, colb, 112);
 #endif
 				}
 				if(pixel_mode & PMODE_GLOW)
@@ -1167,24 +1176,24 @@ void Renderer::render_parts()
                     glowC[cglowC++] = 1.0f;
                     cglow++;
 #else
-                    g->addpixel(nx, ny, colr, colg, colb, (192*cola)/255);
-                    g->addpixel(nx+1, ny, colr, colg, colb, (96*cola)/255);
-                    g->addpixel(nx-1, ny, colr, colg, colb, (96*cola)/255);
-                    g->addpixel(nx, ny+1, colr, colg, colb, (96*cola)/255);
-                    g->addpixel(nx, ny-1, colr, colg, colb, (96*cola)/255);
+                    addpixel(nx, ny, colr, colg, colb, (192*cola)/255);
+                    addpixel(nx+1, ny, colr, colg, colb, (96*cola)/255);
+                    addpixel(nx-1, ny, colr, colg, colb, (96*cola)/255);
+                    addpixel(nx, ny+1, colr, colg, colb, (96*cola)/255);
+                    addpixel(nx, ny-1, colr, colg, colb, (96*cola)/255);
 
 					for (x = 1; x < 6; x++) {
-						g->addpixel(nx, ny-x, colr, colg, colb, cola1);
-						g->addpixel(nx, ny+x, colr, colg, colb, cola1);
-						g->addpixel(nx-x, ny, colr, colg, colb, cola1);
-						g->addpixel(nx+x, ny, colr, colg, colb, cola1);
+						addpixel(nx, ny-x, colr, colg, colb, cola1);
+						addpixel(nx, ny+x, colr, colg, colb, cola1);
+						addpixel(nx-x, ny, colr, colg, colb, cola1);
+						addpixel(nx+x, ny, colr, colg, colb, cola1);
 						for (y = 1; y < 6; y++) {
 							if(x + y > 7)
 								continue;
-							g->addpixel(nx+x, ny-y, colr, colg, colb, cola1);
-							g->addpixel(nx-x, ny+y, colr, colg, colb, cola1);
-							g->addpixel(nx+x, ny+y, colr, colg, colb, cola1);
-							g->addpixel(nx-x, ny-y, colr, colg, colb, cola1);
+							addpixel(nx+x, ny-y, colr, colg, colb, cola1);
+							addpixel(nx-x, ny+y, colr, colg, colb, cola1);
+							addpixel(nx+x, ny+y, colr, colg, colb, cola1);
+							addpixel(nx-x, ny-y, colr, colg, colb, cola1);
 						}
 					}
 #endif
@@ -1205,11 +1214,11 @@ void Renderer::render_parts()
 						for (y=-3; y<4; y++)
 						{
 							if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
-								g->blendpixel(x+nx, y+ny, colr, colg, colb, 30);
+								blendpixel(x+nx, y+ny, colr, colg, colb, 30);
 							if (abs(x)+abs(y) <=3 && abs(x)+abs(y))
-								g->blendpixel(x+nx, y+ny, colr, colg, colb, 20);
+								blendpixel(x+nx, y+ny, colr, colg, colb, 20);
 							if (abs(x)+abs(y) == 2)
-								g->blendpixel(x+nx, y+ny, colr, colg, colb, 10);
+								blendpixel(x+nx, y+ny, colr, colg, colb, 10);
 						}
 					}
 #endif
@@ -1269,11 +1278,11 @@ void Renderer::render_parts()
 #else
 					gradv = 4*sim->parts[i].life + flicker;
 					for (x = 0; gradv>0.5; x++) {
-						g->addpixel(nx+x, ny, colr, colg, colb, gradv);
-						g->addpixel(nx-x, ny, colr, colg, colb, gradv);
+						addpixel(nx+x, ny, colr, colg, colb, gradv);
+						addpixel(nx-x, ny, colr, colg, colb, gradv);
 
-						g->addpixel(nx, ny+x, colr, colg, colb, gradv);
-						g->addpixel(nx, ny-x, colr, colg, colb, gradv);
+						addpixel(nx, ny+x, colr, colg, colb, gradv);
+						addpixel(nx, ny-x, colr, colg, colb, gradv);
 						gradv = gradv/1.5f;
 					}
 #endif
@@ -1332,21 +1341,21 @@ void Renderer::render_parts()
 				    cline++;
 #else
 					gradv = flicker + fabs(parts[i].vx)*17 + fabs(sim->parts[i].vy)*17;
-					g->blendpixel(nx, ny, colr, colg, colb, (gradv*4)>255?255:(gradv*4) );
-					g->blendpixel(nx+1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					g->blendpixel(nx-1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					g->blendpixel(nx, ny+1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					g->blendpixel(nx, ny-1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(nx, ny, colr, colg, colb, (gradv*4)>255?255:(gradv*4) );
+					blendpixel(nx+1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(nx-1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(nx, ny+1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(nx, ny-1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
 					if (gradv>255) gradv=255;
-					g->blendpixel(nx+1, ny-1, colr, colg, colb, gradv);
-					g->blendpixel(nx-1, ny-1, colr, colg, colb, gradv);
-					g->blendpixel(nx+1, ny+1, colr, colg, colb, gradv);
-					g->blendpixel(nx-1, ny+1, colr, colg, colb, gradv);
+					blendpixel(nx+1, ny-1, colr, colg, colb, gradv);
+					blendpixel(nx-1, ny-1, colr, colg, colb, gradv);
+					blendpixel(nx+1, ny+1, colr, colg, colb, gradv);
+					blendpixel(nx-1, ny+1, colr, colg, colb, gradv);
 					for (x = 1; gradv>0.5; x++) {
-						g->addpixel(nx+x, ny, colr, colg, colb, gradv);
-						g->addpixel(nx-x, ny, colr, colg, colb, gradv);
-						g->addpixel(nx, ny+x, colr, colg, colb, gradv);
-						g->addpixel(nx, ny-x, colr, colg, colb, gradv);
+						addpixel(nx+x, ny, colr, colg, colb, gradv);
+						addpixel(nx-x, ny, colr, colg, colb, gradv);
+						addpixel(nx, ny+x, colr, colg, colb, gradv);
+						addpixel(nx, ny-x, colr, colg, colb, gradv);
 						gradv = gradv/1.2f;
 					}
 #endif
@@ -1405,21 +1414,21 @@ void Renderer::render_parts()
 				    cline++;
 #else
 					gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
-					g->blendpixel(nx, ny, colr, colg, colb, (gradv*4)>255?255:(gradv*4) );
-					g->blendpixel(nx+1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					g->blendpixel(nx-1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					g->blendpixel(nx, ny+1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					g->blendpixel(nx, ny-1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(nx, ny, colr, colg, colb, (gradv*4)>255?255:(gradv*4) );
+					blendpixel(nx+1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(nx-1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(nx, ny+1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(nx, ny-1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
 					if (gradv>255) gradv=255;
-					g->blendpixel(nx+1, ny-1, colr, colg, colb, gradv);
-					g->blendpixel(nx-1, ny-1, colr, colg, colb, gradv);
-					g->blendpixel(nx+1, ny+1, colr, colg, colb, gradv);
-					g->blendpixel(nx-1, ny+1, colr, colg, colb, gradv);
+					blendpixel(nx+1, ny-1, colr, colg, colb, gradv);
+					blendpixel(nx-1, ny-1, colr, colg, colb, gradv);
+					blendpixel(nx+1, ny+1, colr, colg, colb, gradv);
+					blendpixel(nx-1, ny+1, colr, colg, colb, gradv);
 					for (x = 1; gradv>0.5; x++) {
-						g->addpixel(nx+x, ny, colr, colg, colb, gradv);
-						g->addpixel(nx-x, ny, colr, colg, colb, gradv);
-						g->addpixel(nx, ny+x, colr, colg, colb, gradv);
-						g->addpixel(nx, ny-x, colr, colg, colb, gradv);
+						addpixel(nx+x, ny, colr, colg, colb, gradv);
+						addpixel(nx-x, ny, colr, colg, colb, gradv);
+						addpixel(nx, ny+x, colr, colg, colb, gradv);
+						addpixel(nx, ny-x, colr, colg, colb, gradv);
 						gradv = gradv/1.01f;
 					}
 #endif
@@ -1439,7 +1448,7 @@ void Renderer::render_parts()
 						nxo = ddist*cos(drad);
 						nyo = ddist*sin(drad);
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES)
-							g->addpixel(nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
+							addpixel(nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
 					}
 				}
 				if (pixel_mode & EFFECT_GRAVOUT)
@@ -1457,7 +1466,7 @@ void Renderer::render_parts()
 						nxo = ddist*cos(drad);
 						nyo = ddist*sin(drad);
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES)
-							g->addpixel(nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
+							addpixel(nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
 					}
 				}
 				//Fire effects
@@ -1730,7 +1739,7 @@ void Renderer::draw_other() // EMP effect
 		for (j=0; j<YRES; j++)
 			for (i=0; i<XRES; i++)
 			{
-				this->g->blendpixel(i, j, r, g, b, a);
+				blendpixel(i, j, r, g, b, a);
 			}
 #endif
 	}
@@ -1755,7 +1764,7 @@ void Renderer::draw_grav()
 			{
 				nx -= sim->gravx[ca]*0.5f;
 				ny -= sim->gravy[ca]*0.5f;
-				g->addpixel((int)(nx+0.5f), (int)(ny+0.5f), 255, 255, 255, (int)(dist*20.0f));
+				addpixel((int)(nx+0.5f), (int)(ny+0.5f), 255, 255, 255, (int)(dist*20.0f));
 			}
 		}
 	}
@@ -1831,7 +1840,7 @@ void Renderer::draw_air()
 			}
 			for (j=0; j<CELL; j++)//draws the colors
 				for (i=0; i<CELL; i++)
-					g->vid[(x*CELL+i) + (y*CELL+j)*(XRES+BARSIZE)] = c;
+					vid[(x*CELL+i) + (y*CELL+j)*(VIDXRES)] = c;
 		}
 #else
 	int sdl_scale = 1;
@@ -1905,9 +1914,9 @@ void Renderer::draw_grav_zones()
 				for (j=0; j<CELL; j++)//draws the colors
 					for (i=0; i<CELL; i++)
 						if(i == j)
-							g->blendpixel(x*CELL+i, y*CELL+j, 255, 200, 0, 120);
+							blendpixel(x*CELL+i, y*CELL+j, 255, 200, 0, 120);
 						else
-							g->blendpixel(x*CELL+i, y*CELL+j, 32, 32, 32, 120);
+							blendpixel(x*CELL+i, y*CELL+j, 32, 32, 32, 120);
 			}
 		}
 	}
@@ -1915,15 +1924,15 @@ void Renderer::draw_grav_zones()
 
 void Renderer::drawblob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
 {
-	g->blendpixel(x+1, y, cr, cg, cb, 112);
-	g->blendpixel(x-1, y, cr, cg, cb, 112);
-	g->blendpixel(x, y+1, cr, cg, cb, 112);
-	g->blendpixel(x, y-1, cr, cg, cb, 112);
+	blendpixel(x+1, y, cr, cg, cb, 112);
+	blendpixel(x-1, y, cr, cg, cb, 112);
+	blendpixel(x, y+1, cr, cg, cb, 112);
+	blendpixel(x, y-1, cr, cg, cb, 112);
 
-	g->blendpixel(x+1, y-1, cr, cg, cb, 64);
-	g->blendpixel(x-1, y-1, cr, cg, cb, 64);
-	g->blendpixel(x+1, y+1, cr, cg, cb, 64);
-	g->blendpixel(x-1, y+1, cr, cg, cb, 64);
+	blendpixel(x+1, y-1, cr, cg, cb, 64);
+	blendpixel(x-1, y-1, cr, cg, cb, 64);
+	blendpixel(x+1, y+1, cr, cg, cb, 64);
+	blendpixel(x-1, y+1, cr, cg, cb, 64);
 }
 
 Renderer::Renderer(Graphics * g, Simulation * sim):
@@ -1938,6 +1947,13 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 {
 	this->g = g;
 	this->sim = sim;
+#if !defined(OGLR)
+#if defined(OGLI)
+	vid = new pixel[VIDXRES*VIDYRES];
+#else
+	vid = vid;
+#endif
+#endif
 
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
@@ -2200,4 +2216,8 @@ Renderer::~Renderer()
 	free(flm_data);
 	free(plasma_data);
 }
+
+#define PIXELMETHODS_CLASS Renderer
+#include "PixelMethods.inc"
+#undef PIXELMETHODS_CLASS
 

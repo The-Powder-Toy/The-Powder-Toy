@@ -38,7 +38,7 @@ extern "C" IMAGE_DOS_HEADER __ImageBase;
 
 SDL_Surface * sdl_scrn;
 
-#ifdef OGLR
+#ifdef OGLI
 void blit()
 {
 	SDL_GL_SwapBuffers();
@@ -110,13 +110,13 @@ SDL_Surface * SDLOpen()
 	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	atexit(SDL_Quit);
-#ifndef OGLR
+#ifndef OGLI
 	surface = SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_SWSURFACE);
 #else
 	surface = SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_OPENGL);
 #endif
 
-#if defined(OGLR)
+#if defined(OGLI)
 	int status = glewInit();
 	if(status != GLEW_OK)
 	{
@@ -135,7 +135,7 @@ int main(int argc, char * argv[])
 	float fps = 0, delta = 1.0f;
 
 	sdl_scrn = SDLOpen();
-#ifdef OGLR
+#ifdef OGLI
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 #endif
 	
@@ -195,14 +195,14 @@ int main(int argc, char * argv[])
 		engine->Tick();
 		engine->Draw();
 		
-		if(SDL_GetTicks()-lastTick>1000)
+		if(SDL_GetTicks()-lastTick>500)
 		{
 			//Run client tick every second
 			lastTick = SDL_GetTicks();
 			Client::Ref().Tick();
 		}
 
-#ifdef OGLR
+#ifdef OGLI
 		blit();
 #else
 		blit(engine->g->vid);

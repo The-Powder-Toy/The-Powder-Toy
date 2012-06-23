@@ -870,7 +870,7 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 		}
 		else
 		{
-		scrollBar->Position.X = 0;
+			scrollBar->Position.X = 0;
 		}
 		scrollBar->Size.X=scrollSize;
 	}

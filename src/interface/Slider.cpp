@@ -104,7 +104,7 @@ void Slider::Draw(const Point& screenPos)
 
 	if(bgGradient)
 	{
-#ifndef OGLR
+#ifndef OGLI
 		for (int j = 3; j < Size.Y-6; j++)
 				for (int i = 3; i < Size.X-6; i++)
 					g->blendpixel(screenPos.X+i+2, screenPos.Y+j+2, bgGradient[(i-3)*3], bgGradient[(i-3)*3+1], bgGradient[(i-3)*3+2], 255);

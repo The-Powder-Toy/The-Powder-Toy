@@ -1,7 +1,7 @@
 #include "Graphics.h"
 #include "font.h"
 
-#ifdef OGLR
+#ifdef OGLI
 
 Graphics::Graphics():
 sdl_scale(1)

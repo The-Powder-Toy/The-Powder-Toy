@@ -4,7 +4,7 @@
 #include <string>
 #include <cstdlib>
 #include <cstring>
-#if defined(OGLR)
+#if defined(OGLI)
 #include "OpenGLHeaders.h"
 #endif
 #include "Config.h"
@@ -104,7 +104,7 @@ class Graphics
 public:
 	pixel *vid;
 	int sdl_scale;
-#ifdef OGLR
+#ifdef OGLI
 	//OpenGL specific instance variables
 	GLuint vidBuf, textTexture;
  #endif

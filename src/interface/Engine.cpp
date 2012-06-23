@@ -76,7 +76,7 @@ void Engine::ShowWindow(Window * window)
 		}
 		lastBuffer = (pixel*)malloc((width_ * height_) * PIXELSIZE);
 
-#ifndef OGLR
+#ifndef OGLI
 		memcpy(lastBuffer, g->vid, (width_ * height_) * PIXELSIZE);
 #endif
 
@@ -171,7 +171,7 @@ void Engine::Draw()
 	if(lastBuffer && !(state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
 	{
 		g->Clear();
-#ifndef OGLR
+#ifndef OGLI
 		memcpy(g->vid, lastBuffer, (width_ * height_) * PIXELSIZE);
 #endif
 	}
