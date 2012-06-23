@@ -42,6 +42,7 @@ int update_FIRW(UPDATE_FUNC_ARGS) {
 						multiplier = (parts[i].life+20)*0.2f/sqrtf(gx*gx+gy*gy);
 						parts[i].vx -= gx*multiplier;
 						parts[i].vy -= gy*multiplier;
+						return 0;
 					}
 				}
 	}
