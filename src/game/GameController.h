@@ -90,6 +90,7 @@ public:
 	void OpenRenderOptions();
 	void OpenSaveWindow();
 	void OpenStamps();
+	void OpenElementSearch();
 	void PlaceSave(ui::Point position);
 	void ClearSim();
 	void ReloadSim();

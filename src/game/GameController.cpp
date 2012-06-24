@@ -13,6 +13,7 @@
 #include "dialogues/ConfirmPrompt.h"
 #include "GameModelException.h"
 #include "simulation/Air.h"
+#include "elementsearch/ElementSearchActivity.h"
 #include "update/UpdateActivity.h"
 #include "Notification.h"
 
@@ -511,6 +512,21 @@ void GameController::OpenLogin()
 {
 	loginWindow = new LoginController(new LoginCallback(this));
 	ui::Engine::Ref().ShowWindow(loginWindow->GetView());
+}
+
+void GameController::OpenElementSearch()
+{
+	vector<Tool*> toolList;
+	vector<Menu*> menuList = gameModel->GetMenuList();
+	for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter!=end; ++iter) {
+		if(!(*iter))
+			continue;
+		vector<Tool*> menuToolList = (*iter)->GetToolList();
+		if(!menuToolList.size())
+			continue;
+		toolList.insert(toolList.end(), menuToolList.begin(), menuToolList.end());
+	}
+	ui::Engine::Ref().ShowWindow(new ElementSearchActivity(gameModel, toolList));
 }
 
 void GameController::OpenTags()

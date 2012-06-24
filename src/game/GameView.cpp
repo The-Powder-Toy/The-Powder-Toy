@@ -238,6 +238,21 @@ GameView::GameView():
 	colourBSlider->SetActionCallback(colC);
 	colourASlider = new ui::Slider(ui::Point(275, Size.Y-39), ui::Point(50, 14), 255);
 	colourASlider->SetActionCallback(colC);
+
+	class ElementSearchAction : public ui::ButtonAction
+	{
+		GameView * v;
+	public:
+		ElementSearchAction(GameView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->c->OpenElementSearch();
+		}
+	};
+	ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, YRES+MENUSIZE-32), ui::Point(15, 15), "");
+	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
+	tempButton->SetActionCallback(new ElementSearchAction(this));
+	AddComponent(tempButton);
 }
 
 class GameView::MenuAction: public ui::ButtonAction
@@ -272,7 +287,7 @@ public:
 
 void GameView::NotifyMenuListChanged(GameModel * sender)
 {
-	int currentY = YRES+MENUSIZE-16-(sender->GetMenuList().size()*16);
+	int currentY = YRES+MENUSIZE-48;//-(sender->GetMenuList().size()*16);
 	for(int i = 0; i < menuButtons.size(); i++)
 	{
 		RemoveComponent(menuButtons[i]);
@@ -286,15 +301,16 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 	}
 	toolButtons.clear();
 	vector<Menu*> menuList = sender->GetMenuList();
-	for(int i = 0; i < menuList.size(); i++)
+	for(vector<Menu*>::reverse_iterator iter = menuList.rbegin(), end = menuList.rend(); iter != end; ++iter)
 	{
 		std::string tempString = "";
-		tempString += menuList[i]->GetIcon();
+		Menu * item = *iter;
+		tempString += item->GetIcon();
 		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, currentY), ui::Point(15, 15), tempString);
 		tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 		tempButton->SetTogglable(true);
-		tempButton->SetActionCallback(new MenuAction(this, menuList[i]));
-		currentY+=16;
+		tempButton->SetActionCallback(new MenuAction(this, item));
+		currentY-=16;
 		AddComponent(tempButton);
 		menuButtons.push_back(tempButton);
 	}
