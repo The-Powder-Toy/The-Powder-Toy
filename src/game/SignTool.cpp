@@ -32,9 +32,24 @@ public:
 			{
 				prompt->sim->signs.push_back(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
 			}
-			else if(prompt->textField->GetText().length())
+			else if(prompt->signID!=-1 && prompt->textField->GetText().length())
 			{
 				prompt->sim->signs[prompt->signID] = sign(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
+			}
+			prompt->SelfDestruct();
+		}
+	};
+	class DeleteAction: public ui::ButtonAction
+	{
+	public:
+		SignWindow * prompt;
+		DeleteAction(SignWindow * prompt_) { prompt = prompt_; }
+		void ActionCallback(ui::Button * sender)
+		{
+			ui::Engine::Ref().CloseWindow();
+			if(prompt->signID!=-1)
+			{
+				prompt->sim->signs.erase(prompt->sim->signs.begin()+prompt->signID);
 			}
 			prompt->SelfDestruct();
 		}
@@ -48,28 +63,51 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	sim(sim_),
 	signPosition(position_)
 {
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "New sign");
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "New sign");
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
-	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(messageLabel);
-	
+
 	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "OK");
-	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = (ui::Colour(200, 200, 200));
 	okayButton->SetActionCallback(new OkayAction(this));
 	AddComponent(okayButton);
 	
-	justification = new ui::DropDown(ui::Point(8, 46), ui::Point(50, 16));
+	ui::Label * tempLabel = new ui::Label(ui::Point(8, 48), ui::Point(40, 15), "Justify:");
+	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(tempLabel);
+
+	justification = new ui::DropDown(ui::Point(52, 48), ui::Point(50, 16));
 	AddComponent(justification);
-	justification->AddOption(std::pair<std::string, int>("Left", (int)sign::Left));
-	justification->AddOption(std::pair<std::string, int>("Centre", (int)sign::Centre));
-	justification->AddOption(std::pair<std::string, int>("Right", (int)sign::Right));
+	justification->AddOption(std::pair<std::string, int>("\x9D Left", (int)sign::Left));
+	justification->AddOption(std::pair<std::string, int>("\x9E Centre", (int)sign::Centre));
+	justification->AddOption(std::pair<std::string, int>("\x9F Right", (int)sign::Right));
 	justification->SetOption(0);
+	justification->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	
-	textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "");
-	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	textField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 17), "");
+	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(textField);
 	
+	if(signID!=-1)
+	{
+		messageLabel->SetText("Edit sign");
+
+		textField->SetText(sim->signs[signID].text);
+		justification->SetOption(sim->signs[signID].ju);
+
+		ui::Point position = ui::Point(justification->Position.X+justification->Size.X+3, 48);
+		ui::Button * deleteButton = new ui::Button(position, ui::Point(Size.X-position.X-8, 16), "Delete");
+		deleteButton->SetIcon(IconDelete);
+		deleteButton->SetActionCallback(new DeleteAction(this));
+		AddComponent(deleteButton);
+	}
+
 	ui::Engine::Ref().ShowWindow(this);
 }
 void SignWindow::OnDraw()
@@ -82,5 +120,14 @@ void SignWindow::OnDraw()
 
 void SignTool::Click(Simulation * sim, Brush * brush, ui::Point position)
 {
-	new SignWindow(this, sim, -1, position);
+	int signX, signY, signW, signH, signIndex = -1;
+	for(int i = 0; i < sim->signs.size(); i++){
+		sim->signs[i].pos(signX, signY, signW, signH);
+		if(position.X > signX && position.X < signX+signW && position.Y > signY && position.Y < signY+signH)
+		{
+			signIndex = i;
+			break;
+		}
+	}
+	new SignWindow(this, sim, signIndex, position);
 }

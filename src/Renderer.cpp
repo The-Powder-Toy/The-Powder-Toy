@@ -58,6 +58,9 @@ void Renderer::clearScreen(float alpha)
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 #endif
+#ifdef OGLI
+    std::fill(vid, vid+(VIDXRES*VIDYRES), 0);
+#endif
 }
 #ifdef OGLR
 void Renderer::checkShader(GLuint shader, char * shname)
@@ -478,44 +481,6 @@ void Renderer::DrawWalls()
 #endif
 }
 
-void Renderer::get_sign_pos(int i, int *x0, int *y0, int *w, int *h)
-{
-	std::vector<sign> signs = sim->signs;
-	//Changing width if sign have special content
-	if (signs[i].text == "{p}")
-	{
-		*w = Graphics::textwidth("Pressure: -000.00");
-	}
-	else if (signs[i].text == "{t}")
-	{
-		*w = Graphics::textwidth("Temp: 0000.00");
-	}
-	else if (sregexp(signs[i].text.c_str(), "^{c:[0-9]*|.*}$")==0)
-	{
-		int sldr, startm;
-		char buff[256];
-		memset(buff, 0, sizeof(buff));
-		for (sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
-			startm = sldr + 1;
-
-		sldr = startm;
-		while (signs[i].text[sldr] != '}')
-		{
-			buff[sldr - startm] = signs[i].text[sldr];
-			sldr++;
-		}
-		*w = Graphics::textwidth(buff) + 5;
-	}
-	else
-	{
-		*w = Graphics::textwidth(signs[i].text.c_str()) + 5;
-	}
-	*h = 14;
-	*x0 = (signs[i].ju == 2) ? signs[i].x - *w :
-	      (signs[i].ju == 1) ? signs[i].x - *w/2 : signs[i].x;
-	*y0 = (signs[i].y > 18) ? signs[i].y - 18 : signs[i].y + 4;
-}
-
 void Renderer::DrawSigns()
 {
 	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq;
@@ -528,7 +493,7 @@ void Renderer::DrawSigns()
 		if (signs[i].text.length())
 		{
 			char buff[256];  //Buffer
-			get_sign_pos(i, &x, &y, &w, &h);
+			sim->signs[i].pos(x, y, w, h);
 			clearrect(x, y, w, h);
 			drawrect(x, y, w, h, 192, 192, 192, 255);
 

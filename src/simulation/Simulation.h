@@ -141,6 +141,7 @@ public:
 	//int get_brush_flags();
 	inline int create_part(int p, int x, int y, int t);
 	inline void delete_part(int x, int y, int flags);
+	void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
 	inline int is_wire(int x, int y);
 	inline int is_wire_off(int x, int y);
 	inline void set_emap(int x, int y);
