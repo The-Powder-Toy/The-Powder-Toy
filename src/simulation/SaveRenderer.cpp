@@ -53,6 +53,9 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 
 		glTranslated(0, MENUSIZE, 0);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+	    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	    glClear(GL_COLOR_BUFFER_BIT);
+	    ren->clearScreen(1.0f);
 		ren->render_parts();
 		ren->FinaliseParts();
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
