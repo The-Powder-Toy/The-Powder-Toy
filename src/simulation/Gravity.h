@@ -5,6 +5,10 @@
 #include "Config.h"
 #include "Simulation.h"
 
+#ifdef GRAVFFT
+#include <fftw3.h>
+#endif
+
 class Simulation;
 
 struct mask_el {
@@ -54,6 +58,13 @@ private:
 	pthread_cond_t gravcv;
 	int grav_ready;
 	int gravthread_done;
+
+#ifdef GRAVFFT
+	bool grav_fft_status;
+	float *th_ptgravx, *th_ptgravy, *th_gravmapbig, *th_gravxbig, *th_gravybig;
+	fftwf_complex *th_ptgravxt, *th_ptgravyt, *th_gravmapbigt, *th_gravxbigt, *th_gravybigt;
+	fftwf_plan plan_gravmap, plan_gravx_inverse, plan_gravy_inverse;
+#endif
 
 	//Simulation * sim;
 public:

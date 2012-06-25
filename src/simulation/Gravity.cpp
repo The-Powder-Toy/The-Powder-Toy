@@ -5,10 +5,6 @@
 #include "Gravity.h"
 //#include "powder.h"
 
-#ifdef GRAVFFT
-#include <fftw3.h>
-#endif 
-
 void Gravity::bilinear_interpolation(float *src, float *dst, int sw, int sh, int rw, int rh)
 {
 	int y, x, fxceil, fyceil;
@@ -49,9 +45,6 @@ void Gravity::gravity_init()
 	gravx = (float *)calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
 	gravp = (float *)calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
 	gravmask = (unsigned int *)calloc((XRES/CELL)*(YRES/CELL), sizeof(unsigned));
-#ifdef GRAVFFT
-	grav_fft_init();
-#endif
 }
 
 void Gravity::gravity_cleanup()
@@ -196,10 +189,6 @@ void Gravity::stop_grav_async()
 }
 
 #ifdef GRAVFFT
-int grav_fft_status = 0;
-float *th_ptgravx, *th_ptgravy, *th_gravmapbig, *th_gravxbig, *th_gravybig;
-fftwf_complex *th_ptgravxt, *th_ptgravyt, *th_gravmapbigt, *th_gravxbigt, *th_gravybigt;
-fftwf_plan plan_gravmap, plan_gravx_inverse, plan_gravy_inverse;
 
 void Gravity::grav_fft_init()
 {
@@ -256,7 +245,7 @@ void Gravity::grav_fft_init()
 	//clear padded gravmap
 	memset(th_gravmapbig,0,xblock2*yblock2*sizeof(float));
 
-	grav_fft_status = 1;
+	grav_fft_status = true;
 }
 
 void Gravity::grav_fft_cleanup()
@@ -273,7 +262,7 @@ void Gravity::grav_fft_cleanup()
 	fftwf_destroy_plan(plan_gravmap);
 	fftwf_destroy_plan(plan_gravx_inverse);
 	fftwf_destroy_plan(plan_gravy_inverse);
-	grav_fft_status = 0;
+	grav_fft_status = false;
 }
 
 void Gravity::update_grav()
@@ -495,7 +484,8 @@ void Gravity::gravity_mask()
 	mask_free(t_mask_el);
 }
 
-Gravity::Gravity()
+Gravity::Gravity():
+		grav_fft_status(false)
 {
 	gravity_init();
 }
