@@ -206,6 +206,8 @@ int main(int argc, char * argv[])
 				currentWidth = width;
 				currentHeight = height;
 				inputScale = float(XRES+BARSIZE)/currentWidth;
+
+				glLineWidth(currentWidth/float(XRES+BARSIZE));
 				if(sdl_scrn == NULL)
 				{
 					std::cerr << "Oh bugger" << std::endl;
