@@ -24,6 +24,11 @@ public:
 	Thumbnail * Render(GameSave * save);
 	Thumbnail * Render(unsigned char * saveData, int saveDataSize);
 	virtual ~SaveRenderer();
+
+private:
+#if defined(OGLR) || defined(OGLI)
+	GLuint fboTex, fbo;
+#endif
 };
 
 #endif /* SAVERENDERER_H_ */

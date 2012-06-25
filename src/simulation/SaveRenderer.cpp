@@ -12,40 +12,83 @@
 
 
 SaveRenderer::SaveRenderer(){
-	//g = new Graphics();
+	g = new Graphics();
 	sim = new Simulation();
 	ren = new Renderer(g, sim);
+
+#if defined(OGLR) || defined(OGLI)
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &fboTex);
+	glBindTexture(GL_TEXTURE_2D, fboTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, XRES, YRES, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+	//FBO
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+	glEnable(GL_BLEND);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboTex, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // Reset framebuffer binding
+	glDisable(GL_TEXTURE_2D);
+#endif
 }
 
 Thumbnail * SaveRenderer::Render(GameSave * save)
 {
-	return NULL;
 	int width, height;
 	Thumbnail * tempThumb;
-#ifdef OGLR
-	width = save->blockWidth*CELL;
-	height = save->blockHeight*CELL;
-
-	VideoBuffer buffer(width, height);
-	buffer.BlendCharacter((width/2)-3, (height/2)-5, 'x', 255, 255, 255, 255);
-
-	tempThumb = new Thumbnail(0, 0, buffer.Buffer, ui::Point(width, height));
-
-	return tempThumb;
-#else
 	width = save->blockWidth;
 	height = save->blockHeight;
-	
-	pixel * pData = NULL;
-	pixel * dst;
-	pixel * src = g->vid;
 	
 	g->Clear();
 	sim->clear_sim();
 	
 	if(!sim->Load(save))
 	{
+#if defined(OGLR) || defined(OGLI)
+		pixel * pData = NULL;
+		unsigned char * texData = NULL;
+
+		glTranslated(0, MENUSIZE, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
 		ren->render_parts();
+		ren->FinaliseParts();
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glTranslated(0, -MENUSIZE, 0);
+
+		glEnable( GL_TEXTURE_2D );
+		glBindTexture(GL_TEXTURE_2D, fboTex);
+
+		pData = new pixel[XRES*YRES];
+		texData = new unsigned char[(XRES*YRES)*PIXELSIZE];
+		std::fill(texData, texData+(XRES*YRES), 0xDD);
+		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+		glDisable(GL_TEXTURE_2D);
+
+		for(int x = 0; x < width*CELL; x++)
+		{
+			for(int y = 0; y < height*CELL; y++)
+			{
+				unsigned char red = texData[((((YRES-1-y)*XRES)+x)*4)];
+				unsigned char green = texData[((((YRES-1-y)*XRES)+x)*4)+1];
+				unsigned char blue = texData[((((YRES-1-y)*XRES)+x)*4)+2];
+
+				pData[(y*(width*CELL))+x] = PIXRGBA(red, green, blue, 255);
+			}
+		}
+
+		tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
+		delete[] pData;
+		delete[] texData;
+		pData = NULL;
+#else
+		pixel * pData = NULL;
+		pixel * dst;
+		pixel * src = g->vid;
+		ren->render_parts();
+		ren->FinaliseParts();
 	
 		pData = (pixel *)malloc(PIXELSIZE * ((width*CELL)*(height*CELL)));
 		dst = pData;
@@ -56,11 +99,11 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 			src+=XRES+BARSIZE;
 		}
 		tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
-	}
-	if(pData)
-		free(pData);
-	return tempThumb;
+		if(pData)
+			free(pData);
 #endif
+	}
+	return tempThumb;
 }
 
 Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize)
