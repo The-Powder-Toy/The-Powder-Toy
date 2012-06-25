@@ -34,17 +34,20 @@ extern "C"
 void Renderer::clearScreen(float alpha)
 {
 #ifdef OGLR
+	GLint prevFbo;
 	if(alpha > 0.999f)
 	{
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
     }
     else
     {
 		glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
 		glColor4f(1.0f, 1.0f, 1.0f, alpha);
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 		glBegin(GL_QUADS);
 		glVertex2f(0, 0);
@@ -52,7 +55,7 @@ void Renderer::clearScreen(float alpha)
 		glVertex2f(XRES, YRES);
 		glVertex2f(0, YRES);
 		glEnd();
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
 		glBlendEquation(GL_FUNC_ADD);
     }
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -486,6 +489,8 @@ void Renderer::DrawSigns()
 	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq;
 	std::vector<sign> signs = sim->signs;
 #ifdef OGLR
+	GLint prevFbo;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 	glTranslated(0, MENUSIZE, 0);
 #endif
@@ -563,7 +568,7 @@ void Renderer::DrawSigns()
 		}
 #ifdef OGLR
 	glTranslated(0, -MENUSIZE, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
 #endif
 }
 
@@ -746,10 +751,11 @@ void Renderer::render_parts()
 	int cflatV = 0, cflatC = 0, cflat = 0;
 	int caddV = 0, caddC = 0, cadd = 0;
 	int clineV = 0, clineC = 0, cline = 0;
-	GLint origBlendSrc, origBlendDst;
+	GLint origBlendSrc, origBlendDst, prevFbo;
 
 	glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
 	glGetIntegerv(GL_BLEND_DST, &origBlendDst);
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo);
 	//Render to the particle FBO
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 	glTranslated(0, MENUSIZE, 0);
@@ -1659,7 +1665,7 @@ void Renderer::render_parts()
 
         //Reset FBO
         glTranslated(0, -MENUSIZE, 0);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
 
         glBlendFunc(origBlendSrc, origBlendDst);
 #endif
@@ -1676,6 +1682,8 @@ void Renderer::draw_other() // EMP effect
 	if (emp_decor>0)
 	{
 #ifdef OGLR
+		GLint prevFbo;
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 		glTranslated(0, MENUSIZE, 0);
 		float femp_decor = ((float)emp_decor)/255.0f;
@@ -1693,7 +1701,7 @@ void Renderer::draw_other() // EMP effect
 		glVertex2f(0, YRES+MENUSIZE);
 		glEnd();
 		glTranslated(0, -MENUSIZE, 0);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
 #else
 		int r=emp_decor*2.5, g=100+emp_decor*1.5, b=255;
 		int a=(1.0*emp_decor/110)*255;
@@ -1810,6 +1818,7 @@ void Renderer::draw_air()
 #else
 	int sdl_scale = 1;
 	GLuint airProg;
+	GLint prevFbo;
 	if(display_mode & DISPLAY_AIRC)
 	{
 		airProg = airProg_Cracker;
@@ -1828,6 +1837,7 @@ void Renderer::draw_air()
 	}
 
     glEnable( GL_TEXTURE_2D );
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
     glTranslated(0, MENUSIZE, 0);
 
@@ -1862,7 +1872,7 @@ void Renderer::draw_air()
     glUseProgram(0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glTranslated(0, -MENUSIZE, 0);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
     glDisable( GL_TEXTURE_2D );
 #endif
 }
