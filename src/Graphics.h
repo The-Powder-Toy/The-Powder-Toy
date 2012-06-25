@@ -107,6 +107,7 @@ public:
 #ifdef OGLI
 	//OpenGL specific instance variables
 	GLuint vidBuf, textTexture;
+	void Reset();
  #endif
 
 	//Common graphics methods in Graphics.cpp

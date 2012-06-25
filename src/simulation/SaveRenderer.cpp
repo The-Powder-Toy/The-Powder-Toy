@@ -12,13 +12,14 @@
 
 
 SaveRenderer::SaveRenderer(){
-	g = new Graphics();
+	//g = new Graphics();
 	sim = new Simulation();
 	ren = new Renderer(g, sim);
 }
 
 Thumbnail * SaveRenderer::Render(GameSave * save)
 {
+	return NULL;
 	int width, height;
 	Thumbnail * tempThumb;
 #ifdef OGLR

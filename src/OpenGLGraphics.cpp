@@ -6,19 +6,7 @@
 Graphics::Graphics():
 sdl_scale(1)
 {
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	
-	//glOrtho(0, (XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
-	glOrtho(0, (XRES+BARSIZE)*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 0, -1, 1);
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	
-	//glRasterPos2i(0, (YRES+MENUSIZE));
-	glRasterPos2i(0, 0);
-	glPixelZoom(1, 1);
+	Reset();
 	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -49,6 +37,22 @@ sdl_scale(1)
 
 Graphics::~Graphics()
 {
+}
+
+void Graphics::Reset()
+{
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	//glOrtho(0, (XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
+	glOrtho(0, (XRES+BARSIZE)*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 0, -1, 1);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	//glRasterPos2i(0, (YRES+MENUSIZE));
+	glRasterPos2i(0, 0);
+	glPixelZoom(1, 1);
 }
 
 void Graphics::Clear()

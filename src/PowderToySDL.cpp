@@ -113,7 +113,7 @@ SDL_Surface * SDLOpen()
 #ifndef OGLI
 	surface = SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_SWSURFACE);
 #else
-	surface = SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_OPENGL);
+	surface = SDL_SetVideoMode((XRES + BARSIZE), (YRES + MENUSIZE), 32, SDL_OPENGL | SDL_RESIZABLE);
 #endif
 
 #if defined(OGLI)
@@ -132,11 +132,14 @@ int main(int argc, char * argv[])
 {
 	int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
 	unsigned int lastTick = 0;
-	float fps = 0, delta = 1.0f;
+	float fps = 0, delta = 1.0f, inputScale = 1.0f;
+	float currentWidth = XRES+BARSIZE, currentHeight = YRES+MENUSIZE;
 
 	sdl_scrn = SDLOpen();
 #ifdef OGLI
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
+	//glScaled(2.0f, 2.0f, 1.0f);
+
 #endif
 	
 	ui::Engine::Ref().g = new Graphics();
@@ -168,26 +171,47 @@ int main(int argc, char * argv[])
 				engine->onKeyRelease(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_SHIFT, event.key.keysym.mod&KEY_MOD_CONTROL, event.key.keysym.mod&KEY_MOD_ALT);
 				break;
 			case SDL_MOUSEMOTION:
-				engine->onMouseMove(event.motion.x, event.motion.y);
+				engine->onMouseMove(event.motion.x*inputScale, event.motion.y*inputScale);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				if(event.button.button == SDL_BUTTON_WHEELUP)
 				{
-					engine->onMouseWheel(event.motion.x, event.motion.y, 1);
+					engine->onMouseWheel(event.motion.x*inputScale, event.motion.y*inputScale, 1);
 				}
 				else if (event.button.button == SDL_BUTTON_WHEELDOWN)
 				{
-					engine->onMouseWheel(event.motion.x, event.motion.y, -1);
+					engine->onMouseWheel(event.motion.x*inputScale, event.motion.y*inputScale, -1);
 				}
 				else
 				{
-					engine->onMouseClick(event.motion.x, event.motion.y, event.button.button);
+					engine->onMouseClick(event.motion.x*inputScale, event.motion.y*inputScale, event.button.button);
 				}
 				break;
 			case SDL_MOUSEBUTTONUP:
 				if(event.button.button != SDL_BUTTON_WHEELUP && event.button.button != SDL_BUTTON_WHEELDOWN)
-					engine->onMouseUnclick(event.motion.x, event.motion.y, event.button.button);
+					engine->onMouseUnclick(event.motion.x*inputScale, event.motion.y*inputScale, event.button.button);
 				break;
+#ifdef OGLI
+			case SDL_VIDEORESIZE:
+				float ratio = float(XRES+BARSIZE) / float(YRES+MENUSIZE);
+				float width = event.resize.w;
+				float height = width/ratio;
+
+				sdl_scrn = SDL_SetVideoMode(event.resize.w, height, 32, SDL_OPENGL | SDL_RESIZABLE);
+
+				glViewport(0, 0, width, height);
+				engine->g->Reset();
+				//glScaled(width/currentWidth, height/currentHeight, 1.0f);
+
+				currentWidth = width;
+				currentHeight = height;
+				inputScale = float(XRES+BARSIZE)/currentWidth;
+				if(sdl_scrn == NULL)
+				{
+					std::cerr << "Oh bugger" << std::endl;
+				}
+				break;
+#endif
 			}
 			event.type = 0; //Clear last event
 		}
