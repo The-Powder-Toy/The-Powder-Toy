@@ -61,6 +61,7 @@ void * PreviewModel::updateSaveDataT()
 
 void * PreviewModel::updateSaveCommentsT()
 {
+	//Haha, j/k
 	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(tSaveID, (commentsPageNumber-1)*20, 20);
 	updateSaveCommentsFinished = true;
 	return tempComments;
