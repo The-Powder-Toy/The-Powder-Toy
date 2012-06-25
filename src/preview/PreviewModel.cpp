@@ -61,7 +61,7 @@ void * PreviewModel::updateSaveDataT()
 
 void * PreviewModel::updateSaveCommentsT()
 {
-	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(tSaveID, (commentsPageNumber-1)*10, 10);
+	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(tSaveID, (commentsPageNumber-1)*20, 20);
 	updateSaveCommentsFinished = true;
 	return tempComments;
 }
@@ -142,7 +142,7 @@ int PreviewModel::GetCommentsPageNum()
 
 int PreviewModel::GetCommentsPageCount()
 {
-	return max(1, (int)(ceil(commentsTotal/10)));
+	return max(1, (int)(ceil(commentsTotal/20)));
 }
 
 bool PreviewModel::GetCommentsLoaded()
