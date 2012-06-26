@@ -820,6 +820,11 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			return -1;
 		if (parts[pmap[y][x]>>8].life!=0)
 			return -1;
+		if (p==-2 && (pmap[y][x]&0xFF)==PT_INST)
+		{
+			flood_INST(x, y, PT_SPRK, PT_INST);
+			return pmap[y][x]>>8;
+		}
 		parts[pmap[y][x]>>8].type = PT_SPRK;
 		parts[pmap[y][x]>>8].life = 4;
 		parts[pmap[y][x]>>8].ctype = pmap[y][x]&0xFF;
