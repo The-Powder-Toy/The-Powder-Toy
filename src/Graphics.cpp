@@ -439,7 +439,12 @@ int Graphics::textnwidth(char *s, int n)
 			break;
 		if(((char)*s)=='\b')
 		{
+			if(!s[1]) break;
 			s++;
+			continue;
+		} else if(*s == '\x0F') {
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
 			continue;
 		}
 		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
@@ -486,7 +491,13 @@ int Graphics::textwidthx(char *s, int w)
 	{
 		if((char)*s == '\b')
 		{
+			if(!s[1]) break;
 			s++;
+			continue;
+		} else if (*s == '\x0F')
+		{
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
 			continue;
 		}
 		cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
@@ -547,7 +558,13 @@ int Graphics::textwrapheight(char *s, int width)
 			}
 			else if (*s == '\b')
 			{
+				if(!s[1]) break;
 				s++;
+			}
+			else if (*s == '\x0F')
+			{
+				if(!s[1] || !s[2] || !s[3]) break;
+				s+=3;
 			}
 			else
 			{
@@ -581,8 +598,14 @@ void Graphics::textsize(const char * s, int & width, int & height)
 			cWidth = 0;
 			cHeight += FONT_H+2;
 		}
+		else if (*s == '\x0F')
+		{
+			if(!s[1] || !s[2] || !s[1]) break;
+			s+=3;
+		}
 		else if (*s == '\b')
 		{
+			if(!s[1]) break;
 			s++;
 		}
 		else

@@ -6,6 +6,7 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int 
 		return 0;
 	int width, height;
 
+	int oR = r, oG = g, oB = b;
 	int characterX = x, characterY = y;
 	int startX = characterX;
 	for (; *s; s++)
@@ -15,8 +16,23 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int 
 			characterX = startX;
 			characterY += FONT_H+2;
 		}
+		else if (*s == '\x0F')
+		{
+			if(!s[1] || !s[2] || !s[3]) break;
+			r = s[1];
+			g = s[2];
+			b = s[3];
+			s += 3;
+		}
+		else if (*s == '\x0E')
+		{
+			r = oR;
+			g = oG;
+			b = oB;
+		}
 		else if (*s == '\b')
 		{
+			if(!s[1]) break;
 			switch (s[1])
 			{
 			case 'w':

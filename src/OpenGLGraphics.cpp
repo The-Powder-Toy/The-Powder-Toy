@@ -70,6 +70,7 @@ int Graphics::drawtext(int x, int y, const char *s, int r, int g, int b, int a)
 {
 	if(!strlen(s))
 		return 0;
+	int oR = r, oG = g, oB = b;
 	int width, height;
 	Graphics::textsize(s, width, height);
 	VideoBuffer texture(width, height);
@@ -82,8 +83,23 @@ int Graphics::drawtext(int x, int y, const char *s, int r, int g, int b, int a)
 			characterX = startX;
 			characterY += FONT_H+2;
 		}
+		else if (*s == '\x0F')
+		{
+			if(!s[1] || !s[2] || !s[3]) break;
+			r = s[1];
+			g = s[2];
+			b = s[3];
+			s += 3;
+		}
+		else if (*s == '\x0E')
+		{
+			r = oR;
+			g = oG;
+			b = oB;
+		}
 		else if (*s == '\b')
 		{
+			if(!s[1]) break;
 			switch (s[1])
 			{
 			case 'w':
