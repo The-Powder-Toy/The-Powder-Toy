@@ -51,6 +51,7 @@ namespace ui
 		virtual void OnMouseUp(int x, int y, unsigned button);
 		virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
 		virtual void Draw(const Point& screenPos);
+		virtual void Tick(float dt);
 	};
 }
 

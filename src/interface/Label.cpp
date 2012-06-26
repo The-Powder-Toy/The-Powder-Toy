@@ -121,6 +121,17 @@ void Label::OnMouseMoved(int localx, int localy, int dx, int dy)
 	}
 }
 
+void Label::Tick(float dt)
+{
+	if(!this->IsFocused() && (selecting || (selectionIndex0 != -1 && selectionIndex1 != -1)))
+	{
+		selecting = false;
+		selectionIndex0 = -1;
+		selectionIndex1 = -1;
+		updateSelection();
+	}
+}
+
 void Label::updateSelection()
 {
 	std::string currentText;
