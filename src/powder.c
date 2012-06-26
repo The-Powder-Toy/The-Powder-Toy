@@ -3067,7 +3067,7 @@ int flood_INST(int x, int y, int fullc, int cm)
 	int x1, x2, dy = (c<PT_NUM)?1:CELL;
 	int co = c;
 	int coord_stack_limit = XRES*YRES;
-	unsigned short (*coord_stack)[2] = malloc(sizeof(unsigned short)*2*coord_stack_limit);
+	unsigned short (*coord_stack)[2];
 	int coord_stack_size = 0;
 	int created_something = 0;
 
@@ -3086,9 +3086,10 @@ int flood_INST(int x, int y, int fullc, int cm)
 			cm = 0;
 	}
 
-	if ((pmap[y][x]&0xFF)!=cm)
+	if ((pmap[y][x]&0xFF)!=cm || parts[pmap[y][x]>>8].life!=0)
 		return 1;
 
+	coord_stack = malloc(sizeof(unsigned short)*2*coord_stack_limit);
 	coord_stack[coord_stack_size][0] = x;
 	coord_stack[coord_stack_size][1] = y;
 	coord_stack_size++;
@@ -3102,7 +3103,7 @@ int flood_INST(int x, int y, int fullc, int cm)
 		// go left as far as possible
 		while (x1>=CELL)
 		{
-			if ((pmap[y][x1-1]&0xFF)!=cm)
+			if ((pmap[y][x1-1]&0xFF)!=cm || parts[pmap[y][x1-1]>>8].life!=0)
 			{
 				break;
 			}
@@ -3111,7 +3112,7 @@ int flood_INST(int x, int y, int fullc, int cm)
 		// go right as far as possible
 		while (x2<XRES-CELL)
 		{
-			if ((pmap[y][x2+1]&0xFF)!=cm)
+			if ((pmap[y][x2+1]&0xFF)!=cm || parts[pmap[y][x2+1]>>8].life!=0)
 			{
 				break;
 			}
@@ -3131,20 +3132,23 @@ int flood_INST(int x, int y, int fullc, int cm)
 				!PMAP_CMP_CONDUCTIVE(pmap[y-2][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y-2][x1], cm) && !PMAP_CMP_CONDUCTIVE(pmap[y-2][x1+1], cm))
 		{
 			// travelling vertically up, skipping a horizontal line
-			if ((pmap[y-2][x1]&0xFF)==cm)
+			if ((pmap[y-2][x1]&0xFF)==cm && !parts[pmap[y-2][x1]>>8].life)
 			{
 				coord_stack[coord_stack_size][0] = x1;
 				coord_stack[coord_stack_size][1] = y-2;
 				coord_stack_size++;
 				if (coord_stack_size>=coord_stack_limit)
+				{
+					free(coord_stack);
 					return -1;
+				}
 			}
 		}
 		else if (y>=CELL+1)
 		{
 			for (x=x1; x<=x2; x++)
 			{
-				if ((pmap[y-1][x]&0xFF)==cm)
+				if ((pmap[y-1][x]&0xFF)==cm && !parts[pmap[y-1][x]>>8].life)
 				{
 					if (x==x1 || x==x2 || y>=YRES-CELL-1 || !PMAP_CMP_CONDUCTIVE(pmap[y+1][x], cm))
 					{
@@ -3153,7 +3157,10 @@ int flood_INST(int x, int y, int fullc, int cm)
 						coord_stack[coord_stack_size][1] = y-1;
 						coord_stack_size++;
 						if (coord_stack_size>=coord_stack_limit)
+						{
+							free(coord_stack);
 							return -1;
+						}
 					}
 				}
 			}
@@ -3164,20 +3171,23 @@ int flood_INST(int x, int y, int fullc, int cm)
 				!PMAP_CMP_CONDUCTIVE(pmap[y+2][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y+2][x1], cm) && !PMAP_CMP_CONDUCTIVE(pmap[y+2][x1+1], cm))
 		{
 			// travelling vertically down, skipping a horizontal line
-			if ((pmap[y+2][x1]&0xFF)==cm)
+			if ((pmap[y+2][x1]&0xFF)==cm && !parts[pmap[y+2][x1]>>8].life)
 			{
 				coord_stack[coord_stack_size][0] = x1;
 				coord_stack[coord_stack_size][1] = y+2;
 				coord_stack_size++;
 				if (coord_stack_size>=coord_stack_limit)
+				{
+					free(coord_stack);
 					return -1;
+				}
 			}
 		}
 		else if (y<YRES-CELL-1)
 		{
 			for (x=x1; x<=x2; x++)
 			{
-				if ((pmap[y+1][x]&0xFF)==cm)
+				if ((pmap[y+1][x]&0xFF)==cm && !parts[pmap[y+1][x]>>8].life)
 				{
 					if (x==x1 || x==x2 || y<0 || !PMAP_CMP_CONDUCTIVE(pmap[y-1][x], cm))
 					{
@@ -3186,7 +3196,10 @@ int flood_INST(int x, int y, int fullc, int cm)
 						coord_stack[coord_stack_size][1] = y+1;
 						coord_stack_size++;
 						if (coord_stack_size>=coord_stack_limit)
+						{
+							free(coord_stack);
 							return -1;
+						}
 					}
 
 				}
@@ -3204,7 +3217,7 @@ int flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 	int x1, x2, dy = (c<PT_NUM)?1:CELL;
 	int co = c;
 	int coord_stack_limit = XRES*YRES;
-	unsigned short (*coord_stack)[2] = malloc(sizeof(unsigned short)*2*coord_stack_limit);
+	unsigned short (*coord_stack)[2];
 	int coord_stack_size = 0;
 	int created_something = 0;
 
@@ -3240,6 +3253,7 @@ int flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm )||( (flags&BRUSH_SPECIFIC_DELETE) && cm!=SLALT))
 		return 1;
 
+	coord_stack = malloc(sizeof(unsigned short)*2*coord_stack_limit);
 	coord_stack[coord_stack_size][0] = x;
 	coord_stack[coord_stack_size][1] = y;
 	coord_stack_size++;
@@ -3284,7 +3298,10 @@ int flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 					coord_stack[coord_stack_size][1] = y-dy;
 					coord_stack_size++;
 					if (coord_stack_size>=coord_stack_limit)
+					{
+						free(coord_stack);
 						return -1;
+					}
 				}
 		if (y<YRES-CELL-dy)
 			for (x=x1; x<=x2; x++)
@@ -3294,7 +3311,10 @@ int flood_parts(int x, int y, int fullc, int cm, int bm, int flags)
 					coord_stack[coord_stack_size][1] = y+dy;
 					coord_stack_size++;
 					if (coord_stack_size>=coord_stack_limit)
+					{
+						free(coord_stack);
 						return -1;
+					}
 				}
 	} while (coord_stack_size>0);
 	free(coord_stack);
