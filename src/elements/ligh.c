@@ -127,7 +127,7 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 	 *
 	 * life - "thickness" of lighting (but anyway one pixel)
 	 *
-	 * tmp - angle of lighting
+	 * tmp - angle of lighting, measured in degrees anticlockwise from the positive x direction
 	 *
 	*/
 	int r,rx,ry, multipler, powderful;
