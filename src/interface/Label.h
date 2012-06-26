@@ -34,6 +34,9 @@ namespace ui
 
 		void updateMultiline();
 		void updateSelection();
+
+		int getLowerSelectionBound();
+		int getHigherSelectionBound();
 	public:
 		//Label(Window* parent_state, std::string labelText);
 		Label(Point position, Point size, std::string labelText);
@@ -41,11 +44,14 @@ namespace ui
 		virtual ~Label();
 
 		virtual void SetMultiline(bool status);
+
 		virtual void SetText(std::string text);
 		virtual std::string GetText();
 
-		void SetTextColour(Colour textColour) { this->textColour = textColour; }
+		virtual bool HasSelection();
+		virtual void ClearSelection();
 
+		void SetTextColour(Colour textColour) { this->textColour = textColour; }
 
 		virtual void OnMouseClick(int x, int y, unsigned button);
 		virtual void OnMouseUp(int x, int y, unsigned button);

@@ -125,20 +125,58 @@ void Label::Tick(float dt)
 {
 	if(!this->IsFocused() && (selecting || (selectionIndex0 != -1 && selectionIndex1 != -1)))
 	{
-		selecting = false;
-		selectionIndex0 = -1;
-		selectionIndex1 = -1;
-		updateSelection();
+		ClearSelection();
 	}
+}
+
+int Label::getLowerSelectionBound()
+{
+	return (selectionIndex0 > selectionIndex1) ? selectionIndex1 : selectionIndex0;
+}
+
+int Label::getHigherSelectionBound()
+{
+	return (selectionIndex0 > selectionIndex1) ? selectionIndex0 : selectionIndex1;
+}
+
+bool Label::HasSelection()
+{
+	if(selectionIndex0 != -1 && selectionIndex1 != -1 && selectionIndex0 != selectionIndex1)
+		return true;
+	return false;
+}
+
+void Label::ClearSelection()
+{
+	selecting = false;
+	selectionIndex0 = -1;
+	selectionIndex1 = -1;
+	updateSelection();
 }
 
 void Label::updateSelection()
 {
 	std::string currentText;
+
+	if(selectionIndex0 < 0) selectionIndex0 = 0;
+	if(selectionIndex0 > text.length()) selectionIndex0 = text.length();
+	if(selectionIndex1 < 0) selectionIndex1 = 0;
+	if(selectionIndex1 > text.length()) selectionIndex1 = text.length();
+
+	if(selectionIndex0 == -1 || selectionIndex1 == -1)
+	{
+		selectionXH = -1;
+		selectionXL = -1;
+
+		textFragments = std::string(currentText);
+		return;
+	}
+
 	if(multiline)
 		currentText = textLines;
 	else
 		currentText = text;
+
 	if(selectionIndex1 > selectionIndex0) {
 		selectionLineH = Graphics::PositionAtCharIndex((char*)currentText.c_str(), selectionIndex1, selectionXH, selectionYH);
 		selectionLineL = Graphics::PositionAtCharIndex((char*)currentText.c_str(), selectionIndex0, selectionXL, selectionYL);
