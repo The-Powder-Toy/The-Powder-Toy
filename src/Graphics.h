@@ -122,6 +122,8 @@ public:
 	static pixel *render_packed_rgb(void *image, int width, int height, int cmp_size);
 
 	//Font/text metrics
+	static int CharIndexAtPosition(char *s, int positionX, int positionY);
+	static int PositionAtCharIndex(char *s, int charIndex, int & positionX, int & positionY);
 	static int textnwidth(char *s, int n);
 	static void textnpos(char *s, int n, int w, int *cx, int *cy);
 	static int textwidthx(char *s, int w);

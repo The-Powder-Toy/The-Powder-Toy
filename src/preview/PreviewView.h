@@ -16,7 +16,6 @@
 #include "interface/Button.h"
 #include "search/Thumbnail.h"
 #include "interface/Label.h"
-#include "interface/Textblock.h"
 
 class PreviewModel;
 class PreviewController;
@@ -30,7 +29,7 @@ class PreviewView: public ui::Window {
 	ui::Label * saveNameLabel;
 	ui::Label * authorDateLabel;
 	ui::Label * pageInfo;
-	ui::Textblock * saveDescriptionTextblock;
+	ui::Label * saveDescriptionLabel;
 	std::vector<SaveComment> comments;
 	std::vector<ui::Component*> commentComponents;
 	std::vector<ui::Component*> commentTextComponents;

@@ -5,42 +5,83 @@
 
 using namespace ui;
 
-/*Label::Label(Window* parent_state, std::string labelText):
-	Component(parent_state),
-	text(labelText),
-	textPosition(ui::Point(0, 0)),
-	textVAlign(AlignMiddle),
-	textHAlign(AlignCentre)
-{
-	TextPosition();
-}*/
-
 Label::Label(Point position, Point size, std::string labelText):
 	Component(position, size),
 	text(labelText),
-	textColour(255, 255, 255)
+	textColour(255, 255, 255),
+	selectionIndex0(-1),
+	selectionIndex1(-1),
+	selectionXL(-1),
+	selectionXH(-1),
+	multiline(false),
+	selecting(false),
+	autoHeight(size.Y==-1?true:false),
+	caret(-1)
 {
 }
-
-/*Label::Label(std::string labelText):
-	Component(),
-	text(labelText),
-	textPosition(ui::Point(0, 0)),
-	textVAlign(AlignMiddle),
-	textHAlign(AlignCentre)
-{
-	TextPosition();
-}*/
 
 Label::~Label()
 {
 
 }
 
+void Label::SetMultiline(bool status)
+{
+	multiline = status;
+	if(status)
+	{
+		updateMultiline();
+		updateSelection();
+	}
+}
+
 void Label::SetText(std::string text)
 {
 	this->text = text;
+	if(multiline)
+	{
+		updateMultiline();
+		updateSelection();
+	}
 	TextPosition(text);
+}
+
+void Label::updateMultiline()
+{
+	char * rawText = new char[text.length()+1];
+	std::copy(text.begin(), text.end(), rawText);
+	rawText[text.length()] = 0;
+
+	int lines = 1;
+	int currentWidth = 0;
+	char * lastSpace = NULL;
+	char * currentWord = rawText;
+	char * nextSpace;
+	while(true)
+	{
+		nextSpace = strchr(currentWord+1, ' ');
+		if(nextSpace)
+			nextSpace[0] = 0;
+		int width = Graphics::textwidth(currentWord);
+		if(width+currentWidth > Size.X-6)
+		{
+			currentWidth = width;
+			currentWord[0] = '\n';
+			lines++;
+		}
+		else
+			currentWidth += width;
+		if(nextSpace)
+			nextSpace[0] = ' ';
+		if(!(currentWord = strchr(currentWord+1, ' ')))
+			break;
+	}
+	if(autoHeight)
+	{
+		Size.Y = lines*12;
+	}
+	textLines = std::string(rawText);
+	delete[] rawText;
 }
 
 std::string Label::GetText()
@@ -48,14 +89,115 @@ std::string Label::GetText()
 	return this->text;
 }
 
+void Label::OnMouseClick(int x, int y, unsigned button)
+{
+	if(x > textPosition.X && x < textPosition.X + textSize.X && y > textPosition.Y && y < textPosition.Y + textSize.Y)
+	{
+		selecting = true;
+		if(multiline)
+			selectionIndex0 = Graphics::CharIndexAtPosition((char*)textLines.c_str(), x-textPosition.X, y-textPosition.Y);
+		else
+			selectionIndex0 = Graphics::CharIndexAtPosition((char*)text.c_str(), x-textPosition.X, y-textPosition.Y);
+		selectionIndex1 = selectionIndex0;
+
+		updateSelection();
+	}
+}
+
+void Label::OnMouseUp(int x, int y, unsigned button)
+{
+	selecting = false;
+}
+
+void Label::OnMouseMoved(int localx, int localy, int dx, int dy)
+{
+	if(selecting)
+	{
+		if(multiline)
+			selectionIndex1 = Graphics::CharIndexAtPosition((char*)textLines.c_str(), localx-textPosition.X, localy-textPosition.Y);
+		else
+			selectionIndex1 = Graphics::CharIndexAtPosition((char*)text.c_str(), localx-textPosition.X, localy-textPosition.Y);
+		updateSelection();
+	}
+}
+
+void Label::updateSelection()
+{
+	std::string currentText;
+	if(multiline)
+		currentText = textLines;
+	else
+		currentText = text;
+	if(selectionIndex1 > selectionIndex0) {
+		selectionLineH = Graphics::PositionAtCharIndex((char*)currentText.c_str(), selectionIndex1, selectionXH, selectionYH);
+		selectionLineL = Graphics::PositionAtCharIndex((char*)currentText.c_str(), selectionIndex0, selectionXL, selectionYL);
+
+		textFragments = std::string(currentText);
+		textFragments.insert(selectionIndex1, "\x0E");
+		textFragments.insert(selectionIndex0, "\x0F\x01\x01\x01");
+	} else if(selectionIndex0 > selectionIndex1) {
+		selectionLineH = Graphics::PositionAtCharIndex((char*)currentText.c_str(), selectionIndex0, selectionXH, selectionYH);
+		selectionLineL = Graphics::PositionAtCharIndex((char*)currentText.c_str(), selectionIndex1, selectionXL, selectionYL);
+
+		textFragments = std::string(currentText);
+		textFragments.insert(selectionIndex0, "\x0E");
+		textFragments.insert(selectionIndex1, "\x0F\x01\x01\x01");
+	} else {
+		selectionXH = -1;
+		selectionXL = -1;
+
+		textFragments = std::string(currentText);
+	}
+}
+
 void Label::Draw(const Point& screenPos)
 {
 	if(!drawn)
 	{
-		TextPosition(text);
+		if(multiline)
+		{
+			TextPosition(textLines);
+			updateMultiline();
+			updateSelection();
+		}
+		else
+			TextPosition(text);
 		drawn = true;
 	}
 	Graphics * g = Engine::Ref().g;
-	g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, text, textColour.Red, textColour.Green, textColour.Blue, 255);
+
+	if(multiline)
+	{
+		if(selectionXL != -1 && selectionXH != -1)
+		{
+			if(selectionLineH - selectionLineL > 0)
+			{
+				g->fillrect(screenPos.X+textPosition.X+selectionXL, (screenPos.Y+textPosition.Y-1)+selectionYL, textSize.X-(selectionXL), 10, 255, 255, 255, 255);
+				for(int i = 1; i < selectionLineH-selectionLineL; i++)
+				{
+					g->fillrect(screenPos.X+textPosition.X, (screenPos.Y+textPosition.Y-1)+selectionYL+(i*12), textSize.X, 10, 255, 255, 255, 255);
+				}
+				g->fillrect(screenPos.X+textPosition.X, (screenPos.Y+textPosition.Y-1)+selectionYH, selectionXH, 10, 255, 255, 255, 255);
+
+			} else {
+				g->fillrect(screenPos.X+textPosition.X+selectionXL, screenPos.Y+selectionYL+textPosition.Y-1, selectionXH-(selectionXL), 10, 255, 255, 255, 255);
+			}
+			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, textFragments, textColour.Red, textColour.Green, textColour.Blue, 255);
+		}
+		else
+		{
+			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, textLines, textColour.Red, textColour.Green, textColour.Blue, 255);
+		}
+	} else {
+		if(selectionXL != -1 && selectionXH != -1)
+		{
+			g->fillrect(screenPos.X+textPosition.X+selectionXL, screenPos.Y+textPosition.Y-1, selectionXH-(selectionXL), 10, 255, 255, 255, 255);
+			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, textFragments, textColour.Red, textColour.Green, textColour.Blue, 255);
+		}
+		else
+		{
+			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, text, textColour.Red, textColour.Green, textColour.Blue, 255);
+		}
+	}
 }
 

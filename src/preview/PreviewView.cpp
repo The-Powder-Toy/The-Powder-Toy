@@ -5,6 +5,7 @@
  *      Author: Simon
  */
 
+#include <sstream>
 #include <vector>
 #include <cmath>
 #include "PreviewView.h"
@@ -106,10 +107,12 @@ PreviewView::PreviewView():
 	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(saveNameLabel);
 
-	saveDescriptionTextblock = new ui::Textblock(ui::Point(5, (YRES/2)+15+14+17), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+15+14+17)-21), "");
-	saveDescriptionTextblock->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	saveDescriptionTextblock->Appearance.VerticalAlign = ui::Appearance::AlignTop;
-	saveDescriptionTextblock->SetTextColour(ui::Colour(180, 180, 180));
-	AddComponent(saveDescriptionTextblock);
+	saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+15+14+17), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+15+14+17)-21), "");
+	saveDescriptionLabel->SetMultiline(true);
+	saveDescriptionLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	saveDescriptionLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	saveDescriptionLabel->SetTextColour(ui::Colour(180, 180, 180));
+	AddComponent(saveDescriptionLabel);
 
 	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+15+14), ui::Point(100, 16), "");
 	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
@@ -231,7 +234,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		votesDown = save->votesDown;
 		saveNameLabel->SetText(save->name);
 		authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw ");
-		saveDescriptionTextblock->SetText(save->Description);
+		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
 			favButton->Enabled = false;
 		else
@@ -261,7 +264,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		votesDown = 0;
 		saveNameLabel->SetText("");
 		authorDateLabel->SetText("");
-		saveDescriptionTextblock->SetText("");
+		saveDescriptionLabel->SetText("");
 		favButton->Enabled = false;
 	}
 }
@@ -278,7 +281,7 @@ void PreviewView::displayComments(int yOffset)
 
 	int currentY = -yOffset;
 	ui::Label * tempUsername;
-	ui::Textblock * tempComment;
+	ui::Label * tempComment;
 	for(int i = 0; i < comments.size(); i++)
 	{
 		int usernameY = currentY+5, commentY;
@@ -299,7 +302,8 @@ void PreviewView::displayComments(int yOffset)
 		}
 
 		commentY = currentY+5;
-		tempComment = new ui::Textblock(ui::Point((XRES/2) + 5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), -1), comments[i].comment);
+		tempComment = new ui::Label(ui::Point((XRES/2) + 5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), -1), comments[i].comment);
+		tempComment->SetMultiline(true);
 		tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 		tempComment->SetTextColour(ui::Colour(180, 180, 180));
 		currentY += tempComment->Size.Y+4;
@@ -338,7 +342,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	}
 
 	ui::Label * tempUsername;
-	ui::Textblock * tempComment;
+	ui::Label * tempComment;
 	int maxY = 0;
 	for(int i = 0; i < comments.size(); i++)
 	{
@@ -346,7 +350,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 		maxY += 16;
-		tempComment = new ui::Textblock(ui::Point(0, 0), ui::Point(Size.X-((XRES/2) + 10), -1), comments[i].comment);
+		tempComment = new ui::Label(ui::Point(0, 0), ui::Point(Size.X-((XRES/2) + 10), -1), comments[i].comment);
 		tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 		tempComment->SetTextColour(ui::Colour(180, 180, 180));

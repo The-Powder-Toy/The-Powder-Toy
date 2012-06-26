@@ -7,7 +7,7 @@
 
 #include "ConfirmPrompt.h"
 #include "Style.h"
-#include "interface/Textblock.h"
+#include "interface/Label.h"
 #include "interface/Button.h"
 
 ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDialogueCallback * callback_):
@@ -22,13 +22,12 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	AddComponent(titleLabel);
 
 
-	ui::Textblock * messageLabel = new ui::Textblock(ui::Point(4, 25), ui::Point(Size.X-8, 60), message);
-	Graphics::textsize(messageLabel->GetDisplayText().c_str(), width, height);
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 25), ui::Point(Size.X-8, -1), message);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 
-	Size.Y += height;
+	Size.Y += messageLabel->Size.Y;
 	Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
 
 	class CloseAction: public ui::ButtonAction

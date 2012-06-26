@@ -452,6 +452,7 @@ int Graphics::textnwidth(char *s, int n)
 	}
 	return x-1;
 }
+
 void Graphics::textnpos(char *s, int n, int w, int *cx, int *cy)
 {
 	int x = 0;
@@ -508,6 +509,70 @@ int Graphics::textwidthx(char *s, int w)
 	}
 	return n;
 }
+
+int Graphics::PositionAtCharIndex(char *s, int charIndex, int & positionX, int & positionY)
+{
+	int x = 0, y = 0, lines = 1;
+	for (; *s; s++)
+	{
+		if (!charIndex)
+			break;
+		if(*s == '\n') {
+			lines++;
+			x = 0;
+			y += FONT_H+2;
+			charIndex--;
+			continue;
+		} else if(*s =='\b') {
+			if(!s[1]) break;
+			s++;
+			charIndex-=2;
+			continue;
+		} else if(*s == '\x0F') {
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
+			charIndex-=4;
+			continue;
+		}
+		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		charIndex--;
+	}
+	positionX = x;
+	positionY = y;
+	return lines;
+}
+
+int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
+{
+	int x=0, y=0,charIndex=0,cw;
+	for (; *s; s++)
+	{
+		if(*s == '\n') {
+			x = 0;
+			y += FONT_H+2;
+			charIndex++;
+			continue;
+		} else if(*s == '\b') {
+			if(!s[1]) break;
+			s++;
+			charIndex+=2;
+			continue;
+		} else if (*s == '\x0F') {
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
+			charIndex+=4;
+			continue;
+		}
+		cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		if ((x+(cw/2) >= positionX && y+FONT_H >= positionY) || y > positionY)
+			break;
+		x += cw;
+		charIndex++;
+	}
+	return charIndex;
+}
+
+
 int Graphics::textposxy(char *s, int width, int w, int h)
 {
 	int x=0,y=0,n=0,cw, wordlen, charspace;

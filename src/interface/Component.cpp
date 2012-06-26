@@ -16,6 +16,7 @@ Component::Component(Window* parent_state):
 	Locked(false),
 	Visible(true),
 	textPosition(0, 0),
+	textSize(0, 0),
 	iconPosition(0, 0),
 	drawn(false)
 {
@@ -30,6 +31,7 @@ Component::Component(Point position, Point size):
 	Locked(false),
 	Visible(true),
 	textPosition(0, 0),
+	textSize(0, 0),
 	iconPosition(0, 0),
 	drawn(false)
 {
@@ -44,6 +46,7 @@ Component::Component():
 	Locked(false),
 	Visible(true),
 	textPosition(0, 0),
+	textSize(0, 0),
 	iconPosition(0, 0),
 	drawn(false)
 {
@@ -62,6 +65,7 @@ void Component::TextPosition(std::string displayText)
 	
 	int textWidth, textHeight = 10;
 	Graphics::textsize((char*)displayText.c_str(), textWidth, textHeight);
+	textSize.X = textWidth; textSize.Y = textHeight;
 	textHeight-=3;
 	textWidth-=1;
 	if(Appearance.icon)

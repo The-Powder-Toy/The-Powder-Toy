@@ -23,6 +23,7 @@ namespace ui
 	protected:
 		bool drawn;
 		ui::Point textPosition;
+		ui::Point textSize;
 		ui::Point iconPosition;
 	public:
 		Component(Window* parent_state);
