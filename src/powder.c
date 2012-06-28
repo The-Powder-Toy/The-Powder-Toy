@@ -168,7 +168,6 @@ void init_can_move()
 	for (t=0;t<PT_NUM;t++)
 	{
 		// make them eat things
-		can_move[t][PT_VOID] = 1;
 		can_move[t][PT_BHOL] = 1;
 		can_move[t][PT_NBHL] = 1;
 		can_move[t][PT_STKM] = 0;
@@ -178,8 +177,9 @@ void init_can_move()
 		can_move[t][PT_INVIS] = 3;
 		//stop CNCT being displaced by other particles
 		can_move[t][PT_CNCT] = 0;
-		//Powered void behaviour varies on powered state
+		//void behaviour varies with powered state and ctype
 		can_move[t][PT_PVOD] = 3;
+		can_move[t][PT_VOID] = 3;
 	}
 	for (t=0;t<PT_NUM;t++)
 	{
@@ -242,8 +242,21 @@ int eval_move(int pt, int nx, int ny, unsigned *rr)
 		}
 		if ((r&0xFF)==PT_PVOD)
 		{
-			if (parts[r>>8].life == 10) result = 1;
+			if (parts[r>>8].life == 10)
+			{
+				if(!parts[r>>8].ctype || (parts[r>>8].ctype==pt)!=(parts[r>>8].tmp&1))
+					result = 1;
+				else
+					result = 0;
+			}
 			else result = 0;
+		}
+		if ((r&0xFF)==PT_VOID)
+		{
+			if(!parts[r>>8].ctype || (parts[r>>8].ctype==pt)!=(parts[r>>8].tmp&1))
+				result = 1;
+			else
+				result = 0;
 		}
 	}
 	if (bmap[ny/CELL][nx/CELL])
@@ -371,8 +384,8 @@ int try_move(int i, int x, int y, int nx, int ny)
 	}
 	if ((r&0xFF)==PT_VOID || (r&0xFF)==PT_PVOD) //this is where void eats particles
 	{
-		if(!parts[r>>8].ctype || (parts[r>>8].ctype==parts[i].type)!=(parts[r>>8].tmp&1))
-			kill_part(i);
+		//void ctype already checked in eval_move
+		kill_part(i);
 		return 0;
 	}
 	if ((r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) //this is where blackhole eats particles
