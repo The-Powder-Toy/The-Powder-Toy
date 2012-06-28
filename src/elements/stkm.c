@@ -476,6 +476,19 @@ void STKM_interact(playerst* playerp, int i, int x, int y)
 					break;
 				}
 		}
+
+		if (((r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) && parts[i].type)
+		{
+			if (!legacy_enable)
+			{
+				parts[r>>8].temp = restrict_flt(parts[r>>8].temp+parts[i].temp/2, MIN_TEMP, MAX_TEMP);
+			}
+			kill_part(i);
+		}
+		if (((r&0xFF)==PT_VOID || ((r&0xFF)==PT_PVOD && parts[r>>8].life==10)) && (!parts[r>>8].ctype || (parts[r>>8].ctype==parts[i].type)!=(parts[r>>8].tmp&1)) && parts[i].type)
+		{
+			kill_part(i);
+		}
 	}
 }
 
