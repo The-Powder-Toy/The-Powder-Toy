@@ -24,7 +24,7 @@ int update_C5(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (((r&0xFF)!=PT_C5 && parts[r>>8].temp<100)||(r&0xFF)==PT_HFLM)
+				if (((r&0xFF)!=PT_C5 && parts[r>>8].temp<100 && ptypes[r&0xFF].hconduct && ((r&0xFF)!=PT_HSWC||parts[r>>8].life==10)) || (r&0xFF)==PT_HFLM)
 				{
 					if (1>rand()%6)
 					{
