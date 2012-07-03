@@ -26,3 +26,4 @@ Makefile.me
 *.manifest
 *.manifest.res
 *.pdb
+*.sublime-*
