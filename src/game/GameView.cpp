@@ -31,7 +31,8 @@ GameView::GameView():
 	selectPoint2(0, 0),
 	placeSaveThumb(NULL),
 	mousePosition(0, 0),
-	lastOffset(0)
+	lastOffset(0),
+	drawSnap(false)
 {
 	
 	int currentX = 1;
@@ -636,14 +637,27 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 			isMouseDown = false;
 			if(drawMode == DrawRect || drawMode == DrawLine)
 			{
+				ui::Point finalDrawPoint2(0, 0);
 				drawPoint2 = ui::Point(x, y);
+				finalDrawPoint2 = drawPoint2;
+
+				if(drawSnap && drawMode == DrawLine)
+				{
+					finalDrawPoint2 = lineSnapCoords(drawPoint1, drawPoint2);
+				}
+
+				if(drawSnap && drawMode == DrawRect)
+				{
+					finalDrawPoint2 = rectSnapCoords(drawPoint1, drawPoint2);
+				}
+
 				if(drawMode == DrawRect)
 				{
-					c->DrawRect(toolIndex, drawPoint1, drawPoint2);
+					c->DrawRect(toolIndex, drawPoint1, finalDrawPoint2);
 				}
 				if(drawMode == DrawLine)
 				{
-					c->DrawLine(toolIndex, drawPoint1, drawPoint2);
+					c->DrawLine(toolIndex, drawPoint1, finalDrawPoint2);
 				}
 			}
 			if(drawMode == DrawPoints)
@@ -724,6 +738,9 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	}
 	switch(key)
 	{
+	case KEY_ALT:
+		drawSnap = true;
+		break;
 	case KEY_CTRL:
 		if(drawModeReset)
 			drawModeReset = false;
@@ -815,6 +832,9 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 		drawModeReset = true;
 	switch(key)
 	{
+	case KEY_ALT:
+		drawSnap = false;
+		break;
 	case 'z':
 		if(!zoomCursorFixed)
 			c->SetZoomEnabled(false);
@@ -1030,17 +1050,27 @@ void GameView::OnDraw()
 		ren->FinaliseParts();
 		if(activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
 		{
+			ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
+
 			if(drawMode==DrawRect && isMouseDown)
 			{
-				activeBrush->RenderRect(g, c->PointTranslate(drawPoint1), c->PointTranslate(currentMouse));
+				if(drawSnap)
+				{
+					finalCurrentMouse = rectSnapCoords(c->PointTranslate(drawPoint1), finalCurrentMouse);
+				}
+				activeBrush->RenderRect(g, c->PointTranslate(drawPoint1), finalCurrentMouse);
 			}
 			else if(drawMode==DrawLine && isMouseDown)
 			{
-				activeBrush->RenderLine(g, c->PointTranslate(drawPoint1), c->PointTranslate(currentMouse));
+				if(drawSnap)
+				{
+					finalCurrentMouse = lineSnapCoords(c->PointTranslate(drawPoint1), finalCurrentMouse);
+				}
+				activeBrush->RenderLine(g, c->PointTranslate(drawPoint1), finalCurrentMouse);
 			}
 			else
 			{
-				activeBrush->RenderPoint(g, c->PointTranslate(currentMouse));
+				activeBrush->RenderPoint(g, finalCurrentMouse);
 			}
 		}
 		ren->RenderZoom();
@@ -1128,4 +1158,19 @@ void GameView::OnDraw()
 		sampleInfo << ", Ctype: " << c->ElementResolve(sample.ctype);
 
 	g->drawtext(XRES+BARSIZE-(10+Graphics::textwidth((char*)sampleInfo.str().c_str())), 10, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255);
+}
+
+ui::Point GameView::lineSnapCoords(ui::Point point1, ui::Point point2)
+{
+	ui::Point newPoint(0, 0);
+	float snapAngle = floor(atan2(point2.Y-point1.Y, point2.X-point1.X)/(M_PI*0.25)+0.5)*M_PI*0.25;
+	float lineMag = sqrtf(pow(point2.X-point1.X,2)+pow(point2.Y-point1.Y,2));
+	newPoint.X = (int)(lineMag*cos(snapAngle)+point1.X+0.5f);
+	newPoint.Y = (int)(lineMag*sin(snapAngle)+point1.Y+0.5f);
+	return newPoint;
+}
+
+ui::Point GameView::rectSnapCoords(ui::Point point1, ui::Point point2)
+{
+	return point2;
 }

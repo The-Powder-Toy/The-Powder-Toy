@@ -35,6 +35,7 @@ private:
 	bool isMouseDown;
 	bool zoomEnabled;
 	bool zoomCursorFixed;
+	bool drawSnap;
 	int toolIndex;
 	queue<ui::Point*> pointQueue;
 	GameController * c;
@@ -82,6 +83,8 @@ private:
 	int lastOffset;
 	void setToolButtonOffset(int offset);
 	void changeColour();
+	virtual ui::Point lineSnapCoords(ui::Point point1, ui::Point point2);
+	virtual ui::Point rectSnapCoords(ui::Point point1, ui::Point point2);
 public:
     GameView();
 
