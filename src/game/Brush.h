@@ -106,6 +106,10 @@ public:
 			return;
 		g->xor_bitmap(outline, position.X-radius.X, position.Y-radius.Y, size.X, size.Y);
 	}
+	virtual void RenderFill(Graphics * g, ui::Point position)
+	{
+		//Do nothing for now - possibly draw some sort of flood fill mask
+	}
 	virtual void GenerateBitmap()
 	{
 		if(bitmap)

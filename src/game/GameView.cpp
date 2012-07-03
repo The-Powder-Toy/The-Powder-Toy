@@ -1068,6 +1068,10 @@ void GameView::OnDraw()
 				}
 				activeBrush->RenderLine(g, c->PointTranslate(drawPoint1), finalCurrentMouse);
 			}
+			else if(drawMode==DrawFill)
+			{
+				activeBrush->RenderFill(g, finalCurrentMouse);
+			}
 			else
 			{
 				activeBrush->RenderPoint(g, finalCurrentMouse);
