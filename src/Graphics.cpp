@@ -738,11 +738,17 @@ void Graphics::draw_icon(int x, int y, Icon icon)
 		drawchar(x, y, 0x8C, 160, 144, 32, 255);
 		drawchar(x, y, 0x84, 255, 255, 255, 255);
 		break;
+	case IconClose:
+		drawchar(x, y, 0xAA, 230, 230, 230, 255);	
+		break;
 	case IconVoteSort:
 	case IconDateSort:
 	case IconFolder:
 	case IconSearch:
 	case IconDelete:
+		drawchar(x, y, 0x86, 255, 55, 55, 255);
+		drawchar(x, y, 0x85, 255, 255, 255, 255);
+		break;
 	default:
 		drawchar(x, y, 't', 255, 255, 255, 255);
 		break;

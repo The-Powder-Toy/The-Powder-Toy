@@ -681,7 +681,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 		}
 	};
 
-	gameModel->AddNotification(new UpdateNotification(this, "An Update is available"));
+	gameModel->AddNotification(new UpdateNotification(this, "A new version is available - click here to download"));
 }
 
 void GameController::RemoveNotification(Notification * notification)

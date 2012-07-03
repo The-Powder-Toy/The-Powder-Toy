@@ -2,6 +2,7 @@
 #include <iomanip>
 
 #include "Config.h"
+#include "Style.h"
 #include "GameView.h"
 #include "Graphics.h"
 #include "interface/Window.h"
@@ -988,12 +989,16 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 		int width = (Graphics::textwidth((*iter)->Message.c_str()))+8;
 		ui::Button * tempButton = new ui::Button(ui::Point(XRES-width-22, currentY), ui::Point(width, 15), (*iter)->Message);
 		tempButton->SetActionCallback(new NotificationButtonAction(this, *iter));
+		tempButton->Appearance.BorderInactive = style::Colour::WarningTitle;
+		tempButton->Appearance.TextInactive = style::Colour::WarningTitle;
 		AddComponent(tempButton);
 		notificationComponents.push_back(tempButton);
 
 		tempButton = new ui::Button(ui::Point(XRES-20, currentY), ui::Point(15, 15));
-		tempButton->SetIcon(IconDelete);
+		tempButton->SetIcon(IconClose);
 		tempButton->SetActionCallback(new CloseNotificationButtonAction(this, *iter));
+		tempButton->Appearance.BorderInactive = style::Colour::WarningTitle;
+		tempButton->Appearance.TextInactive = style::Colour::WarningTitle;
 		AddComponent(tempButton);
 		notificationComponents.push_back(tempButton);
 
