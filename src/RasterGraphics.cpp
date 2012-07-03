@@ -26,7 +26,7 @@ void Graphics::Finalise()
 
 #define VIDXRES XRES+BARSIZE
 #define VIDYRES YRES+MENUSIZE
-#define PIXELMOETHODS_CLASS Graphics
+#define PIXELMETHODS_CLASS Graphics
 #include "PixelMethods.inc"
 #undef VIDYRES
 #undef VIDXRES

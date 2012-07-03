@@ -24,11 +24,15 @@ extern "C"
 }
 
 #ifndef OGLI
-#define VIDXRES VIDXRES
+#define VIDXRES XRES+BARSIZE
 #define VIDYRES YRES+MENUSIZE
 #else
 #define VIDXRES XRES
 #define VIDYRES YRES
+#endif
+
+#ifdef OGLR
+#define drawrect(args) g->drawrect(args)
 #endif
 
 void Renderer::clearScreen(float alpha)
