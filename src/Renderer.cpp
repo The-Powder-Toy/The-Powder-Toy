@@ -1930,7 +1930,7 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 #if defined(OGLI)
 	vid = new pixel[VIDXRES*VIDYRES];
 #else
-	vid = vid;
+	vid = g->vid;
 #endif
 #endif
 
