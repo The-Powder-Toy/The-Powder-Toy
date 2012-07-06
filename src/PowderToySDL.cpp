@@ -1,5 +1,7 @@
 #ifdef USE_SDL
 
+#include <map>
+#include <string>
 #include <time.h>
 #include "SDL.h"
 #ifdef WIN32
@@ -22,6 +24,7 @@
 #include "interface/Label.h"
 #include "simulation/SaveRenderer.h"
 #include "client/Client.h"
+#include "Misc.h"
 
 #include "game/GameController.h"
 #include "game/GameView.h"
@@ -128,12 +131,75 @@ SDL_Surface * SDLOpen()
 return surface;
 }
 
+std::map<std::string, std::string> readArguments(int argc, char * argv[])
+{
+	std::map<std::string, std::string> arguments;
+
+	//Defaults 
+	arguments["scale"] = "";
+	arguments["proxy"] = "";
+	arguments["nohud"] = "false";
+	arguments["sound"] = "false";
+	arguments["kiosk"] = "false";
+	arguments["scripts"] = "false";
+	arguments["open"] = "";
+	arguments["ddir"] = "";
+	arguments["ptsave"] = "";
+
+	for (int i=1; i<argc; i++)
+	{
+		if (!strncmp(argv[i], "scale:", 6) && argv[i]+6)
+		{
+			arguments["scale"] = std::string(argv[i]+6);
+		}
+		else if (!strncmp(argv[i], "proxy:", 6) && argv[i]+6)
+		{
+			arguments["proxy"] =  std::string(argv[i]+6);
+		}
+		else if (!strncmp(argv[i], "nohud", 5))
+		{
+			arguments["nohud"] = "true";
+		}
+		else if (!strncmp(argv[i], "kiosk", 5))
+		{
+			arguments["kiosk"] = "true";
+		}
+		else if (!strncmp(argv[i], "sound", 5))
+		{
+			arguments["sound"] = "true";
+		}
+		else if (!strncmp(argv[i], "scripts", 8))
+		{
+			arguments["scripts"] = "true";
+		}
+		else if (!strncmp(argv[i], "open", 5) && i+1<argc)
+		{
+			arguments["open"] = std::string(argv[i+1]);;
+			i++;
+		}
+		else if (!strncmp(argv[i], "ddir", 5) && i+1<argc)
+		{
+			arguments["ddir"] = std::string(argv[i+1]);
+			i++;
+		}
+		else if (!strncmp(argv[i], "ptsave", 7) && i+1<argc)
+		{
+			arguments["ptsave"] = std::string(argv[i+1]);
+			i++;
+			break;
+		}
+	}
+	return arguments;
+}
+
 int main(int argc, char * argv[])
 {
 	int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
 	unsigned int lastTick = 0;
 	float fps = 0, delta = 1.0f, inputScale = 1.0f;
 	float currentWidth = XRES+BARSIZE, currentHeight = YRES+MENUSIZE;
+
+	std::map<std::string, std::string> arguments = readArguments(argc, argv);
 
 	sdl_scrn = SDLOpen();
 #ifdef OGLI
@@ -150,8 +216,6 @@ int main(int argc, char * argv[])
 
 	GameController * gameController = new GameController();
 	engine->ShowWindow(gameController->GetView());
-
-	//new ErrorMessage("Error", "This is a test error message");
 
 	SDL_Event event;
 	while(engine->Running())
