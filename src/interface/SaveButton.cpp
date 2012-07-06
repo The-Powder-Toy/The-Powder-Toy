@@ -2,7 +2,7 @@
 
 #include "SaveButton.h"
 #include "client/SaveInfo.h"
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 #include "Engine.h"
 #include "client/Client.h"
 #include "simulation/SaveRenderer.h"

@@ -6,7 +6,7 @@
 #include "interface/Window.h"
 #include "interface/Platform.h"
 #include "interface/Engine.h"
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 
 using namespace ui;
 using namespace std;

@@ -10,7 +10,7 @@
 
 #include "Border.h"
 #include "Colour.h"
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 
 namespace ui
 {

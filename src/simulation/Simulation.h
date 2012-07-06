@@ -10,8 +10,8 @@
 #include <cstring>
 #include <cstddef>
 #include "Config.h"
-#include "Renderer.h"
-#include "Graphics.h"
+#include "graphics/Renderer.h"
+#include "graphics/Graphics.h"
 //#include "Elements.h"
 #include "Tools.h"
 #include "Misc.h"

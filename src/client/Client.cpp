@@ -18,7 +18,7 @@
 #include "Config.h"
 #include "Client.h"
 #include "MD5.h"
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 #include "Misc.h"
 
 #include "interface/Point.h"

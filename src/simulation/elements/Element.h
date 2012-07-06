@@ -2,7 +2,7 @@
 #define ELEMENTCLASS_H
 
 #include "simulation/Simulation.h"
-#include "Renderer.h"
+#include "graphics/Renderer.h"
 #include "simulation/Elements.h"
 
 class Simulation;

@@ -27,3 +27,6 @@ Makefile.me
 *.manifest.res
 *.pdb
 *.sublime-*
+*.project
+*.cproject
+*.settings

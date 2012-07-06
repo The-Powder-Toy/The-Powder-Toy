@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include "interface/Button.h"
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 #include "Engine.h"
 #include "Misc.h"
 

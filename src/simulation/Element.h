@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include "Simulation.h"
-#include "Renderer.h"
+#include "graphics/Renderer.h"
 #include "Gravity.h"
 #include "Misc.h"
 #include "ElementGraphics.h"

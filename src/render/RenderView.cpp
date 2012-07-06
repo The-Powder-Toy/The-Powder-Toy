@@ -6,8 +6,8 @@
  */
 
 #include "simulation/ElementGraphics.h"
-#include "Graphics.h"
-#include "Renderer.h"
+#include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
 #include "RenderView.h"
 
 class RenderView::RenderModeAction: public ui::CheckboxAction

@@ -13,7 +13,7 @@
 #include "interface/Window.h"
 #include "RenderController.h"
 #include "RenderModel.h"
-#include "Renderer.h"
+#include "graphics/Renderer.h"
 #include "interface/Checkbox.h"
 
 class RenderController;

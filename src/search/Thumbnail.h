@@ -2,7 +2,7 @@
 #define THUMBNAIL_H
 
 #include <iostream>
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 #include "interface/Point.h"
 
 class Thumbnail

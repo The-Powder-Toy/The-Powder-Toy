@@ -7,7 +7,7 @@
 
 #include "Config.h"
 #include "PowderToyJava.h"
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 
 #include "game/GameController.h"
 

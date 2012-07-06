@@ -2197,6 +2197,12 @@ Renderer::~Renderer()
 }
 
 #define PIXELMETHODS_CLASS Renderer
-#include "PixelMethods.inc"
+
+#ifdef OGLR
+#include "OpenGLDrawMethods.inc"
+#else
+#include "RasterDrawMethods.inc"
+#endif
+
 #undef PIXELMETHODS_CLASS
 

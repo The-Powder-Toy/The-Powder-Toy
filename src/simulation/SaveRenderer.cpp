@@ -6,9 +6,9 @@
  */
 
 #include "SaveRenderer.h"
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 #include "Simulation.h"
-#include "Renderer.h"
+#include "graphics/Renderer.h"
 
 
 SaveRenderer::SaveRenderer(){

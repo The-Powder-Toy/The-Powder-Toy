@@ -6,7 +6,7 @@
  */
 
 #include "Sign.h"
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 #include "Misc.h"
 
 sign::sign(std::string text_, int x_, int y_, Justification justification_):

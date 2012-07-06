@@ -3,7 +3,7 @@
 #include "GameView.h"
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
-#include "Renderer.h"
+#include "graphics/Renderer.h"
 #include "interface/Point.h"
 #include "Brush.h"
 #include "EllipseBrush.h"

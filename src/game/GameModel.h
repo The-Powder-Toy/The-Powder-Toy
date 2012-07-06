@@ -6,7 +6,7 @@
 #include "client/SaveInfo.h"
 #include "simulation/Simulation.h"
 #include "interface/Colour.h"
-#include "Renderer.h"
+#include "graphics/Renderer.h"
 #include "GameView.h"
 #include "Brush.h"
 #include "client/User.h"

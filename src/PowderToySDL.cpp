@@ -9,7 +9,7 @@
 #include <sstream>
 #include <string>
 #include "Config.h"
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 #if defined(LIN32) || defined(LIN64)
 #include "icon.h"
 #endif

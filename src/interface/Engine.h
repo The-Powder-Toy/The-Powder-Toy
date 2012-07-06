@@ -3,7 +3,7 @@
 #include <stack>
 #include "Singleton.h"
 #include "Platform.h"
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 #include "Window.h"
 
 namespace ui

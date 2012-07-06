@@ -4,7 +4,7 @@
 #include "Config.h"
 #include "Style.h"
 #include "GameView.h"
-#include "Graphics.h"
+#include "graphics/Graphics.h"
 #include "interface/Window.h"
 #include "interface/Button.h"
 #include "interface/Colour.h"

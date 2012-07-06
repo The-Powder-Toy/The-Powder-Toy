@@ -10,7 +10,7 @@
 
 #include "RenderView.h"
 #include "RenderModel.h"
-#include "Renderer.h"
+#include "graphics/Renderer.h"
 #include "Controller.h"
 
 class RenderView;
