@@ -802,8 +802,8 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 				bson_append_finish_object(&b);
 			}
 		}
+		bson_append_finish_array(&b);
 	}
-	bson_append_finish_array(&b);
 	bson_finish(&b);
 	bson_print(&b);
 	
