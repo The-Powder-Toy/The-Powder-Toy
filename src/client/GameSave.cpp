@@ -1622,8 +1622,8 @@ char * GameSave::serialiseOPS(int & dataLength)
 				bson_append_finish_object(&b);
 			}
 		}
+		bson_append_finish_array(&b);
 	}
-	bson_append_finish_array(&b);
 	bson_finish(&b);
 	bson_print(&b);
 	
