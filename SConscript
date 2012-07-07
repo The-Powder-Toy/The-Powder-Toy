@@ -68,7 +68,7 @@ if not conf.CheckLib('SDL'):
 #Check for FFT lib
 if conf.CheckLib('fftw3f'):
 	fftLib = "fftw3f"
-if conf.CheckLib('fftw3f-3'):
+elif conf.CheckLib('fftw3f-3'):
 	fftLib = "fftw3f-3"
 else:
     print "libfftw3f not found or not installed"
