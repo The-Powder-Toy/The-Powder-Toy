@@ -30,3 +30,6 @@ Makefile.me
 *.project
 *.cproject
 *.settings
+config.log
+*.sconsign.dblite
+*.sconf_temp
