@@ -51,7 +51,7 @@ except:
             print "sdl headers not found or not installed"
             raise SystemExit(1)
         else:
-            env.Append(CCFLAGS=['-I' + GetOption("sdl-dir")])
+            env.Append(CPPPATH=GetOption("sdl-dir"))
 
 #Find correct lua include dir
 if(GetOption("lua-dir")):
@@ -59,7 +59,7 @@ if(GetOption("lua-dir")):
         print "lua5.1 headers not found or not installed"
         raise SystemExit(1)
     else:
-        env.Append(CCFLAGS=['-I' + GetOption("lua-dir")])
+        env.Append(CPPPATH=GetOption("lua-dir"))
 
 #Check for FFT lib
 if not conf.CheckLib('fftw3f') and not conf.CheckLib('fftw3f-3'):
@@ -88,9 +88,11 @@ if(GetOption('lin32') or GetOption('lin64')):
     openGLLibs = ['GL']
     env.Append(LIBS=['X11', 'rt'])
     if GetOption('lin32'):
+        env.Append(LINKFLAGS=['-m32'])
         env.Append(CCFLAGS=['-m32'])
         env.Append(CPPDEFINES=["LIN32"])
     else:
+        env.Append(LINKFAGS=['-m64'])
         env.Append(CCFLAGS=['-m64'])
         env.Append(CPPDEFINES=["LIN64"])
 
