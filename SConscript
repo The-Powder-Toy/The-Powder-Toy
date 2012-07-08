@@ -29,10 +29,9 @@ AddOption('--win32',dest="win32",action='store_true',default=False,help="32bit W
 AddOption('--lin32',dest="lin32",action='store_true',default=False,help="32bit Linux target")
 AddOption('--lin64',dest="lin64",action='store_true',default=False,help="64bit Linux target")
 AddOption('--release',dest="release",action='store_true',default=False,help="Enable optimisations (Will slow down compiling)")
+AddOption('--lua-dir',dest="lua-dir",default=False,help="Directory for lua includes")
+AddOption('--sdl-dir',dest="sdl-dir",default=False,help="Directory for SDL includes")
 
-luaLib = "lua5.1"
-luaInclude = "lua5.1"
-fftLib = "fftw3f"
 
 if(GetOption('win32')):
     env = Environment(tools = ['mingw'], ENV = os.environ)
@@ -42,56 +41,43 @@ else:
 #Check for headers and libraries
 conf = Configure(env)
 
+try:
+    env.ParseConfig('sdl-config --cflags')
+    env.ParseConfig('sdl-config --libs')
+except:
+    conf.CheckLib("SDL")
+    if(GetOption("sdl-dir")):
+        if not conf.CheckCHeader(GetOption("sdl-dir") + '/SDL.h'):
+            print "sdl headers not found or not installed"
+            raise SystemExit(1)
+        else:
+            env.Append(CCFLAGS=['-I' + GetOption("sdl-dir")])
+
 #Find correct lua include dir
-if conf.CheckCHeader('lua.h'):
-    luaInclude = "/MinGW/include/"
-elif conf.CheckCHeader('lua5.1/lua.h'):
-    luaInclude = "/MinGW/include/lua5.1"
-elif conf.CheckCHeader('lua51/lua.h'):
-    luaInclude = "/MinGW/include/lua51"
-elif conf.CheckCHeader('lua/lua.h'):
-    luaInclude = "/MinGW/include/lua"
-else:
-    print "lua5.1 headers not found or not installed"
-    raise SystemExit(1)
-
-#Check for SDL headers
-if not conf.CheckCHeader('SDL/SDL.h'):
-    print "SDL headers not found or not installed"
-    raise SystemExit(1)
-
-#Check for SDL lib
-if not conf.CheckLib('SDL'):
-    print "libSDL not found or not installed"
-    raise SystemExit(1)
+if(GetOption("lua-dir")):
+    if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
+        print "lua5.1 headers not found or not installed"
+        raise SystemExit(1)
+    else:
+        env.Append(CCFLAGS=['-I' + GetOption("lua-dir")])
 
 #Check for FFT lib
-if conf.CheckLib('fftw3f'):
-	fftLib = "fftw3f"
-elif conf.CheckLib('fftw3f-3'):
-	fftLib = "fftw3f-3"
-else:
+if not conf.CheckLib('fftw3f') and not conf.CheckLib('fftw3f-3'):
     print "libfftw3f not found or not installed"
     raise SystemExit(1)
 
 #Check for Lua lib
-if conf.CheckLib('lua'):
-    luaLib = 'lua'
-elif conf.CheckLib('lua5.1'):
-    luaLib = 'lua5.1'
-elif conf.CheckLib('lua51'):
-    luaLib = 'lua51'
-else:
+if not conf.CheckLib('lua') and not conf.CheckLib('lua5.1') and not conf.CheckLib('lua51'):
     print "liblua not found or not installed"
     raise SystemExit(1)
 
 env = conf.Finish();
 
-env.Append(CPPPATH=['src/', 'data/', 'generated/', luaInclude, '/MinGW/include/SDL/'])
+env.Append(CPPPATH=['src/', 'data/', 'generated/'])
 env.Append(CCFLAGS=['-w', '-std=c99', '-fkeep-inline-functions'])
-env.Append(LIBS=['pthread', fftLib, 'm', 'bz2', luaLib, 'SDL'])
-env.Append(CPPDEFINES={"_POSIX_C_SOURCE":"200112L"})
-env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE","GRAVFFT","_GNU_SOURCE","USE_STDINT"])
+env.Append(LIBS=['pthread', 'm', 'bz2'])
+env.Append(CPPDEFINES={"_POSIX_C_SOURCE": "200112L"})
+env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT"])
 
 
 if(GetOption('win32')):
@@ -102,8 +88,10 @@ if(GetOption('lin32') or GetOption('lin64')):
     openGLLibs = ['GL']
     env.Append(LIBS=['X11', 'rt'])
     if GetOption('lin32'):
+        env.Append(CCFLAGS=['-m32'])
         env.Append(CPPDEFINES=["LIN32"])
     else:
+        env.Append(CCFLAGS=['-m64'])
         env.Append(CPPDEFINES=["LIN64"])
 
 
