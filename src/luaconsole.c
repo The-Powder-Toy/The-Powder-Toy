@@ -709,7 +709,7 @@ int luacon_keyevent(int key, int modifier, int event){
 	}
 	return kpcontinue;
 }
-int luacon_mouseevent(int mx, int my, int mb, int event){
+int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel){
 	int i = 0, mpcontinue = 1;
 	if(mouseclick_function_count){
 		for(i = 0; i < mouseclick_function_count && mpcontinue; i++){
@@ -718,7 +718,8 @@ int luacon_mouseevent(int mx, int my, int mb, int event){
 			lua_pushinteger(l, my);
 			lua_pushinteger(l, mb);
 			lua_pushinteger(l, event);
-			lua_pcall(l, 4, 1, 0);
+			lua_pushinteger(l, mouse_wheel);
+			lua_pcall(l, 5, 1, 0);
 			if(lua_isboolean(l, -1)){
 				mpcontinue = lua_toboolean(l, -1);
 			}
@@ -727,8 +728,11 @@ int luacon_mouseevent(int mx, int my, int mb, int event){
 	}
 	return mpcontinue;
 }
-int luacon_step(int mx, int my, int selectl, int selectr){
+int luacon_step(int mx, int my, int selectl, int selectr, int bsx, int bsy){
 	int tempret = 0, tempb, i, callret;
+	lua_pushinteger(l, bsy);
+	lua_pushinteger(l, bsx);
+	lua_pushinteger(l, SLALT);
 	lua_pushinteger(l, selectr);
 	lua_pushinteger(l, selectl);
 	lua_pushinteger(l, my);
@@ -737,6 +741,9 @@ int luacon_step(int mx, int my, int selectl, int selectr){
 	lua_setfield(l, tptProperties, "mousey");
 	lua_setfield(l, tptProperties, "selectedl");
 	lua_setfield(l, tptProperties, "selectedr");
+	lua_setfield(l, tptProperties, "selecteda");
+	lua_setfield(l, tptProperties, "brushx");
+	lua_setfield(l, tptProperties, "brushy");
 	for(i = 0; i<6; i++){
 		if(step_functions[i]){
 			loop_time = SDL_GetTicks();

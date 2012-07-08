@@ -1807,7 +1807,7 @@ int parse_save_PSv(void *save, int size, int replace, int x0, int y0, unsigned c
 				//TODO: Possibly some server side translation
 				j = PT_DUST;//goto corrupt;
 			}
-			gol[x][y]=0;
+			gol[y][x]=0;
 			if (j)
 			{
 				if (pmap[y][x])
