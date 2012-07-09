@@ -26,7 +26,7 @@ int create_n_parts(int n, int x, int y, float vx, float vy, float temp, int t)//
 	if (n>340) {
 		n = 340;
 	}
-	if (x<0 || y<0 || x>=XRES || y>=YRES || t<0 || t>=PT_NUM)
+	if (x<0 || y<0 || x>=XRES || y>=YRES || t<0 || t>=PT_NUM || !ptypes[t].enabled)
 		return -1;
 
 	for (c=0; c<n; c++) {

@@ -24,7 +24,7 @@ int update_BCLN(UPDATE_FUNC_ARGS) {
 		parts[i].vx += advection*vx[y/CELL][x/CELL];
 		parts[i].vy += advection*vy[y/CELL][x/CELL];
 	}
-	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOLALT)))
+	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !ptypes[parts[i].ctype].enabled || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOLALT)))
 	{
 		int r, rx, ry;
 		for (rx=-1; rx<2; rx++)

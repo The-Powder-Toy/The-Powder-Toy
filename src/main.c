@@ -1548,7 +1548,7 @@ int main(int argc, char *argv[])
 					for (i=0; i<NPART; i++)
 						if (parts[i].type==PT_SPRK)
 						{
-							if (parts[i].ctype >= 0 && parts[i].ctype < PT_NUM)
+							if (parts[i].ctype >= 0 && parts[i].ctype < PT_NUM && ptypes[parts[i].ctype].enabled)
 							{
 								parts[i].type = parts[i].ctype;
 								parts[i].life = 0;
@@ -2797,14 +2797,14 @@ int main(int argc, char *argv[])
 		//Setting an element for the stick man
 		if (player.spwn==0)
 		{
-			if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT || sr == PT_LIGH)
+			if ((sr>0 && sr<PT_NUM && ptypes[sr].enabled && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT || sr == PT_LIGH)
 				player.elem = sr;
 			else
 				player.elem = PT_DUST;
 		}
 		if (player2.spwn==0)
 		{
-			if ((sr<PT_NUM && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT || sr == PT_LIGH)
+			if ((sr>0 && sr<PT_NUM && ptypes[sr].enabled && ptypes[sr].falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT || sr == PT_LIGH)
 				player2.elem = sr;
 			else
 				player2.elem = PT_DUST;

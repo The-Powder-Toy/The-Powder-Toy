@@ -1237,7 +1237,7 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 						fprintf(stderr, "Out of range [%d]: %d %d, [%d, %d], [%d, %d]\n", i, x, y, (unsigned)partsData[i+1], (unsigned)partsData[i+2], (unsigned)partsData[i+3], (unsigned)partsData[i+4]);
 						goto fail;
 					}
-					if(partsData[i] >= PT_NUM)
+					if(partsData[i] >= PT_NUM || !ptypes[partsData[i]].enabled)
 						partsData[i] = PT_DMND;	//Replace all invalid elements with diamond
 					if(pmap[y][x] && posCount==0) // Check posCount to make sure an existing particle is not replaced twice if two particles are saved in that position
 					{
