@@ -28,15 +28,22 @@ AddOption('--opengl',dest="opengl",action='store_true',default=False,help="Build
 AddOption('--win32',dest="win32",action='store_true',default=False,help="32bit Windows target.")
 AddOption('--lin32',dest="lin32",action='store_true',default=False,help="32bit Linux target")
 AddOption('--lin64',dest="lin64",action='store_true',default=False,help="64bit Linux target")
+AddOption('--static',dest="static",action="store_true",default=False,help="Static linking, reduces external library dependancies but increased file size")
+AddOption('--pthreadw32-static',dest="ptw32-static",action="store_true",default=False,help="Use PTW32_STATIC_LIB for pthreadw32 headers")
 AddOption('--release',dest="release",action='store_true',default=False,help="Enable optimisations (Will slow down compiling)")
 AddOption('--lua-dir',dest="lua-dir",default=False,help="Directory for lua includes")
 AddOption('--sdl-dir',dest="sdl-dir",default=False,help="Directory for SDL includes")
-
+AddOption('--tool',dest="toolprefix",default=False,help="Prefix")
 
 if(GetOption('win32')):
     env = Environment(tools = ['mingw'], ENV = os.environ)
 else:
     env = Environment(ENV = os.environ)
+
+if GetOption("toolprefix"):
+    env['CC'] = GetOption("toolprefix")+env['CC']
+    env['CXX'] = GetOption("toolprefix")+env['CXX']
+    env['RC'] = GetOption("toolprefix")+env['RC']
 
 #Check for headers and libraries
 conf = Configure(env)
@@ -79,11 +86,18 @@ env.Append(LIBS=['pthread', 'm', 'bz2'])
 env.Append(CPPDEFINES={"_POSIX_C_SOURCE": "200112L"})
 env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT"])
 
+if GetOption("ptw32-static"):
+    env.Append(CPPDEFINES=['PTW32_STATIC_LIB']);
+
+if(GetOption('static')):
+    env.Append(LINKFLAGS=['-static-libgcc'])
 
 if(GetOption('win32')):
     openGLLibs = ['opengl32', 'glew32']
     env.Prepend(LIBS=['mingw32', 'ws2_32', 'SDLmain', 'regex'])
+    env.Append(LIBS=['winmm', 'gdi32'])
     env.Append(CPPDEFINES=["WIN32"])
+    env.Append(LINKFLAGS=['-mwindows'])
 if(GetOption('lin32') or GetOption('lin64')):
     openGLLibs = ['GL']
     env.Append(LIBS=['X11', 'rt'])
