@@ -229,7 +229,10 @@ int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 				if (!r && !bmap[(y+ry)/CELL][(x+rx)/CELL])
 					continue;
 				
-				if (ptypes[r&0xFF].falldown!=0 || ptypes[r&0xFF].state == ST_GAS || (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT)
+				if (ptypes[r&0xFF].falldown!=0 || ptypes[r&0xFF].state == ST_GAS 
+						|| ptypes[r&0xFF].properties&TYPE_GAS
+						|| ptypes[r&0xFF].properties&TYPE_LIQUID
+						|| (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT)
 				{
 					playerp->elem = r&0xFF;  //Current element
 				}
