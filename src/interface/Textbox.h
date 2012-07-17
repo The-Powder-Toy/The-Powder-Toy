@@ -22,7 +22,7 @@ class Textbox : public Label
 protected:
 	bool mouseDown;
 	bool masked, border;
-	int cursor, cursorPosition;
+	int cursor, cursorPositionX, cursorPositionY;
 	TextboxAction *actionCallback;
 	std::string backingText;
 	std::string placeHolder;

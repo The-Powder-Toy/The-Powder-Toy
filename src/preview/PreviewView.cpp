@@ -28,6 +28,16 @@ public:
 	}
 };
 
+class PreviewView::AutoCommentSizeAction: public ui::TextboxAction
+{
+	PreviewView * v;
+public:
+	AutoCommentSizeAction(PreviewView * v): v(v) {}
+	virtual void TextChangedCallback(ui::Textbox * sender) {
+		v->commentBoxAutoHeight();
+	}
+};
+
 PreviewView::PreviewView():
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+200, (YRES/2)+150)),
 	savePreview(NULL),
@@ -137,6 +147,30 @@ PreviewView::PreviewView():
 	pageInfo->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
 	AddComponent(pageInfo);
+}
+
+void PreviewView::commentBoxAutoHeight()
+{
+	if(!addCommentBox)
+		return;
+	int textWidth = Graphics::textwidth(addCommentBox->GetText().c_str());
+	if(textWidth+5 > Size.X-(XRES/2)-48)
+	{
+		commentBoxHeight = 58;
+		addCommentBox->SetMultiline(true);
+		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+		addCommentBox->Position = ui::Point((XRES/2)+4, Size.Y-58);
+		addCommentBox->Size = ui::Point(Size.X-(XRES/2)-8, 37);
+	}
+	else
+	{
+		commentBoxHeight = 20;
+		addCommentBox->SetMultiline(false);
+		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+		addCommentBox->Position = ui::Point((XRES/2)+4, Size.Y-19);
+		addCommentBox->Size = ui::Point(Size.X-(XRES/2)-48, 17);
+	}
+	displayComments(commentsOffset);
 }
 
 void PreviewView::DoDraw()
@@ -305,10 +339,10 @@ void PreviewView::displayComments(int yOffset)
 		tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 		currentY += 16;
 
-		if(currentY > Size.Y-commentBoxHeight || usernameY < 0)
+		if(currentY+5 > Size.Y-commentBoxHeight || usernameY < 0)
 		{
 			delete tempUsername;
-			if(currentY > Size.Y)
+			if(currentY+5 > Size.Y-commentBoxHeight)
 				break;
 		}
 		else
@@ -324,10 +358,10 @@ void PreviewView::displayComments(int yOffset)
 		tempComment->SetTextColour(ui::Colour(180, 180, 180));
 		currentY += tempComment->Size.Y+4;
 
-		if(currentY > Size.Y-commentBoxHeight || commentY < 0)
+		if(currentY+5 > Size.Y-commentBoxHeight || commentY < 0)
 		{
 			delete tempComment;
-			if(currentY > Size.Y)
+			if(currentY+5 > Size.Y-commentBoxHeight)
 				break;
 		}
 		else
@@ -356,6 +390,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	if(sender->GetCommentBoxEnabled())
 	{
 		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment");
+		addCommentBox->SetActionCallback(new AutoCommentSizeAction(this));
 		addCommentBox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		AddComponent(addCommentBox);
 		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "Submit");
