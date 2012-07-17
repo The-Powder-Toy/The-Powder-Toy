@@ -975,16 +975,18 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
         }
     };
 
-	for(std::vector<ui::Component*>::iterator iter = notificationComponents.begin(); iter != notificationComponents.end(); ++iter) {
-		RemoveComponent(*iter);
-		delete *iter;
+	for(std::vector<ui::Component*>::const_iterator iter = notificationComponents.begin(), end = notificationComponents.end(); iter != end; ++iter) {
+		ui::Component * cNotification = *iter;
+		RemoveComponent(cNotification);
+		delete cNotification;
 	}
 	notificationComponents.clear();
+
 
 	std::vector<Notification*> notifications = sender->GetNotifications();
 
 	int currentY = YRES-17;
-	for(std::vector<Notification*>::iterator iter = notifications.begin(); iter != notifications.end(); ++iter)
+	for(std::vector<Notification*>::iterator iter = notifications.begin(), end = notifications.end(); iter != end; ++iter)
 	{
 		int width = (Graphics::textwidth((*iter)->Message.c_str()))+8;
 		ui::Button * tempButton = new ui::Button(ui::Point(XRES-width-22, currentY), ui::Point(width, 15), (*iter)->Message);
