@@ -49,6 +49,10 @@ class PreviewView: public ui::Window {
 	float commentsVel;
 
 	int commentBoxHeight;
+	float commentBoxPositionX;
+	float commentBoxPositionY;
+	float commentBoxSizeX;
+	float commentBoxSizeY;
 
 	void displayComments(int yOffset);
 	void commentBoxAutoHeight();

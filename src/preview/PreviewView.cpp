@@ -159,16 +159,22 @@ void PreviewView::commentBoxAutoHeight()
 		commentBoxHeight = 58;
 		addCommentBox->SetMultiline(true);
 		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignTop;
-		addCommentBox->Position = ui::Point((XRES/2)+4, Size.Y-58);
-		addCommentBox->Size = ui::Point(Size.X-(XRES/2)-8, 37);
+
+		commentBoxPositionX = (XRES/2)+4;
+		commentBoxPositionY = Size.Y-58;
+		commentBoxSizeX = Size.X-(XRES/2)-8;
+		commentBoxSizeY = 37;
 	}
 	else
 	{
 		commentBoxHeight = 20;
 		addCommentBox->SetMultiline(false);
 		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-		addCommentBox->Position = ui::Point((XRES/2)+4, Size.Y-19);
-		addCommentBox->Size = ui::Point(Size.X-(XRES/2)-48, 17);
+
+		commentBoxPositionX = (XRES/2)+4;
+		commentBoxPositionY = Size.Y-19;
+		commentBoxSizeX = Size.X-(XRES/2)-48;
+		commentBoxSizeY = 17;
 	}
 	displayComments(commentsOffset);
 }
@@ -261,6 +267,42 @@ void PreviewView::OnTick(float dt)
 		}
 
 		displayComments(commentsOffset);
+	}
+
+	if(addCommentBox)
+	{
+		ui::Point positionDiff = ui::Point(commentBoxPositionX, commentBoxPositionY)-addCommentBox->Position;
+		ui::Point sizeDiff = ui::Point(commentBoxSizeX, commentBoxSizeY)-addCommentBox->Size;
+
+		if(positionDiff.X!=0)
+		{
+			int xdiff = positionDiff.X/5;
+			if(xdiff == 0)
+				xdiff = 1*isign(positionDiff.X);
+			addCommentBox->Position.X += xdiff;
+		}
+		if(positionDiff.Y!=0)
+		{
+			int ydiff = positionDiff.Y/5;
+			if(ydiff == 0)
+				ydiff = 1*isign(positionDiff.Y);
+			addCommentBox->Position.Y += ydiff;
+		}
+
+		if(sizeDiff.X!=0)
+		{
+			int xdiff = sizeDiff.X/5;
+			if(xdiff == 0)
+				xdiff = 1*isign(sizeDiff.X);
+			addCommentBox->Size.X += xdiff;
+		}
+		if(sizeDiff.Y!=0)
+		{
+			int ydiff = sizeDiff.Y/5;
+			if(ydiff == 0)
+				ydiff = 1*isign(sizeDiff.Y);
+			addCommentBox->Size.Y += ydiff;
+		}
 	}
 
 	c->Update();
@@ -389,6 +431,11 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	}
 	if(sender->GetCommentBoxEnabled())
 	{
+		commentBoxPositionX = (XRES/2)+4;
+		commentBoxPositionY = Size.Y-19;
+		commentBoxSizeX = Size.X-(XRES/2)-48;
+		commentBoxSizeY = 17;
+
 		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment");
 		addCommentBox->SetActionCallback(new AutoCommentSizeAction(this));
 		addCommentBox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
