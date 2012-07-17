@@ -8,13 +8,15 @@
 
 using namespace ui;
 
-Textbox::Textbox(Point position, Point size, std::string textboxText):
+Textbox::Textbox(Point position, Point size, std::string textboxText, std::string textboxPlaceholder):
 	Label(position, size, ""),
 	actionCallback(NULL),
 	masked(false),
 	border(true),
 	mouseDown(false)
 {
+	placeHolder = textboxPlaceholder;
+
 	SetText(textboxText);
 	cursor = text.length();
 }
@@ -231,6 +233,10 @@ void Textbox::Draw(const Point& screenPos)
 	}
 	else
 	{
+		if(!text.length())
+		{
+			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, placeHolder, textColour.Red, textColour.Green, textColour.Blue, 170);
+		}
 		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 160, 160, 160, 255);
 	}
 }

@@ -25,8 +25,9 @@ protected:
 	int cursor, cursorPosition;
 	TextboxAction *actionCallback;
 	std::string backingText;
+	std::string placeHolder;
 public:
-	Textbox(Point position, Point size, std::string textboxText);
+	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
 	virtual ~Textbox();
 
 	virtual void SetDisplayText(std::string text);

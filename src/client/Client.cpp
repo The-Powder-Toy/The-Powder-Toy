@@ -211,9 +211,29 @@ void Client::notifyUpdateAvailable()
 	}
 }
 
+void Client::notifyAuthUserChanged()
+{
+	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	{
+		(*iterator)->NotifyAuthUserChanged(this);
+	}
+}
+
 void Client::AddListener(ClientListener * listener)
 {
 	listeners.push_back(listener);
+}
+
+void Client::RemoveListener(ClientListener * listener)
+{
+	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	{
+		if((*iterator) == listener)
+		{
+			listeners.erase(iterator);
+			return;
+		}
+	}
 }
 
 void Client::Shutdown()
@@ -256,6 +276,7 @@ Client::~Client()
 void Client::SetAuthUser(User user)
 {
 	authUser = user;
+	notifyAuthUserChanged();
 }
 
 User Client::GetAuthUser()

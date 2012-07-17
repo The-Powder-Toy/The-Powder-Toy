@@ -27,6 +27,7 @@ struct SaveData
 class PreviewView;
 class PreviewModel {
 	bool doOpen;
+	bool commentBoxEnabled;
 	vector<PreviewView*> observers;
 	SaveInfo * save;
 	vector<char> saveDataBuffer;
@@ -34,6 +35,7 @@ class PreviewModel {
 	void notifySaveChanged();
 	void notifySaveCommentsChanged();
 	void notifyCommentsPageChanged();
+	void notifyCommentBoxEnabledChanged();
 
 	//Background retrieval
 	int tSaveID;
@@ -65,6 +67,9 @@ public:
 	PreviewModel();
 	SaveInfo * GetSave();
 	std::vector<SaveComment*> * GetComments();
+
+	bool GetCommentBoxEnabled();
+	void SetCommentBoxEnabled(bool enabledState);
 
 	bool GetCommentsLoaded();
 	int GetCommentsPageNum();
