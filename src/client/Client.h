@@ -92,6 +92,8 @@ public:
 	int GetStampsCount();
 	SaveFile * GetFirstStamp();
 
+	RequestStatus AddComment(int saveID, std::string comment);
+
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	LoginStatus Login(string username, string password, User & user);
 	void ClearThumbnailRequests();

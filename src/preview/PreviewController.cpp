@@ -60,6 +60,26 @@ void PreviewController::Update()
 	}
 }
 
+void PreviewController::SubmitComment(std::string comment)
+{
+	if(comment.length() < 4)
+	{
+		new ErrorMessage("Error", "Comment is too short");
+	}
+	else
+	{
+		RequestStatus status = Client::Ref().AddComment(saveId, comment);
+		if(status != RequestOkay)
+		{
+			new ErrorMessage("Error Submitting comment", Client::Ref().GetLastError());	
+		}
+		else
+		{
+			previewModel->UpdateComments(1);
+		}
+	}
+}
+
 void PreviewController::ShowLogin()
 {
 	loginWindow = new LoginController();

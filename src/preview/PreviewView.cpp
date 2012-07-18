@@ -28,6 +28,17 @@ public:
 	}
 };
 
+class PreviewView::SubmitCommentAction: public ui::ButtonAction
+{
+	PreviewView * v;
+public:
+	SubmitCommentAction(PreviewView * v_){ v = v_; }
+	virtual void ActionCallback(ui::Button * sender)
+	{
+		v->submitComment();
+	}
+};
+
 class PreviewView::AutoCommentSizeAction: public ui::TextboxAction
 {
 	PreviewView * v;
@@ -361,6 +372,23 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 	}
 }
 
+void PreviewView::submitComment()
+{
+	if(addCommentBox)
+	{
+		std::string comment = std::string(addCommentBox->GetText());
+		submitCommentButton->Enabled = false;
+		addCommentBox->SetText("");
+		addCommentBox->SetPlaceholder("Submitting comment");
+		FocusComponent(NULL);
+
+		c->SubmitComment(comment);
+
+		addCommentBox->SetPlaceholder("Add comment");
+		submitCommentButton->Enabled = true;
+	}
+}
+
 void PreviewView::displayComments(int yOffset)
 {
 	for(int i = 0; i < commentComponents.size(); i++)
@@ -441,6 +469,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		addCommentBox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		AddComponent(addCommentBox);
 		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "Submit");
+		submitCommentButton->SetActionCallback(new SubmitCommentAction(this));
 		//submitCommentButton->Enabled = false;
 		AddComponent(submitCommentButton);
 	}

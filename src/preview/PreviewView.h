@@ -21,6 +21,7 @@
 class PreviewModel;
 class PreviewController;
 class PreviewView: public ui::Window {
+	class SubmitCommentAction;
 	class LoginAction;
 	class AutoCommentSizeAction;
 	PreviewController * c;
@@ -56,6 +57,7 @@ class PreviewView: public ui::Window {
 
 	void displayComments(int yOffset);
 	void commentBoxAutoHeight();
+	void submitComment();
 public:
 	void AttachController(PreviewController * controller) { c = controller;}
 	PreviewView();

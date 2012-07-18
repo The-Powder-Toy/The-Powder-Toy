@@ -34,6 +34,8 @@ public:
 	virtual void SetText(std::string text);
 	virtual std::string GetText();
 
+	virtual void SetPlaceholder(std::string text);
+
 	void SetBorder(bool border) { this->border = border; };
 	void SetHidden(bool hidden) { masked = hidden; }
 	bool GetHidden() { return masked; }

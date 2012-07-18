@@ -38,6 +38,7 @@ public:
 	PreviewView * GetView() { return previewView; }
 	void Update();
 	void FavouriteSave();
+	void SubmitComment(std::string comment);
 
 	void NextCommentPage();
 	void PrevCommentPage();

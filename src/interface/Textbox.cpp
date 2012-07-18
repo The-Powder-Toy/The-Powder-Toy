@@ -27,6 +27,11 @@ Textbox::~Textbox()
 		delete actionCallback;
 }
 
+void Textbox::SetPlaceholder(std::string text)
+{
+	placeHolder = text;
+}
+
 void Textbox::SetText(std::string newText)
 {
 	backingText = newText;
