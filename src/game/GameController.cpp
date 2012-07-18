@@ -405,6 +405,7 @@ void GameController::Exit()
 void GameController::LoadRenderPreset(RenderPreset preset)
 {
 	Renderer * renderer = gameModel->GetRenderer();
+	gameModel->SetInfoTip(preset.Name);
 	renderer->SetRenderMode(preset.RenderModes);
 	renderer->SetDisplayMode(preset.DisplayModes);
 	renderer->SetColourMode(preset.ColourMode);

@@ -38,6 +38,11 @@ private:
 	bool zoomCursorFixed;
 	bool drawSnap;
 	int toolIndex;
+
+	int infoTipPresence;
+	std::string toolTip;
+	std::string infoTip;
+	
 	queue<ui::Point*> pointQueue;
 	GameController * c;
 	Renderer * ren;
@@ -111,6 +116,9 @@ public:
 	void NotifyPlaceSaveChanged(GameModel * sender);
 	void NotifyNotificationsChanged(GameModel * sender);
 	void NotifyLogChanged(GameModel * sender, string entry);
+	void NotifyToolTipChanged(GameModel * sender);
+	void NotifyInfoTipChanged(GameModel * sender);
+
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);

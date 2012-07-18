@@ -33,7 +33,10 @@ GameView::GameView():
 	placeSaveThumb(NULL),
 	mousePosition(0, 0),
 	lastOffset(0),
-	drawSnap(false)
+	drawSnap(false),
+	toolTip(""),
+	infoTip(""),
+	infoTipPresence(0)
 {
 	
 	int currentX = 1;
@@ -520,6 +523,17 @@ void GameView::NotifyPausedChanged(GameModel * sender)
 	pauseButton->SetToggleState(sender->GetPaused());
 }
 
+void GameView::NotifyToolTipChanged(GameModel * sender)
+{
+	toolTip = sender->GetToolTip();
+}
+
+void GameView::NotifyInfoTipChanged(GameModel * sender)
+{
+	infoTip = sender->GetInfoTip();
+	infoTipPresence = 120;
+}
+
 void GameView::NotifySaveChanged(GameModel * sender)
 {
 	if(sender->GetSave())
@@ -922,6 +936,12 @@ void GameView::OnTick(float dt)
 	{
 		c->DrawFill(toolIndex, currentMouse);
 	}
+	if(infoTipPresence>0)
+	{
+		infoTipPresence -= int(dt)>0?int(dt):1;
+		if(infoTipPresence<0)
+			infoTipPresence = 0;
+	}
 	c->Update();
 	if(lastLogEntry > -0.1f)
 		lastLogEntry -= 0.16*dt;
@@ -1227,6 +1247,12 @@ void GameView::OnDraw()
 		sampleInfo << ", Ctype: " << c->ElementResolve(sample.ctype);
 
 	g->drawtext(XRES+BARSIZE-(10+Graphics::textwidth((char*)sampleInfo.str().c_str())), 10, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255);
+
+	if(infoTipPresence)
+	{
+		int infoTipAlpha = (infoTipPresence>50?50:infoTipPresence)*5;
+		g->drawtext((XRES-Graphics::textwidth((char*)infoTip.c_str()))/2, (YRES/2)-2, (char*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
+	}
 }
 
 ui::Point GameView::lineSnapCoords(ui::Point point1, ui::Point point2)

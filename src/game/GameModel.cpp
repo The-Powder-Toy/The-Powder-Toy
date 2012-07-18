@@ -517,6 +517,28 @@ void GameModel::RemoveNotification(Notification * notification)
 	notifyNotificationsChanged();
 }
 
+void GameModel::SetToolTip(std::string text)
+{
+	toolTip = text;
+	notifyToolTipChanged();
+}
+
+void GameModel::SetInfoTip(std::string text)
+{
+	infoTip = text;
+	notifyInfoTipChanged();
+}
+
+std::string GameModel::GetToolTip()
+{
+	return toolTip;
+}
+
+std::string GameModel::GetInfoTip()
+{
+	return infoTip;
+}
+
 void GameModel::notifyNotificationsChanged()
 {
 	for(std::vector<GameView*>::iterator iter = observers.begin(); iter != observers.end(); ++iter)
@@ -642,5 +664,21 @@ void GameModel::notifyLogChanged(string entry)
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyLogChanged(this, entry);
+	}
+}
+
+void GameModel::notifyInfoTipChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyInfoTipChanged(this);
+	}
+}
+
+void GameModel::notifyToolTipChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyToolTipChanged(this);
 	}
 }
