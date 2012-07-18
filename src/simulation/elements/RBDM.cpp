@@ -43,7 +43,7 @@ Element_RBDM::Element_RBDM()
     HighTemperatureTransition = PT_LRBD;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_RBDM::~Element_RBDM() {}

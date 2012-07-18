@@ -43,7 +43,7 @@ Element_INST::Element_INST()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_INST::~Element_INST() {}

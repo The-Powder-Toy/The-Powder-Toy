@@ -43,7 +43,7 @@ Element_SING::Element_SING()
     HighTemperatureTransition = NT;
     
     Update = &Element_SING::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_SING static int update(UPDATE_FUNC_ARGS)

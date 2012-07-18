@@ -43,7 +43,7 @@ Element_WOOD::Element_WOOD()
     HighTemperatureTransition = PT_FIRE;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_WOOD::~Element_WOOD() {}

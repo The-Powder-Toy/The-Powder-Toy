@@ -43,7 +43,7 @@ Element_URAN::Element_URAN()
     HighTemperatureTransition = NT;
     
     Update = &Element_URAN::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_URAN static int update(UPDATE_FUNC_ARGS)

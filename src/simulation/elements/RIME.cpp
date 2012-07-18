@@ -43,7 +43,7 @@ Element_RIME::Element_RIME()
     HighTemperatureTransition = PT_WATR;
     
     Update = &Element_RIME::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_RIME static int update(UPDATE_FUNC_ARGS)

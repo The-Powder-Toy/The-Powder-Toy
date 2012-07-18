@@ -43,7 +43,7 @@ Element_WAX::Element_WAX()
     HighTemperatureTransition = PT_MWAX;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_WAX::~Element_WAX() {}

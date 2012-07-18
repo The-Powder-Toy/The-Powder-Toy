@@ -255,6 +255,59 @@ GameView::GameView():
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback(new ElementSearchAction(this));
 	AddComponent(tempButton);
+
+	//Render mode presets. Possibly load from config in future?
+	renderModePresets = new RenderPreset[10];
+
+	renderModePresets[0].Name = "Alternative Velocity Display";
+	renderModePresets[0].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[0].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[0].DisplayModes.push_back(DISPLAY_AIRC);
+
+	renderModePresets[1].Name = "Velocity Display";
+	renderModePresets[1].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[1].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[1].DisplayModes.push_back(DISPLAY_AIRV);
+
+	renderModePresets[2].Name = "Pressure Display";
+	renderModePresets[2].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[2].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[2].DisplayModes.push_back(DISPLAY_AIRP);
+
+	renderModePresets[3].Name = "Persistent Display";
+	renderModePresets[3].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[3].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[3].DisplayModes.push_back(DISPLAY_PERS);
+
+	renderModePresets[4].Name = "Fire Display";
+	renderModePresets[4].RenderModes.push_back(RENDER_FIRE);
+	renderModePresets[4].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[4].RenderModes.push_back(RENDER_BASC);
+
+	renderModePresets[5].Name = "Blob Display";
+	renderModePresets[5].RenderModes.push_back(RENDER_FIRE);
+	renderModePresets[5].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[5].RenderModes.push_back(RENDER_BLOB);
+
+	renderModePresets[6].Name = "Heat Display";
+	renderModePresets[6].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[6].DisplayModes.push_back(DISPLAY_AIRH);
+	renderModePresets[6].ColourMode = COLOUR_HEAT;
+
+	renderModePresets[7].Name = "Fancy Display";
+	renderModePresets[7].RenderModes.push_back(RENDER_FIRE);
+	renderModePresets[7].RenderModes.push_back(RENDER_GLOW);
+	renderModePresets[7].RenderModes.push_back(RENDER_BLUR);
+	renderModePresets[7].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[7].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[7].DisplayModes.push_back(DISPLAY_WARP);
+
+	renderModePresets[8].Name = "Nothing Display";
+	renderModePresets[8].RenderModes.push_back(RENDER_BASC);
+
+	renderModePresets[9].Name = "Heat Gradient Display";
+	renderModePresets[9].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[9].ColourMode = COLOUR_GRAD;
 }
 
 class GameView::MenuAction: public ui::ButtonAction
@@ -818,6 +871,11 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case '[':
 		c->AdjustBrushSize(-1, true);
 		break;
+	}
+
+	if(key >= '0' && key <= '9')
+	{
+		c->LoadRenderPreset(renderModePresets[key-'0']);
 	}
 }
 

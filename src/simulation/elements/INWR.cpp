@@ -43,7 +43,7 @@ Element_INWR::Element_INWR()
     HighTemperatureTransition = PT_LAVA;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_INWR::~Element_INWR() {}

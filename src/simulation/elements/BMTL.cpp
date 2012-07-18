@@ -43,7 +43,7 @@ Element_BMTL::Element_BMTL()
     HighTemperatureTransition = PT_LAVA;
     
     Update = &Element_BMTL::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_BMTL static int update(UPDATE_FUNC_ARGS)

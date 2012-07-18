@@ -43,7 +43,7 @@ Element_SOAP::Element_SOAP()
     HighTemperatureTransition = NT;
     
     Update = &Element_SOAP::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_SOAP static void attach(Particle * parts, int i1, int i2)

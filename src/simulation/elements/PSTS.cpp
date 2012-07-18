@@ -43,7 +43,7 @@ Element_PSTS::Element_PSTS()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_PSTS::~Element_PSTS() {}

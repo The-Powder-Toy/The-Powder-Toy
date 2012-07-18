@@ -43,7 +43,7 @@ Element_SHLD4::Element_SHLD4()
     HighTemperatureTransition = NT;
     
     Update = &Element_SHLD4::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_SHLD4 static int update(UPDATE_FUNC_ARGS)

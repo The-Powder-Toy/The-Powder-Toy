@@ -43,7 +43,7 @@ Element_CLNE::Element_CLNE()
     HighTemperatureTransition = NT;
     
     Update = &Element_CLNE::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_CLNE static int update(UPDATE_FUNC_ARGS)

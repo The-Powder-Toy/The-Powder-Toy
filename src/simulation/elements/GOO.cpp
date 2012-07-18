@@ -43,7 +43,7 @@ Element_GOO::Element_GOO()
     HighTemperatureTransition = NT;
     
     Update = &Element_GOO::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_GOO static int update(UPDATE_FUNC_ARGS)

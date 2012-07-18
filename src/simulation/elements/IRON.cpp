@@ -43,7 +43,7 @@ Element_IRON::Element_IRON()
     HighTemperatureTransition = PT_LAVA;
     
     Update = &Element_IRON::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_IRON static int update(UPDATE_FUNC_ARGS)

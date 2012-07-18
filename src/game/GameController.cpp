@@ -402,6 +402,14 @@ void GameController::Exit()
 	HasDone = true;
 }
 
+void GameController::LoadRenderPreset(RenderPreset preset)
+{
+	Renderer * renderer = gameModel->GetRenderer();
+	renderer->SetRenderMode(preset.RenderModes);
+	renderer->SetDisplayMode(preset.DisplayModes);
+	renderer->SetColourMode(preset.ColourMode);
+}
+
 void GameController::Update()
 {
 	ui::Point pos = gameView->GetMousePosition();

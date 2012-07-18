@@ -43,7 +43,7 @@ Element_FRZW::Element_FRZW()
     HighTemperatureTransition = PT_ICEI;
     
     Update = &Element_FRZW::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_FRZW static int update(UPDATE_FUNC_ARGS)

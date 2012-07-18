@@ -43,7 +43,7 @@ Element_DESL::Element_DESL()
     HighTemperatureTransition = PT_FIRE;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_DESL::~Element_DESL() {}

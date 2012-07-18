@@ -43,7 +43,7 @@ Element_NSCN::Element_NSCN()
     HighTemperatureTransition = PT_LAVA;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_NSCN::~Element_NSCN() {}

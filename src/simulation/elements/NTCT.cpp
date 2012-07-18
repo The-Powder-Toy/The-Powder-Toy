@@ -43,7 +43,7 @@ Element_NTCT::Element_NTCT()
     HighTemperatureTransition = PT_LAVA;
     
     Update = &Element_NTCT::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_NTCT static int update(UPDATE_FUNC_ARGS)

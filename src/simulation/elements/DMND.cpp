@@ -43,7 +43,7 @@ Element_DMND::Element_DMND()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_DMND::~Element_DMND() {}

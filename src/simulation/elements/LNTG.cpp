@@ -43,7 +43,7 @@ Element_LNTG::Element_LNTG()
     HighTemperatureTransition = PT_NONE;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_LNTG::~Element_LNTG() {}

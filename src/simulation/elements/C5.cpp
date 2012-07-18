@@ -43,7 +43,7 @@ Element_C5::Element_C5()
     HighTemperatureTransition = NT;
     
     Update = &Element_C5::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_C5 static int update(UPDATE_FUNC_ARGS)

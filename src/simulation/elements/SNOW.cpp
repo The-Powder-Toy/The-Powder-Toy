@@ -43,7 +43,7 @@ Element_SNOW::Element_SNOW()
     HighTemperatureTransition = ST;
     
     Update = &Element_SNOW::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_SNOW static int update(UPDATE_FUNC_ARGS)

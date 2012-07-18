@@ -43,7 +43,7 @@ Element_FOG::Element_FOG()
     HighTemperatureTransition = PT_WTRV;
     
     Update = &Element_FOG::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_FOG static int update(UPDATE_FUNC_ARGS)

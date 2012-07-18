@@ -43,7 +43,7 @@ Element_OIL::Element_OIL()
     HighTemperatureTransition = PT_GAS;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_OIL::~Element_OIL() {}

@@ -617,6 +617,8 @@ void Renderer::render_gravlensing()
 void Renderer::render_fire()
 {
 #ifndef OGLR
+	if(!(render_mode & FIREMODE))
+		return;
 	int i,j,x,y,r,g,b,nx,ny;
 	for (j=0; j<YRES/CELL; j++)
 		for (i=0; i<XRES/CELL; i++)
@@ -2093,9 +2095,18 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 
 void Renderer::CompileRenderMode()
 {
+	int old_render_mode = render_mode;
 	render_mode = 0;
 	for(int i = 0; i < render_modes.size(); i++)
 		render_mode |= render_modes[i];
+
+	//If firemode is removed, clear the fire display
+	if(!(render_mode & FIREMODE) && (old_render_mode & FIREMODE))
+	{
+		std::fill(fire_r[0]+0, fire_r[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
+		std::fill(fire_g[0]+0, fire_g[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
+		std::fill(fire_b[0]+0, fire_b[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
+	}
 }
 
 void Renderer::AddRenderMode(unsigned int mode)

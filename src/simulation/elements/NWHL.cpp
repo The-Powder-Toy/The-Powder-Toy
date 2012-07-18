@@ -43,7 +43,7 @@ Element_NWHL::Element_NWHL()
     HighTemperatureTransition = NT;
     
     Update = &Element_NWHL::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_NWHL static int update(UPDATE_FUNC_ARGS)

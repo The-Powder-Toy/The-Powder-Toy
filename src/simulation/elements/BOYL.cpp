@@ -43,7 +43,7 @@ Element_BOYL::Element_BOYL()
     HighTemperatureTransition = NT;
     
     Update = &Element_BOYL::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_BOYL static int update(UPDATE_FUNC_ARGS)

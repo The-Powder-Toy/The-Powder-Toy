@@ -12,6 +12,7 @@
 #include "interface/Button.h"
 #include "interface/Slider.h"
 #include "ToolButton.h"
+#include "RenderPreset.h"
 #include "Brush.h"
 
 using namespace std;
@@ -75,6 +76,8 @@ private:
 	ui::Point selectPoint2;
 
 	ui::Point mousePosition;
+
+	RenderPreset * renderModePresets;
 
 	Thumbnail * placeSaveThumb;
 

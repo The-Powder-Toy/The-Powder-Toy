@@ -43,7 +43,7 @@ Element_ETRD::Element_ETRD()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_ETRD::~Element_ETRD() {}

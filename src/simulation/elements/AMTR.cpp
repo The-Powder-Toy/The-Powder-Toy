@@ -43,7 +43,7 @@ Element_AMTR::Element_AMTR()
     HighTemperatureTransition = NT;
     
     Update = &Element_AMTR::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_AMTR static int update(UPDATE_FUNC_ARGS)

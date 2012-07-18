@@ -43,7 +43,7 @@ Element_NONE::Element_NONE()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_NONE::~Element_NONE() {}

@@ -43,7 +43,7 @@ Element_116::Element_116()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_116::~Element_116() {}

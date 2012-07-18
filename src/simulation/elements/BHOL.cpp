@@ -43,7 +43,7 @@ Element_BHOL::Element_BHOL()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_BHOL::~Element_BHOL() {}
