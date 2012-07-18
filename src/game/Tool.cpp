@@ -12,15 +12,17 @@
 
 using namespace std;
 
-Tool::Tool(int id, string name, int r, int g, int b):
+Tool::Tool(int id, string name, string description, int r, int g, int b):
 	toolID(id),
 	toolName(name),
+	toolDescription(description),
 	colRed(r),
 	colGreen(g),
 	colBlue(b)
 {
 }
 string Tool::GetName() { return toolName; }
+string Tool::GetDescription() { return toolDescription; }
 Tool::~Tool() {}
 void Tool::Click(Simulation * sim, Brush * brush, ui::Point position) { }
 void Tool::Draw(Simulation * sim, Brush * brush, ui::Point position) {
@@ -34,8 +36,8 @@ void Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Po
 }
 void Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {};
 
-ElementTool::ElementTool(int id, string name, int r, int g, int b):
-	Tool(id, name, r, g, b)
+ElementTool::ElementTool(int id, string name, string description, int r, int g, int b):
+	Tool(id, name, description, r, g, b)
 {
 }
 ElementTool::~ElementTool() {}
@@ -53,8 +55,8 @@ void ElementTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) 
 }
 
 
-WallTool::WallTool(int id, string name, int r, int g, int b):
-Tool(id, name, r, g, b)
+WallTool::WallTool(int id, string name, string description, int r, int g, int b):
+Tool(id, name, description, r, g, b)
 {
 }
 WallTool::~WallTool() {}
@@ -72,8 +74,8 @@ void WallTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 }
 
 
-GolTool::GolTool(int id, string name, int r, int g, int b):
-	Tool(id, name, r, g, b)
+GolTool::GolTool(int id, string name, string description, int r, int g, int b):
+	Tool(id, name, description, r, g, b)
 {
 }
 GolTool::~GolTool() {}

@@ -27,7 +27,7 @@ public:
 class Button : public Component
 {
 public:
-	Button(Point position = Point(0, 0), Point size = Point(0, 0), std::string buttonText = "");
+	Button(Point position = Point(0, 0), Point size = Point(0, 0), std::string buttonText = "", std::string toolTip = "");
 	virtual ~Button();
 
 	bool Toggleable;
@@ -55,6 +55,7 @@ public:
 	void SetIcon(Icon icon);
 protected:
 
+	std::string toolTip;
 	std::string buttonDisplayText;
 	std::string ButtonText;
 

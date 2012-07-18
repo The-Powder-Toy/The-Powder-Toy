@@ -36,7 +36,8 @@ GameView::GameView():
 	drawSnap(false),
 	toolTip(""),
 	infoTip(""),
-	infoTipPresence(0)
+	infoTipPresence(0),
+	toolTipPosition(-1, -1)
 {
 	
 	int currentX = 1;
@@ -435,7 +436,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	for(int i = 0; i < toolList.size(); i++)
 	{
 		//ToolButton * tempButton = new ToolButton(ui::Point(XRES+1, currentY), ui::Point(28, 15), toolList[i]->GetName());
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), toolList[i]->GetName());
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), toolList[i]->GetName(), toolList[i]->GetDescription());
 		//currentY -= 17;
 		currentX -= 31;
 		tempButton->SetActionCallback(new ToolAction(this, toolList[i]));
@@ -740,6 +741,12 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 			}
 		}
 	}
+}
+
+void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip)
+{
+	this->toolTip = toolTip;
+	toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
 }
 
 void GameView::OnMouseWheel(int x, int y, int d)
@@ -1252,6 +1259,11 @@ void GameView::OnDraw()
 	{
 		int infoTipAlpha = (infoTipPresence>50?50:infoTipPresence)*5;
 		g->drawtext((XRES-Graphics::textwidth((char*)infoTip.c_str()))/2, (YRES/2)-2, (char*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
+	}
+
+	if(toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
+	{
+		g->drawtext(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, 255);
 	}
 }
 

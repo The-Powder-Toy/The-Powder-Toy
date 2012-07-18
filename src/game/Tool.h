@@ -22,9 +22,11 @@ class Tool
 protected:
 	int toolID;
 	string toolName;
+	string toolDescription;
 public:
-	Tool(int id, string name, int r, int g, int b);
+	Tool(int id, string name, string description, int r, int g, int b);
 	string GetName();
+	string GetDescription();
 	virtual ~Tool();
 	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
@@ -38,7 +40,7 @@ class SignTool: public Tool
 {
 public:
 	SignTool():
-	Tool(0, "SIGN", 0, 0, 0)
+	Tool(0, "SIGN", "Sign. Click a sign to edit or anywhere else to create a new one", 0, 0, 0)
 	{
 	}
 	virtual ~SignTool() {}
@@ -53,7 +55,7 @@ class PropertyTool: public Tool
 {
 public:
 	PropertyTool():
-	Tool(0, "PROP", 0, 0, 0)
+	Tool(0, "PROP", "Property Edit. Click to alter the properties of elements in the field", 0, 0, 0)
 	{
 	}
 	virtual ~PropertyTool() {}
@@ -67,7 +69,7 @@ public:
 class ElementTool: public Tool
 {
 public:
-	ElementTool(int id, string name, int r, int g, int b);
+	ElementTool(int id, string name, string description, int r, int g, int b);
 	virtual ~ElementTool();
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
@@ -78,7 +80,7 @@ public:
 class WallTool: public Tool
 {
 public:
-	WallTool(int id, string name, int r, int g, int b);
+	WallTool(int id, string name, string description, int r, int g, int b);
 	virtual ~WallTool();
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
@@ -89,7 +91,7 @@ public:
 class GolTool: public Tool
 {
 public:
-	GolTool(int id, string name, int r, int g, int b);
+	GolTool(int id, string name, string description, int r, int g, int b);
 	virtual ~GolTool();
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);

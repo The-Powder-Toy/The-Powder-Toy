@@ -61,7 +61,7 @@ GameModel::GameModel():
 	{
 		if(sim->elements[i].MenuSection < 12 && sim->elements[i].Enabled && sim->elements[i].MenuVisible)
 		{
-			Tool * tempTool = new ElementTool(i, sim->elements[i].Name, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour));
+			Tool * tempTool = new ElementTool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour));
 			menuList[sim->elements[i].MenuSection]->AddTool(tempTool);
 		}
 	}
@@ -69,14 +69,14 @@ GameModel::GameModel():
 	//Build menu for GOL types
 	for(int i = 0; i < NGOL; i++)
 	{
-		Tool * tempTool = new GolTool(i, sim->gmenu[i].name, PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour));
+		Tool * tempTool = new GolTool(i, sim->gmenu[i].name, std::string(sim->gmenu[i].description), PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour));
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
 
 	//Build other menus from wall data
 	for(int i = 0; i < UI_WALLCOUNT; i++)
 	{
-		Tool * tempTool = new WallTool(i, "", PIXR(sim->wtypes[i].colour), PIXG(sim->wtypes[i].colour), PIXB(sim->wtypes[i].colour));
+		Tool * tempTool = new WallTool(i, "", std::string(sim->wtypes[i].descs), PIXR(sim->wtypes[i].colour), PIXG(sim->wtypes[i].colour), PIXB(sim->wtypes[i].colour));
 		menuList[SC_WALL]->AddTool(tempTool);
 		//sim->wtypes[i]
 	}
@@ -88,17 +88,17 @@ GameModel::GameModel():
 	//Build menu for simtools
 	for(int i = 0; i < sim->tools.size(); i++)
 	{
-		Tool * tempTool = new Tool(i, sim->tools[i]->Name, PIXR(sim->tools[i]->Colour), PIXG(sim->tools[i]->Colour), PIXB(sim->tools[i]->Colour));
+		Tool * tempTool = new Tool(i, sim->tools[i]->Name, sim->tools[i]->Description, PIXR(sim->tools[i]->Colour), PIXG(sim->tools[i]->Colour), PIXB(sim->tools[i]->Colour));
 		menuList[SC_TOOL]->AddTool(tempTool);
 	}
 
 	//Add decoration tools to menu
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendAdd, "ADD", 0, 0, 0));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendRemove, "SUB", 0, 0, 0));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendMultiply, "MUL", 0, 0, 0));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendDivide, "DIV", 0, 0, 0));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSmudge, "SMDG", 0, 0, 0));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSet, "SET", 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendAdd, "ADD", "Colour blending: Add", 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendRemove, "SUB", "Colour blending: Subtract", 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendMultiply, "MUL", "Colour blending: Multiply", 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendDivide, "DIV", "Colour blending: Divide" , 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSmudge, "SMDG", "Smudge colour", 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSet, "SET", "Set colour (No blending)", 0, 0, 0));
 
 	//Set default brush palette
 	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));

@@ -46,6 +46,8 @@ enum ChromeStyle
 		// Remove a component from state. NOTE: This WILL free component from memory.
 		void RemoveComponent(unsigned idx);
 
+		virtual void ToolTip(Component * sender, ui::Point mousePosition, std::string toolTip) {}
+
 		virtual void DoInitialized();
 		virtual void DoExit();
 		virtual void DoTick(float dt);
