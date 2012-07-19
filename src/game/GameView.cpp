@@ -365,7 +365,7 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 		std::string tempString = "";
 		Menu * item = *iter;
 		tempString += item->GetIcon();
-		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, currentY), ui::Point(15, 15), tempString);
+		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, currentY), ui::Point(15, 15), tempString, item->GetDescription());
 		tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 		tempButton->SetTogglable(true);
 		tempButton->SetActionCallback(new MenuAction(this, item));
