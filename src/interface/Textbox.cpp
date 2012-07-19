@@ -244,6 +244,8 @@ void Textbox::Draw(const Point& screenPos)
 		}
 		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 160, 160, 160, 255);
 	}
+	if(Appearance.icon)
+		g->draw_icon(screenPos.X+iconPosition.X, screenPos.Y+iconPosition.Y, Appearance.icon);
 }
 
 /*
