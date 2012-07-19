@@ -61,7 +61,15 @@ GameModel::GameModel():
 	{
 		if(sim->elements[i].MenuSection < 12 && sim->elements[i].Enabled && sim->elements[i].MenuVisible)
 		{
-			Tool * tempTool = new ElementTool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour));
+			Tool * tempTool;
+			if(i == PT_LIGH)
+			{
+				tempTool = new Element_LIGH_Tool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour));
+			}
+			else
+			{
+				tempTool = new ElementTool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour));
+			}
 			menuList[sim->elements[i].MenuSection]->AddTool(tempTool);
 		}
 	}
@@ -88,7 +96,8 @@ GameModel::GameModel():
 	//Build menu for simtools
 	for(int i = 0; i < sim->tools.size(); i++)
 	{
-		Tool * tempTool = new Tool(i, sim->tools[i]->Name, sim->tools[i]->Description, PIXR(sim->tools[i]->Colour), PIXG(sim->tools[i]->Colour), PIXB(sim->tools[i]->Colour));
+		Tool * tempTool;
+		tempTool = new Tool(i, sim->tools[i]->Name, sim->tools[i]->Description, PIXR(sim->tools[i]->Colour), PIXG(sim->tools[i]->Colour), PIXB(sim->tools[i]->Colour));
 		menuList[SC_TOOL]->AddTool(tempTool);
 	}
 

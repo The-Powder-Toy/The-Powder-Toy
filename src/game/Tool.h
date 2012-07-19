@@ -66,6 +66,21 @@ public:
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
 };
 
+class Element_LIGH_Tool: public Tool
+{
+public:
+	Element_LIGH_Tool(int id, string name, string description, int r, int g, int b):
+	Tool(id, name, description, r, g, b)
+	{
+	}
+	virtual ~Element_LIGH_Tool() {}
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
+	virtual void Click(Simulation * sim, Brush * brush, ui::Point position) { }
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+};
+
 class ElementTool: public Tool
 {
 public:
