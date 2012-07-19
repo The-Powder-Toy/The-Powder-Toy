@@ -216,7 +216,7 @@ void PreviewView::OnDraw()
 		g->draw_image(savePreview->Data, (Position.X+1)+(((XRES/2)-savePreview->Size.X)/2), (Position.Y+1)+(((YRES/2)-savePreview->Size.Y)/2), savePreview->Size.X, savePreview->Size.Y, 255);
 	}
 	g->drawrect(Position.X, Position.Y, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 100);
-	g->draw_line(Position.X+1+XRES/2, Position.Y+1, Position.X+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
+	g->draw_line(Position.X+1+XRES/2, Position.Y+1, Position.X+1+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
 
 
 	g->draw_line(Position.X+1, Position.Y+12+YRES/2, Position.X-1+XRES/2, Position.Y+12+YRES/2, 100, 100, 100,255);
