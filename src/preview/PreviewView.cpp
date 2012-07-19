@@ -509,6 +509,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 		maxY += 16;
 		tempComment = new ui::Label(ui::Point(0, 0), ui::Point(Size.X-((XRES/2) + 10), -1), comments[i].comment);
+		tempComment->SetMultiline(true);
 		tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 		tempComment->SetTextColour(ui::Colour(180, 180, 180));
