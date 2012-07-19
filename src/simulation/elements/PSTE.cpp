@@ -43,7 +43,7 @@ Element_PSTE::Element_PSTE()
     HighTemperatureTransition = PT_BRCK;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_PSTE::~Element_PSTE() {}

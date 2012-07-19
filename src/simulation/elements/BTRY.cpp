@@ -43,7 +43,7 @@ Element_BTRY::Element_BTRY()
     HighTemperatureTransition = PT_PLSM;
     
     Update = &Element_BTRY::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_BTRY static int update(UPDATE_FUNC_ARGS)

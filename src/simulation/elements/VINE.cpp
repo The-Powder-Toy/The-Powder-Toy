@@ -43,7 +43,7 @@ Element_VINE::Element_VINE()
     HighTemperatureTransition = PT_FIRE;
     
     Update = &Element_VINE::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_VINE static int update(UPDATE_FUNC_ARGS)

@@ -43,7 +43,7 @@ Element_DRIC::Element_DRIC()
     HighTemperatureTransition = PT_CO2;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_DRIC::~Element_DRIC() {}

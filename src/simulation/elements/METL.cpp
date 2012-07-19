@@ -43,7 +43,7 @@ Element_METL::Element_METL()
     HighTemperatureTransition = PT_LAVA;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_METL::~Element_METL() {}

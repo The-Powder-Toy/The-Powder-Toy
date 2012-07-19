@@ -22,16 +22,19 @@ class Textbox : public Label
 protected:
 	bool mouseDown;
 	bool masked, border;
-	int cursor, cursorPosition;
+	int cursor, cursorPositionX, cursorPositionY;
 	TextboxAction *actionCallback;
 	std::string backingText;
+	std::string placeHolder;
 public:
-	Textbox(Point position, Point size, std::string textboxText);
+	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
 	virtual ~Textbox();
 
 	virtual void SetDisplayText(std::string text);
 	virtual void SetText(std::string text);
 	virtual std::string GetText();
+
+	virtual void SetPlaceholder(std::string text);
 
 	void SetBorder(bool border) { this->border = border; };
 	void SetHidden(bool hidden) { masked = hidden; }

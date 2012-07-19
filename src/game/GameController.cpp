@@ -402,6 +402,15 @@ void GameController::Exit()
 	HasDone = true;
 }
 
+void GameController::LoadRenderPreset(RenderPreset preset)
+{
+	Renderer * renderer = gameModel->GetRenderer();
+	gameModel->SetInfoTip(preset.Name);
+	renderer->SetRenderMode(preset.RenderModes);
+	renderer->SetDisplayMode(preset.DisplayModes);
+	renderer->SetColourMode(preset.ColourMode);
+}
+
 void GameController::Update()
 {
 	ui::Point pos = gameView->GetMousePosition();
@@ -681,7 +690,18 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 		}
 	};
 
-	gameModel->AddNotification(new UpdateNotification(this, "A new version is available - click here to download"));
+	switch(sender->GetUpdateInfo().Type)
+	{
+		case UpdateInfo::Snapshot:
+			gameModel->AddNotification(new UpdateNotification(this, std::string("A new snapshot is available - click here to update")));
+			break;
+		case UpdateInfo::Stable:
+			gameModel->AddNotification(new UpdateNotification(this, std::string("A new version is available - click here to update")));
+			break;
+		case UpdateInfo::Beta:
+			gameModel->AddNotification(new UpdateNotification(this, std::string("A new beta is available - click here to update")));
+			break;
+	}
 }
 
 void GameController::RemoveNotification(Notification * notification)

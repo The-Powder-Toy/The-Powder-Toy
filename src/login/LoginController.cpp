@@ -7,6 +7,7 @@
 
 #include "LoginController.h"
 #include "client/User.h"
+#include "client/Client.h"
 
 LoginController::LoginController(ControllerCallback * callback):
 	HasExited(false)
@@ -40,6 +41,10 @@ void LoginController::Exit()
 	}
 	if(callback)
 		callback->ControllerExit();
+	else
+	{
+		Client::Ref().SetAuthUser(loginModel->GetUser());
+	}
 	HasExited = true;
 }
 

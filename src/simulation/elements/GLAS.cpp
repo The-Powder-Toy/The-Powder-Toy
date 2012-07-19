@@ -43,7 +43,7 @@ Element_GLAS::Element_GLAS()
     HighTemperatureTransition = PT_LAVA;
     
     Update = &Element_GLAS::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_GLAS static int update(UPDATE_FUNC_ARGS)

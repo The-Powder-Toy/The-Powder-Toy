@@ -43,7 +43,7 @@ Element_WATR::Element_WATR()
     HighTemperatureTransition = PT_WTRV;
     
     Update = &Element_WATR::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_WATR static int update(UPDATE_FUNC_ARGS)

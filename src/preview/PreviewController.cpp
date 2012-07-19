@@ -12,11 +12,13 @@
 #include "PreviewModel.h"
 #include "PreviewModelException.h"
 #include "dialogues/ErrorMessage.h"
+#include "login/LoginController.h"
 #include "Controller.h"
 
 PreviewController::PreviewController(int saveID, ControllerCallback * callback):
 	HasExited(false),
-	saveId(saveID)
+	saveId(saveID),
+	loginWindow(NULL)
 {
 	previewModel = new PreviewModel();
 	previewView = new PreviewView();
@@ -25,11 +27,24 @@ PreviewController::PreviewController(int saveID, ControllerCallback * callback):
 
 	previewModel->UpdateSave(saveID, 0);
 
+	if(Client::Ref().GetAuthUser().ID)
+	{
+		previewModel->SetCommentBoxEnabled(true);
+	}
+
+	Client::Ref().AddListener(this);
+
 	this->callback = callback;
 }
 
 void PreviewController::Update()
 {
+	if(loginWindow && loginWindow->HasExited == true)
+	{
+		delete loginWindow;
+		loginWindow = NULL;
+	}
+
 	try
 	{
 		previewModel->Update();
@@ -43,6 +58,37 @@ void PreviewController::Update()
 	{
 		Exit();
 	}
+}
+
+void PreviewController::SubmitComment(std::string comment)
+{
+	if(comment.length() < 4)
+	{
+		new ErrorMessage("Error", "Comment is too short");
+	}
+	else
+	{
+		RequestStatus status = Client::Ref().AddComment(saveId, comment);
+		if(status != RequestOkay)
+		{
+			new ErrorMessage("Error Submitting comment", Client::Ref().GetLastError());	
+		}
+		else
+		{
+			previewModel->UpdateComments(1);
+		}
+	}
+}
+
+void PreviewController::ShowLogin()
+{
+	loginWindow = new LoginController();
+	ui::Engine::Ref().ShowWindow(loginWindow->GetView());
+}
+
+void PreviewController::NotifyAuthUserChanged(Client * sender)
+{
+	previewModel->SetCommentBoxEnabled(sender->GetAuthUser().ID);
 }
 
 SaveInfo * PreviewController::GetSave()
@@ -114,6 +160,7 @@ PreviewController::~PreviewController() {
 	{
 		ui::Engine::Ref().CloseWindow();
 	}
+	Client::Ref().RemoveListener(this);
 	delete previewModel;
 	delete previewView;
 	if(callback)

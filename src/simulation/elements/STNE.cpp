@@ -43,7 +43,7 @@ Element_STNE::Element_STNE()
     HighTemperatureTransition = PT_LAVA;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_STNE::~Element_STNE() {}

@@ -43,7 +43,7 @@ Element_WHOL::Element_WHOL()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_WHOL::~Element_WHOL() {}

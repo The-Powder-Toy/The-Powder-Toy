@@ -43,7 +43,7 @@ Element_LOLZ::Element_LOLZ()
     HighTemperatureTransition = NT;
     
     Update = &Element_LOLZ::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_LOLZ static int update(UPDATE_FUNC_ARGS)

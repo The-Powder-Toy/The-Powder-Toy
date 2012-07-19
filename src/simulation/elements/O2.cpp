@@ -43,7 +43,7 @@ Element_O2::Element_O2()
     HighTemperatureTransition = NT;
     
     Update = &Element_O2::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_O2 static int update(UPDATE_FUNC_ARGS)

@@ -43,7 +43,7 @@ Element_INSL::Element_INSL()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_INSL::~Element_INSL() {}

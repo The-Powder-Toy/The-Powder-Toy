@@ -43,7 +43,7 @@ Element_SLTW::Element_SLTW()
     HighTemperatureTransition = ST;
     
     Update = &Element_SLTW::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_SLTW static int update(UPDATE_FUNC_ARGS)

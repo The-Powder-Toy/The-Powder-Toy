@@ -13,8 +13,41 @@
 #include "simulation/SaveRenderer.h"
 #include "interface/Point.h"
 #include "interface/Window.h"
+#include "interface/Textbox.h"
 #include "Style.h"
 #include "search/Thumbnail.h"
+
+class PreviewView::LoginAction: public ui::ButtonAction
+{
+	PreviewView * v;
+public:
+	LoginAction(PreviewView * v_){ v = v_; }
+	virtual void ActionCallback(ui::Button * sender)
+	{
+		v->c->ShowLogin();
+	}
+};
+
+class PreviewView::SubmitCommentAction: public ui::ButtonAction
+{
+	PreviewView * v;
+public:
+	SubmitCommentAction(PreviewView * v_){ v = v_; }
+	virtual void ActionCallback(ui::Button * sender)
+	{
+		v->submitComment();
+	}
+};
+
+class PreviewView::AutoCommentSizeAction: public ui::TextboxAction
+{
+	PreviewView * v;
+public:
+	AutoCommentSizeAction(PreviewView * v): v(v) {}
+	virtual void TextChangedCallback(ui::Textbox * sender) {
+		v->commentBoxAutoHeight();
+	}
+};
 
 PreviewView::PreviewView():
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+200, (YRES/2)+150)),
@@ -24,7 +57,10 @@ PreviewView::PreviewView():
 	commentsVel(0),
 	maxOffset(0),
 	commentsBegin(true),
-	commentsEnd(false)
+	commentsEnd(false),
+	addCommentBox(NULL),
+	submitCommentButton(NULL),
+	commentBoxHeight(20)
 {
 	class OpenAction: public ui::ButtonAction
 	{
@@ -118,9 +154,40 @@ PreviewView::PreviewView():
 	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(authorDateLabel);
 
-	pageInfo = new ui::Label(ui::Point((XRES/2) + 5, Size.Y-15), ui::Point(Size.X-((XRES/2) + 10), 15), "Page 1 of 1");
+	pageInfo = new ui::Label(ui::Point((XRES/2) + 5, Size.Y+1), ui::Point(Size.X-((XRES/2) + 10), 15), "Page 1 of 1");
 	pageInfo->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+
 	AddComponent(pageInfo);
+}
+
+void PreviewView::commentBoxAutoHeight()
+{
+	if(!addCommentBox)
+		return;
+	int textWidth = Graphics::textwidth(addCommentBox->GetText().c_str());
+	if(textWidth+5 > Size.X-(XRES/2)-48)
+	{
+		commentBoxHeight = 58;
+		addCommentBox->SetMultiline(true);
+		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+
+		commentBoxPositionX = (XRES/2)+4;
+		commentBoxPositionY = Size.Y-58;
+		commentBoxSizeX = Size.X-(XRES/2)-8;
+		commentBoxSizeY = 37;
+	}
+	else
+	{
+		commentBoxHeight = 20;
+		addCommentBox->SetMultiline(false);
+		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+
+		commentBoxPositionX = (XRES/2)+4;
+		commentBoxPositionY = Size.Y-19;
+		commentBoxSizeX = Size.X-(XRES/2)-48;
+		commentBoxSizeY = 17;
+	}
+	displayComments(commentsOffset);
 }
 
 void PreviewView::DoDraw()
@@ -149,7 +216,7 @@ void PreviewView::OnDraw()
 		g->draw_image(savePreview->Data, (Position.X+1)+(((XRES/2)-savePreview->Size.X)/2), (Position.Y+1)+(((YRES/2)-savePreview->Size.Y)/2), savePreview->Size.X, savePreview->Size.Y, 255);
 	}
 	g->drawrect(Position.X, Position.Y, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 100);
-	g->draw_line(Position.X+XRES/2, Position.Y+1, Position.X+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
+	g->draw_line(Position.X+1+XRES/2, Position.Y+1, Position.X+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
 
 
 	g->draw_line(Position.X+1, Position.Y+12+YRES/2, Position.X-1+XRES/2, Position.Y+12+YRES/2, 100, 100, 100,255);
@@ -213,6 +280,42 @@ void PreviewView::OnTick(float dt)
 		displayComments(commentsOffset);
 	}
 
+	if(addCommentBox)
+	{
+		ui::Point positionDiff = ui::Point(commentBoxPositionX, commentBoxPositionY)-addCommentBox->Position;
+		ui::Point sizeDiff = ui::Point(commentBoxSizeX, commentBoxSizeY)-addCommentBox->Size;
+
+		if(positionDiff.X!=0)
+		{
+			int xdiff = positionDiff.X/5;
+			if(xdiff == 0)
+				xdiff = 1*isign(positionDiff.X);
+			addCommentBox->Position.X += xdiff;
+		}
+		if(positionDiff.Y!=0)
+		{
+			int ydiff = positionDiff.Y/5;
+			if(ydiff == 0)
+				ydiff = 1*isign(positionDiff.Y);
+			addCommentBox->Position.Y += ydiff;
+		}
+
+		if(sizeDiff.X!=0)
+		{
+			int xdiff = sizeDiff.X/5;
+			if(xdiff == 0)
+				xdiff = 1*isign(sizeDiff.X);
+			addCommentBox->Size.X += xdiff;
+		}
+		if(sizeDiff.Y!=0)
+		{
+			int ydiff = sizeDiff.Y/5;
+			if(ydiff == 0)
+				ydiff = 1*isign(sizeDiff.Y);
+			addCommentBox->Size.Y += ydiff;
+		}
+	}
+
 	c->Update();
 }
 
@@ -269,6 +372,23 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 	}
 }
 
+void PreviewView::submitComment()
+{
+	if(addCommentBox)
+	{
+		std::string comment = std::string(addCommentBox->GetText());
+		submitCommentButton->Enabled = false;
+		addCommentBox->SetText("");
+		addCommentBox->SetPlaceholder("Submitting comment");
+		FocusComponent(NULL);
+
+		c->SubmitComment(comment);
+
+		addCommentBox->SetPlaceholder("Add comment");
+		submitCommentButton->Enabled = true;
+	}
+}
+
 void PreviewView::displayComments(int yOffset)
 {
 	for(int i = 0; i < commentComponents.size(); i++)
@@ -289,10 +409,10 @@ void PreviewView::displayComments(int yOffset)
 		tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 		currentY += 16;
 
-		if(currentY > Size.Y || usernameY < 0)
+		if(currentY+5 > Size.Y-commentBoxHeight || usernameY < 0)
 		{
 			delete tempUsername;
-			if(currentY > Size.Y)
+			if(currentY+5 > Size.Y-commentBoxHeight)
 				break;
 		}
 		else
@@ -308,10 +428,10 @@ void PreviewView::displayComments(int yOffset)
 		tempComment->SetTextColour(ui::Colour(180, 180, 180));
 		currentY += tempComment->Size.Y+4;
 
-		if(currentY > Size.Y || commentY < 0)
+		if(currentY+5 > Size.Y-commentBoxHeight || commentY < 0)
 		{
 			delete tempComment;
-			if(currentY > Size.Y)
+			if(currentY+5 > Size.Y-commentBoxHeight)
 				break;
 		}
 		else
@@ -320,6 +440,44 @@ void PreviewView::displayComments(int yOffset)
 			AddComponent(tempComment);
 			commentTextComponents.push_back(tempComment);
 		}
+	}
+}
+
+void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
+{
+	if(addCommentBox)
+	{
+		RemoveComponent(addCommentBox);
+		addCommentBox = NULL;
+		delete addCommentBox;
+	}
+	if(submitCommentButton)
+	{
+		RemoveComponent(submitCommentButton);
+		submitCommentButton = NULL;
+		delete submitCommentButton;
+	}
+	if(sender->GetCommentBoxEnabled())
+	{
+		commentBoxPositionX = (XRES/2)+4;
+		commentBoxPositionY = Size.Y-19;
+		commentBoxSizeX = Size.X-(XRES/2)-48;
+		commentBoxSizeY = 17;
+
+		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment");
+		addCommentBox->SetActionCallback(new AutoCommentSizeAction(this));
+		addCommentBox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		AddComponent(addCommentBox);
+		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "Submit");
+		submitCommentButton->SetActionCallback(new SubmitCommentAction(this));
+		//submitCommentButton->Enabled = false;
+		AddComponent(submitCommentButton);
+	}
+	else
+	{
+		submitCommentButton = new ui::Button(ui::Point(XRES/2, Size.Y-19), ui::Point(Size.X-(XRES/2), 19), "Login to comment");
+		submitCommentButton->SetActionCallback(new LoginAction(this));
+		AddComponent(submitCommentButton);
 	}
 }
 
@@ -361,7 +519,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	}
 
 
-	maxOffset = (maxY-Size.Y)+16;
+	maxOffset = (maxY-(Size.Y-commentBoxHeight))+16;
 	commentsBegin = true;
 	commentsEnd = false;
 	commentsOffset = 0;

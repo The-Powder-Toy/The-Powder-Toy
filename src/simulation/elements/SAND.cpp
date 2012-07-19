@@ -43,7 +43,7 @@ Element_SAND::Element_SAND()
     HighTemperatureTransition = PT_LAVA;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_SAND::~Element_SAND() {}

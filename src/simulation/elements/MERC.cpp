@@ -43,7 +43,7 @@ Element_MERC::Element_MERC()
     HighTemperatureTransition = NT;
     
     Update = &Element_MERC::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_MERC static int update(UPDATE_FUNC_ARGS)

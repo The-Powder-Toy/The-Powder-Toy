@@ -17,6 +17,7 @@
 #include "cat/LuaScriptInterface.h"
 #include "options/OptionsController.h"
 #include "client/ClientListener.h"
+#include "RenderPreset.h"
 #include "Menu.h"
 
 using namespace std;
@@ -63,6 +64,7 @@ public:
 	void Tick();
 	void Exit();
 
+	void LoadRenderPreset(RenderPreset preset);
 	void SetZoomEnabled(bool zoomEnable);
 	void SetZoomPosition(ui::Point position);
 	void AdjustBrushSize(int direction, bool logarithmic = false);

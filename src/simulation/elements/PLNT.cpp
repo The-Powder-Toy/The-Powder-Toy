@@ -43,7 +43,7 @@ Element_PLNT::Element_PLNT()
     HighTemperatureTransition = PT_FIRE;
     
     Update = &Element_PLNT::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_PLNT static int update(UPDATE_FUNC_ARGS)

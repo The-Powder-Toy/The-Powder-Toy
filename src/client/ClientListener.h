@@ -16,6 +16,7 @@ public:
 	virtual ~ClientListener() {}
 
 	virtual void NotifyUpdateAvailable(Client * sender) {}
+	virtual void NotifyAuthUserChanged(Client * sender) {}
 };
 
 

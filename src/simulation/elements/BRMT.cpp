@@ -43,7 +43,7 @@ Element_BRMT::Element_BRMT()
     HighTemperatureTransition = PT_LAVA;
     
     Update = &Element_BRMT::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_BRMT static int update(UPDATE_FUNC_ARGS)

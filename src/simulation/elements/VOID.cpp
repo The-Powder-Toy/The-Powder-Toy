@@ -43,7 +43,7 @@ Element_VOID::Element_VOID()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_VOID::~Element_VOID() {}

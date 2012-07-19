@@ -43,7 +43,7 @@ Element_PSCN::Element_PSCN()
     HighTemperatureTransition = PT_LAVA;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_PSCN::~Element_PSCN() {}

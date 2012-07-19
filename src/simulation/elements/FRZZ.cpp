@@ -43,7 +43,7 @@ Element_FRZZ::Element_FRZZ()
     HighTemperatureTransition = NT;
     
     Update = &Element_FRZZ::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_FRZZ static int update(UPDATE_FUNC_ARGS)

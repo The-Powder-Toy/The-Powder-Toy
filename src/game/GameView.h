@@ -12,6 +12,7 @@
 #include "interface/Button.h"
 #include "interface/Slider.h"
 #include "ToolButton.h"
+#include "RenderPreset.h"
 #include "Brush.h"
 
 using namespace std;
@@ -37,6 +38,12 @@ private:
 	bool zoomCursorFixed;
 	bool drawSnap;
 	int toolIndex;
+
+	int infoTipPresence;
+	std::string toolTip;
+	ui::Point toolTipPosition;
+	std::string infoTip;
+
 	queue<ui::Point*> pointQueue;
 	GameController * c;
 	Renderer * ren;
@@ -76,6 +83,8 @@ private:
 
 	ui::Point mousePosition;
 
+	RenderPreset * renderModePresets;
+
 	Thumbnail * placeSaveThumb;
 
 	Particle sample;
@@ -108,6 +117,11 @@ public:
 	void NotifyPlaceSaveChanged(GameModel * sender);
 	void NotifyNotificationsChanged(GameModel * sender);
 	void NotifyLogChanged(GameModel * sender, string entry);
+	void NotifyToolTipChanged(GameModel * sender);
+	void NotifyInfoTipChanged(GameModel * sender);
+
+	virtual void ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip);
+
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);

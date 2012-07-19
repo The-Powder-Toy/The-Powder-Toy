@@ -43,7 +43,7 @@ Element_BANG::Element_BANG()
     HighTemperatureTransition = NT;
     
     Update = &Element_BANG::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_BANG static int update(UPDATE_FUNC_ARGS)

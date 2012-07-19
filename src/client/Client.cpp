@@ -211,9 +211,29 @@ void Client::notifyUpdateAvailable()
 	}
 }
 
+void Client::notifyAuthUserChanged()
+{
+	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	{
+		(*iterator)->NotifyAuthUserChanged(this);
+	}
+}
+
 void Client::AddListener(ClientListener * listener)
 {
 	listeners.push_back(listener);
+}
+
+void Client::RemoveListener(ClientListener * listener)
+{
+	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	{
+		if((*iterator) == listener)
+		{
+			listeners.erase(iterator);
+			return;
+		}
+	}
 }
 
 void Client::Shutdown()
@@ -256,6 +276,7 @@ Client::~Client()
 void Client::SetAuthUser(User user)
 {
 	authUser = user;
+	notifyAuthUserChanged();
 }
 
 User Client::GetAuthUser()
@@ -640,6 +661,67 @@ RequestStatus Client::DeleteSave(int saveID)
 			json::Reader::Read(objDocument, dataStream);
 
 			int status = ((json::Number)objDocument["Status"]).Value();
+
+			if(status!=1)
+				goto failure;
+		}
+		catch (json::Exception &e)
+		{
+			lastError = "Could not read response";
+			goto failure;
+		}
+	}
+	else
+	{
+		lastError = http_ret_text(dataStatus);
+		goto failure;
+	}
+	if(data)
+		free(data);
+	return RequestOkay;
+failure:
+	if(data)
+		free(data);
+	return RequestFailure;
+}
+
+RequestStatus Client::AddComment(int saveID, std::string comment)
+{
+	lastError = "";
+	std::vector<string> * tags = NULL;
+	std::stringstream urlStream;
+	char * data = NULL;
+	int dataStatus, dataLength;
+	urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
+	if(authUser.ID)
+	{
+		std::stringstream userIDStream;
+		userIDStream << authUser.ID;
+		
+		char * postNames[] = { "Comment", NULL };
+		char * postDatas[] = { (char*)(comment.c_str()) };
+		int postLengths[] = { comment.length() };
+		data = http_multipart_post((char *)urlStream.str().c_str(), postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+	}
+	else
+	{
+		lastError = "Not authenticated";
+		return RequestFailure;
+	}
+	if(dataStatus == 200 && data)
+	{
+		try
+		{
+			std::istringstream dataStream(data);
+			json::Object objDocument;
+			json::Reader::Read(objDocument, dataStream);
+
+			int status = ((json::Number)objDocument["Status"]).Value();
+
+			if(status!=1)
+			{
+				lastError = ((json::Number)objDocument["Error"]).Value();
+			}
 
 			if(status!=1)
 				goto failure;

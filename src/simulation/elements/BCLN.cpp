@@ -43,7 +43,7 @@ Element_BCLN::Element_BCLN()
     HighTemperatureTransition = NT;
     
     Update = &Element_BCLN::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_BCLN static int update(UPDATE_FUNC_ARGS)

@@ -43,7 +43,7 @@ Element_GAS::Element_GAS()
     HighTemperatureTransition = PT_FIRE;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_GAS::~Element_GAS() {}

@@ -12,15 +12,17 @@
 
 using namespace std;
 
-Tool::Tool(int id, string name, int r, int g, int b):
+Tool::Tool(int id, string name, string description, int r, int g, int b):
 	toolID(id),
 	toolName(name),
+	toolDescription(description),
 	colRed(r),
 	colGreen(g),
 	colBlue(b)
 {
 }
 string Tool::GetName() { return toolName; }
+string Tool::GetDescription() { return toolDescription; }
 Tool::~Tool() {}
 void Tool::Click(Simulation * sim, Brush * brush, ui::Point position) { }
 void Tool::Draw(Simulation * sim, Brush * brush, ui::Point position) {
@@ -34,8 +36,8 @@ void Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Po
 }
 void Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {};
 
-ElementTool::ElementTool(int id, string name, int r, int g, int b):
-	Tool(id, name, r, g, b)
+ElementTool::ElementTool(int id, string name, string description, int r, int g, int b):
+	Tool(id, name, description, r, g, b)
 {
 }
 ElementTool::~ElementTool() {}
@@ -53,8 +55,8 @@ void ElementTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) 
 }
 
 
-WallTool::WallTool(int id, string name, int r, int g, int b):
-Tool(id, name, r, g, b)
+WallTool::WallTool(int id, string name, string description, int r, int g, int b):
+Tool(id, name, description, r, g, b)
 {
 }
 WallTool::~WallTool() {}
@@ -72,8 +74,8 @@ void WallTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 }
 
 
-GolTool::GolTool(int id, string name, int r, int g, int b):
-	Tool(id, name, r, g, b)
+GolTool::GolTool(int id, string name, string description, int r, int g, int b):
+	Tool(id, name, description, r, g, b)
 {
 }
 GolTool::~GolTool() {}
@@ -90,5 +92,14 @@ void GolTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 	sim->FloodParts(position.X, position.Y, PT_LIFE|(toolID<<8), -1, -1, 0);
 }
 
-
-
+void Element_LIGH_Tool::Draw(Simulation * sim, Brush * brush, ui::Point position)
+{
+	int p = sim->create_part(-2, position.X, position.Y, toolID);
+	if (p != -1)
+	{
+		sim->parts[p].life = brush->GetRadius().X+brush->GetRadius().Y;
+		if (sim->parts[p].life > 55)
+			sim->parts[p].life = 55;
+		sim->parts[p].temp = sim->parts[p].life*150; // temperature of the lighting shows the power of the lighting
+	}
+}

@@ -43,7 +43,7 @@ Element_ANAR::Element_ANAR()
     HighTemperatureTransition = NT;
     
     Update = &Element_ANAR::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_ANAR static int update(UPDATE_FUNC_ARGS)

@@ -79,7 +79,7 @@ void Component::TextPosition(std::string displayText)
 	switch(Appearance.VerticalAlign)
 	{
 		case ui::Appearance::AlignTop:
-			textPosition.Y = Appearance.Margin.Top;
+			textPosition.Y = Appearance.Margin.Top+2;
 			break;
 		case ui::Appearance::AlignMiddle:
 			textPosition.Y = Appearance.Margin.Top+((textAreaHeight-textHeight)/2);

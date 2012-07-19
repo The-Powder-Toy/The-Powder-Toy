@@ -43,7 +43,7 @@ Element_FRAY::Element_FRAY()
     HighTemperatureTransition = NT;
     
     Update = &Element_FRAY::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_FRAY static int update(UPDATE_FUNC_ARGS)

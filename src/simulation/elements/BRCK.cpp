@@ -43,7 +43,7 @@ Element_BRCK::Element_BRCK()
     HighTemperatureTransition = PT_LAVA;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_BRCK::~Element_BRCK() {}

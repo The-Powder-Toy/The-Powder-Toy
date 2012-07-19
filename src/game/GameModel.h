@@ -53,6 +53,9 @@ private:
 	User currentUser;
 	bool colourSelector;
 	ui::Colour colour;
+
+	std::string infoTip;
+	std::string toolTip;
 	//bool zoomEnabled;
 	void notifyRendererChanged();
 	void notifySimulationChanged();
@@ -71,6 +74,8 @@ private:
 	void notifyColourSelectorVisibilityChanged();
 	void notifyNotificationsChanged();
 	void notifyLogChanged(string entry);
+	void notifyInfoTipChanged();
+	void notifyToolTipChanged();
 public:
 	GameModel();
 	~GameModel();
@@ -80,6 +85,11 @@ public:
 
 	void SetColourSelectorColour(ui::Colour colour);
 	ui::Colour GetColourSelectorColour();
+
+	void SetToolTip(std::string text);
+	void SetInfoTip(std::string text);
+	std::string GetToolTip();
+	std::string GetInfoTip();
 
 	void SetVote(int direction);
 	SaveInfo * GetSave();

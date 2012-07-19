@@ -44,7 +44,7 @@ Element_TTAN::Element_TTAN()
     HighTemperatureTransition = PT_LAVA;
 
     Update = &Element_TTAN::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_TTAN static int update(UPDATE_FUNC_ARGS)

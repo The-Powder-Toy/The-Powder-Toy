@@ -43,7 +43,7 @@ Element_LO2::Element_LO2()
     HighTemperatureTransition = PT_O2;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_LO2::~Element_LO2() {}

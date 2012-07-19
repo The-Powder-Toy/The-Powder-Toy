@@ -43,7 +43,7 @@ Element_PLUT::Element_PLUT()
     HighTemperatureTransition = NT;
     
     Update = &Element_PLUT::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_PLUT static int update(UPDATE_FUNC_ARGS)

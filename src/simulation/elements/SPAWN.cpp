@@ -43,7 +43,7 @@ Element_SPAWN::Element_SPAWN()
     HighTemperatureTransition = NT;
     
     Update = &Element_SPAWN::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_SPAWN static int update(UPDATE_FUNC_ARGS)

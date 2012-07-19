@@ -43,7 +43,7 @@ Element_BGLA::Element_BGLA()
     HighTemperatureTransition = PT_LAVA;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_BGLA::~Element_BGLA() {}

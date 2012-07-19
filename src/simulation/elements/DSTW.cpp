@@ -43,7 +43,7 @@ Element_DSTW::Element_DSTW()
     HighTemperatureTransition = PT_WTRV;
     
     Update = &Element_DSTW::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_DSTW static int update(UPDATE_FUNC_ARGS)

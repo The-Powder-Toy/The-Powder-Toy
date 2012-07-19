@@ -43,7 +43,7 @@ Element_YEST::Element_YEST()
     HighTemperatureTransition = PT_DYST;
     
     Update = &Element_YEST::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_YEST static int update(UPDATE_FUNC_ARGS)

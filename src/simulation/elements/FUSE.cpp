@@ -43,7 +43,7 @@ Element_FUSE::Element_FUSE()
     HighTemperatureTransition = NT;
     
     Update = &Element_FUSE::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_FUSE static int update(UPDATE_FUNC_ARGS)

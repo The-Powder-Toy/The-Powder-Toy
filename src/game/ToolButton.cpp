@@ -8,8 +8,8 @@
 #include "ToolButton.h"
 #include "interface/Keys.h"
 
-ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_):
-	ui::Button(position, size, text_)
+ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolTip):
+	ui::Button(position, size, text_, toolTip)
 {
 	SetSelectionState(-1);
 	Appearance.BorderActive = ui::Colour(255, 0, 0);

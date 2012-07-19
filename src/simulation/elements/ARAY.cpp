@@ -43,7 +43,7 @@ Element_ARAY::Element_ARAY()
     HighTemperatureTransition = NT;
     
     Update = &Element_ARAY::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_ARAY static int update(UPDATE_FUNC_ARGS)

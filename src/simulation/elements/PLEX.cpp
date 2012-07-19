@@ -43,7 +43,7 @@ Element_PLEX::Element_PLEX()
     HighTemperatureTransition = PT_FIRE;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_PLEX::~Element_PLEX() {}

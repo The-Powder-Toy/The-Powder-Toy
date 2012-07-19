@@ -13,7 +13,7 @@
 
 namespace ui {
 
-Button::Button(Point position, Point size, std::string buttonText):
+Button::Button(Point position, Point size, std::string buttonText, std::string toolTip):
 	Component(position, size),
 	ButtonText(buttonText),
 	isMouseInside(false),
@@ -21,7 +21,8 @@ Button::Button(Point position, Point size, std::string buttonText):
 	isTogglable(false),
 	toggle(false),
 	actionCallback(NULL),
-	Enabled(true)
+	Enabled(true),
+	toolTip(toolTip)
 {
 	TextPosition();
 }
@@ -141,6 +142,10 @@ void Button::OnMouseEnter(int x, int y)
 		return;
 	if(actionCallback)
 		actionCallback->MouseEnterCallback(this);
+	if(toolTip.length()>0 && GetParentWindow())
+	{
+		GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
+	}
 }
 
 

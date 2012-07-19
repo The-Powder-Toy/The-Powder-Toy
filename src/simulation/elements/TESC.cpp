@@ -43,7 +43,7 @@ Element_TESC::Element_TESC()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_TESC::~Element_TESC() {}

@@ -8,13 +8,15 @@
 
 using namespace ui;
 
-Textbox::Textbox(Point position, Point size, std::string textboxText):
+Textbox::Textbox(Point position, Point size, std::string textboxText, std::string textboxPlaceholder):
 	Label(position, size, ""),
 	actionCallback(NULL),
 	masked(false),
 	border(true),
 	mouseDown(false)
 {
+	placeHolder = textboxPlaceholder;
+
 	SetText(textboxText);
 	cursor = text.length();
 }
@@ -23,6 +25,11 @@ Textbox::~Textbox()
 {
 	if(actionCallback)
 		delete actionCallback;
+}
+
+void Textbox::SetPlaceholder(std::string text)
+{
+	placeHolder = text;
 }
 
 void Textbox::SetText(std::string newText)
@@ -40,11 +47,11 @@ void Textbox::SetText(std::string newText)
 
 	if(cursor)
 	{
-		cursorPosition = Graphics::textnwidth((char *)text.c_str(), cursor);
+		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
 	}
 	else
 	{
-		cursorPosition = 0;
+		cursorPositionY = cursorPositionX = 0;
 	}
 }
 
@@ -173,25 +180,25 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 
 	if(cursor)
 	{
-		cursorPosition = Graphics::textnwidth((char *)text.c_str(), cursor);
+		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
 	}
 	else
 	{
-		cursorPosition = 0;
+		cursorPositionY = cursorPositionX = 0;
 	}
 }
 
 void Textbox::OnMouseClick(int x, int y, unsigned button)
 {
 	mouseDown = true;
-	cursor = Graphics::CharIndexAtPosition((char*)text.c_str(), x-textPosition.X, y-textPosition.Y);
+	cursor = Graphics::CharIndexAtPosition(multiline?((char*)textLines.c_str()):((char*)text.c_str()), x-textPosition.X, y-textPosition.Y);
 	if(cursor)
 	{
-		cursorPosition = Graphics::textnwidth((char *)text.c_str(), cursor);
+		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
 	}
 	else
 	{
-		cursorPosition = 0;
+		cursorPositionY = cursorPositionX = 0;
 	}
 	Label::OnMouseClick(x, y, button);
 }
@@ -206,14 +213,14 @@ void Textbox::OnMouseMoved(int localx, int localy, int dx, int dy)
 {
 	if(mouseDown)
 	{
-		cursor = Graphics::CharIndexAtPosition((char*)text.c_str(), localx-textPosition.X, localy-textPosition.Y);
+		cursor = Graphics::CharIndexAtPosition(multiline?((char*)textLines.c_str()):((char*)text.c_str()), localx-textPosition.X, localy-textPosition.Y);
 		if(cursor)
 		{
-			cursorPosition = Graphics::textnwidth((char *)text.c_str(), cursor);
+			Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
 		}
 		else
 		{
-			cursorPosition = 0;
+			cursorPositionY = cursorPositionX = 0;
 		}
 	}
 	Label::OnMouseMoved(localx, localy, dx, dy);
@@ -227,10 +234,14 @@ void Textbox::Draw(const Point& screenPos)
 	if(IsFocused())
 	{
 		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
-		g->draw_line(screenPos.X+textPosition.X+cursorPosition, screenPos.Y+3, screenPos.X+textPosition.X+cursorPosition, screenPos.Y+12, 255, 255, 255, XRES+BARSIZE);
+		g->draw_line(screenPos.X+textPosition.X+cursorPositionX+1, screenPos.Y-2+textPosition.Y+cursorPositionY, screenPos.X+textPosition.X+cursorPositionX+1, screenPos.Y+10+textPosition.Y+cursorPositionY, 255, 255, 255, XRES+BARSIZE);
 	}
 	else
 	{
+		if(!text.length())
+		{
+			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, placeHolder, textColour.Red, textColour.Green, textColour.Blue, 170);
+		}
 		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 160, 160, 160, 255);
 	}
 }

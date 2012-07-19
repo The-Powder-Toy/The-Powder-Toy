@@ -43,7 +43,7 @@ Element_ISZS::Element_ISZS()
     HighTemperatureTransition = PT_ISOZ;
     
     Update = &Element_ISZS::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_ISZS static int update(UPDATE_FUNC_ARGS)

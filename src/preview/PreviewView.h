@@ -16,16 +16,22 @@
 #include "interface/Button.h"
 #include "search/Thumbnail.h"
 #include "interface/Label.h"
+#include "interface/Textbox.h"
 
 class PreviewModel;
 class PreviewController;
 class PreviewView: public ui::Window {
+	class SubmitCommentAction;
+	class LoginAction;
+	class AutoCommentSizeAction;
 	PreviewController * c;
 	Thumbnail * savePreview;
 	ui::Button * openButton;
 	ui::Button * browserOpenButton;
 	ui::Button * favButton;
 	ui::Button * reportButton;
+	ui::Button * submitCommentButton;
+	ui::Textbox * addCommentBox;
 	ui::Label * saveNameLabel;
 	ui::Label * authorDateLabel;
 	ui::Label * pageInfo;
@@ -43,13 +49,22 @@ class PreviewView: public ui::Window {
 	float commentsOffset;
 	float commentsVel;
 
+	int commentBoxHeight;
+	float commentBoxPositionX;
+	float commentBoxPositionY;
+	float commentBoxSizeX;
+	float commentBoxSizeY;
+
 	void displayComments(int yOffset);
+	void commentBoxAutoHeight();
+	void submitComment();
 public:
 	void AttachController(PreviewController * controller) { c = controller;}
 	PreviewView();
 	void NotifySaveChanged(PreviewModel * sender);
 	void NotifyCommentsChanged(PreviewModel * sender);
 	void NotifyCommentsPageChanged(PreviewModel * sender);
+	void NotifyCommentBoxEnabledChanged(PreviewModel * sender);
 	virtual void OnDraw();
 	virtual void DoDraw();
 	virtual void OnTick(float dt);

@@ -43,7 +43,7 @@ Element_ICEI::Element_ICEI()
     HighTemperatureTransition = ST;
     
     Update = &Element_ICEI::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_ICEI static int update(UPDATE_FUNC_ARGS)

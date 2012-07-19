@@ -43,7 +43,7 @@ Element_147::Element_147()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_147::~Element_147() {}

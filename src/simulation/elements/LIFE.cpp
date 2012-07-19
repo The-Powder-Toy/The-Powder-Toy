@@ -1,4 +1,8 @@
 #include "simulation/Elements.h"
+
+bool Element_GOL_colourInit = false;
+pixel Element_GOL_colour[NGOL];
+
 //#TPT-Directive ElementClass Element_LIFE PT_LIFE 78
 Element_LIFE::Element_LIFE()
 {
@@ -44,7 +48,22 @@ Element_LIFE::Element_LIFE()
     
     Update = NULL;
     Graphics = &Element_LIFE::graphics;
+
+    if(!Element_GOL_colourInit)
+    {
+    	Element_GOL_colourInit = true;
+
+
+		int golMenuCount;
+		gol_menu * golMenuT = LoadGOLMenu(golMenuCount);
+		for(int i = 0; i < golMenuCount && i < NGOL; i++)
+		{
+			Element_GOL_colour[i] = golMenuT[i].colour;
+		}
+		free(golMenuT);
+    }
 }
+
 
 //#TPT-Directive ElementHeader Element_LIFE static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
@@ -94,7 +113,7 @@ int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
 		else
 			pc = PIXRGB(255, 255, 0);
 	} else {
-		pc = PIXRGB(255, 255, 0);//sim->gmenu[cpart->ctype].colour;
+		pc = Element_GOL_colour[cpart->ctype];
 	}
 	*colr = PIXR(pc);
 	*colg = PIXG(pc);

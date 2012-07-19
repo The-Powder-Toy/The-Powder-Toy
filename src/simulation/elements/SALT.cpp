@@ -43,7 +43,7 @@ Element_SALT::Element_SALT()
     HighTemperatureTransition = PT_LAVA;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_SALT::~Element_SALT() {}

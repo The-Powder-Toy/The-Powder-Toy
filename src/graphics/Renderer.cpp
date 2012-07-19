@@ -35,6 +35,29 @@ extern "C"
 #define drawrect(args) g->drawrect(args)
 #endif
 
+void Renderer::RenderBegin()
+{
+
+	draw_air();
+	render_parts();
+	render_fire();
+	draw_grav();
+	DrawWalls();
+	DrawSigns();
+#ifndef OGLR
+	RenderZoom();
+	FinaliseParts();
+#endif
+}
+
+void Renderer::RenderEnd()
+{
+#ifdef OGLR
+	RenderZoom();
+	FinaliseParts();
+#endif
+}
+
 void Renderer::clearScreen(float alpha)
 {
 #ifdef OGLR
@@ -245,7 +268,7 @@ void Renderer::FinaliseParts()
 	}
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable( GL_TEXTURE_2D );
-#else
+#elif defined(OGLI)
 	g->draw_image(vid, 0, 0, VIDXRES, VIDYRES, 255);
 #endif
 }
@@ -254,7 +277,7 @@ void Renderer::RenderZoom()
 {
 	if(!zoomEnabled)
 		return;
-	#ifdef OGLR
+	#if defined(OGLR)
 		int sdl_scale = 1;
 		int origBlendSrc, origBlendDst;
 		float zcx1, zcx0, zcy1, zcy0, yfactor, xfactor, i; //X-Factor is shit, btw
@@ -344,8 +367,8 @@ void Renderer::RenderZoom()
 		int x, y, i, j;
 		pixel pix;
 		pixel * img = vid;
-		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+2, zoomScopeSize*ZFACTOR+2, 192, 192, 192, 255);
-		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR, zoomScopeSize*ZFACTOR, 0, 0, 0, 255);
+		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+4, zoomScopeSize*ZFACTOR+4, 192, 192, 192, 255);
+		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+2, zoomScopeSize*ZFACTOR+2, 0, 0, 0, 255);
 		clearrect(zoomWindowPosition.X, zoomWindowPosition.Y, zoomScopeSize*ZFACTOR, zoomScopeSize*ZFACTOR);
 		for (j=0; j<zoomScopeSize; j++)
 			for (i=0; i<zoomScopeSize; i++)
@@ -617,6 +640,8 @@ void Renderer::render_gravlensing()
 void Renderer::render_fire()
 {
 #ifndef OGLR
+	if(!(render_mode & FIREMODE))
+		return;
 	int i,j,x,y,r,g,b,nx,ny;
 	for (j=0; j<YRES/CELL; j++)
 		for (i=0; i<XRES/CELL; i++)
@@ -2093,9 +2118,24 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 
 void Renderer::CompileRenderMode()
 {
+	int old_render_mode = render_mode;
 	render_mode = 0;
 	for(int i = 0; i < render_modes.size(); i++)
 		render_mode |= render_modes[i];
+
+	//If firemode is removed, clear the fire display
+	if(!(render_mode & FIREMODE) && (old_render_mode & FIREMODE))
+	{
+		ClearAccumulation();
+	}
+}
+
+void Renderer::ClearAccumulation()
+{
+	//Fire
+	std::fill(fire_r[0]+0, fire_r[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
+	std::fill(fire_g[0]+0, fire_g[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
+	std::fill(fire_b[0]+0, fire_b[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
 }
 
 void Renderer::AddRenderMode(unsigned int mode)

@@ -21,7 +21,8 @@ PreviewModel::PreviewModel():
 	updateSaveCommentsWorking(false),
 	updateSaveCommentsFinished(false),
 	commentsTotal(0),
-	commentsPageNumber(1)
+	commentsPageNumber(1),
+	commentBoxEnabled(false)
 {
 	// TODO Auto-generated constructor stub
 
@@ -74,6 +75,20 @@ void PreviewModel::SetFavourite(bool favourite)
 		Client::Ref().FavouriteSave(save->id, favourite);
 		save->Favourite = favourite;
 		notifySaveChanged();
+	}
+}
+
+bool PreviewModel::GetCommentBoxEnabled()
+{
+	return commentBoxEnabled;
+}
+
+void PreviewModel::SetCommentBoxEnabled(bool enabledState)
+{
+	if(enabledState != commentBoxEnabled)
+	{
+		commentBoxEnabled = enabledState;
+		notifyCommentBoxEnabledChanged();
 	}
 }
 
@@ -189,6 +204,14 @@ void PreviewModel::notifySaveChanged()
 	}
 }
 
+void PreviewModel::notifyCommentBoxEnabledChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyCommentBoxEnabledChanged(this);
+	}
+}
+
 void PreviewModel::notifyCommentsPageChanged()
 {
 	for(int i = 0; i < observers.size(); i++)
@@ -210,6 +233,7 @@ void PreviewModel::AddObserver(PreviewView * observer) {
 	observer->NotifySaveChanged(this);
 	observer->NotifyCommentsChanged(this);
 	observer->NotifyCommentsPageChanged(this);
+	observer->NotifyCommentBoxEnabledChanged(this);
 }
 
 void PreviewModel::Update()

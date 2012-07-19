@@ -43,7 +43,7 @@ Element_NICE::Element_NICE()
     HighTemperatureTransition = PT_LNTG;
     
     Update = NULL;
-    Graphics = NULL;
+    
 }
 
 Element_NICE::~Element_NICE() {}

@@ -67,6 +67,7 @@ private:
 	void updateStamps();
 	static vector<std::string> explodePropertyString(std::string property);
 	void notifyUpdateAvailable();
+	void notifyAuthUserChanged();
 
 	//Config file handle
 	json::Object configDocument;
@@ -79,6 +80,7 @@ public:
 	~Client();
 
 	void AddListener(ClientListener * listener);
+	void RemoveListener(ClientListener * listener);
 
 	RequestStatus ExecVote(int saveID, int direction);
 	RequestStatus UploadSave(SaveInfo * save);
@@ -89,6 +91,8 @@ public:
 	vector<string> GetStamps(int start, int count);
 	int GetStampsCount();
 	SaveFile * GetFirstStamp();
+
+	RequestStatus AddComment(int saveID, std::string comment);
 
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	LoginStatus Login(string username, string password, User & user);

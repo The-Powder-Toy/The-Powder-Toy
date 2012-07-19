@@ -33,7 +33,11 @@ GameView::GameView():
 	placeSaveThumb(NULL),
 	mousePosition(0, 0),
 	lastOffset(0),
-	drawSnap(false)
+	drawSnap(false),
+	toolTip(""),
+	infoTip(""),
+	infoTipPresence(0),
+	toolTipPosition(-1, -1)
 {
 	
 	int currentX = 1;
@@ -255,6 +259,59 @@ GameView::GameView():
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback(new ElementSearchAction(this));
 	AddComponent(tempButton);
+
+	//Render mode presets. Possibly load from config in future?
+	renderModePresets = new RenderPreset[10];
+
+	renderModePresets[0].Name = "Alternative Velocity Display";
+	renderModePresets[0].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[0].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[0].DisplayModes.push_back(DISPLAY_AIRC);
+
+	renderModePresets[1].Name = "Velocity Display";
+	renderModePresets[1].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[1].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[1].DisplayModes.push_back(DISPLAY_AIRV);
+
+	renderModePresets[2].Name = "Pressure Display";
+	renderModePresets[2].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[2].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[2].DisplayModes.push_back(DISPLAY_AIRP);
+
+	renderModePresets[3].Name = "Persistent Display";
+	renderModePresets[3].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[3].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[3].DisplayModes.push_back(DISPLAY_PERS);
+
+	renderModePresets[4].Name = "Fire Display";
+	renderModePresets[4].RenderModes.push_back(RENDER_FIRE);
+	renderModePresets[4].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[4].RenderModes.push_back(RENDER_BASC);
+
+	renderModePresets[5].Name = "Blob Display";
+	renderModePresets[5].RenderModes.push_back(RENDER_FIRE);
+	renderModePresets[5].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[5].RenderModes.push_back(RENDER_BLOB);
+
+	renderModePresets[6].Name = "Heat Display";
+	renderModePresets[6].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[6].DisplayModes.push_back(DISPLAY_AIRH);
+	renderModePresets[6].ColourMode = COLOUR_HEAT;
+
+	renderModePresets[7].Name = "Fancy Display";
+	renderModePresets[7].RenderModes.push_back(RENDER_FIRE);
+	renderModePresets[7].RenderModes.push_back(RENDER_GLOW);
+	renderModePresets[7].RenderModes.push_back(RENDER_BLUR);
+	renderModePresets[7].RenderModes.push_back(RENDER_EFFE);
+	renderModePresets[7].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[7].DisplayModes.push_back(DISPLAY_WARP);
+
+	renderModePresets[8].Name = "Nothing Display";
+	renderModePresets[8].RenderModes.push_back(RENDER_BASC);
+
+	renderModePresets[9].Name = "Heat Gradient Display";
+	renderModePresets[9].RenderModes.push_back(RENDER_BASC);
+	renderModePresets[9].ColourMode = COLOUR_GRAD;
 }
 
 class GameView::MenuAction: public ui::ButtonAction
@@ -308,7 +365,7 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 		std::string tempString = "";
 		Menu * item = *iter;
 		tempString += item->GetIcon();
-		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, currentY), ui::Point(15, 15), tempString);
+		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, currentY), ui::Point(15, 15), tempString, item->GetDescription());
 		tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 		tempButton->SetTogglable(true);
 		tempButton->SetActionCallback(new MenuAction(this, item));
@@ -379,7 +436,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	for(int i = 0; i < toolList.size(); i++)
 	{
 		//ToolButton * tempButton = new ToolButton(ui::Point(XRES+1, currentY), ui::Point(28, 15), toolList[i]->GetName());
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), toolList[i]->GetName());
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), toolList[i]->GetName(), toolList[i]->GetDescription());
 		//currentY -= 17;
 		currentX -= 31;
 		tempButton->SetActionCallback(new ToolAction(this, toolList[i]));
@@ -465,6 +522,17 @@ void GameView::NotifyUserChanged(GameModel * sender)
 void GameView::NotifyPausedChanged(GameModel * sender)
 {
 	pauseButton->SetToggleState(sender->GetPaused());
+}
+
+void GameView::NotifyToolTipChanged(GameModel * sender)
+{
+	toolTip = sender->GetToolTip();
+}
+
+void GameView::NotifyInfoTipChanged(GameModel * sender)
+{
+	infoTip = sender->GetInfoTip();
+	infoTipPresence = 120;
 }
 
 void GameView::NotifySaveChanged(GameModel * sender)
@@ -675,6 +743,12 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 	}
 }
 
+void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip)
+{
+	this->toolTip = toolTip;
+	toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+}
+
 void GameView::OnMouseWheel(int x, int y, int d)
 {
 	if(!d)
@@ -819,6 +893,11 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		c->AdjustBrushSize(-1, true);
 		break;
 	}
+
+	if(key >= '0' && key <= '9')
+	{
+		c->LoadRenderPreset(renderModePresets[key-'0']);
+	}
 }
 
 void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
@@ -863,6 +942,12 @@ void GameView::OnTick(float dt)
 	if(drawMode == DrawFill && isMouseDown)
 	{
 		c->DrawFill(toolIndex, currentMouse);
+	}
+	if(infoTipPresence>0)
+	{
+		infoTipPresence -= int(dt)>0?int(dt):1;
+		if(infoTipPresence<0)
+			infoTipPresence = 0;
 	}
 	c->Update();
 	if(lastLogEntry > -0.1f)
@@ -975,16 +1060,18 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
         }
     };
 
-	for(std::vector<ui::Component*>::iterator iter = notificationComponents.begin(); iter != notificationComponents.end(); ++iter) {
-		RemoveComponent(*iter);
-		delete *iter;
+	for(std::vector<ui::Component*>::const_iterator iter = notificationComponents.begin(), end = notificationComponents.end(); iter != end; ++iter) {
+		ui::Component * cNotification = *iter;
+		RemoveComponent(cNotification);
+		delete cNotification;
 	}
 	notificationComponents.clear();
+
 
 	std::vector<Notification*> notifications = sender->GetNotifications();
 
 	int currentY = YRES-17;
-	for(std::vector<Notification*>::iterator iter = notifications.begin(); iter != notifications.end(); ++iter)
+	for(std::vector<Notification*>::iterator iter = notifications.begin(), end = notifications.end(); iter != end; ++iter)
 	{
 		int width = (Graphics::textwidth((*iter)->Message.c_str()))+8;
 		ui::Button * tempButton = new ui::Button(ui::Point(XRES-width-22, currentY), ui::Point(width, 15), (*iter)->Message);
@@ -1046,13 +1133,7 @@ void GameView::OnDraw()
 	if(ren)
 	{
 		ren->clearScreen(1.0f);
-		ren->draw_air();
-		ren->render_parts();
-		ren->render_fire();
-		ren->draw_grav();
-		ren->DrawWalls();
-		ren->DrawSigns();
-		ren->FinaliseParts();
+		ren->RenderBegin();
 		if(activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
 		{
 			ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
@@ -1082,7 +1163,7 @@ void GameView::OnDraw()
 				activeBrush->RenderPoint(g, finalCurrentMouse);
 			}
 		}
-		ren->RenderZoom();
+		ren->RenderEnd();
 
 		if(selectMode!=SelectNone)
 		{
@@ -1167,6 +1248,17 @@ void GameView::OnDraw()
 		sampleInfo << ", Ctype: " << c->ElementResolve(sample.ctype);
 
 	g->drawtext(XRES+BARSIZE-(10+Graphics::textwidth((char*)sampleInfo.str().c_str())), 10, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255);
+
+	if(infoTipPresence)
+	{
+		int infoTipAlpha = (infoTipPresence>50?50:infoTipPresence)*5;
+		g->drawtext((XRES-Graphics::textwidth((char*)infoTip.c_str()))/2, (YRES/2)-2, (char*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
+	}
+
+	if(toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
+	{
+		g->drawtext(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, 255);
+	}
 }
 
 ui::Point GameView::lineSnapCoords(ui::Point point1, ui::Point point2)

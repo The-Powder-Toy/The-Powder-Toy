@@ -55,9 +55,12 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
 	    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	    glClear(GL_COLOR_BUFFER_BIT);
+	    
 	    ren->clearScreen(1.0f);
-		ren->render_parts();
-		ren->FinaliseParts();
+	    ren->ClearAccumulation();
+		ren->RenderBegin();
+		ren->RenderEnd();
+
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glTranslated(0, -MENUSIZE, 0);
 
@@ -90,8 +93,10 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 		pixel * pData = NULL;
 		pixel * dst;
 		pixel * src = g->vid;
-		ren->render_parts();
-		ren->FinaliseParts();
+
+	    ren->ClearAccumulation();
+		ren->RenderBegin();
+		ren->RenderEnd();
 	
 		pData = (pixel *)malloc(PIXELSIZE * ((width*CELL)*(height*CELL)));
 		dst = pData;

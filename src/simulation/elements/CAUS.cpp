@@ -43,7 +43,7 @@ Element_CAUS::Element_CAUS()
     HighTemperatureTransition = NT;
     
     Update = &Element_CAUS::update;
-    Graphics = NULL;
+    
 }
 
 //#TPT-Directive ElementHeader Element_CAUS static int update(UPDATE_FUNC_ARGS)
