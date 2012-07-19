@@ -1133,13 +1133,7 @@ void GameView::OnDraw()
 	if(ren)
 	{
 		ren->clearScreen(1.0f);
-		ren->draw_air();
-		ren->render_parts();
-		ren->render_fire();
-		ren->draw_grav();
-		ren->DrawWalls();
-		ren->DrawSigns();
-		ren->FinaliseParts();
+		ren->RenderBegin();
 		if(activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
 		{
 			ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
@@ -1169,7 +1163,7 @@ void GameView::OnDraw()
 				activeBrush->RenderPoint(g, finalCurrentMouse);
 			}
 		}
-		ren->RenderZoom();
+		ren->RenderEnd();
 
 		if(selectMode!=SelectNone)
 		{

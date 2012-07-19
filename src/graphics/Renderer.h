@@ -55,6 +55,9 @@ public:
 	int ZFACTOR;
 
 	//Renderers
+	void RenderBegin();
+	void RenderEnd();
+
 	void RenderZoom();
 	void DrawWalls();
 	void DrawSigns();
@@ -67,6 +70,8 @@ public:
 	void draw_grav();
 	void draw_other();
 	void FinaliseParts();
+
+	void ClearAccumulation();
 	void clearScreen(float alpha);
 
 	//class SolidsRenderer;
