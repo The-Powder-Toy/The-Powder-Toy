@@ -284,8 +284,8 @@ int cpu_check(void)
 #ifdef X86
 	unsigned af,bf,cf,df;
 	x86_cpuid(0, af, bf, cf, df);
-	if (bf==0x68747541 && cf==0x444D4163 && df==0x69746E65)
-		amd = 1;
+	//if (bf==0x68747541 && cf==0x444D4163 && df==0x69746E65)
+	//	amd = 1;
 	x86_cpuid(1, af, bf, cf, df);
 #ifdef X86_SSE
 	if (!(df&(1<<25)))
