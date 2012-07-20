@@ -87,6 +87,7 @@ GameSave::GameSave(char * data, int dataSize)
 			throw ParseException(ParseException::Corrupt, "No data");
 		}
 	} catch (ParseException& e) {
+		std::cout << e.what() << std::endl;
 		this->~GameSave();	//Free any allocated memory
 		throw;
 	}
@@ -509,7 +510,41 @@ void GameSave::readOPS(char * data, int dataLength)
 			{
 				if (wallData[y*blockW+x])
 					blockMap[blockY+y][blockX+x] = wallData[y*blockW+x];
-				if (wallData[y*blockW+x] == WL_FAN && fanData)
+
+				if (blockMap[y][x]==O_WL_WALLELEC)
+					blockMap[y][x]=WL_WALLELEC;
+				if (blockMap[y][x]==O_WL_EWALL)
+					blockMap[y][x]=WL_EWALL;
+				if (blockMap[y][x]==O_WL_DETECT)
+					blockMap[y][x]=WL_DETECT;
+				if (blockMap[y][x]==O_WL_STREAM)
+					blockMap[y][x]=WL_STREAM;
+				if (blockMap[y][x]==O_WL_FAN||blockMap[y][x]==O_WL_FANHELPER)
+					blockMap[y][x]=WL_FAN;
+				if (blockMap[y][x]==O_WL_ALLOWLIQUID)
+					blockMap[y][x]=WL_ALLOWLIQUID;
+				if (blockMap[y][x]==O_WL_DESTROYALL)
+					blockMap[y][x]=WL_DESTROYALL;
+				if (blockMap[y][x]==O_WL_ERASE)
+					blockMap[y][x]=WL_ERASE;
+				if (blockMap[y][x]==O_WL_WALL)
+					blockMap[y][x]=WL_WALL;
+				if (blockMap[y][x]==O_WL_ALLOWAIR)
+					blockMap[y][x]=WL_ALLOWAIR;
+				if (blockMap[y][x]==O_WL_ALLOWSOLID)
+					blockMap[y][x]=WL_ALLOWSOLID;
+				if (blockMap[y][x]==O_WL_ALLOWALLELEC)
+					blockMap[y][x]=WL_ALLOWALLELEC;
+				if (blockMap[y][x]==O_WL_EHOLE)
+					blockMap[y][x]=WL_EHOLE;
+				if (blockMap[y][x]==O_WL_ALLOWGAS)
+					blockMap[y][x]=WL_ALLOWGAS;
+				if (blockMap[y][x]==O_WL_GRAV)
+					blockMap[y][x]=WL_GRAV;
+				if (blockMap[y][x]==O_WL_ALLOWENERGY)
+					blockMap[y][x]=WL_ALLOWENERGY;
+
+				if (blockMap[y][x] == WL_FAN && fanData)
 				{
 					if(j+1 >= fanDataLen)
 					{
@@ -758,6 +793,9 @@ void GameSave::readPSv(char * data, int dataLength)
 	free(golTypesT);
 
 	vector<Element> elements = GetElements();
+
+	try
+	{
 	
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
@@ -824,6 +862,8 @@ void GameSave::readPSv(char * data, int dataLength)
 	if (BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), dataLength-12, 0, 0))
 		throw ParseException(ParseException::Corrupt, "Cannot decompress");
 	dataLength = i;
+
+	std::cout << "Parsing " << dataLength << " bytes of data, version " << ver << std::endl;
 	
 	if (dataLength < bw*bh)
 		throw ParseException(ParseException::Corrupt, "Save data corrupt (missing data)");
@@ -919,18 +959,18 @@ void GameSave::readPSv(char * data, int dataLength)
 		}
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
-			if (d[(y-by0)*bw+(x-bx0)]==4||d[(y-by0)*bw+(x-bx0)]==WL_FAN)
+			if (d[(y-by0)*bw+(x-bx0)]==4||d[(y-by0)*bw+(x-bx0)]==O_WL_FAN)
 			{
 				if (p >= dataLength)
-					goto corrupt;
+					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				fanVelX[y][x] = (d[p++]-127.0f)/64.0f;
 			}
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
-			if (d[(y-by0)*bw+(x-bx0)]==4||d[(y-by0)*bw+(x-bx0)]==WL_FAN)
+			if (d[(y-by0)*bw+(x-bx0)]==4||d[(y-by0)*bw+(x-bx0)]==O_WL_FAN)
 			{
 				if (p >= dataLength)
-					goto corrupt;
+					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				fanVelY[y][x] = (d[p++]-127.0f)/64.0f;
 			}
 	
@@ -942,11 +982,11 @@ void GameSave::readPSv(char * data, int dataLength)
 		for (x=x0; x<x0+w; x++)
 		{
 			if (p >= dataLength)
-				goto corrupt;
+				throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			j=d[p++];
 			if (j >= PT_NUM) {
 				//TODO: Possibly some server side translation
-				j = PT_DUST;//goto corrupt;
+				j = PT_DUST;//throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			}
 			if (j)
 			{
@@ -977,7 +1017,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		{
 			i--;
 			if (p+1 >= dataLength)
-				goto corrupt;
+				throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			if (i < NPART)
 			{
 				particles[i].vx = (d[p++]-127.0f)/16.0f;
@@ -994,7 +1034,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		{
 			if (ver>=44) {
 				if (p >= dataLength) {
-					goto corrupt;
+					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
 					ttv = (d[p++])<<8;
@@ -1005,7 +1045,7 @@ void GameSave::readPSv(char * data, int dataLength)
 				}
 			} else {
 				if (p >= dataLength)
-					goto corrupt;
+					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				if (i <= NPART)
 					particles[i-1].life = d[p++]*4;
 				else
@@ -1020,7 +1060,7 @@ void GameSave::readPSv(char * data, int dataLength)
 			if (i)
 			{
 				if (p >= dataLength) {
-					goto corrupt;
+					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
 					ttv = (d[p++])<<8;
@@ -1050,7 +1090,7 @@ void GameSave::readPSv(char * data, int dataLength)
 			if (i && (ty==PT_PBCN || (ty==PT_TRON && ver>=77)))
 			{
 				if (p >= dataLength)
-					goto corrupt;
+					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				if (i <= NPART)
 					particles[i-1].tmp2 = d[p++];
 				else
@@ -1066,7 +1106,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		{
 			if (ver>=49) {
 				if (p >= dataLength) {
-					goto corrupt;
+					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
 					particles[i-1].dcolour = d[p++]<<24;
@@ -1084,7 +1124,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		{
 			if (ver>=49) {
 				if (p >= dataLength) {
-					goto corrupt;
+					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
 					particles[i-1].dcolour |= d[p++]<<16;
@@ -1102,7 +1142,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		{
 			if (ver>=49) {
 				if (p >= dataLength) {
-					goto corrupt;
+					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
 					particles[i-1].dcolour |= d[p++]<<8;
@@ -1120,7 +1160,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		{
 			if (ver>=49) {
 				if (p >= dataLength) {
-					goto corrupt;
+					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
 					particles[i-1].dcolour |= d[p++];
@@ -1140,7 +1180,7 @@ void GameSave::readPSv(char * data, int dataLength)
 			{
 				if (p >= dataLength)
 				{
-					goto corrupt;
+					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART)
 				{
@@ -1182,7 +1222,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		if (i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_BCLN && ver>=44) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34) || (ty==PT_PIPE && ver>=43) || (ty==PT_LIFE && ver>=51) || (ty==PT_PBCN && ver>=52) || (ty==PT_WIRE && ver>=55) || (ty==PT_STOR && ver>=59) || (ty==PT_CONV && ver>=60)))
 		{
 			if (p >= dataLength)
-				goto corrupt;
+				throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			if (i <= NPART)
 				particles[i-1].ctype = d[p++];
 			else
@@ -1260,7 +1300,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	for (i=0; i<j; i++)
 	{
 		if (p+6 > dataLength)
-			goto corrupt;
+			throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 		x = d[p++];
 		x |= ((unsigned)d[p++])<<8;
 		tempSign.x = x+x0;
@@ -1271,7 +1311,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		tempSign.ju = (sign::Justification)x;
 		x = d[p++];
 		if (p+x > dataLength)
-			goto corrupt;
+			throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 		if(x>254)
 			x = 254;
 		memcpy(tempSignText, d+p, x);
@@ -1287,20 +1327,44 @@ void GameSave::readPSv(char * data, int dataLength)
 			break;
 		signs.push_back(tempSigns[i]);
 	}
+
+	}
+	catch(ParseException & e)
+	{
+		if (m)
+		{
+			free(m);
+			m = 0;
+		}
+		if (d)
+		{
+			free(d);
+			d = 0;
+		}
+		if (fp)
+		{
+			free(fp);
+			fp = 0;
+		}
+		throw;
+	}
 	
-version1:
-	if (m) free(m);
-	if (d) free(d);
-	if (fp) free(fp);
-	
-	return;
-	
-corrupt:
-	if (m) free(m);
-	if (d) free(d);
-	if (fp) free(fp);
-	
-	throw ParseException(ParseException::Corrupt, "Save data corrupt");
+	version1:
+	if (m)
+	{
+		free(m);
+		m = 0;
+	}
+	if (d)
+	{
+		free(d);
+		d = 0;
+	}
+	if (fp)
+	{
+		free(fp);
+		fp = 0;
+	}
 }
 
 char * GameSave::serialiseOPS(int & dataLength)
