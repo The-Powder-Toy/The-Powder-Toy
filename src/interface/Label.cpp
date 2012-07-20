@@ -48,40 +48,51 @@ void Label::SetText(std::string text)
 
 void Label::updateMultiline()
 {
-	char * rawText = new char[text.length()+1];
-	std::copy(text.begin(), text.end(), rawText);
-	rawText[text.length()] = 0;
-
 	int lines = 1;
-	int currentWidth = 0;
-	char * lastSpace = NULL;
-	char * currentWord = rawText;
-	char * nextSpace;
-	while(true)
+	if(text.length()>0)
 	{
-		nextSpace = strchr(currentWord+1, ' ');
-		if(nextSpace)
-			nextSpace[0] = 0;
-		int width = Graphics::textwidth(currentWord);
-		if(width+currentWidth > Size.X-6)
+		char * rawText = new char[text.length()+1];
+		std::copy(text.begin(), text.end(), rawText);
+		rawText[text.length()] = 0;
+
+		int currentWidth = 0;
+		char * lastSpace = NULL;
+		char * currentWord = rawText;
+		char * nextSpace;
+		while(true)
 		{
-			currentWidth = width;
-			currentWord[0] = '\n';
-			lines++;
+			nextSpace = strchr(currentWord+1, ' ');
+			if(nextSpace)
+				nextSpace[0] = 0;
+			int width = Graphics::textwidth(currentWord);
+			if(width+currentWidth > Size.X-6)
+			{
+				currentWidth = width;
+				currentWord[0] = '\n';
+				lines++;
+			}
+			else
+				currentWidth += width;
+			if(nextSpace)
+				nextSpace[0] = ' ';
+			if(!currentWord[0] || !currentWord[1] || !(currentWord = strchr(currentWord+1, ' ')))
+				break;
 		}
-		else
-			currentWidth += width;
-		if(nextSpace)
-			nextSpace[0] = ' ';
-		if(!(currentWord = strchr(currentWord+1, ' ')))
-			break;
+		if(autoHeight)
+		{
+			Size.Y = lines*12;
+		}
+		textLines = std::string(rawText);
+		delete[] rawText;
 	}
-	if(autoHeight)
+	else
 	{
-		Size.Y = lines*12;
+		if(autoHeight)
+		{
+			Size.Y = 12;
+		}
+		textLines = std::string("");
 	}
-	textLines = std::string(rawText);
-	delete[] rawText;
 }
 
 std::string Label::GetText()

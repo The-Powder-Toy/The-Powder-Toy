@@ -112,7 +112,7 @@ if(GetOption('lin32') or GetOption('lin64')):
 
 
 if(GetOption('release')):
-    ev.Append(CCFLAGS='-O3')
+    env.Append(CCFLAGS='-O3')
 
 if(GetOption('opengl')):
     env.Append(CPPDEFINES=["OGLI", "PIX32OGL"])
