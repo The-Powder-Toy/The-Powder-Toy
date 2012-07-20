@@ -22,7 +22,13 @@ gravityMode(save.gravityMode),
 airMode(save.airMode),
 signs(save.signs)
 {
-	blockMap, blockMapPtr, fanVelX, fanVelXPtr, fanVelY, fanVelYPtr, particles = NULL;
+	blockMap = NULL;
+	blockMapPtr = NULL;
+	fanVelX = NULL;
+	fanVelXPtr = NULL;
+	fanVelY = NULL;
+	fanVelYPtr = NULL;
+	particles = NULL;
 
 	setSize(save.blockWidth, save.blockHeight);
 
@@ -35,14 +41,30 @@ signs(save.signs)
 
 GameSave::GameSave(int width, int height)
 {
-	blockMap, blockMapPtr, fanVelX, fanVelXPtr, fanVelY, fanVelYPtr, particles = NULL;
+	blockMap = NULL;
+	blockMapPtr = NULL;
+	fanVelX = NULL;
+	fanVelXPtr = NULL;
+	fanVelY = NULL;
+	fanVelYPtr = NULL;
+	particles = NULL;
+
 	setSize(width, height);
 }
 
 GameSave::GameSave(char * data, int dataSize)
 {
-	blockWidth, blockHeight = 0;
-	blockMap, blockMapPtr, fanVelX, fanVelXPtr, fanVelY, fanVelYPtr, particles = NULL;
+	blockWidth = 0;
+	blockHeight = 0;
+
+	blockMap = NULL;
+	blockMapPtr = NULL;
+	fanVelX = NULL;
+	fanVelXPtr = NULL;
+	fanVelY = NULL;
+	fanVelYPtr = NULL;
+	particles = NULL;
+
 	try {
 		if(dataSize > 0)
 		{
