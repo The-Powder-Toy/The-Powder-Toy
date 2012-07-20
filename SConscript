@@ -112,7 +112,7 @@ if(GetOption('lin32') or GetOption('lin64')):
 
 
 if(GetOption('release')):
-    env.Append(CCFLAGS='-O3')
+    env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-msse2', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations', '-Wunsafe-loop-optimizations'])
 
 if(GetOption('opengl')):
     env.Append(CPPDEFINES=["OGLI", "PIX32OGL"])
