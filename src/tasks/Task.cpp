@@ -86,16 +86,15 @@ void Task::Poll()
 			notifyStatusMain();
 		}
 
-		if(done)
-		{
-			pthread_join(doWorkThread, NULL);
-			pthread_mutex_destroy(&taskMutex);
-			after();
-		}
-
 		if(newDone!=done)
 		{
 			done = newDone;
+
+			pthread_join(doWorkThread, NULL);
+			pthread_mutex_destroy(&taskMutex);
+			
+			after();
+			
 			notifyDoneMain();
 		}
 	}

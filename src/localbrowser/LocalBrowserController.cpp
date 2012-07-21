@@ -65,8 +65,9 @@ void LocalBrowserController::removeSelectedC()
 	class RemoveSavesTask : public Task
 	{
 		std::vector<std::string> saves;
+		LocalBrowserController * c;
 	public:
-		RemoveSavesTask(std::vector<std::string> saves_) { saves = saves_; }
+		RemoveSavesTask(LocalBrowserController * c, std::vector<std::string> saves_) : c(c) { saves = saves_; }
 		virtual bool doWork()
 		{
 			for(int i = 0; i < saves.size(); i++)
@@ -80,10 +81,18 @@ void LocalBrowserController::removeSelectedC()
 			}
 			return true;
 		}
+		virtual void after()
+		{
+			c->RefreshSavesList();
+		}
 	};
 
 	std::vector<std::string> selected = browserModel->GetSelected();
-	new TaskWindow("Removing saves", new RemoveSavesTask(selected));
+	new TaskWindow("Removing saves", new RemoveSavesTask(this, selected));
+}
+
+void LocalBrowserController::RefreshSavesList()
+{
 	ClearSelection();
 	browserModel->UpdateSavesList(browserModel->GetPageNum());
 }

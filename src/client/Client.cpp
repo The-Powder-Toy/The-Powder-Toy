@@ -371,7 +371,7 @@ SaveFile * Client::GetStamp(string stampID)
 		stampFile.read((char *)tempData, fileSize);
 		stampFile.close();
 
-		SaveFile * file = new SaveFile(string(STAMPS_DIR PATH_SEP + stampID + ".stm").c_str());
+		SaveFile * file = new SaveFile(string(stampID).c_str());
 		GameSave * tempSave = new GameSave((char *)tempData, fileSize);
 		file->SetGameSave(tempSave);
 		return file;
@@ -388,7 +388,12 @@ void Client::DeleteStamp(string stampID)
 	{
 		if((*iterator) == stampID)
 		{
-			remove(string(STAMPS_DIR PATH_SEP + stampID + ".stm").c_str());
+			stringstream stampFilename;
+			stampFilename << STAMPS_DIR;
+			stampFilename << PATH_SEP;
+			stampFilename << stampID;
+			stampFilename << ".stm";
+			remove(stampFilename.str().c_str());
 			stampIDs.erase(iterator);
 			return;
 		}
