@@ -28,6 +28,30 @@ namespace ui
 		BorderActive(255, 255, 255),
 		Margin(1, 4),
 	
-		icon(NoIcon)
+		icon(NoIcon),
+
+		texture(NULL)
 	{};
+
+	VideoBuffer * Appearance::GetTexture()
+	{
+		return texture;
+	}
+
+	void Appearance::SetTexture(VideoBuffer * texture)
+	{
+		if(this->texture)
+			delete this->texture;
+		if(texture)
+			this->texture = new VideoBuffer(texture);
+		else
+			this->texture = NULL;
+	}
+
+	Appearance::~Appearance()
+	{
+		if(texture)
+			delete texture;
+	}
+
 }

@@ -118,6 +118,11 @@ void SignWindow::OnDraw()
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
 }
 
+VideoBuffer * SignTool::GetIcon(int toolID, int width, int height)
+{
+
+}
+
 void SignTool::Click(Simulation * sim, Brush * brush, ui::Point position)
 {
 	int signX, signY, signW, signH, signIndex = -1;

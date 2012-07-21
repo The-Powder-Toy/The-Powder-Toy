@@ -7,6 +7,36 @@
 #define INCLUDE_FONTDATA
 #include "font.h"
 
+VideoBuffer::VideoBuffer(int width, int height):
+	Width(width),
+	Height(height)
+{
+	Buffer = new pixel[width*height];
+	std::fill(Buffer, Buffer+(width*height), 0);
+};
+
+VideoBuffer::VideoBuffer(const VideoBuffer & old):
+	Width(old.Width),
+	Height(old.Height)
+{
+	Buffer = new pixel[old.Width*old.Height];
+	std::copy(old.Buffer, old.Buffer+(old.Width*old.Height), Buffer);
+};
+
+VideoBuffer::VideoBuffer(VideoBuffer * old):
+	Width(old->Width),
+	Height(old->Height)
+{
+	Buffer = new pixel[old->Width*old->Height];
+	std::copy(old->Buffer, old->Buffer+(old->Width*old->Height), Buffer);
+};
+
+
+VideoBuffer::~VideoBuffer()
+{
+	delete[] Buffer;
+};
+
 TPT_INLINE void VideoBuffer::BlendPixel(int x, int y, int r, int g, int b, int a)
 {
 #ifdef PIX32OGL
@@ -786,4 +816,13 @@ pixel *Graphics::render_packed_rgb(void *image, int width, int height, int cmp_s
 	return res;
 }
 
+void Graphics::draw_image(const VideoBuffer & vidBuf, int x, int y, int a)
+{
+	draw_image(vidBuf.Buffer, x, y, vidBuf.Width, vidBuf.Height, a);
+}
+
+void Graphics::draw_image(VideoBuffer * vidBuf, int x, int y, int a)
+{
+	draw_image(vidBuf->Buffer, x, y, vidBuf->Width, vidBuf->Height, a);
+}
 

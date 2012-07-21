@@ -122,6 +122,8 @@ public:
 	void SetColourMode(unsigned int mode);
 	unsigned int GetColourMode();
 
+	static VideoBuffer * WallIcon(int wallID, int width, int height);
+
 	Renderer(Graphics * g, Simulation * sim);
 	~Renderer();
 

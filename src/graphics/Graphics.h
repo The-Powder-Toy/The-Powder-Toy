@@ -90,14 +90,16 @@ public:
 	pixel * Buffer;
 	int Width, Height;
 
-	VideoBuffer(int width, int height): Width(width), Height(height), Buffer((pixel*)calloc(width*height, PIXELSIZE)) { };
+	VideoBuffer(const VideoBuffer & old);
+	VideoBuffer(VideoBuffer * old);
+	VideoBuffer(int width, int height);
 	void BlendPixel(int x, int y, int r, int g, int b, int a);
 	void AddPixel(int x, int y, int r, int g, int b, int a);
 	void SetPixel(int x, int y, int r, int g, int b, int a);
 	int BlendCharacter(int x, int y, int c, int r, int g, int b, int a);
 	int AddCharacter(int x, int y, int c, int r, int g, int b, int a);
 	int SetCharacter(int x, int y, int c, int r, int g, int b, int a);
-	~VideoBuffer() { free(Buffer); };
+	~VideoBuffer();
 };
 
 class Graphics
@@ -158,6 +160,8 @@ public:
 	void gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2);
 
 	void draw_image(pixel *img, int x, int y, int w, int h, int a);
+	void draw_image(const VideoBuffer & vidBuf, int w, int h, int a);
+	void draw_image(VideoBuffer * vidBuf, int w, int h, int a);
 
 	Graphics();
 	~Graphics();

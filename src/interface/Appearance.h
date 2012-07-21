@@ -16,6 +16,8 @@ namespace ui
 {
 	class Appearance
 	{
+	private:
+			VideoBuffer * texture;
 	public:
 		enum HorizontalAlignment
 		{
@@ -46,8 +48,12 @@ namespace ui
 		ui::Border Margin;
 		
 		Icon icon;
+
+		VideoBuffer * GetTexture();
+		void SetTexture(VideoBuffer * texture);
 		
 		Appearance();
+		~Appearance();
 	};
 }
 

@@ -12,14 +12,23 @@
 
 using namespace std;
 
-Tool::Tool(int id, string name, string description, int r, int g, int b):
+Tool::Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
 	toolID(id),
 	toolName(name),
 	toolDescription(description),
 	colRed(r),
 	colGreen(g),
-	colBlue(b)
+	colBlue(b),
+	textureGen(textureGen)
 {
+}
+VideoBuffer * Tool::GetTexture(int width, int height)
+{
+	if(textureGen)
+	{
+		return textureGen(toolID, width, height);
+	}
+	return NULL;
 }
 string Tool::GetName() { return toolName; }
 string Tool::GetDescription() { return toolDescription; }
@@ -36,8 +45,8 @@ void Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Po
 }
 void Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {};
 
-ElementTool::ElementTool(int id, string name, string description, int r, int g, int b):
-	Tool(id, name, description, r, g, b)
+ElementTool::ElementTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
+	Tool(id, name, description, r, g, b, textureGen)
 {
 }
 ElementTool::~ElementTool() {}
@@ -55,8 +64,8 @@ void ElementTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) 
 }
 
 
-WallTool::WallTool(int id, string name, string description, int r, int g, int b):
-Tool(id, name, description, r, g, b)
+WallTool::WallTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
+Tool(id, name, description, r, g, b, textureGen)
 {
 }
 WallTool::~WallTool() {}
@@ -74,8 +83,8 @@ void WallTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 }
 
 
-GolTool::GolTool(int id, string name, string description, int r, int g, int b):
-	Tool(id, name, description, r, g, b)
+GolTool::GolTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
+	Tool(id, name, description, r, g, b, textureGen)
 {
 }
 GolTool::~GolTool() {}

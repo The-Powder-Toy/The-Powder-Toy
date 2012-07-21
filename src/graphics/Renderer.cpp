@@ -394,6 +394,95 @@ void Renderer::RenderZoom()
 	#endif
 }
 
+int Renderer_wtypesCount;
+wall_type * Renderer_wtypes = LoadWalls(Renderer_wtypesCount);
+
+
+VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
+{
+	int x, y, i, j, cr, cg, cb;
+	int wt = wallID;
+	if (wt<0 || wt>=Renderer_wtypesCount)
+		return 0;
+	wall_type *wtypes = Renderer_wtypes;
+	pixel pc = wtypes[wt].colour;
+	pixel gc = wtypes[wt].eglow;
+	VideoBuffer * newTexture = new VideoBuffer(width, height);
+	if (wtypes[wt].drawstyle==1)
+	{
+		for (j=0; j<height; j+=2)
+			for (i=(j>>1)&1; i<width; i+=2)
+				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+	}
+	else if (wtypes[wt].drawstyle==2)
+	{
+		for (j=0; j<height; j+=2)
+			for (i=0; i<width; i+=2)
+				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+	}
+	else if (wtypes[wt].drawstyle==3)
+	{
+		for (j=0; j<height; j++)
+			for (i=0; i<width; i++)
+				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+	}
+	else if (wtypes[wt].drawstyle==4)
+	{
+		for (j=0; j<height; j++)
+			for (i=0; i<width; i++)
+				if(i%CELL == j%CELL)
+					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+				else if  (i%CELL == (j%CELL)+1 || (i%CELL == 0 && j%CELL == CELL-1))
+					newTexture->SetPixel(i, j, PIXR(gc), PIXG(gc), PIXB(gc), 255);
+				else
+					newTexture->SetPixel(i, j, 0x20, 0x20, 0x20, 255);
+	}
+
+	// special rendering for some walls
+	if (wt==WL_EWALL)
+	{
+		for (j=0; j<height; j++)
+			for (i=0; i<width; i++)
+				if(i > width/2)
+				{
+					if (i&j&1)
+						newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+				}
+				else
+				{
+					if (!(i&j&1))
+						newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);	
+				}
+	}
+	else if (wt==WL_WALLELEC)
+	{
+		for (j=0; j<height; j++)
+			for (i=0; i<width; i++)
+			{
+				if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
+					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+				else
+					newTexture->SetPixel(i, j, 0x80, 0x80, 0x80, 255);
+			}
+	}
+	else if (wt==WL_EHOLE)
+	{
+		for (j=0; j<height; j++)
+			for (i=0; i<width; i++)
+				if(i < width/2)
+				{
+					if (i&j&1)
+						newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+				}
+				else
+				{
+					if (!(i&j&1))
+						newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);	
+				}
+	}
+	return newTexture;
+}
+
 void Renderer::DrawWalls()
 {
 #ifndef OGLR

@@ -40,7 +40,14 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	Graphics * g = ui::Engine::Ref().g;
 	int totalColour = Appearance.BackgroundInactive.Blue + (3*Appearance.BackgroundInactive.Green) + (2*Appearance.BackgroundInactive.Red);
 
-	g->fillrect(screenPos.X+2, screenPos.Y+2, Size.X-4, Size.Y-4, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, Appearance.BackgroundInactive.Alpha);
+	if(Appearance.GetTexture())
+	{
+		g->draw_image(Appearance.GetTexture(), screenPos.X, screenPos.Y, 255);
+	}
+	else
+	{
+		g->fillrect(screenPos.X+2, screenPos.Y+2, Size.X-4, Size.Y-4, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, Appearance.BackgroundInactive.Alpha);
+	}
 
 	if(isMouseInside && currentSelection == -1)
 	{

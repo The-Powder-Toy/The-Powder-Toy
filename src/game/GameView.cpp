@@ -441,6 +441,11 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		currentX -= 31;
 		tempButton->SetActionCallback(new ToolAction(this, toolList[i]));
 
+		VideoBuffer * tempTexture = toolList[i]->GetTexture(30, 18);
+		tempButton->Appearance.SetTexture(tempTexture);
+		if(tempTexture)
+			delete tempTexture;
+
 		tempButton->Appearance.BackgroundInactive = ui::Colour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue);
 
 		if(sender->GetActiveTool(0) == toolList[i])
