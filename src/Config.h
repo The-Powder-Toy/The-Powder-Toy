@@ -16,15 +16,24 @@
 #endif
 
 //VersionInfoStart
+#ifndef SAVE_VERSION
 #define SAVE_VERSION 80
+#endif
+
+#ifndef MINOR_VERSION
 #define MINOR_VERSION 3
-#define BETA
-#define SNAPSHOT
+#endif
+
+#ifndef BUILD_NUM
 #define BUILD_NUM 155
+#endif
 
 #ifndef SNAPSHOT_ID
 #define SNAPSHOT_ID 0
 #endif
+
+#define BETA
+#define SNAPSHOT
 //VersionInfoEnd
 
 #if defined(SNAPSHOT)

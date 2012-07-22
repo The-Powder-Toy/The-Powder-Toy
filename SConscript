@@ -40,6 +40,12 @@ AddOption('--sse2',dest="sse2",action='store_true',default=False,help="Enable SS
 AddOption('--sse3',dest="sse3",action='store_true',default=False,help="Enable SSE3 optimisations")
 AddOption('--x86',dest="x86",action='store_true',default=True,help="Target Intel x86 platform")
 
+AddOption('--beta',dest="beta",action='store_true',default=False,help="Beta build.")
+AddOption('--save-version',dest="save-version",default=False,help="Save version.")
+AddOption('--minor-version',dest="minor-version",default=False,help="Minor version.")
+AddOption('--build-number',dest="build-number",default=False,help="Build number.")
+AddOption('--snapshot',dest="snapshot",default=False,help="Snapshot build.")
+
 if((not GetOption('lin32')) and (not GetOption('lin64')) and (not GetOption('win32')) and (not GetOption('macosx'))):
     print "You must specify a platform to target"
     raise SystemExit(1)
@@ -120,6 +126,18 @@ if(GetOption('lin32') or GetOption('lin64')):
         env.Append(CCFLAGS=['-m64'])
         env.Append(CPPDEFINES=["LIN64"])
 
+if(GetOption('beta')):
+    env.Append(CPPDEFINES='BETA')
+
+if(GetOption('snapshot')):
+    env.Append(CPPDEFINES={'SNAPSHOT_ID': GetOption('snapshot')})
+    env.Append(CPPDEFINES='SNAPSHOT')
+
+if(GetOption('save-version')):
+    env.Append(CPPDEFINES={'SAVE_VERSION': GetOption('major-version')})
+
+if(GetOption('minor-version')):
+    env.Append(CPPDEFINES={'MINOR_VERSION': GetOption('minor-version')})
 
 if(GetOption('release')):
     env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations', '-Wunsafe-loop-optimizations'])
@@ -159,6 +177,12 @@ sources+=Glob("generated/*.cpp")
 
 SetupSpawn(env)
 
-t=env.Program(target='powder', source=sources)
+if(GetOption('win32')):
+    t=env.Program(target='powder.exe', source=sources)
+else:
+    t=env.Program(target='powder', source=sources)
 Default(t)
+
+if(GetOption('release')):
+    StripExecutable(t);
 
