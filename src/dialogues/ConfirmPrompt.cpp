@@ -28,7 +28,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 
-	Size.Y += messageLabel->Size.Y;
+	Size.Y += messageLabel->Size.Y+12;
 	Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
 
 	class CloseAction: public ui::ButtonAction

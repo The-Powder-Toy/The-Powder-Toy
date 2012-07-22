@@ -20,6 +20,8 @@
  */
 
 
+#include <string>
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,6 +70,7 @@
 #define PCLOSE close
 #endif
 
+char * userAgent;
 static int http_up = 0;
 static long http_timeout = 15;
 static int http_use_proxy = 0;
@@ -180,6 +183,15 @@ void http_init(char *proxy)
 		free(host);
 		free(port);
 	}
+	std::stringstream userAgentBuilder;
+	userAgentBuilder << "PowderToy/" << SAVE_VERSION << "." << MINOR_VERSION << " ";
+	userAgentBuilder << "(" << IDENT_PLATFORM << "; " << IDENT_BUILD << "; M0) ";
+	userAgentBuilder << "TPTPP/" << SAVE_VERSION << "." << MINOR_VERSION << "." << BUILD_NUM << IDENT_RELTYPE << "." << SNAPSHOT_ID;
+	std::string newUserAgent = userAgentBuilder.str();
+	userAgent = new char[newUserAgent.length()+1];
+	std::copy(newUserAgent.begin(), newUserAgent.end(), userAgent);
+	userAgent[newUserAgent.length()] = 0;
+	//"User-Agent: PowderToy/%d.%d (%s; %s; M%d) TPTPP/%d.%d.%d%s.%d\n", SAVE_VERSION, MINOR_VERSION, IDENT_PLATFORM, IDENT_BUILD, 0, SAVE_VERSION, MINOR_VERSION, BUILD_NUM, IDENT_RELTYPE, SNAPSHOT_ID
 }
 
 void http_done(void)
@@ -468,7 +480,7 @@ int http_async_req_status(void *ctx)
 		if (cx->txdl)
 		{
 			// generate POST
-			cx->tbuf = (char *)malloc(strlen(cx->host) + strlen(cx->path) + 141 + 128 + cx->txdl + cx->thlen);
+			cx->tbuf = (char *)malloc(strlen(cx->host) + strlen(cx->path) + 126 + strlen(userAgent) + cx->txdl + cx->thlen);
 			cx->tptr = 0;
 			cx->tlen = 0;
 			cx->tlen += sprintf(cx->tbuf+cx->tlen, "POST %s HTTP/1.1\n", cx->path);
@@ -484,7 +496,7 @@ int http_async_req_status(void *ctx)
 				cx->thlen = 0;
 			}
 			cx->tlen += sprintf(cx->tbuf+cx->tlen, "Content-Length: %d\n", cx->txdl);
-			cx->tlen += sprintf(cx->tbuf+cx->tlen, "User-Agent: PowderToy/%d.%d (%s; %s; M%d) TPTPP/%d.%d.%d%s\n", SAVE_VERSION, MINOR_VERSION, IDENT_PLATFORM, IDENT_BUILD, 0, SAVE_VERSION, MINOR_VERSION, BUILD_NUM, IDENT_RELTYPE);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "User-Agent: %s\n", userAgent);
 			cx->tlen += sprintf(cx->tbuf+cx->tlen, "\n");
 			memcpy(cx->tbuf+cx->tlen, cx->txd, cx->txdl);
 			cx->tlen += cx->txdl;
@@ -495,7 +507,7 @@ int http_async_req_status(void *ctx)
 		else
 		{
 			// generate GET
-			cx->tbuf = (char *)malloc(strlen(cx->host) + strlen(cx->path) + 100 + 128 + cx->thlen);
+			cx->tbuf = (char *)malloc(strlen(cx->host) + strlen(cx->path) + 93 + strlen(userAgent) + cx->thlen);
 			cx->tptr = 0;
 			cx->tlen = 0;
 			cx->tlen += sprintf(cx->tbuf+cx->tlen, "GET %s HTTP/1.1\n", cx->path);
@@ -510,7 +522,7 @@ int http_async_req_status(void *ctx)
 			}
 			if (!cx->keep)
 				cx->tlen += sprintf(cx->tbuf+cx->tlen, "Connection: close\n");
-			cx->tlen += sprintf(cx->tbuf+cx->tlen, "User-Agent: PowderToy/%d.%d (%s; %s; M%d) TPTPP/%d.%d.%d%s\n", SAVE_VERSION, MINOR_VERSION, IDENT_PLATFORM, IDENT_BUILD, 0, SAVE_VERSION, MINOR_VERSION, BUILD_NUM, IDENT_RELTYPE);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "User-Agent: %s\n", userAgent);
 			cx->tlen += sprintf(cx->tbuf+cx->tlen, "\n");
 		}
 		cx->state = HTS_XMIT;

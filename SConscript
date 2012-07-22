@@ -1,4 +1,4 @@
-import os, sys, subprocess
+import os, sys, subprocess, time
 
 ##Fix for long command line - http://scons.org/wiki/LongCmdLinesOnWin32
 class ourSpawn:
@@ -93,6 +93,7 @@ env.Append(CPPPATH=['src/', 'data/', 'generated/'])
 env.Append(CCFLAGS=['-w', '-std=c99', '-fkeep-inline-functions'])
 env.Append(LIBS=['pthread', 'm', 'bz2'])
 env.Append(CPPDEFINES={"_POSIX_C_SOURCE": "200112L"})
+env.Append(CPPDEFINES={"SNAPSHOT_ID": int(time.time())})
 env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT"])
 
 if GetOption("ptw32-static"):

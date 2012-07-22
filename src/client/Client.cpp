@@ -155,9 +155,7 @@ void Client::Tick()
 				json::Number betaBuild = betaVersion["Build"];
 				json::String betaFile = betaVersion["File"];
 
-				json::Number snapshotMajor = snapshotVersion["Major"];
-				json::Number snapshotMinor = snapshotVersion["Minor"];
-				json::Number snapshotBuild = snapshotVersion["Build"];
+				json::Number snapshotSnapshot = snapshotVersion["Snapshot"];
 				json::String snapshotFile = snapshotVersion["File"];
 
 				if(stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM)
@@ -175,10 +173,10 @@ void Client::Tick()
 #endif
 
 #ifdef SNAPSHOT
-				if(snapshotMajor.Value()>SAVE_VERSION || (snapshotMinor.Value()>MINOR_VERSION && snapshotMajor.Value()==SAVE_VERSION) || snapshotBuild.Value()>BUILD_NUM)
+				if(snapshotSnapshot.Value() > SNAPSHOT_ID)
 				{
 					updateAvailable = true;
-					updateInfo = UpdateInfo(snapshotMajor.Value(), snapshotMinor.Value(), snapshotBuild.Value(), snapshotFile.Value(), UpdateInfo::Snapshot);
+					updateInfo = UpdateInfo(snapshotSnapshot.Value(), snapshotFile.Value(), UpdateInfo::Snapshot);
 				}
 #endif
 

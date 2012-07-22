@@ -21,6 +21,10 @@
 #define BETA
 #define SNAPSHOT
 #define BUILD_NUM 155
+
+#ifndef SNAPSHOT_ID
+#define SNAPSHOT_ID 0
+#endif
 //VersionInfoEnd
 
 #if defined(SNAPSHOT)

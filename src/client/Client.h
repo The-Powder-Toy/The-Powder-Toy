@@ -35,9 +35,11 @@ public:
 	int Major;
 	int Minor;
 	int Build;
+	int Time;
 	BuildType Type;
-	UpdateInfo() : Major(0), Minor(0), Build(0), File(""), Type(Stable) {}
-	UpdateInfo(int major, int minor, int build, std::string file, BuildType type) : Major(major), Minor(minor), Build(build), File(file), Type(type) {}
+	UpdateInfo() : Major(0), Minor(0), Build(0), Time(0), File(""), Type(Stable) {}
+	UpdateInfo(int major, int minor, int build, std::string file, BuildType type) : Major(major), Minor(minor), Build(build), Time(0), File(file), Type(type) {}
+	UpdateInfo(int time, std::string file, BuildType type) : Major(0), Minor(0), Build(0), Time(time), File(file), Type(type) {}
 };
 
 class ClientListener;
