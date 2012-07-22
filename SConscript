@@ -184,6 +184,6 @@ else:
     t=env.Program(target='powder', source=sources)
 Default(t)
 
-if(GetOption('release')):
-    StripExecutable(t);
+#if(GetOption('release')):
+#    StripExecutable(t);
 
