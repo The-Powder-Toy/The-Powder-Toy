@@ -441,7 +441,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		currentX -= 31;
 		tempButton->SetActionCallback(new ToolAction(this, toolList[i]));
 
-		VideoBuffer * tempTexture = toolList[i]->GetTexture(30, 18);
+		VideoBuffer * tempTexture = toolList[i]->GetTexture(26, 14);
 		tempButton->Appearance.SetTexture(tempTexture);
 		if(tempTexture)
 			delete tempTexture;

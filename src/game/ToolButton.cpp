@@ -42,7 +42,7 @@ void ToolButton::Draw(const ui::Point& screenPos)
 
 	if(Appearance.GetTexture())
 	{
-		g->draw_image(Appearance.GetTexture(), screenPos.X, screenPos.Y, 255);
+		g->draw_image(Appearance.GetTexture(), screenPos.X+2, screenPos.Y+2, 255);
 	}
 	else
 	{
