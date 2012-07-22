@@ -99,7 +99,6 @@ env.Append(CPPPATH=['src/', 'data/', 'generated/'])
 env.Append(CCFLAGS=['-w', '-std=c99', '-fkeep-inline-functions'])
 env.Append(LIBS=['pthread', 'm', 'bz2'])
 env.Append(CPPDEFINES={"_POSIX_C_SOURCE": "200112L"})
-env.Append(CPPDEFINES={"SNAPSHOT_ID": int(time.time())})
 env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT"])
 
 if GetOption("ptw32-static"):
@@ -132,6 +131,8 @@ if(GetOption('beta')):
 if(GetOption('snapshot')):
     env.Append(CPPDEFINES={'SNAPSHOT_ID': GetOption('snapshot')})
     env.Append(CPPDEFINES='SNAPSHOT')
+else:
+    env.Append(CPPDEFINES={"SNAPSHOT_ID": int(time.time())})
 
 if(GetOption('save-version')):
     env.Append(CPPDEFINES={'SAVE_VERSION': GetOption('major-version')})
@@ -169,7 +170,7 @@ elif(GetOption('opengl-renderer')):
 
 sources=Glob("src/*.cpp")
 if(GetOption('win32')):
-	sources += env.RES('resources/powder-res.rc')
+    sources += env.RES('resources/powder-res.rc')
 sources+=Glob("src/*/*.cpp")
 sources+=Glob("src/simulation/elements/*.cpp")
 sources+=Glob("src/simulation/tools/*.cpp")
