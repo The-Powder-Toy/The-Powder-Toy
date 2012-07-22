@@ -436,12 +436,18 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	for(int i = 0; i < toolList.size(); i++)
 	{
 		//ToolButton * tempButton = new ToolButton(ui::Point(XRES+1, currentY), ui::Point(28, 15), toolList[i]->GetName());
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), toolList[i]->GetName(), toolList[i]->GetDescription());
+		VideoBuffer * tempTexture = toolList[i]->GetTexture(26, 14);
+		ToolButton * tempButton;
+
+		if(tempTexture)
+			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", toolList[i]->GetDescription());
+		else
+			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), toolList[i]->GetName(), toolList[i]->GetDescription());
+
 		//currentY -= 17;
 		currentX -= 31;
 		tempButton->SetActionCallback(new ToolAction(this, toolList[i]));
 
-		VideoBuffer * tempTexture = toolList[i]->GetTexture(26, 14);
 		tempButton->Appearance.SetTexture(tempTexture);
 		if(tempTexture)
 			delete tempTexture;

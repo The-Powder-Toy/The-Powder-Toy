@@ -120,7 +120,18 @@ void SignWindow::OnDraw()
 
 VideoBuffer * SignTool::GetIcon(int toolID, int width, int height)
 {
-
+	VideoBuffer * newTexture = new VideoBuffer(width, height);
+	for (int y=0; y<height; y++)
+	{
+		for (int x=0; x<width; x++)
+		{
+			pixel pc =  x==0||x==width-1||y==0||y==height-1 ? PIXPACK(0xA0A0A0) : PIXPACK(0x000000);
+			newTexture->SetPixel(x, y, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+		}
+	}
+	newTexture->SetCharacter((width/2)-5, (height/2)-4, 0xA1, 32, 64, 128, 255);
+	newTexture->SetCharacter((width/2)-5, (height/2)-4, 0xA0, 255, 255, 255, 255);
+	return newTexture;
 }
 
 void SignTool::Click(Simulation * sim, Brush * brush, ui::Point position)
