@@ -46,7 +46,7 @@
 #include "save.h"
 
 SDLMod sdl_mod;
-int sdl_key, sdl_rkey, sdl_wheel, sdl_caps=0, sdl_ascii, sdl_zoom_trig=0;
+int sdl_key, sdl_rkey, sdl_wheel, sdl_ascii, sdl_zoom_trig=0;
 #if (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
 SDL_SysWMinfo sdl_wminfo;
 Atom XA_CLIPBOARD, XA_TARGETS;
@@ -2891,93 +2891,18 @@ int sdl_poll(void)
 		case SDL_KEYDOWN:
 			sdl_key=event.key.keysym.sym;
 			sdl_ascii=event.key.keysym.unicode;
-			if (event.key.keysym.sym == SDLK_CAPSLOCK)
-				sdl_caps = 1;
-			if (event.key.keysym.sym=='z')
-			{
-				if (event.key.keysym.mod&KMOD_ALT)//toggle
-					sdl_zoom_trig = (!sdl_zoom_trig)*2;
-				else
-					sdl_zoom_trig = 1;
-			}
-			if ( event.key.keysym.sym == SDLK_PLUS)
+			if (event.key.keysym.sym == SDLK_PLUS)
 			{
 				sdl_wheel++;
 			}
-			if ( event.key.keysym.sym == SDLK_MINUS)
+			if (event.key.keysym.sym == SDLK_MINUS)
 			{
 				sdl_wheel--;
-			}
-			//  4
-			//1 8 2
-			if (event.key.keysym.sym == SDLK_RIGHT)
-			{
-				player.comm = (int)(player.comm)|0x02;  //Go right command
-			}
-			if (event.key.keysym.sym == SDLK_LEFT)
-			{
-				player.comm = (int)(player.comm)|0x01;  //Go left command
-			}
-			if (event.key.keysym.sym == SDLK_DOWN && ((int)(player.comm)&0x08)!=0x08)
-			{
-				player.comm = (int)(player.comm)|0x08;  //Go left command
-			}
-			if (event.key.keysym.sym == SDLK_UP && ((int)(player.comm)&0x04)!=0x04)
-			{
-				player.comm = (int)(player.comm)|0x04;  //Jump command
-			}
-
-			if (event.key.keysym.sym == SDLK_d)
-			{
-				player2.comm = (int)(player2.comm)|0x02;  //Go right command
-			}
-			if (event.key.keysym.sym == SDLK_a)
-			{
-				player2.comm = (int)(player2.comm)|0x01;  //Go left command
-			}
-			if (event.key.keysym.sym == SDLK_s && ((int)(player2.comm)&0x08)!=0x08)
-			{
-				player2.comm = (int)(player2.comm)|0x08;  //Go left command
-			}
-			if (event.key.keysym.sym == SDLK_w && ((int)(player2.comm)&0x04)!=0x04)
-			{
-				player2.comm = (int)(player2.comm)|0x04;  //Jump command
 			}
 			break;
 
 		case SDL_KEYUP:
 			sdl_rkey=event.key.keysym.sym;
-			if (event.key.keysym.sym == SDLK_CAPSLOCK)
-				sdl_caps = 0;
-			if (event.key.keysym.sym == 'z' && sdl_zoom_trig==1)//if ==2 then it was toggled with alt+z, don't turn off on keyup
-				sdl_zoom_trig = 0;
-			if (event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_LEFT)
-			{
-				player.pcomm = player.comm;  //Saving last movement
-				player.comm = (int)(player.comm)&12;  //Stop command
-			}
-			if (event.key.keysym.sym == SDLK_UP)
-			{
-				player.comm = (int)(player.comm)&11;
-			}
-			if (event.key.keysym.sym == SDLK_DOWN)
-			{
-				player.comm = (int)(player.comm)&7;
-			}
-
-			if (event.key.keysym.sym == SDLK_d || event.key.keysym.sym == SDLK_a)
-			{
-				player2.pcomm = player2.comm;  //Saving last movement
-				player2.comm = (int)(player2.comm)&12;  //Stop command
-			}
-			if (event.key.keysym.sym == SDLK_w)
-			{
-				player2.comm = (int)(player2.comm)&11;
-			}
-			if (event.key.keysym.sym == SDLK_s)
-			{
-				player2.comm = (int)(player2.comm)&7;
-			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			if (event.button.button == SDL_BUTTON_WHEELUP)
@@ -3035,6 +2960,73 @@ int sdl_poll(void)
 	}
 	sdl_mod = SDL_GetModState();
 	return 0;
+}
+
+void stickmen_keys()
+{
+	//  4
+	//1 8 2
+	if (sdl_key == SDLK_RIGHT)
+	{
+		player.comm = (int)(player.comm)|0x02;  //Go right command
+	}
+	if (sdl_key == SDLK_LEFT)
+	{
+		player.comm = (int)(player.comm)|0x01;  //Go left command
+	}
+	if (sdl_key == SDLK_DOWN && ((int)(player.comm)&0x08)!=0x08)
+	{
+		player.comm = (int)(player.comm)|0x08;  //Use element command
+	}
+	if (sdl_key == SDLK_UP && ((int)(player.comm)&0x04)!=0x04)
+	{
+		player.comm = (int)(player.comm)|0x04;  //Jump command
+	}
+
+	if (sdl_key == SDLK_d)
+	{
+		player2.comm = (int)(player2.comm)|0x02;  //Go right command
+	}
+	if (sdl_key == SDLK_a)
+	{
+		player2.comm = (int)(player2.comm)|0x01;  //Go left command
+	}
+	if (sdl_key == SDLK_s && ((int)(player2.comm)&0x08)!=0x08)
+	{
+		player2.comm = (int)(player2.comm)|0x08;  //Use element command
+	}
+	if (sdl_key == SDLK_w && ((int)(player2.comm)&0x04)!=0x04)
+	{
+		player2.comm = (int)(player2.comm)|0x04;  //Jump command
+	}
+
+	if (sdl_rkey == SDLK_RIGHT || sdl_rkey == SDLK_LEFT)
+	{
+		player.pcomm = player.comm;  //Saving last movement
+		player.comm = (int)(player.comm)&12;  //Stop command
+	}
+	if (sdl_rkey == SDLK_UP)
+	{
+		player.comm = (int)(player.comm)&11;
+	}
+	if (sdl_rkey == SDLK_DOWN)
+	{
+		player.comm = (int)(player.comm)&7;
+	}
+
+	if (sdl_rkey == SDLK_d || sdl_rkey == SDLK_a)
+	{
+		player2.pcomm = player2.comm;  //Saving last movement
+		player2.comm = (int)(player2.comm)&12;  //Stop command
+	}
+	if (sdl_rkey == SDLK_w)
+	{
+		player2.comm = (int)(player2.comm)&11;
+	}
+	if (sdl_rkey == SDLK_s)
+	{
+		player2.comm = (int)(player2.comm)&7;
+	}
 }
 
 void set_cmode(int cm) // sets to given view mode

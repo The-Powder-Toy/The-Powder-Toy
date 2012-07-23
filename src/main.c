@@ -1287,6 +1287,7 @@ int main(int argc, char *argv[])
 #endif
 		if (sys_shortcuts==1)//all shortcuts can be disabled by python scripts
 		{
+			stickmen_keys();
 			if (sdl_key=='q' || sdl_key==SDLK_ESCAPE)
 			{
 				if (confirm_ui(vid_buf, "You are about to quit", "Are you sure you want to quit?", "Quit"))
@@ -1713,31 +1714,47 @@ int main(int argc, char *argv[])
 				if (it > 50)
 					it = 50;
 			}*/
-			if (sdl_key=='z'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))) // Undo
+			if (sdl_key=='z') // Undo
 			{
-				int cbx, cby, cbi;
+				if (sdl_mod & (KMOD_LCTRL|KMOD_RCTRL))
+				{
+					int cbx, cby, cbi;
 
-				for (cbi=0; cbi<NPART; cbi++)
-					parts[cbi] = cb_parts[cbi];
-				parts_lastActiveIndex = NPART-1;
+					for (cbi=0; cbi<NPART; cbi++)
+						parts[cbi] = cb_parts[cbi];
+					parts_lastActiveIndex = NPART-1;
 
-				for (cby = 0; cby<YRES; cby++)
-					for (cbx = 0; cbx<XRES; cbx++)
-						pmap[cby][cbx] = cb_pmap[cby][cbx];
+					for (cby = 0; cby<YRES; cby++)
+						for (cbx = 0; cbx<XRES; cbx++)
+							pmap[cby][cbx] = cb_pmap[cby][cbx];
 
-				for (cby = 0; cby<(YRES/CELL); cby++)
-					for (cbx = 0; cbx<(XRES/CELL); cbx++)
-					{
-						vx[cby][cbx] = cb_vx[cby][cbx];
-						vy[cby][cbx] = cb_vy[cby][cbx];
-						pv[cby][cbx] = cb_pv[cby][cbx];
-						hv[cby][cbx] = cb_hv[cby][cbx];
-						bmap[cby][cbx] = cb_bmap[cby][cbx];
-						emap[cby][cbx] = cb_emap[cby][cbx];
-					}
+					for (cby = 0; cby<(YRES/CELL); cby++)
+						for (cbx = 0; cbx<(XRES/CELL); cbx++)
+						{
+							vx[cby][cbx] = cb_vx[cby][cbx];
+							vy[cby][cbx] = cb_vy[cby][cbx];
+							pv[cby][cbx] = cb_pv[cby][cbx];
+							hv[cby][cbx] = cb_hv[cby][cbx];
+							bmap[cby][cbx] = cb_bmap[cby][cbx];
+							emap[cby][cbx] = cb_emap[cby][cbx];
+						}
 
-				force_stacking_check = 1;//check for excessive stacking of particles next time update_particles is run
+					force_stacking_check = 1;//check for excessive stacking of particles next time update_particles is run
+				}
+				else
+				{
+					if (sdl_mod & KMOD_ALT)//toggle
+						sdl_zoom_trig = (!sdl_zoom_trig)*2;
+					else
+						sdl_zoom_trig = 1;
+				}
 			}
+<<<<<<< HEAD
+=======
+			if (sdl_rkey == 'z' && sdl_zoom_trig==1)//if ==2 then it was toggled with alt+z, don't turn off on keyup
+				sdl_zoom_trig = 0;
+			SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+>>>>>>> 230ab97... move some key stuff out of sdl_poll, zoom won't be triggered even when disabled by lua now
 		}
 #ifdef INTERNAL
 		int counterthing;
