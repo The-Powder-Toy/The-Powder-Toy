@@ -178,10 +178,24 @@ sources+=Glob("generated/*.cpp")
 
 SetupSpawn(env)
 
+programName = "powder"
+
 if(GetOption('win32')):
-    t=env.Program(target='powder.exe', source=sources)
-else:
-    t=env.Program(target='powder', source=sources)
+    programName = "Powder"
+
+if(GetOption('lin64')):
+    programName += "64"
+
+if(not (GetOption('sse2') or GetOption('sse3'))):
+    programName += "-legacy"
+
+if(GetOption('macosx')):
+    programName += "-x"
+
+if(GetOption('win32')):
+    programName += ".exe"
+
+t=env.Program(target=programName, source=sources)
 Default(t)
 
 #if(GetOption('release')):
