@@ -92,7 +92,7 @@ GameView::GameView():
             v->c->OpenSaveWindow();
         }
     };
-    saveSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(150, 15));
+    saveSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), "[untitled simulation]");
 	saveSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
     saveSimulationButton->SetIcon(IconSave);
     currentX+=151;
@@ -141,7 +141,7 @@ GameView::GameView():
             v->c->OpenTags();
         }
     };
-    tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(250, 15));
+    tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(250, 15), "[no tags set]");
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
     tagSimulationButton->SetIcon(IconTag);
     currentX+=251;
@@ -173,7 +173,7 @@ GameView::GameView():
             v->c->OpenLogin();
         }
     };
-    loginButton = new ui::Button(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "Login");
+    loginButton = new ui::Button(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "[sign in]");
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
     loginButton->SetIcon(IconLogin);
     loginButton->SetActionCallback(new LoginAction(this));
@@ -520,7 +520,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 {
 	if(!sender->GetUser().ID)
 	{
-		loginButton->SetText("Login");
+		loginButton->SetText("[sign in]");
 	}
 	else
 	{
@@ -567,25 +567,36 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		{
 			std::stringstream tagsStream;
 			std::vector<string> tags = sender->GetSave()->GetTags();
-			for(int i = 0; i < tags.size(); i++)
+			if(tags.size())
 			{
-				tagsStream << sender->GetSave()->GetTags()[i];
-				if(i < tags.size()-1)
-					tagsStream << " ";
+				for(int i = 0; i < tags.size(); i++)
+				{
+					tagsStream << sender->GetSave()->GetTags()[i];
+					if(i < tags.size()-1)
+						tagsStream << " ";
+				}
+				tagSimulationButton->SetText(tagsStream.str());
 			}
-			tagSimulationButton->SetText(tagsStream.str());
+			else
+			{
+				tagSimulationButton->SetText("[no tags set]");
+			}
+		}
+		else
+		{
+			tagSimulationButton->SetText("[no tags set]");
 		}
 	}
 	else
 	{
-		saveSimulationButton->SetText("");
+		saveSimulationButton->SetText("[untitled simulation]");
 		reloadButton->Enabled = false;
 		upVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
 		downVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
 		tagSimulationButton->Enabled = false;
-		tagSimulationButton->SetText("");
+		tagSimulationButton->SetText("[no tags set]");
 	}
 }
 

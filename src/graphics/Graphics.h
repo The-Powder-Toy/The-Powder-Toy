@@ -138,7 +138,7 @@ public:
 	void blendpixel(int x, int y, int r, int g, int b, int a);
 	void addpixel(int x, int y, int r, int g, int b, int a);
 
-	void draw_icon(int x, int y, Icon icon);
+	void draw_icon(int x, int y, Icon icon, unsigned char alpha = 255);
 
 	void Clear();
 	void Finalise();

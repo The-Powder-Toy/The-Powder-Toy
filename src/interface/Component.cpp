@@ -103,7 +103,7 @@ void Component::TextPosition(std::string displayText)
 	}
 	if(Appearance.icon)
 	{
-		iconPosition = textPosition;//-ui::Point(0, 1);
+		iconPosition = textPosition-ui::Point(0, 1);
 		textPosition.X += 15;
 	}
 }
