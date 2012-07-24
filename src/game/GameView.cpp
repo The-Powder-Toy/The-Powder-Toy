@@ -1285,11 +1285,11 @@ void GameView::OnDraw()
 	fpsInfo << "Snapshot " << SNAPSHOT_ID << ". ";
 #endif
 	fpsInfo << "FPS: " << std::fixed << ui::Engine::Ref().GetFps();
-#endif
 
 	textWidth = Graphics::textwidth((char*)fpsInfo.str().c_str());
 	g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
 	g->drawtext(16, 16, (const char*)fpsInfo.str().c_str(), 32, 216, 255, 255*0.75);
+#endif
 
 	//Tooltips
 	if(infoTipPresence)

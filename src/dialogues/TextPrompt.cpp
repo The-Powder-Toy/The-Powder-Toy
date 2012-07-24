@@ -8,6 +8,7 @@
 #include "TextPrompt.h"
 #include "interface/Label.h"
 #include "interface/Button.h"
+#include "Style.h"
 
 class CloseAction: public ui::ButtonAction
 {
@@ -25,33 +26,47 @@ public:
 };
 
 TextPrompt::TextPrompt(std::string title, std::string message, bool multiline, TextDialogueCallback * callback_):
-	ui::Window(ui::Point(-1, -1), ui::Point(200, 75)),
+	ui::Window(ui::Point(-1, -1), ui::Point(200, 80)),
 	callback(callback_)
 {
-	ui::Label * titleLabel = new ui::Label(ui::Point(2, 1), ui::Point(Size.X-4, 16), title);
-	titleLabel->SetTextColour(ui::Colour(220, 220, 50));
-	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 18), title);
+	titleLabel->SetTextColour(style::Colour::WarningTitle);
+	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 18), ui::Point(Size.X-8, 60), message);
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 25), ui::Point(Size.X-8, 16), message);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 
-	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-50, 16), "Cancel");
-	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	textField = new ui::Textbox(ui::Point(4, 45 ), ui::Point(Size.X-8, 16), "", "Reason");
+	if(multiline)
+	{
+		textField->SetMultiline(true);
+		textField->Size.Y = 60;
+		Size.Y += 45;
+		textField->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	}
+	else
+	{
+		textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	}
+	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	AddComponent(textField);
+
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point((Size.X/2)+1, 16), "Cancel");
+	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	cancelButton->SetActionCallback(new CloseAction(this, ResultCancel));
 	AddComponent(cancelButton);
 
-	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-50, Size.Y-16), ui::Point(50, 16), "Okay");
-	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
-	okayButton->Appearance.TextInactive = ui::Colour(220, 220, 50);
+	ui::Button * okayButton = new ui::Button(ui::Point(Size.X/2, Size.Y-16), ui::Point(Size.X/2, 16), "Okay");
+	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
+	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	okayButton->Appearance.TextInactive = style::Colour::WarningTitle;
 	okayButton->SetActionCallback(new CloseAction(this, ResultOkay));
 	AddComponent(okayButton);
-
-	textField = new ui::Textbox(ui::Point(4, 32), ui::Point(Size.X-8, 16), "");
-	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	textField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
-	AddComponent(textField);
 
 	ui::Engine::Ref().ShowWindow(this);
 }
