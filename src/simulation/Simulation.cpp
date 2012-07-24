@@ -750,19 +750,20 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 			{
 				if ((pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
 				{
+					Particle part = parts[pmap[y+ry][x+rx]>>8];
 					num++;
-					ta += float((parts[pmap[y+ry][x+rx]>>8].dcolour>>24)&0xFF)/255.0f;
-					tr += float((parts[pmap[y+ry][x+rx]>>8].dcolour>>16)&0xFF)/255.0f;
-					tg += float((parts[pmap[y+ry][x+rx]>>8].dcolour>>8)&0xFF)/255.0f;
-					tb += float((parts[pmap[y+ry][x+rx]>>8].dcolour)&0xFF)/255.0f;
+					ta += float((part.dcolour>>24)&0xFF)/255.0f;
+					tr += float((part.dcolour>>16)&0xFF)/255.0f;
+					tg += float((part.dcolour>>8)&0xFF)/255.0f;
+					tb += float((part.dcolour)&0xFF)/255.0f;
 				}
 			}
 		if (num == 0)
 			return;
-		ta = ta/float(num)+0.5f;
-		tr = tr/float(num)+0.5f;
-		tg = tg/float(num)+0.5f;
-		tb = tb/float(num)+0.5f;
+		ta = ta/float(num+1);
+		tr = tr/float(num+1);
+		tg = tg/float(num+1);
+		tb = tb/float(num+1);
 	}
 
 	colA_ = ta*255.0f;
