@@ -447,7 +447,7 @@ void ui_edit_process(int mx, int my, int mb, ui_edit *ed)
 				int pl = strlen(paste);
 				if ((textwidth(str)+textwidth(paste) > ed->w-14 && !ed->multiline) || (pl+strlen(ed->str)>255) || (float)(((textwidth(str)+textwidth(paste))/(ed->w-14)*12) > ed->h && ed->multiline))
 					break;
-				memmove(ed->str+ed->cursor+pl, ed->str+ed->cursor, l+pl-ed->cursor);
+				memmove(ed->str+ed->cursor+pl, ed->str+ed->cursor, l-ed->cursor+1);
 				memcpy(ed->str+ed->cursor,paste,pl);
 				ed->cursor += pl;
 				break;
