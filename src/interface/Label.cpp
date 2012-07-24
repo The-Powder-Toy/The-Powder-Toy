@@ -2,6 +2,7 @@
 #include "Config.h"
 #include "Point.h"
 #include "Label.h"
+#include "ContextMenu.h"
 
 using namespace ui;
 
@@ -18,6 +19,8 @@ Label::Label(Point position, Point size, std::string labelText):
 	autoHeight(size.Y==-1?true:false),
 	caret(-1)
 {
+	menu = new ContextMenu(this);
+	menu->AddItem(ContextMenuItem("Copy", 0, true));
 }
 
 Label::~Label()
@@ -100,21 +103,65 @@ std::string Label::GetText()
 	return this->text;
 }
 
+void Label::OnContextMenuAction(int item)
+{
+	switch(item)
+	{
+	case 0:
+		copySelection();
+		break;
+	}
+}
+
 void Label::OnMouseClick(int x, int y, unsigned button)
 {
-	selecting = true;
-	if(multiline)
-		selectionIndex0 = Graphics::CharIndexAtPosition((char*)textLines.c_str(), x-textPosition.X, y-textPosition.Y);
+	if(button == BUTTON_RIGHT)
+	{
+		if(menu)
+			menu->Show(GetParentWindow()->Position + Position + ui::Point(x, y));
+	}
 	else
-		selectionIndex0 = Graphics::CharIndexAtPosition((char*)text.c_str(), x-textPosition.X, y-textPosition.Y);
-	selectionIndex1 = selectionIndex0;
+	{
+		selecting = true;
+		if(multiline)
+			selectionIndex0 = Graphics::CharIndexAtPosition((char*)textLines.c_str(), x-textPosition.X, y-textPosition.Y);
+		else
+			selectionIndex0 = Graphics::CharIndexAtPosition((char*)text.c_str(), x-textPosition.X, y-textPosition.Y);
+		selectionIndex1 = selectionIndex0;
 
-	updateSelection();
+		updateSelection();
+	}
+}
+
+void Label::copySelection()
+{
+	std::string currentText;
+
+	if(multiline)
+		currentText = textLines;
+	else
+		currentText = text;
+
+	if(selectionIndex1 > selectionIndex0) {
+		clipboard_push_text((char*)currentText.substr(selectionIndex0, selectionIndex1-selectionIndex0).c_str());
+	} else if(selectionIndex0 > selectionIndex1) {
+		clipboard_push_text((char*)currentText.substr(selectionIndex1, selectionIndex0-selectionIndex1).c_str());
+	} else {
+		clipboard_push_text((char*)currentText.c_str());
+	}
 }
 
 void Label::OnMouseUp(int x, int y, unsigned button)
 {
 	selecting = false;
+}
+
+void Label::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	if(ctrl && key == 'c')
+	{
+		copySelection();
+	}
 }
 
 void Label::OnMouseMoved(int localx, int localy, int dx, int dy)

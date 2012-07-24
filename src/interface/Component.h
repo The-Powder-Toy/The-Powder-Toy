@@ -7,6 +7,7 @@
 
 namespace ui
 {
+	class ContextMenu;
 	class Window;
 	class Panel;
 	
@@ -25,6 +26,7 @@ namespace ui
 		ui::Point textPosition;
 		ui::Point textSize;
 		ui::Point iconPosition;
+		ui::ContextMenu * menu;
 	public:
 		Component(Window* parent_state);
 		Component(Point position, Point size);
@@ -55,6 +57,8 @@ namespace ui
 
 		//Get the parent component.
 		inline Panel* const GetParent() const { return _parent; }
+
+		virtual void OnContextMenuAction(int item);
 		
 		//UI functions:
 		/*

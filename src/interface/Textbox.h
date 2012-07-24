@@ -26,6 +26,9 @@ protected:
 	TextboxAction *actionCallback;
 	std::string backingText;
 	std::string placeHolder;
+
+	virtual void cutSelection();
+	virtual void pasteIntoSelection();
 public:
 	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
 	virtual ~Textbox();
@@ -37,10 +40,11 @@ public:
 	virtual void SetPlaceholder(std::string text);
 
 	void SetBorder(bool border) { this->border = border; };
-	void SetHidden(bool hidden) { masked = hidden; }
+	void SetHidden(bool hidden);
 	bool GetHidden() { return masked; }
 	void SetActionCallback(TextboxAction * action) { actionCallback = action; }
 
+	virtual void OnContextMenuAction(int item);
 	virtual void OnMouseClick(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);
 	virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
