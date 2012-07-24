@@ -1438,6 +1438,34 @@ double Client::GetPrefNumber(std::string property, double defaultValue)
 	return defaultValue;
 }
 
+int Client::GetPrefInteger(std::string property, int defaultValue)
+{
+	try
+	{
+		std::stringstream defHexInt;
+		defHexInt << std::hex << defaultValue;
+
+		std::string hexString = GetPrefString(property, defHexInt.str());
+		int finalValue = defaultValue;
+
+		std::stringstream hexInt;
+		hexInt << hexString;
+
+		hexInt >> std::hex >> finalValue;
+
+		return finalValue;
+	}
+	catch (json::Exception & e)
+	{
+
+	}
+	catch(exception & e)
+	{
+
+	}
+	return defaultValue;
+}
+
 vector<string> Client::GetPrefStringArray(std::string property)
 {
 	try
@@ -1446,8 +1474,15 @@ vector<string> Client::GetPrefStringArray(std::string property)
 		vector<string> strArray;
 		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
 		{
-			json::String cValue = *iter;
-			strArray.push_back(cValue.Value());
+			try
+			{
+				json::String cValue = *iter;
+				strArray.push_back(cValue.Value());
+			}
+			catch (json::Exception & e)
+			{
+				
+			}
 		}
 		return strArray;
 	}
@@ -1466,8 +1501,15 @@ vector<double> Client::GetPrefNumberArray(std::string property)
 		vector<double> strArray;
 		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
 		{
-			json::Number cValue = *iter;
-			strArray.push_back(cValue.Value());
+			try
+			{
+				json::Number cValue = *iter;
+				strArray.push_back(cValue.Value());
+			}
+			catch (json::Exception & e)
+			{
+				
+			}
 		}
 		return strArray;
 	}
@@ -1478,6 +1520,40 @@ vector<double> Client::GetPrefNumberArray(std::string property)
 	return vector<double>();
 }
 
+vector<int> Client::GetPrefIntegerArray(std::string property)
+{
+	try
+	{
+		json::Array value = GetPref(property);
+		vector<int> intArray;
+		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
+		{
+			try
+			{
+				json::String cValue = *iter;
+				int finalValue = 0;
+		
+				std::string hexString = cValue.Value();
+				std::stringstream hexInt;
+				hexInt << std::hex << hexString;
+				hexInt >> finalValue;
+
+				intArray.push_back(finalValue);
+			}
+			catch (json::Exception & e)
+			{
+
+			}
+		}
+		return intArray;
+	}
+	catch (json::Exception & e)
+	{
+
+	}
+	return vector<int>();
+}
+
 vector<bool> Client::GetPrefBoolArray(std::string property)
 {
 	try
@@ -1486,8 +1562,15 @@ vector<bool> Client::GetPrefBoolArray(std::string property)
 		vector<bool> strArray;
 		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
 		{
-			json::Boolean cValue = *iter;
-			strArray.push_back(cValue.Value());
+			try
+			{
+				json::Boolean cValue = *iter;
+				strArray.push_back(cValue.Value());
+			}
+			catch (json::Exception & e)
+			{
+				
+			}
 		}
 		return strArray;
 	}
@@ -1524,6 +1607,14 @@ void Client::SetPref(std::string property, double value)
 	SetPref(property, numberValue);
 }
 
+void Client::SetPref(std::string property, int value)
+{
+	std::stringstream hexInt;
+	hexInt << std::hex << value;
+	json::UnknownElement intValue = json::String(hexInt.str());
+	SetPref(property, intValue);
+}
+
 void Client::SetPref(std::string property, vector<string> value)
 {
 	json::Array newArray;
@@ -1557,6 +1648,20 @@ void Client::SetPref(std::string property, vector<bool> value)
 	SetPref(property, newArrayValue);
 }
 
+void Client::SetPref(std::string property, vector<int> value)
+{
+	json::Array newArray;
+	for(vector<int>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	{
+		std::stringstream hexInt;
+		hexInt << std::hex << *iter;
+
+		newArray.Insert(json::String(hexInt.str()));
+	}
+	json::UnknownElement newArrayValue = newArray;
+	SetPref(property, newArrayValue);
+}
+
 void Client::SetPref(std::string property, bool value)
 {
 	json::UnknownElement boolValue = json::Boolean(value);
@@ -1570,7 +1675,7 @@ json::UnknownElement Client::GetPref(std::string property)
 	json::UnknownElement currentRef = configDocumentCopy;
 	for(vector<string>::iterator iter = pTokens.begin(); iter != pTokens.end(); ++iter)
 	{
-		currentRef = currentRef[*iter];
+		currentRef = ((const json::UnknownElement &)currentRef)[*iter];
 	}
 	return currentRef;
 }

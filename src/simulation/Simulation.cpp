@@ -700,6 +700,10 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 		tg = colG;
 		tb = colB;
 	}
+	else if (mode == DECO_CLEAR)
+	{
+		ta = tr = tg = tb = 0.0f;
+	}
 	else if (mode == DECO_ADD)
 	{
 		ta += (colA*0.1f)*colA;
@@ -773,27 +777,32 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 	parts[rp>>8].dcolour = ((colA_<<24)|(colR_<<16)|(colG_<<8)|colB_);
 }
 
-void Simulation::ApplyDecorationPoint(int x, int y, int rx, int ry, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
+void Simulation::ApplyDecorationPoint(int positionX, int positionY, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
 {
 	int i, j;
 
 	if(cBrush)
 	{
-		rx = cBrush->GetRadius().X;
-		ry = cBrush->GetRadius().Y;
-	}
+		int radiusX, radiusY, sizeX, sizeY;
+		
+		radiusX = cBrush->GetRadius().X;
+		radiusY = cBrush->GetRadius().Y;
+		
+		sizeX = cBrush->GetSize().X;
+		sizeY = cBrush->GetSize().Y;
 
-	if (rx == 0 && ry == 0)
-	{
-		ApplyDecoration(x, y, colR, colG, colB, colA, mode);
-		return;
+		unsigned char *bitmap = cBrush->GetBitmap();
+		for(int y = 0; y < sizeY; y++)
+		{
+			for(int x = 0; x < sizeX; x++)
+			{
+				if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
+				{
+					ApplyDecoration(positionX+(x-radiusX), positionY+(y-radiusY), colR, colG, colB, colA, mode);
+				}
+			}
+		}
 	}
-
-	unsigned char *bitmap = cBrush->GetBitmap();
-	for (j=-ry; j<=ry; j++)
-		for (i=-rx; i<=rx; i++)
-			if(bitmap[(j+ry)*(rx*2)+(i+rx)])
-				ApplyDecoration(x+i, y+j, colR, colG, colB, colA, mode);
 }
 
 void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode)
@@ -814,13 +823,20 @@ void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, in
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			ApplyDecorationPoint(i, j, 0, 0, colR, colG, colB, colA, mode);
+			ApplyDecoration(i, j, colR, colG, colB, colA, mode);
 }
 
-void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int rx, int ry, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
+void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
+	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy, rx, ry;
 	float e, de;
+
+	if(cBrush)
+	{
+		rx = cBrush->GetRadius().X;
+		ry = cBrush->GetRadius().Y;
+	}
+
 	if (cp)
 	{
 		y = x1;
@@ -851,9 +867,9 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int rx, int
 	for (x=x1; x<=x2; x++)
 	{
 		if (cp)
-			ApplyDecorationPoint(y, x, rx, ry, colR, colG, colB, colA, mode, cBrush);
+			ApplyDecorationPoint(y, x, colR, colG, colB, colA, mode, cBrush);
 		else
-			ApplyDecorationPoint(x, y, rx, ry, colR, colG, colB, colA, mode, cBrush);
+			ApplyDecorationPoint(x, y, colR, colG, colB, colA, mode, cBrush);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -861,9 +877,9 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int rx, int
 			if (!(rx+ry))
 			{
 				if (cp)
-					ApplyDecorationPoint(y, x, rx, ry, colR, colG, colB, colA, mode, cBrush);
+					ApplyDecorationPoint(y, x, colR, colG, colB, colA, mode, cBrush);
 				else
-					ApplyDecorationPoint(x, y, rx, ry, colR, colG, colB, colA, mode, cBrush);
+					ApplyDecorationPoint(x, y, colR, colG, colB, colA, mode, cBrush);
 			}
 			e -= 1.0f;
 		}

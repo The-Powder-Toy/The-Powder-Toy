@@ -20,7 +20,8 @@ GameModel::GameModel():
 	colourSelector(false),
 	clipboard(NULL),
 	stamp(NULL),
-	placeSave(NULL)
+	placeSave(NULL),
+	colour(255, 0, 0, 255)
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
@@ -108,6 +109,7 @@ GameModel::GameModel():
 	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendDivide, "DIV", "Colour blending: Divide" , 0, 0, 0));
 	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSmudge, "SMDG", "Smudge colour", 0, 0, 0));
 	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSet, "SET", "Set colour (No blending)", 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::Remove, "CLR", "Clear any set decoration", 0, 0, 0));
 
 	//Set default brush palette
 	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
@@ -135,6 +137,15 @@ GameModel::GameModel():
 		if(stampFile && stampFile->GetGameSave())
 			stamp = stampFile->GetGameSave();
 	}
+
+
+	//Set default decoration colour
+	unsigned char colourR = min(Client::Ref().GetPrefInteger("Decoration.Red", 200), 255);
+	unsigned char colourG = min(Client::Ref().GetPrefInteger("Decoration.Green", 100), 255);
+	unsigned char colourB = min(Client::Ref().GetPrefInteger("Decoration.Blue", 50), 255);
+	unsigned char colourA = min(Client::Ref().GetPrefInteger("Decoration.Alpha", 255), 255);
+
+	SetColourSelectorColour(ui::Colour(colourR, colourG, colourB, colourA));
 }
 
 GameModel::~GameModel()
@@ -147,6 +158,11 @@ GameModel::~GameModel()
 
 	std::vector<unsigned int> renderModes = ren->GetRenderMode();
 	Client::Ref().SetPref("Renderer.RenderModes", std::vector<double>(renderModes.begin(), renderModes.end()));
+
+	Client::Ref().SetPref("Decoration.Red", (int)colour.Red);
+	Client::Ref().SetPref("Decoration.Green", (int)colour.Green);
+	Client::Ref().SetPref("Decoration.Blue", (int)colour.Blue);
+	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
 
 	for(int i = 0; i < menuList.size(); i++)
 	{
