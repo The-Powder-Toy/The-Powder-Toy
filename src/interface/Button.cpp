@@ -107,7 +107,19 @@ void Button::Draw(const Point& screenPos)
 		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, buttonDisplayText, 180, 180, 180, 255);
 	}
 	if(Appearance.icon)
-		g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon);
+	{
+		if(Enabled)
+			if(isButtonDown || (isTogglable && toggle))
+			{
+				g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255, true);
+			}
+			else
+			{
+				g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255);	
+			}
+		else
+			g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 180);
+	}
 }
 
 void Button::OnMouseUp(int x, int y, unsigned int button)
