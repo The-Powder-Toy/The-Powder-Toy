@@ -102,17 +102,14 @@ std::string Label::GetText()
 
 void Label::OnMouseClick(int x, int y, unsigned button)
 {
-	if(x > textPosition.X && x < textPosition.X + textSize.X && y > textPosition.Y && y < textPosition.Y + textSize.Y)
-	{
-		selecting = true;
-		if(multiline)
-			selectionIndex0 = Graphics::CharIndexAtPosition((char*)textLines.c_str(), x-textPosition.X, y-textPosition.Y);
-		else
-			selectionIndex0 = Graphics::CharIndexAtPosition((char*)text.c_str(), x-textPosition.X, y-textPosition.Y);
-		selectionIndex1 = selectionIndex0;
+	selecting = true;
+	if(multiline)
+		selectionIndex0 = Graphics::CharIndexAtPosition((char*)textLines.c_str(), x-textPosition.X, y-textPosition.Y);
+	else
+		selectionIndex0 = Graphics::CharIndexAtPosition((char*)text.c_str(), x-textPosition.X, y-textPosition.Y);
+	selectionIndex1 = selectionIndex0;
 
-		updateSelection();
-	}
+	updateSelection();
 }
 
 void Label::OnMouseUp(int x, int y, unsigned button)
