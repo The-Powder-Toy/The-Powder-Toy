@@ -1,10 +1,7 @@
-import re, os, shutil, string
+import re, os, shutil, string, sys
 
-if os.path.isdir("generated/"):
-	shutil.rmtree("generated/")
-os.mkdir("generated")
+def generateElements(elementFiles, outputCpp, outputH):
 
-def generateElements():
 	elementClasses = dict()
 
 	elementHeader = """#ifndef ELEMENTCLASSES_H
@@ -16,9 +13,8 @@ def generateElements():
 
 	directives = []
 
-	elementFiles = os.listdir("src/simulation/elements")
 	for elementFile in elementFiles:
-		f = open("src/simulation/elements/"+elementFile, "r")
+		f = open(elementFile, "r")
 		fileData = f.read()
 		f.close()
 
@@ -70,15 +66,15 @@ def generateElements():
 	}
 	""";
 
-	f = open("generated/ElementClasses.h", "w")
+	f = open(outputH, "w")
 	f.write(elementHeader)
 	f.close()
 
-	f = open("generated/ElementClasses.cpp", "w")
+	f = open(outputCpp, "w")
 	f.write(elementContent)
 	f.close()
 
-def generateTools():
+def generateTools(toolFiles, outputCpp, outputH):
 	toolClasses = dict()
 	
 	toolHeader = """#ifndef TOOLCLASSES_H
@@ -89,10 +85,9 @@ def generateTools():
 		"""
 	
 	directives = []
-	
-	toolFiles = os.listdir("src/simulation/tools")
+
 	for toolFile in toolFiles:
-		f = open("src/simulation/tools/"+toolFile, "r")
+		f = open(toolFile, "r")
 		fileData = f.read()
 		f.close()
 		
@@ -145,13 +140,15 @@ def generateTools():
 		}
 		""";
 	
-	f = open("generated/ToolClasses.h", "w")
+	f = open(outputH, "w")
 	f.write(toolHeader)
 	f.close()
 	
-	f = open("generated/ToolClasses.cpp", "w")
+	f = open(outputCpp, "w")
 	f.write(toolContent)
 	f.close()
 
-generateElements()
-generateTools()
+if(sys.argv[1] == "elements"):
+	generateElements(sys.argv[4:], sys.argv[2], sys.argv[3])
+elif(sys.argv[1] == "tools"):
+	generateTools(sys.argv[4:], sys.argv[2], sys.argv[3])
