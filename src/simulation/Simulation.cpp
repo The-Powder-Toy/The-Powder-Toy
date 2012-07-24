@@ -340,13 +340,25 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, void * propvalue, St
 	return 0;
 }
 
-Particle Simulation::Get(int x, int y)
+SimulationSample Simulation::Get(int x, int y)
 {
+	SimulationSample sample;
 	if(pmap[y][x])
-		return parts[pmap[y][x]>>8];
+		sample.particle = parts[pmap[y][x]>>8];
 	if(photons[y][x])
-		return parts[photons[y][x]>>8];
-	return Particle();
+		sample.particle = parts[photons[y][x]>>8];
+	sample.AirPressure = pv[y/CELL][x/CELL];
+	sample.AirTemperature = hv[y/CELL][x/CELL];
+	sample.AirVelocityX = vx[y/CELL][x/CELL];
+	sample.AirVelocityY = vy[y/CELL][x/CELL];
+
+	if(grav->ngrav_enable)
+	{
+		sample.Gravity = gravp[(y/CELL)*(XRES/CELL)+(x/CELL)];
+		sample.GravityVelocityX = gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
+		sample.GravityVelocityY = gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+	}
+	return sample;
 }
 
 #define PMAP_CMP_CONDUCTIVE(pmap, t) (((pmap)&0xFF)==(t) || (((pmap)&0xFF)==PT_SPRK && parts[(pmap)>>8].ctype==(t)))

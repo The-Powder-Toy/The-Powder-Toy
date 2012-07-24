@@ -182,9 +182,11 @@ void Engine::Draw()
 	if(state_)
 		state_->DoDraw();
 
+#ifdef DEBUG
 	char fpsText[512];
 	sprintf(fpsText, "FPS: %.2f, Delta: %.3f", fps, dt);
 	ui::Engine::Ref().g->drawtext(10, 10, fpsText, 255, 255, 255, 255);
+#endif
 	g->Finalise();
 	FrameIndex++;
 	FrameIndex %= 7200;

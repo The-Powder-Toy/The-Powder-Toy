@@ -41,6 +41,7 @@ namespace ui
 		void Draw();
 
 		void SetFps(float fps);
+		inline float GetFps() { return fps; };
 
 		inline int GetMouseX() { return mousex_; }
 		inline int GetMouseY() { return mousey_; }

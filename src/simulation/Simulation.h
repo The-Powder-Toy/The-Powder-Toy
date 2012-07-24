@@ -26,6 +26,7 @@
 #include "GOLMenu.h"
 #include "MenuSection.h"
 #include "client/GameSave.h"
+#include "Sample.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
 
@@ -117,7 +118,7 @@ public:
 	int Load(int x, int y, GameSave * save);
 	GameSave * Save();
 	GameSave * Save(int x1, int y1, int x2, int y2);
-	Particle Get(int x, int y);
+	SimulationSample Get(int x, int y);
 	inline int is_blocking(int t, int x, int y);
 	inline int is_boundary(int pt, int x, int y);
 	inline int find_next_boundary(int pt, int *x, int *y, int dm, int *em);

@@ -87,7 +87,7 @@ private:
 
 	Thumbnail * placeSaveThumb;
 
-	Particle sample;
+	SimulationSample sample;
 
 	int lastOffset;
 	void setToolButtonOffset(int offset);
@@ -99,7 +99,7 @@ public:
 
     //Breaks MVC, but any other way is going to be more of a mess.
     ui::Point GetMousePosition();
-    void SetSample(Particle sample);
+    void SetSample(SimulationSample sample);
 
 	void AttachController(GameController * _c){ c = _c; }
 	void NotifyRendererChanged(GameModel * sender);
