@@ -93,6 +93,7 @@ GameModel::GameModel():
 	//Add special sign and prop tools
 	menuList[SC_TOOL]->AddTool(new SignTool());
 	menuList[SC_TOOL]->AddTool(new PropertyTool());
+	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", "Create air movement", 64, 64, 64));
 	
 	//Build menu for simtools
 	for(int i = 0; i < sim->tools.size(); i++)

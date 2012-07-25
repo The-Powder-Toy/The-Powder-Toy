@@ -33,7 +33,7 @@ public:
 	virtual ~Tool();
 	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
 	int colRed, colBlue, colGreen;
@@ -50,7 +50,7 @@ public:
 	virtual ~SignTool() {}
 	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
 };
@@ -65,7 +65,7 @@ public:
 	virtual ~PropertyTool() {}
 	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) {};
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
 };
@@ -80,7 +80,7 @@ public:
 	virtual ~Element_LIGH_Tool() {}
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void Click(Simulation * sim, Brush * brush, ui::Point position) { }
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
 };
@@ -91,7 +91,7 @@ public:
 	ElementTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~ElementTool();
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
 };
@@ -102,7 +102,7 @@ public:
 	WallTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~WallTool();
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
 };
@@ -113,7 +113,18 @@ public:
 	GolTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~GolTool();
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
+};
+
+class WindTool: public Tool
+{
+public:
+	WindTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	virtual ~WindTool();
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
 };

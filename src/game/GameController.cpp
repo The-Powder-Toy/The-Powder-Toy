@@ -295,7 +295,7 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueu
 			pointQueue.pop();
 			if(!first)
 			{
-				activeTool->DrawLine(sim, cBrush, fPoint, sPoint);
+				activeTool->DrawLine(sim, cBrush, sPoint, fPoint, true);
 			}
 			else
 			{
