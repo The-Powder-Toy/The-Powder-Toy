@@ -155,15 +155,19 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 	{
 		int t=parts[pNear].type;
 		float n_angle; // angle to nearest part
+		float angle_diff;
 		rx=parts[pNear].x-x;
 		ry=parts[pNear].y-y;
-		if (rx*rx+ry*ry!=0)
-			n_angle = asin(-ry/sqrt(rx*rx+ry*ry));
+		if (rx!=0 || ry!=0)
+			n_angle = atan2f(-ry, rx);
 		else
 			n_angle = 0;
 		if (n_angle<0)
 			n_angle+=M_PI*2;
-		if (parts[i].life<5 || fabs(n_angle-parts[i].tmp*M_PI/180)<M_PI*0.8) // lightning strike
+		angle_diff = fabsf(n_angle-parts[i].tmp*M_PI/180);
+		if (angle_diff>M_PI)
+			angle_diff = M_PI*2 - angle_diff;
+		if (parts[i].life<5 || angle_diff<M_PI*0.8) // lightning strike
 		{
 			create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, parts[i].tmp-90, 0);
 
