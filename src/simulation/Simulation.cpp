@@ -1850,7 +1850,7 @@ void Simulation::init_can_move()
 		//spark shouldn't move
 		can_move[PT_SPRK][t] = 0;
 		stkm_move = 0;
-		if (elements[t].Properties&TYPE_LIQUID)
+		if (elements[t].Properties & (TYPE_LIQUID | TYPE_GAS))
 			stkm_move = 2;
 		if (!t || t==PT_PRTO || t==PT_SPAWN || t==PT_SPAWN2)
 			stkm_move = 2;
