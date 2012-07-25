@@ -2338,6 +2338,10 @@ void Renderer::AddDisplayMode(unsigned int mode)
 		{
 			return;
 		}
+		if(display_modes[i] & DISPLAY_AIR)
+		{
+			display_modes.erase(display_modes.begin()+i);
+		}
 	}
 	display_modes.push_back(mode);
 	CompileDisplayMode();

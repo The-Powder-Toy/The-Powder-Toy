@@ -123,10 +123,10 @@ RenderView::RenderView():
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_AIRH));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(336, YRES+4), ui::Point(70, 16), "Air");
+	/*tCheckbox = new ui::Checkbox(ui::Point(336, YRES+4), ui::Point(70, 16), "Air");
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_AIR));
-	AddComponent(tCheckbox);
+	AddComponent(tCheckbox);*/
 
 	tCheckbox = new ui::Checkbox(ui::Point(336, YRES+4+18), ui::Point(70, 16), "Warp");
 	displayModes.push_back(tCheckbox);
@@ -138,7 +138,7 @@ RenderView::RenderView():
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_PERS));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(411, YRES+4+18), ui::Point(70, 16), "Effect");
+	tCheckbox = new ui::Checkbox(ui::Point(336, YRES+4), ui::Point(70, 16), "Effect");
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_EFFE));
 	AddComponent(tCheckbox);
@@ -245,6 +245,7 @@ void RenderView::OnDraw()
 	}
 	g->draw_line(0, YRES, XRES-1, YRES, 255, 255, 255, XRES+BARSIZE);
 	g->draw_line(180, YRES, 180, YRES+MENUSIZE, 200, 200, 200, XRES+BARSIZE);
+	g->draw_line(330, YRES, 330, YRES+MENUSIZE, 200, 200, 200, XRES+BARSIZE);
 	g->draw_line(480, YRES, 480, YRES+MENUSIZE, 200, 200, 200, XRES+BARSIZE);
 	g->draw_line(XRES-1, 0, XRES-1, YRES+MENUSIZE, 255, 255, 255, XRES+BARSIZE);
 }
