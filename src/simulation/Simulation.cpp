@@ -2660,24 +2660,6 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 	}
 	switch (t)
 		{
-			case PT_LIGH:
-				if (p==-2)
-				{
-					switch (gravityMode)
-					{
-						default:
-						case 0:
-							parts[i].tmp= 270+rand()%40-20;
-							break;
-						case 1:
-							parts[i].tmp = rand()%360;
-							break;
-						case 2:
-							parts[i].tmp = atan2(float( x-XCNTR), float(y-YCNTR))*(180.0f/M_PI)+90;
-					}
-					parts[i].tmp2 = 4;
-				}
-				break;
 			case PT_SOAP:
 				parts[i].tmp = -1;
 				parts[i].tmp2 = -1;
@@ -2875,6 +2857,27 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 					parts[i].tmp = 1|(randomdir<<5)|(randhue<<7);//set as a head and a direction
 					parts[i].tmp2 = 4;//tail
 					parts[i].life = 5;
+				}
+				if (t==PT_LIGH)
+				{
+					float gx, gy, gsize;
+					if (p!=-2)
+					{
+						parts[i].life=30;
+						parts[i].temp=parts[i].life*150.0f; // temperature of the lighting shows the power of the lighting
+					}
+					GetGravityField(x, y, 1.0f, 1.0f, gx, gy);
+					gsize = gx*gx+gy*gy;
+					if (gsize<0.0016f)
+					{
+						float angle = (rand()%6284)*0.001f;//(in radians, between 0 and 2*pi)
+						gsize = sqrtf(gsize);
+						// randomness in weak gravity fields (more randomness with weaker fields)
+						gx += cosf(angle)*(0.04f-gsize);
+						gy += sinf(angle)*(0.04f-gsize);
+					}
+					parts[i].tmp = (((int)(atan2f(-gy, gx)*(180.0f/M_PI)))+rand()%40-20+360)%360;
+					parts[i].tmp2 = 4;
 				}
 				break;
 		}
