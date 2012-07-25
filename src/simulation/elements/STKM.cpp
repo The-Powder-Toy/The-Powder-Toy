@@ -260,7 +260,10 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 				if (!r && !sim->bmap[(y+ry)/CELL][(x+rx)/CELL])
 					continue;
 				
-				if (sim->elements[r&0xFF].Falldown!=0 || sim->elements[r&0xFF].State == ST_GAS || (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT)
+				if (sim->elements[r&0xFF].Falldown!=0 || sim->elements[r&0xFF].State == ST_GAS
+					|| sim->elements[r&0xFF].Properties&TYPE_GAS
+					|| sim->elements[r&0xFF].Properties&TYPE_LIQUID
+					|| (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT)
 				{
 					playerp->elem = r&0xFF;  //Current element
 				}
