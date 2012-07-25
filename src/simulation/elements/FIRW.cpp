@@ -13,11 +13,11 @@ Element_FIRW::Element_FIRW()
     MenuSection = SC_EXPLOSIVE;
     Enabled = 1;
     
-    Advection = 0.4f;
-    AirDrag = 0.02f * CFDS;
+    Advection = 0.2f;
+    AirDrag = 0.01f * CFDS;
     AirLoss = 0.96f;
     Loss = 0.95f;
-    Collision = -0.5f;
+    Collision = -0.1f;
     Gravity = 0.1f;
     Diffusion = 0.00f;
     HotAir = 0.000f	* CFDS;
@@ -78,6 +78,7 @@ int Element_FIRW::update(UPDATE_FUNC_ARGS)
 						multiplier = (parts[i].life+20)*0.2f/sqrtf(gx*gx+gy*gy);
 						parts[i].vx -= gx*multiplier;
 						parts[i].vy -= gy*multiplier;
+						return 0;
 					}
 				}
 	}
