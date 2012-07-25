@@ -13,11 +13,11 @@ Element_FIRW::Element_FIRW()
     MenuSection = SC_EXPLOSIVE;
     Enabled = 1;
     
-    Advection = 0.7f;
+    Advection = 0.4f;
     AirDrag = 0.02f * CFDS;
     AirLoss = 0.96f;
-    Loss = 0.80f;
-    Collision = -0.99f;
+    Loss = 0.95f;
+    Collision = -0.5f;
     Gravity = 0.1f;
     Diffusion = 0.00f;
     HotAir = 0.000f	* CFDS;
@@ -65,8 +65,19 @@ int Element_FIRW::update(UPDATE_FUNC_ARGS)
 					rt = parts[r>>8].type;
 					if (rt==PT_FIRE||rt==PT_PLSM||rt==PT_THDR)
 					{
+						float gx, gy, multiplier;
+						sim->GetGravityField(x, y, sim->elements[PT_FIRW].Gravity, 1.0f, gx, gy);
+						if (gx*gx+gy*gy < 0.001f)
+						{
+							float angle = (rand()%6284)*0.001f;//(in radians, between 0 and 2*pi)
+							gx += sinf(angle)*sim->elements[PT_FIRW].Gravity*0.5f;
+							gy += cosf(angle)*sim->elements[PT_FIRW].Gravity*0.5f;
+						}
 						parts[i].tmp = 1;
-						parts[i].life = rand()%40+60;
+						parts[i].life = rand()%10+20;
+						multiplier = (parts[i].life+20)*0.2f/sqrtf(gx*gx+gy*gy);
+						parts[i].vx -= gx*multiplier;
+						parts[i].vy -= gy*multiplier;
 					}
 				}
 	}
@@ -74,8 +85,7 @@ int Element_FIRW::update(UPDATE_FUNC_ARGS)
 		if (parts[i].life<=0) {
 			parts[i].tmp=2;
 		} else {
-			// TODO: different gravity modes + Newtonian gravity
-			parts[i].vy = -parts[i].life*0.04f - 0.1f;
+			parts[i].flags &= ~FLAG_STAGNANT;
 		}
 	}
 	else if (parts[i].tmp>=2)
@@ -91,8 +101,8 @@ int Element_FIRW::update(UPDATE_FUNC_ARGS)
 			{
 				magnitude = ((rand()%60)+40)*0.05f;
 				angle = (rand()%6284)*0.001f;//(in radians, between 0 and 2*pi)
-				parts[np].vx = parts[i].vx + cosf(angle)*magnitude;
-				parts[np].vy = parts[i].vy + sinf(angle)*magnitude - 2.5f;
+				parts[np].vx = parts[i].vx*0.5f + cosf(angle)*magnitude;
+				parts[np].vy = parts[i].vy*0.5f + sinf(angle)*magnitude;
 				parts[np].ctype = col;
 				parts[np].tmp = 1;
 				parts[np].life = rand()%40+70;

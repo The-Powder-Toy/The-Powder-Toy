@@ -179,6 +179,8 @@ public:
 	void ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush * cBrush = NULL);
 	void ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode);
 	
+	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
+
 	void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
 	inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 	inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);

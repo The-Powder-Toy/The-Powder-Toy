@@ -1665,10 +1665,10 @@ char * GameSave::serialiseOPS(int & dataLength)
 				{
 					fieldDesc |= 1 << 10;
 					partsData[partsDataLen++] = particles[i].tmp2;
-					if(partsptr[i].tmp2 > 255)
+					if(particles[i].tmp2 > 255)
 					{
 						fieldDesc |= 1 << 11;
-						partsData[partsDataLen++] = partsptr[i].tmp2 >> 8;
+						partsData[partsDataLen++] = particles[i].tmp2 >> 8;
 					}
 				}
 				

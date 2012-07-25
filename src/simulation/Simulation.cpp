@@ -2875,6 +2875,28 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 	return i;
 }
 
+void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY)
+{
+	pGravX = newtonGrav*gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
+	pGravY = newtonGrav*gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+	switch (gravityMode)
+	{
+		default:
+		case 0: //normal, vertical gravity
+			pGravY += particleGrav;
+			break;
+		case 1: //no gravity
+			break;
+		case 2: //radial gravity
+			if (x-XCNTR != 0 || y-YCNTR != 0)
+			{
+				float pGravMult = particleGrav/sqrtf((x-XCNTR)*(x-XCNTR) + (y-YCNTR)*(y-YCNTR));
+				pGravX -= pGravMult * (float)(x - XCNTR);
+				pGravY -= pGravMult * (float)(y - YCNTR);
+			}
+	}
+}
+
 void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLOW
 {
 	float xx, yy;
