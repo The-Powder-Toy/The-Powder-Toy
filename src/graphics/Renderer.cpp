@@ -1148,7 +1148,7 @@ void Renderer::render_parts()
 
 					if (colour_mode!=COLOUR_HEAT)
 					{
-						if (cplayer->elem<PT_NUM)
+						if (cplayer->elem<PT_NUM && cplayer->elem > 0)
 						{
 							colr = PIXR(elements[cplayer->elem].Colour);
 							colg = PIXG(elements[cplayer->elem].Colour);
@@ -1204,8 +1204,6 @@ void Renderer::render_parts()
 					glVertex2f(cplayer->legs[12], cplayer->legs[13]);
 					glEnd();
 #else
-					s = VIDXRES;
-
 					if (t==PT_STKM2)
 					{
 						legr = 100;
@@ -1229,23 +1227,23 @@ void Renderer::render_parts()
 					//head
 					if(t==PT_FIGH)
 					{
-						draw_line(nx, ny+2, nx+2, ny, colr, colg, colb, s);
-						draw_line(nx+2, ny, nx, ny-2, colr, colg, colb, s);
-						draw_line(nx, ny-2, nx-2, ny, colr, colg, colb, s);
-						draw_line(nx-2, ny, nx, ny+2, colr, colg, colb, s);
+						draw_line(nx, ny+2, nx+2, ny, colr, colg, colb, 255);
+						draw_line(nx+2, ny, nx, ny-2, colr, colg, colb, 255);
+						draw_line(nx, ny-2, nx-2, ny, colr, colg, colb, 255);
+						draw_line(nx-2, ny, nx, ny+2, colr, colg, colb, 255);
 					}
 					else
 					{
-						draw_line(nx-2, ny+2, nx+2, ny+2, colr, colg, colb, s);
-						draw_line(nx-2, ny-2, nx+2, ny-2, colr, colg, colb, s);
-						draw_line(nx-2, ny-2, nx-2, ny+2, colr, colg, colb, s);
-						draw_line(nx+2, ny-2, nx+2, ny+2, colr, colg, colb, s);
+						draw_line(nx-2, ny+2, nx+2, ny+2, colr, colg, colb, 255);
+						draw_line(nx-2, ny-2, nx+2, ny-2, colr, colg, colb, 255);
+						draw_line(nx-2, ny-2, nx-2, ny+2, colr, colg, colb, 255);
+						draw_line(nx+2, ny-2, nx+2, ny+2, colr, colg, colb, 255);
 					}
 					//legs
-					draw_line(nx, ny+3, cplayer->legs[0], cplayer->legs[1], legr, legg, legb, s);
-					draw_line(cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], legr, legg, legb, s);
-					draw_line(nx, ny+3, cplayer->legs[8], cplayer->legs[9], legr, legg, legb, s);
-					draw_line(cplayer->legs[8], cplayer->legs[9], cplayer->legs[12], cplayer->legs[13], legr, legg, legb, s);
+					draw_line(nx, ny+3, cplayer->legs[0], cplayer->legs[1], legr, legg, legb, 255);
+					draw_line(cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], legr, legg, legb, 255);
+					draw_line(nx, ny+3, cplayer->legs[8], cplayer->legs[9], legr, legg, legb, 255);
+					draw_line(cplayer->legs[8], cplayer->legs[9], cplayer->legs[12], cplayer->legs[13], legr, legg, legb, 255);
 #endif
 				}
 				if(pixel_mode & PMODE_FLAT)

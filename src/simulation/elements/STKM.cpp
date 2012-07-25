@@ -60,8 +60,8 @@ int Element_STKM::update(UPDATE_FUNC_ARGS)
 int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
 
 {	
-	/**pixel_mode = PSPEC_STICKMAN;
-	if ((int)sim->player.elem<PT_NUM)
+	*pixel_mode = PSPEC_STICKMAN;
+	/*if ((int)sim->player.elem<PT_NUM)
 	{
 		*colr = PIXR(elements[sim->player.elem].pcolors);
 		*colg = PIXG(elements[sim->player.elem].pcolors);
