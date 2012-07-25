@@ -712,6 +712,11 @@ void GameSave::readOPS(char * data, int dataLength)
 					{
 						if(i >= partsDataLen) goto fail;
 						particles[newIndex].tmp2 = partsData[i++];
+						if(fieldDescriptor & 0x800)
+						{
+							if(i >= partsDataLen) goto fail;
+							particles[newIndex].tmp2 |= (((unsigned)partsData[i++]) << 8);
+						}
 					}
 
 					//Particle specific parsing:
@@ -1538,7 +1543,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	//Copy parts data
 	/* Field descriptor format:
 	 |		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|
-	 |		tmp2	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
+	 																|	tmp2[2]		|		tmp2	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
 	 life[2] means a second byte (for a 16 bit field) if life[1] is present
 	 */
 	partsData = (unsigned char *)malloc(NPART * (sizeof(Particle)+1));
@@ -1655,11 +1660,16 @@ char * GameSave::serialiseOPS(int & dataLength)
 					partsData[partsDataLen++] = vTemp;
 				}
 				
-				//Tmp2 (optional), 1 byte
+				//Tmp2 (optional), 1 or 2 bytes
 				if(particles[i].tmp2)
 				{
 					fieldDesc |= 1 << 10;
 					partsData[partsDataLen++] = particles[i].tmp2;
+					if(partsptr[i].tmp2 > 255)
+					{
+						fieldDesc |= 1 << 11;
+						partsData[partsDataLen++] = partsptr[i].tmp2 >> 8;
+					}
 				}
 				
 				//Write the field descriptor;
