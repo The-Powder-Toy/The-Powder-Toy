@@ -1810,7 +1810,7 @@ void Simulation::init_can_move()
 	//  1 = Swap
 	//  2 = Both particles occupy the same space.
 	//  3 = Varies, go run some extra checks
-	int t, rt;
+	int t, rt, stkm_move;
 	for (rt=0;rt<PT_NUM;rt++)
 		can_move[0][rt] = 0; // particles that don't exist shouldn't move...
 	for (t=1;t<PT_NUM;t++)
@@ -1849,10 +1849,14 @@ void Simulation::init_can_move()
 	{
 		//spark shouldn't move
 		can_move[PT_SPRK][t] = 0;
-		//all stickman collisions are done in stickman update function
-		can_move[PT_STKM][t] = 2;
-		can_move[PT_STKM2][t] = 2;
-		can_move[PT_FIGH][t] = 2;
+		stkm_move = 0;
+		if (elements[t].Properties&TYPE_LIQUID)
+			stkm_move = 2;
+		if (!t || t==PT_PRTO || t==PT_SPAWN || t==PT_SPAWN2)
+			stkm_move = 2;
+		can_move[PT_STKM][t] = stkm_move;
+		can_move[PT_STKM2][t] = stkm_move;
+		can_move[PT_FIGH][t] = stkm_move;
 	}
 	for (t=0;t<PT_NUM;t++)
 	{
@@ -1860,10 +1864,9 @@ void Simulation::init_can_move()
 		can_move[t][PT_VOID] = 1;
 		can_move[t][PT_BHOL] = 1;
 		can_move[t][PT_NBHL] = 1;
-		//all stickman collisions are done in stickman update function
-		can_move[t][PT_STKM] = 2;
-		can_move[t][PT_STKM2] = 2;
-		can_move[PT_FIGH][t] = 2;
+		can_move[t][PT_STKM] = 0;
+		can_move[t][PT_STKM2] = 0;
+		can_move[t][PT_FIGH] = 0;
 		//INVIS behaviour varies with pressure
 		can_move[t][PT_INVIS] = 3;
 		//stop CNCT being displaced by other particles
@@ -2763,7 +2766,7 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 				{
 					return -1;
 				}
-				create_part(-1,x,y,PT_SPAWN);
+				create_part(-3,x,y,PT_SPAWN);
 				elementCount[PT_SPAWN] = 1;
 				break;
 			case PT_STKM2:
@@ -2784,7 +2787,7 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 				{
 					return -1;
 				}
-				create_part(-1,x,y,PT_SPAWN2);
+				create_part(-3,x,y,PT_SPAWN2);
 				elementCount[PT_SPAWN2] = 1;
 				break;
 			case PT_BIZR: case PT_BIZRG: case PT_BIZRS:
