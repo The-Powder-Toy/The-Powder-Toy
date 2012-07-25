@@ -67,33 +67,29 @@ int Element_FWRK::update(UPDATE_FUNC_ARGS)
 		parts[i].life=0;
 	if ((parts[i].life<3&&parts[i].life>0)||(parts[i].vy>6&&parts[i].life>0))
 	{
-		int q = (rand()%255+1);
-		int w = (rand()%255+1);
-		int e = (rand()%255+1);
-		for (rx=-1; rx<2; rx++)
-			for (ry=-2; ry<3; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-				{
-					if (5>=rand()%8)
-					{
-						if (!pmap[y+ry][x+rx])
-						{
-							np = sim->create_part(-1, x+rx, y+ry , PT_DUST);
-							sim->pv[y/CELL][x/CELL] += 2.00f*CFDS;
-							if (np!=-1)
-							{
-								parts[np].vy = -(rand()%10-1);
-								parts[np].vx = ((rand()%2)*2-1)*rand()%(5+5)+(parts[i].vx)*2 ;
-								parts[np].life= rand()%37+18;
-								parts[np].tmp=q;
-								parts[np].tmp2=w;
-								parts[np].ctype=e;
-								parts[np].temp= rand()%20+6000;
-								parts[np].dcolour = parts[i].dcolour;
-							}
-						}
-					}
-				}
+		int r = (rand()%245+11);
+		int g = (rand()%245+11);
+		int b = (rand()%245+11);
+		int n;
+		float angle, magnitude;
+		unsigned col = (r<<16) | (g<<8) | b;
+		for (n=0; n<40; n++)
+		{
+			np = sim->create_part(-3, x, y, PT_EMBR);
+			if (np>-1)
+			{
+				magnitude = ((rand()%60)+40)*0.05f;
+				angle = (rand()%6284)*0.001f;//(in radians, between 0 and 2*pi)
+				parts[np].vx = parts[i].vx + cosf(angle)*magnitude;
+				parts[np].vy = parts[i].vy + sinf(angle)*magnitude - 2.5f;
+				parts[np].ctype = col;
+				parts[np].tmp = 1;
+				parts[np].life = rand()%40+70;
+				parts[np].temp = (rand()%500)+5750.0f;
+				parts[np].dcolour = parts[i].dcolour;
+			}
+		}
+		sim->pv[y/CELL][x/CELL] += 8.0f;
 		sim->kill_part(i);
 		return 1;
 	}
