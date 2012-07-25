@@ -56,7 +56,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 	{
 		if (ct==PT_WATR||ct==PT_SLTW||ct==PT_PSCN||ct==PT_NSCN||ct==PT_ETRD||ct==PT_INWR)
 			parts[i].temp = R_TEMP + 273.15f;
-		if (ct<=0 || ct>=PT_NUM)
+		if (ct<=0 || ct>=PT_NUM || !sim->elements[parts[i].ctype].Enabled)
 			ct = PT_METL;
 		sim->part_change_type(i,x,y,ct);
 		parts[i].ctype = PT_NONE;

@@ -85,7 +85,7 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	float gvx, gvy;
 	float gx, gy, dl, dr;
 
-	if ((parts[i].ctype>0 && parts[i].ctype<PT_NUM && sim->elements[parts[i].ctype].Falldown>0) || parts[i].ctype==SPC_AIR || parts[i].ctype == PT_NEUT || parts[i].ctype == PT_PHOT || parts[i].ctype == PT_LIGH)
+	if ((parts[i].ctype>0 && parts[i].ctype<PT_NUM && sim->elements[parts[i].ctype].Enabled && sim->elements[parts[i].ctype].Falldown>0) || parts[i].ctype==SPC_AIR || parts[i].ctype == PT_NEUT || parts[i].ctype == PT_PHOT || parts[i].ctype == PT_LIGH)
 		playerp->elem = parts[i].ctype;
 	playerp->frames++;
 

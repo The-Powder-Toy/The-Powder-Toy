@@ -167,7 +167,8 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 			Particle tempPart = parts[i];
 			tempPart.x -= fullX;
 			tempPart.y -= fullY;
-			*newSave << tempPart;
+			if(elements[tempPart.type].Enabled)
+				*newSave << tempPart;
 		}
 	}
 	
