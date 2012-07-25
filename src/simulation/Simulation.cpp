@@ -2606,6 +2606,7 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
 	parts[i].dcolour = 0;
+	parts[i].flags = 0;
 	if (t==PT_GLAS)
 	{
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
