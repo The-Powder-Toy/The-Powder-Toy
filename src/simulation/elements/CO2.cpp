@@ -83,15 +83,14 @@ int Element_CO2::update(UPDATE_FUNC_ARGS)
 		if (rand()%5 < 1)
 		{
 			int j;
-			sim->kill_part(i);
-			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT); if (j != -1) parts[j].temp = 15000;
-			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC); if (j != -1) parts[j].temp = 15000;
-			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_O2);  if (j != -1) parts[j].temp = 15000;
-			if (rand()%1000 < 1) { j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_SING); if (j != -1) { parts[j].temp = 15000; parts[i].life = 3; } }
+			sim->create_part(i,x,y,PT_O2);
 
-			parts[i].temp += 15000;
+			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT); if (j != -1) parts[j].temp = 15000;
+			if (!(rand()%50)) { j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC); if (j != -1) parts[j].temp = 15000; }
+			//if (rand()%1000 < 1) { j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_SING); if (j != -1) { parts[j].temp = 15000; parts[i].life = 3; } }
+
+			parts[i].temp = 15000;
 			sim->pv[y/CELL][x/CELL] += 100;
-			return 1;
 		}
 	}
 	return 0;
