@@ -136,7 +136,7 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 				}
 			}
 		}
-		else
+		else if (parts[i].ctype!=PT_LIGH || (rand()%30)==0)
 		{
 			int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
 			if (np>=0)
