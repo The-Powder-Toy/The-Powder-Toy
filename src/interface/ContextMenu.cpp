@@ -31,13 +31,13 @@ void ContextMenu::Show(ui::Point position)
 	buttons.clear();
 
 	Position = position;
-	Size.Y = items.size()*15;
+	Size.Y = items.size()*16;
 	Size.X = 100;
 
 	int currentY = 1;
 	for(int i = 0; i < items.size(); i++)
 	{
-		Button * tempButton = new Button(Point(1, currentY), Point(Size.X-2, 14), items[i].Text);
+		Button * tempButton = new Button(Point(1, currentY), Point(Size.X-2, 16), items[i].Text);
 		tempButton->Appearance = Appearance;
 		tempButton->Enabled = items[i].Enabled;
 		tempButton->SetActionCallback(new ItemSelectedAction(this, items[i].ID));
