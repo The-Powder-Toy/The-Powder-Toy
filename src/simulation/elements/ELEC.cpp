@@ -128,7 +128,10 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 					return 1;
 				}
 				if ((r&0xFF)==PT_EXOT)
+				{
 					parts[r>>8].tmp2 += 5;
+					parts[r>>8].life = 1000;
+				}
 				if ((sim->elements[r&0xFF].Properties & PROP_CONDUCTS) && ((r&0xFF)!=PT_NBLE||parts[i].temp<2273.15))
 				{
 					sim->create_part(-1, x+rx, y+ry, PT_SPRK);
