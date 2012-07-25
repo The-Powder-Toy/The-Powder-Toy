@@ -17,7 +17,7 @@ Element_EMBR::Element_EMBR()
     AirLoss = 0.99f;
     Loss = 0.90f;
     Collision = 0.0f;
-    Gravity = 0.7f;
+    Gravity = 0.07f;
     Diffusion = 0.00f;
     HotAir = 0.000f    * CFDS;
     Falldown = 1;
