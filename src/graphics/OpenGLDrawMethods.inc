@@ -18,6 +18,9 @@ int Graphics::drawtext(int x, int y, const char *s, int r, int g, int b, int a)
 		else if (*s == '\x0F')
 		{
 			if(!s[1] || !s[2] || !s[3]) break;
+			oR = r;
+			oG = g;
+			oB = b;
 			r = s[1];
 			g = s[2];
 			b = s[3];
