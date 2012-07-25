@@ -4243,7 +4243,8 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
 					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
 						pmap[y][x] = t|(i<<8);
-					if (t!=PT_THDR && t!=PT_EMBR)
+					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
+					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH)
 						pmap_count[y][x]++;
 				}
 			}
