@@ -39,7 +39,7 @@ Element_ICEI::Element_ICEI()
     HighPressureTransition = PT_SNOW;
     LowTemperature = ITL;
     LowTemperatureTransition = NT;
-    HighTemperature = 233.0f;
+    HighTemperature = 252.05f;
     HighTemperatureTransition = ST;
     
     Update = &Element_ICEI::update;

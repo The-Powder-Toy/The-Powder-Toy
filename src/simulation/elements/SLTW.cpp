@@ -37,7 +37,7 @@ Element_SLTW::Element_SLTW()
     LowPressureTransition = NT;
     HighPressure = IPH;
     HighPressureTransition = NT;
-    LowTemperature = 233.0f;
+    LowTemperature = 252.05f;
     LowTemperatureTransition = PT_ICEI;
     HighTemperature = 383.0f;
     HighTemperatureTransition = ST;
