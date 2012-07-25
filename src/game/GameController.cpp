@@ -196,6 +196,7 @@ void GameController::AdjustBrushSize(int direction, bool logarithmic)
 	if(newSize.Y<0)
 			newSize.Y = 0;
 	gameModel->GetBrush()->SetRadius(newSize);
+	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
 }
 
 void GameController::AdjustZoomSize(int direction, bool logarithmic)
@@ -363,6 +364,11 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 bool GameController::MouseMove(int x, int y, int dx, int dy)
 {
 	return commandInterface->OnMouseMove(x, y, dx, dy);
+}
+
+bool GameController::BrushChanged(int brushType, int rx, int ry)
+{
+	return commandInterface->OnBrushChanged(brushType, rx, ry);
 }
 
 bool GameController::MouseDown(int x, int y, unsigned button)
@@ -638,6 +644,7 @@ void GameController::Vote(int direction)
 void GameController::ChangeBrush()
 {
 	gameModel->SetBrush(gameModel->GetBrushID()+1);
+	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
 }
 
 void GameController::ClearSim()

@@ -219,6 +219,13 @@ tpt.partsdata = nil");
 
 }
 
+bool LuaScriptInterface::OnBrushChanged(int brushType, int rx, int ry)
+{
+	luacon_brushx = rx;
+	luacon_brushy = ry;
+	return true;
+}
+
 bool LuaScriptInterface::OnMouseMove(int x, int y, int dx, int dy)
 {
 	luacon_mousex = x;
@@ -230,18 +237,18 @@ bool LuaScriptInterface::OnMouseDown(int x, int y, unsigned button)
 {
 	luacon_mousedown = true;
 	luacon_mousebutton = button;
-	return luacon_mouseevent(x, y, button, LUACON_MDOWN);
+	return luacon_mouseevent(x, y, button, LUACON_MDOWN, 0);
 }
 
 bool LuaScriptInterface::OnMouseUp(int x, int y, unsigned button)
 {
 	luacon_mousedown = false;
-	return luacon_mouseevent(x, y, button, LUACON_MUP);
+	return luacon_mouseevent(x, y, button, LUACON_MUP, 0);
 }
 
 bool LuaScriptInterface::OnMouseWheel(int x, int y, int d)
 {
-	return true;
+	return luacon_mouseevent(x, y, luacon_mousedown?luacon_mousebutton:0, 0, d);
 }
 
 bool LuaScriptInterface::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
@@ -271,8 +278,8 @@ bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, boo
 void LuaScriptInterface::OnTick()
 {
 	if(luacon_mousedown)
-		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS);
-	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr);
+		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
+	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_brushx, luacon_brushy);
 }
 
 int LuaScriptInterface::Command(std::string command)
@@ -783,7 +790,7 @@ int luacon_keyevent(int key, int modifier, int event){
 	}
 	return kpcontinue;
 }
-int luacon_mouseevent(int mx, int my, int mb, int event){
+int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel){
 	int i = 0, mpcontinue = 1;
 	if(mouseclick_function_count){
 		for(i = 0; i < mouseclick_function_count && mpcontinue; i++){
@@ -792,7 +799,8 @@ int luacon_mouseevent(int mx, int my, int mb, int event){
 			lua_pushinteger(luacon_ci->l, my);
 			lua_pushinteger(luacon_ci->l, mb);
 			lua_pushinteger(luacon_ci->l, event);
-			lua_pcall(luacon_ci->l, 4, 1, 0);
+			lua_pushinteger(luacon_ci->l, mouse_wheel);
+			lua_pcall(luacon_ci->l, 5, 1, 0);
 			if(lua_isboolean(luacon_ci->l, -1)){
 				mpcontinue = lua_toboolean(luacon_ci->l, -1);
 			}
@@ -801,8 +809,10 @@ int luacon_mouseevent(int mx, int my, int mb, int event){
 	}
 	return mpcontinue;
 }
-int luacon_step(int mx, int my, int selectl, int selectr){
+int luacon_step(int mx, int my, int selectl, int selectr, int bsx, int bsy){
 	int tempret = 0, tempb, i, callret;
+	lua_pushinteger(luacon_ci->l, bsy);
+	lua_pushinteger(luacon_ci->l, bsx);
 	lua_pushinteger(luacon_ci->l, selectr);
 	lua_pushinteger(luacon_ci->l, selectl);
 	lua_pushinteger(luacon_ci->l, my);
@@ -811,6 +821,8 @@ int luacon_step(int mx, int my, int selectl, int selectr){
 	lua_setfield(luacon_ci->l, tptProperties, "mousey");
 	lua_setfield(luacon_ci->l, tptProperties, "selectedl");
 	lua_setfield(luacon_ci->l, tptProperties, "selectedr");
+	lua_setfield(luacon_ci->l, tptProperties, "brushx");
+	lua_setfield(luacon_ci->l, tptProperties, "brushy");
 	if(step_functions[0]){
 		//Set mouse globals
 		for(i = 0; i<6; i++){

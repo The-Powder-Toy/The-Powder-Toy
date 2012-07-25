@@ -25,6 +25,7 @@ public:
 	int GetParticleType(std::string type);
 	void Log(LogType type, std::string message);
 	//void AttachGameModel(GameModel * m);
+	virtual bool OnBrushChanged(int brushType, int rx, int ry) {return true;}
 	virtual bool OnMouseMove(int x, int y, int dx, int dy) {return true;}
 	virtual bool OnMouseDown(int x, int y, unsigned button) {return true;}
 	virtual bool OnMouseUp(int x, int y, unsigned button) {return true;}

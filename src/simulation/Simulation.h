@@ -77,8 +77,8 @@ public:
 	int CGOL;
 	int ISGOL;
 	int GSPEED;
-	unsigned char gol[XRES][YRES];
-	unsigned char gol2[XRES][YRES][NGOL+1];
+	unsigned char gol[YRES][XRES];
+	unsigned char gol2[YRES][XRES][NGOL+1];
 	//Air sim
 	float (*vx)[XRES/CELL];
 	float (*vy)[XRES/CELL];

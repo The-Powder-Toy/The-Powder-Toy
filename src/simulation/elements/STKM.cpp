@@ -510,15 +510,15 @@ void Element_STKM::STKM_interact(Simulation * sim, playerst* playerp, int i, int
 					break;
 				}
 		}
-		if (((r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) && parts[i].type)
+		if (((r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) && sim->parts[i].type)
 		{
 			if (!sim->legacy_enable)
 			{
-				parts[r>>8].temp = restrict_flt(parts[r>>8].temp+parts[i].temp/2, MIN_TEMP, MAX_TEMP);
+				sim->parts[r>>8].temp = restrict_flt(sim->parts[r>>8].temp+sim->parts[i].temp/2, MIN_TEMP, MAX_TEMP);
 			}
 			sim->kill_part(i);
 		}
-		if (((r&0xFF)==PT_VOID || ((r&0xFF)==PT_PVOD && parts[r>>8].life==10)) && (!parts[r>>8].ctype || (parts[r>>8].ctype==parts[i].type)!=(parts[r>>8].tmp&1)) && parts[i].type)
+		if (((r&0xFF)==PT_VOID || ((r&0xFF)==PT_PVOD && sim->parts[r>>8].life==10)) && (!sim->parts[r>>8].ctype || (sim->parts[r>>8].ctype==sim->parts[i].type)!=(sim->parts[r>>8].tmp&1)) && sim->parts[i].type)
 		{
 			sim->kill_part(i);
 		}
