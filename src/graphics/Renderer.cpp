@@ -2073,7 +2073,7 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	g(NULL),
 	zoomWindowPosition(0, 0),
 	zoomScopePosition(0, 0),
-	zoomScopeSize(10),
+	zoomScopeSize(32),
 	ZFACTOR(8),
 	zoomEnabled(false),
 	decorations_enable(1)
