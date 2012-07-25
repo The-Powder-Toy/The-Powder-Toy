@@ -95,14 +95,14 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 				}
 				if ((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW || (r&0xFF)==PT_CBNW)
 				{
-					if(rand()%2)
+					if(rand()<RAND_MAX/3)
 					{
-						sim->create_part(r>>8, x+rx, y+ry, PT_H2);
+						sim->create_part(r>>8, x+rx, y+ry, PT_O2);
 						return 1;
 					}
 					else
 					{
-						sim->create_part(r>>8, x+rx, y+ry, PT_O2);
+						sim->create_part(r>>8, x+rx, y+ry, PT_H2);
 						return 1;
 					}
 				}
