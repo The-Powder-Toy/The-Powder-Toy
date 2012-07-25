@@ -12,6 +12,10 @@
 #include "bson/BSON.h"
 #include "GameSave.h"
 #include "simulation/SimulationData.h"
+extern "C"
+{
+	#include "hmap.h"
+}
 
 GameSave::GameSave(GameSave & save) :
 waterEEnabled(save.waterEEnabled),
@@ -262,6 +266,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	int i, freeIndicesCount, x, y, j;
 	int *freeIndices = NULL;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
+	int savedVersion = inputData[4];
 	bson b;
 	bson_iterator iter;
 	
@@ -278,7 +283,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	fullH = blockH*CELL;
 	
 	//From newer version
-	if(inputData[4] > SAVE_VERSION)
+	if(savedVersion > SAVE_VERSION)
 		throw ParseException(ParseException::WrongVersion, "Save from newer version");
 	
 	//Incompatible cell size
@@ -715,6 +720,32 @@ void GameSave::readOPS(char * data, int dataLength)
 					case PT_SOAP:
 						//Clear soap links, links will be added back in if soapLinkData is present
 						particles[newIndex].ctype &= ~6;
+						break;
+					case PT_BOMB:
+						if (particles[newIndex].tmp!=0 && savedVersion < 81)
+						{
+							particles[newIndex].type = PT_EMBR;
+							particles[newIndex].ctype = 0;
+							if (particles[newIndex].tmp==1)
+								particles[newIndex].tmp = 0;
+						}
+						break;
+					case PT_DUST:
+						if (particles[newIndex].life>0 && savedVersion < 81)
+						{
+							particles[newIndex].type = PT_EMBR;
+							particles[newIndex].ctype = (particles[newIndex].tmp2<<16) | (particles[newIndex].tmp<<8) | particles[newIndex].ctype;
+							particles[newIndex].tmp = 1;
+						}
+						break;
+					case PT_FIRW:
+						if (particles[newIndex].tmp>=2 && savedVersion < 81)
+						{
+							int caddress = restrict_flt(restrict_flt((float)(particles[newIndex].tmp-4), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+							particles[newIndex].type = PT_EMBR;
+							particles[newIndex].tmp = 1;
+							particles[newIndex].ctype = (((unsigned char)(firw_data[caddress]))<<16) | (((unsigned char)(firw_data[caddress+1]))<<8) | ((unsigned char)(firw_data[caddress+2]));
+						}
 						break;
 					}
 					newIndex++;
@@ -1289,6 +1320,30 @@ void GameSave::readPSv(char * data, int dataLength)
 				else
 				{
 					particles[i-1].tmp2 = particles[i-1].life;
+				}
+			}
+
+			if (ver<81)
+			{
+				if (particles[i-1].type==PT_BOMB && particles[i-1].tmp!=0)
+				{
+					particles[i-1].type = PT_EMBR;
+					particles[i-1].ctype = 0;
+					if (particles[i-1].tmp==1)
+						particles[i-1].tmp = 0;
+				}
+				if (particles[i-1].type==PT_DUST && particles[i-1].life>0)
+				{
+					particles[i-1].type = PT_EMBR;
+					particles[i-1].ctype = (particles[i-1].tmp2<<16) | (particles[i-1].tmp<<8) | particles[i-1].ctype;
+					particles[i-1].tmp = 1;
+				}
+				if (particles[i-1].type==PT_FIRW && particles[i-1].tmp>=2)
+				{
+					int caddress = restrict_flt(restrict_flt((float)(particles[i-1].tmp-4), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+					particles[i-1].type = PT_EMBR;
+					particles[i-1].tmp = 1;
+					particles[i-1].ctype = (((unsigned char)(firw_data[caddress]))<<16) | (((unsigned char)(firw_data[caddress+1]))<<8) | ((unsigned char)(firw_data[caddress+2]));
 				}
 			}
 		}

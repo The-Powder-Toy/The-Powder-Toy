@@ -43,34 +43,7 @@ Element_DUST::Element_DUST()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    Graphics = &Element_DUST::graphics;
+    Graphics = NULL;
 }
-
-//#TPT-Directive ElementHeader Element_DUST static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_DUST::graphics(GRAPHICS_FUNC_ARGS)
-
-{
-	if(cpart->life >= 1)
-	{
-		*firea = 120;
-		*firer = *colr = cpart->flags;
-		*fireg = *colg = cpart->tmp;
-		*fireb = *colb = cpart->ctype;
-		if (ren->decorations_enable && cpart->dcolour)
-		{
-			int a = (cpart->dcolour>>24)&0xFF;
-			*firer = *colr = (a*((cpart->dcolour>>16)&0xFF) + (255-a)**colr) >> 8;
-			*fireg = *colg = (a*((cpart->dcolour>>8)&0xFF) + (255-a)**colg) >> 8;
-			*fireb = *colb = (a*((cpart->dcolour)&0xFF) + (255-a)**colb) >> 8;
-		}
-		*pixel_mode |= PMODE_GLOW | FIRE_ADD;
-		/**firea = 255;
-		*firer = *colr;
-		*fireg = *colg;
-		*fireb = *colb;*/
-	}
-	return 0;
-}
-
 
 Element_DUST::~Element_DUST() {}

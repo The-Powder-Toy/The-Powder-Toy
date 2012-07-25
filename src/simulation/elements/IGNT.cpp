@@ -73,9 +73,9 @@ int Element_IGNT::update(UPDATE_FUNC_ARGS)
 	{
 		if(rand()%3)
 		{
-			int nb = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_BOMB);
+			int nb = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_EMBR);
 			if (nb!=-1) {
-				parts[nb].tmp = 1;
+				parts[nb].tmp = 0;
 				parts[nb].life = 30;
 				parts[nb].vx = rand()%20-10;
 				parts[nb].vy = rand()%20-10;

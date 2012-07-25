@@ -94,7 +94,7 @@ int Element_EMBR::graphics(GRAPHICS_FUNC_ARGS)
         *colr = *colg = *colb = 255;
     }
 
-    if (decorations_enable && cpart->dcolour)
+    if (ren->decorations_enable && cpart->dcolour)
     {
         int a = (cpart->dcolour>>24)&0xFF;
         *colr = (a*((cpart->dcolour>>16)&0xFF) + (255-a)**colr) >> 8;

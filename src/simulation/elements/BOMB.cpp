@@ -70,7 +70,7 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 								if ((pmap[y+nxj][x+nxi]&0xFF)!=PT_DMND && (pmap[y+nxj][x+nxi]&0xFF)!=PT_CLNE && (pmap[y+nxj][x+nxi]&0xFF)!=PT_PCLN && (pmap[y+nxj][x+nxi]&0xFF)!=PT_BCLN)
 								{
 									sim->delete_part(x+nxi, y+nxj, 0);
-									pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
+									sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
 									nb = sim->create_part(-3, x+nxi, y+nxj, PT_EMBR);
 									if (nb!=-1)
 									{

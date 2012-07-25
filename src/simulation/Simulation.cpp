@@ -1899,6 +1899,7 @@ void Simulation::init_can_move()
 	can_move[PT_ANAR][PT_WHOL] = 1;
 	can_move[PT_ANAR][PT_NWHL] = 1;
 	can_move[PT_THDR][PT_THDR] = 2;
+	can_move[PT_EMBR][PT_EMBR] = 2;
 }
 
 /*
@@ -1968,9 +1969,6 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		return 1;
 
 	e = eval_move(parts[i].type, nx, ny, &r);
-
-	if ((r&0xFF)==PT_BOMB && parts[i].type==PT_BOMB && parts[i].tmp == 1)
-		e = 2;
 
 	/* half-silvered mirror */
 	if (!e && parts[i].type==PT_PHOT &&
@@ -2747,6 +2745,9 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 			case PT_EXOT:
 				parts[i].life = 1000;
 				parts[i].tmp = 244;
+				break;
+			case PT_EMBR:
+				parts[i].life = 50;
 				break;
 			case PT_STKM:
 				if (player.spwn==0)
@@ -4242,7 +4243,7 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
 					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
 						pmap[y][x] = t|(i<<8);
-					if (t!=PT_THDR)
+					if (t!=PT_THDR && t!=PT_EMBR)
 						pmap_count[y][x]++;
 				}
 			}
