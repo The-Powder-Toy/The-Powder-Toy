@@ -621,6 +621,27 @@ void Renderer::DrawWalls()
 								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x242424);
 					}
 				}
+				else if (wt==WL_STREAM)
+				{
+					float lx, ly, nx, ny;
+					lx = x*CELL + CELL*0.5f;
+					ly = y*CELL + CELL*0.5f;
+					for (int t = 0; t < 1024; t++)
+					{
+						nx = (int)(lx+0.5f);
+						ny = (int)(ly+0.5f);
+						if (nx<0 || nx>=XRES || ny<0 || ny>=YRES)
+							break;
+						addpixel(nx, ny, 255, 255, 255, 64);
+						i = nx/CELL;
+						j = ny/CELL;
+						lx += sim->vx[j][i]*0.125f;
+						ly += sim->vy[j][i]*0.125f;
+						if (bmap[j][i]==WL_STREAM && i!=x && j!=y)
+							break;
+					}
+					drawtext(x*CELL, y*CELL-2, "\x8D", 255, 255, 255, 128);
+				}
 				if (wtypes[wt].eglow && emap[y][x])
 				{
 					// glow if electrified
