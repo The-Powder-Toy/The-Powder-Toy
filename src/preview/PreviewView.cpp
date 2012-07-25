@@ -16,6 +16,7 @@
 #include "interface/Textbox.h"
 #include "Style.h"
 #include "search/Thumbnail.h"
+#include "client/Client.h"
 
 class PreviewView::LoginAction: public ui::ButtonAction
 {
@@ -93,6 +94,7 @@ PreviewView::PreviewView():
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetIcon(IconFavourite);
 	favButton->SetActionCallback(new FavAction(this));
+	favButton->Enabled = Client::Ref().GetAuthUser().ID?true:false;
 	AddComponent(favButton);
 
 	class ReportPromptCallback: public TextDialogueCallback {
@@ -120,6 +122,7 @@ PreviewView::PreviewView():
 	reportButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	reportButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	reportButton->SetIcon(IconReport);
 	reportButton->SetActionCallback(new ReportAction(this));
+	reportButton->Enabled = Client::Ref().GetAuthUser().ID?true:false;
 	AddComponent(reportButton);
 
 	class BrowserOpenAction: public ui::ButtonAction
@@ -340,7 +343,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
 			favButton->Enabled = false;
-		else
+		else if(Client::Ref().GetAuthUser().ID)
 			favButton->Enabled = true;
 
 		if(save->GetGameSave())
