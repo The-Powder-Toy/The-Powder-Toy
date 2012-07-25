@@ -86,12 +86,6 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT); if (j != -1) parts[j].temp = 15000;
 			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT); if (j != -1) parts[j].temp = 15000;
 			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM); if (j != -1) parts[j].temp = 15000;
-			if (rand()%5 < 2) {
-				j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_SING);
-				if (j != -1) {
-					parts[j].temp = 15000; parts[i].life = rand()%25+50;
-				}
-			}
 
 			parts[i].temp = 15000;
 			sim->pv[y/CELL][x/CELL] += 300;
