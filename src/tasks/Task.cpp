@@ -13,6 +13,8 @@
 void Task::AddTaskListener(TaskListener * listener)
 {
 	this->listener = listener;
+	notifyProgressMain();
+	notifyStatusMain();
 }
 
 void Task::Start()

@@ -99,8 +99,11 @@ void TaskWindow::OnDraw()
 
 	if(progress!=-1)
 	{
-		float size = float(Size.X-4)*(float(progress)/100.0f); // TIL...
-		g->fillrect(Position.X + 2, Position.Y + Size.Y-15, size, 13, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+		if(progress > 0)
+		{
+			float size = float(Size.X-4)*(float(progress)/100.0f); // TIL...
+			g->fillrect(Position.X + 2, Position.Y + Size.Y-15, size, 13, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+		}
 	} else {
 		int size = 40, rsize = 0;
 		float position = float(Size.X-4)*(intermediatePos/100.0f);
