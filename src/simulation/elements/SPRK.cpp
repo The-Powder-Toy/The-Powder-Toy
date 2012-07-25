@@ -243,7 +243,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					else if (rt==PT_INST) {
 						if (parts[r>>8].life==0 && parts[i].life<4)
 						{
-							sim->FloodParts(x+rx,y+ry,PT_SPRK,PT_INST,-1, 0);//spark the wire
+							sim->FloodINST(x+rx,y+ry,PT_SPRK,PT_INST);//spark the wire
 						}
 					}
 					else if (parts[r>>8].life==0 && parts[i].life<4) {

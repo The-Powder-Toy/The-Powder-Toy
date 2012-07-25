@@ -26,21 +26,21 @@ Element_FRZZ::Element_FRZZ()
     
     Weight = 50;
     
-    Temperature = 90.0f;
+    Temperature = 253.15f;
     HeatConduct = 46;
-    Description = "FREEZE";
+    Description = "Freeze powder. When melted, forms ice that always cools. Spreads with regular water.";
     
     State = ST_SOLID;
     Properties = TYPE_PART;
     
     LowPressure = IPL;
     LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
+    HighPressure = 1.8f;
+    HighPressureTransition = PT_SNOW;
+    LowTemperature = 50.0f;
+    LowTemperatureTransition = PT_ICEI;
+    HighTemperature = 273.15;
+    HighTemperatureTransition = PT_WATR;
     
     Update = &Element_FRZZ::update;
     

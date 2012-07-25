@@ -66,6 +66,8 @@ int Element_ICEI::update(UPDATE_FUNC_ARGS)
 					sim->part_change_type(i,x,y,PT_SLTW);
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
 				}
+                if (((r&0xFF)==PT_FRZZ) && (parts[i].ctype=PT_FRZW) && 1>(rand()%1000))
+                    sim->part_change_type(r>>8,x+rx,y+ry,PT_ICEI);
 			}
 	return 0;
 }

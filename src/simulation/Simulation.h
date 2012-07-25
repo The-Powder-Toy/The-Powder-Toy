@@ -160,6 +160,7 @@ public:
 	void ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrush);
 	
 	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags);
+	int FloodINST(int x, int y, int fullc, int cm);
 	int FloodParts(int x, int y, int c, int cm, int bm, int flags);
 	//Create particles from brush/mask
 	int CreateParts(int positionX, int positionY, int c, Brush * cBrush);
