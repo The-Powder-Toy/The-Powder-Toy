@@ -27,7 +27,7 @@ void Graphics::Finalise()
 #define VIDXRES XRES+BARSIZE
 #define VIDYRES YRES+MENUSIZE
 #define PIXELMETHODS_CLASS Graphics
-#include "RasterDrawMethods.inc"
+#include "RasterDrawMethods.inl"
 #undef VIDYRES
 #undef VIDXRES
 #undef PIXELMETHODS_CLASS
