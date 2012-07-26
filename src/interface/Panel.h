@@ -6,6 +6,12 @@
 #include "interface/Window.h"
 #include "interface/Component.h"
 
+#ifdef OGLI
+#include "graphics/OpenGLHeaders.h"
+#endif
+
+
+class Graphics;
 namespace ui
 {
 	/* class XComponent
@@ -15,15 +21,22 @@ namespace ui
 	 * 
 	 * See sys::Component
 	 */
+
 class Component;
 	class Panel : public Component
 	{
 	public:
 		friend class Component;
 
-		Panel(Window* parent_state);
+#ifdef OGLI
+		GLuint myVid, myVidTex;
+#else 
+		pixel * myVid;
+#endif
+		ui::Point InnerSize;
+		ui::Point ViewportPosition;
+
 		Panel(Point position, Point size);
-		Panel();
 		virtual ~Panel();
 		
 		/* Add a child component.
@@ -65,6 +78,7 @@ class Component;
 	protected:
 		// child components
 		std::vector<ui::Component*> children;
+		bool mouseInside;
 		
 		//UI functions:
 		/*

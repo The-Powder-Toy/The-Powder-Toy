@@ -18,6 +18,11 @@
 #include "interface/Label.h"
 #include "interface/Textbox.h"
 
+namespace ui
+{
+	class ScrollPanel;
+}
+
 class PreviewModel;
 class PreviewController;
 class PreviewView: public ui::Window {
@@ -36,6 +41,7 @@ class PreviewView: public ui::Window {
 	ui::Label * authorDateLabel;
 	ui::Label * pageInfo;
 	ui::Label * saveDescriptionLabel;
+	ui::ScrollPanel * commentsPanel;
 	std::vector<SaveComment> comments;
 	std::vector<ui::Component*> commentComponents;
 	std::vector<ui::Component*> commentTextComponents;
@@ -43,19 +49,13 @@ class PreviewView: public ui::Window {
 	int votesDown;
 	bool doOpen;
 
-	bool commentsEnd;
-	bool commentsBegin;
-	int maxOffset;
-	float commentsOffset;
-	float commentsVel;
-
 	int commentBoxHeight;
 	float commentBoxPositionX;
 	float commentBoxPositionY;
 	float commentBoxSizeX;
 	float commentBoxSizeY;
 
-	void displayComments(int yOffset);
+	void displayComments();
 	void commentBoxAutoHeight();
 	void submitComment();
 public:

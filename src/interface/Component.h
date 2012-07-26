@@ -37,6 +37,8 @@ namespace ui
 		inline Window* const GetParentWindow() const { return parentstate_; }
 		bool IsFocused() const;
 
+		void Invalidate() { drawn = false; }
+
 		Point Position;
 		Point Size;
 		bool Locked;
