@@ -86,9 +86,12 @@ public:
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void SetColour(ui::Colour colour);
 	void SetToolStrength(float value);
+	void LoadSaveFile(SaveFile * file);
 	void OpenSearch();
 	void OpenLogin();
 	void OpenTags();
+	void OpenLocalSaveWindow();
+	void OpenLocalBrowse();
 	void OpenOptions();
 	void OpenRenderOptions();
 	void OpenSaveWindow();

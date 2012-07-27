@@ -59,6 +59,8 @@ public:
 	GameSave(GameSave & save);
 	GameSave(int width, int height);
 	GameSave(char * data, int dataSize);
+	GameSave(std::vector<char> data);
+	GameSave(std::vector<unsigned char> data);
 	~GameSave();
 	void setSize(int width, int height);
 	char * Serialise(int & dataSize);
@@ -85,6 +87,7 @@ private:
 	float * fanVelYPtr;
 	unsigned char * blockMapPtr;
 
+	void read(char * data, int dataSize);
 	void readOPS(char * data, int dataLength);
 	void readPSv(char * data, int dataLength);
 	char * serialiseOPS(int & dataSize);

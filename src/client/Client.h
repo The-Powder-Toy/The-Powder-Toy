@@ -81,6 +81,11 @@ public:
 	Client();
 	~Client();
 
+	std::vector<std::string> DirectorySearch(std::string directory, std::string search, std::vector<std::string> extensions);
+	std::vector<std::string> DirectorySearch(std::string directory, std::string search, std::string extension);
+
+	std::vector<unsigned char> ReadFile(std::string filename);
+
 	void AddListener(ClientListener * listener);
 	void RemoveListener(ClientListener * listener);
 

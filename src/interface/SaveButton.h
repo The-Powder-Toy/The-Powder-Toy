@@ -27,6 +27,7 @@ class SaveButton : public Component
 	SaveInfo * save;
 	Thumbnail * thumbnail;
 	std::string name;
+	bool wantsDraw;
 public:
 	SaveButton(Point position, Point size, SaveInfo * save);
 	SaveButton(Point position, Point size, SaveFile * file);

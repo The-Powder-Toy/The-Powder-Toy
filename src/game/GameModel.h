@@ -95,6 +95,7 @@ public:
 	SaveInfo * GetSave();
 	Brush * GetBrush();
 	void SetSave(SaveInfo * newSave);
+	void SetSaveFile(SaveFile * newSave);
 	void AddObserver(GameView * observer);
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int selection, Tool * tool);

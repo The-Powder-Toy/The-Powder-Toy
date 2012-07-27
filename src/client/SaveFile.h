@@ -11,19 +11,24 @@
 #include <string>
 #include "GameSave.h"
 
+
 using namespace std;
 
+class Thumbnail;
 class SaveFile {
 public:
 	SaveFile(SaveFile & save);
 	SaveFile(string filename);
 
+	Thumbnail * GetThumbnail();
 	GameSave * GetGameSave();
+	void SetThumbnail(Thumbnail * thumb);
 	void SetGameSave(GameSave * save);
 	string GetName();
 
 	virtual ~SaveFile();
 private:
+	Thumbnail * thumbnail;
 	GameSave * gameSave;
 	string filename;
 };

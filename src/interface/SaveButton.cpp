@@ -61,7 +61,8 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	actionCallback(NULL),
 	voteColour(255, 0, 0),
 	selectable(false),
-	selected(false)
+	selected(false),
+	wantsDraw(false)
 {
 	if(file)
 	{
@@ -91,7 +92,7 @@ void SaveButton::Tick(float dt)
 {
 	Thumbnail * tempThumb;
 	float scaleFactorY = 1.0f, scaleFactorX = 1.0f;
-	if(!thumbnail)
+	if(!thumbnail/* && wantsDraw*/)
 	{
 		if(save)
 		{
@@ -114,7 +115,11 @@ void SaveButton::Tick(float dt)
 		}
 		if(file)
 		{
-			if(file->GetGameSave())
+			if(file->GetThumbnail())
+			{
+				thumbnail = new Thumbnail(*file->GetThumbnail());
+			}
+			else if(file->GetGameSave())
 			{
 				thumbnail = SaveRenderer::Ref().Render(file->GetGameSave());
 			}
@@ -151,6 +156,8 @@ void SaveButton::Draw(const Point& screenPos)
 	Graphics * g = ui::Engine::Ref().g;
 	float scaleFactor;
 	ui::Point thumbBoxSize(0, 0);
+
+	wantsDraw = true;
 
 	if(selected && selectable)
 	{

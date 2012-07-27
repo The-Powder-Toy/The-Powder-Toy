@@ -85,16 +85,19 @@ void Button::Draw(const Point& screenPos)
 	}
 	Graphics * g = ui::Engine::Ref().g;
 	Point Position = screenPos;
+	ui::Colour bgColour(0, 0, 0);
 	if(Enabled)
 	{
 		if(isButtonDown || (isTogglable && toggle))
 		{
+			bgColour = Appearance.BackgroundActive;
 			g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, Appearance.BackgroundActive.Red, Appearance.BackgroundActive.Green, Appearance.BackgroundActive.Blue, 255);
 			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BorderActive.Red, Appearance.BorderActive.Green, Appearance.BorderActive.Blue, 255);
 			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, buttonDisplayText, Appearance.TextActive.Red, Appearance.TextActive.Green, Appearance.TextActive.Blue, 255);
 		}
 		else
 		{
+			bgColour = Appearance.BackgroundInactive;
 			g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, 255);
 			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BorderInactive.Red, Appearance.BorderInactive.Green, Appearance.BorderInactive.Blue, 255);
 			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, buttonDisplayText, Appearance.TextInactive.Red, Appearance.TextInactive.Green, Appearance.TextInactive.Blue, 255);
@@ -102,23 +105,27 @@ void Button::Draw(const Point& screenPos)
 	}
 	else
 	{
+		bgColour = Appearance.BackgroundInactive;
 		g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, 180);
 		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BackgroundDisabled.Red, Appearance.BackgroundDisabled.Green, Appearance.BackgroundDisabled.Blue, Appearance.BackgroundDisabled.Alpha);
 		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, buttonDisplayText, 180, 180, 180, 255);
 	}
+
+	bool iconInvert = (bgColour.Blue + (3*bgColour.Green) + (2*bgColour.Red))>544?true:false;
+
 	if(Appearance.icon)
 	{
 		if(Enabled)
 			if(isButtonDown || (isTogglable && toggle))
 			{
-				g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255, true);
+				g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255, iconInvert);
 			}
 			else
 			{
-				g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255);	
+				g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255, iconInvert);	
 			}
 		else
-			g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 180);
+			g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 180, iconInvert);
 	}
 }
 

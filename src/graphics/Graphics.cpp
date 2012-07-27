@@ -31,7 +31,6 @@ VideoBuffer::VideoBuffer(VideoBuffer * old):
 	std::copy(old->Buffer, old->Buffer+(old->Width*old->Height), Buffer);
 };
 
-
 VideoBuffer::~VideoBuffer()
 {
 	delete[] Buffer;

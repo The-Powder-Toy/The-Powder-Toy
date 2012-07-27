@@ -16,6 +16,7 @@
 #include "elementsearch/ElementSearchActivity.h"
 #include "update/UpdateActivity.h"
 #include "Notification.h"
+#include "filebrowser/FileBrowserActivity.h"
 
 using namespace std;
 
@@ -521,6 +522,32 @@ void GameController::OpenSearch()
 {
 	search = new SearchController(new SearchCallback(this));
 	ui::Engine::Ref().ShowWindow(search->GetView());
+}
+
+void GameController::OpenLocalSaveWindow()
+{
+
+}
+
+void GameController::LoadSaveFile(SaveFile * file)
+{
+	gameModel->SetSaveFile(file);
+}
+
+void GameController::OpenLocalBrowse()
+{
+	class LocalSaveOpenCallback: public FileSelectedCallback
+	{
+		GameController * c;
+	public:
+		LocalSaveOpenCallback(GameController * _c): c(_c) {}
+		virtual  ~LocalSaveOpenCallback() {};
+		virtual void FileSelected(SaveFile* file)
+		{
+			c->LoadSaveFile(file);
+		}
+	};
+	new FileBrowserActivity(LOCAL_SAVE_DIR PATH_SEP, new LocalSaveOpenCallback(this));
 }
 
 void GameController::OpenLogin()

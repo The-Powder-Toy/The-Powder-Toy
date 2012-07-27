@@ -329,7 +329,7 @@ void PIXELMETHODS_CLASS::clearrect(int x, int y, int w, int h)
 void PIXELMETHODS_CLASS::draw_image(pixel *img, int x, int y, int w, int h, int a)
 {
 	int i, j, r, g, b;
-	if (!img) return;
+	if (!img || y >= VIDYRES) return;
 	if(y + h > VIDYRES) h = (VIDYRES)-y; //Adjust height to prevent drawing off the bottom
 	if(a >= 255)
 		for (j=0; j<h; j++)

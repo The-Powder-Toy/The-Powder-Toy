@@ -6,19 +6,35 @@
  */
 
 #include "SaveFile.h"
+#include "Client.h"
+ #include "search/Thumbnail.h"
 
 SaveFile::SaveFile(SaveFile & save):
-	gameSave(NULL)
+	gameSave(NULL),
+	thumbnail(NULL)
 {
 	if(save.gameSave)
 		gameSave = new GameSave(*save.gameSave);
+	if(save.thumbnail)
+		thumbnail = new Thumbnail(*save.thumbnail);
+}
+
+Thumbnail * SaveFile::GetThumbnail()
+{
+	return thumbnail;
+}
+
+void SaveFile::SetThumbnail(Thumbnail * thumb)
+{
+	thumbnail = thumb;
 }
 
 SaveFile::SaveFile(string filename):
 		filename(filename),
-		gameSave(NULL)
-	{
-	//Load file
+		gameSave(NULL),
+		thumbnail(NULL)
+{
+
 }
 
 GameSave * SaveFile::GetGameSave()
@@ -39,5 +55,7 @@ string SaveFile::GetName()
 SaveFile::~SaveFile() {
 	if(gameSave)
 		delete gameSave;
+	if(thumbnail)
+		delete thumbnail;
 }
 

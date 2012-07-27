@@ -22,12 +22,18 @@
 #include "Misc.h"
 
 #include "interface/Point.h"
-
 #include "client/SaveInfo.h"
-
 #include "ClientListener.h"
-
 #include "Update.h"
+
+extern "C"
+{
+#if defined(WIN32) && !defined(__GNUC__)
+#include <io.h>
+#else
+#include <dirent.h>
+#endif
+}
 
 Client::Client():
 	authUser(0, ""),
@@ -115,6 +121,95 @@ Client::Client():
 
 	//Begin version check
 	versionCheckRequest = http_async_req_start(NULL, SERVER "/Download/Version.json", NULL, 0, 1);
+}
+
+std::vector<std::string> Client::DirectorySearch(std::string directory, std::string search, std::string extension)
+{
+	std::vector<std::string> extensions;
+	extensions.push_back(extension);
+	return DirectorySearch(directory, search, extensions);
+}
+
+std::vector<std::string> Client::DirectorySearch(std::string directory, std::string search, std::vector<std::string> extensions)
+{
+	std::vector<std::string> results;
+
+	//Get full file listing
+	std::vector<std::string> directoryList;
+#if defined(WIN32) && !defined(__GNUC__)
+	//Windows
+	struct _finddata_t currentFile;
+	intptr_t findFileHandle;
+	std::string fileMatch = directory + "*.*";
+	findFileHandle = _findfirst(fileMatch.c_str(), &currentFile);
+	if (findFileHandle == -1L)
+	{
+		printf("Unable to open directory\n");
+		return std::vector<std::string>();
+	}
+	do
+	{
+		std::string currentFileName = std::string(currentFile.name);
+		if(currentFileName.length()>4)
+			directoryList.push_back(directory+currentFileName);
+	}
+	while (_findnext(findFileHandle, &currentFile) == 0);
+	_findclose(findFileHandle);
+#else
+	//Linux or MinGW
+	struct dirent * directoryEntry;
+	DIR *directoryHandle = opendir(directory.c_str());
+	if(!directoryHandle)
+	{
+		printf("Unable to open directory\n");
+		return std::vector<std::string>();
+	}
+	while(directoryEntry = readdir(directoryHandle))
+	{
+		std::string currentFileName = std::string(directoryEntry->d_name);
+		if(currentFileName.length()>4)
+			directoryList.push_back(directory+currentFileName);
+	}
+	closedir(directoryHandle);
+#endif
+
+	//Filter results
+	return directoryList;
+	return results;
+}
+
+std::vector<unsigned char> Client::ReadFile(std::string filename)
+{
+	try
+	{
+		std::ifstream fileStream;
+		fileStream.open(string(filename).c_str(), ios::binary);
+		if(fileStream.is_open())
+		{
+			fileStream.seekg(0, ios::end);
+			size_t fileSize = fileStream.tellg();
+			fileStream.seekg(0);
+
+			unsigned char * tempData = new unsigned char[fileSize];
+			fileStream.read((char *)tempData, fileSize);
+			fileStream.close();
+
+			std::vector<unsigned char> fileData;
+			fileData.insert(fileData.end(), tempData, tempData+fileSize);
+			delete[] tempData;
+
+			return fileData;
+		}
+		else
+		{
+			return std::vector<unsigned char>();
+		}
+	}
+	catch(std::exception & e)
+	{
+		std::cerr << "Readfile: " << e.what() << std::endl;
+		throw;
+	}
 }
 
 void Client::Tick()

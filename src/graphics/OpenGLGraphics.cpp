@@ -1,11 +1,17 @@
 #include "Graphics.h"
 #include "font.h"
+#include <pthread.h>
 
 #ifdef OGLI
+
+static pthread_mutex_t gMutex = PTHREAD_MUTEX_INITIALIZER;
 
 Graphics::Graphics():
 sdl_scale(1)
 {
+	if(gMutex == PTHREAD_MUTEX_INITIALIZER)
+		pthread_mutex_init (&gMutex, NULL);
+
 	Reset();
 	
 	glEnable(GL_BLEND);
@@ -33,6 +39,16 @@ sdl_scale(1)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	
 	glDisable(GL_TEXTURE_2D);
+}
+
+void Graphics::Acquire()
+{
+	pthread_mutex_lock(&gMutex);
+}
+
+void Graphics::Release()
+{
+	pthread_mutex_unlock(&gMutex);
 }
 
 Graphics::~Graphics()

@@ -170,6 +170,7 @@ void Engine::Draw()
 {
 	if(lastBuffer && !(state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
 	{
+		g->Acquire();
 		g->Clear();
 #ifndef OGLI
 		memcpy(g->vid, lastBuffer, (width_ * height_) * PIXELSIZE);
@@ -188,6 +189,7 @@ void Engine::Draw()
 	ui::Engine::Ref().g->drawtext(10, 10, fpsText, 255, 255, 255, 255);
 #endif
 	g->Finalise();
+	g->Release();
 	FrameIndex++;
 	FrameIndex %= 7200;
 }

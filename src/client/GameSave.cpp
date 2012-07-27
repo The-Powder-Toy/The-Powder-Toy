@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include <sstream>
 #include <bzlib.h>
 #include "Config.h"
 #include "bson/BSON.h"
@@ -56,6 +57,50 @@ GameSave::GameSave(int width, int height)
 	setSize(width, height);
 }
 
+GameSave::GameSave(std::vector<char> data)
+{
+	blockWidth = 0;
+	blockHeight = 0;
+
+	blockMap = NULL;
+	blockMapPtr = NULL;
+	fanVelX = NULL;
+	fanVelXPtr = NULL;
+	fanVelY = NULL;
+	fanVelYPtr = NULL;
+	particles = NULL;
+
+	try{
+		read(&data[0], data.size());
+	} catch (ParseException& e) {
+		std::cout << e.what() << std::endl;
+		this->~GameSave();	//Free any allocated memory
+		throw;
+	}
+}
+
+GameSave::GameSave(std::vector<unsigned char> data)
+{
+	blockWidth = 0;
+	blockHeight = 0;
+
+	blockMap = NULL;
+	blockMapPtr = NULL;
+	fanVelX = NULL;
+	fanVelXPtr = NULL;
+	fanVelY = NULL;
+	fanVelYPtr = NULL;
+	particles = NULL;
+
+	try{
+		read((char*)(&data[0]), data.size());
+	} catch (ParseException& e) {
+		std::cout << e.what() << std::endl;
+		this->~GameSave();	//Free any allocated memory
+		throw;
+	}
+}
+
 GameSave::GameSave(char * data, int dataSize)
 {
 	blockWidth = 0;
@@ -69,31 +114,36 @@ GameSave::GameSave(char * data, int dataSize)
 	fanVelYPtr = NULL;
 	particles = NULL;
 
-	try {
-		if(dataSize > 0)
-		{
-			if(data[0] == 0x50 || data[0] == 0x66)
-			{
-				readPSv(data, dataSize);
-			}
-			else if(data[0] == 'O')
-			{
-				readOPS(data, dataSize);
-			}
-			else
-			{
-				std::cerr << "Got Magic number '" << data[0] << "'" << std::endl;
-				throw ParseException(ParseException::Corrupt, "Invalid save format");
-			}
-		}
-		else
-		{
-			throw ParseException(ParseException::Corrupt, "No data");
-		}
+	try{
+		read(data, dataSize);
 	} catch (ParseException& e) {
 		std::cout << e.what() << std::endl;
 		this->~GameSave();	//Free any allocated memory
 		throw;
+	}
+}
+
+void GameSave::read(char * data, int dataSize)
+{
+	if(dataSize > 0)
+	{
+		if(data[0] == 0x50 || data[0] == 0x66)
+		{
+			readPSv(data, dataSize);
+		}
+		else if(data[0] == 'O')
+		{
+			readOPS(data, dataSize);
+		}
+		else
+		{
+			std::cerr << "Got Magic number '" << data[0] << "'" << std::endl;
+			throw ParseException(ParseException::Corrupt, "Invalid save format");
+		}
+	}
+	else
+	{
+		throw ParseException(ParseException::Corrupt, "No data");
 	}
 }
 
@@ -895,8 +945,13 @@ void GameSave::readPSv(char * data, int dataLength)
 	
 	setSize(bw, bh);
 	
-	if (BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), dataLength-12, 0, 0))
-		throw ParseException(ParseException::Corrupt, "Cannot decompress");
+	int bzStatus = 0;
+	if (bzStatus = BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), dataLength-12, 0, 0))
+	{
+		std::stringstream bzStatusStr;
+		bzStatusStr << bzStatus;
+		throw ParseException(ParseException::Corrupt, "Cannot decompress: " + bzStatusStr.str());
+	}
 	dataLength = i;
 
 	std::cout << "Parsing " << dataLength << " bytes of data, version " << ver << std::endl;

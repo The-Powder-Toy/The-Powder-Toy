@@ -135,6 +135,9 @@ public:
 	static int textwidth(const char *s);
 	static void textsize(const char * s, int & width, int & height);
 
+	void Acquire();
+	void Release();
+
 	void blendpixel(int x, int y, int r, int g, int b, int a);
 	void addpixel(int x, int y, int r, int g, int b, int a);
 

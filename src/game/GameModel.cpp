@@ -308,6 +308,34 @@ void GameModel::SetSave(SaveInfo * newSave)
 	notifySaveChanged();
 }
 
+void GameModel::SetSaveFile(SaveFile * newSave)
+{
+	SetSave(NULL);
+
+	if(newSave && newSave->GetGameSave())
+	{
+		GameSave * saveData = newSave->GetGameSave();
+		SetPaused(saveData->paused & GetPaused());
+		sim->gravityMode = saveData->gravityMode;
+		sim->air->airMode = saveData->airMode;
+		sim->legacy_enable = saveData->legacyEnable;
+		sim->water_equal_test = saveData->waterEEnabled;
+		if(saveData->gravityEnable && !sim->grav->ngrav_enable)
+		{
+			sim->grav->start_grav_async();
+		}
+		else if(!saveData->gravityEnable && sim->grav->ngrav_enable)
+		{
+			sim->grav->stop_grav_async();
+		}
+		sim->clear_sim();
+		sim->Load(saveData);
+	}
+	delete newSave;
+	
+	notifySaveChanged();
+}
+
 Simulation * GameModel::GetSimulation()
 {
 	return sim;

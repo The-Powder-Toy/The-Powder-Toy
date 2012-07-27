@@ -37,7 +37,8 @@ GameView::GameView():
 	toolTip(""),
 	infoTip(""),
 	infoTipPresence(0),
-	toolTipPosition(-1, -1)
+	toolTipPosition(-1, -1),
+	alternativeSaveSource(false)
 {
 	
 	int currentX = 1;
@@ -49,7 +50,10 @@ GameView::GameView():
 		SearchAction(GameView * _v) { v = _v; }
 		void ActionCallback(ui::Button * sender)
 		{
-			v->c->OpenSearch();
+			if(v->GetAlternativeSourceEnabled())
+				v->c->OpenLocalBrowse();
+			else
+				v->c->OpenSearch();
 		}
 	};
 	
@@ -89,7 +93,10 @@ GameView::GameView():
         SaveSimulationAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-            v->c->OpenSaveWindow();
+        	if(v->GetAlternativeSourceEnabled())
+        		v->c->OpenLocalSaveWindow();
+        	else
+	            v->c->OpenSaveWindow();
         }
     };
     saveSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), "[untitled simulation]");
@@ -847,6 +854,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			drawMode = DrawFill;
 		else
 			drawMode = DrawRect;
+		enableHDDSave();
 		break;
 	case KEY_SHIFT:
 		if(drawModeReset)
@@ -939,6 +947,9 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 	{
 	case KEY_ALT:
 		drawSnap = false;
+		break;
+	case KEY_CTRL:
+		disableHDDSave();
 		break;
 	case 'z':
 		if(!zoomCursorFixed)
@@ -1150,6 +1161,32 @@ void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 void GameView::changeColour()
 {
 	c->SetColour(ui::Colour(colourRSlider->GetValue(), colourGSlider->GetValue(), colourBSlider->GetValue(), colourASlider->GetValue()));
+}
+
+void GameView::enableHDDSave()
+{
+	if(!alternativeSaveSource)
+	{
+		alternativeSaveSource = true;
+
+		saveSimulationButton->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
+		saveSimulationButton->Appearance.TextInactive = ui::Colour(0, 0, 0);
+		searchButton->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
+		searchButton->Appearance.TextInactive = ui::Colour(0, 0, 0);
+	}
+}
+
+void GameView::disableHDDSave()
+{
+	if(alternativeSaveSource)
+	{
+		alternativeSaveSource = false;
+
+		saveSimulationButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
+		saveSimulationButton->Appearance.TextInactive = ui::Colour(255, 255, 255);
+		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
+		searchButton->Appearance.TextInactive = ui::Colour(255, 255, 255);
+	}
 }
 
 void GameView::OnDraw()

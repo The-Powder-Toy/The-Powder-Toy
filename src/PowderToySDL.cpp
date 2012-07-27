@@ -207,7 +207,6 @@ int main(int argc, char * argv[])
 	//glScaled(2.0f, 2.0f, 1.0f);
 
 #endif
-	
 	ui::Engine::Ref().g = new Graphics();
 	//ui::Engine::Ref().g->AttachSDLSurface(SDLOpen());
 

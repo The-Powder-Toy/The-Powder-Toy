@@ -28,7 +28,7 @@ void ScrollPanel::XOnMouseWheelInside(int localx, int localy, int d)
 {
 	if(!d)
 		return;
-	yScrollVel -= d;
+	yScrollVel -= d*2;
 }
 
 void ScrollPanel::XDraw(const Point& screenPos)
@@ -52,8 +52,8 @@ void ScrollPanel::XDraw(const Point& screenPos)
 
 void ScrollPanel::XTick(float dt)
 {
-	if(yScrollVel > 7.0f) yScrollVel = 7.0f;
-	if(yScrollVel < -7.0f) yScrollVel = -7.0f;
+	//if(yScrollVel > 7.0f) yScrollVel = 7.0f;
+	//if(yScrollVel < -7.0f) yScrollVel = -7.0f;
 	if(yScrollVel > -0.5f && yScrollVel < 0.5)
 		yScrollVel = 0;
 
@@ -63,14 +63,16 @@ void ScrollPanel::XTick(float dt)
 		xScrollVel = 0;
 
 	maxOffset = InnerSize-Size;
+	maxOffset.Y = std::max(0, maxOffset.Y);
+	maxOffset.X = std::max(0, maxOffset.X);
 
 	int oldOffsetY = offsetY;
 	offsetY += yScrollVel;
 	int oldOffsetX = offsetX;
 	offsetX += xScrollVel;
 
-	yScrollVel*=0.99f;
-	xScrollVel*=0.99f;
+	yScrollVel*=0.98f;
+	xScrollVel*=0.98f;
 
 	if(oldOffsetY!=int(offsetY))
 	{

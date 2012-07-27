@@ -161,7 +161,7 @@ void Panel::Draw(const Point& screenPos)
 	//dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
 	for (int row = 0; row < Size.Y; row++)
 	{
-		std::copy(myVid+(row*Size.W), myVid+(row*Size.W)+Size.W, lastVid+(screenPos.Y*(XRES+BARSIZE))+screenPos.X);
+		std::copy(myVid+(row*(XRES+BARSIZE)), myVid+(row*(XRES+BARSIZE))+Size.X, lastVid+((screenPos.Y+row)*(XRES+BARSIZE))+screenPos.X);
 	}
 #endif
 }
