@@ -73,7 +73,7 @@ TPT_INLINE void VideoBuffer::SetPixel(int x, int y, int r, int g, int b, int a)
 #ifdef PIX32OGL
 	Buffer[y*(Width)+x] = PIXRGBA(r,g,b,a);
 #else
-	Buffer[y*(Width)+x] = PIXRGB(r,g,b);
+	Buffer[y*(Width)+x] = PIXRGB((r*a)>>8, (g*a)>>8, (b*a)>>8);
 #endif
 }
 
