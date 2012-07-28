@@ -41,6 +41,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 	Thumbnail * tempThumb;
 	width = save->blockWidth;
 	height = save->blockHeight;
+	bool doCollapse = save->Collapsed();
 	
 	g->Acquire();
 	g->Clear();
@@ -112,6 +113,8 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 			free(pData);
 #endif
 	}
+	if(doCollapse)
+		save->Collapse();
 	g->Release();
 	return tempThumb;
 }

@@ -25,7 +25,10 @@ gravityEnable(save.gravityEnable),
 paused(save.paused),
 gravityMode(save.gravityMode),
 airMode(save.airMode),
-signs(save.signs)
+signs(save.signs),
+expanded(save.expanded),
+hasOriginalData(save.hasOriginalData),
+originalData(save.originalData)
 {
 	blockMap = NULL;
 	blockMapPtr = NULL;
@@ -34,14 +37,21 @@ signs(save.signs)
 	fanVelY = NULL;
 	fanVelYPtr = NULL;
 	particles = NULL;
+	if(save.expanded)
+	{
+		setSize(save.blockWidth, save.blockHeight);
 
-	setSize(save.blockWidth, save.blockHeight);
-
+		copy(save.particles, save.particles+NPART, particles);
+		copy(save.blockMapPtr, save.blockMapPtr+(blockHeight*blockWidth), blockMapPtr);
+		copy(save.fanVelXPtr, save.fanVelXPtr+(blockHeight*blockWidth), fanVelXPtr);
+		copy(save.fanVelYPtr, save.fanVelYPtr+(blockHeight*blockWidth), fanVelYPtr);
+	}
+	else
+	{
+		blockWidth = save.blockWidth;
+		blockHeight = save.blockHeight;
+	}
 	particlesCount = save.particlesCount;
-	copy(save.particles, save.particles+NPART, particles);
-	copy(save.blockMapPtr, save.blockMapPtr+(blockHeight*blockWidth), blockMapPtr);
-	copy(save.fanVelXPtr, save.fanVelXPtr+(blockHeight*blockWidth), fanVelXPtr);
-	copy(save.fanVelYPtr, save.fanVelYPtr+(blockHeight*blockWidth), fanVelYPtr);
 }
 
 GameSave::GameSave(int width, int height)
@@ -54,6 +64,8 @@ GameSave::GameSave(int width, int height)
 	fanVelYPtr = NULL;
 	particles = NULL;
 
+	hasOriginalData = false;
+	expanded = true;
 	setSize(width, height);
 }
 
@@ -70,13 +82,20 @@ GameSave::GameSave(std::vector<char> data)
 	fanVelYPtr = NULL;
 	particles = NULL;
 
-	try{
-		read(&data[0], data.size());
-	} catch (ParseException& e) {
+	expanded = false;
+	hasOriginalData = true;
+	originalData = data;
+	try
+	{
+		Expand();
+	}
+	catch(ParseException & e)
+	{
 		std::cout << e.what() << std::endl;
 		this->~GameSave();	//Free any allocated memory
 		throw;
 	}
+	Collapse();
 }
 
 GameSave::GameSave(std::vector<unsigned char> data)
@@ -92,13 +111,20 @@ GameSave::GameSave(std::vector<unsigned char> data)
 	fanVelYPtr = NULL;
 	particles = NULL;
 
-	try{
-		read((char*)(&data[0]), data.size());
-	} catch (ParseException& e) {
+	expanded = false;
+	hasOriginalData = true;
+	originalData = std::vector<char>(data.begin(), data.end());
+	try
+	{
+		Expand();
+	}
+	catch(ParseException & e)
+	{
 		std::cout << e.what() << std::endl;
 		this->~GameSave();	//Free any allocated memory
 		throw;
 	}
+	Collapse();
 }
 
 GameSave::GameSave(char * data, int dataSize)
@@ -114,12 +140,76 @@ GameSave::GameSave(char * data, int dataSize)
 	fanVelYPtr = NULL;
 	particles = NULL;
 
-	try{
-		read(data, dataSize);
-	} catch (ParseException& e) {
+	expanded = true;
+	hasOriginalData = true;
+	originalData = std::vector<char>(data, data+dataSize);
+	try
+	{
+		Expand();
+	}
+	catch(ParseException & e)
+	{
 		std::cout << e.what() << std::endl;
 		this->~GameSave();	//Free any allocated memory
 		throw;
+	}
+	//Collapse();
+}
+
+bool GameSave::Collapsed()
+{
+	return !expanded;
+}
+
+void GameSave::Expand()
+{
+	if(hasOriginalData && !expanded)
+	{
+		expanded = true;
+		read(&originalData[0], originalData.size());
+	}
+}
+
+void GameSave::Collapse()
+{
+	if(expanded && hasOriginalData)
+	{
+		expanded = false;
+		if(particles)
+		{
+			delete[] particles;
+			particles = NULL;
+		}
+		if(blockMap)
+		{
+			delete[] blockMap;
+			blockMap = NULL;
+		}
+		if(blockMapPtr)
+		{
+			delete[] blockMapPtr;
+			blockMapPtr = NULL;
+		}
+		if(fanVelX)
+		{
+			delete[] fanVelX;
+			fanVelX = NULL;
+		}
+		if(fanVelXPtr)
+		{
+			delete[] fanVelXPtr;
+			fanVelXPtr = NULL;
+		}
+		if(fanVelY)
+		{
+			delete[] fanVelY;
+			fanVelY = NULL;
+		}
+		if(fanVelYPtr)
+		{
+			delete[] fanVelYPtr;
+			fanVelYPtr = NULL;
+		}
 	}
 }
 

@@ -21,6 +21,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 	int blockX, blockY, x, y, r;
 
 	if(!save) return 0;
+	save->Expand();
 
 	//Align to blockMap
 	blockX = fullX/CELL;
