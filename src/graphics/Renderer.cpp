@@ -1922,6 +1922,8 @@ void Renderer::draw_grav()
 
 void Renderer::draw_air()
 {
+	if(!sim->aheat_enable && (display_mode & DISPLAY_AIRH))
+		return;
 #ifndef OGLR
 	if(!(display_mode & DISPLAY_AIR))
 		return;
