@@ -20,6 +20,7 @@ class Textbox : public Label
 {
 	friend class TextboxAction;
 protected:
+	size_t limit;
 	bool mouseDown;
 	bool masked, border;
 	int cursor, cursorPositionX, cursorPositionY;

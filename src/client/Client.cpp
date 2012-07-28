@@ -132,8 +132,6 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 
 std::vector<std::string> Client::DirectorySearch(std::string directory, std::string search, std::vector<std::string> extensions)
 {
-	std::vector<std::string> results;
-
 	//Get full file listing
 	std::vector<std::string> directoryList;
 #if defined(WIN32) && !defined(__GNUC__)
@@ -173,9 +171,29 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 	closedir(directoryHandle);
 #endif
 
+	std::vector<std::string> searchResults;
+	for(std::vector<std::string>::iterator iter = directoryList.begin(), end = directoryList.end(); iter != end; ++iter)
+	{
+		std::string filename = *iter;
+		bool extensionMatch = !extensions.size();
+		for(std::vector<std::string>::iterator extIter = extensions.begin(), extEnd = extensions.end(); extIter != extEnd; ++extIter)
+		{
+			if(filename.find(*extIter)==filename.length()-(*extIter).length())
+			{
+				extensionMatch = true;
+				break;
+			}
+		}
+		bool searchMatch = !search.size();
+		if(search.size() && filename.find(search)!=std::string::npos)
+			searchMatch = true;
+		
+		if(searchMatch && extensionMatch)
+			searchResults.push_back(filename);
+	}
+
 	//Filter results
-	return directoryList;
-	return results;
+	return searchResults;
 }
 
 std::vector<unsigned char> Client::ReadFile(std::string filename)
