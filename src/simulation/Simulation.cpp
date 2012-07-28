@@ -4303,13 +4303,20 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 	if(!sys_pause||framerender)
 	{
 		air->update_air();
-		grav->gravity_update_async();
 
-		//Get updated buffer pointers for gravity
-		gravx = grav->gravx;
-		gravy = grav->gravy;
-		gravp = grav->gravp;
-		gravmap = grav->gravmap;
+		if(aheat_enable)
+			air->update_airh();
+
+		if(grav->ngrav_enable)
+		{
+			grav->gravity_update_async();
+
+			//Get updated buffer pointers for gravity
+			gravx = grav->gravx;
+			gravy = grav->gravy;
+			gravp = grav->gravp;
+			gravmap = grav->gravmap;
+		}
 	}
 
 	memset(pmap, 0, sizeof(pmap));
