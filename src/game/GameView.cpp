@@ -1206,7 +1206,7 @@ void GameView::OnDraw()
 				{
 					finalCurrentMouse = rectSnapCoords(c->PointTranslate(drawPoint1), finalCurrentMouse);
 				}
-				activeBrush->RenderRect(g, c->PointTranslate(drawPoint1), finalCurrentMouse);
+				activeBrush->RenderRect(ren, c->PointTranslate(drawPoint1), finalCurrentMouse);
 			}
 			else if(drawMode==DrawLine && isMouseDown)
 			{
@@ -1214,15 +1214,15 @@ void GameView::OnDraw()
 				{
 					finalCurrentMouse = lineSnapCoords(c->PointTranslate(drawPoint1), finalCurrentMouse);
 				}
-				activeBrush->RenderLine(g, c->PointTranslate(drawPoint1), finalCurrentMouse);
+				activeBrush->RenderLine(ren, c->PointTranslate(drawPoint1), finalCurrentMouse);
 			}
 			else if(drawMode==DrawFill)
 			{
-				activeBrush->RenderFill(g, finalCurrentMouse);
+				activeBrush->RenderFill(ren, finalCurrentMouse);
 			}
 			else
 			{
-				activeBrush->RenderPoint(g, finalCurrentMouse);
+				activeBrush->RenderPoint(ren, finalCurrentMouse);
 			}
 		}
 		ren->RenderEnd();

@@ -45,15 +45,14 @@ void Renderer::RenderBegin()
 	DrawWalls();
 	DrawSigns();
 #ifndef OGLR
-	RenderZoom();
 	FinaliseParts();
 #endif
 }
 
 void Renderer::RenderEnd()
 {
-#ifdef OGLR
 	RenderZoom();
+#ifdef OGLR
 	FinaliseParts();
 #endif
 }

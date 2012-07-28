@@ -11,6 +11,7 @@
 #include <iostream>
 #include "interface/Point.h"
 
+class Renderer;
 class Brush
 {
 protected:
@@ -73,43 +74,10 @@ public:
 		if(outline)
 			delete[] outline;
 	}
-	virtual void RenderRect(Graphics * g, ui::Point position1, ui::Point position2)
-	{
-		int width, height, t;
-		width = position2.X-position1.X;
-		height = position2.Y-position1.Y;
-		if(height<0)
-		{
-			position1.Y += height;
-			height *= -1;
-		}
-		if(width<0)
-		{
-			position1.X += width;
-			width *= -1;
-		}
-		g->xor_line(position1.X, position1.Y, position1.X+width, position1.Y);
-		g->xor_line(position1.X, position1.Y+height, position1.X+width, position1.Y+height);
-		g->xor_line(position1.X+width, position1.Y+1, position1.X+width, position1.Y+height-1);
-		g->xor_line(position1.X, position1.Y+1, position1.X, position1.Y+height-1);
-	}
-	virtual void RenderLine(Graphics * g, ui::Point position1, ui::Point position2)
-	{
-		g->xor_line(position1.X, position1.Y, position2.X, position2.Y);
-	}
-	//Draw the brush outline onto the screen
-	virtual void RenderPoint(Graphics * g, ui::Point position)
-	{
-		if(!outline)
-			updateOutline();
-		if(!outline)
-			return;
-		g->xor_bitmap(outline, position.X-radius.X, position.Y-radius.Y, size.X, size.Y);
-	}
-	virtual void RenderFill(Graphics * g, ui::Point position)
-	{
-		//Do nothing for now - possibly draw some sort of flood fill mask
-	}
+	virtual void RenderRect(Renderer * ren, ui::Point position1, ui::Point position2);
+	virtual void RenderLine(Renderer * ren, ui::Point position1, ui::Point position2);
+	virtual void RenderPoint(Renderer * ren, ui::Point position);
+	virtual void RenderFill(Renderer * ren, ui::Point position);
 	virtual void GenerateBitmap()
 	{
 		if(bitmap)
