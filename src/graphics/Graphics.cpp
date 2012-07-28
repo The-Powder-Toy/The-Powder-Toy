@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include <bzlib.h>
 #include <string>
 #include "Config.h"
@@ -330,6 +331,9 @@ pixel *Graphics::resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
 
 pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 {
+#ifdef DEBUG
+	std::cout << "Resampling " << sw << "x" << sh << " to " << rw << "x" << rh << std::endl;
+#endif
 	int y, x, fxceil, fyceil;
 	//int i,j,x,y,w,h,r,g,b,c;
 	pixel *q = NULL;
@@ -337,7 +341,7 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 		//Don't resample
 		q = (pixel *)malloc(rw*rh*PIXELSIZE);
 		memcpy(q, src, rw*rh*PIXELSIZE);
-	} else if(rw > sw && rh > sh){
+	} else if(rw >= sw && rh >= sh){
 		float fx, fy, fyc, fxc;
 		double intp;
 		pixel tr, tl, br, bl;
@@ -376,14 +380,16 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 		rw = sw;
 		rh = sh;
 		while(rrw != rw && rrh != rh){
-			rw *= 0.7;
-			rh *= 0.7;
-			if(rw <= rrw || rh <= rrh){
+			if(rw > rrw)
+				rw *= 0.7;
+			if(rh > rrh)
+				rh *= 0.7;
+			if(rw <= rrw)
 				rw = rrw;
+			if(rh <= rrh)
 				rh = rrh;
-			}
 			q = (pixel *)malloc(rw*rh*PIXELSIZE);
-			//Bilinear interpolation for upscaling
+			//Bilinear interpolation
 			for (y=0; y<rh; y++)
 				for (x=0; x<rw; x++)
 				{

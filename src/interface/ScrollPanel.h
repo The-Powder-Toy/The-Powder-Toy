@@ -18,7 +18,7 @@ namespace ui
 
 		int GetScrollLimit();
 
-		virtual void XDraw(const Point& screenPos);
+		virtual void Draw(const Point& screenPos);
 		virtual void XTick(float dt);
 		virtual void XOnMouseWheelInside(int localx, int localy, int d);
 	};

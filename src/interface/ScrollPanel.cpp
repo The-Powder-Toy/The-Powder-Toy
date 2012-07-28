@@ -31,8 +31,10 @@ void ScrollPanel::XOnMouseWheelInside(int localx, int localy, int d)
 	yScrollVel -= d*2;
 }
 
-void ScrollPanel::XDraw(const Point& screenPos)
+void ScrollPanel::Draw(const Point& screenPos)
 {
+	Panel::Draw(screenPos);
+
 	Graphics * g = ui::Engine::Ref().g;
 
 	//Vertical scroll bar
@@ -45,7 +47,7 @@ void ScrollPanel::XDraw(const Point& screenPos)
 			scrollPos = float(Size.Y-scrollHeight)*(float(offsetY)/float(maxOffset.Y));
 		}
 
-		g->fillrect(screenPos.X+(Size.X-scrollBarWidth), screenPos.Y, scrollBarWidth, Size.Y, 255, 255, 255, 55);
+		g->fillrect(screenPos.X+(Size.X-scrollBarWidth), screenPos.Y, scrollBarWidth, Size.Y, 125, 125, 125, 100);
 		g->fillrect(screenPos.X+(Size.X-scrollBarWidth), screenPos.Y+scrollPos, scrollBarWidth, scrollHeight, 255, 255, 255, 255);
 	}
 }

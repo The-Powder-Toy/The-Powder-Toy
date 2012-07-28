@@ -85,6 +85,9 @@ GameSave::GameSave(std::vector<char> data)
 	expanded = false;
 	hasOriginalData = true;
 	originalData = data;
+#ifdef DEBUG
+	std::cout << "Creating Collapsed save from data" << std::endl;
+#endif
 	try
 	{
 		Expand();
@@ -114,6 +117,9 @@ GameSave::GameSave(std::vector<unsigned char> data)
 	expanded = false;
 	hasOriginalData = true;
 	originalData = std::vector<char>(data.begin(), data.end());
+#ifdef DEBUG
+	std::cout << "Creating Collapsed save from data" << std::endl;
+#endif
 	try
 	{
 		Expand();
@@ -140,9 +146,12 @@ GameSave::GameSave(char * data, int dataSize)
 	fanVelYPtr = NULL;
 	particles = NULL;
 
-	expanded = true;
+	expanded = false;
 	hasOriginalData = true;
 	originalData = std::vector<char>(data, data+dataSize);
+#ifdef DEBUG
+	std::cout << "Creating Expanded save from data" << std::endl;
+#endif
 	try
 	{
 		Expand();
@@ -219,10 +228,16 @@ void GameSave::read(char * data, int dataSize)
 	{
 		if(data[0] == 0x50 || data[0] == 0x66)
 		{
+#ifdef DEBUG
+			std::cout << "Reading PSv..." << std::endl;
+#endif
 			readPSv(data, dataSize);
 		}
 		else if(data[0] == 'O')
 		{
+#ifdef DEBUG
+			std::cout << "Reading OPS..." << std::endl;
+#endif
 			readOPS(data, dataSize);
 		}
 		else

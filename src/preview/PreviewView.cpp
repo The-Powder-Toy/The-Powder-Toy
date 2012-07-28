@@ -156,7 +156,7 @@ PreviewView::PreviewView():
 	pageInfo = new ui::Label(ui::Point((XRES/2) + 5, Size.Y+1), ui::Point(Size.X-((XRES/2) + 10), 15), "Page 1 of 1");
 	pageInfo->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
-	commentsPanel = new ui::ScrollPanel(ui::Point(XRES/2, 0), ui::Point(Size.X-(XRES/2), Size.Y-commentBoxHeight));
+	commentsPanel = new ui::ScrollPanel(ui::Point((XRES/2)+1, 1), ui::Point((Size.X-(XRES/2))-2, Size.Y-commentBoxHeight));
 	AddComponent(commentsPanel);
 
 	AddComponent(pageInfo);
@@ -202,6 +202,18 @@ void PreviewView::DoDraw()
 		g->drawrect(Position.X+(Size.X/2)-100, Position.Y+(Size.Y/2)-25, 200, 50, 255, 255, 255, 180);
 		g->drawtext(Position.X+(Size.X/2)-(Graphics::textwidth("Loading save...")/2), Position.Y+(Size.Y/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
 	}
+
+	for(int i = 0; i < commentTextComponents.size(); i++)
+	{
+		int linePos = commentTextComponents[i]->Position.Y+commentsPanel->ViewportPosition.Y+commentTextComponents[i]->Size.Y+4;
+		if(linePos > 0 && linePos < Size.Y-commentBoxHeight)
+		g->draw_line(
+				Position.X+1+XRES/2,
+				Position.Y+linePos,
+				Position.X+Size.X-2,
+				Position.Y+linePos,
+				255, 255, 255, 100);
+	}
 }
 
 void PreviewView::OnDraw()
@@ -218,7 +230,7 @@ void PreviewView::OnDraw()
 		g->draw_image(savePreview->Data, (Position.X+1)+(((XRES/2)-savePreview->Size.X)/2), (Position.Y+1)+(((YRES/2)-savePreview->Size.Y)/2), savePreview->Size.X, savePreview->Size.Y, 255);
 	}
 	g->drawrect(Position.X, Position.Y, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 100);
-	g->draw_line(Position.X+1+XRES/2, Position.Y+1, Position.X+1+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
+	g->draw_line(Position.X+XRES/2, Position.Y+1, Position.X+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
 
 
 	g->draw_line(Position.X+1, Position.Y+12+YRES/2, Position.X-1+XRES/2, Position.Y+12+YRES/2, 100, 100, 100,255);
@@ -232,18 +244,6 @@ void PreviewView::OnDraw()
 		g->fillrect(Position.X+(XRES/2)-15, 2+Position.Y+(YRES/2), 14, 9, 0, 0, 0, 100);
 		g->draw_icon(1+Position.X+2, Position.Y+(YRES/2)+4, IconVoteUp);
 		g->draw_icon(Position.X+(XRES/2)-12, Position.Y+(YRES/2)+1, IconVoteDown);
-	}
-
-	for(int i = 0; i < commentTextComponents.size(); i++)
-	{
-		int linePos = commentTextComponents[i]->Position.Y+commentsPanel->ViewportPosition.Y+commentTextComponents[i]->Size.Y+4;
-		if(linePos > 0 && linePos < Size.Y-commentBoxHeight)
-		g->draw_line(
-				Position.X+XRES/2,
-				Position.Y+linePos,
-				Position.X+Size.X-1,
-				Position.Y+linePos,
-				100, 100, 100, 255);
 	}
 }
 
