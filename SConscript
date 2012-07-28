@@ -40,6 +40,7 @@ AddOption('--sse2',dest="sse2",action='store_true',default=False,help="Enable SS
 AddOption('--sse3',dest="sse3",action='store_true',default=False,help="Enable SSE3 optimisations")
 AddOption('--x86',dest="x86",action='store_true',default=True,help="Target Intel x86 platform")
 
+AddOption('--debugging', dest="debug", action="store_true", default=False, help="Enable debug options")
 AddOption('--beta',dest="beta",action='store_true',default=False,help="Beta build.")
 AddOption('--save-version',dest="save-version",default=False,help="Save version.")
 AddOption('--minor-version',dest="minor-version",default=False,help="Minor version.")
@@ -145,6 +146,10 @@ if(GetOption('release')):
 
 if(GetOption('x86')):
     env.Append(CPPDEFINES='X86')
+
+if(GetOption('debug')):
+    env.Append(CPPDEFINES='DEBUG')
+    env.Append(CCFLAGS='-g')
 
 if(GetOption('sse')):
     env.Append(CCFLAGS='-msse')
