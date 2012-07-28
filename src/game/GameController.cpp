@@ -185,9 +185,13 @@ void GameController::PlaceSave(ui::Point position)
 	}
 }
 
-void GameController::AdjustBrushSize(int direction, bool logarithmic)
+void GameController::AdjustBrushSize(int direction, bool logarithmic, bool xAxis, bool yAxis)
 {
+	if(xAxis && yAxis)
+		return;
+
 	ui::Point newSize(0, 0);
+	ui::Point oldSize = gameModel->GetBrush()->GetRadius();
 	if(logarithmic)
 		newSize = gameModel->GetBrush()->GetRadius() + ui::Point(direction * ((gameModel->GetBrush()->GetRadius().X/10)>0?gameModel->GetBrush()->GetRadius().X/10:1), direction * ((gameModel->GetBrush()->GetRadius().Y/10)>0?gameModel->GetBrush()->GetRadius().Y/10:1));
 	else
@@ -196,7 +200,14 @@ void GameController::AdjustBrushSize(int direction, bool logarithmic)
 			newSize.X = 0;
 	if(newSize.Y<0)
 			newSize.Y = 0;
-	gameModel->GetBrush()->SetRadius(newSize);
+
+	if(xAxis)
+		gameModel->GetBrush()->SetRadius(ui::Point(newSize.X, oldSize.Y));
+	else if(yAxis)
+		gameModel->GetBrush()->SetRadius(ui::Point(oldSize.X, newSize.Y));
+	else
+		gameModel->GetBrush()->SetRadius(newSize);
+
 	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
 }
 

@@ -38,7 +38,8 @@ GameView::GameView():
 	infoTip(""),
 	infoTipPresence(0),
 	toolTipPosition(-1, -1),
-	alternativeSaveSource(false)
+	shiftBehaviour(false),
+	ctrlBehaviour(false)
 {
 	
 	int currentX = 1;
@@ -50,7 +51,7 @@ GameView::GameView():
 		SearchAction(GameView * _v) { v = _v; }
 		void ActionCallback(ui::Button * sender)
 		{
-			if(v->GetAlternativeSourceEnabled())
+			if(v->CtrlBehaviour())
 				v->c->OpenLocalBrowse();
 			else
 				v->c->OpenSearch();
@@ -93,7 +94,7 @@ GameView::GameView():
         SaveSimulationAction(GameView * _v) { v = _v; }
         void ActionCallback(ui::Button * sender)
         {
-        	if(v->GetAlternativeSourceEnabled())
+        	if(v->CtrlBehaviour())
         		v->c->OpenLocalSaveWindow();
         	else
 	            v->c->OpenSaveWindow();
@@ -792,7 +793,7 @@ void GameView::OnMouseWheel(int x, int y, int d)
 	}
 	else
 	{
-		c->AdjustBrushSize(d);
+		c->AdjustBrushSize(d, false, shiftBehaviour, ctrlBehaviour);
 		if(isMouseDown)
 		{
 			pointQueue.push(new ui::Point(x, y));
@@ -854,7 +855,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			drawMode = DrawFill;
 		else
 			drawMode = DrawRect;
-		enableHDDSave();
+		enableCtrlBehaviour();
 		break;
 	case KEY_SHIFT:
 		if(drawModeReset)
@@ -865,6 +866,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			drawMode = DrawFill;
 		else
 			drawMode = DrawLine;
+		enableShiftBehaviour();
 		break;
 	case ' ': //Space
 		c->SetPaused();
@@ -920,10 +922,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		c->OpenStamps();
 		break;
 	case ']':
-		c->AdjustBrushSize(1, true);
+		c->AdjustBrushSize(1, true, shiftBehaviour, ctrlBehaviour);
 		break;
 	case '[':
-		c->AdjustBrushSize(-1, true);
+		c->AdjustBrushSize(-1, true, shiftBehaviour, ctrlBehaviour);
 		break;
 	}
 
@@ -949,7 +951,10 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 		drawSnap = false;
 		break;
 	case KEY_CTRL:
-		disableHDDSave();
+		disableCtrlBehaviour();
+		break;
+	case KEY_SHIFT:
+		disableShiftBehaviour();
 		break;
 	case 'z':
 		if(!zoomCursorFixed)
@@ -1163,12 +1168,29 @@ void GameView::changeColour()
 	c->SetColour(ui::Colour(colourRSlider->GetValue(), colourGSlider->GetValue(), colourBSlider->GetValue(), colourASlider->GetValue()));
 }
 
-void GameView::enableHDDSave()
+void GameView::enableShiftBehaviour()
 {
-	if(!alternativeSaveSource)
+	if(!shiftBehaviour)
 	{
-		alternativeSaveSource = true;
+		shiftBehaviour = true;
+	}
+}
 
+void GameView::disableShiftBehaviour()
+{
+	if(shiftBehaviour)
+	{
+		shiftBehaviour = false;
+	}
+}
+
+void GameView::enableCtrlBehaviour()
+{
+	if(!ctrlBehaviour)
+	{
+		ctrlBehaviour = true;
+
+		//Show HDD save & load buttons
 		saveSimulationButton->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
 		saveSimulationButton->Appearance.TextInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
@@ -1176,12 +1198,13 @@ void GameView::enableHDDSave()
 	}
 }
 
-void GameView::disableHDDSave()
+void GameView::disableCtrlBehaviour()
 {
-	if(alternativeSaveSource)
+	if(ctrlBehaviour)
 	{
-		alternativeSaveSource = false;
+		ctrlBehaviour = false;
 
+		//Hide HDD save & load buttons
 		saveSimulationButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		saveSimulationButton->Appearance.TextInactive = ui::Colour(255, 255, 255);
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);

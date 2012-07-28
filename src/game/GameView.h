@@ -37,7 +37,8 @@ private:
 	bool zoomEnabled;
 	bool zoomCursorFixed;
 	bool drawSnap;
-	bool alternativeSaveSource;
+	bool shiftBehaviour;
+	bool ctrlBehaviour;
 	int toolIndex;
 
 	int infoTipPresence;
@@ -96,15 +97,18 @@ private:
 	virtual ui::Point lineSnapCoords(ui::Point point1, ui::Point point2);
 	virtual ui::Point rectSnapCoords(ui::Point point1, ui::Point point2);
 
-	void enableHDDSave();
-	void disableHDDSave();
+	void enableShiftBehaviour();
+	void disableShiftBehaviour();
+	void enableCtrlBehaviour();
+	void disableCtrlBehaviour();
 public:
     GameView();
 
     //Breaks MVC, but any other way is going to be more of a mess.
     ui::Point GetMousePosition();
     void SetSample(SimulationSample sample);
-    bool GetAlternativeSourceEnabled(){ return alternativeSaveSource; }
+    bool CtrlBehaviour(){ return ctrlBehaviour; }
+    bool ShiftBehaviour(){ return shiftBehaviour; }
 
 	void AttachController(GameController * _c){ c = _c; }
 	void NotifyRendererChanged(GameModel * sender);

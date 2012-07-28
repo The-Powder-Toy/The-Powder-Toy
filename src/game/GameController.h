@@ -68,7 +68,7 @@ public:
 	void LoadRenderPreset(RenderPreset preset);
 	void SetZoomEnabled(bool zoomEnable);
 	void SetZoomPosition(ui::Point position);
-	void AdjustBrushSize(int direction, bool logarithmic = false);
+	void AdjustBrushSize(int direction, bool logarithmic = false, bool xAxis = false, bool yAxis = false);
 	void AdjustZoomSize(int direction, bool logarithmic = false);
 	void ToolClick(int toolSelection, ui::Point point);
 	void DrawPoints(int toolSelection, queue<ui::Point*> & pointQueue);
