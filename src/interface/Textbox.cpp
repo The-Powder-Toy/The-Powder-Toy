@@ -162,6 +162,7 @@ void Textbox::pasteIntoSelection()
 		cursor = getLowerSelectionBound();
 	}
 	backingText.insert(cursor, newText);
+	cursor = cursor+newText.length();
 	ClearSelection();
 
 	if(masked)
