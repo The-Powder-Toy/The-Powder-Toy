@@ -122,7 +122,7 @@ if(GetOption('lin32') or GetOption('lin64')):
         env.Append(CCFLAGS=['-m32'])
         env.Append(CPPDEFINES=["LIN32"])
     else:
-        env.Append(LINKFAGS=['-m64'])
+        env.Append(LINKFLAGS=['-m64'])
         env.Append(CCFLAGS=['-m64'])
         env.Append(CPPDEFINES=["LIN64"])
 
