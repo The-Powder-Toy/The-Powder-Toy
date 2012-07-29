@@ -40,6 +40,7 @@ private:
 	bool drawSnap;
 	bool shiftBehaviour;
 	bool ctrlBehaviour;
+	bool showHud;
 	int toolIndex;
 
 	int infoTipPresence;
