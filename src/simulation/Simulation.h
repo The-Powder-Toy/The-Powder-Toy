@@ -55,6 +55,8 @@ public:
 	int grule[NGOL+1][10];
 	menu_section msections[SC_TOTAL];
 
+	int currentTick;
+
 	playerst player;
 	playerst player2;
 	playerst fighters[256]; //255 is the maximum number of fighters

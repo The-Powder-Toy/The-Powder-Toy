@@ -76,6 +76,8 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			//Replace existing
 			parts[r>>8] = tempPart;
 			pmap[y][x] = 0;
+			elementCount[parts[r>>8].type]--;
+			elementCount[tempPart.type]++;
 		}
 		else
 		{
@@ -86,6 +88,8 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			pfree = parts[i].life;
 			if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 			parts[i] = tempPart;
+
+			elementCount[tempPart.type]++;
 		}
 	}
 	parts_lastActiveIndex = NPART-1;
@@ -1779,6 +1783,7 @@ void Simulation::clear_sim(void)
 {
 	int i, x, y;
 	signs.clear();
+	currentTick = 0;
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
 	memset(parts, 0, sizeof(Particle)*NPART);
@@ -1803,6 +1808,7 @@ void Simulation::clear_sim(void)
 	memset(gol2, 0, sizeof(gol2));
 	memset(portalp, 0, sizeof(portalp));
 	memset(fighters, 0, sizeof(fighters));
+	std::fill(elementCount, elementCount+PT_NUM, 0);
 	fighcount = 0;
 	player.spwn = 0;
 	player2.spwn = 0;
@@ -3070,6 +3076,9 @@ void Simulation::update_particles_i(int start, int inc)
 	float pGravX, pGravY, pGravD;
 	int excessive_stacking_found = 0;
 
+	currentTick++;
+	currentTick %= 3600;
+
 	if (lighting_recreate>0)
     {
         for (i=0; i<=parts_lastActiveIndex; i++)
@@ -3260,6 +3269,13 @@ void Simulation::update_particles_i(int start, int inc)
 		}
 		ISWIRE--;
 	}
+
+	bool elementRecount = !(currentTick%180);
+	if(elementRecount)
+	{
+		std::fill(elementCount, elementCount+PT_NUM, 0);
+	}
+
 	for (i=0; i<=parts_lastActiveIndex; i++)
 		if (parts[i].type)
 		{
@@ -3269,6 +3285,9 @@ void Simulation::update_particles_i(int start, int inc)
 				kill_part(i);
 				continue;
 			}
+
+
+			elementCount[t]++;
 
 			elem_properties = elements[t].Properties;
 			if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC))
@@ -4430,6 +4449,9 @@ Simulation::Simulation():
     
     memcpy(portal_rx, tportal_rx, sizeof(tportal_rx));   
     memcpy(portal_ry, tportal_ry, sizeof(tportal_ry));
+
+    currentTick = 0;
+    std::fill(elementCount, elementCount+PT_NUM, 0);
 
 	//Create and attach gravity simulation
 	grav = new Gravity();
