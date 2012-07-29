@@ -29,7 +29,7 @@ public:
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position){
 		sim->ApplyDecorationPoint(position.X, position.Y, Red, Green, Blue, Alpha, decoMode, brush);
 	}
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging) {
 		sim->ApplyDecorationLine(position1.X, position1.Y, position2.X, position2.Y, Red, Green, Blue, Alpha, decoMode, brush);
 	}
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {

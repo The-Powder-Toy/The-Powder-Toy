@@ -254,17 +254,21 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 		{
 		case KEY_HOME:
 			cursor = 0;
+			ClearSelection();
 			break;
 		case KEY_END:
 			cursor = backingText.length();
+			ClearSelection();
 			break;
 		case KEY_LEFT:
 			if(cursor > 0)
 				cursor--;
+			ClearSelection();
 			break;
 		case KEY_RIGHT:
 			if(cursor < backingText.length())
 				cursor++;
+			ClearSelection();
 			break;
 		case KEY_DELETE:
 			if(HasSelection())
@@ -283,6 +287,7 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 					backingText.erase(cursor, 1);
 				changed = true;
 			}
+			ClearSelection();
 			break;
 		case KEY_BACKSPACE:
 			if(HasSelection())
@@ -307,6 +312,7 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 				}
 				changed = true;
 			}
+			ClearSelection();
 			break;
 		}
 		if(CharacterValid(character))
@@ -332,8 +338,8 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 			}
 			cursor++;
 			changed = true;
+			ClearSelection();
 		}
-		ClearSelection();
 	}
 	catch(std::out_of_range &e)
 	{
@@ -350,8 +356,8 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 		if(!backingText.length())
 			backingText = "0";
 	}
-	if(cursor >= backingText.length())
-			cursor = backingText.length()-1;
+	if(cursor > backingText.length())
+			cursor = backingText.length();
 	if(changed)
 	{
 		if(masked)
