@@ -113,7 +113,9 @@ void Component::TextPosition(std::string displayText)
 
 bool Component::IsFocused() const
 {
-	return parentstate_->IsFocused(this);
+	if(parentstate_)
+		return parentstate_->IsFocused(this);
+	return false;
 }
 
 void Component::SetParentWindow(Window* window)
