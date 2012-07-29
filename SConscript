@@ -25,7 +25,7 @@ def SetupSpawn( env ):
 
 AddOption('--opengl-renderer',dest="opengl-renderer",action='store_true',default=False,help="Build with OpenGL renderer support. (requires --opengl)")
 AddOption('--opengl',dest="opengl",action='store_true',default=False,help="Build with OpenGL interface support.")
-AddOption('--win32',dest="win32",action='store_true',default=False,help="32bit Windows platform target.")
+AddOption('--win',dest="win",action='store_true',default=False,help="Windows platform target.")
 AddOption('--lin',dest="lin",action='store_true',default=False,help="Linux platform target")
 AddOption('--macosx',dest="macosx",action='store_true',default=False,help="Mac OS X platform target")
 AddOption('--64bit',dest="_64bit",action='store_true',default=False,help="64-bit platform target (Linux only at the moment)")
@@ -47,11 +47,11 @@ AddOption('--minor-version',dest="minor-version",default=False,help="Minor versi
 AddOption('--build-number',dest="build-number",default=False,help="Build number.")
 AddOption('--snapshot',dest="snapshot",default=False,help="Snapshot build.")
 
-if((not GetOption('lin')) and (not GetOption('win32')) and (not GetOption('macosx'))):
+if((not GetOption('lin')) and (not GetOption('win')) and (not GetOption('macosx'))):
     print "You must specify a platform to target"
     raise SystemExit(1)
 
-if(GetOption('win32')):
+if(GetOption('win')):
     env = Environment(tools = ['mingw'], ENV = os.environ)
 else:
     env = Environment(ENV = os.environ)
@@ -108,11 +108,11 @@ if GetOption("ptw32-static"):
 if(GetOption('static')):
     env.Append(LINKFLAGS=['-static-libgcc'])
 
-if(GetOption('win32')):
+if(GetOption('win')):
     openGLLibs = ['opengl32', 'glew32']
     env.Prepend(LIBS=['mingw32', 'ws2_32', 'SDLmain', 'regex'])
     env.Append(LIBS=['winmm', 'gdi32'])
-    env.Append(CPPDEFINES=["WIN32"])
+    env.Append(CPPDEFINES=["WIN"])
     env.Append(LINKFLAGS=['-mwindows'])
 if(GetOption('lin'):
     openGLLibs = ['GL']
@@ -174,7 +174,7 @@ elif(GetOption('opengl-renderer')):
     raise SystemExit(1)
 
 sources=Glob("src/*.cpp")
-if(GetOption('win32')):
+if(GetOption('win')):
     sources += env.RES('resources/powder-res.rc')
 sources+=Glob("src/*/*.cpp")
 sources+=Glob("src/simulation/elements/*.cpp")
@@ -187,7 +187,7 @@ SetupSpawn(env)
 
 programName = "powder"
 
-if(GetOption('win32')):
+if(GetOption('win')):
     programName = "Powder"
 
 if(GetOption('_64bit')):
@@ -199,7 +199,7 @@ if(not (GetOption('sse2') or GetOption('sse3'))):
 if(GetOption('macosx')):
     programName += "-x"
 
-if(GetOption('win32')):
+if(GetOption('win')):
     programName += ".exe"
 
 env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")

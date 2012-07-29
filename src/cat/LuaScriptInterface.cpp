@@ -1971,7 +1971,7 @@ int luatpt_getscript(lua_State* l)
 	filename = (char*)malloc(strlen(fileauthor)+strlen(fileid)+strlen(PATH_SEP)+strlen(LOCAL_LUA_DIR)+6);
 	sprintf(filename, LOCAL_LUA_DIR PATH_SEP "%s_%s.lua", fileauthor, fileid);
 
-#ifdef WIN32
+#ifdef WIN
 	_mkdir(LOCAL_LUA_DIR);
 #else
 	mkdir(LOCAL_LUA_DIR, 0755);

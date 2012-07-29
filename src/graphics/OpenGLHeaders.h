@@ -10,7 +10,7 @@
 #define GL_RGBA32F 0x8814
 #endif
 
-#elif defined(WIN32)
+#elif defined(WIN)
 
 #include <GL/glew.h>
 #include <GL/gl.h>

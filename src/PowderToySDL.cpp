@@ -4,7 +4,7 @@
 #include <string>
 #include <time.h>
 #include "SDL.h"
-#ifdef WIN32
+#ifdef WIN
 #include "SDL_syswm.h"
 #endif
 #include <iostream>
@@ -35,7 +35,7 @@
 
 using namespace std;
 
-#ifdef WIN32
+#ifdef WIN
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 #endif
 
@@ -74,7 +74,7 @@ void blit(pixel * vid)
 SDL_Surface * SDLOpen()
 {
 	SDL_Surface * surface;
-#if defined(WIN32) && defined(WINCONSOLE)
+#if defined(WIN) && defined(WINCONSOLE)
 	FILE * console = fopen("CON", "w" );
 #endif
 	if (SDL_Init(SDL_INIT_VIDEO)<0)
@@ -83,17 +83,16 @@ SDL_Surface * SDLOpen()
 		return 0;
 	}
 	SDL_EnableUNICODE(1);
-#if defined(WIN32) && defined(WINCONSOLE)
+#if defined(WIN) && defined(WINCONSOLE)
 	//On Windows, SDL redirects stdout to stdout.txt, which can be annoying when debugging, here we redirect back to the console
 	if (console)
 	{
-
 		freopen("CON", "w", stdout);
 		freopen("CON", "w", stderr);
 		//fclose(console);
 	}
 #endif
-#ifdef WIN32
+#ifdef WIN
 	SDL_SysWMinfo SysInfo;
 	SDL_VERSION(&SysInfo.version);
 	if(SDL_GetWMInfo(&SysInfo) <= 0) {

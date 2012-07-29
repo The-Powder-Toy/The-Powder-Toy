@@ -8,7 +8,7 @@
 #include "Config.h"
 #include "Misc.h"
 #include "icondoc.h"
-#if defined WIN32
+#if defined(WIN)
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <windows.h>
@@ -59,7 +59,7 @@ char *clipboard_text = NULL;
 
 char *exe_name(void)
 {
-#if defined WIN32
+#if defined(WIN)
 	char *name= (char *)malloc(64);
 	DWORD max=64, res;
 	while ((res = GetModuleFileName(NULL, name, max)) >= max)
@@ -378,7 +378,7 @@ void clipboard_push_text(char * text)
 
 	CFDataRef data = CFDataCreate(kCFAllocatorDefault, (const UInt8*)text, strlen(text));
 	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);
-#elif defined WIN32
+#elif defined(WIN)
 	if (OpenClipboard(NULL))
 	{
 		HGLOBAL cbuffer;
@@ -414,7 +414,7 @@ char * clipboard_pull_text()
 {
 #ifdef MACOSX
 	printf("Not implemented: get text from clipboard\n");
-#elif defined WIN32
+#elif defined(WIN)
 	if (OpenClipboard(NULL))
 	{
 		HANDLE cbuffer;
@@ -440,7 +440,7 @@ char * clipboard_pull_text()
 
 int register_extension()
 {
-#if defined WIN32
+#if defined(WIN)
 	int returnval;
 	LONG rresult;
 	HKEY newkey;
@@ -661,7 +661,7 @@ void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255(0-360 for
 }
 
 void OpenURI(std::string uri) {
-#ifdef WIN32
+#if defined(WIN)
 	ShellExecute(0, "OPEN", uri.c_str(), NULL, NULL, 0);
 #elif defined(MACOSX)
 	char *cmd = (char*)malloc(7+uri.length());

@@ -3829,7 +3829,7 @@ killed:
 			if (!parts[i].vx&&!parts[i].vy)//if its not moving, skip to next particle, movement code it next
 				continue;
 
-#if defined(WIN32) && !defined(__GNUC__)
+#if defined(WIN) && !defined(__GNUC__)
 			mv = max(fabsf(parts[i].vx), fabsf(parts[i].vy));
 #else
 			mv = fmaxf(fabsf(parts[i].vx), fabsf(parts[i].vy));

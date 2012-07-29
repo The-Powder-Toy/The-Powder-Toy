@@ -1,4 +1,4 @@
-#if defined(USE_JNI) && defined(WIN32)
+#if defined(USE_JNI) && defined(WIN)
 #include "OpenGLCanvasWin32.h"
 
 static jfieldID ctxID = NULL;
