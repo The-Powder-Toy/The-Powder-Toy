@@ -31,6 +31,15 @@ void Gravity::bilinear_interpolation(float *src, float *dst, int sw, int sh, int
 		}
 }
 
+void Gravity::Clear()
+{
+	std::fill(gravy, gravy+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(gravx, gravx+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(gravp, gravp+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(gravmap, gravmap+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(gravmask, gravmask+((XRES/CELL)*(YRES/CELL)), 0xFFFFFFFF);
+}
+
 void Gravity::gravity_init()
 {
 	ngrav_enable = 0;

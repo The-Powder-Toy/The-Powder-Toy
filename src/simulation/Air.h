@@ -28,6 +28,7 @@ public:
 	void make_kernel(void);
 	void update_airh(void);
 	void update_air(void);
+	void Clear();
 	Air();
 };
 

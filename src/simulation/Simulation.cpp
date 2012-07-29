@@ -1793,12 +1793,6 @@ void Simulation::clear_sim(void)
 	pfree = 0;
 	parts_lastActiveIndex = 0;
 	memset(pmap, 0, sizeof(pmap));
-	if(pv)
-		memset(pv, 0, (XRES/CELL) * (YRES/CELL)*sizeof(float));
-	if(vx)
-		memset(vx, 0, (XRES/CELL) * (YRES/CELL)*sizeof(float));
-	if(vy)
-		memset(vy, 0, (XRES/CELL) * (YRES/CELL)*sizeof(float));
 	if(fvx)
 		memset(fvx, 0, sizeof(fvx));
 	if(fvy)
@@ -1818,18 +1812,10 @@ void Simulation::clear_sim(void)
 	//memset(fire_b, 0, sizeof(fire_b));
 	//if(gravmask)
 		//memset(gravmask, 0xFFFFFFFF, (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
-	if(gravy)
-		memset(gravy, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
-	if(gravx)
-		memset(gravx, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
-	if(gravp)
-		memset(gravp, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
-	if(hv)
-		for(x = 0; x < XRES/CELL; x++){
-			for(y = 0; y < YRES/CELL; y++){
-				hv[y][x] = 273.15f+22.0f; //Set to room temperature
-			}
-		}
+	if(grav)
+		grav->Clear();
+	if(air)
+		air->Clear();
 }
 void Simulation::init_can_move()
 {

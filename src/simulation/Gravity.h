@@ -77,6 +77,8 @@ public:
 	void grav_mask_r(int x, int y, char checkmap[YRES/CELL][XRES/CELL], char shape[YRES/CELL][XRES/CELL], char *shapeout);
 	void mask_free(mask_el *c_mask_el);
 
+	void Clear();
+
 	void gravity_init();
 	void gravity_cleanup();
 	void gravity_update_async();
