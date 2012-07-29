@@ -119,12 +119,14 @@ if(GetOption('lin'):
     env.Append(LIBS=['X11', 'rt'])
     env.Append(CPPDEFINES=["LIN"])
     if GetOption('_64bit'):
-        env.Append(CPPDEFINES=["_64BIT"])
         env.Append(LINKFAGS=['-m64'])
         env.Append(CCFLAGS=['-m64'])
     else:
         env.Append(LINKFLAGS=['-m32'])
         env.Append(CCFLAGS=['-m32'])
+
+if GetOption('_64bit'):
+    env.Append(CPPDEFINES=["_64BIT"])
 
 if(GetOption('beta')):
     env.Append(CPPDEFINES='BETA')
