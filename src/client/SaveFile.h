@@ -24,6 +24,8 @@ public:
 	GameSave * GetGameSave();
 	void SetThumbnail(Thumbnail * thumb);
 	void SetGameSave(GameSave * save);
+	string GetDisplayName();
+	void SetDisplayName(string displayName);
 	string GetName();
 
 	virtual ~SaveFile();
@@ -31,6 +33,7 @@ private:
 	Thumbnail * thumbnail;
 	GameSave * gameSave;
 	string filename;
+	string displayName;
 };
 
 #endif /* SAVEFILE_H_ */

@@ -23,7 +23,7 @@ public:
 	std::string GetError();
 	std::string GetStatus();
 	void Poll();
-	Task() { progress = 0; }
+	Task() : listener(NULL) { progress = 0; }
 	virtual ~Task();
 protected:
 	int progress;

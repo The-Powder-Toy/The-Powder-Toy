@@ -30,6 +30,7 @@ public:
 class LoadFilesTask: public Task
 {
 	std::string directory;
+	std::string search;
 	std::vector<SaveFile*> saveFiles;
 
 	virtual void before()
@@ -44,7 +45,7 @@ class LoadFilesTask: public Task
 
 	virtual bool doWork()
 	{
-		std::vector<std::string> files = Client::Ref().DirectorySearch(directory, "", ".cps");
+		std::vector<std::string> files = Client::Ref().DirectorySearch(directory, search, ".cps");
 
 
 		notifyProgress(-1);
@@ -57,6 +58,19 @@ class LoadFilesTask: public Task
 				GameSave * tempSave = new GameSave(data);
 				saveFile->SetGameSave(tempSave); 
 				saveFiles.push_back(saveFile);
+
+				std::string filename = *iter;
+				size_t folderPos = filename.rfind(PATH_SEP);
+				if(folderPos!=std::string::npos && folderPos+1 < filename.size())
+				{
+					filename = filename.substr(folderPos+1);
+				}
+				size_t extPos = filename.rfind(".");
+				if(extPos!=std::string::npos)
+				{
+					filename = filename.substr(0, extPos);
+				}
+				saveFile->SetDisplayName(filename);
 			}
 			catch(std::exception & e)
 			{
@@ -72,10 +86,21 @@ public:
 		return saveFiles;
 	}
 
-	LoadFilesTask(std::string directory):
-		directory(directory)
+	LoadFilesTask(std::string directory, std::string search):
+		directory(directory),
+		search(search)
 	{
 
+	}
+};
+
+class FileBrowserActivity::SearchAction: public ui::TextboxAction
+{
+public:
+	FileBrowserActivity * a;
+	SearchAction(FileBrowserActivity * a) : a(a) {}
+	virtual void TextChangedCallback(ui::Textbox * sender) {
+		a->DoSearch(sender->GetText());
 	}
 };
 
@@ -93,16 +118,20 @@ FileBrowserActivity::FileBrowserActivity(std::string directory, FileSelectedCall
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	//ui::Textbox * textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", "[search]");
-	//textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	//textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	//AddComponent(textField);
+	ui::Textbox * textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", "[search]");
+	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	textField->SetActionCallback(new SearchAction(this));
+	AddComponent(textField);
 
 	itemList = new ui::ScrollPanel(ui::Point(4, 45), ui::Point(Size.X-8, Size.Y-53));
 	AddComponent(itemList);
 
 	progressBar = new ui::ProgressBar(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17));
 	AddComponent(progressBar);
+
+	infoText = new ui::Label(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17), "No saves found");
+	AddComponent(infoText);
 
 	filesX = 4;
 	filesY = 3;
@@ -117,7 +146,15 @@ FileBrowserActivity::FileBrowserActivity(std::string directory, FileSelectedCall
 	buttonWidth = (buttonAreaWidth/filesX) - buttonPadding*2;
 	buttonHeight = (buttonAreaHeight/filesY) - buttonPadding*2;
 
-	loadDirectory(directory);
+	loadDirectory(directory, "");
+}
+
+void FileBrowserActivity::DoSearch(std::string search)
+{
+	if(!loadFiles)
+	{
+		loadDirectory(directory, search);
+	}
 }
 
 void FileBrowserActivity::SelectSave(SaveFile * file)
@@ -127,17 +164,7 @@ void FileBrowserActivity::SelectSave(SaveFile * file)
 	Exit();
 }
 
-void FileBrowserActivity::loadDirectory(std::string directory)
-{
-	progressBar->Visible = true;
-	progressBar->SetProgress(-1);
-	progressBar->SetStatus("Loading files");
-	loadFiles = new LoadFilesTask(directory);
-	loadFiles->AddTaskListener(this);
-	loadFiles->Start();
-}
-
-void FileBrowserActivity::NotifyDone(Task * task)
+void FileBrowserActivity::loadDirectory(std::string directory, std::string search)
 {
 	for(int i = 0; i < components.size(); i++)
 	{
@@ -145,12 +172,42 @@ void FileBrowserActivity::NotifyDone(Task * task)
 		itemList->RemoveChild(components[i]);
 		delete components[i];
 	}
+	components.clear();
+
+	for(std::vector<ui::Component*>::iterator iter = componentsQueue.begin(), end = componentsQueue.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
+	componentsQueue.clear();
+
+	for(std::vector<SaveFile*>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
+	files.clear();
+
+	infoText->Visible = false;
+	progressBar->Visible = true;
+	progressBar->SetProgress(-1);
+	progressBar->SetStatus("Loading files");
+	loadFiles = new LoadFilesTask(directory, search);
+	loadFiles->AddTaskListener(this);
+	loadFiles->Start();
+}
+
+void FileBrowserActivity::NotifyDone(Task * task)
+{
 	fileX = 0;
 	fileY = 0;
 	files = ((LoadFilesTask*)task)->GetSaveFiles();
 	totalFiles = files.size();
-	delete task;
+	delete loadFiles;
 	loadFiles = NULL;
+	if(!files.size())
+	{
+		progressBar->Visible = false;
+		infoText->Visible = true;
+	}
 }
 
 void FileBrowserActivity::OnMouseDown(int x, int y, unsigned button)
@@ -218,7 +275,8 @@ void FileBrowserActivity::OnTick(float dt)
 		}
 		componentsQueue.clear();
 		itemList->InnerSize.Y = (buttonHeight+(buttonPadding*2))*fileY;
-		progressBar->Visible = false;
+		if(!componentsQueue.size())
+			progressBar->Visible = false;
 	}
 }
 

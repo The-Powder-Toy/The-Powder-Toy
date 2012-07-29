@@ -11,7 +11,9 @@
 
 SaveFile::SaveFile(SaveFile & save):
 	gameSave(NULL),
-	thumbnail(NULL)
+	thumbnail(NULL),
+	filename(save.filename),
+	displayName(save.displayName)
 {
 	if(save.gameSave)
 		gameSave = new GameSave(*save.gameSave);
@@ -31,6 +33,7 @@ void SaveFile::SetThumbnail(Thumbnail * thumb)
 
 SaveFile::SaveFile(string filename):
 		filename(filename),
+		displayName(filename),
 		gameSave(NULL),
 		thumbnail(NULL)
 {
@@ -50,6 +53,16 @@ void SaveFile::SetGameSave(GameSave * save)
 string SaveFile::GetName()
 {
 	return filename;
+}
+
+string SaveFile::GetDisplayName()
+{
+	return displayName;
+}
+
+void SaveFile::SetDisplayName(string displayName)
+{
+	this->displayName = displayName;
 }
 
 SaveFile::~SaveFile() {

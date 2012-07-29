@@ -66,7 +66,7 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 {
 	if(file)
 	{
-		name = file->GetName();
+		name = file->GetDisplayName();
 		if(Graphics::textwidth((char *)name.c_str()) > Size.X)
 		{
 			int position = Graphics::textwidthx((char *)name.c_str(), Size.X - 22);

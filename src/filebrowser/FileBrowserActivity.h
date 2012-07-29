@@ -17,6 +17,7 @@ public:
 
 namespace ui
 {
+	class Label;
 	class ScrollPanel;
 	class ProgressBar;
 }
@@ -27,6 +28,7 @@ class FileBrowserActivity: public ui::Window, public TaskListener
 	LoadFilesTask * loadFiles;
 	FileSelectedCallback * callback;
 	ui::ScrollPanel * itemList;
+	ui::Label * infoText;
 	std::vector<SaveFile*> files;
 	std::vector<ui::Component*> components;
 	std::vector<ui::Component*> componentsQueue;
@@ -39,14 +41,17 @@ class FileBrowserActivity: public ui::Window, public TaskListener
 	int fileX, fileY;
 	int buttonWidth, buttonHeight, buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
+
+	class SearchAction;
 	void populateList();
 public:
 	FileBrowserActivity(std::string directory, FileSelectedCallback * callback);
 	virtual void OnDraw();
 	virtual void OnTick(float dt);
 	virtual void OnMouseDown(int x, int y, unsigned button);
-	void loadDirectory(std::string directory);
+	void loadDirectory(std::string directory, std::string search);
 	void SelectSave(SaveFile * file);
+	void DoSearch(std::string search);
 	virtual ~FileBrowserActivity();
 
 	virtual void NotifyDone(Task * task);
