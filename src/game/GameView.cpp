@@ -253,21 +253,29 @@ GameView::GameView():
 	colourRSlider->SetActionCallback(new ColourChange(this));
 	colourRValue = new ui::Textbox(ui::Point(60, Size.Y-41), ui::Point(25, 17), "255");
 	colourRValue->SetActionCallback(new ColourChange(this));
+	colourRValue->SetLimit(3);
+	colourRValue->SetInputType(ui::Textbox::Number);
 
 	colourGSlider = new ui::Slider(ui::Point(95, Size.Y-39), ui::Point(50, 14), 255);
 	colourGSlider->SetActionCallback(new ColourChange(this));
 	colourGValue = new ui::Textbox(ui::Point(150, Size.Y-41), ui::Point(25, 17), "255");
 	colourGValue->SetActionCallback(new ColourChange(this));
+	colourGValue->SetLimit(3);
+	colourGValue->SetInputType(ui::Textbox::Number);
 
 	colourBSlider = new ui::Slider(ui::Point(185, Size.Y-39), ui::Point(50, 14), 255);
 	colourBSlider->SetActionCallback(new ColourChange(this));
 	colourBValue = new ui::Textbox(ui::Point(240, Size.Y-41), ui::Point(25, 17), "255");
 	colourBValue->SetActionCallback(new ColourChange(this));
+	colourBValue->SetLimit(3);
+	colourBValue->SetInputType(ui::Textbox::Number);
 
 	colourASlider = new ui::Slider(ui::Point(275, Size.Y-39), ui::Point(50, 14), 255);
 	colourASlider->SetActionCallback(new ColourChange(this));
 	colourAValue = new ui::Textbox(ui::Point(330, Size.Y-41), ui::Point(25, 17), "255");
 	colourAValue->SetActionCallback(new ColourChange(this));
+	colourAValue->SetLimit(3);
+	colourAValue->SetInputType(ui::Textbox::Number);
 
 	class ElementSearchAction : public ui::ButtonAction
 	{

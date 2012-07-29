@@ -15,7 +15,8 @@ Textbox::Textbox(Point position, Point size, std::string textboxText, std::strin
 	masked(false),
 	border(true),
 	mouseDown(false),
-	limit(0)
+	limit(std::string::npos),
+	inputType(All)
 {
 	placeHolder = textboxPlaceholder;
 
@@ -72,6 +73,26 @@ void Textbox::SetText(std::string newText)
 	{
 		cursorPositionY = cursorPositionX = 0;
 	}
+}
+
+Textbox::ValidInput Textbox::GetInputType()
+{
+	return inputType;
+}
+
+void Textbox::SetInputType(ValidInput input)
+{
+	inputType = input;
+}
+
+void Textbox::SetLimit(size_t limit)
+{
+	this->limit = limit;
+}
+
+size_t Textbox::GetLimit()
+{
+	return limit;
 }
 
 void Textbox::SetDisplayText(std::string newText)
@@ -194,6 +215,20 @@ void Textbox::pasteIntoSelection()
 	}
 }
 
+bool Textbox::CharacterValid(Uint16 character)
+{
+	switch(inputType)
+	{
+		case Number:
+		case Numeric:
+			return (character >= '0' && character <= '9');
+		case All:
+		default:
+			return (character >= ' ' && character < 127);
+	}
+	return false;
+}
+
 void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	bool changed = false;
@@ -274,7 +309,7 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 			}
 			break;
 		}
-		if(character >= ' ' && character < 127)
+		if(CharacterValid(character))
 		{
 			if(HasSelection())
 			{
@@ -284,13 +319,16 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 				cursor = getLowerSelectionBound();
 			}
 
-			if(cursor == backingText.length())
+			if(limit==std::string::npos || backingText.length() < limit)
 			{
-				backingText += character;
-			}
-			else
-			{
-				backingText.insert(cursor, 1, (char)character);
+				if(cursor == backingText.length())
+				{
+					backingText += character;
+				}
+				else
+				{
+					backingText.insert(cursor, 1, (char)character);
+				}
 			}
 			cursor++;
 			changed = true;
@@ -302,6 +340,18 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 		cursor = 0;
 		backingText = "";
 	}
+	if(inputType == Number)
+	{
+		if(backingText.length()>1)
+		{
+			while(backingText[0] == '0')
+				backingText.erase(backingText.begin());
+		}
+		if(!backingText.length())
+			backingText = "0";
+	}
+	if(cursor >= backingText.length())
+			cursor = backingText.length()-1;
 	if(changed)
 	{
 		if(masked)

@@ -19,18 +19,8 @@ public:
 class Textbox : public Label
 {
 	friend class TextboxAction;
-protected:
-	size_t limit;
-	bool mouseDown;
-	bool masked, border;
-	int cursor, cursorPositionX, cursorPositionY;
-	TextboxAction *actionCallback;
-	std::string backingText;
-	std::string placeHolder;
-
-	virtual void cutSelection();
-	virtual void pasteIntoSelection();
 public:
+	enum ValidInput { All, Numeric, Number };
 	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
 	virtual ~Textbox();
 
@@ -45,12 +35,34 @@ public:
 	bool GetHidden() { return masked; }
 	void SetActionCallback(TextboxAction * action) { actionCallback = action; }
 
+	void SetLimit(size_t limit);
+	size_t GetLimit();
+
+	ValidInput GetInputType();
+	void SetInputType(ValidInput input);
+
+	//Determines if the given character is valid given the input type
+	bool CharacterValid(Uint16 character);
+
 	virtual void OnContextMenuAction(int item);
 	virtual void OnMouseClick(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);
 	virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
 	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual void Draw(const Point& screenPos);
+
+protected:
+	ValidInput inputType;
+	size_t limit;
+	bool mouseDown;
+	bool masked, border;
+	int cursor, cursorPositionX, cursorPositionY;
+	TextboxAction *actionCallback;
+	std::string backingText;
+	std::string placeHolder;
+
+	virtual void cutSelection();
+	virtual void pasteIntoSelection();
 };
 
 /*class Textbox : public Component
