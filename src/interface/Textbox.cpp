@@ -348,11 +348,11 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 	}
 	if(inputType == Number)
 	{
-		if(backingText.length()>1)
-		{
-			while(backingText[0] == '0')
-				backingText.erase(backingText.begin());
-		}
+		//Remove extra preceding 0's
+		while(backingText[0] == '0' && backingText.length()>1)
+			backingText.erase(backingText.begin());
+
+		//If there is no content, replace with 0
 		if(!backingText.length())
 			backingText = "0";
 	}
