@@ -11,6 +11,7 @@
 #include "interface/Point.h"
 #include "interface/Button.h"
 #include "interface/Slider.h"
+#include "interface/Textbox.h"
 #include "ToolButton.h"
 #include "RenderPreset.h"
 #include "Brush.h"
@@ -75,6 +76,11 @@ private:
 	ui::Slider * colourBSlider;
 	ui::Slider * colourASlider;
 
+	ui::Textbox * colourRValue;
+	ui::Textbox * colourGValue;
+	ui::Textbox * colourBValue;
+	ui::Textbox * colourAValue;
+
 	bool drawModeReset;
 	ui::Point drawPoint1;
 	ui::Point drawPoint2;
@@ -93,7 +99,8 @@ private:
 
 	int lastOffset;
 	void setToolButtonOffset(int offset);
-	void changeColour();
+	void changeColourSlider();
+	void changeColourText();
 	virtual ui::Point lineSnapCoords(ui::Point point1, ui::Point point2);
 	virtual ui::Point rectSnapCoords(ui::Point point1, ui::Point point2);
 

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <sstream>
 #include <vector>
 
 #if defined(WIN32) && !defined(__GNUC__)
@@ -81,6 +82,20 @@ void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b);
 void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v);
 
 void OpenURI(std::string uri);
+
+template <typename T> std::string NumberToString(T number)
+{
+	std::stringstream ss;
+	ss << number;
+	return ss.str();
+}
+
+template <typename T> T StringToNumber(const std::string & text)
+{
+	std::stringstream ss(text);
+	T number;
+	return (ss >> number)?number:0;
+}
 
 void membwand(void * dest, void * src, size_t destsize, size_t srcsize);
 // a b

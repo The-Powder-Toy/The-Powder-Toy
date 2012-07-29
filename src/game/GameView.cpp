@@ -233,25 +233,40 @@ GameView::GameView():
 	pauseButton->SetActionCallback(new PauseAction(this));
 	AddComponent(pauseButton);
 
-	class ColourChange : public ui::SliderAction
+	class ColourChange : public ui::SliderAction, public ui::TextboxAction
 	{
 		GameView * v;
 	public:
 		ColourChange(GameView * _v) { v = _v; }
 		void ValueChangedCallback(ui::Slider * sender)
 		{
-			v->changeColour();
+			v->changeColourSlider();
+		}
+
+		void TextChangedCallback(ui::Textbox * sender)
+		{
+			v->changeColourText();
 		}
 	};
-	ColourChange * colC = new ColourChange(this);
-	colourRSlider = new ui::Slider(ui::Point(5, Size.Y-39), ui::Point(80, 14), 255);
-	colourRSlider->SetActionCallback(colC);
-	colourGSlider = new ui::Slider(ui::Point(95, Size.Y-39), ui::Point(80, 14), 255);
-	colourGSlider->SetActionCallback(colC);
-	colourBSlider = new ui::Slider(ui::Point(185, Size.Y-39), ui::Point(80, 14), 255);
-	colourBSlider->SetActionCallback(colC);
+	colourRSlider = new ui::Slider(ui::Point(5, Size.Y-39), ui::Point(50, 14), 255);
+	colourRSlider->SetActionCallback(new ColourChange(this));
+	colourRValue = new ui::Textbox(ui::Point(60, Size.Y-41), ui::Point(25, 17), "255");
+	colourRValue->SetActionCallback(new ColourChange(this));
+
+	colourGSlider = new ui::Slider(ui::Point(95, Size.Y-39), ui::Point(50, 14), 255);
+	colourGSlider->SetActionCallback(new ColourChange(this));
+	colourGValue = new ui::Textbox(ui::Point(150, Size.Y-41), ui::Point(25, 17), "255");
+	colourGValue->SetActionCallback(new ColourChange(this));
+
+	colourBSlider = new ui::Slider(ui::Point(185, Size.Y-39), ui::Point(50, 14), 255);
+	colourBSlider->SetActionCallback(new ColourChange(this));
+	colourBValue = new ui::Textbox(ui::Point(240, Size.Y-41), ui::Point(25, 17), "255");
+	colourBValue->SetActionCallback(new ColourChange(this));
+
 	colourASlider = new ui::Slider(ui::Point(275, Size.Y-39), ui::Point(50, 14), 255);
-	colourASlider->SetActionCallback(colC);
+	colourASlider->SetActionCallback(new ColourChange(this));
+	colourAValue = new ui::Textbox(ui::Point(330, Size.Y-41), ui::Point(25, 17), "255");
+	colourAValue->SetActionCallback(new ColourChange(this));
 
 	class ElementSearchAction : public ui::ButtonAction
 	{
@@ -487,32 +502,69 @@ void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
 {
 	RemoveComponent(colourRSlider);
 	colourRSlider->SetParentWindow(NULL);
+	RemoveComponent(colourRValue);
+	colourRValue->SetParentWindow(NULL);
+
 	RemoveComponent(colourGSlider);
 	colourGSlider->SetParentWindow(NULL);
+	RemoveComponent(colourGValue);
+	colourGValue->SetParentWindow(NULL);
+
 	RemoveComponent(colourBSlider);
 	colourBSlider->SetParentWindow(NULL);
+	RemoveComponent(colourBValue);
+	colourBValue->SetParentWindow(NULL);
+
 	RemoveComponent(colourASlider);
 	colourASlider->SetParentWindow(NULL);
+	RemoveComponent(colourAValue);
+	colourAValue->SetParentWindow(NULL);
+
 	if(sender->GetColourSelectorVisibility())
 	{
 		AddComponent(colourRSlider);
+		AddComponent(colourRValue);
+
 		AddComponent(colourGSlider);
+		AddComponent(colourGValue);
+
 		AddComponent(colourBSlider);
+		AddComponent(colourBValue);
+
 		AddComponent(colourASlider);
+		AddComponent(colourAValue);
 	}
 
 }
 
 void GameView::NotifyColourSelectorColourChanged(GameModel * sender)
 {
+	std::string intR, intG, intB, intA;
+
+	intR = NumberToString<int>(sender->GetColourSelectorColour().Red);
+	intG = NumberToString<int>(sender->GetColourSelectorColour().Green);
+	intB = NumberToString<int>(sender->GetColourSelectorColour().Blue);
+	intA = NumberToString<int>(sender->GetColourSelectorColour().Alpha);
+
 	colourRSlider->SetValue(sender->GetColourSelectorColour().Red);
-	colourRSlider->SetColour(ui::Colour(0, sender->GetColourSelectorColour().Green, sender->GetColourSelectorColour().Blue), ui::Colour(255, sender->GetColourSelectorColour().Green, sender->GetColourSelectorColour().Blue));
+	colourRSlider->SetColour(ui::Colour(0, 0, 0), ui::Colour(255, 0, 0));
+	if(!colourRValue->IsFocused())
+		colourRValue->SetText(intR);
+
 	colourGSlider->SetValue(sender->GetColourSelectorColour().Green);
-	colourGSlider->SetColour(ui::Colour(sender->GetColourSelectorColour().Red, 0, sender->GetColourSelectorColour().Blue), ui::Colour(sender->GetColourSelectorColour().Red, 255, sender->GetColourSelectorColour().Blue));
+	colourGSlider->SetColour(ui::Colour(0, 0, 0), ui::Colour(0, 255, 0));
+	if(!colourGValue->IsFocused())
+		colourGValue->SetText(intG);
+
 	colourBSlider->SetValue(sender->GetColourSelectorColour().Blue);
-	colourBSlider->SetColour(ui::Colour(sender->GetColourSelectorColour().Red, sender->GetColourSelectorColour().Green, 0), ui::Colour(sender->GetColourSelectorColour().Red, sender->GetColourSelectorColour().Green, 255));
+	colourBSlider->SetColour(ui::Colour(0, 0, 0), ui::Colour(0, 0, 255));
+	if(!colourBValue->IsFocused())
+		colourBValue->SetText(intB);
+
 	colourASlider->SetValue(sender->GetColourSelectorColour().Alpha);
-	colourASlider->SetColour(ui::Colour(0, 0, 0), ui::Colour(255, 255, 255));
+	colourASlider->SetColour(ui::Colour(0, 0, 0), ui::Colour(sender->GetColourSelectorColour().Red, sender->GetColourSelectorColour().Green, sender->GetColourSelectorColour().Blue));
+	if(!colourAValue->IsFocused())
+		colourAValue->SetText(intA);
 }
 
 void GameView::NotifyRendererChanged(GameModel * sender)
@@ -803,6 +855,9 @@ void GameView::OnMouseWheel(int x, int y, int d)
 
 void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
+	if(colourRValue->IsFocused() || colourGValue->IsFocused() || colourBValue->IsFocused() || colourAValue->IsFocused())
+		return;
+
 	if(selectMode!=SelectNone)
 	{
 		if(selectMode==PlaceSave)
@@ -937,6 +992,9 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
+	if(colourRValue->IsFocused() || colourGValue->IsFocused() || colourBValue->IsFocused() || colourAValue->IsFocused())
+		return;
+
 	if(selectMode!=SelectNone)
 	{
 		return;
@@ -1163,9 +1221,19 @@ void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 	}
 }
 
-void GameView::changeColour()
+void GameView::changeColourSlider()
 {
 	c->SetColour(ui::Colour(colourRSlider->GetValue(), colourGSlider->GetValue(), colourBSlider->GetValue(), colourASlider->GetValue()));
+}
+
+void GameView::changeColourText()
+{
+	c->SetColour(ui::Colour(
+		std::min(255U, StringToNumber<unsigned int>(colourRValue->GetText())),
+		std::min(255U, StringToNumber<unsigned int>(colourGValue->GetText())),
+		std::min(255U, StringToNumber<unsigned int>(colourBValue->GetText())),
+		std::min(255U, StringToNumber<unsigned int>(colourAValue->GetText())))
+	);
 }
 
 void GameView::enableShiftBehaviour()

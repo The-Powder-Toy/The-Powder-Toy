@@ -85,7 +85,7 @@ void Slider::SetColour(Colour col1, Colour col2)
 	this->col2 = col2;
 	bgGradient = (unsigned char*)Graphics::GenerateGradient(
 			(pixel[2]){PIXRGB(col1.Red, col1.Green, col1.Blue), PIXRGB(col2.Red, col2.Green, col2.Blue)},
-			(float[2]){0.0f, 1.0f}, 2, Size.X-6);
+			(float[2]){0.0f, 1.0f}, 2, Size.X-7);
 }
 
 void Slider::SetValue(int value)
@@ -105,8 +105,8 @@ void Slider::Draw(const Point& screenPos)
 	if(bgGradient)
 	{
 #ifndef OGLI
-		for (int j = 3; j < Size.Y-6; j++)
-				for (int i = 3; i < Size.X-6; i++)
+		for (int j = 3; j < Size.Y-7; j++)
+				for (int i = 3; i < Size.X-7; i++)
 					g->blendpixel(screenPos.X+i+2, screenPos.Y+j+2, bgGradient[(i-3)*3], bgGradient[(i-3)*3+1], bgGradient[(i-3)*3+2], 255);
 #else
 		g->gradientrect(screenPos.X+5, screenPos.Y+5, Size.X-10, Size.Y-10, col1.Red, col1.Green, col1.Blue, col1.Alpha, col2.Red, col2.Green, col2.Blue, col2.Alpha);
