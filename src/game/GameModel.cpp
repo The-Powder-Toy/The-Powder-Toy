@@ -289,19 +289,15 @@ void GameModel::SetSave(SaveInfo * newSave)
 	if(currentSave && currentSave->GetGameSave())
 	{
 		GameSave * saveData = currentSave->GetGameSave();
-		SetPaused(saveData->paused & GetPaused());
+		SetPaused(saveData->paused | GetPaused());
 		sim->gravityMode = saveData->gravityMode;
 		sim->air->airMode = saveData->airMode;
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
-		if(saveData->gravityEnable && !sim->grav->ngrav_enable)
-		{
+		if(saveData->gravityEnable)
 			sim->grav->start_grav_async();
-		}
-		else if(!saveData->gravityEnable && sim->grav->ngrav_enable)
-		{
+		else
 			sim->grav->stop_grav_async();
-		}
 		sim->clear_sim();
 		sim->Load(saveData);
 	}

@@ -167,17 +167,20 @@ void Gravity::update_grav_async()
 
 void Gravity::start_grav_async()
 {
-	if(!ngrav_enable){
-		gravthread_done = 0;
-		grav_ready = 0;
-		pthread_mutex_init (&gravmutex, NULL);
-		pthread_cond_init(&gravcv, NULL);
-		pthread_create(&gravthread, NULL, &Gravity::update_grav_async_helper, this); //Start asynchronous gravity simulation
-		ngrav_enable = 1;
-	}
+	if(ngrav_enable)	//If it's already enabled, restart it
+		stop_grav_async();
+
+	gravthread_done = 0;
+	grav_ready = 0;
+	pthread_mutex_init (&gravmutex, NULL);
+	pthread_cond_init(&gravcv, NULL);
+	pthread_create(&gravthread, NULL, &Gravity::update_grav_async_helper, this); //Start asynchronous gravity simulation
+	ngrav_enable = 1;
+
 	memset(gravy, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 	memset(gravx, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 	memset(gravp, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(gravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 }
 
 void Gravity::stop_grav_async()
@@ -195,6 +198,7 @@ void Gravity::stop_grav_async()
 	memset(gravy, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 	memset(gravx, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 	memset(gravp, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memset(gravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 }
 
 #ifdef GRAVFFT
