@@ -12,7 +12,7 @@
 #include <string>
 #include "Config.h"
 #include "graphics/Graphics.h"
-#if defined(LIN32) || defined(LIN64)
+#if defined(LIN)
 #include "icon.h"
 #endif
 
@@ -105,7 +105,7 @@ SDL_Surface * SDLOpen()
 	HICON hIconBig = (HICON)LoadImage(reinterpret_cast<HMODULE>(&__ImageBase), MAKEINTRESOURCE(101), IMAGE_ICON, 32, 32, LR_SHARED);
 	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
 	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
-#elif defined(LIN32) || defined(LIN32)
+#elif defined(LIN)
 	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon, 16, 16, 32, 64, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 	SDL_WM_SetIcon(icon, NULL);
 #endif

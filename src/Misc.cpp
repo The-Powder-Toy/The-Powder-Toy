@@ -49,7 +49,7 @@ std::string URLEscape(std::string source)
 	return finalString;
 }
 
-#if defined(USE_SDL) && (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+#if defined(USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 #include <SDL/SDL_syswm.h>
 SDL_SysWMinfo sdl_wminfo;
 Atom XA_CLIPBOARD, XA_TARGETS;
@@ -395,7 +395,7 @@ void clipboard_push_text(char * text)
 		SetClipboardData(CF_TEXT, cbuffer);
 		CloseClipboard();
 	}
-#elif (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 	if (clipboard_text!=NULL) {
 		free(clipboard_text);
 		clipboard_text = NULL;
@@ -430,7 +430,7 @@ char * clipboard_pull_text()
 			return "";
 		}
 	}
-#elif (defined(LIN32) || defined(LIN64)) && defined(SDL_VIDEO_DRIVER_X11)
+#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 	printf("Not implemented: get text from clipboard\n");
 #else
 	printf("Not implemented: get text from clipboard\n");
@@ -554,7 +554,7 @@ int register_extension()
 	if(currentfilename) free(currentfilename);
 	
 	return returnval;
-#elif defined(LIN32) || defined(LIN64)
+#elif defined(LIN)
 	char *currentfilename = exe_name();
 	FILE *f;
 	char *mimedata =
@@ -663,17 +663,12 @@ void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255(0-360 for
 void OpenURI(std::string uri) {
 #ifdef WIN32
 	ShellExecute(0, "OPEN", uri.c_str(), NULL, NULL, 0);
-#elif MACOSX
+#elif defined(MACOSX)
 	char *cmd = (char*)malloc(7+uri.length());
 	strcpy(cmd, "open ");
 	strappend(cmd, (char*)uri.c_str());
 	system(cmd);
-#elif LIN32
-	char *cmd = (char*)malloc(11+uri.length());
-	strcpy(cmd, "xdg-open ");
-	strappend(cmd, (char*)uri.c_str());
-	system(cmd);
-#elif LIN64
+#elif defined(LIN)
 	char *cmd = (char*)malloc(11+uri.length());
 	strcpy(cmd, "xdg-open ");
 	strappend(cmd, (char*)uri.c_str());

@@ -26,9 +26,9 @@ def SetupSpawn( env ):
 AddOption('--opengl-renderer',dest="opengl-renderer",action='store_true',default=False,help="Build with OpenGL renderer support. (requires --opengl)")
 AddOption('--opengl',dest="opengl",action='store_true',default=False,help="Build with OpenGL interface support.")
 AddOption('--win32',dest="win32",action='store_true',default=False,help="32bit Windows platform target.")
-AddOption('--lin32',dest="lin32",action='store_true',default=False,help="32bit Linux platform target")
-AddOption('--lin64',dest="lin64",action='store_true',default=False,help="64bit Linux platform target")
+AddOption('--lin',dest="lin",action='store_true',default=False,help="Linux platform target")
 AddOption('--macosx',dest="macosx",action='store_true',default=False,help="Mac OS X platform target")
+AddOption('--64bit',dest="_64bit",action='store_true',default=False,help="64-bit platform target (Linux only at the moment)")
 AddOption('--static',dest="static",action="store_true",default=False,help="Static linking, reduces external library dependancies but increased file size")
 AddOption('--pthreadw32-static',dest="ptw32-static",action="store_true",default=False,help="Use PTW32_STATIC_LIB for pthreadw32 headers")
 AddOption('--release',dest="release",action='store_true',default=False,help="Enable optimisations (Will slow down compiling)")
@@ -47,7 +47,7 @@ AddOption('--minor-version',dest="minor-version",default=False,help="Minor versi
 AddOption('--build-number',dest="build-number",default=False,help="Build number.")
 AddOption('--snapshot',dest="snapshot",default=False,help="Snapshot build.")
 
-if((not GetOption('lin32')) and (not GetOption('lin64')) and (not GetOption('win32')) and (not GetOption('macosx'))):
+if((not GetOption('lin')) and (not GetOption('win32')) and (not GetOption('macosx'))):
     print "You must specify a platform to target"
     raise SystemExit(1)
 
@@ -114,17 +114,17 @@ if(GetOption('win32')):
     env.Append(LIBS=['winmm', 'gdi32'])
     env.Append(CPPDEFINES=["WIN32"])
     env.Append(LINKFLAGS=['-mwindows'])
-if(GetOption('lin32') or GetOption('lin64')):
+if(GetOption('lin'):
     openGLLibs = ['GL']
     env.Append(LIBS=['X11', 'rt'])
-    if GetOption('lin32'):
+    env.Append(CPPDEFINES=["LIN"])
+    if GetOption('_64bit'):
+        env.Append(CPPDEFINES=["_64BIT"])
+        env.Append(LINKFAGS=['-m64'])
+        env.Append(CCFLAGS=['-m64'])
+    else:
         env.Append(LINKFLAGS=['-m32'])
         env.Append(CCFLAGS=['-m32'])
-        env.Append(CPPDEFINES=["LIN32"])
-    else:
-        env.Append(LINKFLAGS=['-m64'])
-        env.Append(CCFLAGS=['-m64'])
-        env.Append(CPPDEFINES=["LIN64"])
 
 if(GetOption('beta')):
     env.Append(CPPDEFINES='BETA')
@@ -190,7 +190,7 @@ programName = "powder"
 if(GetOption('win32')):
     programName = "Powder"
 
-if(GetOption('lin64')):
+if(GetOption('_64bit')):
     programName += "64"
 
 if(not (GetOption('sse2') or GetOption('sse3'))):
