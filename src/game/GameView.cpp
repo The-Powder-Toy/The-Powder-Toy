@@ -909,6 +909,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	{
 	case KEY_ALT:
 		drawSnap = true;
+		enableAltBehaviour();
 		break;
 	case KEY_CTRL:
 		if(drawModeReset)
@@ -989,10 +990,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		c->OpenStamps();
 		break;
 	case ']':
-		c->AdjustBrushSize(1, true, shiftBehaviour, ctrlBehaviour);
+		c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
 		break;
 	case '[':
-		c->AdjustBrushSize(-1, true, shiftBehaviour, ctrlBehaviour);
+		c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
 		break;
 	}
 
@@ -1019,6 +1020,7 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 	{
 	case KEY_ALT:
 		drawSnap = false;
+		disableAltBehaviour();
 		break;
 	case KEY_CTRL:
 		disableCtrlBehaviour();
@@ -1261,6 +1263,22 @@ void GameView::disableShiftBehaviour()
 	if(shiftBehaviour)
 	{
 		shiftBehaviour = false;
+	}
+}
+
+void GameView::enableAltBehaviour()
+{
+	if(!altBehaviour)
+	{
+		altBehaviour = true;
+	}
+}
+
+void GameView::disableAltBehaviour()
+{
+	if(altBehaviour)
+	{
+		altBehaviour = false;
 	}
 }
 

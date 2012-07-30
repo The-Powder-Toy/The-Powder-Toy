@@ -40,6 +40,7 @@ private:
 	bool drawSnap;
 	bool shiftBehaviour;
 	bool ctrlBehaviour;
+	bool altBehaviour;
 	bool showHud;
 	int toolIndex;
 
@@ -109,6 +110,8 @@ private:
 	void disableShiftBehaviour();
 	void enableCtrlBehaviour();
 	void disableCtrlBehaviour();
+	void enableAltBehaviour();
+	void disableAltBehaviour();
 public:
     GameView();
 
