@@ -1035,6 +1035,13 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 	}
 }
 
+void GameView::OnBlur()
+{
+	disableAltBehaviour();
+	disableCtrlBehaviour();
+	disableShiftBehaviour();
+}
+
 void GameView::OnTick(float dt)
 {
 	if(selectMode==PlaceSave && !placeSaveThumb)

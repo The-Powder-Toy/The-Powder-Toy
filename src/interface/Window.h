@@ -52,6 +52,8 @@ enum ChromeStyle
 		virtual void DoExit();
 		virtual void DoTick(float dt);
 		virtual void DoDraw();
+		virtual void DoFocus();
+		virtual void DoBlur();
 
 		virtual void DoMouseMove(int x, int y, int dx, int dy);
 		virtual void DoMouseDown(int x, int y, unsigned button);
@@ -73,6 +75,8 @@ enum ChromeStyle
 		virtual void OnExit() {}
 		virtual void OnTick(float dt) {}
 		virtual void OnDraw() {}
+		virtual void OnFocus() {}
+		virtual void OnBlur() {}
 
 		virtual void OnMouseMove(int x, int y, int dx, int dy) {}
 		virtual void OnMouseDown(int x, int y, unsigned button) {}

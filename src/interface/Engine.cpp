@@ -82,6 +82,9 @@ void Engine::ShowWindow(Window * window)
 
 		windows.push(state_);
 	}
+	if(state_)
+		state_->DoBlur();
+
 	state_ = window;
 
 }
@@ -102,6 +105,9 @@ void Engine::CloseWindow()
 		}
 		state_ = windows.top();
 		windows.pop();
+
+		if(state_)
+			state_->DoFocus();
 	}
 	else
 	{

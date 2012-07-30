@@ -107,6 +107,18 @@ void Window::DoInitialized()
 	OnInitialized();
 }
 
+void Window::DoBlur()
+{
+
+	OnBlur();
+}
+
+void Window::DoFocus()
+{
+
+	OnFocus();
+}
+
 void Window::DoDraw()
 {
 	OnDraw();
