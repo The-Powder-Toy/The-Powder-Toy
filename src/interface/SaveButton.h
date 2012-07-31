@@ -6,6 +6,7 @@
 #include "Component.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
+#include "client/ThumbnailListener.h"
 #include "graphics/Graphics.h"
 #include "search/Thumbnail.h"
 #include "interface/Colour.h"
@@ -21,13 +22,14 @@ public:
 	virtual ~SaveButtonAction() {}
 };
 
-class SaveButton : public Component
+class SaveButton : public Component, public ThumbnailListener
 {
 	SaveFile * file;
 	SaveInfo * save;
 	Thumbnail * thumbnail;
 	std::string name;
 	bool wantsDraw;
+	bool waitingForThumb;
 public:
 	SaveButton(Point position, Point size, SaveInfo * save);
 	SaveButton(Point position, Point size, SaveFile * file);
@@ -41,6 +43,8 @@ public:
 
 	virtual void Draw(const Point& screenPos);
 	virtual void Tick(float dt);
+
+	virtual void OnThumbnailReady(Thumbnail * thumb);
 
 	void SetSelected(bool selected_) { selected = selected_; }
 	bool GetSelected() { return selected; }

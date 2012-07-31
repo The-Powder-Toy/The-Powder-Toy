@@ -14,6 +14,9 @@ public:
 
 	~Thumbnail();
 
+	void Resize(int Width, int Height);
+	void Resize(ui::Point newSize);
+
 	int ID, Datestamp;
 	ui::Point Size;
 	pixel * Data;

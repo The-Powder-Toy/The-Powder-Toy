@@ -21,10 +21,12 @@
 #include "graphics/Graphics.h"
 #include "Misc.h"
 
+#include "simulation/SaveRenderer.h"
 #include "interface/Point.h"
 #include "client/SaveInfo.h"
 #include "ClientListener.h"
 #include "Update.h"
+#include "ThumbnailBroker.h"
 
 extern "C"
 {
@@ -232,6 +234,9 @@ std::vector<unsigned char> Client::ReadFile(std::string filename)
 
 void Client::Tick()
 {
+	//Check thumbnail queue
+	ThumbnailBroker::Ref().FlushThumbQueue();
+
 	//Check status on version check request
 	if(versionCheckRequest && http_async_req_status(versionCheckRequest))
 	{

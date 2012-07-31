@@ -42,6 +42,33 @@ Thumbnail::Thumbnail(int _id, int _datestamp, pixel * _data, ui::Point _size):
 	}
 }
 
+void Thumbnail::Resize(int width, int height)
+{
+	Resize(ui::Point(width, height));
+}
+
+void Thumbnail::Resize(ui::Point newSize)
+{
+	float scaleFactorX = 1.0f, scaleFactorY = 1.0f;
+	if(Size.Y >  newSize.Y)
+	{
+		scaleFactorY = float(newSize.Y)/((float)Size.Y);
+	}
+	if(Size.X > newSize.X)
+	{
+		scaleFactorX = float(newSize.X)/((float)Size.X);
+	}
+	if(scaleFactorY < 1.0f || scaleFactorX < 1.0f)
+	{
+		float scaleFactor = scaleFactorY < scaleFactorX ? scaleFactorY : scaleFactorX;
+		pixel * thumbData = Data;
+		Data = Graphics::resample_img(thumbData, Size.X, Size.Y, Size.X * scaleFactor, Size.Y * scaleFactor);
+		Size.X *= scaleFactor;
+		Size.Y *= scaleFactor;
+		free(thumbData);
+	}
+}
+
 Thumbnail::~Thumbnail()
 {
 	if(Data)

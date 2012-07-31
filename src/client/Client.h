@@ -42,6 +42,7 @@ public:
 	UpdateInfo(int time, std::string file, BuildType type) : Major(0), Minor(0), Build(0), Time(time), File(file), Type(type) {}
 };
 
+class ThumbnailListener;
 class ClientListener;
 class Client: public Singleton<Client> {
 private:
@@ -74,6 +75,7 @@ private:
 	//Config file handle
 	json::Object configDocument;
 public:
+
 	vector<ClientListener*> listeners;
 
 	UpdateInfo GetUpdateInfo();

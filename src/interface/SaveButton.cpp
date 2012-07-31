@@ -4,7 +4,7 @@
 #include "client/SaveInfo.h"
 #include "graphics/Graphics.h"
 #include "Engine.h"
-#include "client/Client.h"
+#include "client/ThumbnailBroker.h"
 #include "simulation/SaveRenderer.h"
 
 namespace ui {
@@ -62,7 +62,8 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	voteColour(255, 0, 0),
 	selectable(false),
 	selected(false),
-	wantsDraw(false)
+	wantsDraw(false),
+	waitingForThumb(false)
 {
 	if(file)
 	{
@@ -78,6 +79,8 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 
 SaveButton::~SaveButton()
 {
+	ThumbnailBroker::Ref().DetachThumbnailListener(this);
+
 	if(thumbnail)
 		delete thumbnail;
 	if(actionCallback)
@@ -88,11 +91,43 @@ SaveButton::~SaveButton()
 		delete file;
 }
 
+void SaveButton::OnThumbnailReady(Thumbnail * thumb)
+{
+	if(thumb)
+	{
+		if(thumbnail)
+			delete thumbnail;
+		thumbnail = thumb;
+		waitingForThumb = false;
+	}
+}
+
 void SaveButton::Tick(float dt)
 {
-	Thumbnail * tempThumb;
+	if(!thumbnail && !waitingForThumb)
+	{
+		if(save)
+		{
+			if(save->GetGameSave())
+			{
+				waitingForThumb = true;
+				ThumbnailBroker::Ref().RenderThumbnail(save->GetGameSave(), Size.X-3, Size.Y-25, this);
+			}
+			else if(save->GetID())
+			{
+				waitingForThumb = true;
+				ThumbnailBroker::Ref().RetrieveThumbnail(save->GetID() , Size.X-3, Size.Y-25, this);
+			}
+		}
+		else if(file && file->GetGameSave())
+		{
+			waitingForThumb = true;
+			ThumbnailBroker::Ref().RenderThumbnail(file->GetGameSave(), Size.X-3, Size.Y-25, this);
+		}
+	}
+	/*Thumbnail * tempThumb;
 	float scaleFactorY = 1.0f, scaleFactorX = 1.0f;
-	if(!thumbnail/* && wantsDraw*/)
+	if(!thumbnail)
 	{
 		if(save)
 		{
@@ -148,7 +183,7 @@ void SaveButton::Tick(float dt)
 				free(thumbData);
 			}
 		}
-	}
+	}*/
 }
 
 void SaveButton::Draw(const Point& screenPos)
