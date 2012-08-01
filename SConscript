@@ -28,7 +28,7 @@ AddOption('--opengl',dest="opengl",action='store_true',default=False,help="Build
 AddOption('--win',dest="win",action='store_true',default=False,help="Windows platform target.")
 AddOption('--lin',dest="lin",action='store_true',default=False,help="Linux platform target")
 AddOption('--macosx',dest="macosx",action='store_true',default=False,help="Mac OS X platform target")
-AddOption('--64bit',dest="_64bit",action='store_true',default=False,help="64-bit platform target (Linux only at the moment)")
+AddOption('--64bit',dest="_64bit",action='store_true',default=False,help="64-bit platform target")
 AddOption('--static',dest="static",action="store_true",default=False,help="Static linking, reduces external library dependancies but increased file size")
 AddOption('--pthreadw32-static',dest="ptw32-static",action="store_true",default=False,help="Use PTW32_STATIC_LIB for pthreadw32 headers")
 AddOption('--release',dest="release",action='store_true',default=False,help="Enable optimisations (Will slow down compiling)")
