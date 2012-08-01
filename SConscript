@@ -114,7 +114,10 @@ if(GetOption('win')):
     env.Append(LIBS=['winmm', 'gdi32'])
     env.Append(CPPDEFINES=["WIN"])
     env.Append(LINKFLAGS=['-mwindows'])
-if(GetOption('lin'):
+    if(GetOption('_64bit')):
+        env.Append(CPPDEFINES=['__CRT__NO_INLINE'])
+        env.Append(LINKFLAGS=['-Wl,--stack=16777216'])
+if(GetOption('lin')):
     openGLLibs = ['GL']
     env.Append(LIBS=['X11', 'rt'])
     env.Append(CPPDEFINES=["LIN"])

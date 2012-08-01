@@ -100,7 +100,7 @@ int update_start(char *data, int len)
 	}
 	fclose(f);
 
-	if ((int)ShellExecute(NULL, "open", self, NULL, NULL, SW_SHOWNORMAL) <= 32)
+	if ((uintptr_t)ShellExecute(NULL, "open", self, NULL, NULL, SW_SHOWNORMAL) <= 32)
 	{
 		DeleteFile(self);
 		goto fail;
