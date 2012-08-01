@@ -71,8 +71,11 @@ void Label::updateMultiline()
 			if(width+currentWidth > Size.X-6)
 			{
 				currentWidth = width;
-				currentWord[0] = '\n';
-				lines++;
+				if(currentWord!=rawText)
+				{
+					currentWord[0] = '\n';
+					lines++;
+				}
 			}
 			else
 				currentWidth += width;
