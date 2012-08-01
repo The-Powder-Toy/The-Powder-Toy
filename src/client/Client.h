@@ -88,11 +88,15 @@ public:
 
 	std::vector<unsigned char> ReadFile(std::string filename);
 
+	void WriteFile(std::vector<unsigned char> fileData, std::string filename);
+	void WriteFile(std::vector<char> fileData, std::string filename);
+	bool FileExists(std::string filename);
+
 	void AddListener(ClientListener * listener);
 	void RemoveListener(ClientListener * listener);
 
 	RequestStatus ExecVote(int saveID, int direction);
-	RequestStatus UploadSave(SaveInfo * save);
+	RequestStatus UploadSave(SaveInfo & save);
 
 	SaveFile * GetStamp(string stampID);
 	void DeleteStamp(string stampID);

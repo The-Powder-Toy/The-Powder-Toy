@@ -45,6 +45,21 @@ string SaveInfo::GetName() {
 	return name;
 }
 
+void SaveInfo::SetDescription(string description) {
+	Description = description;
+}
+string SaveInfo::GetDescription() {
+	return Description;
+}
+
+void SaveInfo::SetPublished(bool published) {
+	Published = published;
+}
+
+bool SaveInfo::GetPublished() {
+	return Published;
+}
+
 void SaveInfo::SetVote(int vote)
 {
 	this->vote = vote;

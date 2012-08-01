@@ -16,4 +16,12 @@ public:
 	virtual ~ControllerCallback() {}
 };
 
+class Controller
+{
+private:
+	virtual void Exit();
+	virtual void Show();
+	virtual void Hide();
+};
+
 #endif /* CONTROLLER_H_ */

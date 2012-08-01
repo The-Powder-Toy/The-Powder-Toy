@@ -44,6 +44,12 @@ public:
 	void SetName(string name);
 	string GetName();
 
+	void SetDescription(string description);
+	string GetDescription();
+
+	void SetPublished(bool published);
+	bool GetPublished();
+
 	void SetUserName(string userName);
 	string GetUserName();
 

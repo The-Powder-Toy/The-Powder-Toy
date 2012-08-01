@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <string>
+#include "Activity.h"
 #include "interface/Window.h"
 #include "interface/Textbox.h"
 #include "game/ToolButton.h"
@@ -18,7 +19,7 @@ class Tool;
 
 class GameModel;
 
-class ElementSearchActivity: public ui::Window {
+class ElementSearchActivity: public WindowActivity {
 	Tool * firstResult;
 	GameModel * gameModel;
 	std::vector<Tool*> tools;
@@ -29,7 +30,6 @@ public:
 	class ToolAction;
 	Tool * GetFirstResult() { return firstResult; }
 	ElementSearchActivity(GameModel * gameModel, std::vector<Tool*> tools);
-	void Exit();
 	void SetActiveTool(int selectionState, Tool * tool);
 	virtual ~ElementSearchActivity();
 	virtual void OnDraw();

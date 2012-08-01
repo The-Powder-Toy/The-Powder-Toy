@@ -1,4 +1,4 @@
-#ifndef GAMECONTROLLER_H
+ #ifndef GAMECONTROLLER_H
 #define GAMECONTROLLER_H
 
 #include <queue>
@@ -9,7 +9,6 @@
 #include "search/SearchController.h"
 #include "render/RenderController.h"
 #include "login/LoginController.h"
-#include "ssave/SSaveController.h"
 #include "tags/TagsController.h"
 #include "console/ConsoleController.h"
 #include "localbrowser/LocalBrowserController.h"
@@ -36,7 +35,6 @@ private:
 	SearchController * search;
 	RenderController * renderOptions;
 	LoginController * loginWindow;
-	SSaveController * ssave;
 	ConsoleController * console;
 	TagsController * tagsWindow;
 	LocalBrowserController * localBrowser;
@@ -87,6 +85,7 @@ public:
 	void SetColour(ui::Colour colour);
 	void SetToolStrength(float value);
 	void LoadSaveFile(SaveFile * file);
+	void LoadSave(SaveInfo * save);
 	void OpenSearch();
 	void OpenLogin();
 	void OpenTags();

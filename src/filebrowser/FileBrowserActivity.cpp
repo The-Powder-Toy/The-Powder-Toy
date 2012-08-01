@@ -105,12 +105,11 @@ public:
 };
 
 FileBrowserActivity::FileBrowserActivity(std::string directory, FileSelectedCallback * callback):
-	ui::Window(ui::Point(-1, -1), ui::Point(450, 300)),
+	WindowActivity(ui::Point(-1, -1), ui::Point(450, 300)),
 	callback(callback),
 	directory(directory),
 	totalFiles(0)
 {
-	ui::Engine::Ref().ShowWindow(this);
 
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 18), "Save Browser");
 	titleLabel->SetTextColour(style::Colour::WarningTitle);
@@ -214,12 +213,6 @@ void FileBrowserActivity::OnMouseDown(int x, int y, unsigned button)
 {
 	if(!(x > Position.X && y > Position.Y && y < Position.Y+Size.Y && x < Position.X+Size.X)) //Clicked outside window
 		Exit();
-}
-
-void FileBrowserActivity::Exit()
-{
-	ui::Engine::Ref().CloseWindow();
-	SelfDestruct();
 }
 
 void FileBrowserActivity::NotifyError(Task * task)

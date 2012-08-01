@@ -28,7 +28,7 @@ public:
 };
 
 ElementSearchActivity::ElementSearchActivity(GameModel * gameModel, std::vector<Tool*> tools) :
-	Window(ui::Point(-1, -1), ui::Point(236, 302)),
+	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
 	gameModel(gameModel),
 	tools(tools),
 	firstResult(NULL)
@@ -152,15 +152,6 @@ void ElementSearchActivity::SetActiveTool(int selectionState, Tool * tool)
 {
 	gameModel->SetActiveTool(selectionState, tool);
 	Exit();
-}
-
-void ElementSearchActivity::Exit()
-{
-	if(ui::Engine::Ref().GetWindow() == this)
-	{
-		ui::Engine::Ref().CloseWindow();
-	}
-	SelfDestruct();
 }
 
 void ElementSearchActivity::OnDraw()

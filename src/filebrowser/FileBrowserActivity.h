@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include "Activity.h"
 #include "interface/Window.h"
 #include "tasks/TaskListener.h"
 
@@ -23,7 +24,7 @@ namespace ui
 }
 
 class LoadFilesTask;
-class FileBrowserActivity: public ui::Window, public TaskListener
+class FileBrowserActivity: public TaskListener, public WindowActivity
 {
 	LoadFilesTask * loadFiles;
 	FileSelectedCallback * callback;
@@ -58,6 +59,4 @@ public:
 	virtual void NotifyError(Task * task);
 	virtual void NotifyProgress(Task * task);
 	virtual void NotifyStatus(Task * task);
-
-	void Exit();
 };

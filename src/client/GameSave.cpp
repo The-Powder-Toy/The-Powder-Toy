@@ -278,6 +278,15 @@ void GameSave::setSize(int newWidth, int newHeight)
 		fanVelY[y] = &fanVelYPtr[y*blockWidth];
 }
 
+std::vector<char> GameSave::Serialise()
+{
+	int dataSize;
+	char * data = Serialise(dataSize);
+	std::vector<char> dataVect(data, data+dataSize);
+	delete data;
+	return dataVect;
+}
+
 char * GameSave::Serialise(int & dataSize)
 {
 	return serialiseOPS(dataSize);

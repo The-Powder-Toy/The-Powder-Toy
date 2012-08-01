@@ -64,6 +64,7 @@ public:
 	~GameSave();
 	void setSize(int width, int height);
 	char * Serialise(int & dataSize);
+	std::vector<char> Serialise();
 	void Transform(matrix2d transform, vector2d translate);
 
 	void Expand();

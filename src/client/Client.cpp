@@ -198,6 +198,64 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 	return searchResults;
 }
 
+void Client::WriteFile(std::vector<unsigned char> fileData, std::string filename)
+{
+	try
+	{
+		std::ofstream fileStream;
+		fileStream.open(string(filename).c_str(), ios::binary);
+		if(fileStream.is_open())
+		{
+			fileStream.write((char*)&fileData[0], fileData.size());
+			fileStream.close();
+		}
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << "WriteFile:" << e.what() << std::endl;
+		throw;
+	}	
+}
+
+bool Client::FileExists(std::string filename)
+{
+	bool exists = false;
+	try
+	{
+		std::ofstream fileStream;
+		fileStream.open(string(filename).c_str(), ios::binary);
+		if(fileStream.is_open())
+		{
+			exists = true;
+			fileStream.close();
+		}
+	}
+	catch (std::exception & e)
+	{
+		exists = false;
+	}
+	return exists;
+}
+
+void Client::WriteFile(std::vector<char> fileData, std::string filename)
+{
+	try
+	{
+		std::ofstream fileStream;
+		fileStream.open(string(filename).c_str(), ios::binary);
+		if(fileStream.is_open())
+		{
+			fileStream.write(&fileData[0], fileData.size());
+			fileStream.close();
+		}
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << "WriteFile:" << e.what() << std::endl;
+		throw;
+	}	
+}
+
 std::vector<unsigned char> Client::ReadFile(std::string filename)
 {
 	try
@@ -400,7 +458,7 @@ User Client::GetAuthUser()
 	return authUser;
 }
 
-RequestStatus Client::UploadSave(SaveInfo * save)
+RequestStatus Client::UploadSave(SaveInfo & save)
 {
 	lastError = "";
 	int gameDataLength;
@@ -412,13 +470,14 @@ RequestStatus Client::UploadSave(SaveInfo * save)
 	userIDStream << authUser.ID;
 	if(authUser.ID)
 	{
-		if(!save->GetGameSave())
+		if(!save.GetGameSave())
 		{
 			lastError = "Empty game save";
 			return RequestFailure;
 		}
+		save.SetID(0);
 
-		gameData = save->GetGameSave()->Serialise(gameDataLength);
+		gameData = save.GetGameSave()->Serialise(gameDataLength);
 
 		if(!gameData)
 		{
@@ -427,8 +486,8 @@ RequestStatus Client::UploadSave(SaveInfo * save)
 		}
 
 		char * postNames[] = { "Name", "Description", "Data:save.bin", "Publish", NULL };
-		char * postDatas[] = { (char *)(save->name.c_str()), (char *)(save->Description.c_str()), gameData, (char *)(save->Published?"Public":"Private") };
-		int postLengths[] = { save->name.length(), save->Description.length(), gameDataLength, save->Published?6:7 };
+		char * postDatas[] = { (char *)(save.GetName().c_str()), (char *)(save.GetDescription().c_str()), gameData, (char *)(save.GetPublished()?"Public":"Private") };
+		int postLengths[] = { save.GetName().length(), save.GetDescription().length(), gameDataLength, save.GetPublished()?6:7 };
 		//std::cout << postNames[0] << " " << postDatas[0] << " " << postLengths[0] << std::endl;
 		data = http_multipart_post("http://" SERVER "/Save.api", postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
 	}
@@ -458,7 +517,7 @@ RequestStatus Client::UploadSave(SaveInfo * save)
 			}
 			else
 			{
-				save->id = tempID;
+				save.SetID(tempID);
 			}
 		}
 		free(data);

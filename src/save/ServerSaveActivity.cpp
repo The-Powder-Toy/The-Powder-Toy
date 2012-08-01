@@ -1,0 +1,149 @@
+#include "ServerSaveActivity.h"
+#include "interface/Label.h"
+#include "interface/Textbox.h"
+#include "interface/Button.h"
+#include "interface/Checkbox.h"
+#include "search/Thumbnail.h"
+#include "client/ThumbnailBroker.h"
+#include "dialogues/ErrorMessage.h"
+#include "dialogues/ConfirmPrompt.h"
+#include "client/Client.h"
+#include "Style.h"
+
+class ServerSaveActivity::CancelAction: public ui::ButtonAction
+{
+	ServerSaveActivity * a;
+public:
+	CancelAction(ServerSaveActivity * a) : a(a) {}
+	virtual void ActionCallback(ui::Button * sender)
+	{
+		a->Exit();
+	}
+};
+
+class ServerSaveActivity::SaveAction: public ui::ButtonAction
+{
+	ServerSaveActivity * a;
+public:
+	SaveAction(ServerSaveActivity * a) : a(a) {}
+	virtual void ActionCallback(ui::Button * sender)
+	{
+		a->Save();
+	}
+};
+
+ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUploadedCallback * callback) :
+	WindowActivity(ui::Point(-1, -1), ui::Point(440, 200)),
+	thumbnail(NULL),
+	save(save),
+	callback(callback)
+{
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point((Size.X/2)-8, 16), "Save to server:");
+	titleLabel->SetTextColour(style::Colour::InformationTitle);
+	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(titleLabel);
+
+	ui::Label * previewLabel = new ui::Label(ui::Point((Size.X/2)+4, 5), ui::Point((Size.X/2)-8, 16), "Preview:");
+	previewLabel->SetTextColour(style::Colour::InformationTitle);
+	previewLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	previewLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(previewLabel);
+
+	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point((Size.X/2)-16, 16), save.GetName(), "[save name]");
+	nameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	nameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	AddComponent(nameField);
+
+	descriptionField = new ui::Textbox(ui::Point(8, 65), ui::Point((Size.X/2)-16, Size.Y-(65+16+4)), save.GetDescription(), "[save description]");
+	descriptionField->SetMultiline(true);
+	descriptionField->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	descriptionField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	AddComponent(descriptionField);
+
+	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X/2)-16, 16), "Publish");
+	publishedCheckbox->SetChecked(save.GetPublished());
+	AddComponent(publishedCheckbox);
+
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point((Size.X/2)-50, 16), "Cancel");
+	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
+	cancelButton->SetActionCallback(new CancelAction(this));
+	AddComponent(cancelButton);
+
+	ui::Button * okayButton = new ui::Button(ui::Point((Size.X/2)-76, Size.Y-16), ui::Point(76, 16), "Save");
+	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	okayButton->Appearance.TextInactive = style::Colour::InformationTitle;
+	okayButton->SetActionCallback(new SaveAction(this));
+	AddComponent(okayButton);
+
+	if(save.GetGameSave())
+		ThumbnailBroker::Ref().RenderThumbnail(save.GetGameSave(), (Size.X/2)-16, -1, this);
+}
+
+void ServerSaveActivity::Save()
+{
+	if(nameField->GetText().length())
+	{
+		saveUpload();
+		Exit();
+	}
+	else
+	{
+		new ErrorMessage("Error", "You must specify a save name.");
+	}
+}
+
+void ServerSaveActivity::saveUpload()
+{
+	save.SetName(nameField->GetText());
+	save.SetDescription(descriptionField->GetText());
+	save.SetPublished(publishedCheckbox->GetChecked());
+	save.SetUserName(Client::Ref().GetAuthUser().Username);
+	save.SetID(0);
+
+	if(Client::Ref().UploadSave(save) != RequestOkay)
+	{
+		new ErrorMessage("Error", "Upload failed with error:\n"+Client::Ref().GetLastError());
+	}
+	else if(callback)
+	{
+		callback->SaveUploaded(save);
+	}
+}
+
+void ServerSaveActivity::Exit()
+{
+	if(callback)
+	{
+		delete callback;
+		callback = NULL;
+	}
+	WindowActivity::Exit();
+}
+
+void ServerSaveActivity::OnDraw()
+{
+	Graphics * g = ui::Engine::Ref().g;
+	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
+	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
+	g->draw_line(Position.X+(Size.X/2)-1, Position.Y, Position.X+(Size.X/2)-1, Position.Y+Size.Y-1, 255, 255, 255, 255);
+
+	if(thumbnail)
+	{
+		g->draw_image(thumbnail->Data, Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Size.X)/2, Position.Y+25, thumbnail->Size.X, thumbnail->Size.Y, 255);
+		g->drawrect(Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Size.X)/2, Position.Y+25, thumbnail->Size.X, thumbnail->Size.Y, 180, 180, 180, 255);
+	}
+}
+
+void ServerSaveActivity::OnThumbnailReady(Thumbnail * thumbnail)
+{
+	this->thumbnail = thumbnail;
+}
+
+ServerSaveActivity::~ServerSaveActivity()
+{
+
+}

@@ -17,6 +17,8 @@
 #include "update/UpdateActivity.h"
 #include "Notification.h"
 #include "filebrowser/FileBrowserActivity.h"
+#include "save/LocalSaveActivity.h"
+#include "save/ServerSaveActivity.h"
 
 using namespace std;
 
@@ -76,22 +78,6 @@ public:
 	}
 };
 
-class GameController::SSaveCallback: public ControllerCallback
-{
-	GameController * cc;
-public:
-	SSaveCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
-	{
-		if(cc->ssave->GetSaveUploaded())
-		{
-			cc->gameModel->SetSave(new SaveInfo(*(cc->ssave->GetSave())));
-
-		}
-		//cc->gameModel->SetUser(cc->loginWindow->GetUser());
-	}
-};
-
 class GameController::TagsCallback: public ControllerCallback
 {
 	GameController * cc;
@@ -122,7 +108,6 @@ GameController::GameController():
 		search(NULL),
 		renderOptions(NULL),
 		loginWindow(NULL),
-		ssave(NULL),
 		console(NULL),
 		tagsWindow(NULL),
 		options(NULL),
@@ -537,12 +522,35 @@ void GameController::OpenSearch()
 
 void GameController::OpenLocalSaveWindow()
 {
-
+	Simulation * sim = gameModel->GetSimulation();
+	GameSave * gameSave = sim->Save();
+	gameSave->paused = gameModel->GetPaused();
+	gameSave->gravityMode = sim->gravityMode;
+	gameSave->airMode = sim->air->airMode;
+	gameSave->legacyEnable = sim->legacy_enable;
+	gameSave->waterEEnabled = sim->water_equal_test;
+	gameSave->gravityEnable = sim->grav->ngrav_enable;
+	if(!gameSave)
+	{
+		new ErrorMessage("Error", "Unable to build save.");
+	}
+	else
+	{
+		SaveFile tempSave("");
+		tempSave.SetGameSave(gameSave);
+		new LocalSaveActivity(tempSave);
+	}
 }
 
 void GameController::LoadSaveFile(SaveFile * file)
 {
 	gameModel->SetSaveFile(file);
+}
+
+
+void GameController::LoadSave(SaveInfo * save)
+{
+	gameModel->SetSave(save);
 }
 
 void GameController::OpenLocalBrowse()
@@ -579,7 +587,7 @@ void GameController::OpenElementSearch()
 			continue;
 		toolList.insert(toolList.end(), menuToolList.begin(), menuToolList.end());
 	}
-	ui::Engine::Ref().ShowWindow(new ElementSearchActivity(gameModel, toolList));
+	new ElementSearchActivity(gameModel, toolList);
 }
 
 void GameController::OpenTags()
@@ -630,6 +638,17 @@ void GameController::OpenRenderOptions()
 
 void GameController::OpenSaveWindow()
 {
+	class SaveUploadedCallback: public ServerSaveActivity::SaveUploadedCallback
+	{
+		GameController * c;
+	public:
+		SaveUploadedCallback(GameController * _c): c(_c) {}
+		virtual  ~SaveUploadedCallback() {};
+		virtual void SaveUploaded(SaveInfo save)
+		{
+			c->LoadSave(&save);
+		}
+	};
 	if(gameModel->GetUser().ID)
 	{
 		Simulation * sim = gameModel->GetSimulation();
@@ -650,15 +669,14 @@ void GameController::OpenSaveWindow()
 			{
 				SaveInfo tempSave(*gameModel->GetSave());
 				tempSave.SetGameSave(gameSave);
-				ssave = new SSaveController(new SSaveCallback(this), tempSave);
+				new ServerSaveActivity(tempSave, new SaveUploadedCallback(this));
 			}
 			else
 			{				
 				SaveInfo tempSave(0, 0, 0, 0, gameModel->GetUser().Username, "");
 				tempSave.SetGameSave(gameSave);
-				ssave = new SSaveController(new SSaveCallback(this), tempSave);
+				new ServerSaveActivity(tempSave, new SaveUploadedCallback(this));
 			}
-			ui::Engine::Ref().ShowWindow(ssave->GetView());
 		}
 	}
 	else

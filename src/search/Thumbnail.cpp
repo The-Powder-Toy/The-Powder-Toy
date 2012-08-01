@@ -58,6 +58,10 @@ void Thumbnail::Resize(ui::Point newSize)
 	{
 		scaleFactorX = float(newSize.X)/((float)Size.X);
 	}
+	if(newSize.X == -1)
+		scaleFactorX = scaleFactorY;
+	if(newSize.Y == -1)
+		scaleFactorY = scaleFactorX;
 	if(scaleFactorY < 1.0f || scaleFactorX < 1.0f)
 	{
 		float scaleFactor = scaleFactorY < scaleFactorX ? scaleFactorY : scaleFactorX;
