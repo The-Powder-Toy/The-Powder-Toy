@@ -5438,7 +5438,7 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	//fillrect(vid_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
 	memcpy(old_buf,vid_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 
-	fillrect(old_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
+	fillrect(old_buf, -1, -1, XRES+BARSIZE, 220, 0, 0, 0, 190);
 
 	currentcommand2 = malloc(sizeof(command_history));
 	memset(currentcommand2, 0, sizeof(command_history));
