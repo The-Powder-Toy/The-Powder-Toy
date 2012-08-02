@@ -2197,7 +2197,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 							{
 								pt = (c_heat - platent[t])/c_Cm;
 
-								if (1>rand()%6) t = PT_SALT;
+								if (rand()%4==0) t = PT_SALT;
 								else t = PT_WTRV;
 							}
 							else
@@ -2206,7 +2206,7 @@ void update_particles_i(pixel *vid, int start, int inc)
 								s = 0;
 							}
 #else
-							if (1>rand()%6) t = PT_SALT;
+							if (rand()%4==0) t = PT_SALT;
 							else t = PT_WTRV;
 #endif
 						}

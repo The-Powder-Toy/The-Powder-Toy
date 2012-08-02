@@ -27,7 +27,9 @@ int update_WATR(UPDATE_FUNC_ARGS) {
 				if ((r&0xFF)==PT_SALT && 1>(rand()%250))
 				{
 					part_change_type(i,x,y,PT_SLTW);
-					part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
+					// on average, convert 3 WATR to SLTW before SALT turns into SLTW
+					if (rand()%3==0)
+						part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
 				}
 				if (((r&0xFF)==PT_RBDM||(r&0xFF)==PT_LRBD) && (legacy_enable||parts[i].temp>(273.15f+12.0f)) && 1>(rand()%500))
 				{
@@ -41,6 +43,10 @@ int update_WATR(UPDATE_FUNC_ARGS) {
 							kill_part(i);
 							return 1;
 						}
+				}
+				if ((r&0xFF)==PT_SLTW && 1>(rand()%10000))
+				{
+					part_change_type(i,x,y,PT_SLTW);
 				}
 				/*if ((r&0xFF)==PT_CNCT && 1>(rand()%500))	Concrete+Water to paste, not very popular
 				{

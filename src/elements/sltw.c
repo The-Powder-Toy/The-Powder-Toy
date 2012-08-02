@@ -25,7 +25,7 @@ int update_SLTW(UPDATE_FUNC_ARGS) {
 				if (!r)
 					continue;
 				if ((r&0xFF)==PT_SALT && 1>(rand()%10000))
-					kill_part(r>>8);
+					part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
 				if ((r&0xFF)==PT_PLNT&&5>(rand()%1000))
 					kill_part(r>>8);
 				if (((r&0xFF)==PT_RBDM||(r&0xFF)==PT_LRBD) && !legacy_enable && parts[i].temp>(273.15f+12.0f) && 1>(rand()%500))

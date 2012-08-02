@@ -68,8 +68,8 @@ int update_legacy_all(UPDATE_FUNC_ARGS) {
 						continue;
 					if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_LAVA) && 1>(rand()%10))
 					{
-						part_change_type(i,x,y,PT_SALT);
-						part_change_type(r>>8,x+rx,y+ry,PT_WTRV);
+						if (rand()%4==0) part_change_type(i,x,y,PT_SALT);
+						else part_change_type(i,x,y,PT_WTRV);
 					}
 				}
 	}
