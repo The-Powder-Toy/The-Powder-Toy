@@ -936,6 +936,7 @@ int main(int argc, char *argv[])
 			{
 				puts("Got ptsave:id");
 				saveURIOpen = tempSaveID;
+				it = 0;
 			}
 			break;
 		}
@@ -1749,12 +1750,8 @@ int main(int argc, char *argv[])
 						sdl_zoom_trig = 1;
 				}
 			}
-<<<<<<< HEAD
-=======
 			if (sdl_rkey == 'z' && sdl_zoom_trig==1)//if ==2 then it was toggled with alt+z, don't turn off on keyup
 				sdl_zoom_trig = 0;
-			SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
->>>>>>> 230ab97... move some key stuff out of sdl_poll, zoom won't be triggered even when disabled by lua now
 		}
 #ifdef INTERNAL
 		int counterthing;
