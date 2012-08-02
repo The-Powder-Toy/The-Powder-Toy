@@ -1518,7 +1518,7 @@ int luatpt_drawrect(lua_State* l)
 	if (a<0) a = 0;
 	if (a>255) a = 255;
 	luacon_g->drawrect(x, y, w, h, r, g, b, a);
-	return luaL_error(l, "Screen buffer does not exist");
+	return 0;
 }
 
 int luatpt_fillrect(lua_State* l)
@@ -1548,7 +1548,7 @@ int luatpt_fillrect(lua_State* l)
 	if (a<0) a = 0;
 	if (a>255) a = 255;
 	luacon_g->fillrect(x, y, w, h, r, g, b, a);
-	return luaL_error(l, "Screen buffer does not exist");
+	return 0;
 }
 
 int luatpt_drawline(lua_State* l)
@@ -1573,7 +1573,7 @@ int luatpt_drawline(lua_State* l)
 	if (a<0) a = 0;
 	if (a>255) a = 255;
 	luacon_g->draw_line(x1, y1, x2, y2, r, g, b, a);
-	return luaL_error(l, "Screen buffer does not exist");
+	return 0;
 }
 
 int luatpt_textwidth(lua_State* l)
