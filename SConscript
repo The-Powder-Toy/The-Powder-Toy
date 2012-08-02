@@ -172,7 +172,7 @@ if(GetOption('opengl')):
     env.Append(CPPDEFINES=["OGLI", "PIX32OGL"])
     env.Append(LIBS=openGLLibs)
 
-if(GetOption('opengl-renderer') and GetOption('opengl-renderer')):
+if(GetOption('opengl') and GetOption('opengl-renderer')):
     env.Append(CPPDEFINES=["OGLR"])
 elif(GetOption('opengl-renderer')):
     print "opengl-renderer requires opengl"
