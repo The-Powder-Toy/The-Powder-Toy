@@ -52,11 +52,84 @@ GameModel::GameModel():
 
 	}
 
+	//Load last user
+	if(Client::Ref().GetAuthUser().ID)
+	{
+		currentUser = Client::Ref().GetAuthUser();
+	}
+
+	//Set stamp to first stamp in list
+	vector<string> stamps = Client::Ref().GetStamps(0, 1);
+	if(stamps.size()>0)
+	{
+		SaveFile * stampFile = Client::Ref().GetStamp(stamps[0]);
+		if(stampFile && stampFile->GetGameSave())
+			stamp = stampFile->GetGameSave();
+	}
+
+	BuildMenus();
+
+	//Set default decoration colour
+	unsigned char colourR = min(Client::Ref().GetPrefInteger("Decoration.Red", 200), 255);
+	unsigned char colourG = min(Client::Ref().GetPrefInteger("Decoration.Green", 100), 255);
+	unsigned char colourB = min(Client::Ref().GetPrefInteger("Decoration.Blue", 50), 255);
+	unsigned char colourA = min(Client::Ref().GetPrefInteger("Decoration.Alpha", 255), 255);
+
+	SetColourSelectorColour(ui::Colour(colourR, colourG, colourB, colourA));
+}
+
+GameModel::~GameModel()
+{
+	//Save to config:
+	Client::Ref().SetPref("Renderer.ColourMode", (double)ren->GetColourMode());
+
+	std::vector<unsigned int> displayModes = ren->GetDisplayMode();
+	Client::Ref().SetPref("Renderer.DisplayModes", std::vector<double>(displayModes.begin(), displayModes.end()));
+
+	std::vector<unsigned int> renderModes = ren->GetRenderMode();
+	Client::Ref().SetPref("Renderer.RenderModes", std::vector<double>(renderModes.begin(), renderModes.end()));
+
+	Client::Ref().SetPref("Decoration.Red", (int)colour.Red);
+	Client::Ref().SetPref("Decoration.Green", (int)colour.Green);
+	Client::Ref().SetPref("Decoration.Blue", (int)colour.Blue);
+	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
+
+	for(int i = 0; i < menuList.size(); i++)
+	{
+		delete menuList[i];
+	}
+	for(int i = 0; i < brushList.size(); i++)
+	{
+		delete brushList[i];
+	}
+	delete sim;
+	delete ren;
+	if(clipboard)
+		delete clipboard;
+	if(stamp)
+		delete stamp;
+	if(currentSave)
+		delete currentSave;
+	//if(activeTools)
+	//	delete[] activeTools;
+}
+
+void GameModel::BuildMenus()
+{
+	//Empty current menus
+	for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
 	menuList.clear();
+	toolList.clear();
+
+	//Create menus
 	for(int i = 0; i < SC_TOTAL; i++)
 	{
 		menuList.push_back(new Menu((const char)sim->msections[i].icon[0], sim->msections[i].name));
 	}
+
 	//Build menus from Simulation elements
 	for(int i = 0; i < PT_NUM; i++)
 	{
@@ -119,70 +192,15 @@ GameModel::GameModel():
 	//Set default tools
 	activeTools[0] = menuList[SC_POWDERS]->GetToolList()[0];
 	activeTools[1] = menuList[SC_SPECIAL]->GetToolList()[0];
+	activeTools[2] = NULL;
 
 	//Set default menu
 	activeMenu = menuList[SC_POWDERS];
 	toolList = menuList[SC_POWDERS]->GetToolList();
 
-	//Load last user
-	if(Client::Ref().GetAuthUser().ID)
-	{
-		currentUser = Client::Ref().GetAuthUser();
-	}
-
-	//Set stamp to first stamp in list
-	vector<string> stamps = Client::Ref().GetStamps(0, 1);
-	if(stamps.size()>0)
-	{
-		SaveFile * stampFile = Client::Ref().GetStamp(stamps[0]);
-		if(stampFile && stampFile->GetGameSave())
-			stamp = stampFile->GetGameSave();
-	}
-
-
-	//Set default decoration colour
-	unsigned char colourR = min(Client::Ref().GetPrefInteger("Decoration.Red", 200), 255);
-	unsigned char colourG = min(Client::Ref().GetPrefInteger("Decoration.Green", 100), 255);
-	unsigned char colourB = min(Client::Ref().GetPrefInteger("Decoration.Blue", 50), 255);
-	unsigned char colourA = min(Client::Ref().GetPrefInteger("Decoration.Alpha", 255), 255);
-
-	SetColourSelectorColour(ui::Colour(colourR, colourG, colourB, colourA));
-}
-
-GameModel::~GameModel()
-{
-	//Save to config:
-	Client::Ref().SetPref("Renderer.ColourMode", (double)ren->GetColourMode());
-
-	std::vector<unsigned int> displayModes = ren->GetDisplayMode();
-	Client::Ref().SetPref("Renderer.DisplayModes", std::vector<double>(displayModes.begin(), displayModes.end()));
-
-	std::vector<unsigned int> renderModes = ren->GetRenderMode();
-	Client::Ref().SetPref("Renderer.RenderModes", std::vector<double>(renderModes.begin(), renderModes.end()));
-
-	Client::Ref().SetPref("Decoration.Red", (int)colour.Red);
-	Client::Ref().SetPref("Decoration.Green", (int)colour.Green);
-	Client::Ref().SetPref("Decoration.Blue", (int)colour.Blue);
-	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
-
-	for(int i = 0; i < menuList.size(); i++)
-	{
-		delete menuList[i];
-	}
-	for(int i = 0; i < brushList.size(); i++)
-	{
-		delete brushList[i];
-	}
-	delete sim;
-	delete ren;
-	if(clipboard)
-		delete clipboard;
-	if(stamp)
-		delete stamp;
-	if(currentSave)
-		delete currentSave;
-	//if(activeTools)
-	//	delete[] activeTools;
+	notifyMenuListChanged();
+	notifyToolListChanged();
+	notifyActiveToolsChanged();
 }
 
 void GameModel::SetVote(int direction)

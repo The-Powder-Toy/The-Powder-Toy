@@ -91,6 +91,8 @@ public:
 	std::string GetToolTip();
 	std::string GetInfoTip();
 
+	void BuildMenus();
+
 	void SetVote(int direction);
 	SaveInfo * GetSave();
 	Brush * GetBrush();

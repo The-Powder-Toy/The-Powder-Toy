@@ -16,7 +16,7 @@ extern "C"
 }
 
 #include "CommandInterface.h"
-#include "simulation/Simulation.h";
+#include "simulation/Simulation.h"
 
 //Because lua only has bindings for C, we're going to have to go outside "outside" the LuaScriptInterface, this means we can only have one instance :(
 

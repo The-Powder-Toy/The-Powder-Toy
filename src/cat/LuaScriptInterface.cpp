@@ -543,6 +543,8 @@ int luacon_element_getproperty(char * key, int * format, unsigned int * modified
 	if (strcmp(key, "name")==0){
 		offset = offsetof(Element, Name);
 		*format = 2;
+		if(modified_stuff)
+			*modified_stuff |= LUACON_EL_MODIFIED_MENUS;
 	}
 	else if (strcmp(key, "color")==0){
 		offset = offsetof(Element, Colour);
@@ -651,6 +653,8 @@ int luacon_element_getproperty(char * key, int * format, unsigned int * modified
 	else if (strcmp(key, "description")==0){
 		offset = offsetof(Element, Description);
 		*format = 2;
+		if(modified_stuff)
+			*modified_stuff |= LUACON_EL_MODIFIED_MENUS;
 	}
 	else {
 		return -1;
@@ -761,8 +765,8 @@ int luacon_elementwrite(lua_State* l){
 	}
 	if (modified_stuff)
 	{
-		//if (modified_stuff & LUACON_EL_MODIFIED_MENUS)
-			//luacon_model->notifyMenuListChanged();
+		if (modified_stuff & LUACON_EL_MODIFIED_MENUS)
+			luacon_model->BuildMenus();
 		if (modified_stuff & LUACON_EL_MODIFIED_CANMOVE)
 			luacon_sim->init_can_move();
 		if (modified_stuff & LUACON_EL_MODIFIED_GRAPHICS)
