@@ -1,43 +1,6 @@
 #pragma once
 
 typedef unsigned short Uint16;
-/* ***** Platform-ness ***** */
-
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32_LEAN_AND_MEAN)
-# define IEF_PLATFORM_WIN32
-# ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-# endif
-#elif defined(linux) || defined(_linux) || defined(__linux)
-# define IEF_PLATFORM_LINUX
-
-#elif defined(__APPLE__) || defined(MACOSX) || defined(macintosh) || defined(Macintosh)
-# define IEF_PLATFORM_MACOSX
-
-//#elif defined(__FreeBSD__) || define(__FreeBSD_kernel__)
-//# define IEF_PLATFORM_FREEBSD
-
-#else
-# error Operating System not supported.
-#endif
-
-
-/* ***** Endian-ness ***** */
-
-#if defined(__m68k__) || defined(mc68000) || defined(_M_M68K) || (defined(__MIPS__) && defined(__MISPEB__)) || defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) || defined(__sparc__) || defined(__hppa__)
-# define IEF_ENDIAN_BIG
-
-#else
-# define IEF_ENDIAN_LITTLE
-#endif
-
-
-/* ***** Debug-ness ***** */
-
-#if !defined(NDEBUG) || defined(_DEBUG)
-# define IEF_DEBUG
-#endif
-
 
 /* ***** Primitive Types ***** */
 

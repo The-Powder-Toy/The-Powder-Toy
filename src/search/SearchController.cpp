@@ -1,6 +1,5 @@
 #include <string>
 #include <sstream>
-#include <unistd.h>
 #include "SearchController.h"
 #include "SearchModel.h"
 #include "SearchView.h"
@@ -210,9 +209,7 @@ void SearchController::removeSelectedC()
  					std::stringstream saveIDF;
  					saveIDF << "\boFailed to delete [" << saves[i] << "] ...";
 					notifyStatus(saveIDF.str());
-					usleep(500*1000);
 				}
-				usleep(100*1000);
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
 			return true;
@@ -264,9 +261,7 @@ void SearchController::unpublishSelectedC()
  					std::stringstream saveIDF;
  					saveIDF << "\boFailed to hide [" << saves[i] << "] ...";
 					notifyStatus(saveIDF.str());
-					usleep(500*1000);
 				}
-				usleep(100*1000);
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
 			return true;
@@ -298,9 +293,7 @@ void SearchController::FavouriteSelected()
 					std::stringstream saveIDF;
 					saveIDF << "\boFailed to favourite [" << saves[i] << "] ...";
 					notifyStatus(saveIDF.str());
-					usleep(500*1000);
 				}
-				usleep(100*1000);
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
 			return true;

@@ -5,7 +5,6 @@
  *      Author: Simon
  */
 #include <sstream>
-#include <unistd.h>
 
 #include "client/Client.h"
 #include "LocalBrowserController.h"
@@ -76,7 +75,6 @@ void LocalBrowserController::removeSelectedC()
 				saveName << "Deleting save [" << saves[i] << "] ...";
  				notifyStatus(saveName.str());
  				Client::Ref().DeleteStamp(saves[i]);
-				usleep(100*1000);
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
 			return true;

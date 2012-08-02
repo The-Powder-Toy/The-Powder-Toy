@@ -5,8 +5,6 @@
  *      Author: Simon
  */
 
-
-#include <unistd.h>
 #include "Task.h"
 #include "TaskListener.h"
 
@@ -118,7 +116,6 @@ bool Task::doWork()
 	for(int i = 0; i < 100; i++)
 	{
 		notifyProgress(i);
-		usleep((100)*1000);
 	}
 	return true;
 }

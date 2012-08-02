@@ -90,7 +90,7 @@ if not conf.CheckLib('fftw3f') and not conf.CheckLib('fftw3f-3'):
     raise SystemExit(1)
 
 #Check for Lua lib
-if not conf.CheckLib('lua') and not conf.CheckLib('lua5.1') and not conf.CheckLib('lua51'):
+if not conf.CheckLib('lua') and not conf.CheckLib('lua5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua-5.1'):
     print "liblua not found or not installed"
     raise SystemExit(1)
 
