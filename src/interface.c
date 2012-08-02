@@ -6121,11 +6121,21 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 		{
 			zoom_en = 0;
 		}
-		if (sdl_key=='z' && zoom_en==2)
+		if (sdl_key=='z')
 		{
-			zoom_en = 1;
-			hidden = 1;
+			if (sdl_mod & KMOD_ALT)//toggle
+				sdl_zoom_trig = (!sdl_zoom_trig)*2;
+			else
+				sdl_zoom_trig = 1;
 		}
+		if (sdl_rkey == 'z' && sdl_zoom_trig==1)//if ==2 then it was toggled with alt+z, don't turn off on keyup
+				sdl_zoom_trig = 0;
+
+		if (!sdl_zoom_trig && zoom_en==1)
+			zoom_en = 0;
+
+		if (sdl_key=='z' && zoom_en==2)
+			zoom_en = 1;
 
 		if(sdl_key=='b' || sdl_key==SDLK_ESCAPE)
 		{
