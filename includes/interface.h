@@ -95,6 +95,7 @@ static quick_option quickmenu[] =
 	{"D", "Show decorations", QM_TOGGLE, &decorations_enable},
 	{"N", "Newtonian gravity", QM_TOGGLE, &ngrav_enable},
 	{"A", "Ambient heat", QM_TOGGLE, &aheat_enable},
+	{"C", "Show Console", QM_TOGGLE, &console_mode},
 	{NULL}
 };
 
