@@ -152,3 +152,8 @@ void Element_LIGH_Tool::Draw(Simulation * sim, Brush * brush, ui::Point position
 		sim->parts[p].temp = sim->parts[p].life*150; // temperature of the lighting shows the power of the lighting
 	}
 }
+
+void PlopTool::Click(Simulation * sim, Brush * brush, ui::Point position)
+{
+	sim->create_part(-1, position.X, position.Y, toolID);
+}
