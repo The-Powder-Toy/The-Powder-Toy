@@ -12,6 +12,7 @@
 #include "interface/Slider.h"
 #include "search/Thumbnail.h"
 #include "simulation/SaveRenderer.h"
+#include "QuickOption.h"
 
 GameView::GameView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE)),
@@ -362,6 +363,33 @@ public:
 	}
 };
 
+class GameView::OptionAction: public ui::ButtonAction
+{
+	QuickOption * option;
+public:
+	OptionAction(QuickOption * _option) { option = _option; }
+	void ActionCallback(ui::Button * sender)
+	{
+		option->Perform();
+	}
+};
+
+class GameView::OptionListener: public QuickOptionListener
+{
+	ui::Button * button;
+public:
+	OptionListener(ui::Button * _button) { button = _button; }
+	virtual void OnValueChanged(QuickOption * option)
+	{
+		switch(option->GetType())
+		{
+		case QuickOption::Toggle:
+			button->SetTogglable(true);
+			button->SetToggleState(option->GetToggle());
+		}
+	}
+};
+
 class GameView::ToolAction: public ui::ButtonAction
 {
 	GameView * v;
@@ -375,6 +403,31 @@ public:
 			v->c->SetActiveTool(sender->GetSelectionState(), tool);
 	}
 };
+
+void GameView::NotifyQuickOptionsChanged(GameModel * sender)
+{
+	for(int i = 0; i < quickOptionButtons.size(); i++)
+	{
+		RemoveComponent(quickOptionButtons[i]);
+		delete quickOptionButtons[i];
+	}
+
+	int currentY = 1;
+	vector<QuickOption*> optionList = sender->GetQuickOptions();
+	for(vector<QuickOption*>::iterator iter = optionList.begin(), end = optionList.end(); iter != end; ++iter)
+	{
+		QuickOption * option = *iter;
+		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, currentY), ui::Point(15, 15), option->GetIcon(), option->GetDescription());
+		//tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
+		tempButton->SetTogglable(true);
+		tempButton->SetActionCallback(new OptionAction(option));
+		option->AddListener(new OptionListener(tempButton));
+		AddComponent(tempButton);
+
+		quickOptionButtons.push_back(tempButton);
+		currentY += 16;
+	}
+}
 
 void GameView::NotifyMenuListChanged(GameModel * sender)
 {

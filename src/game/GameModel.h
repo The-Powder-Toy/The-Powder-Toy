@@ -21,6 +21,7 @@ class GameView;
 class Simulation;
 class Renderer;
 
+class QuickOption;
 class ToolSelection
 {
 public:
@@ -43,6 +44,7 @@ private:
 	vector<GameView*> observers;
 	vector<Tool*> toolList;
 	vector<Menu*> menuList;
+	vector<QuickOption*> quickOptions;
 	Menu * activeMenu;
 	int currentBrush;
 	vector<Brush *> brushList;
@@ -76,6 +78,7 @@ private:
 	void notifyLogChanged(string entry);
 	void notifyInfoTipChanged();
 	void notifyToolTipChanged();
+	void notifyQuickOptionsChanged();
 public:
 	GameModel();
 	~GameModel();
@@ -92,6 +95,9 @@ public:
 	std::string GetInfoTip();
 
 	void BuildMenus();
+	void BuildQuickOptionMenu();
+
+	void UpdateQuickOptions();
 
 	void SetVote(int direction);
 	SaveInfo * GetSave();
@@ -108,6 +114,7 @@ public:
 	void ClearSimulation();
 	vector<Menu*> GetMenuList();
 	vector<Tool*> GetToolList();
+	vector<QuickOption*> GetQuickOptions();
 	void SetActiveMenu(Menu * menu);
 	Menu * GetActiveMenu();
 	void FrameStep(int frames);

@@ -54,6 +54,7 @@ private:
 	Renderer * ren;
 	Brush * activeBrush;
 	//UI Elements
+	vector<ui::Button*> quickOptionButtons;
 	vector<ui::Button*> menuButtons;
 	vector<ToolButton*> toolButtons;
 	vector<ui::Component*> notificationComponents;
@@ -139,6 +140,7 @@ public:
 	void NotifyLogChanged(GameModel * sender, string entry);
 	void NotifyToolTipChanged(GameModel * sender);
 	void NotifyInfoTipChanged(GameModel * sender);
+	void NotifyQuickOptionsChanged(GameModel * sender);
 
 	virtual void ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip);
 
@@ -163,6 +165,8 @@ public:
 
 	class MenuAction;
 	class ToolAction;
+	class OptionAction;
+	class OptionListener;
 };
 
 #endif // GAMEVIEW_H

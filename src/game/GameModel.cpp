@@ -10,6 +10,7 @@
 #include "client/Client.h"
 #include "game/DecorationTool.h"
 #include "GameModelException.h"
+#include "QuickOptions.h"
 
 GameModel::GameModel():
 	sim(NULL),
@@ -68,6 +69,7 @@ GameModel::GameModel():
 	}
 
 	BuildMenus();
+	BuildQuickOptionMenu();
 
 	//Set default decoration colour
 	unsigned char colourR = min(Client::Ref().GetPrefInteger("Decoration.Red", 200), 255);
@@ -112,6 +114,33 @@ GameModel::~GameModel()
 		delete currentSave;
 	//if(activeTools)
 	//	delete[] activeTools;
+}
+
+void GameModel::UpdateQuickOptions()
+{
+	for(std::vector<QuickOption*>::iterator iter = quickOptions.begin(), end = quickOptions.end(); iter != end; ++iter)
+	{
+		QuickOption * option = *iter;
+		option->Update();
+	}	
+}
+
+void GameModel::BuildQuickOptionMenu()
+{
+	for(std::vector<QuickOption*>::iterator iter = quickOptions.begin(), end = quickOptions.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
+	quickOptions.clear();
+
+	quickOptions.push_back(new SandEffectOption(this));
+	quickOptions.push_back(new DrawGravOption(this));
+	quickOptions.push_back(new DecorationsOption(this));
+	quickOptions.push_back(new NGravityOption(this));
+	quickOptions.push_back(new AHeatOption(this));
+
+	notifyQuickOptionsChanged();
+	UpdateQuickOptions();
 }
 
 void GameModel::BuildMenus()
@@ -246,6 +275,8 @@ void GameModel::AddObserver(GameView * observer){
 	observer->NotifyZoomChanged(this);
 	observer->NotifyColourSelectorVisibilityChanged(this);
 	observer->NotifyColourSelectorColourChanged(this);
+	observer->NotifyQuickOptionsChanged(this);
+	UpdateQuickOptions();
 }
 
 void GameModel::SetActiveMenu(Menu * menu)
@@ -280,6 +311,11 @@ void GameModel::SetActiveTool(int selection, Tool * tool)
 {
 	activeTools[selection] = tool;
 	notifyActiveToolsChanged();
+}
+
+vector<QuickOption*> GameModel::GetQuickOptions()
+{
+	return quickOptions;
 }
 
 vector<Menu*> GameModel::GetMenuList()
@@ -320,6 +356,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 		sim->Load(saveData);
 	}
 	notifySaveChanged();
+	UpdateQuickOptions();
 }
 
 void GameModel::SetSaveFile(SaveFile * newSave)
@@ -348,6 +385,7 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 	delete newSave;
 	
 	notifySaveChanged();
+	UpdateQuickOptions();
 }
 
 Simulation * GameModel::GetSimulation()
@@ -476,6 +514,7 @@ void GameModel::SetDecoration(bool decorationState)
 {
 	ren->decorations_enable = decorationState?1:0;
 	notifyDecorationChanged();
+	UpdateQuickOptions();
 }
 
 bool GameModel::GetDecoration()
@@ -748,5 +787,13 @@ void GameModel::notifyToolTipChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyToolTipChanged(this);
+	}
+}
+
+void GameModel::notifyQuickOptionsChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyQuickOptionsChanged(this);
 	}
 }

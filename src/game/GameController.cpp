@@ -74,6 +74,7 @@ public:
 	OptionsCallback(GameController * cc_) { cc = cc_; }
 	virtual void ControllerExit()
 	{
+		cc->gameModel->UpdateQuickOptions();
 		//cc->gameModel->SetUser(cc->loginWindow->GetUser());
 	}
 };

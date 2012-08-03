@@ -42,6 +42,7 @@ public:
 	char * plasma_data;
 	int emp_decor;
 	//
+	bool gravifyFieldEnabled;
 	int decorations_enable;
 	Simulation * sim;
 	Graphics * g;

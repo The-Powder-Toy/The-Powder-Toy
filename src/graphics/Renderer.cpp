@@ -39,9 +39,9 @@ void Renderer::RenderBegin()
 {
 
 	draw_air();
+	draw_grav();
 	render_parts();
 	render_fire();
-	draw_grav();
 	DrawWalls();
 	DrawSigns();
 #ifndef OGLR
@@ -1899,6 +1899,9 @@ void Renderer::draw_grav()
 	int x, y, i, ca;
 	float nx, ny, dist;
 
+	if(!gravifyFieldEnabled)
+		return;
+
 	for (y=0; y<YRES/CELL; y++)
 	{
 		for (x=0; x<XRES/CELL; x++)
@@ -2096,7 +2099,8 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	zoomScopeSize(32),
 	ZFACTOR(8),
 	zoomEnabled(false),
-	decorations_enable(1)
+	decorations_enable(1),
+	gravifyFieldEnabled(false)
 {
 	this->g = g;
 	this->sim = sim;
