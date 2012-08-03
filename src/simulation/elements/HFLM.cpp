@@ -1,4 +1,9 @@
 #include "simulation/Elements.h"
+extern "C"
+{
+    #include "hmap.h"
+}
+
 //#TPT-Directive ElementClass Element_HFLM PT_HFLM 68
 Element_HFLM::Element_HFLM()
 {
@@ -51,9 +56,9 @@ int Element_HFLM::graphics(GRAPHICS_FUNC_ARGS)
 
 {
 	int caddress = restrict_flt(restrict_flt((float)((int)(cpart->life/2)), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
-	*colr = 0;//(unsigned char)hflm_data[caddress];
-	*colg = 0;//(unsigned char)hflm_data[caddress+1];
-	*colb = 0;//(unsigned char)hflm_data[caddress+2];
+	*colr = (unsigned char)hflm_data[caddress];
+	*colg = (unsigned char)hflm_data[caddress+1];
+	*colb = (unsigned char)hflm_data[caddress+2];
 	
 	*firea = 255;
 	*firer = *colr;
