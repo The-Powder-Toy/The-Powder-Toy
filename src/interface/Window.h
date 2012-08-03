@@ -15,6 +15,7 @@ enum ChromeStyle
 //class State;
 	class Engine;
 	class Component;
+	class Button;
 
 	/* class State
 	 *
@@ -28,6 +29,9 @@ enum ChromeStyle
 
 		Window(Point _position, Point _size);
 		virtual ~Window();
+
+		void SetOkayButton(ui::Button * button) { okayButton = button; }
+		void SetCancelButton(ui::Button * button) { cancelButton = button; }
 
 		bool AllowExclusiveDrawing; //false will not call draw on objects outside of bounds
 
@@ -70,13 +74,22 @@ enum ChromeStyle
 
 		void* UserData;
 
+		enum OkayMethod { Enter, OkayButton };
+		enum ExitMethod { MouseOutside, Escape, ExitButton };
+
 	protected:
+		ui::Button * okayButton;
+		ui::Button * cancelButton;
+
 		virtual void OnInitialized() {}
 		virtual void OnExit() {}
 		virtual void OnTick(float dt) {}
 		virtual void OnDraw() {}
 		virtual void OnFocus() {}
 		virtual void OnBlur() {}
+
+		virtual void OnTryExit(ExitMethod); 
+		virtual void OnTryOkay(OkayMethod);
 
 		virtual void OnMouseMove(int x, int y, int dx, int dy) {}
 		virtual void OnMouseDown(int x, int y, unsigned button) {}

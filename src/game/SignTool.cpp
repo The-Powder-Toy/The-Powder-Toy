@@ -20,6 +20,7 @@ public:
 	SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_);
 	virtual void OnDraw();
 	virtual ~SignWindow() {}
+	virtual void OnTryExit(ui::Window::ExitMethod method);
 	class OkayAction: public ui::ButtonAction
 	{
 	public:
@@ -75,6 +76,7 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	okayButton->Appearance.BorderInactive = (ui::Colour(200, 200, 200));
 	okayButton->SetActionCallback(new OkayAction(this));
 	AddComponent(okayButton);
+	SetOkayButton(okayButton);
 	
 	ui::Label * tempLabel = new ui::Label(ui::Point(8, 48), ui::Point(40, 15), "Justify:");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -86,7 +88,7 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	justification->AddOption(std::pair<std::string, int>("\x9D Left", (int)sign::Left));
 	justification->AddOption(std::pair<std::string, int>("\x9E Centre", (int)sign::Centre));
 	justification->AddOption(std::pair<std::string, int>("\x9F Right", (int)sign::Right));
-	justification->SetOption(0);
+	justification->SetOption(1);
 	justification->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	
 	textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 17), "");
@@ -110,6 +112,13 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 
 	ui::Engine::Ref().ShowWindow(this);
 }
+
+void SignWindow::OnTryExit(ui::Window::ExitMethod method)
+{
+	ui::Engine::Ref().CloseWindow();
+	SelfDestruct();
+}
+
 void SignWindow::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
