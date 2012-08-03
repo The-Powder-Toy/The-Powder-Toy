@@ -33,10 +33,12 @@ extern "C"
 #define LUACON_EL_MODIFIED_GRAPHICS 0x2
 #define LUACON_EL_MODIFIED_MENUS 0x4
 
+class TPTScriptInterface;
 class LuaScriptInterface: public CommandInterface {
 	int luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_mousebutton, luacon_brushx, luacon_brushy;
 	bool luacon_mousedown;
 	bool currentCommand;
+	TPTScriptInterface * legacy;
 public:
 	lua_State *l;
 	LuaScriptInterface(GameModel * m);

@@ -9,6 +9,7 @@
 #define TPTSTYPES_H_
 
 #include <string>
+#include <typeinfo>
 #include "interface/Point.h"
 
 enum ValueType { TypeNumber, TypePoint, TypeString, TypeNull, TypeFunction };
@@ -26,15 +27,6 @@ public:
 	}
 };
 
-class InvalidConversionException: public GeneralException
-{
-private:
-	ValueType from;
-	ValueType to;
-public:
-	InvalidConversionException(ValueType from_, ValueType to_): GeneralException("Invalid conversion"), from(from_), to(to_) {
-	}
-};
 
 class NumberType;
 class StringType;
@@ -52,7 +44,54 @@ public:
 	operator StringType();
 	operator PointType();
 	ValueType GetType();
+	std::string TypeName()
+	{
+		switch(type)
+		{
+		case TypeNumber:
+			return "Number";
+		case TypePoint:
+			return "Point";
+		case TypeString:
+			return "String";
+		case TypeNull:
+			return "Null";
+		case TypeFunction:
+			return "Function";
+		default:
+			return "Unknown";
+		}
+	}
+	static std::string TypeName(ValueType type)
+	{
+		switch(type)
+		{
+		case TypeNumber:
+			return "Number";
+		case TypePoint:
+			return "Point";
+		case TypeString:
+			return "String";
+		case TypeNull:
+			return "Null";
+		case TypeFunction:
+			return "Function";
+		default:
+			return "Unknown";
+		}
+	}
 	~AnyType();
+};
+
+class InvalidConversionException: public GeneralException
+{
+private:
+	ValueType from;
+	ValueType to;
+public:
+	InvalidConversionException(ValueType from_, ValueType to_):
+	GeneralException("Invalid conversion from " + AnyType::TypeName(from_) + " to " + AnyType::TypeName(to_)), from(from_), to(to_) {
+	}
 };
 
 class NumberType: public AnyType

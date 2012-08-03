@@ -65,6 +65,8 @@ void Textbox::SetText(std::string newText)
 	else
 		Label::SetText(newText);
 
+	cursor = newText.length();
+
 	if(cursor)
 	{
 		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);

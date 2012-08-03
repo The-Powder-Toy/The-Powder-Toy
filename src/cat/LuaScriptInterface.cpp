@@ -8,13 +8,15 @@
 #include <string>
 #include "Config.h"
 #include "LuaScriptInterface.h"
+#include "TPTScriptInterface.h"
 #include "simulation/Simulation.h"
 #include "game/GameModel.h"
 #include "LuaScriptHelper.h"
 
 LuaScriptInterface::LuaScriptInterface(GameModel * m):
 	CommandInterface(m),
-	currentCommand(false)
+	currentCommand(false),
+	legacy(new TPTScriptInterface(m))
 {
 	int i = 0, j;
 	char tmpname[12];
@@ -284,16 +286,26 @@ void LuaScriptInterface::OnTick()
 
 int LuaScriptInterface::Command(std::string command)
 {
-	int ret;
-	lastError = "";
-	currentCommand = true;
-	if((ret = luaL_dostring(l, command.c_str())))
+	if(command[0] == '!')
 	{
-		lastError = luacon_geterror();
-		//Log(LogError, lastError);
+		lastError = "";
+		int ret = legacy->Command(command.substr(1));
+		lastError = legacy->GetLastError();
+		return ret;
 	}
-	currentCommand = false;
-	return ret;
+	else
+	{
+		int ret;
+		lastError = "";
+		currentCommand = true;
+		if((ret = luaL_dostring(l, command.c_str())))
+		{
+			lastError = luacon_geterror();
+			//Log(LogError, lastError);
+		}
+		currentCommand = false;
+		return ret;
+	}
 }
 
 std::string LuaScriptInterface::FormatCommand(std::string command)
@@ -302,7 +314,7 @@ std::string LuaScriptInterface::FormatCommand(std::string command)
 }
 
 LuaScriptInterface::~LuaScriptInterface() {
-	// TODO Auto-generated destructor stub
+	delete legacy;
 }
 
 #ifndef FFI

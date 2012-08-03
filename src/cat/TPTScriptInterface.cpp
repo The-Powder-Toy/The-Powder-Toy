@@ -167,8 +167,8 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 {
 	//Arguments from stack
 	StringType property = eval(words);
-	AnyType value = eval(words);
 	AnyType selector = eval(words);
+	AnyType value = eval(words);
 
 	Simulation * sim = m->GetSimulation();
 
@@ -187,7 +187,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		{
 			ui::Point tempPoint = ((PointType)selector).Value();
 			if(tempPoint.X<0 || tempPoint.Y<0 || tempPoint.Y >= YRES || tempPoint.X >= XRES)
-				throw GeneralException("Invalid particle");
+				throw GeneralException("Invalid position");
 
 		}
 		else
