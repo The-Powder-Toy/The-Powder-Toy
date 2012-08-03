@@ -35,6 +35,11 @@ void Label::SetMultiline(bool status)
 	{
 		updateMultiline();
 		updateSelection();
+		TextPosition(textLines);
+	}
+	else
+	{
+		TextPosition(text);
 	}
 }
 
@@ -45,8 +50,12 @@ void Label::SetText(std::string text)
 	{
 		updateMultiline();
 		updateSelection();
+		TextPosition(textLines);
 	}
-	TextPosition(text);
+	else
+	{
+		TextPosition(text);
+	}
 }
 
 void Label::updateMultiline()
@@ -68,7 +77,7 @@ void Label::updateMultiline()
 			if(nextSpace)
 				nextSpace[0] = 0;
 			int width = Graphics::textwidth(currentWord);
-			if(width+currentWidth > Size.X-6)
+			if(width+currentWidth >= Size.X-(Appearance.Margin.Left+Appearance.Margin.Right))
 			{
 				currentWidth = width;
 				if(currentWord!=rawText)
