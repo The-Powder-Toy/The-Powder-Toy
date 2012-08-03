@@ -1017,6 +1017,21 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		selectMode = SelectStamp;
 		selectPoint1 = ui::Point(-1, -1);
 		break;
+	case 'w':
+		c->SwitchGravity();
+		break;
+	case 'y':
+		c->SwitchAir();
+		break;
+	case 'u':
+		c->ToggleAHeat();
+		break;
+	case '=':
+		if(ctrl)
+			c->ResetSpark();
+		else
+			c->ResetAir();
+		break;
 	case 'c':
 		if(ctrl)
 		{

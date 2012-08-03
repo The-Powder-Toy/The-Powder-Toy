@@ -406,6 +406,76 @@ void GameController::Exit()
 	HasDone = true;
 }
 
+void GameController::ResetAir()
+{
+	gameModel->GetSimulation()->air->Clear();
+}
+
+void GameController::ResetSpark()
+{
+	Simulation * sim = gameModel->GetSimulation();
+	for (int i = 0; i < NPART; i++)
+		if (sim->parts[i].type == PT_SPRK)
+		{
+			if (sim->parts[i].ctype >= 0 && sim->parts[i].ctype < PT_NUM && sim->elements[sim->parts[i].ctype].Enabled)
+			{
+				sim->parts[i].type = sim->parts[i].ctype;
+				sim->parts[i].life = 0;
+			}
+			else
+				sim->kill_part(i);
+		}
+}
+
+void GameController::SwitchGravity()
+{
+	gameModel->GetSimulation()->gravityMode = (gameModel->GetSimulation()->gravityMode+1)%3;
+
+	switch (gameModel->GetSimulation()->gravityMode)
+	{
+	case 0:
+		gameModel->SetInfoTip("Gravity: Vertical");
+		break;
+	case 1:
+		gameModel->SetInfoTip("Gravity: Off");
+		break;
+	case 2:
+		gameModel->SetInfoTip("Gravity: Radial");
+		break;
+	}
+}
+
+void GameController::SwitchAir()
+{
+	gameModel->GetSimulation()->air->airMode = (gameModel->GetSimulation()->air->airMode+1)%5;
+
+	switch (gameModel->GetSimulation()->air->airMode)
+	{
+	case 0:
+		gameModel->SetInfoTip("Air: On");
+		break;
+	case 1:
+		gameModel->SetInfoTip("Air: Pressure Off");
+		break;
+	case 2:
+		gameModel->SetInfoTip("Air: Velocity Off");
+		break;
+	case 3:
+		gameModel->SetInfoTip("Air: Off");
+		break;
+	case 4:
+		gameModel->SetInfoTip("Air: No Update");
+		break;
+	}
+}
+
+void GameController::ToggleAHeat()
+{
+	gameModel->GetSimulation()->aheat_enable = !gameModel->GetSimulation()->aheat_enable;
+	gameModel->UpdateQuickOptions();
+}
+
+
 void GameController::LoadRenderPreset(RenderPreset preset)
 {
 	Renderer * renderer = gameModel->GetRenderer();

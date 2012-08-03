@@ -109,6 +109,12 @@ public:
 	ui::Point NormaliseBlockCoord(ui::Point point);
 	std::string ElementResolve(int type);
 
+	void ResetAir();
+	void ResetSpark();
+	void SwitchGravity();
+	void SwitchAir();
+	void ToggleAHeat();
+
 	void LoadClipboard();
 	void LoadStamp();
 
