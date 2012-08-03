@@ -156,6 +156,17 @@ void Component::SetParent(Panel* new_parent)
 	this->_parent = new_parent;
 }
 
+Point Component::GetScreenPos()
+{
+	Point newPos(0,0);
+	if(GetParentWindow())
+		newPos += GetParentWindow()->Position;
+	if(GetParent())
+		newPos += GetParent()->Position;
+	newPos += Position;
+	return newPos;
+}
+
 // ***** OVERRIDEABLES *****
 // Kept empty.
 

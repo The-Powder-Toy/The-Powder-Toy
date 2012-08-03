@@ -121,7 +121,7 @@ void Label::OnMouseClick(int x, int y, unsigned button)
 	if(button == BUTTON_RIGHT)
 	{
 		if(menu)
-			menu->Show(GetParentWindow()->Position + Position + ui::Point(x, y));
+			menu->Show(GetScreenPos() + ui::Point(x, y));
 	}
 	else
 	{

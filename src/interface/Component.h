@@ -50,6 +50,8 @@ namespace ui
 		virtual void TextPosition(std::string);
 		
 		void Refresh();
+
+		Point GetScreenPos();
 		
 		/* See the parent of this component.
 		 * If new_parent is NULL, this component will have no parent. (THIS DOES NOT delete THE COMPONENT. See XComponent::RemoveChild)
