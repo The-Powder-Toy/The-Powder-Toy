@@ -49,11 +49,13 @@ position(position_)
 	
 	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Edit property");
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
-	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 	
 	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 17), "OK");
-	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	okayButton->SetActionCallback(new OkayAction(this));
 	AddComponent(okayButton);
@@ -66,15 +68,16 @@ position(position_)
 	}
 	property->SetOption(0);
 	
-	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "");
-	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	textField->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[value]");
+	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(textField);
 	
 	ui::Engine::Ref().ShowWindow(this);
 }
 void PropertyWindow::SetProperty()
 {
-	if(property->GetOption().second!=-1)
+	if(property->GetOption().second!=-1 && textField->GetText().length() > 0)
 	{
 		void * propValue;
 		int tempInt;
@@ -102,8 +105,29 @@ void PropertyWindow::SetProperty()
 					}
 					else 
 					{
-						istringstream(value) >> tempInt;
+						if(properties[property->GetOption().second].Type == StructProperty::ParticleType)
+						{
+							int type = sim->GetParticleType(value);
+							if(type != -1)
+							{
+#ifdef DEBUG
+					std::cout << "Got type from particle name" << std::endl;
+#endif
+								tempInt = type;
+							}
+							else
+							{
+								stringstream(value) >> tempInt;
+							}
+						}
+						else
+						{
+							stringstream(value) >> tempInt;
+						}
 					}
+#ifdef DEBUG
+					std::cout << "Got int value " << tempInt << std::endl;
+#endif
 					propValue = &tempInt;
 					break;
 				case StructProperty::UInteger:
@@ -123,12 +147,18 @@ void PropertyWindow::SetProperty()
 					}
 					else 
 					{
-						istringstream(value) >> tempUInt;
+						stringstream(value) >> tempUInt;
 					}
+#ifdef DEBUG
+					std::cout << "Got uint value " << tempUInt << std::endl;
+#endif
 					propValue = &tempUInt;
 					break;
 				case StructProperty::Float:
 					istringstream(value) >> tempFloat;
+#ifdef DEBUG
+					std::cout << "Got float value " << tempFloat << std::endl;
+#endif
 					propValue = &tempFloat;
 					break;
 				default:
@@ -146,6 +176,7 @@ void PropertyWindow::SetProperty()
 		}
 	}
 }
+
 void PropertyWindow::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;

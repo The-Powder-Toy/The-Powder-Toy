@@ -4294,6 +4294,24 @@ movedone:
 		}
 }
 
+int Simulation::GetParticleType(std::string type)
+{
+	int i = -1;
+	char * txt = (char*)type.c_str();
+
+	// alternative names for some elements
+	if (strcasecmp(txt,"C4")==0) i = PT_PLEX;
+	else if (strcasecmp(txt,"C5")==0) i = PT_C5;
+	else if (strcasecmp(txt,"NONE")==0) i = PT_NONE;
+	for (i=1; i<PT_NUM; i++) {
+		if (strcasecmp(txt, elements[i].Name)==0 && strlen(elements[i].Name) && elements[i].Enabled)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 void Simulation::update_particles()//doesn't update the particles themselves, but some other things
 {
 	int i, j, x, y, t, nx, ny, r, cr,cg,cb, l = -1;

@@ -183,6 +183,8 @@ public:
 	
 	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
 
+	int GetParticleType(std::string type);
+
 	void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
 	inline void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 	inline void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
