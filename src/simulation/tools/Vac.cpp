@@ -5,7 +5,7 @@ Tool_Vac::Tool_Vac()
 {
 	Identifier = "DEFAULT_TOOL_VAC";
 	Name = "VAC";
-	Colour = PIXPACK(0x000000);
+	Colour = PIXPACK(0x303030);
 	Description = "Removes air pressure";
 }
 
