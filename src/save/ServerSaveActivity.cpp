@@ -62,7 +62,16 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	AddComponent(descriptionField);
 
 	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X/2)-16, 16), "Publish");
-	publishedCheckbox->SetChecked(save.GetPublished());
+	if(Client::Ref().GetAuthUser().Username != save.GetUserName())
+	{
+		//Save is not owned by the user, disable by default
+		publishedCheckbox->SetChecked(false);	
+	}
+	else
+	{
+		//Save belongs to the current user, use published state already set
+		publishedCheckbox->SetChecked(save.GetPublished());
+	}
 	AddComponent(publishedCheckbox);
 
 	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point((Size.X/2)-50, 16), "Cancel");
@@ -85,10 +94,31 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 
 void ServerSaveActivity::Save()
 {
+	class PublishConfirmation: public ConfirmDialogueCallback {
+	public:
+		ServerSaveActivity * a;
+		PublishConfirmation(ServerSaveActivity * a) : a(a) {}
+		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+			if (result == ConfirmPrompt::ResultOkay)
+			{
+				a->saveUpload();
+				a->Exit();
+			}
+		}
+		virtual ~PublishConfirmation() { }
+	};
+
 	if(nameField->GetText().length())
 	{
-		saveUpload();
-		Exit();
+		if(Client::Ref().GetAuthUser().Username != save.GetUserName() && publishedCheckbox->GetChecked())
+		{
+			new ConfirmPrompt("Publish", "This save was created by " + save.GetUserName() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please untick the publish box, otherwise continue", new PublishConfirmation(this));
+		}
+		else
+		{
+			saveUpload();
+			Exit();
+		}
 	}
 	else
 	{
