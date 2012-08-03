@@ -59,7 +59,7 @@ class PropertyTool: public Tool
 {
 public:
 	PropertyTool():
-	Tool(0, "PROP", "Property Edit. Click to alter the properties of elements in the field", 0, 0, 0, NULL)
+	Tool(0, "PROP", "Property Edit. Click to alter the properties of elements in the field", 0xfe, 0xa9, 0x00, NULL)
 	{
 	}
 	virtual ~PropertyTool() {}
