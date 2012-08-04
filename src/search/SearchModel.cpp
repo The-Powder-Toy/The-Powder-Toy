@@ -12,8 +12,14 @@ SearchModel::SearchModel():
 	updateSaveListFinished(false),
 	saveListLoaded(false),
 	currentPage(1),
-	resultCount(0)
+	resultCount(0),
+	showTags(true)
 {
+}
+
+void SearchModel::SetShowTags(bool show)
+{
+	showTags = show;
 }
 
 void * SearchModel::updateSaveListTHelper(void * obj)
@@ -23,14 +29,27 @@ void * SearchModel::updateSaveListTHelper(void * obj)
 
 void * SearchModel::updateSaveListT()
 {
+	void ** information = new void*[2];
+	
 	std::string category = "";
 	if(showFavourite)
 		category = "Favourites";
 	if(showOwn && Client::Ref().GetAuthUser().ID)
 		category = "by:"+Client::Ref().GetAuthUser().Username;
-	vector<SaveInfo*> * tempSaveList = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category, resultCount);
+	information[0] = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category, resultCount);
+
+	if(showTags)
+	{
+		int tagResultCount;
+		information[1] = Client::Ref().GetTags(0, 24, "", tagResultCount);
+	}
+	else
+	{
+		information[1] = NULL;
+	}
+
 	updateSaveListFinished = true;
-	return tempSaveList;
+	return information;
 }
 
 void SearchModel::UpdateSaveList(int pageNumber, std::string query)
@@ -45,6 +64,11 @@ void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 	notifyPageChanged();
 	selected.clear();
 	notifySelectedChanged();
+
+	if(pageNumber == 1 && !showOwn && !showFavourite && currentSort == "best" && query == "")
+		SetShowTags(true);
+	else
+		SetShowTags(false);
 
 	//Threading
 	if(!updateSaveListWorking)
@@ -78,6 +102,11 @@ vector<SaveInfo*> SearchModel::GetSaveList()
 	return saveList;
 }
 
+vector<pair<string, int> > SearchModel::GetTagList()
+{
+	return tagList;
+}
+
 void SearchModel::Update()
 {
 	if(updateSaveListWorking)
@@ -87,10 +116,25 @@ void SearchModel::Update()
 			updateSaveListWorking = false;
 			lastError = "";
 			saveListLoaded = true;
-			vector<SaveInfo*> * tempSaveList;
-			pthread_join(updateSaveListThread, (void**)(&tempSaveList));
-			saveList = *tempSaveList;
-			delete tempSaveList;
+			void ** tempInformation;
+			//vector<SaveInfo*> * tempSaveList;
+			pthread_join(updateSaveListThread, (void**)(&tempInformation));
+			saveList = *(vector<SaveInfo*>*)tempInformation[0];
+
+			delete (vector<SaveInfo*>*)tempInformation[0];
+
+			if(tempInformation[1])
+			{
+				tagList = *(vector<pair<string, int> >*)tempInformation[1];
+				delete (vector<pair<string, int> >*)tempInformation[1];
+			}
+			else
+			{
+				tagList = vector<pair<string, int> >();
+			}
+
+			delete[] tempInformation;
+
 			if(!saveList.size())
 			{
 				lastError = Client::Ref().GetLastError();

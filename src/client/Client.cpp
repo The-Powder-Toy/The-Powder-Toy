@@ -1262,6 +1262,55 @@ std::vector<SaveComment*> * Client::GetComments(int saveID, int start, int count
 	return commentArray;
 }
 
+std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count, string query, int & resultCount)
+{
+	lastError = "";
+	resultCount = 0;
+	std::vector<std::pair<std::string, int> > * tagArray = new std::vector<std::pair<std::string, int> >();
+	std::stringstream urlStream;
+	char * data;
+	int dataStatus, dataLength;
+	urlStream << "http://" << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
+	if(query.length())
+	{
+		urlStream << "&Search_Query=";
+		if(query.length())
+			urlStream << URLEscape(query);
+	}
+	
+	data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+	if(dataStatus == 200 && data)
+	{
+		try
+		{
+			std::istringstream dataStream(data);
+			json::Object objDocument;
+			json::Reader::Read(objDocument, dataStream);
+
+			json::Number tempCount = objDocument["TagTotal"];
+			resultCount = tempCount.Value();
+			json::Array tagsArray = objDocument["Tags"];
+			for(int j = 0; j < tagsArray.Size(); j++)
+			{
+				json::Number tagCount = tagsArray[j]["Count"];
+				json::String tag = tagsArray[j]["Tag"];
+				tagArray->push_back(std::pair<std::string, int>(tag.Value(), tagCount.Value()));
+			}
+		}
+		catch (json::Exception &e)
+		{
+			lastError = "Could not read response";
+		}
+	}
+	else
+	{
+		lastError = http_ret_text(dataStatus);
+	}
+	if(data)
+		free(data);
+	return tagArray;
+}
+
 std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, string query, string sort, std::string category, int & resultCount)
 {
 	lastError = "";

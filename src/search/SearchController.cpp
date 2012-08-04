@@ -96,11 +96,19 @@ SearchController::~SearchController()
 	delete searchView;
 }
 
-void SearchController::DoSearch(std::string query)
+void SearchController::DoSearch(std::string query, bool now)
 {
 	nextQuery = query;
-	nextQueryTime = clock()+(0.6 * CLOCKS_PER_SEC);
-	nextQueryDone = false;
+	if(!now)
+	{
+		nextQueryTime = clock()+(0.6 * CLOCKS_PER_SEC);
+		nextQueryDone = false;
+	}
+	else
+	{
+		nextQueryDone = true;
+		searchModel->UpdateSaveList(1, nextQuery);
+	}
 	//searchModel->UpdateSaveList(1, query);
 }
 

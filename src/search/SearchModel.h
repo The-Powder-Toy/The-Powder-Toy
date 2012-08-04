@@ -21,10 +21,12 @@ private:
 	vector<int> selected;
 	vector<SearchView*> observers;
 	vector<SaveInfo*> saveList;
+	vector<pair<string, int> > tagList;
 	int currentPage;
 	int resultCount;
 	bool showOwn;
 	bool showFavourite;
+	bool showTags;
 	void notifySaveListChanged();
 	void notifySelectedChanged();
 	void notifyPageChanged();
@@ -43,9 +45,11 @@ public:
     SearchModel();
     virtual ~SearchModel();
 
+    void SetShowTags(bool show);
 	void AddObserver(SearchView * observer);
 	void UpdateSaveList(int pageNumber, std::string query);
 	vector<SaveInfo*> GetSaveList();
+	vector<pair<string, int> > GetTagList();
 	string GetLastError() { return lastError; }
 	int GetPageCount() { return max(1, (int)(ceil(resultCount/16))); }
 	int GetPageNum() { return currentPage; }

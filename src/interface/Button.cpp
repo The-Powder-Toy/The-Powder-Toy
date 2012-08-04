@@ -86,32 +86,45 @@ void Button::Draw(const Point& screenPos)
 	Graphics * g = ui::Engine::Ref().g;
 	Point Position = screenPos;
 	ui::Colour bgColour(0, 0, 0);
+
+	ui::Colour textColour = Appearance.TextInactive;
+	ui::Colour borderColour = Appearance.BorderInactive;
+	ui::Colour backgroundColour = Appearance.BackgroundInactive;
+
 	if(Enabled)
 	{
 		if(isButtonDown || (isTogglable && toggle))
 		{
-			bgColour = Appearance.BackgroundActive;
-			g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, Appearance.BackgroundActive.Red, Appearance.BackgroundActive.Green, Appearance.BackgroundActive.Blue, 255);
-			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BorderActive.Red, Appearance.BorderActive.Green, Appearance.BorderActive.Blue, 255);
-			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, buttonDisplayText, Appearance.TextActive.Red, Appearance.TextActive.Green, Appearance.TextActive.Blue, 255);
+			textColour = Appearance.TextActive;
+			borderColour = Appearance.BorderActive;
+			backgroundColour = Appearance.BackgroundActive;
+		}
+		else if (isMouseInside)
+		{
+			textColour = Appearance.TextHover;
+			borderColour = Appearance.BorderHover;
+			backgroundColour = Appearance.BackgroundHover;
 		}
 		else
 		{
-			bgColour = Appearance.BackgroundInactive;
-			g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, 255);
-			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BorderInactive.Red, Appearance.BorderInactive.Green, Appearance.BorderInactive.Blue, 255);
-			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, buttonDisplayText, Appearance.TextInactive.Red, Appearance.TextInactive.Green, Appearance.TextInactive.Blue, 255);
+			textColour = Appearance.TextInactive;
+			borderColour = Appearance.BorderInactive;
+			backgroundColour = Appearance.BackgroundInactive;
 		}
 	}
 	else
 	{
-		bgColour = Appearance.BackgroundInactive;
-		g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, 180);
-		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BackgroundDisabled.Red, Appearance.BackgroundDisabled.Green, Appearance.BackgroundDisabled.Blue, Appearance.BackgroundDisabled.Alpha);
-		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, buttonDisplayText, 180, 180, 180, 255);
+		textColour = Appearance.TextDisabled;
+		borderColour = Appearance.BorderDisabled;
+		backgroundColour = Appearance.BackgroundDisabled;
 	}
 
-	bool iconInvert = (bgColour.Blue + (3*bgColour.Green) + (2*bgColour.Red))>544?true:false;
+	bgColour = Appearance.BackgroundInactive;
+	g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, backgroundColour.Red, backgroundColour.Green, backgroundColour.Blue, backgroundColour.Alpha);
+	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+	g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, buttonDisplayText, textColour.Red, textColour.Green, textColour.Blue, textColour.Alpha);
+
+	bool iconInvert = (backgroundColour.Blue + (3*backgroundColour.Green) + (2*backgroundColour.Red))>544?true:false;
 
 	if(Appearance.icon)
 	{

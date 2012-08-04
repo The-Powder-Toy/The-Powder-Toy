@@ -30,7 +30,7 @@ public:
 	~SearchController();
 	SearchView * GetView() { return searchView; }
 	void Exit();
-	void DoSearch(std::string query);
+	void DoSearch(std::string query, bool now = false);
 	void NextPage();
 	void PrevPage();
 	void ChangeSort();

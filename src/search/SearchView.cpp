@@ -16,6 +16,7 @@ SearchView::SearchView():
 	nextButton = new ui::Button(ui::Point(XRES+BARSIZE-52, YRES+MENUSIZE-18), ui::Point(50, 16), "Next \x95");
 	previousButton = new ui::Button(ui::Point(1, YRES+MENUSIZE-18), ui::Point(50, 16), "\x96 Prev");
 	infoLabel  = new ui::Label(ui::Point(51, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-102, 16), "Loading...");
+	tagsLabel  = new ui::Label(ui::Point(51, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-102, 16), "Popular Tags:");
 
 	class SearchAction : public ui::TextboxAction
 	{
@@ -219,6 +220,12 @@ SearchView::~SearchView()
 	delete infoLabel;
 }
 
+void SearchView::Search(std::string query)
+{
+	searchField->SetText(query);
+	c->DoSearch(query, true);
+}
+
 void SearchView::NotifySortChanged(SearchModel * sender)
 {
     sortButton->SetText("Show "+sender->GetSort());
@@ -293,14 +300,29 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 1;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
+	int tagWidth, tagHeight, tagX = 0, tagY = 0, tagsX = 6, tagsY = 4, tagPadding = 1;
+	int tagAreaWidth, tagAreaHeight, tagXOffset, tagYOffset;
+
 	vector<SaveInfo*> saves = sender->GetSaveList();
+	vector<pair<string, int> > tags = sender->GetTagList();
+	//string messageOfTheDay = sender->GetMessageOfTheDay();
+
+	RemoveComponent(tagsLabel);
+	tagsLabel->SetParentWindow(NULL);
+
 	Client::Ref().ClearThumbnailRequests();
 	for(i = 0; i < saveButtons.size(); i++)
 	{
 		RemoveComponent(saveButtons[i]);
 		delete saveButtons[i];
 	}
+	for(i = 0; i < tagButtons.size(); i++)
+	{
+		RemoveComponent(tagButtons[i]);
+		delete tagButtons[i];
+	}
 	saveButtons.clear();
+	tagButtons.clear();
 	if(!sender->GetSavesLoaded())
 	{
 		nextButton->Enabled = false;
@@ -341,12 +363,34 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			delete errorLabel;
 			errorLabel = NULL;
 		}
-		buttonXOffset = buttonPadding;
+
 		buttonYOffset = 28;
+		buttonXOffset = buttonPadding;
 		buttonAreaWidth = Size.X;
 		buttonAreaHeight = Size.Y - buttonYOffset - 18;
+
+		if(tags.size())
+		{
+			buttonYOffset += (buttonAreaHeight/savesY) - buttonPadding*2;
+			buttonAreaHeight = Size.Y - buttonYOffset - 18;
+			savesY--;
+
+			tagXOffset = tagPadding;
+			tagYOffset = 60;
+			tagAreaWidth = Size.X;
+			tagAreaHeight = ((buttonAreaHeight/savesY) - buttonPadding*2)-(tagYOffset-28)-5;
+			tagWidth = (tagAreaWidth/tagsX) - tagPadding*2;
+			tagHeight = (tagAreaHeight/tagsY) - tagPadding*2;
+
+			AddComponent(tagsLabel);
+			tagsLabel->Position.Y = tagYOffset-16;
+		}
+
 		buttonWidth = (buttonAreaWidth/savesX) - buttonPadding*2;
 		buttonHeight = (buttonAreaHeight/savesY) - buttonPadding*2;
+
+
+
 		class SaveOpenAction: public ui::SaveButtonAction
 		{
 			SearchView * v;
@@ -361,6 +405,59 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 				v->c->Selected(sender->GetSave()->GetID(), sender->GetSelected());
 			}
 		};
+
+		class TagAction: public ui::ButtonAction
+		{
+			SearchView * v;
+			std::string tag;
+		public:
+			TagAction(SearchView * v, std::string tag) : v(v), tag(tag) {}
+			virtual void ActionCallback(ui::Button * sender)
+			{
+				v->Search(tag);
+			}
+		};
+
+		for(i = 0; i < tags.size(); i++)
+		{
+			int maxTagVotes = tags[0].second;
+
+			pair<string, int> tag = tags[i];
+			
+			if(tagX == tagsX)
+			{
+				if(tagY == tagsY-1)
+					break;
+				tagX = 0;
+				tagY++;
+			}
+
+			int tagAlpha = 192;
+			if (maxTagVotes)
+				tagAlpha = 127+(128*tag.second)/maxTagVotes;
+
+			ui::Button * tagButton;
+			tagButton = new ui::Button(
+				ui::Point(
+						tagXOffset + tagPadding + tagX*(tagWidth+tagPadding*2),
+						tagYOffset + tagPadding + tagY*(tagHeight+tagPadding*2)
+					),
+				ui::Point(tagWidth, tagHeight),
+				tag.first
+				);
+			tagButton->SetActionCallback(new TagAction(this, tag.first));
+			tagButton->Appearance.BorderInactive = ui::Colour(0, 0, 0);
+			tagButton->Appearance.BorderHover = ui::Colour(0, 0, 0);
+			tagButton->Appearance.BorderActive = ui::Colour(0, 0, 0);
+			tagButton->Appearance.BackgroundHover = ui::Colour(0, 0, 0);
+
+			tagButton->Appearance.TextInactive = ui::Colour(tagAlpha, tagAlpha, tagAlpha);
+			tagButton->Appearance.TextHover = ui::Colour((tagAlpha*5)/6, (tagAlpha*5)/6, tagAlpha);
+			AddComponent(tagButton);
+			tagButtons.push_back(tagButton);
+			tagX++;
+
+		}
 		for(i = 0; i < saves.size(); i++)
 		{
 			if(saveX == savesX)

@@ -40,10 +40,12 @@ namespace ui
 		ui::Colour TextHover;
 		ui::Colour TextInactive;
 		ui::Colour TextActive;
+		ui::Colour TextDisabled;
 		
 		ui::Colour BorderHover;
 		ui::Colour BorderInactive;
 		ui::Colour BorderActive;
+		ui::Colour BorderDisabled;
 		
 		ui::Border Margin;
 		
