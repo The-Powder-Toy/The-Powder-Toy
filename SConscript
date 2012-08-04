@@ -137,16 +137,16 @@ if(GetOption('beta')):
     env.Append(CPPDEFINES='BETA')
 
 if(GetOption('snapshot')):
-    env.Append(CPPDEFINES={'SNAPSHOT_ID': GetOption('snapshot')})
+    env.Append(CPPDEFINES=['SNAPSHOT_ID=' + GetOption('snapshot')])
     env.Append(CPPDEFINES='SNAPSHOT')
 else:
-    env.Append(CPPDEFINES={"SNAPSHOT_ID": int(time.time())})
+    env.Append(CPPDEFINES=["SNAPSHOT_ID=" + str(int(time.time()))])
 
 if(GetOption('save-version')):
-    env.Append(CPPDEFINES={'SAVE_VERSION': GetOption('major-version')})
+    env.Append(CPPDEFINES=['SAVE_VERSION=' + GetOption('major-version')])
 
 if(GetOption('minor-version')):
-    env.Append(CPPDEFINES={'MINOR_VERSION': GetOption('minor-version')})
+    env.Append(CPPDEFINES=['MINOR_VERSION=' + GetOption('minor-version')])
 
 if(GetOption('release')):
     env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations', '-Wunsafe-loop-optimizations'])
