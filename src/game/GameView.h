@@ -142,6 +142,8 @@ public:
 	void NotifyInfoTipChanged(GameModel * sender);
 	void NotifyQuickOptionsChanged(GameModel * sender);
 
+	void ExitPrompt();
+
 	virtual void ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip);
 
 	virtual void OnMouseMove(int x, int y, int dx, int dy);

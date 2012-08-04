@@ -68,7 +68,7 @@ public:
 	virtual void OnDraw();
 	virtual void DoDraw();
 	virtual void OnTick(float dt);
-	virtual void OnMouseDown(int x, int y, unsigned button);
+	virtual void OnTryExit(ExitMethod method);
 	virtual void OnMouseWheel(int x, int y, int d);
 	virtual ~PreviewView();
 };

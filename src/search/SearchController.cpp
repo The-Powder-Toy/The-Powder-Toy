@@ -20,8 +20,13 @@ public:
 	{
 		if(cc->activePreview->GetDoOpen() && cc->activePreview->GetSave())
 		{
-			cc->searchModel->SetLoadedSave(new SaveInfo(*(cc->activePreview->GetSave())));
+			cc->searchModel->SetLoadedSave(cc->activePreview->GetSave());
 		}
+		else
+		{
+			cc->searchModel->SetLoadedSave(NULL);
+		}
+
 	}
 };
 
@@ -161,6 +166,8 @@ void SearchController::Selected(int saveID, bool selected)
 
 void SearchController::OpenSave(int saveID)
 {
+	if(activePreview)
+		delete activePreview;
 	activePreview = new PreviewController(saveID, new OpenCallback(this));
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }

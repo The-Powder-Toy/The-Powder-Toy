@@ -57,7 +57,16 @@ void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 
 void SearchModel::SetLoadedSave(SaveInfo * save)
 {
-	loadedSave = save;
+	if(loadedSave != save && loadedSave)
+		delete loadedSave;
+	if(save)
+	{
+		loadedSave = new SaveInfo(*save);
+	}
+	else
+	{
+		loadedSave = NULL;
+	}
 }
 
 SaveInfo * SearchModel::GetLoadedSave(){

@@ -60,6 +60,7 @@ TextPrompt::TextPrompt(std::string title, std::string message, bool multiline, T
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	cancelButton->SetActionCallback(new CloseAction(this, ResultCancel));
 	AddComponent(cancelButton);
+	SetCancelButton(cancelButton);
 
 	ui::Button * okayButton = new ui::Button(ui::Point(Size.X/2, Size.Y-16), ui::Point(Size.X/2, 16), "Okay");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
@@ -67,6 +68,7 @@ TextPrompt::TextPrompt(std::string title, std::string message, bool multiline, T
 	okayButton->Appearance.TextInactive = style::Colour::WarningTitle;
 	okayButton->SetActionCallback(new CloseAction(this, ResultOkay));
 	AddComponent(okayButton);
+	SetOkayButton(okayButton);
 
 	ui::Engine::Ref().ShowWindow(this);
 }

@@ -53,6 +53,7 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save) :
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	cancelButton->SetActionCallback(new CancelAction(this));
 	AddComponent(cancelButton);
+	SetCancelButton(cancelButton);
 
 	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), "Save");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -60,6 +61,7 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save) :
 	okayButton->Appearance.TextInactive = style::Colour::InformationTitle;
 	okayButton->SetActionCallback(new SaveAction(this));
 	AddComponent(okayButton);
+	SetOkayButton(okayButton);
 
 	if(save.GetGameSave())
 		ThumbnailBroker::Ref().RenderThumbnail(save.GetGameSave(), Size.X-16, -1, this);

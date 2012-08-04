@@ -42,6 +42,9 @@ ErrorMessage::ErrorMessage(std::string title, std::string message):
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	okayButton->SetActionCallback(new DismissAction(this));
 	AddComponent(okayButton);
+	SetOkayButton(okayButton);
+	SetCancelButton(okayButton);
+	
 	ui::Engine::Ref().ShowWindow(this);
 }
 

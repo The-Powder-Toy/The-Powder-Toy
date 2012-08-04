@@ -48,11 +48,13 @@ LoginView::LoginView():
 	AddComponent(infoLabel);
 	
 	AddComponent(loginButton);
+	SetOkayButton(loginButton);
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	loginButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	loginButton->Appearance.TextInactive = style::Colour::ConfirmButton;
 	loginButton->SetActionCallback(new LoginAction(this));
 	AddComponent(cancelButton);
+	SetCancelButton(cancelButton);
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->SetActionCallback(new CancelAction(this));
@@ -77,11 +79,6 @@ void LoginView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, boo
 			FocusComponent(passwordField);
 		else
 			FocusComponent(usernameField);
-		break;
-	case KEY_ENTER:
-	case KEY_RETURN:
-		if(IsFocused(passwordField))
-			loginButton->DoAction();
 		break;
 	}
 }

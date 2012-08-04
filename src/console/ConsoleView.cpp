@@ -35,6 +35,7 @@ void ConsoleView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 {
 	switch(key)
 	{
+	case KEY_ESCAPE:
 	case '`':
 		c->CloseConsole();
 		break;

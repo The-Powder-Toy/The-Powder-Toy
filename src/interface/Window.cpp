@@ -84,7 +84,7 @@ void Window::RemoveComponent(Component* c)
 
 void Window::OnTryExit(ExitMethod method)
 {
-	if(cancelButton)
+	if(cancelButton && method != MouseOutside)
 		cancelButton->DoAction();
 }
 

@@ -133,6 +133,8 @@ OptionsView::OptionsView():
 	ui::Button * tempButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "OK");
 	tempButton->SetActionCallback(new CloseAction(this));
 	AddComponent(tempButton);
+	SetCancelButton(tempButton);
+	SetOkayButton(tempButton);
 }
 
 void OptionsView::NotifySettingsChanged(OptionsModel * sender)

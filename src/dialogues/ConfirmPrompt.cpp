@@ -52,6 +52,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	cancelButton->SetActionCallback(new CloseAction(this, ResultCancel));
 	AddComponent(cancelButton);
+	SetCancelButton(cancelButton);
 
 	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), "Continue");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -59,6 +60,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	okayButton->Appearance.TextInactive = style::Colour::WarningTitle;
 	okayButton->SetActionCallback(new CloseAction(this, ResultOkay));
 	AddComponent(okayButton);
+	SetOkayButton(okayButton);
 
 	ui::Engine::Ref().ShowWindow(this);
 }

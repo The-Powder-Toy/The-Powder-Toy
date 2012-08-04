@@ -75,6 +75,7 @@ PreviewView::PreviewView():
 	openButton->SetIcon(IconOpen);
 	openButton->SetActionCallback(new OpenAction(this));
 	AddComponent(openButton);
+	SetOkayButton(openButton);
 
 	class FavAction: public ui::ButtonAction
 	{
@@ -291,10 +292,9 @@ void PreviewView::OnTick(float dt)
 	c->Update();
 }
 
-void PreviewView::OnMouseDown(int x, int y, unsigned button)
+void PreviewView::OnTryExit(ExitMethod method)
 {
-	if(!(x > Position.X && y > Position.Y && y < Position.Y+Size.Y && x < Position.X+Size.X)) //Clicked outside window
-		c->Exit();
+	c->Exit();
 }
 
 void PreviewView::OnMouseWheel(int x, int y, int d)
