@@ -69,6 +69,16 @@ ValueType TPTScriptInterface::testType(std::string word)
 	//Function
 	if(word == "set")
 		return TypeFunction;
+	else if(word == "create")
+		return TypeFunction;
+	else if(word == "delete")
+		return TypeFunction;
+	else if(word == "kill")
+		return TypeFunction;
+	else if(word == "load")
+		return TypeFunction;
+	else if(word == "bubble")
+		return TypeFunction;
 	//Basic type
 	parseNumber:
 			for(i = 0; i < word.length(); i++)
@@ -104,6 +114,12 @@ AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 	case TypeFunction:
 		if(word == "set")
 			return tptS_set(words);
+		else if(word == "create")
+			return tptS_create(words);
+		else if(word == "delete" || word == "kill")
+			return tptS_delete(words);
+		else if(word == "load")
+			return tptS_load(words);
 		break;
 	case TypeNumber:
 		return NumberType(atoi(rawWord));
@@ -180,6 +196,15 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	if(propertyOffset==-1)
 		throw GeneralException("Invalid property");
 
+	//Selector
+	int newValue;
+	if(selector.GetType() == TypeNumber)
+		newValue = ((NumberType)selector).Value();
+	else if(selector.GetType() == TypeString)
+		newValue = GetParticleType(((StringType)selector).Value());
+	else
+		throw GeneralException("Invalid value for assignment");
+
 	if(selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
 	{
 		int partIndex = -1;
@@ -198,10 +223,10 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		switch(propertyFormat)
 		{
 		case FormatInt:
-			*((int*)(((unsigned char*)&sim->parts[partIndex])+propertyOffset)) = ((NumberType)value).Value();
+			*((int*)(((unsigned char*)&sim->parts[partIndex])+propertyOffset)) = newValue;
 			break;
 		case FormatFloat:
-			*((float*)(((unsigned char*)&sim->parts[partIndex])+propertyOffset)) = ((NumberType)value).Value();
+			*((float*)(((unsigned char*)&sim->parts[partIndex])+propertyOffset)) = newValue;
 			break;
 		}
 		returnValue = 1;
@@ -212,23 +237,21 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		{
 		case FormatInt:
 			{
-				int tempNumber = ((NumberType)value).Value();
 				for(int j = 0; j < NPART; j++)
 					if(sim->parts[j].type)
 					{
 						returnValue++;
-						*((int*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = tempNumber;
+						*((int*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = newValue;
 					}
 			}
 			break;
 		case FormatFloat:
 			{
-				float tempNumber = ((NumberType)value).Value();
 				for(int j = 0; j < NPART; j++)
 					if(sim->parts[j].type)
 					{
 						returnValue++;
-						*((float*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = tempNumber;
+						*((float*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = newValue;
 					}
 			}
 			break;
@@ -239,7 +262,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		int type;
 		if(selector.GetType() == TypeNumber)
 			type = ((NumberType)selector).Value();
-		else
+		else if(selector.GetType() == TypeString)
 			type = GetParticleType(((StringType)selector).Value());
 
 		if(type<0 || type>=PT_NUM)
@@ -248,23 +271,21 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		{
 		case FormatInt:
 			{
-				int tempNumber = ((NumberType)value).Value();
 				for(int j = 0; j < NPART; j++)
 					if(sim->parts[j].type == type)
 					{
 						returnValue++;
-						*((int*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = tempNumber;
+						*((int*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = newValue;
 					}
 			}
 			break;
 		case FormatFloat:
 			{
-				float tempNumber = ((NumberType)value).Value();
 				for(int j = 0; j < NPART; j++)
 					if(sim->parts[j].type == type)
 					{
 						returnValue++;
-						*((float*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = tempNumber;
+						*((float*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = newValue;
 					}
 			}
 			break;
@@ -273,6 +294,69 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	else
 		throw GeneralException("Invalid selector");
 	return NumberType(returnValue);
+}
+
+AnyType TPTScriptInterface::tptS_create(std::deque<std::string> * words)
+{
+	//Arguments from stack
+	AnyType createType = eval(words);
+	PointType position = eval(words);
+
+	Simulation * sim = m->GetSimulation();
+
+	int type;
+	if(createType.GetType() == TypeNumber)
+		type = ((NumberType)createType).Value();
+	else if(createType.GetType() == TypeString)
+		type = GetParticleType(((StringType)createType).Value());
+	else
+		throw GeneralException("Invalid type");
+
+	if(type == -1)
+		throw GeneralException("Invalid particle type");
+
+	ui::Point tempPoint = position.Value();
+	if(tempPoint.X<0 || tempPoint.Y<0 || tempPoint.Y >= YRES || tempPoint.X >= XRES)
+				throw GeneralException("Invalid position");
+
+	int returnValue = sim->create_part(-1, tempPoint.X, tempPoint.Y, type);
+
+	return NumberType(returnValue);
+}
+
+AnyType TPTScriptInterface::tptS_delete(std::deque<std::string> * words)
+{
+	//Arguments from stack
+	AnyType partRef = eval(words);
+
+	Simulation * sim = m->GetSimulation();
+
+	if(partRef.GetType() == TypePoint)
+	{
+		ui::Point deletePoint = ((PointType)partRef).Value();
+		if(deletePoint.X<0 || deletePoint.Y<0 || deletePoint.Y >= YRES || deletePoint.X >= XRES)
+			throw GeneralException("Invalid position");
+		sim->delete_part(deletePoint.X, deletePoint.Y, 0);
+	}
+	else if(partRef.GetType() == TypeNumber)
+	{
+		int partIndex = ((NumberType)partRef).Value();
+		if(partIndex < 0 || partIndex >= NPART)
+			throw GeneralException("Invalid particle index");
+		sim->kill_part(partIndex);
+	}
+	else
+		throw GeneralException("Invalid particle reference");
+
+	return NumberType(0);
+}
+
+AnyType TPTScriptInterface::tptS_load(std::deque<std::string> * words)
+{
+	//Arguments from stack
+	NumberType saveID = eval(words);
+
+	return NumberType(0);
 }
 
 TPTScriptInterface::~TPTScriptInterface() {
