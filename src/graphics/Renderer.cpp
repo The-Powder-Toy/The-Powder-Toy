@@ -441,17 +441,18 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 	if (wt==WL_EWALL)
 	{
 		for (j=0; j<height; j++)
-			for (i=0; i<width; i++)
-				if(i > width/2)
-				{
-					if (i&j&1)
-						newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-				}
-				else
-				{
-					if (!(i&j&1))
-						newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);	
-				}
+		{
+			for (i=0; i<(width/4)+j; i++)
+			{
+				if (!(i&j&1))
+					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);	
+			}
+			for (; i<width; i++)
+			{
+				if (i&j&1)
+					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+			}
+		}
 	}
 	else if (wt==WL_WALLELEC)
 	{
@@ -467,17 +468,18 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 	else if (wt==WL_EHOLE)
 	{
 		for (j=0; j<height; j++)
-			for (i=0; i<width; i++)
-				if(i < width/2)
-				{
-					if (i&j&1)
-						newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-				}
-				else
-				{
-					if (!(i&j&1))
-						newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);	
-				}
+		{
+			for (i=0; i<(width/4)+j; i++)
+			{
+				if (i&j&1)
+					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+			}
+			for (; i<width; i++)
+			{
+				if (!(i&j&1))
+					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);	
+			}
+		}
 	}
 	else if (wt == WL_ERASE)
 	{
@@ -495,12 +497,12 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
 			}
 		}
-		for (j=4; j<width/2; j++)
+		for (j=3; j<(width-4)/2; j++)
 		{
 			newTexture->SetPixel(j+6, j, 0xFF, 0, 0, 255);
 			newTexture->SetPixel(j+7, j, 0xFF, 0, 0, 255);
-			newTexture->SetPixel(-j+21, j, 0xFF, 0, 0, 255);
-			newTexture->SetPixel(-j+22, j, 0xFF, 0, 0, 255);
+			newTexture->SetPixel(-j+19, j, 0xFF, 0, 0, 255);
+			newTexture->SetPixel(-j+20, j, 0xFF, 0, 0, 255);
 		}
 	}
 	else if(wt == WL_STREAM)
@@ -513,10 +515,10 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
 			}
 		}
-		newTexture->SetCharacter(4, 3, 0x8D, 255, 255, 255, 255);
+		newTexture->SetCharacter(4, 2, 0x8D, 255, 255, 255, 255);
 		for (i=width/3; i<width; i++)
 		{
-			newTexture->SetPixel(i, 8+(int)(3.9f*cos(i*0.3f)), 255, 255, 255, 255);
+			newTexture->SetPixel(i, 7+(int)(3.9f*cos(i*0.3f)), 255, 255, 255, 255);
 		}
 	}
 	return newTexture;

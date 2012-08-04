@@ -43,7 +43,24 @@ Element_NONE::Element_NONE()
     HighTemperatureTransition = NT;
     
     Update = NULL;
-    
+    IconGenerator = &Element_NONE::iconGen;
 }
+
+//#TPT-Directive ElementHeader Element_NONE static VideoBuffer * iconGen(int, int, int)
+VideoBuffer * Element_NONE::iconGen(int wallID, int width, int height)
+{
+    VideoBuffer * newTexture = new VideoBuffer(width, height);
+
+    for (int j=3; j<(width-4)/2; j++)
+    {
+        newTexture->SetPixel(j+6, j, 0xFF, 0, 0, 255);
+        newTexture->SetPixel(j+7, j, 0xFF, 0, 0, 255);
+        newTexture->SetPixel(-j+19, j, 0xFF, 0, 0, 255);
+        newTexture->SetPixel(-j+20, j, 0xFF, 0, 0, 255);
+    }
+
+    return newTexture;
+}
+
 
 Element_NONE::~Element_NONE() {}

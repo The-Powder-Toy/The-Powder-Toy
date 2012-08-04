@@ -30,6 +30,7 @@ public:
 	string GetName();
 	string GetDescription();
 	VideoBuffer * GetTexture(int width, int height);
+	void SetTextureGen(VideoBuffer * (*textureGen)(int, int, int));
 	virtual ~Tool();
 	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);

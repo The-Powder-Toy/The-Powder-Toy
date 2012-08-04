@@ -30,6 +30,10 @@ VideoBuffer * Tool::GetTexture(int width, int height)
 	}
 	return NULL;
 }
+void Tool::SetTextureGen(VideoBuffer * (*textureGen)(int, int, int))
+{
+	this->textureGen = textureGen;
+}
 string Tool::GetName() { return toolName; }
 string Tool::GetDescription() { return toolDescription; }
 Tool::~Tool() {}
