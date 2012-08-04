@@ -40,6 +40,10 @@ void Window::AddComponent(Component* c)
 	{
 		c->SetParentWindow(this);
 		Components.push_back(c);
+
+		if(Engine::Ref().GetMouseX() > Position.X + c->Position.X && Engine::Ref().GetMouseX() < Position.X + c->Position.X + c->Size.X &&
+			Engine::Ref().GetMouseY() > Position.Y + c->Position.Y && Engine::Ref().GetMouseY() < Position.Y + c->Position.Y + c->Size.Y)
+			c->OnMouseEnter(Engine::Ref().GetMouseX() - (Position.X + c->Position.X), Engine::Ref().GetMouseY() - (Position.Y + c->Position.Y));
 	}
 	else
 	{
