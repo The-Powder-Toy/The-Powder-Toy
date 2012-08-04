@@ -587,7 +587,8 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 
 void GameController::OpenSearch()
 {
-	search = new SearchController(new SearchCallback(this));
+	if(!search)
+		search = new SearchController(new SearchCallback(this));
 	ui::Engine::Ref().ShowWindow(search->GetView());
 }
 

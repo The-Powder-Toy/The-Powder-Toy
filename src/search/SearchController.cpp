@@ -76,7 +76,7 @@ void SearchController::Exit()
 	}
 	if(callback)
 		callback->ControllerExit();
-	HasExited = true;
+	//HasExited = true;
 }
 
 SearchController::~SearchController()
