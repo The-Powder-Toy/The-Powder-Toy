@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include "TPTScriptInterface.h"
 #include "game/GameModel.h"
+#include "simulation/Air.h"
 
 TPTScriptInterface::TPTScriptInterface(GameModel * m): CommandInterface(m)
 {
@@ -77,6 +78,8 @@ ValueType TPTScriptInterface::testType(std::string word)
 		return TypeFunction;
 	else if(word == "load")
 		return TypeFunction;
+	else if(word == "reset")
+		return TypeFunction;
 	else if(word == "bubble")
 		return TypeFunction;
 	//Basic type
@@ -120,6 +123,10 @@ AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 			return tptS_delete(words);
 		else if(word == "load")
 			return tptS_load(words);
+		else if(word == "reset")
+			return tptS_reset(words);
+		else if(word == "bubble")
+			return tptS_bubble(words);
 		break;
 	case TypeNumber:
 		return NumberType(atoi(rawWord));
@@ -355,6 +362,97 @@ AnyType TPTScriptInterface::tptS_load(std::deque<std::string> * words)
 {
 	//Arguments from stack
 	NumberType saveID = eval(words);
+
+	throw GeneralException("Function not implemented");
+
+	return NumberType(0);
+}
+
+AnyType TPTScriptInterface::tptS_bubble(std::deque<std::string> * words)
+{
+	//Arguments from stack
+	PointType bubblePosA = eval(words);
+	ui::Point bubblePos = bubblePosA.Value();
+
+	if(bubblePos.X<0 || bubblePos.Y<0 || bubblePos.Y >= YRES || bubblePos.X >= XRES)
+			throw GeneralException("Invalid position");
+
+	Simulation * sim = m->GetSimulation();
+
+	int first, rem1, rem2;
+
+	first = sim->create_part(-1, bubblePos.X+18, bubblePos.Y, PT_SOAP);
+	rem1 = first;
+
+	for (int i = 1; i<=30; i++)
+	{
+		rem2 = sim->create_part(-1, bubblePos.X+18*cosf(i/5.0), bubblePos.Y+18*sinf(i/5.0), PT_SOAP);
+
+		sim->parts[rem1].ctype = 7;
+		sim->parts[rem1].tmp = rem2;
+		sim->parts[rem2].tmp2 = rem1;
+
+		rem1 = rem2;
+	}
+
+	sim->parts[rem1].ctype = 7;
+	sim->parts[rem1].tmp = first;
+	sim->parts[first].tmp2 = rem1;
+	sim->parts[first].ctype = 7;
+
+	return NumberType(0);
+}
+
+AnyType TPTScriptInterface::tptS_reset(std::deque<std::string> * words)
+{
+	//Arguments from stack
+	StringType reset = eval(words);
+	std::string resetStr = reset.Value();
+
+	Simulation * sim = m->GetSimulation();
+
+	if (resetStr == "pressure")
+	{
+		for (int nx = 0; nx < XRES/CELL; nx++)
+			for (int ny = 0; ny < YRES/CELL; ny++)
+			{
+				sim->air->pv[ny][nx] = 0;
+			}
+	}
+	else if (resetStr == "velocity")
+	{
+		for (int nx = 0; nx < XRES/CELL; nx++)
+			for (int ny = 0; ny < YRES/CELL; ny++)
+			{
+				sim->air->vx[ny][nx] = 0;
+				sim->air->vy[ny][nx] = 0;
+			}
+	}
+	else if (resetStr == "sparks")
+	{
+		for (int i = 0; i < NPART; i++)
+		{
+			if (sim->parts[i].type == PT_SPRK)
+			{
+				sim->parts[i].type = sim->parts[i].ctype;
+				sim->parts[i].life = 4;
+			}
+		}
+	}
+	else if (resetStr == "temp")
+	{
+		for (int i = 0; i < NPART; i++)
+		{
+			if (sim->parts[i].type)
+			{
+				sim->parts[i].temp = sim->elements[sim->parts[i].type].Temperature;
+			}
+		}
+	}
+	else
+	{
+		throw GeneralException("Unknown reset command");
+	}
 
 	return NumberType(0);
 }
