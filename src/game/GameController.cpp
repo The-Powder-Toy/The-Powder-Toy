@@ -386,12 +386,82 @@ bool GameController::MouseWheel(int x, int y, int d)
 
 bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	return commandInterface->OnKeyPress(key, character, shift, ctrl, alt);
+	bool ret = commandInterface->OnKeyPress(key, character, shift, ctrl, alt);
+	if(ret)
+	{
+		Simulation * sim = gameModel->GetSimulation();
+		if (key == KEY_RIGHT)
+		{
+			sim->player.comm = (int)(sim->player.comm)|0x02;  //Go right command
+		}
+		if (key == KEY_LEFT)
+		{
+			sim->player.comm = (int)(sim->player.comm)|0x01;  //Go left command
+		}
+		if (key == KEY_DOWN && ((int)(sim->player.comm)&0x08)!=0x08)
+		{
+			sim->player.comm = (int)(sim->player.comm)|0x08;  //Use element command
+		}
+		if (key == KEY_UP && ((int)(sim->player.comm)&0x04)!=0x04)
+		{
+			sim->player.comm = (int)(sim->player.comm)|0x04;  //Jump command
+		}
+
+		if (key == KEY_d)
+		{
+			sim->player2.comm = (int)(sim->player2.comm)|0x02;  //Go right command
+		}
+		if (key == KEY_a)
+		{
+			sim->player2.comm = (int)(sim->player2.comm)|0x01;  //Go left command
+		}
+		if (key == KEY_s && ((int)(sim->player2.comm)&0x08)!=0x08)
+		{
+			sim->player2.comm = (int)(sim->player2.comm)|0x08;  //Use element command
+		}
+		if (key == KEY_w && ((int)(sim->player2.comm)&0x04)!=0x04)
+		{
+			sim->player2.comm = (int)(sim->player2.comm)|0x04;  //Jump command
+		}
+	}
+	return ret;
 }
 
 bool GameController::KeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	return commandInterface->OnKeyRelease(key, character, shift, ctrl, alt);
+	bool ret = commandInterface->OnKeyRelease(key, character, shift, ctrl, alt);
+	if(ret)
+	{
+		Simulation * sim = gameModel->GetSimulation();
+		if (key == SDLK_RIGHT || key == SDLK_LEFT)
+		{
+			sim->player.pcomm = sim->player.comm;  //Saving last movement
+			sim->player.comm = (int)(sim->player.comm)&12;  //Stop command
+		}
+		if (key == SDLK_UP)
+		{
+			sim->player.comm = (int)(sim->player.comm)&11;
+		}
+		if (key == SDLK_DOWN)
+		{
+			sim->player.comm = (int)(sim->player.comm)&7;
+		}
+
+		if (key == SDLK_d || key == SDLK_a)
+		{
+			sim->player2.pcomm = sim->player2.comm;  //Saving last movement
+			sim->player2.comm = (int)(sim->player2.comm)&12;  //Stop command
+		}
+		if (key == SDLK_w)
+		{
+			sim->player2.comm = (int)(sim->player2.comm)&11;
+		}
+		if (key == SDLK_s)
+		{
+			sim->player2.comm = (int)(sim->player2.comm)&7;
+		}
+	}
+	return ret;
 }
 
 void GameController::Tick()

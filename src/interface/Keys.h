@@ -22,6 +22,11 @@
 #define KEY_MOD_ALT KMOD_ALT
 #define KEY_MOD_SHIFT KMOD_SHIFT
 
+#define KEY_a SDLK_a
+#define KEY_d SDLK_d
+#define KEY_s SDLK_s
+#define KEY_w SDLK_w
+
 #define BUTTON_LEFT SDL_BUTTON_LEFT
 #define BUTTON_MIDDLE SDL_BUTTON_MIDDLE
 #define BUTTON_RIGHT SDL_BUTTON_RIGHT
