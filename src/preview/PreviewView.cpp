@@ -15,6 +15,7 @@
 #include "interface/Window.h"
 #include "interface/Textbox.h"
 #include "Style.h"
+#include "Format.h"
 #include "search/Thumbnail.h"
 #include "client/Client.h"
 #include "interface/ScrollPanel.h"
@@ -316,7 +317,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		votesUp = save->votesUp;
 		votesDown = save->votesDown;
 		saveNameLabel->SetText(save->name);
-		authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw ");
+		authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
 		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
 			favButton->Enabled = false;
