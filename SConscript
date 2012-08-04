@@ -77,12 +77,15 @@ except:
             env.Append(CPPPATH=GetOption("sdl-dir"))
 
 #Find correct lua include dir
-if(GetOption("lua-dir")):
-    if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
-        print "lua5.1 headers not found or not installed"
-        raise SystemExit(1)
-    else:
-        env.Append(CPPPATH=GetOption("lua-dir"))
+try:
+    env.ParseConfig('pkg-config --cflags lua5.1')
+except:
+    if(GetOption("lua-dir")):
+        if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
+            print "lua5.1 headers not found or not installed"
+            raise SystemExit(1)
+        else:
+            env.Append(CPPPATH=GetOption("lua-dir"))
 
 #Check for FFT lib
 if not conf.CheckLib('fftw3f') and not conf.CheckLib('fftw3f-3'):
