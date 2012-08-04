@@ -290,7 +290,7 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 void SearchView::NotifySaveListChanged(SearchModel * sender)
 {
 	int i = 0;
-	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 2;
+	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 1;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
 	vector<SaveInfo*> saves = sender->GetSaveList();
@@ -341,8 +341,8 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			delete errorLabel;
 			errorLabel = NULL;
 		}
-		buttonXOffset = 0;
-		buttonYOffset = 50;
+		buttonXOffset = buttonPadding;
+		buttonYOffset = 28;
 		buttonAreaWidth = Size.X;
 		buttonAreaHeight = Size.Y - buttonYOffset - 18;
 		buttonWidth = (buttonAreaWidth/savesX) - buttonPadding*2;
