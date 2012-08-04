@@ -102,8 +102,7 @@ env = conf.Finish();
 env.Append(CPPPATH=['src/', 'data/', 'generated/'])
 env.Append(CCFLAGS=['-w', '-std=c99', '-fkeep-inline-functions'])
 env.Append(LIBS=['pthread', 'm', 'bz2'])
-env.Append(CPPDEFINES={"_POSIX_C_SOURCE": "200112L"})
-env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT"])
+env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
 
 if GetOption("ptw32-static"):
     env.Append(CPPDEFINES=['PTW32_STATIC_LIB']);
