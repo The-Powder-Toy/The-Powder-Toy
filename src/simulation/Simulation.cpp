@@ -2777,6 +2777,7 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 					parts[i].temp = elements[t].Temperature;
 					Element_STKM::STKM_init_legs(this, &player, i);
 					player.spwn = 1;
+					player.elem = PT_DUST;
 				}
 				else
 				{
@@ -2798,6 +2799,7 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 					parts[i].temp = elements[t].Temperature;
 					Element_STKM::STKM_init_legs(this, &player2, i);
 					player2.spwn = 1;
+					player2.elem = PT_DUST;
 				}
 				else
 				{
