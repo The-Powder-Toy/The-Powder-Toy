@@ -174,6 +174,13 @@ void Textbox::cutSelection()
 	}
 }
 
+void Textbox::selectAll()
+{
+	selectionIndex0 = 0;
+	selectionIndex1 = text.length();
+	updateSelection();
+}
+
 void Textbox::pasteIntoSelection()
 {
 	char * clipboardText;
@@ -273,6 +280,11 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	if(ctrl && key == 'x' && !masked)
 	{
 		cutSelection();
+		return;
+	}
+	if(ctrl && key == 'a')
+	{
+		selectAll();
 		return;
 	}
 

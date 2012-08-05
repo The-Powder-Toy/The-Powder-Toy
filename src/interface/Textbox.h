@@ -67,6 +67,7 @@ protected:
 	std::string backingText;
 	std::string placeHolder;
 
+	virtual void selectAll();
 	virtual void cutSelection();
 	virtual void pasteIntoSelection();
 };
