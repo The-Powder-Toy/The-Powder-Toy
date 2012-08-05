@@ -115,7 +115,15 @@ void ElementSearchActivity::searchTools(std::string query)
 			if(!firstResult)
 				firstResult = tool;
 
-			ToolButton * tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), tool->GetName());
+			VideoBuffer * tempTexture = tool->GetTexture(26, 14);
+			ToolButton * tempButton;
+
+			if(tempTexture)
+				tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), "", tool->GetDescription());
+			else
+				tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), tool->GetName(), tool->GetDescription());
+
+			tempButton->Appearance.SetTexture(tempTexture);
 			tempButton->Appearance.BackgroundInactive = ui::Colour(tool->colRed, tool->colGreen, tool->colBlue);
 			tempButton->SetActionCallback(new ToolAction(this, tool));
 
