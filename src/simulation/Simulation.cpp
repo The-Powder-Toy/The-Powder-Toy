@@ -546,16 +546,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
 	}
 	if (bm==-1)
 	{
-		if (c-UI_WALLSTART+UI_ACTUALSTART==WL_ERASE)
-		{
-			bm = bmap[y/CELL][x/CELL];
-			if (!bm)
-				return 0;
-			if (bm==WL_WALL)
-				cm = 0xFF;
-		}
-		else
-			bm = 0;
+		bm = bmap[y/CELL][x/CELL];
 	}
 
 	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm ))
@@ -635,16 +626,7 @@ int Simulation::FloodWalls(int x, int y, int c, int cm, int bm, int flags)
 	int co = c;
 	if (cm==-1)
 	{
-		if (c==0)
-		{
-			cm = pmap[y][x]&0xFF;
-			if (!cm)
-				return 0;
-			//if ((flags&BRUSH_REPLACEMODE) && cm!=SLALT)
-			//	return 0;
-		}
-		else
-			cm = 0;
+		cm = pmap[y][x]&0xFF;
 	}
 	if (bm==-1)
 	{
@@ -653,8 +635,6 @@ int Simulation::FloodWalls(int x, int y, int c, int cm, int bm, int flags)
 			bm = bmap[y/CELL][x/CELL];
 			if (!bm)
 				return 0;
-			if (bm==WL_WALL)
-				cm = 0xFF;
 		}
 		else
 			bm = 0;
@@ -699,7 +679,7 @@ int Simulation::FloodWalls(int x, int y, int c, int cm, int bm, int flags)
 			if ((pmap[y+dy][x]&0xFF)==cm && bmap[(y+dy)/CELL][x/CELL]==bm)
 				if (!FloodWalls(x, y+dy, c, cm, bm, flags))
 					return 0;
-	return 0;
+	return 1;
 }
 int Simulation::flood_water(int x, int y, int i, int originaly, int check)
 {
