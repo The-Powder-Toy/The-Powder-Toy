@@ -10,8 +10,11 @@
 SearchView::SearchView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE)),
 	saveButtons(vector<ui::SaveButton*>()),
-	errorLabel(NULL)
+	errorLabel(NULL),
+	c(NULL)
 {
+
+	Client::Ref().AddListener(this);
 
 	nextButton = new ui::Button(ui::Point(XRES+BARSIZE-52, YRES+MENUSIZE-18), ui::Point(50, 16), "Next \x95");
 	previousButton = new ui::Button(ui::Point(1, YRES+MENUSIZE-18), ui::Point(50, 16), "\x96 Prev");
@@ -29,7 +32,8 @@ SearchView::SearchView():
 		}
 	};
 	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point((XRES+BARSIZE)-226, 16), "");
-	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	searchField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	searchField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	searchField->SetActionCallback(new SearchAction(this));
 
 	class SortAction : public ui::ButtonAction
@@ -44,7 +48,8 @@ SearchView::SearchView():
 	};
 	sortButton = new ui::Button(ui::Point(XRES+BARSIZE-140, 10), ui::Point(60, 16), "Sort");
 	sortButton->SetActionCallback(new SortAction(this));
-	sortButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	sortButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	sortButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	sortButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(sortButton);
 
 	class MyOwnAction : public ui::ButtonAction
@@ -60,9 +65,8 @@ SearchView::SearchView():
 	ownButton = new ui::Button(ui::Point(XRES+BARSIZE-70, 10), ui::Point(60, 16), "My Own");
 	ownButton->SetTogglable(true);
 	ownButton->SetActionCallback(new MyOwnAction(this));
-	if(!Client::Ref().GetAuthUser().ID)
-		ownButton->Enabled = false;
-	ownButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	ownButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	ownButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	ownButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(ownButton);
 
 	class FavAction : public ui::ButtonAction
@@ -79,9 +83,8 @@ SearchView::SearchView():
 	favButton->SetIcon(IconFavourite);
 	favButton->SetTogglable(true);
 	favButton->SetActionCallback(new FavAction(this));
-	if(!Client::Ref().GetAuthUser().ID)
-		favButton->Enabled = false;
-	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(favButton);
 
 	class NextPageAction : public ui::ButtonAction
@@ -95,7 +98,8 @@ SearchView::SearchView():
 		}
 	};
 	nextButton->SetActionCallback(new NextPageAction(this));
-	nextButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;	nextButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	nextButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
+	nextButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	class PrevPageAction : public ui::ButtonAction
 	{
 		SearchView * v;
@@ -107,7 +111,8 @@ SearchView::SearchView():
 		}
 	};
 	previousButton->SetActionCallback(new PrevPageAction(this));
-	previousButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	previousButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	previousButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	previousButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(nextButton);
 	AddComponent(previousButton);
 	AddComponent(searchField);
@@ -117,7 +122,8 @@ SearchView::SearchView():
 	AddComponent(loadingSpinner);
 
 	ui::Label * searchPrompt = new ui::Label(ui::Point(10, 10), ui::Point(50, 16), "Search:");
-	searchPrompt->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	searchPrompt->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	searchPrompt->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	searchPrompt->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(searchPrompt);
 
 	class RemoveSelectedAction : public ui::ButtonAction
@@ -184,24 +190,7 @@ SearchView::SearchView():
 	clearSelection->SetActionCallback(new ClearSelectionAction(this));
 	AddComponent(clearSelection);
 
-	if(Client::Ref().GetAuthUser().ID)
-	{
-		favouriteSelected->Enabled = true;
-		if((Client::Ref().GetAuthUser().UserElevation == ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == ElevationModerator))
-		{
-			unpublishSelected->Enabled = true;
-			removeSelected->Enabled = true;
-		}
-		else
-		{
-			unpublishSelected->Enabled = false;
-			removeSelected->Enabled = false;
-		}
-	}
-	else
-	{
-		favouriteSelected->Enabled = true;
-	}
+	CheckAccess();
 }
 
 void SearchView::doSearch()
@@ -211,6 +200,7 @@ void SearchView::doSearch()
 
 SearchView::~SearchView()
 {
+	Client::Ref().RemoveListener(this);
 	RemoveComponent(nextButton);
 	RemoveComponent(previousButton);
 	RemoveComponent(infoLabel);
@@ -291,6 +281,58 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 	else
 	{
 		nextButton->Visible = true;
+	}
+}
+
+void SearchView::NotifyAuthUserChanged(Client * sender)
+{
+	CheckAccess();
+}
+
+void SearchView::CheckAccess()
+{
+	if(c)
+	{
+		c->ClearSelection();
+
+		if(ownButton->GetToggleState())
+			ownButton->DoAction();
+		if(favButton->GetToggleState())
+			favButton->DoAction();
+	}
+	
+	if(Client::Ref().GetAuthUser().ID)
+	{
+		ownButton->Enabled = true;
+		favButton->Enabled = true;
+		favouriteSelected->Enabled = true;
+
+		if(Client::Ref().GetAuthUser().UserElevation == ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == ElevationModerator)
+		{
+			unpublishSelected->Enabled = true;
+			removeSelected->Enabled = true;
+			for(int i = 0; i < saveButtons.size(); i++)
+			{
+				saveButtons[i]->SetSelectable(true);
+			}
+		}
+
+	}
+	else
+	{
+		ownButton->Enabled = false;
+		favButton->Enabled = false;
+
+
+		favouriteSelected->Enabled = false;
+		unpublishSelected->Enabled = false;
+		removeSelected->Enabled = false;
+
+		for(int i = 0; i < saveButtons.size(); i++)
+		{
+			saveButtons[i]->SetSelectable(false);
+			saveButtons[i]->SetSelected(false);
+		}
 	}
 }
 

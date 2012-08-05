@@ -8,13 +8,14 @@
 #include "interface/Label.h"
 #include "interface/Spinner.h"
 #include "interface/Textbox.h"
+#include "client/ClientListener.h"
 
 using namespace std;
 
 class SearchModel;
 class SearchController;
 
-class SearchView: public ui::Window
+class SearchView: public ui::Window, public ClientListener
 {
 private:
 	SearchController * c;
@@ -43,6 +44,8 @@ public:
 	void NotifySortChanged(SearchModel * sender);
 	void NotifyShowOwnChanged(SearchModel * sender);
 	void NotifyShowFavouriteChanged(SearchModel * sender);
+	void NotifyAuthUserChanged(Client * sender);
+	void CheckAccess();
     SearchView();
 	virtual ~SearchView();
 	void AttachController(SearchController * _c) { c = _c; }

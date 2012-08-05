@@ -34,7 +34,8 @@ SearchController::SearchController(ControllerCallback * callback):
 	activePreview(NULL),
 	HasExited(false),
 	nextQueryTime(0.0f),
-	nextQueryDone(true)
+	nextQueryDone(true),
+	searchModel(NULL)
 {
 	searchModel = new SearchModel();
 	searchView = new SearchView();
