@@ -31,11 +31,12 @@ SearchView::SearchView():
 			v->doSearch();
 		}
 	};
-	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point((XRES+BARSIZE)-226, 16), "", "[search]");
+	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point((XRES+BARSIZE)-239, 16), "", "[search]");
 	searchField->Appearance.icon = IconSearch;
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	searchField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	searchField->SetActionCallback(new SearchAction(this));
+
 
 	class SortAction : public ui::ButtonAction
 	{
@@ -80,13 +81,33 @@ SearchView::SearchView():
 			v->c->ShowFavourite(sender->GetToggleState());
 		}
 	};
-	favButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X, 0), ui::Point(16, 16), "");
+	favButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X+14, 0), ui::Point(16, 16), "");
 	favButton->SetIcon(IconFavourite);
 	favButton->SetTogglable(true);
+	favButton->Appearance.Margin.Left+=2;
 	favButton->SetActionCallback(new FavAction(this));
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(favButton);
+	
+	class ClearSearchAction : public ui::ButtonAction
+	{
+		SearchView * v;
+	public:
+		ClearSearchAction(SearchView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->clearSearch();
+		}
+	};
+	ui::Button * clearSearchButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X-1, 0), ui::Point(16, 16), "");
+	clearSearchButton->SetIcon(IconClose);
+	clearSearchButton->SetActionCallback(new ClearSearchAction(this));
+	clearSearchButton->Appearance.Margin.Left+=2;
+	clearSearchButton->Appearance.Margin.Top+=2;
+	clearSearchButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	clearSearchButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(clearSearchButton);
 
 	class NextPageAction : public ui::ButtonAction
 	{
@@ -197,6 +218,18 @@ SearchView::SearchView():
 void SearchView::doSearch()
 {
 	c->DoSearch(searchField->GetText());
+}
+
+
+void SearchView::clearSearch()
+{
+	searchField->SetText("");
+	c->DoSearch(searchField->GetText(), true);
+}
+
+void SearchView::OnTryOkay(OkayMethod method)
+{
+	c->DoSearch(searchField->GetText(), true);
 }
 
 SearchView::~SearchView()

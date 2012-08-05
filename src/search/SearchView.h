@@ -36,6 +36,7 @@ private:
 	ui::Button * unpublishSelected;
 	ui::Button * favouriteSelected;
 	ui::Button * clearSelection;
+	void clearSearch();
 	void doSearch();
 public:
 	void NotifySaveListChanged(SearchModel * sender);
@@ -46,6 +47,7 @@ public:
 	void NotifyShowFavouriteChanged(SearchModel * sender);
 	void NotifyAuthUserChanged(Client * sender);
 	void CheckAccess();
+	virtual void OnTryOkay(OkayMethod method);
     SearchView();
 	virtual ~SearchView();
 	void AttachController(SearchController * _c) { c = _c; }

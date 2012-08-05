@@ -1303,6 +1303,8 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 		tempButton = new ui::Button(ui::Point(XRES-20, currentY), ui::Point(15, 15));
 		tempButton->SetIcon(IconClose);
 		tempButton->SetActionCallback(new CloseNotificationButtonAction(this, *iter));
+		tempButton->Appearance.Margin.Left+=2;
+		tempButton->Appearance.Margin.Top+=2;
 		tempButton->Appearance.BorderInactive = style::Colour::WarningTitle;
 		tempButton->Appearance.TextInactive = style::Colour::WarningTitle;
 		AddComponent(tempButton);
