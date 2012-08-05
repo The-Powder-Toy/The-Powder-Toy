@@ -87,6 +87,7 @@ GameView::GameView():
     };
     reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15));
     reloadButton->SetIcon(IconReload);
+    reloadButton->Appearance.Margin.Left+=2;
     currentX+=18;
     reloadButton->SetActionCallback(new ReloadAction(this));
     AddComponent(reloadButton);
@@ -123,7 +124,9 @@ GameView::GameView():
     };
     upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(15, 15));
     upVoteButton->SetIcon(IconVoteUp);
-    currentX+=15;
+    upVoteButton->Appearance.Margin.Top+=2;
+    upVoteButton->Appearance.Margin.Left+=2;
+    currentX+=14;
     upVoteButton->SetActionCallback(new UpVoteAction(this));
     AddComponent(upVoteButton);
 
@@ -139,6 +142,8 @@ GameView::GameView():
     };
     downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(15, 15));
     downVoteButton->SetIcon(IconVoteDown);
+    downVoteButton->Appearance.Margin.Bottom+=2;
+    downVoteButton->Appearance.Margin.Left+=2;
     currentX+=16;
     downVoteButton->SetActionCallback(new DownVoteAction(this));
     AddComponent(downVoteButton);
@@ -153,10 +158,10 @@ GameView::GameView():
             v->c->OpenTags();
         }
     };
-    tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(250, 15), "[no tags set]");
+    tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(251, 15), "[no tags set]");
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
     tagSimulationButton->SetIcon(IconTag);
-    currentX+=251;
+    currentX+=252;
     tagSimulationButton->SetActionCallback(new TagSimulationAction(this));
     AddComponent(tagSimulationButton);
 
@@ -172,6 +177,7 @@ GameView::GameView():
     };
     clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15));
     clearSimButton->SetIcon(IconNew);
+    clearSimButton->Appearance.Margin.Left+=2;
     clearSimButton->SetActionCallback(new ClearSimAction(this));
     AddComponent(clearSimButton);
 
@@ -187,6 +193,7 @@ GameView::GameView():
     };
     loginButton = new ui::Button(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "[sign in]");
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	loginButton->Appearance.Margin.Top+=2;
     loginButton->SetIcon(IconLogin);
     loginButton->SetActionCallback(new LoginAction(this));
     AddComponent(loginButton);
@@ -203,6 +210,7 @@ GameView::GameView():
     };
     simulationOptionButton = new ui::Button(ui::Point(Size.X-48, Size.Y-16), ui::Point(15, 15));
     simulationOptionButton->SetIcon(IconSimulationSettings);
+    simulationOptionButton->Appearance.Margin.Left+=2;
     simulationOptionButton->SetActionCallback(new SimulationOptionAction(this));
     AddComponent(simulationOptionButton);
 
@@ -218,6 +226,7 @@ GameView::GameView():
     };
     displayModeButton = new ui::Button(ui::Point(Size.X-32, Size.Y-16), ui::Point(15, 15));
     displayModeButton->SetIcon(IconRenderSettings);
+    displayModeButton->Appearance.Margin.Left+=2;
     displayModeButton->SetActionCallback(new DisplayModeAction(this));
     AddComponent(displayModeButton);
 

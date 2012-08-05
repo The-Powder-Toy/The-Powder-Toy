@@ -844,6 +844,9 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 	case IconDateSort:
 	case IconFolder:
 	case IconSearch:
+		drawchar(x, y+1, 0x8E, 30, 30, 180, alpha);
+		drawchar(x, y+1, 0x8F, 255, 255, 255, alpha);
+		break;
 	case IconDelete:
 		if(invert)
 		{
