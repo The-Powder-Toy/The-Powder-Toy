@@ -176,6 +176,27 @@ void Element_LIGH_Tool::Draw(Simulation * sim, Brush * brush, ui::Point position
 	}
 }
 
+Element_TESC_Tool::Element_TESC_Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
+	ElementTool(id, name, description, r, g, b, textureGen)
+	{
+	}
+void Element_TESC_Tool::Draw(Simulation * sim, Brush * brush, ui::Point position){
+	int radiusInfo = brush->GetRadius().X*4+brush->GetRadius().Y*4+7;
+	sim->CreateParts(position.X, position.Y, toolID | (radiusInfo << 8), brush);
+}
+void Element_TESC_Tool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging) {
+	int radiusInfo = brush->GetRadius().X*4+brush->GetRadius().Y*4+7;
+	sim->CreateLine(position1.X, position1.Y, position2.X, position2.Y, toolID | (radiusInfo << 8), brush);
+}
+void Element_TESC_Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
+	int radiusInfo = brush->GetRadius().X*4+brush->GetRadius().Y*4+7;
+	sim->CreateBox(position1.X, position1.Y, position2.X, position2.Y, toolID | (radiusInfo << 8), 0);
+}
+void Element_TESC_Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
+	int radiusInfo = brush->GetRadius().X*4+brush->GetRadius().Y*4+7;
+	sim->FloodParts(position.X, position.Y, toolID | (radiusInfo << 8), -1, -1, 0);
+}
+
 void PlopTool::Click(Simulation * sim, Brush * brush, ui::Point position)
 {
 	sim->create_part(-1, position.X, position.Y, toolID);

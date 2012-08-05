@@ -86,11 +86,23 @@ public:
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
 };
 
+
 class ElementTool: public Tool
 {
 public:
 	ElementTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~ElementTool();
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
+};
+
+class Element_TESC_Tool: public ElementTool
+{
+public:
+	Element_TESC_Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	virtual ~Element_TESC_Tool() {}
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);

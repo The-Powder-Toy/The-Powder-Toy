@@ -2443,12 +2443,14 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 	}
 }
 
-int Simulation::create_part(int p, int x, int y, int tv)//the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
+//the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
+//tv = Type (8 bits) + Var (24 bits), var is usually 0
+int Simulation::create_part(int p, int x, int y, int tv)
 {
 	int i;
 
 	int t = tv & 0xFF;
-	int v = (tv >> 8) & 0xFF;
+	int v = (tv >> 8) & 0xFFFFFF;
 
 	if (x<0 || y<0 || x>=XRES || y>=YRES || ((t<=0 || t>=PT_NUM)&&t!=SPC_HEAT&&t!=SPC_COOL&&t!=SPC_AIR&&t!=SPC_VACUUM&&t!=SPC_PGRV&&t!=SPC_NGRV))
 		return -1;
@@ -2748,6 +2750,11 @@ int Simulation::create_part(int p, int x, int y, int tv)//the function for creat
 				break;
 			case PT_EMBR:
 				parts[i].life = 50;
+				break;
+			case PT_TESC:
+				parts[i].tmp = v;
+				if (parts[i].tmp > 300)
+					parts[i].tmp=300;
 				break;
 			case PT_STKM:
 				if (player.spwn==0)
