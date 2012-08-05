@@ -1692,6 +1692,34 @@ int Client::GetPrefInteger(std::string property, int defaultValue)
 	return defaultValue;
 }
 
+unsigned int Client::GetPrefUInteger(std::string property, unsigned int defaultValue)
+{
+	try
+	{
+		std::stringstream defHexInt;
+		defHexInt << std::hex << defaultValue;
+
+		std::string hexString = GetPrefString(property, defHexInt.str());
+		unsigned int finalValue = defaultValue;
+
+		std::stringstream hexInt;
+		hexInt << hexString;
+
+		hexInt >> std::hex >> finalValue;
+
+		return finalValue;
+	}
+	catch (json::Exception & e)
+	{
+
+	}
+	catch(exception & e)
+	{
+
+	}
+	return defaultValue;
+}
+
 vector<string> Client::GetPrefStringArray(std::string property)
 {
 	try
@@ -1780,6 +1808,40 @@ vector<int> Client::GetPrefIntegerArray(std::string property)
 	return vector<int>();
 }
 
+vector<unsigned int> Client::GetPrefUIntegerArray(std::string property)
+{
+	try
+	{
+		json::Array value = GetPref(property);
+		vector<unsigned int> intArray;
+		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
+		{
+			try
+			{
+				json::String cValue = *iter;
+				unsigned int finalValue = 0;
+		
+				std::string hexString = cValue.Value();
+				std::stringstream hexInt;
+				hexInt << std::hex << hexString;
+				hexInt >> finalValue;
+
+				intArray.push_back(finalValue);
+			}
+			catch (json::Exception & e)
+			{
+
+			}
+		}
+		return intArray;
+	}
+	catch (json::Exception & e)
+	{
+
+	}
+	return vector<unsigned int>();
+}
+
 vector<bool> Client::GetPrefBoolArray(std::string property)
 {
 	try
@@ -1841,6 +1903,14 @@ void Client::SetPref(std::string property, int value)
 	SetPref(property, intValue);
 }
 
+void Client::SetPref(std::string property, unsigned int value)
+{
+	std::stringstream hexInt;
+	hexInt << std::hex << value;
+	json::UnknownElement intValue = json::String(hexInt.str());
+	SetPref(property, intValue);
+}
+
 void Client::SetPref(std::string property, vector<string> value)
 {
 	json::Array newArray;
@@ -1878,6 +1948,20 @@ void Client::SetPref(std::string property, vector<int> value)
 {
 	json::Array newArray;
 	for(vector<int>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	{
+		std::stringstream hexInt;
+		hexInt << std::hex << *iter;
+
+		newArray.Insert(json::String(hexInt.str()));
+	}
+	json::UnknownElement newArrayValue = newArray;
+	SetPref(property, newArrayValue);
+}
+
+void Client::SetPref(std::string property, vector<unsigned int> value)
+{
+	json::Array newArray;
+	for(vector<unsigned int>::iterator iter = value.begin(); iter != value.end(); ++iter)
 	{
 		std::stringstream hexInt;
 		hexInt << std::hex << *iter;

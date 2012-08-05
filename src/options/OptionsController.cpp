@@ -46,6 +46,10 @@ void OptionsController::SetAirMode(int airMode)
 {
 	model->SetAirMode(airMode);
 }
+void OptionsController::SetEdgeMode(int airMode)
+{
+	model->SetEdgeMode(airMode);
+}
 
 OptionsView * OptionsController::GetView()
 {

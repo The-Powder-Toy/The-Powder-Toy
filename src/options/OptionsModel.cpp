@@ -75,6 +75,16 @@ void OptionsModel::SetAirMode(int airMode)
 	notifySettingsChanged();
 }
 
+int OptionsModel::GetEdgeMode()
+{
+	return sim->edgeMode;
+}
+void OptionsModel::SetEdgeMode(int edgeMode)
+{
+	sim->SetEdgeMode(edgeMode);
+	notifySettingsChanged();
+}
+
 int OptionsModel::GetGravityMode()
 {
 	return sim->gravityMode;

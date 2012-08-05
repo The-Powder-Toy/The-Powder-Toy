@@ -133,18 +133,22 @@ public:
 	std::string GetPrefString(std::string property, std::string defaultValue);
 	double GetPrefNumber(std::string property, double defaultValue);
 	int GetPrefInteger(std::string property, int defaultValue);
+	unsigned int GetPrefUInteger(std::string property, unsigned int defaultValue);
 	vector<string> GetPrefStringArray(std::string property);
 	vector<double> GetPrefNumberArray(std::string property);
 	vector<int> GetPrefIntegerArray(std::string property);
+	vector<unsigned int> GetPrefUIntegerArray(std::string property);
 	vector<bool> GetPrefBoolArray(std::string property);
 	bool GetPrefBool(std::string property, bool defaultValue);
 
 	void SetPref(std::string property, std::string value);
 	void SetPref(std::string property, double value);
 	void SetPref(std::string property, int value);
+	void SetPref(std::string property, unsigned int value);
 	void SetPref(std::string property, vector<string> value);
 	void SetPref(std::string property, vector<double> value);
 	void SetPref(std::string property, vector<int> value);
+	void SetPref(std::string property, vector<unsigned int> value);
 	void SetPref(std::string property, vector<bool> value);
 	void SetPref(std::string property, bool value);
 

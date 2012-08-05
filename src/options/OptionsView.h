@@ -24,6 +24,7 @@ class OptionsView: public ui::Window {
 	ui::Checkbox * waterEqualisation;
 	ui::DropDown * airMode;
 	ui::DropDown * gravityMode;
+	ui::DropDown * edgeMode;
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);

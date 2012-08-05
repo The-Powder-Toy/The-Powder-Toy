@@ -750,6 +750,41 @@ int Simulation::create_part_add_props(int p, int x, int y, int tv, int rx, int r
 	return p;
 }
 
+void Simulation::SetEdgeMode(int newEdgeMode)
+{
+	edgeMode = newEdgeMode;
+	switch(edgeMode)
+	{
+	case 0:
+		for(int i = 0; i<(XRES/CELL); i++)
+		{
+			bmap[0][i] = 0;
+			bmap[YRES/CELL-1][i] = 0;
+		}
+		for(int i = 1; i<((YRES/CELL)-1); i++)
+		{
+			bmap[i][0] = 0;
+			bmap[i][XRES/CELL-1] = 0;
+		}
+		break;
+	case 1:
+		int i;
+		for(i=0; i<(XRES/CELL); i++)
+		{
+			bmap[0][i] = WL_WALL;
+			bmap[YRES/CELL-1][i] = WL_WALL;
+		}
+		for(i=1; i<((YRES/CELL)-1); i++)
+		{
+			bmap[i][0] = WL_WALL;
+			bmap[i][XRES/CELL-1] = WL_WALL;
+		}
+		break;
+	default:
+		SetEdgeMode(0);
+	}
+}
+
 void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, int colA_, int mode)
 {
 	int rp;
@@ -1801,6 +1836,7 @@ void Simulation::clear_sim(void)
 		grav->Clear();
 	if(air)
 		air->Clear();
+	SetEdgeMode(edgeMode);
 }
 void Simulation::init_can_move()
 {

@@ -30,6 +30,8 @@ public:
 	void SetWaterEqualisation(bool state);
 	int GetAirMode();
 	void SetAirMode(int airMode);
+	int GetEdgeMode();
+	void SetEdgeMode(int edgeMode);
 	int GetGravityMode();
 	void SetGravityMode(int gravityMode);
 	virtual ~OptionsModel();

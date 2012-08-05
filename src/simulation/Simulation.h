@@ -102,6 +102,7 @@ public:
 	int photons[YRES][XRES];
 	int pmap_count[YRES][XRES];
 	//
+	int edgeMode;
 	int gravityMode;
 	//int airMode;
 	int legacy_enable;
@@ -155,6 +156,8 @@ public:
 	void update_particles();
 	void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert);
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
+
+	void SetEdgeMode(int newEdgeMode);
 
 	int Tool(int x, int y, int tool, float strength);
 	int ToolBrush(int x, int y, int tool, Brush * cBrush);

@@ -12,7 +12,7 @@
 #include "interface/DropDown.h"
 
 OptionsView::OptionsView():
-	ui::Window(ui::Point(-1, -1), ui::Point(300, 206)){
+	ui::Window(ui::Point(-1, -1), ui::Point(300, 226)){
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Simulation Options");
 	tempLabel->SetTextColour(style::Colour::InformationTitle);
@@ -118,6 +118,24 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
+	class EdgeModeChanged: public ui::DropDownAction
+	{
+		OptionsView * v;
+	public:
+		EdgeModeChanged(OptionsView * v): v(v) { }
+		virtual void OptionChanged(ui::DropDown * sender, std::pair<std::string, int> option) { v->c->SetEdgeMode(option.second); }
+	};	
+
+	edgeMode = new ui::DropDown(ui::Point(Size.X-88, 186), ui::Point(80, 16));
+	AddComponent(edgeMode);
+	edgeMode->AddOption(std::pair<std::string, int>("Void", 0));
+	edgeMode->AddOption(std::pair<std::string, int>("Solid", 1));
+	edgeMode->SetActionCallback(new EdgeModeChanged(this));
+
+	tempLabel = new ui::Label(ui::Point(8, 186), ui::Point(Size.X-96, 16), "Edge Mode");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(tempLabel);
+
 
 	class CloseAction: public ui::ButtonAction
 	{
@@ -145,6 +163,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	waterEqualisation->SetChecked(sender->GetWaterEqualisation());
 	airMode->SetOption(sender->GetAirMode());
 	gravityMode->SetOption(sender->GetGravityMode());
+	edgeMode->SetOption(sender->GetEdgeMode());
 }
 
 void OptionsView::AttachController(OptionsController * c_)
