@@ -7,6 +7,7 @@
 #include "interface/Point.h"
 #include "Brush.h"
 #include "EllipseBrush.h"
+#include "TriangleBrush.h"
 #include "client/Client.h"
 #include "game/DecorationTool.h"
 #include "GameModelException.h"
@@ -222,6 +223,7 @@ void GameModel::BuildMenus()
 	//Set default brush palette
 	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
 	brushList.push_back(new Brush(ui::Point(4, 4)));
+	brushList.push_back(new TriangleBrush(ui::Point(4, 4)));
 
 	//Set default tools
 	activeTools[0] = menuList[SC_POWDERS]->GetToolList()[0];
