@@ -114,7 +114,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		}
 	}
 
-	grav->gravity_mask();
+	gravWallChanged = true;
 
 	return 0;
 }
@@ -232,6 +232,8 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 	{
 		for (cx=0; cx<area_w; cx++)
 		{
+			if(bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] == WL_GRAV)
+				gravWallChanged = true;
 			bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
 			delete_part(cx+area_x, cy+area_y, 0);
 		}
@@ -1240,6 +1242,10 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brus
 					fvx[j][i] = 0.0f;
 					fvy[j][i] = 0.0f;
 				}
+				if (b==WL_GRAV || bmap[j][i]==WL_GRAV)
+				{
+					gravWallChanged = true;
+				}
 				if (b==WL_STREAM)
 				{
 					i = x + rx/2;
@@ -1253,7 +1259,6 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brus
 					bmap[j][i] = WL_STREAM;
 					continue;
 				}
-				if (b==0 && bmap[j][i]==WL_GRAV) gravwl_timeout = 60;
 				bmap[j][i] = b;
 			}
 		}
@@ -4341,6 +4346,12 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 			gravy = grav->gravy;
 			gravp = grav->gravp;
 			gravmap = grav->gravmap;
+
+			if(gravWallChanged)
+			{
+				grav->gravity_mask();
+				gravWallChanged = false;
+			}
 		}
 	}
 
