@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <stdexcept>
+#include <time.h>
 #include "Config.h"
 #include "interface/Point.h"
 #include "interface/Textbox.h"
@@ -16,7 +17,8 @@ Textbox::Textbox(Point position, Point size, std::string textboxText, std::strin
 	border(true),
 	mouseDown(false),
 	limit(std::string::npos),
-	inputType(All)
+	inputType(All),
+	keyDown(0)
 {
 	placeHolder = textboxPlaceholder;
 
@@ -231,7 +233,31 @@ bool Textbox::CharacterValid(Uint16 character)
 	return false;
 }
 
+void Textbox::Tick(float dt)
+{
+	Label::Tick(dt);
+	if((keyDown || characterDown) && repeatTime <= clock())
+	{
+		OnVKeyPress(keyDown, characterDown, false, false, false);
+		repeatTime = clock()+(0.03 * CLOCKS_PER_SEC);
+	}
+}
+
+void Textbox::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	keyDown = 0;
+	characterDown = 0;
+}
+
 void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	characterDown = character;
+	keyDown = key;
+	repeatTime = clock()+(0.3 * CLOCKS_PER_SEC);
+	OnVKeyPress(key, character, shift, ctrl, alt);
+}
+
+void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	bool changed = false;
 	if(ctrl && key == 'c' && !masked)

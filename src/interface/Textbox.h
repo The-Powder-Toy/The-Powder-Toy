@@ -44,16 +44,22 @@ public:
 	//Determines if the given character is valid given the input type
 	bool CharacterValid(Uint16 character);
 
+	virtual void  Tick(float dt);
 	virtual void OnContextMenuAction(int item);
 	virtual void OnMouseClick(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);
 	virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
 	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual void Draw(const Point& screenPos);
 
 protected:
 	ValidInput inputType;
 	size_t limit;
+	int repeatTime;
+	int keyDown;
+	Uint16 characterDown;
 	bool mouseDown;
 	bool masked, border;
 	int cursor, cursorPositionX, cursorPositionY;
