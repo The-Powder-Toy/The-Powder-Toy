@@ -65,6 +65,7 @@
 #define WL_ALLOWGAS		13
 #define WL_GRAV			14
 #define WL_ALLOWENERGY	15
+#define WL_FLOODHELPER	255
 
 #define SPC_AIR 236
 #define SPC_HEAT 237

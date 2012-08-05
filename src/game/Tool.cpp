@@ -77,7 +77,26 @@ void WallTool::Draw(Simulation * sim, Brush * brush, ui::Point position){
 	sim->CreateWalls(position.X, position.Y, 1, 1, toolID, 0, brush);
 }
 void WallTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging) {
-	sim->CreateWallLine(position1.X, position1.Y, position2.X, position2.Y, 1, 1, toolID, 0, brush);
+	int wallX = position1.X/CELL;
+	int wallY = position1.Y/CELL;
+	if(dragging == false && toolID == WL_FAN && sim->bmap[wallY][wallX]==WL_FAN)
+	{
+		float newFanVelX = (position2.X-position1.X)*0.005f;
+		float newFanVelY = (position2.Y-position1.Y)*0.005f;
+		sim->FloodWalls(position1.X, position1.Y, WL_FLOODHELPER, -1, WL_FAN, 0);
+		for (int j = 0; j < YRES/CELL; j++)
+			for (int i = 0; i < XRES/CELL; i++)
+				if (sim->bmap[j][i] == WL_FLOODHELPER)
+				{
+					sim->fvx[j][i] = newFanVelX;
+					sim->fvy[j][i] = newFanVelY;
+					sim->bmap[j][i] = WL_FAN;
+				}
+	}
+	else
+	{
+		sim->CreateWallLine(position1.X, position1.Y, position2.X, position2.Y, 1, 1, toolID, 0, brush);
+	}
 }
 void WallTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
 	sim->CreateWallBox(position1.X, position1.Y, position2.X, position2.Y, toolID, 0);
