@@ -43,7 +43,6 @@ typedef struct mask_el mask_el;
 class Gravity
 {
 private:
-	unsigned *gravmask;
 
 	float *th_ogravmap;
 	float *th_gravmap;
@@ -68,6 +67,7 @@ private:
 
 	//Simulation * sim;
 public:
+	unsigned *gravmask;
 	float *gravmap;
 	float *gravp;
 	float *gravy;

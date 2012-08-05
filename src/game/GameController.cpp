@@ -653,6 +653,14 @@ void GameController::SetActiveMenu(Menu * menu)
 void GameController::SetActiveTool(int toolSelection, Tool * tool)
 {
 	gameModel->SetActiveTool(toolSelection, tool);
+	gameModel->GetRenderer()->gravityZonesEnabled = false;
+	for(int i = 0; i < 3; i++)
+	{
+		if(gameModel->GetActiveTool(i) == gameModel->GetMenuList().at(SC_WALL)->GetToolList().at(WL_GRAV))
+		{
+			gameModel->GetRenderer()->gravityZonesEnabled = true;
+		}
+	}	
 }
 
 void GameController::OpenSearch()

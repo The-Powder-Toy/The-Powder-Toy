@@ -43,6 +43,7 @@ void Renderer::RenderBegin()
 	render_parts();
 	render_fire();
 	DrawWalls();
+	draw_grav_zones();
 	DrawSigns();
 #ifndef OGLR
 	FinaliseParts();
@@ -1901,7 +1902,7 @@ void Renderer::draw_grav()
 	int x, y, i, ca;
 	float nx, ny, dist;
 
-	if(!gravifyFieldEnabled)
+	if(!gravityFieldEnabled)
 		return;
 
 	for (y=0; y<YRES/CELL; y++)
@@ -2062,12 +2063,15 @@ void Renderer::draw_air()
 
 void Renderer::draw_grav_zones()
 {
+	if(!gravityZonesEnabled)
+		return;
+
 	int x, y, i, j;
 	for (y=0; y<YRES/CELL; y++)
 	{
 		for (x=0; x<XRES/CELL; x++)
 		{
-			//if(sim->gravmask[y*(XRES/CELL)+x])
+			if(sim->grav->gravmask[y*(XRES/CELL)+x])
 			{
 				for (j=0; j<CELL; j++)//draws the colors
 					for (i=0; i<CELL; i++)
@@ -2102,7 +2106,8 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	ZFACTOR(8),
 	zoomEnabled(false),
 	decorations_enable(1),
-	gravifyFieldEnabled(false)
+	gravityFieldEnabled(false),
+	gravityZonesEnabled(false)
 {
 	this->g = g;
 	this->sim = sim;

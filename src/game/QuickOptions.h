@@ -29,11 +29,11 @@ public:
 	}
 	virtual bool GetToggle() 
 	{
-		return m->GetRenderer()->gravifyFieldEnabled;
+		return m->GetRenderer()->gravityFieldEnabled;
 	}
 	virtual void perform()
 	{
-		m->GetRenderer()->gravifyFieldEnabled = !m->GetRenderer()->gravifyFieldEnabled;
+		m->GetRenderer()->gravityFieldEnabled = !m->GetRenderer()->gravityFieldEnabled;
 	}
 };
 
@@ -95,5 +95,23 @@ public:
 	virtual void perform()
 	{
 		m->GetSimulation()->aheat_enable = !m->GetSimulation()->aheat_enable;
+	}
+};
+
+class DrawGravWallOption: public QuickOption
+{
+public:
+	DrawGravWallOption(GameModel * m):
+	QuickOption("Z", "Draw gravity zones", m, Toggle)
+	{
+
+	}
+	virtual bool GetToggle() 
+	{
+		return m->GetRenderer()->gravityZonesEnabled;
+	}
+	virtual void perform()
+	{
+		m->GetRenderer()->gravityZonesEnabled = !m->GetRenderer()->gravityZonesEnabled;
 	}
 };
