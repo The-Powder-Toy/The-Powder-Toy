@@ -1,6 +1,7 @@
 #include "Graphics.h"
 #include "font.h"
 #include <pthread.h>
+#undef GetUserName //God dammit microsoft!
 
 #ifdef OGLI
 

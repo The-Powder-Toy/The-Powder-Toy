@@ -11,6 +11,7 @@
 #include <vector>
 #include <iostream>
 #include <pthread.h>
+ #undef GetUserName //God dammit microsoft!
 #include "PreviewView.h"
 #include "client/SaveInfo.h"
 #include "preview/Comment.h"

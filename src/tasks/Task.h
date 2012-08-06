@@ -10,6 +10,7 @@
 
 #include <string>
 #include <pthread.h>
+#undef GetUserName //God dammit microsoft!
 #include "TaskListener.h"
 
 class TaskListener;

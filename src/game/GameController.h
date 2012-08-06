@@ -94,6 +94,7 @@ public:
 	void OpenOptions();
 	void OpenRenderOptions();
 	void OpenSaveWindow();
+	void SaveAsCurrent();
 	void OpenStamps();
 	void OpenElementSearch();
 	void PlaceSave(ui::Point position);

@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <pthread.h>
+#undef GetUserName //God dammit microsoft!
 #include <cmath>
 #include "client/SaveInfo.h"
 #include "SearchView.h"

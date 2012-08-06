@@ -94,6 +94,19 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 		ThumbnailBroker::Ref().RenderThumbnail(save.GetGameSave(), (Size.X/2)-16, -1, this);
 }
 
+ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, ServerSaveActivity::SaveUploadedCallback * callback) :
+	WindowActivity(ui::Point(-1, -1), ui::Point(200, 50)),
+	thumbnail(NULL),
+	save(save),
+	callback(callback)
+{
+	ui::Label * titleLabel = new ui::Label(ui::Point(0, 0), Size, "Saving to server...");
+	titleLabel->SetTextColour(style::Colour::InformationTitle);
+	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(titleLabel);
+}
+
 void ServerSaveActivity::Save()
 {
 	class PublishConfirmation: public ConfirmDialogueCallback {
@@ -161,7 +174,9 @@ void ServerSaveActivity::OnDraw()
 	Graphics * g = ui::Engine::Ref().g;
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
-	g->draw_line(Position.X+(Size.X/2)-1, Position.Y, Position.X+(Size.X/2)-1, Position.Y+Size.Y-1, 255, 255, 255, 255);
+
+	if(Size.X>220)
+		g->draw_line(Position.X+(Size.X/2)-1, Position.Y, Position.X+(Size.X/2)-1, Position.Y+Size.Y-1, 255, 255, 255, 255);
 
 	if(thumbnail)
 	{

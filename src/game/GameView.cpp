@@ -16,6 +16,133 @@
 #include "Format.h"
 #include "QuickOption.h"
 
+
+class SplitButton;
+class SplitButtonAction
+{
+public:
+	virtual void ActionCallbackLeft(ui::Button * sender) {}
+	virtual void ActionCallbackRight(ui::Button * sender) {}
+	virtual ~SplitButtonAction() {}
+};
+class SplitButton : public ui::Button
+{
+private:
+	bool rightDown;
+	bool leftDown;
+	bool showSplit;
+	int splitPosition;
+	std::string toolTip2;
+	SplitButtonAction * splitActionCallback;
+public:
+	SplitButton(ui::Point position, ui::Point size, std::string buttonText, std::string toolTip, std::string toolTip2, int split) :
+		Button(position, size, buttonText, toolTip),
+		toolTip2(toolTip2),
+		splitPosition(split),
+		splitActionCallback(NULL),
+		showSplit(true)
+	{
+
+	}
+	bool GetShowSplit() { return showSplit; }
+	void SetShowSplit(bool split) { showSplit = split; }
+	SplitButtonAction * GetSplitActionCallback() { return splitActionCallback; }
+	void SetSplitActionCallback(SplitButtonAction * newAction) { splitActionCallback = newAction; }
+	virtual void OnMouseUp(int x, int y, unsigned int button)
+	{
+	    if(isButtonDown)
+	    {
+	    	if(leftDown)
+				DoLeftAction();
+			if(rightDown)
+				DoRightAction();
+	    }
+	    ui::Button::OnMouseUp(x, y, button);
+
+	}
+	virtual void OnMouseMovedInside(int x, int y, int dx, int dy)
+	{
+		if(x >= splitPosition)
+		{
+			if(toolTip.length()>0 && GetParentWindow())
+			{
+				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
+			}
+		}
+		else if(x < splitPosition)
+		{
+			if(toolTip2.length()>0 && GetParentWindow())
+			{
+				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip2);
+			}
+		}
+	}
+	virtual void OnMouseEnter(int x, int y)
+	{
+	    isMouseInside = true;
+		if(!Enabled)
+			return;
+		if(x >= splitPosition)
+		{
+			if(toolTip.length()>0 && GetParentWindow())
+			{
+				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
+			}
+		}
+		else if(x < splitPosition)
+		{
+			if(toolTip2.length()>0 && GetParentWindow())
+			{
+				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip2);
+			}
+		}
+	}
+	virtual void TextPosition()
+	{
+		ui::Button::TextPosition();
+		textPosition.X += 3;
+	}
+	virtual void OnMouseClick(int x, int y, unsigned int button)
+	{
+		ui::Button::OnMouseClick(x, y, button);
+		rightDown = false;
+		leftDown = false;
+		if(x >= splitPosition)
+			rightDown = true;
+		else if(x < splitPosition)
+			leftDown = true;
+	}
+	void DoRightAction()
+	{
+		if(!Enabled)
+			return;
+		if(splitActionCallback)
+			splitActionCallback->ActionCallbackRight(this);
+	}
+	void DoLeftAction()
+	{
+		if(!Enabled)
+			return;
+		if(splitActionCallback)
+			splitActionCallback->ActionCallbackLeft(this);
+	}
+	void Draw(const ui::Point& screenPos)
+	{
+		ui::Button::Draw(screenPos);
+		Graphics * g = ui::Engine::Ref().g;
+		drawn = true;
+
+		if(showSplit)
+			g->draw_line(splitPosition+screenPos.X, screenPos.Y+1, splitPosition+screenPos.X, screenPos.Y+Size.Y-2, 180, 180, 180, 255);
+	}
+	virtual ~SplitButton()
+	{
+		if(splitActionCallback)
+			delete splitActionCallback;
+	}
+};
+
+
 GameView::GameView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE)),
 	pointQueue(queue<ui::Point*>()),
@@ -92,24 +219,31 @@ GameView::GameView():
     reloadButton->SetActionCallback(new ReloadAction(this));
     AddComponent(reloadButton);
 
-    class SaveSimulationAction : public ui::ButtonAction
+    class SaveSimulationAction : public SplitButtonAction
     {
         GameView * v;
     public:
         SaveSimulationAction(GameView * _v) { v = _v; }
-        void ActionCallback(ui::Button * sender)
+        void ActionCallbackRight(ui::Button * sender)
         {
         	if(v->CtrlBehaviour())
         		v->c->OpenLocalSaveWindow();
         	else
 	            v->c->OpenSaveWindow();
         }
+        void ActionCallbackLeft(ui::Button * sender)
+        {
+        	if(v->CtrlBehaviour())
+        		v->c->OpenLocalSaveWindow();
+        	else
+	            v->c->SaveAsCurrent();
+        }
     };
-    saveSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), "[untitled simulation]");
+    saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), "[untitled simulation]", "Save game as current name", "Save game as new name", 19);
 	saveSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
     saveSimulationButton->SetIcon(IconSave);
     currentX+=151;
-    saveSimulationButton->SetActionCallback(new SaveSimulationAction(this));
+    ((SplitButton*)saveSimulationButton)->SetSplitActionCallback(new SaveSimulationAction(this));
     AddComponent(saveSimulationButton);
 
     class UpVoteAction : public ui::ButtonAction
@@ -683,6 +817,10 @@ void GameView::NotifySaveChanged(GameModel * sender)
 	if(sender->GetSave())
 	{
 		saveSimulationButton->SetText(sender->GetSave()->GetName());
+		if(sender->GetSave()->GetUserName() == sender->GetUser().Username)
+			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
+		else
+			((SplitButton*)saveSimulationButton)->SetShowSplit(false);
 		reloadButton->Enabled = true;
 		upVoteButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==0);
 		if(sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==1)
@@ -721,6 +859,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 	}
 	else
 	{
+		((SplitButton*)saveSimulationButton)->SetShowSplit(false);
 		saveSimulationButton->SetText("[untitled simulation]");
 		reloadButton->Enabled = false;
 		upVoteButton->Enabled = false;

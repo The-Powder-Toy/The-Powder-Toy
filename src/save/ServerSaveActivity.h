@@ -22,6 +22,7 @@ public:
 		virtual void SaveUploaded(SaveInfo save) {}
 	};
 	ServerSaveActivity(SaveInfo save, SaveUploadedCallback * callback);
+	ServerSaveActivity(SaveInfo save, bool saveNow, SaveUploadedCallback * callback);
 	void saveUpload();
 	virtual void Save();
 	virtual void Exit();

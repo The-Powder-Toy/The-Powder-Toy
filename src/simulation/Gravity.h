@@ -2,6 +2,7 @@
 #define GRAVITY_H
 
 #include <pthread.h>
+#undef GetUserName //God dammit microsoft!
 #include "Config.h"
 #include "Simulation.h"
 

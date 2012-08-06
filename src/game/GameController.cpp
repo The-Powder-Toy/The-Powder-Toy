@@ -837,6 +837,61 @@ void GameController::OpenSaveWindow()
 	}
 }
 
+void GameController::SaveAsCurrent()
+{
+
+	class SaveUploadedCallback: public ServerSaveActivity::SaveUploadedCallback
+	{
+		GameController * c;
+	public:
+		SaveUploadedCallback(GameController * _c): c(_c) {}
+		virtual  ~SaveUploadedCallback() {};
+		virtual void SaveUploaded(SaveInfo save)
+		{
+			//Don't do anything
+			//c->LoadSave(&save);
+		}
+	};
+	if(gameModel->GetSave() && gameModel->GetUser().Username != gameModel->GetSave()->GetUserName())
+	{
+		OpenSaveWindow();
+	}
+	if(gameModel->GetUser().ID)
+	{
+		Simulation * sim = gameModel->GetSimulation();
+		GameSave * gameSave = sim->Save();
+		gameSave->paused = gameModel->GetPaused();
+		gameSave->gravityMode = sim->gravityMode;
+		gameSave->airMode = sim->air->airMode;
+		gameSave->legacyEnable = sim->legacy_enable;
+		gameSave->waterEEnabled = sim->water_equal_test;
+		gameSave->gravityEnable = sim->grav->ngrav_enable;
+		if(!gameSave)
+		{
+			new ErrorMessage("Error", "Unable to build save.");
+		}
+		else
+		{
+			if(gameModel->GetSave())
+			{
+				SaveInfo tempSave(*gameModel->GetSave());
+				tempSave.SetGameSave(gameSave);
+				new ServerSaveActivity(tempSave, true, new SaveUploadedCallback(this));
+			}
+			else
+			{				
+				SaveInfo tempSave(0, 0, 0, 0, gameModel->GetUser().Username, "");
+				tempSave.SetGameSave(gameSave);
+				new ServerSaveActivity(tempSave, true, new SaveUploadedCallback(this));
+			}
+		}
+	}
+	else
+	{
+		new ErrorMessage("Error", "You need to login to upload saves.");
+	}
+}
+
 void GameController::FrameStep()
 {
 	gameModel->FrameStep(1);
