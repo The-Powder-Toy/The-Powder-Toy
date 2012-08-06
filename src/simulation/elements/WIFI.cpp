@@ -93,6 +93,7 @@ int Element_WIFI::graphics(GRAPHICS_FUNC_ARGS)
 	*colr = sin(frequency*q + 0) * 127 + 128;
 	*colg = sin(frequency*q + 2) * 127 + 128;
 	*colb = sin(frequency*q + 4) * 127 + 128;
+	*pixel_mode |= EFFECT_DBGLINES;
 	return 0;
 }
 

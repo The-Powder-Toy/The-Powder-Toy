@@ -43,6 +43,7 @@ Element_SOAP::Element_SOAP()
     HighTemperatureTransition = NT;
     
     Update = &Element_SOAP::update;
+    Graphics = &Element_SOAP::graphics;
     
 }
 
@@ -120,7 +121,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 			parts[i].vx *= 0.5f;
 		}
 
-		if(parts[i].ctype&2)
+		if(!(parts[i].ctype&2))
 		{
 			for (rx=-2; rx<3; rx++)
 				for (ry=-2; ry<3; ry++)
@@ -279,5 +280,12 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_SOAP static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_SOAP::graphics(GRAPHICS_FUNC_ARGS)
+
+{
+	*pixel_mode |= EFFECT_LINES;
+	return 1;
+}
 
 Element_SOAP::~Element_SOAP() {}

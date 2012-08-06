@@ -1289,7 +1289,7 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 
 	std::vector<Notification*> notifications = sender->GetNotifications();
 
-	int currentY = YRES-17;
+	int currentY = YRES-23;
 	for(std::vector<Notification*>::iterator iter = notifications.begin(), end = notifications.end(); iter != end; ++iter)
 	{
 		int width = (Graphics::textwidth((*iter)->Message.c_str()))+8;

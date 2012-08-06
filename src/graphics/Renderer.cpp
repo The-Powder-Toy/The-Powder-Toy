@@ -1127,6 +1127,14 @@ void Renderer::render_parts()
 	#endif
 
 				//Pixel rendering
+				if (pixel_mode & EFFECT_LINES)
+				{
+					if (t==PT_SOAP)
+					{
+						if ((parts[i].ctype&7) == 7)
+							draw_line(nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), colr, colg, colb, cola);
+					}
+				}
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
 					char buff[20];  //Buffer for HP
@@ -1619,6 +1627,25 @@ void Renderer::render_parts()
 							addpixel(nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
 					}
 				}
+				if (pixel_mode & EFFECT_DBGLINES)
+				{
+					if (mousePosX == nx && mousePosY == ny)//draw lines connecting wifi/portal channels
+					{
+						int z;
+						int type = parts[i].type;
+						if (type == PT_PRTI)
+							type = PT_PRTO;
+						else if (type == PT_PRTO)
+							type = PT_PRTI;
+						for (z = 0; z<NPART; z++) {
+							if (parts[z].type)
+							{
+								if (parts[z].type==type&&parts[z].tmp==parts[i].tmp)
+									xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f));
+							}
+						}
+					}
+				}
 				//Fire effects
 				if(firea && (pixel_mode & FIRE_BLEND))
 				{
@@ -2107,7 +2134,9 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	zoomEnabled(false),
 	decorations_enable(1),
 	gravityFieldEnabled(false),
-	gravityZonesEnabled(false)
+	gravityZonesEnabled(false),
+	mousePosX(-1),
+	mousePosY(-1)
 {
 	this->g = g;
 	this->sim = sim;

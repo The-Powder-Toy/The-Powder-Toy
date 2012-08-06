@@ -166,6 +166,7 @@ int Element_PRTO::graphics(GRAPHICS_FUNC_ARGS)
 	*firer = 0;
 	*fireg = 0;
 	*fireb = 255;
+	*pixel_mode |= EFFECT_DBGLINES;
 	*pixel_mode |= EFFECT_GRAVOUT;
 	*pixel_mode &= ~PMODE;
 	*pixel_mode |= PMODE_ADD;

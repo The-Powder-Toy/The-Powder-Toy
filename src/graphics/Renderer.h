@@ -49,6 +49,9 @@ public:
 	Graphics * g;
 	gcache_item *graphicscache;
 
+	//Mouse position for debug information
+	int mousePosX, mousePosY;
+
 	//Zoom window
 	ui::Point zoomWindowPosition;
 	ui::Point zoomScopePosition;

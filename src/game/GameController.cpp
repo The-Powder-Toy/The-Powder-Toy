@@ -560,6 +560,8 @@ void GameController::Update()
 	ui::Point pos = gameView->GetMousePosition();
 	if(pos.X >= 0 && pos.Y >= 0 && pos.X < XRES && pos.Y < YRES)
 	{
+		gameModel->GetRenderer()->mousePosX = pos.X;
+		gameModel->GetRenderer()->mousePosY = pos.Y;
 		gameView->SetSample(gameModel->GetSimulation()->Get(pos.X, pos.Y));
 	}
 

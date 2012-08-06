@@ -129,6 +129,7 @@ int Element_PRTI::graphics(GRAPHICS_FUNC_ARGS)
 	*firer = 255;
 	*fireg = 0;
 	*fireb = 0;
+	*pixel_mode |= EFFECT_DBGLINES;
 	*pixel_mode |= EFFECT_GRAVIN;
 	*pixel_mode &= ~PMODE;
 	*pixel_mode |= PMODE_ADD;
