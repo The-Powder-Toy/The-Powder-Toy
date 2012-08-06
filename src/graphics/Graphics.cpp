@@ -768,9 +768,9 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		break;
 	case IconLogin:
 		if(invert)
-			drawchar(x, y, 0x84, 0, 0, 0, alpha);
+			drawchar(x, y+1, 0x84, 0, 0, 0, alpha);
 		else
-			drawchar(x, y, 0x84, 255, 255, 255, alpha);
+			drawchar(x, y+1, 0x84, 255, 255, 255, alpha);
 		break;
 	case IconSimulationSettings:
 		if(invert)

@@ -193,7 +193,6 @@ GameView::GameView():
     };
     loginButton = new ui::Button(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "[sign in]");
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	loginButton->Appearance.Margin.Top+=2;
     loginButton->SetIcon(IconLogin);
     loginButton->SetActionCallback(new LoginAction(this));
     AddComponent(loginButton);
