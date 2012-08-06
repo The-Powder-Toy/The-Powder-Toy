@@ -23,8 +23,8 @@ def SetupSpawn( env ):
         buf.ourenv = env
         env['SPAWN'] = buf.ourspawn
 
-AddOption('--opengl-renderer',dest="opengl-renderer",action='store_true',default=False,help="Build with OpenGL renderer support. (requires --opengl)")
 AddOption('--opengl',dest="opengl",action='store_true',default=False,help="Build with OpenGL interface support.")
+AddOption('--opengl-renderer',dest="opengl-renderer",action='store_true',default=False,help="Build with OpenGL renderer support. (requires --opengl)")
 AddOption('--win',dest="win",action='store_true',default=False,help="Windows platform target.")
 AddOption('--lin',dest="lin",action='store_true',default=False,help="Linux platform target")
 AddOption('--macosx',dest="macosx",action='store_true',default=False,help="Mac OS X platform target")
