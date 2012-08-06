@@ -852,7 +852,7 @@ void GameController::SaveAsCurrent()
 			//c->LoadSave(&save);
 		}
 	};
-	if(gameModel->GetSave() && gameModel->GetUser().Username != gameModel->GetSave()->GetUserName())
+	if(!gameModel->GetSave() || gameModel->GetUser().Username != gameModel->GetSave()->GetUserName())
 	{
 		OpenSaveWindow();
 	}
