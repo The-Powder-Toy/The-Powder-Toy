@@ -99,11 +99,6 @@ size_t Textbox::GetLimit()
 	return limit;
 }
 
-void Textbox::SetDisplayText(std::string newText)
-{
-	Label::SetText(text);
-}
-
 std::string Textbox::GetText()
 {
 	return backingText;

@@ -310,7 +310,12 @@ int LuaScriptInterface::Command(std::string command)
 
 std::string LuaScriptInterface::FormatCommand(std::string command)
 {
-	return command;
+	if(command[0] == '!')
+	{
+		return "!"+legacy->FormatCommand(command.substr(1));
+	}
+	else
+		return command;
 }
 
 LuaScriptInterface::~LuaScriptInterface() {

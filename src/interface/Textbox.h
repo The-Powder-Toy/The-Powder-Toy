@@ -24,7 +24,6 @@ public:
 	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
 	virtual ~Textbox();
 
-	virtual void SetDisplayText(std::string text);
 	virtual void SetText(std::string text);
 	virtual std::string GetText();
 
@@ -44,7 +43,7 @@ public:
 	//Determines if the given character is valid given the input type
 	bool CharacterValid(Uint16 character);
 
-	virtual void  Tick(float dt);
+	virtual void Tick(float dt);
 	virtual void OnContextMenuAction(int item);
 	virtual void OnMouseClick(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);

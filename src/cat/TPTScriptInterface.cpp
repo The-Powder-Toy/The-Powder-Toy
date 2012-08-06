@@ -194,6 +194,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	AnyType value = eval(words);
 
 	Simulation * sim = m->GetSimulation();
+	unsigned char * partsBlock = (unsigned char*)&sim->parts[0];
 
 	int returnValue = 0;
 
@@ -205,10 +206,10 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 
 	//Selector
 	int newValue;
-	if(selector.GetType() == TypeNumber)
-		newValue = ((NumberType)selector).Value();
-	else if(selector.GetType() == TypeString)
-		newValue = GetParticleType(((StringType)selector).Value());
+	if(value.GetType() == TypeNumber)
+		newValue = ((NumberType)value).Value();
+	else if(value.GetType() == TypeString)
+		newValue = GetParticleType(((StringType)value).Value());
 	else
 		throw GeneralException("Invalid value for assignment");
 
@@ -230,10 +231,10 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		switch(propertyFormat)
 		{
 		case FormatInt:
-			*((int*)(((unsigned char*)&sim->parts[partIndex])+propertyOffset)) = newValue;
+			*((int*)(partsBlock+(partIndex*sizeof(Particle))+propertyOffset)) = newValue;
 			break;
 		case FormatFloat:
-			*((float*)(((unsigned char*)&sim->parts[partIndex])+propertyOffset)) = newValue;
+			*((float*)(partsBlock+(partIndex*sizeof(Particle))+propertyOffset)) = newValue;
 			break;
 		}
 		returnValue = 1;
@@ -248,7 +249,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 					if(sim->parts[j].type)
 					{
 						returnValue++;
-						*((int*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = newValue;
+						*((int*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValue;
 					}
 			}
 			break;
@@ -258,7 +259,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 					if(sim->parts[j].type)
 					{
 						returnValue++;
-						*((float*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = newValue;
+						*((float*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValue;
 					}
 			}
 			break;
@@ -274,6 +275,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 
 		if(type<0 || type>=PT_NUM)
 			throw GeneralException("Invalid particle type");
+		std::cout << propertyOffset << std::endl;
 		switch(propertyFormat)
 		{
 		case FormatInt:
@@ -282,7 +284,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 					if(sim->parts[j].type == type)
 					{
 						returnValue++;
-						*((int*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = newValue;
+						*((int*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValue;
 					}
 			}
 			break;
@@ -292,7 +294,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 					if(sim->parts[j].type == type)
 					{
 						returnValue++;
-						*((float*)(((unsigned char*)&sim->parts[j])+propertyOffset)) = newValue;
+						*((float*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValue;
 					}
 			}
 			break;

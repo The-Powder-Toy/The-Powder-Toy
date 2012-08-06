@@ -14,6 +14,7 @@ namespace ui
 	protected:
 		std::string textFragments;
 		std::string textLines;
+		std::string displayText;
 
 		std::string text;
 		Colour textColour;
@@ -48,6 +49,7 @@ namespace ui
 		virtual void SetMultiline(bool status);
 
 		virtual void SetText(std::string text);
+		virtual void SetDisplayText(std::string newText);
 		virtual std::string GetText();
 
 		virtual bool HasSelection();

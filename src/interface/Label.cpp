@@ -266,6 +266,11 @@ void Label::updateSelection()
 	}
 }
 
+void Label::SetDisplayText(std::string newText)
+{
+	displayText = newText;
+}
+
 void Label::Draw(const Point& screenPos)
 {
 	if(!drawn)
@@ -281,6 +286,23 @@ void Label::Draw(const Point& screenPos)
 		drawn = true;
 	}
 	Graphics * g = Engine::Ref().g;
+
+	std::string cDisplayText = displayText;
+
+	if(!cDisplayText.length())
+	{
+		if(selectionXL != -1 && selectionXH != -1)
+		{
+			cDisplayText = textFragments;
+		}
+		else
+		{
+			if(multiline)
+				cDisplayText = textLines;
+			else
+				cDisplayText = text;
+		}
+	}
 
 	if(multiline)
 	{
@@ -298,21 +320,21 @@ void Label::Draw(const Point& screenPos)
 			} else {
 				g->fillrect(screenPos.X+textPosition.X+selectionXL, screenPos.Y+selectionYL+textPosition.Y-1, selectionXH-(selectionXL), 10, 255, 255, 255, 255);
 			}
-			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, textFragments, textColour.Red, textColour.Green, textColour.Blue, 255);
+			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, cDisplayText, textColour.Red, textColour.Green, textColour.Blue, 255);
 		}
 		else
 		{
-			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, textLines, textColour.Red, textColour.Green, textColour.Blue, 255);
+			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, cDisplayText, textColour.Red, textColour.Green, textColour.Blue, 255);
 		}
 	} else {
 		if(selectionXL != -1 && selectionXH != -1)
 		{
 			g->fillrect(screenPos.X+textPosition.X+selectionXL, screenPos.Y+textPosition.Y-1, selectionXH-(selectionXL), 10, 255, 255, 255, 255);
-			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, textFragments, textColour.Red, textColour.Green, textColour.Blue, 255);
+			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, cDisplayText, textColour.Red, textColour.Green, textColour.Blue, 255);
 		}
 		else
 		{
-			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, text, textColour.Red, textColour.Green, textColour.Blue, 255);
+			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, cDisplayText, textColour.Red, textColour.Green, textColour.Blue, 255);
 		}
 	}
 }
