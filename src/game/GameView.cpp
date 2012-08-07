@@ -15,6 +15,7 @@
 #include "dialogues/ConfirmPrompt.h"
 #include "Format.h"
 #include "QuickOption.h"
+#include "IntroText.h"
 
 
 class SplitButton;
@@ -170,7 +171,9 @@ GameView::GameView():
 	toolTipPosition(-1, -1),
 	shiftBehaviour(false),
 	ctrlBehaviour(false),
-	showHud(true)
+	showHud(true),
+	introText(2048),
+	introTextMessage(introTextData)
 {
 	
 	int currentX = 1;
@@ -1085,6 +1088,11 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	if(colourRValue->IsFocused() || colourGValue->IsFocused() || colourBValue->IsFocused() || colourAValue->IsFocused())
 		return;
 
+	if(introText)
+	{
+		introText = 50;
+	}
+
 	if(selectMode!=SelectNone)
 	{
 		if(selectMode==PlaceSave)
@@ -1171,8 +1179,22 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'f':
 		c->FrameStep();
 		break;
+	case KEY_F1:
+		if(!introText)
+			introText = 8047;
+		else
+			introText = 0;
+		break;
 	case 'h':
-		showHud = !showHud;
+		if(ctrl)
+		{
+			if(!introText)
+				introText = 8047;
+			else
+				introText = 0;
+		}
+		else
+			showHud = !showHud;
 		break;
 	case 'b':
 		if(ctrl)
@@ -1300,6 +1322,12 @@ void GameView::OnTick(float dt)
 	{
 		c->DrawFill(toolIndex, currentMouse);
 	}
+	if(introText)
+	{
+		introText -= int(dt)>0?int(dt):1;
+		if(introText < 0)
+			introText  = 0;
+	}
 	if(infoTipPresence>0)
 	{
 		infoTipPresence -= int(dt)>0?int(dt):1;
@@ -1357,6 +1385,8 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 
 void GameView::DoMouseDown(int x, int y, unsigned button)
 {
+	if(introText)
+		introText = 50;
 	if(c->MouseDown(x, y, button))
 		Window::DoMouseDown(x, y, button);
 }
@@ -1666,7 +1696,7 @@ void GameView::OnDraw()
 		}
 	}
 
-	if(showHud)
+	if(showHud && !introText)
 	{
 		//Draw info about simulation under cursor
 		std::stringstream sampleInfo;
@@ -1708,6 +1738,13 @@ void GameView::OnDraw()
 	if(toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
 	{
 		g->drawtext(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, 255);
+	}
+
+	//Introduction text
+	if(introText)
+	{
+		g->fillrect(0, 0, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, introText>51?102:introText*2);
+		g->drawtext(16, 20, (char*)introTextMessage.c_str(), 255, 255, 255, introText>51?255:introText*5);
 	}
 }
 
