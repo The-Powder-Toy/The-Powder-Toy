@@ -1088,7 +1088,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	if(colourRValue->IsFocused() || colourGValue->IsFocused() || colourBValue->IsFocused() || colourAValue->IsFocused())
 		return;
 
-	if(introText)
+	if(introText > 50)
 	{
 		introText = 50;
 	}
@@ -1385,7 +1385,7 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 
 void GameView::DoMouseDown(int x, int y, unsigned button)
 {
-	if(introText)
+	if(introText > 50)
 		introText = 50;
 	if(c->MouseDown(x, y, button))
 		Window::DoMouseDown(x, y, button);
