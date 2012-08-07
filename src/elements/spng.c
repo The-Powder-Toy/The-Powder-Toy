@@ -26,10 +26,31 @@ int update_SPNG(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)==PT_WATR&&33>=rand()/(RAND_MAX/100)+1)
+					if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_FRZW)&&33>=rand()/(RAND_MAX/100)+1)
 					{
 						parts[i].life++;
 						kill_part(r>>8);
+					}
+					if ((r&0xFF)==PT_SLTW&&33>=rand()/(RAND_MAX/100)+1)
+					{
+						parts[i].life++;
+						if (rand()%4)
+							kill_part(r>>8);
+						else
+							part_change_type(r>>8, x+rx, y+ry, PT_SALT);
+					}
+					if ((r&0xFF)==PT_CBNW&&33>=rand()/(RAND_MAX/100)+1)
+					{
+						parts[i].life++;
+						if (rand()%4)
+							kill_part(r>>8);
+						else
+							part_change_type(r>>8, x+rx, y+ry, PT_CO2);
+					}
+					if ((r&0xFF)==PT_PSTE&&33>=rand()/(RAND_MAX/100)+1)
+					{
+						parts[i].life++;
+						create_part(r>>8, x+rx, y+ry, PT_CLST);
 					}
 				}
 	}

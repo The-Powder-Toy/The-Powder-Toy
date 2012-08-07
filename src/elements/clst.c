@@ -27,7 +27,7 @@ int update_CLST(UPDATE_FUNC_ARGS) {
 					continue;
 				if ((r&0xFF)==PT_WATR && 1>(rand()%1500))
 				{
-					part_change_type(i,x,y,PT_PSTS);					
+					part_change_type(i,x,y,PT_PSTS);
 					kill_part(r>>8);
 				}
 				if ((r&0xFF)==PT_NITR)
