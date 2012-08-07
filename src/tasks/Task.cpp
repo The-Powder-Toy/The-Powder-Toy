@@ -102,7 +102,11 @@ void Task::Poll()
 
 Task::~Task()
 {
-
+	if(!done)
+	{
+		pthread_join(doWorkThread, NULL);
+		pthread_mutex_destroy(&taskMutex);
+	}
 }
 
 void Task::before()

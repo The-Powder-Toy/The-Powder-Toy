@@ -8,6 +8,7 @@
 #include "dialogues/ErrorMessage.h"
 #include "dialogues/ConfirmPrompt.h"
 #include "client/Client.h"
+#include "tasks/Task.h"
 #include "Style.h"
 
 class ServerSaveActivity::CancelAction: public ui::ButtonAction
@@ -32,11 +33,46 @@ public:
 	}
 };
 
+//Currently, reading is done on another thread, we can't render outside the main thread due to some bullshit with OpenGL 
+class SaveUploadTask: public Task
+{
+	SaveInfo save;
+
+	virtual void before()
+	{
+
+	}
+
+	virtual void after()
+	{
+
+	}
+
+	virtual bool doWork()
+	{
+		notifyProgress(-1);
+		return Client::Ref().UploadSave(save) == RequestOkay;
+	}
+
+public:
+	SaveInfo GetSave()
+	{
+		return save;
+	}
+
+	SaveUploadTask(SaveInfo save):
+		save(save)
+	{
+
+	}
+};
+
 ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUploadedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(440, 200)),
 	thumbnail(NULL),
 	save(save),
-	callback(callback)
+	callback(callback),
+	saveUploadTask(NULL)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point((Size.X/2)-8, 16), "Save to server:");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
@@ -98,13 +134,27 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, ServerSaveAc
 	WindowActivity(ui::Point(-1, -1), ui::Point(200, 50)),
 	thumbnail(NULL),
 	save(save),
-	callback(callback)
+	callback(callback),
+	saveUploadTask(NULL)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(0, 0), Size, "Saving to server...");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
+
+	saveUploadTask = new SaveUploadTask(save);
+	saveUploadTask->AddTaskListener(this);
+	saveUploadTask->Start();
+}
+
+void ServerSaveActivity::NotifyDone(Task * task)
+{
+	Exit();
+	if(!task->GetSuccess())
+	{
+		new ErrorMessage("Error", "Error while saving");
+	}
 }
 
 void ServerSaveActivity::Save()
@@ -169,6 +219,12 @@ void ServerSaveActivity::Exit()
 	WindowActivity::Exit();
 }
 
+void ServerSaveActivity::OnTick(float dt)
+{
+	if(saveUploadTask)
+		saveUploadTask->Poll();
+}
+
 void ServerSaveActivity::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
@@ -192,5 +248,6 @@ void ServerSaveActivity::OnThumbnailReady(Thumbnail * thumbnail)
 
 ServerSaveActivity::~ServerSaveActivity()
 {
-
+	if(saveUploadTask)
+		delete saveUploadTask;
 }

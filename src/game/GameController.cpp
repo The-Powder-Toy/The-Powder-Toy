@@ -19,6 +19,7 @@
 #include "filebrowser/FileBrowserActivity.h"
 #include "save/LocalSaveActivity.h"
 #include "save/ServerSaveActivity.h"
+#include "interface/Keys.h"
 
 using namespace std;
 
@@ -433,26 +434,26 @@ bool GameController::KeyRelease(int key, Uint16 character, bool shift, bool ctrl
 	if(ret)
 	{
 		Simulation * sim = gameModel->GetSimulation();
-		if (key == SDLK_RIGHT || key == SDLK_LEFT)
+		if (key == KEY_RIGHT || key == KEY_LEFT)
 		{
 			sim->player.pcomm = sim->player.comm;  //Saving last movement
 			sim->player.comm = (int)(sim->player.comm)&12;  //Stop command
 		}
-		if (key == SDLK_UP)
+		if (key == KEY_UP)
 		{
 			sim->player.comm = (int)(sim->player.comm)&11;
 		}
-		if (key == SDLK_DOWN)
+		if (key == KEY_DOWN)
 		{
 			sim->player.comm = (int)(sim->player.comm)&7;
 		}
 
-		if (key == SDLK_d || key == SDLK_a)
+		if (key == KEY_d || key == KEY_a)
 		{
 			sim->player2.pcomm = sim->player2.comm;  //Saving last movement
 			sim->player2.comm = (int)(sim->player2.comm)&12;  //Stop command
 		}
-		if (key == SDLK_w)
+		if (key == KEY_w)
 		{
 			sim->player2.comm = (int)(sim->player2.comm)&11;
 		}
@@ -852,11 +853,8 @@ void GameController::SaveAsCurrent()
 			//c->LoadSave(&save);
 		}
 	};
-	if(!gameModel->GetSave() || gameModel->GetUser().Username != gameModel->GetSave()->GetUserName())
-	{
-		OpenSaveWindow();
-	}
-	if(gameModel->GetUser().ID)
+
+	if(gameModel->GetSave() && gameModel->GetUser().ID && gameModel->GetUser().Username == gameModel->GetSave()->GetUserName())
 	{
 		Simulation * sim = gameModel->GetSimulation();
 		GameSave * gameSave = sim->Save();
@@ -885,6 +883,10 @@ void GameController::SaveAsCurrent()
 				new ServerSaveActivity(tempSave, true, new SaveUploadedCallback(this));
 			}
 		}
+	}
+	else if(gameModel->GetUser().ID)
+	{
+		OpenSaveWindow();
 	}
 	else
 	{

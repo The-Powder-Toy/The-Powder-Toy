@@ -54,7 +54,7 @@ public:
 	    {
 	    	if(leftDown)
 				DoLeftAction();
-			if(rightDown)
+			else if(rightDown)
 				DoRightAction();
 	    }
 	    ui::Button::OnMouseUp(x, y, button);
