@@ -42,6 +42,8 @@ private:
 	bool ctrlBehaviour;
 	bool altBehaviour;
 	bool showHud;
+	int introText;
+	std::string introTextMessage;
 	int toolIndex;
 
 	int infoTipPresence;
