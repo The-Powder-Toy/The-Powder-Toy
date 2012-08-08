@@ -532,14 +532,15 @@ void ui_list_process(pixel * vid_buf, int mx, int my, int mb, ui_list *ed)
 					}
 					draw_line(vid_buf, ed->x, ystart + i * 16, ed->x+ed->w, ystart + i * 16, 128, 128, 128, XRES+BARSIZE);
 				}
-				if(!selected && mb)
-					break;
 				drawrect(vid_buf, ed->x, ystart, ed->w, ed->count*16, 255, 255, 255, 255);
 #ifdef OGLR
 				clearScreen(1.0f);
 #endif
 				sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 				clearrect(vid_buf, ed->x-2, ystart-2, ed->w+4, (ed->count*16)+4);
+
+				if(!selected && mb)
+					break;
 			}
 			while (!sdl_poll())
 			{
