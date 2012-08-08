@@ -1689,12 +1689,29 @@ void xor_rect(pixel *vid, int x, int y, int w, int h)
 	for (i=0; i<w; i+=2)
 	{
 		xor_pixel(x+i, y, vid);
-		xor_pixel(x+i, y+h-1, vid);
 	}
+	if (h != 1)
+	{
+		if (h%2 == 1) i = 2;
+		else i = 1;
+		for (; i<w; i+=2)
+		{
+			xor_pixel(x+i, y+h-1, vid);
+		}
+	}
+
 	for (i=2; i<h; i+=2)
 	{
 		xor_pixel(x, y+i, vid);
-		xor_pixel(x+w-1, y+i, vid);
+	}
+	if (w != 1)
+	{
+		if (w%2 == 1) i = 2;
+		else i = 1;
+		for (; i<h-1; i+=2)
+		{
+			xor_pixel(x+w-1, y+i, vid);
+		}
 	}
 }
 

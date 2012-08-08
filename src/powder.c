@@ -3482,6 +3482,8 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill)
         }
         else return 0;
 	}
+	if (c == PT_STKM || c == PT_STKM2 || c == PT_FIGH)
+		rx = ry = 0;
 	
 	if (dw==1)
 	{
