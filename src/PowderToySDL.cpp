@@ -6,6 +6,7 @@
 #include "SDL.h"
 #ifdef WIN
 #include "SDL_syswm.h"
+#include <direct.h>
 #endif
 #include <iostream>
 #include <sstream>
@@ -16,6 +17,11 @@
 #include "icon.h"
 #endif
 
+#ifndef WIN
+#include <unistd.h>
+#endif
+
+#include "Format.h"
 #include "interface/Engine.h"
 #include "interface/Button.h"
 #include "interface/Panel.h"
@@ -287,15 +293,45 @@ int main(int argc, char * argv[])
 
 	std::map<std::string, std::string> arguments = readArguments(argc, argv);
 
+	if(arguments["ddir"].length())
+#ifdef WIN
+		_chdir(arguments["ddir"].c_str());
+#else
+		chdir(arguments["ddir"].c_str());
+#endif
+
+	int tempScale = 1;
+	bool tempFullscreen = false;
+
+	tempScale = Client::Ref().GetPrefInteger("Scale", 1);
+	tempFullscreen = Client::Ref().GetPrefBool("Fullscreen", false);
+
+
+	if(arguments["kiosk"] == "true")
+	{
+		tempFullscreen = true;
+		Client::Ref().SetPref("Fullscreen", tempFullscreen);
+	}
+
+	if(arguments["scale"].length())
+	{
+		tempScale = format::StringToNumber<int>(arguments["scale"]);
+		Client::Ref().SetPref("Scale", tempScale);
+	}
+
+	if(tempScale != 1 && tempScale != 2)
+		tempScale = 1;
+
 	int sdlStatus = SDLOpen();
-	sdl_scrn = SDLSetScreen(1, false);
+	sdl_scrn = SDLSetScreen(tempScale, tempFullscreen);
 #ifdef OGLI
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 	//glScaled(2.0f, 2.0f, 1.0f);
-
 #endif
 	ui::Engine::Ref().g = new Graphics();
-	//ui::Engine::Ref().g->AttachSDLSurface(SDLOpen());
+	ui::Engine::Ref().Scale = scale;
+	inputScale = 1.0f/float(scale);
+	ui::Engine::Ref().Fullscreen = fullscreen;
 
 	ui::Engine * engine = &ui::Engine::Ref();
 	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);

@@ -102,6 +102,7 @@ bool OptionsModel::GetScale()
 void OptionsModel::SetScale(bool doubleScale)
 {
 	ui::Engine::Ref().SetScale(doubleScale?2:1);
+	Client::Ref().SetPref("Scale", int(doubleScale?2:1));
 	notifySettingsChanged();
 }
 
@@ -113,6 +114,7 @@ bool OptionsModel::GetFullscreen()
 void OptionsModel::SetFullscreen(bool fullscreen)
 {
 	ui::Engine::Ref().SetFullscreen(fullscreen);
+	Client::Ref().SetPref("Fullscreen", bool(fullscreen));
 	notifySettingsChanged();
 }
 
