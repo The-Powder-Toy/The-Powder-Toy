@@ -25,7 +25,7 @@ static const char *introTextData =
     "\n"
     "\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html\n"
 	"\n"
-	"\bt" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) " "
+	"\bt" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) " " IDENT_PLATFORM " "
 #ifdef X86
 	"X86 "
 #endif
@@ -37,15 +37,6 @@ static const char *introTextData =
 #endif
 #ifdef X86_SSE3
 	"X86_SSE3 "
-#endif
-#ifdef LIN32
-	"LIN32 "
-#endif
-#ifdef LIN64
-	"LIN64 "
-#endif
-#ifdef WIN32
-	"WIN32 "
 #endif
 #ifdef MACOSX
 	"MACOSX "
