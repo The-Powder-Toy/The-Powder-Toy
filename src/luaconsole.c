@@ -1326,7 +1326,7 @@ int luatpt_set_property(lua_State* l)
 	} else if (strcmp(prop,"y")==0){
 		offset = offsetof(particle, y);
 		format = 2;
-	} else if (strcmp(prop,"dcolour")==0){
+	} else if (strcmp(prop,"dcolour")==0 || strcmp(prop,"dcolor")==0){
 		offset = offsetof(particle, dcolour);
 		format = 1;
 	} else {
@@ -1367,22 +1367,22 @@ int luatpt_set_property(lua_State* l)
 			w = XRES-x;
 		if(y+h > YRES)
 			h = YRES-y;
-		for (nx = x; nx<x+w; nx++)
-			for (ny = y; ny<y+h; ny++){
-				r = pmap[ny][nx];
-				if (!r || (partsel && partsel != parts[r>>8].type))
+		for (i = 0; i < NPART; i++)
+		{
+			if (parts[i].type)
+			{
+				nx = (int)(parts[i].x + .5f);
+				ny = (int)(parts[i].y + .5f);
+				if (nx >= x && nx < x+w && ny >= y && ny < y+h && (!partsel || partsel == parts[i].type))
 				{
-					r = photons[ny][nx];
-					if (!r || (partsel && partsel != parts[r>>8].type))
-						continue;
-				}
-				i = r>>8;
-				if(format==2){
-					*((float*)(((char*)&parts[i])+offset)) = f;
-				} else {
-					*((int*)(((char*)&parts[i])+offset)) = t;
+					if(format==2){
+						*((float*)(((char*)&parts[i])+offset)) = f;
+					} else {
+						*((int*)(((char*)&parts[i])+offset)) = t;
+					}
 				}
 			}
+		}
 	} else {
 		// Got coords or particle index
 		if(i != -1 && y != -1){
