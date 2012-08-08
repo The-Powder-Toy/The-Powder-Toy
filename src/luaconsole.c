@@ -1478,7 +1478,7 @@ int luatpt_get_property(lua_State* l)
 			lua_pushnumber(l, parts[i].y);
 			return 1;
 		}
-		if (strcmp(prop,"dcolour")==0){
+		if (strcmp(prop,"dcolour")==0 || strcmp(prop,"dcolor")==0){
 			lua_pushinteger(l, parts[i].dcolour);
 			return 1;
 		}
@@ -1950,7 +1950,9 @@ int luatpt_heat(lua_State* l)
 }
 int luatpt_cmode_set(lua_State* l)
 {
-    return luaL_error(l, "Not implemented");
+	int cmode = luaL_optint(l, 1, CM_FIRE);
+	set_cmode(cmode);
+	return 0;
 }
 int luatpt_setfire(lua_State* l)
 {
