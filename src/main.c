@@ -2178,34 +2178,46 @@ int main(int argc, char *argv[])
 			save_h = my + 1 - save_y;
 			if (save_w+save_x>XRES) save_w = XRES-save_x;
 			if (save_h+save_y>YRES) save_h = YRES-save_y;
-			if (save_w<1) save_w = 1;
-			if (save_h<1) save_h = 1;
+			if (save_w+save_x<0) save_w = 0;
+			if (save_h+save_y<0) save_h = 0;
+			//if (save_w<1) save_w = 1;
+			//if (save_h<1) save_h = 1;
 			if (!b)
 			{
-				if (copy_mode==1)//CTRL-C, copy
+				if (save_w < 0)
 				{
-					clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, vx, vy, pv, fvx, fvy, signs, parts);
-					if (clipboard_data)
-						clipboard_ready = 1;
-					save_mode = 0;
-					copy_mode = 0;
+					save_x = save_x + save_w - 1;
+					save_w = abs(save_w) + 2;
 				}
-				else if (copy_mode==2)//CTRL-X, cut
+				if (save_h < 0)
 				{
-					clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, vx, vy, pv, fvx, fvy, signs, parts);
-					if (clipboard_data)
+					save_y = save_y + save_h - 1;
+					save_h = abs(save_h) + 2;
+				}
+				if (save_h > 0 && save_w > 0)
+				{
+					if (copy_mode==1)//CTRL-C, copy
 					{
-						clipboard_ready = 1;
-						clear_area(save_x, save_y, save_w, save_h);
+						clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, vx, vy, pv, fvx, fvy, signs, parts, (sdl_mod & KMOD_SHIFT));
+						if (clipboard_data)
+							clipboard_ready = 1;
 					}
-					save_mode = 0;
-					copy_mode = 0;
+					else if (copy_mode==2)//CTRL-X, cut
+					{
+						clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, vx, vy, pv, fvx, fvy, signs, parts, (sdl_mod & KMOD_SHIFT));
+						if (clipboard_data)
+						{
+							clipboard_ready = 1;
+							clear_area(save_x, save_y, save_w, save_h);
+						}
+					}
+					else//normal save
+					{
+						stamp_save(save_x, save_y, save_w, save_h);
+					}
 				}
-				else//normal save
-				{
-					stamp_save(save_x, save_y, save_w, save_h);
-					save_mode = 0;
-				}
+				copy_mode = 0;
+				save_mode = 0;
 			}
 		}
 		else if (sdl_zoom_trig && zoom_en<2)
@@ -2565,9 +2577,23 @@ int main(int argc, char *argv[])
 
 		if (save_mode)//draw dotted lines for selection
 		{
-			xor_rect(vid_buf, save_x, save_y, save_w, save_h);
+			int savex = save_x, savey = save_y, savew = save_w, saveh = save_h;
+			if (savew < 0)
+			{
+				savex = savex + savew - 1;
+				savew = abs(savew) + 2;
+			}
+			if (saveh < 0)
+			{
+				savey = savey + saveh - 1;
+				saveh = abs(saveh) + 2;
+			}
+			xor_rect(vid_buf, savex, savey, savew, saveh);
 			da = 51;//draws mouseover text for the message
-			db = 269;//the save message
+			if (copy_mode != 2)
+				db = 269;//the save message
+			else
+				db = 278;
 		}
 
 		if (zoom_en!=1 && !load_mode && !save_mode)//draw normal cursor
@@ -2650,6 +2676,9 @@ int main(int argc, char *argv[])
 				break;
 			case 277:
 				drawtext(vid_buf, 16, YRES-24, "Save the simulation to your hard drive.", 255, 255, 255, da*5);
+				break;
+			case 278: //Fix for Ctrl + X showing copy message
+				drawtext(vid_buf, 16, YRES-24, "Click-and-drag to specify a rectangle to copy and then cut (right click = cancel).", 255, 216, 32, da*5);
 				break;
 			default:
 				drawtext(vid_buf, 16, YRES-24, (char *)ptypes[db].descs, 255, 255, 255, da*5);
