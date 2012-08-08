@@ -2279,6 +2279,8 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 {
 	int b=1,bq,mx,my,h,x,y,n=0,height,width,sy,rows=0;
 	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	if (!old_vid)
+		return;
 	fillrect(vid_buf, -1, -1, XRES+1, YRES+MENUSIZE, 0, 0, 0, 192);
 	memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 
@@ -3306,6 +3308,8 @@ int search_ui(pixel *vid_buf)
 	void *thumb, *data;
 	int thlen, dlen;
 
+	if (!v_buf)
+		return 0;
 	memset(v_buf, 0, ((YRES+MENUSIZE)*(XRES+BARSIZE))*PIXELSIZE);
 
 	memset(img_http, 0, sizeof(img_http));
@@ -4102,6 +4106,8 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	ui_copytext ctb;
 
 	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	if (!old_vid || !info)
+		return 0;
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 	viewcountbuffer[0] = 0;
 
@@ -5448,6 +5454,8 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	ed.multiline = 0;
 	ed.cursor = 0;
 	//fillrect(vid_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
+	if (!old_buf)
+		return NULL;
 	memcpy(old_buf,vid_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 
 	fillrect(old_buf, -1, -1, XRES+BARSIZE, 220, 0, 0, 0, 190);
@@ -5663,6 +5671,8 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 	box_B.cursor = 0;
 
 
+	if (!old_buf)
+		return PIXRGB(currR,currG,currB);
 	memcpy(old_buf,vid_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 	while (!sdl_poll())
 	{
@@ -6423,6 +6433,8 @@ void catalogue_ui(pixel * vid_buf)
 	ui_edit ed;
 	
 	vid_buf2 = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	if (!vid_buf2)
+		return;
 	
 	ed.w = xsize-16-4;
 	ed.x = x0+11;
@@ -6811,6 +6823,8 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	part_vbuf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE); //Extra video buffer
 	part_vbuf_store = part_vbuf;
 	
+	if (!o_vid_buf || !part_vbuf || !part_vbuf_store)
+		return;
 	while (!sdl_poll())
 	{
 		b = mouse_get_state(&mx, &my);
