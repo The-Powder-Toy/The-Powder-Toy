@@ -1257,6 +1257,7 @@ char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shad
 
 void prop_edit_ui(pixel *vid_buf, int x, int y)
 {
+	pixel * o_vid_buf;
 	float valuef;
 	unsigned char valuec;
 	int valuei;
@@ -1299,6 +1300,9 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 	strncpy(ed2.str, "0", 254);
 	strncpy(ed.str, "ctype", 254);
 
+	o_vid_buf = (pixel*)calloc((YRES+MENUSIZE) * (XRES+BARSIZE), PIXELSIZE);
+	if (o_vid_buf)
+		memcpy(o_vid_buf, vid_buf, ((YRES+MENUSIZE) * (XRES+BARSIZE)) * PIXELSIZE);
 	while (!sdl_poll())
 	{
 		b = mouse_get_state(&mx, &my);
@@ -1311,6 +1315,8 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 		bq = b;
 		b = mouse_get_state(&mx, &my);
 
+		if (o_vid_buf)
+			memcpy(vid_buf, o_vid_buf, ((YRES+MENUSIZE) * (XRES+BARSIZE)) * PIXELSIZE);
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
 		drawtext(vid_buf, x0+8, y0+8, "Change particle property", 160, 160, 255, 255);
@@ -1338,7 +1344,7 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 		if (sdl_key==SDLK_RETURN)
 			break;
 		if (sdl_key==SDLK_ESCAPE)
-			break;
+			goto exit;
 	}
 
 	if(ed.selected!=-1)
@@ -6316,7 +6322,8 @@ int save_filename_ui(pixel *vid_buf)
 		drawtext(vid_buf, x0+8, y0+ysize-12, "Save", 255, 255, 255, 255);
 
 		ui_edit_draw(vid_buf, &ed);
-		drawtext(vid_buf, x0+12+textwidth(ed.str), y0+25, ".cps", 240, 240, 255, 180);
+		if (strlen(ed.str) || ed.focus)
+			drawtext(vid_buf, x0+12+textwidth(ed.str), y0+25, ".cps", 240, 240, 255, 180);
 #ifdef OGLR
 		clearScreen(1.0f);
 #endif
