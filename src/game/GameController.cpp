@@ -717,6 +717,7 @@ void GameController::OpenLocalBrowse()
 		virtual void FileSelected(SaveFile* file)
 		{
 			c->LoadSaveFile(file);
+			delete file;
 		}
 	};
 	new FileBrowserActivity(LOCAL_SAVE_DIR PATH_SEP, new LocalSaveOpenCallback(this));

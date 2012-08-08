@@ -398,7 +398,6 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 		sim->clear_sim();
 		sim->Load(saveData);
 	}
-	delete newSave;
 	
 	notifySaveChanged();
 	UpdateQuickOptions();
