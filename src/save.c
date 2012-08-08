@@ -795,6 +795,9 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	bson_append_bool(&b, "paused", sys_pause);
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);
+	bson_append_int(&b, "render_mode", render_mode);
+	bson_append_int(&b, "display_mode", display_mode);
+	bson_append_int(&b, "color_mode", colour_mode);
 	
 	//bson_append_int(&b, "leftSelectedElement", sl);
 	//bson_append_int(&b, "rightSelectedElement", sr);
@@ -1177,6 +1180,39 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 			}
 		}*/
+		else if(strcmp(bson_iterator_key(&iter), "render_mode")==0 && replace)
+		{
+			if(bson_iterator_type(&iter)==BSON_INT)
+			{
+				render_mode = bson_iterator_int(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "display_mode")==0 && replace)
+		{
+			if(bson_iterator_type(&iter)==BSON_INT)
+			{
+				display_mode = bson_iterator_int(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "color_mode")==0 && replace)
+		{
+			if(bson_iterator_type(&iter)==BSON_INT)
+			{
+				colour_mode = bson_iterator_int(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
 		else if(strcmp(bson_iterator_key(&iter), "activeMenu")==0 && replace)
 		{
 			if(bson_iterator_type(&iter)==BSON_INT && bson_iterator_int(&iter) >= 0 && bson_iterator_int(&iter) < SC_TOTAL && msections[bson_iterator_int(&iter)].doshow)
