@@ -1,4 +1,4 @@
-The Powder Toy - October 2011
+The Powder Toy - August 2012
 
 Get latest version here:  http://powdertoy.co.uk/Download.html
 
@@ -20,6 +20,7 @@ jacksonmj
 Lieuwe Mosch
 Anthony Boot
 Matthew Miller
+jacob1
 
 Instructions:
 
@@ -62,7 +63,7 @@ B		Decoration editor
 Ctrl + B	Toggle decorations on/off
 U		Toggle ambient heat on/off
 M		switch left and right selected elements
-N		Toggle pretty powders
+E       Element search
 Ctrl + I	Install powder toy for loading saves/stamps by double clicking
 ~ 		Console
 = 		Reset pressure and velocity map
@@ -98,11 +99,98 @@ ddir <directory> - Directory used for saving stamps and preferences
 nohud - disables the hud
 sound - enable sound to be played from console
 scripts - enable scripts to be run from old console
+ptsave:<save id>#<name, optional> (ex. ptsave:2198#Destroyable_city_5_wth_metro~dima-gord)
 
 History:
 
 ---------------------------------------------------------------------------
 
+* Version 81.6 Build 189
+      o Fix zoom in decorations mode
+* Version 81.5 Build 188
+      o Allow Lua Key event function to override keys used by stickman and zoom
+      o Hide intro text when opened by PTSave link
+      o Added Console button to quick menu
+* Version 81.4 Build 187
+      o Fixed issues with saving current menu (Walls is now a valid menu)
+      o Fixed crash when pasting long text strings
+      o Disable decorations in save thumbnails
+* Version 81.3 Build 186
+      o Stickmen can now shoot plasma
+* Version 81.3 Build 185
+      o Reduced lag created by PLNT
+      o Optimisations to improve speed with GOL
+      o Added more checks for invalid elements
+      o Added brush size to Lua environment (tpt.brushx, tpt.brushy)
+      o Added brush "Alt Selected" element to Lua environment (tpt.selecteda)
+      o Added mouse wheel to mouse event arguments (mouseX, mouseY, mouseButton, mouseWheel)
+      o SALT will only melt ICE if the ICE if above salt-water freezing temperature
+      o Updated README and LICENSE files
+* Version 81.2 Build 184
+      o Fix bug in saving code when there are no signs
+* Version 81.1 Build 183
+      o C5 neighbouring cold insulators no longer explodes
+      o Fixed issue where clicking on a stack of save signs will cause an unstoppable torrent of save open windows
+      o Prevent acid from eating broken glass
+      o Stickman should no longer be able to walk on the bottom of the screen
+      o VOID and BHOL should eat stickman
+      o Reduced rate of lighting creation by CLNE
+      o INST can now be sparked directly using the brush
+      o Lightning should now be affected by gravity fields
+      o Fix crash when sparking INST
+* Version 81.0 Build 182
+      o Many things causing BHOL formation have been fixed
+      o Stickmen no longer fall through some powders
+      o Fireworks work with different gravity modes and Newtonian gravity
+      o Freezing point for SLTW corrected to -21.1 °C
+      o SING formation removed from fusion
+* Version 80.4 Build 179
+      o VINE grows along WOOD
+      o changes to FRZZ
+      o Adding neutrons to EXOT makes it turn into whatever element it touches
+      o Clone remembers the ctype of lava (can now clone molten metal etc, instead of just molten stone)
+      o Compressed particles turn into BHOL
+* Version 80.3 Build 178
+      o Fix session check on startup
+* Version 80.3 Build 177
+      o TTAN only blocks pressure when adjacent to at least two more TTAN particles (or anytime with a .tmp of 1)
+* Version 80.2 Build 176
+      o Minor EXOT fix
+* Version 80.1 Build 175
+      o EXOT uses heat view's rainbow color scale
+* Version 80.1 Build 174
+      o No change - not in beta anymore
+* Version 80.0 Beta Build 173
+      o New Element: EXOT
+      o WARP element changes - now completely invisible
+* Version 79.7 Build 172
+      o Fix a TRON flag
+* Version 79.6 Beta Build 171
+      o Fix FIGH not spawning
+* Version 79.5 Beta Build 170
+      o Fix bug where snow melted without taking it's ctype into account
+      o Fix PROP_NEUTPENETRATE
+      o Add a setting to draw a wall frame around the screen
+      o Fix flashing dust glitch
+      o Fix command line save opening
+* Version 79.4 Beta Build 169
+      o Fix ptsave parsing if there is no '#'
+      o Download progress bar for save opening
+      o Soap bubbles easily formed, also their links inherit soap's decoration color
+      o Don't show disabled elements in the search
+      o Fix saltwater boiling temp typo
+* Version 79.3 Beta Build 168
+      o Fix emp flash
+      o Live parts rendering in deco editor
+      o Oxygen fusion and other fusion fixes
+      o Prevent infinite loops in Lua
+      o Fix some decoration editor and console bugs
+      o Custom graphics functions with lua using tpt.graphics_func()
+      o VOID and PVOD can be set to only eat their ctype
+      o New feature, Element search (press 'e' on the keyboard)
+      o Fix bug with BOMB not deleting correctly
+      o Fix issue that cause the gravity walls to not update
+      o Handling of ptsave protocol so you can create links to open games in Powder toy
 * Version 79.2 Beta Build 167
       o Fix minor spelling errors
       o Fix crash when using flood-fill or a lot of INST
@@ -113,7 +201,7 @@ History:
       o Fix crash when opening display options
 * Version 79.0 Beta Build 165
       o Fix Titanium only conducting once
-	  o Better colour options preview.
+      o Better colour options preview.
 * Version 79.0 Beta Build 164
       o Fix a problem with GPMP that caused gravity to depend on air pressure
       o Fix TNT sometimes not exploding if multiple TNT particles are in the same place
@@ -338,7 +426,7 @@ History:
       o Photons turn into neutrons when passing through INVS
       o Other small bug fixes.
 * Version 44.7
-      o Fix login and dialoq text box issues.
+      o Fix login and dialog text box issues.
       o Small bugfixes to some elements.
       o Additional 'debug' information.
       o Increase WIFI channels
