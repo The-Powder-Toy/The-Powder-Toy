@@ -1648,7 +1648,7 @@ int main(int argc, char *argv[])
 				dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
 			if (sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
 			{
-				if (clipboard_ready==1)
+				if (clipboard_ready==1 && clipboard_data)
 				{
 					load_data = malloc(clipboard_length);
 					memcpy(load_data, clipboard_data, clipboard_length);
@@ -2185,17 +2185,21 @@ int main(int argc, char *argv[])
 				if (copy_mode==1)//CTRL-C, copy
 				{
 					clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, vx, vy, pv, fvx, fvy, signs, parts);
-					clipboard_ready = 1;
+					if (clipboard_data)
+						clipboard_ready = 1;
 					save_mode = 0;
 					copy_mode = 0;
 				}
 				else if (copy_mode==2)//CTRL-X, cut
 				{
 					clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, vx, vy, pv, fvx, fvy, signs, parts);
-					clipboard_ready = 1;
+					if (clipboard_data)
+					{
+						clipboard_ready = 1;
+						clear_area(save_x, save_y, save_w, save_h);
+					}
 					save_mode = 0;
 					copy_mode = 0;
-					clear_area(save_x, save_y, save_w, save_h);
 				}
 				else//normal save
 				{
