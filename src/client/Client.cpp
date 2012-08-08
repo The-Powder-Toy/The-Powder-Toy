@@ -230,7 +230,7 @@ bool Client::FileExists(std::string filename)
 	bool exists = false;
 	try
 	{
-		std::ofstream fileStream;
+		std::ifstream fileStream;
 		fileStream.open(string(filename).c_str(), ios::binary);
 		if(fileStream.is_open())
 		{
