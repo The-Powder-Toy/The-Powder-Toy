@@ -363,6 +363,39 @@ int main(int argc, char * argv[])
 	GameController * gameController = new GameController();
 	engine->ShowWindow(gameController->GetView());
 
+	if(arguments["open"].length())
+	{
+		std::cout << arguments["open"] << std::endl;
+		if(Client::Ref().FileExists(arguments["open"]))
+		{
+			try
+			{
+				std::vector<unsigned char> gameSaveData = Client::Ref().ReadFile(arguments["open"]);
+				if(!gameSaveData.size())
+				{
+					new ErrorMessage("Error", "Could not read file");
+				}
+				else
+				{
+					SaveFile * newFile = new SaveFile(arguments["open"]);
+					GameSave * newSave = new GameSave(gameSaveData);
+					newFile->SetGameSave(newSave);
+					gameController->LoadSaveFile(newFile);
+					delete newFile;
+				}
+
+			}
+			catch(std::exception & e)
+			{
+				new ErrorMessage("Error", "Could not open save file:\n"+std::string(e.what())) ;
+			}
+		}
+		else
+		{
+			new ErrorMessage("Error", "Could not open file");
+		}
+	}
+
 	SDL_Event event;
 	while(engine->Running())
 	{
