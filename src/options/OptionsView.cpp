@@ -12,7 +12,7 @@
 #include "interface/DropDown.h"
 
 OptionsView::OptionsView():
-	ui::Window(ui::Point(-1, -1), ui::Point(300, 266)){
+	ui::Window(ui::Point(-1, -1), ui::Point(300, 270)){
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Simulation Options");
 	tempLabel->SetTextColour(style::Colour::InformationTitle);
@@ -144,7 +144,7 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetScale(sender->GetChecked()); }
 	};
 
-	scale = new ui::Checkbox(ui::Point(8, 206), ui::Point(Size.X-6, 16), "Large screen");
+	scale = new ui::Checkbox(ui::Point(8, 210), ui::Point(Size.X-6, 16), "Large screen");
 	scale->SetActionCallback(new ScaleAction(this));
 	AddComponent(scale);
 
@@ -156,7 +156,7 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetFullscreen(sender->GetChecked()); }
 	};
 
-	fullscreen = new ui::Checkbox(ui::Point(8, 226), ui::Point(Size.X-6, 16), "Fullscreen");
+	fullscreen = new ui::Checkbox(ui::Point(8, 230), ui::Point(Size.X-6, 16), "Fullscreen");
 	fullscreen->SetActionCallback(new FullscreenAction(this));
 	AddComponent(fullscreen);
 
@@ -201,6 +201,7 @@ void OptionsView::OnDraw()
 	Graphics * g = ui::Engine::Ref().g;
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
+	g->draw_line(Position.X+1, Position.Y+scale->Position.Y-4, Position.X+Size.X-1, Position.Y+scale->Position.Y-4, 255, 255, 255, 180);
 }
 
 
