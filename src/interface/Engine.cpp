@@ -22,7 +22,9 @@ Engine::Engine():
 	lastBuffer(NULL),
 	prevBuffers(stack<pixel*>()),
 	windowTargetPosition(0, 0),
-	FrameIndex(0)
+	FrameIndex(0),
+	Fullscreen(false),
+	Scale(1)
 {
 }
 

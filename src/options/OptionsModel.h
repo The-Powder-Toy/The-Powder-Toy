@@ -34,6 +34,10 @@ public:
 	void SetEdgeMode(int edgeMode);
 	int GetGravityMode();
 	void SetGravityMode(int gravityMode);
+	bool GetFullscreen();
+	void SetFullscreen(bool fullscreen);
+	bool GetScale();
+	void SetScale(bool scale);
 	virtual ~OptionsModel();
 };
 

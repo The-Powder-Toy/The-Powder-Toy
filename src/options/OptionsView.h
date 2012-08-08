@@ -25,6 +25,8 @@ class OptionsView: public ui::Window {
 	ui::DropDown * airMode;
 	ui::DropDown * gravityMode;
 	ui::DropDown * edgeMode;
+	ui::Checkbox * scale;
+	ui::Checkbox * fullscreen;
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);

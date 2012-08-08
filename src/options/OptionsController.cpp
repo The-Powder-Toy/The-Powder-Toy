@@ -38,17 +38,30 @@ void OptionsController::SetWaterEqualisation(bool state)
 {
 	model->SetWaterEqualisation(state);
 }
+
 void OptionsController::SetGravityMode(int gravityMode)
 {
 	model->SetGravityMode(gravityMode);
 }
+
 void OptionsController::SetAirMode(int airMode)
 {
 	model->SetAirMode(airMode);
 }
+
 void OptionsController::SetEdgeMode(int airMode)
 {
 	model->SetEdgeMode(airMode);
+}
+
+void OptionsController::SetFullscreen(bool fullscreen)
+{
+	model->SetFullscreen(fullscreen);
+}
+
+void OptionsController::SetScale(bool scale)
+{
+	model->SetScale(scale);
 }
 
 OptionsView * OptionsController::GetView()

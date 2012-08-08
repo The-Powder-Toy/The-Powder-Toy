@@ -95,6 +95,27 @@ void OptionsModel::SetGravityMode(int gravityMode)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetScale()
+{
+	return ui::Engine::Ref().GetScale()==2;
+}
+void OptionsModel::SetScale(bool doubleScale)
+{
+	ui::Engine::Ref().SetScale(doubleScale?2:1);
+	notifySettingsChanged();
+}
+
+
+bool OptionsModel::GetFullscreen()
+{
+	return ui::Engine::Ref().GetFullscreen();
+}
+void OptionsModel::SetFullscreen(bool fullscreen)
+{
+	ui::Engine::Ref().SetFullscreen(fullscreen);
+	notifySettingsChanged();
+}
+
 void OptionsModel::notifySettingsChanged()
 {
 	for(int i = 0; i < observers.size(); i++)

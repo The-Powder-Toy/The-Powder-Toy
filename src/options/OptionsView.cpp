@@ -12,7 +12,7 @@
 #include "interface/DropDown.h"
 
 OptionsView::OptionsView():
-	ui::Window(ui::Point(-1, -1), ui::Point(300, 226)){
+	ui::Window(ui::Point(-1, -1), ui::Point(300, 266)){
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Simulation Options");
 	tempLabel->SetTextColour(style::Colour::InformationTitle);
@@ -136,6 +136,29 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
+	class ScaleAction: public ui::CheckboxAction
+	{
+		OptionsView * v;
+	public:
+		ScaleAction(OptionsView * v_){	v = v_;	}
+		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetScale(sender->GetChecked()); }
+	};
+
+	scale = new ui::Checkbox(ui::Point(8, 206), ui::Point(Size.X-6, 16), "Large screen");
+	scale->SetActionCallback(new ScaleAction(this));
+	AddComponent(scale);
+
+	class FullscreenAction: public ui::CheckboxAction
+	{
+		OptionsView * v;
+	public:
+		FullscreenAction(OptionsView * v_){	v = v_;	}
+		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetFullscreen(sender->GetChecked()); }
+	};
+
+	fullscreen = new ui::Checkbox(ui::Point(8, 226), ui::Point(Size.X-6, 16), "Fullscreen");
+	fullscreen->SetActionCallback(new FullscreenAction(this));
+	AddComponent(fullscreen);
 
 	class CloseAction: public ui::ButtonAction
 	{
@@ -164,6 +187,8 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	airMode->SetOption(sender->GetAirMode());
 	gravityMode->SetOption(sender->GetGravityMode());
 	edgeMode->SetOption(sender->GetEdgeMode());
+	scale->SetChecked(sender->GetScale());
+	fullscreen->SetChecked(sender->GetFullscreen());
 }
 
 void OptionsView::AttachController(OptionsController * c_)

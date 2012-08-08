@@ -37,6 +37,11 @@ namespace ui
 		inline bool Running() { return running_; }
 		void Exit();
 
+		void SetFullscreen(bool fullscreen) { Fullscreen = fullscreen; }
+		inline bool GetFullscreen() { return Fullscreen; }
+		void SetScale(int scale) { Scale = scale; }
+		inline int GetScale() { return Scale; }
+
 		void Tick();
 		void Draw();
 
@@ -55,6 +60,8 @@ namespace ui
 		inline Window* GetWindow() { return state_; }
 		float FpsLimit;
 		Graphics * g;
+		int Scale;
+		bool Fullscreen;
 
 		unsigned int FrameIndex;
 	private:

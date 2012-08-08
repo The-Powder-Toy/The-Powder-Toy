@@ -40,6 +40,8 @@ extern "C" IMAGE_DOS_HEADER __ImageBase;
 #endif
 
 SDL_Surface * sdl_scrn;
+int scale = 1;
+bool fullscreen = false;
 
 #ifdef OGLI
 void blit()
@@ -51,18 +53,96 @@ void blit(pixel * vid)
 {
 	if(sdl_scrn)
 	{
-		pixel * dst;
 		pixel * src = vid;
 		int j, x = 0, y = 0, w = XRES+BARSIZE, h = YRES+MENUSIZE, pitch = XRES+BARSIZE;
+		pixel *dst;
 		if (SDL_MUSTLOCK(sdl_scrn))
 			if (SDL_LockSurface(sdl_scrn)<0)
 				return;
 		dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
-		for (j=0; j<h; j++)
+		if (SDL_MapRGB(sdl_scrn->format,0x33,0x55,0x77)!=PIXPACK(0x335577))
 		{
-			memcpy(dst, src, w*PIXELSIZE);
-			dst+=sdl_scrn->pitch/PIXELSIZE;
-			src+=pitch;
+			//pixel format conversion
+			int i;
+			pixel px;
+			SDL_PixelFormat *fmt = sdl_scrn->format;
+			for (j=0; j<h; j++)
+			{
+				for (i=0; i<w; i++)
+				{
+					px = src[i];
+					dst[i] = ((PIXR(px)>>fmt->Rloss)<<fmt->Rshift)|
+							((PIXG(px)>>fmt->Gloss)<<fmt->Gshift)|
+							((PIXB(px)>>fmt->Bloss)<<fmt->Bshift);
+				}
+				dst+=sdl_scrn->pitch/PIXELSIZE;
+				src+=pitch;
+			}
+		}
+		else
+		{
+			for (j=0; j<h; j++)
+			{
+				memcpy(dst, src, w*PIXELSIZE);
+				dst+=sdl_scrn->pitch/PIXELSIZE;
+				src+=pitch;
+			}
+		}
+		if (SDL_MUSTLOCK(sdl_scrn))
+			SDL_UnlockSurface(sdl_scrn);
+		SDL_UpdateRect(sdl_scrn,0,0,0,0);
+	}
+}
+void blit2(pixel * vid, int currentScale)
+{
+	if(sdl_scrn)
+	{
+		pixel * src = vid;
+		int j, x = 0, y = 0, w = XRES+BARSIZE, h = YRES+MENUSIZE, pitch = XRES+BARSIZE;
+		pixel *dst;
+		int i,k;
+		if (SDL_MUSTLOCK(sdl_scrn))
+			if (SDL_LockSurface(sdl_scrn)<0)
+				return;
+		dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
+		if (SDL_MapRGB(sdl_scrn->format,0x33,0x55,0x77)!=PIXPACK(0x335577))
+		{
+			//pixel format conversion
+			pixel px;
+			SDL_PixelFormat *fmt = sdl_scrn->format;
+			for (j=0; j<h; j++)
+			{
+				for (k=0; k<currentScale; k++)
+				{
+					for (i=0; i<w; i++)
+					{
+						px = src[i];
+						px = ((PIXR(px)>>fmt->Rloss)<<fmt->Rshift)|
+							((PIXG(px)>>fmt->Gloss)<<fmt->Gshift)|
+							((PIXB(px)>>fmt->Bloss)<<fmt->Bshift);
+						dst[i*2]=px;
+						dst[i*2+1]=px;
+					}
+					dst+=sdl_scrn->pitch/PIXELSIZE;
+				}
+				src+=pitch;
+			}
+		}
+		else
+		{
+			for (j=0; j<h; j++)
+			{
+				for (k=0; k<currentScale; k++)
+				{
+					for (i=0; i<w; i++)
+					{
+						dst[i*2]=src[i];
+						dst[i*2+1]=src[i];
+					}
+					dst+=sdl_scrn->pitch/PIXELSIZE;
+				}
+				src+=pitch;
+			}
 		}
 		if (SDL_MUSTLOCK(sdl_scrn))
 			SDL_UnlockSurface(sdl_scrn);
@@ -71,7 +151,7 @@ void blit(pixel * vid)
 }
 #endif
 
-SDL_Surface * SDLOpen()
+int SDLOpen()
 {
 	SDL_Surface * surface;
 #if defined(WIN) && defined(WINCONSOLE)
@@ -80,7 +160,7 @@ SDL_Surface * SDLOpen()
 	if (SDL_Init(SDL_INIT_VIDEO)<0)
 	{
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
-		return 0;
+		return 1;
 	}
 	SDL_EnableUNICODE(1);
 #if defined(WIN) && defined(WINCONSOLE)
@@ -112,11 +192,6 @@ SDL_Surface * SDLOpen()
 	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	atexit(SDL_Quit);
-#ifndef OGLI
-	surface = SDL_SetVideoMode(XRES + BARSIZE, YRES + MENUSIZE, 32, SDL_SWSURFACE);
-#else
-	surface = SDL_SetVideoMode((XRES + BARSIZE), (YRES + MENUSIZE), 32, SDL_OPENGL | SDL_RESIZABLE);
-#endif
 
 #if defined(OGLI)
 	int status = glewInit();
@@ -126,8 +201,20 @@ SDL_Surface * SDLOpen()
 		exit(-1);
 	}
 #endif
+	return 0;
+}
 
-return surface;
+SDL_Surface * SDLSetScreen(int newScale, bool newFullscreen)
+{
+	scale = newScale;
+	fullscreen = newFullscreen;
+	SDL_Surface * surface;
+#ifndef OGLI
+	surface = SDL_SetVideoMode((XRES + BARSIZE) * newScale, (YRES + MENUSIZE) * newScale, 32, SDL_SWSURFACE | (newFullscreen?SDL_FULLSCREEN:0));
+#else
+	surface = SDL_SetVideoMode((XRES + BARSIZE) * newScale, (YRES + MENUSIZE) * newScale, 32, SDL_OPENGL | SDL_RESIZABLE | (newFullscreen?SDL_FULLSCREEN:0));
+#endif
+	return surface;
 }
 
 std::map<std::string, std::string> readArguments(int argc, char * argv[])
@@ -200,7 +287,8 @@ int main(int argc, char * argv[])
 
 	std::map<std::string, std::string> arguments = readArguments(argc, argv);
 
-	sdl_scrn = SDLOpen();
+	int sdlStatus = SDLOpen();
+	sdl_scrn = SDLSetScreen(1, false);
 #ifdef OGLI
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 	//glScaled(2.0f, 2.0f, 1.0f);
@@ -290,10 +378,19 @@ int main(int argc, char * argv[])
 			Client::Ref().Tick();
 		}
 
+		if(scale != engine->Scale || fullscreen != engine->Fullscreen)
+		{
+			sdl_scrn = SDLSetScreen(engine->Scale, engine->Fullscreen);
+			inputScale = 1.0f/float(scale);
+		}
+
 #ifdef OGLI
 		blit();
 #else
-		blit(engine->g->vid);
+		if(engine->Scale==2)
+			blit2(engine->g->vid, engine->Scale);
+		else
+			blit(engine->g->vid);
 #endif
 
 		currentFrame++;

@@ -29,6 +29,8 @@ public:
 	void SetGravityMode(int gravityMode);
 	void SetAirMode(int airMode);
 	void SetEdgeMode(int airMode);
+	void SetFullscreen(bool fullscreen);
+	void SetScale(bool scale);
 	void Exit();
 	OptionsView * GetView();
 	virtual ~OptionsController();
