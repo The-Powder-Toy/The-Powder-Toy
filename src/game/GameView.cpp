@@ -819,6 +819,9 @@ void GameView::NotifySaveChanged(GameModel * sender)
 {
 	if(sender->GetSave())
 	{
+		if(introText > 50)
+			introText = 50;
+
 		saveSimulationButton->SetText(sender->GetSave()->GetName());
 		if(sender->GetSave()->GetUserName() == sender->GetUser().Username)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
@@ -1324,7 +1327,7 @@ void GameView::OnTick(float dt)
 	}
 	if(introText)
 	{
-		introText -= int(dt)>0?int(dt):1;
+		introText -= int(dt)>0?std::min(int(dt), 5):1;
 		if(introText < 0)
 			introText  = 0;
 	}

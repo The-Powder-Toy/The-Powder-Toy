@@ -741,6 +741,17 @@ unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
 	return NULL;
 }
 
+std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
+{
+	int dataSize;
+	unsigned char * data = GetSaveData(saveID, saveDate, dataSize);
+
+	std::vector<unsigned char> saveData(data, data+dataSize);
+
+	delete[] data;
+	return saveData;
+}
+
 LoginStatus Client::Login(string username, string password, User & user)
 {
 	lastError = "";

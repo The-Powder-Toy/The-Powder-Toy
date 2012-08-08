@@ -111,6 +111,7 @@ public:
 	RequestStatus AddComment(int saveID, std::string comment);
 
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
+	std::vector<unsigned char> GetSaveData(int saveID, int saveDate);
 	LoginStatus Login(string username, string password, User & user);
 	void ClearThumbnailRequests();
 	std::vector<SaveInfo*> * SearchSaves(int start, int count, string query, string sort, string category, int & resultCount);
