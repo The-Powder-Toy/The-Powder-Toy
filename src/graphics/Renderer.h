@@ -87,6 +87,7 @@ public:
 	void loadShaders();
 #else
 	pixel * vid;
+	pixel * persistentVid;
 	void blendpixel(int x, int y, int r, int g, int b, int a);
 	void addpixel(int x, int y, int r, int g, int b, int a);
 
