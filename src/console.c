@@ -218,411 +218,411 @@ int process_command_old(pixel *vid_buf, char *console, char *console_error)
 			else
 				strcpy(console_error, "python not ready. check stdout for more info.")
 #endif
-			else if (strcmp(console2, "load")==0 && console3[0])
+		else if (strcmp(console2, "load")==0 && console3[0])
+		{
+			j = atoi(console3);
+			if (j)
 			{
-				j = atoi(console3);
-				if (j)
-				{
-					open_ui(vid_buf, console3, NULL);
-					console_mode = 0;
-				}
+				open_ui(vid_buf, console3, NULL);
+				console_mode = 0;
 			}
-			else if (strcmp(console2, "if")==0 && console3[0])
+		}
+		else if (strcmp(console2, "if")==0 && console3[0])
+		{
+			if (strcmp(console3, "type")==0)//TODO: add more than just type, and be able to check greater/less than
 			{
-				if (strcmp(console3, "type")==0)//TODO: add more than just type, and be able to check greater/less than
+				if (console_parse_partref(console4, &i, console_error)
+				    && console_parse_type(console5, &j, console_error))
 				{
-					if (console_parse_partref(console4, &i, console_error)
-				        && console_parse_type(console5, &j, console_error))
-					{
-						if (parts[i].type==j)
-							return 1;
-						else
-							return 0;
-					}
+					if (parts[i].type==j)
+						return 1;
 					else
 						return 0;
 				}
+				else
+					return 0;
 			}
-			else if (strcmp(console2, "create")==0 && console3[0] && console4[0])
+		}
+		else if (strcmp(console2, "create")==0 && console3[0] && console4[0])
+		{
+			if (console_parse_type(console3, &j, console_error)
+			    && console_parse_coords(console4, &nx, &ny, console_error))
 			{
-				if (console_parse_type(console3, &j, console_error)
-			        && console_parse_coords(console4, &nx, &ny, console_error))
-				{
-					if (!j)
-						strcpy(console_error, "Cannot create particle with type NONE");
-					else if (create_part(-1,nx,ny,j)<0)
-						strcpy(console_error, "Could not create particle");
-				}
+				if (!j)
+					strcpy(console_error, "Cannot create particle with type NONE");
+				else if (create_part(-1,nx,ny,j)<0)
+					strcpy(console_error, "Could not create particle");
 			}
-			else if (strcmp(console2, "bubble")==0 && console3[0])
+		}
+		else if (strcmp(console2, "bubble")==0 && console3[0])
+		{
+			if (console_parse_coords(console3, &nx, &ny, console_error))
 			{
-				if (console_parse_coords(console3, &nx, &ny, console_error))
+				int first, rem1, rem2;
+
+				first = create_part(-1, nx+18, ny, PT_SOAP);
+				rem1 = first;
+
+				for (i = 1; i<=30; i++)
 				{
-					int first, rem1, rem2;
-
-					first = create_part(-1, nx+18, ny, PT_SOAP);
-					rem1 = first;
-
-					for (i = 1; i<=30; i++)
-					{
-						rem2 = create_part(-1, nx+18*cosf(i/5.0), ny+18*sinf(i/5.0), PT_SOAP);
-
-						parts[rem1].ctype = 7;
-						parts[rem1].tmp = rem2;
-						parts[rem2].tmp2 = rem1;
-
-						rem1 = rem2;
-					}
+					rem2 = create_part(-1, nx+18*cosf(i/5.0), ny+18*sinf(i/5.0), PT_SOAP);
 
 					parts[rem1].ctype = 7;
-					parts[rem1].tmp = first;
-					parts[first].tmp2 = rem1;
-					parts[first].ctype = 7;
+					parts[rem1].tmp = rem2;
+					parts[rem2].tmp2 = rem1;
+
+					rem1 = rem2;
 				}
+
+				parts[rem1].ctype = 7;
+				parts[rem1].tmp = first;
+				parts[first].tmp2 = rem1;
+				parts[first].ctype = 7;
 			}
-			else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3[0])
+		}
+		else if ((strcmp(console2, "delete")==0 || strcmp(console2, "kill")==0) && console3[0])
+		{
+			if (console_parse_partref(console3, &i, console_error))
+				kill_part(i);
+		}
+		else if (strcmp(console2, "reset")==0 && console3[0])
+		{
+			if (strcmp(console3, "pressure")==0)
 			{
-				if (console_parse_partref(console3, &i, console_error))
-					kill_part(i);
-			}
-			else if (strcmp(console2, "reset")==0 && console3[0])
-			{
-				if (strcmp(console3, "pressure")==0)
-				{
-					for (nx = 0; nx<XRES/CELL; nx++)
-						for (ny = 0; ny<YRES/CELL; ny++)
-						{
-							pv[ny][nx] = 0;
-						}
-				}
-				else if (strcmp(console3, "velocity")==0)
-				{
-					for (nx = 0; nx<XRES/CELL; nx++)
-						for (ny = 0; ny<YRES/CELL; ny++)
-						{
-							vx[ny][nx] = 0;
-							vy[ny][nx] = 0;
-						}
-				}
-				else if (strcmp(console3, "sparks")==0)
-				{
-					for (i=0; i<NPART; i++)
+				for (nx = 0; nx<XRES/CELL; nx++)
+					for (ny = 0; ny<YRES/CELL; ny++)
 					{
-						if (parts[i].type==PT_SPRK)
-						{
-							parts[i].type = parts[i].ctype;
-							parts[i].life = 4;
-						}
+						pv[ny][nx] = 0;
+					}
+			}
+			else if (strcmp(console3, "velocity")==0)
+			{
+				for (nx = 0; nx<XRES/CELL; nx++)
+					for (ny = 0; ny<YRES/CELL; ny++)
+					{
+						vx[ny][nx] = 0;
+						vy[ny][nx] = 0;
+					}
+			}
+			else if (strcmp(console3, "sparks")==0)
+			{
+				for (i=0; i<NPART; i++)
+				{
+					if (parts[i].type==PT_SPRK)
+					{
+						parts[i].type = parts[i].ctype;
+						parts[i].life = 4;
 					}
 				}
-				else if (strcmp(console3, "temp")==0)
+			}
+			else if (strcmp(console3, "temp")==0)
+			{
+				for (i=0; i<NPART; i++)
 				{
+					if (parts[i].type)
+					{
+						parts[i].temp = ptypes[parts[i].type].heat;
+					}
+				}
+			}
+		}
+		else if (strcmp(console2, "set")==0 && console3[0] && console4[0] && console5[0])
+		{
+			if (strcmp(console3, "life")==0)
+			{
+				if (strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
 					for (i=0; i<NPART; i++)
 					{
 						if (parts[i].type)
-						{
-							parts[i].temp = ptypes[parts[i].type].heat;
-						}
-					}
-				}
-			}
-			else if (strcmp(console2, "set")==0 && console3[0] && console4[0] && console5[0])
-			{
-				if (strcmp(console3, "life")==0)
-				{
-					if (strcmp(console4, "all")==0)
-					{
-						j = atoi(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type)
-								parts[i].life = j;
-						}
-					}
-					else if (console_parse_type(console4, &j, console_error))
-					{
-						k = atoi(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type == j)
-								parts[i].life = k;
-						}
-					}
-					else
-					{
-						if (console_parse_partref(console4, &i, console_error))
-						{
-							j = atoi(console5);
 							parts[i].life = j;
-						}
 					}
 				}
-				else if (strcmp(console3, "type")==0)
+				else if (console_parse_type(console4, &j, console_error))
 				{
-					if (strcmp(console4, "all")==0)
+					k = atoi(console5);
+					for (i=0; i<NPART; i++)
 					{
-						if (console_parse_type(console5, &j, console_error))
-							for (i=0; i<NPART; i++)
-							{
-								if (parts[i].type)
-									parts[i].type = j;
-							}
-					}
-					else if (console_parse_type(console4, &j, console_error)
-							 && console_parse_type(console5, &k, console_error))
-					{
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type == j)
-								parts[i].type = k;
-						}
-					}
-					else
-					{
-						if (console_parse_partref(console4, &i, console_error)
-					        && console_parse_type(console5, &j, console_error))
-						{
-							parts[i].type = j;
-						}
-					}
-				}
-				else if (strcmp(console3, "temp")==0)
-				{
-					if (strcmp(console4, "all")==0)
-					{
-						f = atof(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type)
-								parts[i].temp = f;
-						}
-					}
-					else if (console_parse_type(console4, &j, console_error))
-					{
-						f = atof(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type == j)
-								parts[i].temp= f;
-						}
-					}
-					else
-					{
-						if (console_parse_partref(console4, &i, console_error))
-						{
-							f = atof(console5);
-							parts[i].temp = f;
-						}
-					}
-				}
-				else if (strcmp(console3, "tmp")==0)
-				{
-					if (strcmp(console4, "all")==0)
-					{
-						j = atoi(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type)
-								parts[i].tmp = j;
-						}
-					}
-					else if (console_parse_type(console4, &j, console_error))
-					{
-						k = atoi(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type == j)
-								parts[i].tmp = k;
-						}
-					}
-					else
-					{
-						if (console_parse_partref(console4, &i, console_error))
-						{
-							j = atoi(console5);
-							parts[i].tmp = j;
-						}
-					}
-				}
-				else if (strcmp(console3, "tmp2")==0)
-				{
-					if (strcmp(console4, "all")==0)
-					{
-						j = atoi(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type)
-								parts[i].tmp2 = j;
-						}
-					}
-					else if (console_parse_type(console4, &j, console_error))
-					{
-						k = atoi(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type == j)
-								parts[i].tmp2 = k;
-						}
-					}
-					else
-					{
-						if (console_parse_partref(console4, &i, console_error))
-						{
-							j = atoi(console5);
-							parts[i].tmp2 = j;
-						}
-					}
-				}
-				else if (strcmp(console3, "x")==0)
-				{
-					if (strcmp(console4, "all")==0)
-					{
-						j = atoi(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type)
-								parts[i].x = j;
-						}
-					}
-					else if (console_parse_type(console4, &j, console_error))
-					{
-						k = atoi(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type == j)
-								parts[i].x = k;
-						}
-					}
-					else
-					{
-						if (console_parse_partref(console4, &i, console_error))
-						{
-							j = atoi(console5);
-							parts[i].x = j;
-						}
-					}
-				}
-				else if (strcmp(console3, "y")==0)
-				{
-					if (strcmp(console4, "all")==0)
-					{
-						j = atoi(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type)
-								parts[i].y = j;
-						}
-					}
-					else if (console_parse_type(console4, &j, console_error))
-					{
-						k = atoi(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type == j)
-								parts[i].y = k;
-						}
-					}
-					else
-					{
-						if (console_parse_partref(console4, &i, console_error))
-						{
-							j = atoi(console5);
-							parts[i].y = j;
-						}
-					}
-				}
-				else if (strcmp(console3, "ctype")==0)
-				{
-					if (strcmp(console4, "all")==0)
-					{
-						if (console_parse_type(console5, &j, console_error))
-							for (i=0; i<NPART; i++)
-							{
-								if (parts[i].type)
-									parts[i].ctype = j;
-							}
-					}
-					else if (console_parse_type(console4, &j, console_error)
-							 && console_parse_type(console5, &k, console_error))
-					{
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type == j)
-								parts[i].ctype = k;
-						}
-					}
-					else
-					{
-						if (console_parse_partref(console4, &i, console_error)
-					        && console_parse_type(console5, &j, console_error))
-						{
-							parts[i].ctype = j;
-						}
-					}
-				}
-				else if (strcmp(console3, "vx")==0)
-				{
-					if (strcmp(console4, "all")==0)
-					{
-						f = atof(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type)
-								parts[i].vx = f;
-						}
-					}
-					else if (console_parse_type(console4, &j, console_error))
-					{
-						f = atof(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type == j)
-								parts[i].vx = f;
-						}
-					}
-					else
-					{
-						if (console_parse_partref(console4, &i, console_error))
-						{
-							f = atof(console5);
-							parts[i].vx = f;
-						}
-					}
-				}
-				else if (strcmp(console3, "vy")==0)
-				{
-					if (strcmp(console4, "all")==0)
-					{
-						f = atof(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type)
-								parts[i].vy = f;
-						}
-					}
-					else if (console_parse_type(console4, &j, console_error))
-					{
-						f = atof(console5);
-						for (i=0; i<NPART; i++)
-						{
-							if (parts[i].type == j)
-								parts[i].vy = f;
-						}
-					}
-					else
-					{
-						if (console_parse_partref(console4, &i, console_error))
-						{
-							f = atof(console5);
-							parts[i].vy = f;
-						}
+						if (parts[i].type == j)
+							parts[i].life = k;
 					}
 				}
 				else
-					strcpy(console_error, "Invalid property");
+				{
+					if (console_parse_partref(console4, &i, console_error))
+					{
+						j = atoi(console5);
+						parts[i].life = j;
+					}
+				}
+			}
+			else if (strcmp(console3, "type")==0)
+			{
+				if (strcmp(console4, "all")==0)
+				{
+					if (console_parse_type(console5, &j, console_error))
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type)
+								parts[i].type = j;
+						}
+				}
+				else if (console_parse_type(console4, &j, console_error)
+							&& console_parse_type(console5, &k, console_error))
+				{
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type == j)
+							parts[i].type = k;
+					}
+				}
+				else
+				{
+					if (console_parse_partref(console4, &i, console_error)
+					    && console_parse_type(console5, &j, console_error))
+					{
+						parts[i].type = j;
+					}
+				}
+			}
+			else if (strcmp(console3, "temp")==0)
+			{
+				if (strcmp(console4, "all")==0)
+				{
+					f = atof(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type)
+							parts[i].temp = f;
+					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					f = atof(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type == j)
+							parts[i].temp= f;
+					}
+				}
+				else
+				{
+					if (console_parse_partref(console4, &i, console_error))
+					{
+						f = atof(console5);
+						parts[i].temp = f;
+					}
+				}
+			}
+			else if (strcmp(console3, "tmp")==0)
+			{
+				if (strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type)
+							parts[i].tmp = j;
+					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type == j)
+							parts[i].tmp = k;
+					}
+				}
+				else
+				{
+					if (console_parse_partref(console4, &i, console_error))
+					{
+						j = atoi(console5);
+						parts[i].tmp = j;
+					}
+				}
+			}
+			else if (strcmp(console3, "tmp2")==0)
+			{
+				if (strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type)
+							parts[i].tmp2 = j;
+					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type == j)
+							parts[i].tmp2 = k;
+					}
+				}
+				else
+				{
+					if (console_parse_partref(console4, &i, console_error))
+					{
+						j = atoi(console5);
+						parts[i].tmp2 = j;
+					}
+				}
+			}
+			else if (strcmp(console3, "x")==0)
+			{
+				if (strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type)
+							parts[i].x = j;
+					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type == j)
+							parts[i].x = k;
+					}
+				}
+				else
+				{
+					if (console_parse_partref(console4, &i, console_error))
+					{
+						j = atoi(console5);
+						parts[i].x = j;
+					}
+				}
+			}
+			else if (strcmp(console3, "y")==0)
+			{
+				if (strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type)
+							parts[i].y = j;
+					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type == j)
+							parts[i].y = k;
+					}
+				}
+				else
+				{
+					if (console_parse_partref(console4, &i, console_error))
+					{
+						j = atoi(console5);
+						parts[i].y = j;
+					}
+				}
+			}
+			else if (strcmp(console3, "ctype")==0)
+			{
+				if (strcmp(console4, "all")==0)
+				{
+					j = atoi(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type)
+							parts[i].ctype = j;
+					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					k = atoi(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type == j)
+							parts[i].ctype = k;
+					}
+				}
+				else
+				{
+					if (console_parse_partref(console4, &i, console_error))
+					{
+						j = atoi(console5);
+						parts[i].ctype = j;
+					}
+				}
+			}
+			else if (strcmp(console3, "vx")==0)
+			{
+				if (strcmp(console4, "all")==0)
+				{
+					f = atof(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type)
+							parts[i].vx = f;
+					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					f = atof(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type == j)
+							parts[i].vx = f;
+					}
+				}
+				else
+				{
+					if (console_parse_partref(console4, &i, console_error))
+					{
+						f = atof(console5);
+						parts[i].vx = f;
+					}
+				}
+			}
+			else if (strcmp(console3, "vy")==0)
+			{
+				if (strcmp(console4, "all")==0)
+				{
+					f = atof(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type)
+							parts[i].vy = f;
+					}
+				}
+				else if (console_parse_type(console4, &j, console_error))
+				{
+					f = atof(console5);
+					for (i=0; i<NPART; i++)
+					{
+						if (parts[i].type == j)
+							parts[i].vy = f;
+					}
+				}
+				else
+				{
+					if (console_parse_partref(console4, &i, console_error))
+					{
+						f = atof(console5);
+						parts[i].vy = f;
+					}
+				}
 			}
 			else
-				strcpy(console_error, "Invalid Command");
+				strcpy(console_error, "Invalid property");
+		}
+		else
+			strcpy(console_error, "Invalid Command");
 	}
 	return 1;
 }
