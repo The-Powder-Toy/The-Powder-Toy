@@ -536,7 +536,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	partsPosLink = calloc(NPART, sizeof(unsigned));
 	if (!partsPosFirstMap || !partsPosLastMap || !partsPosCount || !partsPosLink)
 	{
-		puts("Save Error\n");
+		puts("Save Error, out of memory\n");
 		outputData = NULL;
 		goto fin;
 	}
