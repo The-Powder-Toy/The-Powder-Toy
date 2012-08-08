@@ -53,7 +53,7 @@ int update_WARP(UPDATE_FUNC_ARGS) {
 }
 int graphics_WARP(GRAPHICS_FUNC_ARGS)
 {
-	*cola = 0;
+	*colr = *colg = *colb = *cola = 0;
 	*pixel_mode &= ~PMODE;
 	return 0;
 }
