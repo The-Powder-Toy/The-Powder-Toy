@@ -352,6 +352,8 @@ int graphics_SOAP(GRAPHICS_FUNC_ARGS);
 int graphics_EXOT(GRAPHICS_FUNC_ARGS);
 int graphics_WARP(GRAPHICS_FUNC_ARGS);
 int graphics_EMBR(GRAPHICS_FUNC_ARGS);
+int graphics_WOOD(GRAPHICS_FUNC_ARGS);
+int graphics_PLNT(GRAPHICS_FUNC_ARGS);
 
 void TRON_init_graphics();
 

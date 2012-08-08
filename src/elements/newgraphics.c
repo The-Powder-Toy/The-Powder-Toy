@@ -514,3 +514,38 @@ int graphics_COAL(GRAPHICS_FUNC_ARGS) //Both COAL and Broken Coal
 	return 0;
 }
 
+int graphics_WOOD(GRAPHICS_FUNC_ARGS)
+{
+	float maxtemp = fmax(cpart->tmp,cpart->temp);
+	if (maxtemp > 400)
+	{
+		*colr -= (int)restrict_flt((maxtemp-400)/3,0,172);
+		*colg -= (int)restrict_flt((maxtemp-400)/4,0,140);
+		*colb -= (int)restrict_flt((maxtemp-400)/20,0,44);
+		if (maxtemp > 550)
+			cpart->tmp = (int)maxtemp;
+	}
+	if (maxtemp < 273)
+	{
+		*colr -= (int)restrict_flt((273-maxtemp)/5,0,40);
+		*colg += (int)restrict_flt((273-maxtemp)/4,0,40);
+		*colb += (int)restrict_flt((273-maxtemp)/1.5,0,150);
+	}
+	return 0;
+}
+int graphics_PLNT(GRAPHICS_FUNC_ARGS)
+{
+	float maxtemp = fmax(cpart->tmp2,cpart->temp);
+	if (maxtemp > 300)
+	{
+		*colr += (int)restrict_flt((maxtemp-300)/5,0,58);
+		*colg -= (int)restrict_flt((maxtemp-300)/2,0,102);
+		*colb += (int)restrict_flt((maxtemp-300)/5,0,70);
+	}
+	if (maxtemp < 273)
+	{
+		*colg += (int)restrict_flt((273-maxtemp)/4,0,255);
+		*colb += (int)restrict_flt((273-maxtemp)/1.5,0,255);
+	}
+	return 0;
+}
