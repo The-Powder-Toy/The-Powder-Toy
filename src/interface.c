@@ -5114,6 +5114,11 @@ void execute_save(pixel *vid_buf)
 	uploadparts[1] = svf_description;
 	plens[1] = strlen(svf_description);
 	uploadparts[2] = build_save(plens+2, 0, 0, XRES, YRES, bmap, vx, vy, pv, fvx, fvy, signs, parts);
+	if (!uploadparts[2])
+	{
+		error_ui(vid_buf, 0, "Error creating save");
+		return;
+	}
 	uploadparts[3] = build_thumb(plens+3, 1);
 	uploadparts[4] = (svf_publish==1)?"Public":"Private";
 	plens[4] = strlen((svf_publish==1)?"Public":"Private");
