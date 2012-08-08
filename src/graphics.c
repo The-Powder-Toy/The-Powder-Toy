@@ -2044,7 +2044,7 @@ void render_parts(pixel *vid)
 					else
 						continue;
 
-					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
+					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mouse is in the head
 					{
 						sprintf(buff, "%3d", parts[i].life);  //Show HP
 						drawtext(vid, mousex-8-2*(parts[i].life<100)-2*(parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
