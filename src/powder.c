@@ -2603,7 +2603,7 @@ killed:
 					{
 						parts[r>>8].tmp =  (parts[r>>8].tmp&~0xFF) | parts[i].type;
 						parts[r>>8].temp = parts[i].temp;
-						parts[r>>8].flags = parts[i].life;
+						parts[r>>8].tmp2 = parts[i].tmp2;
 						parts[r>>8].pavg[0] = parts[i].tmp;
 						parts[r>>8].pavg[1] = parts[i].ctype;
 						kill_part(i);
