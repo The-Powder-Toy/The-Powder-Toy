@@ -88,6 +88,9 @@ public:
 
 	std::vector<unsigned char> ReadFile(std::string filename);
 
+	void Initialise(std::string proxyString);
+	void SetProxy(std::string proxy);
+
 	void WriteFile(std::vector<unsigned char> fileData, std::string filename);
 	void WriteFile(std::vector<char> fileData, std::string filename);
 	bool FileExists(std::string filename);

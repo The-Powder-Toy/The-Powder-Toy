@@ -244,9 +244,12 @@ std::map<std::string, std::string> readArguments(int argc, char * argv[])
 		{
 			arguments["scale"] = std::string(argv[i]+6);
 		}
-		else if (!strncmp(argv[i], "proxy:", 6) && argv[i]+6)
+		else if (!strncmp(argv[i], "proxy:", 6))
 		{
-			arguments["proxy"] =  std::string(argv[i]+6);
+			if(argv[i]+6)
+				arguments["proxy"] =  std::string(argv[i]+6);
+			else
+				arguments["proxy"] = "false";
 		}
 		else if (!strncmp(argv[i], "nohud", 5))
 		{
@@ -318,6 +321,27 @@ int main(int argc, char * argv[])
 		tempScale = format::StringToNumber<int>(arguments["scale"]);
 		Client::Ref().SetPref("Scale", tempScale);
 	}
+
+	std::string proxyString = "";
+	if(arguments["proxy"].length())
+	{
+		if(arguments["proxy"] == "false")
+		{
+			proxyString = "";
+			Client::Ref().SetPref("Proxy", "");	
+		}
+		else
+		{
+			proxyString = (arguments["proxy"]);
+			Client::Ref().SetPref("Proxy", arguments["proxy"]);
+		}
+	}
+	else if(Client::Ref().GetPrefString("Proxy", "").length())
+	{
+		proxyString = (Client::Ref().GetPrefString("Proxy", ""));
+	}
+
+	Client::Ref().Initialise(proxyString);
 
 	if(tempScale != 1 && tempScale != 2)
 		tempScale = 1;

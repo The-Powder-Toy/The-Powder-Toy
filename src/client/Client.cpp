@@ -39,10 +39,10 @@ extern "C"
 
 Client::Client():
 	authUser(0, ""),
-	updateAvailable(false)
+	updateAvailable(false),
+	versionCheckRequest(NULL)
 {
 	int i = 0;
-	std::string proxyString("");
 	for(i = 0; i < THUMB_CACHE_SIZE; i++)
 	{
 		thumbnailCache[i] = NULL;
@@ -89,6 +89,10 @@ Client::Client():
 		}
 		configFile.close();
 	}
+}
+
+void Client::Initialise(std::string proxyString)
+{
 
 	if(GetPrefBool("version.update", false)==true)
 	{
@@ -96,15 +100,10 @@ Client::Client():
 		update_finish();
 	}
 
-	proxyString = GetPrefString("proxy", "");
 	if(proxyString.length())
-	{
-		http_init((char *)proxyString.c_str());
-	}
+		http_init((char*)proxyString.c_str());
 	else
-	{
 		http_init(NULL);
-	}
 
 	//Read stamps library
 	std::ifstream stampsLib;
@@ -123,6 +122,15 @@ Client::Client():
 
 	//Begin version check
 	versionCheckRequest = http_async_req_start(NULL, SERVER "/Download/Version.json", NULL, 0, 1);
+}
+
+void Client::SetProxy(std::string proxy)
+{
+	http_done();
+	if(proxy.length())
+		http_init((char*)proxy.c_str());
+	else
+		http_init(NULL);
 }
 
 std::vector<std::string> Client::DirectorySearch(std::string directory, std::string search, std::string extension)
