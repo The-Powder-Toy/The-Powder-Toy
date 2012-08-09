@@ -73,9 +73,11 @@ public:
 
 class Element_LIGH_Tool: public Tool
 {
+	int nextUse;
 public:
 	Element_LIGH_Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL):
-	Tool(id, name, description, r, g, b)
+	Tool(id, name, description, r, g, b),
+	nextUse(0)
 	{
 	}
 	virtual ~Element_LIGH_Tool() {}

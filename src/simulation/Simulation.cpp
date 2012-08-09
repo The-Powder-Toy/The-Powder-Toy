@@ -3093,7 +3093,6 @@ void Simulation::update_particles_i(int start, int inc)
 	int excessive_stacking_found = 0;
 
 	currentTick++;
-	currentTick %= 3600;
 
 	if (lighting_recreate>0)
     {

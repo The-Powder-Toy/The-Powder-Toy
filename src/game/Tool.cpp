@@ -166,13 +166,17 @@ void WindTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {}
 
 void Element_LIGH_Tool::Draw(Simulation * sim, Brush * brush, ui::Point position)
 {
-	int p = sim->create_part(-2, position.X, position.Y, toolID);
-	if (p != -1)
+	if(sim->currentTick >= nextUse)
 	{
-		sim->parts[p].life = brush->GetRadius().X+brush->GetRadius().Y;
-		if (sim->parts[p].life > 55)
-			sim->parts[p].life = 55;
-		sim->parts[p].temp = sim->parts[p].life*150; // temperature of the lighting shows the power of the lighting
+		int p = sim->create_part(-2, position.X, position.Y, toolID);
+		if (p != -1)
+		{
+			sim->parts[p].life = brush->GetRadius().X+brush->GetRadius().Y;
+			if (sim->parts[p].life > 55)
+				sim->parts[p].life = 55;
+			sim->parts[p].temp = sim->parts[p].life*150; // temperature of the lighting shows the power of the lighting
+			nextUse = sim->currentTick+sim->parts[p].life/4;
+		}
 	}
 }
 
