@@ -549,3 +549,12 @@ int graphics_PLNT(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
+int graphics_BRCK(GRAPHICS_FUNC_ARGS)
+{
+	if (cpart->tmp == 1)
+	{
+		*pixel_mode |= PMODE_GLOW;
+		*colb += 100;
+	}
+	return 0;
+}

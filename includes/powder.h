@@ -160,11 +160,9 @@
 #define PT_PVOD 84
 #define PT_CONV 85
 #define PT_CAUS 86
-
 #define PT_LIGH 87
 #define PT_TESC 88
 #define PT_DEST 89
-
 #define PT_SPNG 90
 #define PT_RIME 91
 #define PT_FOG 92
@@ -237,7 +235,8 @@
 #define PT_FIGH 158
 #define PT_FRAY 159
 #define PT_REPL 160
-#define PT_NUM  161
+#define PT_PPIP 161
+#define PT_NUM  162
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -354,6 +353,7 @@ int graphics_WARP(GRAPHICS_FUNC_ARGS);
 int graphics_EMBR(GRAPHICS_FUNC_ARGS);
 int graphics_WOOD(GRAPHICS_FUNC_ARGS);
 int graphics_PLNT(GRAPHICS_FUNC_ARGS);
+int graphics_BRCK(GRAPHICS_FUNC_ARGS);
 
 void TRON_init_graphics();
 

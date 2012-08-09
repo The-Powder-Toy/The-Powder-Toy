@@ -438,6 +438,13 @@ pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 							if(i++ >= partsDataLen) goto fail;
 						}
 					}
+
+					//Skip flags
+					if(fieldDescriptor & 0x1000)
+					{
+						if(i+3 >= partsDataLen) goto fail;
+						i += 4;
+					}
 				}
 			}
 		}
@@ -591,7 +598,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	//Copy parts data
 	/* Field descriptor format:
 	|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|
-																	|		tmp2[2]	|		tmp2[1]	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
+													|	  flags		|	  tmp2[2]	|	  tmp2[1]	|	ctype[2]	|		vy		|		vx		|	dcololour	|	 ctype[1]	|		tmp[2]	|	  tmp[1]	|	  life[2]	|	  life[1]	|  temp dbl len	|
 	life[2] means a second byte (for a 16 bit field) if life[1] is present
 	*/
 	partsData = malloc(NPART * (sizeof(particle)+1));
@@ -724,6 +731,15 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 						fieldDesc |= 1 << 11;
 						partsData[partsDataLen++] = partsptr[i].tmp2 >> 8;
 					}
+				}
+				//Flags (optional), 4 bytes
+				if(partsptr[i].flags)
+				{
+					fieldDesc |= 1 << 12;
+					partsData[partsDataLen++] = partsptr[i].flags;
+					partsData[partsDataLen++] = (partsptr[i].flags&0xFF000000)>>24;
+					partsData[partsDataLen++] = (partsptr[i].flags&0x00FF0000)>>16;
+					partsData[partsDataLen++] = (partsptr[i].flags&0x0000FF00)>>8;
 				}
 				
 				//Write the field descriptor;
@@ -1433,6 +1449,16 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 							partsptr[newIndex].tmp2 |= (((unsigned)partsData[i++]) << 8);
 						}
 					}
+
+					//Read flags
+					if(fieldDescriptor & 0x1000)
+					{
+						if(i >= partsDataLen) goto fail;
+						partsptr[newIndex].flags = partsData[i++];
+						partsptr[newIndex].flags |= (((unsigned)partsData[i++]) << 24);
+						partsptr[newIndex].flags |= (((unsigned)partsData[i++]) << 16);
+						partsptr[newIndex].flags |= (((unsigned)partsData[i++]) << 8);
+					}
 					
 #ifdef OGLR
 					partsptr[newIndex].lastX = partsptr[newIndex].x - partsptr[newIndex].vx;
@@ -1472,6 +1498,13 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 					{
 						//Clear soap links, links will be added back in if soapLinkData is present
 						partsptr[newIndex].ctype &= ~6;
+					}
+					else if (partsptr[newIndex].type == PT_PPIP)
+					{
+						if (partsptr[newIndex].flags & 0x00020000)
+							parts[newIndex].tmp |= 0x10000;
+						if (partsptr[newIndex].flags & 0x00040000)
+							parts[newIndex].tmp |= 0x20000;
 					}
 					if (!ptypes[partsptr[newIndex].type].enabled)
 						partsptr[newIndex].type = PT_NONE;

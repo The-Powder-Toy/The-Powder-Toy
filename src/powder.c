@@ -1027,6 +1027,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			parts[i].life = 100;
 			break;
 		case PT_PIPE:
+		case PT_PPIP:
 			parts[i].life = 60;
 			break;
 		case PT_BCOL:
@@ -2599,7 +2600,7 @@ killed:
 					}
 					r = pmap[fin_y][fin_x];
 					
-					if ((r & 0xFF) == PT_PIPE && !(parts[r>>8].tmp&0xFF))
+					if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && !(parts[r>>8].tmp&0xFF))
 					{
 						parts[r>>8].tmp =  (parts[r>>8].tmp&~0xFF) | parts[i].type;
 						parts[r>>8].temp = parts[i].temp;

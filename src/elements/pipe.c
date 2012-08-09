@@ -17,6 +17,7 @@
 
 #define PFLAG_NORMALSPEED 0x00010000
 #define PFLAG_REVERSE 0x00020000
+#define PFLAG_PAUSE 0x00040000
 
 signed char pos_1_rx[] = {-1,-1,-1, 0, 0, 1, 1, 1};
 signed char pos_1_ry[] = {-1, 0, 1,-1, 1,-1, 0, 1};
@@ -45,7 +46,7 @@ void pushParticle(int i, int count, int original)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				else if ((r&0xFF)==PT_PIPE && parts[r>>8].ctype!=notctype && (parts[r>>8].tmp&0xFF)==0)
+				else if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && parts[r>>8].ctype!=notctype && (parts[r>>8].tmp&0xFF)==0)
 				{
 					parts[r>>8].tmp = (parts[r>>8].tmp&~0xFF) | (parts[i].tmp&0xFF);
 					parts[r>>8].temp = parts[i].temp;
@@ -58,6 +59,25 @@ void pushParticle(int i, int count, int original)
 					count++;
 					pushParticle(r>>8,count,original);
 				}
+				else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
+				{
+					int nnx;
+					for (nnx=0; nnx<80; nnx++)
+						if (!portalp[parts[r>>8].tmp][count][nnx].type)
+						{
+							portalp[parts[r>>8].tmp][count][nnx] = parts[i];
+							portalp[parts[r>>8].tmp][count][nnx].type = (parts[i].tmp&0xFF);
+							portalp[parts[r>>8].tmp][count][nnx].tmp = parts[i].pavg[0];
+							portalp[parts[r>>8].tmp][count][nnx].life = parts[i].tmp2;
+							portalp[parts[r>>8].tmp][count][nnx].ctype = parts[i].pavg[1];
+							portalp[parts[r>>8].tmp][count][nnx].pavg[0] = 0;
+							portalp[parts[r>>8].tmp][count][nnx].pavg[1] = 0;
+							portalp[parts[r>>8].tmp][count][nnx].tmp2 = 0;
+							parts[i].tmp &= ~0xFF;
+							count++;
+							break;
+						}
+				}
 			}
 		}
 	}
@@ -65,10 +85,7 @@ void pushParticle(int i, int count, int original)
 	{
 		int coords = 7 - ((parts[i].tmp>>10)&7);
 		r = pmap[y+ pos_1_ry[coords]][x+ pos_1_rx[coords]];
-		if (!r)
-		{
-		}
-		else if ((r&0xFF)==PT_PIPE && parts[r>>8].ctype!=notctype && (parts[r>>8].tmp&0xFF)==0)
+		if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && parts[r>>8].ctype!=notctype && (parts[r>>8].tmp&0xFF)==0)
 		{
 			parts[r>>8].tmp = (parts[r>>8].tmp&~0xFF) | (parts[i].tmp&0xFF);
 			parts[r>>8].temp = parts[i].temp;
@@ -81,34 +98,131 @@ void pushParticle(int i, int count, int original)
 			count++;
 			pushParticle(r>>8,count,original);
 		}
-
-
+		else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
+		{
+			int nnx;
+			for (nnx=0; nnx<80; nnx++)
+				if (!portalp[parts[r>>8].tmp][count][nnx].type)
+				{
+					portalp[parts[r>>8].tmp][count][nnx] = parts[i];
+					portalp[parts[r>>8].tmp][count][nnx].type = (parts[i].tmp&0xFF);
+					portalp[parts[r>>8].tmp][count][nnx].tmp = parts[i].pavg[0];
+					portalp[parts[r>>8].tmp][count][nnx].life = parts[i].tmp2;
+					portalp[parts[r>>8].tmp][count][nnx].ctype = parts[i].pavg[1];
+					portalp[parts[r>>8].tmp][count][nnx].pavg[0] = 0;
+					portalp[parts[r>>8].tmp][count][nnx].pavg[1] = 0;
+					portalp[parts[r>>8].tmp][count][nnx].tmp2 = 0;
+					parts[i].tmp &= ~0xFF;
+					count++;
+					break;
+				}
+		}
+		else if ((r&0xFF) == PT_NONE) //Move particles out of pipe automatically, much faster at ends
+		{
+			rx = pos_1_rx[coords];
+			ry = pos_1_ry[coords];
+			np = create_part(-1,x+rx,y+ry,parts[i].tmp&0xFF);
+			if (np!=-1)
+			{
+				parts[np].temp = parts[i].temp;
+				parts[np].life = parts[i].tmp2;
+				parts[np].tmp = parts[i].pavg[0];
+				parts[np].ctype = parts[i].pavg[1];
+				parts[i].tmp &= ~0xFF;
+			}
+		}
 	}
 	return;
 }
 
-int update_PIPE(UPDATE_FUNC_ARGS) {
-	int r, rx, ry, np, change = 0;
-	int rnd, rndstore;
-	if ((parts[i].flags & PFLAG_REVERSE) && !(parts[i].tmp & 0x4000))
+int reverse_changed(UPDATE_FUNC_ARGS)
+{
+	int change = 0;
+	if ((parts[i].flags & PFLAG_REVERSE) && !(parts[i].tmp & 0x10000))
 	{
-		parts[i].tmp |= 0x4000;
+		parts[i].tmp |= 0x10000;
 		change = 1;
 	}
-	else if (!(parts[i].flags & PFLAG_REVERSE) && (parts[i].tmp & 0x4000))
+	else if (!(parts[i].flags & PFLAG_REVERSE) && (parts[i].tmp & 0x10000))
 	{
-		parts[i].tmp &= ~0x4000;
+		parts[i].tmp &= ~0x10000;
 		change = 1;
 	}
 	if (change)
 	{
-		if (parts[i].ctype == 2)
+		if (parts[i].ctype == 2) //Switch colors so it goes in reverse
 			parts[i].ctype = 4;
 		else if (parts[i].ctype == 4)
 			parts[i].ctype = 2;
-		//Single pixel pipe doesn't reverse, it pauses. I'm calling this glitch a feature
+		if ((parts[i].tmp & 0x100) && (parts[i].tmp & 0xFC00)) //Switch one pixel pipe direction
+		{
+			int coords = (parts[i].tmp>>13)&7;
+			int coords2 = (parts[i].tmp>>10)&7;
+			parts[i].tmp &= ~0xFC00;
+			parts[i].tmp |= coords<<10;
+			parts[i].tmp |= coords2<<13;
+			if (coords)
+				parts[i].tmp |= 0x200;
+			else
+				parts[i].tmp &= ~0x200;
+		}
 	}
-	if (parts[i].ctype>=2 && parts[i].ctype<=4)
+	return change;
+}
+
+int pause_changed(UPDATE_FUNC_ARGS)
+{
+	int change = 0;
+	if ((parts[i].flags & PFLAG_PAUSE) && !(parts[i].tmp & 0x20000))
+	{
+		parts[i].tmp |= 0x20000;
+		change = 1;
+	}
+	else if (!(parts[i].flags & PFLAG_PAUSE) && (parts[i].tmp & 0x20000))
+	{
+		parts[i].tmp &= ~0x20000;
+		change = 1;
+	}
+	if (change)
+	{
+		int rx, ry, r;
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+			{
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				{
+					r = pmap[y+ry][x+rx];
+					if ((r&0xFF) == PT_BRCK)
+					{
+						if (parts[i].flags & PFLAG_PAUSE)
+							parts[r>>8].tmp = 0;
+						else
+							parts[r>>8].tmp = 1; //make surrounding BRCK glow
+					}
+				}
+			}
+	}
+	return change;
+}
+
+int update_PIPE(UPDATE_FUNC_ARGS) {
+	int r, rx, ry, np;
+	int rnd, rndstore;
+	if (parts[i].type == PT_PPIP)
+	{
+		if ((reverse_changed(UPDATE_FUNC_SUBCALL_ARGS) || pause_changed(UPDATE_FUNC_SUBCALL_ARGS)) && (parts[i].tmp & 0x100))
+		{
+			for (rx = -1; rx < 2; rx++)
+				for (ry = -1; ry < 2; ry++)
+					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					{
+						r = pmap[y+ry][x+rx];
+						if ((r&0xFF) == PT_PPIP)
+							parts[r>>8].flags = parts[i].flags; //Flood fill doesn't work with diagonal single pixel pipe, so spread the changes manually
+					}
+		}
+	}
+	if (parts[i].ctype>=2 && parts[i].ctype<=4 && !(parts[i].flags & PFLAG_PAUSE))
 	{
 		if (parts[i].life==3)
 		{
@@ -123,7 +237,7 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 						r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
-						if ((r&0xFF)==PT_PIPE&&parts[r>>8].ctype==1)
+						if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP)&&parts[r>>8].ctype==1)
 						{
 							parts[r>>8].ctype = (((parts[i].ctype)%3)+2);//reverse
 							parts[r>>8].life = 6;
@@ -131,11 +245,12 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 							{
 								parts[r>>8].tmp |= 0x200;//will transfer to a single pixel pipe
 								parts[r>>8].tmp |= count<<10;//coords of where it came from
+								parts[i].tmp |= ((7-count)<<13);
 							}
 							neighborcount ++;
 							lastneighbor = r>>8;
 						}
-						else if ((r&0xFF)==PT_PIPE&&parts[r>>8].ctype!=(((parts[i].ctype-1)%3)+2))
+						else if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP)&&parts[r>>8].ctype!=(((parts[i].ctype-1)%3)+2))
 						{
 							neighborcount ++;
 							lastneighbor = r>>8;
@@ -236,7 +351,11 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 					{
 						r = pmap[y+ry][x+rx];
 						if (!r)
-							create_part(-1,x+rx,y+ry,PT_BRCK);//BRCK border, people didn't like DMND
+						{
+							int index = create_part(-1,x+rx,y+ry,PT_BRCK);//BRCK border, people didn't like DMND
+							if (parts[i].type == PT_PPIP && index != -1)
+								parts[index].tmp = 1;
+						}
 					}
 				}
 			if (parts[i].life<=1)
@@ -263,11 +382,11 @@ int update_PIPE(UPDATE_FUNC_ARGS) {
 					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r&0xFF)==PT_PIPE && parts[i].ctype==1 && parts[i].life )
+						if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && parts[i].ctype==1 && parts[i].life )
 							issingle = 0;
 					}
-					if (issingle)
-						parts[i].tmp |= 0x100;
+			if (issingle)
+				parts[i].tmp |= 0x100;
 		}
 		else if (parts[i].life==2)
 		{
@@ -296,6 +415,7 @@ int graphics_PIPE(GRAPHICS_FUNC_ARGS)
 		if (graphicscache[t].isready)
 		{
 			*pixel_mode = graphicscache[t].pixel_mode;
+			*cola = graphicscache[t].cola;
 			*colr = graphicscache[t].colr;
 			*colg = graphicscache[t].colg;
 			*colb = graphicscache[t].colb;
@@ -307,8 +427,8 @@ int graphics_PIPE(GRAPHICS_FUNC_ARGS)
 		else
 		{
 			*colr = PIXR(ptypes[t].pcolors);
-			*colg = PIXR(ptypes[t].pcolors);
-			*colb = PIXR(ptypes[t].pcolors);
+			*colg = PIXG(ptypes[t].pcolors);
+			*colb = PIXB(ptypes[t].pcolors);
 			if (ptypes[t].graphics_func)
 			{
 				(*(ptypes[t].graphics_func))(&tpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
