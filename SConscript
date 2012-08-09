@@ -92,6 +92,15 @@ if not conf.CheckLib('fftw3f') and not conf.CheckLib('fftw3f-3'):
     print "libfftw3f not found or not installed"
     raise SystemExit(1)
 
+#Check for Bzip lib
+if not conf.CheckLib('bz2'):
+    print "libbz2 not found or not installed"
+    raise SystemExit(1)
+
+if not conf.CheckCHeader("bzlib.h"):
+    print "bzip2 headers not found"
+    raise SystemExit(1)
+
 #Check for Lua lib
 if not conf.CheckLib('lua') and not conf.CheckLib('lua5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua-5.1'):
     print "liblua not found or not installed"
@@ -101,7 +110,7 @@ env = conf.Finish();
 
 env.Append(CPPPATH=['src/', 'data/', 'generated/'])
 env.Append(CCFLAGS=['-w', '-std=c99', '-fkeep-inline-functions'])
-env.Append(LIBS=['pthread', 'm', 'bz2'])
+env.Append(LIBS=['pthread', 'm'])
 env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
 
 if GetOption("ptw32-static"):
