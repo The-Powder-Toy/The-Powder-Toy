@@ -172,6 +172,7 @@ GameView::GameView():
 	shiftBehaviour(false),
 	ctrlBehaviour(false),
 	showHud(true),
+	showDebug(false),
 	introText(2048),
 	introTextMessage(introTextData)
 {
@@ -1182,6 +1183,9 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'f':
 		c->FrameStep();
 		break;
+	case 'd':
+		showDebug = !showDebug;
+		break;
 	case KEY_F1:
 		if(!introText)
 			introText = 8047;
@@ -1705,15 +1709,48 @@ void GameView::OnDraw()
 		std::stringstream sampleInfo;
 		sampleInfo.precision(2);
 		if(sample.particle.type)
-			sampleInfo << c->ElementResolve(sample.particle.type) << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
+		{	
+			if(showDebug)
+			{
+				sampleInfo << c->ElementResolve(sample.particle.type);
+				if(sample.particle.ctype > 0 && sample.particle.ctype < PT_NUM)
+				{
+					sampleInfo << " (" << c->ElementResolve(sample.particle.ctype) << ")";
+				}
+				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
+				sampleInfo << ", Life: " << sample.particle.life;
+				sampleInfo << ", Temp: " << sample.particle.tmp;
+			}
+			else
+			{
+				sampleInfo << c->ElementResolve(sample.particle.type) << ", Pressure: " << std::fixed << sample.AirPressure;
+				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
+			}
+		}
 		else
-			sampleInfo << "Empty";
-
-		sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+		{
+			sampleInfo << "Empty, Pressure: " << std::fixed << sample.AirPressure;
+		}
 
 		int textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
 		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255*0.75);
+
+		if(showDebug)
+		{
+			sampleInfo.str(std::string());
+
+			if(sample.particle.type)
+			{
+				sampleInfo << "#" << sample.ParticleID << ", ";
+			}
+			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
+
+			textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+			g->fillrect(XRES-20-textWidth, 26, textWidth+8, 15, 0, 0, 0, 255*0.5);
+			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255*0.75);
+		}
 
 
 		//FPS and some version info

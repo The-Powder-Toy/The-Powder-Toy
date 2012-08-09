@@ -42,6 +42,7 @@ private:
 	bool ctrlBehaviour;
 	bool altBehaviour;
 	bool showHud;
+	bool showDebug;
 	int introText;
 	std::string introTextMessage;
 	int toolIndex;
