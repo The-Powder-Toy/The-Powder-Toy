@@ -42,6 +42,13 @@ void Renderer::RenderBegin()
 	{
 		std::copy(persistentVid, persistentVid+(VIDXRES*YRES), vid);
 	}
+	pixel * oldVid;
+	if(display_mode & DISPLAY_WARP)
+	{
+		oldVid = vid;
+		vid = warpVid;
+		std::fill(warpVid, warpVid+(VIDXRES*VIDYRES), 0);
+	}
 #endif
 	draw_air();
 	draw_grav();
@@ -69,6 +76,12 @@ void Renderer::RenderBegin()
 	DrawWalls();
 	draw_grav_zones();
 	DrawSigns();
+#ifndef OGLR
+	if(display_mode & DISPLAY_WARP)
+	{
+		vid = oldVid;
+	}
+#endif
 #ifndef OGLR
 	FinaliseParts();
 #endif
@@ -292,8 +305,15 @@ void Renderer::FinaliseParts()
 	}
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable( GL_TEXTURE_2D );
-#elif defined(OGLI)
+#endif
+
+#if defined(OGLI) && !defined(OGLR)
+	render_gravlensing(warpVid);
 	g->draw_image(vid, 0, 0, VIDXRES, VIDYRES, 255);
+#endif
+
+#if !defined(OGLR) && !defined(OGLI)
+	render_gravlensing(warpVid);
 #endif
 }
 
@@ -775,13 +795,13 @@ void Renderer::DrawSigns()
 #endif
 }
 
-void Renderer::render_gravlensing()
+void Renderer::render_gravlensing(pixel * source)
 {
 #ifndef OGLR
 	int nx, ny, rx, ry, gx, gy, bx, by, co;
 	int r, g, b;
 	pixel t;
-	pixel *src = vid;
+	pixel *src = source;
 	pixel *dst = vid;
 	for(nx = 0; nx < XRES; nx++)
 	{
@@ -2171,6 +2191,7 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	vid = g->vid;
 #endif
 	persistentVid = new pixel[VIDXRES*YRES];
+	warpVid = new pixel[VIDXRES*VIDYRES];
 #endif
 
 	memset(fire_r, 0, sizeof(fire_r));

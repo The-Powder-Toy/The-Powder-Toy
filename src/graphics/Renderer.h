@@ -66,7 +66,7 @@ public:
 	void RenderZoom();
 	void DrawWalls();
 	void DrawSigns();
-	void render_gravlensing();
+	void render_gravlensing(pixel * source);
 	void render_fire();
 	void prepare_alpha(int size, float intensity);
 	void render_parts();
@@ -88,6 +88,7 @@ public:
 #else
 	pixel * vid;
 	pixel * persistentVid;
+	pixel * warpVid;
 	void blendpixel(int x, int y, int r, int g, int b, int a);
 	void addpixel(int x, int y, int r, int g, int b, int a);
 
