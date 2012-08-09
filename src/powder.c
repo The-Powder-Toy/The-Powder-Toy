@@ -755,12 +755,15 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 
 	if (t==SPC_HEAT||t==SPC_COOL)
 	{
-		if ((pmap[y][x]&0xFF)!=PT_NONE&&(pmap[y][x]&0xFF)<PT_NUM)
+		int r = pmap[y][x];
+		if (!(r&0xFF))
+			r = photons[y][x];
+		if ((r&0xFF)!=PT_NONE&&(r&0xFF)<PT_NUM)
 		{
-			if (t==SPC_HEAT&&parts[pmap[y][x]>>8].temp<MAX_TEMP)
+			if (t==SPC_HEAT&&parts[r>>8].temp<MAX_TEMP)
 			{
 				float heatchange;
-				int r = pmap[y][x], fast = ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)));
+				int fast = ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)));
 				if ((r&0xFF)==PT_PUMP || (r&0xFF)==PT_GPMP)
 					heatchange = fast?1.0f:.1f;
 				else
@@ -768,10 +771,10 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 				
 				parts[r>>8].temp = restrict_flt(parts[r>>8].temp + heatchange, MIN_TEMP, MAX_TEMP);
 			}
-			if (t==SPC_COOL&&parts[pmap[y][x]>>8].temp>MIN_TEMP)
+			if (t==SPC_COOL&&parts[r>>8].temp>MIN_TEMP)
 			{
 				float heatchange;
-				int r = pmap[y][x], fast = ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)));
+				int fast = ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL)));
 				if ((r&0xFF)==PT_PUMP || (r&0xFF)==PT_GPMP)
 					heatchange = fast?1.0f:.1f;
 				else
@@ -779,7 +782,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 				
 				parts[r>>8].temp = restrict_flt(parts[r>>8].temp - heatchange, MIN_TEMP, MAX_TEMP);
 			}
-			return pmap[y][x]>>8;
+			return r>>8;
 		}
 		else
 		{
@@ -1024,6 +1027,7 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 			parts[i].life = 100;
 			break;
 		case PT_PIPE:
+		case PT_PPIP:
 			parts[i].life = 60;
 			break;
 		case PT_BCOL:
@@ -2596,11 +2600,11 @@ killed:
 					}
 					r = pmap[fin_y][fin_x];
 					
-					if ((r & 0xFF) == PT_PIPE && !(parts[r>>8].tmp&0xFF))
+					if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && !(parts[r>>8].tmp&0xFF))
 					{
 						parts[r>>8].tmp =  (parts[r>>8].tmp&~0xFF) | parts[i].type;
 						parts[r>>8].temp = parts[i].temp;
-						parts[r>>8].flags = parts[i].life;
+						parts[r>>8].tmp2 = parts[i].life;
 						parts[r>>8].pavg[0] = parts[i].tmp;
 						parts[r>>8].pavg[1] = parts[i].ctype;
 						kill_part(i);
@@ -3464,6 +3468,8 @@ int create_parts(int x, int y, int rx, int ry, int c, int flags, int fill)
         }
         else return 0;
 	}
+	if (c == PT_STKM || c == PT_STKM2 || c == PT_FIGH)
+		rx = ry = 0;
 	
 	if (dw==1)
 	{

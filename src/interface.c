@@ -532,14 +532,15 @@ void ui_list_process(pixel * vid_buf, int mx, int my, int mb, ui_list *ed)
 					}
 					draw_line(vid_buf, ed->x, ystart + i * 16, ed->x+ed->w, ystart + i * 16, 128, 128, 128, XRES+BARSIZE);
 				}
-				if(!selected && mb)
-					break;
 				drawrect(vid_buf, ed->x, ystart, ed->w, ed->count*16, 255, 255, 255, 255);
 #ifdef OGLR
 				clearScreen(1.0f);
 #endif
 				sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 				clearrect(vid_buf, ed->x-2, ystart-2, ed->w+4, (ed->count*16)+4);
+
+				if(!selected && mb)
+					break;
 			}
 			while (!sdl_poll())
 			{
@@ -1257,6 +1258,7 @@ char *input_ui(pixel *vid_buf, char *title, char *prompt, char *text, char *shad
 
 void prop_edit_ui(pixel *vid_buf, int x, int y)
 {
+	pixel * o_vid_buf;
 	float valuef;
 	unsigned char valuec;
 	int valuei;
@@ -1299,6 +1301,9 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 	strncpy(ed2.str, "0", 254);
 	strncpy(ed.str, "ctype", 254);
 
+	o_vid_buf = (pixel*)calloc((YRES+MENUSIZE) * (XRES+BARSIZE), PIXELSIZE);
+	if (o_vid_buf)
+		memcpy(o_vid_buf, vid_buf, ((YRES+MENUSIZE) * (XRES+BARSIZE)) * PIXELSIZE);
 	while (!sdl_poll())
 	{
 		b = mouse_get_state(&mx, &my);
@@ -1311,6 +1316,8 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 		bq = b;
 		b = mouse_get_state(&mx, &my);
 
+		if (o_vid_buf)
+			memcpy(vid_buf, o_vid_buf, ((YRES+MENUSIZE) * (XRES+BARSIZE)) * PIXELSIZE);
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
 		drawrect(vid_buf, x0, y0, xsize, ysize, 192, 192, 192, 255);
 		drawtext(vid_buf, x0+8, y0+8, "Change particle property", 160, 160, 255, 255);
@@ -1338,7 +1345,7 @@ void prop_edit_ui(pixel *vid_buf, int x, int y)
 		if (sdl_key==SDLK_RETURN)
 			break;
 		if (sdl_key==SDLK_ESCAPE)
-			break;
+			goto exit;
 	}
 
 	if(ed.selected!=-1)
@@ -2272,6 +2279,8 @@ void menu_ui(pixel *vid_buf, int i, int *sl, int *sr)
 {
 	int b=1,bq,mx,my,h,x,y,n=0,height,width,sy,rows=0;
 	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	if (!old_vid)
+		return;
 	fillrect(vid_buf, -1, -1, XRES+1, YRES+MENUSIZE, 0, 0, 0, 192);
 	memcpy(old_vid, vid_buf, ((XRES+BARSIZE)*(YRES+MENUSIZE))*PIXELSIZE);
 
@@ -3299,6 +3308,8 @@ int search_ui(pixel *vid_buf)
 	void *thumb, *data;
 	int thlen, dlen;
 
+	if (!v_buf)
+		return 0;
 	memset(v_buf, 0, ((YRES+MENUSIZE)*(XRES+BARSIZE))*PIXELSIZE);
 
 	memset(img_http, 0, sizeof(img_http));
@@ -4095,6 +4106,8 @@ int open_ui(pixel *vid_buf, char *save_id, char *save_date)
 	ui_copytext ctb;
 
 	pixel *old_vid=(pixel *)calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	if (!old_vid || !info)
+		return 0;
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 	viewcountbuffer[0] = 0;
 
@@ -5114,6 +5127,11 @@ void execute_save(pixel *vid_buf)
 	uploadparts[1] = svf_description;
 	plens[1] = strlen(svf_description);
 	uploadparts[2] = build_save(plens+2, 0, 0, XRES, YRES, bmap, vx, vy, pv, fvx, fvy, signs, parts);
+	if (!uploadparts[2])
+	{
+		error_ui(vid_buf, 0, "Error creating save");
+		return;
+	}
 	uploadparts[3] = build_thumb(plens+3, 1);
 	uploadparts[4] = (svf_publish==1)?"Public":"Private";
 	plens[4] = strlen((svf_publish==1)?"Public":"Private");
@@ -5436,6 +5454,8 @@ char *console_ui(pixel *vid_buf,char error[255],char console_more) {
 	ed.multiline = 0;
 	ed.cursor = 0;
 	//fillrect(vid_buf, -1, -1, XRES, 220, 0, 0, 0, 190);
+	if (!old_buf)
+		return NULL;
 	memcpy(old_buf,vid_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 
 	fillrect(old_buf, -1, -1, XRES+BARSIZE, 220, 0, 0, 0, 190);
@@ -5651,6 +5671,8 @@ unsigned int decorations_ui(pixel *vid_buf,int *bsx,int *bsy, unsigned int saved
 	box_B.cursor = 0;
 
 
+	if (!old_buf)
+		return PIXRGB(currR,currG,currB);
 	memcpy(old_buf,vid_buf,(XRES+BARSIZE)*YRES*PIXELSIZE);
 	while (!sdl_poll())
 	{
@@ -6311,7 +6333,8 @@ int save_filename_ui(pixel *vid_buf)
 		drawtext(vid_buf, x0+8, y0+ysize-12, "Save", 255, 255, 255, 255);
 
 		ui_edit_draw(vid_buf, &ed);
-		drawtext(vid_buf, x0+12+textwidth(ed.str), y0+25, ".cps", 240, 240, 255, 180);
+		if (strlen(ed.str) || ed.focus)
+			drawtext(vid_buf, x0+12+textwidth(ed.str), y0+25, ".cps", 240, 240, 255, 180);
 #ifdef OGLR
 		clearScreen(1.0f);
 #endif
@@ -6410,6 +6433,8 @@ void catalogue_ui(pixel * vid_buf)
 	ui_edit ed;
 	
 	vid_buf2 = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE);
+	if (!vid_buf2)
+		return;
 	
 	ed.w = xsize-16-4;
 	ed.x = x0+11;
@@ -6434,6 +6459,7 @@ void catalogue_ui(pixel * vid_buf)
 	fillrect(vid_buf, -1, -1, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, 192);
 	while (!sdl_poll())
 	{
+		bq = b;
 		b = mouse_get_state(&mx, &my);
 		sprintf(savetext, "Found %d save%s", rescount, rescount==1?"":"s");
 		clearrect(vid_buf, x0-2, y0-2, xsize+4, ysize+4);
@@ -6579,6 +6605,27 @@ void catalogue_ui(pixel * vid_buf)
 					drawtext(vid_buf2, listxc+((XRES/CATALOGUE_S)/2-textwidth(csave->name)/2), listyc+YRES/CATALOGUE_S+3, csave->name, 255, 255, 255, 255);
 				else
 					drawtext(vid_buf2, listxc+((XRES/CATALOGUE_S)/2-textwidth(csave->name)/2), listyc+YRES/CATALOGUE_S+3, csave->name, 240, 240, 255, 180);
+				if (mx>=listxc+XRES/GRID_S-4 && mx<=listxc+XRES/GRID_S+6 && my>=listyc-6 && my<=listyc+4)
+				{
+					if (b && !bq && confirm_ui(vid_buf, "Do you want to delete?", csave->name, "Delete"))
+					{
+						remove(csave->filename);
+						currentstart = 0;
+						if(saves!=NULL) free_saveslist(saves);
+						saves = get_local_saves(LOCAL_SAVE_DIR PATH_SEP, last, &rescount);
+						cssave = saves;
+						scrollvel = 0.0f;
+						offsetf = 0.0f;
+						thidden = 0;
+						if (rescount == 0)
+							rmdir(LOCAL_SAVE_DIR PATH_SEP);
+						break;
+					}
+					drawtext(vid_buf2, listxc+XRES/GRID_S-4, listyc-6, "\x86", 255, 48, 32, 255);
+				}
+				else
+					drawtext(vid_buf2, listxc+XRES/GRID_S-4, listyc-6, "\x86", 160, 48, 32, 255);
+				drawtext(vid_buf2, listxc+XRES/GRID_S-4, listyc-6, "\x85", 255, 255, 255, 255);
 				csave = csave->next;
 				if(++listx==CATALOGUE_X){
 					listx = 0;
@@ -6595,7 +6642,7 @@ void catalogue_ui(pixel * vid_buf)
 		{
 			pixel *srctemp = vid_buf2, *desttemp = vid_buf;
 			int j = 0;
-			for (j = y0+48; j < y0+ysize; j++)
+			for (j = y0+42; j < y0+ysize; j++)
 			{
 				memcpy(desttemp+j*(XRES+BARSIZE)+x0+1, srctemp+j*(XRES+BARSIZE)+x0+1, (xsize-1)*PIXELSIZE);
 				//desttemp+=(XRES+BARSIZE);//*PIXELSIZE;
@@ -6776,6 +6823,8 @@ void render_ui(pixel * vid_buf, int xcoord, int ycoord, int orientation)
 	part_vbuf = calloc((XRES+BARSIZE)*(YRES+MENUSIZE), PIXELSIZE); //Extra video buffer
 	part_vbuf_store = part_vbuf;
 	
+	if (!o_vid_buf || !part_vbuf || !part_vbuf_store)
+		return;
 	while (!sdl_poll())
 	{
 		b = mouse_get_state(&mx, &my);

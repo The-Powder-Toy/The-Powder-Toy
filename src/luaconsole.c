@@ -691,7 +691,7 @@ int luacon_elementwrite(lua_State* l){
 	return 0;
 }
 int luacon_keyevent(int key, int modifier, int event){
-	int i = 0, kpcontinue = 1;
+	int i = 0, kpcontinue = 1, callret;
 	char tempkey[] = {key, 0};
 	if(keypress_function_count){
 		for(i = 0; i < keypress_function_count && kpcontinue; i++){
@@ -700,7 +700,11 @@ int luacon_keyevent(int key, int modifier, int event){
 			lua_pushinteger(l, key);
 			lua_pushinteger(l, modifier);
 			lua_pushinteger(l, event);
-			lua_pcall(l, 4, 1, 0);
+			callret = lua_pcall(l, 4, 1, 0);
+			if (callret)
+			{
+				printf("In key event: %s\n",luacon_geterror());
+			}
 			if(lua_isboolean(l, -1)){
 				kpcontinue = lua_toboolean(l, -1);
 			}
@@ -710,7 +714,7 @@ int luacon_keyevent(int key, int modifier, int event){
 	return kpcontinue;
 }
 int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel){
-	int i = 0, mpcontinue = 1;
+	int i = 0, mpcontinue = 1, callret;
 	if(mouseclick_function_count){
 		for(i = 0; i < mouseclick_function_count && mpcontinue; i++){
 			lua_rawgeti(l, LUA_REGISTRYINDEX, mouseclick_functions[i]);
@@ -719,7 +723,11 @@ int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel){
 			lua_pushinteger(l, mb);
 			lua_pushinteger(l, event);
 			lua_pushinteger(l, mouse_wheel);
-			lua_pcall(l, 5, 1, 0);
+			callret = lua_pcall(l, 5, 1, 0);
+			if (callret)
+			{
+				printf("In mouse event: %s\n",luacon_geterror());
+			}
 			if(lua_isboolean(l, -1)){
 				mpcontinue = lua_toboolean(l, -1);
 			}
@@ -779,7 +787,7 @@ void lua_hook(lua_State *L, lua_Debug *ar)
 }
 int luacon_part_update(int t, int i, int x, int y, int surround_space, int nt)
 {
-	int retval = 0;
+	int retval = 0, callret;
 	if(lua_el_func[t]){
 		lua_rawgeti(l, LUA_REGISTRYINDEX, lua_el_func[t]);
 		lua_pushinteger(l, i);
@@ -787,7 +795,11 @@ int luacon_part_update(int t, int i, int x, int y, int surround_space, int nt)
 		lua_pushinteger(l, y);
 		lua_pushinteger(l, surround_space);
 		lua_pushinteger(l, nt);
-		lua_pcall(l, 5, 1, 0);
+		callret = lua_pcall(l, 5, 1, 0);
+		if (callret)
+		{
+			printf("In particle update: %s\n",luacon_geterror());
+		}
 		if(lua_isboolean(l, -1)){
 			retval = lua_toboolean(l, -1);
 		}
@@ -797,13 +809,17 @@ int luacon_part_update(int t, int i, int x, int y, int surround_space, int nt)
 }
 int luacon_graphics_update(int t, int i, int *pixel_mode, int *cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb)
 {
-	int cache = 0;
+	int cache = 0, callret;
 	lua_rawgeti(l, LUA_REGISTRYINDEX, lua_gr_func[t]);
 	lua_pushinteger(l, i);
 	lua_pushinteger(l, *colr);
 	lua_pushinteger(l, *colg);
 	lua_pushinteger(l, *colb);
-	lua_pcall(l, 4, 10, 0);
+	callret = lua_pcall(l, 4, 10, 0);
+	if (callret)
+	{
+		printf("In graphics function: %s\n",luacon_geterror());
+	}
 
 	cache = luaL_optint(l, -10, 0);
 	*pixel_mode = luaL_optint(l, -9, *pixel_mode);
@@ -1326,7 +1342,7 @@ int luatpt_set_property(lua_State* l)
 	} else if (strcmp(prop,"y")==0){
 		offset = offsetof(particle, y);
 		format = 2;
-	} else if (strcmp(prop,"dcolour")==0){
+	} else if (strcmp(prop,"dcolour")==0 || strcmp(prop,"dcolor")==0){
 		offset = offsetof(particle, dcolour);
 		format = 1;
 	} else {
@@ -1367,22 +1383,22 @@ int luatpt_set_property(lua_State* l)
 			w = XRES-x;
 		if(y+h > YRES)
 			h = YRES-y;
-		for (nx = x; nx<x+w; nx++)
-			for (ny = y; ny<y+h; ny++){
-				r = pmap[ny][nx];
-				if (!r || (partsel && partsel != parts[r>>8].type))
+		for (i = 0; i < NPART; i++)
+		{
+			if (parts[i].type)
+			{
+				nx = (int)(parts[i].x + .5f);
+				ny = (int)(parts[i].y + .5f);
+				if (nx >= x && nx < x+w && ny >= y && ny < y+h && (!partsel || partsel == parts[i].type))
 				{
-					r = photons[ny][nx];
-					if (!r || (partsel && partsel != parts[r>>8].type))
-						continue;
-				}
-				i = r>>8;
-				if(format==2){
-					*((float*)(((char*)&parts[i])+offset)) = f;
-				} else {
-					*((int*)(((char*)&parts[i])+offset)) = t;
+					if(format==2){
+						*((float*)(((char*)&parts[i])+offset)) = f;
+					} else {
+						*((int*)(((char*)&parts[i])+offset)) = t;
+					}
 				}
 			}
+		}
 	} else {
 		// Got coords or particle index
 		if(i != -1 && y != -1){
@@ -1478,7 +1494,7 @@ int luatpt_get_property(lua_State* l)
 			lua_pushnumber(l, parts[i].y);
 			return 1;
 		}
-		if (strcmp(prop,"dcolour")==0){
+		if (strcmp(prop,"dcolour")==0 || strcmp(prop,"dcolor")==0){
 			lua_pushinteger(l, parts[i].dcolour);
 			return 1;
 		}
@@ -1950,7 +1966,9 @@ int luatpt_heat(lua_State* l)
 }
 int luatpt_cmode_set(lua_State* l)
 {
-    return luaL_error(l, "Not implemented");
+	int cmode = luaL_optint(l, 1, CM_FIRE);
+	set_cmode(cmode);
+	return 0;
 }
 int luatpt_setfire(lua_State* l)
 {

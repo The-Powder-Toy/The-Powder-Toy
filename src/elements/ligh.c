@@ -130,10 +130,8 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 	 * tmp - angle of lighting, measured in degrees anticlockwise from the positive x direction
 	 *
 	*/
-	int r,rx,ry, multipler, powderful;
+	int r,rx,ry, multipler, powderful=(int)(parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER), near, voidnearby = 0;
 	float angle, angle2=-1;
-	int near;
-	powderful = powderful=parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER;
 	update_PYRO(UPDATE_FUNC_SUBCALL_ARGS);
 	if (aheat_enable)
 	{
@@ -184,6 +182,10 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 					{
 						parts[r>>8].life-=powderful/100;
 					}
+					if ((((r&0xFF)==PT_VOID || ((r&0xFF)==PT_PVOD && parts[r>>8].life >= 10)) && (!parts[r>>8].ctype || (parts[r>>8].ctype==PT_LIGH)!=(parts[r>>8].tmp&1))) || (r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) // VOID, PVOD, VACU, and BHOL eat LIGH here
+					{
+						voidnearby++;
+					}
 				}
 			}
 	if (parts[i].tmp2==3)
@@ -204,7 +206,7 @@ int update_LIGH(UPDATE_FUNC_ARGS)
 		parts[i].tmp2--;
 		return 1;
 	}
-	if (parts[i].tmp2<=-2)
+	if (parts[i].tmp2<=-2 || voidnearby > 5)
 	{
 		kill_part(i);
 		return 1;

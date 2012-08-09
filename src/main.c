@@ -339,6 +339,7 @@ void clear_sim(void)
 	ISSPAWN1 = ISSPAWN2 = 0;
 	player.spwn = 0;
 	player2.spwn = 0;
+	emp_decor = 0;
 	memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
@@ -1572,7 +1573,7 @@ int main(int argc, char *argv[])
 				}
 			}
 
-			if (sdl_key=='w' && (!player2.spwn || (sdl_mod & (KMOD_SHIFT)))) //Gravity, by Moach
+			if (sdl_key=='w' && (!player2.spwn || (sdl_mod & (KMOD_CTRL)))) //Gravity, by Moach
 			{
 				++gravityMode; // cycle gravity mode
 				itc = 51;
@@ -1647,7 +1648,7 @@ int main(int argc, char *argv[])
 				dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
 			if (sdl_key=='v'&&(sdl_mod & (KMOD_LCTRL|KMOD_RCTRL)))
 			{
-				if (clipboard_ready==1)
+				if (clipboard_ready==1 && clipboard_data)
 				{
 					load_data = malloc(clipboard_length);
 					memcpy(load_data, clipboard_data, clipboard_length);
@@ -1895,7 +1896,7 @@ int main(int argc, char *argv[])
 
 					sprintf(nametext, "Molten %s", lowername);
 				}
-				else if ((cr&0xFF)==PT_PIPE && (parts[cr>>8].tmp&0xFF) > 0 && (parts[cr>>8].tmp&0xFF) < PT_NUM )
+				else if (((cr&0xFF)==PT_PIPE || (cr&0xFF) == PT_PPIP) && (parts[cr>>8].tmp&0xFF) > 0 && (parts[cr>>8].tmp&0xFF) < PT_NUM )
 				{
 					char lowername[6];
 					int ix;
@@ -1908,7 +1909,7 @@ int main(int argc, char *argv[])
 				else if (DEBUG_MODE)
 				{
 					int tctype = parts[cr>>8].ctype;
-					if ((cr&0xFF)==PT_PIPE)
+					if ((cr&0xFF)==PT_PIPE || (cr&0xFF) == PT_PPIP)
 					{
 						tctype = parts[cr>>8].tmp&0xFF;
 					}
@@ -2177,30 +2178,46 @@ int main(int argc, char *argv[])
 			save_h = my + 1 - save_y;
 			if (save_w+save_x>XRES) save_w = XRES-save_x;
 			if (save_h+save_y>YRES) save_h = YRES-save_y;
-			if (save_w<1) save_w = 1;
-			if (save_h<1) save_h = 1;
+			if (save_w+save_x<0) save_w = 0;
+			if (save_h+save_y<0) save_h = 0;
+			//if (save_w<1) save_w = 1;
+			//if (save_h<1) save_h = 1;
 			if (!b)
 			{
-				if (copy_mode==1)//CTRL-C, copy
+				if (save_w < 0)
 				{
-					clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, vx, vy, pv, fvx, fvy, signs, parts);
-					clipboard_ready = 1;
-					save_mode = 0;
-					copy_mode = 0;
+					save_x = save_x + save_w - 1;
+					save_w = abs(save_w) + 2;
 				}
-				else if (copy_mode==2)//CTRL-X, cut
+				if (save_h < 0)
 				{
-					clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, vx, vy, pv, fvx, fvy, signs, parts);
-					clipboard_ready = 1;
-					save_mode = 0;
-					copy_mode = 0;
-					clear_area(save_x, save_y, save_w, save_h);
+					save_y = save_y + save_h - 1;
+					save_h = abs(save_h) + 2;
 				}
-				else//normal save
+				if (save_h > 0 && save_w > 0)
 				{
-					stamp_save(save_x, save_y, save_w, save_h);
-					save_mode = 0;
+					if (copy_mode==1)//CTRL-C, copy
+					{
+						clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, vx, vy, pv, fvx, fvy, signs, parts, (sdl_mod & KMOD_SHIFT));
+						if (clipboard_data)
+							clipboard_ready = 1;
+					}
+					else if (copy_mode==2)//CTRL-X, cut
+					{
+						clipboard_data=build_save(&clipboard_length, save_x, save_y, save_w, save_h, bmap, vx, vy, pv, fvx, fvy, signs, parts, (sdl_mod & KMOD_SHIFT));
+						if (clipboard_data)
+						{
+							clipboard_ready = 1;
+							clear_area(save_x, save_y, save_w, save_h);
+						}
+					}
+					else//normal save
+					{
+						stamp_save(save_x, save_y, save_w, save_h);
+					}
 				}
+				copy_mode = 0;
+				save_mode = 0;
 			}
 		}
 		else if (sdl_zoom_trig && zoom_en<2)
@@ -2272,6 +2289,8 @@ int main(int argc, char *argv[])
 						svf_description[0] = 0;
 						gravityMode = 0;
 						airMode = 0;
+						svf_last = NULL;
+						svf_lsize = 0;
 					}
 					if (x>=(XRES+BARSIZE-(510-385)) && x<=(XRES+BARSIZE-(510-476)))
 					{
@@ -2322,7 +2341,10 @@ int main(int argc, char *argv[])
 					}
 					if (x>=19 && x<=35 && svf_last && !bq) {
 						//int tpval = sys_pause;
-						parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, vx, vy, pv, fvx, fvy, signs, parts, pmap);
+						if (b == 1 || !strncmp(svf_id,"",8))
+							parse_save(svf_last, svf_lsize, 1, 0, 0, bmap, vx, vy, pv, fvx, fvy, signs, parts, pmap);
+						else
+							open_ui(vid_buf, svf_id, NULL, 0);
 						//sys_pause = tpval;
 					}
 					if (x>=(XRES+BARSIZE-(510-476)) && x<=(XRES+BARSIZE-(510-491)) && !bq)
@@ -2560,9 +2582,23 @@ int main(int argc, char *argv[])
 
 		if (save_mode)//draw dotted lines for selection
 		{
-			xor_rect(vid_buf, save_x, save_y, save_w, save_h);
+			int savex = save_x, savey = save_y, savew = save_w, saveh = save_h;
+			if (savew < 0)
+			{
+				savex = savex + savew - 1;
+				savew = abs(savew) + 2;
+			}
+			if (saveh < 0)
+			{
+				savey = savey + saveh - 1;
+				saveh = abs(saveh) + 2;
+			}
+			xor_rect(vid_buf, savex, savey, savew, saveh);
 			da = 51;//draws mouseover text for the message
-			db = 269;//the save message
+			if (copy_mode != 2)
+				db = 269;//the save message
+			else
+				db = 278;
 		}
 
 		if (zoom_en!=1 && !load_mode && !save_mode)//draw normal cursor
@@ -2645,6 +2681,9 @@ int main(int argc, char *argv[])
 				break;
 			case 277:
 				drawtext(vid_buf, 16, YRES-24, "Save the simulation to your hard drive.", 255, 255, 255, da*5);
+				break;
+			case 278: //Fix for Ctrl + X showing copy message
+				drawtext(vid_buf, 16, YRES-24, "Click-and-drag to specify a rectangle to copy and then cut (right click = cancel).", 255, 216, 32, da*5);
 				break;
 			default:
 				drawtext(vid_buf, 16, YRES-24, (char *)ptypes[db].descs, 255, 255, 255, da*5);
