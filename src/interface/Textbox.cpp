@@ -18,7 +18,8 @@ Textbox::Textbox(Point position, Point size, std::string textboxText, std::strin
 	mouseDown(false),
 	limit(std::string::npos),
 	inputType(All),
-	keyDown(0)
+	keyDown(0),
+	characterDown(0)
 {
 	placeHolder = textboxPlaceholder;
 
