@@ -1107,7 +1107,7 @@ void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrus
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			ToolBrush(i, j, tool, cBrush, strength);
+			Tool(i, j, tool, strength);
 }
 
 int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush)

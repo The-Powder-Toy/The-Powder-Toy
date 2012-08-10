@@ -1142,25 +1142,31 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		enableAltBehaviour();
 		break;
 	case KEY_CTRL:
-		if(drawModeReset)
-			drawModeReset = false;
-		else
-			drawPoint1 = currentMouse;
-		if(shift)
-			drawMode = DrawFill;
-		else
-			drawMode = DrawRect;
+		if(!isMouseDown)
+		{
+			if(drawModeReset)
+				drawModeReset = false;
+			else
+				drawPoint1 = currentMouse;
+			if(shift)
+				drawMode = DrawFill;
+			else
+				drawMode = DrawRect;
+		}
 		enableCtrlBehaviour();
 		break;
 	case KEY_SHIFT:
-		if(drawModeReset)
-			drawModeReset = false;
-		else
-			drawPoint1 = currentMouse;
-		if(ctrl)
-			drawMode = DrawFill;
-		else
-			drawMode = DrawLine;
+		if(!isMouseDown)
+		{
+			if(drawModeReset)
+				drawModeReset = false;
+			else
+				drawPoint1 = currentMouse;
+			if(ctrl)
+				drawMode = DrawFill;
+			else
+				drawMode = DrawLine;
+		}
 		enableShiftBehaviour();
 		break;
 	case ' ': //Space
@@ -1538,10 +1544,13 @@ void GameView::enableShiftBehaviour()
 	if(!shiftBehaviour)
 	{
 		shiftBehaviour = true;
-		if(!ctrlBehaviour)
-			c->SetToolStrength(10.0f);
-		else
-			c->SetToolStrength(1.0f);
+		if(isMouseDown)
+		{
+			if(!ctrlBehaviour)
+				c->SetToolStrength(10.0f);
+			else
+				c->SetToolStrength(1.0f);
+		}
 	}
 }
 
@@ -1584,10 +1593,13 @@ void GameView::enableCtrlBehaviour()
 		saveSimulationButton->Appearance.TextInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
 		searchButton->Appearance.TextInactive = ui::Colour(0, 0, 0);
-		if(!shiftBehaviour)
-			c->SetToolStrength(.1f);
-		else
-			c->SetToolStrength(1.0f);
+		if(isMouseDown)
+		{
+			if(!shiftBehaviour)
+				c->SetToolStrength(.1f);
+			else
+				c->SetToolStrength(1.0f);
+		}
 	}
 }
 
