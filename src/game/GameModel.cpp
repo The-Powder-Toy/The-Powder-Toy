@@ -23,7 +23,8 @@ GameModel::GameModel():
 	clipboard(NULL),
 	stamp(NULL),
 	placeSave(NULL),
-	colour(255, 0, 0, 255)
+	colour(255, 0, 0, 255),
+	toolStrength(1.0f)
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
@@ -293,6 +294,16 @@ void GameModel::AddObserver(GameView * observer){
 	observer->NotifyColourSelectorColourChanged(this);
 	observer->NotifyQuickOptionsChanged(this);
 	UpdateQuickOptions();
+}
+
+void GameModel::SetToolStrength(float value)
+{
+	toolStrength = value;
+}
+
+float GameModel::GetToolStrength()
+{
+	return toolStrength;
 }
 
 void GameModel::SetActiveMenu(Menu * menu)

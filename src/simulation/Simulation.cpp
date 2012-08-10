@@ -1018,7 +1018,7 @@ int Simulation::Tool(int x, int y, int tool, float strength)
 	return 0;
 }
 
-int Simulation::ToolBrush(int x, int y, int tool, Brush * cBrush)
+int Simulation::ToolBrush(int x, int y, int tool, Brush * cBrush, float strength)
 {
 	int rx, ry, j, i;
 	if(!cBrush)
@@ -1032,11 +1032,11 @@ int Simulation::ToolBrush(int x, int y, int tool, Brush * cBrush)
 			{
 				if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
 					continue;
-				Tool(x+i, y+j, tool, 1.0f);
+				Tool(x+i, y+j, tool, strength);
 			}
 }
 
-void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBrush)
+void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength)
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy, rx, ry;
 	float e, de;
@@ -1072,9 +1072,9 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 	for (x=x1; x<=x2; x++)
 	{
 		if (cp)
-			ToolBrush(y, x, tool, cBrush);
+			ToolBrush(y, x, tool, cBrush, strength);
 		else
-			ToolBrush(x, y, tool, cBrush);
+			ToolBrush(x, y, tool, cBrush, strength);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -1082,15 +1082,15 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 			if ((!(rx+ry)) && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
 				if (cp)
-					ToolBrush(y, x, tool, cBrush);
+					ToolBrush(y, x, tool, cBrush, strength);
 				else
-					ToolBrush(x, y, tool, cBrush);
+					ToolBrush(x, y, tool, cBrush, strength);
 			}
 			e -= 1.0f;
 		}
 	}
 }
-void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrush)
+void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength)
 {
 	int i, j;
 	if (x1>x2)
@@ -1107,7 +1107,7 @@ void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrus
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			ToolBrush(i, j, tool, cBrush);
+			ToolBrush(i, j, tool, cBrush, strength);
 }
 
 int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush)

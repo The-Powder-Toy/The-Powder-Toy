@@ -25,10 +25,13 @@ protected:
 	int toolID;
 	string toolName;
 	string toolDescription;
+	float strength;
 public:
 	Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	string GetName();
 	string GetDescription();
+	void SetStrength(float value) { strength = value; }
+	float  GetStrength() { return strength; }
 	VideoBuffer * GetTexture(int width, int height);
 	void SetTextureGen(VideoBuffer * (*textureGen)(int, int, int));
 	virtual ~Tool();

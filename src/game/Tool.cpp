@@ -19,7 +19,8 @@ Tool::Tool(int id, string name, string description, int r, int g, int b, VideoBu
 	colRed(r),
 	colGreen(g),
 	colBlue(b),
-	textureGen(textureGen)
+	textureGen(textureGen),
+	strength(1.0f)
 {
 }
 VideoBuffer * Tool::GetTexture(int width, int height)
@@ -39,13 +40,13 @@ string Tool::GetDescription() { return toolDescription; }
 Tool::~Tool() {}
 void Tool::Click(Simulation * sim, Brush * brush, ui::Point position) { }
 void Tool::Draw(Simulation * sim, Brush * brush, ui::Point position) {
-	sim->ToolBrush(position.X, position.Y, toolID, brush);
+	sim->ToolBrush(position.X, position.Y, toolID, brush, strength);
 }
 void Tool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging) {
-	sim->ToolLine(position1.X, position1.Y, position2.X, position2.Y, toolID, brush);
+	sim->ToolLine(position1.X, position1.Y, position2.X, position2.Y, toolID, brush, strength);
 }
 void Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
-	sim->ToolBox(position1.X, position1.Y, position2.X, position2.Y, toolID, brush);
+	sim->ToolBox(position1.X, position1.Y, position2.X, position2.Y, toolID, brush, strength);
 }
 void Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {};
 
@@ -82,7 +83,9 @@ void WallTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui
 	if(dragging == false && toolID == WL_FAN && sim->bmap[wallY][wallX]==WL_FAN)
 	{
 		float newFanVelX = (position2.X-position1.X)*0.005f;
+		newFanVelX *= strength;
 		float newFanVelY = (position2.Y-position1.Y)*0.005f;
+		newFanVelY *= strength;
 		sim->FloodWalls(position1.X, position1.Y, WL_FLOODHELPER, -1, WL_FAN, 0);
 		for (int j = 0; j < YRES/CELL; j++)
 			for (int i = 0; i < XRES/CELL; i++)
@@ -138,6 +141,7 @@ void WindTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui
 	int radiusX, radiusY, sizeX, sizeY;
 	
 	float strength = dragging?0.01f:0.002f;
+	strength *= this->strength;
 
 	radiusX = brush->GetRadius().X;
 	radiusY = brush->GetRadius().Y;

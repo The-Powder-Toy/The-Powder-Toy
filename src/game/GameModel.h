@@ -55,6 +55,7 @@ private:
 	User currentUser;
 	bool colourSelector;
 	ui::Colour colour;
+	float toolStrength;
 
 	std::string infoTip;
 	std::string toolTip;
@@ -98,6 +99,9 @@ public:
 	void BuildQuickOptionMenu();
 
 	void UpdateQuickOptions();
+
+	void SetToolStrength(float value);
+	float GetToolStrength();
 
 	void SetVote(int direction);
 	SaveInfo * GetSave();

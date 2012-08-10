@@ -1538,6 +1538,10 @@ void GameView::enableShiftBehaviour()
 	if(!shiftBehaviour)
 	{
 		shiftBehaviour = true;
+		if(!ctrlBehaviour)
+			c->SetToolStrength(10.0f);
+		else
+			c->SetToolStrength(1.0f);
 	}
 }
 
@@ -1546,6 +1550,10 @@ void GameView::disableShiftBehaviour()
 	if(shiftBehaviour)
 	{
 		shiftBehaviour = false;
+		if(!ctrlBehaviour)
+			c->SetToolStrength(1.0f);
+		else
+			c->SetToolStrength(.1f);
 	}
 }
 
@@ -1576,6 +1584,10 @@ void GameView::enableCtrlBehaviour()
 		saveSimulationButton->Appearance.TextInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
 		searchButton->Appearance.TextInactive = ui::Colour(0, 0, 0);
+		if(!shiftBehaviour)
+			c->SetToolStrength(.1f);
+		else
+			c->SetToolStrength(1.0f);
 	}
 }
 
@@ -1590,6 +1602,10 @@ void GameView::disableCtrlBehaviour()
 		saveSimulationButton->Appearance.TextInactive = ui::Colour(255, 255, 255);
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.TextInactive = ui::Colour(255, 255, 255);
+		if(!shiftBehaviour)
+			c->SetToolStrength(1.0f);
+		else
+			c->SetToolStrength(10.0f);
 	}
 }
 

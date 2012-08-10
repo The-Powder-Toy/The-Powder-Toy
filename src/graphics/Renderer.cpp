@@ -308,12 +308,18 @@ void Renderer::FinaliseParts()
 #endif
 
 #if defined(OGLI) && !defined(OGLR)
-	render_gravlensing(warpVid);
+	if(display_mode & DISPLAY_WARP)
+	{
+		render_gravlensing(warpVid);
+	}
 	g->draw_image(vid, 0, 0, VIDXRES, VIDYRES, 255);
 #endif
 
 #if !defined(OGLR) && !defined(OGLI)
-	render_gravlensing(warpVid);
+	if(display_mode & DISPLAY_WARP)
+	{
+		render_gravlensing(warpVid);
+	}
 #endif
 }
 

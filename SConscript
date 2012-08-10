@@ -221,6 +221,7 @@ if(GetOption('win')):
 env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")
 env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python generator.py tools $TARGETS $SOURCES")
 t=env.Program(target=programName, source=sources)
+Decider('MD5')
 Default(t)
 
 #if(GetOption('release')):

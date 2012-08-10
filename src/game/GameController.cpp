@@ -248,6 +248,7 @@ void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point poi
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
+	activeTool->SetStrength(gameModel->GetToolStrength());
 	activeTool->DrawRect(sim, cBrush, PointTranslate(point1), PointTranslate(point2));
 }
 
@@ -258,6 +259,7 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
+	activeTool->SetStrength(gameModel->GetToolStrength());
 	activeTool->DrawLine(sim, cBrush, PointTranslate(point1), PointTranslate(point2));
 }
 
@@ -268,6 +270,7 @@ void GameController::DrawFill(int toolSelection, ui::Point point)
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
+	activeTool->SetStrength(gameModel->GetToolStrength());
 	activeTool->DrawFill(sim, cBrush, PointTranslate(point));
 }
 
@@ -288,6 +291,7 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueu
 		}
 	}
 
+	activeTool->SetStrength(gameModel->GetToolStrength());
 	if(!pointQueue.empty())
 	{
 		ui::Point sPoint(0, 0);
@@ -593,6 +597,11 @@ void GameController::Update()
 void GameController::SetZoomEnabled(bool zoomEnabled)
 {
 	gameModel->SetZoomEnabled(zoomEnabled);
+}
+
+void GameController::SetToolStrength(float value)
+{
+	gameModel->SetToolStrength(value);
 }
 
 void GameController::SetZoomPosition(ui::Point position)
