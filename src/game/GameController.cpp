@@ -187,6 +187,10 @@ void GameController::AdjustBrushSize(int direction, bool logarithmic, bool xAxis
 			newSize.X = 0;
 	if(newSize.Y<0)
 			newSize.Y = 0;
+	if(newSize.X>128)
+			newSize.X = 128;
+	if(newSize.Y>128)
+			newSize.Y = 128;
 
 	if(xAxis)
 		gameModel->GetBrush()->SetRadius(ui::Point(newSize.X, oldSize.Y));
