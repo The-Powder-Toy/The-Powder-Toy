@@ -14,11 +14,20 @@ public:
 	ui::DropDown * justification;
 	ui::Textbox * textField;
 	SignTool * tool;
+	sign * movingSign;
+	bool signMoving;
 	Simulation * sim;
 	int signID;
 	ui::Point signPosition;
 	SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_);
 	virtual void OnDraw();
+	virtual void DoDraw();
+	virtual void DoMouseMove(int x, int y, int dx, int dy);
+	virtual void DoMouseDown(int x, int y, unsigned button);
+	virtual void DoMouseUp(int x, int y, unsigned button) { if(!signMoving) ui::Window::DoMouseUp(x, y, button); }
+	virtual void DoMouseWheel(int x, int y, int d) { if(!signMoving) ui::Window::DoMouseWheel(x, y, d); }
+	virtual void DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) { if(!signMoving) ui::Window::DoKeyPress(key, character, shift, ctrl, alt); };
+	virtual void DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) { if(!signMoving) ui::Window::DoKeyRelease(key, character, shift, ctrl, alt); };
 	virtual ~SignWindow() {}
 	virtual void OnTryExit(ui::Window::ExitMethod method);
 	class OkayAction: public ui::ButtonAction
@@ -55,6 +64,35 @@ public:
 			prompt->SelfDestruct();
 		}
 	};
+
+	class SignTextAction: public ui::TextboxAction
+	{
+	public:
+		SignWindow * prompt;
+		SignTextAction(SignWindow * prompt_) { prompt = prompt_; }
+		virtual void TextChangedCallback(ui::Textbox * sender)
+		{
+			if(prompt->signID!=-1)
+			{
+				prompt->sim->signs[prompt->signID].text = sender->GetText();
+			}
+		}
+	};
+
+	class MoveAction: public ui::ButtonAction
+	{
+	public:
+		SignWindow * prompt;
+		MoveAction(SignWindow * prompt_) { prompt = prompt_; }
+		void ActionCallback(ui::Button * sender)
+		{
+			if(prompt->signID!=-1)
+			{
+				prompt->movingSign = &prompt->sim->signs[prompt->signID];
+				prompt->signMoving = true;
+			}
+		}
+	};
 };
 
 SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_):
@@ -62,7 +100,9 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	tool(tool_),
 	signID(signID_),
 	sim(sim_),
-	signPosition(position_)
+	signPosition(position_),
+	movingSign(NULL),
+	signMoving(false)
 {
 	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "New sign");
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
@@ -94,6 +134,7 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 17), "");
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	textField->SetActionCallback(new SignTextAction(this));
 	AddComponent(textField);
 	
 	if(signID!=-1)
@@ -104,9 +145,18 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 		justification->SetOption(sim->signs[signID].ju);
 
 		ui::Point position = ui::Point(justification->Position.X+justification->Size.X+3, 48);
-		ui::Button * deleteButton = new ui::Button(position, ui::Point(Size.X-position.X-8, 16), "Delete");
-		deleteButton->SetIcon(IconDelete);
+		ui::Button * moveButton = new ui::Button(position, ui::Point(((Size.X-position.X-8)/2)-2, 16), "Move");
+		moveButton->SetActionCallback(new MoveAction(this));
+		AddComponent(moveButton);
+
+		position = ui::Point(justification->Position.X+justification->Size.X+3, 48)+ui::Point(moveButton->Size.X+3, 0);
+		ui::Button * deleteButton = new ui::Button(position, ui::Point((Size.X-position.X-8)-1, 16), "Delete");
+		//deleteButton->SetIcon(IconDelete);
 		deleteButton->SetActionCallback(new DeleteAction(this));
+
+		signPosition.X = sim->signs[signID].x;
+		signPosition.Y = sim->signs[signID].y;
+
 		AddComponent(deleteButton);
 	}
 
@@ -117,6 +167,85 @@ void SignWindow::OnTryExit(ui::Window::ExitMethod method)
 {
 	ui::Engine::Ref().CloseWindow();
 	SelfDestruct();
+}
+
+void SignWindow::DoDraw()
+{
+	for(std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
+	{
+		sign & currentSign = *iter;
+		int x, y, w, h;
+		Graphics * g = ui::Engine::Ref().g;
+		char buff[256];  //Buffer
+		currentSign.pos(x, y, w, h);
+		g->clearrect(x, y, w, h);
+		g->drawrect(x, y, w, h, 192, 192, 192, 255);
+
+		//Displaying special information
+		if (currentSign.text == "{p}")
+		{
+			float pressure = 0.0f;
+			if (currentSign.x>=0 && currentSign.x<XRES && currentSign.y>=0 && currentSign.y<YRES)
+				pressure = sim->pv[currentSign.y/CELL][currentSign.x/CELL];
+			sprintf(buff, "Pressure: %3.2f", pressure);  //...pressure
+			g->drawtext(x+3, y+3, buff, 255, 255, 255, 255);
+		}
+		else if (currentSign.text == "{t}")
+		{
+			if (currentSign.x>=0 && currentSign.x<XRES && currentSign.y>=0 && currentSign.y<YRES && sim->pmap[currentSign.y][currentSign.x])
+				sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[currentSign.y][currentSign.x]>>8].temp-273.15);  //...temperature
+			else
+				sprintf(buff, "Temp: 0.00");  //...temperature
+			g->drawtext(x+3, y+3, buff, 255, 255, 255, 255);
+		}
+		else if (sregexp(currentSign.text.c_str(), "^{c:[0-9]*|.*}$")==0)
+		{
+			int sldr, startm;
+			memset(buff, 0, sizeof(buff));
+			for (sldr=3; currentSign.text[sldr-1] != '|'; sldr++)
+				startm = sldr + 1;
+			sldr = startm;
+			while (currentSign.text[sldr] != '}')
+			{
+				buff[sldr - startm] = currentSign.text[sldr];
+				sldr++;
+			}
+			g->drawtext(x+3, y+3, buff, 0, 191, 255, 255);
+		}
+		else 
+		{
+			g->drawtext(x+3, y+3, currentSign.text, 255, 255, 255, 255);
+		}
+	}
+	if(!signMoving)
+	{
+		ui::Window::DoDraw();
+	}
+}
+
+void SignWindow::DoMouseMove(int x, int y, int dx, int dy) {
+	if(!signMoving)
+		ui::Window::DoMouseMove(x, y, dx, dy);
+	else
+	{
+		if(x < XRES && y < YRES)
+		{
+			movingSign->x = x;
+			movingSign->y = y;
+			signPosition.X = x;
+			signPosition.Y = y;
+		}
+	}
+}
+
+void SignWindow::DoMouseDown(int x, int y, unsigned button)
+{
+	if(!signMoving)
+		ui::Window::DoMouseDown(x, y, button);
+	else
+	{
+		signMoving = false;
+	}
 }
 
 void SignWindow::OnDraw()
