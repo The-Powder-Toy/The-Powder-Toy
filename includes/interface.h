@@ -170,8 +170,8 @@ struct save_info
 	int myfav;
 	char *tags;
 	int comment_count;
-	char *comments[6];
-	char *commentauthors[6];
+	char *comments[7];
+	char *commentauthors[7];
 };
 typedef struct save_info save_info;
 

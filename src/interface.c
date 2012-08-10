@@ -4663,7 +4663,7 @@ int info_parse(char *info_data, save_info *info)
 	if (info->date) free(info->date);
 	if (info->description) free(info->description);
 	if (info->tags) free(info->tags);
-	for (i=0;i<6;i++)
+	for (i=0;i<7;i++)
 	{
 		if (info->comments[i]) free(info->comments[i]);
 		if (info->commentauthors[i]) free(info->commentauthors[i]);
@@ -4754,7 +4754,7 @@ int info_parse(char *info_data, save_info *info)
 		}
 		else if (!strncmp(info_data, "COMMENT ", 8))
 		{
-			if (info->comment_count>=6) {
+			if (info->comment_count>=7) {
 				info_data = p;
 				continue;
 			} else {
