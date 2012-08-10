@@ -535,16 +535,16 @@ int process_command_old(pixel *vid_buf, char *console, char *console_error)
 				{
 					if (strcmp(console4, "all")==0)
 					{
-						if (console_parse_type(console5, &j, console_error))
+							j = atoi(console5);
 							for (i=0; i<NPART; i++)
 							{
 								if (parts[i].type)
 									parts[i].ctype = j;
 							}
 					}
-					else if (console_parse_type(console4, &j, console_error)
-							 && console_parse_type(console5, &k, console_error))
+					else if (console_parse_type(console4, &j, console_error))
 					{
+						k = atoi(console5);
 						for (i=0; i<NPART; i++)
 						{
 							if (parts[i].type == j)
@@ -553,9 +553,9 @@ int process_command_old(pixel *vid_buf, char *console, char *console_error)
 					}
 					else
 					{
-						if (console_parse_partref(console4, &i, console_error)
-					        && console_parse_type(console5, &j, console_error))
+						if (console_parse_partref(console4, &i, console_error))
 						{
+							j = atoi(console5);
 							parts[i].ctype = j;
 						}
 					}
