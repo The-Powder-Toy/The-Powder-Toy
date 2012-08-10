@@ -1275,10 +1275,16 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		c->OpenStamps();
 		break;
 	case ']':
-		c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
+		if(zoomEnabled && !zoomCursorFixed)
+			c->AdjustZoomSize(1, !alt);
+		else
+			c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
 		break;
 	case '[':
-		c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
+		if(zoomEnabled && !zoomCursorFixed)
+			c->AdjustZoomSize(-1, !alt);
+		else
+			c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
 		break;
 	case 'i':
 		if(ctrl)

@@ -264,9 +264,9 @@ void GameController::AdjustZoomSize(int direction, bool logarithmic)
 {
 	int newSize;
 	if(logarithmic)
-		newSize = gameModel->GetZoomSize()+direction;
-	else
 		newSize = gameModel->GetZoomSize()+(((gameModel->GetZoomSize()/10)>0?(gameModel->GetZoomSize()/10):1)*direction);
+	else
+		newSize = gameModel->GetZoomSize()+direction;
 	if(newSize<5)
 			newSize = 5;
 	if(newSize>64)
