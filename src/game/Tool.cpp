@@ -20,7 +20,8 @@ Tool::Tool(int id, string name, string description, int r, int g, int b, VideoBu
 	colGreen(g),
 	colBlue(b),
 	textureGen(textureGen),
-	strength(1.0f)
+	strength(1.0f),
+	resolution(1)
 {
 }
 VideoBuffer * Tool::GetTexture(int width, int height)
@@ -72,6 +73,7 @@ void ElementTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) 
 WallTool::WallTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
 Tool(id, name, description, r, g, b, textureGen)
 {
+	resolution = CELL;
 }
 WallTool::~WallTool() {}
 void WallTool::Draw(Simulation * sim, Brush * brush, ui::Point position){

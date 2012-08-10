@@ -1250,11 +1250,11 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brus
 	rx = rx/CELL;
 	x = x/CELL;
 	y = y/CELL;
-	x -= rx/2;
-	y -= ry/2;
-	for (ox=x; ox<=x+rx; ox++)
+	x -= rx;///2;
+	y -= ry;///2;
+	for (ox=x; ox<=x+rx+rx; ox++)
 	{
-		for (oy=y; oy<=y+rx; oy++)
+		for (oy=y; oy<=y+ry+ry; oy++)
 		{
 			if (ox>=0&&ox<XRES/CELL&&oy>=0&&oy<YRES/CELL)
 			{

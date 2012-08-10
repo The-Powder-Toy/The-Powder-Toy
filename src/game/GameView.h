@@ -43,6 +43,7 @@ private:
 	bool altBehaviour;
 	bool showHud;
 	bool showDebug;
+	bool wallBrush;
 	int introText;
 	std::string introTextMessage;
 	int toolIndex;
@@ -144,6 +145,7 @@ public:
 	void NotifyToolTipChanged(GameModel * sender);
 	void NotifyInfoTipChanged(GameModel * sender);
 	void NotifyQuickOptionsChanged(GameModel * sender);
+	void NotifyLastToolChanged(GameModel * sender);
 
 	void ExitPrompt();
 

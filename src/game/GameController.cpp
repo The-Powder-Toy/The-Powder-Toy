@@ -276,6 +276,7 @@ void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point poi
 {
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
+	gameModel->SetLastTool(activeTool);
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
@@ -287,6 +288,7 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 {
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
+	gameModel->SetLastTool(activeTool);
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
@@ -298,6 +300,7 @@ void GameController::DrawFill(int toolSelection, ui::Point point)
 {
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
+	gameModel->SetLastTool(activeTool);
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
@@ -309,6 +312,7 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueu
 {
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
+	gameModel->SetLastTool(activeTool);
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 	{
@@ -701,6 +705,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 {
 	gameModel->SetActiveTool(toolSelection, tool);
 	gameModel->GetRenderer()->gravityZonesEnabled = false;
+	gameModel->SetLastTool(tool);
 	for(int i = 0; i < 3; i++)
 	{
 		if(gameModel->GetActiveTool(i) == gameModel->GetMenuList().at(SC_WALL)->GetToolList().at(WL_GRAV))

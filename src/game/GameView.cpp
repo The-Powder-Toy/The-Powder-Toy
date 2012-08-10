@@ -174,7 +174,8 @@ GameView::GameView():
 	showHud(true),
 	showDebug(false),
 	introText(2048),
-	introTextMessage(introTextData)
+	introTextMessage(introTextData),
+	wallBrush(false)
 {
 	
 	int currentX = 1;
@@ -639,6 +640,18 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 		{
 			toolButtons[i]->SetSelectionState(-1);
 		}
+	}
+}
+
+void GameView::NotifyLastToolChanged(GameModel * sender)
+{
+	if(sender->GetLastTool()->GetResolution() == CELL)
+	{
+		wallBrush = true;
+	}
+	else
+	{
+		wallBrush = false;
 	}
 }
 
@@ -1637,22 +1650,29 @@ void GameView::OnDraw()
 		if(selectMode == SelectNone && activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
 		{
 			ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
+			ui::Point initialDrawPoint = drawPoint1;
+
+			if(wallBrush)
+			{
+				finalCurrentMouse = c->NormaliseBlockCoord(finalCurrentMouse);
+				initialDrawPoint = c->NormaliseBlockCoord(initialDrawPoint);
+			}
 
 			if(drawMode==DrawRect && isMouseDown)
 			{
 				if(drawSnap)
 				{
-					finalCurrentMouse = rectSnapCoords(c->PointTranslate(drawPoint1), finalCurrentMouse);
+					finalCurrentMouse = rectSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 				}
-				activeBrush->RenderRect(ren, c->PointTranslate(drawPoint1), finalCurrentMouse);
+				activeBrush->RenderRect(ren, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 			}
 			else if(drawMode==DrawLine && isMouseDown)
 			{
 				if(drawSnap)
 				{
-					finalCurrentMouse = lineSnapCoords(c->PointTranslate(drawPoint1), finalCurrentMouse);
+					finalCurrentMouse = lineSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 				}
-				activeBrush->RenderLine(ren, c->PointTranslate(drawPoint1), finalCurrentMouse);
+				activeBrush->RenderLine(ren, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 			}
 			else if(drawMode==DrawFill)
 			{
@@ -1660,7 +1680,19 @@ void GameView::OnDraw()
 			}
 			else
 			{
-				activeBrush->RenderPoint(ren, finalCurrentMouse);
+				if(wallBrush)
+				{
+					ui::Point finalBrushRadius = c->NormaliseBlockCoord(activeBrush->GetRadius());
+					ren->xor_line(finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y-finalBrushRadius.Y, finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y-finalBrushRadius.Y);
+					ren->xor_line(finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-1, finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-1);
+				
+					ren->xor_line(finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y-finalBrushRadius.Y+1, finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-2);
+					ren->xor_line(finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y-finalBrushRadius.Y+1, finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-2);
+				}
+				else
+				{
+					activeBrush->RenderPoint(ren, finalCurrentMouse);
+				}
 			}
 		}
 		ren->RenderEnd();

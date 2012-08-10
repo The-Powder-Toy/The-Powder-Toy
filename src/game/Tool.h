@@ -26,10 +26,12 @@ protected:
 	string toolName;
 	string toolDescription;
 	float strength;
+	int resolution;
 public:
 	Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	string GetName();
 	string GetDescription();
+	int GetResolution() { return resolution; }
 	void SetStrength(float value) { strength = value; }
 	float  GetStrength() { return strength; }
 	VideoBuffer * GetTexture(int width, int height);
