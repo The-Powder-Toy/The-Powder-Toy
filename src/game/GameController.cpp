@@ -351,6 +351,7 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueu
 				pointQueue.pop();
 			}
 		}
+		return;
 	}
 
 	activeTool->SetStrength(gameModel->GetToolStrength());
