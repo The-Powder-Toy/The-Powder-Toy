@@ -645,7 +645,7 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 
 void GameView::NotifyLastToolChanged(GameModel * sender)
 {
-	if(sender->GetLastTool()->GetResolution() == CELL)
+	if(sender->GetLastTool() && sender->GetLastTool()->GetResolution() == CELL)
 	{
 		wallBrush = true;
 	}
