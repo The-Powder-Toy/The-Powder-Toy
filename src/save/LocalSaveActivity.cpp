@@ -1,3 +1,8 @@
+#ifdef WIN
+#include <direct.h>
+#else
+#include <sys/stat.h>
+#endif
 #include "LocalSaveActivity.h"
 #include "interface/Label.h"
 #include "interface/Textbox.h"
@@ -105,6 +110,11 @@ void LocalSaveActivity::Save()
 
 void LocalSaveActivity::saveWrite(std::string finalFilename)
 {
+#ifdef WIN
+	_mkdir(LOCAL_SAVE_DIR);
+#else
+	mkdir(LOCAL_SAVE_DIR, 0755);
+#endif
 	Client::Ref().WriteFile(save.GetGameSave()->Serialise(), finalFilename);
 }
 
