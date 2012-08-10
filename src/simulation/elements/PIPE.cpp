@@ -97,7 +97,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 		{
 			if (parts[i].flags&PFLAG_NORMALSPEED)//skip particle push to prevent particle number being higher causeing speed up
 			{
-				parts[i].tmp2 &= ~PFLAG_NORMALSPEED;
+				parts[i].flags &= ~PFLAG_NORMALSPEED;
 			}
 			else
 			{
