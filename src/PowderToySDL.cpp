@@ -471,10 +471,10 @@ int main(int argc, char * argv[])
 				engine->Exit();
 				break;
 			case SDL_KEYDOWN:
-				engine->onKeyPress(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_SHIFT, event.key.keysym.mod&KEY_MOD_CONTROL, event.key.keysym.mod&KEY_MOD_ALT);
+				engine->onKeyPress(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_LSHIFT, event.key.keysym.mod&KEY_MOD_LCONTROL, event.key.keysym.mod&KEY_MOD_LALT);
 				break;
 			case SDL_KEYUP:
-				engine->onKeyRelease(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_SHIFT, event.key.keysym.mod&KEY_MOD_CONTROL, event.key.keysym.mod&KEY_MOD_ALT);
+				engine->onKeyRelease(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_LSHIFT, event.key.keysym.mod&KEY_MOD_LCONTROL, event.key.keysym.mod&KEY_MOD_LALT);
 				break;
 			case SDL_MOUSEMOTION:
 				engine->onMouseMove(event.motion.x*inputScale, event.motion.y*inputScale);
