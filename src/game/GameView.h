@@ -119,6 +119,7 @@ private:
 	void disableAltBehaviour();
 public:
     GameView();
+    virtual ~GameView();
 
     //Breaks MVC, but any other way is going to be more of a mess.
     ui::Point GetMousePosition();

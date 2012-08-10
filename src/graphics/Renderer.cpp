@@ -2477,6 +2477,13 @@ unsigned int Renderer::GetColourMode()
 
 Renderer::~Renderer()
 {
+#if !defined(OGLR)
+#if defined(OGLI)
+	delete[] vid;
+#endif
+	delete[] persistentVid;
+	delete[] warpVid;
+#endif
 	free(graphicscache);
 	free(flm_data);
 	free(plasma_data);

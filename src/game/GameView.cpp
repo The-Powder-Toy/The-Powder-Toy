@@ -496,6 +496,35 @@ GameView::GameView():
 	renderModePresets[9].ColourMode = COLOUR_GRAD;
 }
 
+GameView::~GameView()
+{
+	delete[] renderModePresets;
+
+	if(!colourRSlider->GetParentWindow())
+		delete colourRSlider;
+
+	if(!colourGSlider->GetParentWindow())
+		delete colourGSlider;
+
+	if(!colourBSlider->GetParentWindow())
+		delete colourBSlider;
+
+	if(!colourASlider->GetParentWindow())
+		delete colourASlider;
+
+	if(!colourRValue->GetParentWindow())
+		delete colourRValue;
+
+	if(!colourGValue->GetParentWindow())
+		delete colourGValue;
+
+	if(!colourBValue->GetParentWindow())
+		delete colourBValue;
+
+	if(!colourAValue->GetParentWindow())
+		delete colourAValue;
+}
+
 class GameView::MenuAction: public ui::ButtonAction
 {
 	GameView * v;
