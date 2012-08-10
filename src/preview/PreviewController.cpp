@@ -150,9 +150,9 @@ void PreviewController::Exit()
 	{
 		ui::Engine::Ref().CloseWindow();
 	}
+	HasExited = true;
 	if(callback)
 		callback->ControllerExit();
-	HasExited = true;
 }
 
 PreviewController::~PreviewController() {

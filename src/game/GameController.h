@@ -8,6 +8,7 @@
 #include "simulation/Simulation.h"
 #include "search/SearchController.h"
 #include "render/RenderController.h"
+#include "preview/PreviewController.h"
 #include "login/LoginController.h"
 #include "tags/TagsController.h"
 #include "console/ConsoleController.h"
@@ -30,6 +31,7 @@ class GameController: public ClientListener
 {
 private:
 	//Simulation * sim;
+	PreviewController * activePreview;
 	GameView * gameView;
 	GameModel * gameModel;
 	SearchController * search;
@@ -49,6 +51,8 @@ public:
 	class TagsCallback;
 	class StampsCallback;
 	class OptionsCallback;
+	class SaveOpenCallback;
+	friend class SaveOpenCallback;
 	GameController();
 	~GameController();
 	GameView * GetView();
@@ -91,6 +95,7 @@ public:
 	void OpenSearch();
 	void OpenLogin();
 	void OpenTags();
+	void OpenSavePreview(int saveID, int saveDate);
 	void OpenLocalSaveWindow();
 	void OpenLocalBrowse();
 	void OpenOptions();

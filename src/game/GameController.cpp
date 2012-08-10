@@ -2,6 +2,7 @@
 #include <iostream>
 #include <queue>
 #include "Config.h"
+#include "Format.h"
 #include "GameController.h"
 #include "GameModel.h"
 #include "client/SaveInfo.h"
@@ -48,6 +49,27 @@ public:
 			try
 			{
 				cc->gameModel->SetSave(cc->search->GetLoadedSave());
+			}
+			catch(GameModelException & ex)
+			{
+				new ErrorMessage("Cannot open save", ex.what());
+			}
+		}
+	}
+};
+
+class GameController::SaveOpenCallback: public ControllerCallback
+{
+	GameController * cc;
+public:
+	SaveOpenCallback(GameController * cc_) { cc = cc_; }
+	virtual void ControllerExit()
+	{
+		if(cc->activePreview->GetDoOpen() && cc->activePreview->GetSave())
+		{
+			try
+			{
+				cc->LoadSave(cc->activePreview->GetSave());
 			}
 			catch(GameModelException & ex)
 			{
@@ -114,6 +136,7 @@ GameController::GameController():
 		console(NULL),
 		tagsWindow(NULL),
 		options(NULL),
+		activePreview(NULL),
 		HasDone(false)
 {
 	gameView = new GameView();
@@ -150,6 +173,10 @@ GameController::~GameController()
 	if(console)
 	{
 		delete console;
+	}
+	if(activePreview)
+	{
+		delete activePreview;
 	}
 	if(ui::Engine::Ref().GetWindow() == gameView)
 	{
@@ -420,7 +447,41 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 
 bool GameController::MouseUp(int x, int y, unsigned button)
 {
-	return commandInterface->OnMouseUp(x, y, button);
+	bool ret = commandInterface->OnMouseUp(x, y, button);
+	if(ret && y<YRES && x<XRES)
+	{
+		if (true)//If it's not a sign tool
+		{
+			Simulation * sim = gameModel->GetSimulation();
+			for (std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
+			{
+				int signx, signy, signw, signh;
+				(*iter).pos(signx, signy, signw, signh);
+				if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
+				{
+					if (sregexp((*iter).text.c_str(), "^{c:[0-9]*|.*}$")==0)
+					{
+						const char * signText = (*iter).text.c_str();
+						char buff[256];
+						int sldr;
+
+						memset(buff, 0, sizeof(buff));
+
+						for (sldr=3; signText[sldr] != '|'; sldr++)
+							buff[sldr-3] = signText[sldr];
+
+						buff[sldr-3] = '\0';
+
+						int tempSaveID = format::StringToNumber<int>(std::string(buff));
+						if(tempSaveID)
+							OpenSavePreview(tempSaveID, 0);
+						break;
+					}
+				}
+			}
+		}
+	}
+	return ret;
 }
 
 bool GameController::MouseWheel(int x, int y, int d)
@@ -622,6 +683,12 @@ void GameController::Update()
 		search = NULL;
 	}
 
+	if(activePreview && activePreview->HasExited)
+	{
+		delete activePreview;
+		activePreview = NULL;
+	}
+
 	if(loginWindow && loginWindow->HasExited)
 	{
 		delete loginWindow;
@@ -753,6 +820,12 @@ void GameController::LoadSaveFile(SaveFile * file)
 void GameController::LoadSave(SaveInfo * save)
 {
 	gameModel->SetSave(save);
+}
+
+void GameController::OpenSavePreview(int saveID, int saveDate)
+{
+	activePreview = new PreviewController(saveID, new SaveOpenCallback(this));
+	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 
 void GameController::OpenLocalBrowse()
