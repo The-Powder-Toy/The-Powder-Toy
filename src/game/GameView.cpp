@@ -1318,7 +1318,7 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 		disableShiftBehaviour();
 		break;
 	case 'z':
-		if(!zoomCursorFixed)
+		if(!zoomCursorFixed && !alt)
 			c->SetZoomEnabled(false);
 		break;
 	}
@@ -1647,7 +1647,7 @@ void GameView::OnDraw()
 	{
 		ren->clearScreen(1.0f);
 		ren->RenderBegin();
-		if(selectMode == SelectNone && activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
+		if(selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
 		{
 			ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
 			ui::Point initialDrawPoint = drawPoint1;
