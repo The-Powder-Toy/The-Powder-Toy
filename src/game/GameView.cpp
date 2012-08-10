@@ -1589,10 +1589,10 @@ void GameView::enableCtrlBehaviour()
 		ctrlBehaviour = true;
 
 		//Show HDD save & load buttons
-		saveSimulationButton->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
-		saveSimulationButton->Appearance.TextInactive = ui::Colour(0, 0, 0);
-		searchButton->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
-		searchButton->Appearance.TextInactive = ui::Colour(0, 0, 0);
+		saveSimulationButton->Appearance.BackgroundInactive = saveSimulationButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
+		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(0, 0, 0);
+		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
+		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 		if(isMouseDown)
 		{
 			if(!shiftBehaviour)
@@ -1611,9 +1611,11 @@ void GameView::disableCtrlBehaviour()
 
 		//Hide HDD save & load buttons
 		saveSimulationButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
-		saveSimulationButton->Appearance.TextInactive = ui::Colour(255, 255, 255);
+		saveSimulationButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
+		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(255, 255, 255);
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
-		searchButton->Appearance.TextInactive = ui::Colour(255, 255, 255);
+		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
+		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(255, 255, 255);
 		if(!shiftBehaviour)
 			c->SetToolStrength(1.0f);
 		else
