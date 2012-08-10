@@ -1490,7 +1490,6 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 	}
 	notificationComponents.clear();
 
-
 	std::vector<Notification*> notifications = sender->GetNotifications();
 
 	int currentY = YRES-23;

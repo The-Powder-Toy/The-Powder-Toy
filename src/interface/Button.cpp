@@ -151,10 +151,9 @@ void Button::OnMouseUp(int x, int y, unsigned int button)
 
     if(isButtonDown)
     {
+	    isButtonDown = false;
 		DoAction();
     }
-
-    isButtonDown = false;
 }
 
 void Button::OnMouseClick(int x, int y, unsigned int button)
