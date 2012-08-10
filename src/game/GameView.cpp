@@ -1267,6 +1267,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case '[':
 		c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
 		break;
+	case 'i':
+		if(ctrl)
+			c->Install();
+		break;
 	}
 
 	if(key >= '0' && key <= '9')

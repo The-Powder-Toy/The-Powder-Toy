@@ -86,6 +86,8 @@ public:
 	std::vector<std::string> DirectorySearch(std::string directory, std::string search, std::vector<std::string> extensions);
 	std::vector<std::string> DirectorySearch(std::string directory, std::string search, std::string extension);
 
+	bool DoInstallation();
+
 	std::vector<unsigned char> ReadFile(std::string filename);
 
 	void Initialise(std::string proxyString);

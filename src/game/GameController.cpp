@@ -10,6 +10,7 @@
 #include "login/LoginController.h"
 #include "interface/Point.h"
 #include "dialogues/ErrorMessage.h"
+#include "dialogues/InformationMessage.h"
 #include "dialogues/ConfirmPrompt.h"
 #include "GameModelException.h"
 #include "simulation/Air.h"
@@ -170,6 +171,36 @@ void GameController::PlaceSave(ui::Point position)
 		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetPlaceSave());
 		gameModel->SetPaused(gameModel->GetPaused());
 	}
+}
+
+void GameController::Install()
+{
+#if defined(MACOSX)
+	new InformationMessage("No Installation necessary", "You don't need to install The Powder Toy on Mac OS X");
+#elif defined(WIN) || defined(LIN)
+	class InstallConfirmation: public ConfirmDialogueCallback {
+	public:
+		GameController * c;
+		InstallConfirmation(GameController * c_) {	c = c_;	}
+		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+			if (result == ConfirmPrompt::ResultOkay)
+			{
+				if(Client::Ref().DoInstallation())
+				{
+					new InformationMessage("Install Success", "The installation completed without error");
+				}
+				else
+				{
+					new ErrorMessage("Could not install", "The installation did not complete due to an error");
+				}
+			}
+		}
+		virtual ~InstallConfirmation() { }
+	};
+	new ConfirmPrompt("Install The Powder Toy", "You are about to install The Powder Toy onto this computer", new InstallConfirmation(this));
+#else
+	new ErrorMessage("Cannot install", "You cannot install The Powder Toy on this platform");
+#endif
 }
 
 void GameController::AdjustBrushSize(int direction, bool logarithmic, bool xAxis, bool yAxis)

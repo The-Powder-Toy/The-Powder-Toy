@@ -8,7 +8,15 @@
 #include <stdio.h>
 #include <deque>
 
+#ifdef MACOSX
+#include <mach-o/dyld.h>
+#include <ApplicationServices/ApplicationServices.h>
+#endif
+
 #ifdef WIN
+#include <shlobj.h>
+#include <shlwapi.h>
+#include <windows.h>
 #include <direct.h>
 #else
 #include <sys/stat.h>
@@ -122,6 +130,185 @@ void Client::Initialise(std::string proxyString)
 
 	//Begin version check
 	versionCheckRequest = http_async_req_start(NULL, SERVER "/Download/Version.json", NULL, 0, 1);
+}
+
+bool Client::DoInstallation()
+{
+#if defined(WIN)
+	int returnval;
+	LONG rresult;
+	HKEY newkey;
+	char *currentfilename = exe_name();
+	char *iconname = NULL;
+	char *opencommand = NULL;
+	//char AppDataPath[MAX_PATH];
+	char *AppDataPath = NULL;
+	iconname = (char*)malloc(strlen(currentfilename)+6);
+	sprintf(iconname, "%s,-102", currentfilename);
+	
+	//Create Roaming application data folder
+	/*if(!SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA|CSIDL_FLAG_CREATE, NULL, 0, AppDataPath))) 
+	{
+		returnval = 0;
+		goto finalise;
+	}*/
+	
+	//AppDataPath = _getcwd(NULL, 0);
+
+	//Move Game executable into application data folder
+	//TODO: Implement
+	
+	opencommand = (char*)malloc(strlen(currentfilename)+53+strlen(AppDataPath));
+	/*if((strlen(AppDataPath)+strlen(APPDATA_SUBDIR "\\Powder Toy"))<MAX_PATH)
+	{
+		strappend(AppDataPath, APPDATA_SUBDIR);
+		_mkdir(AppDataPath);
+		strappend(AppDataPath, "\\Powder Toy");
+		_mkdir(AppDataPath);
+	} else {
+		returnval = 0;
+		goto finalise;
+	}*/
+	sprintf(opencommand, "\"%s\" open \"%%1\" ddir \"%s\"", currentfilename, AppDataPath);
+
+	//Create extension entry
+	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.cps", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
+	if (rresult != ERROR_SUCCESS) {
+		returnval = 0;
+		goto finalise;
+	}
+	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)"PowderToySave", strlen("PowderToySave")+1);
+	if (rresult != ERROR_SUCCESS) {
+		RegCloseKey(newkey);
+		returnval = 0;
+		goto finalise;
+	}
+	RegCloseKey(newkey);
+
+	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.stm", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
+	if (rresult != ERROR_SUCCESS) {
+		returnval = 0;
+		goto finalise;
+	}
+	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)"PowderToySave", strlen("PowderToySave")+1);
+	if (rresult != ERROR_SUCCESS) {
+		RegCloseKey(newkey);
+		returnval = 0;
+		goto finalise;
+	}
+	RegCloseKey(newkey);
+
+	//Create program entry
+	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
+	if (rresult != ERROR_SUCCESS) {
+		returnval = 0;
+		goto finalise;
+	}
+	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)"Powder Toy Save", strlen("Powder Toy Save")+1);
+	if (rresult != ERROR_SUCCESS) {
+		RegCloseKey(newkey);
+		returnval = 0;
+		goto finalise;
+	}
+	RegCloseKey(newkey);
+
+	//Set DefaultIcon
+	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave\\DefaultIcon", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
+	if (rresult != ERROR_SUCCESS) {
+		returnval = 0;
+		goto finalise;
+	}
+	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)iconname, strlen(iconname)+1);
+	if (rresult != ERROR_SUCCESS) {
+		RegCloseKey(newkey);
+		returnval = 0;
+		goto finalise;
+	}
+	RegCloseKey(newkey);
+
+	//Set Launch command
+	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\PowderToySave\\shell\\open\\command", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
+	if (rresult != ERROR_SUCCESS) {
+		returnval = 0;
+		goto finalise;
+	}
+	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)opencommand, strlen(opencommand)+1);
+	if (rresult != ERROR_SUCCESS) {
+		RegCloseKey(newkey);
+		returnval = 0;
+		goto finalise;
+	}
+	RegCloseKey(newkey);
+	
+	returnval = 1;
+	finalise:
+
+	if(iconname) free(iconname);
+	if(opencommand) free(opencommand);
+	if(currentfilename) free(currentfilename);
+	
+	return returnval;
+#elif defined(LIN)
+	#include "icondoc.h"
+
+	char *currentfilename = exe_name();
+	FILE *f;
+	char *mimedata =
+"<?xml version=\"1.0\"?>\n"
+"	<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>\n"
+"	<mime-type type=\"application/vnd.powdertoy.save\">\n"
+"		<comment>Powder Toy save</comment>\n"
+"		<glob pattern=\"*.cps\"/>\n"
+"		<glob pattern=\"*.stm\"/>\n"
+"	</mime-type>\n"
+"</mime-info>\n";
+	f = fopen("powdertoy-save.xml", "wb");
+	if (!f)
+		return 0;
+	fwrite(mimedata, 1, strlen(mimedata), f);
+	fclose(f);
+
+	char *desktopfiledata_tmp =
+"[Desktop Entry]\n"
+"Type=Application\n"
+"Name=Powder Toy\n"
+"Comment=Physics sandbox game\n"
+"MimeType=application/vnd.powdertoy.save;\n"
+"NoDisplay=true\n";
+	char *desktopfiledata = (char *)malloc(strlen(desktopfiledata_tmp)+strlen(currentfilename)+100);
+	strcpy(desktopfiledata, desktopfiledata_tmp);
+	strappend(desktopfiledata, "Exec=");
+	strappend(desktopfiledata, currentfilename);
+	strappend(desktopfiledata, " open %f\n");
+	f = fopen("powdertoy-tpt.desktop", "wb");
+	if (!f)
+		return 0;
+	fwrite(desktopfiledata, 1, strlen(desktopfiledata), f);
+	fclose(f);
+	system("xdg-mime install powdertoy-save.xml");
+	system("xdg-desktop-menu install powdertoy-tpt.desktop");
+	f = fopen("powdertoy-save-32.png", "wb");
+	if (!f)
+		return 0;
+	fwrite(icon_doc_32_png, 1, sizeof(icon_doc_32_png), f);
+	fclose(f);
+	f = fopen("powdertoy-save-16.png", "wb");
+	if (!f)
+		return 0;
+	fwrite(icon_doc_16_png, 1, sizeof(icon_doc_16_png), f);
+	fclose(f);
+	system("xdg-icon-resource install --noupdate --context mimetypes --size 32 powdertoy-save-32.png application-vnd.powdertoy.save");
+	system("xdg-icon-resource install --noupdate --context mimetypes --size 16 powdertoy-save-16.png application-vnd.powdertoy.save");
+	system("xdg-icon-resource forceupdate");
+	system("xdg-mime default powdertoy-tpt.desktop application/vnd.powdertoy.save");
+	unlink("powdertoy-save-32.png");
+	unlink("powdertoy-save-16.png");
+	unlink("powdertoy-save.xml");
+	unlink("powdertoy-tpt.desktop");
+	return true;
+#elif defined MACOSX
+	return false;
+#endif
 }
 
 void Client::SetProxy(std::string proxy)

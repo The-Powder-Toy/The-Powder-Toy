@@ -63,6 +63,8 @@ public:
 	void Tick();
 	void Exit();
 
+	void Install();
+
 	void LoadRenderPreset(RenderPreset preset);
 	void SetZoomEnabled(bool zoomEnable);
 	void SetZoomPosition(ui::Point position);
