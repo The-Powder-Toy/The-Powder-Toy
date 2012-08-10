@@ -1923,15 +1923,15 @@ int main(int argc, char *argv[])
 				}
 				if (DEBUG_MODE)
 				{
-					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d, Tmp:%d", nametext, pv[y/CELL][x/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life, parts[cr>>8].tmp);
+					sprintf(heattext, "%s, Temp: %4.2f C, Life: %d, Tmp:%d, Pressure: %3.2f", nametext, parts[cr>>8].temp-273.15f, parts[cr>>8].life, parts[cr>>8].tmp, pv[y/CELL][x/CELL]);
 					sprintf(coordtext, "#%d, X:%d Y:%d", cr>>8, x, y);
 				}
 				else
 				{
 #ifdef BETA
-					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C, Life: %d, Tmp:%d", nametext, pv[y/CELL][x/CELL], parts[cr>>8].temp-273.15f, parts[cr>>8].life, parts[cr>>8].tmp);
+					sprintf(heattext, "%s, Temp: %4.2f C, Life: %d, Tmp:%d, Pressure: %3.2f", nametext, parts[cr>>8].temp-273.15f, parts[cr>>8].life, parts[cr>>8].tmp, pv[y/CELL][x/CELL]);
 #else
-					sprintf(heattext, "%s, Pressure: %3.2f, Temp: %4.2f C", nametext, pv[y/CELL][x/CELL], parts[cr>>8].temp-273.15f);
+					sprintf(heattext, "%s, Temp: %4.2f C, Pressure: %3.2f", nametext, parts[cr>>8].temp-273.15f, pv[y/CELL][x/CELL]);
 #endif
 				}
 				if ((cr&0xFF)==PT_PHOT) wavelength_gfx = parts[cr>>8].ctype;
@@ -1946,6 +1946,14 @@ int main(int argc, char *argv[])
 					else
 						sprintf(coordtext, "X:%d Y:%d", x, y);
 				}
+			}
+		}
+		else
+		{
+			sprintf(heattext, "Empty");
+			if (DEBUG_MODE)
+			{
+				sprintf(coordtext, "X:%d Y:%d", x, y);
 			}
 		}
 
