@@ -535,28 +535,38 @@ int process_command_old(pixel *vid_buf, char *console, char *console_error)
 			{
 				if (strcmp(console4, "all")==0)
 				{
-					j = atoi(console5);
-					for (i=0; i<NPART; i++)
+					if (console_parse_type(console5, &j, console_error) || (j = atoi(console5)) || !strcmp(console5,"0") || !strcasecmp(console5,"NONE"))
 					{
-						if (parts[i].type)
-							parts[i].ctype = j;
+						strcpy(console_error, "");
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type)
+								parts[i].ctype = j;
+						}
 					}
 				}
 				else if (console_parse_type(console4, &j, console_error))
 				{
-					k = atoi(console5);
-					for (i=0; i<NPART; i++)
+					if (console_parse_type(console5, &k, console_error) || (k = atoi(console5)) || !strcmp(console5,"0") || !strcasecmp(console5,"NONE"))
 					{
-						if (parts[i].type == j)
-							parts[i].ctype = k;
+						strcpy(console_error, "");
+						for (i=0; i<NPART; i++)
+						{
+							if (parts[i].type == j)
+								parts[i].ctype = k;
+						}
 					}
 				}
 				else
 				{
 					if (console_parse_partref(console4, &i, console_error))
 					{
-						j = atoi(console5);
-						parts[i].ctype = j;
+						if (console_parse_type(console5, &j, console_error) || (j = atoi(console5)) || !strcmp(console5,"0") || !strcasecmp(console5,"NONE"))
+						{
+							strcpy(console_error, "");
+							j = atoi(console5);
+							parts[i].ctype = j;
+						}
 					}
 				}
 			}
