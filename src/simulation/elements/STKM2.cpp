@@ -4,7 +4,7 @@ Element_STKM2::Element_STKM2()
 {
     Identifier = "DEFAULT_PT_STKM2";
     Name = "STK2";
-    Colour = PIXPACK(0x000000);
+    Colour = PIXPACK(0x6464FF);
     MenuVisible = 1;
     MenuSection = SC_SPECIAL;
     Enabled = 1;
@@ -43,7 +43,7 @@ Element_STKM2::Element_STKM2()
     HighTemperatureTransition = PT_FIRE;
     
     Update = &Element_STKM2::update;
-    Graphics = &Element_STKM2::graphics;
+    Graphics = &Element_STKM::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_STKM2 static int update(UPDATE_FUNC_ARGS)
@@ -52,26 +52,5 @@ int Element_STKM2::update(UPDATE_FUNC_ARGS)
 	Element_STKM::run_stickman(&sim->player2, UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
 }
-
-
-
-//#TPT-Directive ElementHeader Element_STKM2 static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_STKM2::graphics(GRAPHICS_FUNC_ARGS)
-
-{	
-	*pixel_mode = PSPEC_STICKMAN;
-	/*if ((int)sim->player2.elem<PT_NUM)
-	{
-		*colr = PIXR(elements[sim->player2.elem].pcolors);
-		*colg = PIXG(elements[sim->player2.elem].pcolors);
-		*colb = PIXB(elements[sim->player2.elem].pcolors);
-	}
-	else*/
-	{
-		*colr = *colg = *colb = 255;
-	}
-	return 1;
-}
-
 
 Element_STKM2::~Element_STKM2() {}

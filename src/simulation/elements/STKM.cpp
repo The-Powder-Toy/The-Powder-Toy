@@ -4,7 +4,7 @@ Element_STKM::Element_STKM()
 {
     Identifier = "DEFAULT_PT_STKM";
     Name = "STKM";
-    Colour = PIXPACK(0x000000);
+    Colour = PIXPACK(0xFFE0A0);
     MenuVisible = 1;
     MenuSection = SC_SPECIAL;
     Enabled = 1;
@@ -58,19 +58,9 @@ int Element_STKM::update(UPDATE_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_STKM static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
-
 {	
+	*colr = *colg = *colb = *cola = 0;
 	*pixel_mode = PSPEC_STICKMAN;
-	/*if ((int)sim->player.elem<PT_NUM)
-	{
-		*colr = PIXR(elements[sim->player.elem].pcolors);
-		*colg = PIXG(elements[sim->player.elem].pcolors);
-		*colb = PIXB(elements[sim->player.elem].pcolors);
-	}
-	else*/
-	{
-		*colr = *colg = *colb = 255;
-	}
 	return 1;
 }
 

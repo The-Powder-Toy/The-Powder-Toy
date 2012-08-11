@@ -2373,7 +2373,7 @@ void Renderer::CompileRenderMode()
 
 void Renderer::ClearAccumulation()
 {
-	//Fire
+	emp_decor = 0;
 	std::fill(fire_r[0]+0, fire_r[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
 	std::fill(fire_g[0]+0, fire_g[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
 	std::fill(fire_b[0]+0, fire_b[(YRES/CELL)-1]+((XRES/CELL)-1), 0);

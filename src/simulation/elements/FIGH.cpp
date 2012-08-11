@@ -4,7 +4,7 @@ Element_FIGH::Element_FIGH()
 {
     Identifier = "DEFAULT_PT_FIGH";
     Name = "FIGH";
-    Colour = PIXPACK(0x000000);
+    Colour = PIXPACK(0xFFE0A0);
     MenuVisible = 1;
     MenuSection = SC_SPECIAL;
     Enabled = 1;
@@ -43,7 +43,7 @@ Element_FIGH::Element_FIGH()
     HighTemperatureTransition = PT_FIRE;
     
     Update = &Element_FIGH::update;
-    Graphics = &Element_FIGH::graphics;
+    Graphics = &Element_STKM::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_FIGH static int update(UPDATE_FUNC_ARGS)
@@ -136,27 +136,5 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	Element_STKM::run_stickman(figh, UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
 }
-
-
-
-//#TPT-Directive ElementHeader Element_FIGH static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_FIGH::graphics(GRAPHICS_FUNC_ARGS)
-
-{	
-	playerst * cplayer;// = &sim->fighters[(unsigned char)cpart->tmp];
-	*pixel_mode = PSPEC_STICKMAN;
-	/*if (cplayer->elem<PT_NUM)
-	{
-		*colr = PIXR(sim->elements[cplayer->elem].pcolors);
-		*colg = PIXG(sim->elements[cplayer->elem].pcolors);
-		*colb = PIXB(sim->elements[cplayer->elem].pcolors);
-	}
-	else*/
-	{
-		*colr = *colg = *colb = 255;
-	}
-	return 1;
-}
-
 
 Element_FIGH::~Element_FIGH() {}

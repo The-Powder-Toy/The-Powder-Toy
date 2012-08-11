@@ -4,7 +4,7 @@ Element_WARP::Element_WARP()
 {
     Identifier = "DEFAULT_PT_WARP";
     Name = "WARP";
-    Colour = PIXPACK(0x000000);
+    Colour = PIXPACK(0x101010);
     MenuVisible = 1;
     MenuSection = SC_NUCLEAR;
     Enabled = 1;
@@ -87,7 +87,7 @@ int Element_WARP::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_WARP static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_WARP::graphics(GRAPHICS_FUNC_ARGS)
 {
-	*cola = 0;
+	*colr = *colg = *colb = *cola = 0;
 	*pixel_mode &= ~PMODE;
 	return 0;
 }
