@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdlib>
 #include <cstring>
+#include <vector>
 #if defined(OGLI)
 #include "OpenGLHeaders.h"
 #endif
@@ -134,6 +135,8 @@ public:
 	static int textwrapheight(char *s, int width);
 	static int textwidth(const char *s);
 	static void textsize(const char * s, int & width, int & height);
+
+	VideoBuffer DumpFrame();
 
 	void Acquire();
 	void Release();

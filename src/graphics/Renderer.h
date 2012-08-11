@@ -113,6 +113,8 @@ public:
 	void draw_image(pixel *img, int x, int y, int w, int h, int a);
 #endif
 
+	VideoBuffer DumpFrame();
+
 	void drawblob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb);
 	//...
 	//Display mode modifiers

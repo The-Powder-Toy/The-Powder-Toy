@@ -97,6 +97,11 @@ if not conf.CheckLib('bz2'):
     print "libbz2 not found or not installed"
     raise SystemExit(1)
 
+#Check for zlib
+if not conf.CheckLib('z'):
+    print "libz not found or not installed"
+    raise SystemExit(1)
+
 if not conf.CheckCHeader("bzlib.h"):
     print "bzip2 headers not found"
     raise SystemExit(1)

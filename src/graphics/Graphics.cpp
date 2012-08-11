@@ -909,3 +909,12 @@ void Graphics::draw_image(VideoBuffer * vidBuf, int x, int y, int a)
 	draw_image(vidBuf->Buffer, x, y, vidBuf->Width, vidBuf->Height, a);
 }
 
+VideoBuffer Graphics::DumpFrame()
+{
+#ifdef OGLI
+#else
+	VideoBuffer newBuffer(XRES+BARSIZE, YRES+MENUSIZE);
+	std::copy(vid, vid+((XRES+BARSIZE)*(YRES+MENUSIZE)), newBuffer.Buffer);
+	return newBuffer;
+#endif
+}

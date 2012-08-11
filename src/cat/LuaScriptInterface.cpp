@@ -7,8 +7,11 @@
 
 #include <string>
 #include "Config.h"
+#include "Format.h"
 #include "LuaScriptInterface.h"
 #include "TPTScriptInterface.h"
+#include "dialogues/ErrorMessage.h"
+#include "dialogues/InformationMessage.h"
 #include "simulation/Simulation.h"
 #include "game/GameModel.h"
 #include "LuaScriptHelper.h"
@@ -258,7 +261,7 @@ bool LuaScriptInterface::OnMouseWheel(int x, int y, int d)
 
 bool LuaScriptInterface::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	int modifiers;
+	int modifiers = 0;
 	if(shift)
 		modifiers |= 0x001;
 	if(ctrl)
@@ -270,7 +273,7 @@ bool LuaScriptInterface::OnKeyPress(int key, Uint16 character, bool shift, bool 
 
 bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	int modifiers;
+	int modifiers = 0;
 	if(shift)
 		modifiers |= 0x001;
 	if(ctrl)
@@ -994,16 +997,8 @@ int luatpt_graphics_func(lua_State *l)
 
 int luatpt_error(lua_State* l)
 {
-	/*char *error = "";
-	error = mystrdup((char*)luaL_optstring(l, 1, "Error text"));
-	if(vid_buf!=NULL){
-		error_ui(vid_buf, 0, error);
-		free(error);
-		return 0;
-	}
-	free(error);
-	return luaL_error(l, "Screen buffer does not exist");*/
-	//TODO IMPLEMENT
+	std::string errorMessage = std::string(luaL_optstring(l, 1, "Error text"));
+	new ErrorMessage("Error", errorMessage);
 	return 0;
 }
 int luatpt_drawtext(lua_State* l)
@@ -1539,7 +1534,7 @@ int luatpt_get_property(lua_State* l)
 
 int luatpt_drawpixel(lua_State* l)
 {
-	/*int x, y, r, g, b, a;
+	int x, y, r, g, b, a;
 	x = luaL_optint(l, 1, 0);
 	y = luaL_optint(l, 2, 0);
 	r = luaL_optint(l, 3, 255);
@@ -1557,12 +1552,8 @@ int luatpt_drawpixel(lua_State* l)
 	if (b>255) b = 255;
 	if (a<0) a = 0;
 	if (a>255) a = 255;
-	if (luacon_g->vid!=NULL)
-	{
-		luacon_g->drawpixel(x, y, r, g, b, a);
-		return 0;
-	}*/
-	return luaL_error(l, "Deprecated");
+	luacon_g->blendpixel(x, y, r, g, b, a);
+	return 0;
 }
 
 int luatpt_drawrect(lua_State* l)
@@ -1672,10 +1663,6 @@ int luatpt_get_name(lua_State* l)
 
 int luatpt_set_shortcuts(lua_State* l)
 {
-	/*int state;
-	state = luaL_optint(l, 1, 0);
-	sys_shortcuts = (state==0?0:1);
-	return 0;*/
 	return luaL_error(l, "set_shortcuts: deprecated");
 }
 
@@ -1879,20 +1866,9 @@ int luatpt_input(lua_State* l)
 }
 int luatpt_message_box(lua_State* l)
 {
-	/*char *title, *text;
-	title = mystrdup(luaL_optstring(l, 1, "Title"));
-	text = mystrdup(luaL_optstring(l, 2, "Message"));
-	if (vid_buf!=NULL)
-	{
-		info_ui(vid_buf, title, text);
-		free(title);
-		free(text);
-		return 0;
-	}
-	free(title);
-	free(text);
-	return luaL_error(l, "Screen buffer does not exist");;*/
-	//TODO IMPLEMENT
+	std::string title = std::string(luaL_optstring(l, 1, "Title"));
+	std::string message = std::string(luaL_optstring(l, 2, "Message"));
+	new InformationMessage(title, message);
 	return 0;
 }
 int luatpt_get_numOfParts(lua_State* l)
@@ -1945,15 +1921,12 @@ int luatpt_hud(lua_State* l)
 }
 int luatpt_gravity(lua_State* l)
 {
-	//luacon_sim->
-    /*int gravstate;
+    int gravstate;
     gravstate = luaL_optint(l, 1, 0);
     if(gravstate)
-        start_grav_async();
+        luacon_sim->grav->start_grav_async();
     else
-        stop_grav_async();
-    ngrav_enable = (gravstate==0?0:1);*/
-	//TODO IMPLEMENT
+        luacon_sim->grav->stop_grav_async();
     return 0;
 }
 int luatpt_airheat(lua_State* l)
@@ -1991,7 +1964,7 @@ int luatpt_heat(lua_State* l)
 int luatpt_cmode_set(lua_State* l)
 {
 	//TODO IMPLEMENT
-    return luaL_error(l, "Not implemented");
+    return luaL_error(l, "cmode_set: Deprecated");
 }
 int luatpt_setfire(lua_State* l)
 {
@@ -2002,11 +1975,7 @@ int luatpt_setfire(lua_State* l)
 }
 int luatpt_setdebug(lua_State* l)
 {
-	/*int debug = luaL_optint(l, 1, 0);
-	debug_flags = debug;
-	return 0;*/
-	//TODO IMPLEMENT
-	return luaL_error(l, "Not implemented");
+	return luaL_error(l, "setdebug: Deprecated");
 }
 int luatpt_setfpscap(lua_State* l)
 {
@@ -2108,32 +2077,30 @@ fin:
 
 int luatpt_setwindowsize(lua_State* l)
 {
-	/*int result, scale = luaL_optint(l,1,1), kiosk = luaL_optint(l,2,0);
+	int scale = luaL_optint(l,1,1), kiosk = luaL_optint(l,2,0);
 	if (scale!=2) scale = 1;
 	if (kiosk!=1) kiosk = 0;
-	result = set_scale(scale, kiosk);
-	lua_pushnumber(l, result);
-	return 1;*/
-	//TODO Implement
-	return luaL_error(l, "Not implemented");
+	ui::Engine::Ref().SetScale(scale);
+	ui::Engine::Ref().SetFullscreen(kiosk);
+	return 0;
 }
 
 int luatpt_screenshot(lua_State* l)
 {
 	//TODO Implement
-	/*int captureUI = luaL_optint(l, 1, 0);
-	if(vid_buf)
+	int captureUI = luaL_optint(l, 1, 0);
+	std::vector<char> data;
+	if(captureUI)
 	{
-		if(captureUI)
-		{
-			dump_frame(vid_buf, XRES+BARSIZE, YRES+MENUSIZE, XRES+BARSIZE);
-		}
-		else
-		{
-			dump_frame(vid_buf, XRES, YRES, XRES+BARSIZE);
-		}
-		return 0;
-	}*/
-	return luaL_error(l, "Not implemented");
+		VideoBuffer screenshot(ui::Engine::Ref().g->DumpFrame());
+		data = format::VideoBufferToPNG(screenshot);
+	}
+	else
+	{
+		VideoBuffer screenshot(luacon_ren->DumpFrame());
+		data = format::VideoBufferToPNG(screenshot);
+	}
+	Client::Ref().WriteFile(data, "screenshot.png");
+	return 0;
 }
 
