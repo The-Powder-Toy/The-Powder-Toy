@@ -7,7 +7,6 @@ To use online features such as saving, you need to register at: http://powdertoy
 
 
 Thanks:
-
 ---------------------------------------------------------------------------
 
 Stanislaw K Skowronek - Designed the original
@@ -23,80 +22,76 @@ Matthew Miller
 jacob1
 
 Instructions:
-
 ---------------------------------------------------------------------------
 
 Click on the elements with the mouse and draw in the field, like in MS Paint. The rest of the game is learning what happens next.
 
 
-
 Controls:
-
 ---------------------------------------------------------------------------
 
-Caps Lock 	Specific Element Erase
-Insert 	Replace mode
-TAB 		Switch between circle/square/triangle brush
-Space 	Pause
-Q 		Quit
-Esc 		Quit
-Z 		Zoom
-S 		Save stamp (+ Ctrl when STK2 is out)
-L 		Load last saved stamp
-K 		Stamp library
-C 		Cycle view mode
-1-9 		Set view mode
-P 		Save screenshot to .ppm
-F 		Pause and go to next frame
-G 		Grid
-H 		Show/Hide HUD
-Ctrl + H	Show intro text
-F1		Show intro text
-D 		Debug mode (+ Shift when STK2 is out)
-I 		Invert Pressure and Velocity map
-T 		Vine mode
-W 		Toggle gravity modes (+ Ctrl when STK2 is out)
-Y		Toggle air modes
-R 		Reset LIFE generation
-N		"Sand effect" for drawing powders
-B		Decoration editor
-Ctrl + B	Toggle decorations on/off
-U		Toggle ambient heat on/off
-M		switch left and right selected elements
-E       Element search
-Ctrl + I	Install powder toy for loading saves/stamps by double clicking
-~ 		Console
-= 		Reset pressure and velocity map
-[ 		Decrease brush size
-] 		Increase brush size
-Alt + [	Decrease brush size by 1
-Alt + ]	Increase brush size by 1
+Caps Lock 			Specific Element Erase
+Insert 			Replace mode
+TAB 				Switch between circle/square/triangle brush
+Space 				Pause
+Q 				Quit
+Esc 				Quit
+Z 				Zoom
+S 				Save stamp (+ Ctrl when STK2 is out)
+L 				Load last saved stamp
+K 				Stamp library
+C 				Cycle view mode
+1-9 				Set view mode
+P 				Save screenshot to .ppm
+F 				Pause and go to next frame
+G 				Grid
+H 				Show/Hide HUD
+Ctrl + H			Show intro text
+F1				Show intro text
+D 				Debug mode (+ Shift when STK2 is out)
+I 				Invert Pressure and Velocity map
+T 				Vine mode
+W 				Toggle gravity modes (+ Ctrl when STK2 is out)
+Y				Toggle air modes
+R 				Reset LIFE generation
+N				"Sand effect" for drawing powders
+B				Decoration editor
+Ctrl + B			Toggle decorations on/off
+U				Toggle ambient heat on/off
+M				switch left and right selected elements
+N				Toggle pretty powders
+Ctrl + I			Install powder toy for loading saves/stamps by double clicking
+~ 				Console
+= 				Reset pressure and velocity map
+[ 				Decrease brush size
+] 				Increase brush size
+Alt + [			Decrease brush size by 1
+Alt + ]			Increase brush size by 1
 
 Ctrl + C/V/X 			Copy/Paste/Cut
-Ctrl + Z 				Undo
+Ctrl + Z 			Undo
 Ctrl + Cursor drag 		Rectangle
 Shift + Cursor drag 		Line
 MMB / Alt + LMB click 	Sample element
 Mouse scroll 			Change brush size
 Ctrl + Mouse scroll 		Change vertical brush size
-Shift + Mouse scroll 		Change horizontal brush size
+Shift + Mouse scroll 	Change horizontal brush size
 Shift + Ctrl + R 		Horizontal mirror for selected area
-Ctrl + R 				Rotate selected area counterclockwise
-Ctrl + Left Alt			Select element for Specific Element erase
-Ctrl + = 				Reset Electricity
+Ctrl + R 			Rotate selected area counterclockwise
+Ctrl + Left Alt		Select element for Specific Element erase
+Ctrl + = 			Reset Electricity
 
 
 Command Line:
-
 ---------------------------------------------------------------------------
 
-scale:1 - Normal window resolution
-scale:2 - Doubled window resolution
-kiosk -   Fullscreen mode
-proxy:<server>:<port> (ie, proxy:wwwcache.lancs.ac.uk:8080)
-open <file> - Opens the file as a stamp or game save
-ddir <directory> - Directory used for saving stamps and preferences
-nohud - disables the hud
-sound - enable sound to be played from console
-scripts - enable scripts to be run from old console
-ptsave:<save id>#<name, optional> (ex. ptsave:2198#Destroyable_city_5_wth_metro~dima-gord)
+scale:1		Normal window resolution
+scale:2		Doubled window resolution
+kiosk			Fullscreen mode
+proxy:server[:port]	Proxy server to use [Example: proxy:wwwcache.lancs.ac.uk:8080]
+open <file>		Opens the file as a stamp or game save
+ddir <directory>	Directory used for saving stamps and preferences
+nohud			Disables the hud
+sound			Enable sound to be played from console
+scripts		Enable scripts to be run from old console
+ptsave:<save id>#<name(Optional)> (ex. ptsave:2198#Destroyable_city_5_wth_metro~dima-gord)
