@@ -1,0 +1,458 @@
+* Version 81.6 Build 189
+      o Fix zoom in decorations mode
+* Version 81.5 Build 188
+      o Allow Lua Key event function to override keys used by stickman and zoom
+      o Hide intro text when opened by PTSave link
+      o Added Console button to quick menu
+* Version 81.4 Build 187
+      o Fixed issues with saving current menu (Walls is now a valid menu)
+      o Fixed crash when pasting long text strings
+      o Disable decorations in save thumbnails
+* Version 81.3 Build 186
+      o Stickmen can now shoot plasma
+* Version 81.3 Build 185
+      o Reduced lag created by PLNT
+      o Optimisations to improve speed with GOL
+      o Added more checks for invalid elements
+      o Added brush size to Lua environment (tpt.brushx, tpt.brushy)
+      o Added brush "Alt Selected" element to Lua environment (tpt.selecteda)
+      o Added mouse wheel to mouse event arguments (mouseX, mouseY, mouseButton, mouseWheel)
+      o SALT will only melt ICE if the ICE if above salt-water freezing temperature
+      o Updated README and LICENSE files
+* Version 81.2 Build 184
+      o Fix bug in saving code when there are no signs
+* Version 81.1 Build 183
+      o C5 neighbouring cold insulators no longer explodes
+      o Fixed issue where clicking on a stack of save signs will cause an unstoppable torrent of save open windows
+      o Prevent acid from eating broken glass
+      o Stickman should no longer be able to walk on the bottom of the screen
+      o VOID and BHOL should eat stickman
+      o Reduced rate of lighting creation by CLNE
+      o INST can now be sparked directly using the brush
+      o Lightning should now be affected by gravity fields
+      o Fix crash when sparking INST
+* Version 81.0 Build 182
+      o Many things causing BHOL formation have been fixed
+      o Stickmen no longer fall through some powders
+      o Fireworks work with different gravity modes and Newtonian gravity
+      o Freezing point for SLTW corrected to -21.1 °C
+      o SING formation removed from fusion
+* Version 80.4 Build 179
+      o VINE grows along WOOD
+      o changes to FRZZ
+      o Adding neutrons to EXOT makes it turn into whatever element it touches
+      o Clone remembers the ctype of lava (can now clone molten metal etc, instead of just molten stone)
+      o Compressed particles turn into BHOL
+* Version 80.3 Build 178
+      o Fix session check on startup
+* Version 80.3 Build 177
+      o TTAN only blocks pressure when adjacent to at least two more TTAN particles (or anytime with a .tmp of 1)
+* Version 80.2 Build 176
+      o Minor EXOT fix
+* Version 80.1 Build 175
+      o EXOT uses heat view's rainbow color scale
+* Version 80.1 Build 174
+      o No change - not in beta anymore
+* Version 80.0 Beta Build 173
+      o New Element: EXOT
+      o WARP element changes - now completely invisible
+* Version 79.7 Build 172
+      o Fix a TRON flag
+* Version 79.6 Beta Build 171
+      o Fix FIGH not spawning
+* Version 79.5 Beta Build 170
+      o Fix bug where snow melted without taking it's ctype into account
+      o Fix PROP_NEUTPENETRATE
+      o Add a setting to draw a wall frame around the screen
+      o Fix flashing dust glitch
+      o Fix command line save opening
+* Version 79.4 Beta Build 169
+      o Fix ptsave parsing if there is no '#'
+      o Download progress bar for save opening
+      o Soap bubbles easily formed, also their links inherit soap's decoration color
+      o Don't show disabled elements in the search
+      o Fix saltwater boiling temp typo
+* Version 79.3 Beta Build 168
+      o Fix emp flash
+      o Live parts rendering in deco editor
+      o Oxygen fusion and other fusion fixes
+      o Prevent infinite loops in Lua
+      o Fix some decoration editor and console bugs
+      o Custom graphics functions with lua using tpt.graphics_func()
+      o VOID and PVOD can be set to only eat their ctype
+      o New feature, Element search (press 'e' on the keyboard)
+      o Fix bug with BOMB not deleting correctly
+      o Fix issue that cause the gravity walls to not update
+      o Handling of ptsave protocol so you can create links to open games in Powder toy
+* Version 79.2 Beta Build 167
+      o Fix minor spelling errors
+      o Fix crash when using flood-fill or a lot of INST
+      o Fix an issue that made it impossible to change the Windows size from the options screen
+* Version 79.1 Beta Build 166
+      o Prevent changing of Window size if the screen is too small.
+      o Fix bug that caused pressure to leak from TTAN when pausing/framestepping
+      o Fix crash when opening display options
+* Version 79.0 Beta Build 165
+      o Fix Titanium only conducting once
+      o Better colour options preview.
+* Version 79.0 Beta Build 164
+      o Fix a problem with GPMP that caused gravity to depend on air pressure
+      o Fix TNT sometimes not exploding if multiple TNT particles are in the same place
+      o Fix PUMP not generating negative pressure if it is next to a wall
+      o New element: titanium (in the solids menu), which completely blocks air and absorbs some neutrons
+* Version 78.1 Build 163
+      o Fix bug that created "weaponised explosive GEL"
+      o Changes to License (GPLv2 to GPLv3)
+      o Fix bug that caused thumbnail caching to not work
+      o Remove unused debug output of thumbnail cache
+      o Plasma can now travel through portals and PIPE
+      o Fix file opening on Mac OS X
+* Version 78.0 Beta Build 162
+      o Fixes when moving signs
+      o Line snapping in the decoration editor
+      o Changes to SING to prevent it from exploding through walls
+      o Save soap bubbles
+      o Changes to GEL, will no longer absorb water when saturated
+      o FILT not heated by photons with ambient heat on
+      o New save format: OPS, allows saving of almost all data within the simulation
+* Version 77.0 Build 159
+      o tmp2 support for old console
+      o save tmp2 for TRON
+* Version 76.0 Build 158
+      o GEL won't try to move solids anymore
+* Version 76.0 Build 157
+      o Fixes for GEL and TRON
+      o Fix sponge bug
+* Version 76.0 Beta Build 156
+      o New element: TRON
+* Version 75.0 Beta Build 155
+      o New element: GEL
+* Version 74.2 Build 154
+      o Walls don't trigger automatic pipe pattern generation
+      o BCOL uses COAL's graphics function
+      o Report icon
+      o Fix unmeltable ice
+* Version 74.1 Build 152
+      o Fix ice with ctype of 0
+* Version 74.1 Build 151
+      o BRAY glows in fancy display mode
+* Version 74.1 Build 150
+      o Icon for Force Elements
+	  o Allow DEST to be used with clone elements.
+* Version 74.0
+      o Fixes for Triangle brush and minor electron bug
+      o Debug lines for WiFi, Portal and Soap
+      o Fusion for H2 at high temperature+high pressure
+      o Ambient heat and Newtonian Gravity in Quick Options menu.
+      o Smudge tool
+      o Speed improvements for particle drawing
+* Version 73.0
+      o New elements: FRAY - Similar to ARAY but applies force, RPEL - Attract and repel particles
+      o DEUT can be compressed by gravitational fields
+      o Fix for "bumpy" streams of photons coming from PCLN
+      o Lua methods for writing and reading the bmap and emap
+* Version 72.0
+      o More consistent spark speed (possibly affects existing circuits)
+      o BRAY fire speed (Only shoots once per spark)
+      o DLAY blocked by INSL
+      o WIFI will always take one frame to transmit SPRK
+      o Ambient heat blocked by walls.
+*  Version 71.3
+      o OPS format fixes
+      o Figh drawn correctly in stamps
+* Version 71.2
+      o Enable use of caching server to improve performance or thumbnail retrieval
+* Version 71.1
+      o Fixes to OPS format
+      o Fix issue where LRBD/RBDM isn't ignited by WATR
+      o Fix crash on rotating a stamp with walls as wide as the window
+      o Fix Invisible photons
+      o Fix bug where WARP+SING destroys DMND
+      o Fix issue where Lua can't create photons in glass
+* Version 71.0
+      o Update can_move, recount menu items, and clear graphics cache when tpt.el is changed
+      o Fix creation of invalid sign walls
+      o Added OPS format, disabled and not used
+* Version 70.1
+      o Support element names and hex constants in PROP tool
+      o Fix TNT bug
+      o Fix crash in clear_sim if gravity is not initialized
+* Version 70.0
+      o New element: ignition cord
+      o Stickmen and fighter fixes
+*  Version 69.1
+      o New Lua API features, ability to edit particle properties from tpt.el... array, particles are exposed as an array now
+*  Version 69.0
+      o New element: TNT
+      o Bug fix for LCRY and ELEC
+      o Restore old LCRY/DECO rendering
+      o Fix display modes on number hotkeys not saving correctly
+*  Version 68.7
+      o Additions to Lua API:
+              o tpt.el: Table of element types, tpt.el.none = 0, tpt.el.dust = 1, etc.
+              o tpt.version: Table of version info, tpt.el.major, minor, build
+              o int tpt.element(string name): returns numeric ID of given element name, tpt.element("WATR") = tpt.el.watr
+              o tpt.element_func(function func, int element, [boolean replace]) : Sets the update function for a specific element
+              o tpt.element_func has the following args: (int index, int x, int y, int surround, int nt)
+* Version 68.6
+      o Add back number key hotkeys to change display modes
+      o Add back blob and heat gradient display
+      o Correct icons in render_ui
+      o Add back portal effects
+* Version 68.5
+      o Fix decorations
+* Version 68.4
+      o Stamp browser fixes
+      o Remove some stuff from HUD to make it fit
+      o Fix grid mode
+      o Replace cmode with flexible render options
+* Version 68.3
+      o Pixel grid and cursor in zoom
+* Version 68.1
+      o CAUS killes stickmen they can also have gas powers now
+      o Fix air inversion
+* Version 68.0
+      o Decorations appear on gases
+      o Stickmen and fighter fixes
+      o Fixed WIRE graphics
+      o New elements: ACEL and DCEL, accelerate nearby photons
+* Version 67.0
+      o New element: ELEC
+      o Changed now LCRY works
+*  Version 66.1
+      o Massive overhaul of graphics code, appearance of many elements changed
+*  Version 65.5
+      o Elements from Maksprog's mod
+              o LIGH - Lightning
+              o DEST - Variation of BOMB
+              o TESC - Tesla coil, creates lightning
+              o EMP - Destroys electronic components
+      o Fix bug with infinite temperature
+      o Fix beta enrolling
+      o Add a new mode to filter, subtract (tmp of 3)
+      o Quick options menu in top right, can toggle various options quickly
+      o Lots and lots of fixes
+*  Version 64.3
+      o Decoration editor tool menu, with lighten and darken tools
+      o Can type in decoration editor color boxes for specific RGB values, hit enter after typing a number to confirm
+      o SOAP removes decoration, opposite of BIZR
+      o Water equalization, turn on in options menu, or with tpt.watertest()
+      o BUBW changes to be more realistic, can explode
+      o New element CAUS, an acid like gas, created from ACID+WTRV
+      o Can see selected elements from Lua, tpt.selectedl or tpt.selectedr
+      o Saved settings are in JSON format, replaces powder.def
+      o Can opt in to receive beta updates
+      o QRTZ scatters photons.
+      o New Tool, PROP, edit properties easily without console.
+      o FILT has modes with .tmp (0,1,2). 0 is convert (old method). 1 will filter (only close color can pass). 2 is add color
+      o 'Sign out' button in the login menu, instead of submitting blank data
+      o Fancy colored powders, hit 'n' to toggle
+*  Version 61.2
+      o Fixed a Lua mouse event bug
+      o Can set decoration layer "dcolour" property
+      o Fixed some possible cases where particles disappear randomly
+*  Version 61.1
+      o Fix some memory leaks
+      o STOR will absorb anything when no ctype set, and it's ctype can't be a solid element
+*  Version 61.0
+      o Added energy only wall (Photons, Neutrons, etc.) as replacement for gas only wall fix
+      o STOR will change appearance when it holds a particle
+*  Version 60.1
+      o Tools menu for AIR, HEAT, COOL, etc.
+      o tpt.getscript() to download from official script repository (not used)
+      o tpt.setwindowsize(scale,fullscreen) to change scale (1 or 2) and fullscreen (0 or 1)
+      o Selection for stamp/copy now by pixel
+      o Water puts out fire better
+      o New elements: CO2, BUBW, DRIC, STOR, PVOD, CONV
+      o Zoom toggle: alt+z
+      o BIZR acts as a dye
+      o Many other various fixes and improvements
+*  Version 57.5
+      o Fix Lua keyevent function
+*  Version 57.4
+      o Fix STKM2 spaz
+      o Fix bug where electrode (ETRD) would delete particles in replace mode
+*  Version 57.3
+      o Fix coal being invisible when first drawn
+*  Version 57.2
+      o Allow scrolling in the special menu
+*  Version 57.1
+      o Stops the client launching DDos attack on server when checking for updates
+*  Version 57
+      o Gravity tools (NGRV and PGRV)
+      o Allow reloading of directly opened files
+      o Graphical changes to coal
+*  Version 56
+      o New element: GBMB (gravity bomb), requires newtonian gravity
+*  Version 55
+      o New element: WIRE
+      o Extra line tool info if you type tpt.setdebug(4) into the console
+*  Version 53.3
+      o New Lua API functions to get keyboard/mouse presses
+*  Version 53.1
+      o Fix old GOL + clone saves and other life visual imprivements
+      o Fancy lensing for mewtonian gravity in fancy (7) display
+      o New element: DLAY
+      o New Lua API functions from me4502
+*  Version 47.3
+      o Enhanced visual effects for Portals
+      o Glow now has more stimuli (Green: Pressure, Blue: Movement, Red: Heat)
+      o Python console (Unavailable in current beta)
+      o Fixed issue where you appear to be logged in but aren't.
+      o Changes to Quartz (Grows like crystal when exposed to salt water)
+      o Singularity explodes upon death
+      o Save ID shown after saving and on Open Dialog
+      o Rearrangement of some elements (Photons in Radioactive, Thunder in Explosive, etc)
+*  Version 46.3
+      o Major game engine and performance improvements.
+      o New GOL elements.
+      o More secure login system
+* Version 45.2
+      o Important! Fix for Auto-update in Linux.
+* Version 45.1
+      o Small bugfix for Lava and Portals.
+      o Fix crash when 2 of the same stickman are somehow placed.
+* Version 45.0
+      o Fix bug where description would persist after a reset
+      o ARAY now passes through INWR without interracting.
+      o INST has been fixed and placed in the Electronics menu
+      o Photons turn into neutrons when passing through INVS
+      o Other small bug fixes.
+* Version 44.7
+      o Fix login and dialog text box issues.
+      o Small bugfixes to some elements.
+      o Additional 'debug' information.
+      o Increase WIFI channels
+      o Add missing icons for menus and display modes.
+* Version 44.6
+      o Fix for brush issues when using small brushes.
+      o Pause state saving modifications.
+* Version 44.5
+      o Fix corruption issues with FAN wall.
+* Version 44.4
+      o Many new elements from cracker64s mod.
+      o Pause state is saved.
+      o Particle properties are saved more accurately.
+      o Improved search and save viewing, added descriptions and comments.
+* Version 42.3
+      o Changed internal temperature scale to kelvin.
+      o Fixed physics bug with certain powders.
+      o Fixed bug when loading saves with stickman in.
+      o Added save history, the ability to view previous versions of saves.
+* Version 42.0
+      o New Elements: Brick, Glow, Diesel, many others.
+      o Source code seperation
+      o Lots of other stuff that I can't remember.
+* Version 41.3
+      o Fixes bug where Insulation would burst into flames randomly
+      o Moves fancy new effects into a separate colour mode.
+* Version 39.0
+      o New element: Liquid Crystal
+      o New element: Battery
+      o New element: Noble Gas
+      o Copy, cut and paste
+* Version 38.0
+      o New element: Nitrogen Ice
+      o New element: Electrode (Allows currents to jump)
+      o Adds a lock icon to private saves.
+      o Binds the '[' and ']' keys to decrease/increase the cursor size for those without scroll wheels.
+      o Fixes wall menu issue where walls would be selected by accident.
+* Version 37.0
+      o New element: Plasma
+      o New element: Thunder/Lighting
+      o New wall: Allows only gas
+      o Fixes HUD bug.
+* Version 36.3
+      o Introduced public & private saving (more info here)
+* Version 36.2
+      o Fixes bug where rating would appear as Zero in search.
+* Version 36.1
+      o Feature: Particle sampling with middle click
+      o Feature: Download from website, for information, see the "Announcement" forum section.
+* Version 36.0
+      o Changes to the menu
+      o New elements for electronics
+      o New voting system
+      o Added functions for moderating
+* Version 35.0
+      o Added elements: White Hole, Black Hole, Rubidium and Liquid Rubidium
+      o Fixed the OSX version
+      o Some other bug fixes that I forgot.
+* Version 34.0
+      o Fixed certain graphical glitches
+      o Changed menu categories
+      o Increased menu hover size
+* Version 33.2
+      o Photons can now ignite flammable materials.
+      o Distilled water will turn into water on contact with water.
+      o Fixes burning broken metal
+* Version 34.0 (Beta 6)
+      o New element menu layout
+      o New element: Liquid Nitrogen
+* Version 34.0 (Beta 5)
+      o Improvements to stamp browser
+      o Added Glyphs for Blob and Heat view
+      o Fixed bug that caused a crash on Windows systems when using the wall tool in the window edges.(Fixed more than last time)
+      o Decreased/Increased Min/Max Temperatures.
+* Version 34.0 (Beta 4)
+      o Cool, heat and Air no longer crash upon flood fill
+      o Fixed bug that caused a crash on Windows systems when using the wall tool in the window edges.
+      o Stamp browser now allows multiple pages.
+      o Improved the zoom features, allowing inspection.
+      o Modification to temperature simulation, pressure is now taken into account with transitions from liquid to gas and vice-versa
+      o Fixed bug where Salt-water would not leave salt upon evaporation
+* Version 34.0 (Beta 3)
+      o Bug fixes for uranium
+      o Fixed bug where extremely hot objects would show as black
+      o Fixed but where stamps would not be loaded
+* Version 34.0 (Beta 2)
+      o Bug fixes
+      o Legacy Mode state is now saved and loaded
+      o Fix "Cool" and "Heat" when drawing on walls.
+      o Air now works.
+* Version 34.0 (Beta 1)
+      o Bug fixes
+      o Legacy Mode (Older saves will load with legacy mode, preserving the functionality of the older powder toy)
+      o Heat and Cool elements. (Air is broken until next beta.)
+* Version 34.0 (Beta)
+      o Heat Simulation (With free bugs and glitches)
+      o New Element: Uranium, heats up when pressurised.
+      o New button, AIR, provides instant air, the Alt+Click and Middle Click can be used as a shortcut
+* Version 33.1
+      o Masses of bug fixes
+      o Broken metal and breakable metal fixed (conduction)
+      o Liquid collisions fixed.
+* Version 33.0
+      o Added Photons, particles similar to neutrons that travel in straight lines
+      o Added destructable metal
+      o Fixed a glitch with diamond that would make it appear invisible to air pressure.
+* Version 32.0
+      o Added Diamond (Thanks to ief014)
+      o Fixed packaging errors for the Windows release
+* Version 31.0
+      o Plutonium more powerful
+      o Changes to the handling of lava (Now solidifies into the same material it was melted from).
+      o New element: Salt.
+      o New element: Salt water
+* Version 30.0
+      o Added the ability to change the zoom strength
+      o Increased the maximum pen size.
+      o New element: Concrete, tougher than stone, stackable.
+      o New element: Distilled water, similar to water, but doesn't conduct electricity
+      o Changed menu layout, walls at the bottom, elements at the top (to allow for more future elements)
+      o 32bit colour for Macintosh versions.
+* Version 28.4
+      o Fixes crash when loading a save with acid.
+      o Another tiny change for acid colour in blob mode
+* Version 28.3
+      o Fixes acid colour in blob mode
+      o Fixes blob mode colour on Macintosh and 16bit colour systems
+* Version 28.2
+      o Quit confirmation dialogue when using the escape key
+      o Walls are "blobbed" in Blob view
+* Version 28.1
+      o Steam rises
+      o Acid drastically changed, now dilutes itself when dissolving other particles
+* Version 28.0
+      o "Yellow wall" bug fix, doesn't absorb particles when placed above another wall type.
+      o New wall type added: E-Hole, absorbs particles when unpowered, released them when powered.
