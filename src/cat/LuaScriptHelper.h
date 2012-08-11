@@ -12,11 +12,12 @@ GameModel * luacon_model;
 Simulation * luacon_sim;
 LuaScriptInterface * luacon_ci;
 Graphics * luacon_g;
+Renderer * luacon_ren;
 
 bool *luacon_currentCommand;
 string *luacon_lastError;
 
-int *lua_el_func, *lua_el_mode;
+int *lua_el_func, *lua_el_mode, *lua_gr_func;
 
 int getPartIndex_curIdx;
 int step_functions[6];//[6] = {0, 0, 0, 0, 0, 0};
@@ -28,7 +29,6 @@ int tptProperties; //Table for some TPT properties
 int tptPropertiesVersion;
 int tptElements; //Table for TPT element names
 int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, tptPart, cIndex;
-
 
 int luacon_step(int mx, int my, int selectl, int selectr, int bsx, int bsy);
 int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel);
@@ -53,7 +53,13 @@ int luacon_element_getproperty(char * key, int * format, unsigned int * modified
 //Interface
 int luatpt_test(lua_State* l);
 int luatpt_getelement(lua_State *l);
+
+int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS);
+int luatpt_graphics_func(lua_State *l);
+
+int luacon_elementReplacement(UPDATE_FUNC_ARGS);
 int luatpt_element_func(lua_State *l);
+
 int luatpt_error(lua_State* l);
 int luatpt_drawtext(lua_State* l);
 
