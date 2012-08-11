@@ -514,3 +514,12 @@ int graphics_COAL(GRAPHICS_FUNC_ARGS) //Both COAL and Broken Coal
 	return 0;
 }
 
+int graphics_BRCK(GRAPHICS_FUNC_ARGS)
+{
+	if (cpart->tmp == 1)
+	{
+		*pixel_mode |= PMODE_GLOW;
+		*colb += 100;
+	}
+	return 0;
+}

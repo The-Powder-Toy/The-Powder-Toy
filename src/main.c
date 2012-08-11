@@ -1896,7 +1896,7 @@ int main(int argc, char *argv[])
 
 					sprintf(nametext, "Molten %s", lowername);
 				}
-				else if ((cr&0xFF)==PT_PIPE && (parts[cr>>8].tmp&0xFF) > 0 && (parts[cr>>8].tmp&0xFF) < PT_NUM )
+				else if (((cr&0xFF)==PT_PIPE || (cr&0xFF) == PT_PPIP) && (parts[cr>>8].tmp&0xFF) > 0 && (parts[cr>>8].tmp&0xFF) < PT_NUM )
 				{
 					char lowername[6];
 					int ix;
@@ -1909,7 +1909,7 @@ int main(int argc, char *argv[])
 				else if (DEBUG_MODE)
 				{
 					int tctype = parts[cr>>8].ctype;
-					if ((cr&0xFF)==PT_PIPE)
+					if ((cr&0xFF)==PT_PIPE || (cr&0xFF) == PT_PPIP)
 					{
 						tctype = parts[cr>>8].tmp&0xFF;
 					}

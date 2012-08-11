@@ -56,6 +56,7 @@ int parse_save(void *save, int size, int replace, int x0, int y0, unsigned char 
 		return 1;
 	}
 	force_stacking_check = 1;//check for excessive stacking of particles next time update_particles is run
+	ppip_changed = 1;
 	if(saveData[0] == 'O' && saveData[1] == 'P' && saveData[2] == 'S')
 	{
 		return parse_save_OPS(save, size, replace, x0, y0, bmap, vx, vy, pv, fvx, fvy, signs, partsptr, pmap);
@@ -391,6 +392,11 @@ pixel *prerender_save_OPS(void *save, int size, int *width, int *height)
 						if(fieldDescriptor & 0x10)
 						{
 							if(i++ >= partsDataLen) goto fail;
+							if(fieldDescriptor & 0x1000)
+							{
+								if(i+1 >= partsDataLen) goto fail;
+								i += 2;
+							}
 						}
 					}
 					
@@ -573,7 +579,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	//Copy parts data
 	/* Field descriptor format:
 	|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|
-																	|		tmp2[2]	|		tmp2[1]	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
+														tmp[3+4]	|		tmp2[2]	|		tmp2[1]	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
 	life[2] means a second byte (for a 16 bit field) if life[1] is present
 	*/
 	partsData = malloc(NPART * (sizeof(particle)+1));
@@ -634,7 +640,7 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 					}
 				}
 				
-				//Tmp (optional), 1 to 2 bytes
+				//Tmp (optional), 1, 2 or 4 bytes
 				if(partsptr[i].tmp)
 				{
 					fieldDesc |= 1 << 3;
@@ -643,6 +649,12 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 					{
 						fieldDesc |= 1 << 4;
 						partsData[partsDataLen++] = partsptr[i].tmp >> 8;
+						if(partsptr[i].tmp > 65535)
+						{
+							fieldDesc |= 1 << 12;
+							partsData[partsDataLen++] = (partsptr[i].tmp&0xFF000000)>>24;
+							partsData[partsDataLen++] = (partsptr[i].tmp&0x00FF0000)>>16;
+						}
 					}
 				}
 				
@@ -1307,6 +1319,13 @@ int parse_save_OPS(void *save, int size, int replace, int x0, int y0, unsigned c
 						{
 							if(i >= partsDataLen) goto fail;
 							partsptr[newIndex].tmp |= (((unsigned)partsData[i++]) << 8);
+							//Read 3rd and 4th bytes
+							if(fieldDescriptor & 0x1000)
+							{
+								if(i+1 >= partsDataLen) goto fail;
+								partsptr[newIndex].tmp |= (((unsigned)partsData[i++]) << 24);
+								partsptr[newIndex].tmp |= (((unsigned)partsData[i++]) << 16);
+							}
 						}
 					}
 					

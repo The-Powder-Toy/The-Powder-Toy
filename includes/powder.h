@@ -160,11 +160,9 @@
 #define PT_PVOD 84
 #define PT_CONV 85
 #define PT_CAUS 86
-
 #define PT_LIGH 87
 #define PT_TESC 88
 #define PT_DEST 89
-
 #define PT_SPNG 90
 #define PT_RIME 91
 #define PT_FOG 92
@@ -237,7 +235,8 @@
 #define PT_FIGH 158
 #define PT_FRAY 159
 #define PT_REPL 160
-#define PT_NUM  161
+#define PT_PPIP 161
+#define PT_NUM  162
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -352,6 +351,7 @@ int graphics_SOAP(GRAPHICS_FUNC_ARGS);
 int graphics_EXOT(GRAPHICS_FUNC_ARGS);
 int graphics_WARP(GRAPHICS_FUNC_ARGS);
 int graphics_EMBR(GRAPHICS_FUNC_ARGS);
+int graphics_BRCK(GRAPHICS_FUNC_ARGS);
 
 void TRON_init_graphics();
 
@@ -482,6 +482,7 @@ int update_legacy_all(UPDATE_FUNC_ARGS);
 int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS);
 void STKM_init_legs(playerst* playerp, int i);
 void STKM_interact(playerst* playerp, int i, int x, int y);
+void PPIP_flood_trigger(int x, int y, int sparkedBy);
 
 struct part_type
 {
@@ -759,6 +760,7 @@ extern int portal_ry[8];
 
 extern int wire_placed;
 extern int force_stacking_check;
+extern int ppip_changed;
 
 extern playerst player;
 extern playerst player2;
