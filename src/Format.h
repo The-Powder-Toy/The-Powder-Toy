@@ -4,6 +4,7 @@
 #include <vector>
 
 class VideoBuffer;
+
 namespace format
 {
 	template <typename T> std::string NumberToString(T number)

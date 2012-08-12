@@ -2,6 +2,7 @@
 #include "Config.h"
 #include "Point.h"
 #include "Label.h"
+#include "Keys.h"
 #include "ContextMenu.h"
 
 using namespace ui;

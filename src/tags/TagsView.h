@@ -10,9 +10,13 @@
 
 #include <vector>
 #include "interface/Window.h"
-#include "interface/Button.h"
-#include "interface/Textbox.h"
-#include "interface/Label.h"
+
+namespace ui
+{
+	class Button;
+	class Textbox;
+	class Label;
+}
 
 class TagsController;
 class TagsModel;

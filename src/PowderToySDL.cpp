@@ -28,6 +28,8 @@
 #include "interface/Panel.h"
 #include "interface/Point.h"
 #include "interface/Label.h"
+#include "interface/Keys.h"
+
 #include "simulation/SaveRenderer.h"
 #include "client/Client.h"
 #include "Misc.h"

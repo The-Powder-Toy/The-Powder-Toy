@@ -8,7 +8,6 @@
 #ifndef UPDATEACTIVITY_H_
 #define UPDATEACTIVITY_H_
 
-#include "interface/Window.h"
 #include "tasks/TaskWindow.h"
 
 class UpdateActivity {

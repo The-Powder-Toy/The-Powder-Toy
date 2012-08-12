@@ -6,8 +6,9 @@
  */
 
 #include "SaveFile.h"
+#include "GameSave.h"
 #include "Client.h"
- #include "search/Thumbnail.h"
+#include "search/Thumbnail.h"
 
 SaveFile::SaveFile(SaveFile & save):
 	gameSave(NULL),
@@ -31,7 +32,7 @@ void SaveFile::SetThumbnail(Thumbnail * thumb)
 	thumbnail = thumb;
 }
 
-SaveFile::SaveFile(string filename):
+SaveFile::SaveFile(std::string filename):
 		filename(filename),
 		displayName(filename),
 		gameSave(NULL),
@@ -50,17 +51,17 @@ void SaveFile::SetGameSave(GameSave * save)
 	gameSave = save;
 }
 
-string SaveFile::GetName()
+std::string SaveFile::GetName()
 {
 	return filename;
 }
 
-string SaveFile::GetDisplayName()
+std::string SaveFile::GetDisplayName()
 {
 	return displayName;
 }
 
-void SaveFile::SetDisplayName(string displayName)
+void SaveFile::SetDisplayName(std::string displayName)
 {
 	this->displayName = displayName;
 }

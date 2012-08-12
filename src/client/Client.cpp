@@ -7,6 +7,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <deque>
+#include <fstream>
 
 #ifdef MACOSX
 #include <mach-o/dyld.h>
@@ -29,13 +30,21 @@
 #include "MD5.h"
 #include "graphics/Graphics.h"
 #include "Misc.h"
+#include "Update.h"
+#include "HTTP.h"
 
 #include "simulation/SaveRenderer.h"
 #include "interface/Point.h"
 #include "client/SaveInfo.h"
+#include "client/SaveFile.h"
+#include "client/GameSave.h"
+#include "search/Thumbnail.h"
+#include "preview/Comment.h"
 #include "ClientListener.h"
-#include "Update.h"
 #include "ThumbnailBroker.h"
+
+#include "cajun/reader.h"
+#include "cajun/writer.h"
 
 extern "C"
 {
@@ -65,13 +74,13 @@ Client::Client():
 
 	//Read config
 	std::ifstream configFile;
-	configFile.open("powder.pref", ios::binary);
+	configFile.open("powder.pref", std::ios::binary);
 	if(configFile)
 	{
 		int fsize = configFile.tellg();
 		configFile.seekg(0, std::ios::end);
 		fsize = configFile.tellg() - (std::streampos)fsize;
-		configFile.seekg(0, ios::beg);
+		configFile.seekg(0, std::ios::beg);
 		if(fsize)
 		{
 			json::Reader::Read(configDocument, configFile);
@@ -84,11 +93,11 @@ Client::Client():
 
 				std::string userElevation = ((json::String)(configDocument["User"]["Elevation"])).Value();
 				if(userElevation == "Admin")
-					authUser.UserElevation = ElevationAdmin;
+					authUser.UserElevation = User::ElevationAdmin;
 				else if(userElevation == "Mod")
-					authUser.UserElevation = ElevationModerator;
+					authUser.UserElevation = User::ElevationModerator;
 				else
-					authUser.UserElevation= ElevationNone;
+					authUser.UserElevation = User::ElevationNone;
 			}
 			catch (json::Exception &e)
 			{
@@ -116,7 +125,7 @@ void Client::Initialise(std::string proxyString)
 
 	//Read stamps library
 	std::ifstream stampsLib;
-	stampsLib.open(STAMPS_DIR PATH_SEP "stamps.def", ios::binary);
+	stampsLib.open(STAMPS_DIR PATH_SEP "stamps.def", std::ios::binary);
 	while(true)
 	{
 		char data[11];
@@ -404,7 +413,7 @@ void Client::WriteFile(std::vector<unsigned char> fileData, std::string filename
 	try
 	{
 		std::ofstream fileStream;
-		fileStream.open(string(filename).c_str(), ios::binary);
+		fileStream.open(std::string(filename).c_str(), std::ios::binary);
 		if(fileStream.is_open())
 		{
 			fileStream.write((char*)&fileData[0], fileData.size());
@@ -424,7 +433,7 @@ bool Client::FileExists(std::string filename)
 	try
 	{
 		std::ifstream fileStream;
-		fileStream.open(string(filename).c_str(), ios::binary);
+		fileStream.open(std::string(filename).c_str(), std::ios::binary);
 		if(fileStream.is_open())
 		{
 			exists = true;
@@ -443,7 +452,7 @@ void Client::WriteFile(std::vector<char> fileData, std::string filename)
 	try
 	{
 		std::ofstream fileStream;
-		fileStream.open(string(filename).c_str(), ios::binary);
+		fileStream.open(std::string(filename).c_str(), std::ios::binary);
 		if(fileStream.is_open())
 		{
 			fileStream.write(&fileData[0], fileData.size());
@@ -462,10 +471,10 @@ std::vector<unsigned char> Client::ReadFile(std::string filename)
 	try
 	{
 		std::ifstream fileStream;
-		fileStream.open(string(filename).c_str(), ios::binary);
+		fileStream.open(std::string(filename).c_str(), std::ios::binary);
 		if(fileStream.is_open())
 		{
-			fileStream.seekg(0, ios::end);
+			fileStream.seekg(0, std::ios::end);
 			size_t fileSize = fileStream.tellg();
 			fileStream.seekg(0);
 
@@ -652,7 +661,7 @@ void Client::Shutdown()
 
 	//Save config
 	std::ofstream configFile;
-	configFile.open("powder.pref", ios::trunc);
+	configFile.open("powder.pref", std::ios::trunc);
 	if(configFile)
 	{
 		if(authUser.ID)
@@ -661,9 +670,9 @@ void Client::Shutdown()
 			configDocument["User"]["SessionID"] = json::String(authUser.SessionID);
 			configDocument["User"]["SessionKey"] = json::String(authUser.SessionKey);
 			configDocument["User"]["Username"] = json::String(authUser.Username);
-			if(authUser.UserElevation == ElevationAdmin)
+			if(authUser.UserElevation == User::ElevationAdmin)
 				configDocument["User"]["Elevation"] = json::String("Admin");
-			else if(authUser.UserElevation == ElevationModerator)
+			else if(authUser.UserElevation == User::ElevationModerator)
 				configDocument["User"]["Elevation"] = json::String("Mod");
 			else
 				configDocument["User"]["Elevation"] = json::String("None");
@@ -767,13 +776,13 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	return RequestFailure;
 }
 
-SaveFile * Client::GetStamp(string stampID)
+SaveFile * Client::GetStamp(std::string stampID)
 {
 	std::ifstream stampFile;
-	stampFile.open(string(STAMPS_DIR PATH_SEP + stampID + ".stm").c_str(), ios::binary);
+	stampFile.open(std::string(STAMPS_DIR PATH_SEP + stampID + ".stm").c_str(), std::ios::binary);
 	if(stampFile.is_open())
 	{
-		stampFile.seekg(0, ios::end);
+		stampFile.seekg(0, std::ios::end);
 		size_t fileSize = stampFile.tellg();
 		stampFile.seekg(0);
 
@@ -781,7 +790,7 @@ SaveFile * Client::GetStamp(string stampID)
 		stampFile.read((char *)tempData, fileSize);
 		stampFile.close();
 
-		SaveFile * file = new SaveFile(string(stampID).c_str());
+		SaveFile * file = new SaveFile(std::string(stampID).c_str());
 		GameSave * tempSave = new GameSave((char *)tempData, fileSize);
 		file->SetGameSave(tempSave);
 		return file;
@@ -792,13 +801,13 @@ SaveFile * Client::GetStamp(string stampID)
 	}
 }
 
-void Client::DeleteStamp(string stampID)
+void Client::DeleteStamp(std::string stampID)
 {
-	for (std::list<string>::iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
+	for (std::list<std::string>::iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
 	{
 		if((*iterator) == stampID)
 		{
-			stringstream stampFilename;
+			std::stringstream stampFilename;
 			stampFilename << STAMPS_DIR;
 			stampFilename << PATH_SEP;
 			stampFilename << stampID;
@@ -810,7 +819,7 @@ void Client::DeleteStamp(string stampID)
 	}
 }
 
-string Client::AddStamp(GameSave * saveData)
+std::string Client::AddStamp(GameSave * saveData)
 {
 	unsigned t=(unsigned)time(NULL);
 	if (lastStampTime!=t)
@@ -836,7 +845,7 @@ string Client::AddStamp(GameSave * saveData)
 	char * gameData = saveData->Serialise(gameDataLength);
 
 	std::ofstream stampStream;
-	stampStream.open(string(STAMPS_DIR PATH_SEP + saveID.str()+".stm").c_str(), ios::binary);
+	stampStream.open(std::string(STAMPS_DIR PATH_SEP + saveID.str()+".stm").c_str(), std::ios::binary);
 	stampStream.write((const char *)gameData, gameDataLength);
 	stampStream.close();
 
@@ -857,8 +866,8 @@ void Client::updateStamps()
 #endif
 
 	std::ofstream stampsStream;
-	stampsStream.open(string(STAMPS_DIR PATH_SEP "stamps.def").c_str(), ios::binary);
-	for (std::list<string>::const_iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
+	stampsStream.open(std::string(STAMPS_DIR PATH_SEP "stamps.def").c_str(), std::ios::binary);
+	for (std::list<std::string>::const_iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
 	{
 		stampsStream.write((*iterator).c_str(), 10);
 	}
@@ -872,17 +881,17 @@ int Client::GetStampsCount()
 	return stampIDs.size();
 }
 
-vector<string> Client::GetStamps(int start, int count)
+std::vector<std::string> Client::GetStamps(int start, int count)
 {
 	if(start+count > stampIDs.size()) {
 		if(start > stampIDs.size())
-			return vector<string>();
+			return std::vector<std::string>();
 		count = stampIDs.size()-start;
 	}
 
-	vector<string> stampRange;
+	std::vector<std::string> stampRange;
 	int index = 0;
-	for (std::list<string>::const_iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator, ++index) {
+	for (std::list<std::string>::const_iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator, ++index) {
 		if(index>=start && index < start+count)
 			stampRange.push_back(*iterator);
 	}
@@ -979,7 +988,7 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 	return saveData;
 }
 
-LoginStatus Client::Login(string username, string password, User & user)
+LoginStatus Client::Login(std::string username, std::string password, User & user)
 {
 	lastError = "";
 	std::stringstream urlStream;
@@ -1028,11 +1037,11 @@ LoginStatus Client::Login(string username, string password, User & user)
 				user.SessionKey = sessionKeyTemp.Value();
 				std::string userElevation = userElevationTemp.Value();
 				if(userElevation == "Admin")
-					user.UserElevation = ElevationAdmin;
+					user.UserElevation = User::ElevationAdmin;
 				else if(userElevation == "Mod")
-					user.UserElevation = ElevationModerator;
+					user.UserElevation = User::ElevationModerator;
 				else
-					user.UserElevation= ElevationNone;
+					user.UserElevation= User::ElevationNone;
 				return LoginOkay;
 			}
 			else
@@ -1062,7 +1071,7 @@ LoginStatus Client::Login(string username, string password, User & user)
 RequestStatus Client::DeleteSave(int saveID)
 {
 	lastError = "";
-	std::vector<string> * tags = NULL;
+	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1114,7 +1123,7 @@ failure:
 RequestStatus Client::AddComment(int saveID, std::string comment)
 {
 	lastError = "";
-	std::vector<string> * tags = NULL;
+	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1175,7 +1184,7 @@ failure:
 RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 {
 	lastError = "";
-	std::vector<string> * tags = NULL;
+	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1232,7 +1241,7 @@ failure:
 RequestStatus Client::ReportSave(int saveID, std::string message)
 {
 	lastError = "";
-	std::vector<string> * tags = NULL;
+	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1291,7 +1300,7 @@ failure:
 RequestStatus Client::UnpublishSave(int saveID)
 {
 	lastError = "";
-	std::vector<string> * tags = NULL;
+	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1383,7 +1392,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 			json::Number tempComments = objDocument["Comments"];
 
 			json::Array tagsArray = objDocument["Tags"];
-			vector<string> tempTags;
+			std::vector<std::string> tempTags;
 
 			for(int j = 0; j < tagsArray.Size(); j++)
 			{
@@ -1508,7 +1517,7 @@ std::vector<SaveComment*> * Client::GetComments(int saveID, int start, int count
 	return commentArray;
 }
 
-std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count, string query, int & resultCount)
+std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count, std::string query, int & resultCount)
 {
 	lastError = "";
 	resultCount = 0;
@@ -1557,7 +1566,7 @@ std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count
 	return tagArray;
 }
 
-std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, string query, string sort, std::string category, int & resultCount)
+std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string query, std::string sort, std::string category, int & resultCount)
 {
 	lastError = "";
 	resultCount = 0;
@@ -1765,10 +1774,10 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 	return NULL;
 }
 
-std::vector<string> * Client::RemoveTag(int saveID, string tag)
+std::vector<std::string> * Client::RemoveTag(int saveID, std::string tag)
 {
 	lastError = "";
-	std::vector<string> * tags = NULL;
+	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1792,7 +1801,7 @@ std::vector<string> * Client::RemoveTag(int saveID, string tag)
 			json::Array tagsArray;
 			json::Reader::Read(tagsArray, dataStream);
 
-			tags = new std::vector<string>();
+			tags = new std::vector<std::string>();
 
 			for(int j = 0; j < tagsArray.Size(); j++)
 			{
@@ -1814,10 +1823,10 @@ std::vector<string> * Client::RemoveTag(int saveID, string tag)
 	return tags;
 }
 
-std::vector<string> * Client::AddTag(int saveID, string tag)
+std::vector<std::string> * Client::AddTag(int saveID, std::string tag)
 {
 	lastError = "";
-	std::vector<string> * tags = NULL;
+	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1841,7 +1850,7 @@ std::vector<string> * Client::AddTag(int saveID, string tag)
 			json::Array tagsArray;
 			json::Reader::Read(tagsArray, dataStream);
 
-			tags = new std::vector<string>();
+			tags = new std::vector<std::string>();
 
 			for(int j = 0; j < tagsArray.Size(); j++)
 			{
@@ -1863,11 +1872,11 @@ std::vector<string> * Client::AddTag(int saveID, string tag)
 	return tags;
 }
 
-vector<std::string> Client::explodePropertyString(std::string property)
+std::vector<std::string> Client::explodePropertyString(std::string property)
 {
-	vector<string> stringArray;
-	string current = "";
-	for (string::iterator iter = property.begin(); iter != property.end(); ++iter) {
+	std::vector<std::string> stringArray;
+	std::string current = "";
+	for (std::string::iterator iter = property.begin(); iter != property.end(); ++iter) {
 		if (*iter == '.') {
 			if (current.length() > 0) {
 				stringArray.push_back(current);
@@ -1931,7 +1940,7 @@ int Client::GetPrefInteger(std::string property, int defaultValue)
 	{
 
 	}
-	catch(exception & e)
+	catch(std::exception & e)
 	{
 
 	}
@@ -1959,19 +1968,19 @@ unsigned int Client::GetPrefUInteger(std::string property, unsigned int defaultV
 	{
 
 	}
-	catch(exception & e)
+	catch(std::exception & e)
 	{
 
 	}
 	return defaultValue;
 }
 
-vector<string> Client::GetPrefStringArray(std::string property)
+std::vector<std::string> Client::GetPrefStringArray(std::string property)
 {
 	try
 	{
 		json::Array value = GetPref(property);
-		vector<string> strArray;
+		std::vector<std::string> strArray;
 		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
 		{
 			try
@@ -1990,15 +1999,15 @@ vector<string> Client::GetPrefStringArray(std::string property)
 	{
 
 	}
-	return vector<string>();
+	return std::vector<std::string>();
 }
 
-vector<double> Client::GetPrefNumberArray(std::string property)
+std::vector<double> Client::GetPrefNumberArray(std::string property)
 {
 	try
 	{
 		json::Array value = GetPref(property);
-		vector<double> strArray;
+		std::vector<double> strArray;
 		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
 		{
 			try
@@ -2017,15 +2026,15 @@ vector<double> Client::GetPrefNumberArray(std::string property)
 	{
 
 	}
-	return vector<double>();
+	return std::vector<double>();
 }
 
-vector<int> Client::GetPrefIntegerArray(std::string property)
+std::vector<int> Client::GetPrefIntegerArray(std::string property)
 {
 	try
 	{
 		json::Array value = GetPref(property);
-		vector<int> intArray;
+		std::vector<int> intArray;
 		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
 		{
 			try
@@ -2051,15 +2060,15 @@ vector<int> Client::GetPrefIntegerArray(std::string property)
 	{
 
 	}
-	return vector<int>();
+	return std::vector<int>();
 }
 
-vector<unsigned int> Client::GetPrefUIntegerArray(std::string property)
+std::vector<unsigned int> Client::GetPrefUIntegerArray(std::string property)
 {
 	try
 	{
 		json::Array value = GetPref(property);
-		vector<unsigned int> intArray;
+		std::vector<unsigned int> intArray;
 		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
 		{
 			try
@@ -2085,15 +2094,15 @@ vector<unsigned int> Client::GetPrefUIntegerArray(std::string property)
 	{
 
 	}
-	return vector<unsigned int>();
+	return std::vector<unsigned int>();
 }
 
-vector<bool> Client::GetPrefBoolArray(std::string property)
+std::vector<bool> Client::GetPrefBoolArray(std::string property)
 {
 	try
 	{
 		json::Array value = GetPref(property);
-		vector<bool> strArray;
+		std::vector<bool> strArray;
 		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
 		{
 			try
@@ -2112,7 +2121,7 @@ vector<bool> Client::GetPrefBoolArray(std::string property)
 	{
 
 	}
-	return vector<bool>();
+	return std::vector<bool>();
 }
 
 bool Client::GetPrefBool(std::string property, bool defaultValue)
@@ -2157,10 +2166,10 @@ void Client::SetPref(std::string property, unsigned int value)
 	SetPref(property, intValue);
 }
 
-void Client::SetPref(std::string property, vector<string> value)
+void Client::SetPref(std::string property, std::vector<std::string> value)
 {
 	json::Array newArray;
-	for(vector<string>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	for(std::vector<std::string>::iterator iter = value.begin(); iter != value.end(); ++iter)
 	{
 		newArray.Insert(json::String(*iter));
 	}
@@ -2168,10 +2177,10 @@ void Client::SetPref(std::string property, vector<string> value)
 	SetPref(property, newArrayValue);
 }
 
-void Client::SetPref(std::string property, vector<double> value)
+void Client::SetPref(std::string property, std::vector<double> value)
 {
 	json::Array newArray;
-	for(vector<double>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	for(std::vector<double>::iterator iter = value.begin(); iter != value.end(); ++iter)
 	{
 		newArray.Insert(json::Number(*iter));
 	}
@@ -2179,10 +2188,10 @@ void Client::SetPref(std::string property, vector<double> value)
 	SetPref(property, newArrayValue);
 }
 
-void Client::SetPref(std::string property, vector<bool> value)
+void Client::SetPref(std::string property, std::vector<bool> value)
 {
 	json::Array newArray;
-	for(vector<bool>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	for(std::vector<bool>::iterator iter = value.begin(); iter != value.end(); ++iter)
 	{
 		newArray.Insert(json::Boolean(*iter));
 	}
@@ -2190,10 +2199,10 @@ void Client::SetPref(std::string property, vector<bool> value)
 	SetPref(property, newArrayValue);
 }
 
-void Client::SetPref(std::string property, vector<int> value)
+void Client::SetPref(std::string property, std::vector<int> value)
 {
 	json::Array newArray;
-	for(vector<int>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	for(std::vector<int>::iterator iter = value.begin(); iter != value.end(); ++iter)
 	{
 		std::stringstream hexInt;
 		hexInt << std::hex << *iter;
@@ -2204,10 +2213,10 @@ void Client::SetPref(std::string property, vector<int> value)
 	SetPref(property, newArrayValue);
 }
 
-void Client::SetPref(std::string property, vector<unsigned int> value)
+void Client::SetPref(std::string property, std::vector<unsigned int> value)
 {
 	json::Array newArray;
-	for(vector<unsigned int>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	for(std::vector<unsigned int>::iterator iter = value.begin(); iter != value.end(); ++iter)
 	{
 		std::stringstream hexInt;
 		hexInt << std::hex << *iter;
@@ -2226,17 +2235,17 @@ void Client::SetPref(std::string property, bool value)
 
 json::UnknownElement Client::GetPref(std::string property)
 {
-	vector<string> pTokens = Client::explodePropertyString(property);
+	std::vector<std::string> pTokens = Client::explodePropertyString(property);
 	const json::UnknownElement & configDocumentCopy = configDocument;
 	json::UnknownElement currentRef = configDocumentCopy;
-	for(vector<string>::iterator iter = pTokens.begin(); iter != pTokens.end(); ++iter)
+	for(std::vector<std::string>::iterator iter = pTokens.begin(); iter != pTokens.end(); ++iter)
 	{
 		currentRef = ((const json::UnknownElement &)currentRef)[*iter];
 	}
 	return currentRef;
 }
 
-void Client::setPrefR(std::deque<string> tokens, json::UnknownElement & element, json::UnknownElement & value)
+void Client::setPrefR(std::deque<std::string> tokens, json::UnknownElement & element, json::UnknownElement & value)
 {
 	if(tokens.size())
 	{
@@ -2250,9 +2259,9 @@ void Client::setPrefR(std::deque<string> tokens, json::UnknownElement & element,
 
 void Client::SetPref(std::string property, json::UnknownElement & value)
 {
-	vector<string> pTokens = Client::explodePropertyString(property);
-	deque<string> dTokens(pTokens.begin(), pTokens.end());
-	string token = dTokens.front();
+	std::vector<std::string> pTokens = Client::explodePropertyString(property);
+	std::deque<std::string> dTokens(pTokens.begin(), pTokens.end());
+	std::string token = dTokens.front();
 	dTokens.pop_front();
 	setPrefR(dTokens, configDocument[token], value);
 }

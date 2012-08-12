@@ -11,11 +11,12 @@
 #include <vector>
 #include <string>
 #include <cmath>
-#include "client/SaveFile.h"
+
+class SaveFile;
 
 class LocalBrowserView;
 class LocalBrowserModel {
-	vector<std::string> selected;
+	std::vector<std::string> selected;
 	SaveFile * stamp;
 	std::vector<std::string> stampIDs;
 	std::vector<SaveFile*> savesList;
@@ -26,14 +27,14 @@ class LocalBrowserModel {
 	void notifySelectedChanged();
 public:
 	LocalBrowserModel();
-	int GetPageCount() { return max(1, (int)(ceil(stampIDs.size()/16))); }
+	int GetPageCount() { return std::max(1, (int)(std::ceil(stampIDs.size()/16))); }
 	int GetPageNum() { return currentPage; }
 	void AddObserver(LocalBrowserView * observer);
 	std::vector<SaveFile *> GetSavesList();
 	void UpdateSavesList(int pageNumber);
 	SaveFile * GetSave();
 	void SetSave(SaveFile * newStamp);
-	vector<std::string> GetSelected() { return selected; }
+	std::vector<std::string> GetSelected() { return selected; }
 	void ClearSelected() { selected.clear(); notifySelectedChanged(); }
 	void SelectSave(std::string stampID);
 	void DeselectSave(std::string stampID);

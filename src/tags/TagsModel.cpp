@@ -9,6 +9,7 @@
 #include "TagsView.h"
 #include "client/Client.h"
 #include "TagsModelException.h"
+#include "client/SaveInfo.h"
 
 TagsModel::TagsModel():
 	save(NULL)
@@ -28,14 +29,14 @@ SaveInfo * TagsModel::GetSave()
 	return save;
 }
 
-void TagsModel::RemoveTag(string tag)
+void TagsModel::RemoveTag(std::string tag)
 {
 	if(save)
 	{
-		std::vector<string> * tags = Client::Ref().RemoveTag(save->GetID(), tag);
+		std::vector<std::string> * tags = Client::Ref().RemoveTag(save->GetID(), tag);
 		if(tags)
 		{
-			save->SetTags(vector<string>(*tags));
+			save->SetTags(std::vector<std::string>(*tags));
 			notifyTagsChanged();
 			delete tags;
 		}
@@ -46,14 +47,14 @@ void TagsModel::RemoveTag(string tag)
 	}
 }
 
-void TagsModel::AddTag(string tag)
+void TagsModel::AddTag(std::string tag)
 {
 	if(save)
 	{
-		std::vector<string> * tags = Client::Ref().AddTag(save->GetID(), tag);
+		std::vector<std::string> * tags = Client::Ref().AddTag(save->GetID(), tag);
 		if(tags)
 		{
-			save->SetTags(vector<string>(*tags));
+			save->SetTags(std::vector<std::string>(*tags));
 			notifyTagsChanged();
 			delete tags;
 		}

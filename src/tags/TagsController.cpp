@@ -29,13 +29,13 @@ SaveInfo * TagsController::GetSave()
 	return tagsModel->GetSave();
 }
 
-void TagsController::RemoveTag(string tag)
+void TagsController::RemoveTag(std::string tag)
 {
 	tagsModel->RemoveTag(tag);
 }
 
 
-void TagsController::AddTag(string tag)
+void TagsController::AddTag(std::string tag)
 {
 	tagsModel->AddTag(tag);
 }

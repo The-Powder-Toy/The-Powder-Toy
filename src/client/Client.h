@@ -4,20 +4,19 @@
 #include <queue>
 #include <vector>
 #include <list>
-#include <fstream>
 
 #include "Config.h"
-#include "HTTP.h"
-#include "preview/Comment.h"
-#include "search/Thumbnail.h"
-#include "client/SaveInfo.h"
-#include "client/SaveFile.h"
 #include "Singleton.h"
+
 #include "User.h"
 
-#include "cajun/reader.h"
-#include "cajun/writer.h"
 #include "cajun/elements.h"
+
+class Thumbnail;
+class SaveInfo;
+class SaveFile;
+class SaveComment;
+class GameSave;
 
 enum LoginStatus {
 	LoginOkay, LoginError
@@ -55,7 +54,7 @@ private:
 
 	std::string lastError;
 
-	list<string> stampIDs;
+	std::list<std::string> stampIDs;
 	int lastStampTime;
 	int lastStampName;
 
@@ -70,7 +69,7 @@ private:
 	int activeThumbRequestCompleteTimes[IMGCONNS];
 	std::string activeThumbRequestIDs[IMGCONNS];
 	void updateStamps();
-	static vector<std::string> explodePropertyString(std::string property);
+	static std::vector<std::string> explodePropertyString(std::string property);
 	void notifyUpdateAvailable();
 	void notifyAuthUserChanged();
 	void notifyMessageOfTheDay();
@@ -79,7 +78,7 @@ private:
 	json::Object configDocument;
 public:
 
-	vector<ClientListener*> listeners;
+	std::vector<ClientListener*> listeners;
 
 	UpdateInfo GetUpdateInfo();
 
@@ -109,10 +108,10 @@ public:
 	RequestStatus ExecVote(int saveID, int direction);
 	RequestStatus UploadSave(SaveInfo & save);
 
-	SaveFile * GetStamp(string stampID);
-	void DeleteStamp(string stampID);
-	string AddStamp(GameSave * saveData);
-	vector<string> GetStamps(int start, int count);
+	SaveFile * GetStamp(std::string stampID);
+	void DeleteStamp(std::string stampID);
+	std::string AddStamp(GameSave * saveData);
+	std::vector<std::string> GetStamps(int start, int count);
 	int GetStampsCount();
 	SaveFile * GetFirstStamp();
 
@@ -120,10 +119,10 @@ public:
 
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	std::vector<unsigned char> GetSaveData(int saveID, int saveDate);
-	LoginStatus Login(string username, string password, User & user);
+	LoginStatus Login(std::string username, std::string password, User & user);
 	void ClearThumbnailRequests();
-	std::vector<SaveInfo*> * SearchSaves(int start, int count, string query, string sort, string category, int & resultCount);
-	std::vector<std::pair<std::string, int> > * GetTags(int start, int count, string query, int & resultCount);
+	std::vector<SaveInfo*> * SearchSaves(int start, int count, std::string query, std::string sort, std::string category, int & resultCount);
+	std::vector<std::pair<std::string, int> > * GetTags(int start, int count, std::string query, int & resultCount);
 	std::vector<SaveComment*> * GetComments(int saveID, int start, int count);
 	Thumbnail * GetPreview(int saveID, int saveDate);
 	Thumbnail * GetThumbnail(int saveID, int saveDate);
@@ -134,8 +133,8 @@ public:
 	RequestStatus FavouriteSave(int saveID, bool favourite);
 	void SetAuthUser(User user);
 	User GetAuthUser();
-	std::vector<string> * RemoveTag(int saveID, string tag); //TODO RequestStatus
-	std::vector<string> * AddTag(int saveID, string tag);
+	std::vector<std::string> * RemoveTag(int saveID, std::string tag); //TODO RequestStatus
+	std::vector<std::string> * AddTag(int saveID, std::string tag);
 	std::string GetLastError() {
 		return lastError;
 	}
@@ -146,26 +145,26 @@ public:
 	double GetPrefNumber(std::string property, double defaultValue);
 	int GetPrefInteger(std::string property, int defaultValue);
 	unsigned int GetPrefUInteger(std::string property, unsigned int defaultValue);
-	vector<string> GetPrefStringArray(std::string property);
-	vector<double> GetPrefNumberArray(std::string property);
-	vector<int> GetPrefIntegerArray(std::string property);
-	vector<unsigned int> GetPrefUIntegerArray(std::string property);
-	vector<bool> GetPrefBoolArray(std::string property);
+	std::vector<std::string> GetPrefStringArray(std::string property);
+	std::vector<double> GetPrefNumberArray(std::string property);
+	std::vector<int> GetPrefIntegerArray(std::string property);
+	std::vector<unsigned int> GetPrefUIntegerArray(std::string property);
+	std::vector<bool> GetPrefBoolArray(std::string property);
 	bool GetPrefBool(std::string property, bool defaultValue);
 
 	void SetPref(std::string property, std::string value);
 	void SetPref(std::string property, double value);
 	void SetPref(std::string property, int value);
 	void SetPref(std::string property, unsigned int value);
-	void SetPref(std::string property, vector<string> value);
-	void SetPref(std::string property, vector<double> value);
-	void SetPref(std::string property, vector<int> value);
-	void SetPref(std::string property, vector<unsigned int> value);
-	void SetPref(std::string property, vector<bool> value);
+	void SetPref(std::string property, std::vector<std::string> value);
+	void SetPref(std::string property, std::vector<double> value);
+	void SetPref(std::string property, std::vector<int> value);
+	void SetPref(std::string property, std::vector<unsigned int> value);
+	void SetPref(std::string property, std::vector<bool> value);
 	void SetPref(std::string property, bool value);
 
 	json::UnknownElement GetPref(std::string property);
-	void setPrefR(std::deque<string> tokens, json::UnknownElement & element, json::UnknownElement & value);
+	void setPrefR(std::deque<std::string> tokens, json::UnknownElement & element, json::UnknownElement & value);
 	void SetPref(std::string property, json::UnknownElement & value);
 };
 

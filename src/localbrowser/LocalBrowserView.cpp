@@ -9,6 +9,12 @@
 #include "client/Client.h"
 #include "LocalBrowserView.h"
 
+#include "interface/Button.h"
+#include "interface/Textbox.h"
+#include "interface/Label.h"
+#include "interface/SaveButton.h"
+#include "interface/Keys.h"
+ 
 #include "dialogues/ErrorMessage.h"
 #include "LocalBrowserController.h"
 #include "LocalBrowserModel.h"

@@ -9,6 +9,7 @@
 #include "graphics/Graphics.h"
 #include "Simulation.h"
 #include "graphics/Renderer.h"
+#include "search/Thumbnail.h"
 
 
 SaveRenderer::SaveRenderer(){
@@ -124,7 +125,7 @@ Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize)
 	GameSave * tempSave;
 	try {
 		tempSave = new GameSave((char*)saveData, dataSize);
-	} catch (exception & e) {
+	} catch (std::exception & e) {
 		
 		//Todo: make this look a little less shit
 		VideoBuffer buffer(64, 64);

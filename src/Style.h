@@ -7,7 +7,8 @@
 
 #ifndef The_Powder_Toy_Style_h
 #define The_Powder_Toy_Style_h
-#include "interface/Colour.h"
+
+namespace ui { class Colour; }
 
 namespace style
 {

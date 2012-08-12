@@ -8,7 +8,6 @@
 
 #include "Config.h"
 #include "client/Client.h"
-#include "simulation/Simulation.h"
 #include "Graphics.h"
 #include "interface/Point.h"
 

@@ -7,8 +7,9 @@
 
 #include "LocalBrowserModel.h"
 #include "LocalBrowserView.h"
-#include "client/Client.h"
 #include "LocalBrowserModelException.h"
+#include "client/Client.h"
+#include "client/SaveFile.h"
 
 LocalBrowserModel::LocalBrowserModel():
 	stamp(NULL),

@@ -9,6 +9,8 @@
 #define SIMULATION_H_
 #include <cstring>
 #include <cstddef>
+#include <vector>
+
 #include "Config.h"
 #include "graphics/Renderer.h"
 #include "graphics/Graphics.h"
@@ -45,9 +47,9 @@ public:
 	Gravity * grav;
 	Air * air;
 
-	vector<sign> signs;
+	std::vector<sign> signs;
 	Element * elements;
-	vector<SimTool*> tools;
+	std::vector<SimTool*> tools;
 	unsigned int * platent;
 	wall_type wtypes[UI_WALLCOUNT];
 	gol_menu gmenu[NGOL];

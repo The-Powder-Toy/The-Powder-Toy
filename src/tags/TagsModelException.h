@@ -10,12 +10,11 @@
 
 #include <string>
 #include <exception>
-using namespace std;
 
 class TagsModelException {
-	string message;
+	std::string message;
 public:
-	TagsModelException(string message_): message(message_) {};
+	TagsModelException(std::string message_): message(message_) {};
 	const char * what() const throw() { return message.c_str(); };
 	~TagsModelException() throw() {};
 };

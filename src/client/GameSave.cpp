@@ -41,10 +41,10 @@ originalData(save.originalData)
 	{
 		setSize(save.blockWidth, save.blockHeight);
 
-		copy(save.particles, save.particles+NPART, particles);
-		copy(save.blockMapPtr, save.blockMapPtr+(blockHeight*blockWidth), blockMapPtr);
-		copy(save.fanVelXPtr, save.fanVelXPtr+(blockHeight*blockWidth), fanVelXPtr);
-		copy(save.fanVelYPtr, save.fanVelYPtr+(blockHeight*blockWidth), fanVelYPtr);
+		std::copy(save.particles, save.particles+NPART, particles);
+		std::copy(save.blockMapPtr, save.blockMapPtr+(blockHeight*blockWidth), blockMapPtr);
+		std::copy(save.fanVelXPtr, save.fanVelXPtr+(blockHeight*blockWidth), fanVelXPtr);
+		std::copy(save.fanVelYPtr, save.fanVelYPtr+(blockHeight*blockWidth), fanVelYPtr);
 	}
 	else
 	{
@@ -261,11 +261,11 @@ void GameSave::setSize(int newWidth, int newHeight)
 	particles = new Particle[NPART];
 
 	blockMapPtr = new unsigned char[blockHeight*blockWidth];
-	fill(blockMapPtr, blockMapPtr+(blockHeight*blockWidth), 0);
+	std::fill(blockMapPtr, blockMapPtr+(blockHeight*blockWidth), 0);
 	fanVelXPtr = new float[(blockHeight)*(blockWidth)];
-	fill(fanVelXPtr, fanVelXPtr+((blockHeight)*(blockWidth)), 0);
+	std::fill(fanVelXPtr, fanVelXPtr+((blockHeight)*(blockWidth)), 0);
 	fanVelYPtr = new float[(blockHeight)*(blockWidth)];
-	fill(fanVelYPtr, fanVelYPtr+((blockHeight)*(blockWidth)), 0);
+	std::fill(fanVelYPtr, fanVelYPtr+((blockHeight)*(blockWidth)), 0);
 
 	blockMap = new unsigned char*[blockHeight];
 	for(int y = 0; y < blockHeight; y++)
@@ -330,11 +330,11 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	unsigned char * blockMapPtrNew;
 
 	blockMapPtrNew = new unsigned char[newBlockHeight*newBlockWidth];
-	fill(blockMapPtrNew, blockMapPtrNew+(newBlockHeight*newBlockWidth), 0);
+	std::fill(blockMapPtrNew, blockMapPtrNew+(newBlockHeight*newBlockWidth), 0);
 	fanVelXPtrNew = new float[newBlockHeight*newBlockWidth];
-	fill(fanVelXPtrNew, fanVelXPtrNew+(newBlockHeight*newBlockWidth), 0);
+	std::fill(fanVelXPtrNew, fanVelXPtrNew+(newBlockHeight*newBlockWidth), 0);
 	fanVelYPtrNew = new float[(newBlockHeight)*(newBlockWidth)];
-	fill(fanVelYPtrNew, fanVelYPtrNew+(newBlockHeight*newBlockWidth), 0);
+	std::fill(fanVelYPtrNew, fanVelYPtrNew+(newBlockHeight*newBlockWidth), 0);
 
 	blockMapNew = new unsigned char*[newBlockHeight];
 	for(int y = 0; y < newBlockHeight; y++)
@@ -992,7 +992,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	memcpy(goltype, golTypesT, sizeof(int) * (golTypesCount));
 	free(golTypesT);
 
-	vector<Element> elements = GetElements();
+	std::vector<Element> elements = GetElements();
 
 	try
 	{
@@ -1609,7 +1609,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	int posCount, signsCount;
 	bson b;
 	
-	fill(elementCount, elementCount+PT_NUM, 0);
+	std::fill(elementCount, elementCount+PT_NUM, 0);
 
 	//Get coords in blocks
 	blockX = 0;//orig_x0/CELL;

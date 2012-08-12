@@ -10,14 +10,14 @@
 
 #include <string>
 
-enum Elevation
-{
-	ElevationAdmin, ElevationModerator, ElevationNone
-};
 
 class User
 {
 public:
+	enum Elevation
+	{
+		ElevationAdmin, ElevationModerator, ElevationNone
+	};
 	int ID;
 	std::string Username;
 	std::string SessionID;

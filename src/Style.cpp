@@ -7,7 +7,9 @@
 //
 
 #include <iostream>
+
 #include "Style.h"
+#include "interface/Colour.h"
 
 namespace style {
 	ui::Colour Colour::InformationTitle = ui::Colour(140, 140, 255);

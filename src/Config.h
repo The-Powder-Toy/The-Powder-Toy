@@ -202,5 +202,4 @@ extern unsigned char ZSIZE;
 #define DEBUG_PERFORMANCE_CALC 0x0008
 #define DEBUG_PERFORMANCE_FRAME 0x0010
 
-#include "interface/Keys.h"
 //#endif /* CONFIG_H_ */

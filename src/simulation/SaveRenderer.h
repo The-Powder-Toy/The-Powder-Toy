@@ -9,12 +9,13 @@
 #define SAVERENDERER_H_
 
 #include "Singleton.h"
-#include "search/Thumbnail.h"
-#include "client/GameSave.h"
 
+class GameSave;
+class Thumbnail;
 class Graphics;
 class Simulation;
 class Renderer;
+
 class SaveRenderer: public Singleton<SaveRenderer> {
 	Graphics * g;
 	Simulation * sim;

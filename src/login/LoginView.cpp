@@ -6,6 +6,11 @@
  */
 
 #include "LoginView.h"
+
+#include "interface/Button.h"
+#include "interface/Label.h"
+#include "interface/Textbox.h"
+#include "interface/Keys.h"
 #include "Style.h"
 
 class LoginView::LoginAction : public ui::ButtonAction

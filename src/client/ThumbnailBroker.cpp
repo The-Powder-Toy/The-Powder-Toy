@@ -4,6 +4,7 @@
 #include "ThumbnailBroker.h"
 #include "ThumbnailListener.h"
 #include "Client.h"
+#include "HTTP.h"
 #include "GameSave.h"
 #include "search/Thumbnail.h"
 #include "simulation/SaveRenderer.h"

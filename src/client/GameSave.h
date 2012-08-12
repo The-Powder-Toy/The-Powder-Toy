@@ -12,17 +12,18 @@
 #include <string>
 #include "Config.h"
 #include "Misc.h"
+
 #include "simulation/Sign.h"
 #include "simulation/Particle.h"
 
-using namespace std;
+//using namespace std;
 
-struct ParseException: public exception {
+struct ParseException: public std::exception {
 	enum ParseResult { OK = 0, Corrupt, WrongVersion, InvalidDimensions, InternalError, MissingElement };
-	string message;
+	std::string message;
 	ParseResult result;
 public:
-	ParseException(ParseResult result, string message_): message(message_), result(result) {}
+	ParseException(ParseResult result, std::string message_): message(message_), result(result) {}
 	const char * what() const throw()
 	{
 		return message.c_str();

@@ -2,6 +2,7 @@
 
 #include "SearchView.h"
 #include "client/Client.h"
+#include "interface/Keys.h"
 #include "interface/SaveButton.h"
 #include "interface/Label.h"
 #include "interface/Textbox.h"
@@ -264,7 +265,7 @@ void SearchView::NotifySortChanged(SearchModel * sender)
 void SearchView::NotifyShowOwnChanged(SearchModel * sender)
 {
     ownButton->SetToggleState(sender->GetShowOwn());
-    if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == ElevationModerator)
+    if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
     {
     	unpublishSelected->Enabled = true;
     	removeSelected->Enabled = true;
@@ -289,7 +290,7 @@ void SearchView::NotifyShowFavouriteChanged(SearchModel * sender)
     	unpublishSelected->Enabled = false;
     	removeSelected->Enabled = true;
     }
-    else if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == ElevationModerator)
+    else if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
     {
     	unpublishSelected->Enabled = true;
     	removeSelected->Enabled = true;
@@ -347,7 +348,7 @@ void SearchView::CheckAccess()
 		favButton->Enabled = true;
 		favouriteSelected->Enabled = true;
 
-		if(Client::Ref().GetAuthUser().UserElevation == ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == ElevationModerator)
+		if(Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
 		{
 			unpublishSelected->Enabled = true;
 			removeSelected->Enabled = true;

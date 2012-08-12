@@ -13,6 +13,11 @@
 #include "TagsModel.h"
 #include "TagsModelException.h"
 
+#include "interface/Button.h"
+#include "interface/Textbox.h"
+#include "interface/Label.h"
+#include "interface/Keys.h"
+
 TagsView::TagsView():
 	ui::Window(ui::Point(-1, -1), ui::Point(195, 250))
 {
@@ -60,9 +65,9 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 	class DeleteTagAction : public ui::ButtonAction
 	{
 		TagsView * v;
-		string tag;
+		std::string tag;
 	public:
-		DeleteTagAction(TagsView * _v, string tag) { v = _v; this->tag = tag; }
+		DeleteTagAction(TagsView * _v, std::string tag) { v = _v; this->tag = tag; }
 		void ActionCallback(ui::Button * sender)
 		{
 			try

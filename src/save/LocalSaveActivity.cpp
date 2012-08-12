@@ -12,6 +12,7 @@
 #include "dialogues/ErrorMessage.h"
 #include "dialogues/ConfirmPrompt.h"
 #include "client/Client.h"
+#include "client/GameSave.h"
 #include "Style.h"
 
 class LocalSaveActivity::CancelAction: public ui::ButtonAction

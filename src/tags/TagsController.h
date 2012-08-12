@@ -23,8 +23,8 @@ public:
 	TagsController(ControllerCallback * callback, SaveInfo * save);
 	TagsView * GetView() {return tagsView;}
 	SaveInfo * GetSave();
-	void RemoveTag(string tag);
-	void AddTag(string tag);
+	void RemoveTag(std::string tag);
+	void AddTag(std::string tag);
 	void Exit();
 	virtual ~TagsController();
 };

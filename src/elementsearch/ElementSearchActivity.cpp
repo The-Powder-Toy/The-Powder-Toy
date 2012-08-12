@@ -9,6 +9,7 @@
 #include "ElementSearchActivity.h"
 #include "interface/Textbox.h"
 #include "interface/Label.h"
+#include "interface/Keys.h"
 #include "game/Tool.h"
 #include "Style.h"
 #include "game/GameModel.h"

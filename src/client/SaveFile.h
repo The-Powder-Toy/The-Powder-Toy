@@ -9,31 +9,29 @@
 #define SAVEFILE_H_
 
 #include <string>
-#include "GameSave.h"
 
-
-using namespace std;
-
+class GameSave;
 class Thumbnail;
+
 class SaveFile {
 public:
 	SaveFile(SaveFile & save);
-	SaveFile(string filename);
+	SaveFile(std::string filename);
 
 	Thumbnail * GetThumbnail();
 	GameSave * GetGameSave();
 	void SetThumbnail(Thumbnail * thumb);
 	void SetGameSave(GameSave * save);
-	string GetDisplayName();
-	void SetDisplayName(string displayName);
-	string GetName();
+	std::string GetDisplayName();
+	void SetDisplayName(std::string displayName);
+	std::string GetName();
 
 	virtual ~SaveFile();
 private:
 	Thumbnail * thumbnail;
 	GameSave * gameSave;
-	string filename;
-	string displayName;
+	std::string filename;
+	std::string displayName;
 };
 
 #endif /* SAVEFILE_H_ */

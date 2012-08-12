@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Window.h"
+#include "Keys.h"
 #include "Component.h"
 #include "interface/Point.h"
 #include "interface/Button.h"

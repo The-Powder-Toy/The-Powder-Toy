@@ -8,12 +8,16 @@
 #ifndef LOGINVIEW_H_
 #define LOGINVIEW_H_
 
-#include "interface/Button.h"
 #include "interface/Window.h"
-#include "interface/Label.h"
-#include "interface/Textbox.h"
 #include "LoginController.h"
 #include "LoginModel.h"
+
+namespace ui
+{
+	class Textbox;
+	class Button;
+	class Label;
+}
 
 class LoginController;
 class LoginMode;

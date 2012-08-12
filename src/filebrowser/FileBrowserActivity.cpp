@@ -8,6 +8,7 @@
 #include "interface/ProgressBar.h"
 #include "client/Client.h"
 #include "client/SaveFile.h"
+#include "client/GameSave.h"
 #include "Style.h"
 #include "tasks/Task.h"
 #include "simulation/SaveRenderer.h"
