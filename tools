@@ -1,0 +1,7 @@
+#include "ToolClasses.h"
+		std::vector<SimTool*> GetTools()
+		{
+		std::vector<SimTool*> tools;
+			return tools;
+		}
+		

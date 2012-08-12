@@ -31,9 +31,6 @@ extern "C"
 #define VIDYRES YRES
 #endif
 
-#ifdef OGLR
-#define drawrect(args) g->drawrect(args)
-#endif
 
 void Renderer::RenderBegin()
 {
