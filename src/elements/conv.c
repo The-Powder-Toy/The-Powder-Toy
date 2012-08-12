@@ -49,7 +49,7 @@ int update_CONV(UPDATE_FUNC_ARGS) {
 						r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if((r&0xFF)!=PT_CONV && (r&0xFF)!=parts[i].ctype)
+					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=parts[i].ctype)
 					{
 						if (parts[i].ctype==PT_LIFE) create_part(r>>8, x+rx, y+ry, parts[i].ctype|(parts[i].tmp<<8));
 						else create_part(r>>8, x+rx, y+ry, parts[i].ctype);
