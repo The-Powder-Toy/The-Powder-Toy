@@ -7,7 +7,9 @@
 
 #ifndef SAVERENDERER_H_
 #define SAVERENDERER_H_
+#ifdef OGLI
 #include "graphics/OpenGLHeaders.h" 
+#endif
 #include "Singleton.h"
 
 class GameSave;
