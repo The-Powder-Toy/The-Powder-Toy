@@ -244,12 +244,12 @@ void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w,
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	for(int i =0; i < w*h; i++)
 	{
+			glBegin(GL_POINTS);
 		if(bitmap[i]==255)
 		{
-			glBegin(GL_POINTS);
 			glVertex2f(x+i%w,y+i/w);
-			glEnd();
 		}
+			glEnd();
 	}
 }
 
