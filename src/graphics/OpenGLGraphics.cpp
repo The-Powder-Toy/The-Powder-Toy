@@ -11,9 +11,9 @@ static pthread_mutex_t gMutex = PTHREAD_MUTEX_INITIALIZER;
 Graphics::Graphics():
 	sdl_scale(1)
 {
-	if(gMutex == PTHREAD_MUTEX_INITIALIZER)
-		pthread_mutex_init (&gMutex, NULL);
-
+//	if(gMutex == PTHREAD_MUTEX_INITIALIZER)
+//		pthread_mutex_init (&gMutex, NULL);
+printf("PTHREAD_MUTEX_INITIALIZER\n");
 	Reset();
 	
 	glEnable(GL_BLEND);

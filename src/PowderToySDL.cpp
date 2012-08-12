@@ -26,7 +26,6 @@
 #include "interface/Engine.h"
 #include "interface/Button.h"
 #include "interface/Panel.h"
-#include "interface/ControlFactory.h"
 #include "interface/Point.h"
 #include "interface/Label.h"
 #include "simulation/SaveRenderer.h"

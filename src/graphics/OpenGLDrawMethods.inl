@@ -1,4 +1,5 @@
-int Graphics::drawtext(int x, int y, const char *s, int r, int g, int b, int a)
+#include "../data/font.h" 
+int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int b, int a)
 {
 	if(!strlen(s))
 		return 0;
@@ -100,12 +101,12 @@ int Graphics::drawtext(int x, int y, const char *s, int r, int g, int b, int a)
 	return x;
 }
 
-int Graphics::drawtext(int x, int y, std::string s, int r, int g, int b, int a)
+int PIXELMETHODS_CLASS::drawtext(int x, int y, std::string s, int r, int g, int b, int a)
 {
 	return drawtext(x, y, s.c_str(), r, g, b, a);
 }
 
-TPT_INLINE int Graphics::drawchar(int x, int y, int c, int r, int g, int b, int a)
+TPT_INLINE int PIXELMETHODS_CLASS::drawchar(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];
@@ -135,7 +136,7 @@ TPT_INLINE int Graphics::drawchar(int x, int y, int c, int r, int g, int b, int 
 	return x + w;
 }
 
-TPT_INLINE int Graphics::addchar(int x, int y, int c, int r, int g, int b, int a)
+TPT_INLINE int PIXELMETHODS_CLASS::addchar(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];
@@ -167,22 +168,22 @@ TPT_INLINE int Graphics::addchar(int x, int y, int c, int r, int g, int b, int a
 	return x + w;
 }
 
-TPT_INLINE void Graphics::xor_pixel(int x, int y)
+TPT_INLINE void PIXELMETHODS_CLASS::xor_pixel(int x, int y)
 {
 	//OpenGL doesn't support single pixel manipulation, there are ways around it, but with poor performance
 }
 
-TPT_INLINE void Graphics::blendpixel(int x, int y, int r, int g, int b, int a)
+TPT_INLINE void PIXELMETHODS_CLASS::blendpixel(int x, int y, int r, int g, int b, int a)
 {
 	//OpenGL doesn't support single pixel manipulation, there are ways around it, but with poor performance
 }
 
-TPT_INLINE void Graphics::addpixel(int x, int y, int r, int g, int b, int a)
+TPT_INLINE void PIXELMETHODS_CLASS::addpixel(int x, int y, int r, int g, int b, int a)
 {
 	//OpenGL doesn't support single pixel manipulation, there are ways around it, but with poor performance
 }
 
-void Graphics::xor_line(int x, int y, int x2, int y2)
+void PIXELMETHODS_CLASS::xor_line(int x, int y, int x2, int y2)
 {
 	glEnable(GL_COLOR_LOGIC_OP);
 	//glEnable(GL_LINE_SMOOTH);
@@ -195,7 +196,7 @@ void Graphics::xor_line(int x, int y, int x2, int y2)
 	glDisable(GL_COLOR_LOGIC_OP);
 }
 
-void Graphics::xor_rect(int x, int y, int width, int height)
+void PIXELMETHODS_CLASS::xor_rect(int x, int y, int width, int height)
 {
 	glEnable(GL_COLOR_LOGIC_OP);
 	//glEnable(GL_LINE_SMOOTH);
@@ -211,7 +212,7 @@ void Graphics::xor_rect(int x, int y, int width, int height)
 	glDisable(GL_COLOR_LOGIC_OP);
 }
 
-void Graphics::xor_bitmap(unsigned char * bitmap, int x, int y, int w, int h)
+void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w, int h)
 {
 	//glEnable(GL_COLOR_LOGIC_OP);
 	//glLogicOp(GL_XOR);
@@ -240,7 +241,7 @@ void Graphics::xor_bitmap(unsigned char * bitmap, int x, int y, int w, int h)
 	//glDisable(GL_COLOR_LOGIC_OP);
 }
 
-void Graphics::draw_line(int x, int y, int x2, int y2, int r, int g, int b, int a)
+void PIXELMETHODS_CLASS::draw_line(int x, int y, int x2, int y2, int r, int g, int b, int a)
 {
 	a = 255;
 	glColor4ub(r, g, b, a);
@@ -250,7 +251,7 @@ void Graphics::draw_line(int x, int y, int x2, int y2, int r, int g, int b, int 
 	glEnd();
 }
 
-void Graphics::drawrect(int x, int y, int width, int height, int r, int g, int b, int a)
+void PIXELMETHODS_CLASS::drawrect(int x, int y, int width, int height, int r, int g, int b, int a)
 {
 	float fx = float(x)+0.5f;
 	float fy = float(y)+0.5f;
@@ -270,7 +271,7 @@ void Graphics::drawrect(int x, int y, int width, int height, int r, int g, int b
 	glEnd();
 }
 
-void Graphics::fillrect(int x, int y, int width, int height, int r, int g, int b, int a)
+void PIXELMETHODS_CLASS::fillrect(int x, int y, int width, int height, int r, int g, int b, int a)
 {
 	/*x++;
 	y++;
@@ -286,7 +287,7 @@ void Graphics::fillrect(int x, int y, int width, int height, int r, int g, int b
 	glEnd();
 }
 
-void Graphics::gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2)
+void PIXELMETHODS_CLASS::gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2)
 {
 	glBegin(GL_QUADS);
 	glColor4ub(r, g, b, a);
@@ -300,7 +301,7 @@ void Graphics::gradientrect(int x, int y, int width, int height, int r, int g, i
 	glEnd();
 }
 
-void Graphics::clearrect(int x, int y, int width, int height)
+void PIXELMETHODS_CLASS::clearrect(int x, int y, int width, int height)
 {
 	glColor4ub(0, 0, 0, 255);
 	glBegin(GL_QUADS);
@@ -311,7 +312,7 @@ void Graphics::clearrect(int x, int y, int width, int height)
 	glEnd();
 }
 
-void Graphics::draw_image(pixel *img, int x, int y, int w, int h, int a)
+void PIXELMETHODS_CLASS::draw_image(pixel *img, int x, int y, int w, int h, int a)
 {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textTexture);
