@@ -24,6 +24,7 @@
 #endif
 
 #include "Config.h"
+#include "Format.h"
 #include "Client.h"
 #include "MD5.h"
 #include "graphics/Graphics.h"
@@ -129,7 +130,12 @@ void Client::Initialise(std::string proxyString)
 	stampsLib.close();
 
 	//Begin version check
-	versionCheckRequest = http_async_req_start(NULL, SERVER "/Download/Version.json", NULL, 0, 1);
+	versionCheckRequest = http_async_req_start(NULL, SERVER "/Startup.json", NULL, 0, 1);
+
+	if(authUser.ID)
+	{
+		http_auth_headers(versionCheckRequest, (char *)format::NumberToString<int>(authUser.ID).c_str(), NULL, (char *)authUser.SessionID.c_str());
+	}
 }
 
 bool Client::DoInstallation()
@@ -485,6 +491,17 @@ std::vector<unsigned char> Client::ReadFile(std::string filename)
 	}
 }
 
+void Client::SetMessageOfTheDay(std::string message)
+{
+	messageOfTheDay = message;
+	notifyMessageOfTheDay();
+}
+
+std::string Client::GetMessageOfTheDay()
+{
+	return messageOfTheDay;
+}
+
 void Client::Tick()
 {
 	//Check thumbnail queue
@@ -512,9 +529,24 @@ void Client::Tick()
 				json::Object objDocument;
 				json::Reader::Read(objDocument, dataStream);
 
-				json::Object stableVersion = objDocument["Stable"];
-				json::Object betaVersion = objDocument["Beta"];
-				json::Object snapshotVersion = objDocument["Snapshot"];
+				//Check session
+				json::Boolean sessionStatus = objDocument["Session"];
+				if(!sessionStatus.Value())
+				{
+					authUser = User(0, "");
+				}
+
+				//MOTD
+				json::String messageOfTheDay = objDocument["MessageOfTheDay"];
+				this->messageOfTheDay = messageOfTheDay.Value();
+				notifyMessageOfTheDay();
+
+				//Check for updates
+				json::Object versions = objDocument["Updates"];
+				
+				json::Object stableVersion = versions["Stable"];
+				json::Object betaVersion = versions["Beta"];
+				json::Object snapshotVersion = versions["Snapshot"];
 
 				json::Number stableMajor = stableVersion["Major"];
 				json::Number stableMinor = stableVersion["Minor"];
@@ -577,6 +609,14 @@ void Client::notifyUpdateAvailable()
 	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
 	{
 		(*iterator)->NotifyUpdateAvailable(this);
+	}
+}
+
+void Client::notifyMessageOfTheDay()
+{
+	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	{
+		(*iterator)->NotifyMessageOfTheDay(this);
 	}
 }
 

@@ -46,6 +46,8 @@ class ThumbnailListener;
 class ClientListener;
 class Client: public Singleton<Client> {
 private:
+	std::string messageOfTheDay;
+
 	void * versionCheckRequest;
 	bool updateAvailable;
 	UpdateInfo updateInfo;
@@ -71,6 +73,7 @@ private:
 	static vector<std::string> explodePropertyString(std::string property);
 	void notifyUpdateAvailable();
 	void notifyAuthUserChanged();
+	void notifyMessageOfTheDay();
 
 	//Config file handle
 	json::Object configDocument;
@@ -89,6 +92,9 @@ public:
 	bool DoInstallation();
 
 	std::vector<unsigned char> ReadFile(std::string filename);
+
+	void SetMessageOfTheDay(std::string message);
+	std::string GetMessageOfTheDay();
 
 	void Initialise(std::string proxyString);
 	void SetProxy(std::string proxy);

@@ -28,6 +28,7 @@ private:
 	ui::Textbox * searchField;
 	ui::Label * infoLabel;
 	ui::Label * tagsLabel;
+	ui::Label * motdLabel;
 	ui::Button * sortButton;
 	ui::Button * ownButton;
 	ui::Spinner * loadingSpinner;
@@ -46,6 +47,7 @@ public:
 	void NotifyShowOwnChanged(SearchModel * sender);
 	void NotifyShowFavouriteChanged(SearchModel * sender);
 	void NotifyAuthUserChanged(Client * sender);
+	void NotifyMessageOfTheDay(Client * sender);
 	void CheckAccess();
 	virtual void OnTryOkay(OkayMethod method);
     SearchView();

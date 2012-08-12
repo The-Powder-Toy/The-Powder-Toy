@@ -17,6 +17,7 @@ public:
 
 	virtual void NotifyUpdateAvailable(Client * sender) {}
 	virtual void NotifyAuthUserChanged(Client * sender) {}
+	virtual void NotifyMessageOfTheDay(Client * sender) {}
 };
 
 
