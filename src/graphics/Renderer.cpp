@@ -123,7 +123,9 @@ void Renderer::clearScreen(float alpha)
 	glClear(GL_COLOR_BUFFER_BIT);
 #endif
 #ifdef OGLI
+#ifndef OGLR
 	std::fill(vid, vid+(VIDXRES*VIDYRES), 0);
+#endif
 #endif
 }
 #ifdef OGLR
@@ -2374,7 +2376,9 @@ void Renderer::ClearAccumulation()
 	std::fill(fire_r[0]+0, fire_r[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
 	std::fill(fire_g[0]+0, fire_g[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
 	std::fill(fire_b[0]+0, fire_b[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
+#ifndef OGLR
 	std::fill(persistentVid, persistentVid+(VIDXRES*YRES), 0);
+#endif
 }
 
 void Renderer::AddRenderMode(unsigned int mode)
