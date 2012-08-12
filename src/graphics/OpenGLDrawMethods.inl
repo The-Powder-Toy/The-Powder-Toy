@@ -241,16 +241,21 @@ void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w,
 	//glDisable(GL_COLOR_LOGIC_OP);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 	*/
+	float old_size;
+	glGetFloatv(GL_POINT_SIZE,&old_size);	
+
+	glPointSize(1.0);
+	glBegin(GL_POINTS);
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	for(int i =0; i < w*h; i++)
 	{
-			glBegin(GL_POINTS);
 		if(bitmap[i]==255)
 		{
 			glVertex2f(x+i%w,y+i/w);
 		}
-			glEnd();
 	}
+	glEnd();
+	glPointSize(old_size);
 }
 
 void PIXELMETHODS_CLASS::draw_line(int x, int y, int x2, int y2, int r, int g, int b, int a)
