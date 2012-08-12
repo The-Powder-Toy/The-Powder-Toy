@@ -16,6 +16,7 @@ namespace ui
 class Spinner: public Component
 {
 	float cValue;
+	int tickInternal;
 public:
 	Spinner(Point position, Point size);
 	virtual void Tick(float dt);
