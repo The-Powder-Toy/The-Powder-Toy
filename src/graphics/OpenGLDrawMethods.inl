@@ -202,7 +202,7 @@ void PIXELMETHODS_CLASS::xor_rect(int x, int y, int width, int height)
 	//glEnable(GL_LINE_SMOOTH);
 	glLogicOp(GL_XOR);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBegin(GL_LINE_LOOP);
+	glBegin(GL_LINE_STRIP);
 	glVertex2i(x, y);
 	glVertex2i(x+width, y);
 	glVertex2i(x+width, y+height);
