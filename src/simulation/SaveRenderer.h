@@ -7,7 +7,7 @@
 
 #ifndef SAVERENDERER_H_
 #define SAVERENDERER_H_
-
+#include "graphics/OpenGLHeaders.h" 
 #include "Singleton.h"
 
 class GameSave;
