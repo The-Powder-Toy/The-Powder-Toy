@@ -4,7 +4,6 @@
  *  Created on: Jan 22, 2012
  *      Author: Simon
  */
-
 #ifndef BRUSH_H_
 #define BRUSH_H_
 
@@ -33,7 +32,9 @@ protected:
 			for(int y = 0; y < size.Y; y++)
 			{
 				if(bitmap[y*size.X+x] && (!y || !x || x == size.X-1 || y == size.Y-1 || !bitmap[y*size.X+(x+1)] || !bitmap[y*size.X+(x-1)] || !bitmap[(y-1)*size.X+x] || !bitmap[(y+1)*size.X+x]))
+				{
 					outline[y*size.X+x] = 255;
+				}
 				else
 					outline[y*size.X+x] = 0;
 			}
