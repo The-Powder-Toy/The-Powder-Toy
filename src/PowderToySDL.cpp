@@ -199,14 +199,6 @@ int SDLOpen()
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	atexit(SDL_Quit);
 
-#if defined(OGLI)
-	int status = glewInit();
-	if(status != GLEW_OK)
-	{
-		fprintf(stderr, "Initializing Glew: %d\n", status);
-		exit(-1);
-	}
-#endif
 	return 0;
 }
 
@@ -351,6 +343,14 @@ int main(int argc, char * argv[])
 #ifdef OGLI
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 	//glScaled(2.0f, 2.0f, 1.0f);
+#endif
+#if defined(OGLI)
+	int status = glewInit();
+	if(status != GLEW_OK)
+	{
+		fprintf(stderr, "Initializing Glew: %d\n", status);
+		exit(-1);
+	}
 #endif
 	ui::Engine::Ref().g = new Graphics();
 	ui::Engine::Ref().Scale = scale;

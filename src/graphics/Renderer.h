@@ -85,6 +85,7 @@ public:
 	void checkShader(GLuint shader, char * shname);
 	void checkProgram(GLuint program, char * progname);
 	void loadShaders();
+	GLuint vidBuf,textTexture;
 #endif
 	pixel * vid;
 	pixel * persistentVid;
