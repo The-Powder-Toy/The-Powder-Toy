@@ -237,7 +237,8 @@
 #define PT_FIGH 158
 #define PT_FRAY 159
 #define PT_REPL 160
-#define PT_NUM  161
+#define PT_NNBT 161
+#define PT_NUM  162
 
 #define R_TEMP 22
 #define MAX_TEMP 9999
@@ -352,6 +353,7 @@ int graphics_SOAP(GRAPHICS_FUNC_ARGS);
 int graphics_EXOT(GRAPHICS_FUNC_ARGS);
 int graphics_WARP(GRAPHICS_FUNC_ARGS);
 int graphics_EMBR(GRAPHICS_FUNC_ARGS);
+int graphics_NNBT(GRAPHICS_FUNC_ARGS);
 
 void TRON_init_graphics();
 
@@ -475,6 +477,7 @@ int update_TRON(UPDATE_FUNC_ARGS);
 int update_TTAN(UPDATE_FUNC_ARGS);
 int update_BREL(UPDATE_FUNC_ARGS);
 int update_EXOT(UPDATE_FUNC_ARGS);
+int update_NNBT(UPDATE_FUNC_ARGS);
 
 int update_MISC(UPDATE_FUNC_ARGS);
 int update_legacy_PYRO(UPDATE_FUNC_ARGS);
@@ -567,7 +570,7 @@ extern part_transition ptransitions[PT_NUM];
 #define GT_STAR 144
 #define GT_FROG 145
 #define GT_BRAN 146
- 
+
 //New IDs for GOL types
 #define NGT_GOL 0
 #define NGT_HLIF 1
@@ -603,7 +606,7 @@ struct gol_menu
 };
 typedef struct gol_menu gol_menu;
 
-static gol_menu gmenu[NGOL] = 
+static gol_menu gmenu[NGOL] =
 {
 	{"GOL",		PIXPACK(0x0CAC00), 0, "Game Of Life B3/S23"},
 	{"HLIF",	PIXPACK(0xFF0000), 1, "High Life B36/S23"},

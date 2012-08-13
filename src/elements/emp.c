@@ -52,12 +52,20 @@ int update_EMP(UPDATE_FUNC_ARGS) {
 				is_elec=1;
 				if (ptypes[parts[r].type].hconduct && rand()%100==0)
 					parts[r].temp = restrict_flt(parts[r].temp+3000.0f, MIN_TEMP, MAX_TEMP);
-				if (rand()%80==0)
+				if (rand()%80==0) {
+				    parts[r].tmp = parts[r].ctype;
+				    parts[r].pavg[0] = parts[r].x;
+					parts[r].pavg[1] = parts[r].y;
 					part_change_type(r, rx, ry, PT_BREL);
-				else if (rand()%120==0)
+				}
+				else if (rand()%120==0) {
+				    parts[r].tmp = parts[r].ctype;
+				    parts[r].pavg[0] = parts[r].x;
+					parts[r].pavg[1] = parts[r].y;
 					part_change_type(r, rx, ry, PT_NTCT);
+				}
 			}
-			
+
 			for (nx=-2; nx<3; nx++)
 				for (ny=-2; ny<3; ny++)
 					if (rx+nx>=0 && ry+ny>=0 && rx+nx<XRES && ry+ny<YRES && (rx || ry))
@@ -82,11 +90,17 @@ int update_EMP(UPDATE_FUNC_ARGS) {
 							}
 							if ((n&0xFF)==PT_BMTL && rand()%160==0)
 							{
-								part_change_type(n>>8, rx+nx, ry+ny, PT_BMTL);//TODO: Redundant, was this meant to be BRMT or something?
+                                parts[n>>8].tmp = parts[r].type;
+                                parts[n>>8].pavg[0] = parts[r].x;
+                                parts[n>>8].pavg[1] = parts[r].y;
+								part_change_type(n>>8, rx+nx, ry+ny, PT_BRMT);
 								parts[n>>8].temp = restrict_flt(parts[n>>8].temp+1000.0f, MIN_TEMP, MAX_TEMP);
 							}
 							if ((n&0xFF)==PT_METL && rand()%300==0)
 							{
+                                parts[n>>8].tmp = parts[r].type;
+                                parts[n>>8].pavg[0] = parts[r].x;
+                                parts[n>>8].pavg[1] = parts[r].y;
 								part_change_type(n>>8, rx+nx, ry+ny, PT_BMTL);
 							}
 							if ((n&0xFF)==PT_WIFI && rand()%8==0)
