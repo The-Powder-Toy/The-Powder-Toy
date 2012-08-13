@@ -47,6 +47,8 @@ AddOption('--minor-version',dest="minor-version",default=False,help="Minor versi
 AddOption('--build-number',dest="build-number",default=False,help="Build number.")
 AddOption('--snapshot',dest="snapshot",action='store_true',default=False,help="Snapshot build.")
 
+AddOption('--aao', dest="everythingAtOnce", action='store_true', default=False, help="Compile the whole game without generating intermediate objects (very slow), enable this when using compilers like clang or mscc that don't support -fkeep-inline-functions")
+
 if((not GetOption('lin')) and (not GetOption('win')) and (not GetOption('macosx'))):
 	print "You must specify a platform to target"
 	raise SystemExit(1)
@@ -230,11 +232,12 @@ if(GetOption('win')):
 
 if(GetOption('release')):
 	env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations', '-Wunsafe-loop-optimizations'])
-	#env.Command(programName, sources, "gcc -o $TARGETS $SOURCES")
-	env.Decider('MD5')
+
+if(GetOption('everythingAtOnce')):
 	env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")
 	env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python generator.py tools $TARGETS $SOURCES")
-	t=env.MFProgram(target=programName, source=sources)
+	env.Decider('MD5')
+	t=env.Program(target=programName, source=sources)
 	Default(t)
 else:
 	env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")
