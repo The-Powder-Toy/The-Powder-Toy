@@ -186,12 +186,13 @@ part_type ptypes[PT_NUM] =
 	{"MERC",    PIXPACK(0x736B6D),	0.4f,	0.04f * CFDS,	0.94f,	0.80f,	0.0f,	0.3f,	0.00f,	0.000f	* CFDS,	2,	0,		0,	0,	20,	1,	1,	91,		SC_ELEC,		R_TEMP+0.0f	+273.15f,	251,	"Mercury. Volume changes with temperature, Conductive.", ST_LIQUID, TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB|PROP_LIFE_DEC, &update_MERC, NULL},
 	{"PBCN",	PIXPACK(0x3B1D0A),	0.0f,	0.00f * CFDS,	0.97f,	0.50f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	12,	1,	1,	100,	SC_POWERED,		R_TEMP+0.0f	+273.15f,	251,	"Powered breakable clone", ST_NONE, TYPE_SOLID, &update_PBCN, &graphics_PBCN},
 	{"GPMP",	PIXPACK(0x0A3B3B),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	1,	100,	SC_POWERED,		0.0f		+273.15f,	0,		"Changes gravity to its temp when activated. (use HEAT/COOL).", ST_NONE, TYPE_SOLID, &update_GPMP, &graphics_GPMP},
-	{"CLST",	PIXPACK(0xE4A4A4),	0.7f,	0.02f * CFDS,	0.94f,	0.95f,	0.0f,	0.2f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	1,	55,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Clay dust. Produces paste when mixed with water.", ST_SOLID, TYPE_PART, &update_CLST, &graphics_CLST},	
+	{"CLST",	PIXPACK(0xE4A4A4),	0.7f,	0.02f * CFDS,	0.94f,	0.95f,	0.0f,	0.2f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	2,	2,	1,	1,	55,		SC_POWDERS,		R_TEMP+0.0f	+273.15f,	70,		"Clay dust. Produces paste when mixed with water.", ST_SOLID, TYPE_PART, &update_CLST, &graphics_CLST},
 	{"WIRE",    PIXPACK(0xFFCC00),  0.0f,   0.00f * CFDS,   0.00f,  0.00f,  0.0f,   0.0f,   0.00f,  0.000f  * CFDS, 0,  0,      0,  0,  0,  1,  1,  100,    SC_ELEC,        R_TEMP+0.0f +273.15f,   250,    "WireWorld wires.",ST_SOLID,TYPE_SOLID,&update_WIRE, &graphics_WIRE},
 	{"GBMB",	PIXPACK(0x1144BB),	0.6f,	0.01f * CFDS,	0.98f,	0.95f,	0.0f,	0.1f,	0.00f,	0.000f	* CFDS,	1,	0,		0,	0,	20,	1,	1,	30,		SC_EXPLOSIVE,	R_TEMP-2.0f	+273.15f,	29,		"Sticks to first object it touches then produces strong gravity push.", ST_NONE, TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC, &update_GBMB, &graphics_GBMB},
 	{"FIGH",	PIXPACK(0xFFE0A0),	0.5f,	0.00f * CFDS,	0.2f,	1.0f,	0.0f,	0.0f,	0.0f,	0.00f	* CFDS,	0,	0,		0,	0,	0,	1,	1,	50,		SC_SPECIAL,		R_TEMP+14.6f+273.15f,	0,		"Fighter. Tries to kill stickmen.", ST_NONE, 0, &update_FIGH, &graphics_STKM},
 	{"FRAY",	PIXPACK(0x00BBFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	1,	1,	1,	1,	100,	SC_FORCE,		20.0f+0.0f +273.15f,	0,		"Force Emitter. Push or pull objects based on temp value, use like ARAY", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_FRAY, NULL},
-	{"RPEL",	PIXPACK(0x99CC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,	100,	SC_FORCE,		20.0f+0.0f	+273.15f,	0,	"Repel or attract particles based on temp value.", ST_NONE, TYPE_SOLID, &update_REPL, NULL},
+	{"RPEL",	PIXPACK(0x99CC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,	100,	SC_FORCE,		20.0f+0.0f	+273.15f,	0,	    "Repel or attract particles based on temp value.", ST_NONE, TYPE_SOLID, &update_REPL, NULL},
+    {"NNBT",	PIXPACK(0x404040),	0.7f,   0.02f * CFDS,   0.96f,  0.80f,  0.00f,  0.0f,   2.00f,  0.0000f * CFDS, 0,	0,		0,	0,	0,	1,	1,	100,	SC_ELEC,	 	R_TEMP+0.0f +273.15f,	70,		"NanoBots, Slowly repair BREL", ST_NONE, TYPE_PART, &update_NNBT, &graphics_NNBT},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd M	Use	Weight	Section			H						Ins		Description
 };
 
@@ -368,6 +369,7 @@ part_transition ptransitions[PT_NUM] =
 	/* FIGH */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			620.0f,	PT_FIRE},
 	/* FRAY */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 	/* REPL */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
+	/* NNBT */ {IPL,	NT,			IPH,	NT,			ITL,	NT,			ITH,	NT},
 };
 
 // This is an enthalpy values table, converted into TPT imaginary units
@@ -535,6 +537,7 @@ unsigned int platent[PT_NUM] =
 	/* FIGH */ 0,
 	/* FRAY */ 0,
 	/* REPL */ 0,
+	/* NNBT */ 0,
 };
 #undef IPL
 #undef IPH
