@@ -49,7 +49,7 @@ int update_NNBT(UPDATE_FUNC_ARGS)
 				    parts[r>>8].tmp = parts[r>>8].ctype;
 				    parts[r>>8].pavg[0] = parts[r>>8].x;
 					parts[r>>8].pavg[1] = parts[r>>8].y;
-					part_change_type(r, rx, ry, PT_BREL);
+					part_change_type(r>>8, rx, ry, PT_BREL);
                 }
             }
     return 0;
