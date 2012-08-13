@@ -203,8 +203,13 @@ def MFProgramGenerator(source, target, env, for_signature):
             #else:
             #    _CPPPATH.append(relpath(os.path.join(sconscript_dir, i), 
             #                            destdir))
+
+    defines = ""
+    for t in env['CPPDEFINES']:
+        defines += ("-D"+str(t)+" ")
+
     _CPPINCFLAGS = ['-I' + i for i in _CPPPATH]
-    _CCOMCOM = '$CPPFLAGS $_CPPDEFFLAGS %s' % ' '.join(_CPPINCFLAGS)
+    _CCOMCOM = '$CPPFLAGS $_CPPDEFFLAGS $defines %s' % ' '.join(_CPPINCFLAGS)
 
     libstr = ""
     for t in env['LIBS']:
