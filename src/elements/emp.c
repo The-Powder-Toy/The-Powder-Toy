@@ -90,7 +90,7 @@ int update_EMP(UPDATE_FUNC_ARGS) {
 							}
 							if ((n&0xFF)==PT_BMTL && rand()%160==0)
 							{
-                                parts[n>>8].tmp = parts[r].ctype;
+                                parts[n>>8].tmp = parts[r].type;
                                 parts[n>>8].pavg[0] = parts[r].x;
                                 parts[n>>8].pavg[1] = parts[r].y;
 								part_change_type(n>>8, rx+nx, ry+ny, PT_BRMT);
@@ -98,7 +98,7 @@ int update_EMP(UPDATE_FUNC_ARGS) {
 							}
 							if ((n&0xFF)==PT_METL && rand()%300==0)
 							{
-                                parts[n>>8].tmp = parts[r].ctype;
+                                parts[n>>8].tmp = parts[r].type;
                                 parts[n>>8].pavg[0] = parts[r].x;
                                 parts[n>>8].pavg[1] = parts[r].y;
 								part_change_type(n>>8, rx+nx, ry+ny, PT_BMTL);

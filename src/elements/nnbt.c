@@ -18,8 +18,10 @@
 int update_NNBT(UPDATE_FUNC_ARGS)
 {
     int r,rx,ry;
-    parts[i].life --;
-    if(parts[i].life > 0) return 0;
+    if(parts[i].life > 0) {
+        parts[i].life --;
+        return 0;
+    }
     for (rx=-2; rx<3; rx++)
         for (ry=-2; ry<3; ry++)
             if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -43,6 +45,9 @@ int update_NNBT(UPDATE_FUNC_ARGS)
 int graphics_NNBT(GRAPHICS_FUNC_ARGS)
 {
     int col = cpart->life + 55;
-    *colr = *colg = *colb = col;
+    *colr = *colg = *colb = *cola = col;
+    if(cpart->life > 100) {
+        *pixel_mode |= PMODE_FLARE;
+    }
 	return 0;
 }
