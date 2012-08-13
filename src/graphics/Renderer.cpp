@@ -1186,7 +1186,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
-					char buff[20];  //Buffer for HP
+					char buff[4];  //Buffer for HP
 					int s;
 					int legr, legg, legb;
 					playerst *cplayer;
@@ -1199,11 +1199,11 @@ void Renderer::render_parts()
 					else
 						continue;
 
-/*					if (mousex>(nx-3) && mousex<(nx+3) && mousey<(ny+3) && mousey>(ny-3)) //If mous is in the head
+					if (mousePosX>(nx-3) && mousePosX<(nx+3) && mousePosY<(ny+3) && mousePosY>(ny-3)) //If mouse is in the head
 					{
 						sprintf(buff, "%3d", sim->parts[i].life);  //Show HP
-						drawtext(mousex-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousey-12, buff, 255, 255, 255, 255);
-					}*/
+						drawtext(mousePosX-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePosY-12, buff, 255, 255, 255, 255);
+					}
 
 					if (colour_mode!=COLOUR_HEAT)
 					{
