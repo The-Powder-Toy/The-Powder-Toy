@@ -1,4 +1,5 @@
 #include <iostream>
+#include <typeinfo>
 
 #include "SaveButton.h"
 #include "client/SaveInfo.h"
@@ -19,7 +20,8 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	actionCallback(NULL),
 	voteColour(255, 0, 0),
 	selectable(false),
-	selected(false)
+	selected(false),
+	waitingForThumb(false)
 {
 	if(save)
 	{
@@ -125,6 +127,7 @@ void SaveButton::Tick(float dt)
 			ThumbnailBroker::Ref().RenderThumbnail(file->GetGameSave(), Size.X-3, Size.Y-25, this);
 		}
 	}
+
 	/*Thumbnail * tempThumb;
 	float scaleFactorY = 1.0f, scaleFactorX = 1.0f;
 	if(!thumbnail)

@@ -96,6 +96,9 @@ void ThumbnailBroker::RenderThumbnail(GameSave * gameSave, int width, int height
 
 void ThumbnailBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int height, ThumbnailListener * tListener)
 {
+#ifdef DEBUG
+		std::cout << typeid(*this).name() << " New Thumbnail Retrieval request for " << saveID << ":" << saveDate << std::endl;
+#endif
 	AttachThumbnailListener(tListener);
 	pthread_mutex_lock(&thumbnailQueueMutex);
 	bool running = thumbnailQueueRunning;
@@ -126,7 +129,12 @@ void ThumbnailBroker::FlushThumbQueue()
 		if(CheckThumbnailListener(thumbnailComplete.front().first))
 			thumbnailComplete.front().first->OnThumbnailReady(thumbnailComplete.front().second);
 		else
+		{
+#ifdef DEBUG
+			std::cout << typeid(*this).name() << " Listener lost, discarding request" << std::endl;
+#endif
 			delete thumbnailComplete.front().second;
+		}
 		thumbnailComplete.pop_front();
 	}	
 	pthread_mutex_unlock(&thumbnailQueueMutex);
@@ -138,13 +146,13 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 	while(true)
 	{
 		//Shutdown after 2 seconds of idle
-		if(time(NULL) - lastAction > 2)
-		{
-			pthread_mutex_lock(&thumbnailQueueMutex);
-			thumbnailQueueRunning = false;
-			pthread_mutex_unlock(&thumbnailQueueMutex);
-			break;
-		}
+		//if(time(NULL) - lastAction > 2)
+		//{
+		//	pthread_mutex_lock(&thumbnailQueueMutex);
+		//	thumbnailQueueRunning = false;
+		//	pthread_mutex_unlock(&thumbnailQueueMutex);
+		//	break;
+		//}
 
 		//Renderer
 		pthread_mutex_lock(&thumbnailQueueMutex);
@@ -215,7 +223,7 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 					pthread_mutex_unlock(&thumbnailQueueMutex);	
 				}
 			}
-			else if(!thumbnail)
+			else
 			{
 				//Check for ongoing requests
 				bool requested = false;
@@ -225,6 +233,10 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 					{
 						requested = true;
 						
+#ifdef DEBUG
+						std::cout << typeid(*this).name() << " Request for " << req.ID.SaveID << ":" << req.ID.SaveDate << " found, appending." << std::endl;
+#endif
+
 						//Add the current listener to the item already being requested
 						(*iter).SubRequests.push_back(req.SubRequests.front());
 					}
@@ -242,24 +254,21 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 					pthread_mutex_unlock(&thumbnailQueueMutex);
 
 					//If it's not already being requested, request it
-					if(!requested && CheckThumbnailListener(req.SubRequests.front().CompletedListener))
+					std::stringstream urlStream;
+					urlStream << "http://" << STATICSERVER << "/" << req.ID.SaveID;
+					if(req.ID.SaveDate)
 					{
-						std::stringstream urlStream;
-						urlStream << "http://" << STATICSERVER << "/" << req.ID.SaveID;
-						if(req.ID.SaveDate)
-						{
-							urlStream << "_" << req.ID.SaveDate;
-						}
-						urlStream << "_small.pti";
+						urlStream << "_" << req.ID.SaveDate;
+					}
+					urlStream << "_small.pti";
 
 #ifdef DEBUG
-						std::cout << typeid(*this).name() << " Creating new request for " << req.ID.SaveID << ":" << req.ID.SaveDate << std::endl;
+					std::cout << typeid(*this).name() << " Creating new request for " << req.ID.SaveID << ":" << req.ID.SaveDate << std::endl;
 #endif
 
-						req.HTTPContext = http_async_req_start(NULL, (char *)urlStream.str().c_str(), NULL, 0, 1);
-						req.RequestTime = time(NULL);
-						currentRequests.push_back(req);
-					}
+					req.HTTPContext = http_async_req_start(NULL, (char *)urlStream.str().c_str(), NULL, 0, 1);
+					req.RequestTime = time(NULL);
+					currentRequests.push_back(req);
 				}
 				else
 				{
@@ -275,7 +284,6 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 		}
 
 		std::list<ThumbnailRequest>::iterator iter = currentRequests.begin();
-		std::list<ThumbnailRequest>::iterator end = currentRequests.end();
 		while (iter != currentRequests.end())
 		{
 			lastAction = time(NULL);
@@ -304,8 +312,11 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 					}
 					else
 					{
-						thumbnail = new Thumbnail(req.ID.SaveID, req.ID.SaveID, thumbData, ui::Point(128, 128));
-						free(thumbData);
+						//Error thumbnail
+						VideoBuffer errorThumb(128, 128);
+						errorThumb.SetCharacter(64, 64, 'x', 255, 255, 255, 255);
+
+						thumbnail = new Thumbnail(req.ID.SaveID, req.ID.SaveID, errorThumb.Buffer, ui::Point(errorThumb.Width, errorThumb.Height));
 					}
 
 					if(thumbnailCache.size() >= THUMB_CACHE_SIZE)
