@@ -15,6 +15,7 @@
 #include "ToolButton.h"
 #include "RenderPreset.h"
 #include "Brush.h"
+#include "simulation/Sample.h"
 
 using namespace std;
 

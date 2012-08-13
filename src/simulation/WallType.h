@@ -9,6 +9,9 @@
 #ifndef The_Powder_Toy_WallType_h
 #define The_Powder_Toy_WallType_h
 
+#include "graphics/Graphics.h"
+class VideoBuffer;
+
 struct wall_type
 {
 	pixel colour;

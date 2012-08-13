@@ -8,11 +8,13 @@
 
 #include <iostream>
 #include <sstream>
+#include <cmath>
 #include <bzlib.h>
 #include "Config.h"
 #include "bson/BSON.h"
 #include "GameSave.h"
 #include "simulation/SimulationData.h"
+#include "ElementClasses.h"
 extern "C"
 {
 	#include "hmap.h"

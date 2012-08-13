@@ -140,7 +140,7 @@
 #define SIMULATIONDATA_H_
 
 //#include "elements/NULLElement.h"
-#include "Simulation.h"
+//#include "Simulation.h"
 
 /*class Simulation;
 class Renderer;

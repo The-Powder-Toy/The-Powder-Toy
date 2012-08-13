@@ -1,7 +1,0 @@
-#include "ElementClasses.h"
-	std::vector<Element> GetElements()
-	{
-		std::vector<Element> elements;
-		return elements;
-	}
-	

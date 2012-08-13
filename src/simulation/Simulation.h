@@ -12,25 +12,23 @@
 #include <vector>
 
 #include "Config.h"
-#include "graphics/Renderer.h"
-#include "graphics/Graphics.h"
-//#include "Elements.h"
-#include "Tools.h"
-#include "Misc.h"
-#include "game/Brush.h"
-#include "Gravity.h"
+#include "Elements.h"
 #include "SimulationData.h"
 #include "Sign.h"
 #include "Particle.h"
-#include "StorageClasses.h"
 #include "Player.h"
 #include "WallType.h"
 #include "GOLMenu.h"
 #include "MenuSection.h"
-#include "client/GameSave.h"
-#include "Sample.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
+
+class Element;
+class SimTool;
+class Brush;
+struct SimulationSample;
+struct matrix2d;
+struct vector2d;
 
 class Simulation;
 class Renderer;

@@ -6,6 +6,7 @@
 #include "GameController.h"
 #include "GameModel.h"
 #include "client/SaveInfo.h"
+#include "client/GameSave.h"
 #include "search/SearchController.h"
 #include "render/RenderController.h"
 #include "login/LoginController.h"

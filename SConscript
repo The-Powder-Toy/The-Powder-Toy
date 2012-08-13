@@ -45,16 +45,16 @@ AddOption('--beta',dest="beta",action='store_true',default=False,help="Beta buil
 AddOption('--save-version',dest="save-version",default=False,help="Save version.")
 AddOption('--minor-version',dest="minor-version",default=False,help="Minor version.")
 AddOption('--build-number',dest="build-number",default=False,help="Build number.")
-AddOption('--snapshot',dest="snapshot",default=False,help="Snapshot build.")
+AddOption('--snapshot',dest="snapshot",action='store_true',default=False,help="Snapshot build.")
 
 if((not GetOption('lin')) and (not GetOption('win')) and (not GetOption('macosx'))):
 	print "You must specify a platform to target"
 	raise SystemExit(1)
 
 if(GetOption('win')):
-	env = Environment(tools = ['mingw'], ENV = os.environ)
+	env = Environment(tools = ['mingw', 'gch'], ENV = os.environ)
 else:
-	env = Environment(ENV = os.environ)
+	env = Environment(tools = ['default', 'gch'], ENV = os.environ)
 
 if GetOption("toolprefix"):
 	env['CC'] = GetOption("toolprefix")+env['CC']
@@ -152,11 +152,13 @@ if GetOption('_64bit'):
 if(GetOption('beta')):
 	env.Append(CPPDEFINES='BETA')
 
-if(GetOption('snapshot')):
-	env.Append(CPPDEFINES=['SNAPSHOT_ID=' + GetOption('snapshot')])
+
+if(not GetOption('snapshot') and not GetOption('beta') and not GetOption('release')):
+	env.Append(CPPDEFINES='SNAPSHOT_ID=0')
 	env.Append(CPPDEFINES='SNAPSHOT')
-else:
-	env.Append(CPPDEFINES=["SNAPSHOT_ID=" + str(int(time.time()))])
+elif(GetOption('snapshot')):
+	env.Append(CPPDEFINES=['SNAPSHOT_ID=' + str(int(time.time()))])
+	env.Append(CPPDEFINES='SNAPSHOT')
 
 if(GetOption('save-version')):
 	env.Append(CPPDEFINES=['SAVE_VERSION=' + GetOption('major-version')])
@@ -205,6 +207,10 @@ sources+=Glob("src/simulation/tools/*.cpp")
 sources+=Glob("generated/ToolClasses.cpp")
 sources+=Glob("generated/ElementClasses.cpp")
 
+env['Gch'] = env.Gch('src/simulation/Tools.h.gch', 'src/simulation/Tools.h')[0]
+env['Gch'] = env.Gch('src/simulation/Elements.h.gch', 'src/simulation/Elements.h')[0]
+env['Gch'] = env.Gch('src/client/Client.h.gch', 'src/client/Client.h')[0]
+env['Gch'] = env.Gch('src/simulation/SimulationData.h.gch', 'src/simulation/SimulationData.h')[0]
 
 SetupSpawn(env)
 
@@ -227,8 +233,8 @@ if(GetOption('win')):
 
 env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")
 env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python generator.py tools $TARGETS $SOURCES")
+env.Decider('MD5')
 t=env.Program(target=programName, source=sources)
-Decider('MD5')
 Default(t)
 
 #if(GetOption('release')):

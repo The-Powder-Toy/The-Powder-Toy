@@ -30,6 +30,7 @@
 #include "interface/Label.h"
 #include "interface/Keys.h"
 
+#include "client/GameSave.h"
 #include "simulation/SaveRenderer.h"
 #include "client/Client.h"
 #include "Misc.h"
@@ -42,6 +43,7 @@
 #include "client/HTTP.h"
 
 using namespace std;
+
 
 #ifdef WIN
 extern "C" IMAGE_DOS_HEADER __ImageBase;

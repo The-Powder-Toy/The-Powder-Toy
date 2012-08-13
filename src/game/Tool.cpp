@@ -7,6 +7,7 @@
 
 #include <string>
 #include "Tool.h"
+#include "game/Brush.h"
 
 #include "simulation/Simulation.h"
 

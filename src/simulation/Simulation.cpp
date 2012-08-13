@@ -8,6 +8,15 @@
 #include "Gravity.h"
 #include "elements/Element.h"
 
+//#include "graphics/Renderer.h"
+//#include "graphics/Graphics.h"
+#include "Misc.h"
+#include "Tools.h"
+#include "game/Brush.h"
+#include "client/GameSave.h"
+#include "Sample.h"
+//#include "StorageClasses.h"
+
 #undef LUACONSOLE
 //#include "cat/LuaScriptHelper.h"
 

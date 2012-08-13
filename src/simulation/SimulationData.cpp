@@ -7,6 +7,7 @@
 #include "SimulationData.h"
 //#include "ElementFunctions.h"
 #include "ElementGraphics.h"
+#include "Elements.h"
 
 gol_menu * LoadGOLMenu(int & golMenuCount)
 {
