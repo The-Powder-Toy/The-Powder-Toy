@@ -46,7 +46,7 @@ int update_NNBT(UPDATE_FUNC_ARGS)
 
                 if(parts[i].ctype == PT_EMP && ((r&0xFF)==PT_BREL || (r&0xFF)==PT_PSCN || (r&0xFF)==PT_NSCN || (r&0xFF)==PT_BMTL
                     || (r&0xFF)==PT_BRMT || (r&0xFF)==PT_METL || (r&0xFF)==PT_WIRE || (r&0xFF)==PT_NTCT || (r&0xFF)==PT_PTCT) && rand()%16 == 0) {
-				    parts[r>>8].tmp = parts[r>>8].ctype;
+				    parts[r>>8].tmp = parts[r>>8].type;
 				    parts[r>>8].pavg[0] = parts[r>>8].x;
 					parts[r>>8].pavg[1] = parts[r>>8].y;
 					part_change_type(r>>8, rx, ry, PT_BREL);
