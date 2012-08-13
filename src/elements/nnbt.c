@@ -32,10 +32,10 @@ int update_NNBT(UPDATE_FUNC_ARGS)
                 if (!r)
                     continue;
 
-                if((r&0xFF)==PT_VOID) parts[i].ctype = PT_VOID;
+                if((r&0xFF)==PT_EMP) parts[i].ctype = PT_EMP;
 
                 if (((r&0xFF)==PT_BREL || (r&0xFF)==PT_NTCT || (r&0xFF)==PT_BRMT || (r&0xFF)==PT_BMTL) &&
-                    parts[r>>8].tmp > 0 && parts[r>>8].pavg[0] > 0 && parts[r>>8].pavg[1] > 0 && rand()%360==0 && parts[i].ctype != PT_VOID)
+                    parts[r>>8].tmp > 0 && parts[r>>8].pavg[0] > 0 && parts[r>>8].pavg[1] > 0 && rand()%360==0 && parts[i].ctype != PT_EMP)
                 {
                     parts[r>>8].type = parts[r>>8].tmp;
                     parts[r>>8].x = parts[r>>8].pavg[0];
@@ -44,7 +44,7 @@ int update_NNBT(UPDATE_FUNC_ARGS)
                     parts[i].tmp2 ++;
                 }
 
-                if(parts[i].ctype == PT_VOID && ((r&0xFF)==PT_BREL || (r&0xFF)==PT_PSCN || (r&0xFF)==PT_NSCN || (r&0xFF)==PT_BMTL
+                if(parts[i].ctype == PT_EMP && ((r&0xFF)==PT_BREL || (r&0xFF)==PT_PSCN || (r&0xFF)==PT_NSCN || (r&0xFF)==PT_BMTL
                     || (r&0xFF)==PT_BRMT || (r&0xFF)==PT_METL || (r&0xFF)==PT_WIRE || (r&0xFF)==PT_NTCT || (r&0xFF)==PT_PTCT) && rand()%16 == 0) {
 				    parts[r>>8].tmp = parts[r>>8].ctype;
 				    parts[r>>8].pavg[0] = parts[r>>8].x;
