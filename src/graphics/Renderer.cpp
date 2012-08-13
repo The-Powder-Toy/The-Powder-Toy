@@ -2185,7 +2185,10 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	gravityFieldEnabled(false),
 	gravityZonesEnabled(false),
 	mousePosX(-1),
-	mousePosY(-1)
+	mousePosY(-1),
+	display_mode(0),
+	render_mode(0),
+	colour_mode(0)
 {
 	this->g = g;
 	this->sim = sim;
