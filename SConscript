@@ -52,9 +52,9 @@ if((not GetOption('lin')) and (not GetOption('win')) and (not GetOption('macosx'
 	raise SystemExit(1)
 
 if(GetOption('win')):
-	env = Environment(tools = ['mingw', 'gch'], ENV = os.environ)
+	env = Environment(tools = ['mingw', 'gch', 'mfprogram'], ENV = os.environ)
 else:
-	env = Environment(tools = ['default', 'gch'], ENV = os.environ)
+	env = Environment(tools = ['default', 'gch', 'mfprogram'], ENV = os.environ)
 
 if GetOption("toolprefix"):
 	env['CC'] = GetOption("toolprefix")+env['CC']
@@ -166,9 +166,6 @@ if(GetOption('save-version')):
 if(GetOption('minor-version')):
 	env.Append(CPPDEFINES=['MINOR_VERSION=' + GetOption('minor-version')])
 
-if(GetOption('release')):
-	env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations', '-Wunsafe-loop-optimizations'])
-
 if(GetOption('x86')):
 	env.Append(CPPDEFINES='X86')
 
@@ -231,11 +228,20 @@ if(GetOption('macosx')):
 if(GetOption('win')):
 	programName += ".exe"
 
-env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")
-env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python generator.py tools $TARGETS $SOURCES")
-env.Decider('MD5')
-t=env.Program(target=programName, source=sources)
-Default(t)
+if(GetOption('release')):
+	env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations', '-Wunsafe-loop-optimizations'])
+	#env.Command(programName, sources, "gcc -o $TARGETS $SOURCES")
+	env.Decider('MD5')
+	env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")
+	env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python generator.py tools $TARGETS $SOURCES")
+	t=env.MFProgram(target=programName, source=sources)
+	Default(t)
+else:
+	env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")
+	env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python generator.py tools $TARGETS $SOURCES")
+	env.Decider('MD5')
+	t=env.Program(target=programName, source=sources)
+	Default(t)
 
 #if(GetOption('release')):
 #	 StripExecutable(t);
