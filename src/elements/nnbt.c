@@ -22,6 +22,8 @@ int update_NNBT(UPDATE_FUNC_ARGS)
         parts[i].life --;
         return 0;
     }
+    if(parts[i].tmp2 > 1 && rand()%720 > parts[i].tmp2)
+        kill_part(i);
     for (rx=-2; rx<3; rx++)
         for (ry=-2; ry<3; ry++)
             if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -37,6 +39,7 @@ int update_NNBT(UPDATE_FUNC_ARGS)
                     parts[r>>8].x = parts[r>>8].pavg[0];
                     parts[r>>8].y = parts[r>>8].pavg[1];
                     parts[i].life += 200;
+                    parts[i].tmp2 ++;
                 }
             }
     return 0;
