@@ -46,6 +46,7 @@ AddOption('--save-version',dest="save-version",default=False,help="Save version.
 AddOption('--minor-version',dest="minor-version",default=False,help="Minor version.")
 AddOption('--build-number',dest="build-number",default=False,help="Build number.")
 AddOption('--snapshot',dest="snapshot",action='store_true',default=False,help="Snapshot build.")
+AddOption('--snapshot-id',dest="snapshot-id",default=False,help="Snapshot build ID.")
 
 AddOption('--aao', dest="everythingAtOnce", action='store_true', default=False, help="Compile the whole game without generating intermediate objects (very slow), enable this when using compilers like clang or mscc that don't support -fkeep-inline-functions")
 
@@ -158,8 +159,11 @@ if(GetOption('beta')):
 if(not GetOption('snapshot') and not GetOption('beta') and not GetOption('release')):
 	env.Append(CPPDEFINES='SNAPSHOT_ID=0')
 	env.Append(CPPDEFINES='SNAPSHOT')
-elif(GetOption('snapshot')):
-	env.Append(CPPDEFINES=['SNAPSHOT_ID=' + str(int(time.time()))])
+elif(GetOption('snapshot') or GetOption('snapshot-id')):
+	if(GetOption('snapshot-id')):
+		env.Append(CPPDEFINES=['SNAPSHOT_ID=' + GetOption('snapshot-id')])
+	else:
+		env.Append(CPPDEFINES=['SNAPSHOT_ID=' + str(int(time.time()))])
 	env.Append(CPPDEFINES='SNAPSHOT')
 
 if(GetOption('save-version')):
