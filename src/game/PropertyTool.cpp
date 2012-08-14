@@ -94,14 +94,16 @@ void PropertyWindow::SetProperty()
 					if(value.length() > 2 && value.substr(0, 2) == "0x")
 					{
 						//0xC0FFEE
-						stringstream buffer;
+						std::stringstream buffer;
+						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
 						buffer << std::hex << value.substr(2);
 						buffer >> tempInt;
 					}
 					else if(value.length() > 1 && value[0] == '#')
 					{
 						//#C0FFEE
-						stringstream buffer;
+						std::stringstream buffer;
+						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
 						buffer << std::hex << value.substr(1);
 						buffer >> tempInt;
 					}
@@ -119,12 +121,16 @@ void PropertyWindow::SetProperty()
 							}
 							else
 							{
-								stringstream(value) >> tempInt;
+								std::stringstream buffer(value);
+								buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
+								buffer >> tempInt;
 							}
 						}
 						else
 						{
-							stringstream(value) >> tempInt;
+							std::stringstream buffer(value);
+							buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
+							buffer >> tempInt;
 						}
 					}
 #ifdef DEBUG
@@ -136,20 +142,24 @@ void PropertyWindow::SetProperty()
 					if(value.length() > 2 && value.substr(0, 2) == "0x")
 					{
 						//0xC0FFEE
-						stringstream buffer;
+						std::stringstream buffer;
+						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
 						buffer << std::hex << value.substr(2);
 						buffer >> tempUInt;
 					}
 					else if(value.length() > 1 && value[0] == '#')
 					{
 						//#C0FFEE
-						stringstream buffer;
+						std::stringstream buffer;
+						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
 						buffer << std::hex << value.substr(1);
 						buffer >> tempUInt;
 					}
 					else 
 					{
-						stringstream(value) >> tempUInt;
+						std::stringstream buffer(value);
+						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
+						buffer >> tempUInt;
 					}
 #ifdef DEBUG
 					std::cout << "Got uint value " << tempUInt << std::endl;
@@ -157,11 +167,15 @@ void PropertyWindow::SetProperty()
 					propValue = &tempUInt;
 					break;
 				case StructProperty::Float:
-					istringstream(value) >> tempFloat;
+				{
+					std::stringstream buffer(value);
+					buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
+					buffer >> tempFloat;
 #ifdef DEBUG
 					std::cout << "Got float value " << tempFloat << std::endl;
 #endif
 					propValue = &tempFloat;
+				}
 					break;
 				default:
 					new ErrorMessage("Could not set property", "Invalid property");
