@@ -63,18 +63,18 @@ public:
 	}
 	virtual void OnMouseMovedInside(int x, int y, int dx, int dy)
 	{
-		if(x >= splitPosition)
+		if(x >= splitPosition || !showSplit)
 		{
 			if(toolTip.length()>0 && GetParentWindow())
 			{
-				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
+				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip2);
 			}
 		}
 		else if(x < splitPosition)
 		{
 			if(toolTip2.length()>0 && GetParentWindow())
 			{
-				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip2);
+				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
 			}
 		}
 	}
@@ -83,18 +83,18 @@ public:
 	    isMouseInside = true;
 		if(!Enabled)
 			return;
-		if(x >= splitPosition)
+		if(x >= splitPosition || !showSplit)
 		{
 			if(toolTip.length()>0 && GetParentWindow())
 			{
-				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
+				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip2);
 			}
 		}
 		else if(x < splitPosition)
 		{
 			if(toolTip2.length()>0 && GetParentWindow())
 			{
-				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip2);
+				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
 			}
 		}
 	}
@@ -1105,8 +1105,16 @@ void GameView::ExitPrompt()
 
 void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip)
 {
-	this->toolTip = toolTip;
-	toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+	if(sender->Position.Y > Size.Y-17)
+	{
+		buttonTip = toolTip;
+		buttonTipShow = 120;
+	}
+	else
+	{
+		this->toolTip = toolTip;
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+	}
 }
 
 void GameView::OnMouseWheel(int x, int y, int d)
@@ -1400,6 +1408,12 @@ void GameView::OnTick(float dt)
 		infoTipPresence -= int(dt)>0?int(dt):1;
 		if(infoTipPresence<0)
 			infoTipPresence = 0;
+	}
+	if(buttonTipShow>0)
+	{
+		buttonTipShow -= int(dt)>0?int(dt):1;
+		if(buttonTipShow<0)
+			buttonTipShow = 0;	
 	}
 	c->Update();
 	if(lastLogEntry > -0.1f)
@@ -1819,6 +1833,10 @@ void GameView::OnDraw()
 				{
 					sampleInfo << " (" << c->ElementResolve(sample.particle.ctype) << ")";
 				}
+				else
+				{
+					sampleInfo << " ()";	
+				}
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
 				sampleInfo << ", Life: " << sample.particle.life;
@@ -1860,7 +1878,7 @@ void GameView::OnDraw()
 		std::stringstream fpsInfo;
 		fpsInfo.precision(2);
 #ifdef SNAPSHOT
-		fpsInfo << "Snapshot " << SNAPSHOT_ID << ". ";
+		fpsInfo << "Snapshot " << SNAPSHOT_ID << ", ";
 #endif
 		fpsInfo << "FPS: " << std::fixed << ui::Engine::Ref().GetFps();
 
@@ -1880,6 +1898,11 @@ void GameView::OnDraw()
 	if(toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
 	{
 		g->drawtext(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, 255);
+	}
+
+	if(buttonTipShow > 0)
+	{
+		g->drawtext(6, Size.Y-MENUSIZE-10, (char*)buttonTip.c_str(), 255, 255, 255, buttonTipShow>51?255:buttonTipShow*5);
 	}
 
 	//Introduction text

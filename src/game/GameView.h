@@ -46,6 +46,8 @@ private:
 	bool showDebug;
 	bool wallBrush;
 	int introText;
+	int buttonTipShow;
+	std::string buttonTip;
 	std::string introTextMessage;
 	int toolIndex;
 
