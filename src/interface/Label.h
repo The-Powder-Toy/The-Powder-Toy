@@ -15,6 +15,7 @@ namespace ui
 		std::string textFragments;
 		std::string textLines;
 		std::string displayText;
+		std::string tDisplayText;
 
 		std::string text;
 		Colour textColour;

@@ -6,6 +6,7 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int 
 		return 0;
 	int width, height;
 
+	int invert = 0;
 	int oR = r, oG = g, oB = b;
 	int characterX = x, characterY = y;
 	int startX = characterX;
@@ -32,6 +33,13 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int 
 			r = oR;
 			g = oG;
 			b = oB;
+		}
+		else if (*s == '\x01')
+		{
+			invert = !invert;
+			r = 255-r;
+			g = 255-g;
+			b = 255-b;
 		}
 		else if (*s == '\b')
 		{
@@ -66,6 +74,12 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int 
 				g = 170;
 				r = 32;
 				break;
+			}
+			if(invert)
+			{
+				r = 255-r;
+				g = 255-g;
+				b = 255-b;
 			}
 			s++;
 		}

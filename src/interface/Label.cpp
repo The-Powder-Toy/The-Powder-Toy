@@ -250,26 +250,49 @@ void Label::updateSelection()
 		selectionLineL = Graphics::PositionAtCharIndex((char*)currentText.c_str(), selectionIndex0, selectionXL, selectionYL);
 
 		textFragments = std::string(currentText);
-		textFragments.insert(selectionIndex1, "\x0E");
-		textFragments.insert(selectionIndex0, "\x0F\x01\x01\x01");
+		//textFragments.insert(selectionIndex1, "\x0E");
+		//textFragments.insert(selectionIndex0, "\x0F\x01\x01\x01");
+		textFragments.insert(selectionIndex1, "\x01");
+		textFragments.insert(selectionIndex0, "\x01");
 	} else if(selectionIndex0 > selectionIndex1) {
 		selectionLineH = Graphics::PositionAtCharIndex((char*)currentText.c_str(), selectionIndex0, selectionXH, selectionYH);
 		selectionLineL = Graphics::PositionAtCharIndex((char*)currentText.c_str(), selectionIndex1, selectionXL, selectionYL);
 
 		textFragments = std::string(currentText);
-		textFragments.insert(selectionIndex0, "\x0E");
-		textFragments.insert(selectionIndex1, "\x0F\x01\x01\x01");
+		//textFragments.insert(selectionIndex0, "\x0E");
+		//textFragments.insert(selectionIndex1, "\x0F\x01\x01\x01");
+		textFragments.insert(selectionIndex0, "\x01");
+		textFragments.insert(selectionIndex1, "\x01");
 	} else {
 		selectionXH = -1;
 		selectionXL = -1;
 
 		textFragments = std::string(currentText);
 	}
+
+	if(displayText.length())
+	{
+		displayText = tDisplayText;
+		if(selectionIndex1 > selectionIndex0) {
+			int tSelectionIndex1 = Graphics::CharIndexAtPosition((char*)displayText.c_str(), selectionXH, selectionYH);
+			int tSelectionIndex0 = Graphics::CharIndexAtPosition((char*)displayText.c_str(), selectionXL, selectionYL);
+
+			displayText.insert(tSelectionIndex1, "\x01");
+			displayText.insert(tSelectionIndex0, "\x01");
+		} else if(selectionIndex0 > selectionIndex1) {
+			int tSelectionIndex0 = Graphics::CharIndexAtPosition((char*)displayText.c_str(), selectionXH, selectionYH);
+			int tSelectionIndex1 = Graphics::CharIndexAtPosition((char*)displayText.c_str(), selectionXL, selectionYL);
+
+			displayText.insert(tSelectionIndex0, "\x01");
+			displayText.insert(tSelectionIndex1, "\x01");
+		}
+	}
 }
 
 void Label::SetDisplayText(std::string newText)
 {
 	displayText = newText;
+	tDisplayText = displayText;
 }
 
 void Label::Draw(const Point& screenPos)
