@@ -39,6 +39,8 @@ public:
 	void SetActionCallback(DropDownAction * action) { callback = action;}
 	virtual void Draw(const Point& screenPos);
 	virtual void OnMouseClick(int x, int y, unsigned int button);
+	virtual void OnMouseEnter(int x, int y);
+	virtual void OnMouseLeave(int x, int y);
 	virtual ~DropDown();
 };
 

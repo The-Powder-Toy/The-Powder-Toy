@@ -43,16 +43,17 @@ public:
 		{
 			Button * tempButton = new Button(Point(1, currentY), Point(Size.X-2, 16), dropDown->options[i].first);
 			tempButton->Appearance = appearance;
+			if(i)
+				tempButton->Appearance.Border = ui::Border(0, 1, 1, 1);
 			tempButton->SetActionCallback(new ItemSelectedAction(this, dropDown->options[i].first));
 			AddComponent(tempButton);
-			currentY += 15;
+			currentY += 16;
 		}
 	}
 	virtual void OnDraw()
 	{
 		Graphics * g = ui::Engine::Ref().g;
-		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 100, 100, 100, 255);
-		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, appearance.BackgroundInactive.Red, appearance.BackgroundInactive.Green, appearance.BackgroundInactive.Blue, appearance.BackgroundInactive.Alpha);
+		g->clearrect(Position.X, Position.Y, Size.X, Size.Y);
 	}
 	void setOption(std::string option)
 	{
@@ -67,6 +68,10 @@ public:
 			}
 			dropDown->callback->OptionChanged(dropDown, dropDown->options[optionIndex]);
 		}
+	}
+	virtual void OnTryExit(ExitMethod method)
+	{
+		SelfDestruct();
 	}
 	virtual ~DropDownWindow() {}
 };
@@ -95,23 +100,39 @@ void DropDown::Draw(const Point& screenPos)
 	}
 	Graphics * g = ui::Engine::Ref().g;
 	Point Position = screenPos;
-	if(isMouseInside)
+
+	ui::Colour textColour = Appearance.TextInactive;
+	ui::Colour borderColour = Appearance.BorderInactive;
+	ui::Colour backgroundColour = Appearance.BackgroundInactive;
+
+	if (isMouseInside)
 	{
-		g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, Appearance.BackgroundActive.Red, Appearance.BackgroundActive.Green, Appearance.BackgroundActive.Blue, 255);
-		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BorderActive.Red, Appearance.BorderActive.Green, Appearance.BorderActive.Blue, 255);
-		if(optionIndex!=-1)
-			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, options[optionIndex].first, Appearance.TextActive.Red, Appearance.TextActive.Green, Appearance.TextActive.Blue, 255);
+		textColour = Appearance.TextHover;
+		borderColour = Appearance.BorderHover;
+		backgroundColour = Appearance.BackgroundHover;
 	}
 	else
 	{
-		g->fillrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, 255);
-		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BorderInactive.Red, Appearance.BorderInactive.Green, Appearance.BorderInactive.Blue, 255);
-		if(optionIndex!=-1)
-			g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, options[optionIndex].first, Appearance.TextInactive.Red, Appearance.TextInactive.Green, Appearance.TextInactive.Blue, 255);
+		textColour = Appearance.TextInactive;
+		borderColour = Appearance.BorderInactive;
+		backgroundColour = Appearance.BackgroundInactive;
 	}
 
+	g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, backgroundColour.Red, backgroundColour.Green, backgroundColour.Blue, backgroundColour.Alpha);
+	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+	if(optionIndex!=-1)
+		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, options[optionIndex].first, textColour.Red, textColour.Green, textColour.Blue, textColour.Alpha);
 }
 	
+void DropDown::OnMouseEnter(int x, int y)
+{
+	isMouseInside = true;
+}
+
+void DropDown::OnMouseLeave(int x, int y)
+{
+	isMouseInside = false;
+}
 	std::pair<std::string, int> DropDown::GetOption()
 	{
 		if(optionIndex!=-1)

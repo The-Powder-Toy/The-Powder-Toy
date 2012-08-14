@@ -48,6 +48,8 @@ namespace ui
 		ui::Colour BorderDisabled;
 		
 		ui::Border Margin;
+
+		ui::Border Border;
 		
 		Icon icon;
 

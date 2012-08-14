@@ -121,7 +121,19 @@ void Button::Draw(const Point& screenPos)
 
 	bgColour = Appearance.BackgroundInactive;
 	g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, backgroundColour.Red, backgroundColour.Green, backgroundColour.Blue, backgroundColour.Alpha);
-	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+	if(Appearance.Border == 1)
+		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+	else
+	{
+		if(Appearance.Border.Top)
+			g->draw_line(Position.X, Position.Y, Position.X+Size.X-1, Position.Y, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+		if(Appearance.Border.Bottom)
+			g->draw_line(Position.X, Position.Y+Size.Y-1, Position.X+Size.X-1, Position.Y+Size.Y-1, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+		if(Appearance.Border.Left)
+			g->draw_line(Position.X, Position.Y, Position.X, Position.Y+Size.Y-1, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+		if(Appearance.Border.Right)
+			g->draw_line(Position.X+Size.X-1, Position.Y, Position.X+Size.X-1, Position.Y+Size.Y-1, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+	}
 	g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, buttonDisplayText, textColour.Red, textColour.Green, textColour.Blue, textColour.Alpha);
 
 	bool iconInvert = (backgroundColour.Blue + (3*backgroundColour.Green) + (2*backgroundColour.Red))>544?true:false;

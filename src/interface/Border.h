@@ -40,10 +40,15 @@ namespace ui
 		Left(left)
 		{
 		}
+
+		inline bool operator == (const int& v) const
+		{
+			return (Top == v && Right == v && Bottom == v && Left == v);
+		}
 		
 		inline bool operator == (const Border& v) const
 		{
-			return (Top == v.Top || Right == v.Right || Bottom == v.Bottom || Left == v.Left);
+			return (Top == v.Top && Right == v.Right && Bottom == v.Bottom && Left == v.Left);
 		}
 		
 		inline bool operator != (const Border& v) const

@@ -30,6 +30,7 @@ namespace ui
 		BorderDisabled(100, 100, 100),
 
 		Margin(1, 4),
+		Border(1),
 	
 		icon(NoIcon),
 
