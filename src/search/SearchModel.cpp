@@ -36,7 +36,7 @@ void * SearchModel::updateSaveListT()
 		category = "Favourites";
 	if(showOwn && Client::Ref().GetAuthUser().ID)
 		category = "by:"+Client::Ref().GetAuthUser().Username;
-	information[0] = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category, resultCount);
+	information[0] = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category, thResultCount);
 
 	if(showTags)
 	{
@@ -119,6 +119,7 @@ void SearchModel::Update()
 			void ** tempInformation;
 			//vector<SaveInfo*> * tempSaveList;
 			pthread_join(updateSaveListThread, (void**)(&tempInformation));
+			resultCount = thResultCount;
 			saveList = *(vector<SaveInfo*>*)tempInformation[0];
 
 			delete (vector<SaveInfo*>*)tempInformation[0];

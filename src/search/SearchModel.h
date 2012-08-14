@@ -25,6 +25,7 @@ private:
 	vector<pair<string, int> > tagList;
 	int currentPage;
 	int resultCount;
+	int thResultCount;
 	bool showOwn;
 	bool showFavourite;
 	bool showTags;
