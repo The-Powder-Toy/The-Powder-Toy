@@ -136,6 +136,7 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->SetActionCallback(new SignTextAction(this));
 	AddComponent(textField);
+	FocusComponent(textField);
 	
 	if(signID!=-1)
 	{
