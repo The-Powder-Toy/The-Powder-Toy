@@ -142,7 +142,7 @@ void Button::Draw(const Point& screenPos)
 	}
 }
 
-void Button::OnMouseUp(int x, int y, unsigned int button)
+void Button::OnMouseUnclick(int x, int y, unsigned int button)
 {
     if(button != 1)
     {
@@ -183,6 +183,7 @@ void Button::OnMouseEnter(int x, int y)
 void Button::OnMouseLeave(int x, int y)
 {
     isMouseInside = false;
+    isButtonDown = false;
 }
 
 void Button::DoAction()

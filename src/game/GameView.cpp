@@ -49,7 +49,7 @@ public:
 	void SetShowSplit(bool split) { showSplit = split; }
 	SplitButtonAction * GetSplitActionCallback() { return splitActionCallback; }
 	void SetSplitActionCallback(SplitButtonAction * newAction) { splitActionCallback = newAction; }
-	virtual void OnMouseUp(int x, int y, unsigned int button)
+	virtual void OnMouseUnclick(int x, int y, unsigned int button)
 	{
 	    if(isButtonDown)
 	    {
@@ -58,7 +58,7 @@ public:
 			else if(rightDown)
 				DoRightAction();
 	    }
-	    ui::Button::OnMouseUp(x, y, button);
+	    ui::Button::OnMouseUnclick(x, y, button);
 
 	}
 	virtual void OnMouseMovedInside(int x, int y, int dx, int dy)
