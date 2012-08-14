@@ -83,9 +83,9 @@ Client::Client():
 		configFile.seekg(0, std::ios::beg);
 		if(fsize)
 		{
-			json::Reader::Read(configDocument, configFile);
 			try
 			{
+				json::Reader::Read(configDocument, configFile);
 				authUser.ID = ((json::Number)(configDocument["User"]["ID"])).Value();
 				authUser.SessionID = ((json::String)(configDocument["User"]["SessionID"])).Value();
 				authUser.SessionKey = ((json::String)(configDocument["User"]["SessionKey"])).Value();
@@ -102,7 +102,7 @@ Client::Client():
 			catch (json::Exception &e)
 			{
 				authUser = User(0, "");
-				std::cerr << "Error: Client [Read User data from pref] " << e.what() << std::endl;
+				std::cerr << "Error: Could not read data from prefs: " << e.what() << std::endl;
 			}
 		}
 		configFile.close();
