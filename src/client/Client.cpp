@@ -283,6 +283,25 @@ bool Client::DoInstallation()
 	fwrite(mimedata, 1, strlen(mimedata), f);
 	fclose(f);
 
+	char *protocolfiledata_tmp =
+"[Desktop Entry]\n"
+"Type=Application\n"
+"Name=Powder Toy\n"
+"Comment=Physics sandbox game\n"
+"MimeType=x-scheme-handler/ptsave;\n"
+"NoDisplay=true\n";
+	char *protocolfiledata = (char *)malloc(strlen(protocolfiledata_tmp)+strlen(currentfilename)+100);
+	strcpy(protocolfiledata, protocolfiledata_tmp);
+	strappend(protocolfiledata, "Exec=");
+	strappend(protocolfiledata, currentfilename);
+	strappend(protocolfiledata, " ptsave %u\n");
+	f = fopen("powdertoy-tpt-ptsave.desktop", "wb");
+	if (!f)
+		return 0;
+	fwrite(protocolfiledata, 1, strlen(protocolfiledata), f);
+	fclose(f);
+	system("xdg-desktop-menu install powdertoy-tpt-ptsave.desktop");
+
 	char *desktopfiledata_tmp =
 "[Desktop Entry]\n"
 "Type=Application\n"
@@ -316,6 +335,7 @@ bool Client::DoInstallation()
 	system("xdg-icon-resource install --noupdate --context mimetypes --size 16 powdertoy-save-16.png application-vnd.powdertoy.save");
 	system("xdg-icon-resource forceupdate");
 	system("xdg-mime default powdertoy-tpt.desktop application/vnd.powdertoy.save");
+	system("xdg-mime default powdertoy-tpt-ptsave.desktop x-scheme-handler/ptsave");
 	unlink("powdertoy-save-32.png");
 	unlink("powdertoy-save-16.png");
 	unlink("powdertoy-save.xml");
