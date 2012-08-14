@@ -1847,17 +1847,13 @@ void GameView::OnDraw()
 			{
 				sampleInfo << c->ElementResolve(sample.particle.type);
 				if(sample.particle.ctype > 0 && sample.particle.ctype < PT_NUM)
-				{
 					sampleInfo << " (" << c->ElementResolve(sample.particle.ctype) << ")";
-				}
 				else
-				{
 					sampleInfo << " ()";	
-				}
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
 				sampleInfo << ", Life: " << sample.particle.life;
-				sampleInfo << ", Temp: " << sample.particle.tmp;
+				sampleInfo << ", Tmp: " << sample.particle.tmp;
 			}
 			else
 			{
