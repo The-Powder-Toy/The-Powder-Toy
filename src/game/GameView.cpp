@@ -1348,10 +1348,6 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 	if(colourRValue->IsFocused() || colourGValue->IsFocused() || colourBValue->IsFocused() || colourAValue->IsFocused())
 		return;
 
-	if(selectMode!=SelectNone)
-	{
-		return;
-	}
 	if(!isMouseDown)
 		drawMode = DrawPoints;
 	else
