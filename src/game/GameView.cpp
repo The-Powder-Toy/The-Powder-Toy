@@ -951,9 +951,9 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 	if(selectMode!=SelectNone)
 	{
 		if(selectMode==PlaceSave)
-			selectPoint1 = ui::Point(x, y);
+			selectPoint1 = c->NormaliseBlockCoord(c->PointTranslate(ui::Point(x, y)));
 		if(selectPoint1.X!=-1)
-			selectPoint2 = c->NormaliseBlockCoord(ui::Point(x, y));
+			selectPoint2 = c->NormaliseBlockCoord(c->PointTranslate(ui::Point(x, y)));
 		return;
 	}
 	currentMouse = ui::Point(x, y);
@@ -970,7 +970,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 	{
 		if(button==BUTTON_LEFT)
 		{
-			selectPoint1 = c->NormaliseBlockCoord(ui::Point(x, y));
+			selectPoint1 = c->NormaliseBlockCoord(c->PointTranslate(ui::Point(x, y)));
 			selectPoint2 = selectPoint1;
 		}
 		return;
@@ -1770,6 +1770,8 @@ void GameView::OnDraw()
 						thumbPos.Y = YRES-tempThumb->Size.Y;
 
 					g->draw_image(tempThumb->Data, thumbPos.X, thumbPos.Y, tempThumb->Size.X, tempThumb->Size.Y, 128);
+
+					g->xor_rect(thumbPos.X, thumbPos.Y, tempThumb->Size.X, tempThumb->Size.Y);
 				}
 			}
 			else
