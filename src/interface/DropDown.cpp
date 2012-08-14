@@ -71,6 +71,7 @@ public:
 	}
 	virtual void OnTryExit(ExitMethod method)
 	{
+		ui::Engine::Ref().CloseWindow();
 		SelfDestruct();
 	}
 	virtual ~DropDownWindow() {}
