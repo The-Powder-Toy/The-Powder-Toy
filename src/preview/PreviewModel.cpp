@@ -248,6 +248,7 @@ void PreviewModel::Update()
 
 			if(updateSaveInfoFinished && save)
 			{
+				commentsTotal = save->Comments;
 				try
 				{
 					save->SetGameSave(new GameSave(&saveDataBuffer[0], saveDataBuffer.size()));
@@ -257,6 +258,7 @@ void PreviewModel::Update()
 					throw PreviewModelException("Save file corrupt or from newer version");
 				}
 				notifySaveChanged();
+				notifyCommentsPageChanged();
 			}
 		}
 	}
@@ -285,7 +287,7 @@ void PreviewModel::Update()
 				}
 			}
 			notifySaveChanged();
-			notifyCommentsPageChanged();
+
 			if(!save)
 				throw PreviewModelException("Unable to load save");
 		}

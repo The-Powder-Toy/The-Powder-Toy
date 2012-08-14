@@ -54,25 +54,25 @@ void * SearchModel::updateSaveListT()
 
 void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 {
-	lastQuery = query;
-	lastError = "";
-	saveListLoaded = false;
-	saveList.clear();
-	//resultCount = 0;
-	currentPage = pageNumber;
-	notifySaveListChanged();
-	notifyPageChanged();
-	selected.clear();
-	notifySelectedChanged();
-
-	if(pageNumber == 1 && !showOwn && !showFavourite && currentSort == "best" && query == "")
-		SetShowTags(true);
-	else
-		SetShowTags(false);
-
 	//Threading
 	if(!updateSaveListWorking)
 	{
+		lastQuery = query;
+		lastError = "";
+		saveListLoaded = false;
+		saveList.clear();
+		//resultCount = 0;
+		currentPage = pageNumber;
+		notifySaveListChanged();
+		notifyPageChanged();
+		selected.clear();
+		notifySelectedChanged();
+
+		if(pageNumber == 1 && !showOwn && !showFavourite && currentSort == "best" && query == "")
+			SetShowTags(true);
+		else
+			SetShowTags(false);
+		
 		updateSaveListFinished = false;
 		updateSaveListWorking = true;
 		pthread_create(&updateSaveListThread, 0, &SearchModel::updateSaveListTHelper, this);
@@ -119,7 +119,8 @@ void SearchModel::Update()
 			void ** tempInformation;
 			//vector<SaveInfo*> * tempSaveList;
 			pthread_join(updateSaveListThread, (void**)(&tempInformation));
-			resultCount = thResultCount;
+
+
 			saveList = *(vector<SaveInfo*>*)tempInformation[0];
 
 			delete (vector<SaveInfo*>*)tempInformation[0];
@@ -140,7 +141,8 @@ void SearchModel::Update()
 			{
 				lastError = Client::Ref().GetLastError();
 			}
-			//currentPage = pageNumber;
+			
+			resultCount = thResultCount;
 			notifyPageChanged();
 			notifySaveListChanged();
 		}
