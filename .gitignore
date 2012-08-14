@@ -35,3 +35,5 @@ Makefile.me
 config.log
 *.sconsign.dblite
 *.sconf_temp
+*.gch
+*.pyc

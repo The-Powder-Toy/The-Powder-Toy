@@ -873,14 +873,16 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		reloadButton->Enabled = true;
 		upVoteButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==0);
 		if(sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==1)
-			upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 200, 40));
+			upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 200, 40, 100));
 		else
-			upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
+			upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
+
 		downVoteButton->Enabled = upVoteButton->Enabled;
 		if(sender->GetSave()->GetID() && sender->GetUser().ID && sender->GetSave()->GetVote()==-1)
-			downVoteButton->Appearance.BackgroundInactive = (ui::Colour(200, 40, 40));
+			downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(200, 40, 40, 100));
 		else
-			downVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
+			downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
+
 		tagSimulationButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID);
 		if(sender->GetSave()->GetID())
 		{

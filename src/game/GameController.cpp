@@ -1028,7 +1028,16 @@ void GameController::FrameStep()
 void GameController::Vote(int direction)
 {
 	if(gameModel->GetSave() && gameModel->GetUser().ID && gameModel->GetSave()->GetID() && gameModel->GetSave()->GetVote()==0)
-		gameModel->SetVote(direction);
+	{
+		try
+		{
+			gameModel->SetVote(direction);
+		}
+		catch(GameModelException & ex)
+		{
+			new ErrorMessage("Error while voting", ex.what());
+		}
+	}
 }
 
 void GameController::ChangeBrush()

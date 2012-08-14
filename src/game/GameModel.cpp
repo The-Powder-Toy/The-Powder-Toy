@@ -263,6 +263,10 @@ void GameModel::SetVote(int direction)
 			currentSave->vote = direction;
 			notifySaveChanged();
 		}
+		else
+		{
+			throw GameModelException("Could not vote: "+Client::Ref().GetLastError());
+		}
 	}
 }
 

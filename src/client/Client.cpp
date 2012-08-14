@@ -927,24 +927,18 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 	int dataLength = 0;
 	std::stringstream idStream;
 	idStream << saveID;
-	std::string directionS;
-	if(direction==1)
-	{
-		directionS = "Up";
-	}
-	else
-	{
-		directionS = "Down";
-	}
-	std::stringstream userIDStream;
-	userIDStream << authUser.ID;
+
+	std::string saveIDText = format::NumberToString<int>(saveID);
+	std::string directionText = direction==1?"Up":"Down";
+
+	std::string userIDText = format::NumberToString<int>(authUser.ID);
 	if(authUser.ID)
 	{
 		char * postNames[] = { "ID", "Action", NULL };
-		char * postDatas[] = { (char*)(idStream.str().c_str()), (char*)(directionS.c_str()) };
-		int postLengths[] = { idStream.str().length(), directionS.length() };
+		char * postDatas[] = { (char*)(saveIDText.c_str()), (char*)(directionText.c_str()) };
+		int postLengths[] = { saveIDText.length(), directionText.length() };
 		//std::cout << postNames[0] << " " << postDatas[0] << " " << postLengths[0] << std::endl;
-		data = http_multipart_post("http://" SERVER "/Vote.api", postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+		data = http_multipart_post("http://" SERVER "/Vote.api", postNames, postDatas, postLengths, (char *)(userIDText.c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
 	}
 	else
 	{
