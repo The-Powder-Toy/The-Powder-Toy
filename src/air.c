@@ -170,20 +170,6 @@ void update_air(void)
 			vy[YRES/CELL-1][i] = vy[YRES/CELL-2][i]*0.9f;
 		}
 
-		for (j=1; j<YRES/CELL; j++) //clear some velocities near walls
-		{
-			for (i=1; i<XRES/CELL; i++)
-			{
-				if (bmap_blockair[j][i])
-				{
-					vx[j][i] = 0.0f;
-					vx[j][i-1] = 0.0f;
-					vy[j][i] = 0.0f;
-					vy[j-1][i] = 0.0f;
-				}
-			}
-		}
-
 		for (y=1; y<YRES/CELL; y++) //pressure adjustments from velocity
 			for (x=1; x<XRES/CELL; x++)
 			{
@@ -204,10 +190,15 @@ void update_air(void)
 				vy[y][x] *= AIR_VLOSS;
 				vx[y][x] += dx*AIR_TSTEPV;
 				vy[y][x] += dy*AIR_TSTEPV;
-				if (bmap_blockair[y][x] || bmap_blockair[y][x+1])
+				if (bmap_blockair[y][x]) //clear some velocities near walls
+				{
+					vx[y][x] = 0.0f;
+					vx[y][x+1] = 0.0f;
+					vy[y][x] = 0.0f;
+					vy[y+1][x] = 0.0f;
+				}
+				else if (bmap_blockair[y][x+1] || bmap_blockair[y+1][x])
 					vx[y][x] = 0;
-				if (bmap_blockair[y][x] || bmap_blockair[y+1][x])
-					vy[y][x] = 0;
 			}
 
 		for (y=0; y<YRES/CELL; y++) //update velocity and pressure
@@ -293,6 +284,10 @@ void update_air(void)
 					break;
 				case 4: //No Update
 					break;
+				}
+				if (bmap_blockair[y][x])
+				{
+					dx = dy = dp = 0.0f;
 				}
 
 				ovx[y][x] = dx;
