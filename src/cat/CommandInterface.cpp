@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <string.h>
+#include <strings.h>
 #include "CommandInterface.h"
 #include "game/GameModel.h"
 
