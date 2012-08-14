@@ -200,7 +200,7 @@ GameView::GameView():
 	scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(scrollBar);
 	
-	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15));  //Open
+	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", "Find & open a simulation");  //Open
 	searchButton->SetIcon(IconOpen);
 	currentX+=18;
 	searchButton->SetTogglable(false);
@@ -217,7 +217,7 @@ GameView::GameView():
             v->c->ReloadSim();
         }
     };
-    reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15));
+    reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", "Reload the simulation");
     reloadButton->SetIcon(IconReload);
     reloadButton->Appearance.Margin.Left+=2;
     currentX+=18;
@@ -261,7 +261,7 @@ GameView::GameView():
         	v->c->Vote(1);
         }
     };
-    upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(15, 15));
+    upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(15, 15), "", "Like this save");
     upVoteButton->SetIcon(IconVoteUp);
     upVoteButton->Appearance.Margin.Top+=2;
     upVoteButton->Appearance.Margin.Left+=2;
@@ -279,7 +279,7 @@ GameView::GameView():
         	v->c->Vote(-1);
         }
     };
-    downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(15, 15));
+    downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(15, 15), "", "Dislike this save");
     downVoteButton->SetIcon(IconVoteDown);
     downVoteButton->Appearance.Margin.Bottom+=2;
     downVoteButton->Appearance.Margin.Left+=2;
@@ -297,7 +297,7 @@ GameView::GameView():
             v->c->OpenTags();
         }
     };
-    tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(251, 15), "[no tags set]");
+    tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(251, 15), "[no tags set]", "Add simulation tags");
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
     tagSimulationButton->SetIcon(IconTag);
     currentX+=252;
@@ -314,7 +314,7 @@ GameView::GameView():
             v->c->ClearSim();
         }
     };
-    clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15));
+    clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15), "", "Erase everything");
     clearSimButton->SetIcon(IconNew);
     clearSimButton->Appearance.Margin.Left+=2;
     clearSimButton->SetActionCallback(new ClearSimAction(this));
@@ -346,7 +346,7 @@ GameView::GameView():
             v->c->OpenOptions();
         }
     };
-    simulationOptionButton = new ui::Button(ui::Point(Size.X-48, Size.Y-16), ui::Point(15, 15));
+    simulationOptionButton = new ui::Button(ui::Point(Size.X-48, Size.Y-16), ui::Point(15, 15), "", "Simulation options");
     simulationOptionButton->SetIcon(IconSimulationSettings);
     simulationOptionButton->Appearance.Margin.Left+=2;
     simulationOptionButton->SetActionCallback(new SimulationOptionAction(this));
@@ -362,7 +362,7 @@ GameView::GameView():
             v->c->OpenRenderOptions();
         }
     };
-    displayModeButton = new ui::Button(ui::Point(Size.X-32, Size.Y-16), ui::Point(15, 15));
+    displayModeButton = new ui::Button(ui::Point(Size.X-32, Size.Y-16), ui::Point(15, 15), "", "Renderer options");
     displayModeButton->SetIcon(IconRenderSettings);
     displayModeButton->Appearance.Margin.Left+=2;
     displayModeButton->SetActionCallback(new DisplayModeAction(this));
@@ -378,7 +378,7 @@ GameView::GameView():
 			v->c->SetPaused(sender->GetToggleState());
 		}
 	};
-	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15));  //Pause
+	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", "Pause/Resume the simulation");  //Pause
 	pauseButton->SetIcon(IconPause);
 	pauseButton->SetTogglable(true);
 	pauseButton->SetActionCallback(new PauseAction(this));
@@ -437,7 +437,7 @@ GameView::GameView():
 			v->c->OpenElementSearch();
 		}
 	};
-	ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, YRES+MENUSIZE-32), ui::Point(15, 15), "\xE5");
+	ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, YRES+MENUSIZE-32), ui::Point(15, 15), "\xE5", "Search for elements");
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback(new ElementSearchAction(this));
 	AddComponent(tempButton);
