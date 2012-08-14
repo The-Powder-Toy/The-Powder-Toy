@@ -1,5 +1,6 @@
 //#include <cstdlib>
 #include <cmath>
+#include <strings.h>
 #include "Config.h"
 #include "Simulation.h"
 #include "Elements.h"
