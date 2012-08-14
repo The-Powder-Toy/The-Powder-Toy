@@ -23,6 +23,7 @@ public:
 	PropertyWindow(PropertyTool * tool_, Simulation * sim_, ui::Point position_);
 	void SetProperty();
 	virtual void OnDraw();
+	virtual void OnTryExit(ExitMethod method);
 	virtual ~PropertyWindow() {}
 	class OkayAction: public ui::ButtonAction
 	{
@@ -59,6 +60,7 @@ position(position_)
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	okayButton->SetActionCallback(new OkayAction(this));
 	AddComponent(okayButton);
+	SetOkayButton(okayButton);
 	
 	property = new ui::DropDown(ui::Point(8, 25), ui::Point(Size.X-16, 17));
 	AddComponent(property);
@@ -175,6 +177,12 @@ void PropertyWindow::SetProperty()
 			new ErrorMessage("Could not set property", "Invalid value provided");
 		}
 	}
+}
+
+void PropertyWindow::OnTryExit(ExitMethod method)
+{
+	ui::Engine::Ref().CloseWindow();
+	SelfDestruct();
 }
 
 void PropertyWindow::OnDraw()
