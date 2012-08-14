@@ -1268,6 +1268,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 's':
 		selectMode = SelectStamp;
 		selectPoint1 = ui::Point(-1, -1);
+		infoTip = "\x0F\xEF\xEF\x10Select an area to create a stamp";
+		infoTipPresence = 120;
 		break;
 	case 'w':
 		c->SwitchGravity();
@@ -1293,6 +1295,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			selectMode = SelectCopy;
 			selectPoint1 = ui::Point(-1, -1);
+			infoTip = "\x0F\xEF\xEF\x10Select an area to copy";
+			infoTipPresence = 120;
 		}
 		break;
 	case 'v':

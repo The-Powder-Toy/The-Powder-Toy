@@ -22,9 +22,9 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int 
 			oR = r;
 			oG = g;
 			oB = b;
-			r = s[1];
-			g = s[2];
-			b = s[3];
+			r = (unsigned char)s[1];
+			g = (unsigned char)s[2];
+			b = (unsigned char)s[3];
 			s += 3;
 		}
 		else if (*s == '\x0E')
