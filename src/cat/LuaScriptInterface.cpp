@@ -225,6 +225,8 @@ tpt.partsdata = nil");
 		lua_el_mode[i] = 0;
 	}
 
+	//Autorun
+	luacon_eval("dofile(\"autorun.lua\")"); //Autorun lua script
 }
 
 bool LuaScriptInterface::OnBrushChanged(int brushType, int rx, int ry)
