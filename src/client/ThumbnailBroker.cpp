@@ -96,9 +96,6 @@ void ThumbnailBroker::RenderThumbnail(GameSave * gameSave, int width, int height
 
 void ThumbnailBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int height, ThumbnailListener * tListener)
 {
-#ifdef DEBUG
-		std::cout << typeid(*this).name() << " New Thumbnail Retrieval request for " << saveID << ":" << saveDate << std::endl;
-#endif
 	AttachThumbnailListener(tListener);
 	pthread_mutex_lock(&thumbnailQueueMutex);
 	bool running = thumbnailQueueRunning;
@@ -127,7 +124,9 @@ void ThumbnailBroker::FlushThumbQueue()
 	while(thumbnailComplete.size())
 	{
 		if(CheckThumbnailListener(thumbnailComplete.front().first))
+		{
 			thumbnailComplete.front().first->OnThumbnailReady(thumbnailComplete.front().second);
+		}
 		else
 		{
 #ifdef DEBUG
@@ -146,13 +145,13 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 	while(true)
 	{
 		//Shutdown after 2 seconds of idle
-		//if(time(NULL) - lastAction > 2)
-		//{
-		//	pthread_mutex_lock(&thumbnailQueueMutex);
-		//	thumbnailQueueRunning = false;
-		//	pthread_mutex_unlock(&thumbnailQueueMutex);
-		//	break;
-		//}
+		if(time(NULL) - lastAction > 2)
+		{
+			pthread_mutex_lock(&thumbnailQueueMutex);
+			thumbnailQueueRunning = false;
+			pthread_mutex_unlock(&thumbnailQueueMutex);
+			break;
+		}
 
 		//Renderer
 		pthread_mutex_lock(&thumbnailQueueMutex);
@@ -379,6 +378,15 @@ void ThumbnailBroker::AttachThumbnailListener(ThumbnailListener * tListener)
 void ThumbnailBroker::DetachThumbnailListener(ThumbnailListener * tListener)
 {
 	pthread_mutex_lock(&listenersMutex);
-	std::remove(validListeners.begin(), validListeners.end(), tListener);
+
+	std::vector<ThumbnailListener*>::iterator iter = validListeners.begin();
+	while (iter != validListeners.end())
+	{
+		if(*iter == tListener)
+			iter = validListeners.erase(iter);
+		else
+			++iter;
+	}
+
 	pthread_mutex_unlock(&listenersMutex);
 }

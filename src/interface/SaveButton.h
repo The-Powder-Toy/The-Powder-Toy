@@ -18,6 +18,7 @@ class SaveButtonAction
 {
 public:
 	virtual void ActionCallback(ui::SaveButton * sender) {}
+	virtual void AuthorActionCallback(ui::SaveButton * sender) {}
 	virtual void SelectedCallback(ui::SaveButton * sender) {}
 	virtual ~SaveButtonAction() {}
 };
@@ -30,6 +31,7 @@ class SaveButton : public Component, public ThumbnailListener
 	std::string name;
 	bool wantsDraw;
 	bool waitingForThumb;
+	bool isMouseInsideAuthor;
 public:
 	SaveButton(Point position, Point size, SaveInfo * save);
 	SaveButton(Point position, Point size, SaveFile * file);
@@ -40,6 +42,8 @@ public:
 
 	virtual void OnMouseEnter(int x, int y);
 	virtual void OnMouseLeave(int x, int y);
+
+	virtual void OnMouseMovedInside(int x, int y, int dx, int dy);
 
 	virtual void Draw(const Point& screenPos);
 	virtual void Tick(float dt);
@@ -55,6 +59,7 @@ public:
 	SaveFile * GetSaveFile() { return file; }
 	inline bool GetState() { return state; }
 	virtual void DoAction();
+	virtual void DoAuthorAction();
 	virtual void DoSelection();
 	void SetActionCallback(SaveButtonAction * action);
 protected:

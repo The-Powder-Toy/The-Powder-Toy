@@ -493,6 +493,10 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			{
 				v->c->Selected(sender->GetSave()->GetID(), sender->GetSelected());
 			}
+			virtual void AuthorActionCallback(ui::SaveButton * sender)
+			{
+				v->Search("user:"+sender->GetSave()->GetUserName());
+			}
 		};
 
 		class TagAction: public ui::ButtonAction

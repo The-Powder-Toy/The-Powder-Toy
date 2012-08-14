@@ -21,7 +21,8 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	voteColour(255, 0, 0),
 	selectable(false),
 	selected(false),
-	waitingForThumb(false)
+	waitingForThumb(false),
+	isMouseInsideAuthor(false)
 {
 	if(save)
 	{
@@ -65,7 +66,8 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	selectable(false),
 	selected(false),
 	wantsDraw(false),
-	waitingForThumb(false)
+	waitingForThumb(false),
+	isMouseInsideAuthor(false)
 {
 	if(file)
 	{
@@ -127,66 +129,6 @@ void SaveButton::Tick(float dt)
 			ThumbnailBroker::Ref().RenderThumbnail(file->GetGameSave(), Size.X-3, Size.Y-25, this);
 		}
 	}
-
-	/*Thumbnail * tempThumb;
-	float scaleFactorY = 1.0f, scaleFactorX = 1.0f;
-	if(!thumbnail)
-	{
-		if(save)
-		{
-			if(!save->GetGameSave() && save->GetID())
-			{
-				tempThumb = Client::Ref().GetThumbnail(save->GetID(), 0);
-				if(tempThumb)
-				{
-					thumbnail = new Thumbnail(*tempThumb); //Store a local copy of the thumbnail
-				}
-			}
-			else if(save->GetGameSave())
-			{
-				thumbnail = SaveRenderer::Ref().Render(save->GetGameSave());
-			}
-			else
-			{
-				thumbnail = NULL;
-			}
-		}
-		if(file)
-		{
-			if(file->GetThumbnail())
-			{
-				thumbnail = new Thumbnail(*file->GetThumbnail());
-			}
-			else if(file->GetGameSave())
-			{
-				thumbnail = SaveRenderer::Ref().Render(file->GetGameSave());
-			}
-			else
-			{
-				thumbnail = NULL;
-			}
-		}
-		if(thumbnail && thumbnail->Data)
-		{
-			if(thumbnail->Size.Y > (Size.Y-25))
-			{
-				scaleFactorY = ((float)(Size.Y-25))/((float)thumbnail->Size.Y);
-			}
-			if(thumbnail->Size.X > Size.X-3)
-			{
-				scaleFactorX = ((float)Size.X-3)/((float)thumbnail->Size.X);
-			}
-			if(scaleFactorY < 1.0f || scaleFactorX < 1.0f)
-			{
-				float scaleFactor = scaleFactorY < scaleFactorX ? scaleFactorY : scaleFactorX;
-				pixel * thumbData = thumbnail->Data;
-				thumbnail->Data = Graphics::resample_img(thumbData, thumbnail->Size.X, thumbnail->Size.Y, thumbnail->Size.X * scaleFactor, thumbnail->Size.Y * scaleFactor);
-				thumbnail->Size.X *= scaleFactor;
-				thumbnail->Size.Y *= scaleFactor;
-				free(thumbData);
-			}
-		}
-	}*/
 }
 
 void SaveButton::Draw(const Point& screenPos)
@@ -236,17 +178,15 @@ void SaveButton::Draw(const Point& screenPos)
 				g->drawrect(screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 180, 180, 180, 255);
 		}
 
-		if(isMouseInside)
-		{
-			//g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
+		if(isMouseInside && !isMouseInsideAuthor)
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)name.c_str()))/2, screenPos.Y+Size.Y - 21, name, 255, 255, 255, 255);
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 200, 230, 255, 255);
-		}
 		else
-		{
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)name.c_str()))/2, screenPos.Y+Size.Y - 21, name, 180, 180, 180, 255);
+
+		if(isMouseInsideAuthor)
+			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 200, 230, 255, 255);
+		else
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 100, 130, 160, 255);
-		}
 	}
 	if(file)
 	{
@@ -290,7 +230,10 @@ void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
 
 	if(isButtonDown)
 	{
-		DoAction();
+		if(isMouseInsideAuthor)
+			DoAuthorAction();
+		else
+			DoAction();
 	}
 
 	isButtonDown = false;
@@ -308,6 +251,16 @@ void SaveButton::OnMouseClick(int x, int y, unsigned int button)
 	isButtonDown = true;
 }
 
+void SaveButton::OnMouseMovedInside(int x, int y, int dx, int dy)
+{
+	if(y > Size.Y-11)
+	{
+		isMouseInsideAuthor = true;
+	}
+	else
+		isMouseInsideAuthor = false;
+}
+
 void SaveButton::OnMouseEnter(int x, int y)
 {
 	isMouseInside = true;
@@ -316,6 +269,13 @@ void SaveButton::OnMouseEnter(int x, int y)
 void SaveButton::OnMouseLeave(int x, int y)
 {
 	isMouseInside = false;
+	isMouseInsideAuthor = false;
+}
+
+void SaveButton::DoAuthorAction()
+{
+	if(actionCallback)
+		actionCallback->AuthorActionCallback(this);
 }
 
 void SaveButton::DoAction()
