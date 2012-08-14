@@ -953,7 +953,7 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 		if(selectMode==PlaceSave)
 			selectPoint1 = ui::Point(x, y);
 		if(selectPoint1.X!=-1)
-			selectPoint2 = ui::Point(x, y);
+			selectPoint2 = c->NormaliseBlockCoord(ui::Point(x, y));
 		return;
 	}
 	currentMouse = ui::Point(x, y);
@@ -970,7 +970,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 	{
 		if(button==BUTTON_LEFT)
 		{
-			selectPoint1 = ui::Point(x, y);
+			selectPoint1 = c->NormaliseBlockCoord(ui::Point(x, y));
 			selectPoint2 = selectPoint1;
 		}
 		return;
