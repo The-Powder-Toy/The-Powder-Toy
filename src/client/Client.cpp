@@ -340,6 +340,7 @@ bool Client::DoInstallation()
 	unlink("powdertoy-save-16.png");
 	unlink("powdertoy-save.xml");
 	unlink("powdertoy-tpt.desktop");
+	unlink("powdertoy-tpt-ptsave.desktop");
 	return true;
 #elif defined MACOSX
 	return false;
