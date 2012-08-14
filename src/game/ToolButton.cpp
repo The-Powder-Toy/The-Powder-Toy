@@ -20,7 +20,7 @@ void ToolButton::OnMouseClick(int x, int y, unsigned int button)
     isButtonDown = true;
 }
 
-void ToolButton::OnMouseUp(int x, int y, unsigned int button)
+void ToolButton::OnMouseUnclick(int x, int y, unsigned int button)
 {
 	if(isButtonDown)
 	{

@@ -14,7 +14,7 @@ class ToolButton: public ui::Button {
 	int currentSelection;
 public:
 	ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolTip = "");
-	virtual void OnMouseUp(int x, int y, unsigned int button);
+	virtual void OnMouseUnclick(int x, int y, unsigned int button);
 	virtual void OnMouseClick(int x, int y, unsigned int button);
 	virtual void Draw(const ui::Point& screenPos);
 	void SetSelectionState(int state);
