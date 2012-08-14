@@ -26,7 +26,7 @@ enum DrawMode
 
 enum SelectMode
 {
-	SelectNone, SelectStamp, SelectCopy, PlaceSave
+	SelectNone, SelectStamp, SelectCopy, SelectCut, PlaceSave
 };
 
 class GameController;

@@ -81,6 +81,7 @@ public:
 	void DrawFill(int toolSelection, ui::Point point);
 	void StampRegion(ui::Point point1, ui::Point point2);
 	void CopyRegion(ui::Point point1, ui::Point point2);
+	void CutRegion(ui::Point point1, ui::Point point2);
 	void Update();
 	void SetPaused(bool pauseState);
 	void SetPaused();

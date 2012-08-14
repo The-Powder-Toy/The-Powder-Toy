@@ -432,6 +432,12 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 		gameModel->SetClipboard(newSave);
 }
 
+void GameController::CutRegion(ui::Point point1, ui::Point point2)
+{
+	CopyRegion(point1, point2);
+	gameModel->GetSimulation()->clear_area(point1.X, point1.Y, point2.X-point1.X, point2.Y-point1.Y);
+}
+
 bool GameController::MouseMove(int x, int y, int dx, int dy)
 {
 	return commandInterface->OnMouseMove(x, y, dx, dy);

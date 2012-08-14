@@ -1032,6 +1032,8 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 				{
 					if(selectMode==SelectCopy)
 						c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+					else if(selectMode==SelectCut)
+						c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2));
 					else if(selectMode==SelectStamp)
 						c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
 				}
@@ -1296,6 +1298,15 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			selectMode = SelectCopy;
 			selectPoint1 = ui::Point(-1, -1);
 			infoTip = "\x0F\xEF\xEF\x10Select an area to copy";
+			infoTipPresence = 120;
+		}
+		break;
+	case 'x':
+		if(ctrl)
+		{
+			selectMode = SelectCut;
+			selectPoint1 = ui::Point(-1, -1);
+			infoTip = "\x0F\xEF\xEF\x10Select an area to cut";
 			infoTipPresence = 120;
 		}
 		break;
