@@ -1839,6 +1839,7 @@ void GameView::OnDraw()
 	if(showHud && !introText)
 	{
 		//Draw info about simulation under cursor
+		int wavelengthGfx = 0;
 		std::stringstream sampleInfo;
 		sampleInfo.precision(2);
 		if(sample.particle.type)
@@ -1860,6 +1861,8 @@ void GameView::OnDraw()
 				sampleInfo << c->ElementResolve(sample.particle.type) << ", Pressure: " << std::fixed << sample.AirPressure;
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
 			}
+			if(sample.particle.type == PT_PHOT)
+				wavelengthGfx = sample.particle.ctype;
 		}
 		else
 		{
@@ -1869,6 +1872,43 @@ void GameView::OnDraw()
 		int textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
 		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255*0.75);
+
+#ifndef OGLI
+		if(wavelengthGfx)
+		{
+			int i, cr, cg, cb, j, h = 3, x = XRES-19-textWidth, y = 10;
+			int tmp;
+			g->fillrect(x, y, 30, h, 64, 64, 64, 255); // coords -1 size +1 to work around bug in fillrect - TODO: fix fillrect
+			for (i = 0; i < 30; i++)
+			{
+				if ((wavelengthGfx >> i)&1)
+				{
+					// Need a spread of wavelengths to get a smooth spectrum, 5 bits seems to work reasonably well
+					if (i>2) tmp = 0x1F << (i-2);
+					else tmp = 0x1F >> (2-i);
+
+					cg = 0;
+					cb = 0;
+					cr = 0;
+
+					for (j=0; j<12; j++)
+					{
+						cr += (tmp >> (j+18)) & 1;
+						cb += (tmp >> j) & 1;
+					}
+					for (j=0; j<13; j++)
+						cg += (tmp >> (j+9)) & 1;
+
+					tmp = 624/(cr+cg+cb+1);
+					cr *= tmp;
+					cg *= tmp;
+					cb *= tmp;
+					for (j=0; j<h; j++)
+						g->blendpixel(x+29-i,y+j,cr>255?255:cr,cg>255?255:cg,cb>255?255:cb,255);
+				}	
+			}
+		}
+#endif
 
 		if(showDebug)
 		{
