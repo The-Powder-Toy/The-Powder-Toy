@@ -79,7 +79,7 @@ void Renderer::RenderBegin()
 		vid = oldVid;
 	}
 #endif
-#ifndef OGLR
+#ifndef OGLI
 	FinaliseParts();
 #endif
 }
@@ -87,7 +87,7 @@ void Renderer::RenderBegin()
 void Renderer::RenderEnd()
 {
 	RenderZoom();
-#ifdef OGLR
+#ifdef OGLI
 	FinaliseParts();
 #endif
 }
