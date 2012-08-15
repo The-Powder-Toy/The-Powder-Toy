@@ -34,7 +34,20 @@ extern "C"
 
 void Renderer::RenderBegin()
 {
-#ifndef OGLR
+#ifdef OGLI
+#ifdef OGLR
+	draw_air();
+	draw_grav();
+	render_parts();
+	render_fire();
+	DrawWalls();
+	draw_grav_zones();
+	DrawSigns();
+
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+	glTranslated(0, MENUSIZE, 0);
+#else
 	if(display_mode & DISPLAY_PERS)
 	{
 		std::copy(persistentVid, persistentVid+(VIDXRES*YRES), vid);
@@ -46,12 +59,12 @@ void Renderer::RenderBegin()
 		vid = warpVid;
 		std::fill(warpVid, warpVid+(VIDXRES*VIDYRES), 0);
 	}
-#endif
-	//draw_air();
-	//draw_grav();
+
+	draw_air();
+	draw_grav();
 	render_parts();
-	//render_fire();
-#ifndef OGLR
+	render_fire();
+
 	if(display_mode & DISPLAY_PERS)
 	{
 		int i,r,g,b;
@@ -69,17 +82,59 @@ void Renderer::RenderBegin()
 			persistentVid[i] = PIXRGB(r,g,b);
 		}
 	}
-#endif
+
 	DrawWalls();
-	//draw_grav_zones();
-	//DrawSigns();
-#ifndef OGLR
+	draw_grav_zones();
+	DrawSigns();
 	if(display_mode & DISPLAY_WARP)
 	{
 		vid = oldVid;
 	}
 #endif
-#ifndef OGLI
+#else
+	if(display_mode & DISPLAY_PERS)
+	{
+		std::copy(persistentVid, persistentVid+(VIDXRES*YRES), vid);
+	}
+	pixel * oldVid;
+	if(display_mode & DISPLAY_WARP)
+	{
+		oldVid = vid;
+		vid = warpVid;
+		std::fill(warpVid, warpVid+(VIDXRES*VIDYRES), 0);
+	}
+
+	draw_air();
+	draw_grav();
+	render_parts();
+	render_fire();
+	if(display_mode & DISPLAY_PERS)
+	{
+		int i,r,g,b;
+		for (i = 0; i < VIDXRES*YRES; i++)
+		{
+			r = PIXR(vid[i]);
+			g = PIXG(vid[i]);
+			b = PIXB(vid[i]);
+			if (r>0)
+				r--;
+			if (g>0)
+				g--;
+			if (b>0)
+				b--;
+			persistentVid[i] = PIXRGB(r,g,b);
+		}
+	}
+
+	DrawWalls();
+	draw_grav_zones();
+	DrawSigns();
+
+	if(display_mode & DISPLAY_WARP)
+	{
+		vid = oldVid;
+	}
+
 	FinaliseParts();
 #endif
 }
@@ -88,6 +143,8 @@ void Renderer::RenderEnd()
 {
 #ifdef OGLI
 #ifdef OGLR
+	glTranslated(0, -MENUSIZE, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
 	FinaliseParts();
 	RenderZoom();
 #else
@@ -348,7 +405,7 @@ void Renderer::RenderZoom()
 
 		glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
 		glGetIntegerv(GL_BLEND_DST, &origBlendDst);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);//glBlendFunc(GL_ONE, GL_ZERO);
+		glBlendFunc(GL_ONE, GL_ZERO);
 
 		glEnable( GL_TEXTURE_2D );
 		//glReadBuffer(GL_AUX0);
@@ -2390,6 +2447,19 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+
+	//Temptexture
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &textTexture);
+	glBindTexture(GL_TEXTURE_2D, textTexture);
+	
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 

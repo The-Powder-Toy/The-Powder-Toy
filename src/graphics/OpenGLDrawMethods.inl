@@ -228,16 +228,16 @@ void PIXELMETHODS_CLASS::xor_rect(int x, int y, int width, int height)
 
 void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w, int h)
 {
-	/* Rewriting until better method can be found */
 	//glEnable(GL_COLOR_LOGIC_OP);
 	//glLogicOp(GL_XOR);
+	
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textTexture);
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_ALPHA, GL_UNSIGNED_BYTE, bitmap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, w, h, 0, GL_ALPHA, GL_UNSIGNED_BYTE, bitmap);
 
 	glBegin(GL_QUADS);
     glTexCoord2d(0, 0);
@@ -254,22 +254,6 @@ void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w,
 	glDisable(GL_TEXTURE_2D);
 	//glDisable(GL_COLOR_LOGIC_OP);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-	
-	/*float old_size;
-	glGetFloatv(GL_POINT_SIZE,&old_size);	
-
-	glPointSize(1.0);
-	glBegin(GL_POINTS);
-	glColor4f(1.0f,1.0f,1.0f,1.0f);
-	for(int i =0; i < w*h; i++)
-	{
-		if(bitmap[i]==255)
-		{
-			glVertex2f(x+i%w,y+i/w);
-		}
-	}
-	glEnd();
-	glPointSize(old_size);*/
 }
 
 void PIXELMETHODS_CLASS::draw_line(int x, int y, int x2, int y2, int r, int g, int b, int a)
