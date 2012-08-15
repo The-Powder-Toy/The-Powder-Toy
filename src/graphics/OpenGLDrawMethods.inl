@@ -1,6 +1,7 @@
 #include "../data/font.h" 
 int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int b, int a)
 {
+	bool invert = false;
 	if(!strlen(s))
 		return 0;
 	int oR = r, oG = g, oB = b;
@@ -282,7 +283,7 @@ void PIXELMETHODS_CLASS::draw_line(int x, int y, int x2, int y2, int r, int g, i
 	glEnd();
 }
 
-void PIXELMETHODS_CLASS::drawrect(int x, int y, int width, int height, int r, int g, int b, int a)
+void PIXELMETHODS_CLASS::drawrect(int x, int y, int width, int height, int r, int g, int b, int a,bool hollow)
 {
 	float fx = float(x)+0.5f;
 	float fy = float(y)+0.5f;
@@ -293,7 +294,10 @@ void PIXELMETHODS_CLASS::drawrect(int x, int y, int width, int height, int r, in
 	//height-=2;
 	//width-=2;
 	glColor4ub(r, g, b, a);
-	glBegin(GL_LINE_STRIP);
+	if(hollow)
+		glBegin(GL_LINE_STRIP);
+	else
+		glBegin(GL_QUADS);
 	glVertex2f(fx, fy);
 	glVertex2f(fx+fwidth, fy);
 	glVertex2f(fx+fwidth, fy+fheight);
