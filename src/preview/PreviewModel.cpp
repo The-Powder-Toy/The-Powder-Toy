@@ -285,6 +285,7 @@ void PreviewModel::Update()
 				{
 					throw PreviewModelException("Save file corrupt or from newer version");
 				}
+				notifyCommentsPageChanged();
 			}
 			notifySaveChanged();
 
