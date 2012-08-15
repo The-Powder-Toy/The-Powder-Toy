@@ -576,7 +576,6 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 
 void Renderer::DrawWalls()
 {
-#ifndef OGLR
 	int x, y, i, j, cr, cg, cb;
 	unsigned char wt;
 	pixel pc;
@@ -593,6 +592,13 @@ void Renderer::DrawWalls()
 					continue;
 				pc = wtypes[wt].colour;
 				gc = wtypes[wt].eglow;
+#ifdef OGLR
+				int r = (pc&0x00FF0000)>>8;
+				int g = (pc&0x0000FF00)>>4;
+				int b = (pc&0x000000FF)>>0;
+				int a = 255;
+#endif
+#ifndef OGLR
 
 				// standard wall patterns
 				if (wtypes[wt].drawstyle==1)
@@ -708,8 +714,10 @@ void Renderer::DrawWalls()
 					fire_b[y][x] = cb;
 
 				}
-			}
+#else
+				this->drawrect(x*CELL,y*CELL,CELL,CELL,r,g,b,a,false);
 #endif
+			}
 }
 
 void Renderer::DrawSigns()
