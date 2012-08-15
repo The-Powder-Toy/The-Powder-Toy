@@ -47,10 +47,10 @@ void Renderer::RenderBegin()
 		std::fill(warpVid, warpVid+(VIDXRES*VIDYRES), 0);
 	}
 #endif
-	draw_air();
-	draw_grav();
+	//draw_air();
+	//draw_grav();
 	render_parts();
-	render_fire();
+	//render_fire();
 #ifndef OGLR
 	if(display_mode & DISPLAY_PERS)
 	{
@@ -71,8 +71,8 @@ void Renderer::RenderBegin()
 	}
 #endif
 	DrawWalls();
-	draw_grav_zones();
-	DrawSigns();
+	//draw_grav_zones();
+	//DrawSigns();
 #ifndef OGLR
 	if(display_mode & DISPLAY_WARP)
 	{
@@ -86,9 +86,16 @@ void Renderer::RenderBegin()
 
 void Renderer::RenderEnd()
 {
-	RenderZoom();
 #ifdef OGLI
+#ifdef OGLR
 	FinaliseParts();
+	RenderZoom();
+#else
+	RenderZoom();
+	FinaliseParts();
+#endif
+#else
+	RenderZoom();
 #endif
 }
 
@@ -341,7 +348,7 @@ void Renderer::RenderZoom()
 
 		glGetIntegerv(GL_BLEND_SRC, &origBlendSrc);
 		glGetIntegerv(GL_BLEND_DST, &origBlendDst);
-		glBlendFunc(GL_ONE, GL_ZERO);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);//glBlendFunc(GL_ONE, GL_ZERO);
 
 		glEnable( GL_TEXTURE_2D );
 		//glReadBuffer(GL_AUX0);
@@ -576,6 +583,12 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 
 void Renderer::DrawWalls()
 {
+#ifdef OGLR
+	GLint prevFbo;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
+	glTranslated(0, MENUSIZE, 0);
+
 	int x, y, i, j, cr, cg, cb;
 	unsigned char wt;
 	pixel pc;
@@ -592,13 +605,33 @@ void Renderer::DrawWalls()
 					continue;
 				pc = wtypes[wt].colour;
 				gc = wtypes[wt].eglow;
-#ifdef OGLR
-				int r = PIXR(pc);
-				int g = PIXG(pc);
-				int b = PIXB(pc);
-				int a = 255;
-#endif
-#ifndef OGLR
+
+				cr = PIXR(pc);
+				cg = PIXG(pc);
+				cb = PIXB(pc);
+
+				fillrect(x*CELL, y*CELL, CELL, CELL, cr, cg, cb, 255);
+			}
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
+	glTranslated(0, -MENUSIZE, 0);
+#else
+	int x, y, i, j, cr, cg, cb;
+	unsigned char wt;
+	pixel pc;
+	pixel gc;
+	unsigned char (*bmap)[XRES/CELL] = sim->bmap;
+	unsigned char (*emap)[XRES/CELL] = sim->emap;
+	wall_type *wtypes = sim->wtypes;
+	for (y=0; y<YRES/CELL; y++)
+		for (x=0; x<XRES/CELL; x++)
+			if (bmap[y][x])
+			{
+				wt = bmap[y][x];
+				if (wt<0 || wt>=UI_WALLCOUNT)
+					continue;
+				pc = wtypes[wt].colour;
+				gc = wtypes[wt].eglow;
 
 				// standard wall patterns
 				if (wtypes[wt].drawstyle==1)
@@ -714,10 +747,8 @@ void Renderer::DrawWalls()
 					fire_b[y][x] = cb;
 
 				}
-#else
-				this->fillrect(x*CELL, y*CELL, CELL, CELL, r, g, b, a);
-#endif
 			}
+#endif
 }
 
 void Renderer::DrawSigns()

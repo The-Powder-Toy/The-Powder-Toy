@@ -228,7 +228,7 @@ void PIXELMETHODS_CLASS::xor_rect(int x, int y, int width, int height)
 
 void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w, int h)
 {
-	/* Rewriting until better method can be found
+	/* Rewriting until better method can be found */
 	//glEnable(GL_COLOR_LOGIC_OP);
 	//glLogicOp(GL_XOR);
 	glEnable(GL_TEXTURE_2D);
@@ -254,8 +254,8 @@ void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w,
 	glDisable(GL_TEXTURE_2D);
 	//glDisable(GL_COLOR_LOGIC_OP);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-	*/
-	float old_size;
+	
+	/*float old_size;
 	glGetFloatv(GL_POINT_SIZE,&old_size);	
 
 	glPointSize(1.0);
@@ -269,7 +269,7 @@ void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w,
 		}
 	}
 	glEnd();
-	glPointSize(old_size);
+	glPointSize(old_size);*/
 }
 
 void PIXELMETHODS_CLASS::draw_line(int x, int y, int x2, int y2, int r, int g, int b, int a)
