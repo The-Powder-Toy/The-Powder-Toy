@@ -593,9 +593,9 @@ void Renderer::DrawWalls()
 				pc = wtypes[wt].colour;
 				gc = wtypes[wt].eglow;
 #ifdef OGLR
-				int r = (pc&0x00FF0000)>>8;
-				int g = (pc&0x0000FF00)>>4;
-				int b = (pc&0x000000FF)>>0;
+				int r = PIXR(pc);
+				int g = PIXG(pc);
+				int b = PIXB(pc);
 				int a = 255;
 #endif
 #ifndef OGLR
@@ -715,7 +715,7 @@ void Renderer::DrawWalls()
 
 				}
 #else
-				this->drawrect(x*CELL,y*CELL,CELL,CELL,r,g,b,a,false);
+				this->fillrect(x*CELL, y*CELL, CELL, CELL, r, g, b, a);
 #endif
 			}
 }
