@@ -51,10 +51,7 @@ int update_GEL(UPDATE_FUNC_ARGS) {
 				if (((r&0xFF)==PT_CBNW) && parts[i].tmp<100)
 				{
 					parts[i].tmp++;
-					if (rand()%4)
-						kill_part(r>>8);
-					else
-						part_change_type(r>>8, x+rx, y+ry, PT_CO2);
+					part_change_type(r>>8, x+rx, y+ry, PT_CO2);
 				}
 
 				if ((r&0xFF)==PT_SPNG && parts[i].tmp<100 && ((parts[r>>8].life+1)>parts[i].tmp))
