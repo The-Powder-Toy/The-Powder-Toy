@@ -5,6 +5,7 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int 
 		return 0;
 	int oR = r, oG = g, oB = b;
 	int width, height;
+	bool invert = false;
 	Graphics::textsize(s, width, height);
 	VideoBuffer texture(width, height);
 	int characterX = 0, characterY = 0;
