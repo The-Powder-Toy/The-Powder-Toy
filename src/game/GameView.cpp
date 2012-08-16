@@ -1243,6 +1243,12 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'f':
 		c->FrameStep();
 		break;
+	case 'g':
+		if(shift)
+			c->AdjustGridSize(-1);
+		else
+			c->AdjustGridSize(1);
+		break;
 	case 'd':
 		showDebug = !showDebug;
 		break;
@@ -1345,6 +1351,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'i':
 		if(ctrl)
 			c->Install();
+		else
+			c->InvertAirSim();
 		break;
 	}
 

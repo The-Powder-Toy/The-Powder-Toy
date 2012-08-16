@@ -231,6 +231,20 @@ void GameController::Install()
 #endif
 }
 
+void GameController::AdjustGridSize(int direction)
+{
+	if(direction > 0)
+		gameModel->GetRenderer()->SetGridSize((gameModel->GetRenderer()->GetGridSize()+1)%10);
+	else
+		gameModel->GetRenderer()->SetGridSize((gameModel->GetRenderer()->GetGridSize()+9)%10);
+}
+
+void GameController::InvertAirSim()
+{
+	gameModel->GetSimulation()->air->Invert();
+}
+
+
 void GameController::AdjustBrushSize(int direction, bool logarithmic, bool xAxis, bool yAxis)
 {
 	if(xAxis && yAxis)

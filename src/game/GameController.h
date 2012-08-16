@@ -69,6 +69,8 @@ public:
 
 	void Install();
 
+	void AdjustGridSize(int direction);
+	void InvertAirSim();
 	void LoadRenderPreset(RenderPreset preset);
 	void SetZoomEnabled(bool zoomEnable);
 	void SetZoomPosition(ui::Point position);

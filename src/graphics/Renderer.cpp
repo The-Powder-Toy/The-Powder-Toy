@@ -1086,17 +1086,17 @@ void Renderer::render_parts()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 	glTranslated(0, MENUSIZE, 0);
 #else
-	/*if (GRID_MODE)//draws the grid
+	if (gridSize)//draws the grid
 	{
 		for (ny=0; ny<YRES; ny++)
 			for (nx=0; nx<XRES; nx++)
 			{
-				if (ny%(4*GRID_MODE)==0)
+				if (ny%(4*gridSize)==0)
 					blendpixel(nx, ny, 100, 100, 100, 80);
-				if (nx%(4*GRID_MODE)==0)
+				if (nx%(4*gridSize)==0)
 					blendpixel(nx, ny, 100, 100, 100, 80);
 			}
-	}*/
+	}
 #endif
 	for(i = 0; i<=sim->parts_lastActiveIndex; i++) {
 		if (sim->parts[i].type) {
@@ -2284,7 +2284,8 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	mousePosY(-1),
 	display_mode(0),
 	render_mode(0),
-	colour_mode(0)
+	colour_mode(0),
+	gridSize(0)
 {
 	this->g = g;
 	this->sim = sim;

@@ -29,6 +29,7 @@ public:
 	void update_airh(void);
 	void update_air(void);
 	void Clear();
+	void Invert();
 	Air();
 };
 

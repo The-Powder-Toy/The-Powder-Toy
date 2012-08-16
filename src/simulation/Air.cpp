@@ -1,4 +1,5 @@
 #include <cmath>
+#include <algorithm>
 #include "Config.h"
 #include "Air.h"
 //#include <powder.h>
@@ -295,6 +296,19 @@ void Air::update_air(void)
 		memcpy(pv, opv, sizeof(pv));
 	}
 }
+
+void Air::Invert()
+{
+	int nx, ny;
+	for (nx = 0; nx<XRES/CELL; nx++)
+		for (ny = 0; ny<YRES/CELL; ny++)
+		{
+			pv[ny][nx] = -pv[ny][nx];
+			vx[ny][nx] = -vx[ny][nx];
+			vy[ny][nx] = -vy[ny][nx];
+		}
+}
+
 Air::Air():
 	airMode(0)
 {

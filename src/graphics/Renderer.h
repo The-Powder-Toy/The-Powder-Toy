@@ -131,12 +131,16 @@ public:
 	void SetColourMode(unsigned int mode);
 	unsigned int GetColourMode();
 
+	int GetGridSize() { return gridSize; }
+	void SetGridSize(int value) { gridSize = value; }
+
 	static VideoBuffer * WallIcon(int wallID, int width, int height);
 
 	Renderer(Graphics * g, Simulation * sim);
 	~Renderer();
 
 private:
+	int gridSize;
 #ifdef OGLR
 	GLuint zoomTex, airBuf, fireAlpha, glowAlpha, blurAlpha, partsFboTex, partsFbo, partsTFX, partsTFY, airPV, airVY, airVX;
 	GLuint fireProg, airProg_Pressure, airProg_Velocity, airProg_Cracker, lensProg;
