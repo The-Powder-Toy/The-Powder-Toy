@@ -57,6 +57,7 @@ private:
 	bool colourSelector;
 	ui::Colour colour;
 	float toolStrength;
+	std::deque<Snapshot*> history;
 
 	std::string infoTip;
 	std::string toolTip;
@@ -99,6 +100,9 @@ public:
 
 	void BuildMenus();
 	void BuildQuickOptionMenu();
+
+	std::deque<Snapshot*> GetHistory();
+	void SetHistory(std::deque<Snapshot*> newHistory);
 
 	void UpdateQuickOptions();
 

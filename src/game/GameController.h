@@ -69,6 +69,9 @@ public:
 
 	void Install();
 
+	void HistoryRestore();
+	void HistorySnapshot();
+
 	void AdjustGridSize(int direction);
 	void InvertAirSim();
 	void LoadRenderPreset(RenderPreset preset);

@@ -23,6 +23,7 @@
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
 
+class Snapshot;
 class Element;
 class SimTool;
 class Brush;
@@ -122,6 +123,10 @@ public:
 	GameSave * Save();
 	GameSave * Save(int x1, int y1, int x2, int y2);
 	SimulationSample Get(int x, int y);
+
+	Snapshot * CreateSnapshot();
+	void Restore(const Snapshot & snap);
+
 	inline int is_blocking(int t, int x, int y);
 	inline int is_boundary(int pt, int x, int y);
 	inline int find_next_boundary(int pt, int *x, int *y, int dm, int *em);

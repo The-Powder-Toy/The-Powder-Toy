@@ -253,6 +253,15 @@ void GameModel::BuildMenus()
 	notifyLastToolChanged();
 }
 
+std::deque<Snapshot*> GameModel::GetHistory()
+{
+	return history;
+}
+void GameModel::SetHistory(std::deque<Snapshot*> newHistory)
+{
+	history = newHistory;
+}
+
 void GameModel::SetVote(int direction)
 {
 	if(currentSave)

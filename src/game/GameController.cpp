@@ -23,6 +23,7 @@
 #include "save/LocalSaveActivity.h"
 #include "save/ServerSaveActivity.h"
 #include "interface/Keys.h"
+#include "simulation/Snapshot.h"
 
 using namespace std;
 
@@ -185,6 +186,40 @@ GameController::~GameController()
 	}
 	delete gameModel;
 	delete gameView;
+}
+
+void GameController::HistoryRestore()
+{
+	std::deque<Snapshot*> history = gameModel->GetHistory();
+	if(history.size())
+	{
+		Snapshot * snap = history.back();
+		gameModel->GetSimulation()->Restore(*snap);
+		if(history.size()>1)
+		{
+			history.pop_back();
+			delete snap;
+			gameModel->SetHistory(history);
+		}
+	}
+}
+
+void GameController::HistorySnapshot()
+{
+	std::deque<Snapshot*> history = gameModel->GetHistory();
+	Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();
+	if(newSnap)
+	{
+		if(history.size() >= 1) //History limit is current 1
+		{
+			Snapshot * snap = history.front();
+			history.pop_front();
+			//snap->Particles.clear();
+			delete snap;
+		}
+		history.push_back(newSnap);
+		gameModel->SetHistory(history);
+	}
 }
 
 GameView * GameController::GetView()

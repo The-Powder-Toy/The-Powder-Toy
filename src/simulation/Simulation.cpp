@@ -16,6 +16,7 @@
 #include "game/Brush.h"
 #include "client/GameSave.h"
 #include "Sample.h"
+#include "Snapshot.h"
 //#include "StorageClasses.h"
 
 #undef LUACONSOLE
@@ -212,6 +213,44 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 	}
 
 	return newSave;
+}
+
+Snapshot * Simulation::CreateSnapshot()
+{
+	Snapshot * snap = new Snapshot();
+	snap->AirPressure.insert(snap->AirPressure.begin(), &pv[0][0], &pv[0][0]+((XRES/CELL)*(YRES/CELL)));
+	snap->AirVelocityX.insert(snap->AirVelocityX.begin(), &vx[0][0], &vx[0][0]+((XRES/CELL)*(YRES/CELL)));
+	snap->AirVelocityY.insert(snap->AirVelocityY.begin(), &vy[0][0], &vy[0][0]+((XRES/CELL)*(YRES/CELL)));
+	snap->Particles.insert(snap->Particles.begin(), parts, parts+NPART);
+	snap->PortalParticles.insert(snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[CHANNELS-1][8-1][80-1]);
+	snap->WirelessData.insert(snap->WirelessData.begin(), &wireless[0][0], &wireless[CHANNELS-1][2-1]);
+	snap->GravVelocityX.insert(snap->GravVelocityX.begin(), gravx, gravx+((XRES/CELL)*(YRES/CELL)));
+	snap->GravVelocityY.insert(snap->GravVelocityY.begin(), gravy, gravy+((XRES/CELL)*(YRES/CELL)));
+	snap->GravValue.insert(snap->GravValue.begin(), gravp, gravp+((XRES/CELL)*(YRES/CELL)));
+	snap->GravMap.insert(snap->GravMap.begin(), gravmap, gravmap+((XRES/CELL)*(YRES/CELL)));
+	snap->BlockMap.insert(snap->BlockMap.begin(), &bmap[0][0], &bmap[0][0]+((XRES/CELL)*(YRES/CELL)));
+	snap->ElecMap.insert(snap->ElecMap.begin(), &emap[0][0], &emap[0][0]+((XRES/CELL)*(YRES/CELL)));
+	snap->FanVelocityX.insert(snap->FanVelocityX.begin(), &fvx[0][0], &fvx[0][0]+((XRES/CELL)*(YRES/CELL)));
+	snap->FanVelocityY.insert(snap->FanVelocityY.begin(), &fvy[0][0], &fvy[0][0]+((XRES/CELL)*(YRES/CELL)));
+	return snap;
+}
+
+void Simulation::Restore(const Snapshot & snap)
+{
+	std::copy(snap.AirPressure.begin(), snap.AirPressure.end(), &pv[0][0]);
+	std::copy(snap.AirVelocityX.begin(), snap.AirVelocityX.end(), &vx[0][0]);
+	std::copy(snap.AirVelocityY.begin(), snap.AirVelocityY.end(), &vy[0][0]);
+	std::copy(snap.Particles.begin(), snap.Particles.end(), parts);
+	std::copy(snap.PortalParticles.begin(), snap.PortalParticles.end(), &portalp[0][0][0]);
+	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0]);
+	std::copy(snap.GravVelocityX.begin(), snap.GravVelocityX.end(), gravx);
+	std::copy(snap.GravVelocityY.begin(), snap.GravVelocityY.end(), gravy);
+	std::copy(snap.GravValue.begin(), snap.GravValue.end(), gravp);
+	std::copy(snap.GravMap.begin(), snap.GravMap.end(), gravmap);
+	std::copy(snap.BlockMap.begin(), snap.BlockMap.end(), &bmap[0][0]);
+	std::copy(snap.ElecMap.begin(), snap.ElecMap.end(), &emap[0][0]);
+	std::copy(snap.FanVelocityX.begin(), snap.FanVelocityX.end(), &fvx[0][0]);
+	std::copy(snap.FanVelocityY.begin(), snap.FanVelocityY.end(), &fvy[0][0]);
 }
 
 /*int Simulation::Load(unsigned char * data, int dataLength)
