@@ -14,7 +14,6 @@ static const char *introTextData =
     "\n\boUse 'Z' for a zoom tool. Click to make the drawable zoom window stay around. Use the wheel to change the zoom strength\n"
     "Use 'S' to save parts of the window as 'stamps'.\n"
     "'L' will load the most recent stamp, 'K' shows a library of stamps you saved.\n"
-    "'C' will cycle the display mode (Fire, Blob, Velocity, etc.). The numbers on the keyboard do the same\n"
     "Use the mouse scroll wheel to change the tool size for particles.\n"
     "The spacebar can be used to pause physics.\n"
     "'P' will take a screenshot and save it into the current directory.\n"
