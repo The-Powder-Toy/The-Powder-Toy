@@ -12,6 +12,16 @@
 
 using namespace std;
 
+namespace ui
+{
+	class RichLabel;
+	class SaveButton;
+	class Button;
+	class Label;
+	class Spinner;
+	class Textbox;
+}
+
 class SearchModel;
 class SearchController;
 
@@ -28,7 +38,7 @@ private:
 	ui::Textbox * searchField;
 	ui::Label * infoLabel;
 	ui::Label * tagsLabel;
-	ui::Label * motdLabel;
+	ui::RichLabel * motdLabel;
 	ui::Button * sortButton;
 	ui::Button * ownButton;
 	ui::Spinner * loadingSpinner;

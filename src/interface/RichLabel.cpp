@@ -1,0 +1,183 @@
+#include <vector>
+#include <exception>
+
+#include "RichLabel.h"
+#include "Misc.h"
+#include "interface/Point.h"
+#include "interface/Component.h"
+#include "graphics/Graphics.h"
+
+using namespace ui;
+
+struct RichTextParseException: public std::exception {
+	std::string message;
+public:
+	RichTextParseException(std::string message_ = "Parse error"): message(message_) {}
+	const char * what() const throw()
+	{
+		return message.c_str();
+	}
+	~RichTextParseException() throw() {};
+};
+
+RichLabel::RichLabel(Point position, Point size, std::string labelText):
+	Component(position, size),
+	textSource(labelText)
+{
+	updateRichText();
+}
+
+RichLabel::~RichLabel()
+{
+
+}
+
+void RichLabel::updateRichText()
+{
+	regions.clear();
+
+	enum State { ReadText, ReadData, ReadRegion, ReadDataStart };
+	State state = ReadText;
+
+	int currentDataPos = 0;
+	char * currentData = new char[textSource.length()+1];
+
+	int finalTextPos = 0;
+	char * finalText = new char[textSource.length()+1];
+
+	int originalTextPos = 0;
+	char * originalText = new char[textSource.length()+1];
+	std::copy(textSource.begin(), textSource.end(), originalText);
+
+	int stackPos = -1;
+	RichTextRegion * regionsStack = new RichTextRegion[256];
+
+	try
+	{
+		while(originalText[originalTextPos])
+		{
+			char current = originalText[originalTextPos];
+
+			if(state == ReadText)
+			{
+				if(current == '{')
+				{
+					if(stackPos > 255)
+						throw RichTextParseException("Too many nested regions");
+					stackPos++;
+					regionsStack[stackPos].start = finalTextPos;
+					regionsStack[stackPos].finish = finalTextPos;
+					state = ReadRegion;
+				}
+				else if(current == '}')
+				{
+					if(stackPos >= 0)
+					{
+						currentData[currentDataPos] = 0;
+						regionsStack[stackPos].actionData = std::string(currentData);
+						regions.push_back(regionsStack[stackPos]);
+						stackPos--;
+					}
+					else
+					{
+						throw RichTextParseException("Unexpected '}'");
+					}
+				}
+				else
+				{
+					finalText[finalTextPos++] = current;
+					if(stackPos >= 0)
+					{
+						regionsStack[stackPos].finish = finalTextPos;
+					}
+				}
+			}
+			else if(state == ReadData)
+			{
+				if(current == '|')
+				{
+					state = ReadText;
+				}
+				else
+				{
+					currentData[currentDataPos++] = current;
+				}
+			}
+			else if(state == ReadDataStart)
+			{
+				if(current != ':')
+				{
+					throw RichTextParseException("Expected ':'");
+				}
+				state = ReadData;
+				currentDataPos = 0;
+			}
+			else if(state == ReadRegion)
+			{
+				if(stackPos >= 0)
+				{
+					regionsStack[stackPos].action = current;
+					state = ReadDataStart;
+				}
+				else
+				{
+					throw RichTextParseException();
+				}
+			}
+
+			originalTextPos++;
+		}
+		finalText[finalTextPos] = 0;
+		displayText = std::string(finalText);
+	}
+	catch (const RichTextParseException & e)
+	{
+		displayText = "[Parse exception: " + std::string(e.what()) + "]";
+	}
+	delete[] currentData;
+	delete[] finalText;
+	delete[] originalText;
+	delete[] regionsStack;
+
+	TextPosition(displayText);
+}
+
+void RichLabel::SetText(std::string text)
+{
+	textSource = text;
+	updateRichText();
+}
+
+std::string RichLabel::GetDisplayText()
+{
+	return displayText;
+}
+
+std::string RichLabel::GetText()
+{
+	return textSource;
+}
+
+void RichLabel::Draw(const Point& screenPos)
+{
+	Graphics * g = ui::Engine::Ref().g;
+	ui::Colour textColour = Appearance.TextInactive;
+	g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, displayText, textColour.Red, textColour.Green, textColour.Blue, 255);
+}
+
+void RichLabel::OnMouseClick(int x, int y, unsigned button)
+{
+	int cursorPosition = Graphics::CharIndexAtPosition((char*)displayText.c_str(), x-textPosition.X, y-textPosition.Y);
+	for(std::vector<RichTextRegion>::iterator iter = regions.begin(), end = regions.end(); iter != end; ++iter)
+	{
+		if((*iter).start <= cursorPosition && (*iter).finish >= cursorPosition)
+		{
+			switch((*iter).action)
+			{
+				case 'a':
+					OpenURI((*iter).actionData);
+				break;
+			}
+		}
+	}
+}

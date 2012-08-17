@@ -5,6 +5,7 @@
 #include "interface/Keys.h"
 #include "interface/SaveButton.h"
 #include "interface/Label.h"
+#include "interface/RichLabel.h"
 #include "interface/Textbox.h"
 #include "Misc.h"
 
@@ -21,7 +22,7 @@ SearchView::SearchView():
 	previousButton = new ui::Button(ui::Point(1, YRES+MENUSIZE-18), ui::Point(50, 16), "\x96 Prev");
 	infoLabel  = new ui::Label(ui::Point(51, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-102, 16), "Loading...");
 	tagsLabel  = new ui::Label(ui::Point(51, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-102, 16), "\boPopular Tags:");
-	motdLabel  = new ui::Label(ui::Point(51, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-102, 16), Client::Ref().GetMessageOfTheDay());
+	motdLabel  = new ui::RichLabel(ui::Point(51, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-102, 16), Client::Ref().GetMessageOfTheDay());
 
 	class SearchAction : public ui::TextboxAction
 	{

@@ -31,6 +31,7 @@
 #include "interface/Keys.h"
 
 #include "client/GameSave.h"
+#include "client/SaveFile.h"
 #include "simulation/SaveRenderer.h"
 #include "client/Client.h"
 #include "Misc.h"
