@@ -127,6 +127,10 @@ void RichLabel::updateRichText()
 
 			originalTextPos++;
 		}
+
+		if(stackPos != -1)
+			throw RichTextParseException("Unclosed region");
+
 		finalText[finalTextPos] = 0;
 		displayText = std::string(finalText);
 	}
