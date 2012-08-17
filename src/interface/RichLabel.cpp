@@ -39,7 +39,7 @@ void RichLabel::updateRichText()
 	displayText = "";
 
 	if(textSource.length())
-		{
+	{
 
 		enum State { ReadText, ReadData, ReadRegion, ReadDataStart };
 		State state = ReadText;
@@ -55,6 +55,7 @@ void RichLabel::updateRichText()
 		int originalTextPos = 0;
 		char * originalText = new char[textSource.length()+1];
 		std::copy(textSource.begin(), textSource.end(), originalText);
+		originalText[textSource.length()+1] = 0;
 
 		int stackPos = -1;
 		RichTextRegion * regionsStack = new RichTextRegion[256];
