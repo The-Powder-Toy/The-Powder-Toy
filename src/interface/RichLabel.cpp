@@ -22,7 +22,8 @@ public:
 
 RichLabel::RichLabel(Point position, Point size, std::string labelText):
 	Component(position, size),
-	textSource(labelText)
+	textSource(labelText),
+	displayText("")
 {
 	updateRichText();
 }
@@ -35,114 +36,123 @@ RichLabel::~RichLabel()
 void RichLabel::updateRichText()
 {
 	regions.clear();
+	displayText = "";
 
-	enum State { ReadText, ReadData, ReadRegion, ReadDataStart };
-	State state = ReadText;
-
-	int currentDataPos = 0;
-	char * currentData = new char[textSource.length()+1];
-
-	int finalTextPos = 0;
-	char * finalText = new char[textSource.length()+1];
-
-	int originalTextPos = 0;
-	char * originalText = new char[textSource.length()+1];
-	std::copy(textSource.begin(), textSource.end(), originalText);
-
-	int stackPos = -1;
-	RichTextRegion * regionsStack = new RichTextRegion[256];
-
-	try
-	{
-		while(originalText[originalTextPos])
+	if(textSource.length())
 		{
-			char current = originalText[originalTextPos];
 
-			if(state == ReadText)
+		enum State { ReadText, ReadData, ReadRegion, ReadDataStart };
+		State state = ReadText;
+
+		int currentDataPos = 0;
+		char * currentData = new char[textSource.length()+1];
+		std::fill(currentData, currentData+textSource.length()+1, 0);
+
+		int finalTextPos = 0;
+		char * finalText = new char[textSource.length()+1];
+		std::fill(finalText, finalText+textSource.length()+1, 0);
+
+		int originalTextPos = 0;
+		char * originalText = new char[textSource.length()+1];
+		std::copy(textSource.begin(), textSource.end(), originalText);
+
+		int stackPos = -1;
+		RichTextRegion * regionsStack = new RichTextRegion[256];
+
+		try
+		{
+			while(originalText[originalTextPos])
 			{
-				if(current == '{')
+				char current = originalText[originalTextPos];
+
+				if(state == ReadText)
 				{
-					if(stackPos > 255)
-						throw RichTextParseException("Too many nested regions");
-					stackPos++;
-					regionsStack[stackPos].start = finalTextPos;
-					regionsStack[stackPos].finish = finalTextPos;
-					state = ReadRegion;
-				}
-				else if(current == '}')
-				{
-					if(stackPos >= 0)
+					if(current == '{')
 					{
-						currentData[currentDataPos] = 0;
-						regionsStack[stackPos].actionData = std::string(currentData);
-						regions.push_back(regionsStack[stackPos]);
-						stackPos--;
+						if(stackPos > 255)
+							throw RichTextParseException("Too many nested regions");
+						stackPos++;
+						regionsStack[stackPos].start = finalTextPos;
+						regionsStack[stackPos].finish = finalTextPos;
+						state = ReadRegion;
+					}
+					else if(current == '}')
+					{
+						if(stackPos >= 0)
+						{
+							currentData[currentDataPos] = 0;
+							regionsStack[stackPos].actionData = std::string(currentData);
+							regions.push_back(regionsStack[stackPos]);
+							stackPos--;
+						}
+						else
+						{
+							throw RichTextParseException("Unexpected '}'");
+						}
 					}
 					else
 					{
-						throw RichTextParseException("Unexpected '}'");
+						finalText[finalTextPos++] = current;
+						finalText[finalTextPos] = 0;
+						if(stackPos >= 0)
+						{
+							regionsStack[stackPos].finish = finalTextPos;
+						}
 					}
 				}
-				else
+				else if(state == ReadData)
 				{
-					finalText[finalTextPos++] = current;
+					if(current == '|')
+					{
+						state = ReadText;
+					}
+					else
+					{
+						currentData[currentDataPos++] = current;
+						currentData[currentDataPos] = 0;
+					}
+				}
+				else if(state == ReadDataStart)
+				{
+					if(current != ':')
+					{
+						throw RichTextParseException("Expected ':'");
+					}
+					state = ReadData;
+					currentDataPos = 0;
+				}
+				else if(state == ReadRegion)
+				{
 					if(stackPos >= 0)
 					{
-						regionsStack[stackPos].finish = finalTextPos;
+						regionsStack[stackPos].action = current;
+						state = ReadDataStart;
+					}
+					else
+					{
+						throw RichTextParseException();
 					}
 				}
-			}
-			else if(state == ReadData)
-			{
-				if(current == '|')
-				{
-					state = ReadText;
-				}
-				else
-				{
-					currentData[currentDataPos++] = current;
-				}
-			}
-			else if(state == ReadDataStart)
-			{
-				if(current != ':')
-				{
-					throw RichTextParseException("Expected ':'");
-				}
-				state = ReadData;
-				currentDataPos = 0;
-			}
-			else if(state == ReadRegion)
-			{
-				if(stackPos >= 0)
-				{
-					regionsStack[stackPos].action = current;
-					state = ReadDataStart;
-				}
-				else
-				{
-					throw RichTextParseException();
-				}
+
+				originalTextPos++;
 			}
 
-			originalTextPos++;
+			if(stackPos != -1)
+				throw RichTextParseException("Unclosed region");
+
+			finalText[finalTextPos] = 0;
+			displayText = std::string(finalText);
 		}
-
-		if(stackPos != -1)
-			throw RichTextParseException("Unclosed region");
-
-		finalText[finalTextPos] = 0;
-		displayText = std::string(finalText);
+		catch (const RichTextParseException & e)
+		{
+			displayText = "\br[Parse exception: " + std::string(e.what()) + "]";
+			regions.clear();
+		}
+		delete[] currentData;
+		delete[] finalText;
+		delete[] originalText;
+		delete[] regionsStack;
 	}
-	catch (const RichTextParseException & e)
-	{
-		displayText = "[Parse exception: " + std::string(e.what()) + "]";
-	}
-	delete[] currentData;
-	delete[] finalText;
-	delete[] originalText;
-	delete[] regionsStack;
-
 	TextPosition(displayText);
 }
 

@@ -58,7 +58,8 @@ extern "C"
 Client::Client():
 	authUser(0, ""),
 	updateAvailable(false),
-	versionCheckRequest(NULL)
+	versionCheckRequest(NULL),
+	messageOfTheDay("")
 {
 	int i = 0;
 	for(i = 0; i < THUMB_CACHE_SIZE; i++)
