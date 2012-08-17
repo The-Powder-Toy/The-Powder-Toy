@@ -43,6 +43,12 @@ private:
 	deque<string> consoleLog;
 	vector<GameView*> observers;
 	vector<Tool*> toolList;
+
+	//All tools that are associated with elements
+	vector<Tool*> elementTools;
+	//Tools that are present in elementTools, but don't have an associated menu and need to be freed manually
+	vector<Tool*> extraElementTools;
+
 	vector<Menu*> menuList;
 	vector<QuickOption*> quickOptions;
 	Menu * activeMenu;
@@ -118,8 +124,13 @@ public:
 	void SetSave(SaveInfo * newSave);
 	void SetSaveFile(SaveFile * newSave);
 	void AddObserver(GameView * observer);
+
+	//Get an element tool from an element ID
+	Tool * GetElementTool(int elementID);
+
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int selection, Tool * tool);
+
 	bool GetPaused();
 	void SetPaused(bool pauseState);
 	bool GetDecoration();

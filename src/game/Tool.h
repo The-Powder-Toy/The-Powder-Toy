@@ -29,6 +29,7 @@ protected:
 	int resolution;
 public:
 	Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	int GetToolID() { return toolID; }
 	string GetName();
 	string GetDescription();
 	int GetResolution() { return resolution; }
@@ -56,6 +57,26 @@ public:
 	virtual ~SignTool() {}
 	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+};
+
+class GameModel;
+
+class SampleTool: public Tool
+{
+	GameModel * gameModel;
+public:
+	SampleTool(GameModel * model):
+	Tool(0, "SMPL", "Sample an element on the screen", 0, 0, 0, SampleTool::GetIcon),
+	gameModel(model)
+	{
+	}
+	static VideoBuffer * GetIcon(int toolID, int width, int height);
+	virtual ~SampleTool() {}
+	virtual void Click(Simulation * sim, Brush * brush, ui::Point position) { }
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }

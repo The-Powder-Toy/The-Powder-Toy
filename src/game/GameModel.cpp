@@ -109,6 +109,10 @@ GameModel::~GameModel()
 	{
 		delete menuList[i];
 	}
+	for(std::vector<Tool*>::iterator iter = extraElementTools.begin(), end = extraElementTools.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
 	for(int i = 0; i < brushList.size(); i++)
 	{
 		delete brushList[i];
@@ -163,6 +167,13 @@ void GameModel::BuildMenus()
 	menuList.clear();
 	toolList.clear();
 
+	for(std::vector<Tool*>::iterator iter = extraElementTools.begin(), end = extraElementTools.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
+	extraElementTools.clear();
+	elementTools.clear();
+
 	//Create menus
 	for(int i = 0; i < SC_TOTAL; i++)
 	{
@@ -172,7 +183,7 @@ void GameModel::BuildMenus()
 	//Build menus from Simulation elements
 	for(int i = 0; i < PT_NUM; i++)
 	{
-		if(sim->elements[i].MenuSection < 12 && sim->elements[i].Enabled && sim->elements[i].MenuVisible)
+		if(sim->elements[i].Enabled)
 		{
 			Tool * tempTool;
 			if(i == PT_LIGH)
@@ -191,7 +202,16 @@ void GameModel::BuildMenus()
 			{
 				tempTool = new ElementTool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), sim->elements[i].IconGenerator);
 			}
-			menuList[sim->elements[i].MenuSection]->AddTool(tempTool);
+
+			if(sim->elements[i].MenuSection < 12 && sim->elements[i].MenuVisible)
+			{
+				menuList[sim->elements[i].MenuSection]->AddTool(tempTool);
+			}
+			else
+			{
+				extraElementTools.push_back(tempTool);
+			}
+			elementTools.push_back(tempTool);
 		}
 	}
 
@@ -211,6 +231,7 @@ void GameModel::BuildMenus()
 	}
 	
 	//Add special sign and prop tools
+	menuList[SC_TOOL]->AddTool(new SampleTool(this));
 	menuList[SC_TOOL]->AddTool(new SignTool());
 	menuList[SC_TOOL]->AddTool(new PropertyTool());
 	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", "Create air movement", 64, 64, 64));
@@ -240,7 +261,7 @@ void GameModel::BuildMenus()
 	//Set default tools
 	activeTools[0] = menuList[SC_POWDERS]->GetToolList()[0];
 	activeTools[1] = menuList[SC_SPECIAL]->GetToolList()[0];
-	activeTools[2] = NULL;
+	activeTools[2] = menuList[SC_TOOL]->GetToolList()[0];
 	lastTool = activeTools[0];
 
 	//Set default menu
@@ -345,6 +366,17 @@ vector<Tool*> GameModel::GetToolList()
 Menu * GameModel::GetActiveMenu()
 {
 	return activeMenu;
+}
+
+Tool * GameModel::GetElementTool(int elementID)
+{
+	std::cout << elementID << std::endl;
+	for(std::vector<Tool*>::iterator iter = elementTools.begin(), end = elementTools.end(); iter != end; ++iter)
+	{
+		if((*iter)->GetToolID() == elementID)
+			return *iter;
+	}
+	return NULL;
 }
 
 Tool * GameModel::GetActiveTool(int selection)
