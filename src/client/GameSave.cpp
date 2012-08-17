@@ -951,6 +951,16 @@ void GameSave::readOPS(char * data, int dataLength)
 			}
 		}
 	}
+
+	if(tempSigns.size())
+	{
+		for (int i = 0; i < tempSigns.size(); i++)
+		{
+			if(signs.size() == MAXSIGNS)
+				break;
+			signs.push_back(tempSigns[i]);
+		}
+	}
 	goto fin;
 fail:
 	//Clean up everything
@@ -1554,7 +1564,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	
 	for (i = 0; i < tempSigns.size(); i++)
 	{
-		if(i == MAXSIGNS)
+		if(signs.size() == MAXSIGNS)
 			break;
 		signs.push_back(tempSigns[i]);
 	}
