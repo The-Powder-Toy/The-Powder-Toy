@@ -35,6 +35,12 @@ class GameView: public ui::Window
 {
 private:
 	DrawMode drawMode;
+	
+	bool doScreenshot;
+	bool recording;
+	int screenshotIndex;
+	int recordingIndex;
+
 	bool isMouseDown;
 	bool zoomEnabled;
 	bool zoomCursorFixed;
@@ -113,6 +119,9 @@ private:
 	void changeColourText();
 	virtual ui::Point lineSnapCoords(ui::Point point1, ui::Point point2);
 	virtual ui::Point rectSnapCoords(ui::Point point1, ui::Point point2);
+
+	void screenshot();
+	void record();
 
 	void enableShiftBehaviour();
 	void disableShiftBehaviour();

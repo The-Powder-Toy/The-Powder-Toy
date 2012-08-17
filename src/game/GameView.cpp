@@ -175,7 +175,11 @@ GameView::GameView():
 	showDebug(false),
 	introText(2048),
 	introTextMessage(introTextData),
-	wallBrush(false)
+	wallBrush(false),
+	doScreenshot(false),
+	recording(false),
+	screenshotIndex(0),
+	recordingIndex(0)
 {
 	
 	int currentX = 1;
@@ -927,6 +931,35 @@ void GameView::NotifyBrushChanged(GameModel * sender)
 	activeBrush = sender->GetBrush();
 }
 
+void GameView::screenshot()
+{
+	doScreenshot = true;
+}
+
+void GameView::record()
+{
+	if(recording)
+	{
+		recording = false;
+	}
+	else
+	{
+		class RecordingConfirmation: public ConfirmDialogueCallback {
+		public:
+			GameView * v;
+			RecordingConfirmation(GameView * v): v(v) {}
+			virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+				if (result == ConfirmPrompt::ResultOkay)
+				{
+					v->recording = true;
+				}
+			}
+			virtual ~RecordingConfirmation() { }
+		};
+		new ConfirmPrompt("Recording", "You're about to start recording all drawn frames. This may use a load of hard disk space.", new RecordingConfirmation(this));
+	}
+}
+
 void GameView::setToolButtonOffset(int offset)
 {
 	int offset_ = offset;
@@ -1245,6 +1278,12 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		break;
 	case '`':
 		c->ShowConsole();
+		break;
+	case 'p':
+		screenshot();
+		break;
+	case 'r':
+		record();
 		break;
 	case 'e':
 		c->OpenElementSearch();
@@ -1782,6 +1821,22 @@ void GameView::OnDraw()
 		}
 		ren->RenderEnd();
 
+		if(doScreenshot)
+		{
+			VideoBuffer screenshot(ren->DumpFrame());
+			std::vector<char> data = format::VideoBufferToPNG(screenshot);
+			Client::Ref().WriteFile(data, "screenshot_" + format::NumberToString<int>(screenshotIndex++) + ".png");
+			doScreenshot = false;
+		}
+
+		if(recording)
+		{
+			VideoBuffer screenshot(ren->DumpFrame());
+			std::vector<char> data = format::VideoBufferToPPM(screenshot);
+			Client::Ref().WriteFile(data, "frame_" + format::NumberToString<int>(recordingIndex++) + ".ppm");
+		}
+
+
 		if(selectMode!=SelectNone)
 		{
 			if(selectMode==PlaceSave)
@@ -1856,7 +1911,17 @@ void GameView::OnDraw()
 		}
 	}
 
-	if(showHud && !introText)
+	if(recording)
+	{
+		std::stringstream sampleInfo;
+		sampleInfo << recordingIndex;
+		sampleInfo << ". \x8E REC";
+
+		int textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
+		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 50, 20, 255);
+	}
+	else if(showHud && !introText)
 	{
 		//Draw info about simulation under cursor
 		int wavelengthGfx = 0;

@@ -24,5 +24,6 @@ namespace format
 	std::string UnixtimeToDate(time_t unixtime, std::string dateFomat = "%d %b %Y");
 	std::string UnixtimeToDateMini(time_t unixtime);
 	std::vector<char> VideoBufferToPNG(const VideoBuffer & vidBuf);
+	std::vector<char> VideoBufferToPPM(const VideoBuffer & vidBuf);
 	unsigned long CalculateCRC(unsigned char * data, int length);
 }

@@ -2,7 +2,10 @@
 #include <ctime>
 #include <string>
 #include <stdexcept>
+#include <iostream>
+#include <iterator>
 #include <zlib.h>
+#include <stdio.h>
 #include "Format.h"
 #include "graphics/Graphics.h"
 
@@ -35,6 +38,30 @@ std::string format::UnixtimeToDateMini(time_t unixtime)
 	{
 		return UnixtimeToDate(unixtime, "%H:%M:%S");
 	}
+}
+
+std::vector<char> format::VideoBufferToPPM(const VideoBuffer & vidBuf)
+{
+	std::vector<char> data;
+	char buffer[256];
+	sprintf(buffer, "P6\n%d %d\n255\n", vidBuf.Width, vidBuf.Height);
+	data.insert(data.end(), buffer, buffer+strlen(buffer));
+
+	unsigned char * currentRow = new unsigned char[vidBuf.Width*3];
+	for(int y = 0; y < vidBuf.Height; y++)
+	{
+		int rowPos = 0;
+		for(int x = 0; x < vidBuf.Width; x++)
+		{
+			currentRow[rowPos++] = PIXR(vidBuf.Buffer[(y*vidBuf.Width)+x]);
+			currentRow[rowPos++] = PIXG(vidBuf.Buffer[(y*vidBuf.Width)+x]);
+			currentRow[rowPos++] = PIXB(vidBuf.Buffer[(y*vidBuf.Width)+x]);
+		}
+		data.insert(data.end(), currentRow, currentRow+(vidBuf.Width*3));
+	}
+	delete currentRow;
+
+	return data;
 }
 
 struct PNGChunk
