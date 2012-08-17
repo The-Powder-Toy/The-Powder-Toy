@@ -531,7 +531,7 @@ int main(int argc, char * argv[])
 		engine->Tick();
 		engine->Draw();
 		
-		if(SDL_GetTicks()-lastTick>500)
+		if(SDL_GetTicks()-lastTick>250)
 		{
 			//Run client tick every second
 			lastTick = SDL_GetTicks();

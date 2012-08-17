@@ -37,3 +37,5 @@ config.log
 *.sconf_temp
 *.gch
 *.pyc
+site_scons/site_tools/mfprogram/*.pyc
+site_scons/site_tools/gch/*.pyc
