@@ -4595,7 +4595,7 @@ Simulation::Simulation():
 		if(i < elementList.size())
 			elements[i] = elementList[i];
 		else
-			elements[i] = Element_NONE();
+			elements[i] = Element();
 	}
 	
 	tools = GetTools();

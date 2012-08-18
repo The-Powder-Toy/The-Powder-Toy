@@ -3,7 +3,7 @@
 Element::Element():
 	Identifier("DEFAULT_INVALID"),
 	Name(""),
-	Colour(PIXPACK(0xFFFFFF)),
+	Colour(PIXPACK(0xFF00FF)),
 	MenuVisible(0),
 	MenuSection(0),
 	Enabled(0),
