@@ -3352,7 +3352,7 @@ void Simulation::update_particles_i(int start, int inc)
 		if (parts[i].type)
 		{
 			t = parts[i].type;
-			if (t<0 || t>=PT_NUM || !elements[i].Enabled)
+			if (t<0 || t>=PT_NUM || !elements[t].Enabled)
 			{
 				kill_part(i);
 				continue;
