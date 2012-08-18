@@ -4528,7 +4528,6 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 
 Simulation::~Simulation()
 {
-	delete[] elements;
 	delete[] platent;
 	delete grav;
 	delete air;
