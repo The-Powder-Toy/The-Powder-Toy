@@ -5,6 +5,7 @@
  *      Author: Simon
  */
 
+#include <iostream>
 #include "TextPrompt.h"
 #include "interface/Label.h"
 #include "interface/Button.h"

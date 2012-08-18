@@ -52,7 +52,12 @@ void Engine::Begin(int width, int height)
 
 void Engine::Break()
 {
-	break_ = !break_;
+	break_ = true;
+}
+
+void Engine::UnBreak()
+{
+	break_ = false;
 }
 
 void Engine::Exit()

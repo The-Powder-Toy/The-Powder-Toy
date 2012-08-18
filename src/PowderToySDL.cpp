@@ -296,7 +296,7 @@ void EngineProcess()
 	{
 		if(engine->Broken())
 		{
-			engine->Break();
+			engine->UnBreak();
 			break;
 		}
 		event.type = 0;
@@ -414,6 +414,9 @@ void EngineProcess()
 		}
 		engine->SetFps(fps);
 	}
+#ifdef DEBUG
+	std::cout << "Breaking out of EngineProcess" << std::endl;
+#endif
 }
 
 int main(int argc, char * argv[])

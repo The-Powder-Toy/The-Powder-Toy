@@ -38,6 +38,7 @@ namespace ui
 		inline bool Broken() { return break_; } 
 		void Exit();
 		void Break();
+		void UnBreak();
 
 		void SetFullscreen(bool fullscreen) { Fullscreen = fullscreen; }
 		inline bool GetFullscreen() { return Fullscreen; }
