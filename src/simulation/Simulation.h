@@ -20,11 +20,11 @@
 #include "WallType.h"
 #include "GOLMenu.h"
 #include "MenuSection.h"
+#include "elements/Element.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
 
 class Snapshot;
-class Element;
 class SimTool;
 class Brush;
 struct SimulationSample;
@@ -47,7 +47,8 @@ public:
 	Air * air;
 
 	std::vector<sign> signs;
-	Element * elements;
+	Element elements[PT_NUM];
+	//Element * elements;
 	std::vector<SimTool*> tools;
 	unsigned int * platent;
 	wall_type wtypes[UI_WALLCOUNT];

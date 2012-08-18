@@ -2477,7 +2477,7 @@ void Simulation::kill_part(int i)//kills particle number i
 	if (parts[i].type == PT_NONE)
 		return;
 
-	if(elementCount[parts[i].type] && parts[i].type)
+	if(parts[i].type > 0 && parts[i].type < PT_NUM && elementCount[parts[i].type] && parts[i].type)
 		elementCount[parts[i].type]--;
 	if (parts[i].type == PT_STKM)
 	{
@@ -3352,7 +3352,7 @@ void Simulation::update_particles_i(int start, int inc)
 		if (parts[i].type)
 		{
 			t = parts[i].type;
-			if (t<0 || t>=PT_NUM)
+			if (t<0 || t>=PT_NUM || !elements[i].Enabled)
 			{
 				kill_part(i);
 				continue;
@@ -4588,11 +4588,14 @@ Simulation::Simulation():
 	memcpy(platent, platentT, latentCount * sizeof(unsigned int));
 	free(platentT);
 	
-	elements = new Element[PT_NUM];
+	//elements = new Element[PT_NUM];
 	std::vector<Element> elementList = GetElements();
-	for(int i = 0; i < elementList.size(); i++)
+	for(int i = 0; i < PT_NUM; i++)
 	{
-		elements[i] = elementList[i];
+		if(i < elementList.size())
+			elements[i] = elementList[i];
+		else
+			elements[i] = Element_NONE();
 	}
 	
 	tools = GetTools();
