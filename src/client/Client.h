@@ -141,6 +141,9 @@ public:
 	void Tick();
 	void Shutdown();
 
+	//Force flushing preferences to file on disk.
+	void WritePrefs();
+
 	std::string GetPrefString(std::string property, std::string defaultValue);
 	double GetPrefNumber(std::string property, double defaultValue);
 	int GetPrefInteger(std::string property, int defaultValue);

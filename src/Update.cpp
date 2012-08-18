@@ -150,6 +150,10 @@ int update_finish(void)
 	char *temp, *self=exe_name(), *p;
 	int timeout = 60, err;
 
+#ifdef DEBUG
+	printf("Update: Current EXE name: %s\n", self);
+#endif
+
 	temp = (char*)malloc(strlen(self)+12);
 	strcpy(temp, self);
 	p = temp + strlen(temp) - 4;
@@ -157,12 +161,18 @@ int update_finish(void)
 		p += 4;
 	strcpy(p, "_update.exe");
 
+#ifdef DEBUG
+	printf("Update: Temp EXE name: %s\n", temp);
+#endif
+
 	while (!DeleteFile(temp))
 	{
 		err = GetLastError();
 		if (err == ERROR_FILE_NOT_FOUND)
 		{
-			// just as well, then
+#ifdef DEBUG
+	printf("Update: Temp file deleted\n");
+#endif
 			free(temp);
 			return 0;
 		}
@@ -170,6 +180,9 @@ int update_finish(void)
 		timeout--;
 		if (timeout <= 0)
 		{
+#ifdef DEBUG
+			printf("Update: Delete timeout\n");
+#endif
 			free(temp);
 			return 1;
 		}

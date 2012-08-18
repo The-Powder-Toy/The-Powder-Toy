@@ -105,13 +105,16 @@ private:
 		notifyStatus("Applying update");
 		notifyProgress(-1);
 
+		Client::Ref().SetPref("version.update", true);
+		Client::Ref().WritePrefs();
 		if (update_start(res, uncompressedLength))
 		{
+			Client::Ref().SetPref("version.update", false);
 			update_cleanup();
 			notifyError("Update failed - try downloading a new version.");
+			return false;
 		}
 
-		Client::Ref().SetPref("version.update", true);
 		return true;
 
 	corrupt:

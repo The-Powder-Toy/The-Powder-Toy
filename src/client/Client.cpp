@@ -676,12 +676,8 @@ void Client::RemoveListener(ClientListener * listener)
 	}
 }
 
-void Client::Shutdown()
+void Client::WritePrefs()
 {
-	ClearThumbnailRequests();
-	http_done();
-
-	//Save config
 	std::ofstream configFile;
 	configFile.open("powder.pref", std::ios::trunc);
 	if(configFile)
@@ -706,6 +702,15 @@ void Client::Shutdown()
 		json::Writer::Write(configDocument, configFile);
 		configFile.close();
 	}
+}
+
+void Client::Shutdown()
+{
+	ClearThumbnailRequests();
+	http_done();
+
+	//Save config
+	WritePrefs();
 }
 
 Client::~Client()
