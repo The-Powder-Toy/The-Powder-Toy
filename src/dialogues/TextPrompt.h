@@ -5,8 +5,8 @@
  *      Author: Simon
  */
 
-#ifndef CONFIRMPROMPT_H_
-#define CONFIRMPROMPT_H_
+#ifndef TEXTPROMPT_H_
+#define TEXTPROMPT_H_
 
 #include "interface/Window.h"
 #include "interface/Textbox.h"
@@ -18,7 +18,8 @@ protected:
 public:
 	friend class CloseAction;
 	enum DialogueResult { ResultCancel, ResultOkay };
-	TextPrompt(std::string title, std::string message, bool multiline, TextDialogueCallback * callback_);
+	TextPrompt(std::string title, std::string message, std::string text, std::string placeholder, bool multiline, TextDialogueCallback * callback_);
+	static std::string Blocking(std::string title, std::string message, std::string text, std::string placeholder, bool multiline);
 	virtual void OnDraw();
 	virtual ~TextPrompt();
 	TextDialogueCallback * callback;
@@ -31,4 +32,4 @@ class TextDialogueCallback
 		virtual ~TextDialogueCallback() {}
 };
 
-#endif /* CONFIRMPROMPT_H_ */
+#endif /* TEXTPROMPT_H_ */

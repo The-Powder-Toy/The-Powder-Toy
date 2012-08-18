@@ -284,188 +284,21 @@ std::map<std::string, std::string> readArguments(int argc, char * argv[])
 	return arguments;
 }
 
-int main(int argc, char * argv[])
+int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
+unsigned int lastTick = 0;
+float fps = 0, delta = 1.0f, inputScale = 1.0f;
+ui::Engine * engine = NULL;
+
+void EngineProcess()
 {
-	int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
-	unsigned int lastTick = 0;
-	float fps = 0, delta = 1.0f, inputScale = 1.0f;
-	float currentWidth = XRES+BARSIZE, currentHeight = YRES+MENUSIZE;
-
-	std::map<std::string, std::string> arguments = readArguments(argc, argv);
-
-	if(arguments["ddir"].length())
-#ifdef WIN
-		_chdir(arguments["ddir"].c_str());
-#else
-		chdir(arguments["ddir"].c_str());
-#endif
-
-	int tempScale = 1;
-	bool tempFullscreen = false;
-
-	tempScale = Client::Ref().GetPrefInteger("Scale", 1);
-	tempFullscreen = Client::Ref().GetPrefBool("Fullscreen", false);
-
-
-	if(arguments["kiosk"] == "true")
-	{
-		tempFullscreen = true;
-		Client::Ref().SetPref("Fullscreen", tempFullscreen);
-	}
-
-	if(arguments["scale"].length())
-	{
-		tempScale = format::StringToNumber<int>(arguments["scale"]);
-		Client::Ref().SetPref("Scale", tempScale);
-	}
-
-	std::string proxyString = "";
-	if(arguments["proxy"].length())
-	{
-		if(arguments["proxy"] == "false")
-		{
-			proxyString = "";
-			Client::Ref().SetPref("Proxy", "");	
-		}
-		else
-		{
-			proxyString = (arguments["proxy"]);
-			Client::Ref().SetPref("Proxy", arguments["proxy"]);
-		}
-	}
-	else if(Client::Ref().GetPrefString("Proxy", "").length())
-	{
-		proxyString = (Client::Ref().GetPrefString("Proxy", ""));
-	}
-
-	Client::Ref().Initialise(proxyString);
-
-	if(tempScale != 1 && tempScale != 2)
-		tempScale = 1;
-
-	int sdlStatus = SDLOpen();
-	sdl_scrn = SDLSetScreen(tempScale, tempFullscreen);
-#ifdef OGLI
-	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
-	//glScaled(2.0f, 2.0f, 1.0f);
-#endif
-#if defined(OGLI)
-	int status = glewInit();
-	if(status != GLEW_OK)
-	{
-		fprintf(stderr, "Initializing Glew: %d\n", status);
-		exit(-1);
-	}
-#endif
-	ui::Engine::Ref().g = new Graphics();
-	ui::Engine::Ref().Scale = scale;
-	inputScale = 1.0f/float(scale);
-	ui::Engine::Ref().Fullscreen = fullscreen;
-
-	ui::Engine * engine = &ui::Engine::Ref();
-	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
-
-	GameController * gameController = new GameController();
-	engine->ShowWindow(gameController->GetView());
-
-	if(arguments["open"].length())
-	{
-#ifdef DEBUG
-		std::cout << "Loading " << arguments["open"] << std::endl;
-#endif
-		if(Client::Ref().FileExists(arguments["open"]))
-		{
-			try
-			{
-				std::vector<unsigned char> gameSaveData = Client::Ref().ReadFile(arguments["open"]);
-				if(!gameSaveData.size())
-				{
-					new ErrorMessage("Error", "Could not read file");
-				}
-				else
-				{
-					SaveFile * newFile = new SaveFile(arguments["open"]);
-					GameSave * newSave = new GameSave(gameSaveData);
-					newFile->SetGameSave(newSave);
-					gameController->LoadSaveFile(newFile);
-					delete newFile;
-				}
-
-			}
-			catch(std::exception & e)
-			{
-				new ErrorMessage("Error", "Could not open save file:\n"+std::string(e.what())) ;
-			}
-		}
-		else
-		{
-			new ErrorMessage("Error", "Could not open file");
-		}
-	}
-
-	if(arguments["ptsave"].length())
-	{
-		engine->g->fillrect((engine->GetWidth()/2)-101, (engine->GetHeight()/2)-26, 202, 52, 0, 0, 0, 210);
-		engine->g->drawrect((engine->GetWidth()/2)-100, (engine->GetHeight()/2)-25, 200, 50, 255, 255, 255, 180);
-		engine->g->drawtext((engine->GetWidth()/2)-(Graphics::textwidth("Loading save...")/2), (engine->GetHeight()/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
-
-#ifdef OGLI
-		blit();
-#else
-		if(engine->Scale==2)
-			blit2(engine->g->vid, engine->Scale);
-		else
-			blit(engine->g->vid);
-#endif
-		std::string ptsaveArg = arguments["ptsave"];
-		try
-		{
-		if(!ptsaveArg.find("ptsave:"))
-		{
-			std::string saveIdPart = "";
-			int saveId;
-			int hashPos = ptsaveArg.find('#');
-			if(hashPos != std::string::npos)
-			{
-				saveIdPart = ptsaveArg.substr(7, hashPos-7);
-			}
-			else
-			{
-				saveIdPart = ptsaveArg.substr(7);
-			}
-			if(saveIdPart.length())
-			{
-#ifdef DEBUG
-				std::cout << "Got Ptsave: id: " <<  saveIdPart << std::endl;
-#endif
-				saveId = format::StringToNumber<int>(saveIdPart);
-				if(!saveId)
-					throw std::runtime_error("Invalid Save ID");
-
-				SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
-				GameSave * newGameSave = new GameSave(Client::Ref().GetSaveData(saveId, 0));
-				newSave->SetGameSave(newGameSave);
-				if(!newSave)
-					throw std::runtime_error("Could not load save");
-
-				gameController->LoadSave(newSave);
-				delete newSave;
-			}
-			else
-			{
-				throw std::runtime_error("No Save ID");
-			}
-		}
-		}
-		catch (std::exception & e)
-		{
-			new ErrorMessage("Error", "Invalid save link");
-		}
-	}
-
 	SDL_Event event;
 	while(engine->Running())
 	{
+		if(engine->Broken())
+		{
+			engine->Break();
+			break;
+		}
 		event.type = 0;
 		while (SDL_PollEvent(&event))
 		{
@@ -581,6 +414,186 @@ int main(int argc, char * argv[])
 		}
 		engine->SetFps(fps);
 	}
+}
+
+int main(int argc, char * argv[])
+{
+	float currentWidth = XRES+BARSIZE, currentHeight = YRES+MENUSIZE;
+
+	std::map<std::string, std::string> arguments = readArguments(argc, argv);
+
+	if(arguments["ddir"].length())
+#ifdef WIN
+		_chdir(arguments["ddir"].c_str());
+#else
+		chdir(arguments["ddir"].c_str());
+#endif
+
+	int tempScale = 1;
+	bool tempFullscreen = false;
+
+	tempScale = Client::Ref().GetPrefInteger("Scale", 1);
+	tempFullscreen = Client::Ref().GetPrefBool("Fullscreen", false);
+
+
+	if(arguments["kiosk"] == "true")
+	{
+		tempFullscreen = true;
+		Client::Ref().SetPref("Fullscreen", tempFullscreen);
+	}
+
+	if(arguments["scale"].length())
+	{
+		tempScale = format::StringToNumber<int>(arguments["scale"]);
+		Client::Ref().SetPref("Scale", tempScale);
+	}
+
+	std::string proxyString = "";
+	if(arguments["proxy"].length())
+	{
+		if(arguments["proxy"] == "false")
+		{
+			proxyString = "";
+			Client::Ref().SetPref("Proxy", "");	
+		}
+		else
+		{
+			proxyString = (arguments["proxy"]);
+			Client::Ref().SetPref("Proxy", arguments["proxy"]);
+		}
+	}
+	else if(Client::Ref().GetPrefString("Proxy", "").length())
+	{
+		proxyString = (Client::Ref().GetPrefString("Proxy", ""));
+	}
+
+	Client::Ref().Initialise(proxyString);
+
+	if(tempScale != 1 && tempScale != 2)
+		tempScale = 1;
+
+	int sdlStatus = SDLOpen();
+	sdl_scrn = SDLSetScreen(tempScale, tempFullscreen);
+#ifdef OGLI
+	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
+	//glScaled(2.0f, 2.0f, 1.0f);
+#endif
+#if defined(OGLI)
+	int status = glewInit();
+	if(status != GLEW_OK)
+	{
+		fprintf(stderr, "Initializing Glew: %d\n", status);
+		exit(-1);
+	}
+#endif
+	ui::Engine::Ref().g = new Graphics();
+	ui::Engine::Ref().Scale = scale;
+	inputScale = 1.0f/float(scale);
+	ui::Engine::Ref().Fullscreen = fullscreen;
+
+	engine = &ui::Engine::Ref();
+	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
+
+	GameController * gameController = new GameController();
+	engine->ShowWindow(gameController->GetView());
+
+	if(arguments["open"].length())
+	{
+#ifdef DEBUG
+		std::cout << "Loading " << arguments["open"] << std::endl;
+#endif
+		if(Client::Ref().FileExists(arguments["open"]))
+		{
+			try
+			{
+				std::vector<unsigned char> gameSaveData = Client::Ref().ReadFile(arguments["open"]);
+				if(!gameSaveData.size())
+				{
+					new ErrorMessage("Error", "Could not read file");
+				}
+				else
+				{
+					SaveFile * newFile = new SaveFile(arguments["open"]);
+					GameSave * newSave = new GameSave(gameSaveData);
+					newFile->SetGameSave(newSave);
+					gameController->LoadSaveFile(newFile);
+					delete newFile;
+				}
+
+			}
+			catch(std::exception & e)
+			{
+				new ErrorMessage("Error", "Could not open save file:\n"+std::string(e.what())) ;
+			}
+		}
+		else
+		{
+			new ErrorMessage("Error", "Could not open file");
+		}
+	}
+
+	if(arguments["ptsave"].length())
+	{
+		engine->g->fillrect((engine->GetWidth()/2)-101, (engine->GetHeight()/2)-26, 202, 52, 0, 0, 0, 210);
+		engine->g->drawrect((engine->GetWidth()/2)-100, (engine->GetHeight()/2)-25, 200, 50, 255, 255, 255, 180);
+		engine->g->drawtext((engine->GetWidth()/2)-(Graphics::textwidth("Loading save...")/2), (engine->GetHeight()/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
+
+#ifdef OGLI
+		blit();
+#else
+		if(engine->Scale==2)
+			blit2(engine->g->vid, engine->Scale);
+		else
+			blit(engine->g->vid);
+#endif
+		std::string ptsaveArg = arguments["ptsave"];
+		try
+		{
+		if(!ptsaveArg.find("ptsave:"))
+		{
+			std::string saveIdPart = "";
+			int saveId;
+			int hashPos = ptsaveArg.find('#');
+			if(hashPos != std::string::npos)
+			{
+				saveIdPart = ptsaveArg.substr(7, hashPos-7);
+			}
+			else
+			{
+				saveIdPart = ptsaveArg.substr(7);
+			}
+			if(saveIdPart.length())
+			{
+#ifdef DEBUG
+				std::cout << "Got Ptsave: id: " <<  saveIdPart << std::endl;
+#endif
+				saveId = format::StringToNumber<int>(saveIdPart);
+				if(!saveId)
+					throw std::runtime_error("Invalid Save ID");
+
+				SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
+				GameSave * newGameSave = new GameSave(Client::Ref().GetSaveData(saveId, 0));
+				newSave->SetGameSave(newGameSave);
+				if(!newSave)
+					throw std::runtime_error("Could not load save");
+
+				gameController->LoadSave(newSave);
+				delete newSave;
+			}
+			else
+			{
+				throw std::runtime_error("No Save ID");
+			}
+		}
+		}
+		catch (std::exception & e)
+		{
+			new ErrorMessage("Error", "Invalid save link");
+		}
+	}
+
+	EngineProcess();
+	
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
 	delete ui::Engine::Ref().g;

@@ -9,6 +9,7 @@
 #include "interface/Label.h"
 #include "interface/Button.h"
 #include "Style.h"
+#include "PowderToy.h"
 
 class CloseAction: public ui::ButtonAction
 {
@@ -25,7 +26,7 @@ public:
 	}
 };
 
-TextPrompt::TextPrompt(std::string title, std::string message, bool multiline, TextDialogueCallback * callback_):
+TextPrompt::TextPrompt(std::string title, std::string message, std::string text, std::string placeholder, bool multiline, TextDialogueCallback * callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 80)),
 	callback(callback_)
 {
@@ -39,7 +40,7 @@ TextPrompt::TextPrompt(std::string title, std::string message, bool multiline, T
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 
-	textField = new ui::Textbox(ui::Point(4, 45 ), ui::Point(Size.X-8, 16), "", "Reason");
+	textField = new ui::Textbox(ui::Point(4, 45 ), ui::Point(Size.X-8, 16), text, placeholder);
 	if(multiline)
 	{
 		textField->SetMultiline(true);
@@ -71,6 +72,29 @@ TextPrompt::TextPrompt(std::string title, std::string message, bool multiline, T
 	SetOkayButton(okayButton);
 
 	ui::Engine::Ref().ShowWindow(this);
+}
+
+std::string TextPrompt::Blocking(std::string title, std::string message, std::string text, std::string placeholder, bool multiline)
+{
+	std::string returnString = "";
+
+	class BlockingTextCallback: public TextDialogueCallback {
+		std::string & outputString;
+	public:
+		BlockingTextCallback(std::string & output) : outputString(output) {}
+		virtual void TextCallback(TextPrompt::DialogueResult result, std::string resultText) {
+			if(result == ResultOkay)
+				outputString = resultText;
+			else
+				outputString = "";
+			ui::Engine::Ref().Break();
+		}
+		virtual ~BlockingTextCallback() { }
+	};
+	new TextPrompt(title, message, text, placeholder, multiline, new BlockingTextCallback(returnString));
+	EngineProcess();
+
+	return returnString;
 }
 
 void TextPrompt::OnDraw()

@@ -9,9 +9,11 @@
 #include "ErrorMessage.h"
 #include "interface/Button.h"
 #include "interface/Label.h"
+#include "PowderToy.h"
 
-ErrorMessage::ErrorMessage(std::string title, std::string message):
-	ui::Window(ui::Point(-1, -1), ui::Point(200, 75))
+ErrorMessage::ErrorMessage(std::string title, std::string message,  ErrorMessageCallback * callback_):
+	ui::Window(ui::Point(-1, -1), ui::Point(200, 75)),
+	callback(callback_)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), title);
 	titleLabel->SetTextColour(style::Colour::ErrorTitle);
@@ -32,7 +34,9 @@ ErrorMessage::ErrorMessage(std::string title, std::string message):
 		void ActionCallback(ui::Button * sender)
 		{
 			ui::Engine::Ref().CloseWindow();
-			message->SelfDestruct(); //TODO: Fix component disposal
+			if(message->callback)
+				message->callback->DismissCallback();
+			message->SelfDestruct();
 		}
 	};
 
@@ -48,6 +52,20 @@ ErrorMessage::ErrorMessage(std::string title, std::string message):
 	ui::Engine::Ref().ShowWindow(this);
 }
 
+void ErrorMessage::Blocking(std::string title, std::string message)
+{
+	class BlockingDismissCallback: public ErrorMessageCallback {
+	public:
+		BlockingDismissCallback() {}
+		virtual void DismissCallback() {
+			ui::Engine::Ref().Break();
+		}
+		virtual ~BlockingDismissCallback() { }
+	};
+	new ErrorMessage(title, message, new BlockingDismissCallback());
+	EngineProcess();
+}
+
 void ErrorMessage::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
@@ -57,5 +75,7 @@ void ErrorMessage::OnDraw()
 }
 
 ErrorMessage::~ErrorMessage() {
+	if(callback)
+		delete callback;
 }
 

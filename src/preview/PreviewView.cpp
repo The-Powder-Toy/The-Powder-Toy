@@ -113,7 +113,7 @@ PreviewView::PreviewView():
 		ReportAction(PreviewView * v_){ v = v_; }
 		virtual void ActionCallback(ui::Button * sender)
 		{
-			new TextPrompt("Report Save", "Reason for reporting", true, new ReportPromptCallback(v));
+			new TextPrompt("Report Save", "Reason for reporting", "", "[reason]", true, new ReportPromptCallback(v));
 		}
 	};
 	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), "Report");

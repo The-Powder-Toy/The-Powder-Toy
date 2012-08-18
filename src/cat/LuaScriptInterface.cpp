@@ -12,9 +12,18 @@
 #include "TPTScriptInterface.h"
 #include "dialogues/ErrorMessage.h"
 #include "dialogues/InformationMessage.h"
+#include "dialogues/TextPrompt.h"
+#include "dialogues/ConfirmPrompt.h" 
 #include "simulation/Simulation.h"
 #include "game/GameModel.h"
 #include "LuaScriptHelper.h"
+#include "client/HTTP.h"
+
+ #ifdef WIN
+#include <direct.h>
+#else
+#include <sys/stat.h>
+#endif
 
 LuaScriptInterface::LuaScriptInterface(GameModel * m):
 	CommandInterface(m),
@@ -1000,7 +1009,7 @@ int luatpt_graphics_func(lua_State *l)
 int luatpt_error(lua_State* l)
 {
 	std::string errorMessage = std::string(luaL_optstring(l, 1, "Error text"));
-	new ErrorMessage("Error", errorMessage);
+	ErrorMessage::Blocking("Error", errorMessage);
 	return 0;
 }
 int luatpt_drawtext(lua_State* l)
@@ -1841,30 +1850,16 @@ int luatpt_unregister_mouseclick(lua_State* l)
 }
 int luatpt_input(lua_State* l)
 {
-	/*char *prompt, *title, *result, *shadow, *text;
-	title = mystrdup((char*)luaL_optstring(l, 1, "Title"));
-	prompt = mystrdup((char*)luaL_optstring(l, 2, "Enter some text:"));
-	text = mystrdup((char*)luaL_optstring(l, 3, ""));
-	shadow = mystrdup((char*)luaL_optstring(l, 4, ""));
+	std::string prompt, title, result, shadow, text;
+	title = std::string(luaL_optstring(l, 1, "Title"));
+	prompt = std::string(luaL_optstring(l, 2, "Enter some text:"));
+	text = std::string(luaL_optstring(l, 3, ""));
+	shadow = std::string(luaL_optstring(l, 4, ""));
 
-	if (vid_buf!=NULL)
-	{
-		result = input_ui(vid_buf, title, prompt, text, shadow);
-		lua_pushstring(l, result);
-		free(result);
-		free(title);
-		free(prompt);
-		free(text);
-		free(shadow);
-		return 1;
-	}
-	free(title);
-	free(prompt);
-	free(text);
-	free(shadow);
-	return luaL_error(l, "Screen buffer does not exist");*/
-	//TODO IMPLEMENT
-	return 0;
+	result = TextPrompt::Blocking(title, prompt, text, shadow, false);
+	
+	lua_pushstring(l, result.c_str());
+	return 1;
 }
 int luatpt_message_box(lua_State* l)
 {
@@ -1989,22 +1984,24 @@ int luatpt_setfpscap(lua_State* l)
 }
 int luatpt_getscript(lua_State* l)
 {
-	/*char *fileid = NULL, *filedata = NULL, *fileuri = NULL, *fileauthor = NULL, *filename = NULL, *lastError = NULL, *luacommand = NULL;
+	char *filedata = NULL, *fileuri = NULL, *filename = NULL, *lastError = NULL, *luacommand = NULL;
+	std::string fileauthor = "", fileid = "";
 	int len, ret,run_script;
 	FILE * outputfile;
 
-	fileauthor = mystrdup(luaL_optstring(l, 1, ""));
-	fileid = mystrdup(luaL_optstring(l, 2, ""));
+	fileauthor = std::string(luaL_optstring(l, 1, ""));
+	fileid = std::string(luaL_optstring(l, 2, ""));
 	run_script = luaL_optint(l, 3, 0);
-	if(!fileauthor || !fileid || strlen(fileauthor)<1 || strlen(fileid)<1)
+	if(!fileauthor.length() || !fileid.length())
 		goto fin;
-	if(!confirm_ui(vid_buf, "Do you want to install script?", fileid, "Install"))
+	if(!ConfirmPrompt::Blocking("Do you want to install script?", fileid, "Install"))
 		goto fin;
 
-	fileuri = malloc(strlen(SCRIPTSERVER)+strlen(fileauthor)+strlen(fileid)+44);
-	sprintf(fileuri, "http://" SCRIPTSERVER "/GetScript.api?Author=%s&Filename=%s", fileauthor, fileid);
+	fileuri = new char[strlen(SCRIPTSERVER)+fileauthor.length()+fileid.length()+44];
+	sprintf(fileuri, "http://" SCRIPTSERVER "/GetScript.api?Author=%s&Filename=%s", fileauthor.c_str(), fileid.c_str());
 
-	filedata = http_auth_get(fileuri, svf_user_id, NULL, svf_session_id, &ret, &len);
+	//filedata = http_auth_get(fileuri, svf_user_id, NULL, svf_session_id, &ret, &len);
+	filedata = http_auth_get(fileuri, NULL, NULL, NULL, &ret, &len);
 
 	if(len <= 0 || !filedata)
 	{
@@ -2017,8 +2014,8 @@ int luatpt_getscript(lua_State* l)
 		goto fin;
 	}
 
-	filename = (char*)malloc(strlen(fileauthor)+strlen(fileid)+strlen(PATH_SEP)+strlen(LOCAL_LUA_DIR)+6);
-	sprintf(filename, LOCAL_LUA_DIR PATH_SEP "%s_%s.lua", fileauthor, fileid);
+	filename = new char[fileauthor.length()+fileid.length()+strlen(PATH_SEP)+strlen(LOCAL_LUA_DIR)+6];
+	sprintf(filename, LOCAL_LUA_DIR PATH_SEP "%s_%s.lua", fileauthor.c_str(), fileid.c_str());
 
 #ifdef WIN
 	_mkdir(LOCAL_LUA_DIR);
@@ -2031,7 +2028,7 @@ int luatpt_getscript(lua_State* l)
 	{
 		fclose(outputfile);
 		outputfile = NULL;
-		if(confirm_ui(vid_buf, "File already exists, overwrite?", filename, "Overwrite"))
+		if(ConfirmPrompt::Blocking("File already exists, overwrite?", filename, "Overwrite"))
 		{
 			outputfile = fopen(filename, "w");
 		}
@@ -2057,24 +2054,20 @@ int luatpt_getscript(lua_State* l)
 	outputfile = NULL;
 	if(run_script)
 	{
-		luacommand = malloc(strlen(filename)+20);
+		luacommand = new char[strlen(filename)+20];
 		sprintf(luacommand,"dofile(\"%s\")",filename);
 		luaL_dostring (l, luacommand);
     }
 
 fin:
-	if(fileid) free(fileid);
 	if(filedata) free(filedata);
-	if(fileuri) free(fileuri);
-	if(fileauthor) free(fileauthor);
-	if(filename) free(filename);
-	if(luacommand) free(luacommand);
+	if(fileuri) delete[] fileuri;
+	if(filename) delete[] filename;
+	if(luacommand) delete[] luacommand;
 	luacommand = NULL;
 
 	if(lastError) return luaL_error(l, lastError);
-	return 0;*/
-	//TODO IMPLEMENT
-	return luaL_error(l, "Not implemented");
+	return 0;
 }
 
 int luatpt_setwindowsize(lua_State* l)
