@@ -6,6 +6,7 @@
  */
 
 #include <string>
+#include <iomanip>
 #include "Config.h"
 #include "Format.h"
 #include "LuaScriptInterface.h"
@@ -2083,6 +2084,8 @@ int luatpt_setwindowsize(lua_State* l)
 	return 0;
 }
 
+int screenshotIndex = 0;
+
 int luatpt_screenshot(lua_State* l)
 {
 	//TODO Implement
@@ -2098,7 +2101,11 @@ int luatpt_screenshot(lua_State* l)
 		VideoBuffer screenshot(luacon_ren->DumpFrame());
 		data = format::VideoBufferToPNG(screenshot);
 	}
-	Client::Ref().WriteFile(data, "screenshot.png");
+	std::stringstream filename;
+	filename << "screenshot_";
+	filename << std::setfill('0') << std::setw(6) << (screenshotIndex++);
+	filename << ".png";
+	Client::Ref().WriteFile(data, filename.str());
 	return 0;
 }
 

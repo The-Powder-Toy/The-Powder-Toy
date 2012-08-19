@@ -1825,7 +1825,13 @@ void GameView::OnDraw()
 		{
 			VideoBuffer screenshot(ren->DumpFrame());
 			std::vector<char> data = format::VideoBufferToPNG(screenshot);
-			Client::Ref().WriteFile(data, "screenshot_" + format::NumberToString<int>(screenshotIndex++) + ".png");
+
+			std::stringstream filename;
+			filename << "screenshot_";
+			filename << std::setfill('0') << std::setw(6) << (screenshotIndex++);
+			filename << ".png";
+
+			Client::Ref().WriteFile(data, filename.str());
 			doScreenshot = false;
 		}
 
@@ -1833,7 +1839,13 @@ void GameView::OnDraw()
 		{
 			VideoBuffer screenshot(ren->DumpFrame());
 			std::vector<char> data = format::VideoBufferToPPM(screenshot);
-			Client::Ref().WriteFile(data, "frame_" + format::NumberToString<int>(recordingIndex++) + ".ppm");
+
+			std::stringstream filename;
+			filename << "frame_";
+			filename << std::setfill('0') << std::setw(6) << (recordingIndex++);
+			filename << ".ppm";
+
+			Client::Ref().WriteFile(data, filename.str());
 		}
 
 
