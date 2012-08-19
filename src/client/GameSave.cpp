@@ -2049,5 +2049,5 @@ void GameSave::dealloc()
 
 GameSave::~GameSave()
 {
-
+	dealloc();
 }
