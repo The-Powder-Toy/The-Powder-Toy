@@ -97,6 +97,7 @@ private:
 
 	std::vector<char> originalData;
 
+	void dealloc();
 	void read(char * data, int dataSize);
 	void readOPS(char * data, int dataLength);
 	void readPSv(char * data, int dataLength);

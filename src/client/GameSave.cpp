@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <vector>
 #include <bzlib.h>
 #include "Config.h"
 #include "bson/BSON.h"
@@ -97,7 +98,7 @@ GameSave::GameSave(std::vector<char> data)
 	catch(ParseException & e)
 	{
 		std::cout << e.what() << std::endl;
-		this->~GameSave();	//Free any allocated memory
+		dealloc();	//Free any allocated memory
 		throw;
 	}
 	Collapse();
@@ -129,7 +130,7 @@ GameSave::GameSave(std::vector<unsigned char> data)
 	catch(ParseException & e)
 	{
 		std::cout << e.what() << std::endl;
-		this->~GameSave();	//Free any allocated memory
+		dealloc();	//Free any allocated memory
 		throw;
 	}
 	Collapse();
@@ -161,7 +162,7 @@ GameSave::GameSave(char * data, int dataSize)
 	catch(ParseException & e)
 	{
 		std::cout << e.what() << std::endl;
-		this->~GameSave();	//Free any allocated memory
+		dealloc();	//Free any allocated memory
 		throw;
 	}
 	//Collapse();
@@ -2007,20 +2008,46 @@ fin:
 	return (char*)outputData;
 }
 
-GameSave::~GameSave()
+void GameSave::dealloc()
 {
 	if(particles)
+	{
 		delete[] particles;
+		particles = NULL;
+	}
 	if(blockMap)
+	{
 		delete[] blockMap;
+		blockMap = NULL;
+	}
 	if(blockMapPtr)
+	{
 		delete[] blockMapPtr;
+		blockMapPtr = NULL;
+	}
 	if(fanVelX)
+	{
 		delete[] fanVelX;
+		fanVelX = NULL;
+	}
 	if(fanVelXPtr)
+	{
 		delete[] fanVelXPtr;
+		fanVelXPtr = NULL;
+	}
 	if(fanVelY)
+	{
 		delete[] fanVelY;
+		fanVelY = NULL;
+	}
 	if(fanVelYPtr)
+	{
 		delete[] fanVelYPtr;
+		fanVelYPtr = NULL;
+	}
+}
+
+GameSave::~GameSave()
+{
+
 }
