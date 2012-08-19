@@ -1113,7 +1113,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 			if(drawMode == DrawPoints)
 			{
 				c->ToolClick(toolIndex, ui::Point(x, y));
-				pointQueue.push(new ui::Point(x, y));
+				//pointQueue.push(new ui::Point(x, y));
 			}
 			if(drawModeReset)
 			{
