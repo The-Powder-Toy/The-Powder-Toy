@@ -97,6 +97,9 @@ LuaScriptInterface::LuaScriptInterface(GameModel * m):
 		{NULL,NULL}
 	};
 
+	luacon_mousedown = false;
+	luacon_mousebutton = 0;
+
 	luacon_currentCommand = &currentCommand;
 	luacon_lastError = &lastError;
 
