@@ -32,6 +32,7 @@ public:
 	int Weight;
 	int MenuSection;
 	float Temperature;
+	float Enthalpy;
 	unsigned char HeatConduct;
 	char *Description;
 	char State;

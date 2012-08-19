@@ -50,7 +50,6 @@ public:
 	Element elements[PT_NUM];
 	//Element * elements;
 	std::vector<SimTool*> tools;
-	unsigned int * platent;
 	wall_type wtypes[UI_WALLCOUNT];
 	gol_menu gmenu[NGOL];
 	int goltype[NGOL];

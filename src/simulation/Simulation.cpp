@@ -3152,89 +3152,89 @@ void Simulation::update_particles_i(int start, int inc)
 	currentTick++;
 
 	if (lighting_recreate>0)
-    {
-        for (i=0; i<=parts_lastActiveIndex; i++)
-        {
-            if (parts[i].type==PT_LIGH && parts[i].tmp2>0)
-            {
-                lighting_ok=0;
-                break;
-            }
-        }
-    }
+	{
+		for (i=0; i<=parts_lastActiveIndex; i++)
+		{
+			if (parts[i].type==PT_LIGH && parts[i].tmp2>0)
+			{
+				lighting_ok=0;
+				break;
+			}
+		}
+	}
 
 	if (lighting_ok)
-        lighting_recreate--;
+		lighting_recreate--;
 
-    if (lighting_recreate<0)
-        lighting_recreate=1;
+	if (lighting_recreate<0)
+		lighting_recreate=1;
 
-    if (lighting_recreate>21)
-        lighting_recreate=21;
+	if (lighting_recreate>21)
+		lighting_recreate=21;
 
 	//if (sys_pause&&!framerender)//do nothing if paused
 	//	return;
 
-    if (force_stacking_check || (rand()%10)==0)
-    {
-    	force_stacking_check = 0;
-    	excessive_stacking_found = 0;
-    	for (y=0; y<YRES; y++)
-    	{
-    		for (x=0; x<XRES; x++)
-    		{
-    			// Use a threshold, since some particle stacking can be normal (e.g. BIZR + FILT)
-    			// Setting pmap_count[y][x] > NPART means BHOL will form in that spot
-    			if (pmap_count[y][x]>5)
-    			{
-    				if (bmap[y/CELL][x/CELL]==WL_EHOLE)
-    				{
-    					// Allow more stacking in E-hole
-    					if (pmap_count[y][x]>1500)
-    					{
-    						pmap_count[y][x] = pmap_count[y][x] + NPART;
-    						excessive_stacking_found = 1;
-    					}
-    				}
-    				else if (pmap_count[y][x]>1500 || (rand()%1600)<=(pmap_count[y][x]+100))
-    				{
-    					pmap_count[y][x] = pmap_count[y][x] + NPART;
-    					excessive_stacking_found = 1;
-    				}
-    			}
-    		}
-    	}
-    	if (excessive_stacking_found)
-    	{
-    		for (i=0; i<=parts_lastActiveIndex; i++)
-    		{
-    			if (parts[i].type)
-    			{
-    				t = parts[i].type;
-    				x = (int)(parts[i].x+0.5f);
-    				y = (int)(parts[i].y+0.5f);
-    				if (x>=0 && y>=0 && x<XRES && y<YRES && !(elements[t].Properties&TYPE_ENERGY))
-    				{
-    					if (pmap_count[y][x]>=NPART)
-    					{
-    						if (pmap_count[y][x]>NPART)
-    						{
-    							create_part(i, x, y, PT_NBHL);
-    							parts[i].temp = MAX_TEMP;
-    							parts[i].tmp = pmap_count[y][x]-NPART;//strength of grav field
-    							if (parts[i].tmp>51200) parts[i].tmp = 51200;
-    							pmap_count[y][x] = NPART;
-    						}
-    						else
-    						{
-    							kill_part(i);
-    						}
-    					}
-    				}
-    			}
-    		}
-    	}
-    }
+	if (force_stacking_check || (rand()%10)==0)
+	{
+		force_stacking_check = 0;
+		excessive_stacking_found = 0;
+		for (y=0; y<YRES; y++)
+		{
+			for (x=0; x<XRES; x++)
+			{
+				// Use a threshold, since some particle stacking can be normal (e.g. BIZR + FILT)
+				// Setting pmap_count[y][x] > NPART means BHOL will form in that spot
+				if (pmap_count[y][x]>5)
+				{
+					if (bmap[y/CELL][x/CELL]==WL_EHOLE)
+					{
+						// Allow more stacking in E-hole
+						if (pmap_count[y][x]>1500)
+						{
+							pmap_count[y][x] = pmap_count[y][x] + NPART;
+							excessive_stacking_found = 1;
+						}
+					}
+					else if (pmap_count[y][x]>1500 || (rand()%1600)<=(pmap_count[y][x]+100))
+					{
+						pmap_count[y][x] = pmap_count[y][x] + NPART;
+						excessive_stacking_found = 1;
+					}
+				}
+			}
+		}
+		if (excessive_stacking_found)
+		{
+			for (i=0; i<=parts_lastActiveIndex; i++)
+			{
+				if (parts[i].type)
+				{
+					t = parts[i].type;
+					x = (int)(parts[i].x+0.5f);
+					y = (int)(parts[i].y+0.5f);
+					if (x>=0 && y>=0 && x<XRES && y<YRES && !(elements[t].Properties&TYPE_ENERGY))
+					{
+						if (pmap_count[y][x]>=NPART)
+						{
+							if (pmap_count[y][x]>NPART)
+							{
+								create_part(i, x, y, PT_NBHL);
+								parts[i].temp = MAX_TEMP;
+								parts[i].tmp = pmap_count[y][x]-NPART;//strength of grav field
+								if (parts[i].tmp>51200) parts[i].tmp = 51200;
+								pmap_count[y][x] = NPART;
+							}
+							else
+							{
+								kill_part(i);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
 	//wire!
 	if(elementCount[PT_WIRE] > 0)
@@ -3242,13 +3242,13 @@ void Simulation::update_particles_i(int start, int inc)
 		for (nx=0; nx<XRES; nx++)
 		{
 			for (ny=0; ny<YRES; ny++)
-		    {
-			    r = pmap[ny][nx];
-			    if (!r)
-			        continue;
+			{
+				r = pmap[ny][nx];
+				if (!r)
+					continue;
 				if(parts[r>>8].type==PT_WIRE)
 					parts[r>>8].tmp=parts[r>>8].ctype;
-		    }
+			}
 		}
 	}
 	//game of life!
@@ -3271,33 +3271,33 @@ void Simulation::update_particles_i(int start, int inc)
 				{
 					//for ( golnum=1; golnum<=NGOL; golnum++) //This shouldn't be necessary any more.
 					//{
-						if (parts[r>>8].type==PT_LIFE/* && parts[r>>8].ctype==golnum-1*/)
-						{
-							golnum = parts[r>>8].ctype+1;
-							if (golnum<=0 || golnum>NGOLALT) {
-								parts[r>>8].type = PT_NONE;
-								continue;
-							}
-							if (parts[r>>8].tmp == grule[golnum][9]-1) {
-								gol[ny][nx] = golnum;
-								for ( nnx=-1; nnx<2; nnx++)
+					if (parts[r>>8].type==PT_LIFE/* && parts[r>>8].ctype==golnum-1*/)
+					{
+						golnum = parts[r>>8].ctype+1;
+						if (golnum<=0 || golnum>NGOLALT) {
+							parts[r>>8].type = PT_NONE;
+							continue;
+						}
+						if (parts[r>>8].tmp == grule[golnum][9]-1) {
+							gol[ny][nx] = golnum;
+							for ( nnx=-1; nnx<2; nnx++)
+							{
+								for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
 								{
-									for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
+									rt = pmap[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL];
+									if (!rt || (rt&0xFF)==PT_LIFE)
 									{
-										rt = pmap[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL];
-										if (!rt || (rt&0xFF)==PT_LIFE)
-										{
-											gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][golnum] ++;
-											gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][0] ++;
-										}
+										gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][golnum] ++;
+										gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][0] ++;
 									}
 								}
-							} else {
-								parts[r>>8].tmp --;
-								if (parts[r>>8].tmp<=0)
-									parts[r>>8].type = PT_NONE;//using kill_part makes it not work
 							}
+						} else {
+							parts[r>>8].tmp --;
+							if (parts[r>>8].tmp<=0)
+								parts[r>>8].type = PT_NONE;//using kill_part makes it not work
 						}
+					}
 					//}
 				}
 			}
@@ -3380,33 +3380,33 @@ void Simulation::update_particles_i(int start, int inc)
 				continue;
 			}
 		}
-			//the main particle loop function, goes over all particles.
+	//the main particle loop function, goes over all particles.
 
-		for (i=0; i<=parts_lastActiveIndex; i++)
-			if (parts[i].type)
-			{
-				t = parts[i].type;
+	for (i=0; i<=parts_lastActiveIndex; i++)
+		if (parts[i].type)
+		{
+			t = parts[i].type;
 
 			x = (int)(parts[i].x+0.5f);
 			y = (int)(parts[i].y+0.5f);
 
 			//this kills any particle out of the screen, or in a wall where it isn't supposed to go
 			if (x<CELL || y<CELL || x>=XRES-CELL || y>=YRES-CELL ||
-			        (bmap[y/CELL][x/CELL] &&
-			         (bmap[y/CELL][x/CELL]==WL_WALL ||
-			          bmap[y/CELL][x/CELL]==WL_WALLELEC ||
-			          bmap[y/CELL][x/CELL]==WL_ALLOWAIR ||
-			          (bmap[y/CELL][x/CELL]==WL_DESTROYALL) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID && elements[t].Falldown!=2) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWSOLID && elements[t].Falldown!=1) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && !(elements[t].Properties&TYPE_GAS)) || //&& elements[t].Falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_HFLM) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWENERGY && !(elements[t].Properties&TYPE_ENERGY)) ||
-					  (bmap[y/CELL][x/CELL]==WL_DETECT && (t==PT_METL || t==PT_SPRK)) ||
-			          (bmap[y/CELL][x/CELL]==WL_EWALL && !emap[y/CELL][x/CELL])) && (t!=PT_STKM) && (t!=PT_STKM2) && (t!=PT_FIGH)))
-			{
-				kill_part(i);
-				continue;
-			}
+					(bmap[y/CELL][x/CELL] &&
+					 (bmap[y/CELL][x/CELL]==WL_WALL ||
+					  bmap[y/CELL][x/CELL]==WL_WALLELEC ||
+					  bmap[y/CELL][x/CELL]==WL_ALLOWAIR ||
+					  (bmap[y/CELL][x/CELL]==WL_DESTROYALL) ||
+					  (bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID && elements[t].Falldown!=2) ||
+					  (bmap[y/CELL][x/CELL]==WL_ALLOWSOLID && elements[t].Falldown!=1) ||
+					  (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && !(elements[t].Properties&TYPE_GAS)) || //&& elements[t].Falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_HFLM) ||
+					 (bmap[y/CELL][x/CELL]==WL_ALLOWENERGY && !(elements[t].Properties&TYPE_ENERGY)) ||
+					 (bmap[y/CELL][x/CELL]==WL_DETECT && (t==PT_METL || t==PT_SPRK)) ||
+					 (bmap[y/CELL][x/CELL]==WL_EWALL && !emap[y/CELL][x/CELL])) && (t!=PT_STKM) && (t!=PT_STKM2) && (t!=PT_FIGH)))
+					 {
+						 kill_part(i);
+						 continue;
+					 }
 			if (bmap[y/CELL][x/CELL]==WL_DETECT && emap[y/CELL][x/CELL]<8)
 				set_emap(x/CELL, y/CELL);
 
@@ -3444,19 +3444,19 @@ void Simulation::update_particles_i(int start, int inc)
 			//Gravity mode by Moach
 			switch (gravityMode)
 			{
-			default:
-			case 0:
-				pGravX = 0.0f;
-				pGravY = elements[t].Gravity;
-				break;
-			case 1:
-				pGravX = pGravY = 0.0f;
-				break;
-			case 2:
-				pGravD = 0.01f - hypotf((x - XCNTR), (y - YCNTR));
-				pGravX = elements[t].Gravity * ((float)(x - XCNTR) / pGravD);
-				pGravY = elements[t].Gravity * ((float)(y - YCNTR) / pGravD);
-				break;
+				default:
+				case 0:
+					pGravX = 0.0f;
+					pGravY = elements[t].Gravity;
+					break;
+				case 1:
+					pGravX = pGravY = 0.0f;
+					break;
+				case 2:
+					pGravD = 0.01f - hypotf((x - XCNTR), (y - YCNTR));
+					pGravX = elements[t].Gravity * ((float)(x - XCNTR) / pGravD);
+					pGravY = elements[t].Gravity * ((float)(y - YCNTR) / pGravD);
+					break;
 			}
 			//Get some gravity from the gravity map
 			if (t==PT_ANAR)
@@ -3483,14 +3483,9 @@ void Simulation::update_particles_i(int start, int inc)
 
 			if (elements[t].Diffusion)//the random diffusion that gasses have
 			{
-#ifdef REALISTIC
 				//The magic number controlls diffusion speed
 				parts[i].vx += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
 				parts[i].vy += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
-#else
-				parts[i].vx += elements[t].Diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
-				parts[i].vy += elements[t].Diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
-#endif
 			}
 
 			j = surround_space = nt = 0;//if nt is 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
@@ -3512,7 +3507,7 @@ void Simulation::update_particles_i(int start, int inc)
 
 			if (!legacy_enable)
 			{
-				 if (y-2 >= 0 && y-2 < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale>(1+rand()%255))) {//some heat convection for liquids
+				if (y-2 >= 0 && y-2 < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale>(1+rand()%255))) {//some heat convection for liquids
 					r = pmap[y-2][x];
 					if (!(!r || parts[i].type != (r&0xFF))) {
 						if (parts[i].temp>parts[r>>8].temp) {
@@ -3525,18 +3520,11 @@ void Simulation::update_particles_i(int start, int inc)
 
 				//heat transfer code
 				h_count = 0;
-#ifdef REALISTIC
 				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale))
 				{
 					float c_Cm = 0.0f;
-#else
-					if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale)>(rand()%250))
-				{
-					float c_Cm = 0.0f;
-#endif
 					if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
 					{
-#ifdef REALISTIC
 						c_heat = parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight) + hv[y/CELL][x/CELL]*100*(pv[y/CELL][x/CELL]+273.15f)/256;
 						c_Cm = 96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight)  + 100*(pv[y/CELL][x/CELL]+273.15f)/256;
 						pt = c_heat/c_Cm;
@@ -3545,12 +3533,6 @@ void Simulation::update_particles_i(int start, int inc)
 						//Pressure increase from heat (temporary)
 						pv[y/CELL][x/CELL] += (pt-hv[y/CELL][x/CELL])*0.004;
 						hv[y/CELL][x/CELL] = pt;
-#else
-						c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
-						c_heat = restrict_flt(c_heat, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
-						parts[i].temp += c_heat;
-						hv[y/CELL][x/CELL] -= c_heat;
-#endif
 					}
 					c_heat = 0.0f;
 					c_Cm = 0.0f;
@@ -3562,24 +3544,19 @@ void Simulation::update_particles_i(int start, int inc)
 							continue;
 						rt = r&0xFF;
 						if (rt&&elements[rt].HeatConduct&&(rt!=PT_HSWC||parts[r>>8].life==10)
-						        &&(t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
-						        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
+								&&(t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
+								&&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG)))
 						{
 							surround_hconduct[j] = r>>8;
-#ifdef REALISTIC
 							if (rt==PT_GEL)
 								gel_scale = parts[r>>8].tmp*2.55f;
 							else gel_scale = 1.0f;
 
 							c_heat += parts[r>>8].temp*96.645/elements[rt].HeatConduct*gel_scale*fabs(elements[rt].Weight);
 							c_Cm += 96.645/elements[rt].HeatConduct*gel_scale*fabs(elements[rt].Weight);
-#else
-							c_heat += parts[r>>8].temp;
-#endif
 							h_count++;
 						}
 					}
-#ifdef REALISTIC
 					if (t==PT_GEL)
 						gel_scale = parts[i].tmp*2.55f;
 					else gel_scale = 1.0f;
@@ -3592,22 +3569,14 @@ void Simulation::update_particles_i(int start, int inc)
 					c_heat += parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight);
 					c_Cm += 96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight);
 					parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
-#else
-					pt = (c_heat+parts[i].temp)/(h_count+1);
-					pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
-					for (j=0; j<8; j++)
-					{
-						parts[surround_hconduct[j]].temp = pt;
-					}
-#endif
 
 					ctemph = ctempl = pt;
 					// change boiling point with pressure
 					if ((elements[t].State==ST_LIQUID && elements[t].HighTemperatureTransition>-1 && elements[t].HighTemperatureTransition<PT_NUM && elements[elements[t].HighTemperatureTransition].State==ST_GAS)
-					        || t==PT_LNTG || t==PT_SLTW)
+							|| t==PT_LNTG || t==PT_SLTW)
 						ctemph -= 2.0f*pv[y/CELL][x/CELL];
 					else if ((elements[t].State==ST_GAS && elements[t].LowTemperatureTransition>-1 && elements[t].LowTemperatureTransition<PT_NUM && elements[elements[t].LowTemperatureTransition].State==ST_LIQUID)
-					         || t==PT_WTRV)
+							|| t==PT_WTRV)
 						ctempl -= 2.0f*pv[y/CELL][x/CELL];
 					s = 1;
 
@@ -3617,13 +3586,12 @@ void Simulation::update_particles_i(int start, int inc)
 
 					if (ctemph>elements[t].HighTemperature&&elements[t].HighTemperatureTransition>-1) {
 						// particle type change due to high temperature
-#ifdef REALISTIC
 						float dbt = ctempl - pt;
 						if (elements[t].HighTemperatureTransition!=PT_NUM)
 						{
-							if (platent[t] <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
+							if (elements[t].Enthalpy <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
 							{
-								pt = (c_heat - platent[t])/c_Cm;
+								pt = (c_heat - elements[t].Enthalpy)/c_Cm;
 								t = elements[t].HighTemperatureTransition;
 							}
 							else
@@ -3632,42 +3600,31 @@ void Simulation::update_particles_i(int start, int inc)
 								s = 0;
 							}
 						}
-						 	 #else
-						if (elements[t].HighTemperatureTransition!=PT_NUM)
-							t = elements[t].HighTemperatureTransition;
-#endif
 						else if (t==PT_ICEI || t==PT_SNOW) {
 							if (parts[i].ctype<PT_NUM&&parts[i].ctype!=t) {
 								if (elements[parts[i].ctype].LowTemperatureTransition==t&&pt<=elements[parts[i].ctype].LowTemperature) s = 0;
 								else {
-#ifdef REALISTIC
 									//One ice table value for all it's kinds
-									if (platent[t] <= (c_heat - (elements[parts[i].ctype].LowTemperature - dbt)*c_Cm))
+									if (elements[t].Enthalpy <= (c_heat - (elements[parts[i].ctype].LowTemperature - dbt)*c_Cm))
 									{
-										pt = (c_heat - platent[t])/c_Cm;
-									 	 t = parts[i].ctype;
-									 	 parts[i].ctype = PT_NONE;
-									 	 parts[i].life = 0;
+										pt = (c_heat - elements[t].Enthalpy)/c_Cm;
+										t = parts[i].ctype;
+										parts[i].ctype = PT_NONE;
+										parts[i].life = 0;
 									}
 									else
 									{
 										parts[i].temp = restrict_flt(elements[parts[i].ctype].LowTemperature - dbt, MIN_TEMP, MAX_TEMP);
-									 	 s = 0;
+										s = 0;
 									}
-									#else
-									t = parts[i].ctype;
-									parts[i].ctype = PT_NONE;
-									parts[i].life = 0;
-#endif
 								}
 							}
 							else s = 0;
 						}
 						else if (t==PT_SLTW) {
-#ifdef REALISTIC
-							if (platent[t] <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
+							if (elements[t].Enthalpy <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
 							{
-								pt = (c_heat - platent[t])/c_Cm;
+								pt = (c_heat - elements[t].Enthalpy)/c_Cm;
 
 								if (1>rand()%6) t = PT_SALT;
 								else t = PT_WTRV;
@@ -3677,21 +3634,16 @@ void Simulation::update_particles_i(int start, int inc)
 								parts[i].temp = restrict_flt(elements[t].HighTemperature - dbt, MIN_TEMP, MAX_TEMP);
 								s = 0;
 							}
-#else
-							if (1>rand()%6) t = PT_SALT;
-							else t = PT_WTRV;
-#endif
 						}
 						else s = 0;
 					} else if (ctempl<elements[t].LowTemperature&&elements[t].LowTemperatureTransition>-1) {
 						// particle type change due to low temperature
-#ifdef REALISTIC
 						float dbt = ctempl - pt;
 						if (elements[t].LowTemperatureTransition!=PT_NUM)
 						{
-							if (platent[elements[t].LowTemperatureTransition] >= (c_heat - (elements[t].LowTemperature - dbt)*c_Cm))
+							if (elements[elements[t].LowTemperatureTransition].Enthalpy >= (c_heat - (elements[t].LowTemperature - dbt)*c_Cm))
 							{
-								pt = (c_heat + platent[elements[t].LowTemperatureTransition])/c_Cm;
+								pt = (c_heat + elements[elements[t].LowTemperatureTransition].Enthalpy)/c_Cm;
 								t = elements[t].LowTemperatureTransition;
 							}
 							else
@@ -3700,10 +3652,6 @@ void Simulation::update_particles_i(int start, int inc)
 								s = 0;
 							}
 						}
-#else
-						 if (elements[t].LowTemperatureTransition!=PT_NUM)
-						   t = elements[t].LowTemperatureTransition;
-#endif
 						else if (t==PT_WTRV) {
 							if (pt<273.0f) t = PT_RIME;
 							else t = PT_DSTW;
@@ -3735,13 +3683,11 @@ void Simulation::update_particles_i(int start, int inc)
 						else s = 0;
 					}
 					else s = 0;
-#ifdef REALISTIC
 					pt = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
 					for (j=0; j<8; j++)
 					{
 						parts[surround_hconduct[j]].temp = pt;
 					}
-#endif
 					if (s) { // particle type change occurred
 						if (t==PT_ICEI||t==PT_LAVA||t==PT_SNOW)
 							parts[i].ctype = parts[i].type;
@@ -3906,7 +3852,7 @@ void Simulation::update_particles_i(int start, int inc)
 			}
 #endif
 			//if (legacy_enable)//if heat sim is off
-				//update_legacy_all(this, i,x,y,surround_space,nt, parts, pmap); //TODO:pop
+			//update_legacy_all(this, i,x,y,surround_space,nt, parts, pmap); //TODO:pop
 
 killed:
 			if (parts[i].type == PT_NONE)//if its dead, skip to next particle
@@ -3996,10 +3942,10 @@ killed:
 						photons[ny][nx] = t|(i<<8);
 					else if (t)
 						pmap[ny][nx] = t|(i<<8);
-					}
 				}
-				else if (elements[t].Properties & TYPE_ENERGY)
-				{
+			}
+			else if (elements[t].Properties & TYPE_ENERGY)
+			{
 				if (t == PT_PHOT) {
 					if (parts[i].flags&FLAG_SKIPMOVE)
 					{
@@ -4169,7 +4115,7 @@ killed:
 						s = 1;
 						r = (rand()%2)*2-1;
 						if ((clear_x!=x || clear_y!=y || nt || surround_space) &&
-							(fabsf(parts[i].vx)>0.01f || fabsf(parts[i].vy)>0.01f))
+								(fabsf(parts[i].vx)>0.01f || fabsf(parts[i].vy)>0.01f))
 						{
 							// allow diagonal movement if target position is blocked
 							// but no point trying this if particle is stuck in a block of identical particles
@@ -4212,14 +4158,14 @@ killed:
 							for (j=clear_x+r; j>=0 && j>=clear_x-rt && j<clear_x+rt && j<XRES; j+=r)
 							{
 								if (((pmap[fin_y][j]&0xFF)!=t || bmap[fin_y/CELL][j/CELL])
-									&& (s=do_move(i, x, y, (float)j, fin_yf)))
+										&& (s=do_move(i, x, y, (float)j, fin_yf)))
 								{
 									nx = (int)(parts[i].x+0.5f);
 									ny = (int)(parts[i].y+0.5f);
 									break;
 								}
 								if (fin_y!=clear_y && ((pmap[clear_y][j]&0xFF)!=t || bmap[clear_y/CELL][j/CELL])
-									&& (s=do_move(i, x, y, (float)j, clear_yf)))
+										&& (s=do_move(i, x, y, (float)j, clear_yf)))
 								{
 									nx = (int)(parts[i].x+0.5f);
 									ny = (int)(parts[i].y+0.5f);
@@ -4528,7 +4474,6 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 
 Simulation::~Simulation()
 {
-	delete[] platent;
 	delete grav;
 	delete air;
 	for(int i = 0; i < tools.size(); i++)
@@ -4581,12 +4526,6 @@ Simulation::Simulation():
 	memcpy(wtypes, wtypesT, wallCount * sizeof(wall_type));
 	free(wtypesT);
 
-	platent = new unsigned[PT_NUM];
-	int latentCount;
-	unsigned int * platentT = LoadLatent(latentCount);
-	memcpy(platent, platentT, latentCount * sizeof(unsigned int));
-	free(platentT);
-	
 	//elements = new Element[PT_NUM];
 	std::vector<Element> elementList = GetElements();
 	for(int i = 0; i < PT_NUM; i++)
