@@ -294,11 +294,7 @@ void EngineProcess()
 	SDL_Event event;
 	while(engine->Running())
 	{
-		if(engine->Broken())
-		{
-			engine->UnBreak();
-			break;
-		}
+		if(engine->Broken()) { engine->UnBreak(); break; }
 		event.type = 0;
 		while (SDL_PollEvent(&event))
 		{
@@ -360,6 +356,7 @@ void EngineProcess()
 			}
 			event.type = 0; //Clear last event
 		}
+		if(engine->Broken()) { engine->UnBreak(); break; }
 
 		engine->Tick();
 		engine->Draw();
