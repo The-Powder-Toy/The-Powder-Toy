@@ -68,10 +68,10 @@ void LocalBrowserModel::UpdateSavesList(int pageNumber)
 	currentPage = pageNumber;
 	notifyPageChanged();
 	notifySavesListChanged();
-	/*notifyStampsListChanged();
-	for(int i = 0; i < tempStampsList.size(); i++)
+	//notifyStampsListChanged();
+	/*for(int i = 0; i < tempSavesList.size(); i++)
 	{
-		delete tempStampsList[i];
+		delete tempSavesList[i];
 	}*/
 
 	stampIDs = Client::Ref().GetStamps((pageNumber-1)*20, 20);

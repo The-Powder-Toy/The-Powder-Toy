@@ -119,6 +119,8 @@ GameModel::~GameModel()
 	}
 	delete sim;
 	delete ren;
+	if(placeSave)
+		delete placeSave;
 	if(clipboard)
 		delete clipboard;
 	if(stamp)

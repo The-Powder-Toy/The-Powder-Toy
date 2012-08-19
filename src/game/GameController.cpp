@@ -180,6 +180,10 @@ GameController::~GameController()
 	{
 		delete activePreview;
 	}
+	if(localBrowser)
+	{
+		delete localBrowser;
+	}
 	if(ui::Engine::Ref().GetWindow() == gameView)
 	{
 		ui::Engine::Ref().CloseWindow();
@@ -750,6 +754,12 @@ void GameController::Update()
 	{
 		delete loginWindow;
 		loginWindow = NULL;
+	}
+
+	if(localBrowser && localBrowser->HasDone)
+	{
+		delete localBrowser;
+		localBrowser = NULL;
 	}
 }
 

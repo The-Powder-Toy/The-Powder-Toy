@@ -527,6 +527,9 @@ GameView::~GameView()
 
 	if(!colourAValue->GetParentWindow())
 		delete colourAValue;
+
+	if(placeSaveThumb)
+		delete placeSaveThumb;
 }
 
 class GameView::MenuAction: public ui::ButtonAction

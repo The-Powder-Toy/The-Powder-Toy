@@ -813,7 +813,7 @@ SaveFile * Client::GetStamp(std::string stampID)
 		size_t fileSize = stampFile.tellg();
 		stampFile.seekg(0);
 
-		unsigned char * tempData = (unsigned char *)malloc(fileSize);
+		unsigned char * tempData = new unsigned char[fileSize];
 		stampFile.read((char *)tempData, fileSize);
 		stampFile.close();
 
@@ -826,8 +826,10 @@ SaveFile * Client::GetStamp(std::string stampID)
 		}
 		catch (ParseException & e)
 		{
+			delete[] tempData;
 			std::cerr << "Client: Invalid stamp file, " << stampID << " " << std::string(e.what()) << std::endl;
 		}
+		delete[] tempData;
 		return file;
 	}
 	else
