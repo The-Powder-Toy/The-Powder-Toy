@@ -818,8 +818,16 @@ SaveFile * Client::GetStamp(std::string stampID)
 		stampFile.close();
 
 		SaveFile * file = new SaveFile(std::string(stampID).c_str());
-		GameSave * tempSave = new GameSave((char *)tempData, fileSize);
-		file->SetGameSave(tempSave);
+		GameSave * tempSave = NULL;
+		try
+		{
+			GameSave * tempSave = new GameSave((char *)tempData, fileSize);
+			file->SetGameSave(tempSave);
+		}
+		catch (ParseException & e)
+		{
+			std::cerr << "Client: Invalid stamp file, " << stampID << " " << std::string(e.what()) << std::endl;
+		}
 		return file;
 	}
 	else
