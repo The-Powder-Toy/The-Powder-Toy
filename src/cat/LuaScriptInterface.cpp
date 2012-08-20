@@ -1306,22 +1306,24 @@ int luatpt_set_property(lua_State* l)
 			w = XRES-x;
 		if(y+h > YRES)
 			h = YRES-y;
-		for (nx = x; nx<x+w; nx++)
-			for (ny = y; ny<y+h; ny++){
-				r = luacon_sim->pmap[ny][nx];
-				if (!r || (partsel && partsel != luacon_sim->parts[r>>8].type))
+		Particle * parts = luacon_sim->parts;
+		for (i = 0; i < NPART; i++)
+		{
+			if (parts[i].type)
+			{
+				nx = (int)(parts[i].x + .5f);
+				ny = (int)(parts[i].y + .5f);
+				if (nx >= x && nx < x+w && ny >= y && ny < y+h && (!partsel || partsel == parts[i].type))
 				{
-					r = luacon_sim->photons[ny][nx];
-					if (!r || (partsel && partsel != luacon_sim->parts[r>>8].type))
-						continue;
-				}
-				i = r>>8;
-				if(format == CommandInterface::FormatFloat){
-					*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = f;
-				} else {
-					*((int*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = t;
+					if(format == CommandInterface::FormatFloat){
+						*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = f;
+					} else {
+						*((int*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = t;
+					}
 				}
 			}
+		}
+
 	} else {
 		// Got coords or particle index
 		if(i != -1 && y != -1){
@@ -1532,6 +1534,10 @@ int luatpt_get_property(lua_State* l)
 			return 1;
 		}
 		if (strcmp(prop,"dcolour")==0){
+			lua_pushinteger(l, luacon_sim->parts[i].dcolour);
+			return 1;
+		}
+		if (strcmp(prop,"dcolor")==0){
 			lua_pushinteger(l, luacon_sim->parts[i].dcolour);
 			return 1;
 		}
