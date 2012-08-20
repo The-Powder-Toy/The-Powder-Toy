@@ -105,6 +105,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 	}
 	parts_lastActiveIndex = NPART-1;
 	force_stacking_check = 1;
+	Element_PPIP::ppip_changed = 1;
 	for(int i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
 	{
 		sign tempSign = save->signs[i];
@@ -2810,6 +2811,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_FRZW:
 				parts[i].life = 100;
 				break;
+			case PT_PPIP:
 			case PT_PIPE:
 				parts[i].life = 60;
 				break;
@@ -3251,6 +3253,20 @@ void Simulation::update_particles_i(int start, int inc)
 			}
 		}
 	}
+
+	if (Element_PPIP::ppip_changed)
+	{
+		for (i=0; i<=parts_lastActiveIndex; i++)
+		{
+			if (parts[i].type==PT_PPIP)
+			{
+				parts[i].tmp |= (parts[i].tmp&0xE0000000)>>3;
+				parts[i].tmp &= ~0xE0000000;
+			}
+		}
+		Element_PPIP::ppip_changed = 0;
+	}
+
 	//game of life!
 	if (elementCount[PT_LIFE]>0&&++CGOL>=GSPEED)//GSPEED is frames per generation
 	{
@@ -4014,7 +4030,7 @@ killed:
 					}
 					r = pmap[fin_y][fin_x];
 
-					if ((r & 0xFF) == PT_PIPE && !(parts[r>>8].tmp&0xFF))
+					if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && !(parts[r>>8].tmp&0xFF))
 					{
 						parts[r>>8].tmp =  (parts[r>>8].tmp&~0xFF) | parts[i].type;
 						parts[r>>8].temp = parts[i].temp;

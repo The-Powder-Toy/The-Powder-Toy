@@ -43,7 +43,18 @@ Element_BRCK::Element_BRCK()
     HighTemperatureTransition = PT_LAVA;
     
     Update = NULL;
-    
+    Graphics = &Element_BRCK::graphics;
+}
+
+//#TPT-Directive ElementHeader Element_BRCK static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_BRCK::graphics(GRAPHICS_FUNC_ARGS)
+{
+    if (cpart->tmp == 1)
+    {
+        *pixel_mode |= PMODE_GLOW;
+        *colb += 100;
+    }
+    return 0;  
 }
 
 Element_BRCK::~Element_BRCK() {}

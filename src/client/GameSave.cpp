@@ -832,6 +832,13 @@ void GameSave::readOPS(char * data, int dataLength)
 						{
 							if(i >= partsDataLen) goto fail;
 							particles[newIndex].tmp |= (((unsigned)partsData[i++]) << 8);
+							//Read 3rd and 4th bytes
+							if(fieldDescriptor & 0x1000)
+							{
+								if(i+1 >= partsDataLen) goto fail;
+								particles[newIndex].tmp |= (((unsigned)partsData[i++]) << 16);
+								particles[newIndex].tmp |= (((unsigned)partsData[i++]) << 24);
+							}
 						}
 					}
 					
@@ -1795,6 +1802,12 @@ char * GameSave::serialiseOPS(int & dataLength)
 					{
 						fieldDesc |= 1 << 4;
 						partsData[partsDataLen++] = particles[i].tmp >> 8;
+						if(particles[i].tmp > 65535)
+						{
+							fieldDesc |= 1 << 12;
+							partsData[partsDataLen++] = (particles[i].tmp&0xFF000000)>>24;
+							partsData[partsDataLen++] = (particles[i].tmp&0x00FF0000)>>16;
+						}
 					}
 				}
 				
