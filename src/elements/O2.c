@@ -51,9 +51,18 @@ int update_O2(UPDATE_FUNC_ARGS)
 			int j;
 			create_part(i,x,y,PT_BRMT);
 
-			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT); if (j != -1) parts[j].temp = 15000;
-			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT); if (j != -1) parts[j].temp = 15000;
-			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM); if (j != -1) parts[j].temp = 15000;
+			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT);
+			if (j != -1)
+				parts[j].temp = 15000;
+			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT);
+			if (j != -1)
+				parts[j].temp = 15000;
+			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM);
+			if (j != -1)
+			{
+				parts[j].temp = 15000;
+				parts[j].tmp |= 8;
+			}
 
 			parts[i].temp = 15000;
 			pv[y/CELL][x/CELL] += 300;
