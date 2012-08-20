@@ -432,6 +432,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 		else
 			sim->grav->stop_grav_async();
 		sim->clear_sim();
+		sim->SetEdgeMode(0);
 		sim->Load(saveData);
 	}
 	notifySaveChanged();
