@@ -169,7 +169,7 @@ void PreviewView::commentBoxAutoHeight()
 	if(!addCommentBox)
 		return;
 	int textWidth = Graphics::textwidth(addCommentBox->GetText().c_str());
-	if(textWidth+5 > Size.X-(XRES/2)-48)
+	if(textWidth+10 > Size.X-(XRES/2)-48)
 	{
 		commentBoxHeight = 59;
 		addCommentBox->SetMultiline(true);

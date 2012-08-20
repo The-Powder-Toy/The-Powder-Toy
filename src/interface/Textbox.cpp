@@ -361,7 +361,10 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				cursor = getLowerSelectionBound();
 			}
 
-			if(limit==std::string::npos || backingText.length() < limit)
+			int regionWidth = Size.X;
+			if(Appearance.icon)
+				regionWidth -= 17;
+			if((limit==std::string::npos || backingText.length() < limit) && (Graphics::textwidth((char*)std::string(backingText+char(character)).c_str()) <= regionWidth || multiline || limit!=std::string::npos))
 			{
 				if(cursor == backingText.length())
 				{
@@ -371,8 +374,8 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				{
 					backingText.insert(cursor, 1, (char)character);
 				}
+				cursor++;
 			}
-			cursor++;
 			changed = true;
 			ClearSelection();
 		}
