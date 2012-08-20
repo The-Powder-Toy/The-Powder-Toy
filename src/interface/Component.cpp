@@ -162,7 +162,7 @@ Point Component::GetScreenPos()
 	if(GetParentWindow())
 		newPos += GetParentWindow()->Position;
 	if(GetParent())
-		newPos += GetParent()->Position;
+		newPos += GetParent()->Position + GetParent()->ViewportPosition;
 	newPos += Position;
 	return newPos;
 }
