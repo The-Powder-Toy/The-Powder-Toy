@@ -3626,7 +3626,7 @@ void Simulation::update_particles_i(int start, int inc)
 							{
 								pt = (c_heat - elements[t].Enthalpy)/c_Cm;
 
-								if (1>rand()%6) t = PT_SALT;
+								if (rand()%4==0) t = PT_SALT;
 								else t = PT_WTRV;
 							}
 							else
