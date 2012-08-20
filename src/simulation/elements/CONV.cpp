@@ -82,7 +82,7 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if((r&0xFF)!=PT_CONV && (r&0xFF)!=parts[i].ctype)
+					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=parts[i].ctype)
 					{
 						if (parts[i].ctype==PT_LIFE) sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype|(parts[i].tmp<<8));
 						else sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype);
