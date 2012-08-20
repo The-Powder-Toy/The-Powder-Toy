@@ -433,6 +433,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 			sim->grav->stop_grav_async();
 		sim->clear_sim();
 		sim->SetEdgeMode(0);
+		ren->ClearAccumulation();
 		sim->Load(saveData);
 	}
 	notifySaveChanged();
@@ -460,6 +461,8 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 			sim->grav->stop_grav_async();
 		}
 		sim->clear_sim();
+		sim->SetEdgeMode(0);
+		ren->ClearAccumulation();
 		sim->Load(saveData);
 	}
 	
@@ -623,6 +626,7 @@ void GameModel::FrameStep(int frames)
 void GameModel::ClearSimulation()
 {
 	sim->clear_sim();
+	ren->ClearAccumulation();
 }
 
 void GameModel::SetStamp(GameSave * save)
