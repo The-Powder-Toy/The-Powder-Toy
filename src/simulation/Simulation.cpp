@@ -3851,8 +3851,8 @@ void Simulation::update_particles_i(int start, int inc)
 				y = (int)(parts[i].y+0.5f);
 			}
 #endif
-			//if (legacy_enable)//if heat sim is off
-			//update_legacy_all(this, i,x,y,surround_space,nt, parts, pmap); //TODO:pop
+			if(legacy_enable)//if heat sim is off
+				Element::legacyUpdate(this, i,x,y,surround_space,nt, parts, pmap);
 
 killed:
 			if (parts[i].type == PT_NONE)//if its dead, skip to next particle

@@ -53,6 +53,7 @@ public:
 	Element();
 	virtual ~Element() {}
 	static int defaultGraphics(GRAPHICS_FUNC_ARGS);
+	static int legacyUpdate(UPDATE_FUNC_ARGS);
 };
 
 #endif
