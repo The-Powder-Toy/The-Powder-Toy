@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_H2 PT_H2 148
 Element_H2::Element_H2()
 {
-    Identifier = "DEFAULT_PT_H2";
-    Name = "HYGN";
-    Colour = PIXPACK(0x5070FF);
-    MenuVisible = 1;
-    MenuSection = SC_GAS;
-    Enabled = 1;
-    
-    Advection = 2.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.99f;
-    Loss = 0.30f;
-    Collision = -0.10f;
-    Gravity = 0.00f;
-    Diffusion = 3.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 1;
-    
-    Temperature = R_TEMP+0.0f +273.15f;
-    HeatConduct = 251;
-    Description = "Combines with O2 to make WATR";
-    
-    State = ST_GAS;
-    Properties = TYPE_GAS;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_H2::update;
-    
+	Identifier = "DEFAULT_PT_H2";
+	Name = "HYGN";
+	Colour = PIXPACK(0x5070FF);
+	MenuVisible = 1;
+	MenuSection = SC_GAS;
+	Enabled = 1;
+
+	Advection = 2.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.99f;
+	Loss = 0.30f;
+	Collision = -0.10f;
+	Gravity = 0.00f;
+	Diffusion = 3.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+
+	Weight = 1;
+
+	Temperature = R_TEMP+0.0f +273.15f;
+	HeatConduct = 251;
+	Description = "Combines with O2 to make WATR";
+
+	State = ST_GAS;
+	Properties = TYPE_GAS;
+
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+
+	Update = &Element_H2::update;
+
 }
 
 //#TPT-Directive ElementHeader Element_H2 static int update(UPDATE_FUNC_ARGS)
@@ -66,22 +66,23 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_WATR);
 					sim->part_change_type(i,x,y,PT_OIL);
 				}
-				if (parts[r>>8].temp > 2273.15)// && pv[y/CELL][x/CELL] > 50.0f)
+				if (parts[r>>8].temp > 2273.15 && sim->pv[y/CELL][x/CELL] > 45)// && pv[y/CELL][x/CELL] > 50.0f)
 					continue;
-				if (parts[i].temp < 2273.15)
+				if (sim->pv[x/CELL][y/CELL]<45)
 				{
 					if (rt==PT_FIRE)
 					{
 						parts[r>>8].temp=2473.15;
 						if(parts[r>>8].tmp&0x02)
-						parts[r>>8].temp=3473;
+							parts[r>>8].temp=3473;
 						parts[r>>8].tmp |= 1;
 					}
 					if (rt==PT_FIRE || rt==PT_PLSM || rt==PT_LAVA)
 					{
 						sim->create_part(i,x,y,PT_FIRE);
-						parts[i].temp+=(rand()/(RAND_MAX/100));
+						parts[i].temp+=(rand()%250);
 						parts[i].tmp |= 1;
+						sim->pv[y/CELL][x/CELL] +=0.1f;
 					}
 				}
 			}
