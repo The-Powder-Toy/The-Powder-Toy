@@ -139,6 +139,7 @@ GameController::GameController():
 		tagsWindow(NULL),
 		options(NULL),
 		activePreview(NULL),
+		localBrowser(NULL),
 		HasDone(false)
 {
 	gameView = new GameView();
