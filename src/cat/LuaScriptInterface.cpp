@@ -25,6 +25,7 @@
 #else
 #include <sys/stat.h>
 #endif
+ #include <time.h>
 
 LuaScriptInterface::LuaScriptInterface(GameModel * m):
 	CommandInterface(m),
@@ -141,6 +142,7 @@ LuaScriptInterface::LuaScriptInterface(GameModel * m):
 	lua_setfield(l, tptPropertiesVersion, "build");
 	lua_setfield(l, tptProperties, "version");
 
+	lua_sethook(l, &luacon_hook, LUA_MASKCOUNT, 200);
 #ifdef FFI
 	//LuaJIT's ffi gives us direct access to parts data, no need for nested metatables. HOWEVER, this is in no way safe, it's entirely possible for someone to try to read parts[-10]
 	lua_pushlightuserdata(l, parts);
@@ -300,6 +302,7 @@ bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, boo
 
 void LuaScriptInterface::OnTick()
 {
+	LoopTime = clock();
 	if(luacon_mousedown)
 		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
 	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_brushx, luacon_brushy);
@@ -319,6 +322,7 @@ int LuaScriptInterface::Command(std::string command)
 		int ret;
 		lastError = "";
 		currentCommand = true;
+		LoopTime = clock();	
 		if((ret = luaL_dostring(l, command.c_str())))
 		{
 			lastError = luacon_geterror();
@@ -874,26 +878,40 @@ int luacon_step(int mx, int my, int selectl, int selectr, int bsx, int bsy){
 	lua_setfield(luacon_ci->l, tptProperties, "selectedr");
 	lua_setfield(luacon_ci->l, tptProperties, "brushx");
 	lua_setfield(luacon_ci->l, tptProperties, "brushy");
-	if(step_functions[0]){
-		//Set mouse globals
-		for(i = 0; i<6; i++){
-			if(step_functions[i]){
-				lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, step_functions[i]);
-				callret = lua_pcall(luacon_ci->l, 0, 0, 0);
-				if (callret)
+	for(i = 0; i<6; i++){
+		if(step_functions[i]){
+			lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, step_functions[i]);
+			callret = lua_pcall(luacon_ci->l, 0, 0, 0);
+			if (callret)
+			{
+				if (!strcmp(luacon_geterror(),"Error: Script not responding"))
 				{
-					luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+					luacon_ci->LoopTime = clock();
+					lua_pushcfunction(luacon_ci->l, &luatpt_unregister_step);
+					lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, step_functions[i]);
+					lua_pcall(luacon_ci->l, 1, 0, 0);
 				}
+				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			}
 		}
-		return tempret;
 	}
 	return 0;
 }
 
 
 int luacon_eval(char *command){
+	luacon_ci->LoopTime = clock();
 	return luaL_dostring (luacon_ci->l, command);
+}
+
+void luacon_hook(lua_State * l, lua_Debug * ar)
+{
+	if(ar->event == LUA_HOOKCOUNT && clock()-luacon_ci->LoopTime > CLOCKS_PER_SEC*3)
+	{
+		if(ConfirmPrompt::Blocking("Script not responding", "The Lua script may have stopped responding. There might be an infinite loop. Press \"Stop\" to stop it", "Stop"))
+			luaL_error(l, "Error: Script not responding");
+		luacon_ci->LoopTime = clock();
+	}
 }
 
 char *luacon_geterror(){
