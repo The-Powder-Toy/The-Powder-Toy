@@ -60,13 +60,15 @@ int Element_DSTW::update(UPDATE_FUNC_ARGS)
 				if ((r&0xFF)==PT_SALT && 1>(rand()%250))
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);
-					sim->part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
+					// on average, convert 3 DSTW to SLTW before SALT turns into SLTW
+					if (rand()%3==0)
+						sim->part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
 				}
 				if (((r&0xFF)==PT_WATR||(r&0xFF)==PT_SLTW) && 1>(rand()%500))
 				{
 					sim->part_change_type(i,x,y,PT_WATR);
 				}
-				if ((r&0xFF)==PT_SLTW && 1>(rand()%500))
+				if ((r&0xFF)==PT_SLTW && 1>(rand()%10000))
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);
 				}
