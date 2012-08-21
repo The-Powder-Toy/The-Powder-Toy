@@ -887,10 +887,19 @@ int luatpt_test(lua_State* l)
 int luatpt_getelement(lua_State *l)
 {
 	int t;
-	char * name = luaL_optstring(l, 1, "dust");
-	if (!console_parse_type(name, &t, NULL))
-		return luaL_error(l,"Unrecognised element '%s'", name);
-	lua_pushinteger(l, t);
+	char* name;
+	if(lua_isnumber(l, 1)){
+		t = luaL_optint(l, 1, 0);
+		if (t<0 || t>=PT_NUM)
+			return luaL_error(l, "Unrecognised element number '%d'", t);
+		name = ptypes[t&0xFF].name;
+		lua_pushstring(l, name);
+	} else {
+		name = (char*)luaL_optstring(l, 1, "dust");
+		if (!console_parse_type(name, &t, NULL))
+			return luaL_error(l, "Unrecognised element '%s'", name);
+		lua_pushinteger(l, t);
+	}
 	return 1;
 }
 int luatpt_element_func(lua_State *l)
