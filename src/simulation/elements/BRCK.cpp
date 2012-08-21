@@ -51,8 +51,13 @@ int Element_BRCK::graphics(GRAPHICS_FUNC_ARGS)
 {
     if (cpart->tmp == 1)
     {
-        *pixel_mode |= PMODE_GLOW;
+        *pixel_mode |= FIRE_ADD;
         *colb += 100;
+
+        *firea = 40;
+        *firer = *colr;
+        *fireg = *colg;
+        *fireb = *colb;
     }
     return 0;  
 }
