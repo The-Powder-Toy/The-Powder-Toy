@@ -19,8 +19,10 @@ int update_GEL(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
 	float dx, dy;
 	char gel;
+	int absorbChanceDenom;
 	if (parts[i].tmp>100) parts[i].tmp = 100;
 	if (parts[i].tmp<0) parts[i].tmp = 0;
+	absorbChanceDenom = parts[i].tmp*10 + 500;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -30,17 +32,17 @@ int update_GEL(UPDATE_FUNC_ARGS) {
 					continue;
 
 				//Desaturation
-				if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_FRZW) && parts[i].tmp<100)
+				if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_FRZW) && parts[i].tmp<100 && 500>rand()%absorbChanceDenom)
 				{
 					parts[i].tmp++;
 					kill_part(r>>8);
 				}
-				if (((r&0xFF)==PT_PSTE) && parts[i].tmp<100)
+				if (((r&0xFF)==PT_PSTE) && parts[i].tmp<100 && 20>rand()%absorbChanceDenom)
 				{
 					parts[i].tmp++;
 					create_part(r>>8, x+rx, y+ry, PT_CLST);
 				}
-				if (((r&0xFF)==PT_SLTW) && parts[i].tmp<100)
+				if (((r&0xFF)==PT_SLTW) && parts[i].tmp<100 && 50>rand()%absorbChanceDenom)
 				{
 					parts[i].tmp++;
 					if (rand()%4)
@@ -48,7 +50,7 @@ int update_GEL(UPDATE_FUNC_ARGS) {
 					else
 						part_change_type(r>>8, x+rx, y+ry, PT_SALT);
 				}
-				if (((r&0xFF)==PT_CBNW) && parts[i].tmp<100)
+				if (((r&0xFF)==PT_CBNW) && parts[i].tmp<100 && 100>rand()%absorbChanceDenom)
 				{
 					parts[i].tmp++;
 					part_change_type(r>>8, x+rx, y+ry, PT_CO2);
