@@ -37,8 +37,6 @@ int update_H2(UPDATE_FUNC_ARGS)
 					continue;
 				if (pv[x/CELL][y/CELL] < 45.0f)
 				{
-					if(parts[r>>8].tmp&8&&rt==PT_PLSM)
-						continue;
 					if (rt==PT_FIRE)
 					{
 						parts[r>>8].temp=2473.15;
@@ -46,7 +44,7 @@ int update_H2(UPDATE_FUNC_ARGS)
 							parts[r>>8].temp=3473;
 						parts[r>>8].tmp |= 1;
 					}
-					if (rt==PT_FIRE || rt==PT_PLSM || rt==PT_LAVA)
+					if (rt==PT_FIRE || (rt==PT_PLSM && !(parts[r>>8].tmp&1)) || (rt==PT_LAVA && parts[r>>8].ctype != PT_BMTL))
 					{
 						create_part(i,x,y,PT_FIRE);
 						parts[i].temp+=(rand()%250);
@@ -75,14 +73,14 @@ int update_H2(UPDATE_FUNC_ARGS)
 			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT);
 			if (j != -1)
 			{
-				parts[j].ctype = 0xFFFF00;
+				parts[j].ctype = 0x7C0000;
 				parts[j].temp = temp;
 			}
 			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM);
 			if (j != -1)
 			{
 				parts[j].temp = temp;
-				parts[j].tmp |= 8;
+				parts[j].tmp |= 1;
 			}
 
 			parts[i].temp = temp+750+rand()%500;

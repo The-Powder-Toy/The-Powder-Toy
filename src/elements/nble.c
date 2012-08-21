@@ -37,7 +37,7 @@ int update_NBLE(UPDATE_FUNC_ARGS)
 			j = create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT);
 			if (j != -1)
 			{
-				parts[j].ctype = 0xFF0000;
+				parts[j].ctype = 0xF800000;
 				parts[j].temp = temp;
 			}
 
@@ -45,7 +45,7 @@ int update_NBLE(UPDATE_FUNC_ARGS)
 			if (j != -1)
 			{
 				parts[j].temp = temp;
-				parts[j].tmp |= 8;
+				parts[j].tmp |= 1;
 			}
 
 			parts[i].temp = temp+1750+rand()%500;
