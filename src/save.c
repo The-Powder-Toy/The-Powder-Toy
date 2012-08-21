@@ -811,9 +811,9 @@ void *build_save_OPS(int *size, int orig_x0, int orig_y0, int orig_w, int orig_h
 	bson_append_bool(&b, "paused", sys_pause);
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);
-	bson_append_int(&b, "render_mode", render_mode);
-	bson_append_int(&b, "display_mode", display_mode);
-	bson_append_int(&b, "color_mode", colour_mode);
+	//bson_append_int(&b, "render_mode", render_mode);
+	//bson_append_int(&b, "display_mode", display_mode);
+	//bson_append_int(&b, "color_mode", colour_mode);
 	
 	//bson_append_int(&b, "leftSelectedElement", sl);
 	//bson_append_int(&b, "rightSelectedElement", sr);
