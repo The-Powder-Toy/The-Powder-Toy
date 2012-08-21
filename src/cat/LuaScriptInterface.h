@@ -40,7 +40,6 @@ class LuaScriptInterface: public CommandInterface {
 	bool currentCommand;
 	TPTScriptInterface * legacy;
 public:
-	int LoopTime;
 	lua_State *l;
 	LuaScriptInterface(GameModel * m);
 	virtual bool OnBrushChanged(int brushType, int rx, int ry);

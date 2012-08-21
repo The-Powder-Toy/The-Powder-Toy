@@ -302,7 +302,7 @@ bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, boo
 
 void LuaScriptInterface::OnTick()
 {
-	LoopTime = clock();
+	ui::Engine::Ref().LastTick(clock());
 	if(luacon_mousedown)
 		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
 	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_brushx, luacon_brushy);
@@ -322,7 +322,7 @@ int LuaScriptInterface::Command(std::string command)
 		int ret;
 		lastError = "";
 		currentCommand = true;
-		LoopTime = clock();	
+		ui::Engine::Ref().LastTick(clock());
 		if((ret = luaL_dostring(l, command.c_str())))
 		{
 			lastError = luacon_geterror();
@@ -886,7 +886,7 @@ int luacon_step(int mx, int my, int selectl, int selectr, int bsx, int bsy){
 			{
 				if (!strcmp(luacon_geterror(),"Error: Script not responding"))
 				{
-					luacon_ci->LoopTime = clock();
+					ui::Engine::Ref().LastTick(clock());
 					lua_pushcfunction(luacon_ci->l, &luatpt_unregister_step);
 					lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, step_functions[i]);
 					lua_pcall(luacon_ci->l, 1, 0, 0);
@@ -900,17 +900,17 @@ int luacon_step(int mx, int my, int selectl, int selectr, int bsx, int bsy){
 
 
 int luacon_eval(char *command){
-	luacon_ci->LoopTime = clock();
+	ui::Engine::Ref().LastTick(clock());
 	return luaL_dostring (luacon_ci->l, command);
 }
 
 void luacon_hook(lua_State * l, lua_Debug * ar)
 {
-	if(ar->event == LUA_HOOKCOUNT && clock()-luacon_ci->LoopTime > CLOCKS_PER_SEC*3)
+	if(ar->event == LUA_HOOKCOUNT && clock()-ui::Engine::Ref().LastTick() > CLOCKS_PER_SEC*3)
 	{
 		if(ConfirmPrompt::Blocking("Script not responding", "The Lua script may have stopped responding. There might be an infinite loop. Press \"Stop\" to stop it", "Stop"))
 			luaL_error(l, "Error: Script not responding");
-		luacon_ci->LoopTime = clock();
+		ui::Engine::Ref().LastTick(clock());
 	}
 }
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stack>
 #include <cstdio>
+#include <time.h>
 
 #include "Config.h"
 #include "interface/Window.h"
@@ -25,7 +26,8 @@ Engine::Engine():
 	FrameIndex(0),
 	Fullscreen(false),
 	Scale(1),
-	break_(false)
+	break_(false),
+	lastTick(0)
 {
 }
 
@@ -152,6 +154,7 @@ void Engine::Tick()
 		state_->DoTick(dt);
 
 
+	lastTick = clock();
 	if(windowOpenState<1.0f)
 	{
 		if(lastBuffer)
