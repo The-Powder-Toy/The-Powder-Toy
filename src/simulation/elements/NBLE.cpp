@@ -63,7 +63,12 @@ int Element_NBLE::update(UPDATE_FUNC_ARGS)
             if (!(rand()%25)) { j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC); if (j != -1) parts[j].temp = temp; }
             j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT); if (j != -1) { parts[j].ctype = 0xFF0000; parts[j].temp = temp; }
 
-            j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM); if (j != -1) parts[j].temp = temp;
+            j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM); 
+			if (j != -1) 
+			{
+				parts[j].temp = temp;
+				parts[j].tmp |=8;
+			}
 
             parts[i].temp = temp+1750+rand()%500;
             sim->pv[y/CELL][x/CELL] += 50;
