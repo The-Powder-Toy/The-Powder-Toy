@@ -805,7 +805,26 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 
 SaveFile * Client::GetStamp(std::string stampID)
 {
-	std::ifstream stampFile;
+	std::string stampFile = std::string(STAMPS_DIR PATH_SEP + stampID + ".stm");
+	if(FileExists(stampFile))
+	{
+		SaveFile * file = new SaveFile(stampID);
+		try
+		{
+			GameSave * tempSave = new GameSave(ReadFile(stampFile));
+			file->SetGameSave(tempSave);
+		}
+		catch (ParseException & e)
+		{
+			std::cerr << "Client: Invalid stamp file, " << stampID << " " << std::string(e.what()) << std::endl;
+		}
+		return file;
+	}
+	else
+	{
+		return NULL;
+	}
+	/*std::ifstream stampFile;
 	stampFile.open(std::string(STAMPS_DIR PATH_SEP + stampID + ".stm").c_str(), std::ios::binary);
 	if(stampFile.is_open())
 	{
@@ -835,7 +854,7 @@ SaveFile * Client::GetStamp(std::string stampID)
 	else
 	{
 		return NULL;
-	}
+	}*/
 }
 
 void Client::DeleteStamp(std::string stampID)
@@ -885,6 +904,8 @@ std::string Client::AddStamp(GameSave * saveData)
 	stampStream.open(std::string(STAMPS_DIR PATH_SEP + saveID.str()+".stm").c_str(), std::ios::binary);
 	stampStream.write((const char *)gameData, gameDataLength);
 	stampStream.close();
+
+	delete[] gameData;
 
 	stampIDs.push_front(saveID.str());
 

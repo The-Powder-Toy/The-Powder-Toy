@@ -657,7 +657,7 @@ void GameModel::AddStamp(GameSave * save)
 {
 	if(stamp)
 		delete stamp;
-	stamp = new GameSave(*save);
+	stamp = save;
 	Client::Ref().AddStamp(save);
 }
 
