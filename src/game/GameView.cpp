@@ -1822,6 +1822,63 @@ void GameView::OnDraw()
 				}
 			}
 		}
+
+		if(selectMode!=SelectNone)
+		{
+			if(selectMode==PlaceSave)
+			{
+				Thumbnail * tempThumb = placeSaveThumb;
+				if(tempThumb && selectPoint2.X!=-1)
+				{
+					int thumbX = selectPoint2.X - (tempThumb->Size.X/2);
+					int thumbY = selectPoint2.Y - (tempThumb->Size.Y/2);
+
+					ui::Point thumbPos = c->NormaliseBlockCoord(ui::Point(thumbX, thumbY));
+
+					if(thumbPos.X<0)
+						thumbPos.X = 0;
+					if(thumbPos.X+(tempThumb->Size.X)>=XRES)
+						thumbPos.X = XRES-tempThumb->Size.X;
+
+					if(thumbPos.Y<0)
+						thumbPos.Y = 0;
+					if(thumbPos.Y+(tempThumb->Size.Y)>=YRES)
+						thumbPos.Y = YRES-tempThumb->Size.Y;
+
+					ren->draw_image(tempThumb->Data, thumbPos.X, thumbPos.Y, tempThumb->Size.X, tempThumb->Size.Y, 128);
+
+					ren->xor_rect(thumbPos.X, thumbPos.Y, tempThumb->Size.X, tempThumb->Size.Y);
+				}
+			}
+			else
+			{
+				if(selectPoint1.X==-1)
+				{
+					ren->fillrect(0, 0, XRES, YRES, 0, 0, 0, 100);
+				}
+				else
+				{
+					int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
+					int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
+					int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
+					int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
+
+					if(x2>XRES-1)
+						x2 = XRES-1;
+					if(y2>YRES-1)
+						y2 = YRES-1;
+
+					ren->fillrect(0, 0, XRES, y1, 0, 0, 0, 100);
+					ren->fillrect(0, y2, XRES, YRES-y2, 0, 0, 0, 100);
+
+					ren->fillrect(0, y1, x1, (y2-y1), 0, 0, 0, 100);
+					ren->fillrect(x2, y1, XRES-x2, (y2-y1), 0, 0, 0, 100);
+
+					ren->xor_rect(x1, y1, (x2-x1)+1, (y2-y1)+1);
+				}
+			}
+		}
+
 		ren->RenderEnd();
 
 		if(doScreenshot)
@@ -1849,63 +1906,6 @@ void GameView::OnDraw()
 			filename << ".ppm";
 
 			Client::Ref().WriteFile(data, filename.str());
-		}
-
-
-		if(selectMode!=SelectNone)
-		{
-			if(selectMode==PlaceSave)
-			{
-				Thumbnail * tempThumb = placeSaveThumb;
-				if(tempThumb && selectPoint2.X!=-1)
-				{
-					int thumbX = selectPoint2.X - (tempThumb->Size.X/2);
-					int thumbY = selectPoint2.Y - (tempThumb->Size.Y/2);
-
-					ui::Point thumbPos = c->NormaliseBlockCoord(ui::Point(thumbX, thumbY));
-
-					if(thumbPos.X<0)
-						thumbPos.X = 0;
-					if(thumbPos.X+(tempThumb->Size.X)>=XRES)
-						thumbPos.X = XRES-tempThumb->Size.X;
-
-					if(thumbPos.Y<0)
-						thumbPos.Y = 0;
-					if(thumbPos.Y+(tempThumb->Size.Y)>=YRES)
-						thumbPos.Y = YRES-tempThumb->Size.Y;
-
-					g->draw_image(tempThumb->Data, thumbPos.X, thumbPos.Y, tempThumb->Size.X, tempThumb->Size.Y, 128);
-
-					g->xor_rect(thumbPos.X, thumbPos.Y, tempThumb->Size.X, tempThumb->Size.Y);
-				}
-			}
-			else
-			{
-				if(selectPoint1.X==-1)
-				{
-					g->fillrect(0, 0, XRES, YRES, 0, 0, 0, 100);
-				}
-				else
-				{
-					int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
-					int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
-					int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
-					int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
-
-					if(x2>XRES-1)
-						x2 = XRES-1;
-					if(y2>YRES-1)
-						y2 = YRES-1;
-
-					g->fillrect(0, 0, XRES, y1, 0, 0, 0, 100);
-					g->fillrect(0, y2, XRES, YRES-y2, 0, 0, 0, 100);
-
-					g->fillrect(0, y1, x1, (y2-y1), 0, 0, 0, 100);
-					g->fillrect(x2, y1, XRES-x2, (y2-y1), 0, 0, 0, 100);
-
-					g->xor_rect(x1, y1, (x2-x1)+1, (y2-y1)+1);
-				}
-			}
 		}
 
 		int startX = 20;
