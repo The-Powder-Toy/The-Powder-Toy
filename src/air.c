@@ -239,7 +239,7 @@ void update_air(void)
 				j = (int)ty;
 				tx -= i;
 				ty -= j;
-				if (i>=2 && i<XRES/CELL-3 && j>=2 && j<YRES/CELL-3 && !bmap_blockair[y+j][x+i])
+				if (i>=2 && i<XRES/CELL-3 && j>=2 && j<YRES/CELL-3)
 				{
 					dx *= 1.0f - AIR_VADV;
 					dy *= 1.0f - AIR_VADV;
@@ -292,10 +292,6 @@ void update_air(void)
 					break;
 				}
 
-				if (bmap_blockair[y][x])
-				{
-					dx = dy = dp = 0.0f;
-				}
 				ovx[y][x] = dx;
 				ovy[y][x] = dy;
 				opv[y][x] = dp;
