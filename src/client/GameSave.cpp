@@ -1230,7 +1230,7 @@ void GameSave::readPSv(char * data, int dataLength)
 				particles[k].x = (float)x;
 				particles[k].y = (float)y;
 				m[(x-x0)+(y-y0)*w] = k+1;
-				particlesCount = k++;
+				particlesCount = ++k;
 			}
 		}
 	
