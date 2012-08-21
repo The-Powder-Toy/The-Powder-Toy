@@ -824,37 +824,6 @@ SaveFile * Client::GetStamp(std::string stampID)
 	{
 		return NULL;
 	}
-	/*std::ifstream stampFile;
-	stampFile.open(std::string(STAMPS_DIR PATH_SEP + stampID + ".stm").c_str(), std::ios::binary);
-	if(stampFile.is_open())
-	{
-		stampFile.seekg(0, std::ios::end);
-		size_t fileSize = stampFile.tellg();
-		stampFile.seekg(0);
-
-		unsigned char * tempData = new unsigned char[fileSize];
-		stampFile.read((char *)tempData, fileSize);
-		stampFile.close();
-
-		SaveFile * file = new SaveFile(std::string(stampID).c_str());
-		GameSave * tempSave = NULL;
-		try
-		{
-			GameSave * tempSave = new GameSave((char *)tempData, fileSize);
-			file->SetGameSave(tempSave);
-		}
-		catch (ParseException & e)
-		{
-			delete[] tempData;
-			std::cerr << "Client: Invalid stamp file, " << stampID << " " << std::string(e.what()) << std::endl;
-		}
-		delete[] tempData;
-		return file;
-	}
-	else
-	{
-		return NULL;
-	}*/
 }
 
 void Client::DeleteStamp(std::string stampID)

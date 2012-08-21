@@ -87,6 +87,11 @@ void LocalBrowserModel::UpdateSavesList(int pageNumber)
 	notifySavesListChanged();
 }
 
+int LocalBrowserModel::GetPageCount()
+{
+	return std::max(1, (int)(std::ceil(float(Client::Ref().GetStampsCount())/20.0f)));
+}
+
 void LocalBrowserModel::SelectSave(std::string stampID)
 {
 	for(int i = 0; i < selected.size(); i++)

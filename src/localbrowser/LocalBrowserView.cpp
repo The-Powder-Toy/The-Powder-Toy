@@ -41,7 +41,8 @@ LocalBrowserView::LocalBrowserView():
 		}
 	};
 	nextButton->SetActionCallback(new NextPageAction(this));
-	nextButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;	nextButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	nextButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
+	nextButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
 	class PrevPageAction : public ui::ButtonAction
 	{
@@ -54,7 +55,8 @@ LocalBrowserView::LocalBrowserView():
 		}
 	};
 	previousButton->SetActionCallback(new PrevPageAction(this));
-	previousButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	previousButton->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	previousButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	previousButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
 	class RemoveSelectedAction : public ui::ButtonAction
 	{
@@ -186,7 +188,7 @@ void LocalBrowserView::OnMouseWheel(int x, int y, int d)
 {
 	if(!d)
 		return;
-	if(d<0)
+	if(d>0)
 		c->NextPage();
 	else
 		c->PrevPage();
