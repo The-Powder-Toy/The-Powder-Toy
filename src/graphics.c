@@ -1994,14 +1994,22 @@ void render_parts(pixel *vid)
 				//Apply decoration colour
 				if(!(colour_mode & ~COLOUR_GRAD))
 				{
+#ifdef RENDERER
+					if(!(pixel_mode & NO_DECO) && (decorations_enable || (deca == 255 && decr == 0 && decg == 0 && decb == 0)))
+#else
 					if(!(pixel_mode & NO_DECO) && decorations_enable)
+#endif
 					{
 						colr = (deca*decr + (255-deca)*colr) >> 8;
 						colg = (deca*decg + (255-deca)*colg) >> 8;
 						colb = (deca*decb + (255-deca)*colb) >> 8;
 					}
 					
+#ifdef RENDERER
+					if(pixel_mode & DECO_FIRE && (decorations_enable || (deca == 255 && decr == 0 && decg == 0 && decb == 0)))
+#else
 					if(pixel_mode & DECO_FIRE && decorations_enable)
+#endif
 					{
 						firer = (deca*decr + (255-deca)*firer) >> 8;
 						fireg = (deca*decg + (255-deca)*fireg) >> 8;
