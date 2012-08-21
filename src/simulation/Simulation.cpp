@@ -4520,7 +4520,7 @@ Simulation::Simulation():
 	gravmap = grav->gravmap;
 
 	//Create and attach air simulation
-	air = new Air();
+	air = new Air(*this);
 	//Give air sim references to our data
 	air->bmap = bmap;
 	air->emap = emap;

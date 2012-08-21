@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "Config.h"
 #include "Air.h"
+#include "Simulation.h"
 //#include <powder.h>
 //#include <defines.h>
 #include "Gravity.h"
@@ -110,7 +111,7 @@ void Air::update_airh(void)
 				dh += AIR_VADV*(1.0f-tx)*ty*(bmap_blockairh[j+1][i] ? odh : hv[j+1][i]);
 				dh += AIR_VADV*tx*ty*(bmap_blockairh[j+1][i+1] ? odh : hv[j+1][i+1]);
 			}
-			//if(!gravityMode) TODO: GET REAL VALUE
+			if(!sim.gravityMode)
 			{ //Vertical gravity only for the time being
 				float airdiff = hv[y-1][x]-hv[y][x];
 				if(airdiff>0 && !bmap_blockairh[y-1][x])
@@ -309,9 +310,12 @@ void Air::Invert()
 		}
 }
 
-Air::Air():
-	airMode(0)
+Air::Air(Simulation & simulation):
+	airMode(0),
+	sim(simulation)
 {
 	//Simulation should do this.
 	make_kernel();
+
+
 }

@@ -7,6 +7,7 @@ class Simulation;
 class Air
 {
 public:
+	Simulation & sim;
 	int airMode;
 	//Arrays from the simulation
 	unsigned char (*bmap)[XRES/CELL];
@@ -30,7 +31,7 @@ public:
 	void update_air(void);
 	void Clear();
 	void Invert();
-	Air();
+	Air(Simulation & sim);
 };
 
 #endif
