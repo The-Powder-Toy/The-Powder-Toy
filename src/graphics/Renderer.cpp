@@ -41,6 +41,7 @@ void Renderer::RenderBegin()
 	render_parts();
 	render_fire();
 	DrawWalls();
+	draw_other();
 	draw_grav_zones();
 	DrawSigns();
 
@@ -84,6 +85,7 @@ void Renderer::RenderBegin()
 	}
 
 	DrawWalls();
+	draw_other();
 	draw_grav_zones();
 	DrawSigns();
 	if(display_mode & DISPLAY_WARP)
@@ -127,6 +129,7 @@ void Renderer::RenderBegin()
 	}
 
 	DrawWalls();
+	draw_other();
 	draw_grav_zones();
 	DrawSigns();
 
@@ -2025,10 +2028,10 @@ void Renderer::render_parts()
 void Renderer::draw_other() // EMP effect
 {
 	int i, j;
-	//if (emp_decor>0 && !sys_pause) emp_decor-=emp_decor/25+2; TODO: Render should render only, do not change simulation state
-	if (emp_decor>40) emp_decor=40;
+	int emp_decor = sim->emp_decor;
+	if (emp_decor>40) emp_decor = 40;
 	if (emp_decor<0) emp_decor = 0;
-	if (!(display_mode & DISPLAY_EFFE)) // no in nothing mode
+	if (!(render_mode & EFFECT)) // not in nothing mode
 		return;
 	if (emp_decor>0)
 	{
@@ -2485,7 +2488,6 @@ void Renderer::CompileRenderMode()
 
 void Renderer::ClearAccumulation()
 {
-	emp_decor = 0;
 	std::fill(fire_r[0]+0, fire_r[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
 	std::fill(fire_g[0]+0, fire_g[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
 	std::fill(fire_b[0]+0, fire_b[(YRES/CELL)-1]+((XRES/CELL)-1), 0);

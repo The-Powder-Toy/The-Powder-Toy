@@ -1860,6 +1860,7 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 void Simulation::clear_sim(void)
 {
 	int i, x, y;
+	emp_decor = 0;
 	signs.clear();
 	currentTick = 0;
 	memset(bmap, 0, sizeof(bmap));
@@ -4394,6 +4395,10 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 				gravWallChanged = false;
 			}
 		}
+		if(emp_decor>0)
+			emp_decor -= emp_decor/25+2;
+		if(emp_decor < 0)
+			emp_decor = 0;
 	}
 
 	memset(pmap, 0, sizeof(pmap));

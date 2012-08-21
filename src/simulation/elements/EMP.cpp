@@ -68,9 +68,9 @@ int Element_EMP::update(UPDATE_FUNC_ARGS)
 	if (!ok)
 		return 0;
 	parts[i].life=220;
-	//emp_decor+=3; TODO: Fix
-	//if (emp_decor>40)
-	//	emp_decor=40;
+	sim->emp_decor += 3;
+	if (sim->emp_decor > 40)
+		sim->emp_decor = 40;
 	for (r=0; r<=sim->parts_lastActiveIndex; r++)
 	{
 		t=parts[r].type;

@@ -39,7 +39,6 @@ public:
 	unsigned int fire_alpha[CELL*3][CELL*3];
 	char * flm_data;
 	char * plasma_data;
-	int emp_decor;
 	//
 	bool gravityZonesEnabled;
 	bool gravityFieldEnabled;

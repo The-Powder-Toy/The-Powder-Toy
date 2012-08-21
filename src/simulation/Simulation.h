@@ -76,6 +76,7 @@ public:
 	int elementCount[PT_NUM];
 	int ISWIRE;
 	int force_stacking_check;
+	int emp_decor;
 	//Gol sim
 	int CGOL;
 	int ISGOL;
