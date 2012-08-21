@@ -5,15 +5,25 @@
  *      Author: Simon
  */
 
+#include "client/Client.h"
 #include "ConsoleModel.h"
 
 ConsoleModel::ConsoleModel() {
-
+	std::vector<std::string> previousHistory = Client::Ref().GetPrefStringArray("Console.History");
+	for(std::vector<std::string>::reverse_iterator iter = previousHistory.rbegin(), end = previousHistory.rend(); iter != end; ++iter)
+	{
+		if(previousCommands.size()<25)
+		{
+			previousCommands.push_front(ConsoleCommand(*iter, 0, ""));
+			currentCommandIndex = previousCommands.size();
+		}
+	}
 }
 
 void ConsoleModel::AddObserver(ConsoleView * observer)
 {
 	observers.push_back(observer);
+	observer->NotifyPreviousCommandsChanged(this);
 }
 
 int ConsoleModel::GetCurrentCommandIndex()
@@ -67,6 +77,6 @@ void ConsoleModel::notifyCurrentCommandChanged()
 }
 
 ConsoleModel::~ConsoleModel() {
-
+	Client::Ref().SetPref("Console.History", std::vector<std::string>(previousCommands.begin(), previousCommands.end()));
 }
 

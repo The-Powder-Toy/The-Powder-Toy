@@ -19,6 +19,11 @@ public:
 	std::string Command;
 	int ReturnStatus;
 	std::string ReturnValue;
+
+	operator std::string() const
+	{
+		return Command;
+	}
 };
 
 
