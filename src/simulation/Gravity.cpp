@@ -420,13 +420,13 @@ void Gravity::grav_mask_r(int x, int y, char checkmap[YRES/CELL][XRES/CELL], cha
 		*shapeout = 1;
 
 	int x1 = x, x2 = x;
-	while (x1 >= 0)
+	while (x1 >= 1)
 	{
 		if(checkmap[y][x1-1] || bmap[y][x1-1]==WL_GRAV)
 			break;
 		x1--;
 	}
-	while (x2 < XRES/CELL)
+	while (x2 < (XRES/CELL)-1)
 	{
 		if(checkmap[y][x2+1] || bmap[y][x2+1]==WL_GRAV)
 			break;
