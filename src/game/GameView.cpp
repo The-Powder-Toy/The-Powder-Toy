@@ -1002,6 +1002,8 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
 {
+	if(altBehaviour)
+		button = BUTTON_MIDDLE;
 	if(selectMode!=SelectNone)
 	{
 		if(button==BUTTON_LEFT)
@@ -1035,6 +1037,9 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 
 void GameView::OnMouseUp(int x, int y, unsigned button)
 {
+	if(altBehaviour)
+		button = BUTTON_MIDDLE;
+
 	if(selectMode!=SelectNone)
 	{
 		if(button==BUTTON_LEFT)
