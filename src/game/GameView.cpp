@@ -1179,6 +1179,19 @@ void GameView::OnMouseWheel(int x, int y, int d)
 	}
 }
 
+void GameView::ToggleDebug()
+{
+	showDebug = !showDebug;
+}
+
+void GameView::BeginStampSelection()
+{
+	selectMode = SelectStamp;
+	selectPoint1 = ui::Point(-1, -1);
+	infoTip = "\x0F\xEF\xEF\x10Select an area to create a stamp";
+	infoTipPresence = 120;
+}
+
 void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	if(colourRValue->IsFocused() || colourGValue->IsFocused() || colourBValue->IsFocused() || colourAValue->IsFocused())
@@ -1300,9 +1313,6 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		else
 			c->AdjustGridSize(1);
 		break;
-	case 'd':
-		showDebug = !showDebug;
-		break;
 	case KEY_F1:
 		if(!introText)
 			introText = 8047;
@@ -1323,15 +1333,6 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'b':
 		if(ctrl)
 			c->SetDecoration();
-		break;
-	case 's':
-		selectMode = SelectStamp;
-		selectPoint1 = ui::Point(-1, -1);
-		infoTip = "\x0F\xEF\xEF\x10Select an area to create a stamp";
-		infoTipPresence = 120;
-		break;
-	case 'w':
-		c->SwitchGravity();
 		break;
 	case 'y':
 		c->SwitchAir();
