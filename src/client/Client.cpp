@@ -169,7 +169,7 @@ bool Client::DoInstallation()
 		goto finalise;
 	}*/
 	
-	//AppDataPath = _getcwd(NULL, 0);
+	AppDataPath = _getcwd(NULL, 0);
 
 	//Move Game executable into application data folder
 	//TODO: Implement
