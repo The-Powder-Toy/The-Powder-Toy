@@ -188,7 +188,7 @@ void LocalBrowserView::OnMouseWheel(int x, int y, int d)
 {
 	if(!d)
 		return;
-	if(d>0)
+	if(d<0)
 		c->NextPage();
 	else
 		c->PrevPage();

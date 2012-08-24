@@ -102,14 +102,14 @@ void LocalBrowserController::ClearSelection()
 
 void LocalBrowserController::NextPage()
 {
-	if(browserModel->GetPageNum()>1)
-		browserModel->UpdateSavesList(browserModel->GetPageNum()-1);
+	if(browserModel->GetPageNum() < browserModel->GetPageCount())
+		browserModel->UpdateSavesList(browserModel->GetPageNum()+1);
 }
 
 void LocalBrowserController::PrevPage()
 {
-	if(browserModel->GetPageNum() <= browserModel->GetPageCount())
-		browserModel->UpdateSavesList(browserModel->GetPageNum()+1);
+	if(browserModel->GetPageNum()>1)
+		browserModel->UpdateSavesList(browserModel->GetPageNum()-1);
 }
 
 void LocalBrowserController::Update()
