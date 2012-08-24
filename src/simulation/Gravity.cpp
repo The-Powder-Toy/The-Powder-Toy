@@ -418,16 +418,33 @@ void Gravity::grav_mask_r(int x, int y, char checkmap[YRES/CELL][XRES/CELL], cha
 		return;
 	if(x == 0 || y ==0 || y == (YRES/CELL)-1 || x == (XRES/CELL)-1)
 		*shapeout = 1;
-	checkmap[y][x] = 1;
-	shape[y][x] = 1;
-	if(x-1 >= 0 && !checkmap[y][x-1] && bmap[y][x-1]!=WL_GRAV)
-		grav_mask_r(x-1, y, checkmap, shape, shapeout);
-	if(y-1 >= 0 && !checkmap[y-1][x] && bmap[y-1][x]!=WL_GRAV)
-		grav_mask_r(x, y-1, checkmap, shape, shapeout);
-	if(x+1 < XRES/CELL && !checkmap[y][x+1] && bmap[y][x+1]!=WL_GRAV)
-		grav_mask_r(x+1, y, checkmap, shape, shapeout);
-	if(y+1 < YRES/CELL && !checkmap[y+1][x] && bmap[y+1][x]!=WL_GRAV)
-		grav_mask_r(x, y+1, checkmap, shape, shapeout);
+
+	int x1 = x, x2 = x;
+	while (x1 >= 0)
+	{
+		if(checkmap[y][x1-1] || bmap[y][x1-1]==WL_GRAV)
+			break;
+		x1--;
+	}
+	while (x2 < XRES/CELL)
+	{
+		if(checkmap[y][x2+1] || bmap[y][x2+1]==WL_GRAV)
+			break;
+		x2++;
+	}
+	
+	// fill span
+	for (x = x1; x <= x2; x++)
+		checkmap[y][x] = shape[y][x] = 1;
+
+	if(y >= 1)
+		for(x = x1; x <= x2; x++)
+			if(!checkmap[y-1][x] && bmap[y-1][x]!=WL_GRAV)
+				grav_mask_r(x, y-1, checkmap, shape, shapeout);
+	if(y < (YRES/CELL)-1)
+		for(x = x1; x <= x2; x++)
+			if(!checkmap[y+1][x] && bmap[y+1][x]!=WL_GRAV)
+				grav_mask_r(x, y+1, checkmap, shape, shapeout);
 	return;
 }
 void Gravity::mask_free(mask_el *c_mask_el){
