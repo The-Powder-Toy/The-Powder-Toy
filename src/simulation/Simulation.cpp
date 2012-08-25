@@ -3922,13 +3922,10 @@ void Simulation::update_particles_i(int start, int inc)
 				y = (int)(parts[i].y+0.5f);
 			}
 #endif
-<<<<<<< HEAD
+
+
 			if(legacy_enable)//if heat sim is off
 				Element::legacyUpdate(this, i,x,y,surround_space,nt, parts, pmap);
-=======
-			//if (legacy_enable)//if heat sim is off
-				//update_legacy_all(this, i,x,y,surround_space,nt, parts, pmap); //TODO:pop
->>>>>>> parent of d6fe7fa... Basic realistic heat and latent heat support.
 
 killed:
 			if (parts[i].type == PT_NONE)//if its dead, skip to next particle
