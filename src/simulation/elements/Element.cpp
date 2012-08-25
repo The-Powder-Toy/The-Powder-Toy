@@ -26,7 +26,6 @@ Element::Element():
 	Weight(50),
 
 	Temperature(273.15f),
-	Enthalpy(0.0f),
 	HeatConduct(128),
 	Description("No description"),
 

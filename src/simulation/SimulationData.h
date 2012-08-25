@@ -172,4 +172,6 @@ wall_type * LoadWalls(int & wallCount);
 
 menu_section * LoadMenus(int & menuCount);
 
+unsigned int * LoadLatent(int & elementCount);
+
 #endif /* SIMULATIONDATA_H_ */

@@ -27,7 +27,7 @@ Element_FIRE::Element_FIRE()
     Weight = 2;
     
     Temperature = R_TEMP+400.0f+273.15f;
-    HeatConduct = 1;
+    HeatConduct = 88;
     Description = "Ignites flammable materials. Heats air.";
     
     State = ST_GAS;

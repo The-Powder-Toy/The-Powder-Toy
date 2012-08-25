@@ -836,8 +836,8 @@ void GameSave::readOPS(char * data, int dataLength)
 							if(fieldDescriptor & 0x1000)
 							{
 								if(i+1 >= partsDataLen) goto fail;
-								particles[newIndex].tmp |= (((unsigned)partsData[i++]) << 16);
 								particles[newIndex].tmp |= (((unsigned)partsData[i++]) << 24);
+								particles[newIndex].tmp |= (((unsigned)partsData[i++]) << 16);
 							}
 						}
 					}

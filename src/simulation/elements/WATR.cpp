@@ -27,7 +27,6 @@ Element_WATR::Element_WATR()
     Weight = 30;
     
     Temperature = R_TEMP-2.0f	+273.15f;
-    Enthalpy = 7500;
     HeatConduct = 29;
     Description = "Liquid. Conducts electricity. Freezes. Extinguishes fires.";
     
