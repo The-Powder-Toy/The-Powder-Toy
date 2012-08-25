@@ -2272,6 +2272,17 @@ void Renderer::drawblob(int x, int y, unsigned char cr, unsigned char cg, unsign
 	blendpixel(x-1, y+1, cr, cg, cb, 64);
 }
 
+pixel Renderer::GetPixel(int x, int y)
+{
+	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)
+		return 0;
+#ifdef OGLR
+	return 0;	
+#else
+	return vid[(y*VIDXRES)+x];
+#endif
+}
+
 Renderer::Renderer(Graphics * g, Simulation * sim):
 	sim(NULL),
 	g(NULL),

@@ -115,6 +115,8 @@ public:
 	VideoBuffer DumpFrame();
 
 	void drawblob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb);
+
+	pixel GetPixel(int x, int y);
 	//...
 	//Display mode modifiers
 	void CompileDisplayMode();

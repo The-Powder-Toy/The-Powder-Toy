@@ -2,6 +2,7 @@
 #include "graphics/Graphics.h"
 #include "Tool.h"
 #include "GameModel.h"
+#include "interface/Colour.h"
 
 VideoBuffer * SampleTool::GetIcon(int toolID, int width, int height)
 {
@@ -21,16 +22,24 @@ VideoBuffer * SampleTool::GetIcon(int toolID, int width, int height)
 
 void SampleTool::Draw(Simulation * sim, Brush * brush, ui::Point position)
 {
-	int particleType = 0;
-	if(sim->pmap[position.Y][position.X])
-		particleType = sim->parts[sim->pmap[position.Y][position.X]>>8].type;
-	else if(sim->photons[position.Y][position.X])
-		particleType = sim->parts[sim->photons[position.Y][position.X]>>8].type;
-
-	if(particleType)
+	if(gameModel->GetColourSelectorVisibility())
 	{
-		Tool * elementTool = gameModel->GetElementTool(particleType);
-		if(elementTool)
-			gameModel->SetActiveTool(0, elementTool);
+		pixel colour = gameModel->GetRenderer()->GetPixel(position.X, position.Y);
+		gameModel->SetColourSelectorColour(ui::Colour(PIXR(colour), PIXG(colour), PIXB(colour), 255));
+	}
+	else
+	{
+		int particleType = 0;
+		if(sim->pmap[position.Y][position.X])
+			particleType = sim->parts[sim->pmap[position.Y][position.X]>>8].type;
+		else if(sim->photons[position.Y][position.X])
+			particleType = sim->parts[sim->photons[position.Y][position.X]>>8].type;
+
+		if(particleType)
+		{
+			Tool * elementTool = gameModel->GetElementTool(particleType);
+			if(elementTool)
+				gameModel->SetActiveTool(0, elementTool);
+		}
 	}
 }
