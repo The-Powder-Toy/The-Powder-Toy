@@ -334,7 +334,7 @@ GameView::GameView():
             v->c->OpenLogin();
         }
     };
-    loginButton = new ui::Button(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "[sign in]");
+    loginButton = new ui::Button(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "[sign in]", "Sign into simulation server");
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
     loginButton->SetIcon(IconLogin);
     loginButton->SetActionCallback(new LoginAction(this));
