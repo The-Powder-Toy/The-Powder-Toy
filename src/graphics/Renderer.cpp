@@ -483,9 +483,9 @@ void Renderer::RenderZoom()
 		int x, y, i, j;
 		pixel pix;
 		pixel * img = vid;
+		clearrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+2, zoomScopeSize*ZFACTOR+2);
 		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+4, zoomScopeSize*ZFACTOR+4, 192, 192, 192, 255);
 		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+2, zoomScopeSize*ZFACTOR+2, 0, 0, 0, 255);
-		clearrect(zoomWindowPosition.X, zoomWindowPosition.Y, zoomScopeSize*ZFACTOR, zoomScopeSize*ZFACTOR);
 		for (j=0; j<zoomScopeSize; j++)
 			for (i=0; i<zoomScopeSize; i++)
 			{
