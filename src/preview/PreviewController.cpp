@@ -124,12 +124,9 @@ void PreviewController::FavouriteSave()
 
 void PreviewController::OpenInBrowser()
 {
-	if(previewModel->GetSave())
-	{
-		std::stringstream uriStream;
-		uriStream << "http://" << SERVER << "/Browse/View.html?ID=" << previewModel->GetSave()->id;
-		OpenURI(uriStream.str());
-	}
+	std::stringstream uriStream;
+	uriStream << "http://" << SERVER << "/Browse/View.html?ID=" << saveId;
+	OpenURI(uriStream.str());
 }
 
 void PreviewController::NextCommentPage()

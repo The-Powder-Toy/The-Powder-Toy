@@ -155,13 +155,43 @@ PreviewView::PreviewView():
 	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(authorDateLabel);
 
+
 	pageInfo = new ui::Label(ui::Point((XRES/2) + 5, Size.Y+1), ui::Point(Size.X-((XRES/2) + 10), 15), "Page 1 of 1");
 	pageInfo->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+
+	saveIDTextbox = new ui::Textbox(ui::Point((XRES/2)-55, Size.Y-40), ui::Point(50, 16), "0000000");
+	saveIDTextbox->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	saveIDTextbox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	saveIDTextbox->ReadOnly = true;
+	AddComponent(saveIDTextbox);
+
+	class CopyIDAction: public ui::ButtonAction
+	{
+		PreviewView * v;
+	public:
+		CopyIDAction(PreviewView * v_){ v = v_; }
+		virtual void ActionCallback(ui::Button * sender)
+		{
+			clipboard_push_text((char*)v->saveIDTextbox->GetText().c_str());
+		}
+	};
+
+	ui::Button * tempButton = new ui::Button(ui::Point((XRES/2)-130, Size.Y-40), ui::Point(70, 16), "Copy Save ID");
+	tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	tempButton->SetActionCallback(new CopyIDAction(this));
+	AddComponent(tempButton);
 
 	commentsPanel = new ui::ScrollPanel(ui::Point((XRES/2)+1, 1), ui::Point((Size.X-(XRES/2))-2, Size.Y-commentBoxHeight));
 	AddComponent(commentsPanel);
 
 	AddComponent(pageInfo);
+}
+
+void PreviewView::AttachController(PreviewController * controller)
+{ 
+	c = controller;
+	saveIDTextbox->SetText(format::NumberToString<int>(c->SaveID()));
 }
 
 void PreviewView::commentBoxAutoHeight()

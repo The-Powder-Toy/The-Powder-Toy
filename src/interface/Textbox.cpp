@@ -19,7 +19,8 @@ Textbox::Textbox(Point position, Point size, std::string textboxText, std::strin
 	limit(std::string::npos),
 	inputType(All),
 	keyDown(0),
-	characterDown(0)
+	characterDown(0),
+	ReadOnly(false)
 {
 	placeHolder = textboxPlaceholder;
 
@@ -268,12 +269,12 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		copySelection();
 		return;
 	}
-	if(ctrl && key == 'v')
+	if(ctrl && key == 'v' && !ReadOnly)
 	{
 		pasteIntoSelection();
 		return;
 	}
-	if(ctrl && key == 'x' && !masked)
+	if(ctrl && key == 'x' && !masked && !ReadOnly)
 	{
 		cutSelection();
 		return;
@@ -307,6 +308,8 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			ClearSelection();
 			break;
 		case KEY_DELETE:
+			if(ReadOnly)
+				break;
 			if(HasSelection())
 			{
 				if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())
@@ -326,6 +329,8 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			ClearSelection();
 			break;
 		case KEY_BACKSPACE:
+			if(ReadOnly)
+				break;
 			if(HasSelection())
 			{
 				if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())
@@ -351,7 +356,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			ClearSelection();
 			break;
 		}
-		if(CharacterValid(character))
+		if(CharacterValid(character) && !ReadOnly)
 		{
 			if(HasSelection())
 			{

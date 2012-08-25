@@ -41,6 +41,7 @@ class PreviewView: public ui::Window {
 	ui::Label * authorDateLabel;
 	ui::Label * pageInfo;
 	ui::Label * saveDescriptionLabel;
+	ui::Textbox * saveIDTextbox;
 	ui::ScrollPanel * commentsPanel;
 	std::vector<SaveComment> comments;
 	std::vector<ui::Component*> commentComponents;
@@ -59,7 +60,7 @@ class PreviewView: public ui::Window {
 	void commentBoxAutoHeight();
 	void submitComment();
 public:
-	void AttachController(PreviewController * controller) { c = controller;}
+	void AttachController(PreviewController * controller);
 	PreviewView();
 	void NotifySaveChanged(PreviewModel * sender);
 	void NotifyCommentsChanged(PreviewModel * sender);

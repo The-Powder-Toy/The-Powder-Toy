@@ -25,6 +25,7 @@ class PreviewController: public ClientListener {
 	ControllerCallback * callback;
 public:
 	virtual void NotifyAuthUserChanged(Client * sender);
+	inline int SaveID() { return saveId; };
 
 	bool HasExited;
 	PreviewController(int saveID, ControllerCallback * callback);

@@ -20,6 +20,7 @@ class Textbox : public Label
 {
 	friend class TextboxAction;
 public:
+	bool ReadOnly;
 	enum ValidInput { All, Numeric, Number };
 	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
 	virtual ~Textbox();
