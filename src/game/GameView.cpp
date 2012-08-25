@@ -179,7 +179,8 @@ GameView::GameView():
 	doScreenshot(false),
 	recording(false),
 	screenshotIndex(0),
-	recordingIndex(0)
+	recordingIndex(0),
+	toolTipPresence(0)
 {
 	
 	int currentX = 1;
@@ -1155,10 +1156,19 @@ void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::str
 		buttonTip = toolTip;
 		buttonTipShow = 120;
 	}
+	else if(sender->Position.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
+	{
+		this->toolTip = toolTip;
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), sender->Position.Y+3);
+		if(toolTipPosition.Y+10 > Size.Y-MENUSIZE)
+			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+		toolTipPresence = 120;
+	}
 	else
 	{
 		this->toolTip = toolTip;
 		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+		toolTipPresence = 160;
 	}
 }
 
@@ -1497,6 +1507,12 @@ void GameView::OnTick(float dt)
 		buttonTipShow -= int(dt)>0?int(dt):1;
 		if(buttonTipShow<0)
 			buttonTipShow = 0;	
+	}
+	if(toolTipPresence>0)
+	{
+		toolTipPresence -= int(dt)>0?int(dt):1;
+		if(toolTipPresence<0)
+			toolTipPresence = 0;	
 	}
 	c->Update();
 	if(lastLogEntry > -0.1f)
@@ -2054,9 +2070,9 @@ void GameView::OnDraw()
 		g->drawtext((XRES-Graphics::textwidth((char*)infoTip.c_str()))/2, (YRES/2)-2, (char*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
 	}
 
-	if(toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
+	if(toolTipPresence && toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
 	{
-		g->drawtext(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, 255);
+		g->drawtext(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
 	}
 
 	if(buttonTipShow > 0)
