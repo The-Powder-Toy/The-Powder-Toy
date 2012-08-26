@@ -17,6 +17,7 @@ SaveRenderer::SaveRenderer(){
 	g = new Graphics();
 	sim = new Simulation();
 	ren = new Renderer(g, sim);
+	ren->decorations_enable = false;
 
 #if defined(OGLR) || defined(OGLI)
 	glEnable(GL_TEXTURE_2D);
@@ -51,6 +52,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save)
 	
 	if(!sim->Load(save))
 	{
+		ren->decorations_enable = false;
 #if defined(OGLR) || defined(OGLI)
 		pixel * pData = NULL;
 		unsigned char * texData = NULL;
