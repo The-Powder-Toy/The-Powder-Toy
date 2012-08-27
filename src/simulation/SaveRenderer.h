@@ -24,8 +24,8 @@ class SaveRenderer: public Singleton<SaveRenderer> {
 	Renderer * ren;
 public:
 	SaveRenderer();
-	Thumbnail * Render(GameSave * save);
-	Thumbnail * Render(unsigned char * saveData, int saveDataSize);
+	Thumbnail * Render(GameSave * save, bool decorations = true);
+	Thumbnail * Render(unsigned char * saveData, int saveDataSize, bool decorations = true);
 	virtual ~SaveRenderer();
 
 private:

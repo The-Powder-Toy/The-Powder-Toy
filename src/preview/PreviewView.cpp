@@ -356,7 +356,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 
 		if(save->GetGameSave())
 		{
-			savePreview = SaveRenderer::Ref().Render(save->GetGameSave());
+			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false);
 
 			if(savePreview && savePreview->Data && !(savePreview->Size.X == XRES/2 && savePreview->Size.Y == YRES/2))
 			{

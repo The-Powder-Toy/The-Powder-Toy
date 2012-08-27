@@ -127,7 +127,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	SetOkayButton(okayButton);
 
 	if(save.GetGameSave())
-		ThumbnailBroker::Ref().RenderThumbnail(save.GetGameSave(), (Size.X/2)-16, -1, this);
+		ThumbnailBroker::Ref().RenderThumbnail(save.GetGameSave(), false, (Size.X/2)-16, -1, this);
 }
 
 ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, ServerSaveActivity::SaveUploadedCallback * callback) :

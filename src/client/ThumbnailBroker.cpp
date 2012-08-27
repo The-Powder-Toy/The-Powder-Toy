@@ -54,11 +54,12 @@ class ThumbnailBroker::ThumbRenderRequest
 {
 public:
 	int Width, Height;
+	bool Decorations;
 	GameSave * Save;
 	ThumbnailListener * CompletedListener;
-	ThumbRenderRequest(GameSave * save, int width, int height, ThumbnailListener * completedListener) :
-		Save(save), Width(width), Height(height), CompletedListener(completedListener) {}
-	ThumbRenderRequest() :	Save(0), Width(0), Height(0), CompletedListener(NULL) {}
+	ThumbRenderRequest(GameSave * save, bool decorations, int width, int height, ThumbnailListener * completedListener) :
+		Save(save), Width(width), Height(height), CompletedListener(completedListener), Decorations(decorations) {}
+	ThumbRenderRequest() :	Save(0), Decorations(true), Width(0), Height(0), CompletedListener(NULL) {}
 };
 
 ThumbnailBroker::ThumbnailBroker()
@@ -78,11 +79,16 @@ ThumbnailBroker::~ThumbnailBroker()
 
 void ThumbnailBroker::RenderThumbnail(GameSave * gameSave, int width, int height, ThumbnailListener * tListener)
 {
+	RenderThumbnail(gameSave, true, width, height, tListener);
+}
+
+void ThumbnailBroker::RenderThumbnail(GameSave * gameSave, bool decorations, int width, int height, ThumbnailListener * tListener)
+{
 	AttachThumbnailListener(tListener);
 	pthread_mutex_lock(&thumbnailQueueMutex);
 	bool running = thumbnailQueueRunning;
 	thumbnailQueueRunning = true;
-	renderRequests.push_back(ThumbRenderRequest(new GameSave(*gameSave), width, height, tListener));
+	renderRequests.push_back(ThumbRenderRequest(new GameSave(*gameSave), decorations, width, height, tListener));
 	pthread_mutex_unlock(&thumbnailQueueMutex);
 	
 	if(!running)
@@ -167,7 +173,7 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 			std::cout << typeid(*this).name() << " Processing render request" << std::endl;
 #endif
 
-			Thumbnail * thumbnail = SaveRenderer::Ref().Render(req.Save);
+			Thumbnail * thumbnail = SaveRenderer::Ref().Render(req.Save, req.Decorations);
 			delete req.Save;
 
 			if(thumbnail)

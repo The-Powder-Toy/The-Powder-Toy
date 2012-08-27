@@ -48,6 +48,7 @@ public:
 	virtual ~ThumbnailBroker();
 
 	void FlushThumbQueue();
+	void RenderThumbnail(GameSave * gameSave, bool decorations, int width, int height, ThumbnailListener * tListener);
 	void RenderThumbnail(GameSave * gameSave, int width, int height, ThumbnailListener * tListener);
 	void RetrieveThumbnail(int saveID, int saveDate, int width, int height, ThumbnailListener * tListener);
 	void RetrieveThumbnail(int saveID, int width, int height, ThumbnailListener * tListener);
