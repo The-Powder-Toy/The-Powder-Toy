@@ -55,6 +55,7 @@ namespace ui
 
 		virtual bool HasSelection();
 		virtual void ClearSelection();
+		virtual void AutoHeight();
 
 		void SetTextColour(Colour textColour) { this->textColour = textColour; }
 

@@ -199,16 +199,21 @@ void PreviewView::commentBoxAutoHeight()
 	if(!addCommentBox)
 		return;
 	int textWidth = Graphics::textwidth(addCommentBox->GetText().c_str());
-	if(textWidth+10 > Size.X-(XRES/2)-48)
+	if(textWidth+15 > Size.X-(XRES/2)-48)
 	{
-		commentBoxHeight = 59;
 		addCommentBox->SetMultiline(true);
 		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 
+		int oldSize = addCommentBox->Size.Y;
+		addCommentBox->AutoHeight();
+		int newSize = addCommentBox->Size.Y+5;
+		addCommentBox->Size.Y = oldSize;
+
+		commentBoxHeight = newSize+22;
 		commentBoxPositionX = (XRES/2)+4;
-		commentBoxPositionY = Size.Y-58;
+		commentBoxPositionY = Size.Y-(newSize+21);
 		commentBoxSizeX = Size.X-(XRES/2)-8;
-		commentBoxSizeY = 37;
+		commentBoxSizeY = newSize;
 	}
 	else
 	{

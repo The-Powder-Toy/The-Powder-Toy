@@ -59,6 +59,14 @@ void Label::SetText(std::string text)
 	}
 }
 
+void Label::AutoHeight()
+{
+	bool oldAH = autoHeight;
+	autoHeight = true;
+	updateMultiline();
+	autoHeight = oldAH;
+}
+
 void Label::updateMultiline()
 {
 	int lines = 1;
