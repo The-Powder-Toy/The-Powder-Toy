@@ -32,8 +32,10 @@
 #define SNAPSHOT_ID 0
 #endif
 
+#ifndef BETA
 #define BETA
 #define SNAPSHOT
+#endif
 //VersionInfoEnd
 
 #if defined(SNAPSHOT)
