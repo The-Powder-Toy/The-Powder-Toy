@@ -50,8 +50,10 @@ Element_SPNG::Element_SPNG()
 int Element_SPNG::update(UPDATE_FUNC_ARGS)
  {
 	int r, trade, rx, ry, tmp, np;
-	if (sim->pv[y/CELL][x/CELL]<=3 && sim->pv[y/CELL][x/CELL]>=-3&&parts[i].temp<=374.0f)
+	int limit = 50;
+	if (parts[i].life<limit && sim->pv[y/CELL][x/CELL]<=3&&sim->pv[y/CELL][x/CELL]>=-3&&parts[i].temp<=374.0f)
 	{
+		int absorbChanceDenom = parts[i].life*1000/limit + 500;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -59,12 +61,12 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_FRZW)&&33>=rand()/(RAND_MAX/100)+1)
+					if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_FRZW) && parts[i].life<limit && 500>rand()%absorbChanceDenom)
 					{
 						parts[i].life++;
 						sim->kill_part(r>>8);
 					}
-					if ((r&0xFF)==PT_SLTW&&33>=rand()/(RAND_MAX/100)+1)
+					if ((r&0xFF)==PT_SLTW && parts[i].life<limit && 50>rand()%absorbChanceDenom)
 					{
 						parts[i].life++;
 						if (rand()%4)
@@ -72,12 +74,12 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 						else
 							sim->part_change_type(r>>8, x+rx, y+ry, PT_SALT);
 					}
-					if ((r&0xFF)==PT_CBNW&&33>=rand()/(RAND_MAX/100)+1)
+					if ((r&0xFF)==PT_CBNW && parts[i].life<limit && 100>rand()%absorbChanceDenom)
 					{
 						parts[i].life++;
 						sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
 					}
-					if ((r&0xFF)==PT_PSTE&&33>=rand()/(RAND_MAX/100)+1)
+					if ((r&0xFF)==PT_PSTE && parts[i].life<limit && 20>rand()%absorbChanceDenom)
 					{
 						parts[i].life++;
 						sim->create_part(r>>8, x+rx, y+ry, PT_CLST);
