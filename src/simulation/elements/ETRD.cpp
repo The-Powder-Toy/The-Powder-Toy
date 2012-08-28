@@ -21,7 +21,7 @@ Element_ETRD::Element_ETRD()
     
     Flammable = 0;
     Explosive = 0;
-    Meltable = 1;
+    Meltable = 0;
     Hardness = 1;
     
     Weight = 100;

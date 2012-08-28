@@ -21,7 +21,7 @@ Element_SPNG::Element_SPNG()
     
     Flammable = 20;
     Explosive = 0;
-    Meltable = 1;
+    Meltable = 0;
     Hardness = 30;
     
     Weight = 100;
