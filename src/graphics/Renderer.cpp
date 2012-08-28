@@ -1128,6 +1128,17 @@ void Renderer::render_parts()
 			decg = (sim->parts[i].dcolour>>8)&0xFF;
 			decb = (sim->parts[i].dcolour)&0xFF;
 
+			if(decorations_enable && blackDecorations)
+			{
+				if(deca < 250 || decr > 5 || decg > 5 || decb > 5)
+					deca = 0;
+				else
+				{
+					deca = 255;
+					decr = decg = decb = 0;
+				}
+			}
+
 			{
 				if (graphicscache[t].isready)
 				{
@@ -1226,16 +1237,16 @@ void Renderer::render_parts()
 				}
 
 				//Apply decoration colour
-				if(!(colour_mode & ~COLOUR_GRAD))
+				if(!(colour_mode & ~COLOUR_GRAD) && decorations_enable && deca)
 				{
-					if(!(pixel_mode & NO_DECO) && decorations_enable)
+					if(!(pixel_mode & NO_DECO))
 					{
 						colr = (deca*decr + (255-deca)*colr) >> 8;
 						colg = (deca*decg + (255-deca)*colg) >> 8;
 						colb = (deca*decb + (255-deca)*colb) >> 8;
 					}
 
-					if((pixel_mode & DECO_FIRE) && decorations_enable)
+					if(pixel_mode & DECO_FIRE)
 					{
 						firer = (deca*decr + (255-deca)*firer) >> 8;
 						fireg = (deca*decg + (255-deca)*fireg) >> 8;
@@ -2299,7 +2310,8 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	display_mode(0),
 	render_mode(0),
 	colour_mode(0),
-	gridSize(0)
+	gridSize(0),
+	blackDecorations(false)
 {
 	this->g = g;
 	this->sim = sim;

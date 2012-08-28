@@ -43,6 +43,7 @@ public:
 	bool gravityZonesEnabled;
 	bool gravityFieldEnabled;
 	int decorations_enable;
+	bool blackDecorations;
 	Simulation * sim;
 	Graphics * g;
 	gcache_item *graphicscache;
