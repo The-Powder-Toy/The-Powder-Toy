@@ -39,6 +39,12 @@ class LuaScriptInterface: public CommandInterface {
 	bool luacon_mousedown;
 	bool currentCommand;
 	TPTScriptInterface * legacy;
+
+	//Renderer
+	void initRendererAPI();
+	static int luatpt_renderer_renderModes(lua_State * l);
+	static int luatpt_renderer_displayModes(lua_State * l);
+	static int luatpt_renderer_colourMode(lua_State * l);
 public:
 	lua_State *l;
 	LuaScriptInterface(GameModel * m);

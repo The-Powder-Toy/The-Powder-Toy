@@ -7,6 +7,7 @@
 
 #include <string>
 #include <iomanip>
+#include <vector>
 #include "Config.h"
 #include "Format.h"
 #include "LuaScriptInterface.h"
@@ -20,18 +21,31 @@
 #include "LuaScriptHelper.h"
 #include "client/HTTP.h"
 
- #ifdef WIN
+#ifdef WIN
 #include <direct.h>
 #else
 #include <sys/stat.h>
 #endif
- #include <time.h>
+#include <time.h>
 
 LuaScriptInterface::LuaScriptInterface(GameModel * m):
 	CommandInterface(m),
 	currentCommand(false),
 	legacy(new TPTScriptInterface(m))
 {
+	luacon_model = m;
+	luacon_sim = m->GetSimulation();
+	luacon_g = ui::Engine::Ref().g;
+	luacon_ren = m->GetRenderer();
+	luacon_ci = this;
+
+	//New TPT API
+	l = lua_open();
+	luaL_openlibs(l);
+
+	initRendererAPI();
+
+	//Old TPT API
 	int i = 0, j;
 	char tmpname[12];
 	int currentElementMeta, currentElement;
@@ -104,15 +118,6 @@ LuaScriptInterface::LuaScriptInterface(GameModel * m):
 
 	luacon_currentCommand = &currentCommand;
 	luacon_lastError = &lastError;
-
-	luacon_model = m;
-	luacon_sim = m->GetSimulation();
-	luacon_g = ui::Engine::Ref().g;
-	luacon_ren = m->GetRenderer();
-	luacon_ci = this;
-
-	l = lua_open();
-	luaL_openlibs(l);
 
 	//Replace print function with our screen logging thingy
 	lua_pushcfunction(l, luatpt_log);
@@ -243,6 +248,156 @@ tpt.partsdata = nil");
 	//Autorun
 	luacon_eval("dofile(\"autorun.lua\")"); //Autorun lua script
 }
+
+//// Begin Renderer API
+
+void LuaScriptInterface::initRendererAPI()
+{
+	//Methods
+	struct luaL_reg rendererAPIMethods [] = {
+		{"renderModes", luatpt_renderer_renderModes},
+		{"displayModes", luatpt_renderer_displayModes},
+		{"colourMode", luatpt_renderer_colourMode},
+		{"colorMode", luatpt_renderer_colourMode}, //Duplicate of above to make americans happy
+		{NULL, NULL}
+	};
+	luaL_register(l, "renderer", rendererAPIMethods);
+	int rendererAPI = lua_gettop(l);
+
+	//Static values
+	//Particle pixel modes/fire mode/effects
+	lua_pushinteger(l, PMODE); lua_setfield(l, rendererAPI, "PMODE");
+	lua_pushinteger(l, PMODE_NONE); lua_setfield(l, rendererAPI, "PMODE_NONE");
+	lua_pushinteger(l, PMODE_FLAT); lua_setfield(l, rendererAPI, "PMODE_FLAT");
+	lua_pushinteger(l, PMODE_BLOB); lua_setfield(l, rendererAPI, "PMODE_BLOB");
+	lua_pushinteger(l, PMODE_BLUR); lua_setfield(l, rendererAPI, "PMODE_BLUR");
+	lua_pushinteger(l, PMODE_GLOW); lua_setfield(l, rendererAPI, "PMODE_GLOW");
+	lua_pushinteger(l, PMODE_SPARK); lua_setfield(l, rendererAPI, "PMODE_SPARK");
+	lua_pushinteger(l, PMODE_FLARE); lua_setfield(l, rendererAPI, "PMODE_FLARE");
+	lua_pushinteger(l, PMODE_LFLARE); lua_setfield(l, rendererAPI, "PMODE_LFLARE");
+	lua_pushinteger(l, PMODE_ADD); lua_setfield(l, rendererAPI, "PMODE_ADD");
+	lua_pushinteger(l, PMODE_BLEND); lua_setfield(l, rendererAPI, "PMODE_BLEND");
+	lua_pushinteger(l, PSPEC_STICKMAN); lua_setfield(l, rendererAPI, "PSPEC_STICKMAN");
+	lua_pushinteger(l, OPTIONS); lua_setfield(l, rendererAPI, "OPTIONS");
+	lua_pushinteger(l, NO_DECO); lua_setfield(l, rendererAPI, "NO_DECO");
+	lua_pushinteger(l, DECO_FIRE); lua_setfield(l, rendererAPI, "DECO_FIRE");
+	lua_pushinteger(l, FIREMODE); lua_setfield(l, rendererAPI, "FIREMODE");
+	lua_pushinteger(l, FIRE_ADD); lua_setfield(l, rendererAPI, "FIRE_ADD");
+	lua_pushinteger(l, FIRE_BLEND); lua_setfield(l, rendererAPI, "FIRE_BLEND");
+	lua_pushinteger(l, EFFECT); lua_setfield(l, rendererAPI, "EFFECT");
+	lua_pushinteger(l, EFFECT_GRAVIN); lua_setfield(l, rendererAPI, "EFFECT_GRAVIN");
+	lua_pushinteger(l, EFFECT_GRAVOUT); lua_setfield(l, rendererAPI, "EFFECT_GRAVOUT");
+	lua_pushinteger(l, EFFECT_LINES); lua_setfield(l, rendererAPI, "EFFECT_LINES");
+	lua_pushinteger(l, EFFECT_DBGLINES); lua_setfield(l, rendererAPI, "EFFECT_DBGLINES");
+
+	//Display/Render/Colour modes
+	lua_pushinteger(l, RENDER_EFFE); lua_setfield(l, rendererAPI, "RENDER_EFFE");
+	lua_pushinteger(l, RENDER_FIRE); lua_setfield(l, rendererAPI, "RENDER_FIRE");
+	lua_pushinteger(l, RENDER_GLOW); lua_setfield(l, rendererAPI, "RENDER_GLOW");
+	lua_pushinteger(l, RENDER_BLUR); lua_setfield(l, rendererAPI, "RENDER_BLUR");
+	lua_pushinteger(l, RENDER_BLOB); lua_setfield(l, rendererAPI, "RENDER_BLOB");
+	lua_pushinteger(l, RENDER_BASC); lua_setfield(l, rendererAPI, "RENDER_BASC");
+	lua_pushinteger(l, RENDER_NONE); lua_setfield(l, rendererAPI, "RENDER_NONE");
+	lua_pushinteger(l, COLOUR_HEAT); lua_setfield(l, rendererAPI, "COLOUR_HEAT");
+	lua_pushinteger(l, COLOUR_LIFE); lua_setfield(l, rendererAPI, "COLOUR_LIFE");
+	lua_pushinteger(l, COLOUR_GRAD); lua_setfield(l, rendererAPI, "COLOUR_GRAD");
+	lua_pushinteger(l, COLOUR_BASC); lua_setfield(l, rendererAPI, "COLOUR_BASC");
+	lua_pushinteger(l, COLOUR_DEFAULT); lua_setfield(l, rendererAPI, "COLOUR_DEFAULT");
+	lua_pushinteger(l, DISPLAY_AIRC); lua_setfield(l, rendererAPI, "DISPLAY_AIRC");
+	lua_pushinteger(l, DISPLAY_AIRP); lua_setfield(l, rendererAPI, "DISPLAY_AIRP");
+	lua_pushinteger(l, DISPLAY_AIRV); lua_setfield(l, rendererAPI, "DISPLAY_AIRV");
+	lua_pushinteger(l, DISPLAY_AIRH); lua_setfield(l, rendererAPI, "DISPLAY_AIRH");
+	lua_pushinteger(l, DISPLAY_AIR); lua_setfield(l, rendererAPI, "DISPLAY_AIR");
+	lua_pushinteger(l, DISPLAY_WARP); lua_setfield(l, rendererAPI, "DISPLAY_WARP");
+	lua_pushinteger(l, DISPLAY_PERS); lua_setfield(l, rendererAPI, "DISPLAY_PERS");
+	lua_pushinteger(l, DISPLAY_EFFE); lua_setfield(l, rendererAPI, "DISPLAY_EFFE");
+}
+
+//get/set render modes list
+int LuaScriptInterface::luatpt_renderer_renderModes(lua_State * l)
+{
+	int args = lua_gettop(l);
+	if(args)
+	{
+		int size = 0;
+		luaL_checktype(l, 1, LUA_TTABLE);
+		size = luaL_getn(l, 1);
+		
+		std::vector<unsigned int> renderModes;
+		for(int i = 1; i <= size; i++)
+		{
+			lua_rawgeti(l, 1, i);
+			renderModes.push_back(lua_tointeger(l, -1));
+			lua_pop(l, 1);
+		}
+		luacon_ren->SetRenderMode(renderModes);
+		return 0;
+	}
+	else
+	{
+		lua_newtable(l);
+		std::vector<unsigned int> renderModes = luacon_ren->GetRenderMode();
+		int i = 1;
+		for(std::vector<unsigned int>::iterator iter = renderModes.begin(), end = renderModes.end(); iter != end; ++iter)
+		{
+			lua_pushinteger(l, *iter);
+			lua_rawseti(l, -2, i++);
+		}
+		return 1;
+	}
+}
+
+int LuaScriptInterface::luatpt_renderer_displayModes(lua_State * l)
+{
+	int args = lua_gettop(l);
+	if(args)
+	{
+		int size = 0;
+		luaL_checktype(l, 1, LUA_TTABLE);
+		size = luaL_getn(l, 1);
+		
+		std::vector<unsigned int> displayModes;
+		for(int i = 1; i <= size; i++)
+		{
+			lua_rawgeti(l, 1, i);
+			displayModes.push_back(lua_tointeger(l, -1));
+			lua_pop(l, 1);
+		}
+		luacon_ren->SetDisplayMode(displayModes);
+		return 0;
+	}
+	else
+	{
+		lua_newtable(l);
+		std::vector<unsigned int> displayModes = luacon_ren->GetDisplayMode();
+		int i = 1;
+		for(std::vector<unsigned int>::iterator iter = displayModes.begin(), end = displayModes.end(); iter != end; ++iter)
+		{
+			lua_pushinteger(l, *iter);
+			lua_rawseti(l, -2, i++);
+		}
+		return 1;
+	}
+}
+
+int LuaScriptInterface::luatpt_renderer_colourMode(lua_State * l)
+{
+	int args = lua_gettop(l);
+	if(args)
+	{
+		luaL_checktype(l, 1, LUA_TNUMBER);
+		luacon_ren->SetColourMode(lua_tointeger(l, 1));
+		lua_pop(l, 1);
+		return 0;
+	}
+	else
+	{
+		lua_pushinteger(l, luacon_ren->GetColourMode());
+		return 1;
+	}
+	return luaL_error(l, "Not implemented");
+}
+
 
 bool LuaScriptInterface::OnBrushChanged(int brushType, int rx, int ry)
 {
