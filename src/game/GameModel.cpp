@@ -51,6 +51,9 @@ GameModel::GameModel():
 			std::vector<unsigned int> renderModes(tempArray.begin(), tempArray.end());
 			ren->SetRenderMode(renderModes);
 		}
+
+		ren->gravityFieldEnabled = Client::Ref().GetPrefBool("Renderer.GravityField", false);
+		ren->decorations_enable = Client::Ref().GetPrefBool("Renderer.Decorations", true);
 	}
 	catch(json::Exception & e)
 	{
@@ -97,6 +100,9 @@ GameModel::~GameModel()
 
 	std::vector<unsigned int> renderModes = ren->GetRenderMode();
 	Client::Ref().SetPref("Renderer.RenderModes", std::vector<unsigned int>(renderModes.begin(), renderModes.end()));
+
+	Client::Ref().SetPref("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
+	Client::Ref().SetPref("Renderer.Decorations", (bool)ren->decorations_enable);
 
 	Client::Ref().SetPref("Simulation.EdgeMode", sim->edgeMode);
 
