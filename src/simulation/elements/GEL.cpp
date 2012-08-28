@@ -61,11 +61,31 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 					continue;
 
 				//Desaturation
-				if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW || (r&0xFF)==PT_CBNW)
-				    && parts[i].tmp<100)
+				if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_FRZW) && parts[i].tmp<100)
 				{
 					parts[i].tmp++;
 					sim->kill_part(r>>8);
+				}
+				if (((r&0xFF)==PT_PSTE) && parts[i].tmp<100)
+				{
+					parts[i].tmp++;
+					sim->create_part(r>>8, x+rx, y+ry, PT_CLST);
+				}
+				if (((r&0xFF)==PT_SLTW) && parts[i].tmp<100)
+				{
+					parts[i].tmp++;
+					if (rand()%4)
+						sim->kill_part(r>>8);
+					else
+						sim->part_change_type(r>>8, x+rx, y+ry, PT_SALT);
+				}
+				if (((r&0xFF)==PT_CBNW) && parts[i].tmp<100)
+				{
+					parts[i].tmp++;
+					if (rand()%4)
+						sim->kill_part(r>>8);
+					else
+						sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
 				}
 
 				if ((r&0xFF)==PT_SPNG && parts[i].tmp<100 && ((parts[r>>8].life+1)>parts[i].tmp))
