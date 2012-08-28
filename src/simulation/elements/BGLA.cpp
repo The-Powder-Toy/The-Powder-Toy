@@ -22,7 +22,7 @@ Element_BGLA::Element_BGLA()
     Flammable = 0;
     Explosive = 0;
     Meltable = 5;
-    Hardness = 2;
+    Hardness = 0;
     
     Weight = 90;
     
