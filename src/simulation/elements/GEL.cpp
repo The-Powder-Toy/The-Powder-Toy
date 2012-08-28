@@ -82,10 +82,7 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 				if (((r&0xFF)==PT_CBNW) && parts[i].tmp<100)
 				{
 					parts[i].tmp++;
-					if (rand()%4)
-						sim->kill_part(r>>8);
-					else
-						sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
+					sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
 				}
 
 				if ((r&0xFF)==PT_SPNG && parts[i].tmp<100 && ((parts[r>>8].life+1)>parts[i].tmp))

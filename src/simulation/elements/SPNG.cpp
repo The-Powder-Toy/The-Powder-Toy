@@ -75,10 +75,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 					if ((r&0xFF)==PT_CBNW&&33>=rand()/(RAND_MAX/100)+1)
 					{
 						parts[i].life++;
-						if (rand()%4)
-							sim->kill_part(r>>8);
-						else
-							sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
+						sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
 					}
 					if ((r&0xFF)==PT_PSTE&&33>=rand()/(RAND_MAX/100)+1)
 					{
