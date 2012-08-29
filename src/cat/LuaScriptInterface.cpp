@@ -8,6 +8,8 @@
 #include <string>
 #include <iomanip>
 #include <vector>
+#include <algorithm>
+#include <locale>
 #include "Config.h"
 #include "Format.h"
 #include "LuaScriptInterface.h"
@@ -20,6 +22,8 @@
 #include "game/GameModel.h"
 #include "LuaScriptHelper.h"
 #include "client/HTTP.h"
+
+#include "LuaBit.h"
 
 #ifdef WIN
 #include <direct.h>
@@ -42,8 +46,10 @@ LuaScriptInterface::LuaScriptInterface(GameModel * m):
 	//New TPT API
 	l = lua_open();
 	luaL_openlibs(l);
+	luaopen_bit(l);
 
 	initRendererAPI();
+	initElementsAPI();
 
 	//Old TPT API
 	int i = 0, j;
@@ -255,10 +261,10 @@ void LuaScriptInterface::initRendererAPI()
 {
 	//Methods
 	struct luaL_reg rendererAPIMethods [] = {
-		{"renderModes", luatpt_renderer_renderModes},
-		{"displayModes", luatpt_renderer_displayModes},
-		{"colourMode", luatpt_renderer_colourMode},
-		{"colorMode", luatpt_renderer_colourMode}, //Duplicate of above to make americans happy
+		{"renderModes", renderer_renderModes},
+		{"displayModes", renderer_displayModes},
+		{"colourMode", renderer_colourMode},
+		{"colorMode", renderer_colourMode}, //Duplicate of above to make americans happy
 		{NULL, NULL}
 	};
 	luaL_register(l, "renderer", rendererAPIMethods);
@@ -314,7 +320,7 @@ void LuaScriptInterface::initRendererAPI()
 }
 
 //get/set render modes list
-int LuaScriptInterface::luatpt_renderer_renderModes(lua_State * l)
+int LuaScriptInterface::renderer_renderModes(lua_State * l)
 {
 	int args = lua_gettop(l);
 	if(args)
@@ -347,7 +353,7 @@ int LuaScriptInterface::luatpt_renderer_renderModes(lua_State * l)
 	}
 }
 
-int LuaScriptInterface::luatpt_renderer_displayModes(lua_State * l)
+int LuaScriptInterface::renderer_displayModes(lua_State * l)
 {
 	int args = lua_gettop(l);
 	if(args)
@@ -380,7 +386,7 @@ int LuaScriptInterface::luatpt_renderer_displayModes(lua_State * l)
 	}
 }
 
-int LuaScriptInterface::luatpt_renderer_colourMode(lua_State * l)
+int LuaScriptInterface::renderer_colourMode(lua_State * l)
 {
 	int args = lua_gettop(l);
 	if(args)
@@ -396,6 +402,126 @@ int LuaScriptInterface::luatpt_renderer_colourMode(lua_State * l)
 		return 1;
 	}
 	return luaL_error(l, "Not implemented");
+}
+
+void LuaScriptInterface::initElementsAPI()
+{
+	//Methods
+	struct luaL_reg elementsAPIMethods [] = {
+		{"allocate", elements_allocate},
+		{"free", elements_free},
+		{NULL, NULL}
+	};
+	luaL_register(l, "elements", elementsAPIMethods);
+	int elementsAPI = lua_gettop(l);
+
+	//Static values
+	//Element types/properties/states
+	lua_pushinteger(l, TYPE_PART); lua_setfield(l, elementsAPI, "TYPE_PART");
+	lua_pushinteger(l, TYPE_LIQUID); lua_setfield(l, elementsAPI, "TYPE_LIQUID");
+	lua_pushinteger(l, TYPE_SOLID); lua_setfield(l, elementsAPI, "TYPE_SOLID");
+	lua_pushinteger(l, TYPE_GAS); lua_setfield(l, elementsAPI, "TYPE_GAS");
+	lua_pushinteger(l, TYPE_ENERGY); lua_setfield(l, elementsAPI, "TYPE_ENERGY");
+	lua_pushinteger(l, PROP_CONDUCTS); lua_setfield(l, elementsAPI, "PROP_CONDUCTS");
+	lua_pushinteger(l, PROP_BLACK); lua_setfield(l, elementsAPI, "PROP_BLACK");
+	lua_pushinteger(l, PROP_NEUTPENETRATE); lua_setfield(l, elementsAPI, "PROP_NEUTPENETRATE");
+	lua_pushinteger(l, PROP_NEUTABSORB); lua_setfield(l, elementsAPI, "PROP_NEUTABSORB");
+	lua_pushinteger(l, PROP_NEUTPASS); lua_setfield(l, elementsAPI, "PROP_NEUTPASS");
+	lua_pushinteger(l, PROP_DEADLY); lua_setfield(l, elementsAPI, "PROP_DEADLY");
+	lua_pushinteger(l, PROP_HOT_GLOW); lua_setfield(l, elementsAPI, "PROP_HOT_GLOW");
+	lua_pushinteger(l, PROP_LIFE); lua_setfield(l, elementsAPI, "PROP_LIFE");
+	lua_pushinteger(l, PROP_RADIOACTIVE); lua_setfield(l, elementsAPI, "PROP_RADIOACTIVE");
+	lua_pushinteger(l, PROP_LIFE_DEC); lua_setfield(l, elementsAPI, "PROP_LIFE_DEC");
+	lua_pushinteger(l, PROP_LIFE_KILL); lua_setfield(l, elementsAPI, "PROP_LIFE_KILL");
+	lua_pushinteger(l, PROP_LIFE_KILL_DEC); lua_setfield(l, elementsAPI, "PROP_LIFE_KILL_DEC");
+	lua_pushinteger(l, PROP_SPARKSETTLE); lua_setfield(l, elementsAPI, "PROP_SPARKSETTLE");
+	lua_pushinteger(l, PROP_NOAMBHEAT); lua_setfield(l, elementsAPI, "PROP_NOAMBHEAT");
+	lua_pushinteger(l, FLAG_STAGNANT); lua_setfield(l, elementsAPI, "FLAG_STAGNANT");
+	lua_pushinteger(l, FLAG_SKIPMOVE); lua_setfield(l, elementsAPI, "FLAG_SKIPMOVE");
+	lua_pushinteger(l, FLAG_MOVABLE); lua_setfield(l, elementsAPI, "FLAG_MOVABLE");
+	lua_pushinteger(l, ST_NONE); lua_setfield(l, elementsAPI, "ST_NONE");
+	lua_pushinteger(l, ST_SOLID); lua_setfield(l, elementsAPI, "ST_SOLID");
+	lua_pushinteger(l, ST_LIQUID); lua_setfield(l, elementsAPI, "ST_LIQUID");
+	lua_pushinteger(l, ST_GAS); lua_setfield(l, elementsAPI, "ST_GAS");
+
+	//Element identifiers
+	for(int i = 0; i < PT_NUM; i++)
+	{
+		if(luacon_sim->elements[i].Enabled)
+		{
+			lua_pushinteger(l, i);
+			lua_setfield(l, elementsAPI, luacon_sim->elements[i].Identifier);
+		}
+	}
+}
+
+int LuaScriptInterface::elements_allocate(lua_State * l)
+{
+	std::string group, id, identifier;
+	luaL_checktype(l, 1, LUA_TSTRING);
+	luaL_checktype(l, 2, LUA_TSTRING);
+	group = std::string(lua_tostring(l, 1));
+	std::transform(group.begin(), group.end(), group.begin(), ::toupper);
+	id = std::string(lua_tostring(l, 2));
+	std::transform(id.begin(), id.end(), id.begin(), ::toupper);
+
+	if(group == "DEFAULT")
+		return luaL_error(l, "You cannot create elements in the 'default' group.");
+
+	identifier = group + "_PT_" + id;
+
+	for(int i = 0; i < PT_NUM; i++)
+	{
+		if(luacon_sim->elements[i].Enabled && std::string(luacon_sim->elements[i].Identifier) == identifier)
+			return luaL_error(l, "Element identifier already in use");
+	}
+
+	int newID = -1;
+	for(int i = PT_NUM-1; i >= 0; i--)
+	{
+		if(!luacon_sim->elements[i].Enabled)
+		{
+			newID = i;
+			luacon_sim->elements[i] = Element();
+			luacon_sim->elements[i].Enabled = true;
+			luacon_sim->elements[i].Identifier = strdup(identifier.c_str());
+			break;
+		}
+	}
+
+	if(newID != -1)
+	{	
+		lua_getglobal(l, "elements");
+		lua_pushinteger(l, newID);
+		lua_setfield(l, -2, identifier.c_str());
+		lua_pop(l, 1);
+	}
+
+	lua_pushinteger(l, newID);
+	return 1;
+}
+
+int LuaScriptInterface::elements_free(lua_State * l)
+{
+	int id;
+	luaL_checktype(l, 1, LUA_TNUMBER);
+	id = lua_tointeger(l, 1);
+	
+	if(id < 0 || id >= PT_NUM || !luacon_sim->elements[id].Enabled)
+		return luaL_error(l, "Invalid element");
+
+	std::string identifier = luacon_sim->elements[id].Identifier;
+	if(identifier.length()>7 && identifier.substr(0, 7) == "DEFAULT")
+		return luaL_error(l, "Cannot free default elements");
+
+	luacon_sim->elements[id].Enabled = false;
+
+	lua_getglobal(l, "elements");
+	lua_pushnil(l);
+	lua_setfield(l, -2, identifier.c_str());
+	lua_pop(l, 1);
+
+	return 0;
 }
 
 

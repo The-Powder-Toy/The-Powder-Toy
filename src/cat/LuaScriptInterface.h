@@ -42,9 +42,14 @@ class LuaScriptInterface: public CommandInterface {
 
 	//Renderer
 	void initRendererAPI();
-	static int luatpt_renderer_renderModes(lua_State * l);
-	static int luatpt_renderer_displayModes(lua_State * l);
-	static int luatpt_renderer_colourMode(lua_State * l);
+	static int renderer_renderModes(lua_State * l);
+	static int renderer_displayModes(lua_State * l);
+	static int renderer_colourMode(lua_State * l);
+
+	//Elements
+	void initElementsAPI();
+	static int elements_allocate(lua_State * l);
+	static int elements_free(lua_State * l);
 public:
 	lua_State *l;
 	LuaScriptInterface(GameModel * m);
