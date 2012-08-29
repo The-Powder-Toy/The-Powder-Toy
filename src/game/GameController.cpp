@@ -336,6 +336,15 @@ void GameController::AdjustZoomSize(int direction, bool logarithmic)
 
 ui::Point GameController::PointTranslate(ui::Point point)
 {
+	if(point.X >= XRES)
+		point.X = XRES-1;
+	if(point.Y >= YRES)
+		point.Y = YRES+1;
+	if(point.Y < 0)
+		point.Y = 0;
+	if(point.X < 0)
+		point.X = 0;
+
 	bool zoomEnabled = gameModel->GetZoomEnabled();
 	if(!zoomEnabled)
 		return point;
@@ -344,7 +353,7 @@ ui::Point GameController::PointTranslate(ui::Point point)
 	ui::Point zoomWindowPosition = gameModel->GetZoomWindowPosition();
 	ui::Point zoomWindowSize = ui::Point(gameModel->GetZoomSize()*zoomFactor, gameModel->GetZoomSize()*zoomFactor);
 
-	if(point.X > zoomWindowPosition.X && point.X > zoomWindowPosition.Y && point.X < zoomWindowPosition.X+zoomWindowSize.X && point.Y < zoomWindowPosition.Y+zoomWindowSize.Y)
+	if(point.X >= zoomWindowPosition.X && point.X >= zoomWindowPosition.Y && point.X <= zoomWindowPosition.X+zoomWindowSize.X && point.Y <= zoomWindowPosition.Y+zoomWindowSize.Y)
 		return ((point-zoomWindowPosition)/gameModel->GetZoomFactor())+gameModel->GetZoomPosition();
 	return point;
 }
