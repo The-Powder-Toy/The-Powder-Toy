@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "simulation/StructProperty.h"
 
 Element::Element():
 	Identifier("DEFAULT_INVALID"),
@@ -45,6 +46,43 @@ Element::Element():
 	Graphics(&Element::defaultGraphics),
 	IconGenerator(NULL)
 {
+}
+
+std::vector<StructProperty> Element::GetProperties()
+{
+	std::vector<StructProperty> properties;
+	properties.push_back(StructProperty("Name",							StructProperty::String,		offsetof(Element, Name)));
+	properties.push_back(StructProperty("Colour",						StructProperty::Colour,		offsetof(Element, Colour)));
+	properties.push_back(StructProperty("MenuVisible",					StructProperty::Integer,	offsetof(Element, MenuVisible)));
+	properties.push_back(StructProperty("MenuSection",					StructProperty::Integer,	offsetof(Element, MenuSection)));
+	properties.push_back(StructProperty("Advection",					StructProperty::Float,		offsetof(Element, Advection)));
+	properties.push_back(StructProperty("AirDrag",						StructProperty::Float,		offsetof(Element, AirDrag)));
+	properties.push_back(StructProperty("AirLoss",						StructProperty::Float,		offsetof(Element, AirLoss)));
+	properties.push_back(StructProperty("Loss",							StructProperty::Float,		offsetof(Element, Loss)));
+	properties.push_back(StructProperty("Collision",					StructProperty::Float,		offsetof(Element, Collision)));
+	properties.push_back(StructProperty("Gravity",						StructProperty::Float,		offsetof(Element, Gravity)));
+	properties.push_back(StructProperty("Diffusion",					StructProperty::Float,		offsetof(Element, Diffusion)));
+	properties.push_back(StructProperty("HotAir",						StructProperty::Float,		offsetof(Element, HotAir)));
+	properties.push_back(StructProperty("Falldown",						StructProperty::Integer,	offsetof(Element, Falldown)));
+	properties.push_back(StructProperty("Flammable",					StructProperty::Integer,	offsetof(Element, Flammable)));
+	properties.push_back(StructProperty("Explosive",					StructProperty::Integer,	offsetof(Element, Explosive)));
+	properties.push_back(StructProperty("Meltable",						StructProperty::Integer,	offsetof(Element, Meltable)));
+	properties.push_back(StructProperty("Hardness",						StructProperty::Integer,	offsetof(Element, Hardness)));
+	properties.push_back(StructProperty("Weight",						StructProperty::Integer,	offsetof(Element, Weight)));
+	properties.push_back(StructProperty("Temperature",					StructProperty::Float,		offsetof(Element, Temperature)));
+	properties.push_back(StructProperty("HeatConduct",					StructProperty::UChar,		offsetof(Element, HeatConduct)));
+	properties.push_back(StructProperty("Description",					StructProperty::String,		offsetof(Element, Description)));
+	properties.push_back(StructProperty("State",						StructProperty::Char,		offsetof(Element, State)));
+	properties.push_back(StructProperty("Properties",					StructProperty::Integer,	offsetof(Element, Properties)));
+	properties.push_back(StructProperty("LowPressure",					StructProperty::Float,		offsetof(Element, LowPressure)));
+	properties.push_back(StructProperty("LowPressureTransition",		StructProperty::Integer,	offsetof(Element, LowPressureTransition)));
+	properties.push_back(StructProperty("HighPressure",					StructProperty::Float,		offsetof(Element, HighPressure)));
+	properties.push_back(StructProperty("HighPressureTransition",		StructProperty::Integer,	offsetof(Element, HighPressureTransition)));
+	properties.push_back(StructProperty("LowTemperature",				StructProperty::Float,		offsetof(Element, LowTemperature)));
+	properties.push_back(StructProperty("LowTemperatureTransition",		StructProperty::Integer,	offsetof(Element, LowTemperatureTransition)));
+	properties.push_back(StructProperty("HighTemperature",				StructProperty::Float,		offsetof(Element, HighTemperature)));
+	properties.push_back(StructProperty("HighTemperatureTransition",	StructProperty::Integer,	offsetof(Element, HighTemperatureTransition)));
+	return properties;
 }
 
 int Element::legacyUpdate(UPDATE_FUNC_ARGS) {

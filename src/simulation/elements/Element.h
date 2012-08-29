@@ -4,6 +4,7 @@
 #include "simulation/Simulation.h"
 #include "graphics/Renderer.h"
 #include "simulation/Elements.h"
+#include "simulation/StructProperty.h"
 
 class Simulation;
 class Renderer;
@@ -53,6 +54,10 @@ public:
 	virtual ~Element() {}
 	static int defaultGraphics(GRAPHICS_FUNC_ARGS);
 	static int legacyUpdate(UPDATE_FUNC_ARGS);
+
+	/** Returns a list of properties, their type and offset within the structure that can be changed
+	 by higher-level processes refering to them by name such as Lua or the property tool **/
+	static std::vector<StructProperty> GetProperties();
 };
 
 #endif
