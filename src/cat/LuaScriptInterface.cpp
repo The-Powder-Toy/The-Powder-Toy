@@ -411,6 +411,7 @@ void LuaScriptInterface::initElementsAPI()
 		{"allocate", elements_allocate},
 		{"element", elements_element},
 		{"free", elements_free},
+		{"loadDefault", elements_loadDefault},
 		{NULL, NULL}
 	};
 	luaL_register(l, "elements", elementsAPIMethods);
@@ -418,32 +419,47 @@ void LuaScriptInterface::initElementsAPI()
 
 	//Static values
 	//Element types/properties/states
-	lua_pushinteger(l, TYPE_PART); lua_setfield(l, elementsAPI, "TYPE_PART");
-	lua_pushinteger(l, TYPE_LIQUID); lua_setfield(l, elementsAPI, "TYPE_LIQUID");
-	lua_pushinteger(l, TYPE_SOLID); lua_setfield(l, elementsAPI, "TYPE_SOLID");
-	lua_pushinteger(l, TYPE_GAS); lua_setfield(l, elementsAPI, "TYPE_GAS");
-	lua_pushinteger(l, TYPE_ENERGY); lua_setfield(l, elementsAPI, "TYPE_ENERGY");
-	lua_pushinteger(l, PROP_CONDUCTS); lua_setfield(l, elementsAPI, "PROP_CONDUCTS");
-	lua_pushinteger(l, PROP_BLACK); lua_setfield(l, elementsAPI, "PROP_BLACK");
+	lua_pushinteger(l, TYPE_PART); 			lua_setfield(l, elementsAPI, "TYPE_PART");
+	lua_pushinteger(l, TYPE_LIQUID); 		lua_setfield(l, elementsAPI, "TYPE_LIQUID");
+	lua_pushinteger(l, TYPE_SOLID); 		lua_setfield(l, elementsAPI, "TYPE_SOLID");
+	lua_pushinteger(l, TYPE_GAS); 			lua_setfield(l, elementsAPI, "TYPE_GAS");
+	lua_pushinteger(l, TYPE_ENERGY); 		lua_setfield(l, elementsAPI, "TYPE_ENERGY");
+	lua_pushinteger(l, PROP_CONDUCTS); 		lua_setfield(l, elementsAPI, "PROP_CONDUCTS");
+	lua_pushinteger(l, PROP_BLACK); 		lua_setfield(l, elementsAPI, "PROP_BLACK");
 	lua_pushinteger(l, PROP_NEUTPENETRATE); lua_setfield(l, elementsAPI, "PROP_NEUTPENETRATE");
-	lua_pushinteger(l, PROP_NEUTABSORB); lua_setfield(l, elementsAPI, "PROP_NEUTABSORB");
-	lua_pushinteger(l, PROP_NEUTPASS); lua_setfield(l, elementsAPI, "PROP_NEUTPASS");
-	lua_pushinteger(l, PROP_DEADLY); lua_setfield(l, elementsAPI, "PROP_DEADLY");
-	lua_pushinteger(l, PROP_HOT_GLOW); lua_setfield(l, elementsAPI, "PROP_HOT_GLOW");
-	lua_pushinteger(l, PROP_LIFE); lua_setfield(l, elementsAPI, "PROP_LIFE");
-	lua_pushinteger(l, PROP_RADIOACTIVE); lua_setfield(l, elementsAPI, "PROP_RADIOACTIVE");
-	lua_pushinteger(l, PROP_LIFE_DEC); lua_setfield(l, elementsAPI, "PROP_LIFE_DEC");
-	lua_pushinteger(l, PROP_LIFE_KILL); lua_setfield(l, elementsAPI, "PROP_LIFE_KILL");
+	lua_pushinteger(l, PROP_NEUTABSORB); 	lua_setfield(l, elementsAPI, "PROP_NEUTABSORB");
+	lua_pushinteger(l, PROP_NEUTPASS); 		lua_setfield(l, elementsAPI, "PROP_NEUTPASS");
+	lua_pushinteger(l, PROP_DEADLY); 		lua_setfield(l, elementsAPI, "PROP_DEADLY");
+	lua_pushinteger(l, PROP_HOT_GLOW); 		lua_setfield(l, elementsAPI, "PROP_HOT_GLOW");
+	lua_pushinteger(l, PROP_LIFE); 			lua_setfield(l, elementsAPI, "PROP_LIFE");
+	lua_pushinteger(l, PROP_RADIOACTIVE); 	lua_setfield(l, elementsAPI, "PROP_RADIOACTIVE");
+	lua_pushinteger(l, PROP_LIFE_DEC); 		lua_setfield(l, elementsAPI, "PROP_LIFE_DEC");
+	lua_pushinteger(l, PROP_LIFE_KILL); 	lua_setfield(l, elementsAPI, "PROP_LIFE_KILL");
 	lua_pushinteger(l, PROP_LIFE_KILL_DEC); lua_setfield(l, elementsAPI, "PROP_LIFE_KILL_DEC");
-	lua_pushinteger(l, PROP_SPARKSETTLE); lua_setfield(l, elementsAPI, "PROP_SPARKSETTLE");
-	lua_pushinteger(l, PROP_NOAMBHEAT); lua_setfield(l, elementsAPI, "PROP_NOAMBHEAT");
-	lua_pushinteger(l, FLAG_STAGNANT); lua_setfield(l, elementsAPI, "FLAG_STAGNANT");
-	lua_pushinteger(l, FLAG_SKIPMOVE); lua_setfield(l, elementsAPI, "FLAG_SKIPMOVE");
-	lua_pushinteger(l, FLAG_MOVABLE); lua_setfield(l, elementsAPI, "FLAG_MOVABLE");
-	lua_pushinteger(l, ST_NONE); lua_setfield(l, elementsAPI, "ST_NONE");
-	lua_pushinteger(l, ST_SOLID); lua_setfield(l, elementsAPI, "ST_SOLID");
-	lua_pushinteger(l, ST_LIQUID); lua_setfield(l, elementsAPI, "ST_LIQUID");
-	lua_pushinteger(l, ST_GAS); lua_setfield(l, elementsAPI, "ST_GAS");
+	lua_pushinteger(l, PROP_SPARKSETTLE); 	lua_setfield(l, elementsAPI, "PROP_SPARKSETTLE");
+	lua_pushinteger(l, PROP_NOAMBHEAT); 	lua_setfield(l, elementsAPI, "PROP_NOAMBHEAT");
+	lua_pushinteger(l, FLAG_STAGNANT); 		lua_setfield(l, elementsAPI, "FLAG_STAGNANT");
+	lua_pushinteger(l, FLAG_SKIPMOVE); 		lua_setfield(l, elementsAPI, "FLAG_SKIPMOVE");
+	lua_pushinteger(l, FLAG_MOVABLE); 		lua_setfield(l, elementsAPI, "FLAG_MOVABLE");
+	lua_pushinteger(l, ST_NONE); 			lua_setfield(l, elementsAPI, "ST_NONE");
+	lua_pushinteger(l, ST_SOLID); 			lua_setfield(l, elementsAPI, "ST_SOLID");
+	lua_pushinteger(l, ST_LIQUID); 			lua_setfield(l, elementsAPI, "ST_LIQUID");
+	lua_pushinteger(l, ST_GAS); 			lua_setfield(l, elementsAPI, "ST_GAS");
+
+	lua_pushinteger(l, SC_WALL);		lua_setfield(l, elementsAPI, "SC_WALL");
+	lua_pushinteger(l, SC_ELEC);		lua_setfield(l, elementsAPI, "SC_ELEC");
+	lua_pushinteger(l, SC_POWERED);		lua_setfield(l, elementsAPI, "SC_POWERED");
+	lua_pushinteger(l, SC_FORCE);		lua_setfield(l, elementsAPI, "SC_FORCE");
+	lua_pushinteger(l, SC_EXPLOSIVE);	lua_setfield(l, elementsAPI, "SC_EXPLOSIVE");
+	lua_pushinteger(l, SC_GAS);			lua_setfield(l, elementsAPI, "SC_GAS");
+	lua_pushinteger(l, SC_LIQUID);		lua_setfield(l, elementsAPI, "SC_LIQUID");
+	lua_pushinteger(l, SC_POWDERS);		lua_setfield(l, elementsAPI, "SC_POWDERS");
+	lua_pushinteger(l, SC_SOLIDS);		lua_setfield(l, elementsAPI, "SC_SOLIDS");
+	lua_pushinteger(l, SC_NUCLEAR);		lua_setfield(l, elementsAPI, "SC_NUCLEAR");
+	lua_pushinteger(l, SC_SPECIAL);		lua_setfield(l, elementsAPI, "SC_SPECIAL");
+	lua_pushinteger(l, SC_LIFE);		lua_setfield(l, elementsAPI, "SC_LIFE");
+	lua_pushinteger(l, SC_TOOL);		lua_setfield(l, elementsAPI, "SC_TOOL");
+	lua_pushinteger(l, SC_DECO);		lua_setfield(l, elementsAPI, "SC_DECO");
 
 	//Element identifiers
 	for(int i = 0; i < PT_NUM; i++)
@@ -454,6 +470,51 @@ void LuaScriptInterface::initElementsAPI()
 			lua_setfield(l, elementsAPI, luacon_sim->elements[i].Identifier);
 		}
 	}
+}
+
+int LuaScriptInterface::elements_loadDefault(lua_State * l)
+{
+	int args = lua_gettop(l);
+	if(args)
+	{
+		luaL_checktype(l, 1, LUA_TNUMBER);
+		int id = lua_tointeger(l, 1);
+		if(id < 0 || id >= PT_NUM)
+			return luaL_error(l, "Invalid element");
+
+		lua_getglobal(l, "elements");
+		lua_pushnil(l);
+		lua_setfield(l, -2, luacon_sim->elements[id].Identifier);
+
+		std::vector<Element> elementList = GetElements();
+		if(id < elementList.size())
+			luacon_sim->elements[id] = elementList[id];
+		else
+			luacon_sim->elements[id] = Element();
+
+		lua_pushinteger(l, id);
+		lua_setfield(l, -2, luacon_sim->elements[id].Identifier);
+		lua_pop(l, 1);
+	}
+	else
+	{
+		std::vector<Element> elementList = GetElements();
+		for(int i = 0; i < PT_NUM; i++)
+		{
+			if(i < elementList.size())
+				luacon_sim->elements[i] = elementList[i];
+			else
+				luacon_sim->elements[i] = Element();
+		}
+		lua_pushnil(l);
+		lua_setglobal(l, "elements");
+		luacon_ci->initElementsAPI();
+	}
+
+	luacon_model->BuildMenus();
+	luacon_sim->init_can_move();
+	std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
+
 }
 
 int LuaScriptInterface::elements_allocate(lua_State * l)
@@ -514,7 +575,53 @@ int LuaScriptInterface::elements_element(lua_State * l)
 
 	if(args > 1)
 	{
-		//Write values from fields in the table
+		luaL_checktype(l, 2, LUA_TTABLE);
+		std::vector<StructProperty> properties = Element::GetProperties();
+		//Write values from native data to a table
+		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
+		{
+			lua_getfield(l, -1, (*iter).Name.c_str());
+			if(lua_type(l, -1) != LUA_TNIL)
+			{
+				intptr_t offset = (*iter).Offset;
+				switch((*iter).Type)
+				{
+					case StructProperty::ParticleType:
+					case StructProperty::Integer:
+						*((int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
+						break;
+					case StructProperty::UInteger:
+						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
+						break;
+					case StructProperty::Float:
+						*((float*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tonumber(l, -1);
+						break;
+					case StructProperty::Char:
+						*((char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
+						break;
+					case StructProperty::UChar:
+						*((unsigned char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
+						break;
+					case StructProperty::String:
+						*((char**)(((unsigned char*)&luacon_sim->elements[id])+offset)) = strdup(lua_tostring(l, -1));
+						break;
+					case StructProperty::Colour:
+#if PIXELSIZE == 4
+						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
+#else
+						*((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
+#endif
+						break;
+				}
+				lua_pop(l, 1);
+			}
+		}
+
+		luacon_model->BuildMenus();
+		luacon_sim->init_can_move();
+		std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
+
+		lua_pop(l, 1);
 		return 0;
 	}
 	else
