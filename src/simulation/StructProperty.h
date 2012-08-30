@@ -25,6 +25,14 @@ struct StructProperty
 	{
 		
 	}
+
+	StructProperty():
+	Name(""),
+	Type(Char),
+	Offset(0)
+	{
+		
+	}
 };
 
 #endif

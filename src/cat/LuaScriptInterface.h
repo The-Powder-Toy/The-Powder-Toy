@@ -50,6 +50,8 @@ class LuaScriptInterface: public CommandInterface {
 	void initElementsAPI();
 	static int elements_allocate(lua_State * l);
 	static int elements_element(lua_State * l);
+	static int elements_property(lua_State * l);
+	static int elements_loadDefault(lua_State * l);
 	static int elements_free(lua_State * l);
 public:
 	lua_State *l;

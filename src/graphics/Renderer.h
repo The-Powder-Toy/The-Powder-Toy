@@ -21,6 +21,19 @@ struct gcache_item
 	int pixel_mode;
 	int cola, colr, colg, colb;
 	int firea, firer, fireg, fireb;
+	gcache_item() :
+	isready(0),
+	pixel_mode(0),
+	cola(0),
+	colr(0),
+	colg(0),
+	colb(0),
+	firea(0),
+	firer(0),
+	fireg(0),
+	fireb(0)
+	{
+	}
 };
 typedef struct gcache_item gcache_item;
 

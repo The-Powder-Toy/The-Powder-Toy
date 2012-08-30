@@ -410,6 +410,7 @@ void LuaScriptInterface::initElementsAPI()
 	struct luaL_reg elementsAPIMethods [] = {
 		{"allocate", elements_allocate},
 		{"element", elements_element},
+		{"property", elements_property},
 		{"free", elements_free},
 		{"loadDefault", elements_loadDefault},
 		{NULL, NULL}
@@ -617,6 +618,34 @@ int LuaScriptInterface::elements_element(lua_State * l)
 			}
 		}
 
+		lua_getfield(l, -1, "Update");
+		if(lua_type(l, -1) == LUA_TFUNCTION)
+		{
+			lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+			luacon_sim->elements[id].Update = &luacon_elementReplacement;
+		}
+		else if(lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+		{
+			lua_el_func[id] = 0;
+			luacon_sim->elements[id].Update = NULL;
+		}
+		else
+			lua_pop(l, 1);
+
+		lua_getfield(l, -1, "Graphics");
+		if(lua_type(l, -1) == LUA_TFUNCTION)
+		{
+			lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+			luacon_sim->elements[id].Graphics = &luacon_graphicsReplacement;
+		}
+		else if(lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+		{
+			lua_el_func[id] = 0;
+			luacon_sim->elements[id].Graphics = NULL;
+		}
+		else
+			lua_pop(l, 1);
+
 		luacon_model->BuildMenus();
 		luacon_sim->init_can_move();
 		std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
@@ -666,6 +695,168 @@ int LuaScriptInterface::elements_element(lua_State * l)
 			lua_setfield(l, -2, (*iter).Name.c_str());
 		}
 		return 1;
+	}
+}
+
+int LuaScriptInterface::elements_property(lua_State * l)
+{
+	int args = lua_gettop(l);
+	int id;
+	std::string propertyName;
+	luaL_checktype(l, 1, LUA_TNUMBER);
+	id = lua_tointeger(l, 1);
+	luaL_checktype(l, 2, LUA_TSTRING);
+	propertyName = std::string(lua_tostring(l, 2));
+
+	if(id < 0 || id >= PT_NUM || !luacon_sim->elements[id].Enabled)
+		return luaL_error(l, "Invalid element");
+
+
+
+	if(args > 2)
+	{
+		StructProperty property;
+		bool propertyFound = false;
+		std::vector<StructProperty> properties = Element::GetProperties();
+
+		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
+		{
+			if((*iter).Name == propertyName)
+			{
+				property = *iter;
+				propertyFound = true;
+				break;
+			}
+		}
+
+		if(propertyFound)
+		{
+			if(lua_type(l, 3) != LUA_TNIL)
+			{
+				intptr_t offset = property.Offset;
+				switch(property.Type)
+				{
+					case StructProperty::ParticleType:
+					case StructProperty::Integer:
+						*((int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
+						break;
+					case StructProperty::UInteger:
+						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
+						break;
+					case StructProperty::Float:
+						*((float*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tonumber(l, 3);
+						break;
+					case StructProperty::Char:
+						*((char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
+						break;
+					case StructProperty::UChar:
+						*((unsigned char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
+						break;
+					case StructProperty::String:
+						*((char**)(((unsigned char*)&luacon_sim->elements[id])+offset)) = strdup(lua_tostring(l, 3));
+						break;
+					case StructProperty::Colour:
+	#if PIXELSIZE == 4
+						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
+	#else
+						*((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
+	#endif
+						break;
+				}
+			}
+
+			luacon_model->BuildMenus();
+			luacon_sim->init_can_move();
+			std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
+
+			return 0;
+		}
+		else if(propertyName == "Update")
+		{
+			if(lua_type(l, 3) == LUA_TFUNCTION)
+			{
+				lua_pushvalue(l, 3);
+				lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+				luacon_sim->elements[id].Update = &luacon_elementReplacement;
+			}
+			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
+			{
+				lua_el_func[id] = 0;
+				luacon_sim->elements[id].Update = NULL;
+			}
+		}
+		else if(propertyName == "Graphics")
+		{
+			if(lua_type(l, 3) == LUA_TFUNCTION)
+			{
+				lua_pushvalue(l, 3);
+				lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+				luacon_sim->elements[id].Graphics = &luacon_graphicsReplacement;
+			}
+			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+			{
+				lua_el_func[id] = 0;
+				luacon_sim->elements[id].Graphics = NULL;
+			}
+			std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
+		}
+		else
+			return luaL_error(l, "Invalid element property");
+	}
+	else
+	{
+		StructProperty property;
+		bool propertyFound = false;
+		std::vector<StructProperty> properties = Element::GetProperties();
+
+		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
+		{
+			if((*iter).Name == propertyName)
+			{
+				property = *iter;
+				propertyFound = true;
+				break;
+			}
+		}
+
+		if(propertyFound)
+		{
+			intptr_t offset = property.Offset;
+			switch(property.Type)
+			{
+				case StructProperty::ParticleType:
+				case StructProperty::Integer:
+					lua_pushinteger(l, *((int*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
+					break;
+				case StructProperty::UInteger:
+					lua_pushinteger(l, *((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
+					break;
+				case StructProperty::Float:
+					lua_pushnumber(l, *((float*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
+					break;
+				case StructProperty::Char:
+					lua_pushinteger(l, *((char*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
+					break;
+				case StructProperty::UChar:
+					lua_pushinteger(l, *((unsigned char*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
+					break;
+				case StructProperty::String:
+					lua_pushstring(l, *((char**)(((unsigned char*)&luacon_sim->elements[id])+offset)));
+					break;
+				case StructProperty::Colour:
+#if PIXELSIZE == 4
+					lua_pushinteger(l, *((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
+#else
+					lua_pushinteger(l, *((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
+#endif
+					break;
+				default:
+					lua_pushnil(l);
+			}
+			return 1;
+		}
+		else
+			return luaL_error(l, "Invalid element property");
 	}
 }
 
