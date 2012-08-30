@@ -1322,8 +1322,8 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brus
 				}
 				if (b==WL_STREAM)
 				{
-					i = x + rx/2;
-					j = y + ry/2;
+					i = x + rx;///2;
+					j = y + ry;///2;
 					for (v=-1; v<2; v++)
 						for (u=-1; u<2; u++)
 							if (i+u>=0 && i+u<XRES/CELL &&
