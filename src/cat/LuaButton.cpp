@@ -119,7 +119,7 @@ void LuaButton::triggerAction()
 		std::cout << actionFunction << std::endl;
 		lua_rawgeti(l, LUA_REGISTRYINDEX, actionFunction);
 		lua_pushinteger(l, 1);
-		if (lua_pcall(l, 1, 1, 0))
+		if (lua_pcall(l, 1, 0, 0))
 		{
 			//Log error somewhere
 		}
