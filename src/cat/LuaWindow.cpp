@@ -8,7 +8,9 @@ extern "C"
 #include <iostream>
 #include "LuaWindow.h"
 #include "LuaButton.h"
+#include "LuaLabel.h"
 #include "interface/Button.h"
+#include "interface/Label.h"
 #include "interface/Window.h"
 
 const char LuaWindow::className[] = "Window";
@@ -91,8 +93,10 @@ int LuaWindow::addComponent(lua_State * l)
 {
 	void * luaComponent = NULL;
 	ui::Component * component = NULL;
-	if(luaComponent = luaL_checkudata(l, 1, "Button"))
+	if(luaComponent = Luna<LuaButton>::tryGet(l, 1))
 		component = Luna<LuaButton>::get(luaComponent)->GetComponent();
+	else if(luaComponent = Luna<LuaLabel>::tryGet(l, 1))
+		component = Luna<LuaLabel>::get(luaComponent)->GetComponent();
 	else
 		luaL_typerror(l, 1, "Component");
 	if(component)

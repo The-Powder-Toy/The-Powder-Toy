@@ -75,6 +75,33 @@ public:
 		return ud->pT;  // pointer to T object
 	}
 
+	static void * tryGet(lua_State * L, int narg)
+	{
+		if(checkType(L, narg, T::className))
+		{
+			userdataType *ud = static_cast<userdataType*>(luaL_checkudata(L, narg, T::className));
+			if(!ud)
+				luaL_typerror(L, narg, T::className);
+			return ud;  // pointer to T object
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+
+	static bool checkType (lua_State * L, int idx, const char *name) 
+	{
+		// returns true if a userdata is of a certain type
+		int res;
+		if (lua_type(L, idx) != LUA_TUSERDATA) return false;
+		lua_getmetatable(L, idx);
+		luaL_newmetatable (L, name);
+		res = lua_equal(L, -2, -1);
+		lua_pop(L, 2); // pop both tables (metatables) off
+		return res;
+	}
+
 	static inline T * get(void * userData)
 	{
 		return ((userdataType*)userData)->pT;
