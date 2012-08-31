@@ -53,6 +53,7 @@ public:
 	ButtonAction * GetActionCallback() { return actionCallback; }
 	void SetText(std::string buttonText);
 	void SetIcon(Icon icon);
+	inline std::string GetText() { return ButtonText; };
 protected:
 
 	std::string toolTip;

@@ -31,6 +31,7 @@ class GameController: public ClientListener
 {
 private:
 	//Simulation * sim;
+	bool firstTick;
 	int screenshotIndex;
 	PreviewController * activePreview;
 	GameView * gameView;

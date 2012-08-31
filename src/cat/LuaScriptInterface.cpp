@@ -25,6 +25,10 @@
 
 #include "LuaBit.h"
 
+#include "LuaLuna.h"
+#include "LuaWindow.h"
+#include "LuaButton.h"
+
 #ifdef WIN
 #include <direct.h>
 #else
@@ -48,6 +52,7 @@ LuaScriptInterface::LuaScriptInterface(GameModel * m):
 	luaL_openlibs(l);
 	luaopen_bit(l);
 
+	initInterfaceAPI();
 	initRendererAPI();
 	initElementsAPI();
 
@@ -251,9 +256,65 @@ tpt.partsdata = nil");
 		lua_el_mode[i] = 0;
 	}
 
-	//Autorun
-	luacon_eval("dofile(\"autorun.lua\")"); //Autorun lua script
 }
+
+void LuaScriptInterface::Init()
+{
+	if(luacon_eval("dofile(\"autorun.lua\")"))
+	{
+		luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+	}
+}
+
+void LuaScriptInterface::SetWindow(ui::Window * window)
+{
+	Window = window;
+}
+
+//// Begin Interface API
+
+void LuaScriptInterface::initInterfaceAPI()
+{
+	struct luaL_reg interfaceAPIMethods [] = {
+		{"showWindow", interface_showWindow},
+		{"closeWindow", interface_closeWindow},
+		{"addComponent", interface_addComponent},
+		{NULL, NULL}
+	};
+	luaL_register(l, "interface", interfaceAPIMethods);
+	Luna<LuaWindow>::Register(l);
+	Luna<LuaButton>::Register(l);
+}
+
+int LuaScriptInterface::interface_addComponent(lua_State * l)
+{
+	void * luaComponent = NULL;
+	ui::Component * component = NULL;
+	if(luaComponent = luaL_checkudata(l, 1, "Button"))
+		component = Luna<LuaButton>::get(luaComponent)->GetComponent();
+	else
+		luaL_typerror(l, 1, "Component");
+	if(luacon_ci->Window && component)
+		luacon_ci->Window->AddComponent(component);
+	return 0;
+}
+
+int LuaScriptInterface::interface_showWindow(lua_State * l)
+{
+	LuaWindow * window = Luna<LuaWindow>::check(l, 1);
+	if(window && ui::Engine::Ref().GetWindow()!=window->GetWindow())
+		ui::Engine::Ref().ShowWindow(window->GetWindow());
+	return 0;
+}
+
+int LuaScriptInterface::interface_closeWindow(lua_State * l)
+{
+	LuaWindow * window = Luna<LuaWindow>::check(l, 1);
+	if(window && ui::Engine::Ref().GetWindow()==window->GetWindow())
+		ui::Engine::Ref().CloseWindow();
+	return 0;
+}
+
 
 //// Begin Renderer API
 

@@ -140,7 +140,8 @@ GameController::GameController():
 		options(NULL),
 		activePreview(NULL),
 		localBrowser(NULL),
-		HasDone(false)
+		HasDone(false),
+		firstTick(true)
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
@@ -149,7 +150,7 @@ GameController::GameController():
 	gameModel->AddObserver(gameView);
 
 	commandInterface = new LuaScriptInterface(gameModel);//new TPTScriptInterface();
-	//commandInterface->AttachGameModel(gameModel);
+	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
 
 	//sim = new Simulation();
 	Client::Ref().AddListener(this);
@@ -658,6 +659,11 @@ bool GameController::KeyRelease(int key, Uint16 character, bool shift, bool ctrl
 
 void GameController::Tick()
 {
+	if(firstTick)
+	{
+		((LuaScriptInterface*)commandInterface)->Init();
+		firstTick = false;
+	}
 	commandInterface->OnTick();
 }
 
