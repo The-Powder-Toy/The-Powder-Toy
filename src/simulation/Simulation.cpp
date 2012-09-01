@@ -1069,22 +1069,23 @@ int Simulation::Tool(int x, int y, int tool, float strength)
 	return 0;
 }
 
-int Simulation::ToolBrush(int x, int y, int tool, Brush * cBrush, float strength)
+int Simulation::ToolBrush(int positionX, int positionY, int tool, Brush * cBrush, float strength)
 {
-	int rx, ry, j, i;
-	if(!cBrush)
-		return 0;
-	rx = cBrush->GetRadius().X;
-	ry = cBrush->GetRadius().Y;
-	unsigned char *bitmap = cBrush->GetBitmap();
-	for (j=-ry; j<=ry; j++)
-		for (i=-rx; i<=rx; i++)
-			if(bitmap[(j+ry)*((rx*2)+1)+(i+rx+1)])
-			{
-				if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
-					continue;
-				Tool(x+i, y+j, tool, strength);
-			}
+	if(cBrush)
+	{
+		int radiusX, radiusY, sizeX, sizeY;
+		
+		radiusX = cBrush->GetRadius().X;
+		radiusY = cBrush->GetRadius().Y;
+		
+		sizeX = cBrush->GetSize().X;
+		sizeY = cBrush->GetSize().Y;
+		unsigned char *bitmap = cBrush->GetBitmap();
+		for(int y = 0; y < sizeY; y++)
+			for(int x = 0; x < sizeX; x++)
+				if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
+					Tool(positionX+(x-radiusX), positionY+(y-radiusY), tool, strength);
+	}
 }
 
 void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength)
