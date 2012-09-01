@@ -88,15 +88,8 @@ private:
 	ui::Button * pauseButton;
 	ui::Point currentMouse;
 
-	ui::Slider * colourRSlider;
-	ui::Slider * colourGSlider;
-	ui::Slider * colourBSlider;
-	ui::Slider * colourASlider;
-
-	ui::Textbox * colourRValue;
-	ui::Textbox * colourGValue;
-	ui::Textbox * colourBValue;
-	ui::Textbox * colourAValue;
+	ui::Button * colourPicker;
+	vector<ToolButton*> colourPresets;
 
 	bool drawModeReset;
 	ui::Point drawPoint1;
@@ -116,8 +109,6 @@ private:
 
 	int lastOffset;
 	void setToolButtonOffset(int offset);
-	void changeColourSlider();
-	void changeColourText();
 	virtual ui::Point lineSnapCoords(ui::Point point1, ui::Point point2);
 	virtual ui::Point rectSnapCoords(ui::Point point1, ui::Point point2);
 
@@ -157,6 +148,8 @@ public:
 	void NotifyZoomChanged(GameModel * sender);
 	void NotifyColourSelectorVisibilityChanged(GameModel * sender);
 	void NotifyColourSelectorColourChanged(GameModel * sender);
+	void NotifyColourPresetsChanged(GameModel * sender);
+	void NotifyColourActivePresetChanged(GameModel * sender);
 	void NotifyPlaceSaveChanged(GameModel * sender);
 	void NotifyNotificationsChanged(GameModel * sender);
 	void NotifyLogChanged(GameModel * sender, string entry);

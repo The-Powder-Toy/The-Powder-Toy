@@ -390,49 +390,6 @@ GameView::GameView():
 	pauseButton->SetActionCallback(new PauseAction(this));
 	AddComponent(pauseButton);
 
-	class ColourChange : public ui::SliderAction, public ui::TextboxAction
-	{
-		GameView * v;
-	public:
-		ColourChange(GameView * _v) { v = _v; }
-		void ValueChangedCallback(ui::Slider * sender)
-		{
-			v->changeColourSlider();
-		}
-
-		void TextChangedCallback(ui::Textbox * sender)
-		{
-			v->changeColourText();
-		}
-	};
-	colourRSlider = new ui::Slider(ui::Point(5, Size.Y-39), ui::Point(50, 14), 255);
-	colourRSlider->SetActionCallback(new ColourChange(this));
-	colourRValue = new ui::Textbox(ui::Point(60, Size.Y-41), ui::Point(25, 17), "255");
-	colourRValue->SetActionCallback(new ColourChange(this));
-	colourRValue->SetLimit(3);
-	colourRValue->SetInputType(ui::Textbox::Number);
-
-	colourGSlider = new ui::Slider(ui::Point(95, Size.Y-39), ui::Point(50, 14), 255);
-	colourGSlider->SetActionCallback(new ColourChange(this));
-	colourGValue = new ui::Textbox(ui::Point(150, Size.Y-41), ui::Point(25, 17), "255");
-	colourGValue->SetActionCallback(new ColourChange(this));
-	colourGValue->SetLimit(3);
-	colourGValue->SetInputType(ui::Textbox::Number);
-
-	colourBSlider = new ui::Slider(ui::Point(185, Size.Y-39), ui::Point(50, 14), 255);
-	colourBSlider->SetActionCallback(new ColourChange(this));
-	colourBValue = new ui::Textbox(ui::Point(240, Size.Y-41), ui::Point(25, 17), "255");
-	colourBValue->SetActionCallback(new ColourChange(this));
-	colourBValue->SetLimit(3);
-	colourBValue->SetInputType(ui::Textbox::Number);
-
-	colourASlider = new ui::Slider(ui::Point(275, Size.Y-39), ui::Point(50, 14), 255);
-	colourASlider->SetActionCallback(new ColourChange(this));
-	colourAValue = new ui::Textbox(ui::Point(330, Size.Y-41), ui::Point(25, 17), "255");
-	colourAValue->SetActionCallback(new ColourChange(this));
-	colourAValue->SetLimit(3);
-	colourAValue->SetInputType(ui::Textbox::Number);
-
 	class ElementSearchAction : public ui::ButtonAction
 	{
 		GameView * v;
@@ -447,6 +404,19 @@ GameView::GameView():
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback(new ElementSearchAction(this));
 	AddComponent(tempButton);
+
+	class ColourPickerAction : public ui::ButtonAction
+	{
+		GameView * v;
+	public:
+		ColourPickerAction(GameView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->c->OpenColourPicker();
+		}
+	};
+	colourPicker = new ui::Button(ui::Point((XRES/2)-8, YRES+1), ui::Point(16, 16), "", "Pick Colour");
+	colourPicker->SetActionCallback(new ColourPickerAction(this));
 
 	//Render mode presets. Possibly load from config in future?
 	renderModePresets = new RenderPreset[10];
@@ -506,29 +476,18 @@ GameView::~GameView()
 {
 	delete[] renderModePresets;
 
-	if(!colourRSlider->GetParentWindow())
-		delete colourRSlider;
+	if(!colourPicker->GetParentWindow())
+		delete colourPicker;
 
-	if(!colourGSlider->GetParentWindow())
-		delete colourGSlider;
+	for(std::vector<ToolButton*>::iterator iter = colourPresets.begin(), end = colourPresets.end(); iter != end; ++iter)
+	{
+		ToolButton * button = *iter;
+		if(!button->GetParentWindow())
+		{
+			delete button;
+		}
 
-	if(!colourBSlider->GetParentWindow())
-		delete colourBSlider;
-
-	if(!colourASlider->GetParentWindow())
-		delete colourASlider;
-
-	if(!colourRValue->GetParentWindow())
-		delete colourRValue;
-
-	if(!colourGValue->GetParentWindow())
-		delete colourGValue;
-
-	if(!colourBValue->GetParentWindow())
-		delete colourBValue;
-
-	if(!colourAValue->GetParentWindow())
-		delete colourAValue;
+	}
 
 	if(placeSaveThumb)
 		delete placeSaveThumb;
@@ -761,71 +720,96 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 
 void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
 {
-	RemoveComponent(colourRSlider);
-	colourRSlider->SetParentWindow(NULL);
-	RemoveComponent(colourRValue);
-	colourRValue->SetParentWindow(NULL);
+	for(std::vector<ToolButton*>::iterator iter = colourPresets.begin(), end = colourPresets.end(); iter != end; ++iter)
+	{
+		ToolButton * button = *iter;
+		RemoveComponent(button);
+		button->SetParentWindow(NULL);
+	}
 
-	RemoveComponent(colourGSlider);
-	colourGSlider->SetParentWindow(NULL);
-	RemoveComponent(colourGValue);
-	colourGValue->SetParentWindow(NULL);
-
-	RemoveComponent(colourBSlider);
-	colourBSlider->SetParentWindow(NULL);
-	RemoveComponent(colourBValue);
-	colourBValue->SetParentWindow(NULL);
-
-	RemoveComponent(colourASlider);
-	colourASlider->SetParentWindow(NULL);
-	RemoveComponent(colourAValue);
-	colourAValue->SetParentWindow(NULL);
+	RemoveComponent(colourPicker);
+	colourPicker->SetParentWindow(NULL);
 
 	if(sender->GetColourSelectorVisibility())
 	{
-		AddComponent(colourRSlider);
-		AddComponent(colourRValue);
-
-		AddComponent(colourGSlider);
-		AddComponent(colourGValue);
-
-		AddComponent(colourBSlider);
-		AddComponent(colourBValue);
-
-		AddComponent(colourASlider);
-		AddComponent(colourAValue);
+		for(std::vector<ToolButton*>::iterator iter = colourPresets.begin(), end = colourPresets.end(); iter != end; ++iter)
+		{
+			ToolButton * button = *iter;
+			AddComponent(button);
+		}
+		AddComponent(colourPicker);
 	}
+}
 
+void GameView::NotifyColourPresetsChanged(GameModel * sender)
+{
+	class ColourPresetAction: public ui::ButtonAction
+	{
+		GameView * v;
+	public:
+		int preset;
+		ColourPresetAction(GameView * _v, int preset) : preset(preset) { v = _v; }
+		void ActionCallback(ui::Button * sender_)
+		{
+			ToolButton *sender = (ToolButton*)sender_;
+			if(sender->GetSelectionState() == 0)
+			{
+				v->c->SetActiveColourPreset(preset);
+				v->c->SetColour(sender->Appearance.BackgroundInactive);
+			}
+			else
+				sender->SetSelectionState(0);
+		}
+	};
+
+
+	for(std::vector<ToolButton*>::iterator iter = colourPresets.begin(), end = colourPresets.end(); iter != end; ++iter)
+	{
+		ToolButton * button = *iter;
+		RemoveComponent(button);
+		delete button;
+	}
+	colourPresets.clear();
+
+	int currentX = 5;
+	std::vector<ui::Colour> colours = sender->GetColourPresets();
+	int i = 0;
+	for(std::vector<ui::Colour>::iterator iter = colours.begin(), end = colours.end(); iter != end; ++iter)
+	{
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "");
+		tempButton->Appearance.BackgroundInactive = *iter;
+		tempButton->SetActionCallback(new ColourPresetAction(this, i));
+
+		currentX += 31;
+
+		if(sender->GetColourSelectorVisibility())
+			AddComponent(tempButton);
+		colourPresets.push_back(tempButton);
+
+		i++;
+	}
+	NotifyColourActivePresetChanged(sender);
+}
+
+void GameView::NotifyColourActivePresetChanged(GameModel * sender)
+{
+	for(int i = 0; i < colourPresets.size(); i++)
+	{
+		if(sender->GetActiveColourPreset() == i)
+		{
+			colourPresets[i]->SetSelectionState(0);	//Primary
+		}
+		else
+		{
+			colourPresets[i]->SetSelectionState(-1);
+		}
+	}
 }
 
 void GameView::NotifyColourSelectorColourChanged(GameModel * sender)
 {
-	std::string intR, intG, intB, intA;
-
-	intR = format::NumberToString<int>(sender->GetColourSelectorColour().Red);
-	intG = format::NumberToString<int>(sender->GetColourSelectorColour().Green);
-	intB = format::NumberToString<int>(sender->GetColourSelectorColour().Blue);
-	intA = format::NumberToString<int>(sender->GetColourSelectorColour().Alpha);
-
-	colourRSlider->SetValue(sender->GetColourSelectorColour().Red);
-	colourRSlider->SetColour(ui::Colour(0, 0, 0), ui::Colour(255, 0, 0));
-	if(!colourRValue->IsFocused())
-		colourRValue->SetText(intR);
-
-	colourGSlider->SetValue(sender->GetColourSelectorColour().Green);
-	colourGSlider->SetColour(ui::Colour(0, 0, 0), ui::Colour(0, 255, 0));
-	if(!colourGValue->IsFocused())
-		colourGValue->SetText(intG);
-
-	colourBSlider->SetValue(sender->GetColourSelectorColour().Blue);
-	colourBSlider->SetColour(ui::Colour(0, 0, 0), ui::Colour(0, 0, 255));
-	if(!colourBValue->IsFocused())
-		colourBValue->SetText(intB);
-
-	colourASlider->SetValue(sender->GetColourSelectorColour().Alpha);
-	colourASlider->SetColour(ui::Colour(0, 0, 0), ui::Colour(sender->GetColourSelectorColour().Red, sender->GetColourSelectorColour().Green, sender->GetColourSelectorColour().Blue));
-	if(!colourAValue->IsFocused())
-		colourAValue->SetText(intA);
+	colourPicker->Appearance.BackgroundInactive = sender->GetColourSelectorColour();
+	colourPicker->Appearance.BackgroundHover = sender->GetColourSelectorColour();
 }
 
 void GameView::NotifyRendererChanged(GameModel * sender)
@@ -1210,9 +1194,6 @@ void GameView::BeginStampSelection()
 
 void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if(colourRValue->IsFocused() || colourGValue->IsFocused() || colourBValue->IsFocused() || colourAValue->IsFocused())
-		return;
-
 	if(introText > 50)
 	{
 		introText = 50;
@@ -1432,9 +1413,6 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if(colourRValue->IsFocused() || colourGValue->IsFocused() || colourBValue->IsFocused() || colourAValue->IsFocused())
-		return;
-
 	if(!isMouseDown)
 		drawMode = DrawPoints;
 	else
@@ -1689,21 +1667,6 @@ void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 		placeSaveThumb = NULL;
 		selectMode = SelectNone;
 	}
-}
-
-void GameView::changeColourSlider()
-{
-	c->SetColour(ui::Colour(colourRSlider->GetValue(), colourGSlider->GetValue(), colourBSlider->GetValue(), colourASlider->GetValue()));
-}
-
-void GameView::changeColourText()
-{
-	c->SetColour(ui::Colour(
-		std::min(255U, format::StringToNumber<unsigned int>(colourRValue->GetText())),
-		std::min(255U, format::StringToNumber<unsigned int>(colourGValue->GetText())),
-		std::min(255U, format::StringToNumber<unsigned int>(colourBValue->GetText())),
-		std::min(255U, format::StringToNumber<unsigned int>(colourAValue->GetText())))
-	);
 }
 
 void GameView::enableShiftBehaviour()

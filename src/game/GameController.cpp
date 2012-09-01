@@ -17,6 +17,7 @@
 #include "GameModelException.h"
 #include "simulation/Air.h"
 #include "elementsearch/ElementSearchActivity.h"
+#include "colourpicker/ColourPickerActivity.h"
 #include "update/UpdateActivity.h"
 #include "Notification.h"
 #include "filebrowser/FileBrowserActivity.h"
@@ -845,6 +846,11 @@ void GameController::SetDecoration()
 	gameModel->SetDecoration(!gameModel->GetDecoration());
 }
 
+void GameController::SetActiveColourPreset(int preset)
+{
+	gameModel->SetActiveColourPreset(preset);
+}
+
 void GameController::SetColour(ui::Colour colour)
 {
 	gameModel->SetColourSelectorColour(colour);
@@ -963,6 +969,22 @@ void GameController::OpenElementSearch()
 		toolList.insert(toolList.end(), menuToolList.begin(), menuToolList.end());
 	}
 	new ElementSearchActivity(gameModel, toolList);
+}
+
+void GameController::OpenColourPicker()
+{
+	class ColourPickerCallback: public ColourPickedCallback
+	{
+		GameController * c;
+	public:
+		ColourPickerCallback(GameController * _c): c(_c) {}
+		virtual  ~ColourPickerCallback() {};
+		virtual void ColourPicked(ui::Colour colour)
+		{
+			c->SetColour(colour);
+		}
+	};
+	new ColourPickerActivity(gameModel->GetColourSelectorColour(), new ColourPickerCallback(this));
 }
 
 void GameController::OpenTags()

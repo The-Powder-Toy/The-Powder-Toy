@@ -96,6 +96,7 @@ public:
 	void SetDecoration();
 	void SetActiveMenu(Menu * menu);
 	void SetActiveTool(int toolSelection, Tool * tool);
+	void SetActiveColourPreset(int preset);
 	void SetColour(ui::Colour colour);
 	void SetToolStrength(float value);
 	void LoadSaveFile(SaveFile * file);
@@ -112,6 +113,7 @@ public:
 	void SaveAsCurrent();
 	void OpenStamps();
 	void OpenElementSearch();
+	void OpenColourPicker();
 	void PlaceSave(ui::Point position);
 	void ClearSim();
 	void ReloadSim();

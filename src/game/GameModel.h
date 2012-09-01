@@ -60,10 +60,13 @@ private:
 	Tool * lastTool;
 	Tool * activeTools[3];
 	User currentUser;
-	bool colourSelector;
-	ui::Colour colour;
 	float toolStrength;
 	std::deque<Snapshot*> history;
+
+	int activeColourPreset;
+	std::vector<ui::Colour> colourPresets;
+	bool colourSelector;
+	ui::Colour colour;
 
 	std::string infoTip;
 	std::string toolTip;
@@ -83,6 +86,8 @@ private:
 	void notifyPlaceSaveChanged();
 	void notifyColourSelectorColourChanged();
 	void notifyColourSelectorVisibilityChanged();
+	void notifyColourPresetsChanged();
+	void notifyColourActivePresetChanged();
 	void notifyNotificationsChanged();
 	void notifyLogChanged(string entry);
 	void notifyInfoTipChanged();
@@ -92,6 +97,13 @@ private:
 public:
 	GameModel();
 	~GameModel();
+
+	void SetActiveColourPreset(int preset);
+	int GetActiveColourPreset();
+
+	void SetPresetColour(ui::Colour colour);
+
+	std::vector<ui::Colour> GetColourPresets();
 
 	void SetColourSelectorVisibility(bool visibility);
 	bool GetColourSelectorVisibility();
