@@ -150,7 +150,7 @@ GameController::GameController():
 	gameView->AttachController(this);
 	gameModel->AddObserver(gameView);
 
-	commandInterface = new LuaScriptInterface(gameModel);//new TPTScriptInterface();
+	commandInterface = new LuaScriptInterface(this, gameModel);//new TPTScriptInterface();
 	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
 
 	//sim = new Simulation();

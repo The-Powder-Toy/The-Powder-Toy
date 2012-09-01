@@ -13,14 +13,16 @@
 //#include "game/GameModel.h"
 
 class GameModel;
+class GameController;
 class CommandInterface {
 protected:
 	std::string lastError;
 	GameModel * m;
+	GameController * c;
 public:
 	enum LogType { LogError, LogWarning, LogNotice };
 	enum FormatType { FormatInt, FormatString, FormatChar, FormatFloat };
-	CommandInterface(GameModel * m);
+	CommandInterface(GameController * c, GameModel * m);
 	int GetPropertyOffset(std::string key_, FormatType & format);
 	int GetParticleType(std::string type);
 	void Log(LogType type, std::string message);

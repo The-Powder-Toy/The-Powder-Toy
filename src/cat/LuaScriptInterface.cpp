@@ -37,10 +37,10 @@
 #endif
 #include <time.h>
 
-LuaScriptInterface::LuaScriptInterface(GameModel * m):
-	CommandInterface(m),
+LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
+	CommandInterface(c, m),
 	currentCommand(false),
-	legacy(new TPTScriptInterface(m))
+	legacy(new TPTScriptInterface(c, m))
 {
 	luacon_model = m;
 	luacon_sim = m->GetSimulation();

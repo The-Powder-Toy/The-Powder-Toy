@@ -11,9 +11,11 @@
 #include <strings.h>
 #include "CommandInterface.h"
 #include "game/GameModel.h"
+#include "game/GameController.h"
 
-CommandInterface::CommandInterface(GameModel * m) {
+CommandInterface::CommandInterface(GameController * c, GameModel * m) {
 	this->m = m;
+	this->c = c;
 }
 
 /*void CommandInterface::AttachGameModel(GameModel * m)

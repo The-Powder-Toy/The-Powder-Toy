@@ -22,7 +22,7 @@ protected:
 	AnyType tptS_bubble(std::deque<std::string> * words);
 	ValueType testType(std::string word);
 public:
-	TPTScriptInterface(GameModel * m);
+	TPTScriptInterface(GameController * c, GameModel * m);
 	virtual void Tick() {}
 	virtual int Command(std::string command);
 	virtual std::string FormatCommand(std::string command);

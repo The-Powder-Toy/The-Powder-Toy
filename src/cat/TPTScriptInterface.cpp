@@ -15,7 +15,7 @@
 #include "game/GameModel.h"
 #include "simulation/Air.h"
 
-TPTScriptInterface::TPTScriptInterface(GameModel * m): CommandInterface(m)
+TPTScriptInterface::TPTScriptInterface(GameController * c, GameModel * m): CommandInterface(c, m)
 {
 }
 
@@ -365,7 +365,7 @@ AnyType TPTScriptInterface::tptS_load(std::deque<std::string> * words)
 	//Arguments from stack
 	NumberType saveID = eval(words);
 
-	throw GeneralException("Function not implemented");
+	c->OpenSavePreview(saveID.Value(), 0);
 
 	return NumberType(0);
 }
