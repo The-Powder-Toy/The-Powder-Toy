@@ -260,7 +260,10 @@ void SearchView::Search(std::string query)
 
 void SearchView::NotifySortChanged(SearchModel * sender)
 {
-    sortButton->SetText("Show "+sender->GetSort());
+	if(sender->GetSort() == "best")
+ 	   sortButton->SetText("By votes");
+ 	else
+ 		sortButton->SetText("By date");
 }
 
 void SearchView::NotifyShowOwnChanged(SearchModel * sender)
