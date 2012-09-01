@@ -20,7 +20,7 @@ SaveInfo::SaveInfo(SaveInfo & save) :
 SaveInfo::SaveInfo(int _id, int _date, int _votesUp, int _votesDown, std::string _userName,
 		std::string _name) :
 		id(_id), votesUp(_votesUp), votesDown(_votesDown), userName(_userName), name(
-				_name), Description("No description provided"), date(_date), Published(
+				_name), Description(""), date(_date), Published(
 				true), gameSave(NULL), vote(0), tags(), Comments(0) {
 }
 
