@@ -14,6 +14,7 @@ namespace ui
 	class Window;
 }
 
+class LuaScriptInterface;
 class LuaWindow
 {
 	int onInitializedFunction;
@@ -69,6 +70,8 @@ class LuaWindow
 	void triggerOnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 
 public:
+	LuaScriptInterface * ci;
+	int UserData;
 	static const char className[];
 	static Luna<LuaWindow>::RegType methods[];
 

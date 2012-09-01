@@ -7,6 +7,7 @@ extern "C"
 
 #include <iostream>
 #include "LuaButton.h"
+#include "LuaScriptInterface.h"
 #include "interface/Button.h"
 
 const char LuaButton::className[] = "Button";
@@ -29,7 +30,12 @@ LuaButton::LuaButton(lua_State * l) :
 	int sizeX = luaL_optinteger(l, 3, 10);
 	int sizeY = luaL_optinteger(l, 4, 10);
 	std::string text = luaL_optstring(l, 5, "");
-	std::string toolTip = luaL_optstring(l, 6, "");;
+	std::string toolTip = luaL_optstring(l, 6, "");
+
+	lua_pushstring(l, "Luacon_ci");
+	lua_gettable(l, LUA_REGISTRYINDEX);
+	ci = (LuaScriptInterface*)lua_touserdata(l, -1);
+	lua_pop(l, 1);
 
 	button = new ui::Button(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, toolTip);
 	class ClickAction : public ui::ButtonAction
@@ -116,12 +122,11 @@ void LuaButton::triggerAction()
 {
 	if(actionFunction)
 	{
-		std::cout << actionFunction << std::endl;
 		lua_rawgeti(l, LUA_REGISTRYINDEX, actionFunction);
-		lua_pushinteger(l, 1);
+		lua_rawgeti(l, LUA_REGISTRYINDEX, UserData);
 		if (lua_pcall(l, 1, 0, 0))
 		{
-			//Log error somewhere
+			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
 		}
 	}
 }

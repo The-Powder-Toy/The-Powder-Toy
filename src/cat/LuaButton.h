@@ -13,6 +13,8 @@ namespace ui
 	class Button;
 }
 
+class LuaScriptInterface;
+
 class LuaButton
 {
 	ui::Button * button;
@@ -24,6 +26,8 @@ class LuaButton
 	int position(lua_State * l);
 	int size(lua_State * l);
 public:
+	LuaScriptInterface * ci;
+	int UserData;
 	static const char className[];
 	static Luna<LuaButton>::RegType methods[];
 

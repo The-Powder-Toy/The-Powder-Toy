@@ -13,6 +13,8 @@ namespace ui
 	class Label;
 }
 
+class LuaScriptInterface;
+
 class LuaLabel
 {
 	ui::Label * label;
@@ -21,6 +23,8 @@ class LuaLabel
 	int position(lua_State * l);
 	int size(lua_State * l);
 public:
+	LuaScriptInterface * ci;
+	int UserData;
 	static const char className[];
 	static Luna<LuaLabel>::RegType methods[];
 

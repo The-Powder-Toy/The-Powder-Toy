@@ -126,9 +126,14 @@ private:
 	static int new_T(lua_State * L)
 	{
 		lua_remove(L, 1);   // use classname:new(), instead of classname.new()
+
 		T *obj = new T(L);  // call constructor for T objects
 		userdataType *ud = static_cast<userdataType*>(lua_newuserdata(L, sizeof(userdataType)));
 		ud->pT = obj;  // store pointer to object in userdata
+		
+		obj->UserData = luaL_ref(L, LUA_REGISTRYINDEX);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, obj->UserData);
+
 		luaL_getmetatable(L, T::className);  // lookup metatable in Lua registry
 		lua_setmetatable(L, -2);
 		return 1;  // userdata containing pointer to T object

@@ -12,6 +12,7 @@
 #include <locale>
 #include "Config.h"
 #include "Format.h"
+#include "LuaLuna.h"
 #include "LuaScriptInterface.h"
 #include "TPTScriptInterface.h"
 #include "dialogues/ErrorMessage.h"
@@ -25,7 +26,6 @@
 
 #include "LuaBit.h"
 
-#include "LuaLuna.h"
 #include "LuaWindow.h"
 #include "LuaButton.h"
 #include "LuaLabel.h"
@@ -48,10 +48,15 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_ren = m->GetRenderer();
 	luacon_ci = this;
 
+
 	//New TPT API
 	l = lua_open();
 	luaL_openlibs(l);
 	luaopen_bit(l);
+
+	lua_pushstring(l, "Luacon_ci");
+	lua_pushlightuserdata(l, this);
+	lua_settable(l, LUA_REGISTRYINDEX);
 
 	initInterfaceAPI();
 	initRendererAPI();

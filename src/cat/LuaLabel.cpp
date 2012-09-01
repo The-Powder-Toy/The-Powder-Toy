@@ -6,6 +6,7 @@ extern "C"
 }
 
 #include <iostream>
+#include "LuaScriptInterface.h"
 #include "LuaLabel.h"
 #include "interface/Label.h"
 
@@ -27,6 +28,11 @@ LuaLabel::LuaLabel(lua_State * l)
 	int sizeX = luaL_optinteger(l, 3, 10);
 	int sizeY = luaL_optinteger(l, 4, 10);
 	std::string text = luaL_optstring(l, 5, "");
+
+	lua_pushstring(l, "Luacon_ci");
+	lua_gettable(l, LUA_REGISTRYINDEX);
+	ci = (LuaScriptInterface*)lua_touserdata(l, -1);
+	lua_pop(l, 1);
 
 	label = new ui::Label(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text);
 }
