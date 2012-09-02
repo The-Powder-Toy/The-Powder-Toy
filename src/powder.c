@@ -791,28 +791,12 @@ inline int create_part(int p, int x, int y, int tv)//the function for creating a
 	}
 	if (t==SPC_AIR)
 	{
-		pv[y/CELL][x/CELL] += 0.03f;
-		if (y+CELL<YRES)
-			pv[y/CELL+1][x/CELL] += 0.03f;
-		if (x+CELL<XRES)
-		{
-			pv[y/CELL][x/CELL+1] += 0.03f;
-			if (y+CELL<YRES)
-				pv[y/CELL+1][x/CELL+1] += 0.03f;
-		}
+		pv[y/CELL][x/CELL] += 0.10f;
 		return -1;
 	}
 	if (t==SPC_VACUUM)
 	{
-		pv[y/CELL][x/CELL] -= 0.03f;
-		if (y+CELL<YRES)
-			pv[y/CELL+1][x/CELL] -= 0.03f;
-		if (x+CELL<XRES)
-		{
-			pv[y/CELL][x/CELL+1] -= 0.03f;
-			if (y+CELL<YRES)
-				pv[y/CELL+1][x/CELL+1] -= 0.03f;
-		}
+		pv[y/CELL][x/CELL] -= 0.10f;
 		return -1;
 	}
 	if (t==SPC_PGRV)
