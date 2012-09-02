@@ -18,13 +18,15 @@ Luna<LuaButton>::RegType LuaButton::methods[] = {
 	method(LuaButton, text),
 	method(LuaButton, position),
 	method(LuaButton, size),
+	method(LuaButton, visible),
+	method(LuaButton, enabled),
 	{0, 0}
 };
 
 LuaButton::LuaButton(lua_State * l) :
+	LuaComponent(l),
 	actionFunction(0)
 {
-	this->l = l;
 	int posX = luaL_optinteger(l, 1, 0);
 	int posY = luaL_optinteger(l, 2, 0);
 	int sizeX = luaL_optinteger(l, 3, 10);
@@ -32,12 +34,8 @@ LuaButton::LuaButton(lua_State * l) :
 	std::string text = luaL_optstring(l, 5, "");
 	std::string toolTip = luaL_optstring(l, 6, "");
 
-	lua_pushstring(l, "Luacon_ci");
-	lua_gettable(l, LUA_REGISTRYINDEX);
-	ci = (LuaScriptInterface*)lua_touserdata(l, -1);
-	lua_pop(l, 1);
-
 	button = new ui::Button(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, toolTip);
+	component = button;
 	class ClickAction : public ui::ButtonAction
 	{
 		LuaButton * luaButton;
@@ -49,6 +47,22 @@ LuaButton::LuaButton(lua_State * l) :
 		}
 	};
 	button->SetActionCallback(new ClickAction(this));
+}
+
+int LuaButton::enabled(lua_State * l)
+{
+	int args = lua_gettop(l);
+	if(args)
+	{
+		luaL_checktype(l, 1, LUA_TBOOLEAN);
+		button->Enabled = lua_toboolean(l, 1);
+		return 0;
+	}
+	else
+	{
+		lua_pushboolean(l, button->Enabled);
+		return 1;
+	}
 }
 
 int LuaButton::action(lua_State * l)
@@ -81,43 +95,6 @@ int LuaButton::text(lua_State * l)
 	}
 }
 
-int LuaButton::position(lua_State * l)
-{
-	int args = lua_gettop(l);
-	if(args)
-	{
-		luaL_checktype(l, 1, LUA_TNUMBER);
-		luaL_checktype(l, 2, LUA_TNUMBER);
-		button->Position = ui::Point(lua_tointeger(l, 1), lua_tointeger(l, 2));
-		return 0;
-	}
-	else
-	{
-		lua_pushinteger(l, button->Position.X);
-		lua_pushinteger(l, button->Position.Y);
-		return 2;
-	}
-}
-
-int LuaButton::size(lua_State * l)
-{
-	int args = lua_gettop(l);
-	if(args)
-	{
-		luaL_checktype(l, 1, LUA_TNUMBER);
-		luaL_checktype(l, 2, LUA_TNUMBER);
-		button->Size = ui::Point(lua_tointeger(l, 1), lua_tointeger(l, 2));
-		button->Invalidate();
-		return 0;
-	}
-	else
-	{
-		lua_pushinteger(l, button->Size.X);
-		lua_pushinteger(l, button->Size.Y);
-		return 2;
-	}
-}
-
 void LuaButton::triggerAction()
 {
 	if(actionFunction)
@@ -133,7 +110,4 @@ void LuaButton::triggerAction()
 
 LuaButton::~LuaButton()
 {
-	if(button->GetParentWindow())
-		button->GetParentWindow()->RemoveComponent(button);
-	delete button;
 }

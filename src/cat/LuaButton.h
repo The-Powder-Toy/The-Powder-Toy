@@ -7,6 +7,7 @@ extern "C" {
 }
 
 #include "LuaLuna.h"
+#include "LuaComponent.h"
 
 namespace ui
 {
@@ -15,23 +16,18 @@ namespace ui
 
 class LuaScriptInterface;
 
-class LuaButton
+class LuaButton: public LuaComponent
 {
 	ui::Button * button;
 	int actionFunction;
-	lua_State * l;
 	void triggerAction();
 	int action(lua_State * l);
 	int text(lua_State * l);
-	int position(lua_State * l);
-	int size(lua_State * l);
+	int enabled(lua_State * l);
 public:
-	LuaScriptInterface * ci;
-	int UserData;
 	static const char className[];
 	static Luna<LuaButton>::RegType methods[];
 
-	ui::Button * GetComponent() { return button; }
 	LuaButton(lua_State * l);
 	~LuaButton();
 };

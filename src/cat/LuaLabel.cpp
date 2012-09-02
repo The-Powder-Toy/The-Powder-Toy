@@ -17,10 +17,12 @@ Luna<LuaLabel>::RegType LuaLabel::methods[] = {
 	method(LuaLabel, text),
 	method(LuaLabel, position),
 	method(LuaLabel, size),
+	method(LuaLabel, visible),
 	{0, 0}
 };
 
-LuaLabel::LuaLabel(lua_State * l)
+LuaLabel::LuaLabel(lua_State * l) :
+	LuaComponent(l)
 {
 	this->l = l;
 	int posX = luaL_optinteger(l, 1, 0);
@@ -29,12 +31,8 @@ LuaLabel::LuaLabel(lua_State * l)
 	int sizeY = luaL_optinteger(l, 4, 10);
 	std::string text = luaL_optstring(l, 5, "");
 
-	lua_pushstring(l, "Luacon_ci");
-	lua_gettable(l, LUA_REGISTRYINDEX);
-	ci = (LuaScriptInterface*)lua_touserdata(l, -1);
-	lua_pop(l, 1);
-
 	label = new ui::Label(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text);
+	component = label;
 }
 
 int LuaLabel::text(lua_State * l)
@@ -53,46 +51,6 @@ int LuaLabel::text(lua_State * l)
 	}
 }
 
-int LuaLabel::position(lua_State * l)
-{
-	int args = lua_gettop(l);
-	if(args)
-	{
-		luaL_checktype(l, 1, LUA_TNUMBER);
-		luaL_checktype(l, 2, LUA_TNUMBER);
-		label->Position = ui::Point(lua_tointeger(l, 1), lua_tointeger(l, 2));
-		return 0;
-	}
-	else
-	{
-		lua_pushinteger(l, label->Position.X);
-		lua_pushinteger(l, label->Position.Y);
-		return 2;
-	}
-}
-
-int LuaLabel::size(lua_State * l)
-{
-	int args = lua_gettop(l);
-	if(args)
-	{
-		luaL_checktype(l, 1, LUA_TNUMBER);
-		luaL_checktype(l, 2, LUA_TNUMBER);
-		label->Size = ui::Point(lua_tointeger(l, 1), lua_tointeger(l, 2));
-		label->Invalidate();
-		return 0;
-	}
-	else
-	{
-		lua_pushinteger(l, label->Size.X);
-		lua_pushinteger(l, label->Size.Y);
-		return 2;
-	}
-}
-
 LuaLabel::~LuaLabel()
 {
-	if(label->GetParentWindow())
-		label->GetParentWindow()->RemoveComponent(label);
-	delete label;
 }

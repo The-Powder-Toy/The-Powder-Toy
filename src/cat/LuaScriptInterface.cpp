@@ -29,6 +29,7 @@
 #include "LuaWindow.h"
 #include "LuaButton.h"
 #include "LuaLabel.h"
+#include "LuaTextbox.h"
 
 #ifdef WIN
 #include <direct.h>
@@ -291,6 +292,7 @@ void LuaScriptInterface::initInterfaceAPI()
 	Luna<LuaWindow>::Register(l);
 	Luna<LuaButton>::Register(l);
 	Luna<LuaLabel>::Register(l);
+	Luna<LuaTextbox>::Register(l);
 }
 
 int LuaScriptInterface::interface_addComponent(lua_State * l)
@@ -301,6 +303,8 @@ int LuaScriptInterface::interface_addComponent(lua_State * l)
 		component = Luna<LuaButton>::get(luaComponent)->GetComponent();
 	else if(luaComponent = Luna<LuaLabel>::tryGet(l, 1))
 		component = Luna<LuaLabel>::get(luaComponent)->GetComponent();
+	else if(luaComponent = Luna<LuaTextbox>::tryGet(l, 1))
+		component = Luna<LuaTextbox>::get(luaComponent)->GetComponent();
 	else
 		luaL_typerror(l, 1, "Component");
 	if(luacon_ci->Window && component)
