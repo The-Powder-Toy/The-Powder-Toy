@@ -193,7 +193,7 @@ part_type ptypes[PT_NUM] =
 	{"FRAY",	PIXPACK(0x00BBFF),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,	100,	SC_FORCE,		20.0f+0.0f +273.15f,	0,		"Force Emitter. Push or pull objects based on temp value, use like ARAY", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_FRAY, NULL},
 	{"RPEL",	PIXPACK(0x99CC00),	0.0f,	0.00f * CFDS,	0.90f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,	100,	SC_FORCE,		20.0f+0.0f	+273.15f,	0,		"Repel or attract particles based on temp value.", ST_NONE, TYPE_SOLID, &update_REPL, NULL},
 	{"PPIP",	PIXPACK(0x444466),	0.0f,	0.00f * CFDS,	0.95f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	0,	1,	1,	100,	SC_POWERED,		273.15f,				0,		"Powered pipe", ST_SOLID, TYPE_SOLID|PROP_LIFE_DEC, &update_PIPE, &graphics_PIPE},
-	{"DTEC",	PIXPACK(0xFD9D18),	0.0f,	0.00f * CFDS,	0.96f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,	100,	SC_SPECIAL,		R_TEMP+273.15f,			0,		"Creates a spark when something with its ctype is nearby", ST_SOLID, TYPE_SOLID, &update_DTEC, NULL},
+	{"DTEC",	PIXPACK(0xFD9D18),	0.0f,	0.00f * CFDS,	0.96f,	0.00f,	0.0f,	0.0f,	0.00f,	0.000f	* CFDS,	0,	0,		0,	0,	1,	1,	1,	100,	SC_ELEC,		R_TEMP+273.15f,			0,		"Creates a spark when something with its ctype is nearby", ST_SOLID, TYPE_SOLID, &update_DTEC, NULL},
 	//Name		Colour				Advec	Airdrag			Airloss	Loss	Collid	Grav	Diffus	Hotair			Fal	Burn	Exp	Mel	Hrd M	Use	Weight	Section			H						Ins		Description
 };
 
