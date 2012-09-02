@@ -417,9 +417,11 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	{
 		nextButton->Enabled = false;
 		previousButton->Enabled = false;
+		sortButton->Enabled = false;
 	}
 	else
 	{
+		sortButton->Enabled = true;
 		nextButton->Enabled = true;
 		previousButton->Enabled = true;
 	}

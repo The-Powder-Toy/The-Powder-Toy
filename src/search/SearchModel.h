@@ -56,9 +56,9 @@ public:
 	int GetPageCount() { return max(1, (int)(ceil(resultCount/16))); }
 	int GetPageNum() { return currentPage; }
 	std::string GetLastQuery() { return lastQuery; }
-	void SetSort(string sort) { currentSort = sort; notifySortChanged(); }
+	void SetSort(string sort) { if(!updateSaveListWorking) { currentSort = sort; } notifySortChanged(); }
 	string GetSort() { return currentSort; }
-	void SetShowOwn(bool show) { if(show!=showOwn) { showOwn = show; } notifyShowOwnChanged();  }
+	void SetShowOwn(bool show) { if(!updateSaveListWorking) { if(show!=showOwn) { showOwn = show; } } notifyShowOwnChanged();  }
 	bool GetShowOwn() { return showOwn; }
 	void SetShowFavourite(bool show) { if(show!=showFavourite) { showFavourite = show; } notifyShowFavouriteChanged();  }
 	bool GetShowFavourite() { return showFavourite; }
