@@ -66,5 +66,24 @@ int update_PLNT(UPDATE_FUNC_ARGS) {
 				}
 		parts[i].life = 0;
 	}
+	if (parts[i].temp > 400 && parts[i].temp > parts[i].tmp2)
+		parts[i].tmp2 = (int)parts[i].temp;
+	return 0;
+}
+
+int graphics_PLNT(GRAPHICS_FUNC_ARGS)
+{
+	float maxtemp = fmax(cpart->tmp2,cpart->temp);
+	if (maxtemp > 300)
+	{
+		*colr += (int)restrict_flt((maxtemp-300)/5,0,58);
+		*colg -= (int)restrict_flt((maxtemp-300)/2,0,102);
+		*colb += (int)restrict_flt((maxtemp-300)/5,0,70);
+	}
+	if (maxtemp < 273)
+	{
+		*colg += (int)restrict_flt((273-maxtemp)/4,0,255);
+		*colb += (int)restrict_flt((273-maxtemp)/1.5,0,255);
+	}
 	return 0;
 }

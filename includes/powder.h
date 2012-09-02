@@ -352,6 +352,8 @@ int graphics_EXOT(GRAPHICS_FUNC_ARGS);
 int graphics_WARP(GRAPHICS_FUNC_ARGS);
 int graphics_EMBR(GRAPHICS_FUNC_ARGS);
 int graphics_BRCK(GRAPHICS_FUNC_ARGS);
+int graphics_WOOD(GRAPHICS_FUNC_ARGS);
+int graphics_PLNT(GRAPHICS_FUNC_ARGS);
 
 void TRON_init_graphics();
 
@@ -439,6 +441,7 @@ int update_VINE(UPDATE_FUNC_ARGS);
 int update_WARP(UPDATE_FUNC_ARGS);
 int update_WATR(UPDATE_FUNC_ARGS);
 int update_WIFI(UPDATE_FUNC_ARGS);
+int update_WOOD(UPDATE_FUNC_ARGS);
 int update_WTRV(UPDATE_FUNC_ARGS);
 int update_YEST(UPDATE_FUNC_ARGS);
 int update_SOAP(UPDATE_FUNC_ARGS);
