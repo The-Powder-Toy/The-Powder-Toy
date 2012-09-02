@@ -55,9 +55,9 @@ if((not GetOption('lin')) and (not GetOption('win')) and (not GetOption('macosx'
 	raise SystemExit(1)
 
 if(GetOption('win')):
-	env = Environment(tools = ['mingw', 'gch', 'mfprogram'], ENV = os.environ)
+	env = Environment(tools = ['mingw'], ENV = os.environ)
 else:
-	env = Environment(tools = ['default', 'gch', 'mfprogram'], ENV = os.environ)
+	env = Environment(tools = ['default'], ENV = os.environ)
 
 if GetOption("toolprefix"):
 	env['CC'] = GetOption("toolprefix")+env['CC']
@@ -167,10 +167,13 @@ elif(GetOption('snapshot') or GetOption('snapshot-id')):
 	env.Append(CPPDEFINES='SNAPSHOT')
 
 if(GetOption('save-version')):
-	env.Append(CPPDEFINES=['SAVE_VERSION=' + GetOption('major-version')])
+	env.Append(CPPDEFINES=['SAVE_VERSION=' + GetOption('save-version')])
 
 if(GetOption('minor-version')):
 	env.Append(CPPDEFINES=['MINOR_VERSION=' + GetOption('minor-version')])
+
+if(GetOption('build-number')):
+	env.Append(CPPDEFINES=['BUILD_NUM=' + GetOption('build-number')])
 
 if(GetOption('x86')):
 	env.Append(CPPDEFINES='X86')
@@ -210,10 +213,8 @@ sources+=Glob("src/simulation/tools/*.cpp")
 sources+=Glob("generated/ToolClasses.cpp")
 sources+=Glob("generated/ElementClasses.cpp")
 
-env['Gch'] = env.Gch('src/simulation/Tools.h.gch', 'src/simulation/Tools.h')[0]
-env['Gch'] = env.Gch('src/simulation/Elements.h.gch', 'src/simulation/Elements.h')[0]
-env['Gch'] = env.Gch('src/client/Client.h.gch', 'src/client/Client.h')[0]
-env['Gch'] = env.Gch('src/simulation/SimulationData.h.gch', 'src/simulation/SimulationData.h')[0]
+if(GetOption('win')):
+	sources = filter(lambda source: str(source) != 'src/simulation/Gravity.cpp', sources)
 
 SetupSpawn(env)
 
@@ -237,19 +238,13 @@ if(GetOption('win')):
 if(GetOption('release')):
 	env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations', '-Wunsafe-loop-optimizations'])
 
-if(GetOption('everythingAtOnce')):
-	env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")
-	env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python generator.py tools $TARGETS $SOURCES")
-	env.Decider('MD5')
-	t=env.MFProgram(target=programName, source=sources)
-	Default(t)
-else:
-	env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")
-	env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python generator.py tools $TARGETS $SOURCES")
-	env.Decider('MD5')
-	t=env.Program(target=programName, source=sources)
-	Default(t)
+if(GetOption('win')):
+	envCopy = env.Clone()
+	envCopy.Append(CCFLAGS=['-mincoming-stack-boundary=2'])
+	sources+=envCopy.Object('src/simulation/Gravity.cpp')
 
-#if(GetOption('release')):
-#	 StripExecutable(t);
-
+env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")
+env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python generator.py tools $TARGETS $SOURCES")
+env.Decider('MD5')
+t=env.Program(target=programName, source=sources)
+Default(t)
