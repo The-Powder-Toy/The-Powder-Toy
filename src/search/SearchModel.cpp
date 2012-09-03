@@ -10,6 +10,8 @@ SearchModel::SearchModel():
 	loadedSave(NULL),
 	updateSaveListWorking(false),
 	updateSaveListFinished(false),
+	updateTagListWorking(false),
+	updateTagListFinished(false),
 	saveListLoaded(false),
 	currentPage(1),
 	resultCount(0),
