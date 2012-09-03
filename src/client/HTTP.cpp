@@ -312,7 +312,7 @@ void http_async_add_header(void *ctx, char *name, char *data)
 {
 	struct http_ctx *cx = (http_ctx *)ctx;
 	cx->thdr = (char *)realloc(cx->thdr, cx->thlen + strlen(name) + strlen(data) + 4);
-	cx->thlen += sprintf(cx->thdr+cx->thlen, "%s: %s\n", name, data);
+	cx->thlen += sprintf(cx->thdr+cx->thlen, "%s: %s\r\n", name, data);
 }
 
 static void process_header(struct http_ctx *cx, char *str)
@@ -480,13 +480,13 @@ int http_async_req_status(void *ctx)
 		if (cx->txdl)
 		{
 			// generate POST
-			cx->tbuf = (char *)malloc(strlen(cx->host) + strlen(cx->path) + 126 + strlen(userAgent) + cx->txdl + cx->thlen);
+			cx->tbuf = (char *)malloc(strlen(cx->host) + strlen(cx->path) + 132 + strlen(userAgent) + cx->txdl + cx->thlen);
 			cx->tptr = 0;
 			cx->tlen = 0;
-			cx->tlen += sprintf(cx->tbuf+cx->tlen, "POST %s HTTP/1.1\n", cx->path);
-			cx->tlen += sprintf(cx->tbuf+cx->tlen, "Host: %s\n", cx->host);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "POST %s HTTP/1.1\r\n", cx->path);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "Host: %s\r\n", cx->host);
 			if (!cx->keep)
-				cx->tlen += sprintf(cx->tbuf+cx->tlen, "Connection: close\n");
+				cx->tlen += sprintf(cx->tbuf+cx->tlen, "Connection: close\r\n");
 			if (cx->thdr)
 			{
 				memcpy(cx->tbuf+cx->tlen, cx->thdr, cx->thlen);
@@ -495,9 +495,9 @@ int http_async_req_status(void *ctx)
 				cx->thdr = NULL;
 				cx->thlen = 0;
 			}
-			cx->tlen += sprintf(cx->tbuf+cx->tlen, "Content-Length: %d\n", cx->txdl);
-			cx->tlen += sprintf(cx->tbuf+cx->tlen, "User-Agent: %s\n", userAgent);
-			cx->tlen += sprintf(cx->tbuf+cx->tlen, "\n");
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "Content-Length: %d\r\n", cx->txdl);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "User-Agent: %s\r\n", userAgent);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "\r\n");
 			memcpy(cx->tbuf+cx->tlen, cx->txd, cx->txdl);
 			cx->tlen += cx->txdl;
 			free(cx->txd);
@@ -507,11 +507,11 @@ int http_async_req_status(void *ctx)
 		else
 		{
 			// generate GET
-			cx->tbuf = (char *)malloc(strlen(cx->host) + strlen(cx->path) + 93 + strlen(userAgent) + cx->thlen);
+			cx->tbuf = (char *)malloc(strlen(cx->host) + strlen(cx->path) + 98 + strlen(userAgent) + cx->thlen);
 			cx->tptr = 0;
 			cx->tlen = 0;
-			cx->tlen += sprintf(cx->tbuf+cx->tlen, "GET %s HTTP/1.1\n", cx->path);
-			cx->tlen += sprintf(cx->tbuf+cx->tlen, "Host: %s\n", cx->host);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "GET %s HTTP/1.1\r\n", cx->path);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "Host: %s\r\n", cx->host);
 			if (cx->thdr)
 			{
 				memcpy(cx->tbuf+cx->tlen, cx->thdr, cx->thlen);
@@ -521,9 +521,9 @@ int http_async_req_status(void *ctx)
 				cx->thlen = 0;
 			}
 			if (!cx->keep)
-				cx->tlen += sprintf(cx->tbuf+cx->tlen, "Connection: close\n");
-			cx->tlen += sprintf(cx->tbuf+cx->tlen, "User-Agent: %s\n", userAgent);
-			cx->tlen += sprintf(cx->tbuf+cx->tlen, "\n");
+				cx->tlen += sprintf(cx->tbuf+cx->tlen, "Connection: close\r\n");
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "User-Agent: %s\r\n", userAgent);
+			cx->tlen += sprintf(cx->tbuf+cx->tlen, "\r\n");
 		}
 		cx->state = HTS_XMIT;
 		cx->last = now;
