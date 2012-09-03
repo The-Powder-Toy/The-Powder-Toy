@@ -4977,7 +4977,7 @@ int search_results(char *str, int votes)
 		}
 		else if (!strncmp(str, "MOTD ", 5))
 		{
-			memcpy(server_motd, str+5, strlen(str+5));
+			strncpy(server_motd, str+5, 511);
 		}
 		else if (!strncmp(str, "TAG ", 4))
 		{
