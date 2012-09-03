@@ -22,6 +22,11 @@ void SearchModel::SetShowTags(bool show)
 	showTags = show;
 }
 
+bool SearchModel::GetShowTags()
+{
+	return showTags;	
+}
+
 void * SearchModel::updateSaveListTHelper(void * obj)
 {
 	return ((SearchModel *)obj)->updateSaveListT();
@@ -36,26 +41,30 @@ void * SearchModel::updateSaveListT()
 		category = "Favourites";
 	if(showOwn && Client::Ref().GetAuthUser().ID)
 		category = "by:"+Client::Ref().GetAuthUser().Username;
-	information[0] = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category, thResultCount);
-
-	if(showTags)
-	{
-		int tagResultCount;
-		information[1] = Client::Ref().GetTags(0, 24, "", tagResultCount);
-	}
-	else
-	{
-		information[1] = NULL;
-	}
+	vector<SaveInfo*> * saveList = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category, thResultCount);
 
 	updateSaveListFinished = true;
-	return information;
+	return saveList;
+}
+
+void * SearchModel::updateTagListTHelper(void * obj)
+{
+	return ((SearchModel *)obj)->updateTagListT();
+}
+
+void * SearchModel::updateTagListT()
+{
+	int tagResultCount;
+	std::vector<std::pair<std::string, int> > * tagList = Client::Ref().GetTags(0, 24, "", tagResultCount);
+
+	updateTagListFinished = true;
+	return tagList;
 }
 
 void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 {
 	//Threading
-	if(!updateSaveListWorking)
+	if(!updateSaveListWorking && !updateTagListWorking)
 	{
 		lastQuery = query;
 		lastError = "";
@@ -63,15 +72,24 @@ void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 		saveList.clear();
 		//resultCount = 0;
 		currentPage = pageNumber;
-		notifySaveListChanged();
-		notifyPageChanged();
-		selected.clear();
-		notifySelectedChanged();
 
 		if(pageNumber == 1 && !showOwn && !showFavourite && currentSort == "best" && query == "")
 			SetShowTags(true);
 		else
 			SetShowTags(false);
+
+		notifySaveListChanged();
+		notifyTagListChanged();
+		notifyPageChanged();
+		selected.clear();
+		notifySelectedChanged();
+
+		if(GetShowTags() && !tagList.size())
+		{
+			updateTagListFinished = false;
+			updateTagListWorking = true;
+			pthread_create(&updateTagListThread, 0, &SearchModel::updateTagListTHelper, this);
+		}
 		
 		updateSaveListFinished = false;
 		updateSaveListWorking = true;
@@ -116,26 +134,15 @@ void SearchModel::Update()
 			updateSaveListWorking = false;
 			lastError = "";
 			saveListLoaded = true;
-			void ** tempInformation;
-			//vector<SaveInfo*> * tempSaveList;
-			pthread_join(updateSaveListThread, (void**)(&tempInformation));
 
+			vector<SaveInfo*> * tempSaveList;
+			pthread_join(updateSaveListThread, (void**)&tempSaveList);
 
-			saveList = *(vector<SaveInfo*>*)tempInformation[0];
-
-			delete (vector<SaveInfo*>*)tempInformation[0];
-
-			if(tempInformation[1])
+			if(tempSaveList)
 			{
-				tagList = *(vector<pair<string, int> >*)tempInformation[1];
-				delete (vector<pair<string, int> >*)tempInformation[1];
+				saveList = *tempSaveList;
+				delete tempSaveList;
 			}
-			else
-			{
-				tagList = vector<pair<string, int> >();
-			}
-
-			delete[] tempInformation;
 
 			if(!saveList.size())
 			{
@@ -147,6 +154,23 @@ void SearchModel::Update()
 			notifySaveListChanged();
 		}
 	}
+	if(updateTagListWorking)
+	{
+		if(updateTagListFinished)
+		{
+			updateTagListWorking = false;
+
+			vector<pair<string, int> > * tempTagList;
+			pthread_join(updateTagListThread, (void**)&tempTagList);
+
+			if(tempTagList)
+			{
+				tagList = *tempTagList;
+				delete tempTagList;
+			}
+			notifyTagListChanged();
+		}
+	}
 }
 
 void SearchModel::AddObserver(SearchView * observer)
@@ -156,6 +180,7 @@ void SearchModel::AddObserver(SearchView * observer)
 	observer->NotifyPageChanged(this);
 	observer->NotifySortChanged(this);
 	observer->NotifyShowOwnChanged(this);
+	observer->NotifyTagListChanged(this);
 }
 
 void SearchModel::SelectSave(int saveID)
@@ -194,6 +219,15 @@ void SearchModel::notifySaveListChanged()
 	{
 		SearchView* cObserver = observers[i];
 		cObserver->NotifySaveListChanged(this);
+	}
+}
+
+void SearchModel::notifyTagListChanged()
+{
+	for(int i = 0; i < observers.size(); i++)
+	{
+		SearchView* cObserver = observers[i];
+		cObserver->NotifyTagListChanged(this);
 	}
 }
 

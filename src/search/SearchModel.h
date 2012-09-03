@@ -30,6 +30,7 @@ private:
 	bool showFavourite;
 	bool showTags;
 	void notifySaveListChanged();
+	void notifyTagListChanged();
 	void notifySelectedChanged();
 	void notifyPageChanged();
 	void notifySortChanged();
@@ -43,11 +44,18 @@ private:
 	pthread_t updateSaveListThread;
 	static void * updateSaveListTHelper(void * obj);
 	void * updateSaveListT();
+
+	bool updateTagListWorking;
+	volatile bool updateTagListFinished;
+	pthread_t updateTagListThread;
+		static void * updateTagListTHelper(void * obj);
+	void * updateTagListT();
 public:
     SearchModel();
     virtual ~SearchModel();
 
     void SetShowTags(bool show);
+    bool GetShowTags();
 	void AddObserver(SearchView * observer);
 	void UpdateSaveList(int pageNumber, std::string query);
 	vector<SaveInfo*> GetSaveList();

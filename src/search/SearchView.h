@@ -50,6 +50,7 @@ private:
 	void clearSearch();
 	void doSearch();
 public:
+	void NotifyTagListChanged(SearchModel * sender);
 	void NotifySaveListChanged(SearchModel * sender);
 	void NotifySelectedChanged(SearchModel * sender);
 	void NotifyPageChanged(SearchModel * sender);
