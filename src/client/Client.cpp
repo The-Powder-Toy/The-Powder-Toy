@@ -1411,6 +1411,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 			json::Boolean tempPublished = objDocument["Published"];
 			json::Boolean tempFavourite = objDocument["Favourite"];
 			json::Number tempComments = objDocument["Comments"];
+			json::Number tempViews = objDocument["Views"];
 
 			json::Array tagsArray = objDocument["Tags"];
 			std::vector<std::string> tempTags;
@@ -1435,6 +1436,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 					);
 			tempSave->Comments = tempComments.Value();
 			tempSave->Favourite = tempFavourite.Value();
+			tempSave->Views = tempViews.Value();
 			return tempSave;
 		}
 		catch (json::Exception &e)

@@ -140,20 +140,24 @@ PreviewView::PreviewView():
 	browserOpenButton->SetActionCallback(new BrowserOpenAction(this));
 	AddComponent(browserOpenButton);
 
-	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+15), ui::Point(100, 16), "");
+	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)), ui::Point(100, 16), "");
 	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(saveNameLabel);
 
-	saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+15+14+17), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+15+14+17)-21), "");
+	saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+15+17), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+15+14+17)-21), "");
 	saveDescriptionLabel->SetMultiline(true);
 	saveDescriptionLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveDescriptionLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	saveDescriptionLabel->SetTextColour(ui::Colour(180, 180, 180));
 	AddComponent(saveDescriptionLabel);
 
-	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+15+14), ui::Point(100, 16), "");
+	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+15), ui::Point(100, 16), "");
 	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 	AddComponent(authorDateLabel);
+
+	viewsLabel = new ui::Label(ui::Point((XRES/2)-103, (YRES/2)+15), ui::Point(100, 16), "");
+	viewsLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;	viewsLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	AddComponent(viewsLabel);
 
 
 	pageInfo = new ui::Label(ui::Point((XRES/2) + 5, Size.Y+1), ui::Point(Size.X-((XRES/2) + 10), 15), "Page 1 of 1");
@@ -269,18 +273,35 @@ void PreviewView::OnDraw()
 	g->drawrect(Position.X, Position.Y, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 100);
 	g->draw_line(Position.X+XRES/2, Position.Y+1, Position.X+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
 
-
-	g->draw_line(Position.X+1, Position.Y+12+YRES/2, Position.X-1+XRES/2, Position.Y+12+YRES/2, 100, 100, 100,255);
-	float factor;
 	if(!(!votesUp && !votesDown))
 	{
-		factor = (float)(((float)(XRES/2)-2)/((float)(votesUp+votesDown)));
-		g->fillrect(1+Position.X, 2+Position.Y+YRES/2, (XRES/2)-2, 9, 200, 50, 50, 255);
-		g->fillrect(1+Position.X, 2+Position.Y+YRES/2, (int)(((float)votesUp)*factor), 9, 50, 200, 50, 255);
-		g->fillrect(1+Position.X, 2+Position.Y+(YRES/2), 14, 9, 0, 0, 0, 100);
-		g->fillrect(Position.X+(XRES/2)-15, 2+Position.Y+(YRES/2), 14, 9, 0, 0, 0, 100);
-		g->draw_icon(1+Position.X+2, Position.Y+(YRES/2)+4, IconVoteUp);
-		g->draw_icon(Position.X+(XRES/2)-12, Position.Y+(YRES/2)+1, IconVoteDown);
+		float ryf;
+		int nyu, nyd;
+		int lv = (votesUp>votesDown)?votesUp:votesDown;
+		lv = (lv>10)?lv:10;
+
+		if (50>lv)
+		{
+			ryf = 50.0f/((float)lv);
+			nyu = votesUp*ryf;
+			nyd = votesDown*ryf;
+		}
+		else
+		{
+			ryf = ((float)lv)/50.0f;
+			nyu = votesUp/ryf;
+			nyd = votesDown/ryf;
+		}
+		nyu = nyu>50?50:nyu;
+		nyd = nyd>50?50:nyd;
+
+		g->fillrect(Position.X+(XRES/2)-55, Position.Y+(YRES/2)+3, 53, 7, 0, 107, 10, 255);
+		g->fillrect(Position.X+(XRES/2)-55, Position.Y+(YRES/2)+9, 53, 7, 107, 10, 0, 255);
+		g->drawrect(Position.X+(XRES/2)-55, Position.Y+(YRES/2)+3, 53, 7, 128, 128, 128, 255);
+		g->drawrect(Position.X+(XRES/2)-55, Position.Y+(YRES/2)+9, 53, 7, 128, 128, 128, 255);
+
+		g->fillrect(Position.X+(XRES/2)-4-nyu, Position.Y+(YRES/2)+5, nyu, 3, 57, 187, 57, 255);
+		g->fillrect(Position.X+(XRES/2)-4-nyd, Position.Y+(YRES/2)+11, nyd, 3, 187, 57, 57, 255);
 	}
 }
 
@@ -353,6 +374,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		votesDown = save->votesDown;
 		saveNameLabel->SetText(save->name);
 		authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
+		viewsLabel->SetText("\bgViews:\bw " + format::NumberToString<int>(save->Views));
 		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
 			favButton->Enabled = false;

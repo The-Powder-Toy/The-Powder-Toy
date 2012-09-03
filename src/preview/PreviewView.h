@@ -41,6 +41,7 @@ class PreviewView: public ui::Window {
 	ui::Label * authorDateLabel;
 	ui::Label * pageInfo;
 	ui::Label * saveDescriptionLabel;
+	ui::Label * viewsLabel;
 	ui::Textbox * saveIDTextbox;
 	ui::ScrollPanel * commentsPanel;
 	std::vector<SaveComment> comments;
