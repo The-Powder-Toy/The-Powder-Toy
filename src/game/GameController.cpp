@@ -447,11 +447,15 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueu
 void GameController::LoadClipboard()
 {
 	gameModel->SetPlaceSave(gameModel->GetClipboard());
+	if(gameModel->GetPlaceSave() && gameModel->GetPlaceSave()->Collapsed())
+		gameModel->GetPlaceSave()->Expand();
 }
 
 void GameController::LoadStamp()
 {
 	gameModel->SetPlaceSave(gameModel->GetStamp());
+	if(gameModel->GetPlaceSave() && gameModel->GetPlaceSave()->Collapsed())
+		gameModel->GetPlaceSave()->Expand();
 }
 
 void GameController::TranslateSave(ui::Point point)

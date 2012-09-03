@@ -297,6 +297,8 @@ char * GameSave::Serialise(int & dataSize)
 
 void GameSave::Transform(matrix2d transform, vector2d translate)
 {
+	if(Collapsed())
+		Expand();
 	int i, x, y, nx, ny, width = blockWidth*CELL, height = blockHeight*CELL, newWidth, newHeight, newBlockWidth, newBlockHeight;
 	vector2d pos, tmp, ctl, cbr, vel;
 	vector2d cornerso[4];
