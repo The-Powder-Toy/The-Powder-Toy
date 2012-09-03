@@ -11,57 +11,6 @@
 
 //Asynchronous Thumbnail render & request processing
 
-class ThumbnailBroker::ThumbnailSpec
-{
-public:
-	int Width, Height;
-	ThumbnailListener * CompletedListener;
-	ThumbnailSpec(int width, int height, ThumbnailListener * completedListener) :
-		Width(width), Height(height), CompletedListener(completedListener) {}
-};
-
-class ThumbnailBroker::ThumbnailID
-{
-public:
-	int SaveID, SaveDate;
-	bool operator ==(const ThumbnailID & second)
-	{
-		return SaveID == second.SaveID && SaveDate == second.SaveDate;
-	}
-	ThumbnailID(int saveID, int saveDate) : SaveID(saveID), SaveDate(saveDate) {}
-	ThumbnailID() : SaveID(0), SaveDate(0) {}
-};
-
-class ThumbnailBroker::ThumbnailRequest
-{
-public:
-	bool Complete;
-	void * HTTPContext;
-	int RequestTime;
-
-	ThumbnailID ID;
-	std::vector<ThumbnailSpec> SubRequests;
-	
-	ThumbnailRequest(int saveID, int saveDate, int width, int height, ThumbnailListener * completedListener) :
-		ID(saveID, saveDate), Complete(false), HTTPContext(NULL), RequestTime(0)
-		{
-			SubRequests.push_back(ThumbnailSpec(width, height, completedListener));
-		}
-	ThumbnailRequest() : Complete(false), HTTPContext(NULL), RequestTime(0) {}
-};
-
-class ThumbnailBroker::ThumbRenderRequest
-{
-public:
-	int Width, Height;
-	bool Decorations;
-	GameSave * Save;
-	ThumbnailListener * CompletedListener;
-	ThumbRenderRequest(GameSave * save, bool decorations, int width, int height, ThumbnailListener * completedListener) :
-		Save(save), Width(width), Height(height), CompletedListener(completedListener), Decorations(decorations) {}
-	ThumbRenderRequest() :	Save(0), Decorations(true), Width(0), Height(0), CompletedListener(NULL) {}
-};
-
 ThumbnailBroker::ThumbnailBroker()
 {
 	thumbnailQueueRunning = false;

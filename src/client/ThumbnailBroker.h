@@ -14,10 +14,56 @@ class ThumbnailListener;
 class ThumbnailBroker: public Singleton<ThumbnailBroker>
 {
 private: 
-	class ThumbnailID;
-	class ThumbnailRequest;
-	class ThumbnailSpec;
-	class ThumbRenderRequest;
+	class ThumbnailSpec
+	{
+	public:
+		int Width, Height;
+		ThumbnailListener * CompletedListener;
+		ThumbnailSpec(int width, int height, ThumbnailListener * completedListener) :
+			Width(width), Height(height), CompletedListener(completedListener) {}
+	};
+
+	class ThumbnailID
+	{
+	public:
+		int SaveID, SaveDate;
+		bool operator ==(const ThumbnailID & second)
+		{
+			return SaveID == second.SaveID && SaveDate == second.SaveDate;
+		}
+		ThumbnailID(int saveID, int saveDate) : SaveID(saveID), SaveDate(saveDate) {}
+		ThumbnailID() : SaveID(0), SaveDate(0) {}
+	};
+
+	class ThumbnailRequest
+	{
+	public:
+		bool Complete;
+		void * HTTPContext;
+		int RequestTime;
+
+		ThumbnailID ID;
+		std::vector<ThumbnailSpec> SubRequests;
+		
+		ThumbnailRequest(int saveID, int saveDate, int width, int height, ThumbnailListener * completedListener) :
+			ID(saveID, saveDate), Complete(false), HTTPContext(NULL), RequestTime(0)
+			{
+				SubRequests.push_back(ThumbnailSpec(width, height, completedListener));
+			}
+		ThumbnailRequest() : Complete(false), HTTPContext(NULL), RequestTime(0) {}
+	};
+
+	class ThumbRenderRequest
+	{
+	public:
+		int Width, Height;
+		bool Decorations;
+		GameSave * Save;
+		ThumbnailListener * CompletedListener;
+		ThumbRenderRequest(GameSave * save, bool decorations, int width, int height, ThumbnailListener * completedListener) :
+			Save(save), Width(width), Height(height), CompletedListener(completedListener), Decorations(decorations) {}
+		ThumbRenderRequest() :	Save(0), Decorations(true), Width(0), Height(0), CompletedListener(NULL) {}
+	};
 
 	//Thumbnail retreival
 	/*int thumbnailCacheNextID;
