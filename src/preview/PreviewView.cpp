@@ -140,23 +140,26 @@ PreviewView::PreviewView():
 	browserOpenButton->SetActionCallback(new BrowserOpenAction(this));
 	AddComponent(browserOpenButton);
 
-	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)), ui::Point(100, 16), "");
-	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(100, 16), "");
+	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(saveNameLabel);
 
-	saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+15+17), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+15+14+17)-21), "");
+	saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15+17), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+4+15+17)-21), "");
 	saveDescriptionLabel->SetMultiline(true);
 	saveDescriptionLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveDescriptionLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	saveDescriptionLabel->SetTextColour(ui::Colour(180, 180, 180));
 	AddComponent(saveDescriptionLabel);
 
-	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+15), ui::Point(100, 16), "");
-	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15), ui::Point(200, 16), "");
+	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(authorDateLabel);
 
-	viewsLabel = new ui::Label(ui::Point((XRES/2)-103, (YRES/2)+15), ui::Point(100, 16), "");
-	viewsLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;	viewsLabel->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+	viewsLabel = new ui::Label(ui::Point((XRES/2)-80, (YRES/2)+4+15), ui::Point(80, 16), "");
+	viewsLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
+	viewsLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(viewsLabel);
 
 
