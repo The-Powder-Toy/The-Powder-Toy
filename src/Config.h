@@ -181,7 +181,7 @@ extern unsigned char ZSIZE;
 
 #ifdef WIN
 #define strcasecmp stricmp
-#endif //_MSC_VER
+#endif
 #if defined(_MSC_VER)
 #define fmin(a,b) (((a) < (b)) ? (a) : (b))
 #define fminf(a,b) (((a) < (b)) ? (a) : (b))

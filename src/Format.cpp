@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <iterator>
-#include "zlib.h"
+#include <zlib.h>
 #include <stdio.h>
 #include "Format.h"
 #include "graphics/Graphics.h"
