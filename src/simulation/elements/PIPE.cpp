@@ -306,6 +306,8 @@ int Element_PIPE::graphics(GRAPHICS_FUNC_ARGS)
 		tpart.life = cpart->tmp2;
 		tpart.tmp = cpart->pavg[0];
 		tpart.ctype = cpart->pavg[1];
+		if (tpart.type == PT_PHOT && tpart.ctype == 0x40000000)
+			tpart.ctype = 0x3FFFFFFF;
 		t = tpart.type;
 		if (ren->graphicscache[t].isready)
 		{
@@ -392,8 +394,13 @@ void Element_PIPE::transfer_pipe_to_part(Particle *pipe, Particle *part)
 	part->ctype = pipe->pavg[1];
 	pipe->tmp &= ~0xFF;
 
-	part->vx = 0.0f;
-	part->vy = 0.0f;
+	if (part->type != PT_PHOT && part->type != PT_ELEC && part->type != PT_NEUT)
+	{
+		part->vx = 0.0f;
+		part->vy = 0.0f;
+	}
+	else if (part->type == PT_PHOT && part->ctype == 0x40000000)
+		part->ctype = 0x3FFFFFFF;
 	part->tmp2 = 0;
 	part->flags = 0;
 	part->dcolour = 0;
