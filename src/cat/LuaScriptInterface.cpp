@@ -289,6 +289,11 @@ void LuaScriptInterface::initInterfaceAPI()
 		{NULL, NULL}
 	};
 	luaL_register(l, "interface", interfaceAPIMethods);
+
+	//Ren shortcut
+	lua_getglobal(l, "interface");
+	lua_setglobal(l, "ui");
+
 	Luna<LuaWindow>::Register(l);
 	Luna<LuaButton>::Register(l);
 	Luna<LuaLabel>::Register(l);
@@ -328,6 +333,93 @@ int LuaScriptInterface::interface_closeWindow(lua_State * l)
 	return 0;
 }
 
+//// Begin Simulation API
+
+void LuaScriptInterface::initSimulationAPI()
+{
+	//Methods
+	struct luaL_reg simulationAPIMethods [] = {
+		{"partNeighbours", simulation_partNeighbours},
+		{"partChangeType", simulation_partChangeType},
+		{"partCreate", simulation_partCreate},
+		{"partKill", simulation_partKill},
+		{NULL, NULL}
+	};
+	luaL_register(l, "simulation", simulationAPIMethods);
+
+	//Sim shortcut
+	lua_getglobal(l, "simlation");
+	lua_setglobal(l, "sim");
+
+	int simulationAPI = lua_gettop(l);
+}
+
+int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
+{
+	int ids = 0;
+	if(lua_gettop(l) == 4)
+	{
+		int x = lua_tointeger(l, 1), y = lua_tointeger(l, 2), r = lua_tointeger(l, 3), t = lua_tointeger(l, 4), rx, ry, n;
+		for (rx = -r; rx <= r; rx++)
+			for (ry = -r; ry <= r; ry++)
+				if (x+rx >= 0 && y+ry >= 0 && x+rx < XRES && y+ry < YRES && (rx || ry))
+				{
+					if(n = luacon_sim->pmap[y][x] && (n&0xFF) == t)
+					{
+						ids++;
+						lua_pushinteger(l, n>>8);
+					}
+				}
+
+	}
+	else
+	{
+		int x = lua_tointeger(l, 1), y = lua_tointeger(l, 2), r = lua_tointeger(l, 3), rx, ry, n;
+		int ids = 0;
+		for (rx = -r; rx <= r; rx++)
+			for (ry = -r; ry <= r; ry++)
+				if (x+rx >= 0 && y+ry >= 0 && x+rx < XRES && y+ry < YRES && (rx || ry))
+				{
+					if(n = luacon_sim->pmap[y][x])
+					{
+						ids++;
+						lua_pushinteger(l, n>>8);
+					}
+				}
+	}
+	return ids;
+}
+
+int LuaScriptInterface::simulation_partChangeType(lua_State * l)
+{
+	int partIndex = lua_tointeger(l, 1), x, y;
+	if(partIndex < 0 || partIndex >= NPART || !luacon_sim->parts[partIndex].type)
+		return 0;
+	luacon_sim->part_change_type(partIndex, luacon_sim->parts[partIndex].x+0.5f, luacon_sim->parts[partIndex].y+0.5f, lua_tointeger(l, 2));
+	return 0;
+}
+
+int LuaScriptInterface::simulation_partCreate(lua_State * l)
+{
+	int newID = lua_tointeger(l, 1);
+	if(newID >= NPART || newID < -3)
+	{
+		lua_pushinteger(l, -1);
+		return 1;
+	}
+	lua_pushinteger(l, luacon_sim->create_part(newID, lua_tointeger(l, 2), lua_tointeger(l, 3), lua_tointeger(l, 4)));
+	return 1;
+}
+
+int LuaScriptInterface::simulation_partKill(lua_State * l)
+{
+	if(lua_gettop(l)==2)
+		luacon_sim->delete_part(lua_tointeger(l, 1), lua_tointeger(l, 2), 0);
+	else
+		luacon_sim->kill_part(lua_tointeger(l, 1));
+	return 0;
+}
+
 
 //// Begin Renderer API
 
@@ -342,6 +434,11 @@ void LuaScriptInterface::initRendererAPI()
 		{NULL, NULL}
 	};
 	luaL_register(l, "renderer", rendererAPIMethods);
+
+	//Ren shortcut
+	lua_getglobal(l, "renderer");
+	lua_setglobal(l, "ren");
+
 	int rendererAPI = lua_gettop(l);
 
 	//Static values
@@ -490,6 +587,11 @@ void LuaScriptInterface::initElementsAPI()
 		{NULL, NULL}
 	};
 	luaL_register(l, "elements", elementsAPIMethods);
+
+	//elem shortcut
+	lua_getglobal(l, "elements");
+	lua_setglobal(l, "elem");
+
 	int elementsAPI = lua_gettop(l);
 
 	//Static values

@@ -45,6 +45,13 @@ class LuaScriptInterface: public CommandInterface {
 	bool currentCommand;
 	TPTScriptInterface * legacy;
 
+	//Simulation
+	void initSimulationAPI();
+	static int simulation_partNeighbours(lua_State * l);
+	static int simulation_partChangeType(lua_State * l);
+	static int simulation_partCreate(lua_State * l);
+	static int simulation_partKill(lua_State * l);
+
 	//Renderer
 	void initRendererAPI();
 	static int renderer_renderModes(lua_State * l);
