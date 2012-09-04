@@ -96,7 +96,7 @@ TPT_INLINE void VideoBuffer::AddPixel(int x, int y, int r, int g, int b, int a)
 	Buffer[y*(Width)+x] = PIXRGB(r,g,b);
 }
 
-TPT_INLINE int VideoBuffer::SetCharacter(int x, int y, int c, int r, int g, int b, int a)
+TPT_NO_INLINE int VideoBuffer::SetCharacter(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];
@@ -116,7 +116,7 @@ TPT_INLINE int VideoBuffer::SetCharacter(int x, int y, int c, int r, int g, int 
 	return x + w;
 }
 
-TPT_INLINE int VideoBuffer::BlendCharacter(int x, int y, int c, int r, int g, int b, int a)
+TPT_NO_INLINE int VideoBuffer::BlendCharacter(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];
@@ -136,7 +136,7 @@ TPT_INLINE int VideoBuffer::BlendCharacter(int x, int y, int c, int r, int g, in
 	return x + w;
 }
 
-TPT_INLINE int VideoBuffer::AddCharacter(int x, int y, int c, int r, int g, int b, int a)
+TPT_NO_INLINE int VideoBuffer::AddCharacter(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];

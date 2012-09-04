@@ -53,9 +53,9 @@ public:
 
 	Type GetType() { return type; }
 
-	virtual bool GetToggle() {}
-	virtual int GetMutli() {}
-	virtual int GetMultiCount() {}
+	virtual bool GetToggle() { return true;}
+	virtual int GetMutli() { return 0;}
+	virtual int GetMultiCount() { return 0;}
 
 	std::string GetIcon() { return icon; }
 	void SetIcon(std::string icon) { this->icon = icon; }

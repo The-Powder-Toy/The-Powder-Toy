@@ -43,16 +43,16 @@ namespace json
 {
 
 
-inline void Writer::Write(const UnknownElement& elementRoot, std::ostream& ostr) { Write_i(elementRoot, ostr); }
-inline void Writer::Write(const Object& object, std::ostream& ostr)              { Write_i(object, ostr); }
-inline void Writer::Write(const Array& array, std::ostream& ostr)                { Write_i(array, ostr); }
-inline void Writer::Write(const Number& number, std::ostream& ostr)              { Write_i(number, ostr); }
-inline void Writer::Write(const String& string, std::ostream& ostr)              { Write_i(string, ostr); }
-inline void Writer::Write(const Boolean& boolean, std::ostream& ostr)            { Write_i(boolean, ostr); }
-inline void Writer::Write(const Null& null, std::ostream& ostr)                  { Write_i(null, ostr); }
+TPT_NO_INLINE void Writer::Write(const UnknownElement& elementRoot, std::ostream& ostr) { Write_i(elementRoot, ostr); }
+TPT_NO_INLINE void Writer::Write(const Object& object, std::ostream& ostr)              { Write_i(object, ostr); }
+TPT_NO_INLINE void Writer::Write(const Array& array, std::ostream& ostr)                { Write_i(array, ostr); }
+TPT_NO_INLINE void Writer::Write(const Number& number, std::ostream& ostr)              { Write_i(number, ostr); }
+TPT_NO_INLINE void Writer::Write(const String& string, std::ostream& ostr)              { Write_i(string, ostr); }
+TPT_NO_INLINE void Writer::Write(const Boolean& boolean, std::ostream& ostr)            { Write_i(boolean, ostr); }
+TPT_NO_INLINE void Writer::Write(const Null& null, std::ostream& ostr)                  { Write_i(null, ostr); }
 
 
-inline Writer::Writer(std::ostream& ostr) :
+TPT_NO_INLINE Writer::Writer(std::ostream& ostr) :
    m_ostr(ostr),
    m_nTabDepth(0)
 {}
@@ -65,7 +65,7 @@ void Writer::Write_i(const ElementTypeT& element, std::ostream& ostr)
    ostr.flush(); // all done
 }
 
-inline void Writer::Write_i(const Array& array)
+TPT_NO_INLINE void Writer::Write_i(const Array& array)
 {
    if (array.Empty())
       m_ostr << "[]";
@@ -91,7 +91,7 @@ inline void Writer::Write_i(const Array& array)
    }
 }
 
-inline void Writer::Write_i(const Object& object)
+TPT_NO_INLINE void Writer::Write_i(const Object& object)
 {
    if (object.Empty())
       m_ostr << "{}";
@@ -120,17 +120,17 @@ inline void Writer::Write_i(const Object& object)
    }
 }
 
-inline void Writer::Write_i(const Number& numberElement)
+TPT_NO_INLINE void Writer::Write_i(const Number& numberElement)
 {
    m_ostr << std::setprecision(20) << numberElement.Value();
 }
 
-inline void Writer::Write_i(const Boolean& booleanElement)
+TPT_NO_INLINE void Writer::Write_i(const Boolean& booleanElement)
 {
    m_ostr << (booleanElement.Value() ? "true" : "false");
 }
 
-inline void Writer::Write_i(const String& stringElement)
+TPT_NO_INLINE void Writer::Write_i(const String& stringElement)
 {
    m_ostr << '"';
 
@@ -156,22 +156,22 @@ inline void Writer::Write_i(const String& stringElement)
    m_ostr << '"';   
 }
 
-inline void Writer::Write_i(const Null& )
+TPT_NO_INLINE void Writer::Write_i(const Null& )
 {
    m_ostr << "null";
 }
 
-inline void Writer::Write_i(const UnknownElement& unknown)
+TPT_NO_INLINE void Writer::Write_i(const UnknownElement& unknown)
 {
    unknown.Accept(*this); 
 }
 
-inline void Writer::Visit(const Array& array)       { Write_i(array); }
-inline void Writer::Visit(const Object& object)     { Write_i(object); }
-inline void Writer::Visit(const Number& number)     { Write_i(number); }
-inline void Writer::Visit(const String& string)     { Write_i(string); }
-inline void Writer::Visit(const Boolean& boolean)   { Write_i(boolean); }
-inline void Writer::Visit(const Null& null)         { Write_i(null); }
+TPT_NO_INLINE void Writer::Visit(const Array& array)       { Write_i(array); }
+TPT_NO_INLINE void Writer::Visit(const Object& object)     { Write_i(object); }
+TPT_NO_INLINE void Writer::Visit(const Number& number)     { Write_i(number); }
+TPT_NO_INLINE void Writer::Visit(const String& string)     { Write_i(string); }
+TPT_NO_INLINE void Writer::Visit(const Boolean& boolean)   { Write_i(boolean); }
+TPT_NO_INLINE void Writer::Visit(const Null& null)         { Write_i(null); }
 
 
 

@@ -3,9 +3,9 @@
 #include <map>
 #include <string>
 #include <time.h>
-#include "SDL.h"
+#include "SDL/SDL.h"
 #ifdef WIN
-#include "SDL_syswm.h"
+#include "SDL/SDL_syswm.h"
 #include <direct.h>
 #endif
 #include <iostream>

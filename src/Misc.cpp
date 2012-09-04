@@ -111,7 +111,7 @@ int isign(float i) //TODO: INline or macro
 	return 0;
 }
 
-TPT_INLINE unsigned clamp_flt(float f, float min, float max) //TODO: Also inline/macro
+TPT_NO_INLINE unsigned clamp_flt(float f, float min, float max) //TODO: Also inline/macro
 {
 	if (f<min)
 		return 0;
@@ -120,7 +120,7 @@ TPT_INLINE unsigned clamp_flt(float f, float min, float max) //TODO: Also inline
 	return (int)(255.0f*(f-min)/(max-min));
 }
 
-TPT_INLINE float restrict_flt(float f, float min, float max) //TODO Inline or macro or something
+TPT_NO_INLINE float restrict_flt(float f, float min, float max) //TODO Inline or macro or something
 {
 	if (f<min)
 		return min;
@@ -623,7 +623,7 @@ void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255(0-360 for
 	ss = s/255.0f;
 	vv = v/255.0f;
 	c = vv * ss;
-	x = c * ( 1 - fabs(fmod(hh,2.0) -1) );
+	x = c * ( 1 - fabs(fmod(hh,2.0f) -1) );
 	if(hh<1){
 		*r = (int)(c*255.0);
 		*g = (int)(x*255.0);

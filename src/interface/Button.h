@@ -47,8 +47,8 @@ public:
 	virtual void DoAction(); //action of button what ever it may be
 	void SetTogglable(bool isTogglable);
 	bool GetTogglable();
-	inline bool GetToggleState();
-	inline void SetToggleState(bool state);
+	TPT_NO_INLINE bool GetToggleState();
+	TPT_NO_INLINE void SetToggleState(bool state);
 	void SetActionCallback(ButtonAction * action);
 	ButtonAction * GetActionCallback() { return actionCallback; }
 	void SetText(std::string buttonText);

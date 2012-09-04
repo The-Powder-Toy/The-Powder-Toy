@@ -1,8 +1,8 @@
 extern "C"
 {
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
+#include "lua5.1/lua.h"
+#include "lua5.1/lauxlib.h"
+#include "lua5.1/lualib.h"
 }
 
 #include <iostream>
@@ -77,6 +77,7 @@ int LuaButton::action(lua_State * l)
 	{
 		actionFunction = 0;
 	}
+	return 0;
 }
 
 int LuaButton::text(lua_State * l)

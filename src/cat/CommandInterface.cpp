@@ -8,7 +8,9 @@
 #include <iostream>
 #include <string>
 #include <string.h>
+#if !defined(WIN) || defined(__GNUC__)
 #include <strings.h>
+#endif
 #include "CommandInterface.h"
 #include "game/GameModel.h"
 #include "game/GameController.h"

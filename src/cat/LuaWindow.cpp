@@ -1,8 +1,8 @@
 extern "C"
 {
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
+#include "lua5.1/lua.h"
+#include "lua5.1/lauxlib.h"
+#include "lua5.1/lualib.h"
 }
 
 #include <iostream>
@@ -353,6 +353,7 @@ int LuaWindow::onInitialized(lua_State * l)
 	{
 		onInitializedFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onExit(lua_State * l)
@@ -367,6 +368,7 @@ int LuaWindow::onExit(lua_State * l)
 	{
 		onExitFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onTick(lua_State * l)
@@ -381,6 +383,7 @@ int LuaWindow::onTick(lua_State * l)
 	{
 		onTickFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onDraw(lua_State * l)
@@ -395,6 +398,7 @@ int LuaWindow::onDraw(lua_State * l)
 	{
 		onDrawFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onFocus(lua_State * l)
@@ -409,6 +413,7 @@ int LuaWindow::onFocus(lua_State * l)
 	{
 		onFocusFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onBlur(lua_State * l)
@@ -423,6 +428,7 @@ int LuaWindow::onBlur(lua_State * l)
 	{
 		onBlurFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onTryExit(lua_State * l)
@@ -437,6 +443,7 @@ int LuaWindow::onTryExit(lua_State * l)
 	{
 		onTryExitFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onTryOkay(lua_State * l)
@@ -451,6 +458,7 @@ int LuaWindow::onTryOkay(lua_State * l)
 	{
 		onTryOkayFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onMouseMove(lua_State * l)
@@ -465,6 +473,7 @@ int LuaWindow::onMouseMove(lua_State * l)
 	{
 		onMouseMoveFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onMouseDown(lua_State * l)
@@ -479,6 +488,7 @@ int LuaWindow::onMouseDown(lua_State * l)
 	{
 		onMouseDownFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onMouseUp(lua_State * l)
@@ -493,6 +503,7 @@ int LuaWindow::onMouseUp(lua_State * l)
 	{
 		onMouseUpFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onMouseWheel(lua_State * l)
@@ -507,6 +518,7 @@ int LuaWindow::onMouseWheel(lua_State * l)
 	{
 		onMouseWheelFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onKeyPress(lua_State * l)
@@ -521,6 +533,7 @@ int LuaWindow::onKeyPress(lua_State * l)
 	{
 		onKeyPressFunction = 0;
 	}
+	return 0;
 }
 
 int LuaWindow::onKeyRelease(lua_State * l)
@@ -535,6 +548,7 @@ int LuaWindow::onKeyRelease(lua_State * l)
 	{
 		onKeyReleaseFunction = 0;
 	}
+	return 0;
 }
 
 
