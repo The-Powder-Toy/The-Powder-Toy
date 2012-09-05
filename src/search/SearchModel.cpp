@@ -36,8 +36,6 @@ void * SearchModel::updateSaveListTHelper(void * obj)
 
 void * SearchModel::updateSaveListT()
 {
-	void ** information = new void*[2];
-	
 	std::string category = "";
 	if(showFavourite)
 		category = "Favourites";
