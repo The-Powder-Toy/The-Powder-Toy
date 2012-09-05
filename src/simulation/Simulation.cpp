@@ -848,6 +848,7 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 {
 	int rp;
 	float tr, tg, tb, ta, colR = colR_, colG = colG_, colB = colB_, colA = colA_;
+	float strength = 0.01f;
 	rp = pmap[y][x];
 	if (!rp)
 		return;
@@ -873,52 +874,54 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 	}
 	else if (mode == DECO_ADD)
 	{
-		ta += (colA*0.1f)*colA;
-		tr += (colR*0.1f)*colA;
-		tg += (colG*0.1f)*colA;
-		tb += (colB*0.1f)*colA;
+		ta += (colA*strength)*colA;
+		tr += (colR*strength)*colA;
+		tg += (colG*strength)*colA;
+		tb += (colB*strength)*colA;
 	}
 	else if (mode == DECO_SUBTRACT)
 	{
-		ta -= (colA*0.1f)*colA;
-		tr -= (colR*0.1f)*colA;
-		tg -= (colG*0.1f)*colA;
-		tb -= (colB*0.1f)*colA;
+		ta -= (colA*strength)*colA;
+		tr -= (colR*strength)*colA;
+		tg -= (colG*strength)*colA;
+		tb -= (colB*strength)*colA;
 	}
 	else if (mode == DECO_MULTIPLY)
 	{
-		tr *= 1.0f+(colR*0.1f)*colA;
-		tg *= 1.0f+(colG*0.1f)*colA;
-		tb *= 1.0f+(colB*0.1f)*colA;
+		tr *= 1.0f+(colR*strength)*colA;
+		tg *= 1.0f+(colG*strength)*colA;
+		tb *= 1.0f+(colB*strength)*colA;
 	}
 	else if (mode == DECO_DIVIDE)
 	{
-		tr /= 1.0f+(colR*0.1f)*colA;
-		tg /= 1.0f+(colG*0.1f)*colA;
-		tb /= 1.0f+(colB*0.1f)*colA;
+		tr /= 1.0f+(colR*strength)*colA;
+		tg /= 1.0f+(colG*strength)*colA;
+		tb /= 1.0f+(colB*strength)*colA;
 	}
 	else if (mode == DECO_SMUDGE)
 	{
-		int rx, ry, num = 0;
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
+		float tas = ta, trs = tr, tgs = tg, tbs = tb;
+		int rx, ry;
+		float num = 1.0f;
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
 			{
 				if ((pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
 				{
 					Particle part = parts[pmap[y+ry][x+rx]>>8];
 					num++;
-					ta += float((part.dcolour>>24)&0xFF)/255.0f;
-					tr += float((part.dcolour>>16)&0xFF)/255.0f;
-					tg += float((part.dcolour>>8)&0xFF)/255.0f;
-					tb += float((part.dcolour)&0xFF)/255.0f;
+					tas += ((float)((part.dcolour>>24)&0xFF))/255.0f;
+					trs += ((float)((part.dcolour>>16)&0xFF))/255.0f;
+					tgs += ((float)((part.dcolour>>8)&0xFF))/255.0f;
+					tbs += ((float)((part.dcolour)&0xFF))/255.0f;
 				}
 			}
 		if (num == 0)
 			return;
-		ta = ta/float(num+1);
-		tr = tr/float(num+1);
-		tg = tg/float(num+1);
-		tb = tb/float(num+1);
+		ta = ((tas/num)*0.1f) + (ta*0.9f);
+		tr = ((trs/num)*0.1f) + (tr*0.9f);
+		tg = ((tgs/num)*0.1f) + (tg*0.9f);
+		tb = ((tbs/num)*0.1f) + (tb*0.9f);
 	}
 
 	colA_ = ta*255.0f;
