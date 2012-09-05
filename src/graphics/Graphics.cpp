@@ -334,6 +334,30 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 #ifdef DEBUG
 	std::cout << "Resampling " << sw << "x" << sh << " to " << rw << "x" << rh << std::endl;
 #endif
+	bool stairstep = false;
+	if(rw < sw || rh < sh)
+	{
+		float fx = (float)(((float)sw)/((float)rw));
+		float fy = (float)(((float)sh)/((float)rh));
+
+		int fxint, fyint;
+		double fxintp_t, fyintp_t;
+
+		float fxf = modf(fx, &fxintp_t), fyf = modf(fy, &fyintp_t);
+		fxint = fxintp_t;
+		fyint = fyintp_t;
+
+		if(((fxint & (fxint-1)) == 0 && fxf < 0.1f) || ((fyint & (fyint-1)) == 0 && fyf < 0.1f))
+			stairstep = true;
+
+#ifdef DEBUG
+		if(stairstep)
+			std::cout << "Downsampling by " << fx << "x" << fy << " using stairstepping" << std::endl;
+		else
+			std::cout << "Downsampling by " << fx << "x" << fy << " without stairstepping" << std::endl;
+#endif
+	}
+
 	int y, x, fxceil, fyceil;
 	//int i,j,x,y,w,h,r,g,b,c;
 	pixel *q = NULL;
@@ -341,7 +365,7 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 		//Don't resample
 		q = (pixel *)malloc(rw*rh*PIXELSIZE);
 		memcpy(q, src, rw*rh*PIXELSIZE);
-	} else if(rw >= sw && rh >= sh){
+	} else if(!stairstep) {
 		float fx, fy, fyc, fxc;
 		double intp;
 		pixel tr, tl, br, bl;
