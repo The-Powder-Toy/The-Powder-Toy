@@ -87,7 +87,19 @@ int update_PRTO(UPDATE_FUNC_ARGS) {
 								fighters[(unsigned char)parts[np].tmp].spwn = 0;
 								fighters[(unsigned char)portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 1;
 							}
-							parts[np] = portalp[parts[i].tmp][randomness][nnx];
+							if (portalp[parts[i].tmp][randomness][nnx].vx == 0.0f && portalp[parts[i].tmp][randomness][nnx].vy == 0.0f)
+							{
+								// particles that have passed from PIPE into PRTI have lost their velocity, so use the velocity of the newly created particle if the particle in the portal has no velocity
+								float tmp_vx = parts[np].vx;
+								float tmp_vy = parts[np].vy;
+								parts[np] = portalp[parts[i].tmp][randomness][nnx];
+								parts[np].vx = tmp_vx;
+								parts[np].vy = tmp_vy;
+							}
+							else
+							{
+								parts[np] = portalp[parts[i].tmp][randomness][nnx];
+							}
 							parts[np].x = x+rx;
 							parts[np].y = y+ry;
 							portalp[parts[i].tmp][randomness][nnx] = emptyparticle;
