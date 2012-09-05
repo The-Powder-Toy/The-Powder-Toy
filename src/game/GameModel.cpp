@@ -290,9 +290,9 @@ void GameModel::BuildMenus()
 	brushList.push_back(new TriangleBrush(ui::Point(4, 4)));
 
 	//Set default tools
-	activeTools[0] = GetToolFromIdentifier("DEFAULT_PT_DUST");//menuList[SC_POWDERS]->GetToolList()[0];
-	activeTools[1] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");//menuList[SC_SPECIAL]->GetToolList()[0];
-	activeTools[2] = GetToolFromIdentifier("DEFAULT_PT_NONE");//menuList[SC_TOOL]->GetToolList()[0];
+	activeTools[0] = GetToolFromIdentifier("DEFAULT_PT_DUST");
+	activeTools[2] = GetToolFromIdentifier("DEFAULT_PT_NONE");
+	activeTools[1] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
 
 	if(activeToolIdentifiers[0].length())
 		activeTools[0] = GetToolFromIdentifier(activeToolIdentifiers[0]);
