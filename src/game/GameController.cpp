@@ -858,6 +858,7 @@ void GameController::SetActiveColourPreset(int preset)
 void GameController::SetColour(ui::Colour colour)
 {
 	gameModel->SetColourSelectorColour(colour);
+	gameModel->SetPresetColour(colour);
 }
 
 void GameController::SetActiveMenu(Menu * menu)
