@@ -27,11 +27,13 @@ protected:
 	string toolDescription;
 	float strength;
 	int resolution;
+	std::string identifier;
 public:
-	Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	int GetToolID() { return toolID; }
 	string GetName();
 	string GetDescription();
+	std::string GetIdentifier();
 	int GetResolution() { return resolution; }
 	void SetStrength(float value) { strength = value; }
 	float  GetStrength() { return strength; }
@@ -50,7 +52,7 @@ class SignTool: public Tool
 {
 public:
 	SignTool():
-	Tool(0, "SIGN", "Sign. Click a sign to edit or anywhere else to create a new one", 0, 0, 0, SignTool::GetIcon)
+	Tool(0, "SIGN", "Sign. Click a sign to edit or anywhere else to create a new one", 0, 0, 0, "DEFAULT_UI_SIGN", SignTool::GetIcon)
 	{
 	}
 	static VideoBuffer * GetIcon(int toolID, int width, int height);
@@ -69,7 +71,7 @@ class SampleTool: public Tool
 	GameModel * gameModel;
 public:
 	SampleTool(GameModel * model):
-	Tool(0, "SMPL", "Sample an element on the screen", 0, 0, 0, SampleTool::GetIcon),
+	Tool(0, "SMPL", "Sample an element on the screen", 0, 0, 0, "DEFAULT_UI_SAMPLE", SampleTool::GetIcon),
 	gameModel(model)
 	{
 	}
@@ -86,7 +88,7 @@ class PropertyTool: public Tool
 {
 public:
 	PropertyTool():
-	Tool(0, "PROP", "Property Edit. Click to alter the properties of elements in the field", 0xfe, 0xa9, 0x00, NULL)
+	Tool(0, "PROP", "Property Edit. Click to alter the properties of elements in the field", 0xfe, 0xa9, 0x00, "DEFAULT_UI_PROPERTY", NULL)
 	{
 	}
 	virtual ~PropertyTool() {}
@@ -101,8 +103,8 @@ class Element_LIGH_Tool: public Tool
 {
 	int nextUse;
 public:
-	Element_LIGH_Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL):
-	Tool(id, name, description, r, g, b),
+	Element_LIGH_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
+	Tool(id, name, description, r, g, b, identifier, textureGen),
 	nextUse(0)
 	{
 	}
@@ -118,7 +120,7 @@ public:
 class ElementTool: public Tool
 {
 public:
-	ElementTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	ElementTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~ElementTool();
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
@@ -129,7 +131,7 @@ public:
 class Element_TESC_Tool: public ElementTool
 {
 public:
-	Element_TESC_Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	Element_TESC_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~Element_TESC_Tool() {}
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
@@ -140,8 +142,8 @@ public:
 class PlopTool: public ElementTool
 {
 public:
-	PlopTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL):
-	ElementTool(id, name, description, r, g, b)
+	PlopTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
+	ElementTool(id, name, description, r, g, b, identifier, textureGen)
 	{
 	}
 	virtual ~PlopTool() {}
@@ -155,7 +157,7 @@ public:
 class WallTool: public Tool
 {
 public:
-	WallTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	WallTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~WallTool();
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
@@ -166,7 +168,7 @@ public:
 class GolTool: public Tool
 {
 public:
-	GolTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	GolTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~GolTool();
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
@@ -177,7 +179,7 @@ public:
 class WindTool: public Tool
 {
 public:
-	WindTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	WindTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~WindTool();
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);

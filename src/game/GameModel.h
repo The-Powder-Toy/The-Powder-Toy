@@ -98,6 +98,8 @@ public:
 	GameModel();
 	~GameModel();
 
+	Tool * GetToolFromIdentifier(std::string identifier);
+
 	void SetActiveColourPreset(int preset);
 	int GetActiveColourPreset();
 

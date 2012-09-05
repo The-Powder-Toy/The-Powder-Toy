@@ -16,8 +16,8 @@ public:
 	unsigned char Blue;
 	unsigned char Alpha;
 
-	DecorationTool(ToolType decoMode_, string name, string description, int r, int g, int b):
-		Tool(0, name, description, r, g, b),
+	DecorationTool(ToolType decoMode_, string name, string description, int r, int g, int b, std::string identifier):
+		Tool(0, name, description, r, g, b, identifier),
 		decoMode(decoMode_),
 		Red(0),
 		Green(0),

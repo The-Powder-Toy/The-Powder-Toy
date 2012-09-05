@@ -13,7 +13,7 @@
 
 using namespace std;
 
-Tool::Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
+Tool::Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	toolID(id),
 	toolName(name),
 	toolDescription(description),
@@ -22,7 +22,8 @@ Tool::Tool(int id, string name, string description, int r, int g, int b, VideoBu
 	colBlue(b),
 	textureGen(textureGen),
 	strength(1.0f),
-	resolution(1)
+	resolution(1),
+	identifier(identifier)
 {
 }
 VideoBuffer * Tool::GetTexture(int width, int height)
@@ -37,6 +38,7 @@ void Tool::SetTextureGen(VideoBuffer * (*textureGen)(int, int, int))
 {
 	this->textureGen = textureGen;
 }
+std::string Tool::GetIdentifier() { return identifier; }
 string Tool::GetName() { return toolName; }
 string Tool::GetDescription() { return toolDescription; }
 Tool::~Tool() {}
@@ -52,8 +54,8 @@ void Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Po
 }
 void Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {};
 
-ElementTool::ElementTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
-	Tool(id, name, description, r, g, b, textureGen)
+ElementTool::ElementTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
+	Tool(id, name, description, r, g, b, identifier, textureGen)
 {
 }
 ElementTool::~ElementTool() {}
@@ -71,8 +73,8 @@ void ElementTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) 
 }
 
 
-WallTool::WallTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
-Tool(id, name, description, r, g, b, textureGen)
+WallTool::WallTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
+Tool(id, name, description, r, g, b, identifier, textureGen)
 {
 	resolution = CELL;
 }
@@ -112,8 +114,8 @@ void WallTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 }
 
 
-GolTool::GolTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
-	Tool(id, name, description, r, g, b, textureGen)
+GolTool::GolTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
+	Tool(id, name, description, r, g, b, identifier, textureGen)
 {
 }
 GolTool::~GolTool() {}
@@ -130,8 +132,8 @@ void GolTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 	sim->FloodParts(position.X, position.Y, PT_LIFE|(toolID<<8), -1, -1, 0);
 }
 
-WindTool::WindTool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
-	Tool(id, name, description, r, g, b, textureGen)
+WindTool::WindTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
+	Tool(id, name, description, r, g, b, identifier, textureGen)
 {
 }
 WindTool::~WindTool() {}
@@ -187,8 +189,8 @@ void Element_LIGH_Tool::Draw(Simulation * sim, Brush * brush, ui::Point position
 	}
 }
 
-Element_TESC_Tool::Element_TESC_Tool(int id, string name, string description, int r, int g, int b, VideoBuffer * (*textureGen)(int, int, int)):
-	ElementTool(id, name, description, r, g, b, textureGen)
+Element_TESC_Tool::Element_TESC_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
+	ElementTool(id, name, description, r, g, b, identifier, textureGen)
 	{
 	}
 void Element_TESC_Tool::Draw(Simulation * sim, Brush * brush, ui::Point position){

@@ -14,6 +14,7 @@
 #include "game/DecorationTool.h"
 #include "GameModelException.h"
 #include "QuickOptions.h"
+#include "Format.h"
 
 GameModel::GameModel():
 	sim(NULL),
@@ -27,12 +28,13 @@ GameModel::GameModel():
 	placeSave(NULL),
 	colour(255, 0, 0, 255),
 	toolStrength(1.0f),
-	activeColourPreset(-1)
+	activeColourPreset(-1),
+	activeMenu(NULL)
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
 
-    memset(activeTools, 0, sizeof(activeTools));
+    std::fill(activeTools, activeTools+3, (Tool*)NULL);
     
 	//Load config into renderer
 	try
@@ -176,6 +178,18 @@ void GameModel::BuildQuickOptionMenu()
 
 void GameModel::BuildMenus()
 {
+	char lastMenu = 0;
+	if(activeMenu)
+		lastMenu = activeMenu->GetIcon();
+
+	std::string activeToolIdentifiers[3];
+	if(activeTools[0])
+		activeToolIdentifiers[0] = activeTools[0]->GetIdentifier();
+	if(activeTools[1])
+		activeToolIdentifiers[1] = activeTools[1]->GetIdentifier();
+	if(activeTools[2])
+		activeToolIdentifiers[2] = activeTools[2]->GetIdentifier();
+
 	//Empty current menus
 	for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
 	{
@@ -205,19 +219,19 @@ void GameModel::BuildMenus()
 			Tool * tempTool;
 			if(i == PT_LIGH)
 			{
-				tempTool = new Element_LIGH_Tool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), sim->elements[i].IconGenerator);
+				tempTool = new Element_LIGH_Tool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), sim->elements[i].Identifier, sim->elements[i].IconGenerator);
 			}
 			else if(i == PT_TESC)
 			{
-				tempTool = new Element_TESC_Tool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), sim->elements[i].IconGenerator);
+				tempTool = new Element_TESC_Tool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), sim->elements[i].Identifier, sim->elements[i].IconGenerator);
 			}
 			else if(i == PT_STKM || i == PT_FIGH || i == PT_STKM2)
 			{
-				tempTool = new PlopTool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), sim->elements[i].IconGenerator);
+				tempTool = new PlopTool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), sim->elements[i].Identifier, sim->elements[i].IconGenerator);
 			}
 			else
 			{
-				tempTool = new ElementTool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), sim->elements[i].IconGenerator);
+				tempTool = new ElementTool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), sim->elements[i].Identifier, sim->elements[i].IconGenerator);
 			}
 
 			if(sim->elements[i].MenuSection < 12 && sim->elements[i].MenuVisible)
@@ -235,14 +249,14 @@ void GameModel::BuildMenus()
 	//Build menu for GOL types
 	for(int i = 0; i < NGOL; i++)
 	{
-		Tool * tempTool = new GolTool(i, sim->gmenu[i].name, std::string(sim->gmenu[i].description), PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour));
+		Tool * tempTool = new GolTool(i, sim->gmenu[i].name, std::string(sim->gmenu[i].description), PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour), "DEFAULT_PT_LIFE_"+std::string(sim->gmenu[i].name));
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
 
 	//Build other menus from wall data
 	for(int i = 0; i < UI_WALLCOUNT; i++)
 	{
-		Tool * tempTool = new WallTool(i, "", std::string(sim->wtypes[i].descs), PIXR(sim->wtypes[i].colour), PIXG(sim->wtypes[i].colour), PIXB(sim->wtypes[i].colour), sim->wtypes[i].textureGen);
+		Tool * tempTool = new WallTool(i, "", std::string(sim->wtypes[i].descs), PIXR(sim->wtypes[i].colour), PIXG(sim->wtypes[i].colour), PIXB(sim->wtypes[i].colour), "DEFAULT_WL_"+format::NumberToString<int>(i), sim->wtypes[i].textureGen);
 		menuList[SC_WALL]->AddTool(tempTool);
 		//sim->wtypes[i]
 	}
@@ -251,24 +265,24 @@ void GameModel::BuildMenus()
 	menuList[SC_TOOL]->AddTool(new SampleTool(this));
 	menuList[SC_TOOL]->AddTool(new SignTool());
 	menuList[SC_TOOL]->AddTool(new PropertyTool());
-	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", "Create air movement", 64, 64, 64));
+	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", "Create air movement", 64, 64, 64, "DEFAULT_UI_WIND"));
 	
 	//Build menu for simtools
 	for(int i = 0; i < sim->tools.size(); i++)
 	{
 		Tool * tempTool;
-		tempTool = new Tool(i, sim->tools[i]->Name, sim->tools[i]->Description, PIXR(sim->tools[i]->Colour), PIXG(sim->tools[i]->Colour), PIXB(sim->tools[i]->Colour));
+		tempTool = new Tool(i, sim->tools[i]->Name, sim->tools[i]->Description, PIXR(sim->tools[i]->Colour), PIXG(sim->tools[i]->Colour), PIXB(sim->tools[i]->Colour), sim->tools[i]->Identifier);
 		menuList[SC_TOOL]->AddTool(tempTool);
 	}
 
 	//Add decoration tools to menu
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendAdd, "ADD", "Colour blending: Add", 0, 0, 0));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendRemove, "SUB", "Colour blending: Subtract", 0, 0, 0));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendMultiply, "MUL", "Colour blending: Multiply", 0, 0, 0));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendDivide, "DIV", "Colour blending: Divide" , 0, 0, 0));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSmudge, "SMDG", "Smudge colour", 0, 0, 0));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSet, "SET", "Set colour (No blending)", 0, 0, 0));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::Remove, "CLR", "Clear any set decoration", 0, 0, 0));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendAdd, "ADD", "Colour blending: Add", 0, 0, 0, "DEFAULT_DECOR_ADD"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendRemove, "SUB", "Colour blending: Subtract", 0, 0, 0, "DEFAULT_DECOR_SUB"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendMultiply, "MUL", "Colour blending: Multiply", 0, 0, 0, "DEFAULT_DECOR_MUL"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendDivide, "DIV", "Colour blending: Divide" , 0, 0, 0, "DEFAULT_DECOR_DIV"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSmudge, "SMDG", "Smudge colour", 0, 0, 0, "DEFAULT_DECOR_SMDG"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSet, "SET", "Set colour (No blending)", 0, 0, 0, "DEFAULT_DECOR_SET"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::Remove, "CLR", "Clear any set decoration", 0, 0, 0, "DEFAULT_DECOR_CLR"));
 
 	//Set default brush palette
 	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
@@ -276,19 +290,54 @@ void GameModel::BuildMenus()
 	brushList.push_back(new TriangleBrush(ui::Point(4, 4)));
 
 	//Set default tools
-	activeTools[0] = menuList[SC_POWDERS]->GetToolList()[0];
-	activeTools[1] = menuList[SC_SPECIAL]->GetToolList()[0];
-	activeTools[2] = menuList[SC_TOOL]->GetToolList()[0];
+	activeTools[0] = GetToolFromIdentifier("DEFAULT_PT_DUST");//menuList[SC_POWDERS]->GetToolList()[0];
+	activeTools[1] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");//menuList[SC_SPECIAL]->GetToolList()[0];
+	activeTools[2] = GetToolFromIdentifier("DEFAULT_PT_NONE");//menuList[SC_TOOL]->GetToolList()[0];
+
+	if(activeToolIdentifiers[0].length())
+		activeTools[0] = GetToolFromIdentifier(activeToolIdentifiers[0]);
+	if(activeToolIdentifiers[1].length())
+		activeTools[1] = GetToolFromIdentifier(activeToolIdentifiers[1]);
+	if(activeToolIdentifiers[2].length())
+		activeTools[2] = GetToolFromIdentifier(activeToolIdentifiers[2]);
+
 	lastTool = activeTools[0];
 
 	//Set default menu
 	activeMenu = menuList[SC_POWDERS];
-	toolList = menuList[SC_POWDERS]->GetToolList();
+
+	if(lastMenu)
+	{
+		for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
+		{
+			if((*iter)->GetIcon() == lastMenu)
+				activeMenu = *iter;
+		}
+	}
+
+	if(activeMenu)
+		toolList = activeMenu->GetToolList();
+	else
+		toolList = std::vector<Tool*>();
 
 	notifyMenuListChanged();
 	notifyToolListChanged();
 	notifyActiveToolsChanged();
 	notifyLastToolChanged();
+}
+
+Tool * GameModel::GetToolFromIdentifier(std::string identifier)
+{
+	for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
+	{
+		std::vector<Tool*> menuTools = (*iter)->GetToolList();
+		for(std::vector<Tool*>::iterator titer = menuTools.begin(), tend = menuTools.end(); titer != tend; ++titer)
+		{
+			if(identifier == (*titer)->GetIdentifier())
+				return *titer;
+		}
+	}
+	return NULL;
 }
 
 std::deque<Snapshot*> GameModel::GetHistory()
