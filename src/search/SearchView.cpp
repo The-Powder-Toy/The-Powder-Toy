@@ -277,7 +277,7 @@ void SearchView::NotifyShowOwnChanged(SearchModel * sender)
     else if(sender->GetShowFavourite())
     {
     	unpublishSelected->Enabled = false;
-    	removeSelected->Enabled = true;
+    	removeSelected->Enabled = false;
     }
     else
     {
@@ -292,7 +292,7 @@ void SearchView::NotifyShowFavouriteChanged(SearchModel * sender)
     if(sender->GetShowFavourite())
     {
     	unpublishSelected->Enabled = false;
-    	removeSelected->Enabled = true;
+    	removeSelected->Enabled = false;
     }
     else if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
     {
@@ -497,6 +497,11 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 
 	vector<SaveInfo*> saves = sender->GetSaveList();
 	//string messageOfTheDay = sender->GetMessageOfTheDay();
+
+	if(sender->GetShowFavourite())
+		favouriteSelected->SetText("Unfavourite");
+	else
+		favouriteSelected->SetText("Favourite");
 
 	Client::Ref().ClearThumbnailRequests();
 	for(i = 0; i < saveButtons.size(); i++)

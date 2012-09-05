@@ -119,7 +119,13 @@ void PreviewController::Report(std::string message)
 
 void PreviewController::FavouriteSave()
 {
-	previewModel->SetFavourite(true);
+	if(previewModel->GetSave() && Client::Ref().GetAuthUser().ID)
+	{
+		if(previewModel->GetSave()->Favourite)
+			previewModel->SetFavourite(false);
+		else
+			previewModel->SetFavourite(true);
+	}
 }
 
 void PreviewController::OpenInBrowser()

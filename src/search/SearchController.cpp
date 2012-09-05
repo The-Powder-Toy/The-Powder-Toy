@@ -316,7 +316,34 @@ void SearchController::FavouriteSelected()
 		}
 	};
 
+	class UnfavouriteSavesTask : public Task
+	{
+		std::vector<int> saves;
+	public:
+		UnfavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
+		virtual bool doWork()
+		{
+			for(int i = 0; i < saves.size(); i++)
+			{
+				std::stringstream saveID;
+				saveID << "Unfavouring save [" << saves[i] << "] ...";
+				notifyStatus(saveID.str());
+				if(Client::Ref().FavouriteSave(saves[i], false)!=RequestOkay)
+				{
+					std::stringstream saveIDF;
+					saveIDF << "\boFailed to remove [" << saves[i] << "] ...";
+					notifyStatus(saveIDF.str());
+				}
+				notifyProgress((float(i+1)/float(saves.size())*100));
+			}
+			return true;
+		}
+	};
+
 	std::vector<int> selected = searchModel->GetSelected();
-	new TaskWindow("Favouring saves", new FavouriteSavesTask(selected));
+	if(!searchModel->GetShowFavourite())
+		new TaskWindow("Favouring saves", new FavouriteSavesTask(selected));
+	else
+		new TaskWindow("Unfavouring saves", new UnfavouriteSavesTask(selected));
 	ClearSelection();
 }

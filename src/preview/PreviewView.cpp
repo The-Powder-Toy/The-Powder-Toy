@@ -88,7 +88,7 @@ PreviewView::PreviewView():
 		}
 	};
 
-	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav.");
+	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav");
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetIcon(IconFavourite);
 	favButton->SetActionCallback(new FavAction(this));
@@ -380,9 +380,20 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		viewsLabel->SetText("\bgViews:\bw " + format::NumberToString<int>(save->Views));
 		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
-			favButton->Enabled = false;
-		else if(Client::Ref().GetAuthUser().ID)
+		{
 			favButton->Enabled = true;
+			favButton->SetText("Unfav");
+		}
+		else if(Client::Ref().GetAuthUser().ID)
+		{
+			favButton->Enabled = true;
+			favButton->SetText("Fav");
+		}
+		else
+		{
+			favButton->SetText("Fav");
+			favButton->Enabled = false;
+		}
 
 		if(save->GetGameSave())
 		{

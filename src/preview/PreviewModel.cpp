@@ -71,7 +71,7 @@ void * PreviewModel::updateSaveCommentsT()
 
 void PreviewModel::SetFavourite(bool favourite)
 {
-	//if(save)
+	if(save)
 	{
 		Client::Ref().FavouriteSave(save->id, favourite);
 		save->Favourite = favourite;
