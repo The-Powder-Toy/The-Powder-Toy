@@ -33,15 +33,38 @@ TagsView::TagsView():
 		}
 	};
 	closeButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(195, 16), "Close");
-	closeButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	closeButton->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	closeButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	closeButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	closeButton->SetActionCallback(new CloseAction(this));
 	AddComponent(closeButton);
 
-	tagInput = new ui::Textbox(ui::Point(8, Size.Y-40), ui::Point(Size.X-16, 16), "");
+
+	tagInput = new ui::Textbox(ui::Point(8, Size.Y-40), ui::Point(Size.X-60, 16), "", "[new tag]");
+	tagInput->Appearance.icon = IconTag;
+	tagInput->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	tagInput->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tagInput);
 
+	class AddTagAction : public ui::ButtonAction
+	{
+		TagsView * v;
+	public:
+		AddTagAction(TagsView * _v) { v = _v; }
+		void ActionCallback(ui::Button * sender)
+		{
+			v->addTag();
+		}
+	};
+	addButton = new ui::Button(ui::Point(tagInput->Position.X+tagInput->Size.X+4, tagInput->Position.Y), ui::Point(40, 16), "Add");
+	addButton->Appearance.icon = IconAdd;
+	addButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	addButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	addButton->SetActionCallback(new AddTagAction(this));
+	AddComponent(addButton);
+
 	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 16), "Manage tags:");
-	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	title->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	title->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(title);
 }
 
@@ -90,10 +113,14 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 			tags.push_back(tempLabel);
 			AddComponent(tempLabel);
 
-			if(sender->GetSave()->GetUserName()==Client::Ref().GetAuthUser().Username)
+			if(sender->GetSave()->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
 			{
-				ui::Button * tempButton = new ui::Button(ui::Point(15, 35+(16*i)), ui::Point(14, 14), "x");
-				tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;				tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+				ui::Button * tempButton = new ui::Button(ui::Point(15, 37+(16*i)), ui::Point(11, 12));
+				tempButton->Appearance.icon = IconDelete;
+				tempButton->Appearance.Border = ui::Border(0);
+				tempButton->Appearance.Margin.Top += 2;
+				tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	
+				tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 				tempButton->SetActionCallback(new DeleteTagAction(this, sender->GetSave()->GetTags()[i]));
 				tags.push_back(tempButton);
 				AddComponent(tempButton);
@@ -116,19 +143,23 @@ void TagsView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case KEY_RETURN:
 		if(IsFocused(tagInput))
 		{
-
-			try
-			{
-				c->AddTag(tagInput->GetText());
-			}
-			catch(TagsModelException & ex)
-			{
-				new ErrorMessage("Could not add tag", ex.what());
-			}
-			tagInput->SetText("");
+			addTag();
 		}
 		break;
 	}
+}
+
+void TagsView::addTag()
+{
+	try
+	{
+		c->AddTag(tagInput->GetText());
+	}
+	catch(TagsModelException & ex)
+	{
+		new ErrorMessage("Could not add tag", ex.what());
+	}
+	tagInput->SetText("");
 }
 
 TagsView::~TagsView() {

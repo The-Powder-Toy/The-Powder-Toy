@@ -22,10 +22,12 @@ class TagsController;
 class TagsModel;
 class TagsView: public ui::Window {
 	TagsController * c;
+	ui::Button * addButton;
 	ui::Button * closeButton;
 	ui::Label * title;
 	ui::Textbox * tagInput;
 	std::vector<ui::Component*> tags;
+	void addTag();
 public:
 	TagsView();
 	virtual void OnDraw();

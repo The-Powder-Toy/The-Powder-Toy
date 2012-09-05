@@ -78,6 +78,7 @@ enum Icon
 	IconFolder,
 	IconSearch,
 	IconDelete,
+	IconAdd,
 	IconReport,
 	IconUsername,
 	IconPassword,

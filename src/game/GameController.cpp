@@ -113,7 +113,7 @@ public:
 	TagsCallback(GameController * cc_) { cc = cc_; }
 	virtual void ControllerExit()
 	{
-		cc->gameModel->SetSave(new SaveInfo(*(cc->tagsWindow->GetSave())));
+		cc->gameView->NotifySaveChanged(cc->gameModel);
 	}
 };
 

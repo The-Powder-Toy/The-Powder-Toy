@@ -874,13 +874,25 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 	case IconDelete:
 		if(invert)
 		{
-			drawchar(x, y, 0x86, 255, 55, 55, alpha);
+			drawchar(x, y, 0x86, 159, 47, 31, alpha);
 			drawchar(x, y, 0x85, 0, 0, 0, alpha);
 		}
 		else
 		{
-			drawchar(x, y, 0x86, 255, 55, 55, alpha);
+			drawchar(x, y, 0x86, 159, 47, 31, alpha);
 			drawchar(x, y, 0x85, 255, 255, 255, alpha);
+		}
+		break;
+	case IconAdd:
+		if(invert)
+		{
+			drawchar(x, y, 0x86, 32, 144, 32, alpha);
+			drawchar(x, y, 0x89, 0, 0, 0, alpha);
+		}
+		else
+		{
+			drawchar(x, y, 0x86, 32, 144, 32, alpha);
+			drawchar(x, y, 0x89, 255, 255, 255, alpha);
 		}
 		break;
 	default:

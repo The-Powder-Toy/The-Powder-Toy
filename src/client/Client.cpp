@@ -1821,15 +1821,27 @@ std::vector<std::string> * Client::RemoveTag(int saveID, std::string tag)
 		try
 		{
 			std::istringstream dataStream(data);
-			json::Array tagsArray;
-			json::Reader::Read(tagsArray, dataStream);
+			json::Object responseObject;
+			json::Reader::Read(responseObject, dataStream);
 
-			tags = new std::vector<std::string>();
+			json::Number status = responseObject["Status"];
 
-			for(int j = 0; j < tagsArray.Size(); j++)
+			if(status.Value()==0)
 			{
-				json::String tempTag = tagsArray[j];
-				tags->push_back(tempTag.Value());
+				json::String error = responseObject["Error"];
+				lastError = error.Value();
+			}
+			else
+			{
+				json::Array tagsArray = responseObject["Tags"];
+
+				tags = new std::vector<std::string>();
+
+				for(int j = 0; j < tagsArray.Size(); j++)
+				{
+					json::String tempTag = tagsArray[j];
+					tags->push_back(tempTag.Value());
+				}
 			}
 		}
 		catch (json::Exception &e)
@@ -1870,15 +1882,27 @@ std::vector<std::string> * Client::AddTag(int saveID, std::string tag)
 		try
 		{
 			std::istringstream dataStream(data);
-			json::Array tagsArray;
-			json::Reader::Read(tagsArray, dataStream);
+			json::Object responseObject;
+			json::Reader::Read(responseObject, dataStream);
 
-			tags = new std::vector<std::string>();
+			json::Number status = responseObject["Status"];
 
-			for(int j = 0; j < tagsArray.Size(); j++)
+			if(status.Value()==0)
 			{
-				json::String tempTag = tagsArray[j];
-				tags->push_back(tempTag.Value());
+				json::String error = responseObject["Error"];
+				lastError = error.Value();
+			}
+			else
+			{
+				json::Array tagsArray = responseObject["Tags"];
+
+				tags = new std::vector<std::string>();
+
+				for(int j = 0; j < tagsArray.Size(); j++)
+				{
+					json::String tempTag = tagsArray[j];
+					tags->push_back(tempTag.Value());
+				}
 			}
 		}
 		catch (json::Exception &e)
