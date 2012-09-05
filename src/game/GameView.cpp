@@ -981,8 +981,8 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 	currentMouse = ui::Point(x, y);
 	if(isMouseDown && drawMode == DrawPoints)
 	{
-		pointQueue.push(new ui::Point(x-dx, y-dy));
-		pointQueue.push(new ui::Point(x, y));
+		pointQueue.push(new ui::Point(c->PointTranslate(ui::Point(x-dx, y-dy))));
+		pointQueue.push(new ui::Point(c->PointTranslate(ui::Point(x, y))));
 	}
 }
 
@@ -1014,7 +1014,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 		}
 		if(drawMode == DrawPoints)
 		{
-			pointQueue.push(new ui::Point(x, y));
+			pointQueue.push(new ui::Point(c->PointTranslate(ui::Point(x, y))));
 		}
 	}
 }
@@ -1082,26 +1082,26 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 
 				if(drawSnap && drawMode == DrawLine)
 				{
-					finalDrawPoint2 = lineSnapCoords(drawPoint1, drawPoint2);
+					finalDrawPoint2 = c->PointTranslate(lineSnapCoords(c->PointTranslate(drawPoint1), drawPoint2));
 				}
 
 				if(drawSnap && drawMode == DrawRect)
 				{
-					finalDrawPoint2 = rectSnapCoords(drawPoint1, drawPoint2);
+					finalDrawPoint2 = c->PointTranslate(rectSnapCoords(c->PointTranslate(drawPoint1), drawPoint2));
 				}
 
 				if(drawMode == DrawRect)
 				{
-					c->DrawRect(toolIndex, drawPoint1, finalDrawPoint2);
+					c->DrawRect(toolIndex, c->PointTranslate(drawPoint1), finalDrawPoint2);
 				}
 				if(drawMode == DrawLine)
 				{
-					c->DrawLine(toolIndex, drawPoint1, finalDrawPoint2);
+					c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), finalDrawPoint2);
 				}
 			}
 			if(drawMode == DrawPoints)
 			{
-				c->ToolClick(toolIndex, ui::Point(x, y));
+				c->ToolClick(toolIndex, c->PointTranslate(ui::Point(x, y)));
 				//pointQueue.push(new ui::Point(x, y));
 			}
 			if(drawModeReset)
@@ -1169,7 +1169,7 @@ void GameView::OnMouseWheel(int x, int y, int d)
 		c->AdjustBrushSize(d, false, shiftBehaviour, ctrlBehaviour);
 		if(isMouseDown)
 		{
-			pointQueue.push(new ui::Point(x, y));
+			pointQueue.push(new ui::Point(c->PointTranslate(ui::Point(x, y))));
 		}
 	}
 }
@@ -1453,7 +1453,7 @@ void GameView::OnTick(float dt)
 	{
 		if(isMouseDown)
 		{
-			pointQueue.push(new ui::Point(currentMouse));
+			pointQueue.push(new ui::Point(c->PointTranslate(currentMouse)));
 		}
 		if(!pointQueue.empty())
 		{
@@ -1462,7 +1462,7 @@ void GameView::OnTick(float dt)
 	}
 	if(drawMode == DrawFill && isMouseDown)
 	{
-		c->DrawFill(toolIndex, currentMouse);
+		c->DrawFill(toolIndex, c->PointTranslate(currentMouse));
 	}
 	if(introText)
 	{

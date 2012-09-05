@@ -374,7 +374,7 @@ void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point poi
 	if(!activeTool || !cBrush)
 		return;
 	activeTool->SetStrength(gameModel->GetToolStrength());
-	activeTool->DrawRect(sim, cBrush, PointTranslate(point1), PointTranslate(point2));
+	activeTool->DrawRect(sim, cBrush, point1, point2);
 }
 
 void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point point2)
@@ -386,7 +386,7 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 	if(!activeTool || !cBrush)
 		return;
 	activeTool->SetStrength(gameModel->GetToolStrength());
-	activeTool->DrawLine(sim, cBrush, PointTranslate(point1), PointTranslate(point2));
+	activeTool->DrawLine(sim, cBrush, point1, point2);
 }
 
 void GameController::DrawFill(int toolSelection, ui::Point point)
@@ -398,7 +398,7 @@ void GameController::DrawFill(int toolSelection, ui::Point point)
 	if(!activeTool || !cBrush)
 		return;
 	activeTool->SetStrength(gameModel->GetToolStrength());
-	activeTool->DrawFill(sim, cBrush, PointTranslate(point));
+	activeTool->DrawFill(sim, cBrush, point);
 }
 
 void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueue)
@@ -427,7 +427,7 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueu
 		bool first = true;
 		while(!pointQueue.empty())
 		{
-			ui::Point fPoint = PointTranslate(*pointQueue.front());
+			ui::Point fPoint = *pointQueue.front();
 			delete pointQueue.front();
 			pointQueue.pop();
 			if(!first)
@@ -480,7 +480,7 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
-	activeTool->Click(sim, cBrush, PointTranslate(point));
+	activeTool->Click(sim, cBrush, point);
 }
 
 void GameController::StampRegion(ui::Point point1, ui::Point point2)
