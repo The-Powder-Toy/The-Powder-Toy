@@ -59,6 +59,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_pushlightuserdata(l, this);
 	lua_settable(l, LUA_REGISTRYINDEX);
 
+	initSimulationAPI();
 	initInterfaceAPI();
 	initRendererAPI();
 	initElementsAPI();
@@ -346,12 +347,12 @@ void LuaScriptInterface::initSimulationAPI()
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
+	int simulationAPI = lua_gettop(l);
 
 	//Sim shortcut
-	lua_getglobal(l, "simlation");
+	lua_getglobal(l, "simulation");
 	lua_setglobal(l, "sim");
 
-	int simulationAPI = lua_gettop(l);
 }
 
 int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
@@ -364,7 +365,8 @@ int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
 			for (ry = -r; ry <= r; ry++)
 				if (x+rx >= 0 && y+ry >= 0 && x+rx < XRES && y+ry < YRES && (rx || ry))
 				{
-					if(n = luacon_sim->pmap[y][x] && (n&0xFF) == t)
+					n = luacon_sim->pmap[y+ry][x+rx];
+					if(n && (n&0xFF) == t)
 					{
 						ids++;
 						lua_pushinteger(l, n>>8);
@@ -375,12 +377,13 @@ int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
 	else
 	{
 		int x = lua_tointeger(l, 1), y = lua_tointeger(l, 2), r = lua_tointeger(l, 3), rx, ry, n;
-		int ids = 0;
+		std::cout << x << " " << y << " " << r << std::endl;
 		for (rx = -r; rx <= r; rx++)
 			for (ry = -r; ry <= r; ry++)
 				if (x+rx >= 0 && y+ry >= 0 && x+rx < XRES && y+ry < YRES && (rx || ry))
 				{
-					if(n = luacon_sim->pmap[y][x])
+					n = luacon_sim->pmap[y+ry][x+rx];
+					if(n)
 					{
 						ids++;
 						lua_pushinteger(l, n>>8);
