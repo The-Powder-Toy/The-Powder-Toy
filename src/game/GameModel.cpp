@@ -291,8 +291,8 @@ void GameModel::BuildMenus()
 
 	//Set default tools
 	activeTools[0] = GetToolFromIdentifier("DEFAULT_PT_DUST");
-	activeTools[2] = GetToolFromIdentifier("DEFAULT_PT_NONE");
-	activeTools[1] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
+	activeTools[1] = GetToolFromIdentifier("DEFAULT_PT_NONE");
+	activeTools[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
 
 	if(activeToolIdentifiers[0].length())
 		activeTools[0] = GetToolFromIdentifier(activeToolIdentifiers[0]);
