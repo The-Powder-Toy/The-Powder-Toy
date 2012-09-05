@@ -14,6 +14,8 @@ using namespace std;
 
 Engine::Engine():
 	state_(NULL),
+	maxWidth(0),
+	maxHeight(0),
 	mousex_(0),
 	mousey_(0),
 	mousexp_(0),
@@ -146,6 +148,12 @@ void Engine::SetSize(int width, int height)
 {
 	width_ = width;
 	height_ = height;
+}
+
+void Engine::SetMaxSize(int width, int height)
+{
+	maxWidth = width;
+	maxHeight = height;
 }
 
 void Engine::Tick()

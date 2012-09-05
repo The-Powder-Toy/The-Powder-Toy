@@ -6,6 +6,7 @@
  */
 
 #include "OptionsController.h"
+#include "dialogues/ErrorMessage.h"
 
 OptionsController::OptionsController(Simulation * sim, ControllerCallback * callback_):
 	callback(callback_),
@@ -61,7 +62,19 @@ void OptionsController::SetFullscreen(bool fullscreen)
 
 void OptionsController::SetScale(bool scale)
 {
-	model->SetScale(scale);
+	if(scale)
+	{
+		if(ui::Engine::Ref().GetMaxWidth() >= ui::Engine::Ref().GetWidth() * 2 && ui::Engine::Ref().GetMaxHeight() >= ui::Engine::Ref().GetHeight() * 2)
+			model->SetScale(scale);
+		else
+		{
+			new ErrorMessage("Screen resolution error", "Your screen size is too small to use this scale mode.");
+			model->SetScale(false);
+		}
+	}
+	else
+		model->SetScale(scale);
+
 }
 
 OptionsView * OptionsController::GetView()

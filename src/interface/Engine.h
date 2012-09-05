@@ -57,6 +57,10 @@ namespace ui
 		inline int GetMouseY() { return mousey_; }
 		inline int GetWidth() { return width_; }
 		inline int GetHeight() { return height_; }
+		inline int GetMaxWidth() { return maxWidth; }
+		inline int GetMaxHeight() { return maxHeight; }
+
+		inline void SetMaxSize(int width, int height);
 
 		inline void SetSize(int width, int height);
 		
@@ -90,6 +94,9 @@ namespace ui
 		int mouseyp_;
 		int width_;
 		int height_;
+
+		int maxWidth;
+		int maxHeight;
 	};
 
 }

@@ -12,7 +12,7 @@
 #include "PowderToy.h"
 
 ErrorMessage::ErrorMessage(std::string title, std::string message,  ErrorMessageCallback * callback_):
-	ui::Window(ui::Point(-1, -1), ui::Point(200, 75)),
+	ui::Window(ui::Point(-1, -1), ui::Point(200, 35)),
 	callback(callback_)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), title);
@@ -21,10 +21,14 @@ ErrorMessage::ErrorMessage(std::string title, std::string message,  ErrorMessage
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 24), ui::Point(Size.X-8, 60), message);
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 24), ui::Point(Size.X-8, -1), message);
+	messageLabel->SetMultiline(true);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
+
+	Size.Y += messageLabel->Size.Y+12;
+	Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
 
 	class DismissAction: public ui::ButtonAction
 	{

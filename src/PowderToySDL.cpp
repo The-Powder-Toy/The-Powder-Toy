@@ -50,6 +50,8 @@ using namespace std;
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 #endif
 
+int desktopWidth = 1280, desktopHeight = 1024;
+
 SDL_Surface * sdl_scrn;
 int scale = 1;
 bool fullscreen = false;
@@ -173,6 +175,9 @@ int SDLOpen()
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
 		return 1;
 	}
+	const SDL_VideoInfo * vidInfo = SDL_GetVideoInfo();
+	desktopWidth = vidInfo->current_w;
+	desktopHeight = vidInfo->current_h;
 	SDL_EnableUNICODE(1);
 #if defined(WIN) && defined(WINCONSOLE)
 	//On Windows, SDL redirects stdout to stdout.txt, which can be annoying when debugging, here we redirect back to the console
@@ -492,6 +497,7 @@ int main(int argc, char * argv[])
 	ui::Engine::Ref().Fullscreen = fullscreen;
 
 	engine = &ui::Engine::Ref();
+	engine->SetMaxSize(desktopWidth, desktopHeight);
 	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
 
 	GameController * gameController = new GameController();

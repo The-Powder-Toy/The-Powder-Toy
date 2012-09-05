@@ -88,7 +88,7 @@ DropDown::DropDown(Point position, Point size):
 void DropDown::OnMouseClick(int x, int y, unsigned int button)
 {
 	DropDownWindow * newWindow = new DropDownWindow(this);
-	ui::Engine().Ref().ShowWindow(newWindow);
+	ui::Engine::Ref().ShowWindow(newWindow);
 }
 
 void DropDown::Draw(const Point& screenPos)
