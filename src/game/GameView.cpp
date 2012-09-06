@@ -1618,6 +1618,8 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 		tempButton->SetActionCallback(new NotificationButtonAction(this, *iter));
 		tempButton->Appearance.BorderInactive = style::Colour::WarningTitle;
 		tempButton->Appearance.TextInactive = style::Colour::WarningTitle;
+		tempButton->Appearance.BorderHover = ui::Colour(255, 175, 0);
+		tempButton->Appearance.TextHover = ui::Colour(255, 175, 0);
 		AddComponent(tempButton);
 		notificationComponents.push_back(tempButton);
 
@@ -1628,6 +1630,8 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 		tempButton->Appearance.Margin.Top+=2;
 		tempButton->Appearance.BorderInactive = style::Colour::WarningTitle;
 		tempButton->Appearance.TextInactive = style::Colour::WarningTitle;
+		tempButton->Appearance.BorderHover = ui::Colour(255, 175, 0);
+		tempButton->Appearance.TextHover = ui::Colour(255, 175, 0);
 		AddComponent(tempButton);
 		notificationComponents.push_back(tempButton);
 
