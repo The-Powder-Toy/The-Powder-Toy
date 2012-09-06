@@ -1468,7 +1468,7 @@ void GameView::OnTick(float dt)
 	}
 	if(introText)
 	{
-		introText -= int(dt)>0?std::min(int(dt), 5):1;
+		introText -= int(dt)>0?((int)dt < 5? dt:5):1;
 		if(introText < 0)
 			introText  = 0;
 	}

@@ -183,10 +183,10 @@ extern unsigned char ZSIZE;
 #define strcasecmp stricmp
 #endif
 #if defined(_MSC_VER)
-#define fmin(a,b) (((a) < (b)) ? (a) : (b))
-#define fminf(a,b) (((a) < (b)) ? (a) : (b))
-#define fmax(a,b) (((a) > (b)) ? (a) : (b))
-#define fmaxf(a,b) (((a) > (b)) ? (a) : (b))
+#define fmin min
+#define fminf min
+#define fmax max
+#define fmaxf max
 #endif
 
 #if defined(_MSC_VER)

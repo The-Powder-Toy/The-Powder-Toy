@@ -277,11 +277,9 @@ int Element_SPRK::graphics(GRAPHICS_FUNC_ARGS)
 
 {
 	*firea = 80;
-	
 	*firer = 170;
 	*fireg = 200;
 	*fireb = 220;
-	//*pixel_mode |= FIRE_ADD;
 	*pixel_mode |= FIRE_ADD;
 	return 1;
 }

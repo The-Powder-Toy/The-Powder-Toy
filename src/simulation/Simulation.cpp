@@ -1,8 +1,10 @@
 //#include <cstdlib>
 #include <cmath>
 #include <math.h>
-#if !defined(WIN) || defined(__GNUC__)
+#if !defined(_MSC_VER)
 #include <strings.h>
+#else
+#include <windows.h>
 #endif
 #include "Config.h"
 #include "Simulation.h"

@@ -8,6 +8,9 @@
 #include "Gravity.h"
 #include "Misc.h"
 #include "ElementGraphics.h"
+#ifdef _MSC_VER
+#include <Windows.h>
+#endif
 
 #define IPL -257.0f
 #define IPH 257.0f
