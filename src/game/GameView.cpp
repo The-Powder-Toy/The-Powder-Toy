@@ -1082,7 +1082,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 
 				if(drawSnap && drawMode == DrawLine)
 				{
-					finalDrawPoint2 = lineSnapCoords(c->PointTranslate(drawPoint1), drawPoint2));
+					finalDrawPoint2 = lineSnapCoords(c->PointTranslate(drawPoint1), drawPoint2);
 				}
 
 				if(drawSnap && drawMode == DrawRect)
