@@ -60,23 +60,6 @@ PreviewView::PreviewView():
 	submitCommentButton(NULL),
 	commentBoxHeight(20)
 {
-	class OpenAction: public ui::ButtonAction
-	{
-		PreviewView * v;
-	public:
-		OpenAction(PreviewView * v_){ v = v_; }
-		virtual void ActionCallback(ui::Button * sender)
-		{
-			v->c->DoOpen();
-		}
-	};
-	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), "Open");
-	openButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	openButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	openButton->SetIcon(IconOpen);
-	openButton->SetActionCallback(new OpenAction(this));
-	AddComponent(openButton);
-	SetOkayButton(openButton);
-
 	class FavAction: public ui::ButtonAction
 	{
 		PreviewView * v;
@@ -122,6 +105,23 @@ PreviewView::PreviewView():
 	reportButton->SetActionCallback(new ReportAction(this));
 	reportButton->Enabled = Client::Ref().GetAuthUser().ID?true:false;
 	AddComponent(reportButton);
+
+	class OpenAction: public ui::ButtonAction
+	{
+		PreviewView * v;
+	public:
+		OpenAction(PreviewView * v_){ v = v_; }
+		virtual void ActionCallback(ui::Button * sender)
+		{
+			v->c->DoOpen();
+		}
+	};
+	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), "Open");
+	openButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	openButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	openButton->SetIcon(IconOpen);
+	openButton->SetActionCallback(new OpenAction(this));
+	AddComponent(openButton);
+	SetOkayButton(openButton);
 
 	class BrowserOpenAction: public ui::ButtonAction
 	{

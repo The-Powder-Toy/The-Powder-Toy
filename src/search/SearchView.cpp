@@ -20,8 +20,8 @@ SearchView::SearchView():
 
 	nextButton = new ui::Button(ui::Point(XRES+BARSIZE-52, YRES+MENUSIZE-18), ui::Point(50, 16), "Next \x95");
 	previousButton = new ui::Button(ui::Point(1, YRES+MENUSIZE-18), ui::Point(50, 16), "\x96 Prev");
-	infoLabel  = new ui::Label(ui::Point(51, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-102, 16), "Loading...");
-	tagsLabel  = new ui::Label(ui::Point(51, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-102, 16), "\boPopular Tags:");
+	infoLabel  = new ui::Label(ui::Point(260, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-520, 16), "Page 1 of 1");
+	tagsLabel  = new ui::Label(ui::Point(270, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-540, 16), "\boPopular Tags:");
 	motdLabel  = new ui::RichLabel(ui::Point(51, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-102, 16), Client::Ref().GetMessageOfTheDay());
 
 	class SearchAction : public ui::TextboxAction
@@ -91,6 +91,7 @@ SearchView::SearchView():
 	favButton->SetActionCallback(new FavAction(this));
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	favButton->Appearance.BorderInactive = ui::Colour(170,170,170);
 	AddComponent(favButton);
 	
 	class ClearSearchAction : public ui::ButtonAction
@@ -110,6 +111,7 @@ SearchView::SearchView():
 	clearSearchButton->Appearance.Margin.Top+=2;
 	clearSearchButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	clearSearchButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	clearSearchButton->Appearance.BorderInactive = ui::Colour(170,170,170);
 	AddComponent(clearSearchButton);
 
 	class NextPageAction : public ui::ButtonAction
