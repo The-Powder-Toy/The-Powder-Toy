@@ -1762,9 +1762,9 @@ void Renderer::render_parts()
 					for (r = 0; r < 4; r++) {
 						ddist = ((float)orbd[r])/16.0f;
 						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
-						nxo = ddist*cos(drad);
-						nyo = ddist*sin(drad);
-						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES)
+						nxo = (int)(ddist*cos(drad));
+						nyo = (int)(ddist*sin(drad));
+						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && (sim->pmap[ny+nyo][nx+nxo]&0xFF) != PT_PRTI)
 							addpixel(nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
 					}
 				}
@@ -1780,15 +1780,15 @@ void Renderer::render_parts()
 					for (r = 0; r < 4; r++) {
 						ddist = ((float)orbd[r])/16.0f;
 						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
-						nxo = ddist*cos(drad);
-						nyo = ddist*sin(drad);
-						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES)
+						nxo = (int)(ddist*cos(drad));
+						nyo = (int)(ddist*sin(drad));
+						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && (sim->pmap[ny+nyo][nx+nxo]&0xFF) != PT_PRTO)
 							addpixel(nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
 					}
 				}
 				if (pixel_mode & EFFECT_DBGLINES)
 				{
-					if (mousePosX == nx && mousePosY == ny)//draw lines connecting wifi/portal channels
+					if (mousePosX == nx && mousePosY == ny && debugLines)//draw lines connecting wifi/portal channels
 					{
 						int z;
 						int type = parts[i].type;
@@ -2311,7 +2311,8 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	render_mode(0),
 	colour_mode(0),
 	gridSize(0),
-	blackDecorations(false)
+	blackDecorations(false),
+	debugLines(false)
 {
 	this->g = g;
 	this->sim = sim;

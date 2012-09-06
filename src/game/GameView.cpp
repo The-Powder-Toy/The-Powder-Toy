@@ -1177,6 +1177,8 @@ void GameView::OnMouseWheel(int x, int y, int d)
 void GameView::ToggleDebug()
 {
 	showDebug = !showDebug;
+	if (ren)
+		ren->debugLines = showDebug;
 }
 
 void GameView::BeginStampSelection()
