@@ -997,7 +997,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 		}
 		return;
 	}
-	if(currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES && !(zoomEnabled && !zoomCursorFixed))
+	if(currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES && !(zoomEnabled && !zoomCursorFixed))
 	{
 		if(button == BUTTON_LEFT)
 			toolIndex = 0;
@@ -1761,7 +1761,7 @@ void GameView::OnDraw()
 	{
 		ren->clearScreen(1.0f);
 		ren->RenderBegin();
-		if(selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && currentMouse.X > 0 && currentMouse.X < XRES && currentMouse.Y > 0 && currentMouse.Y < YRES)
+		if(selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)
 		{
 			ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
 			ui::Point initialDrawPoint = drawPoint1;

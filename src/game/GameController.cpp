@@ -341,7 +341,7 @@ ui::Point GameController::PointTranslate(ui::Point point)
 	if(point.X >= XRES)
 		point.X = XRES-1;
 	if(point.Y >= YRES)
-		point.Y = YRES+1;
+		point.Y = YRES-1;
 	if(point.Y < 0)
 		point.Y = 0;
 	if(point.X < 0)
