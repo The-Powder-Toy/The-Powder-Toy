@@ -414,6 +414,10 @@ SimulationSample Simulation::Get(int x, int y)
 		sample.particle = parts[photons[y][x]>>8];
 		sample.ParticleID = photons[y][x]>>8;
 	}
+	if (bmap[y/CELL][x/CELL])
+	{
+		sample.WallType = bmap[y/CELL][x/CELL];
+	}
 	sample.AirPressure = pv[y/CELL][x/CELL];
 	sample.AirTemperature = hv[y/CELL][x/CELL];
 	sample.AirVelocityX = vx[y/CELL][x/CELL];
