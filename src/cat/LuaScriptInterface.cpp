@@ -377,7 +377,6 @@ int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
 	else
 	{
 		int x = lua_tointeger(l, 1), y = lua_tointeger(l, 2), r = lua_tointeger(l, 3), rx, ry, n;
-		std::cout << x << " " << y << " " << r << std::endl;
 		for (rx = -r; rx <= r; rx++)
 			for (ry = -r; ry <= r; ry++)
 				if (x+rx >= 0 && y+ry >= 0 && x+rx < XRES && y+ry < YRES && (rx || ry))
