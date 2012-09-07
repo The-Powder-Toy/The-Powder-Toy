@@ -426,6 +426,11 @@ void GameModel::SetActiveMenu(Menu * menu)
 	}
 }
 
+vector<Tool*> GameModel::GetUnlistedTools()
+{
+	return extraElementTools;
+}
+
 vector<Tool*> GameModel::GetToolList()
 {
 	return toolList;

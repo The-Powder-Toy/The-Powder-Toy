@@ -973,6 +973,8 @@ void GameController::OpenElementSearch()
 			continue;
 		toolList.insert(toolList.end(), menuToolList.begin(), menuToolList.end());
 	}
+	vector<Tool*> hiddenTools = gameModel->GetUnlistedTools();
+	toolList.insert(toolList.end(), hiddenTools.begin(), hiddenTools.end());
 	new ElementSearchActivity(gameModel, toolList);
 }
 
