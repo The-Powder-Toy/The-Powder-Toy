@@ -120,6 +120,7 @@ public:
 		int LoadProgram(char * filename);
 		int Run();
 		int Call(int address);
+		void End();
 		void Marshal(int address, word element)
 		{
 			ram_t * ptr = ram+RP+address;

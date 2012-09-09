@@ -196,6 +196,11 @@ namespace vm
 		return 1;
 	}
 
+	void VirtualMachine::End()
+	{
+		PC = romSize+1;
+	}
+
 	int VirtualMachine::Call(int address)
 	{
 		word w;
