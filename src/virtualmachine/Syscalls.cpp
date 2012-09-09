@@ -1,33 +1,71 @@
-#include "VirtualMachine.h"
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
+#include "VirtualMachine.h"
+#include "simulation/Simulation.h"
+#include "graphics/Renderer.h"
 
 namespace vm
 {
-	#define ARG(n) (Get<int4_t>(RP + ((2 + n) * sizeof(word))))
+	#define ARG(n) (Get(RP + ((2 + n) * sizeof(word))))
 
 	#define TRAPDEF(f) int VirtualMachine::trap##f()
 
-	TRAPDEF(Print)
+	TRAPDEF(sin)
 	{
+		Push<float4_t>(sin(ARG(0).float4));
+	}
 
-		char *text;
+	TRAPDEF(cos)
+	{
+		Push<float4_t>(cos(ARG(0).float4));
+	}
 
-		//crumb("SYSCALL Print [%d]\n", ARG(0)); 
-		text = (char*)(ram) + ARG(0);
-		//crumb("PRINTING [%s]\n", text);
-		printf("%s", text);
-		return 0;
+	TRAPDEF(atan2)
+	{
+		Push<float4_t>(atan2(ARG(0).float4, ARG(1).float4));
+	}
+
+	TRAPDEF(sqrt)
+	{
+		Push<float4_t>(sqrt(ARG(0).float4));
+	}
+
+	TRAPDEF(floor)
+	{
+		Push<float4_t>(floor(ARG(0).float4));
+	}
+
+	TRAPDEF(ceil)
+	{
+		Push<float4_t>(ceil(ARG(0).float4));
 	}
 
 
-	TRAPDEF(Error)
+	TRAPDEF(print)
+	{
+		char *text;
+		text = (char*)(ram) + ARG(0).int4;
+		printf("%s", text);
+	}
+
+
+	TRAPDEF(error)
 	{
 		char *msg;
-
-		msg = (char*)(ram) + ARG(0);
+		msg = (char*)(ram) + ARG(0).int4;
 		printf("%s", msg);
-		PC = romSize + 1;
-		return 0;
+		End();
+	}
+
+
+	TRAPDEF(partCreate)
+	{
+		Push<int4_t>(sim->create_part(ARG(0).int4, ARG(1).int4, ARG(2).int4, ARG(3).int4));
+	}
+
+	TRAPDEF(partChangeType)
+	{
+		sim->part_change_type(ARG(0).int4, ARG(1).int4, ARG(2).int4, ARG(3).int4);
 	}
 }

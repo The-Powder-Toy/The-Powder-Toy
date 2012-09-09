@@ -2,6 +2,9 @@
 
 #include "Exceptions.h"
 
+class Simulation;
+class Renderer;
+
 namespace vm
 {
 
@@ -62,6 +65,7 @@ namespace vm
 
 	class VirtualMachine
 	{
+
 		bool bigEndian;  /* host is big-endian (requires byte-swapping). */
 
 		/* Memory spaces. */
@@ -110,6 +114,9 @@ namespace vm
 		int opcodeParameterSize(int opcode);
 		int syscall(int programCounter);
 public:
+		Simulation * sim;
+		Renderer * ren;
+		
 		#define OPDEF(n) int Op##n(word parameter);
 		#include "Operations.inl"
 		#undef OPDEF

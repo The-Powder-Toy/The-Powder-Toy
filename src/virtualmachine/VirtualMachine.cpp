@@ -22,7 +22,9 @@ namespace vm
 		RP(0),        /* Return stack pointer. */
 		PC(0),
 		cm(0),
-		cycles(0)
+		cycles(0),
+		sim(NULL),
+		ren(NULL)
 	{
 		hunk = new char[hunkSize];
 		std::fill(hunk, hunk+hunkSize, 0);
@@ -268,21 +270,15 @@ namespace vm
 
 	int VirtualMachine::syscall(int trap)
 	{
-		int retval;
-		word w;
+		PC = Pop<int4_t>();
 
-		retval = 0;
 		switch (trap)
 		{
-		#define TRAPDEF(n, f) case n: retval = trap##f(); break;
+		#define TRAPDEF(n, f) case n: trap##f(); break;
 			#include "Syscalls.inl"
 		#undef TRAPDEF
 		}
 
-		w = Pop();
-		PC = w.int4;
-		w.int4 = retval;
-		Push(w);
 		return 1;
 	}
 }
