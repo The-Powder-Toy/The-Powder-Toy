@@ -93,18 +93,15 @@ namespace vm
 		int cycles;
 
 		#define TRAPDEF(n, f) int trap##f();
-			#include "Traps.inl"
+			#include "Syscalls.inl"
 		#undef TRAPDEF
 
 		static OperationFunction operations[];
 
-		#define OPDEF(n) int op##n(word parameter);
-		#include "OpCodes.inl"
-		#undef OPDEF
 
 		#define OPDEF(n) OP##n,
 		enum {
-			#include "OpCodes.inl"
+			#include "Operations.inl"
 		};
 		#undef OPDEF
 
@@ -113,6 +110,10 @@ namespace vm
 		int opcodeParameterSize(int opcode);
 		int syscall(int programCounter);
 public:
+		#define OPDEF(n) int Op##n(word parameter);
+		#include "Operations.inl"
+		#undef OPDEF
+
 		VirtualMachine(int hunkMbytes);
 		virtual ~VirtualMachine();
 
