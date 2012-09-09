@@ -198,11 +198,11 @@ namespace vm
 	int VirtualMachine::Call(int address)
 	{
 		word w;
-		int i, argCount = 13;
+		int i, argCount = 0;
 
 		/* Set up call. */
-		opPUSH(w);
-		crumb("Starting with PC=%d, DP=%d, RP=%d to %d\n", PC, DP, RP, address);
+		//crumb("Starting with PC=%d, DP=%d, RP=%d to %d\n", PC, DP, RP, address);
+		opPUSH(w);	//wtf is the point of this...
 		w.int4 = (argCount + 2) * sizeof(word);
 		opENTER(w);
 		i = 8;
@@ -222,11 +222,14 @@ namespace vm
 		w.int4 = address;
 		Push(w);
 		opCALL(w);
-		printf("Upon running PC=%d, DP=%d, RP=%d\n", PC, DP, RP);
+		//printf("Upon running PC=%d, DP=%d, RP=%d\n", PC, DP, RP);
 		Run();
-		printf("At finish PC=%d, DP=%d, RP=%d\n", PC, DP, RP);
+		//printf("At finish PC=%d, DP=%d, RP=%d\n", PC, DP, RP);
 		w.int4 = (argCount + 2) * sizeof(word);
 		opLEAVE(w);
+		opPOP(w); //To counter that stupid opPUSH at the start
+		PC = romSize + 1;
+		//crumb("Ending with PC=%d, DP=%d, RP=%d\n", PC, DP, RP);
 		return 0;
 	}
 
