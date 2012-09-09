@@ -228,6 +228,7 @@ namespace vm
 		DEBUGTRACE("At finish PC=%d, DP=%d, RP=%d\n", PC, DP, RP);
 		w.int4 = (argCount + 2) * sizeof(word);
 		OpLEAVE(w);
+		OpPOP(w);
 		PC = romSize + 1;
 		return 0;
 	}
