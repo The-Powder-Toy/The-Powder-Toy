@@ -1,3 +1,5 @@
+#ifdef TEST
+
 #include <iostream>
 #include "virtualmachine/VirtualMachine.h"
 
@@ -9,3 +11,4 @@ int main(int argc, char * argv[])
 	std::cout << "Return value: " << vm->Pop<vm::uint4_t>() << std::endl;
 	//vm->Run();
 }
+#endif
