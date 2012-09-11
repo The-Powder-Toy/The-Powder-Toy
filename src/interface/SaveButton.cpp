@@ -22,7 +22,9 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	selectable(false),
 	selected(false),
 	waitingForThumb(false),
-	isMouseInsideAuthor(false)
+	isMouseInsideAuthor(false),
+	MouseInsideHistory(false),
+	showVotes(false)
 {
 	if(save)
 	{
@@ -67,7 +69,9 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	selected(false),
 	wantsDraw(false),
 	waitingForThumb(false),
-	isMouseInsideAuthor(false)
+	isMouseInsideAuthor(false),
+	MouseInsideHistory(false),
+	showVotes(false)
 {
 	if(file)
 	{
@@ -187,6 +191,39 @@ void SaveButton::Draw(const Point& screenPos)
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 200, 230, 255, 255);
 		else
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 100, 130, 160, 255);
+		if (!isMouseInside && showVotes)
+		{
+			char icon[64], votestring[64];
+			int j;
+			sprintf(votestring, "%d", save->GetVotesUp()-save->GetVotesDown());
+			icon[0] = 0xBB;
+			for (j = 1; j <= strlen(votestring); j++)
+				icon[j] = 0xBC;
+			icon[j-1] = 0xB9;
+			icon[j] = 0xBA;
+			icon[j+1] = 0;
+			int x = screenPos.X-7+(Size.X-thumbBoxSize.X)/2+thumbBoxSize.X-Graphics::textwidth(icon);
+			int y = screenPos.Y-23+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
+			g->drawtext(x, y, icon, 16, 72, 16, 255);
+			for (j=0; icon[j]; j++)
+				icon[j] -= 14;
+			g->drawtext(x, y, icon, 192, 192, 192, 255);
+			for (j=0; votestring[j]; j++)
+				if (votestring[j] != '-')
+					votestring[j] += 127;
+			g->drawtext(x+3, y, votestring, 255, 255, 255, 255);
+		}
+		if (MouseInsideHistory && showVotes)
+		{
+			int x = screenPos.X;
+			int y = screenPos.Y-15+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
+			g->fillrect(x+1, y+1, 7, 8, 255, 255, 255, 255);
+			if (MouseInsideHistory) {
+				g->drawtext(x, y, "\xA6", 200, 100, 80, 255);
+			} else {
+				g->drawtext(x, y, "\xA6", 160, 70, 50, 255);
+			}
+		}
 	}
 	if(file)
 	{
@@ -233,6 +270,8 @@ void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
 		isButtonDown = false;
 		if(isMouseInsideAuthor)
 			DoAuthorAction();
+		else if (MouseInsideHistory)
+			DoHistoryAction();
 		else
 			DoAction();
 	}
@@ -258,6 +297,13 @@ void SaveButton::OnMouseMovedInside(int x, int y, int dx, int dy)
 	}
 	else
 		isMouseInsideAuthor = false;
+
+	if(showVotes && y > Size.Y-29 && y < Size.Y - 18 && x > 0 && x < 9)
+	{
+		MouseInsideHistory = true;
+	}
+	else
+		MouseInsideHistory = false;
 }
 
 void SaveButton::OnMouseEnter(int x, int y)
@@ -269,6 +315,13 @@ void SaveButton::OnMouseLeave(int x, int y)
 {
 	isMouseInside = false;
 	isMouseInsideAuthor = false;
+	MouseInsideHistory = false;
+}
+
+void SaveButton::DoHistoryAction()
+{
+	if(actionCallback)
+		actionCallback->HistoryActionCallback(this);
 }
 
 void SaveButton::DoAuthorAction()

@@ -596,6 +596,12 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			{
 				v->Search("user:"+sender->GetSave()->GetUserName());
 			}
+			virtual void HistoryActionCallback(ui::SaveButton * sender)
+			{
+				stringstream search;
+				search << "history:" << sender->GetSave()->GetID();
+				v->Search(search.str());
+			}
 		};
 		for(i = 0; i < saves.size(); i++)
 		{
@@ -617,6 +623,8 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			saveButton->SetActionCallback(new SaveOpenAction(this));
 			if(Client::Ref().GetAuthUser().ID)
 				saveButton->SetSelectable(true);
+			if (saves[i]->GetUserName() == Client::Ref().GetAuthUser().Username || sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
+				saveButton->SetShowVotes(true);
 			saveButtons.push_back(saveButton);
 			AddComponent(saveButton);
 			saveX++;
