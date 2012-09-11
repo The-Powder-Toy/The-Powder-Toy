@@ -311,7 +311,7 @@ void *http_async_req_start(void *ctx, char *uri, char *data, int dlen, int keep)
 void http_async_add_header(void *ctx, char *name, char *data)
 {
 	struct http_ctx *cx = (http_ctx *)ctx;
-	cx->thdr = (char *)realloc(cx->thdr, cx->thlen + strlen(name) + strlen(data) + 4);
+	cx->thdr = (char *)realloc(cx->thdr, cx->thlen + strlen(name) + strlen(data) + 5);
 	cx->thlen += sprintf(cx->thdr+cx->thlen, "%s: %s\r\n", name, data);
 }
 
