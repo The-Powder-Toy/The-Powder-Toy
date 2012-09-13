@@ -1063,6 +1063,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 				}
 			}
 		}
+		currentMouse = ui::Point(x, y);
 		selectMode = SelectNone;
 		return;
 	}
