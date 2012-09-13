@@ -123,6 +123,7 @@ namespace vm
 		int syscall(int programCounter);
 
 		//Used by the JIT
+		#ifdef VMJIT
 		int constant4();
 		int constant1();
 		void emit1(int v);
@@ -133,9 +134,14 @@ namespace vm
 		void emitMovEAXEDI();
 		bool emitMovEBXEDI(int andit);
 		static int hex(int c);
+		#endif
 public:
+	#ifdef VMJIT
 		static void callFromCompiled();
 		static void callSyscall();
+		bool Compile();
+		int CallCompiled(int address);
+	#endif
 		Simulation * sim;
 		Renderer * ren;
 		
@@ -146,11 +152,9 @@ public:
 		VirtualMachine(int hunkMbytes);
 		virtual ~VirtualMachine();
 
-		bool Compile();
 		int LoadProgram(char * filename);
 		int Run();
 		int CallInterpreted(int address);
-		int CallCompiled(int address);
 		void End();
 		void Marshal(int address, word element)
 		{
