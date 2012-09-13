@@ -120,7 +120,7 @@ void SaveButton::Tick(float dt)
 			else if(save->GetID())
 			{
 				waitingForThumb = true;
-				ThumbnailBroker::Ref().RetrieveThumbnail(save->GetID() , Size.X-3, Size.Y-25, this);
+				ThumbnailBroker::Ref().RetrieveThumbnail(save->GetID(), save->GetVersion(), Size.X-3, Size.Y-25, this);
 			}
 		}
 		else if(file && file->GetGameSave())

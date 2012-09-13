@@ -76,21 +76,59 @@ void Label::updateMultiline()
 		std::copy(text.begin(), text.end(), rawText);
 		rawText[text.length()] = 0;
 
-		int currentWidth = 0;
+		char c, pc = 0;
+		int charIndex = 0;
+
+		int wordWidth = 0;
+		int lineWidth = 0;
+		char * wordStart = NULL;
+		while(c = rawText[charIndex++])
+		{
+			switch(c)
+			{
+				case ' ':
+					lineWidth += Graphics::CharWidth(c);
+					lineWidth += wordWidth;
+					wordWidth = 0;
+					break;
+				case '\n':
+					lineWidth = wordWidth = 0;
+					lines++;
+					break;
+				default:
+					if(pc == ' ')
+					{
+						wordStart = &rawText[charIndex-2];
+					}
+					wordWidth += Graphics::CharWidth(c);
+					if(lineWidth + wordWidth >= Size.X-(Appearance.Margin.Left+Appearance.Margin.Right))
+					{
+						if(wordStart && *wordStart)
+							*wordStart = '\n';
+						else if(!wordStart)
+							rawText[charIndex-1] = '\n';
+						lineWidth = wordWidth = 0;
+						lines++;
+					}
+					break;
+			}
+			pc = c;
+		}
+		if(autoHeight)
+		{
+			Size.Y = lines*12;
+		}
+		textLines = std::string(rawText);
+		delete[] rawText;
+		/*int currentWidth = 0;
 		char * lastSpace = NULL;
 		char * currentWord = rawText;
 		char * nextSpace;
-		char oldChar;
 		while(true)
 		{
 			nextSpace = strchr(currentWord+1, ' ');
-			if(nextSpace > strchr(currentWord+1, '\n'))
-				nextSpace = strchr(currentWord+1, '\n');
 			if(nextSpace)
-			{
-				oldChar = nextSpace[0];
 				nextSpace[0] = 0;
-			}
 			int width = Graphics::textwidth(currentWord);
 			if(width+currentWidth >= Size.X-(Appearance.Margin.Left+Appearance.Margin.Right))
 			{
@@ -101,15 +139,10 @@ void Label::updateMultiline()
 					lines++;
 				}
 			}
-			else if(oldChar == '\n')
-			{
-				currentWidth = width;
-				lines++;
-			}
 			else
 				currentWidth += width;
 			if(nextSpace)
-				nextSpace[0] = oldChar;
+				nextSpace[0] = ' ';
 			if(!currentWord[0] || !currentWord[1] || !(currentWord = strchr(currentWord+1, ' ')))
 				break;
 		}
@@ -118,7 +151,7 @@ void Label::updateMultiline()
 			Size.Y = lines*12;
 		}
 		textLines = std::string(rawText);
-		delete[] rawText;
+		delete[] rawText;*/
 	}
 	else
 	{

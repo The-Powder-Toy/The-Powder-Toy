@@ -181,6 +181,14 @@ void SearchController::OpenSave(int saveID)
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 
+void SearchController::OpenSave(int saveID, int saveDate)
+{
+	if(activePreview)
+		delete activePreview;
+	activePreview = new PreviewController(saveID, saveDate, new OpenCallback(this));
+	ui::Engine::Ref().ShowWindow(activePreview->GetView());
+}
+
 void SearchController::ClearSelection()
 {
 	searchModel->ClearSelected();

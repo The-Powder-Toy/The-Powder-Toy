@@ -1412,6 +1412,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 			json::Boolean tempFavourite = objDocument["Favourite"];
 			json::Number tempComments = objDocument["Comments"];
 			json::Number tempViews = objDocument["Views"];
+			json::Number tempVersion = objDocument["Version"];
 
 			json::Array tagsArray = objDocument["Tags"];
 			std::vector<std::string> tempTags;
@@ -1437,6 +1438,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 			tempSave->Comments = tempComments.Value();
 			tempSave->Favourite = tempFavourite.Value();
 			tempSave->Views = tempViews.Value();
+			tempSave->Version = tempVersion.Value();
 			return tempSave;
 		}
 		catch (json::Exception &e)
@@ -1643,16 +1645,17 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 				json::Number tempScoreDown = savesArray[j]["ScoreDown"];
 				json::String tempUsername = savesArray[j]["Username"];
 				json::String tempName = savesArray[j]["Name"];
-				saveArray->push_back(
-							new SaveInfo(
+				json::Number tempVersion = savesArray[j]["Version"];
+				SaveInfo * tempSaveInfo = new SaveInfo(
 								tempID.Value(),
 								tempDate.Value(),
 								tempScoreUp.Value(),
 								tempScoreDown.Value(),
 								tempUsername.Value(),
 								tempName.Value()
-								)
-							);
+								);
+				tempSaveInfo->Version = tempVersion.Value();
+				saveArray->push_back(tempSaveInfo);
 			}
 		}
 		catch (json::Exception &e)

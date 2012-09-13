@@ -18,6 +18,7 @@ public:
 	bool Favourite;
 	int Comments;
 	int Views;
+	int Version;
 
 	GameSave * gameSave;
 
@@ -63,6 +64,9 @@ public:
 
 	void SetVotesDown(int votesDown);
 	int GetVotesDown();
+
+	void SetVersion(int version);
+	int GetVersion();
 
 	void SetTags(std::vector<std::string> tags);
 	std::vector<std::string> GetTags();

@@ -38,6 +38,7 @@ public:
 	void ShowFavourite(bool show);
 	void Selected(int saveID, bool selected);
 	void OpenSave(int saveID);
+	void OpenSave(int saveID, int saveDate);
 	void Update();
 	void ClearSelection();
 	void RemoveSelected();

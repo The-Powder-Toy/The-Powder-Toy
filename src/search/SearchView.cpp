@@ -586,7 +586,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			SaveOpenAction(SearchView * _v) { v = _v; }
 			virtual void ActionCallback(ui::SaveButton * sender)
 			{
-				v->c->OpenSave(sender->GetSave()->GetID());
+				v->c->OpenSave(sender->GetSave()->GetID(), sender->GetSave()->GetVersion());
 			}
 			virtual void SelectedCallback(ui::SaveButton * sender)
 			{

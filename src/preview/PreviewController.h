@@ -19,6 +19,7 @@ class PreviewModel;
 class PreviewView;
 class PreviewController: public ClientListener {
 	int saveId;
+	int saveDate;
 	PreviewModel * previewModel;
 	PreviewView * previewView;
 	LoginController * loginWindow;
@@ -29,6 +30,7 @@ public:
 
 	bool HasExited;
 	PreviewController(int saveID, ControllerCallback * callback);
+	PreviewController(int saveID, int saveDate, ControllerCallback * callback);
 	void Exit();
 	void DoOpen();
 	void OpenInBrowser();
