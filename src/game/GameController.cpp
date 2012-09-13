@@ -525,9 +525,9 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 bool GameController::MouseUp(int x, int y, unsigned button)
 {
 	bool ret = commandInterface->OnMouseUp(x, y, button);
-	if(ret && y<YRES && x<XRES)
+	if(ret && button == BUTTON_LEFT && y<YRES && x<XRES)
 	{
-		if (true)//If it's not a sign tool
+		if (gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN")//If it's not a sign tool
 		{
 			Simulation * sim = gameModel->GetSimulation();
 			for (std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
