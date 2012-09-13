@@ -80,11 +80,17 @@ void Label::updateMultiline()
 		char * lastSpace = NULL;
 		char * currentWord = rawText;
 		char * nextSpace;
+		char oldChar;
 		while(true)
 		{
 			nextSpace = strchr(currentWord+1, ' ');
+			if(nextSpace > strchr(currentWord+1, '\n'))
+				nextSpace = strchr(currentWord+1, '\n');
 			if(nextSpace)
+			{
+				oldChar = nextSpace[0];
 				nextSpace[0] = 0;
+			}
 			int width = Graphics::textwidth(currentWord);
 			if(width+currentWidth >= Size.X-(Appearance.Margin.Left+Appearance.Margin.Right))
 			{
@@ -95,10 +101,15 @@ void Label::updateMultiline()
 					lines++;
 				}
 			}
+			else if(oldChar == '\n')
+			{
+				currentWidth = width;
+				lines++;
+			}
 			else
 				currentWidth += width;
 			if(nextSpace)
-				nextSpace[0] = ' ';
+				nextSpace[0] = oldChar;
 			if(!currentWord[0] || !currentWord[1] || !(currentWord = strchr(currentWord+1, ' ')))
 				break;
 		}

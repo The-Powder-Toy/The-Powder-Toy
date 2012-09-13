@@ -1226,7 +1226,24 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 
 		virtual void Action()
 		{
-			new ConfirmPrompt("Run Updater", "Are you sure you want to run the updater, please save any changes before updating", new UpdateConfirmation(c));
+			std::string currentVersion, newVersion;
+#ifdef BETA
+			currentVersion = MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " Beta, Build " MTOS(BUILD_NUM);
+#elif defined(SNAPSHOT)
+			currentVersion = "Snapshot " MTOS(SNAPSHOT_ID);
+#else
+			currentVersion = MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " Stable, Build " MTOS(BUILD_NUM);
+#endif
+
+			UpdateInfo info = Client::Ref().GetUpdateInfo();
+			if(info.Type == UpdateInfo::Beta)
+				newVersion = format::NumberToString<int>(info.Major) + " " + format::NumberToString<int>(info.Minor) + " Beta, Build " + format::NumberToString<int>(info.Build);
+			else if(info.Type == UpdateInfo::Snapshot)
+				newVersion = "Snapshot " + format::NumberToString<int>(info.Time);
+			else if(info.Type == UpdateInfo::Stable)
+				newVersion = format::NumberToString<int>(info.Major) + " " + format::NumberToString<int>(info.Minor) + " Stable, Build " + format::NumberToString<int>(info.Build);
+
+			new ConfirmPrompt("Run Updater", "Are you sure you want to run the updater, please save any changes before updating.\n\nCurrent version:\n " + currentVersion + "\nNew version:\n " + newVersion, new UpdateConfirmation(c));
 		}
 	};
 

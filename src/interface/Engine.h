@@ -79,6 +79,7 @@ namespace ui
 		pixel * lastBuffer;
 		std::stack<pixel*> prevBuffers;
 		std::stack<Window*> windows;
+		std::stack<Point> mousePositions;
 		//Window* statequeued_;
 		Window* state_;
 		Point windowTargetPosition;

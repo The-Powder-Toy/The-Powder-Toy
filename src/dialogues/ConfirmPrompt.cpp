@@ -12,7 +12,7 @@
 #include "PowderToy.h"
 
 ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDialogueCallback * callback_):
-	ui::Window(ui::Point(-1, -1), ui::Point(250, 50)),
+	ui::Window(ui::Point(-1, -1), ui::Point(250, 35)),
 	callback(callback_)
 {
 	int width, height;
