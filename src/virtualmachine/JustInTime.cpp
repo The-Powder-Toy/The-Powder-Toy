@@ -1,4 +1,11 @@
+#ifdef VMJIT
+
+#include <cstdio>
 #include "VirtualMachine.h"
+
+#ifdef WIN32
+#include "Windows.h"
+#endif
 
 namespace vm
 {
@@ -9,24 +16,34 @@ namespace vm
 	  ebx	scratch
 	  ecx	scratch (required for shifts)
 	  edx	scratch (required for divisions)
-	  esi	program stack
-	  edi	opstack
+	  esi	RP
+	  edi	DP
 
 	*/
 
 	// TTimo: initialised the statics, this fixes a crash when entering a compiled VM 
-	static	unsigned char		*buf = NULL;
-	static	unsigned char		*jused = NULL;
-	static	int					compiledOfs = 0;
-	static	int					pc = 0;
+	static unsigned char		*buf = NULL;
+	static unsigned char		*jused = NULL;
+	static int					compiledOfs = 0;
+	static int					pc = 0;
 
-	static	int					callMask = 0; // bk001213 - init
+	//static int					callMask = 0; // bk001213 - init
+	static int					eDP;
+	static int					eRP;
+	static int					instruction, pass;
+	static int					lastConst = 0;
+	static int					oc0, oc1, pop0, pop1;
 
-	static	int					instruction, pass;
-	static	int					lastConst = 0;
-	static	int					oc0, oc1, pop0, pop1;
+	static int					eRamMask = 0;
+	static int					eRomMask = 0;
+	static int					* eInstructionPointers = NULL;
 
-	static	int					*instructionPointers = NULL;
+	static int					eSyscallNum;
+	static void					* eRam = NULL;
+	static VirtualMachine		* eVM = NULL;
+
+	static int callFromCompiledPtr = (int)VirtualMachine::callFromCompiled;
+	static int callSyscallPtr = (int)VirtualMachine::callSyscall;
 
 	typedef enum 
 	{
@@ -38,7 +55,201 @@ namespace vm
 
 	static ELastCommand LastCommand;
 
-	void VirtualMachine::Compile()
+	void VirtualMachine::callSyscall()
+	{
+		//throw RuntimeException("Turd");
+
+		/*VirtualMachine * savedVM;
+		int * callOpStack2;
+
+		savedVM = eVM;
+		callOpStack2 = (int*)eOpStack;
+
+		// save the stack to allow recursive VM entry
+		eVM->DP = eDP - 4;
+		*(int *)((byte *)eVM->ram + eDP + 4) = eSyscallNum;
+	//VM_LogSyscalls(  (int *)((byte *)currentVM->dataBase + programStack + 4) );
+		*(callOpStack2+1) = eVM->syscall( *(int *)((unsigned char *)eVM->ram + eDP + 4) );
+
+	 	eVM = savedVM;*/
+	}
+
+	void VirtualMachine::callFromCompiled()
+	{
+		/*__asm__("doAsmCall:      				\n\t" \
+				"	movl (%%edi),%%eax			\n\t" \
+				"	subl $4,%%edi				\n\t" \
+				"   orl %%eax,%%eax				\n\t" \
+				"	jl systemCall				\n\t" \
+				"	shll $2,%%eax				\n\t" \
+				"	addl %3,%%eax				\n\t" \
+				"	call *(%%eax)				\n\t" \
+				"   movl (%%edi),%%eax			\n\t" \
+				"   andl %5, %%eax				\n\t" \
+				"	jmp doret					\n\t" \
+				"systemCall:					\n\t" \
+				"	negl %%eax					\n\t" \
+				"	decl %%eax					\n\t" \
+				"	movl %%eax,%0				\n\t" \
+				"	movl %%esi,%1				\n\t" \
+				"	movl %%edi,%2				\n\t" \
+				"	pushl %%ecx					\n\t" \
+				"	pushl %%esi					\n\t" \
+				"	pushl %%edi					\n\t" \
+				"	call *%4						\n\t" \
+				"	popl %%edi					\n\t" \
+				"	popl %%esi					\n\t" \
+				"	popl %%ecx					\n\t" \
+				"	addl $4,%%edi				\n\t" \
+				"doret:							\n\t" \
+				"	ret							\n\t" \
+				: "=rm" (eSyscallNum), "=rm" (eDP), "=rm" (eOpStack) \
+				: "rm" (eInstructionPointers), "r" (callSyscall), "m" (eRomMask) \
+				: "ax", "di", "si", "cx" \
+		);*/
+				//"	call *%4						\n\t"
+
+				//"	negl %%eax					\n\t"
+			//	"	decl %%eax					\n\t"
+		__asm__ volatile ("doAsmCall:      				\n\t" \
+				"	movl (%%edi),%%eax			\n\t" \
+				"	subl $4,%%edi				\n\t" \
+				"   orl %%eax,%%eax				\n\t" \
+				"	jl systemCall				\n\t" \
+				"	shll $2,%%eax				\n\t" \
+				"	addl %3,%%eax				\n\t" \
+				"	call *(%%eax)				\n\t" \
+				"   movl (%%edi),%%eax			\n\t" \
+				"   andl %5, %%eax				\n\t" \
+				"	ret							\n\t" \
+				"systemCall:					\n\t" \
+				"	movl %%eax,%0				\n\t" \
+				"	movl %%esi,%1				\n\t" \
+				"	movl %%edi,%2				\n\t" \
+				"	pushl %%ecx					\n\t" \
+				"	pushl %%esi					\n\t" \
+				"	pushl %%edi					\n\t" \
+				: "=rm" (eSyscallNum), "=rm" (eRP), "=rm" (eDP) \
+				: "rm" (eInstructionPointers), "r" (callSyscall), "m" (eRomMask) \
+				: "ax", "di", "si", "cx" \
+		);
+				//printf("Syscall: %d\n", eSyscallNum);
+				//throw RuntimeException("Turd");
+
+				eVM->DP = eDP-((int)eRam);
+				eVM->syscall(eSyscallNum);
+				eDP = eVM->DP+((int)eRam)-4;
+
+				//"	addl $4,%edi				\n\t"
+	//			"	ret							\n\t"
+		__asm__ volatile ("popl %edi					\n\t" \
+				"	popl %esi					\n\t" \
+				"	popl %ecx					\n\t" \
+				"doret:							\n\t" \
+		);
+	}
+
+	int VirtualMachine::CallCompiled(int address)
+	{
+		//int		stack[1024];
+		//int stack[100];
+		int programStack;
+		int stackOnEntry;
+		unsigned char * image;
+		void * entryPoint;
+		int * oldInstructionPointers;
+		void * oldDataStack;
+
+		oldDataStack = eRam;
+		oldInstructionPointers = eInstructionPointers;
+
+		eVM = this;
+		eInstructionPointers = instructionPointers;
+
+		eRomMask = romMask;
+		eRamMask = ramMask;
+
+		// we might be called recursively, so this might not be the very top
+		eDP =  ((int)ram)+DP;
+		stackOnEntry = DP;
+
+		// set up the stack frame 
+		image = (unsigned char *)ram;//vm->dataBase;
+
+		eDP -= 48;
+
+		//*(int *)&image[ programStack + 44] = args[9];
+		//*(int *)&image[ programStack + 40] = args[8];
+		//*(int *)&image[ programStack + 36] = args[7];
+		//*(int *)&image[ programStack + 32] = args[6];
+		//*(int *)&image[ programStack + 28] = args[5];
+		//*(int *)&image[ programStack + 24] = args[4];
+		//*(int *)&image[ programStack + 20] = args[3];
+		//*(int *)&image[ programStack + 16] = args[2];
+		//*(int *)&image[ programStack + 12] = args[1];
+		//*(int *)&image[ programStack + 8 ] = args[0];
+		//*(int *)&image[ programStack + 4 ] = 0;	// return stack
+		//*(int *)&image[ programStack ] = -1;	// will terminate the loop on return
+
+		// off we go into generated code...
+		entryPoint = compiledRom;//0;//vm->codeBase;
+		eRam = ram+dataStack;
+
+	#if defined(_MSC_VER)
+		__asm  {
+			pushad
+			mov		esi, DP;
+			mov		edi, opStack
+			call	entryPoint
+			mov		DP, esi
+			mov		opStack, edi
+			popad
+		}
+	#else
+		{
+			static int memDP;
+			static int memRP;
+			static void *memEntryPoint;
+
+			memDP = DP+((int)ram);
+			memRP = RP;
+			memEntryPoint = entryPoint;
+			
+			__asm__("	pushal				\r\n" \
+					"	movl %0,%%esi		\r\n" \
+					"	movl %1,%%edi		\r\n" \
+					"	call *%2			\r\n" \
+					"	movl %%esi,%0		\r\n" \
+					"	movl %%edi,%1		\r\n" \
+					"	popal				\r\n" \
+					: "=m" (memRP), "=m" (memDP) \
+					: "m" (memEntryPoint), "0" (memRP), "1" (memDP) \
+					: "si", "di" \
+			);
+
+			DP = memDP-((int)ram);
+			RP = memRP;
+		}
+	#endif
+
+		if ( eRam != ram+dataStack ) {
+			throw RuntimeException("opStack corrupted in compiled code");
+		}
+		if ( DP != stackOnEntry+4 ) {
+			printf("DP: %d, stackOnEntry: %d\n", DP, stackOnEntry);
+			throw RuntimeException("programStack corrupted in compiled code");
+		}
+
+		DP = stackOnEntry;
+
+		// in case we were recursively called by another vm
+		eInstructionPointers = oldInstructionPointers;
+		eRam = oldDataStack;
+
+		return 0;//*(int *)eOpStack;
+	}
+
+	bool VirtualMachine::Compile()
 	{
 		Instruction	op;
 		int		maxLength;
@@ -50,6 +261,7 @@ namespace vm
 		maxLength = romSize * 8;
 		buf = new unsigned char[maxLength];
 		jused = new unsigned char[romSize + 2];
+		instructionPointers = new int[romSize];
 		std::fill(jused, jused+romSize+2, 0);
 
 		for(pass=0; pass<2; pass++) {
@@ -90,6 +302,7 @@ namespace vm
 					emitInstruction( "CC" );			// int 3
 					break;
 				case OP(ENTER):
+					//emitInstruction( "CC" );			// int 3
 					emitInstruction( "81 EE" );		// sub	esi, 0x12345678
 					emit4( constant4() );
 					break;
@@ -216,12 +429,11 @@ namespace vm
 					emitCommand(LAST_COMMAND_SUB_DI_4);		// sub edi, 4
 					break;
 				case OP(CALL):
-					emitInstruction( "C7 86" );		// mov dword ptr [esi+ram],0x12345678
-					emit4( (int)ram );
-					emit4( pc );
-					emitInstruction( "FF 15" );		// call asmCallPtr
-					//emit4( (int)&asmCallPtr );
-					emit4(0);
+					emitInstruction("C7 86");		// mov dword ptr [esi+ram],0x12345678
+					emit4((int)ram);
+					emit4(pc);
+					emitInstruction("FF 15");		// call callFromCompiled
+					emit4((int)&callFromCompiledPtr);
 					break;
 				case OP(PUSH):
 					emitAddEDI4();
@@ -729,6 +941,11 @@ namespace vm
 		
 		//Com_Memcpy( codeBase, buf, compiledOfs );
 
+		compiledRom = new char[compiledOfs];
+		std::copy(buf, buf+compiledOfs, compiledRom);
+		compiledRomSize = compiledOfs;
+		compiledRomMask = compiledOfs;
+
 		delete[] buf;
 		delete[] jused;
 
@@ -736,9 +953,12 @@ namespace vm
 
 		// offset all the instruction pointers for the new location
 		for ( i = 0 ; i < /*header->instructionCount*/ romSize ; i++ ) {
-			instructionPointers[i] += (int)codeBase;
+			instructionPointers[i] += (int)rom;
 		}
 
+#ifdef WIN32
+		VirtualProtect(compiledRom, compiledRomSize, PAGE_EXECUTE, NULL);
+#endif
 	#if 0 // ndef _WIN32
 		// Must make the newly generated code executable
 		{
@@ -755,6 +975,7 @@ namespace vm
 				Com_Error( ERR_FATAL, "mprotect failed to change PROT_EXEC" );
 		}
 	#endif
+		return true;
 
 	}
 
@@ -919,3 +1140,5 @@ namespace vm
 
 	#undef OP
 }
+
+#endif

@@ -66,6 +66,8 @@ namespace vm
 	class VirtualMachine
 	{
 
+		int * instructionPointers;
+
 		bool bigEndian;  /* host is big-endian (requires byte-swapping). */
 
 		/* Memory spaces. */
@@ -76,10 +78,16 @@ namespace vm
 		/* Read-Only Memory (code). */
 		Instruction * rom;
 		int romSize;
+		int romMask;
+
+		char * compiledRom;
+		int compiledRomSize;
+		int compiledRomMask;
 
 		/* Random-Access Memory (data). */
 		ram_t *ram;
 		int ramSize;
+		int ramMask;
 
 		int dataStack;
 		int returnStack;
@@ -113,7 +121,21 @@ namespace vm
 		int readInt(FILE *qvmfile);
 		int opcodeParameterSize(int opcode);
 		int syscall(int programCounter);
+
+		//Used by the JIT
+		int constant4();
+		int constant1();
+		void emit1(int v);
+		void emit4(int v);
+		void emitInstruction(const char *string);
+		void emitCommand(int command);
+		void emitAddEDI4();
+		void emitMovEAXEDI();
+		bool emitMovEBXEDI(int andit);
+		static int hex(int c);
 public:
+		static void callFromCompiled();
+		static void callSyscall();
 		Simulation * sim;
 		Renderer * ren;
 		
@@ -124,9 +146,11 @@ public:
 		VirtualMachine(int hunkMbytes);
 		virtual ~VirtualMachine();
 
+		bool Compile();
 		int LoadProgram(char * filename);
 		int Run();
-		int Call(int address);
+		int CallInterpreted(int address);
+		int CallCompiled(int address);
 		void End();
 		void Marshal(int address, word element)
 		{

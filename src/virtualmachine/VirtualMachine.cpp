@@ -186,14 +186,17 @@ namespace vm
 		/* set up stack. */
 		{
 			int stacksize = 0x10000;
-			returnStack = ramSize;
 			dataStack = ramSize - (stacksize / 2);
+			//returnStack = ramSize;
+			returnStack = dataStack+4;
 			RP = returnStack;
 			DP = dataStack;
 		}
 
 		/* set up PC for return-to-termination. */
 		PC = romSize + 1;
+
+		ramMask = ramSize;
 
 		return 1;
 	}
@@ -203,7 +206,7 @@ namespace vm
 		PC = romSize+1;
 	}
 
-	int VirtualMachine::Call(int address)
+	int VirtualMachine::CallInterpreted(int address)
 	{
 		word w;
 		int i, argCount = 0;

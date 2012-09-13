@@ -7,11 +7,16 @@ namespace vm
 {
 	class RuntimeException: public std::exception
 	{
+		char * error;
 	public:
-		RuntimeException() {}
+		RuntimeException() : error(NULL) {}
+		RuntimeException(char * message) : error(strdup(message)) {}
 		const char * what() const throw()
 		{
-			return "VirtualMachine runtime exception";
+			if(error)
+				return error;
+			else
+				return "VirtualMachine runtime exception";
 		}
 		~RuntimeException() throw() {};
 	};
@@ -54,6 +59,21 @@ namespace vm
 			return "VirtualMachine Access violation";
 		}
 		~AccessViolationException() throw() {};
+	};
+
+	class JITException: public RuntimeException
+	{
+		char * _what;
+	public:
+		JITException(const char * what2)
+		{
+			_what = strdup(what2);
+		}
+		const char * what() const throw()
+		{
+			return _what;
+		}
+		~JITException() throw() {};
 	};
 
 	class OutOfMemoryException: public RuntimeException
