@@ -35,7 +35,7 @@ namespace vm
 		delete[] hunk;
 	}
 
-	#define DEBUGTRACE(args...) printf(args);
+	#define DEBUGTRACE(args, ...) printf(args);
 
 	int VirtualMachine::opcodeParameterSize(int opcode)
 	{
@@ -316,6 +316,7 @@ namespace vm
 		ramMask = ramSize;
 
 		return 1;*/
+		return 0; //temporary, something has to be returned for now
 	}
 
 	void VirtualMachine::End()
