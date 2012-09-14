@@ -81,30 +81,33 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			elementCount[tempPart.type]++;
 		}
 
-		if (tempPart.type == PT_STKM)
+		if (parts[i].type == PT_STKM)
 		{
 			Element_STKM::STKM_init_legs(this, &player, i);
 			player.spwn = 1;
 			player.elem = PT_DUST;
 		}
-		else if (tempPart.type == PT_STKM2)
+		else if (parts[i].type == PT_STKM2)
 		{
 			Element_STKM::STKM_init_legs(this, &player2, i);
 			player2.spwn = 1;
 			player2.elem = PT_DUST;
 		}
-		else if (tempPart.type == PT_FIGH)
+		else if (parts[i].type == PT_FIGH)
 		{
 			//TODO: 100 should be replaced with a macro
-			unsigned char fcount = 0;
-			while (fcount < 100 && fcount < (fighcount+1) && fighters[fcount].spwn==1) fcount++;
-			if (fcount < 100 && fighters[fcount].spwn==0)
+			for(int fcount = 0; fcount < 100; fcount++)
 			{
-				tempPart.tmp = fcount;
-				fighters[fcount].spwn = 1;
-				fighters[fcount].elem = PT_DUST;
-				fighcount++;
-				Element_STKM::STKM_init_legs(this, &(fighters[fcount]), i);
+				if(!fighters[fcount].spwn)
+				{
+					fighcount++;
+					//currentPart.tmp = fcount;
+					parts[i].tmp = fcount;
+					fighters[fcount].spwn = 1;
+					fighters[fcount].elem = PT_DUST;
+					Element_STKM::STKM_init_legs(this, &(fighters[fcount]), i);
+					break;
+				}
 			}
 		}
 	}
