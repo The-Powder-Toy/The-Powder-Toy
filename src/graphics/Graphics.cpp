@@ -865,16 +865,49 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		break;
 	case IconClose:
 		if(invert)
-			drawchar(x, y, 0xAA, 20, 20, 20, alpha);	
+			drawchar(x, y, 0xAA, 20, 20, 20, alpha);
 		else
-			drawchar(x, y, 0xAA, 230, 230, 230, alpha);	
+			drawchar(x, y, 0xAA, 230, 230, 230, alpha);
 		break;
 	case IconVoteSort:
+		if (invert)
+		{
+			drawchar(x, y, 0xA9, 44, 48, 32, alpha);
+			drawchar(x, y, 0xA8, 32, 44, 32, alpha);
+			drawchar(x, y, 0xA7, 128, 128, 128, alpha);
+		}
+		else
+		{
+			drawchar(x, y, 0xA9, 144, 48, 32, alpha);
+			drawchar(x, y, 0xA8, 32, 144, 32, alpha);
+			drawchar(x, y, 0xA7, 255, 255, 255, alpha);
+		}
+		break;
 	case IconDateSort:
-	case IconFolder:
+		if (invert)
+		{
+			drawchar(x, y, 0xA6, 32, 32, 32, alpha);
+		}
+		else
+		{
+			drawchar(x, y, 0xA6, 255, 255, 255, alpha);
+		}
+		break;
+	case IconMyOwn:
+		if (invert)
+		{
+			drawchar(x, y, 0x94, 192, 160, 64, alpha);
+			drawchar(x, y, 0x93, 32, 32, 32, alpha);
+		}
+		else
+		{
+			drawchar(x, y, 0x94, 192, 160, 64, alpha);
+			drawchar(x, y, 0x93, 255, 255, 255, alpha);
+		}
+		break;
 	case IconSearch:
-		drawchar(x, y+1, 0x8E, 30, 30, 180, alpha);
-		drawchar(x, y+1, 0x8F, 255, 255, 255, alpha);
+		drawchar(x, y, 0x8E, 30, 30, 180, alpha);
+		drawchar(x, y, 0x8F, 255, 255, 255, alpha);
 		break;
 	case IconDelete:
 		if(invert)

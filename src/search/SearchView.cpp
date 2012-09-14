@@ -34,7 +34,7 @@ SearchView::SearchView():
 			v->doSearch();
 		}
 	};
-	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point((XRES+BARSIZE)-239, 16), "", "[search]");
+	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point((XRES+BARSIZE)-238, 17), "", "[search]");
 	searchField->Appearance.icon = IconSearch;
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	searchField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -51,7 +51,8 @@ SearchView::SearchView():
 			v->c->ChangeSort();
 		}
 	};
-	sortButton = new ui::Button(ui::Point(XRES+BARSIZE-140, 10), ui::Point(60, 16), "Sort");
+	sortButton = new ui::Button(ui::Point(XRES+BARSIZE-140, 10), ui::Point(61, 17), "Sort");
+	sortButton->SetIcon(IconVoteSort);
 	sortButton->SetActionCallback(new SortAction(this));
 	sortButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	sortButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -67,7 +68,8 @@ SearchView::SearchView():
 			v->c->ShowOwn(sender->GetToggleState());
 		}
 	};
-	ownButton = new ui::Button(ui::Point(XRES+BARSIZE-70, 10), ui::Point(60, 16), "My Own");
+	ownButton = new ui::Button(ui::Point(XRES+BARSIZE-70, 10), ui::Point(61, 17), "My Own");
+	ownButton->SetIcon(IconMyOwn);
 	ownButton->SetTogglable(true);
 	ownButton->SetActionCallback(new MyOwnAction(this));
 	ownButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
@@ -84,7 +86,7 @@ SearchView::SearchView():
 			v->c->ShowFavourite(sender->GetToggleState());
 		}
 	};
-	favButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X+14, 0), ui::Point(16, 16), "");
+	favButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X+15, 0), ui::Point(17, 17), "");
 	favButton->SetIcon(IconFavourite);
 	favButton->SetTogglable(true);
 	favButton->Appearance.Margin.Left+=2;
@@ -104,7 +106,7 @@ SearchView::SearchView():
 			v->clearSearch();
 		}
 	};
-	ui::Button * clearSearchButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X-1, 0), ui::Point(16, 16), "");
+	ui::Button * clearSearchButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X-1, 0), ui::Point(17, 17), "");
 	clearSearchButton->SetIcon(IconClose);
 	clearSearchButton->SetActionCallback(new ClearSearchAction(this));
 	clearSearchButton->Appearance.Margin.Left+=2;
@@ -263,9 +265,15 @@ void SearchView::Search(std::string query)
 void SearchView::NotifySortChanged(SearchModel * sender)
 {
 	if(sender->GetSort() == "best")
+	{
  	   sortButton->SetText("By votes");
+	   sortButton->SetIcon(IconVoteSort);
+	}
  	else
+	{
  		sortButton->SetText("By date");
+		sortButton->SetIcon(IconDateSort);
+	}
 }
 
 void SearchView::NotifyShowOwnChanged(SearchModel * sender)
@@ -429,7 +437,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 		tagsLabel->Position.Y = tagYOffset-16;
 
 		AddComponent(motdLabel);
-		motdLabel->Position.Y = tagYOffset-28;
+		motdLabel->Position.Y = tagYOffset-30;
 	}
 
 	class TagAction: public ui::ButtonAction
@@ -516,13 +524,23 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	{
 		nextButton->Enabled = false;
 		previousButton->Enabled = false;
+		favButton->Enabled = false;
+	}
+	else
+	{
+		nextButton->Enabled = true;
+		previousButton->Enabled = true;
+		favButton->Enabled = true;
+	}
+	if (!sender->GetSavesLoaded() || favButton->GetToggleState())
+	{
+		ownButton->Enabled = false;
 		sortButton->Enabled = false;
 	}
 	else
 	{
+		ownButton->Enabled = true;
 		sortButton->Enabled = true;
-		nextButton->Enabled = true;
-		previousButton->Enabled = true;
 	}
 	if(!saves.size())
 	{
