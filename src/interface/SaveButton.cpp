@@ -166,10 +166,15 @@ void SaveButton::Draw(const Point& screenPos)
 		if(save->id)
 		{
 			if(isMouseInside)
+			{
 				g->drawrect(screenPos.X-3+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 210, 230, 255, 255);
+				g->drawrect(screenPos.X-4+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 7, thumbBoxSize.Y, 210, 230, 255, 255);
+			}
 			else
+			{
 				g->drawrect(screenPos.X-3+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 180, 180, 180, 255);
-			g->drawrect(screenPos.X-4+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 7, thumbBoxSize.Y, 180, 180, 180, 255);
+				g->drawrect(screenPos.X-4+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 7, thumbBoxSize.Y, 180, 180, 180, 255);
+			}
 
 			int voteBar = std::max(10.0f, ((float)(thumbBoxSize.Y-4))*voteRatio);
 			g->fillrect(1+screenPos.X-3+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, (screenPos.Y-2)+(thumbBoxSize.Y-voteBar)+(Size.Y-21-thumbBoxSize.Y)/2, 3, voteBar, voteColour.Red, voteColour.Green, voteColour.Blue, 255);
@@ -191,7 +196,7 @@ void SaveButton::Draw(const Point& screenPos)
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 200, 230, 255, 255);
 		else
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 100, 130, 160, 255);
-		if (!isMouseInside && showVotes)
+		if (showVotes)// && !isMouseInside)
 		{
 			char icon[64], votestring[64];
 			int j;
