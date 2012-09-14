@@ -74,86 +74,87 @@ namespace vm
 	}
 
 	/* Read one octet from file. */
-	int VirtualMachine::readByte(FILE *qvmfile)
+	int VirtualMachine::readByte(std::istream & input)
 	{
 		int o;
-		o = fgetc(qvmfile);
+		o = input.get();
 		if (o < 0) o = 0;  /* EOF (hack) */
 			return o;
 	}
 
 	/* Read little-endian 32-bit integer from file. */
-	int VirtualMachine::readInt(FILE *qvmfile)
+	int VirtualMachine::readInt(std::istream & input)
 	{
 		int a, b, c, d, n;
 
-		a = readByte(qvmfile);
-		b = readByte(qvmfile);
-		c = readByte(qvmfile);
-		d = readByte(qvmfile);
+		a = readByte(input);
+		b = readByte(input);
+		c = readByte(input);
+		d = readByte(input);
 		n = (a) | (b << 8) | (c << 16) | (d << 24);
 		return n;
 	}
 
-	int VirtualMachine::LoadProgram(char * filename)
+	int VirtualMachine::readProgram(std::istream & input)
 	{
-		FILE * qvmfile = fopen(filename, "rb");
 		qvm_header_t qvminfo;
 		int i, n;
 		uint1_t x[4];
 		word w;
 
 		DEBUGTRACE("Loading file...\n");
-		qvminfo.magic = readInt(qvmfile); /* magic. */
+		qvminfo.magic = readInt(input); /* magic. */
 		if (qvminfo.magic != QVM_MAGIC)
-			{
-				DEBUGTRACE("Invalid magic");
-				//q3vm_error("Does not appear to be a QVM file.");
-				/* XXX: option to force continue. */
-				return 0;
-			}
+		{
+			DEBUGTRACE("Invalid magic");
+			throw InvalidProgramException();
+			//q3vm_error("Does not appear to be a QVM file.");
+			/* XXX: option to force continue. */
+			return 0;
+		}
 		DEBUGTRACE("Magic OK\n");
 		/* variable-length instructions mean instruction count != code length */
-		qvminfo.inscount = readInt(qvmfile);
-		qvminfo.codeoff = readInt(qvmfile);
-		qvminfo.codelen = readInt(qvmfile);
-		qvminfo.dataoff = readInt(qvmfile);
-		qvminfo.datalen = readInt(qvmfile);
-		qvminfo.litlen = readInt(qvmfile);
-		qvminfo.bsslen = readInt(qvmfile);
+		qvminfo.inscount = readInt(input);
+		qvminfo.codeoff = readInt(input);
+		qvminfo.codelen = readInt(input);
+		qvminfo.dataoff = readInt(input);
+		qvminfo.datalen = readInt(input);
+		qvminfo.litlen = readInt(input);
+		qvminfo.bsslen = readInt(input);
 
 		/* Code segment should follow... */
 		/* XXX: use fseek with SEEK_CUR? */
-		DEBUGTRACE("Searching for .code @ %d from %d\n", qvminfo.codeoff, ftell(qvmfile));
+		DEBUGTRACE("Searching for .code @ %d from %d\n", qvminfo.codeoff, input.tellg());
+
 		//  rom = (q3vm_rom_t*)(hunk);  /* ROM-in-hunk */
 		rom = (Instruction*)calloc(qvminfo.inscount, sizeof(rom[0]));
-		while (ftell(qvmfile) < qvminfo.codeoff)
-			readByte(qvmfile);
+		while (input.tellg() < qvminfo.codeoff)
+			readByte(input);
 		while (romSize < qvminfo.inscount)
 		{
-			n = readByte(qvmfile);
+			n = readByte(input);
 			w.int4 = 0;
 			if ((i = opcodeParameterSize(n)))
 			{
 				x[0] = x[1] = x[2] = x[3] = 0;
-				fread(&x, 1, i, qvmfile);
+				input.readsome((char*)x, 4);
 				w.uint4 = (x[0]) | (x[1] << 8) | (x[2] << 16) | (x[3] << 24);
 			}
 			rom[romSize].Operation = n;
 			rom[romSize].Parameter = w;
 			romSize++;
 		}
-		DEBUGTRACE("After loading code: at %d, should be %d\n", ftell(qvmfile), qvminfo.codeoff + qvminfo.codelen);
+		DEBUGTRACE("After loading code: at %d, should be %d\n", input.tellg(), qvminfo.codeoff + qvminfo.codelen);
 
 		/* Then data segment. */
 		//  ram = hunk + ((romlen + 3) & ~3);  /* RAM-in-hunk */
 		ram = hunk;
-		DEBUGTRACE("Searching for .data @ %d from %d\n", qvminfo.dataoff, ftell(qvmfile));
-		while (ftell(qvmfile) < qvminfo.dataoff)
-			readByte(qvmfile);
+		DEBUGTRACE("Searching for .data @ %d from %d\n", qvminfo.dataoff, input.tellg());
+		while (input.tellg() < qvminfo.dataoff)
+			readByte(input);
 		for (n = 0; n < (qvminfo.datalen / sizeof(uint1_t)); n++)
 		{
-			i = fread(&x, 1, sizeof(x), qvmfile);
+			i = input.readsome((char*)x, sizeof(x));
 			w.uint4 = (x[0]) | (x[1] << 8) | (x[2] << 16) | (x[3] << 24);
 			*((word*)(ram + ramSize)) = w;
 			ramSize += sizeof(word);
@@ -164,7 +165,7 @@ namespace vm
 		DEBUGTRACE("Loading .lit\n");
 		for (n = 0; n < (qvminfo.litlen / sizeof(uint1_t)); n++)
 		{
-			i = fread(&x, 1, sizeof(x), qvmfile);
+			i = input.readsome((char*)x, sizeof(x));
 			memcpy(&(w.uint1), &x, sizeof(x));  /* no byte-swapping. */
 			*((word*)(ram + ramSize)) = w;
 			ramSize += sizeof(word);
@@ -187,8 +188,8 @@ namespace vm
 		{
 			int stacksize = 0x10000;
 			dataStack = ramSize - (stacksize / 2);
-			//returnStack = ramSize;
-			returnStack = dataStack+4;
+			returnStack = ramSize;
+			//returnStack = dataStack+4;
 			RP = returnStack;
 			DP = dataStack;
 		}
@@ -199,6 +200,122 @@ namespace vm
 		ramMask = ramSize;
 
 		return 1;
+	}
+
+	int VirtualMachine::LoadProgram(std::vector<char> data)
+	{
+		/*class vectorwrapbuf : public std::basic_streambuf<char, std::char_traits<char> >
+		{
+		public:
+    		vectorwrapbuf(std::vector<char> &vec) {
+    		    setg(vec.data(), vec.data(), vec.data() + vec.size());
+    		}
+		};
+		vectorwrapbuf databuf(data);
+		std::istream is(&databuf);
+		return readProgram(is);*/
+		std::stringstream ss(std::string(data.begin(), data.end()));
+		return readProgram((std::istream &)ss);
+	}
+
+	int VirtualMachine::LoadProgram(char * filename)
+	{
+		/*FILE * qvmfile = fopen(filename, "rb");
+		qvm_header_t qvminfo;
+		int i, n;
+		uint1_t x[4];
+		word w;
+
+		DEBUGTRACE("Loading file...\n");
+		qvminfo.magic = readInt(qvmfile);
+		if (qvminfo.magic != QVM_MAGIC)
+			{
+				DEBUGTRACE("Invalid magic");
+				return 0;
+			}
+		DEBUGTRACE("Magic OK\n");
+
+		qvminfo.inscount = readInt(qvmfile);
+		qvminfo.codeoff = readInt(qvmfile);
+		qvminfo.codelen = readInt(qvmfile);
+		qvminfo.dataoff = readInt(qvmfile);
+		qvminfo.datalen = readInt(qvmfile);
+		qvminfo.litlen = readInt(qvmfile);
+		qvminfo.bsslen = readInt(qvmfile);
+
+
+		DEBUGTRACE("Searching for .code @ %d from %d\n", qvminfo.codeoff, ftell(qvmfile));
+
+		rom = (Instruction*)calloc(qvminfo.inscount, sizeof(rom[0]));
+		while (ftell(qvmfile) < qvminfo.codeoff)
+			readByte(qvmfile);
+		while (romSize < qvminfo.inscount)
+		{
+			n = readByte(qvmfile);
+			w.int4 = 0;
+			if ((i = opcodeParameterSize(n)))
+			{
+				x[0] = x[1] = x[2] = x[3] = 0;
+				fread(&x, 1, i, qvmfile);
+				w.uint4 = (x[0]) | (x[1] << 8) | (x[2] << 16) | (x[3] << 24);
+			}
+			rom[romSize].Operation = n;
+			rom[romSize].Parameter = w;
+			romSize++;
+		}
+		DEBUGTRACE("After loading code: at %d, should be %d\n", ftell(qvmfile), qvminfo.codeoff + qvminfo.codelen);
+
+
+		ram = hunk;
+		DEBUGTRACE("Searching for .data @ %d from %d\n", qvminfo.dataoff, ftell(qvmfile));
+		while (ftell(qvmfile) < qvminfo.dataoff)
+			readByte(qvmfile);
+		for (n = 0; n < (qvminfo.datalen / sizeof(uint1_t)); n++)
+		{
+			i = fread(&x, 1, sizeof(x), qvmfile);
+			w.uint4 = (x[0]) | (x[1] << 8) | (x[2] << 16) | (x[3] << 24);
+			*((word*)(ram + ramSize)) = w;
+			ramSize += sizeof(word);
+		}
+	
+
+		DEBUGTRACE("Loading .lit\n");
+		for (n = 0; n < (qvminfo.litlen / sizeof(uint1_t)); n++)
+		{
+			i = fread(&x, 1, sizeof(x), qvmfile);
+			memcpy(&(w.uint1), &x, sizeof(x));
+			*((word*)(ram + ramSize)) = w;
+			ramSize += sizeof(word);
+		}
+
+		DEBUGTRACE("Allocating .bss %d (%X) bytes\n", qvminfo.bsslen, qvminfo.bsslen);
+		ramSize += qvminfo.bsslen;
+
+		hunkFree = hunkSize - ((ramSize * sizeof(uint1_t)) + 4);
+
+		DEBUGTRACE("VM hunk has %d of %d bytes free (RAM = %d B).\n", hunkFree, hunkSize, ramSize);
+		if (ramSize > hunkSize)
+		{
+			throw OutOfMemoryException();
+			return 0;
+		}
+
+
+		{
+			int stacksize = 0x10000;
+			dataStack = ramSize - (stacksize / 2);
+			//returnStack = ramSize;
+			returnStack = dataStack+4;
+			RP = returnStack;
+			DP = dataStack;
+		}
+
+
+		PC = romSize + 1;
+
+		ramMask = ramSize;
+
+		return 1;*/
 	}
 
 	void VirtualMachine::End()

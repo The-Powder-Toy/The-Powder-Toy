@@ -117,8 +117,9 @@ namespace vm
 		};
 		#undef OPDEF
 
-		int readByte(FILE *qvmfile);
-		int readInt(FILE *qvmfile);
+		int readProgram(std::istream & input);
+		int readByte(std::istream & input);
+		int readInt(std::istream & input);
 		int opcodeParameterSize(int opcode);
 		int syscall(int programCounter);
 
@@ -153,6 +154,7 @@ public:
 		virtual ~VirtualMachine();
 
 		int LoadProgram(char * filename);
+		int LoadProgram(std::vector<char> fileData);
 		int Run();
 		int CallInterpreted(int address);
 		void End();

@@ -191,6 +191,21 @@ void Textbox::pasteIntoSelection()
 		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 		cursor = getLowerSelectionBound();
 	}
+	for(std::string::iterator iter = newText.begin(), end = newText.end(); iter != end; ++iter)
+	{
+		if(!CharacterValid(*iter))
+		{
+			if(inputType == All)
+			{
+				if(*iter == '\n' || *iter == '\r')
+					*iter = ' ';
+				else
+					*iter = '?';
+			}
+			else
+				*iter = '0';
+		}
+	}
 	backingText.insert(cursor, newText);
 	cursor = cursor+newText.length();
 	ClearSelection();

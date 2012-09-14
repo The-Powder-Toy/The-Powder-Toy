@@ -86,4 +86,15 @@ namespace vm
 		}
 		~OutOfMemoryException() throw() {};
 	};
+
+	class InvalidProgramException: public RuntimeException
+	{
+	public:
+		InvalidProgramException() {}
+		const char * what() const throw()
+		{
+			return "Could not load program";
+		}
+		~InvalidProgramException() throw() {};
+	};
 }

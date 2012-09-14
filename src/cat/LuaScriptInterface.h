@@ -23,6 +23,12 @@ namespace ui
 	class Window;
 }
 
+namespace vm
+{
+	class VirtualMachine;
+}
+
+
 //Because lua only has bindings for C, we're going to have to go outside "outside" the LuaScriptInterface, this means we can only have one instance :(
 
 #define LOCAL_LUA_DIR "Lua"
@@ -59,6 +65,9 @@ class LuaScriptInterface: public CommandInterface {
 	static int renderer_colourMode(lua_State * l);
 
 	//Elements
+	static vm::VirtualMachine * updateVirtualMachines[PT_NUM];
+	static int updateVM(UPDATE_FUNC_ARGS);
+	//
 	void initElementsAPI();
 	static int elements_allocate(lua_State * l);
 	static int elements_element(lua_State * l);
@@ -71,6 +80,10 @@ class LuaScriptInterface: public CommandInterface {
 	static int interface_showWindow(lua_State * l);
 	static int interface_closeWindow(lua_State * l);
 	static int interface_addComponent(lua_State * l);
+
+	//VM
+	void initVirtualMachineAPI();
+	static int virtualMachine_loadProgram(lua_State * l);
 public:
 	ui::Window * Window;
 	lua_State *l;

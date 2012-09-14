@@ -20,6 +20,7 @@
 #include "dialogues/TextPrompt.h"
 #include "dialogues/ConfirmPrompt.h" 
 #include "simulation/Simulation.h"
+#include "virtualmachine/VirtualMachine.h"
 #include "game/GameModel.h"
 #include "LuaScriptHelper.h"
 #include "client/HTTP.h"
@@ -63,6 +64,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	initInterfaceAPI();
 	initRendererAPI();
 	initElementsAPI();
+	initVirtualMachineAPI();
 
 	//Old TPT API
 	int i = 0, j;
@@ -651,6 +653,42 @@ void LuaScriptInterface::initElementsAPI()
 	}
 }
 
+vm::VirtualMachine * LuaScriptInterface::updateVirtualMachines[PT_NUM];
+
+int LuaScriptInterface::updateVM(UPDATE_FUNC_ARGS)
+{
+	vm::VirtualMachine * vMachine = updateVirtualMachines[parts[i].type];
+
+	vm::word w;
+	int argAddr = 0, argCount = 5;
+	vMachine->sim = sim;
+	
+	/* Set up call. */
+	vMachine->OpPUSH(w);  //Pointless null in stack
+	w.int4 = (argCount + 2) * sizeof(vm::word);
+	vMachine->OpENTER(w);
+	argAddr = 8;
+
+	//Arguments
+	w.int4 = i; vMachine->Marshal(argAddr, w); argAddr += 4;
+	w.int4 = x; vMachine->Marshal(argAddr, w); argAddr += 4;
+	w.int4 = y; vMachine->Marshal(argAddr, w); argAddr += 4;
+	w.int4 = nt; vMachine->Marshal(argAddr, w); argAddr += 4;
+	w.int4 = surround_space; vMachine->Marshal(argAddr, w); argAddr += 4;
+	
+	w.int4 = 0;
+	vMachine->Push(w);
+	
+	vMachine->OpCALL(w);
+	vMachine->Run();
+	w.int4 = (argCount + 2) * sizeof(vm::word);
+	vMachine->OpLEAVE(w);
+	vMachine->OpPOP(w);   //Pop pointless null
+	vMachine->End();
+
+	return 0;
+}
+
 int LuaScriptInterface::elements_loadDefault(lua_State * l)
 {
 	int args = lua_gettop(l);
@@ -957,6 +995,11 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
 				luacon_sim->elements[id].Update = &luacon_elementReplacement;
 			}
+			else if(lua_type(l, 3) == LUA_TLIGHTUSERDATA)
+			{
+				updateVirtualMachines[id] = (vm::VirtualMachine*)lua_touserdata(l, 3);
+				luacon_sim->elements[id].Update = &updateVM;
+			}
 			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
 			{
 				lua_el_func[id] = 0;
@@ -1061,6 +1104,41 @@ int LuaScriptInterface::elements_free(lua_State * l)
 	return 0;
 }
 
+void LuaScriptInterface::initVirtualMachineAPI()
+{
+	//Methods
+	struct luaL_reg vmAPIMethods [] = {
+		{"loadProgram", virtualMachine_loadProgram},
+		{NULL, NULL}
+	};
+	luaL_register(l, "virtualMachine", vmAPIMethods);
+
+	//elem shortcut
+	lua_getglobal(l, "virtualMachine");
+	lua_setglobal(l, "vm");
+
+	int vmAPI = lua_gettop(l);
+}
+
+int LuaScriptInterface::virtualMachine_loadProgram(lua_State * l)
+{
+	luaL_checktype(l, 1, LUA_TSTRING);
+
+	vm::VirtualMachine * newVM = new vm::VirtualMachine(1);
+	try
+	{
+		const char * tempString = lua_tostring(l, 1);
+		int tempStringLength = lua_strlen(l, 1);
+		std::vector<char> programData(tempString, tempString+tempStringLength);
+		newVM->LoadProgram(programData);
+	}
+	catch(std::exception & e)
+	{
+		return luaL_error(l, "Unable to load program");
+	}
+	lua_pushlightuserdata(l, newVM);
+	return 1;
+}
 
 bool LuaScriptInterface::OnBrushChanged(int brushType, int rx, int ry)
 {
