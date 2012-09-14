@@ -193,6 +193,8 @@ void Renderer::clearScreen(float alpha)
 #ifndef OGLR
 	std::fill(vid, vid+(VIDXRES*VIDYRES), 0);
 #endif
+#else
+	g->Clear();
 #endif
 }
 #ifdef OGLR

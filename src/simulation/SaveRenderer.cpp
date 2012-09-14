@@ -66,8 +66,23 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations)
 	    
 	    ren->clearScreen(1.0f);
 	    ren->ClearAccumulation();
+
+#ifdef OGLR
 		ren->RenderBegin();
 		ren->RenderEnd();
+#else
+		int frame = 15;
+		while(frame)
+		{
+			frame--;
+			ren->render_parts();
+			ren->render_fire();
+			ren->clearScreen(1.0f);
+		}
+
+		ren->RenderBegin();
+		ren->RenderEnd();
+#endif
 
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glTranslated(0, -MENUSIZE, 0);
@@ -103,8 +118,19 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations)
 		pixel * src = g->vid;
 
 	    ren->ClearAccumulation();
+
+	   	int frame = 15;
+		while(frame)
+		{
+			frame--;
+			ren->render_parts();
+			ren->render_fire();
+			ren->clearScreen(1.0f);
+		}
+
 		ren->RenderBegin();
 		ren->RenderEnd();
+
 	
 		pData = (pixel *)malloc(PIXELSIZE * ((width*CELL)*(height*CELL)));
 		dst = pData;
