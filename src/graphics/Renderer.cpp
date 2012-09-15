@@ -1123,7 +1123,7 @@ void Renderer::render_parts()
 			colr = PIXR(elements[t].Colour);
 			colg = PIXG(elements[t].Colour);
 			colb = PIXB(elements[t].Colour);
-			firea = 0;
+			firer = fireg = fireb = firea = 0;
 
 			deca = (sim->parts[i].dcolour>>24)&0xFF;
 			decr = (sim->parts[i].dcolour>>16)&0xFF;

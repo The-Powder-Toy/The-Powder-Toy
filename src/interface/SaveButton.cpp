@@ -230,13 +230,12 @@ void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
 
 	if(isButtonDown)
 	{
+		isButtonDown = false;
 		if(isMouseInsideAuthor)
 			DoAuthorAction();
 		else
 			DoAction();
 	}
-
-	isButtonDown = false;
 }
 
 void SaveButton::OnMouseClick(int x, int y, unsigned int button)
