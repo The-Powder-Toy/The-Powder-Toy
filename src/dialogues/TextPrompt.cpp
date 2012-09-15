@@ -28,20 +28,27 @@ public:
 };
 
 TextPrompt::TextPrompt(std::string title, std::string message, std::string text, std::string placeholder, bool multiline, TextDialogueCallback * callback_):
-	ui::Window(ui::Point(-1, -1), ui::Point(200, 80)),
+	ui::Window(ui::Point(-1, -1), ui::Point(200, 65)),
 	callback(callback_)
 {
+	if(multiline)
+		Size.X += 100;
+
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 18), title);
 	titleLabel->SetTextColour(style::Colour::WarningTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 25), ui::Point(Size.X-8, 16), message);
-	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 25), ui::Point(Size.X-8, -1), message);
+	messageLabel->SetMultiline(true);
+	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 
-	textField = new ui::Textbox(ui::Point(4, 45 ), ui::Point(Size.X-8, 16), text, placeholder);
+	Size.Y += messageLabel->Size.Y+4;
+
+	textField = new ui::Textbox(ui::Point(4, messageLabel->Position.Y + messageLabel->Size.Y + 7), ui::Point(Size.X-8, 16), text, placeholder);
 	if(multiline)
 	{
 		textField->SetMultiline(true);
