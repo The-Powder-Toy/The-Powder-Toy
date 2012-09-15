@@ -1,13 +1,14 @@
 code
 
-equ	sin							-104
-equ	cos							-105
-equ	atan2						-106
-equ	sqrt						-107
-equ floor						-108
-equ	ceil						-109
+equ	sin		-1
+equ	cos		-2
+equ	atan2		-3
+equ	sqrt		-4
+equ 	floor		-5
+equ	ceil		-6
 
-equ	error						-110
-equ	print						-111
-equ partCreate					-112
-equ partChangeType				-113
+equ	error		-7
+equ	print		-8
+equ	partCreate	-9
+equ	partChangeType	-10
+equ	pmapData	-11
