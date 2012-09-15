@@ -39,8 +39,8 @@ void Renderer::RenderBegin()
 	draw_air();
 	draw_grav();
 	render_parts();
-	render_fire();
 	DrawWalls();
+	render_fire();
 	draw_other();
 	draw_grav_zones();
 	DrawSigns();
@@ -64,7 +64,6 @@ void Renderer::RenderBegin()
 	draw_air();
 	draw_grav();
 	render_parts();
-	render_fire();
 
 	if(display_mode & DISPLAY_PERS)
 	{
@@ -85,6 +84,7 @@ void Renderer::RenderBegin()
 	}
 
 	DrawWalls();
+	render_fire();
 	draw_other();
 	draw_grav_zones();
 	DrawSigns();
@@ -109,7 +109,6 @@ void Renderer::RenderBegin()
 	draw_air();
 	draw_grav();
 	render_parts();
-	render_fire();
 	if(display_mode & DISPLAY_PERS)
 	{
 		int i,r,g,b;
@@ -129,6 +128,7 @@ void Renderer::RenderBegin()
 	}
 
 	DrawWalls();
+	render_fire();
 	draw_other();
 	draw_grav_zones();
 	DrawSigns();
