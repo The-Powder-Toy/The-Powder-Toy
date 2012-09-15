@@ -61,9 +61,7 @@ namespace vm
 
 	TRAPDEF(partCreate)
 	{
-		printf("%d, %d, %d, %d\n", ARG(0).int4, ARG(1).int4, ARG(2).int4, ARG(3).int4);
-		Push<int4_t>(0);
-		//Push<int4_t>(sim->create_part(ARG(0).int4, ARG(1).int4, ARG(2).int4, ARG(3).int4));
+		Push<int4_t>(sim->create_part(ARG(0).int4, ARG(1).int4, ARG(2).int4, ARG(3).int4));
 	}
 
 	TRAPDEF(partChangeType)

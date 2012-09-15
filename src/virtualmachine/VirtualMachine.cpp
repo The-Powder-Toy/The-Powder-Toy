@@ -137,7 +137,7 @@ namespace vm
 			if ((i = opcodeParameterSize(n)))
 			{
 				x[0] = x[1] = x[2] = x[3] = 0;
-				input.readsome((char*)x, 4);
+				input.readsome((char*)x, i);
 				w.uint4 = (x[0]) | (x[1] << 8) | (x[2] << 16) | (x[3] << 24);
 			}
 			rom[romSize].Operation = n;

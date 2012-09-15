@@ -227,7 +227,7 @@ namespace vm
 
 	OPDEF(ARG)    /* Marshal TOS to to-call argument list */
 	{
-		Marshal(parameter.int4, Pop());
+		Marshal(parameter.uint1, Pop());
 		return 0;
 	}
 
