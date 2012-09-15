@@ -71,10 +71,16 @@ namespace vm
 
 	TRAPDEF(pmapData)
 	{
-		int xarg, yarg;
-		yarg = ARG(0).int4;
-		xarg = ARG(1).int4;
+		Push<int4_t>(sim->pmap[ARG(1).int4][ARG(0).int4]);
+	}
 
-		Push<int4_t>(sim->pmap[yarg][xarg]);
+	TRAPDEF(deletePart)
+	{
+		sim->delete_part(ARG(0).int4, ARG(1).int4, ARG(2).int4);
+	}
+
+	TRAPDEF(killPart)
+	{
+		sim->kill_part(ARG(0).int4);
 	}
 }

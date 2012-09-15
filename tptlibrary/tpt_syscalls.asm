@@ -12,3 +12,5 @@ equ	print		-8
 equ	partCreate	-9
 equ	partChangeType	-10
 equ	pmapData	-11
+equ	deletePart	-12
+equ	killPart	-13
