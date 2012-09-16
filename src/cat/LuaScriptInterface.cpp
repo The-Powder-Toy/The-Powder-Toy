@@ -725,6 +725,14 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 		}
 		lua_pushnil(l);
 		lua_setglobal(l, "elements");
+		lua_pushnil(l);
+		lua_setglobal(l, "elem");
+
+		lua_getglobal(l, "package");
+		lua_getfield(l, -1, "loaded");
+		lua_pushnil(l);
+		lua_setfield(l, -2, "elements");
+
 		luacon_ci->initElementsAPI();
 	}
 
