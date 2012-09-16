@@ -29,6 +29,7 @@ public:
 	virtual void ActionCallback(ui::Button *sender, int item);
 	virtual void AddItem(ContextMenuItem item);
 	virtual void RemoveItem(int id);
+	virtual void SetItem(int id, std::string text);
 	virtual void Show(ui::Point position);
 	virtual void OnDraw();	
 	virtual void OnMouseDown(int x, int y, unsigned button);

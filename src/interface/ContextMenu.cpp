@@ -52,6 +52,7 @@ void ContextMenu::Show(ui::Point position)
 void ContextMenu::ActionCallback(ui::Button *sender, int item)
 {
 	ui::Engine::Ref().CloseWindow();
+	Halt();
 	source->OnContextMenuAction(item);
 }
 
@@ -59,6 +60,18 @@ void ContextMenu::OnMouseDown(int x, int y, unsigned button)
 {
 	if(!(x > Position.X && y > Position.Y && y < Position.Y+Size.Y && x < Position.X+Size.X)) //Clicked outside window
 		ui::Engine::Ref().CloseWindow();
+}
+
+void ContextMenu::SetItem(int id, std::string text)
+{
+	for(int i = 0; i < items.size(); i++)
+	{
+		if(items[i].ID == id)
+		{
+			items[i].Text = text;
+			break;
+		}
+	}
 }
 
 void ContextMenu::RemoveItem(int id)

@@ -30,10 +30,13 @@ class SaveButton : public Component, public ThumbnailListener
 	SaveInfo * save;
 	Thumbnail * thumbnail;
 	std::string name;
+	std::string votesString;
+	std::string votesBackground;
+	std::string votesBackground2;
 	bool wantsDraw;
 	bool waitingForThumb;
 	bool isMouseInsideAuthor;
-	bool MouseInsideHistory;
+	bool isMouseInsideHistory;
 	bool showVotes;
 public:
 	SaveButton(Point position, Point size, SaveInfo * save);
@@ -47,6 +50,8 @@ public:
 	virtual void OnMouseLeave(int x, int y);
 
 	virtual void OnMouseMovedInside(int x, int y, int dx, int dy);
+
+	virtual void OnContextMenuAction(int item);
 
 	virtual void Draw(const Point& screenPos);
 	virtual void Tick(float dt);

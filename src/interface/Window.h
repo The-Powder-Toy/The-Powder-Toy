@@ -68,6 +68,7 @@ enum ChromeStyle
 
 		//Sets halt and destroy, this causes the Windows to stop sending events and remove itself.
 		void SelfDestruct();
+		void Halt();
 
 		bool IsFocused(const Component* c) const;
 		void FocusComponent(Component* c);
@@ -105,6 +106,7 @@ enum ChromeStyle
 		void finalise();
 		bool halt;
 		bool destruct;
+		bool stop;
 #ifdef DEBUG
 		bool debugMode;
 #endif

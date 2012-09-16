@@ -7,6 +7,9 @@
 #include "Engine.h"
 #include "client/ThumbnailBroker.h"
 #include "simulation/SaveRenderer.h"
+#include "Format.h"
+#include "ContextMenu.h"
+#include "Keys.h"
 
 namespace ui {
 
@@ -23,7 +26,7 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	selected(false),
 	waitingForThumb(false),
 	isMouseInsideAuthor(false),
-	MouseInsideHistory(false),
+	isMouseInsideHistory(false),
 	showVotes(false)
 {
 	if(save)
@@ -44,6 +47,12 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 		voteColour.Green = voteRatio*255;
 	}
 
+	menu = new ContextMenu(this);
+	menu->AddItem(ContextMenuItem("Open", 0, true));
+	menu->AddItem(ContextMenuItem("Select", 1, true));
+	menu->AddItem(ContextMenuItem("View History", 2, true));
+	menu->AddItem(ContextMenuItem("More by this user", 3, true));
+
 	if(save)
 	{
 		name = save->name;
@@ -53,6 +62,29 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 			name = name.erase(position, name.length()-position);
 			name += "...";
 		}
+
+		std::string votes, icon;
+		int j;
+
+		votes = format::NumberToString<int>(save->GetVotesUp()-save->GetVotesDown());
+		icon += 0xBB;
+		for (int j = 1; j < votes.length(); j++)
+			icon += 0xBC;
+		icon += 0xB9;
+		icon += 0xBA;
+
+		votesBackground = icon;
+
+		for (std::string::iterator iter = icon.begin(), end = icon.end(); iter != end; ++iter)
+			*iter -= 14;
+
+		votesBackground2 = icon;
+
+		for (std::string::iterator iter = votes.begin(), end = votes.end(); iter != end; ++iter)
+			if(*iter != '-')
+				*iter += 127;
+
+		votesString = votes;
 	}
 }
 
@@ -70,7 +102,7 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	wantsDraw(false),
 	waitingForThumb(false),
 	isMouseInsideAuthor(false),
-	MouseInsideHistory(false),
+	isMouseInsideHistory(false),
 	showVotes(false)
 {
 	if(file)
@@ -198,32 +230,18 @@ void SaveButton::Draw(const Point& screenPos)
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 100, 130, 160, 255);
 		if (showVotes)// && !isMouseInside)
 		{
-			char icon[64], votestring[64];
-			int j;
-			sprintf(votestring, "%d", save->GetVotesUp()-save->GetVotesDown());
-			icon[0] = 0xBB;
-			for (j = 1; j <= strlen(votestring); j++)
-				icon[j] = 0xBC;
-			icon[j-1] = 0xB9;
-			icon[j] = 0xBA;
-			icon[j+1] = 0;
-			int x = screenPos.X-7+(Size.X-thumbBoxSize.X)/2+thumbBoxSize.X-Graphics::textwidth(icon);
+			int x = screenPos.X-7+(Size.X-thumbBoxSize.X)/2+thumbBoxSize.X-Graphics::textwidth(votesBackground.c_str());
 			int y = screenPos.Y-23+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
-			g->drawtext(x, y, icon, 16, 72, 16, 255);
-			for (j=0; icon[j]; j++)
-				icon[j] -= 14;
-			g->drawtext(x, y, icon, 192, 192, 192, 255);
-			for (j=0; votestring[j]; j++)
-				if (votestring[j] != '-')
-					votestring[j] += 127;
-			g->drawtext(x+3, y, votestring, 255, 255, 255, 255);
+			g->drawtext(x, y, votesBackground, 16, 72, 16, 255);
+			g->drawtext(x, y, votesBackground2, 192, 192, 192, 255);
+			g->drawtext(x+3, y, votesString, 255, 255, 255, 255);
 		}
-		if (MouseInsideHistory && showVotes)
+		if (isMouseInsideHistory && showVotes)
 		{
 			int x = screenPos.X;
 			int y = screenPos.Y-15+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
 			g->fillrect(x+1, y+1, 7, 8, 255, 255, 255, 255);
-			if (MouseInsideHistory) {
+			if (isMouseInsideHistory) {
 				g->drawtext(x, y, "\xA6", 200, 100, 80, 255);
 			} else {
 				g->drawtext(x, y, "\xA6", 160, 70, 50, 255);
@@ -275,40 +293,63 @@ void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
 		isButtonDown = false;
 		if(isMouseInsideAuthor)
 			DoAuthorAction();
-		else if (MouseInsideHistory)
+		else if(isMouseInsideHistory)
 			DoHistoryAction();
 		else
 			DoAction();
 	}
 }
 
-void SaveButton::OnMouseClick(int x, int y, unsigned int button)
+void SaveButton::OnContextMenuAction(int item)
 {
-	if(button !=1 && selectable)
+	switch(item)
 	{
+	case 0:
+		DoAction();
+		break;
+	case 1:
 		selected = !selected;
 		DoSelection();
+		break;
+	case 2:
+		DoHistoryAction();
+		break;
+	case 3:
+		DoAuthorAction();
+		break;
 	}
-	if(button != 1) return; //left click only!
+}
 
-	isButtonDown = true;
+void SaveButton::OnMouseClick(int x, int y, unsigned int button)
+{
+	if(button == BUTTON_RIGHT)
+	{
+		if(menu)
+			menu->Show(GetScreenPos() + ui::Point(x, y));
+	}
+	else
+	{
+		isButtonDown = true;
+		if(button !=1 && selectable)
+		{
+			selected = !selected;
+			DoSelection();
+		}
+		
+	}
 }
 
 void SaveButton::OnMouseMovedInside(int x, int y, int dx, int dy)
 {
 	if(y > Size.Y-11)
-	{
 		isMouseInsideAuthor = true;
-	}
 	else
 		isMouseInsideAuthor = false;
 
 	if(showVotes && y > Size.Y-29 && y < Size.Y - 18 && x > 0 && x < 9)
-	{
-		MouseInsideHistory = true;
-	}
+		isMouseInsideHistory = true;
 	else
-		MouseInsideHistory = false;
+		isMouseInsideHistory = false;
 }
 
 void SaveButton::OnMouseEnter(int x, int y)
@@ -320,7 +361,7 @@ void SaveButton::OnMouseLeave(int x, int y)
 {
 	isMouseInside = false;
 	isMouseInsideAuthor = false;
-	MouseInsideHistory = false;
+	isMouseInsideHistory = false;
 }
 
 void SaveButton::DoHistoryAction()
@@ -343,7 +384,14 @@ void SaveButton::DoAction()
 
 void SaveButton::DoSelection()
 {
-	if(selectable)
+	if(menu)
+	{
+		if(selected)
+			menu->SetItem(1, "Deselect");
+		else
+			menu->SetItem(1, "Select");
+	}
+	if(selectable && actionCallback)
 		actionCallback->SelectedCallback(this);
 }
 

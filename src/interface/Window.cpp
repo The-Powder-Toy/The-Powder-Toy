@@ -14,6 +14,7 @@ Window::Window(Point _position, Point _size):
 	AllowExclusiveDrawing(true),
 	halt(false),
 	destruct(false),
+	stop(false),
 	cancelButton(NULL),
 	okayButton(NULL)
 #ifdef DEBUG
@@ -232,6 +233,7 @@ void Window::DoTick(float dt)
 	}
 
 	halt = false;
+	stop = false;
 
 	OnTick(dt);
 
@@ -292,7 +294,8 @@ void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool a
 			focusedComponent_->OnKeyPress(key, character, shift, ctrl, alt);
 	}
 
-	OnKeyPress(key, character, shift, ctrl, alt);
+	if(!stop)
+		OnKeyPress(key, character, shift, ctrl, alt);
 	
 	if(key == KEY_ESCAPE)
 		OnTryExit(Escape);
@@ -317,7 +320,8 @@ void Window::DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool
 			focusedComponent_->OnKeyRelease(key, character, shift, ctrl, alt);
 	}
 
-	OnKeyRelease(key, character, shift, ctrl, alt);
+	if(!stop)
+		OnKeyRelease(key, character, shift, ctrl, alt);
 	if(destruct)
 		finalise();
 }
@@ -360,7 +364,8 @@ void Window::DoMouseDown(int x_, int y_, unsigned button)
 			Components[i]->OnMouseDown(x, y, button);
 	}
 
-	OnMouseDown(x_, y_, button);
+	if(!stop)
+		OnMouseDown(x_, y_, button);
 
 	if(x_ < Position.X || y_ < Position.Y || x_ > Position.X+Size.X || y_ > Position.Y+Size.Y)
 		OnTryExit(MouseOutside);
@@ -419,7 +424,8 @@ void Window::DoMouseMove(int x_, int y_, int dx, int dy)
 		}
 	}
 
-	OnMouseMove(x_, y_, dx, dy);
+	if(!stop)
+		OnMouseMove(x_, y_, dx, dy);
 	if(destruct)
 		finalise();
 }
@@ -452,7 +458,8 @@ void Window::DoMouseUp(int x_, int y_, unsigned button)
 			Components[i]->OnMouseUp(x, y, button);
 	}
 
-	OnMouseUp(x_, y_, button);
+	if(!stop)
+		OnMouseUp(x_, y_, button);
 	if(destruct)
 		finalise();
 }
@@ -483,7 +490,8 @@ void Window::DoMouseWheel(int x_, int y_, int d)
 			Components[i]->OnMouseWheel(x - Components[i]->Position.X, y - Components[i]->Position.Y, d);
 	}
 
-	OnMouseWheel(x_, y_, d);
+	if(!stop)
+		OnMouseWheel(x_, y_, d);
 
 	if(destruct)
 		finalise();
@@ -497,6 +505,13 @@ void Window::finalise()
 void Window::SelfDestruct()
 {
 	destruct = true;
+	halt = true;
+	stop = true;
+}
+
+void Window::Halt()
+{
+	stop = true;
 	halt = true;
 }
 
