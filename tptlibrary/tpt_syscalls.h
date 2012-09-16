@@ -13,5 +13,8 @@ void error(char * message);
 
 int partCreate(int i, int x, int y, int type);
 void partChangeType(int i, int x, int y, int type);
+int pmapData(int x, int y);
+void deletePart(int x, int y, int flags);
+void killPart(int i);
 
 #endif
