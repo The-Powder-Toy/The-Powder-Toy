@@ -33,6 +33,8 @@ void ProgressBar::Draw(const Point & screenPos)
 	{
 		if(progress > 0)
 		{
+			if(progress > 100)
+				progress = 100;
 			float size = float(Size.X-4)*(float(progress)/100.0f); // TIL...
 			size = std::min(std::max(size, 0.0f), float(Size.X-4));
 			g->fillrect(screenPos.X + 2, screenPos.Y + 2, size, Size.Y-4, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
