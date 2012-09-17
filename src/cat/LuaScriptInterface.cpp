@@ -31,6 +31,9 @@
 #include "LuaButton.h"
 #include "LuaLabel.h"
 #include "LuaTextbox.h"
+#include "LuaCheckbox.h"
+#include "LuaSlider.h"
+#include "LuaProgressBar.h"
 
 #ifdef WIN
 #include <direct.h>
@@ -301,6 +304,9 @@ void LuaScriptInterface::initInterfaceAPI()
 	Luna<LuaButton>::Register(l);
 	Luna<LuaLabel>::Register(l);
 	Luna<LuaTextbox>::Register(l);
+	Luna<LuaCheckbox>::Register(l);
+	Luna<LuaSlider>::Register(l);
+	Luna<LuaProgressBar>::Register(l);
 }
 
 int LuaScriptInterface::interface_addComponent(lua_State * l)
@@ -313,6 +319,12 @@ int LuaScriptInterface::interface_addComponent(lua_State * l)
 		component = Luna<LuaLabel>::get(luaComponent)->GetComponent();
 	else if(luaComponent = Luna<LuaTextbox>::tryGet(l, 1))
 		component = Luna<LuaTextbox>::get(luaComponent)->GetComponent();
+	else if(luaComponent = Luna<LuaCheckbox>::tryGet(l, 1))
+		component = Luna<LuaCheckbox>::get(luaComponent)->GetComponent();
+	else if(luaComponent = Luna<LuaSlider>::tryGet(l, 1))
+		component = Luna<LuaSlider>::get(luaComponent)->GetComponent();
+	else if(luaComponent = Luna<LuaProgressBar>::tryGet(l, 1))
+		component = Luna<LuaProgressBar>::get(luaComponent)->GetComponent();
 	else
 		luaL_typerror(l, 1, "Component");
 	if(luacon_ci->Window && component)

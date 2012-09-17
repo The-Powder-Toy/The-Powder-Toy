@@ -25,6 +25,11 @@ void Checkbox::SetText(std::string text)
 	this->text = text;
 }
 
+std::string Checkbox::GetText()
+{
+	return text;
+}
+
 void Checkbox::OnMouseClick(int x, int y, unsigned int button)
 {
 	if(checked)

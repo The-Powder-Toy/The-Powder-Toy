@@ -27,6 +27,7 @@ class Checkbox: public ui::Component {
 public:
 	Checkbox(ui::Point position, ui::Point size, std::string text);
 	void SetText(std::string text);
+	std::string GetText();
 	void Draw(const Point& screenPos);
 	virtual void OnMouseEnter(int x, int y);
 	virtual void OnMouseLeave(int x, int y);

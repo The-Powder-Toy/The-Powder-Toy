@@ -11,6 +11,9 @@ extern "C"
 #include "LuaButton.h"
 #include "LuaLabel.h"
 #include "LuaTextbox.h"
+#include "LuaCheckbox.h"
+#include "LuaSlider.h"
+#include "LuaProgressBar.h"
 #include "interface/Button.h"
 #include "interface/Label.h"
 #include "interface/Window.h"
@@ -106,6 +109,12 @@ int LuaWindow::addComponent(lua_State * l)
 		component = Luna<LuaLabel>::get(luaComponent)->GetComponent();
 	else if(luaComponent = Luna<LuaTextbox>::tryGet(l, 1))
 		component = Luna<LuaTextbox>::get(luaComponent)->GetComponent();
+	else if(luaComponent = Luna<LuaCheckbox>::tryGet(l, 1))
+		component = Luna<LuaCheckbox>::get(luaComponent)->GetComponent();
+	else if(luaComponent = Luna<LuaSlider>::tryGet(l, 1))
+		component = Luna<LuaSlider>::get(luaComponent)->GetComponent();
+	else if(luaComponent = Luna<LuaProgressBar>::tryGet(l, 1))
+		component = Luna<LuaProgressBar>::get(luaComponent)->GetComponent();
 	else
 		luaL_typerror(l, 1, "Component");
 	if(component)

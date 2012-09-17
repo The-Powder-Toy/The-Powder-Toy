@@ -3,22 +3,36 @@
 
 using namespace ui;
 
-ProgressBar::ProgressBar(Point position, Point size):
+ProgressBar::ProgressBar(Point position, Point size, int startProgress, std::string startStatus):
 	Component(position, size),
 	intermediatePos(0.0f),
-	progressStatus("")
+	progressStatus(""),
+	progress(0)
 {
-	progress = 0;
+	SetStatus(startStatus);
+	SetProgress(startProgress);
 }
 
 void ProgressBar::SetProgress(int progress)
 {
 	this->progress = progress;
+	if(this->progress > 100)
+		this->progress = 100;
+}
+
+int ProgressBar::GetProgress()
+{
+	return progress;
 }
 
 void ProgressBar::SetStatus(std::string status)
 {
 	progressStatus = status;
+}
+
+std::string ProgressBar::GetStatus()
+{
+	return progressStatus;
 }
 
 void ProgressBar::Draw(const Point & screenPos)

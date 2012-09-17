@@ -72,10 +72,6 @@ void Slider::OnMouseUp(int x, int y, unsigned button)
 	}
 }
 
-int Slider::GetValue()
-{
-	return sliderPosition;
-}
 
 void Slider::SetColour(Colour col1, Colour col2)
 {
@@ -88,6 +84,11 @@ void Slider::SetColour(Colour col1, Colour col2)
 	bgGradient = (unsigned char*)Graphics::GenerateGradient(pix, fl, 2, Size.X-7);
 }
 
+int Slider::GetValue()
+{
+	return sliderPosition;
+}
+
 void Slider::SetValue(int value)
 {
 	if(value < 0)
@@ -95,6 +96,20 @@ void Slider::SetValue(int value)
 	if(value > sliderSteps)
 		value = sliderSteps;
 	sliderPosition = value;
+}
+
+int Slider::GetSteps()
+{
+	return sliderSteps;
+}
+
+void Slider::SetSteps(int steps)
+{
+	if(steps < 0)
+		steps = 0;
+	if(steps < sliderPosition)
+		sliderPosition = steps;
+	sliderSteps = steps;
 }
 
 void Slider::Draw(const Point& screenPos)

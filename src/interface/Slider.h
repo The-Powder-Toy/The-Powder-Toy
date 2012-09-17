@@ -38,6 +38,8 @@ public:
 	void SetActionCallback(SliderAction * action) { actionCallback = action; }
 	int GetValue();
 	void SetValue(int value);
+	int GetSteps();
+	void SetSteps(int steps);
 	virtual ~Slider();
 };
 
