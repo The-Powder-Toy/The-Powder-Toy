@@ -412,10 +412,6 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		//Remove extra preceding 0's
 		while(backingText[0] == '0' && backingText.length()>1)
 			backingText.erase(backingText.begin());
-
-		//If there is no content, replace with 0
-		if(!backingText.length())
-			backingText = "0";
 	}
 	if(cursor > backingText.length())
 			cursor = backingText.length();

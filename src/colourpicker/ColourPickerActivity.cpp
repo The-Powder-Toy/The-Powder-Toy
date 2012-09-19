@@ -33,12 +33,22 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 
 		void TextChangedCallback(ui::Textbox * sender)
 		{
-			int r, g, b;
+			int r, g, b, alpha;
 			r = format::StringToNumber<int>(a->rValue->GetText());
 			g = format::StringToNumber<int>(a->gValue->GetText());
 			b = format::StringToNumber<int>(a->bValue->GetText());
-			a->currentAlpha = format::StringToNumber<int>(a->aValue->GetText());
 			RGB_to_HSV(r, g, b, &a->currentHue, &a->currentSaturation, &a->currentValue);
+
+			if (r > 255)
+				a->rValue->SetText("255");
+			if (g > 255)
+				a->gValue->SetText("255");
+			if (b > 255)
+				a->bValue->SetText("255");
+			alpha = format::StringToNumber<int>(a->aValue->GetText());
+			if (alpha > 255)
+				a->aValue->SetText("255");
+			a->currentAlpha = format::StringToNumber<int>(a->aValue->GetText());
 		}
 	};
 
