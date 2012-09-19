@@ -518,7 +518,7 @@ wall_type * Renderer_wtypes = LoadWalls(Renderer_wtypesCount);
 
 VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 {
-	int x, y, i, j, cr, cg, cb;
+	int i, j, cr, cg, cb;
 	int wt = wallID;
 	if (wt<0 || wt>=Renderer_wtypesCount)
 		return 0;
@@ -578,7 +578,7 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 		for (j=0; j<height; j++)
 			for (i=0; i<width; i++)
 			{
-				if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
+				if (!(j%2) && !(i%2))
 					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
 				else
 					newTexture->SetPixel(i, j, 0x80, 0x80, 0x80, 255);
