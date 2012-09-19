@@ -37,6 +37,7 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 			r = format::StringToNumber<int>(a->rValue->GetText());
 			g = format::StringToNumber<int>(a->gValue->GetText());
 			b = format::StringToNumber<int>(a->bValue->GetText());
+			a->currentAlpha = format::StringToNumber<int>(a->aValue->GetText());
 			RGB_to_HSV(r, g, b, &a->currentHue, &a->currentSaturation, &a->currentValue);
 		}
 	};
@@ -59,6 +60,12 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 	bValue->SetInputType(ui::Textbox::Number);
 	AddComponent(bValue);
 
+	aValue = new ui::Textbox(ui::Point(110, Size.Y-23), ui::Point(30, 17), "255");
+	aValue->SetActionCallback(new ColourChange(this));
+	aValue->SetLimit(3);
+	aValue->SetInputType(ui::Textbox::Number);
+	AddComponent(aValue);
+
 	class CancelAction: public ui::ButtonAction
 	{
 		ColourPickerActivity * a;
@@ -79,7 +86,7 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 		{
 			int Red, Green, Blue;
 			HSV_to_RGB(a->currentHue, a->currentSaturation, a->currentValue, &Red, &Green, &Blue);
-			ui::Colour col(Red, Green, Blue);
+			ui::Colour col(Red, Green, Blue, a->currentAlpha);
 			if(a->callback)
 				a->callback->ColourPicked(col);
 			a->Exit();
@@ -99,7 +106,9 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 	rValue->SetText(format::NumberToString<int>(initialColour.Red));
 	gValue->SetText(format::NumberToString<int>(initialColour.Green));
 	bValue->SetText(format::NumberToString<int>(initialColour.Blue));
+	aValue->SetText(format::NumberToString<int>(initialColour.Alpha));
 	RGB_to_HSV(initialColour.Red, initialColour.Green, initialColour.Blue, &currentHue, &currentSaturation, &currentValue);
+	currentAlpha = initialColour.Alpha;
 }
 
 void ColourPickerActivity::OnMouseMove(int x, int y, int dx, int dy)
@@ -236,7 +245,8 @@ void ColourPickerActivity::OnMouseUp(int x, int y, unsigned button)
 void ColourPickerActivity::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
-	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
+	//g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
+	g->fillrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3, 0, 0, 0, currentAlpha);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 
 	g->drawrect(Position.X+4, Position.Y+4, 258, 130, 180, 180, 180, 255);
@@ -248,16 +258,23 @@ void ColourPickerActivity::OnDraw()
 	int offsetY = Position.Y+5;
 
 
+	//draw color square
+	int lastx = -1, currx = 0;
 	for(int saturation = 0; saturation <= 255; saturation+=2)
+	{
 		for(int hue = 0; hue <= 359; hue++)
 		{
+			currx = clamp_flt(hue, 0, 359)+offsetX;
+			if (currx == lastx)
+				continue;
+			lastx = currx;
 			int cr = 0;
 			int cg = 0;
 			int cb = 0;
-			HSV_to_RGB(hue, 255-saturation, 255-saturation, &cr, &cg, &cb);
-
-			g->blendpixel(clamp_flt(hue, 0, 359)+offsetX, (saturation/2)+offsetY, cr, cg, cb, 255);
+			HSV_to_RGB(hue, 255-saturation, currentValue, &cr, &cg, &cb);
+			g->blendpixel(currx, (saturation/2)+offsetY, cr, cg, cb, currentAlpha);
 		}
+	}
 
 	//draw brightness bar
 	for(int value = 0; value <= 255; value++)
@@ -268,7 +285,7 @@ void ColourPickerActivity::OnDraw()
 			int cb = 0;
 			HSV_to_RGB(currentHue, currentSaturation, value, &cr, &cg, &cb);
 
-			g->blendpixel(value+offsetX, i+offsetY+127+5, cr, cg, cb, 255);
+			g->blendpixel(value+offsetX, i+offsetY+127+5, cr, cg, cb, currentAlpha);
 		}
 
 	int currentHueX = clamp_flt(currentHue, 0, 359);

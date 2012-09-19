@@ -18,6 +18,7 @@ class ColourPickerActivity: public WindowActivity {
 	int currentHue;
 	int currentSaturation;
 	int currentValue;
+	int currentAlpha;
 
 	bool mouseDown;
 	bool valueMouseDown;
@@ -25,6 +26,7 @@ class ColourPickerActivity: public WindowActivity {
 	ui::Textbox * rValue;
 	ui::Textbox * gValue;
 	ui::Textbox * bValue;
+	ui::Textbox * aValue;
 
 	ColourPickedCallback * callback;
 public:
