@@ -988,6 +988,8 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
 {
+	if(altBehaviour && !shiftBehaviour)
+		button = BUTTON_MIDDLE;
 	if(selectMode!=SelectNone)
 	{
 		if(button==BUTTON_LEFT)
