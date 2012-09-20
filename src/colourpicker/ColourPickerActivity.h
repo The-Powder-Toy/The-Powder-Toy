@@ -31,7 +31,7 @@ class ColourPickerActivity: public WindowActivity {
 
 	ColourPickedCallback * callback;
 
-	void UpdateHexLabel(int r, int g, int b, int a);
+	void UpdateTextboxes(int r, int g, int b, int a);
 public:
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);

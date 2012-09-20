@@ -38,19 +38,19 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 			r = format::StringToNumber<int>(a->rValue->GetText());
 			g = format::StringToNumber<int>(a->gValue->GetText());
 			b = format::StringToNumber<int>(a->bValue->GetText());
+			alpha = format::StringToNumber<int>(a->aValue->GetText());
 			RGB_to_HSV(r, g, b, &a->currentHue, &a->currentSaturation, &a->currentValue);
 
 			if (r > 255)
-				a->rValue->SetText("255");
+				r = 255;
 			if (g > 255)
-				a->gValue->SetText("255");
+				g = 255;
 			if (b > 255)
-				a->bValue->SetText("255");
-			alpha = format::StringToNumber<int>(a->aValue->GetText());
+				b = 255;
 			if (alpha > 255)
-				a->aValue->SetText("255");
-			a->currentAlpha = format::StringToNumber<int>(a->aValue->GetText());
-			a->UpdateHexLabel(r, g, b, alpha);
+				alpha = 255;
+			a->currentAlpha = alpha;
+			a->UpdateTextboxes(r, g, b, alpha);
 		}
 	};
 
@@ -102,17 +102,17 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 	AddComponent(doneButton);
 	SetOkayButton(doneButton);
 
-	rValue->SetText(format::NumberToString<int>(initialColour.Red));
-	gValue->SetText(format::NumberToString<int>(initialColour.Green));
-	bValue->SetText(format::NumberToString<int>(initialColour.Blue));
-	aValue->SetText(format::NumberToString<int>(initialColour.Alpha));
 	RGB_to_HSV(initialColour.Red, initialColour.Green, initialColour.Blue, &currentHue, &currentSaturation, &currentValue);
 	currentAlpha = initialColour.Alpha;
-	UpdateHexLabel(initialColour.Red, initialColour.Green, initialColour.Blue, initialColour.Alpha);
+	UpdateTextboxes(initialColour.Red, initialColour.Green, initialColour.Blue, initialColour.Alpha);
 }
 
-void ColourPickerActivity::UpdateHexLabel(int r, int g, int b, int a)
+void ColourPickerActivity::UpdateTextboxes(int r, int g, int b, int a)
 {
+	rValue->SetText(format::NumberToString<int>(r));
+	gValue->SetText(format::NumberToString<int>(g));
+	bValue->SetText(format::NumberToString<int>(b));
+	aValue->SetText(format::NumberToString<int>(a));
 	std::stringstream hex;
 	hex << std::hex << "0x" << std::setfill('0') << std::setw(2) << std::uppercase << a << std::setw(2) << r << std::setw(2) << g << std::setw(2) << b;
 	hexValue->SetText(hex.str());
@@ -159,10 +159,7 @@ void ColourPickerActivity::OnMouseMove(int x, int y, int dx, int dy)
 	{
 		int cr, cg, cb;
 		HSV_to_RGB(currentHue, currentSaturation, currentValue, &cr, &cg, &cb);
-		rValue->SetText(format::NumberToString<int>(cr));
-		gValue->SetText(format::NumberToString<int>(cg));
-		bValue->SetText(format::NumberToString<int>(cb));
-		UpdateHexLabel(cr, cg, cb, currentAlpha);
+		UpdateTextboxes(cr, cg, cb, currentAlpha);
 	}
 }
 
@@ -201,10 +198,7 @@ void ColourPickerActivity::OnMouseDown(int x, int y, unsigned button)
 	{
 		int cr, cg, cb;
 		HSV_to_RGB(currentHue, currentSaturation, currentValue, &cr, &cg, &cb);
-		rValue->SetText(format::NumberToString<int>(cr));
-		gValue->SetText(format::NumberToString<int>(cg));
-		bValue->SetText(format::NumberToString<int>(cb));
-		UpdateHexLabel(cr, cg, cb, currentAlpha);
+		UpdateTextboxes(cr, cg, cb, currentAlpha);
 	}
 }
 
@@ -214,10 +208,7 @@ void ColourPickerActivity::OnMouseUp(int x, int y, unsigned button)
 	{
 		int cr, cg, cb;
 		HSV_to_RGB(currentHue, currentSaturation, currentValue, &cr, &cg, &cb);
-		rValue->SetText(format::NumberToString<int>(cr));
-		gValue->SetText(format::NumberToString<int>(cg));
-		bValue->SetText(format::NumberToString<int>(cb));
-		UpdateHexLabel(cr, cg, cb, currentAlpha);
+		UpdateTextboxes(cr, cg, cb, currentAlpha);
 	}
 
 	if(mouseDown)
