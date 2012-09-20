@@ -39,8 +39,6 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 			g = format::StringToNumber<int>(a->gValue->GetText());
 			b = format::StringToNumber<int>(a->bValue->GetText());
 			alpha = format::StringToNumber<int>(a->aValue->GetText());
-			RGB_to_HSV(r, g, b, &a->currentHue, &a->currentSaturation, &a->currentValue);
-
 			if (r > 255)
 				r = 255;
 			if (g > 255)
@@ -49,6 +47,8 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 				b = 255;
 			if (alpha > 255)
 				alpha = 255;
+
+			RGB_to_HSV(r, g, b, &a->currentHue, &a->currentSaturation, &a->currentValue);
 			a->currentAlpha = alpha;
 			a->UpdateTextboxes(r, g, b, alpha);
 		}
@@ -89,7 +89,9 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 		void ActionCallback(ui::Button * sender)
 		{
 			int Red, Green, Blue;
-			HSV_to_RGB(a->currentHue, a->currentSaturation, a->currentValue, &Red, &Green, &Blue);
+			Red = format::StringToNumber<int>(a->rValue->GetText());
+			Green = format::StringToNumber<int>(a->gValue->GetText());
+			Blue = format::StringToNumber<int>(a->bValue->GetText());
 			ui::Colour col(Red, Green, Blue, a->currentAlpha);
 			if(a->callback)
 				a->callback->ColourPicked(col);
