@@ -6,6 +6,7 @@
  */
 
 #include <algorithm>
+#include <iomanip>
 #include "ColourPickerActivity.h"
 #include "interface/Textbox.h"
 #include "interface/Label.h"
@@ -49,6 +50,7 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 			if (alpha > 255)
 				a->aValue->SetText("255");
 			a->currentAlpha = format::StringToNumber<int>(a->aValue->GetText());
+			a->UpdateHexLabel(r, g, b, alpha);
 		}
 	};
 
@@ -76,16 +78,8 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 	aValue->SetInputType(ui::Textbox::Number);
 	AddComponent(aValue);
 
-	class CancelAction: public ui::ButtonAction
-	{
-		ColourPickerActivity * a;
-	public:
-		CancelAction(ColourPickerActivity * a) : a(a) { }
-		void ActionCallback(ui::Button * sender)
-		{
-			a->Exit();
-		}
-	};
+	hexValue = new::ui::Label(ui::Point(150, Size.Y-23), ui::Point(53, 17), "0xFFFFFFFF");
+	AddComponent(hexValue);
 
 	class OkayAction: public ui::ButtonAction
 	{
@@ -108,17 +102,24 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 	AddComponent(doneButton);
 	SetOkayButton(doneButton);
 
-	ui::Button * cancelButton = new ui::Button(ui::Point(Size.X-90, Size.Y-23), ui::Point(40, 17), "Cancel");
-	cancelButton->SetActionCallback(new CancelAction(this));
-	AddComponent(cancelButton);
-	SetCancelButton(cancelButton);
-
 	rValue->SetText(format::NumberToString<int>(initialColour.Red));
 	gValue->SetText(format::NumberToString<int>(initialColour.Green));
 	bValue->SetText(format::NumberToString<int>(initialColour.Blue));
 	aValue->SetText(format::NumberToString<int>(initialColour.Alpha));
 	RGB_to_HSV(initialColour.Red, initialColour.Green, initialColour.Blue, &currentHue, &currentSaturation, &currentValue);
 	currentAlpha = initialColour.Alpha;
+	UpdateHexLabel(initialColour.Red, initialColour.Green, initialColour.Blue, initialColour.Alpha);
+}
+
+void ColourPickerActivity::UpdateHexLabel(int r, int g, int b, int a)
+{
+	std::stringstream hex;
+	hex << std::hex << "0x" << std::setfill('0') << std::setw(2) << std::uppercase << a << std::setw(2) << r << std::setw(2) << g << std::setw(2) << b;
+	hexValue->SetText(hex.str());
+}
+void ColourPickerActivity::OnTryExit(ExitMethod method)
+{
+	Exit();
 }
 
 void ColourPickerActivity::OnMouseMove(int x, int y, int dx, int dy)
@@ -161,6 +162,7 @@ void ColourPickerActivity::OnMouseMove(int x, int y, int dx, int dy)
 		rValue->SetText(format::NumberToString<int>(cr));
 		gValue->SetText(format::NumberToString<int>(cg));
 		bValue->SetText(format::NumberToString<int>(cb));
+		UpdateHexLabel(cr, cg, cb, currentAlpha);
 	}
 }
 
@@ -202,6 +204,7 @@ void ColourPickerActivity::OnMouseDown(int x, int y, unsigned button)
 		rValue->SetText(format::NumberToString<int>(cr));
 		gValue->SetText(format::NumberToString<int>(cg));
 		bValue->SetText(format::NumberToString<int>(cb));
+		UpdateHexLabel(cr, cg, cb, currentAlpha);
 	}
 }
 
@@ -214,6 +217,7 @@ void ColourPickerActivity::OnMouseUp(int x, int y, unsigned button)
 		rValue->SetText(format::NumberToString<int>(cr));
 		gValue->SetText(format::NumberToString<int>(cg));
 		bValue->SetText(format::NumberToString<int>(cb));
+		UpdateHexLabel(cr, cg, cb, currentAlpha);
 	}
 
 	if(mouseDown)
