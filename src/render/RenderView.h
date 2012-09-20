@@ -24,6 +24,8 @@ class RenderView: public ui::Window {
 	std::vector<ui::Checkbox*> renderModes;
 	std::vector<ui::Checkbox*> displayModes;
 	std::vector<ui::Checkbox*> colourModes;
+	std::string toolTip;
+	int toolTipPresence;
 public:
 	class RenderModeAction;
 	class DisplayModeAction;
@@ -36,6 +38,8 @@ public:
 	void AttachController(RenderController * c_) { c = c_; }
 	void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnDraw();
+	virtual void OnTick(float dt);
+	virtual void ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip);
 	virtual ~RenderView();
 };
 

@@ -27,7 +27,7 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetHeatSimulation(sender->GetChecked()); }
 	};
 
-	heatSimulation = new ui::Checkbox(ui::Point(8, 23), ui::Point(Size.X-6, 16), "Heat simulation \bgIntroduced in version 34");
+	heatSimulation = new ui::Checkbox(ui::Point(8, 23), ui::Point(Size.X-6, 16), "Heat simulation \bgIntroduced in version 34", "");
 	heatSimulation->SetActionCallback(new HeatSimulationAction(this));
 	AddComponent(heatSimulation);
 	tempLabel = new ui::Label(ui::Point(24, heatSimulation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgCan cause odd behaviour with very old saves");
@@ -42,7 +42,7 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetAmbientHeatSimulation(sender->GetChecked()); }
 	};
 
-	ambientHeatSimulation = new ui::Checkbox(ui::Point(8, 53), ui::Point(Size.X-6, 16), "Ambient heat simulation \bgIntroduced in version 50");
+	ambientHeatSimulation = new ui::Checkbox(ui::Point(8, 53), ui::Point(Size.X-6, 16), "Ambient heat simulation \bgIntroduced in version 50", "");
 	ambientHeatSimulation->SetActionCallback(new AmbientHeatSimulationAction(this));
 	AddComponent(ambientHeatSimulation);
 	tempLabel = new ui::Label(ui::Point(24, ambientHeatSimulation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgCan cause odd behaviour with old saves");
@@ -57,7 +57,7 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetNewtonianGravity(sender->GetChecked()); }
 	};
 
-	newtonianGravity = new ui::Checkbox(ui::Point(8, 83), ui::Point(Size.X-6, 16), "Newtonian gravity \bgIntroduced in version 48");
+	newtonianGravity = new ui::Checkbox(ui::Point(8, 83), ui::Point(Size.X-6, 16), "Newtonian gravity \bgIntroduced in version 48", "");
 	newtonianGravity->SetActionCallback(new NewtonianGravityAction(this));
 	AddComponent(newtonianGravity);
 	tempLabel = new ui::Label(ui::Point(24, newtonianGravity->Position.Y+14), ui::Point(Size.X-28, 16), "\bgMay cause poor performance on older computers");
@@ -72,7 +72,7 @@ OptionsView::OptionsView():
 			virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetWaterEqualisation(sender->GetChecked()); }
 		};
 
-	waterEqualisation = new ui::Checkbox(ui::Point(8, 113), ui::Point(Size.X-6, 16), "Water equalisation \bgIntroduced in version 61");
+	waterEqualisation = new ui::Checkbox(ui::Point(8, 113), ui::Point(Size.X-6, 16), "Water equalisation \bgIntroduced in version 61", "");
 	waterEqualisation->SetActionCallback(new WaterEqualisationAction(this));
 	AddComponent(waterEqualisation);
 	tempLabel = new ui::Label(ui::Point(24, waterEqualisation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgMay cause poor performance with a lot of water");
@@ -144,7 +144,7 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetScale(sender->GetChecked()); }
 	};
 
-	scale = new ui::Checkbox(ui::Point(8, 210), ui::Point(Size.X-6, 16), "Large screen");
+	scale = new ui::Checkbox(ui::Point(8, 210), ui::Point(Size.X-6, 16), "Large screen", "");
 	scale->SetActionCallback(new ScaleAction(this));
 	AddComponent(scale);
 
@@ -156,7 +156,7 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetFullscreen(sender->GetChecked()); }
 	};
 
-	fullscreen = new ui::Checkbox(ui::Point(8, 230), ui::Point(Size.X-6, 16), "Fullscreen");
+	fullscreen = new ui::Checkbox(ui::Point(8, 230), ui::Point(Size.X-6, 16), "Fullscreen", "");
 	fullscreen->SetActionCallback(new FullscreenAction(this));
 	AddComponent(fullscreen);
 

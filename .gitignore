@@ -38,6 +38,7 @@ Makefile.me
 *.ipch
 *.log
 *.lastbuildstate
+*.unsuccessfulbuild
 *.pdb
 *.sublime-*
 *.project

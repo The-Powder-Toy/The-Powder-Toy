@@ -69,96 +69,98 @@ public:
 
 RenderView::RenderView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES, YRES+MENUSIZE)),
+	toolTip(""),
+	toolTipPresence(0),
 	ren(NULL)
 {
 	ui::Checkbox * tCheckbox;
 
-	tCheckbox = new ui::Checkbox(ui::Point(1, YRES+4), ui::Point(55, 16), "Effects");
+	tCheckbox = new ui::Checkbox(ui::Point(1, YRES+4), ui::Point(55, 16), "Effects", "");
 	renderModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new RenderModeAction(this, RENDER_EFFE));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(1, YRES+4+18), ui::Point(55, 16), "Fire");
+	tCheckbox = new ui::Checkbox(ui::Point(1, YRES+4+18), ui::Point(55, 16), "Fire", "");
 	renderModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new RenderModeAction(this, RENDER_FIRE));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(61, YRES+4), ui::Point(55, 16), "Glow");
+	tCheckbox = new ui::Checkbox(ui::Point(61, YRES+4), ui::Point(55, 16), "Glow", "");
 	renderModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new RenderModeAction(this, RENDER_GLOW));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(61, YRES+4+18), ui::Point(55, 16), "Blur");
+	tCheckbox = new ui::Checkbox(ui::Point(61, YRES+4+18), ui::Point(55, 16), "Blur", "");
 	renderModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new RenderModeAction(this, RENDER_BLUR));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(121, YRES+4), ui::Point(55, 16), "Blob");
+	tCheckbox = new ui::Checkbox(ui::Point(121, YRES+4), ui::Point(55, 16), "Blob", "");
 	renderModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new RenderModeAction(this, RENDER_BLOB));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(121, YRES+4+18), ui::Point(55, 16), "Point");
+	tCheckbox = new ui::Checkbox(ui::Point(121, YRES+4+18), ui::Point(55, 16), "Point", "");
 	renderModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new RenderModeAction(this, RENDER_BASC));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(186, YRES+4), ui::Point(70, 16), "Alt. Air");
+	tCheckbox = new ui::Checkbox(ui::Point(186, YRES+4), ui::Point(70, 16), "Alt. Air", "");
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_AIRC));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(186, YRES+4+18), ui::Point(70, 16), "Pressure");
+	tCheckbox = new ui::Checkbox(ui::Point(186, YRES+4+18), ui::Point(70, 16), "Pressure", "");
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_AIRP));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(261, YRES+4), ui::Point(70, 16), "Velocity");
+	tCheckbox = new ui::Checkbox(ui::Point(261, YRES+4), ui::Point(70, 16), "Velocity", "");
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_AIRV));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(261, YRES+4+18), ui::Point(70, 16), "Air-heat");
+	tCheckbox = new ui::Checkbox(ui::Point(261, YRES+4+18), ui::Point(70, 16), "Air-heat", "");
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_AIRH));
 	AddComponent(tCheckbox);
 
-	/*tCheckbox = new ui::Checkbox(ui::Point(336, YRES+4), ui::Point(70, 16), "Air");
+	/*tCheckbox = new ui::Checkbox(ui::Point(336, YRES+4), ui::Point(70, 16), "Air", "");
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_AIR));
 	AddComponent(tCheckbox);*/
 
-	tCheckbox = new ui::Checkbox(ui::Point(336, YRES+4+18), ui::Point(70, 16), "Warp");
+	tCheckbox = new ui::Checkbox(ui::Point(336, YRES+4+18), ui::Point(70, 16), "Warp", "");
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_WARP));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(411, YRES+4), ui::Point(70, 16), "Persistent");
+	tCheckbox = new ui::Checkbox(ui::Point(411, YRES+4), ui::Point(70, 16), "Persistent", "");
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_PERS));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(336, YRES+4), ui::Point(70, 16), "Effect");
+	tCheckbox = new ui::Checkbox(ui::Point(336, YRES+4), ui::Point(70, 16), "Effect", "");
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_EFFE));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(486, YRES+4), ui::Point(50, 16), "Heat");
+	tCheckbox = new ui::Checkbox(ui::Point(486, YRES+4), ui::Point(50, 16), "Heat", "");
 	colourModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new ColourModeAction(this, COLOUR_HEAT));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(486, YRES+4+18), ui::Point(50, 16), "Life");
+	tCheckbox = new ui::Checkbox(ui::Point(486, YRES+4+18), ui::Point(50, 16), "Life", "");
 	colourModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new ColourModeAction(this, COLOUR_LIFE));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(536, YRES+4+18), ui::Point(50, 16), "H-Gradient");
+	tCheckbox = new ui::Checkbox(ui::Point(536, YRES+4+18), ui::Point(50, 16), "H-Gradient", "");
 	colourModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new ColourModeAction(this, COLOUR_GRAD));
 	AddComponent(tCheckbox);
 
-	tCheckbox = new ui::Checkbox(ui::Point(536, YRES+4), ui::Point(50, 16), "Basic");
+	tCheckbox = new ui::Checkbox(ui::Point(536, YRES+4), ui::Point(50, 16), "Basic", "");
 	colourModes.push_back(tCheckbox);
 	tCheckbox->SetActionCallback(new ColourModeAction(this, COLOUR_BASC));
 	AddComponent(tCheckbox);
@@ -236,18 +238,38 @@ void RenderView::NotifyColourChanged(RenderModel * sender)
 void RenderView::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
-	g->clearrect(0, 0, XRES, YRES+MENUSIZE);
+	g->clearrect(-1, -1, XRES+BARSIZE+1, YRES+MENUSIZE+1);
 	if(ren)
 	{
 		ren->clearScreen(1.0f);
 		ren->RenderBegin();
 		ren->RenderEnd();
 	}
-	g->draw_line(0, YRES, XRES-1, YRES, 255, 255, 255, XRES+BARSIZE);
-	g->draw_line(180, YRES, 180, YRES+MENUSIZE, 200, 200, 200, XRES+BARSIZE);
-	g->draw_line(330, YRES, 330, YRES+MENUSIZE, 200, 200, 200, XRES+BARSIZE);
-	g->draw_line(480, YRES, 480, YRES+MENUSIZE, 200, 200, 200, XRES+BARSIZE);
-	g->draw_line(XRES-1, 0, XRES-1, YRES+MENUSIZE, 255, 255, 255, XRES+BARSIZE);
+	g->draw_line(0, YRES, XRES-1, YRES, 200, 200, 200, 255);
+	g->draw_line(180, YRES, 180, YRES+MENUSIZE, 200, 200, 200, 255);
+	g->draw_line(330, YRES, 330, YRES+MENUSIZE, 200, 200, 200, 255);
+	g->draw_line(480, YRES, 480, YRES+MENUSIZE, 200, 200, 200, 255);
+	g->draw_line(XRES, 0, XRES, YRES+MENUSIZE, 255, 255, 255, 255);
+	if(toolTipPresence && toolTip.length())
+	{
+		g->drawtext(6, Size.Y-MENUSIZE-10, (char*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+	}
+}
+
+void RenderView::OnTick(float dt)
+{
+	if(toolTipPresence>0)
+	{
+		toolTipPresence -= int(dt)>0?int(dt):1;
+		if(toolTipPresence<0)
+			toolTipPresence = 0;
+	}
+}
+
+void RenderView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip)
+{
+	this->toolTip = toolTip;
+	toolTipPresence = 160;
 }
 
 RenderView::~RenderView() {

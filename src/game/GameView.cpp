@@ -1491,7 +1491,7 @@ void GameView::OnTick(float dt)
 	{
 		toolTipPresence -= int(dt)>0?int(dt):1;
 		if(toolTipPresence<0)
-			toolTipPresence = 0;	
+			toolTipPresence = 0;
 	}
 	c->Update();
 	if(lastLogEntry > -0.1f)

@@ -97,7 +97,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	descriptionField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(descriptionField);
 
-	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X/2)-16, 16), "Publish");
+	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X/2)-16, 16), "Publish", "");
 	if(Client::Ref().GetAuthUser().Username != save.GetUserName())
 	{
 		//Save is not owned by the user, disable by default
