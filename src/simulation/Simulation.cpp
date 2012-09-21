@@ -886,14 +886,14 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 	}
 	else if (mode == DECO_ADD)
 	{
-		ta += (colA*strength)*colA;
+		//ta += (colA*strength)*colA;
 		tr += (colR*strength)*colA;
 		tg += (colG*strength)*colA;
 		tb += (colB*strength)*colA;
 	}
 	else if (mode == DECO_SUBTRACT)
 	{
-		ta -= (colA*strength)*colA;
+		//ta -= (colA*strength)*colA;
 		tr -= (colR*strength)*colA;
 		tg -= (colG*strength)*colA;
 		tb -= (colB*strength)*colA;
@@ -912,16 +912,17 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 	}
 	else if (mode == DECO_SMUDGE)
 	{
-		float tas = ta, trs = tr, tgs = tg, tbs = tb;
+		float tas = 0.0f, trs = 0.0f, tgs = 0.0f, tbs = 0.0f;
+		
 		int rx, ry;
-		float num = 1.0f;
+		float num = 0;	
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 			{
 				if ((pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
 				{
 					Particle part = parts[pmap[y+ry][x+rx]>>8];
-					num++;
+					num += 1.0f;
 					tas += ((float)((part.dcolour>>24)&0xFF))/255.0f;
 					trs += ((float)((part.dcolour>>16)&0xFF))/255.0f;
 					tgs += ((float)((part.dcolour>>8)&0xFF))/255.0f;
@@ -930,16 +931,19 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 			}
 		if (num == 0)
 			return;
-		ta = ((tas/num)*0.1f) + (ta*0.9f);
-		tr = ((trs/num)*0.1f) + (tr*0.9f);
-		tg = ((tgs/num)*0.1f) + (tg*0.9f);
-		tb = ((tbs/num)*0.1f) + (tb*0.9f);
+		ta = ((tas/num));//*0.8f) + (ta*0.2f);
+		tr = ((trs/num));//*0.8f) + (tr*0.2f);
+		tg = ((tgs/num));//*0.8f) + (tg*0.2f);
+		tb = ((tbs/num));//*0.8f) + (tb*0.2f);
 	}
 
-	colA_ = ta*255.0f;
-	colR_ = tr*255.0f;
-	colG_ = tg*255.0f;
-	colB_ = tb*255.0f;
+	ta *= 255.0f; tr *= 255.0f; tg *= 255.0f; tb *= 255.0f;
+	ta += .5f; tr += .5f; tg += .5f; tb += .5f;
+
+	colA_ = ta;
+	colR_ = tr;
+	colG_ = tg;
+	colB_ = tb;
 
 	if(colA_ > 255)
 		colA_ = 255;
