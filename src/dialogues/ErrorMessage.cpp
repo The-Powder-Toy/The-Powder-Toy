@@ -74,7 +74,7 @@ void ErrorMessage::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
 
-	g->clearrect(Position.X-2, Position.Y-2, Size.X+4, Size.Y+4);
+	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
 }
 
