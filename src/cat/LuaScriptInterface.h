@@ -23,7 +23,7 @@ namespace ui
 	class Window;
 }
 
-namespace vm
+namespace pim
 {
 	class VirtualMachine;
 }
@@ -65,7 +65,7 @@ class LuaScriptInterface: public CommandInterface {
 	static int renderer_colourMode(lua_State * l);
 
 	//Elements
-	static vm::VirtualMachine * updateVirtualMachines[PT_NUM];
+	static pim::VirtualMachine * updateVirtualMachines[PT_NUM];
 	static int updateVM(UPDATE_FUNC_ARGS);
 	//
 	void initElementsAPI();

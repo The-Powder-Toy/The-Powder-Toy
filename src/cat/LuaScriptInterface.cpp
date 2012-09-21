@@ -20,10 +20,13 @@
 #include "dialogues/TextPrompt.h"
 #include "dialogues/ConfirmPrompt.h" 
 #include "simulation/Simulation.h"
-#include "virtualmachine/VirtualMachine.h"
 #include "game/GameModel.h"
 #include "LuaScriptHelper.h"
 #include "client/HTTP.h"
+
+//#include "virtualmachine/VirtualMachine.h"
+#include "pim/Parser.h"
+#include "pim/Machine.h"
 
 #include "LuaBit.h"
 
@@ -665,17 +668,24 @@ void LuaScriptInterface::initElementsAPI()
 	}
 }
 
-vm::VirtualMachine * LuaScriptInterface::updateVirtualMachines[PT_NUM];
+pim::VirtualMachine * LuaScriptInterface::updateVirtualMachines[PT_NUM];
 
 int LuaScriptInterface::updateVM(UPDATE_FUNC_ARGS)
 {
-	vm::VirtualMachine * vMachine = updateVirtualMachines[parts[i].type];
+	pim::VirtualMachine * machine = updateVirtualMachines[parts[i].type];
+
+	machine->CSPush(i);
+	machine->CSPush(x);
+	machine->CSPush(y);
+	machine->Call(0);
+
+
+	/*vm::VirtualMachine * vMachine = updateVirtualMachines[parts[i].type];
 
 	vm::word w;
 	int argAddr = 0, argCount = 5;
 	vMachine->sim = sim;
 	
-	/* Set up call. */
 	vMachine->OpPUSH(w);  //Pointless null in stack
 	w.int4 = (argCount + 2) * sizeof(vm::word);
 	vMachine->OpENTER(w);
@@ -696,7 +706,7 @@ int LuaScriptInterface::updateVM(UPDATE_FUNC_ARGS)
 	w.int4 = (argCount + 2) * sizeof(vm::word);
 	vMachine->OpLEAVE(w);
 	vMachine->OpPOP(w);   //Pop pointless null
-	vMachine->End();
+	vMachine->End();*/
 
 	return 0;
 }
@@ -1017,7 +1027,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 			}
 			else if(lua_type(l, 3) == LUA_TLIGHTUSERDATA)
 			{
-				updateVirtualMachines[id] = (vm::VirtualMachine*)lua_touserdata(l, 3);
+				updateVirtualMachines[id] = (pim::VirtualMachine*)lua_touserdata(l, 3);
 				luacon_sim->elements[id].Update = &updateVM;
 			}
 			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
@@ -1142,7 +1152,7 @@ void LuaScriptInterface::initVirtualMachineAPI()
 
 int LuaScriptInterface::virtualMachine_loadProgram(lua_State * l)
 {
-	luaL_checktype(l, 1, LUA_TSTRING);
+	/*luaL_checktype(l, 1, LUA_TSTRING);
 
 	vm::VirtualMachine * newVM = new vm::VirtualMachine(1);
 	try
@@ -1156,7 +1166,19 @@ int LuaScriptInterface::virtualMachine_loadProgram(lua_State * l)
 	{
 		return luaL_error(l, "Unable to load program");
 	}
-	lua_pushlightuserdata(l, newVM);
+	lua_pushlightuserdata(l, newVM);*/
+	std::string programSource(lua_tostring(l, 1));
+	std::stringstream input(programSource);
+
+
+	pim::compiler::Parser * parser = new pim::compiler::Parser(input);
+	
+	std::vector<unsigned char> programData = parser->Compile();
+
+	pim::VirtualMachine * machine = new pim::VirtualMachine(luacon_sim);
+	machine->LoadProgram(programData);
+
+	lua_pushlightuserdata(l, machine);
 	return 1;
 }
 
