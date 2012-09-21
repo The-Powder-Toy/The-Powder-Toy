@@ -82,7 +82,21 @@ enum Icon
 	IconReport,
 	IconUsername,
 	IconPassword,
-	IconClose
+	IconClose,
+	IconEffect,
+	IconFire,
+	IconGlow,
+	IconBlur,
+	IconBlob,
+	IconBasic,
+	IconAltAir,
+	IconPressure,
+	IconVelocity,
+	IconWarp,
+	IconPersistant,
+	IconHeat,
+	IconLife,
+	IconGradient
 };
 
 //"Graphics lite" - slightly lower performance due to variable size,

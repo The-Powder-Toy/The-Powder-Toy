@@ -34,7 +34,7 @@ std::string Checkbox::GetText()
 void Checkbox::SetIcon(Icon icon)
 {
 	Appearance.icon = icon;
-	iconPosition.X = 19;
+	iconPosition.X = 17;
 	iconPosition.Y = 3;
 }
 
@@ -86,7 +86,7 @@ void Checkbox::Draw(const Point& screenPos)
 		if (!Appearance.icon)
 			g->drawtext(screenPos.X+18, screenPos.Y+4, text, 255, 255, 255, 255);
 		else
-			g->draw_icon(screenPos.X+15, screenPos.Y+iconPosition.Y, Appearance.icon);
+			g->draw_icon(screenPos.X+iconPosition.X, screenPos.Y+iconPosition.Y, Appearance.icon);
 	}
 	else
 	{
@@ -94,7 +94,7 @@ void Checkbox::Draw(const Point& screenPos)
 		if (!Appearance.icon)
 			g->drawtext(screenPos.X+18, screenPos.Y+4, text, 255, 255, 255, 200);
 		else
-			g->draw_icon(screenPos.X+15, screenPos.Y+iconPosition.Y, Appearance.icon);
+			g->draw_icon(screenPos.X+iconPosition.X, screenPos.Y+iconPosition.Y, Appearance.icon);
 	}
 }
 
