@@ -42,6 +42,7 @@ namespace pim
 		#define CSA(argument) (*((Word*)&ram[framePointer-argument]))
 		#define CS() (*((Word*)&ram[callStack]))
 		#define PS() (*((Word*)&ram[programStack]))
+		#define PPROP(index, property) (*((Word*)(&sim->parts[(index)]+property)))
 
 		int programStack;	//Points to the item on top of the Program Stack
 		int callStack;		//Points to the item on top of the call stack

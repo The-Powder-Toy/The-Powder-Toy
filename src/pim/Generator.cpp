@@ -257,6 +257,17 @@ namespace pim
 			writeOpcode(Opcode::Kill);
 		}
 
+		void Generator::LoadProperty(std::string property)
+		{
+			writeOpcode(Opcode::LoadProperty);
+			writeConstant(0);
+		}
+
+		void Generator::StoreProperty(std::string property)
+		{
+			writeOpcode(Opcode::StoreProperty);
+			writeConstant(0);
+		}
 
 		void Generator::IntegerToDecimal()
 		{

@@ -56,6 +56,7 @@ namespace pim
 				Identifier,
 
 				CommaSymbol,
+				DotSymbol,
 
 				InvalidSymbol,
 

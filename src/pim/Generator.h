@@ -36,10 +36,13 @@ namespace pim
 			}
 			~SymbolNotFoundException() throw() {};
 		};
+		class Type
+		{
+			enum { Integer = Token::IntegerSymbol, Decimal = Token::DecimalSymbol };
+		};
 		class Definition
 		{
 		public:
-			enum { Integer = Token::IntegerSymbol, Decimal = Token::DecimalSymbol };
 			std::string Name;
 			int Type;
 			int StackPosition;
@@ -145,6 +148,8 @@ namespace pim
 			void GetParticle();
 			void GetPosition();
 			void KillParticle();
+			void LoadProperty(std::string property);
+			void StoreProperty(std::string property);
 
 			void IntegerToDecimal();
 			void DecimalToInteger();

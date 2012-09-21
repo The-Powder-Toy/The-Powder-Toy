@@ -105,6 +105,8 @@ namespace pim
 		case Opcode::Jump:
 		case Opcode::Return:
 		case Opcode::LocalEnter:
+		case Opcode::LoadProperty:
+		case Opcode::StoreProperty:
 			return 4;
 		case Opcode::Discard:
 		case Opcode::Duplicate:
@@ -213,6 +215,13 @@ namespace pim
 			case Opcode::Kill:
 				sim->kill_part(PSPop().Integer);
 				PSPush((Word)0);
+				break;
+			case Opcode::LoadProperty:
+				PSPush(PPROP(PSPop().Integer, argument.Integer));
+				break;
+			case Opcode::StoreProperty:
+				temp1 = PSPop();
+				PPROP(temp1.Integer, argument.Integer) = PSPop();
 				break;
 			case Opcode::JumpEqual:
 				if(PSPop().Integer == PSPop().Integer)

@@ -160,6 +160,11 @@ namespace pim
 				nextCharacter();
 				return Token(Token::CommaSymbol, ",", cLine);
 			}
+			else if(cChar == '.')
+			{
+				nextCharacter();
+				return Token(Token::DotSymbol, ".", cLine);
+			}
 			else
 			{
 				nextCharacter();

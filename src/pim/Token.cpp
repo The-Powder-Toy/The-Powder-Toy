@@ -41,6 +41,7 @@ namespace pim
 			"get",
 			"IDENTIFIER",
 			",",
+			".",
 			"INVALID SYMBOL"
 		};
 	}

@@ -438,17 +438,26 @@ namespace pim
 		}
 		
 		/*
-			<assigment statement> ::= identifier = <expression>
+			<assigment statement> ::= identifier = <expression> | identifier.property = <expression>
 		*/
 		void Parser::assigmentStatement()
 		{
 			std::string variable = token.Source;
-			//generator->PushVariableAddress(token.Source);
 			expect(Token::Identifier);
-			expect(Token::AssignSymbol);
-			expression();
-			//generator->Store();
-			generator->StoreVariable(variable);
+			if(accept(Token::AssignSymbol))
+			{
+				expression();
+				generator->StoreVariable(variable);
+			}
+			else if(accept(Token::DotSymbol))
+			{
+				std::string property = token.Source;
+				expect(Token::Identifier);
+				expect(Token::AssignSymbol);
+				expression();
+				generator->LoadVariable(variable);
+				generator->StoreProperty(property);	
+			}
 		}
 		
 		/*
@@ -533,56 +542,10 @@ namespace pim
 			}
 			if(doNegate)
 				generator->Negate();
-			/*if(!accept(Token::Identifier))
-			{
-				if(!accept(Token::IntegerConstant))
-				{
-					if(!accept(Token::DecimalConstant))
-					{
-						if(!accept(Token::LeftBracket))
-						{
-							throw ParserExpectException(token, "identifier or constant");
-						}
-						else
-						{
-							expression();
-							expect(Token::RightBracket);
-						}
-					}
-					else
-					{
-						if(doNegate)
-						{
-							doNegate = false;
-							generator->Constant("-" + factor);
-						}
-						else
-							generator->Constant(factor);
-					}
-				}
-				else
-				{
-					if(doNegate)
-					{
-						doNegate = false;
-						generator->Constant("-" + factor);
-					}
-					else
-						generator->Constant(factor);
-				}
-			}
-			else
-			{
-				generator->LoadVariable(factor);
-			}
-			if(doNegate)
-			{
-				generator->Negate();
-			}*/
 		}
 
 		/*
-			<variable value> ::= <function call> | identifier | <particle action>
+			<variable value> ::= <function call> | identifier | identifier.property | <particle action>
 		*/
 		void Parser::variableValue()
 		{
@@ -596,7 +559,17 @@ namespace pim
 				}
 				else
 				{
-					generator->LoadVariable(variable);
+					if(accept(Token::DotSymbol))
+					{
+						std::string property = token.Source;
+						expect(Token::Identifier);
+						generator->LoadVariable(variable);
+						generator->LoadProperty(property);
+					}
+					else
+					{
+						generator->LoadVariable(variable);
+					}
 				}
 			}
 			else
@@ -618,8 +591,10 @@ namespace pim
 				}
 				else
 					token = scanner->NextToken();
+				std::cout << "Symbol " << Token::SymbolNames[symbol] << " " << lastToken.Source << std::endl;
 				return true;
 			}
+			std::cout << "Bad Symbol " << Token::SymbolNames[symbol] << " " << token.Source << " (" << token.GetName() << ")" << std::endl;
 			return false;
 		}
 
