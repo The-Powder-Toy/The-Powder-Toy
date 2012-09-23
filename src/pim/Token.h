@@ -45,6 +45,8 @@ namespace pim
 				BreakSymbol,
 				ContinueSymbol,
 				IfSymbol,
+				ElseSymbol,
+				ElseIfSymbol,
 				ThenSymbol,
 				EndSymbol,
 

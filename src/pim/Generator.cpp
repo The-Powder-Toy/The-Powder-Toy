@@ -225,6 +225,8 @@ namespace pim
 			Scope * prevScope = currentScope;
 			currentScope = new Scope();
 			defineLabel(label);
+
+			output << "." << label << std::endl;
 		}
 
 		void Generator::PushLocalScope(std::string label)
@@ -235,6 +237,8 @@ namespace pim
 			currentScope->Definitions.insert(currentScope->Definitions.begin(), prevScope->Definitions.begin(), prevScope->Definitions.end());
 			currentScope->FrameSize = prevScope->FrameSize;
 			defineLabel(label);
+
+			output << "." << label << std::endl;
 		}
 
 		void Generator::PopScope()
@@ -242,6 +246,9 @@ namespace pim
 
 			writeOpcode(Opcode::Return);
 			writeConstant(currentScope->LocalFrameSize);
+
+			output << "return " << currentScope->LocalFrameSize << std::endl;
+
 			currentScope = scopes.top();
 			scopes.pop();
 		}
@@ -250,12 +257,16 @@ namespace pim
 		{
 			//defineLabelwriteOpcode("." << label);
 			defineLabel(label);
+
+			output << "." << label << std::endl;
 		}	
 
 		void Generator::LocalEnter()
 		{
 			writeOpcode(Opcode::LocalEnter);
 			writeConstantPlaceholder(&(currentScope->LocalFrameSize));
+
+			output << "enter " << "#" << std::endl;
 		}
 
 		void Generator::ScopeVariableType(int type)
@@ -268,6 +279,8 @@ namespace pim
 			currentScope->Definitions.push_back(Definition(label, variableType, currentScope->FrameSize));
 			currentScope->FrameSize += 4;
 			currentScope->LocalFrameSize += 4;
+
+			output << "#declare " << label << " " << currentScope->FrameSize-4 << std::endl;
 		}
 
 		void Generator::PushVariableAddress(std::string label)
@@ -279,108 +292,148 @@ namespace pim
 		{
 			writeOpcode(Opcode::Load);
 			writeConstant(currentScope->GetDefinition(label).StackPosition);
+
+			output << "load " << label << std::endl;
 		}
 
 		void Generator::StoreVariable(std::string label)
 		{
 			writeOpcode(Opcode::Store);
 			writeConstant(currentScope->GetDefinition(label).StackPosition);
+
+			output << "store " << label << std::endl;
 		}
 
 		void Generator::RTConstant(std::string name)
 		{
 			writeOpcode(Opcode::Constant);
 			writeConstantMacroPlaceholder(name);
+
+			output << "const " << name << std::endl;
 		}
 
 		void Generator::Constant(std::string constant)
 		{
 			writeOpcode(Opcode::Constant);
 			writeConstant(constant);
+
+			output << "const " << constant << std::endl;
+
 		}
 
 		void Generator::Increment(std::string constant)
 		{
 			writeOpcode(Opcode::Increment);
 			writeConstant(constant);
+
+			output << "inc " << constant << std::endl;
 		}
 
 		void Generator::Discard()
 		{
 			writeOpcode(Opcode::Discard);
+
+			output << "discard" << std::endl;
 		}
 
 		void Generator::Duplicate()
 		{
 			writeOpcode(Opcode::Duplicate);
+
+			output << "duplicate" << std::endl;
 		}
 
 		void Generator::Add()
 		{
 			writeOpcode(Opcode::Add);
+
+			output << "add" << std::endl;
 		}
 
 		void Generator::Subtract()
 		{
 			writeOpcode(Opcode::Subtract);
+
+			output << "sub" << std::endl;
 		}
 
 		void Generator::Multiply()
 		{
 			writeOpcode(Opcode::Multiply);
+
+			output << "mul" << std::endl;
 		}
 
 		void Generator::Divide()
 		{
 			writeOpcode(Opcode::Divide);
+
+			output << "div" << std::endl;
 		}
 
 		void Generator::Modulus()
 		{
 			writeOpcode(Opcode::Modulus);
+
+			output << "add" << std::endl;
 		}
 
 		void Generator::Negate()
 		{
 			writeOpcode(Opcode::Negate);
+
+			output << "neg" << std::endl;
 		}
 
 		void Generator::CreateParticle()
 		{
 			writeOpcode(Opcode::Create);
 
+			output << "create" << std::endl;
 		}
 
 		void Generator::TransformParticle()
 		{
 			writeOpcode(Opcode::Transform);
+
+			output << "transform" << std::endl;
 		}
 
 		void Generator::GetParticle()
 		{
 			writeOpcode(Opcode::Get);
+
+			output << "getpart" << std::endl;
 		}
 
 		void Generator::GetPosition()
 		{
 			writeOpcode(Opcode::Position);
+
+			output << "getpos" << std::endl;
 		}
 
 		void Generator::KillParticle()
 		{
 			writeOpcode(Opcode::Kill);
+
+			output << "kill" << std::endl;
 		}
 
 		void Generator::LoadProperty(std::string property)
 		{
 			writeOpcode(Opcode::LoadProperty);
 			writeConstantPropertyPlaceholder(property);
+
+			output << "loadprop " << property << std::endl;
 		}
 
 		void Generator::StoreProperty(std::string property)
 		{
 			writeOpcode(Opcode::StoreProperty);
 			writeConstantPropertyPlaceholder(property);
+
+			output << "storeprop " << property << std::endl;
 		}
 
 		void Generator::IntegerToDecimal()
@@ -398,42 +451,56 @@ namespace pim
 		{
 			writeOpcode(Opcode::JumpEqual);
 			writeConstantPlaceholder(label); 
+
+			output << "jumpe " << label << std::endl;
 		}
 
 		void Generator::JumpNotEqual(std::string label)
 		{
 			writeOpcode(Opcode::JumpNotEqual);
 			writeConstantPlaceholder(label); 
+
+			output << "jumpne " << label << std::endl;
 		}
 
 		void Generator::JumpGreater(std::string label)
 		{
 			writeOpcode(Opcode::JumpGreater);
 			writeConstantPlaceholder(label); 
+
+			output << "jumpg " << label << std::endl;
 		}
 
 		void Generator::JumpGreaterEqual(std::string label)
 		{
 			writeOpcode(Opcode::JumpGreaterEqual);
 			writeConstantPlaceholder(label); 
+
+			output << "jumpge " << label << std::endl;
 		}
 
 		void Generator::JumpLess(std::string label)
 		{
 			writeOpcode(Opcode::JumpLess);
 			writeConstantPlaceholder(label); 
+
+			output << "jumpl " << label << std::endl;
 		}
 
 		void Generator::JumpLessEqual(std::string label)
 		{
 			writeOpcode(Opcode::JumpLessEqual);
 			writeConstantPlaceholder(label); 
+
+			output << "jumple " << label << std::endl;
 		}
 
 		void Generator::Jump(std::string label)
 		{
 			writeOpcode(Opcode::Jump);
 			writeConstantPlaceholder(label); 
+
+			output << "jump " << label << std::endl;
 		}
 
 

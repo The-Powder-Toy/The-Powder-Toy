@@ -51,8 +51,7 @@ namespace pim
 			void statement();
 			void neighbourStatement();
 			void ifStatement();
-			void condition();
-			void conditionalOperator();
+			void condition(std::string jumpLabel);
 			void assigmentStatement();
 			void particleAction();
 			void killStatement();
@@ -60,11 +59,13 @@ namespace pim
 			void createStatement();
 			void transformStatement();
 			void expressionList();
+
 			void expression();
 			void term();
 			void factor();
 			void variableValue();
 
+			Token forward();
 			bool accept(int symbol);
 			bool look(int symbol);
 			void back();

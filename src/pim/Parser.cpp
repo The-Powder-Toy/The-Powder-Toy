@@ -1,5 +1,6 @@
 //Syntax analyser
 #include "Parser.h"
+#include "Format.h"
 namespace pim
 {
 	namespace compiler
@@ -157,7 +158,7 @@ namespace pim
 		void Parser::statementList()
 		{
 			statement();
-			while(!look(Token::EndSymbol))
+			while(!look(Token::EndSymbol) && !look(Token::ElseIfSymbol))
 				statement();
 		}
 		
@@ -387,54 +388,69 @@ namespace pim
 		*/
 		void Parser::ifStatement()
 		{
-			//generator->Begin(NonTerminal::IfStatement);
+			std::string label = generator->UniqueLabel("if");
+			int blockNum = 0;
 			expect(Token::IfSymbol);
-			condition();
+			condition(label+format::NumberToString<int>(blockNum));
 			expect(Token::ThenSymbol);
 			block();
+			while(accept(Token::ElseIfSymbol))
+			{
+				generator->ScopeLabel(label+format::NumberToString<int>(blockNum++));
+				condition(label+format::NumberToString<int>(blockNum));
+				expect(Token::ThenSymbol);
+				block();
+			}
+			if(accept(Token::ElseSymbol))
+			{
+				generator->ScopeLabel(label+format::NumberToString<int>(blockNum++));
+				block();
+			}
+			else
+			{
+				generator->ScopeLabel(label+format::NumberToString<int>(blockNum++));
+			}
 			expect(Token::EndSymbol);
 			//generator->End(NonTerminal::IfStatement);
 		}
 		
 		/*
-			<condition> ::= identifier <conditional operator> identifier | identifier <conditional operator> numberConstant	| numberConstant <conditional operator> identifier | numberConstant <conditional operator> numberConstant
+			<condition> ::= <expression> <conditional operator> <expression>
 		*/
-		void Parser::condition()
+		void Parser::condition(std::string jumpLabel)
 		{
-			//generator->Begin(NonTerminal::Condition);
-			if(look(Token::Identifier))
+			expression();
+
+			Token token = forward();
+
+			expression();
+
+			if(token.Symbol == Token::GreaterSymbol)
 			{
-				conditionalOperator();
-				if(!accept(Token::Identifier) && !accept(Token::IntegerConstant) && !accept(Token::DecimalConstant))
-					throw ParserExpectException(token, "identifier or constant");
+				generator->JumpLessEqual(jumpLabel);
 			}
-			else if(look(Token::DecimalConstant) || look(Token::IntegerConstant))
+			else if(token.Symbol == Token::GreaterEqualSymbol)
 			{
-				conditionalOperator();
-				if(!accept(Token::Identifier) && !accept(Token::IntegerConstant) && !accept(Token::DecimalConstant))
-					throw ParserExpectException(token, "identifier or constant");	
+				generator->JumpLess(jumpLabel);
+			}
+			else if(token.Symbol == Token::EqualSymbol)
+			{
+				generator->JumpNotEqual(jumpLabel);
+			}
+			else if(token.Symbol == Token::NotEqualSymbol)
+			{
+				generator->JumpEqual(jumpLabel);
+			}
+			else if(token.Symbol == Token::LessSymbol)
+			{
+				generator->JumpGreaterEqual(jumpLabel);
+			}
+			else if(token.Symbol == Token::LessEqualSymbol)
+			{
+				generator->JumpGreater(jumpLabel);
 			}
 			else
-			{
-				throw ParserExpectException(token, "condition");
-			}
-			//generator->End(NonTerminal::Condition);
-		}
-
-		/*
-			<conditional operator> ::= > | >= | == | != | < | <=
-		*/
-		void Parser::conditionalOperator()
-		{
-			//generator->Begin(NonTerminal::ConditionalOperator);
-			if(!accept(Token::GreaterSymbol))
-				if(!accept(Token::GreaterEqualSymbol))
-					if(!accept(Token::EqualSymbol))
-						if(!accept(Token::NotEqualSymbol))
-							if(!accept(Token::LessSymbol))
-								if(!accept(Token::LessEqualSymbol))
-									throw ParserExpectException(token, "conditional operator");
-			//generator->End(NonTerminal::ConditionalOperator);
+				throw ParserExpectException(token, "conditional operator");
 		}
 		
 		/*
@@ -586,7 +602,6 @@ namespace pim
 		{
 			if(symbol == token.Symbol)
 			{
-				//generator->Insert(token);
 				lastToken = token;
 				if(previousTokens.size())
 				{
@@ -595,10 +610,10 @@ namespace pim
 				}
 				else
 					token = scanner->NextToken();
-				std::cout << "Symbol " << Token::SymbolNames[symbol] << " " << lastToken.Source << std::endl;
+				//std::cout << "Symbol " << Token::SymbolNames[symbol] << " " << lastToken.Source << std::endl;
 				return true;
 			}
-			std::cout << "Bad Symbol " << Token::SymbolNames[symbol] << " " << token.Source << " (" << token.GetName() << ")" << std::endl;
+			//std::cout << "Bad Symbol " << Token::SymbolNames[symbol] << " " << token.Source << " (" << token.GetName() << ")" << std::endl;
 			return false;
 		}
 
@@ -614,6 +629,19 @@ namespace pim
 		{
 			previousTokens.push(token);
 			token = lastToken;
+		}
+
+		Token Parser::forward()
+		{
+			lastToken = token;
+			if(previousTokens.size())
+			{
+				token = previousTokens.top();
+				previousTokens.pop();
+			}
+			else
+				token = scanner->NextToken();
+			return lastToken;
 		}
 
 		void Parser::expect(int symbol)

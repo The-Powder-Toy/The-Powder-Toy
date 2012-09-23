@@ -33,6 +33,8 @@ namespace pim
 			"break",
 			"continue",
 			"if",
+			"else",
+			"elseif",
 			"then",
 			"end",
 			"kill",
