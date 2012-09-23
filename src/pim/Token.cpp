@@ -39,6 +39,7 @@ namespace pim
 			"create",
 			"transform",
 			"get",
+			"RUNTIMEMACRO",
 			"IDENTIFIER",
 			",",
 			".",

@@ -545,7 +545,7 @@ namespace pim
 		}
 
 		/*
-			<variable value> ::= <function call> | identifier | identifier.property | <particle action>
+			<variable value> ::= <function call> | identifier | identifier.property | rtmacro | <particle action>
 		*/
 		void Parser::variableValue()
 		{
@@ -571,6 +571,10 @@ namespace pim
 						generator->LoadVariable(variable);
 					}
 				}
+			}
+			else if(accept(Token::RTMacro))
+			{
+				generator->RTConstant(variable);
 			}
 			else
 			{

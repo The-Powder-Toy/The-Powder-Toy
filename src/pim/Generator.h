@@ -100,6 +100,12 @@ namespace pim
 			typedef std::pair<int, int*> ValuePlaceholder;
 			std::vector<ValuePlaceholder> valuePlaceholders;
 
+			typedef std::pair<int, std::string> PropertyPlaceholder;
+			std::vector<PropertyPlaceholder> propertyPlaceholders;
+
+			typedef std::pair<int, std::string> MacroPlaceholder;
+			std::vector<MacroPlaceholder> macroPlaceholders;
+
 			std::vector<Label> labelPositions;
 
 			std::vector<unsigned char> program;
@@ -110,6 +116,8 @@ namespace pim
 			void writeConstant(int constant);
 			void writeConstantPlaceholder(std::string label);
 			void writeConstantPlaceholder(int * value);
+			void writeConstantMacroPlaceholder(std::string macro);
+			void writeConstantPropertyPlaceholder(std::string property);
 		
 		public:
 			Generator();
@@ -134,6 +142,7 @@ namespace pim
 
 			void Duplicate();
 			void Discard();
+			void RTConstant(std::string name);
 			void Constant(std::string constant);
 			void Increment(std::string constant);
 			void Add();

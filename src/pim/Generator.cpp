@@ -1,5 +1,6 @@
 //Code generator for bytecode
 #include <sstream>
+#include <fstream>
 #include "Format.h"
 #include "Generator.h"
 #include "Opcodes.h"
@@ -60,8 +61,27 @@ namespace pim
 			program.push_back(0);
 		}
 
+		void Generator::writeConstantPropertyPlaceholder(std::string property)
+		{
+			propertyPlaceholders.push_back(PropertyPlaceholder(program.size(), property));
+			program.push_back(0);
+			program.push_back(0);
+			program.push_back(0);
+			program.push_back(0);
+		}
+
+		void Generator::writeConstantMacroPlaceholder(std::string macro)
+		{
+			macroPlaceholders.push_back(MacroPlaceholder(program.size(), macro));
+			program.push_back(0);
+			program.push_back(0);
+			program.push_back(0);
+			program.push_back(0);
+		}
+
 		std::vector<unsigned char> Generator::Finish()
 		{
+			//All compile time labels, macros, etc
 			for(std::vector<Placeholder>::iterator iter = placeholders.begin(), end = placeholders.end(); iter != end; ++iter)
 			{
 				bool found = false;
@@ -98,7 +118,95 @@ namespace pim
 				program[cPosition.first+3] = (value >> 24) & 0xFF;
 			}
 
-			return program;
+			//Build file
+			int macroSizePos, propSizePos, codeSizePos, macroSize = 0, propSize = 0, codeSize = program.size();
+			std::vector<unsigned char> file;
+			file.push_back('P');
+			file.push_back('V');
+			file.push_back('M');
+			file.push_back('1');
+
+
+			macroSizePos = file.size();
+			file.push_back(0);
+			file.push_back(0);
+			file.push_back(0);
+			file.push_back(0);
+
+			propSizePos = file.size();
+			file.push_back(0);
+			file.push_back(0);
+			file.push_back(0);
+			file.push_back(0);
+
+			codeSizePos = file.size();
+			file.push_back(0);
+			file.push_back(0);
+			file.push_back(0);
+			file.push_back(0);
+
+			//Macros
+			for(std::vector<MacroPlaceholder>::iterator iter = macroPlaceholders.begin(), end = macroPlaceholders.end(); iter != end; ++iter)
+			{
+				MacroPlaceholder cPosition = *iter;
+				int position = cPosition.first;
+
+				file.push_back(position & 0xFF);
+				file.push_back((position >> 8) & 0xFF);
+				file.push_back((position >> 16) & 0xFF);
+				file.push_back((position >> 24) & 0xFF);
+				macroSize += 4;
+
+				file.push_back(cPosition.second.length());
+				macroSize += 1;
+				file.insert(file.end(), cPosition.second.begin(), cPosition.second.end());
+				macroSize += cPosition.second.length();
+			}
+
+			file[macroSizePos] = macroSize & 0xFF;
+			file[macroSizePos+1] = (macroSize >> 8) & 0xFF;
+			file[macroSizePos+2] = (macroSize >> 16) & 0xFF;
+			file[macroSizePos+3] = (macroSize >> 24) & 0xFF;
+
+
+			//Macros
+			for(std::vector<PropertyPlaceholder>::iterator iter = propertyPlaceholders.begin(), end = propertyPlaceholders.end(); iter != end; ++iter)
+			{
+				PropertyPlaceholder cPosition = *iter;
+				int position = cPosition.first;
+
+				file.push_back(position & 0xFF);
+				file.push_back((position >> 8) & 0xFF);
+				file.push_back((position >> 16) & 0xFF);
+				file.push_back((position >> 24) & 0xFF);
+				propSize += 4;
+
+				file.push_back(cPosition.second.length());
+				propSize += 1;
+				file.insert(file.end(), cPosition.second.begin(), cPosition.second.end());
+				propSize += cPosition.second.length();
+			}
+
+			file[propSizePos] = propSize & 0xFF;
+			file[propSizePos+1] = (propSize >> 8) & 0xFF;
+			file[propSizePos+2] = (propSize >> 16) & 0xFF;
+			file[propSizePos+3] = (propSize >> 24) & 0xFF;
+
+			file.insert(file.end(), program.begin(), program.end());
+
+			file[codeSizePos] = codeSize & 0xFF;
+			file[codeSizePos+1] = (codeSize >> 8) & 0xFF;
+			file[codeSizePos+2] = (codeSize >> 16) & 0xFF;
+			file[codeSizePos+3] = (codeSize >> 24) & 0xFF;
+
+			std::ofstream newFile("test.pvm");
+			for(std::vector<unsigned char>::iterator iter = file.begin(), end = file.end(); iter != end; ++iter)
+			{
+				newFile.put(*iter);
+			}
+			newFile.close();
+
+			return file;
 		}
 
 		std::string Generator::UniqueLabel(std::string prefix)
@@ -177,6 +285,12 @@ namespace pim
 		{
 			writeOpcode(Opcode::Store);
 			writeConstant(currentScope->GetDefinition(label).StackPosition);
+		}
+
+		void Generator::RTConstant(std::string name)
+		{
+			writeOpcode(Opcode::Constant);
+			writeConstantMacroPlaceholder(name);
 		}
 
 		void Generator::Constant(std::string constant)
@@ -260,13 +374,13 @@ namespace pim
 		void Generator::LoadProperty(std::string property)
 		{
 			writeOpcode(Opcode::LoadProperty);
-			writeConstant(0);
+			writeConstantPropertyPlaceholder(property);
 		}
 
 		void Generator::StoreProperty(std::string property)
 		{
 			writeOpcode(Opcode::StoreProperty);
-			writeConstant(0);
+			writeConstantPropertyPlaceholder(property);
 		}
 
 		void Generator::IntegerToDecimal()

@@ -53,6 +53,7 @@ namespace pim
 				TransformSymbol,
 				GetSymbol,
 
+				RTMacro,
 				Identifier,
 
 				CommaSymbol,

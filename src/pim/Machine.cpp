@@ -25,9 +25,154 @@ namespace pim
 
 	}
 
-	void VirtualMachine::LoadProgram(std::vector<unsigned char> programData)
+	void VirtualMachine::LoadProgram(std::vector<unsigned char> fileData)
 	{
 		int lastBit = 0;
+
+		if(!(fileData[0] == 'P' && fileData[1] == 'V' && fileData[2] == 'M' && fileData[3] == '1' && fileData.size() >= 16))
+		{
+			throw InvalidProgramException();
+		}
+
+		int macroSize = 0, propSize = 0, codeSize = 0;
+		macroSize = fileData[4];
+		macroSize |= fileData[5] << 8;
+		macroSize |= fileData[6] << 16;
+		macroSize |= fileData[7] << 24;
+
+		propSize = fileData[8];
+		propSize |= fileData[9] << 8;
+		propSize |= fileData[10] << 16;
+		propSize |= fileData[11] << 24;
+
+		codeSize = fileData[12];
+		codeSize |= fileData[13] << 8;
+		codeSize |= fileData[14] << 16;
+		codeSize |= fileData[15] << 24;
+
+		if(fileData.size() < 16 + macroSize + propSize + codeSize)
+		{
+			throw InvalidProgramException();
+		}
+
+		//std::vector<std::pair<int, int> > insertions;
+
+		int macroOffset = 16;
+		int propOffset = macroOffset+macroSize;
+		int codeOffset = propOffset+propSize;
+
+
+		int filePosition = macroOffset;
+		while(filePosition + 4 < macroSize + macroOffset)
+		{
+			std::string macro;
+			int macroPosition;
+			int macroValue;
+
+			macroPosition = fileData[filePosition++];
+			macroPosition |= fileData[filePosition++] << 8;
+			macroPosition |= fileData[filePosition++] << 16;
+			macroPosition |= fileData[filePosition++] << 24;
+
+			int stringLength = fileData[filePosition++];
+			if(filePosition + stringLength > macroSize + macroOffset)
+			{
+				throw InvalidProgramException();
+			}
+
+			macro.insert(macro.begin(), fileData.begin()+filePosition, fileData.begin()+filePosition+stringLength);
+			filePosition += stringLength;
+
+			bool resolved = false;
+			for(int i = 0; i < PT_NUM; i++)
+			{
+				if(sim->elements[i].Enabled && sim->elements[i].Identifier == macro)
+				{
+					macroValue = i;
+					resolved = true;
+				}
+			}
+			if(!resolved)
+			{
+				throw UnresolvedValueException(macro);
+			}
+
+			if(macroPosition + 3 >= codeSize)
+			{
+				throw InvalidProgramException();
+			}
+
+			std::cout << "Macro insertion [" << macro << "] at " << macroPosition << " with " << macroValue << std::endl;
+
+			fileData[codeOffset+macroPosition] = macroValue & 0xFF;
+			fileData[codeOffset+macroPosition+1] = (macroValue >> 8) & 0xFF;
+			fileData[codeOffset+macroPosition+2] = (macroValue >> 16) & 0xFF;
+			fileData[codeOffset+macroPosition+3] = (macroValue >> 24) & 0xFF;
+			//insertions.push_back(std::pair<int, int>(macroPosition, macroValue));
+		}
+
+		filePosition = propOffset;
+		while(filePosition + 4 < propSize + propOffset)
+		{
+			std::string prop;
+			int propPosition;
+			int propValue;
+
+			propPosition = fileData[filePosition++];
+			propPosition |= fileData[filePosition++] << 8;
+			propPosition |= fileData[filePosition++] << 16;
+			propPosition |= fileData[filePosition++] << 24;
+
+			int stringLength = fileData[filePosition++];
+			if(filePosition + stringLength > propSize + propOffset)
+			{
+				throw InvalidProgramException();
+			}
+
+			prop.insert(prop.begin(), fileData.begin()+filePosition, fileData.begin()+filePosition+stringLength);
+			filePosition += stringLength;
+
+			bool resolved = false;
+
+			std::vector<StructProperty> properties = Particle::GetProperties();
+			for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
+			{
+				StructProperty property = *iter;
+				std::cout << property.Offset << std::endl;
+				if(property.Name == prop &&
+					(property.Type == StructProperty::ParticleType ||
+						property.Type == StructProperty::Colour ||
+						property.Type == StructProperty::Integer ||
+						property.Type == StructProperty::UInteger ||
+						property.Type == StructProperty::Float)
+					)
+				{
+					propValue = property.Offset;
+					resolved = true;
+					break;
+				}
+			}
+			if(!resolved)
+			{
+				throw UnresolvedValueException(prop);
+			}
+
+			if(propPosition + 3 >= codeSize)
+			{
+				throw InvalidProgramException();
+			}
+
+			std::cout << "Property insertion [" << prop << "] at " << propPosition << " with " << propValue << std::endl;
+
+			fileData[codeOffset+propPosition] = propValue & 0xFF;
+			fileData[codeOffset+propPosition+1] = (propValue >> 8) & 0xFF;
+			fileData[codeOffset+propPosition+2] = (propValue >> 16) & 0xFF;
+			fileData[codeOffset+propPosition+3] = (propValue >> 24) & 0xFF;
+			//insertions.push_back(std::pair<int, int>(macroPosition, macroValue));
+		}
+
+		std::vector<unsigned char> programData;
+		programData.insert(programData.begin(), fileData.begin()+codeOffset, fileData.begin()+codeOffset+codeSize);
 
 		romSize = programData.size();
 
@@ -37,8 +182,9 @@ namespace pim
 
 		rom = new Instruction[romSize];
 
-		int programPosition = 0;
 		int pc = 0;
+		int programPosition = 0;
+
 		while(programPosition < programData.size())
 		{
 			int argSize = 0;
@@ -46,7 +192,7 @@ namespace pim
 			instruction.Opcode = programData[programPosition++];
 			if(argSize = OpcodeArgSize(instruction.Opcode))
 			{
-				if(argSize == 4)
+				if(argSize == 4 && programPosition+3 < programData.size())
 				{
 					int tempInt = 0;
 					tempInt |= programData[programPosition];
@@ -56,12 +202,13 @@ namespace pim
 
 
 					std::cout << "Got integer " << tempInt << std::endl;
-					//std::cout << "Got byte " << (int)(programData[programPosition]) << std::endl;
-					//std::cout << "Got byte " << (int)(programData[programPosition+1]) << std::endl;
-					//std::cout << "Got byte " << (int)(programData[programPosition+2]) << std::endl;
-					//std::cout << "Got byte " << (int)(programData[programPosition+3]) << std::endl;
 
-					//*(int*)&rom[programPosition] = tempInt;
+					if(instruction.Opcode == Opcode::LoadProperty || instruction.Opcode == Opcode::StoreProperty)
+					{
+						if(tempInt > offsetof(Particle, dcolour))
+							throw InvalidProgramException();
+					}
+
 					instruction.Parameter.Integer = tempInt;
 
 					programPosition += 4; 
@@ -74,8 +221,6 @@ namespace pim
 			rom[pc++] = instruction;
 		}
 		romSize = pc;
-		//std::copy(programData.begin(), programData.end(), rom);
-
 
 		ramSize = 1024;
 		ramMask = ramSize - 1;

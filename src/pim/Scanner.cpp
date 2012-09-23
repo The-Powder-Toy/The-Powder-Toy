@@ -86,6 +86,21 @@ namespace pim
 					return Token(Token::DecimalConstant, cToken, cLine);
 				return Token(Token::IntegerConstant, cToken, cLine);
 			}
+			else if(cChar == '[')
+			{
+				cToken.clear();
+				nextCharacter();
+				while(std::isalpha(cChar) || std::isdigit(cChar) || cChar == '_' || cChar == '-')
+				{
+					cToken.push_back(cChar);
+					nextCharacter();
+				}
+				nextCharacter();
+
+				std::transform(cToken.begin(), cToken.end(), cToken.begin(), ::toupper);
+
+				return Token(Token::RTMacro, cToken, cLine);
+			}
 			else if(cChar == '=')
 			{
 				nextCharacter();

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <cstring>
 
 class Simulation;
 namespace pim
@@ -19,6 +20,29 @@ namespace pim
 	{
 		int Opcode;
 		Word Parameter;
+	};
+	class InvalidProgramException: public std::exception
+	{
+	public:
+		InvalidProgramException() { } 
+		const char * what() const throw()
+		{
+			return "Invalid program";
+		}
+		~InvalidProgramException() throw() {};
+	};
+	class UnresolvedValueException: public std::exception
+	{
+		char * error;
+	public:
+		UnresolvedValueException(std::string value) {
+			error = strdup(std::string("Unresolved value: " + value).c_str());
+		} 
+		const char * what() const throw()
+		{
+			return error;
+		}
+		~UnresolvedValueException() throw() {};
 	};
 	class VirtualMachine
 	{
@@ -42,7 +66,7 @@ namespace pim
 		#define CSA(argument) (*((Word*)&ram[framePointer-argument]))
 		#define CS() (*((Word*)&ram[callStack]))
 		#define PS() (*((Word*)&ram[programStack]))
-		#define PPROP(index, property) (*((Word*)(&sim->parts[(index)]+property)))
+		#define PPROP(index, property) (*((Word*)(((char*)&sim->parts[(index)])+property)))
 
 		int programStack;	//Points to the item on top of the Program Stack
 		int callStack;		//Points to the item on top of the call stack
