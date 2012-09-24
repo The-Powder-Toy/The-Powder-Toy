@@ -412,6 +412,218 @@ namespace pim
 		//std::cout << "CS: " << callStack << " PS: " << programStack << std::endl;
 	}
 
+	void VirtualMachine::Compile()
+	{
+		while(programCounter < romSize)
+		{
+			Word argument = rom[programCounter].Parameter;
+			switch(rom[programCounter].Opcode)
+			{
+			case Opcode::Load:
+				emit("83 EF 04"); //sub edi 4
+
+				//Load value at base stack + offset into eax
+				emit("8B 85");	//mov eax [ebp+ram+offset]
+				emit((int) (ram - argument.Integer));
+				
+				//Store value in eax onto top of program stack
+				emit("89 07");	//mov [edi], eax
+				emit((int) (ram));
+				break;
+			case Opcode::Store:
+				//Load value on top of the program stack into eax
+				emit("8B 07");	//mov eax [edi]
+				emit((int) (ram));
+
+				//Load value in eax onto top of program stack
+				emit("89 85");	//mov [ebp+ram+offset], eax
+				emit((int) (ram - argument.Integer));
+
+				emit("83 C7 04"); //add edi 4
+				break;
+			case Opcode::Constant:
+				emit("83 EF 04"); //sub edi 4
+				
+				emit("C7 07"); //mov [edi] constant
+				emit((int) (argument.Integer));
+				break;
+			case Opcode::Increment:
+				emit("81 07");	//add [edi] constant
+				emit((int) (argument.Integer));
+				break;
+			case Opcode::Discard:
+				emit("83 C7 04"); //add edi 4
+				break;
+			case Opcode::Duplicate:
+				//Copy value on stack into register
+				emit("8B 07"); //mov eax [edi]
+				//Adjust program stack pointer
+				emit("83 EF 04"); //sub edi 4
+				//Move value in eax into program stack
+				emit("89 07"); //mov [edi], eax
+				break;
+			case Opcode::Add:
+				emit("8B 07"); //mov eax [edi]
+				emit("01 47 04"); //add [edi+4] eax
+				emit("83 C7 04"); //add edi 4
+				break;
+			case Opcode::Subtract:
+				emit("8B 07"); //mov eax [edi]
+				emit("29 47 04"); //sub [edi+4] eax
+				emit("83 C7 04"); //add edi 4
+				break;
+			case Opcode::Multiply:
+				emit("8B 47 04"); //mov eax [edi+4]
+				emit("F7 2F"); //imul [edi]
+				emit("89 47 04"); //mov [edi+4] eax
+				emit("83 C7 04"); //add edi 4
+				break;
+			case Opcode::Divide:
+				emit("8B 47 04");//mov eax [edi+4]
+				emit("99"); //cdq
+				emit("F7 3F"); //idiv [edi]
+				emit("89 47 04"); //mov [edi+4] eax
+				emit("83 C7 04"); //add edi 4
+				break;
+			case Opcode::Modulus:
+				emit("8B 47 04"); // mov eax [edi+4]
+				emit("99"); // cdq
+				emit("F7 3F"); // idiv [edi]
+				emit("89 57 04"); // mov [edi+4] edx
+				emit("83 C7 04"); //add edi 4
+				break;
+			case Opcode::Negate:
+				emit("F7 1F"); //neg [edi]
+				break;
+			case Opcode::Create:
+				//temp1 = PSPop();
+				//temp2 = PSPop();
+				//temp3 = PSPop();
+				//PSPush(sim->create_part(PSPop().Integer, temp3.Integer, temp2.Integer, temp1.Integer));
+				break;
+			case Opcode::Transform:
+				//PSPop();
+				//PSPop();
+				//PSPush((Word)-1);
+				break;
+			case Opcode::Get:
+				//temp1 = PSPop();
+				//temp2 = PSPop();
+				//if(temp1.Integer < 0 || temp1.Integer >= YRES || temp2.Integer < 0 || temp2.Integer >= XRES || !(temp = sim->pmap[temp1.Integer][temp2.Integer]))
+				//{
+				//	PSPush(-1);
+				//	break;
+				//}
+				//PSPush(temp>>8);
+				break;
+			case Opcode::Position:
+				//temp1 = PSPop();
+				//if(temp1.Integer < 0 || temp1.Integer >= NPART || !sim->parts[temp1.Integer].type)
+				//{
+				//	PSPush(-1);
+				//	PSPush(-1);
+				//	break;
+				//}
+				//PSPush((int)sim->parts[temp1.Integer].x);
+				//PSPush((int)sim->parts[temp1.Integer].y);
+				break;
+			case Opcode::Kill:
+				//sim->kill_part(PSPop().Integer);
+				//PSPush((Word)0);
+				break;
+			case Opcode::LoadProperty:
+				//PSPush(PPROP(PSPop().Integer, argument.Integer));
+				break;
+			case Opcode::StoreProperty:
+				//temp1 = PSPop();
+				//PPROP(temp1.Integer, argument.Integer) = PSPop();
+				break;
+			case Opcode::JumpEqual:
+				emit("83 C7 04"); //add edi 8
+				emit("8B 47 FC"); //mov eax, dword ptr [edi-4]
+				emit("3B 47 F7"); //cmp eax, dword ptr [edi-8]
+				emit("75 06"); //jne +6
+				emit("FF 25"); //jmp [0x12345678]
+				emit(0);
+				break;
+			case Opcode::JumpNotEqual:
+				emit("83 C7 04"); //add edi 8
+				emit("8B 47 FC"); //mov eax, dword ptr [edi-4]
+				emit("3B 47 F7"); //cmp eax, dword ptr [edi-8]
+				emit("74 06"); //je +6
+				emit("FF 25"); //jmp [0x12345678]
+				emit(0);
+				break;
+			case Opcode::JumpGreater:
+				emit("83 C7 04"); //add edi 8
+				emit("8B 47 FC"); //mov eax, dword ptr [edi-4]
+				emit("3B 47 F7"); //cmp eax, dword ptr [edi-8]
+				emit("7E 06"); //jng +6
+				emit("FF 25"); //jmp [0x12345678]
+				emit(0);
+				break;
+			case Opcode::JumpGreaterEqual:
+				emit("83 C7 04"); //add edi 8
+				emit("8B 47 FC"); //mov eax, dword ptr [edi-4]
+				emit("3B 47 F7"); //cmp eax, dword ptr [edi-8]
+				emit("7C 06"); //jnge +6
+				emit("FF 25"); //jmp [0x12345678]
+				emit(0);
+				break;
+			case Opcode::JumpLess:
+				emit("83 C7 04"); //add edi 8
+				emit("8B 47 FC"); //mov eax, dword ptr [edi-4]
+				emit("3B 47 F7"); //cmp eax, dword ptr [edi-8]
+				emit("7D 06"); //jnl +6
+				emit("FF 25"); //jmp [0x12345678]
+				emit(0);
+				break;
+			case Opcode::JumpLessEqual:
+				emit("83 C7 04"); //add edi 8
+				emit("8B 47 FC"); //mov eax, dword ptr [edi-4]
+				emit("3B 47 F7"); //cmp eax, dword ptr [edi-8]
+				emit("7F 06"); //jnle +6
+				emit("FF 25"); //jmp [0x12345678]
+				emit(0);
+				break;
+			case Opcode::Jump:
+				//programCounter = argument.Integer-1;
+				break;
+			case Opcode::Return:
+				emit("81 C6"); //add esi constant
+				emit(argument.Integer);
+				break;
+			case Opcode::LocalEnter:
+				emit("81 EE"); //sub esi constant
+				emit(argument.Integer);
+				break;
+			}
+			//std::cout << programStack << std::endl;
+			programCounter++;
+		}
+		//std::cout << "CS: " << callStack << " PS: " << programStack << std::endl;
+	}
+
+	void VirtualMachine::emit(std::string opcode)
+	{
+
+	}
+
+	void VirtualMachine::emit(int constant)
+	{
+
+	}
+
+	void VirtualMachine::CallCompiled(std::string entryPoint)
+	{
+
+	}
+
+	void VirtualMachine::CallCompiled(int entryPoint)
+	{
+
+	}
+
 	void VirtualMachine::Call(std::string entryPoint)
 	{
 

@@ -59,6 +59,9 @@ namespace pim
 		int romSize;
 		int romMask;
 
+		unsigned char * compiledRom;
+		int compiledRomSize;
+
 		unsigned char * ram;
 		int ramSize;
 		int ramMask;
@@ -76,12 +79,16 @@ namespace pim
 
 		int programCounter;
 
-
+		void emit(std::string opcode);
+		void emit(int constant);
 	public:
 		VirtualMachine(Simulation * sim);
 		int OpcodeArgSize(int opcode);
 		void LoadProgram(std::vector<unsigned char> programData);
 		void Run();
+		void Compile();
+		void CallCompiled(std::string entryPoint);
+		void CallCompiled(int entryPoint);
 		void Call(std::string entryPoint);
 		void Call(int entryPoint);
 		inline void PSPush(Word word)
