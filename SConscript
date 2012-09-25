@@ -66,9 +66,9 @@ if GetOption("toolprefix"):
 		env['RC'] = GetOption("toolprefix")+env['RC']
 
 #Check for headers and libraries
-conf = Configure(env)
-
 if not GetOption("macosx"):
+	conf = Configure(env)
+
 	try:
 		env.ParseConfig('sdl-config --cflags')
 		env.ParseConfig('sdl-config --libs')
@@ -81,8 +81,7 @@ if not GetOption("macosx"):
 			else:
 				env.Append(CPPPATH=GetOption("sdl-dir"))
 
-#Find correct lua include dir
-if not GetOption("macosx"):
+	#Find correct lua include dir
 	try:
 		env.ParseConfig('pkg-config --cflags lua5.1')
 	except:
@@ -93,33 +92,34 @@ if not GetOption("macosx"):
 			else:
 				env.Append(CPPPATH=GetOption("lua-dir"))
 
-#Check for FFT lib
-if not GetOption("macosx"):
+	#Check for FFT lib
 	if not conf.CheckLib('fftw3f') and not conf.CheckLib('fftw3f-3'):
 		print "libfftw3f not found or not installed"
 		raise SystemExit(1)
 
-#Check for Bzip lib
-if not conf.CheckLib('bz2'):
-	print "libbz2 not found or not installed"
-	raise SystemExit(1)
-
-#Check for zlib
-if not conf.CheckLib('z'):
-	print "libz not found or not installed"
-	raise SystemExit(1)
-
-if not conf.CheckCHeader("bzlib.h"):
-	print "bzip2 headers not found"
-	raise SystemExit(1)
-
-#Check for Lua lib
-if not GetOption("macosx"):
-	if not conf.CheckLib('lua') and not conf.CheckLib('lua5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua-5.1'):
-		print "liblua not found or not installed"
+	#Check for Bzip lib
+	if not conf.CheckLib('bz2'):
+		print "libbz2 not found or not installed"
 		raise SystemExit(1)
 
-env = conf.Finish();
+	#Check for zlib
+	if not conf.CheckLib('z'):
+		print "libz not found or not installed"
+		raise SystemExit(1)
+
+	if not conf.CheckCHeader("bzlib.h"):
+		print "bzip2 headers not found"
+		raise SystemExit(1)
+
+	#Check for Lua lib
+	if not GetOption("macosx"):
+		if not conf.CheckLib('lua') and not conf.CheckLib('lua5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua-5.1'):
+			print "liblua not found or not installed"
+			raise SystemExit(1)
+
+	env = conf.Finish();
+else:
+	env.Append(LIBS=['z', 'bz2', 'fftw3f'])
 
 env.Append(CPPPATH=['src/', 'data/', 'generated/'])
 env.Append(CCFLAGS=['-w', '-std=c99', '-fkeep-inline-functions'])
