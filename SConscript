@@ -68,33 +68,36 @@ if GetOption("toolprefix"):
 #Check for headers and libraries
 conf = Configure(env)
 
-try:
-	env.ParseConfig('sdl-config --cflags')
-	env.ParseConfig('sdl-config --libs')
-except:
-	conf.CheckLib("SDL")
-	if(GetOption("sdl-dir")):
-		if not conf.CheckCHeader(GetOption("sdl-dir") + '/SDL.h'):
-			print "sdl headers not found or not installed"
-			raise SystemExit(1)
-		else:
-			env.Append(CPPPATH=GetOption("sdl-dir"))
+if not GetOption("macosx"):
+	try:
+		env.ParseConfig('sdl-config --cflags')
+		env.ParseConfig('sdl-config --libs')
+	except:
+		conf.CheckLib("SDL")
+		if(GetOption("sdl-dir")):
+			if not conf.CheckCHeader(GetOption("sdl-dir") + '/SDL.h'):
+				print "sdl headers not found or not installed"
+				raise SystemExit(1)
+			else:
+				env.Append(CPPPATH=GetOption("sdl-dir"))
 
 #Find correct lua include dir
-try:
-	env.ParseConfig('pkg-config --cflags lua5.1')
-except:
-	if(GetOption("lua-dir")):
-		if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
-			print "lua5.1 headers not found or not installed"
-			raise SystemExit(1)
-		else:
-			env.Append(CPPPATH=GetOption("lua-dir"))
+if not GetOption("macosx"):
+	try:
+		env.ParseConfig('pkg-config --cflags lua5.1')
+	except:
+		if(GetOption("lua-dir")):
+			if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
+				print "lua5.1 headers not found or not installed"
+				raise SystemExit(1)
+			else:
+				env.Append(CPPPATH=GetOption("lua-dir"))
 
 #Check for FFT lib
-if not conf.CheckLib('fftw3f') and not conf.CheckLib('fftw3f-3'):
-	print "libfftw3f not found or not installed"
-	raise SystemExit(1)
+if not GetOption("macosx"):
+	if not conf.CheckLib('fftw3f') and not conf.CheckLib('fftw3f-3'):
+		print "libfftw3f not found or not installed"
+		raise SystemExit(1)
 
 #Check for Bzip lib
 if not conf.CheckLib('bz2'):
