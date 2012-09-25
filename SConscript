@@ -148,9 +148,13 @@ if(GetOption('lin')):
 	else:
 		env.Append(LINKFLAGS=['-m32'])
 		env.Append(CCFLAGS=['-m32'])
+if(GetOption('macosx')):
+	env.Append(CPPDEFINES=["MACOSX"])
 
 if GetOption('_64bit'):
 	env.Append(CPPDEFINES=["_64BIT"])
+	env.Append(CCFLAGS=['-I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/Lua.framework/Headers'])
+	env.Append(LINKFLAGS=['-lfftw3f -framework SDL -framework Lua -framework Cocoa'])
 
 if(GetOption('beta')):
 	env.Append(CPPDEFINES='BETA')
