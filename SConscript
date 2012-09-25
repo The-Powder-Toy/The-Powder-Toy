@@ -110,9 +110,10 @@ if not conf.CheckCHeader("bzlib.h"):
 	raise SystemExit(1)
 
 #Check for Lua lib
-if not conf.CheckLib('lua') and not conf.CheckLib('lua5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua-5.1'):
-	print "liblua not found or not installed"
-	raise SystemExit(1)
+if not GetOption("macosx"):
+	if not conf.CheckLib('lua') and not conf.CheckLib('lua5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua-5.1'):
+		print "liblua not found or not installed"
+		raise SystemExit(1)
 
 env = conf.Finish();
 
@@ -150,11 +151,27 @@ if(GetOption('lin')):
 		env.Append(CCFLAGS=['-m32'])
 if(GetOption('macosx')):
 	env.Append(CPPDEFINES=["MACOSX"])
+	env.Append(CCFLAGS=['-I/Library/Frameworks/SDL.framework/Headers'])
+	env.Append(CCFLAGS=['-I/Library/Frameworks/Lua.framework/Headers'])
+	env.Append(LINKFLAGS=['-lfftw3f'])
+	env.Append(LINKFLAGS=['-framework'])
+	env.Append(LINKFLAGS=['SDL'])
+	env.Append(LINKFLAGS=['-framework'])
+	env.Append(LINKFLAGS=['Lua'])
+	env.Append(LINKFLAGS=['-framework']);
+	env.Append(LINKFLAGS=['Cocoa'])
+	#env.Append(LINKFLAGS=['-framework SDL'])
+	#env.Append(LINKFLAGS=['-framework Lua'])
+	#env.Append(LINKFLAGS=['-framework Cocoa'])
+	if GetOption('_64bit'):
+		env.Append(LINKFAGS=['-m64'])
+		env.Append(CCFLAGS=['-m64'])
+	else:
+		env.Append(LINKFLAGS=['-m32'])
+		env.Append(CCFLAGS=['-m32'])
 
 if GetOption('_64bit'):
 	env.Append(CPPDEFINES=["_64BIT"])
-	env.Append(CCFLAGS=['-I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/Lua.framework/Headers'])
-	env.Append(LINKFLAGS=['-lfftw3f -framework SDL -framework Lua -framework Cocoa'])
 
 if(GetOption('beta')):
 	env.Append(CPPDEFINES='BETA')
@@ -209,6 +226,8 @@ elif(GetOption('opengl-renderer')):
 	raise SystemExit(1)
 
 sources=Glob("src/*.cpp")
+if(GetOption('macosx')):
+	sources +=["SDLMain.m"]
 if(GetOption('win')):
 	sources += env.RES('resources/powder-res.rc')
 sources+=Glob("src/*/*.cpp")

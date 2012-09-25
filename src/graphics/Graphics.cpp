@@ -32,71 +32,7 @@ VideoBuffer::VideoBuffer(VideoBuffer * old):
 	std::copy(old->Buffer, old->Buffer+(old->Width*old->Height), Buffer);
 };
 
-VideoBuffer::~VideoBuffer()
-{
-	delete[] Buffer;
-};
-
-TPT_INLINE void VideoBuffer::BlendPixel(int x, int y, int r, int g, int b, int a)
-{
-#ifdef PIX32OGL
-	pixel t;
-	if (x<0 || y<0 || x>=Width || y>=Height)
-		return;
-	if (a!=255)
-	{
-		t = Buffer[y*(Width)+x];
-		r = (a*r + (255-a)*PIXR(t)) >> 8;
-		g = (a*g + (255-a)*PIXG(t)) >> 8;
-		b = (a*b + (255-a)*PIXB(t)) >> 8;
-		a = a > PIXA(t) ? a : PIXA(t);
-	}
-	Buffer[y*(Width)+x] = PIXRGBA(r,g,b,a);
-#else
-	pixel t;
-	if (x<0 || y<0 || x>=Width || y>=Height)
-		return;
-	if (a!=255)
-	{
-		t = Buffer[y*(Width)+x];
-		r = (a*r + (255-a)*PIXR(t)) >> 8;
-		g = (a*g + (255-a)*PIXG(t)) >> 8;
-		b = (a*b + (255-a)*PIXB(t)) >> 8;
-	}
-	Buffer[y*(Width)+x] = PIXRGB(r,g,b);
-#endif
-}
-
-TPT_INLINE void VideoBuffer::SetPixel(int x, int y, int r, int g, int b, int a)
-{
-	if (x<0 || y<0 || x>=Width || y>=Height)
-			return;
-#ifdef PIX32OGL
-	Buffer[y*(Width)+x] = PIXRGBA(r,g,b,a);
-#else
-	Buffer[y*(Width)+x] = PIXRGB((r*a)>>8, (g*a)>>8, (b*a)>>8);
-#endif
-}
-
-TPT_INLINE void VideoBuffer::AddPixel(int x, int y, int r, int g, int b, int a)
-{
-	pixel t;
-	if (x<0 || y<0 || x>=Width || y>=Height)
-		return;
-	t = Buffer[y*(Width)+x];
-	r = (a*r + 255*PIXR(t)) >> 8;
-	g = (a*g + 255*PIXG(t)) >> 8;
-	b = (a*b + 255*PIXB(t)) >> 8;
-	if (r>255)
-		r = 255;
-	if (g>255)
-		g = 255;
-	if (b>255)
-		b = 255;
-	Buffer[y*(Width)+x] = PIXRGB(r,g,b);
-}
-
-TPT_NO_INLINE int VideoBuffer::SetCharacter(int x, int y, int c, int r, int g, int b, int a)
+int VideoBuffer::SetCharacter(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];
@@ -116,7 +52,7 @@ TPT_NO_INLINE int VideoBuffer::SetCharacter(int x, int y, int c, int r, int g, i
 	return x + w;
 }
 
-TPT_NO_INLINE int VideoBuffer::BlendCharacter(int x, int y, int c, int r, int g, int b, int a)
+int VideoBuffer::BlendCharacter(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];
@@ -136,7 +72,7 @@ TPT_NO_INLINE int VideoBuffer::BlendCharacter(int x, int y, int c, int r, int g,
 	return x + w;
 }
 
-TPT_NO_INLINE int VideoBuffer::AddCharacter(int x, int y, int c, int r, int g, int b, int a)
+int VideoBuffer::AddCharacter(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];
@@ -155,6 +91,11 @@ TPT_NO_INLINE int VideoBuffer::AddCharacter(int x, int y, int c, int r, int g, i
 		}
 	return x + w;
 }
+
+VideoBuffer::~VideoBuffer()
+{
+	delete[] Buffer;
+};
 
 /**
  * Common graphics functions, mostly static methods that provide

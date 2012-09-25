@@ -34,13 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include <iterator>
 #include <string>
 #include <stdexcept>
-
-#if defined(_MSC_VER)
-#define TPT_NO_INLINE //Remove inlines in visual studio, but only the ones that don't work
-#else
-#define TPT_NO_INLINE inline
-#endif
-
+#include "Config.h"
 /*  
 
 TODO:

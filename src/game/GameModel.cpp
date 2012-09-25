@@ -34,8 +34,20 @@ GameModel::GameModel():
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
 
-    std::fill(activeTools, activeTools+3, (Tool*)NULL);
-    
+	std::fill(activeTools, activeTools+3, (Tool*)NULL);
+
+    	//Default render prefs
+	std::vector<unsigned int> tempArray;
+	tempArray.push_back(RENDER_FIRE);
+	tempArray.push_back(RENDER_EFFE);
+	tempArray.push_back(RENDER_BASC);
+	ren->SetRenderMode(tempArray);
+	tempArray.clear();
+
+	ren->SetDisplayMode(tempArray);
+
+	ren->SetColourMode(0);
+
 	//Load config into renderer
 	try
 	{
@@ -60,7 +72,6 @@ GameModel::GameModel():
 	}
 	catch(json::Exception & e)
 	{
-
 	}
 
 	//Load config into simulation

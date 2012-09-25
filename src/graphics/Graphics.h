@@ -95,12 +95,67 @@ public:
 	VideoBuffer(const VideoBuffer & old);
 	VideoBuffer(VideoBuffer * old);
 	VideoBuffer(int width, int height);
-	void BlendPixel(int x, int y, int r, int g, int b, int a);
-	void AddPixel(int x, int y, int r, int g, int b, int a);
-	void SetPixel(int x, int y, int r, int g, int b, int a);
+	TPT_INLINE void BlendPixel(int x, int y, int r, int g, int b, int a)
+	{
+	#ifdef PIX32OGL
+		pixel t;
+		if (x<0 || y<0 || x>=Width || y>=Height)
+			return;
+		if (a!=255)
+		{
+			t = Buffer[y*(Width)+x];
+			r = (a*r + (255-a)*PIXR(t)) >> 8;
+			g = (a*g + (255-a)*PIXG(t)) >> 8;
+			b = (a*b + (255-a)*PIXB(t)) >> 8;
+			a = a > PIXA(t) ? a : PIXA(t);
+		}
+		Buffer[y*(Width)+x] = PIXRGBA(r,g,b,a);
+	#else
+		pixel t;
+		if (x<0 || y<0 || x>=Width || y>=Height)
+			return;
+		if (a!=255)
+		{
+			t = Buffer[y*(Width)+x];
+			r = (a*r + (255-a)*PIXR(t)) >> 8;
+			g = (a*g + (255-a)*PIXG(t)) >> 8;
+			b = (a*b + (255-a)*PIXB(t)) >> 8;
+		}
+		Buffer[y*(Width)+x] = PIXRGB(r,g,b);
+	#endif
+	}
+
+	TPT_INLINE void SetPixel(int x, int y, int r, int g, int b, int a)
+	{
+		if (x<0 || y<0 || x>=Width || y>=Height)
+				return;
+	#ifdef PIX32OGL
+		Buffer[y*(Width)+x] = PIXRGBA(r,g,b,a);
+	#else
+		Buffer[y*(Width)+x] = PIXRGB((r*a)>>8, (g*a)>>8, (b*a)>>8);
+	#endif
+	}
+
+	TPT_INLINE void AddPixel(int x, int y, int r, int g, int b, int a)
+	{
+		pixel t;
+		if (x<0 || y<0 || x>=Width || y>=Height)
+			return;
+		t = Buffer[y*(Width)+x];
+		r = (a*r + 255*PIXR(t)) >> 8;
+		g = (a*g + 255*PIXG(t)) >> 8;
+		b = (a*b + 255*PIXB(t)) >> 8;
+		if (r>255)
+			r = 255;
+		if (g>255)
+			g = 255;
+		if (b>255)
+			b = 255;
+		Buffer[y*(Width)+x] = PIXRGB(r,g,b);
+	}
+	int SetCharacter(int x, int y, int c, int r, int g, int b, int a);
 	int BlendCharacter(int x, int y, int c, int r, int g, int b, int a);
 	int AddCharacter(int x, int y, int c, int r, int g, int b, int a);
-	int SetCharacter(int x, int y, int c, int r, int g, int b, int a);
 	~VideoBuffer();
 };
 

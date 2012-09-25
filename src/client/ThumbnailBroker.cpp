@@ -14,10 +14,10 @@
 ThumbnailBroker::ThumbnailBroker()
 {
 	thumbnailQueueRunning = false;
-	thumbnailQueueMutex = PTHREAD_MUTEX_INITIALIZER;
+	//thumbnailQueueMutex = PTHREAD_MUTEX_INITIALIZER;
 	pthread_mutex_init (&thumbnailQueueMutex, NULL);
 
-	listenersMutex = PTHREAD_MUTEX_INITIALIZER;
+	//listenersMutex = PTHREAD_MUTEX_INITIALIZER;
 	pthread_mutex_init (&listenersMutex, NULL);
 }
 

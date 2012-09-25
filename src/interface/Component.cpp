@@ -5,6 +5,7 @@
 #include "interface/Point.h"
 #include "interface/Window.h"
 #include "interface/Panel.h"
+#include "interface/ContextMenu.h"
 
 using namespace ui;
 

@@ -21,7 +21,7 @@ void Task::Start()
 	done = false;
 	progress = 0;
 	status = "";
-	taskMutex = PTHREAD_MUTEX_INITIALIZER;
+	//taskMutex = PTHREAD_MUTEX_INITIALIZER;
 	before();
 	pthread_mutex_init (&taskMutex, NULL);
 	pthread_create(&doWorkThread, 0, &Task::doWork_helper, this);
