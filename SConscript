@@ -62,7 +62,8 @@ else:
 if GetOption("toolprefix"):
 	env['CC'] = GetOption("toolprefix")+env['CC']
 	env['CXX'] = GetOption("toolprefix")+env['CXX']
-	env['RC'] = GetOption("toolprefix")+env['RC']
+	if GetOption('win'):
+		env['RC'] = GetOption("toolprefix")+env['RC']
 
 #Check for headers and libraries
 conf = Configure(env)
