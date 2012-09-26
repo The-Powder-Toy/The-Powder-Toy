@@ -8,6 +8,7 @@
 #include "interface/Label.h"
 #include "interface/Textbox.h"
 #include "interface/DropDown.h"
+#include "interface/Keys.h"
 #include "dialogues/ErrorMessage.h"
 
 class PropertyWindow: public ui::Window
@@ -23,6 +24,7 @@ public:
 	PropertyWindow(PropertyTool * tool_, Simulation * sim_, ui::Point position_);
 	void SetProperty();
 	virtual void OnDraw();
+	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual void OnTryExit(ExitMethod method);
 	virtual ~PropertyWindow() {}
 	class OkayAction: public ui::ButtonAction
@@ -74,6 +76,7 @@ position(position_)
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(textField);
+	FocusComponent(textField);
 	
 	ui::Engine::Ref().ShowWindow(this);
 }
@@ -205,6 +208,14 @@ void PropertyWindow::OnDraw()
 	
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
+}
+
+void PropertyWindow::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	if (key == KEY_UP)
+		property->SetOption(property->GetOption().second-1);
+	else if (key == KEY_DOWN)
+		property->SetOption(property->GetOption().second+1);
 }
 
 void PropertyTool::Click(Simulation * sim, Brush * brush, ui::Point position)
