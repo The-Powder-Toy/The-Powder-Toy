@@ -2693,6 +2693,8 @@ VideoBuffer Renderer::DumpFrame()
 
 Renderer::~Renderer()
 {
+	delete[] renderModePresets;
+
 #if !defined(OGLR)
 #if defined(OGLI)
 	delete[] vid;
