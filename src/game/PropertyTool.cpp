@@ -64,7 +64,18 @@ position(position_)
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 	
+	class PropertyChanged: public ui::DropDownAction
+	{
+		PropertyWindow * w;
+	public:
+		PropertyChanged(PropertyWindow * w): w(w) { }
+		virtual void OptionChanged(ui::DropDown * sender, std::pair<std::string, int> option)
+		{
+			w->FocusComponent(w->textField);
+		}
+	};
 	property = new ui::DropDown(ui::Point(8, 25), ui::Point(Size.X-16, 17));
+	property->SetActionCallback(new PropertyChanged(this));
 	AddComponent(property);
 	for(int i = 0; i < properties.size(); i++)
 	{
