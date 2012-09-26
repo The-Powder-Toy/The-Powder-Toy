@@ -530,7 +530,8 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	{
 		nextButton->Enabled = true;
 		previousButton->Enabled = true;
-		favButton->Enabled = true;
+		if (Client::Ref().GetAuthUser().ID)
+			favButton->Enabled = true;
 	}
 	if (!sender->GetSavesLoaded() || favButton->GetToggleState())
 	{
@@ -539,7 +540,8 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	}
 	else
 	{
-		ownButton->Enabled = true;
+		if (Client::Ref().GetAuthUser().ID)
+			ownButton->Enabled = true;
 		sortButton->Enabled = true;
 	}
 	if(!saves.size())
