@@ -878,30 +878,51 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		drawchar(x+1, y, 0x98, 128, 160, 255, alpha);
 		break;
 	case IconPressure:
-		drawchar(x+1, y+1, 0x99, 255, 212, 32, alpha);
+		if(invert)
+			drawchar(x+1, y+1, 0x99, 180, 160, 16, alpha);
+		else
+			drawchar(x+1, y+1, 0x99, 255, 212, 32, alpha);
 		break;
 	case IconPersistant:
-		drawchar(x+1, y, 0x9A, 212, 212, 212, alpha);
+		if(invert)
+			drawchar(x+1, y+1, 0x9A, 20, 20, 20, alpha);
+		else
+			drawchar(x+1, y+1, 0x9A, 212, 212, 212, alpha);
 		break;
 	case IconFire:
 		drawchar(x+1, y+1, 0x9B, 255, 0, 0, alpha);
 		drawchar(x+1, y+1, 0x9C, 255, 255, 64, alpha);
 		break;
 	case IconBlob:
-		drawchar(x+1, y, 0xBF, 55, 255, 55, alpha);
+		if(invert)
+			drawchar(x+1, y, 0xBF, 55, 180, 55, alpha);
+		else
+			drawchar(x+1, y, 0xBF, 55, 255, 55, alpha);
 		break;
 	case IconHeat:
 		drawchar(x+3, y, 0xBE, 255, 0, 0, alpha);
-		drawchar(x+3, y, 0xBD, 255, 255, 255, alpha);
+		if(invert)
+			drawchar(x+3, y, 0xBD, 0, 0, 0, alpha);
+		else
+			drawchar(x+3, y, 0xBD, 255, 255, 255, alpha);
 		break;
 	case IconBlur:
-		drawchar(x+1, y, 0xC4, 100, 150, 255, alpha);
+		if(invert)
+			drawchar(x+1, y, 0xC4, 50, 70, 180, alpha);
+		else
+			drawchar(x+1, y, 0xC4, 100, 150, 255, alpha);
 		break;
 	case IconGradient:
-		drawchar(x+1, y+1, 0xD3, 255, 50, 255, alpha);
+		if(invert)
+			drawchar(x+1, y+1, 0xD3, 255, 50, 255, alpha);
+		else
+			drawchar(x+1, y+1, 0xD3, 205, 50, 205, alpha);
 		break;
 	case IconLife:
-		drawchar(x, y, 0xE0, 255, 255, 255, alpha);
+		if(invert)
+			drawchar(x, y+1, 0xE0, 0, 0, 0, alpha);
+		else
+			drawchar(x, y+1, 0xE0, 255, 255, 255, alpha);
 		break;
 	case IconEffect:
 		drawchar(x+1, y, 0xE1, 255, 255, 160, alpha);
@@ -913,11 +934,19 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		drawchar(x+1, y, 0xDE, 255, 255, 255, alpha);
 		break;
 	case IconBasic:
-		drawchar(x+1, y+1, 0xDB, 255, 255, 200, alpha);
+		if(invert)
+			drawchar(x+1, y+1, 0xDB, 50, 50, 0, alpha);
+		else
+			drawchar(x+1, y+1, 0xDB, 255, 255, 200, alpha);
 		break;
 	case IconAltAir:
-		drawchar(x+1, y+1, 0xD4, 255, 55, 55, alpha);
-		drawchar(x+1, y+1, 0xD5, 55, 255, 55, alpha);
+		if(invert) {
+			drawchar(x+1, y+1, 0xD4, 180, 55, 55, alpha);
+			drawchar(x+1, y+1, 0xD5, 55, 180, 55, alpha);
+		} else {
+			drawchar(x+1, y+1, 0xD4, 255, 55, 55, alpha);
+			drawchar(x+1, y+1, 0xD5, 55, 255, 55, alpha);
+		}
 		break;
 	default:
 		if(invert)
