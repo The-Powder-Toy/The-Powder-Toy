@@ -76,7 +76,7 @@ public:
 
 	void AdjustGridSize(int direction);
 	void InvertAirSim();
-	void LoadRenderPreset(RenderPreset preset);
+	void LoadRenderPreset(int presetNum);
 	void SetZoomEnabled(bool zoomEnable);
 	void SetZoomPosition(ui::Point position);
 	void AdjustBrushSize(int direction, bool logarithmic = false, bool xAxis = false, bool yAxis = false);

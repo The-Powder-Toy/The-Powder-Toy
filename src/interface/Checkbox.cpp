@@ -34,7 +34,7 @@ std::string Checkbox::GetText()
 void Checkbox::SetIcon(Icon icon)
 {
 	Appearance.icon = icon;
-	iconPosition.X = 17;
+	iconPosition.X = 16;
 	iconPosition.Y = 3;
 }
 

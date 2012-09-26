@@ -45,6 +45,11 @@ void RenderController::SetColourMode(unsigned int renderMode)
 	renderModel->SetColourMode(renderMode);
 }
 
+void RenderController::LoadRenderPreset(int presetNum)
+{
+	renderModel->LoadRenderPreset(presetNum);
+}
+
 void RenderController::Exit()
 {
 	if(ui::Engine::Ref().GetWindow() == renderView)

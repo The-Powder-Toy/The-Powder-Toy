@@ -35,6 +35,7 @@ public:
 	unsigned int GetDisplayMode();
 	void SetColourMode(unsigned int colourMode);
 	unsigned int GetColourMode();
+	void LoadRenderPreset(int presetNum);
 	virtual ~RenderModel();
 };
 

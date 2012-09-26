@@ -15,6 +15,7 @@
 #include "RenderModel.h"
 #include "graphics/Renderer.h"
 #include "interface/Checkbox.h"
+#include "interface/Button.h"
 
 class RenderController;
 class RenderModel;
@@ -30,6 +31,7 @@ public:
 	class RenderModeAction;
 	class DisplayModeAction;
 	class ColourModeAction;
+	class RenderPresetAction;
 	RenderView();
 	void NotifyRendererChanged(RenderModel * sender);
 	void NotifyRenderChanged(RenderModel * sender);
@@ -39,6 +41,7 @@ public:
 	void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnDraw();
 	virtual void OnTick(float dt);
+	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual void ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip);
 	virtual ~RenderView();
 };

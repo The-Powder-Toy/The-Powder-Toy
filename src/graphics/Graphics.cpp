@@ -875,49 +875,49 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		}
 		break;
 	case IconVelocity:
-		drawchar(x, y, 0x98, 128, 160, 255, alpha);
+		drawchar(x+1, y, 0x98, 128, 160, 255, alpha);
 		break;
 	case IconPressure:
-		drawchar(x, y, 0x99, 255, 212, 32, alpha);
+		drawchar(x+1, y+1, 0x99, 255, 212, 32, alpha);
 		break;
 	case IconPersistant:
-		drawchar(x, y, 0x9A, 212, 212, 212, alpha);
+		drawchar(x+1, y, 0x9A, 212, 212, 212, alpha);
 		break;
 	case IconFire:
-		drawchar(x+1, y, 0x9B, 255, 0, 0, alpha);
-		drawchar(x+1, y, 0x9C, 255, 255, 64, alpha);
+		drawchar(x+1, y+1, 0x9B, 255, 0, 0, alpha);
+		drawchar(x+1, y+1, 0x9C, 255, 255, 64, alpha);
 		break;
 	case IconBlob:
-		drawchar(x, y, 0xBF, 55, 255, 55, alpha);
+		drawchar(x+1, y, 0xBF, 55, 255, 55, alpha);
 		break;
 	case IconHeat:
-		drawchar(x+2, y, 0xBE, 255, 0, 0, alpha);
-		drawchar(x+2, y, 0xBD, 255, 255, 255, alpha);
+		drawchar(x+3, y, 0xBE, 255, 0, 0, alpha);
+		drawchar(x+3, y, 0xBD, 255, 255, 255, alpha);
 		break;
 	case IconBlur:
-		drawchar(x, y, 0xC4, 100, 150, 255, alpha);
+		drawchar(x+1, y, 0xC4, 100, 150, 255, alpha);
 		break;
 	case IconGradient:
-		drawchar(x, y, 0xD3, 255, 50, 255, alpha);
+		drawchar(x+1, y+1, 0xD3, 255, 50, 255, alpha);
 		break;
 	case IconLife:
 		drawchar(x, y, 0xE0, 255, 255, 255, alpha);
 		break;
 	case IconEffect:
-		drawchar(x, y, 0xE1, 255, 255, 160, alpha);
+		drawchar(x+1, y, 0xE1, 255, 255, 160, alpha);
 		break;
 	case IconGlow:
-		drawchar(x, y, 0xDF, 200, 255, 255, alpha);
+		drawchar(x+1, y, 0xDF, 200, 255, 255, alpha);
 		break;
 	case IconWarp:
-		drawchar(x, y, 0xDE, 255, 255, 255, alpha);
+		drawchar(x+1, y, 0xDE, 255, 255, 255, alpha);
 		break;
 	case IconBasic:
-		drawchar(x, y, 0xDB, 255, 255, 200, alpha);
+		drawchar(x+1, y+1, 0xDB, 255, 255, 200, alpha);
 		break;
 	case IconAltAir:
-		drawchar(x, y, 0xD4, 255, 55, 55, alpha);
-		drawchar(x, y, 0xD5, 55, 255, 55, alpha);
+		drawchar(x+1, y+1, 0xD4, 255, 55, 55, alpha);
+		drawchar(x+1, y+1, 0xD5, 55, 255, 55, alpha);
 		break;
 	default:
 		if(invert)

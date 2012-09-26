@@ -749,9 +749,10 @@ void GameController::ToggleAHeat()
 }
 
 
-void GameController::LoadRenderPreset(RenderPreset preset)
+void GameController::LoadRenderPreset(int presetNum)
 {
 	Renderer * renderer = gameModel->GetRenderer();
+	RenderPreset preset = renderer->renderModePresets[presetNum];
 	gameModel->SetInfoTip(preset.Name);
 	renderer->SetRenderMode(preset.RenderModes);
 	renderer->SetDisplayMode(preset.DisplayModes);

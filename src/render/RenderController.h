@@ -30,6 +30,7 @@ public:
 	void SetDisplayMode(unsigned int renderMode);
 	void UnsetDisplayMode(unsigned int renderMode);
 	void SetColourMode(unsigned int renderMode);
+	void LoadRenderPreset(int presetNum);
 };
 
 #endif /* RENDERCONTROLLER_H_ */

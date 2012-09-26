@@ -10,6 +10,7 @@
 #include "client/Client.h"
 #include "Graphics.h"
 #include "interface/Point.h"
+#include "game/renderPreset.h"
 
 class Simulation;
 
@@ -45,6 +46,7 @@ public:
 	unsigned int colour_mode;
 	std::vector<unsigned int> display_modes;
 	unsigned int display_mode;
+	RenderPreset * renderModePresets;
 	//
 	unsigned char fire_r[YRES/CELL][XRES/CELL];
 	unsigned char fire_g[YRES/CELL][XRES/CELL];

@@ -81,6 +81,17 @@ unsigned int RenderModel::GetColourMode()
 		return 0;
 }
 
+void RenderModel::LoadRenderPreset(int presetNum)
+{
+	RenderPreset preset = renderer->renderModePresets[presetNum];
+	renderer->SetRenderMode(preset.RenderModes);
+	renderer->SetDisplayMode(preset.DisplayModes);
+	renderer->SetColourMode(preset.ColourMode);
+	notifyRenderChanged();
+	notifyDisplayChanged();
+	notifyColourChanged();
+}
+
 void RenderModel::SetRenderer(Renderer * ren)
 {
 	renderer = ren;

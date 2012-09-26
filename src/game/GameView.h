@@ -13,7 +13,6 @@
 #include "interface/Slider.h"
 #include "interface/Textbox.h"
 #include "ToolButton.h"
-#include "RenderPreset.h"
 #include "Brush.h"
 #include "simulation/Sample.h"
 
@@ -100,8 +99,6 @@ private:
 	ui::Point selectPoint2;
 
 	ui::Point mousePosition;
-
-	RenderPreset * renderModePresets;
 
 	Thumbnail * placeSaveThumb;
 
