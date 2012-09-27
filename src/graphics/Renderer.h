@@ -10,7 +10,7 @@
 #include "client/Client.h"
 #include "Graphics.h"
 #include "interface/Point.h"
-#include "game/renderPreset.h"
+#include "game/RenderPreset.h"
 
 class Simulation;
 
