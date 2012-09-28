@@ -76,6 +76,17 @@ static long http_timeout = 15;
 static int http_use_proxy = 0;
 static struct sockaddr_in http_proxy;
 
+static char * eatwhitespace(char * s)
+{
+	while(*s)
+	{
+		if(!(*s == ' ' || *s == '\t'))
+			break;
+		s++;
+	}
+	return s;
+}
+
 static char *mystrdup(char *s)
 {
 	char *x;
@@ -351,17 +362,26 @@ static void process_header(struct http_ctx *cx, char *str)
 	}
 	if (!strncmp(str, "Content-Length: ", 16))
 	{
-		cx->contlen = atoi(str+16);
+		str = eatwhitespace(str+16);
+		cx->contlen = atoi(str);
 		return;
 	}
-	if (!strcmp(str, "Transfer-Encoding: chunked"))
+	if (!strncmp(str, "Transfer-Encoding: ", 19))
 	{
-		cx->chunked = 1;
+		str = eatwhitespace(str+19);
+		if(!strncmp(str, "chunked", 8))
+		{
+			cx->chunked = 1;
+		}
 		return;
 	}
-	if (!strcmp(str, "Connection: close"))
+	if (!strncmp(str, "Connection: ", 12))
 	{
-		cx->cclose = 1;
+		str = eatwhitespace(str+12);
+		if(!strncmp(str, "close", 6))
+		{
+			cx->cclose = 1;
+		}
 		return;
 	}
 }
