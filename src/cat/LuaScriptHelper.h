@@ -8,27 +8,27 @@
 #ifndef LUASCRIPTHELPER_H_
 #define LUASCRIPTHELPER_H_
 
-GameModel * luacon_model;
-Simulation * luacon_sim;
-LuaScriptInterface * luacon_ci;
-Graphics * luacon_g;
-Renderer * luacon_ren;
+extern GameModel * luacon_model;
+extern Simulation * luacon_sim;
+extern LuaScriptInterface * luacon_ci;
+extern Graphics * luacon_g;
+extern Renderer * luacon_ren;
 
-bool *luacon_currentCommand;
-string *luacon_lastError;
+extern bool *luacon_currentCommand;
+extern std::string *luacon_lastError;
 
-int *lua_el_func, *lua_el_mode, *lua_gr_func;
+extern int *lua_el_func, *lua_el_mode, *lua_gr_func;
 
-int getPartIndex_curIdx;
-int step_functions[6];//[6] = {0, 0, 0, 0, 0, 0};
-int keypress_function_count;// = 0;
-int *keypress_functions;// = NULL;
-int mouseclick_function_count;// = 0;
-int *mouseclick_functions;// = NULL;
-int tptProperties; //Table for some TPT properties
-int tptPropertiesVersion;
-int tptElements; //Table for TPT element names
-int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, tptPart, cIndex;
+extern int getPartIndex_curIdx;
+extern int step_functions[6];//[6] = {0, 0, 0, 0, 0, 0};
+extern int keypress_function_count;// = 0;
+extern int *keypress_functions;// = NULL;
+extern int mouseclick_function_count;// = 0;
+extern int *mouseclick_functions;// = NULL;
+extern int tptProperties; //Table for some TPT properties
+extern int tptPropertiesVersion;
+extern int tptElements; //Table for TPT element names
+extern int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, tptPart, cIndex;
 
 void luacon_hook(lua_State *L, lua_Debug *ar);
 int luacon_step(int mx, int my, int selectl, int selectr, int bsx, int bsy);

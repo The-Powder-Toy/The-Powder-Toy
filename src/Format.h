@@ -7,6 +7,8 @@ class VideoBuffer;
 
 namespace format
 {
+	static char hex[] = "0123456789ABCDEF";
+
 	template <typename T> std::string NumberToString(T number)
 	{
 		std::stringstream ss;
@@ -21,6 +23,7 @@ namespace format
 		return (ss >> number)?number:0;
 	}
 
+	std::string URLEncode(std::string value);
 	std::string UnixtimeToDate(time_t unixtime, std::string dateFomat = "%d %b %Y");
 	std::string UnixtimeToDateMini(time_t unixtime);
 	std::vector<char> VideoBufferToPNG(const VideoBuffer & vidBuf);

@@ -45,7 +45,8 @@ namespace pim
 #define LUACON_EL_MODIFIED_MENUS 0x4
 
 class TPTScriptInterface;
-class LuaScriptInterface: public CommandInterface {
+class LuaScriptInterface: public CommandInterface
+{
 	int luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_mousebutton, luacon_brushx, luacon_brushy;
 	bool luacon_mousedown;
 	bool currentCommand;
@@ -84,6 +85,14 @@ class LuaScriptInterface: public CommandInterface {
 	//VM
 	void initVirtualMachineAPI();
 	static int virtualMachine_loadProgram(lua_State * l);
+
+	void initGraphicsAPI();
+	static int graphics_textSize(lua_State * l);
+	static int graphics_drawText(lua_State * l);
+	static int graphics_drawLine(lua_State * l);
+	static int graphics_drawRect(lua_State * l);
+	static int graphics_fillRect(lua_State * l);
+
 public:
 	ui::Window * Window;
 	lua_State *l;
