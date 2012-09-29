@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <locale>
+#include <fstream>
 #include "Config.h"
 #include "Format.h"
 #include "LuaLuna.h"
@@ -38,12 +39,15 @@
 #include "LuaSlider.h"
 #include "LuaProgressBar.h"
 
+extern "C"
+{
 #ifdef WIN
 #include <direct.h>
-#else
-#include <sys/stat.h>
 #endif
+#include <sys/stat.h>
+#include <dirent.h>
 #include <time.h>
+}
 
 GameModel * luacon_model;
 Simulation * luacon_sim;
@@ -93,6 +97,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	initElementsAPI();
 	initVirtualMachineAPI();
 	initGraphicsAPI();
+	initFileSystemAPI();
 
 	//Old TPT API
 	int i = 0, j;
@@ -1348,6 +1353,252 @@ int LuaScriptInterface::graphics_fillRect(lua_State * l)
 	if (a>255) a = 255;
 	luacon_g->fillrect(x, y, w, h, r, g, b, a);
 	return 0;
+}
+
+void LuaScriptInterface::initFileSystemAPI()
+{
+	//Methods
+	struct luaL_reg fileSystemAPIMethods [] = {
+		{"list", fileSystem_list},
+		{"exists", fileSystem_exists},
+		{"isFile", fileSystem_isFile},
+		{"isDirectory", fileSystem_isDirectory},
+		{"makeDirectory", fileSystem_makeDirectory},
+		{"removeDirectory", fileSystem_removeDirectory},
+		{"removeFile", fileSystem_removeFile},
+		{"move", fileSystem_move},
+		{"copy", fileSystem_copy},
+		{NULL, NULL}
+	};
+	luaL_register(l, "fileSystem", fileSystemAPIMethods);
+
+	//elem shortcut
+	lua_getglobal(l, "fileSystem");
+	lua_setglobal(l, "fs");
+
+	int fileSystemAPI = lua_gettop(l);
+}
+
+int LuaScriptInterface::fileSystem_list(lua_State * l)
+{
+	const char * directoryName = lua_tostring(l, 1);
+
+	int index = 1;
+	lua_newtable(l);
+
+	DIR * directory;
+	struct dirent * entry;
+
+	directory = opendir(directoryName);
+	if (directory != NULL)
+	{
+		while (entry = readdir(directory))
+		{
+			if(strncmp(entry->d_name, "..", 3) && strncmp(entry->d_name, ".", 2))
+			{
+				lua_pushstring(l, entry->d_name);
+				lua_rawseti(l, -2, index++);
+			}
+		}
+		closedir(directory);
+	}
+	else
+	{
+		lua_pushnil(l);
+	}
+
+	return 1;
+}
+
+int LuaScriptInterface::fileSystem_exists(lua_State * l)
+{
+	const char * filename = lua_tostring(l, 1);
+
+	bool exists = false;
+#ifdef WIN
+	struct _stat s;
+	if(_stat(filename, &s) == 0)
+#else
+	struct stat s;
+	if(stat(filename, &s) == 0)
+#endif
+	{
+		if(s.st_mode & S_IFDIR)
+		{
+			exists = true;
+		}
+		else if(s.st_mode & S_IFREG)
+		{
+			exists = true;
+		}
+		else
+		{
+			exists = true;
+		}
+	}
+	else
+	{
+		exists = false;
+	}
+
+	lua_pushboolean(l, exists);
+	return 1;
+}
+
+int LuaScriptInterface::fileSystem_isFile(lua_State * l)
+{
+	const char * filename = lua_tostring(l, 1);
+
+	bool exists = false;
+#ifdef WIN
+	struct _stat s;
+	if(_stat(filename, &s) == 0)
+#else
+	struct stat s;
+	if(stat(filename, &s) == 0)
+#endif
+	{
+		if(s.st_mode & S_IFDIR)
+		{
+			exists = true;
+		}
+		else if(s.st_mode & S_IFREG)
+		{
+			exists = false;
+		}
+		else
+		{
+			exists = false;
+		}
+	}
+	else
+	{
+		exists = false;
+	}
+
+	lua_pushboolean(l, exists);
+	return 1;
+}
+
+int LuaScriptInterface::fileSystem_isDirectory(lua_State * l)
+{
+	const char * filename = lua_tostring(l, 1);
+
+	bool exists = false;
+#ifdef WIN
+	struct _stat s;
+	if(_stat(filename, &s) == 0)
+#else
+	struct stat s;
+	if(stat(filename, &s) == 0)
+#endif
+	{
+		if(s.st_mode & S_IFDIR)
+		{
+			exists = false;
+		}
+		else if(s.st_mode & S_IFREG)
+		{
+			exists = true;
+		}
+		else
+		{
+			exists = false;
+		}
+	}
+	else
+	{
+		exists = false;
+	}
+
+	lua_pushboolean(l, exists);
+	return 1;
+}
+
+int LuaScriptInterface::fileSystem_makeDirectory(lua_State * l)
+{
+	const char * filename = lua_tostring(l, 1);
+
+	int ret = 0;
+#ifdef WIN
+	ret = _mkdir(filename);
+#else
+	ret = mkdir(filename, 0755);
+#endif
+	lua_pushboolean(l, ret == 0);
+	return 1;
+}
+
+int LuaScriptInterface::fileSystem_removeDirectory(lua_State * l)
+{
+	const char * filename = lua_tostring(l, 1);
+
+	int ret = 0;
+#ifdef WIN
+	ret = _rmdir(filename);
+#else
+	ret = rmdir(filename);
+#endif
+	lua_pushboolean(l, ret == 0);
+	return 1;
+}
+
+int LuaScriptInterface::fileSystem_removeFile(lua_State * l)
+{
+	const char * filename = lua_tostring(l, 1);
+
+	int ret = 0;
+#ifdef WIN
+	ret = _unlink(filename);
+#else
+	ret = unlink(filename);
+#endif
+	lua_pushboolean(l, ret == 0);
+	return 1;
+}
+
+int LuaScriptInterface::fileSystem_move(lua_State * l)
+{
+	const char * filename = lua_tostring(l, 1);
+	const char * newFilename = lua_tostring(l, 2);
+	int ret = 0;
+
+	ret = rename(filename, newFilename);
+
+	lua_pushboolean(l, ret == 0);
+	return 1;
+}
+
+int LuaScriptInterface::fileSystem_copy(lua_State * l)
+{
+	const char * filename = lua_tostring(l, 1);
+	const char * newFilename = lua_tostring(l, 2);
+	int ret = 0;
+
+	try
+	{
+		std::ifstream source(filename, std::ios::binary);
+		std::ofstream dest(newFilename, std::ios::binary);
+		source.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		dest.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+		std::istreambuf_iterator<char> begin_source(source);
+		std::istreambuf_iterator<char> end_source;
+		std::ostreambuf_iterator<char> begin_dest(dest); 
+		std::copy(begin_source, end_source, begin_dest);
+
+		source.close();
+		dest.close();
+
+		ret = 0;
+	}
+	catch (std::exception & e)
+	{
+		ret = 1;
+	}
+
+	lua_pushboolean(l, ret == 0);
+	return 1;
 }
 
 

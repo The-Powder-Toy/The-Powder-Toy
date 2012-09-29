@@ -64,6 +64,7 @@ class LuaScriptInterface: public CommandInterface
 	static int renderer_renderModes(lua_State * l);
 	static int renderer_displayModes(lua_State * l);
 	static int renderer_colourMode(lua_State * l);
+	static int renderer_decorations(lua_State * l);
 
 	//Elements
 	static pim::VirtualMachine * updateVirtualMachines[PT_NUM];
@@ -92,6 +93,17 @@ class LuaScriptInterface: public CommandInterface
 	static int graphics_drawLine(lua_State * l);
 	static int graphics_drawRect(lua_State * l);
 	static int graphics_fillRect(lua_State * l);
+
+	void initFileSystemAPI();
+	static int fileSystem_list(lua_State * l);
+	static int fileSystem_exists(lua_State * l);
+	static int fileSystem_isFile(lua_State * l);
+	static int fileSystem_isDirectory(lua_State * l);
+	static int fileSystem_makeDirectory(lua_State * l);
+	static int fileSystem_removeDirectory(lua_State * l);
+	static int fileSystem_removeFile(lua_State * l);
+	static int fileSystem_move(lua_State * l);
+	static int fileSystem_copy(lua_State * l);
 
 public:
 	ui::Window * Window;
