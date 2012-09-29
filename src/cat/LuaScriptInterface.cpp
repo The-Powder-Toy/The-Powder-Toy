@@ -472,6 +472,7 @@ void LuaScriptInterface::initRendererAPI()
 		{"displayModes", renderer_displayModes},
 		{"colourMode", renderer_colourMode},
 		{"colorMode", renderer_colourMode}, //Duplicate of above to make americans happy
+		{"decorations", renderer_decorations},
 		{NULL, NULL}
 	};
 	luaL_register(l, "renderer", rendererAPIMethods);
@@ -605,7 +606,6 @@ int LuaScriptInterface::renderer_colourMode(lua_State * l)
 	{
 		luaL_checktype(l, 1, LUA_TNUMBER);
 		luacon_ren->SetColourMode(lua_tointeger(l, 1));
-		lua_pop(l, 1);
 		return 0;
 	}
 	else
@@ -613,7 +613,21 @@ int LuaScriptInterface::renderer_colourMode(lua_State * l)
 		lua_pushinteger(l, luacon_ren->GetColourMode());
 		return 1;
 	}
-	return luaL_error(l, "Not implemented");
+}
+
+int LuaScriptInterface::renderer_decorations(lua_State * l)
+{
+	int args = lua_gettop(l);
+	if(args)
+	{
+		luacon_ren->decorations_enable = lua_toboolean(l, 1);
+		return 0;
+	}
+	else
+	{
+		lua_pushboolean(l, luacon_ren->decorations_enable);
+		return 1;
+	}
 }
 
 void LuaScriptInterface::initElementsAPI()
