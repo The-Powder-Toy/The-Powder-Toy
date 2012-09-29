@@ -6,7 +6,7 @@ Element_PPIP::Element_PPIP()
 	Name = "PPIP";
 	Colour = PIXPACK(0x444466);
 	MenuVisible = 1;
-	MenuSection = SC_SOLIDS;
+	MenuSection = SC_POWERED;
 	Enabled = 1;
 	
 	Advection = 0.0f;
