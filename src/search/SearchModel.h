@@ -37,7 +37,7 @@ private:
 	void notifyShowOwnChanged();
 	void notifyShowFavouriteChanged();
 
-	//Variables and methods for backgroun save request
+	//Variables and methods for background save request
 	bool saveListLoaded;
 	bool updateSaveListWorking;
 	volatile bool updateSaveListFinished;

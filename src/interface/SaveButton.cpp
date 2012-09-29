@@ -247,6 +247,11 @@ void SaveButton::Draw(const Point& screenPos)
 				g->drawtext(x, y, "\xA6", 160, 70, 50, 255);
 			}
 		}
+		if (!save->GetPublished())
+		{
+			g->drawtext(screenPos.X, screenPos.Y-2, "\xCD", 255, 255, 255, 255);
+			g->drawtext(screenPos.X, screenPos.Y-2, "\xCE", 212, 151, 81, 255);
+		}
 	}
 	if(file)
 	{

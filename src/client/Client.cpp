@@ -1646,6 +1646,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 				json::String tempUsername = savesArray[j]["Username"];
 				json::String tempName = savesArray[j]["Name"];
 				json::Number tempVersion = savesArray[j]["Version"];
+				json::Boolean tempPublished = savesArray[j]["Published"];
 				SaveInfo * tempSaveInfo = new SaveInfo(
 								tempID.Value(),
 								tempDate.Value(),
@@ -1655,6 +1656,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 								tempName.Value()
 								);
 				tempSaveInfo->Version = tempVersion.Value();
+				tempSaveInfo->SetPublished(tempPublished);
 				saveArray->push_back(tempSaveInfo);
 			}
 		}
