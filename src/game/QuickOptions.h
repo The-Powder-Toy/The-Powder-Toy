@@ -97,21 +97,3 @@ public:
 		m->GetSimulation()->aheat_enable = !m->GetSimulation()->aheat_enable;
 	}
 };
-
-class DrawGravWallOption: public QuickOption
-{
-public:
-	DrawGravWallOption(GameModel * m):
-	QuickOption("Z", "Draw gravity zones", m, Toggle)
-	{
-
-	}
-	virtual bool GetToggle() 
-	{
-		return m->GetRenderer()->gravityZonesEnabled;
-	}
-	virtual void perform()
-	{
-		m->GetRenderer()->gravityZonesEnabled = !m->GetRenderer()->gravityZonesEnabled;
-	}
-};

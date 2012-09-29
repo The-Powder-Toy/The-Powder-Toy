@@ -181,7 +181,6 @@ void GameModel::BuildQuickOptionMenu()
 	quickOptions.push_back(new DecorationsOption(this));
 	quickOptions.push_back(new NGravityOption(this));
 	quickOptions.push_back(new AHeatOption(this));
-	quickOptions.push_back(new DrawGravWallOption(this));
 
 	notifyQuickOptionsChanged();
 	UpdateQuickOptions();
