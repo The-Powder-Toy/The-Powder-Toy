@@ -752,11 +752,14 @@ void GameModel::SetStamp(GameSave * save)
 void GameModel::SetPlaceSave(GameSave * save)
 {
 	if(save != placeSave)
-		delete placeSave;
-	if(save != placeSave)
-		placeSave = new GameSave(*save);
-	else if(!save)
-		placeSave = NULL;
+	{
+		if(placeSave)
+			delete placeSave;
+		if(save)
+			placeSave = new GameSave(*save);
+		else
+			placeSave = NULL;
+	}
 	notifyPlaceSaveChanged();
 }
 
