@@ -4,7 +4,8 @@ class Thumbnail;
 class ThumbnailListener
 {
 public:
-	ThumbnailListener() {}
+	int ListenerRand;
+	ThumbnailListener() { ListenerRand = rand(); }
 	virtual ~ThumbnailListener() {}
 
 	virtual void OnThumbnailReady(Thumbnail * thumb) {}

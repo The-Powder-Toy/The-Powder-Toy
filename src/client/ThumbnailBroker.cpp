@@ -37,7 +37,7 @@ void ThumbnailBroker::RenderThumbnail(GameSave * gameSave, bool decorations, int
 	pthread_mutex_lock(&thumbnailQueueMutex);
 	bool running = thumbnailQueueRunning;
 	thumbnailQueueRunning = true;
-	renderRequests.push_back(ThumbRenderRequest(new GameSave(*gameSave), decorations, width, height, tListener));
+	renderRequests.push_back(ThumbRenderRequest(new GameSave(*gameSave), decorations, width, height, ListenerHandle(tListener->ListenerRand, tListener)));
 	pthread_mutex_unlock(&thumbnailQueueMutex);
 	
 	if(!running)
@@ -55,7 +55,7 @@ void ThumbnailBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int
 	pthread_mutex_lock(&thumbnailQueueMutex);
 	bool running = thumbnailQueueRunning;
 	thumbnailQueueRunning = true;
-	thumbnailRequests.push_back(ThumbnailRequest(saveID, saveDate, width, height, tListener));
+	thumbnailRequests.push_back(ThumbnailRequest(saveID, saveDate, width, height, ListenerHandle(tListener->ListenerRand, tListener)));
 	pthread_mutex_unlock(&thumbnailQueueMutex);
 
 	if(!running)
@@ -80,7 +80,7 @@ void ThumbnailBroker::FlushThumbQueue()
 	{
 		if(CheckThumbnailListener(thumbnailComplete.front().first))
 		{
-			thumbnailComplete.front().first->OnThumbnailReady(thumbnailComplete.front().second);
+			thumbnailComplete.front().first.second->OnThumbnailReady(thumbnailComplete.front().second);
 		}
 		else
 		{
@@ -130,7 +130,7 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 				thumbnail->Resize(req.Width, req.Height);
 
 				pthread_mutex_lock(&thumbnailQueueMutex);
-				thumbnailComplete.push_back(std::pair<ThumbnailListener*, Thumbnail*>(req.CompletedListener, thumbnail));
+				thumbnailComplete.push_back(std::pair<ListenerHandle, Thumbnail*>(req.CompletedListener, thumbnail));
 				pthread_mutex_unlock(&thumbnailQueueMutex);	
 			}
 		}
@@ -173,7 +173,7 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 					tempThumbnail->Resize((*specIter).Width, (*specIter).Height);
 
 					pthread_mutex_lock(&thumbnailQueueMutex);
-					thumbnailComplete.push_back(std::pair<ThumbnailListener*, Thumbnail*>((*specIter).CompletedListener, tempThumbnail));
+					thumbnailComplete.push_back(std::pair<ListenerHandle, Thumbnail*>((*specIter).CompletedListener, tempThumbnail));
 					pthread_mutex_unlock(&thumbnailQueueMutex);	
 				}
 			}
@@ -286,7 +286,7 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 						tempThumbnail->Resize((*specIter).Width, (*specIter).Height);
 
 						pthread_mutex_lock(&thumbnailQueueMutex);
-						thumbnailComplete.push_back(std::pair<ThumbnailListener*, Thumbnail*>((*specIter).CompletedListener, tempThumbnail));
+						thumbnailComplete.push_back(std::pair<ListenerHandle, Thumbnail*>((*specIter).CompletedListener, tempThumbnail));
 						pthread_mutex_unlock(&thumbnailQueueMutex);	
 					}
 				}
@@ -314,10 +314,10 @@ void ThumbnailBroker::RetrieveThumbnail(int saveID, int width, int height, Thumb
 	RetrieveThumbnail(saveID, 0, width, height, tListener);
 }
 
-bool ThumbnailBroker::CheckThumbnailListener(ThumbnailListener * tListener)
+bool ThumbnailBroker::CheckThumbnailListener(ListenerHandle handle)
 {
 	pthread_mutex_lock(&listenersMutex);
-	int count = std::count(validListeners.begin(), validListeners.end(), tListener);
+	int count = std::count(validListeners.begin(), validListeners.end(), handle);
 	pthread_mutex_unlock(&listenersMutex);
 
 	return count;
@@ -326,7 +326,7 @@ bool ThumbnailBroker::CheckThumbnailListener(ThumbnailListener * tListener)
 void ThumbnailBroker::AttachThumbnailListener(ThumbnailListener * tListener)
 {
 	pthread_mutex_lock(&listenersMutex);
-	validListeners.push_back(tListener);
+	validListeners.push_back(ListenerHandle(tListener->ListenerRand, tListener));
 	pthread_mutex_unlock(&listenersMutex);
 }
 
@@ -334,10 +334,10 @@ void ThumbnailBroker::DetachThumbnailListener(ThumbnailListener * tListener)
 {
 	pthread_mutex_lock(&listenersMutex);
 
-	std::vector<ThumbnailListener*>::iterator iter = validListeners.begin();
+	std::vector<ListenerHandle>::iterator iter = validListeners.begin();
 	while (iter != validListeners.end())
 	{
-		if(*iter == tListener)
+		if(*iter == ListenerHandle(tListener->ListenerRand, tListener))
 			iter = validListeners.erase(iter);
 		else
 			++iter;

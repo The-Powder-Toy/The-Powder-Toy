@@ -11,6 +11,7 @@
 class GameSave;
 class Thumbnail;
 class ThumbnailListener;
+typedef std::pair<int, ThumbnailListener*> ListenerHandle;
 class ThumbnailBroker: public Singleton<ThumbnailBroker>
 {
 private: 
@@ -18,8 +19,8 @@ private:
 	{
 	public:
 		int Width, Height;
-		ThumbnailListener * CompletedListener;
-		ThumbnailSpec(int width, int height, ThumbnailListener * completedListener) :
+		ListenerHandle CompletedListener;
+		ThumbnailSpec(int width, int height, ListenerHandle completedListener) :
 			Width(width), Height(height), CompletedListener(completedListener) {}
 	};
 
@@ -45,7 +46,7 @@ private:
 		ThumbnailID ID;
 		std::vector<ThumbnailSpec> SubRequests;
 		
-		ThumbnailRequest(int saveID, int saveDate, int width, int height, ThumbnailListener * completedListener) :
+		ThumbnailRequest(int saveID, int saveDate, int width, int height, ListenerHandle completedListener) :
 			ID(saveID, saveDate), Complete(false), HTTPContext(NULL), RequestTime(0)
 			{
 				SubRequests.push_back(ThumbnailSpec(width, height, completedListener));
@@ -59,10 +60,10 @@ private:
 		int Width, Height;
 		bool Decorations;
 		GameSave * Save;
-		ThumbnailListener * CompletedListener;
-		ThumbRenderRequest(GameSave * save, bool decorations, int width, int height, ThumbnailListener * completedListener) :
+		ListenerHandle CompletedListener;
+		ThumbRenderRequest(GameSave * save, bool decorations, int width, int height, ListenerHandle completedListener) :
 			Save(save), Width(width), Height(height), CompletedListener(completedListener), Decorations(decorations) {}
-		ThumbRenderRequest() :	Save(0), Decorations(true), Width(0), Height(0), CompletedListener(NULL) {}
+		ThumbRenderRequest() :	Save(0), Decorations(true), Width(0), Height(0), CompletedListener(ListenerHandle(0, NULL)) {}
 	};
 
 	//Thumbnail retreival
@@ -80,11 +81,12 @@ private:
 	std::deque<ThumbnailRequest> thumbnailRequests;
 	std::deque<ThumbRenderRequest> renderRequests; 
 
-	std::deque<std::pair<ThumbnailListener*, Thumbnail*> > thumbnailComplete;
+	std::deque<std::pair<ListenerHandle, Thumbnail*> > thumbnailComplete;
 	std::list<ThumbnailRequest> currentRequests;
 	std::deque<std::pair<ThumbnailID, Thumbnail*> > thumbnailCache;
 
-	std::vector<ThumbnailListener*> validListeners;
+
+	std::vector<ListenerHandle> validListeners;
 
 	static void * thumbnailQueueProcessHelper(void * ref);
 	void thumbnailQueueProcessTH();
@@ -99,7 +101,7 @@ public:
 	void RetrieveThumbnail(int saveID, int saveDate, int width, int height, ThumbnailListener * tListener);
 	void RetrieveThumbnail(int saveID, int width, int height, ThumbnailListener * tListener);
 	
-	bool CheckThumbnailListener(ThumbnailListener * tListener);
+	bool CheckThumbnailListener(ListenerHandle handle);
 	void AttachThumbnailListener(ThumbnailListener * tListener);
 	void DetachThumbnailListener(ThumbnailListener * tListener);
 };
