@@ -115,10 +115,8 @@ public:
 	int sys_pause;
 	int framerender;
 	int pretty_powder;
-	//
-	int sandcolour_r;
-	int sandcolour_g;
-	int sandcolour_b; //TODO: Make a single variable
+	int sandcolour;
+	int sandcolour_frame;
 
 	int Load(GameSave * save);
 	int Load(int x, int y, GameSave * save);

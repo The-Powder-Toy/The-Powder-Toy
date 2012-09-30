@@ -3020,9 +3020,9 @@ int Simulation::create_part(int p, int x, int y, int tv)
 	{
 		int colr, colg, colb, randa;
 		randa = (rand()%30)-15;
-		colr = (PIXR(elements[t].Colour)+sandcolour_r+(rand()%20)-10+randa);
-		colg = (PIXG(elements[t].Colour)+sandcolour_g+(rand()%20)-10+randa);
-		colb = (PIXB(elements[t].Colour)+sandcolour_b+(rand()%20)-10+randa);
+		colr = (PIXR(elements[t].Colour)+sandcolour+(rand()%20)-10+randa);
+		colg = (PIXG(elements[t].Colour)+sandcolour+(rand()%20)-10+randa);
+		colb = (PIXB(elements[t].Colour)+sandcolour+(rand()%20)-10+randa);
 		colr = colr>255 ? 255 : (colr<0 ? 0 : colr);
 		colg = colg>255 ? 255 : (colg<0 ? 0 : colg);
 		colb = colb>255 ? 255 : (colb<0 ? 0 : colb);
@@ -4483,6 +4483,8 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 		if(emp_decor < 0)
 			emp_decor = 0;
 	}
+	sandcolour = (int)(20.0f*sin((float)sandcolour_frame*(M_PI/180.0f)));
+	sandcolour_frame = (sandcolour_frame++)%360;
 
 	memset(pmap, 0, sizeof(pmap));
 	memset(pmap_count, 0, sizeof(pmap_count));
@@ -4586,7 +4588,10 @@ Simulation::~Simulation()
 }
 
 Simulation::Simulation():
-	sys_pause(0)
+	sys_pause(0),
+	framerender(false),
+	pretty_powder(0),
+	sandcolour_frame(0)
 {
     
     int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
