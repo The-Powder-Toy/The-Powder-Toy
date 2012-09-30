@@ -401,7 +401,7 @@ void GameController::DrawFill(int toolSelection, ui::Point point)
 	activeTool->DrawFill(sim, cBrush, point);
 }
 
-void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueue)
+void GameController::DrawPoints(int toolSelection, queue<ui::Point> & pointQueue)
 {
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
@@ -413,7 +413,7 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueu
 		{
 			while(!pointQueue.empty())
 			{
-				delete pointQueue.front();
+				//delete pointQueue.front();
 				pointQueue.pop();
 			}
 		}
@@ -427,8 +427,8 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point*> & pointQueu
 		bool first = true;
 		while(!pointQueue.empty())
 		{
-			ui::Point fPoint = *pointQueue.front();
-			delete pointQueue.front();
+			ui::Point fPoint = pointQueue.front();
+			//delete pointQueue.front();
 			pointQueue.pop();
 			if(!first)
 			{

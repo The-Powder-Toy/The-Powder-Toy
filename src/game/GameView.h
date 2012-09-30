@@ -62,7 +62,7 @@ private:
 	std::string infoTip;
 	int toolTipPresence;
 
-	queue<ui::Point*> pointQueue;
+queue<ui::Point> pointQueue;
 	GameController * c;
 	Renderer * ren;
 	Brush * activeBrush;
