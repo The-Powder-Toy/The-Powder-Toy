@@ -11,14 +11,16 @@
 #include "OptionsView.h"
 #include "simulation/Simulation.h"
 
+class GameModel;
 class Simulation;
 class OptionsView;
 class OptionsModel {
+	GameModel * gModel;
 	Simulation * sim;
 	std::vector<OptionsView*> observers;
 	void notifySettingsChanged();
 public:
-	OptionsModel(Simulation * sim_);
+	OptionsModel(GameModel * gModel);
 	void AddObserver(OptionsView* view);
 	bool GetHeatSimulation();
 	void SetHeatSimulation(bool state);

@@ -13,15 +13,17 @@
 #include "OptionsView.h"
 #include "OptionsModel.h"
 
+class GameModel;
 class OptionsModel;
 class OptionsView;
 class OptionsController {
+	GameModel * gModel;
 	OptionsView * view;
 	OptionsModel * model;
 	ControllerCallback * callback;
 public:
 	bool HasExited;
-	OptionsController(Simulation * sim, ControllerCallback * callback_);
+	OptionsController(GameModel * gModel_, ControllerCallback * callback_);
 	void SetHeatSimulation(bool state);
 	void SetAmbientHeatSimulation(bool state);
 	void SetNewtonianGravity(bool state);

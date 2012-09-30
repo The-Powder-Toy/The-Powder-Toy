@@ -1023,7 +1023,7 @@ void GameController::OpenStamps()
 
 void GameController::OpenOptions()
 {
-	options = new OptionsController(gameModel->GetSimulation(), new OptionsCallback(this));
+	options = new OptionsController(gameModel, new OptionsCallback(this));
 	ui::Engine::Ref().ShowWindow(options->GetView());
 
 }

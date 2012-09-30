@@ -68,6 +68,8 @@ private:
 	bool colourSelector;
 	ui::Colour colour;
 
+	int edgeMode;
+
 	std::string infoTip;
 	std::string toolTip;
 	//bool zoomEnabled;
@@ -99,6 +101,9 @@ public:
 	~GameModel();
 
 	Tool * GetToolFromIdentifier(std::string identifier);
+
+	void SetEdgeMode(int edgeMode);
+	int GetEdgeMode();
 
 	void SetActiveColourPreset(int preset);
 	int GetActiveColourPreset();

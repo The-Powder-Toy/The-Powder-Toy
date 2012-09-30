@@ -29,7 +29,8 @@ GameModel::GameModel():
 	colour(255, 0, 0, 255),
 	toolStrength(1.0f),
 	activeColourPreset(-1),
-	activeMenu(NULL)
+	activeMenu(NULL),
+	edgeMode(0)
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
@@ -75,7 +76,8 @@ GameModel::GameModel():
 	}
 
 	//Load config into simulation
-	sim->SetEdgeMode(Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0));
+	edgeMode = Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0);
+	sim->SetEdgeMode(edgeMode);
 
 	//Load last user
 	if(Client::Ref().GetAuthUser().ID)
@@ -350,6 +352,17 @@ Tool * GameModel::GetToolFromIdentifier(std::string identifier)
 	return NULL;
 }
 
+void GameModel::SetEdgeMode(int edgeMode)
+{
+	this->edgeMode = edgeMode;
+	sim->SetEdgeMode(edgeMode);
+}
+
+int GameModel::GetEdgeMode()
+{
+	return this->edgeMode;
+}
+
 std::deque<Snapshot*> GameModel::GetHistory()
 {
 	return history;
@@ -512,8 +525,8 @@ void GameModel::SetSave(SaveInfo * newSave)
 			sim->grav->start_grav_async();
 		else
 			sim->grav->stop_grav_async();
-		sim->clear_sim();
 		sim->SetEdgeMode(0);
+		sim->clear_sim();
 		ren->ClearAccumulation();
 		sim->Load(saveData);
 	}
@@ -541,8 +554,8 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 		{
 			sim->grav->stop_grav_async();
 		}
-		sim->clear_sim();
 		sim->SetEdgeMode(0);
+		sim->clear_sim();
 		ren->ClearAccumulation();
 		sim->Load(saveData);
 	}
@@ -733,6 +746,20 @@ void GameModel::ClearSimulation()
 {
 	sim->clear_sim();
 	ren->ClearAccumulation();
+
+	//Load defaults
+	SetPaused(false);
+	sim->gravityMode = 0;
+	sim->air->airMode = 0;
+	sim->legacy_enable = false;
+	sim->water_equal_test = false;
+	sim->grav->stop_grav_async();
+	sim->SetEdgeMode(edgeMode);
+	sim->clear_sim();
+	ren->ClearAccumulation();
+
+	notifySaveChanged();
+	UpdateQuickOptions();
 }
 
 void GameModel::SetStamp(GameSave * save)

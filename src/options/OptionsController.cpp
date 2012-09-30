@@ -8,12 +8,13 @@
 #include "OptionsController.h"
 #include "dialogues/ErrorMessage.h"
 
-OptionsController::OptionsController(Simulation * sim, ControllerCallback * callback_):
+OptionsController::OptionsController(GameModel * gModel_, ControllerCallback * callback_):
 	callback(callback_),
+	gModel(gModel_),
 	HasExited(false)
 {
 	view = new OptionsView();
-	model = new OptionsModel(sim);
+	model = new OptionsModel(gModel);
 	model->AddObserver(view);
 
 	view->AttachController(this);

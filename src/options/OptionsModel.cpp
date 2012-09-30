@@ -6,10 +6,12 @@
  */
 
 #include "simulation/Air.h"
+#include "game/GameModel.h"
 #include "OptionsModel.h"
 
-OptionsModel::OptionsModel(Simulation * sim_) {
-	sim = sim_;
+OptionsModel::OptionsModel(GameModel * gModel_) {
+	gModel = gModel_;
+	sim = gModel->GetSimulation();
 }
 
 void OptionsModel::AddObserver(OptionsView* view)
@@ -77,11 +79,11 @@ void OptionsModel::SetAirMode(int airMode)
 
 int OptionsModel::GetEdgeMode()
 {
-	return sim->edgeMode;
+	return gModel->GetEdgeMode();
 }
 void OptionsModel::SetEdgeMode(int edgeMode)
 {
-	sim->SetEdgeMode(edgeMode);
+	gModel->SetEdgeMode(edgeMode);
 	notifySettingsChanged();
 }
 
