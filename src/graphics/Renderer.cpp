@@ -38,8 +38,8 @@ void Renderer::RenderBegin()
 #ifdef OGLR
 	draw_air();
 	draw_grav();
-	render_parts();
 	DrawWalls();
+	render_parts();
 	render_fire();
 	draw_other();
 	draw_grav_zones();
@@ -63,6 +63,7 @@ void Renderer::RenderBegin()
 
 	draw_air();
 	draw_grav();
+	DrawWalls();
 	render_parts();
 
 	if(display_mode & DISPLAY_PERS)
@@ -83,7 +84,6 @@ void Renderer::RenderBegin()
 		}
 	}
 
-	DrawWalls();
 	render_fire();
 	draw_other();
 	draw_grav_zones();
@@ -108,6 +108,7 @@ void Renderer::RenderBegin()
 
 	draw_air();
 	draw_grav();
+	DrawWalls();
 	render_parts();
 	if(display_mode & DISPLAY_PERS)
 	{
@@ -127,7 +128,6 @@ void Renderer::RenderBegin()
 		}
 	}
 
-	DrawWalls();
 	render_fire();
 	draw_other();
 	draw_grav_zones();
