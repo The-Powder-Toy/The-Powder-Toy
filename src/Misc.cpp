@@ -427,7 +427,7 @@ char * clipboard_pull_text()
 		if(glbuffer!=NULL){
 			return mystrdup(glbuffer);
 		} else {
-			return "";
+			return mystrdup("");
 		}
 	}
 #elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
@@ -435,7 +435,7 @@ char * clipboard_pull_text()
 #else
 	printf("Not implemented: get text from clipboard\n");
 #endif
-	return "";
+	return mystrdup("");
 }
 
 int register_extension()
