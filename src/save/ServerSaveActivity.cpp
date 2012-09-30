@@ -153,7 +153,7 @@ void ServerSaveActivity::NotifyDone(Task * task)
 	Exit();
 	if(!task->GetSuccess())
 	{
-		new ErrorMessage("Error", "Error while saving");
+		new ErrorMessage("Error", Client::Ref().GetLastError());
 	}
 }
 

@@ -756,11 +756,19 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 			return RequestFailure;
 		}
 
+		char *saveName = new char[save.GetName().length() + 1];
+		std::strcpy ( saveName, save.GetName().c_str() );
+		char *saveDescription = new char[save.GetDescription().length() + 1];
+		std::strcpy ( saveDescription, save.GetDescription().c_str() );
+
 		char * postNames[] = { "Name", "Description", "Data:save.bin", "Publish", NULL };
-		char * postDatas[] = { (char *)(save.GetName().c_str()), (char *)(save.GetDescription().c_str()), gameData, (char *)(save.GetPublished()?"Public":"Private") };
+		char * postDatas[] = { saveName, saveDescription, gameData, (char *)(save.GetPublished()?"Public":"Private") };
 		int postLengths[] = { save.GetName().length(), save.GetDescription().length(), gameDataLength, save.GetPublished()?6:7 };
 		//std::cout << postNames[0] << " " << postDatas[0] << " " << postLengths[0] << std::endl;
 		data = http_multipart_post("http://" SERVER "/Save.api", postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+
+		delete[] saveDescription;
+		delete[] saveName;
 	}
 	else
 	{
@@ -772,8 +780,8 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		if(strncmp((const char *)data, "OK", 2)!=0)
 		{
 			if(gameData) free(gameData);
-			free(data);
 			lastError = std::string((const char *)data);
+			free(data);
 			return RequestFailure;
 		}
 		else
@@ -955,8 +963,8 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 	{
 		if(strncmp((const char *)data, "OK", 2)!=0)
 		{
-			free(data);
 			lastError = std::string((const char *)data);
+			free(data);
 			return RequestFailure;
 		}
 		free(data);
