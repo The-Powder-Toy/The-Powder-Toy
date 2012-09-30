@@ -849,8 +849,8 @@ void GameModel::RemoveNotification(Notification * notification)
 	{
 		if(*iter == notification)
 		{
-			notifications.erase(iter);
 			delete *iter;
+			notifications.erase(iter);
 			break;
 		}
 	}
