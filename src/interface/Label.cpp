@@ -107,7 +107,8 @@ void Label::updateMultiline()
 							*wordStart = '\n';
 						else if(!wordStart)
 							rawText[charIndex-1] = '\n';
-						lineWidth = wordWidth = 0;
+						lineWidth = wordWidth;
+						wordWidth = 0;
 						lines++;
 					}
 					break;
