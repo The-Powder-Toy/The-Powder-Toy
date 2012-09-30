@@ -58,7 +58,9 @@ private:
 	Simulation * sim;
 	Renderer * ren;
 	Tool * lastTool;
-	Tool * activeTools[3];
+	Tool ** activeTools;
+	Tool * decoToolset[3];
+	Tool * regularToolset[3];
 	User currentUser;
 	float toolStrength;
 	std::deque<Snapshot*> history;
