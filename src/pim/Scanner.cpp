@@ -1,5 +1,6 @@
 //Lexical analyser
 #include <algorithm>
+#include <cctype>
 #include "Scanner.h"
 
 namespace pim

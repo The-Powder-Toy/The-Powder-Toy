@@ -63,7 +63,7 @@ private:
 		ListenerHandle CompletedListener;
 		ThumbRenderRequest(GameSave * save, bool decorations, int width, int height, ListenerHandle completedListener) :
 			Save(save), Width(width), Height(height), CompletedListener(completedListener), Decorations(decorations) {}
-		ThumbRenderRequest() :	Save(0), Decorations(true), Width(0), Height(0), CompletedListener(ListenerHandle(0, NULL)) {}
+		ThumbRenderRequest() :	Save(0), Decorations(true), Width(0), Height(0), CompletedListener(ListenerHandle(0, (ThumbnailListener*)NULL)) {}
 	};
 
 	//Thumbnail retreival
