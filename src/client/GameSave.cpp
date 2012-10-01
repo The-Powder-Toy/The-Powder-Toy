@@ -385,8 +385,8 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 		particles[i].vx = vel.x;
 		particles[i].vy = vel.y;
 	}
-	for (y=0; y<blockWidth; y++)
-		for (x=0; x<blockHeight; x++)
+	for (y=0; y<blockHeight; y++)
+		for (x=0; x<blockWidth; x++)
 		{
 			pos = v2d_new(x*CELL+CELL*0.4f, y*CELL+CELL*0.4f);
 			pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
