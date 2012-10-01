@@ -215,10 +215,12 @@ void Textbox::pasteIntoSelection()
 
 	if(limit!=std::string::npos)
 	{
-		if(limit-backingText.length() > 0)
-			newText.substr(0, limit-backingText.length());
+		if(limit-backingText.length() >= 0)
+			newText = newText.substr(0, limit-backingText.length());
+		else
+			newText = "";
 	}
-	else if(Graphics::textwidth((char*)std::string(backingText+newText).c_str()) > regionWidth)
+	else if(!multiline && Graphics::textwidth((char*)std::string(backingText+newText).c_str()) > regionWidth)
 	{
 		int pLimit = regionWidth - Graphics::textwidth((char*)backingText.c_str());
 		int cIndex = Graphics::CharIndexAtPosition((char *)newText.c_str(), pLimit, 0);
@@ -249,7 +251,10 @@ void Textbox::pasteIntoSelection()
 	if(multiline)
 		updateMultiline();
 	updateSelection();
-	TextPosition(text);
+	if(multiline)
+		TextPosition(textLines);
+	else
+		TextPosition(text);
 
 	if(cursor)
 	{
@@ -457,7 +462,10 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	if(multiline)
 		updateMultiline();
 	updateSelection();
-	TextPosition(text);
+	if(multiline)
+		TextPosition(textLines);
+	else
+		TextPosition(text);
 
 	if(cursor)
 	{
