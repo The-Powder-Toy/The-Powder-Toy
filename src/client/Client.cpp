@@ -127,12 +127,11 @@ void Client::Initialise(std::string proxyString)
 	//Read stamps library
 	std::ifstream stampsLib;
 	stampsLib.open(STAMPS_DIR PATH_SEP "stamps.def", std::ios::binary);
-	while(true)
+	while(!stampsLib.eof())
 	{
 		char data[11];
 		memset(data, 0, 11);
-		if(stampsLib.readsome(data, 10)!=10)
-			break;
+		stampsLib.read(data, 10);
 		if(!data[0])
 			break;
 		stampIDs.push_back(data);
