@@ -132,7 +132,8 @@ int Element_PHOT::graphics(GRAPHICS_FUNC_ARGS)
 	*fireg = *colg;
 	*fireb = *colb;
 
-	*pixel_mode |= FIRE_ADD;
+	*pixel_mode &= ~PMODE_FLAT;
+	*pixel_mode |= FIRE_ADD | PMODE_ADD;
 	return 0;
 }
 
