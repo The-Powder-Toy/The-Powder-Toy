@@ -438,6 +438,8 @@ void PreviewView::submitComment()
 
 		addCommentBox->SetPlaceholder("Add comment");
 		submitCommentButton->Enabled = true;
+
+		commentBoxAutoHeight();
 	}
 }
 
