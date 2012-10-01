@@ -85,13 +85,15 @@ ValueType TPTScriptInterface::testType(std::string word)
 	//Basic type
 	parseNumber:
 			for(i = 0; i < word.length(); i++)
-				if(!(rawWord[i] >= '0' && rawWord[i] <= '9') && rawWord[i] != '.')
+			{
+				if(!(rawWord[i] >= '0' && rawWord[i] <= '9') && rawWord[i] != '.' && !(rawWord[i] == '-' && !i))
 				{
 					if(rawWord[i] == ',' && rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
 						goto parsePoint;
 					else
 						goto parseString;
 				}
+			}
 			return TypeNumber;
 	parsePoint:
 			i++;
