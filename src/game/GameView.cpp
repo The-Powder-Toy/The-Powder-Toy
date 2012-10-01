@@ -446,7 +446,8 @@ public:
 	MenuAction(GameView * _v, Menu * menu_) { v = _v; menu = menu_; }
 	void MouseEnterCallback(ui::Button * sender)
 	{
-		v->c->SetActiveMenu(menu);
+		if(!ui::Engine::Ref().GetMouseButton())
+			v->c->SetActiveMenu(menu);
 	}
 	void ActionCallback(ui::Button * sender)
 	{

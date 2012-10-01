@@ -53,6 +53,7 @@ namespace ui
 		void SetFps(float fps);
 		inline float GetFps() { return fps; };
 
+		inline int GetMouseButton() { return mouseb_; }
 		inline int GetMouseX() { return mousex_; }
 		inline int GetMouseY() { return mousey_; }
 		inline int GetWidth() { return width_; }
@@ -89,6 +90,7 @@ namespace ui
 		bool break_;
 		
 		int lastTick;
+		int mouseb_;
 		int mousex_;
 		int mousey_;
 		int mousexp_;

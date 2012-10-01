@@ -16,6 +16,7 @@ Engine::Engine():
 	state_(NULL),
 	maxWidth(0),
 	maxHeight(0),
+	mouseb_(0),
 	mousex_(0),
 	mousey_(0),
 	mousexp_(0),
@@ -260,12 +261,14 @@ void Engine::onKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool
 
 void Engine::onMouseClick(int x, int y, unsigned button)
 {
+	mouseb_ |= button;
 	if(state_)
 		state_->DoMouseDown(x, y, button);
 }
 
 void Engine::onMouseUnclick(int x, int y, unsigned button)
 {
+	mouseb_ &= ~button;
 	if(state_)
 		state_->DoMouseUp(x, y, button);
 }
