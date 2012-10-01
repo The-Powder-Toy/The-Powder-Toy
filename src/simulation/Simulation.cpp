@@ -1884,7 +1884,6 @@ void Simulation::clear_sim(void)
 	int i, x, y;
 	emp_decor = 0;
 	signs.clear();
-	currentTick = 0;
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
 	memset(parts, 0, sizeof(Particle)*NPART);
