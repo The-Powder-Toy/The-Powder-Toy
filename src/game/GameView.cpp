@@ -1180,7 +1180,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				break;
 			}
 		}
-		return;
+		if(key != ' ')
+			return;
 	}
 	switch(key)
 	{
