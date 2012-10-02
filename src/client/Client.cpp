@@ -921,7 +921,7 @@ void Client::UnDeleteStamps()
 		stampIDs.clear();
 		while (entry = readdir(directory))
 		{
-			if(strncmp(entry->d_name, "..", 3) && strncmp(entry->d_name, ".", 2) && strcmp(entry->d_name, ".stm"))
+			if(strncmp(entry->d_name, "..", 3) && strncmp(entry->d_name, ".", 2) && strstr(entry->d_name, ".stm"))
 			{
 				char stampname[11];
 				strncpy(stampname, entry->d_name, 10);
