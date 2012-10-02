@@ -59,11 +59,12 @@ private:
 	public:
 		int Width, Height;
 		bool Decorations;
+		bool Fire;
 		GameSave * Save;
 		ListenerHandle CompletedListener;
-		ThumbRenderRequest(GameSave * save, bool decorations, int width, int height, ListenerHandle completedListener) :
-			Save(save), Width(width), Height(height), CompletedListener(completedListener), Decorations(decorations) {}
-		ThumbRenderRequest() :	Save(0), Decorations(true), Width(0), Height(0), CompletedListener(ListenerHandle(0, (ThumbnailListener*)NULL)) {}
+		ThumbRenderRequest(GameSave * save, bool decorations, bool fire, int width, int height, ListenerHandle completedListener) :
+			Save(save), Width(width), Height(height), CompletedListener(completedListener), Decorations(decorations), Fire(fire) {}
+		ThumbRenderRequest() :	Save(0), Decorations(true), Fire(true), Width(0), Height(0), CompletedListener(ListenerHandle(0, (ThumbnailListener*)NULL)) {}
 	};
 
 	//Thumbnail retreival
@@ -96,7 +97,7 @@ public:
 	virtual ~ThumbnailBroker();
 
 	void FlushThumbQueue();
-	void RenderThumbnail(GameSave * gameSave, bool decorations, int width, int height, ThumbnailListener * tListener);
+	void RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, ThumbnailListener * tListener);
 	void RenderThumbnail(GameSave * gameSave, int width, int height, ThumbnailListener * tListener);
 	void RetrieveThumbnail(int saveID, int saveDate, int width, int height, ThumbnailListener * tListener);
 	void RetrieveThumbnail(int saveID, int width, int height, ThumbnailListener * tListener);

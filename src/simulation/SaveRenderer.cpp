@@ -39,7 +39,7 @@ SaveRenderer::SaveRenderer(){
 #endif
 }
 
-Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations)
+Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 {
 	int width, height;
 	Thumbnail * tempThumb;
@@ -71,13 +71,16 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations)
 		ren->RenderBegin();
 		ren->RenderEnd();
 #else
-		int frame = 15;
-		while(frame)
+		if (fire)
 		{
-			frame--;
-			ren->render_parts();
-			ren->render_fire();
-			ren->clearScreen(1.0f);
+			int frame = 15;
+			while(frame)
+			{
+				frame--;
+				ren->render_parts();
+				ren->render_fire();
+				ren->clearScreen(1.0f);
+			}
 		}
 
 		ren->RenderBegin();
@@ -119,13 +122,16 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations)
 
 	    ren->ClearAccumulation();
 
-	   	int frame = 15;
-		while(frame)
+		if (fire)
 		{
-			frame--;
-			ren->render_parts();
-			ren->render_fire();
-			ren->clearScreen(1.0f);
+	   		int frame = 15;
+			while(frame)
+			{
+				frame--;
+				ren->render_parts();
+				ren->render_fire();
+				ren->clearScreen(1.0f);
+			}
 		}
 
 		ren->RenderBegin();
@@ -151,7 +157,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations)
 	return tempThumb;
 }
 
-Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool decorations)
+Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool decorations, bool fire)
 {
 	GameSave * tempSave;
 	try {
@@ -166,7 +172,7 @@ Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool de
 		
 		return thumb;
 	}
-	Thumbnail * thumb = Render(tempSave, decorations);
+	Thumbnail * thumb = Render(tempSave, decorations, fire);
 	delete tempSave;
 	return thumb;
 }
