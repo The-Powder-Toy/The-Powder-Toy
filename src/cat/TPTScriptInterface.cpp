@@ -211,9 +211,15 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	if(value.GetType() == TypeNumber)
 		newValue = ((NumberType)value).Value();
 	else if(value.GetType() == TypeString)
+	{
 		newValue = GetParticleType(((StringType)value).Value());
+		if (newValue < 0 || newValue >= PT_NUM)
+			throw GeneralException("Invalid element");
+	}
 	else
 		throw GeneralException("Invalid value for assignment");
+	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM))
+		throw GeneralException("Invalid element");
 
 	if(selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
 	{

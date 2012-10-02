@@ -96,16 +96,16 @@ int CommandInterface::GetParticleType(std::string type)
 	Element * elements = m->GetSimulation()->elements;
 
 	// alternative names for some elements
-	if (strcasecmp(txt,"C4")==0) i = PT_PLEX;
-	else if (strcasecmp(txt,"C5")==0) i = PT_C5;
-	else if (strcasecmp(txt,"NONE")==0) i = PT_NONE;
+	if (strcasecmp(txt,"C4")==0) return PT_PLEX;
+	else if (strcasecmp(txt,"C5")==0) return PT_C5;
+	else if (strcasecmp(txt,"NONE")==0) return PT_NONE;
 	for (i=1; i<PT_NUM; i++) {
 		if (strcasecmp(txt, elements[i].Name)==0 && elements[i].Enabled)
 		{
 			return i;
 		}
 	}
-	return i;
+	return -1;
 }
 
 std::string CommandInterface::GetLastError()
