@@ -112,6 +112,7 @@ public:
 	void DeleteStamp(std::string stampID);
 	std::string AddStamp(GameSave * saveData);
 	std::vector<std::string> GetStamps(int start, int count);
+	void Client::UnDeleteStamps();
 	int GetStampsCount();
 	SaveFile * GetFirstStamp();
 

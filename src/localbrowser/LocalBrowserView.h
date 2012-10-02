@@ -23,6 +23,7 @@ class LocalBrowserModel;
 class LocalBrowserView: public ui::Window {
 	LocalBrowserController * c;
 	std::vector<ui::SaveButton*> stampButtons;
+	ui::Button * undeleteButton;
 	ui::Button * previousButton;
 	ui::Button * nextButton;
 	ui::Label * infoLabel;

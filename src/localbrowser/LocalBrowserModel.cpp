@@ -87,6 +87,11 @@ void LocalBrowserModel::UpdateSavesList(int pageNumber)
 	notifySavesListChanged();
 }
 
+void LocalBrowserModel::UnDeleteStamps()
+{
+	Client::Ref().UnDeleteStamps();
+}
+
 int LocalBrowserModel::GetPageCount()
 {
 	return std::max(1, (int)(std::ceil(float(Client::Ref().GetStampsCount())/20.0f)));

@@ -89,6 +89,12 @@ void LocalBrowserController::removeSelectedC()
 	new TaskWindow("Removing saves", new RemoveSavesTask(this, selected));
 }
 
+void LocalBrowserController::UnDeleteStamps()
+{
+	browserModel->UnDeleteStamps();
+	browserModel->UpdateSavesList(browserModel->GetPageNum());
+}
+
 void LocalBrowserController::RefreshSavesList()
 {
 	ClearSelection();
