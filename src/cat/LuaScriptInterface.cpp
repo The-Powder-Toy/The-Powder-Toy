@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <locale>
 #include <fstream>
+#include <unistd.h>
 #include "Config.h"
 #include "Format.h"
 #include "LuaLuna.h"
