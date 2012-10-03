@@ -28,7 +28,7 @@ void sign::pos(int & x0, int & y0, int & w, int & h)
 	{
 		w = Graphics::textwidth("Temp: 0000.00");
 	}
-	else if (sregexp(text.c_str(), "^{c:[0-9]*|.*}$")==0)
+	else if (sregexp(text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)
 	{
 		int sldr, startm;
 		char buff[256];

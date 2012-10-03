@@ -199,7 +199,7 @@ void SignWindow::DoDraw()
 				sprintf(buff, "Temp: 0.00");  //...temperature
 			g->drawtext(x+3, y+3, buff, 255, 255, 255, 255);
 		}
-		else if (sregexp(currentSign.text.c_str(), "^{c:[0-9]*|.*}$")==0)
+		else if (sregexp(currentSign.text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)
 		{
 			int sldr, startm;
 			memset(buff, 0, sizeof(buff));

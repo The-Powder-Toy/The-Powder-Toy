@@ -536,7 +536,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 				(*iter).pos(signx, signy, signw, signh);
 				if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
 				{
-					if (sregexp((*iter).text.c_str(), "^{c:[0-9]*|.*}$")==0)
+					if (sregexp((*iter).text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)
 					{
 						const char * signText = (*iter).text.c_str();
 						char buff[256];
@@ -550,8 +550,17 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 						buff[sldr-3] = '\0';
 
 						int tempSaveID = format::StringToNumber<int>(std::string(buff));
-						if(tempSaveID)
-							OpenSavePreview(tempSaveID, 0);
+						if (tempSaveID)
+						{
+							if ((*iter).text.c_str()[1] == 'c')
+								OpenSavePreview(tempSaveID, 0);
+							else if ((*iter).text.c_str()[1] == 't')
+							{
+								char url[256];
+								sprintf(url, "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=%i", tempSaveID);
+								OpenURI(url);
+							}
+						}
 						break;
 					}
 				}
