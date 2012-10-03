@@ -230,6 +230,7 @@ Snapshot * Simulation::CreateSnapshot()
 	snap->AirPressure.insert(snap->AirPressure.begin(), &pv[0][0], &pv[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->AirVelocityX.insert(snap->AirVelocityX.begin(), &vx[0][0], &vx[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->AirVelocityY.insert(snap->AirVelocityY.begin(), &vy[0][0], &vy[0][0]+((XRES/CELL)*(YRES/CELL)));
+	snap->AmbientHeat.insert(snap->AmbientHeat.begin(), &hv[0][0], &hv[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->Particles.insert(snap->Particles.begin(), parts, parts+NPART);
 	snap->PortalParticles.insert(snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[CHANNELS-1][8-1][80-1]);
 	snap->WirelessData.insert(snap->WirelessData.begin(), &wireless[0][0], &wireless[CHANNELS-1][2-1]);
@@ -250,6 +251,7 @@ void Simulation::Restore(const Snapshot & snap)
 	std::copy(snap.AirPressure.begin(), snap.AirPressure.end(), &pv[0][0]);
 	std::copy(snap.AirVelocityX.begin(), snap.AirVelocityX.end(), &vx[0][0]);
 	std::copy(snap.AirVelocityY.begin(), snap.AirVelocityY.end(), &vy[0][0]);
+	std::copy(snap.AmbientHeat.begin(), snap.AmbientHeat.end(), &hv[0][0]);
 	std::copy(snap.Particles.begin(), snap.Particles.end(), parts);
 	std::copy(snap.PortalParticles.begin(), snap.PortalParticles.end(), &portalp[0][0][0]);
 	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0]);
