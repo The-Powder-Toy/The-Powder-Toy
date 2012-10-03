@@ -71,11 +71,11 @@ int Element_CO2::update(UPDATE_FUNC_ARGS)
 				}
 				if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && 1>(rand()%250))
 				{
-					sim->part_change_type(i,x,y,PT_CBNW);
+					sim->part_change_type(r>>8, x+rx, y+ry, PT_CBNW);
 					if (parts[i].ctype==5) //conserve number of water particles - ctype=5 means this CO2 hasn't released the water particle from BUBW yet
-						sim->create_part(r>>8, x+rx, y+ry, PT_CBNW);
+						sim->create_part(i, x, y, PT_WATR);
 					else
-						sim->kill_part(r>>8);
+						sim->kill_part(i);
 				}
 			}
 	if (parts[i].temp > 9773.15 && sim->pv[y/CELL][x/CELL] > 200.0f)
