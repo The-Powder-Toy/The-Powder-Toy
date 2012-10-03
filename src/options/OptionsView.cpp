@@ -12,7 +12,7 @@
 #include "interface/DropDown.h"
 
 OptionsView::OptionsView():
-	ui::Window(ui::Point(-1, -1), ui::Point(300, 270)){
+	ui::Window(ui::Point(-1, -1), ui::Point(300, 290)){
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Simulation Options");
 	tempLabel->SetTextColour(style::Colour::InformationTitle);
@@ -146,7 +146,11 @@ OptionsView::OptionsView():
 
 	scale = new ui::Checkbox(ui::Point(8, 210), ui::Point(Size.X-6, 16), "Large screen", "");
 	scale->SetActionCallback(new ScaleAction(this));
+	tempLabel = new ui::Label(ui::Point(scale->Position.X+Graphics::textwidth(scale->GetText().c_str())+20, scale->Position.Y), ui::Point(Size.X-28, 16), "\bg- Double window size for smaller screen");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(tempLabel);
 	AddComponent(scale);
+
 
 	class FullscreenAction: public ui::CheckboxAction
 	{
@@ -158,7 +162,26 @@ OptionsView::OptionsView():
 
 	fullscreen = new ui::Checkbox(ui::Point(8, 230), ui::Point(Size.X-6, 16), "Fullscreen", "");
 	fullscreen->SetActionCallback(new FullscreenAction(this));
+	tempLabel = new ui::Label(ui::Point(fullscreen->Position.X+Graphics::textwidth(fullscreen->GetText().c_str())+20, fullscreen->Position.Y), ui::Point(Size.X-28, 16), "\bg- Use the entire screen");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(tempLabel);
 	AddComponent(fullscreen);
+
+
+	class FastQuitAction: public ui::CheckboxAction
+	{
+		OptionsView * v;
+	public:
+		FastQuitAction(OptionsView * v_){	v = v_;	}
+		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetFastQuit(sender->GetChecked()); }
+	};
+
+	fastquit = new ui::Checkbox(ui::Point(8, 250), ui::Point(Size.X-6, 16), "Fast Quit", "");
+	fastquit->SetActionCallback(new FastQuitAction(this));
+	tempLabel = new ui::Label(ui::Point(fastquit->Position.X+Graphics::textwidth(fastquit->GetText().c_str())+20, fastquit->Position.Y), ui::Point(Size.X-28, 16), "\bg- Always exit completely when hitting close");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(tempLabel);
+	AddComponent(fastquit);
 
 	class CloseAction: public ui::ButtonAction
 	{
@@ -189,6 +212,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	edgeMode->SetOption(sender->GetEdgeMode());
 	scale->SetChecked(sender->GetScale());
 	fullscreen->SetChecked(sender->GetFullscreen());
+	fastquit->SetChecked(sender->GetFastQuit());
 }
 
 void OptionsView::AttachController(OptionsController * c_)
@@ -202,6 +226,11 @@ void OptionsView::OnDraw()
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 	g->draw_line(Position.X+1, Position.Y+scale->Position.Y-4, Position.X+Size.X-1, Position.Y+scale->Position.Y-4, 255, 255, 255, 180);
+}
+
+void OptionsView::OnTryExit(ExitMethod method)
+{
+	c->Exit();
 }
 
 

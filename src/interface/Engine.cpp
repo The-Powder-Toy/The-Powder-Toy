@@ -30,6 +30,7 @@ Engine::Engine():
 	FrameIndex(0),
 	Fullscreen(false),
 	Scale(1),
+	FastQuit(1),
 	break_(false),
 	lastTick(0)
 {
@@ -109,7 +110,7 @@ void Engine::ShowWindow(Window * window)
 
 }
 
-void Engine::CloseWindow()
+int Engine::CloseWindow()
 {
 	if(!windows.empty())
 	{
@@ -139,10 +140,12 @@ void Engine::CloseWindow()
 			mousexp_ = mousex_;
 			mouseyp_ = mousey_;
 		}
+		return 0;
 	}
 	else
 	{
 		state_ = NULL;
+		return 1;
 	}
 }
 

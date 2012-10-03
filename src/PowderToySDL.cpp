@@ -309,7 +309,8 @@ void EngineProcess()
 			switch (event.type)
 			{
 			case SDL_QUIT:
-				engine->Exit();
+				if (engine->GetFastQuit() || engine->CloseWindow())
+					engine->Exit();
 				break;
 			case SDL_KEYDOWN:
 				engine->onKeyPress(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_LSHIFT, event.key.keysym.mod&KEY_MOD_LCONTROL, event.key.keysym.mod&KEY_MOD_LALT);
@@ -491,6 +492,7 @@ int main(int argc, char * argv[])
 	engine = &ui::Engine::Ref();
 	engine->SetMaxSize(desktopWidth, desktopHeight);
 	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
+	engine->SetFastQuit(Client::Ref().GetPrefBool("FastQuit", true));
 
 	GameController * gameController = new GameController();
 	engine->ShowWindow(gameController->GetView());

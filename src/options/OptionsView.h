@@ -27,11 +27,13 @@ class OptionsView: public ui::Window {
 	ui::DropDown * edgeMode;
 	ui::Checkbox * scale;
 	ui::Checkbox * fullscreen;
+	ui::Checkbox * fastquit;
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);
 	void AttachController(OptionsController * c_);
 	void OnDraw();
+	void OnTryExit(ExitMethod method);
 	virtual ~OptionsView();
 };
 

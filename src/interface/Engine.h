@@ -22,7 +22,7 @@ namespace ui
 		~Engine();
 
 		void ShowWindow(Window * window);
-		void CloseWindow();
+		int CloseWindow();
 
 		void onMouseMove(int x, int y);
 		void onMouseClick(int x, int y, unsigned button);
@@ -46,6 +46,8 @@ namespace ui
 		inline bool GetFullscreen() { return Fullscreen; }
 		void SetScale(int scale) { Scale = scale; }
 		inline int GetScale() { return Scale; }
+		void SetFastQuit(bool fastquit) { FastQuit = fastquit; }
+		inline bool GetFastQuit() {return FastQuit; }
 
 		void Tick();
 		void Draw();
@@ -88,6 +90,7 @@ namespace ui
 
 		bool running_;
 		bool break_;
+		bool FastQuit;
 		
 		int lastTick;
 		int mouseb_;

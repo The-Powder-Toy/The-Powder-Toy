@@ -120,6 +120,17 @@ void OptionsModel::SetFullscreen(bool fullscreen)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetFastQuit()
+{
+	return ui::Engine::Ref().GetFastQuit();
+}
+void OptionsModel::SetFastQuit(bool fastquit)
+{
+	ui::Engine::Ref().SetFastQuit(fastquit);
+	Client::Ref().SetPref("FastQuit", bool(fastquit));
+	notifySettingsChanged();
+}
+
 void OptionsModel::notifySettingsChanged()
 {
 	for(int i = 0; i < observers.size(); i++)

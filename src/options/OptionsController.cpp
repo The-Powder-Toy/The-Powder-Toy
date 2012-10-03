@@ -78,6 +78,11 @@ void OptionsController::SetScale(bool scale)
 
 }
 
+void OptionsController::SetFastQuit(bool fastquit)
+{
+	model->SetFastQuit(fastquit);
+}
+
 OptionsView * OptionsController::GetView()
 {
 	return view;
