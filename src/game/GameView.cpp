@@ -942,9 +942,9 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 	if(selectMode!=SelectNone)
 	{
 		if(selectMode==PlaceSave)
-			selectPoint1 = c->NormaliseBlockCoord(c->PointTranslate(ui::Point(x, y)));
+			selectPoint1 = c->PointTranslate(ui::Point(x, y));
 		if(selectPoint1.X!=-1)
-			selectPoint2 = c->NormaliseBlockCoord(c->PointTranslate(ui::Point(x, y)));
+			selectPoint2 = c->PointTranslate(ui::Point(x, y));
 		return;
 	}
 	currentMouse = ui::Point(x, y);
@@ -963,7 +963,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 	{
 		if(button==BUTTON_LEFT)
 		{
-			selectPoint1 = c->NormaliseBlockCoord(c->PointTranslate(ui::Point(x, y)));
+			selectPoint1 = c->PointTranslate(ui::Point(x, y));
 			selectPoint2 = selectPoint1;
 		}
 		return;
@@ -1023,15 +1023,12 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 				int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
 				int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
 				int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
-				if(x2-x1>0 && y2-y1>0)
-				{
-					if(selectMode==SelectCopy)
-						c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-					else if(selectMode==SelectCut)
-						c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-					else if(selectMode==SelectStamp)
-						c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-				}
+				if(selectMode==SelectCopy)
+					c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+				else if(selectMode==SelectCut)
+					c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+				else if(selectMode==SelectStamp)
+					c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
 			}
 		}
 		currentMouse = ui::Point(x, y);

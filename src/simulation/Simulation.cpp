@@ -167,7 +167,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 
 GameSave * Simulation::Save()
 {
-	return Save(0, 0, XRES, YRES);
+	return Save(0, 0, XRES-1, YRES-1);
 }
 
 GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
@@ -192,14 +192,14 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 	blockX = fullX/CELL;
 	blockY = fullY/CELL;
 
-	blockX2 = fullX2/CELL;
-	blockY2 = fullY2/CELL;
+	blockX2 = (fullX2+CELL)/CELL;
+	blockY2 = (fullY2+CELL)/CELL;
 
-	fullX = blockX*CELL;
-	fullY = blockY*CELL;
+	//fullX = blockX*CELL;
+	//fullY = blockY*CELL;
 
-	fullX2 = blockX2*CELL;
-	fullY2 = blockY2*CELL;
+	//fullX2 = blockX2*CELL;
+	//fullY2 = blockY2*CELL;
 
 	blockW = blockX2-blockX;
 	blockH = blockY2-blockY;
@@ -216,11 +216,11 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 		int x, y;
 		x = int(parts[i].x + 0.5f);
 		y = int(parts[i].y + 0.5f);
-		if(parts[i].type && x >= fullX && y >= fullY && x < fullX2 && y < fullY2)
+		if(parts[i].type && x >= fullX && y >= fullY && x <= fullX2 && y <= fullY2)
 		{
 			Particle tempPart = parts[i];
-			tempPart.x -= fullX;
-			tempPart.y -= fullY;
+			tempPart.x -= blockX*CELL;
+			tempPart.y -= blockY*CELL;
 			if(elements[tempPart.type].Enabled)
 			{
 				*newSave << tempPart;
@@ -243,11 +243,11 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 	
 	for(int i = 0; i < MAXSIGNS && i < signs.size(); i++)
 	{
-		if(signs[i].text.length() && signs[i].x >= fullX && signs[i].y >= fullY && signs[i].x < fullX2 && signs[i].y < fullY2)
+		if(signs[i].text.length() && signs[i].x >= fullX && signs[i].y >= fullY && signs[i].x <= fullX2 && signs[i].y <= fullY2)
 		{
 			sign tempSign = signs[i];
-			tempSign.x -= fullX;
-			tempSign.y -= fullY;
+			tempSign.x -= blockX*CELL;
+			tempSign.y -= blockY*CELL;
 			*newSave << tempSign;
 		}
 	}
@@ -340,7 +340,15 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 			if(bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] == WL_GRAV)
 				gravWallChanged = true;
 			bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
+			emap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
 			delete_part(cx+area_x, cy+area_y, 0);
+		}
+	}
+	for(int i = 0; i < MAXSIGNS && i < signs.size(); i++)
+	{
+		if(signs[i].text.length() && signs[i].x >= area_x && signs[i].y >= area_y && signs[i].x <= area_x+area_w && signs[i].y <= area_y+area_h)
+		{
+			signs.erase(signs.begin()+i);
 		}
 	}
 }
