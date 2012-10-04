@@ -156,6 +156,8 @@ public:
 	void SetPaused(bool pauseState);
 	bool GetDecoration();
 	void SetDecoration(bool decorationState);
+	bool GetAHeatEnable();
+	void SetAHeatEnable(bool aHeat);
 	void ClearSimulation();
 	vector<Menu*> GetMenuList();
 	vector<Tool*> GetUnlistedTools();

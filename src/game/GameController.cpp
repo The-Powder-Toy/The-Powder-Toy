@@ -753,8 +753,7 @@ void GameController::SwitchAir()
 
 void GameController::ToggleAHeat()
 {
-	gameModel->GetSimulation()->aheat_enable = !gameModel->GetSimulation()->aheat_enable;
-	gameModel->UpdateQuickOptions();
+	gameModel->SetAHeatEnable(!gameModel->GetAHeatEnable());
 }
 
 

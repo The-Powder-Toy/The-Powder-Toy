@@ -754,11 +754,30 @@ void GameModel::SetDecoration(bool decorationState)
 	ren->decorations_enable = decorationState?1:0;
 	notifyDecorationChanged();
 	UpdateQuickOptions();
+	if (decorationState)
+		SetInfoTip("Decorations Layer: On");
+	else
+		SetInfoTip("Decorations Layer: Off");
 }
 
 bool GameModel::GetDecoration()
 {
 	return ren->decorations_enable?true:false;
+}
+
+void GameModel::SetAHeatEnable(bool aHeat)
+{
+	sim->aheat_enable = aHeat;
+	UpdateQuickOptions();
+	if (aHeat)
+		SetInfoTip("Ambient Heat: On");
+	else
+		SetInfoTip("Ambient Heat: Off");
+}
+
+bool GameModel::GetAHeatEnable()
+{
+	return sim->aheat_enable;
 }
 
 void GameModel::FrameStep(int frames)
