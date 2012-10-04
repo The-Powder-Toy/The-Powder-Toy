@@ -3311,11 +3311,11 @@ void Simulation::update_particles_i(int start, int inc)
 							if (ny+nny>0&&ny+nny<YRES&&nx+nnx>=0&&nx+nnx<XRES)
 							{
 								rt=pmap[ny+nny][nx+nnx];
-								if (!rt&&loverule[nnx][nny]==1)
+								if (!rt&&Element_LOVE::RuleTable[nnx][nny]==1)
 									create_part(-1,nx+nnx,ny+nny,PT_LOVE);
 								else if (!rt)
 									continue;
-								else if (parts[rt>>8].type==PT_LOVE&&loverule[nnx][nny]==0)
+								else if (parts[rt>>8].type==PT_LOVE&&Element_LOVE::RuleTable[nnx][nny]==0)
 									kill_part(rt>>8);
 							}
 						}
@@ -3329,11 +3329,11 @@ void Simulation::update_particles_i(int start, int inc)
 							if (ny+nny>0&&ny+nny<YRES&&nx+nnx>=0&&nx+nnx<XRES)
 							{
 								rt=pmap[ny+nny][nx+nnx];
-								if (!rt&&lolzrule[nny][nnx]==1)
+								if (!rt&&Element_LOLZ::RuleTable[nny][nnx]==1)
 									create_part(-1,nx+nnx,ny+nny,PT_LOLZ);
 								else if (!rt)
 									continue;
-								else if (parts[rt>>8].type==PT_LOLZ&&lolzrule[nny][nnx]==0)
+								else if (parts[rt>>8].type==PT_LOLZ&&Element_LOLZ::RuleTable[nny][nnx]==0)
 									kill_part(rt>>8);
 
 							}
@@ -4747,29 +4747,4 @@ Simulation::Simulation():
 	clear_sim();
 
 	grav->gravity_mask();
-
-	int loverule[9][9] =
-	{
-		{0,0,1,1,0,0,0,0,0},
-		{0,1,0,0,1,1,0,0,0},
-		{1,0,0,0,0,0,1,0,0},
-		{1,0,0,0,0,0,0,1,0},
-		{0,1,0,0,0,0,0,0,1},
-		{1,0,0,0,0,0,0,1,0},
-		{1,0,0,0,0,0,1,0,0},
-		{0,1,0,0,1,1,0,0,0},
-		{0,0,1,1,0,0,0,0,0},
-	};
-	int lolzrule[9][9] =
-	{
-		{0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,1,0,0},
-		{1,0,0,0,0,0,1,0,0},
-		{1,0,0,1,1,0,0,1,0},
-		{1,0,1,0,0,1,0,1,0},
-		{1,0,1,0,0,1,0,1,0},
-		{0,1,0,1,1,0,0,1,0},
-		{0,1,0,0,0,0,0,1,0},
-		{0,1,0,0,0,0,0,1,0},
-	};
 }

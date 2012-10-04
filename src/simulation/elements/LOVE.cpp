@@ -46,6 +46,20 @@ Element_LOVE::Element_LOVE()
     
 }
 
+//#TPT-Directive ElementHeader Element_LOVE static int RuleTable[9][9]
+int Element_LOVE::RuleTable[9][9] =
+{
+    {0,0,1,1,0,0,0,0,0},
+    {0,1,0,0,1,1,0,0,0},
+    {1,0,0,0,0,0,1,0,0},
+    {1,0,0,0,0,0,0,1,0},
+    {0,1,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,1,0},
+    {1,0,0,0,0,0,1,0,0},
+    {0,1,0,0,1,1,0,0,0},
+    {0,0,1,1,0,0,0,0,0},
+};
+
 //#TPT-Directive ElementHeader Element_LOVE static int update(UPDATE_FUNC_ARGS)
 int Element_LOVE::update(UPDATE_FUNC_ARGS)
  {
