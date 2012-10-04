@@ -439,6 +439,8 @@ SimulationSample Simulation::Get(int x, int y)
 		sample.GravityVelocityX = gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
 		sample.GravityVelocityY = gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
 	}
+
+	sample.NumParts = NUM_PARTS;
 	return sample;
 }
 
