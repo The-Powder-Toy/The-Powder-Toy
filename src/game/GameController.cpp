@@ -146,6 +146,7 @@ GameController::GameController():
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
+	gameModel->BuildQuickOptionMenu(this);
 
 	gameView->AttachController(this);
 	gameModel->AddObserver(gameView);

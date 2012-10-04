@@ -62,7 +62,7 @@ private:
 	std::string infoTip;
 	int toolTipPresence;
 
-queue<ui::Point> pointQueue;
+	queue<ui::Point> pointQueue;
 	GameController * c;
 	Renderer * ren;
 	Brush * activeBrush;
@@ -168,7 +168,7 @@ public:
 	virtual void OnDraw();
 	virtual void OnBlur();
 
-	//Top-level handers, for Lua interface
+	//Top-level handlers, for Lua interface
 	virtual void DoDraw();
 	virtual void DoMouseMove(int x, int y, int dx, int dy);
 	virtual void DoMouseDown(int x, int y, unsigned button);

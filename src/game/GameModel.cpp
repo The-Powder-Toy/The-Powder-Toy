@@ -98,7 +98,6 @@ GameModel::GameModel():
 	}
 
 	BuildMenus();
-	BuildQuickOptionMenu();
 
 	//Set default decoration colour
 	unsigned char colourR = min(Client::Ref().GetPrefInteger("Decoration.Red", 200), 255);
@@ -173,7 +172,7 @@ void GameModel::UpdateQuickOptions()
 	}	
 }
 
-void GameModel::BuildQuickOptionMenu()
+void GameModel::BuildQuickOptionMenu(GameController * controller)
 {
 	for(std::vector<QuickOption*>::iterator iter = quickOptions.begin(), end = quickOptions.end(); iter != end; ++iter)
 	{
@@ -186,6 +185,7 @@ void GameModel::BuildQuickOptionMenu()
 	quickOptions.push_back(new DecorationsOption(this));
 	quickOptions.push_back(new NGravityOption(this));
 	quickOptions.push_back(new AHeatOption(this));
+	quickOptions.push_back(new ConsoleShowOption(this, controller));
 
 	notifyQuickOptionsChanged();
 	UpdateQuickOptions();

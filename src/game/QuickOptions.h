@@ -99,3 +99,22 @@ public:
 		m->SetAHeatEnable(!m->GetAHeatEnable());
 	}
 };
+
+class ConsoleShowOption: public QuickOption
+{
+	GameController * c;
+public:
+	ConsoleShowOption(GameModel * m, GameController * c_):
+	QuickOption("C", "Show Console", m, Toggle)
+	{
+		c = c_;
+	}
+	virtual bool GetToggle()
+	{
+		return 0;
+	}
+	virtual void perform()
+	{
+		c->ShowConsole();
+	}
+};
