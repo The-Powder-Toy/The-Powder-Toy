@@ -26,7 +26,7 @@ LocalBrowserView::LocalBrowserView():
 {
 	nextButton = new ui::Button(ui::Point(XRES+BARSIZE-52, YRES+MENUSIZE-18), ui::Point(50, 16), "Next \x95");
 	previousButton = new ui::Button(ui::Point(1, YRES+MENUSIZE-18), ui::Point(50, 16), "\x96 Prev");
-	undeleteButton = new ui::Button(ui::Point(XRES+BARSIZE-122, YRES+MENUSIZE-18), ui::Point(60, 16), "Stamp Fix");
+	undeleteButton = new ui::Button(ui::Point(XRES+BARSIZE-122, YRES+MENUSIZE-18), ui::Point(60, 16), "Rescan");
 	infoLabel  = new ui::Label(ui::Point(51, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-102, 16), "Loading...");
 	AddComponent(infoLabel);
 	AddComponent(nextButton);
@@ -68,8 +68,7 @@ LocalBrowserView::LocalBrowserView():
 		UndeleteAction(LocalBrowserView * _v) { v = _v; }
 		void ActionCallback(ui::Button * sender)
 		{
-			if(ConfirmPrompt::Blocking("Bring back deleted stamps", "Versions 83.1-83.8 had a bug where stamps past page 3 were deleted from the list. Click continue to bring these back and read every stamp in the stamps/ folder.\n\nWARNING:\nThis will also bring back all stamps deleted before version 74.2 (March 2012)", "Continue"))
-				v->c->UnDeleteStamps();
+			v->c->RescanStamps();
 		}
 	};
 	undeleteButton->SetActionCallback(new UndeleteAction(this));

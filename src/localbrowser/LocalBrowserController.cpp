@@ -53,10 +53,10 @@ void LocalBrowserController::RemoveSelected()
 	};
 
 	std::stringstream desc;
-	desc << "Are you sure you want to delete " << browserModel->GetSelected().size() << " saves";
+	desc << "Are you sure you want to delete " << browserModel->GetSelected().size() << " stamp";
 	if(browserModel->GetSelected().size()>1)
 		desc << "s";
-	new ConfirmPrompt("Delete saves", desc.str(), new RemoveSelectedConfirmation(this));
+	new ConfirmPrompt("Delete stamps", desc.str(), new RemoveSelectedConfirmation(this));
 }
 
 void LocalBrowserController::removeSelectedC()
@@ -72,7 +72,7 @@ void LocalBrowserController::removeSelectedC()
 			for(int i = 0; i < saves.size(); i++)
 			{
 				std::stringstream saveName;
-				saveName << "Deleting save [" << saves[i] << "] ...";
+				saveName << "Deleting stamp [" << saves[i] << "] ...";
  				notifyStatus(saveName.str());
  				Client::Ref().DeleteStamp(saves[i]);
 				notifyProgress((float(i+1)/float(saves.size())*100));
@@ -89,9 +89,27 @@ void LocalBrowserController::removeSelectedC()
 	new TaskWindow("Removing saves", new RemoveSavesTask(this, selected));
 }
 
-void LocalBrowserController::UnDeleteStamps()
+void LocalBrowserController::RescanStamps()
 {
-	browserModel->UnDeleteStamps();
+	class RescanConfirmation: public ConfirmDialogueCallback {
+	public:
+		LocalBrowserController * c;
+		RescanConfirmation(LocalBrowserController * c_) {	c = c_;	}
+		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+			if (result == ConfirmPrompt::ResultOkay)
+				c->rescanStampsC();
+		}
+		virtual ~RescanConfirmation() { }
+	};
+
+	std::stringstream desc;
+	desc << "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this may mess up the current sorting order";
+	new ConfirmPrompt("Rescan", desc.str(), new RescanConfirmation(this));
+}
+
+void LocalBrowserController::rescanStampsC()
+{
+	browserModel->RescanStamps();
 	browserModel->UpdateSavesList(browserModel->GetPageNum());
 }
 

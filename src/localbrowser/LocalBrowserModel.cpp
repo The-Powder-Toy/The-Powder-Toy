@@ -87,9 +87,9 @@ void LocalBrowserModel::UpdateSavesList(int pageNumber)
 	notifySavesListChanged();
 }
 
-void LocalBrowserModel::UnDeleteStamps()
+void LocalBrowserModel::RescanStamps()
 {
-	Client::Ref().UnDeleteStamps();
+	Client::Ref().RescanStamps();
 }
 
 int LocalBrowserModel::GetPageCount()

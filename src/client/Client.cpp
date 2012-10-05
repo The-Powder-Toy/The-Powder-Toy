@@ -850,6 +850,8 @@ void Client::DeleteStamp(std::string stampID)
 			return;
 		}
 	}
+
+	updateStamps();
 }
 
 std::string Client::AddStamp(GameSave * saveData)
@@ -911,7 +913,7 @@ void Client::updateStamps()
 	return;
 }
 
-void Client::UnDeleteStamps()
+void Client::RescanStamps()
 {
 	DIR * directory;
 	struct dirent * entry;
@@ -921,7 +923,7 @@ void Client::UnDeleteStamps()
 		stampIDs.clear();
 		while (entry = readdir(directory))
 		{
-			if(strncmp(entry->d_name, "..", 3) && strncmp(entry->d_name, ".", 2) && strstr(entry->d_name, ".stm"))
+			if(strncmp(entry->d_name, "..", 3) && strncmp(entry->d_name, ".", 2) && strstr(entry->d_name, ".stm") && strlen(entry->d_name) == 14)
 			{
 				char stampname[11];
 				strncpy(stampname, entry->d_name, 10);
