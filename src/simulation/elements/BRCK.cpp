@@ -50,34 +50,15 @@ Element_BRCK::Element_BRCK()
 int Element_BRCK::graphics(GRAPHICS_FUNC_ARGS)
 {
     if (cpart->tmp == 1)
+    {
+        *pixel_mode |= FIRE_ADD;
         *colb += 100;
-	else if (cpart->tmp == 2)
-		*colr += 100;
-	else if (cpart->tmp == 3)
-		*colg += 100;
-	else if (cpart->tmp == 4) {
-		*colg += 100;
-		*colb += 100;
-	}
-	else if (cpart->tmp == 5) {
-		*colg += 100;
-		*colr += 100;
-	}
-	else if (cpart->tmp == 6) {
-		*colr += 100;
-		*colb += 100;
-	}
-	else if (cpart->tmp == 7) {
-		*colr += 100;
-		*colg += 100;
-		*colb += 100;
-	}
 
-	*pixel_mode |= FIRE_ADD;
-	*firea = 40;
-    *firer = *colr;
-    *fireg = *colg;
-    *fireb = *colb;
+        *firea = 40;
+        *firer = *colr;
+        *fireg = *colg;
+        *fireb = *colb;
+    }
     return 0;  
 }
 
