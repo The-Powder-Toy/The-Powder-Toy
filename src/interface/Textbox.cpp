@@ -283,6 +283,11 @@ bool Textbox::CharacterValid(Uint16 character)
 void Textbox::Tick(float dt)
 {
 	Label::Tick(dt);
+	if(!IsFocused())
+	{
+		keyDown = 0;
+		characterDown = 0;
+	}
 	if((keyDown || characterDown) && repeatTime <= clock())
 	{
 		OnVKeyPress(keyDown, characterDown, false, false, false);
