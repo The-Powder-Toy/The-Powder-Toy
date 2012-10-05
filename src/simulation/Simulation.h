@@ -117,6 +117,12 @@ public:
 	int pretty_powder;
 	int sandcolour;
 	int sandcolour_frame;
+	static int loverule[9][9];
+	bool ISLOVE;
+	int love[XRES/9][YRES/9];
+	static int lolzrule[9][9];
+	bool ISLOLZ;
+	int lolz[XRES/9][YRES/9];
 
 	int Load(GameSave * save);
 	int Load(int x, int y, GameSave * save);
@@ -204,6 +210,7 @@ public:
 	Simulation();
 	~Simulation();
 };
+
 //#endif
 
 #endif /* SIMULATION_H_ */

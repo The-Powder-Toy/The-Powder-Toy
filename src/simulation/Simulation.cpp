@@ -3273,6 +3273,77 @@ void Simulation::update_particles_i(int start, int inc)
     	}
     }
 
+	if (ISLOVE || ISLOLZ) //LOVE and LOLZ element handling
+	{
+		int nx, nnx, ny, nny, r, rt;
+		ISLOVE = 0;
+		ISLOLZ = 0;
+		for (ny=0; ny<YRES-4; ny++)
+		{
+			for (nx=0; nx<XRES-4; nx++)
+			{
+				r=pmap[ny][nx];
+				if (!r)
+				{
+					continue;
+				}
+				else if ((ny<9||nx<9||ny>YRES-7||nx>XRES-10)&&(parts[r>>8].type==PT_LOVE||parts[r>>8].type==PT_LOLZ))
+					kill_part(r>>8);
+				else if (parts[r>>8].type==PT_LOVE)
+				{
+					love[nx/9][ny/9] = 1;
+				}
+				else if (parts[r>>8].type==PT_LOLZ)
+				{
+					lolz[nx/9][ny/9] = 1;
+				}
+			}
+		}
+		for (nx=9; nx<=XRES-18; nx++)
+		{
+			for (ny=9; ny<=YRES-7; ny++)
+			{
+				if (love[nx/9][ny/9]==1)
+				{
+					for ( nnx=0; nnx<9; nnx++)
+						for ( nny=0; nny<9; nny++)
+						{
+							if (ny+nny>0&&ny+nny<YRES&&nx+nnx>=0&&nx+nnx<XRES)
+							{
+								rt=pmap[ny+nny][nx+nnx];
+								if (!rt&&loverule[nnx][nny]==1)
+									create_part(-1,nx+nnx,ny+nny,PT_LOVE);
+								else if (!rt)
+									continue;
+								else if (parts[rt>>8].type==PT_LOVE&&loverule[nnx][nny]==0)
+									kill_part(rt>>8);
+							}
+						}
+				}
+				love[nx/9][ny/9]=0;
+				if (lolz[nx/9][ny/9]==1)
+				{
+					for ( nnx=0; nnx<9; nnx++)
+						for ( nny=0; nny<9; nny++)
+						{
+							if (ny+nny>0&&ny+nny<YRES&&nx+nnx>=0&&nx+nnx<XRES)
+							{
+								rt=pmap[ny+nny][nx+nnx];
+								if (!rt&&lolzrule[nny][nnx]==1)
+									create_part(-1,nx+nnx,ny+nny,PT_LOLZ);
+								else if (!rt)
+									continue;
+								else if (parts[rt>>8].type==PT_LOLZ&&lolzrule[nny][nnx]==0)
+									kill_part(rt>>8);
+
+							}
+						}
+				}
+				lolz[nx/9][ny/9]=0;
+			}
+		}
+	}
+
 	//wire!
 	if(elementCount[PT_WIRE] > 0)
 	{
@@ -4676,4 +4747,29 @@ Simulation::Simulation():
 	clear_sim();
 
 	grav->gravity_mask();
+
+	int loverule[9][9] =
+	{
+		{0,0,1,1,0,0,0,0,0},
+		{0,1,0,0,1,1,0,0,0},
+		{1,0,0,0,0,0,1,0,0},
+		{1,0,0,0,0,0,0,1,0},
+		{0,1,0,0,0,0,0,0,1},
+		{1,0,0,0,0,0,0,1,0},
+		{1,0,0,0,0,0,1,0,0},
+		{0,1,0,0,1,1,0,0,0},
+		{0,0,1,1,0,0,0,0,0},
+	};
+	int lolzrule[9][9] =
+	{
+		{0,0,0,0,0,0,0,0,0},
+		{1,0,0,0,0,0,1,0,0},
+		{1,0,0,0,0,0,1,0,0},
+		{1,0,0,1,1,0,0,1,0},
+		{1,0,1,0,0,1,0,1,0},
+		{1,0,1,0,0,1,0,1,0},
+		{0,1,0,1,1,0,0,1,0},
+		{0,1,0,0,0,0,0,1,0},
+		{0,1,0,0,0,0,0,1,0},
+	};
 }

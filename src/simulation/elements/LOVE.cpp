@@ -49,13 +49,7 @@ Element_LOVE::Element_LOVE()
 //#TPT-Directive ElementHeader Element_LOVE static int update(UPDATE_FUNC_ARGS)
 int Element_LOVE::update(UPDATE_FUNC_ARGS)
  {
-	/*int t = parts[i].type;
-	if (t==PT_LOVE)
-		ISLOVE=1;
-	else if (t==PT_LOLZ)
-		ISLOLZ=1;
-	else if (t==PT_GRAV)
-		ISGRAV=1;*/
+	sim->ISLOVE = true;
 	return 0;
 }
 
