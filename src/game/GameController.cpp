@@ -1101,8 +1101,7 @@ void GameController::SaveAsCurrent()
 		virtual  ~SaveUploadedCallback() {};
 		virtual void SaveUploaded(SaveInfo save)
 		{
-			//Don't do anything
-			//c->LoadSave(&save);
+			c->LoadSave(&save);
 		}
 	};
 
