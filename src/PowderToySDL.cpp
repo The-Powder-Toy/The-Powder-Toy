@@ -296,6 +296,9 @@ ui::Engine * engine = NULL;
 
 void EngineProcess()
 {
+	int frameStart;
+	float frameTime;
+	float frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
 	SDL_Event event;
 	while(engine->Running())
 	{
@@ -363,13 +366,30 @@ void EngineProcess()
 		}
 		if(engine->Broken()) { engine->UnBreak(); break; }
 
+		frameStart = SDL_GetTicks();
 		engine->Tick();
 		engine->Draw();
+		frameTime = SDL_GetTicks() - frameStart;
 		
-		if(SDL_GetTicks()-lastTick>250)
+		frameTimeAvg = (frameTimeAvg*(1.0f-0.2f)) + (0.2f*frameTime);
+		if(ui::Engine::Ref().FpsLimit > 2.0f)
+		{
+			float targetFrameTime = 1000.0f/((float)ui::Engine::Ref().FpsLimit);
+			if(targetFrameTime - frameTimeAvg > 0)
+			{
+				SDL_Delay((targetFrameTime - frameTimeAvg) + 0.5f);
+				frameTime = SDL_GetTicks() - frameStart;//+= (int)(targetFrameTime - frameTimeAvg);
+			}
+		}
+
+		correctedFrameTimeAvg = (correctedFrameTimeAvg*(1.0f-0.05f)) + (0.05f*frameTime);
+		fps = 1000.0f/correctedFrameTimeAvg;
+		engine->SetFps(fps);
+
+		if(frameStart-lastTick>250)
 		{
 			//Run client tick every second
-			lastTick = SDL_GetTicks();
+			lastTick = frameStart;
 			Client::Ref().Tick();
 		}
 
@@ -387,34 +407,6 @@ void EngineProcess()
 		else
 			blit(engine->g->vid);
 #endif
-
-		currentFrame++;
-		currentTime = SDL_GetTicks();
-		elapsedTime = currentTime - lastTime;
-		if(ui::Engine::Ref().FpsLimit > 2.0f && (currentFrame>2 || elapsedTime > 1000*2/ui::Engine::Ref().FpsLimit) && elapsedTime && currentFrame*1000/elapsedTime > ui::Engine::Ref().FpsLimit)
-		{
-			while (currentFrame*1000/elapsedTime > ui::Engine::Ref().FpsLimit)
-			{
-				SDL_Delay(1);
-				currentTime = SDL_GetTicks();
-				elapsedTime = currentTime-lastTime;
-			}
-		}
-		if(elapsedTime>=1000)
-		{
-			fps = (((float)currentFrame)/((float)elapsedTime))*1000.0f;
-			currentFrame = 0;
-			lastTime = currentTime;
-			if(ui::Engine::Ref().FpsLimit > 2.0f)
-			{
-				delta = ui::Engine::Ref().FpsLimit/fps;
-			}
-			else
-			{
-				delta = 1.0f;
-			}
-		}
-		engine->SetFps(fps);
 	}
 #ifdef DEBUG
 	std::cout << "Breaking out of EngineProcess" << std::endl;
