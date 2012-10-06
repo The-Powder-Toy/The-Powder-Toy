@@ -237,8 +237,6 @@ if(GetOption('win')):
 sources+=Glob("src/*/*.cpp")
 sources+=Glob("src/simulation/elements/*.cpp")
 sources+=Glob("src/simulation/tools/*.cpp")
-sources+=Glob("generated/ToolClasses.cpp")
-sources+=Glob("generated/ElementClasses.cpp")
 
 if(GetOption('win')):
 	sources = filter(lambda source: str(source) != 'src/simulation/Gravity.cpp', sources)
@@ -274,7 +272,11 @@ if(GetOption('win')):
 	sources+=envCopy.Object('src/simulation/Gravity.cpp')
 
 env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python2 generator.py elements $TARGETS $SOURCES")
+sources+=Glob("generated/ElementClasses.cpp")
+
 env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python2 generator.py tools $TARGETS $SOURCES")
+sources+=Glob("generated/ToolClasses.cpp")
+
 env.Decider('MD5')
 t=env.Program(target=programName, source=sources)
 Default(t)
