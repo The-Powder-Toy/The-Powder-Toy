@@ -47,64 +47,79 @@ Element_VIBR::Element_VIBR()
 }
 
 int Element_VIBR::update(UPDATE_FUNC_ARGS) {
-	int r, rx, ry, rt, transfer, trade;
-	rt = parts[r>>8].type;
-	//Heat absorption code
-	if (parts[i].temp>274.65f)
+	int r, rx, ry, transfer, trade;
+	if (!parts[i].life)
 	{
-		parts[i].ctype++;
-		parts[i].temp-=3;
-	}
-	if (parts[i].temp<271.65f)
-	{
-		parts[i].ctype--;
-		parts[i].temp+=3;
-	}
-	//Pressure absorption code
-	if (sim->pv[y/CELL][x/CELL]>2.5)
-	{
-		parts[i].tmp++;
-		sim->pv[y/CELL][x/CELL]--;
-	}
-	if (sim->pv[y/CELL][x/CELL]<-2.5)
-	{
-		sim->pv[y/CELL][x/CELL]++;
+		//Heat absorption code
+		if (parts[i].temp>274.65f)
+		{
+			parts[i].ctype++;
+			parts[i].temp-=3;
+		}
+		if (parts[i].temp<271.65f)
+		{
+			parts[i].ctype--;
+			parts[i].temp+=3;
+		}
+		//Pressure absorption code
+		if (sim->pv[y/CELL][x/CELL]>2.5)
+		{
+			parts[i].tmp++;
+			sim->pv[y/CELL][x/CELL]--;
+		}
+		if (sim->pv[y/CELL][x/CELL]<-2.5)
+		{
+			sim->pv[y/CELL][x/CELL]++;
+		}
 	}
 	//Release sparks before explode
-	if (parts[i].ctype>3200)
+	if (parts[i].life && parts[i].life < 300)
 	{
-		parts[r>>8].life = 4;
-		parts[r>>8].ctype = rt;
-		sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+		rx = rand()%3-1;
+		ry = rand()%3-1;
+		r = pmap[y+ry][x+rx];
+		if ((r&0xFF) && (r&0xFF) != PT_BREC && (sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && !parts[r>>8].life)
+		{
+			parts[r>>8].life = 4;
+			parts[r>>8].ctype = r>>8;
+			sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+		}
 	}
 	//Release all heat
-	if ((1000<parts[i].ctype && parts[i].ctype<1200) || parts[i].tmp>90 || (80<parts[i].tmp2 && parts[i].tmp2<100))
+	if (!parts[i].life && (parts[i].ctype > 1200 || parts[i].tmp > 100 || parts[i].tmp2 > 100))
+		parts[i].life = 750;
+	if (parts[i].life && parts[i].life < 500)
 	{
-		for(rx=-1; rx<2; rx++)
-			for(ry=-1; ry<2; ry++)
-				if(x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && pmap[y+ry][x+rx] && (pmap[y+ry][x+rx]&0xFF)!=PT_VIBR&& (pmap[y+ry][x+rx]&0xFF)!=0xFF)
-				{
-					r = pmap[y+ry][x+rx];
-					if(parts[r>>8].temp+ (parts[r>>8].temp*0.2f)<=MAX_TEMP)
-					{
-						parts[r>>8].temp += parts[r>>8].temp*0.2f;
-					}
-					else 
-					{
-						parts[r>>8].temp = MAX_TEMP;
-					}
-				}
-				if (1200<parts[i].ctype || parts[i].tmp>95 || 90<parts[i].tmp2)
-					parts[i].ctype--;
+		int random = rand();
+		rx = random%7-3;
+		ry = (random>>3)%7-3;
+		if(x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES)
+		{
+			r = pmap[y+ry][x+rx];
+			if ((r&0xFF) && (r&0xFF)!=PT_VIBR)
+			{
+				parts[r>>8].temp += parts[i].ctype*6;
+				parts[i].ctype -= parts[i].ctype*2;
+			}
+		}
 	}
 	//Explosion code
-	if (parts[i].ctype>1200 || parts[i].tmp>100 || parts[i].tmp2>100)
+	if (parts[i].life == 1)
 	{
 		sim->part_change_type(i,x,y,PT_EXOT);
-		sim->create_part(-1,x,y-1,PT_ELEC);
-		sim->create_part(-1,x,y-1,PT_NEUT);
-		sim->create_part(-1,x,y-1,PT_PHOT);
-		sim->create_part(-1,x,y-1,PT_BREC);
+		int random = rand(), index;
+		index = sim->create_part(-3,x+(random&3)-1,y+((random>>2)&3)-1,PT_ELEC);
+		if (index != -1)
+			parts[index].temp = 7000;
+		index = sim->create_part(-3,x+((random>>4)&3)-1,y+((random>>6)&3)-1,PT_NEUT);
+		if (index != -1)
+			parts[index].temp = 7000;
+		index = sim->create_part(-3,x+((random>>8)&3)-1,y+((random>>10)&3)-1,PT_PHOT);
+		if (index != -1)
+			parts[index].temp = 7000;
+		index = sim->create_part(-3,x+((random>>12)&3)-1,y+rand()%3-1,PT_BREC);
+		if (index != -1)
+			parts[index].temp = 7000;
 		parts[i].temp=9000;
 		sim->pv[y/CELL][x/CELL]=256;
 	}
@@ -189,25 +204,7 @@ int Element_VIBR::graphics(GRAPHICS_FUNC_ARGS)
 	float maxtemp = fmax(cpart->tmp,cpart->temp);
 	int gradient = max(cpart->ctype/12.0f, cpart->tmp);
 	gradient = max(gradient, cpart->tmp2);
-	if (gradient > 31 && gradient < 63)
-	{
-		*colr += (int)restrict_flt((gradient-31)*0.627,0,51);
-		*colg += (int)restrict_flt((gradient-31)*0.582,0,55);
-		*colb += (int)restrict_flt((gradient-31)*0.627,0,51);
-	}
-	else if (gradient >= 63 && gradient < 94)
-	{
-		*colr += (int)restrict_flt((gradient-63)*.636+51,51,100);
-		*colg += (int)restrict_flt((gradient-63)*.969+55,55,87);
-		*colb += (int)restrict_flt((gradient-63)*.636+51,51,100);
-	}
-	else if (gradient >= 94 && gradient < 100)
-	{
-		*colr += (int)restrict_flt((gradient-94)*19.7+100,100,218);
-		*colg += (int)restrict_flt((gradient-94)*17.5+87,87,192);
-		*colb += (int)restrict_flt((gradient-94)*19.7+100,100,218);
-	}
-	else if (gradient >= 100)
+	if (gradient >= 100 || cpart->life)
 	{
 		*pixel_mode = PMODE_NONE;
 		*pixel_mode |= FIRE_BLEND;
@@ -219,7 +216,24 @@ int Element_VIBR::graphics(GRAPHICS_FUNC_ARGS)
 		*fireg = *colg;
 		*fireb = *colb;
 	}
-
+	else if (gradient >= 94 && gradient < 100)
+	{
+		*colr += (int)restrict_flt((gradient-94)*19.7+100,100,218);
+		*colg += (int)restrict_flt((gradient-94)*17.5+87,87,192);
+		*colb += (int)restrict_flt((gradient-94)*19.7+100,100,218);
+	}
+	else if (gradient >= 63 && gradient < 94)
+	{
+		*colr += (int)restrict_flt((gradient-63)*1.58+51,51,100);
+		*colg += (int)restrict_flt((gradient-63)*1.03+55,55,87);
+		*colb += (int)restrict_flt((gradient-63)*1.58+51,51,100);
+	}
+	else if (gradient > 31 && gradient < 63)
+	{
+		*colr += (int)restrict_flt((gradient-31)*1.59,0,51);
+		*colg += (int)restrict_flt((gradient-31)*1.72,0,55);
+		*colb += (int)restrict_flt((gradient-31)*1.59,0,51);
+	}
 	return 0;
 }
 
