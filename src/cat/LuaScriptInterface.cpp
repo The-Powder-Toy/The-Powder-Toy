@@ -11,7 +11,6 @@
 #include <algorithm>
 #include <locale>
 #include <fstream>
-#include <unistd.h>
 #include "Config.h"
 #include "Format.h"
 #include "LuaLuna.h"
@@ -39,6 +38,10 @@
 #include "LuaCheckbox.h"
 #include "LuaSlider.h"
 #include "LuaProgressBar.h"
+
+#ifdef __unix__
+#include <unistd.h>
+#endif
 
 extern "C"
 {
