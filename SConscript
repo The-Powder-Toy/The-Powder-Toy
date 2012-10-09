@@ -122,7 +122,7 @@ else:
 	env.Append(LIBS=['z', 'bz2', 'fftw3f'])
 
 env.Append(CPPPATH=['src/', 'data/', 'generated/'])
-env.Append(CCFLAGS=['-w', '-std=c99', '-fkeep-inline-functions'])
+env.Append(CCFLAGS=['-w', '-std=c++98', '-fkeep-inline-functions'])
 env.Append(LIBS=['pthread', 'm'])
 env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
 
@@ -237,8 +237,6 @@ if(GetOption('win')):
 sources+=Glob("src/*/*.cpp")
 sources+=Glob("src/simulation/elements/*.cpp")
 sources+=Glob("src/simulation/tools/*.cpp")
-sources+=Glob("generated/ToolClasses.cpp")
-sources+=Glob("generated/ElementClasses.cpp")
 
 if(GetOption('win')):
 	sources = filter(lambda source: str(source) != 'src/simulation/Gravity.cpp', sources)
@@ -273,8 +271,12 @@ if(GetOption('win')):
 	envCopy.Append(CCFLAGS=['-mincoming-stack-boundary=2'])
 	sources+=envCopy.Object('src/simulation/Gravity.cpp')
 
-env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python generator.py elements $TARGETS $SOURCES")
-env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python generator.py tools $TARGETS $SOURCES")
+env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python2 generator.py elements $TARGETS $SOURCES")
+sources+=Glob("generated/ElementClasses.cpp")
+
+env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python2 generator.py tools $TARGETS $SOURCES")
+sources+=Glob("generated/ToolClasses.cpp")
+
 env.Decider('MD5')
 t=env.Program(target=programName, source=sources)
 Default(t)

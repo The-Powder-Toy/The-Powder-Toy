@@ -39,6 +39,10 @@
 #include "LuaSlider.h"
 #include "LuaProgressBar.h"
 
+#ifdef __unix__
+#include <unistd.h>
+#endif
+
 extern "C"
 {
 #ifdef WIN
