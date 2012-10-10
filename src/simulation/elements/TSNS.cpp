@@ -1,9 +1,9 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_DTEC PT_DTEC 162
-Element_DTEC::Element_DTEC()
+//#TPT-Directive ElementClass Element_TSNS PT_TSNS 164
+Element_TSNS::Element_TSNS()
 {
-    Identifier = "DEFAULT_PT_DTEC";
-    Name = "DTEC";
+    Identifier = "DEFAULT_PT_TSNS";
+    Name = "TSNS";
     Colour = PIXPACK(0xFD9D18);
     MenuVisible = 1;
     MenuSection = SC_SENSOR;
@@ -28,7 +28,7 @@ Element_DTEC::Element_DTEC()
     
     Temperature = R_TEMP+0.0f	+273.15f;
     HeatConduct = 0;
-    Description = "Creates a spark when something with its ctype is nearby";
+    Description = "Creates a spark when there's a nearby particle with equal or greater temperature";
     
     State = ST_SOLID;
     Properties = TYPE_SOLID;
@@ -42,18 +42,12 @@ Element_DTEC::Element_DTEC()
     HighTemperature = ITH;
     HighTemperatureTransition = NT;
     
-    Update = &Element_DTEC::update;
+    Update = &Element_TSNS::update;
     
 }
 
-//#TPT-Directive ElementHeader Element_DTEC static int in_radius(int rd, int x, int y)
-int Element_DTEC::in_radius(int rd, int x, int y)
-{
-	return (pow((double)x,2)*pow((double)rd,2)+pow((double)y,2)*pow((double)rd,2)<=pow((double)rd,2)*pow((double)rd,2));
-}
-
-//#TPT-Directive ElementHeader Element_DTEC static int update(UPDATE_FUNC_ARGS)
-int Element_DTEC::update(UPDATE_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_TSNS static int update(UPDATE_FUNC_ARGS)
+int Element_TSNS::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt, rd = parts[i].tmp2;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
@@ -70,7 +64,7 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 					rt = parts[r>>8].type;
 					if (sim->parts_avg(i,r>>8,PT_INSL) != PT_INSL)
 					{
-						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>8].life==0 && in_radius(rd, rx, ry))
+						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>8].life==0 && Element_DTEC::in_radius(rd, rx, ry))
 						{
 							parts[r>>8].life = 4;
 							parts[r>>8].ctype = rt;
@@ -86,7 +80,7 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (parts[r>>8].type == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].tmp == parts[r>>8].tmp))
+				if (parts[r>>8].temp >= parts[i].temp && parts[r>>8].type != PT_TSNS)
 					parts[i].life = 1;
 			}
 	return 0;
@@ -94,4 +88,4 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 
 
 
-Element_DTEC::~Element_DTEC() {}
+Element_TSNS::~Element_TSNS() {}
