@@ -84,7 +84,9 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if (!r)
+				if(!r)
+					r = sim->photons[y+ry][x+rx];
+				if(!r)
 					continue;
 				if (parts[r>>8].type == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].tmp == parts[r>>8].tmp))
 					parts[i].life = 1;

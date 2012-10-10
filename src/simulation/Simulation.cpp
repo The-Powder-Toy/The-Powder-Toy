@@ -2933,7 +2933,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_DTEC:
 				parts[i].tmp2 = 2;
 			case PT_TSNS:
-				parts[i].tmp2 = 2;
+				parts[i].tmp2 = 1;
 				break;
 			default:
 				if (t==PT_FIGH)

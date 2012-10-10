@@ -78,7 +78,9 @@ int Element_TSNS::update(UPDATE_FUNC_ARGS)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if (!r)
+				if(!r)
+					r = sim->photons[y+ry][x+rx];
+				if(!r)
 					continue;
 				if (parts[r>>8].temp >= parts[i].temp && parts[r>>8].type != PT_TSNS)
 					parts[i].life = 1;
