@@ -103,7 +103,7 @@ void LocalBrowserController::RescanStamps()
 	};
 
 	std::stringstream desc;
-	desc << "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this may mess up the current sorting order";
+	desc << "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order";
 	new ConfirmPrompt("Rescan", desc.str(), new RescanConfirmation(this));
 }
 
