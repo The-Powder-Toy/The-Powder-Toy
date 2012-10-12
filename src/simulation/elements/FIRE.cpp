@@ -58,7 +58,7 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 	}
 	if(t==PT_FIRE && parts[i].life <=1)
 	{
-		if (parts[i].tmp==3){
+		if ((parts[i].tmp&0x3) == 3){
 			t = PT_DSTW;
 			sim->part_change_type(i,x,y,t);
 			parts[i].life = 0;
@@ -73,7 +73,7 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 	}
 	if(t==PT_PLSM && parts[i].life <=1)
 	{
-		if (parts[i].tmp==3){
+		if ((parts[i].tmp&0x3) == 3){
 			t = PT_DSTW;
 			sim->part_change_type(i,x,y,t);
 			parts[i].life = 0;
@@ -94,7 +94,7 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 					(t!=PT_SPRK || (rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL)) &&
 					(t!=PT_PHOT || rt!=PT_INSL) &&
 				    (rt!=PT_SPNG || parts[r>>8].life==0) &&
-				    (rt!=PT_H2 || (parts[r>>8].temp < 2273.15 && sim->pv[y/CELL][x/CELL] < 50.0f)) &&
+					(rt!=PT_H2 || (parts[r>>8].temp < 2273.15 && sim->pv[y/CELL][x/CELL] < 50.0f)) &&
 				    sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
 				{
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_FIRE);
