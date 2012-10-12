@@ -1104,7 +1104,7 @@ void Renderer::render_parts()
 	}
 #endif
 	for(i = 0; i<=sim->parts_lastActiveIndex; i++) {
-		if (sim->parts[i].type) {
+		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
 
 			nx = (int)(sim->parts[i].x+0.5f);
