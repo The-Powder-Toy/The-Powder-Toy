@@ -2504,7 +2504,7 @@ void Simulation::kill_part(int i)//kills particle number i
 	if (parts[i].type == PT_NONE)
 		return;
 
-	if(parts[i].type > 0 && parts[i].type < PT_NUM && elementCount[parts[i].type] && parts[i].type)
+	if(parts[i].type > 0 && parts[i].type < PT_NUM && elementCount[parts[i].type])
 		elementCount[parts[i].type]--;
 	if (parts[i].type == PT_STKM)
 	{
