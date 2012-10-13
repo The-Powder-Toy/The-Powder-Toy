@@ -101,7 +101,10 @@ void TaskWindow::OnDraw()
 	{
 		if(progress > 0)
 		{
+			if(progress > 100)
+				progress = 100;
 			float size = float(Size.X-4)*(float(progress)/100.0f); // TIL...
+			size = std::min(std::max(size, 0.0f), float(Size.X-4));
 			g->fillrect(Position.X + 2, Position.Y + Size.Y-15, size, 13, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
 		}
 	} else {
