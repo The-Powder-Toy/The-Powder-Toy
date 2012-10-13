@@ -1,11 +1,3 @@
-//
-//  GameSave.cpp
-//  The Powder Toy
-//
-//  Created by Simon Robertshaw on 04/06/2012.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include <iostream>
 #include <sstream>
 #include <cmath>
@@ -979,7 +971,7 @@ fail:
 		free(freeIndices);
 	if(partsSimIndex)
 		free(partsSimIndex);
-	throw ParseException(ParseException::Corrupt, "Save data currupt");
+	throw ParseException(ParseException::Corrupt, "Save data corrupt");
 fin:
 	bson_destroy(&b);
 	if(freeIndices)

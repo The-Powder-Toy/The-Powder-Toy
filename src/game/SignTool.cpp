@@ -284,5 +284,6 @@ void SignTool::Click(Simulation * sim, Brush * brush, ui::Point position)
 			break;
 		}
 	}
-	new SignWindow(this, sim, signIndex, position);
+	if (signIndex != -1 || sim->signs.size() < MAXSIGNS)
+		new SignWindow(this, sim, signIndex, position);
 }
