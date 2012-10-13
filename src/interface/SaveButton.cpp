@@ -21,7 +21,6 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	isMouseInside(false),
 	isButtonDown(false),
 	actionCallback(NULL),
-	voteColour(255, 0, 0),
 	selectable(false),
 	selected(false),
 	waitingForThumb(false),
@@ -29,24 +28,6 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	isMouseInsideHistory(false),
 	showVotes(false)
 {
-	if(save)
-	{
-		if(save->votesUp==0)
-			voteRatio = 0.0f;
-		else if(save->votesDown==0)
-			voteRatio = 1.0f;
-		else
-			voteRatio = 1.0f-(float)(((float)(save->votesDown))/((float)(save->votesUp)));
-		if(voteRatio < 0.0f)
-			voteRatio = 0.0f;
-		if(voteRatio > 1.0f)	//Not possible, but just in case the server were to give a negative value or something
-			voteRatio = 1.0f;
-
-
-		voteColour.Red = (1.0f-voteRatio)*255;
-		voteColour.Green = voteRatio*255;
-	}
-
 	menu = new ContextMenu(this);
 	menu->AddItem(ContextMenuItem("Open", 0, true));
 	menu->AddItem(ContextMenuItem("Select", 1, true));
@@ -85,6 +66,22 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 				*iter += 127;
 
 		votesString = votes;
+
+		int voteMax = std::max(save->GetVotesUp(),save->GetVotesDown());
+		if (voteMax < 34)
+		{
+			float ry = 33.0f/voteMax;
+			if (voteMax<8)
+				ry =  ry/(8-voteMax);
+			voteBarHeightUp = (int)(save->GetVotesUp()*ry)-1;
+			voteBarHeightDown = (int)(save->GetVotesDown()*ry)-1;
+		}
+		else
+		{
+			float ry = voteMax/33.0f;
+			voteBarHeightUp = (int)(save->GetVotesUp()/ry)-1;
+			voteBarHeightDown = (int)(save->GetVotesDown()/ry)-1;
+		}
 	}
 }
 
@@ -96,7 +93,6 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	isMouseInside(false),
 	isButtonDown(false),
 	actionCallback(NULL),
-	voteColour(255, 0, 0),
 	selectable(false),
 	selected(false),
 	wantsDraw(false),
@@ -208,8 +204,11 @@ void SaveButton::Draw(const Point& screenPos)
 				g->drawrect(screenPos.X-4+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 7, thumbBoxSize.Y, 180, 180, 180, 255);
 			}
 
-			int voteBar = std::max(10.0f, ((float)(thumbBoxSize.Y-4))*voteRatio);
-			g->fillrect(1+screenPos.X-3+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, (screenPos.Y-2)+(thumbBoxSize.Y-voteBar)+(Size.Y-21-thumbBoxSize.Y)/2, 3, voteBar, voteColour.Red, voteColour.Green, voteColour.Blue, 255);
+			g->fillrect(screenPos.X-3+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+1+(Size.Y-20-thumbBoxSize.Y)/2, 5, (thumbBoxSize.Y+1)/2-1, 0, 107, 10, 255);
+			g->fillrect(screenPos.X-3+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-20)/2, 5, thumbBoxSize.Y/2-1, 107, 10, 0, 255);
+
+			g->fillrect(screenPos.X-2+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-20)/2-voteBarHeightUp, 3, voteBarHeightUp, 57, 187, 57, 255); //green
+			g->fillrect(screenPos.X-2+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-20)/2, 3, voteBarHeightDown, 187, 57, 57, 255); //red
 		}
 		else
 		{

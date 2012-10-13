@@ -33,6 +33,8 @@ class SaveButton : public Component, public ThumbnailListener
 	std::string votesString;
 	std::string votesBackground;
 	std::string votesBackground2;
+	int voteBarHeightUp;
+	int voteBarHeightDown;
 	bool wantsDraw;
 	bool waitingForThumb;
 	bool isMouseInsideAuthor;
@@ -74,8 +76,6 @@ public:
 	void SetActionCallback(SaveButtonAction * action);
 protected:
 	bool isButtonDown, state, isMouseInside, selected, selectable;
-	float voteRatio;
-	Colour voteColour;
 	SaveButtonAction * actionCallback;
 };
 }
