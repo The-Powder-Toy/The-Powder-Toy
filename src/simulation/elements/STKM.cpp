@@ -79,7 +79,7 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 		playerp->elem = parts[i].ctype;
 	playerp->frames++;
 
-	//Tempirature handling
+	//Temperature handling
 	if (parts[i].temp<243)
 		parts[i].life -= 1;
 	if ((parts[i].temp<309.6f) && (parts[i].temp>=243))
@@ -545,6 +545,12 @@ void Element_STKM::STKM_init_legs(Simulation * sim, playerst* playerp, int i)
 	playerp->legs[13] = y+12;
 	playerp->legs[14] = x+3;
 	playerp->legs[15] = y+12;
+
+	for (int i = 0; i < 8; i++)
+		playerp->accs[i] = 0;
+	playerp->comm = 0;
+	playerp->pcomm = 0;
+	playerp->frames = 0;
 }
 
 

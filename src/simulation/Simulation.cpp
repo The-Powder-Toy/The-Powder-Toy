@@ -103,9 +103,9 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 					fighcount++;
 					//currentPart.tmp = fcount;
 					parts[i].tmp = fcount;
+					Element_STKM::STKM_init_legs(this, &(fighters[fcount]), i);
 					fighters[fcount].spwn = 1;
 					fighters[fcount].elem = PT_DUST;
-					Element_STKM::STKM_init_legs(this, &(fighters[fcount]), i);
 					break;
 				}
 			}
