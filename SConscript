@@ -1,5 +1,21 @@
 import os, sys, subprocess, time
 
+def uniq(seq, idfun=None): 
+   # order preserving
+   if idfun is None:
+       def idfun(x): return x
+   seen = {}
+   result = []
+   for item in seq:
+       marker = idfun(item)
+       # in old Python versions:
+       # if seen.has_key(marker)
+       # but in new ones:
+       if marker in seen: continue
+       seen[marker] = 1
+       result.append(item)
+   return result
+
 ##Fix for long command line - http://scons.org/wiki/LongCmdLinesOnWin32
 class ourSpawn:
 	def ourspawn(self, sh, escape, cmd, args, env):
@@ -122,7 +138,7 @@ else:
 	env.Append(LIBS=['z', 'bz2', 'fftw3f'])
 
 env.Append(CPPPATH=['src/', 'data/', 'generated/'])
-env.Append(CCFLAGS=['-w', '-std=c++98', '-fkeep-inline-functions'])
+env.Append(CCFLAGS=['-w', '-std=gnu++0x', '-fkeep-inline-functions'])
 env.Append(LIBS=['pthread', 'm'])
 env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
 
@@ -278,5 +294,5 @@ env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/
 sources+=Glob("generated/ToolClasses.cpp")
 
 env.Decider('MD5')
-t=env.Program(target=programName, source=sources)
+t=env.Program(target=programName, source=uniq(sources))
 Default(t)
