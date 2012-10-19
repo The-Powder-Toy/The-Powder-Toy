@@ -564,7 +564,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 	UpdateQuickOptions();
 }
 
-SaveFile * GameModel::GetFile()
+SaveFile * GameModel::GetSaveFile()
 {
 	return currentFile;
 }

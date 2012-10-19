@@ -430,6 +430,15 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 	return searchResults;
 }
 
+int Client::MakeDirectory(const char * dirName)
+{
+#ifdef WIN
+	return _mkdir(dirName);
+#else
+	return mkdir(dirName, 0755);
+#endif
+}
+
 void Client::WriteFile(std::vector<unsigned char> fileData, std::string filename)
 {
 	try
@@ -870,11 +879,7 @@ std::string Client::AddStamp(GameSave * saveData)
 	<< std::setw(8) << std::setfill('0') << std::hex << lastStampTime
 	<< std::setw(2) << std::setfill('0') << std::hex << lastStampName;
 
-#ifdef WIN
-	_mkdir(STAMPS_DIR);
-#else
-	mkdir(STAMPS_DIR, 0755);
-#endif
+	MakeDirectory(STAMPS_DIR);
 
 	int gameDataLength;
 	char * gameData = saveData->Serialise(gameDataLength);
@@ -895,12 +900,7 @@ std::string Client::AddStamp(GameSave * saveData)
 
 void Client::updateStamps()
 {
-
-#ifdef WIN
-	_mkdir(STAMPS_DIR);
-#else
-	mkdir(STAMPS_DIR, 0755);
-#endif
+	MakeDirectory(STAMPS_DIR);
 
 	std::ofstream stampsStream;
 	stampsStream.open(std::string(STAMPS_DIR PATH_SEP "stamps.def").c_str(), std::ios::binary);

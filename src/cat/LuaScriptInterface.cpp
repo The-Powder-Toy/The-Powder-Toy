@@ -1520,14 +1520,10 @@ int LuaScriptInterface::fileSystem_isDirectory(lua_State * l)
 
 int LuaScriptInterface::fileSystem_makeDirectory(lua_State * l)
 {
-	const char * filename = lua_tostring(l, 1);
+	const char * dirname = lua_tostring(l, 1);
 
 	int ret = 0;
-#ifdef WIN
-	ret = _mkdir(filename);
-#else
-	ret = mkdir(filename, 0755);
-#endif
+	ret = Client::Ref().MakeDirectory(dirname);
 	lua_pushboolean(l, ret == 0);
 	return 1;
 }

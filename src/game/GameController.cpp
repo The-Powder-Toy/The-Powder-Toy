@@ -909,7 +909,7 @@ void GameController::OpenSearch()
 	ui::Engine::Ref().ShowWindow(search->GetView());
 }
 
-void GameController::OpenLocalSaveWindow()
+void GameController::OpenLocalSaveWindow(bool asCurrent)
 {
 	Simulation * sim = gameModel->GetSimulation();
 	GameSave * gameSave = sim->Save();
@@ -926,24 +926,32 @@ void GameController::OpenLocalSaveWindow()
 	else
 	{
 		std::string filename = "";
-		if (gameModel->GetFile())
-			filename = gameModel->GetFile()->GetDisplayName();
+		if (gameModel->GetSaveFile())
+			filename = gameModel->GetSaveFile()->GetDisplayName();
 		SaveFile tempSave(filename);
 		tempSave.SetGameSave(gameSave);
 
-		class LocalSaveCallback: public FileSavedCallback
+		if (!asCurrent || !gameModel->GetSaveFile())
 		{
-			GameController * c;
-		public:
-			LocalSaveCallback(GameController * _c): c(_c) {}
-			virtual  ~LocalSaveCallback() {};
-			virtual void FileSaved(SaveFile* file)
+			class LocalSaveCallback: public FileSavedCallback
 			{
-				c->gameModel->SetSaveFile(file);
-			}
-		};
+				GameController * c;
+			public:
+				LocalSaveCallback(GameController * _c): c(_c) {}
+				virtual  ~LocalSaveCallback() {};
+				virtual void FileSaved(SaveFile* file)
+				{
+					c->gameModel->SetSaveFile(file);
+				}
+			};
 
-		new LocalSaveActivity(tempSave, new LocalSaveCallback(this));
+			new LocalSaveActivity(tempSave, new LocalSaveCallback(this));
+		}
+		else if (gameModel->GetSaveFile())
+		{
+			Client::Ref().MakeDirectory(LOCAL_SAVE_DIR);
+			Client::Ref().WriteFile(gameSave->Serialise(), gameModel->GetSaveFile()->GetName());
+		}
 	}
 }
 
@@ -1209,9 +1217,9 @@ void GameController::ReloadSim()
 	{
 		gameModel->SetSave(gameModel->GetSave());
 	}
-	else if(gameModel->GetFile() && gameModel->GetFile()->GetGameSave())
+	else if(gameModel->GetSaveFile() && gameModel->GetSaveFile()->GetGameSave())
 	{
-		gameModel->SetSaveFile(gameModel->GetFile());
+		gameModel->SetSaveFile(gameModel->GetSaveFile());
 	}
 }
 

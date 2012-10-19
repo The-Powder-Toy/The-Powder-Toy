@@ -105,7 +105,7 @@ public:
 	void OpenLogin();
 	void OpenTags();
 	void OpenSavePreview(int saveID, int saveDate);
-	void OpenLocalSaveWindow();
+	void OpenLocalSaveWindow(bool asCurrent);
 	void OpenLocalBrowse();
 	void OpenOptions();
 	void OpenRenderOptions();

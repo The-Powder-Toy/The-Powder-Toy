@@ -144,7 +144,7 @@ public:
 
 	void SetVote(int direction);
 	SaveInfo * GetSave();
-	SaveFile * GetFile();
+	SaveFile * GetSaveFile();
 	Brush * GetBrush();
 	void SetSave(SaveInfo * newSave);
 	void SetSaveFile(SaveFile * newSave);

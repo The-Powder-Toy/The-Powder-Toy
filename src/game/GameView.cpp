@@ -181,7 +181,8 @@ GameView::GameView():
 	recording(false),
 	screenshotIndex(0),
 	recordingIndex(0),
-	toolTipPresence(0)
+	toolTipPresence(0),
+	currentSaveType(0)
 {
 	
 	int currentX = 1;
@@ -238,14 +239,14 @@ GameView::GameView():
         void ActionCallbackRight(ui::Button * sender)
         {
         	if(v->CtrlBehaviour())
-        		v->c->OpenLocalSaveWindow();
+        		v->c->OpenLocalSaveWindow(false);
         	else
 	            v->c->OpenSaveWindow();
         }
         void ActionCallbackLeft(ui::Button * sender)
         {
         	if(v->CtrlBehaviour())
-        		v->c->OpenLocalSaveWindow();
+        		v->c->OpenLocalSaveWindow(true);
         	else
 	            v->c->SaveAsCurrent();
         }
@@ -846,11 +847,15 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		{
 			tagSimulationButton->SetText("[no tags set]");
 		}
+		currentSaveType = 1;
 	}
-	else if (sender->GetFile())
+	else if (sender->GetSaveFile())
 	{
-		((SplitButton*)saveSimulationButton)->SetShowSplit(false);
-		saveSimulationButton->SetText(sender->GetFile()->GetDisplayName());
+		if (ctrlBehaviour)
+			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
+		else
+			((SplitButton*)saveSimulationButton)->SetShowSplit(false);
+		saveSimulationButton->SetText(sender->GetSaveFile()->GetDisplayName());
 		reloadButton->Enabled = true;
 		upVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
@@ -858,6 +863,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
 		tagSimulationButton->Enabled = false;
 		tagSimulationButton->SetText("[no tags set]");
+		currentSaveType = 2;
 	}
 	else
 	{
@@ -870,6 +876,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
 		tagSimulationButton->Enabled = false;
 		tagSimulationButton->SetText("[no tags set]");
+		currentSaveType = 0;
 	}
 }
 
@@ -1685,6 +1692,8 @@ void GameView::enableCtrlBehaviour()
 		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
+		if (currentSaveType == 2)
+			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
 		if(isMouseDown)
 		{
 			if(!shiftBehaviour)
@@ -1708,6 +1717,8 @@ void GameView::disableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(255, 255, 255);
+		if (currentSaveType == 2)
+			((SplitButton*)saveSimulationButton)->SetShowSplit(false);
 		if(!shiftBehaviour)
 			c->SetToolStrength(1.0f);
 		else

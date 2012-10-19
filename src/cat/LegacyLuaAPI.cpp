@@ -16,11 +16,6 @@
 #include "simulation/Simulation.h"
 #include "game/GameModel.h"
 
-#ifdef WIN
-#include <direct.h>
-#else
-#include <sys/stat.h>
-#endif
 #include <time.h>
 
 #ifndef FFI
@@ -1747,11 +1742,7 @@ int luatpt_getscript(lua_State* l)
 	filename = new char[fileauthor.length()+fileid.length()+strlen(PATH_SEP)+strlen(LOCAL_LUA_DIR)+6];
 	sprintf(filename, LOCAL_LUA_DIR PATH_SEP "%s_%s.lua", fileauthor.c_str(), fileid.c_str());
 
-#ifdef WIN
-	_mkdir(LOCAL_LUA_DIR);
-#else
-	mkdir(LOCAL_LUA_DIR, 0755);
-#endif
+	Client::Ref().MakeDirectory(LOCAL_LUA_DIR);
 
 	outputfile = fopen(filename, "r");
 	if(outputfile)

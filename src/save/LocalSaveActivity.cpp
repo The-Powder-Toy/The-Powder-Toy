@@ -1,8 +1,3 @@
-#ifdef WIN
-#include <direct.h>
-#else
-#include <sys/stat.h>
-#endif
 #include "LocalSaveActivity.h"
 #include "interface/Label.h"
 #include "interface/Textbox.h"
@@ -94,6 +89,8 @@ void LocalSaveActivity::Save()
 	if(filenameField->GetText().length())
 	{
 		std::string finalFilename = std::string(LOCAL_SAVE_DIR) + std::string(PATH_SEP) + filenameField->GetText() + ".cps";
+		save.SetDisplayName(filenameField->GetText());
+		save.SetFileName(finalFilename);
 		if(Client::Ref().FileExists(finalFilename))
 		{
 			new ConfirmPrompt("Overwrite file", "Are you sure you wish to overwrite\n"+finalFilename, new FileOverwriteConfirmation(this, finalFilename));
@@ -112,11 +109,7 @@ void LocalSaveActivity::Save()
 
 void LocalSaveActivity::saveWrite(std::string finalFilename)
 {
-#ifdef WIN
-	_mkdir(LOCAL_SAVE_DIR);
-#else
-	mkdir(LOCAL_SAVE_DIR, 0755);
-#endif
+	Client::Ref().MakeDirectory(LOCAL_SAVE_DIR);
 	Client::Ref().WriteFile(save.GetGameSave()->Serialise(), finalFilename);
 	callback->FileSaved(&save);
 }

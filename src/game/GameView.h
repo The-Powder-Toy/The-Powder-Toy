@@ -55,6 +55,7 @@ private:
 	std::string buttonTip;
 	std::string introTextMessage;
 	int toolIndex;
+	int currentSaveType;
 
 	int infoTipPresence;
 	std::string toolTip;

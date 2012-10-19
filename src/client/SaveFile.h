@@ -25,6 +25,7 @@ public:
 	std::string GetDisplayName();
 	void SetDisplayName(std::string displayName);
 	std::string GetName();
+	void SetFileName(std::string fileName);
 
 	virtual ~SaveFile();
 private:

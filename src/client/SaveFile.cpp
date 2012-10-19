@@ -56,6 +56,11 @@ std::string SaveFile::GetName()
 	return filename;
 }
 
+void SaveFile::SetFileName(std::string fileName)
+{
+	this->filename = fileName;
+}
+
 std::string SaveFile::GetDisplayName()
 {
 	return displayName;
