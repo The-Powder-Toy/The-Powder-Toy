@@ -57,6 +57,7 @@ private:
 	int currentBrush;
 	vector<Brush *> brushList;
 	SaveInfo * currentSave;
+	SaveFile * currentFile;
 	Simulation * sim;
 	Renderer * ren;
 	Tool * lastTool;
@@ -143,6 +144,7 @@ public:
 
 	void SetVote(int direction);
 	SaveInfo * GetSave();
+	SaveFile * GetFile();
 	Brush * GetBrush();
 	void SetSave(SaveInfo * newSave);
 	void SetSaveFile(SaveFile * newSave);

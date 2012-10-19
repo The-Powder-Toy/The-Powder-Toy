@@ -847,6 +847,18 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			tagSimulationButton->SetText("[no tags set]");
 		}
 	}
+	else if (sender->GetFile())
+	{
+		((SplitButton*)saveSimulationButton)->SetShowSplit(false);
+		saveSimulationButton->SetText(sender->GetFile()->GetDisplayName());
+		reloadButton->Enabled = true;
+		upVoteButton->Enabled = false;
+		upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
+		downVoteButton->Enabled = false;
+		upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
+		tagSimulationButton->Enabled = false;
+		tagSimulationButton->SetText("[no tags set]");
+	}
 	else
 	{
 		((SplitButton*)saveSimulationButton)->SetShowSplit(false);

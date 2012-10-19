@@ -11,6 +11,14 @@ namespace ui
 
 class Thumbnail;
 
+class FileSavedCallback
+{
+public:
+	FileSavedCallback() {}
+	virtual  ~FileSavedCallback() {}
+	virtual void FileSaved(SaveFile * file) {}
+};
+
 class LocalSaveActivity: public WindowActivity, public ThumbnailListener
 {
 	SaveFile save;
@@ -20,8 +28,9 @@ class LocalSaveActivity: public WindowActivity, public ThumbnailListener
 	class SaveAction;
 	friend class CancelAction;
 	friend class SaveAction;
+	FileSavedCallback * callback;
 public:
-	LocalSaveActivity(SaveFile save);
+	LocalSaveActivity(SaveFile save, FileSavedCallback * callback);
 	void saveWrite(std::string finalFilename);
 	virtual void Save();
 	virtual void OnDraw();

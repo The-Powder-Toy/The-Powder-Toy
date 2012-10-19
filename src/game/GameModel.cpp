@@ -22,6 +22,7 @@ GameModel::GameModel():
 	currentBrush(0),
 	currentUser(0, ""),
 	currentSave(NULL),
+	currentFile(NULL),
 	colourSelector(false),
 	clipboard(NULL),
 	stamp(NULL),
@@ -159,6 +160,8 @@ GameModel::~GameModel()
 		delete stamp;
 	if(currentSave)
 		delete currentSave;
+	if(currentFile)
+		delete currentFile;
 	//if(activeTools)
 	//	delete[] activeTools;
 }
@@ -536,6 +539,9 @@ void GameModel::SetSave(SaveInfo * newSave)
 		else
 			currentSave = new SaveInfo(*newSave);
 	}
+	if(currentFile)
+		delete currentFile;
+	currentFile = NULL;
 
 	if(currentSave && currentSave->GetGameSave())
 	{
@@ -558,9 +564,25 @@ void GameModel::SetSave(SaveInfo * newSave)
 	UpdateQuickOptions();
 }
 
+SaveFile * GameModel::GetFile()
+{
+	return currentFile;
+}
+
 void GameModel::SetSaveFile(SaveFile * newSave)
 {
-	SetSave(NULL);
+	if(currentFile != newSave)
+	{
+		if(currentFile)
+			delete currentFile;
+		if(newSave == NULL)
+			currentFile = NULL;
+		else
+			currentFile = new SaveFile(*newSave);
+	}
+	if (currentSave)
+		delete currentSave;
+	currentSave = NULL;
 
 	if(newSave && newSave->GetGameSave())
 	{

@@ -37,10 +37,11 @@ public:
 	}
 };
 
-LocalSaveActivity::LocalSaveActivity(SaveFile save) :
+LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(220, 200)),
 	thumbnail(NULL),
-	save(save)
+	save(save),
+	callback(callback)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), "Save to computer:");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
@@ -117,6 +118,7 @@ void LocalSaveActivity::saveWrite(std::string finalFilename)
 	mkdir(LOCAL_SAVE_DIR, 0755);
 #endif
 	Client::Ref().WriteFile(save.GetGameSave()->Serialise(), finalFilename);
+	callback->FileSaved(&save);
 }
 
 void LocalSaveActivity::OnDraw()
