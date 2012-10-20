@@ -294,5 +294,5 @@ env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/
 sources+=Glob("generated/ToolClasses.cpp")
 
 env.Decider('MD5')
-t=env.Program(target=programName, source=uniq(sources))
+t=env.Program(target=programName, source=sources)
 Default(t)
