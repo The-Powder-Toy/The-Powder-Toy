@@ -1,20 +1,5 @@
 import os, sys, subprocess, time
 
-def uniq(seq, idfun=None): 
-   # order preserving
-   if idfun is None:
-       def idfun(x): return x
-   seen = {}
-   result = []
-   for item in seq:
-       marker = idfun(item)
-       # in old Python versions:
-       # if seen.has_key(marker)
-       # but in new ones:
-       if marker in seen: continue
-       seen[marker] = 1
-       result.append(item)
-   return result
 
 ##Fix for long command line - http://scons.org/wiki/LongCmdLinesOnWin32
 class ourSpawn:
@@ -151,6 +136,7 @@ if(GetOption('static')):
 if(GetOption('win')):
 	openGLLibs = ['opengl32', 'glew32']
 	env.Prepend(LIBS=['mingw32', 'ws2_32', 'SDLmain', 'regex'])
+	env.Append(CCFLAGS=['-std=gnu++98'])
 	env.Append(LIBS=['winmm', 'gdi32'])
 	env.Append(CPPDEFINES=["WIN"])
 	env.Append(LINKFLAGS=['-mwindows'])
