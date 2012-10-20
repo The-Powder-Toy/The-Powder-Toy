@@ -138,7 +138,7 @@ else:
 	env.Append(LIBS=['z', 'bz2', 'fftw3f'])
 
 env.Append(CPPPATH=['src/', 'data/', 'generated/'])
-env.Append(CCFLAGS=['-w', '-std=gnu++0x', '-fkeep-inline-functions'])
+env.Append(CCFLAGS=['-w', '-std=c++98', '-fkeep-inline-functions'])
 env.Append(LIBS=['pthread', 'm'])
 env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
 
