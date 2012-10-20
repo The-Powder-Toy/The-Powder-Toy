@@ -22,12 +22,13 @@ ConsoleController::ConsoleController(ControllerCallback * callback, CommandInter
 
 void ConsoleController::EvaluateCommand(std::string command)
 {
+	if (command.substr(0, 5) == "!load ")
+		CloseConsole();
 	int returnCode = commandInterface->Command(command);
 	if(command.length())
 		consoleModel->AddLastCommand(ConsoleCommand(command, returnCode, commandInterface->GetLastError()));
 	else
-		if(ui::Engine::Ref().GetWindow() == consoleView)
-			ui::Engine::Ref().CloseWindow();
+		CloseConsole();
 }
 
 void ConsoleController::CloseConsole()
