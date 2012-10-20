@@ -20,6 +20,7 @@ protected:
 	AnyType tptS_load(std::deque<std::string> * words);
 	AnyType tptS_reset(std::deque<std::string> * words);
 	AnyType tptS_bubble(std::deque<std::string> * words);
+	AnyType tptS_quit(std::deque<std::string> * words);
 	ValueType testType(std::string word);
 public:
 	TPTScriptInterface(GameController * c, GameModel * m);
