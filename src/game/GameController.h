@@ -94,6 +94,7 @@ public:
 	void SetPaused();
 	void SetDecoration(bool decorationState);
 	void SetDecoration();
+	void ShowGravityGrid();
 	void SetActiveMenu(Menu * menu);
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void SetActiveColourPreset(int preset);

@@ -802,6 +802,20 @@ bool GameModel::GetAHeatEnable()
 	return sim->aheat_enable;
 }
 
+void GameModel::ShowGravityGrid(bool showGrid)
+{
+	ren->gravityFieldEnabled = showGrid;
+	if (showGrid)
+		SetInfoTip("Gravity Grid: On");
+	else
+		SetInfoTip("Gravity Grid: Off");
+}
+
+bool GameModel::GetGravityGrid()
+{
+	return ren->gravityFieldEnabled;
+}
+
 void GameModel::FrameStep(int frames)
 {
 	sim->framerender += frames;

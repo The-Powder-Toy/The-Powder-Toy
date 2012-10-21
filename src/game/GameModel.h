@@ -162,6 +162,8 @@ public:
 	void SetDecoration(bool decorationState);
 	bool GetAHeatEnable();
 	void SetAHeatEnable(bool aHeat);
+	bool GetGravityGrid();
+	void ShowGravityGrid(bool showGrid);
 	void ClearSimulation();
 	vector<Menu*> GetMenuList();
 	vector<Tool*> GetUnlistedTools();

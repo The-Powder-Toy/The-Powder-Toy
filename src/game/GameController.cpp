@@ -860,6 +860,12 @@ void GameController::SetDecoration()
 	gameModel->SetDecoration(!gameModel->GetDecoration());
 }
 
+void GameController::ShowGravityGrid()
+{
+	gameModel->ShowGravityGrid(!gameModel->GetGravityGrid());
+	gameModel->UpdateQuickOptions();
+}
+
 void GameController::SetActiveColourPreset(int preset)
 {
 	gameModel->SetActiveColourPreset(preset);

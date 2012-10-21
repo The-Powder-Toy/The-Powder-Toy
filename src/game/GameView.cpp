@@ -1271,7 +1271,9 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		c->FrameStep();
 		break;
 	case 'g':
-		if(shift)
+		if (ctrl)
+			c->ShowGravityGrid();
+		else if(shift)
 			c->AdjustGridSize(-1);
 		else
 			c->AdjustGridSize(1);
@@ -1419,7 +1421,7 @@ void GameView::OnBlur()
 void GameView::OnTick(float dt)
 {
 	if(selectMode==PlaceSave && !placeSaveThumb)
-			selectMode = SelectNone;
+		selectMode = SelectNone;
 	if(zoomEnabled && !zoomCursorFixed)
 		c->SetZoomPosition(currentMouse);
 	if(drawMode == DrawPoints)

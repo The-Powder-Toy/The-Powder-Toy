@@ -29,11 +29,11 @@ public:
 	}
 	virtual bool GetToggle() 
 	{
-		return m->GetRenderer()->gravityFieldEnabled;
+		return m->GetGravityGrid();
 	}
 	virtual void perform()
 	{
-		m->GetRenderer()->gravityFieldEnabled = !m->GetRenderer()->gravityFieldEnabled;
+		m->ShowGravityGrid(!m->GetGravityGrid());
 	}
 };
 
