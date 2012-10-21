@@ -283,6 +283,47 @@ void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool a
 				if(key == KEY_RIGHT)
 					focusedComponent_->Position.X++;
 			}
+			if (key == KEY_DELETE)
+			{
+				RemoveComponent(focusedComponent_);
+				halt = false;
+			}
+		}
+		else
+		{
+			if(shift)
+			{
+				if(key == KEY_UP)
+					Size.Y--;
+				if(key == KEY_DOWN)
+					Size.Y++;
+				if(key == KEY_LEFT)
+					Size.X--;
+				if(key == KEY_RIGHT)
+					Size.X++;
+			}
+			if(ctrl)
+			{
+				if(key == KEY_UP)
+					Size.Y++;
+				if(key == KEY_DOWN)
+					Size.Y--;
+				if(key == KEY_LEFT)
+					Size.X++;
+				if(key == KEY_RIGHT)
+					Size.X--;
+			}
+			if(!shift)
+			{
+				if(key == KEY_UP)
+					Position.Y--;
+				if(key == KEY_DOWN)
+					Position.Y++;
+				if(key == KEY_LEFT)
+					Position.X--;
+				if(key == KEY_RIGHT)
+					Position.X++;
+			}
 		}
 		return;
 	}
