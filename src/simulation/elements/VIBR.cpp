@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_VIBR PT_VIBR 
+//#TPT-Directive ElementClass Element_VIBR PT_VIBR 165
 Element_VIBR::Element_VIBR()
 {
 	Identifier = "DEFAULT_PT_VIBR";
@@ -46,6 +46,40 @@ Element_VIBR::Element_VIBR()
 	Graphics = &Element_VIBR::graphics;
 }
 
+void transferProp(UPDATE_FUNC_ARGS, int propOffset)
+{
+	int r, rx, ry, trade, transfer;
+	for (trade = 0; trade < 9; trade++)
+	{
+		int random = rand();
+		rx = random%7-3;
+		ry = (random>>3)%7-3;
+		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+		{
+			r = pmap[y+ry][x+rx];
+			if ((r&0xFF)!=PT_VIBR)
+				continue;
+			if (*((int*)(((char*)&parts[i])+propOffset)) > *((int*)(((char*)&parts[r>>8])+propOffset)))
+			{
+				transfer = *((int*)(((char*)&parts[i])+propOffset)) - *((int*)(((char*)&parts[r>>8])+propOffset));
+				if (transfer == 1)
+				{
+					*((int*)(((char*)&parts[r>>8])+propOffset)) += 1;
+					*((int*)(((char*)&parts[i])+propOffset)) -= 1;
+					trade = 9;
+				}
+				else if (transfer > 0)
+				{
+					*((int*)(((char*)&parts[r>>8])+propOffset)) += transfer/2;
+					*((int*)(((char*)&parts[i])+propOffset)) -= transfer/2;
+					trade = 9;
+				}
+			}
+		}
+	}	
+}
+
+//#TPT-Directive ElementHeader Element_VIBR static int update(UPDATE_FUNC_ARGS)
 int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, transfer, trade;
 	if (!parts[i].life)
@@ -69,6 +103,7 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 		}
 		if (sim->pv[y/CELL][x/CELL]<-2.5)
 		{
+			parts[i].tmp--;
 			sim->pv[y/CELL][x/CELL]++;
 		}
 	}
@@ -85,9 +120,10 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 			sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 		}
 	}
-	//Release all heat
+	//initiate explosion counter
 	if (!parts[i].life && (parts[i].ctype > 1200 || parts[i].tmp > 100 || parts[i].tmp2 > 100))
 		parts[i].life = 750;
+	//Release all heat
 	if (parts[i].life && parts[i].life < 500)
 	{
 		int random = rand();
@@ -106,7 +142,8 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 	//Explosion code
 	if (parts[i].life == 1)
 	{
-		sim->part_change_type(i,x,y,PT_EXOT);
+		sim->create_part(i, x, y, PT_EXOT);
+		parts[i].tmp2 = 100;
 		int random = rand(), index;
 		index = sim->create_part(-3,x+(random&3)-1,y+((random>>2)&3)-1,PT_ELEC);
 		if (index != -1)
@@ -121,7 +158,7 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 		if (index != -1)
 			parts[index].temp = 7000;
 		parts[i].temp=9000;
-		sim->pv[y/CELL][x/CELL]=256;
+		sim->pv[y/CELL][x/CELL]=200;
 	}
 	//Neighbor check loop
 	for (rx=-2; rx<3; rx++)
@@ -137,7 +174,7 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 					sim->part_change_type(i,x,y,PT_EXOT);
 				}
 				//Absorbs energy particles
-				if ((r&0xFF)==PT_NEUT || (r&0xFF)==PT_ELEC || (r&0xFF)==PT_PHOT)
+				if (sim->elements[r&0xFF].Properties & TYPE_ENERGY)
 				{
 					parts[i].tmp2++;
 					sim->kill_part(r>>8);
@@ -147,58 +184,13 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 					sim->part_change_type(i,x,y,PT_BVBR);
 				}
 			}
-			for (trade = 0; trade < 9; trade++)
-			{
-				int random = rand();
-				rx = random%7-3;
-				ry = (random>>3)%7-3;
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-				{
-					r = pmap[y+ry][x+rx];
-					if ((r&0xFF)!=PT_VIBR)
-						continue;
-					if (parts[i].tmp > parts[r>>8].tmp) { //tmp diffusion
-						transfer = parts[i].tmp - parts[r>>8].tmp;
-						if (transfer == 1) {
-							parts[r>>8].tmp++;
-							parts[i].tmp--;
-							trade = 9;
-						} else if (transfer > 0) {
-							parts[r>>8].tmp += transfer/2;
-							parts[i].tmp -= transfer/2;
-							trade = 9;
-						}
-					}
-					if (parts[i].tmp2 > parts[r>>8].tmp2) { //tmp2 diffusion
-						transfer = parts[i].tmp2 - parts[r>>8].tmp2;
-						if (transfer == 1)
-						{
-							parts[r>>8].tmp2++;
-							parts[i].tmp2--;
-							trade = 9; }
-						else if (transfer > 0) {
-							parts[r>>8].tmp2 += transfer/2;
-							parts[i].tmp2 -= transfer/2;
-							trade = 9;
-						}
-					}
-					if (parts[i].ctype > parts[r>>8].ctype) { //ctype diffusion
-						transfer = parts[i].ctype - parts[r>>8].ctype;
-						if (transfer == 1) {
-							parts[r>>8].ctype++;
-							parts[i].ctype--;
-							trade = 9;
-						} else if (transfer > 0) {
-							parts[r>>8].ctype += transfer/2;
-							parts[i].ctype -= transfer/2;
-							trade = 9;
-						}
-					}
-				}
-			}	
-			return 0;
+	transferProp(UPDATE_FUNC_SUBCALL_ARGS, offsetof(Particle, tmp));
+	transferProp(UPDATE_FUNC_SUBCALL_ARGS, offsetof(Particle, tmp2));
+	transferProp(UPDATE_FUNC_SUBCALL_ARGS, offsetof(Particle, ctype));
+	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_VIBR static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_VIBR::graphics(GRAPHICS_FUNC_ARGS)
 {
 	float maxtemp = fmax(cpart->tmp,cpart->temp);
