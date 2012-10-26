@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_BVBR PT_BVBR
+//#TPT-Directive ElementClass Element_BVBR PT_BVBR 166
 Element_BVBR::Element_BVBR()
 {
     Identifier = "DEFAULT_PT_BVBR";
