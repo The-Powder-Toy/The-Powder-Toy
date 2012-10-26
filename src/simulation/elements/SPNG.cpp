@@ -53,7 +53,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 	int limit = 50;
 	if (parts[i].life<limit && sim->pv[y/CELL][x/CELL]<=3&&sim->pv[y/CELL][x/CELL]>=-3&&parts[i].temp<=374.0f)
 	{
-		int absorbChanceDenom = parts[i].life*1000/limit + 500;
+		int absorbChanceDenom = parts[i].life*10000/limit + 500;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
