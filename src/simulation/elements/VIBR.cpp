@@ -193,9 +193,9 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 //#TPT-Directive ElementHeader Element_VIBR static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_VIBR::graphics(GRAPHICS_FUNC_ARGS)
 {
-	float maxtemp = fmax(cpart->tmp,cpart->temp);
-	int gradient = max(cpart->ctype/12.0f, cpart->tmp);
-	gradient = max(gradient, cpart->tmp2);
+	float maxtemp = std::max((float)cpart->tmp, cpart->temp);
+	int gradient = std::max(cpart->ctype/12.0f, (float)cpart->tmp);
+	gradient = std::max(gradient, cpart->tmp2);
 	if (gradient >= 100 || cpart->life)
 	{
 		*pixel_mode = PMODE_NONE;
