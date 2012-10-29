@@ -74,4 +74,9 @@
 #define BUTTON_MIDDLE 20
 #define BUTTON_RIGHT 21
 
+#define KEY_a 22
+#define KEY_d 23
+#define KEY_s 24
+#define KEY_w 25
+
 #endif
