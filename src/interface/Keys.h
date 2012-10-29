@@ -79,4 +79,6 @@
 #define KEY_s 24
 #define KEY_w 25
 
+#define KEY_F1 26
+
 #endif
