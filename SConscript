@@ -253,8 +253,14 @@ SetupSpawn(env)
 
 programName = "powder"
 
+if(GetOption('renderer'))
+	programName = "render"
+
 if(GetOption('win')):
-	programName = "Powder"
+	if(GetOption('renderer'))
+		programName = "Render"
+	else
+		programName = "Powder"
 
 if(GetOption('_64bit')):
 	programName += "64"
