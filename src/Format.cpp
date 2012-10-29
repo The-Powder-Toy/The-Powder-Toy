@@ -71,6 +71,21 @@ std::string format::UnixtimeToDateMini(time_t unixtime)
 	}
 }
 
+std::vector<char> format::VideoBufferToPTI(const VideoBuffer & vidBuf)
+{
+	std::vector<char> data;
+	int dataSize = 0;
+	char * buffer = (char*)Graphics::ptif_pack(vidBuf.Buffer, vidBuf.Width, vidBuf.Height, &dataSize);
+
+	if(buffer)
+	{
+		data.insert(data.end(), buffer, buffer+dataSize);
+		free(buffer);
+	}
+
+	return data;
+}
+
 std::vector<char> format::VideoBufferToPPM(const VideoBuffer & vidBuf)
 {
 	std::vector<char> data;

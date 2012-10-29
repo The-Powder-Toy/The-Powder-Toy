@@ -109,6 +109,7 @@ public:
 	VideoBuffer(const VideoBuffer & old);
 	VideoBuffer(VideoBuffer * old);
 	VideoBuffer(int width, int height);
+	void Resize(float factor, bool resample = false);
 	TPT_INLINE void BlendPixel(int x, int y, int r, int g, int b, int a)
 	{
 	#ifdef PIX32OGL
