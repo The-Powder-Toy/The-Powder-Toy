@@ -259,7 +259,7 @@ if(GetOption('renderer')):
 if(GetOption('win')):
 	if(GetOption('renderer')):
 		programName = "Render"
-	else
+	else:
 		programName = "Powder"
 
 if(GetOption('_64bit')):
