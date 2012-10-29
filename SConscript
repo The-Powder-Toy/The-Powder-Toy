@@ -126,7 +126,7 @@ else:
 env.Append(CPPPATH=['src/', 'data/', 'generated/'])
 env.Append(CCFLAGS=['-w', '-std=c++98', '-fkeep-inline-functions'])
 env.Append(LIBS=['pthread', 'm'])
-env.Append(CPPDEFINES=["USE_SDL", "LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
+env.Append(CPPDEFINES=["LUACONSOLE", "GRAVFFT", "_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
 
 if GetOption("ptw32-static"):
 	env.Append(CPPDEFINES=['PTW32_STATIC_LIB']);
@@ -136,6 +136,8 @@ if(GetOption('static')):
 
 if(GetOption('renderer')):
 	env.Append(CPPDEFINES=['RENDERER'])
+else:
+	env.Append(CPPDEFINES=["USE_SDL"])
 
 if(GetOption('win')):
 	openGLLibs = ['opengl32', 'glew32']
