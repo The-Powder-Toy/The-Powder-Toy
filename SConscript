@@ -26,6 +26,7 @@ def SetupSpawn( env ):
 
 AddOption('--opengl',dest="opengl",action='store_true',default=False,help="Build with OpenGL interface support.")
 AddOption('--opengl-renderer',dest="opengl-renderer",action='store_true',default=False,help="Build with OpenGL renderer support. (requires --opengl)")
+AddOption('--renderer',dest="renderer",action='store_true',default=False,help="Save renderer")
 AddOption('--win',dest="win",action='store_true',default=False,help="Windows platform target.")
 AddOption('--lin',dest="lin",action='store_true',default=False,help="Linux platform target")
 AddOption('--macosx',dest="macosx",action='store_true',default=False,help="Mac OS X platform target")
@@ -132,6 +133,9 @@ if GetOption("ptw32-static"):
 
 if(GetOption('static')):
 	env.Append(LINKFLAGS=['-static-libgcc'])
+
+if(GetOption('renderer')):
+	env.Append(CPPDEFINES=['RENDERER'])
 
 if(GetOption('win')):
 	openGLLibs = ['opengl32', 'glew32']
