@@ -253,11 +253,11 @@ SetupSpawn(env)
 
 programName = "powder"
 
-if(GetOption('renderer'))
+if(GetOption('renderer')):
 	programName = "render"
 
 if(GetOption('win')):
-	if(GetOption('renderer'))
+	if(GetOption('renderer')):
 		programName = "Render"
 	else
 		programName = "Powder"
