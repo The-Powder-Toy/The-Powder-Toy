@@ -664,7 +664,7 @@ bool GameController::KeyRelease(int key, Uint16 character, bool shift, bool ctrl
 		{
 			sim->player2.comm = (int)(sim->player2.comm)&11;
 		}
-		if (key == SDLK_s)
+		if (key == KEY_s)
 		{
 			sim->player2.comm = (int)(sim->player2.comm)&7;
 		}
