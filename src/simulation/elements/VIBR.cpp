@@ -161,11 +161,13 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 		sim->pv[y/CELL][x/CELL]=200;
 	}
 	//Neighbor check loop
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (rx=-3; rx<4; rx++)
+		for (ry=-3; ry<4; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
+				if (!r || (r & (abs(rx) == 3 || abs(ry) == 3)) )
+					r = sim->photons[y+ry][x+rx];
 				if (!r)
 					continue;
 				//Melts into EXOT
