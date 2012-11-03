@@ -1977,7 +1977,7 @@ void Simulation::init_can_move()
 		can_move[PT_STKM2][t] = stkm_move;
 		can_move[PT_FIGH][t] = stkm_move;
 	}
-	for (t=0;t<PT_NUM;t++)
+	for (t=1;t<PT_NUM;t++)
 	{
 		// make them eat things
 		can_move[t][PT_BHOL] = 1;
@@ -1992,6 +1992,8 @@ void Simulation::init_can_move()
 		//void behaviour varies with powered state and ctype
 		can_move[t][PT_PVOD] = 3;
 		can_move[t][PT_VOID] = 3;
+		can_move[t][PT_EMBR] = 0;
+		can_move[PT_EMBR][t] = 0;
 	}
 	for (t=0;t<PT_NUM;t++)
 	{
@@ -4600,7 +4602,7 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
 						pmap[y][x] = t|(i<<8);
 					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
-					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH)
+					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
 						pmap_count[y][x]++;
 				}
 			}
