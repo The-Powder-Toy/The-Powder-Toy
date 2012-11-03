@@ -17,6 +17,8 @@
 #include "simulation/Simulation.h"
 
 
+void EngineProcess() {}
+
 void readFile(std::string filename, std::vector<char> & storage)
 {
 	std::ifstream fileStream;
