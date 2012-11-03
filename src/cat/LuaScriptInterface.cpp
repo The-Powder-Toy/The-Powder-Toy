@@ -700,6 +700,7 @@ void LuaScriptInterface::initElementsAPI()
 	lua_pushinteger(l, SC_LIFE);		lua_setfield(l, elementsAPI, "SC_LIFE");
 	lua_pushinteger(l, SC_TOOL);		lua_setfield(l, elementsAPI, "SC_TOOL");
 	lua_pushinteger(l, SC_DECO);		lua_setfield(l, elementsAPI, "SC_DECO");
+	lua_pushinteger(l, SC_SENSOR);		lua_setfield(l, elementsAPI, "SC_SENSOR");
 
 	//Element identifiers
 	for(int i = 0; i < PT_NUM; i++)
