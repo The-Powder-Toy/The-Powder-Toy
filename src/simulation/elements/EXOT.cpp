@@ -22,16 +22,16 @@ Element_EXOT::Element_EXOT()
     Flammable = 0;
     Explosive = 0;
     Meltable = 0;
-    Hardness = 20;
+    Hardness = 2;
     
-    Weight = 45;
+    Weight = 46;
     
     Temperature = R_TEMP-2.0f	+273.15f;
-    HeatConduct = 29;
+    HeatConduct = 250;
     Description = "Exotic matter. Explodes with excess exposure to electrons.";
     
     State = ST_LIQUID;
-    Properties = TYPE_LIQUID|PROP_NEUTPENETRATE;
+    Properties = TYPE_LIQUID;
     
     LowPressure = IPL;
     LowPressureTransition = NT;
