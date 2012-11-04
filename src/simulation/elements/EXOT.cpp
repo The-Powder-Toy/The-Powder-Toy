@@ -56,7 +56,7 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_WARP)
+				if ((r&0xFF) == PT_WARP)
 				{
 					if (parts[r>>8].tmp2>2000)
 						if (1>rand()%100)
@@ -64,8 +64,22 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS) {
 							parts[i].tmp2 += 100;
 						}
 				}
-				if ((r&0xFF)==PT_EXOT && parts[r>>8].life==1500 && 1>rand()%1000)
+				else if ((r&0xFF) == PT_EXOT && parts[r>>8].life == 1500 && 1>rand()%1000)
 					parts[i].life = 1500;
+				else if ((r&0xFF) == PT_LAVA)
+				{
+					if (parts[r>>8].ctype == PT_TTAN && 1>rand()%10)
+					{
+						parts[r>>8].ctype = PT_VIBR;
+						sim->kill_part(i);
+						return 1;
+					}
+					/*else if (parts[r>>8].ctype == PT_VIBR && 1>rand()%1000)
+					{
+						sim->kill_part(i);
+						return 1;
+					}*/
+				}
 				if ((parts[i].tmp>245) && (parts[i].life>1000))
 					if ((r&0xFF)!=PT_EXOT && (r&0xFF)!=PT_BREC && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_PHOT && (r&0xFF)!=PT_VOID && (r&0xFF)!=PT_NBHL && (r&0xFF)!=PT_WARP && (r&0xFF)!=PT_NEUT)
 					{
@@ -179,7 +193,7 @@ int Element_EXOT::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	else
 	{
-		float frequency = 0.01300; 
+		float frequency = 0.01300;
 		*colr = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
 		*colg = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
 		*colb = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));

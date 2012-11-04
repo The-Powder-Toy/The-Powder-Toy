@@ -4,7 +4,7 @@ Element_BVBR::Element_BVBR()
 {
     Identifier = "DEFAULT_PT_BVBR";
     Name = "BVBR";
-    Colour = PIXPACK(0x002900);
+    Colour = PIXPACK(0x005000);
     MenuVisible = 1;
     MenuSection = SC_POWDERS;
     Enabled = 1;
@@ -16,7 +16,7 @@ Element_BVBR::Element_BVBR()
     Collision = 0.0f;
     Gravity = 0.15f;
     Diffusion = 0.00f;
-    HotAir = 0.0003f	* CFDS;
+    HotAir = 0.0000f	* CFDS;
     Falldown = 1;
     
     Flammable = 0;
