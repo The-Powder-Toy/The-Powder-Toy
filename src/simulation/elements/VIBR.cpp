@@ -144,8 +144,8 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 				r = pmap[y+ry][x+rx];
 				if ((r&0xFF) && (r&0xFF) != parts[i].type)
 				{
-					parts[r>>8].temp += parts[i].tmp*6;
-					parts[i].tmp -= parts[i].tmp*2;
+					parts[r>>8].temp += parts[i].tmp*3;
+					parts[i].tmp = 0;
 				}
 			}
 		}
