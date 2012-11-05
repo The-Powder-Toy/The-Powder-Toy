@@ -51,6 +51,8 @@ int Element_INVIS::update(UPDATE_FUNC_ARGS)
 {
 	if (sim->pv[y/CELL][x/CELL]>4.0f || sim->pv[y/CELL][x/CELL]<-4.0f)
 		parts[i].tmp = 1;
+	else
+		parts[i].tmp = 0;
 	return 0;
 }
 
