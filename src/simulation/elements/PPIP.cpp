@@ -35,8 +35,8 @@ Element_PPIP::Element_PPIP()
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = 10.0f;
-	HighPressureTransition = PT_BRMT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;

@@ -4,9 +4,9 @@ Element_VIBR::Element_VIBR()
 {
 	Identifier = "DEFAULT_PT_VIBR";
 	Name = "VIBR";
-	Colour = PIXPACK(0x002900);
+	Colour = PIXPACK(0x005000);
 	MenuVisible = 1;
-	MenuSection = SC_SOLIDS;
+	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
 
 	Advection = 0.0f;
@@ -26,7 +26,7 @@ Element_VIBR::Element_VIBR()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
+	Temperature = 273.15f;
 	HeatConduct = 251;
 	Description = "Vibranium. Stores energy and releases it in violent explosions.";
 
@@ -57,7 +57,7 @@ void transferProp(UPDATE_FUNC_ARGS, int propOffset)
 		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
-			if ((r&0xFF)!=PT_VIBR)
+			if ((r&0xFF) != parts[i].type)
 				continue;
 			if (*((int*)(((char*)&parts[i])+propOffset)) > *((int*)(((char*)&parts[r>>8])+propOffset)))
 			{
@@ -81,152 +81,158 @@ void transferProp(UPDATE_FUNC_ARGS, int propOffset)
 
 //#TPT-Directive ElementHeader Element_VIBR static int update(UPDATE_FUNC_ARGS)
 int Element_VIBR::update(UPDATE_FUNC_ARGS) {
-	int r, rx, ry, transfer, trade;
-	if (!parts[i].life)
+	int r, rx, ry;
+	if (parts[i].ctype == 1) //leaving in, just because
+	{
+		if (sim->pv[y/CELL][x/CELL] > -2.5 || parts[i].tmp)
+		{
+			parts[i].ctype = 0;
+			sim->part_change_type(i, x, y, PT_VIBR);
+		}
+	}
+	else if (!parts[i].life) //if not exploding
 	{
 		//Heat absorption code
-		if (parts[i].temp>274.65f)
-		{
-			parts[i].ctype++;
-			parts[i].temp-=3;
-		}
-		if (parts[i].temp<271.65f)
-		{
-			parts[i].ctype--;
-			parts[i].temp+=3;
-		}
-		//Pressure absorption code
-		if (sim->pv[y/CELL][x/CELL]>2.5)
+		if (parts[i].temp > 274.65f)
 		{
 			parts[i].tmp++;
-			sim->pv[y/CELL][x/CELL]--;
+			parts[i].temp -= 3;
 		}
-		if (sim->pv[y/CELL][x/CELL]<-2.5)
+		if (parts[i].temp < 271.65f)
 		{
 			parts[i].tmp--;
+			parts[i].temp += 3;
+		}
+		//Pressure absorption code
+		if (sim->pv[y/CELL][x/CELL] > 2.5)
+		{
+			parts[i].tmp += 7;
+			sim->pv[y/CELL][x/CELL]--;
+		}
+		if (sim->pv[y/CELL][x/CELL] < -2.5)
+		{
+			parts[i].tmp -= 2;
 			sim->pv[y/CELL][x/CELL]++;
 		}
+		//initiate explosion counter
+		if (parts[i].tmp > 1000)
+			parts[i].life = 750;
 	}
-	//Release sparks before explode
-	if (parts[i].life && parts[i].life < 300)
+	else //if it is exploding
 	{
-		rx = rand()%3-1;
-		ry = rand()%3-1;
-		r = pmap[y+ry][x+rx];
-		if ((r&0xFF) && (r&0xFF) != PT_BREC && (sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && !parts[r>>8].life)
+		//Release sparks before explode
+		if (parts[i].life < 300)
 		{
-			parts[r>>8].life = 4;
-			parts[r>>8].ctype = r>>8;
-			sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
-		}
-	}
-	//initiate explosion counter
-	if (!parts[i].life && (parts[i].ctype > 1200 || parts[i].tmp > 100 || parts[i].tmp2 > 100))
-		parts[i].life = 750;
-	//Release all heat
-	if (parts[i].life && parts[i].life < 500)
-	{
-		int random = rand();
-		rx = random%7-3;
-		ry = (random>>3)%7-3;
-		if(x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES)
-		{
+			rx = rand()%3-1;
+			ry = rand()%3-1;
 			r = pmap[y+ry][x+rx];
-			if ((r&0xFF) && (r&0xFF)!=PT_VIBR)
+			if ((r&0xFF) && (r&0xFF) != PT_BREC && (sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && !parts[r>>8].life)
 			{
-				parts[r>>8].temp += parts[i].ctype*6;
-				parts[i].ctype -= parts[i].ctype*2;
+				parts[r>>8].life = 4;
+				parts[r>>8].ctype = r&0xFF;
+				sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 			}
 		}
-	}
-	//Explosion code
-	if (parts[i].life == 1)
-	{
-		sim->create_part(i, x, y, PT_EXOT);
-		parts[i].tmp2 = 100;
-		int random = rand(), index;
-		index = sim->create_part(-3,x+(random&3)-1,y+((random>>2)&3)-1,PT_ELEC);
-		if (index != -1)
-			parts[index].temp = 7000;
-		index = sim->create_part(-3,x+((random>>4)&3)-1,y+((random>>6)&3)-1,PT_NEUT);
-		if (index != -1)
-			parts[index].temp = 7000;
-		index = sim->create_part(-3,x+((random>>8)&3)-1,y+((random>>10)&3)-1,PT_PHOT);
-		if (index != -1)
-			parts[index].temp = 7000;
-		index = sim->create_part(-3,x+((random>>12)&3)-1,y+rand()%3-1,PT_BREC);
-		if (index != -1)
-			parts[index].temp = 7000;
-		parts[i].temp=9000;
-		sim->pv[y/CELL][x/CELL]=200;
+		//Release all heat
+		if (parts[i].life < 500)
+		{
+			int random = rand();
+			rx = random%7-3;
+			ry = (random>>3)%7-3;
+			if(x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES)
+			{
+				r = pmap[y+ry][x+rx];
+				if ((r&0xFF) && (r&0xFF)!=PT_VIBR  && (r&0xFF)!=PT_BVBR && sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||parts[r>>8].life==10))
+				{
+					parts[r>>8].temp += parts[i].tmp*3;
+					parts[i].tmp = 0;
+				}
+			}
+		}
+		//Explosion code
+		if (parts[i].life == 1)
+		{
+			int random = rand(), index;
+			sim->create_part(i, x, y, PT_EXOT);
+			parts[i].tmp2 = rand()%1000;
+			index = sim->create_part(-3,x+((random>>4)&3)-1,y+((random>>6)&3)-1,PT_ELEC);
+			if (index != -1)
+				parts[index].temp = 7000;
+			index = sim->create_part(-3,x+((random>>8)&3)-1,y+((random>>10)&3)-1,PT_PHOT);
+			if (index != -1)
+				parts[index].temp = 7000;
+			index = sim->create_part(-1,x+((random>>12)&3)-1,y+rand()%3-1,PT_BREC);
+			if (index != -1)
+				parts[index].temp = 7000;
+			parts[i].temp=9000;
+			sim->pv[y/CELL][x/CELL] += 50;
+
+			return 1;
+		}
 	}
 	//Neighbor check loop
-	for (rx=-3; rx<4; rx++)
-		for (ry=-3; ry<4; ry++)
+	for (rx=-2; rx<3; rx++)
+		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if (!r || (r & (abs(rx) == 3 || abs(ry) == 3)) )
+				if (!r)
 					r = sim->photons[y+ry][x+rx];
 				if (!r)
 					continue;
 				//Melts into EXOT
-				if ((r&0xFF)==PT_EXOT && !(rand()%250))
+				if ((r&0xFF) == PT_EXOT && !(rand()%250))
 				{
-					sim->part_change_type(i,x,y,PT_EXOT);
+					sim->create_part(i, x, y, PT_EXOT);
 				}
-				//Absorbs energy particles
-				if (sim->elements[r&0xFF].Properties & TYPE_ENERGY)
-				{
-					parts[i].tmp2++;
-					sim->kill_part(r>>8);
-				}
-				if ((r&0xFF)==PT_BOYL)
+				else if ((r&0xFF) == PT_ANAR)
 				{
 					sim->part_change_type(i,x,y,PT_BVBR);
+					sim->pv[y/CELL][x/CELL] -= 1;
+				}
+				else if (parts[i].life && ((r&0xFF)==PT_VIBR  || (r&0xFF)==PT_BVBR) && !parts[r>>8].life)
+				{
+					parts[r>>8].tmp += 10;
+				}
+				//Absorbs energy particles
+				if ((sim->elements[r&0xFF].Properties & TYPE_ENERGY))
+				{
+					parts[i].tmp += 20;
+					sim->kill_part(r>>8);
 				}
 			}
 	transferProp(UPDATE_FUNC_SUBCALL_ARGS, offsetof(Particle, tmp));
-	transferProp(UPDATE_FUNC_SUBCALL_ARGS, offsetof(Particle, tmp2));
-	transferProp(UPDATE_FUNC_SUBCALL_ARGS, offsetof(Particle, ctype));
+	if (parts[i].tmp < 0)
+		parts[i].tmp = 0; // only preventing because negative tmp doesn't save
 	return 0;
 }
 
 //#TPT-Directive ElementHeader Element_VIBR static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_VIBR::graphics(GRAPHICS_FUNC_ARGS)
 {
-	float maxtemp = std::max((float)cpart->tmp, cpart->temp);
-	int gradient = std::max(cpart->ctype/12.0f, (float)cpart->tmp);
-	gradient = std::max(gradient, cpart->tmp2);
+	int gradient = cpart->tmp/10;
 	if (gradient >= 100 || cpart->life)
 	{
-		*pixel_mode = PMODE_NONE;
-		*pixel_mode |= FIRE_BLEND;
+		*colr = (int)(fabs(sin(exp((750.0f-cpart->life)/170)))*200.0f);
+		*colg = 255;
+		*colb = (int)(fabs(sin(exp((750.0f-cpart->life)/170)))*200.0f);
 		*firea = 90;
-		*colr = 146;
-		*colg = 158;
-		*colb = 113;
 		*firer = *colr;
 		*fireg = *colg;
 		*fireb = *colb;
+		*pixel_mode = PMODE_NONE;
+		*pixel_mode |= FIRE_BLEND;
 	}
-	else if (gradient >= 94 && gradient < 100)
+	else if (gradient < 100)
 	{
-		*colr += (int)restrict_flt((gradient-94)*19.7+100,100,218);
-		*colg += (int)restrict_flt((gradient-94)*17.5+87,87,192);
-		*colb += (int)restrict_flt((gradient-94)*19.7+100,100,218);
-	}
-	else if (gradient >= 63 && gradient < 94)
-	{
-		*colr += (int)restrict_flt((gradient-63)*1.58+51,51,100);
-		*colg += (int)restrict_flt((gradient-63)*1.03+55,55,87);
-		*colb += (int)restrict_flt((gradient-63)*1.58+51,51,100);
-	}
-	else if (gradient > 31 && gradient < 63)
-	{
-		*colr += (int)restrict_flt((gradient-31)*1.59,0,51);
-		*colg += (int)restrict_flt((gradient-31)*1.72,0,55);
-		*colb += (int)restrict_flt((gradient-31)*1.59,0,51);
+		*colr += (int)restrict_flt(gradient*2.0f,0,255);
+		*colg += (int)restrict_flt(gradient*2.0f,0,175);
+		*colb += (int)restrict_flt(gradient*2.0f,0,255);
+		*firea = (int)restrict_flt(gradient*.6f,0,60);
+		*firer = *colr/2;
+		*fireg = *colg/2;
+		*fireb = *colb/2;
+		*pixel_mode |= FIRE_BLEND;
 	}
 	return 0;
 }
