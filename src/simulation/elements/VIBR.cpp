@@ -153,10 +153,8 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 		if (parts[i].life == 1)
 		{
 			int random = rand(), index;
-			float temperature = parts[i].temp + parts[i].tmp*3;
 			sim->create_part(i, x, y, PT_EXOT);
 			parts[i].tmp2 = rand()%1000;
-			parts[i].temp = temperature;
 			index = sim->create_part(-3,x+((random>>4)&3)-1,y+((random>>6)&3)-1,PT_ELEC);
 			if (index != -1)
 				parts[index].temp = 7000;
