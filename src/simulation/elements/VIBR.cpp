@@ -142,7 +142,7 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 			if(x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES)
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r&0xFF) && (r&0xFF) != parts[i].type)
+				if ((r&0xFF) && (r&0xFF)!=PT_VIBR  && (r&0xFF)!=PT_BVBR && sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||parts[r>>8].life==10))
 				{
 					parts[r>>8].temp += parts[i].tmp*3;
 					parts[i].tmp = 0;
@@ -153,8 +153,10 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 		if (parts[i].life == 1)
 		{
 			int random = rand(), index;
+			float temperature = parts[i].temp + parts[i].tmp*3;
 			sim->create_part(i, x, y, PT_EXOT);
 			parts[i].tmp2 = rand()%1000;
+			parts[i].temp = temperature;
 			index = sim->create_part(-3,x+((random>>4)&3)-1,y+((random>>6)&3)-1,PT_ELEC);
 			if (index != -1)
 				parts[index].temp = 7000;
@@ -166,6 +168,8 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 				parts[index].temp = 7000;
 			parts[i].temp=9000;
 			sim->pv[y/CELL][x/CELL] += 50;
+
+			return 1;
 		}
 	}
 	//Neighbor check loop
@@ -188,7 +192,7 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 					sim->part_change_type(i,x,y,PT_BVBR);
 					sim->pv[y/CELL][x/CELL] -= 1;
 				}
-				else if (parts[i].life && (r&0xFF) == parts[i].type && !parts[r>>8].life)
+				else if (parts[i].life && ((r&0xFF)==PT_VIBR  || (r&0xFF)==PT_BVBR) && !parts[r>>8].life)
 				{
 					parts[r>>8].tmp += 10;
 				}
