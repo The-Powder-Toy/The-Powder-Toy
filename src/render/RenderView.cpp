@@ -257,7 +257,7 @@ RenderView::RenderView():
 	checkboxOffset += sSpace;
 	line3 = checkboxOffset-5;
 
-	tCheckbox = new ui::Checkbox(ui::Point(checkboxOffset, YRES+4), ui::Point(30, 16), "Heat", "Displays temperatures of the elements, dark blue is coldest, pink is hotest");
+	tCheckbox = new ui::Checkbox(ui::Point(checkboxOffset, YRES+4), ui::Point(30, 16), "Heat", "Displays temperatures of the elements, dark blue is coldest, pink is hottest");
 	colourModes.push_back(tCheckbox);
 	tCheckbox->SetIcon(IconHeat);
 	tCheckbox->SetActionCallback(new ColourModeAction(this, COLOUR_HEAT));
