@@ -105,7 +105,7 @@ RenderView::RenderView():
 	presetButton->SetActionCallback(new RenderPresetAction(this, 2));
 	AddComponent(presetButton);
 
-	presetButton = new ui::Button(ui::Point(presetButtonOffset+161, YRES+6), ui::Point(30, 13), "", "Persistant display mode preset");
+	presetButton = new ui::Button(ui::Point(presetButtonOffset+161, YRES+6), ui::Point(30, 13), "", "Persistent display mode preset");
 	presetButton->SetIcon(IconPersistant);
 	presetButton->SetActionCallback(new RenderPresetAction(this, 3));
 	AddComponent(presetButton);
