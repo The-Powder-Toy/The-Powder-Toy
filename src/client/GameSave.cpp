@@ -23,7 +23,8 @@ airMode(save.airMode),
 signs(save.signs),
 expanded(save.expanded),
 hasOriginalData(save.hasOriginalData),
-originalData(save.originalData)
+originalData(save.originalData),
+palette(save.palette)
 {
 	blockMap = NULL;
 	blockMapPtr = NULL;
@@ -657,6 +658,25 @@ void GameSave::readOPS(char * data, int dataLength)
 			else
 			{
 				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(strcmp(bson_iterator_key(&iter), "palette")==0)
+		{
+			palette.clear();
+			if(bson_iterator_type(&iter)==BSON_ARRAY)
+			{
+				bson_iterator subiter;
+				bson_iterator_subiterator(&iter, &subiter);
+				while(bson_iterator_next(&subiter))
+				{
+					if(bson_iterator_type(&subiter)==BSON_INT)
+					{
+						std::string id = std::string(bson_iterator_key(&subiter));
+						int num = bson_iterator_int(&subiter);
+						palette.push_back(PaletteItem(id, num));
+						printf("R P: %s %d\n", id.c_str(), num);
+					}
+				}
 			}
 		}
 	}
@@ -1622,7 +1642,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	int x, y, i, wallDataFound = 0;
 	int posCount, signsCount;
 	bson b;
-	
+
 	std::fill(elementCount, elementCount+PT_NUM, 0);
 
 	//Get coords in blocks
@@ -1939,6 +1959,16 @@ char * GameSave::serialiseOPS(int & dataLength)
 		bson_append_binary(&b, "fanMap", BSON_BIN_USER, (const char *)fanData, fanDataLen);
 	if(soapLinkData)
 		bson_append_binary(&b, "soapLinks", BSON_BIN_USER, (const char *)soapLinkData, soapLinkDataLen);
+	if(partsData && palette.size())
+	{
+		bson_append_start_array(&b, "palette");
+		for(std::vector<PaletteItem>::iterator iter = palette.begin(), end = palette.end(); iter != end; ++iter)
+		{
+			bson_append_int(&b, (*iter).first.c_str(), (*iter).second);
+			printf("W P: %s %d\n", (*iter).first.c_str(), (*iter).second);
+		}
+		bson_append_finish_array(&b);
+	}
 	signsCount = 0;
 	for(i = 0; i < signs.size(); i++)
 	{

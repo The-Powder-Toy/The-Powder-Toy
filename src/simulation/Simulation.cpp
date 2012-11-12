@@ -45,6 +45,29 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 	fullX = blockX*CELL;
 	fullY = blockY*CELL;
 
+	int partMap[PT_NUM];
+	for(int i = 0; i < PT_NUM; i++)
+	{
+		partMap[i] = i;
+	}
+	if(save->palette.size())
+	{
+		for(std::vector<GameSave::PaletteItem>::iterator iter = save->palette.begin(), end = save->palette.end(); iter != end; ++iter)
+		{
+			GameSave::PaletteItem pi = *iter;
+			if(pi.second >= 0 && pi.second < PT_NUM)
+			{
+				int myId = 0;//pi.second;
+				for(int i = 0; i < PT_NUM; i++)
+				{
+					if(elements[i].Enabled && elements[i].Identifier == pi.first)
+						myId = i;
+				}
+				partMap[pi.second] = myId;
+			}
+		}
+	}
+
 	int i;
 	for(int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
@@ -53,6 +76,9 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		tempPart.y += (float)fullY;
 		x = int(tempPart.x + 0.5f);
 		y = int(tempPart.y + 0.5f);
+
+		if(tempPart.type >= 0 && tempPart.type < PT_NUM)
+			tempPart.type = partMap[tempPart.type];
 
 		if ((player.spwn == 1 && tempPart.type==PT_STKM) || (player2.spwn == 1 && tempPart.type==PT_STKM2))
 			continue;
@@ -182,6 +208,9 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 
 	GameSave * newSave = new GameSave(blockW, blockH);
 	
+	int storedParts = 0;
+	int elementCount[PT_NUM];
+	std::fill(elementCount, elementCount+PT_NUM, 0);
 	for(int i = 0; i < NPART; i++)
 	{
 		int x, y;
@@ -193,7 +222,22 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 			tempPart.x -= fullX;
 			tempPart.y -= fullY;
 			if(elements[tempPart.type].Enabled)
+			{
 				*newSave << tempPart;
+				storedParts++;
+				elementCount[tempPart.type]++;
+			}
+		}
+	}
+
+	if(storedParts)
+	{
+		for(int i = 0; i < PT_NUM; i++)
+		{
+			if(elements[i].Enabled && elementCount[i])
+			{
+				newSave->palette.push_back(GameSave::PaletteItem(elements[i].Identifier, i));
+			}
 		}
 	}
 	

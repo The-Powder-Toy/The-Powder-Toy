@@ -55,6 +55,10 @@ public:
 	
 	//Signs
 	std::vector<sign> signs;
+
+	//Element palette
+	typedef std::pair<std::string, int> PaletteItem;
+	std::vector<PaletteItem> palette;
 	
 	GameSave();
 	GameSave(GameSave & save);
