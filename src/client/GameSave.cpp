@@ -674,7 +674,6 @@ void GameSave::readOPS(char * data, int dataLength)
 						std::string id = std::string(bson_iterator_key(&subiter));
 						int num = bson_iterator_int(&subiter);
 						palette.push_back(PaletteItem(id, num));
-						printf("R P: %s %d\n", id.c_str(), num);
 					}
 				}
 			}
@@ -1965,7 +1964,6 @@ char * GameSave::serialiseOPS(int & dataLength)
 		for(std::vector<PaletteItem>::iterator iter = palette.begin(), end = palette.end(); iter != end; ++iter)
 		{
 			bson_append_int(&b, (*iter).first.c_str(), (*iter).second);
-			printf("W P: %s %d\n", (*iter).first.c_str(), (*iter).second);
 		}
 		bson_append_finish_array(&b);
 	}
@@ -1995,7 +1993,9 @@ char * GameSave::serialiseOPS(int & dataLength)
 		bson_append_finish_array(&b);
 	}
 	bson_finish(&b);
+#ifdef DEBUG
 	bson_print(&b);
+#endif
 	
 	finalData = (unsigned char *)bson_data(&b);
 	finalDataLen = bson_size(&b);
@@ -2024,7 +2024,9 @@ char * GameSave::serialiseOPS(int & dataLength)
 		goto fin;
 	}
 	
+#ifdef DEBUG
 	printf("compressed data: %d\n", outputDataLen);
+#endif
 	dataLength = outputDataLen + 12;
 	
 fin:
