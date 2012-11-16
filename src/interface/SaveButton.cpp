@@ -68,19 +68,27 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 		votesString = votes;
 
 		int voteMax = std::max(save->GetVotesUp(),save->GetVotesDown());
-		if (voteMax < 34)
+		if (voteMax)
 		{
-			float ry = 33.0f/voteMax;
-			if (voteMax<8)
-				ry =  ry/(8-voteMax);
-			voteBarHeightUp = (int)(save->GetVotesUp()*ry)-1;
-			voteBarHeightDown = (int)(save->GetVotesDown()*ry)-1;
+			if (voteMax < 34)
+			{
+				float ry = 33.0f/voteMax;
+				if (voteMax<8)
+					ry =  ry/(8-voteMax);
+				voteBarHeightUp = (int)(save->GetVotesUp()*ry)-1;
+				voteBarHeightDown = (int)(save->GetVotesDown()*ry)-1;
+			}
+			else
+			{
+				float ry = voteMax/33.0f;
+				voteBarHeightUp = (int)(save->GetVotesUp()/ry)-1;
+				voteBarHeightDown = (int)(save->GetVotesDown()/ry)-1;
+			}
 		}
 		else
 		{
-			float ry = voteMax/33.0f;
-			voteBarHeightUp = (int)(save->GetVotesUp()/ry)-1;
-			voteBarHeightDown = (int)(save->GetVotesDown()/ry)-1;
+			voteBarHeightUp = 0;
+			voteBarHeightDown = 0;
 		}
 	}
 }

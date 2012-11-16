@@ -174,8 +174,8 @@ void ServerSaveActivity::Save()
 		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
-				a->saveUpload();
 				a->Exit();
+				a->saveUpload();
 			}
 		}
 		virtual ~PublishConfirmation() { }
@@ -189,8 +189,8 @@ void ServerSaveActivity::Save()
 		}
 		else
 		{
-			saveUpload();
 			Exit();
+			saveUpload();
 		}
 	}
 	else

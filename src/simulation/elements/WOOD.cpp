@@ -49,7 +49,7 @@ Element_WOOD::Element_WOOD()
 //#TPT-Directive ElementHeader Element_WOOD static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_WOOD::graphics(GRAPHICS_FUNC_ARGS)
 {
-	float maxtemp = fmax(cpart->tmp, cpart->temp);
+	float maxtemp = std::max((float)cpart->tmp, cpart->temp);
 	if (maxtemp > 400)
 	{
 		*colr -= (int)restrict_flt((maxtemp-400)/3,0,172);

@@ -462,7 +462,7 @@ int luacon_elementwrite(lua_State* l){
 				free(key);
 				return luaL_error(l, "Name too long");
 			}
-			if(luacon_ci->GetParticleType(tempstring) == -1)
+			if(luacon_ci->GetParticleType(tempstring) != -1)
 			{
 				free(tempstring);
 				free(key);

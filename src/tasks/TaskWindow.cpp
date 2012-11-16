@@ -60,7 +60,7 @@ void TaskWindow::Exit()
 	if(ui::Engine::Ref().GetWindow()==this)
 	{
 		ui::Engine::Ref().CloseWindow();
-		delete this;
+		SelfDestruct();
 	}
 }
 
