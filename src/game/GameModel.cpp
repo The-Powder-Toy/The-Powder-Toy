@@ -587,7 +587,7 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 	if(newSave && newSave->GetGameSave())
 	{
 		GameSave * saveData = newSave->GetGameSave();
-		SetPaused(saveData->paused & GetPaused());
+		SetPaused(saveData->paused | GetPaused());
 		sim->gravityMode = saveData->gravityMode;
 		sim->air->airMode = saveData->airMode;
 		sim->legacy_enable = saveData->legacyEnable;

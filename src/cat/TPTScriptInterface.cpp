@@ -219,7 +219,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		newValue = GetParticleType(((StringType)value).Value());
 		if (newValue < 0 || newValue >= PT_NUM)
 		{
-			if (((StringType)value).Value() == "GOLD")
+			if (((StringType)value).Value() == "GOLD" || ((StringType)value).Value() == "gold")
 				throw GeneralException("No, GOLD will not be an element");
 			else
 				throw GeneralException("Invalid element");

@@ -240,7 +240,7 @@ void GameController::PlaceSave(ui::Point position)
 	if(gameModel->GetPlaceSave())
 	{
 		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetPlaceSave());
-		gameModel->SetPaused(gameModel->GetPaused());
+		gameModel->SetPaused(gameModel->GetPlaceSave()->paused | gameModel->GetPaused());
 	}
 }
 
@@ -489,7 +489,10 @@ void GameController::StampRegion(ui::Point point1, ui::Point point2)
 	GameSave * newSave;
 	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y);
 	if(newSave)
+	{
+		newSave->paused = gameModel->GetPaused();
 		gameModel->AddStamp(newSave);
+	}
 	else
 		new ErrorMessage("Could not create stamp", "Error generating save file");
 }
@@ -499,7 +502,10 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 	GameSave * newSave;
 	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y);
 	if(newSave)
+	{
+		newSave->paused = gameModel->GetPaused();
 		gameModel->SetClipboard(newSave);
+	}
 }
 
 void GameController::CutRegion(ui::Point point1, ui::Point point2)

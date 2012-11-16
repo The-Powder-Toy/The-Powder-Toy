@@ -96,12 +96,6 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 				    (rt!=PT_SPNG || parts[r>>8].life==0) &&
 				    sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
 				{
-					int j = sim->create_part(-1, x-1+rand()%3, y-1+rand()%3, PT_SMKE);
-					if (j != -1)
-					{
-						parts[r>>8].temp = restrict_flt(sim->elements[PT_FIRE].Temperature + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
-						parts[j].life = rand()%80+480;
-					}
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_FIRE);
 					parts[r>>8].temp = restrict_flt(sim->elements[PT_FIRE].Temperature + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
 					parts[r>>8].life = rand()%80+180;
