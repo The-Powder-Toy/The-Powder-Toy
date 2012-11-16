@@ -823,17 +823,15 @@ void GameModel::FrameStep(int frames)
 
 void GameModel::ClearSimulation()
 {
-	sim->clear_sim();
-	ren->ClearAccumulation();
 
 	//Load defaults
-	SetPaused(false);
 	sim->gravityMode = 0;
 	sim->air->airMode = 0;
 	sim->legacy_enable = false;
 	sim->water_equal_test = false;
 	sim->grav->stop_grav_async();
 	sim->SetEdgeMode(edgeMode);
+
 	sim->clear_sim();
 	ren->ClearAccumulation();
 
