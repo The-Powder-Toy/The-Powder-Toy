@@ -229,10 +229,10 @@ std::map<std::string, std::string> readArguments(int argc, char * argv[])
 {
 	std::map<std::string, std::string> arguments;
 
-	//Defaults 
+	//Defaults
 	arguments["scale"] = "";
 	arguments["proxy"] = "";
-	arguments["nohud"] = "false";
+	arguments["nohud"] = "false"; //the nohud, sound, and scripts commands currently do nothing.
 	arguments["sound"] = "false";
 	arguments["kiosk"] = "false";
 	arguments["scripts"] = "false";
