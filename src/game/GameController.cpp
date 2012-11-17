@@ -532,9 +532,12 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 bool GameController::MouseUp(int x, int y, unsigned button)
 {
 	bool ret = commandInterface->OnMouseUp(x, y, button);
-	if(ret && button == BUTTON_LEFT && y<YRES && x<XRES)
+	ui::Point point = PointTranslate(ui::Point(x, y));
+	x = point.X;
+	y = point.Y;
+	if(ret && y<YRES && x<XRES)
 	{
-		if (gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN")//If it's not a sign tool
+		if (gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
 			Simulation * sim = gameModel->GetSimulation();
 			for (std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
