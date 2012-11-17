@@ -2722,23 +2722,28 @@ int Simulation::create_part(int p, int x, int y, int tv)
 
 	if (t==PT_SPRK)
 	{
-		if((pmap[y][x]&0xFF)==PT_WIRE){
-			parts[pmap[y][x]>>8].ctype=PT_DUST;
+		int type = pmap[y][x]&0xFF;
+		int index = pmap[y][x]>>8;
+		if(type == PT_WIRE)
+		{
+			parts[index].ctype = PT_DUST;
 		}
-		if (!((pmap[y][x]&0xFF)==PT_INST||(elements[pmap[y][x]&0xFF].Properties&PROP_CONDUCTS)))
+		if (!(type == PT_INST || (elements[type].Properties&PROP_CONDUCTS)))
 			return -1;
-		if (parts[pmap[y][x]>>8].life!=0)
+		if (parts[index].life!=0)
 			return -1;
-		if (p==-2 && (pmap[y][x]&0xFF)==PT_INST)
+		if (p == -2 && type == PT_INST)
 		{
 			FloodINST(x, y, PT_SPRK, PT_INST);
-			return pmap[y][x]>>8;
+			return index;
 		}
-		parts[pmap[y][x]>>8].type = PT_SPRK;
-		parts[pmap[y][x]>>8].life = 4;
-		parts[pmap[y][x]>>8].ctype = pmap[y][x]&0xFF;
+		parts[index].type = PT_SPRK;
+		parts[index].life = 4;
+		parts[index].ctype = type;
 		pmap[y][x] = (pmap[y][x]&~0xFF) | PT_SPRK;
-		return pmap[y][x]>>8;
+		if (parts[index].temp+10.0f < 673.0f && !legacy_enable && (type==PT_METL || type == PT_BMTL || type == PT_BRMT || type == PT_PSCN || type == PT_NSCN || type == PT_ETRD || type == PT_NBLE || type == PT_IRON))
+			parts[index].temp = parts[index].temp+10.0f;
+		return index;
 	}
 	if (t==PT_SPAWN&&elementCount[PT_SPAWN])
 		return -1;
@@ -3725,7 +3730,7 @@ void Simulation::update_particles_i(int start, int inc)
 				{
 					float c_Cm = 0.0f;
 #else
-					if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale)>(rand()%250))
+				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale)>(rand()%250))
 				{
 					float c_Cm = 0.0f;
 #endif
@@ -3976,7 +3981,11 @@ void Simulation::update_particles_i(int start, int inc)
 							parts[i].temp = MAX_TEMP;
 						}
 					}
+#ifdef REALISTIC //needed to fix update_particles_i parsing
 				}
+#else
+				}
+#endif
 				else parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
 			}
 
