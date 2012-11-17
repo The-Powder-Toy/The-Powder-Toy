@@ -102,6 +102,7 @@ int Element_BANG::update(UPDATE_FUNC_ARGS)
 			else
 			{
 				sim->create_part(i, x, y, PT_SMKE);
+				parts[i].life = rand()%50+500;
 				parts[i].temp = restrict_flt((MAX_TEMP/4)+otemp, MIN_TEMP, MAX_TEMP);
 			}
 		}

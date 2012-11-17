@@ -64,6 +64,26 @@ int Element_VINE::update(UPDATE_FUNC_ARGS)
 			sim->part_change_type(i,x,y,PT_PLNT);
 		}
 	}
+	if (parts[i].temp > 350 && parts[i].temp > parts[i].tmp2)
+		parts[i].tmp2 = (int)parts[i].temp;
+	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_VINE static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_VINE::graphics(GRAPHICS_FUNC_ARGS)
+{
+	float maxtemp = std::max((float)cpart->tmp2, cpart->temp);
+	if (maxtemp > 300)
+	{
+		*colr += (int)restrict_flt((maxtemp-300)/5,0,58);
+		*colg -= (int)restrict_flt((maxtemp-300)/2,0,102);
+		*colb += (int)restrict_flt((maxtemp-300)/5,0,70);
+	}
+	if (maxtemp < 273)
+	{
+		*colg += (int)restrict_flt((273-maxtemp)/4,0,255);
+		*colb += (int)restrict_flt((273-maxtemp)/1.5,0,255);
+	}
 	return 0;
 }
 

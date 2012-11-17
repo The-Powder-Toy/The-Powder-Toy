@@ -99,7 +99,7 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 				}
 		parts[i].life = 0;
 	}
-	if (parts[i].temp > 400 && parts[i].temp > parts[i].tmp2)
+	if (parts[i].temp > 350 && parts[i].temp > parts[i].tmp2)
 		parts[i].tmp2 = (int)parts[i].temp;
 	return 0;
 }

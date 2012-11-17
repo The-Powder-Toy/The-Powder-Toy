@@ -55,7 +55,7 @@ int Element_WOOD::graphics(GRAPHICS_FUNC_ARGS)
 		*colr -= (int)restrict_flt((maxtemp-400)/3,0,172);
 		*colg -= (int)restrict_flt((maxtemp-400)/4,0,140);
 		*colb -= (int)restrict_flt((maxtemp-400)/20,0,44);
-		if (maxtemp > 550)
+		if (maxtemp > 450)
 			cpart->tmp = (int)maxtemp;
 	}
 	if (maxtemp < 273)
