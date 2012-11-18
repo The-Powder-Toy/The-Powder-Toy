@@ -626,10 +626,12 @@ void Client::Tick()
 				}
 #endif
 
+#ifndef IGNORE_UPDATES
 				if(updateAvailable)
 				{
 					notifyUpdateAvailable();
 				}
+#endif
 			}
 			catch (json::Exception &e)
 			{
