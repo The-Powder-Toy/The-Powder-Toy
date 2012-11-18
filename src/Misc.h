@@ -26,6 +26,13 @@ static char hex[] = "0123456789ABCDEF";
 
 char *exe_name(void);
 
+//Linear interpolation
+template <typename T> inline T LinearInterpolate(T val1, T val2, T lowerCoord, T upperCoord, T coord)
+{
+	if(lowerCoord == upperCoord) return val1;
+	return (((val2 - val1) / (upperCoord - lowerCoord)) * (coord - lowerCoord)) + val1;
+}
+
 //Signum function
 int isign(float i);
 
