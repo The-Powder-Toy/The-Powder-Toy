@@ -9,6 +9,7 @@
 #include "Brush.h"
 #include "EllipseBrush.h"
 #include "TriangleBrush.h"
+#include "BitmapBrush.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "game/DecorationTool.h"
@@ -309,6 +310,26 @@ void GameModel::BuildMenus()
 	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
 	brushList.push_back(new Brush(ui::Point(4, 4)));
 	brushList.push_back(new TriangleBrush(ui::Point(4, 4)));
+
+	//Load more from brushes folder
+	std::vector<string> brushFiles = Client::Ref().DirectorySearch(BRUSH_DIR, "", ".ptb");
+	for(int i = 0; i < brushFiles.size(); i++)
+	{
+		std::vector<unsigned char> brushData = Client::Ref().ReadFile(brushFiles[i]);
+		if(!brushData.size())
+		{
+			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
+			continue;
+		}
+		int dimension = std::sqrt(brushData.size());
+		if(dimension * dimension != brushData.size())
+		{
+			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;
+			continue;
+		}
+		brushList.push_back(new BitmapBrush(brushData, ui::Point(dimension, dimension)));
+	}
+
 
 	//Set default tools
 	regularToolset[0] = GetToolFromIdentifier("DEFAULT_PT_DUST");

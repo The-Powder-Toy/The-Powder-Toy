@@ -61,7 +61,7 @@ public:
 	{
 		return size;
 	}
-	void SetRadius(ui::Point radius)
+	virtual void SetRadius(ui::Point radius)
 	{
 		this->radius = radius;
 		this->size = radius+radius+ui::Point(1, 1);
