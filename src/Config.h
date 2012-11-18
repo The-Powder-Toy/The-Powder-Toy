@@ -25,7 +25,7 @@
 #endif
 
 #ifndef BUILD_NUM
-#define BUILD_NUM 248
+#define BUILD_NUM 249
 #endif
 
 #ifndef SNAPSHOT_ID
@@ -39,6 +39,8 @@
 #endif
 #endif
 //VersionInfoEnd
+
+//#define IGNORE_UPDATES //uncomment this for mods, to not get any update notifications
 
 #if defined(SNAPSHOT)
 #define IDENT_RELTYPE "S"
