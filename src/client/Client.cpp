@@ -367,6 +367,9 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 std::vector<std::string> Client::DirectorySearch(std::string directory, std::string search, std::vector<std::string> extensions)
 {
 	//Get full file listing
+	//Normalise directory string, ensure / or \ is present
+	if(*directory.rbegin() != '/' && *directory.rbegin() != '\\')
+		directory += PATH_SEP;
 	std::vector<std::string> directoryList;
 #if defined(WIN) && !defined(__GNUC__)
 	//Windows
