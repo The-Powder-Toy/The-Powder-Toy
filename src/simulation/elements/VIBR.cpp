@@ -149,7 +149,7 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 				if (!r)
 					continue;
 				//Melts into EXOT
-				if ((r&0xFF) == PT_EXOT && !(rand()%250))
+				if ((r&0xFF) == PT_EXOT && !(rand()%250) && !parts[i].life)
 				{
 					sim->create_part(i, x, y, PT_EXOT);
 				}
@@ -163,7 +163,7 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 					parts[r>>8].tmp += 10;
 				}
 				//Absorbs energy particles
-				if ((sim->elements[r&0xFF].Properties & TYPE_ENERGY))
+				if ((sim->elements[r&0xFF].Properties & TYPE_ENERGY) && !parts[i].life)
 				{
 					parts[i].tmp += 20;
 					sim->kill_part(r>>8);
