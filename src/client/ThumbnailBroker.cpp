@@ -19,11 +19,53 @@ ThumbnailBroker::ThumbnailBroker()
 
 	//listenersMutex = PTHREAD_MUTEX_INITIALIZER;
 	pthread_mutex_init (&listenersMutex, NULL);
+
+
+	pthread_mutex_init (&runningMutex, NULL);
 }
 
 ThumbnailBroker::~ThumbnailBroker()
 {
 
+}
+
+void ThumbnailBroker::assureRunning()
+{
+	pthread_mutex_lock(&runningMutex);
+	bool running = thumbnailQueueRunning;
+	thumbnailQueueRunning = true;
+	pthread_mutex_unlock(&runningMutex);
+
+	if(!running)
+	{
+#ifdef DEBUG
+		std::cout << typeid(*this).name() << " Starting background thread for new " << __FUNCTION__ << " request" << std::endl;
+#endif
+		pthread_create(&thumbnailQueueThread, 0, &ThumbnailBroker::thumbnailQueueProcessHelper, this);
+	}
+}
+
+void ThumbnailBroker::Shutdown()
+{
+	pthread_mutex_lock(&runningMutex);
+	if(thumbnailQueueRunning)
+	{
+		thumbnailQueueRunning = false;
+		pthread_mutex_unlock(&runningMutex);
+		pthread_join(thumbnailQueueThread, NULL);
+	}
+	else
+		pthread_mutex_unlock(&runningMutex);
+
+
+	for (std::list<ThumbnailRequest>::iterator iter = currentRequests.begin(), end = currentRequests.end(); iter != end; ++iter)
+	{
+		ThumbnailRequest req = *iter;
+		if(req.HTTPContext)
+		{
+			http_async_req_close(req.HTTPContext);
+		}
+	}
 }
 
 void ThumbnailBroker::RenderThumbnail(GameSave * gameSave, int width, int height, ThumbnailListener * tListener)
@@ -35,36 +77,20 @@ void ThumbnailBroker::RenderThumbnail(GameSave * gameSave, bool decorations, boo
 {
 	AttachThumbnailListener(tListener);
 	pthread_mutex_lock(&thumbnailQueueMutex);
-	bool running = thumbnailQueueRunning;
-	thumbnailQueueRunning = true;
 	renderRequests.push_back(ThumbRenderRequest(new GameSave(*gameSave), decorations, fire, width, height, ListenerHandle(tListener->ListenerRand, tListener)));
 	pthread_mutex_unlock(&thumbnailQueueMutex);
 	
-	if(!running)
-	{
-#ifdef DEBUG
-		std::cout << typeid(*this).name() << " Starting background thread for new " << __FUNCTION__ << " request" << std::endl;
-#endif
-		pthread_create(&thumbnailQueueThread, 0, &ThumbnailBroker::thumbnailQueueProcessHelper, this);
-	}
+	assureRunning();
 }
 
 void ThumbnailBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int height, ThumbnailListener * tListener)
 {
 	AttachThumbnailListener(tListener);
 	pthread_mutex_lock(&thumbnailQueueMutex);
-	bool running = thumbnailQueueRunning;
-	thumbnailQueueRunning = true;
 	thumbnailRequests.push_back(ThumbnailRequest(saveID, saveDate, width, height, ListenerHandle(tListener->ListenerRand, tListener)));
 	pthread_mutex_unlock(&thumbnailQueueMutex);
 
-	if(!running)
-	{
-#ifdef DEBUG
-		std::cout << typeid(*this).name() << " Starting background thread for new " << __FUNCTION__ << " request" << std::endl;
-#endif
-		pthread_create(&thumbnailQueueThread, 0, &ThumbnailBroker::thumbnailQueueProcessHelper, this);
-	}
+	assureRunning();
 }
 
 void * ThumbnailBroker::thumbnailQueueProcessHelper(void * ref)
@@ -97,16 +123,32 @@ void ThumbnailBroker::FlushThumbQueue()
 void ThumbnailBroker::thumbnailQueueProcessTH()
 {
 	time_t lastAction = time(NULL);
+	pthread_mutex_lock(&runningMutex);
+	thumbnailQueueRunning = true;
+	pthread_mutex_unlock(&runningMutex);
 	while(true)
 	{
 		//Shutdown after 2 seconds of idle
 		if(time(NULL) - lastAction > 2)
 		{
-			pthread_mutex_lock(&thumbnailQueueMutex);
-			thumbnailQueueRunning = false;
-			pthread_mutex_unlock(&thumbnailQueueMutex);
+#ifdef DEBUG
+			std::cout << typeid(*this).name() << " Idle shutdown" << std::endl;
+#endif
 			break;
 		}
+
+
+		pthread_mutex_lock(&runningMutex);
+		bool running = thumbnailQueueRunning;
+		pthread_mutex_unlock(&runningMutex);
+		if(!running)
+		{
+#ifdef DEBUG
+			std::cout << typeid(*this).name() << " Requested shutdown" << std::endl;
+#endif
+			break;
+		}
+
 
 		//Renderer
 		pthread_mutex_lock(&thumbnailQueueMutex);
@@ -220,7 +262,7 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 					std::cout << typeid(*this).name() << " Creating new request for " << req.ID.SaveID << ":" << req.ID.SaveDate << std::endl;
 #endif
 
-					req.HTTPContext = http_async_req_start(NULL, (char *)urlStream.str().c_str(), NULL, 0, 1);
+					req.HTTPContext = http_async_req_start(NULL, (char *)urlStream.str().c_str(), NULL, 0, 0);
 					req.RequestTime = time(NULL);
 					currentRequests.push_back(req);
 				}
@@ -252,7 +294,6 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 				char * data;
 				int status, data_size, imgw, imgh;
 				data = http_async_req_stop(req.HTTPContext, &status, &data_size);
-				free(req.HTTPContext);
 
 				if (status == 200 && data)
 				{
@@ -307,6 +348,9 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 		}
 
 	}
+	pthread_mutex_lock(&runningMutex);
+	thumbnailQueueRunning = false;
+	pthread_mutex_unlock(&runningMutex);
 }
 
 void ThumbnailBroker::RetrieveThumbnail(int saveID, int width, int height, ThumbnailListener * tListener)
