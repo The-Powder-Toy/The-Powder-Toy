@@ -223,6 +223,10 @@ GameView::GameView():
         {
             v->c->ReloadSim();
         }
+        void AltActionCallback(ui::Button * sender)
+        {
+        	v->c->OpenSavePreview();
+        }
     };
     reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", "Reload the simulation");
     reloadButton->SetIcon(IconReload);

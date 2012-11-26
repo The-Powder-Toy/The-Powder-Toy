@@ -20,6 +20,7 @@ class ButtonAction
 {
 public:
 	virtual void ActionCallback(ui::Button * sender) {}
+	virtual void AltActionCallback(ui::Button * sender) {}
 	virtual void MouseEnterCallback(ui::Button * sender) {}
 	virtual ~ButtonAction() {}
 };
@@ -45,6 +46,7 @@ public:
 	virtual void TextPosition();
 	inline bool GetState() { return state; }
 	virtual void DoAction(); //action of button what ever it may be
+	virtual void DoAltAction(); //action of button what ever it may be
 	void SetTogglable(bool isTogglable);
 	bool GetTogglable();
 	TPT_NO_INLINE bool GetToggleState();
@@ -60,7 +62,7 @@ protected:
 	std::string buttonDisplayText;
 	std::string ButtonText;
 
-	bool isButtonDown, state, isMouseInside, isTogglable, toggle;
+	bool isButtonDown, isAltButtonDown, state, isMouseInside, isTogglable, toggle;
 	ButtonAction * actionCallback;
 
 };
