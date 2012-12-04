@@ -76,7 +76,7 @@ int Element_SWCH::update(UPDATE_FUNC_ARGS)
 							parts[i].life = parts[r>>8].life;
 						}
 					}
-					else if (rt==PT_SPRK&&parts[i].life==10&&parts[r>>8].ctype!=PT_PSCN&&parts[r>>8].ctype!=PT_NSCN) {
+					else if (rt==PT_SPRK && parts[i].life==10 && parts[r>>8].life>0 && parts[r>>8].ctype!=PT_PSCN && parts[r>>8].ctype!=PT_NSCN) {
 						sim->part_change_type(i,x,y,PT_SPRK);
 						parts[i].ctype = PT_SWCH;
 						parts[i].life = 4;
