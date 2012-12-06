@@ -53,6 +53,7 @@ Element_TRON::Element_TRON()
 #define TRON_WAIT 4 //it was just created, so WAIT a frame
 #define TRON_NODIE 8
 #define TRON_DEATH 16 //Crashed, now dying
+#define TRON_NORANDOM 65536
 int tron_rx[4] = {-1, 0, 1, 0};
 int tron_ry[4] = { 0,-1, 0, 1};
 unsigned int tron_colours[32];
@@ -86,7 +87,7 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 
 		//random turn
 		int random = rand()%340;
-		if (random==1 || random==3)
+		if ((random==1 || random==3) && !(parts[i].tmp & TRON_NORANDOM))
 		{
 			//randomly turn left(3) or right(1)
 			direction = (direction + random)%4;
@@ -97,7 +98,12 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 		firstdircheck = Element_TRON::trymovetron(sim,x,y,direction,i,parts[i].tmp2);
 		if (firstdircheck < parts[i].tmp2)
 		{
-			if (originaldir != direction) //if we just tried a random turn, don't pick random again
+			if (parts[i].tmp & TRON_NORANDOM)
+			{
+				seconddir = (direction + 1)%4;
+				lastdir = (direction + 3)%4;
+			}
+			else if (originaldir != direction) //if we just tried a random turn, don't pick random again
 			{
 				seconddir = originaldir;
 				lastdir = (direction + 2)%4;
@@ -177,7 +183,7 @@ int Element_TRON::new_tronhead(Simulation * sim, int x, int y, int i, int direct
 		sim->parts[i].life = 5;
 	}
 	//give new head our properties
-	sim->parts[np].tmp = 1 | direction<<5 | sim->parts[i].tmp&(TRON_NOGROW|TRON_NODIE) | (sim->parts[i].tmp&0xF800);
+	sim->parts[np].tmp = 1 | direction<<5 | sim->parts[i].tmp&(TRON_NOGROW|TRON_NODIE|TRON_NORANDOM) | (sim->parts[i].tmp&0xF800);
 	if (np > i)
 		sim->parts[np].tmp |= TRON_WAIT;
 	
