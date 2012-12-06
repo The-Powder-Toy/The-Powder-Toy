@@ -1612,7 +1612,7 @@ std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count
 			{
 				json::Number tagCount = tagsArray[j]["Count"];
 				json::String tag = tagsArray[j]["Tag"];
-				tagArray->push_back(std::pair<std::string, int>(tag.Value(), tagCount.Value()));
+				tagArray->push_back(std::pair<std::string, int>(tag.Value(), (int)tagCount.Value()));
 			}
 		}
 		catch (json::Exception &e)

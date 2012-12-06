@@ -321,7 +321,7 @@ void GameModel::BuildMenus()
 			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
 			continue;
 		}
-		int dimension = std::sqrt(brushData.size());
+		int dimension = std::sqrt((float)brushData.size());
 		if(dimension * dimension != brushData.size())
 		{
 			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;

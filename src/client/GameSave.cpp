@@ -259,9 +259,9 @@ void GameSave::setSize(int newWidth, int newHeight)
 	blockMapPtr = new unsigned char[blockHeight*blockWidth];
 	std::fill(blockMapPtr, blockMapPtr+(blockHeight*blockWidth), 0);
 	fanVelXPtr = new float[(blockHeight)*(blockWidth)];
-	std::fill(fanVelXPtr, fanVelXPtr+((blockHeight)*(blockWidth)), 0);
+	std::fill(fanVelXPtr, fanVelXPtr+((blockHeight)*(blockWidth)), 0.0f);
 	fanVelYPtr = new float[(blockHeight)*(blockWidth)];
-	std::fill(fanVelYPtr, fanVelYPtr+((blockHeight)*(blockWidth)), 0);
+	std::fill(fanVelYPtr, fanVelYPtr+((blockHeight)*(blockWidth)), 0.0f);
 
 	blockMap = new unsigned char*[blockHeight];
 	for(int y = 0; y < blockHeight; y++)
@@ -330,9 +330,9 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	blockMapPtrNew = new unsigned char[newBlockHeight*newBlockWidth];
 	std::fill(blockMapPtrNew, blockMapPtrNew+(newBlockHeight*newBlockWidth), 0);
 	fanVelXPtrNew = new float[newBlockHeight*newBlockWidth];
-	std::fill(fanVelXPtrNew, fanVelXPtrNew+(newBlockHeight*newBlockWidth), 0);
+	std::fill(fanVelXPtrNew, fanVelXPtrNew+(newBlockHeight*newBlockWidth), 0.0f);
 	fanVelYPtrNew = new float[(newBlockHeight)*(newBlockWidth)];
-	std::fill(fanVelYPtrNew, fanVelYPtrNew+(newBlockHeight*newBlockWidth), 0);
+	std::fill(fanVelYPtrNew, fanVelYPtrNew+(newBlockHeight*newBlockWidth), 0.0f);
 
 	blockMapNew = new unsigned char*[newBlockHeight];
 	for(int y = 0; y < newBlockHeight; y++)
