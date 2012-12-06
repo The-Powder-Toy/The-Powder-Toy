@@ -2071,6 +2071,7 @@ void Simulation::init_can_move()
 	can_move[PT_ELEC][PT_DEUT] = 1;
 	can_move[PT_THDR][PT_THDR] = 2;
 	can_move[PT_EMBR][PT_EMBR] = 2;
+	can_move[PT_TRON][PT_SWCH] = 3;
 }
 
 /*
@@ -2104,7 +2105,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 			if (pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f) result = 2;
 			else result = 0;
 		}
-		if ((r&0xFF)==PT_PVOD)
+		else if ((r&0xFF)==PT_PVOD)
 		{
 			if (parts[r>>8].life == 10)
 			{
@@ -2115,12 +2116,19 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 			}
 			else result = 0;
 		}
-		if ((r&0xFF)==PT_VOID)
+		else if ((r&0xFF)==PT_VOID)
 		{
 			if(!parts[r>>8].ctype || (parts[r>>8].ctype==pt)!=(parts[r>>8].tmp&1))
 				result = 1;
 			else
 				result = 0;
+		}
+		else if (pt == PT_TRON && (r&0xFF) == PT_SWCH)
+		{
+			if (parts[r>>8].life >= 10)
+				return 2;
+			else
+				return 0;
 		}
 	}
 	if (bmap[ny/CELL][nx/CELL])
