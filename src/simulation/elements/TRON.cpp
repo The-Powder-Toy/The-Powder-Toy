@@ -92,7 +92,7 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 			direction = (direction + random)%4;
 		}
 
-		//check infront
+		//check in front
 		//do sight check
 		firstdircheck = Element_TRON::trymovetron(sim,x,y,direction,i,parts[i].tmp2);
 		if (firstdircheck < parts[i].tmp2)
@@ -127,7 +127,7 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 		parts[i].life = parts[i].tmp2;
 		parts[i].tmp &= parts[i].tmp&0xF818;
 	}
-	else // fade tail deco, or prevent tail from dieing
+	else // fade tail deco, or prevent tail from dying
 	{
 		if (parts[i].tmp&TRON_NODIE)
 			parts[i].life++;
@@ -199,13 +199,13 @@ int Element_TRON::trymovetron(Simulation * sim, int x, int y, int dir, int i, in
 		rx += tron_rx[dir];
 		ry += tron_ry[dir];
 		r = sim->pmap[ry][rx];
-		if ((!r || ((r&0xFF) == PT_SWCH && sim->parts[r>>8].life >= 10)) && !sim->bmap[(ry)/CELL][(rx)/CELL] && ry > CELL && rx > CELL && ry < YRES-CELL && rx < XRES-CELL)
+		if (canmovetron(sim, r, k) && !sim->bmap[(ry)/CELL][(rx)/CELL] && ry > CELL && rx > CELL && ry < YRES-CELL && rx < XRES-CELL)
 		{
 			count++;
 			for (tx = rx - tron_ry[dir] , ty = ry - tron_rx[dir], j=1; abs(tx-rx) < (len-k) && abs(ty-ry) < (len-k); tx-=tron_ry[dir],ty-=tron_rx[dir],j++)
 			{
 				r = sim->pmap[ty][tx];
-				if ((!r || ((r&0xFF) == PT_SWCH && sim->parts[r>>8].life >= 10)) && !sim->bmap[(ty)/CELL][(tx)/CELL] && ty > CELL && tx > CELL && ty < YRES-CELL && tx < XRES-CELL)
+				if (canmovetron(sim, r, j+k-1) && !sim->bmap[(ty)/CELL][(tx)/CELL] && ty > CELL && tx > CELL && ty < YRES-CELL && tx < XRES-CELL)
 				{
 					if (j == (len-k))//there is a safe path, so we can break out
 						return len+1;
@@ -217,7 +217,7 @@ int Element_TRON::trymovetron(Simulation * sim, int x, int y, int dir, int i, in
 			for (tx = rx + tron_ry[dir] , ty = ry + tron_rx[dir], j=1; abs(tx-rx) < (len-k) && abs(ty-ry) < (len-k); tx+=tron_ry[dir],ty+=tron_rx[dir],j++)
 			{
 				r = sim->pmap[ty][tx];
-				if ((!r || ((r&0xFF) == PT_SWCH && sim->parts[r>>8].life >= 10)) && !sim->bmap[(ty)/CELL][(tx)/CELL] && ty > CELL && tx > CELL && ty < YRES-CELL && tx < XRES-CELL)
+				if (canmovetron(sim, r, j+k-1) && !sim->bmap[(ty)/CELL][(tx)/CELL] && ty > CELL && tx > CELL && ty < YRES-CELL && tx < XRES-CELL)
 				{
 					if (j == (len-k))
 						return len+1;
@@ -231,6 +231,16 @@ int Element_TRON::trymovetron(Simulation * sim, int x, int y, int dir, int i, in
 			break;
 	}
 	return count;
+}
+
+//#TPT-Directive ElementHeader Element_TRON static bool canmovetron(Simulation * sim, int r, int len)
+bool Element_TRON::canmovetron(Simulation * sim, int r, int len)
+{
+	if (!r || ((r&0xFF) == PT_SWCH && sim->parts[r>>8].life >= 10) || ((r&0xFF) == PT_INVIS && sim->parts[r>>8].tmp == 1))
+		return true;
+	if (((sim->elements[r&0xFF].Properties & PROP_LIFE_KILL_DEC) || ((sim->elements[r&0xFF].Properties & PROP_LIFE_KILL) && (sim->elements[r&0xFF].Properties & PROP_LIFE_DEC))) && sim->parts[r>>8].life < len)
+		return true;
+	return false;
 }
 
 Element_TRON::~Element_TRON() {}
