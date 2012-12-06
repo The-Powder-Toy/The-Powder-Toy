@@ -77,6 +77,7 @@ private:
 
 	pthread_mutex_t thumbnailQueueMutex;
 	pthread_mutex_t listenersMutex;
+	pthread_mutex_t runningMutex;
 	pthread_t thumbnailQueueThread;
 	bool thumbnailQueueRunning;
 	std::deque<ThumbnailRequest> thumbnailRequests;
@@ -91,10 +92,12 @@ private:
 
 	static void * thumbnailQueueProcessHelper(void * ref);
 	void thumbnailQueueProcessTH();
+	void assureRunning();
 
 public:
 	ThumbnailBroker();
 	virtual ~ThumbnailBroker();
+	void Shutdown();
 
 	void FlushThumbQueue();
 	void RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, ThumbnailListener * tListener);

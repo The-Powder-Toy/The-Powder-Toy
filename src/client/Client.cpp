@@ -140,7 +140,7 @@ void Client::Initialise(std::string proxyString)
 	stampsLib.close();
 
 	//Begin version check
-	versionCheckRequest = http_async_req_start(NULL, SERVER "/Startup.json", NULL, 0, 1);
+	versionCheckRequest = http_async_req_start(NULL, SERVER "/Startup.json", NULL, 0, 0);
 
 	if(authUser.ID)
 	{
@@ -367,6 +367,9 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 std::vector<std::string> Client::DirectorySearch(std::string directory, std::string search, std::vector<std::string> extensions)
 {
 	//Get full file listing
+	//Normalise directory string, ensure / or \ is present
+	if(*directory.rbegin() != '/' && *directory.rbegin() != '\\')
+		directory += PATH_SEP;
 	std::vector<std::string> directoryList;
 #if defined(WIN) && !defined(__GNUC__)
 	//Windows
@@ -717,6 +720,7 @@ void Client::WritePrefs()
 
 void Client::Shutdown()
 {
+	ThumbnailBroker::Ref().Shutdown();
 	ClearThumbnailRequests();
 	http_done();
 
@@ -1824,7 +1828,7 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 		{
 			if(!activeThumbRequests[i])
 			{
-				activeThumbRequests[i] = http_async_req_start(NULL, (char *)urlStream.str().c_str(), NULL, 0, 1);
+				activeThumbRequests[i] = http_async_req_start(NULL, (char *)urlStream.str().c_str(), NULL, 0, 0);
 				activeThumbRequestTimes[i] = currentTime;
 				activeThumbRequestCompleteTimes[i] = 0;
 				activeThumbRequestIDs[i] = idString;

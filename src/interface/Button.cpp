@@ -156,26 +156,38 @@ void Button::Draw(const Point& screenPos)
 
 void Button::OnMouseUnclick(int x, int y, unsigned int button)
 {
-    if(button != 1)
+    if(button == 1)
     {
-        return;
+        if(isButtonDown)
+		{
+		    isButtonDown = false;
+			DoAction();
+		}
     }
-
-    if(isButtonDown)
+    else if(button == 3)
     {
-	    isButtonDown = false;
-		DoAction();
-    }
+	    if(isAltButtonDown)
+	    {
+	    	isAltButtonDown = false;
+	    	DoAltAction();
+	    }
+	}
 }
 
 void Button::OnMouseClick(int x, int y, unsigned int button)
 {
-    if(button != 1) return;
-	if(isTogglable)
-	{
-		toggle = !toggle;
+    if(button == 1)
+    {
+		if(isTogglable)
+		{
+			toggle = !toggle;
+		}
+		isButtonDown = true;
 	}
-    isButtonDown = true;
+	else if(button == 3)
+    {
+		isAltButtonDown = true;
+	}
 }
 
 void Button::OnMouseEnter(int x, int y)
@@ -204,6 +216,14 @@ void Button::DoAction()
 		return;
 	if(actionCallback)
 		actionCallback->ActionCallback(this);
+}
+
+void Button::DoAltAction()
+{
+	if(!Enabled)
+		return;
+	if(actionCallback)
+		actionCallback->AltActionCallback(this);
 }
 
 void Button::SetActionCallback(ButtonAction * action)

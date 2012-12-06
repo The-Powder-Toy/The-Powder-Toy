@@ -987,6 +987,15 @@ void GameController::OpenSavePreview(int saveID, int saveDate)
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 
+void GameController::OpenSavePreview()
+{
+	if(gameModel->GetSave())
+	{
+		activePreview = new PreviewController(gameModel->GetSave()->GetID(), new SaveOpenCallback(this));
+		ui::Engine::Ref().ShowWindow(activePreview->GetView());
+	}
+}
+
 void GameController::OpenLocalBrowse()
 {
 	class LocalSaveOpenCallback: public FileSelectedCallback

@@ -11,8 +11,10 @@
 
 #ifdef WIN
 #define PATH_SEP "\\"
+#define PATH_SEP_CHAR '\\'
 #else
 #define PATH_SEP "/"
+#define PATH_SEP_CHAR '/'
 #endif
 
 //VersionInfoStart
@@ -25,7 +27,7 @@
 #endif
 
 #ifndef BUILD_NUM
-#define BUILD_NUM 249
+#define BUILD_NUM 250
 #endif
 
 #ifndef SNAPSHOT_ID
@@ -90,6 +92,8 @@
 #define LOCAL_SAVE_DIR "Saves"
 
 #define STAMPS_DIR "stamps"
+
+#define BRUSH_DIR "Brushes"
 
 #define APPDATA_SUBDIR "\\HardWIRED"
 
