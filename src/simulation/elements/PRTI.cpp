@@ -46,6 +46,14 @@ Element_PRTI::Element_PRTI()
     Graphics = &Element_PRTI::graphics;
 }
 
+/*these are the count values of where the particle gets stored, depending on where it came from
+   0 1 2
+   7 . 3
+   6 5 4
+   PRTO does (count+4)%8, so that it will come out at the opposite place to where it came in
+   PRTO does +/-1 to the count, so it doesn't jam as easily
+*/
+
 //#TPT-Directive ElementHeader Element_PRTI static int update(UPDATE_FUNC_ARGS)
 int Element_PRTI::update(UPDATE_FUNC_ARGS)
  {

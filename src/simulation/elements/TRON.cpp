@@ -48,6 +48,24 @@ Element_TRON::Element_TRON()
     Element_TRON::init_graphics();
 }
 
+/* TRON element is meant to resemble a tron bike (or worm) moving around and trying to avoid obstacles itself.
+ * It has four direction each turn to choose from, 0 (left) 1 (up) 2 (right) 3 (down).
+ * Each turn has a small random chance to randomly turn one way (so it doesn't do the exact same thing in a large room)
+ * If the place it wants to move isn't a barrier, it will try and 'see' in front of itself to determine its safety.
+ * For now the tron can only see its own body length in pixels ahead of itself (and around corners)
+ *  - - - - - - - - - -
+ *  - - - - + - - - - -
+ *  - - - + + + - - - -
+ *  - - +<--+-->+ - - -
+ *  - +<----+---->+ - -
+ *  - - - - H - - - - -
+ * Where H is the head with tail length 4, it checks the + area to see if it can hit any of the edges, then it is called safe, or picks the biggest area if none safe.
+ * .tmp bit values: 1st head, 2nd no tail growth, 3rd wait flag, 4th Nodie, 5th Dying, 6th & 7th is direction, 8th - 16th hue, 17th Norandom
+ * .tmp2 is tail length (gets longer every few hundred frames)
+ * .life is the timer that kills the end of the tail (the head uses life for how often it grows longer)
+ * .ctype Contains the colour, lost on save, regenerated using hue tmp (bits 7 - 16)
+ */
+
 #define TRON_HEAD 1
 #define TRON_NOGROW 2
 #define TRON_WAIT 4 //it was just created, so WAIT a frame
@@ -205,7 +223,7 @@ int Element_TRON::trymovetron(Simulation * sim, int x, int y, int dir, int i, in
 		rx += tron_rx[dir];
 		ry += tron_ry[dir];
 		r = sim->pmap[ry][rx];
-		if (canmovetron(sim, r, k) && !sim->bmap[(ry)/CELL][(rx)/CELL] && ry > CELL && rx > CELL && ry < YRES-CELL && rx < XRES-CELL)
+		if (canmovetron(sim, r, k-1) && !sim->bmap[(ry)/CELL][(rx)/CELL] && ry > CELL && rx > CELL && ry < YRES-CELL && rx < XRES-CELL)
 		{
 			count++;
 			for (tx = rx - tron_ry[dir] , ty = ry - tron_rx[dir], j=1; abs(tx-rx) < (len-k) && abs(ty-ry) < (len-k); tx-=tron_ry[dir],ty-=tron_rx[dir],j++)

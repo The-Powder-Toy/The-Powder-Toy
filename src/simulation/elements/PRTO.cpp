@@ -46,6 +46,14 @@ Element_PRTO::Element_PRTO()
     Graphics = &Element_PRTO::graphics;
 }
 
+/*these are the count values of where the particle gets stored, depending on where it came from
+   0 1 2
+   7 . 3
+   6 5 4
+   PRTO does (count+4)%8, so that it will come out at the opposite place to where it came in
+   PRTO does +/-1 to the count, so it doesn't jam as easily
+*/
+
 //#TPT-Directive ElementHeader Element_PRTO static int update(UPDATE_FUNC_ARGS)
 int Element_PRTO::update(UPDATE_FUNC_ARGS)
  {
@@ -114,7 +122,17 @@ int Element_PRTO::update(UPDATE_FUNC_ARGS)
 								sim->fighters[(unsigned char)parts[np].tmp].spwn = 0;
 								sim->fighters[(unsigned char)sim->portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 1;
 							}
-							parts[np] = sim->portalp[parts[i].tmp][randomness][nnx];
+							if (sim->portalp[parts[i].tmp][randomness][nnx].vx == 0.0f && sim->portalp[parts[i].tmp][randomness][nnx].vy == 0.0f)
+							{
+								// particles that have passed from PIPE into PRTI have lost their velocity, so use the velocity of the newly created particle if the particle in the portal has no velocity
+								float tmp_vx = parts[np].vx;
+								float tmp_vy = parts[np].vy;
+								parts[np] = sim->portalp[parts[i].tmp][randomness][nnx];
+								parts[np].vx = tmp_vx;
+								parts[np].vy = tmp_vy;
+							}
+							else
+								parts[np] = sim->portalp[parts[i].tmp][randomness][nnx];
 							parts[np].x = x+rx;
 							parts[np].y = y+ry;
 							sim->portalp[parts[i].tmp][randomness][nnx] = sim->emptyparticle;
