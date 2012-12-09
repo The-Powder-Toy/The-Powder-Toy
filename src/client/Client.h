@@ -46,6 +46,7 @@ class ClientListener;
 class Client: public Singleton<Client> {
 private:
 	std::string messageOfTheDay;
+	std::vector<std::pair<std::string, std::string> > serverNotifications; 
 
 	void * versionCheckRequest;
 	bool updateAvailable;
@@ -73,6 +74,7 @@ private:
 	void notifyUpdateAvailable();
 	void notifyAuthUserChanged();
 	void notifyMessageOfTheDay();
+	void notifyNewNotification(std::pair<std::string, std::string> notification);
 
 	//Config file handle
 	json::Object configDocument;
@@ -91,6 +93,9 @@ public:
 	bool DoInstallation();
 
 	std::vector<unsigned char> ReadFile(std::string filename);
+
+	void AddServerNotification(std::pair<std::string, std::string> notification);
+	std::vector<std::pair<std::string, std::string> > GetServerNotifications();
 
 	void SetMessageOfTheDay(std::string message);
 	std::string GetMessageOfTheDay();

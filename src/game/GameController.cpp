@@ -1257,6 +1257,23 @@ void GameController::NotifyAuthUserChanged(Client * sender)
 	gameModel->SetUser(newUser);
 }
 
+void GameController::NotifyNewNotification(Client * sender, std::pair<std::string, std::string> notification)
+{
+	class LinkNotification : public Notification
+	{
+		std::string link;
+	public:
+		LinkNotification(std::string link_, std::string message) : link(link_), Notification(message) {}
+		virtual ~LinkNotification() {}
+
+		virtual void Action()
+		{
+			OpenURI(link);
+		}
+	};
+	gameModel->AddNotification(new LinkNotification(notification.second, notification.first));
+}
+
 void GameController::NotifyUpdateAvailable(Client * sender)
 {
 	class UpdateConfirmation: public ConfirmDialogueCallback {

@@ -545,6 +545,17 @@ std::string Client::GetMessageOfTheDay()
 	return messageOfTheDay;
 }
 
+void Client::AddServerNotification(std::pair<std::string, std::string> notification)
+{
+	serverNotifications.push_back(notification);
+	notifyNewNotification(notification);
+}
+
+std::vector<std::pair<std::string, std::string> > Client::GetServerNotifications()
+{
+	return serverNotifications;
+}
+
 void Client::Tick()
 {
 	//Check thumbnail queue
@@ -578,6 +589,18 @@ void Client::Tick()
 				{
 					SetAuthUser(User(0, ""));
 				}
+
+				//Notifications from server
+				json::Array notificationsArray = objDocument["Notifications"];
+				for(int j = 0; j < notificationsArray.Size(); j++)
+				{
+					json::String notificationLink = notificationsArray[j]["Link"];
+					json::String notificationText = notificationsArray[j]["Text"];
+
+					std::pair<std::string, std::string> item = std::pair<std::string, std::string>(notificationText.Value(), notificationLink.Value());
+					AddServerNotification(item);
+				}
+
 
 				//MOTD
 				json::String messageOfTheDay = objDocument["MessageOfTheDay"];
@@ -670,6 +693,14 @@ void Client::notifyAuthUserChanged()
 	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
 	{
 		(*iterator)->NotifyAuthUserChanged(this);
+	}
+}
+
+void Client::notifyNewNotification(std::pair<std::string, std::string> notification)
+{
+	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	{
+		(*iterator)->NotifyNewNotification(this, notification);
 	}
 }
 
@@ -1090,6 +1121,17 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 				json::String sessionIDTemp = objDocument["SessionID"];
 				json::String sessionKeyTemp = objDocument["SessionKey"];
 				json::String userElevationTemp = objDocument["Elevation"];
+				
+				json::Array notificationsArray = objDocument["Notifications"];
+				for(int j = 0; j < notificationsArray.Size(); j++)
+				{
+					json::String notificationLink = notificationsArray[j]["Link"];
+					json::String notificationText = notificationsArray[j]["Text"];
+
+					std::pair<std::string, std::string> item = std::pair<std::string, std::string>(notificationText.Value(), notificationLink.Value());
+					AddServerNotification(item);
+				}
+
 				user.Username = username;
 				user.ID = userIDTemp.Value();
 				user.SessionID = sessionIDTemp.Value();
