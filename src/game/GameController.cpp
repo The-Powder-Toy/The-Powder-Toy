@@ -28,18 +28,6 @@
 
 using namespace std;
 
-class GameController::LoginCallback: public ControllerCallback
-{
-	GameController * cc;
-public:
-	LoginCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
-	{
-		cc->gameModel->SetUser(cc->loginWindow->GetUser());
-	}
-};
-
-
 class GameController::SearchCallback: public ControllerCallback
 {
 	GameController * cc;
@@ -1015,7 +1003,7 @@ void GameController::OpenLocalBrowse()
 
 void GameController::OpenLogin()
 {
-	loginWindow = new LoginController(new LoginCallback(this));
+	loginWindow = new LoginController();
 	ui::Engine::Ref().ShowWindow(loginWindow->GetView());
 }
 
@@ -1261,6 +1249,12 @@ std::string GameController::WallName(int type)
 		return std::string(gameModel->GetSimulation()->wtypes[type].name);
 	else
 		return "";
+}
+
+void GameController::NotifyAuthUserChanged(Client * sender)
+{
+	User newUser = sender->GetAuthUser();
+	gameModel->SetUser(newUser);
 }
 
 void GameController::NotifyUpdateAvailable(Client * sender)

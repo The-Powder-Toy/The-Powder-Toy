@@ -576,7 +576,7 @@ void Client::Tick()
 				json::Boolean sessionStatus = objDocument["Session"];
 				if(!sessionStatus.Value())
 				{
-					authUser = User(0, "");
+					SetAuthUser(User(0, ""));
 				}
 
 				//MOTD

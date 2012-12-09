@@ -777,7 +777,7 @@ ui::Colour GameModel::GetColourSelectorColour()
 void GameModel::SetUser(User user)
 {
 	currentUser = user;
-	Client::Ref().SetAuthUser(user);
+	//Client::Ref().SetAuthUser(user);
 	notifyUserChanged();
 }
 

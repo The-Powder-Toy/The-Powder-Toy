@@ -46,7 +46,6 @@ private:
 	CommandInterface * commandInterface;
 public:
 	bool HasDone;
-	class LoginCallback;
 	class SearchCallback;
 	class RenderCallback;
 	class SSaveCallback;
@@ -142,6 +141,7 @@ public:
 	void RemoveNotification(Notification * notification);
 
 	virtual void NotifyUpdateAvailable(Client * sender);
+	virtual void NotifyAuthUserChanged(Client * sender);
 	void RunUpdater();
 };
 
