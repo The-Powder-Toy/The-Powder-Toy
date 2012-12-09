@@ -4,6 +4,7 @@
 #include <vector>
 #include <bzlib.h>
 #include "Config.h"
+#include "Format.h"
 #include "bson/BSON.h"
 #include "GameSave.h"
 #include "simulation/SimulationData.h"
@@ -501,12 +502,7 @@ void GameSave::readOPS(char * data, int dataLength)
 							{
 								if(strcmp(bson_iterator_key(&signiter), "text")==0 && bson_iterator_type(&signiter)==BSON_STRING)
 								{
-									char tempString[256];
-									strncpy(tempString, bson_iterator_string(&signiter), 255);
-									tempString[255] = 0;
-									clean_text((char*)tempSign.text.c_str(), 158-14);
-
-									tempSign.text = tempString;
+									tempSign.text = format::CleanString(bson_iterator_string(&signiter), 255);
 								}
 								else if(strcmp(bson_iterator_key(&signiter), "justification")==0 && bson_iterator_type(&signiter)==BSON_INT)
 								{

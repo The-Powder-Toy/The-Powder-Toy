@@ -71,6 +71,58 @@ std::string format::UnixtimeToDateMini(time_t unixtime)
 	}
 }
 
+std::string format::CleanString(std::string dirtyString, int maxStringLength)
+{
+	return CleanString(dirtyString, std::string::npos, maxStringLength);
+}
+
+std::string format::CleanString(std::string dirtyString, int maxVisualSize, int maxStringLength)
+{
+	std::string newString = dirtyString;
+	if(maxStringLength != std::string::npos && newString.size() > maxStringLength)
+	{
+		newString = newString.substr(0, maxStringLength);
+	}
+	if(maxVisualSize != std::string::npos && newString.size()*10 > maxVisualSize)
+	{
+		newString = newString.substr(0, maxVisualSize/10);
+	}
+	for(int i = 0; i < newString.size(); i++){
+		if(!(newString[i]>=' ' && newString[i]<127)){	//Clamp to ASCII range
+			newString[i] = '?';							//Replace with "huh" char
+		}
+	}
+	return newString;
+}
+
+std::string format::CleanString(char * dirtyData, int maxStringLength)
+{
+	return CleanString(dirtyData, std::string::npos, maxStringLength);
+}
+
+std::string format::CleanString(char * dirtyData, int maxVisualSize, int maxStringLength)
+{
+	char * newData = new char[maxStringLength+1];
+	strncpy(newData, dirtyData, maxStringLength);
+	newData[maxStringLength] = 0;
+
+	std::string newString = std::string(newData);
+	delete[] newData;
+
+	if(maxVisualSize != std::string::npos && newString.size()*10 > maxVisualSize)
+	{
+		newString = newString.substr(0, maxVisualSize/10);
+	}
+	for(int i = 0; i < newString.size(); i++){
+		if(!(newString[i]>=' ' && newString[i]<127)){	//Clamp to ASCII range
+			newString[i] = '?';							//Replace with "huh" char
+		}
+	}
+	return newString;
+}
+
+
+
 std::vector<char> format::VideoBufferToPTI(const VideoBuffer & vidBuf)
 {
 	std::vector<char> data;
