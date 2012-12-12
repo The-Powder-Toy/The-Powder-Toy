@@ -221,16 +221,16 @@ void GameSave::Collapse()
 
 void GameSave::read(char * data, int dataSize)
 {
-	if(dataSize > 0)
+	if(dataSize > 15)
 	{
-		if(data[0] == 0x50 || data[0] == 0x66)
+		if ((data[0]==0x66 && data[1]==0x75 && data[2]==0x43) || (data[0]==0x50 && data[1]==0x53 && data[2]==0x76))
 		{
 #ifdef DEBUG
 			std::cout << "Reading PSv..." << std::endl;
 #endif
 			readPSv(data, dataSize);
 		}
-		else if(data[0] == 'O')
+		else if(data[0] == 'O' && data[1] == 'P' && data[2] == 'S')
 		{
 #ifdef DEBUG
 			std::cout << "Reading OPS..." << std::endl;
@@ -239,7 +239,7 @@ void GameSave::read(char * data, int dataSize)
 		}
 		else
 		{
-			std::cerr << "Got Magic number '" << data[0] << "'" << std::endl;
+			std::cerr << "Got Magic number '" << data[0] << data[1] << data[2] << "'" << std::endl;
 			throw ParseException(ParseException::Corrupt, "Invalid save format");
 		}
 	}
@@ -1130,62 +1130,62 @@ void GameSave::readPSv(char * data, int dataLength)
 				blockMap[y][x] = d[p];
 				if (blockMap[y][x]==1)
 					blockMap[y][x]=WL_WALL;
-				if (blockMap[y][x]==2)
+				else if (blockMap[y][x]==2)
 					blockMap[y][x]=WL_DESTROYALL;
-				if (blockMap[y][x]==3)
+				else if (blockMap[y][x]==3)
 					blockMap[y][x]=WL_ALLOWLIQUID;
-				if (blockMap[y][x]==4)
+				else if (blockMap[y][x]==4)
 					blockMap[y][x]=WL_FAN;
-				if (blockMap[y][x]==5)
+				else if (blockMap[y][x]==5)
 					blockMap[y][x]=WL_STREAM;
-				if (blockMap[y][x]==6)
+				else if (blockMap[y][x]==6)
 					blockMap[y][x]=WL_DETECT;
-				if (blockMap[y][x]==7)
+				else if (blockMap[y][x]==7)
 					blockMap[y][x]=WL_EWALL;
-				if (blockMap[y][x]==8)
+				else if (blockMap[y][x]==8)
 					blockMap[y][x]=WL_WALLELEC;
-				if (blockMap[y][x]==9)
+				else if (blockMap[y][x]==9)
 					blockMap[y][x]=WL_ALLOWAIR;
-				if (blockMap[y][x]==10)
+				else if (blockMap[y][x]==10)
 					blockMap[y][x]=WL_ALLOWSOLID;
-				if (blockMap[y][x]==11)
+				else if (blockMap[y][x]==11)
 					blockMap[y][x]=WL_ALLOWALLELEC;
-				if (blockMap[y][x]==12)
+				else if (blockMap[y][x]==12)
 					blockMap[y][x]=WL_EHOLE;
-				if (blockMap[y][x]==13)
+				else if (blockMap[y][x]==13)
 					blockMap[y][x]=WL_ALLOWGAS;
 				
 				if (blockMap[y][x]==O_WL_WALLELEC)
 					blockMap[y][x]=WL_WALLELEC;
-				if (blockMap[y][x]==O_WL_EWALL)
+				else if (blockMap[y][x]==O_WL_EWALL)
 					blockMap[y][x]=WL_EWALL;
-				if (blockMap[y][x]==O_WL_DETECT)
+				else if (blockMap[y][x]==O_WL_DETECT)
 					blockMap[y][x]=WL_DETECT;
-				if (blockMap[y][x]==O_WL_STREAM)
+				else if (blockMap[y][x]==O_WL_STREAM)
 					blockMap[y][x]=WL_STREAM;
-				if (blockMap[y][x]==O_WL_FAN||blockMap[y][x]==O_WL_FANHELPER)
+				else if (blockMap[y][x]==O_WL_FAN||blockMap[y][x]==O_WL_FANHELPER)
 					blockMap[y][x]=WL_FAN;
-				if (blockMap[y][x]==O_WL_ALLOWLIQUID)
+				else if (blockMap[y][x]==O_WL_ALLOWLIQUID)
 					blockMap[y][x]=WL_ALLOWLIQUID;
-				if (blockMap[y][x]==O_WL_DESTROYALL)
+				else if (blockMap[y][x]==O_WL_DESTROYALL)
 					blockMap[y][x]=WL_DESTROYALL;
-				if (blockMap[y][x]==O_WL_ERASE)
+				else if (blockMap[y][x]==O_WL_ERASE)
 					blockMap[y][x]=WL_ERASE;
-				if (blockMap[y][x]==O_WL_WALL)
+				else if (blockMap[y][x]==O_WL_WALL)
 					blockMap[y][x]=WL_WALL;
-				if (blockMap[y][x]==O_WL_ALLOWAIR)
+				else if (blockMap[y][x]==O_WL_ALLOWAIR)
 					blockMap[y][x]=WL_ALLOWAIR;
-				if (blockMap[y][x]==O_WL_ALLOWSOLID)
+				else if (blockMap[y][x]==O_WL_ALLOWSOLID)
 					blockMap[y][x]=WL_ALLOWSOLID;
-				if (blockMap[y][x]==O_WL_ALLOWALLELEC)
+				else if (blockMap[y][x]==O_WL_ALLOWALLELEC)
 					blockMap[y][x]=WL_ALLOWALLELEC;
-				if (blockMap[y][x]==O_WL_EHOLE)
+				else if (blockMap[y][x]==O_WL_EHOLE)
 					blockMap[y][x]=WL_EHOLE;
-				if (blockMap[y][x]==O_WL_ALLOWGAS)
+				else if (blockMap[y][x]==O_WL_ALLOWGAS)
 					blockMap[y][x]=WL_ALLOWGAS;
-				if (blockMap[y][x]==O_WL_GRAV)
+				else if (blockMap[y][x]==O_WL_GRAV)
 					blockMap[y][x]=WL_GRAV;
-				if (blockMap[y][x]==O_WL_ALLOWENERGY)
+				else if (blockMap[y][x]==O_WL_ALLOWENERGY)
 					blockMap[y][x]=WL_ALLOWENERGY;
 			}
 			
