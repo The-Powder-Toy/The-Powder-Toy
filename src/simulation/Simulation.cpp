@@ -4320,7 +4320,7 @@ killed:
 							kill_part(i);
 						continue;
 					}
-					if (!(parts[i].ctype&0x3FFFFFFF)&&t!=PT_NEUT&&t!=PT_ELEC) {
+					if (!(parts[i].ctype&0x3FFFFFFF) && t == PT_PHOT) {
 						kill_part(i);
 						continue;
 					}
