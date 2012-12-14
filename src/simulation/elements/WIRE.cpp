@@ -3,7 +3,7 @@
 Element_WIRE::Element_WIRE()
 {
     Identifier = "DEFAULT_PT_WIRE";
-    Name = "WIRE";
+    Name = "WWLD";
     Colour = PIXPACK(0xFFCC00);
     MenuVisible = 1;
     MenuSection = SC_ELEC;
@@ -28,7 +28,7 @@ Element_WIRE::Element_WIRE()
     
     Temperature = R_TEMP+0.0f +273.15f;
     HeatConduct = 250;
-    Description = "WireWorld wires.";
+    Description = "WireWorld wires, probably not what you want. For normal wires, use METL";
     
     State = ST_SOLID;
     Properties = TYPE_SOLID;
