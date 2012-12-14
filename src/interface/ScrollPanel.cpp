@@ -10,17 +10,21 @@ ScrollPanel::ScrollPanel(Point position, Point size):
 	offsetY(0),
 	yScrollVel(0.0f),
 	xScrollVel(0.0f),
-	scrollBarWidth(0)
+	scrollBarWidth(0),
+	isMouseInsideScrollbar(false),
+	scrollbarSelected(false),
+	scrollbarInitialYOffset(0),
+	scrollbarInitialYClick(0)
 {
 
 }
 
 int ScrollPanel::GetScrollLimit()
 {
-	if(maxOffset.Y == -ViewportPosition.Y)
-		return 1;
-	else if(ViewportPosition.Y == 0)
+	if(ViewportPosition.Y == 0)
 		return -1;
+	else if(maxOffset.Y == -ViewportPosition.Y)
+		return 1;
 	return 0;
 }
 
@@ -49,6 +53,54 @@ void ScrollPanel::Draw(const Point& screenPos)
 
 		g->fillrect(screenPos.X+(Size.X-scrollBarWidth), screenPos.Y, scrollBarWidth, Size.Y, 125, 125, 125, 100);
 		g->fillrect(screenPos.X+(Size.X-scrollBarWidth), screenPos.Y+scrollPos, scrollBarWidth, scrollHeight, 255, 255, 255, 255);
+	}
+}
+
+void ScrollPanel::XOnMouseClick(int x, int y, unsigned int button)
+{
+	if (isMouseInsideScrollbar)
+	{
+		scrollbarSelected = true;
+		scrollbarInitialYOffset = offsetY;
+		scrollbarInitialYClick = y;
+	}
+}
+
+void ScrollPanel::XOnMouseUp(int x, int y, unsigned int button)
+{
+	scrollbarSelected = false;
+}
+
+void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
+{
+	if(maxOffset.Y>0 && InnerSize.Y>0)
+	{
+		float scrollHeight = float(Size.Y)*(float(Size.Y)/float(InnerSize.Y));
+		float scrollPos = 0;
+		if(-ViewportPosition.Y>0)
+		{
+			scrollPos = float(Size.Y-scrollHeight)*(float(offsetY)/float(maxOffset.Y));
+		}
+		
+		if (scrollbarSelected)
+		{
+			if (x > 0)
+			{
+				int scrollY = float(y-scrollbarInitialYClick)/float(Size.Y)*float(InnerSize.Y)+scrollbarInitialYOffset;
+				ViewportPosition.Y = -scrollY;
+				offsetY = scrollY;
+			}
+			else
+			{
+				ViewportPosition.Y = -scrollbarInitialYOffset;
+				offsetY = scrollbarInitialYOffset;
+			}
+		}
+
+		if (x > (Size.X-scrollBarWidth) && x < (Size.X-scrollBarWidth)+scrollBarWidth && y > scrollPos && y < scrollPos+scrollHeight)
+			isMouseInsideScrollbar = true;
+		else
+			isMouseInsideScrollbar = false;
 	}
 }
 
@@ -116,6 +168,6 @@ void ScrollPanel::XTick(float dt)
 
 	if(mouseInside && scrollBarWidth < 6)
 		scrollBarWidth++;
-	else if(!mouseInside && scrollBarWidth > 0)
+	else if(!mouseInside && scrollBarWidth > 0 && !scrollbarSelected)
 		scrollBarWidth--;
 }

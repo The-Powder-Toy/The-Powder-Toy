@@ -53,7 +53,7 @@ public:
 };
 
 PreviewView::PreviewView():
-	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+200, (YRES/2)+150)),
+	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
 	savePreview(NULL),
 	doOpen(false),
 	addCommentBox(NULL),
@@ -514,7 +514,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		for(int i = 0; i < comments.size(); i++)
 		{
 			int usernameY = currentY+5, commentY;
-			tempUsername = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), 16), comments[i].authorName);
+			tempUsername = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), 16), comments[i].authorName);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 			currentY += 16;
@@ -524,7 +524,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 
 
 			commentY = currentY+5;
-			tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 10), -1), comments[i].comment);
+			tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comments[i].comment);
 			tempComment->SetMultiline(true);
 			tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
