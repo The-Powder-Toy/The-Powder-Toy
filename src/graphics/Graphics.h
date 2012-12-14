@@ -42,11 +42,19 @@
 #define PIXG(x) (((x)>>8)&0xFF)
 #define PIXB(x) ((x)&0xFF)
 #else
+#ifdef PIX23BGR
+#define PIXPACK(x) (((x&0xFE)<<15)|(x&0xFF00)|((x&0xFF0000)>>16))
+#define PIXRGB(r,g,b) (((b&0xFE)<<15)|((g)<<8)|(r))
+#define PIXB(x) ((x)>>16<<1)
+#define PIXG(x) (((x)>>8)&0xFF)
+#define PIXR(x) ((x)&0xFF)
+#else
 #define PIXPACK(x) (x)
 #define PIXRGB(r,g,b) (((r)<<16)|((g)<<8)|(b))
 #define PIXR(x) ((x)>>16)
 #define PIXG(x) (((x)>>8)&0xFF)
 #define PIXB(x) ((x)&0xFF)
+#endif
 #endif
 #endif
 #endif

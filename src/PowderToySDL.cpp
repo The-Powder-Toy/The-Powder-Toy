@@ -73,6 +73,7 @@ void blit(pixel * vid)
 			if (SDL_LockSurface(sdl_scrn)<0)
 				return;
 		dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
+#ifndef PIXFORCE
 		if (SDL_MapRGB(sdl_scrn->format,0x33,0x55,0x77)!=PIXPACK(0x335577))
 		{
 			//pixel format conversion
@@ -101,6 +102,14 @@ void blit(pixel * vid)
 				src+=pitch;
 			}
 		}
+#else
+		for (j=0; j<h; j++)
+		{
+			memcpy(dst, src, w*PIXELSIZE);
+			dst+=sdl_scrn->pitch/PIXELSIZE;
+			src+=pitch;
+		}
+#endif
 		if (SDL_MUSTLOCK(sdl_scrn))
 			SDL_UnlockSurface(sdl_scrn);
 		SDL_UpdateRect(sdl_scrn,0,0,0,0);
