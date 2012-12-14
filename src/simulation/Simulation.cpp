@@ -1951,6 +1951,7 @@ void Simulation::clear_sim(void)
 	memset(portalp, 0, sizeof(portalp));
 	memset(fighters, 0, sizeof(fighters));
 	std::fill(elementCount, elementCount+PT_NUM, 0);
+	elementRecount = true;
 	fighcount = 0;
 	player.spwn = 0;
 	player2.spwn = 0;
@@ -3550,7 +3551,7 @@ void Simulation::update_particles_i(int start, int inc)
 		ISWIRE--;
 	}
 
-	bool elementRecount = !(currentTick%180);
+	elementRecount |= !(currentTick%180);
 	if(elementRecount)
 	{
 		std::fill(elementCount, elementCount+PT_NUM, 0);
@@ -3566,8 +3567,8 @@ void Simulation::update_particles_i(int start, int inc)
 				continue;
 			}
 
-
-			elementCount[t]++;
+			if(elementRecount)
+				elementCount[t]++;
 
 			elem_properties = elements[t].Properties;
 			if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC))
@@ -4768,6 +4769,7 @@ Simulation::Simulation():
 
     currentTick = 0;
     std::fill(elementCount, elementCount+PT_NUM, 0);
+    elementRecount = true;
 
 	//Create and attach gravity simulation
 	grav = new Gravity();

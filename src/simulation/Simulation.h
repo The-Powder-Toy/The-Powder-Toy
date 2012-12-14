@@ -74,6 +74,7 @@ public:
 	int parts_lastActiveIndex;// = NPART-1;
 	int pfree;
 	int NUM_PARTS;
+	bool elementRecount;
 	int elementCount[PT_NUM];
 	int ISWIRE;
 	int force_stacking_check;
