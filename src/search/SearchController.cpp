@@ -55,6 +55,11 @@ SaveInfo * SearchController::GetLoadedSave()
 	return searchModel->GetLoadedSave();
 }
 
+void SearchController::ReleaseLoadedSave()
+{
+	searchModel->SetLoadedSave(NULL);
+}
+
 void SearchController::Update()
 {
 	if(!nextQueryDone && nextQueryTime < clock())

@@ -40,6 +40,7 @@ public:
 			try
 			{
 				cc->gameModel->SetSave(cc->search->GetLoadedSave());
+				cc->search->ReleaseLoadedSave();
 			}
 			catch(GameModelException & ex)
 			{
