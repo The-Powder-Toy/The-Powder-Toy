@@ -4638,12 +4638,11 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 			gravy = grav->gravy;
 			gravp = grav->gravp;
 			gravmap = grav->gravmap;
-
-			if(gravWallChanged)
-			{
-				grav->gravity_mask();
-				gravWallChanged = false;
-			}
+		}
+		if(gravWallChanged)
+		{
+			grav->gravity_mask();
+			gravWallChanged = false;
 		}
 		if(emp_decor>0)
 			emp_decor -= emp_decor/25+2;
