@@ -261,7 +261,7 @@ void GameController::Install()
 		}
 		virtual ~InstallConfirmation() { }
 	};
-	new ConfirmPrompt("Install The Powder Toy", "You are about to install The Powder Toy onto this computer", new InstallConfirmation(this));
+	new ConfirmPrompt("Install The Powder Toy", "Do you wish to install The Powder Toy on this computer?\nThis allows you to open save files and saves directly from the website.", new InstallConfirmation(this));
 #else
 	new ErrorMessage("Cannot install", "You cannot install The Powder Toy on this platform");
 #endif
@@ -679,6 +679,11 @@ void GameController::Tick()
 	if(firstTick)
 	{
 		((LuaScriptInterface*)commandInterface)->Init();
+		if(!Client::Ref().GetPrefBool("InstallCheck", false))
+		{
+			Client::Ref().SetPref("InstallCheck", true);
+			Install();
+		}
 		firstTick = false;
 	}
 	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
