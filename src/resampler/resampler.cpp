@@ -1,3 +1,4 @@
+#include "Config.h"
 #ifdef HIGH_QUALITY_RESAMPLE
 // http://code.google.com/p/imageresampler/
 // resampler.cpp, Separable filtering image rescaler v2.21, Rich Geldreich - richgel99@gmail.com
