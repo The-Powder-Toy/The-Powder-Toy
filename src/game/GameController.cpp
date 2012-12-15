@@ -251,7 +251,7 @@ void GameController::Install()
 			{
 				if(Client::Ref().DoInstallation())
 				{
-					new InformationMessage("Install Success", "The installation completed without error");
+					new InformationMessage("Install Success", "The installation completed!");
 				}
 				else
 				{
