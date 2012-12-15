@@ -208,7 +208,6 @@ void PreviewView::commentBoxAutoHeight()
 	int textWidth = Graphics::textwidth(addCommentBox->GetText().c_str());
 	if(textWidth+15 > Size.X-(XRES/2)-48)
 	{
-		addCommentBox->SetMultiline(true);
 		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 
 		int oldSize = addCommentBox->Size.Y;
@@ -225,7 +224,6 @@ void PreviewView::commentBoxAutoHeight()
 	else
 	{
 		commentBoxHeight = 20;
-		addCommentBox->SetMultiline(false);
 		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
 		commentBoxPositionX = (XRES/2)+4;
@@ -467,6 +465,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment");
 		addCommentBox->SetActionCallback(new AutoCommentSizeAction(this));
 		addCommentBox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		addCommentBox->SetMultiline(true);
 		AddComponent(addCommentBox);
 		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "Submit");
 		submitCommentButton->SetActionCallback(new SubmitCommentAction(this));
