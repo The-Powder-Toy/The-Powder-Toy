@@ -7,6 +7,9 @@
 #include "Graphics.h"
 #define INCLUDE_FONTDATA
 #include "font.h"
+#ifdef HIGH_QUALITY_RESAMPLE
+#include "resampler/resampler.h"
+#endif
 
 VideoBuffer::VideoBuffer(int width, int height):
 	Width(width),
@@ -291,6 +294,93 @@ pixel *Graphics::resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
 
 pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 {
+#ifdef HIGH_QUALITY_RESAMPLE
+
+	unsigned char * source = (unsigned char*)src;
+	int sourceWidth = sw, sourceHeight = sh;
+	int resultWidth = rw, resultHeight = rh;
+	int sourcePitch = sourceWidth*PIXELSIZE, resultPitch = resultWidth*PIXELSIZE;
+	// Filter scale - values < 1.0 cause aliasing, but create sharper looking mips.
+	const float filter_scale = 0.75f;
+	const char* pFilter = "lanczos12";
+
+
+	Resampler * resamplers[PIXELCHANNELS];
+	float * samples[PIXELCHANNELS];
+
+	//Resampler for each colour channel
+	resamplers[0] = new Resampler(sourceWidth, sourceHeight, resultWidth, resultHeight, Resampler::BOUNDARY_CLAMP, 0.0f, 1.0f, pFilter, NULL, NULL, filter_scale, filter_scale);
+	samples[0] = new float[sourceWidth];
+	for (int i = 1; i < PIXELCHANNELS; i++)
+	{
+		resamplers[i] = new Resampler(sourceWidth, sourceHeight, resultWidth, resultHeight, Resampler::BOUNDARY_CLAMP, 0.0f, 1.0f, pFilter, resamplers[0]->get_clist_x(), resamplers[0]->get_clist_y(), filter_scale, filter_scale);
+		samples[i] = new float[sourceWidth];
+	}
+
+	unsigned char * resultImage = new unsigned char[resultHeight * resultPitch];
+	std::fill(resultImage, resultImage + (resultHeight*resultPitch), 0);
+
+	//Resample time
+	int resultY = 0;
+	for (int sourceY = 0; sourceY < sourceHeight; sourceY++)
+	{
+		unsigned char * sourcePixel = &source[sourceY * sourcePitch];
+
+		//Move pixel components into channel samples
+		for (int c = 0; c < PIXELCHANNELS; c++)
+		{
+			for (int x = 0; x < sourceWidth; x++)
+			{
+				samples[c][x] = sourcePixel[(x*PIXELSIZE)+c] * (1.0f/255.0f);
+			}
+		}
+
+		//Put channel sample data into resampler
+		for (int c = 0; c < PIXELCHANNELS; c++)         
+		{
+			if (!resamplers[c]->put_line(&samples[c][0]))
+			{
+				printf("Out of memory!\n");
+				return NULL;
+			}
+		}         
+
+		//Perform resample and Copy components from resampler result samples to image buffer
+		for ( ; ; )
+		{
+			int comp_index;
+			for (comp_index = 0; comp_index < PIXELCHANNELS; comp_index++)
+			{	
+				const float* resultSamples = resamplers[comp_index]->get_line();
+				if (!resultSamples)
+					break;
+
+				unsigned char * resultPixel = &resultImage[(resultY * resultPitch) + comp_index];
+
+				for (int x = 0; x < resultWidth; x++)
+				{
+					int c = (int)(255.0f * resultSamples[x] + .5f);
+					if (c < 0) c = 0; else if (c > 255) c = 255;
+					*resultPixel = (unsigned char)c;
+					resultPixel += PIXELSIZE;
+				}
+			}   	  
+			if (comp_index < PIXELCHANNELS)
+				break; 
+
+			resultY++;
+		}
+	}
+
+	//Clean up
+	for(int i = 0; i < PIXELCHANNELS; i++)
+	{
+		delete resamplers[i];
+		delete[] samples[i];
+	}
+
+	return (pixel*)resultImage;
+#else
 #ifdef DEBUG
 	std::cout << "Resampling " << sw << "x" << sh << " to " << rw << "x" << rh << std::endl;
 #endif
@@ -402,6 +492,7 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 		}
 	}
 	return q;
+#endif
 }
 
 pixel *Graphics::rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
