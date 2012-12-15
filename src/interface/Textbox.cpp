@@ -447,7 +447,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			backingText.erase(backingText.begin());
 	}
 	if(cursor > backingText.length())
-			cursor = backingText.length();
+		cursor = backingText.length();
 	if(changed)
 	{
 		if(masked)
