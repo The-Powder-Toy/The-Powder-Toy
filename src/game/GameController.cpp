@@ -25,6 +25,8 @@
 #include "save/ServerSaveActivity.h"
 #include "interface/Keys.h"
 #include "simulation/Snapshot.h"
+#include "debug/DebugInfo.h"
+//#include "debug/ElementPopulation.h"
 
 using namespace std;
 
@@ -145,6 +147,8 @@ GameController::GameController():
 
 	//sim = new Simulation();
 	Client::Ref().AddListener(this);
+
+	//debugInfo.push_back(new ElementPopulationDebug(gameModel->GetSimulation()));
 }
 
 GameController::~GameController()
@@ -676,6 +680,10 @@ void GameController::Tick()
 	{
 		((LuaScriptInterface*)commandInterface)->Init();
 		firstTick = false;
+	}
+	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
+	{
+		(*iter)->Draw(ui::Point(10, 10));
 	}
 	commandInterface->OnTick();
 }

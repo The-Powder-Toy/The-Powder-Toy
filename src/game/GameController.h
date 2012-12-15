@@ -22,6 +22,7 @@
 
 using namespace std;
 
+class DebugInfo;
 class Notification;
 class GameModel;
 class GameView;
@@ -44,6 +45,7 @@ private:
 	LocalBrowserController * localBrowser;
 	OptionsController * options;
 	CommandInterface * commandInterface;
+	vector<DebugInfo*> debugInfo;
 public:
 	bool HasDone;
 	class SearchCallback;
