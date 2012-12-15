@@ -157,6 +157,7 @@ bool Client::DoInstallation()
 	char *currentfilename = exe_name();
 	char *iconname = NULL;
 	char *opencommand = NULL;
+	char *protocolcommand = NULL;
 	//char AppDataPath[MAX_PATH];
 	char *AppDataPath = NULL;
 	iconname = (char*)malloc(strlen(currentfilename)+6);
@@ -175,6 +176,7 @@ bool Client::DoInstallation()
 	//TODO: Implement
 	
 	opencommand = (char*)malloc(strlen(currentfilename)+53+strlen(AppDataPath));
+	protocolcommand = (char*)malloc(strlen(currentfilename)+53+strlen(AppDataPath));
 	/*if((strlen(AppDataPath)+strlen(APPDATA_SUBDIR "\\Powder Toy"))<MAX_PATH)
 	{
 		strappend(AppDataPath, APPDATA_SUBDIR);
@@ -186,6 +188,55 @@ bool Client::DoInstallation()
 		goto finalise;
 	}*/
 	sprintf(opencommand, "\"%s\" open \"%%1\" ddir \"%s\"", currentfilename, AppDataPath);
+	sprintf(protocolcommand, "\"%s\" ddir \"%s\" ptsave \"%%1\"", currentfilename, AppDataPath);
+
+	//Create protocol entry
+	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\ptsave", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
+	if (rresult != ERROR_SUCCESS) {
+		returnval = 0;
+		goto finalise;
+	}
+	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)"Powder Toy Save", strlen("Powder Toy Save")+1);
+	if (rresult != ERROR_SUCCESS) {
+		RegCloseKey(newkey);
+		returnval = 0;
+		goto finalise;
+	}
+	rresult = RegSetValueEx(newkey, (LPCSTR)"URL Protocol", 0, REG_SZ, (LPBYTE)"", strlen("")+1);
+	if (rresult != ERROR_SUCCESS) {
+		RegCloseKey(newkey);
+		returnval = 0;
+		goto finalise;
+	}
+	RegCloseKey(newkey);
+	
+	//Set Protocol DefaultIcon
+	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\ptsave\\DefaultIcon", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
+	if (rresult != ERROR_SUCCESS) {
+		returnval = 0;
+		goto finalise;
+	}
+	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)iconname, strlen(iconname)+1);
+	if (rresult != ERROR_SUCCESS) {
+		RegCloseKey(newkey);
+		returnval = 0;
+		goto finalise;
+	}
+	RegCloseKey(newkey);	
+	
+	//Set Protocol Launch command
+	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\ptsave\\shell\\open\\command", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
+	if (rresult != ERROR_SUCCESS) {
+		returnval = 0;
+		goto finalise;
+	}
+	rresult = RegSetValueEx(newkey, 0, 0, REG_SZ, (LPBYTE)protocolcommand, strlen(protocolcommand)+1);
+	if (rresult != ERROR_SUCCESS) {
+		RegCloseKey(newkey);
+		returnval = 0;
+		goto finalise;
+	}
+	RegCloseKey(newkey);
 
 	//Create extension entry
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\.cps", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
@@ -261,6 +312,7 @@ bool Client::DoInstallation()
 
 	if(iconname) free(iconname);
 	if(opencommand) free(opencommand);
+	if(protocolcommand) free(protocolcommand);
 	if(currentfilename) free(currentfilename);
 	
 	return returnval;
