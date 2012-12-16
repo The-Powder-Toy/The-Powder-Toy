@@ -1701,7 +1701,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	partsPosLastMap = (unsigned int *)calloc(fullW*fullH, sizeof(unsigned));
 	partsPosCount = (unsigned int *)calloc(fullW*fullH, sizeof(unsigned));
 	partsPosLink = (unsigned int *)calloc(NPART, sizeof(unsigned));
-	for(i = 0; i < NPART; i++)
+	for(i = 0; i < particlesCount; i++)
 	{
 		if(particles[i].type)
 		{
