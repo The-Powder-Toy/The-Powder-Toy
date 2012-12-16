@@ -19,6 +19,7 @@
 #include "search/Thumbnail.h"
 #include "client/Client.h"
 #include "interface/ScrollPanel.h"
+#include "interface/Keys.h"
 
 class PreviewView::LoginAction: public ui::ButtonAction
 {
@@ -121,7 +122,6 @@ PreviewView::PreviewView():
 	openButton->SetIcon(IconOpen);
 	openButton->SetActionCallback(new OpenAction(this));
 	AddComponent(openButton);
-	SetOkayButton(openButton);
 
 	class BrowserOpenAction: public ui::ButtonAction
 	{
@@ -363,6 +363,12 @@ void PreviewView::OnMouseWheel(int x, int y, int d)
 
 }
 
+void PreviewView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	if ((key == KEY_ENTER || key == KEY_RETURN) && !addCommentBox->IsFocused())
+		openButton->DoAction();
+}
+
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
 	SaveInfo * save = sender->GetSave();
@@ -429,10 +435,11 @@ void PreviewView::submitComment()
 		std::string comment = std::string(addCommentBox->GetText());
 		submitCommentButton->Enabled = false;
 		addCommentBox->SetText("");
-		addCommentBox->SetPlaceholder("Submitting comment");
+		addCommentBox->SetPlaceholder("Submitting comment"); //This doesn't appear to ever show since no separate thread is created
 		FocusComponent(NULL);
 
-		c->SubmitComment(comment);
+		if (!c->SubmitComment(comment))
+			addCommentBox->SetText(comment);
 
 		addCommentBox->SetPlaceholder("Add comment");
 		submitCommentButton->Enabled = true;

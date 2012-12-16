@@ -84,24 +84,27 @@ void PreviewController::Update()
 	}
 }
 
-void PreviewController::SubmitComment(std::string comment)
+bool PreviewController::SubmitComment(std::string comment)
 {
 	if(comment.length() < 4)
 	{
 		new ErrorMessage("Error", "Comment is too short");
+		return false;
 	}
 	else
 	{
 		RequestStatus status = Client::Ref().AddComment(saveId, comment);
 		if(status != RequestOkay)
 		{
-			new ErrorMessage("Error Submitting comment", Client::Ref().GetLastError());	
+			new ErrorMessage("Error Submitting comment", Client::Ref().GetLastError());
+			return false;
 		}
 		else
 		{
 			previewModel->UpdateComments(1);
 		}
 	}
+	return true;
 }
 
 void PreviewController::ShowLogin()
