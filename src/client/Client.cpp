@@ -431,7 +431,7 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 	findFileHandle = _findfirst(fileMatch.c_str(), &currentFile);
 	if (findFileHandle == -1L)
 	{
-		printf("Unable to open directory\n");
+		printf("Unable to open directory: %s\n", directory.c_str());
 		return std::vector<std::string>();
 	}
 	do
@@ -448,7 +448,7 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 	DIR *directoryHandle = opendir(directory.c_str());
 	if(!directoryHandle)
 	{
-		printf("Unable to open directory\n");
+		printf("Unable to open directory: %s\n", directory.c_str());
 		return std::vector<std::string>();
 	}
 	while(directoryEntry = readdir(directoryHandle))
