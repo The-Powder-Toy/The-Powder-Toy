@@ -1097,7 +1097,9 @@ void GameSave::readPSv(char * data, int dataLength)
 	}
 	dataLength = i;
 
+#ifdef DEBUG
 	std::cout << "Parsing " << dataLength << " bytes of data, version " << ver << std::endl;
+#endif
 	
 	if (dataLength < bw*bh)
 		throw ParseException(ParseException::Corrupt, "Save data corrupt (missing data)");
