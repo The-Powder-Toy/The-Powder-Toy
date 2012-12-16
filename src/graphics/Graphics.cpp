@@ -824,9 +824,9 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		break;
 	case IconVoteUp:
 		if(invert)
-			drawchar(x, y, 0xCB, 0, 100, 0, alpha);
+			drawchar(x, y+1, 0xCB, 0, 100, 0, alpha);
 		else
-			drawchar(x, y, 0xCB, 0, 187, 18, alpha);
+			drawchar(x, y+1, 0xCB, 0, 187, 18, alpha);
 		break;
 	case IconVoteDown:
 		if(invert)
