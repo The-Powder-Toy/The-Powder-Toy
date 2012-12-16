@@ -431,7 +431,9 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 	findFileHandle = _findfirst(fileMatch.c_str(), &currentFile);
 	if (findFileHandle == -1L)
 	{
+#ifdef DEBUG
 		printf("Unable to open directory\n");
+#endif
 		return std::vector<std::string>();
 	}
 	do
