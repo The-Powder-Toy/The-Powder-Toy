@@ -834,8 +834,8 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		}
 		else
 		{
-			upVoteButton->Appearance.BorderDisabled = ui::Colour(10, 10, 10);
-			downVoteButton->Appearance.BorderDisabled = ui::Colour(10, 10, 10);
+			upVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
+			downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		}
 
 		tagSimulationButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID);
@@ -874,8 +874,10 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		reloadButton->Enabled = true;
 		upVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
+		upVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		downVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
+		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		tagSimulationButton->Enabled = false;
 		tagSimulationButton->SetText("[no tags set]");
 		currentSaveType = 2;
@@ -887,8 +889,10 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		reloadButton->Enabled = false;
 		upVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
+		upVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100),
 		downVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
+		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100),
 		tagSimulationButton->Enabled = false;
 		tagSimulationButton->SetText("[no tags set]");
 		currentSaveType = 0;
