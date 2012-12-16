@@ -19,6 +19,7 @@
 #include "search/Thumbnail.h"
 #include "client/Client.h"
 #include "interface/ScrollPanel.h"
+#include "interface/Keys.h"
 
 class PreviewView::LoginAction: public ui::ButtonAction
 {
@@ -121,7 +122,6 @@ PreviewView::PreviewView():
 	openButton->SetIcon(IconOpen);
 	openButton->SetActionCallback(new OpenAction(this));
 	AddComponent(openButton);
-	SetOkayButton(openButton);
 
 	class BrowserOpenAction: public ui::ButtonAction
 	{
@@ -208,7 +208,6 @@ void PreviewView::commentBoxAutoHeight()
 	int textWidth = Graphics::textwidth(addCommentBox->GetText().c_str());
 	if(textWidth+15 > Size.X-(XRES/2)-48)
 	{
-		addCommentBox->SetMultiline(true);
 		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 
 		int oldSize = addCommentBox->Size.Y;
@@ -225,7 +224,6 @@ void PreviewView::commentBoxAutoHeight()
 	else
 	{
 		commentBoxHeight = 20;
-		addCommentBox->SetMultiline(false);
 		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
 		commentBoxPositionX = (XRES/2)+4;
@@ -365,6 +363,12 @@ void PreviewView::OnMouseWheel(int x, int y, int d)
 
 }
 
+void PreviewView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	if ((key == KEY_ENTER || key == KEY_RETURN) && !addCommentBox->IsFocused())
+		openButton->DoAction();
+}
+
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
 	SaveInfo * save = sender->GetSave();
@@ -431,10 +435,11 @@ void PreviewView::submitComment()
 		std::string comment = std::string(addCommentBox->GetText());
 		submitCommentButton->Enabled = false;
 		addCommentBox->SetText("");
-		addCommentBox->SetPlaceholder("Submitting comment");
+		addCommentBox->SetPlaceholder("Submitting comment"); //This doesn't appear to ever show since no separate thread is created
 		FocusComponent(NULL);
 
-		c->SubmitComment(comment);
+		if (!c->SubmitComment(comment))
+			addCommentBox->SetText(comment);
 
 		addCommentBox->SetPlaceholder("Add comment");
 		submitCommentButton->Enabled = true;
@@ -467,6 +472,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment");
 		addCommentBox->SetActionCallback(new AutoCommentSizeAction(this));
 		addCommentBox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		addCommentBox->SetMultiline(true);
 		AddComponent(addCommentBox);
 		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "Submit");
 		submitCommentButton->SetActionCallback(new SubmitCommentAction(this));

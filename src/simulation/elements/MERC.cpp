@@ -80,13 +80,14 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (parts[i].tmp<=maxtmp)
 						continue;
-					if ((!r)&&parts[i].tmp>=1)//if nothing then create deut
+					if ((!r)&&parts[i].tmp>=1)//if nothing then create MERC
 					{
 						np = sim->create_part(-1,x+rx,y+ry,PT_MERC);
 						if (np<0) continue;
 						parts[i].tmp--;
 						parts[np].temp = parts[i].temp;
 						parts[np].tmp = 0;
+						parts[np].dcolour = parts[i].dcolour;
 					}
 				}
 	for ( trade = 0; trade<4; trade ++)

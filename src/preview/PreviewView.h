@@ -72,6 +72,7 @@ public:
 	virtual void OnTick(float dt);
 	virtual void OnTryExit(ExitMethod method);
 	virtual void OnMouseWheel(int x, int y, int d);
+	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual ~PreviewView();
 };
 

@@ -431,7 +431,9 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 	findFileHandle = _findfirst(fileMatch.c_str(), &currentFile);
 	if (findFileHandle == -1L)
 	{
+#ifdef DEBUG
 		printf("Unable to open directory\n");
+#endif
 		return std::vector<std::string>();
 	}
 	do
@@ -1308,7 +1310,7 @@ RequestStatus Client::AddComment(int saveID, std::string comment)
 
 			if(status!=1)
 			{
-				lastError = ((json::Number)objDocument["Error"]).Value();
+				lastError = ((json::String)objDocument["Error"]).Value();
 			}
 
 			if(status!=1)
@@ -1480,7 +1482,10 @@ RequestStatus Client::UnpublishSave(int saveID)
 			int status = ((json::Number)objDocument["Status"]).Value();
 
 			if(status!=1)
+			{
+				lastError = ((json::String)objDocument["Error"]).Value();
 				goto failure;
+			}
 		}
 		catch (json::Exception &e)
 		{
@@ -1828,7 +1833,7 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 	//Check active requests for any "forgotten" requests
 	for(i = 0; i < IMGCONNS; i++)
 	{
-		//If the request is active, and we've recieved a response
+		//If the request is active, and we've received a response
 		if(activeThumbRequests[i] && http_async_req_status(activeThumbRequests[i]))
 		{
 			//If we haven't already, mark the request as completed
