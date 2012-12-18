@@ -2801,24 +2801,22 @@ int Simulation::create_part(int p, int x, int y, int tv)
 	{
 		if (pmap[y][x])
 		{
+			int drawOn = pmap[y][x]&0xFF;
 			if ((
-				((pmap[y][x]&0xFF)==PT_STOR&&!(elements[t].Properties&TYPE_SOLID))||
-				(pmap[y][x]&0xFF)==PT_CLNE||
-				(pmap[y][x]&0xFF)==PT_BCLN||
-				(pmap[y][x]&0xFF)==PT_CONV||
-				((pmap[y][x]&0xFF)==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN)||
-				((pmap[y][x]&0xFF)==PT_PBCN&&t!=PT_PSCN&&t!=PT_NSCN)
+				(drawOn == PT_STOR && !(elements[t].Properties&TYPE_SOLID)) ||
+				drawOn==PT_CLNE ||
+				drawOn==PT_BCLN ||
+				drawOn==PT_CONV ||
+				(drawOn==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN) ||
+				(drawOn==PT_PBCN&&t!=PT_PSCN&&t!=PT_NSCN)
 			)&&(
-				t!=PT_CLNE&&t!=PT_PCLN&&
-				t!=PT_BCLN&&t!=PT_STKM&&
-				t!=PT_STKM2&&t!=PT_PBCN&&
-				t!=PT_STOR&&t!=PT_FIGH)
+				t != PT_CLNE && t != PT_PCLN && t != PT_BCLN && t != PT_STKM && t != PT_STKM2 && t != PT_PBCN && t != PT_STOR && t != PT_FIGH && t != PT_CONV)
 			)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t==PT_LIFE && v<NGOLALT && (pmap[y][x]&0xFF)!=PT_STOR) parts[pmap[y][x]>>8].tmp = v;
+				if (t == PT_LIFE && v < NGOLALT && drawOn != PT_STOR) parts[pmap[y][x]>>8].tmp = v;
 			}
-			else if ((pmap[y][x]&0xFF) == PT_DTEC && (pmap[y][x]&0xFF) != t)
+			else if (drawOn == PT_DTEC && drawOn != t)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
 				if (t==PT_LIFE && v<NGOLALT)
