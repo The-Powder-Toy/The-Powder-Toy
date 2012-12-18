@@ -702,7 +702,15 @@ void GameController::Exit()
 
 void GameController::ResetAir()
 {
-	gameModel->GetSimulation()->air->Clear();
+	Simulation * sim = gameModel->GetSimulation();
+	sim->air->Clear();
+	for (int i = 0; i < NPART; i++)
+	{
+		if (sim->parts[i].type == PT_QRTZ || sim->parts[i].type == PT_GLAS)
+		{
+			sim->parts[i].pavg[0] = sim->parts[i].pavg[1] = 0;
+		}
+	}
 }
 
 void GameController::ResetSpark()
