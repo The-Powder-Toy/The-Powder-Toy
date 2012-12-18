@@ -1976,7 +1976,10 @@ void Simulation::clear_sim(void)
 	if(grav)
 		grav->Clear();
 	if(air)
+	{
 		air->Clear();
+		air->ClearAirH();
+	}
 	SetEdgeMode(edgeMode);
 }
 void Simulation::init_can_move()
@@ -3372,11 +3375,9 @@ void Simulation::update_particles_i(int start, int inc)
     	}
     }
 
-	if (ISLOVE || ISLOLZ) //LOVE and LOLZ element handling
+	if (elementCount[PT_LOVE] > 0 || elementCount[PT_LOLZ] > 0) //LOVE and LOLZ element handling
 	{
 		int nx, nnx, ny, nny, r, rt;
-		ISLOVE = 0;
-		ISLOLZ = 0;
 		for (ny=0; ny<YRES-4; ny++)
 		{
 			for (nx=0; nx<XRES-4; nx++)
@@ -3390,11 +3391,11 @@ void Simulation::update_particles_i(int start, int inc)
 					kill_part(r>>8);
 				else if (parts[r>>8].type==PT_LOVE)
 				{
-					love[nx/9][ny/9] = 1;
+					Element_LOVE::love[nx/9][ny/9] = 1;
 				}
 				else if (parts[r>>8].type==PT_LOLZ)
 				{
-					lolz[nx/9][ny/9] = 1;
+					Element_LOLZ::lolz[nx/9][ny/9] = 1;
 				}
 			}
 		}
@@ -3402,7 +3403,7 @@ void Simulation::update_particles_i(int start, int inc)
 		{
 			for (ny=9; ny<=YRES-7; ny++)
 			{
-				if (love[nx/9][ny/9]==1)
+				if (Element_LOVE::love[nx/9][ny/9]==1)
 				{
 					for ( nnx=0; nnx<9; nnx++)
 						for ( nny=0; nny<9; nny++)
@@ -3419,8 +3420,8 @@ void Simulation::update_particles_i(int start, int inc)
 							}
 						}
 				}
-				love[nx/9][ny/9]=0;
-				if (lolz[nx/9][ny/9]==1)
+				Element_LOVE::love[nx/9][ny/9]=0;
+				if (Element_LOLZ::lolz[nx/9][ny/9]==1)
 				{
 					for ( nnx=0; nnx<9; nnx++)
 						for ( nny=0; nny<9; nny++)
@@ -3438,7 +3439,7 @@ void Simulation::update_particles_i(int start, int inc)
 							}
 						}
 				}
-				lolz[nx/9][ny/9]=0;
+				Element_LOLZ::lolz[nx/9][ny/9]=0;
 			}
 		}
 	}
@@ -4805,6 +4806,7 @@ Simulation::Simulation():
 	vy = air->vy;
 	pv = air->pv;
 	hv = air->hv;
+	aheat_enable = false;
 
 	int menuCount;
 	menu_section * msectionsT = LoadMenus(menuCount);

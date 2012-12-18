@@ -42,8 +42,6 @@ Element_LOLZ::Element_LOLZ()
     HighTemperature = ITH;
     HighTemperatureTransition = NT;
     
-    Update = &Element_LOLZ::update;
-    
 }
 
 //#TPT-Directive ElementHeader Element_LOLZ static int RuleTable[9][9]
@@ -60,12 +58,7 @@ int Element_LOLZ::RuleTable[9][9] =
     {0,1,0,0,0,0,0,1,0},
 };
 
-//#TPT-Directive ElementHeader Element_LOLZ static int update(UPDATE_FUNC_ARGS)
-int Element_LOLZ::update(UPDATE_FUNC_ARGS)
- {
-	sim->ISLOLZ = true;
-	return 0;
-}
-
+//#TPT-Directive ElementHeader Element_LOLZ static int lolz[XRES/9][YRES/9];
+int Element_LOLZ::lolz[XRES/9][YRES/9];
 
 Element_LOLZ::~Element_LOLZ() {}

@@ -42,8 +42,6 @@ Element_LOVE::Element_LOVE()
     HighTemperature = ITH;
     HighTemperatureTransition = NT;
     
-    Update = &Element_LOVE::update;
-    
 }
 
 //#TPT-Directive ElementHeader Element_LOVE static int RuleTable[9][9]
@@ -60,12 +58,7 @@ int Element_LOVE::RuleTable[9][9] =
     {0,0,1,1,0,0,0,0,0},
 };
 
-//#TPT-Directive ElementHeader Element_LOVE static int update(UPDATE_FUNC_ARGS)
-int Element_LOVE::update(UPDATE_FUNC_ARGS)
- {
-	sim->ISLOVE = true;
-	return 0;
-}
-
+//#TPT-Directive ElementHeader Element_LOVE static int love[XRES/9][YRES/9];
+int Element_LOVE::love[XRES/9][YRES/9];
 
 Element_LOVE::~Element_LOVE() {}

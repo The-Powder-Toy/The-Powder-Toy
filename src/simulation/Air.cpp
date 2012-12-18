@@ -41,10 +41,14 @@ void Air::make_kernel(void) //used for velocity
 
 void Air::Clear()
 {
-	std::fill(&hv[0][0], &hv[0][0]+((XRES/CELL)*(YRES/CELL)), 273.15f + 22.0f);
 	std::fill(&pv[0][0], &pv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
 	std::fill(&vy[0][0], &vy[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
 	std::fill(&vx[0][0], &vx[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+}
+
+void Air::ClearAirH()
+{
+	std::fill(&hv[0][0], &hv[0][0]+((XRES/CELL)*(YRES/CELL)), 273.15f + 22.0f);
 }
 
 void Air::update_airh(void)
