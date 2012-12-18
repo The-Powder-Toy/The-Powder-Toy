@@ -2846,12 +2846,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 	}
 	else
 	{
-		int oldX = (int)(parts[p].x+0.5f);
-		int oldY = (int)(parts[p].y+0.5f);
-		if ((pmap[oldY][oldX]>>8)==p)
-			pmap[oldY][oldX] = 0;
-		if ((photons[oldY][oldX]>>8)==p)
-			photons[oldY][oldX] = 0;
+		kill_part(p);
 		i = p;
 	}
 
