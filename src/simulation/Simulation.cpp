@@ -4767,11 +4767,7 @@ Simulation::~Simulation()
 		delete tools[i];
 }
 
-Simulation::Simulation():
-	sys_pause(0),
-	framerender(false),
-	pretty_powder(0),
-	sandcolour_frame(0)
+Simulation::Simulation()
 {
     
     int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
@@ -4806,7 +4802,15 @@ Simulation::Simulation():
 	vy = air->vy;
 	pv = air->pv;
 	hv = air->hv;
-	aheat_enable = false;
+
+	sys_pause = 0;
+	framerender = 0;
+	pretty_powder = 0;
+	sandcolour_frame = 0;
+	aheat_enable = 0;
+	legacy_enable = 0;
+	VINE_MODE = 0;
+	water_equal_test = 0;
 
 	int menuCount;
 	menu_section * msectionsT = LoadMenus(menuCount);

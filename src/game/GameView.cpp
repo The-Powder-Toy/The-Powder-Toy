@@ -168,6 +168,7 @@ GameView::GameView():
 	toolTip(""),
 	infoTip(""),
 	infoTipPresence(0),
+	buttonTipShow(0),
 	toolTipPosition(-1, -1),
 	shiftBehaviour(false),
 	ctrlBehaviour(false),
