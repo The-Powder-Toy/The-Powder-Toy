@@ -37,9 +37,10 @@
 #define PROP_SPARKSETTLE	0x20000	//2^17 Allow Sparks/Embers to settle
 #define PROP_NOAMBHEAT      0x40000 //2^18 Don't transfer or receive heat from ambient heat.
 
-#define FLAG_STAGNANT	1
+#define FLAG_STAGNANT	0x1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
-#define FLAG_MOVABLE  0x4 // if can move
+#define FLAG_WATEREQUAL 0x4
+#define FLAG_MOVABLE  0x8 // if can move
 
 #define ST_NONE 0
 #define ST_SOLID 1
