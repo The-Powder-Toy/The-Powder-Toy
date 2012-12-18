@@ -290,6 +290,9 @@ Snapshot * Simulation::CreateSnapshot()
 	snap->ElecMap.insert(snap->ElecMap.begin(), &emap[0][0], &emap[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->FanVelocityX.insert(snap->FanVelocityX.begin(), &fvx[0][0], &fvx[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->FanVelocityY.insert(snap->FanVelocityY.begin(), &fvy[0][0], &fvy[0][0]+((XRES/CELL)*(YRES/CELL)));
+	snap->stickmen.push_back(player2);
+	snap->stickmen.push_back(player);
+	snap->stickmen.insert(snap->stickmen.begin(), &fighters[0], &fighters[255]);
 	return snap;
 }
 
@@ -311,6 +314,9 @@ void Simulation::Restore(const Snapshot & snap)
 	std::copy(snap.ElecMap.begin(), snap.ElecMap.end(), &emap[0][0]);
 	std::copy(snap.FanVelocityX.begin(), snap.FanVelocityX.end(), &fvx[0][0]);
 	std::copy(snap.FanVelocityY.begin(), snap.FanVelocityY.end(), &fvy[0][0]);
+	std::copy(snap.stickmen.begin(), snap.stickmen.end()-2, &fighters[0]);
+	player = snap.stickmen[snap.stickmen.size()-1];
+	player2 = snap.stickmen[snap.stickmen.size()-2];
 }
 
 /*int Simulation::Load(unsigned char * data, int dataLength)
@@ -3004,7 +3010,6 @@ int Simulation::create_part(int p, int x, int y, int tv)
 					return -1;
 				}
 				create_part(-3,x,y,PT_SPAWN);
-				elementCount[PT_SPAWN] = 1;
 				break;
 			case PT_STKM2:
 				if (player2.spwn==0)
@@ -3026,7 +3031,6 @@ int Simulation::create_part(int p, int x, int y, int tv)
 					return -1;
 				}
 				create_part(-3,x,y,PT_SPAWN2);
-				elementCount[PT_SPAWN2] = 1;
 				break;
 			case PT_BIZR: case PT_BIZRG: case PT_BIZRS:
 				parts[i].ctype = 0x47FFFF;
