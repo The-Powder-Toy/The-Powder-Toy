@@ -121,6 +121,7 @@ public:
 	void RescanStamps();
 	int GetStampsCount();
 	SaveFile * GetFirstStamp();
+	void MoveStampToFront(std::string stampID);
 
 	RequestStatus AddComment(int saveID, std::string comment);
 

@@ -152,6 +152,16 @@ void LocalBrowserController::Selected(std::string saveName, bool selected)
 		browserModel->DeselectSave(saveName);
 }
 
+bool LocalBrowserController::GetMoveToFront()
+{
+	return browserModel->GetMoveToFront();
+}
+
+void LocalBrowserController::SetMoveToFront(bool move)
+{
+	browserModel->SetMoveToFront(move);
+}
+
 void LocalBrowserController::Exit()
 {
 	if(ui::Engine::Ref().GetWindow() == browserView)

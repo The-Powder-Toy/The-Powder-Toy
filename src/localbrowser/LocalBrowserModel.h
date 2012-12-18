@@ -22,6 +22,7 @@ class LocalBrowserModel {
 	std::vector<SaveFile*> savesList;
 	std::vector<LocalBrowserView*> observers;
 	int currentPage;
+	bool stampToFront;
 	void notifySavesListChanged();
 	void notifyPageChanged();
 	void notifySelectedChanged();
@@ -35,6 +36,8 @@ public:
 	void RescanStamps();
 	SaveFile * GetSave();
 	void SetSave(SaveFile * newStamp);
+	bool GetMoveToFront();
+	void SetMoveToFront(bool move);
 	std::vector<std::string> GetSelected() { return selected; }
 	void ClearSelected() { selected.clear(); notifySelectedChanged(); }
 	void SelectSave(std::string stampID);

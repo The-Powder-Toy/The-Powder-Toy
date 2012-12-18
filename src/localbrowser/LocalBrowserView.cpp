@@ -210,8 +210,12 @@ void LocalBrowserView::OnMouseWheel(int x, int y, int d)
 }
 void LocalBrowserView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if(key==KEY_ESCAPE)
+	if(key == KEY_ESCAPE)
 		c->Exit();
+	if (key == KEY_CTRL)
+		c->SetMoveToFront(false);
+	else
+		c->SetMoveToFront(true);
 }
 
 LocalBrowserView::~LocalBrowserView() {

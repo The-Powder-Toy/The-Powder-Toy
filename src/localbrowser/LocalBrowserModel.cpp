@@ -13,7 +13,8 @@
 
 LocalBrowserModel::LocalBrowserModel():
 	stamp(NULL),
-	currentPage(1)
+	currentPage(1),
+	stampToFront(1)
 {
 	// TODO Auto-generated constructor stub
 	//stampIDs = Client::Ref().GetStamps();
@@ -59,6 +60,16 @@ void LocalBrowserModel::SetSave(SaveFile * newStamp)
 	if(stamp)
 		delete stamp;
 	stamp = new SaveFile(*newStamp);
+}
+
+bool LocalBrowserModel::GetMoveToFront()
+{
+	return stampToFront;
+}
+
+void LocalBrowserModel::SetMoveToFront(bool move)
+{
+	stampToFront = move;
 }
 
 void LocalBrowserModel::UpdateSavesList(int pageNumber)

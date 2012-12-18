@@ -118,6 +118,8 @@ public:
 		if(cc->localBrowser->GetSave())
 		{
 			cc->gameModel->SetStamp(cc->localBrowser->GetSave()->GetGameSave());
+			if (cc->localBrowser->GetMoveToFront())
+				Client::Ref().MoveStampToFront(cc->localBrowser->GetSave()->GetName());
 			cc->LoadStamp();
 		}
 	}

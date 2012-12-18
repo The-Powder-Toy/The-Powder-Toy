@@ -909,6 +909,20 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	return RequestFailure;
 }
 
+void Client::MoveStampToFront(std::string stampID)
+{
+	for (std::list<std::string>::iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
+	{
+		if((*iterator) == stampID)
+		{
+			stampIDs.erase(iterator);
+			break;
+		}
+	}
+	stampIDs.push_front(stampID);
+	updateStamps();
+}
+
 SaveFile * Client::GetStamp(std::string stampID)
 {
 	std::string stampFile = std::string(STAMPS_DIR PATH_SEP + stampID + ".stm");

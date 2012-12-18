@@ -31,7 +31,8 @@ public:
 	void rescanStampsC();
 	void RefreshSavesList();
 	void OpenSave(SaveFile * stamp);
-	void SetStamp();
+	bool GetMoveToFront();
+	void SetMoveToFront(bool move);
 	void NextPage();
 	void PrevPage();
 	void Update();
