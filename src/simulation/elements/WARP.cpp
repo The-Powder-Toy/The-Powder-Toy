@@ -43,7 +43,7 @@ Element_WARP::Element_WARP()
     HighTemperatureTransition = NT;
     
     Update = &Element_WARP::update;
-    
+    Graphics = &Element_WARP::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_WARP static int update(UPDATE_FUNC_ARGS)
