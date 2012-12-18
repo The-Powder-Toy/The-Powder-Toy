@@ -171,6 +171,12 @@ void GameSave::Expand()
 {
 	if(hasOriginalData && !expanded)
 	{
+		waterEEnabled = 0;
+		legacyEnable = 0;
+		gravityEnable = 0;
+		paused = 0;
+		gravityMode = 0;
+		airMode = 0;
 		expanded = true;
 		read(&originalData[0], originalData.size());
 	}
