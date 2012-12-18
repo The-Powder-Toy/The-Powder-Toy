@@ -61,17 +61,18 @@ int Element_SLTW::update(UPDATE_FUNC_ARGS)
                     sim->part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
 				if ((r&0xFF)==PT_PLNT&&5>(rand()%1000))
 					sim->kill_part(r>>8);
-				if (((r&0xFF)==PT_RBDM||(r&0xFF)==PT_LRBD) && !sim->legacy_enable && parts[i].temp>(273.15f+12.0f) && 1>(rand()%500))
+				if (((r&0xFF)==PT_RBDM||(r&0xFF)==PT_LRBD) && (sim->legacy_enable||parts[i].temp>(273.15f+12.0f)) && 1>(rand()%500))
 				{
 					sim->part_change_type(i,x,y,PT_FIRE);
 					parts[i].life = 4;
+					parts[i].ctype = PT_WATR;
 				}
-				if ((r&0xFF)==PT_FIRE){
+				if ((r&0xFF)==PT_FIRE && parts[r>>8].ctype!=PT_WATR){
 					sim->kill_part(r>>8);
-						if(1>(rand()%150)){
-							sim->kill_part(i);
-							return 1;
-						}
+					if(1>(rand()%150)){
+						sim->kill_part(i);
+						return 1;
+					}
 				}
 			}
 	return 0;

@@ -39,7 +39,7 @@
 
 #define FLAG_STAGNANT	0x1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
-#define FLAG_WATEREQUAL 0x4
+#define FLAG_WATEREQUAL 0x4 //if a liquid was already checked during equalization
 #define FLAG_MOVABLE  0x8 // if can move
 
 #define ST_NONE 0
