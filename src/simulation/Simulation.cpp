@@ -2614,16 +2614,16 @@ void Simulation::kill_part(int i)//kills particle number i
 	{
 		player.spwn = 0;
 	}
-	if (parts[i].type == PT_STKM2)
+	else if (parts[i].type == PT_STKM2)
 	{
 		player2.spwn = 0;
 	}
-	if (parts[i].type == PT_FIGH)
+	else if (parts[i].type == PT_FIGH)
 	{
 		fighters[(unsigned char)parts[i].tmp].spwn = 0;
 		fighcount--;
 	}
-	if (parts[i].type == PT_SOAP)
+	else if (parts[i].type == PT_SOAP)
 	{
 		detach(i);
 	}
@@ -2642,15 +2642,15 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 
 	if (parts[i].type == PT_STKM)
 		player.spwn = 0;
-
-	if (parts[i].type == PT_STKM2)
+	else if (parts[i].type == PT_STKM2)
 		player2.spwn = 0;
-
-	if (parts[i].type == PT_FIGH)
+	else if (parts[i].type == PT_FIGH)
 	{
 		fighters[(unsigned char)parts[i].tmp].spwn = 0;
 		fighcount--;
 	}
+	else if (parts[i].type == PT_SOAP)
+		detach(i);
 
 	parts[i].type = t;
 	if (elements[t].Properties & TYPE_ENERGY)
@@ -2846,7 +2846,30 @@ int Simulation::create_part(int p, int x, int y, int tv)
 	}
 	else
 	{
-		kill_part(p);
+		int oldX = (int)(parts[p].x+0.5f);
+		int oldY = (int)(parts[p].y+0.5f);
+		if ((pmap[oldY][oldX]>>8)==p)
+			pmap[oldY][oldX] = 0;
+		if ((photons[oldY][oldX]>>8)==p)
+			photons[oldY][oldX] = 0;
+
+		if (parts[p].type == PT_STKM)
+		{
+			player.spwn = 0;
+		}
+		else if (parts[p].type == PT_STKM2)
+		{
+			player2.spwn = 0;
+		}
+		else if (parts[p].type == PT_FIGH)
+		{
+			fighters[(unsigned char)parts[i].tmp].spwn = 0;
+			fighcount--;
+		}
+		else if (parts[p].type == PT_SOAP)
+		{
+			detach(i);
+		}
 		i = p;
 	}
 
