@@ -279,7 +279,7 @@ void *file_load(char *fn, int *size)
 
 int cpu_check(void)
 {
-#ifdef MACOSX
+/*#ifdef MACOSX
 	return 0;
 #else
 #ifdef X86
@@ -301,7 +301,7 @@ int cpu_check(void)
 		return 1;
 #endif
 #endif
-#endif
+#endif*/
 	return 0;
 }
 
