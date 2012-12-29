@@ -219,11 +219,6 @@ void ServerSaveActivity::saveUpload()
 
 void ServerSaveActivity::Exit()
 {
-	if(callback)
-	{
-		delete callback;
-		callback = NULL;
-	}
 	WindowActivity::Exit();
 }
 
@@ -258,4 +253,6 @@ ServerSaveActivity::~ServerSaveActivity()
 {
 	if(saveUploadTask)
 		delete saveUploadTask;
+	if(callback)
+		delete callback;
 }
