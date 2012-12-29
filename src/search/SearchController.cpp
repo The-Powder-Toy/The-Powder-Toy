@@ -1,5 +1,6 @@
 #include <string>
 #include <sstream>
+#include <time.h>
 #include "SearchController.h"
 #include "SearchModel.h"
 #include "SearchView.h"

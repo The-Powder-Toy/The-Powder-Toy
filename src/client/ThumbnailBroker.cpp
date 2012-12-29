@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <iostream>
 #include <typeinfo>
+#include <time.h>
 #include "ThumbnailBroker.h"
 #include "ThumbnailListener.h"
 #include "Client.h"
