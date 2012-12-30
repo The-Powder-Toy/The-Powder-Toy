@@ -247,7 +247,8 @@ sources+=Glob("src/simulation/elements/*.cpp")
 sources+=Glob("src/simulation/tools/*.cpp")
 
 if(GetOption('win')):
-	sources = filter(lambda source: str(source) != 'src\simulation\Gravity.cpp', sources)
+	sources = filter(lambda source: str(source) != 'src\\simulation\\Gravity.cpp', sources)
+	sources = filter(lambda source: str(source) != 'src/simulation/Gravity.cpp', sources)
 
 SetupSpawn(env)
 
