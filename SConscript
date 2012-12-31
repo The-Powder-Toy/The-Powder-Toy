@@ -30,6 +30,7 @@ AddOption('--renderer',dest="renderer",action='store_true',default=False,help="S
 AddOption('--win',dest="win",action='store_true',default=False,help="Windows platform target.")
 AddOption('--lin',dest="lin",action='store_true',default=False,help="Linux platform target")
 AddOption('--macosx',dest="macosx",action='store_true',default=False,help="Mac OS X platform target")
+AddOption('--rpi',dest="rpi",action='store_true',default=False,help="Raspbain platform target")
 AddOption('--64bit',dest="_64bit",action='store_true',default=False,help="64-bit platform target")
 AddOption('--static',dest="static",action="store_true",default=False,help="Static linking, reduces external library dependancies but increased file size")
 AddOption('--pthreadw32-static',dest="ptw32-static",action="store_true",default=False,help="Use PTW32_STATIC_LIB for pthreadw32 headers")
@@ -52,7 +53,7 @@ AddOption('--snapshot-id',dest="snapshot-id",default=False,help="Snapshot build 
 
 AddOption('--aao', dest="everythingAtOnce", action='store_true', default=False, help="Compile the whole game without generating intermediate objects (very slow), enable this when using compilers like clang or mscc that don't support -fkeep-inline-functions")
 
-if((not GetOption('lin')) and (not GetOption('win')) and (not GetOption('macosx'))):
+if((not GetOption('lin')) and (not GetOption('win')) and (not GetOption('rpi')) and (not GetOption('macosx'))):
 	print "You must specify a platform to target"
 	raise SystemExit(1)
 
@@ -139,6 +140,13 @@ if(GetOption('renderer')):
 else:
 	env.Append(CPPDEFINES=["USE_SDL"])
 
+if(GetOption('rpi')):
+        if(GetOption('opengl')):
+                env.ParseConfig('pkg-config --libs glew gl glu')
+        openGLLibs = ['GL']
+        env.Append(LIBS=['X11', 'rt'])
+        env.Append(CPPDEFINES=["LIN"])
+		
 if(GetOption('win')):
 	openGLLibs = ['opengl32', 'glew32']
 	env.Prepend(LIBS=['mingw32', 'ws2_32', 'SDLmain', 'regex'])
@@ -247,7 +255,8 @@ sources+=Glob("src/simulation/elements/*.cpp")
 sources+=Glob("src/simulation/tools/*.cpp")
 
 if(GetOption('win')):
-	sources = filter(lambda source: str(source) != 'src\simulation\Gravity.cpp', sources)
+	sources = filter(lambda source: str(source) != 'src\\simulation\\Gravity.cpp', sources)
+	sources = filter(lambda source: str(source) != 'src/simulation/Gravity.cpp', sources)
 
 SetupSpawn(env)
 
@@ -285,15 +294,10 @@ if(GetOption('win')):
 	envCopy.Append(CCFLAGS=['-mincoming-stack-boundary=2'])
 	sources+=envCopy.Object('src/simulation/Gravity.cpp')
 
-if(GetOption('lin')):
-	pythonVer = "python2"
-else:
-	pythonVer = "python"
-
-env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), pythonVer + " generator.py elements $TARGETS $SOURCES")
+env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python2 generator.py elements $TARGETS $SOURCES")
 sources+=Glob("generated/ElementClasses.cpp")
 
-env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), pythonVer + " generator.py tools $TARGETS $SOURCES")
+env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python2 generator.py tools $TARGETS $SOURCES")
 sources+=Glob("generated/ToolClasses.cpp")
 
 env.Decider('MD5')
