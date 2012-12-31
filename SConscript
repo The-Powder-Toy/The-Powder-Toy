@@ -289,15 +289,21 @@ if(GetOption('release')):
 	else:
 		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations', '-Wunsafe-loop-optimizations'])
 
+        
+if(GetOption('lin')):
+	pythonVer = "python2"
+else:
+	pythonVer = "python"
+
 if(GetOption('win')):
 	envCopy = env.Clone()
 	envCopy.Append(CCFLAGS=['-mincoming-stack-boundary=2'])
 	sources+=envCopy.Object('src/simulation/Gravity.cpp')
 
-env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), "python2 generator.py elements $TARGETS $SOURCES")
+env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), pythonVer + " generator.py elements $TARGETS $SOURCES")
 sources+=Glob("generated/ElementClasses.cpp")
 
-env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), "python2 generator.py tools $TARGETS $SOURCES")
+env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), pythonVer + " generator.py tools $TARGETS $SOURCES")
 sources+=Glob("generated/ToolClasses.cpp")
 
 env.Decider('MD5')
