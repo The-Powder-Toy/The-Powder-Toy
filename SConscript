@@ -116,7 +116,7 @@ if not GetOption("macosx"):
 
 	#Check for Lua lib
 	if not GetOption("macosx"):
-		if not conf.CheckLib('lua') and not conf.CheckLib('lua5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua-5.1'):
+		if not conf.CheckLib('lua5.1') and not conf.CheckLib('lua-5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua'):
 			print "liblua not found or not installed"
 			raise SystemExit(1)
 
