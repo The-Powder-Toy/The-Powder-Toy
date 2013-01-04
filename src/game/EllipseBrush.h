@@ -26,17 +26,35 @@ public:
 		bitmap = new unsigned char[size.X*size.Y];
 		int rx = radius.X;
 		int ry = radius.Y;
-		for(int x = 0; x <= radius.X*2; x++)
+
+		if (!rx)
 		{
-			for(int y = 0; y <= radius.Y*2; y++)
+			for (int j = 0; j <= 2*ry; j++)
 			{
-				if((pow(x-radius.X,2.0f)*pow(ry,2.0f)+pow(y-radius.Y,2.0f)*pow(rx,2.0f)<=pow(rx,2.0f)*pow(ry,2.0f)))
+				bitmap[j*(size.X)+rx] = 255;
+			}
+		}
+		else
+		{
+			int yTop = ry, i, j, yBottom;
+			for (i = 0; i <= rx; i++)
+			{
+				while (pow(i-rx,2.0f)*pow(ry,2.0f) + pow(yTop-ry,2.0f)*pow(rx,2.0f) <= pow(rx,2.0f)*pow(ry,2.0f))
+					yTop = yTop + 1;
+				yTop = yTop - 1;
+				yBottom = 2*ry - yTop;
+				for (int j = 0; j <= ry*2; j++)
 				{
-					bitmap[y*(size.X)+x] = 255;
-				}
-				else
-				{
-					bitmap[y*(size.X)+x] = 0;
+					if (j >= yBottom && j <= yTop)
+					{
+						bitmap[j*(size.X)+i] = 255;
+						bitmap[j*(size.X)+2*rx-i] = 255;
+					}
+					else
+					{
+						bitmap[j*(size.X)+i] = 0;
+						bitmap[j*(size.X)+2*rx-i] = 0;
+					}
 				}
 			}
 		}
