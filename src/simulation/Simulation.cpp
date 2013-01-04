@@ -343,9 +343,9 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 {
 	int cx = 0;
 	int cy = 0;
-	for (cy=0; cy<area_h; cy++)
+	for (cy=0; cy<=area_h; cy++)
 	{
-		for (cx=0; cx<area_w; cx++)
+		for (cx=0; cx<=area_w; cx++)
 		{
 			if(bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] == WL_GRAV)
 				gravWallChanged = true;

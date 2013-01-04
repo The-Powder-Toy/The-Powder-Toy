@@ -1847,10 +1847,10 @@ void GameView::OnDraw()
 						y2 = YRES-1;
 
 					ren->fillrect(0, 0, XRES, y1, 0, 0, 0, 100);
-					ren->fillrect(0, y2, XRES, YRES-y2, 0, 0, 0, 100);
+					ren->fillrect(0, y2+1, XRES, YRES-y2-1, 0, 0, 0, 100);
 
-					ren->fillrect(0, y1, x1, (y2-y1), 0, 0, 0, 100);
-					ren->fillrect(x2, y1, XRES-x2, (y2-y1), 0, 0, 0, 100);
+					ren->fillrect(0, y1, x1, (y2-y1)+1, 0, 0, 0, 100);
+					ren->fillrect(x2+1, y1, XRES-x2-1, (y2-y1)+1, 0, 0, 0, 100);
 
 					ren->xor_rect(x1, y1, (x2-x1)+1, (y2-y1)+1);
 				}

@@ -236,12 +236,29 @@ void PIXELMETHODS_CLASS::xor_rect(int x, int y, int w, int h)
 	for (i=0; i<w; i+=2)
 	{
 		xor_pixel(x+i, y);
-		xor_pixel(x+i, y+h-1);
 	}
+	if (h != 1)
+	{
+		if (h%2 == 1) i = 2;
+		else i = 1;
+		for (; i<w; i+=2)
+		{
+			xor_pixel(x+i, y+h-1);
+		}
+	}
+
 	for (i=2; i<h; i+=2)
 	{
 		xor_pixel(x, y+i);
-		xor_pixel(x+w-1, y+i);
+	}
+	if (w != 1)
+	{
+		if (w%2 == 1) i = 2;
+		else i = 1;
+		for (; i<h-1; i+=2)
+		{
+			xor_pixel(x+w-1, y+i);
+		}
 	}
 }
 
