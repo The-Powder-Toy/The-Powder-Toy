@@ -8,7 +8,7 @@ Element_SWCH::Element_SWCH()
     MenuVisible = 1;
     MenuSection = SC_ELEC;
     Enabled = 1;
-    
+
     Advection = 0.0f;
     AirDrag = 0.00f * CFDS;
     AirLoss = 0.90f;
@@ -18,21 +18,21 @@ Element_SWCH::Element_SWCH()
     Diffusion = 0.00f;
     HotAir = 0.000f  * CFDS;
     Falldown = 0;
-    
+
     Flammable = 0;
     Explosive = 0;
     Meltable = 0;
     Hardness = 1;
-    
+
     Weight = 100;
-    
+
     Temperature = R_TEMP+0.0f	+273.15f;
     HeatConduct = 251;
     Description = "Solid. Only conducts when switched on. (PSCN switches on, NSCN switches off)";
-    
+
     State = ST_SOLID;
     Properties = TYPE_SOLID;
-    
+
     LowPressure = IPL;
     LowPressureTransition = NT;
     HighPressure = IPH;
@@ -41,12 +41,12 @@ Element_SWCH::Element_SWCH()
     LowTemperatureTransition = NT;
     HighTemperature = ITH;
     HighTemperatureTransition = NT;
-    
+
     Update = &Element_SWCH::update;
     Graphics = &Element_SWCH::graphics;
 }
 
-bool isRedBRAY(UPDATE_FUNC_ARGS, int xc, int yc)
+inline char isRedBRAY(UPDATE_FUNC_ARGS, int xc, int yc)
 {
 	return (pmap[yc][xc]&0xFF) == PT_BRAY && parts[pmap[yc][xc]>>8].tmp == 2;
 }
@@ -84,7 +84,8 @@ int Element_SWCH::update(UPDATE_FUNC_ARGS)
 				}
 			}
 	//turn SWCH on/off from two red BRAYS. There must be one either above or below, and one either left or right to work, and it can't come from the side, it must be a diagonal beam
-	if (!(pmap[y-1][x-1]&0xFF) && !(pmap[y-1][x+1]&0xFF) && (isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x, y-1) || isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x, y+1)) && (isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x+1, y) || isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x-1, y)))
+	char b = isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x-1, y) + isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x+1, y) + isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x, y-1) + isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x, y+1);
+	if ((b>>1)&&!(b&1))
 	{
 		if (parts[i].life == 10)
 			parts[i].life = 9;
