@@ -24,8 +24,8 @@
 #include "Snapshot.h"
 //#include "StorageClasses.h"
 
-#undef LUACONSOLE
-//#include "cat/LuaScriptHelper.h"
+#include "cat/LuaScriptInterface.h"
+#include "cat/LuaScriptHelper.h"
 
 int Simulation::Load(GameSave * save)
 {
@@ -4132,13 +4132,9 @@ void Simulation::update_particles_i(int start, int inc)
 			}
 
 			//call the particle update function, if there is one
-#ifdef LUACONSOLE
 			if (elements[t].Update && lua_el_mode[t] != 2)
-#else
-			if (elements[t].Update)
-#endif
 			{
-				if ((*(elements[t].Update))(this, i,x,y,surround_space,nt, parts, pmap))
+				if ((*(elements[t].Update))(this, i, x, y, surround_space, nt, parts, pmap))
 					continue;
 				else if (t==PT_WARP)
 				{
@@ -4147,17 +4143,14 @@ void Simulation::update_particles_i(int start, int inc)
 					y = (int)(parts[i].y+0.5f);
 				}
 			}
-#ifdef LUACONSOLE
 			if(lua_el_mode[t])
 			{
-				if(luacon_part_update(t,i,x,y,surround_space,nt))
+				if(luacon_elementReplacement(this, i, x, y, surround_space, nt, parts, pmap))
 					continue;
 				// Need to update variables, in case they've been changed by Lua
 				x = (int)(parts[i].x+0.5f);
 				y = (int)(parts[i].y+0.5f);
 			}
-#endif
-
 
 			if(legacy_enable)//if heat sim is off
 				Element::legacyUpdate(this, i,x,y,surround_space,nt, parts, pmap);

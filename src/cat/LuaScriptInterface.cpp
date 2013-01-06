@@ -913,11 +913,12 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		if(lua_type(l, -1) == LUA_TFUNCTION)
 		{
 			lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
-			luacon_sim->elements[id].Update = &luacon_elementReplacement;
+			lua_el_mode[id] = 1;
 		}
 		else if(lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 		{
 			lua_el_func[id] = 0;
+			lua_el_mode[id] = 0;
 			luacon_sim->elements[id].Update = NULL;
 		}
 		else
@@ -926,12 +927,12 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		lua_getfield(l, -1, "Graphics");
 		if(lua_type(l, -1) == LUA_TFUNCTION)
 		{
-			lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+			lua_gr_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
 			luacon_sim->elements[id].Graphics = &luacon_graphicsReplacement;
 		}
 		else if(lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 		{
-			lua_el_func[id] = 0;
+			lua_gr_func[id] = 0;
 			luacon_sim->elements[id].Graphics = NULL;
 		}
 		else
@@ -1068,7 +1069,17 @@ int LuaScriptInterface::elements_property(lua_State * l)
 			{
 				lua_pushvalue(l, 3);
 				lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
-				luacon_sim->elements[id].Update = &luacon_elementReplacement;
+				if (args > 3)
+				{
+					luaL_checktype(l, 4, LUA_TNUMBER);
+					int replace = lua_tointeger(l, 4);
+					if (replace == 1)
+						lua_el_mode[id] = 2;
+					else
+						lua_el_mode[id] = 1;
+				}
+				else
+					lua_el_mode[id] = 1;
 			}
 			else if(lua_type(l, 3) == LUA_TLIGHTUSERDATA)
 			{
@@ -1078,6 +1089,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
 			{
 				lua_el_func[id] = 0;
+				lua_el_mode[id] = 0;
 				luacon_sim->elements[id].Update = NULL;
 			}
 		}
@@ -1086,12 +1098,12 @@ int LuaScriptInterface::elements_property(lua_State * l)
 			if(lua_type(l, 3) == LUA_TFUNCTION)
 			{
 				lua_pushvalue(l, 3);
-				lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+				lua_gr_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
 				luacon_sim->elements[id].Graphics = &luacon_graphicsReplacement;
 			}
 			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 			{
-				lua_el_func[id] = 0;
+				lua_gr_func[id] = 0;
 				luacon_sim->elements[id].Graphics = NULL;
 			}
 			std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());

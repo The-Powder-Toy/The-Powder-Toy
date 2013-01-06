@@ -648,13 +648,17 @@ int luatpt_element_func(lua_State *l)
 	if(lua_isfunction(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
+		int replace = luaL_optint(l, 3, 0);
 		int function;
 		lua_pushvalue(l, 1);
 		function = luaL_ref(l, LUA_REGISTRYINDEX);
 		if(element > 0 && element < PT_NUM)
 		{
 			lua_el_func[element] = function;
-			luacon_sim->elements[element].Update = &luacon_elementReplacement;
+			if(replace)
+				lua_el_mode[element] = 2;
+			else
+				lua_el_mode[element] = 1;
 			return 0;
 		}
 		else
