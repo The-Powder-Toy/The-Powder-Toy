@@ -286,7 +286,7 @@ std::vector<char> GameSave::Serialise()
 	int dataSize;
 	char * data = Serialise(dataSize);
 	std::vector<char> dataVect(data, data+dataSize);
-	delete data;
+	free(data);
 	return dataVect;
 }
 

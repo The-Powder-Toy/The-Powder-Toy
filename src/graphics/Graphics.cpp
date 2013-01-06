@@ -317,8 +317,8 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 		samples[i] = new float[sourceWidth];
 	}
 
-	unsigned char * resultImage = new unsigned char[resultHeight * resultPitch];
-	std::fill(resultImage, resultImage + (resultHeight*resultPitch), 0);
+	unsigned char * resultImage = (unsigned char*)malloc((resultHeight * resultPitch) * sizeof(unsigned char));
+	memset(resultImage, 0, (resultHeight * resultPitch) * sizeof(unsigned char));
 
 	//Resample time
 	int resultY = 0;
