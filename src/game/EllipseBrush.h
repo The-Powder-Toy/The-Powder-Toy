@@ -36,16 +36,15 @@ public:
 		}
 		else
 		{
-			int yTop = ry, i, j, yBottom;
+			int yTop = ry, yBottom, i, j;
 			for (i = 0; i <= rx; i++)
 			{
 				while (pow(i-rx,2.0f)*pow(ry,2.0f) + pow(yTop-ry,2.0f)*pow(rx,2.0f) <= pow(rx,2.0f)*pow(ry,2.0f))
-					yTop = yTop + 1;
-				yTop = yTop - 1;
+					yTop++;
 				yBottom = 2*ry - yTop;
 				for (int j = 0; j <= ry*2; j++)
 				{
-					if (j >= yBottom && j <= yTop)
+					if (j > yBottom && j < yTop)
 					{
 						bitmap[j*(size.X)+i] = 255;
 						bitmap[j*(size.X)+2*rx-i] = 255;

@@ -1591,6 +1591,10 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
         {
             v->c->RemoveNotification(notification);
         }
+		void AltActionCallback(ui::Button * sender)
+        {
+        	v->c->RemoveNotification(notification);
+        }
     };
 
 	for(std::vector<ui::Component*>::const_iterator iter = notificationComponents.begin(), end = notificationComponents.end(); iter != end; ++iter) {
