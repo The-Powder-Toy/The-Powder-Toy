@@ -49,6 +49,7 @@ public:
 	FileBrowserActivity(std::string directory, FileSelectedCallback * callback);
 	virtual void OnDraw();
 	virtual void OnTick(float dt);
+	virtual void OnTryExit(ExitMethod method);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	void loadDirectory(std::string directory, std::string search);
 	void SelectSave(SaveFile * file);

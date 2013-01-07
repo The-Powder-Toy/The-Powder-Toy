@@ -13,6 +13,7 @@
 #include "tasks/Task.h"
 #include "simulation/SaveRenderer.h"
 #include "dialogues/TextPrompt.h"
+#include "dialogues/ConfirmPrompt.h"
 #include "dialogues/ErrorMessage.h"
 
 class Thumbnail;
@@ -176,19 +177,28 @@ void FileBrowserActivity::SelectSave(SaveFile * file)
 
 void FileBrowserActivity::DeleteSave(SaveFile * file)
 {
-	remove(file->GetName().c_str());
-	loadDirectory(directory, "");
+	std::string deleteMessage = "Are you sure you want to delete " + file->GetDisplayName() + ".cps?";
+	if (ConfirmPrompt::Blocking("Delete Save", deleteMessage))
+	{
+		remove(file->GetName().c_str());
+		loadDirectory(directory, "");
+	}
 }
 
 void FileBrowserActivity::RenameSave(SaveFile * file)
 {
 	std::string newName = TextPrompt::Blocking("Rename", "Change save name", file->GetDisplayName(), "", 0);
-	newName = directory + PATH_SEP + newName + ".cps";
-	int ret = rename(file->GetName().c_str(), newName.c_str());
-	if (ret)
-		ErrorMessage::Blocking("Error", "Could not rename file");
+	if (newName.length())
+	{
+		newName = directory + PATH_SEP + newName + ".cps";
+		int ret = rename(file->GetName().c_str(), newName.c_str());
+		if (ret)
+			ErrorMessage::Blocking("Error", "Could not rename file");
+		else
+			loadDirectory(directory, "");
+	}
 	else
-		loadDirectory(directory, "");
+		ErrorMessage::Blocking("Error", "No save name given");
 }
 
 void FileBrowserActivity::loadDirectory(std::string directory, std::string search)
@@ -244,6 +254,11 @@ void FileBrowserActivity::OnMouseDown(int x, int y, unsigned button)
 {
 	if(!(x > Position.X && y > Position.Y && y < Position.Y+Size.Y && x < Position.X+Size.X)) //Clicked outside window
 		Exit();
+}
+
+void FileBrowserActivity::OnTryExit(ExitMethod method)
+{
+	Exit();
 }
 
 void FileBrowserActivity::NotifyError(Task * task)
