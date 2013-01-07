@@ -467,7 +467,7 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 		bool extensionMatch = !extensions.size();
 		for(std::vector<std::string>::iterator extIter = extensions.begin(), extEnd = extensions.end(); extIter != extEnd; ++extIter)
 		{
-			if(filename.find(*extIter)==filename.length()-(*extIter).length())
+			if(filename.find(*extIter, filename.length()-(*extIter).length())==filename.length()-(*extIter).length())
 			{
 				extensionMatch = true;
 				break;
