@@ -517,9 +517,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	for(i = 0; i < saveButtons.size(); i++)
 	{
 		RemoveComponent(saveButtons[i]);
-		delete saveButtons[i];
 	}
-	saveButtons.clear();
 	if(!sender->GetSavesLoaded())
 	{
 		nextButton->Enabled = false;
@@ -574,6 +572,11 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			delete errorLabel;
 			errorLabel = NULL;
 		}
+		for(i = 0; i < saveButtons.size(); i++)
+		{
+			delete saveButtons[i];
+		}
+		saveButtons.clear();
 
 		buttonYOffset = 28;
 		buttonXOffset = buttonPadding;
