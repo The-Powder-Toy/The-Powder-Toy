@@ -183,7 +183,8 @@ GameView::GameView():
 	screenshotIndex(0),
 	recordingIndex(0),
 	toolTipPresence(0),
-	currentSaveType(0)
+	currentSaveType(0),
+	lastLogEntry(0.0f)
 {
 	
 	int currentX = 1;
