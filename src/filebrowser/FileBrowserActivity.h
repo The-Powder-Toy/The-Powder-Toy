@@ -52,6 +52,8 @@ public:
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	void loadDirectory(std::string directory, std::string search);
 	void SelectSave(SaveFile * file);
+	void DeleteSave(SaveFile * file);
+	void RenameSave(SaveFile * file);
 	void DoSearch(std::string search);
 	virtual ~FileBrowserActivity();
 

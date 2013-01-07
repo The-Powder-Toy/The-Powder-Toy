@@ -615,15 +615,15 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			{
 				v->c->Selected(sender->GetSave()->GetID(), sender->GetSelected());
 			}
-			virtual void AuthorActionCallback(ui::SaveButton * sender)
-			{
-				v->Search("user:"+sender->GetSave()->GetUserName());
-			}
-			virtual void HistoryActionCallback(ui::SaveButton * sender)
+			virtual void AltActionCallback(ui::SaveButton * sender)
 			{
 				stringstream search;
 				search << "history:" << sender->GetSave()->GetID();
 				v->Search(search.str());
+			}
+			virtual void AltActionCallback2(ui::SaveButton * sender)
+			{
+				v->Search("user:"+sender->GetSave()->GetUserName());
 			}
 		};
 		for(i = 0; i < saves.size(); i++)
@@ -643,6 +643,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 							),
 						ui::Point(buttonWidth, buttonHeight),
 						saves[i]);
+			saveButton->AddContextMenu(0);
 			saveButton->SetActionCallback(new SaveOpenAction(this));
 			if(Client::Ref().GetAuthUser().ID)
 				saveButton->SetSelectable(true);

@@ -12,6 +12,8 @@
 #include "Style.h"
 #include "tasks/Task.h"
 #include "simulation/SaveRenderer.h"
+#include "dialogues/TextPrompt.h"
+#include "dialogues/ErrorMessage.h"
 
 class Thumbnail;
 
@@ -24,6 +26,14 @@ public:
 	virtual void ActionCallback(ui::SaveButton * sender)
 	{
 		a->SelectSave(sender->GetSaveFile());
+	}
+	virtual void AltActionCallback(ui::SaveButton * sender)
+	{
+		a->RenameSave(sender->GetSaveFile());
+	}
+	virtual void AltActionCallback2(ui::SaveButton * sender)
+	{
+		a->DeleteSave(sender->GetSaveFile());
 	}
 };
 
@@ -164,15 +174,30 @@ void FileBrowserActivity::SelectSave(SaveFile * file)
 	Exit();
 }
 
+void FileBrowserActivity::DeleteSave(SaveFile * file)
+{
+	remove(file->GetName().c_str());
+	loadDirectory(directory, "");
+}
+
+void FileBrowserActivity::RenameSave(SaveFile * file)
+{
+	std::string newName = TextPrompt::Blocking("Rename", "Change save name", file->GetDisplayName(), "", 0);
+	newName = directory + PATH_SEP + newName + ".cps";
+	int ret = rename(file->GetName().c_str(), newName.c_str());
+	if (ret)
+		ErrorMessage::Blocking("Error", "Could not rename file");
+	else
+		loadDirectory(directory, "");
+}
+
 void FileBrowserActivity::loadDirectory(std::string directory, std::string search)
 {
 	for(int i = 0; i < components.size(); i++)
 	{
 		RemoveComponent(components[i]);
 		itemList->RemoveChild(components[i]);
-		delete components[i];
 	}
-	components.clear();
 
 	for(std::vector<ui::Component*>::iterator iter = componentsQueue.begin(), end = componentsQueue.end(); iter != end; ++iter)
 	{
@@ -208,6 +233,11 @@ void FileBrowserActivity::NotifyDone(Task * task)
 		progressBar->Visible = false;
 		infoText->Visible = true;
 	}
+	for(int i = 0; i < components.size(); i++)
+	{
+		delete components[i];
+	}
+	components.clear();
 }
 
 void FileBrowserActivity::OnMouseDown(int x, int y, unsigned button)
@@ -253,6 +283,7 @@ void FileBrowserActivity::OnTick(float dt)
 							),
 						ui::Point(buttonWidth, buttonHeight),
 						saveFile);
+		saveButton->AddContextMenu(1);
 		saveButton->Tick(dt);
 		saveButton->SetActionCallback(new SaveSelectedAction(this));
 		progressBar->SetStatus("Rendering thumbnails");

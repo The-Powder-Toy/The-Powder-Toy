@@ -28,12 +28,6 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	isMouseInsideHistory(false),
 	showVotes(false)
 {
-	menu = new ContextMenu(this);
-	menu->AddItem(ContextMenuItem("Open", 0, true));
-	menu->AddItem(ContextMenuItem("Select", 1, true));
-	menu->AddItem(ContextMenuItem("View History", 2, true));
-	menu->AddItem(ContextMenuItem("More by this user", 3, true));
-
 	if(save)
 	{
 		name = save->name;
@@ -303,12 +297,31 @@ void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
 	if(isButtonDown)
 	{
 		isButtonDown = false;
-		if(isMouseInsideAuthor)
-			DoAuthorAction();
-		else if(isMouseInsideHistory)
-			DoHistoryAction();
+		if(isMouseInsideHistory)
+			DoAltAction();
+		else if(isMouseInsideAuthor)
+			DoAltAction2();
 		else
 			DoAction();
+	}
+}
+
+void SaveButton::AddContextMenu(int menuType)
+{
+	if (menuType == 0) //Save browser
+	{
+		menu = new ContextMenu(this);
+		menu->AddItem(ContextMenuItem("Open", 0, true));
+		menu->AddItem(ContextMenuItem("Select", 1, true));
+		menu->AddItem(ContextMenuItem("View History", 2, true));
+		menu->AddItem(ContextMenuItem("More by this user", 3, true));
+	}
+	else if (menuType == 1) //Local save browser
+	{
+		menu = new ContextMenu(this);
+		menu->AddItem(ContextMenuItem("Open", 0, true));
+		menu->AddItem(ContextMenuItem("Rename", 2, true));
+		menu->AddItem(ContextMenuItem("Delete", 3, true));
 	}
 }
 
@@ -324,10 +337,10 @@ void SaveButton::OnContextMenuAction(int item)
 		DoSelection();
 		break;
 	case 2:
-		DoHistoryAction();
+		DoAltAction();
 		break;
 	case 3:
-		DoAuthorAction();
+		DoAltAction2();
 		break;
 	}
 }
@@ -376,16 +389,16 @@ void SaveButton::OnMouseLeave(int x, int y)
 	isMouseInsideHistory = false;
 }
 
-void SaveButton::DoHistoryAction()
+void SaveButton::DoAltAction()
 {
 	if(actionCallback)
-		actionCallback->HistoryActionCallback(this);
+		actionCallback->AltActionCallback(this);
 }
 
-void SaveButton::DoAuthorAction()
+void SaveButton::DoAltAction2()
 {
 	if(actionCallback)
-		actionCallback->AuthorActionCallback(this);
+		actionCallback->AltActionCallback2(this);
 }
 
 void SaveButton::DoAction()

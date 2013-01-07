@@ -18,8 +18,8 @@ class SaveButtonAction
 {
 public:
 	virtual void ActionCallback(ui::SaveButton * sender) {}
-	virtual void AuthorActionCallback(ui::SaveButton * sender) {}
-	virtual void HistoryActionCallback(ui::SaveButton * sender) {}
+	virtual void AltActionCallback(ui::SaveButton * sender) {}
+	virtual void AltActionCallback2(ui::SaveButton * sender) {}
 	virtual void SelectedCallback(ui::SaveButton * sender) {}
 	virtual ~SaveButtonAction() {}
 };
@@ -53,6 +53,7 @@ public:
 
 	virtual void OnMouseMovedInside(int x, int y, int dx, int dy);
 
+	void AddContextMenu(int menuType);
 	virtual void OnContextMenuAction(int item);
 
 	virtual void Draw(const Point& screenPos);
@@ -70,8 +71,8 @@ public:
 	SaveFile * GetSaveFile() { return file; }
 	inline bool GetState() { return state; }
 	virtual void DoAction();
-	virtual void DoAuthorAction();
-	virtual void DoHistoryAction();
+	virtual void DoAltAction();
+	virtual void DoAltAction2();
 	virtual void DoSelection();
 	void SetActionCallback(SaveButtonAction * action);
 protected:
