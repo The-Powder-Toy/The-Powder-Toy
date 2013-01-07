@@ -10,6 +10,7 @@
 #include "client/Client.h"
 #include "tasks/Task.h"
 #include "Style.h"
+#include "client/GameSave.h"
 
 class ServerSaveActivity::CancelAction: public ui::ButtonAction
 {
@@ -97,7 +98,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	descriptionField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(descriptionField);
 
-	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X/2)-16, 16), "Publish", "");
+	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X/2)-80, 16), "Publish", "");
 	if(Client::Ref().GetAuthUser().Username != save.GetUserName())
 	{
 		//Save is not owned by the user, disable by default
@@ -109,6 +110,10 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 		publishedCheckbox->SetChecked(save.GetPublished());
 	}
 	AddComponent(publishedCheckbox);
+
+	pausedCheckbox = new ui::Checkbox(ui::Point(160, 45), ui::Point(55, 16), "Paused", "");
+	pausedCheckbox->SetChecked(save.GetGameSave()->paused);
+	AddComponent(pausedCheckbox);
 
 	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point((Size.X/2)-75, 16), "Cancel");
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -206,6 +211,7 @@ void ServerSaveActivity::saveUpload()
 	save.SetPublished(publishedCheckbox->GetChecked());
 	save.SetUserName(Client::Ref().GetAuthUser().Username);
 	save.SetID(0);
+	save.GetGameSave()->paused = pausedCheckbox->GetChecked();
 
 	if(Client::Ref().UploadSave(save) != RequestOkay)
 	{

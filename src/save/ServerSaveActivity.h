@@ -41,6 +41,7 @@ protected:
 	ui::Textbox * nameField;
 	ui::Textbox * descriptionField;
 	ui::Checkbox * publishedCheckbox;
+	ui::Checkbox * pausedCheckbox;
 	class CancelAction;
 	class SaveAction;
 	friend class CancelAction;
