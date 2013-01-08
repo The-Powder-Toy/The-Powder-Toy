@@ -101,6 +101,30 @@ GameModel::GameModel():
 
 	BuildMenus();
 
+	//Set default brush palette
+	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
+	brushList.push_back(new Brush(ui::Point(4, 4)));
+	brushList.push_back(new TriangleBrush(ui::Point(4, 4)));
+
+	//Load more from brushes folder
+	std::vector<string> brushFiles = Client::Ref().DirectorySearch(BRUSH_DIR, "", ".ptb");
+	for(int i = 0; i < brushFiles.size(); i++)
+	{
+		std::vector<unsigned char> brushData = Client::Ref().ReadFile(brushFiles[i]);
+		if(!brushData.size())
+		{
+			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
+			continue;
+		}
+		int dimension = std::sqrt((float)brushData.size());
+		if(dimension * dimension != brushData.size())
+		{
+			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;
+			continue;
+		}
+		brushList.push_back(new BitmapBrush(brushData, ui::Point(dimension, dimension)));
+	}
+
 	//Set default decoration colour
 	unsigned char colourR = min(Client::Ref().GetPrefInteger("Decoration.Red", 200), 255);
 	unsigned char colourG = min(Client::Ref().GetPrefInteger("Decoration.Green", 100), 255);
@@ -305,31 +329,6 @@ void GameModel::BuildMenus()
 	decoToolset[0] = GetToolFromIdentifier("DEFAULT_DECOR_SET");
 	decoToolset[1] = GetToolFromIdentifier("DEFAULT_DECOR_CLR");
 	decoToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
-
-	//Set default brush palette
-	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
-	brushList.push_back(new Brush(ui::Point(4, 4)));
-	brushList.push_back(new TriangleBrush(ui::Point(4, 4)));
-
-	//Load more from brushes folder
-	std::vector<string> brushFiles = Client::Ref().DirectorySearch(BRUSH_DIR, "", ".ptb");
-	for(int i = 0; i < brushFiles.size(); i++)
-	{
-		std::vector<unsigned char> brushData = Client::Ref().ReadFile(brushFiles[i]);
-		if(!brushData.size())
-		{
-			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
-			continue;
-		}
-		int dimension = std::sqrt((float)brushData.size());
-		if(dimension * dimension != brushData.size())
-		{
-			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;
-			continue;
-		}
-		brushList.push_back(new BitmapBrush(brushData, ui::Point(dimension, dimension)));
-	}
-
 
 	//Set default tools
 	regularToolset[0] = GetToolFromIdentifier("DEFAULT_PT_DUST");

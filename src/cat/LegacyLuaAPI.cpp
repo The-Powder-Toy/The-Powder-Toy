@@ -1333,8 +1333,8 @@ int luatpt_fillrect(lua_State* l)
 	int x,y,w,h,r,g,b,a;
 	x = luaL_optint(l, 1, 0)+1;
 	y = luaL_optint(l, 2, 0)+1;
-	w = luaL_optint(l, 3, 10)+1;
-	h = luaL_optint(l, 4, 10)+1;
+	w = luaL_optint(l, 3, 10)-1;
+	h = luaL_optint(l, 4, 10)-1;
 	r = luaL_optint(l, 5, 255);
 	g = luaL_optint(l, 6, 255);
 	b = luaL_optint(l, 7, 255);
