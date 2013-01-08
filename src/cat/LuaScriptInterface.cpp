@@ -1653,6 +1653,8 @@ bool LuaScriptInterface::OnMouseMove(int x, int y, int dx, int dy)
 
 bool LuaScriptInterface::OnMouseDown(int x, int y, unsigned button)
 {
+	if (button == 3)
+		button = 4;
 	luacon_mousedown = true;
 	luacon_mousebutton = button;
 	return luacon_mouseevent(x, y, button, LUACON_MDOWN, 0);
@@ -1660,6 +1662,8 @@ bool LuaScriptInterface::OnMouseDown(int x, int y, unsigned button)
 
 bool LuaScriptInterface::OnMouseUp(int x, int y, unsigned button)
 {
+	if (button == 3)
+		button = 4;
 	luacon_mousedown = false;
 	return luacon_mouseevent(x, y, button, LUACON_MUP, 0);
 }
