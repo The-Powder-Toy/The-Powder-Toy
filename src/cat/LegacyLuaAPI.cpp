@@ -535,18 +535,20 @@ int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel){
 	return mpcontinue;
 }
 
-int luacon_step(int mx, int my, int selectl, int selectr, int bsx, int bsy){
+int luacon_step(int mx, int my, std::string selectl, std::string selectr, std::string selectalt, int bsx, int bsy){
 	int tempret = 0, tempb, i, callret;
 	lua_pushinteger(luacon_ci->l, bsy);
 	lua_pushinteger(luacon_ci->l, bsx);
-	lua_pushinteger(luacon_ci->l, selectr);
-	lua_pushinteger(luacon_ci->l, selectl);
+	lua_pushstring(luacon_ci->l, selectalt.c_str());
+	lua_pushstring(luacon_ci->l, selectr.c_str());
+	lua_pushstring(luacon_ci->l, selectl.c_str());
 	lua_pushinteger(luacon_ci->l, my);
 	lua_pushinteger(luacon_ci->l, mx);
 	lua_setfield(luacon_ci->l, tptProperties, "mousex");
 	lua_setfield(luacon_ci->l, tptProperties, "mousey");
 	lua_setfield(luacon_ci->l, tptProperties, "selectedl");
 	lua_setfield(luacon_ci->l, tptProperties, "selectedr");
+	lua_setfield(luacon_ci->l, tptProperties, "selecteda");
 	lua_setfield(luacon_ci->l, tptProperties, "brushx");
 	lua_setfield(luacon_ci->l, tptProperties, "brushy");
 	for(i = 0; i<6; i++){

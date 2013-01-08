@@ -31,7 +31,7 @@ extern int tptElements; //Table for TPT element names
 extern int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, tptPart, cIndex;
 
 void luacon_hook(lua_State *L, lua_Debug *ar);
-int luacon_step(int mx, int my, int selectl, int selectr, int bsx, int bsy);
+int luacon_step(int mx, int my, std::string , std::string selectr, std::string selectedalt, int bsx, int bsy);
 int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel);
 int luacon_keyevent(int key, int modifier, int event);
 int luacon_eval(char *command);

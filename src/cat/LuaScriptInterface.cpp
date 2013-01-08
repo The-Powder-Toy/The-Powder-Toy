@@ -22,6 +22,7 @@
 #include "dialogues/ConfirmPrompt.h" 
 #include "simulation/Simulation.h"
 #include "game/GameModel.h"
+#include "game/Tool.h"
 #include "LuaScriptHelper.h"
 #include "client/HTTP.h"
 
@@ -78,7 +79,16 @@ int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, t
 LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	CommandInterface(c, m),
 	currentCommand(false),
-	legacy(new TPTScriptInterface(c, m))
+	legacy(new TPTScriptInterface(c, m)),
+	luacon_mousex(0),
+	luacon_mousey(0),
+	luacon_mousebutton(0),
+	luacon_brushx(0),
+	luacon_brushy(0),
+	luacon_selectedl(""),
+	luacon_selectedr(""),
+	luacon_selectedalt(""),
+	luacon_mousedown(false)
 {
 	luacon_model = m;
 	luacon_sim = m->GetSimulation();
@@ -190,10 +200,12 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_setfield(l, tptProperties, "mousex");
 	lua_pushinteger(l, 0);
 	lua_setfield(l, tptProperties, "mousey");
-	lua_pushinteger(l, 0);
+	lua_pushstring(l, "");
 	lua_setfield(l, tptProperties, "selectedl");
-	lua_pushinteger(l, 0);
+	lua_pushstring(l, "");
 	lua_setfield(l, tptProperties, "selectedr");
+	lua_pushstring(l, "");
+	lua_setfield(l, tptProperties, "selecteda");
 
 	lua_newtable(l);
 	tptPropertiesVersion = lua_gettop(l);
@@ -1621,6 +1633,17 @@ bool LuaScriptInterface::OnBrushChanged(int brushType, int rx, int ry)
 	return true;
 }
 
+bool LuaScriptInterface::OnActiveToolChanged(int toolSelection, Tool * tool)
+{
+	if (toolSelection == 0)
+		luacon_selectedl = tool->GetIdentifier();
+	else if (toolSelection == 1)
+		luacon_selectedr = tool->GetIdentifier();
+	else if (toolSelection == 2)
+		luacon_selectedalt = tool->GetIdentifier();
+	return true;
+}
+
 bool LuaScriptInterface::OnMouseMove(int x, int y, int dx, int dy)
 {
 	luacon_mousex = x;
@@ -1675,7 +1698,7 @@ void LuaScriptInterface::OnTick()
 	ui::Engine::Ref().LastTick(clock());
 	if(luacon_mousedown)
 		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
-	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_brushx, luacon_brushy);
+	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_brushx, luacon_brushy);
 }
 
 int LuaScriptInterface::Command(std::string command)
