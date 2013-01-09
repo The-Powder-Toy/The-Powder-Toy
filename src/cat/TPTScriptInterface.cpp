@@ -3,6 +3,9 @@
  *
  *  Created on: Feb 5, 2012
  *      Author: Simon
+ *	Added Brainfuck interpreter
+ *  By boxmein with large amounts of help from
+ *  savask, jacob1, Triclops256 on #powder
  */
 
 #include <stack>
@@ -200,7 +203,7 @@ AnyType TPTScriptInterface::boxS_brainfuck(std::deque<std::string> *words) {
 	Simulation *sim = m->GetSimulation(); 
 
 	const char *k = code.c_str();
-	unsigned char x = 0;
+	unsigned int x = 0;
 	stack<const char *> loops;
 	while(*k) {
 		if(*k == '+') {
