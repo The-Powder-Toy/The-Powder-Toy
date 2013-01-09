@@ -96,7 +96,6 @@ public:
 	void SetDecoration(bool decorationState);
 	void SetDecoration();
 	void ShowGravityGrid();
-	void SetHudEnable(bool hudState);
 	void SetActiveMenu(Menu * menu);
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void SetActiveColourPreset(int preset);
@@ -124,7 +123,6 @@ public:
 	void Vote(int direction);
 	void ChangeBrush();
 	void ShowConsole();
-	void HideConsole();
 	void FrameStep();
 	void TranslateSave(ui::Point point);
 	void TransformSave(matrix2d transform);

@@ -293,7 +293,6 @@ Snapshot * Simulation::CreateSnapshot()
 	snap->stickmen.push_back(player2);
 	snap->stickmen.push_back(player);
 	snap->stickmen.insert(snap->stickmen.begin(), &fighters[0], &fighters[255]);
-	snap->signs = signs;
 	return snap;
 }
 
@@ -318,7 +317,6 @@ void Simulation::Restore(const Snapshot & snap)
 	std::copy(snap.stickmen.begin(), snap.stickmen.end()-2, &fighters[0]);
 	player = snap.stickmen[snap.stickmen.size()-1];
 	player2 = snap.stickmen[snap.stickmen.size()-2];
-	signs = snap.signs;
 }
 
 /*int Simulation::Load(unsigned char * data, int dataLength)

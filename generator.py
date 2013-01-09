@@ -1,7 +1,6 @@
-import re, os, shutil, string, sys
+import re, os, shutil, string
 
-def generateElements(elementFiles, outputCpp, outputH):
-
+def generateElements():
 	elementClasses = dict()
 	baseClasses = dict()
 
@@ -17,8 +16,9 @@ def generateElements(elementFiles, outputCpp, outputH):
 
 	directives = []
 
+	elementFiles = os.listdir("src/simulation/elements")
 	for elementFile in elementFiles:
-		f = open(elementFile, "r")
+		f = open("src/simulation/elements/"+elementFile, "r")
 		fileData = f.read()
 		f.close()
 
@@ -116,19 +116,19 @@ std::vector<Element> GetElements()
 		elementContent += """elements.push_back(%s());
 	""" % (newClass)
 
-	elementContent += """	return elements;
+	elementContent += """return elements;
 }
 	""";
 
-	f = open(outputH, "w")
+	f = open("generated/ElementClasses.h", "w")
 	f.write(elementHeader)
 	f.close()
 
-	f = open(outputCpp, "w")
+	f = open("generated/ElementClasses.cpp", "w")
 	f.write(elementContent)
 	f.close()
 
-def generateTools(toolFiles, outputCpp, outputH):
+def generateTools():
 	toolClasses = dict()
 	
 	toolHeader = """#ifndef TOOLCLASSES_H
@@ -140,8 +140,9 @@ def generateTools(toolFiles, outputCpp, outputH):
 	
 	directives = []
 
+	toolFiles = os.listdir("src/simulation/tools")
 	for toolFile in toolFiles:
-		f = open(toolFile, "r")
+		f = open("src/simulation/tools/"+toolFile, "r")
 		fileData = f.read()
 		f.close()
 		
@@ -190,19 +191,17 @@ def generateTools(toolFiles, outputCpp, outputH):
 		toolContent += """	tools.push_back(new %s());
 			""" % (d[1])
 	
-	toolContent += """	return tools;
+	toolContent += """return tools;
 		}
 		""";
 	
-	f = open(outputH, "w")
+	f = open("generated/ToolClasses.h", "w")
 	f.write(toolHeader)
 	f.close()
 	
-	f = open(outputCpp, "w")
+	f = open("generated/ToolClasses.cpp", "w")
 	f.write(toolContent)
 	f.close()
 
-if(sys.argv[1] == "elements"):
-	generateElements(sys.argv[4:], sys.argv[2], sys.argv[3])
-elif(sys.argv[1] == "tools"):
-	generateTools(sys.argv[4:], sys.argv[2], sys.argv[3])
+generateElements()
+generateTools()

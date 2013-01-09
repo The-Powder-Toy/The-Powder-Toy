@@ -126,7 +126,6 @@ public:
     //Breaks MVC, but any other way is going to be more of a mess.
     ui::Point GetMousePosition();
     void SetSample(SimulationSample sample);
-	void SetHudEnable(bool hudState);
     bool CtrlBehaviour(){ return ctrlBehaviour; }
     bool ShiftBehaviour(){ return shiftBehaviour; }
 	void ExitPrompt();

@@ -32,12 +32,14 @@ Makefile.me
 *.manifest.res
 *manifest.rc
 *res.res
-*.idb
 *.obj
 *.tlog
 *.lib
 *.ipch
 *.log
+*.idb
+*.txt
+*.lua
 *.lastbuildstate
 *.unsuccessfulbuild
 *.pdb
@@ -52,4 +54,9 @@ config.log
 *.pyc
 site_scons/site_tools/mfprogram/*.pyc
 site_scons/site_tools/gch/*.pyc
+build
+Libraries
+Release
+Staticlibs
+generator.py
 others*

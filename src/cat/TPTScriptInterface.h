@@ -21,6 +21,7 @@ protected:
 	AnyType tptS_reset(std::deque<std::string> * words);
 	AnyType tptS_bubble(std::deque<std::string> * words);
 	AnyType tptS_quit(std::deque<std::string> * words);
+	AnyType boxS_brainfuck(std::deque<std::string> *words); // TODO: Make this work! 
 	ValueType testType(std::string word);
 public:
 	TPTScriptInterface(GameController * c, GameModel * m);

@@ -564,11 +564,6 @@ void GameView::SetSample(SimulationSample sample)
 	this->sample = sample;
 }
 
-void GameView::SetHudEnable(bool hudState)
-{
-	showHud = hudState;
-}
-
 ui::Point GameView::GetMousePosition()
 {
 	return mousePosition;
