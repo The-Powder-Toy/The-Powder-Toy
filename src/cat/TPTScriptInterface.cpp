@@ -205,16 +205,24 @@ AnyType TPTScriptInterface::boxS_brainfuck(std::deque<std::string> *words) {
 
 	while(*k) {
 		if(*k == '+') {
-			sim->parts[x].type = sim->parts[x].type + 1; 
+			if (sim->parts[x].type < 256) { // 256 is max particles!
+				sim->parts[x].type = sim->parts[x].type + 1; 
+			}
 		}
 		else if(*k == '-') {
-			sim->parts[x].type = sim->parts[x].type - 1; 
+			if(sim->parts[x].type > 0) { // Prevents ------ breakage. Loops with - will work anyways.
+				sim->parts[x].type = sim->parts[x].type - 1; 
+			}
 		}
 		else if(*k == '>') {
-			x++; 
+			if(x < sim->NUM_PARTS - 1) { // Prevents bad data access.
+				x++; 
+			}
 		}
 		else if(*k == '<') {
-			x--; 
+			if(x > 0) { // Prevents bad data access.
+				x--; 
+			}
 		}
 		else if(*k == '[') {
 			loops.push(k); 
@@ -222,7 +230,7 @@ AnyType TPTScriptInterface::boxS_brainfuck(std::deque<std::string> *words) {
 		else if(*k == ']') {
 			if(sim->parts[x].type) {
 				k = loops.top(); 
-				continue;
+				// continue;
 			}
 			else {
 				loops.pop();
