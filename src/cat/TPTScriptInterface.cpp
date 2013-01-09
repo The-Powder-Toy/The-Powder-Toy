@@ -205,27 +205,28 @@ AnyType TPTScriptInterface::boxS_brainfuck(std::deque<std::string> *words) {
 
 	while(*k) {
 		if(*k == '+') {
-			if(sim->parts[x].type < 256) { sim->parts[x].type = sim->parts[x].type +1; }
+			sim->parts[x].type = sim->parts[x].type + 1; 
 		}
-		else if(*k == '-')
-			sim->parts[x].type = sim->parts[x].type - 1;
-		else if(*k == '>')
-			x++;
-		else if(*k == '<')
-			if (x > 0 ) x--;
-		//  else if(*k == ',') // Input something but what
-			//*x = cin.get();
-		//  else if(*k == '.') // Output something but what!?
-			// cout << *x;
-		else if(*k == '[')
-			loops.push(k);
+		else if(*k == '-') {
+			sim->parts[x].type = sim->parts[x].type - 1; 
+		}
+		else if(*k == '>') {
+			x++; 
+		}
+		else if(*k == '<') {
+			x--; 
+		}
+		else if(*k == '[') {
+			loops.push(k); 
+		}
 		else if(*k == ']') {
 			if(sim->parts[x].type) {
 				k = loops.top(); 
 				continue;
 			}
-			else 
+			else {
 				loops.pop();
+			}
 		}
 		k++;
 	}
