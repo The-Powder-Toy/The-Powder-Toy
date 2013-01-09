@@ -84,6 +84,8 @@ ValueType TPTScriptInterface::testType(std::string word)
 		return TypeFunction;
 	else if(word == "quit")
 		return TypeFunction;
+	else if(word == "bf")  // TODO: Fix this here as well. FIX ALL OF IT FOR GOD'S SAKE THE CODE IS BLASPHEMY
+		return TypeFunction;
 	//Basic type
 	parseNumber:
 			for(i = 0; i < word.length(); i++)
@@ -133,6 +135,8 @@ AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 			return tptS_bubble(words);
 		else if(word == "quit")
 			return tptS_quit(words);
+		else if(word == "bf") // TODO: Make this work! 
+			return boxS_brainfuck(words);
 		break;
 	case TypeNumber:
 		return NumberType(atoi(rawWord));
@@ -191,7 +195,43 @@ std::string TPTScriptInterface::FormatCommand(std::string command)
 	}
 	return outputData;
 }
+AnyType TPTScriptInterface::boxS_brainfuck(std::deque<std::string> *words) {
+	string code = (*words)[0];
+	Simulation *sim = m->GetSimulation(); 
 
+	const char *k = code.c_str();
+	unsigned char x = 0;
+	stack<const char *> loops;
+
+	while(*k) {
+		if(*k == '+') {
+			if(sim->parts[x].type < 256) { sim->parts[x].type = sim->parts[x].type +1; }
+		}
+		else if(*k == '-')
+			sim->parts[x].type = sim->parts[x].type - 1;
+		else if(*k == '>')
+			x++;
+		else if(*k == '<')
+			if (x > 0 ) x--;
+		//  else if(*k == ',') // Input something but what
+			//*x = cin.get();
+		//  else if(*k == '.') // Output something but what!?
+			// cout << *x;
+		else if(*k == '[')
+			loops.push(k);
+		else if(*k == ']') {
+			if(sim->parts[x].type) {
+				k = loops.top(); 
+				continue;
+			}
+			else 
+				loops.pop();
+		}
+		k++;
+	}
+	
+	return NumberType(1);
+};
 AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 {
 	//Arguments from stack
