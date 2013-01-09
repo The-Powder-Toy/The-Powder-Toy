@@ -892,6 +892,11 @@ void GameController::ShowGravityGrid()
 	gameModel->UpdateQuickOptions();
 }
 
+void GameController::SetHudEnable(bool hudState)
+{
+	gameView->SetHudEnable(hudState);
+}
+
 void GameController::SetActiveColourPreset(int preset)
 {
 	gameModel->SetActiveColourPreset(preset);
@@ -1107,7 +1112,16 @@ void GameController::ShowConsole()
 {
 	if(!console)
 		console = new ConsoleController(NULL, commandInterface);
-	ui::Engine::Ref().ShowWindow(console->GetView());
+	if (console->GetView() != ui::Engine::Ref().GetWindow())
+		ui::Engine::Ref().ShowWindow(console->GetView());
+}
+
+void GameController::HideConsole()
+{
+	if(!console)
+		return;
+	if (console->GetView() == ui::Engine::Ref().GetWindow())
+		ui::Engine::Ref().CloseWindow();
 }
 
 void GameController::OpenRenderOptions()

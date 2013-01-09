@@ -55,6 +55,7 @@ extern "C"
 }
 
 GameModel * luacon_model;
+GameController * luacon_controller;
 Simulation * luacon_sim;
 LuaScriptInterface * luacon_ci;
 Graphics * luacon_g;
@@ -91,6 +92,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_mousedown(false)
 {
 	luacon_model = m;
+	luacon_controller = c;
 	luacon_sim = m->GetSimulation();
 	luacon_g = ui::Engine::Ref().g;
 	luacon_ren = m->GetRenderer();

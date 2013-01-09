@@ -12,7 +12,7 @@
 #include "dialogues/ErrorMessage.h"
 #include "dialogues/InformationMessage.h"
 #include "dialogues/TextPrompt.h"
-#include "dialogues/ConfirmPrompt.h" 
+#include "dialogues/ConfirmPrompt.h"
 #include "simulation/Simulation.h"
 #include "game/GameModel.h"
 
@@ -803,11 +803,12 @@ int luatpt_togglewater(lua_State* l)
 
 int luatpt_setconsole(lua_State* l)
 {
-	/*int consolestate;
+	int consolestate;
 	consolestate = luaL_optint(l, 1, 0);
-	console_mode = (consolestate==0?0:1);
-	return 0;*/
-	//TODO IMPLEMENT
+	if (consolestate)
+		luacon_controller->ShowConsole();
+	else
+		luacon_controller->HideConsole();
 	return 0;
 }
 
@@ -1640,12 +1641,12 @@ int luatpt_getPartIndex(lua_State* l)
 }
 int luatpt_hud(lua_State* l)
 {
-    /*int hudstate;
-    hudstate = luaL_optint(l, 1, 0);
-    hud_enable = (hudstate==0?0:1);
-    return 0;*/
-	//TODO IMPLEMENT
-	return 0;
+    int hudstate = luaL_optint(l, 1, 0);
+	if (hudstate)
+		luacon_controller->SetHudEnable(1);
+	else
+		luacon_controller->SetHudEnable(0);
+    return 0;
 }
 int luatpt_gravity(lua_State* l)
 {

@@ -9,6 +9,7 @@
 #define LUASCRIPTHELPER_H_
 
 extern GameModel * luacon_model;
+extern GameController * luacon_controller;
 extern Simulation * luacon_sim;
 extern LuaScriptInterface * luacon_ci;
 extern Graphics * luacon_g;
