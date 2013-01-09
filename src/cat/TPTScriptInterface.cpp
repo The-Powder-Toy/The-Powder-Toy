@@ -202,7 +202,6 @@ AnyType TPTScriptInterface::boxS_brainfuck(std::deque<std::string> *words) {
 	const char *k = code.c_str();
 	unsigned char x = 0;
 	stack<const char *> loops;
-
 	while(*k) {
 		if(*k == '+') {
 			if (sim->parts[x].type < 256) { // 256 is max particles!
@@ -228,7 +227,7 @@ AnyType TPTScriptInterface::boxS_brainfuck(std::deque<std::string> *words) {
 			loops.push(k); 
 		}
 		else if(*k == ']') {
-			if(sim->parts[x].type) {
+			if(sim->parts[x].type && (sim->parts[x].type < 256) ) {
 				k = loops.top(); 
 				// continue;
 			}
