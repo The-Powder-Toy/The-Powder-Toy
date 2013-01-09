@@ -1004,12 +1004,10 @@ int luatpt_set_property(lua_State* l)
 		} else {
 			t = luaL_optint(l, 2, 0);
 		}
-		//TODO Element ID check
-		//if (format == 3 && (t<0 || t>=PT_NUM))
-		//	return luaL_error(l, "Unrecognised element number '%d'", t);
+		if (format == CommandInterface::FormatInt && (t<0 || t>=PT_NUM || !luacon_sim->elements[t].Enabled))
+			return luaL_error(l, "Unrecognised element number '%d'", t);
 	} else {
 		name = (char*)luaL_optstring(l, 2, "dust");
-		//if (!console_parse_type(name, &t, NULL))
 		if((t = luacon_ci->GetParticleType(std::string(name)))==-1)
 			return luaL_error(l, "Unrecognised element '%s'", name);
 	}
@@ -1690,11 +1688,17 @@ int luatpt_heat(lua_State* l)
 	luacon_sim->legacy_enable = (heatstate==1?0:1);
 	return 0;
 }
+
 int luatpt_cmode_set(lua_State* l)
 {
-	//TODO IMPLEMENT
-    return luaL_error(l, "cmode_set: Deprecated");
+	int cmode = luaL_optint(l, 1, 0);
+	if (cmode >= 0 && cmode <= 10)
+		luacon_controller->LoadRenderPreset(cmode);
+	else
+		return luaL_error(l, "Invalid display mode");
+	return 0;
 }
+
 int luatpt_setfire(lua_State* l)
 {
 	int firesize = luaL_optint(l, 2, 4);
@@ -1725,7 +1729,10 @@ int luatpt_getscript(lua_State* l)
 	fileid = std::string(luaL_optstring(l, 2, ""));
 	run_script = luaL_optint(l, 3, 0);
 	if(!fileauthor.length() || !fileid.length())
+	{
+		lastError = "Script Author or ID not given";
 		goto fin;
+	}
 	if(!ConfirmPrompt::Blocking("Do you want to install script?", fileid, "Install"))
 		goto fin;
 
