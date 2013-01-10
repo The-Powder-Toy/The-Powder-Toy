@@ -68,7 +68,7 @@ class LoadFilesTask: public Task
 			{
 				std::vector<unsigned char> data = Client::Ref().ReadFile(*iter);
 				GameSave * tempSave = new GameSave(data);
-				saveFile->SetGameSave(tempSave); 
+				saveFile->SetGameSave(tempSave);
 				saveFiles.push_back(saveFile);
 
 				std::string filename = *iter;

@@ -82,6 +82,8 @@ void Panel::RemoveChild(Component* c)
 		{
 			//remove child from parent. Does not free memory
 			children.erase(children.begin() + i);
+			if (this->GetParentWindow()->IsFocused(c))
+				this->GetParentWindow()->FocusComponent(NULL);
 			break;
 		}
 	}
