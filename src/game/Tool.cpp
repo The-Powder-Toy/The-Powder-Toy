@@ -110,7 +110,8 @@ void WallTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui
 	sim->CreateWallBox(position1.X, position1.Y, position2.X, position2.Y, toolID, 0);
 }
 void WallTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
-	sim->FloodWalls(position.X, position.Y, toolID, -1, -1, 0);
+	if (toolID != WL_STREAM)
+		sim->FloodWalls(position.X, position.Y, toolID, -1, -1, 0);
 }
 
 
