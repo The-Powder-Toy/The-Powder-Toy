@@ -3,7 +3,7 @@
 Element_BGLA::Element_BGLA()
 {
     Identifier = "DEFAULT_PT_BGLA";
-    Name = "BGLA";
+    Name = "BAGL";
     Colour = PIXPACK(0x606060);
     MenuVisible = 1;
     MenuSection = SC_POWDERS;
@@ -28,7 +28,7 @@ Element_BGLA::Element_BGLA()
     
     Temperature = R_TEMP+0.0f	+273.15f;
     HeatConduct = 150;
-    Description = "Broken Glass, Heavy particles. Meltable. Bagels.";
+    Description = "Burnt bagels. Heavy. Meltable. Awesome.";
     
     State = ST_SOLID;
     Properties = TYPE_PART | PROP_HOT_GLOW;
