@@ -36,6 +36,7 @@ private:
 	int screenshotIndex;
 	PreviewController * activePreview;
 	GameView * gameView;
+	GameModel * gameModel;
 	SearchController * search;
 	RenderController * renderOptions;
 	LoginController * loginWindow;
@@ -56,7 +57,6 @@ public:
 	class SaveOpenCallback;
 	friend class SaveOpenCallback;
 	GameController();
-	GameModel * gameModel;
 	~GameController();
 	GameView * GetView();
 
@@ -148,6 +148,7 @@ public:
 	virtual void NotifyAuthUserChanged(Client * sender);
 	virtual void NotifyNewNotification(Client * sender, std::pair<std::string, std::string> notification);
 	void RunUpdater();
+	std::vector<Menu*> GetMenuList();
 };
 
 #endif // GAMECONTROLLER_H

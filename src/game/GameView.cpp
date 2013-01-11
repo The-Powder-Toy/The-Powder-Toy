@@ -1323,7 +1323,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if(ctrl)
 			c->SetDecoration();
         else
-            c->SetActiveMenu(c->gameModel->GetMenuList()[SC_DECO]);
+            c->SetActiveMenu(c->GetMenuList()[SC_DECO]);
 		break;
 	case 'y':
 		c->SwitchAir();
