@@ -36,7 +36,6 @@ private:
 	int screenshotIndex;
 	PreviewController * activePreview;
 	GameView * gameView;
-	GameModel * gameModel;
 	SearchController * search;
 	RenderController * renderOptions;
 	LoginController * loginWindow;
@@ -57,6 +56,7 @@ public:
 	class SaveOpenCallback;
 	friend class SaveOpenCallback;
 	GameController();
+	GameModel * gameModel;
 	~GameController();
 	GameView * GetView();
 
