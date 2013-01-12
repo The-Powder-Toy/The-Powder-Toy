@@ -12,6 +12,7 @@
 #include "interface/Slider.h"
 #include "search/Thumbnail.h"
 #include "simulation/SaveRenderer.h"
+#include "simulation/SimulationData.h"
 #include "dialogues/ConfirmPrompt.h"
 #include "Format.h"
 #include "QuickOption.h"
@@ -186,7 +187,7 @@ GameView::GameView():
 	currentSaveType(0),
 	lastLogEntry(0.0f)
 {
-	
+
 	int currentX = 1;
 	//Set up UI
 	class SearchAction : public ui::ButtonAction
@@ -202,13 +203,13 @@ GameView::GameView():
 				v->c->OpenSearch();
 		}
 	};
-	
+
 	scrollBar = new ui::Button(ui::Point(0,YRES+21), ui::Point(XRES, 2), "");
 	scrollBar->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
 	scrollBar->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(scrollBar);
-	
+
 	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", "Find & open a simulation");  //Open
 	searchButton->SetIcon(IconOpen);
 	currentX+=18;
@@ -1321,6 +1322,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'b':
 		if(ctrl)
 			c->SetDecoration();
+        else
+            c->SetActiveMenu(c->GetMenuList()[SC_DECO]);
 		break;
 	case 'y':
 		c->SwitchAir();
@@ -1478,7 +1481,7 @@ void GameView::OnTick(float dt)
 	{
 		buttonTipShow -= int(dt)>0?int(dt):1;
 		if(buttonTipShow<0)
-			buttonTipShow = 0;	
+			buttonTipShow = 0;
 	}
 	if(toolTipPresence>0)
 	{
@@ -1508,12 +1511,12 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 			int mouseX = x;
 			if(mouseX > XRES)
 				mouseX = XRES;
-				
+
 			scrollBar->Position.X = (int)(((float)mouseX/((float)XRES-15))*(float)(XRES-scrollSize));
-					
+
 			float overflow = totalWidth-(XRES-15), mouseLocation = float(XRES)/float(mouseX-(XRES));
 			setToolButtonOffset(overflow/mouseLocation);
-			
+
 			//Ensure that mouseLeave events are make their way to the buttons should they move from underneith the mouse pointer
 			if(toolButtons[0]->Position.Y < y && toolButtons[0]->Position.Y+toolButtons[0]->Size.Y > y)
 			{
@@ -1800,7 +1803,7 @@ void GameView::OnDraw()
 					ui::Point finalBrushRadius = c->NormaliseBlockCoord(activeBrush->GetRadius());
 					ren->xor_line(finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y-finalBrushRadius.Y, finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y-finalBrushRadius.Y);
 					ren->xor_line(finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-1, finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-1);
-				
+
 					ren->xor_line(finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y-finalBrushRadius.Y+1, finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-2);
 					ren->xor_line(finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y-finalBrushRadius.Y+1, finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-2);
 				}
@@ -2015,7 +2018,7 @@ void GameView::OnDraw()
 					cb *= tmp;
 					for (j=0; j<h; j++)
 						g->blendpixel(x+29-i,y+j,cr>255?255:cr,cg>255?255:cg,cb>255?255:cb,255);
-				}	
+				}
 			}
 		}
 #endif
