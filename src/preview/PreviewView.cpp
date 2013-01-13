@@ -196,7 +196,7 @@ PreviewView::PreviewView():
 }
 
 void PreviewView::AttachController(PreviewController * controller)
-{ 
+{
 	c = controller;
 	saveIDTextbox->SetText(format::NumberToString<int>(c->SaveID()));
 }
@@ -411,7 +411,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 				float factorY = ((float)YRES/2)/((float)savePreview->Size.Y);
 				float scaleFactor = factorY < factorX ? factorY : factorX;
 				savePreview->Data = Graphics::resample_img(oldData, savePreview->Size.X, savePreview->Size.Y, savePreview->Size.X*scaleFactor, savePreview->Size.Y*scaleFactor);
-				free(oldData);
+				delete oldData;
 				savePreview->Size.X *= scaleFactor;
 				savePreview->Size.Y *= scaleFactor;
 			}
