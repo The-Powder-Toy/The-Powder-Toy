@@ -367,8 +367,13 @@ vector2d v2d_new(float x, float y)
 	return result;
 }
 
+char * clipboardtext = NULL;
 void clipboard_push_text(char * text)
 {
+	if (clipboardtext)
+		delete clipboardtext;
+	clipboardtext = new char[strlen(text)+1];
+	strcpy(clipboardtext, text);
 #ifdef MACOSX
 	PasteboardRef newclipboard;
 
@@ -395,7 +400,7 @@ void clipboard_push_text(char * text)
 		SetClipboardData(CF_TEXT, cbuffer);
 		CloseClipboard();
 	}
-#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11) //Much of the code is missing, so it crashes if SDL_VIDEO_DRIVER_X11 is defined TODO: linux copy support
 	if (clipboard_text!=NULL) {
 		free(clipboard_text);
 		clipboard_text = NULL;
@@ -426,15 +431,17 @@ char * clipboard_pull_text()
 		CloseClipboard();
 		if(glbuffer!=NULL){
 			return mystrdup(glbuffer);
-		} else {
-			return mystrdup("");
-		}
+		}// else {
+		//	return mystrdup("");
+		//}
 	}
 #elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 	printf("Not implemented: get text from clipboard\n");
 #else
 	printf("Not implemented: get text from clipboard\n");
 #endif
+	if (clipboardtext)
+		return mystrdup(clipboardtext);
 	return mystrdup("");
 }
 
