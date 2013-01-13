@@ -50,12 +50,13 @@ std::string URLEscape(std::string source)
 }
 
 #if defined(USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+#include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h>
 SDL_SysWMinfo sdl_wminfo;
 Atom XA_CLIPBOARD, XA_TARGETS;
 #endif
 
-char *clipboard_text = NULL;
+char *clipboardText = NULL;
 
 char *exe_name(void)
 {
@@ -367,13 +368,72 @@ vector2d v2d_new(float x, float y)
 	return result;
 }
 
-char * clipboardtext = NULL;
+void clipboard_init()
+{
+#if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+	SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
+	SDL_VERSION(&sdl_wminfo.version);
+	SDL_GetWMInfo(&sdl_wminfo);
+	sdl_wminfo.info.x11.lock_func();
+	XA_CLIPBOARD = XInternAtom(sdl_wminfo.info.x11.display, "CLIPBOARD", 1);
+	XA_TARGETS = XInternAtom(sdl_wminfo.info.x11.display, "TARGETS", 1);
+	sdl_wminfo.info.x11.unlock_func();
+#endif
+}
+
+#if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+void clipboard_event(SDL_Event event)
+{
+	if (event.syswm.msg->subsystem != SDL_SYSWM_X11)
+		return;
+	sdl_wminfo.info.x11.lock_func();
+	XEvent xe = event.syswm.msg->event.xevent;
+	if (xe.type==SelectionClear)
+	{
+		if (clipboardText != NULL) {
+			free(clipboardText);
+			clipboardText = NULL;
+		}
+	}
+	else if (xe.type==SelectionRequest)
+	{
+		XEvent xr;
+		xr.xselection.type = SelectionNotify;
+		xr.xselection.requestor = xe.xselectionrequest.requestor;
+		xr.xselection.selection = xe.xselectionrequest.selection;
+		xr.xselection.target = xe.xselectionrequest.target;
+		xr.xselection.property = xe.xselectionrequest.property;
+		xr.xselection.time = xe.xselectionrequest.time;
+		if (xe.xselectionrequest.target==XA_TARGETS)
+		{
+			// send list of supported formats
+			Atom targets[] = {XA_TARGETS, XA_STRING};
+			xr.xselection.property = xe.xselectionrequest.property;
+			XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, XA_ATOM, 32, PropModeReplace, (unsigned char*)targets, (int)(sizeof(targets)/sizeof(Atom)));
+		}
+		// TODO: Supporting more targets would be nice
+		else if (xe.xselectionrequest.target==XA_STRING && clipboardText)
+		{
+			XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, xe.xselectionrequest.target, 8, PropModeReplace, (unsigned char*)clipboardText, strlen(clipboardText)+1);
+		}
+		else
+		{
+			// refuse clipboard request
+			xr.xselection.property = None;
+		}
+		XSendEvent(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, 0, 0, &xr);
+	}
+	sdl_wminfo.info.x11.unlock_func();
+}
+#endif
+
 void clipboard_push_text(char * text)
 {
-	if (clipboardtext)
-		delete clipboardtext;
-	clipboardtext = new char[strlen(text)+1];
-	strcpy(clipboardtext, text);
+	if (clipboardText != NULL) {
+		free(clipboardText);
+		clipboardText = NULL;
+	}
+	clipboardText = mystrdup(text);
 #ifdef MACOSX
 	PasteboardRef newclipboard;
 
@@ -400,12 +460,7 @@ void clipboard_push_text(char * text)
 		SetClipboardData(CF_TEXT, cbuffer);
 		CloseClipboard();
 	}
-#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11) //Much of the code is missing, so it crashes if SDL_VIDEO_DRIVER_X11 is defined TODO: linux copy support
-	if (clipboard_text!=NULL) {
-		free(clipboard_text);
-		clipboard_text = NULL;
-	}
-	clipboard_text = mystrdup(text);
+#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 	sdl_wminfo.info.x11.lock_func();
 	XSetSelectionOwner(sdl_wminfo.info.x11.display, XA_CLIPBOARD, sdl_wminfo.info.x11.window, CurrentTime);
 	XFlush(sdl_wminfo.info.x11.display);
@@ -440,8 +495,8 @@ char * clipboard_pull_text()
 #else
 	printf("Not implemented: get text from clipboard\n");
 #endif
-	if (clipboardtext)
-		return mystrdup(clipboardtext);
+	if (clipboardText)
+		return mystrdup(clipboardText);
 	return mystrdup("");
 }
 

@@ -164,7 +164,7 @@ if(GetOption('lin')):
 		env.ParseConfig('pkg-config --libs glew gl glu')
 	openGLLibs = ['GL']
 	env.Append(LIBS=['X11', 'rt'])
-	env.Append(CPPDEFINES=["LIN"])
+	env.Append(CPPDEFINES=["LIN","SDL_VIDEO_DRIVER_X11"])
 	if GetOption('_64bit'):
 		env.Append(LINKFLAGS=['-m64'])
 		env.Append(CCFLAGS=['-m64'])

@@ -74,6 +74,13 @@ void strappend(char *dst, char *src);
 
 void *file_load(char *fn, int *size);
 
+void clipboard_init();
+
+#if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+#include <SDL/SDL.h>
+void clipboard_event(SDL_Event event);
+#endif
+
 void clipboard_push_text(char * text);
 
 char * clipboard_pull_text();

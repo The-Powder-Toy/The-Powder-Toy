@@ -362,6 +362,11 @@ void EngineProcess()
 				}
 				break;
 #endif
+#if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+			case SDL_SYSWMEVENT:
+				clipboard_event(event);
+				continue;
+#endif
 			}
 			event.type = 0; //Clear last event
 		}
@@ -486,6 +491,7 @@ int main(int argc, char * argv[])
 		exit(-1);
 	}
 #endif
+	clipboard_init();
 	ui::Engine::Ref().g = new Graphics();
 	ui::Engine::Ref().Scale = scale;
 	inputScale = 1.0f/float(scale);
