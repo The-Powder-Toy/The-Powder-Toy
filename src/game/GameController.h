@@ -98,6 +98,7 @@ public:
 	void ShowGravityGrid();
 	void SetHudEnable(bool hudState);
 	void SetActiveMenu(Menu * menu);
+	std::vector<Menu*> GetMenuList();
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void SetActiveColourPreset(int preset);
 	void SetColour(ui::Colour colour);
@@ -148,7 +149,6 @@ public:
 	virtual void NotifyAuthUserChanged(Client * sender);
 	virtual void NotifyNewNotification(Client * sender, std::pair<std::string, std::string> notification);
 	void RunUpdater();
-	std::vector<Menu*> GetMenuList();
 };
 
 #endif // GAMECONTROLLER_H

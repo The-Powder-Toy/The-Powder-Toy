@@ -925,6 +925,11 @@ void GameController::SetActiveMenu(Menu * menu)
 		gameModel->SetColourSelectorVisibility(false);
 }
 
+std::vector<Menu*> GameController::GetMenuList()
+{
+	return gameModel->GetMenuList();
+}
+
 void GameController::SetActiveTool(int toolSelection, Tool * tool)
 {
 	commandInterface->OnActiveToolChanged(toolSelection, tool);
@@ -1387,9 +1392,3 @@ void GameController::RunUpdater()
 	Exit();
 	new UpdateActivity();
 }
-
-std::vector<Menu*> GameController::GetMenuList()
-{
-    return gameModel->GetMenuList();
-}
-

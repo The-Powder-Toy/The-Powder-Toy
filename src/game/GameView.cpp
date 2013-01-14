@@ -185,7 +185,8 @@ GameView::GameView():
 	recordingIndex(0),
 	toolTipPresence(0),
 	currentSaveType(0),
-	lastLogEntry(0.0f)
+	lastLogEntry(0.0f),
+	lastMenu(NULL)
 {
 
 	int currentX = 1;
@@ -451,15 +452,25 @@ class GameView::MenuAction: public ui::ButtonAction
 	GameView * v;
 public:
 	Menu * menu;
-	MenuAction(GameView * _v, Menu * menu_) { v = _v; menu = menu_; }
+	bool needsClick = false;
+	MenuAction(GameView * _v, Menu * menu_)
+	{ 
+		v = _v;
+		menu = menu_; 
+		if (v->c->GetMenuList()[SC_DECO] == menu)
+			needsClick = true;
+	}
 	void MouseEnterCallback(ui::Button * sender)
 	{
-		if(!ui::Engine::Ref().GetMouseButton())
+		if(!needsClick && !ui::Engine::Ref().GetMouseButton())
 			v->c->SetActiveMenu(menu);
 	}
 	void ActionCallback(ui::Button * sender)
 	{
-		MouseEnterCallback(sender);
+		if (needsClick)
+			v->c->SetActiveMenu(menu);
+		else
+			MouseEnterCallback(sender);
 	}
 };
 
@@ -674,7 +685,8 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		AddComponent(tempButton);
 		toolButtons.push_back(tempButton);
 	}
-
+	if (sender->GetActiveMenu() != sender->GetMenuList()[SC_DECO])
+		lastMenu = sender->GetActiveMenu();
 }
 
 void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
@@ -1322,8 +1334,15 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'b':
 		if(ctrl)
 			c->SetDecoration();
-        else
-            c->SetActiveMenu(c->GetMenuList()[SC_DECO]);
+		else
+			if (colourPicker->GetParentWindow())
+				c->SetActiveMenu(lastMenu);
+			else
+			{
+				c->SetDecoration(true);
+				c->SetPaused(true);
+				c->SetActiveMenu(c->GetMenuList()[SC_DECO]);
+			}
 		break;
 	case 'y':
 		c->SwitchAir();
