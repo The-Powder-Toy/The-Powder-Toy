@@ -452,13 +452,15 @@ class GameView::MenuAction: public ui::ButtonAction
 	GameView * v;
 public:
 	Menu * menu;
-	bool needsClick = false;
+	bool needsClick;
 	MenuAction(GameView * _v, Menu * menu_)
 	{ 
 		v = _v;
 		menu = menu_; 
 		if (v->c->GetMenuList()[SC_DECO] == menu)
 			needsClick = true;
+		else
+			needsClick = false;
 	}
 	void MouseEnterCallback(ui::Button * sender)
 	{
