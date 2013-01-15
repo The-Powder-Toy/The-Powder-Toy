@@ -26,6 +26,7 @@
 #endif
 
 #include "Config.h"
+#include "Version.h"
 #include "Format.h"
 #include "Client.h"
 #include "MD5.h"
