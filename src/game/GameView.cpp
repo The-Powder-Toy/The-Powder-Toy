@@ -1018,7 +1018,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 			c->HistorySnapshot();
 		if(drawMode == DrawRect || drawMode == DrawLine)
 		{
-			drawPoint1 = ui::Point(x, y);
+			drawPoint1 = c->PointTranslate(ui::Point(x, y));
 		}
 		if(drawMode == DrawPoints)
 		{
@@ -1288,7 +1288,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		}
 		else
 		{
-			isMouseDown = false;
+			if (drawMode != DrawLine)
+				isMouseDown = false;
 			zoomCursorFixed = false;
 			c->SetZoomEnabled(true);
 		}
