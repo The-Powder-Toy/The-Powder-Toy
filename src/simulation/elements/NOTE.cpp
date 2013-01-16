@@ -60,7 +60,7 @@ int Element_NOTE::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
                 if ((r&0xFF)==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3)
-					add_note(pow(1.05946309,parts[i].tmp)*110);
+					add_note(pow(1.05946309,parts[i].tmp)*55);
 			}
 	return 0;
 }
@@ -72,8 +72,8 @@ int Element_NOTE::graphics(GRAPHICS_FUNC_ARGS)
 {
 	int q = cpart->tmp*255/100;
 	*colr = 0x66;
-	*colg = q;
-	*colb = 255-q;
+	*colg = fmin(255,q*2);
+	*colb = fmax(0,255-q*2);
 	return 0;
 }
 
