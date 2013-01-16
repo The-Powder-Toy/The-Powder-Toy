@@ -488,6 +488,7 @@ int luacon_elementwrite(lua_State* l){
 	free(key);
 	return 0;
 }
+bool shortcuts = true;
 int luacon_keyevent(int key, int modifier, int event){
 	int i = 0, kpcontinue = 1, callret;
 	char tempkey[] = {key, 0};
@@ -509,7 +510,7 @@ int luacon_keyevent(int key, int modifier, int event){
 			lua_pop(luacon_ci->l, 1);
 		}
 	}
-	return kpcontinue;
+	return kpcontinue && shortcuts;
 }
 int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel){
 	int i = 0, mpcontinue = 1, callret;
@@ -1409,7 +1410,12 @@ int luatpt_get_name(lua_State* l)
 
 int luatpt_set_shortcuts(lua_State* l)
 {
-	return luaL_error(l, "set_shortcuts: deprecated");
+	int shortcut = luaL_optint(l, 1, 0);
+	if (shortcut)
+		shortcuts = true;
+	else
+		shortcuts = false;
+	return 0;
 }
 
 int luatpt_delete(lua_State* l)
@@ -1713,7 +1719,7 @@ int luatpt_setfire(lua_State* l)
 }
 int luatpt_setdebug(lua_State* l)
 {
-	return luaL_error(l, "setdebug: Deprecated");
+	return luaL_error(l, "setdebug: Deprecated"); //TODO: maybe use the debugInfo thing in GameController to implement this
 }
 int luatpt_setfpscap(lua_State* l)
 {
