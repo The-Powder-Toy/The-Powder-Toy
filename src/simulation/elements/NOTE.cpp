@@ -27,7 +27,7 @@ Element_NOTE::Element_NOTE()
 
     Weight = 100;
 
-    Temperature = R_TEMP+4999.0f;
+    Temperature = 273.15+1046.5;
     HeatConduct = 0;
     Description = "Note, plays sound when sparked, tone determined by temperature";
 
