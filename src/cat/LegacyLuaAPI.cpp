@@ -628,7 +628,7 @@ int luatpt_getelement(lua_State *l)
 
 int luacon_elementReplacement(UPDATE_FUNC_ARGS)
 {
-	int retval = 0;
+	int retval = 0, callret;
 	if(lua_el_func[parts[i].type]){
 		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, lua_el_func[parts[i].type]);
 		lua_pushinteger(luacon_ci->l, i);
@@ -636,7 +636,9 @@ int luacon_elementReplacement(UPDATE_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, y);
 		lua_pushinteger(luacon_ci->l, surround_space);
 		lua_pushinteger(luacon_ci->l, nt);
-		lua_pcall(luacon_ci->l, 5, 1, 0);
+		callret = lua_pcall(luacon_ci->l, 5, 1, 0);
+		if (callret)
+			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 		if(lua_isboolean(luacon_ci->l, -1)){
 			retval = lua_toboolean(luacon_ci->l, -1);
 		}
@@ -675,13 +677,15 @@ int luatpt_element_func(lua_State *l)
 
 int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS)
 {
-	int cache = 0;
+	int cache = 0, callret;
 	lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, lua_gr_func[cpart->type]);
 	lua_pushinteger(luacon_ci->l, 0);
 	lua_pushinteger(luacon_ci->l, *colr);
 	lua_pushinteger(luacon_ci->l, *colg);
 	lua_pushinteger(luacon_ci->l, *colb);
-	lua_pcall(luacon_ci->l, 4, 10, 0);
+	callret = lua_pcall(luacon_ci->l, 4, 10, 0);
+	if (callret)
+		luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 
 	cache = luaL_optint(luacon_ci->l, -10, 0);
 	*pixel_mode = luaL_optint(luacon_ci->l, -9, *pixel_mode);
@@ -694,6 +698,7 @@ int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS)
 	*fireg = luaL_optint(luacon_ci->l, -2, *fireg);
 	*fireb = luaL_optint(luacon_ci->l, -1, *fireb);
 	lua_pop(luacon_ci->l, 10);
+
 	return cache;
 }
 
