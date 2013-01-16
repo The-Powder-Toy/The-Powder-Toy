@@ -190,6 +190,7 @@ extern unsigned char ZSIZE;
    this way you can make roof prisms easily */
 #define GLASS_IOR      1.9
 #define GLASS_DISP     0.07
+#define MAX_NOTE 256
 
 #ifdef WIN
 #define strcasecmp stricmp
