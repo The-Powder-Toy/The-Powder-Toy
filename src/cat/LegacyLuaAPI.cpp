@@ -1830,7 +1830,6 @@ int screenshotIndex = 0;
 
 int luatpt_screenshot(lua_State* l)
 {
-	//TODO Implement
 	int captureUI = luaL_optint(l, 1, 0);
 	std::vector<char> data;
 	if(captureUI)

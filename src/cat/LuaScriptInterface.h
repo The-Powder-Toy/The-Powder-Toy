@@ -55,10 +55,19 @@ class LuaScriptInterface: public CommandInterface
 
 	//Simulation
 	void initSimulationAPI();
+	static void set_map(int x, int y, int width, int height, float value, int mapType);
 	static int simulation_partNeighbours(lua_State * l);
 	static int simulation_partChangeType(lua_State * l);
 	static int simulation_partCreate(lua_State * l);
 	static int simulation_partKill(lua_State * l);
+	static int simulation_setPressure(lua_State * l);
+	static int simulation_getPressure(lua_State * l);
+	/*static int simulation_partKill(lua_State * l);
+	static int simulation_partKill(lua_State * l);
+	static int simulation_partKill(lua_State * l);
+	static int simulation_partKill(lua_State * l);
+	static int simulation_partKill(lua_State * l);
+	static int simulation_partKill(lua_State * l);*/
 
 	//Renderer
 	void initRendererAPI();
