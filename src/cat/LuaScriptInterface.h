@@ -60,14 +60,10 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_partChangeType(lua_State * l);
 	static int simulation_partCreate(lua_State * l);
 	static int simulation_partKill(lua_State * l);
-	static int simulation_setPressure(lua_State * l);
-	static int simulation_getPressure(lua_State * l);
-	/*static int simulation_partKill(lua_State * l);
-	static int simulation_partKill(lua_State * l);
-	static int simulation_partKill(lua_State * l);
-	static int simulation_partKill(lua_State * l);
-	static int simulation_partKill(lua_State * l);
-	static int simulation_partKill(lua_State * l);*/
+	static int simulation_pressure(lua_State * l);
+	static int simulation_velocityX(lua_State * l);
+	static int simulation_velocityY(lua_State * l);
+	static int simulation_ambientHeat(lua_State * l);
 
 	//Renderer
 	void initRendererAPI();
