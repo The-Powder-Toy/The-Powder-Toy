@@ -410,6 +410,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"ambientHeat", simulation_ambientHeat},
 		{"velocityX", simulation_velocityX},
 		{"velocityY", simulation_velocityY},
+		{"gravMap", simulation_gravMap},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -452,7 +453,8 @@ void LuaScriptInterface::set_map(int x, int y, int width, int height, float valu
 				luacon_sim->vx[ny][nx] = value;
 			else if (map == 4)
 				luacon_sim->vy[ny][nx] = value;
-
+			else if (map == 5)
+				luacon_sim->gravmap[ny*XRES/CELL+nx] = value; //gravx/y don't seem to work, but this does. opposite of tpt
 		}
 }
 
@@ -668,6 +670,39 @@ int LuaScriptInterface::simulation_velocityY(lua_State* l)
 		value = -256.0f;
 
 	set_map(x, y, width, height, value, 4);
+	return 0;
+}
+
+int LuaScriptInterface::simulation_gravMap(lua_State* l)
+{
+	int argCount = lua_gettop(l);
+	luaL_checktype(l, 1, LUA_TNUMBER);
+	luaL_checktype(l, 2, LUA_TNUMBER);
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
+
+	/*if (argCount == 2)
+	{
+		lua_pushnumber(l, luacon_sim->gravmap[y*XRES/CELL+x]);
+		return 1;
+	}*/
+	int width = 1, height = 1;
+	float value;
+	luaL_checktype(l, 3, LUA_TNUMBER);
+	if (argCount == 3)
+		value = (float)lua_tonumber(l, 3);
+	else
+	{
+		luaL_checktype(l, 4, LUA_TNUMBER);
+		luaL_checktype(l, 5, LUA_TNUMBER);
+		width = lua_tointeger(l, 3);
+		height = lua_tointeger(l, 4);
+		value = (float)lua_tonumber(l, 5);
+	}
+
+	set_map(x, y, width, height, value, 5);
 	return 0;
 }
 

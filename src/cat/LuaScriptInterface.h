@@ -63,6 +63,7 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_pressure(lua_State * l);
 	static int simulation_velocityX(lua_State * l);
 	static int simulation_velocityY(lua_State * l);
+	static int simulation_gravMap(lua_State * l);
 	static int simulation_ambientHeat(lua_State * l);
 
 	//Renderer
