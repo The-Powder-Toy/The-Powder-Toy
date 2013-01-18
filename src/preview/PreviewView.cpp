@@ -179,7 +179,7 @@ PreviewView::PreviewView():
 		CopyIDAction(PreviewView * v_){ v = v_; }
 		virtual void ActionCallback(ui::Button * sender)
 		{
-			clipboard_push_text((char*)v->saveIDTextbox->GetText().c_str());
+			ClipboardPush((char*)v->saveIDTextbox->GetText().c_str());
 		}
 	};
 

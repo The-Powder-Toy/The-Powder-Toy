@@ -4,7 +4,7 @@
 #include <string>
 
 #include "Label.h"
-#include "Misc.h"
+#include "PowderToy.h"
 
 namespace ui
 {
