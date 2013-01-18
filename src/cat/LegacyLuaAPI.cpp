@@ -488,6 +488,7 @@ int luacon_elementwrite(lua_State* l){
 	free(key);
 	return 0;
 }
+bool shortcuts = true;
 int luacon_keyevent(int key, int modifier, int event){
 	int i = 0, kpcontinue = 1, callret;
 	char tempkey[] = {key, 0};
@@ -509,7 +510,7 @@ int luacon_keyevent(int key, int modifier, int event){
 			lua_pop(luacon_ci->l, 1);
 		}
 	}
-	return kpcontinue;
+	return kpcontinue && shortcuts;
 }
 int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel){
 	int i = 0, mpcontinue = 1, callret;
@@ -628,7 +629,7 @@ int luatpt_getelement(lua_State *l)
 
 int luacon_elementReplacement(UPDATE_FUNC_ARGS)
 {
-	int retval = 0;
+	int retval = 0, callret;
 	if(lua_el_func[parts[i].type]){
 		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, lua_el_func[parts[i].type]);
 		lua_pushinteger(luacon_ci->l, i);
@@ -636,7 +637,9 @@ int luacon_elementReplacement(UPDATE_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, y);
 		lua_pushinteger(luacon_ci->l, surround_space);
 		lua_pushinteger(luacon_ci->l, nt);
-		lua_pcall(luacon_ci->l, 5, 1, 0);
+		callret = lua_pcall(luacon_ci->l, 5, 1, 0);
+		if (callret)
+			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 		if(lua_isboolean(luacon_ci->l, -1)){
 			retval = lua_toboolean(luacon_ci->l, -1);
 		}
@@ -675,13 +678,15 @@ int luatpt_element_func(lua_State *l)
 
 int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS)
 {
-	int cache = 0;
+	int cache = 0, callret;
 	lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, lua_gr_func[cpart->type]);
 	lua_pushinteger(luacon_ci->l, 0);
 	lua_pushinteger(luacon_ci->l, *colr);
 	lua_pushinteger(luacon_ci->l, *colg);
 	lua_pushinteger(luacon_ci->l, *colb);
-	lua_pcall(luacon_ci->l, 4, 10, 0);
+	callret = lua_pcall(luacon_ci->l, 4, 10, 0);
+	if (callret)
+		luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 
 	cache = luaL_optint(luacon_ci->l, -10, 0);
 	*pixel_mode = luaL_optint(luacon_ci->l, -9, *pixel_mode);
@@ -694,6 +699,7 @@ int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS)
 	*fireg = luaL_optint(luacon_ci->l, -2, *fireg);
 	*fireb = luaL_optint(luacon_ci->l, -1, *fireb);
 	lua_pop(luacon_ci->l, 10);
+
 	return cache;
 }
 
@@ -1404,7 +1410,12 @@ int luatpt_get_name(lua_State* l)
 
 int luatpt_set_shortcuts(lua_State* l)
 {
-	return luaL_error(l, "set_shortcuts: deprecated");
+	int shortcut = luaL_optint(l, 1, 0);
+	if (shortcut)
+		shortcuts = true;
+	else
+		shortcuts = false;
+	return 0;
 }
 
 int luatpt_delete(lua_State* l)
@@ -1708,7 +1719,7 @@ int luatpt_setfire(lua_State* l)
 }
 int luatpt_setdebug(lua_State* l)
 {
-	return luaL_error(l, "setdebug: Deprecated");
+	return luaL_error(l, "setdebug: Deprecated"); //TODO: maybe use the debugInfo thing in GameController to implement this
 }
 int luatpt_setfpscap(lua_State* l)
 {
@@ -1819,7 +1830,6 @@ int screenshotIndex = 0;
 
 int luatpt_screenshot(lua_State* l)
 {
-	//TODO Implement
 	int captureUI = luaL_optint(l, 1, 0);
 	std::vector<char> data;
 	if(captureUI)

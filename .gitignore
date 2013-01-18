@@ -8,6 +8,7 @@
 *.la
 *~
 *.pref
+*.lua
 stdout.txt
 stderr.txt
 build/*

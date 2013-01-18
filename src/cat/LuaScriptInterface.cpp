@@ -406,6 +406,11 @@ void LuaScriptInterface::initSimulationAPI()
 		{"partChangeType", simulation_partChangeType},
 		{"partCreate", simulation_partCreate},
 		{"partKill", simulation_partKill},
+		{"pressure", simulation_pressure},
+		{"ambientHeat", simulation_ambientHeat},
+		{"velocityX", simulation_velocityX},
+		{"velocityY", simulation_velocityY},
+		{"gravMap", simulation_gravMap},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -415,6 +420,42 @@ void LuaScriptInterface::initSimulationAPI()
 	lua_getglobal(l, "simulation");
 	lua_setglobal(l, "sim");
 
+	//Static values
+	lua_pushinteger(l, XRES); lua_setfield(l, simulationAPI, "XRES");
+	lua_pushinteger(l, YRES); lua_setfield(l, simulationAPI, "YRES");
+	lua_pushinteger(l, PT_NUM); lua_setfield(l, simulationAPI, "PT_NUM");
+	lua_pushinteger(l, luacon_sim->NUM_PARTS); lua_setfield(l, simulationAPI, "NUM_PARTS");
+	lua_pushinteger(l, R_TEMP); lua_setfield(l, simulationAPI, "R_TEMP");
+	lua_pushinteger(l, MAX_TEMP); lua_setfield(l, simulationAPI, "MAX_TEMP");
+	lua_pushinteger(l, MIN_TEMP); lua_setfield(l, simulationAPI, "MIN_TEMP");
+
+}
+
+void LuaScriptInterface::set_map(int x, int y, int width, int height, float value, int map) // A function so this won't need to be repeated many times later
+{
+	int nx, ny;
+	if(x > (XRES/CELL)-1)
+		x = (XRES/CELL)-1;
+	if(y > (YRES/CELL)-1)
+		y = (YRES/CELL)-1;
+	if(x+width > (XRES/CELL)-1)
+		width = (XRES/CELL)-x;
+	if(y+height > (YRES/CELL)-1)
+		height = (YRES/CELL)-y;
+	for (nx = x; nx<x+width; nx++)
+		for (ny = y; ny<y+height; ny++)
+		{
+			if (map == 1)
+				luacon_sim->pv[ny][nx] = value;
+			else if (map == 2)
+				luacon_sim->hv[ny][nx] = value;
+			else if (map == 3)
+				luacon_sim->vx[ny][nx] = value;
+			else if (map == 4)
+				luacon_sim->vy[ny][nx] = value;
+			else if (map == 5)
+				luacon_sim->gravmap[ny*XRES/CELL+nx] = value; //gravx/y don't seem to work, but this does. opposite of tpt
+		}
 }
 
 int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
@@ -484,6 +525,186 @@ int LuaScriptInterface::simulation_partKill(lua_State * l)
 	return 0;
 }
 
+int LuaScriptInterface::simulation_pressure(lua_State* l)
+{
+	int argCount = lua_gettop(l);
+	luaL_checktype(l, 1, LUA_TNUMBER);
+	luaL_checktype(l, 2, LUA_TNUMBER);
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
+
+	if (argCount == 2)
+	{
+		lua_pushnumber(l, luacon_sim->pv[y][x]);
+		return 1;
+	}
+	int width = 1, height = 1;
+	float value;
+	luaL_checktype(l, 3, LUA_TNUMBER);
+	if (argCount == 3)
+		value = (float)lua_tonumber(l, 3);
+	else
+	{
+		luaL_checktype(l, 4, LUA_TNUMBER);
+		luaL_checktype(l, 5, LUA_TNUMBER);
+		width = lua_tointeger(l, 3);
+		height = lua_tointeger(l, 4);
+		value = (float)lua_tonumber(l, 5);
+	}
+	if(value > 256.0f)
+		value = 256.0f;
+	else if(value < -256.0f)
+		value = -256.0f;
+
+	set_map(x, y, width, height, value, 1);
+	return 0;
+}
+
+int LuaScriptInterface::simulation_ambientHeat(lua_State* l)
+{
+	int argCount = lua_gettop(l);
+	luaL_checktype(l, 1, LUA_TNUMBER);
+	luaL_checktype(l, 2, LUA_TNUMBER);
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
+
+	if (argCount == 2)
+	{
+		lua_pushnumber(l, luacon_sim->hv[y][x]);
+		return 1;
+	}
+	int width = 1, height = 1;
+	float value;
+	luaL_checktype(l, 3, LUA_TNUMBER);
+	if (argCount == 3)
+		value = (float)lua_tonumber(l, 3);
+	else
+	{
+		luaL_checktype(l, 4, LUA_TNUMBER);
+		luaL_checktype(l, 5, LUA_TNUMBER);
+		width = lua_tointeger(l, 3);
+		height = lua_tointeger(l, 4);
+		value = (float)lua_tonumber(l, 5);
+	}
+	if(value > MAX_TEMP)
+		value = MAX_TEMP;
+	else if(value < MIN_TEMP)
+		value = MIN_TEMP;
+
+	set_map(x, y, width, height, value, 2);
+	return 0;
+}
+
+int LuaScriptInterface::simulation_velocityX(lua_State* l)
+{
+	int argCount = lua_gettop(l);
+	luaL_checktype(l, 1, LUA_TNUMBER);
+	luaL_checktype(l, 2, LUA_TNUMBER);
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
+
+	if (argCount == 2)
+	{
+		lua_pushnumber(l, luacon_sim->vx[y][x]);
+		return 1;
+	}
+	int width = 1, height = 1;
+	float value;
+	luaL_checktype(l, 3, LUA_TNUMBER);
+	if (argCount == 3)
+		value = (float)lua_tonumber(l, 3);
+	else
+	{
+		luaL_checktype(l, 4, LUA_TNUMBER);
+		luaL_checktype(l, 5, LUA_TNUMBER);
+		width = lua_tointeger(l, 3);
+		height = lua_tointeger(l, 4);
+		value = (float)lua_tonumber(l, 5);
+	}
+	if(value > 256.0f)
+		value = 256.0f;
+	else if(value < -256.0f)
+		value = -256.0f;
+
+	set_map(x, y, width, height, value, 3);
+	return 0;
+}
+
+int LuaScriptInterface::simulation_velocityY(lua_State* l)
+{
+	int argCount = lua_gettop(l);
+	luaL_checktype(l, 1, LUA_TNUMBER);
+	luaL_checktype(l, 2, LUA_TNUMBER);
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
+
+	if (argCount == 2)
+	{
+		lua_pushnumber(l, luacon_sim->vy[y][x]);
+		return 1;
+	}
+	int width = 1, height = 1;
+	float value;
+	luaL_checktype(l, 3, LUA_TNUMBER);
+	if (argCount == 3)
+		value = (float)lua_tonumber(l, 3);
+	else
+	{
+		luaL_checktype(l, 4, LUA_TNUMBER);
+		luaL_checktype(l, 5, LUA_TNUMBER);
+		width = lua_tointeger(l, 3);
+		height = lua_tointeger(l, 4);
+		value = (float)lua_tonumber(l, 5);
+	}
+	if(value > 256.0f)
+		value = 256.0f;
+	else if(value < -256.0f)
+		value = -256.0f;
+
+	set_map(x, y, width, height, value, 4);
+	return 0;
+}
+
+int LuaScriptInterface::simulation_gravMap(lua_State* l)
+{
+	int argCount = lua_gettop(l);
+	luaL_checktype(l, 1, LUA_TNUMBER);
+	luaL_checktype(l, 2, LUA_TNUMBER);
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
+
+	/*if (argCount == 2)
+	{
+		lua_pushnumber(l, luacon_sim->gravmap[y*XRES/CELL+x]);
+		return 1;
+	}*/
+	int width = 1, height = 1;
+	float value;
+	luaL_checktype(l, 3, LUA_TNUMBER);
+	if (argCount == 3)
+		value = (float)lua_tonumber(l, 3);
+	else
+	{
+		luaL_checktype(l, 4, LUA_TNUMBER);
+		luaL_checktype(l, 5, LUA_TNUMBER);
+		width = lua_tointeger(l, 3);
+		height = lua_tointeger(l, 4);
+		value = (float)lua_tonumber(l, 5);
+	}
+
+	set_map(x, y, width, height, value, 5);
+	return 0;
+}
 
 //// Begin Renderer API
 
