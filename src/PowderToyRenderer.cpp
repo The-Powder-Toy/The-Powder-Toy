@@ -18,6 +18,8 @@
 
 
 void EngineProcess() {}
+void ClipboardPush(char * text) {}
+char * ClipboardPull() {}
 
 void readFile(std::string filename, std::vector<char> & storage)
 {
