@@ -27,7 +27,7 @@
 #endif
 
 #ifndef BUILD_NUM
-#define BUILD_NUM 254
+#define BUILD_NUM 255
 #endif
 
 #ifndef SNAPSHOT_ID
