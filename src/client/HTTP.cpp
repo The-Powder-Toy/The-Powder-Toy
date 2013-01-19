@@ -49,7 +49,6 @@
 #endif
 
 #include "Config.h"
-#include "Version.h"
 #include "HTTP.h"
 #include "MD5.h"
 

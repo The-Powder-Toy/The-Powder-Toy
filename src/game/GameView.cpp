@@ -2,7 +2,6 @@
 #include <iomanip>
 
 #include "Config.h"
-#include "Version.h"
 #include "Style.h"
 #include "GameView.h"
 #include "graphics/Graphics.h"

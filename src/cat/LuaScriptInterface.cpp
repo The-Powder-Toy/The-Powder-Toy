@@ -12,7 +12,6 @@
 #include <locale>
 #include <fstream>
 #include "Config.h"
-#include "Version.h"
 #include "Format.h"
 #include "LuaLuna.h"
 #include "LuaScriptInterface.h"

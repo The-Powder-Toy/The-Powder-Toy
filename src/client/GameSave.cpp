@@ -4,7 +4,6 @@
 #include <vector>
 #include <bzlib.h>
 #include "Config.h"
-#include "Version.h"
 #include "Format.h"
 #include "bson/BSON.h"
 #include "GameSave.h"
