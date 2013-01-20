@@ -2816,10 +2816,11 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				drawOn==PT_CLNE ||
 				drawOn==PT_BCLN ||
 				drawOn==PT_CONV ||
+				drawOn==PT_CRAY ||
 				(drawOn==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN) ||
 				(drawOn==PT_PBCN&&t!=PT_PSCN&&t!=PT_NSCN)
 			)&&(
-				t != PT_CLNE && t != PT_PCLN && t != PT_BCLN && t != PT_STKM && t != PT_STKM2 && t != PT_PBCN && t != PT_STOR && t != PT_FIGH && t != PT_CONV)
+				t != PT_CLNE && t != PT_CRAY && t != PT_PCLN && t != PT_BCLN && t != PT_STKM && t != PT_STKM2 && t != PT_PBCN && t != PT_STOR && t != PT_FIGH && t != PT_CONV)
 			)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
