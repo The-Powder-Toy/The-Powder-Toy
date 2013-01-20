@@ -68,16 +68,6 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					if ((r&0xFF)==PT_SPRK && parts[r>>8].life==3) {
-						/*int currentPos = 0;
-						bool foundEnd = false;
-						bool foundStart = false;
-						bool foundParts = false;
-						int pistonSize = 1;
-						int spaces = 0;
-						int destroy = (parts[r>>8].ctype==PT_PSCN)?1:0;
-						int nostop = (parts[r>>8].ctype==PT_INST)?1:0;
-						int newPosX = 10, newPosY = 10;
-						//Scan for particles*/
 						bool foundEnd = false;
 						int pistonEndX, pistonEndY;
 						int pistonCount = 1;
@@ -154,56 +144,6 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 	if(!foundParts && foundEnd)
 		return amount;
 	return 0;
-	/*for (doContinue = true, nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1; docontinue && currentPos < maxSize; nyy+=nyi, nxx+=nxi) {
-		if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)) {
-			break;
-		}
-		r = pmap[y+nyi+nyy][x+nxi+nxx];
-		if(!r) {
-			if(!foundStart) {
-				newPosX = x+nxi+nxx;
-				newPosY = y+nyi+nyy;
-				foundStart = true;
-			}
-			spaces++;
-			foundEnd = true;
-			if(spaces >= pistonSize)
-				docontinue = 0;
-		} else if((r&0xFF)==PT_PSTN) {
-			if(!parts[r>>8].ctype)
-				pistonSize++;
-		} else {
-			if(!foundStart) {
-				newPosX = x+nxi+nxx;
-				newPosY = y+nyi+nyy;
-				foundStart = true;
-			}
-			foundParts = true;
-			tempParts[currentPos++] = r>>8;
-		}
-	}
-	if(foundStart) {
-		if(foundEnd) {
-			//Move particles
-			for(int j = 0; j < currentPos; j++) {
-				int jP = tempParts[j];
-				parts[jP].x += (float)(nxi*pistonSize);
-				parts[jP].y += (float)(nyi*pistonSize);
-				int nPx = (int)(parts[jP].x + 0.5f);
-				int nPy = (int)(parts[jP].y + 0.5f);
-				pmap[nPy][nPx] = parts[jP].type|(i<<8);
-			}
-		}
-		if(foundEnd || !foundParts) {
-			//Create new piston section
-			for(int j = 0; j < pistonSize; j++) {
-				int nr = sim->create_part(-3, newPosX+(nxi*j), newPosY+(nyi*j), PT_PSTN);
-				if (nr!=-1) {
-					parts[nr].ctype = 1;
-				}
-			}
-		}
-	}*/
 }
 
 
