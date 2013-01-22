@@ -1010,7 +1010,7 @@ int luatpt_set_property(lua_State* l)
 		} else {
 			t = luaL_optint(l, 2, 0);
 		}
-		if (format == CommandInterface::FormatInt && (t<0 || t>=PT_NUM || !luacon_sim->elements[t].Enabled))
+		if (!strcmp(prop,"type") && (t<0 || t>=PT_NUM || !luacon_sim->elements[t].Enabled))
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 	} else {
 		name = (char*)luaL_optstring(l, 2, "dust");
@@ -1702,7 +1702,7 @@ int luatpt_heat(lua_State* l)
 
 int luatpt_cmode_set(lua_State* l)
 {
-	int cmode = luaL_optint(l, 1, 0);
+	int cmode = luaL_optint(l, 1, 0)+1;
 	if (cmode >= 0 && cmode <= 10)
 		luacon_controller->LoadRenderPreset(cmode);
 	else

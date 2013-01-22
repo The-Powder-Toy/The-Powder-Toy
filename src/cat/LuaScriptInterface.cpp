@@ -714,7 +714,7 @@ void LuaScriptInterface::initRendererAPI()
 		{"renderModes", renderer_renderModes},
 		{"displayModes", renderer_displayModes},
 		{"colourMode", renderer_colourMode},
-		{"colorMode", renderer_colourMode}, //Duplicate of above to make americans happy
+		{"colorMode", renderer_colourMode}, //Duplicate of above to make Americans happy
 		{"decorations", renderer_decorations},
 		{NULL, NULL}
 	};
@@ -1175,7 +1175,7 @@ int LuaScriptInterface::elements_element(lua_State * l)
 
 		luacon_model->BuildMenus();
 		luacon_sim->init_can_move();
-		std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
+		luacon_ren->graphicscache[id].isready = 0;
 
 		lua_pop(l, 1);
 		return 0;
@@ -1238,8 +1238,6 @@ int LuaScriptInterface::elements_property(lua_State * l)
 	if(id < 0 || id >= PT_NUM || !luacon_sim->elements[id].Enabled)
 		return luaL_error(l, "Invalid element");
 
-
-
 	if(args > 2)
 	{
 		StructProperty property;
@@ -1294,7 +1292,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 
 			luacon_model->BuildMenus();
 			luacon_sim->init_can_move();
-			std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
+			luacon_ren->graphicscache[id].isready = 0;
 
 			return 0;
 		}
@@ -1341,7 +1339,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				lua_gr_func[id] = 0;
 				luacon_sim->elements[id].Graphics = NULL;
 			}
-			std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
+			luacon_ren->graphicscache[id].isready = 0;
 		}
 		else
 			return luaL_error(l, "Invalid element property");
@@ -1700,7 +1698,7 @@ int LuaScriptInterface::fileSystem_isFile(lua_State * l)
 {
 	const char * filename = lua_tostring(l, 1);
 
-	bool exists = false;
+	bool isFile = false;
 #ifdef WIN
 	struct _stat s;
 	if(_stat(filename, &s) == 0)
@@ -1709,25 +1707,21 @@ int LuaScriptInterface::fileSystem_isFile(lua_State * l)
 	if(stat(filename, &s) == 0)
 #endif
 	{
-		if(s.st_mode & S_IFDIR)
+		if(s.st_mode & S_IFREG)
 		{
-			exists = true;
-		}
-		else if(s.st_mode & S_IFREG)
-		{
-			exists = false;
+			isFile = true; //Is file
 		}
 		else
 		{
-			exists = false;
+			isFile = false; //Is directory or something else
 		}
 	}
 	else
 	{
-		exists = false;
+		isFile = false; //Doesn't exist
 	}
 
-	lua_pushboolean(l, exists);
+	lua_pushboolean(l, isFile);
 	return 1;
 }
 
@@ -1735,7 +1729,7 @@ int LuaScriptInterface::fileSystem_isDirectory(lua_State * l)
 {
 	const char * filename = lua_tostring(l, 1);
 
-	bool exists = false;
+	bool isDir = false;
 #ifdef WIN
 	struct _stat s;
 	if(_stat(filename, &s) == 0)
@@ -1746,23 +1740,19 @@ int LuaScriptInterface::fileSystem_isDirectory(lua_State * l)
 	{
 		if(s.st_mode & S_IFDIR)
 		{
-			exists = false;
-		}
-		else if(s.st_mode & S_IFREG)
-		{
-			exists = true;
+			isDir = true; //Is directory
 		}
 		else
 		{
-			exists = false;
+			isDir = false; //Is file or something else
 		}
 	}
 	else
 	{
-		exists = false;
+		isDir = false; //Doesn't exist
 	}
 
-	lua_pushboolean(l, exists);
+	lua_pushboolean(l, isDir);
 	return 1;
 }
 
