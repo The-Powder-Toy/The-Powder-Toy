@@ -78,13 +78,16 @@ if not GetOption("macosx"):
 		env.ParseConfig('sdl-config --cflags')
 		env.ParseConfig('sdl-config --libs')
 	except:
-		conf.CheckLib("SDL")
+		if not conf.CheckLib("SDL"):
+			print "libSDL not found or not installed"
+			raise SystemExit(1)
+			
 		if(GetOption("sdl-dir")):
 			if not conf.CheckCHeader(GetOption("sdl-dir") + '/SDL.h'):
 				print "sdl headers not found or not installed"
 				raise SystemExit(1)
 			else:
-				env.Append(CPPPATH=GetOption("sdl-dir"))
+				env.Append(CPPPATH=[GetOption("sdl-dir")])
 
 	#Find correct lua include dir
 	try:
@@ -95,7 +98,7 @@ if not GetOption("macosx"):
 				print "lua5.1 headers not found or not installed"
 				raise SystemExit(1)
 			else:
-				env.Append(CPPPATH=GetOption("lua-dir"))
+				env.Append(CPPPATH=[GetOption("lua-dir")])
 
 	#Check for FFT lib
 	if not conf.CheckLib('fftw3f') and not conf.CheckLib('fftw3f-3'):
@@ -258,9 +261,12 @@ sources+=Glob("src/*/*.cpp")
 sources+=Glob("src/simulation/elements/*.cpp")
 sources+=Glob("src/simulation/tools/*.cpp")
 
+#for source in sources:
+#	print str(source)
+
 if(GetOption('win')):
-	sources = filter(lambda source: str(source) != 'src\\simulation\\Gravity.cpp', sources)
-	sources = filter(lambda source: str(source) != 'src/simulation/Gravity.cpp', sources)
+	sources = filter(lambda source: not 'src\\simulation\\Gravity.cpp' in str(source), sources)
+	sources = filter(lambda source: not 'src/simulation/Gravity.cpp' in str(source), sources)
 
 SetupSpawn(env)
 
