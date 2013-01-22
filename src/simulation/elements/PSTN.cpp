@@ -55,10 +55,8 @@ int Element_PSTN::tempParts[128];
 int Element_PSTN::update(UPDATE_FUNC_ARGS)
  {
  	int maxSize = parts[i].tmp ? parts[i].tmp : 15;
- 	int currentSize = parts[i].tmp2&0xFF;
- 	int currentDirection = (parts[i].tmp2>>8)&0xFF;
  	int state = parts[i].ctype;
-	int r, nxx, nyy, docontinue, nxi, nyi, rx, ry, nr, ry1, rx1;
+	int r, nxx, nyy, nxi, nyi, rx, ry;
 	if (parts[i].life==0 && !state) {
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
