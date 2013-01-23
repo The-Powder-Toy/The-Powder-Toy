@@ -65,9 +65,9 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 	int r, nxx, nyy, nxi, nyi, rx, ry;
 	int directionX = 0, directionY = 0;
 	if (parts[i].life==0 && state == PISTON_INACTIVE) {
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry) && (!rx || !ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
