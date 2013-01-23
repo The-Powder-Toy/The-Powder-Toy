@@ -54,13 +54,14 @@ int Element_PSTN::tempParts[128];
 #define PISTON_RETRACT	0x01
 #define PISTON_EXTEND	0x02
 #define MAX_FRAME		0x0F
+#define DEFAULT_LIMIT	0x1F
 
 //#TPT-Directive ElementHeader Element_PSTN static int update(UPDATE_FUNC_ARGS)
 int Element_PSTN::update(UPDATE_FUNC_ARGS)
  {
  	if(parts[i].ctype)
  		return 0;
- 	int maxSize = parts[i].tmp ? parts[i].tmp : 15;
+ 	int maxSize = parts[i].tmp ? parts[i].tmp : DEFAULT_LIMIT;
  	int state = parts[i].tmp2;
 	int r, nxx, nyy, nxi, nyi, rx, ry;
 	int directionX = 0, directionY = 0;
@@ -190,32 +191,27 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 		return biggestMove;
 	}
 	if(retract){
+		//Warning: retraction does not scan to see if it has space
 		for(posX = stackX, posY = stackY; currentPos < size; posX += directionX, posY += directionY) {
 			if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
 				break;
 			}
 			r = sim->pmap[posY][posX];
 			if(!r) {
-				spaces++;
-				foundEnd = true;
-				if(spaces >= amount)
-					break;
+				break;
 			} else {
 				foundParts = true;
 				tempParts[currentPos++] = r>>8;
 			}
 		}
-		if(amount > spaces)
-			amount = spaces;
-		if(foundParts && foundEnd) {
+		if(foundParts) {
 			//Move particles
 			for(int j = 0; j < currentPos; j++) {
 				int jP = tempParts[j];
+				sim->pmap[(int)(sim->parts[jP].y + 0.5f)][(int)(sim->parts[jP].x + 0.5f)] = 0;
 				sim->parts[jP].x += (float)((-directionX)*amount);
 				sim->parts[jP].y += (float)((-directionY)*amount);
-				int nPx = (int)(sim->parts[jP].x + 0.5f);
-				int nPy = (int)(sim->parts[jP].y + 0.5f);
-				sim->pmap[nPy][nPx] = sim->parts[jP].type|(jP<<8);
+				sim->pmap[(int)(sim->parts[jP].y + 0.5f)][(int)(sim->parts[jP].x + 0.5f)] = sim->parts[jP].type|(jP<<8);
 			}
 			return amount;
 		}
@@ -243,11 +239,10 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			//Move particles
 			for(int j = 0; j < currentPos; j++) {
 				int jP = tempParts[j];
+				sim->pmap[(int)(sim->parts[jP].y + 0.5f)][(int)(sim->parts[jP].x + 0.5f)] = 0;
 				sim->parts[jP].x += (float)(directionX*amount);
 				sim->parts[jP].y += (float)(directionY*amount);
-				int nPx = (int)(sim->parts[jP].x + 0.5f);
-				int nPy = (int)(sim->parts[jP].y + 0.5f);
-				sim->pmap[nPy][nPx] = sim->parts[jP].type|(jP<<8);
+				sim->pmap[(int)(sim->parts[jP].y + 0.5f)][(int)(sim->parts[jP].x + 0.5f)] = sim->parts[jP].type|(jP<<8);
 			}
 			return amount;
 		}
