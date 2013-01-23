@@ -94,7 +94,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 						{
 							bool foundEnd = false;
 							int pistonEndX, pistonEndY;
-							int pistonCount = 1;
+							int pistonCount = 0;
 							int newSpace = 0;
 							int armCount = 0;
 							for (nxx = 0, nyy = 0, nxi = directionX, nyi = directionY; pistonCount < maxSize; nyy += nyi, nxx += nxi) {
