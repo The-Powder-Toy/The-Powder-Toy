@@ -53,7 +53,7 @@ int Element_PSTN::tempParts[128];
 #define PISTON_INACTIVE	0x00
 #define PISTON_RETRACT	0x01
 #define PISTON_EXTEND	0x02
-#define MAX_FRAME		0xFF
+#define MAX_FRAME		0x0F
 
 //#TPT-Directive ElementHeader Element_PSTN static int update(UPDATE_FUNC_ARGS)
 int Element_PSTN::update(UPDATE_FUNC_ARGS)
@@ -170,10 +170,11 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 					int val = MoveStack(sim, posX, posY, directionX, directionY, size, amount, retract, 1);
 					if(val < biggestMove)
 						biggestMove = val;
-				}
+				} else 
+					break;
 			}
-			if(!c)
-				continue; //If in the centre, don't do extend twice
+		}
+		for(int c = 1; c < MAX_FRAME; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
 			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0) {
@@ -182,7 +183,8 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 					int val = MoveStack(sim, posX, posY, directionX, directionY, size, amount, retract, 1);
 					if(val < biggestMove)
 						biggestMove = val;
-				}
+				} else 	
+					break;
 			}
 		}
 		return biggestMove;
