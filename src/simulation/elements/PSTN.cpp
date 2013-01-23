@@ -53,6 +53,7 @@ int Element_PSTN::tempParts[128];
 #define PISTON_INACTIVE	0x00
 #define PISTON_RETRACT	0x01
 #define PISTON_EXTEND	0x02
+#define MAX_FRAME		0xFF
 
 //#TPT-Directive ElementHeader Element_PSTN static int update(UPDATE_FUNC_ARGS)
 int Element_PSTN::update(UPDATE_FUNC_ARGS)
@@ -150,11 +151,42 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_PSTN static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract)
-int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract)
+//#TPT-Directive ElementHeader Element_PSTN static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract, int callDepth = 0)
+int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract, int callDepth)
 {
 	bool foundEnd = false, foundParts = false;
 	int posX, posY, r, spaces = 0, currentPos = 0;
+	r = sim->pmap[stackY][stackX];
+	if(!callDepth && (r&0xFF) == PT_FRME) {
+		int biggestMove = amount;
+		int newY = !!directionX, newX = !!directionY;
+		//If the piston is pushing frame, iterate out from the centre to the edge and push everything resting on frame
+		for(int c = 0; c < MAX_FRAME; c++) {
+			posY = stackY + (c*newY);
+			posX = stackX + (c*newX);
+			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0) {
+				r = sim->pmap[posY][posX];
+				if((r&0xFF) == PT_FRME) {
+					int val = MoveStack(sim, posX, posY, directionX, directionY, size, amount, retract, 1);
+					if(val < biggestMove)
+						biggestMove = val;
+				}
+			}
+			if(!c)
+				continue; //If in the centre, don't do extend twice
+			posY = stackY - (c*newY);
+			posX = stackX - (c*newX);
+			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0) {
+				r = sim->pmap[posY][posX];
+				if((r&0xFF) == PT_FRME) {
+					int val = MoveStack(sim, posX, posY, directionX, directionY, size, amount, retract, 1);
+					if(val < biggestMove)
+						biggestMove = val;
+				}
+			}
+		}
+		return biggestMove;
+	}
 	if(retract){
 		for(posX = stackX, posY = stackY; currentPos < size; posX += directionX, posY += directionY) {
 			if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
