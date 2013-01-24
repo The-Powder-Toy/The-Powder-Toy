@@ -296,7 +296,7 @@ bool Element_LIGH::create_LIGH(Simulation * sim, int x, int y, int c, int temp, 
 		sim->parts[p].tmp = tmp;
 		sim->parts[p].tmp2 = tmp2;
 	}
-	else
+	else if (x >= 0 && x < XRES && y >= 0 && y < YRES)
 	{
 		int r = sim->pmap[y][x];
 		if ((((r&0xFF)==PT_VOID || ((r&0xFF)==PT_PVOD && sim->parts[r>>8].life >= 10)) && (!sim->parts[r>>8].ctype || (sim->parts[r>>8].ctype==c)!=(sim->parts[r>>8].tmp&1))) || (r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) // VOID, PVOD, VACU, and BHOL eat LIGH here
