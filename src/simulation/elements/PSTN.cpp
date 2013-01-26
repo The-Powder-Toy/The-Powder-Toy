@@ -56,7 +56,7 @@ int Element_PSTN::tempPartAmount[128];
 #define PISTON_RETRACT	0x01
 #define PISTON_EXTEND	0x02
 #define MAX_FRAME		0x0F
-#define DEFAULT_LIMIT	0x06
+#define DEFAULT_LIMIT	0x1F
 
 //#TPT-Directive ElementHeader Element_PSTN static int update(UPDATE_FUNC_ARGS)
 int Element_PSTN::update(UPDATE_FUNC_ARGS)
