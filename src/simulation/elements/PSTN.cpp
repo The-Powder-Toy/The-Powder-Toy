@@ -4,9 +4,9 @@ Element_PSTN::Element_PSTN()
 {
     Identifier = "DEFAULT_PT_PSTN";
     Name = "PSTN";
-    Colour = PIXPACK(0xBBFF00);
+    Colour = PIXPACK(0xAA9999);
     MenuVisible = 1;
-    MenuSection = SC_ELEC;
+    MenuSection = SC_FORCE;
     Enabled = 1;
     
     Advection = 0.0f;
@@ -22,7 +22,7 @@ Element_PSTN::Element_PSTN()
     Flammable = 0;
     Explosive = 0;
     Meltable = 0;
-    Hardness = 1;
+    Hardness = 0;
     
     Weight = 100;
     
@@ -229,6 +229,8 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			if(!r) {
 				spaces++;
 				tempParts[currentPos++] = 0;
+				if(spaces >= amount)
+					break;
 			} else {
 				foundParts = true;
 				if(currentPos < size)
