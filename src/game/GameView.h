@@ -56,6 +56,7 @@ private:
 	std::string introTextMessage;
 	int toolIndex;
 	int currentSaveType;
+	Menu * lastMenu;
 
 	int infoTipPresence;
 	std::string toolTip;

@@ -179,7 +179,7 @@ PreviewView::PreviewView():
 		CopyIDAction(PreviewView * v_){ v = v_; }
 		virtual void ActionCallback(ui::Button * sender)
 		{
-			clipboard_push_text((char*)v->saveIDTextbox->GetText().c_str());
+			ClipboardPush((char*)v->saveIDTextbox->GetText().c_str());
 		}
 	};
 
@@ -196,7 +196,7 @@ PreviewView::PreviewView():
 }
 
 void PreviewView::AttachController(PreviewController * controller)
-{ 
+{
 	c = controller;
 	saveIDTextbox->SetText(format::NumberToString<int>(c->SaveID()));
 }
@@ -365,7 +365,7 @@ void PreviewView::OnMouseWheel(int x, int y, int d)
 
 void PreviewView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if ((key == KEY_ENTER || key == KEY_RETURN) && !addCommentBox->IsFocused())
+	if ((key == KEY_ENTER || key == KEY_RETURN) && (!addCommentBox || !addCommentBox->IsFocused()))
 		openButton->DoAction();
 }
 
@@ -411,7 +411,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 				float factorY = ((float)YRES/2)/((float)savePreview->Size.Y);
 				float scaleFactor = factorY < factorX ? factorY : factorX;
 				savePreview->Data = Graphics::resample_img(oldData, savePreview->Size.X, savePreview->Size.Y, savePreview->Size.X*scaleFactor, savePreview->Size.Y*scaleFactor);
-				free(oldData);
+				delete oldData;
 				savePreview->Size.X *= scaleFactor;
 				savePreview->Size.Y *= scaleFactor;
 			}

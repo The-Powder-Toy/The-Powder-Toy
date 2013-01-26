@@ -141,7 +141,7 @@ char * Graphics::GenerateGradient(pixel * colours, float * points, int pointcoun
 				temp = points[j-1];
 				points[j-1] = points[j];
 				points[j] = temp;
-				
+
 				ptemp = colours[j-1];
 				colours[j-1] = colours[j];
 				colours[j] = ptemp;
@@ -178,7 +178,7 @@ void *Graphics::ptif_pack(pixel *src, int w, int h, int *result_size){
 	unsigned char *blue_chan = (unsigned char*)calloc(1, w*h);
 	unsigned char *data = (unsigned char*)malloc(((w*h)*3)+8);
 	unsigned char *result = (unsigned char*)malloc(((w*h)*3)+8);
-	
+
 	for(cx = 0; cx<w; cx++){
 		for(cy = 0; cy<h; cy++){
 			red_chan[w*(cy)+(cx)] = PIXR(src[w*(cy)+(cx)]);
@@ -186,14 +186,14 @@ void *Graphics::ptif_pack(pixel *src, int w, int h, int *result_size){
 			blue_chan[w*(cy)+(cx)] = PIXB(src[w*(cy)+(cx)]);
 		}
 	}
-	
+
 	memcpy(data, red_chan, w*h);
 	memcpy(data+(w*h), green_chan, w*h);
 	memcpy(data+((w*h)*2), blue_chan, w*h);
 	free(red_chan);
 	free(green_chan);
 	free(blue_chan);
-	
+
 	result[0] = 'P';
 	result[1] = 'T';
 	result[2] = 'i';
@@ -202,15 +202,15 @@ void *Graphics::ptif_pack(pixel *src, int w, int h, int *result_size){
 	result[5] = w>>8;
 	result[6] = h;
 	result[7] = h>>8;
-	
+
 	i -= 8;
-	
+
 	if(BZ2_bzBuffToBuffCompress((char *)(result+8), (unsigned *)&i, (char *)data, datalen, 9, 0, 0) != 0){
 		free(data);
 		free(result);
 		return NULL;
 	}
-	
+
 	*result_size = i+8;
 	free(data);
 	return result;
@@ -234,14 +234,14 @@ pixel *Graphics::ptif_unpack(void *datain, int size, int *w, int *h){
 	}
 	width = data[4]|(data[5]<<8);
 	height = data[6]|(data[7]<<8);
-	
+
 	i = (width*height)*3;
 	undata = (unsigned char*)calloc(1, (width*height)*3);
 	red_chan = (unsigned char*)calloc(1, width*height);
 	green_chan = (unsigned char*)calloc(1, width*height);
 	blue_chan = (unsigned char *)calloc(1, width*height);
 	result = (pixel *)calloc(width*height, PIXELSIZE);
-	
+
 	resCode = BZ2_bzBuffToBuffDecompress((char *)undata, (unsigned *)&i, (char *)(data+8), size-8, 0, 0);
 	if (resCode){
 		printf("Decompression failure, %d\n", resCode);
@@ -264,13 +264,13 @@ pixel *Graphics::ptif_unpack(void *datain, int size, int *w, int *h){
 	memcpy(red_chan, undata, width*height);
 	memcpy(green_chan, undata+(width*height), width*height);
 	memcpy(blue_chan, undata+((width*height)*2), width*height);
-	
+
 	for(cx = 0; cx<width; cx++){
 		for(cy = 0; cy<height; cy++){
 			result[width*(cy)+(cx)] = PIXRGB(red_chan[width*(cy)+(cx)], green_chan[width*(cy)+(cx)], blue_chan[width*(cy)+(cx)]);
 		}
 	}
-	
+
 	*w = width;
 	*h = height;
 	free(red_chan);
@@ -284,7 +284,7 @@ pixel *Graphics::resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
 {
 	int y, x;
 	pixel *q = NULL;
-	q = (pixel *)malloc(rw*rh*PIXELSIZE);
+	q = new pixel[rw*rh];
 	for (y=0; y<rh; y++)
 		for (x=0; x<rw; x++){
 			q[rw*y+x] = src[sw*(y*sh/rh)+(x*sw/rw)];
@@ -317,8 +317,8 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 		samples[i] = new float[sourceWidth];
 	}
 
-	unsigned char * resultImage = (unsigned char*)malloc((resultHeight * resultPitch) * sizeof(unsigned char));
-	memset(resultImage, 0, (resultHeight * resultPitch) * sizeof(unsigned char));
+	unsigned char * resultImage = new unsigned char[resultHeight * resultPitch];
+	std::fill(resultImage, resultImage + (resultHeight*resultPitch), 0);
 
 	//Resample time
 	int resultY = 0;
@@ -336,21 +336,21 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 		}
 
 		//Put channel sample data into resampler
-		for (int c = 0; c < PIXELCHANNELS; c++)         
+		for (int c = 0; c < PIXELCHANNELS; c++)
 		{
 			if (!resamplers[c]->put_line(&samples[c][0]))
 			{
 				printf("Out of memory!\n");
 				return NULL;
 			}
-		}         
+		}
 
 		//Perform resample and Copy components from resampler result samples to image buffer
 		for ( ; ; )
 		{
 			int comp_index;
 			for (comp_index = 0; comp_index < PIXELCHANNELS; comp_index++)
-			{	
+			{
 				const float* resultSamples = resamplers[comp_index]->get_line();
 				if (!resultSamples)
 					break;
@@ -364,9 +364,9 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 					*resultPixel = (unsigned char)c;
 					resultPixel += PIXELSIZE;
 				}
-			}   	  
+			}
 			if (comp_index < PIXELCHANNELS)
-				break; 
+				break;
 
 			resultY++;
 		}
@@ -440,7 +440,7 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 					(int)(((((float)PIXR(tl))*(1.0f-fxc))+(((float)PIXR(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXR(bl))*(1.0f-fxc))+(((float)PIXR(br))*(fxc)))*(fyc)),
 					(int)(((((float)PIXG(tl))*(1.0f-fxc))+(((float)PIXG(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXG(bl))*(1.0f-fxc))+(((float)PIXG(br))*(fxc)))*(fyc)),
 					(int)(((((float)PIXB(tl))*(1.0f-fxc))+(((float)PIXB(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXB(bl))*(1.0f-fxc))+(((float)PIXB(br))*(fxc)))*(fyc))
-					);				
+					);
 			}
 	} else {
 		//Stairstepping
@@ -483,7 +483,7 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 						(int)(((((float)PIXR(tl))*(1.0f-fxc))+(((float)PIXR(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXR(bl))*(1.0f-fxc))+(((float)PIXR(br))*(fxc)))*(fyc)),
 						(int)(((((float)PIXG(tl))*(1.0f-fxc))+(((float)PIXG(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXG(bl))*(1.0f-fxc))+(((float)PIXG(br))*(fxc)))*(fyc)),
 						(int)(((((float)PIXB(tl))*(1.0f-fxc))+(((float)PIXB(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXB(bl))*(1.0f-fxc))+(((float)PIXB(br))*(fxc)))*(fyc))
-						);				
+						);
 				}
 			free(oq);
 			oq = q;

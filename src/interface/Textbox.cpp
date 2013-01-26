@@ -125,20 +125,20 @@ void Textbox::OnContextMenuAction(int item)
 void Textbox::cutSelection()
 {
 	char * clipboardText;
-	clipboardText = clipboard_pull_text();
+	clipboardText = ClipboardPull();
 	std::string newText = std::string(clipboardText);
 	free(clipboardText);
 	if(HasSelection())
 	{
 		if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())
 			return;
-		clipboard_push_text((char*)backingText.substr(getLowerSelectionBound(), getHigherSelectionBound()-getLowerSelectionBound()).c_str());
+		ClipboardPush((char*)backingText.substr(getLowerSelectionBound(), getHigherSelectionBound()-getLowerSelectionBound()).c_str());
 		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 		cursor = getLowerSelectionBound(); 
 	}
 	else
 	{
-		clipboard_push_text((char*)backingText.c_str());
+		ClipboardPush((char*)backingText.c_str());
 		backingText.clear();
 	}
 	ClearSelection();
@@ -181,7 +181,7 @@ void Textbox::selectAll()
 void Textbox::pasteIntoSelection()
 {
 	char * clipboardText;
-	clipboardText = clipboard_pull_text();
+	clipboardText = ClipboardPull();
 	std::string newText = std::string(clipboardText);
 	free(clipboardText);
 	if(HasSelection())

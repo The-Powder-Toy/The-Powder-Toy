@@ -146,6 +146,14 @@ GameController::GameController():
 
 	commandInterface = new LuaScriptInterface(this, gameModel);//new TPTScriptInterface();
 	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
+<<<<<<< HEAD
+=======
+
+	commandInterface->OnBrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().X);
+	commandInterface->OnActiveToolChanged(0, gameModel->GetActiveTool(0));
+	commandInterface->OnActiveToolChanged(1, gameModel->GetActiveTool(1));
+	commandInterface->OnActiveToolChanged(2, gameModel->GetActiveTool(2));
+>>>>>>> 12e3802bf4843dc5d1af1812ce7496bd3e7869b3
 
 	//sim = new Simulation();
 	Client::Ref().AddListener(this);
@@ -915,6 +923,11 @@ void GameController::SetActiveMenu(Menu * menu)
 		gameModel->SetColourSelectorVisibility(false);
 }
 
+std::vector<Menu*> GameController::GetMenuList()
+{
+	return gameModel->GetMenuList();
+}
+
 void GameController::SetActiveTool(int toolSelection, Tool * tool)
 {
 	gameModel->SetActiveTool(toolSelection, tool);
@@ -926,7 +939,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 		{
 			gameModel->GetRenderer()->gravityZonesEnabled = true;
 		}
-	}	
+	}
 }
 
 void GameController::OpenSearch()
@@ -1146,7 +1159,7 @@ void GameController::OpenSaveWindow()
 				new ServerSaveActivity(tempSave, new SaveUploadedCallback(this));
 			}
 			else
-			{				
+			{
 				SaveInfo tempSave(0, 0, 0, 0, gameModel->GetUser().Username, "");
 				tempSave.SetGameSave(gameSave);
 				new ServerSaveActivity(tempSave, new SaveUploadedCallback(this));
@@ -1197,7 +1210,7 @@ void GameController::SaveAsCurrent()
 				new ServerSaveActivity(tempSave, true, new SaveUploadedCallback(this));
 			}
 			else
-			{				
+			{
 				SaveInfo tempSave(0, 0, 0, 0, gameModel->GetUser().Username, "");
 				tempSave.SetGameSave(gameSave);
 				new ServerSaveActivity(tempSave, true, new SaveUploadedCallback(this));
@@ -1367,4 +1380,3 @@ void GameController::RunUpdater()
 	Exit();
 	new UpdateActivity();
 }
-

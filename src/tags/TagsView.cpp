@@ -151,6 +151,11 @@ void TagsView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 void TagsView::addTag()
 {
+	if (tagInput->GetText().length() < 4)
+	{
+		new ErrorMessage("Tag not long enough", "Must be at least 4 letters");
+		return;
+	}
 	try
 	{
 		c->AddTag(tagInput->GetText());

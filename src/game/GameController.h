@@ -97,6 +97,7 @@ public:
 	void SetDecoration();
 	void ShowGravityGrid();
 	void SetActiveMenu(Menu * menu);
+	std::vector<Menu*> GetMenuList();
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void SetActiveColourPreset(int preset);
 	void SetColour(ui::Colour colour);

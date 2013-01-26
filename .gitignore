@@ -8,6 +8,7 @@
 *.la
 *~
 *.pref
+*.lua
 stdout.txt
 stderr.txt
 build/*
@@ -47,6 +48,8 @@ Makefile.me
 *.project
 *.cproject
 *.settings
+*.cbp
+*.layout
 config.log
 *.sconsign.dblite
 *.sconf_temp

@@ -16,7 +16,7 @@ Thumbnail::Thumbnail(const Thumbnail & thumb):
 	//Ensure the actual thumbnail data is copied
 	if(thumb.Data)
 	{
-		Data = (pixel *)malloc((thumb.Size.X*thumb.Size.Y) * PIXELSIZE);
+		Data = new pixel[thumb.Size.X*thumb.Size.Y];
 		memcpy(Data, thumb.Data, (thumb.Size.X*thumb.Size.Y) * PIXELSIZE);
 	}
 	else
@@ -33,7 +33,7 @@ Thumbnail::Thumbnail(int _id, int _datestamp, pixel * _data, ui::Point _size):
 {
 	if(_data)
 	{
-		Data = (pixel *)malloc((_size.X*_size.Y) * PIXELSIZE);
+		Data = new pixel[_size.X*_size.Y];
 		memcpy(Data, _data, (_size.X*_size.Y) * PIXELSIZE);
 	}
 	else
@@ -69,14 +69,12 @@ void Thumbnail::Resize(ui::Point newSize)
 		Data = Graphics::resample_img(thumbData, Size.X, Size.Y, Size.X * scaleFactor, Size.Y * scaleFactor);
 		Size.X *= scaleFactor;
 		Size.Y *= scaleFactor;
-		free(thumbData);
+		delete thumbData;
 	}
 }
 
 Thumbnail::~Thumbnail()
 {
 	if(Data)
-	{
-		free(Data);
-	}
+		delete Data;
 }

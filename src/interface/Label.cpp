@@ -211,11 +211,11 @@ void Label::copySelection()
 	std::string currentText = text;
 
 	if(selectionIndex1 > selectionIndex0) {
-		clipboard_push_text((char*)currentText.substr(selectionIndex0, selectionIndex1-selectionIndex0).c_str());
+		ClipboardPush((char*)currentText.substr(selectionIndex0, selectionIndex1-selectionIndex0).c_str());
 	} else if(selectionIndex0 > selectionIndex1) {
-		clipboard_push_text((char*)currentText.substr(selectionIndex1, selectionIndex0-selectionIndex1).c_str());
+		ClipboardPush((char*)currentText.substr(selectionIndex1, selectionIndex0-selectionIndex1).c_str());
 	} else {
-		clipboard_push_text((char*)currentText.c_str());
+		ClipboardPush((char*)currentText.c_str());
 	}
 }
 

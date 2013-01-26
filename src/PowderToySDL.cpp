@@ -45,6 +45,15 @@
 
 using namespace std;
 
+#if defined(USE_SDL) && defined(LIN)
+#include <SDL_syswm.h>
+#endif
+#if defined(USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+SDL_SysWMinfo sdl_wminfo;
+Atom XA_CLIPBOARD, XA_TARGETS;
+#endif
+
+char *clipboardText = NULL;
 
 #ifdef WIN
 extern "C" IMAGE_DOS_HEADER __ImageBase;
@@ -55,6 +64,79 @@ int desktopWidth = 1280, desktopHeight = 1024;
 SDL_Surface * sdl_scrn;
 int scale = 1;
 bool fullscreen = false;
+
+void ClipboardPush(char * text)
+{
+	if (clipboardText != NULL) {
+		free(clipboardText);
+		clipboardText = NULL;
+	}
+	clipboardText = mystrdup(text);
+#ifdef MACOSX
+	PasteboardRef newclipboard;
+
+	if (PasteboardCreate(kPasteboardClipboard, &newclipboard)!=noErr) return;
+	if (PasteboardClear(newclipboard)!=noErr) return;
+	PasteboardSynchronize(newclipboard);
+
+	CFDataRef data = CFDataCreate(kCFAllocatorDefault, (const UInt8*)text, strlen(text));
+	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);
+#elif defined(WIN)
+	if (OpenClipboard(NULL))
+	{
+		HGLOBAL cbuffer;
+		char * glbuffer;
+
+		EmptyClipboard();
+
+		cbuffer = GlobalAlloc(GMEM_DDESHARE, strlen(text)+1);
+		glbuffer = (char*)GlobalLock(cbuffer);
+
+		strcpy(glbuffer, text);
+
+		GlobalUnlock(cbuffer);
+		SetClipboardData(CF_TEXT, cbuffer);
+		CloseClipboard();
+	}
+#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+	sdl_wminfo.info.x11.lock_func();
+	XSetSelectionOwner(sdl_wminfo.info.x11.display, XA_CLIPBOARD, sdl_wminfo.info.x11.window, CurrentTime);
+	XFlush(sdl_wminfo.info.x11.display);
+	sdl_wminfo.info.x11.unlock_func();
+#else
+	printf("Not implemented: put text on clipboard \"%s\"\n", text);
+#endif
+}
+
+char * ClipboardPull()
+{
+#ifdef MACOSX
+	printf("Not implemented: get text from clipboard\n");
+#elif defined(WIN)
+	if (OpenClipboard(NULL))
+	{
+		HANDLE cbuffer;
+		char * glbuffer;
+
+		cbuffer = GetClipboardData(CF_TEXT);
+		glbuffer = (char*)GlobalLock(cbuffer);
+		GlobalUnlock(cbuffer);
+		CloseClipboard();
+		if(glbuffer!=NULL){
+			return mystrdup(glbuffer);
+		}// else {
+		//	return mystrdup("");
+		//}
+	}
+#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+	printf("Not implemented: get text from clipboard\n");
+#else
+	printf("Not implemented: get text from clipboard\n");
+#endif
+	if (clipboardText)
+		return mystrdup(clipboardText);
+	return mystrdup("");
+}
 
 #ifdef OGLI
 void blit()
@@ -362,6 +444,50 @@ void EngineProcess()
 				}
 				break;
 #endif
+#if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+			case SDL_SYSWMEVENT:
+				if (event.syswm.msg->subsystem != SDL_SYSWM_X11)
+					break;
+				sdl_wminfo.info.x11.lock_func();
+				XEvent xe = event.syswm.msg->event.xevent;
+				if (xe.type==SelectionClear)
+				{
+					if (clipboardText != NULL) {
+						free(clipboardText);
+						clipboardText = NULL;
+					}
+				}
+				else if (xe.type==SelectionRequest)
+				{
+					XEvent xr;
+					xr.xselection.type = SelectionNotify;
+					xr.xselection.requestor = xe.xselectionrequest.requestor;
+					xr.xselection.selection = xe.xselectionrequest.selection;
+					xr.xselection.target = xe.xselectionrequest.target;
+					xr.xselection.property = xe.xselectionrequest.property;
+					xr.xselection.time = xe.xselectionrequest.time;
+					if (xe.xselectionrequest.target==XA_TARGETS)
+					{
+						// send list of supported formats
+						Atom targets[] = {XA_TARGETS, XA_STRING};
+						xr.xselection.property = xe.xselectionrequest.property;
+						XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, XA_ATOM, 32, PropModeReplace, (unsigned char*)targets, (int)(sizeof(targets)/sizeof(Atom)));
+					}
+					// TODO: Supporting more targets would be nice
+					else if (xe.xselectionrequest.target==XA_STRING && clipboardText)
+					{
+						XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, xe.xselectionrequest.target, 8, PropModeReplace, (unsigned char*)clipboardText, strlen(clipboardText)+1);
+					}
+					else
+					{
+						// refuse clipboard request
+						xr.xselection.property = None;
+					}
+					XSendEvent(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, 0, 0, &xr);
+				}
+				sdl_wminfo.info.x11.unlock_func();
+				continue;
+#endif
 			}
 			event.type = 0; //Clear last event
 		}
@@ -485,6 +611,15 @@ int main(int argc, char * argv[])
 		fprintf(stderr, "Initializing Glew: %d\n", status);
 		exit(-1);
 	}
+#endif
+#if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+	SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
+	SDL_VERSION(&sdl_wminfo.version);
+	SDL_GetWMInfo(&sdl_wminfo);
+	sdl_wminfo.info.x11.lock_func();
+	XA_CLIPBOARD = XInternAtom(sdl_wminfo.info.x11.display, "CLIPBOARD", 1);
+	XA_TARGETS = XInternAtom(sdl_wminfo.info.x11.display, "TARGETS", 1);
+	sdl_wminfo.info.x11.unlock_func();
 #endif
 	ui::Engine::Ref().g = new Graphics();
 	ui::Engine::Ref().Scale = scale;

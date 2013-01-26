@@ -49,14 +49,6 @@ std::string URLEscape(std::string source)
 	return finalString;
 }
 
-#if defined(USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-#include <SDL/SDL_syswm.h>
-SDL_SysWMinfo sdl_wminfo;
-Atom XA_CLIPBOARD, XA_TARGETS;
-#endif
-
-char *clipboard_text = NULL;
-
 char *exe_name(void)
 {
 #if defined(WIN)
@@ -365,77 +357,6 @@ vector2d v2d_new(float x, float y)
 {
 	vector2d result = {x, y};
 	return result;
-}
-
-void clipboard_push_text(char * text)
-{
-#ifdef MACOSX
-	PasteboardRef newclipboard;
-
-	if (PasteboardCreate(kPasteboardClipboard, &newclipboard)!=noErr) return;
-	if (PasteboardClear(newclipboard)!=noErr) return;
-	PasteboardSynchronize(newclipboard);
-
-	CFDataRef data = CFDataCreate(kCFAllocatorDefault, (const UInt8*)text, strlen(text));
-	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);
-#elif defined(WIN)
-	if (OpenClipboard(NULL))
-	{
-		HGLOBAL cbuffer;
-		char * glbuffer;
-
-		EmptyClipboard();
-
-		cbuffer = GlobalAlloc(GMEM_DDESHARE, strlen(text)+1);
-		glbuffer = (char*)GlobalLock(cbuffer);
-
-		strcpy(glbuffer, text);
-
-		GlobalUnlock(cbuffer);
-		SetClipboardData(CF_TEXT, cbuffer);
-		CloseClipboard();
-	}
-#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-	if (clipboard_text!=NULL) {
-		free(clipboard_text);
-		clipboard_text = NULL;
-	}
-	clipboard_text = mystrdup(text);
-	sdl_wminfo.info.x11.lock_func();
-	XSetSelectionOwner(sdl_wminfo.info.x11.display, XA_CLIPBOARD, sdl_wminfo.info.x11.window, CurrentTime);
-	XFlush(sdl_wminfo.info.x11.display);
-	sdl_wminfo.info.x11.unlock_func();
-#else
-	printf("Not implemented: put text on clipboard \"%s\"\n", text);
-#endif
-}
-
-char * clipboard_pull_text()
-{
-#ifdef MACOSX
-	printf("Not implemented: get text from clipboard\n");
-#elif defined(WIN)
-	if (OpenClipboard(NULL))
-	{
-		HANDLE cbuffer;
-		char * glbuffer;
-
-		cbuffer = GetClipboardData(CF_TEXT);
-		glbuffer = (char*)GlobalLock(cbuffer);
-		GlobalUnlock(cbuffer);
-		CloseClipboard();
-		if(glbuffer!=NULL){
-			return mystrdup(glbuffer);
-		} else {
-			return mystrdup("");
-		}
-	}
-#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-	printf("Not implemented: get text from clipboard\n");
-#else
-	printf("Not implemented: get text from clipboard\n");
-#endif
-	return mystrdup("");
 }
 
 int register_extension()
