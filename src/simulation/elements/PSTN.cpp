@@ -176,7 +176,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 				} else 
 					break;
 			}
-		}
+		} 
 		for(int c = 1; c < MAX_FRAME; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
@@ -228,7 +228,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			r = sim->pmap[posY][posX];
 			if(!r) {
 				spaces++;
-				tempParts[currentPos++] = 0;
+				tempParts[currentPos++] = -1;
 				if(spaces >= amount)
 					break;
 			} else {
@@ -244,7 +244,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			int possibleMovement = 0;
 			for(int j = currentPos-1; j >= 0; j--) {
 				int jP = tempParts[j];
-				if(!jP) {
+				if(jP == -1) {
 					possibleMovement++;
 					continue;
 				}
