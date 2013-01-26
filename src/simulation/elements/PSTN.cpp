@@ -49,12 +49,14 @@ Element_PSTN::Element_PSTN()
 
 //#TPT-Directive ElementHeader Element_PSTN static int tempParts[128];
 int Element_PSTN::tempParts[128];
+//#TPT-Directive ElementHeader Element_PSTN static int tempPartAmount[128];
+int Element_PSTN::tempPartAmount[128];
 
 #define PISTON_INACTIVE	0x00
 #define PISTON_RETRACT	0x01
 #define PISTON_EXTEND	0x02
 #define MAX_FRAME		0x0F
-#define DEFAULT_LIMIT	0x1F
+#define DEFAULT_LIMIT	0x06
 
 //#TPT-Directive ElementHeader Element_PSTN static int update(UPDATE_FUNC_ARGS)
 int Element_PSTN::update(UPDATE_FUNC_ARGS)
@@ -155,7 +157,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_PSTN static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract, int callDepth = 0)
 int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract, int callDepth)
 {
-	bool foundEnd = false, foundParts = false;
+	bool foundParts = false;
 	int posX, posY, r, spaces = 0, currentPos = 0;
 	r = sim->pmap[stackY][stackX];
 	if(!callDepth && (r&0xFF) == PT_FRME) {
@@ -191,6 +193,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 		return biggestMove;
 	}
 	if(retract){
+		bool foundEnd = false;
 		//Warning: retraction does not scan to see if it has space
 		for(posX = stackX, posY = stackY; currentPos < size; posX += directionX, posY += directionY) {
 			if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
@@ -218,36 +221,42 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 		if(!foundParts && foundEnd)
 			return amount;		
 	} else {
-		for(posX = stackX, posY = stackY; currentPos < size; posX += directionX, posY += directionY) {
+		for(posX = stackX, posY = stackY; currentPos < size + amount; posX += directionX, posY += directionY) {
 			if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
 				break;
 			}
 			r = sim->pmap[posY][posX];
 			if(!r) {
 				spaces++;
-				foundEnd = true;
-				if(spaces >= amount)
-					break;
+				tempParts[currentPos++] = 0;
 			} else {
 				foundParts = true;
-				tempParts[currentPos++] = r>>8;
+				if(currentPos < size)
+					tempParts[currentPos++] = r>>8;
+				else 
+					break;
 			}
 		}
-		if(amount > spaces)
-			amount = spaces;
-		if(foundParts && foundEnd) {
+		if(foundParts && spaces){
 			//Move particles
-			for(int j = 0; j < currentPos; j++) {
+			int possibleMovement = 0;
+			for(int j = currentPos-1; j >= 0; j--) {
 				int jP = tempParts[j];
+				if(!jP) {
+					possibleMovement++;
+					continue;
+				}
+				if(!possibleMovement)
+					continue;
 				sim->pmap[(int)(sim->parts[jP].y + 0.5f)][(int)(sim->parts[jP].x + 0.5f)] = 0;
-				sim->parts[jP].x += (float)(directionX*amount);
-				sim->parts[jP].y += (float)(directionY*amount);
+				sim->parts[jP].x += (float)(directionX*possibleMovement);
+				sim->parts[jP].y += (float)(directionY*possibleMovement);
 				sim->pmap[(int)(sim->parts[jP].y + 0.5f)][(int)(sim->parts[jP].x + 0.5f)] = sim->parts[jP].type|(jP<<8);
 			}
-			return amount;
+			return possibleMovement;
 		}
-		if(!foundParts && foundEnd)
-			return amount;
+		if(!foundParts && spaces)
+			return spaces;
 	}
 	return 0;
 }
