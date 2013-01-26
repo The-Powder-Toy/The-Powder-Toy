@@ -2630,9 +2630,14 @@ std::vector<unsigned int> Renderer::GetRenderMode()
 
 void Renderer::CompileDisplayMode()
 {
+	int old_display_mode = display_mode;
 	display_mode = 0;
 	for(int i = 0; i < display_modes.size(); i++)
 		display_mode |= display_modes[i];
+	if(!(display_mode & DISPLAY_PERS) && (old_display_mode & DISPLAY_PERS))
+	{
+		ClearAccumulation();
+	}
 }
 
 void Renderer::AddDisplayMode(unsigned int mode)
