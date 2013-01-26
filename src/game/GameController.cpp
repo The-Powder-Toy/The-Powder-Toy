@@ -146,14 +146,14 @@ GameController::GameController():
 
 	commandInterface = new LuaScriptInterface(this, gameModel);//new TPTScriptInterface();
 	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
-<<<<<<< HEAD
+/*<<<<<<< HEAD
 =======
 
 	commandInterface->OnBrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().X);
 	commandInterface->OnActiveToolChanged(0, gameModel->GetActiveTool(0));
 	commandInterface->OnActiveToolChanged(1, gameModel->GetActiveTool(1));
 	commandInterface->OnActiveToolChanged(2, gameModel->GetActiveTool(2));
->>>>>>> 12e3802bf4843dc5d1af1812ce7496bd3e7869b3
+>>>>>>> 12e3802bf4843dc5d1af1812ce7496bd3e7869b3 */
 
 	//sim = new Simulation();
 	Client::Ref().AddListener(this);

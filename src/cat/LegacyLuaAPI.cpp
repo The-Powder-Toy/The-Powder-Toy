@@ -1033,14 +1033,14 @@ int luatpt_set_property(lua_State* l)
 		} else {
 			t = luaL_optint(l, 2, 0);
 		}
-<<<<<<< HEAD
+/* <<<<<<< HEAD
 		//TODO Element ID check
 		//if (format == 3 && (t<0 || t>=PT_NUM))
 		//	return luaL_error(l, "Unrecognised element number '%d'", t);
 =======
 		if (!strcmp(prop,"type") && (t<0 || t>=PT_NUM || !luacon_sim->elements[t].Enabled))
 			return luaL_error(l, "Unrecognised element number '%d'", t);
->>>>>>> 12e3802bf4843dc5d1af1812ce7496bd3e7869b3
+>>>>>>> 12e3802bf4843dc5d1af1812ce7496bd3e7869b3 */
 	} else {
 		name = (char*)luaL_optstring(l, 2, "dust");
 		//if (!console_parse_type(name, &t, NULL))
@@ -1731,17 +1731,17 @@ int luatpt_heat(lua_State* l)
 }
 int luatpt_cmode_set(lua_State* l)
 {
-<<<<<<< HEAD
+// <<<<<<< HEAD
 	//TODO IMPLEMENT
     return luaL_error(l, "cmode_set: Deprecated");
-=======
+/* =======
 	int cmode = luaL_optint(l, 1, 0)+1;
 	if (cmode >= 0 && cmode <= 10)
 		luacon_controller->LoadRenderPreset(cmode);
 	else
 		return luaL_error(l, "Invalid display mode");
 	return 0;
->>>>>>> 12e3802bf4843dc5d1af1812ce7496bd3e7869b3
+>>>>>>> 12e3802bf4843dc5d1af1812ce7496bd3e7869b3 */
 }
 int luatpt_setfire(lua_State* l)
 {
