@@ -1818,7 +1818,7 @@ void GameView::OnDraw()
 			{
 				activeBrush->RenderFill(ren, finalCurrentMouse);
 			}
-			if (drawMode == DrawPoints || drawMode==DrawLine)
+			if (drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown))
 			{
 				if(wallBrush)
 				{

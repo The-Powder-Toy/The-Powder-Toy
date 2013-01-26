@@ -315,6 +315,7 @@ tpt.partsdata = nil");
 	for(i = 0; i < PT_NUM; i++)
 	{
 		lua_el_mode[i] = 0;
+		lua_gr_func[i] = 0;
 	}
 
 }
@@ -1163,7 +1164,6 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		if(lua_type(l, -1) == LUA_TFUNCTION)
 		{
 			lua_gr_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
-			luacon_sim->elements[id].Graphics = &luacon_graphicsReplacement;
 		}
 		else if(lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 		{
@@ -1332,7 +1332,6 @@ int LuaScriptInterface::elements_property(lua_State * l)
 			{
 				lua_pushvalue(l, 3);
 				lua_gr_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
-				luacon_sim->elements[id].Graphics = &luacon_graphicsReplacement;
 			}
 			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 			{
