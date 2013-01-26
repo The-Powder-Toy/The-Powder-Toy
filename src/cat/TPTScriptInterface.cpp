@@ -199,6 +199,8 @@ std::string TPTScriptInterface::FormatCommand(std::string command)
 	return outputData;
 }
 AnyType TPTScriptInterface::boxS_brainfuck(std::deque<std::string> *words) {
+	if((*words).empty())
+		return NumberType(0); // words CAN'T be empty
 	string code = (*words)[0];
 	Simulation *sim = m->GetSimulation(); 
 
