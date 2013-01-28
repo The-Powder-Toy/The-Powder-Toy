@@ -78,9 +78,6 @@ namespace pim
 		//Instruction * instructions;
 
 		int programCounter;
-
-		void emit(std::string opcode);
-		void emit(int constant);
 	public:
 		VirtualMachine(Simulation * sim);
 		int OpcodeArgSize(int opcode);

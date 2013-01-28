@@ -1466,6 +1466,7 @@ int LuaScriptInterface::virtualMachine_loadProgram(lua_State * l)
 
 	pim::VirtualMachine * machine = new pim::VirtualMachine(luacon_sim);
 	machine->LoadProgram(programData);
+	machine->Compile();
 
 	lua_pushlightuserdata(l, machine);
 	return 1;
