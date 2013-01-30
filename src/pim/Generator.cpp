@@ -43,6 +43,15 @@ namespace pim
 			program.push_back((constant>>24) & 0xFF);
 		}
 
+		void Generator::writeConstantPlaceholderOffset(int value, int * offset)
+		{
+			valueOffsetPlaceholders.push_back(ValueOffsetPlaceholder(program.size(), std::pair<int, int*>(value, offset)));
+			program.push_back(0);
+			program.push_back(0);
+			program.push_back(0);
+			program.push_back(0);
+		}
+
 		void Generator::writeConstantPlaceholder(std::string label)
 		{
 			placeholders.push_back(Placeholder(program.size(), label));
@@ -111,6 +120,22 @@ namespace pim
 
 				std::cout << "Setting value placeholder at " << cPosition.first << " with " << value << std::endl;
 						
+
+				program[cPosition.first] = value & 0xFF;
+				program[cPosition.first+1] = (value >> 8) & 0xFF;
+				program[cPosition.first+2] = (value >> 16) & 0xFF;
+				program[cPosition.first+3] = (value >> 24) & 0xFF;
+			}
+
+			for(std::vector<ValueOffsetPlaceholder>::iterator iter = valueOffsetPlaceholders.begin(), end = valueOffsetPlaceholders.end(); iter != end; ++iter)
+			{
+				ValueOffsetPlaceholder cPosition = *iter;
+				int value = cPosition.second.first;
+				int offset = *cPosition.second.second;
+
+				std::cout << "Setting value placeholder at " << cPosition.first << " with " << value << " + " << offset << std::endl;
+						
+				value += offset;
 
 				program[cPosition.first] = value & 0xFF;
 				program[cPosition.first+1] = (value >> 8) & 0xFF;
@@ -224,6 +249,8 @@ namespace pim
 			scopes.push(currentScope);
 			Scope * prevScope = currentScope;
 			currentScope = new Scope();
+			currentScope->FrameSize += 4;	//Space for return address
+			currentScope->LocalFrameSize += 4;
 			defineLabel(label);
 
 			output << "." << label << std::endl;
@@ -236,6 +263,7 @@ namespace pim
 			currentScope = new Scope();
 			currentScope->Definitions.insert(currentScope->Definitions.begin(), prevScope->Definitions.begin(), prevScope->Definitions.end());
 			currentScope->FrameSize = prevScope->FrameSize;
+			currentScope->OldFrameSize = prevScope->OldFrameSize;
 			defineLabel(label);
 
 			output << "." << label << std::endl;
@@ -243,14 +271,25 @@ namespace pim
 
 		void Generator::PopScope()
 		{
-
-			writeOpcode(Opcode::Return);
+			writeOpcode(Opcode::Leave);
 			writeConstant(currentScope->LocalFrameSize);
 
-			output << "return " << currentScope->LocalFrameSize << std::endl;
+			output << "leave " << currentScope->LocalFrameSize << std::endl;
 
 			currentScope = scopes.top();
 			scopes.pop();
+		}
+
+		void Generator::ExitScope()
+		{
+			currentScope = scopes.top();
+			scopes.pop();
+		}
+
+		void Generator::Return()
+		{
+			writeOpcode(Opcode::Return);
+			output << "return" << std::endl;
 		}
 
 		void Generator::ScopeLabel(std::string label)
@@ -276,11 +315,11 @@ namespace pim
 
 		void Generator::ScopeVariable(std::string label)
 		{
-			currentScope->Definitions.push_back(Definition(label, variableType, currentScope->FrameSize));
+			currentScope->Definitions.push_back(Definition(label, variableType, currentScope->LocalFrameSize, currentScope));
 			currentScope->FrameSize += 4;
 			currentScope->LocalFrameSize += 4;
 
-			output << "#declare " << label << " " << currentScope->FrameSize-4 << std::endl;
+			output << "#declare " << label << " " << currentScope->LocalFrameSize-4 << std::endl;
 		}
 
 		void Generator::PushVariableAddress(std::string label)
@@ -291,7 +330,8 @@ namespace pim
 		void Generator::LoadVariable(std::string label)
 		{
 			writeOpcode(Opcode::Load);
-			writeConstant(currentScope->GetDefinition(label).StackPosition);
+			Definition d = currentScope->GetDefinition(label);
+			writeConstant(d.StackPosition+(currentScope->FrameSize-d.MyScope->FrameSize));
 
 			output << "load " << label << std::endl;
 		}
@@ -299,7 +339,10 @@ namespace pim
 		void Generator::StoreVariable(std::string label)
 		{
 			writeOpcode(Opcode::Store);
-			writeConstant(currentScope->GetDefinition(label).StackPosition);
+			Definition d = currentScope->GetDefinition(label);
+			writeConstant(d.StackPosition+(currentScope->FrameSize-d.MyScope->FrameSize));
+			//writeConstantPlaceholderOffset(currentScope->GetDefinition(label).StackPosition, &(currentScope->OldFrameSize));
+			//writeConstant(currentScope->GetDefinition(label).StackPosition);
 
 			output << "store " << label << std::endl;
 		}
@@ -505,11 +548,6 @@ namespace pim
 
 
 		void Generator::Call(int arguments, std::string label)
-		{
-
-		}
-
-		void Generator::Return()
 		{
 
 		}

@@ -40,16 +40,19 @@ namespace pim
 		{
 			enum { Integer = Token::IntegerSymbol, Decimal = Token::DecimalSymbol };
 		};
+		class Scope;
 		class Definition
 		{
 		public:
 			std::string Name;
 			int Type;
 			int StackPosition;
-			Definition(std::string name, int type, int position) :
+			Scope * MyScope;
+			Definition(std::string name, int type, int position, Scope * myScope) :
 				Type(type),
 				Name(name),
-				StackPosition(position)
+				StackPosition(position),
+				MyScope(myScope)
 			{
 
 			}
@@ -68,9 +71,11 @@ namespace pim
 			std::vector<Label> Labels;
 			int FrameSize;
 			int LocalFrameSize;
+			int OldFrameSize;
 			Scope():
 				FrameSize(0),
-				LocalFrameSize(0)
+				LocalFrameSize(0),
+				OldFrameSize(0)
 			{
 
 			}
@@ -100,6 +105,9 @@ namespace pim
 			typedef std::pair<int, int*> ValuePlaceholder;
 			std::vector<ValuePlaceholder> valuePlaceholders;
 
+			typedef std::pair<int, std::pair<int, int*> > ValueOffsetPlaceholder;
+			std::vector<ValueOffsetPlaceholder> valueOffsetPlaceholders;
+
 			typedef std::pair<int, std::string> PropertyPlaceholder;
 			std::vector<PropertyPlaceholder> propertyPlaceholders;
 
@@ -116,6 +124,7 @@ namespace pim
 			void writeConstant(int constant);
 			void writeConstantPlaceholder(std::string label);
 			void writeConstantPlaceholder(int * value);
+			void writeConstantPlaceholderOffset(int value, int * offset);
 			void writeConstantMacroPlaceholder(std::string macro);
 			void writeConstantPropertyPlaceholder(std::string property);
 		
@@ -130,6 +139,7 @@ namespace pim
 			void PushLocalScope(std::string label);
 			void LocalEnter();
 			void PopScope();
+			void ExitScope();
 
 			void ScopeLabel(std::string label);
 			void ScopeVariableType(int type);

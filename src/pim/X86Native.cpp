@@ -14,8 +14,12 @@ namespace pim
 		//int * esi = malloc(1024*1024);
 		emit("BE");					//mov esi, machineStack
 		emit((intptr_t)esi);
+		//emit("81 EC");				//sub esp, 12
+		//emit(12);
+#ifdef DEBUG
 		emit("81 C4");				//add esp, 4
 		emit(4);
+#endif
 		while(programCounter < romSize)
 		{
 			Word argument = rom[programCounter].Parameter;
@@ -270,21 +274,28 @@ namespace pim
 				emitPlaceholder(argument.Integer);
 				break;
 			case Opcode::Return:
-				emit("81 C7");									//add edi, constant
+				emit("C3");										//ret
+				break;
+			case Opcode::Leave:
+				//emit("81 C7");								//add edi, constant
+				emit("81 C4");									//add esp, constant
 				emit(argument.Integer);
 				break;
 			case Opcode::LocalEnter:
-				emit("81 EF");									//sub edi constant
+				//emit("81 EF");								//sub edi constant
+				emit("81 EC");									//sub esp constant
 				emit(argument.Integer);
 				break;
 			}
 			//std::cout << programStack << std::endl;
 			programCounter++;
 		}
+#ifdef DEBUG
 		emit("81 EC");				//sub esp, 4
+		//emit("81 EC");			//sub esp, 4
 		emit(4);
-		emit("C9");					//leave
-		emit("C3");					//ret
+		emit("C9");					//leave			//When -fomit-frame-pointers is used, don't 'leave', since ebp isn't on the stack
+#endif
 		for(std::map<int, int>::iterator iter = placeholders.begin(), end = placeholders.end(); iter != end; ++iter)
 		{
 			std::pair<int, int> placeholder = *iter;
