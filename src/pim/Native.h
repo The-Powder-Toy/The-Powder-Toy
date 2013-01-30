@@ -6,6 +6,6 @@ namespace pim
 	{
 	public:
 		Native()  {}
-		virtual std::vector<unsigned char> Compile(Instruction * rom, int romSize) {}
+		virtual std::vector<unsigned char> Compile(Simulation * sim, Instruction * rom, int romSize) {}
 	};
 }

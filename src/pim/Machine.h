@@ -59,6 +59,8 @@ namespace pim
 		int romSize;
 		int romMask;
 
+		intptr_t nativeRom;
+
 		unsigned char * compiledRom;
 		int compiledRomSize;
 

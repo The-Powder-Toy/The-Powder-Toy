@@ -417,13 +417,13 @@ namespace pim
 	void VirtualMachine::Compile()
 	{
 		Native * native = new X86Native();
-		std::vector<unsigned char> executableCode = native->Compile(rom, romSize);
+		std::vector<unsigned char> executableCode = native->Compile(sim, rom, romSize);
 		Client::Ref().WriteFile(executableCode, "code.x");
 
 		unsigned char * romAddress = new unsigned char[executableCode.size()+8];
 		std::fill(romAddress, romAddress+executableCode.size()+8, 0x90);	//Fill with NOP for debugging
 		std::copy(executableCode.begin(), executableCode.end(), romAddress+4);
-
+		nativeRom = (intptr_t)romAddress;
 
 		delete native;
 	}
@@ -435,12 +435,15 @@ namespace pim
 
 	void VirtualMachine::CallCompiled(int entryPoint)
 	{
-
+		void (*nativeFunction)(int, int, int) = (void(*)(int, int, int))nativeRom;
+		int arg3 = CSPop().Integer;
+		int arg2 = CSPop().Integer;
+		int arg1 = CSPop().Integer;
+		nativeFunction(arg1, arg2, arg3);
 	}
 
 	void VirtualMachine::Call(std::string entryPoint)
 	{
-
 	}
 
 	void VirtualMachine::Call(int entryPoint)
