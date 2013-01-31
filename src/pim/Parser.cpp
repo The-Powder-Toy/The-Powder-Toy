@@ -50,7 +50,6 @@ namespace pim
 			expect(Token::FunctionSymbol);
 
 			functionName = token.Source;
-			//generator->ScopeLabel(functionName);	//Function name
 			generator->PushScope(functionName);
 			expect(Token::Identifier);
 
@@ -62,9 +61,10 @@ namespace pim
 			}
 			block();
 			expect(Token::EndSymbol);
+
+			generator->ExitScope();
 			generator->Return();
 
-			generator->PopScope();
 		}
 		
 		/*
@@ -401,7 +401,7 @@ namespace pim
 			generator->Jump(loopLabel+"Next");
 			
 			generator->ScopeLabel(loopLabel+"End");
-			generator->Return();
+			//generator->Return();
 			generator->PopScope();
 			expect(Token::EndSymbol);
 		}

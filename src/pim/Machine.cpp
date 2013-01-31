@@ -251,11 +251,12 @@ namespace pim
 		case Opcode::JumpLess:
 		case Opcode::JumpLessEqual:
 		case Opcode::Jump:
-		case Opcode::Return:
+		case Opcode::Leave:
 		case Opcode::LocalEnter:
 		case Opcode::LoadProperty:
 		case Opcode::StoreProperty:
 			return 4;
+		case Opcode::Return:
 		case Opcode::Discard:
 		case Opcode::Duplicate:
 		case Opcode::Add:
@@ -402,8 +403,10 @@ namespace pim
 			case Opcode::Jump:
 				programCounter = argument.Integer-1;
 				break;
-			case Opcode::Return:
+			case Opcode::Leave:
 				callStack += argument.Integer;
+				break;
+			case Opcode::Return:
 				break;
 			case Opcode::LocalEnter:
 				callStack -= argument.Integer;
@@ -425,6 +428,8 @@ namespace pim
 		std::fill(romAddress, romAddress+executableCode.size()+8, 0x90);	//Fill with NOP for debugging
 		std::copy(executableCode.begin(), executableCode.end(), romAddress+4);
 		nativeRom = (intptr_t)romAddress;
+		printf("%p\n", romAddress);
+		fflush(stdout);
 
 		delete native;
 	}
