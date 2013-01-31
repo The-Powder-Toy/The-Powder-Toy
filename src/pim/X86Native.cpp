@@ -230,7 +230,7 @@ namespace pim
 				emitPlaceholder(argument.Integer);
 				break;
 			case Opcode::JumpNotEqual:
-				emit("83 C6 04"); 								//add esi, 8
+				emit("83 C6 08"); 								//add esi, 8
 				emit("8B 46 FC");								//mov eax, [esi-4]
 				emit("3B 46 F8"); 								//cmp eax, [esi-8]
 				emit("74 05");									//je 8
