@@ -2,6 +2,7 @@ namespace pim
 {
 	struct Opcode
 	{
+		public:
 		enum
 		{
 			#define OPDEF(name) name, 

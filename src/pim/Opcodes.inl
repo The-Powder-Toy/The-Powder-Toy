@@ -1,4 +1,6 @@
 OPDEF(Load)
+OPDEF(ToFloat)
+OPDEF(ToInteger)
 OPDEF(Store)
 OPDEF(Constant)
 OPDEF(Increment)

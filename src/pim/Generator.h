@@ -5,6 +5,7 @@
 #include <stack>
 #include <iostream>
 #include "Token.h"
+#include "Types.h"
 namespace pim
 {
 	namespace compiler
@@ -35,10 +36,6 @@ namespace pim
 				return error;
 			}
 			~SymbolNotFoundException() throw() {};
-		};
-		class Type
-		{
-			enum { Integer = Token::IntegerSymbol, Decimal = Token::DecimalSymbol };
 		};
 		class Definition
 		{
@@ -88,6 +85,7 @@ namespace pim
 		class Generator
 		{
 			int variableType;
+			std::stack<int> typeStack;
 			std::stack<Scope*> scopes;
 			Scope * currentScope;
 			std::ostream & output;
@@ -109,6 +107,9 @@ namespace pim
 			std::vector<Label> labelPositions;
 
 			std::vector<unsigned char> program;
+
+			void pushType(int type);
+			void popType(int count);
 
 			void defineLabel(std::string label);
 			void writeOpcode(int opcode);
@@ -135,6 +136,7 @@ namespace pim
 			void ScopeVariableType(int type);
 			void ScopeVariable(std::string label);
 
+			void PushType(int type);
 			void PushVariableAddress(std::string label);
 //			void Store();
 			void LoadVariable(std::string label);
@@ -151,6 +153,8 @@ namespace pim
 			void Divide();
 			void Modulus();
 			void Negate();
+			void ToInteger();
+			void ToFloat();
 
 			void TransformParticle();
 			void CreateParticle();

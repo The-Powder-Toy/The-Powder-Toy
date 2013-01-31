@@ -1,6 +1,7 @@
 //Syntax analyser
 #include "Parser.h"
 #include "Format.h"
+#include "Types.h"
 namespace pim
 {
 	namespace compiler
@@ -106,7 +107,18 @@ namespace pim
 		*/
 		void Parser::argument()
 		{
-			generator->ScopeVariableType(token.Symbol);
+			int type;
+			switch(token.Symbol)
+			{
+				case Token::DecimalConstant:
+					type = DataType::Float;
+					break;
+				case Token::IntegerConstant:
+				case Token::ParticleConstant:
+					type = DataType::Integer;
+					break;
+			}
+			generator->ScopeVariableType(type);
 			if(!accept(Token::IntegerSymbol))
 				if(!accept(Token::DecimalSymbol))
 					if(!accept(Token::ParticleSymbol))
@@ -130,7 +142,18 @@ namespace pim
 		*/
 		void Parser::declaration()
 		{
-			generator->ScopeVariableType(token.Symbol);
+			int type;
+			switch(token.Symbol)
+			{
+				case Token::DecimalConstant:
+					type = DataType::Float;
+					break;
+				case Token::IntegerConstant:
+				case Token::ParticleConstant:
+					type = DataType::Integer;
+					break;
+			}
+			generator->ScopeVariableType(type);
 			if(!accept(Token::IntegerSymbol))
 				if(!accept(Token::DecimalSymbol))
 					if(!accept(Token::ParticleSymbol))
@@ -296,7 +319,7 @@ namespace pim
 			generator->PushLocalScope(loopLabel+"Start");
 			neighbourVariable = token.Source;
 			expect(Token::Identifier);
-			generator->ScopeVariableType(Token::IntegerConstant);
+			generator->ScopeVariableType(DataType::Integer);
 			generator->ScopeVariable(neighbourVariable);
 			generator->ScopeVariable(xVar);
 			generator->ScopeVariable(yVar);

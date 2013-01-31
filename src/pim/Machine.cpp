@@ -4,6 +4,7 @@
 #include <fstream>
 #include "Machine.h"
 #include "Opcodes.h"
+#include "Types.h"
 #include "simulation/Simulation.h"
 #include "X86Native.h"
 namespace pim

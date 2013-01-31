@@ -958,8 +958,8 @@ int LuaScriptInterface::updateVM(UPDATE_FUNC_ARGS)
 	machine->CSPush(i);
 	machine->CSPush(x);
 	machine->CSPush(y);
-	//machine->Call(0);
-	machine->CallCompiled(0);
+	machine->Call(0);
+	//machine->CallCompiled(0);
 
 
 	/*vm::VirtualMachine * vMachine = updateVirtualMachines[parts[i].type];
