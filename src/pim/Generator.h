@@ -131,11 +131,15 @@ namespace pim
 		
 		public:
 			Generator();
+			virtual ~Generator();
 
 			std::vector<unsigned char> Finish();
 
 			std::string UniqueLabel(std::string prefix);
 
+			void AssureType(int type);
+			void ForceType(int type);
+			
 			void PushScope(std::string label);
 			void PushLocalScope(std::string label);
 			void LocalEnter();
@@ -173,9 +177,6 @@ namespace pim
 			void KillParticle();
 			void LoadProperty(std::string property);
 			void StoreProperty(std::string property);
-
-			void IntegerToDecimal();
-			void DecimalToInteger();
 
 			void JumpEqual(std::string label);
 			void JumpNotEqual(std::string label);

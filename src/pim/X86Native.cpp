@@ -11,15 +11,10 @@ namespace pim
 		nativeRom.clear();
 		unsigned char * esi = new unsigned char[1024*1024];//malloc(1024*1024);
 		esi += 512;
-		//int * esi = malloc(1024*1024);
+		
 		emit("BE");					//mov esi, machineStack
 		emit((intptr_t)esi);
-		//emit("81 EC");				//sub esp, 12
-		//emit(12);
-#ifdef DEBUG
-		emit("81 C4");				//add esp, 4
-		emit(4);
-#endif
+
 		while(programCounter < romSize)
 		{
 			Word argument = rom[programCounter].Parameter;
@@ -221,6 +216,14 @@ namespace pim
 					emit("83 C6 08"); 							//add esi, 8
 				}
 				break;
+			case Opcode::ToFloat:
+				emit("DB 06");									//fild [esi]
+				emit("D9 1E");									//fstp [esi]
+				break;
+			case Opcode::ToInteger:
+				emit("D9 06");									//fld [esi]
+				emit("DB 1E");									//fistp [esi]
+				break;
 			case Opcode::JumpEqual:
 				emit("83 C6 08"); 								//add esi, 8
 				emit("8B 46 FC"); 								//mov eax, [esi-4]
@@ -290,12 +293,6 @@ namespace pim
 			//std::cout << programStack << std::endl;
 			programCounter++;
 		}
-#ifdef DEBUG
-		emit("81 EC");				//sub esp, 4
-		//emit("81 EC");			//sub esp, 4
-		emit(4);
-		emit("C9");					//leave			//When -fomit-frame-pointers is used, don't 'leave', since ebp isn't on the stack
-#endif
 		for(std::map<int, int>::iterator iter = placeholders.begin(), end = placeholders.end(); iter != end; ++iter)
 		{
 			std::pair<int, int> placeholder = *iter;

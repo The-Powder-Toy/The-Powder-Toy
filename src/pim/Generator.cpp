@@ -4,16 +4,22 @@
 #include "Format.h"
 #include "Generator.h"
 #include "Opcodes.h"
+#include "Exceptions.h"
 namespace pim
 {
 	namespace compiler
 	{
 		Generator::Generator() :
+			typeStack(),
 			output(std::cout),
 			labelCounter(0),
 			programCounter(0)
 		{
 
+		}
+
+		Generator::~Generator()
+		{
 		}
 
 		void Generator::defineLabel(std::string label)
@@ -331,12 +337,34 @@ namespace pim
 			}
 		}
 
+		void Generator::AssureType(int type)
+		{
+			int otherType = typeStack.top();
+
+			if(otherType != type)
+			{
+				if(otherType == DataType::Integer && type == DataType::Float)
+				{
+					ToFloat();
+				}
+				else if(otherType == DataType::Float && type == DataType::Integer)
+				{
+					ToInteger();
+				}
+			}
+		}
+
+		void Generator::ForceType(int type)
+		{
+			if(typeStack.top() != type)
+				throw new TypeException(typeStack.top(), type);
+		}
+
 		void Generator::ScopeVariable(std::string label)
 		{
 			currentScope->Definitions.push_back(Definition(label, variableType, currentScope->LocalFrameSize, currentScope));
 			currentScope->FrameSize += 4;
 			currentScope->LocalFrameSize += 4;
-			typeStack.pop();
 
 			output << "#declare " << label << " " << currentScope->LocalFrameSize-4 << std::endl;
 		}
@@ -361,20 +389,8 @@ namespace pim
 		void Generator::StoreVariable(std::string label)
 		{
 			Definition d = currentScope->GetDefinition(label);
-			int otherType = typeStack.top();
-
-			if(otherType != d.Type)
-			{
-				if(otherType == DataType::Integer && d.Type == DataType::Float)
-				{
-					ToFloat();
-				}
-				else if(otherType == DataType::Float && d.Type == DataType::Integer)
-				{
-					ToInteger();
-				}
-			}
-			popType(2);
+			AssureType(d.Type);
+			popType(1);
 
 			writeOpcode(Opcode::Store);
 
@@ -461,6 +477,8 @@ namespace pim
 			popType(1);
 			pushType(DataType::Integer);
 			writeOpcode(Opcode::ToInteger);
+
+			output << "ftoi" << std::endl;
 		}
 
 		void Generator::ToFloat()
@@ -468,6 +486,8 @@ namespace pim
 			popType(1);
 			pushType(DataType::Float);
 			writeOpcode(Opcode::ToFloat);
+
+			output << "itof" << std::endl;
 		}
 
 		void Generator::Divide()
@@ -481,9 +501,9 @@ namespace pim
 
 		void Generator::Modulus()
 		{
-			writeOpcode(Opcode::Modulus);
 			popType(2);
 			pushType(DataType::Integer);
+			writeOpcode(Opcode::Modulus);
 
 			output << "add" << std::endl;
 		}
@@ -538,7 +558,7 @@ namespace pim
 
 		void Generator::LoadProperty(std::string property)
 		{
-			popType(2);
+			popType(1);
 			pushType(DataType::Integer);
 			writeOpcode(Opcode::LoadProperty);
 			writeConstantPropertyPlaceholder(property);
@@ -548,23 +568,15 @@ namespace pim
 
 		void Generator::StoreProperty(std::string property)
 		{
-			popType(2);
+			ForceType(DataType::Integer);	//Ensure particle ID is an integer
+			popType(1);						//Use particle ID
+			popType(1);
+
 			writeOpcode(Opcode::StoreProperty);
 			writeConstantPropertyPlaceholder(property);
 
 			output << "storeprop " << property << std::endl;
 		}
-
-		void Generator::IntegerToDecimal()
-		{
-
-		}
-
-		void Generator::DecimalToInteger()
-		{
-
-		}
-
 
 		void Generator::JumpEqual(std::string label)
 		{

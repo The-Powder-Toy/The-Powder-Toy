@@ -270,6 +270,8 @@ namespace pim
 		case Opcode::Get:
 		case Opcode::Position:
 		case Opcode::Kill:
+		case Opcode::ToFloat:
+		case Opcode::ToInteger:
 			return 0;
 		}
 	}

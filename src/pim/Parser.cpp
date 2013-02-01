@@ -2,6 +2,9 @@
 #include "Parser.h"
 #include "Format.h"
 #include "Types.h"
+#include "Exceptions.h"
+#include "simulation/Particle.h"
+#include "simulation/StructProperty.h"
 namespace pim
 {
 	namespace compiler
@@ -494,6 +497,22 @@ namespace pim
 				expect(Token::Identifier);
 				expect(Token::AssignSymbol);
 				expression();
+
+				int t2;
+				StructProperty::PropertyType t = Particle::GetProperty(property).Type;
+				switch(t){
+					case StructProperty::ParticleType:
+					case StructProperty::Colour:
+					case StructProperty::Integer:
+					case StructProperty::UInteger:
+						t2 = DataType::Integer;
+						break;
+					case StructProperty::Float:
+						t2 = DataType::Float;
+						break;
+				}
+
+				generator->AssureType(t2);
 				generator->LoadVariable(variable);
 				generator->StoreProperty(property);	
 			}
