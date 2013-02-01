@@ -4,6 +4,7 @@
 #include <fstream>
 #include "Machine.h"
 #include "Opcodes.h"
+#include "Types.h"
 #include "simulation/Simulation.h"
 #include "X86Native.h"
 namespace pim
@@ -269,6 +270,8 @@ namespace pim
 		case Opcode::Get:
 		case Opcode::Position:
 		case Opcode::Kill:
+		case Opcode::ToFloat:
+		case Opcode::ToInteger:
 			return 0;
 		}
 	}

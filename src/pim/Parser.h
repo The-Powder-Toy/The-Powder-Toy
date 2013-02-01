@@ -10,22 +10,6 @@ namespace pim
 {
 	namespace compiler
 	{
-		class ParserExpectException: public std::exception
-		{
-			char * error;
-		public:
-			ParserExpectException(Token token, int expectingSymbol) {
-				error = strdup(std::string("Expecting " + Token::SymbolNames[expectingSymbol] + " got " + token.Source).c_str());
-			}
-			ParserExpectException(Token token, std::string expectingString) {
-				error = strdup(std::string("Expecting " + expectingString + " got " + token.Source).c_str());
-			}
-			const char * what() const throw()
-			{
-				return error;
-			}
-			~ParserExpectException() throw() {};
-		};
 		class Parser
 		{
 			std::stringstream & source;

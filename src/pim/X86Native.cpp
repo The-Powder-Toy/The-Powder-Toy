@@ -11,9 +11,10 @@ namespace pim
 		nativeRom.clear();
 		unsigned char * esi = new unsigned char[1024*1024];//malloc(1024*1024);
 		esi += 512;
-		//int * esi = malloc(1024*1024);
+		
 		emit("BE");					//mov esi, machineStack
 		emit((intptr_t)esi);
+
 		while(programCounter < romSize)
 		{
 			Word argument = rom[programCounter].Parameter;
@@ -214,6 +215,14 @@ namespace pim
 					emit(partsArray+propertyOffset);
 					emit("83 C6 08"); 							//add esi, 8
 				}
+				break;
+			case Opcode::ToFloat:
+				emit("DB 06");									//fild [esi]
+				emit("D9 1E");									//fstp [esi]
+				break;
+			case Opcode::ToInteger:
+				emit("D9 06");									//fld [esi]
+				emit("DB 1E");									//fistp [esi]
 				break;
 			case Opcode::JumpEqual:
 				emit("83 C6 08"); 								//add esi, 8

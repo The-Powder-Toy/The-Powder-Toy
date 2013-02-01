@@ -5,6 +5,7 @@
 #include <stack>
 #include <iostream>
 #include "Token.h"
+#include "Types.h"
 namespace pim
 {
 	namespace compiler
@@ -35,10 +36,6 @@ namespace pim
 				return error;
 			}
 			~SymbolNotFoundException() throw() {};
-		};
-		class Type
-		{
-			enum { Integer = Token::IntegerSymbol, Decimal = Token::DecimalSymbol };
 		};
 		class Scope;
 		class Definition
@@ -93,6 +90,7 @@ namespace pim
 		class Generator
 		{
 			int variableType;
+			std::stack<int> typeStack;
 			std::stack<Scope*> scopes;
 			Scope * currentScope;
 			std::ostream & output;
@@ -118,6 +116,9 @@ namespace pim
 
 			std::vector<unsigned char> program;
 
+			void pushType(int type);
+			void popType(int count);
+
 			void defineLabel(std::string label);
 			void writeOpcode(int opcode);
 			void writeConstant(std::string constant);
@@ -130,11 +131,15 @@ namespace pim
 		
 		public:
 			Generator();
+			virtual ~Generator();
 
 			std::vector<unsigned char> Finish();
 
 			std::string UniqueLabel(std::string prefix);
 
+			void AssureType(int type);
+			void ForceType(int type);
+			
 			void PushScope(std::string label);
 			void PushLocalScope(std::string label);
 			void LocalEnter();
@@ -145,6 +150,7 @@ namespace pim
 			void ScopeVariableType(int type);
 			void ScopeVariable(std::string label);
 
+			void PushType(int type);
 			void PushVariableAddress(std::string label);
 //			void Store();
 			void LoadVariable(std::string label);
@@ -161,6 +167,8 @@ namespace pim
 			void Divide();
 			void Modulus();
 			void Negate();
+			void ToInteger();
+			void ToFloat();
 
 			void TransformParticle();
 			void CreateParticle();
@@ -169,9 +177,6 @@ namespace pim
 			void KillParticle();
 			void LoadProperty(std::string property);
 			void StoreProperty(std::string property);
-
-			void IntegerToDecimal();
-			void DecimalToInteger();
 
 			void JumpEqual(std::string label);
 			void JumpNotEqual(std::string label);

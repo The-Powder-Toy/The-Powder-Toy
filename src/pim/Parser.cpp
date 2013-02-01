@@ -1,6 +1,10 @@
 //Syntax analyser
 #include "Parser.h"
 #include "Format.h"
+#include "Types.h"
+#include "Exceptions.h"
+#include "simulation/Particle.h"
+#include "simulation/StructProperty.h"
 namespace pim
 {
 	namespace compiler
@@ -106,7 +110,18 @@ namespace pim
 		*/
 		void Parser::argument()
 		{
-			generator->ScopeVariableType(token.Symbol);
+			int type;
+			switch(token.Symbol)
+			{
+				case Token::DecimalConstant:
+					type = DataType::Float;
+					break;
+				case Token::IntegerConstant:
+				case Token::ParticleConstant:
+					type = DataType::Integer;
+					break;
+			}
+			generator->ScopeVariableType(type);
 			if(!accept(Token::IntegerSymbol))
 				if(!accept(Token::DecimalSymbol))
 					if(!accept(Token::ParticleSymbol))
@@ -130,7 +145,18 @@ namespace pim
 		*/
 		void Parser::declaration()
 		{
-			generator->ScopeVariableType(token.Symbol);
+			int type;
+			switch(token.Symbol)
+			{
+				case Token::DecimalConstant:
+					type = DataType::Float;
+					break;
+				case Token::IntegerConstant:
+				case Token::ParticleConstant:
+					type = DataType::Integer;
+					break;
+			}
+			generator->ScopeVariableType(type);
 			if(!accept(Token::IntegerSymbol))
 				if(!accept(Token::DecimalSymbol))
 					if(!accept(Token::ParticleSymbol))
@@ -296,7 +322,7 @@ namespace pim
 			generator->PushLocalScope(loopLabel+"Start");
 			neighbourVariable = token.Source;
 			expect(Token::Identifier);
-			generator->ScopeVariableType(Token::IntegerConstant);
+			generator->ScopeVariableType(DataType::Integer);
 			generator->ScopeVariable(neighbourVariable);
 			generator->ScopeVariable(xVar);
 			generator->ScopeVariable(yVar);
@@ -471,6 +497,22 @@ namespace pim
 				expect(Token::Identifier);
 				expect(Token::AssignSymbol);
 				expression();
+
+				int t2;
+				StructProperty::PropertyType t = Particle::GetProperty(property).Type;
+				switch(t){
+					case StructProperty::ParticleType:
+					case StructProperty::Colour:
+					case StructProperty::Integer:
+					case StructProperty::UInteger:
+						t2 = DataType::Integer;
+						break;
+					case StructProperty::Float:
+						t2 = DataType::Float;
+						break;
+				}
+
+				generator->AssureType(t2);
 				generator->LoadVariable(variable);
 				generator->StoreProperty(property);	
 			}

@@ -4,16 +4,22 @@
 #include "Format.h"
 #include "Generator.h"
 #include "Opcodes.h"
+#include "Exceptions.h"
 namespace pim
 {
 	namespace compiler
 	{
 		Generator::Generator() :
+			typeStack(),
 			output(std::cout),
 			labelCounter(0),
 			programCounter(0)
 		{
 
+		}
+
+		Generator::~Generator()
+		{
 		}
 
 		void Generator::defineLabel(std::string label)
@@ -313,6 +319,47 @@ namespace pim
 			variableType = type;
 		}
 
+		void Generator::PushType(int type)
+		{
+			typeStack.push(type);
+		}
+
+		void Generator::pushType(int type)
+		{
+			typeStack.push(type);
+		}
+
+		void Generator::popType(int count)
+		{
+			while(count--)
+			{
+				typeStack.pop();
+			}
+		}
+
+		void Generator::AssureType(int type)
+		{
+			int otherType = typeStack.top();
+
+			if(otherType != type)
+			{
+				if(otherType == DataType::Integer && type == DataType::Float)
+				{
+					ToFloat();
+				}
+				else if(otherType == DataType::Float && type == DataType::Integer)
+				{
+					ToInteger();
+				}
+			}
+		}
+
+		void Generator::ForceType(int type)
+		{
+			if(typeStack.top() != type)
+				throw new TypeException(typeStack.top(), type);
+		}
+
 		void Generator::ScopeVariable(std::string label)
 		{
 			currentScope->Definitions.push_back(Definition(label, variableType, currentScope->LocalFrameSize, currentScope));
@@ -329,8 +376,11 @@ namespace pim
 
 		void Generator::LoadVariable(std::string label)
 		{
-			writeOpcode(Opcode::Load);
 			Definition d = currentScope->GetDefinition(label);
+
+			pushType(d.Type);
+			writeOpcode(Opcode::Load);
+
 			writeConstant(d.StackPosition+(currentScope->FrameSize-d.MyScope->FrameSize));
 
 			output << "load " << label << std::endl;
@@ -338,8 +388,12 @@ namespace pim
 
 		void Generator::StoreVariable(std::string label)
 		{
-			writeOpcode(Opcode::Store);
 			Definition d = currentScope->GetDefinition(label);
+			AssureType(d.Type);
+			popType(1);
+
+			writeOpcode(Opcode::Store);
+
 			writeConstant(d.StackPosition+(currentScope->FrameSize-d.MyScope->FrameSize));
 			//writeConstantPlaceholderOffset(currentScope->GetDefinition(label).StackPosition, &(currentScope->OldFrameSize));
 			//writeConstant(currentScope->GetDefinition(label).StackPosition);
@@ -349,6 +403,7 @@ namespace pim
 
 		void Generator::RTConstant(std::string name)
 		{
+			pushType(DataType::Integer);
 			writeOpcode(Opcode::Constant);
 			writeConstantMacroPlaceholder(name);
 
@@ -357,6 +412,7 @@ namespace pim
 
 		void Generator::Constant(std::string constant)
 		{
+			pushType(DataType::Integer);
 			writeOpcode(Opcode::Constant);
 			writeConstant(constant);
 
@@ -374,6 +430,7 @@ namespace pim
 
 		void Generator::Discard()
 		{
+			popType(1);
 			writeOpcode(Opcode::Discard);
 
 			output << "discard" << std::endl;
@@ -381,6 +438,7 @@ namespace pim
 
 		void Generator::Duplicate()
 		{
+			pushType(typeStack.top());
 			writeOpcode(Opcode::Duplicate);
 
 			output << "duplicate" << std::endl;
@@ -388,6 +446,8 @@ namespace pim
 
 		void Generator::Add()
 		{
+			popType(2);
+			pushType(DataType::Integer);
 			writeOpcode(Opcode::Add);
 
 			output << "add" << std::endl;
@@ -395,6 +455,8 @@ namespace pim
 
 		void Generator::Subtract()
 		{
+			popType(2);
+			pushType(DataType::Integer);
 			writeOpcode(Opcode::Subtract);
 
 			output << "sub" << std::endl;
@@ -402,13 +464,36 @@ namespace pim
 
 		void Generator::Multiply()
 		{
+			popType(2);
+			pushType(DataType::Integer);
 			writeOpcode(Opcode::Multiply);
+
 
 			output << "mul" << std::endl;
 		}
 
+		void Generator::ToInteger()
+		{
+			popType(1);
+			pushType(DataType::Integer);
+			writeOpcode(Opcode::ToInteger);
+
+			output << "ftoi" << std::endl;
+		}
+
+		void Generator::ToFloat()
+		{
+			popType(1);
+			pushType(DataType::Float);
+			writeOpcode(Opcode::ToFloat);
+
+			output << "itof" << std::endl;
+		}
+
 		void Generator::Divide()
 		{
+			popType(2);
+			pushType(DataType::Integer);
 			writeOpcode(Opcode::Divide);
 
 			output << "div" << std::endl;
@@ -416,6 +501,8 @@ namespace pim
 
 		void Generator::Modulus()
 		{
+			popType(2);
+			pushType(DataType::Integer);
 			writeOpcode(Opcode::Modulus);
 
 			output << "add" << std::endl;
@@ -444,6 +531,8 @@ namespace pim
 
 		void Generator::GetParticle()
 		{
+			popType(2);
+			pushType(DataType::Integer);
 			writeOpcode(Opcode::Get);
 
 			output << "getpart" << std::endl;
@@ -451,6 +540,9 @@ namespace pim
 
 		void Generator::GetPosition()
 		{
+			popType(1);
+			pushType(DataType::Integer);
+			pushType(DataType::Integer);
 			writeOpcode(Opcode::Position);
 
 			output << "getpos" << std::endl;
@@ -458,6 +550,7 @@ namespace pim
 
 		void Generator::KillParticle()
 		{
+			popType(1);
 			writeOpcode(Opcode::Kill);
 
 			output << "kill" << std::endl;
@@ -465,6 +558,8 @@ namespace pim
 
 		void Generator::LoadProperty(std::string property)
 		{
+			popType(1);
+			pushType(DataType::Integer);
 			writeOpcode(Opcode::LoadProperty);
 			writeConstantPropertyPlaceholder(property);
 
@@ -473,25 +568,19 @@ namespace pim
 
 		void Generator::StoreProperty(std::string property)
 		{
+			ForceType(DataType::Integer);	//Ensure particle ID is an integer
+			popType(1);						//Use particle ID
+			popType(1);
+
 			writeOpcode(Opcode::StoreProperty);
 			writeConstantPropertyPlaceholder(property);
 
 			output << "storeprop " << property << std::endl;
 		}
 
-		void Generator::IntegerToDecimal()
-		{
-
-		}
-
-		void Generator::DecimalToInteger()
-		{
-
-		}
-
-
 		void Generator::JumpEqual(std::string label)
 		{
+			popType(2);
 			writeOpcode(Opcode::JumpEqual);
 			writeConstantPlaceholder(label); 
 
@@ -500,6 +589,7 @@ namespace pim
 
 		void Generator::JumpNotEqual(std::string label)
 		{
+			popType(2);
 			writeOpcode(Opcode::JumpNotEqual);
 			writeConstantPlaceholder(label); 
 
@@ -508,6 +598,7 @@ namespace pim
 
 		void Generator::JumpGreater(std::string label)
 		{
+			popType(2);
 			writeOpcode(Opcode::JumpGreater);
 			writeConstantPlaceholder(label); 
 
@@ -516,6 +607,7 @@ namespace pim
 
 		void Generator::JumpGreaterEqual(std::string label)
 		{
+			popType(2);
 			writeOpcode(Opcode::JumpGreaterEqual);
 			writeConstantPlaceholder(label); 
 
@@ -524,6 +616,7 @@ namespace pim
 
 		void Generator::JumpLess(std::string label)
 		{
+			popType(2);
 			writeOpcode(Opcode::JumpLess);
 			writeConstantPlaceholder(label); 
 
@@ -532,6 +625,7 @@ namespace pim
 
 		void Generator::JumpLessEqual(std::string label)
 		{
+			popType(2);
 			writeOpcode(Opcode::JumpLessEqual);
 			writeConstantPlaceholder(label); 
 
@@ -540,6 +634,7 @@ namespace pim
 
 		void Generator::Jump(std::string label)
 		{
+			popType(2);
 			writeOpcode(Opcode::Jump);
 			writeConstantPlaceholder(label); 
 

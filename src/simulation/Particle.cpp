@@ -25,3 +25,15 @@ std::vector<StructProperty> Particle::GetProperties()
 	properties.push_back(StructProperty("dcolour", StructProperty::UInteger, offsetof(Particle, dcolour)));
 	return properties;
 }
+
+
+StructProperty Particle::GetProperty(std::string propertyName)
+{
+	std::vector<StructProperty> types = GetProperties();
+	for(std::vector<StructProperty>::iterator iter = types.begin(), end = types.end(); iter != end; ++iter)
+	{
+		if((*iter).Name == propertyName)
+			return *iter;
+	}
+	return StructProperty("unknown", StructProperty::Float, 0);
+}
