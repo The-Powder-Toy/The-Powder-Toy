@@ -961,7 +961,9 @@ int LuaScriptInterface::updateNative(UPDATE_FUNC_ARGS)
 	//std::cout << arg2 << std::endl;
 	//std::cout << arg3 << std::endl;
 	nativeFunction(i, x, y);*/
+	__asm__("nop": : :"ecx", "ebx", "esi");
 	updateNativeCode[parts[i].type](i, x, y);
+
 	return 0;
 }
 

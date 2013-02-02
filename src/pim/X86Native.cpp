@@ -12,6 +12,8 @@ namespace pim
 
 		for(int i = 0; i < 8; i++) { emit("90"); } 				//nop, helps find the code in memory with a debugger
 		
+
+		
 		emit("BE");												//mov esi, machineStack
 		emitConstantP((intptr_t)machineStack);
 
