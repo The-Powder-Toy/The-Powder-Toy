@@ -12,8 +12,8 @@ namespace pim
 		unsigned char * esi = new unsigned char[1024*1024];//malloc(1024*1024);
 		esi += 512;
 
-		emit("52");					//push edx
-		emit("56");					//push esi
+		//emit("52");					//push edx
+		//emit("56");					//push esi
 		
 		emit("BE");					//mov esi, machineStack
 		emit((intptr_t)esi);
@@ -273,8 +273,8 @@ namespace pim
 				emitPlaceholder(argument.Integer);
 				break;
 			case Opcode::Return:
-				emit("5E");										//pop esi
-				emit("5A");										//pop edx
+				//emit("5E");										//pop esi
+				//emit("5A");										//pop edx
 				emit("C3");										//ret
 				break;
 			case Opcode::Leave:
