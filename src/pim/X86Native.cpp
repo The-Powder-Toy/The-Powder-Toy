@@ -119,21 +119,25 @@ namespace pim
 					intptr_t partsArray = (intptr_t)sim->pmap;
 					emit("8B 06");								//mov eax, [esi]
 					emit("8B 4E 04");							//mov ecx, [esi+4]
-					emit("81 F9");								//cmp ecx, XRES
+					emit("81 F9");								//cmp ecx, XRES		//Push -1 if y is out of range
 					emitConstantD((int)XRES);
-					emit("7D 22");						//|--<	//jge 34
-					emit("74 20");						//|--<	//jz 32
-					emit("3D");							//|		//cmp eax, YRES
-					emitConstantD((int)YRES);					//|
-					emit("7D 19");						//|--<	//jge 25
-					emit("74 17");						//|--<	//jz 23
+					emit("7D 2C");						//|--<	//jge 34
+					emit("83 F9 00");					//|		//cmp ecx, 0
+					emit("78 27");						//|--<	//js 32
+					emit("3D");							//|		//cmp eax, YRES		//Push -1 if x is out of range
+					emitConstantD((int)YRES);			//|
+					emit("7D 20");						//|--<	//jge 25
+					emit("83 F8 00");					//|		//cmp eax, 0
+					emit("78 1B");						//|--<	//js 23
 					emit("69 C0");						//|		//imul eax, 612
-					emitConstantD((int)XRES);					//|
+					emitConstantD((int)XRES);			//|
 					emit("01 C8");						//|		//add eax, ecx
 					emit("8B 04 85");					//|		//mov eax, [eax*4+pmap]
-					emitConstantP((int)partsArray);				//|
-					emit("C1 F8 08");					//|		//sar eax, 8
-					emit("89 46 04");					//|		//mov [esi+4], eax	#Copy eax onto stack
+					emitConstantP((int)partsArray);		//|
+					emit("85 C0");						//|		//test eax, eax		//Push 0 if location if empty
+					emit("74 08");						//|	|-<	//je +5
+					emit("C1 F8 08");					//|	|	//sar eax, 8
+					emit("89 46 04");					//|	|	//mov [esi+4], eax	#Copy eax onto stack
 					emit("EB 07");						//| |-<	//jmp +7
 					emit("C7 46 04 FF FF FF FF");		//L-+->	//mov [esi+4], -1
 					emit("83 C6 04"); 					//  L->	//add esi, 4
@@ -145,8 +149,9 @@ namespace pim
 					emit("8B 06");								//mov eax, [esi]	#Load index from stack
 					emit("3D");									//cmp eax, NPART
 					emitConstantD((int)NPART);
-					emit("7D 23");						//|--<	//jge 31 
-					emit("74 21");						//|--<	//jz 29
+					emit("7D 26");						//|--<	//jge 31 
+					emit("83 F8 00");					//|		//cmp eax, 0
+					emit("78 21");						//|--<	//js 29
 					emit("C1 E0 03");					//|		//sal eax, 3		#Shift index left (multiply by 8)	
 					emit("8D 14 C5 00 00 00 00");		//|		//lea edx, [eax*8]	#Mutiply by 8 again and copy into edx		//Size of 56 is represented by (1*(8^2))-(1*8)
 					emit("89 D1");						//|		//mov ecx, edx		
@@ -291,7 +296,7 @@ namespace pim
 	void X86Native::emitPlaceholder(int virtualAddress)
 	{
 		placeholders[nativeRom.size()] = virtualAddress;
-		emit((int)0);
+		emitConstantD((int)0);
 	}
 
 	void X86Native::emitCall(intptr_t objectPtr, intptr_t functionAddress, int stackSize)
