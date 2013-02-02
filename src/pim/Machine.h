@@ -59,7 +59,8 @@ namespace pim
 		int romSize;
 		int romMask;
 
-		intptr_t nativeRom;
+		unsigned char * nativeRom;
+		unsigned char * nativeStack; 
 
 		unsigned char * compiledRom;
 		int compiledRomSize;
@@ -80,16 +81,20 @@ namespace pim
 		//Instruction * instructions;
 
 		int programCounter;
+		void run();
+		int opcodeArgSize(int opcode);
 	public:
 		VirtualMachine(Simulation * sim);
-		int OpcodeArgSize(int opcode);
 		void LoadProgram(std::vector<unsigned char> programData);
-		void Run();
 		void Compile();
-		void CallCompiled(std::string entryPoint);
-		void CallCompiled(int entryPoint);
-		void Call(std::string entryPoint);
-		void Call(int entryPoint);
+		void * GetNativeEntryPoint(std::string entryPoint);
+		void * GetNativeEntryPoint(intptr_t entryPoint);
+		void Run(std::string entryPoint);
+		void Run(int entryPoint);
+		inline bool IsCompiled()
+		{
+			return nativeRom != 0;
+		}
 		inline void PSPush(Word word)
 		{
 			programStack -= WORDSIZE;

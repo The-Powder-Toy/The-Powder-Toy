@@ -45,6 +45,8 @@ class Tool;
 #define LUACON_EL_MODIFIED_MENUS 0x4
 
 class TPTScriptInterface;
+class LuaScriptInterface;
+typedef void (*NativeUpdateFunc)(int, int, int);
 class LuaScriptInterface: public CommandInterface
 {
 	int luacon_mousex, luacon_mousey, luacon_mousebutton, luacon_brushx, luacon_brushy;
@@ -75,6 +77,8 @@ class LuaScriptInterface: public CommandInterface
 
 	//Elements
 	static pim::VirtualMachine * updateVirtualMachines[PT_NUM];
+	static NativeUpdateFunc updateNativeCode[PT_NUM];
+	static int updateNative(UPDATE_FUNC_ARGS);
 	static int updateVM(UPDATE_FUNC_ARGS);
 	//
 	void initElementsAPI();

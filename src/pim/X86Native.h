@@ -7,15 +7,13 @@ namespace pim
 	class X86Native : public Native
 	{
 	public:
-		X86Native() : Native(), nativeRom() {}
-		virtual std::vector<unsigned char> Compile(Simulation * sim, Instruction * rom, int romSize);
-	private: 
-		void emit(std::string opcode);
-		void emit(int constant);
-		void emitCall(intptr_t objectPtr, intptr_t functionAddress, int stackSize);
-		void emitPlaceholder(int virtualAddress);
-		unsigned char hex(char c);
-		std::vector<unsigned char> nativeRom;
+		X86Native() : Native() {}
+		virtual std::vector<unsigned char> Compile(Simulation * sim, unsigned char * machineStack, Instruction * rom, int romSize);
+	protected:
+		virtual void emitConstantD(long int constant);
+		virtual void emitConstantP(intptr_t constant);
+		virtual void emitCall(intptr_t objectPtr, intptr_t functionAddress, int stackSize);
+		virtual void emitPlaceholder(int virtualAddress);
 		std::map<int, int> virtualToNative;
 		std::map<int, int> placeholders;
 	};

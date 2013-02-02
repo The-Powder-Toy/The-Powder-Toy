@@ -950,6 +950,20 @@ void LuaScriptInterface::initElementsAPI()
 }
 
 pim::VirtualMachine * LuaScriptInterface::updateVirtualMachines[PT_NUM];
+NativeUpdateFunc LuaScriptInterface::updateNativeCode[PT_NUM];
+int LuaScriptInterface::updateNative(UPDATE_FUNC_ARGS)
+{	
+	/*void (*nativeFunction)(int, int, int) = updateNativeCode[parts[i].type];//(void(*)(int, int, int))nativeRom;
+	//int arg3 = CSPop().Integer;
+	//int arg2 = CSPop().Integer;
+	//int arg1 = CSPop().Integer;
+	//std::cout << arg1 << std::endl;
+	//std::cout << arg2 << std::endl;
+	//std::cout << arg3 << std::endl;
+	nativeFunction(i, x, y);*/
+	updateNativeCode[parts[i].type](i, x, y);
+	return 0;
+}
 
 int LuaScriptInterface::updateVM(UPDATE_FUNC_ARGS)
 {
@@ -959,7 +973,7 @@ int LuaScriptInterface::updateVM(UPDATE_FUNC_ARGS)
 	machine->CSPush(x);
 	machine->CSPush(y);
 	//machine->Call(0);
-	machine->CallCompiled(0);
+	machine->Run(0);
 
 
 	/*vm::VirtualMachine * vMachine = updateVirtualMachines[parts[i].type];
@@ -1318,7 +1332,15 @@ int LuaScriptInterface::elements_property(lua_State * l)
 			else if(lua_type(l, 3) == LUA_TLIGHTUSERDATA)
 			{
 				updateVirtualMachines[id] = (pim::VirtualMachine*)lua_touserdata(l, 3);
-				luacon_sim->elements[id].Update = &updateVM;
+				if(updateVirtualMachines[id]->IsCompiled())
+				{
+					updateNativeCode[id] = (NativeUpdateFunc)updateVirtualMachines[id]->GetNativeEntryPoint(0);
+					luacon_sim->elements[id].Update = &updateNative;
+				}
+				else
+				{
+					luacon_sim->elements[id].Update = &updateVM;
+				}
 			}
 			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
 			{
@@ -1467,7 +1489,10 @@ int LuaScriptInterface::virtualMachine_loadProgram(lua_State * l)
 
 	pim::VirtualMachine * machine = new pim::VirtualMachine(luacon_sim);
 	machine->LoadProgram(programData);
+
+#if defined(X86) && !defined(_64BIT)
 	machine->Compile();
+#endif
 
 	lua_pushlightuserdata(l, machine);
 	return 1;

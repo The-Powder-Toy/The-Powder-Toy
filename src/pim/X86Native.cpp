@@ -4,19 +4,16 @@
 
 namespace pim 
 {
-	std::vector<unsigned char> X86Native::Compile(Simulation * sim, Instruction * rom, int romSize)
+	std::vector<unsigned char> X86Native::Compile(Simulation * sim, unsigned char * machineStack, Instruction * rom, int romSize)
 	{
 	#if defined(X86) && !defined(_64BIT)
 		int programCounter = 0;
 		nativeRom.clear();
-		unsigned char * esi = new unsigned char[1024*1024];//malloc(1024*1024);
-		esi += 512;
 
-		//emit("52");					//push edx
-		//emit("56");					//push esi
+		for(int i = 0; i < 8; i++) { emit("90"); } 				//nop, helps find the code in memory with a debugger
 		
-		emit("BE");					//mov esi, machineStack
-		emit((intptr_t)esi);
+		emit("BE");												//mov esi, machineStack
+		emitConstantP((intptr_t)machineStack);
 
 		while(programCounter < romSize)
 		{
@@ -29,7 +26,7 @@ namespace pim
 				//Load value at base stack + offset into eax
 				//emit("8B 85");								//mov eax, [ebp+offset]
 				emit("8B 84 24");								//mov eax, [esp+offset]
-				emit((int) (argument.Integer));
+				emitConstantP(argument.Integer);
 				//Store value in eax onto top of program stack
 				emit("89 06");									//mov [esi], eax
 				break;
@@ -37,23 +34,22 @@ namespace pim
 				//Load value on top of the program stack into eax
 				emit("8B 06");									//mov eax, [esi]
 				//Load value in eax into memory
-				//emit("89 85");								//mov [ebp+offset], eax
 				emit("89 84 24");								//mov [esp+offset], eax
-				emit((int) (argument.Integer));
+				emitConstantD(argument.Integer);
 				emit("83 C6 04");								//add esi, 4
 				break;
 			case Opcode::Constant:
 				emit("83 EE 04");								//sub esi, 4
 				emit("C7 06");									//mov [esi], dword ptr constant
-				emit((int) (argument.Integer));
+				emitConstantD(argument.Integer);
 				break;
 			case Opcode::Increment:
 				if(argument.Integer > 0) {
 					emit("81 06");								//add [esi], dword ptr constant
-					emit((int) (argument.Integer));
+					emitConstantD(argument.Integer);
 				} else {
 					emit("81 2E");								//sub [esi], dword ptr constant
-					emit((int) (-argument.Integer));
+					emitConstantD(-argument.Integer);
 				}
 				break;
 			case Opcode::Discard:
@@ -112,10 +108,6 @@ namespace pim
 				emit("83 C6 08");								//add esi, 8
 				emitCall((intptr_t)sim, (intptr_t)((void*)&Simulation::create_part), 16);
 				emit("89 06");									//mov [esi], eax
-				//temp1 = PSPop();
-				//temp2 = PSPop();
-				//temp3 = PSPop();
-				//PSPush(sim->create_part(PSPop().Integer, temp3.Integer, temp2.Integer, temp1.Integer));
 				break;
 			case Opcode::Transform:
 				//PSPop();
@@ -127,21 +119,19 @@ namespace pim
 					intptr_t partsArray = (intptr_t)sim->pmap;
 					emit("8B 06");								//mov eax, [esi]
 					emit("8B 4E 04");							//mov ecx, [esi+4]
-
 					emit("81 F9");								//cmp ecx, XRES
-					emit((int)XRES);
+					emitConstantD((int)XRES);
 					emit("7D 22");						//|--<	//jge 34
 					emit("74 20");						//|--<	//jz 32
 					emit("3D");							//|		//cmp eax, YRES
-					emit((int)YRES);					//|
+					emitConstantD((int)YRES);					//|
 					emit("7D 19");						//|--<	//jge 25
 					emit("74 17");						//|--<	//jz 23
-														//|
 					emit("69 C0");						//|		//imul eax, 612
-					emit((int)XRES);					//|
+					emitConstantD((int)XRES);					//|
 					emit("01 C8");						//|		//add eax, ecx
 					emit("8B 04 85");					//|		//mov eax, [eax*4+pmap]
-					emit((int)partsArray);				//|
+					emitConstantP((int)partsArray);				//|
 					emit("C1 F8 08");					//|		//sar eax, 8
 					emit("89 46 04");					//|		//mov [esi+4], eax	#Copy eax onto stack
 					emit("EB 07");						//| |-<	//jmp +7
@@ -153,26 +143,20 @@ namespace pim
 				{
 					intptr_t partsArray = (intptr_t)sim->parts;
 					emit("8B 06");								//mov eax, [esi]	#Load index from stack
-
 					emit("3D");									//cmp eax, NPART
-					emit((int)NPART);
+					emitConstantD((int)NPART);
 					emit("7D 23");						//|--<	//jge 31 
 					emit("74 21");						//|--<	//jz 29
-														//|
 					emit("C1 E0 03");					//|		//sal eax, 3		#Shift index left (multiply by 8)	
 					emit("8D 14 C5 00 00 00 00");		//|		//lea edx, [eax*8]	#Mutiply by 8 again and copy into edx		//Size of 56 is represented by (1*(8^2))-(1*8)
 					emit("89 D1");						//|		//mov ecx, edx		
 					emit("29 C1");						//|		//sub ecx, eax		#Subtract index*8^2 by index*8 to get the index*56
-					//emit("8B 81");					//|		//mov eax, [ecx+xOffset+partsArray]	#Copy value at index+baseAddress+propertyOffset into eax
 					emit("D9 81");						//|		//fld [ecx+xOffset+partsArray]
-					emit(partsArray+offsetof(Particle, x));
+					emitConstantP(partsArray+offsetof(Particle, x));
 					emit("DB 1E");						//|		//fistp [esi]
-					//emit("89 06");					//|		//mov [esi], eax	#Copy eax onto stack
-					//emit("89 81");					//|		//mov eax, [ecx+yOffset+partsArray]	#Copy value at index+baseAddress+propertyOffset into eax
 					emit("D9 81");						//|		//fld [ecx+xOffset+partsArray]
-					emit(partsArray+offsetof(Particle, y));
+					emitConstantP(partsArray+offsetof(Particle, y));
 					emit("DB 5E FC");					//|		//fistp [esi-4], eax	#Copy eax onto stack
-					//emit("89 46 FC");					//|		//mov [esi-4], eax	#Copy eax onto stack
 					emit("EB 0D");						//| |-<	//jmp +13
 					emit("C7 06 FF FF FF FF");			//L-+-> //mov [esi], -1
 					emit("C7 46 FC FF FF FF FF");		//  |	//mov [esi-4] -1
@@ -193,7 +177,7 @@ namespace pim
 					emit("89 D1");								//mov ecx, edx		
 					emit("29 C1");								//sub ecx, eax		#Subtract index*8^2 by index*8 to get the index*56
 					emit("8B 81");								//mov eax, [ecx+propertyOffset+partsArray]	#Copy value at index+baseAddress+propertyOffset into eax
-					emit(partsArray+propertyOffset);
+					emitConstantP(partsArray+propertyOffset);
 					emit("89 06");								//mov [esi], eax	#Copy eax onto stack
 				}
 				break;
@@ -208,7 +192,7 @@ namespace pim
 					emit("29 C1");								//sub ecx, eax
 					emit("8B 46 04");							//mov eax, [esi+4]
 					emit("89 81");								//mov [ecx+propertyOffset+partsArray], eax
-					emit(partsArray+propertyOffset);
+					emitConstantP(partsArray+propertyOffset);
 					emit("83 C6 08"); 							//add esi, 8
 				}
 				break;
@@ -273,25 +257,22 @@ namespace pim
 				emitPlaceholder(argument.Integer);
 				break;
 			case Opcode::Return:
-				//emit("5E");										//pop esi
-				//emit("5A");										//pop edx
 				emit("C3");										//ret
 				break;
 			case Opcode::Leave:
-				//emit("81 C7");								//add edi, constant
 				emit("81 C4");									//add esp, constant
-				emit(argument.Integer);
+				emitConstantD(argument.Integer);
 				break;
 			case Opcode::LocalEnter:
-				//emit("81 EF");								//sub edi constant
 				emit("81 EC");									//sub esp constant
-				emit(argument.Integer);
+				emitConstantD(argument.Integer);
 				break;
 			}
 			//std::cout << programStack << std::endl;
 			programCounter++;
 		}
 
+		for(int i = 0; i < 8; i++) { emit("90"); } 				//nop, helps find the code in memory with a debugger
 
 		for(std::map<int, int>::iterator iter = placeholders.begin(), end = placeholders.end(); iter != end; ++iter)
 		{
@@ -315,39 +296,27 @@ namespace pim
 
 	void X86Native::emitCall(intptr_t objectPtr, intptr_t functionAddress, int stackSize)
 	{
-		//emit("B9");												//mov ecx, instancePointer
-		emit("68");												//push instancePointer
-		emit((int) objectPtr);	
+#ifdef _MSC_VER
+		//MSVC puts the instance pointer in ecx, not on the stack
+		emit("B9");												//mov ecx, instancePointer
+		emitConstantP(objectPtr);	
 		emit("B8");												//mov eax, functionAddress
-		emit((int)functionAddress);
+		emitConstantP(functionAddress);
 		emit("FF D0");											//call eax
 		emit("81 C4");											//add esp, stacksize
-		emit((int)stackSize+sizeof(intptr_t));
+		emitConstantD(stackSize);
+#else
+		emit("68");												//push instancePointer
+		emitConstantP(objectPtr);	
+		emit("B8");												//mov eax, functionAddress
+		emitConstantP(functionAddress);
+		emit("FF D0");											//call eax
+		emit("81 C4");											//add esp, stacksize
+		emitConstantD(stackSize+sizeof(intptr_t));
+#endif
 	}
 
-	void X86Native::emit(std::string opcode)
-	{
-		unsigned char c1, c2;
-		unsigned char v;
-		const char * string = opcode.c_str();
-
-		while (true)
-		{
-			c1 = string[0];
-			c2 = string[1];
-
-			v = (hex( c1 ) << 4) | hex(c2);
-			nativeRom.push_back(v);
-
-			if (!string[2])
-			{
-				break;
-			}
-			string += 3;
-		}
-	}
-
-	void X86Native::emit(int constant)
+	void X86Native::emitConstantD(long int constant)
 	{
 		nativeRom.push_back(constant & 0xFF);
 		nativeRom.push_back((constant >> 8) & 0xFF);
@@ -355,15 +324,9 @@ namespace pim
 		nativeRom.push_back((constant >> 24) & 0xFF);
 	}
 
-	unsigned char X86Native::hex(char c)
+	void X86Native::emitConstantP(intptr_t constant)
 	{
-		if (c >= 'a' && c <= 'f')
-			return 10 + c - 'a';
-		if (c >= 'A' && c <= 'F')
-			return 10 + c - 'A';
-		if (c >= '0' && c <= '9')
-			return c - '0';
-		return 0;
+		emitConstantD(constant);
 	}
 
 }

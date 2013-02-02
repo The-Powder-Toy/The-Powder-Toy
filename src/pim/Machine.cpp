@@ -23,7 +23,8 @@ namespace pim
 	VirtualMachine::VirtualMachine(Simulation * simulation) :
 		rom(NULL),
 		ram(NULL),
-		sim(simulation)
+		sim(simulation),
+		nativeRom(0)
 	{
 
 	}
@@ -193,7 +194,7 @@ namespace pim
 			int argSize = 0;
 			Instruction instruction;
 			instruction.Opcode = programData[programPosition++];
-			if(argSize = OpcodeArgSize(instruction.Opcode))
+			if(argSize = opcodeArgSize(instruction.Opcode))
 			{
 				if(argSize == 4 && programPosition+3 < programData.size())
 				{
@@ -236,7 +237,7 @@ namespace pim
 		callStack += WORDSIZE;	//Since there's nothing on the stack, it shouldn't point to the item on the bottom
 	}
 
-	int VirtualMachine::OpcodeArgSize(int opcode)
+	int VirtualMachine::opcodeArgSize(int opcode)
 	{
 		switch(opcode)
 		{
@@ -276,7 +277,7 @@ namespace pim
 		}
 	}
 
-	void VirtualMachine::Run()
+	void VirtualMachine::run()
 	{
 		//std::cout << "CS: " << callStack << " PS: " << programStack << std::endl;
 		//std::string names[] = { "Load", "Store", "Constant", "Increment", "Discard", "Duplicate", "Add", "Subtract", "Multiply", "Divide", "Modulus", "Negate", "Create", "Transform", "Get", "Position", "Kill", "JumpEqual", "JumpNotEqual", "JumpGreater", "JumpGreaterEqual", "JumpLess", "JumpLessEqual", "Jump", "Return", "LocalEnter"};
@@ -423,43 +424,38 @@ namespace pim
 	void VirtualMachine::Compile()
 	{
 		Native * native = new X86Native();
-		std::vector<unsigned char> executableCode = native->Compile(sim, rom, romSize);
-		Client::Ref().WriteFile(executableCode, "code.x");
+		if(nativeRom)
+			delete[] nativeRom;
+		if(nativeStack)
+			delete[] nativeStack;
 
-		unsigned char * romAddress = new unsigned char[executableCode.size()+8];
-		std::fill(romAddress, romAddress+executableCode.size()+8, 0x90);	//Fill with NOP for debugging
-		std::copy(executableCode.begin(), executableCode.end(), romAddress+4);
-		nativeRom = (intptr_t)romAddress;
-		printf("%p\n", romAddress);
-		fflush(stdout);
+		nativeStack = new unsigned char [1024*1024];
+
+		std::vector<unsigned char> executableCode = native->Compile(sim, nativeStack + (1024*512), rom, romSize);
+		nativeRom = new unsigned char[executableCode.size()];
+
+		std::copy(executableCode.begin(), executableCode.end(), nativeRom);
 
 		delete native;
 	}
 
-	void VirtualMachine::CallCompiled(std::string entryPoint)
+	void * VirtualMachine::GetNativeEntryPoint(std::string entryPoint)
 	{
 
 	}
 
-	void VirtualMachine::CallCompiled(int entryPoint)
+	void * VirtualMachine::GetNativeEntryPoint(intptr_t entryPoint)
 	{
-		void (*nativeFunction)(int, int, int) = (void(*)(int, int, int))nativeRom;
-		int arg3 = CSPop().Integer;
-		int arg2 = CSPop().Integer;
-		int arg1 = CSPop().Integer;
-		//std::cout << arg1 << std::endl;
-		//std::cout << arg2 << std::endl;
-		//std::cout << arg3 << std::endl;
-		nativeFunction(arg1, arg2, arg3);
+		return nativeRom+entryPoint;
 	}
 
-	void VirtualMachine::Call(std::string entryPoint)
+	void VirtualMachine::Run(std::string entryPoint)
 	{
 	}
 
-	void VirtualMachine::Call(int entryPoint)
+	void VirtualMachine::Run(int entryPoint)
 	{
 		programCounter = entryPoint;
-		Run();
+		run();
 	}
 }
