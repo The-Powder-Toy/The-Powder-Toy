@@ -175,7 +175,7 @@ namespace pim
 			void GetParticle();
 			void GetPosition();
 			void KillParticle();
-			void LoadProperty(std::string property);
+			void LoadProperty(std::string property, int type);
 			void StoreProperty(std::string property);
 
 			void JumpEqual(std::string label);

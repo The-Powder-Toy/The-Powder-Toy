@@ -113,11 +113,11 @@ namespace pim
 			int type;
 			switch(token.Symbol)
 			{
-				case Token::DecimalConstant:
+				case Token::DecimalSymbol:
 					type = DataType::Float;
 					break;
-				case Token::IntegerConstant:
-				case Token::ParticleConstant:
+				case Token::IntegerSymbol:
+				case Token::ParticleSymbol:
 					type = DataType::Integer;
 					break;
 			}
@@ -148,11 +148,11 @@ namespace pim
 			int type;
 			switch(token.Symbol)
 			{
-				case Token::DecimalConstant:
+				case Token::DecimalSymbol:
 					type = DataType::Float;
 					break;
-				case Token::IntegerConstant:
-				case Token::ParticleConstant:
+				case Token::IntegerSymbol:
+				case Token::ParticleSymbol:
 					type = DataType::Integer;
 					break;
 			}
@@ -264,12 +264,16 @@ namespace pim
 			expect(Token::CreateSymbol);
 			expect(Token::LeftBracket);
 			expression();
+			generator->AssureType(DataType::Integer);
 			expect(Token::CommaSymbol);
 			expression();
+			generator->AssureType(DataType::Integer);
 			expect(Token::CommaSymbol);
 			expression();
+			generator->AssureType(DataType::Integer);
 			expect(Token::CommaSymbol);
 			expression();
+			generator->AssureType(DataType::Integer);
 			expect(Token::RightBracket);
 			generator->CreateParticle();
 		}
@@ -498,21 +502,7 @@ namespace pim
 				expect(Token::AssignSymbol);
 				expression();
 
-				int t2;
-				StructProperty::PropertyType t = Particle::GetProperty(property).Type;
-				switch(t){
-					case StructProperty::ParticleType:
-					case StructProperty::Colour:
-					case StructProperty::Integer:
-					case StructProperty::UInteger:
-						t2 = DataType::Integer;
-						break;
-					case StructProperty::Float:
-						t2 = DataType::Float;
-						break;
-				}
-
-				generator->AssureType(t2);
+				generator->AssureType(GetPropertyType(property));
 				generator->LoadVariable(variable);
 				generator->StoreProperty(property);	
 			}
@@ -622,7 +612,7 @@ namespace pim
 						std::string property = token.Source;
 						expect(Token::Identifier);
 						generator->LoadVariable(variable);
-						generator->LoadProperty(property);
+						generator->LoadProperty(property, GetPropertyType(property));
 					}
 					else
 					{
@@ -690,6 +680,24 @@ namespace pim
 		{
 			if(!accept(symbol))
 				throw ParserExpectException(token, symbol);
+		}
+
+		int Parser::GetPropertyType(std::string property)
+		{
+			int t2 = DataType::Integer;
+			StructProperty::PropertyType t = Particle::GetProperty(property).Type;
+			switch(t){
+				case StructProperty::ParticleType:
+				case StructProperty::Colour:
+				case StructProperty::Integer:
+				case StructProperty::UInteger:
+					t2 = DataType::Integer;
+					break;
+				case StructProperty::Float:
+					t2 = DataType::Float;
+					break;
+			}
+			return t2;
 		}
 	}
 }

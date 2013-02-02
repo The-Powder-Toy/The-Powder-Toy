@@ -58,6 +58,7 @@ namespace pim
 			Parser(std::stringstream & source_);
 
 			std::vector<unsigned char> Compile();
+			int GetPropertyType(std::string property);
 		};
 	}
 }

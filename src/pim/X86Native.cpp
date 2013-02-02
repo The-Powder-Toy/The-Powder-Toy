@@ -11,6 +11,9 @@ namespace pim
 		nativeRom.clear();
 		unsigned char * esi = new unsigned char[1024*1024];//malloc(1024*1024);
 		esi += 512;
+
+		emit("52");					//push edx
+		emit("56");					//push esi
 		
 		emit("BE");					//mov esi, machineStack
 		emit((intptr_t)esi);
@@ -98,7 +101,17 @@ namespace pim
 				emit("F7 1E");									//neg [esi]
 				break;
 			case Opcode::Create:
-				emitCall((intptr_t)sim, (intptr_t)((void*)&Simulation::create_part));
+				emit("8B 06");									//mov eax, [esi]
+				emit("50");										//push eax
+				emit("8B 46 04");								//mov eax, [esi+4]
+				emit("50");										//push eax
+				emit("8B 46 08");								//mov eax, [esi+8]
+				emit("50");										//push eax
+				emit("8B 46 0C");								//mov eax, [esi+12]
+				emit("50");										//push eax
+				emit("83 C6 08");								//add esi, 8
+				emitCall((intptr_t)sim, (intptr_t)((void*)&Simulation::create_part), 16);
+				emit("89 06");									//mov [esi], eax
 				//temp1 = PSPop();
 				//temp2 = PSPop();
 				//temp3 = PSPop();
@@ -110,14 +123,6 @@ namespace pim
 				//PSPush((Word)-1);
 				break;
 			case Opcode::Get:
-				//temp1 = PSPop();
-				//temp2 = PSPop();
-				//if(temp1.Integer < 0 || temp1.Integer >= YRES || temp2.Integer < 0 || temp2.Integer >= XRES || !(temp = sim->pmap[temp1.Integer][temp2.Integer]))
-				//{
-				//	PSPush(-1);
-				//	break;
-				//}
-				//PSPush(temp>>8);
 				{
 					intptr_t partsArray = (intptr_t)sim->pmap;
 					emit("8B 06");								//mov eax, [esi]
@@ -145,15 +150,6 @@ namespace pim
 				}
 				break;
 			case Opcode::Position:
-				//temp1 = PSPop();
-				//if(temp1.Integer < 0 || temp1.Integer >= NPART || !sim->parts[temp1.Integer].type)
-				//{
-				//	PSPush(-1);
-				//	PSPush(-1);
-				//	break;
-				//}
-				//PSPush((int)sim->parts[temp1.Integer].x);
-				//PSPush((int)sim->parts[temp1.Integer].y);
 				{
 					intptr_t partsArray = (intptr_t)sim->parts;
 					emit("8B 06");								//mov eax, [esi]	#Load index from stack
@@ -277,6 +273,8 @@ namespace pim
 				emitPlaceholder(argument.Integer);
 				break;
 			case Opcode::Return:
+				emit("5E");										//pop esi
+				emit("5A");										//pop edx
 				emit("C3");										//ret
 				break;
 			case Opcode::Leave:
@@ -293,6 +291,8 @@ namespace pim
 			//std::cout << programStack << std::endl;
 			programCounter++;
 		}
+
+
 		for(std::map<int, int>::iterator iter = placeholders.begin(), end = placeholders.end(); iter != end; ++iter)
 		{
 			std::pair<int, int> placeholder = *iter;
@@ -313,13 +313,16 @@ namespace pim
 		emit((int)0);
 	}
 
-	void X86Native::emitCall(intptr_t objectPtr, intptr_t functionAddress)
+	void X86Native::emitCall(intptr_t objectPtr, intptr_t functionAddress, int stackSize)
 	{
-		emit("B9");												//mov ecx, instancePointer
+		//emit("B9");												//mov ecx, instancePointer
+		emit("68");												//push instancePointer
 		emit((int) objectPtr);	
-		emit("A1");												//mov eax, functionAddress
+		emit("B8");												//mov eax, functionAddress
 		emit((int)functionAddress);
-		emit("FF D0");											//call eax		
+		emit("FF D0");											//call eax
+		emit("81 C4");											//add esp, stacksize
+		emit((int)stackSize+sizeof(intptr_t));
 	}
 
 	void X86Native::emit(std::string opcode)

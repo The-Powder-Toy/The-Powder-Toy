@@ -116,7 +116,10 @@ namespace pim
 			{
 				nextCharacter();
 				if(cChar == '=')
-					return Token(Token::NotEqualSymbol, "==", cLine);
+				{
+					nextCharacter();
+					return Token(Token::NotEqualSymbol, "!=", cLine);
+				}
 			}
 			else if(cChar == '(')
 			{

@@ -447,6 +447,9 @@ namespace pim
 		int arg3 = CSPop().Integer;
 		int arg2 = CSPop().Integer;
 		int arg1 = CSPop().Integer;
+		std::cout << arg1 << std::endl;
+		std::cout << arg2 << std::endl;
+		std::cout << arg3 << std::endl;
 		nativeFunction(arg1, arg2, arg3);
 	}
 

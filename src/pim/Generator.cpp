@@ -357,7 +357,7 @@ namespace pim
 		void Generator::ForceType(int type)
 		{
 			if(typeStack.top() != type)
-				throw new TypeException(typeStack.top(), type);
+				throw TypeException(typeStack.top(), type);
 		}
 
 		void Generator::ScopeVariable(std::string label)
@@ -389,7 +389,7 @@ namespace pim
 		void Generator::StoreVariable(std::string label)
 		{
 			Definition d = currentScope->GetDefinition(label);
-			AssureType(d.Type);
+			ForceType(d.Type);
 			popType(1);
 
 			writeOpcode(Opcode::Store);
@@ -517,7 +517,17 @@ namespace pim
 
 		void Generator::CreateParticle()
 		{
+			ForceType(DataType::Integer);
+			popType(1);
+			ForceType(DataType::Integer);
+			popType(1);
+			ForceType(DataType::Integer);
+			popType(1);
+			ForceType(DataType::Integer);
+			popType(1);
 			writeOpcode(Opcode::Create);
+
+			pushType(DataType::Integer);
 
 			output << "create" << std::endl;
 		}
@@ -556,10 +566,12 @@ namespace pim
 			output << "kill" << std::endl;
 		}
 
-		void Generator::LoadProperty(std::string property)
+		void Generator::LoadProperty(std::string property, int type)
 		{
+			ForceType(DataType::Integer);	//Particle type must be integer
 			popType(1);
-			pushType(DataType::Integer);
+			
+			pushType(type);
 			writeOpcode(Opcode::LoadProperty);
 			writeConstantPropertyPlaceholder(property);
 

@@ -12,7 +12,7 @@ namespace pim
 	private: 
 		void emit(std::string opcode);
 		void emit(int constant);
-		void emitCall(intptr_t objectPtr, intptr_t functionAddress);
+		void emitCall(intptr_t objectPtr, intptr_t functionAddress, int stackSize);
 		void emitPlaceholder(int virtualAddress);
 		unsigned char hex(char c);
 		std::vector<unsigned char> nativeRom;
