@@ -75,6 +75,7 @@ public:
 			if(prompt->signID!=-1)
 			{
 				prompt->sim->signs[prompt->signID].text = sender->GetText();
+				prompt->sim->signs[prompt->signID].ju = (sign::Justification)prompt->justification->GetOption().second;
 			}
 		}
 	};
@@ -89,6 +90,7 @@ public:
 			if(prompt->signID!=-1)
 			{
 				prompt->movingSign = &prompt->sim->signs[prompt->signID];
+				prompt->sim->signs[prompt->signID].ju = (sign::Justification)prompt->justification->GetOption().second;
 				prompt->signMoving = true;
 			}
 		}
@@ -175,48 +177,35 @@ void SignWindow::DoDraw()
 	for(std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
 	{
 		sign & currentSign = *iter;
-		int x, y, w, h;
+		int x, y, w, h, dx, dy;
 		Graphics * g = ui::Engine::Ref().g;
-		char buff[256];  //Buffer
-		currentSign.pos(x, y, w, h);
-		g->clearrect(x, y, w, h);
-		g->drawrect(x, y, w, h, 192, 192, 192, 255);
+		std::string text = currentSign.getText(sim);
+		currentSign.pos(text, x, y, w, h);
+		g->clearrect(x, y, w+1, h);
+		g->drawrect(x, y, w+1, h, 192, 192, 192, 255);
+		if (sregexp(currentSign.text.c_str(), "^{[c|t]:[0-9]*|.*}$"))
+			g->drawtext(x+3, y+3, text, 255, 255, 255, 255);
+		else
+			g->drawtext(x+3, y+3, text, 0, 191, 255, 255);
 
-		//Displaying special information
-		if (currentSign.text == "{p}")
+		x = currentSign.x;
+		y = currentSign.y;
+		dx = 1 - currentSign.ju;
+		dy = (currentSign.y > 18) ? -1 : 1;
+#ifdef OGLR
+		glBegin(GL_LINES);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glVertex2i(x, y);
+		glVertex2i(x+(dx*4), y+(dy*4));
+		glEnd();
+#else
+		for (int j=0; j<4; j++)
 		{
-			float pressure = 0.0f;
-			if (currentSign.x>=0 && currentSign.x<XRES && currentSign.y>=0 && currentSign.y<YRES)
-				pressure = sim->pv[currentSign.y/CELL][currentSign.x/CELL];
-			sprintf(buff, "Pressure: %3.2f", pressure);  //...pressure
-			g->drawtext(x+3, y+3, buff, 255, 255, 255, 255);
+			g->blendpixel(x, y, 192, 192, 192, 255);
+			x+=dx;
+			y+=dy;
 		}
-		else if (currentSign.text == "{t}")
-		{
-			if (currentSign.x>=0 && currentSign.x<XRES && currentSign.y>=0 && currentSign.y<YRES && sim->pmap[currentSign.y][currentSign.x])
-				sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[currentSign.y][currentSign.x]>>8].temp-273.15);  //...temperature
-			else
-				sprintf(buff, "Temp: 0.00");  //...temperature
-			g->drawtext(x+3, y+3, buff, 255, 255, 255, 255);
-		}
-		else if (sregexp(currentSign.text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)
-		{
-			int sldr, startm;
-			memset(buff, 0, sizeof(buff));
-			for (sldr=3; currentSign.text[sldr-1] != '|'; sldr++)
-				startm = sldr + 1;
-			sldr = startm;
-			while (currentSign.text[sldr] != '}')
-			{
-				buff[sldr - startm] = currentSign.text[sldr];
-				sldr++;
-			}
-			g->drawtext(x+3, y+3, buff, 0, 191, 255, 255);
-		}
-		else 
-		{
-			g->drawtext(x+3, y+3, currentSign.text, 255, 255, 255, 255);
-		}
+#endif
 	}
 	if(!signMoving)
 	{
@@ -277,7 +266,7 @@ void SignTool::Click(Simulation * sim, Brush * brush, ui::Point position)
 {
 	int signX, signY, signW, signH, signIndex = -1;
 	for(int i = 0; i < sim->signs.size(); i++){
-		sim->signs[i].pos(signX, signY, signW, signH);
+		sim->signs[i].pos(sim->signs[i].getText(sim), signX, signY, signW, signH);
 		if(position.X > signX && position.X < signX+signW && position.Y > signY && position.Y < signY+signH)
 		{
 			signIndex = i;

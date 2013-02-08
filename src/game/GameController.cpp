@@ -543,7 +543,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 			for (std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
 			{
 				int signx, signy, signw, signh;
-				(*iter).pos(signx, signy, signw, signh);
+				(*iter).pos((*iter).getText(sim), signx, signy, signw, signh);
 				if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
 				{
 					if (sregexp((*iter).text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)

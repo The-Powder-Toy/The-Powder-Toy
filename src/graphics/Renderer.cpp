@@ -487,9 +487,9 @@ void Renderer::RenderZoom()
 		int x, y, i, j;
 		pixel pix;
 		pixel * img = vid;
-		clearrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+2, zoomScopeSize*ZFACTOR+2);
-		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+4, zoomScopeSize*ZFACTOR+4, 192, 192, 192, 255);
-		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+2, zoomScopeSize*ZFACTOR+2, 0, 0, 0, 255);
+		clearrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1);
+		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3, 192, 192, 192, 255);
+		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1, 0, 0, 0, 255);
 		for (j=0; j<zoomScopeSize; j++)
 			for (i=0; i<zoomScopeSize; i++)
 			{
@@ -828,46 +828,14 @@ void Renderer::DrawSigns()
 	for (i=0; i < signs.size(); i++)
 		if (signs[i].text.length())
 		{
-			char buff[256];  //Buffer
-			sim->signs[i].pos(x, y, w, h);
-			clearrect(x, y, w, h);
-			drawrect(x, y, w, h, 192, 192, 192, 255);
-
-			//Displaying special information
-			if (signs[i].text == "{p}")
-			{
-				float pressure = 0.0f;
-				if (signs[i].x>=0 && signs[i].x<XRES && signs[i].y>=0 && signs[i].y<YRES)
-					pressure = sim->pv[signs[i].y/CELL][signs[i].x/CELL];
-				sprintf(buff, "Pressure: %3.2f", pressure);  //...pressure
-				drawtext(x+3, y+3, buff, 255, 255, 255, 255);
-			}
-			else if (signs[i].text == "{t}")
-			{
-				if (signs[i].x>=0 && signs[i].x<XRES && signs[i].y>=0 && signs[i].y<YRES && sim->pmap[signs[i].y][signs[i].x])
-					sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...temperature
-				else
-					sprintf(buff, "Temp: 0.00");  //...temperature
-				drawtext(x+3, y+3, buff, 255, 255, 255, 255);
-			}
-			else if (sregexp(signs[i].text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)
-			{
-				int sldr, startm;
-				memset(buff, 0, sizeof(buff));
-				for (sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
-					startm = sldr + 1;
-				sldr = startm;
-				while (signs[i].text[sldr] != '}')
-				{
-					buff[sldr - startm] = signs[i].text[sldr];
-					sldr++;
-				}
-				drawtext(x+3, y+3, buff, 0, 191, 255, 255);
-			}
-			else 
-			{
-				drawtext(x+3, y+3, signs[i].text, 255, 255, 255, 255);
-			}
+			std::string text = sim->signs[i].getText(sim);
+			sim->signs[i].pos(text, x, y, w, h);
+			clearrect(x, y, w+1, h);
+			drawrect(x, y, w+1, h, 192, 192, 192, 255);
+			if (sregexp(signs[i].text.c_str(), "^{[c|t]:[0-9]*|.*}$"))
+				drawtext(x+3, y+3, text, 255, 255, 255, 255);
+			else
+				drawtext(x+3, y+3, text, 0, 191, 255, 255);
 				
 			x = signs[i].x;
 			y = signs[i].y;
@@ -887,15 +855,6 @@ void Renderer::DrawSigns()
 				y+=dy;
 			}
 #endif
-			/*if (MSIGN==i)
-			{
-				bq = b;
-				b = SDL_GetMouseState(&mx, &my);
-				mx /= sdl_scale;
-				my /= sdl_scale;
-				signs[i].x = mx;
-				signs[i].y = my;
-			}*/
 		}
 #ifdef OGLR
 	glTranslated(0, -MENUSIZE, 0);

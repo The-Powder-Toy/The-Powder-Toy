@@ -7,6 +7,7 @@
 
 #include "Sign.h"
 #include "graphics/Graphics.h"
+#include "simulation/Simulation.h"
 #include "Misc.h"
 
 sign::sign(std::string text_, int x_, int y_, Justification justification_):
@@ -17,38 +18,51 @@ sign::sign(std::string text_, int x_, int y_, Justification justification_):
 {
 }
 
-void sign::pos(int & x0, int & y0, int & w, int & h)
+std::string sign::getText(Simulation *sim)
 {
-	//Changing width if sign have special content
-	if (text == "{p}")
+	char buff[256];
+	char signText[256];
+	sprintf(signText, "%s", text.c_str());
+
+	if (!strcmp(signText,"{p}"))
 	{
-		w = Graphics::textwidth("Pressure: -000.00");
+		float pressure = 0.0f;
+		if (x>=0 && x<XRES && y>=0 && y<YRES)
+			pressure = sim->pv[y/CELL][x/CELL];
+		sprintf(buff, "Pressure: %3.2f", pressure);  //...pressure
 	}
-	else if (text == "{t}")
+	else if (!strcmp(signText,"{t}"))
 	{
-		w = Graphics::textwidth("Temp: 0000.00");
+		if (x>=0 && x<XRES && y>=0 && y<YRES && sim->pmap[y][x])
+			sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[y][x]>>8].temp-273.15);  //...temperature
+		else
+			sprintf(buff, "Temp: 0.00");  //...temperature
 	}
-	else if (sregexp(text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)
+	else if (sregexp(signText, "^{[c|t]:[0-9]*|.*}$")==0)
 	{
 		int sldr, startm;
-		char buff[256];
 		memset(buff, 0, sizeof(buff));
-		for (sldr=3; text[sldr-1] != '|'; sldr++)
+		for (sldr=3; signText[sldr-1] != '|'; sldr++)
 			startm = sldr + 1;
-
 		sldr = startm;
-		while (text[sldr] != '}')
+		while (signText[sldr] != '}')
 		{
-			buff[sldr - startm] = text[sldr];
+			buff[sldr - startm] = signText[sldr];
 			sldr++;
 		}
-		w = Graphics::textwidth(buff) + 5;
 	}
 	else
 	{
-		w = Graphics::textwidth(text.c_str()) + 5;
+		sprintf(buff, "%s", signText);
 	}
-	h = 14;
+
+	return std::string(buff,256);
+}
+
+void sign::pos(std::string signText, int & x0, int & y0, int & w, int & h)
+{
+	w = Graphics::textwidth(signText.c_str()) + 5;
+	h = 15;
 	x0 = (ju == 2) ? x - w :
 	      (ju == 1) ? x - w/2 : x;
 	y0 = (y > 18) ? y - 18 : y + 4;
