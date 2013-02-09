@@ -41,18 +41,31 @@ namespace pim
 		class Definition
 		{
 		public:
+			enum DefType { Function, Variable };
 			std::string Name;
+			DefType DefinitionType;
 			int Type;
 			int StackPosition;
 			Scope * MyScope;
 			Definition(std::string name, int type, int position, Scope * myScope) :
-				Type(type),
 				Name(name),
+				DefinitionType(Variable),
+				Type(type),
 				StackPosition(position),
 				MyScope(myScope)
 			{
 
 			}
+			virtual ~Definition() {}
+		};
+
+		class FunctionDefinition : public Definition
+		{
+			public: 
+				bool HasReturn;
+				std::vector<int> Arguments;
+				FunctionDefinition() : Definition("", 0, 0, NULL) { DefinitionType = Function; }
+				virtual ~FunctionDefinition() {}
 		};
 
 		struct Label
@@ -64,7 +77,7 @@ namespace pim
 		class Scope
 		{
 		public:
-			std::vector<Definition> Definitions;
+			std::vector<Definition*> Definitions;
 			std::vector<Label> Labels;
 			int FrameSize;
 			int LocalFrameSize;
@@ -76,14 +89,14 @@ namespace pim
 			{
 
 			}
-			Definition GetDefinition(std::string name)
+			Definition * GetDefinition(std::string name)
 			{
-				for(std::vector<Definition>::iterator iter = Definitions.begin(), end = Definitions.end(); iter != end; ++iter)
+				for(std::vector<Definition*>::iterator iter = Definitions.begin(), end = Definitions.end(); iter != end; ++iter)
 				{
-					if((*iter).Name == name)
+					if((*iter)->Name == name)
 						return *iter;
 				}
-				throw VariableNotFoundException(name);
+				return NULL;
 			}
 		};
 
@@ -93,6 +106,8 @@ namespace pim
 			std::stack<int> typeStack;
 			std::stack<Scope*> scopes;
 			Scope * currentScope;
+			Scope * globalScope;
+			FunctionDefinition * funcDef;
 			std::ostream & output;
 			int labelCounter;
 			int programCounter;
@@ -149,6 +164,12 @@ namespace pim
 			void ScopeLabel(std::string label);
 			void ScopeVariableType(int type);
 			void ScopeVariable(std::string label);
+			void GlobalVariable(std::string label);
+
+			void NewFunction();
+			void FunctionType(int type);
+			void FunctionArgument(int type);
+			void DeclareFunction(std::string name);
 
 			void PushType(int type);
 			void PushVariableAddress(std::string label);

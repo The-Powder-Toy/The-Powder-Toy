@@ -149,7 +149,7 @@ public:
 	TPT_NO_INLINE int create_part_add_props(int p, int x, int y, int tv, int rx, int ry);
 	//int InCurrentBrush(int i, int j, int rx, int ry);
 	//int get_brush_flags();
-	TPT_NO_INLINE int create_part(int p, int x, int y, int t);
+	TPT_NO_INLINE TPT_VM_CALLABLE int create_part(int p, int x, int y, int t);
 	TPT_NO_INLINE void delete_part(int x, int y, int flags);
 	void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
 	TPT_NO_INLINE int is_wire(int x, int y);

@@ -1336,7 +1336,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				updateVirtualMachines[id] = (pim::VirtualMachine*)lua_touserdata(l, 3);
 				if(updateVirtualMachines[id]->IsCompiled())
 				{
-					updateNativeCode[id] = (NativeUpdateFunc)updateVirtualMachines[id]->GetNativeEntryPoint(0);
+					updateNativeCode[id] = (NativeUpdateFunc)updateVirtualMachines[id]->GetNativeEntryPoint("update", "I", "III");
 					luacon_sim->elements[id].Update = &updateNative;
 				}
 				else
@@ -1481,7 +1481,7 @@ int LuaScriptInterface::virtualMachine_loadProgram(lua_State * l)
 		return luaL_error(l, "Unable to load program");
 	}
 	lua_pushlightuserdata(l, newVM);*/
-	std::string programSource(lua_tostring(l, 1));
+	std::string programSource(lua_tostring(l, 1), lua_strlen(l, 1));
 	std::stringstream input(programSource);
 
 

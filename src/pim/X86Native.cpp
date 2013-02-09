@@ -4,7 +4,7 @@
 
 namespace pim 
 {
-	std::vector<unsigned char> X86Native::Compile(Simulation * sim, unsigned char * machineStack, Instruction * rom, int romSize)
+	std::vector<unsigned char> X86Native::Compile(Simulation * sim, unsigned char * machineStack, unsigned char * heap, Instruction * rom, int romSize)
 	{
 	#if defined(X86) && !defined(_64BIT)
 		int programCounter = 0;
@@ -12,10 +12,9 @@ namespace pim
 
 		for(int i = 0; i < 8; i++) { emit("90"); } 				//nop, helps find the code in memory with a debugger
 		
-
 		
-		emit("BE");												//mov esi, machineStack
-		emitConstantP((intptr_t)machineStack);
+		//emit("BE");												//mov esi, machineStack
+		//emitConstantP((intptr_t)machineStack);
 
 		while(programCounter < romSize)
 		{
@@ -23,6 +22,10 @@ namespace pim
 			virtualToNative[programCounter] = nativeRom.size();
 			switch(rom[programCounter].Opcode)
 			{
+			case Opcode::Begin:
+				emit("BE");										//mov esi, machineStack
+				emitConstantP((intptr_t)machineStack);
+				break;
 			case Opcode::Load:
 				emit("83 EE 04"); 								//sub esi, 4
 				//Load value at base stack + offset into eax
@@ -38,6 +41,18 @@ namespace pim
 				//Load value in eax into memory
 				emit("89 84 24");								//mov [esp+offset], eax
 				emitConstantD(argument.Integer);
+				emit("83 C6 04");								//add esi, 4
+				break;
+			case Opcode::LoadAdr:
+				emit("83 EE 04"); 								//sub esi, 4
+				emit("A1");										//mov eax, [offset]
+				emitConstantP(((intptr_t)heap)+argument.Integer);
+				emit("89 06");									//mov [esi], eax
+				break;
+			case Opcode::StoreAdr:
+				emit("8B 06");									//mov eax, [esi]
+				emit("A3");										//mov [offset], eax
+				emitConstantP(((intptr_t)heap)+argument.Integer);
 				emit("83 C6 04");								//add esi, 4
 				break;
 			case Opcode::Constant:

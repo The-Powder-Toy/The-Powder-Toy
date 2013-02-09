@@ -1,4 +1,5 @@
 #include "Machine.h"
+#include <map>
 
 namespace pim
 {
@@ -46,7 +47,8 @@ namespace pim
 		virtual void emitPlaceholder(int virtualAddress) {}
 	public:
 		Native() : nativeRom()  {}
-		virtual std::vector<unsigned char> Compile(Simulation * sim, unsigned char * machineStack, Instruction * rom, int romSize) {}
+		virtual std::map<int, int> GetAddressMap() {}
+		virtual std::vector<unsigned char> Compile(Simulation * sim, unsigned char * machineStack, unsigned char * heap, Instruction * rom, int romSize) {}
 
 	};
 }

@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <map>
 
 class Simulation;
 namespace pim
@@ -47,6 +48,36 @@ namespace pim
 	class VirtualMachine
 	{
 
+		class Variable
+		{
+		public:
+			std::string Name;
+			int Type;
+			int Position;
+			Variable(std::string name, int position, int type)
+			{
+				Name = name;
+				Position = position;
+				Type = type;
+			}
+		};
+		class Function
+		{
+		public:
+			std::string Name;
+			bool HasReturn;
+			int ReturnType;
+			std::vector<int> ArgTypes;
+			int Position;
+			Function(std::string name, int position, bool hasReturn, int returnType, std::vector<int> argTypes)
+			{
+				Name = name;
+				Position = position;
+				HasReturn = hasReturn;
+				ReturnType = returnType;
+				ArgTypes = argTypes;
+			}
+		};
 		#define WORDSIZE 4
 
 		//#define OPDEF(name) void op##name(int parameter);
@@ -68,6 +99,8 @@ namespace pim
 		unsigned char * ram;
 		int ramSize;
 		int ramMask;
+		unsigned char * heap;
+		int heapSize;
 
 		#define CSA(argument) (*((Word*)&ram[framePointer-argument]))
 		#define CS() (*((Word*)&ram[callStack]))
@@ -80,6 +113,10 @@ namespace pim
 
 		//Instruction * instructions;
 
+		std::vector<Function> functions;
+		std::vector<Variable> variables;
+		std::map<int, int> virtualXToNative;
+
 		int programCounter;
 		void run();
 		int opcodeArgSize(int opcode);
@@ -87,9 +124,8 @@ namespace pim
 		VirtualMachine(Simulation * sim);
 		void LoadProgram(std::vector<unsigned char> programData);
 		void Compile();
-		void * GetNativeEntryPoint(std::string entryPoint);
-		void * GetNativeEntryPoint(intptr_t entryPoint);
-		void Run(std::string entryPoint);
+		void * GetNativeEntryPoint(std::string entryPoint, std::string returnType, std::string argTypes);
+		int GetEntryPoint(std::string entryPoint, std::string returnType, std::string argTypes);
 		void Run(int entryPoint);
 		inline bool IsCompiled()
 		{

@@ -11,6 +11,7 @@ namespace pim
 		{
 			char cChar;
 			int cLine;
+			int cCharNum;
 			std::string cToken;
 			std::stringstream & source;
 			void nextCharacter();

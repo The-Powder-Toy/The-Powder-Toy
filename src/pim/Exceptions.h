@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <string>
+#include <cstdio>
 #include "Token.h"
 
 namespace pim
@@ -36,5 +37,34 @@ namespace pim
 			}
 			~TypeException() throw() {};
 		};
+		class ScannerCharacterException: public std::exception
+		{
+			char * error;
+		public:
+			ScannerCharacterException(char character, int lineNumber, int characterNumber) {
+				error = new char[256];
+				sprintf(error, "Unexpected character '%c' at line %d, char %d", character, lineNumber, characterNumber);
+			}
+			const char * what() const throw()
+			{
+				return error;
+			}
+			~ScannerCharacterException() throw() { delete[] error; };
+		};
 	}
+	class FunctionNotFoundException: public std::exception
+	{
+		char * error;
+	public:
+		FunctionNotFoundException(std::string functionName, std::string returnType, std::string arguments)
+		{
+			error = new char[functionName.length() + returnType.length() + arguments.length()];
+			sprintf(error, "Could not find function \"%s\" of type %s(%s)", functionName.c_str(), returnType.c_str(), arguments.c_str());
+		}
+		const char * what() const throw()
+		{
+			return error;
+		}
+		~FunctionNotFoundException() throw() { delete[] error; };
+	};
 }

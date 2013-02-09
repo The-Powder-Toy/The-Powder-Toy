@@ -8,7 +8,8 @@ namespace pim
 	{
 	public:
 		X86Native() : Native() {}
-		virtual std::vector<unsigned char> Compile(Simulation * sim, unsigned char * machineStack, Instruction * rom, int romSize);
+		virtual std::vector<unsigned char> Compile(Simulation * sim, unsigned char * machineStack, unsigned char * heap, Instruction * rom, int romSize);
+		virtual std::map<int, int> GetAddressMap() { return virtualToNative; }
 	protected:
 		virtual void emitConstantD(long int constant);
 		virtual void emitConstantP(intptr_t constant);

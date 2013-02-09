@@ -30,6 +30,8 @@ namespace pim
 			void argument();
 			void declarationList();
 			void declaration();
+			void globalList();
+			void global();
 			void identifierList();
 			void statementList();
 			void statement();

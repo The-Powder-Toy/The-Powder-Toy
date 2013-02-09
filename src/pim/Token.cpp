@@ -45,7 +45,8 @@ namespace pim
 			"IDENTIFIER",
 			",",
 			".",
-			"INVALID SYMBOL"
+			"INVALID SYMBOL",
+			"EOF"
 		};
 	}
 }

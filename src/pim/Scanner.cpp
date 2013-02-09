@@ -2,12 +2,15 @@
 #include <algorithm>
 #include <cctype>
 #include "Scanner.h"
+#include "Exceptions.h"
 
 namespace pim
 {
 	namespace compiler
 	{
 		Scanner::Scanner(std::stringstream & source_) :
+			cLine(1),
+			cCharNum(1),
 			source(source_)
 		{
 			nextCharacter();
@@ -37,12 +40,18 @@ namespace pim
 				{
 					nextCharacter();
 					if(cChar == '\n')
+					{
 						cLine++;
+						cCharNum = 1;
+					}
 					else
 						continue;
 				}
 				else if(cChar == '\n')
+				{
 					cLine++;
+					cCharNum = 1;
+				}
 
 				nextCharacter();
 			}
@@ -184,17 +193,27 @@ namespace pim
 				nextCharacter();
 				return Token(Token::DotSymbol, ".", cLine);
 			}
+			else if(cChar == 0)
+			{
+				return Token(Token::EndOfFile, "EOF", cLine);
+			}
 			else
 			{
-				nextCharacter();
-				return Token(Token::InvalidSymbol, std::string(1, cChar), cLine);
+				throw ScannerCharacterException(cChar, cLine, cCharNum);
+				//nextCharacter();
+				//return Token(Token::InvalidSymbol, std::string(1, cChar), cLine);
 			}
 		}
 
 		void Scanner::nextCharacter()
 		{
-			if(source.good())
+			if(source.good() && !source.eof())
+			{
+				cCharNum++;
 				cChar = source.get();
+				if(source.eof())
+					cChar = 0;
+			}
 			else
 				cChar = 0;
 		}

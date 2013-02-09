@@ -30,27 +30,26 @@ namespace pim
 		*/
 		void Parser::program()
 		{
-			functionList();
+			globalList();
+			//functionList();
 		}
 		
 		/*
-			<function list> ::=	<function> | <function> <function list>
-		*/
-		void Parser::functionList()
-		{
-			function();
-			while(look(Token::FunctionSymbol))
-				function();
-		}
-		
-		/*
-			<function> ::= function identifier ( <declaration list> ) <block> end
+			<function> ::= function identifier ( <declaration list> ) <block> end | function type identifier ( <declaration list> ) <block> end
 		*/
 		void Parser::function()
 		{
 			std::string functionName;
 
 			expect(Token::FunctionSymbol);
+
+			generator->NewFunction();
+			if(accept(Token::IntegerConstant))
+				generator->FunctionType(DataType::Integer);
+			else if(accept(Token::ParticleConstant))
+				generator->FunctionType(DataType::Integer);
+			else if(accept(Token::DecimalConstant))
+				generator->FunctionType(DataType::Float);
 
 			functionName = token.Source;
 			generator->PushScope(functionName);
@@ -62,6 +61,7 @@ namespace pim
 				argumentList();
 				expect(Token::RightBracket);
 			}
+			generator->DeclareFunction(functionName);
 			block();
 			expect(Token::EndSymbol);
 
@@ -77,6 +77,7 @@ namespace pim
 		{
 			std::string functionName;
 
+			//generator->BeginCall();
 			functionName = token.Source;
 			expect(Token::Identifier);
 			expect(Token::LeftBracket);
@@ -127,6 +128,7 @@ namespace pim
 					if(!accept(Token::ParticleSymbol))
 						throw ParserExpectException(token, "type name");
 			generator->ScopeVariable(token.Source);
+			generator->FunctionArgument(type);
 			expect(Token::Identifier);
 		}
 
@@ -162,6 +164,49 @@ namespace pim
 					if(!accept(Token::ParticleSymbol))
 						throw ParserExpectException(token, "type name");
 			identifierList();
+		}
+
+		/*
+			<global list> ::= <global> | <global> <global list>
+		*/
+		void Parser::globalList()
+		{
+			while(look(Token::IntegerSymbol) || look(Token::DecimalSymbol) || look(Token::ParticleSymbol) || look(Token::FunctionSymbol))
+			{
+				global();
+			}
+		}
+		
+		/*
+			<global> ::= integer <identifier list> | decimal <identifier list> | particle <identifier list> | <function>
+		*/
+		void Parser::global()
+		{
+			int type;
+			if(look(Token::FunctionSymbol))
+			{
+				function();
+			}
+			else
+			{
+				switch(token.Symbol)
+				{
+					case Token::DecimalSymbol:
+						type = DataType::Float;
+						break;
+					case Token::IntegerSymbol:
+					case Token::ParticleSymbol:
+						type = DataType::Integer;
+						break;
+				}
+				generator->ScopeVariableType(type);
+				if(!accept(Token::IntegerSymbol))
+					if(!accept(Token::DecimalSymbol))
+						if(!accept(Token::ParticleSymbol))
+							throw ParserExpectException(token, "type name");
+				generator->GlobalVariable(token.Source);
+				expect(Token::Identifier);
+			}
 		}
 		
 		/*

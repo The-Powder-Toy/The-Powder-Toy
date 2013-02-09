@@ -212,6 +212,8 @@ extern unsigned char ZSIZE;
 #define TPT_NO_INLINE inline
 #endif
 
+#define TPT_VM_CALLABLE	__cdecl
+
 #define SDEUT
 //#define REALHEAT
 

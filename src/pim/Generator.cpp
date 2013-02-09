@@ -11,9 +11,12 @@ namespace pim
 	{
 		Generator::Generator() :
 			typeStack(),
+			globalScope(new Scope()),
 			output(std::cout),
 			labelCounter(0),
-			programCounter(0)
+			programCounter(0),
+			program()
+
 		{
 
 		}
@@ -33,16 +36,19 @@ namespace pim
 		void Generator::writeOpcode(int opcode)
 		{
 			programCounter++;
+			printf("Opcode: %d\n", opcode);
 			program.push_back(opcode);
 		}
 
 		void Generator::writeConstant(std::string constant)
 		{
+			printf("Constant: %s\n", constant.c_str());
 			writeConstant(format::StringToNumber<int>(constant));
 		}
 
 		void Generator::writeConstant(int constant)
 		{
+			printf("Constant: %d\n", constant);
 			program.push_back(constant & 0xFF);
 			program.push_back((constant>>8) & 0xFF);
 			program.push_back((constant>>16) & 0xFF);
@@ -51,6 +57,7 @@ namespace pim
 
 		void Generator::writeConstantPlaceholderOffset(int value, int * offset)
 		{
+			printf("Constant: %d\n", value);
 			valueOffsetPlaceholders.push_back(ValueOffsetPlaceholder(program.size(), std::pair<int, int*>(value, offset)));
 			program.push_back(0);
 			program.push_back(0);
@@ -60,6 +67,7 @@ namespace pim
 
 		void Generator::writeConstantPlaceholder(std::string label)
 		{
+			printf("Constant: %s\n", label.c_str());
 			placeholders.push_back(Placeholder(program.size(), label));
 			program.push_back(0);
 			program.push_back(0);
@@ -69,6 +77,7 @@ namespace pim
 
 		void Generator::writeConstantPlaceholder(int * value)
 		{
+			printf("Constant: %p\n", value);
 			valuePlaceholders.push_back(ValuePlaceholder(program.size(), value));
 			program.push_back(0);
 			program.push_back(0);
@@ -78,6 +87,7 @@ namespace pim
 
 		void Generator::writeConstantPropertyPlaceholder(std::string property)
 		{
+			printf("Constant: %s\n", property.c_str());
 			propertyPlaceholders.push_back(PropertyPlaceholder(program.size(), property));
 			program.push_back(0);
 			program.push_back(0);
@@ -87,6 +97,7 @@ namespace pim
 
 		void Generator::writeConstantMacroPlaceholder(std::string macro)
 		{
+			printf("Constant: %s\n", macro.c_str());
 			macroPlaceholders.push_back(MacroPlaceholder(program.size(), macro));
 			program.push_back(0);
 			program.push_back(0);
@@ -150,13 +161,18 @@ namespace pim
 			}
 
 			//Build file
-			int macroSizePos, propSizePos, codeSizePos, macroSize = 0, propSize = 0, codeSize = program.size();
+			int macroSizePos, propSizePos, codeSizePos, symtableSizePos, macroSize = 0, propSize = 0, symtableSize = 0, codeSize = program.size();
 			std::vector<unsigned char> file;
 			file.push_back('P');
 			file.push_back('V');
 			file.push_back('M');
 			file.push_back('1');
 
+			//Heap size
+			file.push_back(globalScope->FrameSize & 0xFF);
+			file.push_back((globalScope->FrameSize >> 8) & 0xFF);
+			file.push_back((globalScope->FrameSize >> 16) & 0xFF);
+			file.push_back((globalScope->FrameSize >> 24) & 0xFF);
 
 			macroSizePos = file.size();
 			file.push_back(0);
@@ -165,6 +181,12 @@ namespace pim
 			file.push_back(0);
 
 			propSizePos = file.size();
+			file.push_back(0);
+			file.push_back(0);
+			file.push_back(0);
+			file.push_back(0);
+
+			symtableSizePos = file.size();
 			file.push_back(0);
 			file.push_back(0);
 			file.push_back(0);
@@ -223,12 +245,58 @@ namespace pim
 			file[propSizePos+2] = (propSize >> 16) & 0xFF;
 			file[propSizePos+3] = (propSize >> 24) & 0xFF;
 
+			for(std::vector<Definition*>::iterator iter = globalScope->Definitions.begin(), end = globalScope->Definitions.end(); iter != end; ++iter)
+			{
+				Definition * d = *iter;
+				if(d->DefinitionType == Definition::Function)
+					file.push_back(255);
+				else
+					file.push_back(d->Type);
+				symtableSize++;
+				file.push_back(d->Name.length());
+				symtableSize++;
+				file.insert(file.end(), d->Name.begin(), d->Name.end());
+				symtableSize += d->Name.length();
+
+				file.push_back(d->StackPosition);
+				file.push_back((d->StackPosition >> 8) & 0xFF);
+				file.push_back((d->StackPosition >> 16) & 0xFF);
+				file.push_back((d->StackPosition >> 24) & 0xFF);
+				symtableSize += 4;
+
+				if(d->DefinitionType == Definition::Function)
+				{
+					FunctionDefinition * fd = (FunctionDefinition*)d;
+					if(fd->HasReturn)
+						file.push_back(fd->Type);
+					else
+						file.push_back(255);
+					symtableSize++;
+
+					file.push_back((char)fd->Arguments.size());
+					symtableSize++;
+
+					for(std::vector<int>::iterator iter = fd->Arguments.begin(), end = fd->Arguments.end(); iter != end; ++iter)
+					{
+						file.push_back((int)*iter);
+						symtableSize++;						
+					}
+				}
+			}
+
+			file[symtableSizePos] = symtableSize & 0xFF;
+			file[symtableSizePos+1] = (symtableSize >> 8) & 0xFF;
+			file[symtableSizePos+2] = (symtableSize >> 16) & 0xFF;
+			file[symtableSizePos+3] = (symtableSize >> 24) & 0xFF;
+
 			file.insert(file.end(), program.begin(), program.end());
 
 			file[codeSizePos] = codeSize & 0xFF;
 			file[codeSizePos+1] = (codeSize >> 8) & 0xFF;
 			file[codeSizePos+2] = (codeSize >> 16) & 0xFF;
 			file[codeSizePos+3] = (codeSize >> 24) & 0xFF;
+
+			printf("codeSize: %d, codeSizePos: %d\n", codeSize, codeSizePos);
 
 			std::ofstream newFile("test.pvm");
 			for(std::vector<unsigned char>::iterator iter = file.begin(), end = file.end(); iter != end; ++iter)
@@ -360,13 +428,49 @@ namespace pim
 				throw TypeException(typeStack.top(), type);
 		}
 
+		void Generator::NewFunction()
+		{
+			funcDef = new FunctionDefinition();
+		}
+
+		void Generator::FunctionType(int type)
+		{
+			funcDef->HasReturn = true;
+			funcDef->Type = type;
+		}
+
+		void Generator::FunctionArgument(int type)
+		{
+			 funcDef->Arguments.push_back(type);
+		}
+
+		void Generator::DeclareFunction(std::string name)
+		{
+			funcDef->Name = name;
+			funcDef->StackPosition = programCounter;
+			globalScope->Definitions.push_back(funcDef);
+			funcDef = NULL;
+
+			writeOpcode(Opcode::Begin);
+
+			output << "begin" << std::endl;
+		}		
+
 		void Generator::ScopeVariable(std::string label)
 		{
-			currentScope->Definitions.push_back(Definition(label, variableType, currentScope->LocalFrameSize, currentScope));
+			currentScope->Definitions.push_back(new Definition(label, variableType, currentScope->LocalFrameSize, currentScope));
 			currentScope->FrameSize += 4;
 			currentScope->LocalFrameSize += 4;
 
 			output << "#declare " << label << " " << currentScope->LocalFrameSize-4 << std::endl;
+		}
+
+		void Generator::GlobalVariable(std::string label)
+		{
+			globalScope->Definitions.push_back(new Definition(label, variableType, globalScope->FrameSize, NULL));
+			globalScope->FrameSize += 4;
+
+			output << "#global " << label << " " << globalScope->FrameSize-4 << std::endl;
 		}
 
 		void Generator::PushVariableAddress(std::string label)
@@ -376,29 +480,73 @@ namespace pim
 
 		void Generator::LoadVariable(std::string label)
 		{
-			Definition d = currentScope->GetDefinition(label);
+			Definition * d = currentScope->GetDefinition(label);
 
-			pushType(d.Type);
-			writeOpcode(Opcode::Load);
+			if(!d)
+			{
+				d = globalScope->GetDefinition(label);
 
-			writeConstant(d.StackPosition+(currentScope->FrameSize-d.MyScope->FrameSize));
+				if(!d)
+					throw VariableNotFoundException(label);
 
-			output << "load " << label << std::endl;
+				if(d->DefinitionType == Definition::Function)
+					throw std::exception();//"Cannot use function as variable");
+
+				pushType(d->Type);
+				
+				writeOpcode(Opcode::LoadAdr);
+				writeConstant(d->StackPosition);
+
+				output << "loadadr " << label << std::endl;
+			}
+			else
+			{
+				if(d->DefinitionType == Definition::Function)
+					throw std::exception();//"Cannot use function as variable");
+
+				pushType(d->Type);
+
+				writeOpcode(Opcode::Load);
+				writeConstant(d->StackPosition+(currentScope->FrameSize-d->MyScope->FrameSize));
+
+				output << "load " << label << std::endl;
+			}
 		}
 
 		void Generator::StoreVariable(std::string label)
 		{
-			Definition d = currentScope->GetDefinition(label);
-			ForceType(d.Type);
-			popType(1);
+			Definition * d = currentScope->GetDefinition(label);
+			if(!d)
+			{
+				d = globalScope->GetDefinition(label);
+				if(!d)
+					throw VariableNotFoundException(label);
 
-			writeOpcode(Opcode::Store);
+				if(d->DefinitionType == Definition::Function)
+					throw std::exception();//"Cannot use function as variable");
 
-			writeConstant(d.StackPosition+(currentScope->FrameSize-d.MyScope->FrameSize));
-			//writeConstantPlaceholderOffset(currentScope->GetDefinition(label).StackPosition, &(currentScope->OldFrameSize));
-			//writeConstant(currentScope->GetDefinition(label).StackPosition);
+				ForceType(d->Type);
+				popType(1);
 
-			output << "store " << label << std::endl;
+				writeOpcode(Opcode::StoreAdr);
+				writeConstant(d->StackPosition);
+				//writeConstant(d->StackPosition+(currentScope->FrameSize-d->MyScope->FrameSize));
+				
+				output << "storeadr " << label << std::endl;
+			}
+			else
+			{
+				if(d->DefinitionType == Definition::Function)
+					throw std::exception();//"Cannot use function as variable");
+
+				ForceType(d->Type);
+				popType(1);
+
+				writeOpcode(Opcode::Store);
+				writeConstant(d->StackPosition+(currentScope->FrameSize-d->MyScope->FrameSize));
+
+				output << "store " << label << std::endl;
+			}
 		}
 
 		void Generator::RTConstant(std::string name)

@@ -63,7 +63,9 @@ namespace pim
 
 				InvalidSymbol,
 
-				SymbolNumber
+				SymbolNumber,
+
+				EndOfFile
 			};
 			int Symbol;
 			int LineNumber;
