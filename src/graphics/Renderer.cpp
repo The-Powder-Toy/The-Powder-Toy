@@ -161,6 +161,11 @@ void Renderer::RenderEnd()
 #endif
 }
 
+void Renderer::SetSample(int x, int y)
+{
+	sampleColor = GetPixel(x, y);
+}
+
 void Renderer::clearScreen(float alpha)
 {
 #ifdef OGLR
@@ -2379,7 +2384,8 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	colour_mode(0),
 	gridSize(0),
 	blackDecorations(false),
-	debugLines(false)
+	debugLines(false),
+	sampleColor(0xFFFFFFFF)
 {
 	this->g = g;
 	this->sim = sim;

@@ -24,7 +24,7 @@ void SampleTool::Draw(Simulation * sim, Brush * brush, ui::Point position)
 {
 	if(gameModel->GetColourSelectorVisibility())
 	{
-		pixel colour = gameModel->GetRenderer()->GetPixel(position.X, position.Y);
+		pixel colour = gameModel->GetRenderer()->sampleColor;
 		gameModel->SetColourSelectorColour(ui::Colour(PIXR(colour), PIXG(colour), PIXB(colour), 255));
 	}
 	else
