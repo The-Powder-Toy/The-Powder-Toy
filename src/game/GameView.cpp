@@ -997,7 +997,7 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
 {
-	if(altBehaviour && !shiftBehaviour)
+	if(altBehaviour && !shiftBehaviour && !ctrlBehaviour)
 		button = BUTTON_MIDDLE;
 	if(selectMode!=SelectNone)
 	{
@@ -1817,11 +1817,11 @@ void GameView::OnDraw()
 				}
 				activeBrush->RenderLine(ren, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 			}
-			else if(drawMode==DrawFill)
+			else if(drawMode==DrawFill || altBehaviour)
 			{
 				activeBrush->RenderFill(ren, finalCurrentMouse);
 			}
-			if (drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown))
+			if ((drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown)) && !altBehaviour)
 			{
 				if(wallBrush)
 				{

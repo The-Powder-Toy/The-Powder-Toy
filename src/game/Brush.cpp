@@ -44,5 +44,8 @@ void Brush::RenderPoint(Renderer * ren, ui::Point position)
 
 void Brush::RenderFill(Renderer * ren, ui::Point position)
 {
-
+	ren->xor_line(position.X-5, position.Y, position.X-1, position.Y);
+	ren->xor_line(position.X+5, position.Y, position.X+1, position.Y);
+	ren->xor_line(position.X, position.Y-5, position.X, position.Y-1);
+	ren->xor_line(position.X, position.Y+5, position.X, position.Y+1);
 }
