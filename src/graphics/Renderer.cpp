@@ -645,6 +645,19 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 	return newTexture;
 }
 
+void Renderer::DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
+{
+	blendpixel(x+1, y, cr, cg, cb, 112);
+	blendpixel(x-1, y, cr, cg, cb, 112);
+	blendpixel(x, y+1, cr, cg, cb, 112);
+	blendpixel(x, y-1, cr, cg, cb, 112);
+
+	blendpixel(x+1, y-1, cr, cg, cb, 64);
+	blendpixel(x-1, y-1, cr, cg, cb, 64);
+	blendpixel(x+1, y+1, cr, cg, cb, 64);
+	blendpixel(x-1, y+1, cr, cg, cb, 64);
+}
+
 void Renderer::DrawWalls()
 {
 #ifdef OGLR
@@ -796,6 +809,87 @@ void Renderer::DrawWalls()
 					}
 					drawtext(x*CELL, y*CELL-2, "\x8D", 255, 255, 255, 128);
 				}
+
+				// when in blob view, draw some blobs
+				if (render_mode & PMODE_BLOB)
+				{
+					if (wtypes[wt].drawstyle==1)
+					{
+						for (j=0; j<CELL; j+=2)
+							for (i=(j>>1)&1; i<CELL; i+=2)
+								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+					else if (wtypes[wt].drawstyle==2)
+					{
+						for (j=0; j<CELL; j+=2)
+							for (i=0; i<CELL; i+=2)
+								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+					else if (wtypes[wt].drawstyle==3)
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+					else if (wtypes[wt].drawstyle==4)
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								if(i == j)
+									drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								else if  (i == j+1 || (i == 0 && j == CELL-1))
+									drawblob((x*CELL+i), (y*CELL+j), PIXR(gc), PIXG(gc), PIXB(gc));
+								else 
+									drawblob((x*CELL+i), (y*CELL+j), 0x20, 0x20, 0x20);
+					}
+					if (bmap[y][x]==WL_EWALL)
+					{
+						if (emap[y][x])
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									if (i&j&1)
+										drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+						}
+						else
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									if (!(i&j&1))
+										drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+						}
+					}
+					else if (bmap[y][x]==WL_WALLELEC)
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+							{
+								if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
+									drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								else
+									drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+							}
+					}
+					else if (bmap[y][x]==WL_EHOLE)
+					{
+						if (emap[y][x])
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									drawblob((x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+							for (j=0; j<CELL; j+=2)
+								for (i=0; i<CELL; i+=2)
+									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x000000);
+						}
+						else
+						{
+							for (j=0; j<CELL; j+=2)
+								for (i=0; i<CELL; i+=2)
+									drawblob((x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+						}
+					}
+				}
+
 				if (wtypes[wt].eglow && emap[y][x])
 				{
 					// glow if electrified
