@@ -478,15 +478,15 @@ SimulationSample Simulation::Get(int x, int y)
 	SimulationSample sample;
 	sample.PositionX = x;
 	sample.PositionY = y;
-	if(pmap[y][x])
-	{
-		sample.particle = parts[pmap[y][x]>>8];
-		sample.ParticleID = pmap[y][x]>>8;
-	}
-	else if(photons[y][x])
+	if (photons[y][x])
 	{
 		sample.particle = parts[photons[y][x]>>8];
 		sample.ParticleID = photons[y][x]>>8;
+	}
+	else if (pmap[y][x])
+	{
+		sample.particle = parts[pmap[y][x]>>8];
+		sample.ParticleID = pmap[y][x]>>8;
 	}
 	if (bmap[y/CELL][x/CELL])
 	{

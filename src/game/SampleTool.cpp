@@ -31,14 +31,14 @@ void SampleTool::Draw(Simulation * sim, Brush * brush, ui::Point position)
 	{
 		int particleType = 0;
 		int particleCtype = 0;
-		if(sim->pmap[position.Y][position.X])
-		{
-			particleType = sim->parts[sim->pmap[position.Y][position.X]>>8].type;
-			particleCtype = sim->parts[sim->pmap[position.Y][position.X]>>8].ctype;
-		}
-		else if(sim->photons[position.Y][position.X])
+		if (sim->photons[position.Y][position.X])
 		{
 			particleType = sim->parts[sim->photons[position.Y][position.X]>>8].type;
+			particleCtype = sim->parts[sim->pmap[position.Y][position.X]>>8].ctype;
+		}
+		else if (sim->pmap[position.Y][position.X])
+		{
+			particleType = sim->parts[sim->pmap[position.Y][position.X]>>8].type;
 			particleCtype = sim->parts[sim->pmap[position.Y][position.X]>>8].ctype;
 		}
 

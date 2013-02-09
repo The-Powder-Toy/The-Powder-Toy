@@ -596,14 +596,17 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 		if(sender->GetActiveTool(0) == tool)
 		{
 			toolButtons[i]->SetSelectionState(0);	//Primary
+			c->ActiveToolChanged(0, tool);
 		}
 		else if(sender->GetActiveTool(1) == tool)
 		{
 			toolButtons[i]->SetSelectionState(1);	//Secondary
+			c->ActiveToolChanged(1, tool);
 		}
 		else if(sender->GetActiveTool(2) == tool)
 		{
 			toolButtons[i]->SetSelectionState(2);	//Tertiary
+			c->ActiveToolChanged(2, tool);
 		}
 		else
 		{

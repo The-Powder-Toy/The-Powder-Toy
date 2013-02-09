@@ -148,9 +148,9 @@ GameController::GameController():
 	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
 
 	commandInterface->OnBrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().X);
-	commandInterface->OnActiveToolChanged(0, gameModel->GetActiveTool(0));
-	commandInterface->OnActiveToolChanged(1, gameModel->GetActiveTool(1));
-	commandInterface->OnActiveToolChanged(2, gameModel->GetActiveTool(2));
+	ActiveToolChanged(0, gameModel->GetActiveTool(0));
+	ActiveToolChanged(1, gameModel->GetActiveTool(1));
+	ActiveToolChanged(2, gameModel->GetActiveTool(2));
 
 	//sim = new Simulation();
 	Client::Ref().AddListener(this);
@@ -930,9 +930,13 @@ std::vector<Menu*> GameController::GetMenuList()
 	return gameModel->GetMenuList();
 }
 
-void GameController::SetActiveTool(int toolSelection, Tool * tool)
+void GameController::ActiveToolChanged(int toolSelection, Tool *tool)
 {
 	commandInterface->OnActiveToolChanged(toolSelection, tool);
+}
+
+void GameController::SetActiveTool(int toolSelection, Tool * tool)
+{
 	gameModel->SetActiveTool(toolSelection, tool);
 	gameModel->GetRenderer()->gravityZonesEnabled = false;
 	gameModel->SetLastTool(tool);
