@@ -56,7 +56,8 @@ void * PreviewModel::updateSaveDataT()
 	int tempDataSize;
 	unsigned char * tempData = Client::Ref().GetSaveData(tSaveID, tSaveDate, tempDataSize);
 	saveDataBuffer.clear();
-	saveDataBuffer.insert(saveDataBuffer.begin(), tempData, tempData+tempDataSize);
+	if (tempData)
+		saveDataBuffer.insert(saveDataBuffer.begin(), tempData, tempData+tempDataSize);
 	updateSaveDataFinished = true;
 	return NULL;
 }
