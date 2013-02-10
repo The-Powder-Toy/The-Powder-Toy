@@ -1434,7 +1434,13 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if(!isMouseDown)
+	if(ctrl && shift)
+		drawMode = DrawFill;
+	else if (ctrl)
+		drawMode = DrawRect;
+	else if (shift)
+		drawMode = DrawLine;
+	else if(!isMouseDown)
 		drawMode = DrawPoints;
 	else
 		drawModeReset = true;
@@ -1818,11 +1824,11 @@ void GameView::OnDraw()
 				}
 				activeBrush->RenderLine(ren, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 			}
-			else if(drawMode==DrawFill || altBehaviour)
+			else if(drawMode==DrawFill)// || altBehaviour)
 			{
 				activeBrush->RenderFill(ren, finalCurrentMouse);
 			}
-			if ((drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown)) && !altBehaviour)
+			if(drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown))
 			{
 				if(wallBrush)
 				{
