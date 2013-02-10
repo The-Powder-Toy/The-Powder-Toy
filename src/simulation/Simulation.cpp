@@ -987,25 +987,27 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 		
 		int rx, ry;
 		float num = 0;	
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
 			{
-				if ((pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
+				if (abs(rx)+abs(ry) > 2 && (pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
 				{
 					Particle part = parts[pmap[y+ry][x+rx]>>8];
 					num += 1.0f;
-					tas += ((float)((part.dcolour>>24)&0xFF))/255.0f;
-					trs += ((float)((part.dcolour>>16)&0xFF))/255.0f;
-					tgs += ((float)((part.dcolour>>8)&0xFF))/255.0f;
-					tbs += ((float)((part.dcolour)&0xFF))/255.0f;
+					tas += ((float)((part.dcolour>>24)&0xFF));
+					trs += ((float)((part.dcolour>>16)&0xFF));
+					tgs += ((float)((part.dcolour>>8)&0xFF));
+					tbs += ((float)((part.dcolour)&0xFF));
 				}
 			}
 		if (num == 0)
 			return;
-		ta = ((tas/num));//*0.8f) + (ta*0.2f);
-		tr = ((trs/num));//*0.8f) + (tr*0.2f);
-		tg = ((tgs/num));//*0.8f) + (tg*0.2f);
-		tb = ((tbs/num));//*0.8f) + (tb*0.2f);
+		ta = (tas/num)/255.0f;
+		tr = (trs/num)/255.0f;
+		tg = (tgs/num)/255.0f;
+		tb = (tbs/num)/255.0f;
+		if (!parts[rp>>8].dcolour)
+			ta -= 3/255.0f;
 	}
 
 	ta *= 255.0f; tr *= 255.0f; tg *= 255.0f; tb *= 255.0f;
