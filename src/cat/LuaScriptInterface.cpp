@@ -43,6 +43,7 @@
 #ifndef WIN
 #include <unistd.h>
 #endif
+#include "SDL.h"
 
 extern "C"
 {
@@ -1887,14 +1888,7 @@ bool LuaScriptInterface::OnMouseWheel(int x, int y, int d)
 
 bool LuaScriptInterface::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	int modifiers = 0;
-	if(shift)
-		modifiers |= 0x001;
-	if(ctrl)
-		modifiers |= 0x040;
-	if(alt)
-		modifiers |= 0x100;
-	return luacon_keyevent(key, modifiers, LUACON_KDOWN);
+	return luacon_keyevent(key, SDL_GetModState(), LUACON_KDOWN);
 }
 
 bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
