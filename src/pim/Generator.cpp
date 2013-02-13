@@ -36,19 +36,16 @@ namespace pim
 		void Generator::writeOpcode(int opcode)
 		{
 			programCounter++;
-			printf("Opcode: %d\n", opcode);
 			program.push_back(opcode);
 		}
 
 		void Generator::writeConstant(std::string constant)
 		{
-			printf("Constant: %s\n", constant.c_str());
 			writeConstant(format::StringToNumber<int>(constant));
 		}
 
 		void Generator::writeConstant(int constant)
 		{
-			printf("Constant: %d\n", constant);
 			program.push_back(constant & 0xFF);
 			program.push_back((constant>>8) & 0xFF);
 			program.push_back((constant>>16) & 0xFF);
@@ -57,7 +54,6 @@ namespace pim
 
 		void Generator::writeConstantPlaceholderOffset(int value, int * offset)
 		{
-			printf("Constant: %d\n", value);
 			valueOffsetPlaceholders.push_back(ValueOffsetPlaceholder(program.size(), std::pair<int, int*>(value, offset)));
 			program.push_back(0);
 			program.push_back(0);
@@ -67,7 +63,6 @@ namespace pim
 
 		void Generator::writeConstantPlaceholder(std::string label)
 		{
-			printf("Constant: %s\n", label.c_str());
 			placeholders.push_back(Placeholder(program.size(), label));
 			program.push_back(0);
 			program.push_back(0);
@@ -77,7 +72,6 @@ namespace pim
 
 		void Generator::writeConstantPlaceholder(int * value)
 		{
-			printf("Constant: %p\n", value);
 			valuePlaceholders.push_back(ValuePlaceholder(program.size(), value));
 			program.push_back(0);
 			program.push_back(0);
@@ -87,7 +81,6 @@ namespace pim
 
 		void Generator::writeConstantPropertyPlaceholder(std::string property)
 		{
-			printf("Constant: %s\n", property.c_str());
 			propertyPlaceholders.push_back(PropertyPlaceholder(program.size(), property));
 			program.push_back(0);
 			program.push_back(0);
@@ -97,7 +90,6 @@ namespace pim
 
 		void Generator::writeConstantMacroPlaceholder(std::string macro)
 		{
-			printf("Constant: %s\n", macro.c_str());
 			macroPlaceholders.push_back(MacroPlaceholder(program.size(), macro));
 			program.push_back(0);
 			program.push_back(0);
@@ -710,6 +702,7 @@ namespace pim
 		{
 			popType(1);
 			writeOpcode(Opcode::Kill);
+			pushType(DataType::Integer);
 
 			output << "kill" << std::endl;
 		}

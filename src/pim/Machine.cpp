@@ -272,7 +272,7 @@ namespace pim
 					tempInt |= programData[programPosition+3] << 24;
 
 
-					std::cout << "Got integer " << tempInt << std::endl;
+					//std::cout << "Got integer " << tempInt << std::endl;
 
 					if(instruction.Opcode == Opcode::LoadProperty || instruction.Opcode == Opcode::StoreProperty)
 					{

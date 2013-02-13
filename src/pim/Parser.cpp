@@ -406,10 +406,6 @@ namespace pim
 			
 			generator->ScopeLabel(loopLabel+"Next");
 
-
-
-
-
 			//Check X
 			generator->LoadVariable(xVar);
 			generator->LoadVariable(xMax);
@@ -643,7 +639,11 @@ namespace pim
 		void Parser::variableValue()
 		{
 			std::string variable = token.Source;
-			if(accept(Token::Identifier))
+			if(look(Token::CreateSymbol) || look(Token::KillSymbol)  || look(Token::GetSymbol) || look(Token::TransformSymbol))
+			{
+				particleAction();
+			}
+			else if(accept(Token::Identifier))
 			{
 				if(look(Token::LeftBracket))
 				{
@@ -668,10 +668,6 @@ namespace pim
 			else if(accept(Token::RTMacro))
 			{
 				generator->RTConstant(variable);
-			}
-			else
-			{
-				particleAction();
 			}
 		}
 

@@ -186,8 +186,10 @@ namespace pim
 				}
 				break;
 			case Opcode::Kill:
-				//sim->kill_part(PSPop().Integer);
-				//PSPush((Word)0);
+				emit("8B 06");									//mov eax, [esi]
+				emit("50");										//push eax
+				emitCall((intptr_t)sim, (intptr_t)((void*)&Simulation::kill_part), 4);
+				emit("C7 06 00 00 00 00");						//mov [esi], eax
 				break;
 			case Opcode::LoadProperty:
 				{
