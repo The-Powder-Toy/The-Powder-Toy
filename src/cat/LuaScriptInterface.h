@@ -46,7 +46,7 @@ class Tool;
 
 class TPTScriptInterface;
 class LuaScriptInterface;
-typedef void (*NativeUpdateFunc)(int, int, int);
+typedef void (TPT_VM_CALLABLE *NativeUpdateFunc)(int, int, int);
 class LuaScriptInterface: public CommandInterface
 {
 	int luacon_mousex, luacon_mousey, luacon_mousebutton, luacon_brushx, luacon_brushy;

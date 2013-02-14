@@ -305,7 +305,7 @@ namespace pim
 			std::stringstream label;
 			label << prefix;
 			label << "_";
-			label << labelCounter;
+			label << labelCounter++;
 			label << "_";
 			return label.str();
 		}
