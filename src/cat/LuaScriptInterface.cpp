@@ -25,6 +25,7 @@
 #include "game/Tool.h"
 #include "LuaScriptHelper.h"
 #include "client/HTTP.h"
+#include "PowderToy.h"
 
 //#include "virtualmachine/VirtualMachine.h"
 #include "pim/Parser.h"
@@ -43,7 +44,6 @@
 #ifndef WIN
 #include <unistd.h>
 #endif
-#include "SDL.h"
 
 extern "C"
 {
@@ -1888,7 +1888,7 @@ bool LuaScriptInterface::OnMouseWheel(int x, int y, int d)
 
 bool LuaScriptInterface::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	return luacon_keyevent(key, SDL_GetModState(), LUACON_KDOWN);
+	return luacon_keyevent(key, GetModifiers(), LUACON_KDOWN);
 }
 
 bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
