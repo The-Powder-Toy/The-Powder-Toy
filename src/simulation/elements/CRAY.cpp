@@ -96,7 +96,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 								colored = wavelengthToDecoColour(parts[r>>8].ctype);
 							} else if ((r&0xFF)==PT_CRAY || nostop) {
 								docontinue = 1;
-							} else if(destroy && (r&0xFF != PT_DMND)) {
+							} else if(destroy && ((r&0xFF) != PT_DMND)) {
 								sim->kill_part(r>>8);
 								if(!--partsRemaining)
 									docontinue = 0;
