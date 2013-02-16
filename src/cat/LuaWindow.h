@@ -37,6 +37,7 @@ class LuaWindow
 	int position(lua_State * l);
 	int size(lua_State * l);
 	int addComponent(lua_State * l);
+	int removeComponent(lua_State * l);
 
 	//Set event handlers
 	int onInitialized(lua_State * l);

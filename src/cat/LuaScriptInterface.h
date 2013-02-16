@@ -89,6 +89,7 @@ class LuaScriptInterface: public CommandInterface
 	static int interface_showWindow(lua_State * l);
 	static int interface_closeWindow(lua_State * l);
 	static int interface_addComponent(lua_State * l);
+	static int interface_removeComponent(lua_State * l);
 
 	//VM
 	void initVirtualMachineAPI();
