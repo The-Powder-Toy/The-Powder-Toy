@@ -19,7 +19,7 @@
 
 //VersionInfoStart
 #ifndef SAVE_VERSION
-#define SAVE_VERSION 85
+#define SAVE_VERSION 86
 #endif
 
 #ifndef MINOR_VERSION
