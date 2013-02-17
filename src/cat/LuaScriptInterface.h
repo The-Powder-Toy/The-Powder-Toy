@@ -54,11 +54,16 @@ class LuaScriptInterface: public CommandInterface
 	TPTScriptInterface * legacy;
 
 	//Simulation
+	static StructProperty * particleProperties;
+	static int particlePropertiesCount;
+	//
 	void initSimulationAPI();
 	static void set_map(int x, int y, int width, int height, float value, int mapType);
 	static int simulation_partNeighbours(lua_State * l);
 	static int simulation_partChangeType(lua_State * l);
 	static int simulation_partCreate(lua_State * l);
+	static int simulation_partProperty(lua_State * l);
+	static int simulation_partPosition(lua_State * l);
 	static int simulation_partKill(lua_State * l);
 	static int simulation_pressure(lua_State * l);
 	static int simulation_velocityX(lua_State * l);
