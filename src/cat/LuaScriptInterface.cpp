@@ -435,6 +435,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"partCreate", simulation_partCreate},
 		{"partProperty", simulation_partProperty},
 		{"partPosition", simulation_partPosition},
+		{"partID", simulation_partID},
 		{"partKill", simulation_partKill},
 		{"pressure", simulation_pressure},
 		{"ambientHeat", simulation_ambientHeat},
@@ -555,6 +556,24 @@ int LuaScriptInterface::simulation_partCreate(lua_State * l)
 		return 1;
 	}
 	lua_pushinteger(l, luacon_sim->create_part(newID, lua_tointeger(l, 2), lua_tointeger(l, 3), lua_tointeger(l, 4)));
+	return 1;
+}
+
+int LuaScriptInterface::simulation_partID(lua_State * l)
+{
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+
+	if(x < 0 || x >= XRES || y < 0 || y >= YRES)
+	{
+		lua_pushnil(l);
+		return 1;
+	}
+
+	int amalgam = luacon_sim->pmap[y][x];
+	if(!amalgam)
+		amalgam = luacon_sim->photons[y][x];
+	lua_pushinteger(l, amalgam >> 8);
 	return 1;
 }
 
