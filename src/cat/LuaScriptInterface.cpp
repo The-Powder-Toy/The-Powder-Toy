@@ -423,6 +423,9 @@ int LuaScriptInterface::interface_closeWindow(lua_State * l)
 
 //// Begin Simulation API
 
+StructProperty * LuaScriptInterface::particleProperties;
+int LuaScriptInterface::particlePropertiesCount;
+
 void LuaScriptInterface::initSimulationAPI()
 {
 	//Methods
@@ -430,6 +433,9 @@ void LuaScriptInterface::initSimulationAPI()
 		{"partNeighbours", simulation_partNeighbours},
 		{"partChangeType", simulation_partChangeType},
 		{"partCreate", simulation_partCreate},
+		{"partProperty", simulation_partProperty},
+		{"partPosition", simulation_partPosition},
+		{"partID", simulation_partID},
 		{"partKill", simulation_partKill},
 		{"pressure", simulation_pressure},
 		{"ambientHeat", simulation_ambientHeat},
@@ -454,6 +460,18 @@ void LuaScriptInterface::initSimulationAPI()
 	lua_pushinteger(l, MAX_TEMP); lua_setfield(l, simulationAPI, "MAX_TEMP");
 	lua_pushinteger(l, MIN_TEMP); lua_setfield(l, simulationAPI, "MIN_TEMP");
 
+	//Declare FIELD_BLAH constants
+	std::vector<StructProperty> particlePropertiesV = Particle::GetProperties(); 
+	particlePropertiesCount = 0;
+	particleProperties = new StructProperty[particlePropertiesV.size()];
+	for(std::vector<StructProperty>::iterator iter = particlePropertiesV.begin(), end = particlePropertiesV.end(); iter != end; ++iter)
+	{
+		std::string propertyName = (*iter).Name;
+		std::transform(propertyName.begin(), propertyName.end(), propertyName.begin(), ::toupper);
+		lua_pushinteger(l, particlePropertiesCount);
+		lua_setfield(l, simulationAPI, ("FIELD_"+propertyName).c_str());
+		particleProperties[particlePropertiesCount++] = *iter;
+	}
 }
 
 void LuaScriptInterface::set_map(int x, int y, int width, int height, float value, int map) // A function so this won't need to be repeated many times later
@@ -539,6 +557,166 @@ int LuaScriptInterface::simulation_partCreate(lua_State * l)
 	}
 	lua_pushinteger(l, luacon_sim->create_part(newID, lua_tointeger(l, 2), lua_tointeger(l, 3), lua_tointeger(l, 4)));
 	return 1;
+}
+
+int LuaScriptInterface::simulation_partID(lua_State * l)
+{
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+
+	if(x < 0 || x >= XRES || y < 0 || y >= YRES)
+	{
+		lua_pushnil(l);
+		return 1;
+	}
+
+	int amalgam = luacon_sim->pmap[y][x];
+	if(!amalgam)
+		amalgam = luacon_sim->photons[y][x];
+	lua_pushinteger(l, amalgam >> 8);
+	return 1;
+}
+
+int LuaScriptInterface::simulation_partPosition(lua_State * l)
+{
+	int particleID = lua_tointeger(l, 1);
+	int argCount = lua_gettop(l);
+	if(particleID < 0 || particleID >= NPART || !luacon_sim->parts[particleID].type)
+	{
+		if(argCount == 1)
+		{
+			lua_pushnil(l);
+			lua_pushnil(l);
+			return 2;
+		} else {
+			return 0;
+		}
+	}
+	
+	if(argCount == 3)
+	{
+		luacon_sim->parts[particleID].x = lua_tonumber(l, 2);
+		luacon_sim->parts[particleID].y = lua_tonumber(l, 3);
+		return 0;
+	}
+	else
+	{
+		lua_pushnumber(l, luacon_sim->parts[particleID].x);
+		lua_pushnumber(l, luacon_sim->parts[particleID].y);
+		return 2;
+	}
+}
+
+int LuaScriptInterface::simulation_partProperty(lua_State * l)
+{
+	int argCount = lua_gettop(l);
+	int particleID = lua_tointeger(l, 1);
+	StructProperty * property = NULL;
+
+	if(particleID < 0 || particleID >= NPART || !luacon_sim->parts[particleID].type)
+	{
+		if(argCount == 3)
+		{
+			lua_pushnil(l);
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	//Get field
+	if(lua_type(l, 2) == LUA_TNUMBER)
+	{
+		int fieldID = lua_tointeger(l, 2);
+		if(fieldID < 0 || fieldID >= particlePropertiesCount)
+			return luaL_error(l, "Invalid field ID (%d)", fieldID);
+		property = &particleProperties[fieldID];
+	} else if(lua_type(l, 2) == LUA_TSTRING) {
+		std::string fieldName = lua_tostring(l, 2);
+		for(int i = particlePropertiesCount-1; i >= 0; i--)
+		{
+			if(particleProperties[i].Name == fieldName)
+				property = &particleProperties[i];
+		}
+		if(!property)
+			return luaL_error(l, "Unknown field (%s)", fieldName.c_str());
+	} else {
+		return luaL_error(l, "Field ID must be an name (string) or identifier (integer)");
+	}
+
+	//Calculate memory address of property
+	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->parts[particleID])+property->Offset);
+
+	if(argCount == 3)
+	{
+		//Set
+		switch(property->Type)
+		{
+			case StructProperty::ParticleType:
+			case StructProperty::Integer:
+				*((int*)propertyAddress) = lua_tointeger(l, 3);
+				break;
+			case StructProperty::UInteger:
+				*((unsigned int*)propertyAddress) = lua_tointeger(l, 3);
+				break;
+			case StructProperty::Float:
+				*((float*)propertyAddress) = lua_tonumber(l, 3);
+				break;
+			case StructProperty::Char:
+				*((char*)propertyAddress) = lua_tointeger(l, 3);
+				break;
+			case StructProperty::UChar:
+				*((unsigned char*)propertyAddress) = lua_tointeger(l, 3);
+				break;
+			case StructProperty::String:
+				*((char**)propertyAddress) = strdup(lua_tostring(l, 3));
+				break;
+			case StructProperty::Colour:
+	#if PIXELSIZE == 4
+				*((unsigned int*)propertyAddress) = lua_tointeger(l, 3);
+	#else
+				*((unsigned short*)propertyAddress) = lua_tointeger(l, 3);
+	#endif
+				break;
+		}
+		return 0;
+	} 
+	else
+	{
+		//Get
+		switch(property->Type)
+		{
+			case StructProperty::ParticleType:
+			case StructProperty::Integer:
+				lua_pushinteger(l, *((int*)propertyAddress));
+				break;
+			case StructProperty::UInteger:
+				lua_pushinteger(l, *((unsigned int*)propertyAddress));
+				break;
+			case StructProperty::Float:
+				lua_pushnumber(l, *((float*)propertyAddress));
+				break;
+			case StructProperty::Char:
+				lua_pushinteger(l, *((char*)propertyAddress));
+				break;
+			case StructProperty::UChar:
+				lua_pushinteger(l, *((unsigned char*)propertyAddress));
+				break;
+			case StructProperty::String:
+				lua_pushstring(l, *((char**)propertyAddress));
+				break;
+			case StructProperty::Colour:
+	#if PIXELSIZE == 4
+				lua_pushinteger(l, *((unsigned int*)propertyAddress));
+	#else
+				lua_pushinteger(l, *((unsigned short*)propertyAddress));
+	#endif
+				break;
+			default:
+				lua_pushnil(l);
+		}
+		return 1;
+	}
 }
 
 int LuaScriptInterface::simulation_partKill(lua_State * l)
