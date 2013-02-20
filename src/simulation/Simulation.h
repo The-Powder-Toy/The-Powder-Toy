@@ -138,6 +138,7 @@ public:
 	TPT_NO_INLINE int try_move(int i, int x, int y, int nx, int ny);
 	TPT_NO_INLINE int eval_move(int pt, int nx, int ny, unsigned *rr);
 	void init_can_move();
+	bool IsObsticle(int x, int y, int type);
 	void create_cherenkov_photon(int pp);
 	void create_gain_photon(int pp);
 	TPT_NO_INLINE void kill_part(int i);

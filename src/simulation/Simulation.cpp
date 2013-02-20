@@ -1995,6 +1995,31 @@ void Simulation::clear_sim(void)
 	}
 	SetEdgeMode(edgeMode);
 }
+
+bool Simulation::IsObsticle(int x, int y, int type)
+{
+	if (pmap[y][x])// && (type != PT_SPRK || !(elements[pmap[y][x]&0xFF].Properties & PROP_CONDUCTS)))
+		return true;
+
+	if (bmap[y/CELL][x/CELL])
+	{
+		int wall = bmap[y/CELL][x/CELL];
+		if (wall == WL_ALLOWGAS && !(elements[type].Properties&TYPE_GAS))
+			return true;
+		else if (wall == WL_ALLOWENERGY && !(elements[type].Properties&TYPE_ENERGY))
+			return true;
+		else if (wall == WL_ALLOWLIQUID && elements[type].Falldown!=2)
+			return true;
+		else if (wall == WL_ALLOWSOLID && elements[type].Falldown!=1)
+			return true;
+		else if (wall == WL_ALLOWAIR || wall == WL_WALL || wall == WL_WALLELEC)
+			return true;
+		else if (wall == WL_EWALL && !emap[y/CELL][x/CELL])
+			return true;
+	}
+	return false;
+}
+
 void Simulation::init_can_move()
 {
 	// can_move[moving type][type at destination]
@@ -2818,11 +2843,10 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				drawOn==PT_CLNE ||
 				drawOn==PT_BCLN ||
 				drawOn==PT_CONV ||
-				drawOn==PT_CRAY ||
 				(drawOn==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN) ||
 				(drawOn==PT_PBCN&&t!=PT_PSCN&&t!=PT_NSCN)
 			)&&(
-				t != PT_CLNE && t != PT_CRAY && t != PT_PCLN && t != PT_BCLN && t != PT_STKM && t != PT_STKM2 && t != PT_PBCN && t != PT_STOR && t != PT_FIGH && t != PT_CONV)
+				t != PT_CLNE && t != PT_PCLN && t != PT_BCLN && t != PT_STKM && t != PT_STKM2 && t != PT_PBCN && t != PT_STOR && t != PT_FIGH && t != PT_CONV)
 			)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
@@ -2833,6 +2857,12 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[pmap[y][x]>>8].ctype = t;
 				if (t==PT_LIFE && v<NGOLALT)
 					parts[pmap[y][x]>>8].tmp = v;
+			}
+			else if (drawOn == PT_CRAY && drawOn != t && drawOn != PT_PSCN && drawOn != PT_INST && drawOn != PT_METL)
+			{
+				parts[pmap[y][x]>>8].ctype = t;
+				if (t==PT_LIFE && v<NGOLALT)
+					parts[pmap[y][x]>>8].tmp2 = v;
 			}
 			return -1;
 		}
