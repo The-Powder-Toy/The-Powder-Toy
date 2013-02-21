@@ -20,6 +20,9 @@
 #ifndef WIN
 #include <unistd.h>
 #endif
+#ifdef MACOSX
+#include <ApplicationServices/ApplicationServices.h>
+#endif
 
 #include "Format.h"
 #include "Style.h"
@@ -538,6 +541,11 @@ void EngineProcess()
 #ifdef DEBUG
 	std::cout << "Breaking out of EngineProcess" << std::endl;
 #endif
+}
+
+int GetModifiers()
+{
+	return SDL_GetModState();
 }
 
 int main(int argc, char * argv[])

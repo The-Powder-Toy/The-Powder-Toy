@@ -4,9 +4,9 @@ Element_FRME::Element_FRME()
 {
     Identifier = "DEFAULT_PT_FRME";
     Name = "FRME";
-    Colour = PIXPACK(0xBBDD50);
+    Colour = PIXPACK(0x999988);
     MenuVisible = 1;
-    MenuSection = SC_ELEC;
+    MenuSection = SC_SOLIDS;
     Enabled = 1;
     
     Advection = 0.0f;
@@ -22,7 +22,7 @@ Element_FRME::Element_FRME()
     Flammable = 0;
     Explosive = 0;
     Meltable = 0;
-    Hardness = 1;
+    Hardness = 0;
     
     Weight = 100;
     

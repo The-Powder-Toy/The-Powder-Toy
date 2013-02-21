@@ -4,9 +4,9 @@ Element_PSTN::Element_PSTN()
 {
     Identifier = "DEFAULT_PT_PSTN";
     Name = "PSTN";
-    Colour = PIXPACK(0xBBFF00);
+    Colour = PIXPACK(0xAA9999);
     MenuVisible = 1;
-    MenuSection = SC_ELEC;
+    MenuSection = SC_FORCE;
     Enabled = 1;
     
     Advection = 0.0f;
@@ -22,7 +22,7 @@ Element_PSTN::Element_PSTN()
     Flammable = 0;
     Explosive = 0;
     Meltable = 0;
-    Hardness = 1;
+    Hardness = 0;
     
     Weight = 100;
     
@@ -52,11 +52,12 @@ int Element_PSTN::tempParts[128];
 //#TPT-Directive ElementHeader Element_PSTN static int tempPartAmount[128];
 int Element_PSTN::tempPartAmount[128];
 
-#define PISTON_INACTIVE	0x00
-#define PISTON_RETRACT	0x01
-#define PISTON_EXTEND	0x02
-#define MAX_FRAME		0x0F
-#define DEFAULT_LIMIT	0x1F
+#define PISTON_INACTIVE		0x00
+#define PISTON_RETRACT		0x01
+#define PISTON_EXTEND		0x02
+#define MAX_FRAME			0x0F
+#define DEFAULT_LIMIT		0x1F
+#define DEFAULT_ARM_LIMIT	0xFF
 
 //#TPT-Directive ElementHeader Element_PSTN static int update(UPDATE_FUNC_ARGS)
 int Element_PSTN::update(UPDATE_FUNC_ARGS)
@@ -64,7 +65,8 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
  	if(parts[i].ctype)
  		return 0;
  	int maxSize = parts[i].tmp ? parts[i].tmp : DEFAULT_LIMIT;
- 	int state = parts[i].tmp2;
+ 	int armLimit = parts[i].tmp2 ? parts[i].tmp2 : DEFAULT_ARM_LIMIT;
+ 	int state = 0;
 	int r, nxx, nyy, nxi, nyi, rx, ry;
 	int directionX = 0, directionY = 0;
 	if (parts[i].life==0 && state == PISTON_INACTIVE) {
@@ -91,7 +93,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF) == PT_PSTN && parts[r>>8].tmp2 == PISTON_INACTIVE) {
+					if ((r&0xFF) == PT_PSTN) {
 						directionX = rx;
 						directionY = ry;
 						{
@@ -119,13 +121,17 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 							}
 							if(foundEnd) {
 								if(state == PISTON_EXTEND) {
-									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false);
-									if(newSpace) {
-										//Create new piston section
-										for(int j = 0; j < newSpace; j++) {
-											int nr = sim->create_part(-3, pistonEndX+(nxi*j), pistonEndY+(nyi*j), PT_PSTN);
-											if (nr!=-1) {
-												parts[nr].ctype = 1;
+									if(armCount+pistonCount > armLimit)
+										pistonCount = armLimit-armCount;
+									if(pistonCount > 0) {
+										newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false);
+										if(newSpace) {
+											//Create new piston section
+											for(int j = 0; j < newSpace; j++) {
+												int nr = sim->create_part(-3, pistonEndX+(nxi*j), pistonEndY+(nyi*j), PT_PSTN);
+												if (nr!=-1) {
+													parts[nr].ctype = 1;
+												}
 											}
 										}
 									}
@@ -176,7 +182,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 				} else 
 					break;
 			}
-		}
+		} 
 		for(int c = 1; c < MAX_FRAME; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
@@ -228,7 +234,9 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			r = sim->pmap[posY][posX];
 			if(!r) {
 				spaces++;
-				tempParts[currentPos++] = 0;
+				tempParts[currentPos++] = -1;
+				if(spaces >= amount)
+					break;
 			} else {
 				foundParts = true;
 				if(currentPos < size)
@@ -242,7 +250,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			int possibleMovement = 0;
 			for(int j = currentPos-1; j >= 0; j--) {
 				int jP = tempParts[j];
-				if(!jP) {
+				if(jP == -1) {
 					possibleMovement++;
 					continue;
 				}

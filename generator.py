@@ -1,5 +1,4 @@
 import re, os, shutil, string
-
 def generateElements():
 	elementClasses = dict()
 	baseClasses = dict()
@@ -120,7 +119,13 @@ std::vector<Element> GetElements()
 }
 	""";
 
+<<<<<<< HEAD
 	f = open("generated/ElementClasses.h", "w")
+=======
+	if not os.path.exists(outputH.split("/")[1]):
+		os.makedirs(outputH.split("/")[1])
+	f = open(outputH, "w")
+>>>>>>> upstream/master
 	f.write(elementHeader)
 	f.close()
 
@@ -128,8 +133,13 @@ std::vector<Element> GetElements()
 	f.write(elementContent)
 	f.close()
 
+<<<<<<< HEAD
 def generateTools():
 	toolClasses = dict()
+=======
+def generateTools(toolFiles, outputCpp, outputH):
+	toolClasses = {}
+>>>>>>> upstream/master
 	
 	toolHeader = """#ifndef TOOLCLASSES_H
 		#define TOOLCLASSES_H
@@ -194,8 +204,15 @@ def generateTools():
 	toolContent += """return tools;
 		}
 		""";
+<<<<<<< HEAD
 	
 	f = open("generated/ToolClasses.h", "w")
+=======
+
+	if not os.path.exists(outputH.split("/")[1]):
+		os.makedirs(outputH.split("/")[1])
+	f = open(outputH, "w")
+>>>>>>> upstream/master
 	f.write(toolHeader)
 	f.close()
 	

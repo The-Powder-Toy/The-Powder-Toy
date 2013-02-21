@@ -86,7 +86,7 @@ void LocalBrowserController::removeSelectedC()
 	};
 
 	std::vector<std::string> selected = browserModel->GetSelected();
-	new TaskWindow("Removing saves", new RemoveSavesTask(this, selected));
+	new TaskWindow("Removing stamps", new RemoveSavesTask(this, selected));
 }
 
 void LocalBrowserController::RescanStamps()

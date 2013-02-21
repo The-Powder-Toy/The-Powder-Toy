@@ -11,6 +11,8 @@
 
 #include <string>
 
+class Simulation;
+
 class sign
 {
 public:
@@ -20,7 +22,8 @@ public:
 	Justification ju;
 	std::string text;
 
-	void pos(int & x0, int & y0, int & w, int & h);
+	std::string getText(Simulation *sim);
+	void pos(std::string signText, int & x0, int & y0, int & w, int & h);
 };
 
 #endif

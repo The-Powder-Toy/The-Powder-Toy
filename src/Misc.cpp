@@ -17,7 +17,6 @@
 #endif
 #ifdef MACOSX
 #include <mach-o/dyld.h>
-#include <ApplicationServices/ApplicationServices.h>
 #endif
 
 std::string URLEscape(std::string source)

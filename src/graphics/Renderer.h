@@ -63,6 +63,7 @@ public:
 	Simulation * sim;
 	Graphics * g;
 	gcache_item *graphicscache;
+	pixel sampleColor;
 
 	//Mouse position for debug information
 	int mousePosX, mousePosY;
@@ -79,6 +80,7 @@ public:
 	void RenderEnd();
 
 	void RenderZoom();
+	void DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb);
 	void DrawWalls();
 	void DrawSigns();
 	void render_gravlensing(pixel * source);
@@ -93,8 +95,7 @@ public:
 
 	void ClearAccumulation();
 	void clearScreen(float alpha);
-
-	//class SolidsRenderer;
+	void SetSample(int x, int y);
 
 #ifdef OGLR
 	void checkShader(GLuint shader, char * shname);

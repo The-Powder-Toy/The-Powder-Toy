@@ -146,14 +146,9 @@ GameController::GameController():
 
 	commandInterface = new LuaScriptInterface(this, gameModel);//new TPTScriptInterface();
 	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
-/*<<<<<<< HEAD
-=======
-
-	commandInterface->OnBrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().X);
-	commandInterface->OnActiveToolChanged(0, gameModel->GetActiveTool(0));
-	commandInterface->OnActiveToolChanged(1, gameModel->GetActiveTool(1));
-	commandInterface->OnActiveToolChanged(2, gameModel->GetActiveTool(2));
->>>>>>> 12e3802bf4843dc5d1af1812ce7496bd3e7869b3 */
+	ActiveToolChanged(0, gameModel->GetActiveTool(0));
+	ActiveToolChanged(1, gameModel->GetActiveTool(1));
+	ActiveToolChanged(2, gameModel->GetActiveTool(2));
 
 	//sim = new Simulation();
 	Client::Ref().AddListener(this);
@@ -546,7 +541,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 			for (std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
 			{
 				int signx, signy, signw, signh;
-				(*iter).pos(signx, signy, signw, signh);
+				(*iter).pos((*iter).getText(sim), signx, signy, signw, signh);
 				if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
 				{
 					if (sregexp((*iter).text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)
@@ -928,8 +923,16 @@ std::vector<Menu*> GameController::GetMenuList()
 	return gameModel->GetMenuList();
 }
 
+void GameController::ActiveToolChanged(int toolSelection, Tool *tool)
+{
+<<<<<<< HEAD
+=======
+	commandInterface->OnActiveToolChanged(toolSelection, tool);
+}
+
 void GameController::SetActiveTool(int toolSelection, Tool * tool)
 {
+>>>>>>> upstream/master
 	gameModel->SetActiveTool(toolSelection, tool);
 	gameModel->GetRenderer()->gravityZonesEnabled = false;
 	gameModel->SetLastTool(tool);
