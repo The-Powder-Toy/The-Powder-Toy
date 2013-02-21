@@ -1,3 +1,73 @@
+The Powder Toy - boxmein's mod v3
+Up to date: version 86.1
+Features: 
+ * A brainfuck interpreter running on the parts[] array
+ * A new element ERAY to do what EDIT was supposed to do. Helps around with automation.
+
+= = = = = = = = = = = = =
+Using Brainfuck
+
+Notes: 
+* Commands go into the console.
+* There is no standard input and output, ., won't do anything.
+* The memory buffer is parts[], so if you loop, make sure your particle indexes go up from 0
+	without any gaps.
+Basic syntax: !bf [[-]>]
+Examples: 
+  Delete all particles: [[-]>]
+  Up every particle: [+>]
+  Down every particle: [->]
+  Up every fifth particle twice: [>>>>>++]
+
+Read about Brainfuck itself here: http://esolangs.org/wiki/Brainfuck
+
+= = = = = = = = = = = = = 
+Using ERAY
+
+## Values it uses: ##
+
+1. ctype => Determines what kind of type gets edited. 
+2. tmp => Used for the value of property you're setting. (e.g the element that will be ctype, or the number that'll be the life value)
+3. dcolour => Special! Used only in deco editing mode, this will be the "receiving" deco colour.
+
+## Setting edit modes: ##
+
+Edit modes can be painted on with a brush (it is determined by ctype), also you can use the console (`!set ctype eray BIZR`)  
+Here are all the various edit modes: 
+
+	  CLNE => ctype
+	  BIZR => dcolour
+	  LIFE => life
+	  FIRE => temp
+	  ACEL => tmp
+	  DCEL => tmp2
+	  PSCN => vx
+	  NSCN => vy
+	  CONV => ctype
+	  NONE => destroys the particle you fired at.
+
+Edit mode #1: Deco colours
+  2. Paint ERAY with any dcolour you want. That will be used to pass on the colour.
+
+Edit mode #3: Type
+	1. Set ERAY's tmp to the desired value. (Old console automatically converts names to ID numbers, 
+	   new console needs `tpt.element("name")`)
+	2. Using values larger than ~170 will make it loop around and start from 0.
+
+Edit mode #4: Ctype
+	1. Set ERAY's tmp to the desired value. (Old console automatically converts names to ID numbers, 
+	   new console needs `tpt.element("name")`)
+	2. Using values larger than ~170 will make it loop around and start from 0.
+
+Other edit modes: Temp, tmp, tmp2, vx, vy, life
+  1. Set ERAY's tmp to the desired value. (Old console automatically converts names to ID numbers, 
+	   new console needs `tpt.element("name")`)
+
+
+
+Old TPT readme below
+== == == == == == == == == == ==
+
 The Powder Toy - November 2012
 
 Get the latest version here:  http://powdertoy.co.uk/Download.html
