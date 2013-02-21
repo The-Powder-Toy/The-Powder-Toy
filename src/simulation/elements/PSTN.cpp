@@ -163,6 +163,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_PSTN static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract, int callDepth = 0)
 int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract, int callDepth)
 {
+	Simulation* oldSim=sim;
 	bool foundParts = false;
 	int posX, posY, r, spaces = 0, currentPos = 0;
 	r = sim->pmap[stackY][stackX];
@@ -179,6 +180,9 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 					int val = MoveStack(sim, posX, posY, directionX, directionY, size, amount, retract, 1);
 					if(val < biggestMove)
 						biggestMove = val;
+					if(val == 0) {
+						return 0;
+					}
 				} else 
 					break;
 			}
@@ -192,6 +196,9 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 					int val = MoveStack(sim, posX, posY, directionX, directionY, size, amount, retract, 1);
 					if(val < biggestMove)
 						biggestMove = val;
+					if (val==0) {
+						return 0;
+					}
 				} else 	
 					break;
 			}
@@ -215,6 +222,10 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 		}
 		if(foundParts) {
 			//Move particles
+			for(int j = 0; j < currentPos; j++) {
+				if (sim->parts[tempParts[j]].type==PT_DMND)
+				return 0;
+			}
 			for(int j = 0; j < currentPos; j++) {
 				int jP = tempParts[j];
 				sim->pmap[(int)(sim->parts[jP].y + 0.5f)][(int)(sim->parts[jP].x + 0.5f)] = 0;
@@ -244,6 +255,10 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 				else 
 					break;
 			}
+		}
+		for (int x=currentPos-1; x>=0; x--) {
+			if (sim->parts[tempParts[x]].type==PT_DMND)
+				return 0;
 		}
 		if(foundParts && spaces){
 			//Move particles

@@ -31,7 +31,7 @@ Element_WTRV::Element_WTRV()
     Description = "Steam, heats up air, produced from hot water.";
     
     State = ST_GAS;
-    Properties = TYPE_GAS;
+    Properties = TYPE_GAS|PROP_CONDUCTS;
     
     LowPressure = IPL;
     LowPressureTransition = NT;
