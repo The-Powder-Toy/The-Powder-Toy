@@ -923,16 +923,10 @@ std::vector<Menu*> GameController::GetMenuList()
 	return gameModel->GetMenuList();
 }
 
-void GameController::ActiveToolChanged(int toolSelection, Tool *tool)
-{
-<<<<<<< HEAD
-=======
-	commandInterface->OnActiveToolChanged(toolSelection, tool);
-}
+void GameController::ActiveToolChanged(int toolSelection, Tool *tool) {}
 
 void GameController::SetActiveTool(int toolSelection, Tool * tool)
 {
->>>>>>> upstream/master
 	gameModel->SetActiveTool(toolSelection, tool);
 	gameModel->GetRenderer()->gravityZonesEnabled = false;
 	gameModel->SetLastTool(tool);
