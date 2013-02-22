@@ -2860,6 +2860,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[pmap[y][x]>>8].ctype = t;
 				if (t==PT_LIFE && v<NGOLALT)
 					parts[pmap[y][x]>>8].tmp2 = v;
+				parts[pmap[y][x]>>8].temp = elements[t].Temperature;
 			}
 			return -1;
 		}

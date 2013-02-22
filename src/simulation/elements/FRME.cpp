@@ -6,7 +6,7 @@ Element_FRME::Element_FRME()
     Name = "FRME";
     Colour = PIXPACK(0x999988);
     MenuVisible = 1;
-    MenuSection = SC_SOLIDS;
+    MenuSection = SC_FORCE;
     Enabled = 1;
     
     Advection = 0.0f;

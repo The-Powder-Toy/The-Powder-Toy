@@ -65,7 +65,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 					if ((r&0xFF)!=PT_CRAY && (r&0xFF)!=PT_PSCN && (r&0xFF)!=PT_INST && (r&0xFF)!=PT_METL && (r&0xFF)!=PT_SPRK && (r&0xFF)<PT_NUM)
 					{
 						parts[i].ctype = r&0xFF;
-						//parts[i].temp = parts[r>>8].temp;
+						parts[i].temp = parts[r>>8].temp;
 					}
 				}
 	} else if (parts[i].life==0) { // only fire when life is 0, but nothing sets the life right now
@@ -96,6 +96,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 									nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype);
 								if (nr!=-1) {
 									parts[nr].dcolour = colored;
+									parts[nr].temp = parts[i].temp;
 								}
 								if((!destroy || parts[i].ctype != PT_SPRK) && !--partsRemaining)
 									docontinue = 0;
