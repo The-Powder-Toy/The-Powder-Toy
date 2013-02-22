@@ -87,7 +87,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 								break;
 							}
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
-							if (!sim->IsObsticle(x+nxi+nxx, y+nyi+nyy, parts[i].ctype) || (parts[i].ctype == PT_SPRK && sim->elements[r&0xFF].Properties & PROP_CONDUCTS) && !destroy) { // create, also set color if it has passed through FILT
+							if (!sim->IsWallBlocking(x+nxi+nxx, y+nyi+nyy, parts[i].ctype) && (!sim->pmap[y+nyi+nyy][x+nxi+nxx] || (parts[i].ctype == PT_SPRK && !destroy))) { // create, also set color if it has passed through FILT
 								int nr;
 								if (parts[i].ctype == PT_LIFE)
 									nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype|(parts[i].tmp2<<8));

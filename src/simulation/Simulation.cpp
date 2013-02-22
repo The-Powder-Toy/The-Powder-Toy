@@ -1996,11 +1996,8 @@ void Simulation::clear_sim(void)
 	SetEdgeMode(edgeMode);
 }
 
-bool Simulation::IsObsticle(int x, int y, int type)
+bool Simulation::IsWallBlocking(int x, int y, int type)
 {
-	if (pmap[y][x])// && (type != PT_SPRK || !(elements[pmap[y][x]&0xFF].Properties & PROP_CONDUCTS)))
-		return true;
-
 	if (bmap[y/CELL][x/CELL])
 	{
 		int wall = bmap[y/CELL][x/CELL];
