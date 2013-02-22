@@ -94,6 +94,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					if ((r&0xFF) == PT_PSTN) {
+						bool movedPiston = false;
 						directionX = rx;
 						directionY = ry;
 						{
@@ -102,7 +103,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 							int pistonCount = 0;
 							int newSpace = 0;
 							int armCount = 0;
-							for (nxx = 0, nyy = 0, nxi = directionX, nyi = directionY; pistonCount < maxSize; nyy += nyi, nxx += nxi) {
+							for (nxx = 0, nyy = 0, nxi = directionX, nyi = directionY; ; nyy += nyi, nxx += nxi) {
 								if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)) {
 									break;
 								}
@@ -110,6 +111,13 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 								if((r&0xFF)==PT_PSTN) {
 									if(parts[r>>8].ctype)
 										armCount++;
+									else if (armCount)
+									{
+										pistonEndX = x+nxi+nxx;
+										pistonEndY = y+nyi+nyy;
+										foundEnd = true;
+										break;
+									}
 									else
 										pistonCount++;
 								} else {
@@ -133,6 +141,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 													parts[nr].ctype = 1;
 												}
 											}
+											movedPiston =  true;
 										}
 									}
 								} else if(state == PISTON_RETRACT) {
@@ -147,12 +156,14 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 										}
 										MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true);
 										//newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true);
+										movedPiston = true;
 									}
 								}
 							}
 						}
 
-						break;
+						if (movedPiston)
+							break;
 					}
 				}
 
