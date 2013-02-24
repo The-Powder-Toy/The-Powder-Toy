@@ -3089,14 +3089,9 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				break;
 			case PT_DTEC:
 				parts[i].tmp2 = 2;
+				break;
 			case PT_TSNS:
 				parts[i].tmp2 = 2;
-				break;
-			case PT_ACEL:
-				parts[i].ctype = 10;
-				break;
-			case PT_DCEL:
-				parts[i].ctype = 9;
 				break;
 			default:
 				if (t==PT_FIGH)

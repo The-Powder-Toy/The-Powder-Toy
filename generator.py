@@ -120,8 +120,10 @@ std::vector<Element> GetElements()
 }
 	""";
 
-	if not os.path.exists(outputH.split("/")[1]):
-		os.makedirs(outputH.split("/")[1])
+	outputPath, outputFile = os.path.split(outputH)
+	if not os.path.exists(outputPath):
+		os.makedirs(outputPath)
+
 	f = open(outputH, "w")
 	f.write(elementHeader)
 	f.close()
@@ -196,8 +198,10 @@ def generateTools(toolFiles, outputCpp, outputH):
 		}
 		""";
 
-	if not os.path.exists(outputH.split("/")[1]):
-		os.makedirs(outputH.split("/")[1])
+	outputPath, outputFile = os.path.split(outputH)
+	if not os.path.exists(outputPath):
+		os.makedirs(outputPath)
+
 	f = open(outputH, "w")
 	f.write(toolHeader)
 	f.close()
