@@ -62,8 +62,17 @@ int Element_ACEL::update(UPDATE_FUNC_ARGS)
 					continue;
 				if(sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
 				{
-					parts[r>>8].vx *= 1.1f;
-					parts[r>>8].vy *= 1.1f;
+					if (parts[i].ctype)
+					{
+						int change = parts[i].ctype > 1000 ? 1000 : parts[i].ctype < 0 ? 0 : parts[i].ctype;
+						parts[r>>8].vx *= 1+change/100.0f;
+						parts[r>>8].vy *= 1+change/100.0f;
+					}
+					else
+					{
+						parts[r>>8].vx *= 1.1f;
+						parts[r>>8].vy *= 1.1f;
+					}
 					parts[i].tmp = 1;
 				}
 			}
