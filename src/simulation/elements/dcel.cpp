@@ -50,23 +50,23 @@ Element_DCEL::Element_DCEL()
 int Element_DCEL::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
-	parts[i].tmp = 0;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry) && !(rx && ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if(!r)
-					r = sim->photons[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
-					continue;
-				if(sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
-				{
-					if (parts[i].ctype)
-					{
-						int change = parts[i].ctype > 100 ? 100 : parts[i].ctype < 0 ? 0 : parts[i].ctype;
-						parts[r>>8].vx *= 1-change/100.0f;
-						parts[r>>8].vy *= 1-change/100.0f;
+	float change = parts[i].life > 100 ? 100 : (parts[i].life < 0 ? 0 : parts[i].life);
+    parts[i].tmp = 0;
+    for (rx=-1; rx<2; rx++)
+        for (ry=-1; ry<2; ry++)
+            if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry) && !(rx && ry))
+            {
+                r = pmap[y+ry][x+rx];
+                if(!r)
+                    r = sim->photons[y+ry][x+rx];
+                if ((r>>8)>=NPART || !r)
+                    continue;
+                if(sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
+                {
+                    if (parts[i].life)
+                    {
+						parts[r>>8].vx *= 1.0f-(change/100.0f);
+						parts[r>>8].vy *= 1.0f-(change/100.0f);
 					}
 					else
 					{
