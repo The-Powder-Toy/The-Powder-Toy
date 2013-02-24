@@ -69,12 +69,12 @@ void Thumbnail::Resize(ui::Point newSize)
 		Data = Graphics::resample_img(thumbData, Size.X, Size.Y, Size.X * scaleFactor, Size.Y * scaleFactor);
 		Size.X *= scaleFactor;
 		Size.Y *= scaleFactor;
-		delete thumbData;
+		delete[] thumbData;
 	}
 }
 
 Thumbnail::~Thumbnail()
 {
 	if(Data)
-		delete Data;
+		delete[] Data;
 }

@@ -4839,7 +4839,8 @@ Simulation::Simulation():
 	lighting_recreate(0),
 	force_stacking_check(0),
 	ISWIRE(0),
-	VINE_MODE(0)
+	VINE_MODE(0),
+	gravWallChanged(false)
 {
     int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
     int tportal_ry[] = {-1,-1,-1, 0, 1, 1, 1, 0};
@@ -4916,6 +4917,13 @@ Simulation::Simulation():
 	gol_menu * golMenuT = LoadGOLMenu(golMenuCount);
 	memcpy(gmenu, golMenuT, sizeof(gol_menu) * golMenuCount);
 	free(golMenuT);
+
+	Element_STKM::STKM_init_legs(this, &player, 0);
+	player.spwn = 1;
+	player.elem = PT_DUST;
+	Element_STKM::STKM_init_legs(this, &player2, 0);
+	player2.spwn = 1;
+	player2.elem = PT_DUST;
 
 	init_can_move();
 	clear_sim();

@@ -366,7 +366,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 		signs[i].x = nx;
 		signs[i].y = ny;
 	}
-	for (i=0; i<NPART; i++)
+	for (i=0; i<particlesCount; i++)
 	{
 		if (!particles[i].type) continue;
 		pos = v2d_new(particles[i].x, particles[i].y);
@@ -410,13 +410,13 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	blockWidth = newBlockWidth;
 	blockHeight = newBlockHeight;
 
-	delete blockMap;
-	delete fanVelX;
-	delete fanVelY;
+	delete[] blockMap;
+	delete[] fanVelX;
+	delete[] fanVelY;
 
-	delete blockMapPtr;
-	delete fanVelXPtr;
-	delete fanVelYPtr;
+	delete[] blockMapPtr;
+	delete[] fanVelXPtr;
+	delete[] fanVelYPtr;
 
 	blockMap = blockMapNew;
 	fanVelX = fanVelXNew;
