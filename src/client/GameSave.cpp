@@ -740,6 +740,9 @@ void GameSave::readOPS(char * data, int dataLength)
 					fanVelX[blockY+y][blockX+x] = (fanData[j++]-127.0f)/64.0f;
 					fanVelY[blockY+y][blockX+x] = (fanData[j++]-127.0f)/64.0f;
 				}
+
+				if (blockMap[y][x] < 0 || blockMap[y][x] >= UI_WALLCOUNT)
+					blockMap[y][x] = 0;
 			}
 		}
 	}
@@ -1195,6 +1198,9 @@ void GameSave::readPSv(char * data, int dataLength)
 					blockMap[y][x]=WL_GRAV;
 				else if (blockMap[y][x]==O_WL_ALLOWENERGY)
 					blockMap[y][x]=WL_ALLOWENERGY;
+
+				if (blockMap[y][x] < 0 || blockMap[y][x] >= UI_WALLCOUNT)
+					blockMap[y][x] = 0;
 			}
 
 			p++;

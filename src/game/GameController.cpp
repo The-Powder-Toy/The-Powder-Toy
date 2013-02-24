@@ -1298,7 +1298,7 @@ std::string GameController::ElementResolve(int type)
 
 std::string GameController::WallName(int type)
 {
-	if(gameModel && gameModel->GetSimulation() && gameModel->GetSimulation()->wtypes && type >= 0)
+	if(gameModel && gameModel->GetSimulation() && gameModel->GetSimulation()->wtypes && type >= 0 && type < UI_WALLCOUNT)
 		return std::string(gameModel->GetSimulation()->wtypes[type].name);
 	else
 		return "";
