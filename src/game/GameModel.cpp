@@ -175,6 +175,10 @@ GameModel::~GameModel()
 	{
 		delete brushList[i];
 	}
+	for(std::deque<Snapshot*>::iterator iter = history.begin(), end = history.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
 	delete sim;
 	delete ren;
 	if(placeSave)

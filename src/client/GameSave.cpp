@@ -2064,6 +2064,16 @@ fin:
 		free(partsSaveIndex);
 	if (soapLinkData)
 		free(soapLinkData);
+	if (partsPosData)
+		free(partsPosData);
+	if (partsPosFirstMap)
+		free(partsPosFirstMap);
+	if (partsPosLastMap)
+		free(partsPosLastMap);
+	if (partsPosCount)
+		free(partsPosCount);
+	if (partsPosLink)
+		free(partsPosLink);
 
 	return (char*)outputData;
 }
