@@ -50,7 +50,16 @@ Element_ACEL::Element_ACEL()
 int Element_ACEL::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
-	float change = parts[i].life > 1000 ? 1000 : (parts[i].life < 0 ? 0 : parts[i].life);
+	float multiplier;
+	if (parts[i].life!=0)
+	{
+		float change = parts[i].life > 1000 ? 1000 : (parts[i].life < 0 ? 0 : parts[i].life);
+		multiplier = 1.0f+(change/100.0f);
+	}
+	else
+	{
+		multiplier = 1.1f;
+	}
     parts[i].tmp = 0;
     for (rx=-1; rx<2; rx++)
         for (ry=-1; ry<2; ry++)
@@ -63,16 +72,8 @@ int Element_ACEL::update(UPDATE_FUNC_ARGS)
                     continue;
                 if(sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
                 {
-                    if (parts[i].life)
-                    {
-						parts[r>>8].vx *= 1.0f+(change/100.0f);
-						parts[r>>8].vy *= 1.0f+(change/100.0f);
-					}
-					else
-					{
-						parts[r>>8].vx *= 1.1f;
-						parts[r>>8].vy *= 1.1f;
-					}
+					parts[r>>8].vx *= multiplier;
+					parts[r>>8].vy *= multiplier;
 					parts[i].tmp = 1;
 				}
 			}
