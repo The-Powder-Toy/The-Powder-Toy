@@ -22,9 +22,9 @@ void ToolButton::OnMouseClick(int x, int y, unsigned int button)
 
 void ToolButton::OnMouseUnclick(int x, int y, unsigned int button)
 {
-	isButtonDown = false;
 	if(isButtonDown)
 	{
+		isButtonDown = false;
 		if(button == BUTTON_LEFT)
 			SetSelectionState(0);
 		if(button == BUTTON_RIGHT)
