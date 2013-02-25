@@ -88,8 +88,6 @@ void SearchController::Exit()
 	}
 	if(callback)
 		callback->ControllerExit();
-	delete callback;
-	callback = NULL;
 	//HasExited = true;
 }
 

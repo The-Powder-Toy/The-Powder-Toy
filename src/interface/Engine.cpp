@@ -116,15 +116,15 @@ int Engine::CloseWindow()
 {
 	if(!windows.empty())
 	{
+		if (lastBuffer)
+		{
+			free(lastBuffer);
+			lastBuffer = NULL;
+		}
 		if(!prevBuffers.empty())
 		{
 			lastBuffer = prevBuffers.top();
 			prevBuffers.pop();
-		}
-		else
-		{
-			free(lastBuffer);
-			lastBuffer = NULL;
 		}
 		state_ = windows.top();
 		windows.pop();

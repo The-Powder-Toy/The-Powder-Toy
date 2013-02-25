@@ -4918,12 +4918,8 @@ Simulation::Simulation():
 	memcpy(gmenu, golMenuT, sizeof(gol_menu) * golMenuCount);
 	free(golMenuT);
 
-	Element_STKM::STKM_init_legs(this, &player, 0);
-	player.spwn = 1;
-	player.elem = PT_DUST;
-	Element_STKM::STKM_init_legs(this, &player2, 0);
-	player2.spwn = 1;
-	player2.elem = PT_DUST;
+	player.comm = 0;
+	player2.comm = 0;
 
 	init_can_move();
 	clear_sim();

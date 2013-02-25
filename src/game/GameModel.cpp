@@ -183,6 +183,10 @@ GameModel::~GameModel()
 	{
 		delete *iter;
 	}
+	for(std::vector<Notification*>::iterator iter = notifications.begin(); iter != notifications.end(); ++iter)
+	{
+		delete *iter;
+	}
 	delete sim;
 	delete ren;
 	if(placeSave)
