@@ -22,6 +22,7 @@ void ToolButton::OnMouseClick(int x, int y, unsigned int button)
 
 void ToolButton::OnMouseUnclick(int x, int y, unsigned int button)
 {
+	isButtonDown = false;
 	if(isButtonDown)
 	{
 		if(button == BUTTON_LEFT)
@@ -32,7 +33,6 @@ void ToolButton::OnMouseUnclick(int x, int y, unsigned int button)
 			SetSelectionState(2);
 		DoAction();
 	}
-	isButtonDown = false;
 }
 
 void ToolButton::Draw(const ui::Point& screenPos)

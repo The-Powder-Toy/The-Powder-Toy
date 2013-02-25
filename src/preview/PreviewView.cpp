@@ -411,7 +411,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 				float factorY = ((float)YRES/2)/((float)savePreview->Size.Y);
 				float scaleFactor = factorY < factorX ? factorY : factorX;
 				savePreview->Data = Graphics::resample_img(oldData, savePreview->Size.X, savePreview->Size.Y, savePreview->Size.X*scaleFactor, savePreview->Size.Y*scaleFactor);
-				delete oldData;
+				delete[] oldData;
 				savePreview->Size.X *= scaleFactor;
 				savePreview->Size.Y *= scaleFactor;
 			}
@@ -453,14 +453,14 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	if(addCommentBox)
 	{
 		RemoveComponent(addCommentBox);
-		addCommentBox = NULL;
 		delete addCommentBox;
+		addCommentBox = NULL;
 	}
 	if(submitCommentButton)
 	{
 		RemoveComponent(submitCommentButton);
-		submitCommentButton = NULL;
 		delete submitCommentButton;
+		submitCommentButton = NULL;
 	}
 	if(sender->GetCommentBoxEnabled())
 	{
@@ -561,6 +561,17 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	}
 }*/
 
-PreviewView::~PreviewView() {
+PreviewView::~PreviewView()
+{
+	if(addCommentBox)
+	{
+		RemoveComponent(addCommentBox);
+		delete addCommentBox;
+	}
+	if(submitCommentButton)
+	{
+		RemoveComponent(submitCommentButton);
+		delete submitCommentButton;
+	}
 }
 

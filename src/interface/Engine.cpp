@@ -46,6 +46,8 @@ Engine::~Engine()
 		delete windows.top();
 		windows.pop();
 	}
+	if (lastBuffer)
+		free(lastBuffer);
 }
 
 void Engine::Begin(int width, int height)

@@ -188,6 +188,10 @@ GameController::~GameController()
 	{
 		delete localBrowser;
 	}
+	if (options)
+	{
+		delete options;
+	}
 	if(ui::Engine::Ref().GetWindow() == gameView)
 	{
 		ui::Engine::Ref().CloseWindow();

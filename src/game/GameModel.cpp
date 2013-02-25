@@ -179,6 +179,10 @@ GameModel::~GameModel()
 	{
 		delete *iter;
 	}
+	for(std::vector<QuickOption*>::iterator iter = quickOptions.begin(), end = quickOptions.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
 	delete sim;
 	delete ren;
 	if(placeSave)

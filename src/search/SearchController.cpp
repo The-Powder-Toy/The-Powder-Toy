@@ -88,6 +88,8 @@ void SearchController::Exit()
 	}
 	if(callback)
 		callback->ControllerExit();
+	delete callback;
+	callback = NULL;
 	//HasExited = true;
 }
 
@@ -101,6 +103,7 @@ SearchController::~SearchController()
 	}
 	delete searchModel;
 	delete searchView;
+	delete callback;
 }
 
 void SearchController::DoSearch(std::string query, bool now)
