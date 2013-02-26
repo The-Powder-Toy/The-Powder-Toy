@@ -49,7 +49,7 @@ Element_AMTR::Element_AMTR()
 //#TPT-Directive ElementHeader Element_AMTR static int update(UPDATE_FUNC_ARGS)
 int Element_AMTR::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry;
+	 int r, rx, ry, rt;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -57,7 +57,9 @@ int Element_AMTR::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)!=PT_AMTR && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_NONE && (r&0xFF)!=PT_PHOT && (r&0xFF)!=PT_VOID && (r&0xFF)!=PT_BHOL && (r&0xFF)!=PT_NBHL && (r&0xFF)!=PT_PRTI && (r&0xFF)!=PT_PRTO)
+				rt = r&0xFF;
+				//would a table lookup be faster than 11 checks?
+				if (rt!=PT_AMTR && rt!=PT_DMND && rt!=PT_CLNE && rt!=PT_PCLN && rt!=PT_NONE && rt!=PT_PHOT && rt!=PT_VOID && rt!=PT_BHOL && rt!=PT_NBHL && rt!=PT_PRTI && rt!=PT_PRTO)
 				{
 					parts[i].life++;
 					if (parts[i].life==4)

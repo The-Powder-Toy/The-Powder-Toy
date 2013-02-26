@@ -102,12 +102,12 @@ int Element_ACID::update(UPDATE_FUNC_ARGS)
 		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
-			if ((r>>8)>=NPART || !r)
+			if (!r)
 				continue;
-			if ((r&0xFF)==PT_ACID&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0)//diffusion
+			if ((r&0xFF)==PT_ACID && (parts[i].life>parts[r>>8].life) && parts[i].life>0)//diffusion
 			{
 				int temp = parts[i].life - parts[r>>8].life;
-				if (temp ==1)
+				if (temp==1)
 				{
 					parts[r>>8].life ++;
 					parts[i].life --;

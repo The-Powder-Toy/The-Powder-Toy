@@ -52,15 +52,15 @@ int Element_BTRY::update(UPDATE_FUNC_ARGS)
 	int r, rx, ry, rt;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry) && abs(rx)+abs(ry)<4)
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = parts[r>>8].type;
+				rt = (r&0xFF);
 				if (sim->parts_avg(i,r>>8,PT_INSL) != PT_INSL)
 				{
-					if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>8].life==0 && abs(rx)+abs(ry) < 4)
+					if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>8].life==0)
 					{
 						parts[r>>8].life = 4;
 						parts[r>>8].ctype = rt;
