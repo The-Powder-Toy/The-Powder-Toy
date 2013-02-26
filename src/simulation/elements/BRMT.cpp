@@ -50,8 +50,11 @@ Element_BRMT::Element_BRMT()
 int Element_BRMT::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry, rt, tempFactor;
-	if (parts[i].temp > (250.0f+273.15f))
+	if (parts[i].temp > 523.15f)//250.0f+273.15f
 	{
+		tempFactor = 1000 - ((523.15f-parts[i].temp)*2);
+		if(tempFactor < 2)
+			tempFactor = 2;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -59,20 +62,14 @@ int Element_BRMT::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					rt = parts[r>>8].type;
-					tempFactor = 1000 - (((250.0f+273.15f)-parts[i].temp)*2);
-					if(tempFactor < 2)
-						tempFactor = 2;
-					if ((rt==PT_BREC) && 1 > (rand()%tempFactor))
+					if ((r&0xFF)==PT_BREC && 1>(rand()%tempFactor))
 					{
 						if(rand()%2)
 						{
 							sim->create_part(r>>8, x+rx, y+ry, PT_THRM);
 						}
 						else
-						{	sim->create_part(i, x, y, PT_THRM);
-						}
-						return 1;
+							sim->create_part(i, x, y, PT_THRM);
 						//part_change_type(r>>8,x+rx,y+ry,PT_BMTL);
 						//parts[r>>8].tmp=(parts[i].tmp<=7)?parts[i].tmp=1:parts[i].tmp-(rand()%5);//rand()/(RAND_MAX/300)+100;
 					}

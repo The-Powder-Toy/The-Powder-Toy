@@ -50,7 +50,7 @@ Element_CONV::Element_CONV()
 int Element_CONV::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
-	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOLALT)))
+	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled || parts[i].ctype==PT_CONV || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOLALT)))
 	{
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
@@ -72,7 +72,9 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	else if(parts[i].ctype>0 && parts[i].ctype<PT_NUM && sim->elements[parts[i].ctype].Enabled && parts[i].ctype!=PT_CONV) {
+	else 
+	{
+		bool life = parts[i].ctype==PT_LIFE;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
@@ -84,7 +86,7 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 						continue;
 					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=parts[i].ctype)
 					{
-						if (parts[i].ctype==PT_LIFE) sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype|(parts[i].tmp<<8));
+						if (life) sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype|(parts[i].tmp<<8));
 						else sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype);
 					}
 				}
