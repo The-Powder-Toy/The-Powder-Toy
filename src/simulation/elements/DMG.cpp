@@ -85,7 +85,7 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 
 										sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 1.0f;
 										
-										t = parts[rr>>8].type;
+										t = rr&0xFF;
 										if(t && sim->elements[t].HighPressureTransition>-1 && sim->elements[t].HighPressureTransition<PT_NUM)
 											sim->part_change_type(rr>>8, x+nxi, y+nxj, sim->elements[t].HighPressureTransition);
 										else if(t == PT_BMTL)

@@ -53,7 +53,7 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 	float rr, rrr;
 	parts[i].pavg[0] = x;
 	parts[i].pavg[1] = y;
-	if(pmap[y][x]==PT_GLOW)
+	if(pmap[y][x]==PT_GLOW)//move into movement code
 	{
 		sim->part_change_type(i, x, y, PT_PHOT);
 	}
@@ -65,7 +65,8 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_GLAS)
+				rt = r&0xFF;
+				if (rt==PT_GLAS)
 				{
 					for (rrx=-1; rrx<=1; rrx++)
 					{
@@ -95,30 +96,25 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 					sim->kill_part(i);
 					return 1;
 				}
-				if ((r&0xFF)==PT_LCRY)
+				if (rt==PT_LCRY)
 				{
 					parts[r>>8].tmp2 = 5+rand()%5;
 				}
-				if ((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_SLTW || (r&0xFF)==PT_CBNW)
+				if (rt==PT_WATR || rt==PT_DSTW || rt==PT_SLTW || rt==PT_CBNW)
 				{
-					if(rand()<RAND_MAX/3)
-					{
+					if(!(rand()%3))
 						sim->create_part(r>>8, x+rx, y+ry, PT_O2);
-						return 1;
-					}
 					else
-					{
 						sim->create_part(r>>8, x+rx, y+ry, PT_H2);
-						return 1;
-					}
+					return 1;
 				}
-				if ((r&0xFF)==PT_NEUT && !pmap[y+ry][x+rx])
+				if (rt==PT_NEUT)
 				{
 					sim->part_change_type(r>>8, x+rx, y+ry, PT_H2);
 					parts[r>>8].life = 0;
 					parts[r>>8].ctype = 0;
 				}
-				if ((r&0xFF)==PT_DEUT)
+				if (rt==PT_DEUT)
 				{
 					if(parts[r>>8].life < 6000)
 						parts[r>>8].life += 1;
@@ -126,12 +122,12 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 					sim->kill_part(i);
 					return 1;
 				}
-				if ((r&0xFF)==PT_EXOT)
+				if (rt==PT_EXOT)
 				{
 					parts[r>>8].tmp2 += 5;
 					parts[r>>8].life = 1000;
 				}
-				if ((sim->elements[r&0xFF].Properties & PROP_CONDUCTS) && ((r&0xFF)!=PT_NBLE||parts[i].temp<2273.15))
+				if ((sim->elements[rt].Properties & PROP_CONDUCTS) && (rt!=PT_NBLE||parts[i].temp<2273.15))
 				{
 					sim->create_part(-1, x+rx, y+ry, PT_SPRK);
 					sim->kill_part(i);

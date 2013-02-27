@@ -60,19 +60,15 @@ int Element_DEST::update(UPDATE_FUNC_ARGS)
 	if (parts[i].life<=0 || parts[i].life>37)
 	{
 		parts[i].life=30+rand()%20;
-		parts[i].temp+=20000;
 		sim->pv[y/CELL][x/CELL]+=60.0f;
 	}
-	parts[i].temp+=10000;
 	if ((r&0xFF)==PT_PLUT || (r&0xFF)==PT_DEUT)
 	{
 		sim->pv[y/CELL][x/CELL]+=20.0f;
-		parts[i].temp+=18000;
-		if (rand()%2==0)
+		if (rand()%2)
 		{
-			float orig_temp = parts[r>>8].temp;
 			sim->create_part(r>>8, x+rx, y+ry, PT_NEUT);
-			parts[r>>8].temp = restrict_flt(orig_temp+40000.0f, MIN_TEMP, MAX_TEMP);
+			parts[r>>8].temp = MAX_TEMP;
 			sim->pv[y/CELL][x/CELL] += 10.0f;
 			parts[i].life-=4;
 		}
@@ -81,23 +77,17 @@ int Element_DEST::update(UPDATE_FUNC_ARGS)
 	{
 		sim->create_part(r>>8, x+rx, y+ry, PT_PLSM);
 	}
-	else if (rand()%3==0)
+	else if (!rand()%3)
 	{
 		sim->kill_part(r>>8);
 		parts[i].life -= 4*((sim->elements[r&0xFF].Properties&TYPE_SOLID)?3:1);
 		if (parts[i].life<=0)
 			parts[i].life=1;
-		parts[i].temp+=10000;
 	}
-	else
-	{
-		if (sim->elements[r&0xFF].HeatConduct) parts[r>>8].temp = restrict_flt(parts[r>>8].temp+10000.0f, MIN_TEMP, MAX_TEMP);
-	}
-	topv=sim->pv[y/CELL][x/CELL]/9+parts[r>>8].temp/900;
-	if (topv>40.0f)
-		topv=40.0f;
-	sim->pv[y/CELL][x/CELL]+=40.0f+topv;
-	parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
+	else if (sim->elements[r&0xFF].HeatConduct) 
+		parts[r>>8].temp = MAX_TEMP;
+	parts[i].temp=MAX_TEMP;
+	sim->pv[y/CELL][x/CELL]+=80.0f;
 	return 0;
 }
 
