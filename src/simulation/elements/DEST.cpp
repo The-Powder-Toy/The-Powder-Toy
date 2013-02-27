@@ -77,7 +77,7 @@ int Element_DEST::update(UPDATE_FUNC_ARGS)
 	{
 		sim->create_part(r>>8, x+rx, y+ry, PT_PLSM);
 	}
-	else if (!rand()%3)
+	else if (!(rand()%3))
 	{
 		sim->kill_part(r>>8);
 		parts[i].life -= 4*((sim->elements[r&0xFF].Properties&TYPE_SOLID)?3:1);

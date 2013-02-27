@@ -49,7 +49,7 @@ Element_IRON::Element_IRON()
 //#TPT-Directive ElementHeader Element_IRON static int update(UPDATE_FUNC_ARGS)
 int Element_IRON::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry;
+	 int r, rx, ry, rt;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -57,12 +57,13 @@ int Element_IRON::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((((r&0xFF) == PT_SALT && 15>(rand()/(RAND_MAX/700))) ||
-				        ((r&0xFF) == PT_SLTW && 30>(rand()/(RAND_MAX/2000))) ||
-				        ((r&0xFF) == PT_WATR && 5 >(rand()/(RAND_MAX/6000))) ||
-				        ((r&0xFF) == PT_O2   && 2 >(rand()/(RAND_MAX/500))) ||
-				        ((r&0xFF) == PT_LO2))&&
-				        (!(parts[i].life))
+				rt = r&0xFF;
+				if ((!(parts[i].life)) &&
+					((rt == PT_SALT && !(rand()%47)) ||
+				        (rt == PT_SLTW && !(rand()%67)) ||
+				        (rt == PT_WATR && !(rand()%1200)) ||
+				        (rt == PT_O2   && !(rand()%250)) ||
+				        (rt == PT_LO2))
 				   )
 				{
 					sim->part_change_type(i,x,y,PT_BMTL);

@@ -55,7 +55,7 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 		sim->part_change_type(i,x,y,PT_NBLE);
 		parts[i].life = 0;
 	}
-	if (t==PT_FIRE && parts[i].life <=1)
+	else if (t==PT_FIRE && parts[i].life <=1)
 	{
 		if ((parts[i].tmp&0x3) == 3){
 			sim->part_change_type(i,x,y,PT_DSTW);
@@ -68,7 +68,7 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 			parts[i].life = rand()%20+250;
 		}
 	}
-	if (t==PT_PLSM && parts[i].life <=1)
+	else if (t==PT_PLSM && parts[i].life <=1)
 	{
 		if ((parts[i].tmp&0x3) == 3){
 			sim->part_change_type(i,x,y,PT_DSTW);

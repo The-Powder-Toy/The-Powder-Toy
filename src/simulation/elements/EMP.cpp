@@ -49,7 +49,7 @@ Element_EMP::Element_EMP()
 //#TPT-Directive ElementHeader Element_EMP static int update(UPDATE_FUNC_ARGS)
 int Element_EMP::update(UPDATE_FUNC_ARGS)
  {
-	int r,rx,ry,ok=0,t,n,nx,ny;
+	int r,rx,ry,t,n,nx,ny;
 	if (parts[i].life)
 		return 0;
 	for (rx=-2; rx<3; rx++)

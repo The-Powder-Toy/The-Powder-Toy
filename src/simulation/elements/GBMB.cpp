@@ -69,7 +69,7 @@ int Element_GBMB::update(UPDATE_FUNC_ARGS)
 	}
 	if(parts[i].life>20)
 		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 20;
-	if(parts[i].life<20 && parts[i].life>=1)
+	else if(parts[i].life>=1)
 		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = -80;
 	return 0;
 }

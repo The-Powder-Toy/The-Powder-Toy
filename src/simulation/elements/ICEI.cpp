@@ -61,14 +61,16 @@ int Element_ICEI::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (((r&0xFF)==PT_SALT || (r&0xFF)==PT_SLTW) && parts[i].temp > sim->elements[PT_SLTW].LowTemperature && 1>(rand()%1000))
+				if (((r&0xFF)==PT_SALT || (r&0xFF)==PT_SLTW) && parts[i].temp > sim->elements[PT_SLTW].LowTemperature && !(rand()%1000))
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
+					goto done;
 				}
-                if (((r&0xFF)==PT_FRZZ) && (parts[i].ctype=PT_FRZW) && 1>(rand()%1000))
-                    sim->part_change_type(r>>8,x+rx,y+ry,PT_ICEI);
+				else if (((r&0xFF)==PT_FRZZ) && (parts[i].ctype=PT_FRZW) && !(rand()%1000))
+					sim->part_change_type(r>>8,x+rx,y+ry,PT_ICEI);
 			}
+ done:
 	return 0;
 }
 

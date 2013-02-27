@@ -49,7 +49,8 @@ Element_GEL::Element_GEL()
 //#TPT-Directive ElementHeader Element_GEL static int update(UPDATE_FUNC_ARGS)
 int Element_GEL::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry;
+	int r, rx, ry, rt;
+	bool gel;
 	int absorbChanceDenom;
 	if (parts[i].tmp>100) parts[i].tmp = 100;
 	if (parts[i].tmp<0) parts[i].tmp = 0;
@@ -58,22 +59,23 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
+				gel=false;
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-
+				rt = r&0xFF;
 				//Desaturation
-				if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_FRZW) && parts[i].tmp<100 && 500>rand()%absorbChanceDenom)
+				if ((rt==PT_WATR || rt==PT_DSTW || rt==PT_FRZW) && parts[i].tmp<100 && 500>rand()%absorbChanceDenom)
 				{
 					parts[i].tmp++;
 					sim->kill_part(r>>8);
 				}
-				if (((r&0xFF)==PT_PSTE) && parts[i].tmp<100 && 20>rand()%absorbChanceDenom)
+				else if ((rt==PT_PSTE) && parts[i].tmp<100 && 20>rand()%absorbChanceDenom)
 				{
 					parts[i].tmp++;
 					sim->create_part(r>>8, x+rx, y+ry, PT_CLST);
 				}
-				if (((r&0xFF)==PT_SLTW) && parts[i].tmp<100 && 50>rand()%absorbChanceDenom)
+				else if ((rt==PT_SLTW) && parts[i].tmp<100 && 50>rand()%absorbChanceDenom)
 				{
 					parts[i].tmp++;
 					if (rand()%4)
@@ -81,30 +83,25 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 					else
 						sim->part_change_type(r>>8, x+rx, y+ry, PT_SALT);
 				}
-				if (((r&0xFF)==PT_CBNW) && parts[i].tmp<100 && 100>rand()%absorbChanceDenom)
+				else if ((rt==PT_CBNW) && parts[i].tmp<100 && 100>rand()%absorbChanceDenom)
 				{
 					parts[i].tmp++;
 					sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
 				}
 
-				if ((r&0xFF)==PT_SPNG && parts[i].tmp<100 && ((parts[r>>8].life+1)>parts[i].tmp))
+				else if (rt==PT_SPNG && parts[i].tmp<100 && ((parts[r>>8].life+1)>parts[i].tmp))
 				{
 					parts[r>>8].life--;
 					parts[i].tmp++;
 				}
-
-				char gel = 0;
-				if ((r&0xFF)==PT_GEL)
-					gel = 1;
-
 				//Concentration diffusion
-				if (gel && (parts[r>>8].tmp+1)<parts[i].tmp)
+				if (rt==PT_GEL && (parts[r>>8].tmp+1)<parts[i].tmp)
 				{
 					parts[r>>8].tmp++;
 					parts[i].tmp--;
+					gel = true;
 				}
-
-				if ((r&0xFF)==PT_SPNG && (parts[r>>8].life+1)<parts[i].tmp)
+				else if (rt==PT_SPNG && (parts[r>>8].life+1)<parts[i].tmp)
 				{
 					parts[r>>8].life++;
 					parts[i].tmp--;
@@ -127,7 +124,7 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 					dx *= per; dy *= per;
 					parts[i].vx += dx;
 					parts[i].vy += dy;
-					if ((sim->elements[r&0xFF].Properties&TYPE_PART) || (r&0xFF)==PT_GOO)
+					if ((sim->elements[r&0xFF].Properties&TYPE_PART) || rt==PT_GOO)
 					{
 						parts[r>>8].vx -= dx;
 						parts[r>>8].vy -= dy;

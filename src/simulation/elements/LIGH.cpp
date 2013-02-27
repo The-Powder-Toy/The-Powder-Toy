@@ -68,11 +68,11 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 	 * tmp - angle of lighting, measured in degrees anticlockwise from the positive x direction
 	 *
 	*/
-	int r,rx,ry, multipler, powderful;
+	int r,rx,ry,rt, multipler, powderful;
 	float angle, angle2=-1;
 	int pNear = 0;
 	powderful = powderful = parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER;
-	Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
+	//Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 	if (sim->aheat_enable)
 	{
 		sim->hv[y/CELL][x/CELL]+=powderful/50;
@@ -87,9 +87,21 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)!=PT_LIGH && (r&0xFF)!=PT_TESC)
+				rt = r&0xFF;
+				if ((surround_space || sim->elements[rt].Explosive) &&
+				    (rt!=PT_SPNG || parts[r>>8].life==0) &&
+				    sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
 				{
-					if ((r&0xFF)!=PT_CLNE&&(r&0xFF)!=PT_THDR&&(r&0xFF)!=PT_DMND&&(r&0xFF)!=PT_FIRE&&(r&0xFF)!=PT_NEUT&&(r&0xFF)!=PT_PHOT)
+					sim->part_change_type(r>>8,x+rx,y+ry,PT_FIRE);
+					parts[r>>8].temp = restrict_flt(sim->elements[PT_FIRE].Temperature + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
+					parts[r>>8].life = rand()%80+180;
+					parts[r>>8].tmp = parts[r>>8].ctype = 0;
+					if (sim->elements[rt].Explosive)
+						sim->pv[y/CELL][x/CELL] += 0.25f * CFDS;
+				}
+				if (rt!=PT_LIGH && rt!=PT_TESC)
+				{
+					if (rt!=PT_CLNE&&rt!=PT_THDR&&rt!=PT_DMND&&rt!=PT_FIRE&&rt!=PT_NEUT&&rt!=PT_PHOT)
 					{
 						if ((sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && parts[r>>8].life==0)
 						{
@@ -98,7 +110,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 						sim->pv[y/CELL][x/CELL] += powderful/400;
 						if (sim->elements[r&0xFF].HeatConduct) parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/1.5, MIN_TEMP, MAX_TEMP);
 					}
-					if ((r&0xFF)==PT_DEUT || (r&0xFF)==PT_PLUT) // start nuclear reactions
+					if (rt==PT_DEUT || rt==PT_PLUT) // start nuclear reactions
 					{
 						parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful, MIN_TEMP, MAX_TEMP);
 						sim->pv[y/CELL][x/CELL] +=powderful/35;
@@ -110,7 +122,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 							parts[r>>8].vy=rand()%10-5;
 						}
 					}
-					if ((r&0xFF)==PT_COAL || (r&0xFF)==PT_BCOL) // ignite coal
+					if (rt==PT_COAL || rt==PT_BCOL) // ignite coal
 					{
 						if (parts[r>>8].life>100) {
 							parts[r>>8].life = 99;
@@ -118,7 +130,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 					}
 					if (sim->elements[r&0xFF].HeatConduct)
 						parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/10, MIN_TEMP, MAX_TEMP);
-					if (((r&0xFF)==PT_STKM && sim->player.elem!=PT_LIGH) || ((r&0xFF)==PT_STKM2 && sim->player2.elem!=PT_LIGH))
+					if ((rt==PT_STKM && sim->player.elem!=PT_LIGH) || (rt==PT_STKM2 && sim->player2.elem!=PT_LIGH))
 					{
 						parts[r>>8].life-=powderful/100;
 					}
