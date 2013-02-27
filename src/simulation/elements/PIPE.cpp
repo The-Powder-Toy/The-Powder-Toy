@@ -216,21 +216,13 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 	{
 		if (parts[i].temp<272.15)//manual pipe colors
 		{
-			if (parts[i].temp>173.25&&parts[i].temp<273.15)
-			{
+			if (parts[i].temp>173.25)
 				parts[i].ctype = 2;
-				parts[i].life = 0;
-			}
-			if (parts[i].temp>73.25&&parts[i].temp<=173.15)
-			{
+			else if (parts[i].temp>73.25)
 				parts[i].ctype = 3;
-				parts[i].life = 0;
-			}
-			if (parts[i].temp>=0&&parts[i].temp<=73.15)
-			{
+			else if (parts[i].temp>=0)
 				parts[i].ctype = 4;
-				parts[i].life = 0;
-			}
+			parts[i].life = 0;
 		}
 		else
 		{

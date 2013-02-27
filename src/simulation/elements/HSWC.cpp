@@ -50,9 +50,12 @@ Element_HSWC::Element_HSWC()
 int Element_HSWC::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
-	if (parts[i].life!=10 && parts[i].life>0)
-		parts[i].life--;
-	else if (parts[i].life==10)
+	if (parts[i].life!=10)
+	{
+		if (parts[i].life>0)
+			parts[i].life--;
+	}
+	else
 	{
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)

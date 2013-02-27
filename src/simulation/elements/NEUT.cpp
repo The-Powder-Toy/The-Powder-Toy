@@ -58,14 +58,15 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_WATR || (r&0xFF)==PT_ICEI || (r&0xFF)==PT_SNOW)
+				rt = r&0xFF;
+				if (rt==PT_WATR || rt==PT_ICEI || rt==PT_SNOW)
 				{
 					parts[i].vx *= 0.995;
 					parts[i].vy *= 0.995;
 				}
-				if ((r&0xFF)==PT_PLUT && pressureFactor>(rand()%1000))
+				if (rt==PT_PLUT && pressureFactor>(rand()%1000))
 				{
-					if (33>rand()%100)
+					if (!(rand()%3))
 					{
 						sim->create_part(r>>8, x+rx, y+ry, rand()%3 ? PT_LAVA : PT_URAN);
 						parts[r>>8].temp = MAX_TEMP;
@@ -84,13 +85,13 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 					Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 				}
 #ifdef SDEUT
-				else if ((r&0xFF)==PT_DEUT && (pressureFactor+1+(parts[r>>8].life/100))>(rand()%1000))
+				else if (rt==PT_DEUT && (pressureFactor+1+(parts[r>>8].life/100))>(rand()%1000))
 				{
 					create_n_parts(sim, parts[r>>8].life, x+rx, y+ry, parts[i].vx, parts[i].vy, restrict_flt(parts[r>>8].temp + parts[r>>8].life*500, MIN_TEMP, MAX_TEMP), PT_NEUT);
 					sim->kill_part(r>>8);
 				}
 #else
-				else if ((r&0xFF)==PT_DEUT && (pressureFactor+1)>(rand()%1000))
+				else if (rt==PT_DEUT && (pressureFactor+1)>(rand()%1000))
 				{
 					create_part(r>>8, x+rx, y+ry, PT_NEUT);
 					parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
@@ -105,36 +106,36 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 						sim.kill_part(r>>8);
 				}
 #endif
-				else if ((r&0xFF)==PT_GUNP && 15>(rand()%1000))
+				else if (rt==PT_GUNP && 3>(rand()%200))
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_DUST);
-				else if ((r&0xFF)==PT_DYST && 15>(rand()%1000))
+				else if (rt==PT_DYST && 3>(rand()%200))
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_YEST);
-				else if ((r&0xFF)==PT_YEST)
+				else if (rt==PT_YEST)
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_DYST);
-				else if ((r&0xFF)==PT_WATR && 15>(rand()%100))
+				else if (rt==PT_WATR && 3>(rand()%20))
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_DSTW);
-				else if ((r&0xFF)==PT_PLEX && 15>(rand()%1000))
+				else if (rt==PT_PLEX && 3>(rand()%200))
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_GOO);
-				else if ((r&0xFF)==PT_NITR && 15>(rand()%1000))
+				else if (rt==PT_NITR && 3>(rand()%200))
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_DESL);
-				else if ((r&0xFF)==PT_PLNT && 5>(rand()%100))
+				else if (rt==PT_PLNT && !(rand()%20))
 					sim->create_part(r>>8, x+rx, y+ry, PT_WOOD);
-				else if ((r&0xFF)==PT_DESL && 15>(rand()%1000))
+				else if (rt==PT_DESL && 3>(rand()%200))
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_GAS);
-				else if ((r&0xFF)==PT_COAL && 5>(rand()%100))
+				else if (rt==PT_COAL && !(rand()%20))
 					sim->create_part(r>>8, x+rx, y+ry, PT_WOOD);
-				else if ((r&0xFF)==PT_DUST && 5>(rand()%100))
+				else if (rt==PT_DUST && !(rand()%20))
 					sim->part_change_type(r>>8, x+rx, y+ry, PT_FWRK);
-				else if ((r&0xFF)==PT_FWRK && 5>(rand()%100))
+				else if (rt==PT_FWRK && !(rand()%20))
 					parts[r>>8].ctype = PT_DUST;
-				else if ((r&0xFF)==PT_ACID && 5>(rand()%100))
+				else if (rt==PT_ACID && !(rand()%20))
 					sim->create_part(r>>8, x+rx, y+ry, PT_ISOZ);
-				else if ((r&0xFF)==PT_TTAN && 5>(rand()%100))
+				else if (rt==PT_TTAN && !(rand()%20))
 				{
 					sim->kill_part(i);
 					return 1;
 				}
-				else if ((r&0xFF)==PT_EXOT && 5>(rand()%100))
+				else if (rt==PT_EXOT && 5>(rand()%100))
 					parts[r>>8].life = 1500;
 				/*if(parts[r>>8].type>1 && parts[r>>8].type!=PT_NEUT && parts[r>>8].type-1!=PT_NEUT && parts[r>>8].type-1!=PT_STKM &&
 				  (elements[parts[r>>8].type-1].menusection==SC_LIQUID||

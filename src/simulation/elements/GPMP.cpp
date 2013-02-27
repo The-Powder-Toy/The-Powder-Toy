@@ -50,9 +50,12 @@ Element_GPMP::Element_GPMP()
 int Element_GPMP::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
-	if (parts[i].life!=10 && parts[i].life>0)
-		parts[i].life--;
-	else if (parts[i].life==10)
+	if (parts[i].life!=10)
+	{
+		if (parts[i].life>0)
+			parts[i].life--;
+	}
+	else
 	{
 		if (parts[i].temp>=256.0+273.15)
 			parts[i].temp=256.0+273.15;

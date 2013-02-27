@@ -101,39 +101,40 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 				}
 				if (rt!=PT_LIGH && rt!=PT_TESC)
 				{
-					if (rt!=PT_CLNE&&rt!=PT_THDR&&rt!=PT_DMND&&rt!=PT_FIRE&&rt!=PT_NEUT&&rt!=PT_PHOT)
+					if (rt!=PT_CLNE&&rt!=PT_THDR&&rt!=PT_DMND&&rt!=PT_FIRE)
 					{
 						if ((sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && parts[r>>8].life==0)
 						{
 							sim->create_part(r>>8,x+rx,y+ry,PT_SPRK);
 						}
-						sim->pv[y/CELL][x/CELL] += powderful/400;
-						if (sim->elements[r&0xFF].HeatConduct) parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/1.5, MIN_TEMP, MAX_TEMP);
-					}
-					if (rt==PT_DEUT || rt==PT_PLUT) // start nuclear reactions
-					{
-						parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful, MIN_TEMP, MAX_TEMP);
-						sim->pv[y/CELL][x/CELL] +=powderful/35;
-						if (rand()%3==0)
+						if (rt==PT_DEUT || rt==PT_PLUT) // start nuclear reactions
 						{
-							sim->part_change_type(r>>8,x+rx,y+ry,PT_NEUT);
-							parts[r>>8].life = rand()%480+480;
-							parts[r>>8].vx=rand()%10-5;
-							parts[r>>8].vy=rand()%10-5;
+							parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful, MIN_TEMP, MAX_TEMP);
+							sim->pv[y/CELL][x/CELL] +=powderful/35;
+							if (!(rand()%3))
+							{
+								sim->part_change_type(r>>8,x+rx,y+ry,PT_NEUT);
+								parts[r>>8].life = rand()%480+480;
+								parts[r>>8].vx=rand()%10-5;
+								parts[r>>8].vy=rand()%10-5;
+							}
 						}
-					}
-					if (rt==PT_COAL || rt==PT_BCOL) // ignite coal
-					{
-						if (parts[r>>8].life>100) {
-							parts[r>>8].life = 99;
+						else if (rt==PT_COAL || rt==PT_BCOL) // ignite coal
+						{
+							if (parts[r>>8].life>100) {
+								parts[r>>8].life = 99;
+							}
 						}
+						else if ((rt==PT_STKM && sim->player.elem!=PT_LIGH) || (rt==PT_STKM2 && sim->player2.elem!=PT_LIGH))
+						{
+							parts[r>>8].life-=powderful/100;
+						}
+						sim->pv[y/CELL][x/CELL] += powderful/400;
+						if (sim->elements[r&0xFF].HeatConduct) parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/1.3, MIN_TEMP, MAX_TEMP);
 					}
-					if (sim->elements[r&0xFF].HeatConduct)
+					else
 						parts[r>>8].temp = restrict_flt(parts[r>>8].temp+powderful/10, MIN_TEMP, MAX_TEMP);
-					if ((rt==PT_STKM && sim->player.elem!=PT_LIGH) || (rt==PT_STKM2 && sim->player2.elem!=PT_LIGH))
-					{
-						parts[r>>8].life-=powderful/100;
-					}
+					
 				}
 			}
 	if (parts[i].tmp2==3)
@@ -141,28 +142,21 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 		parts[i].tmp2=0;
 		return 1;
 	}
-
-	if (parts[i].tmp2==-1)
+	else if (parts[i].tmp2<=-1)
 	{
 		sim->kill_part(i);
 		return 1;
 	}
-	if (parts[i].tmp2<=0 || parts[i].life<=1)
+	else if (parts[i].tmp2<=0 || parts[i].life<=1)
 	{
 		if (parts[i].tmp2>0)
 			parts[i].tmp2=0;
 		parts[i].tmp2--;
 		return 1;
 	}
-	if (parts[i].tmp2<=-2)
-	{
-		sim->kill_part(i);
-		return 1;
-	}
 
-	angle2=-1;
-
-	pNear = LIGH_nearest_part(sim, i, parts[i].life*2.5);
+	//Completely broken and laggy function, possible can be fixed later
+	/*pNear = LIGH_nearest_part(sim, i, parts[i].life*2.5);
 	if (pNear!=-1)
 	{
 		int t=parts[pNear].type;
@@ -196,59 +190,21 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 			}
 		}
 		else pNear=-1;
-	}
+	}*/
 
 	//if (parts[i].tmp2==1/* || near!=-1*/)
 	//angle=0;//parts[i].tmp-30+rand()%60;
-	angle = parts[i].tmp-30+rand()%60;
-	if (angle<0)
-		angle+=360;
-	if (angle>=360)
-		angle-=360;
-	if (parts[i].tmp2==2 && pNear==-1)
-	{
-		angle2=angle+100-rand()%200;
-		if (angle2<0)
-			angle2+=360;
-		if (angle2>=360)
-			angle-=360;
-	}
-
-	multipler=parts[i].life*1.5+rand()%((int)(parts[i].life+1));
+	angle = (parts[i].tmp-30+rand()%60)%360;
+	multipler=parts[i].life*1.5+rand()%((int)(parts[i].life+1));	
 	rx=cos(angle*M_PI/180)*multipler;
 	ry=-sin(angle*M_PI/180)*multipler;
 	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, angle, 0);
-
-	if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+	if (parts[i].tmp2==2)// && pNear==-1)
 	{
-		r = pmap[y+ry][x+rx];
-		if ((r&0xFF)==PT_LIGH)
-		{
-			parts[r>>8].tmp2=1+(rand()%200>parts[i].tmp2*parts[i].tmp2/10+60);
-			parts[r>>8].life=(int)(1.0*parts[i].life/1.5-rand()%2);
-			parts[r>>8].tmp=angle;
-			parts[r>>8].temp=parts[i].temp;
-		}
-	}
-
-	if (angle2!=-1)
-	{
-		multipler=parts[i].life*1.5+rand()%((int)(parts[i].life+1));
+		angle2= ((int)angle+100-rand()%200)%360;
 		rx=cos(angle2*M_PI/180)*multipler;
 		ry=-sin(angle2*M_PI/180)*multipler;
 		create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, angle2, 0);
-
-		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-		{
-			r = pmap[y+ry][x+rx];
-			if ((r&0xFF)==PT_LIGH)
-			{
-				parts[r>>8].tmp2=1+(rand()%200>parts[i].tmp2*parts[i].tmp2/10+40);
-				parts[r>>8].life=(int)(1.0*parts[i].life/1.5-rand()%2);
-				parts[r>>8].tmp=angle;
-				parts[r>>8].temp=parts[i].temp;
-			}
-		}
 	}
 
 	parts[i].tmp2=-1;
@@ -297,16 +253,24 @@ int Element_LIGH::contact_part(Simulation * sim, int i, int tp)
 	return -1;
 }
 
-//#TPT-Directive ElementHeader Element_LIGH static bool create_LIGH(Simulation * sim, int x, int y, int c, int temp, int life, int tmp, int tmp2)
-bool Element_LIGH::create_LIGH(Simulation * sim, int x, int y, int c, int temp, int life, int tmp, int tmp2)
+//#TPT-Directive ElementHeader Element_LIGH static bool create_LIGH(Simulation * sim, int x, int y, int c, int temp, int life, int tmp, int tmp2, bool last)
+bool Element_LIGH::create_LIGH(Simulation * sim, int x, int y, int c, int temp, int life, int tmp, int tmp2, bool last)
 {
 	int p = sim->create_part(-1, x, y,c);
 	if (p != -1)
 	{
-		sim->parts[p].life = life;
 		sim->parts[p].temp = temp;
 		sim->parts[p].tmp = tmp;
-		sim->parts[p].tmp2 = tmp2;
+		if (last)
+		{
+			sim->parts[p].tmp2=1+(rand()%200>tmp2*tmp2/10+60);
+			sim->parts[p].life=(int)(life/1.5-rand()%2);
+		}
+		else
+		{
+			sim->parts[p].life = life;
+			sim->parts[p].tmp2 = tmp2;
+		}
 	}
 	else if (x >= 0 && x < XRES && y >= 0 && y < YRES)
 	{
@@ -348,9 +312,9 @@ void Element_LIGH::create_line_par(Simulation * sim, int x1, int y1, int x2, int
 		{
 			bool ret;
 			if (reverseXY)
-				ret = create_LIGH(sim, y, x, c, temp, life, tmp, tmp2);
+				ret = create_LIGH(sim, y, x, c, temp, life, tmp, tmp2,x==x2);
 			else
-				ret = create_LIGH(sim, x, y, c, temp, life, tmp, tmp2);
+				ret = create_LIGH(sim, x, y, c, temp, life, tmp, tmp2,x==x2);
 			if (ret)
 				return;
 
@@ -368,9 +332,9 @@ void Element_LIGH::create_line_par(Simulation * sim, int x1, int y1, int x2, int
 		{
 			bool ret;
 			if (reverseXY)
-				ret = create_LIGH(sim, y, x, c, temp, life, tmp, tmp2);
+				ret = create_LIGH(sim, y, x, c, temp, life, tmp, tmp2,x==x2);
 			else
-				ret = create_LIGH(sim, x, y, c, temp, life, tmp, tmp2);
+				ret = create_LIGH(sim, x, y, c, temp, life, tmp, tmp2,x==x2);
 			if (ret)
 				return;
 

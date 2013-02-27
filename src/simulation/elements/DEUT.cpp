@@ -66,7 +66,7 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r || (parts[i].life >=maxlife))
 						continue;
-					if ((r&0xFF)==PT_DEUT&&33>=rand()/(RAND_MAX/100)+1)
+					if ((r&0xFF)==PT_DEUT&& !(rand()%3))
 					{
 						if ((parts[i].life + parts[r>>8].life + 1) <= maxlife)
 						{

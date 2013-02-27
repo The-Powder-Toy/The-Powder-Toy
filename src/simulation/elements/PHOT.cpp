@@ -58,14 +58,14 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 		return 1;
 	}
 	if (parts[i].temp > 506)
-		if (1>rand()%10) Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
+		if (!(rand()%10)) Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry)) {
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_ISOZ && 5>(rand()%2000))
+				if ((r&0xFF)==PT_ISOZ && !(rand()%400))
 				{
 					parts[i].vx *= 0.90;
 					parts[i].vy *= 0.90;
@@ -76,7 +76,7 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 					parts[r>>8].vy = rr*sinf(rrr);
 					sim->pv[y/CELL][x/CELL] -= 15.0f * CFDS;
 				}
-				if ((r&0xFF)==PT_ISZS && 5>(rand()%2000))
+				if ((r&0xFF)==PT_ISZS && !(rand()%400))
 				{
 					parts[i].vx *= 0.90;
 					parts[i].vy *= 0.90;
@@ -89,7 +89,7 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 				}
 			}
 	r = pmap[y][x];
-	if((r&0xFF) == PT_QRTZ && r)// && parts[i].ctype==0x3FFFFFFF)
+	if((r&0xFF) == PT_QRTZ)// && parts[i].ctype==0x3FFFFFFF)
 	{
 		float a = (rand()%360)*3.14159f/180.0f;
 		parts[i].vx = 3.0f*cosf(a);

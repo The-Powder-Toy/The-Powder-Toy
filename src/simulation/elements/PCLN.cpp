@@ -49,7 +49,7 @@ Element_PCLN::Element_PCLN()
 //#TPT-Directive ElementHeader Element_PCLN static int update(UPDATE_FUNC_ARGS)
 int Element_PCLN::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry;
+	 int r, rx, ry, rt;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
 	for (rx=-2; rx<3; rx++)
@@ -66,7 +66,7 @@ int Element_PCLN::update(UPDATE_FUNC_ARGS)
 					else if (parts[r>>8].ctype==PT_NSCN)
 						parts[i].life = 9;
 				}
-				if ((r&0xFF)==PT_PCLN)
+				else if ((r&0xFF)==PT_PCLN)
 				{
 					if (parts[i].life==10&&parts[r>>8].life<10&&parts[r>>8].life>0)
 						parts[i].life = 9;
@@ -84,27 +84,26 @@ int Element_PCLN::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN &&
-				        (r&0xFF)!=PT_BCLN &&  (r&0xFF)!=PT_SPRK &&
-				        (r&0xFF)!=PT_NSCN && (r&0xFF)!=PT_PSCN &&
-				        (r&0xFF)!=PT_STKM && (r&0xFF)!=PT_STKM2 &&
-				        (r&0xFF)!=PT_PBCN && (r&0xFF)<PT_NUM)
+					rt = r&0xFF;
+					if (rt!=PT_CLNE && rt!=PT_PCLN &&
+				        rt!=PT_BCLN &&  rt!=PT_SPRK &&
+				        rt!=PT_NSCN && rt!=PT_PSCN &&
+				        rt!=PT_STKM && rt!=PT_STKM2 &&
+				        rt!=PT_PBCN && rt<PT_NUM)
 					{
-						parts[i].ctype = r&0xFF;
-						if ((r&0xFF)==PT_LIFE || (r&0xFF)==PT_LAVA)
+						parts[i].ctype = rt;
+						if (rt==PT_LIFE || rt==PT_LAVA)
 							parts[i].tmp = parts[r>>8].ctype;
 					}
 				}
-	if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && sim->elements[parts[i].ctype].Enabled && parts[i].life==10) {
+	if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && sim->elements[parts[i].ctype].Enabled && parts[i].life==10)
+	{
 		if (parts[i].ctype==PT_PHOT) {//create photons a different way
 			for (rx=-1; rx<2; rx++)
-			{
 				for (ry = -1; ry < 2; ry++)
-				{
 					if (rx || ry)
 					{
-						int r = sim->create_part(-1, x + rx, y + ry,
-								parts[i].ctype);
+						int r = sim->create_part(-1, x + rx, y + ry, parts[i].ctype);
 						if (r != -1)
 						{
 							parts[r].vx = rx * 3;
@@ -116,16 +115,12 @@ int Element_PCLN::update(UPDATE_FUNC_ARGS)
 							}
 						}
 					}
-				}
-			}
 		}
-		else if (parts[i].ctype==PT_LIFE) {//create life a different way
-			for (rx=-1; rx<2; rx++) {
-				for (ry=-1; ry<2; ry++) {
+		else if (parts[i].ctype==PT_LIFE)//create life a different way
+			for (rx=-1; rx<2; rx++)
+				for (ry=-1; ry<2; ry++)
 					sim->create_part(-1, x+rx, y+ry, parts[i].ctype|(parts[i].tmp<<8));
-				}
-			}
-		}
+
 		else if (parts[i].ctype!=PT_LIGH || (rand()%30)==0)
 		{
 			int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
