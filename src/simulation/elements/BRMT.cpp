@@ -62,7 +62,7 @@ int Element_BRMT::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)==PT_BREC && 1>(rand()%tempFactor))
+					if ((r&0xFF)==PT_BREC && !(rand()%tempFactor))
 					{
 						if(rand()%2)
 						{

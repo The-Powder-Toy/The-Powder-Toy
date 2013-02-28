@@ -58,8 +58,7 @@ int Element_AMTR::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				rt = r&0xFF;
-				//would a table lookup be faster than 11 checks?
-				if (rt!=PT_AMTR && rt!=PT_DMND && rt!=PT_CLNE && rt!=PT_PCLN && rt!=PT_NONE && rt!=PT_PHOT && rt!=PT_VOID && rt!=PT_BHOL && rt!=PT_NBHL && rt!=PT_PRTI && rt!=PT_PRTO)
+				if (rt!=PT_AMTR && rt!=PT_DMND && rt!=PT_CLNE && rt!=PT_PCLN && rt!=PT_VOID && rt!=PT_BHOL && rt!=PT_NBHL && rt!=PT_PRTI && rt!=PT_PRTO)
 				{
 					parts[i].life++;
 					if (parts[i].life==4)
@@ -67,7 +66,7 @@ int Element_AMTR::update(UPDATE_FUNC_ARGS)
 						sim->kill_part(i);
 						return 1;
 					}
-					if (10>(rand()/(RAND_MAX/100)))
+					if (!(rand()%10))
 						sim->create_part(r>>8, x+rx, y+ry, PT_PHOT);
 					else
 						sim->kill_part(r>>8);

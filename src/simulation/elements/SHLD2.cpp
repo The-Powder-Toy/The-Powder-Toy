@@ -57,7 +57,7 @@ int Element_SHLD2::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 				{
-					if ( parts[i].life>0)
+					if (parts[i].life>0)
 						sim->create_part(-1,x+rx,y+ry,PT_SHLD1);
 					continue;
 				}
