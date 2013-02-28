@@ -91,7 +91,6 @@ void Element_TRON::init_graphics()
 //#TPT-Directive ElementHeader Element_TRON static int update(UPDATE_FUNC_ARGS)
 int Element_TRON::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry, np;
 	if (parts[i].tmp&TRON_WAIT)
 	{
 		parts[i].tmp &= ~TRON_WAIT;

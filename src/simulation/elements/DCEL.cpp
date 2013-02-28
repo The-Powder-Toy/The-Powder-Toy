@@ -48,7 +48,7 @@ Element_DCEL::Element_DCEL()
 
 //#TPT-Directive ElementHeader Element_DCEL static int update(UPDATE_FUNC_ARGS)
 int Element_DCEL::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	float multiplier;
 	if (parts[i].life!=0)
@@ -60,18 +60,18 @@ int Element_DCEL::update(UPDATE_FUNC_ARGS)
 	{
 		multiplier = 1.0f/1.1f;
 	}
-    parts[i].tmp = 0;
-    for (rx=-1; rx<2; rx++)
-        for (ry=-1; ry<2; ry++)
-            if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry) && !(rx && ry))
-            {
-                r = pmap[y+ry][x+rx];
-                if(!r)
-                    r = sim->photons[y+ry][x+rx];
-                if ((r>>8)>=NPART || !r)
-                    continue;
-                if(sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
-                {
+	parts[i].tmp = 0;
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
+			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry) && !(rx && ry))
+			{
+				r = pmap[y+ry][x+rx];
+				if (!r)
+					r = sim->photons[y+ry][x+rx];
+				if (!r)
+					continue;
+				if (sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
+				{
 					parts[r>>8].vx *= multiplier;
 					parts[r>>8].vy *= multiplier;
 					parts[i].tmp = 1;

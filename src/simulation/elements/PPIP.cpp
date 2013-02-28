@@ -85,7 +85,7 @@ void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 	else if (sparkedBy==PT_INST) prop = PPIP_TMPFLAG_TRIGGER_REVERSE << 3;
 
 	if (prop==0 || (pmap[y][x]&0xFF)!=PT_PPIP || (parts[pmap[y][x]>>8].tmp & prop))
-	return;
+		return;
 
 	coord_stack = new unsigned short[coord_stack_limit][2];
 	coord_stack[coord_stack_size][0] = x;
@@ -103,7 +103,7 @@ void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 		{
 			if ((pmap[y][x1-1]&0xFF)!=PT_PPIP)
 			{
-			break;
+				break;
 			}
 			x1--;
 		}
@@ -112,7 +112,7 @@ void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 		{
 			if ((pmap[y][x2+1]&0xFF)!=PT_PPIP)
 			{
-			break;
+				break;
 			}
 			x2++;
 		}

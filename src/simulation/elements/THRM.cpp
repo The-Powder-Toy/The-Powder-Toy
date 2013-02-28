@@ -59,7 +59,7 @@ int Element_THRM::update(UPDATE_FUNC_ARGS)
 					continue;
 				if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM || (r&0xFF)==PT_LAVA)) // TODO: could this go in update_PYRO?
 				{
-					if (1>(rand()%500)) {
+					if (!(rand()%500)) {
 						sim->part_change_type(i,x,y,PT_LAVA);
 						parts[i].ctype = PT_BMTL;
 						parts[i].temp = 3500.0f;

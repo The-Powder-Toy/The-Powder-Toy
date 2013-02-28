@@ -59,12 +59,15 @@ int Element_PCLN::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_SPRK && parts[r>>8].life>0 && parts[r>>8].life<4)
+				if ((r&0xFF)==PT_SPRK)
 				{
-					if (parts[r>>8].ctype==PT_PSCN)
-						parts[i].life = 10;
-					else if (parts[r>>8].ctype==PT_NSCN)
-						parts[i].life = 9;
+					if (parts[r>>8].life>0 && parts[r>>8].life<4)
+					{
+						if (parts[r>>8].ctype==PT_PSCN)
+							parts[i].life = 10;
+						else if (parts[r>>8].ctype==PT_NSCN)
+							parts[i].life = 9;
+					}
 				}
 				else if ((r&0xFF)==PT_PCLN)
 				{

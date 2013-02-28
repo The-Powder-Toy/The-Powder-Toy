@@ -61,7 +61,7 @@ int Element_SNOW::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (((r&0xFF)==PT_SALT || (r&0xFF)==PT_SLTW) && 1>(rand()%1000))
+				if (((r&0xFF)==PT_SALT || (r&0xFF)==PT_SLTW) && !(rand()%1000))
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_SLTW);

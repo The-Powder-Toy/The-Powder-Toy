@@ -12,7 +12,7 @@ Element_RIME::Element_RIME()
     Advection = 0.00f;
     AirDrag = 0.00f * CFDS;
     AirLoss = 0.00f;
-    Loss = 1.00f;
+    Loss = 0.00f;
     Collision = 0.00f;
     Gravity = 0.0f;
     Diffusion = 0.00f;
@@ -50,8 +50,6 @@ Element_RIME::Element_RIME()
 int Element_RIME::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
-	parts[i].vx = 0;
-	parts[i].vy = 0;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))

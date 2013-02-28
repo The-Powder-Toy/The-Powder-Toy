@@ -93,75 +93,73 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF) == PT_PSTN) {
+					if ((r&0xFF) == PT_PSTN)
+					{
 						bool movedPiston = false;
+						bool foundEnd = false;
+						int pistonEndX, pistonEndY;
+						int pistonCount = 0;
+						int newSpace = 0;
+						int armCount = 0;
 						directionX = rx;
 						directionY = ry;
-						{
-							bool foundEnd = false;
-							int pistonEndX, pistonEndY;
-							int pistonCount = 0;
-							int newSpace = 0;
-							int armCount = 0;
-							for (nxx = 0, nyy = 0, nxi = directionX, nyi = directionY; ; nyy += nyi, nxx += nxi) {
-								if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)) {
-									break;
-								}
-								r = pmap[y+nyi+nyy][x+nxi+nxx];
-								if((r&0xFF)==PT_PSTN) {
-									if(parts[r>>8].ctype)
-										armCount++;
-									else if (armCount)
-									{
-										pistonEndX = x+nxi+nxx;
-										pistonEndY = y+nyi+nyy;
-										foundEnd = true;
-										break;
-									}
-									else
-										pistonCount++;
-								} else {
+						for (nxx = 0, nyy = 0, nxi = directionX, nyi = directionY; ; nyy += nyi, nxx += nxi) {
+							if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)) {
+								break;
+							}
+							r = pmap[y+nyi+nyy][x+nxi+nxx];
+							if((r&0xFF)==PT_PSTN) {
+								if(parts[r>>8].ctype)
+									armCount++;
+								else if (armCount)
+								{
 									pistonEndX = x+nxi+nxx;
 									pistonEndY = y+nyi+nyy;
 									foundEnd = true;
 									break;
 								}
+								else
+									pistonCount++;
+							} else {
+								pistonEndX = x+nxi+nxx;
+								pistonEndY = y+nyi+nyy;
+								foundEnd = true;
+								break;
 							}
-							if(foundEnd) {
-								if(state == PISTON_EXTEND) {
-									if(armCount+pistonCount > armLimit)
-										pistonCount = armLimit-armCount;
-									if(pistonCount > 0) {
-										newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false);
-										if(newSpace) {
-											//Create new piston section
-											for(int j = 0; j < newSpace; j++) {
-												int nr = sim->create_part(-3, pistonEndX+(nxi*j), pistonEndY+(nyi*j), PT_PSTN);
-												if (nr!=-1) {
-													parts[nr].ctype = 1;
-												}
+						}
+						if(foundEnd) {
+							if(state == PISTON_EXTEND) {
+								if(armCount+pistonCount > armLimit)
+									pistonCount = armLimit-armCount;
+								if(pistonCount > 0) {
+									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false);
+									if(newSpace) {
+										//Create new piston section
+										for(int j = 0; j < newSpace; j++) {
+											int nr = sim->create_part(-3, pistonEndX+(nxi*j), pistonEndY+(nyi*j), PT_PSTN);
+											if (nr!=-1) {
+												parts[nr].ctype = 1;
 											}
-											movedPiston =  true;
 										}
+										movedPiston =  true;
 									}
-								} else if(state == PISTON_RETRACT) {
-									if(pistonCount > armCount)
-										pistonCount = armCount;
-									if(armCount) {
-										//Remove arm section
-										int lastPistonX = pistonEndX - nxi;	//Go back to the very last piston arm particle
-										int lastPistonY = pistonEndY - nyi;
-										for(int j = 0; j < pistonCount; j++) {
-											sim->delete_part(lastPistonX+(nxi*-j), lastPistonY+(nyi*-j), 0);
-										}
-										MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true);
-										//newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true);
-										movedPiston = true;
+								}
+							} else if(state == PISTON_RETRACT) {
+								if(pistonCount > armCount)
+									pistonCount = armCount;
+								if(armCount) {
+									//Remove arm section
+									int lastPistonX = pistonEndX - nxi;	//Go back to the very last piston arm particle
+									int lastPistonY = pistonEndY - nyi;
+									for(int j = 0; j < pistonCount; j++) {
+										sim->delete_part(lastPistonX+(nxi*-j), lastPistonY+(nyi*-j), 0);
 									}
+									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true);
+									//newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true);
+									movedPiston = true;
 								}
 							}
 						}
-
 						if (movedPiston)
 							break;
 					}

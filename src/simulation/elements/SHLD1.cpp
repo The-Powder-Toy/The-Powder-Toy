@@ -59,7 +59,7 @@ int Element_SHLD1::update(UPDATE_FUNC_ARGS)
 					continue;
 				else if ((r&0xFF)==PT_SPRK&&parts[i].life==0)
 				{
-					if (55>rand()%200&&parts[i].life==0)
+					if (11>rand()%40)
 					{
 						sim->part_change_type(i,x,y,PT_SHLD2);
 						parts[i].life = 7;
@@ -74,7 +74,7 @@ int Element_SHLD1::update(UPDATE_FUNC_ARGS)
 							}
 						}
 				}
-				else if ((r&0xFF)==PT_SHLD3&&4>rand()%10)
+				else if ((r&0xFF)==PT_SHLD3&&2>rand()%5)
 				{
 					sim->part_change_type(i,x,y,PT_SHLD2);
 					parts[i].life = 7;
