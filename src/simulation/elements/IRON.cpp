@@ -79,6 +79,7 @@ int Element_IRON::update(UPDATE_FUNC_ARGS)
 					break;
 				}
 			}
+	return 0;
 succ:
 	sim->part_change_type(i,x,y,PT_BMTL);
 	parts[i].tmp=(rand()%10)+20;				
