@@ -2837,11 +2837,12 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		{
 			int drawOn = pmap[y][x]&0xFF;
 			if ((
-				(drawOn == PT_STOR && !(elements[t].Properties&TYPE_SOLID)) ||
+				(drawOn == PT_STOR && !(elements[t].Properties&TYPE_SOLID)) || // Brush on elements
 				drawOn==PT_CLNE ||
 				drawOn==PT_BCLN ||
 				drawOn==PT_CONV ||
 				(drawOn==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN) ||
+				drawOn==PT_ERAY ||
 				(drawOn==PT_PBCN&&t!=PT_PSCN&&t!=PT_NSCN)
 			)&&(
 				t != PT_CLNE && t != PT_PCLN && t != PT_BCLN && t != PT_STKM && t != PT_STKM2 && t != PT_PBCN && t != PT_STOR && t != PT_FIGH && t != PT_CONV)
