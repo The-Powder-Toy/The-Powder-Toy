@@ -55,7 +55,8 @@ int Element_FUSE::update(UPDATE_FUNC_ARGS)
 		if (r>-1)
 			parts[r].life = 50;
 		return 1;
-	} else if (parts[i].life < 40) {
+	}
+	else if (parts[i].life < 40) {
 		parts[i].life--;
 		if (!(rand()%100)) {
 			r = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_PLSM);

@@ -50,7 +50,7 @@ Element_THDR::Element_THDR()
 int Element_THDR::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt;
-	bool kill;
+	bool kill=false;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -64,7 +64,7 @@ int Element_THDR::update(UPDATE_FUNC_ARGS)
 					parts[r>>8].ctype = parts[r>>8].type;
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 					parts[r>>8].life = 4;
-					kill = true;
+					kill=true;
 				}
 				else if (rt!=PT_CLNE&&rt!=PT_THDR&&rt!=PT_SPRK&&rt!=PT_DMND&&rt!=PT_FIRE)
 				{

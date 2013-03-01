@@ -66,12 +66,11 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				rt = r&0xFF;
-				if (rt==PT_GLAS)
+				switch (rt)
 				{
+				case PT_GLAS:
 					for (rrx=-1; rrx<=1; rrx++)
-					{
 						for (rry=-1; rry<=1; rry++)
-						{
 							if (x+rx+rrx>=0 && y+ry+rry>=0 && x+rx+rrx<XRES && y+ry+rry<YRES) {
 								nb = sim->create_part(-1, x+rx+rrx, y+ry+rry, PT_EMBR);
 								if (nb!=-1) {
@@ -82,56 +81,43 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 									parts[nb].vy = rand()%20-10;
 								}
 							}
-						}
-					}
-					//fire_r[y/CELL][x/CELL] += rand()%200;   //D: Doesn't work with OpenGL, also shouldn't be here
-					//fire_g[y/CELL][x/CELL] += rand()%200;
-					//fire_b[y/CELL][x/CELL] += rand()%200;
-					/* possible alternative, but doesn't work well at the moment because FIRE_ADD divides firea by 8, so the glow isn't strong enough
-					create_part(i, x, y, PT_EMBR);
-					parts[i].tmp = 2;
-					parts[i].life = 2;
-					parts[i].ctype = ((rand()%200)<<16) | ((rand()%200)<<8) | (rand()%200);
-					*/
 					sim->kill_part(i);
 					return 1;
-				}
-				if (rt==PT_LCRY)
-				{
+				case PT_LCRY:
 					parts[r>>8].tmp2 = 5+rand()%5;
-				}
-				if (rt==PT_WATR || rt==PT_DSTW || rt==PT_SLTW || rt==PT_CBNW)
-				{
+					break;
+				case PT_WATR:
+				case PT_DSTW:
+				case PT_SLTW:
+				case PT_CBNW:
 					if(!(rand()%3))
 						sim->create_part(r>>8, x+rx, y+ry, PT_O2);
 					else
 						sim->create_part(r>>8, x+rx, y+ry, PT_H2);
 					return 1;
-				}
-				if (rt==PT_NEUT)
-				{
+				case PT_NEUT:
 					sim->part_change_type(r>>8, x+rx, y+ry, PT_H2);
 					parts[r>>8].life = 0;
 					parts[r>>8].ctype = 0;
-				}
-				if (rt==PT_DEUT)
-				{
+					break;
+				case PT_DEUT:
 					if(parts[r>>8].life < 6000)
 						parts[r>>8].life += 1;
 					parts[r>>8].temp = 0;
 					sim->kill_part(i);
 					return 1;
-				}
-				if (rt==PT_EXOT)
-				{
+				case PT_EXOT:
 					parts[r>>8].tmp2 += 5;
 					parts[r>>8].life = 1000;
-				}
-				if ((sim->elements[rt].Properties & PROP_CONDUCTS) && (rt!=PT_NBLE||parts[i].temp<2273.15))
-				{
-					sim->create_part(-1, x+rx, y+ry, PT_SPRK);
-					sim->kill_part(i);
-					return 1;
+					break;
+				default:
+					if ((sim->elements[rt].Properties & PROP_CONDUCTS) && (rt!=PT_NBLE||parts[i].temp<2273.15))
+					{
+						sim->create_part(-1, x+rx, y+ry, PT_SPRK);
+						sim->kill_part(i);
+						return 1;
+					}
+					continue;
 				}
 			}
 	return 0;

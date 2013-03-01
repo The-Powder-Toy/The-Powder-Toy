@@ -55,15 +55,14 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				rt = (r&0xFF);
 				if (!r)
 					continue;
+				rt = (r&0xFF);
 				if (sim->pv[y/CELL][x/CELL] > 8.0f && rt == PT_DESL) // This will not work. DESL turns to fire above 5.0 pressure
 				{
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_WATR);
 					sim->part_change_type(i,x,y,PT_OIL);
 				}
-
 				if (sim->pv[y/CELL][x/CELL] > 45.0f)
 				{
 					if (parts[r>>8].temp > 2273.15)
@@ -73,18 +72,19 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 				{
 					if (rt==PT_FIRE)
 					{
-						parts[r>>8].temp=2473.15;
 						if(parts[r>>8].tmp&0x02)
-							parts[r>>8].temp=3473;
+							parts[r>>8].temp=3473.0f;
+						else
+							parts[r>>8].temp=2473.15f;
 						parts[r>>8].tmp |= 1;
 						sim->create_part(i,x,y,PT_FIRE);
-						parts[i].temp+=(rand()/(RAND_MAX/100));
+						parts[i].temp+=(rand()%100);
 						parts[i].tmp |= 1;
 					}
 					else if ((rt==PT_PLSM && !(parts[r>>8].tmp&4)) || (rt==PT_LAVA && parts[r>>8].ctype != PT_BMTL))
 					{
 						sim->create_part(i,x,y,PT_FIRE);
-						parts[i].temp+=(rand()/(RAND_MAX/100));
+						parts[i].temp+=(rand()%100);
 						parts[i].tmp |= 1;
 					}
 				}
@@ -112,14 +112,12 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 				parts[j].ctype = 0x7C0000;
 				parts[j].temp = temp;
 			}
-
 			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM);
 			if (j>-1)
 			{
 				parts[j].temp = temp;
 				parts[j].tmp |= 4;
 			}
-
 			parts[i].temp = temp+750+rand()%500;
 			sim->pv[y/CELL][x/CELL] += 30;
 		}

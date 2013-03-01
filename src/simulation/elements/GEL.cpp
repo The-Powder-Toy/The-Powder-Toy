@@ -65,66 +65,80 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 					continue;
 				rt = r&0xFF;
 				//Desaturation
-				if ((rt==PT_WATR || rt==PT_DSTW || rt==PT_FRZW) && parts[i].tmp<100 && 500>rand()%absorbChanceDenom)
+				switch (rt)
 				{
-					parts[i].tmp++;
-					sim->kill_part(r>>8);
-				}
-				else if ((rt==PT_PSTE) && parts[i].tmp<100 && 20>rand()%absorbChanceDenom)
-				{
-					parts[i].tmp++;
-					sim->create_part(r>>8, x+rx, y+ry, PT_CLST);
-				}
-				else if ((rt==PT_SLTW) && parts[i].tmp<100 && 50>rand()%absorbChanceDenom)
-				{
-					parts[i].tmp++;
-					if (rand()%4)
+				case PT_WATR:
+				case PT_DSTW:
+				case PT_FRZW:
+					if (parts[i].tmp<100 && 500>rand()%absorbChanceDenom)
+					{
+						parts[i].tmp++;
 						sim->kill_part(r>>8);
-					else
-						sim->part_change_type(r>>8, x+rx, y+ry, PT_SALT);
-				}
-				else if ((rt==PT_CBNW) && parts[i].tmp<100 && 100>rand()%absorbChanceDenom)
-				{
-					parts[i].tmp++;
-					sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
-				}
-
-				else if (rt==PT_SPNG && parts[i].tmp<100 && ((parts[r>>8].life+1)>parts[i].tmp))
-				{
-					parts[r>>8].life--;
-					parts[i].tmp++;
-				}
-				//Concentration diffusion
-				if (rt==PT_GEL && (parts[r>>8].tmp+1)<parts[i].tmp)
-				{
-					parts[r>>8].tmp++;
-					parts[i].tmp--;
+					}
+					break;
+				case PT_PSTE:
+					if (parts[i].tmp<100 && 20>rand()%absorbChanceDenom)
+					{
+						parts[i].tmp++;
+						sim->create_part(r>>8, x+rx, y+ry, PT_CLST);
+					}
+					break;
+				case PT_SLTW:
+					if (parts[i].tmp<100 && 50>rand()%absorbChanceDenom)
+					{
+						parts[i].tmp++;
+						if (rand()%4)
+							sim->kill_part(r>>8);
+						else
+							sim->part_change_type(r>>8, x+rx, y+ry, PT_SALT);
+					}
+					break;
+				case PT_CBNW:
+					if (parts[i].tmp<100 && 100>rand()%absorbChanceDenom)
+					{
+						parts[i].tmp++;
+						sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
+					}
+					break;
+				case PT_SPNG:
+					if (parts[i].tmp<100 && ((parts[r>>8].life+1)>parts[i].tmp))
+					{
+						parts[r>>8].life--;
+						parts[i].tmp++;
+					}
+					else if ((parts[r>>8].life+1)<parts[i].tmp)//Concentration diffusion
+					{
+						parts[r>>8].life++;
+						parts[i].tmp--;
+					}
+					break;
+				case PT_GEL:
+					if ((parts[r>>8].tmp+1)<parts[i].tmp)
+					{
+						parts[r>>8].tmp++;
+						parts[i].tmp--;
+					}
 					gel = true;
+					break;
+				default:
+					break;
 				}
-				else if (rt==PT_SPNG && (parts[r>>8].life+1)<parts[i].tmp)
-				{
-					parts[r>>8].life++;
-					parts[i].tmp--;
-				}
-
 				float dx, dy;
 				dx = parts[i].x - parts[r>>8].x;
 				dy = parts[i].y - parts[r>>8].y;
 
 				//Stickness
-				if ((dx*dx + dy*dy)>1.5 && (gel || !sim->elements[r&0xFF].Falldown || (fabs((float)rx)<2 && fabs((float)ry)<2)))
+				if ((dx*dx + dy*dy)>1.5 && (gel || !sim->elements[rt].Falldown || (fabs((float)rx)<2 && fabs((float)ry)<2)))
 				{
 					float per, nd;
 					nd = dx*dx + dy*dy - 0.5;
-
 					per = 5*(1 - parts[i].tmp/100)*(nd/(dx*dx + dy*dy + nd) - 0.5);
-					if (sim->elements[r&0xFF].State==ST_LIQUID)
+					if (sim->elements[rt].State==ST_LIQUID)
 						per *= 0.1;
-
 					dx *= per; dy *= per;
 					parts[i].vx += dx;
 					parts[i].vy += dy;
-					if ((sim->elements[r&0xFF].Properties&TYPE_PART) || rt==PT_GOO)
+					if ((sim->elements[rt].Properties&TYPE_PART) || rt==PT_GOO)
 					{
 						parts[r>>8].vx -= dx;
 						parts[r>>8].vy -= dy;

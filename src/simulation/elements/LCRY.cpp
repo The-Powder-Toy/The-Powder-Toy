@@ -53,13 +53,7 @@ int Element_LCRY::update(UPDATE_FUNC_ARGS)
 	int r, rx, ry, check, setto;
 	switch (parts[i].tmp)
 	{
-	case 0:
-		check=3;
-		setto=1;
-		break;
 	case 1:
-		check=3;
-		setto=1;
 		if(parts[i].life<=0)
 			parts[i].tmp = 0;
 		else
@@ -69,14 +63,11 @@ int Element_LCRY::update(UPDATE_FUNC_ARGS)
 				parts[i].life = 0;
 			parts[i].tmp2 = parts[i].life;
 		}
-		break;
-	case 3:
-		check=0;
-		setto=2;
+	case 0:
+		check=3;
+		setto=1;
 		break;
 	case 2:
-		check=0;
-		setto=2;
 		if(parts[i].life>=10)
 			parts[i].tmp = 3;
 		else
@@ -86,8 +77,10 @@ int Element_LCRY::update(UPDATE_FUNC_ARGS)
 				parts[i].life = 10;
 			parts[i].tmp2 = parts[i].life;
 		}
+	case 3:
+		check=0;
+		setto=2;
 		break;
-
 	default:
 		return 0;
 	}

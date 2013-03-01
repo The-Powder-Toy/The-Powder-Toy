@@ -170,8 +170,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					continue;
 				rt = r&0xFF;
 				conduct_sprk = 1;
-
-
+// ct = spark from material, rt = spark to material. Make conduct_sprk = 0 if conduction not allowed
 				pavg = sim->parts_avg(r>>8, i,PT_INSL);
 				if ((rt==PT_SWCH||(rt==PT_SPRK&&parts[r>>8].ctype==PT_SWCH)) && pavg!=PT_INSL && parts[i].life<4) // make sparked SWCH turn off correctly
 				{
@@ -200,80 +199,75 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					if (ct == PT_NSCN || ct == PT_PSCN || ct == PT_INST)
 						Element_PPIP::flood_trigger(sim, x+rx, y+ry, ct);
 				}
-
-				// ct = spark from material, rt = spark to material. Make conduct_sprk = 0 if conduction not allowed
-
-				if (pavg == PT_INSL) conduct_sprk = 0;
-				if (!((sim->elements[rt].Properties&PROP_CONDUCTS)||rt==PT_INST||rt==PT_QRTZ)) conduct_sprk = 0;
-				if (abs(rx)+abs(ry)>=4 &&ct!=PT_SWCH&&rt!=PT_SWCH)
-					conduct_sprk = 0;
-
-
 				if (ct==PT_METL && (rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR||(rt==PT_SPRK&&(parts[r>>8].ctype==PT_NTCT||parts[r>>8].ctype==PT_PTCT))) && pavg!=PT_INSL && parts[i].life<4)
 				{
 					parts[r>>8].temp = 473.0f;
 					if (rt==PT_NTCT||rt==PT_PTCT)
-						conduct_sprk = 0;
+						continue;
 				}
+				if (pavg == PT_INSL) continue;
+				if (!((sim->elements[rt].Properties&PROP_CONDUCTS)||rt==PT_INST||rt==PT_QRTZ)) continue;
+				if (abs(rx)+abs(ry)>=4 &&ct!=PT_SWCH&&rt!=PT_SWCH)
+					continue;
+				//if (rt==ct && rt!=PT_INST) goto conduct;
 				if (ct==PT_NTCT && !(rt==PT_PSCN || rt==PT_NTCT || (rt==PT_NSCN&&parts[i].temp>373.0f)))
-					conduct_sprk = 0;
+					continue;
 				else if (ct==PT_PTCT && !(rt==PT_PSCN || rt==PT_PTCT || (rt==PT_NSCN&&parts[i].temp<373.0f)))
-					conduct_sprk = 0;
+					continue;
 				else if (ct==PT_INWR && !(rt==PT_NSCN || rt==PT_INWR || rt==PT_PSCN))
-					conduct_sprk = 0;
+					continue;
 				else if (ct==PT_NSCN && rt==PT_PSCN)
-					conduct_sprk = 0;
+					continue;
 				else if (ct==PT_ETRD && !(rt==PT_METL||rt==PT_ETRD||rt==PT_BMTL||rt==PT_BRMT||rt==PT_LRBD||rt==PT_RBDM||rt==PT_PSCN||rt==PT_NSCN))
-					conduct_sprk = 0;
-				else if (ct==PT_INST && rt!=PT_NSCN) conduct_sprk = 0;
+					continue;
+				else if (ct==PT_INST && rt!=PT_NSCN) continue;
 				else if (ct==PT_SWCH && (rt==PT_PSCN||rt==PT_NSCN||rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR))
-					conduct_sprk = 0;
+					continue;
 				else if (rt==PT_QRTZ && !((ct==PT_NSCN||ct==PT_METL||ct==PT_PSCN||ct==PT_QRTZ) && (parts[r>>8].temp<173.15||sim->pv[(y+ry)/CELL][(x+rx)/CELL]>8)))
-					conduct_sprk = 0;
+					continue;
 				else if (rt==PT_NTCT && !(ct==PT_NSCN || ct==PT_NTCT || (ct==PT_PSCN&&parts[r>>8].temp>373.0f)))
-					conduct_sprk = 0;
+					continue;
 				else if (rt==PT_PTCT && !(ct==PT_NSCN || ct==PT_PTCT || (ct==PT_PSCN&&parts[r>>8].temp<373.0f)))
-					conduct_sprk = 0;
+					continue;
 				else if (rt==PT_INWR && !(ct==PT_NSCN || ct==PT_INWR || ct==PT_PSCN))
-					conduct_sprk = 0;
+					continue;
 				else if (rt==PT_INST && ct!=PT_PSCN)
-					conduct_sprk = 0;
+					continue;
 				else if (rt==PT_NBLE && parts[r>>8].tmp == 1)
-					conduct_sprk = 0;
-
-				if (conduct_sprk) {
-					if (rt==PT_WATR||rt==PT_SLTW) {
-						if (parts[r>>8].life==0 && parts[i].life<3)
-						{
-							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
-							if (rt==PT_WATR) parts[r>>8].life = 6;
-							else parts[r>>8].life = 5;
-							parts[r>>8].ctype = rt;
-						}
-					}
-					else if (rt==PT_INST) {
-						if (parts[r>>8].life==0 && parts[i].life<4)
-						{
-							sim->FloodINST(x+rx,y+ry,PT_SPRK,PT_INST);//spark the wire
-						}
-					}
-					else if (parts[r>>8].life==0 && parts[i].life<4) {
-						parts[r>>8].life = 4;
-						parts[r>>8].ctype = rt;
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
-						if (parts[r>>8].temp+10.0f<673.0f&&!sim->legacy_enable&&(rt==PT_METL||rt==PT_BMTL||rt==PT_BRMT||rt==PT_PSCN||rt==PT_NSCN||rt==PT_ETRD||rt==PT_NBLE||rt==PT_IRON))
-							parts[r>>8].temp = parts[r>>8].temp+10.0f;
-					}
-					else if (ct==PT_ETRD && parts[i].life==5)
+					continue;
+			conduct:
+				if (rt==PT_WATR||rt==PT_SLTW) {
+					if (parts[r>>8].life==0 && parts[i].life<3)
 					{
-						sim->part_change_type(i,x,y,ct);
-						parts[i].ctype = PT_NONE;
-						parts[i].life = 20;
-						parts[r>>8].life = 4;
-						parts[r>>8].ctype = rt;
 						sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+						if (rt==PT_WATR) parts[r>>8].life = 6;
+						else parts[r>>8].life = 5;
+						parts[r>>8].ctype = rt;
 					}
 				}
+				else if (rt==PT_INST) {
+					if (parts[r>>8].life==0 && parts[i].life<4)
+					{
+						sim->FloodINST(x+rx,y+ry,PT_SPRK,PT_INST);//spark the wire
+					}
+				}
+				else if (parts[r>>8].life==0 && parts[i].life<4) {
+					parts[r>>8].life = 4;
+					parts[r>>8].ctype = rt;
+					sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+					if (parts[r>>8].temp+10.0f<673.0f&&!sim->legacy_enable&&(rt==PT_METL||rt==PT_BMTL||rt==PT_BRMT||rt==PT_PSCN||rt==PT_NSCN||rt==PT_ETRD||rt==PT_NBLE||rt==PT_IRON))
+						parts[r>>8].temp = parts[r>>8].temp+10.0f;
+				}
+				else if (ct==PT_ETRD && parts[i].life==5)
+				{
+					sim->part_change_type(i,x,y,ct);
+					parts[i].ctype = PT_NONE;
+					parts[i].life = 20;
+					parts[r>>8].life = 4;
+					parts[r>>8].ctype = rt;
+					sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+				}
+				
 			}
 	return 0;
 }

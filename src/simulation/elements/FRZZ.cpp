@@ -64,7 +64,6 @@ int Element_FRZZ::update(UPDATE_FUNC_ARGS)
 					sim->kill_part(i);
 					return 1;
 				}
-
 			}
 	return 0;
 }

@@ -63,8 +63,11 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS) {
 						parts[i].tmp2 += 100;
 					}
 				}
-				else if (rt == PT_EXOT && parts[r>>8].life == 1500 && !(rand()%1000))
-					parts[i].life = 1500;
+				else if (rt == PT_EXOT)
+				{
+					if (parts[r>>8].life == 1500 && !(rand()%1000))
+						parts[i].life = 1500;
+				}
 				else if (rt == PT_LAVA)
 				{
 					if (parts[r>>8].ctype == PT_TTAN && !(rand()%10))

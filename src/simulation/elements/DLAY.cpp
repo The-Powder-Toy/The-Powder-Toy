@@ -68,17 +68,23 @@ int Element_DLAY::update(UPDATE_FUNC_ARGS)
 				}
 				else if ((r&0xFF)==PT_DLAY)
 				{
-					if(!parts[i].life && parts[r>>8].life)
+					if (!parts[i].life)
 					{
-						parts[i].life = parts[r>>8].life;
-						if((r>>8)>i) //If the other particle hasn't been life updated
-							parts[i].life--;
+						if (parts[r>>8].life)
+						{
+							parts[i].life = parts[r>>8].life;
+							if((r>>8)>i) //If the other particle hasn't been life updated
+								parts[i].life--;
+						}
 					}
-					else if(parts[i].life && !parts[r>>8].life)
+					else
 					{
-						parts[r>>8].life = parts[i].life;
-						if((r>>8)>i) //If the other particle hasn't been life updated
-							parts[r>>8].life++;
+						if (!parts[r>>8].life)
+						{
+							parts[r>>8].life = parts[i].life;
+							if((r>>8)>i) //If the other particle hasn't been life updated
+								parts[r>>8].life++;
+						}
 					}
 				}
 				else if((r&0xFF)==PT_NSCN && oldl==1)
