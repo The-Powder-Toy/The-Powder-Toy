@@ -59,7 +59,7 @@ int Element_ERAY::update(UPDATE_FUNC_ARGS)
 					continue;
 				// When sparked...
 				if ((r&0xFF)==PT_SPRK && parts[r>>8].life==3) {
-					
+					// this is too simple, scrapscrap
 					for (docontinue = 1, nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1; docontinue; nyy+=nyi, nxx+=nxi) {
 						if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)) {
 							break;
