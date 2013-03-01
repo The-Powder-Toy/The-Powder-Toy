@@ -43,7 +43,7 @@ Here are all the various edit modes:
 	  DCEL => tmp2
 	  PSCN => vx
 	  NSCN => vy
-	  CONV => ctype
+	  CONV => type
 	  NONE => destroys the particle you fired at.
 
 Edit mode #1: Deco colours
