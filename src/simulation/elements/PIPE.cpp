@@ -453,7 +453,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 					pushParticle(sim, r>>8,count,original);
 				}
 				else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
-		        {
+				{
 					int nnx;
 					for (nnx=0; nnx<80; nnx++)
 						if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
@@ -462,7 +462,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 							count++;
 							break;
 						}
-		        }
+				}
 			}
 		}
 	}
@@ -479,7 +479,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 			pushParticle(sim, r>>8,count,original);
 		}
 		else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
-	    {
+		{
 			int nnx;
 			for (nnx=0; nnx<80; nnx++)
 				if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
@@ -488,9 +488,9 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 					count++;
 					break;
 				}
-	    }
-	    else if ((r&0xFF) == PT_NONE) //Move particles out of pipe automatically, much faster at ends
-	    {
+		}
+		else if ((r&0xFF) == PT_NONE) //Move particles out of pipe automatically, much faster at ends
+		{
 			rx = pos_1_rx[coords];
 			ry = pos_1_ry[coords];
 			np = sim->create_part(-1,x+rx,y+ry,sim->parts[i].tmp&0xFF);
@@ -498,7 +498,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 			{
 				transfer_pipe_to_part(sim->parts+i, sim->parts+np);
 			}
-	    }
+		}
 		
 	}
 	return;

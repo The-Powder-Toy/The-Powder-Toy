@@ -210,10 +210,8 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 					if ((r&0xFF) == PT_OIL)
 					{
 						float ax, ay;
-						parts[i].vy = (parts[i].vy-0.1f)*0.5f;
-						parts[i].vx *= 0.5f;
-						ax = (parts[i].vx + parts[r>>8].vx)/2;
-						ay = (parts[i].vy + parts[r>>8].vy)/2;
+						ax = (parts[i].vx*0.5f + parts[r>>8].vx)/2;
+						ay = ((parts[i].vy-0.1f)*0.5f + parts[r>>8].vy)/2;
 						parts[i].vx = parts[r>>8].vx = ax;
 						parts[i].vy = parts[r>>8].vy = ay;
 					}

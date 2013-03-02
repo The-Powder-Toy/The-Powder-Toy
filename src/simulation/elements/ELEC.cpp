@@ -50,13 +50,8 @@ Element_ELEC::Element_ELEC()
 int Element_ELEC::update(UPDATE_FUNC_ARGS)
  {
 	int r, rt, rx, ry, nb, rrx, rry;
-	float rr, rrr;
 	parts[i].pavg[0] = x;
 	parts[i].pavg[1] = y;
-	if(pmap[y][x]==PT_GLOW)//move into movement code
-	{
-		sim->part_change_type(i, x, y, PT_PHOT);
-	}
 	for (rx=-2; rx<=2; rx++)
 		for (ry=-2; ry<=2; ry++)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES) {
@@ -110,6 +105,12 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 					parts[r>>8].tmp2 += 5;
 					parts[r>>8].life = 1000;
 					break;
+				case PT_GLOW:
+					if (!rx && !ry)//if on GLOW
+						sim->part_change_type(i, x, y, PT_PHOT);
+					break;
+				case PT_NONE: //seems to speed up ELEC even if it isn't used
+					break;
 				default:
 					if ((sim->elements[rt].Properties & PROP_CONDUCTS) && (rt!=PT_NBLE||parts[i].temp<2273.15))
 					{
@@ -117,7 +118,7 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 						sim->kill_part(i);
 						return 1;
 					}
-					continue;
+					break;
 				}
 			}
 	return 0;

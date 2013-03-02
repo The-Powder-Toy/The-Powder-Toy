@@ -163,6 +163,9 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 				case PT_EXOT:
 					if (!(rand()%20))
 						parts[r>>8].life = 1500;
+					break;
+				default:
+					break;
 				}
 			}
 	return 0;

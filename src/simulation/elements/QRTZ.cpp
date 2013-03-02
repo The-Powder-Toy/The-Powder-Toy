@@ -48,7 +48,7 @@ Element_QRTZ::Element_QRTZ()
 
 //#TPT-Directive ElementHeader Element_QRTZ static int update(UPDATE_FUNC_ARGS)
 int Element_QRTZ::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, tmp, trade, rx, ry, np;
 	parts[i].pavg[0] = parts[i].pavg[1];
 	parts[i].pavg[1] = sim->pv[y/CELL][x/CELL];
@@ -71,51 +71,47 @@ int Element_QRTZ::update(UPDATE_FUNC_ARGS)
 						parts[i].ctype ++;
 					}
 				}
-	// grow if absorbed SLTW
+	// grow and diffuse
 	if (parts[i].ctype>0)
 	{
-		for ( trade = 0; trade<5; trade ++)
-		{
-			rx = rand()%3-1;
-			ry = rand()%3-1;
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if (!r && parts[i].ctype!=0)
-				{
-					np = sim->create_part(-1,x+rx,y+ry,PT_QRTZ);
-					if (np>-1)
-					{
-						parts[np].tmp = parts[i].tmp;
-						parts[i].ctype--;
-						if (rand()%2)
-						{
-							parts[np].ctype=-1;//dead qrtz
-						}
-						else if (!parts[i].ctype && !(rand()%15))
-						{
-							parts[i].ctype=-1;
-						}
-
-						break;
-					}
-				}
-			}
-		}
-	}
-	// diffuse absorbed SLTW
-	if (parts[i].ctype>0)
-	{
+		bool stopgrow=false;
+		int rnd, sry, srx;
 		for ( trade = 0; trade<9; trade ++)
 		{
-			rx = rand()%5-2;
-			ry = rand()%5-2;
+			rnd = rand()%0x3FF;
+			rx = (rnd%5)-2;
+			srx = (rnd%3)-1;
+			rnd >>= 3;
+			ry = (rnd%5)-2;
+			sry = (rnd%3)-1;
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
+				if (!stopgrow)//try to grow
+				{
+					if (!pmap[y+sry][x+srx] && parts[i].ctype!=0)
+					{
+						np = sim->create_part(-1,x+srx,y+sry,PT_QRTZ);
+						if (np>-1)
+						{
+							parts[np].tmp = parts[i].tmp;
+							parts[i].ctype--;
+							if (rand()%2)
+							{
+								parts[np].ctype=-1;//dead qrtz
+							}
+							else if (!parts[i].ctype && !(rand()%15))
+							{
+								parts[i].ctype=-1;
+							}
+							stopgrow=true;
+						}
+					}
+				}
+				//diffusion
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_QRTZ && (parts[i].ctype>parts[r>>8].ctype) && parts[r>>8].ctype>=0 )//diffusion
+				else if ((r&0xFF)==PT_QRTZ && (parts[i].ctype>parts[r>>8].ctype) && parts[r>>8].ctype>=0 )
 				{
 					tmp = parts[i].ctype - parts[r>>8].ctype;
 					if (tmp ==1)

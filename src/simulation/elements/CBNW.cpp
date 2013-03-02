@@ -104,13 +104,16 @@ int Element_CBNW::update(UPDATE_FUNC_ARGS)
 				}
 				if ((r&0xFF)==PT_CBNW)
 				{
-					if(!parts[i].tmp && parts[r>>8].tmp)
+					if(!parts[i].tmp)
 					{
-						parts[i].tmp = parts[r>>8].tmp;
-						if((r>>8)>i) //If the other particle hasn't been life updated
-							parts[i].tmp--;
+						if (parts[r>>8].tmp)
+						{
+							parts[i].tmp = parts[r>>8].tmp;
+							if((r>>8)>i) //If the other particle hasn't been life updated
+								parts[i].tmp--;
+						}
 					}
-					else if(parts[i].tmp && !parts[r>>8].tmp)
+					else if(!parts[r>>8].tmp)
 					{
 						parts[r>>8].tmp = parts[i].tmp;
 						if((r>>8)>i) //If the other particle hasn't been life updated

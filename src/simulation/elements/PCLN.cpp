@@ -48,8 +48,8 @@ Element_PCLN::Element_PCLN()
 
 //#TPT-Directive ElementHeader Element_PCLN static int update(UPDATE_FUNC_ARGS)
 int Element_PCLN::update(UPDATE_FUNC_ARGS)
- {
-	 int r, rx, ry, rt;
+{
+	int r, rx, ry, rt;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
 	for (rx=-2; rx<3; rx++)

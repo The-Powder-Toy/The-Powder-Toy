@@ -107,42 +107,43 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 							parts[r>>8].life = 10;
 					}
 				}
-	}
-	if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && sim->elements[parts[i].ctype].Enabled && parts[i].life==10)
-	{
-		if (parts[i].ctype==PT_PHOT) {//create photons a different way
-			for (rx=-1; rx<2; rx++)
-				for (ry = -1; ry < 2; ry++)
-					if (rx || ry)
-					{
-						int r = sim->create_part(-1, x + rx, y + ry,parts[i].ctype);
-						if (r != -1)
+		if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && sim->elements[parts[i].ctype].Enabled)
+		{
+			if (parts[i].ctype==PT_PHOT) {//create photons a different way
+				for (rx=-1; rx<2; rx++)
+					for (ry = -1; ry < 2; ry++)
+						if (rx || ry)
 						{
-							parts[r].vx = rx * 3;
-							parts[r].vy = ry * 3;
-							if (r>i)
+							int r = sim->create_part(-1, x + rx, y + ry,parts[i].ctype);
+							if (r != -1)
 							{
-								// Make sure movement doesn't happen until next frame, to avoid gaps in the beams of photons produced
-								parts[r].flags |= FLAG_SKIPMOVE;
+								parts[r].vx = rx * 3;
+								parts[r].vy = ry * 3;
+								if (r>i)
+								{
+									// Make sure movement doesn't happen until next frame, to avoid gaps in the beams of photons produced
+									parts[r].flags |= FLAG_SKIPMOVE;
+								}
 							}
 						}
-					}
-		}
-		else if (parts[i].ctype==PT_LIFE)//create life a different way
-			for (rx=-1; rx<2; rx++)
-				for (ry=-1; ry<2; ry++)
-					sim->create_part(-1, x+rx, y+ry, parts[i].ctype|(parts[i].tmp<<8));
+			}
+			else if (parts[i].ctype==PT_LIFE)//create life a different way
+				for (rx=-1; rx<2; rx++)
+					for (ry=-1; ry<2; ry++)
+						sim->create_part(-1, x+rx, y+ry, parts[i].ctype|(parts[i].tmp<<8));
 
-		else if (parts[i].ctype!=PT_LIGH || !(rand()%30))
-		{
-			int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
-			if (np>-1)
+			else if (parts[i].ctype!=PT_LIGH || !(rand()%30))
 			{
-				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
-					parts[np].ctype = parts[i].tmp;
+				int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+				if (np>-1)
+				{
+					if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
+						parts[np].ctype = parts[i].tmp;
+				}
 			}
 		}
 	}
+	
 	return 0;
 }
 
