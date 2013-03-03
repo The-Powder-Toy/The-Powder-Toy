@@ -31,7 +31,7 @@ Element_GAS::Element_GAS()
     Description = "Gas. Diffuses. Flammable. Liquefies under pressure.";
     
     State = ST_GAS;
-    Properties = TYPE_GAS;
+    Properties = TYPE_GAS | PROP_NEUTPENETRATE;
     
     LowPressure = IPL;
     LowPressureTransition = NT;

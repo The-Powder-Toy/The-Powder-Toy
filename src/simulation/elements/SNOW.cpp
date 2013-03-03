@@ -31,7 +31,7 @@ Element_SNOW::Element_SNOW()
     Description = "Light particles.";
     
     State = ST_SOLID;
-    Properties = TYPE_PART|PROP_LIFE_DEC;
+    Properties = TYPE_PART|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
     
     LowPressure = IPL;
     LowPressureTransition = NT;

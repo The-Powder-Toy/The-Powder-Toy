@@ -134,6 +134,7 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 						sim->create_part(r>>8, x+rx, y+ry, PT_WOOD);
 					break;
 				case PT_DESL:
+				case PT_OIL:
 					if (3>(rand()%200))
 						sim->part_change_type(r>>8,x+rx,y+ry,PT_GAS);
 					break;
