@@ -50,15 +50,7 @@ Element_VIBR::Element_VIBR()
 int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
 	int trade, transfer;
-	if (parts[i].ctype == 1) //leaving in, just because
-	{
-		if (sim->pv[y/CELL][x/CELL] > -2.5 || parts[i].tmp)
-		{
-			parts[i].ctype = 0;
-			sim->part_change_type(i, x, y, PT_VIBR);
-		}
-	}
-	else if (!parts[i].life) //if not exploding
+	if (!parts[i].life) //if not exploding
 	{
 		//Heat absorption code
 		if (parts[i].temp > 274.65f)
@@ -158,12 +150,12 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 					sim->part_change_type(i,x,y,PT_BVBR);
 					sim->pv[y/CELL][x/CELL] -= 1;
 				}
-				else if (parts[i].life && ((r&0xFF)==PT_VIBR  || (r&0xFF)==PT_BVBR) && !parts[r>>8].life)
+				else if (((r&0xFF)==PT_VIBR  || (r&0xFF)==PT_BVBR) && parts[i].life && !parts[r>>8].life)
 				{
 					parts[r>>8].tmp += 10;
 				}
 				//Absorbs energy particles
-				if ((sim->elements[r&0xFF].Properties & TYPE_ENERGY) && !parts[i].life)
+				else if ((sim->elements[r&0xFF].Properties & TYPE_ENERGY) && !parts[i].life)
 				{
 					parts[i].tmp += 20;
 					sim->kill_part(r>>8);

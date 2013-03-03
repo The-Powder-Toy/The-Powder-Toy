@@ -101,6 +101,7 @@ SearchController::~SearchController()
 	}
 	delete searchModel;
 	delete searchView;
+	delete callback;
 }
 
 void SearchController::DoSearch(std::string query, bool now)

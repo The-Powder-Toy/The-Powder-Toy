@@ -1,10 +1,3 @@
-/*
- * PreviewView.cpp
- *
- *  Created on: Jan 21, 2012
- *      Author: Simon
- */
-
 #include <sstream>
 #include <vector>
 #include <cmath>
@@ -274,7 +267,7 @@ void PreviewView::OnDraw()
 	g->drawrect(Position.X, Position.Y, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 100);
 	g->draw_line(Position.X+XRES/2, Position.Y+1, Position.X+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
 
-	if(!(!votesUp && !votesDown))
+	if(votesUp || votesDown)
 	{
 		float ryf;
 		int nyu, nyd;
@@ -411,7 +404,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 				float factorY = ((float)YRES/2)/((float)savePreview->Size.Y);
 				float scaleFactor = factorY < factorX ? factorY : factorX;
 				savePreview->Data = Graphics::resample_img(oldData, savePreview->Size.X, savePreview->Size.Y, savePreview->Size.X*scaleFactor, savePreview->Size.Y*scaleFactor);
-				delete oldData;
+				delete[] oldData;
 				savePreview->Size.X *= scaleFactor;
 				savePreview->Size.Y *= scaleFactor;
 			}
@@ -453,14 +446,14 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	if(addCommentBox)
 	{
 		RemoveComponent(addCommentBox);
-		addCommentBox = NULL;
 		delete addCommentBox;
+		addCommentBox = NULL;
 	}
 	if(submitCommentButton)
 	{
 		RemoveComponent(submitCommentButton);
-		submitCommentButton = NULL;
 		delete submitCommentButton;
+		submitCommentButton = NULL;
 	}
 	if(sender->GetCommentBoxEnabled())
 	{
@@ -561,6 +554,19 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	}
 }*/
 
-PreviewView::~PreviewView() {
+PreviewView::~PreviewView()
+{
+	if(addCommentBox)
+	{
+		RemoveComponent(addCommentBox);
+		delete addCommentBox;
+	}
+	if(submitCommentButton)
+	{
+		RemoveComponent(submitCommentButton);
+		delete submitCommentButton;
+	}
+	if(savePreview)
+		delete savePreview;
 }
 

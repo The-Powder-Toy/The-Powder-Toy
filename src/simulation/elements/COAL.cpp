@@ -72,15 +72,15 @@ int Element_COAL::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM) && 1>(rand()%500))
+				if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM))
 				{
-					if (parts[i].life>100) {
+					if (parts[i].life>100 && !(rand()%500)) {
 						parts[i].life = 99;
 					}
 				}
-				if ((r&0xFF)==PT_LAVA && 1>(rand()%500))
+				else if ((r&0xFF)==PT_LAVA)
 				{
-					if (parts[r>>8].ctype == PT_IRON) {
+					if (parts[r>>8].ctype == PT_IRON && !(rand()%500)) {
 						parts[r>>8].ctype = PT_METL;
 						sim->kill_part(i);
 						return 1;

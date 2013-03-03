@@ -118,28 +118,15 @@ std::vector<Element> GetElements()
 	elementContent += """return elements;
 }
 	""";
-
-<<<<<<< HEAD
 	f = open("generated/ElementClasses.h", "w")
-=======
-	if not os.path.exists(outputH.split("/")[1]):
-		os.makedirs(outputH.split("/")[1])
-	f = open(outputH, "w")
->>>>>>> upstream/master
 	f.write(elementHeader)
 	f.close()
 
 	f = open("generated/ElementClasses.cpp", "w")
 	f.write(elementContent)
 	f.close()
-
-<<<<<<< HEAD
 def generateTools():
 	toolClasses = dict()
-=======
-def generateTools(toolFiles, outputCpp, outputH):
-	toolClasses = {}
->>>>>>> upstream/master
 	
 	toolHeader = """#ifndef TOOLCLASSES_H
 		#define TOOLCLASSES_H
@@ -204,15 +191,7 @@ def generateTools(toolFiles, outputCpp, outputH):
 	toolContent += """return tools;
 		}
 		""";
-<<<<<<< HEAD
-	
 	f = open("generated/ToolClasses.h", "w")
-=======
-
-	if not os.path.exists(outputH.split("/")[1]):
-		os.makedirs(outputH.split("/")[1])
-	f = open(outputH, "w")
->>>>>>> upstream/master
 	f.write(toolHeader)
 	f.close()
 	

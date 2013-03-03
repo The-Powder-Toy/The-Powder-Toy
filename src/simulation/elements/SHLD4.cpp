@@ -57,15 +57,14 @@ int Element_SHLD4::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 				{
-					if (1>rand()%5500)
+					if (!(rand()%5500))
 					{
 						np = sim->create_part(-1,x+rx,y+ry,PT_SHLD1);
 						if (np<0) continue;
 						parts[np].life=7;
 						sim->part_change_type(i,x,y,PT_SHLD2);
 					}
-					else
-						continue;
+					continue;
 
 				}
 				if ((r&0xFF)==PT_SHLD2 && parts[i].life>3)

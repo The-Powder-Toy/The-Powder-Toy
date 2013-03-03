@@ -366,7 +366,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 		signs[i].x = nx;
 		signs[i].y = ny;
 	}
-	for (i=0; i<NPART; i++)
+	for (i=0; i<particlesCount; i++)
 	{
 		if (!particles[i].type) continue;
 		pos = v2d_new(particles[i].x, particles[i].y);
@@ -410,13 +410,13 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	blockWidth = newBlockWidth;
 	blockHeight = newBlockHeight;
 
-	delete blockMap;
-	delete fanVelX;
-	delete fanVelY;
+	delete[] blockMap;
+	delete[] fanVelX;
+	delete[] fanVelY;
 
-	delete blockMapPtr;
-	delete fanVelXPtr;
-	delete fanVelYPtr;
+	delete[] blockMapPtr;
+	delete[] fanVelXPtr;
+	delete[] fanVelYPtr;
 
 	blockMap = blockMapNew;
 	fanVelX = fanVelXNew;
@@ -740,6 +740,9 @@ void GameSave::readOPS(char * data, int dataLength)
 					fanVelX[blockY+y][blockX+x] = (fanData[j++]-127.0f)/64.0f;
 					fanVelY[blockY+y][blockX+x] = (fanData[j++]-127.0f)/64.0f;
 				}
+
+				if (blockMap[y][x] < 0 || blockMap[y][x] >= UI_WALLCOUNT)
+					blockMap[y][x] = 0;
 			}
 		}
 	}
@@ -941,6 +944,9 @@ void GameSave::readOPS(char * data, int dataLength)
 							particles[newIndex].ctype = (((unsigned char)(firw_data[caddress]))<<16) | (((unsigned char)(firw_data[caddress+1]))<<8) | ((unsigned char)(firw_data[caddress+2]));
 						}
 						break;
+					case PT_PSTN:
+						if (savedVersion < 87 && particles[newIndex].ctype)
+							particles[newIndex].life = 1;
 					}
 					newIndex++;
 				}
@@ -1195,6 +1201,9 @@ void GameSave::readPSv(char * data, int dataLength)
 					blockMap[y][x]=WL_GRAV;
 				else if (blockMap[y][x]==O_WL_ALLOWENERGY)
 					blockMap[y][x]=WL_ALLOWENERGY;
+
+				if (blockMap[y][x] < 0 || blockMap[y][x] >= UI_WALLCOUNT)
+					blockMap[y][x] = 0;
 			}
 
 			p++;
@@ -2058,6 +2067,16 @@ fin:
 		free(partsSaveIndex);
 	if (soapLinkData)
 		free(soapLinkData);
+	if (partsPosData)
+		free(partsPosData);
+	if (partsPosFirstMap)
+		free(partsPosFirstMap);
+	if (partsPosLastMap)
+		free(partsPosLastMap);
+	if (partsPosCount)
+		free(partsPosCount);
+	if (partsPosLink)
+		free(partsPosLink);
 
 	return (char*)outputData;
 }

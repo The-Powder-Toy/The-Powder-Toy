@@ -57,7 +57,7 @@ int Element_YEST::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_DYST && 1>(rand()%30) && !sim->legacy_enable)
+				if ((r&0xFF)==PT_DYST && !(rand()%30) && !sim->legacy_enable)
 				{
 					sim->part_change_type(i,x,y,PT_DYST);
 				}

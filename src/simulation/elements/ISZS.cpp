@@ -50,7 +50,7 @@ Element_ISZS::Element_ISZS()
 int Element_ISZS::update(UPDATE_FUNC_ARGS)
  { // for both ISZS and ISOZ
 	float rr, rrr;
-	if (1>rand()%200 && ((int)(-4.0f*(sim->pv[y/CELL][x/CELL])))>(rand()%1000))
+	if (!(rand()%200) && ((int)(-4.0f*(sim->pv[y/CELL][x/CELL])))>(rand()%1000))
 	{
 		sim->create_part(i, x, y, PT_PHOT);
 		rr = (rand()%228+128)/127.0f;

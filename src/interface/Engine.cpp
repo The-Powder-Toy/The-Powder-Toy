@@ -46,6 +46,8 @@ Engine::~Engine()
 		delete windows.top();
 		windows.pop();
 	}
+	if (lastBuffer)
+		free(lastBuffer);
 }
 
 void Engine::Begin(int width, int height)
@@ -114,15 +116,15 @@ int Engine::CloseWindow()
 {
 	if(!windows.empty())
 	{
+		if (lastBuffer)
+		{
+			free(lastBuffer);
+			lastBuffer = NULL;
+		}
 		if(!prevBuffers.empty())
 		{
 			lastBuffer = prevBuffers.top();
 			prevBuffers.pop();
-		}
-		else
-		{
-			free(lastBuffer);
-			lastBuffer = NULL;
 		}
 		state_ = windows.top();
 		windows.pop();

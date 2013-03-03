@@ -1,10 +1,3 @@
-/*
- * PreviewController.cpp
- *
- *  Created on: Jan 21, 2012
- *      Author: Simon
- */
-
 #include <sstream>
 #include "client/Client.h"
 #include "PreviewController.h"

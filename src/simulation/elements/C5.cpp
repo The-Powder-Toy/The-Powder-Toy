@@ -59,7 +59,7 @@ int Element_C5::update(UPDATE_FUNC_ARGS)
 					continue;
 				if (((r&0xFF)!=PT_C5 && parts[r>>8].temp<100 && sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||parts[r>>8].life==10)) || (r&0xFF)==PT_HFLM)
 				{
-					if (1>rand()%6)
+					if (!(rand()%6))
 					{
 						sim->part_change_type(i,x,y,PT_HFLM);
 						parts[r>>8].temp = parts[i].temp = 0;

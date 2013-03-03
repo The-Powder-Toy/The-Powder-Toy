@@ -55,13 +55,15 @@ int Element_SHLD2::update(UPDATE_FUNC_ARGS)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if (!r && parts[i].life>0)
-					sim->create_part(-1,x+rx,y+ry,PT_SHLD1);
 				if (!r)
+				{
+					if (parts[i].life>0)
+						sim->create_part(-1,x+rx,y+ry,PT_SHLD1);
 					continue;
+				}
 				else if ((r&0xFF)==PT_SPRK&&parts[i].life==0)
 				{
-					if (25>rand()%200&&parts[i].life==0)
+					if (!(rand()%8))
 					{
 						sim->part_change_type(i,x,y,PT_SHLD3);
 						parts[i].life = 7;
@@ -77,7 +79,7 @@ int Element_SHLD2::update(UPDATE_FUNC_ARGS)
 							}
 						}
 				}
-				else if ((r&0xFF)==PT_SHLD4&&4>rand()%10)
+				else if ((r&0xFF)==PT_SHLD4&&2>rand()%5)
 				{
 					sim->part_change_type(i,x,y,PT_SHLD3);
 					parts[i].life = 7;

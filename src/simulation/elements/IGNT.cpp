@@ -49,7 +49,7 @@ Element_IGNT::Element_IGNT()
 //#TPT-Directive ElementHeader Element_IGNT static int update(UPDATE_FUNC_ARGS)
 int Element_IGNT::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry;
+	 int r, rx, ry, rt;
 	if(parts[i].tmp==0)
 	{
 		for (rx=-1; rx<2; rx++)
@@ -59,11 +59,8 @@ int Element_IGNT::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM)
-					{
-						parts[i].tmp = 1;
-					}
-					else if ((r&0xFF)==PT_SPRK || (r&0xFF)==PT_LIGH || ((r&0xFF)==PT_IGNT && parts[r>>8].life==1))
+					rt = r&0xFF;
+					if (rt==PT_FIRE || rt==PT_PLSM || rt==PT_SPRK || rt==PT_LIGH || (rt==PT_IGNT && parts[r>>8].life==1))
 					{
 						parts[i].tmp = 1;
 					}
@@ -79,7 +76,7 @@ int Element_IGNT::update(UPDATE_FUNC_ARGS)
 				parts[nb].life = 30;
 				parts[nb].vx = rand()%20-10;
 				parts[nb].vy = rand()%20-10;
-				parts[nb].temp = restrict_flt(400.0f+parts[i].temp-273.15, MIN_TEMP, MAX_TEMP);
+				parts[nb].temp = restrict_flt(parts[i].temp-273.15f+400.0f, MIN_TEMP, MAX_TEMP);
 			}
 		}
 		else

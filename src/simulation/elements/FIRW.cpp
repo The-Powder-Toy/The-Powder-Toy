@@ -62,7 +62,7 @@ int Element_FIRW::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					rt = parts[r>>8].type;
+					rt = r&0xFF;
 					if (rt==PT_FIRE||rt==PT_PLSM||rt==PT_THDR)
 					{
 						float gx, gy, multiplier;
@@ -89,7 +89,7 @@ int Element_FIRW::update(UPDATE_FUNC_ARGS)
 			parts[i].flags &= ~FLAG_STAGNANT;
 		}
 	}
-	else if (parts[i].tmp>=2)
+	else //if (parts[i].tmp>=2)
 	{
 		float angle, magnitude;
 		int caddress = (rand()%200)*3;

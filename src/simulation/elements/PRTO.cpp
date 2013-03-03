@@ -70,11 +70,8 @@ int Element_PRTO::update(UPDATE_FUNC_ARGS)
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
-					fe = 1;
-				if (r)
-					continue;
-				if (!r)
 				{
+					fe = 1;
 					for ( nnx =0 ; nnx<80; nnx++)
 					{
 						int randomness = (count + rand()%3-1 + 4)%8;//add -1,0,or 1 to count

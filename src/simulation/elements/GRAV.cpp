@@ -42,25 +42,9 @@ Element_GRAV::Element_GRAV()
     HighTemperature = ITH;
     HighTemperatureTransition = NT;
     
-    Update = &Element_GRAV::update;
+    Update = NULL;
     Graphics = &Element_GRAV::graphics;
 }
-
-//#TPT-Directive ElementHeader Element_GRAV static int update(UPDATE_FUNC_ARGS)
-int Element_GRAV::update(UPDATE_FUNC_ARGS)
- {
-	/*int t = parts[i].type;
-	if (t==PT_LOVE)
-		ISLOVE=1;
-	else if (t==PT_LOLZ)
-		ISLOLZ=1;
-	else if (t==PT_GRAV)
-		ISGRAV=1;*/
-	return 0;
-}
-
-int lastIndex;
-
 //#TPT-Directive ElementHeader Element_GRAV static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_GRAV::graphics(GRAPHICS_FUNC_ARGS)
 

@@ -76,16 +76,12 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 										angle = atan2((float)nxj, nxi);
 										fx = cos(angle) * 7.0f;
 										fy = sin(angle) * 7.0f;
-
 										parts[rr>>8].vx += fx;
 										parts[rr>>8].vy += fy;
-										
 										sim->vx[(y+nxj)/CELL][(x+nxi)/CELL] += fx;
 										sim->vy[(y+nxj)/CELL][(x+nxi)/CELL] += fy;
-
 										sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 1.0f;
-										
-										t = parts[rr>>8].type;
+										t = rr&0xFF;
 										if(t && sim->elements[t].HighPressureTransition>-1 && sim->elements[t].HighPressureTransition<PT_NUM)
 											sim->part_change_type(rr>>8, x+nxi, y+nxj, sim->elements[t].HighPressureTransition);
 										else if(t == PT_BMTL)

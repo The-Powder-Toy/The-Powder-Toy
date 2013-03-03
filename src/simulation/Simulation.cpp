@@ -1994,11 +1994,8 @@ void Simulation::clear_sim(void)
 	SetEdgeMode(edgeMode);
 }
 
-bool Simulation::IsObsticle(int x, int y, int type)
+bool Simulation::IsWallBlocking(int x, int y, int type)
 {
-	if (pmap[y][x])// && (type != PT_SPRK || !(elements[pmap[y][x]&0xFF].Properties & PROP_CONDUCTS)))
-		return true;
-
 	if (bmap[y/CELL][x/CELL])
 	{
 		int wall = bmap[y/CELL][x/CELL];
@@ -2851,10 +2848,10 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[pmap[y][x]>>8].ctype = t;
 				if (t == PT_LIFE && v < NGOLALT && drawOn != PT_STOR) parts[pmap[y][x]>>8].tmp = v;
 			}
-			else if (drawOn == PT_DTEC && drawOn != t)
+			else if ((drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME)) && drawOn != t)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t==PT_LIFE && v<NGOLALT)
+				if (drawOn == PT_DTEC && t==PT_LIFE && v<NGOLALT)
 					parts[pmap[y][x]>>8].tmp = v;
 			}
 			else if (drawOn == PT_CRAY && drawOn != t && drawOn != PT_PSCN && drawOn != PT_INST && drawOn != PT_METL)
@@ -2862,6 +2859,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[pmap[y][x]>>8].ctype = t;
 				if (t==PT_LIFE && v<NGOLALT)
 					parts[pmap[y][x]>>8].tmp2 = v;
+				parts[pmap[y][x]>>8].temp = elements[t].Temperature;
 			}
 			return -1;
 		}
@@ -2948,10 +2946,10 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[i].life = 75;
 				break;
 			/*Testing
-			  case PT_WOOD:
-			  parts[i].life = 150;
-			  break;
-			  End Testing*/
+			case PT_WOOD:
+				parts[i].life = 150;
+				break;
+			End Testing*/
 			case PT_WARP:
 				parts[i].life = rand()%95+70;
 				break;
@@ -3090,6 +3088,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				break;
 			case PT_DTEC:
 				parts[i].tmp2 = 2;
+				break;
 			case PT_TSNS:
 				parts[i].tmp2 = 2;
 				break;
@@ -3555,7 +3554,7 @@ void Simulation::update_particles_i(int start, int inc)
 						{
 							golnum = parts[r>>8].ctype+1;
 							if (golnum<=0 || golnum>NGOLALT) {
-								parts[r>>8].type = PT_NONE;
+								kill_part(r>>8);
 								continue;
 							}
 							if (parts[r>>8].tmp == grule[golnum][9]-1) {
@@ -3575,7 +3574,7 @@ void Simulation::update_particles_i(int start, int inc)
 							} else {
 								parts[r>>8].tmp --;
 								if (parts[r>>8].tmp<=0)
-									parts[r>>8].type = PT_NONE;//using kill_part makes it not work
+									kill_part(r>>8);
 							}
 						}
 					//}
@@ -3604,7 +3603,7 @@ void Simulation::update_particles_i(int start, int inc)
 							parts[r>>8].tmp --;
 					}
 					if (r && parts[r>>8].tmp<=0)
-						parts[r>>8].type = PT_NONE;//using kill_part makes it not work
+						kill_part(r>>8);
 				}
 				for ( z = 0; z<=NGOL; z++)
 					gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
@@ -4839,7 +4838,8 @@ Simulation::Simulation():
 	lighting_recreate(0),
 	force_stacking_check(0),
 	ISWIRE(0),
-	VINE_MODE(0)
+	VINE_MODE(0),
+	gravWallChanged(false)
 {
     int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
     int tportal_ry[] = {-1,-1,-1, 0, 1, 1, 1, 0};
@@ -4916,6 +4916,9 @@ Simulation::Simulation():
 	gol_menu * golMenuT = LoadGOLMenu(golMenuCount);
 	memcpy(gmenu, golMenuT, sizeof(gol_menu) * golMenuCount);
 	free(golMenuT);
+
+	player.comm = 0;
+	player2.comm = 0;
 
 	init_can_move();
 	clear_sim();

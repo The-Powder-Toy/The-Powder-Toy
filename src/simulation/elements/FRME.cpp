@@ -6,7 +6,7 @@ Element_FRME::Element_FRME()
     Name = "FRME";
     Colour = PIXPACK(0x999988);
     MenuVisible = 1;
-    MenuSection = SC_SOLIDS;
+    MenuSection = SC_FORCE;
     Enabled = 1;
     
     Advection = 0.0f;
@@ -48,10 +48,11 @@ Element_FRME::Element_FRME()
 //#TPT-Directive ElementHeader Element_FRME static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_FRME::graphics(GRAPHICS_FUNC_ARGS)
 {
-	if(cpart->ctype)
+	if(cpart->tmp)
 	{
-		*colr -= 60;
-		*colg -= 60;
+		*colr += 30;
+		*colg += 30;
+		*colb += 30;
 	}
 	return 0;
 }

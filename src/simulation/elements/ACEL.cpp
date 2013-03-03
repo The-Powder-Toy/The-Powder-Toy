@@ -50,6 +50,16 @@ Element_ACEL::Element_ACEL()
 int Element_ACEL::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
+	float multiplier;
+	if (parts[i].life!=0)
+	{
+		float change = parts[i].life > 1000 ? 1000 : (parts[i].life < 0 ? 0 : parts[i].life);
+		multiplier = 1.0f+(change/100.0f);
+	}
+	else
+	{
+		multiplier = 1.1f;
+	}
 	parts[i].tmp = 0;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -58,12 +68,12 @@ int Element_ACEL::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if(!r)
 					r = sim->photons[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if (!r)
 					continue;
 				if(sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
 				{
-					parts[r>>8].vx *= 1.1f;
-					parts[r>>8].vy *= 1.1f;
+					parts[r>>8].vx *= multiplier;
+					parts[r>>8].vy *= multiplier;
 					parts[i].tmp = 1;
 				}
 			}

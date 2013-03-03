@@ -57,16 +57,14 @@ int Element_SHLD3::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 				{
-					if (1>rand()%2500)
+					if (!(rand()%2500))
 					{
 						np = sim->create_part(-1,x+rx,y+ry,PT_SHLD1);
 						if (np<0) continue;
 						parts[np].life=7;
 						sim->part_change_type(i,x,y,PT_SHLD2);
 					}
-					else
-						continue;
-
+					continue;
 				}
 				if ((r&0xFF)==PT_SHLD1 && parts[i].life>3)
 				{
@@ -75,7 +73,7 @@ int Element_SHLD3::update(UPDATE_FUNC_ARGS)
 				}
 				else if ((r&0xFF)==PT_SPRK&&parts[i].life==0)
 				{
-					if (18>rand()%3000&&parts[i].life==0)
+					if (3>rand()%500)
 					{
 						sim->part_change_type(i,x,y,PT_SHLD4);
 						parts[i].life = 7;

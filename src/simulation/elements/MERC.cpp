@@ -62,7 +62,7 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r || (parts[i].tmp >=maxtmp))
 						continue;
-					if ((r&0xFF)==PT_MERC&&33>=rand()/(RAND_MAX/100)+1)
+					if ((r&0xFF)==PT_MERC&& !(rand()%3))
 					{
 						if ((parts[i].tmp + parts[r>>8].tmp + 1) <= maxtmp)
 						{

@@ -216,21 +216,13 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 	{
 		if (parts[i].temp<272.15)//manual pipe colors
 		{
-			if (parts[i].temp>173.25&&parts[i].temp<273.15)
-			{
+			if (parts[i].temp>173.25)
 				parts[i].ctype = 2;
-				parts[i].life = 0;
-			}
-			if (parts[i].temp>73.25&&parts[i].temp<=173.15)
-			{
+			else if (parts[i].temp>73.25)
 				parts[i].ctype = 3;
-				parts[i].life = 0;
-			}
-			if (parts[i].temp>=0&&parts[i].temp<=73.15)
-			{
+			else if (parts[i].temp>=0)
 				parts[i].ctype = 4;
-				parts[i].life = 0;
-			}
+			parts[i].life = 0;
 		}
 		else
 		{
@@ -461,7 +453,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 					pushParticle(sim, r>>8,count,original);
 				}
 				else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
-		        {
+				{
 					int nnx;
 					for (nnx=0; nnx<80; nnx++)
 						if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
@@ -470,7 +462,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 							count++;
 							break;
 						}
-		        }
+				}
 			}
 		}
 	}
@@ -487,7 +479,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 			pushParticle(sim, r>>8,count,original);
 		}
 		else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
-	    {
+		{
 			int nnx;
 			for (nnx=0; nnx<80; nnx++)
 				if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
@@ -496,9 +488,9 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 					count++;
 					break;
 				}
-	    }
-	    else if ((r&0xFF) == PT_NONE) //Move particles out of pipe automatically, much faster at ends
-	    {
+		}
+		else if ((r&0xFF) == PT_NONE) //Move particles out of pipe automatically, much faster at ends
+		{
 			rx = pos_1_rx[coords];
 			ry = pos_1_ry[coords];
 			np = sim->create_part(-1,x+rx,y+ry,sim->parts[i].tmp&0xFF);
@@ -506,7 +498,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 			{
 				transfer_pipe_to_part(sim->parts+i, sim->parts+np);
 			}
-	    }
+		}
 		
 	}
 	return;

@@ -48,8 +48,9 @@ Element_THDR::Element_THDR()
 
 //#TPT-Directive ElementHeader Element_THDR static int update(UPDATE_FUNC_ARGS)
 int Element_THDR::update(UPDATE_FUNC_ARGS)
- {
-	int r, rx, ry;
+{
+	int r, rx, ry, rt;
+	bool kill=false;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -57,14 +58,15 @@ int Element_THDR::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && parts[r>>8].life==0 && !((r&0xFF)==PT_WATR||(r&0xFF)==PT_SLTW) && parts[r>>8].ctype!=PT_SPRK)
+				rt = r&0xFF;
+				if ((sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && parts[r>>8].life==0 && !(rt==PT_WATR||rt==PT_SLTW) && parts[r>>8].ctype!=PT_SPRK)
 				{
-					parts[i].type = PT_NONE;
 					parts[r>>8].ctype = parts[r>>8].type;
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 					parts[r>>8].life = 4;
+					kill=true;
 				}
-				else if ((r&0xFF)!=PT_CLNE&&(r&0xFF)!=PT_THDR&&(r&0xFF)!=PT_SPRK&&(r&0xFF)!=PT_DMND&&(r&0xFF)!=PT_FIRE&&(r&0xFF)!=PT_NEUT&&(r&0xFF)!=PT_PHOT&&(r&0xFF))
+				else if (rt!=PT_CLNE&&rt!=PT_THDR&&rt!=PT_SPRK&&rt!=PT_DMND&&rt!=PT_FIRE)
 				{
 					sim->pv[y/CELL][x/CELL] += 100.0f;
 					if (sim->legacy_enable&&1>(rand()%200))
@@ -73,12 +75,10 @@ int Element_THDR::update(UPDATE_FUNC_ARGS)
 						sim->part_change_type(i,x,y,PT_FIRE);
 					}
 					else
-					{
-						parts[i].type = PT_NONE;
-					}
+						kill=true;
 				}
 			}
-	if (parts[i].type==PT_NONE) {
+	if (kill) {
 		sim->kill_part(i);
 		return 1;
 	}

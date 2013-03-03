@@ -252,6 +252,13 @@ SearchView::~SearchView()
 	RemoveComponent(previousButton);
 	RemoveComponent(infoLabel);
 
+	for(int i = 0; i < saveButtons.size(); i++)
+	{
+		RemoveComponent(saveButtons[i]);
+		delete saveButtons[i];
+	}
+	saveButtons.clear();
+
 	delete nextButton;
 	delete previousButton;
 	delete infoLabel;

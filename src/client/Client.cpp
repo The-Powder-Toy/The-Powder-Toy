@@ -877,7 +877,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	{
 		if(strncmp((const char *)data, "OK", 2)!=0)
 		{
-			if(gameData) free(gameData);
+			if(gameData) delete[] gameData;
 			lastError = std::string((const char *)data);
 			free(data);
 			return RequestFailure;
@@ -898,14 +898,14 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 			}
 		}
 		free(data);
-		if(gameData) free(gameData);
+		if(gameData) delete[] gameData;
 		return RequestOkay;
 	}
 	else if(data)
 	{
 		free(data);
 	}
-	if(gameData) free(gameData);
+	if(gameData) delete[] gameData;
 	return RequestFailure;
 }
 

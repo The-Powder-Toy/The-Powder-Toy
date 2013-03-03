@@ -1172,9 +1172,9 @@ void Renderer::render_parts()
 			fnx = sim->parts[i].x;
 			fny = sim->parts[i].y;
 
-			if((sim->photons[ny][nx]&0xFF) && !(sim->elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
-				continue;
 			if(nx >= XRES || nx < 0 || ny >= YRES || ny < 0)
+				continue;
+			if((sim->photons[ny][nx]&0xFF) && !(sim->elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
 				continue;
 
 			//Defaults

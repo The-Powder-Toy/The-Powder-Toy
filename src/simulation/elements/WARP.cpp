@@ -54,7 +54,7 @@ int Element_WARP::update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].temp = 10000;
 		sim->pv[y/CELL][x/CELL] += (parts[i].tmp2/5000) * CFDS;
-		if (2>rand()%100)
+		if (!(rand()%50))
 			sim->create_part(-3, x, y, PT_ELEC);
 	}
 	for ( trade = 0; trade<5; trade ++)

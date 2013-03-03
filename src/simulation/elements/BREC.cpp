@@ -50,13 +50,18 @@ Element_BREC::Element_BREC()
 int Element_BREC::update(UPDATE_FUNC_ARGS)
 {
 	int np;
-	if (1>rand()%200 && (sim->pv[y/CELL][x/CELL] > 30.0f) && parts[i].temp>9000 && parts[i].life>0)
+	if (parts[i].life)
 	{
-		sim->part_change_type(i, x ,y ,PT_EXOT);
-		parts[i].life = 1000;
-	}
-	if ((sim->pv[y/CELL][x/CELL] > 10.0f) && (parts[i].life>0)) {
-		parts[i].temp = parts[i].temp + (sim->pv[y/CELL][x/CELL])/8;
+		if (sim->pv[y/CELL][x/CELL]>10.0f) 
+		{
+			if (parts[i].temp>9000 && sim->pv[y/CELL][x/CELL]>30.0f && !(rand()%200))
+			{
+				sim->part_change_type(i, x ,y ,PT_EXOT);
+				parts[i].life = 1000;
+			}
+			parts[i].temp += (sim->pv[y/CELL][x/CELL])/8;
+		}
+		
 	}
 	return 0;
 }
