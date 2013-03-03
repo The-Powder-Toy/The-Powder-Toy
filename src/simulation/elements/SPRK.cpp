@@ -267,6 +267,10 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					if (rt==PT_PSCN || (rt==PT_NSCN && parts[i].temp<373.0f))
 						goto conduct;
 					continue;
+				case PT_INWR:
+					if (rt==PT_NSCN || rt==PT_PSCN)
+						goto conduct;
+					continue;
 				}
 				switch (rt)
 				{
