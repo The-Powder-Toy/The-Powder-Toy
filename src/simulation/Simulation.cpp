@@ -2849,10 +2849,10 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[pmap[y][x]>>8].ctype = t;
 				if (t == PT_LIFE && v < NGOLALT && drawOn != PT_STOR) parts[pmap[y][x]>>8].tmp = v;
 			}
-			else if (drawOn == PT_DTEC && drawOn != t)
+			else if ((drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME)) && drawOn != t)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t==PT_LIFE && v<NGOLALT)
+				if (drawOn == PT_DTEC && t==PT_LIFE && v<NGOLALT)
 					parts[pmap[y][x]>>8].tmp = v;
 			}
 			else if (drawOn == PT_CRAY && drawOn != t && drawOn != PT_PSCN && drawOn != PT_INST && drawOn != PT_METL)
