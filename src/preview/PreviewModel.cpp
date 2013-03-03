@@ -1,10 +1,3 @@
-/*
- * PreviewModel.cpp
- *
- *  Created on: Jan 21, 2012
- *      Author: Simon
- */
-
 #include <cmath>
 #include "PreviewModel.h"
 #include "client/Client.h"
@@ -25,7 +18,6 @@ PreviewModel::PreviewModel():
 	commentsPageNumber(1),
 	commentBoxEnabled(false)
 {
-	// TODO Auto-generated constructor stub
 
 }
 

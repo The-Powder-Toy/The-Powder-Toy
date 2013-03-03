@@ -1,10 +1,3 @@
-/*
- * PreviewView.cpp
- *
- *  Created on: Jan 21, 2012
- *      Author: Simon
- */
-
 #include <sstream>
 #include <vector>
 #include <cmath>
@@ -274,7 +267,7 @@ void PreviewView::OnDraw()
 	g->drawrect(Position.X, Position.Y, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 100);
 	g->draw_line(Position.X+XRES/2, Position.Y+1, Position.X+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
 
-	if(!(!votesUp && !votesDown))
+	if(votesUp || votesDown)
 	{
 		float ryf;
 		int nyu, nyd;
@@ -573,5 +566,7 @@ PreviewView::~PreviewView()
 		RemoveComponent(submitCommentButton);
 		delete submitCommentButton;
 	}
+	if(savePreview)
+		delete savePreview;
 }
 
