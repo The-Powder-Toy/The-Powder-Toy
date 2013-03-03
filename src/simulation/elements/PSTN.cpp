@@ -31,7 +31,7 @@ Element_PSTN::Element_PSTN()
     Description = "Piston, extends and pushes particles";
     
     State = ST_SOLID;
-    Properties = TYPE_SOLID|PROP_LIFE_DEC;
+    Properties = TYPE_SOLID;
     
     LowPressure = IPL;
     LowPressureTransition = NT;
@@ -62,14 +62,14 @@ int Element_PSTN::tempPartAmount[128];
 //#TPT-Directive ElementHeader Element_PSTN static int update(UPDATE_FUNC_ARGS)
 int Element_PSTN::update(UPDATE_FUNC_ARGS)
  {
- 	if(parts[i].ctype)
+ 	if(parts[i].life)
  		return 0;
  	int maxSize = parts[i].tmp ? parts[i].tmp : DEFAULT_LIMIT;
  	int armLimit = parts[i].tmp2 ? parts[i].tmp2 : DEFAULT_ARM_LIMIT;
  	int state = 0;
 	int r, nxx, nyy, nxi, nyi, rx, ry;
 	int directionX = 0, directionY = 0;
-	if (parts[i].life==0 && state == PISTON_INACTIVE) {
+	if (state == PISTON_INACTIVE) {
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
 				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry) && (!rx || !ry))
@@ -109,7 +109,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 							}
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
 							if((r&0xFF)==PT_PSTN) {
-								if(parts[r>>8].ctype)
+								if(parts[r>>8].life)
 									armCount++;
 								else if (armCount)
 								{
@@ -132,13 +132,13 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 								if(armCount+pistonCount > armLimit)
 									pistonCount = armLimit-armCount;
 								if(pistonCount > 0) {
-									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false);
+									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true);
 									if(newSpace) {
 										//Create new piston section
 										for(int j = 0; j < newSpace; j++) {
 											int nr = sim->create_part(-3, pistonEndX+(nxi*j), pistonEndY+(nyi*j), PT_PSTN);
-											if (nr!=-1) {
-												parts[nr].ctype = 1;
+											if (nr > -1) {
+												parts[nr].life = 1;
 											}
 										}
 										movedPiston =  true;
@@ -148,7 +148,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 								if(pistonCount > armCount)
 									pistonCount = armCount;
 								if(armCount) {
-									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true);
+									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true, parts[i].ctype, true);
 									movedPiston = true;
 								}
 							}
@@ -162,18 +162,18 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_PSTN static int CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract)
-int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract)
+//#TPT-Directive ElementHeader Element_PSTN static int CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block)
+int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block)
 {
 	int posX, posY, r, spaces = 0, currentPos = 0;
 	if (amount == 0)
 		return 0;
-	for(posX = stackX, posY = stackY; currentPos < size + amount; posX += directionX, posY += directionY) {
+	for(posX = stackX, posY = stackY; currentPos < maxSize + amount; posX += directionX, posY += directionY) {
 		if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
 			break;
 		}
 		r = sim->pmap[posY][posX];
-		if (sim->IsWallBlocking(posX, posY, 0)/* || (r&0xFF) == PT_INSL*/)
+		if (sim->IsWallBlocking(posX, posY, 0) || (block && (r&0xFF) == block))
 			break;
 		if(!r) {
 			spaces++;
@@ -181,7 +181,7 @@ int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int dir
 			if(spaces >= amount)
 				break;
 		} else {
-			if(currentPos < size && !retract)
+			if(currentPos < maxSize && !retract)
 				tempParts[currentPos++] = r>>8;
 			else
 				return spaces;
@@ -193,8 +193,8 @@ int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int dir
 		return 0;
 }
 
-//#TPT-Directive ElementHeader Element_PSTN static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract, int callDepth = 0)
-int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int size, int amount, bool retract, int callDepth)
+//#TPT-Directive ElementHeader Element_PSTN static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth = 0)
+int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth)
 {
 	bool foundParts = false;
 	int posX, posY, r, spaces = 0, currentPos = 0;
@@ -210,7 +210,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			posY = stackY + (c*newY);
 			posX = stackX + (c*newX);
 			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && (sim->pmap[posY][posX]&0xFF) == PT_FRME) {
-				int val = CanMoveStack(sim, posX+realDirectionX, posY+realDirectionY, realDirectionX, realDirectionY, size, amount, retract);
+				int val = CanMoveStack(sim, posX+realDirectionX, posY+realDirectionY, realDirectionX, realDirectionY, maxSize, amount, retract, block);
 				if(val < amount)
 					amount = val;
 			} else {
@@ -222,7 +222,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
 			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && (sim->pmap[posY][posX]&0xFF) == PT_FRME) {
-				int val = CanMoveStack(sim, posX+realDirectionX, posY+realDirectionY, realDirectionX, realDirectionY, size, amount, retract);
+				int val = CanMoveStack(sim, posX+realDirectionX, posY+realDirectionY, realDirectionX, realDirectionY, maxSize, amount, retract, block);
 				if(val < amount)
 					amount = val;
 			} else {
@@ -235,19 +235,19 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 		for(int c = 1; c < maxRight; c++) {
 			posY = stackY + (c*newY);
 			posX = stackX + (c*newX);
-			MoveStack(sim, posX, posY, directionX, directionY, size, amount, retract, 1);
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[sim->pmap[posY][posX]>>8].tmp, 1);
 		}
 		for(int c = 1; c < maxLeft; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
-			MoveStack(sim, posX, posY, directionX, directionY, size, amount, retract, 1);
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[sim->pmap[posY][posX]>>8].tmp, 1);
 		}
 
 		//Remove arm section if retracting with FRME
 		if (retract)
 			for(int j = 1; j <= amount; j++)
 				sim->kill_part(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]>>8);
-		return MoveStack(sim, stackX, stackY, directionX, directionY, size, amount, retract, 1);
+		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[sim->pmap[stackY][stackX]>>8].tmp, 1);
 	}
 	if(retract){
 		//Remove arm section if retracting without FRME
@@ -255,12 +255,12 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			for(int j = 1; j <= amount; j++)
 				sim->kill_part(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]>>8);
 		bool foundEnd = false;
-		for(posX = stackX, posY = stackY; currentPos < size; posX += directionX, posY += directionY) {
+		for(posX = stackX, posY = stackY; currentPos < maxSize; posX += directionX, posY += directionY) {
 			if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
 				break;
 			}
 			r = sim->pmap[posY][posX];
-			if(!r) {
+			if(!r || (r&0xFF) == block || (!sticky && (r&0xFF) != PT_FRME)) {
 				break;
 			} else {
 				foundParts = true;
@@ -281,13 +281,13 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 		if(!foundParts && foundEnd)
 			return amount;
 	} else {
-		currentPos = CanMoveStack(sim, stackX, stackY, directionX, directionY, size, amount, retract);
+		currentPos = CanMoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block);
 		if(currentPos){
 			//Move particles
 			int possibleMovement = 0;
 			for(int j = currentPos-1; j >= 0; j--) {
 				int jP = tempParts[j];
-				if(jP == -1) {
+				if(jP < 0) {
 					possibleMovement++;
 					continue;
 				}
@@ -310,7 +310,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 //#TPT-Directive ElementHeader Element_PSTN static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_PSTN::graphics(GRAPHICS_FUNC_ARGS)
 {
-	if(cpart->ctype)
+	if(cpart->life)
 	{
 		*colr -= 60;
 		*colg -= 60;

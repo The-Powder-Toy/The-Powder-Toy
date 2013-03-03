@@ -48,10 +48,11 @@ Element_FRME::Element_FRME()
 //#TPT-Directive ElementHeader Element_FRME static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_FRME::graphics(GRAPHICS_FUNC_ARGS)
 {
-	if(cpart->ctype)
+	if(cpart->tmp)
 	{
-		*colr -= 60;
-		*colg -= 60;
+		*colr += 30;
+		*colg += 30;
+		*colb += 30;
 	}
 	return 0;
 }

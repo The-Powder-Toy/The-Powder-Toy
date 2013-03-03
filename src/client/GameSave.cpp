@@ -944,6 +944,9 @@ void GameSave::readOPS(char * data, int dataLength)
 							particles[newIndex].ctype = (((unsigned char)(firw_data[caddress]))<<16) | (((unsigned char)(firw_data[caddress+1]))<<8) | ((unsigned char)(firw_data[caddress+2]));
 						}
 						break;
+					case PT_PSTN:
+						if (savedVersion < 87 && particles[newIndex].ctype)
+							particles[newIndex].life = 1;
 					}
 					newIndex++;
 				}
