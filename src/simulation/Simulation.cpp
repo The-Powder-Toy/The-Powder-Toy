@@ -2947,10 +2947,10 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[i].life = 75;
 				break;
 			/*Testing
-			  case PT_WOOD:
-			  parts[i].life = 150;
-			  break;
-			  End Testing*/
+			case PT_WOOD:
+				parts[i].life = 150;
+				break;
+			End Testing*/
 			case PT_WARP:
 				parts[i].life = rand()%95+70;
 				break;
@@ -3555,7 +3555,7 @@ void Simulation::update_particles_i(int start, int inc)
 						{
 							golnum = parts[r>>8].ctype+1;
 							if (golnum<=0 || golnum>NGOLALT) {
-								parts[r>>8].type = PT_NONE;
+								kill_part(r>>8);
 								continue;
 							}
 							if (parts[r>>8].tmp == grule[golnum][9]-1) {
@@ -3575,7 +3575,7 @@ void Simulation::update_particles_i(int start, int inc)
 							} else {
 								parts[r>>8].tmp --;
 								if (parts[r>>8].tmp<=0)
-									parts[r>>8].type = PT_NONE;//using kill_part makes it not work
+									kill_part(r>>8);
 							}
 						}
 					//}
@@ -3604,7 +3604,7 @@ void Simulation::update_particles_i(int start, int inc)
 							parts[r>>8].tmp --;
 					}
 					if (r && parts[r>>8].tmp<=0)
-						parts[r>>8].type = PT_NONE;//using kill_part makes it not work
+						kill_part(r>>8);
 				}
 				for ( z = 0; z<=NGOL; z++)
 					gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
