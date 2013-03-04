@@ -42,7 +42,7 @@ GameModel::GameModel():
 	std::fill(decoToolset, decoToolset+3, (Tool*)NULL);
 	std::fill(regularToolset, regularToolset+3, (Tool*)NULL);
 
-    	//Default render prefs
+	//Default render prefs
 	std::vector<unsigned int> tempArray;
 	tempArray.push_back(RENDER_FIRE);
 	tempArray.push_back(RENDER_EFFE);
