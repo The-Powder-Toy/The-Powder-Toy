@@ -18,7 +18,11 @@ def generateElements(elementFiles, outputCpp, outputH):
 	directives = []
 
 	for elementFile in elementFiles:
-		f = open(elementFile, "r")
+		try:
+			f = open(elementFile, "r")
+		except:
+			f = open("src/simulation/elements/"+elementFile, "r")
+            
 		fileData = f.read()
 		f.close()
 
@@ -116,7 +120,7 @@ std::vector<Element> GetElements()
 		elementContent += """elements.push_back(%s());
 	""" % (newClass)
 
-	elementContent += """	return elements;
+	elementContent += """return elements;
 }
 	""";
 
@@ -145,7 +149,10 @@ def generateTools(toolFiles, outputCpp, outputH):
 	directives = []
 
 	for toolFile in toolFiles:
-		f = open(toolFile, "r")
+		try:
+			f = open(toolFile, "r")
+		except:
+			f = open("src/simulation/tools/"+toolFile, "r")
 		fileData = f.read()
 		f.close()
 		
@@ -210,7 +217,11 @@ def generateTools(toolFiles, outputCpp, outputH):
 	f.write(toolContent)
 	f.close()
 
-if(sys.argv[1] == "elements"):
-	generateElements(sys.argv[4:], sys.argv[2], sys.argv[3])
-elif(sys.argv[1] == "tools"):
-	generateTools(sys.argv[4:], sys.argv[2], sys.argv[3])
+if(len(sys.argv) > 3):
+    if(sys.argv[1] == "elements"):
+    	generateElements(sys.argv[4:], sys.argv[2], sys.argv[3])
+    elif(sys.argv[1] == "tools"):
+    	generateTools(sys.argv[4:], sys.argv[2], sys.argv[3])
+else:
+	generateElements(os.listdir("src/simulation/elements"), "generated/ElementClasses.cpp", "generated/ElementClasses.h")
+	generateTools(os.listdir("src/simulation/tools"), "generated/ToolClasses.cpp", "generated/ToolClasses.h")
