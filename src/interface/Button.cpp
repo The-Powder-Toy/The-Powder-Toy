@@ -176,6 +176,8 @@ void Button::OnMouseUnclick(int x, int y, unsigned int button)
 
 void Button::OnMouseClick(int x, int y, unsigned int button)
 {
+	if(!Enabled)
+		return;
     if(button == 1)
     {
 		if(isTogglable)

@@ -1942,7 +1942,7 @@ void GameView::OnDraw()
 			{
 				string message = (*iter);
 				startY -= 13;
-				g->fillrect(startX-3, startY-3, Graphics::textwidth((char*)message.c_str())+6																																		, 14, 0, 0, 0, 100);
+				g->fillrect(startX-3, startY-3, Graphics::textwidth((char*)message.c_str())+6, 14, 0, 0, 0, 100);
 				g->drawtext(startX, startY, message.c_str(), 255, 255, 255, startAlpha);
 				startAlpha-=14;
 			}
