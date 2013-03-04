@@ -46,7 +46,7 @@ Element_LIFE::Element_LIFE()
     HighTemperature = ITH;
     HighTemperatureTransition = NT;
     
-    Update = &Element_LIFE::update;
+    Update = NULL;//&Element_LIFE::update;
     Graphics = &Element_LIFE::graphics;
 
     if(!Element_GOL_colourInit)

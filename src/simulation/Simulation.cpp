@@ -3537,6 +3537,7 @@ void Simulation::update_particles_i(int start, int inc)
 		int createdsomething = 0;
 		CGOL=0;
 		ISGOL=0;
+		//TODO: maybe this should only loop through active particles
 		for (ny=CELL; ny<YRES-CELL; ny++)
 		{//go through every particle and set neighbor map
 			for (nx=CELL; nx<XRES-CELL; nx++)
@@ -3572,6 +3573,8 @@ void Simulation::update_particles_i(int start, int inc)
 							}
 						} else {
 							parts[r>>8].tmp --;
+							if (parts[r>>8].tmp<=0)
+								parts[r>>8].type = PT_NONE;//TODO: move delete into an update function, change to kill_part
 						}
 					}
 				}
@@ -3598,6 +3601,8 @@ void Simulation::update_particles_i(int start, int inc)
 						if (parts[r>>8].tmp==grule[golnum][9]-1)
 							parts[r>>8].tmp --;
 					}
+					if (r && parts[r>>8].tmp<=0)
+						parts[r>>8].type = PT_NONE;//TODO: move delete into an update function, change to kill_part
 				}
 				for ( z = 0; z<=NGOL; z++)
 					gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
