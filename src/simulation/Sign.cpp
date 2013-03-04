@@ -22,7 +22,7 @@ std::string sign::getText(Simulation *sim)
 {
 	char buff[256];
 	char signText[256];
-	sprintf(signText, "%s", text.c_str());
+	sprintf(signText, "%s", text.substr(0, 255).c_str());
 
 	if (!strcmp(signText,"{p}"))
 	{
