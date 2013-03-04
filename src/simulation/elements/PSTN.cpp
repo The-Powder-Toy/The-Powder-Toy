@@ -49,8 +49,6 @@ Element_PSTN::Element_PSTN()
 
 //#TPT-Directive ElementHeader Element_PSTN static int tempParts[128];
 int Element_PSTN::tempParts[128];
-//#TPT-Directive ElementHeader Element_PSTN static int tempPartAmount[128];
-int Element_PSTN::tempPartAmount[128];
 
 #define PISTON_INACTIVE		0x00
 #define PISTON_RETRACT		0x01

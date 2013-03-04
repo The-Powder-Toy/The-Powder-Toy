@@ -3549,36 +3549,31 @@ void Simulation::update_particles_i(int start, int inc)
 				}
 				else
 				{
-					//for ( golnum=1; golnum<=NGOL; golnum++) //This shouldn't be necessary any more.
-					//{
-						if (parts[r>>8].type==PT_LIFE/* && parts[r>>8].ctype==golnum-1*/)
-						{
-							golnum = parts[r>>8].ctype+1;
-							if (golnum<=0 || golnum>NGOLALT) {
-								kill_part(r>>8);
-								continue;
-							}
-							if (parts[r>>8].tmp == grule[golnum][9]-1) {
-								gol[ny][nx] = golnum;
-								for ( nnx=-1; nnx<2; nnx++)
+					if (parts[r>>8].type==PT_LIFE)
+					{
+						golnum = parts[r>>8].ctype+1;
+						if (golnum<=0 || golnum>NGOLALT) {
+							kill_part(r>>8);
+							continue;
+						}
+						if (parts[r>>8].tmp == grule[golnum][9]-1) {
+							gol[ny][nx] = golnum;
+							for ( nnx=-1; nnx<2; nnx++)
+							{
+								for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
 								{
-									for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
+									rt = pmap[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL];
+									if (!rt || (rt&0xFF)==PT_LIFE)
 									{
-										rt = pmap[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL];
-										if (!rt || (rt&0xFF)==PT_LIFE)
-										{
-											gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][golnum] ++;
-											gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][0] ++;
-										}
+										gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][golnum] ++;
+										gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][0] ++;
 									}
 								}
-							} else {
-								parts[r>>8].tmp --;
-								if (parts[r>>8].tmp<=0)
-									kill_part(r>>8);
 							}
+						} else {
+							parts[r>>8].tmp --;
 						}
-					//}
+					}
 				}
 			}
 		}
@@ -3590,7 +3585,7 @@ void Simulation::update_particles_i(int start, int inc)
 				neighbors = gol2[ny][nx][0];
 				if (neighbors==0 || !((r&0xFF)==PT_LIFE || !(r&0xFF)))
 					continue;
-				for ( golnum = 1; golnum<=NGOL; golnum++)
+				for (golnum = 1; golnum<=NGOL; golnum++)
 				{
 					goldelete = neighbors;
 					if (gol[ny][nx]==0&&grule[golnum][goldelete]>=2&&gol2[ny][nx][golnum]>=(goldelete%2)+goldelete/2)
@@ -3603,8 +3598,6 @@ void Simulation::update_particles_i(int start, int inc)
 						if (parts[r>>8].tmp==grule[golnum][9]-1)
 							parts[r>>8].tmp --;
 					}
-					if (r && parts[r>>8].tmp<=0)
-						kill_part(r>>8);
 				}
 				for ( z = 0; z<=NGOL; z++)
 					gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
