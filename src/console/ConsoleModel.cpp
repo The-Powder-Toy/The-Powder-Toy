@@ -1,10 +1,3 @@
-/*
- * ConsoleModel.cpp
- *
- *  Created on: Feb 1, 2012
- *      Author: Simon
- */
-
 #include "client/Client.h"
 #include "ConsoleModel.h"
 

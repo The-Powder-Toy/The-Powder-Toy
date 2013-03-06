@@ -1,9 +1,3 @@
-/*
- * Brush.h
- *
- *  Created on: Jan 22, 2012
- *      Author: Simon
- */
 #ifndef BRUSH_H_
 #define BRUSH_H_
 

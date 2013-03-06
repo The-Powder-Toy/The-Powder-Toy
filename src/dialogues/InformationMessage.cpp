@@ -1,10 +1,3 @@
-/*
- * InformationMessage.cpp
- *
- *  Created on: Jan 29, 2012
- *      Author: Simon
- */
-
 #include "Style.h"
 #include "InformationMessage.h"
 #include "interface/Button.h"

@@ -1,10 +1,3 @@
-/*
- * DropDown.h
- *
- *  Created on: Apr 16, 2012
- *      Author: Simon
- */
-
 #ifndef DROPDOWN_H_
 #define DROPDOWN_H_
 

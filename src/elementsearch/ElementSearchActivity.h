@@ -1,10 +1,3 @@
-/*
- * ElementSearchActivity.h
- *
- *  Created on: Jun 24, 2012
- *      Author: Simon
- */
-
 #ifndef ELEMENTSEARCHACTIVITY_H_
 #define ELEMENTSEARCHACTIVITY_H_
 

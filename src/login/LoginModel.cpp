@@ -1,16 +1,8 @@
-/*
- * LoginModel.cpp
- *
- *  Created on: Jan 24, 2012
- *      Author: Simon
- */
-
 #include "LoginModel.h"
 
 LoginModel::LoginModel():
 	currentUser(0, "")
 {
-	// TODO Auto-generated constructor stub
 
 }
 
@@ -62,6 +54,5 @@ void LoginModel::notifyStatusChanged()
 }
 
 LoginModel::~LoginModel() {
-	// TODO Auto-generated destructor stub
 }
 

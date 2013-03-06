@@ -1,10 +1,3 @@
-/*
- * TaskListener.h
- *
- *  Created on: Apr 6, 2012
- *      Author: Simon
- */
-
 #ifndef TASKLISTENER_H_
 #define TASKLISTENER_H_
 

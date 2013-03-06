@@ -1,10 +1,3 @@
-/*
- * LuaScriptInterface.cpp
- *
- *  Created on: Feb 11, 2012
- *      Author: Simon
- */
-
 #include <string>
 #include <iomanip>
 #include <vector>
@@ -1699,8 +1692,8 @@ void LuaScriptInterface::initGraphicsAPI()
 
 int LuaScriptInterface::graphics_textSize(lua_State * l)
 {
-    char * text;
-    int width, height;
+	char * text;
+	int width, height;
 	text = (char*)lua_tostring(l, 1);
 	Graphics::textsize(text, width, height);
 
@@ -1711,7 +1704,7 @@ int LuaScriptInterface::graphics_textSize(lua_State * l)
 
 int LuaScriptInterface::graphics_drawText(lua_State * l)
 {
-    char * text;
+	char * text;
 	int x, y, r, g, b, a;
 	x = lua_tointeger(l, 1);
 	y = lua_tointeger(l, 2);

@@ -1,10 +1,3 @@
-/*
- * OptionsModel.cpp
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #include "simulation/Air.h"
 #include "game/GameModel.h"
 #include "OptionsModel.h"
@@ -140,6 +133,5 @@ void OptionsModel::notifySettingsChanged()
 }
 
 OptionsModel::~OptionsModel() {
-	// TODO Auto-generated destructor stub
 }
 

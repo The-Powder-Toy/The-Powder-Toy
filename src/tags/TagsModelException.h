@@ -1,10 +1,3 @@
-/*
- * TagsModelException.h
- *
- *  Created on: Mar 29, 2012
- *      Author: Simon
- */
-
 #ifndef TAGSMODELEXCEPTION_H_
 #define TAGSMODELEXCEPTION_H_
 

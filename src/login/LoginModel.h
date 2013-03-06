@@ -1,10 +1,3 @@
-/*
- * LoginModel.h
- *
- *  Created on: Jan 24, 2012
- *      Author: Simon
- */
-
 #ifndef LOGINMODEL_H_
 #define LOGINMODEL_H_
 

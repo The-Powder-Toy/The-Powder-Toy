@@ -1,10 +1,3 @@
-/*
- * ElipseBrush.h
- *
- *  Created on: Jan 26, 2012
- *      Author: Simon
- */
-
 #ifndef ELIPSEBRUSH_H_
 #define ELIPSEBRUSH_H_
 

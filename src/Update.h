@@ -1,10 +1,3 @@
-/*
- * Update.h
- *
- *  Created on: Jun 21, 2012
- *      Author: Simon
- */
-
 #ifndef UPDATE_H_
 #define UPDATE_H_
 

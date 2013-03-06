@@ -1,10 +1,3 @@
-/*
- * ConsoleView.cpp
- *
- *  Created on: Jan 31, 2012
- *      Author: Simon
- */
-
 #include "ConsoleView.h"
 #include "interface/Keys.h"
 

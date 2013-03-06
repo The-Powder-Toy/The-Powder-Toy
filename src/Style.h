@@ -1,12 +1,5 @@
-//
-//  Style.h
-//  The Powder Toy
-//
-//  Created by Simon Robertshaw on 14/05/2012.
-//
-
-#ifndef The_Powder_Toy_Style_h
-#define The_Powder_Toy_Style_h
+#ifndef STYLE_H_
+#define STYLE_H_
 
 namespace ui { class Colour; }
 

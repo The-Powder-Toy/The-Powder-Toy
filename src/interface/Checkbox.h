@@ -1,10 +1,3 @@
-/*
- * Checkbox.h
- *
- *  Created on: Jan 26, 2012
- *      Author: Simon
- */
-
 #ifndef CHECKBOX_H_
 #define CHECKBOX_H_
 

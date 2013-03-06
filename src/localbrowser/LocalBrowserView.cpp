@@ -1,10 +1,3 @@
-/*
- * StampsView.cpp
- *
- *  Created on: Mar 29, 2012
- *      Author: Simon
- */
-
 #include <sstream>
 #include "client/Client.h"
 #include "LocalBrowserView.h"
@@ -219,6 +212,5 @@ void LocalBrowserView::OnKeyPress(int key, Uint16 character, bool shift, bool ct
 }
 
 LocalBrowserView::~LocalBrowserView() {
-	// TODO Auto-generated destructor stub
 }
 

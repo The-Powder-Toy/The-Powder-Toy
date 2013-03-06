@@ -1,10 +1,3 @@
-/*
- * ElementSearchActivity.cpp
- *
- *  Created on: Jun 24, 2012
- *      Author: Simon
- */
-
 #include <algorithm>
 #include <iomanip>
 #include "ColourPickerActivity.h"

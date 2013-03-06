@@ -1,10 +1,3 @@
-/*
- * TPTScriptInterface.cpp
- *
- *  Created on: Feb 5, 2012
- *      Author: Simon
- */
-
 #include <stack>
 #include <iostream>
 #include <string>

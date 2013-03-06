@@ -1,10 +1,3 @@
-/*
- * PreviewController.h
- *
- *  Created on: Jan 21, 2012
- *      Author: Simon
- */
-
 #ifndef PREVIEWCONTROLLER_H_
 #define PREVIEWCONTROLLER_H_
 

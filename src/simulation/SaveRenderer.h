@@ -1,10 +1,3 @@
-/*
- * SaveRenderer.h
- *
- *  Created on: Apr 3, 2012
- *      Author: Simon
- */
-
 #ifndef SAVERENDERER_H_
 #define SAVERENDERER_H_
 #ifdef OGLI

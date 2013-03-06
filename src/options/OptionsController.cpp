@@ -1,10 +1,3 @@
-/*
- * OptionsController.cpp
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #include "OptionsController.h"
 #include "dialogues/ErrorMessage.h"
 

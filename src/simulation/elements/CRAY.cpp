@@ -88,7 +88,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 								break;
 							}
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
-							if (!sim->IsWallBlocking(x+nxi+nxx, y+nyi+nyy, parts[i].ctype) && (!sim->pmap[y+nyi+nyy][x+nxi+nxx] || (parts[i].ctype == PT_SPRK && !destroy))) { // create, also set color if it has passed through FILT
+							if (!sim->IsWallBlocking(x+nxi+nxx, y+nyi+nyy, parts[i].ctype) && (!sim->pmap[y+nyi+nyy][x+nxi+nxx] || (parts[i].ctype == PT_SPRK && parts[r>>8].type != PT_BREC && !destroy))) { // create, also set color if it has passed through FILT
 								int nr;
 								if (parts[i].ctype == PT_LIFE)
 									nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype|(parts[i].tmp2<<8));
@@ -98,7 +98,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 									parts[nr].dcolour = colored;
 									parts[nr].temp = parts[i].temp;
 								}
-								if((!destroy || parts[i].ctype != PT_SPRK) && !--partsRemaining)
+								if((!destroy || (parts[i].ctype != PT_SPRK &&parts[r>>8].type != PT_BREC)) && !--partsRemaining)
 									docontinue = 0;
 							} else if ((r&0xFF)==PT_FILT) { // get color if passed through FILT
 								colored = wavelengthToDecoColour(parts[r>>8].ctype);

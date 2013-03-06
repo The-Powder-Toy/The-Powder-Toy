@@ -1,10 +1,3 @@
-/*
- * Kitty.cpp
- *
- *  Created on: Feb 2, 2012
- *      Author: Simon
- */
-
 #include <iostream>
 #include <string>
 #include <string.h>

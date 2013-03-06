@@ -1,10 +1,3 @@
-/*
- * TPTScriptInterface.h
- *
- *  Created on: Feb 5, 2012
- *      Author: Simon
- */
-
 #ifndef TPTSCRIPTINTERFACE_H_
 #define TPTSCRIPTINTERFACE_H_
 

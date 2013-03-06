@@ -1,13 +1,5 @@
-//
-//  WallType.h
-//  The Powder Toy
-//
-//  Created by Simon Robertshaw on 04/06/2012.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
-#ifndef The_Powder_Toy_WallType_h
-#define The_Powder_Toy_WallType_h
+#ifndef WALLTYPE_H_
+#define WALLTYPE_H_
 
 #include "graphics/Graphics.h"
 class VideoBuffer;

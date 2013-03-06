@@ -1,10 +1,3 @@
-//
-//  Appearance.cpp
-//  The Powder Toy
-//
-//  Created by Simon Robertshaw on 15/05/2012.
-//
-
 #include <iostream>
 #include "Appearance.h"
 

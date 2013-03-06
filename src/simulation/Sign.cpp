@@ -1,10 +1,3 @@
-/*
- * Sign.cpp
- *
- *  Created on: Jun 25, 2012
- *      Author: Simon
- */
-
 #include "Sign.h"
 #include "graphics/Graphics.h"
 #include "simulation/Simulation.h"

@@ -1,10 +1,3 @@
-/*
- * Tool.cpp
- *
- *  Created on: Jun 24, 2012
- *      Author: Simon
- */
-
 #include <string>
 #include "Tool.h"
 #include "game/Brush.h"

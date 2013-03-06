@@ -1,10 +1,3 @@
-/*
- * SaveRenderer.cpp
- *
- *  Created on: Apr 3, 2012
- *      Author: Simon
- */
-
 #include "SaveRenderer.h"
 #include "client/GameSave.h"
 #include "graphics/Graphics.h"
@@ -61,11 +54,11 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 
 		glTranslated(0, MENUSIZE, 0);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-	    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	    glClear(GL_COLOR_BUFFER_BIT);
-	    
-	    ren->clearScreen(1.0f);
-	    ren->ClearAccumulation();
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		
+		ren->clearScreen(1.0f);
+		ren->ClearAccumulation();
 
 #ifdef OGLR
 		ren->RenderBegin();
@@ -120,7 +113,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 		pixel * dst;
 		pixel * src = g->vid;
 
-	    ren->ClearAccumulation();
+		ren->ClearAccumulation();
 
 		if (fire)
 		{
@@ -178,6 +171,5 @@ Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool de
 }
 
 SaveRenderer::~SaveRenderer() {
-	// TODO Auto-generated destructor stub
 }
 

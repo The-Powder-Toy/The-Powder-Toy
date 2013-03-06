@@ -1,10 +1,3 @@
-/*
- * OptionsView.h
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #ifndef OPTIONSVIEW_H_
 #define OPTIONSVIEW_H_
 

@@ -1,10 +1,3 @@
-/*
- * ConsoleController.cpp
- *
- *  Created on: Jan 31, 2012
- *      Author: Simon
- */
-
 #include <stack>
 #include "ConsoleController.h"
 

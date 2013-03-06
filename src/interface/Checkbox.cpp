@@ -1,10 +1,3 @@
-/*
- * Checkbox.cpp
- *
- *  Created on: Jan 26, 2012
- *      Author: Simon
- */
-
 #include "Checkbox.h"
 
 using namespace ui;
@@ -17,7 +10,6 @@ Checkbox::Checkbox(ui::Point position, ui::Point size, std::string text, std::st
 	checked(false),
 	actionCallback(NULL)
 {
-	// TODO Auto-generated constructor stub
 
 }
 

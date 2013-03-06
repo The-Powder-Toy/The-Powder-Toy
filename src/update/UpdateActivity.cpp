@@ -1,10 +1,3 @@
-/*
- * UpdateActivity.cpp
- *
- *  Created on: Jun 20, 2012
- *      Author: Simon
- */
-
 #include <bzlib.h>
 #include <sstream>
 #include "dialogues/ConfirmPrompt.h"
@@ -167,6 +160,5 @@ void UpdateActivity::NotifyError(Task * sender)
 
 
 UpdateActivity::~UpdateActivity() {
-	// TODO Auto-generated destructor stub
 }
 

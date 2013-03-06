@@ -1,10 +1,3 @@
-/*
- * RenderModel.h
- *
- *  Created on: Jan 23, 2012
- *      Author: Simon
- */
-
 #ifndef RENDERMODEL_H_
 #define RENDERMODEL_H_
 

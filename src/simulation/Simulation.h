@@ -1,10 +1,3 @@
-/*
- * Simulation.h
- *
- *  Created on: Jan 2, 2012
- *      Author: Simon
- */
-
 #ifndef SIMULATION_H_
 #define SIMULATION_H_
 #include <cstring>
@@ -16,7 +9,7 @@
 #include "SimulationData.h"
 #include "Sign.h"
 #include "Particle.h"
-#include "Player.h"
+#include "Stickman.h"
 #include "WallType.h"
 #include "GOLMenu.h"
 #include "MenuSection.h"

@@ -1,10 +1,3 @@
-/*
- * StampsModel.cpp
- *
- *  Created on: Mar 29, 2012
- *      Author: Simon
- */
-
 #include "LocalBrowserModel.h"
 #include "LocalBrowserView.h"
 #include "LocalBrowserModelException.h"
@@ -16,7 +9,6 @@ LocalBrowserModel::LocalBrowserModel():
 	currentPage(1),
 	stampToFront(1)
 {
-	// TODO Auto-generated constructor stub
 	//stampIDs = Client::Ref().GetStamps();
 	stampIDs = Client::Ref().GetStamps(0, 16);
 }

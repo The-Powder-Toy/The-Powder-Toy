@@ -1,10 +1,3 @@
-/*
- * LoginView.h
- *
- *  Created on: Jan 24, 2012
- *      Author: Simon
- */
-
 #ifndef LOGINVIEW_H_
 #define LOGINVIEW_H_
 

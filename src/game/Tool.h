@@ -1,10 +1,3 @@
-/*
- * Tool.h
- *
- *  Created on: Jan 22, 2012
- *      Author: Simon
- */
-
 #ifndef TOOL_H_
 #define TOOL_H_
 

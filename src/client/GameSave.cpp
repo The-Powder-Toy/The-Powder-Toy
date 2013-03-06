@@ -1318,7 +1318,7 @@ void GameSave::readPSv(char * data, int dataLength)
 					ttv |= (d[p++]);
 					particles[i-1].tmp = ttv;
 					if (ver<53 && !particles[i-1].tmp)
-						for (q = 1; q<=NGOLALT; q++) {
+						for (q = 1; q<=NGOL; q++) {
 							if (particles[i-1].type==goltype[q-1] && grule[q][9]==2)
 								particles[i-1].tmp = grule[q][9]-1;
 						}
@@ -1500,7 +1500,7 @@ void GameSave::readPSv(char * data, int dataLength)
 			if(ver<51 && ((ty>=78 && ty<=89) || (ty>=134 && ty<=146 && ty!=141))){
 				//Replace old GOL
 				particles[i-1].type = PT_LIFE;
-				for (gnum = 0; gnum<NGOLALT; gnum++){
+				for (gnum = 0; gnum<NGOL; gnum++){
 					if (ty==goltype[gnum])
 						particles[i-1].ctype = gnum;
 				}
@@ -1508,7 +1508,7 @@ void GameSave::readPSv(char * data, int dataLength)
 			}
 			if(ver<52 && (ty==PT_CLNE || ty==PT_PCLN || ty==PT_BCLN)){
 				//Replace old GOL ctypes in clone
-				for (gnum = 0; gnum<NGOLALT; gnum++){
+				for (gnum = 0; gnum<NGOL; gnum++){
 					if (particles[i-1].ctype==goltype[gnum])
 					{
 						particles[i-1].ctype = PT_LIFE;

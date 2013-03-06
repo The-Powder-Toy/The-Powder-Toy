@@ -1,10 +1,3 @@
-/*
- * RenderController.cpp
- *
- *  Created on: Jan 23, 2012
- *      Author: Simon
- */
-
 #include "RenderController.h"
 
 RenderController::RenderController(Renderer * ren, ControllerCallback * callback):

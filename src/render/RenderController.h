@@ -1,10 +1,3 @@
-/*
- * RenderController.h
- *
- *  Created on: Jan 23, 2012
- *      Author: Simon
- */
-
 #ifndef RENDERCONTROLLER_H_
 #define RENDERCONTROLLER_H_
 

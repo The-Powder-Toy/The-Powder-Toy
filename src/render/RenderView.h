@@ -1,10 +1,3 @@
-/*
- * RenderView.h
- *
- *  Created on: Jan 23, 2012
- *      Author: Simon
- */
-
 #ifndef RENDERVIEW_H_
 #define RENDERVIEW_H_
 

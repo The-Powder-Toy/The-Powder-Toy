@@ -1,10 +1,3 @@
-/*
- * PreviewView.h
- *
- *  Created on: Jan 21, 2012
- *      Author: Simon
- */
-
 #ifndef PREVIEWVIEW_H_
 #define PREVIEWVIEW_H_
 

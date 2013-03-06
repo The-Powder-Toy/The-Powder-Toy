@@ -1,10 +1,3 @@
-/*
- * ConsoleCommand.h
- *
- *  Created on: Feb 1, 2012
- *      Author: Simon
- */
-
 #ifndef CONSOLECOMMAND_H_
 #define CONSOLECOMMAND_H_
 

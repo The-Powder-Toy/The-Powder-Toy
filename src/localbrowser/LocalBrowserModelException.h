@@ -1,10 +1,3 @@
-/*
- * StampsModelException.h
- *
- *  Created on: Mar 29, 2012
- *      Author: Simon
- */
-
 #ifndef STAMPSMODELEXCEPTION_H_
 #define STAMPSMODELEXCEPTION_H_
 

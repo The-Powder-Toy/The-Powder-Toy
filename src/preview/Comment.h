@@ -1,10 +1,3 @@
-/*
- * Comment.h
- *
- *  Created on: Feb 11, 2012
- *      Author: Simon
- */
-
 #ifndef COMMENT_H_
 #define COMMENT_H_
 

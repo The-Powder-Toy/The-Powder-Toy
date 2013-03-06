@@ -1,10 +1,3 @@
-/*
- * OptionsView.cpp
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #include "OptionsView.h"
 #include "Style.h"
 #include "interface/Button.h"
@@ -235,6 +228,5 @@ void OptionsView::OnTryExit(ExitMethod method)
 
 
 OptionsView::~OptionsView() {
-	// TODO Auto-generated destructor stub
 }
 

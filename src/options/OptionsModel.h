@@ -1,10 +1,3 @@
-/*
- * OptionsModel.h
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #ifndef OPTIONSMODEL_H_
 #define OPTIONSMODEL_H_
 #include <vector>

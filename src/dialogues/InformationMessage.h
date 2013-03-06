@@ -1,10 +1,3 @@
-/*
- * InformationMessage.h
- *
- *  Created on: Jan 29, 2012
- *      Author: Simon
- */
-
 #ifndef INFORMATIONMESSAGE_H_
 #define INFORMATIONMESSAGE_H_
 

@@ -1,10 +1,3 @@
-/*
- * LoginView.cpp
- *
- *  Created on: Jan 24, 2012
- *      Author: Simon
- */
-
 #include "LoginView.h"
 
 #include "interface/Button.h"

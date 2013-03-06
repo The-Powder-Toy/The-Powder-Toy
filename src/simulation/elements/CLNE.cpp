@@ -49,7 +49,7 @@ Element_CLNE::Element_CLNE()
 //#TPT-Directive ElementHeader Element_CLNE static int update(UPDATE_FUNC_ARGS)
 int Element_CLNE::update(UPDATE_FUNC_ARGS)
  {
-	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOLALT)))
+	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOL)))
 	{
 		int r, rx, ry, rt;
 		for (rx=-1; rx<2; rx++)
