@@ -78,8 +78,9 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 						continue;
 					if ((r&0xFF)==PT_SPRK && parts[r>>8].life==3) { //spark found, start creating
 						unsigned int colored = 0;
-						int destroy = (parts[r>>8].ctype==PT_PSCN)?1:0;
-						int nostop = (parts[r>>8].ctype==PT_INST)?1:0;
+						bool destroy = parts[r>>8].ctype==PT_PSCN;
+						bool nostop = parts[r>>8].ctype==PT_INST;
+						bool createSpark = (parts[r>>8].ctype==PT_INWR);
 						int partsRemaining = 255;
 						if (parts[i].tmp) //how far it shoots
 							partsRemaining = parts[i].tmp;
@@ -88,7 +89,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 								break;
 							}
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
-							if (!sim->IsWallBlocking(x+nxi+nxx, y+nyi+nyy, parts[i].ctype) && (!sim->pmap[y+nyi+nyy][x+nxi+nxx] || (parts[i].ctype == PT_SPRK && parts[r>>8].type != PT_BREC && !destroy))) { // create, also set color if it has passed through FILT
+							if (!sim->IsWallBlocking(x+nxi+nxx, y+nyi+nyy, parts[i].ctype) && (!sim->pmap[y+nyi+nyy][x+nxi+nxx] || createSpark)) { // create, also set color if it has passed through FILT
 								int nr;
 								if (parts[i].ctype == PT_LIFE)
 									nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype|(parts[i].tmp2<<8));
@@ -98,7 +99,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 									parts[nr].dcolour = colored;
 									parts[nr].temp = parts[i].temp;
 								}
-								if((!destroy || (parts[i].ctype != PT_SPRK &&parts[r>>8].type != PT_BREC)) && !--partsRemaining)
+								if(!--partsRemaining)
 									docontinue = 0;
 							} else if ((r&0xFF)==PT_FILT) { // get color if passed through FILT
 								colored = wavelengthToDecoColour(parts[r>>8].ctype);

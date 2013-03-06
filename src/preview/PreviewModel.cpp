@@ -314,5 +314,6 @@ PreviewModel::~PreviewModel() {
 			delete saveComments->at(i);
 		delete saveComments;
 	}
+	saveDataBuffer.clear();
 }
 
