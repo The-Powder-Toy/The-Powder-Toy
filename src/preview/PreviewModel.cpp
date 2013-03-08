@@ -100,7 +100,7 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	{
 		for(int i = 0; i < saveComments->size(); i++)
 			delete saveComments->at(i);
-		delete saveComments;
+		saveComments->clear();
 		saveComments = NULL;
 	}
 	notifySaveChanged();
@@ -166,7 +166,7 @@ void PreviewModel::UpdateComments(int pageNumber)
 	{
 		for(int i = 0; i < saveComments->size(); i++)
 			delete saveComments->at(i);
-		delete saveComments;
+		saveComments->clear();
 		saveComments = NULL;
 	}
 
@@ -294,7 +294,7 @@ void PreviewModel::Update()
 			{
 				for(int i = 0; i < saveComments->size(); i++)
 					delete saveComments->at(i);
-				delete saveComments;
+				saveComments->clear();
 				saveComments = NULL;
 			}
 			commentsLoaded = true;
@@ -308,12 +308,6 @@ void PreviewModel::Update()
 PreviewModel::~PreviewModel() {
 	if(save)
 		delete save;
-	if(saveComments)
-	{
-		for(int i = 0; i < saveComments->size(); i++)
-			delete saveComments->at(i);
-		delete saveComments;
-	}
 	saveDataBuffer.clear();
 }
 
