@@ -48,7 +48,7 @@ private:
 	bool updateTagListWorking;
 	volatile bool updateTagListFinished;
 	pthread_t updateTagListThread;
-		static void * updateTagListTHelper(void * obj);
+	static void * updateTagListTHelper(void * obj);
 	void * updateTagListT();
 public:
     SearchModel();
