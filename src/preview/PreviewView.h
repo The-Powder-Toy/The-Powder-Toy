@@ -37,7 +37,6 @@ class PreviewView: public ui::Window {
 	ui::Label * viewsLabel;
 	ui::Textbox * saveIDTextbox;
 	ui::ScrollPanel * commentsPanel;
-	std::vector<SaveComment> comments;
 	std::vector<ui::Component*> commentComponents;
 	std::vector<ui::Component*> commentTextComponents;
 	int votesUp;

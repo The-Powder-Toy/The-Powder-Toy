@@ -166,7 +166,7 @@ void PreviewModel::UpdateComments(int pageNumber)
 	{
 		for(int i = 0; i < saveComments->size(); i++)
 			delete saveComments->at(i);
-		saveComments->clear();
+		delete saveComments;
 		saveComments = NULL;
 	}
 
@@ -295,6 +295,7 @@ void PreviewModel::Update()
 				for(int i = 0; i < saveComments->size(); i++)
 					delete saveComments->at(i);
 				saveComments->clear();
+				delete saveComments;
 				saveComments = NULL;
 			}
 			commentsLoaded = true;
