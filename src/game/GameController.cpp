@@ -196,6 +196,22 @@ GameController::~GameController()
 	{
 		ui::Engine::Ref().CloseWindow();
 	}
+	//deleted here because it refuses to be deleted when deleted from gameModel even with the same code
+	std::deque<Snapshot*> history = gameModel->GetHistory();
+	for(std::deque<Snapshot*>::iterator iter = history.begin(), end = history.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
+	std::vector<QuickOption*> quickOptions = gameModel->GetQuickOptions();
+	for(std::vector<QuickOption*>::iterator iter = quickOptions.begin(), end = quickOptions.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
+	std::vector<Notification*> notifications = gameModel->GetNotifications();
+	for(std::vector<Notification*>::iterator iter = notifications.begin(); iter != notifications.end(); ++iter)
+	{
+		delete *iter;
+	}
 	delete gameModel;
 	delete gameView;
 }
