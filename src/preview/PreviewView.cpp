@@ -489,15 +489,18 @@ void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)
 
 void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 {
-	if(sender->GetComments())
-	{
-		comments = std::vector<SaveComment>(sender->GetComments()->begin(), sender->GetComments()->end());
-	}
-	else
-	{
-		comments.clear();
-	}
+	std::vector<SaveComment*> * comments = sender->GetComments();
 
+	for(int i = 0; i < commentComponents.size(); i++)
+	{
+		commentsPanel->RemoveChild(commentComponents[i]);
+		delete commentComponents[i];
+	}
+	commentComponents.clear();
+	commentTextComponents.clear();
+	commentsPanel->InnerSize = ui::Point(0, 0);
+
+	if(comments)
 	{
 		for(int i = 0; i < commentComponents.size(); i++)
 		{
@@ -510,10 +513,10 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		int currentY = 0;//-yOffset;
 		ui::Label * tempUsername;
 		ui::Label * tempComment;
-		for(int i = 0; i < comments.size(); i++)
+		for(int i = 0; i < comments->size(); i++)
 		{
 			int usernameY = currentY+5, commentY;
-			tempUsername = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), 16), comments[i].authorName);
+			tempUsername = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorName);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 			currentY += 16;
@@ -523,7 +526,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 
 
 			commentY = currentY+5;
-			tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comments[i].comment);
+			tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comments->at(i)->comment);
 			tempComment->SetMultiline(true);
 			tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
