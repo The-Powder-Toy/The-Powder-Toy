@@ -413,6 +413,8 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 {
 	std::vector<std::string> extensions;
 	extensions.push_back(extension);
+	for (std::string::iterator iter = search.begin(); iter != search.end(); ++iter)
+		*iter = toupper(*iter);
 	return DirectorySearch(directory, search, extensions);
 }
 
@@ -463,18 +465,22 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 	std::vector<std::string> searchResults;
 	for(std::vector<std::string>::iterator iter = directoryList.begin(), end = directoryList.end(); iter != end; ++iter)
 	{
-		std::string filename = *iter;
+		std::string filename = *iter, tempfilename = *iter;
 		bool extensionMatch = !extensions.size();
 		for(std::vector<std::string>::iterator extIter = extensions.begin(), extEnd = extensions.end(); extIter != extEnd; ++extIter)
 		{
-			if(filename.find(*extIter, filename.length()-(*extIter).length())==filename.length()-(*extIter).length())
+			int filenameLength = filename.length()-(*extIter).length();
+			if(filename.find(*extIter, filenameLength) == filenameLength)
 			{
 				extensionMatch = true;
+				tempfilename = filename.substr(0, filenameLength);
 				break;
 			}
 		}
+		for (std::string::iterator iter = tempfilename.begin(); iter != tempfilename.end(); ++iter)
+			*iter = toupper(*iter);
 		bool searchMatch = !search.size();
-		if(search.size() && filename.find(search)!=std::string::npos)
+		if(search.size() && tempfilename.find(search)!=std::string::npos)
 			searchMatch = true;
 		
 		if(searchMatch && extensionMatch)
