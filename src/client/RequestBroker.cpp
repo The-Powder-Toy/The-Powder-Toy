@@ -2,7 +2,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <time.h>
-#include "ThumbnailBroker.h"
+#include "RequestBroker.h"
 #include "ThumbnailListener.h"
 #include "Client.h"
 #include "HTTP.h"
@@ -12,7 +12,7 @@
 
 //Asynchronous Thumbnail render & request processing
 
-ThumbnailBroker::ThumbnailBroker()
+RequestBroker::RequestBroker()
 {
 	thumbnailQueueRunning = false;
 	//thumbnailQueueMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -25,12 +25,12 @@ ThumbnailBroker::ThumbnailBroker()
 	pthread_mutex_init (&runningMutex, NULL);
 }
 
-ThumbnailBroker::~ThumbnailBroker()
+RequestBroker::~RequestBroker()
 {
 
 }
 
-void ThumbnailBroker::assureRunning()
+void RequestBroker::assureRunning()
 {
 	pthread_mutex_lock(&runningMutex);
 	bool running = thumbnailQueueRunning;
@@ -42,11 +42,11 @@ void ThumbnailBroker::assureRunning()
 #ifdef DEBUG
 		std::cout << typeid(*this).name() << " Starting background thread for new " << __FUNCTION__ << " request" << std::endl;
 #endif
-		pthread_create(&thumbnailQueueThread, 0, &ThumbnailBroker::thumbnailQueueProcessHelper, this);
+		pthread_create(&thumbnailQueueThread, 0, &RequestBroker::thumbnailQueueProcessHelper, this);
 	}
 }
 
-void ThumbnailBroker::Shutdown()
+void RequestBroker::Shutdown()
 {
 	pthread_mutex_lock(&runningMutex);
 	if(thumbnailQueueRunning)
@@ -69,12 +69,12 @@ void ThumbnailBroker::Shutdown()
 	}
 }
 
-void ThumbnailBroker::RenderThumbnail(GameSave * gameSave, int width, int height, ThumbnailListener * tListener)
+void RequestBroker::RenderThumbnail(GameSave * gameSave, int width, int height, ThumbnailListener * tListener)
 {
 	RenderThumbnail(gameSave, true, true, width, height, tListener);
 }
 
-void ThumbnailBroker::RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, ThumbnailListener * tListener)
+void RequestBroker::RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, ThumbnailListener * tListener)
 {
 	AttachThumbnailListener(tListener);
 	pthread_mutex_lock(&thumbnailQueueMutex);
@@ -84,7 +84,7 @@ void ThumbnailBroker::RenderThumbnail(GameSave * gameSave, bool decorations, boo
 	assureRunning();
 }
 
-void ThumbnailBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int height, ThumbnailListener * tListener)
+void RequestBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int height, ThumbnailListener * tListener)
 {
 	AttachThumbnailListener(tListener);
 	pthread_mutex_lock(&thumbnailQueueMutex);
@@ -94,13 +94,13 @@ void ThumbnailBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int
 	assureRunning();
 }
 
-void * ThumbnailBroker::thumbnailQueueProcessHelper(void * ref)
+void * RequestBroker::thumbnailQueueProcessHelper(void * ref)
 {
-	((ThumbnailBroker*)ref)->thumbnailQueueProcessTH();
+	((RequestBroker*)ref)->thumbnailQueueProcessTH();
 	return NULL;
 }
 
-void ThumbnailBroker::FlushThumbQueue()
+void RequestBroker::FlushThumbQueue()
 {
 	pthread_mutex_lock(&thumbnailQueueMutex);
 	while(thumbnailComplete.size())
@@ -121,7 +121,7 @@ void ThumbnailBroker::FlushThumbQueue()
 	pthread_mutex_unlock(&thumbnailQueueMutex);
 }
 
-void ThumbnailBroker::thumbnailQueueProcessTH()
+void RequestBroker::thumbnailQueueProcessTH()
 {
 	time_t lastAction = time(NULL);
 	pthread_mutex_lock(&runningMutex);
@@ -354,12 +354,12 @@ void ThumbnailBroker::thumbnailQueueProcessTH()
 	pthread_mutex_unlock(&runningMutex);
 }
 
-void ThumbnailBroker::RetrieveThumbnail(int saveID, int width, int height, ThumbnailListener * tListener)
+void RequestBroker::RetrieveThumbnail(int saveID, int width, int height, ThumbnailListener * tListener)
 {
 	RetrieveThumbnail(saveID, 0, width, height, tListener);
 }
 
-bool ThumbnailBroker::CheckThumbnailListener(ListenerHandle handle)
+bool RequestBroker::CheckThumbnailListener(ListenerHandle handle)
 {
 	pthread_mutex_lock(&listenersMutex);
 	int count = std::count(validListeners.begin(), validListeners.end(), handle);
@@ -368,14 +368,14 @@ bool ThumbnailBroker::CheckThumbnailListener(ListenerHandle handle)
 	return count;
 }
 
-void ThumbnailBroker::AttachThumbnailListener(ThumbnailListener * tListener)
+void RequestBroker::AttachThumbnailListener(ThumbnailListener * tListener)
 {
 	pthread_mutex_lock(&listenersMutex);
 	validListeners.push_back(ListenerHandle(tListener->ListenerRand, tListener));
 	pthread_mutex_unlock(&listenersMutex);
 }
 
-void ThumbnailBroker::DetachThumbnailListener(ThumbnailListener * tListener)
+void RequestBroker::DetachThumbnailListener(ThumbnailListener * tListener)
 {
 	pthread_mutex_lock(&listenersMutex);
 

@@ -138,6 +138,21 @@ std::vector<char> format::VideoBufferToPTI(const VideoBuffer & vidBuf)
 	return data;
 }
 
+VideoBuffer * format::PTIToVideoBuffer(std::vector<char> & data)
+{
+
+	int newWidth, newHeight;
+	pixel * buffer = Graphics::ptif_unpack(&data[0], data.size(), &newWidth, &newHeight);
+
+	if(buffer)
+	{
+		VideoBuffer * vb = new VideoBuffer(buffer, newWidth, newHeight);
+		free(buffer);
+		return vb;
+	}
+	return NULL;
+}
+
 std::vector<char> format::VideoBufferToPPM(const VideoBuffer & vidBuf)
 {
 	std::vector<char> data;

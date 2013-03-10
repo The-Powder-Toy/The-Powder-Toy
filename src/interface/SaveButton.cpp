@@ -5,7 +5,7 @@
 #include "client/SaveInfo.h"
 #include "graphics/Graphics.h"
 #include "Engine.h"
-#include "client/ThumbnailBroker.h"
+#include "client/RequestBroker.h"
 #include "simulation/SaveRenderer.h"
 #include "Format.h"
 #include "ContextMenu.h"
@@ -117,7 +117,7 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 
 SaveButton::~SaveButton()
 {
-	ThumbnailBroker::Ref().DetachThumbnailListener(this);
+	RequestBroker::Ref().DetachThumbnailListener(this);
 
 	if(thumbnail)
 		delete thumbnail;
@@ -149,18 +149,18 @@ void SaveButton::Tick(float dt)
 			if(save->GetGameSave())
 			{
 				waitingForThumb = true;
-				ThumbnailBroker::Ref().RenderThumbnail(save->GetGameSave(), Size.X-3, Size.Y-25, this);
+				RequestBroker::Ref().RenderThumbnail(save->GetGameSave(), Size.X-3, Size.Y-25, this);
 			}
 			else if(save->GetID())
 			{
 				waitingForThumb = true;
-				ThumbnailBroker::Ref().RetrieveThumbnail(save->GetID(), save->GetVersion(), Size.X-3, Size.Y-25, this);
+				RequestBroker::Ref().RetrieveThumbnail(save->GetID(), save->GetVersion(), Size.X-3, Size.Y-25, this);
 			}
 		}
 		else if(file && file->GetGameSave())
 		{
 			waitingForThumb = true;
-			ThumbnailBroker::Ref().RenderThumbnail(file->GetGameSave(), Size.X-3, Size.Y-25, this);
+			RequestBroker::Ref().RenderThumbnail(file->GetGameSave(), Size.X-3, Size.Y-25, this);
 		}
 	}
 }

@@ -35,10 +35,25 @@ VideoBuffer::VideoBuffer(VideoBuffer * old):
 	std::copy(old->Buffer, old->Buffer+(old->Width*old->Height), Buffer);
 };
 
+VideoBuffer::VideoBuffer(pixel * buffer, int width, int height):
+	Width(width),
+	Height(height)
+{
+	Buffer = new pixel[width*height];
+	std::copy(buffer, buffer+(width*height), Buffer);
+}
+
 void VideoBuffer::Resize(float factor, bool resample)
 {
 	int newWidth = ((float)Width)*factor;
 	int newHeight = ((float)Height)*factor;
+	Resize(newWidth, newHeight);
+}
+
+void VideoBuffer::Resize(int width, int height, bool resample)
+{
+	int newWidth = width;
+	int newHeight = height;
 	pixel * newBuffer;
 	if(resample)
 		newBuffer = Graphics::resample_img(Buffer, Width, Height, newWidth, newHeight);

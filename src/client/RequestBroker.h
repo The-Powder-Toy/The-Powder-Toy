@@ -12,7 +12,7 @@ class GameSave;
 class Thumbnail;
 class ThumbnailListener;
 typedef std::pair<int, ThumbnailListener*> ListenerHandle;
-class ThumbnailBroker: public Singleton<ThumbnailBroker>
+class RequestBroker: public Singleton<RequestBroker>
 {
 private: 
 	class ThumbnailSpec
@@ -67,6 +67,15 @@ private:
 		ThumbRenderRequest() :	Save(0), Decorations(true), Fire(true), Width(0), Height(0), CompletedListener(ListenerHandle(0, (ThumbnailListener*)NULL)) {}
 	};
 
+	class Request
+	{
+		enum RequestType { Thumbnail, ThumbnailRender, HTTP };
+	public:
+		RequestType Type;
+		void * RequestObject;
+		ListenerHandle Listener;
+	};
+
 	//Thumbnail retreival
 	/*int thumbnailCacheNextID;
 	Thumbnail * thumbnailCache[THUMB_CACHE_SIZE];
@@ -87,16 +96,17 @@ private:
 	std::list<ThumbnailRequest> currentRequests;
 	std::deque<std::pair<ThumbnailID, Thumbnail*> > thumbnailCache;
 
-
 	std::vector<ListenerHandle> validListeners;
+
+	std::deque<Request> requestQueue;
 
 	static void * thumbnailQueueProcessHelper(void * ref);
 	void thumbnailQueueProcessTH();
 	void assureRunning();
 
 public:
-	ThumbnailBroker();
-	virtual ~ThumbnailBroker();
+	RequestBroker();
+	virtual ~RequestBroker();
 	void Shutdown();
 
 	void FlushThumbQueue();

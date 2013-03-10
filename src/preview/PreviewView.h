@@ -14,6 +14,7 @@
 namespace ui
 {
 	class ScrollPanel;
+	class AvatarButton;
 }
 
 class PreviewModel;
@@ -32,6 +33,7 @@ class PreviewView: public ui::Window {
 	ui::Textbox * addCommentBox;
 	ui::Label * saveNameLabel;
 	ui::Label * authorDateLabel;
+	ui::AvatarButton * avatarButton;
 	ui::Label * pageInfo;
 	ui::Label * saveDescriptionLabel;
 	ui::Label * viewsLabel;
@@ -42,6 +44,7 @@ class PreviewView: public ui::Window {
 	int votesUp;
 	int votesDown;
 	bool doOpen;
+	bool showAvatars;
 
 	int commentBoxHeight;
 	float commentBoxPositionX;

@@ -17,6 +17,7 @@ class SaveInfo;
 class SaveFile;
 class SaveComment;
 class GameSave;
+class VideoBuffer;
 
 enum LoginStatus {
 	LoginOkay, LoginError
@@ -124,6 +125,8 @@ public:
 	void MoveStampToFront(std::string stampID);
 
 	RequestStatus AddComment(int saveID, std::string comment);
+
+	VideoBuffer * GetAvatar(std::string username);
 
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	std::vector<unsigned char> GetSaveData(int saveID, int saveDate);

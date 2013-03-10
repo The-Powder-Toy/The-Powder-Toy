@@ -42,7 +42,7 @@
 #include "search/Thumbnail.h"
 #include "preview/Comment.h"
 #include "ClientListener.h"
-#include "ThumbnailBroker.h"
+#include "RequestBroker.h"
 
 #include "cajun/reader.h"
 #include "cajun/writer.h"
@@ -617,7 +617,7 @@ std::vector<std::pair<std::string, std::string> > Client::GetServerNotifications
 void Client::Tick()
 {
 	//Check thumbnail queue
-	ThumbnailBroker::Ref().FlushThumbQueue();
+	RequestBroker::Ref().FlushThumbQueue();
 
 	//Check status on version check request
 	if(versionCheckRequest && http_async_req_status(versionCheckRequest))
@@ -809,7 +809,7 @@ void Client::WritePrefs()
 
 void Client::Shutdown()
 {
-	ThumbnailBroker::Ref().Shutdown();
+	RequestBroker::Ref().Shutdown();
 	ClearThumbnailRequests();
 	http_done();
 
@@ -1148,6 +1148,28 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 
 	delete[] data;
 	return saveData;
+}
+
+VideoBuffer * Client::GetAvatar(std::string username)
+{
+	lastError = "";
+	int dataStatus;
+	int dataLength = 0;
+	unsigned char * data;
+	std::stringstream urlStream;
+	urlStream << "http://" << STATICSERVER << "/avatars/" << username << ".pti";
+
+	data = (unsigned char *)http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+	if(data && dataStatus == 200)
+	{
+		std::vector<char> responseData(data, data+dataLength);
+		return format::PTIToVideoBuffer(responseData);
+	}
+	else if(data)
+	{
+		free(data);
+	}
+	return NULL;
 }
 
 LoginStatus Client::Login(std::string username, std::string password, User & user)

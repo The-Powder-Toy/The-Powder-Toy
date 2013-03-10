@@ -4,7 +4,7 @@
 #include "interface/Button.h"
 #include "interface/Checkbox.h"
 #include "search/Thumbnail.h"
-#include "client/ThumbnailBroker.h"
+#include "client/RequestBroker.h"
 #include "dialogues/ErrorMessage.h"
 #include "dialogues/ConfirmPrompt.h"
 #include "client/Client.h"
@@ -132,7 +132,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	SetOkayButton(okayButton);
 
 	if(save.GetGameSave())
-		ThumbnailBroker::Ref().RenderThumbnail(save.GetGameSave(), false, true, (Size.X/2)-16, -1, this);
+		RequestBroker::Ref().RenderThumbnail(save.GetGameSave(), false, true, (Size.X/2)-16, -1, this);
 }
 
 ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, ServerSaveActivity::SaveUploadedCallback * callback) :

@@ -3,7 +3,7 @@
 #include "interface/Textbox.h"
 #include "interface/Button.h"
 #include "search/Thumbnail.h"
-#include "client/ThumbnailBroker.h"
+#include "client/RequestBroker.h"
 #include "dialogues/ErrorMessage.h"
 #include "dialogues/ConfirmPrompt.h"
 #include "client/Client.h"
@@ -67,7 +67,7 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback
 	SetOkayButton(okayButton);
 
 	if(save.GetGameSave())
-		ThumbnailBroker::Ref().RenderThumbnail(save.GetGameSave(), true, false, Size.X-16, -1, this);
+		RequestBroker::Ref().RenderThumbnail(save.GetGameSave(), true, false, Size.X-16, -1, this);
 }
 
 void LocalSaveActivity::Save()

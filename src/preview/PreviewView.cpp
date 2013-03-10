@@ -12,6 +12,7 @@
 #include "search/Thumbnail.h"
 #include "client/Client.h"
 #include "interface/ScrollPanel.h"
+#include "interface/AvatarButton.h"
 #include "interface/Keys.h"
 
 class PreviewView::LoginAction: public ui::ButtonAction
@@ -52,7 +53,8 @@ PreviewView::PreviewView():
 	doOpen(false),
 	addCommentBox(NULL),
 	submitCommentButton(NULL),
-	commentBoxHeight(20)
+	commentBoxHeight(20),
+	showAvatars(true)
 {
 	class FavAction: public ui::ButtonAction
 	{
@@ -133,22 +135,37 @@ PreviewView::PreviewView():
 	browserOpenButton->SetActionCallback(new BrowserOpenAction(this));
 	AddComponent(browserOpenButton);
 
-	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(100, 16), "");
+	if(showAvatars)
+		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(100, 16), "");
+	else
+		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(100, 16), "");
 	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(saveNameLabel);
 
-	saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15+17), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+4+15+17)-21), "");
+	if(showAvatars)
+		saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15+21), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+4+15+17)-25), "");
+	else
+		saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15+19), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+4+15+17)-23), "");
 	saveDescriptionLabel->SetMultiline(true);
 	saveDescriptionLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveDescriptionLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	saveDescriptionLabel->SetTextColour(ui::Colour(180, 180, 180));
 	AddComponent(saveDescriptionLabel);
 
-	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15), ui::Point(200, 16), "");
+	if(showAvatars)
+		authorDateLabel = new ui::Label(ui::Point(39, (YRES/2)+4+15), ui::Point(180, 16), "");
+	else
+		authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15), ui::Point(200, 16), "");
 	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(authorDateLabel);
+
+	if(showAvatars)
+	{
+		avatarButton = new ui::AvatarButton(ui::Point(4, (YRES/2)+4), ui::Point(34, 34), "");
+		AddComponent(avatarButton);
+	}
 
 	viewsLabel = new ui::Label(ui::Point((XRES/2)-80, (YRES/2)+4+15), ui::Point(80, 16), "");
 	viewsLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
@@ -373,7 +390,14 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		votesUp = save->votesUp;
 		votesDown = save->votesDown;
 		saveNameLabel->SetText(save->name);
-		authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
+		if(showAvatars) {
+			avatarButton->SetUsername(save->userName);
+			authorDateLabel->SetText("\bw" + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
+		}
+		else
+		{
+			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
+		}
 		viewsLabel->SetText("\bgViews:\bw " + format::NumberToString<int>(save->Views));
 		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
@@ -513,17 +537,27 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		int currentY = 0;//-yOffset;
 		ui::Label * tempUsername;
 		ui::Label * tempComment;
+		ui::AvatarButton * tempAvatar;
 		for(int i = 0; i < comments->size(); i++)
 		{
 			int usernameY = currentY+5, commentY;
-			tempUsername = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorName);
+			if(showAvatars)
+			{
+				tempAvatar = new ui::AvatarButton(ui::Point(4, currentY+4), ui::Point(26, 26), comments->at(i)->authorName);
+				commentComponents.push_back(tempAvatar);
+				commentsPanel->AddChild(tempAvatar);
+			}
+
+			if(showAvatars)
+				tempUsername = new ui::Label(ui::Point(31, currentY+5), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorName);
+			else
+				tempUsername = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorName);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 			currentY += 16;
 
 			commentComponents.push_back(tempUsername);
 			commentsPanel->AddChild(tempUsername);
-
 
 			commentY = currentY+5;
 			tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comments->at(i)->comment);
