@@ -146,10 +146,13 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 	Element_PPIP::ppip_changed = 1;
 	for(int i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
 	{
-		sign tempSign = save->signs[i];
-		tempSign.x += fullX;
-		tempSign.y += fullY;
-		signs.push_back(tempSign);
+		if (save->signs[i].text[0])
+		{
+			sign tempSign = save->signs[i];
+			tempSign.x += fullX;
+			tempSign.y += fullY;
+			signs.push_back(tempSign);
+		}
 	}
 	for(int saveBlockX = 0; saveBlockX < save->blockWidth; saveBlockX++)
 	{

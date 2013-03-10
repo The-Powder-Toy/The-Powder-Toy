@@ -64,7 +64,7 @@ void * SearchModel::updateTagListT()
 void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 {
 	//Threading
-	if(!updateSaveListWorking && !updateTagListWorking)
+	if(!updateSaveListWorking)
 	{
 		lastQuery = query;
 		lastError = "";
@@ -84,7 +84,7 @@ void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 		selected.clear();
 		notifySelectedChanged();
 
-		if(GetShowTags() && !tagList.size())
+		if(GetShowTags() && !tagList.size() && !updateTagListWorking)
 		{
 			updateTagListFinished = false;
 			updateTagListWorking = true;

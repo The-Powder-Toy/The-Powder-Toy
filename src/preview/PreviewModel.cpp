@@ -137,6 +137,7 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 		for(int i = 0; i < saveComments->size(); i++)
 			delete saveComments->at(i);
 		saveComments->clear();
+		delete saveComments;
 		saveComments = NULL;
 	}
 	notifySaveChanged();
@@ -202,6 +203,7 @@ void PreviewModel::UpdateComments(int pageNumber)
 	{
 		for(int i = 0; i < saveComments->size(); i++)
 			delete saveComments->at(i);
+		saveComments->clear();
 		delete saveComments;
 		saveComments = NULL;
 	}
