@@ -36,65 +36,63 @@ void * PreviewModel::updateSaveCommentsTHelper(void * obj)
 	return ((PreviewModel*)obj)->updateSaveCommentsT();
 }
 
+void PreviewModel::updateSaveInfoTDelete(void * arg)
+{
+	delete arg;
+}
+void PreviewModel::updateSaveDataTDelete(void * arg)
+{
+	free(arg);
+}
+void PreviewModel::updateSaveCommentsTDelete(void * arg)
+{
+	for(int i = 0; i < ((std::vector<SaveComment*> *)arg)->size(); i++)
+		delete ((std::vector<SaveComment*> *)arg)->at(i);
+	((std::vector<SaveComment*> *)arg)->clear();
+	delete arg;
+}
+
 void * PreviewModel::updateSaveInfoT()
 {
-	int check;
-	pthread_attr_t attr;
-	SaveInfo * tempSave = Client::Ref().GetSave(tSaveID, tSaveDate);
-	pthread_getattr_np(pthread_self(), &attr);
-	pthread_attr_getdetachstate(&attr,&check);
-	pthread_attr_destroy(&attr);
-	if (check==PTHREAD_CREATE_JOINABLE)
-	{
-	    updateSaveInfoFinished = true;
-	    return tempSave;
-	} else
-	{
-		if (tempSave) delete tempSave;
-	}
-	return NULL;
+	SaveInfo * tempSave;
+	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
+	tempSave = Client::Ref().GetSave(tSaveID, tSaveDate);
+	pthread_cleanup_push(&updateSaveInfoTDelete,tempSave);
+	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL);
+	pthread_testcancel();
+	updateSaveInfoFinished = true;
+	pthread_cleanup_pop(0);
+	return tempSave;
 }
 
 void * PreviewModel::updateSaveDataT()
 {
-	int tempDataSize, check;
-	pthread_attr_t attr;
-	unsigned char * tempData = Client::Ref().GetSaveData(tSaveID, tSaveDate, tempDataSize);
-	pthread_getattr_np(pthread_self(), &attr);
-	pthread_attr_getdetachstate(&attr,&check);
-	pthread_attr_destroy(&attr);
-	if (check==PTHREAD_CREATE_JOINABLE)
-	{
-		saveDataBuffer.clear();
-		if (tempData)
-			saveDataBuffer.insert(saveDataBuffer.begin(), tempData, tempData+tempDataSize);
-		updateSaveDataFinished = true;
-	} 
-	if (tempData) free(tempData);
-
+	int tempDataSize;
+	unsigned char * tempData;
+	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
+	tempData = Client::Ref().GetSaveData(tSaveID, tSaveDate, tempDataSize);
+	pthread_cleanup_push(&updateSaveDataTDelete,tempData);
+	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL);
+	pthread_testcancel();
+	saveDataBuffer.clear();
+	if (tempData)
+		saveDataBuffer.insert(saveDataBuffer.begin(), tempData, tempData+tempDataSize);
+	updateSaveDataFinished = true;
+	pthread_cleanup_pop(1);
 	return NULL;
 }
 
 void * PreviewModel::updateSaveCommentsT()
 {
-	int check;
-	pthread_attr_t attr;
-	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(tSaveID, (commentsPageNumber-1)*20, 20);
-	pthread_getattr_np(pthread_self(), &attr);
-	pthread_attr_getdetachstate(&attr,&check);
-	pthread_attr_destroy(&attr);
-	if (check==PTHREAD_CREATE_JOINABLE)
-	{
-		updateSaveCommentsFinished = true;
-		return tempComments;
-	} else
-	{
-		for(int i = 0; i < tempComments->size(); i++)
-			delete tempComments->at(i);
-		tempComments->clear();
-		delete tempComments;
-	}
-	return NULL;
+	std::vector<SaveComment*> * tempComments;
+	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
+	tempComments = Client::Ref().GetComments(tSaveID, (commentsPageNumber-1)*20, 20);
+	pthread_cleanup_push(&updateSaveCommentsTDelete,tempComments);
+	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL);
+	pthread_testcancel();
+	updateSaveCommentsFinished = true;
+	pthread_cleanup_pop(0);
+	return tempComments;
 }
 
 void PreviewModel::SetFavourite(bool favourite)
@@ -345,12 +343,9 @@ void PreviewModel::Update()
 }
 
 PreviewModel::~PreviewModel() {
-	//pthread_join(updateSaveDataThread, NULL);
-	//pthread_join(updateSaveInfoThread, NULL);
-	//pthread_join(updateSaveCommentsThread, NULL);
-	if (updateSaveDataWorking) pthread_detach(updateSaveDataThread);
-	if (updateSaveInfoWorking) pthread_detach(updateSaveInfoThread);
-	if (updateSaveCommentsWorking) pthread_detach(updateSaveCommentsThread);
+	pthread_cancel(updateSaveDataThread);
+	pthread_cancel(updateSaveInfoThread);
+	pthread_cancel(updateSaveCommentsThread);
 	if(save)
 		delete save;
 	if(saveComments)
