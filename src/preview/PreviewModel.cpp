@@ -38,27 +38,63 @@ void * PreviewModel::updateSaveCommentsTHelper(void * obj)
 
 void * PreviewModel::updateSaveInfoT()
 {
+	int check;
+	pthread_attr_t attr;
 	SaveInfo * tempSave = Client::Ref().GetSave(tSaveID, tSaveDate);
-	updateSaveInfoFinished = true;
-	return tempSave;
+	pthread_getattr_np(pthread_self(), &attr);
+	pthread_attr_getdetachstate(&attr,&check);
+	pthread_attr_destroy(&attr);
+	if (check==PTHREAD_CREATE_JOINABLE)
+	{
+	    updateSaveInfoFinished = true;
+	    return tempSave;
+	} else
+	{
+		if (tempSave) delete tempSave;
+	}
+	return NULL;
 }
 
 void * PreviewModel::updateSaveDataT()
 {
-	int tempDataSize;
+	int tempDataSize, check;
+	pthread_attr_t attr;
 	unsigned char * tempData = Client::Ref().GetSaveData(tSaveID, tSaveDate, tempDataSize);
-	saveDataBuffer.clear();
-	if (tempData)
-		saveDataBuffer.insert(saveDataBuffer.begin(), tempData, tempData+tempDataSize);
-	updateSaveDataFinished = true;
+	pthread_getattr_np(pthread_self(), &attr);
+	pthread_attr_getdetachstate(&attr,&check);
+	pthread_attr_destroy(&attr);
+	if (check==PTHREAD_CREATE_JOINABLE)
+	{
+		saveDataBuffer.clear();
+		if (tempData)
+			saveDataBuffer.insert(saveDataBuffer.begin(), tempData, tempData+tempDataSize);
+		updateSaveDataFinished = true;
+	} 
+	if (tempData) free(tempData);
+
 	return NULL;
 }
 
 void * PreviewModel::updateSaveCommentsT()
 {
+	int check;
+	pthread_attr_t attr;
 	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(tSaveID, (commentsPageNumber-1)*20, 20);
-	updateSaveCommentsFinished = true;
-	return tempComments;
+	pthread_getattr_np(pthread_self(), &attr);
+	pthread_attr_getdetachstate(&attr,&check);
+	pthread_attr_destroy(&attr);
+	if (check==PTHREAD_CREATE_JOINABLE)
+	{
+		updateSaveCommentsFinished = true;
+		return tempComments;
+	} else
+	{
+		for(int i = 0; i < tempComments->size(); i++)
+			delete tempComments->at(i);
+		tempComments->clear();
+		delete tempComments;
+	}
+	return NULL;
 }
 
 void PreviewModel::SetFavourite(bool favourite)
@@ -307,6 +343,12 @@ void PreviewModel::Update()
 }
 
 PreviewModel::~PreviewModel() {
+	//pthread_join(updateSaveDataThread, NULL);
+	//pthread_join(updateSaveInfoThread, NULL);
+	//pthread_join(updateSaveCommentsThread, NULL);
+	if (updateSaveDataWorking) pthread_detach(updateSaveDataThread);
+	if (updateSaveInfoWorking) pthread_detach(updateSaveInfoThread);
+	if (updateSaveCommentsWorking) pthread_detach(updateSaveCommentsThread);
 	if(save)
 		delete save;
 	if(saveComments)
@@ -314,6 +356,7 @@ PreviewModel::~PreviewModel() {
 		for(int i = 0; i < saveComments->size(); i++)
 			delete saveComments->at(i);
 		saveComments->clear();
+		delete saveComments;
 	}
 	saveDataBuffer.clear();
 }

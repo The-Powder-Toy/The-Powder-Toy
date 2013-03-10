@@ -1594,16 +1594,19 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 			tempSave->Favourite = tempFavourite.Value();
 			tempSave->Views = tempViews.Value();
 			tempSave->Version = tempVersion.Value();
+			free(data);
 			return tempSave;
 		}
 		catch (json::Exception &e)
 		{
 			lastError = "Could not read response";
+			free(data);
 			return NULL;
 		}
 	}
 	else
 	{
+		if (data) free(data);
 		lastError = http_ret_text(dataStatus);
 	}
 	return NULL;
