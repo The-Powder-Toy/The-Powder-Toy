@@ -27,7 +27,10 @@ ThumbnailBroker::ThumbnailBroker()
 
 ThumbnailBroker::~ThumbnailBroker()
 {
-
+	for(std::deque<std::pair<ThumbnailID, Thumbnail*> >::iterator iter = thumbnailCache.begin(), end = thumbnailCache.end(); iter != end; ++iter)
+	{
+		delete (*iter).second;
+	}
 }
 
 void ThumbnailBroker::assureRunning()
