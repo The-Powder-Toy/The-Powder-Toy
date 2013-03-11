@@ -31,7 +31,7 @@ Element_ICEI::Element_ICEI()
     Description = "Solid. Freezes water. Crushes under pressure. Cools down air.";
     
     State = ST_SOLID;
-    Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
+    Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
     
     LowPressure = IPL;
     LowPressureTransition = NT;
