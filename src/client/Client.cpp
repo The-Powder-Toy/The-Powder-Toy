@@ -1021,7 +1021,7 @@ std::string Client::AddStamp(GameSave * saveData)
 	stampStream.write((const char *)gameData, gameDataLength);
 	stampStream.close();
 
-	free(gameData);
+	delete gameData;
 
 	stampIDs.push_front(saveID.str());
 
@@ -1100,7 +1100,7 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 
 	if(authUser.ID)
 	{
-		char * directionText = direction==1?"Up":"Down";
+		char * directionText = (char*)(direction==1?"Up":"Down");
 		std::string saveIDText = format::NumberToString<int>(saveID);
 		std::string userIDText = format::NumberToString<int>(authUser.ID);
 
