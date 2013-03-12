@@ -121,7 +121,7 @@ void Client::Initialise(std::string proxyString)
 	}
 
 	if(proxyString.length())
-		http_init(proxyString.c_str());
+		http_init((char*)proxyString.c_str());
 	else
 		http_init(NULL);
 
@@ -411,12 +411,7 @@ void Client::SetProxy(std::string proxy)
 {
 	http_done();
 	if(proxy.length())
-	{
-		char *tempproxy = new char[proxy.length() + 1];
-		std::strcpy (tempproxy, proxy.c_str());
-		http_init(tempproxy);
-		delete[] tempproxy;
-	}
+		http_init((char*)proxy.c_str());
 	else
 		http_init(NULL);
 }
