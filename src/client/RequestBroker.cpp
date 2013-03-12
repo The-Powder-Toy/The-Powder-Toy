@@ -31,7 +31,10 @@ RequestBroker::RequestBroker()
 
 RequestBroker::~RequestBroker()
 {
-
+	for(std::deque<std::pair<std::string, VideoBuffer*> >::iterator iter = imageCache.begin(), end = imageCache.end(); iter != end; ++iter)
+	{
+		delete (*iter).second;
+	}
 }
 
 void RequestBroker::assureRunning()
