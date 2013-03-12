@@ -6,6 +6,7 @@
 #include "Component.h"
 #include "graphics/Graphics.h"
 #include "interface/Colour.h"
+#include "client/RequestListener.h"
 
 namespace ui
 {
@@ -17,7 +18,7 @@ public:
 	virtual ~AvatarButtonAction() {}
 };
 
-class AvatarButton : public Component
+class AvatarButton : public Component, public RequestListener
 {
 	VideoBuffer * avatar;
 	std::string name;
@@ -37,6 +38,8 @@ public:
 	virtual void Draw(const Point& screenPos);
 	virtual void Tick(float dt);
 
+	virtual void OnResponseReady(void * imagePtr);
+	
 	virtual void DoAction();
 
 	void SetUsername(std::string username) { name = username; }

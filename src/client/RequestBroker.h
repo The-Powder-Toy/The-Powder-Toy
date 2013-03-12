@@ -9,100 +9,132 @@
 #include "Singleton.h"
 
 class GameSave;
-class Thumbnail;
-class ThumbnailListener;
-typedef std::pair<int, ThumbnailListener*> ListenerHandle;
+class VideoBuffer;
+class RequestListener;
+typedef std::pair<int, RequestListener*> ListenerHandle;
 class RequestBroker: public Singleton<RequestBroker>
 {
 private: 
-	class ThumbnailSpec
-	{
-	public:
-		int Width, Height;
-		ListenerHandle CompletedListener;
-		ThumbnailSpec(int width, int height, ListenerHandle completedListener) :
-			Width(width), Height(height), CompletedListener(completedListener) {}
-	};
 
-	class ThumbnailID
+	enum ProcessResponse { Finished, OK, Canceled, Failed, Duplicate };
+
+	class Request
 	{
 	public:
-		int SaveID, SaveDate;
-		bool operator ==(const ThumbnailID & second)
+		enum RequestType { ThumbnailRender, Image };
+		RequestType Type;
+		void * ResultObject;
+		ListenerHandle Listener;
+		std::vector<Request*> Children;
+		Request(RequestType type, ListenerHandle listener)
 		{
-			return SaveID == second.SaveID && SaveDate == second.SaveDate;
+			Type = type;
+			Listener = listener;
+			ResultObject = NULL;
 		}
-		ThumbnailID(int saveID, int saveDate) : SaveID(saveID), SaveDate(saveDate) {}
-		ThumbnailID() : SaveID(0), SaveDate(0) {}
-	};
-
-	class ThumbnailRequest
-	{
-	public:
-		bool Complete;
-		void * HTTPContext;
-		int RequestTime;
-
-		ThumbnailID ID;
-		std::vector<ThumbnailSpec> SubRequests;
-		
-		ThumbnailRequest(int saveID, int saveDate, int width, int height, ListenerHandle completedListener) :
-			ID(saveID, saveDate), Complete(false), HTTPContext(NULL), RequestTime(0)
+		virtual ~Request()
+		{
+			std::vector<Request*>::iterator iter = Children.begin();
+			while(iter != Children.end())
 			{
-				SubRequests.push_back(ThumbnailSpec(width, height, completedListener));
+				delete (*iter);
+				iter++;
 			}
-		ThumbnailRequest() : Complete(false), HTTPContext(NULL), RequestTime(0) {}
+		}
+		virtual void Cleanup()
+		{
+			std::vector<Request*>::iterator iter = Children.begin();
+			while(iter != Children.end())
+			{
+				(*iter)->Cleanup();
+				iter++;
+			}
+		}
 	};
 
-	class ThumbRenderRequest
+	class ThumbRenderRequest: public Request
 	{
 	public:
 		int Width, Height;
 		bool Decorations;
 		bool Fire;
 		GameSave * Save;
-		ListenerHandle CompletedListener;
-		ThumbRenderRequest(GameSave * save, bool decorations, bool fire, int width, int height, ListenerHandle completedListener) :
-			Save(save), Width(width), Height(height), CompletedListener(completedListener), Decorations(decorations), Fire(fire) {}
-		ThumbRenderRequest() :	Save(0), Decorations(true), Fire(true), Width(0), Height(0), CompletedListener(ListenerHandle(0, (ThumbnailListener*)NULL)) {}
+		ThumbRenderRequest(GameSave * save, bool decorations, bool fire, int width, int height, ListenerHandle listener):
+			Request(ThumbnailRender, listener)
+		{
+			Save = save;
+			Width = width;
+			Height = height;
+			Decorations = decorations;
+			Fire = fire;
+		}
+		virtual ~ThumbRenderRequest()
+		{
+			if(Save)
+				delete Save;
+		}
+		virtual void Cleanup()
+		{
+			Request::Cleanup();
+			if(ResultObject)
+			{
+				delete ((VideoBuffer*)ResultObject);
+				ResultObject = NULL;
+			}
+		}
 	};
 
-	class Request
+	class ImageRequest: public Request
 	{
-		enum RequestType { Thumbnail, ThumbnailRender, HTTP };
 	public:
-		RequestType Type;
-		void * RequestObject;
-		ListenerHandle Listener;
+		int Width, Height;
+		std::string URL;
+		int RequestTime;
+		void * HTTPContext;
+		ImageRequest(std::string url, int width, int height, ListenerHandle listener):
+			Request(Image, listener)
+		{
+			URL = url;
+			HTTPContext = NULL;
+			Width = width;
+			Height = height;
+		}
+		virtual ~ImageRequest() {}
+		virtual void Cleanup()
+		{
+			Request::Cleanup();
+			if(ResultObject)
+			{
+				delete ((VideoBuffer*)ResultObject);
+				ResultObject = NULL;
+			}
+		}
 	};
 
-	//Thumbnail retreival
-	/*int thumbnailCacheNextID;
-	Thumbnail * thumbnailCache[THUMB_CACHE_SIZE];
-	void * activeThumbRequests[IMGCONNS];
-	int activeThumbRequestTimes[IMGCONNS];
-	int activeThumbRequestCompleteTimes[IMGCONNS];
-	std::string activeThumbRequestIDs[IMGCONNS];*/
-
-	pthread_mutex_t thumbnailQueueMutex;
 	pthread_mutex_t listenersMutex;
 	pthread_mutex_t runningMutex;
+	pthread_mutex_t requestQueueMutex;
+	pthread_mutex_t completeQueueMutex;
+
 	pthread_t thumbnailQueueThread;
 	bool thumbnailQueueRunning;
-	std::deque<ThumbnailRequest> thumbnailRequests;
-	std::deque<ThumbRenderRequest> renderRequests; 
-
-	std::deque<std::pair<ListenerHandle, Thumbnail*> > thumbnailComplete;
-	std::list<ThumbnailRequest> currentRequests;
-	std::deque<std::pair<ThumbnailID, Thumbnail*> > thumbnailCache;
 
 	std::vector<ListenerHandle> validListeners;
 
-	std::deque<Request> requestQueue;
+	std::deque<std::pair<std::string, VideoBuffer*> > imageCache;
+
+	std::queue<Request*> completeQueue;
+	std::vector<Request*> requestQueue;
+	std::vector<Request*> activeRequests;
 
 	static void * thumbnailQueueProcessHelper(void * ref);
 	void thumbnailQueueProcessTH();
 	void assureRunning();
+
+	ProcessResponse processThumbnailRender(ThumbRenderRequest & request);
+	ProcessResponse processImage(ImageRequest & request);
+
+	void requestComplete(Request * completedRequest);
 
 public:
 	RequestBroker();
@@ -110,12 +142,14 @@ public:
 	void Shutdown();
 
 	void FlushThumbQueue();
-	void RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, ThumbnailListener * tListener);
-	void RenderThumbnail(GameSave * gameSave, int width, int height, ThumbnailListener * tListener);
-	void RetrieveThumbnail(int saveID, int saveDate, int width, int height, ThumbnailListener * tListener);
-	void RetrieveThumbnail(int saveID, int width, int height, ThumbnailListener * tListener);
+	void RetrieveImage(std::string imageUrl, int width, int height, RequestListener * tListener);
+	void RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, RequestListener * tListener);
+	void RenderThumbnail(GameSave * gameSave, int width, int height, RequestListener * tListener);
+	void RetrieveThumbnail(int saveID, int saveDate, int width, int height, RequestListener * tListener);
+	void RetrieveThumbnail(int saveID, int width, int height, RequestListener * tListener);
+	void RetrieveAvatar(std::string username, int width, int height, RequestListener * tListener);
 	
-	bool CheckThumbnailListener(ListenerHandle handle);
-	void AttachThumbnailListener(ThumbnailListener * tListener);
-	void DetachThumbnailListener(ThumbnailListener * tListener);
+	bool CheckRequestListener(ListenerHandle handle);
+	ListenerHandle AttachRequestListener(RequestListener * tListener);
+	void DetachRequestListener(RequestListener * tListener);
 };

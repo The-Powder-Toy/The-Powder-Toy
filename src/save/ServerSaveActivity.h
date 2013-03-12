@@ -2,7 +2,7 @@
 
 #include "Activity.h"
 #include "client/SaveInfo.h"
-#include "client/ThumbnailListener.h"
+#include "client/RequestListener.h"
 #include "tasks/TaskListener.h"
 
 namespace ui
@@ -13,7 +13,7 @@ namespace ui
 
 class Task;
 class Thumbnail;
-class ServerSaveActivity: public WindowActivity, public ThumbnailListener, public TaskListener
+class ServerSaveActivity: public WindowActivity, public RequestListener, public TaskListener
 {
 public:
 	class SaveUploadedCallback
@@ -29,7 +29,7 @@ public:
 	virtual void Save();
 	virtual void Exit();
 	virtual void OnDraw();
-	virtual void OnThumbnailReady(Thumbnail * thumbnail);
+	virtual void OnRequestReady(void * imagePtr);
 	virtual void OnTick(float dt);
 	virtual ~ServerSaveActivity();
 protected:
@@ -37,7 +37,7 @@ protected:
 	Task * saveUploadTask;
 	SaveUploadedCallback * callback;
 	SaveInfo save;
-	Thumbnail * thumbnail;
+	VideoBuffer * thumbnail;
 	ui::Textbox * nameField;
 	ui::Textbox * descriptionField;
 	ui::Checkbox * publishedCheckbox;

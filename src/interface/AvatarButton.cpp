@@ -5,6 +5,7 @@
 #include "Format.h"
 #include "Engine.h"
 #include "client/Client.h"
+#include "client/RequestBroker.h"
 #include "graphics/Graphics.h"
 #include "ContextMenu.h"
 #include "Keys.h"
@@ -23,6 +24,7 @@ AvatarButton::AvatarButton(Point position, Point size, std::string username):
 
 AvatarButton::~AvatarButton()
 {
+	RequestBroker::Ref().DetachRequestListener(this);
 	if(avatar)
 		delete avatar;
 	if(actionCallback)
@@ -34,13 +36,18 @@ void AvatarButton::Tick(float dt)
 	if(!avatar && !tried && name.size() > 0)
 	{
 		tried = true;
-		avatar = Client::Ref().GetAvatar(name);
-		if(avatar) {
-			if(avatar->Width != Size.X && avatar->Height != Size.Y)
-			{
-				avatar->Resize(Size.X, Size.Y, true);
-			}
-		}
+		RequestBroker::Ref().RetrieveAvatar(name, Size.X, Size.Y, this);
+	}
+}
+
+void AvatarButton::OnResponseReady(void * imagePtr)
+{
+	VideoBuffer * image = (VideoBuffer*)imagePtr;
+	if(image)
+	{
+		if(avatar)
+			delete avatar;
+		avatar = image;
 	}
 }
 

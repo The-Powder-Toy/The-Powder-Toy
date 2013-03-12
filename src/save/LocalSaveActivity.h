@@ -2,14 +2,14 @@
 
 #include "Activity.h"
 #include "client/SaveFile.h"
-#include "client/ThumbnailListener.h"
+#include "client/RequestListener.h"
 
 namespace ui
 {
 	class Textbox;
 }
 
-class Thumbnail;
+class VideoBuffer;
 
 class FileSavedCallback
 {
@@ -19,10 +19,10 @@ public:
 	virtual void FileSaved(SaveFile * file) {}
 };
 
-class LocalSaveActivity: public WindowActivity, public ThumbnailListener
+class LocalSaveActivity: public WindowActivity, public RequestListener
 {
 	SaveFile save;
-	Thumbnail * thumbnail;
+	VideoBuffer * thumbnail;
 	ui::Textbox * filenameField;
 	class CancelAction;
 	class SaveAction;
@@ -34,6 +34,6 @@ public:
 	void saveWrite(std::string finalFilename);
 	virtual void Save();
 	virtual void OnDraw();
-	virtual void OnThumbnailReady(Thumbnail * thumbnail);
+	virtual void OnRequestReady(void * imagePtr);
 	virtual ~LocalSaveActivity();
 };

@@ -42,7 +42,7 @@ public:
 	UpdateInfo(int time, std::string file, BuildType type) : Major(0), Minor(0), Build(0), Time(time), File(file), Type(type) {}
 };
 
-class ThumbnailListener;
+class RequestListener;
 class ClientListener;
 class Client: public Singleton<Client> {
 private:

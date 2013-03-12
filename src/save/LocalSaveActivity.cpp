@@ -123,14 +123,14 @@ void LocalSaveActivity::OnDraw()
 
 	if(thumbnail)
 	{
-		g->draw_image(thumbnail->Data, Position.X+(Size.X-thumbnail->Size.X)/2, Position.Y+45, thumbnail->Size.X, thumbnail->Size.Y, 255);
-		g->drawrect(Position.X+(Size.X-thumbnail->Size.X)/2, Position.Y+45, thumbnail->Size.X, thumbnail->Size.Y, 180, 180, 180, 255);
+		g->draw_image(thumbnail, Position.X+(Size.X-thumbnail->Width)/2, Position.Y+45, 255);
+		g->drawrect(Position.X+(Size.X-thumbnail->Width)/2, Position.Y+45, thumbnail->Width, thumbnail->Height, 180, 180, 180, 255);
 	}
 }
 
-void LocalSaveActivity::OnThumbnailReady(Thumbnail * thumbnail)
+void LocalSaveActivity::OnRequestReady(void * imagePtr)
 {
-	this->thumbnail = thumbnail;
+	this->thumbnail = (VideoBuffer*)imagePtr;
 }
 
 LocalSaveActivity::~LocalSaveActivity()

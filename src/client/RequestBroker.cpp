@@ -3,7 +3,7 @@
 #include <typeinfo>
 #include <time.h>
 #include "RequestBroker.h"
-#include "ThumbnailListener.h"
+#include "RequestListener.h"
 #include "Client.h"
 #include "HTTP.h"
 #include "GameSave.h"
@@ -15,14 +15,18 @@
 RequestBroker::RequestBroker()
 {
 	thumbnailQueueRunning = false;
-	//thumbnailQueueMutex = PTHREAD_MUTEX_INITIALIZER;
-	pthread_mutex_init (&thumbnailQueueMutex, NULL);
 
 	//listenersMutex = PTHREAD_MUTEX_INITIALIZER;
 	pthread_mutex_init (&listenersMutex, NULL);
 
 
 	pthread_mutex_init (&runningMutex, NULL);
+
+
+	pthread_mutex_init (&requestQueueMutex, NULL);
+
+
+	pthread_mutex_init (&completeQueueMutex, NULL);
 }
 
 RequestBroker::~RequestBroker()
@@ -58,38 +62,63 @@ void RequestBroker::Shutdown()
 	else
 		pthread_mutex_unlock(&runningMutex);
 
-
-	for (std::list<ThumbnailRequest>::iterator iter = currentRequests.begin(), end = currentRequests.end(); iter != end; ++iter)
+	std::vector<Request*>::iterator req = activeRequests.begin();
+	while(req != activeRequests.end())
 	{
-		ThumbnailRequest req = *iter;
-		if(req.HTTPContext)
-		{
-			http_async_req_close(req.HTTPContext);
-		}
+		(*req)->Cleanup();
+		delete (*req);
+		req++;
 	}
 }
 
-void RequestBroker::RenderThumbnail(GameSave * gameSave, int width, int height, ThumbnailListener * tListener)
+void RequestBroker::RenderThumbnail(GameSave * gameSave, int width, int height, RequestListener * tListener)
 {
 	RenderThumbnail(gameSave, true, true, width, height, tListener);
 }
 
-void RequestBroker::RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, ThumbnailListener * tListener)
+void RequestBroker::RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, RequestListener * tListener)
 {
-	AttachThumbnailListener(tListener);
-	pthread_mutex_lock(&thumbnailQueueMutex);
-	renderRequests.push_back(ThumbRenderRequest(new GameSave(*gameSave), decorations, fire, width, height, ListenerHandle(tListener->ListenerRand, tListener)));
-	pthread_mutex_unlock(&thumbnailQueueMutex);
+	ListenerHandle handle = AttachRequestListener(tListener);
+	
+	ThumbRenderRequest * r = new ThumbRenderRequest(new GameSave(*gameSave), decorations, fire, width, height, handle);
+	
+	pthread_mutex_lock(&requestQueueMutex);
+	requestQueue.push_back(r);
+	pthread_mutex_unlock(&requestQueueMutex);
 	
 	assureRunning();
 }
 
-void RequestBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int height, ThumbnailListener * tListener)
+void RequestBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int height, RequestListener * tListener)
 {
-	AttachThumbnailListener(tListener);
-	pthread_mutex_lock(&thumbnailQueueMutex);
-	thumbnailRequests.push_back(ThumbnailRequest(saveID, saveDate, width, height, ListenerHandle(tListener->ListenerRand, tListener)));
-	pthread_mutex_unlock(&thumbnailQueueMutex);
+	std::stringstream urlStream;	
+	urlStream << "http://" << STATICSERVER << "/" << saveID;
+	if(saveDate)
+	{
+		urlStream << "_" << saveDate;
+	}
+	urlStream << "_small.pti";
+
+	RetrieveImage(urlStream.str(), width, height, tListener);
+}
+
+void RequestBroker::RetrieveAvatar(std::string username, int width, int height, RequestListener * tListener)
+{
+	std::stringstream urlStream;	
+	urlStream << "http://" << STATICSERVER << "/avatars/" << username << ".pti";
+
+	RetrieveImage(urlStream.str(), width, height, tListener);
+}
+
+void RequestBroker::RetrieveImage(std::string imageUrl, int width, int height, RequestListener * tListener)
+{
+	ListenerHandle handle = AttachRequestListener(tListener);
+
+	ImageRequest * r = new ImageRequest(imageUrl, width, height, handle);
+	
+	pthread_mutex_lock(&requestQueueMutex);
+	requestQueue.push_back(r);
+	pthread_mutex_unlock(&requestQueueMutex);
 
 	assureRunning();
 }
@@ -102,23 +131,24 @@ void * RequestBroker::thumbnailQueueProcessHelper(void * ref)
 
 void RequestBroker::FlushThumbQueue()
 {
-	pthread_mutex_lock(&thumbnailQueueMutex);
-	while(thumbnailComplete.size())
+	pthread_mutex_lock(&completeQueueMutex);
+	while(completeQueue.size())
 	{
-		if(CheckThumbnailListener(thumbnailComplete.front().first))
+		if(CheckRequestListener(completeQueue.front()->Listener))
 		{
-			thumbnailComplete.front().first.second->OnThumbnailReady(thumbnailComplete.front().second);
+			completeQueue.front()->Listener.second->OnResponseReady(completeQueue.front()->ResultObject);
 		}
 		else
 		{
 #ifdef DEBUG
 			std::cout << typeid(*this).name() << " Listener lost, discarding request" << std::endl;
 #endif
-			delete thumbnailComplete.front().second;
+			completeQueue.front()->Cleanup();
 		}
-		thumbnailComplete.pop_front();
+		delete completeQueue.front();
+		completeQueue.pop();
 	}	
-	pthread_mutex_unlock(&thumbnailQueueMutex);
+	pthread_mutex_unlock(&completeQueueMutex);
 }
 
 void RequestBroker::thumbnailQueueProcessTH()
@@ -150,216 +180,211 @@ void RequestBroker::thumbnailQueueProcessTH()
 			break;
 		}
 
-
-		//Renderer
-		pthread_mutex_lock(&thumbnailQueueMutex);
-		if(renderRequests.size())
+		if(activeRequests.size())
 		{
-			lastAction = time(NULL);
-			ThumbRenderRequest req;
-			req = renderRequests.front();
-			renderRequests.pop_front();
-			pthread_mutex_unlock(&thumbnailQueueMutex);
-
-#ifdef DEBUG
-			std::cout << typeid(*this).name() << " Processing render request" << std::endl;
-#endif
-
-			Thumbnail * thumbnail = SaveRenderer::Ref().Render(req.Save, req.Decorations, req.Fire);
-			delete req.Save;
-
-			if(thumbnail)
+			std::vector<Request*>::iterator req = activeRequests.begin();
+			while(req != activeRequests.end())
 			{
-				thumbnail->Resize(req.Width, req.Height);
-
-				pthread_mutex_lock(&thumbnailQueueMutex);
-				thumbnailComplete.push_back(std::pair<ListenerHandle, Thumbnail*>(req.CompletedListener, thumbnail));
-				pthread_mutex_unlock(&thumbnailQueueMutex);	
-			}
-		}
-		else
-		{
-			pthread_mutex_unlock(&thumbnailQueueMutex);
-		}
-
-		//Renderer
-		pthread_mutex_lock(&thumbnailQueueMutex);
-		if(thumbnailRequests.size())
-		{
-			lastAction = time(NULL);
-			Thumbnail * thumbnail = NULL;
-
-			ThumbnailRequest req;
-			req = thumbnailRequests.front();
-
-			//Check the cache
-			for(std::deque<std::pair<ThumbnailID, Thumbnail*> >::iterator iter = thumbnailCache.begin(), end = thumbnailCache.end(); iter != end; ++iter)
-			{
-				if((*iter).first == req.ID)
+				ProcessResponse resultStatus = OK;
+				Request * r = *req;
+				switch(r->Type)
 				{
-					thumbnail = (*iter).second;
-#ifdef DEBUG
-					std::cout << typeid(*this).name() << " " << req.ID.SaveID << ":" << req.ID.SaveDate << " found in cache" << std::endl;
-#endif
+				case Request::ThumbnailRender:
+					resultStatus = processThumbnailRender(*(ThumbRenderRequest*)r);
+					break;
+				case Request::Image:
+					resultStatus = processImage(*(ImageRequest*)r);
+					break;
 				}
-			}
-
-			if(thumbnail)
-			{
-				//Got thumbnail from cache
-				thumbnailRequests.pop_front();
-				pthread_mutex_unlock(&thumbnailQueueMutex);
-
-				for(std::vector<ThumbnailSpec>::iterator specIter = req.SubRequests.begin(), specEnd = req.SubRequests.end(); specIter != specEnd; ++specIter)
+				if(resultStatus == Duplicate || resultStatus == Failed || resultStatus == Finished)
 				{
-					Thumbnail * tempThumbnail = new Thumbnail(*thumbnail);
-					tempThumbnail->Resize((*specIter).Width, (*specIter).Height);
-
-					pthread_mutex_lock(&thumbnailQueueMutex);
-					thumbnailComplete.push_back(std::pair<ListenerHandle, Thumbnail*>((*specIter).CompletedListener, tempThumbnail));
-					pthread_mutex_unlock(&thumbnailQueueMutex);	
-				}
-			}
-			else
-			{
-				//Check for ongoing requests
-				bool requested = false;
-				for(std::list<ThumbnailRequest>::iterator iter = currentRequests.begin(), end = currentRequests.end(); iter != end; ++iter)
-				{
-					if((*iter).ID == req.ID)
-					{
-						requested = true;
-						
-#ifdef DEBUG
-						std::cout << typeid(*this).name() << " Request for " << req.ID.SaveID << ":" << req.ID.SaveDate << " found, appending." << std::endl;
-#endif
-
-						//Add the current listener to the item already being requested
-						(*iter).SubRequests.push_back(req.SubRequests.front());
-					}
-				}
-
-				if(requested)
-				{
-					//Already requested
-					thumbnailRequests.pop_front();
-					pthread_mutex_unlock(&thumbnailQueueMutex);
-				}
-				else if(currentRequests.size() < IMGCONNS) //If it's not already being requested and we still have more space for a new connection, request it
-				{
-					thumbnailRequests.pop_front();
-					pthread_mutex_unlock(&thumbnailQueueMutex);
-
-					//If it's not already being requested, request it
-					std::stringstream urlStream;
-					urlStream << "http://" << STATICSERVER << "/" << req.ID.SaveID;
-					if(req.ID.SaveDate)
-					{
-						urlStream << "_" << req.ID.SaveDate;
-					}
-					urlStream << "_small.pti";
-
-#ifdef DEBUG
-					std::cout << typeid(*this).name() << " Creating new request for " << req.ID.SaveID << ":" << req.ID.SaveDate << std::endl;
-#endif
-
-					req.HTTPContext = http_async_req_start(NULL, (char *)urlStream.str().c_str(), NULL, 0, 0);
-					req.RequestTime = time(NULL);
-					currentRequests.push_back(req);
+					req = activeRequests.erase(req);
 				}
 				else
 				{
-					//Already full of requests
-					pthread_mutex_unlock(&thumbnailQueueMutex);
-
+					req++;
 				}
 			}
-		}
-		else
-		{
-			pthread_mutex_unlock(&thumbnailQueueMutex);
-		}
-
-		std::list<ThumbnailRequest>::iterator iter = currentRequests.begin();
-		while (iter != currentRequests.end())
-		{
 			lastAction = time(NULL);
-
-			ThumbnailRequest req = *iter;
-			Thumbnail * thumbnail = NULL;
-
-			if(http_async_req_status(req.HTTPContext))
-			{
-
-				pixel * thumbData;
-				char * data;
-				int status, data_size, imgw, imgh;
-				data = http_async_req_stop(req.HTTPContext, &status, &data_size);
-
-				if (status == 200 && data)
-				{
-					thumbData = Graphics::ptif_unpack(data, data_size, &imgw, &imgh);
-					free(data);
-
-					if(thumbData)
-					{
-						thumbnail = new Thumbnail(req.ID.SaveID, req.ID.SaveID, thumbData, ui::Point(imgw, imgh));
-						free(thumbData);
-					}
-					else
-					{
-						//Error thumbnail
-						VideoBuffer errorThumb(128, 128);
-						errorThumb.SetCharacter(64, 64, 'x', 255, 255, 255, 255);
-
-						thumbnail = new Thumbnail(req.ID.SaveID, req.ID.SaveID, errorThumb.Buffer, ui::Point(errorThumb.Width, errorThumb.Height));
-					}
-
-					if(thumbnailCache.size() >= THUMB_CACHE_SIZE)
-					{
-						delete thumbnailCache.front().second;
-						thumbnailCache.pop_front();
-					}
-					thumbnailCache.push_back(std::pair<ThumbnailID, Thumbnail*>(req.ID, thumbnail));
-
-					for(std::vector<ThumbnailSpec>::iterator specIter = req.SubRequests.begin(), specEnd = req.SubRequests.end(); specIter != specEnd; ++specIter)
-					{
-						Thumbnail * tempThumbnail = new Thumbnail(*thumbnail);
-						tempThumbnail->Resize((*specIter).Width, (*specIter).Height);
-
-						pthread_mutex_lock(&thumbnailQueueMutex);
-						thumbnailComplete.push_back(std::pair<ListenerHandle, Thumbnail*>((*specIter).CompletedListener, tempThumbnail));
-						pthread_mutex_unlock(&thumbnailQueueMutex);	
-					}
-				}
-				else
-				{
-#ifdef DEBUG
-					std::cout << typeid(*this).name() << " Request for " << req.ID.SaveID << ":" << req.ID.SaveDate << " failed with status " << status << std::endl;
-#endif	
-					if(data)
-						free(data);
-				}
-				iter = currentRequests.erase(iter);
-			}
-			else
-			{
-				++iter;
-			}
 		}
 
+		//Move any items from the request queue to the processing queue
+		pthread_mutex_lock(&requestQueueMutex);
+		std::vector<Request*>::iterator newReq = requestQueue.begin();
+		while(newReq != requestQueue.end())
+		{
+			if(activeRequests.size() > 5)
+			{
+				break;
+			}
+			else 
+			{
+				activeRequests.push_back(*newReq);
+				newReq = requestQueue.erase(newReq);
+			}
+		}
+		pthread_mutex_unlock(&requestQueueMutex);
 	}
 	pthread_mutex_lock(&runningMutex);
 	thumbnailQueueRunning = false;
 	pthread_mutex_unlock(&runningMutex);
 }
 
-void RequestBroker::RetrieveThumbnail(int saveID, int width, int height, ThumbnailListener * tListener)
+RequestBroker::ProcessResponse RequestBroker::processThumbnailRender(ThumbRenderRequest & request)
+{
+#ifdef DEBUG
+		std::cout << typeid(*this).name() << " Processing render request" << std::endl;
+#endif
+	Thumbnail * thumbnail = SaveRenderer::Ref().Render(request.Save, request.Decorations, request.Fire);
+	delete request.Save;
+	request.Save = NULL;
+
+	if(thumbnail)
+	{
+		thumbnail->Resize(request.Width, request.Height);
+		request.ResultObject = (void*)thumbnail;
+		requestComplete(&request);
+		return Finished;
+	}
+	else
+	{
+		return Failed;
+	}
+	return Failed;
+}
+
+RequestBroker::ProcessResponse RequestBroker::processImage(ImageRequest & request)
+{
+	VideoBuffer * image = NULL;
+
+	//Have a look at the thumbnail cache
+	for(std::deque<std::pair<std::string, VideoBuffer*> >::iterator iter = imageCache.begin(), end = imageCache.end(); iter != end; ++iter)
+	{
+		if((*iter).first == request.URL)
+		{
+			image = (*iter).second;
+#ifdef DEBUG
+			std::cout << typeid(*this).name() << " " << request.URL << " found in cache" << std::endl;
+#endif
+		}
+	}
+
+	if(!image)
+	{
+		if(request.HTTPContext)
+		{
+			if(http_async_req_status(request.HTTPContext))
+			{
+				pixel * imageData;
+				char * data;
+				int status, data_size, imgw, imgh;
+				data = http_async_req_stop(request.HTTPContext, &status, &data_size);
+
+				if (status == 200 && data)
+				{
+					imageData = Graphics::ptif_unpack(data, data_size, &imgw, &imgh);
+					free(data);
+
+					if(imageData)
+					{
+						//Success!
+						image = new VideoBuffer(imageData, imgw, imgh);
+						free(imageData);
+					}
+					else
+					{
+						//Error thumbnail
+						image = new VideoBuffer(32, 32);
+						image->SetCharacter(14, 14, 'x', 255, 255, 255, 255);
+					}
+
+					if(imageCache.size() >= THUMB_CACHE_SIZE)
+					{
+						//Remove unnecessary from thumbnail cache
+						delete imageCache.front().second;
+						imageCache.pop_front();
+					}
+					imageCache.push_back(std::pair<std::string, VideoBuffer*>(request.URL, image));
+				}
+				else
+				{
+	#ifdef DEBUG
+					std::cout << typeid(*this).name() << " Request for " << request.URL << " failed with status " << status << std::endl;
+	#endif	
+					if(data)
+						free(data);
+
+					return Failed;
+				}
+			}
+		}
+		else 
+		{
+			//Check for ongoing requests
+			for(std::vector<Request*>::iterator iter = activeRequests.begin(), end = activeRequests.end(); iter != end; ++iter)
+			{
+				if((*iter)->Type != Request::Image)
+					continue;
+				ImageRequest * otherReq = (ImageRequest*)(*iter);
+				if(otherReq->URL == request.URL && otherReq != &request)
+				{
+	#ifdef DEBUG
+					std::cout << typeid(*this).name() << " Request for " << request.URL << " found, appending." << std::endl;
+	#endif
+					//Add the current listener to the item already being requested
+					(*iter)->Children.push_back(&request);
+					return Duplicate;
+				}
+			}
+
+			//If it's not already being requested, request it
+	#ifdef DEBUG
+			std::cout << typeid(*this).name() << " Creating new request for " << request.URL << std::endl;
+	#endif
+			request.HTTPContext = http_async_req_start(NULL, (char *)request.URL.c_str(), NULL, 0, 0);
+			request.RequestTime = time(NULL);
+		}
+	}
+	
+	if(image)
+	{
+
+		//Create a copy, to seperate from the cache
+		VideoBuffer * myVB = new VideoBuffer(*image);
+		myVB->Resize(request.Width, request.Height, true);
+		request.ResultObject = (void*)myVB;
+		requestComplete(&request);
+		for(std::vector<Request*>::iterator childIter = request.Children.begin(), childEnd = request.Children.end(); childIter != childEnd; ++childIter)
+		{
+			if((*childIter)->Type == Request::Image)
+			{
+				ImageRequest * childReq = (ImageRequest*)*childIter;
+				VideoBuffer * tempImage = new VideoBuffer(*image);
+				tempImage->Resize(childReq->Width, childReq->Height, true);
+				childReq->ResultObject = (void*)tempImage;
+				requestComplete(*childIter);
+			}
+		}
+		return Finished;
+	}
+
+	return OK;
+}
+
+void RequestBroker::requestComplete(Request * completedRequest)
+{
+	pthread_mutex_lock(&completeQueueMutex);
+	completeQueue.push(completedRequest);
+	pthread_mutex_unlock(&completeQueueMutex);
+}
+
+
+void RequestBroker::RetrieveThumbnail(int saveID, int width, int height, RequestListener * tListener)
 {
 	RetrieveThumbnail(saveID, 0, width, height, tListener);
 }
 
-bool RequestBroker::CheckThumbnailListener(ListenerHandle handle)
+bool RequestBroker::CheckRequestListener(ListenerHandle handle)
 {
 	pthread_mutex_lock(&listenersMutex);
 	int count = std::count(validListeners.begin(), validListeners.end(), handle);
@@ -368,14 +393,16 @@ bool RequestBroker::CheckThumbnailListener(ListenerHandle handle)
 	return count;
 }
 
-void RequestBroker::AttachThumbnailListener(ThumbnailListener * tListener)
+ListenerHandle RequestBroker::AttachRequestListener(RequestListener * tListener)
 {
+	ListenerHandle handle = ListenerHandle(tListener->ListenerRand, tListener);
 	pthread_mutex_lock(&listenersMutex);
-	validListeners.push_back(ListenerHandle(tListener->ListenerRand, tListener));
+	validListeners.push_back(handle);
 	pthread_mutex_unlock(&listenersMutex);
+	return handle;
 }
 
-void RequestBroker::DetachThumbnailListener(ThumbnailListener * tListener)
+void RequestBroker::DetachRequestListener(RequestListener * tListener)
 {
 	pthread_mutex_lock(&listenersMutex);
 

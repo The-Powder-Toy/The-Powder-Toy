@@ -3,7 +3,6 @@
 #include "interface/Textbox.h"
 #include "interface/Button.h"
 #include "interface/Checkbox.h"
-#include "search/Thumbnail.h"
 #include "client/RequestBroker.h"
 #include "dialogues/ErrorMessage.h"
 #include "dialogues/ConfirmPrompt.h"
@@ -245,14 +244,14 @@ void ServerSaveActivity::OnDraw()
 
 	if(thumbnail)
 	{
-		g->draw_image(thumbnail->Data, Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Size.X)/2, Position.Y+25, thumbnail->Size.X, thumbnail->Size.Y, 255);
-		g->drawrect(Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Size.X)/2, Position.Y+25, thumbnail->Size.X, thumbnail->Size.Y, 180, 180, 180, 255);
+		g->draw_image(thumbnail, Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Width)/2, Position.Y+25, 255);
+		g->drawrect(Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Width)/2, Position.Y+25, thumbnail->Width, thumbnail->Height, 180, 180, 180, 255);
 	}
 }
 
-void ServerSaveActivity::OnThumbnailReady(Thumbnail * thumbnail)
+void ServerSaveActivity::OnRequestReady(void * imagePtr)
 {
-	this->thumbnail = thumbnail;
+	this->thumbnail = (VideoBuffer *)imagePtr;
 }
 
 ServerSaveActivity::~ServerSaveActivity()

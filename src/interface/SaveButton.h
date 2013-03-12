@@ -6,9 +6,8 @@
 #include "Component.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
-#include "client/ThumbnailListener.h"
+#include "client/RequestListener.h"
 #include "graphics/Graphics.h"
-#include "search/Thumbnail.h"
 #include "interface/Colour.h"
 
 namespace ui
@@ -24,11 +23,11 @@ public:
 	virtual ~SaveButtonAction() {}
 };
 
-class SaveButton : public Component, public ThumbnailListener
+class SaveButton : public Component, public RequestListener
 {
 	SaveFile * file;
 	SaveInfo * save;
-	Thumbnail * thumbnail;
+	VideoBuffer * thumbnail;
 	std::string name;
 	std::string votesString;
 	std::string votesBackground;
@@ -59,7 +58,7 @@ public:
 	virtual void Draw(const Point& screenPos);
 	virtual void Tick(float dt);
 
-	virtual void OnThumbnailReady(Thumbnail * thumb);
+	virtual void OnResponseReady(void * imagePtr);
 
 	void SetSelected(bool selected_) { selected = selected_; }
 	bool GetSelected() { return selected; }

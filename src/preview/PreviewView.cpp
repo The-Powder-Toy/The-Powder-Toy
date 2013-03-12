@@ -543,15 +543,15 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			int usernameY = currentY+5, commentY;
 			if(showAvatars)
 			{
-				tempAvatar = new ui::AvatarButton(ui::Point(4, currentY+4), ui::Point(26, 26), comments->at(i)->authorName);
+				tempAvatar = new ui::AvatarButton(ui::Point(2, currentY+7), ui::Point(26, 26), comments->at(i)->authorName);
 				commentComponents.push_back(tempAvatar);
 				commentsPanel->AddChild(tempAvatar);
 			}
 
 			if(showAvatars)
-				tempUsername = new ui::Label(ui::Point(31, currentY+5), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorName);
+				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorName);
 			else
-				tempUsername = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorName);
+				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorName);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 			currentY += 16;
@@ -560,7 +560,10 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			commentsPanel->AddChild(tempUsername);
 
 			commentY = currentY+5;
-			tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comments->at(i)->comment);
+			if(showAvatars)
+				tempComment = new ui::Label(ui::Point(31, currentY+5), ui::Point(Size.X-((XRES/2) + 13 + 26), -1), comments->at(i)->comment);
+			else
+				tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comments->at(i)->comment);
 			tempComment->SetMultiline(true);
 			tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
