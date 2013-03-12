@@ -31,7 +31,7 @@ Element_WATR::Element_WATR()
     Description = "Liquid. Conducts electricity. Freezes. Extinguishes fires.";
     
     State = ST_LIQUID;
-    Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
+    Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPASS;
     
     LowPressure = IPL;
     LowPressureTransition = NT;

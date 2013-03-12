@@ -362,6 +362,12 @@ void PIXELMETHODS_CLASS::draw_image(pixel *img, int x, int y, int w, int h, int 
 	int i, j, r, g, b;
 	if (!img) return;
 	if(y + h > VIDYRES) h = ((VIDYRES)-y)-1; //Adjust height to prevent drawing off the bottom
+	if (y < 0 && -y < h)
+	{
+		img += -y*w;
+		h += y;
+		y = 0;
+	}
 	if(!h || y < 0) return;
 	if(a >= 255)
 		for (j=0; j<h; j++)

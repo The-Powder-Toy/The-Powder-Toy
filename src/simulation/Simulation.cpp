@@ -146,10 +146,13 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 	Element_PPIP::ppip_changed = 1;
 	for(int i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
 	{
-		sign tempSign = save->signs[i];
-		tempSign.x += fullX;
-		tempSign.y += fullY;
-		signs.push_back(tempSign);
+		if (save->signs[i].text[0])
+		{
+			sign tempSign = save->signs[i];
+			tempSign.x += fullX;
+			tempSign.y += fullY;
+			signs.push_back(tempSign);
+		}
 	}
 	for(int saveBlockX = 0; saveBlockX < save->blockWidth; saveBlockX++)
 	{
@@ -2105,7 +2108,6 @@ void Simulation::init_can_move()
 	}
 	can_move[PT_ELEC][PT_LCRY] = 2;
 	can_move[PT_ELEC][PT_EXOT] = 2;
-	can_move[PT_NEUT][PT_EXOT] = 2;
 	can_move[PT_PHOT][PT_LCRY] = 3;//varies according to LCRY life
 
 	can_move[PT_PHOT][PT_BIZR] = 2;
@@ -2115,7 +2117,6 @@ void Simulation::init_can_move()
 	can_move[PT_PHOT][PT_BIZRS] = 2;
 	can_move[PT_ELEC][PT_BIZRS] = 2;
 
-	can_move[PT_NEUT][PT_INVIS] = 2;
 	//whol eats anar
 	can_move[PT_ANAR][PT_WHOL] = 1;
 	can_move[PT_ANAR][PT_NWHL] = 1;

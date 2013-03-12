@@ -31,7 +31,7 @@ Element_EXOT::Element_EXOT()
     Description = "Exotic matter. Explodes with excess exposure to electrons.";
     
     State = ST_LIQUID;
-    Properties = TYPE_LIQUID;
+    Properties = TYPE_LIQUID|PROP_NEUTPASS;
     
     LowPressure = IPL;
     LowPressureTransition = NT;

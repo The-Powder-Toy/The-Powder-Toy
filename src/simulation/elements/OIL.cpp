@@ -31,7 +31,7 @@ Element_OIL::Element_OIL()
     Description = "Liquid. Flammable.";
     
     State = ST_LIQUID;
-    Properties = TYPE_LIQUID | PROP_NEUTPENETRATE;
+    Properties = TYPE_LIQUID | PROP_NEUTPASS;
     
     LowPressure = IPL;
     LowPressureTransition = NT;
