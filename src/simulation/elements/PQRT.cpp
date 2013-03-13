@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_PQRT PT_PQRT 133
 Element_PQRT::Element_PQRT()
 {
-    Identifier = "DEFAULT_PT_PQRT";
-    Name = "PQRT";
-    Colour = PIXPACK(0x88BBBB);
-    MenuVisible = 1;
-    MenuSection = SC_POWDERS;
-    Enabled = 1;
-    
-    Advection = 0.4f;
-    AirDrag = 0.04f * CFDS;
-    AirLoss = 0.94f;
-    Loss = 0.95f;
-    Collision = -0.1f;
-    Gravity = 0.27f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 1;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 90;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 3;
-    Description = "Broken quartz.";
-    
-    State = ST_SOLID;
-    Properties = TYPE_PART| PROP_HOT_GLOW;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = 2573.15f;
-    HighTemperatureTransition = PT_LAVA;
-    
-    Update = &Element_PQRT::update;
-    Graphics = &Element_PQRT::graphics;
+	Identifier = "DEFAULT_PT_PQRT";
+	Name = "PQRT";
+	Colour = PIXPACK(0x88BBBB);
+	MenuVisible = 1;
+	MenuSection = SC_POWDERS;
+	Enabled = 1;
+	
+	Advection = 0.4f;
+	AirDrag = 0.04f * CFDS;
+	AirLoss = 0.94f;
+	Loss = 0.95f;
+	Collision = -0.1f;
+	Gravity = 0.27f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 1;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 90;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 3;
+	Description = "Broken quartz.";
+	
+	State = ST_SOLID;
+	Properties = TYPE_PART| PROP_HOT_GLOW;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = 2573.15f;
+	HighTemperatureTransition = PT_LAVA;
+	
+	Update = &Element_PQRT::update;
+	Graphics = &Element_PQRT::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_PQRT static int update(UPDATE_FUNC_ARGS)
@@ -54,7 +54,7 @@ int Element_PQRT::update(UPDATE_FUNC_ARGS)
 	if (parts[i].ctype!=-1)
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
@@ -78,7 +78,7 @@ int Element_PQRT::update(UPDATE_FUNC_ARGS)
 			rnd = rnd>>3;
 			ry = (rnd%5)-2;
 			sry = (rnd%3)-1;
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				if (!stopgrow)//try to grow
 				{

@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_FIRE PT_FIRE 4
 Element_FIRE::Element_FIRE()
 {
-    Identifier = "DEFAULT_PT_FIRE";
-    Name = "FIRE";
-    Colour = PIXPACK(0xFF1000);
-    MenuVisible = 1;
-    MenuSection = SC_EXPLOSIVE;
-    Enabled = 1;
-    
-    Advection = 0.9f;
-    AirDrag = 0.04f * CFDS;
-    AirLoss = 0.97f;
-    Loss = 0.20f;
-    Collision = 0.0f;
-    Gravity = -0.1f;
-    Diffusion = 0.00f;
-    HotAir = 0.001f  * CFDS;
-    Falldown = 1;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 1;
-    
-    Weight = 2;
-    
-    Temperature = R_TEMP+400.0f+273.15f;
-    HeatConduct = 88;
-    Description = "Ignites flammable materials. Heats air.";
-    
-    State = ST_GAS;
-    Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = 2773.0f;
-    HighTemperatureTransition = PT_PLSM;
-    
-    Update = &Element_FIRE::update;
-    Graphics = &Element_FIRE::graphics;
+	Identifier = "DEFAULT_PT_FIRE";
+	Name = "FIRE";
+	Colour = PIXPACK(0xFF1000);
+	MenuVisible = 1;
+	MenuSection = SC_EXPLOSIVE;
+	Enabled = 1;
+	
+	Advection = 0.9f;
+	AirDrag = 0.04f * CFDS;
+	AirLoss = 0.97f;
+	Loss = 0.20f;
+	Collision = 0.0f;
+	Gravity = -0.1f;
+	Diffusion = 0.00f;
+	HotAir = 0.001f  * CFDS;
+	Falldown = 1;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 1;
+	
+	Weight = 2;
+	
+	Temperature = R_TEMP+400.0f+273.15f;
+	HeatConduct = 88;
+	Description = "Ignites flammable materials. Heats air.";
+	
+	State = ST_GAS;
+	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = 2773.0f;
+	HighTemperatureTransition = PT_PLSM;
+	
+	Update = &Element_FIRE::update;
+	Graphics = &Element_FIRE::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_FIRE static int update(UPDATE_FUNC_ARGS)
@@ -87,7 +87,7 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 	}
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
@@ -96,10 +96,10 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 					continue;
 				rt = r&0xFF;
 				if ((surround_space || sim->elements[rt].Explosive) &&
-					(t!=PT_SPRK || (rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL)) &&
-					(t!=PT_PHOT || rt!=PT_INSL) &&
+				    (t!=PT_SPRK || (rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL)) &&
+				    (t!=PT_PHOT || rt!=PT_INSL) &&
 				    (rt!=PT_SPNG || parts[r>>8].life==0) &&
-				    sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
+					sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
 				{
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_FIRE);
 					parts[r>>8].temp = restrict_flt(sim->elements[PT_FIRE].Temperature + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
@@ -118,7 +118,7 @@ int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
 	int r, rx, ry, rt, lpv, t = parts[i].type;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)

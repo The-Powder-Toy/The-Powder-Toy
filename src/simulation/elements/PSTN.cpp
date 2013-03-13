@@ -2,49 +2,48 @@
 //#TPT-Directive ElementClass Element_PSTN PT_PSTN 168
 Element_PSTN::Element_PSTN()
 {
-    Identifier = "DEFAULT_PT_PSTN";
-    Name = "PSTN";
-    Colour = PIXPACK(0xAA9999);
-    MenuVisible = 1;
-    MenuSection = SC_FORCE;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f +273.15f;
-    HeatConduct = 0;
-    Description = "Piston, extends and pushes particles";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_PSTN::update;
-    Graphics = &Element_PSTN::graphics;
-    
+	Identifier = "DEFAULT_PT_PSTN";
+	Name = "PSTN";
+	Colour = PIXPACK(0xAA9999);
+	MenuVisible = 1;
+	MenuSection = SC_FORCE;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f +273.15f;
+	HeatConduct = 0;
+	Description = "Piston, extends and pushes particles";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_PSTN::update;
+	Graphics = &Element_PSTN::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_PSTN static int tempParts[128];
@@ -70,7 +69,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 	if (state == PISTON_INACTIVE) {
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry) && (!rx || !ry))
+				if (BOUNDS_CHECK && (rx || ry) && (!rx || !ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
@@ -86,7 +85,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 	if(state == PISTON_EXTEND || state == PISTON_RETRACT) {
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry) && (!rx || !ry))
+				if (BOUNDS_CHECK && (rx || ry) && (!rx || !ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)

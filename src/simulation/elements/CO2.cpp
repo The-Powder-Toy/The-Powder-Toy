@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_CO2 PT_CO2 80
 Element_CO2::Element_CO2()
 {
-    Identifier = "DEFAULT_PT_CO2";
-    Name = "CO2";
-    Colour = PIXPACK(0x666666);
-    MenuVisible = 1;
-    MenuSection = SC_GAS;
-    Enabled = 1;
-    
-    Advection = 2.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.99f;
-    Loss = 0.30f;
-    Collision = -0.1f;
-    Gravity = 0.1f;
-    Diffusion = 1.0f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 1;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 1;
-    
-    Temperature = R_TEMP+273.15f;
-    HeatConduct = 88;
-    Description = "Carbon Dioxide";
-    
-    State = ST_GAS;
-    Properties = TYPE_GAS;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = 194.65f;
-    LowTemperatureTransition = PT_DRIC;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_CO2::update;
-    
+	Identifier = "DEFAULT_PT_CO2";
+	Name = "CO2";
+	Colour = PIXPACK(0x666666);
+	MenuVisible = 1;
+	MenuSection = SC_GAS;
+	Enabled = 1;
+	
+	Advection = 2.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.99f;
+	Loss = 0.30f;
+	Collision = -0.1f;
+	Gravity = 0.1f;
+	Diffusion = 1.0f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 1;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 1;
+	
+	Temperature = R_TEMP+273.15f;
+	HeatConduct = 88;
+	Description = "Carbon Dioxide";
+	
+	State = ST_GAS;
+	Properties = TYPE_GAS;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = 194.65f;
+	LowTemperatureTransition = PT_DRIC;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_CO2::update;
+	
 }
 
 //#TPT-Directive ElementHeader Element_CO2 static int update(UPDATE_FUNC_ARGS)
@@ -52,7 +52,7 @@ int Element_CO2::update(UPDATE_FUNC_ARGS)
 	int r, rx, ry;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)

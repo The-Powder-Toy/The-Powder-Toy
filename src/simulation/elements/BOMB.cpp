@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_BOMB PT_BOMB 129
 Element_BOMB::Element_BOMB()
 {
-    Identifier = "DEFAULT_PT_BOMB";
-    Name = "BOMB";
-    Colour = PIXPACK(0xFFF288);
-    MenuVisible = 1;
-    MenuSection = SC_EXPLOSIVE;
-    Enabled = 1;
-    
-    Advection = 0.6f;
-    AirDrag = 0.01f * CFDS;
-    AirLoss = 0.98f;
-    Loss = 0.95f;
-    Collision = 0.0f;
-    Gravity = 0.1f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 1;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 20;
-    
-    Weight = 30;
-    
-    Temperature = R_TEMP-2.0f	+273.15f;
-    HeatConduct = 29;
-    Description = "Bomb.";
-    
-    State = ST_NONE;
-    Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_BOMB::update;
-    Graphics = &Element_BOMB::graphics;
+	Identifier = "DEFAULT_PT_BOMB";
+	Name = "BOMB";
+	Colour = PIXPACK(0xFFF288);
+	MenuVisible = 1;
+	MenuSection = SC_EXPLOSIVE;
+	Enabled = 1;
+	
+	Advection = 0.6f;
+	AirDrag = 0.01f * CFDS;
+	AirLoss = 0.98f;
+	Loss = 0.95f;
+	Collision = 0.0f;
+	Gravity = 0.1f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 1;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 20;
+	
+	Weight = 30;
+	
+	Temperature = R_TEMP-2.0f	+273.15f;
+	HeatConduct = 29;
+	Description = "Bomb.";
+	
+	State = ST_NONE;
+	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_BOMB::update;
+	Graphics = &Element_BOMB::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_BOMB static int update(UPDATE_FUNC_ARGS)
@@ -53,7 +53,7 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 	
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)

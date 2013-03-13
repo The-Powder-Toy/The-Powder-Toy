@@ -6,48 +6,48 @@ extern "C"
 //#TPT-Directive ElementClass Element_FIRW PT_FIRW 69
 Element_FIRW::Element_FIRW()
 {
-    Identifier = "DEFAULT_PT_FIRW";
-    Name = "FIRW";
-    Colour = PIXPACK(0xFFA040);
-    MenuVisible = 1;
-    MenuSection = SC_EXPLOSIVE;
-    Enabled = 1;
-    
-    Advection = 0.2f;
-    AirDrag = 0.01f * CFDS;
-    AirLoss = 0.96f;
-    Loss = 0.95f;
-    Collision = -0.1f;
-    Gravity = 0.1f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 1;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 30;
-    
-    Weight = 55;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 70;
-    Description = "Fireworks!";
-    
-    State = ST_SOLID;
-    Properties = TYPE_PART|PROP_LIFE_DEC;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_FIRW::update;
-    Graphics = &Element_FIRW::graphics;
+	Identifier = "DEFAULT_PT_FIRW";
+	Name = "FIRW";
+	Colour = PIXPACK(0xFFA040);
+	MenuVisible = 1;
+	MenuSection = SC_EXPLOSIVE;
+	Enabled = 1;
+	
+	Advection = 0.2f;
+	AirDrag = 0.01f * CFDS;
+	AirLoss = 0.96f;
+	Loss = 0.95f;
+	Collision = -0.1f;
+	Gravity = 0.1f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 1;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 30;
+	
+	Weight = 55;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 70;
+	Description = "Fireworks!";
+	
+	State = ST_SOLID;
+	Properties = TYPE_PART|PROP_LIFE_DEC;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_FIRW::update;
+	Graphics = &Element_FIRW::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_FIRW static int update(UPDATE_FUNC_ARGS)
@@ -57,7 +57,7 @@ int Element_FIRW::update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp<=0) {
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)

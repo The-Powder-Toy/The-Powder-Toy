@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_MERC PT_MERC 152
 Element_MERC::Element_MERC()
 {
-    Identifier = "DEFAULT_PT_MERC";
-    Name = "MERC";
-    Colour = PIXPACK(0x736B6D);
-    MenuVisible = 1;
-    MenuSection = SC_ELEC;
-    Enabled = 1;
-    
-    Advection = 0.4f;
-    AirDrag = 0.04f * CFDS;
-    AirLoss = 0.94f;
-    Loss = 0.80f;
-    Collision = 0.0f;
-    Gravity = 0.3f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 2;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 20;
-    
-    Weight = 91;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 251;
-    Description = "Mercury. Volume changes with temperature, Conductive.";
-    
-    State = ST_LIQUID;
-    Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB|PROP_LIFE_DEC;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_MERC::update;
-    
+	Identifier = "DEFAULT_PT_MERC";
+	Name = "MERC";
+	Colour = PIXPACK(0x736B6D);
+	MenuVisible = 1;
+	MenuSection = SC_ELEC;
+	Enabled = 1;
+	
+	Advection = 0.4f;
+	AirDrag = 0.04f * CFDS;
+	AirLoss = 0.94f;
+	Loss = 0.80f;
+	Collision = 0.0f;
+	Gravity = 0.3f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 2;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 20;
+	
+	Weight = 91;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 251;
+	Description = "Mercury. Volume changes with temperature, Conductive.";
+	
+	State = ST_LIQUID;
+	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB|PROP_LIFE_DEC;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_MERC::update;
+	
 }
 
 //#TPT-Directive ElementHeader Element_MERC static int update(UPDATE_FUNC_ARGS)
@@ -57,7 +57,7 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 	{
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r || (parts[i].tmp >=maxtmp))
@@ -75,7 +75,7 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 	else
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (parts[i].tmp<=maxtmp)
@@ -94,7 +94,7 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 	{
 		rx = rand()%5-2;
 		ry = rand()%5-2;
-		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
 			if (!r)

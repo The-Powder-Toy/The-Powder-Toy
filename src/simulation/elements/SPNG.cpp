@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_SPNG PT_SPNG 90
 Element_SPNG::Element_SPNG()
 {
-    Identifier = "DEFAULT_PT_SPNG";
-    Name = "SPNG";
-    Colour = PIXPACK(0xFFBE30);
-    MenuVisible = 1;
-    MenuSection = SC_SOLIDS;
-    Enabled = 1;
-    
-    Advection = 0.00f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.00f;
-    Loss = 0.00f;
-    Collision = 0.00f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f  * CFDS;
-    Falldown = 0;
-    
-    Flammable = 20;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 30;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f +273.15f;
-    HeatConduct = 251;
-    Description = "A sponge, absorbs water.";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = 2730.0f;
-    HighTemperatureTransition = PT_FIRE;
-    
-    Update = &Element_SPNG::update;
-    Graphics = &Element_SPNG::graphics;
+	Identifier = "DEFAULT_PT_SPNG";
+	Name = "SPNG";
+	Colour = PIXPACK(0xFFBE30);
+	MenuVisible = 1;
+	MenuSection = SC_SOLIDS;
+	Enabled = 1;
+	
+	Advection = 0.00f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.00f;
+	Loss = 0.00f;
+	Collision = 0.00f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f  * CFDS;
+	Falldown = 0;
+	
+	Flammable = 20;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 30;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f +273.15f;
+	HeatConduct = 251;
+	Description = "A sponge, absorbs water.";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = 2730.0f;
+	HighTemperatureTransition = PT_FIRE;
+	
+	Update = &Element_SPNG::update;
+	Graphics = &Element_SPNG::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_SPNG static int update(UPDATE_FUNC_ARGS)
@@ -56,7 +56,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 		int absorbChanceDenom = parts[i].life*10000/limit + 500;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					switch (r&0xFF)
@@ -102,7 +102,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 	else
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if ((!r)&&parts[i].life>=1)//if nothing then create water
@@ -115,7 +115,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 	{
 		rx = rand()%5-2;
 		ry = rand()%5-2;
-		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
 			if (!r)
@@ -143,7 +143,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 	{
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
@@ -165,7 +165,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 	if (tmp || parts[i].temp>=374)
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if ((!r)&&parts[i].life>=1)//if nothing then create steam
