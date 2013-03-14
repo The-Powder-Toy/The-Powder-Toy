@@ -115,11 +115,14 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 	{
 
 		//Create a copy, to seperate from the cache
+		std::vector<Request *> children(Children.begin(), Children.end());
+		Children.clear();
+
 		VideoBuffer * myVB = new VideoBuffer(*image);
 		myVB->Resize(Width, Height, true);
 		ResultObject = (void*)myVB;
 		rb.requestComplete(this);
-		for(std::vector<Request*>::iterator childIter = Children.begin(), childEnd = Children.end(); childIter != childEnd; ++childIter)
+		for(std::vector<Request*>::iterator childIter = children.begin(), childEnd = children.end(); childIter != childEnd; ++childIter)
 		{
 			if((*childIter)->Type == Request::Image)
 			{

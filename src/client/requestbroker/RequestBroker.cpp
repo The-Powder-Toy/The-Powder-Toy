@@ -9,6 +9,7 @@
 #include "ImageRequest.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
+#include "graphics/Graphics.h"
 
 //Asynchronous Thumbnail render & request processing
 
@@ -139,8 +140,6 @@ void RequestBroker::FlushThumbQueue()
 	{
 		if(CheckRequestListener(completeQueue.front()->Listener))
 		{
-			std::cout << typeid(*this).name() << " Calling listener: " << completeQueue.front()->Listener.second << std::endl;
-			std::cout.flush();
 			completeQueue.front()->Listener.second->OnResponseReady(completeQueue.front()->ResultObject);
 		}
 		else
@@ -288,6 +287,7 @@ RequestBroker::Request::~Request()
 		delete (*iter);
 		iter++;
 	}
+	Children.empty();
 }
 void RequestBroker::Request::Cleanup()
 {
