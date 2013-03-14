@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_EMP PT_EMP 134
 Element_EMP::Element_EMP()
 {
-    Identifier = "DEFAULT_PT_EMP";
-    Name = "EMP";
-    Colour = PIXPACK(0x66AAFF);
-    MenuVisible = 1;
-    MenuSection = SC_ELEC;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.0f;
-    HotAir = 0.0f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 3;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 121;
-    Description = "Breaks activated electronics.";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID|PROP_LIFE_DEC;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_EMP::update;
-    Graphics = &Element_EMP::graphics;
+	Identifier = "DEFAULT_PT_EMP";
+	Name = "EMP";
+	Colour = PIXPACK(0x66AAFF);
+	MenuVisible = 1;
+	MenuSection = SC_ELEC;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.0f;
+	HotAir = 0.0f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 3;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 121;
+	Description = "Breaks activated electronics.";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID|PROP_LIFE_DEC;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_EMP::update;
+	Graphics = &Element_EMP::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_EMP static int update(UPDATE_FUNC_ARGS)
@@ -77,7 +77,7 @@ int Element_EMP::update(UPDATE_FUNC_ARGS)
 		{
 			int is_elec=0;
 			if (parts[r].ctype==PT_PSCN || parts[r].ctype==PT_NSCN || parts[r].ctype==PT_PTCT ||
-			        parts[r].ctype==PT_NTCT || parts[r].ctype==PT_INST || parts[r].ctype==PT_SWCH || t==PT_WIRE || t==PT_SWCH)
+			    parts[r].ctype==PT_NTCT || parts[r].ctype==PT_INST || parts[r].ctype==PT_SWCH || t==PT_WIRE || t==PT_SWCH)
 			{
 				is_elec=1;
 				if (!(rand()%100))

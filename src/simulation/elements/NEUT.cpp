@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_NEUT PT_NEUT 18
 Element_NEUT::Element_NEUT()
 {
-    Identifier = "DEFAULT_PT_NEUT";
-    Name = "NEUT";
-    Colour = PIXPACK(0x20E0FF);
-    MenuVisible = 1;
-    MenuSection = SC_NUCLEAR;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 1.00f;
-    Loss = 1.00f;
-    Collision = -0.99f;
-    Gravity = 0.0f;
-    Diffusion = 0.01f;
-    HotAir = 0.002f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = -1;
-    
-    Temperature = R_TEMP+4.0f	+273.15f;
-    HeatConduct = 60;
-    Description = "Neutrons. Interact with matter in odd ways.";
-    
-    State = ST_GAS;
-    Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_NEUT::update;
-    Graphics = &Element_NEUT::graphics;
+	Identifier = "DEFAULT_PT_NEUT";
+	Name = "NEUT";
+	Colour = PIXPACK(0x20E0FF);
+	MenuVisible = 1;
+	MenuSection = SC_NUCLEAR;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 1.00f;
+	Loss = 1.00f;
+	Collision = -0.99f;
+	Gravity = 0.0f;
+	Diffusion = 0.01f;
+	HotAir = 0.002f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = -1;
+	
+	Temperature = R_TEMP+4.0f	+273.15f;
+	HeatConduct = 60;
+	Description = "Neutrons. Interact with matter in odd ways.";
+	
+	State = ST_GAS;
+	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_NEUT::update;
+	Graphics = &Element_NEUT::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_NEUT static int update(UPDATE_FUNC_ARGS)
@@ -53,7 +53,7 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 	int pressureFactor = 3 + (int)sim->pv[y/CELL][x/CELL];
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				switch (r&0xFF)

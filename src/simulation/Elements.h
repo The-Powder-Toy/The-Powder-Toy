@@ -46,6 +46,8 @@
 #define GRAPHICS_FUNC_ARGS Renderer * ren, Particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
 #define GRAPHICS_FUNC_SUBCALL_ARGS ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb
 
+#define BOUNDS_CHECK true
+
 #define SPC_AIR 236
 #define SPC_HEAT 237
 #define SPC_COOL 238

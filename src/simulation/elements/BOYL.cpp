@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_BOYL PT_BOYL 141
 Element_BOYL::Element_BOYL()
 {
-    Identifier = "DEFAULT_PT_BOYL";
-    Name = "BOYL";
-    Colour = PIXPACK(0x0A3200);
-    MenuVisible = 1;
-    MenuSection = SC_GAS;
-    Enabled = 1;
-    
-    Advection = 1.0f;
-    AirDrag = 0.01f * CFDS;
-    AirLoss = 0.99f;
-    Loss = 0.30f;
-    Collision = -0.1f;
-    Gravity = 0.0f;
-    Diffusion = 0.18f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 1;
-    
-    Weight = 1;
-    
-    Temperature = R_TEMP+2.0f	+273.15f;
-    HeatConduct = 42;
-    Description = "Boyle, variable pressure gas. Expands when heated.";
-    
-    State = ST_GAS;
-    Properties = TYPE_GAS;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_BOYL::update;
-    
+	Identifier = "DEFAULT_PT_BOYL";
+	Name = "BOYL";
+	Colour = PIXPACK(0x0A3200);
+	MenuVisible = 1;
+	MenuSection = SC_GAS;
+	Enabled = 1;
+	
+	Advection = 1.0f;
+	AirDrag = 0.01f * CFDS;
+	AirLoss = 0.99f;
+	Loss = 0.30f;
+	Collision = -0.1f;
+	Gravity = 0.0f;
+	Diffusion = 0.18f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 1;
+	
+	Weight = 1;
+	
+	Temperature = R_TEMP+2.0f	+273.15f;
+	HeatConduct = 42;
+	Description = "Boyle, variable pressure gas. Expands when heated.";
+	
+	State = ST_GAS;
+	Properties = TYPE_GAS;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_BOYL::update;
+	
 }
 
 //#TPT-Directive ElementHeader Element_BOYL static int update(UPDATE_FUNC_ARGS)
@@ -70,8 +70,7 @@ int Element_BOYL::update(UPDATE_FUNC_ARGS)
 	}
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
-			if (x+rx>=0 && y+ry>0 &&
-			        x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)

@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_GLAS PT_GLAS 45
 Element_GLAS::Element_GLAS()
 {
-    Identifier = "DEFAULT_PT_GLAS";
-    Name = "GLAS";
-    Colour = PIXPACK(0x404040);
-    MenuVisible = 1;
-    MenuSection = SC_SOLIDS;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 150;
-    Description = "Solid. Meltable. Shatters under pressure";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID | PROP_NEUTPASS | PROP_HOT_GLOW | PROP_SPARKSETTLE;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = 1973.0f;
-    HighTemperatureTransition = PT_LAVA;
-    
-    Update = &Element_GLAS::update;
-    
+	Identifier = "DEFAULT_PT_GLAS";
+	Name = "GLAS";
+	Colour = PIXPACK(0x404040);
+	MenuVisible = 1;
+	MenuSection = SC_SOLIDS;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 150;
+	Description = "Solid. Meltable. Shatters under pressure";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID | PROP_NEUTPASS | PROP_HOT_GLOW | PROP_SPARKSETTLE;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = 1973.0f;
+	HighTemperatureTransition = PT_LAVA;
+	
+	Update = &Element_GLAS::update;
+	
 }
 
 //#TPT-Directive ElementHeader Element_GLAS static int update(UPDATE_FUNC_ARGS)

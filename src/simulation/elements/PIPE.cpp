@@ -92,7 +92,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 			for (rx=-2; rx<3; rx++)
 				for (ry=-2; ry<3; ry++)
 				{
-					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
 						if ((r&0xFF) == PT_BRCK)
@@ -135,7 +135,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 			// make automatic pipe pattern
 			for (rx=-1; rx<2; rx++)
 				for (ry=-1; ry<2; ry++)
-					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
 						if (!r)
@@ -182,7 +182,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 				rndstore = rndstore>>3;
 				rx = pos_1_rx[rnd];
 				ry = pos_1_ry[rnd];
-				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
+				if (BOUNDS_CHECK)
 				{
 					r = pmap[y+ry][x+rx];
 					if(!r)
@@ -230,7 +230,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 			for (rx=-2; rx<3; rx++)
 				for (ry=-2; ry<3; ry++)
 				{
-					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
 						if (!r)
@@ -251,7 +251,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 		{
 			for (rx=-1; rx<2; rx++)
 				for (ry=-1; ry<2; ry++)
-					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					if (BOUNDS_CHECK && (rx || ry))
 					{
 						if (!pmap[y+ry][x+rx] && sim->bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_ALLOWAIR && sim->bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_WALL && sim->bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_WALLELEC && (sim->bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_EWALL || sim->emap[(y+ry)/CELL][(x+rx)/CELL]))
 							parts[i].life=50;
@@ -262,7 +262,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 			int issingle = 1;
 			for (rx=-1; rx<2; rx++)
 				for (ry=-1; ry<2; ry++)
-					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
 						if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && parts[i].ctype==1 && parts[i].life )
@@ -284,9 +284,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_PIPE static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_PIPE::graphics(GRAPHICS_FUNC_ARGS)
-
 {
-
 	if ((cpart->tmp&0xFF)>0 && (cpart->tmp&0xFF)<PT_NUM)
 	{
 		//Create a temp. particle and do a subcall.

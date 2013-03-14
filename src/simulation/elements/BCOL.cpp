@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_BCOL PT_BCOL 73
 Element_BCOL::Element_BCOL()
 {
-    Identifier = "DEFAULT_PT_BCOL";
-    Name = "BCOL";
-    Colour = PIXPACK(0x333333);
-    MenuVisible = 1;
-    MenuSection = SC_POWDERS;
-    Enabled = 1;
-    
-    Advection = 0.4f;
-    AirDrag = 0.04f * CFDS;
-    AirLoss = 0.94f;
-    Loss = 0.95f;
-    Collision = -0.1f;
-    Gravity = 0.3f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 1;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 5;
-    Hardness = 2;
-    
-    Weight = 90;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 150;
-    Description = "Broken Coal. Heavy particles. See COAL";
-    
-    State = ST_SOLID;
-    Properties = TYPE_PART;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_BCOL::update;
-    Graphics = &Element_BCOL::graphics;
+	Identifier = "DEFAULT_PT_BCOL";
+	Name = "BCOL";
+	Colour = PIXPACK(0x333333);
+	MenuVisible = 1;
+	MenuSection = SC_POWDERS;
+	Enabled = 1;
+	
+	Advection = 0.4f;
+	AirDrag = 0.04f * CFDS;
+	AirLoss = 0.94f;
+	Loss = 0.95f;
+	Collision = -0.1f;
+	Gravity = 0.3f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 1;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 5;
+	Hardness = 2;
+	
+	Weight = 90;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 150;
+	Description = "Broken Coal. Heavy particles. See COAL";
+	
+	State = ST_SOLID;
+	Properties = TYPE_PART;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_BCOL::update;
+	Graphics = &Element_BCOL::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_BCOL static int update(UPDATE_FUNC_ARGS)
@@ -60,7 +60,7 @@ int Element_BCOL::update(UPDATE_FUNC_ARGS)
 
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
@@ -76,7 +76,7 @@ int Element_BCOL::update(UPDATE_FUNC_ARGS)
 					if (parts[r>>8].ctype == PT_IRON && !(rand()%500)) {
 						parts[r>>8].ctype = PT_METL;
 						sim->kill_part(i);
-                                                return 1;
+												return 1;
 					}
 				}
 			}
@@ -87,7 +87,7 @@ int Element_BCOL::update(UPDATE_FUNC_ARGS)
 	{
 		rx = rand()%5-2;
 		ry = rand()%5-2;
-		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
 			if (!r)

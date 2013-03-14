@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_FIGH PT_FIGH 158
 Element_FIGH::Element_FIGH()
 {
-    Identifier = "DEFAULT_PT_FIGH";
-    Name = "FIGH";
-    Colour = PIXPACK(0xFFE0A0);
-    MenuVisible = 1;
-    MenuSection = SC_SPECIAL;
-    Enabled = 1;
-    
-    Advection = 0.5f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.2f;
-    Loss = 1.0f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.0f;
-    HotAir = 0.00f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 50;
-    
-    Temperature = R_TEMP+14.6f+273.15f;
-    HeatConduct = 0;
-    Description = "Fighter. Tries to kill stickmen.";
-    
-    State = ST_NONE;
-    Properties = 0;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = 620.0f;
-    HighTemperatureTransition = PT_FIRE;
-    
-    Update = &Element_FIGH::update;
-    Graphics = &Element_STKM::graphics;
+	Identifier = "DEFAULT_PT_FIGH";
+	Name = "FIGH";
+	Colour = PIXPACK(0xFFE0A0);
+	MenuVisible = 1;
+	MenuSection = SC_SPECIAL;
+	Enabled = 1;
+	
+	Advection = 0.5f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.2f;
+	Loss = 1.0f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.0f;
+	HotAir = 0.00f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 50;
+	
+	Temperature = R_TEMP+14.6f+273.15f;
+	HeatConduct = 0;
+	Description = "Fighter. Tries to kill stickmen.";
+	
+	State = ST_NONE;
+	Properties = 0;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = 620.0f;
+	HighTemperatureTransition = PT_FIRE;
+	
+	Update = &Element_FIGH::update;
+	Graphics = &Element_STKM::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_FIGH static int update(UPDATE_FUNC_ARGS)
@@ -59,7 +59,7 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	if (sim->player2.spwn)
 	{
 		if (sim->player.spwn && (pow((float)sim->player.legs[2]-x, 2) + pow((float)sim->player.legs[3]-y, 2))<=
-		    (pow((float)sim->player2.legs[2]-x, 2) + pow((float)sim->player2.legs[3]-y, 2)))
+		   (pow((float)sim->player2.legs[2]-x, 2) + pow((float)sim->player2.legs[3]-y, 2)))
 		{
 			tarx = (unsigned int)sim->player.legs[2];
 			tary = (unsigned int)sim->player.legs[3];
@@ -74,8 +74,8 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	else if (sim->player.spwn)
 	{
 		tarx = (unsigned int)sim->player.legs[2];
-	        tary = (unsigned int)sim->player.legs[3];
-	        parts[i].tmp2 = 1;
+		tary = (unsigned int)sim->player.legs[3];
+		parts[i].tmp2 = 1;
 	}
 
 	switch (parts[i].tmp2)

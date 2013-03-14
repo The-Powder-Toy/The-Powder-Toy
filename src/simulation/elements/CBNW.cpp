@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_CBNW PT_CBNW 82
 Element_CBNW::Element_CBNW()
 {
-    Identifier = "DEFAULT_PT_CBNW";
-    Name = "BUBW";
-    Colour = PIXPACK(0x2030D0);
-    MenuVisible = 1;
-    MenuSection = SC_LIQUID;
-    Enabled = 1;
-    
-    Advection = 0.6f;
-    AirDrag = 0.01f * CFDS;
-    AirLoss = 0.98f;
-    Loss = 0.95f;
-    Collision = 0.0f;
-    Gravity = 0.1f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 2;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 20;
-    
-    Weight = 30;
-    
-    Temperature = R_TEMP-2.0f	+273.15f;
-    HeatConduct = 29;
-    Description = "Carbonated water. Conducts electricity. Freezes. Extinguishes fires.";
-    
-    State = ST_LIQUID;
-    Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = 273.15f;
-    LowTemperatureTransition = PT_ICEI;
-    HighTemperature = 373.0f;
-    HighTemperatureTransition = PT_WTRV;
-    
-    Update = &Element_CBNW::update;
-    Graphics = &Element_CBNW::graphics;
+	Identifier = "DEFAULT_PT_CBNW";
+	Name = "BUBW";
+	Colour = PIXPACK(0x2030D0);
+	MenuVisible = 1;
+	MenuSection = SC_LIQUID;
+	Enabled = 1;
+	
+	Advection = 0.6f;
+	AirDrag = 0.01f * CFDS;
+	AirLoss = 0.98f;
+	Loss = 0.95f;
+	Collision = 0.0f;
+	Gravity = 0.1f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 2;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 20;
+	
+	Weight = 30;
+	
+	Temperature = R_TEMP-2.0f	+273.15f;
+	HeatConduct = 29;
+	Description = "Carbonated water. Conducts electricity. Freezes. Extinguishes fires.";
+	
+	State = ST_LIQUID;
+	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = 273.15f;
+	LowTemperatureTransition = PT_ICEI;
+	HighTemperature = 373.0f;
+	HighTemperatureTransition = PT_WTRV;
+	
+	Update = &Element_CBNW::update;
+	Graphics = &Element_CBNW::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_CBNW static int update(UPDATE_FUNC_ARGS)
@@ -86,7 +86,7 @@ int Element_CBNW::update(UPDATE_FUNC_ARGS)
 	}
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)

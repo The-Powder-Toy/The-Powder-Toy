@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_DEUT PT_DEUT 95
 Element_DEUT::Element_DEUT()
 {
-    Identifier = "DEFAULT_PT_DEUT";
-    Name = "DEUT";
-    Colour = PIXPACK(0x00153F);
-    MenuVisible = 1;
-    MenuSection = SC_NUCLEAR;
-    Enabled = 1;
-    
-    Advection = 0.6f;
-    AirDrag = 0.01f * CFDS;
-    AirLoss = 0.98f;
-    Loss = 0.95f;
-    Collision = 0.0f;
-    Gravity = 0.1f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 2;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 20;
-    
-    Weight = 31;
-    
-    Temperature = R_TEMP-2.0f	+273.15f;
-    HeatConduct = 251;
-    Description = "Deuterium oxide. Volume changes with temp, radioactive with neutrons.";
-    
-    State = ST_LIQUID;
-    Properties = TYPE_LIQUID|PROP_NEUTPASS;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_DEUT::update;
-    Graphics = &Element_DEUT::graphics;
+	Identifier = "DEFAULT_PT_DEUT";
+	Name = "DEUT";
+	Colour = PIXPACK(0x00153F);
+	MenuVisible = 1;
+	MenuSection = SC_NUCLEAR;
+	Enabled = 1;
+	
+	Advection = 0.6f;
+	AirDrag = 0.01f * CFDS;
+	AirLoss = 0.98f;
+	Loss = 0.95f;
+	Collision = 0.0f;
+	Gravity = 0.1f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 2;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 20;
+	
+	Weight = 31;
+	
+	Temperature = R_TEMP-2.0f	+273.15f;
+	HeatConduct = 251;
+	Description = "Deuterium oxide. Volume changes with temp, radioactive with neutrons.";
+	
+	State = ST_LIQUID;
+	Properties = TYPE_LIQUID|PROP_NEUTPASS;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_DEUT::update;
+	Graphics = &Element_DEUT::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_DEUT static int update(UPDATE_FUNC_ARGS)
@@ -61,7 +61,7 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 	{
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r || (parts[i].life >=maxlife))
@@ -79,7 +79,7 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 	else
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (parts[i].life<=maxlife)
@@ -97,7 +97,7 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 	{
 		rx = rand()%5-2;
 		ry = rand()%5-2;
-		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
 			if (!r)
