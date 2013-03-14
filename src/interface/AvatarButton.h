@@ -6,7 +6,7 @@
 #include "Component.h"
 #include "graphics/Graphics.h"
 #include "interface/Colour.h"
-#include "client/RequestListener.h"
+#include "client/requestbroker/RequestListener.h"
 
 namespace ui
 {

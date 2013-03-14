@@ -42,7 +42,7 @@
 #include "search/Thumbnail.h"
 #include "preview/Comment.h"
 #include "ClientListener.h"
-#include "RequestBroker.h"
+#include "requestbroker/RequestBroker.h"
 
 #include "cajun/reader.h"
 #include "cajun/writer.h"

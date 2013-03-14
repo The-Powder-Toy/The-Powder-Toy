@@ -3,7 +3,7 @@
 #include "interface/Textbox.h"
 #include "interface/Button.h"
 #include "search/Thumbnail.h"
-#include "client/RequestBroker.h"
+#include "client/requestbroker/RequestBroker.h"
 #include "dialogues/ErrorMessage.h"
 #include "dialogues/ConfirmPrompt.h"
 #include "client/Client.h"

@@ -5,7 +5,7 @@
 #include "Format.h"
 #include "Engine.h"
 #include "client/Client.h"
-#include "client/RequestBroker.h"
+#include "client/requestbroker/RequestBroker.h"
 #include "graphics/Graphics.h"
 #include "ContextMenu.h"
 #include "Keys.h"

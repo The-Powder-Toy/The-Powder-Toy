@@ -1,14 +1,14 @@
 #include <algorithm>
 #include <iostream>
 #include <typeinfo>
+#include <sstream>
 #include <time.h>
 #include "RequestBroker.h"
 #include "RequestListener.h"
-#include "Client.h"
-#include "HTTP.h"
-#include "GameSave.h"
-#include "search/Thumbnail.h"
-#include "simulation/SaveRenderer.h"
+#include "ThumbRenderRequest.h"
+#include "ImageRequest.h"
+#include "client/Client.h"
+#include "client/GameSave.h"
 
 //Asynchronous Thumbnail render & request processing
 
@@ -139,6 +139,8 @@ void RequestBroker::FlushThumbQueue()
 	{
 		if(CheckRequestListener(completeQueue.front()->Listener))
 		{
+			std::cout << typeid(*this).name() << " Calling listener: " << completeQueue.front()->Listener.second << std::endl;
+			std::cout.flush();
 			completeQueue.front()->Listener.second->OnResponseReady(completeQueue.front()->ResultObject);
 		}
 		else
@@ -190,15 +192,7 @@ void RequestBroker::thumbnailQueueProcessTH()
 			{
 				ProcessResponse resultStatus = OK;
 				Request * r = *req;
-				switch(r->Type)
-				{
-				case Request::ThumbnailRender:
-					resultStatus = processThumbnailRender(*(ThumbRenderRequest*)r);
-					break;
-				case Request::Image:
-					resultStatus = processImage(*(ImageRequest*)r);
-					break;
-				}
+				resultStatus = r->Process(*this);
 				if(resultStatus == Duplicate || resultStatus == Failed || resultStatus == Finished)
 				{
 					req = activeRequests.erase(req);
@@ -231,147 +225,6 @@ void RequestBroker::thumbnailQueueProcessTH()
 	pthread_mutex_lock(&runningMutex);
 	thumbnailQueueRunning = false;
 	pthread_mutex_unlock(&runningMutex);
-}
-
-RequestBroker::ProcessResponse RequestBroker::processThumbnailRender(ThumbRenderRequest & request)
-{
-#ifdef DEBUG
-		std::cout << typeid(*this).name() << " Processing render request" << std::endl;
-#endif
-	Thumbnail * thumbnail = SaveRenderer::Ref().Render(request.Save, request.Decorations, request.Fire);
-	delete request.Save;
-	request.Save = NULL;
-
-	if(thumbnail)
-	{
-		thumbnail->Resize(request.Width, request.Height);
-		request.ResultObject = (void*)thumbnail;
-		requestComplete(&request);
-		return Finished;
-	}
-	else
-	{
-		return Failed;
-	}
-	return Failed;
-}
-
-RequestBroker::ProcessResponse RequestBroker::processImage(ImageRequest & request)
-{
-	VideoBuffer * image = NULL;
-
-	//Have a look at the thumbnail cache
-	for(std::deque<std::pair<std::string, VideoBuffer*> >::iterator iter = imageCache.begin(), end = imageCache.end(); iter != end; ++iter)
-	{
-		if((*iter).first == request.URL)
-		{
-			image = (*iter).second;
-#ifdef DEBUG
-			std::cout << typeid(*this).name() << " " << request.URL << " found in cache" << std::endl;
-#endif
-		}
-	}
-
-	if(!image)
-	{
-		if(request.HTTPContext)
-		{
-			if(http_async_req_status(request.HTTPContext))
-			{
-				pixel * imageData;
-				char * data;
-				int status, data_size, imgw, imgh;
-				data = http_async_req_stop(request.HTTPContext, &status, &data_size);
-
-				if (status == 200 && data)
-				{
-					imageData = Graphics::ptif_unpack(data, data_size, &imgw, &imgh);
-					free(data);
-
-					if(imageData)
-					{
-						//Success!
-						image = new VideoBuffer(imageData, imgw, imgh);
-						free(imageData);
-					}
-					else
-					{
-						//Error thumbnail
-						image = new VideoBuffer(32, 32);
-						image->SetCharacter(14, 14, 'x', 255, 255, 255, 255);
-					}
-
-					if(imageCache.size() >= THUMB_CACHE_SIZE)
-					{
-						//Remove unnecessary from thumbnail cache
-						delete imageCache.front().second;
-						imageCache.pop_front();
-					}
-					imageCache.push_back(std::pair<std::string, VideoBuffer*>(request.URL, image));
-				}
-				else
-				{
-	#ifdef DEBUG
-					std::cout << typeid(*this).name() << " Request for " << request.URL << " failed with status " << status << std::endl;
-	#endif	
-					if(data)
-						free(data);
-
-					return Failed;
-				}
-			}
-		}
-		else 
-		{
-			//Check for ongoing requests
-			for(std::vector<Request*>::iterator iter = activeRequests.begin(), end = activeRequests.end(); iter != end; ++iter)
-			{
-				if((*iter)->Type != Request::Image)
-					continue;
-				ImageRequest * otherReq = (ImageRequest*)(*iter);
-				if(otherReq->URL == request.URL && otherReq != &request)
-				{
-	#ifdef DEBUG
-					std::cout << typeid(*this).name() << " Request for " << request.URL << " found, appending." << std::endl;
-	#endif
-					//Add the current listener to the item already being requested
-					(*iter)->Children.push_back(&request);
-					return Duplicate;
-				}
-			}
-
-			//If it's not already being requested, request it
-	#ifdef DEBUG
-			std::cout << typeid(*this).name() << " Creating new request for " << request.URL << std::endl;
-	#endif
-			request.HTTPContext = http_async_req_start(NULL, (char *)request.URL.c_str(), NULL, 0, 0);
-			request.RequestTime = time(NULL);
-		}
-	}
-	
-	if(image)
-	{
-
-		//Create a copy, to seperate from the cache
-		VideoBuffer * myVB = new VideoBuffer(*image);
-		myVB->Resize(request.Width, request.Height, true);
-		request.ResultObject = (void*)myVB;
-		requestComplete(&request);
-		for(std::vector<Request*>::iterator childIter = request.Children.begin(), childEnd = request.Children.end(); childIter != childEnd; ++childIter)
-		{
-			if((*childIter)->Type == Request::Image)
-			{
-				ImageRequest * childReq = (ImageRequest*)*childIter;
-				VideoBuffer * tempImage = new VideoBuffer(*image);
-				tempImage->Resize(childReq->Width, childReq->Height, true);
-				childReq->ResultObject = (void*)tempImage;
-				requestComplete(*childIter);
-			}
-		}
-		return Finished;
-	}
-
-	return OK;
 }
 
 void RequestBroker::requestComplete(Request * completedRequest)
@@ -419,4 +272,29 @@ void RequestBroker::DetachRequestListener(RequestListener * tListener)
 	}
 
 	pthread_mutex_unlock(&listenersMutex);
+}
+
+RequestBroker::Request::Request(RequestType type, ListenerHandle listener)
+{
+	Type = type;
+	Listener = listener;
+	ResultObject = NULL;
+}
+RequestBroker::Request::~Request()
+{
+	std::vector<Request*>::iterator iter = Children.begin();
+	while(iter != Children.end())
+	{
+		delete (*iter);
+		iter++;
+	}
+}
+void RequestBroker::Request::Cleanup()
+{
+	std::vector<Request*>::iterator iter = Children.begin();
+	while(iter != Children.end())
+	{
+		(*iter)->Cleanup();
+		iter++;
+	}
 }

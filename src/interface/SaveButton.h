@@ -6,7 +6,7 @@
 #include "Component.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
-#include "client/RequestListener.h"
+#include "client/requestbroker/RequestListener.h"
 #include "graphics/Graphics.h"
 #include "interface/Colour.h"
 

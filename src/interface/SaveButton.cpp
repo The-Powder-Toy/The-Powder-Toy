@@ -5,7 +5,7 @@
 #include "client/SaveInfo.h"
 #include "graphics/Graphics.h"
 #include "Engine.h"
-#include "client/RequestBroker.h"
+#include "client/requestbroker/RequestBroker.h"
 #include "simulation/SaveRenderer.h"
 #include "Format.h"
 #include "ContextMenu.h"
