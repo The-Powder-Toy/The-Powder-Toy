@@ -387,3 +387,13 @@ void PIXELMETHODS_CLASS::draw_image(pixel *img, int x, int y, int w, int h, int 
 				img++;
 			}
 }
+
+void PIXELMETHODS_CLASS::draw_image(const VideoBuffer & vidBuf, int x, int y, int a)
+{
+	draw_image(vidBuf.Buffer, x, y, vidBuf.Width, vidBuf.Height, a);
+}
+
+void PIXELMETHODS_CLASS::draw_image(VideoBuffer * vidBuf, int x, int y, int a)
+{
+	draw_image(vidBuf->Buffer, x, y, vidBuf->Width, vidBuf->Height, a);
+}

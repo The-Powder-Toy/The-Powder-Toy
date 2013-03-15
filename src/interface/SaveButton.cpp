@@ -39,7 +39,6 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 		}
 
 		std::string votes, icon;
-		int j;
 
 		votes = format::NumberToString<int>(save->GetVotesUp()-save->GetVotesDown());
 		icon += 0xBB;

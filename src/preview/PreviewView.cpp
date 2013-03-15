@@ -277,9 +277,9 @@ void PreviewView::OnDraw()
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+4, Size.Y+4);
 
 	//Save preview (top-left)
-	if(savePreview && savePreview->Data)
+	if(savePreview && savePreview->Buffer)
 	{
-		g->draw_image(savePreview->Data, (Position.X+1)+(((XRES/2)-savePreview->Size.X)/2), (Position.Y+1)+(((YRES/2)-savePreview->Size.Y)/2), savePreview->Size.X, savePreview->Size.Y, 255);
+		g->draw_image(savePreview, (Position.X+1)+(((XRES/2)-savePreview->Width)/2), (Position.Y+1)+(((YRES/2)-savePreview->Height)/2), 255);
 	}
 	g->drawrect(Position.X, Position.Y, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 100);
 	g->draw_line(Position.X+XRES/2, Position.Y+1, Position.X+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
@@ -420,17 +420,17 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		{
 			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
 
-			if(savePreview && savePreview->Data && !(savePreview->Size.X == XRES/2 && savePreview->Size.Y == YRES/2))
+			if(savePreview && savePreview->Buffer && !(savePreview->Width == XRES/2 && savePreview->Width == YRES/2))
 			{
 				int newSizeX, newSizeY;
-				pixel * oldData = savePreview->Data;
-				float factorX = ((float)XRES/2)/((float)savePreview->Size.X);
-				float factorY = ((float)YRES/2)/((float)savePreview->Size.Y);
+				pixel * oldData = savePreview->Buffer;
+				float factorX = ((float)XRES/2)/((float)savePreview->Width);
+				float factorY = ((float)YRES/2)/((float)savePreview->Height);
 				float scaleFactor = factorY < factorX ? factorY : factorX;
-				savePreview->Data = Graphics::resample_img(oldData, savePreview->Size.X, savePreview->Size.Y, savePreview->Size.X*scaleFactor, savePreview->Size.Y*scaleFactor);
+				savePreview->Buffer = Graphics::resample_img(oldData, savePreview->Width, savePreview->Height, savePreview->Width*scaleFactor, savePreview->Height*scaleFactor);
 				delete[] oldData;
-				savePreview->Size.X *= scaleFactor;
-				savePreview->Size.Y *= scaleFactor;
+				savePreview->Width *= scaleFactor;
+				savePreview->Height *= scaleFactor;
 			}
 		}
 	}
@@ -582,15 +582,15 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 /*void PreviewView::NotifyPreviewChanged(PreviewModel * sender)
 {
 	savePreview = sender->GetGameSave();
-	if(savePreview && savePreview->Data && !(savePreview->Size.X == XRES/2 && savePreview->Size.Y == YRES/2))
+	if(savePreview && savePreview->Data && !(savePreview->Width == XRES/2 && savePreview->Height == YRES/2))
 	{
 		int newSizeX, newSizeY;
-		float factorX = ((float)XRES/2)/((float)savePreview->Size.X);
-		float factorY = ((float)YRES/2)/((float)savePreview->Size.Y);
+		float factorX = ((float)XRES/2)/((float)savePreview->Width);
+		float factorY = ((float)YRES/2)/((float)savePreview->Height);
 		float scaleFactor = factorY < factorX ? factorY : factorX;
-		savePreview->Data = Graphics::resample_img(savePreview->Data, savePreview->Size.X, savePreview->Size.Y, savePreview->Size.X*scaleFactor, savePreview->Size.Y*scaleFactor);
-		savePreview->Size.X *= scaleFactor;
-		savePreview->Size.Y *= scaleFactor;
+		savePreview->Data = Graphics::resample_img(savePreview->Data, savePreview->Width, savePreview->Height, savePreview->Width*scaleFactor, savePreview->Height*scaleFactor);
+		savePreview->Width *= scaleFactor;
+		savePreview->Height *= scaleFactor;
 	}
 }*/
 

@@ -55,6 +55,16 @@ void VideoBuffer::Resize(int width, int height, bool resample)
 	int newWidth = width;
 	int newHeight = height;
 	pixel * newBuffer;
+	if(newHeight == -1 && newWidth == -1)
+		return;
+	if(newHeight == -1)
+	{
+		newHeight = ((float)Height)*((float)newWidth/(float)Width);
+	}
+	if(newWidth == -1)
+	{
+		newWidth = ((float)Width)*((float)newHeight/(float)Height);
+	}
 	if(resample)
 		newBuffer = Graphics::resample_img(Buffer, Width, Height, newWidth, newHeight);
 	else
@@ -1111,16 +1121,6 @@ pixel *Graphics::render_packed_rgb(void *image, int width, int height, int cmp_s
 
 	free(tmp);
 	return res;
-}
-
-void Graphics::draw_image(const VideoBuffer & vidBuf, int x, int y, int a)
-{
-	draw_image(vidBuf.Buffer, x, y, vidBuf.Width, vidBuf.Height, a);
-}
-
-void Graphics::draw_image(VideoBuffer * vidBuf, int x, int y, int a)
-{
-	draw_image(vidBuf->Buffer, x, y, vidBuf->Width, vidBuf->Height, a);
 }
 
 VideoBuffer Graphics::DumpFrame()

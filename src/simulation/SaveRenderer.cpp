@@ -32,10 +32,10 @@ SaveRenderer::SaveRenderer(){
 #endif
 }
 
-Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
+VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 {
 	int width, height;
-	Thumbnail * tempThumb;
+	VideoBuffer * tempThumb;
 	width = save->blockWidth;
 	height = save->blockHeight;
 	bool doCollapse = save->Collapsed();
@@ -104,7 +104,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 			}
 		}
 
-		tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
+		tempThumb = new VideoBuffer(pData, width*CELL, height*CELL);
 		delete[] pData;
 		delete[] texData;
 		pData = NULL;
@@ -139,7 +139,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 			dst+=(width*CELL);///PIXELSIZE;
 			src+=XRES+BARSIZE;
 		}
-		tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
+		tempThumb = new VideoBuffer(pData, width*CELL, height*CELL);
 		if(pData)
 			free(pData);
 #endif
@@ -150,7 +150,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 	return tempThumb;
 }
 
-Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool decorations, bool fire)
+VideoBuffer * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool decorations, bool fire)
 {
 	GameSave * tempSave;
 	try {
@@ -158,14 +158,12 @@ Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool de
 	} catch (std::exception & e) {
 		
 		//Todo: make this look a little less shit
-		VideoBuffer buffer(64, 64);
-		buffer.BlendCharacter(32, 32, 'x', 255, 255, 255, 255);
+		VideoBuffer * buffer = new VideoBuffer(64, 64);
+		buffer->BlendCharacter(32, 32, 'x', 255, 255, 255, 255);
 		
-		Thumbnail * thumb = new Thumbnail(0, 0, buffer.Buffer, ui::Point(64, 64));
-		
-		return thumb;
+		return buffer;
 	}
-	Thumbnail * thumb = Render(tempSave, decorations, fire);
+	VideoBuffer * thumb = Render(tempSave, decorations, fire);
 	delete tempSave;
 	return thumb;
 }

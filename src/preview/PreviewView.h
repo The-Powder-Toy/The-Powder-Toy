@@ -7,7 +7,6 @@
 #include "preview/PreviewController.h"
 #include "preview/PreviewModel.h"
 #include "interface/Button.h"
-#include "search/Thumbnail.h"
 #include "interface/Label.h"
 #include "interface/Textbox.h"
 
@@ -17,6 +16,7 @@ namespace ui
 	class AvatarButton;
 }
 
+class VideoBuffer;
 class PreviewModel;
 class PreviewController;
 class PreviewView: public ui::Window {
@@ -24,7 +24,7 @@ class PreviewView: public ui::Window {
 	class LoginAction;
 	class AutoCommentSizeAction;
 	PreviewController * c;
-	Thumbnail * savePreview;
+	VideoBuffer * savePreview;
 	ui::Button * openButton;
 	ui::Button * browserOpenButton;
 	ui::Button * favButton;

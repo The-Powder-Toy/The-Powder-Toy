@@ -1,3 +1,4 @@
+#include <iostream>
 #include <typeinfo>
 #include "ThumbRenderRequest.h"
 #include "client/GameSave.h"
@@ -17,10 +18,7 @@ ThumbRenderRequest::ThumbRenderRequest(GameSave * save, bool decorations, bool f
 
 RequestBroker::ProcessResponse ThumbRenderRequest::Process(RequestBroker & rb)
 {
-#ifdef DEBUG
-		std::cout << typeid(*this).name() << " Processing render request" << std::endl;
-#endif
-	Thumbnail * thumbnail = SaveRenderer::Ref().Render(Save, Decorations, Fire);
+	VideoBuffer * thumbnail = SaveRenderer::Ref().Render(Save, Decorations, Fire);
 
 	delete Save;
 	Save = NULL;

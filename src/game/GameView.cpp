@@ -1040,18 +1040,18 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 			{
 				if(placeSaveThumb)
 				{
-					int thumbX = selectPoint2.X - (placeSaveThumb->Size.X/2);
-					int thumbY = selectPoint2.Y - (placeSaveThumb->Size.Y/2);
+					int thumbX = selectPoint2.X - (placeSaveThumb->Width/2);
+					int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2);
 
 					if(thumbX<0)
 						thumbX = 0;
-					if(thumbX+(placeSaveThumb->Size.X)>=XRES)
-						thumbX = XRES-placeSaveThumb->Size.X;
+					if(thumbX+(placeSaveThumb->Width)>=XRES)
+						thumbX = XRES-placeSaveThumb->Width;
 
 					if(thumbY<0)
 						thumbY = 0;
-					if(thumbY+(placeSaveThumb->Size.Y)>=YRES)
-						thumbY = YRES-placeSaveThumb->Size.Y;
+					if(thumbY+(placeSaveThumb->Height)>=YRES)
+						thumbY = YRES-placeSaveThumb->Height;
 
 					c->PlaceSave(ui::Point(thumbX, thumbY));
 				}
@@ -1852,24 +1852,24 @@ void GameView::OnDraw()
 			{
 				if(placeSaveThumb && selectPoint2.X!=-1)
 				{
-					int thumbX = selectPoint2.X - (placeSaveThumb->Size.X/2);
-					int thumbY = selectPoint2.Y - (placeSaveThumb->Size.Y/2);
+					int thumbX = selectPoint2.X - (placeSaveThumb->Width/2);
+					int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2);
 
 					ui::Point thumbPos = c->NormaliseBlockCoord(ui::Point(thumbX, thumbY));
 
 					if(thumbPos.X<0)
 						thumbPos.X = 0;
-					if(thumbPos.X+(placeSaveThumb->Size.X)>=XRES)
-						thumbPos.X = XRES-placeSaveThumb->Size.X;
+					if(thumbPos.X+(placeSaveThumb->Width)>=XRES)
+						thumbPos.X = XRES-placeSaveThumb->Width;
 
 					if(thumbPos.Y<0)
 						thumbPos.Y = 0;
-					if(thumbPos.Y+(placeSaveThumb->Size.Y)>=YRES)
-						thumbPos.Y = YRES-placeSaveThumb->Size.Y;
+					if(thumbPos.Y+(placeSaveThumb->Height)>=YRES)
+						thumbPos.Y = YRES-placeSaveThumb->Height;
 
-					ren->draw_image(placeSaveThumb->Data, thumbPos.X, thumbPos.Y, placeSaveThumb->Size.X, placeSaveThumb->Size.Y, 128);
+					ren->draw_image(placeSaveThumb, thumbPos.X, thumbPos.Y, 128);
 
-					ren->xor_rect(thumbPos.X, thumbPos.Y, placeSaveThumb->Size.X, placeSaveThumb->Size.Y);
+					ren->xor_rect(thumbPos.X, thumbPos.Y, placeSaveThumb->Width, placeSaveThumb->Width);
 				}
 			}
 			else
