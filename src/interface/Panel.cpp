@@ -264,6 +264,7 @@ void Panel::OnMouseMoved(int localx, int localy, int dx, int dy)
 
 void Panel::OnMouseMovedInside(int localx, int localy, int dx, int dy)
 {
+	mouseInside = true;
 	for(int i = 0; i < children.size(); ++i)
 	{
 		if(!children[i]->Locked)
