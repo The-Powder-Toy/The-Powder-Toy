@@ -1725,12 +1725,14 @@ std::vector<SaveComment*> * Client::GetComments(int saveID, int start, int count
 			for(int j = 0; j < commentsArray.Size(); j++)
 			{
 				json::Number tempUserID = commentsArray[j]["UserID"];
-				json::String tempUsername = commentsArray[j]["FormattedUsername"];
+				json::String tempUsername = commentsArray[j]["Username"];
+				json::String tempFormattedUsername = commentsArray[j]["FormattedUsername"];
 				json::String tempComment = commentsArray[j]["Text"];
 				commentArray->push_back(
 							new SaveComment(
 								tempUserID.Value(),
 								tempUsername.Value(),
+								tempFormattedUsername.Value(),
 								tempComment.Value()
 								)
 							);
