@@ -1141,6 +1141,13 @@ void LuaScriptInterface::initElementsAPI()
 		{
 			lua_pushinteger(l, i);
 			lua_setfield(l, elementsAPI, luacon_sim->elements[i].Identifier);
+			char realIdentifier[20];
+			sprintf(realIdentifier, "DEFAULT_PT_%s", luacon_sim->elements[i].Name);
+			if (i != 0 && i != PT_NBHL && i != PT_NWHL && strcmp(luacon_sim->elements[i].Identifier, realIdentifier))
+			{
+				lua_pushinteger(l, i);
+				lua_setfield(l, elementsAPI, realIdentifier);
+			}
 		}
 	}
 }
