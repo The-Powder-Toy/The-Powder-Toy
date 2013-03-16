@@ -25,7 +25,7 @@ RequestBroker::ProcessResponse ThumbRenderRequest::Process(RequestBroker & rb)
 
 	if(thumbnail)
 	{
-		thumbnail->Resize(Width, Height);
+		thumbnail->Resize(Width, Height, true);
 		ResultObject = (void*)thumbnail;
 		rb.requestComplete((Request*)this);
 		return RequestBroker::Finished;
