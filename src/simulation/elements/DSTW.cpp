@@ -50,15 +50,15 @@ Element_DSTW::Element_DSTW()
 int Element_DSTW::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry, rt;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				switch (r&0xFF)
 				{
 				case PT_SALT:
-					if (!(rand()%250))
+					if (!(rand()%83))
 					{
 						sim->part_change_type(i,x,y,PT_SLTW);
 						// on average, convert 3 DSTW to SLTW before SALT turns into SLTW
@@ -67,20 +67,20 @@ int Element_DSTW::update(UPDATE_FUNC_ARGS)
 					}
 					break;
 				case PT_SLTW:
-					if (!(rand()%10000))
+					if (!(rand()%3333))
 					{
 						sim->part_change_type(i,x,y,PT_SLTW);
 						break;
 					}
 				case PT_WATR:
-					if (!(rand()%500))
+					if (!(rand()%166))
 					{
 						sim->part_change_type(i,x,y,PT_WATR);
 					}
 					break;
 				case PT_RBDM:
 				case PT_LRBD:
-					if ((sim->legacy_enable||parts[i].temp>12.0f) && !(rand()%500))
+					if ((sim->legacy_enable||parts[i].temp>12.0f) && !(rand()%166))
 					{
 						sim->part_change_type(i,x,y,PT_FIRE);
 						parts[i].life = 4;
@@ -88,7 +88,7 @@ int Element_DSTW::update(UPDATE_FUNC_ARGS)
 					break;
 				case PT_FIRE:
 					sim->kill_part(r>>8);
-					if(!(rand()%150)){
+					if(!(rand()%50)){
 						sim->kill_part(i);
 						return 1;
 					}

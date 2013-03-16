@@ -50,15 +50,15 @@ Element_PLNT::Element_PLNT()
 int Element_PLNT::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry, np;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				switch (r&0xFF)
 				{
 				case PT_WATR:
-					if (!(rand()%250))
+					if (!(rand()%83))
 					{
 						np = sim->create_part(r>>8,x+rx,y+ry,PT_PLNT);
 						if (np<0) continue;
@@ -66,7 +66,7 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 					}
 					break;
 				case PT_LAVA:
-					if (!(rand()%250))
+					if (!(rand()%83))
 					{
 						sim->part_change_type(i,x,y,PT_FIRE);
 						parts[i].life = 4;
@@ -74,14 +74,14 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 					break;
 				case PT_SMKE:
 				case PT_CO2:
-					if (!(rand()%250))
+					if (!(rand()%83))
 					{
 						sim->kill_part(r>>8);
 						parts[i].life = rand()%60 + 60;
 					}
 					break;
 				case PT_WOOD:
-					if (surround_space && !(rand()%20) && (abs(rx+ry)<=2) && (sim->VINE_MODE || parts[i].tmp==1))  
+					if (surround_space && !(rand()%7) && (abs(rx+ry)<=2) && (sim->VINE_MODE || parts[i].tmp==1))  
 					{
 						int nnx = rand()%3 -1;
 						int nny = rand()%3 -1;

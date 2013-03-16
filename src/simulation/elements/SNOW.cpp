@@ -54,14 +54,14 @@ int Element_SNOW::update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].temp = restrict_flt(parts[i].temp-1.0f, MIN_TEMP, MAX_TEMP);
 	}
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (((r&0xFF)==PT_SALT || (r&0xFF)==PT_SLTW) && !(rand()%1000))
+				if (((r&0xFF)==PT_SALT || (r&0xFF)==PT_SLTW) && !(rand()%333))
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_SLTW);

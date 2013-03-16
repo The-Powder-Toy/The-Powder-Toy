@@ -57,29 +57,6 @@ int Element_BCOL::update(UPDATE_FUNC_ARGS)
 		parts[i].life--;
 		sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_FIRE);
 	}
-
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if (!r)
-					continue;
-				if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM))
-				{
-					if (parts[i].life>100 && !(rand()%500)) {
-						parts[i].life = 99;
-					}
-				}
-				else if ((r&0xFF)==PT_LAVA)
-				{
-					if (parts[r>>8].ctype == PT_IRON && !(rand()%500)) {
-						parts[r>>8].ctype = PT_METL;
-						sim->kill_part(i);
-												return 1;
-					}
-				}
-			}
 	/*if(100-parts[i].life > parts[i].tmp2)
 		parts[i].tmp2 = 100-parts[i].life;
 	if(parts[i].tmp2 < 0) parts[i].tmp2 = 0;

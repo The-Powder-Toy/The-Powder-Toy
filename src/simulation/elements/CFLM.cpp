@@ -4,8 +4,8 @@ extern "C"
 	#include "hmap.h"
 }
 
-//#TPT-Directive ElementClass Element_HFLM PT_HFLM 68
-Element_HFLM::Element_HFLM()
+//#TPT-Directive ElementClass Element_CFLM PT_CFLM 68
+Element_CFLM::Element_CFLM()
 {
 	Identifier = "DEFAULT_PT_HFLM";
 	Name = "CFLM";
@@ -48,11 +48,11 @@ Element_HFLM::Element_HFLM()
 	HighTemperatureTransition = NT;
 	
 	Update = NULL;
-	Graphics = &Element_HFLM::graphics;
+	Graphics = &Element_CFLM::graphics;
 }
 
-//#TPT-Directive ElementHeader Element_HFLM static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_HFLM::graphics(GRAPHICS_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_CFLM static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_CFLM::graphics(GRAPHICS_FUNC_ARGS)
 
 {
 	int caddress = restrict_flt(restrict_flt((float)((int)(cpart->life/2)), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
@@ -72,4 +72,4 @@ int Element_HFLM::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_HFLM::~Element_HFLM() {}
+Element_CFLM::~Element_CFLM() {}

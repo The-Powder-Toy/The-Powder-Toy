@@ -52,14 +52,14 @@ int Element_PQRT::update(UPDATE_FUNC_ARGS)
 	int r, tmp, trade, rx, ry, np;
 	// absorb SLTW
 	if (parts[i].ctype!=-1)
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					else if ((r&0xFF)==PT_SLTW && !(rand()%2500))
+					else if ((r&0xFF)==PT_SLTW && !(rand()%833))
 					{
 						sim->kill_part(r>>8);
 						parts[i].ctype ++;

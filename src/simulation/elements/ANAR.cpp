@@ -53,16 +53,16 @@ int Element_ANAR::update(UPDATE_FUNC_ARGS)
 	   
 	//if (parts[i].temp >= 0.23)
 	// parts[i].temp --;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_HFLM && !(rand()%22))
+				if ((r&0xFF)==PT_CFLM && !(rand()%7))
 				{
-					sim->part_change_type(i,x,y,PT_HFLM);
+					sim->part_change_type(i,x,y,PT_CFLM);
 					parts[i].life = rand()%150+50;
 					parts[r>>8].temp = parts[i].temp = 0;
 					sim->pv[y/CELL][x/CELL] -= 0.5;
