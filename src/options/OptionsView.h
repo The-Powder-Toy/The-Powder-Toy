@@ -21,6 +21,7 @@ class OptionsView: public ui::Window {
 	ui::Checkbox * scale;
 	ui::Checkbox * fullscreen;
 	ui::Checkbox * fastquit;
+	ui::Checkbox * showAvatars;
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);

@@ -114,6 +114,18 @@ void RequestBroker::RetrieveAvatar(std::string username, int width, int height, 
 	RetrieveImage(urlStream.str(), width, height, tListener);
 }
 
+void RequestBroker::Start(Request * request, RequestListener * tListener)
+{
+	ListenerHandle handle = AttachRequestListener(tListener);
+
+	request->Listener = handle;
+	pthread_mutex_lock(&requestQueueMutex);
+	requestQueue.push_back(request);
+	pthread_mutex_unlock(&requestQueueMutex);
+
+	assureRunning();	
+}
+
 void RequestBroker::RetrieveImage(std::string imageUrl, int width, int height, RequestListener * tListener)
 {
 	ListenerHandle handle = AttachRequestListener(tListener);

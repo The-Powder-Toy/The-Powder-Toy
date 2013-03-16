@@ -39,10 +39,13 @@
 #include "client/SaveInfo.h"
 #include "client/SaveFile.h"
 #include "client/GameSave.h"
+#include "client/UserInfo.h"
 #include "search/Thumbnail.h"
 #include "preview/Comment.h"
 #include "ClientListener.h"
 #include "requestbroker/RequestBroker.h"
+#include "requestbroker/APIRequest.h"
+#include "requestbroker/APIResultParser.h"
 
 #include "cajun/reader.h"
 #include "cajun/writer.h"
@@ -1178,26 +1181,42 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 	return saveData;
 }
 
-VideoBuffer * Client::GetAvatar(std::string username)
+RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
 {
-	lastError = "";
-	int dataStatus;
-	int dataLength = 0;
-	unsigned char * data;
-	std::stringstream urlStream;
-	urlStream << "http://" << STATICSERVER << "/avatars/" << username << ".pti";
+	class UserInfoParser: public APIResultParser
+	{
+		virtual void * ProcessResponse(unsigned char * data, int dataLength)
+		{
+			try
+			{
+				std::istringstream dataStream((char*)data);
+				json::Object objDocument;
+				json::Reader::Read(objDocument, dataStream);
+				json::Object tempUser = objDocument["User"];
 
-	data = (unsigned char *)http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
-	if(data && dataStatus == 200)
-	{
-		std::vector<char> responseData(data, data+dataLength);
-		return format::PTIToVideoBuffer(responseData);
-	}
-	else if(data)
-	{
-		free(data);
-	}
-	return NULL;
+				json::Number userIDTemp = tempUser["ID"];
+				json::String usernameTemp = tempUser["Username"];
+				json::String bioTemp = tempUser["Biography"];
+				//json::Number ageTemp = tempUser["Age"];
+				
+				return new UserInfo(
+					userIDTemp.Value(),
+					0,//ageTemp.Value(),
+					usernameTemp.Value(),
+					bioTemp.Value());
+			}
+			catch (json::Exception &e)
+			{
+				return 0;
+			}
+		}
+		virtual void Cleanup(void * objectPtr)
+		{
+			delete (UserInfo*)objectPtr;
+		}
+		virtual ~UserInfoParser() { }
+	};
+	return new APIRequest("http://" SERVER "/User.json?Name=" + username, new UserInfoParser());
 }
 
 LoginStatus Client::Login(std::string username, std::string password, User & user)

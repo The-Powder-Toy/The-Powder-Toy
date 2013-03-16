@@ -67,6 +67,8 @@ PreviewView::PreviewView():
 		}
 	};
 
+	showAvatars = Client::Ref().GetPrefBool("ShowAvatars", true);
+
 	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav");
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetIcon(IconFavourite);

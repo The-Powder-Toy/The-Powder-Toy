@@ -12,6 +12,8 @@
 
 #include "cajun/elements.h"
 
+#include "requestbroker/RequestBroker.h"
+
 class Thumbnail;
 class SaveInfo;
 class SaveFile;
@@ -126,7 +128,8 @@ public:
 
 	RequestStatus AddComment(int saveID, std::string comment);
 
-	VideoBuffer * GetAvatar(std::string username);
+	//Retrieves a "UserInfo" object
+	RequestBroker::Request * GetUserInfoAsync(std::string username);
 
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	std::vector<unsigned char> GetSaveData(int saveID, int saveDate);

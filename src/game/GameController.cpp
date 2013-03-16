@@ -17,6 +17,7 @@
 #include "GameModelException.h"
 #include "simulation/Air.h"
 #include "elementsearch/ElementSearchActivity.h"
+#include "profile/ProfileActivity.h"
 #include "colourpicker/ColourPickerActivity.h"
 #include "update/UpdateActivity.h"
 #include "Notification.h"
@@ -1067,8 +1068,15 @@ void GameController::OpenLocalBrowse()
 
 void GameController::OpenLogin()
 {
-	loginWindow = new LoginController();
-	ui::Engine::Ref().ShowWindow(loginWindow->GetView());
+	if(Client::Ref().GetAuthUser().ID)
+	{
+		new ProfileActivity(Client::Ref().GetAuthUser().Username);
+	}
+	else
+	{
+		loginWindow = new LoginController();
+		ui::Engine::Ref().ShowWindow(loginWindow->GetView());
+	}
 }
 
 void GameController::OpenElementSearch()

@@ -124,6 +124,17 @@ void OptionsModel::SetFastQuit(bool fastquit)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetShowAvatars()
+{
+	return Client::Ref().GetPrefBool("ShowAvatars", true);
+}
+
+void OptionsModel::SetShowAvatars(bool state)
+{
+	Client::Ref().SetPref("ShowAvatars", state);
+	notifySettingsChanged();
+}
+
 void OptionsModel::notifySettingsChanged()
 {
 	for(int i = 0; i < observers.size(); i++)

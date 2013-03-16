@@ -54,6 +54,11 @@ void OptionsController::SetFullscreen(bool fullscreen)
 	model->SetFullscreen(fullscreen);
 }
 
+void OptionsController::SetShowAvatars(bool showAvatars)
+{
+	model->SetShowAvatars(showAvatars);
+}
+
 void OptionsController::SetScale(bool scale)
 {
 	if(scale)

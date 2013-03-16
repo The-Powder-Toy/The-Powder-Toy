@@ -16,6 +16,7 @@ typedef std::pair<int, RequestListener*> ListenerHandle;
 class RequestBroker: public Singleton<RequestBroker>
 {
 	friend class ImageRequest;
+	friend class APIRequest;
 	friend class ThumbRenderRequest;
 public:
 	class Request;
@@ -55,6 +56,7 @@ public:
 	void RetrieveThumbnail(int saveID, int saveDate, int width, int height, RequestListener * tListener);
 	void RetrieveThumbnail(int saveID, int width, int height, RequestListener * tListener);
 	void RetrieveAvatar(std::string username, int width, int height, RequestListener * tListener);
+	void Start(Request * request, RequestListener * tLIstener);
 	
 	bool CheckRequestListener(ListenerHandle handle);
 	ListenerHandle AttachRequestListener(RequestListener * tListener);
@@ -63,7 +65,7 @@ public:
 	class Request
 	{
 	public:
-		enum RequestType { ThumbnailRender, Image };
+		enum RequestType { ThumbnailRender, Image, API };
 		RequestType Type;
 		void * ResultObject;
 		ListenerHandle Listener;
