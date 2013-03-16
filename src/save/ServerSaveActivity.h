@@ -29,7 +29,7 @@ public:
 	virtual void Save();
 	virtual void Exit();
 	virtual void OnDraw();
-	virtual void OnRequestReady(void * imagePtr);
+	virtual void OnResponseReady(void * imagePtr);
 	virtual void OnTick(float dt);
 	virtual ~ServerSaveActivity();
 protected:

@@ -249,15 +249,20 @@ void ServerSaveActivity::OnDraw()
 	}
 }
 
-void ServerSaveActivity::OnRequestReady(void * imagePtr)
+void ServerSaveActivity::OnResponseReady(void * imagePtr)
 {
-	this->thumbnail = (VideoBuffer *)imagePtr;
+	if(thumbnail)
+		delete thumbnail;
+	thumbnail = (VideoBuffer *)imagePtr;
 }
 
 ServerSaveActivity::~ServerSaveActivity()
 {
+	RequestBroker::Ref().DetachRequestListener(this);
 	if(saveUploadTask)
 		delete saveUploadTask;
 	if(callback)
 		delete callback;
+	if(thumbnail)
+		delete thumbnail;
 }

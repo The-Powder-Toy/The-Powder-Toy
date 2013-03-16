@@ -128,12 +128,18 @@ void LocalSaveActivity::OnDraw()
 	}
 }
 
-void LocalSaveActivity::OnRequestReady(void * imagePtr)
+void LocalSaveActivity::OnResponseReady(void * imagePtr)
 {
-	this->thumbnail = (VideoBuffer*)imagePtr;
+	if(thumbnail)
+		delete thumbnail;
+	thumbnail = (VideoBuffer*)imagePtr;
 }
 
 LocalSaveActivity::~LocalSaveActivity()
 {
-
+	RequestBroker::Ref().DetachRequestListener(this);
+	if(thumbnail)
+		delete thumbnail;
+	if(callback)
+		delete callback;
 }

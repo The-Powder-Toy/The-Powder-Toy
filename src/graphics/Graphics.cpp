@@ -50,20 +50,30 @@ void VideoBuffer::Resize(float factor, bool resample)
 	Resize(newWidth, newHeight);
 }
 
-void VideoBuffer::Resize(int width, int height, bool resample)
+void VideoBuffer::Resize(int width, int height, bool resample, bool fixedRatio)
 {
 	int newWidth = width;
 	int newHeight = height;
 	pixel * newBuffer;
 	if(newHeight == -1 && newWidth == -1)
 		return;
-	if(newHeight == -1)
+	if(newHeight == -1 || newWidth == -1)
 	{
-		newHeight = ((float)Height)*((float)newWidth/(float)Width);
+		if(newHeight == -1)
+			newHeight = ((float)Height)*((float)newWidth/(float)Width);
+		if(newWidth == -1)
+			newWidth = ((float)Width)*((float)newHeight/(float)Height);
 	}
-	if(newWidth == -1)
+	else if(fixedRatio)
 	{
-		newWidth = ((float)Width)*((float)newHeight/(float)Height);
+		//Force proportions
+		float scaleFactor = 1.0f;
+		if(Height >  newHeight)
+			scaleFactor = ((float)newHeight)/((float)Height);
+		if(Width > newWidth)
+			scaleFactor = ((float)newWidth)/((float)Width);
+		newWidth = ((float)Width)*scaleFactor;
+		newHeight = ((float)Height)*scaleFactor;
 	}
 	if(resample)
 		newBuffer = Graphics::resample_img(Buffer, Width, Height, newWidth, newHeight);
