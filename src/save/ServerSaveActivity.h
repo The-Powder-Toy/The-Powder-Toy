@@ -28,6 +28,7 @@ public:
 	void saveUpload();
 	virtual void Save();
 	virtual void Exit();
+	virtual void ShowRules();
 	virtual void OnDraw();
 	virtual void OnRequestReady(void * imagePtr);
 	virtual void OnTick(float dt);
@@ -44,6 +45,8 @@ protected:
 	ui::Checkbox * pausedCheckbox;
 	class CancelAction;
 	class SaveAction;
+	class RulesAction;
 	friend class CancelAction;
 	friend class SaveAction;
+	friend class RulesAction;
 };

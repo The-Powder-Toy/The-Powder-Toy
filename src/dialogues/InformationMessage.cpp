@@ -2,20 +2,43 @@
 #include "InformationMessage.h"
 #include "interface/Button.h"
 #include "interface/Label.h"
+#include "interface/ScrollPanel.h"
 
-InformationMessage::InformationMessage(std::string title, std::string message):
+InformationMessage::InformationMessage(std::string title, std::string message, bool large):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 75))
 {
+	if (large) //Maybe also use this large mode for changelogs eventually, or have it as a customizable size?
+	{
+		Size.X += 200;
+		Size.Y += 175;
+	}
+
+	if (large)
+	{
+		ui::ScrollPanel *messagePanel = new ui::ScrollPanel(ui::Point(4, 24), ui::Point(Size.X-8, 206));
+		AddComponent(messagePanel);
+
+		ui::Label * messageLabel = new ui::Label(ui::Point(4, 0), ui::Point(Size.X-28, -1), message);
+		messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+		messageLabel->SetMultiline(true);
+		messagePanel->AddChild(messageLabel);
+
+		messagePanel->InnerSize = ui::Point(messagePanel->Size.X, messageLabel->Size.Y+4);
+	}
+	else
+	{
+		ui::Label * messageLabel = new ui::Label(ui::Point(4, 24), ui::Point(Size.X-8, 60), message);
+		messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+		AddComponent(messageLabel);
+	}
+
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), title);
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
-
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 24), ui::Point(Size.X-8, 60), message);
-	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
-	AddComponent(messageLabel);
 
 	class DismissAction: public ui::ButtonAction
 	{

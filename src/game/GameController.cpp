@@ -267,7 +267,7 @@ void GameController::PlaceSave(ui::Point position)
 void GameController::Install()
 {
 #if defined(MACOSX)
-	new InformationMessage("No Installation necessary", "You don't need to install The Powder Toy on Mac OS X");
+	new InformationMessage("No Installation necessary", "You don't need to install The Powder Toy on Mac OS X", false);
 #elif defined(WIN) || defined(LIN)
 	class InstallConfirmation: public ConfirmDialogueCallback {
 	public:
@@ -278,7 +278,7 @@ void GameController::Install()
 			{
 				if(Client::Ref().DoInstallation())
 				{
-					new InformationMessage("Install Success", "The installation completed!");
+					new InformationMessage("Install Success", "The installation completed!", false);
 				}
 				else
 				{
