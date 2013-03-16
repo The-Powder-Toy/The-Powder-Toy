@@ -50,14 +50,14 @@ Element_YEST::Element_YEST()
 int Element_YEST::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_DYST && !(rand()%30) && !sim->legacy_enable)
+				if ((r&0xFF)==PT_DYST && !(rand()%10) && !sim->legacy_enable)
 				{
 					sim->part_change_type(i,x,y,PT_DYST);
 				}

@@ -50,14 +50,14 @@ Element_WTRV::Element_WTRV()
 int Element_WTRV::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (((r&0xFF)==PT_RBDM||(r&0xFF)==PT_LRBD) && !sim->legacy_enable && parts[i].temp>(273.15f+12.0f) && !(rand()%500))
+				if (((r&0xFF)==PT_RBDM||(r&0xFF)==PT_LRBD) && !sim->legacy_enable && parts[i].temp>(273.15f+12.0f) && !(rand()%166))
 				{
 					sim->part_change_type(i,x,y,PT_FIRE);
 					parts[i].life = 4;

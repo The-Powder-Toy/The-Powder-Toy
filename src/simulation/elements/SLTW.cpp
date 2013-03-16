@@ -50,24 +50,24 @@ Element_SLTW::Element_SLTW()
 int Element_SLTW::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				switch (r&0xFF)
 				{
 				case PT_SALT:
-					if (!(rand()%10000))
+					if (!(rand()%3333))
 						sim->part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
 					break;
 				case PT_PLNT:
-					if (!(rand()%200))
+					if (!(rand()%66))
 						sim->kill_part(r>>8);
 					break;
 				case PT_RBDM:
 				case PT_LRBD:
-					if ((sim->legacy_enable||parts[i].temp>(273.15f+12.0f)) && !(rand()%500))
+					if ((sim->legacy_enable||parts[i].temp>(273.15f+12.0f)) && !(rand()%166))
 					{
 						sim->part_change_type(i,x,y,PT_FIRE);
 						parts[i].life = 4;

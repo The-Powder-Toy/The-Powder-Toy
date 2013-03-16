@@ -84,19 +84,19 @@ int Element_CBNW::update(UPDATE_FUNC_ARGS)
 		}
 		parts[i].tmp--;
 	}
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((sim->elements[r&0xFF].Properties&TYPE_PART) && parts[i].tmp == 0 && !(rand()%250))
+				if ((sim->elements[r&0xFF].Properties&TYPE_PART) && parts[i].tmp == 0 && !(rand()%83))
 				{
 					//Start explode
 					parts[i].tmp = rand()%25;//(rand()%100)+50;
 				}
-				else if((sim->elements[r&0xFF].Properties&TYPE_SOLID) && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_GLAS && parts[i].tmp == 0 && (2-sim->pv[y/CELL][x/CELL])>(rand()%40000))
+				else if((sim->elements[r&0xFF].Properties&TYPE_SOLID) && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_GLAS && parts[i].tmp == 0 && (2-sim->pv[y/CELL][x/CELL])>(rand()%13333))
 				{
 					sim->part_change_type(i,x,y,PT_CO2);
 					parts[i].ctype = 5;
@@ -122,7 +122,7 @@ int Element_CBNW::update(UPDATE_FUNC_ARGS)
 				}
 				else if ((r&0xFF)==PT_RBDM||(r&0xFF)==PT_LRBD)
 				{
-					if ((sim->legacy_enable||parts[i].temp>(273.15f+12.0f)) && !(rand()%500))
+					if ((sim->legacy_enable||parts[i].temp>(273.15f+12.0f)) && !(rand()%166))
 					{
 						sim->part_change_type(i,x,y,PT_FIRE);
 						parts[i].life = 4;
@@ -131,7 +131,7 @@ int Element_CBNW::update(UPDATE_FUNC_ARGS)
 				}
 				else if ((r&0xFF)==PT_FIRE && parts[r>>8].ctype!=PT_WATR){
 					sim->kill_part(r>>8);
-					if(1>(rand()%150)){
+					if(1>(rand()%50)){
 						sim->kill_part(i);
 						return 1;
 					}
