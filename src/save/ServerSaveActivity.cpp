@@ -142,7 +142,6 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
-	//Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Width)/2, Position.Y+25, thumbnail->Width, thumbnail->Height
 	ui::Button * RulesButton = new ui::Button(ui::Point((Size.X*3/4)-75, Size.Y-20), ui::Point(150, 16), "Save Uploading Rules");
 	RulesButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	RulesButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;

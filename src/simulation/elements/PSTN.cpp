@@ -136,6 +136,13 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 											int nr = sim->create_part(-3, pistonEndX+(nxi*j), pistonEndY+(nyi*j), PT_PSTN);
 											if (nr > -1) {
 												parts[nr].life = 1;
+												if (parts[i].dcolour)
+												{
+													int red = PIXR(parts[i].dcolour)&0xFF;
+													int green = PIXG(parts[i].dcolour);
+													int blue = PIXB(parts[i].dcolour);
+													parts[nr].dcolour = 255<<24|PIXRGB(red>60?red-60:0, green>60?green-60:0, blue>60?blue-60:0);
+												}
 											}
 										}
 										movedPiston =  true;
