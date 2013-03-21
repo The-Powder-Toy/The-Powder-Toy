@@ -131,8 +131,8 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 		}
 	}
 	//Neighbor check loop
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (rx=-2; rx<3; rx++)
+		for (ry=-2; ry<3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
@@ -141,7 +141,7 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 				if (!r)
 					continue;
 				//Melts into EXOT
-				if ((r&0xFF) == PT_EXOT && !(rand()%83) && !parts[i].life)
+				if ((r&0xFF) == PT_EXOT && !(rand()%250) && !parts[i].life)
 				{
 					sim->create_part(i, x, y, PT_EXOT);
 				}
