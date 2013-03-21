@@ -10,12 +10,15 @@ public:
 	int Age;
 	std::string Username;
 	std::string Biography;
-	UserInfo(int id, int age, std::string username, std::string biography):
+	std::string Location;
+	UserInfo(int id, int age, std::string username, std::string biography, std::string location):
 		ID(id),
 		Age(age),
 		Username(username),
-		Biography(biography)
+		Biography(biography),
+		Location(location)
 	{ }
+	UserInfo() {}
 };
 
 

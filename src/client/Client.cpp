@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <iomanip>
 #include <time.h>
 #include <stdio.h>
@@ -1181,6 +1182,40 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 	return saveData;
 }
 
+RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
+{
+	class StatusParser: public APIResultParser
+	{
+		virtual void * ProcessResponse(unsigned char * data, int dataLength)
+		{
+			try
+			{
+				std::istringstream dataStream((char*)data);
+				json::Object objDocument;
+				json::Reader::Read(objDocument, dataStream);
+				json::Number tempStatus = objDocument["Status"];
+
+				bool returnValue = tempStatus.Value() == 1;
+
+				return (void*)(returnValue ? 1 : 0);
+			}
+			catch (json::Exception &e)
+			{
+				return 0;
+			}
+		}
+		virtual void Cleanup(void * objectPtr)
+		{
+			//delete (UserInfo*)objectPtr;
+		}
+		virtual ~StatusParser() { }
+	};
+	std::map<std::string, std::string> postData;
+	postData.insert(std::pair<std::string, std::string>("Location", info.Location));
+	postData.insert(std::pair<std::string, std::string>("Biography", info.Biography));
+	return new APIRequest("http://" SERVER "/Profile.json", postData, new StatusParser());	
+}
+
 RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
 {
 	class UserInfoParser: public APIResultParser
@@ -1197,13 +1232,15 @@ RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
 				json::Number userIDTemp = tempUser["ID"];
 				json::String usernameTemp = tempUser["Username"];
 				json::String bioTemp = tempUser["Biography"];
-				//json::Number ageTemp = tempUser["Age"];
+				json::String locationTemp = tempUser["Location"];
+				json::Number ageTemp = tempUser["Age"];
 				
 				return new UserInfo(
 					userIDTemp.Value(),
-					0,//ageTemp.Value(),
+					ageTemp.Value(),
 					usernameTemp.Value(),
-					bioTemp.Value());
+					bioTemp.Value(),
+					locationTemp.Value());
 			}
 			catch (json::Exception &e)
 			{

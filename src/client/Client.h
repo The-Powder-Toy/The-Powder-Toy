@@ -9,6 +9,7 @@
 #include "Singleton.h"
 
 #include "User.h"
+#include "UserInfo.h"
 
 #include "cajun/elements.h"
 
@@ -93,6 +94,9 @@ public:
 	std::vector<std::string> DirectorySearch(std::string directory, std::string search, std::vector<std::string> extensions);
 	std::vector<std::string> DirectorySearch(std::string directory, std::string search, std::string extension);
 
+	std::string FileOpenDialogue();
+	//std::string FileSaveDialogue();
+
 	bool DoInstallation();
 
 	std::vector<unsigned char> ReadFile(std::string filename);
@@ -130,6 +134,7 @@ public:
 
 	//Retrieves a "UserInfo" object
 	RequestBroker::Request * GetUserInfoAsync(std::string username);
+	RequestBroker::Request * SaveUserInfoAsync(UserInfo info);
 
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	std::vector<unsigned char> GetSaveData(int saveID, int saveDate);

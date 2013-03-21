@@ -1102,3 +1102,194 @@ fail:
 		*len = 0;
 	return NULL;
 }
+
+
+void *http_multipart_post_async(char *uri, char **names, char **parts, int *plens, char *user, char *pass, char *session_id)
+{
+	void *ctx;
+	char *data = NULL, *tmp, *p;
+	int dlen = 0, i, j;
+	unsigned char hash[16];
+	unsigned char boundary[32], ch;
+	int blen = 0;
+	unsigned int map[62], m;
+	struct md5_context md5;
+	//struct md5_context md52;
+	int own_plen = 0;
+
+	if (names)
+	{
+		if (!plens)
+		{
+			own_plen = 1;
+			for (i=0; names[i]; i++) ;
+			plens = (int *)calloc(i, sizeof(int));
+			for (i=0; names[i]; i++)
+				plens[i] = strlen(parts[i]);
+		}
+
+retry:
+		if (blen >= 31)
+			goto fail;
+		memset(map, 0, 62*sizeof(int));
+		for (i=0; names[i]; i++)
+		{
+			for (j=0; j<plens[i]-blen; j++)
+				if (!blen || !memcmp(parts[i]+j, boundary, blen))
+				{
+					ch = parts[i][j+blen];
+					if (ch>='0' && ch<='9')
+						map[ch-'0']++;
+					else if (ch>='A' && ch<='Z')
+						map[ch-'A'+10]++;
+					else if (ch>='a' && ch<='z')
+						map[ch-'a'+36]++;
+				}
+		}
+		m = ~0;
+		j = 61;
+		for (i=0; i<62; i++)
+			if (map[i]<m)
+			{
+				m = map[i];
+				j = i;
+			}
+		if (j<10)
+			boundary[blen] = '0'+j;
+		else if (j<36)
+			boundary[blen] = 'A'+(j-10);
+		else
+			boundary[blen] = 'a'+(j-36);
+		blen++;
+		if (map[j])
+			goto retry;
+		boundary[blen] = 0;
+
+		for (i=0; names[i]; i++)
+			dlen += blen+strlen(names[i])+plens[i]+128;
+		dlen += blen+8;
+		data = (char *)malloc(dlen);
+		dlen = 0;
+		for (i=0; names[i]; i++)
+		{
+			dlen += sprintf(data+dlen, "--%s\r\n", boundary);
+			dlen += sprintf(data+dlen, "Content-transfer-encoding: binary\r\n");
+			if (strchr(names[i], ':'))
+			{
+				tmp = mystrdup(names[i]);
+				p = strchr(tmp, ':');
+				*p = 0;
+				dlen += sprintf(data+dlen, "content-disposition: form-data; name=\"%s\"; ", tmp);
+				free(tmp);
+				p = strchr(names[i], ':');
+				dlen += sprintf(data+dlen, "filename=\"%s\"\r\n\r\n", p+1);
+			}
+			else
+				dlen += sprintf(data+dlen, "content-disposition: form-data; name=\"%s\"\r\n\r\n", names[i]);
+			memcpy(data+dlen, parts[i], plens[i]);
+			dlen += plens[i];
+			dlen += sprintf(data+dlen, "\r\n");
+		}
+		dlen += sprintf(data+dlen, "--%s--\r\n", boundary);
+	}
+
+	ctx = http_async_req_start(NULL, uri, data, dlen, 0);
+	if (!ctx)
+		goto fail;
+
+	if (user)
+	{
+		//http_async_add_header(ctx, "X-Auth-User", user);
+		if (pass)
+		{
+			md5_init(&md5);
+			md5_update(&md5, (unsigned char *)user, strlen(user));
+			md5_update(&md5, (unsigned char *)"-", 1);
+			m = 0;
+			if (names)
+			{
+				for (i=0; names[i]; i++)
+				{
+					//md5_update(&md5, (unsigned char *)parts[i], plens[i]); //WHY?
+					//md5_update(&md5, (unsigned char *)"-", 1);
+					p = strchr(names[i], ':');
+					if (p)
+						m += (p - names[i]) + 1;
+					else
+						m += strlen(names[i])+1;
+				}
+
+				tmp = (char *)malloc(m);
+				m = 0;
+				for (i=0; names[i]; i++)
+				{
+					p = strchr(names[i], ':');
+					if (m)
+					{
+						tmp[m] = ' ';
+						m ++;
+					}
+					if (p)
+					{
+						memcpy(tmp+m, names[i], p-names[i]);
+						m += p - names[i];
+					}
+					else
+					{
+						strcpy(tmp+m, names[i]);
+						m += strlen(names[i]);
+					}
+				}
+				tmp[m] = 0;
+				http_async_add_header(ctx, "X-Auth-Objects", tmp);
+				free(tmp);
+			}
+
+			md5_update(&md5, (unsigned char *)pass, strlen(pass));
+			md5_final(hash, &md5);
+			tmp = (char *)malloc(33);
+			for (i=0; i<16; i++)
+			{
+				tmp[i*2] = hexChars[hash[i]>>4];
+				tmp[i*2+1] = hexChars[hash[i]&15];
+			}
+			tmp[32] = 0;
+			http_async_add_header(ctx, "X-Auth-Hash", tmp);
+			free(tmp);
+		}
+		if (session_id)
+		{
+			http_async_add_header(ctx, "X-Auth-User-Id", user);
+			http_async_add_header(ctx, "X-Auth-Session-Key", session_id);
+		}
+		else
+		{
+			http_async_add_header(ctx, "X-Auth-User", user);
+		}
+	}
+
+	if (data)
+	{
+		tmp = (char *)malloc(32+strlen((char *)boundary));
+		sprintf(tmp, "multipart/form-data, boundary=%s", boundary);
+		http_async_add_header(ctx, "Content-type", tmp);
+		free(tmp);
+		free(data);
+	}
+
+	if (own_plen)
+		free(plens);
+
+	return ctx;
+
+fail:
+	if (data)
+		free(data);
+	if (own_plen)
+		free(plens);
+	//if (ret)
+	//	*ret = 600;
+	//if (len)
+	//	*len = 0;
+	return NULL;
+}
