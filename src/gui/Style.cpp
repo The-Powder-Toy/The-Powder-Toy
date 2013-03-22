@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Style.h"
+#include "gui/Style.h"
 #include "gui/interface/Colour.h"
 
 namespace style {

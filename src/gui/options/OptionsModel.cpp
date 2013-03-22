@@ -1,5 +1,5 @@
 #include "simulation/Air.h"
-#include "game/GameModel.h"
+#include "gui/game/GameModel.h"
 #include "OptionsModel.h"
 
 OptionsModel::OptionsModel(GameModel * gModel_) {

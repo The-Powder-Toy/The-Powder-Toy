@@ -12,7 +12,7 @@
 #include "BitmapBrush.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
-#include "game/DecorationTool.h"
+#include "gui/game/DecorationTool.h"
 #include "GameModelException.h"
 #include "QuickOptions.h"
 #include "Format.h"

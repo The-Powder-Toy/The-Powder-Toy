@@ -6,7 +6,7 @@
 #include "Activity.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Textbox.h"
-#include "game/ToolButton.h"
+#include "gui/game/ToolButton.h"
 
 class Tool;
 

@@ -6,7 +6,7 @@
 #include "gui/interface/AvatarButton.h"
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/Keys.h"
-#include "Style.h"
+#include "gui/Style.h"
 #include "client/Client.h"
 #include "client/UserInfo.h"
 #include "client/requestbroker/RequestListener.h"

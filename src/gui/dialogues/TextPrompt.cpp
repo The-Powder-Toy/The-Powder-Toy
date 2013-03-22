@@ -2,7 +2,7 @@
 #include "TextPrompt.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Button.h"
-#include "Style.h"
+#include "gui/Style.h"
 #include "PowderToy.h"
 
 class CloseAction: public ui::ButtonAction

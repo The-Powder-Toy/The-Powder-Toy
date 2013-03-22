@@ -4,7 +4,7 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Keys.h"
-#include "Style.h"
+#include "gui/Style.h"
 
 class LoginView::LoginAction : public ui::ButtonAction
 {

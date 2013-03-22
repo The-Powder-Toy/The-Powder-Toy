@@ -8,8 +8,8 @@
 #include "gui/interface/SaveButton.h"
 #include "gui/interface/Keys.h"
  
-#include "dialogues/ErrorMessage.h"
-#include "dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/ErrorMessage.h"
+#include "gui/dialogues/ConfirmPrompt.h"
 #include "LocalBrowserController.h"
 #include "LocalBrowserModel.h"
 #include "LocalBrowserModelException.h"

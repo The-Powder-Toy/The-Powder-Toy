@@ -3,7 +3,7 @@
 #include "client/Client.h"
 #include "LocalBrowserController.h"
 #include "gui/interface/Engine.h"
-#include "dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/ConfirmPrompt.h"
 #include "tasks/TaskWindow.h"
 #include "tasks/Task.h"
 

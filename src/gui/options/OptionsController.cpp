@@ -1,5 +1,5 @@
 #include "OptionsController.h"
-#include "dialogues/ErrorMessage.h"
+#include "gui/dialogues/ErrorMessage.h"
 
 OptionsController::OptionsController(GameModel * gModel_, ControllerCallback * callback_):
 	callback(callback_),

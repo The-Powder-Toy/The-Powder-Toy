@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Style.h"
+#include "gui/Style.h"
 #include "simulation/Simulation.h"
 #include "Tool.h"
 #include "gui/interface/Window.h"

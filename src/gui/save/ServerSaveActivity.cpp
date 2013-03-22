@@ -4,12 +4,12 @@
 #include "gui/interface/Button.h"
 #include "gui/interface/Checkbox.h"
 #include "client/requestbroker/RequestBroker.h"
-#include "dialogues/ErrorMessage.h"
-#include "dialogues/ConfirmPrompt.h"
-#include "dialogues/InformationMessage.h"
+#include "gui/dialogues/ErrorMessage.h"
+#include "gui/dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/InformationMessage.h"
 #include "client/Client.h"
 #include "tasks/Task.h"
-#include "Style.h"
+#include "gui/Style.h"
 #include "client/GameSave.h"
 
 class ServerSaveActivity::CancelAction: public ui::ButtonAction

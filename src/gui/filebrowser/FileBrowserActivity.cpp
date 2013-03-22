@@ -9,12 +9,12 @@
 #include "client/Client.h"
 #include "client/SaveFile.h"
 #include "client/GameSave.h"
-#include "Style.h"
+#include "gui/Style.h"
 #include "tasks/Task.h"
 #include "simulation/SaveRenderer.h"
-#include "dialogues/TextPrompt.h"
-#include "dialogues/ConfirmPrompt.h"
-#include "dialogues/ErrorMessage.h"
+#include "gui/dialogues/TextPrompt.h"
+#include "gui/dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/ErrorMessage.h"
 
 class Thumbnail;
 

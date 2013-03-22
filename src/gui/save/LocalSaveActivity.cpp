@@ -2,13 +2,13 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Button.h"
-#include "search/Thumbnail.h"
+#include "gui/search/Thumbnail.h"
 #include "client/requestbroker/RequestBroker.h"
-#include "dialogues/ErrorMessage.h"
-#include "dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/ErrorMessage.h"
+#include "gui/dialogues/ConfirmPrompt.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
-#include "Style.h"
+#include "gui/Style.h"
 
 class LocalSaveActivity::CancelAction: public ui::ButtonAction
 {

@@ -1,6 +1,6 @@
 #include <bzlib.h>
 #include <sstream>
-#include "dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/interface/Engine.h"
 #include "UpdateActivity.h"
 #include "tasks/Task.h"

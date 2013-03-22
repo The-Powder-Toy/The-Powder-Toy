@@ -2,7 +2,7 @@
 #include <iomanip>
 
 #include "Config.h"
-#include "Style.h"
+#include "gui/Style.h"
 #include "GameView.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Window.h"
@@ -10,10 +10,10 @@
 #include "gui/interface/Colour.h"
 #include "gui/interface/Keys.h"
 #include "gui/interface/Slider.h"
-#include "search/Thumbnail.h"
+#include "gui/search/Thumbnail.h"
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
-#include "dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/ConfirmPrompt.h"
 #include "Format.h"
 #include "QuickOption.h"
 #include "IntroText.h"

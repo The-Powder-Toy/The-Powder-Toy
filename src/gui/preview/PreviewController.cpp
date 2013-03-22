@@ -4,8 +4,8 @@
 #include "PreviewView.h"
 #include "PreviewModel.h"
 #include "PreviewModelException.h"
-#include "dialogues/ErrorMessage.h"
-#include "login/LoginController.h"
+#include "gui/dialogues/ErrorMessage.h"
+#include "gui/login/LoginController.h"
 #include "Controller.h"
 
 PreviewController::PreviewController(int saveID, int saveDate, ControllerCallback * callback):

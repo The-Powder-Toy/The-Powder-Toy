@@ -1,4 +1,4 @@
-#include "Style.h"
+#include "gui/Style.h"
 #include "ErrorMessage.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"

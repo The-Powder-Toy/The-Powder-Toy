@@ -1,5 +1,5 @@
 #include "ConfirmPrompt.h"
-#include "Style.h"
+#include "gui/Style.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Button.h"
 #include "PowderToy.h"

@@ -2,14 +2,14 @@
 #include <vector>
 #include <cmath>
 #include "PreviewView.h"
-#include "dialogues/TextPrompt.h"
+#include "gui/dialogues/TextPrompt.h"
 #include "simulation/SaveRenderer.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Textbox.h"
-#include "Style.h"
+#include "gui/Style.h"
 #include "Format.h"
-#include "search/Thumbnail.h"
+#include "gui/search/Thumbnail.h"
 #include "client/Client.h"
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/AvatarButton.h"

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <sstream>
-#include "Style.h"
+#include "gui/Style.h"
 #include "simulation/Simulation.h"
 #include "Tool.h"
 #include "gui/interface/Window.h"
@@ -9,7 +9,7 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/DropDown.h"
 #include "gui/interface/Keys.h"
-#include "dialogues/ErrorMessage.h"
+#include "gui/dialogues/ErrorMessage.h"
 
 class PropertyWindow: public ui::Window
 {

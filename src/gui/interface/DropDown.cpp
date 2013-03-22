@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Style.h"
+#include "gui/Style.h"
 #include "Button.h"
 #include "DropDown.h"
 

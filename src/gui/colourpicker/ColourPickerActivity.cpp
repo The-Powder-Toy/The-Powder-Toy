@@ -4,10 +4,10 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Keys.h"
-#include "game/Tool.h"
-#include "Style.h"
+#include "gui/game/Tool.h"
+#include "gui/Style.h"
 #include "Format.h"
-#include "game/GameModel.h"
+#include "gui/game/GameModel.h"
 
 ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPickedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(266, 175)),

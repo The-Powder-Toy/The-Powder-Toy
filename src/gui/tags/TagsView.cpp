@@ -1,7 +1,7 @@
 #include "client/Client.h"
 #include "TagsView.h"
 
-#include "dialogues/ErrorMessage.h"
+#include "gui/dialogues/ErrorMessage.h"
 #include "TagsController.h"
 #include "TagsModel.h"
 #include "TagsModelException.h"

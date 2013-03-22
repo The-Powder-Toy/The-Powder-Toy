@@ -1,5 +1,5 @@
 #include "ProgressBar.h"
-#include "Style.h"
+#include "gui/Style.h"
 
 using namespace ui;
 
