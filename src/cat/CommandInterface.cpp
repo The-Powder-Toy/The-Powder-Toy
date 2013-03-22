@@ -5,8 +5,8 @@
 #include <strings.h>
 #endif
 #include "CommandInterface.h"
-#include "game/GameModel.h"
-#include "game/GameController.h"
+#include "gui/game/GameModel.h"
+#include "gui/game/GameController.h"
 
 CommandInterface::CommandInterface(GameController * c, GameModel * m) {
 	this->m = m;

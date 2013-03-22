@@ -14,9 +14,9 @@ extern "C"
 #include "LuaCheckbox.h"
 #include "LuaSlider.h"
 #include "LuaProgressBar.h"
-#include "interface/Button.h"
-#include "interface/Label.h"
-#include "interface/Window.h"
+#include "gui/interface/Button.h"
+#include "gui/interface/Label.h"
+#include "gui/interface/Window.h"
 
 const char LuaWindow::className[] = "Window";
 

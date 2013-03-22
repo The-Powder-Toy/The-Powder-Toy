@@ -8,7 +8,7 @@ extern "C"
 #include <iostream>
 #include "LuaCheckbox.h"
 #include "LuaScriptInterface.h"
-#include "interface/Checkbox.h"
+#include "gui/interface/Checkbox.h"
 
 const char LuaCheckbox::className[] = "Checkbox";
 

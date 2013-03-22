@@ -18,7 +18,7 @@
 //#include "graphics/Graphics.h"
 #include "Misc.h"
 #include "Tools.h"
-#include "game/Brush.h"
+#include "gui/game/Brush.h"
 #include "client/GameSave.h"
 #include "Sample.h"
 #include "Snapshot.h"
