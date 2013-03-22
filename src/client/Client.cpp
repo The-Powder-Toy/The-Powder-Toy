@@ -643,7 +643,7 @@ void Client::Tick()
 			if(data)
 				free(data);
 		}
-		else
+		else if(data)
 		{
 			std::istringstream dataStream(data);
 
