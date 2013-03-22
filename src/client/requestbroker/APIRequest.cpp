@@ -100,10 +100,11 @@ RequestBroker::ProcessResponse APIRequest::Process(RequestBroker & rb)
 				std::cout << typeid(*this).name() << " Authenticated " << std::endl;
 				User user = Client::Ref().GetAuthUser();
 				char userName[12];
-				char userSession[user.SessionID.length() + 1];
+				char *userSession = new char[user.SessionID.length() + 1];
 				std::strcpy(userName, format::NumberToString<int>(user.ID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
 				HTTPContext = http_multipart_post_async((char*)URL.c_str(), postNames, postData, postLength, userName, NULL, userSession);
+				delete userSession;
 			}
 			else
 			{
