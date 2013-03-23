@@ -2140,7 +2140,7 @@ int LuaScriptInterface::Command(std::string command)
 
 std::string LuaScriptInterface::FormatCommand(std::string command)
 {
-	if(command[0] == '!')
+	if(command != "" && command[0] == '!')
 	{
 		return "!"+legacy->FormatCommand(command.substr(1));
 	}
