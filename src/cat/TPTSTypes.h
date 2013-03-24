@@ -1,10 +1,3 @@
-/*
- * TPTSTypes.h
- *
- *  Created on: Feb 4, 2012
- *      Author: Simon
- */
-
 #ifndef TPTSTYPES_H_
 #define TPTSTYPES_H_
 

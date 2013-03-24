@@ -1,10 +1,3 @@
-/*
- * Particle.cpp
- *
- *  Created on: Jun 6, 2012
- *      Author: Simon
- */
-
 #include <cstddef>
 #include "Particle.h"
 

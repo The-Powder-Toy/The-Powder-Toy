@@ -5,7 +5,7 @@
 #include "client/SaveInfo.h"
 #include "graphics/Graphics.h"
 #include "Engine.h"
-#include "client/ThumbnailBroker.h"
+#include "client/requestbroker/RequestBroker.h"
 #include "simulation/SaveRenderer.h"
 #include "Format.h"
 #include "ContextMenu.h"
@@ -39,7 +39,6 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 		}
 
 		std::string votes, icon;
-		int j;
 
 		votes = format::NumberToString<int>(save->GetVotesUp()-save->GetVotesDown());
 		icon += 0xBB;
@@ -117,7 +116,7 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 
 SaveButton::~SaveButton()
 {
-	ThumbnailBroker::Ref().DetachThumbnailListener(this);
+	RequestBroker::Ref().DetachRequestListener(this);
 
 	if(thumbnail)
 		delete thumbnail;
@@ -129,13 +128,14 @@ SaveButton::~SaveButton()
 		delete file;
 }
 
-void SaveButton::OnThumbnailReady(Thumbnail * thumb)
+void SaveButton::OnResponseReady(void * imagePtr)
 {
-	if(thumb)
+	VideoBuffer * image = (VideoBuffer*)imagePtr;
+	if(image)
 	{
 		if(thumbnail)
 			delete thumbnail;
-		thumbnail = thumb;
+		thumbnail = image;
 		waitingForThumb = false;
 	}
 }
@@ -144,23 +144,25 @@ void SaveButton::Tick(float dt)
 {
 	if(!thumbnail && !waitingForThumb)
 	{
+		float scaleFactor = (Size.Y-25)/((float)YRES);
+		ui::Point thumbBoxSize = ui::Point(((float)XRES)*scaleFactor, ((float)YRES)*scaleFactor);
 		if(save)
 		{
 			if(save->GetGameSave())
 			{
 				waitingForThumb = true;
-				ThumbnailBroker::Ref().RenderThumbnail(save->GetGameSave(), Size.X-3, Size.Y-25, this);
+				RequestBroker::Ref().RenderThumbnail(save->GetGameSave(), thumbBoxSize.X, thumbBoxSize.Y, this);
 			}
 			else if(save->GetID())
 			{
 				waitingForThumb = true;
-				ThumbnailBroker::Ref().RetrieveThumbnail(save->GetID(), save->GetVersion(), Size.X-3, Size.Y-25, this);
+				RequestBroker::Ref().RetrieveThumbnail(save->GetID(), save->GetVersion(), thumbBoxSize.X, thumbBoxSize.Y, this);
 			}
 		}
 		else if(file && file->GetGameSave())
 		{
 			waitingForThumb = true;
-			ThumbnailBroker::Ref().RenderThumbnail(file->GetGameSave(), Size.X-3, Size.Y-25, this);
+			RequestBroker::Ref().RenderThumbnail(file->GetGameSave(), thumbBoxSize.X, thumbBoxSize.Y, this);
 		}
 	}
 }
@@ -180,11 +182,11 @@ void SaveButton::Draw(const Point& screenPos)
 
 	if(thumbnail)
 	{
-		thumbBoxSize = ui::Point(thumbnail->Size.X, thumbnail->Size.Y);
+		thumbBoxSize = ui::Point(thumbnail->Width, thumbnail->Height);
 		if(save && save->id)
-			g->draw_image(thumbnail->Data, screenPos.X-3+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbnail->Size.X, thumbnail->Size.Y, 255);
+			g->draw_image(thumbnail, screenPos.X-3+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 255);
 		else
-			g->draw_image(thumbnail->Data, screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbnail->Size.X, thumbnail->Size.Y, 255);
+			g->draw_image(thumbnail, screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 255);
 	}
 	else
 	{

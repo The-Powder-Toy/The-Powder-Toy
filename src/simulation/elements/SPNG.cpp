@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_SPNG PT_SPNG 90
 Element_SPNG::Element_SPNG()
 {
-    Identifier = "DEFAULT_PT_SPNG";
-    Name = "SPNG";
-    Colour = PIXPACK(0xFFBE30);
-    MenuVisible = 1;
-    MenuSection = SC_SOLIDS;
-    Enabled = 1;
-    
-    Advection = 0.00f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.00f;
-    Loss = 0.00f;
-    Collision = 0.00f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f  * CFDS;
-    Falldown = 0;
-    
-    Flammable = 20;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 30;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f +273.15f;
-    HeatConduct = 251;
-    Description = "A sponge, absorbs water.";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = 2730.0f;
-    HighTemperatureTransition = PT_FIRE;
-    
-    Update = &Element_SPNG::update;
-    Graphics = &Element_SPNG::graphics;
+	Identifier = "DEFAULT_PT_SPNG";
+	Name = "SPNG";
+	Colour = PIXPACK(0xFFBE30);
+	MenuVisible = 1;
+	MenuSection = SC_SOLIDS;
+	Enabled = 1;
+	
+	Advection = 0.00f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.00f;
+	Loss = 0.00f;
+	Collision = 0.00f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f  * CFDS;
+	Falldown = 0;
+	
+	Flammable = 20;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 30;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f +273.15f;
+	HeatConduct = 251;
+	Description = "A sponge, absorbs water.";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = 2730.0f;
+	HighTemperatureTransition = PT_FIRE;
+	
+	Update = &Element_SPNG::update;
+	Graphics = &Element_SPNG::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_SPNG static int update(UPDATE_FUNC_ARGS)
@@ -56,40 +56,53 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 		int absorbChanceDenom = parts[i].life*10000/limit + 500;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if (!r)
-						continue;
-					if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW || (r&0xFF)==PT_FRZW) && parts[i].life<limit && 500>rand()%absorbChanceDenom)
+					switch (r&0xFF)
 					{
-						parts[i].life++;
-						sim->kill_part(r>>8);
-					}
-					if ((r&0xFF)==PT_SLTW && parts[i].life<limit && 50>rand()%absorbChanceDenom)
-					{
-						parts[i].life++;
-						if (rand()%4)
+					case PT_WATR:
+					case PT_DSTW:
+					case PT_FRZW:
+						if (parts[i].life<limit && 500>rand()%absorbChanceDenom)
+						{
+							parts[i].life++;
 							sim->kill_part(r>>8);
-						else
-							sim->part_change_type(r>>8, x+rx, y+ry, PT_SALT);
-					}
-					if ((r&0xFF)==PT_CBNW && parts[i].life<limit && 100>rand()%absorbChanceDenom)
-					{
-						parts[i].life++;
-						sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
-					}
-					if ((r&0xFF)==PT_PSTE && parts[i].life<limit && 20>rand()%absorbChanceDenom)
-					{
-						parts[i].life++;
-						sim->create_part(r>>8, x+rx, y+ry, PT_CLST);
+						}
+						break;
+					case PT_SLTW:
+						if (parts[i].life<limit && 50>rand()%absorbChanceDenom)
+						{
+							parts[i].life++;
+							if (rand()%4)
+								sim->kill_part(r>>8);
+							else
+								sim->part_change_type(r>>8, x+rx, y+ry, PT_SALT);
+						}
+						break;
+					case PT_CBNW:
+						if (parts[i].life<limit && 100>rand()%absorbChanceDenom)
+						{
+							parts[i].life++;
+							sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
+						}
+						break;
+					case PT_PSTE:
+						if (parts[i].life<limit && 20>rand()%absorbChanceDenom)
+						{
+							parts[i].life++;
+							sim->create_part(r>>8, x+rx, y+ry, PT_CLST);
+						}
+						break;
+					default:
+						continue;
 					}
 				}
 	}
 	else
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if ((!r)&&parts[i].life>=1)//if nothing then create water
@@ -102,7 +115,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 	{
 		rx = rand()%5-2;
 		ry = rand()%5-2;
-		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
 			if (!r)
@@ -130,7 +143,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 	{
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
@@ -152,7 +165,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 	if (tmp || parts[i].temp>=374)
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if ((!r)&&parts[i].life>=1)//if nothing then create steam

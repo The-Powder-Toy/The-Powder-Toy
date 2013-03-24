@@ -1,10 +1,3 @@
-/*
- * TagsModel.h
- *
- *  Created on: Mar 5, 2012
- *      Author: Simon
- */
-
 #ifndef TAGSMODEL_H_
 #define TAGSMODEL_H_
 

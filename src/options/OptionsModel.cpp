@@ -1,10 +1,3 @@
-/*
- * OptionsModel.cpp
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #include "simulation/Air.h"
 #include "game/GameModel.h"
 #include "OptionsModel.h"
@@ -131,6 +124,17 @@ void OptionsModel::SetFastQuit(bool fastquit)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetShowAvatars()
+{
+	return Client::Ref().GetPrefBool("ShowAvatars", true);
+}
+
+void OptionsModel::SetShowAvatars(bool state)
+{
+	Client::Ref().SetPref("ShowAvatars", state);
+	notifySettingsChanged();
+}
+
 void OptionsModel::notifySettingsChanged()
 {
 	for(int i = 0; i < observers.size(); i++)
@@ -140,6 +144,5 @@ void OptionsModel::notifySettingsChanged()
 }
 
 OptionsModel::~OptionsModel() {
-	// TODO Auto-generated destructor stub
 }
 

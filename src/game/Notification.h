@@ -1,10 +1,3 @@
-/*
- * Notification.h
- *
- *  Created on: Jun 20, 2012
- *      Author: Simon
- */
-
 #ifndef NOTIFICATION_H_
 #define NOTIFICATION_H_
 

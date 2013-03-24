@@ -2,8 +2,8 @@ import re, os, shutil, string, sys
 
 def generateElements(elementFiles, outputCpp, outputH):
 
-	elementClasses = dict()
-	baseClasses = dict()
+	elementClasses = {}
+	baseClasses = {}
 
 	elementHeader = """#ifndef ELEMENTCLASSES_H
 #define ELEMENTCLASSES_H
@@ -18,7 +18,11 @@ def generateElements(elementFiles, outputCpp, outputH):
 	directives = []
 
 	for elementFile in elementFiles:
-		f = open(elementFile, "r")
+		try:
+			f = open(elementFile, "r")
+		except:
+			f = open("src/simulation/elements/"+elementFile, "r")
+            
 		fileData = f.read()
 		f.close()
 
@@ -116,9 +120,13 @@ std::vector<Element> GetElements()
 		elementContent += """elements.push_back(%s());
 	""" % (newClass)
 
-	elementContent += """	return elements;
+	elementContent += """return elements;
 }
 	""";
+
+	outputPath, outputFile = os.path.split(outputH)
+	if not os.path.exists(outputPath):
+		os.makedirs(outputPath)
 
 	f = open(outputH, "w")
 	f.write(elementHeader)
@@ -129,7 +137,7 @@ std::vector<Element> GetElements()
 	f.close()
 
 def generateTools(toolFiles, outputCpp, outputH):
-	toolClasses = dict()
+	toolClasses = {}
 	
 	toolHeader = """#ifndef TOOLCLASSES_H
 		#define TOOLCLASSES_H
@@ -141,7 +149,10 @@ def generateTools(toolFiles, outputCpp, outputH):
 	directives = []
 
 	for toolFile in toolFiles:
-		f = open(toolFile, "r")
+		try:
+			f = open(toolFile, "r")
+		except:
+			f = open("src/simulation/tools/"+toolFile, "r")
 		fileData = f.read()
 		f.close()
 		
@@ -193,7 +204,11 @@ def generateTools(toolFiles, outputCpp, outputH):
 	toolContent += """	return tools;
 		}
 		""";
-	
+
+	outputPath, outputFile = os.path.split(outputH)
+	if not os.path.exists(outputPath):
+		os.makedirs(outputPath)
+
 	f = open(outputH, "w")
 	f.write(toolHeader)
 	f.close()
@@ -202,7 +217,11 @@ def generateTools(toolFiles, outputCpp, outputH):
 	f.write(toolContent)
 	f.close()
 
-if(sys.argv[1] == "elements"):
-	generateElements(sys.argv[4:], sys.argv[2], sys.argv[3])
-elif(sys.argv[1] == "tools"):
-	generateTools(sys.argv[4:], sys.argv[2], sys.argv[3])
+if(len(sys.argv) > 3):
+    if(sys.argv[1] == "elements"):
+    	generateElements(sys.argv[4:], sys.argv[2], sys.argv[3])
+    elif(sys.argv[1] == "tools"):
+    	generateTools(sys.argv[4:], sys.argv[2], sys.argv[3])
+else:
+	generateElements(os.listdir("src/simulation/elements"), "generated/ElementClasses.cpp", "generated/ElementClasses.h")
+	generateTools(os.listdir("src/simulation/tools"), "generated/ToolClasses.cpp", "generated/ToolClasses.h")

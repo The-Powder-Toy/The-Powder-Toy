@@ -1,10 +1,3 @@
-/*
- * PreviewModel.cpp
- *
- *  Created on: Jan 21, 2012
- *      Author: Simon
- */
-
 #include <cmath>
 #include "PreviewModel.h"
 #include "client/Client.h"
@@ -25,7 +18,6 @@ PreviewModel::PreviewModel():
 	commentsPageNumber(1),
 	commentBoxEnabled(false)
 {
-	// TODO Auto-generated constructor stub
 
 }
 
@@ -44,27 +36,62 @@ void * PreviewModel::updateSaveCommentsTHelper(void * obj)
 	return ((PreviewModel*)obj)->updateSaveCommentsT();
 }
 
+void PreviewModel::updateSaveInfoTDelete(void * arg)
+{
+	delete arg;
+}
+void PreviewModel::updateSaveDataTDelete(void * arg)
+{
+	free(arg);
+}
+void PreviewModel::updateSaveCommentsTDelete(void * arg)
+{
+	for(int i = 0; i < ((std::vector<SaveComment*> *)arg)->size(); i++)
+		delete ((std::vector<SaveComment*> *)arg)->at(i);
+	((std::vector<SaveComment*> *)arg)->clear();
+	delete arg;
+}
+
 void * PreviewModel::updateSaveInfoT()
 {
-	SaveInfo * tempSave = Client::Ref().GetSave(tSaveID, tSaveDate);
+	SaveInfo * tempSave;
+	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
+	tempSave = Client::Ref().GetSave(tSaveID, tSaveDate);
+	pthread_cleanup_push(&updateSaveInfoTDelete,tempSave);
+	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL);
+	pthread_testcancel();
 	updateSaveInfoFinished = true;
+	pthread_cleanup_pop(0);
 	return tempSave;
 }
 
 void * PreviewModel::updateSaveDataT()
 {
 	int tempDataSize;
-	unsigned char * tempData = Client::Ref().GetSaveData(tSaveID, tSaveDate, tempDataSize);
+	unsigned char * tempData;
+	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
+	tempData = Client::Ref().GetSaveData(tSaveID, tSaveDate, tempDataSize);
+	pthread_cleanup_push(&updateSaveDataTDelete,tempData);
+	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL);
+	pthread_testcancel();
 	saveDataBuffer.clear();
-	saveDataBuffer.insert(saveDataBuffer.begin(), tempData, tempData+tempDataSize);
+	if (tempData)
+		saveDataBuffer.insert(saveDataBuffer.begin(), tempData, tempData+tempDataSize);
 	updateSaveDataFinished = true;
+	pthread_cleanup_pop(1);
 	return NULL;
 }
 
 void * PreviewModel::updateSaveCommentsT()
 {
-	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(tSaveID, (commentsPageNumber-1)*20, 20);
+	std::vector<SaveComment*> * tempComments;
+	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
+	tempComments = Client::Ref().GetComments(tSaveID, (commentsPageNumber-1)*20, 20);
+	pthread_cleanup_push(&updateSaveCommentsTDelete,tempComments);
+	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL);
+	pthread_testcancel();
 	updateSaveCommentsFinished = true;
+	pthread_cleanup_pop(0);
 	return tempComments;
 }
 
@@ -107,6 +134,7 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	{
 		for(int i = 0; i < saveComments->size(); i++)
 			delete saveComments->at(i);
+		saveComments->clear();
 		delete saveComments;
 		saveComments = NULL;
 	}
@@ -173,6 +201,7 @@ void PreviewModel::UpdateComments(int pageNumber)
 	{
 		for(int i = 0; i < saveComments->size(); i++)
 			delete saveComments->at(i);
+		saveComments->clear();
 		delete saveComments;
 		saveComments = NULL;
 	}
@@ -301,6 +330,7 @@ void PreviewModel::Update()
 			{
 				for(int i = 0; i < saveComments->size(); i++)
 					delete saveComments->at(i);
+				saveComments->clear();
 				delete saveComments;
 				saveComments = NULL;
 			}
@@ -313,7 +343,18 @@ void PreviewModel::Update()
 }
 
 PreviewModel::~PreviewModel() {
+	pthread_cancel(updateSaveDataThread);
+	pthread_cancel(updateSaveInfoThread);
+	pthread_cancel(updateSaveCommentsThread);
 	if(save)
 		delete save;
+	if(saveComments)
+	{
+		for(int i = 0; i < saveComments->size(); i++)
+			delete saveComments->at(i);
+		saveComments->clear();
+		delete saveComments;
+	}
+	saveDataBuffer.clear();
 }
 

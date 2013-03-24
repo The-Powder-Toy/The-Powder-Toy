@@ -4,7 +4,7 @@
 #include <string>
 
 #include "Component.h"
-#include "Misc.h"
+#include "PowderToy.h"
 #include "Colour.h"
 
 namespace ui

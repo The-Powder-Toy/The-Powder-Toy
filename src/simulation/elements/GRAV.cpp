@@ -2,65 +2,49 @@
 //#TPT-Directive ElementClass Element_GRAV PT_GRAV 102
 Element_GRAV::Element_GRAV()
 {
-    Identifier = "DEFAULT_PT_GRAV";
-    Name = "GRAV";
-    Colour = PIXPACK(0xFFE0A0);
-    MenuVisible = 1;
-    MenuSection = SC_POWDERS;
-    Enabled = 1;
-    
-    Advection = 0.7f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 1.00f;
-    Loss = 1.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 1;
-    
-    Flammable = 10;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 30;
-    
-    Weight = 85;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 70;
-    Description = "Very light dust. Changes colour based on velocity.";
-    
-    State = ST_SOLID;
-    Properties = TYPE_PART;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_GRAV::update;
-    Graphics = &Element_GRAV::graphics;
+	Identifier = "DEFAULT_PT_GRAV";
+	Name = "GRAV";
+	Colour = PIXPACK(0xFFE0A0);
+	MenuVisible = 1;
+	MenuSection = SC_POWDERS;
+	Enabled = 1;
+	
+	Advection = 0.7f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 1.00f;
+	Loss = 1.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 1;
+	
+	Flammable = 10;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 30;
+	
+	Weight = 85;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 70;
+	Description = "Very light dust. Changes colour based on velocity.";
+	
+	State = ST_SOLID;
+	Properties = TYPE_PART;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = NULL;
+	Graphics = &Element_GRAV::graphics;
 }
-
-//#TPT-Directive ElementHeader Element_GRAV static int update(UPDATE_FUNC_ARGS)
-int Element_GRAV::update(UPDATE_FUNC_ARGS)
- {
-	/*int t = parts[i].type;
-	if (t==PT_LOVE)
-		ISLOVE=1;
-	else if (t==PT_LOLZ)
-		ISLOLZ=1;
-	else if (t==PT_GRAV)
-		ISGRAV=1;*/
-	return 0;
-}
-
-int lastIndex;
-
 //#TPT-Directive ElementHeader Element_GRAV static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_GRAV::graphics(GRAPHICS_FUNC_ARGS)
 

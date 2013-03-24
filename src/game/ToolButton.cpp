@@ -1,10 +1,3 @@
-/*
- * ToolButton.cpp
- *
- *  Created on: Jan 30, 2012
- *      Author: Simon
- */
-
 #include "ToolButton.h"
 #include "interface/Keys.h"
 
@@ -17,13 +10,14 @@ ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, st
 
 void ToolButton::OnMouseClick(int x, int y, unsigned int button)
 {
-    isButtonDown = true;
+	isButtonDown = true;
 }
 
 void ToolButton::OnMouseUnclick(int x, int y, unsigned int button)
 {
 	if(isButtonDown)
 	{
+		isButtonDown = false;
 		if(button == BUTTON_LEFT)
 			SetSelectionState(0);
 		if(button == BUTTON_RIGHT)
@@ -32,7 +26,6 @@ void ToolButton::OnMouseUnclick(int x, int y, unsigned int button)
 			SetSelectionState(2);
 		DoAction();
 	}
-	isButtonDown = false;
 }
 
 void ToolButton::Draw(const ui::Point& screenPos)
@@ -94,6 +87,5 @@ int ToolButton::GetSelectionState()
 }
 
 ToolButton::~ToolButton() {
-	// TODO Auto-generated destructor stub
 }
 

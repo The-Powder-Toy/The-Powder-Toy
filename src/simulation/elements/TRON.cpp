@@ -2,50 +2,50 @@
 //#TPT-Directive ElementClass Element_TRON PT_TRON 143
 Element_TRON::Element_TRON()
 {
-    Identifier = "DEFAULT_PT_TRON";
-    Name = "TRON";
-    Colour = PIXPACK(0xA9FF00);
-    MenuVisible = 1;
-    MenuSection = SC_SPECIAL;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f  * CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 100;
-    
-    Temperature = 0.0f;
-    HeatConduct = 40;
-    Description = "Smart particles, Travels in straight lines and avoids obstacles.  Grows with time.";
-    
-    State = ST_NONE;
-    Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_TRON::update;
-    Graphics = &Element_TRON::graphics;
+	Identifier = "DEFAULT_PT_TRON";
+	Name = "TRON";
+	Colour = PIXPACK(0xA9FF00);
+	MenuVisible = 1;
+	MenuSection = SC_SPECIAL;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f  * CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 100;
+	
+	Temperature = 0.0f;
+	HeatConduct = 40;
+	Description = "Smart particles, Travels in straight lines and avoids obstacles.  Grows with time.";
+	
+	State = ST_NONE;
+	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_TRON::update;
+	Graphics = &Element_TRON::graphics;
 
-    Element_TRON::init_graphics();
+	Element_TRON::init_graphics();
 }
 
 /* TRON element is meant to resemble a tron bike (or worm) moving around and trying to avoid obstacles itself.
@@ -91,7 +91,6 @@ void Element_TRON::init_graphics()
 //#TPT-Directive ElementHeader Element_TRON static int update(UPDATE_FUNC_ARGS)
 int Element_TRON::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry, np;
 	if (parts[i].tmp&TRON_WAIT)
 	{
 		parts[i].tmp &= ~TRON_WAIT;

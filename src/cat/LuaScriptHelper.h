@@ -1,10 +1,3 @@
-/*
- * LuaScriptHelper.h
- *
- *  Created on: Feb 12, 2012
- *      Author: Simon
- */
-
 #ifndef LUASCRIPTHELPER_H_
 #define LUASCRIPTHELPER_H_
 
@@ -55,7 +48,7 @@ int luacon_element_getproperty(char * key, int * format, unsigned int * modified
 int luatpt_test(lua_State* l);
 int luatpt_getelement(lua_State *l);
 
-int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS);
+int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS, int i);
 int luatpt_graphics_func(lua_State *l);
 
 int luacon_elementReplacement(UPDATE_FUNC_ARGS);

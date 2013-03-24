@@ -1,10 +1,3 @@
-/*
- * ElementSearchActivity.cpp
- *
- *  Created on: Jun 24, 2012
- *      Author: Simon
- */
-
 #include <algorithm>
 #include <iomanip>
 #include "ColourPickerActivity.h"
@@ -169,7 +162,7 @@ void ColourPickerActivity::OnMouseDown(int x, int y, unsigned button)
 {
 	x -= Position.X+5;
 	y -= Position.Y+5;
-	if(x >= 0 && x <= 256 && y >= 0 && y < 127)
+	if(x >= 0 && x < 256 && y >= 0 && y <= 128)
 	{
 		mouseDown = true;
 		currentHue = (float(x)/float(255))*359.0f;
@@ -185,7 +178,7 @@ void ColourPickerActivity::OnMouseDown(int x, int y, unsigned button)
 			currentHue = 0;
 	}
 
-	if(x >= 0 && x <= 256 && y >= 131 && y < 142)
+	if(x >= 0 && x < 256 && y >= 132 && y <= 142)
 	{
 		valueMouseDown = true;
 		currentValue = x;
@@ -295,13 +288,18 @@ void ColourPickerActivity::OnDraw()
 			g->blendpixel(value+offsetX, i+offsetY+127+5, cr, cg, cb, currentAlpha);
 		}
 
+	//draw color square pointer
 	int currentHueX = clamp_flt(currentHue, 0, 359);
 	int currentSaturationY = ((255-currentSaturation)/2);
-	g->xor_line(offsetX+currentHueX, offsetY+currentSaturationY-5, offsetX+currentHueX, offsetY+currentSaturationY+5);
-	g->xor_line(offsetX+currentHueX-5, offsetY+currentSaturationY, offsetX+currentHueX+5, offsetY+currentSaturationY);
+	g->xor_line(offsetX+currentHueX, offsetY+currentSaturationY-5, offsetX+currentHueX, offsetY+currentSaturationY-1);
+	g->xor_line(offsetX+currentHueX, offsetY+currentSaturationY+1, offsetX+currentHueX, offsetY+currentSaturationY+5);
+	g->xor_line(offsetX+currentHueX-5, offsetY+currentSaturationY, offsetX+currentHueX-1, offsetY+currentSaturationY);
+	g->xor_line(offsetX+currentHueX+1, offsetY+currentSaturationY, offsetX+currentHueX+5, offsetY+currentSaturationY);
 
-	g->xor_line(offsetX+currentValue, offsetY+4+128, offsetX+currentValue, offsetY+13+128);
-	g->xor_line(offsetX+currentValue+1, offsetY+4+128, offsetX+currentValue+1, offsetY+13+128);
+	//draw brightness bar pointer
+	int currentValueX = restrict_flt(currentValue, 0, 254);
+	g->xor_line(offsetX+currentValueX, offsetY+4+128, offsetX+currentValueX, offsetY+13+128);
+	g->xor_line(offsetX+currentValueX+1, offsetY+4+128, offsetX+currentValueX+1, offsetY+13+128);
 }
 
 ColourPickerActivity::~ColourPickerActivity() {

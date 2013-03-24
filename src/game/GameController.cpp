@@ -17,6 +17,7 @@
 #include "GameModelException.h"
 #include "simulation/Air.h"
 #include "elementsearch/ElementSearchActivity.h"
+#include "profile/ProfileActivity.h"
 #include "colourpicker/ColourPickerActivity.h"
 #include "update/UpdateActivity.h"
 #include "Notification.h"
@@ -146,11 +147,11 @@ GameController::GameController():
 
 	commandInterface = new LuaScriptInterface(this, gameModel);//new TPTScriptInterface();
 	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
-	
+
 	commandInterface->OnBrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().X);
-	commandInterface->OnActiveToolChanged(0, gameModel->GetActiveTool(0));
-	commandInterface->OnActiveToolChanged(1, gameModel->GetActiveTool(1));
-	commandInterface->OnActiveToolChanged(2, gameModel->GetActiveTool(2));
+	ActiveToolChanged(0, gameModel->GetActiveTool(0));
+	ActiveToolChanged(1, gameModel->GetActiveTool(1));
+	ActiveToolChanged(2, gameModel->GetActiveTool(2));
 
 	//sim = new Simulation();
 	Client::Ref().AddListener(this);
@@ -188,9 +189,29 @@ GameController::~GameController()
 	{
 		delete localBrowser;
 	}
+	if (options)
+	{
+		delete options;
+	}
 	if(ui::Engine::Ref().GetWindow() == gameView)
 	{
 		ui::Engine::Ref().CloseWindow();
+	}
+	//deleted here because it refuses to be deleted when deleted from gameModel even with the same code
+	std::deque<Snapshot*> history = gameModel->GetHistory();
+	for(std::deque<Snapshot*>::iterator iter = history.begin(), end = history.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
+	std::vector<QuickOption*> quickOptions = gameModel->GetQuickOptions();
+	for(std::vector<QuickOption*>::iterator iter = quickOptions.begin(), end = quickOptions.end(); iter != end; ++iter)
+	{
+		delete *iter;
+	}
+	std::vector<Notification*> notifications = gameModel->GetNotifications();
+	for(std::vector<Notification*>::iterator iter = notifications.begin(); iter != notifications.end(); ++iter)
+	{
+		delete *iter;
 	}
 	delete gameModel;
 	delete gameView;
@@ -247,7 +268,7 @@ void GameController::PlaceSave(ui::Point position)
 void GameController::Install()
 {
 #if defined(MACOSX)
-	new InformationMessage("No Installation necessary", "You don't need to install The Powder Toy on Mac OS X");
+	new InformationMessage("No Installation necessary", "You don't need to install The Powder Toy on Mac OS X", false);
 #elif defined(WIN) || defined(LIN)
 	class InstallConfirmation: public ConfirmDialogueCallback {
 	public:
@@ -258,7 +279,7 @@ void GameController::Install()
 			{
 				if(Client::Ref().DoInstallation())
 				{
-					new InformationMessage("Install Success", "The installation completed!");
+					new InformationMessage("Install Success", "The installation completed!", false);
 				}
 				else
 				{
@@ -543,7 +564,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 			for (std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
 			{
 				int signx, signy, signw, signh;
-				(*iter).pos(signx, signy, signw, signh);
+				(*iter).pos((*iter).getText(sim), signx, signy, signw, signh);
 				if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
 				{
 					if (sregexp((*iter).text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)
@@ -925,9 +946,18 @@ void GameController::SetActiveMenu(Menu * menu)
 		gameModel->SetColourSelectorVisibility(false);
 }
 
-void GameController::SetActiveTool(int toolSelection, Tool * tool)
+std::vector<Menu*> GameController::GetMenuList()
+{
+	return gameModel->GetMenuList();
+}
+
+void GameController::ActiveToolChanged(int toolSelection, Tool *tool)
 {
 	commandInterface->OnActiveToolChanged(toolSelection, tool);
+}
+
+void GameController::SetActiveTool(int toolSelection, Tool * tool)
+{
 	gameModel->SetActiveTool(toolSelection, tool);
 	gameModel->GetRenderer()->gravityZonesEnabled = false;
 	gameModel->SetLastTool(tool);
@@ -937,7 +967,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 		{
 			gameModel->GetRenderer()->gravityZonesEnabled = true;
 		}
-	}	
+	}
 }
 
 void GameController::OpenSearch()
@@ -1038,8 +1068,15 @@ void GameController::OpenLocalBrowse()
 
 void GameController::OpenLogin()
 {
-	loginWindow = new LoginController();
-	ui::Engine::Ref().ShowWindow(loginWindow->GetView());
+	if(Client::Ref().GetAuthUser().ID)
+	{
+		new ProfileActivity(Client::Ref().GetAuthUser().Username);
+	}
+	else
+	{
+		loginWindow = new LoginController();
+		ui::Engine::Ref().ShowWindow(loginWindow->GetView());
+	}
 }
 
 void GameController::OpenElementSearch()
@@ -1166,7 +1203,7 @@ void GameController::OpenSaveWindow()
 				new ServerSaveActivity(tempSave, new SaveUploadedCallback(this));
 			}
 			else
-			{				
+			{
 				SaveInfo tempSave(0, 0, 0, 0, gameModel->GetUser().Username, "");
 				tempSave.SetGameSave(gameSave);
 				new ServerSaveActivity(tempSave, new SaveUploadedCallback(this));
@@ -1217,7 +1254,7 @@ void GameController::SaveAsCurrent()
 				new ServerSaveActivity(tempSave, true, new SaveUploadedCallback(this));
 			}
 			else
-			{				
+			{
 				SaveInfo tempSave(0, 0, 0, 0, gameModel->GetUser().Username, "");
 				tempSave.SetGameSave(gameSave);
 				new ServerSaveActivity(tempSave, true, new SaveUploadedCallback(this));
@@ -1289,7 +1326,7 @@ std::string GameController::ElementResolve(int type)
 
 std::string GameController::WallName(int type)
 {
-	if(gameModel && gameModel->GetSimulation() && gameModel->GetSimulation()->wtypes && type >= 0)
+	if(gameModel && gameModel->GetSimulation() && gameModel->GetSimulation()->wtypes && type >= 0 && type < UI_WALLCOUNT)
 		return std::string(gameModel->GetSimulation()->wtypes[type].name);
 	else
 		return "";
@@ -1387,4 +1424,3 @@ void GameController::RunUpdater()
 	Exit();
 	new UpdateActivity();
 }
-

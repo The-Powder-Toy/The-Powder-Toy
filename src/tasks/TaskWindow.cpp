@@ -1,10 +1,3 @@
-/*
- * TaskWindow.cpp
- *
- *  Created on: Apr 6, 2012
- *      Author: Simon
- */
-
 #include <sstream>
 #include "interface/Label.h"
 #include "TaskWindow.h"

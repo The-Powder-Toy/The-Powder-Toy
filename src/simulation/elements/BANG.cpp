@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_BANG PT_BANG 139
 Element_BANG::Element_BANG()
 {
-    Identifier = "DEFAULT_PT_BANG";
-    Name = "TNT";
-    Colour = PIXPACK(0xC05050);
-    MenuVisible = 1;
-    MenuSection = SC_EXPLOSIVE;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 1;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 88;
-    Description = "Explosive.";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_BANG::update;
-    
+	Identifier = "DEFAULT_PT_BANG";
+	Name = "TNT";
+	Colour = PIXPACK(0xC05050);
+	MenuVisible = 1;
+	MenuSection = SC_EXPLOSIVE;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 1;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 88;
+	Description = "Explosive.";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_BANG::update;
+	
 }
 
 //#TPT-Directive ElementHeader Element_BANG static int update(UPDATE_FUNC_ARGS)
@@ -57,16 +57,12 @@ int Element_BANG::update(UPDATE_FUNC_ARGS)
 		else
 			for (rx=-1; rx<2; rx++)
 				for (ry=-1; ry<2; ry++)
-					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
-						if ((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM)
-						{
-							parts[i].tmp = 1;
-						}
-						else if ((r&0xFF)==PT_SPRK || (r&0xFF)==PT_LIGH)
+						if ((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM || (r&0xFF)==PT_SPRK || (r&0xFF)==PT_LIGH)
 						{
 							parts[i].tmp = 1;
 						}
@@ -86,9 +82,9 @@ int Element_BANG::update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].tmp = 3;
 	}
-	else if(parts[i].tmp>=3)
+	else
 	{
-		float otemp = parts[i].temp-275.13f;
+		float otemp = parts[i].temp-273.15f;
 		//Explode!!
 		sim->pv[y/CELL][x/CELL] += 0.5f;
 		parts[i].tmp = 0;
@@ -97,14 +93,13 @@ int Element_BANG::update(UPDATE_FUNC_ARGS)
 			if(!(rand()%2))
 			{
 				sim->create_part(i, x, y, PT_FIRE);
-				parts[i].temp = restrict_flt((MAX_TEMP/4)+otemp, MIN_TEMP, MAX_TEMP);
 			}
 			else
 			{
 				sim->create_part(i, x, y, PT_SMKE);
 				parts[i].life = rand()%50+500;
-				parts[i].temp = restrict_flt((MAX_TEMP/4)+otemp, MIN_TEMP, MAX_TEMP);
 			}
+			parts[i].temp = restrict_flt((MAX_TEMP/4)+otemp, MIN_TEMP, MAX_TEMP);
 		}
 		else
 		{

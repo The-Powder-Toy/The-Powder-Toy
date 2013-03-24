@@ -1,10 +1,3 @@
-/*
- * DropDown.cpp
- *
- *  Created on: Apr 16, 2012
- *      Author: Simon
- */
-
 #include <iostream>
 #include "Style.h"
 #include "Button.h"

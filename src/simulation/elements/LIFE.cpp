@@ -6,53 +6,52 @@ pixel Element_GOL_colour[NGOL];
 //#TPT-Directive ElementClass Element_LIFE PT_LIFE 78
 Element_LIFE::Element_LIFE()
 {
-    Identifier = "DEFAULT_PT_LIFE";
-    Name = "LIFE";
-    Colour = PIXPACK(0x0CAC00);
-    MenuVisible = 0;
-    MenuSection = SC_LIFE;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 100;
-    
-    Temperature = 9000.0f;
-    HeatConduct = 40;
-    Description = "Game Of Life! B3/S23";
-    
-    State = ST_NONE;
-    Properties = TYPE_SOLID|PROP_LIFE;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = NULL;
-    Graphics = &Element_LIFE::graphics;
+	Identifier = "DEFAULT_PT_LIFE";
+	Name = "LIFE";
+	Colour = PIXPACK(0x0CAC00);
+	MenuVisible = 0;
+	MenuSection = SC_LIFE;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 100;
+	
+	Temperature = 9000.0f;
+	HeatConduct = 40;
+	Description = "Game Of Life! B3/S23";
+	
+	State = ST_NONE;
+	Properties = TYPE_SOLID|PROP_LIFE;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = NULL;//&Element_LIFE::update;
+	Graphics = &Element_LIFE::graphics;
 
-    if(!Element_GOL_colourInit)
-    {
-    	Element_GOL_colourInit = true;
-
+	if(!Element_GOL_colourInit)
+	{
+		Element_GOL_colourInit = true;
 
 		int golMenuCount;
 		gol_menu * golMenuT = LoadGOLMenu(golMenuCount);
@@ -61,9 +60,16 @@ Element_LIFE::Element_LIFE()
 			Element_GOL_colour[i] = golMenuT[i].colour;
 		}
 		free(golMenuT);
-    }
+	}
 }
 
+//#TPT-Directive ElementHeader Element_LIFE static int update(UPDATE_FUNC_ARGS)
+int Element_LIFE::update(UPDATE_FUNC_ARGS)
+{
+	if (parts[i].tmp <= 0)
+		sim->kill_part(i);
+	return 0;
+}
 
 //#TPT-Directive ElementHeader Element_LIFE static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)

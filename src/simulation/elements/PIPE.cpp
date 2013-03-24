@@ -92,7 +92,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 			for (rx=-2; rx<3; rx++)
 				for (ry=-2; ry<3; ry++)
 				{
-					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
 						if ((r&0xFF) == PT_BRCK)
@@ -135,7 +135,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 			// make automatic pipe pattern
 			for (rx=-1; rx<2; rx++)
 				for (ry=-1; ry<2; ry++)
-					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
 						if (!r)
@@ -182,7 +182,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 				rndstore = rndstore>>3;
 				rx = pos_1_rx[rnd];
 				ry = pos_1_ry[rnd];
-				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
+				if (BOUNDS_CHECK)
 				{
 					r = pmap[y+ry][x+rx];
 					if(!r)
@@ -216,21 +216,13 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 	{
 		if (parts[i].temp<272.15)//manual pipe colors
 		{
-			if (parts[i].temp>173.25&&parts[i].temp<273.15)
-			{
+			if (parts[i].temp>173.25)
 				parts[i].ctype = 2;
-				parts[i].life = 0;
-			}
-			if (parts[i].temp>73.25&&parts[i].temp<=173.15)
-			{
+			else if (parts[i].temp>73.25)
 				parts[i].ctype = 3;
-				parts[i].life = 0;
-			}
-			if (parts[i].temp>=0&&parts[i].temp<=73.15)
-			{
+			else if (parts[i].temp>=0)
 				parts[i].ctype = 4;
-				parts[i].life = 0;
-			}
+			parts[i].life = 0;
 		}
 		else
 		{
@@ -238,7 +230,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 			for (rx=-2; rx<3; rx++)
 				for (ry=-2; ry<3; ry++)
 				{
-					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
 						if (!r)
@@ -259,7 +251,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 		{
 			for (rx=-1; rx<2; rx++)
 				for (ry=-1; ry<2; ry++)
-					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					if (BOUNDS_CHECK && (rx || ry))
 					{
 						if (!pmap[y+ry][x+rx] && sim->bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_ALLOWAIR && sim->bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_WALL && sim->bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_WALLELEC && (sim->bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_EWALL || sim->emap[(y+ry)/CELL][(x+rx)/CELL]))
 							parts[i].life=50;
@@ -270,7 +262,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 			int issingle = 1;
 			for (rx=-1; rx<2; rx++)
 				for (ry=-1; ry<2; ry++)
-					if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
 						if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && parts[i].ctype==1 && parts[i].life )
@@ -292,9 +284,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_PIPE static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_PIPE::graphics(GRAPHICS_FUNC_ARGS)
-
 {
-
 	if ((cpart->tmp&0xFF)>0 && (cpart->tmp&0xFF)<PT_NUM)
 	{
 		//Create a temp. particle and do a subcall.
@@ -461,7 +451,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 					pushParticle(sim, r>>8,count,original);
 				}
 				else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
-		        {
+				{
 					int nnx;
 					for (nnx=0; nnx<80; nnx++)
 						if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
@@ -470,7 +460,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 							count++;
 							break;
 						}
-		        }
+				}
 			}
 		}
 	}
@@ -487,7 +477,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 			pushParticle(sim, r>>8,count,original);
 		}
 		else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
-	    {
+		{
 			int nnx;
 			for (nnx=0; nnx<80; nnx++)
 				if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
@@ -496,9 +486,9 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 					count++;
 					break;
 				}
-	    }
-	    else if ((r&0xFF) == PT_NONE) //Move particles out of pipe automatically, much faster at ends
-	    {
+		}
+		else if ((r&0xFF) == PT_NONE) //Move particles out of pipe automatically, much faster at ends
+		{
 			rx = pos_1_rx[coords];
 			ry = pos_1_ry[coords];
 			np = sim->create_part(-1,x+rx,y+ry,sim->parts[i].tmp&0xFF);
@@ -506,7 +496,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 			{
 				transfer_pipe_to_part(sim->parts+i, sim->parts+np);
 			}
-	    }
+		}
 		
 	}
 	return;

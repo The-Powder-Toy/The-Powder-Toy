@@ -42,7 +42,7 @@ GameModel::GameModel():
 	std::fill(decoToolset, decoToolset+3, (Tool*)NULL);
 	std::fill(regularToolset, regularToolset+3, (Tool*)NULL);
 
-    	//Default render prefs
+	//Default render prefs
 	std::vector<unsigned int> tempArray;
 	tempArray.push_back(RENDER_FIRE);
 	tempArray.push_back(RENDER_EFFE);
@@ -843,13 +843,11 @@ void GameModel::FrameStep(int frames)
 
 void GameModel::ClearSimulation()
 {
-
 	//Load defaults
 	sim->gravityMode = 0;
 	sim->air->airMode = 0;
 	sim->legacy_enable = false;
 	sim->water_equal_test = false;
-	sim->grav->stop_grav_async();
 	sim->SetEdgeMode(edgeMode);
 
 	sim->clear_sim();

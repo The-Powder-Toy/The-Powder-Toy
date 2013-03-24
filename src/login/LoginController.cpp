@@ -1,10 +1,3 @@
-/*
- * LoginController.cpp
- *
- *  Created on: Jan 24, 2012
- *      Author: Simon
- */
-
 #include "LoginController.h"
 #include "client/User.h"
 #include "client/Client.h"
@@ -12,7 +5,6 @@
 LoginController::LoginController(ControllerCallback * callback):
 	HasExited(false)
 {
-	// TODO Auto-generated constructor stub
 	loginView = new LoginView();
 	loginModel = new LoginModel();
 

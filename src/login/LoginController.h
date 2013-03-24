@@ -1,10 +1,3 @@
-/*
- * LoginController.h
- *
- *  Created on: Jan 24, 2012
- *      Author: Simon
- */
-
 #ifndef LOGINCONTROLLER_H_
 #define LOGINCONTROLLER_H_
 

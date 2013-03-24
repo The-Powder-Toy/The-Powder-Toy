@@ -1,10 +1,3 @@
-/*
- * RenderView.cpp
- *
- *  Created on: Jan 23, 2012
- *      Author: Simon
- */
-
 #include "simulation/ElementGraphics.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
@@ -405,5 +398,4 @@ void RenderView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::s
 }
 
 RenderView::~RenderView() {
-	// TODO Auto-generated destructor stub
 }

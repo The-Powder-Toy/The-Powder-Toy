@@ -2,109 +2,100 @@
 //#TPT-Directive ElementClass Element_LCRY PT_LCRY 54
 Element_LCRY::Element_LCRY()
 {
-    Identifier = "DEFAULT_PT_LCRY";
-    Name = "LCRY";
-    Colour = PIXPACK(0x505050);
-    MenuVisible = 1;
-    MenuSection = SC_POWERED;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 1;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 251;
-    Description = "Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = 1273.0f;
-    HighTemperatureTransition = PT_BGLA;
-    
-    Update = &Element_LCRY::update;
-    Graphics = &Element_LCRY::graphics;
+	Identifier = "DEFAULT_PT_LCRY";
+	Name = "LCRY";
+	Colour = PIXPACK(0x505050);
+	MenuVisible = 1;
+	MenuSection = SC_POWERED;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 1;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 251;
+	Description = "Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = 1273.0f;
+	HighTemperatureTransition = PT_BGLA;
+	
+	Update = &Element_LCRY::update;
+	Graphics = &Element_LCRY::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_LCRY static int update(UPDATE_FUNC_ARGS)
 int Element_LCRY::update(UPDATE_FUNC_ARGS)
 
 {
-	int r, rx, ry;
-	if(parts[i].tmp==1 || parts[i].tmp==0)
+	int r, rx, ry, check, setto;
+	switch (parts[i].tmp)
 	{
-		if(parts[i].tmp==1)
+	case 1:
+		if(parts[i].life<=0)
+			parts[i].tmp = 0;
+		else
 		{
-			if(parts[i].life<=0)
-				parts[i].tmp = 0;
-			else
-			{
-				parts[i].life-=2;
-				if(parts[i].life < 0)
-					parts[i].life = 0;
-				parts[i].tmp2 = parts[i].life;
-			}	
+			parts[i].life-=2;
+			if(parts[i].life < 0)
+				parts[i].life = 0;
+			parts[i].tmp2 = parts[i].life;
 		}
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-				{
-					r = pmap[y+ry][x+rx];
-					if (!r)
-						continue;
-					if ((r&0xFF)==PT_LCRY && parts[r>>8].tmp == 3)
-					{
-						parts[r>>8].tmp = 1;
-					}
-				}
-	}
-	else if(parts[i].tmp==2 || parts[i].tmp==3)
-	{
-		if(parts[i].tmp==2)
+	case 0:
+		check=3;
+		setto=1;
+		break;
+	case 2:
+		if(parts[i].life>=10)
+			parts[i].tmp = 3;
+		else
 		{
-			if(parts[i].life>=10)
-				parts[i].tmp = 3;
-			else
+			parts[i].life+=2;
+			if(parts[i].life > 10)
+				parts[i].life = 10;
+			parts[i].tmp2 = parts[i].life;
+		}
+	case 3:
+		check=0;
+		setto=2;
+		break;
+	default:
+		return 0;
+	}
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
+			if (BOUNDS_CHECK && (rx || ry))
 			{
-				parts[i].life+=2;
-				if(parts[i].life > 10)
-					parts[i].life = 10;
-				parts[i].tmp2 = parts[i].life;
+				r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+				if ((r&0xFF)==PT_LCRY && parts[r>>8].tmp == check)
+				{
+					parts[r>>8].tmp = setto;
+				}
 			}
-		}
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-				{
-					r = pmap[y+ry][x+rx];
-					if (!r)
-						continue;
-					if ((r&0xFF)==PT_LCRY && parts[r>>8].tmp == 0)
-					{
-						parts[r>>8].tmp = 2;
-					}
-				}
-	}
 	return 0;
 }
 

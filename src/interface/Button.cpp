@@ -1,10 +1,3 @@
-/*
- * Button.cpp
- *
- *  Created on: Jan 8, 2012
- *      Author: Simon
- */
-
 #include <iostream>
 #include "interface/Button.h"
 #include "graphics/Graphics.h"
@@ -156,28 +149,30 @@ void Button::Draw(const Point& screenPos)
 
 void Button::OnMouseUnclick(int x, int y, unsigned int button)
 {
-    if(button == 1)
-    {
-        if(isButtonDown)
+	if(button == 1)
+	{
+		if(isButtonDown)
 		{
-		    isButtonDown = false;
+			isButtonDown = false;
 			DoAction();
 		}
-    }
-    else if(button == 3)
-    {
-	    if(isAltButtonDown)
-	    {
-	    	isAltButtonDown = false;
-	    	DoAltAction();
-	    }
+	}
+	else if(button == 3)
+	{
+		if(isAltButtonDown)
+		{
+			isAltButtonDown = false;
+			DoAltAction();
+		}
 	}
 }
 
 void Button::OnMouseClick(int x, int y, unsigned int button)
 {
-    if(button == 1)
-    {
+	if(!Enabled)
+		return;
+	if(button == 1)
+	{
 		if(isTogglable)
 		{
 			toggle = !toggle;
@@ -185,14 +180,14 @@ void Button::OnMouseClick(int x, int y, unsigned int button)
 		isButtonDown = true;
 	}
 	else if(button == 3)
-    {
+	{
 		isAltButtonDown = true;
 	}
 }
 
 void Button::OnMouseEnter(int x, int y)
 {
-    isMouseInside = true;
+	isMouseInside = true;
 	if(!Enabled)
 		return;
 	if(actionCallback)
@@ -206,8 +201,8 @@ void Button::OnMouseEnter(int x, int y)
 
 void Button::OnMouseLeave(int x, int y)
 {
-    isMouseInside = false;
-    isButtonDown = false;
+	isMouseInside = false;
+	isButtonDown = false;
 }
 
 void Button::DoAction()

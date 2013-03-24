@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_DMG PT_DMG 163
 Element_DMG::Element_DMG()
 {
-    Identifier = "DEFAULT_PT_DMG";
-    Name = "DMG";
-    Colour = PIXPACK(0x88FF88);
-    MenuVisible = 1;
-    MenuSection = SC_FORCE;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.01f * CFDS;
-    AirLoss = 0.98f;
-    Loss = 0.95f;
-    Collision = 0.0f;
-    Gravity = 0.1f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 1;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 20;
-    
-    Weight = 30;
-    
-    Temperature = R_TEMP-2.0f	+273.15f;
-    HeatConduct = 29;
-    Description = "DMG.";
-    
-    State = ST_NONE;
-    Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_DMG::update;
-    Graphics = &Element_DMG::graphics;
+	Identifier = "DEFAULT_PT_DMG";
+	Name = "DMG";
+	Colour = PIXPACK(0x88FF88);
+	MenuVisible = 1;
+	MenuSection = SC_FORCE;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.01f * CFDS;
+	AirLoss = 0.98f;
+	Loss = 0.95f;
+	Collision = 0.0f;
+	Gravity = 0.1f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 1;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 20;
+	
+	Weight = 30;
+	
+	Temperature = R_TEMP-2.0f	+273.15f;
+	HeatConduct = 29;
+	Description = "DMG.";
+	
+	State = ST_NONE;
+	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_DMG::update;
+	Graphics = &Element_DMG::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_DMG static int update(UPDATE_FUNC_ARGS)
@@ -53,9 +53,9 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 	int rad = 25;
 	float angle, fx, fy;
 	
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
@@ -76,16 +76,12 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 										angle = atan2((float)nxj, nxi);
 										fx = cos(angle) * 7.0f;
 										fy = sin(angle) * 7.0f;
-
 										parts[rr>>8].vx += fx;
 										parts[rr>>8].vy += fy;
-										
 										sim->vx[(y+nxj)/CELL][(x+nxi)/CELL] += fx;
 										sim->vy[(y+nxj)/CELL][(x+nxi)/CELL] += fy;
-
 										sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 1.0f;
-										
-										t = parts[rr>>8].type;
+										t = rr&0xFF;
 										if(t && sim->elements[t].HighPressureTransition>-1 && sim->elements[t].HighPressureTransition<PT_NUM)
 											sim->part_change_type(rr>>8, x+nxi, y+nxj, sim->elements[t].HighPressureTransition);
 										else if(t == PT_BMTL)

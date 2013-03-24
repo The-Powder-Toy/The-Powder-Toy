@@ -1,10 +1,3 @@
-/*
- * TagsController.h
- *
- *  Created on: Mar 5, 2012
- *      Author: Simon
- */
-
 #ifndef TAGSCONTROLLER_H_
 #define TAGSCONTROLLER_H_
 

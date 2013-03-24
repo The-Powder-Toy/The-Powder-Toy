@@ -1,17 +1,10 @@
-/*
- * PreviewModel.h
- *
- *  Created on: Jan 21, 2012
- *      Author: Simon
- */
-
 #ifndef PREVIEWMODEL_H_
 #define PREVIEWMODEL_H_
 
 #include <vector>
 #include <iostream>
 #include <pthread.h>
- #undef GetUserName //God dammit microsoft!
+#undef GetUserName //God dammit microsoft!
 #include "PreviewView.h"
 #include "client/SaveInfo.h"
 #include "preview/Comment.h"
@@ -51,18 +44,21 @@ class PreviewModel {
 	volatile bool updateSaveDataFinished;
 	pthread_t updateSaveDataThread;
 	static void * updateSaveDataTHelper(void * obj);
+	static void updateSaveDataTDelete(void * arg);
 	void * updateSaveDataT();
 
 	bool updateSaveInfoWorking;
 	volatile bool updateSaveInfoFinished;
 	pthread_t updateSaveInfoThread;
 	static void * updateSaveInfoTHelper(void * obj);
+	static void updateSaveInfoTDelete(void * arg);
 	void * updateSaveInfoT();
 
 	bool updateSaveCommentsWorking;
 	volatile bool updateSaveCommentsFinished;
 	pthread_t updateSaveCommentsThread;
 	static void * updateSaveCommentsTHelper(void * obj);
+	static void updateSaveCommentsTDelete(void * arg);
 	void * updateSaveCommentsT();
 public:
 	PreviewModel();

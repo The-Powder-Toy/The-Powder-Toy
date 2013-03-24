@@ -1,12 +1,5 @@
-/*
- * SaveLoadException.h
- *
- *  Created on: Mar 29, 2012
- *      Author: Simon
- */
-
-#ifndef SAVELOADEXCEPTION_H_
-#define SAVELOADEXCEPTION_H_
+#ifndef GAMEMODELEXCEPTION_H_
+#define GAMEMODELEXCEPTION_H_
 
 #include <string>
 #include <exception>
@@ -23,4 +16,4 @@ public:
 	~GameModelException() throw() {};
 };
 
-#endif /* SAVELOADEXCEPTION_H_ */
+#endif /* GAMEMODELEXCEPTION_H_ */

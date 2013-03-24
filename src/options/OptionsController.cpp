@@ -1,10 +1,3 @@
-/*
- * OptionsController.cpp
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #include "OptionsController.h"
 #include "dialogues/ErrorMessage.h"
 
@@ -59,6 +52,11 @@ void OptionsController::SetEdgeMode(int airMode)
 void OptionsController::SetFullscreen(bool fullscreen)
 {
 	model->SetFullscreen(fullscreen);
+}
+
+void OptionsController::SetShowAvatars(bool showAvatars)
+{
+	model->SetShowAvatars(showAvatars);
 }
 
 void OptionsController::SetScale(bool scale)

@@ -53,6 +53,7 @@ SearchView::SearchView():
 	};
 	sortButton = new ui::Button(ui::Point(XRES+BARSIZE-140, 10), ui::Point(61, 17), "Sort");
 	sortButton->SetIcon(IconVoteSort);
+	sortButton->SetTogglable(true);
 	sortButton->SetActionCallback(new SortAction(this));
 	sortButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	sortButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -229,7 +230,8 @@ void SearchView::NotifyMessageOfTheDay(Client * sender)
 
 void SearchView::doSearch()
 {
-	c->DoSearch(searchField->GetText());
+	if (searchField->GetText().length() > 3 || !searchField->GetText().length())
+		c->DoSearch(searchField->GetText());
 }
 
 
@@ -251,6 +253,13 @@ SearchView::~SearchView()
 	RemoveComponent(previousButton);
 	RemoveComponent(infoLabel);
 
+	for(int i = 0; i < saveButtons.size(); i++)
+	{
+		RemoveComponent(saveButtons[i]);
+		delete saveButtons[i];
+	}
+	saveButtons.clear();
+
 	delete nextButton;
 	delete previousButton;
 	delete infoLabel;
@@ -266,54 +275,56 @@ void SearchView::NotifySortChanged(SearchModel * sender)
 {
 	if(sender->GetSort() == "best")
 	{
- 	   sortButton->SetText("By votes");
-	   sortButton->SetIcon(IconVoteSort);
+		sortButton->SetToggleState(false);
+		sortButton->SetText("By votes");
+		sortButton->SetIcon(IconVoteSort);
 	}
- 	else
+	else
 	{
- 		sortButton->SetText("By date");
+		sortButton->SetToggleState(true);
+		sortButton->SetText("By date");
 		sortButton->SetIcon(IconDateSort);
 	}
 }
 
 void SearchView::NotifyShowOwnChanged(SearchModel * sender)
 {
-    ownButton->SetToggleState(sender->GetShowOwn());
-    if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
-    {
-    	unpublishSelected->Enabled = true;
-    	removeSelected->Enabled = true;
-    }
-    else if(sender->GetShowFavourite())
-    {
-    	unpublishSelected->Enabled = false;
-    	removeSelected->Enabled = false;
-    }
-    else
-    {
-    	unpublishSelected->Enabled = false;
-    	removeSelected->Enabled = false;
-    }
+	ownButton->SetToggleState(sender->GetShowOwn());
+	if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
+	{
+		unpublishSelected->Enabled = true;
+		removeSelected->Enabled = true;
+	}
+	else if(sender->GetShowFavourite())
+	{
+		unpublishSelected->Enabled = false;
+		removeSelected->Enabled = false;
+	}
+	else
+	{
+		unpublishSelected->Enabled = false;
+		removeSelected->Enabled = false;
+	}
 }
 
 void SearchView::NotifyShowFavouriteChanged(SearchModel * sender)
 {
-    favButton->SetToggleState(sender->GetShowFavourite());
-    if(sender->GetShowFavourite())
-    {
-    	unpublishSelected->Enabled = false;
-    	removeSelected->Enabled = false;
-    }
-    else if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
-    {
-    	unpublishSelected->Enabled = true;
-    	removeSelected->Enabled = true;
-    }
-    else
-    {
-    	unpublishSelected->Enabled = false;
-    	removeSelected->Enabled = false;
-    }
+	favButton->SetToggleState(sender->GetShowFavourite());
+	if(sender->GetShowFavourite())
+	{
+		unpublishSelected->Enabled = false;
+		removeSelected->Enabled = false;
+	}
+	else if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
+	{
+		unpublishSelected->Enabled = true;
+		removeSelected->Enabled = true;
+	}
+	else
+	{
+		unpublishSelected->Enabled = false;
+		removeSelected->Enabled = false;
+	}
 }
 
 void SearchView::NotifyPageChanged(SearchModel * sender)

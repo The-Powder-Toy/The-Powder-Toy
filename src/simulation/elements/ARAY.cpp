@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_ARAY PT_ARAY 126
 Element_ARAY::Element_ARAY()
 {
-    Identifier = "DEFAULT_PT_ARAY";
-    Name = "ARAY";
-    Colour = PIXPACK(0xFFBB00);
-    MenuVisible = 1;
-    MenuSection = SC_ELEC;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 1;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f +273.15f;
-    HeatConduct = 0;
-    Description = "Ray Emitter. Rays create points when they collide";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID|PROP_LIFE_DEC;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_ARAY::update;
-    
+	Identifier = "DEFAULT_PT_ARAY";
+	Name = "ARAY";
+	Colour = PIXPACK(0xFFBB00);
+	MenuVisible = 1;
+	MenuSection = SC_ELEC;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 1;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f +273.15f;
+	HeatConduct = 0;
+	Description = "Ray Emitter. Rays create points when they collide";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID|PROP_LIFE_DEC;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_ARAY::update;
+	
 }
 
 //#TPT-Directive ElementHeader Element_ARAY static int update(UPDATE_FUNC_ARGS)
@@ -51,10 +51,9 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
  {
 	int r, nxx, nyy, docontinue, nxi, nyi, rx, ry, nr, ry1, rx1;
 	if (parts[i].life==0) {
-		int colored =0;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
@@ -62,6 +61,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 					if ((r&0xFF)==PT_SPRK && parts[r>>8].life==3) {
 						int destroy = (parts[r>>8].ctype==PT_PSCN)?1:0;
 						int nostop = (parts[r>>8].ctype==PT_INST)?1:0;
+						int colored = 0;
 						for (docontinue = 1, nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1; docontinue; nyy+=nyi, nxx+=nxi) {
 							if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)) {
 								break;
@@ -78,17 +78,20 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									parts[nr].temp = parts[i].temp;
 								}
 							} else if (!destroy) {
-								if ((r&0xFF)==PT_BRAY&&parts[r>>8].tmp==0) {//if it hits another BRAY that isn't red
-									if (nyy!=0 || nxx!=0) {
-										parts[r>>8].life = 1020;//makes it last a while
-										parts[r>>8].tmp = 1;
-										if (!parts[r>>8].ctype)//and colors it if it isn't already
-											parts[r>>8].ctype = colored;
+								if ((r&0xFF)==PT_BRAY) {
+									if (parts[r>>8].tmp==0){//if it hits another BRAY that isn't red
+										if (nyy!=0 || nxx!=0) {
+											parts[r>>8].life = 1020;//makes it last a while
+											parts[r>>8].tmp = 1;
+											if (!parts[r>>8].ctype)//and colors it if it isn't already
+												parts[r>>8].ctype = colored;
+										}
+										docontinue = 0;//then stop it
 									}
-									docontinue = 0;//then stop it
-								} else if ((r&0xFF)==PT_BRAY&&parts[r>>8].tmp==1) {//if it hits one that already was a long life, reset it
-									parts[r>>8].life = 1020;
-									//docontinue = 1;
+									else if (parts[r>>8].tmp==1) {//if it hits one that already was a long life, reset it
+										parts[r>>8].life = 1020;
+										//docontinue = 1;
+									}
 								} else if ((r&0xFF)==PT_FILT) {//get color if passed through FILT
 									colored = parts[r>>8].ctype;
 									//this if prevents BRAY from stopping on certain materials

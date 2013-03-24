@@ -1,10 +1,3 @@
-/*
- * UpdateActivity.h
- *
- *  Created on: Jun 20, 2012
- *      Author: Simon
- */
-
 #ifndef UPDATEACTIVITY_H_
 #define UPDATEACTIVITY_H_
 

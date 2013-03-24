@@ -1,9 +1,3 @@
-/*
- * Renderer.cpp
- *
- *  Created on: Jan 7, 2012
- *      Author: Simon
- */
 #include <cmath>
 #include <iostream>
 #include <vector>
@@ -15,6 +9,8 @@
 #include "simulation/Elements.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/Air.h"
+#include "cat/LuaScriptInterface.h"
+#include "cat/LuaScriptHelper.h"
 extern "C"
 {
 #include "hmap.h"
@@ -157,6 +153,11 @@ void Renderer::RenderEnd()
 #else
 	RenderZoom();
 #endif
+}
+
+void Renderer::SetSample(int x, int y)
+{
+	sampleColor = GetPixel(x, y);
 }
 
 void Renderer::clearScreen(float alpha)
@@ -485,9 +486,9 @@ void Renderer::RenderZoom()
 		int x, y, i, j;
 		pixel pix;
 		pixel * img = vid;
-		clearrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+2, zoomScopeSize*ZFACTOR+2);
-		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+4, zoomScopeSize*ZFACTOR+4, 192, 192, 192, 255);
-		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+2, zoomScopeSize*ZFACTOR+2, 0, 0, 0, 255);
+		clearrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1);
+		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3, 192, 192, 192, 255);
+		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1, 0, 0, 0, 255);
 		for (j=0; j<zoomScopeSize; j++)
 			for (i=0; i<zoomScopeSize; i++)
 			{
@@ -643,6 +644,19 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 	return newTexture;
 }
 
+void Renderer::DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
+{
+	blendpixel(x+1, y, cr, cg, cb, 112);
+	blendpixel(x-1, y, cr, cg, cb, 112);
+	blendpixel(x, y+1, cr, cg, cb, 112);
+	blendpixel(x, y-1, cr, cg, cb, 112);
+
+	blendpixel(x+1, y-1, cr, cg, cb, 64);
+	blendpixel(x-1, y-1, cr, cg, cb, 64);
+	blendpixel(x+1, y+1, cr, cg, cb, 64);
+	blendpixel(x-1, y+1, cr, cg, cb, 64);
+}
+
 void Renderer::DrawWalls()
 {
 #ifdef OGLR
@@ -794,6 +808,87 @@ void Renderer::DrawWalls()
 					}
 					drawtext(x*CELL, y*CELL-2, "\x8D", 255, 255, 255, 128);
 				}
+
+				// when in blob view, draw some blobs
+				if (render_mode & PMODE_BLOB)
+				{
+					if (wtypes[wt].drawstyle==1)
+					{
+						for (j=0; j<CELL; j+=2)
+							for (i=(j>>1)&1; i<CELL; i+=2)
+								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+					else if (wtypes[wt].drawstyle==2)
+					{
+						for (j=0; j<CELL; j+=2)
+							for (i=0; i<CELL; i+=2)
+								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+					else if (wtypes[wt].drawstyle==3)
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+					}
+					else if (wtypes[wt].drawstyle==4)
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+								if(i == j)
+									drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								else if  (i == j+1 || (i == 0 && j == CELL-1))
+									drawblob((x*CELL+i), (y*CELL+j), PIXR(gc), PIXG(gc), PIXB(gc));
+								else 
+									drawblob((x*CELL+i), (y*CELL+j), 0x20, 0x20, 0x20);
+					}
+					if (bmap[y][x]==WL_EWALL)
+					{
+						if (emap[y][x])
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									if (i&j&1)
+										drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+						}
+						else
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									if (!(i&j&1))
+										drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+						}
+					}
+					else if (bmap[y][x]==WL_WALLELEC)
+					{
+						for (j=0; j<CELL; j++)
+							for (i=0; i<CELL; i++)
+							{
+								if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
+									drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								else
+									drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+							}
+					}
+					else if (bmap[y][x]==WL_EHOLE)
+					{
+						if (emap[y][x])
+						{
+							for (j=0; j<CELL; j++)
+								for (i=0; i<CELL; i++)
+									drawblob((x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+							for (j=0; j<CELL; j+=2)
+								for (i=0; i<CELL; i+=2)
+									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x000000);
+						}
+						else
+						{
+							for (j=0; j<CELL; j+=2)
+								for (i=0; i<CELL; i+=2)
+									drawblob((x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+						}
+					}
+				}
+
 				if (wtypes[wt].eglow && emap[y][x])
 				{
 					// glow if electrified
@@ -826,46 +921,14 @@ void Renderer::DrawSigns()
 	for (i=0; i < signs.size(); i++)
 		if (signs[i].text.length())
 		{
-			char buff[256];  //Buffer
-			sim->signs[i].pos(x, y, w, h);
-			clearrect(x, y, w, h);
-			drawrect(x, y, w, h, 192, 192, 192, 255);
-
-			//Displaying special information
-			if (signs[i].text == "{p}")
-			{
-				float pressure = 0.0f;
-				if (signs[i].x>=0 && signs[i].x<XRES && signs[i].y>=0 && signs[i].y<YRES)
-					pressure = sim->pv[signs[i].y/CELL][signs[i].x/CELL];
-				sprintf(buff, "Pressure: %3.2f", pressure);  //...pressure
-				drawtext(x+3, y+3, buff, 255, 255, 255, 255);
-			}
-			else if (signs[i].text == "{t}")
-			{
-				if (signs[i].x>=0 && signs[i].x<XRES && signs[i].y>=0 && signs[i].y<YRES && sim->pmap[signs[i].y][signs[i].x])
-					sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[signs[i].y][signs[i].x]>>8].temp-273.15);  //...temperature
-				else
-					sprintf(buff, "Temp: 0.00");  //...temperature
-				drawtext(x+3, y+3, buff, 255, 255, 255, 255);
-			}
-			else if (sregexp(signs[i].text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)
-			{
-				int sldr, startm;
-				memset(buff, 0, sizeof(buff));
-				for (sldr=3; signs[i].text[sldr-1] != '|'; sldr++)
-					startm = sldr + 1;
-				sldr = startm;
-				while (signs[i].text[sldr] != '}')
-				{
-					buff[sldr - startm] = signs[i].text[sldr];
-					sldr++;
-				}
-				drawtext(x+3, y+3, buff, 0, 191, 255, 255);
-			}
-			else 
-			{
-				drawtext(x+3, y+3, signs[i].text, 255, 255, 255, 255);
-			}
+			std::string text = sim->signs[i].getText(sim);
+			sim->signs[i].pos(text, x, y, w, h);
+			clearrect(x, y, w+1, h);
+			drawrect(x, y, w+1, h, 192, 192, 192, 255);
+			if (sregexp(signs[i].text.c_str(), "^{[c|t]:[0-9]*|.*}$"))
+				drawtext(x+3, y+3, text, 255, 255, 255, 255);
+			else
+				drawtext(x+3, y+3, text, 0, 191, 255, 255);
 				
 			x = signs[i].x;
 			y = signs[i].y;
@@ -885,15 +948,6 @@ void Renderer::DrawSigns()
 				y+=dy;
 			}
 #endif
-			/*if (MSIGN==i)
-			{
-				bq = b;
-				b = SDL_GetMouseState(&mx, &my);
-				mx /= sdl_scale;
-				my /= sdl_scale;
-				signs[i].x = mx;
-				signs[i].y = my;
-			}*/
 		}
 #ifdef OGLR
 	glTranslated(0, -MENUSIZE, 0);
@@ -1112,9 +1166,9 @@ void Renderer::render_parts()
 			fnx = sim->parts[i].x;
 			fny = sim->parts[i].y;
 
-			if((sim->photons[ny][nx]&0xFF) && !(sim->elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
-				continue;
 			if(nx >= XRES || nx < 0 || ny >= YRES || ny < 0)
+				continue;
+			if((sim->photons[ny][nx]&0xFF) && !(sim->elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
 				continue;
 
 			//Defaults
@@ -1158,7 +1212,15 @@ void Renderer::render_parts()
 				{
 					if (elements[t].Graphics)
 					{
+#ifndef RENDERER
+						if (lua_gr_func[t])
+						{
+							luacon_graphicsReplacement(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb, i);
+						}
+						else if ((*(elements[t].Graphics))(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
+#else
 						if ((*(elements[t].Graphics))(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
+#endif
 						{
 							graphicscache[t].isready = 1;
 							graphicscache[t].pixel_mode = pixel_mode;
@@ -2320,7 +2382,8 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	colour_mode(0),
 	gridSize(0),
 	blackDecorations(false),
-	debugLines(false)
+	debugLines(false),
+	sampleColor(0xFFFFFFFF)
 {
 	this->g = g;
 	this->sim = sim;
@@ -2624,9 +2687,14 @@ std::vector<unsigned int> Renderer::GetRenderMode()
 
 void Renderer::CompileDisplayMode()
 {
+	int old_display_mode = display_mode;
 	display_mode = 0;
 	for(int i = 0; i < display_modes.size(); i++)
 		display_mode |= display_modes[i];
+	if(!(display_mode & DISPLAY_PERS) && (old_display_mode & DISPLAY_PERS))
+	{
+		ClearAccumulation();
+	}
 }
 
 void Renderer::AddDisplayMode(unsigned int mode)

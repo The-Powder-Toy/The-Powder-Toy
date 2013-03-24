@@ -1,10 +1,3 @@
-/*
- * User.h
- *
- *  Created on: Jan 25, 2012
- *      Author: Simon
- */
-
 #ifndef USER_H_
 #define USER_H_
 

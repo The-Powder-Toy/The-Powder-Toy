@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_STKM PT_STKM 55
 Element_STKM::Element_STKM()
 {
-    Identifier = "DEFAULT_PT_STKM";
-    Name = "STKM";
-    Colour = PIXPACK(0xFFE0A0);
-    MenuVisible = 1;
-    MenuSection = SC_SPECIAL;
-    Enabled = 1;
-    
-    Advection = 0.5f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.2f;
-    Loss = 1.0f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.0f;
-    HotAir = 0.00f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 50;
-    
-    Temperature = R_TEMP+14.6f+273.15f;
-    HeatConduct = 0;
-    Description = "Stickman. Don't kill him!";
-    
-    State = ST_NONE;
-    Properties = 0;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = 620.0f;
-    HighTemperatureTransition = PT_FIRE;
-    
-    Update = &Element_STKM::update;
-    Graphics = &Element_STKM::graphics;
+	Identifier = "DEFAULT_PT_STKM";
+	Name = "STKM";
+	Colour = PIXPACK(0xFFE0A0);
+	MenuVisible = 1;
+	MenuSection = SC_SPECIAL;
+	Enabled = 1;
+	
+	Advection = 0.5f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.2f;
+	Loss = 1.0f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.0f;
+	HotAir = 0.00f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 50;
+	
+	Temperature = R_TEMP+14.6f+273.15f;
+	HeatConduct = 0;
+	Description = "Stickman. Don't kill him!";
+	
+	State = ST_NONE;
+	Properties = 0;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = 620.0f;
+	HighTemperatureTransition = PT_FIRE;
+	
+	Update = &Element_STKM::update;
+	Graphics = &Element_STKM::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_STKM static int update(UPDATE_FUNC_ARGS)
@@ -155,7 +155,7 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	playerp->legs[15] = playerp->legs[13];
 	playerp->legs[13] = pp;
 
-	//Setting accseleration to 0
+	//Setting acceleration to 0
 	playerp->accs[0] = 0;
 	playerp->accs[1] = 0;
 

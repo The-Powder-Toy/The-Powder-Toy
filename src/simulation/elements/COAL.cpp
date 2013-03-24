@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_COAL PT_COAL 59
 Element_COAL::Element_COAL()
 {
-    Identifier = "DEFAULT_PT_COAL";
-    Name = "COAL";
-    Colour = PIXPACK(0x222222);
-    MenuVisible = 1;
-    MenuSection = SC_SOLIDS;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.0f;
-    HotAir = 0.0f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 20;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 200;
-    Description = "Solid. Burns slowly.";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_COAL::update;
-    Graphics = &Element_COAL::graphics;
+	Identifier = "DEFAULT_PT_COAL";
+	Name = "COAL";
+	Colour = PIXPACK(0x222222);
+	MenuVisible = 1;
+	MenuSection = SC_SOLIDS;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.0f;
+	HotAir = 0.0f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 20;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 200;
+	Description = "Solid. Burns slowly.";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_COAL::update;
+	Graphics = &Element_COAL::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_COAL static int update(UPDATE_FUNC_ARGS)
@@ -65,28 +65,6 @@ int Element_COAL::update(UPDATE_FUNC_ARGS)
 		sim->create_part(i, x, y, PT_BCOL);
 		return 1;
 	}
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if (!r)
-					continue;
-				if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM) && 1>(rand()%500))
-				{
-					if (parts[i].life>100) {
-						parts[i].life = 99;
-					}
-				}
-				if ((r&0xFF)==PT_LAVA && 1>(rand()%500))
-				{
-					if (parts[r>>8].ctype == PT_IRON) {
-						parts[r>>8].ctype = PT_METL;
-						sim->kill_part(i);
-						return 1;
-					}
-				}
-			}
 	/*if(100-parts[i].life > parts[i].tmp2)
 		parts[i].tmp2 = 100-parts[i].life;
 	if(parts[i].tmp2 < 0) parts[i].tmp2 = 0;
@@ -94,7 +72,7 @@ int Element_COAL::update(UPDATE_FUNC_ARGS)
 	{
 		rx = rand()%5-2;
 		ry = rand()%5-2;
-		if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
 			if (!r)

@@ -1,10 +1,3 @@
-/*
- * Task.cpp
- *
- *  Created on: Apr 6, 2012
- *      Author: Simon
- */
-
 #include "Task.h"
 #include "TaskListener.h"
 

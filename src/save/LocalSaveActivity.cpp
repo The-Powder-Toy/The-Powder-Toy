@@ -3,7 +3,7 @@
 #include "interface/Textbox.h"
 #include "interface/Button.h"
 #include "search/Thumbnail.h"
-#include "client/ThumbnailBroker.h"
+#include "client/requestbroker/RequestBroker.h"
 #include "dialogues/ErrorMessage.h"
 #include "dialogues/ConfirmPrompt.h"
 #include "client/Client.h"
@@ -67,7 +67,7 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback
 	SetOkayButton(okayButton);
 
 	if(save.GetGameSave())
-		ThumbnailBroker::Ref().RenderThumbnail(save.GetGameSave(), true, false, Size.X-16, -1, this);
+		RequestBroker::Ref().RenderThumbnail(save.GetGameSave(), true, false, Size.X-16, -1, this);
 }
 
 void LocalSaveActivity::Save()
@@ -123,17 +123,23 @@ void LocalSaveActivity::OnDraw()
 
 	if(thumbnail)
 	{
-		g->draw_image(thumbnail->Data, Position.X+(Size.X-thumbnail->Size.X)/2, Position.Y+45, thumbnail->Size.X, thumbnail->Size.Y, 255);
-		g->drawrect(Position.X+(Size.X-thumbnail->Size.X)/2, Position.Y+45, thumbnail->Size.X, thumbnail->Size.Y, 180, 180, 180, 255);
+		g->draw_image(thumbnail, Position.X+(Size.X-thumbnail->Width)/2, Position.Y+45, 255);
+		g->drawrect(Position.X+(Size.X-thumbnail->Width)/2, Position.Y+45, thumbnail->Width, thumbnail->Height, 180, 180, 180, 255);
 	}
 }
 
-void LocalSaveActivity::OnThumbnailReady(Thumbnail * thumbnail)
+void LocalSaveActivity::OnResponseReady(void * imagePtr)
 {
-	this->thumbnail = thumbnail;
+	if(thumbnail)
+		delete thumbnail;
+	thumbnail = (VideoBuffer*)imagePtr;
 }
 
 LocalSaveActivity::~LocalSaveActivity()
 {
-
+	RequestBroker::Ref().DetachRequestListener(this);
+	if(thumbnail)
+		delete thumbnail;
+	if(callback)
+		delete callback;
 }

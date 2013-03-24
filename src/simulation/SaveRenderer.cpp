@@ -1,10 +1,3 @@
-/*
- * SaveRenderer.cpp
- *
- *  Created on: Apr 3, 2012
- *      Author: Simon
- */
-
 #include "SaveRenderer.h"
 #include "client/GameSave.h"
 #include "graphics/Graphics.h"
@@ -39,10 +32,10 @@ SaveRenderer::SaveRenderer(){
 #endif
 }
 
-Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
+VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 {
 	int width, height;
-	Thumbnail * tempThumb;
+	VideoBuffer * tempThumb;
 	width = save->blockWidth;
 	height = save->blockHeight;
 	bool doCollapse = save->Collapsed();
@@ -61,11 +54,11 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 
 		glTranslated(0, MENUSIZE, 0);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-	    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	    glClear(GL_COLOR_BUFFER_BIT);
-	    
-	    ren->clearScreen(1.0f);
-	    ren->ClearAccumulation();
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		
+		ren->clearScreen(1.0f);
+		ren->ClearAccumulation();
 
 #ifdef OGLR
 		ren->RenderBegin();
@@ -111,7 +104,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 			}
 		}
 
-		tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
+		tempThumb = new VideoBuffer(pData, width*CELL, height*CELL);
 		delete[] pData;
 		delete[] texData;
 		pData = NULL;
@@ -120,7 +113,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 		pixel * dst;
 		pixel * src = g->vid;
 
-	    ren->ClearAccumulation();
+		ren->ClearAccumulation();
 
 		if (fire)
 		{
@@ -146,7 +139,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 			dst+=(width*CELL);///PIXELSIZE;
 			src+=XRES+BARSIZE;
 		}
-		tempThumb = new Thumbnail(0, 0, pData, ui::Point(width*CELL, height*CELL));
+		tempThumb = new VideoBuffer(pData, width*CELL, height*CELL);
 		if(pData)
 			free(pData);
 #endif
@@ -157,7 +150,7 @@ Thumbnail * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 	return tempThumb;
 }
 
-Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool decorations, bool fire)
+VideoBuffer * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool decorations, bool fire)
 {
 	GameSave * tempSave;
 	try {
@@ -165,19 +158,16 @@ Thumbnail * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool de
 	} catch (std::exception & e) {
 		
 		//Todo: make this look a little less shit
-		VideoBuffer buffer(64, 64);
-		buffer.BlendCharacter(32, 32, 'x', 255, 255, 255, 255);
+		VideoBuffer * buffer = new VideoBuffer(64, 64);
+		buffer->BlendCharacter(32, 32, 'x', 255, 255, 255, 255);
 		
-		Thumbnail * thumb = new Thumbnail(0, 0, buffer.Buffer, ui::Point(64, 64));
-		
-		return thumb;
+		return buffer;
 	}
-	Thumbnail * thumb = Render(tempSave, decorations, fire);
+	VideoBuffer * thumb = Render(tempSave, decorations, fire);
 	delete tempSave;
 	return thumb;
 }
 
 SaveRenderer::~SaveRenderer() {
-	// TODO Auto-generated destructor stub
 }
 

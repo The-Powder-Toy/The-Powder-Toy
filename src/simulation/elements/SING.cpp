@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_SING PT_SING 131
 Element_SING::Element_SING()
 {
-    Identifier = "DEFAULT_PT_SING";
-    Name = "SING";
-    Colour = PIXPACK(0x242424);
-    MenuVisible = 1;
-    MenuSection = SC_NUCLEAR;
-    Enabled = 1;
-    
-    Advection = 0.7f;
-    AirDrag = 0.36f * CFDS;
-    AirLoss = 0.96f;
-    Loss = 0.80f;
-    Collision = 0.1f;
-    Gravity = 0.12f;
-    Diffusion = 0.00f;
-    HotAir = -0.001f	* CFDS;
-    Falldown = 1;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 86;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 70;
-    Description = "Singularity";
-    
-    State = ST_SOLID;
-    Properties = TYPE_PART|PROP_LIFE_DEC;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_SING::update;
-    
+	Identifier = "DEFAULT_PT_SING";
+	Name = "SING";
+	Colour = PIXPACK(0x242424);
+	MenuVisible = 1;
+	MenuSection = SC_NUCLEAR;
+	Enabled = 1;
+	
+	Advection = 0.7f;
+	AirDrag = 0.36f * CFDS;
+	AirLoss = 0.96f;
+	Loss = 0.80f;
+	Collision = 0.1f;
+	Gravity = 0.12f;
+	Diffusion = 0.00f;
+	HotAir = -0.001f	* CFDS;
+	Falldown = 1;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 86;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 70;
+	Description = "Singularity";
+	
+	State = ST_SOLID;
+	Properties = TYPE_PART|PROP_LIFE_DEC;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_SING::update;
+	
 }
 
 //#TPT-Directive ElementHeader Element_SING static int update(UPDATE_FUNC_ARGS)
@@ -116,12 +116,12 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 	}
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)!=PT_DMND&&33>=rand()/(RAND_MAX/100)+1)
+				if ((r&0xFF)!=PT_DMND&& !(rand()%3))
 				{
 					if ((r&0xFF)==PT_SING && parts[r>>8].life >10)
 					{
@@ -133,7 +133,7 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 					{
 						if (parts[i].life+3 > 255)
 						{
-							if (parts[r>>8].type!=PT_SING && 1>rand()%100)
+							if (parts[r>>8].type!=PT_SING && !(rand()%100))
 							{
 								int np;
 								np = sim->create_part(r>>8,x+rx,y+ry,PT_SING);

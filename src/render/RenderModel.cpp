@@ -1,10 +1,3 @@
-/*
- * RenderModel.cpp
- *
- *  Created on: Jan 23, 2012
- *      Author: Simon
- */
-
 #include "RenderModel.h"
 
 RenderModel::RenderModel():
@@ -139,5 +132,4 @@ void RenderModel::notifyColourChanged()
 }
 
 RenderModel::~RenderModel() {
-	// TODO Auto-generated destructor stub
 }

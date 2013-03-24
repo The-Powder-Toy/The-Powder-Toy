@@ -1,10 +1,3 @@
-/*
- * Spinner.h
- *
- *  Created on: Feb 11, 2012
- *      Author: Simon
- */
-
 #ifndef SPINNER_H_
 #define SPINNER_H_
 

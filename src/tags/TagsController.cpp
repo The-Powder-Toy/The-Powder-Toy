@@ -1,10 +1,3 @@
-/*
- * TagsController.cpp
- *
- *  Created on: Mar 5, 2012
- *      Author: Simon
- */
-
 #include "TagsController.h"
 #include "interface/Engine.h"
 

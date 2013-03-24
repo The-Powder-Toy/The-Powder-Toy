@@ -1,11 +1,3 @@
-/*
- * Spinner.cpp
- *
- *  Created on: Feb 11, 2012
- *      Author: Simon
- */
-
-
 #include <cmath>
 #include <iostream>
 #include "Spinner.h"

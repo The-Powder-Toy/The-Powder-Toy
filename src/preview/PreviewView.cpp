@@ -1,10 +1,3 @@
-/*
- * PreviewView.cpp
- *
- *  Created on: Jan 21, 2012
- *      Author: Simon
- */
-
 #include <sstream>
 #include <vector>
 #include <cmath>
@@ -19,6 +12,7 @@
 #include "search/Thumbnail.h"
 #include "client/Client.h"
 #include "interface/ScrollPanel.h"
+#include "interface/AvatarButton.h"
 #include "interface/Keys.h"
 
 class PreviewView::LoginAction: public ui::ButtonAction
@@ -59,7 +53,8 @@ PreviewView::PreviewView():
 	doOpen(false),
 	addCommentBox(NULL),
 	submitCommentButton(NULL),
-	commentBoxHeight(20)
+	commentBoxHeight(20),
+	showAvatars(true)
 {
 	class FavAction: public ui::ButtonAction
 	{
@@ -71,6 +66,8 @@ PreviewView::PreviewView():
 			v->c->FavouriteSave();
 		}
 	};
+
+	showAvatars = Client::Ref().GetPrefBool("ShowAvatars", true);
 
 	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav");
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -140,22 +137,37 @@ PreviewView::PreviewView():
 	browserOpenButton->SetActionCallback(new BrowserOpenAction(this));
 	AddComponent(browserOpenButton);
 
-	saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(100, 16), "");
+	if(showAvatars)
+		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(100, 16), "");
+	else
+		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(100, 16), "");
 	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(saveNameLabel);
 
-	saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15+17), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+4+15+17)-21), "");
+	if(showAvatars)
+		saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15+21), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+4+15+17)-25), "");
+	else
+		saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15+19), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+4+15+17)-23), "");
 	saveDescriptionLabel->SetMultiline(true);
 	saveDescriptionLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveDescriptionLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	saveDescriptionLabel->SetTextColour(ui::Colour(180, 180, 180));
 	AddComponent(saveDescriptionLabel);
 
-	authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15), ui::Point(200, 16), "");
+	if(showAvatars)
+		authorDateLabel = new ui::Label(ui::Point(39, (YRES/2)+4+15), ui::Point(180, 16), "");
+	else
+		authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15), ui::Point(200, 16), "");
 	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(authorDateLabel);
+
+	if(showAvatars)
+	{
+		avatarButton = new ui::AvatarButton(ui::Point(4, (YRES/2)+4), ui::Point(34, 34), "");
+		AddComponent(avatarButton);
+	}
 
 	viewsLabel = new ui::Label(ui::Point((XRES/2)-80, (YRES/2)+4+15), ui::Point(80, 16), "");
 	viewsLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
@@ -179,7 +191,7 @@ PreviewView::PreviewView():
 		CopyIDAction(PreviewView * v_){ v = v_; }
 		virtual void ActionCallback(ui::Button * sender)
 		{
-			clipboard_push_text((char*)v->saveIDTextbox->GetText().c_str());
+			ClipboardPush((char*)v->saveIDTextbox->GetText().c_str());
 		}
 	};
 
@@ -196,7 +208,7 @@ PreviewView::PreviewView():
 }
 
 void PreviewView::AttachController(PreviewController * controller)
-{ 
+{
 	c = controller;
 	saveIDTextbox->SetText(format::NumberToString<int>(c->SaveID()));
 }
@@ -267,14 +279,14 @@ void PreviewView::OnDraw()
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+4, Size.Y+4);
 
 	//Save preview (top-left)
-	if(savePreview && savePreview->Data)
+	if(savePreview && savePreview->Buffer)
 	{
-		g->draw_image(savePreview->Data, (Position.X+1)+(((XRES/2)-savePreview->Size.X)/2), (Position.Y+1)+(((YRES/2)-savePreview->Size.Y)/2), savePreview->Size.X, savePreview->Size.Y, 255);
+		g->draw_image(savePreview, (Position.X+1)+(((XRES/2)-savePreview->Width)/2), (Position.Y+1)+(((YRES/2)-savePreview->Height)/2), 255);
 	}
 	g->drawrect(Position.X, Position.Y, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 100);
 	g->draw_line(Position.X+XRES/2, Position.Y+1, Position.X+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
 
-	if(!(!votesUp && !votesDown))
+	if(votesUp || votesDown)
 	{
 		float ryf;
 		int nyu, nyd;
@@ -365,7 +377,7 @@ void PreviewView::OnMouseWheel(int x, int y, int d)
 
 void PreviewView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if ((key == KEY_ENTER || key == KEY_RETURN) && !addCommentBox->IsFocused())
+	if ((key == KEY_ENTER || key == KEY_RETURN) && (!addCommentBox || !addCommentBox->IsFocused()))
 		openButton->DoAction();
 }
 
@@ -380,7 +392,14 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		votesUp = save->votesUp;
 		votesDown = save->votesDown;
 		saveNameLabel->SetText(save->name);
-		authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
+		if(showAvatars) {
+			avatarButton->SetUsername(save->userName);
+			authorDateLabel->SetText("\bw" + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
+		}
+		else
+		{
+			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
+		}
 		viewsLabel->SetText("\bgViews:\bw " + format::NumberToString<int>(save->Views));
 		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
@@ -403,17 +422,17 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		{
 			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
 
-			if(savePreview && savePreview->Data && !(savePreview->Size.X == XRES/2 && savePreview->Size.Y == YRES/2))
+			if(savePreview && savePreview->Buffer && !(savePreview->Width == XRES/2 && savePreview->Width == YRES/2))
 			{
 				int newSizeX, newSizeY;
-				pixel * oldData = savePreview->Data;
-				float factorX = ((float)XRES/2)/((float)savePreview->Size.X);
-				float factorY = ((float)YRES/2)/((float)savePreview->Size.Y);
+				pixel * oldData = savePreview->Buffer;
+				float factorX = ((float)XRES/2)/((float)savePreview->Width);
+				float factorY = ((float)YRES/2)/((float)savePreview->Height);
 				float scaleFactor = factorY < factorX ? factorY : factorX;
-				savePreview->Data = Graphics::resample_img(oldData, savePreview->Size.X, savePreview->Size.Y, savePreview->Size.X*scaleFactor, savePreview->Size.Y*scaleFactor);
-				free(oldData);
-				savePreview->Size.X *= scaleFactor;
-				savePreview->Size.Y *= scaleFactor;
+				savePreview->Buffer = Graphics::resample_img(oldData, savePreview->Width, savePreview->Height, savePreview->Width*scaleFactor, savePreview->Height*scaleFactor);
+				delete[] oldData;
+				savePreview->Width *= scaleFactor;
+				savePreview->Height *= scaleFactor;
 			}
 		}
 	}
@@ -453,14 +472,14 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	if(addCommentBox)
 	{
 		RemoveComponent(addCommentBox);
-		addCommentBox = NULL;
 		delete addCommentBox;
+		addCommentBox = NULL;
 	}
 	if(submitCommentButton)
 	{
 		RemoveComponent(submitCommentButton);
-		submitCommentButton = NULL;
 		delete submitCommentButton;
+		submitCommentButton = NULL;
 	}
 	if(sender->GetCommentBoxEnabled())
 	{
@@ -496,15 +515,18 @@ void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)
 
 void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 {
-	if(sender->GetComments())
-	{
-		comments = std::vector<SaveComment>(sender->GetComments()->begin(), sender->GetComments()->end());
-	}
-	else
-	{
-		comments.clear();
-	}
+	std::vector<SaveComment*> * comments = sender->GetComments();
 
+	for(int i = 0; i < commentComponents.size(); i++)
+	{
+		commentsPanel->RemoveChild(commentComponents[i]);
+		delete commentComponents[i];
+	}
+	commentComponents.clear();
+	commentTextComponents.clear();
+	commentsPanel->InnerSize = ui::Point(0, 0);
+
+	if(comments)
 	{
 		for(int i = 0; i < commentComponents.size(); i++)
 		{
@@ -517,10 +539,21 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		int currentY = 0;//-yOffset;
 		ui::Label * tempUsername;
 		ui::Label * tempComment;
-		for(int i = 0; i < comments.size(); i++)
+		ui::AvatarButton * tempAvatar;
+		for(int i = 0; i < comments->size(); i++)
 		{
 			int usernameY = currentY+5, commentY;
-			tempUsername = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), 16), comments[i].authorName);
+			if(showAvatars)
+			{
+				tempAvatar = new ui::AvatarButton(ui::Point(2, currentY+7), ui::Point(26, 26), comments->at(i)->authorName);
+				commentComponents.push_back(tempAvatar);
+				commentsPanel->AddChild(tempAvatar);
+			}
+
+			if(showAvatars)
+				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
+			else
+				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 			currentY += 16;
@@ -528,9 +561,11 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			commentComponents.push_back(tempUsername);
 			commentsPanel->AddChild(tempUsername);
 
-
 			commentY = currentY+5;
-			tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comments[i].comment);
+			if(showAvatars)
+				tempComment = new ui::Label(ui::Point(31, currentY+5), ui::Point(Size.X-((XRES/2) + 13 + 26), -1), comments->at(i)->comment);
+			else
+				tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comments->at(i)->comment);
 			tempComment->SetMultiline(true);
 			tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
@@ -549,18 +584,31 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 /*void PreviewView::NotifyPreviewChanged(PreviewModel * sender)
 {
 	savePreview = sender->GetGameSave();
-	if(savePreview && savePreview->Data && !(savePreview->Size.X == XRES/2 && savePreview->Size.Y == YRES/2))
+	if(savePreview && savePreview->Data && !(savePreview->Width == XRES/2 && savePreview->Height == YRES/2))
 	{
 		int newSizeX, newSizeY;
-		float factorX = ((float)XRES/2)/((float)savePreview->Size.X);
-		float factorY = ((float)YRES/2)/((float)savePreview->Size.Y);
+		float factorX = ((float)XRES/2)/((float)savePreview->Width);
+		float factorY = ((float)YRES/2)/((float)savePreview->Height);
 		float scaleFactor = factorY < factorX ? factorY : factorX;
-		savePreview->Data = Graphics::resample_img(savePreview->Data, savePreview->Size.X, savePreview->Size.Y, savePreview->Size.X*scaleFactor, savePreview->Size.Y*scaleFactor);
-		savePreview->Size.X *= scaleFactor;
-		savePreview->Size.Y *= scaleFactor;
+		savePreview->Data = Graphics::resample_img(savePreview->Data, savePreview->Width, savePreview->Height, savePreview->Width*scaleFactor, savePreview->Height*scaleFactor);
+		savePreview->Width *= scaleFactor;
+		savePreview->Height *= scaleFactor;
 	}
 }*/
 
-PreviewView::~PreviewView() {
+PreviewView::~PreviewView()
+{
+	if(addCommentBox)
+	{
+		RemoveComponent(addCommentBox);
+		delete addCommentBox;
+	}
+	if(submitCommentButton)
+	{
+		RemoveComponent(submitCommentButton);
+		delete submitCommentButton;
+	}
+	if(savePreview)
+		delete savePreview;
 }
 

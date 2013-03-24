@@ -146,10 +146,13 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 	Element_PPIP::ppip_changed = 1;
 	for(int i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
 	{
-		sign tempSign = save->signs[i];
-		tempSign.x += fullX;
-		tempSign.y += fullY;
-		signs.push_back(tempSign);
+		if (save->signs[i].text[0])
+		{
+			sign tempSign = save->signs[i];
+			tempSign.x += fullX;
+			tempSign.y += fullY;
+			signs.push_back(tempSign);
+		}
 	}
 	for(int saveBlockX = 0; saveBlockX < save->blockWidth; saveBlockX++)
 	{
@@ -478,15 +481,15 @@ SimulationSample Simulation::Get(int x, int y)
 	SimulationSample sample;
 	sample.PositionX = x;
 	sample.PositionY = y;
-	if(pmap[y][x])
-	{
-		sample.particle = parts[pmap[y][x]>>8];
-		sample.ParticleID = pmap[y][x]>>8;
-	}
-	else if(photons[y][x])
+	if (photons[y][x])
 	{
 		sample.particle = parts[photons[y][x]>>8];
 		sample.ParticleID = photons[y][x]>>8;
+	}
+	else if (pmap[y][x])
+	{
+		sample.particle = parts[pmap[y][x]>>8];
+		sample.ParticleID = pmap[y][x]>>8;
 	}
 	if (bmap[y/CELL][x/CELL])
 	{
@@ -987,25 +990,27 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 		
 		int rx, ry;
 		float num = 0;	
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
 			{
-				if ((pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
+				if (abs(rx)+abs(ry) > 2 && (pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
 				{
 					Particle part = parts[pmap[y+ry][x+rx]>>8];
 					num += 1.0f;
-					tas += ((float)((part.dcolour>>24)&0xFF))/255.0f;
-					trs += ((float)((part.dcolour>>16)&0xFF))/255.0f;
-					tgs += ((float)((part.dcolour>>8)&0xFF))/255.0f;
-					tbs += ((float)((part.dcolour)&0xFF))/255.0f;
+					tas += ((float)((part.dcolour>>24)&0xFF));
+					trs += ((float)((part.dcolour>>16)&0xFF));
+					tgs += ((float)((part.dcolour>>8)&0xFF));
+					tbs += ((float)((part.dcolour)&0xFF));
 				}
 			}
 		if (num == 0)
 			return;
-		ta = ((tas/num));//*0.8f) + (ta*0.2f);
-		tr = ((trs/num));//*0.8f) + (tr*0.2f);
-		tg = ((tgs/num));//*0.8f) + (tg*0.2f);
-		tb = ((tbs/num));//*0.8f) + (tb*0.2f);
+		ta = (tas/num)/255.0f;
+		tr = (trs/num)/255.0f;
+		tg = (tgs/num)/255.0f;
+		tb = (tbs/num)/255.0f;
+		if (!parts[rp>>8].dcolour)
+			ta -= 3/255.0f;
 	}
 
 	ta *= 255.0f; tr *= 255.0f; tg *= 255.0f; tb *= 255.0f;
@@ -1993,6 +1998,28 @@ void Simulation::clear_sim(void)
 	}
 	SetEdgeMode(edgeMode);
 }
+
+bool Simulation::IsWallBlocking(int x, int y, int type)
+{
+	if (bmap[y/CELL][x/CELL])
+	{
+		int wall = bmap[y/CELL][x/CELL];
+		if (wall == WL_ALLOWGAS && !(elements[type].Properties&TYPE_GAS))
+			return true;
+		else if (wall == WL_ALLOWENERGY && !(elements[type].Properties&TYPE_ENERGY))
+			return true;
+		else if (wall == WL_ALLOWLIQUID && elements[type].Falldown!=2)
+			return true;
+		else if (wall == WL_ALLOWSOLID && elements[type].Falldown!=1)
+			return true;
+		else if (wall == WL_ALLOWAIR || wall == WL_WALL || wall == WL_WALLELEC)
+			return true;
+		else if (wall == WL_EWALL && !emap[y/CELL][x/CELL])
+			return true;
+	}
+	return false;
+}
+
 void Simulation::init_can_move()
 {
 	// can_move[moving type][type at destination]
@@ -2081,7 +2108,6 @@ void Simulation::init_can_move()
 	}
 	can_move[PT_ELEC][PT_LCRY] = 2;
 	can_move[PT_ELEC][PT_EXOT] = 2;
-	can_move[PT_NEUT][PT_EXOT] = 2;
 	can_move[PT_PHOT][PT_LCRY] = 3;//varies according to LCRY life
 
 	can_move[PT_PHOT][PT_BIZR] = 2;
@@ -2091,7 +2117,6 @@ void Simulation::init_can_move()
 	can_move[PT_PHOT][PT_BIZRS] = 2;
 	can_move[PT_ELEC][PT_BIZRS] = 2;
 
-	can_move[PT_NEUT][PT_INVIS] = 2;
 	//whol eats anar
 	can_move[PT_ANAR][PT_WHOL] = 1;
 	can_move[PT_ANAR][PT_NWHL] = 1;
@@ -2594,12 +2619,8 @@ void Simulation::detach(int i)
 
 void Simulation::kill_part(int i)//kills particle number i
 {
-	int x, y;
-
-	// Remove from pmap even if type==0, otherwise infinite recursion occurs when flood fill deleting
-	// a particle which sets type to 0 without calling kill_part (such as LIFE)
-	x = (int)(parts[i].x+0.5f);
-	y = (int)(parts[i].y+0.5f);
+	int x = (int)(parts[i].x+0.5f);
+	int y = (int)(parts[i].y+0.5f);
 	if (x>=0 && y>=0 && x<XRES && y<YRES) {
 		if ((pmap[y][x]>>8)==i)
 			pmap[y][x] = 0;
@@ -2637,10 +2658,15 @@ void Simulation::kill_part(int i)//kills particle number i
 
 void Simulation::part_change_type(int i, int x, int y, int t)//changes the type of particle number i, to t.  This also changes pmap at the same time.
 {
-	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART || t<0 || t>=PT_NUM)
+	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART || t<0 || t>=PT_NUM || !parts[i].type)
 		return;
 	if (!elements[t].Enabled)
 		t = PT_NONE;
+	if (t == PT_NONE)
+	{
+		kill_part(i);
+		return;
+	}
 
 	if (parts[i].type == PT_STKM)
 		player.spwn = 0;
@@ -2822,13 +2848,20 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t == PT_LIFE && v < NGOLALT && drawOn != PT_STOR) parts[pmap[y][x]>>8].tmp = v;
+				if (t == PT_LIFE && v < NGOL && drawOn != PT_STOR) parts[pmap[y][x]>>8].tmp = v;
 			}
-			else if (drawOn == PT_DTEC && drawOn != t)
+			else if ((drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME)) && drawOn != t)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t==PT_LIFE && v<NGOLALT)
+				if (drawOn == PT_DTEC && t==PT_LIFE && v<NGOL)
 					parts[pmap[y][x]>>8].tmp = v;
+			}
+			else if (drawOn == PT_CRAY && drawOn != t && drawOn != PT_PSCN && drawOn != PT_INST && drawOn != PT_METL)
+			{
+				parts[pmap[y][x]>>8].ctype = t;
+				if (t==PT_LIFE && v<NGOL)
+					parts[pmap[y][x]>>8].tmp2 = v;
+				parts[pmap[y][x]>>8].temp = elements[t].Temperature;
 			}
 			return -1;
 		}
@@ -2915,10 +2948,10 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[i].life = 75;
 				break;
 			/*Testing
-			  case PT_WOOD:
-			  parts[i].life = 150;
-			  break;
-			  End Testing*/
+			case PT_WOOD:
+				parts[i].life = 150;
+				break;
+			End Testing*/
 			case PT_WARP:
 				parts[i].life = rand()%95+70;
 				break;
@@ -2927,7 +2960,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[i].tmp = 50;
 				break;
 			case PT_LIFE:
-				if (v<NGOLALT)
+				if (v<NGOL)
 				{
 					parts[i].tmp = grule[v+1][9] - 1;
 					parts[i].ctype = v;
@@ -2983,7 +3016,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_PLSM:
 				parts[i].life = rand()%150+50;
 				break;
-			case PT_HFLM:
+			case PT_CFLM:
 				parts[i].life = rand()%150+50;
 				break;
 			case PT_LAVA:
@@ -3057,6 +3090,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				break;
 			case PT_DTEC:
 				parts[i].tmp2 = 2;
+				break;
 			case PT_TSNS:
 				parts[i].tmp2 = 2;
 				break;
@@ -3504,6 +3538,7 @@ void Simulation::update_particles_i(int start, int inc)
 		int createdsomething = 0;
 		CGOL=0;
 		ISGOL=0;
+		//TODO: maybe this should only loop through active particles
 		for (ny=CELL; ny<YRES-CELL; ny++)
 		{//go through every particle and set neighbor map
 			for (nx=CELL; nx<XRES-CELL; nx++)
@@ -3516,36 +3551,33 @@ void Simulation::update_particles_i(int start, int inc)
 				}
 				else
 				{
-					//for ( golnum=1; golnum<=NGOL; golnum++) //This shouldn't be necessary any more.
-					//{
-						if (parts[r>>8].type==PT_LIFE/* && parts[r>>8].ctype==golnum-1*/)
-						{
-							golnum = parts[r>>8].ctype+1;
-							if (golnum<=0 || golnum>NGOLALT) {
-								parts[r>>8].type = PT_NONE;
-								continue;
-							}
-							if (parts[r>>8].tmp == grule[golnum][9]-1) {
-								gol[ny][nx] = golnum;
-								for ( nnx=-1; nnx<2; nnx++)
+					if (parts[r>>8].type==PT_LIFE)
+					{
+						golnum = parts[r>>8].ctype+1;
+						if (golnum<=0 || golnum>NGOL) {
+							kill_part(r>>8);
+							continue;
+						}
+						if (parts[r>>8].tmp == grule[golnum][9]-1) {
+							gol[ny][nx] = golnum;
+							for ( nnx=-1; nnx<2; nnx++)
+							{
+								for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
 								{
-									for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
+									rt = pmap[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL];
+									if (!rt || (rt&0xFF)==PT_LIFE)
 									{
-										rt = pmap[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL];
-										if (!rt || (rt&0xFF)==PT_LIFE)
-										{
-											gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][golnum] ++;
-											gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][0] ++;
-										}
+										gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][golnum] ++;
+										gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][0] ++;
 									}
 								}
-							} else {
-								parts[r>>8].tmp --;
-								if (parts[r>>8].tmp<=0)
-									parts[r>>8].type = PT_NONE;//using kill_part makes it not work
 							}
+						} else {
+							parts[r>>8].tmp --;
+							if (parts[r>>8].tmp<=0)
+								parts[r>>8].type = PT_NONE;//TODO: move delete into an update function, change to kill_part
 						}
-					//}
+					}
 				}
 			}
 		}
@@ -3557,7 +3589,7 @@ void Simulation::update_particles_i(int start, int inc)
 				neighbors = gol2[ny][nx][0];
 				if (neighbors==0 || !((r&0xFF)==PT_LIFE || !(r&0xFF)))
 					continue;
-				for ( golnum = 1; golnum<=NGOL; golnum++)
+				for (golnum = 1; golnum<=NGOL; golnum++)
 				{
 					goldelete = neighbors;
 					if (gol[ny][nx]==0&&grule[golnum][goldelete]>=2&&gol2[ny][nx][golnum]>=(goldelete%2)+goldelete/2)
@@ -3571,7 +3603,7 @@ void Simulation::update_particles_i(int start, int inc)
 							parts[r>>8].tmp --;
 					}
 					if (r && parts[r>>8].tmp<=0)
-						parts[r>>8].type = PT_NONE;//using kill_part makes it not work
+						parts[r>>8].type = PT_NONE;//TODO: move delete into an update function, change to kill_part
 				}
 				for ( z = 0; z<=NGOL; z++)
 					gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
@@ -3646,7 +3678,7 @@ void Simulation::update_particles_i(int start, int inc)
 			          (bmap[y/CELL][x/CELL]==WL_DESTROYALL) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID && elements[t].Falldown!=2) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWSOLID && elements[t].Falldown!=1) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && !(elements[t].Properties&TYPE_GAS)) || //&& elements[t].Falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_HFLM) ||
+			          (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && !(elements[t].Properties&TYPE_GAS)) || //&& elements[t].Falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_CFLM) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWENERGY && !(elements[t].Properties&TYPE_ENERGY)) ||
 					  (bmap[y/CELL][x/CELL]==WL_DETECT && (t==PT_METL || t==PT_SPRK)) ||
 			          (bmap[y/CELL][x/CELL]==WL_EWALL && !emap[y/CELL][x/CELL])) && (t!=PT_STKM) && (t!=PT_STKM2) && (t!=PT_FIGH)))
@@ -3661,62 +3693,69 @@ void Simulation::update_particles_i(int start, int inc)
 			vx[y/CELL][x/CELL] = vx[y/CELL][x/CELL]*elements[t].AirLoss + elements[t].AirDrag*parts[i].vx;
 			vy[y/CELL][x/CELL] = vy[y/CELL][x/CELL]*elements[t].AirLoss + elements[t].AirDrag*parts[i].vy;
 
-			if (t==PT_GAS||t==PT_NBLE)
+			if (elements[t].HotAir)
 			{
-				if (pv[y/CELL][x/CELL]<3.5f)
-					pv[y/CELL][x/CELL] += elements[t].HotAir*(3.5f-pv[y/CELL][x/CELL]);
-				if (y+CELL<YRES && pv[y/CELL+1][x/CELL]<3.5f)
-					pv[y/CELL+1][x/CELL] += elements[t].HotAir*(3.5f-pv[y/CELL+1][x/CELL]);
-				if (x+CELL<XRES)
+				if (t==PT_GAS||t==PT_NBLE)
 				{
-					if (pv[y/CELL][x/CELL+1]<3.5f)
-						pv[y/CELL][x/CELL+1] += elements[t].HotAir*(3.5f-pv[y/CELL][x/CELL+1]);
-					if (y+CELL<YRES && pv[y/CELL+1][x/CELL+1]<3.5f)
-						pv[y/CELL+1][x/CELL+1] += elements[t].HotAir*(3.5f-pv[y/CELL+1][x/CELL+1]);
+					if (pv[y/CELL][x/CELL]<3.5f)
+						pv[y/CELL][x/CELL] += elements[t].HotAir*(3.5f-pv[y/CELL][x/CELL]);
+					if (y+CELL<YRES && pv[y/CELL+1][x/CELL]<3.5f)
+						pv[y/CELL+1][x/CELL] += elements[t].HotAir*(3.5f-pv[y/CELL+1][x/CELL]);
+					if (x+CELL<XRES)
+					{
+						if (pv[y/CELL][x/CELL+1]<3.5f)
+							pv[y/CELL][x/CELL+1] += elements[t].HotAir*(3.5f-pv[y/CELL][x/CELL+1]);
+						if (y+CELL<YRES && pv[y/CELL+1][x/CELL+1]<3.5f)
+							pv[y/CELL+1][x/CELL+1] += elements[t].HotAir*(3.5f-pv[y/CELL+1][x/CELL+1]);
+					}
 				}
-			}
-			else//add the hotair variable to the pressure map, like black hole, or white hole.
-			{
-				pv[y/CELL][x/CELL] += elements[t].HotAir;
-				if (y+CELL<YRES)
-					pv[y/CELL+1][x/CELL] += elements[t].HotAir;
-				if (x+CELL<XRES)
+				else//add the hotair variable to the pressure map, like black hole, or white hole.
 				{
-					pv[y/CELL][x/CELL+1] += elements[t].HotAir;
+					pv[y/CELL][x/CELL] += elements[t].HotAir;
 					if (y+CELL<YRES)
-						pv[y/CELL+1][x/CELL+1] += elements[t].HotAir;
+						pv[y/CELL+1][x/CELL] += elements[t].HotAir;
+					if (x+CELL<XRES)
+					{
+						pv[y/CELL][x/CELL+1] += elements[t].HotAir;
+						if (y+CELL<YRES)
+							pv[y/CELL+1][x/CELL+1] += elements[t].HotAir;
+					}
 				}
 			}
-
-			//Gravity mode by Moach
-			switch (gravityMode)
+			if (elements[t].Gravity || !(elements[t].Properties & TYPE_SOLID))
 			{
-			default:
-			case 0:
-				pGravX = 0.0f;
-				pGravY = elements[t].Gravity;
-				break;
-			case 1:
-				pGravX = pGravY = 0.0f;
-				break;
-			case 2:
-				pGravD = 0.01f - hypotf((x - XCNTR), (y - YCNTR));
-				pGravX = elements[t].Gravity * ((float)(x - XCNTR) / pGravD);
-				pGravY = elements[t].Gravity * ((float)(y - YCNTR) / pGravD);
-				break;
+				//Gravity mode by Moach
+				switch (gravityMode)
+				{
+				default:
+				case 0:
+					pGravX = 0.0f;
+					pGravY = elements[t].Gravity;
+					break;
+				case 1:
+					pGravX = pGravY = 0.0f;
+					break;
+				case 2:
+					pGravD = 0.01f - hypotf((x - XCNTR), (y - YCNTR));
+					pGravX = elements[t].Gravity * ((float)(x - XCNTR) / pGravD);
+					pGravY = elements[t].Gravity * ((float)(y - YCNTR) / pGravD);
+					break;
+				}
+				//Get some gravity from the gravity map
+				if (t==PT_ANAR)
+				{
+					// perhaps we should have a ptypes variable for this
+					pGravX -= gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
+					pGravY -= gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+				}
+				else if(t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH && !(elements[t].Properties & TYPE_SOLID))
+				{
+					pGravX += gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
+					pGravY += gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+				}
 			}
-			//Get some gravity from the gravity map
-			if (t==PT_ANAR)
-			{
-				// perhaps we should have a ptypes variable for this
-				pGravX -= gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
-				pGravY -= gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
-			}
-			else if(t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH && !(elements[t].Properties & TYPE_SOLID))
-			{
-				pGravX += gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
-				pGravY += gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
-			}
+			else
+				pGravX = pGravY = 0;
 			//velocity updates for the particle
 			if (t != PT_SPNG || !(parts[i].flags&FLAG_MOVABLE))
 			{
@@ -3999,7 +4038,7 @@ void Simulation::update_particles_i(int start, int inc)
 						if (elements[t].State==ST_GAS&&elements[parts[i].type].State!=ST_GAS)
 							pv[y/CELL][x/CELL] += 0.50f;
 						part_change_type(i,x,y,t);
-						if (t==PT_FIRE||t==PT_PLSM||t==PT_HFLM)
+						if (t==PT_FIRE||t==PT_PLSM||t==PT_CFLM)
 							parts[i].life = rand()%50+120;
 						if (t==PT_LAVA) {
 							if (parts[i].ctype==PT_BRMT) parts[i].ctype = PT_BMTL;
@@ -4799,7 +4838,8 @@ Simulation::Simulation():
 	lighting_recreate(0),
 	force_stacking_check(0),
 	ISWIRE(0),
-	VINE_MODE(0)
+	VINE_MODE(0),
+	gravWallChanged(false)
 {
     int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
     int tportal_ry[] = {-1,-1,-1, 0, 1, 1, 1, 0};
@@ -4876,6 +4916,9 @@ Simulation::Simulation():
 	gol_menu * golMenuT = LoadGOLMenu(golMenuCount);
 	memcpy(gmenu, golMenuT, sizeof(gol_menu) * golMenuCount);
 	free(golMenuT);
+
+	player.comm = 0;
+	player2.comm = 0;
 
 	init_can_move();
 	clear_sim();

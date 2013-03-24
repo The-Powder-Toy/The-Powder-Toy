@@ -1,10 +1,3 @@
-/*
- * ErrorMessage.cpp
- *
- *  Created on: Jan 29, 2012
- *      Author: Simon
- */
-
 #include "Style.h"
 #include "ErrorMessage.h"
 #include "interface/Button.h"

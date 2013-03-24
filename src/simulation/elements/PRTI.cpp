@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_PRTI PT_PRTI 109
 Element_PRTI::Element_PRTI()
 {
-    Identifier = "DEFAULT_PT_PRTI";
-    Name = "PRTI";
-    Colour = PIXPACK(0xEB5917);
-    MenuVisible = 1;
-    MenuSection = SC_SPECIAL;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = -0.005f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 0;
-    Description = "Portal IN.  Things go in here, now with channels (same as WIFI)";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_PRTI::update;
-    Graphics = &Element_PRTI::graphics;
+	Identifier = "DEFAULT_PT_PRTI";
+	Name = "PRTI";
+	Colour = PIXPACK(0xEB5917);
+	MenuVisible = 1;
+	MenuSection = SC_SPECIAL;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = -0.005f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 0;
+	Description = "Portal IN.  Things go in here, now with channels (same as WIFI)";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_PRTI::update;
+	Graphics = &Element_PRTI::graphics;
 }
 
 /*these are the count values of where the particle gets stored, depending on where it came from
@@ -66,36 +66,36 @@ int Element_PRTI::update(UPDATE_FUNC_ARGS)
 	{
 		rx = sim->portal_rx[count];
 		ry = sim->portal_ry[count];
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+		if (BOUNDS_CHECK && (rx || ry))
+		{
+			r = pmap[y+ry][x+rx];
+			if (!r)
+				fe = 1;
+			if (!r || (!(sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)) && (r&0xFF)!=PT_SPRK))
 			{
-				r = pmap[y+ry][x+rx];
+				r = sim->photons[y+ry][x+rx];
 				if (!r)
-					fe = 1;
-				if (!r || (r&0xFF)==PT_PRTI || (r&0xFF)==PT_PRTO || (!(sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)) && (r&0xFF)!=PT_SPRK))
-				{
-					r = sim->photons[y+ry][x+rx];
-					if (!r || (r&0xFF)==PT_PRTI || (r&0xFF)==PT_PRTO || (!(sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)) && (r&0xFF)!=PT_SPRK))
-						continue;
-				}
-
-				if ((r&0xFF)==PT_STKM || (r&0xFF)==PT_STKM2 || (r&0xFF)==PT_FIGH)
-					continue;// Handling these is a bit more complicated, and is done in STKM_interact()
-
-				if ((r&0xFF) == PT_SOAP)
-					sim->detach(r>>8);
-
-				for ( nnx=0; nnx<80; nnx++)
-					if (!sim->portalp[parts[i].tmp][count][nnx].type)
-					{
-						sim->portalp[parts[i].tmp][count][nnx] = parts[r>>8];
-						if ((r&0xFF)==PT_SPRK)
-							sim->part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
-						else
-							sim->kill_part(r>>8);
-						fe = 1;
-						break;
-					}
+					continue;
 			}
+
+			if ((r&0xFF)==PT_STKM || (r&0xFF)==PT_STKM2 || (r&0xFF)==PT_FIGH)
+				continue;// Handling these is a bit more complicated, and is done in STKM_interact()
+
+			if ((r&0xFF) == PT_SOAP)
+				sim->detach(r>>8);
+
+			for ( nnx=0; nnx<80; nnx++)
+				if (!sim->portalp[parts[i].tmp][count][nnx].type)
+				{
+					sim->portalp[parts[i].tmp][count][nnx] = parts[r>>8];
+					if ((r&0xFF)==PT_SPRK)
+						sim->part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
+					else
+						sim->kill_part(r>>8);
+					fe = 1;
+					break;
+				}
+		}
 	}
 
 

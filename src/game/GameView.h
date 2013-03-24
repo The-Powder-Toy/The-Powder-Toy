@@ -56,6 +56,7 @@ private:
 	std::string introTextMessage;
 	int toolIndex;
 	int currentSaveType;
+	Menu * lastMenu;
 
 	int infoTipPresence;
 	std::string toolTip;
@@ -101,7 +102,7 @@ private:
 
 	ui::Point mousePosition;
 
-	Thumbnail * placeSaveThumb;
+	VideoBuffer * placeSaveThumb;
 
 	SimulationSample sample;
 

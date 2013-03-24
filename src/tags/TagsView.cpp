@@ -1,10 +1,3 @@
-/*
- * TagsView.cpp
- *
- *  Created on: Mar 5, 2012
- *      Author: Simon
- */
-
 #include "client/Client.h"
 #include "TagsView.h"
 
@@ -133,12 +126,6 @@ void TagsView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 {
 	switch(key)
 	{
-	/*case KEY_TAB:
-		if(IsFocused(usernameField))
-			FocusComponent(passwordField);
-		else
-			FocusComponent(usernameField);
-		break;*/
 	case KEY_ENTER:
 	case KEY_RETURN:
 		if(IsFocused(tagInput))
@@ -151,6 +138,11 @@ void TagsView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 void TagsView::addTag()
 {
+	if (tagInput->GetText().length() < 4)
+	{
+		new ErrorMessage("Tag not long enough", "Must be at least 4 letters");
+		return;
+	}
 	try
 	{
 		c->AddTag(tagInput->GetText());
@@ -163,6 +155,5 @@ void TagsView::addTag()
 }
 
 TagsView::~TagsView() {
-	// TODO Auto-generated destructor stub
 }
 

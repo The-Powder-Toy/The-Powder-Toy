@@ -1,10 +1,3 @@
-/*
- * ConfirmPrompt.cpp
- *
- *  Created on: Apr 6, 2012
- *      Author: Simon
- */
-
 #include "ConfirmPrompt.h"
 #include "Style.h"
 #include "interface/Label.h"

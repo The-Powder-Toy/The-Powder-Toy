@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_STOR PT_STOR 83
 Element_STOR::Element_STOR()
 {
-    Identifier = "DEFAULT_PT_STOR";
-    Name = "STOR";
-    Colour = PIXPACK(0x50DFDF);
-    MenuVisible = 1;
-    MenuSection = SC_POWERED;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 1;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 0;
-    Description = "Solid. Stores a single particle, releases when charged with PSCN, also passes to PIPE";
-    
-    State = ST_NONE;
-    Properties = TYPE_SOLID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_STOR::update;
-    Graphics = &Element_STOR::graphics;
+	Identifier = "DEFAULT_PT_STOR";
+	Name = "STOR";
+	Colour = PIXPACK(0x50DFDF);
+	MenuVisible = 1;
+	MenuSection = SC_POWERED;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 1;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 0;
+	Description = "Solid. Stores a single particle, releases when charged with PSCN, also passes to PIPE";
+	
+	State = ST_NONE;
+	Properties = TYPE_SOLID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_STOR::update;
+	Graphics = &Element_STOR::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_STOR static int update(UPDATE_FUNC_ARGS)
@@ -54,13 +54,14 @@ int Element_STOR::update(UPDATE_FUNC_ARGS)
 		parts[i].life--;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if ((r>>8)>=NPART || !r)
 					continue;
 				if (!parts[i].tmp && !parts[i].life && (r&0xFF)!=PT_STOR && !(sim->elements[(r&0xFF)].Properties&TYPE_SOLID) && (!parts[i].ctype || (r&0xFF)==parts[i].ctype))
 				{
+					if ((r&0xFF) == PT_SOAP) sim->detach(r>>8);
 					parts[i].tmp = parts[r>>8].type;
 					parts[i].temp = parts[r>>8].temp;
 					parts[i].tmp2 = parts[r>>8].life;
@@ -71,7 +72,7 @@ int Element_STOR::update(UPDATE_FUNC_ARGS)
 				if(parts[i].tmp && (r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_PSCN && parts[r>>8].life>0 && parts[r>>8].life<4)
 				{
 					for(ry1 = 1; ry1 >= -1; ry1--){
-						for(rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1-rx1+1){ // Oscilate the X starting at 0, 1, -1, 3, -5, etc (Though stop at -1)
+						for(rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1-rx1+1){ // Oscillate the X starting at 0, 1, -1, 3, -5, etc (Though stop at -1)
 							np = sim->create_part(-1,x+rx1,y+ry1,parts[i].tmp);
 							if (np!=-1)
 							{

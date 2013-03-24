@@ -362,6 +362,12 @@ void PIXELMETHODS_CLASS::draw_image(pixel *img, int x, int y, int w, int h, int 
 	int i, j, r, g, b;
 	if (!img) return;
 	if(y + h > VIDYRES) h = ((VIDYRES)-y)-1; //Adjust height to prevent drawing off the bottom
+	if (y < 0 && -y < h)
+	{
+		img += -y*w;
+		h += y;
+		y = 0;
+	}
 	if(!h || y < 0) return;
 	if(a >= 255)
 		for (j=0; j<h; j++)
@@ -380,4 +386,14 @@ void PIXELMETHODS_CLASS::draw_image(pixel *img, int x, int y, int w, int h, int 
 				blendpixel(x+i, y+j, r, g, b, a);
 				img++;
 			}
+}
+
+void PIXELMETHODS_CLASS::draw_image(const VideoBuffer & vidBuf, int x, int y, int a)
+{
+	draw_image(vidBuf.Buffer, x, y, vidBuf.Width, vidBuf.Height, a);
+}
+
+void PIXELMETHODS_CLASS::draw_image(VideoBuffer * vidBuf, int x, int y, int a)
+{
+	draw_image(vidBuf->Buffer, x, y, vidBuf->Width, vidBuf->Height, a);
 }

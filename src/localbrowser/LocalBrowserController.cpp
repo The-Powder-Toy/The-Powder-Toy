@@ -1,9 +1,3 @@
-/*
- * StampsController.cpp
- *
- *  Created on: Mar 29, 2012
- *      Author: Simon
- */
 #include <sstream>
 
 #include "client/Client.h"
@@ -86,7 +80,7 @@ void LocalBrowserController::removeSelectedC()
 	};
 
 	std::vector<std::string> selected = browserModel->GetSelected();
-	new TaskWindow("Removing saves", new RemoveSavesTask(this, selected));
+	new TaskWindow("Removing stamps", new RemoveSavesTask(this, selected));
 }
 
 void LocalBrowserController::RescanStamps()
