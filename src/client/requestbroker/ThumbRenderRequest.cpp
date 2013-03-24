@@ -3,7 +3,6 @@
 #include "ThumbRenderRequest.h"
 #include "client/GameSave.h"
 #include "graphics/Graphics.h"
-#include "search/Thumbnail.h"
 #include "simulation/SaveRenderer.h"
 
 ThumbRenderRequest::ThumbRenderRequest(GameSave * save, bool decorations, bool fire, int width, int height, ListenerHandle listener):

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "interface/Window.h"
+#include "gui/interface/Window.h"
 
 class Activity
 {

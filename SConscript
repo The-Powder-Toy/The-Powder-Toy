@@ -258,6 +258,7 @@ if(GetOption('macosx')):
 if(GetOption('win')):
 	sources += env.RES('resources/powder-res.rc')
 sources+=Glob("src/*/*.cpp")
+sources+=Glob("src/gui/*/*.cpp")
 sources+=Glob("src/simulation/elements/*.cpp")
 sources+=Glob("src/simulation/tools/*.cpp")
 sources+=Glob("src/client/requestbroker/*.cpp")

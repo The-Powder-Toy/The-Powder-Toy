@@ -9,7 +9,7 @@
 
 #include "Config.h"
 #include "Format.h"
-#include "interface/Engine.h"
+#include "gui/interface/Engine.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
 

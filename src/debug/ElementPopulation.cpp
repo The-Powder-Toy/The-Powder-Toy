@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ElementPopulation.h"
-#include "interface/Engine.h"
+#include "gui/interface/Engine.h"
 #include "simulation/Simulation.h"
 #include "Format.h"
 

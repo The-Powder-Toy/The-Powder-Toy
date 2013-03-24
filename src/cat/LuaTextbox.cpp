@@ -8,7 +8,7 @@ extern "C"
 #include <iostream>
 #include "LuaScriptInterface.h"
 #include "LuaTextbox.h"
-#include "interface/Textbox.h"
+#include "gui/interface/Textbox.h"
 
 const char LuaTextbox::className[] = "Textbox";
 

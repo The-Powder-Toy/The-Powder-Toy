@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "TPTScriptInterface.h"
-#include "game/GameModel.h"
+#include "gui/game/GameModel.h"
 #include "simulation/Air.h"
 
 TPTScriptInterface::TPTScriptInterface(GameController * c, GameModel * m): CommandInterface(c, m)

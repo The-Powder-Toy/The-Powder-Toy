@@ -1,6 +1,6 @@
 #pragma once
 
-#include "interface/Point.h"
+#include "gui/interface/Point.h"
 
 class DebugInfo
 {

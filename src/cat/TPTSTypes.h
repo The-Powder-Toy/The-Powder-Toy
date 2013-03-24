@@ -3,7 +3,7 @@
 
 #include <string>
 #include <typeinfo>
-#include "interface/Point.h"
+#include "gui/interface/Point.h"
 
 enum ValueType { TypeNumber, TypePoint, TypeString, TypeNull, TypeFunction };
 

@@ -1,7 +1,7 @@
 #include "SaveFile.h"
 #include "GameSave.h"
 #include "Client.h"
-#include "search/Thumbnail.h"
+#include "gui/search/Thumbnail.h"
 
 SaveFile::SaveFile(SaveFile & save):
 	gameSave(NULL),

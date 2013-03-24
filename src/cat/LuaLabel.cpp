@@ -8,7 +8,7 @@ extern "C"
 #include <iostream>
 #include "LuaScriptInterface.h"
 #include "LuaLabel.h"
-#include "interface/Label.h"
+#include "gui/interface/Label.h"
 
 const char LuaLabel::className[] = "Label";
 
