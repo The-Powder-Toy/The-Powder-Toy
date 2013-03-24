@@ -1,5 +1,4 @@
 #include "simulation/Elements.h"
-#include "Sound.h"
 //#TPT-Directive ElementClass Element_NOTE PT_NOTE 167
 Element_NOTE::Element_NOTE()
 {
@@ -29,10 +28,10 @@ Element_NOTE::Element_NOTE()
 
     Temperature = 273.15+1046.5;
     HeatConduct = 0;
-    Description = "Note, plays sound when sparked, tone determined by temperature";
+    Description = "Note, plays sound when sparked, tone determined by temperature, length by tmp";
 
     State = ST_SOLID;
-    Properties = TYPE_SOLID;
+    Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 
     LowPressure = IPL;
     LowPressureTransition = NT;
@@ -49,19 +48,10 @@ Element_NOTE::Element_NOTE()
 
 //#TPT-Directive ElementHeader Element_NOTE static int update(UPDATE_FUNC_ARGS)
 int Element_NOTE::update(UPDATE_FUNC_ARGS)
- {
-	int r, rx, ry;
-	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if (!r)
-					continue;
-                if ((r&0xFF)==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3)
-					add_note(pow(1.05946309,parts[i].tmp)*55);
-			}
+{
+	if(!parts[i].tmp)
+		parts[i].tmp=10;
+	parts[i].tmp2 = (int)((parts[i].temp-73.15f)/100+1);
 	return 0;
 }
 
@@ -70,10 +60,9 @@ int Element_NOTE::update(UPDATE_FUNC_ARGS)
 int Element_NOTE::graphics(GRAPHICS_FUNC_ARGS)
 
 {
-	int q = cpart->tmp*255/100;
 	*colr = 0x66;
-	*colg = fmin(255,q*2);
-	*colb = fmax(0,255-q*2);
+	*colg = cpart->tmp2*255/100;
+	*colb = cpart->tmp*255/100;
 	return 0;
 }
 

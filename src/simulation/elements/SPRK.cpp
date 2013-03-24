@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Sound.h"
 //#TPT-Directive ElementClass Element_SPRK PT_SPRK 15
 Element_SPRK::Element_SPRK()
 {
@@ -154,6 +155,12 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 							sim->part_change_type(r>>8,x+rx,y+ry,PT_H2);
 					}
 				}
+	}
+	else if(ct==PT_NOTE && parts[i].life==3)
+	{
+		if(!parts[i].tmp)
+			parts[i].tmp=10;
+		add_note(pow(1.05946309f,parts[i].tmp2)*55,parts[i].tmp*2205);
 	}
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
