@@ -20,7 +20,7 @@ void add_note(float f, int l)
 	}
 }
 #define MIX(A,B,R) (A)*(R)+(B)*(1.0f-(R))
-#define NOTE(F,L,S) (sin(2.0f*PI*(F)*(S)/44100.0f)*(1.0f-((float)(S))/(L)))
+#define NOTE(F,L,S) (sin(2.0f*PI*(F)*(S)/44100.0f)*(pow(1.0f-((float)(S))/(L),2)))
 void create_tone(void *userdata, Uint8 *stream, int l)
 {
 	int i,k;
