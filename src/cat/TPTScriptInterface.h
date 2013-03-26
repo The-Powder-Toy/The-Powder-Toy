@@ -7,6 +7,7 @@
 class TPTScriptInterface: public CommandInterface {
 protected:
 	AnyType eval(std::deque<std::string> * words);
+	int parseNumber(char * stringData);
 	AnyType tptS_set(std::deque<std::string> * words);
 	AnyType tptS_create(std::deque<std::string> * words);
 	AnyType tptS_delete(std::deque<std::string> * words);
