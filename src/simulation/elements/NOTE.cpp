@@ -64,7 +64,7 @@ int Element_NOTE::update(UPDATE_FUNC_ARGS)
 						continue;
 					if((r&0xFF)==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3)
 					{
-						parts[i].life=2;
+						parts[i].life=4;
 						add_note(pow(1.05946309f,parts[i].tmp2)*55,parts[i].tmp*2205);
 					}
 				}
