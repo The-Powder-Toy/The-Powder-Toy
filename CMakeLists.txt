@@ -10,21 +10,28 @@ file(GLOB powder_SRC
     "src/elements/*.cpp"
     "src/*.cpp"
     "src/*/*.cpp"
-    "src/simulation/*/*.cpp"
+    "src/*/*/*.cpp"
+    "generated/*.cpp"
 )
 
 # TODO: remove this once everything is C++, this is needed because the C++ stuff interacts with stuff in .c files and not all the headers for .c files have extern "C"
-# set_source_files_properties(${powder_SRC} PROPERTIES LANGUAGE CXX )
+set_source_files_properties(${powder_SRC} PROPERTIES LANGUAGE CXX )
 
 include_directories(includes)
 include_directories(data)
 include_directories(generated)
+include_directories(resources)
 include_directories(src)
 add_executable(powder ${powder_SRC})
 
 
+# TODO: make "bitness" check
+add_definitions(-D_64BIT)
+# Is that needed?
+add_definitions(-DUSE_SDL)
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	add_definitions(-DLIN32)
+	add_definitions(-DLIN)
 	add_definitions(-DLINUX)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
@@ -67,34 +74,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 
-if(PreferStatic)
-	set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_ONLY_STATIC})
-	find_package(SDL)
-	if(SDL_FOUND)
-		find_package(SDL_static_extra)
-		if(NOT SDL_STATIC_EXTRA_LIBRARIES)
-			set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_ORIG})
-			find_package(SDL_static_extra REQUIRED)
-		endif(NOT SDL_STATIC_EXTRA_LIBRARIES)
-		if(SDL_STATIC_EXTRA_LIBRARIES)
-			include_directories(${SDL_INCLUDE_DIR})
-			target_link_libraries(powder ${SDL_LIBRARY})
-			if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-				target_link_libraries(powder ${SDL_STATIC_EXTRA_LIBRARIES})
-			endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-		else()
-			set(SDL_FOUND false)
-		endif()
-	endif(SDL_FOUND)
-	set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_ORIG})
-endif(PreferStatic)
-if(NOT SDL_FOUND)
-	find_package(SDL REQUIRED)
-	include_directories(${SDL_INCLUDE_DIR})
-	target_link_libraries(powder ${SDL_LIBRARY})
-endif(NOT SDL_FOUND)
-
-
 find_package(Threads REQUIRED)
 target_link_libraries(powder ${CMAKE_THREAD_LIBS_INIT})
 
@@ -131,6 +110,14 @@ if(NOT BZIP2_FOUND)
 endif(NOT BZIP2_FOUND)
 include_directories(${BZIP2_INCLUDE_DIR})
 target_link_libraries(powder ${BZIP2_LIBRARIES})
+
+# zlib
+
+if(NOT ZLIB_FOUND)
+	find_package(ZLIB REQUIRED)
+endif(NOT ZLIB_FOUND)
+include_directories(${ZLIB_INCLUDE_DIR})
+target_link_libraries(powder ${ZLIB_LIBRARIES})
 
 
 option(LuaConsole "Enable Lua console" ON)
@@ -170,6 +157,36 @@ if (LuaConsole)
 	endif (LUA51_FOUND)
 endif (LuaConsole)
 
+# SDL
+
+if(PreferStatic)
+	set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_ONLY_STATIC})
+	find_package(SDL)
+	if(SDL_FOUND)
+		find_package(SDL_static_extra)
+		if(NOT SDL_STATIC_EXTRA_LIBRARIES)
+			set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_ORIG})
+			find_package(SDL_static_extra REQUIRED)
+		endif(NOT SDL_STATIC_EXTRA_LIBRARIES)
+		if(SDL_STATIC_EXTRA_LIBRARIES)
+			include_directories(${SDL_INCLUDE_DIR})
+			target_link_libraries(powder ${SDL_LIBRARY})
+			if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+				target_link_libraries(powder ${SDL_STATIC_EXTRA_LIBRARIES})
+			endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+		else()
+			set(SDL_FOUND false)
+		endif()
+	endif(SDL_FOUND)
+	set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_ORIG})
+endif(PreferStatic)
+if(NOT SDL_FOUND)
+	find_package(SDL REQUIRED)
+	include_directories(${SDL_INCLUDE_DIR})
+	target_link_libraries(powder ${SDL_LIBRARY})
+endif(NOT SDL_FOUND)
+
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	find_package(ClockGettime REQUIRED)
 	include_directories(${CLOCK_GETTIME_INCLUDE_DIR})
@@ -188,6 +205,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	target_link_libraries(powder ${WINSOCK_LIBRARIES})
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fkeep-inline-functions")
 
 option(Optimisations "Enable optimisations" ON)
 if (Optimisations)
