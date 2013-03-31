@@ -1,10 +1,3 @@
-/*
- * TPTScriptInterface.h
- *
- *  Created on: Feb 5, 2012
- *      Author: Simon
- */
-
 #ifndef TPTSCRIPTINTERFACE_H_
 #define TPTSCRIPTINTERFACE_H_
 
@@ -14,6 +7,7 @@
 class TPTScriptInterface: public CommandInterface {
 protected:
 	AnyType eval(std::deque<std::string> * words);
+	int parseNumber(char * stringData);
 	AnyType tptS_set(std::deque<std::string> * words);
 	AnyType tptS_create(std::deque<std::string> * words);
 	AnyType tptS_delete(std::deque<std::string> * words);

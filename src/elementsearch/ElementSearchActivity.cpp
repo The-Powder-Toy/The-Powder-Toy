@@ -1,10 +1,3 @@
-/*
- * ElementSearchActivity.cpp
- *
- *  Created on: Jun 24, 2012
- *      Author: Simon
- */
-
 #include <algorithm>
 #include "ElementSearchActivity.h"
 #include "interface/Textbox.h"
@@ -187,6 +180,5 @@ void ElementSearchActivity::OnKeyPress(int key, Uint16 character, bool shift, bo
 }
 
 ElementSearchActivity::~ElementSearchActivity() {
-	// TODO Auto-generated destructor stub
 }
 

@@ -1,10 +1,3 @@
-/*
- * ErrorMessage.h
- *
- *  Created on: Jan 29, 2012
- *      Author: Simon
- */
-
 #ifndef ERRORMESSAGE_H_
 #define ERRORMESSAGE_H_
 

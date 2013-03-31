@@ -1,10 +1,3 @@
-/*
- * Tool.cpp
- *
- *  Created on: Jun 24, 2012
- *      Author: Simon
- */
-
 #include <string>
 #include "Tool.h"
 #include "game/Brush.h"
@@ -26,6 +19,7 @@ Tool::Tool(int id, string name, string description, int r, int g, int b, std::st
 	identifier(identifier)
 {
 }
+
 VideoBuffer * Tool::GetTexture(int width, int height)
 {
 	if(textureGen)
@@ -42,6 +36,7 @@ std::string Tool::GetIdentifier() { return identifier; }
 string Tool::GetName() { return toolName; }
 string Tool::GetDescription() { return toolDescription; }
 Tool::~Tool() {}
+
 void Tool::Click(Simulation * sim, Brush * brush, ui::Point position) { }
 void Tool::Draw(Simulation * sim, Brush * brush, ui::Point position) {
 	sim->ToolBrush(position.X, position.Y, toolID, brush, strength);
@@ -53,6 +48,7 @@ void Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Po
 	sim->ToolBox(position1.X, position1.Y, position2.X, position2.Y, toolID, brush, strength);
 }
 void Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {};
+
 
 ElementTool::ElementTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	Tool(id, name, description, r, g, b, identifier, textureGen)
@@ -133,6 +129,7 @@ void GolTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 	sim->FloodParts(position.X, position.Y, PT_LIFE|(toolID<<8), -1, -1, 0);
 }
 
+
 WindTool::WindTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	Tool(id, name, description, r, g, b, identifier, textureGen)
 {
@@ -170,7 +167,6 @@ void WindTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui
 	}
 }
 void WindTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {}
-
 void WindTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {}
 
 
@@ -189,6 +185,7 @@ void Element_LIGH_Tool::Draw(Simulation * sim, Brush * brush, ui::Point position
 		}
 	}
 }
+
 
 Element_TESC_Tool::Element_TESC_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	ElementTool(id, name, description, r, g, b, identifier, textureGen)
@@ -210,6 +207,7 @@ void Element_TESC_Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point posi
 	int radiusInfo = brush->GetRadius().X*4+brush->GetRadius().Y*4+7;
 	sim->FloodParts(position.X, position.Y, toolID | (radiusInfo << 8), -1, -1, 0);
 }
+
 
 void PlopTool::Click(Simulation * sim, Brush * brush, ui::Point position)
 {

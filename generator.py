@@ -198,6 +198,5 @@ def generateTools():
 	f = open("generated/ToolClasses.cpp", "w")
 	f.write(toolContent)
 	f.close()
-
 generateElements()
 generateTools()

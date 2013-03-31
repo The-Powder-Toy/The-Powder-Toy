@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_DTEC PT_DTEC 162
 Element_DTEC::Element_DTEC()
 {
-    Identifier = "DEFAULT_PT_DTEC";
-    Name = "DTEC";
-    Colour = PIXPACK(0xFD9D18);
-    MenuVisible = 1;
-    MenuSection = SC_SENSOR;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.96f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 1;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 0;
-    Description = "Creates a spark when something with its ctype is nearby";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_DTEC::update;
-    
+	Identifier = "DEFAULT_PT_DTEC";
+	Name = "DTEC";
+	Colour = PIXPACK(0xFD9D18);
+	MenuVisible = 1;
+	MenuSection = SC_SENSOR;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.96f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 1;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 0;
+	Description = "Creates a spark when something with its ctype is nearby";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_DTEC::update;
+	
 }
 
 //#TPT-Directive ElementHeader Element_DTEC static int update(UPDATE_FUNC_ARGS)
@@ -56,7 +56,7 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 		parts[i].life = 0;
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
@@ -75,7 +75,7 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 	}
 	for (rx=-rd; rx<rd+1; rx++)
 		for (ry=-rd; ry<rd+1; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if(!r)

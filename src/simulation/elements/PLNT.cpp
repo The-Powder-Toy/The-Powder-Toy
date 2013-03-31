@@ -2,63 +2,63 @@
 //#TPT-Directive ElementClass Element_PLNT PT_PLNT 20
 Element_PLNT::Element_PLNT()
 {
-    Identifier = "DEFAULT_PT_PLNT";
-    Name = "PLNT";
-    Colour = PIXPACK(0x0CAC00);
-    MenuVisible = 1;
-    MenuSection = SC_SOLIDS;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.95f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 20;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 10;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 65;
-    Description = "Plant, drinks water and grows.";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = 573.0f;
-    HighTemperatureTransition = PT_FIRE;
-    
-    Update = &Element_PLNT::update;
-    Graphics = &Element_PLNT::graphics;
+	Identifier = "DEFAULT_PT_PLNT";
+	Name = "PLNT";
+	Colour = PIXPACK(0x0CAC00);
+	MenuVisible = 1;
+	MenuSection = SC_SOLIDS;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.95f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 20;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 10;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 65;
+	Description = "Plant, drinks water and grows.";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = 573.0f;
+	HighTemperatureTransition = PT_FIRE;
+	
+	Update = &Element_PLNT::update;
+	Graphics = &Element_PLNT::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_PLNT static int update(UPDATE_FUNC_ARGS)
 int Element_PLNT::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry, np;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				switch (r&0xFF)
 				{
 				case PT_WATR:
-					if (!(rand()%250))
+					if (!(rand()%83))
 					{
 						np = sim->create_part(r>>8,x+rx,y+ry,PT_PLNT);
 						if (np<0) continue;
@@ -66,7 +66,7 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 					}
 					break;
 				case PT_LAVA:
-					if (!(rand()%250))
+					if (!(rand()%83))
 					{
 						sim->part_change_type(i,x,y,PT_FIRE);
 						parts[i].life = 4;
@@ -74,14 +74,14 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 					break;
 				case PT_SMKE:
 				case PT_CO2:
-					if (!(rand()%250))
+					if (!(rand()%83))
 					{
 						sim->kill_part(r>>8);
 						parts[i].life = rand()%60 + 60;
 					}
 					break;
 				case PT_WOOD:
-					if (surround_space && !(rand()%20) && (abs(rx+ry)<=2) && (sim->VINE_MODE || parts[i].tmp==1))  
+					if (surround_space && !(rand()%7) && (abs(rx+ry)<=2) && (sim->VINE_MODE || parts[i].tmp==1))  
 					{
 						int nnx = rand()%3 -1;
 						int nny = rand()%3 -1;
@@ -103,7 +103,7 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 	{
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)

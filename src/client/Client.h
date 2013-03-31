@@ -9,14 +9,18 @@
 #include "Singleton.h"
 
 #include "User.h"
+#include "UserInfo.h"
 
 #include "cajun/elements.h"
+
+#include "requestbroker/RequestBroker.h"
 
 class Thumbnail;
 class SaveInfo;
 class SaveFile;
 class SaveComment;
 class GameSave;
+class VideoBuffer;
 
 enum LoginStatus {
 	LoginOkay, LoginError
@@ -41,7 +45,7 @@ public:
 	UpdateInfo(int time, std::string file, BuildType type) : Major(0), Minor(0), Build(0), Time(time), File(file), Type(type) {}
 };
 
-class ThumbnailListener;
+class RequestListener;
 class ClientListener;
 class Client: public Singleton<Client> {
 private:
@@ -90,6 +94,9 @@ public:
 	std::vector<std::string> DirectorySearch(std::string directory, std::string search, std::vector<std::string> extensions);
 	std::vector<std::string> DirectorySearch(std::string directory, std::string search, std::string extension);
 
+	std::string FileOpenDialogue();
+	//std::string FileSaveDialogue();
+
 	bool DoInstallation();
 
 	std::vector<unsigned char> ReadFile(std::string filename);
@@ -124,6 +131,10 @@ public:
 	void MoveStampToFront(std::string stampID);
 
 	RequestStatus AddComment(int saveID, std::string comment);
+
+	//Retrieves a "UserInfo" object
+	RequestBroker::Request * GetUserInfoAsync(std::string username);
+	RequestBroker::Request * SaveUserInfoAsync(UserInfo info);
 
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	std::vector<unsigned char> GetSaveData(int saveID, int saveDate);

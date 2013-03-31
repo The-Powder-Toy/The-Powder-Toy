@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_BIZR PT_BIZR 103
 Element_BIZR::Element_BIZR()
 {
-    Identifier = "DEFAULT_PT_BIZR";
-    Name = "BIZR";
-    Colour = PIXPACK(0x00FF77);
-    MenuVisible = 1;
-    MenuSection = SC_LIQUID;
-    Enabled = 1;
-    
-    Advection = 0.6f;
-    AirDrag = 0.01f * CFDS;
-    AirLoss = 0.98f;
-    Loss = 0.95f;
-    Collision = 0.0f;
-    Gravity = 0.1f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 2;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 20;
-    
-    Weight = 30;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 29;
-    Description = "Bizarre... contradicts the normal state changes.";
-    
-    State = ST_LIQUID;
-    Properties = TYPE_LIQUID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = 100.0f;
-    LowTemperatureTransition = PT_BIZRG;
-    HighTemperature = 400.0f;
-    HighTemperatureTransition = PT_BIZRS;
-    
-    Update = &Element_BIZR::update;
-    Graphics = &Element_BIZR::graphics;
+	Identifier = "DEFAULT_PT_BIZR";
+	Name = "BIZR";
+	Colour = PIXPACK(0x00FF77);
+	MenuVisible = 1;
+	MenuSection = SC_LIQUID;
+	Enabled = 1;
+	
+	Advection = 0.6f;
+	AirDrag = 0.01f * CFDS;
+	AirLoss = 0.98f;
+	Loss = 0.95f;
+	Collision = 0.0f;
+	Gravity = 0.1f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 2;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 20;
+	
+	Weight = 30;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 29;
+	Description = "Bizarre... contradicts the normal state changes.";
+	
+	State = ST_LIQUID;
+	Properties = TYPE_LIQUID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = 100.0f;
+	LowTemperatureTransition = PT_BIZRG;
+	HighTemperature = 400.0f;
+	HighTemperatureTransition = PT_BIZRS;
+	
+	Update = &Element_BIZR::update;
+	Graphics = &Element_BIZR::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_BIZR static int update(UPDATE_FUNC_ARGS)
@@ -55,7 +55,7 @@ int Element_BIZR::update(UPDATE_FUNC_ARGS)
 	if(parts[i].dcolour){
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)

@@ -1,10 +1,3 @@
-/*
- * TaskWindow.h
- *
- *  Created on: Apr 6, 2012
- *      Author: Simon
- */
-
 #ifndef TASKWINDOW_H_
 #define TASKWINDOW_H_
 

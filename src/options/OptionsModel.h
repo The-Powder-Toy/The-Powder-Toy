@@ -1,10 +1,3 @@
-/*
- * OptionsModel.h
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #ifndef OPTIONSMODEL_H_
 #define OPTIONSMODEL_H_
 #include <vector>
@@ -30,6 +23,8 @@ public:
 	void SetNewtonianGravity(bool state);
 	bool GetWaterEqualisation();
 	void SetWaterEqualisation(bool state);
+	bool GetShowAvatars();
+	void SetShowAvatars(bool state);
 	int GetAirMode();
 	void SetAirMode(int airMode);
 	int GetEdgeMode();

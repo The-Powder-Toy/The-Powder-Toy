@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_THDR PT_THDR 48
 Element_THDR::Element_THDR()
 {
-    Identifier = "DEFAULT_PT_THDR";
-    Name = "THDR";
-    Colour = PIXPACK(0xFFFFA0);
-    MenuVisible = 1;
-    MenuSection = SC_EXPLOSIVE;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 1.0f;
-    Loss = 0.30f;
-    Collision = -0.99f;
-    Gravity = 0.6f;
-    Diffusion = 0.62f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 1;
-    
-    Temperature = 9000.0f		+273.15f;
-    HeatConduct = 1;
-    Description = "Lightning! Very hot, inflicts damage upon most materials, transfers current to metals.";
-    
-    State = ST_NONE;
-    Properties = TYPE_PART;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_THDR::update;
-    Graphics = &Element_THDR::graphics;
+	Identifier = "DEFAULT_PT_THDR";
+	Name = "THDR";
+	Colour = PIXPACK(0xFFFFA0);
+	MenuVisible = 1;
+	MenuSection = SC_EXPLOSIVE;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 1.0f;
+	Loss = 0.30f;
+	Collision = -0.99f;
+	Gravity = 0.6f;
+	Diffusion = 0.62f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 1;
+	
+	Temperature = 9000.0f		+273.15f;
+	HeatConduct = 1;
+	Description = "Lightning! Very hot, inflicts damage upon most materials, transfers current to metals.";
+	
+	State = ST_NONE;
+	Properties = TYPE_PART;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_THDR::update;
+	Graphics = &Element_THDR::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_THDR static int update(UPDATE_FUNC_ARGS)
@@ -53,7 +53,7 @@ int Element_THDR::update(UPDATE_FUNC_ARGS)
 	bool kill=false;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)

@@ -260,6 +260,7 @@ if(GetOption('win')):
 sources+=Glob("src/*/*.cpp")
 sources+=Glob("src/simulation/elements/*.cpp")
 sources+=Glob("src/simulation/tools/*.cpp")
+sources+=Glob("src/client/requestbroker/*.cpp")
 
 #for source in sources:
 #	print str(source)

@@ -1,10 +1,3 @@
-/*
- * OptionsView.h
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #ifndef OPTIONSVIEW_H_
 #define OPTIONSVIEW_H_
 
@@ -28,6 +21,7 @@ class OptionsView: public ui::Window {
 	ui::Checkbox * scale;
 	ui::Checkbox * fullscreen;
 	ui::Checkbox * fastquit;
+	ui::Checkbox * showAvatars;
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);

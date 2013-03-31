@@ -1,10 +1,3 @@
-/*
- * Config.h
- *
- *  Created on: Jan 5, 2012
- *      Author: Simon
- */
-
 //#ifndef CONFIG_H_
 //#define CONFIG_H_
 
@@ -23,11 +16,11 @@
 #endif
 
 #ifndef MINOR_VERSION
-#define MINOR_VERSION 1
+#define MINOR_VERSION 2
 #endif
 
 #ifndef BUILD_NUM
-#define BUILD_NUM 262
+#define BUILD_NUM 263
 #endif
 
 #ifndef SNAPSHOT_ID
@@ -99,8 +92,6 @@
 
 #define BRUSH_DIR "Brushes"
 
-#define APPDATA_SUBDIR "\\HardWIRED"
-
 //Number of unique thumbnails to have in cache at one time
 #define THUMB_CACHE_SIZE 256
 
@@ -111,7 +102,7 @@
 #define M_GRAV 6.67300e-1
 #endif
 
-//Number of asynchronous connections used to retrieve thumnails
+//Number of asynchronous connections used to retrieve thumbnails
 #define IMGCONNS 5
 //Not sure
 #define TIMEOUT 100
@@ -139,15 +130,14 @@
 #define GRAV_DIFF
 
 #define MAXSIGNS 16
-#define TAG_MAX 256
 
 #define ZSIZE_D	16
 #define ZFACTOR_D	8
 extern unsigned char ZFACTOR;
 extern unsigned char ZSIZE;
 
-#define CELL    4
-#define ISTP    (CELL/2)
+#define CELL	4
+#define ISTP	(CELL/2)
 #define CFDS	(4.0f/CELL)
 
 #define AIR_TSTEPP 0.3f
@@ -156,40 +146,24 @@ extern unsigned char ZSIZE;
 #define AIR_VLOSS 0.999f
 #define AIR_PLOSS 0.9999f
 
-#define GRID_X 5
-#define GRID_Y 4
-#define GRID_P 3
-#define GRID_S 6
-#define GRID_Z 3
-
-#define CATALOGUE_X 4
-#define CATALOGUE_Y 3
-#define CATALOGUE_S 6
-#define CATALOGUE_Z 3
-
-#define STAMP_MAX 240
-
-#define SAVE_OPS
-
 #define NGOL 24
-#define NGOLALT 24 //NGOL should be 24, but use this var until I find out why
 
 #define CIRCLE_BRUSH 0
 #define SQUARE_BRUSH 1
 #define TRI_BRUSH 2
 #define BRUSH_NUM 3
 
-#define SURF_RANGE     10
-#define NORMAL_MIN_EST 3
-#define NORMAL_INTERP  20
-#define NORMAL_FRAC    16
+#define SURF_RANGE		10
+#define NORMAL_MIN_EST	3
+#define NORMAL_INTERP	20
+#define NORMAL_FRAC		16
 
-#define REFRACT        0x80000000
+#define REFRACT			0x80000000
 
 /* heavy flint glass, for awesome refraction/dispersion
    this way you can make roof prisms easily */
-#define GLASS_IOR      1.9
-#define GLASS_DISP     0.07
+#define GLASS_IOR		1.9
+#define GLASS_DISP		0.07
 
 #ifdef WIN
 #define strcasecmp stricmp
@@ -214,11 +188,5 @@ extern unsigned char ZSIZE;
 
 #define SDEUT
 //#define REALHEAT
-
-#define DEBUG_PARTS		0x0001
-#define DEBUG_PARTCOUNT	0x0002
-#define DEBUG_DRAWTOOL	0x0004
-#define DEBUG_PERFORMANCE_CALC 0x0008
-#define DEBUG_PERFORMANCE_FRAME 0x0010
 
 //#endif /* CONFIG_H_ */

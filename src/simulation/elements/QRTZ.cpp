@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_QRTZ PT_QRTZ 132
 Element_QRTZ::Element_QRTZ()
 {
-    Identifier = "DEFAULT_PT_QRTZ";
-    Name = "QRTZ";
-    Colour = PIXPACK(0xAADDDD);
-    MenuVisible = 1;
-    MenuSection = SC_SOLIDS;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 3;
-    Description = "Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID|PROP_HOT_GLOW|PROP_LIFE_DEC;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = 2573.15f;
-    HighTemperatureTransition = PT_LAVA;
-    
-    Update = &Element_QRTZ::update;
-    Graphics = &Element_QRTZ::graphics;
+	Identifier = "DEFAULT_PT_QRTZ";
+	Name = "QRTZ";
+	Colour = PIXPACK(0xAADDDD);
+	MenuVisible = 1;
+	MenuSection = SC_SOLIDS;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 3;
+	Description = "Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID|PROP_HOT_GLOW|PROP_LIFE_DEC;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = 2573.15f;
+	HighTemperatureTransition = PT_LAVA;
+	
+	Update = &Element_QRTZ::update;
+	Graphics = &Element_QRTZ::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_QRTZ static int update(UPDATE_FUNC_ARGS)
@@ -60,7 +60,7 @@ int Element_QRTZ::update(UPDATE_FUNC_ARGS)
 	if (parts[i].ctype!=-1)
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
@@ -84,7 +84,7 @@ int Element_QRTZ::update(UPDATE_FUNC_ARGS)
 			rnd >>= 3;
 			ry = (rnd%5)-2;
 			sry = (rnd%3)-1;
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				if (!stopgrow)//try to grow
 				{

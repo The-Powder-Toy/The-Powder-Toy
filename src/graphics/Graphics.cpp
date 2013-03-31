@@ -35,11 +35,46 @@ VideoBuffer::VideoBuffer(VideoBuffer * old):
 	std::copy(old->Buffer, old->Buffer+(old->Width*old->Height), Buffer);
 };
 
+VideoBuffer::VideoBuffer(pixel * buffer, int width, int height):
+	Width(width),
+	Height(height)
+{
+	Buffer = new pixel[width*height];
+	std::copy(buffer, buffer+(width*height), Buffer);
+}
+
 void VideoBuffer::Resize(float factor, bool resample)
 {
 	int newWidth = ((float)Width)*factor;
 	int newHeight = ((float)Height)*factor;
+	Resize(newWidth, newHeight);
+}
+
+void VideoBuffer::Resize(int width, int height, bool resample, bool fixedRatio)
+{
+	int newWidth = width;
+	int newHeight = height;
 	pixel * newBuffer;
+	if(newHeight == -1 && newWidth == -1)
+		return;
+	if(newHeight == -1 || newWidth == -1)
+	{
+		if(newHeight == -1)
+			newHeight = ((float)Height)*((float)newWidth/(float)Width);
+		if(newWidth == -1)
+			newWidth = ((float)Width)*((float)newHeight/(float)Height);
+	}
+	else if(fixedRatio)
+	{
+		//Force proportions
+		float scaleFactor = 1.0f;
+		if(Height >  newHeight)
+			scaleFactor = ((float)newHeight)/((float)Height);
+		if(Width > newWidth)
+			scaleFactor = ((float)newWidth)/((float)Width);
+		newWidth = ((float)Width)*scaleFactor;
+		newHeight = ((float)Height)*scaleFactor;
+	}
 	if(resample)
 		newBuffer = Graphics::resample_img(Buffer, Width, Height, newWidth, newHeight);
 	else
@@ -413,13 +448,13 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 	pixel *q = NULL;
 	if(rw == sw && rh == sh){
 		//Don't resample
-		q = (pixel *)malloc(rw*rh*PIXELSIZE);
-		memcpy(q, src, rw*rh*PIXELSIZE);
+		q = new pixel[rw*rh];
+		std::copy(src, src+(rw*rh), q);
 	} else if(!stairstep) {
 		float fx, fy, fyc, fxc;
 		double intp;
 		pixel tr, tl, br, bl;
-		q = (pixel *)malloc(rw*rh*PIXELSIZE);
+		q = new pixel[rw*rh];
 		//Bilinear interpolation for upscaling
 		for (y=0; y<rh; y++)
 			for (x=0; x<rw; x++)
@@ -449,8 +484,8 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 		pixel tr, tl, br, bl;
 		int rrw = rw, rrh = rh;
 		pixel * oq;
-		oq = (pixel *)malloc(sw*sh*PIXELSIZE);
-		memcpy(oq, src, sw*sh*PIXELSIZE);
+		oq = new pixel[sw*sh];
+		std::copy(src, src+(sw*sh), oq);
 		rw = sw;
 		rh = sh;
 		while(rrw != rw && rrh != rh){
@@ -462,7 +497,7 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 				rw = rrw;
 			if(rh <= rrh)
 				rh = rrh;
-			q = (pixel *)malloc(rw*rh*PIXELSIZE);
+			q = new pixel[rw*rh];
 			//Bilinear interpolation
 			for (y=0; y<rh; y++)
 				for (x=0; x<rw; x++)
@@ -485,7 +520,7 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 						(int)(((((float)PIXB(tl))*(1.0f-fxc))+(((float)PIXB(tr))*(fxc)))*(1.0f-fyc) + ((((float)PIXB(bl))*(1.0f-fxc))+(((float)PIXB(br))*(fxc)))*(fyc))
 						);
 				}
-			free(oq);
+			delete[] oq;
 			oq = q;
 			sw = rw;
 			sh = rh;
@@ -1096,16 +1131,6 @@ pixel *Graphics::render_packed_rgb(void *image, int width, int height, int cmp_s
 
 	free(tmp);
 	return res;
-}
-
-void Graphics::draw_image(const VideoBuffer & vidBuf, int x, int y, int a)
-{
-	draw_image(vidBuf.Buffer, x, y, vidBuf.Width, vidBuf.Height, a);
-}
-
-void Graphics::draw_image(VideoBuffer * vidBuf, int x, int y, int a)
-{
-	draw_image(vidBuf->Buffer, x, y, vidBuf->Width, vidBuf->Height, a);
 }
 
 VideoBuffer Graphics::DumpFrame()

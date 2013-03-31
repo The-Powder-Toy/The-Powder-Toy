@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_H2 PT_H2 148
 Element_H2::Element_H2()
 {
-    Identifier = "DEFAULT_PT_H2";
-    Name = "HYGN";
-    Colour = PIXPACK(0x5070FF);
-    MenuVisible = 1;
-    MenuSection = SC_GAS;
-    Enabled = 1;
-    
-    Advection = 2.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.99f;
-    Loss = 0.30f;
-    Collision = -0.10f;
-    Gravity = 0.00f;
-    Diffusion = 3.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 1;
-    
-    Temperature = R_TEMP+0.0f +273.15f;
-    HeatConduct = 251;
-    Description = "Combines with O2 to make WATR";
-    
-    State = ST_GAS;
-    Properties = TYPE_GAS;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_H2::update;
-    
+	Identifier = "DEFAULT_PT_H2";
+	Name = "HYGN";
+	Colour = PIXPACK(0x5070FF);
+	MenuVisible = 1;
+	MenuSection = SC_GAS;
+	Enabled = 1;
+	
+	Advection = 2.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.99f;
+	Loss = 0.30f;
+	Collision = -0.10f;
+	Gravity = 0.00f;
+	Diffusion = 3.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 1;
+	
+	Temperature = R_TEMP+0.0f +273.15f;
+	HeatConduct = 251;
+	Description = "Combines with O2 to make WATR";
+	
+	State = ST_GAS;
+	Properties = TYPE_GAS;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_H2::update;
+	
 }
 
 //#TPT-Directive ElementHeader Element_H2 static int update(UPDATE_FUNC_ARGS)
@@ -52,7 +52,7 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 	int r,rx,ry,rt;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)

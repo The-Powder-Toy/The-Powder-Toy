@@ -42,7 +42,7 @@ GameModel::GameModel():
 	std::fill(decoToolset, decoToolset+3, (Tool*)NULL);
 	std::fill(regularToolset, regularToolset+3, (Tool*)NULL);
 
-    	//Default render prefs
+	//Default render prefs
 	std::vector<unsigned int> tempArray;
 	tempArray.push_back(RENDER_FIRE);
 	tempArray.push_back(RENDER_EFFE);
@@ -150,18 +150,6 @@ GameModel::~GameModel()
 	for(int i = 0; i < brushList.size(); i++)
 	{
 		delete brushList[i];
-	}
-	for(std::deque<Snapshot*>::iterator iter = history.begin(), end = history.end(); iter != end; ++iter)
-	{
-		delete *iter;
-	}
-	for(std::vector<QuickOption*>::iterator iter = quickOptions.begin(), end = quickOptions.end(); iter != end; ++iter)
-	{
-		delete *iter;
-	}
-	for(std::vector<Notification*>::iterator iter = notifications.begin(); iter != notifications.end(); ++iter)
-	{
-		delete *iter;
 	}
 	delete sim;
 	delete ren;

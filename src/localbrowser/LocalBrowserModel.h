@@ -1,10 +1,3 @@
-/*
- * StampsModel.h
- *
- *  Created on: Mar 29, 2012
- *      Author: Simon
- */
-
 #ifndef STAMPSMODEL_H_
 #define STAMPSMODEL_H_
 

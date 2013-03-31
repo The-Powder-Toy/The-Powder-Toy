@@ -1,10 +1,3 @@
-/*
- * Task.h
- *
- *  Created on: Apr 6, 2012
- *      Author: Simon
- */
-
 #ifndef TASK_H_
 #define TASK_H_
 

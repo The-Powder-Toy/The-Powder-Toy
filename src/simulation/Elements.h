@@ -1,10 +1,3 @@
-/*
- * Elements.h
- *
- *  Created on: Jan 5, 2012
- *      Author: Simon
- */
-
 #ifndef ELEMENTS_H_
 #define ELEMENTS_H_
 
@@ -35,7 +28,7 @@
 #define PROP_LIFE_KILL		0x08000 //2^15 Kill when life value is <= zero
 #define PROP_LIFE_KILL_DEC	0x10000 //2^16 Kill when life value is decremented to <= zero
 #define PROP_SPARKSETTLE	0x20000	//2^17 Allow Sparks/Embers to settle
-#define PROP_NOAMBHEAT      0x40000 //2^18 Don't transfer or receive heat from ambient heat.
+#define PROP_NOAMBHEAT		0x40000 //2^18 Don't transfer or receive heat from ambient heat.
 
 #define FLAG_STAGNANT	0x1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
@@ -52,6 +45,8 @@
 
 #define GRAPHICS_FUNC_ARGS Renderer * ren, Particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
 #define GRAPHICS_FUNC_SUBCALL_ARGS ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb
+
+#define BOUNDS_CHECK true
 
 #define SPC_AIR 236
 #define SPC_HEAT 237

@@ -1,10 +1,3 @@
-/*
- * SaveRenderer.h
- *
- *  Created on: Apr 3, 2012
- *      Author: Simon
- */
-
 #ifndef SAVERENDERER_H_
 #define SAVERENDERER_H_
 #ifdef OGLI
@@ -13,7 +6,7 @@
 #include "Singleton.h"
 
 class GameSave;
-class Thumbnail;
+class VideoBuffer;
 class Graphics;
 class Simulation;
 class Renderer;
@@ -24,8 +17,8 @@ class SaveRenderer: public Singleton<SaveRenderer> {
 	Renderer * ren;
 public:
 	SaveRenderer();
-	Thumbnail * Render(GameSave * save, bool decorations = true, bool fire = true);
-	Thumbnail * Render(unsigned char * saveData, int saveDataSize, bool decorations = true, bool fire = true);
+	VideoBuffer * Render(GameSave * save, bool decorations = true, bool fire = true);
+	VideoBuffer * Render(unsigned char * saveData, int saveDataSize, bool decorations = true, bool fire = true);
 	virtual ~SaveRenderer();
 
 private:

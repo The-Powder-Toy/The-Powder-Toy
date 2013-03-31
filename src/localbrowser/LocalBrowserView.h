@@ -1,10 +1,3 @@
-/*
- * StampsView.h
- *
- *  Created on: Mar 29, 2012
- *      Author: Simon
- */
-
 #ifndef STAMPSVIEW_H_
 #define STAMPSVIEW_H_
 

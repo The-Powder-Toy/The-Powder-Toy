@@ -2,59 +2,59 @@
 //#TPT-Directive ElementClass Element_WIRE PT_WIRE 156
 Element_WIRE::Element_WIRE()
 {
-    Identifier = "DEFAULT_PT_WIRE";
-    Name = "WWLD";
-    Colour = PIXPACK(0xFFCC00);
-    MenuVisible = 1;
-    MenuSection = SC_ELEC;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.00f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f  * CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f +273.15f;
-    HeatConduct = 250;
-    Description = "WireWorld wires, probably not what you want. For normal wires, use METL";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_WIRE::update;
-    Graphics = &Element_WIRE::graphics;
+	Identifier = "DEFAULT_PT_WIRE";
+	Name = "WWLD";
+	Colour = PIXPACK(0xFFCC00);
+	MenuVisible = 1;
+	MenuSection = SC_ELEC;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.00f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f  * CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f +273.15f;
+	HeatConduct = 250;
+	Description = "WireWorld wires, probably not what you want. For normal wires, use METL";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_WIRE::update;
+	Graphics = &Element_WIRE::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_WIRE static int update(UPDATE_FUNC_ARGS)
 int Element_WIRE::update(UPDATE_FUNC_ARGS)
 {
-	int s,r,rx,ry,count;    
+	int s,r,rx,ry,count=0;	
 	/*
 	  0:  wire
 	  1:  spark head
 	  2:  spark tail
-    
+	  
 	  tmp is previous state, ctype is current state
 	*/
 	//parts[i].tmp=parts[i].ctype;
@@ -67,11 +67,10 @@ int Element_WIRE::update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].ctype=0;
 	}
-	count=0;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 		{
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)

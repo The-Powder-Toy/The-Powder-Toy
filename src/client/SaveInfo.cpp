@@ -1,10 +1,3 @@
-/*
- * Save.cpp
- *
- *  Created on: Jan 26, 2012
- *      Author: Simon
- */
-
 #include "SaveInfo.h"
 #include "GameSave.h"
 #include "Client.h"

@@ -408,7 +408,7 @@ void Window::DoMouseDown(int x_, int y_, unsigned button)
 	if(!stop)
 		OnMouseDown(x_, y_, button);
 
-	if(x_ < Position.X || y_ < Position.Y || x_ > Position.X+Size.X || y_ > Position.Y+Size.Y)
+	if(!clickState && (x_ < Position.X || y_ < Position.Y || x_ > Position.X+Size.X || y_ > Position.Y+Size.Y))
 		OnTryExit(MouseOutside);
 
 	if(destruct)

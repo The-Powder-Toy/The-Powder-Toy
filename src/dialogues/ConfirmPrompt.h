@@ -1,10 +1,3 @@
-/*
- * ConfirmPrompt.h
- *
- *  Created on: Apr 6, 2012
- *      Author: Simon
- */
-
 #ifndef CONFIRMPROMPT_H_
 #define CONFIRMPROMPT_H_
 

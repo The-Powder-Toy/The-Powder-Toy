@@ -102,7 +102,7 @@ private:
 
 	ui::Point mousePosition;
 
-	Thumbnail * placeSaveThumb;
+	VideoBuffer * placeSaveThumb;
 
 	SimulationSample sample;
 

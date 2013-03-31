@@ -1,10 +1,3 @@
-/*
- * OptionsController.h
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #ifndef OPTIONSCONTROLLER_H_
 #define OPTIONSCONTROLLER_H_
 
@@ -34,6 +27,7 @@ public:
 	void SetFullscreen(bool fullscreen);
 	void SetScale(bool scale);
 	void SetFastQuit(bool fastquit);
+	void SetShowAvatars(bool showAvatars);
 	void Exit();
 	OptionsView * GetView();
 	virtual ~OptionsController();

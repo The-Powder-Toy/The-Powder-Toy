@@ -1,10 +1,3 @@
-/*
- * LuaScriptInterface.h
- *
- *  Created on: Feb 11, 2012
- *      Author: Simon
- */
-
 #ifndef LUASCRIPTINTERFACE_H_
 #define LUASCRIPTINTERFACE_H_
 

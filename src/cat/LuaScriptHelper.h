@@ -1,10 +1,3 @@
-/*
- * LuaScriptHelper.h
- *
- *  Created on: Feb 12, 2012
- *      Author: Simon
- */
-
 #ifndef LUASCRIPTHELPER_H_
 #define LUASCRIPTHELPER_H_
 

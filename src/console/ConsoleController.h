@@ -1,10 +1,3 @@
-/*
- * ConsoleController.h
- *
- *  Created on: Jan 31, 2012
- *      Author: Simon
- */
-
 #ifndef CONSOLECONTROLLER_H_
 #define CONSOLECONTROLLER_H_
 

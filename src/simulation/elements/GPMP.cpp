@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_GPMP PT_GPMP 154
 Element_GPMP::Element_GPMP()
 {
-    Identifier = "DEFAULT_PT_GPMP";
-    Name = "GPMP";
-    Colour = PIXPACK(0x0A3B3B);
-    MenuVisible = 1;
-    MenuSection = SC_POWERED;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 1;
-    
-    Weight = 100;
-    
-    Temperature = 0.0f		+273.15f;
-    HeatConduct = 0;
-    Description = "Changes gravity to its temp when activated. (use HEAT/COOL).";
-    
-    State = ST_NONE;
-    Properties = TYPE_SOLID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_GPMP::update;
-    Graphics = &Element_GPMP::graphics;
+	Identifier = "DEFAULT_PT_GPMP";
+	Name = "GPMP";
+	Colour = PIXPACK(0x0A3B3B);
+	MenuVisible = 1;
+	MenuSection = SC_POWERED;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 1;
+	
+	Weight = 100;
+	
+	Temperature = 0.0f		+273.15f;
+	HeatConduct = 0;
+	Description = "Changes gravity to its temp when activated. (use HEAT/COOL).";
+	
+	State = ST_NONE;
+	Properties = TYPE_SOLID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_GPMP::update;
+	Graphics = &Element_GPMP::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_GPMP static int update(UPDATE_FUNC_ARGS)
@@ -65,7 +65,7 @@ int Element_GPMP::update(UPDATE_FUNC_ARGS)
 		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 0.2f*(parts[i].temp-273.15);
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
-				if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)

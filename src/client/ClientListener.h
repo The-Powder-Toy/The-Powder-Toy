@@ -1,10 +1,3 @@
-/*
- * ClientListener.h
- *
- *  Created on: Jun 19, 2012
- *      Author: Simon
- */
-
 #ifndef CLIENTLISTENER_H_
 #define CLIENTLISTENER_H_
 

@@ -1,10 +1,3 @@
-/*
- * StampsController.h
- *
- *  Created on: Mar 29, 2012
- *      Author: Simon
- */
-
 #ifndef STAMPSCONTROLLER_H_
 #define STAMPSCONTROLLER_H_
 

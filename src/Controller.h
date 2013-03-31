@@ -1,10 +1,3 @@
-/*
- * Controller.h
- *
- *  Created on: Jan 25, 2012
- *      Author: Simon
- */
-
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 

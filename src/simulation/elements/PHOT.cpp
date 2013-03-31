@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_PHOT PT_PHOT 31
 Element_PHOT::Element_PHOT()
 {
-    Identifier = "DEFAULT_PT_PHOT";
-    Name = "PHOT";
-    Colour = PIXPACK(0xFFFFFF);
-    MenuVisible = 1;
-    MenuSection = SC_NUCLEAR;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 1.00f;
-    Loss = 1.00f;
-    Collision = -0.99f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = -1;
-    
-    Temperature = R_TEMP+900.0f+273.15f;
-    HeatConduct = 251;
-    Description = "Photons. Travel in straight lines.";
-    
-    State = ST_GAS;
-    Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_PHOT::update;
-    Graphics = &Element_PHOT::graphics;
+	Identifier = "DEFAULT_PT_PHOT";
+	Name = "PHOT";
+	Colour = PIXPACK(0xFFFFFF);
+	MenuVisible = 1;
+	MenuSection = SC_NUCLEAR;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 1.00f;
+	Loss = 1.00f;
+	Collision = -0.99f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = -1;
+	
+	Temperature = R_TEMP+900.0f+273.15f;
+	HeatConduct = 251;
+	Description = "Photons. Travel in straight lines.";
+	
+	State = ST_GAS;
+	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_PHOT::update;
+	Graphics = &Element_PHOT::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_PHOT static int update(UPDATE_FUNC_ARGS)
@@ -61,7 +61,7 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 		if (!(rand()%10)) Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
-			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES) {
+			if (BOUNDS_CHECK) {
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;

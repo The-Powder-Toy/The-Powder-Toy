@@ -3,48 +3,48 @@
 //#TPT-Directive ElementClass Element_LIGH PT_LIGH 87
 Element_LIGH::Element_LIGH()
 {
-    Identifier = "DEFAULT_PT_LIGH";
-    Name = "LIGH";
-    Colour = PIXPACK(0xFFFFC0);
-    MenuVisible = 1;
-    MenuSection = SC_ELEC;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 0.90f;
-    Loss = 0.00f;
-    Collision = 0.0f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 1;
-    
-    Weight = 100;
-    
-    Temperature = R_TEMP+0.0f	+273.15f;
-    HeatConduct = 0;
-    Description = "More realistic lightning. Set pen size to set the size of the lightning.";
-    
-    State = ST_SOLID;
-    Properties = TYPE_SOLID;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_LIGH::update;
-    Graphics = &Element_LIGH::graphics;
+	Identifier = "DEFAULT_PT_LIGH";
+	Name = "LIGH";
+	Colour = PIXPACK(0xFFFFC0);
+	MenuVisible = 1;
+	MenuSection = SC_ELEC;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 1;
+	
+	Weight = 100;
+	
+	Temperature = R_TEMP+0.0f	+273.15f;
+	HeatConduct = 0;
+	Description = "More realistic lightning. Set pen size to set the size of the lightning.";
+	
+	State = ST_SOLID;
+	Properties = TYPE_SOLID;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_LIGH::update;
+	Graphics = &Element_LIGH::graphics;
 }
 
 #define LIGHTING_POWER 0.65
@@ -82,7 +82,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
@@ -90,7 +90,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 				rt = r&0xFF;
 				if ((surround_space || sim->elements[rt].Explosive) &&
 				    (rt!=PT_SPNG || parts[r>>8].life==0) &&
-				    sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
+					sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
 				{
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_FIRE);
 					parts[r>>8].temp = restrict_flt(sim->elements[PT_FIRE].Temperature + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);

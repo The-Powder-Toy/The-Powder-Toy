@@ -1,10 +1,3 @@
-/*
- * Sign.cpp
- *
- *  Created on: Jun 25, 2012
- *      Author: Simon
- */
-
 #include "Sign.h"
 #include "graphics/Graphics.h"
 #include "simulation/Simulation.h"
@@ -22,7 +15,7 @@ std::string sign::getText(Simulation *sim)
 {
 	char buff[256];
 	char signText[256];
-	sprintf(signText, "%s", text.c_str());
+	sprintf(signText, "%s", text.substr(0, 255).c_str());
 
 	if (!strcmp(signText,"{p}"))
 	{

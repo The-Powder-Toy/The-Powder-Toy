@@ -1,10 +1,3 @@
-/*
- * Slider.h
- *
- *  Created on: Mar 3, 2012
- *      Author: Simon
- */
-
 #ifndef SLIDER_H_
 #define SLIDER_H_
 

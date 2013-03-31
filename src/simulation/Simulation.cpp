@@ -146,10 +146,13 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 	Element_PPIP::ppip_changed = 1;
 	for(int i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
 	{
-		sign tempSign = save->signs[i];
-		tempSign.x += fullX;
-		tempSign.y += fullY;
-		signs.push_back(tempSign);
+		if (save->signs[i].text[0])
+		{
+			sign tempSign = save->signs[i];
+			tempSign.x += fullX;
+			tempSign.y += fullY;
+			signs.push_back(tempSign);
+		}
 	}
 	for(int saveBlockX = 0; saveBlockX < save->blockWidth; saveBlockX++)
 	{
@@ -2103,7 +2106,6 @@ void Simulation::init_can_move()
 	}
 	can_move[PT_ELEC][PT_LCRY] = 2;
 	can_move[PT_ELEC][PT_EXOT] = 2;
-	can_move[PT_NEUT][PT_EXOT] = 2;
 	can_move[PT_PHOT][PT_LCRY] = 3;//varies according to LCRY life
 
 	can_move[PT_PHOT][PT_BIZR] = 2;
@@ -2112,8 +2114,8 @@ void Simulation::init_can_move()
 	can_move[PT_ELEC][PT_BIZRG] = 2;
 	can_move[PT_PHOT][PT_BIZRS] = 2;
 	can_move[PT_ELEC][PT_BIZRS] = 2;
-
 	can_move[PT_NEUT][PT_INVIS] = 2;
+
 	//whol eats anar
 	can_move[PT_ANAR][PT_WHOL] = 1;
 	can_move[PT_ANAR][PT_NWHL] = 1;
@@ -2846,18 +2848,18 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t == PT_LIFE && v < NGOLALT && drawOn != PT_STOR) parts[pmap[y][x]>>8].tmp = v;
+				if (t == PT_LIFE && v < NGOL && drawOn != PT_STOR) parts[pmap[y][x]>>8].tmp = v;
 			}
 			else if ((drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME)) && drawOn != t)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (drawOn == PT_DTEC && t==PT_LIFE && v<NGOLALT)
+				if (drawOn == PT_DTEC && t==PT_LIFE && v<NGOL)
 					parts[pmap[y][x]>>8].tmp = v;
 			}
 			else if (drawOn == PT_CRAY && drawOn != t && drawOn != PT_PSCN && drawOn != PT_INST && drawOn != PT_METL)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t==PT_LIFE && v<NGOLALT)
+				if (t==PT_LIFE && v<NGOL)
 					parts[pmap[y][x]>>8].tmp2 = v;
 				parts[pmap[y][x]>>8].temp = elements[t].Temperature;
 			}
@@ -2958,7 +2960,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[i].tmp = 50;
 				break;
 			case PT_LIFE:
-				if (v<NGOLALT)
+				if (v<NGOL)
 				{
 					parts[i].tmp = grule[v+1][9] - 1;
 					parts[i].ctype = v;
@@ -3014,7 +3016,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_PLSM:
 				parts[i].life = rand()%150+50;
 				break;
-			case PT_HFLM:
+			case PT_CFLM:
 				parts[i].life = rand()%150+50;
 				break;
 			case PT_LAVA:
@@ -3536,6 +3538,7 @@ void Simulation::update_particles_i(int start, int inc)
 		int createdsomething = 0;
 		CGOL=0;
 		ISGOL=0;
+		//TODO: maybe this should only loop through active particles
 		for (ny=CELL; ny<YRES-CELL; ny++)
 		{//go through every particle and set neighbor map
 			for (nx=CELL; nx<XRES-CELL; nx++)
@@ -3548,36 +3551,33 @@ void Simulation::update_particles_i(int start, int inc)
 				}
 				else
 				{
-					//for ( golnum=1; golnum<=NGOL; golnum++) //This shouldn't be necessary any more.
-					//{
-						if (parts[r>>8].type==PT_LIFE/* && parts[r>>8].ctype==golnum-1*/)
-						{
-							golnum = parts[r>>8].ctype+1;
-							if (golnum<=0 || golnum>NGOLALT) {
-								kill_part(r>>8);
-								continue;
-							}
-							if (parts[r>>8].tmp == grule[golnum][9]-1) {
-								gol[ny][nx] = golnum;
-								for ( nnx=-1; nnx<2; nnx++)
+					if (parts[r>>8].type==PT_LIFE)
+					{
+						golnum = parts[r>>8].ctype+1;
+						if (golnum<=0 || golnum>NGOL) {
+							kill_part(r>>8);
+							continue;
+						}
+						if (parts[r>>8].tmp == grule[golnum][9]-1) {
+							gol[ny][nx] = golnum;
+							for ( nnx=-1; nnx<2; nnx++)
+							{
+								for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
 								{
-									for ( nny=-1; nny<2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
+									rt = pmap[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL];
+									if (!rt || (rt&0xFF)==PT_LIFE)
 									{
-										rt = pmap[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL];
-										if (!rt || (rt&0xFF)==PT_LIFE)
-										{
-											gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][golnum] ++;
-											gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][0] ++;
-										}
+										gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][golnum] ++;
+										gol2[((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL][((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL][0] ++;
 									}
 								}
-							} else {
-								parts[r>>8].tmp --;
-								if (parts[r>>8].tmp<=0)
-									kill_part(r>>8);
 							}
+						} else {
+							parts[r>>8].tmp --;
+							if (parts[r>>8].tmp<=0)
+								parts[r>>8].type = PT_NONE;//TODO: move delete into an update function, change to kill_part
 						}
-					//}
+					}
 				}
 			}
 		}
@@ -3589,7 +3589,7 @@ void Simulation::update_particles_i(int start, int inc)
 				neighbors = gol2[ny][nx][0];
 				if (neighbors==0 || !((r&0xFF)==PT_LIFE || !(r&0xFF)))
 					continue;
-				for ( golnum = 1; golnum<=NGOL; golnum++)
+				for (golnum = 1; golnum<=NGOL; golnum++)
 				{
 					goldelete = neighbors;
 					if (gol[ny][nx]==0&&grule[golnum][goldelete]>=2&&gol2[ny][nx][golnum]>=(goldelete%2)+goldelete/2)
@@ -3603,7 +3603,7 @@ void Simulation::update_particles_i(int start, int inc)
 							parts[r>>8].tmp --;
 					}
 					if (r && parts[r>>8].tmp<=0)
-						kill_part(r>>8);
+						parts[r>>8].type = PT_NONE;//TODO: move delete into an update function, change to kill_part
 				}
 				for ( z = 0; z<=NGOL; z++)
 					gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
@@ -3678,7 +3678,7 @@ void Simulation::update_particles_i(int start, int inc)
 			          (bmap[y/CELL][x/CELL]==WL_DESTROYALL) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID && elements[t].Falldown!=2) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWSOLID && elements[t].Falldown!=1) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && !(elements[t].Properties&TYPE_GAS)) || //&& elements[t].Falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_HFLM) ||
+			          (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && !(elements[t].Properties&TYPE_GAS)) || //&& elements[t].Falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_CFLM) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWENERGY && !(elements[t].Properties&TYPE_ENERGY)) ||
 					  (bmap[y/CELL][x/CELL]==WL_DETECT && (t==PT_METL || t==PT_SPRK)) ||
 			          (bmap[y/CELL][x/CELL]==WL_EWALL && !emap[y/CELL][x/CELL])) && (t!=PT_STKM) && (t!=PT_STKM2) && (t!=PT_FIGH)))
@@ -4038,7 +4038,7 @@ void Simulation::update_particles_i(int start, int inc)
 						if (elements[t].State==ST_GAS&&elements[parts[i].type].State!=ST_GAS)
 							pv[y/CELL][x/CELL] += 0.50f;
 						part_change_type(i,x,y,t);
-						if (t==PT_FIRE||t==PT_PLSM||t==PT_HFLM)
+						if (t==PT_FIRE||t==PT_PLSM||t==PT_CFLM)
 							parts[i].life = rand()%50+120;
 						if (t==PT_LAVA) {
 							if (parts[i].ctype==PT_BRMT) parts[i].ctype = PT_BMTL;

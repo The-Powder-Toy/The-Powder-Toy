@@ -1,10 +1,3 @@
-//
-//  GameSave.h
-//  The Powder Toy
-//
-//  Created by Simon Robertshaw on 04/06/2012.
-//
-
 #ifndef The_Powder_Toy_GameSave_h
 #define The_Powder_Toy_GameSave_h
 

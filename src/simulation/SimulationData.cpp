@@ -1,9 +1,3 @@
-#/*
- * SimulationData.cpp
- *
- *  Created on: Jan 24, 2012
- *      Author: Simon
- */
 #include "SimulationData.h"
 //#include "ElementFunctions.h"
 #include "ElementGraphics.h"

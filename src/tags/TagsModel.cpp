@@ -1,10 +1,3 @@
-/*
- * TagsModel.cpp
- *
- *  Created on: Mar 5, 2012
- *      Author: Simon
- */
-
 #include "TagsModel.h"
 #include "TagsView.h"
 #include "client/Client.h"
@@ -14,7 +7,6 @@
 TagsModel::TagsModel():
 	save(NULL)
 {
-	// TODO Auto-generated constructor stub
 
 }
 
@@ -80,6 +72,5 @@ void TagsModel::notifyTagsChanged()
 }
 
 TagsModel::~TagsModel() {
-	// TODO Auto-generated destructor stub
 }
 

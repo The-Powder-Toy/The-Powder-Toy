@@ -1,10 +1,3 @@
-/*
- * TagsView.h
- *
- *  Created on: Mar 5, 2012
- *      Author: Simon
- */
-
 #ifndef TAGSVIEW_H_
 #define TAGSVIEW_H_
 

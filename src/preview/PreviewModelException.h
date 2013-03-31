@@ -1,10 +1,3 @@
-/*
- * PreviewModelException.h
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #ifndef PREVIEWMODELEXCEPTION_H_
 #define PREVIEWMODELEXCEPTION_H_
 

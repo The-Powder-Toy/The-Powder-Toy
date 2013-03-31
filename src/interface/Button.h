@@ -1,10 +1,3 @@
-/*
- * Button.h
- *
- *  Created on: Jan 8, 2012
- *      Author: Simon
- */
-
 #ifndef BUTTON_H_
 #define BUTTON_H_
 

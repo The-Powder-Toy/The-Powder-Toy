@@ -1636,7 +1636,8 @@ int luatpt_message_box(lua_State* l)
 {
 	std::string title = std::string(luaL_optstring(l, 1, "Title"));
 	std::string message = std::string(luaL_optstring(l, 2, "Message"));
-	new InformationMessage(title, message);
+	int large = luaL_optint(l, 1, 0);
+	new InformationMessage(title, message, large);
 	return 0;
 }
 int luatpt_get_numOfParts(lua_State* l)

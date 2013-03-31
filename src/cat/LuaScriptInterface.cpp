@@ -1,10 +1,3 @@
-/*
- * LuaScriptInterface.cpp
- *
- *  Created on: Feb 11, 2012
- *      Author: Simon
- */
-
 #include <string>
 #include <iomanip>
 #include <vector>
@@ -1134,6 +1127,13 @@ void LuaScriptInterface::initElementsAPI()
 		{
 			lua_pushinteger(l, i);
 			lua_setfield(l, elementsAPI, luacon_sim->elements[i].Identifier);
+			char realIdentifier[20];
+			sprintf(realIdentifier, "DEFAULT_PT_%s", luacon_sim->elements[i].Name);
+			if (i != 0 && i != PT_NBHL && i != PT_NWHL && strcmp(luacon_sim->elements[i].Identifier, realIdentifier))
+			{
+				lua_pushinteger(l, i);
+				lua_setfield(l, elementsAPI, realIdentifier);
+			}
 		}
 	}
 }
@@ -1685,8 +1685,8 @@ void LuaScriptInterface::initGraphicsAPI()
 
 int LuaScriptInterface::graphics_textSize(lua_State * l)
 {
-    char * text;
-    int width, height;
+	char * text;
+	int width, height;
 	text = (char*)lua_tostring(l, 1);
 	Graphics::textsize(text, width, height);
 
@@ -1697,7 +1697,7 @@ int LuaScriptInterface::graphics_textSize(lua_State * l)
 
 int LuaScriptInterface::graphics_drawText(lua_State * l)
 {
-    char * text;
+	char * text;
 	int x, y, r, g, b, a;
 	x = lua_tointeger(l, 1);
 	y = lua_tointeger(l, 2);
@@ -2111,7 +2111,7 @@ int LuaScriptInterface::Command(std::string command)
 
 std::string LuaScriptInterface::FormatCommand(std::string command)
 {
-	if(command[0] == '!')
+	if(command != "" && command[0] == '!')
 	{
 		return "!"+legacy->FormatCommand(command.substr(1));
 	}

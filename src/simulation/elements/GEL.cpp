@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_GEL PT_GEL 142
 Element_GEL::Element_GEL()
 {
-    Identifier = "DEFAULT_PT_GEL";
-    Name = "GEL";
-    Colour = PIXPACK(0xFF9900);
-    MenuVisible = 1;
-    MenuSection = SC_LIQUID;
-    Enabled = 1;
-    
-    Advection = 0.6f;
-    AirDrag = 0.01f * CFDS;
-    AirLoss = 0.98f;
-    Loss = 0.95f;
-    Collision = 0.0f;
-    Gravity = 0.1f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f  * CFDS;
-    Falldown = 2;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 20;
-    
-    Weight = 35;
-    
-    Temperature = R_TEMP-2.0f  +273.15f;
-    HeatConduct = 29;
-    Description = "Gel. A liquid with variable viscosity and heat conductivity";
-    
-    State = ST_LIQUID;
-    Properties = TYPE_LIQUID|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_GEL::update;
-    Graphics = &Element_GEL::graphics;
+	Identifier = "DEFAULT_PT_GEL";
+	Name = "GEL";
+	Colour = PIXPACK(0xFF9900);
+	MenuVisible = 1;
+	MenuSection = SC_LIQUID;
+	Enabled = 1;
+	
+	Advection = 0.6f;
+	AirDrag = 0.01f * CFDS;
+	AirLoss = 0.98f;
+	Loss = 0.95f;
+	Collision = 0.0f;
+	Gravity = 0.1f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f  * CFDS;
+	Falldown = 2;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 20;
+	
+	Weight = 35;
+	
+	Temperature = R_TEMP-2.0f  +273.15f;
+	HeatConduct = 29;
+	Description = "Gel. A liquid with variable viscosity and heat conductivity";
+	
+	State = ST_LIQUID;
+	Properties = TYPE_LIQUID|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_GEL::update;
+	Graphics = &Element_GEL::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_GEL static int update(UPDATE_FUNC_ARGS)
@@ -57,7 +57,7 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 	absorbChanceDenom = parts[i].tmp*10 + 500;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
-			if (x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+			if (BOUNDS_CHECK && (rx || ry))
 			{
 				gel=false;
 				r = pmap[y+ry][x+rx];
@@ -127,7 +127,7 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 				dx = parts[i].x - parts[r>>8].x;
 				dy = parts[i].y - parts[r>>8].y;
 
-				//Stickness
+				//Stickiness
 				if ((dx*dx + dy*dy)>1.5 && (gel || !sim->elements[rt].Falldown || (fabs((float)rx)<2 && fabs((float)ry)<2)))
 				{
 					float per, nd;

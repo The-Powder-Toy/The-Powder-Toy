@@ -1,10 +1,3 @@
-/*
- * ConsoleView.h
- *
- *  Created on: Jan 31, 2012
- *      Author: Simon
- */
-
 #ifndef CONSOLEVIEW_H_
 #define CONSOLEVIEW_H_
 

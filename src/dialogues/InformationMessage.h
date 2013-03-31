@@ -1,10 +1,3 @@
-/*
- * InformationMessage.h
- *
- *  Created on: Jan 29, 2012
- *      Author: Simon
- */
-
 #ifndef INFORMATIONMESSAGE_H_
 #define INFORMATIONMESSAGE_H_
 
@@ -12,7 +5,7 @@
 
 class InformationMessage: public ui::Window {
 public:
-	InformationMessage(std::string title, std::string message);
+	InformationMessage(std::string title, std::string message, bool large);
 	virtual void OnDraw();
 	virtual ~InformationMessage();
 };

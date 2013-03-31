@@ -1,10 +1,3 @@
-/*
- * SaveFile.h
- *
- *  Created on: Jun 6, 2012
- *      Author: Simon
- */
-
 #ifndef SAVEFILE_H_
 #define SAVEFILE_H_
 

@@ -1,10 +1,3 @@
-/*
- * SimulationData.h
- *
- *  Created on: Jan 24, 2012
- *      Author: Simon
- */
-
 #include <vector>
 
 #define SC_WALL 0

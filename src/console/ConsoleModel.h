@@ -1,10 +1,3 @@
-/*
- * ConsoleModel.h
- *
- *  Created on: Feb 1, 2012
- *      Author: Simon
- */
-
 #ifndef CONSOLEMODEL_H_
 #define CONSOLEMODEL_H_
 

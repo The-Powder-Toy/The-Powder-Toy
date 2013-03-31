@@ -1,10 +1,3 @@
-/*
- * TPTSTypes.cpp
- *
- *  Created on: Feb 4, 2012
- *      Author: Simon
- */
-
 #include <iostream>
 #include <sstream>
 #include <stdint.h>

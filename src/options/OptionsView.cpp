@@ -1,10 +1,3 @@
-/*
- * OptionsView.cpp
- *
- *  Created on: Apr 14, 2012
- *      Author: Simon
- */
-
 #include "OptionsView.h"
 #include "Style.h"
 #include "interface/Button.h"
@@ -12,7 +5,7 @@
 #include "interface/DropDown.h"
 
 OptionsView::OptionsView():
-	ui::Window(ui::Point(-1, -1), ui::Point(300, 290)){
+	ui::Window(ui::Point(-1, -1), ui::Point(300, 310)){
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Simulation Options");
 	tempLabel->SetTextColour(style::Colour::InformationTitle);
@@ -183,6 +176,21 @@ OptionsView::OptionsView():
 	AddComponent(tempLabel);
 	AddComponent(fastquit);
 
+	class ShowAvatarsAction: public ui::CheckboxAction
+	{
+		OptionsView * v;
+	public:
+		ShowAvatarsAction(OptionsView * v_){	v = v_;	}
+		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetShowAvatars(sender->GetChecked()); }
+	};
+
+	showAvatars = new ui::Checkbox(ui::Point(8, 270), ui::Point(Size.X-6, 16), "Show Avatars", "");
+	showAvatars->SetActionCallback(new ShowAvatarsAction(this));
+	tempLabel = new ui::Label(ui::Point(showAvatars->Position.X+Graphics::textwidth(showAvatars->GetText().c_str())+20, showAvatars->Position.Y), ui::Point(Size.X-28, 16), "\bg- Disable if you have a slow connection");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(tempLabel);
+	AddComponent(showAvatars);
+
 	class CloseAction: public ui::ButtonAction
 	{
 	public:
@@ -213,6 +221,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	scale->SetChecked(sender->GetScale());
 	fullscreen->SetChecked(sender->GetFullscreen());
 	fastquit->SetChecked(sender->GetFastQuit());
+	showAvatars->SetChecked(sender->GetShowAvatars());
 }
 
 void OptionsView::AttachController(OptionsController * c_)
@@ -235,6 +244,5 @@ void OptionsView::OnTryExit(ExitMethod method)
 
 
 OptionsView::~OptionsView() {
-	// TODO Auto-generated destructor stub
 }
 

@@ -1,10 +1,3 @@
-/*
- * ToolButton.h
- *
- *  Created on: Jan 30, 2012
- *      Author: Simon
- */
-
 #ifndef TOOLBUTTON_H_
 #define TOOLBUTTON_H_
 

@@ -1,9 +1,3 @@
-/*
- * StampsController.cpp
- *
- *  Created on: Mar 29, 2012
- *      Author: Simon
- */
 #include <sstream>
 
 #include "client/Client.h"

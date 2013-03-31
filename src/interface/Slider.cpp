@@ -1,10 +1,3 @@
-/*
- * Slider.cpp
- *
- *  Created on: Mar 3, 2012
- *      Author: Simon
- */
-
 #include <iostream>
 #include "Slider.h"
 #include "Colour.h"
@@ -20,7 +13,6 @@ Slider::Slider(Point position, Point size, int steps):
 		col1(0, 0, 0, 0),
 		col2(0, 0, 0, 0)
 {
-	// TODO Auto-generated constructor stub
 
 }
 

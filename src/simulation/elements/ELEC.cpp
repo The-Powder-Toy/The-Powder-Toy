@@ -2,48 +2,48 @@
 //#TPT-Directive ElementClass Element_ELEC PT_ELEC 136
 Element_ELEC::Element_ELEC()
 {
-    Identifier = "DEFAULT_PT_ELEC";
-    Name = "ELEC";
-    Colour = PIXPACK(0xDFEFFF);
-    MenuVisible = 1;
-    MenuSection = SC_NUCLEAR;
-    Enabled = 1;
-    
-    Advection = 0.0f;
-    AirDrag = 0.00f * CFDS;
-    AirLoss = 1.00f;
-    Loss = 1.00f;
-    Collision = -0.99f;
-    Gravity = 0.0f;
-    Diffusion = 0.00f;
-    HotAir = 0.000f	* CFDS;
-    Falldown = 0;
-    
-    Flammable = 0;
-    Explosive = 0;
-    Meltable = 0;
-    Hardness = 0;
-    
-    Weight = -1;
-    
-    Temperature = R_TEMP+200.0f+273.15f;
-    HeatConduct = 251;
-    Description = "Electrons";
-    
-    State = ST_GAS;
-    Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
-    
-    LowPressure = IPL;
-    LowPressureTransition = NT;
-    HighPressure = IPH;
-    HighPressureTransition = NT;
-    LowTemperature = ITL;
-    LowTemperatureTransition = NT;
-    HighTemperature = ITH;
-    HighTemperatureTransition = NT;
-    
-    Update = &Element_ELEC::update;
-    Graphics = &Element_ELEC::graphics;
+	Identifier = "DEFAULT_PT_ELEC";
+	Name = "ELEC";
+	Colour = PIXPACK(0xDFEFFF);
+	MenuVisible = 1;
+	MenuSection = SC_NUCLEAR;
+	Enabled = 1;
+	
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 1.00f;
+	Loss = 1.00f;
+	Collision = -0.99f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
+	
+	Flammable = 0;
+	Explosive = 0;
+	Meltable = 0;
+	Hardness = 0;
+	
+	Weight = -1;
+	
+	Temperature = R_TEMP+200.0f+273.15f;
+	HeatConduct = 251;
+	Description = "Electrons";
+	
+	State = ST_GAS;
+	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	
+	LowPressure = IPL;
+	LowPressureTransition = NT;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+	
+	Update = &Element_ELEC::update;
+	Graphics = &Element_ELEC::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_ELEC static int update(UPDATE_FUNC_ARGS)
@@ -54,7 +54,7 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 	parts[i].pavg[1] = y;
 	for (rx=-2; rx<=2; rx++)
 		for (ry=-2; ry<=2; ry++)
-			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES) {
+			if (BOUNDS_CHECK) {
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					r = sim->photons[y+ry][x+rx];
