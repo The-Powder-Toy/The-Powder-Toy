@@ -26,7 +26,21 @@ add_executable(powder ${powder_SRC})
 
 
 # TODO: make "bitness" check
-add_definitions(-D_64BIT)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	add_definitions(-D_64BIT)
+	SET(CMAKE_CXX_FLAGS "-m64")
+	SET(CMAKE_C_FLAGS "-m64")
+	SET(CMAKE_EXE_LINKER_FLAGS "-m64")
+	SET(CMAKE_MODULE_LINKER_FLAGS "-m64")
+	SET(CMAKE_SHARED_LINKER_FLAGS "-m64")
+else()
+	SET(CMAKE_CXX_FLAGS "-m32")
+	SET(CMAKE_C_FLAGS "-m32")
+	SET(CMAKE_EXE_LINKER_FLAGS "-m32")
+	SET(CMAKE_MODULE_LINKER_FLAGS "-m32")
+	SET(CMAKE_SHARED_LINKER_FLAGS "-m32")
+endif()
+
 # Is that needed?
 add_definitions(-DUSE_SDL)
 
@@ -157,6 +171,25 @@ if (LuaConsole)
 	endif (LUA51_FOUND)
 endif (LuaConsole)
 
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	find_package(ClockGettime REQUIRED)
+	include_directories(${CLOCK_GETTIME_INCLUDE_DIR})
+	target_link_libraries(powder ${CLOCK_GETTIME_LIBRARIES})
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	find_package(X11 REQUIRED)
+	include_directories(${X11_X11_INCLUDE_PATH})
+	target_link_libraries(powder ${X11_X11_LIB})
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	find_package(Winsock REQUIRED)
+	include_directories(${WINSOCK_INCLUDE_DIR})
+	target_link_libraries(powder ${WINSOCK_LIBRARIES})
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
 # SDL
 
 if(PreferStatic)
@@ -186,25 +219,6 @@ if(NOT SDL_FOUND)
 	target_link_libraries(powder ${SDL_LIBRARY})
 endif(NOT SDL_FOUND)
 
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	find_package(ClockGettime REQUIRED)
-	include_directories(${CLOCK_GETTIME_INCLUDE_DIR})
-	target_link_libraries(powder ${CLOCK_GETTIME_LIBRARIES})
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	find_package(X11 REQUIRED)
-	include_directories(${X11_X11_INCLUDE_PATH})
-	target_link_libraries(powder ${X11_X11_LIB})
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	find_package(Winsock REQUIRED)
-	include_directories(${WINSOCK_INCLUDE_DIR})
-	target_link_libraries(powder ${WINSOCK_LIBRARIES})
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fkeep-inline-functions")
 
 option(Optimisations "Enable optimisations" ON)
@@ -227,7 +241,7 @@ if (Debug)
 	endif(CMAKE_COMPILER_IS_GNUCXX)
 endif(Debug)
 
-option(NoWarnings "Disable compiler warnings" OFF)
+option(NoWarnings "Disable compiler warnings" ON)
 if (NoWarnings)
 	if(CMAKE_COMPILER_IS_GNUCC)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
