@@ -24,25 +24,16 @@ include_directories(resources)
 include_directories(src)
 add_executable(powder ${powder_SRC})
 
-
-# TODO: make "bitness" check
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	add_definitions(-D_64BIT)
-	SET(CMAKE_CXX_FLAGS "-m64")
-	SET(CMAKE_C_FLAGS "-m64")
-	SET(CMAKE_EXE_LINKER_FLAGS "-m64")
-	SET(CMAKE_MODULE_LINKER_FLAGS "-m64")
-	SET(CMAKE_SHARED_LINKER_FLAGS "-m64")
-else()
-	SET(CMAKE_CXX_FLAGS "-m32")
-	SET(CMAKE_C_FLAGS "-m32")
-	SET(CMAKE_EXE_LINKER_FLAGS "-m32")
-	SET(CMAKE_MODULE_LINKER_FLAGS "-m32")
-	SET(CMAKE_SHARED_LINKER_FLAGS "-m32")
 endif()
 
-# Is that needed?
-add_definitions(-DUSE_SDL)
+option(Renderer "Compiles TPT for site previews rendering" OFF)
+if(Renderer)
+	add_definitions(-DRENDERER)
+else()
+	add_definitions(-DUSE_SDL)
+endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	add_definitions(-DLIN)
@@ -56,6 +47,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	add_definitions(-DMACOSX)
+	#TODO: Include SDLMain.h and SDLMain.m
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 
@@ -127,6 +119,11 @@ target_link_libraries(powder ${BZIP2_LIBRARIES})
 
 # zlib
 
+if(PreferStatic)
+	set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_ONLY_STATIC})
+	find_package(ZLIB)
+	set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_ORIG})
+endif(PreferStatic)
 if(NOT ZLIB_FOUND)
 	find_package(ZLIB REQUIRED)
 endif(NOT ZLIB_FOUND)
