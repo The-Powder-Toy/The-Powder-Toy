@@ -514,13 +514,18 @@ void Gravity::gravity_mask()
 	}
 	mask_free(t_mask_el);
 }
-
+#ifdef GRAVFFT
 Gravity::Gravity():
-		grav_fft_status(false)
+	grav_fft_status(false)
 {
 	gravity_init();
 }
-
+#else
+Gravity::Gravity()
+{
+	gravity_init();
+}
+#endif
 Gravity::~Gravity()
 {
 	gravity_cleanup();
