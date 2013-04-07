@@ -1068,6 +1068,12 @@ void GameController::OpenLocalBrowse()
 
 void GameController::OpenLogin()
 {
+	loginWindow = new LoginController();
+	ui::Engine::Ref().ShowWindow(loginWindow->GetView());
+}
+
+void GameController::OpenProfile()
+{
 	if(Client::Ref().GetAuthUser().ID)
 	{
 		new ProfileActivity(Client::Ref().GetAuthUser().Username);

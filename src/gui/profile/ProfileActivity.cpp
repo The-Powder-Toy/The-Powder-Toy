@@ -49,11 +49,13 @@ ProfileActivity::ProfileActivity(std::string username) :
 		}
 	};
 
-	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), "Close");
-	closeButton->SetActionCallback(new CloseAction(this));
 
+	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point(Size.X, 15), "Close");
+	closeButton->SetActionCallback(new CloseAction(this));
 	if(editable)
 	{
+		closeButton->Size.X = (Size.X/2)+1;
+
 		ui::Button * saveButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), "Save");
 		saveButton->SetActionCallback(new SaveAction(this));
 		AddComponent(saveButton);
@@ -67,6 +69,17 @@ ProfileActivity::ProfileActivity(std::string username) :
 
 void ProfileActivity::setUserInfo(UserInfo newInfo)
 {
+	class EditAvatarAction: public ui::ButtonAction
+	{
+		ProfileActivity * a;
+	public:
+		EditAvatarAction(ProfileActivity * a) : a(a) {  }
+		void ActionCallback(ui::Button * sender_)
+		{
+			OpenURI("http://" SERVER "/Profile/Avatar.html");
+		}
+	};
+
 	info = newInfo;
 
 	if(!info.Biography.length() && !editable)
@@ -79,10 +92,17 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	AddComponent(avatar);
 
 	int currentY = 5;
-	ui::Label * title = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8), 15), info.Username);
+	if(editable)
+	{
+		ui::Button * editAvatar = new ui::Button(ui::Point(Size.X - (40 + 16 + 75), currentY), ui::Point(75, 15), "Edit Avatar");
+		editAvatar->SetActionCallback(new EditAvatarAction(this));
+		AddComponent(editAvatar);
+	}
+	ui::Label * title = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8+75), 15), info.Username);
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(title);
 	currentY += 20;
+
 
 	ui::Label * locationTitle = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8), 15), "Location");
 	locationTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;

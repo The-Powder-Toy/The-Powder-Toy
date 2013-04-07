@@ -108,6 +108,7 @@ public:
 	void LoadSave(SaveInfo * save);
 	void OpenSearch();
 	void OpenLogin();
+	void OpenProfile();
 	void OpenTags();
 	void OpenSavePreview(int saveID, int saveDate);
 	void OpenSavePreview();

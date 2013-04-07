@@ -23,6 +23,7 @@ class PreviewView: public ui::Window {
 	class SubmitCommentAction;
 	class LoginAction;
 	class AutoCommentSizeAction;
+	class AvatarAction;
 	PreviewController * c;
 	VideoBuffer * savePreview;
 	ui::Button * openButton;

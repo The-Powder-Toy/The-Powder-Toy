@@ -10,6 +10,7 @@
 #include "gui/Style.h"
 #include "Format.h"
 #include "gui/search/Thumbnail.h"
+#include "gui/profile/ProfileActivity.h"
 #include "client/Client.h"
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/AvatarButton.h"
@@ -44,6 +45,20 @@ public:
 	AutoCommentSizeAction(PreviewView * v): v(v) {}
 	virtual void TextChangedCallback(ui::Textbox * sender) {
 		v->commentBoxAutoHeight();
+	}
+};
+
+class PreviewView::AvatarAction: public ui::AvatarButtonAction
+{
+	PreviewView * v;
+public:
+	AvatarAction(PreviewView * v_){ v = v_; }
+	virtual void ActionCallback(ui::AvatarButton * sender)
+	{
+		if(sender->GetUsername().size() > 0)
+		{
+			new ProfileActivity(sender->GetUsername());
+		}
 	}
 };
 
@@ -166,6 +181,7 @@ PreviewView::PreviewView():
 	if(showAvatars)
 	{
 		avatarButton = new ui::AvatarButton(ui::Point(4, (YRES/2)+4), ui::Point(34, 34), "");
+		avatarButton->SetActionCallback(new AvatarAction(this));
 		AddComponent(avatarButton);
 	}
 
@@ -546,6 +562,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			if(showAvatars)
 			{
 				tempAvatar = new ui::AvatarButton(ui::Point(2, currentY+7), ui::Point(26, 26), comments->at(i)->authorName);
+				tempAvatar->SetActionCallback(new AvatarAction(this));
 				commentComponents.push_back(tempAvatar);
 				commentsPanel->AddChild(tempAvatar);
 			}

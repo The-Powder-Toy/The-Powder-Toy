@@ -46,6 +46,7 @@ public:
 	{
 
 	}
+	void SetRightToolTip(std::string tooltip) { toolTip2 = tooltip; }
 	bool GetShowSplit() { return showSplit; }
 	void SetShowSplit(bool split) { showSplit = split; }
 	SplitButtonAction * GetSplitActionCallback() { return splitActionCallback; }
@@ -335,20 +336,24 @@ GameView::GameView():
 	clearSimButton->SetActionCallback(new ClearSimAction(this));
 	AddComponent(clearSimButton);
 
-	class LoginAction : public ui::ButtonAction
+	class LoginAction : public SplitButtonAction
 	{
 		GameView * v;
 	public:
 		LoginAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallbackLeft(ui::Button * sender)
 		{
 			v->c->OpenLogin();
 		}
+		void ActionCallbackRight(ui::Button * sender)
+		{
+			v->c->OpenProfile();
+		}
 	};
-	loginButton = new ui::Button(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "[sign in]", "Sign into simulation server");
+	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "[sign in]", "Sign into simulation server", "Edit Profile", 19);
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	loginButton->SetIcon(IconLogin);
-	loginButton->SetActionCallback(new LoginAction(this));
+	((SplitButton*)loginButton)->SetSplitActionCallback(new LoginAction(this));
 	AddComponent(loginButton);
 
 	class SimulationOptionAction : public ui::ButtonAction
@@ -802,10 +807,14 @@ void GameView::NotifyUserChanged(GameModel * sender)
 	if(!sender->GetUser().ID)
 	{
 		loginButton->SetText("[sign in]");
+		((SplitButton*)loginButton)->SetShowSplit(false);
+		((SplitButton*)loginButton)->SetRightToolTip("Sign in to simulation server");
 	}
 	else
 	{
 		loginButton->SetText(sender->GetUser().Username);
+		((SplitButton*)loginButton)->SetShowSplit(true);
+		((SplitButton*)loginButton)->SetRightToolTip("Edit profile");
 	}
 	NotifySaveChanged(sender);
 }
