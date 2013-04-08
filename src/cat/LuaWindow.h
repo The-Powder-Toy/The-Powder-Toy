@@ -8,7 +8,7 @@ extern "C" {
 
 #include "LuaLuna.h"
 
-#include "interface/Platform.h"
+#include "gui/interface/Platform.h"
 namespace ui
 {
 	class Window;

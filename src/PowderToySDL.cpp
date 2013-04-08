@@ -25,13 +25,6 @@
 #endif
 
 #include "Format.h"
-#include "Style.h"
-#include "interface/Engine.h"
-#include "interface/Button.h"
-#include "interface/Panel.h"
-#include "interface/Point.h"
-#include "interface/Label.h"
-#include "interface/Keys.h"
 
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
@@ -39,10 +32,12 @@
 #include "client/Client.h"
 #include "Misc.h"
 
-#include "game/GameController.h"
-#include "game/GameView.h"
+#include "gui/game/GameController.h"
+#include "gui/game/GameView.h"
 
-#include "dialogues/ErrorMessage.h"
+#include "gui/dialogues/ErrorMessage.h"
+#include "gui/interface/Keys.h"
+#include "gui/Style.h"
 
 #include "client/HTTP.h"
 

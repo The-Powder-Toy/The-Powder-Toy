@@ -9,8 +9,8 @@
 #include "Config.h"
 #include "client/Client.h"
 #include "Graphics.h"
-#include "interface/Point.h"
-#include "game/RenderPreset.h"
+#include "gui/interface/Point.h"
+#include "gui/game/RenderPreset.h"
 
 class Simulation;
 

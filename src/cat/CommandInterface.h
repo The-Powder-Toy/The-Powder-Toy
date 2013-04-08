@@ -2,7 +2,7 @@
 #define COMMANDINTERFACE_H_
 
 #include <string>
-#include "interface/Engine.h"
+#include "gui/interface/Engine.h"
 //#include "game/GameModel.h"
 
 class GameModel;

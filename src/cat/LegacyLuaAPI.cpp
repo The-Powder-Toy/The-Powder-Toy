@@ -9,12 +9,12 @@
 #include "LuaScriptInterface.h"
 #include "LuaScriptHelper.h"
 
-#include "dialogues/ErrorMessage.h"
-#include "dialogues/InformationMessage.h"
-#include "dialogues/TextPrompt.h"
-#include "dialogues/ConfirmPrompt.h" 
+#include "gui/dialogues/ErrorMessage.h"
+#include "gui/dialogues/InformationMessage.h"
+#include "gui/dialogues/TextPrompt.h"
+#include "gui/dialogues/ConfirmPrompt.h"
+#include "gui/game/GameModel.h"
 #include "simulation/Simulation.h"
-#include "game/GameModel.h"
 
 #include <time.h>
 

@@ -2,8 +2,8 @@
 #define TASKWINDOW_H_
 
 #include <string>
-#include "interface/Label.h"
-#include "interface/Window.h"
+#include "gui/interface/Label.h"
+#include "gui/interface/Window.h"
 #include "tasks/TaskListener.h"
 
 class Task;
