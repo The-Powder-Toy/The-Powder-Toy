@@ -100,10 +100,11 @@ if not GetOption("macosx"):
 			else:
 				env.Append(CPPPATH=[GetOption("lua-dir")])
 
-	#Check for FFT lib
-	if not conf.CheckLib('fftw3f') and not conf.CheckLib('fftw3f-3'):
-		print "libfftw3f not found or not installed"
-		raise SystemExit(1)
+	if not GetOption('nofft'):
+		#Check for FFT lib
+		if not conf.CheckLib('fftw3f') and not conf.CheckLib('fftw3f-3'):
+			print "libfftw3f not found or not installed"
+			raise SystemExit(1)
 
 	#Check for Bzip lib
 	if not conf.CheckLib('bz2'):
