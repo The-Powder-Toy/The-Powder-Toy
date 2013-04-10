@@ -344,6 +344,8 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 	float * samples[PIXELCHANNELS];
 
 	//Resampler for each colour channel
+	if (sourceWidth <= 0 || sourceHeight <= 0 || resultWidth <= 0 || resultHeight <= 0)
+		return NULL;
 	resamplers[0] = new Resampler(sourceWidth, sourceHeight, resultWidth, resultHeight, Resampler::BOUNDARY_CLAMP, 0.0f, 1.0f, pFilter, NULL, NULL, filter_scale, filter_scale);
 	samples[0] = new float[sourceWidth];
 	for (int i = 1; i < PIXELCHANNELS; i++)
