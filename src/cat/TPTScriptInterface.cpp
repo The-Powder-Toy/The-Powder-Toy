@@ -146,14 +146,7 @@ int TPTScriptInterface::parseNumber(char * stringData)
 	}
 	else
 	{
-		while(cc = *(stringData++))
-		{
-			currentNumber *= base;
-			if(cc >= '0' && cc <= '9')
-				currentNumber += cc - '0';
-			else
-				break;
-		}
+		return atoi(stringData);
 	}
 	return currentNumber;
 }
