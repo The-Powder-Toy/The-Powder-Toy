@@ -513,7 +513,9 @@ Menu * GameModel::GetActiveMenu()
 
 Tool * GameModel::GetElementTool(int elementID)
 {
+#ifdef DEBUG
 	std::cout << elementID << std::endl;
+#endif
 	for(std::vector<Tool*>::iterator iter = elementTools.begin(), end = elementTools.end(); iter != end; ++iter)
 	{
 		if((*iter)->GetToolID() == elementID)
