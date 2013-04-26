@@ -61,11 +61,6 @@ std::string *luacon_lastError;
 int *lua_el_func, *lua_el_mode, *lua_gr_func;
 
 int getPartIndex_curIdx;
-int step_functions[6] = {0, 0, 0, 0, 0, 0};
-int keypress_function_count = 0;
-int *keypress_functions = NULL;
-int mouseclick_function_count = 0;
-int *mouseclick_functions = NULL;
 int tptProperties; //Table for some TPT properties
 int tptPropertiesVersion;
 int tptElements; //Table for TPT element names

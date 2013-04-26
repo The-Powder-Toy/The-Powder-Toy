@@ -14,11 +14,6 @@ extern std::string *luacon_lastError;
 extern int *lua_el_func, *lua_el_mode, *lua_gr_func;
 
 extern int getPartIndex_curIdx;
-extern int step_functions[6];//[6] = {0, 0, 0, 0, 0, 0};
-extern int keypress_function_count;// = 0;
-extern int *keypress_functions;// = NULL;
-extern int mouseclick_function_count;// = 0;
-extern int *mouseclick_functions;// = NULL;
 extern int tptProperties; //Table for some TPT properties
 extern int tptPropertiesVersion;
 extern int tptElements; //Table for TPT element names
