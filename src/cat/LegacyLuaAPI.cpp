@@ -843,22 +843,44 @@ int luatpt_setconsole(lua_State* l)
 		luacon_controller->HideConsole();
 	return 0;
 }
-
+static int luaL_tostring (lua_State *L, int n) {
+	luaL_checkany(L, n);
+	switch (lua_type(L, n)) {
+		case LUA_TNUMBER:
+			lua_pushstring(L, lua_tostring(L, n));
+			break;
+		case LUA_TSTRING:
+			lua_pushvalue(L, n);
+			break;
+		case LUA_TBOOLEAN:
+			lua_pushstring(L, (lua_toboolean(L, n) ? "true" : "false"));
+			break;
+		case LUA_TNIL:
+			lua_pushliteral(L, "nil");
+			break;
+		default:
+			lua_pushfstring(L, "%s: %p", luaL_typename(L, n), lua_topointer(L, n));
+			break;
+	}
+	return 1;
+}
 int luatpt_log(lua_State* l)
 {
 	int args = lua_gettop(l);
+	std::string text = "";
 	for(int i = 1; i <= args; i++)
 	{
-		if((*luacon_currentCommand))
-		{
-			if(!(*luacon_lastError).length())
-				(*luacon_lastError) = luaL_optstring(l, i, "");
-			else
-				(*luacon_lastError) += ", " + std::string(luaL_optstring(l, i, ""));
-		}
+		luaL_tostring(l, lua_gettop(l));
+		if(text.length())
+			text=std::string(luaL_optstring(l, lua_gettop(l), "")) + ", " + text;
 		else
-			luacon_ci->Log(CommandInterface::LogNotice, luaL_optstring(l, i, ""));
+			text=std::string(luaL_optstring(l, lua_gettop(l), ""));
+		lua_pop(l, 2);
 	}
+	if((*luacon_currentCommand))
+		(*luacon_lastError) = text;
+	else
+		luacon_ci->Log(CommandInterface::LogNotice, text.c_str());
 	return 0;
 }
 
