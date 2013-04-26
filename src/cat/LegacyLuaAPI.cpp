@@ -1571,7 +1571,7 @@ int luatpt_register_step(lua_State* l)
 		lua_rawget(l, LUA_REGISTRYINDEX);
 		if(!lua_istable(l, -1))
 		{
-			lua_pop(l, -1);
+			lua_pop(l, 1);
 			lua_newtable(l);
 			lua_pushstring(l, "stepfunctions");
 			lua_pushvalue(l, -2);
