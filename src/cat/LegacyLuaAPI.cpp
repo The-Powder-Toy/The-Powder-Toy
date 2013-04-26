@@ -775,20 +775,24 @@ int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS, int i)
 	lua_pushinteger(luacon_ci->l, *colb);
 	callret = lua_pcall(luacon_ci->l, 4, 10, 0);
 	if (callret)
-		luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
-
-	cache = luaL_optint(luacon_ci->l, -10, 0);
-	*pixel_mode = luaL_optint(luacon_ci->l, -9, *pixel_mode);
-	*cola = luaL_optint(luacon_ci->l, -8, *cola);
-	*colr = luaL_optint(luacon_ci->l, -7, *colr);
-	*colg = luaL_optint(luacon_ci->l, -6, *colg);
-	*colb = luaL_optint(luacon_ci->l, -5, *colb);
-	*firea = luaL_optint(luacon_ci->l, -4, *firea);
-	*firer = luaL_optint(luacon_ci->l, -3, *firer);
-	*fireg = luaL_optint(luacon_ci->l, -2, *fireg);
-	*fireb = luaL_optint(luacon_ci->l, -1, *fireb);
-	lua_pop(luacon_ci->l, 10);
-
+	{
+		luacon_ci->Log(CommandInterface::LogError, luaL_optstring(luacon_ci->l, -1, ""));
+		lua_pop(luacon_ci->l, 1);
+	}
+	else
+	{
+		cache = luaL_optint(luacon_ci->l, -10, 0);
+		*pixel_mode = luaL_optint(luacon_ci->l, -9, *pixel_mode);
+		*cola = luaL_optint(luacon_ci->l, -8, *cola);
+		*colr = luaL_optint(luacon_ci->l, -7, *colr);
+		*colg = luaL_optint(luacon_ci->l, -6, *colg);
+		*colb = luaL_optint(luacon_ci->l, -5, *colb);
+		*firea = luaL_optint(luacon_ci->l, -4, *firea);
+		*firer = luaL_optint(luacon_ci->l, -3, *firer);
+		*fireg = luaL_optint(luacon_ci->l, -2, *fireg);
+		*fireb = luaL_optint(luacon_ci->l, -1, *fireb);
+		lua_pop(luacon_ci->l, 10);
+	}
 	return cache;
 }
 
