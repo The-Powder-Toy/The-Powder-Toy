@@ -70,7 +70,7 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS) {
 				}
 				else if (rt == PT_LAVA)
 				{
-					if (parts[r>>8].ctype == PT_TTAN && !(rand()%10))
+					if ((parts[r>>8].ctype == PT_TTAN || parts[r>>8].ctype == PT_GOLD) && !(rand()%10))
 					{
 						parts[r>>8].ctype = PT_VIBR;
 						sim->kill_part(i);
