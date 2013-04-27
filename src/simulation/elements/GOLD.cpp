@@ -76,7 +76,7 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 			if ((!rx != !ry) && BOUNDS_CHECK) {
 				r = pmap[y+ry][x+rx];
 				if(!r) continue;
-				if((r&0xFF)==PT_SPRK && parts[r>>8].life)
+				if((r&0xFF)==PT_SPRK && parts[r>>8].life && parts[r>>8].life<4)
 				{
 					parts[i].life = 4;
 					parts[i].type = PT_SPRK;
