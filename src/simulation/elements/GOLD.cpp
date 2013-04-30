@@ -40,7 +40,7 @@ Element_GOLD::Element_GOLD()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = 1941.0f;
+	HighTemperature = 1337.0f;
 	HighTemperatureTransition = PT_LAVA;
 
 	Update = &Element_GOLD::update;
