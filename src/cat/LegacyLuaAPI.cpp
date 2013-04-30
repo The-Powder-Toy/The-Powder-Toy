@@ -489,86 +489,162 @@ int luacon_elementwrite(lua_State* l){
 	return 0;
 }
 bool shortcuts = true;
-int luacon_keyevent(int key, int modifier, int event){
-	int i = 0, kpcontinue = 1, callret;
-	char tempkey[] = {key, 0};
-	if(keypress_function_count){
-		for(i = 0; i < keypress_function_count && kpcontinue; i++){
-			lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, keypress_functions[i]);
-			lua_pushstring(luacon_ci->l, tempkey);
-			lua_pushinteger(luacon_ci->l, key);
-			lua_pushinteger(luacon_ci->l, modifier);
-			lua_pushinteger(luacon_ci->l, event);
-			callret = lua_pcall(luacon_ci->l, 4, 1, 0);
-			if (callret)
+int luacon_keyevent(int key, int modifier, int event)
+{
+	int kycontinue = 1, i, j, callret;
+	lua_State* l=luacon_ci->l;
+	lua_pushstring(l, "keyfunctions");
+	lua_rawget(l, LUA_REGISTRYINDEX);
+	if(!lua_istable(l, -1))
+	{
+		lua_pop(l, 1);
+		lua_newtable(l);
+		lua_pushstring(l, "keyfunctions");
+		lua_pushvalue(l, -2);
+		lua_rawset(l, LUA_REGISTRYINDEX);
+	}
+	int c=lua_objlen(l, -1);
+	for(i=1;i<=c && kycontinue;i++)
+	{
+		lua_rawgeti(l, -1, i);
+		lua_pushlstring(l, (const char*)&key, 1);
+		lua_pushinteger(l, key);
+		lua_pushinteger(l, modifier);
+		lua_pushinteger(l, event);
+		callret = lua_pcall(l, 4, 1, 0);
+		if (callret)
+		{
+			if (!strcmp(luaL_optstring(l, -1, ""), "Error: Script not responding"))
 			{
-				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+				ui::Engine::Ref().LastTick(clock());
+				for(j=i;j<=c-1;j++)
+				{
+					lua_rawgeti(l, -2, j+1);
+					lua_rawseti(l, -3, j);
+				}
+				lua_pushnil(l);
+				lua_rawseti(l, -3, c);
+				c--;
+				i--;
 			}
-			if(lua_isboolean(luacon_ci->l, -1)){
-				kpcontinue = lua_toboolean(luacon_ci->l, -1);
-			}
-			lua_pop(luacon_ci->l, 1);
+			lua_pop(l, 1);
+			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+		}
+		else
+		{
+			if(!lua_isnoneornil(l, -1))
+				kycontinue = lua_toboolean(l, -1);
+			lua_pop(l, 1);
 		}
 	}
-	return kpcontinue && shortcuts;
+	lua_pop(l, 1);
+	return kycontinue && shortcuts;
 }
-int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel){
-	int i = 0, mpcontinue = 1, callret;
-	if(mouseclick_function_count){
-		for(i = 0; i < mouseclick_function_count && mpcontinue; i++){
-			lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, mouseclick_functions[i]);
-			lua_pushinteger(luacon_ci->l, mx);
-			lua_pushinteger(luacon_ci->l, my);
-			lua_pushinteger(luacon_ci->l, mb);
-			lua_pushinteger(luacon_ci->l, event);
-			lua_pushinteger(luacon_ci->l, mouse_wheel);
-			callret = lua_pcall(luacon_ci->l, 5, 1, 0);
-			if (callret)
+int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel)
+{
+	int mpcontinue = 1, i, j, callret;
+	lua_State* l=luacon_ci->l;
+	lua_pushstring(l, "mousefunctions");
+	lua_rawget(l, LUA_REGISTRYINDEX);
+	if(!lua_istable(l, -1))
+	{
+		lua_pop(l, 1);
+		lua_newtable(l);
+		lua_pushstring(l, "mousefunctions");
+		lua_pushvalue(l, -2);
+		lua_rawset(l, LUA_REGISTRYINDEX);
+	}
+	int c=lua_objlen(l, -1);
+	for(i=1;i<=c && mpcontinue;i++)
+	{
+		lua_rawgeti(l, -1, i);
+		lua_pushinteger(l, mx);
+		lua_pushinteger(l, my);
+		lua_pushinteger(l, mb);
+		lua_pushinteger(l, event);
+		lua_pushinteger(l, mouse_wheel);
+		callret = lua_pcall(l, 5, 1, 0);
+		if (callret)
+		{
+			if (!strcmp(luaL_optstring(l, -1, ""), "Error: Script not responding"))
 			{
-				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+				ui::Engine::Ref().LastTick(clock());
+				for(j=i;j<=c-1;j++)
+				{
+					lua_rawgeti(l, -2, j+1);
+					lua_rawseti(l, -3, j);
+				}
+				lua_pushnil(l);
+				lua_rawseti(l, -3, c);
+				c--;
+				i--;
 			}
-			if(lua_isboolean(luacon_ci->l, -1)){
-				mpcontinue = lua_toboolean(luacon_ci->l, -1);
-			}
-			lua_pop(luacon_ci->l, 1);
+			luacon_ci->Log(CommandInterface::LogError, luaL_optstring(l, -1, ""));
+			lua_pop(l, 1);
+		}
+		else
+		{
+			if(!lua_isnoneornil(l, -1))
+				mpcontinue = lua_toboolean(l, -1);
+			lua_pop(l, 1);
 		}
 	}
+	lua_pop(l, 1);
 	return mpcontinue;
 }
-
-int luacon_step(int mx, int my, std::string selectl, std::string selectr, std::string selectalt, int bsx, int bsy){
-	int tempret = 0, tempb, i, callret;
-	lua_pushinteger(luacon_ci->l, bsy);
-	lua_pushinteger(luacon_ci->l, bsx);
-	lua_pushstring(luacon_ci->l, selectalt.c_str());
-	lua_pushstring(luacon_ci->l, selectr.c_str());
-	lua_pushstring(luacon_ci->l, selectl.c_str());
-	lua_pushinteger(luacon_ci->l, my);
-	lua_pushinteger(luacon_ci->l, mx);
-	lua_setfield(luacon_ci->l, tptProperties, "mousex");
-	lua_setfield(luacon_ci->l, tptProperties, "mousey");
-	lua_setfield(luacon_ci->l, tptProperties, "selectedl");
-	lua_setfield(luacon_ci->l, tptProperties, "selectedr");
-	lua_setfield(luacon_ci->l, tptProperties, "selecteda");
-	lua_setfield(luacon_ci->l, tptProperties, "brushx");
-	lua_setfield(luacon_ci->l, tptProperties, "brushy");
-	for(i = 0; i<6; i++){
-		if(step_functions[i]){
-			lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, step_functions[i]);
-			callret = lua_pcall(luacon_ci->l, 0, 0, 0);
-			if (callret)
+int luacon_step(int mx, int my, std::string selectl, std::string selectr, std::string selectalt, int bsx, int bsy)
+{
+	int i, j, callret;
+	lua_State* l=luacon_ci->l;
+	lua_pushinteger(l, bsy);
+	lua_pushinteger(l, bsx);
+	lua_pushstring(l, selectalt.c_str());
+	lua_pushstring(l, selectr.c_str());
+	lua_pushstring(l, selectl.c_str());
+	lua_pushinteger(l, my);
+	lua_pushinteger(l, mx);
+	lua_setfield(l, tptProperties, "mousex");
+	lua_setfield(l, tptProperties, "mousey");
+	lua_setfield(l, tptProperties, "selectedl");
+	lua_setfield(l, tptProperties, "selectedr");
+	lua_setfield(l, tptProperties, "selecteda");
+	lua_setfield(l, tptProperties, "brushx");
+	lua_setfield(l, tptProperties, "brushy");
+	lua_pushstring(l, "stepfunctions");
+	lua_rawget(l, LUA_REGISTRYINDEX);
+	if(!lua_istable(l, -1))
+	{
+		lua_pop(l, 1);
+		lua_newtable(l);
+		lua_pushstring(l, "stepfunctions");
+		lua_pushvalue(l, -2);
+		lua_rawset(l, LUA_REGISTRYINDEX);
+	}
+	int c=lua_objlen(l, -1);
+	for(i=1;i<=c;i++)
+	{
+		lua_rawgeti(l, -1, i);
+		callret = lua_pcall(l, 0, 0, 0);
+		if (callret)
+		{
+			if (!strcmp(luaL_optstring(l, -1, ""), "Error: Script not responding"))
 			{
-				if (!strcmp(luacon_geterror(),"Error: Script not responding"))
+				ui::Engine::Ref().LastTick(clock());
+				for(j=i;j<=c-1;j++)
 				{
-					ui::Engine::Ref().LastTick(clock());
-					lua_pushcfunction(luacon_ci->l, &luatpt_unregister_step);
-					lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, step_functions[i]);
-					lua_pcall(luacon_ci->l, 1, 0, 0);
+					lua_rawgeti(l, -2, j+1);
+					lua_rawseti(l, -3, j);
 				}
-				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+				lua_pushnil(l);
+				lua_rawseti(l, -3, c);
+				c--;
+				i--;
 			}
+			luacon_ci->Log(CommandInterface::LogError, luaL_optstring(l, -1, ""));
+			lua_pop(l, 1);
 		}
 	}
+	lua_pop(l, 1);
 	return 0;
 }
 
@@ -699,20 +775,24 @@ int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS, int i)
 	lua_pushinteger(luacon_ci->l, *colb);
 	callret = lua_pcall(luacon_ci->l, 4, 10, 0);
 	if (callret)
-		luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
-
-	cache = luaL_optint(luacon_ci->l, -10, 0);
-	*pixel_mode = luaL_optint(luacon_ci->l, -9, *pixel_mode);
-	*cola = luaL_optint(luacon_ci->l, -8, *cola);
-	*colr = luaL_optint(luacon_ci->l, -7, *colr);
-	*colg = luaL_optint(luacon_ci->l, -6, *colg);
-	*colb = luaL_optint(luacon_ci->l, -5, *colb);
-	*firea = luaL_optint(luacon_ci->l, -4, *firea);
-	*firer = luaL_optint(luacon_ci->l, -3, *firer);
-	*fireg = luaL_optint(luacon_ci->l, -2, *fireg);
-	*fireb = luaL_optint(luacon_ci->l, -1, *fireb);
-	lua_pop(luacon_ci->l, 10);
-
+	{
+		luacon_ci->Log(CommandInterface::LogError, luaL_optstring(luacon_ci->l, -1, ""));
+		lua_pop(luacon_ci->l, 1);
+	}
+	else
+	{
+		cache = luaL_optint(luacon_ci->l, -10, 0);
+		*pixel_mode = luaL_optint(luacon_ci->l, -9, *pixel_mode);
+		*cola = luaL_optint(luacon_ci->l, -8, *cola);
+		*colr = luaL_optint(luacon_ci->l, -7, *colr);
+		*colg = luaL_optint(luacon_ci->l, -6, *colg);
+		*colb = luaL_optint(luacon_ci->l, -5, *colb);
+		*firea = luaL_optint(luacon_ci->l, -4, *firea);
+		*firer = luaL_optint(luacon_ci->l, -3, *firer);
+		*fireg = luaL_optint(luacon_ci->l, -2, *fireg);
+		*fireb = luaL_optint(luacon_ci->l, -1, *fireb);
+		lua_pop(luacon_ci->l, 10);
+	}
 	return cache;
 }
 
@@ -843,22 +923,44 @@ int luatpt_setconsole(lua_State* l)
 		luacon_controller->HideConsole();
 	return 0;
 }
-
+static int luaL_tostring (lua_State *L, int n) {
+	luaL_checkany(L, n);
+	switch (lua_type(L, n)) {
+		case LUA_TNUMBER:
+			lua_pushstring(L, lua_tostring(L, n));
+			break;
+		case LUA_TSTRING:
+			lua_pushvalue(L, n);
+			break;
+		case LUA_TBOOLEAN:
+			lua_pushstring(L, (lua_toboolean(L, n) ? "true" : "false"));
+			break;
+		case LUA_TNIL:
+			lua_pushliteral(L, "nil");
+			break;
+		default:
+			lua_pushfstring(L, "%s: %p", luaL_typename(L, n), lua_topointer(L, n));
+			break;
+	}
+	return 1;
+}
 int luatpt_log(lua_State* l)
 {
 	int args = lua_gettop(l);
+	std::string text = "";
 	for(int i = 1; i <= args; i++)
 	{
-		if((*luacon_currentCommand))
-		{
-			if(!(*luacon_lastError).length())
-				(*luacon_lastError) = luaL_optstring(l, i, "");
-			else
-				(*luacon_lastError) += ", " + std::string(luaL_optstring(l, i, ""));
-		}
+		luaL_tostring(l, -1);
+		if(text.length())
+			text=std::string(luaL_optstring(l, -1, "")) + ", " + text;
 		else
-			luacon_ci->Log(CommandInterface::LogNotice, luaL_optstring(l, i, ""));
+			text=std::string(luaL_optstring(l, -1, ""));
+		lua_pop(l, 2);
 	}
+	if((*luacon_currentCommand))
+		(*luacon_lastError) = text;
+	else
+		luacon_ci->Log(CommandInterface::LogNotice, text.c_str());
 	return 0;
 }
 
@@ -1463,155 +1565,157 @@ int luatpt_delete(lua_State* l)
 
 int luatpt_register_step(lua_State* l)
 {
-	int ref, i, ifree = -1;
-	if(lua_isfunction(l, 1)){
-		for(i = 0; i<6; i++){
-			if(!step_functions[i]){
-				if (ifree<0) ifree = i;
-			} else {
-				lua_rawgeti(l, LUA_REGISTRYINDEX, step_functions[i]);
-				if(lua_equal(l, 1, lua_gettop(l))){
-					lua_pop(l, 1);
-					return luaL_error(l, "Function already registered");
-				}
-				lua_pop(l, 1);
-			}
-		}
-		if (ifree>=0)
+	if(lua_isfunction(l, 1))
+	{
+		lua_pushstring(l, "stepfunctions");
+		lua_rawget(l, LUA_REGISTRYINDEX);
+		if(!lua_istable(l, -1))
 		{
-			ref = luaL_ref(l, LUA_REGISTRYINDEX);
-			step_functions[ifree] = ref;
-			return 0;
+			lua_pop(l, 1);
+			lua_newtable(l);
+			lua_pushstring(l, "stepfunctions");
+			lua_pushvalue(l, -2);
+			lua_rawset(l, LUA_REGISTRYINDEX);
 		}
-		else return luaL_error(l, "Step function limit reached");
+		int c = lua_objlen(l, -1);
+		lua_pushvalue(l, 1);
+		lua_rawseti(l, -2, c+1);
 	}
 	return 0;
 }
 int luatpt_unregister_step(lua_State* l)
 {
-	int i;
-	if(lua_isfunction(l, 1)){
-		for(i = 0; i<6; i++){
-			if (step_functions[i]){
-				lua_rawgeti(l, LUA_REGISTRYINDEX, step_functions[i]);
-				if(lua_equal(l, 1, lua_gettop(l))){
-					lua_pop(l, 1);
-					luaL_unref(l, LUA_REGISTRYINDEX, step_functions[i]);
-					step_functions[i] = 0;
-				}
-				else lua_pop(l, 1);
+	if(lua_isfunction(l, 1))
+	{
+		lua_pushstring(l, "stepfunctions");
+		lua_rawget(l, LUA_REGISTRYINDEX);
+		if(!lua_istable(l, -1))
+		{
+			lua_pop(l, -1);
+			lua_newtable(l);
+			lua_pushstring(l, "stepfunctions");
+			lua_pushvalue(l, -2);
+			lua_rawset(l, LUA_REGISTRYINDEX);
+		}
+		int c = lua_objlen(l, -1);
+		int d = 0;
+		int i = 0;
+		for(i=1;i<=c;i++)
+		{
+			lua_rawgeti(l, -1, i+d);
+			if(lua_equal(l, 1, -1))
+			{
+				lua_pop(l, 1);
+				d++;
+				i--;
 			}
+			else
+				lua_rawseti(l, -2, i);
 		}
 	}
 	return 0;
 }
 int luatpt_register_keypress(lua_State* l)
 {
-	int *newfunctions, i;
-	if(lua_isfunction(l, 1)){
-		for(i = 0; i<keypress_function_count; i++){
-			lua_rawgeti(l, LUA_REGISTRYINDEX, keypress_functions[i]);
-			if(lua_equal(l, 1, lua_gettop(l))){
-				lua_pop(l, 1);
-				return luaL_error(l, "Function already registered");
-			}
+	if(lua_isfunction(l, 1))
+	{
+		lua_pushstring(l, "keyfunctions");
+		lua_rawget(l, LUA_REGISTRYINDEX);
+		if(!lua_istable(l, -1))
+		{
 			lua_pop(l, 1);
+			lua_newtable(l);
+			lua_pushstring(l, "keyfunctions");
+			lua_pushvalue(l, -2);
+			lua_rawset(l, LUA_REGISTRYINDEX);
 		}
-		newfunctions = (int*)calloc(keypress_function_count+1, sizeof(int));
-		if(keypress_functions){
-			memcpy(newfunctions, keypress_functions, keypress_function_count*sizeof(int));
-			free(keypress_functions);
-		}
-		newfunctions[keypress_function_count] = luaL_ref(l, LUA_REGISTRYINDEX);
-		keypress_function_count++;
-		keypress_functions = newfunctions;
+		int c = lua_objlen(l, -1);
+		lua_pushvalue(l, 1);
+		lua_rawseti(l, -2, c+1);
 	}
 	return 0;
 }
 int luatpt_unregister_keypress(lua_State* l)
 {
-	int *newfunctions, i, functionindex = -1;
-	if(lua_isfunction(l, 1)){
-		for(i = 0; i<keypress_function_count; i++){
-			lua_rawgeti(l, LUA_REGISTRYINDEX, keypress_functions[i]);
-			if(lua_equal(l, 1, lua_gettop(l))){
-				functionindex = i;
-			}
+	if(lua_isfunction(l, 1))
+	{
+		lua_pushstring(l, "keyfunctions");
+		lua_rawget(l, LUA_REGISTRYINDEX);
+		if(!lua_istable(l, -1))
+		{
 			lua_pop(l, 1);
+			lua_newtable(l);
+			lua_pushstring(l, "keyfunctions");
+			lua_pushvalue(l, -2);
+			lua_rawset(l, LUA_REGISTRYINDEX);
 		}
-	}
-	if(functionindex != -1){
-		luaL_unref(l, LUA_REGISTRYINDEX, keypress_functions[functionindex]);
-		if(functionindex != keypress_function_count-1){
-			memmove(keypress_functions+functionindex+1, keypress_functions+functionindex+1, (keypress_function_count-functionindex-1)*sizeof(int));
+		int c = lua_objlen(l, -1);
+		int d = 0;
+		int i = 0;
+		for(i=1;i<=c;i++)
+		{
+			lua_rawgeti(l, -1, i+d);
+			if(lua_equal(l, 1, -1))
+			{
+				lua_pop(l, 1);
+				d++;
+				i--;
+			}
+			else
+				lua_rawseti(l, -2, i);
 		}
-		if(keypress_function_count-1 > 0){
-			newfunctions = (int*)calloc(keypress_function_count-1, sizeof(int));
-			memcpy(newfunctions, keypress_functions, (keypress_function_count-1)*sizeof(int));
-			free(keypress_functions);
-			keypress_functions = newfunctions;
-		} else {
-			free(keypress_functions);
-			keypress_functions = NULL;
-		}
-		keypress_function_count--;
-	} else {
-		return luaL_error(l, "Function not registered");
 	}
 	return 0;
 }
 int luatpt_register_mouseclick(lua_State* l)
 {
-	int *newfunctions, i;
-	if(lua_isfunction(l, 1)){
-		for(i = 0; i<mouseclick_function_count; i++){
-			lua_rawgeti(l, LUA_REGISTRYINDEX, mouseclick_functions[i]);
-			if(lua_equal(l, 1, lua_gettop(l))){
-				lua_pop(l, 1);
-				return luaL_error(l, "Function already registered");
-			}
+	if(lua_isfunction(l, 1))
+	{
+		lua_pushstring(l, "mousefunctions");
+		lua_rawget(l, LUA_REGISTRYINDEX);
+		if(!lua_istable(l, -1))
+		{
 			lua_pop(l, 1);
+			lua_newtable(l);
+			lua_pushstring(l, "mousefunctions");
+			lua_pushvalue(l, -2);
+			lua_rawset(l, LUA_REGISTRYINDEX);
 		}
-		newfunctions = (int*)calloc(mouseclick_function_count+1, sizeof(int));
-		if(mouseclick_functions){
-			memcpy(newfunctions, mouseclick_functions, mouseclick_function_count*sizeof(int));
-			free(mouseclick_functions);
-		}
-		newfunctions[mouseclick_function_count] = luaL_ref(l, LUA_REGISTRYINDEX);
-		mouseclick_function_count++;
-		mouseclick_functions = newfunctions;
+		int c = lua_objlen(l, -1);
+		lua_pushvalue(l, 1);
+		lua_rawseti(l, -2, c+1);
 	}
 	return 0;
 }
 int luatpt_unregister_mouseclick(lua_State* l)
 {
-	int *newfunctions, i, functionindex = -1;
-	if(lua_isfunction(l, 1)){
-		for(i = 0; i<mouseclick_function_count; i++){
-			lua_rawgeti(l, LUA_REGISTRYINDEX, mouseclick_functions[i]);
-			if(lua_equal(l, 1, lua_gettop(l))){
-				functionindex = i;
-			}
+	if(lua_isfunction(l, 1))
+	{
+		lua_pushstring(l, "mousefunctions");
+		lua_rawget(l, LUA_REGISTRYINDEX);
+		if(!lua_istable(l, -1))
+		{
 			lua_pop(l, 1);
+			lua_newtable(l);
+			lua_pushstring(l, "mousefunctions");
+			lua_pushvalue(l, -2);
+			lua_rawset(l, LUA_REGISTRYINDEX);
 		}
-	}
-	if(functionindex != -1){
-		luaL_unref(l, LUA_REGISTRYINDEX, mouseclick_functions[functionindex]);
-		if(functionindex != mouseclick_function_count-1){
-			memmove(mouseclick_functions+functionindex+1, mouseclick_functions+functionindex+1, (mouseclick_function_count-functionindex-1)*sizeof(int));
+		int c = lua_objlen(l, -1);
+		int d = 0;
+		int i = 0;
+		for(i=1;i<=c;i++)
+		{
+			lua_rawgeti(l, -1, i+d);
+			if(lua_equal(l, 1, -1))
+			{
+				lua_pop(l, 1);
+				d++;
+				i--;
+			}
+			else
+				lua_rawseti(l, -2, i);
 		}
-		if(mouseclick_function_count-1 > 0){
-			newfunctions = (int*)calloc(mouseclick_function_count-1, sizeof(int));
-			memcpy(newfunctions, mouseclick_functions, (mouseclick_function_count-1)*sizeof(int));
-			free(mouseclick_functions);
-			mouseclick_functions = newfunctions;
-		} else {
-			free(mouseclick_functions);
-			mouseclick_functions = NULL;
-		}
-		mouseclick_function_count--;
-	} else {
-		return luaL_error(l, "Function not registered");
 	}
 	return 0;
 }
