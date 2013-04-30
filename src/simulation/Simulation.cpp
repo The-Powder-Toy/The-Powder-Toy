@@ -602,9 +602,9 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 			{
 				if ((pmap[y-1][x]&0xFF)==cm && !parts[pmap[y-1][x]>>8].life)
 				{
-					if (x==x1 || x==x2 || y>=YRES-CELL-1 || !PMAP_CMP_CONDUCTIVE(pmap[y+1][x], cm))
+					if (x==x1 || x==x2 || y>=YRES-CELL-1 || !PMAP_CMP_CONDUCTIVE(pmap[y+1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x-1], cm))
 					{
-						// if at the end of a horizontal section, or if it's a T junction
+						// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
 						coord_stack[coord_stack_size][0] = x;
 						coord_stack[coord_stack_size][1] = y-1;
 						coord_stack_size++;
@@ -641,9 +641,9 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 			{
 				if ((pmap[y+1][x]&0xFF)==cm && !parts[pmap[y+1][x]>>8].life)
 				{
-					if (x==x1 || x==x2 || y<0 || !PMAP_CMP_CONDUCTIVE(pmap[y-1][x], cm))
+					if (x==x1 || x==x2 || y<0 || !PMAP_CMP_CONDUCTIVE(pmap[y-1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x-1], cm))
 					{
-						// if at the end of a horizontal section, or if it's a T junction
+						// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
 						coord_stack[coord_stack_size][0] = x;
 						coord_stack[coord_stack_size][1] = y+1;
 						coord_stack_size++;
