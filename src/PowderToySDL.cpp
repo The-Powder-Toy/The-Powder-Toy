@@ -4,6 +4,7 @@
 #include <string>
 #include <time.h>
 #include "SDL.h"
+#include "SDL_audio.h"
 #ifdef WIN
 #include "SDL_syswm.h"
 #include <direct.h>
@@ -38,6 +39,8 @@
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Keys.h"
 #include "gui/Style.h"
+
+#include "Sound.h"
 
 #include "client/HTTP.h"
 
@@ -246,6 +249,20 @@ void blit2(pixel * vid, int currentScale)
 
 int SDLOpen()
 {
+	SDL_AudioSpec fmt;
+	fmt.freq = 22050;
+	fmt.format = AUDIO_S16;
+	fmt.channels = 2;
+	fmt.samples = 512;
+	fmt.callback = create_tone;
+	fmt.userdata = NULL;
+	if ( SDL_OpenAudio(&fmt, NULL) < 0 ) {
+		fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
+	}
+	else
+	{
+		SDL_PauseAudio(0);
+	}
 	SDL_Surface * surface;
 #if defined(WIN) && defined(WINCONSOLE)
 	FILE * console = fopen("CON", "w" );
@@ -495,7 +512,7 @@ void EngineProcess()
 		engine->Tick();
 		engine->Draw();
 		frameTime = SDL_GetTicks() - frameStart;
-		
+
 		frameTimeAvg = (frameTimeAvg*(1.0f-0.2f)) + (0.2f*frameTime);
 		if(ui::Engine::Ref().FpsLimit > 2.0f)
 		{
@@ -545,7 +562,7 @@ int GetModifiers()
 
 int main(int argc, char * argv[])
 {
-	currentWidth = XRES+BARSIZE; 
+	currentWidth = XRES+BARSIZE;
 	currentHeight = YRES+MENUSIZE;
 
 
@@ -583,7 +600,7 @@ int main(int argc, char * argv[])
 		if(arguments["proxy"] == "false")
 		{
 			proxyString = "";
-			Client::Ref().SetPref("Proxy", "");	
+			Client::Ref().SetPref("Proxy", "");
 		}
 		else
 		{
@@ -733,7 +750,7 @@ int main(int argc, char * argv[])
 	}
 
 	EngineProcess();
-	
+
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
 	delete ui::Engine::Ref().g;
