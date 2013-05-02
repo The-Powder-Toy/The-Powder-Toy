@@ -2119,14 +2119,43 @@ int LuaScriptInterface::Command(std::string command)
 	}
 	else
 	{
-		int ret;
+		int level = lua_gettop(l), ret;
+		std::string text = "";
 		lastError = "";
 		currentCommand = true;
+		std::string tmp = "return " + command;
 		ui::Engine::Ref().LastTick(clock());
-		if((ret = luaL_dostring(l, command.c_str())))
+		luaL_loadbuffer(l, tmp.c_str(), tmp.length(), "@console");
+		if(lua_type(l, -1) != LUA_TFUNCTION)
 		{
+			lua_pop(l, 1);
+			luaL_loadbuffer(l, command.c_str(), command.length(), "@console");
+		}
+		if(lua_type(l, -1) != LUA_TFUNCTION)
 			lastError = luacon_geterror();
-			//Log(LogError, lastError);
+		else
+		{
+			ret = lua_pcall(l, 0, LUA_MULTRET, 0);
+			if(ret)
+				lastError = luacon_geterror();
+			else
+			{
+				for(level++;level<=lua_gettop(l);level++)
+				{
+					luaL_tostring(l, level);
+					if(text.length())
+						text += ", " + std::string(luaL_optstring(l, -1, ""));
+					else
+						text = std::string(luaL_optstring(l, -1, ""));
+					lua_pop(l, 1);
+				}
+				if(text.length())
+					if(lastError.length())
+						lastError += "; " + text;
+					else
+						lastError = text;
+
+			}
 		}
 		currentCommand = false;
 		return ret;

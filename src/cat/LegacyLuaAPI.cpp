@@ -664,7 +664,7 @@ void luacon_hook(lua_State * l, lua_Debug * ar)
 	}
 }
 
-static int luaL_tostring (lua_State *L, int n) {
+int luaL_tostring (lua_State *L, int n) {
 	luaL_checkany(L, n);
 	switch (lua_type(L, n)) {
 		case LUA_TNUMBER:
