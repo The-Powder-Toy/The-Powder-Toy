@@ -664,12 +664,32 @@ void luacon_hook(lua_State * l, lua_Debug * ar)
 	}
 }
 
-char *luacon_geterror(){
-	char *error = (char*)lua_tostring(luacon_ci->l, -1);
-	if(error==NULL || !error[0]){
-		error = "failed to execute";
+static int luaL_tostring (lua_State *L, int n) {
+	luaL_checkany(L, n);
+	switch (lua_type(L, n)) {
+		case LUA_TNUMBER:
+			lua_pushstring(L, lua_tostring(L, n));
+			break;
+		case LUA_TSTRING:
+			lua_pushvalue(L, n);
+			break;
+		case LUA_TBOOLEAN:
+			lua_pushstring(L, (lua_toboolean(L, n) ? "true" : "false"));
+			break;
+		case LUA_TNIL:
+			lua_pushliteral(L, "nil");
+			break;
+		default:
+			lua_pushfstring(L, "%s: %p", luaL_typename(L, n), lua_topointer(L, n));
+			break;
 	}
-	return error;
+	return 1;
+}
+char *luacon_geterror(){
+	luaL_tostring(luacon_ci->l, -1);
+	char* err = (char*)luaL_optstring(luacon_ci->l, -1, "failed to execute");
+	lua_pop(luacon_ci->l, 1);
+	return err;
 }
 /*void luacon_close(){
 	lua_close(l);
@@ -922,27 +942,6 @@ int luatpt_setconsole(lua_State* l)
 	else
 		luacon_controller->HideConsole();
 	return 0;
-}
-static int luaL_tostring (lua_State *L, int n) {
-	luaL_checkany(L, n);
-	switch (lua_type(L, n)) {
-		case LUA_TNUMBER:
-			lua_pushstring(L, lua_tostring(L, n));
-			break;
-		case LUA_TSTRING:
-			lua_pushvalue(L, n);
-			break;
-		case LUA_TBOOLEAN:
-			lua_pushstring(L, (lua_toboolean(L, n) ? "true" : "false"));
-			break;
-		case LUA_TNIL:
-			lua_pushliteral(L, "nil");
-			break;
-		default:
-			lua_pushfstring(L, "%s: %p", luaL_typename(L, n), lua_topointer(L, n));
-			break;
-	}
-	return 1;
 }
 int luatpt_log(lua_State* l)
 {
